@@ -66,11 +66,14 @@ Descriptive statistics
  values mahalanobis
  ranks
  probit logit kendall cloglog
+Experimental design
+ fullfact ff2n hadamard
 Linear regression
  anova anovan
  polyfit wpolyfit	
- polyval	
- gls ols
+ polyval polyconf	
+ gls ols wsolve
+ princomp
 Plots
  qqplot ppplot boxplot scatter normplot
 Nonlinear regression
