@@ -32,9 +32,15 @@ function v = nanmedian (X, dim)
       endif
     endif
     if (dim == 2) X = X.'; endif
-    dfi = do_fortran_indexing;
+    try dfi = do_fortran_indexing;
+    catch dfi = 0;
+    end
+    try wfi = warn_fortran_indexing;
+    catch wfi = 0;
+    end
     unwind_protect
       do_fortran_indexing = 1;
+      warn_fortran_indexing = 0;
       ## Find lengths of datasets after excluding NaNs; valid datasets
       ## are those that are not empty after you remove all the NaNs
       n = size(X,1) - sum (isnan(X));
@@ -61,6 +67,7 @@ function v = nanmedian (X, dim)
 		 + X (colidx + ceil(n(valid)./2+0.4)) ) ./ 2;
     unwind_protect_cleanup
       do_fortran_indexing = dfi;
+      warn_fortran_indexing = wfi;
     end_unwind_protect
     if (dim == 2) v = v.'; endif
   endif
