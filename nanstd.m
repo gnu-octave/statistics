@@ -41,8 +41,8 @@ function v = nanstd (X, dim)
     meanX = sum (X) ./ n;
     
     ## subtract the mean from the data and compute the sum squared
-    v = sumsq (X - ones(size(X,1), 1) * meanX);
-    
+    v = sumsq (X - repmat(meanX,size(X,1),1));
+
     ## because the missing data was set to zero each missing data
     ## point will contribute (-meanX)^2 to sumsq, so remove these
     v = v - (meanX .^ 2) .* (size(X,1) - n);
