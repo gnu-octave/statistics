@@ -22,8 +22,8 @@ function normplot(X)
   xlabel "Data"
 
   # plot grid
-  t = [0.00001;0.0001;0.001;0.01;0.1;1;2;5;10;25;50;
-	75;90;95;98;99;99.9;99.99;99.999;99.9999;99.99999];
+  t = [0.00001;0.0001;0.001;0.01;0.1;0.3;1;2;5;10;25;50;
+	75;90;95;98;99;99.7;99.9;99.99;99.999;99.9999;99.99999];
   tics ('y',normal_inv(t/100),num2str(t));
   grid on
 
@@ -33,11 +33,11 @@ function normplot(X)
   q = normal_inv([1:n]'/(n+1));
   Y = sort(X);
 
-  # Set view range
-  miny = min(Y(:)); minq = min(q(1),normal_inv(0.006));
-  maxy = max(Y(:)); maxq = max(q(end),normal_inv(0.994));
-  space = (maxy-miny)*0.05;
-  axis ([miny-space, maxy+space, minq, maxq]);
+  # Set view range with a bit of space around data
+  miny = min(Y(:)); minq = min(q(1),normal_inv(0.05));
+  maxy = max(Y(:)); maxq = max(q(end),normal_inv(0.95));
+  yspace = (maxy-miny)*0.05; qspace = (q(end)-q(1))*0.05;
+  axis ([miny-yspace, maxy+yspace, minq-qspace, maxq+qspace]); 
 
   # Find the line joining the first to the third quartile for each column
   q1 = ceil(n/4);
