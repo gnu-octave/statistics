@@ -22,7 +22,7 @@ Distributions
  discrete_cdf discrete_pdf discrete_inv discrete_rnd
  uniform_cdf uniform_pdf uniform_inv uniform_rnd
  weibull_cdf weibull_pdf weibull_inv weibull_rnd
- wiener_rnd
+ wiener_rnd anderson_darling_cdf
 Descriptive statistics
  max 
  min 
@@ -109,6 +109,7 @@ Hypothesis testing
  run_test
  var_test
  welch_test
+ anderson_darling_test
 Compatibility
  beta*=use <code>beta_*</code>
  bino*=use <code>binomial_*</code>
