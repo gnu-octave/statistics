@@ -68,7 +68,7 @@ Descriptive statistics
  probit logit kendall cloglog
 Linear regression
  anova	
- polyfit	
+ polyfit wpolyfit	
  polyval	
  gls ols
 Plots
