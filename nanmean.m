@@ -24,15 +24,9 @@ function v = nanmean (X, ...)
   if nargin < 1
     usage ("v = nanmean(X [, dim])");
   else
-    dfi = do_fortran_indexing;
-    unwind_protect
-      do_fortran_indexing = 1;
-      n = sum (!isnan(X), all_va_args);
-      n(n == 0) = NaN;
-      X(isnan(X)) = 0;
-      v = sum (X, all_va_args) ./ n;
-    unwind_protect_cleanup
-      do_fortran_indexing = dfi;
-    end_unwind_protect
+    n = sum (!isnan(X), all_va_args);
+    n(n == 0) = NaN;
+    X(isnan(X)) = 0;
+    v = sum (X, all_va_args) ./ n;
   endif
 endfunction

@@ -24,13 +24,7 @@ function v = nansum (X, ...)
   if nargin < 1
     usage ("v = nansum (X [, dim])");
   else
-    dfi = do_fortran_indexing;
-    unwind_protect
-      do_fortran_indexing = 1;
-      X(isnan(X)) = 0;
-      v = sum (X, all_va_args);
-    unwind_protect_cleanup
-      do_fortran_indexing = dfi;
-    end_unwind_protect
+    X(isnan(X)) = 0;
+    v = sum (X, all_va_args);
   endif
 endfunction
