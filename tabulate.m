@@ -94,7 +94,6 @@ end
 bins=length(edges)-1;
 # initialize freqency table
 freqtable = zeros(bins,4);
-freqtable (:,1) = [1:1:bins]';
 
 for k=1:1:bins;
   if k != bins
@@ -107,11 +106,12 @@ for k=1:1:bins;
   end
 end
 
+freqtable(:,1) = edges(1:end-1)(:);
 freqtable(:,3) = 100*freqtable(:,2)/n;
 
 if nargout == 0
-  disp("     bin      Fa       Fr%        Fc");
-  printf("  %5d    %5d    %6.2f%%    %5d\n",freqtable');
+  disp("     bin     Fa       Fr%        Fc");
+  printf("%8g  %5d    %6.2f%%    %5d\n",freqtable');
 else table = freqtable;
 end
 
