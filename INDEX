@@ -67,7 +67,7 @@ Descriptive statistics
  ranks
  probit logit kendall cloglog
 Linear regression
- anova	
+ anova anovan
  polyfit wpolyfit	
  polyval	
  gls ols
