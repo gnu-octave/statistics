@@ -86,7 +86,6 @@ function [PVAL, FSTAT, DF_B, DFE] = anovan (data, grps)
     DFE= sum( (gn(sel)-1).*(gn(sel)>0) );
     MSE= SSE/DFE;
     stats(nstats+1,1:3)= [SSE, DFE, MSE];
-    keyboard
 
     for i= 1:nstats
         MS= stats(i,3);
