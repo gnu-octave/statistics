@@ -79,6 +79,8 @@ for i=1:nc
     outliers = col(col < s(2,i)-IQR | col > s(4,i)+IQR);
     outliers_x = [outliers_x; i*ones(size(outliers))];
     outliers_y = [outliers_y; outliers];
+  else
+    s(:,i) = NaN;
   end
 end
 
