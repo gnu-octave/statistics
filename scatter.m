@@ -45,101 +45,88 @@
 ##
 ## ToDo: filled markers, RGB support.
 
-function scatter (varargin)
+## 2003-03-15 Paul Kienzle
+## * cleanup, optimization
+
+function scatter (x,y,varargin)
 
 error(nargchk(2,6,nargin))
 filled = 0; 
-marker = "";
+marker = "+";
 c = 1; ## default color
-s = []; ## circle surface
+s = 0; ## circle surface
 
-Nin=nargin;
-while Nin > 0 & isstr(varargin{Nin})
-  if strcmp(varargin{Nin},"filled")
+seen=0;
+for i=1:length(varargin)
+  v = varargin{i};
+  if !isstr(v)
+    if seen==0, s = v; 
+    elseif seen==1, c = v;
+    else error("too many numeric arguments");
+    endif
+    seen++;
+  elseif strcmp(v,"filled")
     filled = 1;
   else
-    marker=varargin{Nin};
-    if filled~=1
-      filled = 0; 
-    endif
+    marker = v;
   endif
-  Nin = Nin-1;
-endwhile
-
-if isempty(marker)
-  marker = "+";
-endif
-
-switch Nin
-case 2  ## scatter(x,y)
-  x = varargin{1};
-  y = varargin{2};
-  if nargin < 3 
-    marker = "o";
-  endif
-case 3  ## scatter(x,y,s)
-  x = varargin{1};
-  y = varargin{2};
-  s = varargin{3};
-case 4  ## scatter(x,y,s,c)
-  x = varargin{1};
-  y = varargin{2};
-  s = varargin{3};
-  c = varargin{4};
-otherwise
-   error("Wrong number of input arguments.");
-endswitch
+endfor
 
 ## check X and Y vectors
-if length(x) ~= length(y) | ...
-   length(x) ~= prod(size(x)) | length(y) ~= prod(size(y))
+x=x(:); y=y(:); c=c(:); s = s(:);
+if length(x) ~= length(y)
   error("X and Y must be vectors of the same length.");
 endif
 
 ## Map colors in color vector if necessary.
-if prod(size(c))==1
-  color = repmat(c,length(x),1); 
-elseif length(c)==prod(size(c)) & length(c)==length(x), ## C is a vector 
-  color = c;
-else
+if isempty(c)
+  c = ones(size(x));
+elseif length(c)==1
+  c = c*ones(size(x));
+elseif length(c) ~= length(x)
   error("C must be a single color or a vector the same length as X.");
 endif
 
 ## Scalar expand the marker size if necessary.
-if Nin > 2
-  if length(s)==1,
-    s = repmat(s,length(x),1); 
-  elseif length(s)~=prod(size(s)) | length(s)~=length(x)
-    error("S must be a scalar or a vector the same length as X.");
-  endif
+if isempty(s)
+  s = zeros(size(x));
+elseif length(s)==1
+  s = s*ones(size(x));
+elseif length(s) ~= length(x)
+  error("S must be a scalar or a vector the same length as X.");
 endif
 
 ## Now draw the plot, one patch per point.
 clearplot;
 hold on;
-				# delete the following line if you use
-				# patch
+
+## set axis limits
 rmax=sqrt(max(s)/pi);
-if size(rmax)==[0 0]
-  rmax=0;
-endif
 ex=0.1*(max(x)-min(x))+rmax; ey=0.1*(max(y)-min(y))+rmax;
 axis ([min(x)-ex max(x)+ex, min(y)-ey, max(y)+ey]);
-for i=1:length(x)
+
+## draw the markers
+
+for color = unique(c)'
+  i =  (color == c);
   ## patch(x(i),y(i),marker);
 				# patch is too slow!! 
 				# delete the next line if you use patch
-  plot(x(i), y(i), sprintf(";;%d%s",color(i),marker));
+  plot(x(i), y(i), sprintf(";;%d%s",color,marker));
 endfor
-if Nin > 2
+
+## draw the circles
+markers = find(s);
+if ~isempty(markers)
   axis ("equal");
-  for i=1:length(x)
+  for i=markers'
     ## t SIN COS is used to draw circles around point
     t=[0:0.01:2*pi]; SIN=sin(t); COS=cos(t);
     ## plot circles 
-    plot(x(i)+sqrt(s(i)/pi)*SIN,y(i)+sqrt(s(i)/pi)*COS,sprintf(";;%d",color(i)));
+    plot(x(i)+sqrt(s(i)/pi)*SIN,y(i)+sqrt(s(i)/pi)*COS,sprintf(";;%d",c(i)));
   endfor
 endif
+
 ## fill the circles
 if filled==1
   disp("'fill' isn't supported.");
