@@ -16,8 +16,8 @@
 
 ## [v, idx] = nanmax(X [, dim]);
 ## nanmax is identical to the max function except that NaN values are
-## treated as -Inf, and so are ignored.  If all values are NaN, the
-## maximum is returned as -Inf. [Is this behaviour compatible?]
+## are ignored.  If all values in a column are NaN, the maximum is 
+## returned as NaN rather than []. 
 ##
 ## See also: nansum, nanmin, nanmean, nanmedian
 function [v, idx] = nanmax (X, ...)
