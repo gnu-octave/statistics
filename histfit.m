@@ -49,8 +49,7 @@ if nargin < 2
 endif
 
 [n,xbin]=hist(data,nbins);
-dx = xbin(2)-xbin(1);
-if any(abs(diff(xbin,2)) > 10*dx*eps)
+if any(abs(diff(xbin,2)) > 10*max(xbin)*eps)
   error("histfit bins must be uniform width");
 endif
 
@@ -59,7 +58,8 @@ sr = nanstd(data);  ## Estimates the parameter, SIGMA, of the normal distributio
 x=(-3*sr+mr:0.1*sr:3*sr+mr)';## Evenly spaced samples of the expected data range.
 [xb,yb] = bar(xbin,n);
 y = normal_pdf(x,mr,sr);  
-y = row*y*dx;   ## Normalization necessary to overplot the histogram.
+binwidth = xbin(2)-xbin(1);
+y = row*y*binwidth;   ## Normalization necessary to overplot the histogram.
 plot(xb,yb,";;b",x,y,";;r-");     ## Plots density line over histogram.
 
 endfunction
