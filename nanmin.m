@@ -16,8 +16,8 @@
 
 ## [v, idx] = nanmin (X [, dim]);
 ## nanmin is identical to the min function except that NaN values are
-## treated as Inf, and so are ignored.  If all values are NaN, the
-## minimum is returned as Inf. [Is this behaviour compatible?]
+## are ignored.  If all values in a column are NaN, the minimum is 
+## returned as NaN rather than [].
 ##
 ## See also: nansum, nanmax, nanmean, nanmedian
 function [v, idx] = nanmin (X, ...)
