@@ -14,30 +14,33 @@
 ## The algorithm given in [1] claims to be an approximation for the
 ## Anderson-Darling CDF accurate to 6 decimal points.
 ##
-## Test using:
-##    n=300;
-##    z=randn(n,1000);
-##    x=(1+erf(z/sqrt(2))/2;
-##    x=sort(x);
+## Demonstrate using:
+##    n=300; reps=10000;
+##    z=randn(n,reps);
+##    x=sort((1+erf(z/sqrt(2)))/2);
 ##    i = [1:n]'*ones(1,size(x,2));
 ##    A = -n - sum( (2*i-1) .* (log(x) + log(1-x(n:-1:1,:))) )/n;
 ##    p=anderson_darling_cdf(A,n);
-##    hist(10*p,[1:10]-0.5);
-## You will see that the histogram is basically flat.
-## Similarly for uniform:
-##    x=rand(n,1000);
-## And for exponential:
-##    x=1-exp(-rande(n,1000));
+##    hist(100*p,[1:100]-0.5);
+## You will see that the histogram is basically flat, which is to
+## say that the probabilities returned by the Anderson-Darling CDF 
+## are distributed uniformly.
 ##
-## Examine some of the more extreme values of p:
+## You can easily determine the extreme values of p:
 ##    [junk,idx]=sort(p);
-##    hist(z(:,idx(1)),[-4:4]);
-##    hist(z(:,idx(2)),[-4:4]);
-##    hist(z(:,idx(end)),[-4:4]);
-##    hist(z(:,idx(end-1),[-4:4]);
+## The histograms of various p aren't  very informative:
+##    histfit(z(:,idx(1)),linspace(-3,3,15));
+##    histfit(z(:,idx(end/2)),linspace(-3,3,15));
+##    histfit(z(:,idx(end)),linspace(-3,3,15));
+## More telling is the qqplot:
+##    qqplot(z(:,idx(1))); hold on; plot([-3,3],[-3,3],';;'); hold off;
+##    qqplot(z(:,idx(end/2))); hold on; plot([-3,3],[-3,3],';;'); hold off;
+##    qqplot(z(:,idx(end))); hold on; plot([-3,3],[-3,3],';;'); hold off;
 ##
-## Repeat the experiment for x=z=rand(n,1000) and x=rande(n,1000)
-## z=1-exp(-x).
+## Try a similarly analysis for z uniform:
+##    z=rand(n,reps); x=sort(z);
+## and for z exponential:
+##    z=rande(n,reps); x=sort(1-exp(-z));
 ##
 ## [1] Marsaglia, G; Marsaglia JCW; (2004) "Evaluating the Anderson Darling
 ## distribution", Journal of Statistical Software, 9(2).
