@@ -120,14 +120,14 @@ Compatibility
  unid*= use <code>discrete_*</code>
  unif*= use <code>uniform_*</code>
  weib*= use <code>weibull_*</code>
- anova1= use <code>anova</code>
- regress= use <code>gls</code>
- nlinfit= use <code>leasqr</code>
- barttest= use <code>bartlett_test</code>
- ranksum= use <code>u_test</code>
- signrank= use <code>wilcoxon_test</code>
- signtest= use <code>sign_test</code>
- ttest= use <code>t_test</code>
- ttest2= use <code>t_test_2</code>
- ztest= use <code>z_test</code>
+ anova1= use <f>anova</f>
+ regress= use <f>gls</f>
+ nlinfit= use <f>leasqr</f>
+ barttest= use <f>bartlett_test</f>
+ ranksum= use <f>u_test</f>
+ signrank= use <f>wilcoxon_test</f>
+ signtest= use <f>sign_test</f>
+ ttest= use <f>t_test</f>
+ ttest2= use <f>t_test_2</f>
+ ztest= use <f>z_test</f>
 
