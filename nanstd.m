@@ -25,29 +25,31 @@
 ##		this provides the square root of the second moment around the mean
 ##
 ## See also: nanmin, nanmax, nansum, nanmedian, nanmean
-function v = nanstd (X, opt, dim)
+function v = nanstd (X, opt, varargin)
   if nargin < 1
     usage ("v = nanstd(X [, opt [, dim]])");
   else
     if nargin < 3
       dim = min(find(size(X)>1));
       if isempty(dim), dim=1; endif;
+    else
+      dim = varargin{1};
     endif
     if ((nargin < 2) || isempty(opt))
       opt = 0;
     endif
 
     ## determine the number of non-missing points in each data set
-    n = sum (!isnan(X), dim);
+    n = sum (!isnan(X), varargin{:});
     
     ## replace missing data with zero and compute the mean
     X(isnan(X)) = 0;
-    meanX = sum (X, dim) ./ n;
+    meanX = sum (X, varargin{:}) ./ n;
     
     ## subtract the mean from the data and compute the sum squared
     sz = ones(1,length(size(X)));
     sz(dim) = size(X,dim);
-    v = sumsq (X - repmat(meanX,sz), dim);
+    v = sumsq (X - repmat(meanX,sz), varargin{:});
     
     ## because the missing data was set to zero each missing data
     ## point will contribute (-meanX)^2 to sumsq, so remove these

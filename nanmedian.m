@@ -20,18 +20,19 @@
 ## [Is this behaviour compatible?]
 ##
 ## See also: nanmin, nanmax, nansum, nanmean
-function v = nanmedian (X, dim)
+function v = nanmedian (X, varargin)
   if nargin < 1 || nargin > 2
-    usage ("v = nanmean(X [, dim])");
+    usage ("v = nanmedian(X [, dim])");
+  endif
+  if nargin < 2
+    dim = min(find(size(X)>1));
+    if isempty(dim), dim=1; endif;
   else
-    if nargin == 1
-      if size(X,1) == 1
-	dim = 2; 
-      else
-        dim = 1;
-      endif
-    endif
-    if (dim == 2) X = X.'; endif
+    dim = varargin{:};
+  endif
+
+  sz = size (X);
+  if (prod (sz) > 1)
     try dfi = do_fortran_indexing;
     catch dfi = 0;
     end
@@ -43,32 +44,35 @@ function v = nanmedian (X, dim)
       warn_fortran_indexing = 0;
       ## Find lengths of datasets after excluding NaNs; valid datasets
       ## are those that are not empty after you remove all the NaNs
-      n = size(X,1) - sum (isnan(X));
-      valid = find(n!=0);
+      n = sz(dim) - sum (isnan(X),varargin{:});
 
-      ## Extract all non-empty datasets and sort, replacing NaN with Inf
-      ## so that the invalid elements go toward the ends of the columns
-      X (isnan(X)) = Inf;
-      X = sort ( X (:, valid) );
+      ## When n is equal to zero, force it to one, so that median
+      ## picks up a NaN value below
+      n (n==0) = 1;
 
-      ## Determine the offset for each remaining column in single index mode
-      colidx = (0:size(X,2)-1)*size(X,1);
+      ## Sort the datasets, with the NaN going to the end of the data
+      X = sort (X, varargin{:});
 
-      ## Assume the median for all datasets will be NaNs
-      v = NaN*ones(size(n));
+      ## Determine the offset for each column in single index mode
+      colidx = reshape((0:(prod(sz) / sz(dim) - 1)), size(n)); 
+      colidx = floor(colidx / prod(sz(1:dim-1))) * prod(sz(1:dim)) + ...
+	  mod(colidx,prod(sz(1:dim-1)));
+      stride = prod(sz(1:dim-1));
 
       ## Average the two central values of the sorted list to compute
       ## the median, but only do so for valid rows.  If the dataset
       ## is odd length, the single central value will be used twice.
       ## E.g., 
-      ##   for n==5, ceil(2.5+0.4) is 3 and floor(2.5+0.6) is also 3
-      ##   for n==6, ceil(3.0+0.4) is 4 and floor(3.0+0.6) is 3
-      v(valid) = ( X (colidx + floor(n(valid)./2+0.6)) ...
-		 + X (colidx + ceil(n(valid)./2+0.4)) ) ./ 2;
+      ##   for n==5, ceil(2.5+0.5) is 3 and floor(2.5+0.5) is also 3
+      ##   for n==6, ceil(3.0+0.5) is 4 and floor(3.0+0.5) is 3
+      ## correction made for stride of data "stride*ceil(2.5-0.5)+1"
+      v = (X(colidx + stride*ceil(n./2-0.5) + 1)  + ...
+	   X(colidx + stride*floor(n./2-0.5) + 1)) ./ 2;
     unwind_protect_cleanup
       do_fortran_indexing = dfi;
       warn_fortran_indexing = wfi;
     end_unwind_protect
-    if (dim == 2) v = v.'; endif
+  else
+    error ("nanmedian: invalid matrix argument");
   endif
 endfunction
