@@ -14,6 +14,8 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+## Compatibility function --- same as mean(x,'g')
+
 function a = geomean(x)
   a = mean(x, "g");
 endfunction
