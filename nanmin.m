@@ -1,4 +1,5 @@
 ## Copyright (C) 2001 Paul Kienzle
+##  modified (C) 2003 Alois Schloegl 
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -25,14 +26,14 @@ function [v, idx] = nanmin (X, Y)
     usage ("[v, idx] = nanmin(X [, Y])");
   elseif nargin == 1
     nanvals = isnan(X);
-    X(nanvals) = -Inf;
+    X(nanvals) = Inf;
     v = min (X);
     v(all(nanvals)) = NaN;
   else
     Xnan = isnan(X);
     Ynan = isnan(Y);
-    X(Xnan) = -Inf;
-    Y(Ynan) = -Inf;
+    X(Xnan) = Inf;
+    Y(Ynan) = Inf;
     v = min(X,Y);
     v(Xnan & Ynan) = NaN;
   endif
