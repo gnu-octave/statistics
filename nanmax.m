@@ -24,13 +24,9 @@ function [v, idx] = nanmax (X, ...)
   if nargin < 1
     usage ("[v, idx] = nanmax(X [, dim])");
   else
-    dfi = do_fortran_indexing;
-    unwind_protect
-      do_fortran_indexing = 1;
-      X(isnan(X)) = -Inf;
-      [v,idx] = max (X, all_va_args);
-    unwind_protect_cleanup
-      do_fortran_indexing = dfi;
-    end_unwind_protect
+    nanvals = isnan(X);
+    X(nanvals) = -Inf;
+    [v,idx] = max (X, all_va_args);
+    v(all(nanvals, all_va_args)) = NaN;
   endif
 endfunction
