@@ -20,8 +20,8 @@ function a = mad(X)
   if nargin != 1
     usage("a = mad (X)");
   elseif all (size (X) > 1)
-    a = mean (abs (X - ones(size(X,1),1) * mean(X)));
+    a = nanmean (abs (X - ones(size(X,1),1) * nanmean(X)));
   else
-    a = mean (abs (X - mean(X)));
+    a = nanmean (abs (X - nanmean(X)));
   endif
 endfunction
