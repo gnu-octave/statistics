@@ -18,7 +18,7 @@
 ## 02111-1307, USA.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{pval}, @var{f}, @var{df_b}, @var{df_w}] =} anovan (@var{data}, @var{grps})
+## @deftypefn {Function File} {[@var{pval}, @var{f}, @var{df_b}, @var{df_e}] =} anovan (@var{data}, @var{grps})
 ## Perform a multi-way analysis of variance (ANOVA).  The goal is to test
 ## whether the population means of data taken from @var{k} different
 ## groups are all equal.
@@ -32,7 +32,7 @@
 ## Note that groups do not need to be sequentially numbered.
 ##
 ## Under the null of constant means, the statistic @var{f} follows an F
-## distribution with @var{df_b} and @var{df_w} degrees of freedom.
+## distribution with @var{df_b} and @var{df_e} degrees of freedom.
 ##
 ## The p-value (1 minus the CDF of this distribution at @var{f}) is
 ## returned in @var{pval}.
@@ -47,7 +47,7 @@
 ## Based on code by: KH <Kurt.Hornik@ci.tuwien.ac.at>
 ## $Id$
 
-function [pval, f, df_b, df_w] = anovan (data, grps)
+function [PVAL, FSTAT, DF_B, DFE] = anovan (data, grps)
 
     if nargin <= 1
         usage ("anovan (data, grps)");
@@ -89,12 +89,20 @@ function [pval, f, df_b, df_w] = anovan (data, grps)
 
     for i= 1:nstats
         MS= stats(i,3);
+        DF= stats(i,2);
         F= MS/MSE;
         pval = 1 - f_cdf (F, DF, DFE);
         stats(i,4:5)= [F, pval];
     end
 
-    printout( stats, stats_tbl );
+    if nargout==0;
+        printout( stats, stats_tbl );
+    else
+        PVAL= stats(1:nstats,5);
+        FSTAT=stats(1:nstats,4);
+        DF_B= stats(1:nstats,2);
+        DF_E= DFE;
+    end
 endfunction
 
 
@@ -285,6 +293,12 @@ grp = [1,1;1,2;1,3;
        3,1;3,2;3,3;
        4,1;4,2;4,3;
        5,1;5,2;5,3];
+# Test Data from www.mathworks.com/
+#                access/helpdesk/help/toolbox/stats/linear10.shtml
+data=[23  27  43  41  15  17   3   9  20  63  55  90];
+grp= [ 1    1   1   1   2   2   2   2   3   3   3   3;
+       1    1   2   2   1   1   2   2   1   1   2   2]';
+
 
 
 
