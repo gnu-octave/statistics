@@ -14,19 +14,26 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-## [v, idx] = nanmin (X [, dim]);
+## [v, idx] = nanmin(X [, Y]);
 ## nanmin is identical to the min function except that NaN values are
 ## are ignored.  If all values in a column are NaN, the minimum is 
-## returned as NaN rather than [].
+## returned as NaN rather than []. 
 ##
 ## See also: nansum, nanmax, nanmean, nanmedian
-function [v, idx] = nanmin (X, ...)
-  if nargin < 1
-    usage ("[v, idx] = nanmin (X [, dim])");
-  else
+function [v, idx] = nanmin (X, Y) 
+  if nargin < 1 || nargin > 2
+    usage ("[v, idx] = nanmin(X [, Y])");
+  elseif nargin == 1
     nanvals = isnan(X);
-    X(nanvals) = Inf;
-    [v, idx] = min (X, all_va_args);
-    v(all(nanvals, all_va_args)) = NaN;
+    X(nanvals) = -Inf;
+    v = min (X);
+    v(all(nanvals)) = NaN;
+  else
+    Xnan = isnan(X);
+    Ynan = isnan(Y);
+    X(Xnan) = -Inf;
+    Y(Ynan) = -Inf;
+    v = min(X,Y);
+    v(Xnan & Ynan) = NaN;
   endif
 endfunction

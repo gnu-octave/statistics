@@ -14,19 +14,26 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-## [v, idx] = nanmax(X [, dim]);
+## [v, idx] = nanmax(X [, Y]);
 ## nanmax is identical to the max function except that NaN values are
 ## are ignored.  If all values in a column are NaN, the maximum is 
 ## returned as NaN rather than []. 
 ##
 ## See also: nansum, nanmin, nanmean, nanmedian
-function [v, idx] = nanmax (X, ...)
-  if nargin < 1
-    usage ("[v, idx] = nanmax(X [, dim])");
-  else
+function [v, idx] = nanmax (X, Y) 
+  if nargin < 1 || nargin > 2
+    usage ("[v, idx] = nanmax(X [, Y])");
+  elseif nargin == 1
     nanvals = isnan(X);
     X(nanvals) = -Inf;
-    [v,idx] = max (X, all_va_args);
-    v(all(nanvals, all_va_args)) = NaN;
+    v = max (X);
+    v(all(nanvals)) = NaN;
+  else
+    Xnan = isnan(X);
+    Ynan = isnan(Y);
+    X(Xnan) = -Inf;
+    Y(Ynan) = -Inf;
+    v = max(X,Y);
+    v(Xnan & Ynan) = NaN;
   endif
 endfunction
