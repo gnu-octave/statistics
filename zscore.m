@@ -18,12 +18,18 @@
 ## compute the z-score of each element of X relative to the data in the
 ## columns of X.  The z-score for a single data point x_i is:
 ##    (x_i - mean(x))/std(x)
-function A = zscore(X)
-  if nargin != 1
-    usage("zscore(X)");
-  elseif any(size(X) == 1)
-    A = (X - mean(X)) ./ std(X);
-  else
-    A = (X - ones(size(X,1),1)*mean(X)) ./ (ones(size(X,1),1)*std(X));
+function A = zscore(X,varargin{:})
+  if (nargin != 1 && nargin != 2)
+    usage("zscore(X,dim)");
   endif
+  if (nargin == 2)
+    dim = varargin{1}
+  else
+    dim = min(find(size(X)>1));
+    if isempty(dim), dim=1; endif;
+  endif
+  
+  sz = ones(1,length(size(X)));
+  sz(dim) = size(X,dim);
+  A = (X - repmat(mean(X,varargin{:}),sz)) ./ repmat(std(X,varargin{:}),sz);
 endfunction

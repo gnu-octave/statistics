@@ -16,6 +16,10 @@
 
 ## Compatibility function --- same as mean(x,'g')
 
-function a = geomean(x)
-  a = mean(x, "g");
+function a = geomean(x, dim)
+  if (nargin == 1)
+    a = mean(s, "g");
+  else
+    a = mean(x, "g", dim);
+  endif
 endfunction

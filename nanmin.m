@@ -21,20 +21,29 @@
 ## returned as NaN rather than []. 
 ##
 ## See also: nansum, nanmax, nanmean, nanmedian
-function [v, idx] = nanmin (X, Y) 
+function [v, idx] = nanmin (X, Y, DIM) 
   if nargin < 1 || nargin > 2
-    usage ("[v, idx] = nanmin(X [, Y])");
-  elseif nargin == 1
+    usage ("[v, idx] = nanmin(X [, Y, [DIM]])");
+  elseif nargin == 1 || (nargin == 2 && isempty(Y))
     nanvals = isnan(X);
     X(nanvals) = Inf;
     v = min (X);
+    v(all(nanvals)) = NaN;
+  elseif (nargin == 3 && isempty(Y))
+    nanvals = isnan(X);
+    X(nanvals) = Inf;
+    v = min (X,[],DIM);
     v(all(nanvals)) = NaN;
   else
     Xnan = isnan(X);
     Ynan = isnan(Y);
     X(Xnan) = Inf;
     Y(Ynan) = Inf;
-    v = min(X,Y);
+    if (nargin == 3)
+      v = min(X,Y,DIM);
+    else
+      v = min(X,Y);
+    endif
     v(Xnan & Ynan) = NaN;
   endif
 endfunction

@@ -16,6 +16,10 @@
 
 ## Compatibility function --- same as mean(x,"h")
 
-function a = harmmean(x)
-  a = mean(x, "h");
+function a = harmmean(x, dim)
+  if (nargin == 1)
+    a = mean(s, "h");
+  else
+    a = mean(x, "h", dim);
+  endif
 endfunction

@@ -20,13 +20,21 @@
 ## E.g.,
 ##    mean([-inf 1:9 inf]) is NaN
 ##    trimmean([-inf 1:9 inf], 10) is 5
-function a = trimmean(x, p)
-  if nargin != 2
-    usage("a = trimmean(x,p)");
+function a = trimmean(x, p, varargin)
+  if (nargin != 2 && nargin != 3)
+    usage("a = trimmean(x,p, dim)");
   endif
-  y = sort(x);
-  if size (y,1) == 1, y = y.'; endif
-  trim = round(size(y,1)*p*0.01);
-  rng = 1+trim : size(y,1)-trim;
-  a = mean ( y (rng, :) );
+  y = sort(x, varargin{:});
+  sz = size(x);
+  if nargin < 3
+    dim = min(find(sz>1));
+    if isempty(dim), dim=1; endif;
+  else
+    dim = varargin{1};
+  endif
+  idx = cell (0);
+  for i=1:length(sz), idx{i} = 1:sz(i); end;
+  trim = round(sz(dim)*p*0.01);
+  idx{dim} = 1+trim : sz(dim)-trim;
+  a = mean (y (idx{:}), varargin{:});
 endfunction
