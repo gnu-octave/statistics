@@ -72,7 +72,7 @@ Linear regression
  polyval	
  gls ols
 Plots
- qqplot ppplot boxplot scatter
+ qqplot ppplot boxplot scatter normplot
 Nonlinear regression
  leasqr	
 Models
