@@ -45,6 +45,7 @@
 
 ## Author: Andy Adler <adler@site.uottawa.ca>
 ## Based on code by: KH <Kurt.Hornik@ci.tuwien.ac.at>
+## $Id$
 
 function [pval, f, df_b, df_w] = anovan (data, grps)
 
@@ -73,69 +74,28 @@ function [pval, f, df_b, df_w] = anovan (data, grps)
     SSE= sum( gss(sel) ) - sum( gs(sel).^2 ./ gn(sel) );  
     DFE= sum( gn(sel) -1 );
     MSE= SSE/DFE;
-    [SS, DF, MS, F]= factor_sums( gn, gs, gss, [0 0], ng, nw);
-    [SS, DF, MS, F]= factor_sums( gn, gs, gss, [0 1], ng, nw); SS,DF
-    [SS, DF, MS, F]= factor_sums( gn, gs, gss, [1 0], ng, nw); SS,DF
-    [SS, DF, MS, F]= factor_sums( gn, gs, gss, [1 1], ng, nw); SS,DF
 
-
-  total_mean = mean (group_mean);
-  SSB = sum (group_count .* (group_mean - total_mean) .^ 2);
-  SST = sumsq (reshape (data, nd, 1) - total_mean);
-  SSW = SST - SSB;
-  df_b = k - 1;
-  df_w = nd - k;
-  v_b = SSB / df_b;
-  v_w = SSW / df_w;
-  f = v_b / v_w;
-  pval = 1 - f_cdf (f, df_b, df_w);
-
-  if (nargout == 0)
-    printf ('%d-way ANOVA Table:\n\n', nw);
-    printf ("Source of Variation   Sum of Squares    df  Empirical Var\n");
-    printf ("*********************************************************\n");
-    printf ("Between Groups       %15.4f  %4d  %13.4f\n", SSB, df_b, v_b);
-    printf ("Within Groups        %15.4f  %4d  %13.4f\n", SSW, df_w, v_w);
-    printf ("---------------------------------------------------------\n");
-    printf ("Total                %15.4f  %4d\n", SST, nd - 1);
-    printf ("\n");
-    printf ("Test Statistic f     %15.4f\n", f);
-    printf ("p-value              %15.4f\n", pval);
-    printf ("\n");
-  endif
-
-endfunction
-
-# Create interaction vectors
-#
-# ng is the number of ANOVA groups
-function str=interaction_vectors(varname, ng, max_interact)
-
-# use assoc array to hold sumsqr of each group. Separate groups with _.
-# Thus [2,3,4], is added to d.2_3_4_, d.0_3_4_, d.2_0_4_, d.0_0_4_,
-#                           d.2_0_3_, d.0_3_0_, d.2_0_0_, d.0_0_0_
-
-    combin= 2^ng;
-    static interact_tbl=[];
-    if isempty( interact_tbl )
-        interact_tbl= zeros( combin, ng);
-        idx= (0:combin-1)';
-        for i=1:ng;
-           interact_tbl(:,i) = ( rem(idx,2^i) >= 2^(i-1) ); 
-        end
-
-        # find elements with more than max_interact 1's
-        idx = ( sum(interact_tbl') > max_interact );
-        interact_tbl(idx,:) =[];
+    stats_tbl = int_tbl(2:size(int_tbl,1),:)>0;
+    nstats= size(stats_tbl,1);
+    stats= zeros( nstats+1, 5); # SS, DF, MS, F, p
+    stats(nstats+1,1:3)= [SSE, DFE, MSE];
+    for i= 1:nstats
+        [SS, DF, MS]= factor_sums( gn, gs, gss, stats_tbl(i,:), ng, nw);
+        F= MS/MSE;
+        pval = 1 - f_cdf (F, DF, DFE);
+        stats(i,:)= [SS, DF, MS, F, pval];
     end
 
-    str= cell{ 2^ng };
-    for i= 1:ng
-
-    end
-
+    printout( stats, stats_tbl );
 endfunction
 
+
+# relabel groups to a mapping from 1 to ng
+# Input
+#   grps    input grouping
+# Output
+#   g       relabelled grouping
+#   grp_map map from output to input grouping
 function [g,grp_map] = relabel_groups(grps)
     grp_vec= vec(grps);
     s= sort (grp_vec);
@@ -214,25 +174,36 @@ endfunction
 #    ng            number of ANOVA groups
 #    nw            number of ways
 
-function [SS, DF, MS, F]= factor_sums( gn, gs, gss, select, ng, nw);
-   if all(select == 0)
-       SS= gs(1)^2/gn(1);
-       return;
+function [SS,DF]= raw_factor_sums( gn, gs, gss, select, ng, nw);
+   sel= select_pat( select, ng, nw);
+   SS=  sum( gs(sel).^2 ./ gn(sel) );
+   if length(find(select>0))==1
+       DF= length(sel)-1;
+   else
+       DF= 1; #this isn't the real DF, but needed to multiply
    end
+endfunction
 
-   sub_factor_sum=0;
+function [SS, DF, MS]= factor_sums( gn, gs, gss, select, ng, nw);
+   SS=0;
+   DF=1;
+
    ff = find(select);
    lff= length(ff);
-   for i= 1:2^lff-1
+   # zero terms added, one term subtracted, two added, etc
+   for i= 0:2^lff-1
        remove= find( rem( floor( i * 2.^(-lff+1:0) ), 2) );
        sel1= select;
-       sel1( ff( remove ) )=0;
-       sub_factor_sum+= factor_sums(gn,gs,gss,sel1,ng,nw);
+       if ~isempty(remove)
+           sel1( ff( remove ) )=0;
+       end
+       [raw_sum,raw_df]= raw_factor_sums(gn,gs,gss,sel1,ng,nw);
+       
+       add_sub= (-1)^length(remove);
+       SS+= add_sub*raw_sum;
+       DF*= raw_df;
    end
 
-   sel= select_pat( select, ng, nw);
-   SS=  sum( gs(sel).^2 ./ gn(sel) ) - sub_factor_sum;
-   DF=  sum( gn(sel) -1 );
    MS=  SS/DF;
 endfunction
 
@@ -261,6 +232,27 @@ function sel= select_pat( select, ng, nw);
    sel= find( all( field == ones(ng1^nw,1)*select(:)', 2) );
 endfunction
 
+
+function printout( stats, stats_tbl );
+  nw= size( stats_tbl,2);
+  [jnk,order]= sort( sum(stats_tbl,2) );
+
+  printf('\n%d-way ANOVA Table (Factors A%s):\n\n', nw, ...
+         sprintf(',%c',toascii('A')+(1:nw-1)) );
+  printf('Source of Variation        Sum Sqr   df      MeanSS    Fval   p-value\n');
+  printf('*********************************************************************\n');
+  printf('Error                  %10.2f  %4d %10.2f\n', stats( size(stats,1),1:3));
+  
+  for i= order(:)'
+      str=  sprintf(' %c x',toascii('A')+find(stats_tbl(i,:)>0)-1 );
+      str= str(1:length(str)-2); # remove x
+      printf('Factor %15s %10.2f  %4d %10.2f  %7.3f  %7.6f\n', ...
+         str, stats(i,:) );
+  end
+  printf('\n');
+endfunction
+
+# Test Data from http://maths.sci.shu.ac.uk/distance/stats/14.shtml
 data=[7  9  9  8 12 10 ...
       9  8 10 11 13 13 ...
       9 10 10 12 10 12]';
