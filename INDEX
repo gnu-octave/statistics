@@ -63,6 +63,7 @@ Descriptive statistics
  statistics
  studentize
  table
+ tabulate
  values mahalanobis
  ranks
  probit logit kendall cloglog
@@ -75,7 +76,9 @@ Linear regression
  gls ols wsolve
  princomp
 Plots
- qqplot ppplot boxplot scatter normplot
+ qqplot ppplot boxplot scatter normplot 
+ pareto 
+ histfit
 Nonlinear regression
  leasqr	
 Models
