@@ -64,26 +64,34 @@ function [pval, f, df_b, df_w] = anovan (data, grps)
     endif
 
     [g,grp_map]   = relabel_groups (grps);
-    max_interact  = length(grp_map);
+    max_interact  = length(grp_map); #must be maximum currently
     ng = length(grp_map);
     int_tbl       = interact_tbl (nw, ng, max_interact );
     [gn, gs, gss] = raw_sums(data, g, ng, int_tbl);
 
-    # The Mean squared error is the data - avg for each possible measurement
-    sel = select_pat( ones(1,nw), ng, nw);
-    SSE= sum( gss(sel) ) - sum( gs(sel).^2 ./ gn(sel) );  
-    DFE= sum( gn(sel) -1 );
-    MSE= SSE/DFE;
-
     stats_tbl = int_tbl(2:size(int_tbl,1),:)>0;
     nstats= size(stats_tbl,1);
     stats= zeros( nstats+1, 5); # SS, DF, MS, F, p
-    stats(nstats+1,1:3)= [SSE, DFE, MSE];
     for i= 1:nstats
         [SS, DF, MS]= factor_sums( gn, gs, gss, stats_tbl(i,:), ng, nw);
+        stats(i,1:3)= [SS, DF, MS];
+    end
+
+    # The Mean squared error is the data - avg for each possible measurement
+    # This calculation doesn't work unless there is replication for all grps
+#   SSE= sum( gss(sel) ) - sum( gs(sel).^2 ./ gn(sel) );  
+    SST= gss(1) - gs(1)^2/gn(1);
+    SSE= SST - sum(stats(:,1));
+    sel = select_pat( ones(1,nw), ng, nw);
+    DFE= sum( (gn(sel)-1).*(gn(sel)>0) );
+    MSE= SSE/DFE;
+    stats(nstats+1,1:3)= [SSE, DFE, MSE];
+
+    for i= 1:nstats
+        MS= stats(i,3);
         F= MS/MSE;
         pval = 1 - f_cdf (F, DF, DFE);
-        stats(i,:)= [SS, DF, MS, F, pval];
+        stats(i,4:5)= [F, pval];
     end
 
     printout( stats, stats_tbl );
@@ -176,9 +184,10 @@ endfunction
 
 function [SS,DF]= raw_factor_sums( gn, gs, gss, select, ng, nw);
    sel= select_pat( select, ng, nw);
-   SS=  sum( gs(sel).^2 ./ gn(sel) );
+   ss_raw=   gs(sel).^2 ./ gn(sel);
+   SS= sum( ss_raw( ~isnan(ss_raw) ));
    if length(find(select>0))==1
-       DF= length(sel)-1;
+       DF= sum(gn(sel)>0)-1;
    else
        DF= 1; #this isn't the real DF, but needed to multiply
    end
@@ -259,4 +268,23 @@ data=[7  9  9  8 12 10 ...
 grp = [1,1; 1,1; 1,2; 1,2; 1,3; 1,3;
        2,1; 2,1; 2,2; 2,2; 2,3; 2,3;
        3,1; 3,1; 3,2; 3,2; 3,3; 3,3];
+data=[7  9  9  8 12 10  9  8 ...
+      9  8 10 11 13 13 10 11 ...
+      9 10 10 12 10 12 10 12]';
+grp = [1,4; 1,4; 1,5; 1,5; 1,6; 1,6; 1,7; 1,7;
+       2,4; 2,4; 2,5; 2,5; 2,6; 2,6; 2,7; 2,7;
+       3,4; 3,4; 3,5; 3,5; 3,6; 3,6; 3,7; 3,7];
+# Test Data from http://maths.sci.shu.ac.uk/distance/stats/13.shtml
+data=[7.56  9.68 11.65  ...
+      9.98  9.69 10.69  ...
+      7.23 10.49 11.77  ...
+      8.22  8.55 10.72  ...
+      7.59  8.30 12.36]'; 
+grp = [1,1;1,2;1,3;
+       2,1;2,2;2,3;
+       3,1;3,2;3,3;
+       4,1;4,2;4,3;
+       5,1;5,2;5,3];
+
+
 
