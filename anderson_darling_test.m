@@ -18,8 +18,8 @@
 ## exponential:     f(lambda*x, 'exponential')
 ## weibull:         f((x/scale)^shape, 'exponential')
 ##
-## The uses Marsaglia's approximation to the Anderson-Darling CDF
-## to compute the p-values.
+## We use Marsaglia's approximation to the Anderson-Darling CDF
+## to compute the p-values (see anderson_darling_cdf for details).
 ##
 ## These values differ significantly from those published elsewhere,
 ## but I do not yet understand why.  I have included published values 
