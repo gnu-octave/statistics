@@ -20,13 +20,13 @@
 ## [Is this behaviour compatible?]
 ##
 ## See also: nanmin, nanmax, nansum, nanmedian
-function v = nanmean (X, ...)
+function v = nanmean (X, varargin) 
   if nargin < 1
     usage ("v = nanmean(X [, dim])");
   else
-    n = sum (!isnan(X), all_va_args);
+    n = sum (!isnan(X), varargin{:});
     n(n == 0) = NaN;
     X(isnan(X)) = 0;
-    v = sum (X, all_va_args) ./ n;
+    v = sum (X, varargin{:}) ./ n;
   endif
 endfunction

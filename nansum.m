@@ -20,11 +20,11 @@
 ## returned as 0. [Is this behaviour compatible?]
 ##
 ## See also: nanmin, nanmax, nanmean, nanmedian
-function v = nansum (X, ...)
+function v = nansum (X, varargin)
   if nargin < 1
     usage ("v = nansum (X [, dim])");
   else
     X(isnan(X)) = 0;
-    v = sum (X, all_va_args);
+    v = sum (X, varargin{:});
   endif
 endfunction
