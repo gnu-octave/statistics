@@ -86,6 +86,7 @@ function [PVAL, FSTAT, DF_B, DFE] = anovan (data, grps)
     DFE= sum( (gn(sel)-1).*(gn(sel)>0) );
     MSE= SSE/DFE;
     stats(nstats+1,1:3)= [SSE, DFE, MSE];
+    keyboard
 
     for i= 1:nstats
         MS= stats(i,3);
@@ -282,6 +283,11 @@ data=[7  9  9  8 12 10  9  8 ...
 grp = [1,4; 1,4; 1,5; 1,5; 1,6; 1,6; 1,7; 1,7;
        2,4; 2,4; 2,5; 2,5; 2,6; 2,6; 2,7; 2,7;
        3,4; 3,4; 3,5; 3,5; 3,6; 3,6; 3,7; 3,7];
+# Test Data from http://maths.sci.shu.ac.uk/distance/stats/9.shtml
+data=[9.5 11.1 11.9 12.8 ...
+     10.9 10.0 11.0 11.9 ...
+     11.2 10.4 10.8 13.4]';
+grp= [1:4,1:4,1:4]';
 # Test Data from http://maths.sci.shu.ac.uk/distance/stats/13.shtml
 data=[7.56  9.68 11.65  ...
       9.98  9.69 10.69  ...
