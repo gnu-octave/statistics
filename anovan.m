@@ -1,7 +1,5 @@
 ## Copyright (C) 2003 Andy Adler
 ##
-## This file is part of Octave.
-##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 2, or (at your option)
@@ -39,13 +37,35 @@
 ##
 ## If no output argument is given, the standard one-way ANOVA table is
 ## printed.
-##
-## NOTE: this function has not yet been tested with > 2 ways
-## @end deftypefn
 
 ## Author: Andy Adler <adler@site.uottawa.ca>
 ## Based on code by: KH <Kurt.Hornik@ci.tuwien.ac.at>
 ## $Id$
+##
+## TESTING RESULTS:
+##  1. ANOVA ACCURACY: www.itl.nist.gov/div898/strd/anova/anova.html
+##     Passes 'easy' test. Comes close on 'Average'. Fails 'Higher'.
+##     This could be fixed with higher precision arithmetic
+##  2. Matlab anova2 test
+##      www.mathworks.com/access/helpdesk/help/toolbox/stats/anova2.html
+##     % From web site:
+##      popcorn= [  5.5 4.5 3.5; 5.5 4.5 4.0; 6.0 4.0 3.0;
+##                  6.5 5.0 4.0; 7.0 5.5 5.0; 7.0 5.0 4.5];
+##     % Define groups so reps = 3
+##      groups = [  1 1;1 2;1 3;1 1;1 2;1 3;1 1;1 2;1 3;
+##                  2 1;2 2;2 3;2 1;2 2;2 3;2 1;2 2;2 3 ];
+##      anovan( vec(popcorn'), groups )
+##     % Results same as Matlab output
+##  3. Matlab anovan test
+##      www.mathworks.com/access/helpdesk/help/toolbox/stats/anovan.html
+##    % From web site
+##      y = [52.7 57.5 45.9 44.5 53.0 57.0 45.9 44.0]';
+##      g1 = [1 2 1 2 1 2 1 2]; 
+##      g2 = {'hi';'hi';'lo';'lo';'hi';'hi';'lo';'lo'}; 
+##      g3 = {'may'; 'may'; 'may'; 'may'; 'june'; 'june'; 'june'; 'june'}; 
+##      anovan( y', [g1',g2',g3'])
+##    % Fails because we always do interactions
+                                                                           
 
 function [PVAL, FSTAT, DF_B, DFE] = anovan (data, grps)
 
