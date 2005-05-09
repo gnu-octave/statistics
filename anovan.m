@@ -1,4 +1,4 @@
-## Copyright (C) 2003 Andy Adler
+## Copyright (C) 2003-2005 Andy Adler
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{pval}, @var{f}, @var{df_b}, @var{df_e}] =} anovan (@var{data}, @var{grps})
+## @deftypefn {Function File} {[@var{pval}, @var{f}, @var{df_b}, @var{df_e}] =} anovan (@var{data}, @var{grps}, 'param1', @var{value1})
 ## Perform a multi-way analysis of variance (ANOVA).  The goal is to test
 ## whether the population means of data taken from @var{k} different
 ## groups are all equal.
@@ -29,6 +30,15 @@
 ## data point 1.2 was measured under conditions 1,5,2.
 ## Note that groups do not need to be sequentially numbered.
 ##
+## By default, a 'linear' model is used, computing the N main effects
+## with no interactions. this may be modified by param 'model'
+##
+## p= anovan(data,groups, 'model', modeltype)
+## - modeltype = 'linear': compute N main effects
+## - modeltype = 'interaction': compute N effects and
+##                               N*(N-1) two-factor interactions
+## - modeltype = 'full': compute interactions at all levels
+##
 ## Under the null of constant means, the statistic @var{f} follows an F
 ## distribution with @var{df_b} and @var{df_e} degrees of freedom.
 ##
@@ -37,6 +47,8 @@
 ##
 ## If no output argument is given, the standard one-way ANOVA table is
 ## printed.
+##
+## BUG: DFE is incorrect for modeltypes != full
 
 ## Author: Andy Adler <adler@site.uottawa.ca>
 ## Based on code by: KH <Kurt.Hornik@ci.tuwien.ac.at>
@@ -54,7 +66,7 @@
 ##     % Define groups so reps = 3
 ##      groups = [  1 1;1 2;1 3;1 1;1 2;1 3;1 1;1 2;1 3;
 ##                  2 1;2 2;2 3;2 1;2 2;2 3;2 1;2 2;2 3 ];
-##      anovan( vec(popcorn'), groups )
+##      anovan( vec(popcorn'), groups, 'model', 'full')
 ##     % Results same as Matlab output
 ##  3. Matlab anovan test
 ##      www.mathworks.com/access/helpdesk/help/toolbox/stats/anovan.html
@@ -67,10 +79,24 @@
 ##    % Fails because we always do interactions
                                                                            
 
-function [PVAL, FSTAT, DF_B, DFE] = anovan (data, grps)
+function [PVAL, FSTAT, DF_B, DFE] = anovan (data, grps, varargin)
 
     if nargin <= 1
         usage ("anovan (data, grps)");
+    end
+
+    # test supplied parameters
+    modeltype= 'linear';
+    for idx= 3:2:nargin
+       param= varargin{idx-2};
+       value= varargin{idx-1};
+
+       if strcmp(param, 'model')
+          modeltype= value;
+#      elseif strcmp(param    # add other parameters here
+       else 
+          error(sprintf('parameter %s is not supported', param));
+       end
     end
 
     if ~isvector (data)
@@ -84,7 +110,15 @@ function [PVAL, FSTAT, DF_B, DFE] = anovan (data, grps)
     endif
 
     [g,grp_map]   = relabel_groups (grps);
-    max_interact  = length(grp_map); #must be maximum currently
+    if strcmp(modeltype, 'linear')
+       max_interact  = 1;
+    elseif strcmp(modeltype,'interaction')
+       max_interact  = 2;
+    elseif strcmp(modeltype,'full')
+       max_interact  = rows(grps);
+    else
+       error(sprintf('modeltype %s is not supported', modeltype));
+    end
     ng = length(grp_map);
     int_tbl       = interact_tbl (nw, ng, max_interact );
     [gn, gs, gss] = raw_sums(data, g, ng, int_tbl);
@@ -102,7 +136,7 @@ function [PVAL, FSTAT, DF_B, DFE] = anovan (data, grps)
 #   SSE= sum( gss(sel) ) - sum( gs(sel).^2 ./ gn(sel) );  
     SST= gss(1) - gs(1)^2/gn(1);
     SSE= SST - sum(stats(:,1));
-    sel = select_pat( ones(1,nw), ng, nw);
+    sel = select_pat( ones(1,nw), ng, nw); %incorrect for modeltypes != full
     DFE= sum( (gn(sel)-1).*(gn(sel)>0) );
     MSE= SSE/DFE;
     stats(nstats+1,1:3)= [SSE, DFE, MSE];
@@ -155,25 +189,22 @@ endfunction
 #    max_interact  maximum number of interactions to consider
 #                  default is nw
 function int_tbl =interact_tbl(nw, ng, max_interact)
-    if nargin<3
-        max_interact= nw;
-    end
     combin= 2^nw;
-    interact_tbl= zeros( combin, nw);
+    inter_tbl= zeros( combin, nw);
     idx= (0:combin-1)';
     for i=1:nw;
-       interact_tbl(:,i) = ( rem(idx,2^i) >= 2^(i-1) ); 
+       inter_tbl(:,i) = ( rem(idx,2^i) >= 2^(i-1) ); 
     end
 
     # find elements with more than max_interact 1's
-    idx = ( sum(interact_tbl',1) > max_interact );
-    int_tbl(idx,:) =[];
-    combin= size(interact_tbl,1); # update value
+    idx = ( sum(inter_tbl',1) > max_interact );
+    inter_tbl(idx,:) =[];
+    combin= size(inter_tbl,1); # update value
 
-    #scale interact_tbl 
+    #scale inter_tbl 
     # use ng+1 to map combinations of groups to integers
     # this would be lots easier with a hash data structure
-    int_tbl = interact_tbl .* (ones(combin,1) * (ng+1).^(0:nw-1) );
+    int_tbl = inter_tbl .* (ones(combin,1) * (ng+1).^(0:nw-1) );
 endfunction 
 
 # Calculate sums for each combination
