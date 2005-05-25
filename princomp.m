@@ -4,6 +4,10 @@
 ##   z   the transformed data
 ##   w   the eigenvalues of the covariance matrix
 ##   Tsq Hotelling's T^2 statistic for the transformed data
+
+## Author: Paul Kienzle
+## This program is public domain.
+
 function [pc,z,w,Tsq] = princomp(X)
   C = cov(X);
   [U,D,pc] = svd(C,1);

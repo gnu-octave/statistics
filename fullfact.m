@@ -3,6 +3,10 @@
 ##
 ## fullfact(n)
 ##    full factorial design with n binary choices, 0 and 1
+
+## Author: Paul Kienzle
+## This program is public domain.
+
 function A = fullfact(n)
   if length(n) == 1
     % combinatorial design with n either/or choices
