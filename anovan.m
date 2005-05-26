@@ -50,7 +50,7 @@
 ##
 ## BUG: DFE is incorrect for modeltypes != full
 
-## Author: Andy Adler <adler@site.uottawa.ca>
+## Author: Andy Adler <adler@ncf.ca>
 ## Based on code by: KH <Kurt.Hornik@ci.tuwien.ac.at>
 ## $Id$
 ##
