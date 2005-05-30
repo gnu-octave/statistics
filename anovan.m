@@ -17,7 +17,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{pval}, @var{f}, @var{df_b}, @var{df_e}] =} anovan (@var{data}, @var{grps})
-## @deftypefn {Function File} {[@var{pval}, @var{f}, @var{df_b}, @var{df_e}] =} anovan (@var{data}, @var{grps}, 'param1', @var{value1})
+## @deftypefnx {Function File} {[@var{pval}, @var{f}, @var{df_b}, @var{df_e}] =} anovan (@var{data}, @var{grps}, 'param1', @var{value1})
 ## Perform a multi-way analysis of variance (ANOVA).  The goal is to test
 ## whether the population means of data taken from @var{k} different
 ## groups are all equal.
@@ -49,6 +49,7 @@
 ## printed.
 ##
 ## BUG: DFE is incorrect for modeltypes != full
+## @end deftypefn
 
 ## Author: Andy Adler <adler@ncf.ca>
 ## Based on code by: KH <Kurt.Hornik@ci.tuwien.ac.at>
