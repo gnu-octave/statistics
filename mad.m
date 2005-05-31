@@ -24,7 +24,7 @@ function a = mad(X,dim)
   if (nargin != 1 || nargin != 2)
     usage("a = mad (X,dim)");
   elseif (prod(size(X)) != size(X,dim))
-    sz = ones(1,length(size(X));
+    sz = ones(1,length(size(X)));
     sz(dim) = size(X,dim);
     a = nanmean (abs (X - repmat (nanmean (X, dim), sz)), dim);
   elseif all (size (X) > 1)
