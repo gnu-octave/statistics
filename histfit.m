@@ -49,7 +49,7 @@ if nargin < 2
 endif
 
 [n,xbin]=hist(data,nbins);
-if any(abs(diff(xbin,2)) > 10*max(xbin)*eps)
+if any(abs(diff(xbin,2)) > 10*max(abs(xbin))*eps)
   error("histfit bins must be uniform width");
 endif
 
