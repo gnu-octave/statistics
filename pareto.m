@@ -103,7 +103,7 @@ function pareto (varargin)
   if ~exist ("labels"), labels = [1:n]; end
   
   ## check if using numbers as labels
-  if ~isstr(labels), labels = num2str(labels(:)); endif
+  if ~ischar(labels), labels = num2str(labels(:)); endif
   
   ## sort labels along with data
   labels = labels(j,:);

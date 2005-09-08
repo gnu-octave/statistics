@@ -59,7 +59,7 @@ s = 0; ## circle surface
 seen=0;
 for i=1:length(varargin)
   v = varargin{i};
-  if !isstr(v)
+  if !ischar(v)
     if seen==0, s = v; 
     elseif seen==1, c = v;
     else error("too many numeric arguments");
