@@ -91,5 +91,14 @@ s = randn(n,d)*U + mu;
 % 	U = sqrt(Lambda)*E'
 % If any Lambdas are negative then Sigma just isn't even positive semi-definite
 % so we can give up.
+%
+% Paul Kienzle adds:
+%   Where it exists, chol(Sigma) is numerically well behaved.  chol(hilb(12)) 
+%   for doubles and for 100 digit floating point differ in the last digit.
+%   Where chol(Sigma) doesn't exist, X*sqrt(Lambda)*E' will be somewhat
+%   accurate.  For example, the elements of sqrt(Lambda)*E' for hilb(12),
+%   hilb(55) and hilb(120) are accurate to around 1e-8 or better.  This was
+%   tested using the TNT+JAMA for eig and chol templates, and qlib for
+%   100 digit precision.
 % }}}
 
