@@ -1,28 +1,46 @@
 statistics >> Statistics
+Depreciated
+ beta_cdf beta_inv beta_pdf beta_rnd
+ binomial_cdf binomial_inv binomial_pdf binomial_rnd
+ chisquare_cdf chisquare_inv chisquare_pdf chisquare_rnd
+ exponential_cdf exponential_inv exponential_pdf exponential_rnd
+ f_cdf f_inv f_pdf f_rnd
+ gamma_cdf gamma_inv gamma_pdf gamma_rnd
+ geometric_cdf geometric_inv geometric_pdf geometric_rnd
+ hypergeometric_cdf hypergeometric_inv hypergeometric_pdf hypergeometric_rnd
+ lognormal_cdf lognormal_inv lognormal_pdf lognormal_rnd
+ normal_cdf normal_inv normal_pdf normal_rnd
+ poisson_cdf poisson_inv poisson_pdf poisson_rnd
+ t_cdf t_inv t_pdf t_rnd
+ uniform_cdf uniform_inv uniform_pdf uniform_rnd
+ weibull_cdf weibull_inv weibull_pdf weibull_rnd
+ wiener_rnd 
 Distributions
- beta_cdf beta_pdf beta_inv beta_rnd		
- binomial_cdf binomial_pdf binomial_inv binomial_rnd	
- cauchy_cdf cauchy_pdf cauchy_inv cauchy_rnd
- chisquare_cdf chisquare_pdf chisquare_inv chisquare_rnd	
- empirical_cdf empirical_pdf empirical_inv empirical_rnd
- exponential_cdf exponential_pdf exponential_inv exponential_rnd
- f_cdf f_pdf f_inv f_rnd
- gamma_cdf gamma_pdf gamma_inv gamma_rnd		
- geometric_cdf geometric_pdf geometric_inv geometric_rnd
- hypergeometric_cdf hypergeometric_pdf hypergeometric_inv hypergeometric_rnd
+ anderson_darling_cdf
+ betacdf betainv betapdf betarnd
+ binocdf binoinv binopdf binornd
+ cauchy_cdf cauchy_inv cauchy_pdf cauchy_rnd
+ chi2cdf chi2inv chi2pdf chi2rnd
+ discrete_cdf discrete_inv discrete_pdf discrete_rnd
+ empirical_cdf empirical_inv empirical_pdf empirical_rnd
+ expcdf expinv exppdf exprnd
+ fcdf finv fpdf frnd
+ gamcdf gaminv gampdf gamrnd
+ geocdf geoinv geopdf geornd
+ hygecdf hygeinv hygepdf hygernd
  kolmogorov_smirnov_cdf
- laplace_cdf laplace_pdf laplace_inv laplace_rnd
- logistic_cdf logistic_pdf logistic_inv logistic_rnd
- lognormal_cdf lognormal_pdf lognormal_inv lognormal_rnd
- stdnormal_cdf stdnormal_pdf stdnormal_inv stdnormal_rnd
- pascal_cdf pascal_pdf pascal_inv pascal_rnd
- normal_cdf normal_pdf normal_inv normal_rnd
- poisson_cdf poisson_pdf poisson_inv poisson_rnd
- t_cdf t_pdf t_inv t_rnd
- discrete_cdf discrete_pdf discrete_inv discrete_rnd
- uniform_cdf uniform_pdf uniform_inv uniform_rnd
- weibull_cdf weibull_pdf weibull_inv weibull_rnd
- wiener_rnd anderson_darling_cdf
+ laplace_cdf laplace_inv laplace_pdf laplace_rnd
+ logistic_cdf logistic_inv logistic_pdf logistic_rnd
+ logncdf logninv lognpdf lognrnd
+ normcdf norminv normpdf normrnd
+ pascal_cdf pascal_inv pascal_pdf pascal_rnd
+ poisscdf poissinv poisspdf poissrnd
+ stdnormal_cdf stdnormal_inv stdnormal_pdf stdnormal_rnd
+ tcdf tinv tpdf trnd
+ unidrnd
+ unifcdf unifinv unifpdf unifrnd
+ weibcdf weibinv weibpdf weibrnd
+ wienrnd
 Descriptive statistics
  max 
  min 
@@ -111,22 +129,8 @@ Hypothesis testing
  welch_test
  anderson_darling_test
 Compatibility
- beta*=use <code>beta_*</code>
- bino*=use <code>binomial_*</code>
- chi2*=use <code>chisquare_*</code>
- exp*= use <code>exponential_*</code>
- f*= use <code>f_*</code>
- gam*= use <code>gamma_*</code>
- geo*= use <code>geometric_*</code>
- hyge*= use <code>hypergeometric_*</code>
- logn*= use <code>lognormal_*</code>
  nbin*= use <code>pascal_*</code>
- norm*= use <code>normal_*</code>
- poiss*= use <code>poisson_*</code>
- t*= use <code>t_*</code>
  unid*= use <code>discrete_*</code>
- unif*= use <code>uniform_*</code>
- weib*= use <code>weibull_*</code>
  anova1= use <f>anova</f>
  regress= use <f>gls</f>
  nlinfit= use <f>leasqr</f>
