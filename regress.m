@@ -198,7 +198,7 @@ endfunction
 %!        69564   114.2   502601   3931     2514    125368  1960
 %!        69331   115.7   518173   4806     2572    127852  1961
 %!        70551   116.9   554894   4007     2827    130081  1962 ];
-%! % Results certified by NIST using 100 digit arithmetic
+%! % Results certified by NIST using 500 digit arithmetic
 %! % b and standard error in b
 %! V = [  -3482258.63459582         890420.383607373
 %!         15.0618722713733         84.9149257747669
