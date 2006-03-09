@@ -1,4 +1,4 @@
-## Copyright (C) 2005 William Poetra Yoga Hadisoeseno
+## Copyright (C) 2005, 2006 William Poetra Yoga Hadisoeseno
 ##
 ## This file is part of Octave.
 ##
@@ -128,13 +128,15 @@ function [b, bint, r, rint, stats] = regress (y, X, alpha)
     dof = n - p;
     t_alpha_2 = t_inv (alpha / 2, dof);
     H = X * pinv_X;
-    r = (eye(size(H)) - H) * y;
+
+    r = (eye (n) - H) * y;
     SSE = sum (r .^ 2);
     v = SSE / dof;
 
     # c = diag(inv (X' * X)) using (economy) QR decomposition
     # which means that we only have to use Xr
     c = diag (inv (Xr' * Xr));
+
     db = t_alpha_2 * sqrt (v * c);
 
     bint = [b + db, b - db];
@@ -148,7 +150,7 @@ function [b, bint, r, rint, stats] = regress (y, X, alpha)
 
     # From Matlab's documentation on Multiple Linear Regression,
     #   sigmaihat2 = norm (r) ^ 2 / dof1 - r .^ 2 / (dof1 * (1 - h));
-    #   dr = -t_inv (1 - alpha / 2, dof) * sqrt (sigmaihat2 .* (1 - h));
+    #   dr = -tinv (1 - alpha / 2, dof) * sqrt (sigmaihat2 .* (1 - h));
     # Substitute
     #   norm (r) ^ 2 == sum (r .^ 2) == SSE
     #   -tinv (1 - alpha / 2, dof) == tinv (alpha / 2, dof) == t_alpha_2
@@ -166,8 +168,9 @@ function [b, bint, r, rint, stats] = regress (y, X, alpha)
 
   if (nargout > 4)
 
-    R2 = 1 - SSE / sum((y - mean (y)) .^ 2);
-    F = (R2 / (p - 1)) / ((1 - R2) / dof);
+    R2 = 1 - SSE / sum ((y - mean (y)) .^ 2);
+#    F = (R2 / (p - 1)) / ((1 - R2) / dof);
+    F = dof / (p - 1) / (1 / R2 - 1);
     pval = 1 - f_cdf (F, p - 1, dof);
 
     stats = [R2 F pval v];
@@ -207,7 +210,9 @@ endfunction
 %! Rsq = 0.995479004577296;
 %! F = 330.285339234588;
 %! y = Z(:,1); X = [ones(rows(Z),1), Z(:,2:end)];
-%! [b, bint, r, rint, stats] = regress (y, X, 0.05);
-%! assert(b,V(:,1),6e-7);
-%! assert(stats(1),Rsq,7e-14);
-%! assert(stats(2),F,5e-9);
+%! alpha = 0.05;
+%! [b, bint, r, rint, stats] = regress (y, X, alpha);
+%! assert(b,V(:,1),3e-6);
+%! assert(stats(1),Rsq,3e-13);
+%! assert(stats(2),F,3e-8);
+%! assert(((bint(:,1)-bint(:,2))/2)/t_inv(alpha/2,9),V(:,2),7.6e-3);
