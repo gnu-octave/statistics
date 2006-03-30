@@ -1,4 +1,4 @@
-## Copyright (C) 2006   Arno Onken   <whyly(at)gmx.net>
+## Copyright (C) 2006 Arno Onken
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -26,14 +26,14 @@
 ## @itemize
 ## @item
 ## @var{sequence} is the vector of length @var{len} with given outputs. The
-## outputs must be integers ranging from @code{1} to @code{columns(outprob)}
+## outputs must be integers ranging from @code{1} to @code{columns (outprob)}
 ## @item
 ## @var{transprob} is the matrix with the transition probabilities for the
-## states. @code{transprob(i,j)} is the probability for a transition to
+## states. @code{transprob (i, j)} is the probability for a transition to
 ## state @code{j} given state @code{i}
 ## @item
 ## @var{outprob} is the matrix with the output probabilities.
-## @code{outprob(i,j)} is the probability for generating output @code{j}
+## @code{outprob (i, j)} is the probability for generating output @code{j}
 ## given state @code{i}
 ## @end itemize
 ##
@@ -43,88 +43,177 @@
 ## @item
 ## @var{vpath} is the vector of the same length as @var{sequence} with the
 ## estimated hidden states. The states are integers ranging from @code{1} to
-## @code{columns(transprob)}
+## @code{columns (transprob)}
+## @end itemize
+##
+## @deftypefnx {Function File} hmmviterbi (..., 'symbols', @var{symbols})
+##
+## If 'symbols' is specified, then @var{sequence} is expected to be a
+## sequence of the elements of @var{symbols} instead of integers ranging
+## from @code{1} to @code{columns (outprob)}. @var{symbols} can be a cell array
+##
+## @deftypefnx {Function File} hmmviterbi (..., 'statenames', @var{statenames})
+##
+## If 'statenames' is specified, then the elements of @var{statenames} are
+## used for the states in @var{vpath} instead of integers ranging from
+## @code{1} to @code{columns (transprob)}. @var{statenames} can be a cell array
+##
+## Examples:
+##
+## @example
+## transprob = [0.8 0.2; 0.4 0.6];
+## outprob = [0.2 0.4 0.4; 0.7 0.2 0.1];
+## [sequence, states] = hmmgenerate (25, transprob, outprob)
+## vpath = hmmviterbi (sequence, transprob, outprob)
+##
+## symbols = {'A', 'B', 'C'};
+## statenames = {'One', 'Two'};
+## [sequence, states] = hmmgenerate (25, transprob, outprob, 'symbols', symbols, 'statenames', statenames)
+## vpath = hmmviterbi (sequence, transprob, outprob, 'symbols', symbols, 'statenames', statenames)
+## @end example
+##
+## References:
+##
+## @itemize
+## @item
+## @cite{Matlab 7.0 documentation (pdf)}
+## @item
+## @uref{http://en.wikipedia.org/wiki/Viterbi_algorithm}
 ## @end itemize
 ##
 ## @end deftypefn
 
-## Example:
-## transprob = [0.8 0.2; 0.4 0.6];
-## outprob = [0.2 0.4 0.4; 0.7 0.2 0.1];
-## [sequence, states] = hmmgenerate(25, transprob, outprob)
-## vpath = hmmviterbi(sequence, transprob, outprob)
+## Author: Arno Onken <whyly@gmx.net>
 
-## References:
-## - Matlab 7.0 documentation (pdf)
-## - http://en.wikipedia.org/wiki/Viterbi_algorithm
+function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
 
-function vpath = hmmviterbi(sequence, transprob, outprob)
+  # Usage string
+  ustring = "vpath = hmmviterbi (sequence, transprob, outprob [, 'symbols', symbols] [, 'statenames', statenames])";
 
   # Check arguments
-  if (nargin != 3)
-    usage("vpath = hmmviterbi(sequence, transprob, outprob)");
+  if (nargin < 3 || mod (length (varargin), 2) != 0)
+    usage (ustring);
   endif
 
-  if (! isvector(sequence) && ! isempty(sequence))
-    error("hmmgenerate: sequence must be a vector")
+  if (isempty (sequence))
+    error ("hmmgenerate: sequence must not be empty")
   endif
 
-  if (! ismatrix(transprob))
-    error("hmmgenerate: transprob must be a non-empty numeric matrix");
+  if (! ismatrix (transprob))
+    error ("hmmgenerate: transprob must be a non-empty numeric matrix");
   endif
-  if (! ismatrix(outprob))
-    error("hmmgenerate: outprob must be a non-empty numeric matrix");
+  if (! ismatrix (outprob))
+    error ("hmmgenerate: outprob must be a non-empty numeric matrix");
   endif
 
-  len = length(sequence);
+  len = length (sequence);
   # nstate is the number of states of the Hidden Markow Model
-  nstate = rows(transprob);
+  nstate = rows (transprob);
   # noutput is the number of different outputs that the Hidden Markow Model
   # can generate
-  noutput = columns(outprob);
+  noutput = columns (outprob);
 
   # Check whether transprob and outprob are feasible for a Hidden Markow Model
-  if (columns(transprob) != nstate)
-    error("hmmgenerate: transprob must be a square matrix");
+  if (columns (transprob) != nstate)
+    error ("hmmgenerate: transprob must be a square matrix");
   endif
-  if (rows(outprob) != nstate)
-    error("hmmgenerate: outprob must have the same number of rows as transprob");
+  if (rows (outprob) != nstate)
+    error ("hmmgenerate: outprob must have the same number of rows as transprob");
+  endif
+
+  # Flag for symbols
+  usesym = false;
+  # Flag for statenames
+  usesn = false;
+
+  # Process varargin
+  for i = 1:2:length (varargin)
+    # There must be an identifier: 'symbols' or 'statenames'
+    if (! ischar (varargin {i}))
+      usage (ustring);
+    endif
+    # Upper case is also fine
+    if (strcmp (lower (varargin {i}), 'symbols'))
+      if (length (varargin {i + 1}) != noutput)
+        error ("hmmviterbi: number of symbols does not match number of possible outputs");
+      endif
+      usesym = true;
+      # Use the following argument as symbols
+      symbols = varargin {i + 1};
+    # The same for statenames
+    elseif (strcmp (lower (varargin {i}), 'statenames'))
+      if (length (varargin {i + 1}) != nstate)
+        error ("hmmviterbi: number of statenames does not match number of states");
+      endif
+      usesn = true;
+      # Use the following argument as statenames
+      statenames = varargin {i + 1};
+    else
+      error ("hmmviterbi: expected 'symbols' or 'statenames' but found '%s'", varargin {i});
+    endif
+  endfor
+  
+  # Transform sequence from symbols to integers if necessary
+  if (usesym)
+    # sequenceint is used to build the transformed sequence
+    sequenceint = zeros (1, len);
+    for i = 1:noutput
+      # Search for symbols (i) in the sequence, isequal will have 1 at
+      # corresponding indices; i is the right integer for that symbol
+      isequal = ismember (sequence, symbols (i));
+      # We do not want to change sequenceint if the symbol appears a second
+      # time in symbols
+      if (any ((sequenceint == 0) & (isequal == 1)))
+        isequal *= i;
+        sequenceint += isequal;
+      endif
+    endfor
+    if (! all (sequenceint))
+      index = max ((sequenceint == 0) .* (1:len));
+      error (["hmmviterbi: sequence (" int2str(index) ") not in symbols"]);
+    endif
+    sequence = sequenceint;
   endif
 
   # Each row in transprob and outprob should contain probabilities
   # => scale so that the sum is 1
   # A zero row remains zero
   # - for transprob
-  s = sum(transprob, 2);
-  s(s==0) = 1;
-  transprob = transprob ./ (s * ones(1, columns(transprob)));
+  s = sum (transprob, 2);
+  s (s == 0) = 1;
+  transprob = transprob ./ (s * ones (1, columns (transprob)));
   # - for outprob
-  s = sum(outprob, 2);
-  s(s==0) = 1;
-  outsprob = outprob ./ (s * ones(1, columns(outprob))); 
+  s = sum (outprob, 2);
+  s (s == 0) = 1;
+  outsprob = outprob ./ (s * ones (1, columns (outprob))); 
 
-  # Store the path starting from i in spath(i, :)
-  spath = ones(nstate, len+1);
+  # Store the path starting from i in spath (i, :)
+  spath = ones (nstate, len + 1);
   # Set the first state for each path
-  spath(:, 1) = (1:nstate)';
-  # Store the probability for path i in spathprob(i)
-  spathprob = transprob(1, :);
+  spath (:, 1) = (1:nstate)';
+  # Store the probability for path i in spathprob (i)
+  spathprob = transprob (1, :);
 
   # Find the most likely paths for the given output sequence
   for i = 1:len
     # Calculate the new probabilities for the continuation with each state
-    nextpathprob = ((spathprob' .* outprob(:, sequence(i))) * ones(1, nstate)) .* transprob;
+    nextpathprob = ((spathprob' .* outprob (:, sequence (i))) * ones (1, nstate)) .* transprob;
     # Find the paths with the highest probabilities
-    [spathprob, mindex] = max(nextpathprob);
+    [spathprob, mindex] = max (nextpathprob);
     # Update spath and spathprob with the new paths
-    spath = spath(mindex, :);
-    spath(:, i+1) = (1:nstate)';  
+    spath = spath (mindex, :);
+    spath (:, i + 1) = (1:nstate)';  
   endfor
 
   # Set vpath to the most likely path
   # We do not want the last state because we do not have an output for it
-  [m, mindex] = max(spathprob);
-  vpath = spath(mindex, 1:len);
+  [m, mindex] = max (spathprob);
+  vpath = spath (mindex, 1:len);
+
+  # Transform vpath into statenames if requested
+  if (usesn)
+    vpath = reshape (statenames (vpath), 1, len);
+  endif
 
 endfunction
 
@@ -132,6 +221,16 @@ endfunction
 %! sequence = [1 2 1 1 1 2 2 1 2 3 3 3 3 2 3 1 1 1 1 3 3 2 3 1 3];
 %! transprob = [0.8 0.2; 0.4 0.6];
 %! outprob = [0.2 0.4 0.4; 0.7 0.2 0.1];
-%! vpath = hmmviterbi(sequence, transprob, outprob);
+%! vpath = hmmviterbi (sequence, transprob, outprob);
 %! expected = [1 1 2 2 2 1 1 1 1 1 1 1 1 1 1 2 2 2 2 1 1 1 1 1 1];
-%! assert(vpath, expected);
+%! assert (vpath, expected);
+
+%!test
+%! sequence = {'A' 'B' 'A' 'A' 'A' 'B' 'B' 'A' 'B' 'C' 'C' 'C' 'C' 'B' 'C' 'A' 'A' 'A' 'A' 'C' 'C' 'B' 'C' 'A' 'C'};
+%! transprob = [0.8 0.2; 0.4 0.6];
+%! outprob = [0.2 0.4 0.4; 0.7 0.2 0.1];
+%! symbols = {'A', 'B', 'C'};
+%! statenames = {'One', 'Two'};
+%! vpath = hmmviterbi (sequence, transprob, outprob, 'symbols', symbols, 'statenames', statenames);
+%! expected = {'One' 'One' 'Two' 'Two' 'Two' 'One' 'One' 'One' 'One' 'One' 'One' 'One' 'One' 'One' 'One' 'Two' 'Two' 'Two' 'Two' 'One' 'One' 'One' 'One' 'One' 'One'};
+%! assert (vpath, expected);
