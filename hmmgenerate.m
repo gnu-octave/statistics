@@ -64,8 +64,8 @@
 ## Examples:
 ##
 ## @example
-## transprob = [0.8 0.2; 0.4 0.6];
-## outprob = [0.2 0.4 0.4; 0.7 0.2 0.1];
+## transprob = [0.8, 0.2; 0.4, 0.6];
+## outprob = [0.2, 0.4, 0.4; 0.7, 0.2, 0.1];
 ## [sequence, states] = hmmgenerate (25, transprob, outprob)
 ##
 ## symbols = {'A', 'B', 'C'};
@@ -107,13 +107,13 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
     error ("hmmgenerate: outprob must be a non-empty numeric matrix");
   endif
 
-  # nstate is the number of states of the Hidden Markow Model
+  # nstate is the number of states of the Hidden Markov Model
   nstate = rows (transprob);
-  # noutput is the number of different outputs that the Hidden Markow Model
+  # noutput is the number of different outputs that the Hidden Markov Model
   # can generate
   noutput = columns (outprob);
 
-  # Check whether transprob and outprob are feasible for a Hidden Markow
+  # Check whether transprob and outprob are feasible for a Hidden Markov
   # Model
   if (columns (transprob) != nstate)
     error ("hmmgenerate: transprob must be a square matrix");
@@ -134,7 +134,8 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
       usage (ustring);
     endif
     # Upper case is also fine
-    if (strcmp (lower (varargin {i}), 'symbols'))
+    lowerarg = lower (varargin {i});
+    if (strcmp (lowerarg, 'symbols'))
       if (length (varargin {i + 1}) != noutput)
         error ("hmmgenerate: number of symbols does not match number of possible outputs");
       endif
@@ -142,7 +143,7 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
       # Use the following argument as symbols
       symbols = varargin {i + 1};
     # The same for statenames
-    elseif (strcmp (lower (varargin {i}), 'statenames'))
+    elseif (strcmp (lowerarg, 'statenames'))
       if (length (varargin {i + 1}) != nstate)
         error ("hmmgenerate: number of statenames does not match number of states");
       endif
@@ -160,11 +161,11 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
   # - for transprob
   s = sum (transprob, 2);
   s (s == 0) = 1;
-  transprob = transprob ./ (s * ones (1, columns (transprob)));
+  transprob = transprob ./ (s * ones (1, nstate));
   # - for outprob
   s = sum (outprob, 2);
   s (s == 0) = 1;
-  outsprob = outprob ./ (s * ones (1, columns (outprob)));
+  outprob = outprob ./ (s * ones (1, noutput));
 
   # Generate sequences of uniformly distributed random numbers between 0 and
   # 1
@@ -214,8 +215,8 @@ endfunction
 
 %!test
 %! len = 25;
-%! transprob = [0.8 0.2; 0.4 0.6];
-%! outprob = [0.2 0.4 0.4; 0.7 0.2 0.1];
+%! transprob = [0.8, 0.2; 0.4, 0.6];
+%! outprob = [0.2, 0.4, 0.4; 0.7, 0.2, 0.1];
 %! [sequence, states] = hmmgenerate (len, transprob, outprob);
 %! assert (length (sequence), len);
 %! assert (length (states), len);
@@ -226,8 +227,8 @@ endfunction
 
 %!test
 %! len = 25;
-%! transprob = [0.8 0.2; 0.4 0.6];
-%! outprob = [0.2 0.4 0.4; 0.7 0.2 0.1];
+%! transprob = [0.8, 0.2; 0.4, 0.6];
+%! outprob = [0.2, 0.4, 0.4; 0.7, 0.2, 0.1];
 %! symbols = {'A', 'B', 'C'};
 %! statenames = {'One', 'Two'};
 %! [sequence, states] = hmmgenerate (len, transprob, outprob, 'symbols', symbols, 'statenames', statenames);
