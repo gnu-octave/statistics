@@ -16,6 +16,8 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {@var{vpath} =} hmmviterbi (@var{sequence}, @var{transprob}, @var{outprob})
+## @deftypefnx {Function File} {} hmmviterbi (@dots{}, 'symbols', @var{symbols})
+## @deftypefnx {Function File} {} hmmviterbi (@dots{}, 'statenames', @var{statenames})
 ## Uses the Viterbi algorithm to find the Viterbi path for a Hidden Markov
 ## Model given a sequence of outputs. The model assumes that the generation
 ## begins with state @code{1} in step @code{0} but does not include step
@@ -46,13 +48,9 @@
 ## @code{columns (transprob)}
 ## @end itemize
 ##
-## @deftypefnx {Function File} hmmviterbi (..., 'symbols', @var{symbols})
-##
 ## If 'symbols' is specified, then @var{sequence} is expected to be a
 ## sequence of the elements of @var{symbols} instead of integers ranging
 ## from @code{1} to @code{columns (outprob)}. @var{symbols} can be a cell array
-##
-## @deftypefnx {Function File} hmmviterbi (..., 'statenames', @var{statenames})
 ##
 ## If 'statenames' is specified, then the elements of @var{statenames} are
 ## used for the states in @var{vpath} instead of integers ranging from
@@ -66,8 +64,8 @@
 ## [sequence, states] = hmmgenerate (25, transprob, outprob)
 ## vpath = hmmviterbi (sequence, transprob, outprob)
 ##
-## symbols = {'A', 'B', 'C'};
-## statenames = {'One', 'Two'};
+## symbols = @{'A', 'B', 'C'@};
+## statenames = @{'One', 'Two'@};
 ## [sequence, states] = hmmgenerate (25, transprob, outprob, 'symbols', symbols, 'statenames', statenames)
 ## vpath = hmmviterbi (sequence, transprob, outprob, 'symbols', symbols, 'statenames', statenames)
 ## @end example
