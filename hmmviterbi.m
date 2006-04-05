@@ -59,8 +59,8 @@
 ## Examples:
 ##
 ## @example
-## transprob = [0.8 0.2; 0.4 0.6];
-## outprob = [0.2 0.4 0.4; 0.7 0.2 0.1];
+## transprob = [0.8, 0.2; 0.4, 0.6];
+## outprob = [0.2, 0.4, 0.4; 0.7, 0.2, 0.1];
 ## [sequence, states] = hmmgenerate (25, transprob, outprob)
 ## vpath = hmmviterbi (sequence, transprob, outprob)
 ##
@@ -93,30 +93,26 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
     usage (ustring);
   endif
 
-  if (isempty (sequence))
-    error ("hmmgenerate: sequence must not be empty")
-  endif
-
   if (! ismatrix (transprob))
-    error ("hmmgenerate: transprob must be a non-empty numeric matrix");
+    error ("hmmviterbi: transprob must be a non-empty numeric matrix");
   endif
   if (! ismatrix (outprob))
-    error ("hmmgenerate: outprob must be a non-empty numeric matrix");
+    error ("hmmviterbi: outprob must be a non-empty numeric matrix");
   endif
 
   len = length (sequence);
-  # nstate is the number of states of the Hidden Markow Model
+  # nstate is the number of states of the Hidden Markov Model
   nstate = rows (transprob);
-  # noutput is the number of different outputs that the Hidden Markow Model
+  # noutput is the number of different outputs that the Hidden Markov Model
   # can generate
   noutput = columns (outprob);
 
-  # Check whether transprob and outprob are feasible for a Hidden Markow Model
+  # Check whether transprob and outprob are feasible for a Hidden Markov Model
   if (columns (transprob) != nstate)
-    error ("hmmgenerate: transprob must be a square matrix");
+    error ("hmmviterbi: transprob must be a square matrix");
   endif
   if (rows (outprob) != nstate)
-    error ("hmmgenerate: outprob must have the same number of rows as transprob");
+    error ("hmmviterbi: outprob must have the same number of rows as transprob");
   endif
 
   # Flag for symbols
@@ -131,7 +127,8 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
       usage (ustring);
     endif
     # Upper case is also fine
-    if (strcmp (lower (varargin {i}), 'symbols'))
+    lowerarg = lower (varargin {i});
+    if (strcmp (lowerarg, 'symbols'))
       if (length (varargin {i + 1}) != noutput)
         error ("hmmviterbi: number of symbols does not match number of possible outputs");
       endif
@@ -139,7 +136,7 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
       # Use the following argument as symbols
       symbols = varargin {i + 1};
     # The same for statenames
-    elseif (strcmp (lower (varargin {i}), 'statenames'))
+    elseif (strcmp (lowerarg, 'statenames'))
       if (length (varargin {i + 1}) != nstate)
         error ("hmmviterbi: number of statenames does not match number of states");
       endif
@@ -171,6 +168,14 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
       error (["hmmviterbi: sequence (" int2str(index) ") not in symbols"]);
     endif
     sequence = sequenceint;
+  else
+    if (! isvector (sequence) && ! isempty (sequence))
+      error ("hmmviterbi: sequence must be a vector");
+    endif
+    if (! all (ismember (sequence, 1:noutput)))
+      index = max ((ismember (sequence, 1:noutput) == 0) .* (1:len));
+      error (["hmmviterbi: sequence (" int2str(index) ") out of range"]);
+    endif
   endif
 
   # Each row in transprob and outprob should contain probabilities
@@ -216,19 +221,19 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
 endfunction
 
 %!test
-%! sequence = [1 2 1 1 1 2 2 1 2 3 3 3 3 2 3 1 1 1 1 3 3 2 3 1 3];
-%! transprob = [0.8 0.2; 0.4 0.6];
-%! outprob = [0.2 0.4 0.4; 0.7 0.2 0.1];
+%! sequence = [1, 2, 1, 1, 1, 2, 2, 1, 2, 3, 3, 3, 3, 2, 3, 1, 1, 1, 1, 3, 3, 2, 3, 1, 3];
+%! transprob = [0.8, 0.2; 0.4, 0.6];
+%! outprob = [0.2, 0.4, 0.4; 0.7, 0.2, 0.1];
 %! vpath = hmmviterbi (sequence, transprob, outprob);
-%! expected = [1 1 2 2 2 1 1 1 1 1 1 1 1 1 1 2 2 2 2 1 1 1 1 1 1];
+%! expected = [1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1];
 %! assert (vpath, expected);
 
 %!test
-%! sequence = {'A' 'B' 'A' 'A' 'A' 'B' 'B' 'A' 'B' 'C' 'C' 'C' 'C' 'B' 'C' 'A' 'A' 'A' 'A' 'C' 'C' 'B' 'C' 'A' 'C'};
-%! transprob = [0.8 0.2; 0.4 0.6];
-%! outprob = [0.2 0.4 0.4; 0.7 0.2 0.1];
+%! sequence = {'A', 'B', 'A', 'A', 'A', 'B', 'B', 'A', 'B', 'C', 'C', 'C', 'C', 'B', 'C', 'A', 'A', 'A', 'A', 'C', 'C', 'B', 'C', 'A', 'C'};
+%! transprob = [0.8, 0.2; 0.4, 0.6];
+%! outprob = [0.2, 0.4, 0.4; 0.7, 0.2, 0.1];
 %! symbols = {'A', 'B', 'C'};
 %! statenames = {'One', 'Two'};
 %! vpath = hmmviterbi (sequence, transprob, outprob, 'symbols', symbols, 'statenames', statenames);
-%! expected = {'One' 'One' 'Two' 'Two' 'Two' 'One' 'One' 'One' 'One' 'One' 'One' 'One' 'One' 'One' 'One' 'Two' 'Two' 'Two' 'Two' 'One' 'One' 'One' 'One' 'One' 'One'};
+%! expected = {'One', 'One', 'Two', 'Two', 'Two', 'One', 'One', 'One', 'One', 'One', 'One', 'One', 'One', 'One', 'One', 'Two', 'Two', 'Two', 'Two', 'One', 'One', 'One', 'One', 'One', 'One'};
 %! assert (vpath, expected);
