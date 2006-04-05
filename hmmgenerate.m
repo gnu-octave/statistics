@@ -16,6 +16,8 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{sequence}, @var{states}] =} hmmgenerate (@var{len}, @var{transprob}, @var{outprob})
+## @deftypefnx {Function File} {} hmmgenerate (@dots{}, 'symbols', @var{symbols})
+## @deftypefnx {Function File} {} hmmgenerate (@dots{}, 'statenames', @var{statenames})
 ## Generates an output sequence and hidden states for a Hidden Markov Model.
 ## The model starts with state @code{1} at step @code{0} but will not
 ## include step @code{0} in the generated states and sequence
@@ -49,13 +51,9 @@
 ## @code{columns (transprob)}
 ## @end itemize
 ##
-## @deftypefnx {Function File} hmmgenerate (..., 'symbols', @var{symbols})
-##
 ## If 'symbols' is specified, then the elements of @var{symbols} are used
 ## for the output sequence instead of integers ranging from @code{1} to
 ## @code{columns (outprob)}. @var{symbols} can be a cell array
-##
-## @deftypefnx {Function File} hmmgenerate (..., 'statenames', @var{statenames})
 ##
 ## If 'statenames' is specified, then the elements of @var{statenames} are
 ## used for the states instead of integers ranging from @code{1} to
@@ -68,8 +66,8 @@
 ## outprob = [0.2, 0.4, 0.4; 0.7, 0.2, 0.1];
 ## [sequence, states] = hmmgenerate (25, transprob, outprob)
 ##
-## symbols = {'A', 'B', 'C'};
-## statenames = {'One', 'Two'};
+## symbols = @{'A', 'B', 'C'@};
+## statenames = @{'One', 'Two'@};
 ## [sequence, states] = hmmgenerate (25, transprob, outprob, 'symbols', symbols, 'statenames', statenames)
 ## @end example
 ##
