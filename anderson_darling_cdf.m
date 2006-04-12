@@ -82,7 +82,7 @@ function y = ADerrfix(x,n)
     p = [255.7844, -1116.360, 1950.646, -1705.091, 745.2337, -130.2137];
     g3 = polyval(p,x(idx));
     y(idx) = g3./n(idx);
-  endif
+  end
 
   idx = (x < 0.8 & x > c);
   if any(idx(:))
@@ -91,7 +91,7 @@ function y = ADerrfix(x,n)
     c1 = c(idx);
     g2 = polyval(p,(x(idx)-c1)./(.8-c1));
     y(idx) = (.04213 + .01365*n1).*n1 .* g2;
-  endif
+  end
 
   idx = (x <= c);
   if any(idx(:))
@@ -99,4 +99,5 @@ function y = ADerrfix(x,n)
     n1 = 1./n(idx);
     g1 = sqrt(x1).*(1-x1).*(49*x1-102);
     y(idx) = ((.0037*n1+.00078).*n1+.00006).*n1 .* g1;
-  endif
+  end
+end

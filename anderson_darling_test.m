@@ -96,7 +96,7 @@ function [q,Asq,info] = anderson_darling_test(x,dist)
 
   if any(x<0 | x>1)
     error('Anderson-Darling test requires data in CDF form');
-  endif
+  end
 
   i = [1:n]'*ones(1,size(x,2));
   Asq = -n - sum( (2*i-1) .* (log(x) + log(1-x(n:-1:1,:))) )/n;
@@ -108,7 +108,7 @@ function [q,Asq,info] = anderson_darling_test(x,dist)
   else
     idx = lookup([-Inf,Acrit],Asq*adj);
     q = [1,qvals](idx); 
-  endif
+  end
 
   if nargout > 2,
     info.Asq = Asq;
@@ -116,7 +116,7 @@ function [q,Asq,info] = anderson_darling_test(x,dist)
     info.Asq_critical = [100*(1-qvals); Acrit]';
     info.p = 1-q;
     info.p_is_precise = use_cdf;
-  endif
+  end
 
 
 %!demo
