@@ -1,0 +1,10 @@
+Name: Statistics
+Version: 1.0.0
+Date: 2006-08-05
+Author: Various Authors
+Maintainer: The Octave Community
+Title: Statistics.
+Description: Add a description to this package!
+Depends: octave (>= 2.9.7)
+License: See individual files
+Url: http://octave.sf.net
