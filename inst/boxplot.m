@@ -65,6 +65,12 @@
 ## Version: 1.4
 ## Created: 6 January 2002
 
+## Version: 1.4.1
+## Author: Alberto Pose <apose@alu.itba.edu.ar>
+## Updated: 3 September 2006 
+## - Replaced deprecated is_nan_or_na(X) with (isnan(X) | isna(X)) 
+## (now works with Octave 2.9.7 and foward)
+
 function s = boxplot (data,notched,symbol,vertical,maxwhisker)
 
 ## assign parameter defaults
@@ -111,7 +117,7 @@ for i=1:nc
     col = data(:,i);
   endif
   ## Skip missing data
-  col(is_nan_or_na (col)) = [];
+  col(isnan(col) || isna (col)) = [];
   ## Remember the data length
   nd = length(col);
   box(i) = nd;
