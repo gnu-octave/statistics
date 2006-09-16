@@ -18,7 +18,7 @@
 
 function a = geomean(x, dim)
   if (nargin == 1)
-    a = mean(s, "g");
+    a = mean(x, "g");
   else
     a = mean(x, "g", dim);
   endif
