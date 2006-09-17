@@ -1,0 +1,114 @@
+## Copyright (C) 2006 Arno Onken
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+## -*- texinfo -*-
+## @deftypefn {Function File} {[@var{m}, @var{v}] =} gamstat (@var{a}, @var{b})
+## Returns mean and variance of the gamma distribution
+##
+## Arguments are
+##
+## @itemize
+## @item
+## @var{a} is the first parameter of the gamma distribution. @var{a} must be
+## positive
+## @item
+## @var{b} is the second parameter of the gamma distribution. @var{b} must be
+## positive
+## @end itemize
+## @var{a} and @var{b} must be of common size or one of them must be scalar
+##
+## Return values are
+##
+## @itemize
+## @item
+## @var{m} is the mean of the gamma distribution
+## @item
+## @var{v} is the variance of the gamma distribution
+## @end itemize
+##
+## Examples:
+##
+## @example
+## a = 1:6;
+## b = 1:0.2:2;
+## [m, v] = gamstat (a, b)
+##
+## [m, v] = gamstat (a, 1.5)
+## @end example
+##
+## References:
+##
+## @itemize
+## @item
+## @cite{Matlab 7.0 documentation (pdf)}
+## @item
+## @uref{http://en.wikipedia.org/wiki/Gamma_distribution}
+## @end itemize
+##
+## @end deftypefn
+
+## Author: Arno Onken <whyly@gmx.net>
+
+function [m, v] = gamstat (a, b)
+
+  # Check arguments
+  if (nargin != 2)
+    usage ("[m, v] = gamstat (a, b)");
+  endif
+
+  if (! isempty (a) && ! ismatrix (a))
+    error ("gamstat: a must be a numeric matrix");
+  endif
+  if (! isempty (b) && ! ismatrix (b))
+    error ("gamstat: b must be a numeric matrix");
+  endif
+
+  if (! isscalar (a) || ! isscalar (b))
+    [retval, a, b] = common_size (a, b);
+    if (retval > 0)
+      error ("gamstat: a and b must be of common size or scalar");
+    endif
+  endif
+
+  # Calculate moments
+  m = a .* b;
+  v = a .* (b .^ 2);
+
+  # Continue argument check
+  k = find (! (a > 0) | ! (a < Inf) | ! (b > 0) | ! (b < Inf));
+  if (any (k))
+    m (k) = NaN;
+    v (k) = NaN;
+  endif
+
+endfunction
+
+%!test
+%! a = 1:6;
+%! b = 1:0.2:2;
+%! [m, v] = gamstat (a, b);
+%! expected_m = [1.00, 2.40, 4.20,  6.40,  9.00, 12.00];
+%! expected_v = [1.00, 2.88, 5.88, 10.24, 16.20, 24.00];
+%! assert (m, expected_m, 0.001);
+%! assert (v, expected_v, 0.001);
+
+%!test
+%! a = 1:6;
+%! [m, v] = gamstat (a, 1.5);
+%! expected_m = [1.50, 3.00, 4.50, 6.00,  7.50,  9.00];
+%! expected_v = [2.25, 4.50, 6.75, 9.00, 11.25, 13.50];
+%! assert (m, expected_m, 0.001);
+%! assert (v, expected_v, 0.001);
