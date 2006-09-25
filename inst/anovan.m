@@ -284,7 +284,7 @@ endfunction
 function sel= select_pat( select, ng, nw);
    # if select(i) is zero, remove nonzeros
    # if select(i) is zero, remove zero terms for i
-   static field=[];
+   field=[];
 
    if length(select) ~= nw;
        error("length of select must be = nw");
