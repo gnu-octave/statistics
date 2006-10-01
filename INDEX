@@ -17,30 +17,31 @@ Depreciated
  wiener_rnd 
 Distributions
  anderson_darling_cdf
- betacdf betainv betapdf betarnd
- binocdf binoinv binopdf binornd
+ betacdf betainv betapdf betarnd betastat
+ binocdf binoinv binopdf binornd binostat
  cauchy_cdf cauchy_inv cauchy_pdf cauchy_rnd
- chi2cdf chi2inv chi2pdf chi2rnd
+ chi2cdf chi2inv chi2pdf chi2rnd chi2stat
  discrete_cdf discrete_inv discrete_pdf discrete_rnd
  empirical_cdf empirical_inv empirical_pdf empirical_rnd
- expcdf expinv exppdf exprnd
- fcdf finv fpdf frnd
- gamcdf gaminv gampdf gamrnd
- geocdf geoinv geopdf geornd
- hygecdf hygeinv hygepdf hygernd
+ expcdf expinv exppdf exprnd expstat
+ fcdf finv fpdf frnd fstat
+ gamcdf gaminv gampdf gamrnd gamstat
+ geocdf geoinv geopdf geornd geostat
+ hygecdf hygeinv hygepdf hygernd hygestat
  kolmogorov_smirnov_cdf
  laplace_cdf laplace_inv laplace_pdf laplace_rnd
  logistic_cdf logistic_inv logistic_pdf logistic_rnd
- logncdf logninv lognpdf lognrnd
+ logncdf logninv lognpdf lognrnd lognstat
  mvnpdf mvnrnd
- normcdf norminv normpdf normrnd
- pascal_cdf pascal_inv pascal_pdf pascal_rnd
- poisscdf poissinv poisspdf poissrnd
+ normcdf norminv normpdf normrnd normstat
+ pascal_cdf pascal_inv pascal_pdf pascal_rnd pascal_stat
+ poisscdf poissinv poisspdf poissrnd poisstat
+ raylcdf raylinv raylpdf raylrnd raylstat
  stdnormal_cdf stdnormal_inv stdnormal_pdf stdnormal_rnd
- tcdf tinv tpdf trnd
- unidrnd
- unifcdf unifinv unifpdf unifrnd
- weibcdf weibinv weibpdf weibrnd
+ tcdf tinv tpdf trnd tstat
+ unidrnd unidstat
+ unifcdf unifinv unifpdf unifrnd unifstat
+ weibcdf weibinv weibpdf weibrnd weibstat
  wienrnd
 Descriptive statistics
  max 
@@ -101,6 +102,7 @@ Plots
 Nonlinear regression
  leasqr	
 Models
+ hmmdecode hmmestimate hmmgenerate
  logistic_regression logistic_regression_derivatives 
  logistic_regression_likelihood
 Hypothesis testing
