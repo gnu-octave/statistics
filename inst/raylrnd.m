@@ -22,7 +22,7 @@
 ##
 ## Arguments are
 ##
-## @itemize
+## @itemize @bullet
 ## @item
 ## @var{sigma} is the parameter of the Rayleigh distribution. The elements
 ## of @var{sigma} must be positive.
@@ -42,11 +42,11 @@
 ##
 ## Return values are
 ##
-## @itemize
+## @itemize @bullet
 ## @item
 ## @var{x} is a matrix of random samples from the Rayleigh distribution with
 ## corresponding parameter @var{sigma}. If neither @var{sz} nor @var{r} and
-## @var{c} are specified, then @var{x} is of the same size as @{sigma}.
+## @var{c} are specified, then @var{x} is of the same size as @var{sigma}.
 ## @end itemize
 ##
 ## Examples:
