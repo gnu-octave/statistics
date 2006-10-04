@@ -1,141 +1,58 @@
 statistics >> Statistics
-Depreciated
- beta_cdf beta_inv beta_pdf beta_rnd
- binomial_cdf binomial_inv binomial_pdf binomial_rnd
- chisquare_cdf chisquare_inv chisquare_pdf chisquare_rnd
- exponential_cdf exponential_inv exponential_pdf exponential_rnd
- f_cdf f_inv f_pdf f_rnd
- gamma_cdf gamma_inv gamma_pdf gamma_rnd
- geometric_cdf geometric_inv geometric_pdf geometric_rnd
- hypergeometric_cdf hypergeometric_inv hypergeometric_pdf hypergeometric_rnd
- lognormal_cdf lognormal_inv lognormal_pdf lognormal_rnd
- normal_cdf normal_inv normal_pdf normal_rnd
- poisson_cdf poisson_inv poisson_pdf poisson_rnd
- t_cdf t_inv t_pdf t_rnd
- uniform_cdf uniform_inv uniform_pdf uniform_rnd
- weibull_cdf weibull_inv weibull_pdf weibull_rnd
- wiener_rnd 
 Distributions
  anderson_darling_cdf
- betacdf betainv betapdf betarnd betastat
- binocdf binoinv binopdf binornd binostat
- cauchy_cdf cauchy_inv cauchy_pdf cauchy_rnd
- chi2cdf chi2inv chi2pdf chi2rnd chi2stat
- discrete_cdf discrete_inv discrete_pdf discrete_rnd
- empirical_cdf empirical_inv empirical_pdf empirical_rnd
- expcdf expinv exppdf exprnd expstat
- fcdf finv fpdf frnd fstat
- gamcdf gaminv gampdf gamrnd gamstat
- geocdf geoinv geopdf geornd geostat
- hygecdf hygeinv hygepdf hygernd hygestat
- kolmogorov_smirnov_cdf
- laplace_cdf laplace_inv laplace_pdf laplace_rnd
- logistic_cdf logistic_inv logistic_pdf logistic_rnd
- logncdf logninv lognpdf lognrnd lognstat
+ betastat
+ binostat
+ chi2stat
+ expstat
+ fstat
+ gamstat
+ geostat
+ hygestat
+ lognstat
  mvnpdf mvnrnd
- normcdf norminv normpdf normrnd normstat
- pascal_cdf pascal_inv pascal_pdf pascal_rnd pascal_stat
- poisscdf poissinv poisspdf poissrnd poisstat
+ normstat
+ pascal_stat
+ poisstat
  raylcdf raylinv raylpdf raylrnd raylstat
- stdnormal_cdf stdnormal_inv stdnormal_pdf stdnormal_rnd
- tcdf tinv tpdf trnd tstat
- unidrnd unidstat
- unifcdf unifinv unifpdf unifrnd unifstat
- weibcdf weibinv weibpdf weibrnd weibstat
- wienrnd
+ tstat
+ unidstat
+ unifstat
+ weibstat
 Descriptive statistics
- max 
- min 
- mean meansq
- median 
- std 
- var 
- cut hist
- histc 
- corrcoef 
- cov cor
- sum sumsq 
- prod 
- trapz 
- cumsum 
- cumprod 
- cumtrapz 
- nansum	
- nanmax	
- nanmean	
- nanmedian	
- nanmin	
- nanstd	
- nanfunc
+ nansum
+ nanmax
+ nanmean
+ nanmedian
+ nanmin
+ nanstd
  geomean	
  harmmean	
- iqr		
- kurtosis	
  mad		
- moment	
  prctile	
- range	
- skewness	
  trimmean	
  zscore	
- spearman
- run_count
- statistics
- studentize
- table
  tabulate
- values mahalanobis
- ranks
- probit logit kendall cloglog
 Experimental design
- fullfact ff2n hadamard
+ fullfact ff2n
 Linear regression
- anova anovan
- polyfit wpolyfit	
- polyval polyconf	
- gls ols wsolve
+ anovan
  princomp
+ regress
 Plots
- qqplot ppplot boxplot scatter normplot 
- pareto 
+ boxplot 
+ scatter
+ normplot
+ pareto
  histfit
-Nonlinear regression
- leasqr	
 Models
- hmmdecode hmmestimate hmmgenerate
- logistic_regression logistic_regression_derivatives 
- logistic_regression_likelihood
+ hmmestimate hmmgenerate hmmviterbi
 Hypothesis testing
- u_test	
- wilcoxon_test	
- sign_test	
- t_test	
- t_test_2	
- t_test_regression
- z_test	
- z_test_2
- bartlett_test
- chisquare_test_homogeneity
- chisquare_test_independence
- cor_test
- f_test_regression
- hotelling_test
- hotelling_test_2
- kolmogorov_smirnov_test
- kolmogorov_smirnov_test_2
- kruskal_wallis_test
- manova
- mcnemar_test
- prop_test_2
- run_test
- var_test
- welch_test
  anderson_darling_test
 Compatibility
  nbin*= use <code>pascal_*</code>
  unid*= use <code>discrete_*</code>
  anova1= use <f>anova</f>
- regress= use <f>gls</f>
  nlinfit= use <f>leasqr</f>
  barttest= use <f>bartlett_test</f>
  ranksum= use <f>u_test</f>
