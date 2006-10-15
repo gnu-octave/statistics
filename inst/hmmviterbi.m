@@ -20,68 +20,87 @@
 ## @deftypefnx {Function File} {} hmmviterbi (@dots{}, 'statenames', @var{statenames})
 ## Uses the Viterbi algorithm to find the Viterbi path for a Hidden Markov
 ## Model given a sequence of outputs. The model assumes that the generation
-## begins with state @code{1} in step @code{0} but does not include step
-## @code{0} in the generated states and sequence
+## starts in state @code{1} at step @code{0} but does not include step
+## @code{0} in the generated states and sequence.
 ##
 ## Arguments are
 ##
-## @itemize
+## @itemize @bullet
 ## @item
-## @var{sequence} is the vector of length @var{len} with given outputs. The
-## outputs must be integers ranging from @code{1} to @code{columns (outprob)}
+## @var{sequence} is the vector of length @var{len} of given outputs. The
+## outputs must be integers ranging from @code{1} to
+## @code{columns (outprob)}.
+##
 ## @item
-## @var{transprob} is the matrix with the transition probabilities for the
-## states. @code{transprob (i, j)} is the probability for a transition to
-## state @code{j} given state @code{i}
+## @var{transprob} is the matrix of transition probabilities for the states.
+## @code{transprob (i, j)} is the probability for a transition to state
+## @code{j} given state @code{i}.
+##
 ## @item
-## @var{outprob} is the matrix with the output probabilities.
+## @var{outprob} is the matrix of output probabilities.
 ## @code{outprob (i, j)} is the probability for generating output @code{j}
-## given state @code{i}
+## given state @code{i}.
 ## @end itemize
 ##
 ## Return values are
 ##
-## @itemize
+## @itemize @bullet
 ## @item
-## @var{vpath} is the vector of the same length as @var{sequence} with the
+## @var{vpath} is the vector of the same length as @var{sequence} of the
 ## estimated hidden states. The states are integers ranging from @code{1} to
-## @code{columns (transprob)}
+## @code{columns (transprob)}.
 ## @end itemize
 ##
-## If 'symbols' is specified, then @var{sequence} is expected to be a
+## If @code{'symbols'} is specified, then @var{sequence} is expected to be a
 ## sequence of the elements of @var{symbols} instead of integers ranging
-## from @code{1} to @code{columns (outprob)}. @var{symbols} can be a cell array
+## from @code{1} to @code{columns (outprob)}. @var{symbols} can be a cell array.
 ##
-## If 'statenames' is specified, then the elements of @var{statenames} are
-## used for the states in @var{vpath} instead of integers ranging from
-## @code{1} to @code{columns (transprob)}. @var{statenames} can be a cell array
+## If @code{'statenames'} is specified, then the elements of
+## @var{statenames} are used for the states in @var{vpath} instead of
+## integers ranging from @code{1} to @code{columns (transprob)}.
+## @var{statenames} can be a cell array.
 ##
 ## Examples:
 ##
 ## @example
+## @group
 ## transprob = [0.8, 0.2; 0.4, 0.6];
 ## outprob = [0.2, 0.4, 0.4; 0.7, 0.2, 0.1];
 ## [sequence, states] = hmmgenerate (25, transprob, outprob)
 ## vpath = hmmviterbi (sequence, transprob, outprob)
+## @end group
 ##
+## @group
 ## symbols = @{'A', 'B', 'C'@};
 ## statenames = @{'One', 'Two'@};
 ## [sequence, states] = hmmgenerate (25, transprob, outprob, 'symbols', symbols, 'statenames', statenames)
 ## vpath = hmmviterbi (sequence, transprob, outprob, 'symbols', symbols, 'statenames', statenames)
+## @end group
 ## @end example
 ##
 ## References:
 ##
-## @itemize
+## @enumerate
 ## @item
-## @cite{Matlab 7.0 documentation (pdf)}
-## @item
-## @uref{http://en.wikipedia.org/wiki/Viterbi_algorithm}
-## @end itemize
+## W. L. Martinez and A. R. Martinez. @cite{Computational Statistics
+## Handbook with MATLAB.} Chapman & Hall/CRC, pages 547-557, 2001.
 ##
+## @item
+## Wikipedia contributors. Hidden Markov model. @cite{Wikipedia, The Free
+## Encyclopedia.}
+## @uref{http://en.wikipedia.org/w/index.php?title=Hidden_Markov_model&oldid=81100294},
+## October 2006.
+##
+## @item
+## Wikipedia contributors. Viterbi algorithm. @cite{Wikipedia, The Free
+## Encyclopedia.}
+## @uref{http://en.wikipedia.org/w/index.php?title=Viterbi_algorithm&oldid=73517908},
+## September 2006.
+## @end enumerate
 ## @end deftypefn
 
 ## Author: Arno Onken <whyly@gmx.net>
+## Description: Viterbi path for a Hidden Markov Model
 
 function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
 
