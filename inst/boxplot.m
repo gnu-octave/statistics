@@ -117,7 +117,7 @@ for i=1:nc
     col = data(:,i);
   endif
   ## Skip missing data
-  col(isnan(col) || isna (col)) = [];
+  col(isnan(col) | isna (col)) = [];
   ## Remember the data length
   nd = length(col);
   box(i) = nd;
