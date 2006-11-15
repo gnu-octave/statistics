@@ -18,11 +18,11 @@
 ## @deftypefn {Function File} {[@var{sequence}, @var{states}] =} hmmgenerate (@var{len}, @var{transprob}, @var{outprob})
 ## @deftypefnx {Function File} {} hmmgenerate (@dots{}, 'symbols', @var{symbols})
 ## @deftypefnx {Function File} {} hmmgenerate (@dots{}, 'statenames', @var{statenames})
-## Generates an output sequence and hidden states for a Hidden Markov Model.
+## Generates an output sequence and hidden states of a Hidden Markov Model.
 ## The model starts in state @code{1} at step @code{0} but will not include
 ## step @code{0} in the generated states and sequence.
 ##
-## Arguments are
+## @subheading Arguments
 ##
 ## @itemize @bullet
 ## @item
@@ -30,17 +30,17 @@
 ## @var{states} will have @var{len} entries each.
 ##
 ## @item
-## @var{transprob} is the matrix of transition probabilities for the states.
-## @code{transprob (i, j)} is the probability for a transition to state
+## @var{transprob} is the matrix of transition probabilities of the states.
+## @code{transprob (i, j)} is the probability of a transition to state
 ## @code{j} given state @code{i}.
 ##
 ## @item
 ## @var{outprob} is the matrix of output probabilities.
-## @code{outprob (i, j)} is the probability for generating output @code{j}
+## @code{outprob (i, j)} is the probability of generating output @code{j}
 ## given state @code{i}.
 ## @end itemize
 ##
-## Return values are
+## @subheading Return values
 ##
 ## @itemize @bullet
 ## @item
@@ -63,7 +63,7 @@
 ## @code{1} to @code{columns (transprob)}. @var{statenames} can be a cell
 ## array.
 ##
-## Examples:
+## @subheading Examples
 ##
 ## @example
 ## @group
@@ -79,7 +79,7 @@
 ## @end group
 ## @end example
 ##
-## References:
+## @subheading References
 ##
 ## @enumerate
 ## @item
@@ -94,8 +94,8 @@
 ## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@gmx.net>
-## Description: Output sequence and hidden states for a Hidden Markov Model
+## Author: Arno Onken <whyly@whyly.org>
+## Description: Output sequence and hidden states of a Hidden Markov Model
 
 function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
 
@@ -107,8 +107,8 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
     usage (ustring);
   endif
 
-  if (! isscalar (len) || len < 0)
-    error ("hmmgenerate: len must be a non-negative scalar value")
+  if (! isscalar (len) || len < 0 || round (len) != len)
+    error ("hmmgenerate: len must be a non-negative scalar integer")
   endif
 
   if (! ismatrix (transprob))
@@ -172,11 +172,11 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
   # - for transprob
   s = sum (transprob, 2);
   s (s == 0) = 1;
-  transprob = transprob ./ (s * ones (1, nstate));
+  transprob = transprob ./ repmat (s, 1, nstate);
   # - for outprob
   s = sum (outprob, 2);
   s (s == 0) = 1;
-  outprob = outprob ./ (s * ones (1, noutput));
+  outprob = outprob ./ repmat (s, 1, noutput);
 
   # Generate sequences of uniformly distributed random numbers between 0 and
   # 1
@@ -191,35 +191,40 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
   sequence = ones (1, len);
   states = ones (1, len);
 
-  # Calculate cumulated probabilities backwards for easy comparison with the
-  # generated random numbers
-  # Cumulated probability in first column must always be 1
-  # We might have a zero row
-  # - for transprob
-  transprob (:, end:-1:1) = cumsum (transprob (:, end:-1:1), 2);
-  transprob (:, 1) = 1;
-  # - for outprob
-  outprob (:, end:-1:1) = cumsum (outprob (:, end:-1:1), 2);
-  outprob (:, 1) = 1;
+  if (len > 0)
+    # Calculate cumulated probabilities backwards for easy comparison with
+    # the generated random numbers
+    # Cumulated probability in first column must always be 1
+    # We might have a zero row
+    # - for transprob
+    transprob (:, end:-1:1) = cumsum (transprob (:, end:-1:1), 2);
+    transprob (:, 1) = 1;
+    # - for outprob
+    outprob (:, end:-1:1) = cumsum (outprob (:, end:-1:1), 2);
+    outprob (:, 1) = 1;
 
-  # cstate is the current state
-  # Start in state 1 but do not include it in the states vector
-  cstate = 1;
-  for i = 1:len
-    # Compare the randon number i of transdraw to the cumulated probability
-    # of the state transition and set the transition accordingly
-    states (i) = sum (transdraw (i) <= transprob (cstate, :));
-    cstate = states (i);
-    # The same for the output of the state
-    sequence (i) = sum (outdraw (i) <= outprob (cstate, :));
-  endfor
+    # cstate is the current state
+    # Start in state 1 but do not include it in the states vector
+    cstate = 1;
+    for i = 1:len
+      # Compare the randon number i of transdraw to the cumulated
+      # probability of the state transition and set the transition
+      # accordingly
+      states (i) = sum (transdraw (i) <= transprob (cstate, :));
+      cstate = states (i);
+    endfor
 
-  # Transform default matrices into symbols/statenames if requested
-  if (usesym)
-    sequence = reshape (symbols (sequence), 1, len);
-  endif
-  if (usesn)
-    states = reshape (statenames (states), 1, len);
+    # Compare the randon numbers of outdraw to the cumulated probabilities
+    # of the outputs and set the sequence vector accordingly
+    sequence = sum (repmat (outdraw, noutput, 1) <= outprob (states, :)', 1);
+
+    # Transform default matrices into symbols/statenames if requested
+    if (usesym)
+      sequence = reshape (symbols (sequence), 1, len);
+    endif
+    if (usesn)
+      states = reshape (statenames (states), 1, len);
+    endif
   endif
 
 endfunction
