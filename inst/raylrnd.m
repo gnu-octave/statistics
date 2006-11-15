@@ -20,7 +20,7 @@
 ## @deftypefnx {Function File} {@var{x} =} raylrnd (@var{sigma}, @var{r}, @var{c})
 ## Returns a matrix of random samples from the Rayleigh distribution.
 ##
-## Arguments are
+## @subheading Arguments
 ##
 ## @itemize @bullet
 ## @item
@@ -40,7 +40,7 @@
 ## must be a non-negative integer.
 ## @end itemize
 ##
-## Return values are
+## @subheading Return values
 ##
 ## @itemize @bullet
 ## @item
@@ -49,21 +49,27 @@
 ## @var{c} are specified, then @var{x} is of the same size as @var{sigma}.
 ## @end itemize
 ##
-## Examples:
+## @subheading Examples
 ##
 ## @example
+## @group
 ## sigma = 1:6;
 ## x = raylrnd (sigma)
+## @end group
 ##
+## @group
 ## sz = [2, 3];
 ## x = raylrnd (0.5, sz)
+## @end group
 ##
+## @group
 ## r = 2;
 ## c = 3;
 ## x = raylrnd (0.5, r, c)
+## @end group
 ## @end example
 ##
-## References:
+## @subheading References
 ##
 ## @enumerate
 ## @item
@@ -78,7 +84,7 @@
 ## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@gmx.net>
+## Author: Arno Onken <whyly@whyly.org>
 ## Description: Random samples from the Rayleigh distribution
 
 function x = raylrnd (sigma, r, c)

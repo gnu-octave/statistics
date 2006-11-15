@@ -19,9 +19,9 @@
 ## Calculates the quantile of the Rayleigh distribution. The quantile is the
 ## inverse of the cumulative distribution function.
 ##
-## Arguments are
+## @subheading Arguments
 ##
-## @itemize
+## @itemize @bullet
 ## @item
 ## @var{p} is the cumulative distribution. The elements of @var{p} must be
 ## probabilities.
@@ -33,25 +33,29 @@
 ## @var{p} and @var{sigma} must be of common size or one of them must be
 ## scalar.
 ##
-## Return values are
+## @subheading Return values
 ##
-## @itemize
+## @itemize @bullet
 ## @item
 ## @var{x} is the quantile of the Rayleigh distribution at each element of
 ## @var{p} and corresponding parameter @var{sigma}.
 ## @end itemize
 ##
-## Examples:
+## @subheading Examples
 ##
 ## @example
+## @group
 ## p = 0:0.1:0.5;
 ## sigma = 1:6;
 ## x = raylinv (p, sigma)
+## @end group
 ##
+## @group
 ## x = raylinv (p, 0.5)
+## @end group
 ## @end example
 ##
-## References:
+## @subheading References
 ##
 ## @enumerate
 ## @item
@@ -66,7 +70,7 @@
 ## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@gmx.net>
+## Author: Arno Onken <whyly@whyly.org>
 ## Description: Quantile of the Rayleigh distribution
 
 function x = raylinv (p, sigma)

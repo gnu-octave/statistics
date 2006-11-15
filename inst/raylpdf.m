@@ -18,9 +18,9 @@
 ## @deftypefn {Function File} {@var{y} =} raylpdf (@var{x}, @var{sigma})
 ## Calculates the probability density function of the Rayleigh distribution.
 ##
-## Arguments are
+## @subheading Arguments
 ##
-## @itemize
+## @itemize @bullet
 ## @item
 ## @var{x} is the support. The elements of @var{x} must be non-negative.
 ##
@@ -31,25 +31,29 @@
 ## @var{x} and @var{sigma} must be of common size or one of them must be
 ## scalar.
 ##
-## Return values are
+## @subheading Return values
 ##
-## @itemize
+## @itemize @bullet
 ## @item
 ## @var{y} is the probability density of the Rayleigh distribution at each
 ## element of @var{x} and corresponding parameter @var{sigma}.
 ## @end itemize
 ##
-## Examples:
+## @subheading Examples
 ##
 ## @example
+## @group
 ## x = 0:0.5:2.5;
 ## sigma = 1:6;
 ## y = raylpdf (x, sigma)
+## @end group
 ##
+## @group
 ## y = raylpdf (x, 0.5)
+## @end group
 ## @end example
 ##
-## References:
+## @subheading References
 ##
 ## @enumerate
 ## @item
@@ -64,7 +68,7 @@
 ## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@gmx.net>
+## Author: Arno Onken <whyly@whyly.org>
 ## Description: PDF of the Rayleigh distribution
 
 function y = raylpdf (x, sigma)

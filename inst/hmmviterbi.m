@@ -18,12 +18,12 @@
 ## @deftypefn {Function File} {@var{vpath} =} hmmviterbi (@var{sequence}, @var{transprob}, @var{outprob})
 ## @deftypefnx {Function File} {} hmmviterbi (@dots{}, 'symbols', @var{symbols})
 ## @deftypefnx {Function File} {} hmmviterbi (@dots{}, 'statenames', @var{statenames})
-## Uses the Viterbi algorithm to find the Viterbi path for a Hidden Markov
+## Uses the Viterbi algorithm to find the Viterbi path of a Hidden Markov
 ## Model given a sequence of outputs. The model assumes that the generation
 ## starts in state @code{1} at step @code{0} but does not include step
 ## @code{0} in the generated states and sequence.
 ##
-## Arguments are
+## @subheading Arguments
 ##
 ## @itemize @bullet
 ## @item
@@ -32,17 +32,17 @@
 ## @code{columns (outprob)}.
 ##
 ## @item
-## @var{transprob} is the matrix of transition probabilities for the states.
-## @code{transprob (i, j)} is the probability for a transition to state
+## @var{transprob} is the matrix of transition probabilities of the states.
+## @code{transprob (i, j)} is the probability of a transition to state
 ## @code{j} given state @code{i}.
 ##
 ## @item
 ## @var{outprob} is the matrix of output probabilities.
-## @code{outprob (i, j)} is the probability for generating output @code{j}
+## @code{outprob (i, j)} is the probability of generating output @code{j}
 ## given state @code{i}.
 ## @end itemize
 ##
-## Return values are
+## @subheading Return values
 ##
 ## @itemize @bullet
 ## @item
@@ -60,7 +60,7 @@
 ## integers ranging from @code{1} to @code{columns (transprob)}.
 ## @var{statenames} can be a cell array.
 ##
-## Examples:
+## @subheading Examples
 ##
 ## @example
 ## @group
@@ -78,7 +78,7 @@
 ## @end group
 ## @end example
 ##
-## References:
+## @subheading References
 ##
 ## @enumerate
 ## @item
@@ -99,8 +99,8 @@
 ## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@gmx.net>
-## Description: Viterbi path for a Hidden Markov Model
+## Author: Arno Onken <whyly@whyly.org>
+## Description: Viterbi path of a Hidden Markov Model
 
 function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
 
@@ -166,7 +166,7 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
       error ("hmmviterbi: expected 'symbols' or 'statenames' but found '%s'", varargin {i});
     endif
   endfor
-  
+
   # Transform sequence from symbols to integers if necessary
   if (usesym)
     # sequenceint is used to build the transformed sequence
@@ -213,12 +213,12 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
   spath = ones (nstate, len + 1);
   # Set the first state for each path
   spath (:, 1) = (1:nstate)';
-  # Store the probability for path i in spathprob (i)
+  # Store the probability of path i in spathprob (i)
   spathprob = transprob (1, :);
 
   # Find the most likely paths for the given output sequence
   for i = 1:len
-    # Calculate the new probabilities for the continuation with each state
+    # Calculate the new probabilities of the continuation with each state
     nextpathprob = ((spathprob' .* outprob (:, sequence (i))) * ones (1, nstate)) .* transprob;
     # Find the paths with the highest probabilities
     [spathprob, mindex] = max (nextpathprob);
