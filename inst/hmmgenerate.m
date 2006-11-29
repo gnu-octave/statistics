@@ -75,7 +75,8 @@
 ## @group
 ## symbols = @{'A', 'B', 'C'@};
 ## statenames = @{'One', 'Two'@};
-## [sequence, states] = hmmgenerate (25, transprob, outprob, 'symbols', symbols, 'statenames', statenames)
+## [sequence, states] = hmmgenerate (25, transprob, outprob,
+##                      'symbols', symbols, 'statenames', statenames)
 ## @end group
 ## @end example
 ##
@@ -83,14 +84,14 @@
 ##
 ## @enumerate
 ## @item
-## W. L. Martinez and A. R. Martinez. @cite{Computational Statistics
-## Handbook with MATLAB.} Chapman & Hall/CRC, pages 547-557, 2001.
+## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
+## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
+## 2001.
 ##
 ## @item
-## Wikipedia contributors. Hidden Markov model. @cite{Wikipedia, The Free
-## Encyclopedia.}
-## @uref{http://en.wikipedia.org/w/index.php?title=Hidden_Markov_model&oldid=81100294},
-## October 2006.
+## Lawrence R. Rabiner. A Tutorial on Hidden Markov Models and Selected
+## Applications in Speech Recognition. @cite{Proceedings of the IEEE},
+## 77(2), pages 257-286, February 1989.
 ## @end enumerate
 ## @end deftypefn
 

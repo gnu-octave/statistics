@@ -59,14 +59,14 @@
 ##
 ## @enumerate
 ## @item
-## W. L. Martinez and A. R. Martinez. @cite{Computational Statistics
-## Handbook with MATLAB.} Chapman & Hall/CRC, pages 547-557, 2001.
+## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
+## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
+## 2001.
 ##
 ## @item
-## Wikipedia contributors. Rayleigh distribution. @cite{Wikipedia, The Free
-## Encyclopedia.}
-## @uref{http://en.wikipedia.org/w/index.php?title=Rayleigh_distribution&oldid=69294908},
-## August 2006.
+## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
+## Processes}. pages 104 and 148, McGraw-Hill, New York, second edition,
+## 1984.
 ## @end enumerate
 ## @end deftypefn
 
