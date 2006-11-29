@@ -18,17 +18,17 @@
 ## @deftypefn {Function File} {[@var{m}, @var{v}] =} raylstat (@var{sigma})
 ## Returns mean and variance of the Rayleigh distribution.
 ##
-## Arguments are
+## @subheading Arguments
 ##
-## @itemize
+## @itemize @bullet
 ## @item
 ## @var{sigma} is the parameter of the Rayleigh distribution. The elements
 ## of @var{sigma} must be positive.
 ## @end itemize
 ##
-## Return values are
+## @subheading Return values
 ##
-## @itemize
+## @itemize @bullet
 ## @item
 ## @var{m} is the mean of the Rayleigh distribution.
 ##
@@ -36,29 +36,30 @@
 ## @var{v} is the variance of the Rayleigh distribution.
 ## @end itemize
 ##
-## Example:
+## @subheading Example
 ##
 ## @example
+## @group
 ## sigma = 1:6;
 ## [m, v] = raylstat (sigma)
+## @end group
 ## @end example
 ##
-## References:
+## @subheading References
 ##
 ## @enumerate
 ## @item
-## W. L. Martinez and A. R. Martinez. @cite{Computational Statistics
-## Handbook with MATLAB.} Chapman & Hall/CRC, pages 547-557, 2001.
+## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
+## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
+## 2001.
 ##
 ## @item
-## Wikipedia contributors. Rayleigh distribution. @cite{Wikipedia, The Free
-## Encyclopedia.}
-## @uref{http://en.wikipedia.org/w/index.php?title=Rayleigh_distribution&oldid=69294908},
-## August 2006.
+## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
+## Processes}. McGraw-Hill, New York, second edition, 1984.
 ## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@gmx.net>
+## Author: Arno Onken <whyly@whyly.org>
 ## Description: Moments of the Rayleigh distribution
 
 function [m, v] = raylstat (sigma)

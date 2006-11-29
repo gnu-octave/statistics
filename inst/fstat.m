@@ -18,51 +18,61 @@
 ## @deftypefn {Function File} {[@var{mn}, @var{v}] =} fstat (@var{m}, @var{n})
 ## Returns mean and variance of the F distribution
 ##
-## Arguments are
+## @subheading Arguments
 ##
-## @itemize
+## @itemize @bullet
 ## @item
 ## @var{m} is the first parameter of the F distribution. The elements
 ## of @var{m} must be positive
+##
 ## @item
 ## @var{n} is the second parameter of the F distribution. The
 ## elements of @var{n} must be positive
 ## @end itemize
 ## @var{m} and @var{n} must be of common size or one of them must be scalar
 ##
-## Return values are
+## @subheading Return values
 ##
-## @itemize
+## @itemize @bullet
 ## @item
 ## @var{mn} is the mean of the F distribution. The mean is undefined for
 ## @var{n} not greater than 2
+##
 ## @item
 ## @var{v} is the variance of the F distribution. The variance is undefined
 ## for @var{n} not greater than 4
 ## @end itemize
 ##
-## Examples:
+## @subheading Examples
 ##
 ## @example
+## @group
 ## m = 1:6;
 ## n = 5:10;
 ## [mn, v] = fstat (m, n)
+## @end group
 ##
+## @group
 ## [mn, v] = fstat (m, 5)
+## @end group
 ## @end example
 ##
-## References:
+## @subheading References
 ##
-## @itemize
+## @enumerate
 ## @item
-## @cite{Matlab 7.0 documentation (pdf)}
-## @item
-## @uref{http://en.wikipedia.org/wiki/F_distribution}
-## @end itemize
+## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
+## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
+## 2001.
 ##
+## @item
+## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
+## Processes}. McGraw-Hill, New York, second edition, 1984.
+## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@gmx.net>
+## Author: Arno Onken <whyly@whyly.org>
+## Description: Moments of the F distribution
 
 function [mn, v] = fstat (m, n)
 

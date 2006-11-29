@@ -18,53 +18,64 @@
 ## @deftypefn {Function File} {[@var{mn}, @var{v}] =} hygestat (@var{m}, @var{t}, @var{n})
 ## Returns mean and variance of the hypergeometric distribution
 ##
-## Arguments are
+## @subheading Arguments
 ##
-## @itemize
+## @itemize @bullet
 ## @item
 ## @var{m} is the number of marked items of the hypergeometric distribution.
 ## The elements of @var{n} must be natural numbers
+##
 ## @item
 ## @var{t} is the total size of the population of the hypergeometric
 ## distribution. The elements of @var{p} must be positive natural numbers
+##
 ## @item
 ## @var{n} is the size of the drawn sample of the hypergeometric
 ## distribution. The elements of @var{p} must be positive natural numbers
 ## @end itemize
 ## @var{m}, @var{t} and @var{n} must be of common size or scalar
 ##
-## Return values are
+## @subheading Return values
 ##
-## @itemize
+## @itemize @bullet
 ## @item
 ## @var{mn} is the mean of the hypergeometric distribution
+##
 ## @item
 ## @var{v} is the variance of the hypergeometric distribution
 ## @end itemize
 ##
-## Examples:
+## @subheading Examples
 ##
 ## @example
+## @group
 ## m = 0:5;
 ## t = 4:9;
 ## n = 1:6;
 ## [mn, v] = hygestat (m, t, n)
+## @end group
 ##
+## @group
 ## [mn, v] = hygestat (m, t, 2)
+## @end group
 ## @end example
 ##
-## References:
+## @subheading References
 ##
-## @itemize
+## @enumerate
 ## @item
-## @cite{Matlab 7.0 documentation (pdf)}
-## @item
-## @uref{http://en.wikipedia.org/wiki/Hypergeometric_distribution}
-## @end itemize
+## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
+## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
+## 2001.
 ##
+## @item
+## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
+## Processes}. McGraw-Hill, New York, second edition, 1984.
+## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@gmx.net>
+## Author: Arno Onken <whyly@whyly.org>
+## Description: Moments of the hypergeometric distribution
 
 function [mn, v] = hygestat (m, t, n)
 

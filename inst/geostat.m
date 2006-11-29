@@ -18,42 +18,49 @@
 ## @deftypefn {Function File} {[@var{m}, @var{v}] =} geostat (@var{p})
 ## Returns mean and variance of the geometric distribution
 ##
-## Arguments are
+## @subheading Arguments
 ##
-## @itemize
+## @itemize @bullet
 ## @item
 ## @var{p} is the rate parameter of the geometric distribution. The
 ## elements of @var{p} must be probabilities
 ## @end itemize
 ##
-## Return values are
+## @subheading Return values
 ##
-## @itemize
+## @itemize @bullet
 ## @item
 ## @var{m} is the mean of the geometric distribution
+##
 ## @item
 ## @var{v} is the variance of the geometric distribution
 ## @end itemize
 ##
-## Example:
+## @subheading Example
 ##
 ## @example
+## @group
 ## p = 1 ./ (1:6);
 ## [m, v] = geostat (p)
+## @end group
 ## @end example
 ##
-## References:
+## @subheading References
 ##
-## @itemize
+## @enumerate
 ## @item
-## @cite{Matlab 7.0 documentation (pdf)}
-## @item
-## @uref{http://en.wikipedia.org/wiki/Geometric_distribution}
-## @end itemize
+## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
+## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
+## 2001.
 ##
+## @item
+## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
+## Processes}. McGraw-Hill, New York, second edition, 1984.
+## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@gmx.net>
+## Author: Arno Onken <whyly@whyly.org>
+## Description: Moments of the geometric distribution
 
 function [m, v] = geostat (p)
 

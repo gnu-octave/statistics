@@ -18,42 +18,49 @@
 ## @deftypefn {Function File} {[@var{m}, @var{v}] =} unidstat (@var{n})
 ## Returns mean and variance of the discrete uniform distribution
 ##
-## Arguments are
+## @subheading Arguments
 ##
-## @itemize
+## @itemize @bullet
 ## @item
 ## @var{n} is the parameter of the discrete uniform distribution. The elements
 ## of @var{n} must be positive natural numbers
 ## @end itemize
 ##
-## Return values are
+## @subheading Return values
 ##
-## @itemize
+## @itemize @bullet
 ## @item
 ## @var{m} is the mean of the discrete uniform distribution
+##
 ## @item
 ## @var{v} is the variance of the discrete uniform distribution
 ## @end itemize
 ##
-## Example:
+## @subheading Example
 ##
 ## @example
+## @group
 ## n = 1:6;
 ## [m, v] = unidstat (n)
+## @end group
 ## @end example
 ##
-## References:
+## @subheading References
 ##
-## @itemize
+## @enumerate
 ## @item
-## @cite{Matlab 7.0 documentation (pdf)}
-## @item
-## @uref{http://en.wikipedia.org/wiki/Uniform_distribution}
-## @end itemize
+## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
+## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
+## 2001.
 ##
+## @item
+## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
+## Processes}. McGraw-Hill, New York, second edition, 1984.
+## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@gmx.net>
+## Author: Arno Onken <whyly@whyly.org>
+## Description: Moments of the discrete uniform distribution
 
 function [m, v] = unidstat (n)
 

@@ -18,49 +18,59 @@
 ## @deftypefn {Function File} {[@var{m}, @var{v}] =} pascal_stat (@var{n}, @var{p})
 ## Returns mean and variance of the negative binomial distribution
 ##
-## Arguments are
+## @subheading Arguments
 ##
-## @itemize
+## @itemize @bullet
 ## @item
 ## @var{n} is the first parameter of the negative binomial distribution. The elements
 ## of @var{n} must be natural numbers
+##
 ## @item
 ## @var{p} is the second parameter of the negative binomial distribution. The
 ## elements of @var{p} must be probabilities
 ## @end itemize
 ## @var{n} and @var{p} must be of common size or one of them must be scalar
 ##
-## Return values are
+## @subheading Return values
 ##
-## @itemize
+## @itemize @bullet
 ## @item
 ## @var{m} is the mean of the negative binomial distribution
+##
 ## @item
 ## @var{v} is the variance of the negative binomial distribution
 ## @end itemize
 ##
-## Examples:
+## @subheading Examples
 ##
 ## @example
+## @group
 ## n = 1:4;
 ## p = 0.2:0.2:0.8;
 ## [m, v] = pascal_stat (n, p)
+## @end group
 ##
+## @group
 ## [m, v] = pascal_stat (n, 0.5)
+## @end group
 ## @end example
 ##
-## References:
+## @subheading References
 ##
-## @itemize
+## @enumerate
 ## @item
-## @cite{Matlab 7.0 documentation (pdf)}
-## @item
-## @uref{http://en.wikipedia.org/wiki/Pascal_distribution}
-## @end itemize
+## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
+## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
+## 2001.
 ##
+## @item
+## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
+## Processes}. McGraw-Hill, New York, second edition, 1984.
+## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@gmx.net>
+## Author: Arno Onken <whyly@whyly.org>
+## Description: Moments of the negative binomial distribution
 
 function [m, v] = pascal_stat (n, p)
 

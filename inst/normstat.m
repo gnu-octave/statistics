@@ -18,11 +18,12 @@
 ## @deftypefn {Function File} {[@var{mn}, @var{vr}] =} normstat (@var{m}, @var{v})
 ## Returns mean and variance of the normal distribution, the given arguments
 ##
-## Arguments are
+## @subheading Arguments
 ##
-## @itemize
+## @itemize @bullet
 ## @item
 ## @var{m} is the mean of the normal distribution
+##
 ## @item
 ## @var{v} is the variance of the normal distribution.
 ## @var{v} must be positive
@@ -30,37 +31,46 @@
 ## @var{m} and @var{v} must be of common size or one of them must be
 ## scalar
 ##
-## Return values are
+## @subheading Return values
 ##
-## @itemize
+## @itemize @bullet
 ## @item
 ## @var{mn} is the mean of the normal distribution
+##
 ## @item
 ## @var{vr} is the variance of the normal distribution
 ## @end itemize
 ##
-## Examples:
+## @subheading Examples
 ##
 ## @example
+## @group
 ## m = 1:6;
 ## v = 0:0.2:1;
 ## [mn, vr] = normstat (m, v)
+## @end group
 ##
+## @group
 ## [mn, vr] = normstat (0, v)
+## @end group
 ## @end example
 ##
-## References:
+## @subheading References
 ##
-## @itemize
+## @enumerate
 ## @item
-## @cite{Matlab 7.0 documentation (pdf)}
-## @item
-## @uref{http://en.wikipedia.org/wiki/Normal_distribution}
-## @end itemize
+## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
+## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
+## 2001.
 ##
+## @item
+## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
+## Processes}. McGraw-Hill, New York, second edition, 1984.
+## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@gmx.net>
+## Author: Arno Onken <whyly@whyly.org>
+## Description: Moments of the normal distribution
 
 function [mn, vr] = normstat (m, v)
 

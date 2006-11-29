@@ -18,49 +18,59 @@
 ## @deftypefn {Function File} {[@var{m}, @var{v}] =} betastat (@var{a}, @var{b})
 ## Returns mean and variance of the beta distribution
 ##
-## Arguments are
+## @subheading Arguments
 ##
-## @itemize
+## @itemize @bullet
 ## @item
 ## @var{a} is the first parameter of the beta distribution. @var{a} must be
 ## positive
+##
 ## @item
 ## @var{b} is the second parameter of the beta distribution. @var{b} must be
 ## positive
 ## @end itemize
 ## @var{a} and @var{b} must be of common size or one of them must be scalar
 ##
-## Return values are
+## @subheading Return values
 ##
-## @itemize
+## @itemize @bullet
 ## @item
 ## @var{m} is the mean of the beta distribution
+##
 ## @item
 ## @var{v} is the variance of the beta distribution
 ## @end itemize
 ##
-## Examples:
+## @subheading Examples
 ##
 ## @example
+## @group
 ## a = 1:6;
 ## b = 1:0.2:2;
 ## [m, v] = betastat (a, b)
+## @end group
 ##
+## @group
 ## [m, v] = betastat (a, 1.5)
+## @end group
 ## @end example
 ##
-## References:
+## @subheading References
 ##
-## @itemize
+## @enumerate
 ## @item
-## @cite{Matlab 7.0 documentation (pdf)}
-## @item
-## @uref{http://en.wikipedia.org/wiki/Beta_distribution}
-## @end itemize
+## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
+## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
+## 2001.
 ##
+## @item
+## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
+## Processes}. McGraw-Hill, New York, second edition, 1984.
+## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@gmx.net>
+## Author: Arno Onken <whyly@whyly.org>
+## Description: Moments of the beta distribution
 
 function [m, v] = betastat (a, b)
 
