@@ -19,6 +19,9 @@ Distributions
  unidstat
  unifstat
  weibstat
+ gamlike
+ juscdf
+ juspdf
 Descriptive statistics
  nansum
  nanmax
@@ -49,6 +52,8 @@ Models
  hmmestimate hmmgenerate hmmviterbi
 Hypothesis testing
  anderson_darling_test
+Fitting
+ gamfit
 Compatibility
  nbin*= use <code>pascal_*</code>
  unid*= use <code>discrete_*</code>
