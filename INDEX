@@ -20,8 +20,8 @@ Distributions
  unifstat
  weibstat
  gamlike
- juscdf
- juspdf
+ jsucdf
+ jsupdf
 Descriptive statistics
  nansum
  nanmax
