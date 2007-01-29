@@ -215,4 +215,4 @@ endfunction
 %! assert(b,V(:,1),3e-6);
 %! assert(stats(1),Rsq,3e-13);
 %! assert(stats(2),F,3e-8);
-%! assert(((bint(:,1)-bint(:,2))/2)/t_inv(alpha/2,9),V(:,2),7.6e-3);
+%! assert(((bint(:,1)-bint(:,2))/2)/t_inv(alpha/2,9),V(:,2),1.e-2);
