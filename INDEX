@@ -54,16 +54,3 @@ Hypothesis testing
  anderson_darling_test
 Fitting
  gamfit
-Compatibility
- nbin*= use <code>pascal_*</code>
- unid*= use <code>discrete_*</code>
- anova1= use <f>anova</f>
- nlinfit= use <f>leasqr</f>
- barttest= use <f>bartlett_test</f>
- ranksum= use <f>u_test</f>
- signrank= use <f>wilcoxon_test</f>
- signtest= use <f>sign_test</f>
- ttest= use <f>t_test</f>
- ttest2= use <f>t_test_2</f>
- ztest= use <f>z_test</f>
-
