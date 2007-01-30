@@ -7,5 +7,6 @@ Title: Statistics.
 Description: Additional statistics functions for Octave.
 Categories: Statistics
 Depends: octave (>= 2.9.7)
+Autoload: yes
 License: See individual files
 Url: http://octave.sf.net
