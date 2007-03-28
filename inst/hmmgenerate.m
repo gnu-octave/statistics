@@ -215,7 +215,7 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
       cstate = states (i);
     endfor
 
-    # Compare the randon numbers of outdraw to the cumulated probabilities
+    # Compare the random numbers of outdraw to the cumulated probabilities
     # of the outputs and set the sequence vector accordingly
     sequence = sum (repmat (outdraw, noutput, 1) <= outprob (states, :)', 1);
 
