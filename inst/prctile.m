@@ -35,5 +35,8 @@ function a = prctile(x, p)
   if size (y,1) == 1, y = y(:); endif
   trim = 1 + (size(y,1)-1)*p(:)*0.01;
   delta = (trim - floor(trim))*ones(1,size(y,2));
-  a = y(floor(trim), :) .* delta + y(ceil(trim), :) .* (1-delta);
+  a = y(floor(trim), :) .* (1-delta) + y(ceil(trim), :) .* delta;
 endfunction
+
+%!assert(prctile([0,1],[25,75]),[.25;.75],eps)
+%!assert(prctile([0,0;1,2],[25,75]),[.25,.5;.75,1.5],eps)
