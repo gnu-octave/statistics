@@ -70,7 +70,7 @@
 ## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@whyly.org>
+## Author: Arno Onken <asnelt@asnelt.org>
 ## Description: Moments of the Weibull distribution
 
 function [m, v] = weibstat (alpha, sigma)

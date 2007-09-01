@@ -68,7 +68,7 @@
 ## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@whyly.org>
+## Author: Arno Onken <asnelt@asnelt.org>
 ## Description: PDF of the Rayleigh distribution
 
 function y = raylpdf (x, sigma)

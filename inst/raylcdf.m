@@ -69,7 +69,7 @@
 ## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@whyly.org>
+## Author: Arno Onken <asnelt@asnelt.org>
 ## Description: CDF of the Rayleigh distribution
 
 function p = raylcdf (x, sigma)

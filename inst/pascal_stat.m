@@ -69,7 +69,7 @@
 ## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@whyly.org>
+## Author: Arno Onken <asnelt@asnelt.org>
 ## Description: Moments of the negative binomial distribution
 
 function [m, v] = pascal_stat (n, p)

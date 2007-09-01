@@ -69,7 +69,7 @@
 ## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@whyly.org>
+## Author: Arno Onken <asnelt@asnelt.org>
 ## Description: Moments of the gamma distribution
 
 function [m, v] = gamstat (a, b)

@@ -70,7 +70,7 @@
 ## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@whyly.org>
+## Author: Arno Onken <asnelt@asnelt.org>
 ## Description: Quantile of the Rayleigh distribution
 
 function x = raylinv (p, sigma)

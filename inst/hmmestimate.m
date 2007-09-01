@@ -121,7 +121,7 @@
 ## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@whyly.org>
+## Author: Arno Onken <asnelt@asnelt.org>
 ## Description: Estimation of a Hidden Markov Model for a given sequence
 
 function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)

@@ -74,7 +74,7 @@
 ## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@whyly.org>
+## Author: Arno Onken <asnelt@asnelt.org>
 ## Description: Moments of the hypergeometric distribution
 
 function [mn, v] = hygestat (m, t, n)

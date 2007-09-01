@@ -95,7 +95,7 @@
 ## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@whyly.org>
+## Author: Arno Onken <asnelt@asnelt.org>
 ## Description: Output sequence and hidden states of a Hidden Markov Model
 
 function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)

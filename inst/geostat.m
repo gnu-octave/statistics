@@ -59,7 +59,7 @@
 ## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@whyly.org>
+## Author: Arno Onken <asnelt@asnelt.org>
 ## Description: Moments of the geometric distribution
 
 function [m, v] = geostat (p)

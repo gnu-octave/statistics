@@ -84,7 +84,7 @@
 ## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@whyly.org>
+## Author: Arno Onken <asnelt@asnelt.org>
 ## Description: Random samples from the Rayleigh distribution
 
 function x = raylrnd (sigma, r, c)

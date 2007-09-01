@@ -59,7 +59,7 @@
 ## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@whyly.org>
+## Author: Arno Onken <asnelt@asnelt.org>
 ## Description: Moments of the Rayleigh distribution
 
 function [m, v] = raylstat (sigma)

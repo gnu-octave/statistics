@@ -68,7 +68,7 @@
 ## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@whyly.org>
+## Author: Arno Onken <asnelt@asnelt.org>
 ## Description: Moments of the continuous uniform distribution
 
 function [m, v] = unifstat (a, b)

@@ -69,7 +69,7 @@
 ## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@whyly.org>
+## Author: Arno Onken <asnelt@asnelt.org>
 ## Description: Moments of the lognormal distribution
 
 function [m, v] = lognstat (mu, sigma)

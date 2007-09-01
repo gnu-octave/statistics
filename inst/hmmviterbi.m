@@ -95,7 +95,7 @@
 ## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <whyly@whyly.org>
+## Author: Arno Onken <asnelt@asnelt.org>
 ## Description: Viterbi path of a Hidden Markov Model
 
 function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
