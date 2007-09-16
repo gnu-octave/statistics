@@ -75,7 +75,7 @@ function [m, v] = unifstat (a, b)
 
   # Check arguments
   if (nargin != 2)
-    usage ("[m, v] = unifstat (a, b)");
+    print_usage ();
   endif
 
   if (! isempty (a) && ! ismatrix (a))

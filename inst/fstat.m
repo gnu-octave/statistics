@@ -78,7 +78,7 @@ function [mn, v] = fstat (m, n)
 
   # Check arguments
   if (nargin != 2)
-    usage ("[mn, v] = fstat (m, n)");
+    print_usage ();
   endif
 
   if (! isempty (m) && ! ismatrix (m))

@@ -66,7 +66,7 @@ function [m, v] = raylstat (sigma)
 
   # Check arguments
   if (nargin != 1)
-    usage ("[m, v] = raylstat (sigma)");
+    print_usage ();
   endif
 
   if (! isempty (sigma) && ! ismatrix (sigma))

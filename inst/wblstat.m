@@ -77,7 +77,7 @@ function [m, v] = wblstat (scale, shape)
 
   # Check arguments
   if (nargin != 2)
-    usage ("[m, v] = wblstat (scale, shape)");
+    print_usage ();
   endif
 
   if (! isempty (scale) && ! ismatrix (scale))

@@ -77,7 +77,7 @@ function x = raylinv (p, sigma)
 
   # Check arguments
   if (nargin != 2)
-    usage ("x = raylinv (p, sigma)");
+    print_usage ();
   endif
 
   if (! isempty (p) && ! ismatrix (p))

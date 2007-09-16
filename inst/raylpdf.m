@@ -75,7 +75,7 @@ function y = raylpdf (x, sigma)
 
   # Check arguments
   if (nargin != 2)
-    usage ("y = raylpdf (x, sigma)");
+    print_usage ();
   endif
 
   if (! isempty (x) && ! ismatrix (x))

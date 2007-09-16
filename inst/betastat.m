@@ -76,7 +76,7 @@ function [m, v] = betastat (a, b)
 
   # Check arguments
   if (nargin != 2)
-    usage ("[m, v] = betastat (a, b)");
+    print_usage ();
   endif
 
   if (! isempty (a) && ! ismatrix (a))

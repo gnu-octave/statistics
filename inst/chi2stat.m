@@ -66,7 +66,7 @@ function [m, v] = chi2stat (n)
 
   # Check arguments
   if (nargin != 1)
-    usage ("[m, v] = chi2stat (n)");
+    print_usage ();
   endif
 
   if (! isempty (n) && ! ismatrix (n))

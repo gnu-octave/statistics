@@ -66,7 +66,7 @@ function [m, v] = unidstat (n)
 
   # Check arguments
   if (nargin != 1)
-    usage ("[m, v] = unidstat (n)");
+    print_usage ();
   endif
 
   if (! isempty (n) && ! ismatrix (n))

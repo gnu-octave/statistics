@@ -76,7 +76,7 @@ function [m, v] = gamstat (a, b)
 
   # Check arguments
   if (nargin != 2)
-    usage ("[m, v] = gamstat (a, b)");
+    print_usage ();
   endif
 
   if (! isempty (a) && ! ismatrix (a))

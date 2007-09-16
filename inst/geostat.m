@@ -66,7 +66,7 @@ function [m, v] = geostat (p)
 
   # Check arguments
   if (nargin != 1)
-    usage ("[m, v] = geostat (p)");
+    print_usage ();
   endif
 
   if (! isempty (p) && ! ismatrix (p))

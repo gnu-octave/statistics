@@ -76,7 +76,7 @@ function [mn, v] = normstat (m, s)
 
   # Check arguments
   if (nargin != 2)
-    usage ("[mn, v] = normstat (m, s)");
+    print_usage ();
   endif
 
   if (! isempty (m) && ! ismatrix (m))

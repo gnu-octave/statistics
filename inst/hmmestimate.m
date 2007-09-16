@@ -126,12 +126,9 @@
 
 function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
 
-  # Usage string
-  ustring = "[transprobest, outprobest] = hmmestimate (sequence, states [, 'symbols', symbols] [, 'statenames', statenames] [, 'pseudotransitions', pseudotransitions] [, 'pseudoemissions', pseudoemissions])";
-
   # Check arguments
   if (nargin < 2 || mod (length (varargin), 2) != 0)
-    usage (ustring);
+    print_usage ();
   endif
 
   len = length (sequence);
@@ -153,7 +150,7 @@ function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
     # There must be an identifier: 'symbols', 'statenames',
     # 'pseudotransitions' or 'pseudoemissions'
     if (! ischar (varargin {i}))
-      usage (ustring);
+      print_usage ();
     endif
     # Upper case is also fine
     lowerarg = lower (varargin {i});

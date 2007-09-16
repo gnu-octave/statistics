@@ -66,7 +66,7 @@ function [m, v] = poisstat (lambda)
 
   # Check arguments
   if (nargin != 1)
-    usage ("[m, v] = poisstat (lambda)");
+    print_usage ();
   endif
 
   if (! isempty (lambda) && ! ismatrix (lambda))

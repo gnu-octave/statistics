@@ -66,7 +66,7 @@ function [m, v] = expstat (l)
 
   # Check arguments
   if (nargin != 1)
-    usage ("[m, v] = expstat (l)");
+    print_usage ();
   endif
 
   if (! isempty (l) && ! ismatrix (l))

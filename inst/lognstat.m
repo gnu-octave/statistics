@@ -76,7 +76,7 @@ function [m, v] = lognstat (mu, sigma)
 
   # Check arguments
   if (nargin != 2)
-    usage ("[m, v] = lognstat (mu, sigma)");
+    print_usage ();
   endif
 
   if (! isempty (mu) && ! ismatrix (mu))

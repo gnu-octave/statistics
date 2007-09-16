@@ -81,7 +81,7 @@ function [mn, v] = hygestat (t, m, n)
 
   # Check arguments
   if (nargin != 3)
-    usage ("[mn, v] = hygestat (t, m, n)");
+    print_usage ();
   endif
 
   if (! isempty (t) && ! ismatrix (t))

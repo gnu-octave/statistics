@@ -76,7 +76,7 @@ function [m, v] = binostat (n, p)
 
   # Check arguments
   if (nargin != 2)
-    usage ("[m, v] = binostat (n, p)");
+    print_usage ();
   endif
 
   if (! isempty (n) && ! ismatrix (n))

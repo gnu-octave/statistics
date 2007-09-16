@@ -112,7 +112,7 @@ function x = raylrnd (sigma, r, c)
       error ("raylrnd: sigma must be scalar or of size [r, c]");
     endif
   else
-    usage ("x = raylrnd (sigma [, sz |, r, c])");
+    print_usage ();
   endif
 
   if (! isempty (sigma) && ! ismatrix (sigma))

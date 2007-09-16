@@ -100,12 +100,9 @@
 
 function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
 
-  # Usage string
-  ustring = "[sequence, states] = hmmgenerate (len, transprob, outprob [, 'symbols', symbols] [, 'statenames', statenames])";
-
   # Check arguments
   if (nargin < 3 || mod (length (varargin), 2) != 0)
-    usage (ustring);
+    print_usage ();
   endif
 
   if (! isscalar (len) || len < 0 || round (len) != len)
@@ -143,7 +140,7 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
   for i = 1:2:length (varargin)
     # There must be an identifier: 'symbols' or 'statenames'
     if (! ischar (varargin {i}))
-      usage (ustring);
+      print_usage ();
     endif
     # Upper case is also fine
     lowerarg = lower (varargin {i});
