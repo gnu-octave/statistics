@@ -15,7 +15,7 @@
 ## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{mn}, @var{vr}] =} normstat (@var{m}, @var{v})
+## @deftypefn {Function File} {[@var{mn}, @var{v}] =} normstat (@var{m}, @var{s})
 ## Returns mean and variance of the normal distribution, the given arguments
 ##
 ## @subheading Arguments
@@ -25,10 +25,10 @@
 ## @var{m} is the mean of the normal distribution
 ##
 ## @item
-## @var{v} is the variance of the normal distribution.
-## @var{v} must be positive
+## @var{s} is the standard deviation of the normal distribution.
+## @var{s} must be positive
 ## @end itemize
-## @var{m} and @var{v} must be of common size or one of them must be
+## @var{m} and @var{s} must be of common size or one of them must be
 ## scalar
 ##
 ## @subheading Return values
@@ -38,7 +38,7 @@
 ## @var{mn} is the mean of the normal distribution
 ##
 ## @item
-## @var{vr} is the variance of the normal distribution
+## @var{v} is the variance of the normal distribution
 ## @end itemize
 ##
 ## @subheading Examples
@@ -46,12 +46,12 @@
 ## @example
 ## @group
 ## m = 1:6;
-## v = 0:0.2:1;
-## [mn, vr] = normstat (m, v)
+## s = 0:0.2:1;
+## [mn, v] = normstat (m, s)
 ## @end group
 ##
 ## @group
-## [mn, vr] = normstat (0, v)
+## [mn, v] = normstat (0, s)
 ## @end group
 ## @end example
 ##
@@ -72,50 +72,52 @@
 ## Author: Arno Onken <asnelt@asnelt.org>
 ## Description: Moments of the normal distribution
 
-function [mn, vr] = normstat (m, v)
+function [mn, v] = normstat (m, s)
 
   # Check arguments
   if (nargin != 2)
-    usage ("[mn, vr] = normstat (m, v)");
+    usage ("[mn, v] = normstat (m, s)");
   endif
 
   if (! isempty (m) && ! ismatrix (m))
     error ("normstat: m must be a numeric matrix");
   endif
-  if (! isempty (v) && ! ismatrix (v))
-    error ("normstat: v must be a numeric matrix");
+  if (! isempty (s) && ! ismatrix (s))
+    error ("normstat: s must be a numeric matrix");
   endif
 
-  if (! isscalar (m) || ! isscalar (v))
-    [retval, m, v] = common_size (m, v);
+  if (! isscalar (m) || ! isscalar (s))
+    [retval, m, s] = common_size (m, s);
     if (retval > 0)
-      error ("normstat: m and v must be of common size or scalar");
+      error ("normstat: m and s must be of common size or scalar");
     endif
   endif
 
   # Set moments
   mn = m;
-  vr = v;
+  v = s .* s;
 
   # Continue argument check
-  k = find (! (v > 0) | ! (v < Inf));
+  k = find (! (s > 0) | ! (s < Inf));
   if (any (k))
     mn (k) = NaN;
-    vr (k) = NaN;
+    v (k) = NaN;
   endif
 
 endfunction
 
 %!test
 %! m = 1:6;
-%! v = 0.2:0.2:1.2;
-%! [mn, vr] = normstat (m, v);
+%! s = 0.2:0.2:1.2;
+%! [mn, v] = normstat (m, s);
+%! expected_v = [0.0400, 0.1600, 0.3600, 0.6400, 1.0000, 1.4400];
 %! assert (mn, m);
-%! assert (vr, v);
+%! assert (v, expected_v, 0.001);
 
 %!test
-%! v = 0.2:0.2:1.2;
-%! [mn, vr] = normstat (0, v);
+%! s = 0.2:0.2:1.2;
+%! [mn, v] = normstat (0, s);
 %! expected_mn = [0, 0, 0, 0, 0, 0];
-%! assert (mn, expected_mn);
-%! assert (vr, v);
+%! expected_v = [0.0400, 0.1600, 0.3600, 0.6400, 1.0000, 1.4400];
+%! assert (mn, expected_mn, 0.001);
+%! assert (v, expected_v, 0.001);

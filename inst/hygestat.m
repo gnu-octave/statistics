@@ -15,25 +15,25 @@
 ## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{mn}, @var{v}] =} hygestat (@var{m}, @var{t}, @var{n})
+## @deftypefn {Function File} {[@var{mn}, @var{v}] =} hygestat (@var{t}, @var{m}, @var{n})
 ## Returns mean and variance of the hypergeometric distribution
 ##
 ## @subheading Arguments
 ##
 ## @itemize @bullet
 ## @item
-## @var{m} is the number of marked items of the hypergeometric distribution.
-## The elements of @var{n} must be natural numbers
+## @var{t} is the total size of the population of the hypergeometric
+## distribution. The elements of @var{t} must be positive natural numbers
 ##
 ## @item
-## @var{t} is the total size of the population of the hypergeometric
-## distribution. The elements of @var{p} must be positive natural numbers
+## @var{m} is the number of marked items of the hypergeometric distribution.
+## The elements of @var{m} must be natural numbers
 ##
 ## @item
 ## @var{n} is the size of the drawn sample of the hypergeometric
-## distribution. The elements of @var{p} must be positive natural numbers
+## distribution. The elements of @var{n} must be positive natural numbers
 ## @end itemize
-## @var{m}, @var{t} and @var{n} must be of common size or scalar
+## @var{t}, @var{m}, and @var{n} must be of common size or scalar
 ##
 ## @subheading Return values
 ##
@@ -49,8 +49,8 @@
 ##
 ## @example
 ## @group
-## m = 0:5;
 ## t = 4:9;
+## m = 0:5;
 ## n = 1:6;
 ## [mn, v] = hygestat (m, t, n)
 ## @end group
@@ -77,27 +77,27 @@
 ## Author: Arno Onken <asnelt@asnelt.org>
 ## Description: Moments of the hypergeometric distribution
 
-function [mn, v] = hygestat (m, t, n)
+function [mn, v] = hygestat (t, m, n)
 
   # Check arguments
   if (nargin != 3)
-    usage ("[m, v] = hygestat (m, t, n)");
+    usage ("[mn, v] = hygestat (t, m, n)");
   endif
 
-  if (! isempty (m) && ! ismatrix (m))
-    error ("hygestat: m must be a numeric matrix");
-  endif
   if (! isempty (t) && ! ismatrix (t))
     error ("hygestat: t must be a numeric matrix");
+  endif
+  if (! isempty (m) && ! ismatrix (m))
+    error ("hygestat: m must be a numeric matrix");
   endif
   if (! isempty (n) && ! ismatrix (n))
     error ("hygestat: n must be a numeric matrix");
   endif
 
-  if (! isscalar (m) || ! isscalar (t) || ! isscalar (n))
-    [retval, m, t, n] = common_size (m, t, n);
+  if (! isscalar (t) || ! isscalar (m) || ! isscalar (n))
+    [retval, t, m, n] = common_size (t, m, n);
     if (retval > 0)
-      error ("hygestat: m, t and n must be of common size or scalar");
+      error ("hygestat: t, m and n must be of common size or scalar");
     endif
   endif
 
@@ -106,7 +106,7 @@ function [mn, v] = hygestat (m, t, n)
   v = (n .* (m ./ t) .* (1 - m ./ t) .* (t - n)) ./ (t - 1);
 
   # Continue argument check
-  k = find (! (m >= 0) | ! (t >= 0) | ! (n > 0) | ! (m == round (m)) | ! (t == round (t)) | ! (n == round (n)) | ! (m <= t) | ! (n <= t));
+  k = find (! (t >= 0) | ! (m >= 0) | ! (n > 0) | ! (t == round (t)) | ! (m == round (m)) | ! (n == round (n)) | ! (m <= t) | ! (n <= t));
   if (any (k))
     mn (k) = NaN;
     v (k) = NaN;
@@ -115,19 +115,19 @@ function [mn, v] = hygestat (m, t, n)
 endfunction
 
 %!test
-%! m = 0:5;
 %! t = 4:9;
+%! m = 0:5;
 %! n = 1:6;
-%! [mn, v] = hygestat (m, t, n);
+%! [mn, v] = hygestat (t, m, n);
 %! expected_mn = [0.0000, 0.4000, 1.0000, 1.7143, 2.5000, 3.3333];
 %! expected_v = [0.0000, 0.2400, 0.4000, 0.4898, 0.5357, 0.5556];
 %! assert (mn, expected_mn, 0.001);
 %! assert (v, expected_v, 0.001);
 
 %!test
-%! m = 0:5;
 %! t = 4:9;
-%! [mn, v] = hygestat (m, t, 2);
+%! m = 0:5;
+%! [mn, v] = hygestat (t, m, 2);
 %! expected_mn = [0.0000, 0.4000, 0.6667, 0.8571, 1.0000, 1.1111];
 %! expected_v = [0.0000, 0.2400, 0.3556, 0.4082, 0.4286, 0.4321];
 %! assert (mn, expected_mn, 0.001);

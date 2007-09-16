@@ -15,21 +15,21 @@
 ## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{m}, @var{v}] =} weibstat (@var{alpha}, @var{sigma})
+## @deftypefn {Function File} {[@var{m}, @var{v}] =} wblstat (@var{scale}, @var{shape})
 ## Returns mean and variance of the Weibull distribution
 ##
 ## @subheading Arguments
 ##
 ## @itemize @bullet
 ## @item
-## @var{alpha} is the shape parameter of the Weibull distribution.
-## @var{alpha} must be positive
+## @var{scale} is the scale parameter of the Weibull distribution.
+## @var{scale} must be positive
 ##
 ## @item
-## @var{sigma} is the scale parameter of the Weibull distribution.
-## @var{sigma} must be positive
+## @var{shape} is the shape parameter of the Weibull distribution.
+## @var{shape} must be positive
 ## @end itemize
-## @var{alpha} and @var{sigma} must be of common size or one of them must be
+## @var{scale} and @var{shape} must be of common size or one of them must be
 ## scalar
 ##
 ## @subheading Return values
@@ -46,13 +46,13 @@
 ##
 ## @example
 ## @group
-## alpha = 1:6;
-## sigma = 3:8;
-## [m, v] = weibstat (alpha, sigma)
+## scale = 3:8;
+## shape = 1:6;
+## [m, v] = wblstat (scale, shape)
 ## @end group
 ##
 ## @group
-## [m, v] = weibstat (alpha, 6)
+## [m, v] = wblstat (6, shape)
 ## @end group
 ## @end example
 ##
@@ -73,33 +73,33 @@
 ## Author: Arno Onken <asnelt@asnelt.org>
 ## Description: Moments of the Weibull distribution
 
-function [m, v] = weibstat (alpha, sigma)
+function [m, v] = wblstat (scale, shape)
 
   # Check arguments
   if (nargin != 2)
-    usage ("[m, v] = weibstat (alpha, sigma)");
+    usage ("[m, v] = wblstat (scale, shape)");
   endif
 
-  if (! isempty (alpha) && ! ismatrix (alpha))
-    error ("weibstat: alpha must be a numeric matrix");
+  if (! isempty (scale) && ! ismatrix (scale))
+    error ("wblstat: scale must be a numeric matrix");
   endif
-  if (! isempty (sigma) && ! ismatrix (sigma))
-    error ("weibstat: sigma must be a numeric matrix");
+  if (! isempty (shape) && ! ismatrix (shape))
+    error ("wblstat: shape must be a numeric matrix");
   endif
 
-  if (! isscalar (alpha) || ! isscalar (sigma))
-    [retval, alpha, sigma] = common_size (alpha, sigma);
+  if (! isscalar (scale) || ! isscalar (shape))
+    [retval, scale, shape] = common_size (scale, shape);
     if (retval > 0)
-      error ("weibstat: alpha and sigma must be of common size or scalar");
+      error ("wblstat: scale and shape must be of common size or scalar");
     endif
   endif
 
   # Calculate moments
-  m = sigma .* gamma (1 + 1 ./ alpha);
-  v = (sigma .^ 2) .* gamma (1 + 2 ./ alpha) - m .^ 2;
+  m = scale .* gamma (1 + 1 ./ shape);
+  v = (scale .^ 2) .* gamma (1 + 2 ./ shape) - m .^ 2;
 
   # Continue argument check
-  k = find (! (alpha > 0) | ! (alpha < Inf) | ! (sigma > 0) | ! (sigma < Inf));
+  k = find (! (scale > 0) | ! (scale < Inf) | ! (shape > 0) | ! (shape < Inf));
   if (any (k))
     m (k) = NaN;
     v (k) = NaN;
@@ -108,17 +108,17 @@ function [m, v] = weibstat (alpha, sigma)
 endfunction
 
 %!test
-%! alpha = 1:6;
-%! sigma = 3:8;
-%! [m, v] = weibstat (alpha, sigma);
+%! scale = 3:8;
+%! shape = 1:6;
+%! [m, v] = wblstat (scale, shape);
 %! expected_m = [3.0000, 3.5449, 4.4649, 5.4384, 6.4272, 7.4218];
 %! expected_v = [9.0000, 3.4336, 2.6333, 2.3278, 2.1673, 2.0682];
 %! assert (m, expected_m, 0.001);
 %! assert (v, expected_v, 0.001);
 
 %!test
-%! alpha = 1:6;
-%! [m, v] = weibstat (alpha, 6);
+%! shape = 1:6;
+%! [m, v] = wblstat (6, shape);
 %! expected_m = [ 6.0000, 5.3174, 5.3579, 5.4384, 5.5090, 5.5663];
 %! expected_v = [36.0000, 7.7257, 3.7920, 2.3278, 1.5923, 1.1634];
 %! assert (m, expected_m, 0.001);

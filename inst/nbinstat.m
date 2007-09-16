@@ -15,7 +15,7 @@
 ## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{m}, @var{v}] =} pascal_stat (@var{n}, @var{p})
+## @deftypefn {Function File} {[@var{m}, @var{v}] =} nbinstat (@var{n}, @var{p})
 ## Returns mean and variance of the negative binomial distribution
 ##
 ## @subheading Arguments
@@ -47,11 +47,11 @@
 ## @group
 ## n = 1:4;
 ## p = 0.2:0.2:0.8;
-## [m, v] = pascal_stat (n, p)
+## [m, v] = nbinstat (n, p)
 ## @end group
 ##
 ## @group
-## [m, v] = pascal_stat (n, 0.5)
+## [m, v] = nbinstat (n, 0.5)
 ## @end group
 ## @end example
 ##
@@ -72,24 +72,24 @@
 ## Author: Arno Onken <asnelt@asnelt.org>
 ## Description: Moments of the negative binomial distribution
 
-function [m, v] = pascal_stat (n, p)
+function [m, v] = nbinstat (n, p)
 
   # Check arguments
   if (nargin != 2)
-    usage ("[m, v] = pascal_stat (n, p)");
+    usage ("[m, v] = nbinstat (n, p)");
   endif
 
   if (! isempty (n) && ! ismatrix (n))
-    error ("pascal_stat: n must be a numeric matrix");
+    error ("nbinstat: n must be a numeric matrix");
   endif
   if (! isempty (p) && ! ismatrix (p))
-    error ("pascal_stat: p must be a numeric matrix");
+    error ("nbinstat: p must be a numeric matrix");
   endif
 
   if (! isscalar (n) || ! isscalar (p))
     [retval, n, p] = common_size (n, p);
     if (retval > 0)
-      error ("pascal_stat: n and p must be of common size or scalar");
+      error ("nbinstat: n and p must be of common size or scalar");
     endif
   endif
 
@@ -110,7 +110,7 @@ endfunction
 %!test
 %! n = 1:4;
 %! p = 0.2:0.2:0.8;
-%! [m, v] = pascal_stat (n, p);
+%! [m, v] = nbinstat (n, p);
 %! expected_m = [ 4.0000, 3.0000, 2.0000, 1.0000];
 %! expected_v = [20.0000, 7.5000, 3.3333, 1.2500];
 %! assert (m, expected_m, 0.001);
@@ -118,7 +118,7 @@ endfunction
 
 %!test
 %! n = 1:4;
-%! [m, v] = pascal_stat (n, 0.5);
+%! [m, v] = nbinstat (n, 0.5);
 %! expected_m = [1, 2, 3, 4];
 %! expected_v = [2, 4, 6, 8];
 %! assert (m, expected_m, 0.001);

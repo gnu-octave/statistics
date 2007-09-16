@@ -22,7 +22,7 @@
 ##
 ## @itemize @bullet
 ## @item
-## @var{l} is the rate parameter of the exponential distribution. The
+## @var{l} is the parameter of the exponential distribution. The
 ## elements of @var{l} must be positive
 ## @end itemize
 ##
@@ -40,7 +40,7 @@
 ##
 ## @example
 ## @group
-## l = 1 ./ (1:6);
+## l = 1:6;
 ## [m, v] = expstat (l)
 ## @end group
 ## @end example
@@ -74,7 +74,7 @@ function [m, v] = expstat (l)
   endif
 
   # Calculate moments
-  m = 1 ./ l;
+  m = l;
   v = m .^ 2;
 
   # Continue argument check
@@ -87,7 +87,7 @@ function [m, v] = expstat (l)
 endfunction
 
 %!test
-%! l = 1 ./ (1:6);
+%! l = 1:6;
 %! [m, v] = expstat (l);
 %! assert (m, [1, 2, 3, 4, 5, 6], 0.001);
 %! assert (v, [1, 4, 9, 16, 25, 36], 0.001);
