@@ -12,13 +12,13 @@ Distributions
  lognstat
  mvnpdf mvnrnd
  normstat
- pascal_stat
+ nbinstat
  poisstat
  raylcdf raylinv raylpdf raylrnd raylstat
  tstat
  unidstat
  unifstat
- weibstat
+ wblstat
  gamlike
  jsucdf
  jsupdf
