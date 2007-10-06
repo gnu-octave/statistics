@@ -52,11 +52,11 @@
 ## t = 4:9;
 ## m = 0:5;
 ## n = 1:6;
-## [mn, v] = hygestat (m, t, n)
+## [mn, v] = hygestat (t, m, n)
 ## @end group
 ##
 ## @group
-## [mn, v] = hygestat (m, t, 2)
+## [mn, v] = hygestat (t, m, 2)
 ## @end group
 ## @end example
 ##
