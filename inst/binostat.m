@@ -16,7 +16,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{m}, @var{v}] =} binostat (@var{n}, @var{p})
-## Returns mean and variance of the binomial distribution
+## Compute mean and variance of the binomial distribution.
 ##
 ## @subheading Arguments
 ##

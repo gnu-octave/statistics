@@ -16,7 +16,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{mn}, @var{v}] =} fstat (@var{m}, @var{n})
-## Returns mean and variance of the F distribution
+## Compute mean and variance of the F distribution.
 ##
 ## @subheading Arguments
 ##

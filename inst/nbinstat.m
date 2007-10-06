@@ -16,7 +16,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{m}, @var{v}] =} nbinstat (@var{n}, @var{p})
-## Returns mean and variance of the negative binomial distribution
+## Compute mean and variance of the negative binomial distribution.
 ##
 ## @subheading Arguments
 ##

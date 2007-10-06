@@ -16,7 +16,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{m}, @var{v}] =} chi2stat (@var{n})
-## Returns mean and variance of the chi-square distribution
+## Compute mean and variance of the chi-square distribution.
 ##
 ## @subheading Arguments
 ##

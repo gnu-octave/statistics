@@ -16,7 +16,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{m}, @var{v}] =} lognstat (@var{mu}, @var{sigma})
-## Returns mean and variance of the lognormal distribution
+## Compute mean and variance of the lognormal distribution.
 ##
 ## @subheading Arguments
 ##

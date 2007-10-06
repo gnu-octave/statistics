@@ -16,7 +16,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{m}, @var{v}] =} tstat (@var{n})
-## Returns mean and variance of the t (Student) distribution
+## Compute mean and variance of the t (Student) distribution.
 ##
 ## @subheading Arguments
 ##

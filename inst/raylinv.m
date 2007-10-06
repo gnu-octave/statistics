@@ -16,7 +16,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {@var{x} =} raylinv (@var{p}, @var{sigma})
-## Calculates the quantile of the Rayleigh distribution. The quantile is the
+## Compute the quantile of the Rayleigh distribution. The quantile is the
 ## inverse of the cumulative distribution function.
 ##
 ## @subheading Arguments

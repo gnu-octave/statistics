@@ -16,7 +16,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {@var{y} =} raylpdf (@var{x}, @var{sigma})
-## Calculates the probability density function of the Rayleigh distribution.
+## Compute the probability density function of the Rayleigh distribution.
 ##
 ## @subheading Arguments
 ##

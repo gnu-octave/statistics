@@ -16,7 +16,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{m}, @var{v}] =} gamstat (@var{a}, @var{b})
-## Returns mean and variance of the gamma distribution
+## Compute mean and variance of the gamma distribution.
 ##
 ## @subheading Arguments
 ##

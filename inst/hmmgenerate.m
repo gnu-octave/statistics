@@ -18,7 +18,7 @@
 ## @deftypefn {Function File} {[@var{sequence}, @var{states}] =} hmmgenerate (@var{len}, @var{transprob}, @var{outprob})
 ## @deftypefnx {Function File} {} hmmgenerate (@dots{}, 'symbols', @var{symbols})
 ## @deftypefnx {Function File} {} hmmgenerate (@dots{}, 'statenames', @var{statenames})
-## Generates an output sequence and hidden states of a Hidden Markov Model.
+## Generate an output sequence and hidden states of a hidden Markov model.
 ## The model starts in state @code{1} at step @code{0} but will not include
 ## step @code{0} in the generated states and sequence.
 ##
@@ -96,7 +96,7 @@
 ## @end deftypefn
 
 ## Author: Arno Onken <asnelt@asnelt.org>
-## Description: Output sequence and hidden states of a Hidden Markov Model
+## Description: Output sequence and hidden states of a hidden Markov model
 
 function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
 
@@ -116,14 +116,14 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
     error ("hmmgenerate: outprob must be a non-empty numeric matrix");
   endif
 
-  # nstate is the number of states of the Hidden Markov Model
+  # nstate is the number of states of the hidden Markov model
   nstate = rows (transprob);
-  # noutput is the number of different outputs that the Hidden Markov Model
+  # noutput is the number of different outputs that the hidden Markov model
   # can generate
   noutput = columns (outprob);
 
-  # Check whether transprob and outprob are feasible for a Hidden Markov
-  # Model
+  # Check whether transprob and outprob are feasible for a hidden Markov
+  # model
   if (columns (transprob) != nstate)
     error ("hmmgenerate: transprob must be a square matrix");
   endif

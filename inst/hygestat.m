@@ -16,7 +16,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{mn}, @var{v}] =} hygestat (@var{t}, @var{m}, @var{n})
-## Returns mean and variance of the hypergeometric distribution
+## Compute mean and variance of the hypergeometric distribution.
 ##
 ## @subheading Arguments
 ##

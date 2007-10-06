@@ -16,7 +16,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{m}, @var{v}] =} poisstat (@var{lambda})
-## Returns mean and variance of the Poisson distribution
+## Compute mean and variance of the Poisson distribution.
 ##
 ## @subheading Arguments
 ##

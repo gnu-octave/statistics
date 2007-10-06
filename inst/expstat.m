@@ -16,7 +16,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{m}, @var{v}] =} expstat (@var{l})
-## Returns mean and variance of the exponential distribution
+## Compute mean and variance of the exponential distribution.
 ##
 ## @subheading Arguments
 ##

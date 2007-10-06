@@ -18,8 +18,8 @@
 ## @deftypefn {Function File} {@var{vpath} =} hmmviterbi (@var{sequence}, @var{transprob}, @var{outprob})
 ## @deftypefnx {Function File} {} hmmviterbi (@dots{}, 'symbols', @var{symbols})
 ## @deftypefnx {Function File} {} hmmviterbi (@dots{}, 'statenames', @var{statenames})
-## Uses the Viterbi algorithm to find the Viterbi path of a Hidden Markov
-## Model given a sequence of outputs. The model assumes that the generation
+## Use the Viterbi algorithm to find the Viterbi path of a hidden Markov
+## model given a sequence of outputs. The model assumes that the generation
 ## starts in state @code{1} at step @code{0} but does not include step
 ## @code{0} in the generated states and sequence.
 ##
@@ -96,7 +96,7 @@
 ## @end deftypefn
 
 ## Author: Arno Onken <asnelt@asnelt.org>
-## Description: Viterbi path of a Hidden Markov Model
+## Description: Viterbi path of a hidden Markov model
 
 function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
 
@@ -113,13 +113,13 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
   endif
 
   len = length (sequence);
-  # nstate is the number of states of the Hidden Markov Model
+  # nstate is the number of states of the hidden Markov model
   nstate = rows (transprob);
-  # noutput is the number of different outputs that the Hidden Markov Model
+  # noutput is the number of different outputs that the hidden Markov model
   # can generate
   noutput = columns (outprob);
 
-  # Check whether transprob and outprob are feasible for a Hidden Markov Model
+  # Check whether transprob and outprob are feasible for a hidden Markov model
   if (columns (transprob) != nstate)
     error ("hmmviterbi: transprob must be a square matrix");
   endif

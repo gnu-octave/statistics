@@ -16,7 +16,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {@var{p} =} raylcdf (@var{x}, @var{sigma})
-## Calculates the cumulative distribution function of the Rayleigh
+## Compute the cumulative distribution function of the Rayleigh
 ## distribution.
 ##
 ## @subheading Arguments

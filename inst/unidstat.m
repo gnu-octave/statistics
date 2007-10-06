@@ -16,7 +16,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{m}, @var{v}] =} unidstat (@var{n})
-## Returns mean and variance of the discrete uniform distribution
+## Compute mean and variance of the discrete uniform distribution.
 ##
 ## @subheading Arguments
 ##

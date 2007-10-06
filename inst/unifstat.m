@@ -16,7 +16,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{m}, @var{v}] =} unifstat (@var{a}, @var{b})
-## Returns mean and variance of the continuous uniform distribution
+## Compute mean and variance of the continuous uniform distribution.
 ##
 ## @subheading Arguments
 ##

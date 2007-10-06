@@ -16,7 +16,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{mn}, @var{v}] =} normstat (@var{m}, @var{s})
-## Returns mean and variance of the normal distribution, the given arguments
+## Compute mean and variance of the normal distribution.
 ##
 ## @subheading Arguments
 ##

@@ -16,7 +16,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{m}, @var{v}] =} betastat (@var{a}, @var{b})
-## Returns mean and variance of the beta distribution
+## Compute mean and variance of the beta distribution.
 ##
 ## @subheading Arguments
 ##

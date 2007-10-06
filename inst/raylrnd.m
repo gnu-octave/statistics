@@ -18,7 +18,7 @@
 ## @deftypefn {Function File} {@var{x} =} raylrnd (@var{sigma})
 ## @deftypefnx {Function File} {@var{x} =} raylrnd (@var{sigma}, @var{sz})
 ## @deftypefnx {Function File} {@var{x} =} raylrnd (@var{sigma}, @var{r}, @var{c})
-## Returns a matrix of random samples from the Rayleigh distribution.
+## Generate a matrix of random samples from the Rayleigh distribution.
 ##
 ## @subheading Arguments
 ##
