@@ -28,7 +28,7 @@ a=nmsmax( @gamfit_search, 1, [], [], avg, R );
 
 b=a/avg;      # **
 
-res=[a b];
+res=[a 1/b];
 
 # Helper function so we only have to minimize for one variable. Also to
 # inverting the output of gamlike, incase the optimisation function wants to
@@ -38,6 +38,6 @@ function res = gamfit_search( a, avg, R )
 
 b=a/avg;      # **
 
-res = -gamlike([a b], R);
+res = -gamlike([a 1/b], R);
 
  	  	 
