@@ -108,8 +108,8 @@ function [mn, v] = hygestat (t, m, n)
   # Continue argument check
   k = find (! (t >= 0) | ! (m >= 0) | ! (n > 0) | ! (t == round (t)) | ! (m == round (m)) | ! (n == round (n)) | ! (m <= t) | ! (n <= t));
   if (any (k))
-    mn (k) = NaN;
-    v (k) = NaN;
+    mn(k) = NaN;
+    v(k) = NaN;
   endif
 
 endfunction

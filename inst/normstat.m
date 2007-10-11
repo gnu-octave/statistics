@@ -100,8 +100,8 @@ function [mn, v] = normstat (m, s)
   # Continue argument check
   k = find (! (s > 0) | ! (s < Inf));
   if (any (k))
-    mn (k) = NaN;
-    v (k) = NaN;
+    mn(k) = NaN;
+    v(k) = NaN;
   endif
 
 endfunction

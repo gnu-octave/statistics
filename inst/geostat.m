@@ -81,8 +81,8 @@ function [m, v] = geostat (p)
   # Continue argument check
   k = find (! (p >= 0) | ! (p <= 1));
   if (any (k))
-    m (k) = NaN;
-    v (k) = NaN;
+    m(k) = NaN;
+    v(k) = NaN;
   endif
 
 endfunction

@@ -45,12 +45,12 @@
 ## @itemize @bullet
 ## @item
 ## @var{transprobest} is the matrix of the estimated transition
-## probabilities of the states. @code{transprobest (i, j)} is the estimated
+## probabilities of the states. @code{transprobest(i, j)} is the estimated
 ## probability of a transition to state @code{j} given state @code{i}.
 ##
 ## @item
 ## @var{outprobest} is the matrix of the estimated output probabilities.
-## @code{outprobest (i, j)} is the estimated probability of generating
+## @code{outprobest(i, j)} is the estimated probability of generating
 ## output @code{j} given state @code{i}.
 ## @end itemize
 ##
@@ -64,14 +64,14 @@
 ##
 ## If @code{'pseudotransitions'} is specified then the integer matrix
 ## @var{pseudotransitions} is used as an initial number of counted
-## transitions. @code{pseudotransitions (i, j)} is the initial number of
+## transitions. @code{pseudotransitions(i, j)} is the initial number of
 ## counted transitions from state @code{i} to state @code{j}.
 ## @var{transprobest} will have the same size as @var{pseudotransitions}.
 ## Use this if you have transitions that are very unlikely to occur.
 ##
 ## If @code{'pseudoemissions'} is specified then the integer matrix
 ## @var{pseudoemissions} is used as an initial number of counted outputs.
-## @code{pseudoemissions (i, j)} is the initial number of counted outputs
+## @code{pseudoemissions(i, j)} is the initial number of counted outputs
 ## @code{j} given state @code{i}. If @code{'pseudoemissions'} is also
 ## specified then the number of rows of @var{pseudoemissions} must be the
 ## same as the number of rows of @var{pseudotransitions}. @var{outprobest}
@@ -149,23 +149,23 @@ function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
   for i = 1:2:length (varargin)
     # There must be an identifier: 'symbols', 'statenames',
     # 'pseudotransitions' or 'pseudoemissions'
-    if (! ischar (varargin {i}))
+    if (! ischar (varargin{i}))
       print_usage ();
     endif
     # Upper case is also fine
-    lowerarg = lower (varargin {i});
+    lowerarg = lower (varargin{i});
     if (strcmp (lowerarg, 'symbols'))
       usesym = true;
       # Use the following argument as symbols
-      symbols = varargin {i + 1};
+      symbols = varargin{i + 1};
     # The same for statenames
     elseif (strcmp (lowerarg, 'statenames'))
       usesn = true;
       # Use the following argument as statenames
-      statenames = varargin {i + 1};
+      statenames = varargin{i + 1};
     elseif (strcmp (lowerarg, 'pseudotransitions'))
       # Use the following argument as an initial count for transitions
-      transprobest = varargin {i + 1};
+      transprobest = varargin{i + 1};
       if (! ismatrix (transprobest))
         error ("hmmestimate: pseudotransitions must be a non-empty numeric matrix");
       endif
@@ -174,12 +174,12 @@ function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
       endif
     elseif (strcmp (lowerarg, 'pseudoemissions'))
       # Use the following argument as an initial count for outputs
-      outprobest = varargin {i + 1};
+      outprobest = varargin{i + 1};
       if (! ismatrix (outprobest))
         error ("hmmestimate: pseudoemissions must be a non-empty numeric matrix");
       endif
     else
-      error ("hmmestimate: expected 'symbols', 'statenames', 'pseudotransitions' or 'pseudoemissions' but found '%s'", varargin {i});
+      error ("hmmestimate: expected 'symbols', 'statenames', 'pseudotransitions' or 'pseudoemissions' but found '%s'", varargin{i});
     endif
   endfor
 
@@ -188,9 +188,9 @@ function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
     # sequenceint is used to build the transformed sequence
     sequenceint = zeros (1, len);
     for i = 1:length (symbols)
-      # Search for symbols (i) in the sequence, isequal will have 1 at
+      # Search for symbols(i) in the sequence, isequal will have 1 at
       # corresponding indices; i is the right integer for that symbol
-      isequal = ismember (sequence, symbols (i));
+      isequal = ismember (sequence, symbols(i));
       # We do not want to change sequenceint if the symbol appears a second
       # time in symbols
       if (any ((sequenceint == 0) & (isequal == 1)))
@@ -200,7 +200,7 @@ function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
     endfor
     if (! all (sequenceint))
       index = max ((sequenceint == 0) .* (1:len));
-      error (["hmmestimate: sequence (" int2str(index) ") not in symbols"]);
+      error (["hmmestimate: sequence(" int2str (index) ") not in symbols"]);
     endif
     sequence = sequenceint;
   else
@@ -209,7 +209,7 @@ function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
     endif
     if (! all (ismember (sequence, 1:max (sequence))))
       index = max ((ismember (sequence, 1:max (sequence)) == 0) .* (1:len));
-      error (["hmmestimate: sequence (" int2str(index) ") not feasible"]);
+      error (["hmmestimate: sequence(" int2str (index) ") not feasible"]);
     endif
   endif
 
@@ -218,9 +218,9 @@ function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
     # statesint is used to build the transformed states
     statesint = zeros (1, len);
     for i = 1:length (statenames)
-      # Search for statenames (i) in states, isequal will have 1 at
+      # Search for statenames(i) in states, isequal will have 1 at
       # corresponding indices; i is the right integer for that statename
-      isequal = ismember (states, statenames (i));
+      isequal = ismember (states, statenames(i));
       # We do not want to change statesint if the statename appears a second
       # time in statenames
       if (any ((statesint == 0) & (isequal == 1)))
@@ -230,7 +230,7 @@ function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
     endfor
     if (! all (statesint))
       index = max ((statesint == 0) .* (1:len));
-      error (["hmmestimate: states (" int2str(index) ") not in statenames"]);
+      error (["hmmestimate: states(" int2str (index) ") not in statenames"]);
     endif
     states = statesint;
   else
@@ -239,7 +239,7 @@ function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
     endif
     if (! all (ismember (states, 1:max (states))))
       index = max ((ismember (states, 1:max (states)) == 0) .* (1:len));
-      error (["hmmestimate: states (" int2str(index) ") not feasible"]);
+      error (["hmmestimate: states(" int2str (index) ") not feasible"]);
     endif
   endif
 
@@ -285,10 +285,10 @@ function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
   cstate = 1;
   for i = 1:len
     # Count the number of transitions for each state pair
-    transprobest (cstate, states (i)) ++;
+    transprobest(cstate, states(i)) ++;
     cstate = states (i);
     # Count the number of outputs for each state output pair
-    outprobest (cstate, sequence (i)) ++;
+    outprobest(cstate, sequence(i)) ++;
   endfor
 
   # transprobest and outprobest contain counted numbers
@@ -298,11 +298,11 @@ function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
   # A zero row remains zero
   # - for transprobest
   s = sum (transprobest, 2);
-  s (s == 0) = 1;
+  s(s == 0) = 1;
   transprobest = transprobest ./ (s * ones (1, nstate));
   # - for outprobest
   s = sum (outprobest, 2);
-  s (s == 0) = 1;
+  s(s == 0) = 1;
   outprobest = outprobest ./ (s * ones (1, noutput));
 
 endfunction

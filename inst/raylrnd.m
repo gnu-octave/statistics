@@ -130,7 +130,7 @@ function x = raylrnd (sigma, r, c)
     # Continue argument check
     k = find (! (sigma > 0));
     if (any (k))
-      x (k) = NaN;
+      x(k) = NaN;
     endif
   endif
 

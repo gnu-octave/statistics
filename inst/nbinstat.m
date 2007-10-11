@@ -101,8 +101,8 @@ function [m, v] = nbinstat (n, p)
   # Continue argument check
   k = find (! (n > 0) | ! (n < Inf) | ! (p > 0) | ! (p < 1));
   if (any (k))
-    m (k) = NaN;
-    v (k) = NaN;
+    m(k) = NaN;
+    v(k) = NaN;
   endif
 
 endfunction

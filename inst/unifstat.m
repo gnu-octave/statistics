@@ -99,8 +99,8 @@ function [m, v] = unifstat (a, b)
   # Continue argument check
   k = find (! (-Inf < a) | ! (a < b) | ! (b < Inf));
   if (any (k))
-    m (k) = NaN;
-    v (k) = NaN;
+    m(k) = NaN;
+    v(k) = NaN;
   endif
 
 endfunction

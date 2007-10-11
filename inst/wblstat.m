@@ -101,8 +101,8 @@ function [m, v] = wblstat (scale, shape)
   # Continue argument check
   k = find (! (scale > 0) | ! (scale < Inf) | ! (shape > 0) | ! (shape < Inf));
   if (any (k))
-    m (k) = NaN;
-    v (k) = NaN;
+    m(k) = NaN;
+    v(k) = NaN;
   endif
 
 endfunction

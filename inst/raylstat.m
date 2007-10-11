@@ -80,8 +80,8 @@ function [m, v] = raylstat (sigma)
   # Continue argument check
   k = find (! (sigma > 0));
   if (any (k))
-    m (k) = NaN;
-    v (k) = NaN;
+    m(k) = NaN;
+    v(k) = NaN;
   endif
 
 endfunction

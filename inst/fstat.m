@@ -102,13 +102,13 @@ function [mn, v] = fstat (m, n)
   # Continue argument check
   k = find (! (m > 0) | ! (m < Inf) | ! (n > 2) | ! (n < Inf));
   if (any (k))
-    mn (k) = NaN;
-    v (k) = NaN;
+    mn(k) = NaN;
+    v(k) = NaN;
   endif
 
   k = find (! (n > 4));
   if (any (k))
-    v (k) = NaN;
+    v(k) = NaN;
   endif
 
 endfunction

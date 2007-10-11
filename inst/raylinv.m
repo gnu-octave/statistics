@@ -99,13 +99,13 @@ function x = raylinv (p, sigma)
 
   k = find (p == 1);
   if (any (k))
-    x (k) = Inf;
+    x(k) = Inf;
   endif
 
   # Continue argument check
   k = find (! (p >= 0) | ! (p <= 1) | ! (sigma > 0));
   if (any (k))
-    x (k) = NaN;
+    x(k) = NaN;
   endif
 
 endfunction

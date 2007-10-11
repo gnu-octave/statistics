@@ -100,8 +100,8 @@ function [m, v] = lognstat (mu, sigma)
   # Continue argument check
   k = find (! (sigma >= 0) | ! (sigma < Inf));
   if (any (k))
-    m (k) = NaN;
-    v (k) = NaN;
+    m(k) = NaN;
+    v(k) = NaN;
   endif
 
 endfunction

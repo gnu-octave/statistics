@@ -98,7 +98,7 @@ function y = raylpdf (x, sigma)
   # Continue argument check
   k = find (! (x >= 0) | ! (x < Inf) | ! (sigma > 0));
   if (any (k))
-    y (k) = NaN;
+    y(k) = NaN;
   endif
 
 endfunction

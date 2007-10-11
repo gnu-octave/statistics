@@ -80,8 +80,8 @@ function [m, v] = chi2stat (n)
   # Continue argument check
   k = find (! (n > 0) | ! (n < Inf));
   if (any (k))
-    m (k) = NaN;
-    v (k) = NaN;
+    m(k) = NaN;
+    v(k) = NaN;
   endif
 
 endfunction

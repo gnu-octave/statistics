@@ -80,8 +80,8 @@ function [m, v] = expstat (l)
   # Continue argument check
   k = find (! (l > 0) | ! (l < Inf));
   if (any (k))
-    m (k) = NaN;
-    v (k) = NaN;
+    m(k) = NaN;
+    v(k) = NaN;
   endif
 
 endfunction

@@ -80,12 +80,12 @@ function [m, v] = tstat (n)
   # Continue argument check
   k = find (! (n > 1) | ! (n < Inf));
   if (any (k))
-    m (k) = NaN;
-    v (k) = NaN;
+    m(k) = NaN;
+    v(k) = NaN;
   endif
   k = find (! (n > 2) & (n < Inf));
   if (any (k))
-    v (k) = Inf;
+    v(k) = Inf;
   endif
 
 endfunction

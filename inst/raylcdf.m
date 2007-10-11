@@ -99,7 +99,7 @@ function p = raylcdf (x, sigma)
   # Continue argument check
   k = find (! (x >= 0) | ! (x < Inf) | ! (sigma > 0));
   if (any (k))
-    p (k) = NaN;
+    p(k) = NaN;
   endif
 
 endfunction

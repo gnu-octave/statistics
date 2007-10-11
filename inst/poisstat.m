@@ -80,8 +80,8 @@ function [m, v] = poisstat (lambda)
   # Continue argument check
   k = find (! (lambda > 0) | ! (lambda < Inf));
   if (any (k))
-    m (k) = NaN;
-    v (k) = NaN;
+    m(k) = NaN;
+    v(k) = NaN;
   endif
 
 endfunction

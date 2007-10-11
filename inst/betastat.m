@@ -100,8 +100,8 @@ function [m, v] = betastat (a, b)
   # Continue argument check
   k = find (! (a > 0) | ! (a < Inf) | ! (b > 0) | ! (b < Inf));
   if (any (k))
-    m (k) = NaN;
-    v (k) = NaN;
+    m(k) = NaN;
+    v(k) = NaN;
   endif
 
 endfunction

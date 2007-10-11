@@ -33,12 +33,12 @@
 ##
 ## @item
 ## @var{transprob} is the matrix of transition probabilities of the states.
-## @code{transprob (i, j)} is the probability of a transition to state
+## @code{transprob(i, j)} is the probability of a transition to state
 ## @code{j} given state @code{i}.
 ##
 ## @item
 ## @var{outprob} is the matrix of output probabilities.
-## @code{outprob (i, j)} is the probability of generating output @code{j}
+## @code{outprob(i, j)} is the probability of generating output @code{j}
 ## given state @code{i}.
 ## @end itemize
 ##
@@ -135,28 +135,28 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
   # Process varargin
   for i = 1:2:length (varargin)
     # There must be an identifier: 'symbols' or 'statenames'
-    if (! ischar (varargin {i}))
+    if (! ischar (varargin{i}))
       print_usage ();
     endif
     # Upper case is also fine
-    lowerarg = lower (varargin {i});
+    lowerarg = lower (varargin{i});
     if (strcmp (lowerarg, 'symbols'))
-      if (length (varargin {i + 1}) != noutput)
+      if (length (varargin{i + 1}) != noutput)
         error ("hmmviterbi: number of symbols does not match number of possible outputs");
       endif
       usesym = true;
       # Use the following argument as symbols
-      symbols = varargin {i + 1};
+      symbols = varargin{i + 1};
     # The same for statenames
     elseif (strcmp (lowerarg, 'statenames'))
-      if (length (varargin {i + 1}) != nstate)
+      if (length (varargin{i + 1}) != nstate)
         error ("hmmviterbi: number of statenames does not match number of states");
       endif
       usesn = true;
       # Use the following argument as statenames
-      statenames = varargin {i + 1};
+      statenames = varargin{i + 1};
     else
-      error ("hmmviterbi: expected 'symbols' or 'statenames' but found '%s'", varargin {i});
+      error ("hmmviterbi: expected 'symbols' or 'statenames' but found '%s'", varargin{i});
     endif
   endfor
 
@@ -165,9 +165,9 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
     # sequenceint is used to build the transformed sequence
     sequenceint = zeros (1, len);
     for i = 1:noutput
-      # Search for symbols (i) in the sequence, isequal will have 1 at
+      # Search for symbols(i) in the sequence, isequal will have 1 at
       # corresponding indices; i is the right integer for that symbol
-      isequal = ismember (sequence, symbols (i));
+      isequal = ismember (sequence, symbols(i));
       # We do not want to change sequenceint if the symbol appears a second
       # time in symbols
       if (any ((sequenceint == 0) & (isequal == 1)))
@@ -177,7 +177,7 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
     endfor
     if (! all (sequenceint))
       index = max ((sequenceint == 0) .* (1:len));
-      error (["hmmviterbi: sequence (" int2str(index) ") not in symbols"]);
+      error (["hmmviterbi: sequence(" int2str (index) ") not in symbols"]);
     endif
     sequence = sequenceint;
   else
@@ -186,7 +186,7 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
     endif
     if (! all (ismember (sequence, 1:noutput)))
       index = max ((ismember (sequence, 1:noutput) == 0) .* (1:len));
-      error (["hmmviterbi: sequence (" int2str(index) ") out of range"]);
+      error (["hmmviterbi: sequence(" int2str (index) ") out of range"]);
     endif
   endif
 
@@ -195,39 +195,39 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
   # A zero row remains zero
   # - for transprob
   s = sum (transprob, 2);
-  s (s == 0) = 1;
+  s(s == 0) = 1;
   transprob = transprob ./ (s * ones (1, columns (transprob)));
   # - for outprob
   s = sum (outprob, 2);
-  s (s == 0) = 1;
+  s(s == 0) = 1;
   outsprob = outprob ./ (s * ones (1, columns (outprob))); 
 
-  # Store the path starting from i in spath (i, :)
+  # Store the path starting from i in spath(i, :)
   spath = ones (nstate, len + 1);
   # Set the first state for each path
-  spath (:, 1) = (1:nstate)';
-  # Store the probability of path i in spathprob (i)
-  spathprob = transprob (1, :);
+  spath(:, 1) = (1:nstate)';
+  # Store the probability of path i in spathprob(i)
+  spathprob = transprob(1, :);
 
   # Find the most likely paths for the given output sequence
   for i = 1:len
     # Calculate the new probabilities of the continuation with each state
-    nextpathprob = ((spathprob' .* outprob (:, sequence (i))) * ones (1, nstate)) .* transprob;
+    nextpathprob = ((spathprob' .* outprob(:, sequence(i))) * ones (1, nstate)) .* transprob;
     # Find the paths with the highest probabilities
     [spathprob, mindex] = max (nextpathprob);
     # Update spath and spathprob with the new paths
-    spath = spath (mindex, :);
-    spath (:, i + 1) = (1:nstate)';  
+    spath = spath(mindex, :);
+    spath(:, i + 1) = (1:nstate)';  
   endfor
 
   # Set vpath to the most likely path
   # We do not want the last state because we do not have an output for it
   [m, mindex] = max (spathprob);
-  vpath = spath (mindex, 1:len);
+  vpath = spath(mindex, 1:len);
 
   # Transform vpath into statenames if requested
   if (usesn)
-    vpath = reshape (statenames (vpath), 1, len);
+    vpath = reshape (statenames(vpath), 1, len);
   endif
 
 endfunction

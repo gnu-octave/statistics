@@ -31,12 +31,12 @@
 ##
 ## @item
 ## @var{transprob} is the matrix of transition probabilities of the states.
-## @code{transprob (i, j)} is the probability of a transition to state
+## @code{transprob(i, j)} is the probability of a transition to state
 ## @code{j} given state @code{i}.
 ##
 ## @item
 ## @var{outprob} is the matrix of output probabilities.
-## @code{outprob (i, j)} is the probability of generating output @code{j}
+## @code{outprob(i, j)} is the probability of generating output @code{j}
 ## given state @code{i}.
 ## @end itemize
 ##
@@ -139,28 +139,28 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
   # Process varargin
   for i = 1:2:length (varargin)
     # There must be an identifier: 'symbols' or 'statenames'
-    if (! ischar (varargin {i}))
+    if (! ischar (varargin{i}))
       print_usage ();
     endif
     # Upper case is also fine
-    lowerarg = lower (varargin {i});
+    lowerarg = lower (varargin{i});
     if (strcmp (lowerarg, 'symbols'))
-      if (length (varargin {i + 1}) != noutput)
+      if (length (varargin{i + 1}) != noutput)
         error ("hmmgenerate: number of symbols does not match number of possible outputs");
       endif
       usesym = true;
       # Use the following argument as symbols
-      symbols = varargin {i + 1};
+      symbols = varargin{i + 1};
     # The same for statenames
     elseif (strcmp (lowerarg, 'statenames'))
-      if (length (varargin {i + 1}) != nstate)
+      if (length (varargin{i + 1}) != nstate)
         error ("hmmgenerate: number of statenames does not match number of states");
       endif
       usesn = true;
       # Use the following argument as statenames
-      statenames = varargin {i + 1};
+      statenames = varargin{i + 1};
     else
-      error ("hmmgenerate: expected 'symbols' or 'statenames' but found '%s'", varargin {i});
+      error ("hmmgenerate: expected 'symbols' or 'statenames' but found '%s'", varargin{i});
     endif
   endfor
 
@@ -169,11 +169,11 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
   # A zero row remains zero
   # - for transprob
   s = sum (transprob, 2);
-  s (s == 0) = 1;
+  s(s == 0) = 1;
   transprob = transprob ./ repmat (s, 1, nstate);
   # - for outprob
   s = sum (outprob, 2);
-  s (s == 0) = 1;
+  s(s == 0) = 1;
   outprob = outprob ./ repmat (s, 1, noutput);
 
   # Generate sequences of uniformly distributed random numbers between 0 and
@@ -195,11 +195,11 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
     # Cumulated probability in first column must always be 1
     # We might have a zero row
     # - for transprob
-    transprob (:, end:-1:1) = cumsum (transprob (:, end:-1:1), 2);
-    transprob (:, 1) = 1;
+    transprob(:, end:-1:1) = cumsum (transprob(:, end:-1:1), 2);
+    transprob(:, 1) = 1;
     # - for outprob
-    outprob (:, end:-1:1) = cumsum (outprob (:, end:-1:1), 2);
-    outprob (:, 1) = 1;
+    outprob(:, end:-1:1) = cumsum (outprob(:, end:-1:1), 2);
+    outprob(:, 1) = 1;
 
     # cstate is the current state
     # Start in state 1 but do not include it in the states vector
@@ -208,20 +208,20 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
       # Compare the randon number i of transdraw to the cumulated
       # probability of the state transition and set the transition
       # accordingly
-      states (i) = sum (transdraw (i) <= transprob (cstate, :));
-      cstate = states (i);
+      states(i) = sum (transdraw(i) <= transprob(cstate, :));
+      cstate = states(i);
     endfor
 
     # Compare the random numbers of outdraw to the cumulated probabilities
     # of the outputs and set the sequence vector accordingly
-    sequence = sum (repmat (outdraw, noutput, 1) <= outprob (states, :)', 1);
+    sequence = sum (repmat (outdraw, noutput, 1) <= outprob(states, :)', 1);
 
     # Transform default matrices into symbols/statenames if requested
     if (usesym)
-      sequence = reshape (symbols (sequence), 1, len);
+      sequence = reshape (symbols(sequence), 1, len);
     endif
     if (usesn)
-      states = reshape (statenames (states), 1, len);
+      states = reshape (statenames(states), 1, len);
     endif
   endif
 
