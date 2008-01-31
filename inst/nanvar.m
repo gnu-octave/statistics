@@ -16,8 +16,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{y}] =} nanvar(@var{X} [, @var{opt} [, @var{dim}]])
-##	nanstd is identical to the var function except that NaN values are
-ignored.
+## nanstd is identical to the var function except that NaN values are ignored.
 ## @seealso{nanmean,nanstd,nanmax,nanmin}
 ## @end deftypefn
 

@@ -30,6 +30,7 @@ Descriptive statistics
  nanmedian
  nanmin
  nanstd
+ nanvar
  geomean	
  harmmean	
  mad		
