@@ -56,3 +56,7 @@ Hypothesis testing
  anderson_darling_test
 Fitting
  gamfit
+Clustering
+ pdist
+ linkage
+ squareform
