@@ -69,7 +69,7 @@
 ## Author: Alberto Pose <apose@alu.itba.edu.ar>
 ## Updated: 3 September 2006 
 ## - Replaced deprecated is_nan_or_na(X) with (isnan(X) | isna(X)) 
-## (now works with Octave 2.9.7 and foward)
+## (now works with this software 2.9.7 and foward)
 
 function s = boxplot (data,notched,symbol,vertical,maxwhisker)
 
