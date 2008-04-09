@@ -123,7 +123,7 @@ function [b, bint, r, rint, stats] = regress (y, X, alpha)
     n = rows (X);
     p = columns (X);
     dof = n - p;
-    t_alpha_2 = t_inv (alpha / 2, dof);
+    t_alpha_2 = tinv (alpha / 2, dof);
     H = X * pinv_X;
 
     r = (eye (n) - H) * y;
@@ -168,7 +168,7 @@ function [b, bint, r, rint, stats] = regress (y, X, alpha)
     R2 = 1 - SSE / sum ((y - mean (y)) .^ 2);
 #    F = (R2 / (p - 1)) / ((1 - R2) / dof);
     F = dof / (p - 1) / (1 / R2 - 1);
-    pval = 1 - f_cdf (F, p - 1, dof);
+    pval = 1 - fcdf (F, p - 1, dof);
 
     stats = [R2 F pval v];
 
@@ -212,4 +212,4 @@ endfunction
 %! assert(b,V(:,1),3e-6);
 %! assert(stats(1),Rsq,1e-12);
 %! assert(stats(2),F,3e-8);
-%! assert(((bint(:,1)-bint(:,2))/2)/t_inv(alpha/2,9),V(:,2),-1.e-5);
+%! assert(((bint(:,1)-bint(:,2))/2)/tinv(alpha/2,9),V(:,2),-1.e-5);

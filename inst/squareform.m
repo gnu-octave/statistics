@@ -92,4 +92,4 @@ endfunction
 ## make sure that the command arguments force the correct behavior
 %!assert(squareform(1), [0 1;1 0])
 %!assert(squareform(1, "tomatrix"), [0 1;1 0])
-%!assert(squareform(1, "tovector"), [])
+%!assert(squareform(1, "tovector"), zeros(0,1))

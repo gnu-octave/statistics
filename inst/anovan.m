@@ -145,7 +145,7 @@ function [PVAL, FSTAT, DF_B, DFE] = anovan (data, grps, varargin)
         MS= stats(i,3);
         DF= stats(i,2);
         F= MS/MSE;
-        pval = 1 - f_cdf (F, DF, DFE);
+        pval = 1 - fcdf (F, DF, DFE);
         stats(i,4:5)= [F, pval];
     end
 
