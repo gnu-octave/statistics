@@ -4,6 +4,7 @@ Distributions
  betastat
  binostat
  chi2stat
+ copulacdf copulapdf
  expstat
  fstat
  gamstat
