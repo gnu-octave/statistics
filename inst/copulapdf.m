@@ -23,20 +23,21 @@
 ## @item
 ## @var{family} is the copula family name. Currently, @var{family} can
 ## be @code{'Clayton'} for the Clayton family, @code{'Gumbel'} for the
-## Gumbel-Hougaard family, or @code{'Frank'} for the Frank family.
+## Gumbel-Hougaard family, @code{'Frank'} for the Frank family, or
+## @code{'AMH'} for the Ali-Mikhail-Haq family.
 ##
 ## @item
 ## @var{x} is the support where each row corresponds to an observation.
 ##
 ## @item
 ## @var{theta} is the parameter of the copula. The elements of
-## @var{theta} must be greater than or equal to @code{-1} in the
-## bivariate case and non-negative for greater dimensions for the
+## @var{theta} must be greater than or equal to @code{-1} for the
 ## Clayton family, greater than or equal to @code{1} for the
-## Gumbel-Hougaard family, and arbitrary in the bivariate case and
-## non-negative for greater dimensions for the Frank family. @var{theta}
-## must be a column vector with the same number of rows as @var{x} or be
-## scalar.
+## Gumbel-Hougaard family, arbitrary for the Frank family, and greater
+## than or equal to @code{-1} and lower than @code{1} for the
+## Ali-Mikhail-Haq family. Moreover, @var{theta} must be non-negative
+## for dimensions greater than @code{2}. @var{theta} must be a column
+## vector with the same number of rows as @var{x} or be scalar.
 ## @end itemize
 ##
 ## @subheading Return values
@@ -81,7 +82,7 @@ function p = copulapdf (family, x, theta)
   endif
 
   if (! ischar (family))
-    error ("copulapdf: family must be one of 'Clayton', 'Gumbel', and 'Frank'");
+    error ("copulapdf: family must be one of 'Clayton', 'Gumbel', 'Frank', and 'AMH'");
   endif
 
   if (! isempty (x) && ! ismatrix (x))
@@ -114,46 +115,53 @@ function p = copulapdf (family, x, theta)
       log_cdf = -log (sum (x .^ (repmat (-theta, 1, d)), 2) - d + 1) ./ theta;
       p = prod (repmat (theta, 1, d) .* repmat (0:(d - 1), n, 1) + 1, 2) .* exp ((1 + theta .* d) .* log_cdf - (theta + 1) .* sum (log (x), 2));
       p(p < 0) = 0;
-
+      # Product copula at columns where theta == 0
       k = find (theta == 0);
       if (any (k))
-        # Product copula at columns k
         p(k) = 1;
       endif
-
       # Check theta
       if (d > 2)
         k = find (! (theta >= 0) | ! (theta < inf));
       else
-        # In the bivariate case, theta can be negative
         k = find (! (theta >= -1) | ! (theta < inf));
-      endif
-      if (any (k))
-        p(k) = NaN;
       endif
     elseif (strcmp (lowerarg, "gumbel"))
       # The Gumbel-Hougaard family
       g = sum ((-log (x)) .^ repmat (theta, 1, d), 2);
       c = exp (-g .^ (1 ./ theta));
       p = ((prod (-log (x), 2)) .^ (theta - 1)) ./ prod (x, 2) .* c .* (g .^ (2 ./ theta - 2) + (theta - 1) .* g .^ (1 ./ theta - 2));
-      p(! (theta >= 1) | ! (theta < inf)) = NaN;
+      # Check theta
+      k = find (! (theta >= 1) | ! (theta < inf));
     elseif (strcmp (lowerarg, "frank"))
       # The Frank family
       if (d != 2)
         error ("copulapdf: Frank copula PDF implemented as bivariate only");
       endif
       p = (theta .* exp (theta .* (1 + sum (x, 2))) .* expm1 (theta))./ (exp (theta) - exp (theta + theta .* x(:, 1)) + exp (theta .* sum (x, 2)) - exp (theta + theta .* x(:, 2))) .^ 2;
-
+      # Product copula at columns where theta == 0
       k = find (theta == 0);
       if (any (k))
-        # Product copula at columns k
         p(k) = 1;
       endif
-
-      p(! (theta > -inf) | ! (theta < inf)) = NaN;
+      # Check theta
+      k = find (! (theta > -inf) | ! (theta < inf));
+    elseif (strcmp (lowerarg, "amh"))
+      # The Ali-Mikhail-Haq family
+      if (d != 2)
+        error ("copulapdf: Ali-Mikhail-Haq copula PDF implemented as bivariate only");
+      endif
+      z = 1 - theta .* prod (1 - x, 2);
+      p = (z .^ (-1)) + 3 .* (theta .^ 2) .* prod (x, 2) .* (z .^ (-2)) + 3 .* (theta .^ 4) .* (prod (x, 2) .^ 2) .* (z .^ (-3));
+      k = find (! (theta >= -1) | ! (theta < 1));
     else
       error ("copulapdf: unknown copula family '%s'", family);
     endif
+
+    if (any (k))
+      p(k) = NaN;
+    endif
+
   endif
 
 endfunction
@@ -176,4 +184,11 @@ endfunction
 %! theta = [1; 2];
 %! p = copulapdf ("Frank", x, theta);
 %! expected_p = [0.9378; 0.8678];
+%! assert (p, expected_p, 0.001);
+
+%!test
+%! x = [0.2, 0.6; 0.2, 0.6];
+%! theta = [0.3; 0.7];
+%! p = copulapdf ("AMH", x, theta);
+%! expected_p = [1.1464; 1.6038];
 %! assert (p, expected_p, 0.001);

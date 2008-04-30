@@ -23,20 +23,21 @@
 ## @item
 ## @var{family} is the copula family name. Currently, @var{family} can
 ## be @code{'Clayton'} for the Clayton family, @code{'Gumbel'} for the
-## Gumbel-Hougaard family, or @code{'Frank'} for the Frank family.
+## Gumbel-Hougaard family, @code{'Frank'} for the Frank family, or
+## @code{'AMH'} for the Ali-Mikhail-Haq family.
 ##
 ## @item
 ## @var{x} is the support where each row corresponds to an observation.
 ##
 ## @item
 ## @var{theta} is the parameter of the copula. The elements of
-## @var{theta} must be greater than or equal to @code{-1} in the
-## bivariate case and non-negative for greater dimensions for the
+## @var{theta} must be greater than or equal to @code{-1} for the
 ## Clayton family, greater than or equal to @code{1} for the
-## Gumbel-Hougaard family, and arbitrary in the bivariate case and
-## non-negative for greater dimensions for the Frank family. @var{theta}
-## must be a column vector with the same number of rows as @var{x} or be
-## scalar.
+## Gumbel-Hougaard family, arbitrary for the Frank family, and greater
+## than or equal to @code{-1} and lower than @code{1} for the
+## Ali-Mikhail-Haq family. Moreover, @var{theta} must be non-negative
+## for dimensions greater than @code{2}. @var{theta} must be a column
+## vector with the same number of rows as @var{x} or be scalar.
 ## @end itemize
 ##
 ## @subheading Return values
@@ -81,7 +82,7 @@ function p = copulacdf (family, x, theta)
   endif
 
   if (! ischar (family))
-    error ("copulacdf: family must be one of 'Clayton', 'Gumbel', and 'Frank'");
+    error ("copulacdf: family must be one of 'Clayton', 'Gumbel', 'Frank', and 'AMH'");
   endif
 
   if (! isempty (x) && ! ismatrix (x))
@@ -113,50 +114,53 @@ function p = copulacdf (family, x, theta)
       # The Clayton family
       p = exp (-log (sum (x .^ (repmat (-theta, 1, d)), 2) - d + 1) ./ theta);
       p(p < 0) = 0;
-
+      # Product copula at columns where theta == 0
       k = find (theta == 0);
       if (any (k))
-        # Product copula at columns k
         p(k) = prod (x(k, :), 2);
       endif
-
       # Check theta
       if (d > 2)
         k = find (! (theta >= 0) | ! (theta < inf));
       else
-        # In the bivariate case, theta can be negative
         k = find (! (theta >= -1) | ! (theta < inf));
-      endif
-      if (any (k))
-        p(k) = NaN;
       endif
     elseif (strcmp (lowerarg, "gumbel"))
       # The Gumbel-Hougaard family
       p = exp (-(sum ((-log (x)) .^ repmat (theta, 1, d), 2)) .^ (1 ./ theta));
-      p(! (theta >= 1) | ! (theta < inf)) = NaN;
+      # Check theta
+      k = find (! (theta >= 1) | ! (theta < inf));
     elseif (strcmp (lowerarg, "frank"))
       # The Frank family
       p = -log (1 + (prod (expm1 (repmat (-theta, 1, d) .* x), 2)) ./ (expm1 (-theta) .^ (d - 1))) ./ theta;
-
+      # Product copula at columns where theta == 0
       k = find (theta == 0);
       if (any (k))
-        # Product copula at columns k
         p(k) = prod (x(k, :), 2);
       endif
-
       # Check theta
       if (d > 2)
         k = find (! (theta >= 0) | ! (theta < inf));
       else
-        # In the bivariate case, theta can be negative
         k = find (! (theta > -inf) | ! (theta < inf));
       endif
-      if (any (k))
-        p(k) = NaN;
+    elseif (strcmp (lowerarg, "amh"))
+      # The Ali-Mikhail-Haq family
+      p = (theta - 1) ./ (theta - prod ((1 + repmat (theta, 1, d) .* (x - 1)) ./ x, 2));
+      # Check theta
+      if (d > 2)
+        k = find (! (theta >= 0) | ! (theta < 1));
+      else
+        k = find (! (theta >= -1) | ! (theta < 1));
       endif
     else
       error ("copulacdf: unknown copula family '%s'", family);
     endif
+
+    if (any (k))
+      p(k) = NaN;
+    endif
+
   endif
 
 endfunction
@@ -179,4 +183,11 @@ endfunction
 %! theta = [1; 2];
 %! p = copulacdf ("Frank", x, theta);
 %! expected_p = [0.0699; 0.0930];
+%! assert (p, expected_p, 0.001);
+
+%!test
+%! x = [0.2:0.2:0.6; 0.2:0.2:0.6];
+%! theta = [0.3; 0.7];
+%! p = copulacdf ("AMH", x, theta);
+%! expected_p = [0.0629; 0.0959];
 %! assert (p, expected_p, 0.001);
