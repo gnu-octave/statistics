@@ -151,8 +151,9 @@ function p = copulapdf (family, x, theta)
       if (d != 2)
         error ("copulapdf: Ali-Mikhail-Haq copula PDF implemented as bivariate only");
       endif
-      z = 1 - theta .* prod (1 - x, 2);
-      p = (z .^ (-1)) + 3 .* (theta .^ 2) .* prod (x, 2) .* (z .^ (-2)) + 3 .* (theta .^ 4) .* (prod (x, 2) .^ 2) .* (z .^ (-3));
+      z = theta .* prod (x - 1, 2) - 1;
+      p = (theta .* (1 - sum (x, 2) - prod (x, 2) - z) - 1) ./ (z .^ 3);
+      # Check theta
       k = find (! (theta >= -1) | ! (theta < 1));
     else
       error ("copulapdf: unknown copula family '%s'", family);
@@ -190,5 +191,5 @@ endfunction
 %! x = [0.2, 0.6; 0.2, 0.6];
 %! theta = [0.3; 0.7];
 %! p = copulapdf ("AMH", x, theta);
-%! expected_p = [1.1464; 1.6038];
+%! expected_p = [0.9540; 0.8577];
 %! assert (p, expected_p, 0.001);
