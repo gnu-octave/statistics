@@ -20,18 +20,25 @@
 ## @end deftypefn
 
 function y = nanvar(x,w,dim)
-	if nargin < 1
-		usage ("v = nanvar(X [, opt [, dim]])");
-	else
-	
-	if ((nargin < 2) || isempty(w))
-		w = 0;
-	endif
-	
-	if nargin < 3
-		dim = min(find(size(x)>1));
-		if isempty(dim), dim=1; endif;
-	endif
-	
-	y = nanstd(x,w,dim).^2;
-	
+  if nargin < 1
+    print_usage ();
+  else
+    if ((nargin < 2) || isempty(w))
+      w = 0;
+    endif
+    
+    if nargin < 3
+      dim = min(find(size(x)>1));
+      if isempty(dim)
+	dim=1;
+      endif
+    endif
+    
+    y = nanstd(x,w,dim).^2;
+  endif
+endfunction
+
+## Tests
+%!shared x
+%! x = [1 2 nan 3 4 5];
+%!assert (nanvar (x), var (x(! isnan (x))), 10*eps)
