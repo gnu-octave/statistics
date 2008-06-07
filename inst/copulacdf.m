@@ -112,8 +112,7 @@ function p = copulacdf (family, x, theta)
 
     if (strcmp (lowerarg, "clayton"))
       # The Clayton family
-      p = exp (-log (sum (x .^ (repmat (-theta, 1, d)), 2) - d + 1) ./ theta);
-      p(p < 0) = 0;
+      p = exp (-log (max (sum (x .^ (repmat (-theta, 1, d)), 2) - d + 1, 0)) ./ theta);
       # Product copula at columns where theta == 0
       k = find (theta == 0);
       if (any (k))
