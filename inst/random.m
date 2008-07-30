@@ -122,7 +122,7 @@ function retval = random(name, varargin)
     case {"beta", "beta distribution"}
       retval = betarnd(varargin{:});
     case {"bino", "binomial", "binomial distribution"}
-      retval = binornd(varargin{:})
+      retval = binornd(varargin{:});
     case {"chi2", "chi-square", "chi-square distribution"}
       retval = chi2rnd(varargin{:});
     case {"exp", "exponential", "exponential distribution"}
