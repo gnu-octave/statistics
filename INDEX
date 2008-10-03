@@ -11,7 +11,8 @@ Distributions
  geostat
  hygestat
  lognstat
- mvnpdf mvnrnd
+ mvnpdf mvnrnd mvncdf
+ mvtcdf
  normstat
  nbinstat
  poisstat
