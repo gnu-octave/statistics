@@ -13,17 +13,34 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
-## v = nanstd(X [, opt [, dim]]);
-## nanstd is identical to the std function except that NaN values are
-## ignored.  If all values are NaN, the std is returned as NaN. If there
-## is only a single non-NaN value, the std is returned as 0. 
+## -*- texinfo -*-
+## @deftypefn {Function File} {@var{v} =} nanstd (@var{X})
+## @deftypefnx{Function File} {@var{v} =} nanstd (@var{X}, @var{opt})
+## @deftypefnx{Function File} {@var{v} =} nanstd (@var{X}, @var{opt}, @var{dim})
+## Compute the standard deviation while ignoring NaN values.
 ##
-##	0:  normalizes with N-1 [default]
-##		provides the square root of best unbiased estimator of the variance
-##	1:  normalizes with N,
-##		this provides the square root of the second moment around the mean
+## @code{nanstd} is identical to the @code{std} function except that NaN values are
+## ignored.  If all values are NaN, the standard deviation is returned as NaN.
+## If there is only a single non-NaN value, the deviation is returned as 0. 
 ##
-## See also: nanmin, nanmax, nansum, nanmedian, nanmean
+## The argument @var{opt} determines the type of normalization to use. Valid values
+## are
+##
+## @table @asis 
+## @item 0:
+##   normalizes with @math{N-1}, provides the square root of best unbiased estimator of 
+##   the variance [default]
+## @item 1:
+##   normalizes with @math{N}, this provides the square root of the second moment around 
+##   the mean
+## @end table
+##
+## The third argument @var{dim} determines the dimension along which the standard
+## deviation is calculated.
+##
+## @seealso{std, nanmin, nanmax, nansum, nanmedian, nanmean}
+## @end deftypefn
+
 function v = nanstd (X, opt, varargin)
   if nargin < 1
     usage ("v = nanstd(X [, opt [, dim]])");

@@ -13,12 +13,17 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
-## v = nanmean(X [, dim]);
-## nanmean is identical to the mean function except that NaN values are
-## ignored.  If all values are NaN, the mean is returned as NaN. 
-## [Is this behaviour compatible?]
+## -*- texinfo -*-
+## @deftypefn {Function File} {@var{v} =} nanmean (@var{X})
+## @deftypefnx{Function File} {@var{v} =} nanmean (@var{X}, @var{dim})
+## Compute the mean value while ignoring NaN values.
 ##
-## See also: nanmin, nanmax, nansum, nanmedian
+## @code{nanmean} is identical to the @code{mean} function except that NaN values
+## are ignored.  If all values are NaN, the mean is returned as NaN. 
+##
+## @seealso{mean, nanmin, nanmax, nansum, nanmedian}
+## @end deftypefn
+
 function v = nanmean (X, varargin) 
   if nargin < 1
     usage ("v = nanmean(X [, dim])");

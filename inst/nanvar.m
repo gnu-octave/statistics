@@ -14,9 +14,30 @@
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{y}] =} nanvar(@var{X} [, @var{opt} [, @var{dim}]])
-## nanstd is identical to the var function except that NaN values are ignored.
-## @seealso{nanmean,nanstd,nanmax,nanmin}
+## @deftypefn {Function File} {} nanvar (@var{x})
+## @deftypefnx{Function File} {@var{v} =} nanvar (@var{X}, @var{opt})
+## @deftypefnx{Function File} {@var{v} =} nanvar (@var{X}, @var{opt}, @var{dim})
+## Compute the variance while ignoring NaN values.
+##
+## For vector arguments, return the (real) variance of the values.
+## For matrix arguments, return a row vector containing the variance for
+## each column.
+##
+## The argument @var{opt} determines the type of normalization to use.
+## Valid values are
+##
+## @table @asis 
+## @item 0:
+## Normalizes with @math{N-1}, provides the best unbiased estimator of the
+## variance [default].
+## @item 1:
+## Normalizes with @math{N}, this provides the second moment around the mean.
+## @end table
+##
+## The third argument @var{dim} determines the dimension along which the 
+## variance is calculated.
+##
+## @seealso{var, nanmean, nanstd, nanmax, nanmin}
 ## @end deftypefn
 
 function y = nanvar(x,w,dim)

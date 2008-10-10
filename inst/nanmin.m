@@ -14,12 +14,18 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
-## [v, idx] = nanmin(X [, Y]);
-## nanmin is identical to the min function except that NaN values are
+## -*- texinfo -*-
+## @deftypefn {Function File} {[@var{v}, @var{idx}] =} nanmin (@var{X})
+## @deftypefnx{Function File} {[@var{v}, @var{idx}] =} nanmin (@var{X}, @var{Y})
+## Find the minimal element while ignoring NaN values.
+##
+## @code{nanmin} is identical to the @code{min} function except that NaN values
 ## are ignored.  If all values in a column are NaN, the minimum is 
 ## returned as NaN rather than []. 
 ##
-## See also: nansum, nanmax, nanmean, nanmedian
+## @seealso{min, nansum, nanmax, nanmean, nanmedian}
+## @end deftypefn
+
 function [v, idx] = nanmin (X, Y, DIM) 
   if nargin < 1 || nargin > 2
     usage ("[v, idx] = nanmin(X [, Y, [DIM]])");

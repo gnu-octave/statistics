@@ -13,12 +13,18 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
-## v = nansum (X [, dim]);
-## nansum is identical to the sum function except that NaN values are
-## treated as 0 and so ignored.  If all values are NaN, the sum is 
-## returned as 0. [Is this behaviour compatible?]
+## -*- texinfo -*-
+## @deftypefn {Function File} {@var{v} =} nansum (@var{X})
+## @deftypefnx{Function File} {@var{v} =} nansum (@var{X}, @var{dim})
+## Compute the sum while ignoring NaN values.
 ##
-## See also: nanmin, nanmax, nanmean, nanmedian
+## @code{nansum} is identical to the @code{sum} function except that NaN values are
+## treated as 0 and so ignored.  If all values are NaN, the sum is 
+## returned as 0.
+##
+## @seealso{sum, nanmin, nanmax, nanmean, nanmedian}
+## @end deftypefn
+
 function v = nansum (X, varargin)
   if nargin < 1
     usage ("v = nansum (X [, dim])");

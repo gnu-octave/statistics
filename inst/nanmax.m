@@ -13,12 +13,18 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
-## [v, idx] = nanmax(X [, Y]);
-## nanmax is identical to the max function except that NaN values are
+## -*- texinfo -*-
+## @deftypefn {Function File} {[@var{v}, @var{idx}] =} nanmax (@var{X})
+## @deftypefnx{Function File} {[@var{v}, @var{idx}] =} nanmax (@var{X}, @var{Y})
+## Find the maximal element while ignoring NaN values.
+##
+## @code{nanmax} is identical to the @code{max} function except that NaN values
 ## are ignored.  If all values in a column are NaN, the maximum is 
 ## returned as NaN rather than []. 
 ##
-## See also: nansum, nanmin, nanmean, nanmedian
+## @seealso{max, nansum, nanmin, nanmean, nanmedian}
+## @end deftypefn
+
 function [v, idx] = nanmax (X, Y, DIM) 
   if nargin < 1 || nargin > 3
     usage ("[v, idx] = nanmax(X [, Y, [DIM]])");
