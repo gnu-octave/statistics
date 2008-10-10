@@ -17,6 +17,18 @@
 ## @deftypefn {Function File} mad (@var{x})
 ## @deftypefnx{Function File} mad (@var{x}, @var{dim})
 ## Compute the mean absolute deviation of @var{x}.
+##
+## The mean absolute deviation is computed as
+##
+## @example
+## mean (abs (@var{x} - mean (@var{x})))
+## @end example
+##
+## Elements of @var{x} containing NaN or NA values are ignored during computations.
+## This is done along the dimension @var{dim} of @var{x}. If this variable is not
+## given, the mean absolute devation s computed along the smallest dimension of
+## @var{x}.
+##
 ## @seealso{std}
 ## @end deftypefn
 
