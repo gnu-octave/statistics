@@ -1,8 +1,14 @@
-## fullfact([n1 n2 n3])
-##    full factorial design with choices 1 through n_i for each factor i
+## -*- texinfo -*-
+## @deftypefn {Function File} fullfact (@var{N})
+## Full factorial design.
 ##
-## fullfact(n)
-##    full factorial design with n binary choices, 0 and 1
+## If @var{N} is a scalar, return the full factorial design with @var{N} binary
+## choices, 0 and 1.
+##
+## If @var{N} is a vector, return the full factorial design with choices 1 
+## through @var{n_i} for each factor @var{i}.
+##
+## @end deftypefn
 
 ## Author: Paul Kienzle
 ## This program is public domain.
