@@ -13,19 +13,24 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
-## usage:  histfit(data,nbins)
+## -*- texinfo -*-
+## @deftypefn {Function File} histfit (@var{data}, @var{nbins})
 ##
-## Histogram with superimposed fitted normal density.
+## Plot histogram with superimposed fitted normal density.
 ##
-## histfit(data,nbins) plots a histogram of the values in the vector data.
-## using nbins bars in the histogram. With one input argument, nbins is set 
-## to the square root of the number of elements in data. 
+## @code{histfit (@var{data}, @var{nbins})} plots a histogram of the values in
+## the vector @var{data} using @var{nbins} bars in the histogram. With one input
+## argument, @var{nbins} is set  to the square root of the number of elements in
+## data. 
 ##
 ## Example
 ##
-##   histfit(randn(100,1))
+## @example
+## histfit (randn (100, 1))
+## @end example
 ##
-## See also bar,hist and pareto.
+## @seealso{bar,hist, pareto}
+## @end deftypefn
 
 ## Author: Alberto Terruzzi <t-albert@libero.it>
 ## Version: 1.0
