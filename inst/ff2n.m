@@ -1,7 +1,9 @@
-## ff2n(n)
-##   full-factor design with n binary terms.
+## -*- texinfo -*-
+## @deftypefn {Function File} ff2n (@var{n})
+## full-factor design with n binary terms.
 ##
-## see also: fullfact
+## @seealso {fullfact}
+## @end deftypefn
 
 ## This program is public domain
 
