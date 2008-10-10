@@ -20,7 +20,7 @@ function a = mad(X,dim)
     dim = min(find(size(X)>1));
     if isempty(dim), dim=1; endif;
   endif
-  if (nargin != 1 || nargin != 2)
+  if (nargin != 1 && nargin != 2)
     usage("a = mad (X,dim)");
   elseif (prod(size(X)) != size(X,dim))
     sz = ones(1,length(size(X)));
