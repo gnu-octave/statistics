@@ -13,12 +13,17 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
-## v = nanmedian(X [, dim]);
-## nanmedian is identical to the median function except that NaN values are
-## ignored.  If all values are NaN, the median is returned as NaN. 
-## [Is this behaviour compatible?]
+## -*- texinfo -*-
+## @deftypefn {Function File} @var{v} = nanmedian (@var{x})
+## @deftypefnx{Function File} @var{v} = nanmedian (@var{x}, @var{dim})
+## Compute the median of data while ignoring NaN values.
 ##
-## See also: nanmin, nanmax, nansum, nanmean
+## This function is identical to the @code{median} function except that NaN values
+## are ignored.  If all values are NaN, the median is returned as NaN. 
+##
+## @seealso{median, nanmin, nanmax, nansum, nanmean}
+## @end deftypefn
+
 function v = nanmedian (X, varargin)
   if nargin < 1 || nargin > 2
     usage ("v = nanmedian(X [, dim])");
