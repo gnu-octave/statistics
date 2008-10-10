@@ -32,15 +32,6 @@ function v = nanmedian (X, varargin)
 
   sz = size (X);
   if (prod (sz) > 1)
-    try dfi = do_fortran_indexing;
-    catch dfi = 0;
-    end
-    try wfi = warn_fortran_indexing;
-    catch wfi = 0;
-    end
-    unwind_protect
-      do_fortran_indexing = 1;
-      warn_fortran_indexing = 0;
       ## Find lengths of datasets after excluding NaNs; valid datasets
       ## are those that are not empty after you remove all the NaNs
       n = sz(dim) - sum (isnan(X),varargin{:});
@@ -67,10 +58,6 @@ function v = nanmedian (X, varargin)
       ## correction made for stride of data "stride*ceil(2.5-0.5)+1"
       v = (X(colidx + stride*ceil(n./2-0.5) + 1)  + ...
 	   X(colidx + stride*floor(n./2-0.5) + 1)) ./ 2;
-    unwind_protect_cleanup
-      do_fortran_indexing = dfi;
-      warn_fortran_indexing = wfi;
-    end_unwind_protect
   else
     error ("nanmedian: invalid matrix argument");
   endif
