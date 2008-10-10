@@ -72,10 +72,8 @@ function a = mad (X, flag = 0, dim = [])
   
   if (flag == 0)
     f = @nanmean;
-  elseif (flag == 1)
-    f = @nanmedian;
   else
-    error ("mad: second input argument must be 0 or 1");
+    f = @nanmedian;
   endif
   
   ## Compute the mad
