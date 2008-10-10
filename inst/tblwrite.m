@@ -14,8 +14,8 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {} tblread (@var{data}, @var{varnames}, @var{casenames}, @var{filename})
-## @deftypefnx {Function File} {} tblread (@var{data}, @var{varnames}, @var{casenames}, @var{filename}, @var{delimeter})
+## @deftypefn {Function File} {} tblwrite (@var{data}, @var{varnames}, @var{casenames}, @var{filename})
+## @deftypefnx {Function File} {} tblwrite (@var{data}, @var{varnames}, @var{casenames}, @var{filename}, @var{delimeter})
 ## Write tabular data to an ascii file.
 ##
 ## @var{data} is written to an ascii data file named @var{filename} with
@@ -39,7 +39,7 @@
 ## Author: Bill Denney <bill@denney.ws>
 ## Description: Read tabular data from a file
 
-function tblread (data, varnames, casenames, f="", d=" ")
+function tblwrite (data, varnames, casenames, f="", d=" ")
 
   ## Check arguments
   if nargin < 4 || nargin > 5
