@@ -64,3 +64,7 @@ function a = mad (X, dim)
     a = nanmean (abs (X - nanmean(X, dim)), dim);
   endif
 endfunction
+
+## Tests
+
+%!assert (mad(1), 0);
