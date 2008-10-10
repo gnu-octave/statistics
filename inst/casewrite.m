@@ -25,7 +25,7 @@
 ## Author: Bill Denney <bill@denney.ws>
 ## Description: Write strings from a file
 
-function names = caseread (s="", f="")
+function names = casewrite (s="", f="")
 
   ## Check arguments
   if nargin != 2
