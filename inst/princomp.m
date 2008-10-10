@@ -1,9 +1,13 @@
-## Compute principal components of X
-## [pc,z,w,Tsq] = princomp(X)
-##   pc  the principal components
-##   z   the transformed data
-##   w   the eigenvalues of the covariance matrix
-##   Tsq Hotelling's T^2 statistic for the transformed data
+## -*- texinfo -*-
+## @deftypefn {Function File} {[@var{pc}, @var{z}, @var{w}, @var{Tsq}] =} princomp (@var{X})
+##
+## Compute principal components of @var{X}.
+##
+## The first output argument @var{pc} is the principal components of @var{X}.
+## The second @var{z} is the transformed data, and @var{w} is the eigenvalues of
+## the covariance matrix of @var{X}. @var{Tsq} is the Hotelling's @math{T^2}
+## statistic for the transformed data.
+## @end deftypefn
 
 ## Author: Paul Kienzle
 ## This program is public domain.

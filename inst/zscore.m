@@ -13,10 +13,19 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
-## A = zscore (X)
-## compute the z-score of each element of X relative to the data in the
-## columns of X.  The z-score for a single data point x_i is:
-##    (x_i - mean(x))/std(x)
+## -*- texinfo -*-
+## @deftypefn {Function File} {@var{A} =} zscore (@var{X})
+## Compute the @math{z}-score.
+##
+## Compute the @math{z}-score of each element of @var{X} relative to the data in
+## the columns of @var{X}.  The @math{z}-score for a single data point @math{x_i}
+## is:
+##
+## @example
+## (x_i - mean(x))/std(x)
+## @end example
+## @end deftypefn
+
 function A = zscore(X,varargin)
   if (nargin != 1 && nargin != 2)
     usage("zscore(X,dim)");

@@ -13,54 +13,66 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
-## usage:  table = tabulate (data,edges)
+## -*- texinfo -*-
+## @deftypefn {Function File} {@var{table} =} tabulate (@var{data}, @var{edges})
 ##
-## Frequency table.
+## Compute a frequency table.
 ##
-## table = tabulate (data,edges), for vector data, counts the number of
+## For vector data, the function counts the number of
 ## values in data that fall between the elements in the edges vector
-## (which must contain monotonically non-decreasing values). table is a
+## (which must contain monotonically non-decreasing values). @var{table} is a
 ## matrix.
-## The first column of table is the number of bin, the second
+## The first column of @var{table} is the number of bin, the second
 ## is the number of instances in each class (absolute frequency). The
 ## third column contains the percentage of each value (relative
 ## frequency) and the fourth column contains the cumulative frequency.
-## If edges is missed the width of each class is unitary, if edges is a
-## scalar then represent the number of classes, or you can define the
+##
+## If @var{edges} is missed the width of each class is unitary, if @var{edges}
+## is a scalar then represent the number of classes, or you can define the
 ## width of each bin.
-## table(k,2) will count the value data(i) if edges(k) <= data(i) <
-## edges(k+1).  The  last bin will count the value of data(i) if
-## edges(k) <= data(i) <=  edges(k+1).  
-## Values outside the values in edges are not counted.  Use -inf and inf
-## in edges to include all values. 
+## @var{table}(@var{k}, 2) will count the value @var{data} (@var{i}) if 
+## @var{edges} (@var{k}) <= @var{data} (@var{i}) < @var{edges} (@var{k}+1).
+## The  last bin will count the value of @var{data} (@var{i}) if
+## @var{edges}(@var{k}) <= @var{data} (@var{i}) <=  @var{edges} (@var{k}+1).  
+## Values outside the values in @var{edges} are not counted.  Use -inf and inf
+## in @var{edges} to include all values. 
 ## Tabulate with no output arguments returns a formatted table in the
 ## command window. 
 ##
 ## Example
 ##
-##   sphere_radius = [1:0.05:2.5];
-##   tabulate (sphere_radius)
+## @example
+## sphere_radius = [1:0.05:2.5];
+## tabulate (sphere_radius)
+## @end example
 ##
 ## Tabulate returns 2 bins, the first contains the sphere with radius
 ## between 1 and 2 mm excluded, and the second one contains the sphere with
 ## radius between 2 and 3 mm.
 ##
-##   tabulate (sphere_radius,10)
+## @example
+## tabulate (sphere_radius, 10)
+## @end example
 ##
 ## Tabulate returns ten bins.
 ##
-##   tabulate (sphere_radius,[1 1.5 2 2.5])
+## @example
+## tabulate (sphere_radius, [1, 1.5, 2, 2.5])
+## @end example
 ##
 ## Tabulate returns three bins, the first contains the sphere with radius
 ## between 1 and 1.5 mm excluded, the second one contains the sphere with
 ## radius between 1.5 and 2 mm excluded, and the third contains the sphere with
 ## radius between 2 and 2.5 mm. 
 ##
-##   bar (table(:,1),table(:,2))
+## @example
+## bar (table (:, 1), table (:, 2))
+## @end example
 ##
 ## draw histogram.
 ##
-## See also bar and pareto.
+## @seealso{bar, pareto}
+## @end deftypefn
 
 ## Author: Alberto Terruzzi <t-albert@libero.it>
 ## Version: 1.0

@@ -1,13 +1,16 @@
-# normplot(X)
-#
-# Produce a normal probability plot for each column of X.
-# The line joing the 1st and 3rd quantile is drawn on the
-# graph.  If the underlying distribution is normal, the
-# points will cluster around this line.
-#
-# Note that this function sets the title, xlabel, ylabel,
-# axis, grid, tics and hold properties of the graph.  These 
-# need to be cleared before subsequent graphs using 'clf'.
+## -*- texinfo -*-
+## @deftypefn {Function File} normplot (@var{X})
+##
+## Produce a normal probability plot for each column of X.
+##
+## The line joing the 1st and 3rd quantile is drawn on the
+## graph.  If the underlying distribution is normal, the
+## points will cluster around this line.
+##
+## Note that this function sets the title, xlabel, ylabel,
+## axis, grid, tics and hold properties of the graph.  These 
+## need to be cleared before subsequent graphs using 'clf'.
+## @end deftypefn
 
 # Author: Paul Kienzle <pkienzle@users.sf.net>
 # This program is in the public domain

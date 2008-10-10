@@ -13,12 +13,31 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
-## a = trimmean(x,p)
-##    mean of x excluding highest and lowest p% of the data
+## -*- texinfo -*-
+## @deftypefn {Function File} {@var{a} =} trimmean (@var{x}, @var{p})
 ##
-## E.g.,
-##    mean([-inf 1:9 inf]) is NaN
-##    trimmean([-inf 1:9 inf], 10) is 5
+## Compute the trimmed mean.
+##
+## The trimmed mean of @var{x} is defined as the mean of @var{x} excluding the
+## highest and lowest @var{p} percent of the data.
+##
+## For example
+##
+## @example
+## mean ([-inf, 1:9, inf])
+## @end example
+##
+## is NaN, while
+##
+## @example
+## trimmean ([-inf, 1:9, inf], 10)
+## @end example
+##
+## excludes the infinite values, which make the result 5.
+##
+## @seealso{mean}
+## @end deftypefn
+
 function a = trimmean(x, p, varargin)
   if (nargin != 2 && nargin != 3)
     usage("a = trimmean(x,p, dim)");
