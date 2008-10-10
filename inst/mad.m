@@ -93,3 +93,8 @@ endfunction
 ## Tests
 
 %!assert (mad(1), 0);
+%!test
+%! X = eye(3); abs_mean = [4/9, 4/9, 4/9]; abs_median=[0,0,0];
+%! assert(mad(X), abs_mean, eps);
+%! assert(mad(X, 0), abs_mean, eps);
+%! assert(mad(X,1), abs_median);
