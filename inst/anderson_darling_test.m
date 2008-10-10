@@ -1,38 +1,56 @@
-## [q,Asq,info] = anderson_darling_test(x,uniform|normal|exponential)
+## -*- texinfo -*-
+## @deftypefn {Function File} {[@var{q}, @var{Asq}, @var{info}] = } = @
+## anderson_darling_test (@var{x}, @var{distribution})
 ##
-## Test the hypothesis that x is selected from the given distribution
-## using the Anderson-Darling test.  If the returned q is small, reject
-## the hypothesis at the q*100% level.
+## Test the hypothesis that @var{x} is selected from the given distribution
+## using the Anderson-Darling test.  If the returned @var{q} is small, reject
+## the hypothesis at the @var{q}*100% level.
 ##
-## The Anderson-Darling A^2 statistic is calculated as follows:
+## The Anderson-Darling @math{@var{A}^2} statistic is calculated as follows:
 ##
-##    A^2_n = -n - \sum_{i=1}^n (2i-1)/n log(z_i (1-z_{n-i+1}))
+## @example
+## @iftex
+## A^2_n = -n - \sum_{i=1}^n (2i-1)/n log(z_i (1-z_{n-i+1}))
+## @end iftex
+## @ifnottex
+##               n
+## A^2_n = -n - SUM (2i-1)/n log(@math{z_i} (1 - @math{z_@{n-i+1@}}))
+##              i=1
+## @end ifnottex
+## @end example
 ##
-## where z_i is the ordered position of the x's in the CDF of the 
+## where @math{z_i} is the ordered position of the @var{x}'s in the CDF of the 
 ## distribution.  Unlike the Kolmogorov-Smirnov statistic, the 
 ## Anderson-Darling statistic is sensitive to the tails of the 
 ## distribution.
 ##
-## For 'normal' and 'exponential' distributions, estimate the 
+## The @var{distribution} argument must be a either @t{"uniform"}, @t{"normal"},
+## or @t{"exponential"}.
+##
+## For @t{"normal"}' and @t{"exponential"} distributions, estimate the 
 ## distribution parameters from the data, convert the values 
 ## to CDF values, and compare the result to tabluated critical 
-## values.  This includes an correction for small n which 
-## works well enough for n >= 8, but less so from smaller n.  The
-## returned info.Asq_corrected contains the adjusted statistic.
+## values.  This includes an correction for small @var{n} which 
+## works well enough for @var{n} >= 8, but less so from smaller @var{n}.  The
+## returned @code{info.Asq_corrected} contains the adjusted statistic.
 ##
-## For 'uniform', assume the values are uniformly distributed
-## in (0,1), compute A^2 and return the corresponding p value from
-## 1-anderson_darling_cdf(A^2,n).
+## For @t{"uniform"}, assume the values are uniformly distributed
+## in (0,1), compute @math{@var{A}^2} and return the corresponding @math{p}-value from
+## @code{1-anderson_darling_cdf(A^2,n)}.
 ## 
 ## If you are selecting from a known distribution, convert your 
-## values into CDF values for the distribution and use 'uniform'.
-## Do not use 'uniform' if the distribution parameters are estimated 
-## from the data itself, as this sharply biases the A^2 statistic
+## values into CDF values for the distribution and use @t{"uniform"}.
+## Do not use @t{"uniform"} if the distribution parameters are estimated 
+## from the data itself, as this sharply biases the @math{A^2} statistic
 ## toward smaller values.
 ##
 ## [1] Stephens, MA; (1986), "Tests based on EDF statistics", in
 ## D'Agostino, RB; Stephens, MA; (eds.) Goodness-of-fit Techinques.
 ## New York: Dekker.
+##
+## @seealso{anderson_darling_cdf}
+## @end deftypefn
+
 
 ## Author: Paul Kienzle
 ## This program is granted to the public domain.
