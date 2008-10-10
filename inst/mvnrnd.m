@@ -13,14 +13,15 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
+## -*- texinfo -*-
+## @deftypefn {Function File} @var{s} = mvnrnd (@var{mu}, @var{Sigma})
+## @deftypefnx{Function File} @var{s} = mvnrnd (@var{mu}, @var{Sigma}, @var{n})
+## Draw @var{n} random @var{d}-dimensional vectors from a multivariate Gaussian
+## distribution with mean @var{mu}(@var{n}x@var{d}) and covariance matrix
+## @var{Sigma}(@var{d}x@var{d}).
+## @end deftypefn
+
 function s = mvnrnd(mu,Sigma,K)
-% s = mvnrnd (mu, Sigma)
-%   Draw n random d-dimensional vectors from a multivariate Gaussian distribution
-%   with mean mu(nxd) and covariance matrix Sigma(dxd).
-%
-% s = mvnrnd (mu, Sigma, n)
-%   Draw n vectors from distributions with the same mean mu(1xd).
-%
 
 % Iain Murray 2003 -- I got sick of this simple thing not being in Octave and
 %                     locking up a stats-toolbox license in Matlab for no good
