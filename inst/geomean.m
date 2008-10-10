@@ -13,7 +13,15 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
-## Compatibility function --- same as mean(x,'g')
+## -*- texinfo -*-
+## @deftypefn {Function File} geomean (@var{x})
+## @deftypefnx{Function File} geomean (@var{x}, @var{dim})
+## Compute the geometric mean.
+##
+## This function does the same as @code{mean (x, "g")}.
+##
+## @seealso{mean}
+## @end deftypefn
 
 function a = geomean(x, dim)
   if (nargin == 1)
