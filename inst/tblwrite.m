@@ -33,7 +33,7 @@
 ## @var{varnames} are a char matrix or cell vector written to the first
 ## row (starting at (1,2)), and the @var{casenames} are a char matrix
 ## (or cell vector) written to the first column (starting at (2,1)).
-## @seealso{tblwrite, csv2cell, cell2csv}
+## @seealso{tblread, csv2cell, cell2csv}
 ## @end deftypefn
 
 ## Author: Bill Denney <bill@denney.ws>
