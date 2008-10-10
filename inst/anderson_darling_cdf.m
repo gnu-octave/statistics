@@ -1,49 +1,77 @@
-## p = anderson_darling_cdf(A,n)
+## -*- texinfo -*-
+## @deftypefn {Function File} @var{p} = anderson_darling_cdf (@var{A}, @var{n})
 ##
-## Return the CDF for the given Anderson-Darling coefficient A
-## computed from n values sampled from a distribution. For a 
-## vector of random variables x of length n, compute the CDF
+## Return the CDF for the given Anderson-Darling coefficient @var{A}
+## computed from @var{n} values sampled from a distribution. For a 
+## vector of random variables @var{x} of length @var{n}, compute the CDF
 ## of the values from the distribution from which they are drawn.
-## You can uses these values to compute A as follows:
+## You can uses these values to compute @var{A} as follows:
 ##
-##    A = -n - sum( (2*i-1) .* (log(x) + log(1-x(n:-1:1,:))) )/n;
+## @example
+## @var{A} = -@var{n} - sum( (2*i-1) .* (log(@var{x}) + log(1 - @var{x}(@var{n}:-1:1,:))) )/@var{n};
+## @end example
 ## 
-## From the value A, anderson_darling_cdf returns the probability
-## that A could be returned from a set of samples.
+## From the value @var{A}, @code{anderson_darling_cdf} returns the probability
+## that @var{A} could be returned from a set of samples.
 ##
 ## The algorithm given in [1] claims to be an approximation for the
 ## Anderson-Darling CDF accurate to 6 decimal points.
 ##
 ## Demonstrate using:
-##    n=300; reps=10000;
-##    z=randn(n,reps);
-##    x=sort((1+erf(z/sqrt(2)))/2);
-##    i = [1:n]'*ones(1,size(x,2));
-##    A = -n - sum( (2*i-1) .* (log(x) + log(1-x(n:-1:1,:))) )/n;
-##    p=anderson_darling_cdf(A,n);
-##    hist(100*p,[1:100]-0.5);
+##
+## @example
+## n = 300; reps = 10000;
+## z = randn(n, reps);
+## x = sort ((1 + erf (z/sqrt (2)))/2);
+## i = [1:n]' * ones (1, size (x, 2));
+## A = -n - sum ((2*i-1) .* (log (x) + log (1 - x (n:-1:1, :))))/n;
+## p = anderson_darling_cdf (A, n);
+## hist (100 * p, [1:100] - 0.5);
+## @end example
+##
 ## You will see that the histogram is basically flat, which is to
 ## say that the probabilities returned by the Anderson-Darling CDF 
 ## are distributed uniformly.
 ##
-## You can easily determine the extreme values of p:
-##    [junk,idx]=sort(p);
-## The histograms of various p aren't  very informative:
-##    histfit(z(:,idx(1)),linspace(-3,3,15));
-##    histfit(z(:,idx(end/2)),linspace(-3,3,15));
-##    histfit(z(:,idx(end)),linspace(-3,3,15));
-## More telling is the qqplot:
-##    qqplot(z(:,idx(1))); hold on; plot([-3,3],[-3,3],';;'); hold off;
-##    qqplot(z(:,idx(end/2))); hold on; plot([-3,3],[-3,3],';;'); hold off;
-##    qqplot(z(:,idx(end))); hold on; plot([-3,3],[-3,3],';;'); hold off;
+## You can easily determine the extreme values of @var{p}:
 ##
-## Try a similarly analysis for z uniform:
-##    z=rand(n,reps); x=sort(z);
-## and for z exponential:
-##    z=rande(n,reps); x=sort(1-exp(-z));
+## @example
+## [junk, idx] = sort (p);
+## @end example
+##
+## The histograms of various @var{p} aren't  very informative:
+##
+## @example
+## histfit (z (:, idx (1)), linspace (-3, 3, 15));
+## histfit (z (:, idx (end/2)), linspace (-3, 3, 15));
+## histfit (z (:, idx (end)), linspace (-3, 3, 15));
+## @end example
+##
+## More telling is the qqplot:
+##
+## @example
+## qqplot (z (:, idx (1))); hold on; plot ([-3, 3], [-3, 3], ';;'); hold off;
+## qqplot (z (:, idx (end/2))); hold on; plot ([-3, 3], [-3, 3], ';;'); hold off;
+## qqplot (z (:, idx (end))); hold on; plot ([-3, 3], [-3, 3], ';;'); hold off;
+## @end example
+##
+## Try a similarly analysis for @var{z} uniform:
+##
+## @example
+## z = rand (n, reps); x = sort(z);
+## @end example
+##
+## and for @var{z} exponential:
+##
+## @example
+## z = rande (n, reps); x = sort (1 - exp (-z));
+## @end example
 ##
 ## [1] Marsaglia, G; Marsaglia JCW; (2004) "Evaluating the Anderson Darling
 ## distribution", Journal of Statistical Software, 9(2).
+##
+## @seealso{anderson_darling_test}
+## @end deftypefn
 
 ## Author: Paul Kienzle
 ## This code is granted to the public domain.
