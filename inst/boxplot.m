@@ -13,52 +13,68 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
-## usage: s = boxplot (data,notched,symbol,vertical,maxwhisker);
+## -*- texinfo -*-
+## @deftypefn {Function File} @var{s} = boxplot (@var{data}, @var{notched}, @
+## @var{symbol}, @var{vertical}, @var{maxwhisker})
+##
+## Produce a box plot.
 ##
 ## The box plot is a graphical display that simultaneously describes several 
 ## important features of a data set, such as center, spread, departure from 
 ## symmetry, and identification of observations that lie unusually far from
 ## the bulk of the data.
 ##
-## data is a matrix with one column for each dataset, or data is a cell
-## vector with one cell for each dataset.
-## notched = 1 produces a notched-box plot. Notches represent a robust 
+## @var{data} is a matrix with one column for each data set, or data is a cell
+## vector with one cell for each data set.
+##
+## @var{notched} = 1 produces a notched-box plot. Notches represent a robust 
 ## estimate of the uncertainty about the median.
-## notched = 0 (default) produces a rectangular box plot. 
-## notched in (0,1) produces a notch of the specified depth.
-## notched values outside [0,1] are amusing if not exactly practical.
-## symbol sets the symbol for the outlier values, default symbol for
+##
+## @var{notched} = 0 (default) produces a rectangular box plot. 
+##
+## @var{notched} in (0,1) produces a notch of the specified depth.
+## notched values outside (0,1) are amusing if not exactly practical.
+##
+## @var{symbol} sets the symbol for the outlier values, default symbol for
 ## points that lie outside 3 times the interquartile range is 'o',
 ## default symbol for points between 1.5 and 3 times the interquartile
 ## range is '+'. 
-## Exaples
-## symbol = '.' points between 1.5 and 3 times the IQR is marked with
+##
+## @var{symbol} = '.' points between 1.5 and 3 times the IQR is marked with
 ## '.' and points outside 3 times IQR with 'o'.
-## symbol = ['x','*'] points between 1.5 and 3 times the IQR is marked with
+##
+## @var{symbol} = ['x','*'] points between 1.5 and 3 times the IQR is marked with
 ## 'x' and points outside 3 times IQR with '*'.
-## vertical = 0 makes the boxes horizontal, by default vertical = 1.
-## maxwhisker defines the length of the whiskers as a function of the IQR
-## (default = 1.5). If maxwhisker = 0 then boxplot displays all data  
+##
+## @var{vertical} = 0 makes the boxes horizontal, by default @var{vertical} = 1.
+##
+## @var{maxwhisker} defines the length of the whiskers as a function of the IQR
+## (default = 1.5). If @var{maxwhisker} = 0 then @code{boxplot} displays all data  
 ## values outside the box using the plotting symbol for points that lie
-## outside 3 times the IQR.   
+## outside 3 times the IQR.
 ##
-## The returned matrix s has one column for each dataset as follows:
+## The returned matrix @var{s} has one column for each data set as follows:
 ##
-##    1  minimum
-##    2  1st quartile
-##    3  2nd quartile (median)
-##    4  3rd quartile
-##    5  maximum
-##    6  lower confidence limit for median
-##    7  upper confidence limit for median
+## @multitable @columnfractions .1 .8
+## @item 1 @tab Minimum
+## @item 2 @tab 1st quartile
+## @item 3 @tab 2nd quartile (median)
+## @item 4 @tab 3rd quartile
+## @item 5 @tab Maximum
+## @item 6 @tab Lower confidence limit for median
+## @item 7 @tab Upper confidence limit for median
+## @end multitable
 ##
 ## Example
 ##
-##   title("Grade 3 heights");
-##   tics("x",1:2,["girls";"boys"]);
-##   axis([0,3]);
-##   boxplot({randn(10,1)*5+140, randn(13,1)*8+135});
+## @example
+## title ("Grade 3 heights");
+## tics ("x",1:2,["girls";"boys"]);
+## axis ([0,3]);
+## boxplot (@{randn(10,1)*5+140, randn(13,1)*8+135@});
+## @end example
 ##
+## @end deftypefn
 
 ## Author: Alberto Terruzzi <t-albert@libero.it>
 ## Version: 1.4
