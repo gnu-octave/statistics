@@ -1,11 +1,11 @@
-## Copyright (C) 2006, 2008  Bill Denney  <bill@denney.ws>
+## Copyright (C) 2008  Francesco Potortì  <pot@gnu.org>
 ##
-## This software is free software; you can redistribute it and/or modify
+## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2, or (at your option)
+## the Free Software Foundation; either version 3, or (at your option)
 ## any later version.
 ##
-## This software is distributed in the hope that it will be useful, but
+## This program is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ## General Public License for more details.
@@ -15,33 +15,38 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{y} =} pdist (@var{x})
-## @deftypefnx {Function File} {@var{y} =} pdist (@var{x},
-## @var{distfun})
-## @deftypefnx {Function File} {@var{y} =} pdist (@var{x},
+## @deftypefn {Function File} @var{y} = pdist (@var{x})
+## @deftypefnx {Function File} @var{y} = pdist (@var{x}, @var{distfun})
+## @deftypefnx {Function File} @var{y} = pdist (@var{x},
 ## @var{distfun}, @var{distfunarg}, @dots{})
+##
 ## Return the distance between any two rows in @var{x}.
 ##
-## @var{x} is the matrix (n x m) to determine the distance between.  If
-## no @var{distfun} is given, then the 'euclidean' distance is assumed.
-## @var{distfun} may be any of these or a function handle to a user
-## defined function that takes two arguments distfun (@var{u}, @var{V})
-## where @var{u} is a the row (1 x m) that is having its distance taken
-## relative to @var{V} (a p x m matrix).
+## @var{x} is the @var{n}x@var{d} matrix representing @var{q} row vectors of
+## size @var{d}.
 ##
-## The output vector, @var{y}, is (n - 1) * (n / 2) long where the
-## distances are in the order [(1, 2); (1, 3); @dots{}; (2, 3); @dots{};
-## (n-1, n)].
+## The output is a dissimilarity matrix arranged into a row vector
+## @var{y},(n - 1) * (n / 2) long, where the distances are in the order
+## [(1, 2) (1, 3) @dots{} (2, 3) @dots{} (n-1, n)].  You can use the
+## @seealso{squareform} function to display the distances between the
+## vectors arranged into an @var{n}x@var{n} matrix.
 ##
-## Any additional arguments after the @var{distfun} are passed as
-## distfun (@var{u}, @var{V}, @var{distfunarg1}, @var{distfunarg2}
-## @dots{}).
+## @var{distfun} is an optional argument specifying how the distance is
+## computed. It can be any of the following ones, defaulting to
+## "euclidean", or a user defined function that takes two arguments
+## distfun @var{x} and @var{y} plus any number of optional arguments,
+## where @var{x} is a row vector and and @var{y} is a matrix having the
+## same number of columns as @var{x}.  @var{distfun} returns a column
+## vector where row @var{i} is the distance between @var{x} and row
+## @var{i} of @var{y}. Any additional arguments after the @var{distfun}
+## are passed as distfun (@var{x}, @var{y}, @var{distfunarg1},
+## @var{distfunarg2} @dots{}).
 ##
-## Pre-defined distance functions are:
+## Predefined distance functions are:
 ##
 ## @table @samp
 ## @item "euclidean"
-## Euclidean distance (default)
+## Euclidean distance (default).
 ##
 ## @item "seuclidean"
 ## Standardized Euclidean distance. Each coordinate in the sum of
@@ -49,17 +54,19 @@
 ## coordinate.
 ##
 ## @item "mahalanobis"
-## Mahalanobis distance
+## Mahalanobis distance: @seealso{mahalanobis}.
 ##
 ## @item "cityblock"
-## City Block metric (aka manhattan distance)
+## City Block metric, aka Manhattan distance.
 ##
 ## @item "minkowski"
-## Minkowski metric (with a default parameter 2)
+## Minkowski metric.  Accepts a numeric parameter @var{p}: for @var{p}=1
+## this is the same as the cityblock metric, with @var{p}=2 (default) it
+## is equal to the euclidean metric.
 ##
 ## @item "cosine"
-## One minus the cosine of the included angle between points (treated as
-## vectors)
+## One minus the cosine of the included angle between rows, seen as
+## vectors.
 ##
 ## @item "correlation"
 ## One minus the sample correlation between points (treated as
@@ -67,118 +74,151 @@
 ##
 ## @item "spearman"
 ## One minus the sample Spearman's rank correlation between
-## observations, treated as sequences of values
+## observations, treated as sequences of values.
 ##
 ## @item "hamming"
-## Hamming distance, the percentage of coordinates that differ
+## Hamming distance: the quote of the number of coordinates that differ.
 ##
 ## @item "jaccard"
-## One minus the Jaccard coefficient, the percentage of nonzero
-## coordinates that differ
+## One minus the Jaccard coefficient, the quote of nonzero
+## coordinates that differ.
 ##
 ## @item "chebychev"
-## Chebychev distance (maximum coordinate difference)
+## Chebychev distance: the maximum coordinate difference.
 ## @end table
-## @seealso{cluster,squareform}
+## @seealso{linkage,squareform}
 ## @end deftypefn
 
-## Author: Bill Denney <denney@...>
+## Author: Francesco Potortì  <pot@gnu.org>
 
 function y = pdist (x, distfun, varargin)
 
   if (nargin < 1)
     print_usage ();
-  elseif (nargin > 1) && ...
-        ! (ischar (distfun) || ...
-           strcmp (class(distfun), "function_handle"))
-    error ("pdist: the distance function must be either a string or a \
-	function handle.");
+  elseif ((nargin > 1)
+          && ! ischar (distfun)
+          && ! isa (distfun, "function_handle"))
+    error (["pdist: the distance function must be either a string or a "
+	    "function handle."]);
   endif
 
   if (nargin < 2)
     distfun = "euclidean";
   endif
 
-  if (isempty (x))
-    error ("pdist: x cannot be empty");
+  if (! ismatrix (x) || isempty (x))
+    error ("pdist: x must be a nonempty matrix");
   elseif (length (size (x)) > 2)
     error ("pdist: x must be 1 or 2 dimensional");
   endif
 
-  sx1 = size (x, 1);
   y = [];
-  ## compute the distance
-  for i = 1:sx1
-    tmpd = feval (distfun, x(i,:), x(i+1:sx1,:), varargin{:});
-    y = [y;tmpd(:)];
-  endfor
+  if (ischar (distfun))
+    order = nchoosek(1:rows(x),2);
+    Xi = order(:,1);
+    Yi = order(:,2);
+    X = x';
+    switch (distfun)
+      case "euclidean"
+	diff = X(:,Xi) - X(:,Yi);
+	if (str2num(version()(1:3)) > 3.1)
+	  y = norm (diff, "cols");
+	else
+	  y = sqrt (sumsq (diff));
+	endif
 
-endfunction
+      case "seuclidean"
+	diff = X(:,Xi) - X(:,Yi);
+	weights = inv (diag (var (x)));
+	y = sqrt (sum ((weights * diff) .* diff));
 
-## the different standardized distance functions
+      case "mahalanobis"
+	diff = X(:,Xi) - X(:,Yi);
+	weights = inv (cov (x));
+	y = sqrt (sum ((weights * diff) .* diff));
 
-function d = euclidean(u, v)
-  d = sqrt (sum ((repmat (u, size (v,1), 1) - v).^2, 2));
-endfunction
+      case "cityblock"
+	diff = X(:,Xi) - X(:,Yi);
+	if (str2num(version()(1:3)) > 3.1)
+	  y = norm (diff, 1, "cols");
+	else
+	  y = sum (abs (diff));
+	endif
 
-function d = seuclidean(u, v)
-  ## FIXME
-  error("Not implemented")
-endfunction
+      case "minkowski"
+	diff = X(:,Xi) - X(:,Yi);
+	p = 2;			# default
+	if (nargin > 2)
+	  p = varargin{1};	# explicitly assigned
+	endif;
+	if (str2num(version()(1:3)) > 3.1)
+	  y = norm (diff, p, "cols");
+	else
+	  y = (sum ((abs (diff)).^p)).^(1/p);
+	endif
 
-function d = mahalanobis(u, v, p)
-  repu = repmat (u, size (v,1), 1);
-  d = (repu - v)' * inv (cov (repu, v)) * (repu - v);
-  d = d.^(0.5);
-endfunction
+      case "cosine"
+	prod = X(:,Xi) .* X(:,Yi);
+	weights = sumsq (X(:,Xi)) .* sumsq (X(:,Yi));
+	y = 1 - sum (prod) ./ sqrt (weights);
 
-function d = cityblock(u, v)
-  d = sum (abs (repmat (u, size(v,1), 1) - v), 2);
-endfunction
+      case "correlation"
+	corr = cor (X);
+	y = 1 - corr (sub2ind (size (corr), Xi, Yi))';
 
-function d = minkowski
-  if (nargin < 3)
-    p = 2;
+      case "spearman"
+	corr = spearman (X);
+	y = 1 - corr (sub2ind (size (corr), Xi, Yi))';
+
+      case "hamming"
+	diff = logical (X(:,Xi) - X(:,Yi));
+	y = sum (diff) / rows (X);
+
+      case "jaccard"
+	diff = logical (X(:,Xi) - X(:,Yi));
+	weights = X(:,Xi) | X(:,Yi);
+	y = sum (diff & weights) ./ sum (weights);
+
+      case "chebychev"
+	diff = X(:,Xi) - X(:,Yi);
+	if (str2num(version()(1:3)) > 3.1)
+	  y = norm (diff, Inf, "cols");
+	else
+	  y = max (abs (diff));
+	endif
+
+    endswitch
   endif
 
-  d = (sum (abs (repmat (u, size(v,1), 1) - v).^p, 2)).^(1/p);
+  if (isempty (y))
+    ## Distfun is a function handle or the name of an external function
+    l = rows (x);
+    y = zeros (1, nchoosek (l, 2));
+    idx = 1;
+    for ii = 1:l-1
+      for jj = ii+1:l
+	y(idx++) = feval (distfun, x(ii,:), x, varargin{:})(jj);
+      endfor
+    endfor
+  endif
+
 endfunction
 
-function d = cosine(u, v)
-  repu = repmat (u, size (v,1), 1);
-  d = dot (repu, v, 2) ./ (dot(repu, repu).*dot(v, v));
-endfunction
-
-function d = correlation(u, v)
-  repu = repmat (u, size (v,1), 1);
-  d = cor(repu, v);
-endfunction
-
-function d = spearman(u, v)
-  repu = repmat (u, size (v,1), 1);
-  d = spearman (repu, v);
-endfunction
-
-function d = hamming(u, v)
-  ## Hamming distance, the percentage of coordinates that differ
-  sv2 = size(v, 2);
-  for i = 1:sv2
-    v(:,i) = (v(:,i) == u(i));
-  endfor
-  d = sum (v,2)./sv2;
-endfunction
-
-function d = jaccard(u, v)
-  ## Jaccard distance, one minus the percentage of non-zero coordinates
-  ## that differ
-  sv2 = size(v, 2);
-  for i = 1:sv2
-    v(:,i) = (v(:,i) == u(i)) && (u(i) || v(:,i));
-  endfor
-  d = 1 - sum (v,2)./sv2;
-endfunction
-
-function d = chebychev(u, v)
-  repu = repmat (u, size (v,1), 1);
-  d = max (abs (repu - v), [], 2);
-endfunction
+%!shared xy, t, eucl
+%! xy = [0 1; 0 2; 7 6; 5 6];
+%! t = 1e-3;
+%! eucl = @(v,m) sqrt(sumsq(repmat(v,rows(m),1)-m,2));
+%!assert(pdist(xy),              [1.000 8.602 7.071 8.062 6.403 2.000],t);
+%!assert(pdist(xy,eucl),         [1.000 8.602 7.071 8.062 6.403 2.000],t);
+%!assert(pdist(xy,"euclidean"),  [1.000 8.602 7.071 8.062 6.403 2.000],t);
+%!assert(pdist(xy,"seuclidean"), [0.380 2.735 2.363 2.486 2.070 0.561],t);
+%!assert(pdist(xy,"mahalanobis"),[1.384 1.967 2.446 2.384 1.535 2.045],t);
+%!assert(pdist(xy,"cityblock"),  [1.000 12.00 10.00 11.00 9.000 2.000],t);
+%!assert(pdist(xy,"minkowski"),  [1.000 8.602 7.071 8.062 6.403 2.000],t);
+%!assert(pdist(xy,"minkowski",3),[1.000 7.763 6.299 7.410 5.738 2.000],t);
+%!assert(pdist(xy,"cosine"),     [0.000 0.349 0.231 0.349 0.231 0.013],t);
+%!assert(pdist(xy,"correlation"),[0.000 2.000 0.000 2.000 0.000 2.000],t);
+%!assert(pdist(xy,"spearman"),   [0.000 2.000 0.000 2.000 0.000 2.000],t);
+%!assert(pdist(xy,"hamming"),    [0.500 1.000 1.000 1.000 1.000 0.500],t);
+%!assert(pdist(xy,"jaccard"),    [1.000 1.000 1.000 1.000 1.000 0.500],t);
+%!assert(pdist(xy,"chebychev"),  [1.000 7.000 5.000 7.000 5.000 2.000],t);
