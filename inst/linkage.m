@@ -32,16 +32,19 @@
 ## Furthest distance between two clusters
 ##
 ## @item "average"
-## Unweighted average distance (aka group average)
+## Unweighted pair group method with averaging (UPGMA)
 ##
 ## @item "weighted"
-## Weighted average distance
+## Weighted pair group method with averaging (WPGMA)
+## Same as Median, its formal definition does not require Euclidean
+## metric. (Is this true?)
 ##
 ## @item "centroid"
-## Centroid distance (not implemented)
+## Centroid distance
 ##
 ## @item "median"
-## Weighted center of mass distance
+## Weighted pair-group method using centroids (WPGMC)
+## To be used with Euclidean metric. (Is this true?)
 ##
 ## @item "ward"
 ## Inner squared distance (minimum variance)
@@ -78,8 +81,8 @@ function y = linkage (x, method)
     error ("linkage: x must be a vector");
   endif
 
-  ## Function findfxn returns a scalar from a vector and a row from a
-  ## matrix.
+  ## Function findfxn must return a scalar from a vector and a row from
+  ## a matrix.
 
   method = lower (method);
   switch (method)
@@ -87,8 +90,11 @@ function y = linkage (x, method)
       ## this is just a minimal spanning tree
       findfxn = @min;
     case "complete"
+      error ("linkage: %s is not yet implemented", method);
       findfxn = @max;
-    case { "average", "median", "weighted", "centroid", "ward" }
+    case { "median", "weighted" }
+      findfxn = @mean;
+    case { "average", "centroid", "ward" }
       error ("linkage: %s is not yet implemented", method);
     otherwise
       error ("linkage: %s: unknown method", method);
@@ -107,11 +113,11 @@ function y = linkage (x, method)
     ## Add it as a new cluster index and remove the old ones.
     cnameidx(r) = yidx + startsize;
     cnameidx(c) = [];
-    ## Update the dissimilarity matrix; the diagonal element may be made
-    ## inconsistent by this, but they are not used.
+    ## Update the dissimilarity matrix
     newdissim = findfxn (dissim([r c], :));
     dissim(r,:) = newdissim;
     dissim(:,r) = newdissim';
+    dissim(r,r) = 0;
     dissim(c,:) = [];
     dissim(:,c) = [];
   endfor
