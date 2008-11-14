@@ -16,9 +16,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} @var{y} = pdist (@var{x})
-## @deftypefnx {Function File} @var{y} = pdist (@var{x}, @var{distfun})
+## @deftypefnx {Function File} @var{y} = pdist (@var{x}, @var{metric})
 ## @deftypefnx {Function File} @var{y} = pdist (@var{x},
-## @var{distfun}, @var{distfunarg}, @dots{})
+## @var{metric}, @var{metricarg}, @dots{})
 ##
 ## Return the distance between any two rows in @var{x}.
 ##
@@ -26,21 +26,21 @@
 ## size @var{d}.
 ##
 ## The output is a dissimilarity matrix formatted as a row vector
-## @var{y}, @math{(n - 1) * (n / 2)} long, where the distances are in
+## @var{y}, @math{(n-1)*n/2} long, where the distances are in
 ## the order [(1, 2) (1, 3) @dots{} (2, 3) @dots{} (n-1, n)].  You can
 ## use the @code{squareform} function to display the distances between
 ## the vectors arranged into an @var{n}x@var{n} matrix.
 ##
-## @code{distfun} is an optional argument specifying how the distance is
+## @code{metric} is an optional argument specifying how the distance is
 ## computed. It can be any of the following ones, defaulting to
 ## "euclidean", or a user defined function that takes two arguments
-## distfun @var{x} and @var{y} plus any number of optional arguments,
+## @var{x} and @var{y} plus any number of optional arguments,
 ## where @var{x} is a row vector and and @var{y} is a matrix having the
-## same number of columns as @var{x}.  @code{distfun} returns a column
+## same number of columns as @var{x}.  @code{metric} returns a column
 ## vector where row @var{i} is the distance between @var{x} and row
-## @var{i} of @var{y}. Any additional arguments after the @code{distfun}
-## are passed as distfun (@var{x}, @var{y}, @var{distfunarg1},
-## @var{distfunarg2} @dots{}).
+## @var{i} of @var{y}. Any additional arguments after the @code{metric}
+## are passed as metric (@var{x}, @var{y}, @var{metricarg1},
+## @var{metricarg2} @dots{}).
 ##
 ## Predefined distance functions are:
 ##
@@ -91,19 +91,19 @@
 
 ## Author: Francesco Potortì  <pot@gnu.org>
 
-function y = pdist (x, distfun, varargin)
+function y = pdist (x, metric, varargin)
 
   if (nargin < 1)
     print_usage ();
   elseif ((nargin > 1)
-          && ! ischar (distfun)
-          && ! isa (distfun, "function_handle"))
+          && ! ischar (metric)
+          && ! isa (metric, "function_handle"))
     error (["pdist: the distance function must be either a string or a "
 	    "function handle."]);
   endif
 
   if (nargin < 2)
-    distfun = "euclidean";
+    metric = "euclidean";
   endif
 
   if (! ismatrix (x) || isempty (x))
@@ -113,12 +113,13 @@ function y = pdist (x, distfun, varargin)
   endif
 
   y = [];
-  if (ischar (distfun))
+  if (ischar (metric))
     order = nchoosek(1:rows(x),2);
     Xi = order(:,1);
     Yi = order(:,2);
     X = x';
-    switch (distfun)
+    metric = lower (metric);
+    switch (metric)
       case "euclidean"
 	diff = X(:,Xi) - X(:,Yi);
 	if (str2num(version()(1:3)) > 3.1)
@@ -191,13 +192,13 @@ function y = pdist (x, distfun, varargin)
   endif
 
   if (isempty (y))
-    ## Distfun is a function handle or the name of an external function
+    ## Metric is a function handle or the name of an external function
     l = rows (x);
     y = zeros (1, nchoosek (l, 2));
     idx = 1;
     for ii = 1:l-1
       for jj = ii+1:l
-	y(idx++) = feval (distfun, x(ii,:), x, varargin{:})(jj);
+	y(idx++) = feval (metric, x(ii,:), x, varargin{:})(jj);
       endfor
     endfor
   endif
