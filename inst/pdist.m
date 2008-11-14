@@ -25,20 +25,20 @@
 ## @var{x} is the @var{n}x@var{d} matrix representing @var{q} row vectors of
 ## size @var{d}.
 ##
-## The output is a dissimilarity matrix arranged into a row vector
-## @var{y},(n - 1) * (n / 2) long, where the distances are in the order
-## [(1, 2) (1, 3) @dots{} (2, 3) @dots{} (n-1, n)].  You can use the
-## @seealso{squareform} function to display the distances between the
-## vectors arranged into an @var{n}x@var{n} matrix.
+## The output is a dissimilarity matrix formatted as a row vector
+## @var{y}, @math{(n - 1) * (n / 2)} long, where the distances are in
+## the order [(1, 2) (1, 3) @dots{} (2, 3) @dots{} (n-1, n)].  You can
+## use the @code{squareform} function to display the distances between
+## the vectors arranged into an @var{n}x@var{n} matrix.
 ##
-## @var{distfun} is an optional argument specifying how the distance is
+## @code{distfun} is an optional argument specifying how the distance is
 ## computed. It can be any of the following ones, defaulting to
 ## "euclidean", or a user defined function that takes two arguments
 ## distfun @var{x} and @var{y} plus any number of optional arguments,
 ## where @var{x} is a row vector and and @var{y} is a matrix having the
-## same number of columns as @var{x}.  @var{distfun} returns a column
+## same number of columns as @var{x}.  @code{distfun} returns a column
 ## vector where row @var{i} is the distance between @var{x} and row
-## @var{i} of @var{y}. Any additional arguments after the @var{distfun}
+## @var{i} of @var{y}. Any additional arguments after the @code{distfun}
 ## are passed as distfun (@var{x}, @var{y}, @var{distfunarg1},
 ## @var{distfunarg2} @dots{}).
 ##
