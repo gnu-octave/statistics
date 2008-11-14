@@ -17,8 +17,7 @@
 ## -*- texinfo -*-
 ## @deftypefn {Function File} @var{y} = pdist (@var{x})
 ## @deftypefnx {Function File} @var{y} = pdist (@var{x}, @var{metric})
-## @deftypefnx {Function File} @var{y} = pdist (@var{x},
-## @var{metric}, @var{metricarg}, @dots{})
+## @deftypefnx {Function File} @var{y} = pdist (@var{x}, @var{metric}, @var{metricarg}, @dots{})
 ##
 ## Return the distance between any two rows in @var{x}.
 ##
