@@ -33,29 +33,35 @@
 ## two columns are the numbers of the two component clusters and column
 ## 3 contains their distance.
 ##
-## Methods can be:
+## Methods define the way the distance between two clusters is computed:
 ##
 ## @table @samp
 ## @item "single" (default)
-## Shortest distance between two clusters (aka a minimum spanning tree)
+## Distance between two clusters is the minimum distance between two
+## elements belonging each to one cluster.  Produces a cluster tree
+## known as minimum spanning tree.
 ##
 ## @item "complete"
-## Furthest distance between two clusters
+## Furthest distance between two elements belonging each to one cluster.
 ##
 ## @item "average"
 ## Unweighted pair group method with averaging (UPGMA)
+## The mean distance between all pair of elements each belonging to one
+## cluster.
 ##
 ## @item "weighted"
 ## Weighted pair group method with averaging (WPGMA)
-## Same as Median, its formal definition does not require Euclidean
-## metric. (Is this true?)
 ##
 ## @item "centroid"
-## Centroid distance
+## Unweighted Pair-Group Method using Centroids (UPGMC)
+## Assumes Euclidean metric.  The distance between cluster centroids,
+## each centroid being the center of mass of a cluster.
 ##
 ## @item "median"
-## Weighted pair-group method using centroids (WPGMC)
-## To be used with Euclidean metric. (Is this true?)
+## Weighted pair-group method using centroids (WPGMC).
+## Assumes Euclidean metric.  Distance between cluster centroids.  When
+## two clusters are joined together, the new centroid is the midpoint
+## between the joined centroids.
 ##
 ## @item "ward"
 ## Inner squared distance (minimum variance)
@@ -82,17 +88,18 @@ function y = linkage (x, method)
     error ("linkage: x must be a vector");
   endif
 
-  ## Function findfxn must return a scalar from a vector and a row from
+  ## Function distance must return a scalar from a vector and a row from
   ## a matrix.
 
   method = lower (method);
   switch (method)
     case "single"
-      ## this is just a minimal spanning tree
-      findfxn = @min;
+      dist = @min;
     case "complete"
-      findfxn = @max;
-    case { "median", "weighted", "average", "centroid", "ward" }
+      dist = @max;
+    case "median"
+      dist = @mediandist;	# see below
+    case { "weighted", "average", "centroid", "ward" }
       error ("linkage: %s is not yet implemented", method);
     otherwise
       error ("linkage: %s: unknown method", method);
@@ -106,31 +113,54 @@ function y = linkage (x, method)
   y = zeros (n-1, 3);		# clusters from n+1 to 2*n-1
   for yidx = 1:n-1
     ## Find the two nearest clusters
-    [m midx] = min (dissim(:));	# the min distance and its first index
-    [r, c] = ind2sub (size (dissim), midx); # row and col number
+    ## For equal-distance nodes, the order in which nodes are added to
+    ## clusters is arbitrary.  The following code chooses the nodes so
+    ## to mostly get the same ordering as in Matlab.  Note that the
+    ## weighted methods can produce different clusterings depending on
+    ## the order in which elements are added to clusters.
+    [r c] = find (dissim == min (dissim(:)), 1, "last");
     ## Here is the new cluster
     y(yidx, :) = [cname(r) cname(c) dissim(r, c)];
-    ## Add it as a new cluster index and remove the old ones
+    ## Put it in place of the first one and remove the second
     cname(r) = yidx + n;
     cname(c) = [];
-    ## Add the new dissimilarities and remove the old ones
-    newdissim = findfxn (dissim([r c], :));
-    newdissim(r) = Inf;
-    dissim(r,:) = newdissim;
-    dissim(:,r) = newdissim';
+    ## Same for the dissimilarities, take care of the diagonal element
+    d = dist (dissim([r c], :));
+    d(r) = Inf;
+    dissim(r,:) = d;
+    dissim(:,r) = d';
     dissim(c,:) = [];
     dissim(:,c) = [];
   endfor
 
+  ## Check that distances are monotonically increasing
+  if (any (diff (y(:,3)) < 0))
+    warning ("clustering",
+	     "linkage: cluster distances do not monotonically increase\n\
+	you should maybe use a method different from \"%s\"", method);
+  endif
+
+endfunction
+
+## Take two row vectors, which are the distances of clusters I and J
+## from the others.  Column J of second row contains Inf, column J of
+## first row contains distance between clusters I and J.  The centroid
+## of the new cluster is midway between the old ones.  Use the law of
+## cosines to find distances of the new ones from all the others.
+function y = mediandist (x)
+  interdist = x(1, x(2,:) == Inf); # distance between component clusters
+  y = sqrt (sumsq (x) / 2 - interdist^2 / 4);
 endfunction
 
 %!shared x, y, t
 %! x = [3 1.7; 1 1; 2 3; 2 2.5; 1.2 1; 1.1 1.5; 3 1];
 %! y = reshape(mod(magic(6),5),[],3);
 %! t = 1e-6;
-%!assert (cond (linkage (pdist (x))),             66.534612, t);
-%!assert (cond (linkage (pdist (y))),             34.945071, t);
-%!assert (cond (linkage (pdist (x), "single")),   66.534612, t);
-%!assert (cond (linkage (pdist (y), "single")),   34.945071, t);
-%!assert (cond (linkage (pdist (x), "complete")), 27.071750, t);
-%!assert (cond (linkage (pdist (y), "complete")), 20.296516, t);
+%!assert (cond (linkage (pdist (x))),             56.981591, t);
+%!assert (cond (linkage (pdist (y))),             27.771542, t);
+%!assert (cond (linkage (pdist (x), "single")),   56.981591, t);
+%!assert (cond (linkage (pdist (y), "single")),   27.771542, t);
+%!assert (cond (linkage (pdist (x), "complete")), 26.681691, t);
+%!assert (cond (linkage (pdist (y), "complete")), 21.726318, t);
+%!assert (cond (linkage (pdist (x), "median")),   39.032841, t);
+%!assert (cond (linkage (pdist (y), "median")),   26.159331, t);
