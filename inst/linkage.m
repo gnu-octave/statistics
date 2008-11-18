@@ -48,9 +48,11 @@
 ## Unweighted pair group method with averaging (UPGMA)
 ## The mean distance between all pair of elements each belonging to one
 ## cluster.
+## NOT IMPLEMENTED
 ##
 ## @item "weighted"
 ## Weighted pair group method with averaging (WPGMA)
+## NOT IMPLEMENTED
 ##
 ## @item "centroid"
 ## Unweighted Pair-Group Method using Centroids (UPGMC)
@@ -65,6 +67,7 @@
 ##
 ## @item "ward"
 ## Inner squared distance (minimum variance)
+## NOT IMPLEMENTED
 ##
 ## @end table
 ##
@@ -88,50 +91,62 @@ function y = linkage (x, method)
     error ("linkage: x must be a vector");
   endif
 
-  ## Function distance must return a scalar from a vector and a row from
-  ## a matrix.
+  quickmethods = { "single", "complete", "centroid", "median" };
+  slowmethods  = { "weighted", "average", "ward" };
 
   method = lower (method);
   switch (method)
-    case "single"
-      dist = @min;
-    case "complete"
-      dist = @max;
-    case "median"
-      dist = @mediandist;	# see below
-    case { "weighted", "average", "centroid", "ward" }
+
+      ## These methods do not require to keep memory of merged clusters
+    case (quickmethods)
+      distfunction = {(@(x,w) min(x));        (@(x,w) max(x))
+		      (@(x,w) massdist(x,w)); (@(x,w) massdist(x,1))};
+      dist = distfunction {strcmp (method, quickmethods)};
+      dissim = squareform (x, "tomatrix"); # dissimilarity NxN matrix
+      n = rows (dissim);		   # the number of observations
+      diagidx = sub2ind ([n,n], 1:n, 1:n); # indices of diagonal elements
+      dissim(diagidx) = Inf;	# consider a cluster as far from itself
+      cname = 1:n;		# cluster names in dissim
+      weight = ones (1, n);	# cluster weights
+      y = zeros (n-1, 3);	# clusters from n+1 to 2*n-1
+      for yidx = 1:n-1
+	## Find the two nearest clusters
+	## For equal-distance nodes, the order in which nodes are added
+	## to clusters is arbitrary.  The two commented lines of code
+	## are simplest, but the two uncommented ones choose the nodes
+	## so to get an ordering closer to Matlab's.  Note that the
+	## weighted methods can produce different clusterings depending
+	## on the order in which elements are added to clusters.
+	###[m midx] = min (dissim(:));
+	###[r, c] = ind2sub (size (dissim), midx);
+	[r c] = find (dissim == min (dissim(:)), 1, "last");
+	if (cname(r) > cname(c)) [r c] = swap (r, c); endif
+	## Here is the new cluster
+	y(yidx, :) = [cname(r) cname(c) dissim(r, c)];
+	## Put it in place of the first one and remove the second
+	cname(r) = yidx + n;
+	cname(c) = [];
+	## Compute the new distances. The dist function must return a
+	## scalar from a vector and a row from a matrix.
+	d = dist (dissim([r c], :), weight(r)/weight(c));
+	d(r) = Inf;		# take care of the diagonal element
+	## Put distances in place of the first ones, remove the second ones
+	dissim(r,:) = d;
+	dissim(:,r) = d';
+	dissim(c,:) = [];
+	dissim(:,c) = [];
+	## The new weight is the sum of the components' weights
+	weight(r) += weight(c);
+	weight(c) = [];
+      endfor
+
+      ## These methods require a list of elements per merged clusters
+    case (slowmethods)
       error ("linkage: %s is not yet implemented", method);
+
     otherwise
       error ("linkage: %s: unknown method", method);
   endswitch
-
-  dissim = squareform (x, "tomatrix"); # dissimilarity matrix in square format
-  n = rows (dissim);		       # the number of observations
-  diagidx = sub2ind ([n,n], 1:n, 1:n); # indices of diagonal elements
-  dissim(diagidx) = Inf;	# consider a cluster as far from itself
-  cname = 1:n;			# cluster names in dissim
-  y = zeros (n-1, 3);		# clusters from n+1 to 2*n-1
-  for yidx = 1:n-1
-    ## Find the two nearest clusters
-    ## For equal-distance nodes, the order in which nodes are added to
-    ## clusters is arbitrary.  The following code chooses the nodes so
-    ## to mostly get the same ordering as in Matlab.  Note that the
-    ## weighted methods can produce different clusterings depending on
-    ## the order in which elements are added to clusters.
-    [r c] = find (dissim == min (dissim(:)), 1, "last");
-    ## Here is the new cluster
-    y(yidx, :) = [cname(r) cname(c) dissim(r, c)];
-    ## Put it in place of the first one and remove the second
-    cname(r) = yidx + n;
-    cname(c) = [];
-    ## Same for the dissimilarities, take care of the diagonal element
-    d = dist (dissim([r c], :));
-    d(r) = Inf;
-    dissim(r,:) = d;
-    dissim(:,r) = d';
-    dissim(c,:) = [];
-    dissim(:,c) = [];
-  endfor
 
   ## Check that distances are monotonically increasing
   if (any (diff (y(:,3)) < 0))
@@ -142,25 +157,29 @@ function y = linkage (x, method)
 
 endfunction
 
-## Take two row vectors, which are the distances of clusters I and J
-## from the others.  Column J of second row contains Inf, column J of
-## first row contains distance between clusters I and J.  The centroid
-## of the new cluster is midway between the old ones.  Use the law of
-## cosines to find distances of the new ones from all the others.
-function y = mediandist (x)
-  interdist = x(1, x(2,:) == Inf); # distance between component clusters
-  y = sqrt (sumsq (x) / 2 - interdist^2 / 4);
+## Take two row vectors, which are the Euclidean distances of clusters I
+## and J from the others.  Column J of second row contains Inf, column J
+## of first row contains the distance between clusters I and J.  The
+## centroid of the new cluster is on the segment joining the old ones. W
+## is the ratio between the weights of clusters I and J.  Use the law of
+## cosines to find the distances of the new cluster from all the others.
+function y = massdist (x, w)
+  c = x(1, x(2,:) == Inf);	# distance between component clusters
+  q = 1 / (1 + w);		# ratio of distance position
+  y = sqrt ((1-q)*x(1,:).^2 + q*x(2,:).^2 + (q^2-q)*c^2);
 endfunction
+
 
 %!shared x, y, t
 %! x = [3 1.7; 1 1; 2 3; 2 2.5; 1.2 1; 1.1 1.5; 3 1];
 %! y = reshape(mod(magic(6),5),[],3);
 %! t = 1e-6;
-%!assert (cond (linkage (pdist (x))),             56.981591, t);
-%!assert (cond (linkage (pdist (y))),             27.771542, t);
-%!assert (cond (linkage (pdist (x), "single")),   56.981591, t);
-%!assert (cond (linkage (pdist (y), "single")),   27.771542, t);
-%!assert (cond (linkage (pdist (x), "complete")), 26.681691, t);
-%!assert (cond (linkage (pdist (y), "complete")), 21.726318, t);
-%!assert (cond (linkage (pdist (x), "median")),   39.032841, t);
-%!assert (cond (linkage (pdist (y), "median")),   26.159331, t);
+%! disp ("linkage: should emit 4 warnings\n\t about the \"centroid\" and \"median\" methods");
+%!assert (cond (linkage (pdist (x))),             55.787151, t);
+%!assert (cond (linkage (pdist (y))),             34.119045, t);
+%!assert (cond (linkage (pdist (x), "complete")), 27.506710, t);
+%!assert (cond (linkage (pdist (y), "complete")), 21.793345, t);
+%!assert (cond (linkage (pdist (x), "centroid")), 39.104461, t);
+%!assert (cond (linkage (pdist (y), "centroid")), 27.457477, t);
+%!assert (cond (linkage (pdist (x), "median")),   39.671458, t);
+%!assert (cond (linkage (pdist (y), "median")),   27.683325, t);
