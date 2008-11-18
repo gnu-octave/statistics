@@ -47,7 +47,6 @@
 ## Unweighted pair group method with averaging (UPGMA)
 ## The mean distance between all pair of elements each belonging to one
 ## cluster.
-## NOT IMPLEMENTED
 ##
 ## @item "weighted"
 ## Weighted pair group method with averaging (WPGMA)
@@ -91,20 +90,19 @@ function y = linkage (x, method)
     error ("linkage: x must be a vector");
   endif
 
-  quickmethods = { "single", "complete", "weighted", "centroid", "median" };
-  slowmethods  = { "average", "ward" };
-
+  methods = { "single", "complete", "average", "weighted", "centroid", "median" };
   method = lower (method);
   switch (method)
 
-      ## These methods do not require to keep memory of merged clusters
-    case (quickmethods)
-      distfunction = {(@(x) min(x))
-		      (@(x) max(x))
-		      (@(x) mean(x))
-		      (@(x,w) massdist(x,w))
-		      (@(x) massdist(x))};
-      dist = distfunction {strcmp (method, quickmethods)};
+    case (methods)
+      distfunction = ...
+      {(@(x) min(x))			       # single
+       (@(x) max(x))			       # complete
+       (@(x,q) sum(dmult(q,x)) / sum(q))       # average
+       (@(x) mean(x))			       # weighted
+       (@(x,q) massdist(x,q))		       # centroid
+       (@(x) massdist(x))};		       # median
+      dist = distfunction {strcmp (method, methods)};
       dissim = squareform (x, "tomatrix"); # dissimilarity NxN matrix
       n = rows (dissim);		   # the number of observations
       diagidx = sub2ind ([n,n], 1:n, 1:n); # indices of diagonal elements
@@ -127,7 +125,7 @@ function y = linkage (x, method)
 	cname(r) = n + yidx;
 	cname(c) = [];
 	## Compute the new distances
-	d = dist (dissim([r c], :), weight(r)/weight(c));
+	d = dist (dissim([r c], :), weight([r c]));
 	d(r) = Inf;		# take care of the diagonal element
 	## Put distances in place of the first ones, remove the second ones
 	dissim(r,:) = d;
@@ -141,8 +139,7 @@ function y = linkage (x, method)
       ## Sort the cluster numbers, as Matlab does
       y(:,1:2) = sort (y(:,1:2), 2);
 
-      ## These methods require a list of elements per merged clusters
-    case (slowmethods)
+    case "ward"
       error ("linkage: %s is not yet implemented", method);
 
     otherwise
@@ -153,7 +150,7 @@ function y = linkage (x, method)
   if (any (diff (y(:,3)) < 0))
     warning ("clustering",
 	     "linkage: cluster distances do not monotonically increase\n\
-	you should maybe use a method different from \"%s\"", method);
+	you should probably use a method different from \"%s\"", method);
   endif
 
 endfunction
@@ -162,12 +159,13 @@ endfunction
 ## and J from the others.  Column J of second row contains Inf, column J
 ## of first row contains the distance between clusters I and J.  The
 ## centroid of the new cluster is on the segment joining the old ones. W
-## is the ratio between the weights of clusters I and J.  Use the law of
-## cosines to find the distances of the new cluster from all the others.
-function y = massdist (x, w = 1)
+## are the weights of clusters I and J.  Use the law of cosines to find
+## the distances of the new cluster from all the others.
+function y = massdist (x, w = [1 1])
   c = x(1, x(2,:) == Inf);	# distance between component clusters
-  q = 1 / (1 + w);		# ratio of distance position
-  y = sqrt ((1-q)*x(1,:).^2 + q*x(2,:).^2 + (q^2-q)*c^2);
+  w /= sum (w);			# ratio of distance position
+  q2 = w(2);
+  y = sqrt (w(1)*x(1,:).^2 + q2*(x(2,:).^2 + (q2-1)*c^2));
 endfunction
 
 
@@ -180,6 +178,8 @@ endfunction
 %!assert (cond (linkage (pdist (y))),             34.119045, t);
 %!assert (cond (linkage (pdist (x), "complete")), 27.506710, t);
 %!assert (cond (linkage (pdist (y), "complete")), 21.793345, t);
+%!assert (cond (linkage (pdist (x), "average")),  35.766804, t);
+%!assert (cond (linkage (pdist (y), "average")),  27.045012, t);
 %!assert (cond (linkage (pdist (x), "weighted")), 36.257913, t);
 %!assert (cond (linkage (pdist (y), "weighted")), 27.412889, t);
 %!assert (cond (linkage (pdist (x), "centroid")), 39.104461, t);
