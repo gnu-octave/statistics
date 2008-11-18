@@ -1,4 +1,3 @@
-## Copyright (C) 2006, 2008  Bill Denney  <bill@denney.ws>
 ## Copyright (C) 2008  Francesco Potortì  <pot@gnu.org>
 ##
 ## This software is free software; you can redistribute it and/or modify
@@ -19,8 +18,8 @@
 ## @deftypefn {Function File} {@var{y} =} linkage (@var{x})
 ## @deftypefnx {Function File} {@var{y} =} linkage (@var{x}, @var{method})
 ##
-## Return clusters generated from a distance vector created by the pdist
-## function.
+## Produce a hierarchical clustering dendrogram from a distance vector
+## created by the @code{pdist} function.
 ##
 ## @var{x} is the dissimilarity matrix relative to @var{n} observations,
 ## formatted as a @math{(n-1)*n/2}x1 vector as produced by @code{pdist}.
@@ -52,7 +51,8 @@
 ##
 ## @item "weighted"
 ## Weighted pair group method with averaging (WPGMA)
-## NOT IMPLEMENTED
+## When two clusters A and B are joined together, the new distance to a
+## cluster C is the mean between distances A-C and B-C.
 ##
 ## @item "centroid"
 ## Unweighted Pair-Group Method using Centroids (UPGMC)
@@ -91,43 +91,42 @@ function y = linkage (x, method)
     error ("linkage: x must be a vector");
   endif
 
-  quickmethods = { "single", "complete", "centroid", "median" };
-  slowmethods  = { "weighted", "average", "ward" };
+  quickmethods = { "single", "complete", "weighted", "centroid", "median" };
+  slowmethods  = { "average", "ward" };
 
   method = lower (method);
   switch (method)
 
       ## These methods do not require to keep memory of merged clusters
     case (quickmethods)
-      distfunction = {(@(x,w) min(x));        (@(x,w) max(x))
-		      (@(x,w) massdist(x,w)); (@(x,w) massdist(x,1))};
+      distfunction = {(@(x) min(x))
+		      (@(x) max(x))
+		      (@(x) mean(x))
+		      (@(x,w) massdist(x,w))
+		      (@(x) massdist(x))};
       dist = distfunction {strcmp (method, quickmethods)};
       dissim = squareform (x, "tomatrix"); # dissimilarity NxN matrix
       n = rows (dissim);		   # the number of observations
       diagidx = sub2ind ([n,n], 1:n, 1:n); # indices of diagonal elements
       dissim(diagidx) = Inf;	# consider a cluster as far from itself
-      cname = 1:n;		# cluster names in dissim
+      ## For equal-distance nodes, the order in which clusters are
+      ## merged is arbitrary, but some methods can produce different
+      ## clusterings depending on it.  Rotating the initial matrix
+      ## produces an ordering more similar to Matlab's.
+      dissim = rot90 (dissim, 2);
+      cname = n:-1:1;		# cluster names in dissim
       weight = ones (1, n);	# cluster weights
       y = zeros (n-1, 3);	# clusters from n+1 to 2*n-1
       for yidx = 1:n-1
 	## Find the two nearest clusters
-	## For equal-distance nodes, the order in which nodes are added
-	## to clusters is arbitrary.  The two commented lines of code
-	## are simplest, but the two uncommented ones choose the nodes
-	## so to get an ordering closer to Matlab's.  Note that the
-	## weighted methods can produce different clusterings depending
-	## on the order in which elements are added to clusters.
-	###[m midx] = min (dissim(:));
-	###[r, c] = ind2sub (size (dissim), midx);
-	[r c] = find (dissim == min (dissim(:)), 1, "last");
-	if (cname(r) > cname(c)) [r c] = swap (r, c); endif
+	[m midx] = min (dissim(:));
+	[r, c] = ind2sub (size (dissim), midx);
 	## Here is the new cluster
 	y(yidx, :) = [cname(r) cname(c) dissim(r, c)];
 	## Put it in place of the first one and remove the second
-	cname(r) = yidx + n;
+	cname(r) = n + yidx;
 	cname(c) = [];
-	## Compute the new distances. The dist function must return a
-	## scalar from a vector and a row from a matrix.
+	## Compute the new distances
 	d = dist (dissim([r c], :), weight(r)/weight(c));
 	d(r) = Inf;		# take care of the diagonal element
 	## Put distances in place of the first ones, remove the second ones
@@ -139,6 +138,8 @@ function y = linkage (x, method)
 	weight(r) += weight(c);
 	weight(c) = [];
       endfor
+      ## Sort the cluster numbers, as Matlab does
+      y(:,1:2) = sort (y(:,1:2), 2);
 
       ## These methods require a list of elements per merged clusters
     case (slowmethods)
@@ -163,7 +164,7 @@ endfunction
 ## centroid of the new cluster is on the segment joining the old ones. W
 ## is the ratio between the weights of clusters I and J.  Use the law of
 ## cosines to find the distances of the new cluster from all the others.
-function y = massdist (x, w)
+function y = massdist (x, w = 1)
   c = x(1, x(2,:) == Inf);	# distance between component clusters
   q = 1 / (1 + w);		# ratio of distance position
   y = sqrt ((1-q)*x(1,:).^2 + q*x(2,:).^2 + (q^2-q)*c^2);
@@ -179,6 +180,8 @@ endfunction
 %!assert (cond (linkage (pdist (y))),             34.119045, t);
 %!assert (cond (linkage (pdist (x), "complete")), 27.506710, t);
 %!assert (cond (linkage (pdist (y), "complete")), 21.793345, t);
+%!assert (cond (linkage (pdist (x), "weighted")), 36.257913, t);
+%!assert (cond (linkage (pdist (y), "weighted")), 27.412889, t);
 %!assert (cond (linkage (pdist (x), "centroid")), 39.104461, t);
 %!assert (cond (linkage (pdist (y), "centroid")), 27.457477, t);
 %!assert (cond (linkage (pdist (x), "median")),   39.671458, t);
