@@ -15,13 +15,13 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{y} =} linkage (@var{x})
-## @deftypefnx {Function File} {@var{y} =} linkage (@var{x}, @var{method})
+## @deftypefn {Function File} {@var{y} =} linkage (@var{d})
+## @deftypefnx {Function File} {@var{y} =} linkage (@var{d}, @var{method})
 ##
 ## Produce a hierarchical clustering dendrogram from a distance vector
 ## created by the @code{pdist} function.
 ##
-## @var{x} is the dissimilarity matrix relative to @var{n} observations,
+## @var{d} is the dissimilarity matrix relative to @var{n} observations,
 ## formatted as a @math{(n-1)*n/2}x1 vector as produced by @code{pdist}.
 ## @code{linkage} starts by putting each observation into a singleton
 ## cluster and numbering those from 1 to @var{n}.  Then it merges two
@@ -32,7 +32,8 @@
 ## two columns are the numbers of the two component clusters and column
 ## 3 contains their distance.
 ##
-## Methods define the way the distance between two clusters is computed:
+## @var{method} defines the way the distance between two clusters is
+## computed and how they are recomputed when two clusters are merged:
 ##
 ## @table @samp
 ## @item "single" (default)
@@ -44,17 +45,17 @@
 ## Furthest distance between two elements belonging each to one cluster.
 ##
 ## @item "average"
-## Unweighted pair group method with averaging (UPGMA)
+## Unweighted pair group method with averaging (UPGMA).
 ## The mean distance between all pair of elements each belonging to one
 ## cluster.
 ##
 ## @item "weighted"
-## Weighted pair group method with averaging (WPGMA)
+## Weighted pair group method with averaging (WPGMA).
 ## When two clusters A and B are joined together, the new distance to a
 ## cluster C is the mean between distances A-C and B-C.
 ##
 ## @item "centroid"
-## Unweighted Pair-Group Method using Centroids (UPGMC)
+## Unweighted Pair-Group Method using Centroids (UPGMC).
 ## Assumes Euclidean metric.  The distance between cluster centroids,
 ## each centroid being the center of mass of a cluster.
 ##
@@ -65,17 +66,23 @@
 ## between the joined centroids.
 ##
 ## @item "ward"
-## Inner squared distance (minimum variance)
-## NOT IMPLEMENTED
-##
+## Ward's sum of squared deviations about the group mean (ESS).
+## Also known as minimum variance or inner squared distance.
+## Assumes Euclidean metric.  How much the moment of inertia of the
+## merged cluster exceeds the sum of those of the individual clusters.
 ## @end table
 ##
-## @seealso{cluster,pdist}
+## @strong{Reference}
+## Ward, J. H. Hierarchical Grouping to Optimize an Objective Function
+## J. Am. Statist. Assoc. 1963, 58, 236-244,
+## @url{http://iv.slis.indiana.edu/sw/data/ward.pdf}.
 ## @end deftypefn
+##
+## @seealso{pdist,squareform}
 
-## Author: Bill Denney <denney@...>
+## Author: Francesco Potortì  <pot@gnu.org>
 
-function y = linkage (x, method)
+function dgram = linkage (d, method)
 
   ## check the input
   if (nargin < 1) || (nargin > 2)
@@ -84,70 +91,67 @@ function y = linkage (x, method)
     method = "single";
   endif
 
-  if (isempty (x))
-    error ("linkage: x cannot be empty");
-  elseif (~ isvector (x))
-    error ("linkage: x must be a vector");
+  if (isempty (d))
+    error ("linkage: d cannot be empty");
+  elseif (~ isvector (d))
+    error ("linkage: d must be a vector");
   endif
 
-  methods = { "single", "complete", "average", "weighted", "centroid", "median" };
-  method = lower (method);
-  switch (method)
+  methods = struct ...
+  ("name", { "single"; "complete"; "average"; "weighted";
+	    "centroid"; "median"; "ward" },
+   "distfunc", {(@(x) min(x))				     # single
+		(@(x) max(x))				     # complete
+		(@(x,i,j,w) sum(dmult(q=w([i,j]),x))/sum(q)) # average
+		(@(x) mean(x))				     # weighted
+		(@massdist)				     # centroid
+		(@(x,i) massdist(x,i))			     # median
+		(@inertialdist)				     # ward
+   });
 
-    case (methods)
-      distfunction = ...
-      {(@(x) min(x))			       # single
-       (@(x) max(x))			       # complete
-       (@(x,q) sum(dmult(q,x)) / sum(q))       # average
-       (@(x) mean(x))			       # weighted
-       (@(x,q) massdist(x,q))		       # centroid
-       (@(x) massdist(x))};		       # median
-      dist = distfunction {strcmp (method, methods)};
-      dissim = squareform (x, "tomatrix"); # dissimilarity NxN matrix
-      n = rows (dissim);		   # the number of observations
-      diagidx = sub2ind ([n,n], 1:n, 1:n); # indices of diagonal elements
-      dissim(diagidx) = Inf;	# consider a cluster as far from itself
-      ## For equal-distance nodes, the order in which clusters are
-      ## merged is arbitrary, but some methods can produce different
-      ## clusterings depending on it.  Rotating the initial matrix
-      ## produces an ordering more similar to Matlab's.
-      dissim = rot90 (dissim, 2);
-      cname = n:-1:1;		# cluster names in dissim
-      weight = ones (1, n);	# cluster weights
-      y = zeros (n-1, 3);	# clusters from n+1 to 2*n-1
-      for yidx = 1:n-1
-	## Find the two nearest clusters
-	[m midx] = min (dissim(:));
-	[r, c] = ind2sub (size (dissim), midx);
-	## Here is the new cluster
-	y(yidx, :) = [cname(r) cname(c) dissim(r, c)];
-	## Put it in place of the first one and remove the second
-	cname(r) = n + yidx;
-	cname(c) = [];
-	## Compute the new distances
-	d = dist (dissim([r c], :), weight([r c]));
-	d(r) = Inf;		# take care of the diagonal element
-	## Put distances in place of the first ones, remove the second ones
-	dissim(r,:) = d;
-	dissim(:,r) = d';
-	dissim(c,:) = [];
-	dissim(:,c) = [];
-	## The new weight is the sum of the components' weights
-	weight(r) += weight(c);
-	weight(c) = [];
-      endfor
-      ## Sort the cluster numbers, as Matlab does
-      y(:,1:2) = sort (y(:,1:2), 2);
+  mask = strcmp (lower (method), {methods.name});
+  if (! any (mask))
+    error ("linkage: %s: unknown method", method);
+  endif
+  dist = {methods.distfunc}{mask};
 
-    case "ward"
-      error ("linkage: %s is not yet implemented", method);
-
-    otherwise
-      error ("linkage: %s: unknown method", method);
-  endswitch
+  d = squareform (d, "tomatrix");      # dissimilarity NxN matrix
+  n = rows (d);			       # the number of observations
+  diagidx = sub2ind ([n,n], 1:n, 1:n); # indices of diagonal elements
+  d(diagidx) = Inf;	# consider a cluster as far from itself
+  ## For equal-distance nodes, the order in which clusters are
+  ## merged is arbitrary.  Rotating the initial matrix produces an
+  ## ordering similar to Matlab's.
+  cname = n:-1:1;		# cluster names in d
+  d = rot90 (d, 2);		# exchange low and high cluster numbers
+  weight = ones (1, n);		# cluster weights
+  dgram = zeros (n-1, 3);	# clusters from n+1 to 2*n-1
+  for cluster = n+1:2*n-1
+    ## Find the two nearest clusters
+    [m midx] = min (d(:));
+    [r, c] = ind2sub (size (d), midx);
+    ## Here is the new cluster
+    dgram(cluster-n, :) = [cname(r) cname(c) d(r, c)];
+    ## Put it in place of the first one and remove the second
+    cname(r) = cluster;
+    cname(c) = [];
+    ## Compute the new distances
+    newd = dist (d([r c], :), r, c, weight);
+    newd(r) = Inf;		# take care of the diagonal element
+    ## Put distances in place of the first ones, remove the second ones
+    d(r,:) = newd;
+    d(:,r) = newd';
+    d(c,:) = [];
+    d(:,c) = [];
+    ## The new weight is the sum of the components' weights
+    weight(r) += weight(c);
+    weight(c) = [];
+  endfor
+  ## Sort the cluster numbers, as Matlab does
+  dgram(:,1:2) = sort (dgram(:,1:2), 2);
 
   ## Check that distances are monotonically increasing
-  if (any (diff (y(:,3)) < 0))
+  if (any (diff (dgram(:,3)) < 0))
     warning ("clustering",
 	     "linkage: cluster distances do not monotonically increase\n\
 	you should probably use a method different from \"%s\"", method);
@@ -156,33 +160,57 @@ function y = linkage (x, method)
 endfunction
 
 ## Take two row vectors, which are the Euclidean distances of clusters I
-## and J from the others.  Column J of second row contains Inf, column J
-## of first row contains the distance between clusters I and J.  The
-## centroid of the new cluster is on the segment joining the old ones. W
-## are the weights of clusters I and J.  Use the law of cosines to find
-## the distances of the new cluster from all the others.
-function y = massdist (x, w = [1 1])
-  c = x(1, x(2,:) == Inf);	# distance between component clusters
-  w /= sum (w);			# ratio of distance position
-  q2 = w(2);
-  y = sqrt (w(1)*x(1,:).^2 + q2*(x(2,:).^2 + (q2-1)*c^2));
+## and J from the others.  Column I of second row contains the distance
+## between clusters I and J.  The centre of gravity of the new cluster
+## is on the segment joining the old ones. W are the weights of all
+## clusters. Use the law of cosines to find the distances of the new
+## cluster from all the others.
+function y = massdist (x, i, j, w)
+  c = x(2, i);			# distance between I and J
+  if (nargin < 4)		# median distance
+    qi = qj = 0.5;		# equal weights ("weighted")
+  else				# centroid distance
+    qi = w(i); qj = w(j);	# the cluster weights
+    norm = qi + qj;		# normalisation factor
+    qi /= norm; qj /= norm;	# normalise them ("unweighted")
+  endif
+  y = sqrt (qi*x(1,:).^2 + qj*(x(2,:).^2 - (1-qj)*c^2));
+endfunction
+
+## Take two row vectors, which are the inertial distances of clusters I
+## and J from the others.  Column I of second row contains the inertial
+## distance between clusters I and J. The centre of gravity of the new
+## cluster K is on the segment joining I and J.  W are the weights of
+## all clusters.  Use the law of cosines to find the distance of K from
+## all the other clusters, then compute the intertial distance of K from
+## all the other clusters and return it.
+function y = inertialdist (x, i, j, w)
+  wi = w(i); wj = w(j);		# the cluster weights
+  sij = wi + wj;		# sum of weights of I and J
+  c2 = x(2,i)^2 * sij / wi / wj; # squared Eucl. dist. between I and J
+  s = [wi + w; wj + w];		# sum of weights for all cluster pairs
+  p = [wi * w; wj * w];		# product of weights for all cluster pairs
+  ed2 = x.^2 .* s ./ p;		# convert inertial dist. to squared Eucl.
+  qi = wi/sij; qj = wj/sij;	# normalise the weights of I and J
+  ## Squared Euclidean distances between all clusters and new cluster K
+  ed2 = qi*ed2(1,:) + qj*(ed2(2,:) - (1-qj)*c2);
+  y = sqrt (ed2 * sij .* w ./ (sij + w)); # convert Eucl. dist. to inertial
 endfunction
 
 
-%!shared x, y, t
-%! x = [3 1.7; 1 1; 2 3; 2 2.5; 1.2 1; 1.1 1.5; 3 1];
-%! y = reshape(mod(magic(6),5),[],3);
+%!shared x, t
+%! x = reshape(mod(magic(6),5),[],3);
 %! t = 1e-6;
-%! disp ("linkage: should emit 4 warnings\n\t about the \"centroid\" and \"median\" methods");
-%!assert (cond (linkage (pdist (x))),             55.787151, t);
-%!assert (cond (linkage (pdist (y))),             34.119045, t);
-%!assert (cond (linkage (pdist (x), "complete")), 27.506710, t);
-%!assert (cond (linkage (pdist (y), "complete")), 21.793345, t);
-%!assert (cond (linkage (pdist (x), "average")),  35.766804, t);
-%!assert (cond (linkage (pdist (y), "average")),  27.045012, t);
-%!assert (cond (linkage (pdist (x), "weighted")), 36.257913, t);
-%!assert (cond (linkage (pdist (y), "weighted")), 27.412889, t);
-%!assert (cond (linkage (pdist (x), "centroid")), 39.104461, t);
-%!assert (cond (linkage (pdist (y), "centroid")), 27.457477, t);
-%!assert (cond (linkage (pdist (x), "median")),   39.671458, t);
-%!assert (cond (linkage (pdist (y), "median")),   27.683325, t);
+%!assert (cond (linkage (pdist (x))),             34.119045, t);
+%!assert (cond (linkage (pdist (x), "complete")), 21.793345, t);
+%!assert (cond (linkage (pdist (x), "average")),  27.045012, t);
+%!assert (cond (linkage (pdist (x), "weighted")), 27.412889, t);
+%!test warning off clustering
+%! assert (cond (linkage (pdist (x), "centroid")),27.457477, t);
+%! warning on clustering
+%!warning <monotonically> linkage (pdist (x), "centroid");
+%!test warning off clustering
+%! assert (cond (linkage (pdist (x), "median")),  27.683325, t);
+%! warning on clustering
+%!warning <monotonically> linkage (pdist (x), "median");
+%!assert (cond (linkage (pdist (x), "ward")),     17.195198, t);
