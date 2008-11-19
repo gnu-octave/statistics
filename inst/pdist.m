@@ -124,25 +124,25 @@ function y = pdist (x, metric, varargin)
 	if (str2num(version()(1:3)) > 3.1)
 	  y = norm (diff, "cols");
 	else
-	  y = sqrt (sumsq (diff));
+	  y = sqrt (sumsq (diff, 1));
 	endif
 
       case "seuclidean"
 	diff = X(:,Xi) - X(:,Yi);
-	weights = inv (diag (var (x)));
-	y = sqrt (sum ((weights * diff) .* diff));
+	weights = inv (diag (var (x, 1)));
+	y = sqrt (sum ((weights * diff) .* diff, 1));
 
       case "mahalanobis"
 	diff = X(:,Xi) - X(:,Yi);
 	weights = inv (cov (x));
-	y = sqrt (sum ((weights * diff) .* diff));
+	y = sqrt (sum ((weights * diff) .* diff, 1));
 
       case "cityblock"
 	diff = X(:,Xi) - X(:,Yi);
 	if (str2num(version()(1:3)) > 3.1)
 	  y = norm (diff, 1, "cols");
 	else
-	  y = sum (abs (diff));
+	  y = sum (abs (diff), 1);
 	endif
 
       case "minkowski"
@@ -154,37 +154,39 @@ function y = pdist (x, metric, varargin)
 	if (str2num(version()(1:3)) > 3.1)
 	  y = norm (diff, p, "cols");
 	else
-	  y = (sum ((abs (diff)).^p)).^(1/p);
+	  y = (sum ((abs (diff)).^p, 1)).^(1/p);
 	endif
 
       case "cosine"
 	prod = X(:,Xi) .* X(:,Yi);
-	weights = sumsq (X(:,Xi)) .* sumsq (X(:,Yi));
+	weights = sumsq (X(:,Xi), 1) .* sumsq (X(:,Yi), 1);
 	y = 1 - sum (prod) ./ sqrt (weights);
 
       case "correlation"
+	error ("pdist: cannot compute correlation distance between 1-D vectors")
 	corr = cor (X);
 	y = 1 - corr (sub2ind (size (corr), Xi, Yi))';
 
       case "spearman"
+	error ("pdist: cannot compute spearman distance between 1-D vectors")
 	corr = spearman (X);
 	y = 1 - corr (sub2ind (size (corr), Xi, Yi))';
 
       case "hamming"
 	diff = logical (X(:,Xi) - X(:,Yi));
-	y = sum (diff) / rows (X);
+	y = sum (diff, 1) / rows (X);
 
       case "jaccard"
 	diff = logical (X(:,Xi) - X(:,Yi));
 	weights = X(:,Xi) | X(:,Yi);
-	y = sum (diff & weights) ./ sum (weights);
+	y = sum (diff & weights, 1) ./ sum (weights, 1);
 
       case "chebychev"
 	diff = X(:,Xi) - X(:,Yi);
 	if (str2num(version()(1:3)) > 3.1)
 	  y = norm (diff, Inf, "cols");
 	else
-	  y = max (abs (diff));
+	  y = max (abs (diff), 1);
 	endif
 
     endswitch
