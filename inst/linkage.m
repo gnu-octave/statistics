@@ -17,12 +17,20 @@
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {@var{y} =} linkage (@var{d})
 ## @deftypefnx {Function File} {@var{y} =} linkage (@var{d}, @var{method})
+## @deftypefnx {Function File} @
+##   {@var{y} =} linkage (@var{x}, @var{method}, @var{metric})
+## @deftypefnx {Function File} @
+##   {@var{y} =} linkage (@var{x}, @var{method}, @var{arglist})
 ##
-## Produce a hierarchical clustering dendrogram from a distance vector
-## created by the @code{pdist} function.
+## Produce a hierarchical clustering dendrogram
 ##
 ## @var{d} is the dissimilarity matrix relative to @var{n} observations,
 ## formatted as a @math{(n-1)*n/2}x1 vector as produced by @code{pdist}.
+## Alternatively, @var{x} contains data formatted for input to
+## @code{pdist}, @var{metric} is a metric for @code{pdist} and
+## @var{arglist} is a cell array containing arguments that are passed to
+## @code{pdist}.
+##
 ## @code{linkage} starts by putting each observation into a singleton
 ## cluster and numbering those from 1 to @var{n}.  Then it merges two
 ## clusters, chosen according to @var{method}, to create a new cluster
@@ -82,18 +90,16 @@
 
 ## Author: Francesco Potortì  <pot@gnu.org>
 
-function dgram = linkage (d, method)
+function dgram = linkage (d, method = "single", distarg)
 
   ## check the input
-  if (nargin < 1) || (nargin > 2)
+  if (nargin < 1) || (nargin > 3)
     print_usage ();
-  elseif (nargin < 2)
-    method = "single";
   endif
 
   if (isempty (d))
     error ("linkage: d cannot be empty");
-  elseif (~ isvector (d))
+  elseif ( nargin < 3 && ~ isvector (d))
     error ("linkage: d must be a vector");
   endif
 
@@ -108,12 +114,21 @@ function dgram = linkage (d, method)
 		(@(x,i) massdist(x,i))			     # median
 		(@inertialdist)				     # ward
    });
-
   mask = strcmp (lower (method), {methods.name});
   if (! any (mask))
     error ("linkage: %s: unknown method", method);
   endif
   dist = {methods.distfunc}{mask};
+
+  if (nargin == 3)
+    if (ischar (distarg))
+      d = pdist (d, distarg);
+    elseif (iscell (distarg))
+      d = pdist (d, distarg{:});
+    else
+      print_usage ();
+    endif
+  endif
 
   d = squareform (d, "tomatrix");      # dissimilarity NxN matrix
   n = rows (d);			       # the number of observations
@@ -166,24 +181,24 @@ endfunction
 ## clusters. Use the law of cosines to find the distances of the new
 ## cluster from all the others.
 function y = massdist (x, i, j, w)
-  c = x(2, i);			# distance between I and J
+  x .^= 2;			# squared Euclidean distances
+  c2 = x(2, i);			# squared distance between I and J
   if (nargin < 4)		# median distance
-    qi = qj = 0.5;		# equal weights ("weighted")
+    qi = 0.5;			# equal weights ("weighted")
   else				# centroid distance
-    qi = w(i); qj = w(j);	# the cluster weights
-    norm = qi + qj;		# normalisation factor
-    qi /= norm; qj /= norm;	# normalise them ("unweighted")
+    qi = 1 / (1 + w(j) / w(i));	# the cluster weights
   endif
-  y = sqrt (qi*x(1,:).^2 + qj*(x(2,:).^2 - (1-qj)*c^2));
+  y = sqrt (qi*x(1,:) + (1-qi)*(x(2,:) - qi*c2));
 endfunction
 
 ## Take two row vectors, which are the inertial distances of clusters I
 ## and J from the others.  Column I of second row contains the inertial
 ## distance between clusters I and J. The centre of gravity of the new
 ## cluster K is on the segment joining I and J.  W are the weights of
-## all clusters.  Use the law of cosines to find the distance of K from
-## all the other clusters, then compute the intertial distance of K from
-## all the other clusters and return it.
+## all clusters.  Convert inertial to Euclidean distances, then use the
+## law of cosines to find the Euclidean distances of K from all the
+## other clusters, convert them back to inertial distances and return
+## them.
 function y = inertialdist (x, i, j, w)
   wi = w(i); wj = w(j);		# the cluster weights
   sij = wi + wj;		# sum of weights of I and J
@@ -201,16 +216,19 @@ endfunction
 %!shared x, t
 %! x = reshape(mod(magic(6),5),[],3);
 %! t = 1e-6;
-%!assert (cond (linkage (pdist (x))),             34.119045, t);
-%!assert (cond (linkage (pdist (x), "complete")), 21.793345, t);
-%!assert (cond (linkage (pdist (x), "average")),  27.045012, t);
-%!assert (cond (linkage (pdist (x), "weighted")), 27.412889, t);
-%!test warning off clustering
-%! assert (cond (linkage (pdist (x), "centroid")),27.457477, t);
-%! warning on clustering
+%!assert (cond (linkage (pdist (x))),               34.119045, t);
+%!assert (cond (linkage (pdist (x), "complete")),   21.793345, t);
+%!assert (cond (linkage (pdist (x), "average")),    27.045012, t);
+%!assert (cond (linkage (pdist (x), "weighted")),   27.412889, t);
 %!warning <monotonically> linkage (pdist (x), "centroid");
 %!test warning off clustering
-%! assert (cond (linkage (pdist (x), "median")),  27.683325, t);
+%! assert (cond (linkage (pdist (x), "centroid")),  27.457477, t);
 %! warning on clustering
 %!warning <monotonically> linkage (pdist (x), "median");
-%!assert (cond (linkage (pdist (x), "ward")),     17.195198, t);
+%!test warning off clustering
+%! assert (cond (linkage (pdist (x), "median")),    27.683325, t);
+%! warning on clustering
+%!assert (cond (linkage (pdist (x), "ward")),       17.195198, t);
+%!assert (cond (linkage(x,"ward","euclidean")),     17.195198, t);
+%!assert (cond (linkage(x,"ward",{"euclidean"})),   17.195198, t);
+%!assert (cond (linkage(x,"ward",{"minkowski", 2})),17.195198, t);
