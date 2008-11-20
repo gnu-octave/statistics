@@ -200,16 +200,17 @@ endfunction
 ## other clusters, convert them back to inertial distances and return
 ## them.
 function y = inertialdist (x, i, j, w)
+  x .^= 2;			# squared inertial distances
   wi = w(i); wj = w(j);		# the cluster weights
   sij = wi + wj;		# sum of weights of I and J
-  c2 = x(2,i)^2 * sij / wi / wj; # squared Eucl. dist. between I and J
+  c2 = x(2,i) * sij / wi / wj;	# squared Eucl. dist. between I and J
   s = [wi + w; wj + w];		# sum of weights for all cluster pairs
-  p = [wi * w; wj * w];		# product of weights for all cluster pairs
-  ed2 = x.^2 .* s ./ p;		# convert inertial dist. to squared Eucl.
-  qi = wi/sij; qj = wj/sij;	# normalise the weights of I and J
+  p = [wi * w; wj * w];	      # product of weights for all cluster pairs
+  x .*= s ./ p;		        # convert inertial dist. to squared Eucl.
+  qi = wi/sij;			# normalise the weights of I and J
   ## Squared Euclidean distances between all clusters and new cluster K
-  ed2 = qi*ed2(1,:) + qj*(ed2(2,:) - (1-qj)*c2);
-  y = sqrt (ed2 * sij .* w ./ (sij + w)); # convert Eucl. dist. to inertial
+  x = qi*x(1,:) + (1-qi)*(x(2,:) - qi*c2);
+  y = sqrt (x * sij .* w ./ (sij + w)); # convert Eucl. dist. to inertial
 endfunction
 
 
