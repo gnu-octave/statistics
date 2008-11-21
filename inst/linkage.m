@@ -182,13 +182,12 @@ endfunction
 ## cluster from all the others.
 function y = massdist (x, i, j, w)
   x .^= 2;			# squared Euclidean distances
-  c2 = x(2, i);			# squared distance between I and J
-  if (nargin < 4)		# median distance
+  if (nargin == 2)		# median distance
     qi = 0.5;			# equal weights ("weighted")
   else				# centroid distance
-    qi = 1 / (1 + w(j) / w(i));	# the cluster weights
+    qi = 1 / (1 + w(j) / w(i));	# proportional weights ("unweighted")
   endif
-  y = sqrt (qi*x(1,:) + (1-qi)*(x(2,:) - qi*c2));
+  y = sqrt (qi*x(1,:) + (1-qi)*(x(2,:) - qi*x(2,i)));
 endfunction
 
 ## Take two row vectors, which are the inertial distances of clusters I
@@ -200,16 +199,14 @@ endfunction
 ## other clusters, convert them back to inertial distances and return
 ## them.
 function y = inertialdist (x, i, j, w)
-  x .^= 2;			# squared inertial distances
-  wi = w(i); wj = w(j);		# the cluster weights
-  sij = wi + wj;		# sum of weights of I and J
-  c2 = x(2,i) * sij / wi / wj;	# squared Eucl. dist. between I and J
-  s = [wi + w; wj + w];		# sum of weights for all cluster pairs
-  p = [wi * w; wj * w];	      # product of weights for all cluster pairs
-  x .*= s ./ p;		        # convert inertial dist. to squared Eucl.
-  qi = wi/sij;			# normalise the weights of I and J
+  wi = w(i); wj = w(j);	# the cluster weights
+  s = [wi + w; wj + w];	# sum of weights for all cluster pairs
+  p = [wi * w; wj * w];	# product of weights for all cluster pairs
+  x = x.^2 .* s ./ p;	# convert inertial dist. to squared Eucl.
+  sij = wi + wj;	# sum of weights of I and J
+  qi = wi/sij;		# normalise the weight of I
   ## Squared Euclidean distances between all clusters and new cluster K
-  x = qi*x(1,:) + (1-qi)*(x(2,:) - qi*c2);
+  x = qi*x(1,:) + (1-qi)*(x(2,:) - qi*x(2,i));
   y = sqrt (x * sij .* w ./ (sij + w)); # convert Eucl. dist. to inertial
 endfunction
 
@@ -217,19 +214,19 @@ endfunction
 %!shared x, t
 %! x = reshape(mod(magic(6),5),[],3);
 %! t = 1e-6;
-%!assert (cond (linkage (pdist (x))),               34.119045, t);
-%!assert (cond (linkage (pdist (x), "complete")),   21.793345, t);
-%!assert (cond (linkage (pdist (x), "average")),    27.045012, t);
-%!assert (cond (linkage (pdist (x), "weighted")),   27.412889, t);
+%!assert (cond (linkage (pdist (x))),              34.119045,t);
+%!assert (cond (linkage (pdist (x), "complete")),  21.793345,t);
+%!assert (cond (linkage (pdist (x), "average")),   27.045012,t);
+%!assert (cond (linkage (pdist (x), "weighted")),  27.412889,t);
 %!warning <monotonically> linkage (pdist (x), "centroid");
 %!test warning off clustering
-%! assert (cond (linkage (pdist (x), "centroid")),  27.457477, t);
+%! assert (cond (linkage (pdist (x), "centroid")), 27.457477,t);
 %! warning on clustering
 %!warning <monotonically> linkage (pdist (x), "median");
 %!test warning off clustering
-%! assert (cond (linkage (pdist (x), "median")),    27.683325, t);
+%! assert (cond (linkage (pdist (x), "median")),   27.683325,t);
 %! warning on clustering
-%!assert (cond (linkage (pdist (x), "ward")),       17.195198, t);
-%!assert (cond (linkage(x,"ward","euclidean")),     17.195198, t);
-%!assert (cond (linkage(x,"ward",{"euclidean"})),   17.195198, t);
-%!assert (cond (linkage(x,"ward",{"minkowski", 2})),17.195198, t);
+%!assert (cond (linkage (pdist (x), "ward")),      17.195198,t);
+%!assert (cond (linkage(x,"ward","euclidean")),    17.195198,t);
+%!assert (cond (linkage(x,"ward",{"euclidean"})),  17.195198,t);
+%!assert (cond (linkage(x,"ward",{"minkowski",2})),17.195198,t);
