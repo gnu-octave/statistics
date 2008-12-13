@@ -6,7 +6,7 @@ Maintainer: The Octave Community
 Title: Statistics.
 Description: Additional statistics functions for Octave.
 Categories: Statistics
-Depends: octave (>= 2.9.7)
+Depends: octave (>= 2.9.7), miscellaneous
 Autoload: yes
 License: See individual files
 Url: http://octave.sf.net
