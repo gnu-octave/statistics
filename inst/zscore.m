@@ -26,7 +26,7 @@
 ## @end example
 ## @end deftypefn
 
-function A = zscore(X,varargin)
+function [A, mu, sigma] = zscore(X,varargin)
   if (nargin != 1 && nargin != 2)
     usage("zscore(X,dim)");
   endif
@@ -40,4 +40,11 @@ function A = zscore(X,varargin)
   sz = ones(1,length(size(X)));
   sz(dim) = size(X,dim);
   A = (X - repmat(mean(X,varargin{:}),sz)) ./ repmat(std(X,varargin{:}),sz);
+  
+  if (nargout > 1)
+    mu = mean (X, dim);
+  endif
+  if (nargout > 2)
+    sigma = std (X, 0, dim);
+  endif
 endfunction
