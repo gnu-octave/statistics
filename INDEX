@@ -25,6 +25,7 @@ Distributions
  jsucdf
  jsupdf
  random
+ cl_multinom
 Descriptive statistics
  nansum
  nanmax
