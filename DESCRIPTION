@@ -1,9 +1,9 @@
 Name: Statistics
-Version: 1.0.7
-Date: 2008-08-23
+Version: 1.0.8
+Date: 2009-05-03
 Author: Various Authors
 Maintainer: Arno Onken <asnelt@asnelt.org>
-Title: Statistics.
+Title: Statistics
 Description: Additional statistics functions for Octave.
 Categories: Statistics
 Depends: octave (>= 2.9.7), miscellaneous
