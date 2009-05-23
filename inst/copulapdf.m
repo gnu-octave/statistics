@@ -137,7 +137,7 @@ function p = copulapdf (family, x, theta)
       if (d != 2)
         error ("copulapdf: Frank copula PDF implemented as bivariate only");
       endif
-      p = (theta .* exp (theta .* (1 + sum (x, 2))) .* expm1 (theta))./ (exp (theta) - exp (theta + theta .* x(:, 1)) + exp (theta .* sum (x, 2)) - exp (theta + theta .* x(:, 2))) .^ 2;
+      p = (theta .* exp (theta .* (1 + sum (x, 2))) .* (exp (theta) - 1))./ (exp (theta) - exp (theta + theta .* x(:, 1)) + exp (theta .* sum (x, 2)) - exp (theta + theta .* x(:, 2))) .^ 2;
       # Product copula at columns where theta == 0
       k = find (theta == 0);
       if (any (k))
