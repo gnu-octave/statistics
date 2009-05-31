@@ -21,8 +21,8 @@
 ##
 ## Return the distance between any two rows in @var{x}.
 ##
-## @var{x} is the @var{n}x@var{d} matrix representing @var{q} row vectors of
-## size @var{d}.
+## @var{x} is the @var{n}x@var{d} matrix representing @var{q} row
+## vectors of size @var{d}.
 ##
 ## The output is a dissimilarity matrix formatted as a row vector
 ## @var{y}, @math{(n-1)*n/2} long, where the distances are in
@@ -112,6 +112,10 @@ function y = pdist (x, metric, varargin)
   endif
 
   y = [];
+  if (rows(x) == 1)
+    return;
+  endif
+
   if (ischar (metric))
     order = nchoosek(1:rows(x),2);
     Xi = order(:,1);
@@ -120,73 +124,71 @@ function y = pdist (x, metric, varargin)
     metric = lower (metric);
     switch (metric)
       case "euclidean"
-	diff = X(:,Xi) - X(:,Yi);
+	d = X(:,Xi) - X(:,Yi);
 	if (str2num(version()(1:3)) > 3.1)
-	  y = norm (diff, "cols");
+	  y = norm (d, "cols");
 	else
-	  y = sqrt (sumsq (diff, 1));
+	  y = sqrt (sumsq (d));
 	endif
 
       case "seuclidean"
-	diff = X(:,Xi) - X(:,Yi);
-	weights = inv (diag (var (x, 1)));
-	y = sqrt (sum ((weights * diff) .* diff, 1));
+	d = X(:,Xi) - X(:,Yi);
+	weights = inv (diag (var (x)));
+	y = sqrt (sum ((weights * d) .* d));
 
       case "mahalanobis"
-	diff = X(:,Xi) - X(:,Yi);
+	d = X(:,Xi) - X(:,Yi);
 	weights = inv (cov (x));
-	y = sqrt (sum ((weights * diff) .* diff, 1));
+	y = sqrt (sum ((weights * d) .* d));
 
       case "cityblock"
-	diff = X(:,Xi) - X(:,Yi);
+	d = X(:,Xi) - X(:,Yi);
 	if (str2num(version()(1:3)) > 3.1)
-	  y = norm (diff, 1, "cols");
+	  y = norm (d, 1, "cols");
 	else
-	  y = sum (abs (diff), 1);
+	  y = sum (abs (d));
 	endif
 
       case "minkowski"
-	diff = X(:,Xi) - X(:,Yi);
+	d = X(:,Xi) - X(:,Yi);
 	p = 2;			# default
 	if (nargin > 2)
 	  p = varargin{1};	# explicitly assigned
 	endif;
 	if (str2num(version()(1:3)) > 3.1)
-	  y = norm (diff, p, "cols");
+	  y = norm (d, p, "cols");
 	else
-	  y = (sum ((abs (diff)).^p, 1)).^(1/p);
+	  y = (sum ((abs (d)).^p)).^(1/p);
 	endif
 
       case "cosine"
 	prod = X(:,Xi) .* X(:,Yi);
-	weights = sumsq (X(:,Xi), 1) .* sumsq (X(:,Yi), 1);
+	weights = sumsq (X(:,Xi)) .* sumsq (X(:,Yi));
 	y = 1 - sum (prod) ./ sqrt (weights);
 
       case "correlation"
-	error ("pdist: cannot compute correlation distance between 1-D vectors")
 	corr = cor (X);
 	y = 1 - corr (sub2ind (size (corr), Xi, Yi))';
 
       case "spearman"
-	error ("pdist: cannot compute spearman distance between 1-D vectors")
 	corr = spearman (X);
 	y = 1 - corr (sub2ind (size (corr), Xi, Yi))';
 
       case "hamming"
-	diff = logical (X(:,Xi) - X(:,Yi));
-	y = sum (diff, 1) / rows (X);
+	d = logical (X(:,Xi) - X(:,Yi));
+	y = sum (d) / rows (X);
 
       case "jaccard"
-	diff = logical (X(:,Xi) - X(:,Yi));
+	d = logical (X(:,Xi) - X(:,Yi));
 	weights = X(:,Xi) | X(:,Yi);
-	y = sum (diff & weights, 1) ./ sum (weights, 1);
+	y = sum (d & weights) ./ sum (weights);
 
       case "chebychev"
-	diff = X(:,Xi) - X(:,Yi);
+	d = X(:,Xi) - X(:,Yi);
 	if (str2num(version()(1:3)) > 3.1)
-	  y = norm (diff, Inf, "cols");
+	  y = norm (d, Inf, "cols");
 	else
-	  y = max (abs (diff), 1);
+	  y = max (abs (d));
 	endif
 
     endswitch
