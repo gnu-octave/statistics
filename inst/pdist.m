@@ -128,25 +128,25 @@ function y = pdist (x, metric, varargin)
 	if (str2num(version()(1:3)) > 3.1)
 	  y = norm (d, "cols");
 	else
-	  y = sqrt (sumsq (d));
+	  y = sqrt (sumsq (d, 1));
 	endif
 
       case "seuclidean"
 	d = X(:,Xi) - X(:,Yi);
-	weights = inv (diag (var (x)));
-	y = sqrt (sum ((weights * d) .* d));
+	weights = inv (diag (var (x, 0, 1)));
+	y = sqrt (sum ((weights * d) .* d, 1));
 
       case "mahalanobis"
 	d = X(:,Xi) - X(:,Yi);
 	weights = inv (cov (x));
-	y = sqrt (sum ((weights * d) .* d));
+	y = sqrt (sum ((weights * d) .* d, 1));
 
       case "cityblock"
 	d = X(:,Xi) - X(:,Yi);
 	if (str2num(version()(1:3)) > 3.1)
 	  y = norm (d, 1, "cols");
 	else
-	  y = sum (abs (d));
+	  y = sum (abs (d), 1);
 	endif
 
       case "minkowski"
@@ -158,37 +158,43 @@ function y = pdist (x, metric, varargin)
 	if (str2num(version()(1:3)) > 3.1)
 	  y = norm (d, p, "cols");
 	else
-	  y = (sum ((abs (d)).^p)).^(1/p);
+	  y = (sum ((abs (d)).^p, 1)).^(1/p);
 	endif
 
       case "cosine"
 	prod = X(:,Xi) .* X(:,Yi);
-	weights = sumsq (X(:,Xi)) .* sumsq (X(:,Yi));
-	y = 1 - sum (prod) ./ sqrt (weights);
+	weights = sumsq (X(:,Xi), 1) .* sumsq (X(:,Yi), 1);
+	y = 1 - sum (prod, 1) ./ sqrt (weights);
 
       case "correlation"
+	if (rows(X) == 1)
+	  error ("pdist: correlation distance between scalars not defined")
+	endif
 	corr = cor (X);
 	y = 1 - corr (sub2ind (size (corr), Xi, Yi))';
 
       case "spearman"
+	if (rows(X) == 1)
+	  error ("pdist: spearman distance between scalars not defined")
+	endif
 	corr = spearman (X);
 	y = 1 - corr (sub2ind (size (corr), Xi, Yi))';
 
       case "hamming"
 	d = logical (X(:,Xi) - X(:,Yi));
-	y = sum (d) / rows (X);
+	y = sum (d, 1) / rows (X);
 
       case "jaccard"
 	d = logical (X(:,Xi) - X(:,Yi));
 	weights = X(:,Xi) | X(:,Yi);
-	y = sum (d & weights) ./ sum (weights);
+	y = sum (d & weights, 1) ./ sum (weights, 1);
 
       case "chebychev"
 	d = X(:,Xi) - X(:,Yi);
 	if (str2num(version()(1:3)) > 3.1)
 	  y = norm (d, Inf, "cols");
 	else
-	  y = max (abs (d));
+	  y = max (abs (d), [], 1);
 	endif
 
     endswitch
