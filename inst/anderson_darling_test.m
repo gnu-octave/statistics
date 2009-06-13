@@ -104,7 +104,7 @@ function [q,Asq,info] = anderson_darling_test(x,dist)
       Acrit = Acritn(lookup(Acritn(:,1),n),2:5);
 
       lambda = 1./mean(x);  # exponential parameter estimation
-      x = exponential_cdf(x,ones(n,1)*lambda);
+      x = expcdf(x, 1./(ones(n,1)*lambda));
 
     otherwise
       # FIXME consider implementing more of distributions; a number
