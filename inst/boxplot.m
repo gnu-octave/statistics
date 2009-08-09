@@ -69,7 +69,7 @@
 ##
 ## @example
 ## title ("Grade 3 heights");
-## tics ("x",1:2,["girls";"boys"]);
+## tics ("x", 1:2, {"girls"; "boys"});
 ## axis ([0,3]);
 ## boxplot (@{randn(10,1)*5+140, randn(13,1)*8+135@});
 ## @end example
