@@ -12,6 +12,7 @@ Distributions
  hygestat
  lognstat
  mvnpdf mvnrnd mvncdf
+ vmpdf vmrnd
  mvtcdf
  normstat
  nbinstat
