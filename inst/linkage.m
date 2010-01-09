@@ -108,7 +108,7 @@ function dgram = linkage (d, method = "single", distarg)
 	    "centroid"; "median"; "ward" },
    "distfunc", {(@(x) min(x))				     # single
 		(@(x) max(x))				     # complete
-		(@(x,i,j,w) sum(dmult(q=w([i,j]),x))/sum(q)) # average
+		(@(x,i,j,w) sum(diag(q=w([i,j]))*x)/sum(q)) # average
 		(@(x) mean(x))				     # weighted
 		(@massdist)				     # centroid
 		(@(x,i) massdist(x,i))			     # median
