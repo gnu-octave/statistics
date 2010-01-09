@@ -55,7 +55,7 @@ function [d, err] = __tbl_delim__ (d)
       if ! ismember (d, fieldnames (s))
         err = ["tblread: delimiter must be either a single " ...
                "character or one of\n" ...
-               sprintf("%s, ", fieldnames (s))(1:end-2)];
+               sprintf("%s, ", fieldnames (s){:})(1:end-2)];
         d = NaN;
       else
         d = s.(d);
