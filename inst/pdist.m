@@ -84,7 +84,7 @@
 ##
 ## @item "chebychev"
 ## Chebychev distance: the maximum coordinate difference.
-## @end table
+## @end table 
 ## @seealso{linkage,squareform}
 ## @end deftypefn
 
