@@ -320,6 +320,7 @@ function printout( stats, stats_tbl );
   printf('\n');
 endfunction
 
+#{
 # Test Data from http://maths.sci.shu.ac.uk/distance/stats/14.shtml
 data=[7  9  9  8 12 10 ...
       9  8 10 11 13 13 ...
@@ -354,7 +355,7 @@ grp = [1,1;1,2;1,3;
 data=[23  27  43  41  15  17   3   9  20  63  55  90];
 grp= [ 1    1   1   1   2   2   2   2   3   3   3   3;
        1    1   2   2   1   1   2   2   1   1   2   2]';
-
+#}
 
 
 
