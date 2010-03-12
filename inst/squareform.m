@@ -16,9 +16,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {@var{y} =} squareform (@var{x})
-## @deftypefnx {Function File} {@var{y} =} squareform (@var{x},
+## @deftypefnx {Function File} {@var{y} =} squareform (@var{x}, @
 ## "tovector")
-## @deftypefnx {Function File} {@var{y} =} squareform (@var{x},
+## @deftypefnx {Function File} {@var{y} =} squareform (@var{x}, @
 ## "tomatrix")
 ## Convert a vector from the pdist function into a square matrix or from
 ## a square matrix back to the vector form.
