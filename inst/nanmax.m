@@ -37,7 +37,7 @@ function [v, idx] = nanmax (X, Y, DIM)
     nanvals = isnan(X);
     X(nanvals) = -Inf;
     v = max (X,[],DIM);
-    v(all(nanvals)) = NaN;
+    v(all(nanvals,DIM)) = NaN;
   else
     Xnan = isnan(X);
     Ynan = isnan(Y);

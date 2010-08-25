@@ -27,7 +27,7 @@
 ## @end deftypefn
 
 function [v, idx] = nanmin (X, Y, DIM) 
-  if nargin < 1 || nargin > 2
+  if nargin < 1 || nargin > 3
     usage ("[v, idx] = nanmin(X [, Y, [DIM]])");
   elseif nargin == 1 || (nargin == 2 && isempty(Y))
     nanvals = isnan(X);
@@ -38,7 +38,7 @@ function [v, idx] = nanmin (X, Y, DIM)
     nanvals = isnan(X);
     X(nanvals) = Inf;
     v = min (X,[],DIM);
-    v(all(nanvals)) = NaN;
+    v(all(nanvals,DIM)) = NaN;
   else
     Xnan = isnan(X);
     Ynan = isnan(Y);
