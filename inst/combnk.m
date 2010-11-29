@@ -55,7 +55,9 @@ function retval = __combnk__ (data, k)
     for j = 1:n
       C = __combnk__ (data ((j+1):end), k-1);
       C = cat (2, repmat (data (j), rows (C), 1), C);
-      retval = [retval; C];
+      if (!isempty (C))
+        retval = [retval; C];
+      endif
     endfor
   endif
 endfunction
