@@ -1,4 +1,5 @@
 ## Copyright (C) 2005, 2006 William Poetra Yoga Hadisoeseno
+## Copyright (C) 2011 Nir Krakauer
 ##
 ## This program is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -124,9 +125,8 @@ function [b, bint, r, rint, stats] = regress (y, X, alpha)
     p = columns (X);
     dof = n - p;
     t_alpha_2 = tinv (alpha / 2, dof);
-    H = X * pinv_X;
 
-    r = (eye (n) - H) * y;
+    r = y - X * b; # added -- Nir
     SSE = sum (r .^ 2);
     v = SSE / dof;
 
@@ -143,7 +143,7 @@ function [b, bint, r, rint, stats] = regress (y, X, alpha)
   if (nargout > 3)
 
     dof1 = n - p - 1;
-    h = diag (H);
+    h = sum(X.*pinv_X', 2); #added -- Nir (same as diag(X*pinv_X), without doing the matrix multiply)
 
     # From Matlab's documentation on Multiple Linear Regression,
     #   sigmaihat2 = norm (r) ^ 2 / dof1 - r .^ 2 / (dof1 * (1 - h));
