@@ -55,6 +55,7 @@ Plots
  normplot
  pareto
  histfit
+ repanova
 Models
  hmmestimate hmmgenerate hmmviterbi
 Hypothesis testing
