@@ -1,4 +1,4 @@
-## Copyright (C) 2008 Bill Denney
+## Copyright (C) 2008 Bill Denney <bill@denney.ws>
 ##
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -36,9 +36,6 @@
 ## @seealso{tblread, csv2cell, cell2csv}
 ## @end deftypefn
 
-## Author: Bill Denney <bill@denney.ws>
-## Description: Read tabular data from a file
-
 function tblwrite (data, varnames, casenames, f="", d=" ")
 
   ## Check arguments
@@ -59,7 +56,7 @@ function tblwrite (data, varnames, casenames, f="", d=" ")
     ## becomes available
     error ("tblread: filename must be given")
   endif
-  [d err] = __tbl_delim__ (d);
+  [d err] = tbl_delim (d);
   if ! isempty (err)
     error ("tblwrite: %s", err)
   endif

@@ -1,4 +1,4 @@
-## Copyright (C) 2008 Bill Denney
+## Copyright (C) 2008 Bill Denney <bill@denney.ws>
 ##
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{d}, @var{err}] = } tblread (@var{d})
+## @deftypefn {Function File} {[@var{d}, @var{err}] = } tbl_delim (@var{d})
 ## Return the delimiter for tblread or tblwrite.
 ##
 ## The delimeter, @var{d} may be any single character or
@@ -31,9 +31,7 @@
 ## @seealso{tblread, tblwrite}
 ## @end deftypefn
 
-## Author: Bill Denney <bill@denney.ws>
-
-function [d, err] = __tbl_delim__ (d)
+function [d, err] = tbl_delim (d)
 
   ## Check arguments
   if nargin != 1
@@ -75,55 +73,54 @@ endfunction
 ## Tests
 ## The defaults
 %!test
-%! [d err] = __tbl_delim__ (" ");
+%! [d err] = tbl_delim (" ");
 %! assert (d, " ");
 %! assert (err, "");
 ## Named delimiters
 %!test
-%! [d err] = __tbl_delim__ ("space");
+%! [d err] = tbl_delim ("space");
 %! assert (d, " ");
 %! assert (err, "");
 %!test
-%! [d err] = __tbl_delim__ ("tab");
+%! [d err] = tbl_delim ("tab");
 %! assert (d, sprintf ("\t"));
 %! assert (err, "");
 %!test
-%! [d err] = __tbl_delim__ ("comma");
+%! [d err] = tbl_delim ("comma");
 %! assert (d, ",");
 %! assert (err, "");
 %!test
-%! [d err] = __tbl_delim__ ("semi");
+%! [d err] = tbl_delim ("semi");
 %! assert (d, ";");
 %! assert (err, "");
 %!test
-%! [d err] = __tbl_delim__ ("bar");
+%! [d err] = tbl_delim ("bar");
 %! assert (d, "|");
 %! assert (err, "");
 ## An arbitrary character
 %!test
-%! [d err] = __tbl_delim__ ("x");
+%! [d err] = tbl_delim ("x");
 %! assert (d, "x");
 %! assert (err, "");
 ## An arbitrary escape string
 %!test
-%! [d err] = __tbl_delim__ ('\r');
+%! [d err] = tbl_delim ('\r');
 %! assert (d, sprintf ('\r'))
 %! assert (err, "");
 ## Errors
 %!test
-%! [d err] = __tbl_delim__ ("bars");
+%! [d err] = tbl_delim ("bars");
 %! assert (isnan (d));
 %! assert (! isempty (err));
 %!test
-%! [d err] = __tbl_delim__ ("");
+%! [d err] = tbl_delim ("");
 %! assert (isnan (d));
 %! assert (! isempty (err));
 %!test
-%! [d err] = __tbl_delim__ (5);
+%! [d err] = tbl_delim (5);
 %! assert (isnan (d));
 %! assert (! isempty (err));
 %!test
-%! [d err] = __tbl_delim__ ({"."});
+%! [d err] = tbl_delim ({"."});
 %! assert (isnan (d));
 %! assert (! isempty (err));
-
