@@ -12,6 +12,7 @@ Distributions
  hygestat
  lognstat
  mvnpdf mvnrnd mvncdf
+ normalise_distribution
  vmpdf vmrnd
  mvtcdf
  normstat
@@ -35,12 +36,12 @@ Descriptive statistics
  nanmin
  nanstd
  nanvar
- geomean	
- harmmean	
- mad		
- prctile	
- trimmean	
- zscore	
+ geomean
+ harmmean
+ mad
+ prctile
+ trimmean
+ zscore
  tabulate
  combnk
 Experimental design
@@ -50,10 +51,8 @@ Linear regression
  princomp
  regress
 Plots
- boxplot 
- scatter
+ boxplot
  normplot
- pareto
  histfit
  repanova
 Models
@@ -71,4 +70,3 @@ Reading and Writing
  casewrite
  tblread
  tblwrite
-
