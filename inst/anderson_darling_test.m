@@ -86,7 +86,7 @@ function [q,Asq,info] = anderson_darling_test(x,dist)
       qvals = [ 0.1, 0.05, 0.025, 0.01 ];
       Acrit = [ 0.637, 0.757, 0.877, 1.038];
       ## XXX FIXME XXX how to fit alpha and sigma?
-      x = weibull_cdf(x,ones(n,1)*alpha,ones(n,1)*sigma);
+      x = wblcdf (x, ones(n,1)*sigma, ones(n,1)*alpha);
 
     case 'exponential',
       adj = 1 + 0.6/n;
