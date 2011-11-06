@@ -28,7 +28,7 @@
 
 function [A, mu, sigma] = zscore(X,varargin)
   if (nargin != 1 && nargin != 2)
-    usage("zscore(X,dim)");
+    print_usage;
   endif
   if (nargin == 2)
     dim = varargin{1}

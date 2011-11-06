@@ -30,12 +30,10 @@
 ## standard normal probability distribution function.  $\alpha_1$ and
 ## $\alpha_2$ are shape parameters.
 
-
-
 function pdf = jsupdf (x, alpha1, alpha2)
 
   if (nargin != 1 && nargin != 3)
-    usage ("jsupdf (x, alpha1, alpha2)");
+    print_usage;
   endif
 
   if (nargin == 1)
@@ -53,6 +51,6 @@ function pdf = jsupdf (x, alpha1, alpha2)
   one = ones(size(x));
   sr = sqrt(x.*x + one);
   pdf = (alpha2 ./ sr) .* stdnormal_pdf (alpha1 .* one +
-					 alpha2 .* log (x + sr));
+                                         alpha2 .* log (x + sr));
 
 endfunction

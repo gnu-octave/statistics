@@ -40,7 +40,7 @@
 
 function a = trimmean(x, p, varargin)
   if (nargin != 2 && nargin != 3)
-    usage("a = trimmean(x,p, dim)");
+    print_usage;
   endif
   y = sort(x, varargin{:});
   sz = size(x);

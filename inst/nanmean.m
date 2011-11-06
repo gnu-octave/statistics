@@ -26,7 +26,7 @@
 
 function v = nanmean (X, varargin) 
   if nargin < 1
-    usage ("v = nanmean(X [, dim])");
+    print_usage;
   else
     n = sum (!isnan(X), varargin{:});
     n(n == 0) = NaN;

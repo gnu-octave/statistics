@@ -15,9 +15,9 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{y} = pdist (@var{x})
-## @deftypefnx {Function File} @var{y} = pdist (@var{x}, @var{metric})
-## @deftypefnx {Function File} @var{y} = pdist (@var{x}, @var{metric}, @var{metricarg}, @dots{})
+## @deftypefn {Function File} {@var{y} =} pdist (@var{x})
+## @deftypefnx {Function File} {@var{y} =} pdist (@var{x}, @var{metric})
+## @deftypefnx {Function File} {@var{y} =} pdist (@var{x}, @var{metric}, @var{metricarg}, @dots{})
 ##
 ## Return the distance between any two rows in @var{x}.
 ##
@@ -98,7 +98,7 @@ function y = pdist (x, metric, varargin)
           && ! ischar (metric)
           && ! isa (metric, "function_handle"))
     error (["pdist: the distance function must be either a string or a "
-	    "function handle."]);
+            "function handle."]);
   endif
 
   if (nargin < 2)
@@ -124,78 +124,78 @@ function y = pdist (x, metric, varargin)
     metric = lower (metric);
     switch (metric)
       case "euclidean"
-	d = X(:,Xi) - X(:,Yi);
-	if (str2num(version()(1:3)) > 3.1)
-	  y = norm (d, "cols");
-	else
-	  y = sqrt (sumsq (d, 1));
-	endif
+        d = X(:,Xi) - X(:,Yi);
+        if (str2num(version()(1:3)) > 3.1)
+          y = norm (d, "cols");
+        else
+          y = sqrt (sumsq (d, 1));
+        endif
 
       case "seuclidean"
-	d = X(:,Xi) - X(:,Yi);
-	weights = inv (diag (var (x, 0, 1)));
-	y = sqrt (sum ((weights * d) .* d, 1));
+        d = X(:,Xi) - X(:,Yi);
+        weights = inv (diag (var (x, 0, 1)));
+        y = sqrt (sum ((weights * d) .* d, 1));
 
       case "mahalanobis"
-	d = X(:,Xi) - X(:,Yi);
-	weights = inv (cov (x));
-	y = sqrt (sum ((weights * d) .* d, 1));
+        d = X(:,Xi) - X(:,Yi);
+        weights = inv (cov (x));
+        y = sqrt (sum ((weights * d) .* d, 1));
 
       case "cityblock"
-	d = X(:,Xi) - X(:,Yi);
-	if (str2num(version()(1:3)) > 3.1)
-	  y = norm (d, 1, "cols");
-	else
-	  y = sum (abs (d), 1);
-	endif
+        d = X(:,Xi) - X(:,Yi);
+        if (str2num(version()(1:3)) > 3.1)
+          y = norm (d, 1, "cols");
+        else
+          y = sum (abs (d), 1);
+        endif
 
       case "minkowski"
-	d = X(:,Xi) - X(:,Yi);
-	p = 2;			# default
-	if (nargin > 2)
-	  p = varargin{1};	# explicitly assigned
-	endif;
-	if (str2num(version()(1:3)) > 3.1)
-	  y = norm (d, p, "cols");
-	else
-	  y = (sum ((abs (d)).^p, 1)).^(1/p);
-	endif
+        d = X(:,Xi) - X(:,Yi);
+        p = 2;                  # default
+        if (nargin > 2)
+          p = varargin{1};      # explicitly assigned
+        endif;
+        if (str2num(version()(1:3)) > 3.1)
+          y = norm (d, p, "cols");
+        else
+          y = (sum ((abs (d)).^p, 1)).^(1/p);
+        endif
 
       case "cosine"
-	prod = X(:,Xi) .* X(:,Yi);
-	weights = sumsq (X(:,Xi), 1) .* sumsq (X(:,Yi), 1);
-	y = 1 - sum (prod, 1) ./ sqrt (weights);
+        prod = X(:,Xi) .* X(:,Yi);
+        weights = sumsq (X(:,Xi), 1) .* sumsq (X(:,Yi), 1);
+        y = 1 - sum (prod, 1) ./ sqrt (weights);
 
       case "correlation"
-	if (rows(X) == 1)
-	  error ("pdist: correlation distance between scalars not defined")
-	endif
-	corr = cor (X);
-	y = 1 - corr (sub2ind (size (corr), Xi, Yi))';
+        if (rows(X) == 1)
+          error ("pdist: correlation distance between scalars not defined")
+        endif
+        corr = cor (X);
+        y = 1 - corr (sub2ind (size (corr), Xi, Yi))';
 
       case "spearman"
-	if (rows(X) == 1)
-	  error ("pdist: spearman distance between scalars not defined")
-	endif
-	corr = spearman (X);
-	y = 1 - corr (sub2ind (size (corr), Xi, Yi))';
+        if (rows(X) == 1)
+          error ("pdist: spearman distance between scalars not defined")
+        endif
+        corr = spearman (X);
+        y = 1 - corr (sub2ind (size (corr), Xi, Yi))';
 
       case "hamming"
-	d = logical (X(:,Xi) - X(:,Yi));
-	y = sum (d, 1) / rows (X);
+        d = logical (X(:,Xi) - X(:,Yi));
+        y = sum (d, 1) / rows (X);
 
       case "jaccard"
-	d = logical (X(:,Xi) - X(:,Yi));
-	weights = X(:,Xi) | X(:,Yi);
-	y = sum (d & weights, 1) ./ sum (weights, 1);
+        d = logical (X(:,Xi) - X(:,Yi));
+        weights = X(:,Xi) | X(:,Yi);
+        y = sum (d & weights, 1) ./ sum (weights, 1);
 
       case "chebychev"
-	d = X(:,Xi) - X(:,Yi);
-	if (str2num(version()(1:3)) > 3.1)
-	  y = norm (d, Inf, "cols");
-	else
-	  y = max (abs (d), [], 1);
-	endif
+        d = X(:,Xi) - X(:,Yi);
+        if (str2num(version()(1:3)) > 3.1)
+          y = norm (d, Inf, "cols");
+        else
+          y = max (abs (d), [], 1);
+        endif
 
     endswitch
   endif
@@ -207,7 +207,7 @@ function y = pdist (x, metric, varargin)
     idx = 1;
     for ii = 1:l-1
       for jj = ii+1:l
-	y(idx++) = feval (metric, x(ii,:), x, varargin{:})(jj);
+        y(idx++) = feval (metric, x(ii,:), x, varargin{:})(jj);
       endfor
     endfor
   endif

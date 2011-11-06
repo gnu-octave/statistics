@@ -80,51 +80,50 @@
 
 function table = tabulate (varargin)
 
-if nargin < 1 || nargin > 2
-   usage("table = tabulate (data,edges)")
-endif
+  if nargin < 1 || nargin > 2
+    print_usage;
+  endif
 
-data = varargin{1};
-if isvector (data) != 1
-  error ("data must be a vector.");
-endif
-n = length(data);
-m = min(data);
-M = max(data);
+  data = varargin{1};
+  if isvector (data) != 1
+    error ("data must be a vector.");
+  endif
+  n = length(data);
+  m = min(data);
+  M = max(data);
 
-if nargin == 1 edges = 1:1:max(data)+1;
-else edges = varargin{2};
-end 
+  if nargin == 1 edges = 1:1:max(data)+1;
+  else edges = varargin{2};
+  end 
 
-if isscalar(edges)
-  h=(M-m)/edges;
-  edges = [m:h:M];
-end
-
-# number of classes
-bins=length(edges)-1;
-# initialize freqency table
-freqtable = zeros(bins,4);
-
-for k=1:1:bins;
-  if k != bins
-    freqtable(k,2)=length(find (data >= edges(k) & data < edges(k+1)));
-  else 
-    freqtable(k,2)=length(find (data >= edges(k) & data <= edges(k+1)));
+  if isscalar(edges)
+    h=(M-m)/edges;
+    edges = [m:h:M];
   end
-  if k == 1 freqtable (k,4) = freqtable(k,2);
-  else freqtable(k,4) = freqtable(k-1,4) + freqtable(k,2); 
+
+  # number of classes
+  bins=length(edges)-1;
+  # initialize freqency table
+  freqtable = zeros(bins,4);
+
+  for k=1:1:bins;
+    if k != bins
+      freqtable(k,2)=length(find (data >= edges(k) & data < edges(k+1)));
+    else
+      freqtable(k,2)=length(find (data >= edges(k) & data <= edges(k+1)));
+    end
+    if k == 1 freqtable (k,4) = freqtable(k,2);
+    else freqtable(k,4) = freqtable(k-1,4) + freqtable(k,2); 
+    end
   end
-end
 
-freqtable(:,1) = edges(1:end-1)(:);
-freqtable(:,3) = 100*freqtable(:,2)/n;
+  freqtable(:,1) = edges(1:end-1)(:);
+  freqtable(:,3) = 100*freqtable(:,2)/n;
 
-if nargout == 0
-  disp("     bin     Fa       Fr%        Fc");
-  printf("%8g  %5d    %6.2f%%    %5d\n",freqtable');
-else table = freqtable;
-end
+  if nargout == 0
+    disp("     bin     Fa       Fr%        Fc");
+    printf("%8g  %5d    %6.2f%%    %5d\n",freqtable');
+  else table = freqtable;
+  end
 
 endfunction
-

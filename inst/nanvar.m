@@ -51,7 +51,7 @@ function y = nanvar(x,w,dim)
     if nargin < 3
       dim = min(find(size(x)>1));
       if isempty(dim)
-	dim=1;
+        dim=1;
       endif
     endif
     

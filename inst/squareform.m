@@ -41,14 +41,14 @@ function y = squareform (x, method)
       method = "tovector";
     else
       error ("squareform: cannot deal with a nonsquare, nonvector \
-	  input");
+       input");
     endif
   endif
   method = lower (method);
 
   if ! strcmp ({"tovector" "tomatrix"}, method)
     error ("squareform: method must be either \"tovector\" or \
-	\"tomatrix\"");
+       \"tomatrix\"");
   endif
 
   if strcmp ("tovector", method)

@@ -1,7 +1,7 @@
 ## -*- texinfo -*-
 ## @deftypefn {Function File} normplot (@var{X})
 ##
-## Produce a normal probability plot for each column of X.
+## Produce a normal probability plot for each column of @var{X}.
 ##
 ## The line joing the 1st and 3rd quantile is drawn on the
 ## graph.  If the underlying distribution is normal, the
@@ -16,7 +16,7 @@
 # This program is in the public domain
 
 function normplot(X)
-  if nargin!=1, usage("normplot(X)"); end
+  if nargin!=1, print_usage; end
   if (rows(X) == 1), X=X(:); end
 
   # plot labels
@@ -26,7 +26,7 @@ function normplot(X)
 
   # plot grid
   t = [0.00001;0.0001;0.001;0.01;0.1;0.3;1;2;5;10;25;50;
-	75;90;95;98;99;99.7;99.9;99.99;99.999;99.9999;99.99999];
+      75;90;95;98;99;99.7;99.9;99.99;99.999;99.9999;99.99999];
   tics ('y',normal_inv(t/100),num2str(t));
   grid on
 

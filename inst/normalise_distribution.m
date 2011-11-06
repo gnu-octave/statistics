@@ -20,9 +20,9 @@
 ## TODO: 
 
 ## -*- texinfo -*-
-## @deftypefn{Function File} { [ @var{NORMALISED} ] } = normalise_distribution ( @var{DATA} )
-## @deftypefnx{Function File} { [ @var{NORMALISED} ] } = normalise_distribution ( @var{DATA}, @var{DISTRIBUTION} )
-## @deftypefnx{Function File} { [ @var{NORMALISED} ] } = normalise_distribution ( @var{DATA}, @var{DISTRIBUTION}, @var{DIMENSION} )
+## @deftypefn{Function File} {@var{NORMALISED} =} normalise_distribution (@var{DATA})
+## @deftypefnx{Function File} {@var{NORMALISED} =} normalise_distribution (@var{DATA}, @var{DISTRIBUTION})
+## @deftypefnx{Function File} {@var{NORMALISED} =} normalise_distribution (@var{DATA}, @var{DISTRIBUTION}, @var{DIMENSION})
 ## 
 ## Transform a set of data so as to be N(0,1) distributed according to an idea
 ## by van Albada and Robinson.
@@ -69,164 +69,159 @@
 
 function [ normalised ] = normalise_distribution ( data, distribution, dimension )
 
-	err = nargchk ( 1, 3, nargin, "string" );
+  if ( nargin < 1 || nargin > 3 )
+    print_usage;
+  elseif ( !ismatrix ( data ) || length ( size ( data ) ) > 2 )
+    error ( "First argument must be a vector or matrix" );
+  end
 
-        if ( err )
-                error ( err );
+
+  if ( nargin >= 2 )
+
+    if ( !isempty ( distribution ) )
+
+      #Wrap a single handle in a cell array.
+      if ( strcmp ( typeinfo ( distribution ), typeinfo ( @(x)(x) ) ) )
+
+        distribution = { distribution };
+      
+      #Do we have a string argument instead?
+      elseif ( ischar ( distribution ) )
+
+        ##Is it a single string?
+        if ( rows ( distribution ) == 1 )
+
+          distribution = { str2func( distribution ) };
+        else
+          error ( ["Second argument cannot contain more than one string" ...
+             " unless in a cell array"] );
         end
 
 
-	if ( !ismatrix ( data ) || length ( size ( data ) ) > 2 )
-		error ( "First argument must be a vector or matrix" );
-	end
+      ##Do we have a cell array of distributions instead?
+      elseif ( iscell ( distribution ) )
+
+        ##Does it consist of strings only?
+        if ( all ( cellfun ( @ischar, distribution ) ) )
+
+          distribution = cellfun ( @str2func, distribution, "UniformOutput", false );
+        end
+
+        ##Does it eventually consist of function handles only
+        if ( !all ( cellfun ( @ ( h ) ( strcmp ( typeinfo ( h ), typeinfo ( @(x)(x) ) ) ), distribution ) ) )
+
+          error ( ["Second argument must contain either" ...
+             " a single function name or handle or " ...
+             " a cell array of either all function names or handles!"] );
+        end
+
+      else
+        error ( "Illegal second argument: ", typeinfo ( distribution ) );
+      end
+
+    end
+
+  else
+
+    distribution = [];
+  end
 
 
-	if ( nargin >= 2 )
+  if ( nargin == 3 )
 
-		if ( !isempty ( distribution ) )
+    if ( !isscalar ( dimension ) || ( dimension != 1 && dimension != 2 ) )
+      error ( "Third argument must be either 1 or 2" );
+    end
 
-			#Wrap a single handle in a cell array.
-			if ( strcmp ( typeinfo ( distribution ), typeinfo ( @(x)(x) ) ) )
+  else
+    if ( isvector ( data ) && rows ( data ) == 1 )
 
-				distribution = { distribution };
-			
-			#Do we have a string argument instead?
-			elseif ( ischar ( distribution ) )
+      dimension = 2;
 
-				##Is it a single string?
-				if ( rows ( distribution ) == 1 )
+    else
 
-					distribution = { str2func( distribution ) };
-				else
-					error ( ["Second argument cannot contain more than one string" ...
-						 " unless in a cell array"] );
-				end
+      dimension = 1;
+    end
+  end
 
+  trp = ( dimension == 2 );
 
-			##Do we have a cell array of distributions instead?
-			elseif ( iscell ( distribution ) )
+  if ( trp )
+    data = data';
+  end
 
-				##Does it consist of strings only?
-				if ( all ( cellfun ( @ischar, distribution ) ) )
+  r = rows ( data );
+  c = columns ( data );
+  normalised = NA ( r, c );
 
-					distribution = cellfun ( @str2func, distribution, "UniformOutput", false );
-				end
+  ##Do we know the distribution of the sample?
+  if ( isempty ( distribution ) )
 
-				##Does it eventually consist of function handles only
-				if ( !all ( cellfun ( @ ( h ) ( strcmp ( typeinfo ( h ), typeinfo ( @(x)(x) ) ) ), distribution ) ) )
-
-					error ( ["Second argument must contain either" ...
-						 " a single function name or handle or " ...
-						 " a cell array of either all function names or handles!"] );
-				end
-
-			else
-				error ( "Illegal second argument: ", typeinfo ( distribution ) );
-			end
-
-		end
-
-	else
-
-		distribution = [];
-	end
+    precomputed_normalisation = [];
 
 
-	if ( nargin == 3 )
+    for k = 1 : columns ( data )
 
-		if ( !isscalar ( dimension ) || ( dimension != 1 && dimension != 2 ) )
-			error ( "Third argument must be either 1 or 2" );
-		end
-
-	else
-		if ( isvector ( data ) && rows ( data ) == 1 )
-
-			dimension = 2;
-
-		else
-
-			dimension = 1;
-		end
-	end
-
-	trp = ( dimension == 2 );
-
-	if ( trp )
-		data = data';
-	end
-
-	r = rows ( data );
-	c = columns ( data );
-	normalised = NA ( r, c );
-
-	##Do we know the distribution of the sample?
-	if ( isempty ( distribution ) )
-
-		precomputed_normalisation = [];
+      ##Note that this line is in accordance with equation (16) in the
+      ##original text. The author's original program, however, produces
+      ##different values in the presence of ties, namely those you'd
+      ##get replacing "last" by "first".
+      [ uniq, indices ] = unique ( sort ( data ( :, k ) ), "last" );
 
 
-		for k = 1 : columns ( data )
+      ##Does the sample have ties?
+      if ( rows ( uniq ) != r )
 
-			##Note that this line is in accordance with equation (16) in the
-			##original text. The author's original program, however, produces
-			##different values in the presence of ties, namely those you'd
-			##get replacing "last" by "first".
-			[ uniq, indices ] = unique ( sort ( data ( :, k ) ), "last" );
+        ##Transform to uniform, then normal distribution.
+        uniform = ( indices - 1/2 ) / r;
+        normal = norminv ( uniform );
 
+      else
+        ## Without ties everything is pretty much straightforward as
+        ## stated in the text.
+        if ( isempty ( precomputed_normalisation ) )
 
-			##Does the sample have ties?
-			if ( rows ( uniq ) != r )
+          precomputed_normalisation = norminv ( 1 / (2*r) : 1/r : 1 - 1 / (2*r) );
+          normal = precomputed_normalisation;
+        end
+      end
+  
+      #Find the original indices in the unsorted sample.
+      #This somewhat quirky way of doing it is still faster than
+      #using a for-loop.
+      [ ignore, ignore, target_indices ] = unique ( data (:, k ) );
 
-				##Transform to uniform, then normal distribution.
-				uniform = ( indices - 1/2 ) / r;
-				normal = norminv ( uniform );
+      #Put normalised values in the places where they belong.
+      f_remap = @( k ) ( normal ( k ) );
+      normalised ( :, k ) = arrayfun ( f_remap, target_indices );
 
-			else
-				## Without ties everything is pretty much straightforward as
-				## stated in the text.
-				if ( isempty ( precomputed_normalisation ) )
+    end
 
-					precomputed_normalisation = norminv ( 1 / (2*r) : 1/r : 1 - 1 / (2*r) );
-					normal = precomputed_normalisation;
-				end
-			end
-	
-			#Find the original indices in the unsorted sample.
-			#This somewhat quirky way of doing it is still faster than
-			#using a for-loop.
-			[ ignore, ignore, target_indices ] = unique ( data (:, k ) );
+  else
+    ##With known distributions, everything boils down to a few lines of code
 
-			#Put normalised values in the places where they belong.
-			f_remap = @( k ) ( normal ( k ) );
-			normalised ( :, k ) = arrayfun ( f_remap, target_indices );
+    ##The same distribution for all data?
+    if ( all ( size ( distribution ) == 1 ) )
 
-		end
+      normalised = norminv ( distribution {1,1} ( data ) );
 
-	else
-		##With known distributions, everything boils down to a few lines of code
+    elseif ( length ( vec ( distribution ) ) == c )
 
-		##The same distribution for all data?	
-		if ( all ( size ( distribution ) == 1 )	)
+      for k = 1 : c
 
-			normalised = norminv ( distribution {1,1} ( data ) );
+        normalised ( :, k ) = norminv ( distribution { k } ( data ) ( :, k ) );
+      end
 
-		elseif ( length ( vec ( distribution ) ) == c )
+    else
+      error ( "Number of distributions does not match data size! ")
 
-			for k = 1 : c
+    end
+  end
 
-				normalised ( :, k ) = norminv ( distribution { k } ( data ) ( :, k ) );
-			end
+  if ( trp )
 
-		else
-			error ( "Number of distributions does not match data size! ")
-
-		end
-	end
-
-	if ( trp )
-
-		normalised = normalised';
-	end
+    normalised = normalised';
+  end
 
 endfunction
 
@@ -286,4 +281,3 @@ endfunction
 %!test
 %! fail ("normalise_distribution( zeros ( 3, 4 ), { @unifcdf; @normcdf; @( x )( expcdf ( x, 1 ) ) } )", ...
 %! "Number of distributions does not match data size!");
-

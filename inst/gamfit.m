@@ -20,24 +20,25 @@
 
 function res = gamfit(R)
 
-avg = mean(R);
+  if (nargin != 1)
+    print_usage;
+  endif
 
-# This can be just about any search function. I choose this because it
-# seemed to be the only one that might work in this situaition...
-a=nmsmax( @gamfit_search, 1, [], [], avg, R );
+  avg = mean(R);
 
-b=a/avg;      # **
+  # This can be just about any search function. I choose this because it
+  # seemed to be the only one that might work in this situaition...
+  a=nmsmax( @gamfit_search, 1, [], [], avg, R );
 
-res=[a 1/b];
+  b=a/avg;      # **
+
+  res=[a 1/b];
+endfunction
 
 # Helper function so we only have to minimize for one variable. Also to
 # inverting the output of gamlike, incase the optimisation function wants to
 # maximize rather than minimize.
-
 function res = gamfit_search( a, avg, R )
-
-b=a/avg;      # **
-
-res = -gamlike([a 1/b], R);
-
- 	  	 
+  b=a/avg;      # **
+  res = -gamlike([a 1/b], R);
+endfunction

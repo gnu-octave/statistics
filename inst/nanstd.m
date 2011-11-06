@@ -43,7 +43,7 @@
 
 function v = nanstd (X, opt, varargin)
   if nargin < 1
-    usage ("v = nanstd(X [, opt [, dim]])");
+    print_usage;
   else
     if nargin < 3
       dim = min(find(size(X)>1));

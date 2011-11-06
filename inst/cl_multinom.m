@@ -1,6 +1,6 @@
 # -*- texinfo -*-
 #
-# @deftypefn {Function File} {@var{CL}} cl_multinom( @var{x},@var{N},@var{b},@var{calculation_type} ) - Confidence level of multinomial portions
+# @deftypefn {Function File} {@var{CL} =} cl_multinom (@var{x}, @var{N}, @var{b}, @var{calculation_type} ) - Confidence level of multinomial portions
 #    Returns confidence level of multinomial parameters estimated @math{ p = x / sum(x) } with predefined confidence interval @var{b}.
 #    Finite population is also considered.
 #
@@ -23,9 +23,9 @@
 #            if value is 0, b=.02 is assumed which is standard choice at elections
 #            otherwise it is calculated in a way that one sample in a cell alteration defines the confidence interval
 # @item @var{calculation_type}  : string    : (Optional), described below
-#			"bromaghin" 	(default) - do not change it unless you have a good reason to do so
-#			"cochran"
-#			"agresti_cull"  this is not exactly the solution at reference given below but an adjustment of the solutions above
+#           "bromaghin"     (default) - do not change it unless you have a good reason to do so
+#           "cochran"
+#           "agresti_cull"  this is not exactly the solution at reference given below but an adjustment of the solutions above
 # @end itemize
 #
 # @subheading Returns
@@ -51,7 +51,6 @@
 #
 # @end deftypefn
 
-
 # Copyright (C) 2009 Levente Torok / TorokLev@gmail.com 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -67,58 +66,59 @@
 # along with this program; If not, see <http://www.gnu.org/licenses/>. 
 #
 
-function CL = cl_multinom( x, N, b, calculation_type )
+function CL = cl_multinom( x, N, b = .05, calculation_type = "bromaghin")
 
-	k = rows(x);
-	nn = sum(x);
-	p = x / nn;
-
-    if (nargin < 3)
-        b = .05;
+    if (nargin < 2 || nargin > 4)
+        print_usage;
+    elseif (!ischar (calculation_type))
+        error ("Argument calculation_type must be a string");
     endif
-	if (isscalar( b ))
+
+    k = rows(x);
+    nn = sum(x);
+    p = x / nn;
+
+    if (isscalar( b ))
         if (b==0) b=0.02; endif
-		b = ones( rows(x), 1 ) * b;	
-     
-        if (b<0)  b=1 ./ max( x, 1 ); endif        
-	endif
-	bb = b .* b;
-	
+        b = ones( rows(x), 1 ) * b;
+
+        if (b<0)  b=1 ./ max( x, 1 ); endif
+    endif
+    bb = b .* b;
+
     if (N==nn)
         CL = 1;
         return;
     endif
-	
-	if (N<nn)
-		fpc = 1;
-	else
-		fpc = (N-1) / (N-nn); # finite population correction tag
-	endif
 
-	beta = p.*(1-p);
-
-    if ( nargin < 4 )
-        calculation_type = "bromaghin";
+    if (N<nn)
+        fpc = 1;
+    else
+        fpc = (N-1) / (N-nn); # finite population correction tag
     endif
+
+    beta = p.*(1-p);
 
     switch calculation_type
       case {"cochran"}
         t = sqrt( fpc * nn * bb ./ beta )
-		alpha = ( 1 - normcdf( t )) * 2
+        alpha = ( 1 - normcdf( t )) * 2
 
       case {"bromaghin"}
         t = sqrt(  fpc * (nn * 2 * bb )./ ( beta - 2 * bb + sqrt( beta .* beta - bb .* ( 4*beta - 1 ))) );
         alpha = ( 1 - normcdf( t )) * 2;
 
-	  case {"agresti_cull"}
+      case {"agresti_cull"}
         ts = fpc * nn * bb ./ beta ;
-	    if ( k<=2 )
+        if ( k<=2 )
           alpha = 1 - chi2cdf( ts, k-1 ); % adjusted Wilson interval
-		else
-		  alpha = 1 - chi2cdf( ts/k, 1 ); % Goodman interval with Bonferroni argument
-		endif
+        else
+          alpha = 1 - chi2cdf( ts/k, 1 ); % Goodman interval with Bonferroni argument
+        endif
+      otherwise
+        error ("Unknown calculation type '%s'", calculation_type);
     endswitch
- 
-	CL = 1 - max( alpha );
+
+    CL = 1 - max( alpha );
 
 endfunction

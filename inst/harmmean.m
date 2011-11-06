@@ -26,7 +26,9 @@
 function a = harmmean(x, dim)
   if (nargin == 1)
     a = mean(x, "h");
-  else
+  elseif (nargin == 2)
     a = mean(x, "h", dim);
+  else
+    print_usage;
   endif
 endfunction

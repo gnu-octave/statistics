@@ -10,7 +10,7 @@
 ##
 ## @end deftypefn
 
-## Author: Paul Kienzle
+## Author: Paul Kienzle <pkienzle@users.sf.net>
 ## This program is public domain.
 
 function A = fullfact(n)
@@ -24,3 +24,4 @@ function A = fullfact(n)
       A = [kron([1:n(i)]',ones(rows(A),1)), repmat(A,n(i),1)];
     end
   end
+endfunction

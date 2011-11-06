@@ -94,12 +94,12 @@ function [q,Asq,info] = anderson_darling_test(x,dist)
       # Critical values depend on n.  Choose the appropriate critical set.
       # These values come from NIST dataplot/src/dp8.f.
       Acritn = [
-	  0, 1.022, 1.265, 1.515, 1.888
-	 11, 1.045, 1.300, 1.556, 1.927;
-	 21, 1.062, 1.323, 1.582, 1.945;
-	 51, 1.070, 1.330, 1.595, 1.951;
-	101, 1.078, 1.341, 1.606, 1.957;
-	];
+                  0, 1.022, 1.265, 1.515, 1.888
+                 11, 1.045, 1.300, 1.556, 1.927;
+                 21, 1.062, 1.323, 1.582, 1.945;
+                 51, 1.070, 1.330, 1.595, 1.951;
+                101, 1.078, 1.341, 1.606, 1.957;
+                ];
       # FIXME: consider interpolating in the critical value table.
       Acrit = Acritn(lookup(Acritn(:,1),n),2:5);
 
@@ -110,11 +110,11 @@ function [q,Asq,info] = anderson_darling_test(x,dist)
       # FIXME consider implementing more of distributions; a number
       # of them are defined in NIST dataplot/src/dp8.f.
       error("Anderson-Darling test for %s not implemented", dist);
-  end
+  endswitch
 
   if any(x<0 | x>1)
     error('Anderson-Darling test requires data in CDF form');
-  end
+  endif
 
   i = [1:n]'*ones(1,size(x,2));
   Asq = -n - sum( (2*i-1) .* (log(x) + log(1-x(n:-1:1,:))) )/n;
@@ -126,7 +126,7 @@ function [q,Asq,info] = anderson_darling_test(x,dist)
   else
     idx = lookup([-Inf,Acrit],Asq*adj);
     q = [1,qvals](idx); 
-  end
+  endif
 
   if nargout > 2,
     info.Asq = Asq;
@@ -134,8 +134,8 @@ function [q,Asq,info] = anderson_darling_test(x,dist)
     info.Asq_critical = [100*(1-qvals); Acrit]';
     info.p = 1-q;
     info.p_is_precise = use_cdf;
-  end
-
+  endif
+endfunction
 
 %!demo
 %! c = anderson_darling_test(10*rande(12,10000),'exponential');

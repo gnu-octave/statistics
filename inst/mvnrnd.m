@@ -23,41 +23,42 @@
 
 function s = mvnrnd(mu,Sigma,K)
 
-% Iain Murray 2003 -- I got sick of this simple thing not being in Octave and
-%                     locking up a stats-toolbox license in Matlab for no good
-%                     reason.
-% May 2004 take a third arg, cases. Makes it more compatible with Matlab's.
+  % Iain Murray 2003 -- I got sick of this simple thing not being in Octave and
+  %                     locking up a stats-toolbox license in Matlab for no good
+  %                     reason.
+  % May 2004 take a third arg, cases. Makes it more compatible with Matlab's.
 
-% Paul Kienzle <pkienzle@users.sf.net>
-% * Add GPL notice.
-% * Add docs for argument K
+  % Paul Kienzle <pkienzle@users.sf.net>
+  % * Add GPL notice.
+  % * Add docs for argument K
 
-% If mu is column vector and Sigma not a scalar then assume user didn't read
-% help but let them off and flip mu. Don't be more liberal than this or it will
-% encourage errors (eg what should you do if mu is square?).
-if ((size(mu,2)==1)&(size(Sigma)~=[1,1]))
-	mu=mu';
-end
+  % If mu is column vector and Sigma not a scalar then assume user didn't read
+  % help but let them off and flip mu. Don't be more liberal than this or it will
+  % encourage errors (eg what should you do if mu is square?).
+  if ((size(mu,2)==1)&(size(Sigma)~=[1,1]))
+    mu=mu';
+  end
 
-if nargin==3
-	mu=repmat(mu,K,1);
-end
+  if nargin==3
+    mu=repmat(mu,K,1);
+  end
 
-[n,d]=size(mu);
+  [n,d]=size(mu);
 
-if (size(Sigma)~=[d,d])
-	error('Sigma must have dimensions dxd where mu is nxd.');
-end
+  if (size(Sigma)~=[d,d])
+    error('Sigma must have dimensions dxd where mu is nxd.');
+  end
 
-try
-	U=chol(Sigma);
-catch
-	[E,Lambda]=eig(Sigma);
-	if (min(diag(Lambda))<0),error('Sigma must be positive semi-definite.'),end
-	U = sqrt(Lambda)*E';
-end
+  try
+    U=chol(Sigma);
+  catch
+    [E,Lambda]=eig(Sigma);
+    if (min(diag(Lambda))<0),error('Sigma must be positive semi-definite.'),end
+    U = sqrt(Lambda)*E';
+  end
 
-s = randn(n,d)*U + mu;
+  s = randn(n,d)*U + mu;
+endfunction
 
 % {{{ END OF CODE --- Guess I should provide an explanation:
 % 

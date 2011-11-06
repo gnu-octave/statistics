@@ -28,7 +28,7 @@
 
 function [v, idx] = nanmin (X, Y, DIM) 
   if nargin < 1 || nargin > 3
-    usage ("[v, idx] = nanmin(X [, Y, [DIM]])");
+    print_usage;
   elseif nargin == 1 || (nargin == 2 && isempty(Y))
     nanvals = isnan(X);
     X(nanvals) = Inf;

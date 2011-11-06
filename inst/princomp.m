@@ -18,9 +18,9 @@ function [pc,z,w,Tsq] = princomp(X)
   if nargout>1, z = center(X)*pc; end
   if nargout>2, w = diag(D); end
   if nargout>3, Tsq = sumsq(zscore(z),2); 
-  	warning('XXX FIXME XXX Tsq return from princomp fails some tests'); 
+    warning('XXX FIXME XXX Tsq return from princomp fails some tests'); 
   end
-
+endfunction
 %!shared pc,z,w,Tsq,m,x
 
 %!test

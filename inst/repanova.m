@@ -33,63 +33,59 @@
 
 function [p, table, st] = repanova(varargin)
 
-switch nargin
-     case 0
-	  error('Too few inputs.');
-     case 1
-	  error('Too few inputs.');
-     case 2
-	  X = varargin{1};
-	  condition = varargin{2};
-	  option = 'cell';
-     case 3
-	  X = varargin{1};
-	  condition = varargin{2};
-	  option = varargin{3};
-     otherwise
-	  error('Too many inputs.');
-end
-     % Find the means of the subjects and measures, ignoring any NaNs
-     u_subjects = nanmean(X,2);
-     u_measures = nanmean(X,1);
-     u_grand = nansum(nansum(X)) / (size(X,1) * size(X,2));
-     % Differences between rows will be reflected in SS subjects, differences
-     % between columns will be reflected in SS_within subjects.
-     N = size(X,1); % number of subjects
-     J = size(X,2); % number of samples per subject
-     SS_measures = N * nansum((u_measures - u_grand).^2);
-     SS_subjects = J * nansum((u_subjects - u_grand).^2);
-     SS_total = nansum(nansum((X - u_grand).^2));
-     SS_error = SS_total - SS_measures - SS_subjects;
-     df_measures = J - 1;
-     df_subjects = N - 1;
-     df_grand = (N*J) - 1;
-     df_error = df_grand - df_measures - df_subjects;
-     MS_measures = SS_measures / df_measures;
-     MS_subjects = SS_subjects / df_subjects;
-     MS_error = SS_error / df_error; % variation expected as a result of sampling error alone
-     F = MS_measures / MS_error;
-     p = 1 - fcdf(F,df_measures,df_subjects); % Probability of F given equal means.
+    if (nargin == 2)
+        X = varargin{1};
+        condition = varargin{2};
+        option = 'cell';
+    elseif (nargin = 3)
+        X = varargin{1};
+        condition = varargin{2};
+        option = varargin{3};
+    else
+        print_usage;
+    endif
 
-     if strcmp(option, 'string')
-	  table  = [sprintf('\nSource\tSS\tdf\tMS\tF\tProb > F'), ...
-		    sprintf('\nSubject\t%g\t%i\t%g', SS_subjects, df_subjects, MS_subjects), ...
-		    sprintf('\nMeasure\t%g\t%i\t%g\t%g\t%g', SS_measures, df_measures, MS_measures, F, p), ...
-		    sprintf('\nError\t%g\t%i\t%g', SS_error, df_error, MS_error), ...
-		    sprintf('\n')];
-     else
-	  table  = {'Source', 'Partial SS', 'df', 'MS', 'F', 'Prob > F'; ...
-		    'Subject', SS_subjects, df_subjects, MS_subjects, '', ''; ...
-		    'Measure', SS_measures, df_measures, MS_measures, F, p};
-     end
+    % Find the means of the subjects and measures, ignoring any NaNs
+    u_subjects = nanmean(X,2);
+    u_measures = nanmean(X,1);
+    u_grand = nansum(nansum(X)) / (size(X,1) * size(X,2));
+    % Differences between rows will be reflected in SS subjects, differences
+    % between columns will be reflected in SS_within subjects.
+    N = size(X,1); % number of subjects
+    J = size(X,2); % number of samples per subject
+    SS_measures = N * nansum((u_measures - u_grand).^2);
+    SS_subjects = J * nansum((u_subjects - u_grand).^2);
+    SS_total = nansum(nansum((X - u_grand).^2));
+    SS_error = SS_total - SS_measures - SS_subjects;
+    df_measures = J - 1;
+    df_subjects = N - 1;
+    df_grand = (N*J) - 1;
+    df_error = df_grand - df_measures - df_subjects;
+    MS_measures = SS_measures / df_measures;
+    MS_subjects = SS_subjects / df_subjects;
+    MS_error = SS_error / df_error; % variation expected as a result of sampling error alone
+    F = MS_measures / MS_error;
+    p = 1 - fcdf(F,df_measures,df_subjects); % Probability of F given equal means.
 
-     st.gnames = condition'; % this is the same struct format used in anova1
-     st.n = repmat(N, 1, J);
-     st.source = 'anova1'; % it cannot be assumed that 'repanova' is a supported source for multcompare
-     st.means = u_measures;
-     st.df = df_error;
-     st.s = sqrt(MS_error);
-end
+    if strcmp(option, 'string')
+        table  = [sprintf('\nSource\tSS\tdf\tMS\tF\tProb > F'), ...
+                  sprintf('\nSubject\t%g\t%i\t%g', SS_subjects, df_subjects, MS_subjects), ...
+                  sprintf('\nMeasure\t%g\t%i\t%g\t%g\t%g', SS_measures, df_measures, MS_measures, F, p), ...
+                  sprintf('\nError\t%g\t%i\t%g', SS_error, df_error, MS_error), ...
+                  sprintf('\n')];
+    else
+        table  = {'Source', 'Partial SS', 'df', 'MS', 'F', 'Prob > F'; ...
+                  'Subject', SS_subjects, df_subjects, MS_subjects, '', ''; ...
+                  'Measure', SS_measures, df_measures, MS_measures, F, p};
+    end
+
+    st.gnames = condition'; % this is the same struct format used in anova1
+    st.n = repmat(N, 1, J);
+    st.source = 'anova1'; % it cannot be assumed that 'repanova' is a supported source for multcompare
+    st.means = u_measures;
+    st.df = df_error;
+    st.s = sqrt(MS_error);
+endfunction
 
 % This function was created with guidance from the following websites:
 % http://courses.washington.edu/stat217/rmANOVA.html

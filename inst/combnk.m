@@ -20,11 +20,11 @@
 
 function retval = combnk (data, k)
   ## Check input
-  if (! isvector (data))
+  if (nargin != 2)
+    print_usage;
+  elseif (! isvector (data))
     error ("combnk: first input argument must be a vector");
-  endif 
-
-  if (!isreal (k) || k != round (k) || k < 0)
+  elseif (!isreal (k) || k != round (k) || k < 0)
     error ("combnk: second input argument must be a non-negative integer");
   endif
 

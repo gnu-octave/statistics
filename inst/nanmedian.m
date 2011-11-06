@@ -26,7 +26,7 @@
 
 function v = nanmedian (X, varargin)
   if nargin < 1 || nargin > 2
-    usage ("v = nanmedian(X [, dim])");
+    print_usage;
   endif
   if nargin < 2
     dim = min(find(size(X)>1));
@@ -51,7 +51,7 @@ function v = nanmedian (X, varargin)
       ## Determine the offset for each column in single index mode
       colidx = reshape((0:(prod(sz) / sz(dim) - 1)), size(n)); 
       colidx = floor(colidx / prod(sz(1:dim-1))) * prod(sz(1:dim)) + ...
-	  mod(colidx,prod(sz(1:dim-1)));
+          mod(colidx,prod(sz(1:dim-1)));
       stride = prod(sz(1:dim-1));
 
       ## Average the two central values of the sorted list to compute
@@ -62,7 +62,7 @@ function v = nanmedian (X, varargin)
       ##   for n==6, ceil(3.0+0.5) is 4 and floor(3.0+0.5) is 3
       ## correction made for stride of data "stride*ceil(2.5-0.5)+1"
       v = (X(colidx + stride*ceil(n./2-0.5) + 1)  + ...
-	   X(colidx + stride*floor(n./2-0.5) + 1)) ./ 2;
+           X(colidx + stride*floor(n./2-0.5) + 1)) ./ 2;
   else
     error ("nanmedian: invalid matrix argument");
   endif

@@ -34,7 +34,7 @@
 function cdf = jsucdf (x, alpha1, alpha2)
 
   if (! ((nargin == 1) || (nargin == 3)))
-    usage ("jsucdf (x, alpha1, alpha2)");
+    print_usage;
   endif
 
   if (nargin == 1)

@@ -26,7 +26,9 @@
 function a = geomean(x, dim)
   if (nargin == 1)
     a = mean(x, "g");
-  else
+  elseif (nargin == 2)
     a = mean(x, "g", dim);
+  else
+    print_usage;
   endif
 endfunction

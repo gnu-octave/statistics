@@ -86,7 +86,7 @@
 function [b, bint, r, rint, stats] = regress (y, X, alpha)
 
   if (nargin < 2 || nargin > 3)
-    usage ("[b, bint, r, rint] = regress (y, X, [alpha])");
+    print_usage;
   endif
 
   if (! ismatrix (y))
