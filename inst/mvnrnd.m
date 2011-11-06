@@ -35,7 +35,7 @@ function s = mvnrnd(mu,Sigma,K)
   % If mu is column vector and Sigma not a scalar then assume user didn't read
   % help but let them off and flip mu. Don't be more liberal than this or it will
   % encourage errors (eg what should you do if mu is square?).
-  if ((size(mu,2)==1)&(size(Sigma)~=[1,1]))
+  if ((size(mu,2)==1)&&(size(Sigma)~=[1,1]))
     mu=mu';
   end
 
