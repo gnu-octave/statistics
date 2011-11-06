@@ -1,0 +1,31 @@
+Summary of important user-visible changes for statistics 1.1.0:
+-------------------------------------------------------------------
+
+ ** IMPORTANT note about `fstat' shadowing core library function:
+
+    GNU octave's 3.2 release added a new function `fstat' to return
+    information of a file. Statistics' `fstat' computes F mean and
+    variance. Since MatLab's `fstat' is the equivalent to statistics'
+    `fstat' (not to core's `fstat'), and to avoid problems with the
+    statistics package, `fstat' has been deprecated in octave 3.4
+    and will be removed in Octave 3.8. In the mean time, please
+    ignore this warning when installing the package.
+
+ ** The following functions are new in 1.1.0:
+
+      normalise_distribution  repanova  combnk
+
+ ** The following functions were removed since equivalents are now
+    part of GNU octave core:
+
+      prctile
+
+ ** The __tbl_delim__ function is now private.
+
+ ** The function `boxplot' now accepts named arguments.
+
+ ** Bug fixes on the functions:
+
+      harmmean  nanmax  nanmin  regress
+
+ ** Small improvements on help text.
