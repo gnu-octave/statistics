@@ -37,7 +37,7 @@ function [p, table, st] = repanova(varargin)
         X = varargin{1};
         condition = varargin{2};
         option = 'cell';
-    elseif (nargin = 3)
+    elseif (nargin == 3)
         X = varargin{1};
         condition = varargin{2};
         option = varargin{3};
