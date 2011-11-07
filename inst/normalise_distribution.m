@@ -192,8 +192,20 @@ function [ normalised ] = normalise_distribution ( data, distribution, dimension
       [ ignore, ignore, target_indices ] = unique ( data (:, k ) );
 
       #Put normalised values in the places where they belong.
-      f_remap = @( k ) ( normal ( k ) );
-      normalised ( :, k ) = arrayfun ( f_remap, target_indices );
+
+      ## XXX the following 2 commented lines code worked fine in 3.2 but a
+      ## regression makes it fail in 3.4.3 (at least). It seems to be already
+      ## fixed on the dev release
+      ## See https://savannah.gnu.org/bugs/index.php?34765
+      ## Eventually, the following 2 lines can be uncommented and the for
+      ## loop removed
+#      f_remap = @( k ) ( normal ( k ) );
+#      normalised ( :, k ) = arrayfun ( f_remap, target_indices );
+      ## XXX start of fix
+      for index = 1:numel(target_indices)
+        normalised ( index, k ) = normal(target_indices(index));
+      endfor
+      ## XXX end of fix
 
     end
 
