@@ -182,8 +182,9 @@ function [ normalised ] = normalise_distribution ( data, distribution, dimension
         if ( isempty ( precomputed_normalisation ) )
 
           precomputed_normalisation = norminv ( 1 / (2*r) : 1/r : 1 - 1 / (2*r) );
-          normal = precomputed_normalisation;
         end
+
+	normal = precomputed_normalisation;
       end
   
       #Find the original indices in the unsorted sample.
@@ -289,6 +290,12 @@ endfunction
 %! N = normalise_distribution  ( A, { @unifcdf; @normcdf;  @( x )( expcdf ( x, 1 ) ) }, 2 );
 %! assert ( mean ( N, 2 ), [ 0, 0, 0 ]', 0.1 )
 %! assert ( std ( N, [], 2 ), [ 1, 1, 1 ]', 0.1 )
+
+%!xtest
+%! A = exprnd ( 1, 1000, 9 ); A ( 300 : 500, 4:6 ) = 17;
+%! N = normalise_distribution ( A );
+%! assert ( mean ( N ), [ 0 0 0 0.38 0.38 0.38 0 0 0 ], 0.1 );
+%! assert ( var ( N ), [ 1 1 1 2.59 2.59 2.59 1 1 1 ], 0.1 );
 
 %!test
 %! fail ("normalise_distribution( zeros ( 3, 4 ), { @unifcdf; @normcdf; @( x )( expcdf ( x, 1 ) ) } )", ...
