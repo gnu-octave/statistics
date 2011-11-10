@@ -63,17 +63,17 @@ endfunction
 % {{{ END OF CODE --- Guess I should provide an explanation:
 % 
 % We can draw from axis aligned unit Gaussians with randn(d)
-% 	x ~ A*exp(-0.5*x'*x)
+%   x ~ A*exp(-0.5*x'*x)
 % We can then rotate this distribution using
-% 	y = U'*x
+%   y = U'*x
 % Note that
-% 	x = inv(U')*y
+%   x = inv(U')*y
 % Our new variable y is distributed according to:
-% 	y ~ B*exp(-0.5*y'*inv(U'*U)*y)
+%   y ~ B*exp(-0.5*y'*inv(U'*U)*y)
 % or
-% 	y ~ N(0,Sigma)
+%   y ~ N(0,Sigma)
 % where
-% 	Sigma = U'*U
+%   Sigma = U'*U
 % For a given Sigma we can use the chol function to find the corresponding U,
 % draw x and find y. We can adjust for a non-zero mean by just adding it on.
 % 
@@ -85,11 +85,11 @@ endfunction
 % another way of doing the decomposition is by diagonalising Sigma (which is
 % slower but works).
 % if
-% 	[E,Lambda]=eig(Sigma)
+%   [E,Lambda]=eig(Sigma)
 % then
-% 	Sigma = E*Lambda*E'
+%   Sigma = E*Lambda*E'
 % so
-% 	U = sqrt(Lambda)*E'
+%   U = sqrt(Lambda)*E'
 % If any Lambdas are negative then Sigma just isn't even positive semi-definite
 % so we can give up.
 %

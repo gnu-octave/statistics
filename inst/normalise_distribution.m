@@ -184,9 +184,9 @@ function [ normalised ] = normalise_distribution ( data, distribution, dimension
           precomputed_normalisation = norminv ( 1 / (2*r) : 1/r : 1 - 1 / (2*r) );
         end
 
-	normal = precomputed_normalisation;
+        normal = precomputed_normalisation;
       end
-  
+
       #Find the original indices in the unsorted sample.
       #This somewhat quirky way of doing it is still faster than
       #using a for-loop.

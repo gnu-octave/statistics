@@ -44,7 +44,7 @@
 ## square it.
 ##
 ## The exponential argument @var{A} = @var{x}' * inv (@var{sigma}) * @var{x}
-##	
+##
 ## @example
 ## @var{A} = @var{x}' * inv (@var{sigma}) * @var{x}
 ##   = @var{x}' * inv (@var{r}' * @var{r}) * @var{x}
