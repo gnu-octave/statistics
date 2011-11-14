@@ -45,8 +45,9 @@ Descriptive statistics
  combnk
 Experimental design
  fullfact ff2n
-Linear regression
+Regression
  anovan
+ monotone_smooth
  princomp
  regress
 Plots
