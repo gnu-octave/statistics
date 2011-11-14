@@ -75,9 +75,9 @@
 ## Author: Nir Krakauer <nkrakauer@ccny.cuny.edu>
 ## Description: Nonparametric monotone increasing regression
 
-function yy = monotone_smooth(x, y, h)
+function yy = monotone_smooth (x, y, h)
 
-  if nargin < 2 || ~isnumeric(x) || ~isnumeric(y)
+  if nargin < 2 || nargin > 3 || ~isnumeric(x) || ~isnumeric(y)
     print_usage ();
   endif
 
@@ -87,9 +87,11 @@ function yy = monotone_smooth(x, y, h)
   x = x(:);
 
   %set filter bandwidth at a reasonable default value, if not specified
-  if nargin < 3 || ~isscalar(h)
+  if (nargin != 3)
     s = std(x);
     h = s / (n^0.2);
+  elseif (!isscalar (h) || !isnumeric (h))
+    error ("third argument 'h' (kernel bandwith) must a numeric scalar")
   end
 
   x_min = min(x);
@@ -106,13 +108,10 @@ function yy = monotone_smooth(x, y, h)
   %Epanechnikov smoothing kernel (with finite support)
   %K_epanech_kernel = @(z) (3/4) * ((1 - z).^2) .* (abs(z) < 1);
 
-
-  K_epanech_int = @(z) mean(((abs(z) < 1)/2) - (3/4) * (z .* (abs(z) < 1) - (1/3) * (z.^3) .* (abs(z) < 1)) + (z < -1)); 
+  K_epanech_int = @(z) mean(((abs(z) < 1)/2) - (3/4) * (z .* (abs(z) < 1) - (1/3) * (z.^3) .* (abs(z) < 1)) + (z < -1));
 
   %integral of kernels up to t
   monotone_inverse = @(t) K_epanech_int((y - t) / h);
-
-
 
   %find the value of the monotone smooth function at each point in x
   niter_max = 150; %maximum number of iterations for estimating each value (should not be reached in most cases) 
@@ -129,26 +128,29 @@ function yy = monotone_smooth(x, y, h)
       iter_max_reached = 1;
       for i = 1:niter_max
         wt_scaled = (wt - wmin) / (wmax - wmin);
-        tn = tmin + wt_scaled * (tmax - tmin) ;
-        wn = monotone_inverse(tn);
+        tn        = tmin + wt_scaled * (tmax - tmin) ;
+        wn        = monotone_inverse(tn);
         wn_scaled = (wn - wmin) / (wmax - wmin);
-        %if (abs(wt-wn) < 1E-4) || (tn < (y_min-0.1)) || (tn > (y_max+0.1)) %%criterion for break in the R code -- replaced by the following line to hopefully be less dependent on the scale of y
+
+        %if (abs(wt-wn) < 1E-4) || (tn < (y_min-0.1)) || (tn > (y_max+0.1))
+        %% criterion for break in the R code -- replaced by the following line to
+        %% hopefully be less dependent on the scale of y
         if (abs(wt_scaled-wn_scaled) < 1E-4) || (wt_scaled < -0.1) || (wt_scaled > 1.1)
           iter_max_reached = 0;
           break
-        end
+        endif
         if wn > wt
           tmax = tn;
           wmax = wn;
         else
           tmin = tn;
           wmin = wn;
-        end
-      end
+        endif
+      endfor
       if iter_max_reached
-        warning(['at x = ' num2str(x(l)) ', maximum number of iterations reached without convergence; approximation may not be optimal'])
-      end 
+        warning("at x = %g, maximum number of iterations %d reached without convergence; approximation may not be optimal", x(l), niter_max)
+      endif
       yy(l) = tmin + (wt - wmin) * (tmax - tmin) / (wmax - wmin);
-    end
-  end
-end
+    endif
+  endfor
+endfunction
