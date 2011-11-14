@@ -1,4 +1,5 @@
 ## Copyright (C) 2011  Nir Krakauer
+## Copyright (C) 2011  Carnë Draug <carandraug+dev@gmail.com>
 ##
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -77,21 +78,24 @@
 
 function yy = monotone_smooth (x, y, h)
 
-  if nargin < 2 || nargin > 3 || ~isnumeric(x) || ~isnumeric(y)
+  if (nargin < 2 || nargin > 3)
     print_usage ();
+  elseif (!isnumeric (x) || !isvector (x))
+    error ("first argument x must be a numeric vector")
+  elseif (!isnumeric (y) || !isvector (y))
+    error ("second argument y must be a numeric vector")
+  elseif (numel (x) != numel (y))
+    error ("x and y must have the same number of elements")
+  elseif (nargin == 3 && (!isscalar (h) || !isnumeric (h)))
+    error ("third argument 'h' (kernel bandwith) must a numeric scalar")
   endif
 
   n = numel(x);
-
-  %reshape x to be a vector
-  x = x(:);
 
   %set filter bandwidth at a reasonable default value, if not specified
   if (nargin != 3)
     s = std(x);
     h = s / (n^0.2);
-  elseif (!isscalar (h) || !isnumeric (h))
-    error ("third argument 'h' (kernel bandwith) must a numeric scalar")
   end
 
   x_min = min(x);
