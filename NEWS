@@ -5,6 +5,9 @@ Summary of important user-visible changes for statistics 1XXXXXXXX:
 
       monotone_smooth
 
+ ** Bug fixes on the function:
+
+      repanova
 
 Summary of important user-visible changes for statistics 1.1.0:
 -------------------------------------------------------------------
