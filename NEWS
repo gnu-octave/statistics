@@ -1,9 +1,9 @@
 Summary of important user-visible changes for statistics 1XXXXXXXX:
 -------------------------------------------------------------------
 
- ** The following functions are new in 1.1.0:
+ ** The following functions are new in 1.1.X:
 
-      monotone_smooth
+      monotone_smooth kmeans
 
  ** Bug fixes on the function:
 

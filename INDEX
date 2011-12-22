@@ -62,8 +62,9 @@ Hypothesis testing
 Fitting
  gamfit
 Clustering
- pdist
+ kmeans
  linkage
+ pdist
  squareform
 Reading and Writing
  caseread
