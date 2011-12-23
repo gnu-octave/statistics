@@ -3,7 +3,7 @@ Summary of important user-visible changes for statistics 1XXXXXXXX:
 
  ** The following functions are new in 1.1.X:
 
-      monotone_smooth kmeans
+      monotone_smooth kmeans jackknife
 
  ** Bug fixes on the function:
 

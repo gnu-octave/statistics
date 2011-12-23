@@ -43,6 +43,7 @@ Descriptive statistics
  zscore
  tabulate
  combnk
+ jackknife
 Experimental design
  fullfact ff2n
 Regression
