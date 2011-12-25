@@ -15,24 +15,27 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn{Function File} { [ @var{t}, @var{v} ] } = jackknife ( @var{E}, @var{x}, ... )
-## Compute jackknife estimates of a parameter taking one or more given samples as parameters,
-## as well as its variance.
+## @deftypefn{Function File} { @var{jackstat} } = jackknife ( @var{E}, @var{x}, ... )
+## Compute jackknife estimates of a parameter taking one or more given samples as parameters.
 ## In particular, @var{E} is the estimator to be jackknifed as a function name, handle,
 ## or inline function, and @var{x} is the sample for which the estimate is to be taken.
-## @var{t} will be the estimate for the parameter, and @var{v} the estimate of its variance.
+## The @var{i}-th entry of @var{jackstat} will contain the value of the estimator
+## on the sample @var{x} with its @var{i}-th row omitted.
+## @code{jackstat(i) = E(x(1 : i - 1, i + 1 : length(x)))}.
 ## 
 ## Depending on the number of samples to be used, the estimator must have the appropriate form:
 ## If only one sample is used, then the estimator need not be concerned with cell arrays,
 ## for example jackknifing the standard deviation of a sample can be performed with
-## @code{ [ @var{t}, @var{v} ] = jackknife(@@std, rand (100, 1))}.
+## @code{ @var{jackstat} = jackknife(@@std, rand (100, 1))}.
 ## If, however, more than one sample is to be used, the samples must all be of equal size,
 ## and the estimator must address them as elements of a cell-array,
 ## in which they are aggregated in their order of appearance:
-## @code{ [ @var{t}, @var{v} ] = jackknife(@@(x) std(x@{1@})/var(x@{2@}), rand (100, 1), randn (100, 1)}.
+## @code{ @var{jackstat} = jackknife(@@(x) std(x@{1@})/var(x@{2@}), rand (100, 1), randn (100, 1)}.
 ##
 ## If all goes well, a theoretical value @var{P} for the parameter is already known,
-## and @var{n} is the sample size, then
+## @var{n} is the sample size, 
+## @code{ @var{t} = @var{n} * @var{E}(@var{x}) - (@var{n} - 1) * mean(@var{jackstat}) }, and
+## @code{ @var{v} = sumsq(@var{n} * @var{E}(@var{x}) - (@var{n} - 1) * @var{jackstat} - @var{t}) / (@var{n} * (@var{n} - 1)) }, then
 ## @code{ (@var{t}-@var{P})/sqrt(@var{v}) } should follow a t-distribution with @var{n}-1 degrees of freedom.
 ##
 ## Jackknifing is a well known method to reduce bias; further details can be found in:
@@ -46,7 +49,7 @@
 ## Author: Alexander Klein <alexander.klein@math.uni-giessen.de>
 ## Created: 2011-11-25
 
-function [ theta_tilde, var_theta_tilde ] = jackknife ( anEstimator, varargin )
+function jackstat = jackknife ( anEstimator, varargin )
 
 
 	## Convert function name to handle if necessary, or throw
@@ -72,19 +75,12 @@ function [ theta_tilde, var_theta_tilde ] = jackknife ( anEstimator, varargin )
 		aSample = varargin { 1 };
 
 		g = length ( aSample );
-		indices = 1 : g;
 		
-		theta_hat = anEstimator ( aSample );
-
-		theta_hat_minus_i = zeros ( 1, g );
+		jackstat = zeros ( 1, g );
 
 		for k = 1 : g
-			theta_hat_minus_i ( k ) = anEstimator ( aSample ( [ 1 : k - 1, k + 1 : g ] ) );
+			jackstat ( k ) = anEstimator ( aSample ( [ 1 : k - 1, k + 1 : g ] ) );
 		end
-
-		theta_tilde = g * theta_hat - ( g - 1 ) * mean ( theta_hat_minus_i );
-
-		var_theta_tilde = sumsq ( ( g * theta_hat - ( g - 1 ) * theta_hat_minus_i ) - theta_tilde ) / ( g * ( g - 1 ) );
 
 	## More complicated input requires more work, however.
 	else
@@ -98,20 +94,12 @@ function [ theta_tilde, var_theta_tilde ] = jackknife ( anEstimator, varargin )
 
 		g = g ( 1 );
 
-		theta_hat = anEstimator ( varargin );
-
-		theta_hat_minus_i = zeros ( 1, g );
-
-		flags = 1 - eye ( 1, g );
+		jackstat = zeros ( 1, g );
 
 		for k = 1 : g
 
-				theta_hat_minus_i ( k ) = anEstimator ( cellfun ( @(x) x( [ 1 : k - 1, k + 1 : g ] ), varargin, "UniformOutput", false ) );
+			jackstat ( k ) = anEstimator ( cellfun ( @(x) x( [ 1 : k - 1, k + 1 : g ] ), varargin, "UniformOutput", false ) );
 		end
-
-		theta_tilde = g * theta_hat - ( g - 1 ) * mean ( theta_hat_minus_i );
-
-		var_theta_tilde = sumsq ( ( g * theta_hat - ( g - 1 ) * theta_hat_minus_i ) - theta_tilde ) / ( g * ( g - 1 ) );
 
 	end
 endfunction
@@ -120,14 +108,15 @@ endfunction
 %!test
 %! ##Example from Quenouille, Table 1
 %! d=[0.18 4.00 1.04 0.85 2.14 1.01 3.01 2.33 1.57 2.19];
-%! t = jackknife ( @(x) 1/mean(x), d );
-%! assert ( t, 0.5240, 1e-5 );
+%! jackstat = jackknife ( @(x) 1/mean(x), d );
+%! assert ( 10 / mean(d) - 9 * mean(jackstat), 0.5240, 1e-5 );
 
 %!demo
 %! for k = 1:1000
 %!  x=rand(10,1);
 %!  s(k)=std(x);
-%!  j(k)=jackknife(@std,x);
+%!  jackstat=jackknife(@std,x);
+%!  j(k)=10*std(x) - 9*mean(jackstat);
 %! end
 %! figure();hist([s',j'], 0:sqrt(1/12)/10:2*sqrt(1/12))
 
@@ -135,7 +124,9 @@ endfunction
 %! for k = 1:1000
 %!  x=randn(1,50);
 %!  y=rand(1,50);
-%!  [j(k),v(k)]=jackknife(@(x) std(x{1})/std(x{2}),y,x);
+%!  jackstat=jackknife(@(x) std(x{1})/std(x{2}),y,x);
+%!  j(k)=50*std(y)/std(x) - 49*mean(jackstat);
+%!  v(k)=sumsq((50*std(y)/std(x) - 49*jackstat) - j(k)) / (50 * 49);
 %! end
 %! t=(j-sqrt(1/12))./sqrt(v);
 %! figure();plot(sort(tcdf(t,49)),"-;Almost linear mapping indicates good fit with t-distribution.;")
