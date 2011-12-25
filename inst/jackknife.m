@@ -2,7 +2,7 @@
 ## 
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ## 
 ## This program is distributed in the hope that it will be useful,
@@ -15,28 +15,38 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn{Function File} { @var{jackstat} } = jackknife ( @var{E}, @var{x}, ... )
+## @deftypefn{Function File} {@var{jackstat} =} jackknife (@var{E}, @var{x}, @dots{})
 ## Compute jackknife estimates of a parameter taking one or more given samples as parameters.
 ## In particular, @var{E} is the estimator to be jackknifed as a function name, handle,
 ## or inline function, and @var{x} is the sample for which the estimate is to be taken.
 ## The @var{i}-th entry of @var{jackstat} will contain the value of the estimator
 ## on the sample @var{x} with its @var{i}-th row omitted.
-## @code{jackstat(i) = E(x(1 : i - 1, i + 1 : length(x)))}.
-## 
+##
+## @example
+## @group
+## jackstat(@var{i}) = @var{E}(@var{x}(1 : @var{i} - 1, @var{i} + 1 : length(@var{x})))
+## @end group
+## @end example
+##
 ## Depending on the number of samples to be used, the estimator must have the appropriate form:
 ## If only one sample is used, then the estimator need not be concerned with cell arrays,
 ## for example jackknifing the standard deviation of a sample can be performed with
-## @code{ @var{jackstat} = jackknife(@@std, rand (100, 1))}.
+## @code{@var{jackstat} = jackknife (@@std, rand (100, 1))}.
 ## If, however, more than one sample is to be used, the samples must all be of equal size,
 ## and the estimator must address them as elements of a cell-array,
 ## in which they are aggregated in their order of appearance:
-## @code{ @var{jackstat} = jackknife(@@(x) std(x@{1@})/var(x@{2@}), rand (100, 1), randn (100, 1)}.
+##
+## @example
+## @group
+## @var{jackstat} = jackknife(@@(x) std(x@{1@})/var(x@{2@}), rand (100, 1), randn (100, 1)
+## @end group
+## @end example
 ##
 ## If all goes well, a theoretical value @var{P} for the parameter is already known,
 ## @var{n} is the sample size, 
-## @code{ @var{t} = @var{n} * @var{E}(@var{x}) - (@var{n} - 1) * mean(@var{jackstat}) }, and
-## @code{ @var{v} = sumsq(@var{n} * @var{E}(@var{x}) - (@var{n} - 1) * @var{jackstat} - @var{t}) / (@var{n} * (@var{n} - 1)) }, then
-## @code{ (@var{t}-@var{P})/sqrt(@var{v}) } should follow a t-distribution with @var{n}-1 degrees of freedom.
+## @code{@var{t} = @var{n} * @var{E}(@var{x}) - (@var{n} - 1) * mean(@var{jackstat})}, and
+## @code{@var{v} = sumsq(@var{n} * @var{E}(@var{x}) - (@var{n} - 1) * @var{jackstat} - @var{t}) / (@var{n} * (@var{n} - 1))}, then
+## @code{(@var{t}-@var{P})/sqrt(@var{v})} should follow a t-distribution with @var{n}-1 degrees of freedom.
 ##
 ## Jackknifing is a well known method to reduce bias; further details can be found in:
 ## @itemize @bullet
