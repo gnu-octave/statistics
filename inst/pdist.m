@@ -53,7 +53,7 @@
 ## coordinate.
 ##
 ## @item "mahalanobis"
-## Mahalanobis distance: @seealso{mahalanobis}.
+## Mahalanobis distance: see the function mahalanobis.
 ##
 ## @item "cityblock"
 ## City Block metric, aka Manhattan distance.
@@ -85,7 +85,7 @@
 ## @item "chebychev"
 ## Chebychev distance: the maximum coordinate difference.
 ## @end table 
-## @seealso{linkage,squareform}
+## @seealso{linkage, mahalanobis, squareform}
 ## @end deftypefn
 
 ## Author: Francesco Potortì  <pot@gnu.org>
