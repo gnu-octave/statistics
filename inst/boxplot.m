@@ -19,18 +19,18 @@
 ##
 ## Produce a box plot.
 ##
-## The box plot is a graphical display that simultaneously describes several 
-## important features of a data set, such as center, spread, departure from 
+## The box plot is a graphical display that simultaneously describes several
+## important features of a data set, such as center, spread, departure from
 ## symmetry, and identification of observations that lie unusually far from
 ## the bulk of the data.
 ##
 ## @var{data} is a matrix with one column for each data set, or data is a cell
 ## vector with one cell for each data set.
 ##
-## @var{notched} = 1 produces a notched-box plot. Notches represent a robust 
+## @var{notched} = 1 produces a notched-box plot. Notches represent a robust
 ## estimate of the uncertainty about the median.
 ##
-## @var{notched} = 0 (default) produces a rectangular box plot. 
+## @var{notched} = 0 (default) produces a rectangular box plot.
 ##
 ## @var{notched} in (0,1) produces a notch of the specified depth.
 ## notched values outside (0,1) are amusing if not exactly practical.
@@ -38,7 +38,7 @@
 ## @var{symbol} sets the symbol for the outlier values, default symbol for
 ## points that lie outside 3 times the interquartile range is 'o',
 ## default symbol for points between 1.5 and 3 times the interquartile
-## range is '+'. 
+## range is '+'.
 ##
 ## @var{symbol} = '.' points between 1.5 and 3 times the IQR is marked with
 ## '.' and points outside 3 times IQR with 'o'.
@@ -49,7 +49,7 @@
 ## @var{vertical} = 0 makes the boxes horizontal, by default @var{vertical} = 1.
 ##
 ## @var{maxwhisker} defines the length of the whiskers as a function of the IQR
-## (default = 1.5). If @var{maxwhisker} = 0 then @code{boxplot} displays all data  
+## (default = 1.5). If @var{maxwhisker} = 0 then @code{boxplot} displays all data
 ## values outside the box using the plotting symbol for points that lie
 ## outside 3 times the IQR.
 ##
@@ -84,8 +84,8 @@
 
 ## Version: 1.4.1
 ## Author: Alberto Pose <apose@alu.itba.edu.ar>
-## Updated: 3 September 2006 
-## - Replaced deprecated is_nan_or_na(X) with (isnan(X) | isna(X)) 
+## Updated: 3 September 2006
+## - Replaced deprecated is_nan_or_na(X) with (isnan(X) | isna(X))
 ## (now works with this software 2.9.7 and foward)
 
 ## Version: 1.4.2
@@ -93,8 +93,14 @@
 ## Updated: 14 October 2011
 ## - Added support for named arguments
 
+## Version: 1.4.2
+## Author: Juan Pablo Carbajal <carbajal@ifi.uzh.ch>
+## Updated: 01 March 2012
+## - Returns structure with handles to plot elements
+## - Added example as demo
+
 %# function s = boxplot (data,notched,symbol,vertical,maxwhisker)
-function s = boxplot (data, varargin)
+function [s hs] = boxplot (data, varargin)
 
   ## assign parameter defaults
   if (nargin < 1)
@@ -102,10 +108,10 @@ function s = boxplot (data, varargin)
   endif
 
   %# default values
-  maxwhisker = 1.5; 
-  vertical = 1; 
-  symbol = ['+', 'o']; 
-  notched = 0; 
+  maxwhisker = 1.5;
+  vertical = 1;
+  symbol = ['+', 'o'];
+  notched = 0;
   plot_opts = {};
 
   %# Optional arguments analysis
@@ -141,7 +147,7 @@ function s = boxplot (data, varargin)
             vertical = varargin{indopt};
           case 4
             maxwhisker = varargin{indopt};
-          otherwise 
+          otherwise
             %# take two args and append them to plot_opts
             plot_opts(1, end+1:end+2) = {dummy,  varargin{indopt}};
         endswitch
@@ -156,7 +162,7 @@ function s = boxplot (data, varargin)
   a = 1-notched;
 
   ## figure out how many data sets we have
-  if (iscell (data)) 
+  if (iscell (data))
     nc = length (data);
   else
     if (isvector (data)) data = data(:); endif
@@ -221,7 +227,7 @@ function s = boxplot (data, varargin)
 
   ## Note which boxes don't have enough stats
   chop = find (box <= 1);
-      
+
   ## Draw a box around the quartiles, with width proportional to the number of
   ## items in the box. Draw notches if desired.
   box *= 0.4/max (box);
@@ -254,30 +260,30 @@ function s = boxplot (data, varargin)
   ## Do the plot
   if (vertical)
     if (isempty (plot_opts))
-      plot (quartile_x, quartile_y, "b;;",
+     h = plot (quartile_x, quartile_y, "b;;",
             whisker_x, whisker_y, "b;;",
             cap_x, cap_y, "b;;",
             median_x, median_y, "r;;",
-            outliers_x, outliers_y, [symbol(1), "r;;"], 
+            outliers_x, outliers_y, [symbol(1), "r;;"],
             outliers2_x, outliers2_y, [symbol(2), "r;;"]);
     else
-    plot (quartile_x, quartile_y, "b;;",
+    h = plot (quartile_x, quartile_y, "b;;",
           whisker_x, whisker_y, "b;;",
           cap_x, cap_y, "b;;",
           median_x, median_y, "r;;",
-            outliers_x, outliers_y, [symbol(1), "r;;"], 
+            outliers_x, outliers_y, [symbol(1), "r;;"],
             outliers2_x, outliers2_y, [symbol(2), "r;;"], plot_opts{:});
     endif
   else
     if (isempty (plot_opts))
-      plot (quartile_y, quartile_x, "b;;",
+     h = plot (quartile_y, quartile_x, "b;;",
             whisker_y, whisker_x, "b;;",
             cap_y, cap_x, "b;;",
             median_y, median_x, "r;;",
             outliers_y, outliers_x, [symbol(1), "r;;"],
             outliers2_y, outliers2_x, [symbol(2), "r;;"]);
     else
-    plot (quartile_y, quartile_x, "b;;",
+    h = plot (quartile_y, quartile_x, "b;;",
           whisker_y, whisker_x, "b;;",
           cap_y, cap_x, "b;;",
           median_y, median_x, "r;;",
@@ -286,4 +292,21 @@ function s = boxplot (data, varargin)
     endif
   endif
 
+  % Distribute handles
+  nq = 1:size(quartile_x,2);
+  hs.box = h(nq);
+  nw = nq(end) + [1:2*size(whisker_x,2)];
+  hs.whisker = h(nw);
+  nm = nw(end)+ [1:size(median_x,2)];
+  hs.median = h(nm);
+  no = nm(end) + [1:size(outliers_y,2)];
+  hs.outliers = h(no);
+  no2 = no(end) + [1:size(outliers2_y,2)];
+  hs.outliers2 = h(no2);
+
 endfunction
+#!demo
+#! title ("Grade 3 heights");
+#! tics ("x", 1:2, @{"girls"; "boys"@});
+#! axis ([0,3]);
+#! boxplot (@{randn(10,1)*5+140, randn(13,1)*8+135@});
