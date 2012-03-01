@@ -14,6 +14,8 @@ Summary of important user-visible changes for statistics 1XXXXXXXX:
 
       zscore
 
+ ** boxplot.m now retunrs a structure with handles to the plot elemenets.
+
 Summary of important user-visible changes for statistics 1.1.0:
 -------------------------------------------------------------------
 
