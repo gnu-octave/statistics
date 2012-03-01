@@ -16,6 +16,7 @@
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {@var{s} =} boxplot (@var{data}, @var{notched}, @
 ## @var{symbol}, @var{vertical}, @var{maxwhisker}, @dots{})
+## @deftypefnx {Function File} {[@dots{} @var{h}]=} boxplot (@dots{})
 ##
 ## Produce a box plot.
 ##
@@ -67,12 +68,15 @@
 ## @item 7 @tab Upper confidence limit for median
 ## @end multitable
 ##
+## The returned structure @var{h} has hanldes to the plot elements, allowing
+## customization of the visualization using set/get functions.
+##
 ## Example
 ##
 ## @example
 ## title ("Grade 3 heights");
-## tics ("x", 1:2, @{"girls"; "boys"@});
 ## axis ([0,3]);
+## tics ("x", 1:2, @{"girls"; "boys"@});
 ## boxplot (@{randn(10,1)*5+140, randn(13,1)*8+135@});
 ## @end example
 ##
@@ -299,14 +303,18 @@ function [s hs] = boxplot (data, varargin)
   hs.whisker = h(nw);
   nm = nw(end)+ [1:size(median_x,2)];
   hs.median = h(nm);
-  no = nm(end) + [1:size(outliers_y,2)];
-  hs.outliers = h(no);
-  no2 = no(end) + [1:size(outliers2_y,2)];
-  hs.outliers2 = h(no2);
+
+  if ~isempty (outliers_y)
+    no = nm(end) + [1:size(outliers_y,2)];
+    hs.outliers = h(no);
+    no2 = no(end) + [1:size(outliers2_y,2)];
+    hs.outliers2 = h(no2);
+  end
 
 endfunction
-#!demo
-#! title ("Grade 3 heights");
-#! tics ("x", 1:2, @{"girls"; "boys"@});
-#! axis ([0,3]);
-#! boxplot (@{randn(10,1)*5+140, randn(13,1)*8+135@});
+
+%!demo
+%! title ("Grade 3 heights");
+%! axis ([0,3]);
+%! tics ("x", 1:2, {"girls"; "boys"});
+%! boxplot ({randn(10,1)*5+140, randn(13,1)*8+135});
