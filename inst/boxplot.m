@@ -307,6 +307,8 @@ function [s hs] = boxplot (data, varargin)
   if ~isempty (outliers_y)
     no = nm(end) + [1:size(outliers_y,2)];
     hs.outliers = h(no);
+  end
+  if ~isempty (outliers2_y)
     no2 = no(end) + [1:size(outliers2_y,2)];
     hs.outliers2 = h(no2);
   end
