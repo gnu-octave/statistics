@@ -7,6 +7,7 @@ Summary of important user-visible changes for statistics 1XXXXXXXX:
 
  ** Bug fixes on the function:
 
+      normalise_distribution
       repanova
 
  ** The following functions were removed since equivalents are now

@@ -1,23 +1,17 @@
-## Copyright (C) 2011 Alexander Klein
-## 
-## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
-## (at your option) any later version.
-## 
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-## 
-## You should have received a copy of the GNU General Public License
-## along with Octave; see the file COPYING.  If not, see
-## <http://www.gnu.org/licenses/>.
+## Copyright (C) 2011 Alexander Klein <alexander.klein@math.uni-giessen.de>
 ##
-## Author: Alexander Klein <alexander.klein@math.uni-giessen.de>
-## Created: 2011-09-13
+## This program is free software; you can redistribute it and/or modify it under
+## the terms of the GNU General Public License as published by the Free Software
+## Foundation; either version 3 of the License, or (at your option) any later
+## version.
 ##
-## TODO: 
+## This program is distributed in the hope that it will be useful, but WITHOUT
+## ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+## FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+## details.
+##
+## You should have received a copy of the GNU General Public License along with
+## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn{Function File} {@var{NORMALISED} =} normalise_distribution (@var{DATA})
@@ -198,7 +192,11 @@ function [ normalised ] = normalise_distribution ( data, distribution, dimension
       ## differently depending on octave version. This applies the fix for all
       ## 3.4 releases but it probably only appeared on 3.4.3 (can someone check?)
       ## See https://savannah.gnu.org/bugs/index.php?34765
-      if (compare_versions (OCTAVE_VERSION, "3.4", "<") || compare_versions (OCTAVE_VERSION, "3.6", ">"))
+      ## Turns out that the bug was not completely fixed the first time and is
+      ## still present in 3.6.1
+      ## FIXME Once package dependency increases beyond an octave version that
+      ## has this fixed, remove this
+      if (compare_versions (OCTAVE_VERSION, "3.4", "<"))
         ## this is how it should work
         f_remap = @( k ) ( normal ( k ) );
         normalised ( :, k ) = arrayfun ( f_remap, target_indices );
