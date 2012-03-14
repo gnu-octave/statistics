@@ -1,17 +1,17 @@
-## Copyright (C) 2010  Soren Hauberg
+## Copyright (C) 2010 Soren Hauberg <soren@hauberg.org>
 ##
-## This program is free software: you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation, either version 3 of the License, or
-## (at your option) any later version.
+## This program is free software; you can redistribute it and/or modify it under
+## the terms of the GNU General Public License as published by the Free Software
+## Foundation; either version 3 of the License, or (at your option) any later
+## version.
 ##
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
+## This program is distributed in the hope that it will be useful, but WITHOUT
+## ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+## FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+## details.
 ##
-## You should have received a copy of the GNU General Public License
-## along with this program.  If not, see <http://www.gnu.org/licenses/>.
+## You should have received a copy of the GNU General Public License along with
+## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {@var{c} =} combnk (@var{data}, @var{k})
@@ -51,7 +51,11 @@ function retval = __combnk__ (data, k)
   else
     ## Process data
     n = numel (data);
-    retval = [];
+    if iscell (data)
+      retval = {};
+    else
+      retval = [];
+    endif
     for j = 1:n
       C = __combnk__ (data ((j+1):end), k-1);
       C = cat (2, repmat (data (j), rows (C), 1), C);

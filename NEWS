@@ -5,9 +5,9 @@ Summary of important user-visible changes for statistics 1XXXXXXXX:
 
       monotone_smooth kmeans jackknife
 
- ** Bug fixes on the function:
+ ** Bug fixes on the functions:
 
-      normalise_distribution
+      normalise_distribution  combnk
       repanova
 
  ** The following functions were removed since equivalents are now
