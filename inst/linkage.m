@@ -217,6 +217,7 @@ endfunction
 %!assert (cond (linkage (pdist (x), "complete")),  21.793345,t);
 %!assert (cond (linkage (pdist (x), "average")),   27.045012,t);
 %!assert (cond (linkage (pdist (x), "weighted")),  27.412889,t);
+%! lastwarn(); # Clear last warning before the test
 %!warning <monotonically> linkage (pdist (x), "centroid");
 %!test warning off clustering
 %! assert (cond (linkage (pdist (x), "centroid")), 27.457477,t);
