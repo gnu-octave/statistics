@@ -190,13 +190,11 @@ function [ normalised ] = normalise_distribution ( data, distribution, dimension
 
       ## A regression in the 3.4 series made this no longer work so we behave
       ## differently depending on octave version. This applies the fix for all
-      ## 3.4 releases but it probably only appeared on 3.4.3 (can someone check?)
+      ## 3.4 releases but it may have appeared on 3.2.4 (can someone check?)
       ## See https://savannah.gnu.org/bugs/index.php?34765
-      ## Turns out that the bug was not completely fixed the first time and is
-      ## still present in 3.6.1
       ## FIXME Once package dependency increases beyond an octave version that
       ## has this fixed, remove this
-      if (compare_versions (OCTAVE_VERSION, "3.4", "<"))
+      if (compare_versions (OCTAVE_VERSION, "3.4", "<") || compare_versions (OCTAVE_VERSION, "3.6.2", ">="))
         ## this is how it should work
         f_remap = @( k ) ( normal ( k ) );
         normalised ( :, k ) = arrayfun ( f_remap, target_indices );
