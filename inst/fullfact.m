@@ -1,3 +1,6 @@
+## Author: Paul Kienzle <pkienzle@users.sf.net>
+## This program is granted to the public domain.
+
 ## -*- texinfo -*-
 ## @deftypefn {Function File} fullfact (@var{N})
 ## Full factorial design.
@@ -9,9 +12,6 @@
 ## through @var{n_i} for each factor @var{i}.
 ##
 ## @end deftypefn
-
-## Author: Paul Kienzle <pkienzle@users.sf.net>
-## This program is public domain.
 
 function A = fullfact(n)
   if length(n) == 1

@@ -1,3 +1,6 @@
+## Author: Paul Kienzle <pkienzle@users.sf.net>
+## This program is granted to the public domain.
+
 ## -*- texinfo -*-
 ## @deftypefn {Function File} @var{p} = anderson_darling_cdf (@var{A}, @var{n})
 ##
@@ -73,9 +76,6 @@
 ## @seealso{anderson_darling_test}
 ## @end deftypefn
 
-## Author: Paul Kienzle
-## This code is granted to the public domain.
-  
 function y = anderson_darling_cdf(z,n)
   y = ADinf(z);
   y += ADerrfix(y,n);

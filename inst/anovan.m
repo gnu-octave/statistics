@@ -1,18 +1,17 @@
-## Copyright (C) 2003-2005 Andy Adler
+## Copyright (C) 2003-2005 Andy Adler <adler@ncf.ca>
 ##
-## Octave is free software; you can redistribute it and/or modify it
-## under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2, or (at your option)
-## any later version.
+## This program is free software; you can redistribute it and/or modify it under
+## the terms of the GNU General Public License as published by the Free Software
+## Foundation; either version 3 of the License, or (at your option) any later
+## version.
 ##
-## This software is distributed in the hope that it will be useful, but
-## WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-## General Public License for more details.
+## This program is distributed in the hope that it will be useful, but WITHOUT
+## ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+## FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+## details.
 ##
-## You should have received a copy of the GNU General Public License
-## along with this software; see the file COPYING.  If not, see
-## <http://www.gnu.org/licenses/>.
+## You should have received a copy of the GNU General Public License along with
+## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{pval}, @var{f}, @var{df_b}, @var{df_e}] =} anovan (@var{data}, @var{grps})
@@ -77,7 +76,6 @@
 ##      g3 = {'may'; 'may'; 'may'; 'may'; 'june'; 'june'; 'june'; 'june'}; 
 ##      anovan( y', [g1',g2',g3'])
 ##    % Fails because we always do interactions
-                                                                           
 
 function [PVAL, FSTAT, DF_B, DFE] = anovan (data, grps, varargin)
 

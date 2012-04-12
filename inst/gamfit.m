@@ -1,3 +1,6 @@
+## Author: Martijn van Oosterhout <kleptog@svana.org>
+## This program is granted to the public domain.
+
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {} [A B] = gamfit (@var{R})
 ## Finds the maximumlikelihood estimator for the Gamma distribution for R
@@ -14,9 +17,6 @@
 ## Note: Octave uses the inverse scale parameter, which is the opposite of
 ## Matlab. To work for Matlab, value of b needs to be inverted in a few
 ## places (marked with **)
-
-## Written by Martijn van Oosterhout <kleptog@svana.org> (Nov 2006)
-## This code is public domain
 
 function res = gamfit(R)
 

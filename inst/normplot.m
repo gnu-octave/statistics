@@ -1,3 +1,6 @@
+## Author: Paul Kienzle <pkienzle@users.sf.net>
+## This program is granted to the public domain.
+
 ## -*- texinfo -*-
 ## @deftypefn {Function File} normplot (@var{X})
 ##
@@ -11,9 +14,6 @@
 ## axis, grid, tics and hold properties of the graph.  These 
 ## need to be cleared before subsequent graphs using 'clf'.
 ## @end deftypefn
-
-# Author: Paul Kienzle <pkienzle@users.sf.net>
-# This program is in the public domain
 
 function normplot(X)
   if nargin!=1, print_usage; end

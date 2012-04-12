@@ -1,3 +1,6 @@
+## Author: Paul Kienzle <pkienzle@users.sf.net>
+## This program is granted to the public domain.
+
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{q}, @var{Asq}, @var{info}] = } = @
 ## anderson_darling_test (@var{x}, @var{distribution})
@@ -51,9 +54,6 @@
 ## @seealso{anderson_darling_cdf}
 ## @end deftypefn
 
-
-## Author: Paul Kienzle
-## This program is granted to the public domain.
 function [q,Asq,info] = anderson_darling_test(x,dist)
 
   if size(x,1) == 1, x=x(:); end

@@ -1,3 +1,6 @@
+## Author: Paul Kienzle <pkienzle@users.sf.net>
+## This program is granted to the public domain.
+
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {@var{y} =} mvnpdf (@var{x})
 ## @deftypefnx{Function File} {@var{y} =} mvnpdf (@var{x}, @var{mu})
@@ -74,8 +77,6 @@
 ## @seealso{mvncdf, mvnrnd}
 ## @end deftypefn
 
-## This program is public domain
-## Author: Paul Kienzle
 function pdf = mvnpdf (x, mu = 0, sigma = 1)
   ## Check input
   if (!ismatrix (x))

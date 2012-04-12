@@ -1,12 +1,12 @@
+## Author: Martijn van Oosterhout <kleptog@svana.org>
+## This program is granted to the public domain.
+
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {@var{X} =} gamlike ([@var{A} @var{B}], @var{R})
 ## Calculates the negative log-likelihood function for the Gamma
 ## distribution over vector @var{R}, with the given parameters @var{A} and @var{B}.
 ## @seealso{gampdf, gaminv, gamrnd, gamfit}
 ## @end deftypefn
-
-## Written by Martijn van Oosterhout <kleptog@svana.org> (Nov 2006)
-## This code is public domain
 
 function res = gamlike(P,K)
 
