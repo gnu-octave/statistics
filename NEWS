@@ -1,7 +1,7 @@
-Summary of important user-visible changes for statistics 1XXXXXXXX:
+Summary of important user-visible changes for statistics 1.1.1:
 -------------------------------------------------------------------
 
- ** The following functions are new in 1.1.X:
+ ** The following functions are new in 1.1.1:
 
       monotone_smooth kmeans jackknife
 
@@ -15,7 +15,7 @@ Summary of important user-visible changes for statistics 1XXXXXXXX:
 
       zscore
 
- ** boxplot.m now retunrs a structure with handles to the plot elemenets.
+ ** boxplot.m now returns a structure with handles to the plot elemenets.
 
 Summary of important user-visible changes for statistics 1.1.0:
 -------------------------------------------------------------------
