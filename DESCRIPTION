@@ -6,7 +6,7 @@ Maintainer: Arno Onken <asnelt@asnelt.org>
 Title: Statistics
 Description: Additional statistics functions for Octave.
 Categories: Statistics
-Depends: octave (>= 2.9.7), miscellaneous
+Depends: octave (>= 2.9.7), miscellaneous, io (>= 1.0.18)
 Autoload: yes
 License: GPLv3+, public domain
 Url: http://octave.sf.net
