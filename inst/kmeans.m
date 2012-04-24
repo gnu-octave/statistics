@@ -1,4 +1,5 @@
 ## Copyright (C) 2011 Soren Hauberg <soren@hauberg.org>
+## Copyright (C) 2012 Daniel Ward <dwa012@gmail.com>
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -13,8 +14,26 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-function [classes, centers] = kmeans (data, k, varargin)
-  ## Input checking
+function [classes, centers, sumd, D] = kmeans (data, k, varargin)
+  [reg, prop] = parseparams(varargin);
+  
+  #defaults for options
+  emptyaction = 'error';
+  start = "sample";
+  
+  #used for getting the number of samples
+  [N, D] = size (data);
+  
+  #used to hold the distances from each sample to each class
+  D = zeros (N, k);
+  
+  #used for convergence of the centroids
+  err = 1;
+  
+  #initial sum of distances
+  sumd = Inf;
+  
+  ## Input checking, validate the matrix and k
   if (!ismatrix (data) || !isreal (data))
     error ("kmeans: first input argument must be a DxN real data matrix");
   endif
@@ -22,14 +41,20 @@ function [classes, centers] = kmeans (data, k, varargin)
     error ("kmeans: second input argument must be a scalar");
   endif
   
-  [N, D] = size (data);
+  if(length(varargin) > 0)
+    ## check for the 'emptyaction' property
+    found = find(strcmpi(prop,'emptyaction') == 1);
+    switch(lower(prop{found+1}))
+      case 'singleton'
+        emptyaction = 'singleton';
+      otherwise
+        error ("kmeans: unsupported empty cluster action parameter");
+    endswitch
+  endif
   
-  ## (so far) Harcoded options
-  maxiter = Inf;
-  start = "sample";
-  
-  ## Find initial clusters
-  switch (lower (start))
+  ## check for the 'start' property
+  #found = find(strcmpi(prop,'start') == 1);
+  switch (lower(start))
     case "sample"
       idx = randperm (N) (1:k);
       centers = data (idx, :);
@@ -37,31 +62,70 @@ function [classes, centers] = kmeans (data, k, varargin)
       error ("kmeans: unsupported initial clustering parameter");
   endswitch
   
+ 
   ## Run the algorithm
-  D = zeros (N, k);
-  iterations = 0;
-  prevcenters = centers;
-  while (true)
+  while err > .001
     ## Compute distances
     for i = 1:k
-      D (:, i) = sum (( data - repmat (centers (i, :), N, 1)).^2, 2);
+      D (:, i) = sumsq(data - repmat(centers(i, :), N, 1), 2);
     endfor
     
     ## Classify
     [tmp, classes] = min (D, [], 2);
     
-    ## Recompute centers
+    ## Calcualte new centroids
     for i = 1:k
+  
+      ## Check for empty clusters
+      if sum(classes==i)==0 || length(mean(data(classes == i, :))) == 0
+      
+        switch(emptyaction)
+          ## if 'singleton', then find the point that is the
+          ## farthest and add it to the empty cluster
+        case 'singleton'
+          classes(maxCostSampleIndex(data,centers(i,:))) = i;
+
+        ## if 'error' then throw the error
+        otherwise
+          error ("kmeans: empty cluster created");
+        endswitch
+
+      endif ## end check for empty clusters
+
+      ## update the centroids
       centers (i, :) = mean (data (classes == i, :));
+      
     endfor
     
-    ## Check for convergence
-    iterations++;
-    if (all (centers (:) == prevcenters (:)) || iterations >= maxiter)
-      break;
+    ## calculate the differnece in the sum of distances
+    err = sumd - objCost(data,classes,centers);
+    ## update the current sum of distances
+    sumd = objCost(data,classes,centers);
+  endwhile  
+endfunction
+
+## calculate the sum of distances
+function obj = objCost(data,classes,centers)
+  [N D] = size(data);
+  sum = 0;
+
+    for i=1:N
+      sum = sum + sumsq(data(i,:)-centers(classes(i),:));
+    endfor
+
+    obj = sum;
+endfunction
+
+function index = maxCostSampleIndex(data,centers)
+  [n m] = size(data); 
+  cost = 0;
+  index = 1;
+  for j = 1:n
+    if cost < sumsq(data(j,:) - centers)
+      cost = sumsq(data(j,:) - centers);
+      index = j;
     endif
-    prevcenters = centers;
-  endwhile
+  endfor
 endfunction
 
 %!demo
@@ -80,4 +144,3 @@ endfunction
 %! plot (data (idx==2, 1), data (idx==2, 2), 'bs');
 %! plot (centers (:, 1), centers (:, 2), 'kv', 'markersize', 10);
 %! hold off
-

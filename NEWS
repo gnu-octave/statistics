@@ -5,6 +5,12 @@ Summary of important user-visible changes for statistics 1.1.2:
     later) since the functions that it depended of from miscellaneous
     package have been moved to io.
 
+ ** The function `kmeans' now accepts the 'emptyaction' property with
+    the 'singleton' value. This allows for the kmeans algorithm to handle
+    empty cluster better. It also throws an error if the user does not
+    request an empty cluster handling, and there is an empty cluster.
+    Plus, the returned items are now a closer match to Matlab.
+
 Summary of important user-visible changes for statistics 1.1.1:
 -------------------------------------------------------------------
 
