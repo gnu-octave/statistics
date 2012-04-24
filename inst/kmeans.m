@@ -14,6 +14,13 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
+## -*- texinfo -*-
+## @deftypefn {Function File} {[@var{idx}, @var{centers}] =} kmeans (@var{data}, @var{k}, @var{param1}, @var{value1, @dots{})
+## K-means clustering.
+##
+## @seealso{linkage}
+## @end deftypefn
+
 function [classes, centers, sumd, D] = kmeans (data, k, varargin)
   [reg, prop] = parseparams (varargin);
 
