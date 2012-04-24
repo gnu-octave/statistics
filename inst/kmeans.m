@@ -15,17 +15,17 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 function [classes, centers, sumd, D] = kmeans (data, k, varargin)
-  [reg, prop] = parseparams(varargin);
-  
-  #defaults for options
-  emptyaction = 'error';
-  start = "sample";
-  
+  [reg, prop] = parseparams (varargin);
+
+  ## defaults for options
+  emptyaction = "error";
+  start       = "sample";
+
   #used for getting the number of samples
-  [N, D] = size (data);
-  
-  #used to hold the distances from each sample to each class
-  D = zeros (N, k);
+  nRows = rows (data);
+
+  ## used to hold the distances from each sample to each class
+  D = zeros (nRows, k);
   
   #used for convergence of the centroids
   err = 1;
@@ -34,40 +34,37 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
   sumd = Inf;
   
   ## Input checking, validate the matrix and k
-  if (!ismatrix (data) || !isreal (data))
+  if (!isnumeric (data) || !ismatrix (data) || !isreal (data))
     error ("kmeans: first input argument must be a DxN real data matrix");
-  endif
-  if (!isscalar (k))
+  elseif (!isscalar (k))
     error ("kmeans: second input argument must be a scalar");
   endif
   
-  if(length(varargin) > 0)
+  if (length (varargin) > 0)
     ## check for the 'emptyaction' property
-    found = find(strcmpi(prop,'emptyaction') == 1);
-    switch(lower(prop{found+1}))
-      case 'singleton'
-        emptyaction = 'singleton';
+    found = find (strcmpi (prop, "emptyaction") == 1);
+    switch (lower (prop{found+1}))
+      case "singleton"
+        emptyaction = "singleton";
       otherwise
         error ("kmeans: unsupported empty cluster action parameter");
     endswitch
   endif
   
   ## check for the 'start' property
-  #found = find(strcmpi(prop,'start') == 1);
-  switch (lower(start))
+  switch (lower (start))
     case "sample"
-      idx = randperm (N) (1:k);
+      idx = randperm (nRows) (1:k);
       centers = data (idx, :);
     otherwise
       error ("kmeans: unsupported initial clustering parameter");
   endswitch
   
- 
   ## Run the algorithm
   while err > .001
     ## Compute distances
     for i = 1:k
-      D (:, i) = sumsq(data - repmat(centers(i, :), N, 1), 2);
+      D (:, i) = sumsq (data - repmat (centers(i, :), nRows, 1), 2);
     endfor
     
     ## Classify
@@ -75,55 +72,44 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
     
     ## Calcualte new centroids
     for i = 1:k
-  
       ## Check for empty clusters
-      if sum(classes==i)==0 || length(mean(data(classes == i, :))) == 0
+      if (sum (classe s== i) ==0 || length (mean (data(classes == i, :))) == 0)
       
-        switch(emptyaction)
+        switch emptyaction
           ## if 'singleton', then find the point that is the
           ## farthest and add it to the empty cluster
-        case 'singleton'
-          classes(maxCostSampleIndex(data,centers(i,:))) = i;
-
-        ## if 'error' then throw the error
-        otherwise
-          error ("kmeans: empty cluster created");
+          case 'singleton'
+            classes(maxCostSampleIndex (data, centers(i,:))) = i;
+         ## if 'error' then throw the error
+          otherwise
+            error ("kmeans: empty cluster created");
         endswitch
-
-      endif ## end check for empty clusters
+     endif ## end check for empty clusters
 
       ## update the centroids
-      centers (i, :) = mean (data (classes == i, :));
-      
+      centers(i, :) = mean (data(classes == i, :));
     endfor
-    
+
     ## calculate the differnece in the sum of distances
-    err = sumd - objCost(data,classes,centers);
+    err  = sumd - objCost (data, classes, centers);
     ## update the current sum of distances
-    sumd = objCost(data,classes,centers);
-  endwhile  
+    sumd = objCost (data, classes, centers);
+  endwhile
 endfunction
 
 ## calculate the sum of distances
-function obj = objCost(data,classes,centers)
-  [N D] = size(data);
-  sum = 0;
-
-    for i=1:N
-      sum = sum + sumsq(data(i,:)-centers(classes(i),:));
+function obj = objCost (data, classes, centers)
+  obj = 0;
+    for i=1:rows (data)
+      obj = obj + sumsq (data(i,:) - centers(classes(i),:));
     endfor
-
-    obj = sum;
 endfunction
 
-function index = maxCostSampleIndex(data,centers)
-  [n m] = size(data); 
+function index = maxCostSampleIndex (data, centers)
   cost = 0;
-  index = 1;
-  for j = 1:n
-    if cost < sumsq(data(j,:) - centers)
-      cost = sumsq(data(j,:) - centers);
-      index = j;
+  for index = 1:rows (data)
+    if cost < sumsq (data(index,:) - centers)
+      cost = sumsq (data(index,:) - centers);
     endif
   endfor
 endfunction
