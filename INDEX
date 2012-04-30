@@ -4,30 +4,31 @@ Distributions
  betastat
  binostat
  chi2stat
+ cl_multinom
  copulacdf copulapdf
  expstat
  fstat
+ gamlike
  gamstat
  geostat
  hygestat
+ jsucdf
+ jsupdf
  lognstat
  mvnpdf mvnrnd mvncdf
- normalise_distribution
- vmpdf vmrnd
+ mnrnd
  mvtcdf
- normstat
  nbinstat
+ normalise_distribution
+ normstat
  poisstat
+ random
  raylcdf raylinv raylpdf raylrnd raylstat
  tstat
  unidstat
  unifstat
+ vmpdf vmrnd
  wblstat
- gamlike
- jsucdf
- jsupdf
- random
- cl_multinom
 Descriptive statistics
  nansum
  nanmax
