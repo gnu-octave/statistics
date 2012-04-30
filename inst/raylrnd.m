@@ -94,7 +94,7 @@ function x = raylrnd (sigma, r, c)
   elseif (nargin == 2)
     if (! isvector (r) || any ((r < 0) | round (r) != r))
       error ("raylrnd: sz must be a vector of non-negative integers")
-    end
+    endif
     sz = r(:)';
     if (! isscalar (sigma) && ! isempty (sigma) && (length (size (sigma)) != length (sz) || any (size (sigma) != sz)))
       error ("raylrnd: sigma must be scalar or of size sz");
@@ -102,10 +102,10 @@ function x = raylrnd (sigma, r, c)
   elseif (nargin == 3)
     if (! isscalar (r) || any ((r < 0) | round (r) != r))
       error ("raylrnd: r must be a non-negative integer")
-    end
+    endif
     if (! isscalar (c) || any ((c < 0) | round (c) != c))
       error ("raylrnd: c must be a non-negative integer")
-    end
+    endif
     sz = [r, c];
     if (! isscalar (sigma) && ! isempty (sigma) && (length (size (sigma)) != length (sz) || any (size (sigma) != sz)))
       error ("raylrnd: sigma must be scalar or of size [r, c]");
