@@ -150,7 +150,7 @@ function x = mnrnd (n, p, s)
     else
       x(i, :) = NaN;
     endif
-  end
+  endfor
 
 endfunction
 
