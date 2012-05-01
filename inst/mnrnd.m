@@ -27,7 +27,7 @@
 ## sample. The elements of @var{n} must be non-negative integers.
 ##
 ## @item
-## @var{n} is the second parameter of the multinomial distribution. @var{p} can
+## @var{p} is the second parameter of the multinomial distribution. @var{p} can
 ## be a vector with the probabilities of the categories or a matrix with each
 ## row containing the probabilities of a multinomial sample. If @var{p} has
 ## more than one row and @var{n} is non-scalar, then the number of rows of
@@ -37,6 +37,7 @@
 ## @var{s} is the number of multinomial samples to be generated. @var{s} must
 ## be a non-negative integer. If @var{s} is specified, then @var{n} must be
 ## scalar and @var{p} must be a vector.
+## @end itemize
 ##
 ## @subheading Return values
 ##
@@ -56,19 +57,19 @@
 ## @example
 ## @group
 ## n = 10;
-## p = [0.2 0.5 0.3];
+## p = [0.2, 0.5, 0.3];
 ## x = mnrnd (n, p);
 ## @end group
 ##
 ## @group
 ## n = 10 * ones (3, 1);
-## p = [0.2 0.5 0.3];
+## p = [0.2, 0.5, 0.3];
 ## x = mnrnd (n, p);
 ## @end group
 ##
 ## @group
 ## n = (1:2)';
-## p = [0.2 0.5 0.3; 0.1 0.1 0.8];
+## p = [0.2, 0.5, 0.3; 0.1, 0.1, 0.8];
 ## x = mnrnd (n, p);
 ## @end group
 ## @end example
@@ -81,8 +82,8 @@
 ## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC, 2001.
 ##
 ## @item
-## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
-## Processes}. pages 104 and 148, McGraw-Hill, New York, second edition, 1984.
+## Merran Evans, Nicholas Hastings and Brian Peacock. @cite{Statistical
+## Distributions}. pages 134-136, Wiley, New York, third edition, 2000.
 ## @end enumerate
 ## @end deftypefn
 
@@ -156,7 +157,7 @@ endfunction
 
 %!test
 %! n = 10;
-%! p = [0.2 0.5 0.3];
+%! p = [0.2, 0.5, 0.3];
 %! x = mnrnd (n, p);
 %! assert (size (x), size (p));
 %! assert (all (x >= 0));
@@ -165,7 +166,7 @@ endfunction
 
 %!test
 %! n = 10 * ones (3, 1);
-%! p = [0.2 0.5 0.3];
+%! p = [0.2, 0.5, 0.3];
 %! x = mnrnd (n, p);
 %! assert (size (x), [length(n) length(p)]);
 %! assert (all (x >= 0));
@@ -174,7 +175,7 @@ endfunction
 
 %!test
 %! n = (1:2)';
-%! p = [0.2 0.5 0.3; 0.1 0.1 0.8];
+%! p = [0.2, 0.5, 0.3; 0.1, 0.1, 0.8];
 %! x = mnrnd (n, p);
 %! assert (size (x), size (p));
 %! assert (all (x >= 0));
