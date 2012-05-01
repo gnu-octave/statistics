@@ -80,7 +80,7 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
     ## Calcualte new centroids
     for i = 1:k
       ## Check for empty clusters
-      if (sum (classe s== i) ==0 || length (mean (data(classes == i, :))) == 0)
+      if (sum (classes == i) ==0 || length (mean (data(classes == i, :))) == 0)
       
         switch emptyaction
           ## if 'singleton', then find the point that is the
