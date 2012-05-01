@@ -16,7 +16,7 @@ Distributions
  jsupdf
  lognstat
  mvnpdf mvnrnd mvncdf
- mnrnd
+ mnpdf mnrnd
  mvtcdf
  nbinstat
  normalise_distribution

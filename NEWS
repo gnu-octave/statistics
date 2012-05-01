@@ -3,7 +3,7 @@ Summary of important user-visible changes for statistics 1.1.2:
 
  ** The following functions are new in 1.1.2:
 
-      mnrnd
+      mnpdf mnrnd
 
  ** The package is now dependent on the io package (version 1.0.18 or
     later) since the functions that it depended of from miscellaneous
