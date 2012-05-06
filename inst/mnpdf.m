@@ -115,7 +115,9 @@ function y = mnpdf (x, p)
   t = x .* log (p);
   t(x == 0) = 0;
   y = exp (gammaln (n+1) - sum (gammaln (x+1), 2) + sum (t, 2));
-  y(sum (p, 2) != 1) = NaN;
+  # Set invalid rows to NaN
+  k = (abs (sum (p, 2) - 1) > 1e-6);
+  y(k) = NaN;
 
 endfunction
 

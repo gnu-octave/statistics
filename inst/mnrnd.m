@@ -135,23 +135,24 @@ function x = mnrnd (n, p, s)
 
   # Upper bounds of categories
   ub = cumsum (p, 2);
+  # Make sure that the greatest upper bound is 1
+  gub = ub(:, end);
+  ub(:, end) = 1;
   # Lower bounds of categories
   lb = [zeros(sz(1), 1) ub(:, 1:(end-1))];
 
   # Draw multinomial samples
   x = zeros (sz);
   for i = 1:sz(1)
-    # Check if the probabilities sum to 1
-    if (ub(i, end) == 1)
-      # Draw uniform random numbers
-      r = repmat (rand (n(i), 1), 1, sz(2));
-      # Compare the random numbers of r to the cumulated probabilities of p and
-      # count the number of samples for each category
-      x(i, :) =  sum (r <= repmat (ub(i, :), n(i), 1) & r > repmat (lb(i, :), n(i), 1), 1);
-    else
-      x(i, :) = NaN;
-    endif
+    # Draw uniform random numbers
+    r = repmat (rand (n(i), 1), 1, sz(2));
+    # Compare the random numbers of r to the cumulated probabilities of p and
+    # count the number of samples for each category
+    x(i, :) =  sum (r <= repmat (ub(i, :), n(i), 1) & r > repmat (lb(i, :), n(i), 1), 1);
   endfor
+  # Set invalid rows to NaN
+  k = (abs (gub - 1) > 1e-6);
+  x(k, :) = NaN;
 
 endfunction
 
