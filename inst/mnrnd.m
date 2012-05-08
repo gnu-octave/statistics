@@ -169,7 +169,7 @@ endfunction
 %! n = 10 * ones (3, 1);
 %! p = [0.2, 0.5, 0.3];
 %! x = mnrnd (n, p);
-%! assert (size (x), [length(n) length(p)]);
+%! assert (size (x), [length(n), length(p)]);
 %! assert (all (x >= 0));
 %! assert (all (round (x) == x));
 %! assert (all (sum (x, 2) == n));

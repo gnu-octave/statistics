@@ -153,5 +153,5 @@ endfunction
 %! r = 2;
 %! c = 3;
 %! x = raylrnd (sigma, r, c);
-%! assert (size (x), [r c]);
+%! assert (size (x), [r, c]);
 %! assert (all (x >= 0));
