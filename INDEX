@@ -5,7 +5,7 @@ Distributions
  binostat
  chi2stat
  cl_multinom
- copulacdf copulapdf
+ copulacdf copulapdf copularnd
  expstat
  fstat
  gamlike
@@ -17,7 +17,7 @@ Distributions
  lognstat
  mvnpdf mvnrnd mvncdf
  mnpdf mnrnd
- mvtcdf
+ mvtcdf mvtrnd
  nbinstat
  normalise_distribution
  normstat
