@@ -1,6 +1,10 @@
 Summary of important user-visible changes for statistics 1.1.3:
 -------------------------------------------------------------------
 
+ ** The following functions are new in 1.1.3:
+
+      copularnd mvtrnd
+
  ** The functions mnpdf and mnrnd are now also usable for greater numbers
     of categories for which the rows do not exactly sum to 1.
 
