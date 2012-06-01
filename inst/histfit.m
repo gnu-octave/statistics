@@ -21,7 +21,7 @@
 ## @code{histfit (@var{data}, @var{nbins})} plots a histogram of the values in
 ## the vector @var{data} using @var{nbins} bars in the histogram. With one input
 ## argument, @var{nbins} is set  to the square root of the number of elements in
-## data. 
+## data.
 ##
 ## Example
 ##
@@ -61,10 +61,9 @@ function histfit (data,nbins)
   sr = nanstd(data);  ## Estimates the parameter, SIGMA, of the normal distribution.
   x=(-3*sr+mr:0.1*sr:3*sr+mr)';## Evenly spaced samples of the expected data range.
   [xb,yb] = bar(xbin,n);
-  y = normal_pdf(x,mr,sr.^2);
+  y = normpdf(x,mr,sr);
   binwidth = xbin(2)-xbin(1);
   y = row*y*binwidth;   ## Normalization necessary to overplot the histogram.
   plot(xb,yb,";;b",x,y,";;r-");     ## Plots density line over histogram.
 
 endfunction
-
