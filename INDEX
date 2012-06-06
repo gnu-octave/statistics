@@ -51,6 +51,7 @@ Regression
  monotone_smooth
  princomp
  regress
+ regress_gp
 Plots
  boxplot
  normplot
