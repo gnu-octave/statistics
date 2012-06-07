@@ -1,9 +1,13 @@
 Summary of important user-visible changes for statistics 1.2.0:
 -------------------------------------------------------------------
 
- ** The following functions are new in 1.2.0:
+ ** The following functions are new:
 
       regress_gp
+ 
+ ** The interface of the following functions has been modified:
+
+      mvnrnd
 
 Summary of important user-visible changes for statistics 1.1.3:
 -------------------------------------------------------------------
