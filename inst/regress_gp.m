@@ -46,6 +46,19 @@ function [wm K yi dy] = regress_gp (x,y,Sp=[],xi=[])
 
   x  = [ones(1,size(x,1)); x'];
 
+  ## Juan Pablo Carbajal <carbajal@ifi.uzh.ch>
+  ## Note that in the book the equation (below 2.11) for the A reads
+  ## A  = (1/sy^2)*x*x' + inv (Vp);
+  ## where sy is the scalar variance of the of the residuals (i.e y = x' * w + epsilon)
+  ## and epsilon is drawn from N(0,sy^2). Vp is the variance of the parameters w.
+  ## Note that
+  ## (sy^2 * A)^{-1} = (1/sy^2)*A^{-1} =  (x*x' + sy^2 * inv(Vp))^{-1};
+  ## and that the formula for the w mean is
+  ## (1/sy^2)*A^{-1}*x*y
+  ## Then one obtains
+  ## inv(x*x' + sy^2 * inv(Vp))*x*y
+  ## Looking at the formula bloew we see that Sp = (1/sy^2)*Vp
+  ## making the regression depend on only one parameter, Sp, and not two.
   A  = x*x' + inv (Sp);
   K  = inv (A);
   wm = K*x*y;
