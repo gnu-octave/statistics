@@ -29,7 +29,7 @@
 ##
 ## @end deftypefn
 
-function s = mvnrnd_jpi (mu, Sigma, K, tol=eps*norm (Sigma, "fro"))
+function s = mvnrnd (mu, Sigma, K, tol=eps*norm (Sigma, "fro"))
 
   % Iain Murray 2003 -- I got sick of this simple thing not being in Octave and
   %                     locking up a stats-toolbox license in Matlab for no good
