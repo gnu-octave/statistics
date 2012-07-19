@@ -9,6 +9,9 @@ Summary of important user-visible changes for statistics 1.2.0:
 
       mvnrnd
 
+ ** `kmeans' has been fixed to deal with clusters that contain only
+    one element.
+
 Summary of important user-visible changes for statistics 1.1.3:
 -------------------------------------------------------------------
 

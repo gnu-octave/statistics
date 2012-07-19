@@ -33,20 +33,20 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
 
   ## used to hold the distances from each sample to each class
   D = zeros (nRows, k);
-  
+
   #used for convergence of the centroids
   err = 1;
-  
+
   #initial sum of distances
   sumd = Inf;
-  
+
   ## Input checking, validate the matrix and k
   if (!isnumeric (data) || !ismatrix (data) || !isreal (data))
     error ("kmeans: first input argument must be a DxN real data matrix");
   elseif (!isscalar (k))
     error ("kmeans: second input argument must be a scalar");
   endif
-  
+
   if (length (varargin) > 0)
     ## check for the 'emptyaction' property
     found = find (strcmpi (prop, "emptyaction") == 1);
@@ -57,7 +57,7 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
         error ("kmeans: unsupported empty cluster action parameter");
     endswitch
   endif
-  
+
   ## check for the 'start' property
   switch (lower (start))
     case "sample"
@@ -66,27 +66,30 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
     otherwise
       error ("kmeans: unsupported initial clustering parameter");
   endswitch
-  
+
   ## Run the algorithm
   while err > .001
     ## Compute distances
     for i = 1:k
       D (:, i) = sumsq (data - repmat (centers(i, :), nRows, 1), 2);
     endfor
-    
+
     ## Classify
     [tmp, classes] = min (D, [], 2);
-    
-    ## Calcualte new centroids
+
+    ## Calculate new centroids
     for i = 1:k
+      ## Get binary vector indicating membership in cluster i
+      membership = (classes == i);
       ## Check for empty clusters
-      if (sum (classes == i) ==0 || length (mean (data(classes == i, :))) == 0)
-      
+      if (sum (membership) == 0)
         switch emptyaction
           ## if 'singleton', then find the point that is the
           ## farthest and add it to the empty cluster
           case 'singleton'
-            classes(maxCostSampleIndex (data, centers(i,:))) = i;
+           idx=maxCostSampleIndex (data, centers(i,:));
+           classes(idx) = i;
+           membership(idx)=1;
          ## if 'error' then throw the error
           otherwise
             error ("kmeans: empty cluster created");
@@ -94,10 +97,11 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
      endif ## end check for empty clusters
 
       ## update the centroids
-      centers(i, :) = mean (data(classes == i, :));
+      members = data(membership, :);
+      centers(i, :) = sum(members,1)/size(members,1);
     endfor
 
-    ## calculate the differnece in the sum of distances
+    ## calculate the difference in the sum of distances
     err  = sumd - objCost (data, classes, centers);
     ## update the current sum of distances
     sumd = objCost (data, classes, centers);
@@ -112,11 +116,11 @@ function obj = objCost (data, classes, centers)
     endfor
 endfunction
 
-function index = maxCostSampleIndex (data, centers)
+function idx = maxCostSampleIndex (data, centers)
   cost = 0;
-  for index = 1:rows (data)
-    if cost < sumsq (data(index,:) - centers)
-      cost = sumsq (data(index,:) - centers);
+  for idx = 1:rows (data)
+    if cost < sumsq (data(idx,:) - centers)
+      cost = sumsq (data(idx,:) - centers);
     endif
   endfor
 endfunction
