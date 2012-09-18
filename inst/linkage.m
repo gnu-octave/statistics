@@ -23,7 +23,7 @@
 ##
 ## Produce a hierarchical clustering dendrogram
 ##
-## @var{d} is the dissimilarity matrix relative to @var{n} observations,
+## @var{d} is the dissimilarity matrix relative to n observations,
 ## formatted as a @math{(n-1)*n/2}x1 vector as produced by @code{pdist}.
 ## Alternatively, @var{x} contains data formatted for input to
 ## @code{pdist}, @var{metric} is a metric for @code{pdist} and
@@ -31,11 +31,11 @@
 ## @code{pdist}.
 ##
 ## @code{linkage} starts by putting each observation into a singleton
-## cluster and numbering those from 1 to @var{n}.  Then it merges two
+## cluster and numbering those from 1 to n.  Then it merges two
 ## clusters, chosen according to @var{method}, to create a new cluster
-## numbered @var{n+1}, and so on until all observations are grouped into
-## a single cluster numbered @var{2*n-1}.  Row @var{m} of the
-## @math{m-1}x3 output matrix relates to cluster @math{n+m}: the first
+## numbered n+1, and so on until all observations are grouped into
+## a single cluster numbered 2*n-1.  Row m of the
+## (m-1)x3 output matrix relates to cluster n+m: the first
 ## two columns are the numbers of the two component clusters and column
 ## 3 contains their distance.
 ##
