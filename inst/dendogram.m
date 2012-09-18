@@ -85,4 +85,12 @@ endfunction
 %!demo
 %! y      = [4 5; 2 6; 3 7; 8 9; 1 10];
 %! y(:,3) = 1:5;
+%! figure(gcf); clf;
+%! dendogram(y);
+
+%!demo
+%! v = 2*rand(30,1)-1;
+%! d = abs(v(:,1)-v(:,1)');
+%! y = linkage (squareform(d,"tovector"));
+%! figure(gcf); clf;
 %! dendogram(y);
