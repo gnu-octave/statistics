@@ -3,7 +3,7 @@ Summary of important user-visible changes for statistics 1.2.0:
 
  ** The following functions are new:
 
-      regress_gp
+      regress_gp  dendogram
  
  ** The interface of the following functions has been modified:
 

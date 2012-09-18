@@ -34,8 +34,8 @@
 ## cluster and numbering those from 1 to n.  Then it merges two
 ## clusters, chosen according to @var{method}, to create a new cluster
 ## numbered n+1, and so on until all observations are grouped into
-## a single cluster numbered 2*n-1.  Row m of the
-## (m-1)x3 output matrix relates to cluster n+m: the first
+## a single cluster numbered 2(n-1).  Row k of the
+## (m-1)x3 output matrix relates to cluster n+k: the first
 ## two columns are the numbers of the two component clusters and column
 ## 3 contains their distance.
 ##

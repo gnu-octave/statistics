@@ -57,6 +57,7 @@ Plots
  normplot
  histfit
  repanova
+ dendogram
 Models
  hmmestimate hmmgenerate hmmviterbi
 Hypothesis testing
