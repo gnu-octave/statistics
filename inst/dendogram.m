@@ -14,7 +14,7 @@
 %%    along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 %% -*- texinfo -*-
-%% @deftypefn {Function File} {@var{h} = } dendogram (@var{tree})
+%% @deftypefn {Function File} {@var{p} = } dendogram (@var{tree})
 %% Plots a dendogram using the output of function @command{linkage}.
 %%
 %% TODO: Return handle to lines to set properties
@@ -23,7 +23,7 @@
 %% @seealso{linkage}
 %% @end deftypefn
 
-function h = dendogram (tree)
+function p = dendogram (tree)
 
   [m d] = size (tree);
   if d != 3
@@ -70,10 +70,10 @@ function h = dendogram (tree)
   tmp = line (x', tree(:,[3 3])');
 
   % plot vertical lines
-  for i=1:nc
-    [ind,~] = find (tree(:,1:2)==i);
-    tmp = line (p([i; i],1),[p(i,2); tree(ind,3)]);
-  end
+  [~,tf]  = ismember (1:nc, tree(:,1:2));
+  [ind,~] = ind2sub (size (tree(:,1:2)), tf);
+  y       = [p(1:nc,2) tree(ind,3)];
+  tmp     = line ([p(1:nc,1) p(1:nc,1)]',y');
 
   xticks = 1:n;
   xl_txt = arrayfun (@num2str, labels,"uniformoutput",false);
