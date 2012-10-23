@@ -2,8 +2,13 @@
 ## This program is granted to the public domain.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {} [A B] = gamfit (@var{R})
-## Finds the maximumlikelihood estimator for the Gamma distribution for R
+## @deftypefn {Function File} {@var{MLE} =} gamfit (@var{data})
+## Calculate gamma distribution parameters.
+##
+## Find the maximum likelihood estimators (@var{mle}s) of the Gamma distribution
+## of @var{data}.  @var{MLE} is a two element vector with shape parameter
+## @var{A} and scale @var{B}.
+##
 ## @seealso{gampdf, gaminv, gamrnd, gamlike}
 ## @end deftypefn
 
@@ -14,6 +19,7 @@
 ## for the search takes one parameter, calculates the other and then returns
 ## the value of gamlike.
 
+## FIXME is this still true???
 ## Note: Octave uses the inverse scale parameter, which is the opposite of
 ## Matlab. To work for Matlab, value of b needs to be inverted in a few
 ## places (marked with **)
