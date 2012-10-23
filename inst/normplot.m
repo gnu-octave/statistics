@@ -3,8 +3,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} normplot (@var{X})
-##
-## Produce a normal probability plot for each column of @var{X}.
+## Produce normal probability plot for each column of @var{X}.
 ##
 ## The line joing the 1st and 3rd quantile is drawn on the
 ## graph.  If the underlying distribution is normal, the
@@ -19,28 +18,11 @@ function normplot(X)
   if nargin!=1, print_usage; end
   if (rows(X) == 1), X=X(:); end
 
-  # plot labels
-  title "Normal Probability Plot"
-  ylabel "% Probability"
-  xlabel "Data"
-
-  # plot grid
-  t = [0.00001;0.0001;0.001;0.01;0.1;0.3;1;2;5;10;25;50;
-      75;90;95;98;99;99.7;99.9;99.99;99.999;99.9999;99.99999];
-  tics ('y',normal_inv(t/100),num2str(t));
-  grid on
-
   # Transform data
   n = rows(X);
   if n<2, error("normplot requires a vector"); end
-  q = normal_inv([1:n]'/(n+1));
+  q = norminv([1:n]'/(n+1));
   Y = sort(X);
-
-  # Set view range with a bit of space around data
-  miny = min(Y(:)); minq = min(q(1),normal_inv(0.05));
-  maxy = max(Y(:)); maxq = max(q(end),normal_inv(0.95));
-  yspace = (maxy-miny)*0.05; qspace = (q(end)-q(1))*0.05;
-  axis ([miny-yspace, maxy+yspace, minq-qspace, maxq+qspace]); 
 
   # Find the line joining the first to the third quartile for each column
   q1 = ceil(n/4);
@@ -71,5 +53,23 @@ function normplot(X)
     plot(pts, polyval(p(:,i),pts), [num2str(i),";;"]);
   end
   hold off;
+  
+    # plot labels
+  title "Normal Probability Plot"
+  ylabel "% Probability"
+  xlabel "Data"
+
+  # plot grid
+  t = [0.00001;0.0001;0.001;0.01;0.1;0.3;1;2;5;10;25;50;
+      75;90;95;98;99;99.7;99.9;99.99;99.999;99.9999;99.99999];
+  set(gca, "ytick",  norminv(t/100), "yticklabel", num2str(t));
+  grid on
+  
+  # Set view range with a bit of space around data
+  miny = min(Y(:)); minq = min(q(1),norminv(0.05));
+  maxy = max(Y(:)); maxq = max(q(end),norminv(0.95));
+  yspace = (maxy-miny)*0.05; qspace = (q(end)-q(1))*0.05;
+  axis ([miny-yspace, maxy+yspace, minq-qspace, maxq+qspace]); 
+  
 end
 
