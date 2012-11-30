@@ -1,4 +1,4 @@
-## Copyright (C) 2012  Arno Onken <asnelt@asnelt.org>
+## Copyright (C) 2012  Arno Onken <asnelt@asnelt.org>, Iñigo Urteaga
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -23,7 +23,14 @@
 ## @itemize @bullet
 ## @item
 ## @var{sigma} is the matrix of correlation coefficients. If there are any
-## non-unit diagonal elements then @var{sigma} will be normalized.
+## non-unit diagonal elements then @var{sigma} will be normalized, so that the
+## resulting covariance of the obtained samples @var{x} follows:
+## @code{cov (x) = nu/(nu-2) * sigma ./ (sqrt (diag (sigma) * diag (sigma)))}.
+## In order to obtain samples distributed according to a standard multivariate
+## t-distribution, @var{sigma} must be equal to the identity matrix. To generate
+## multivariate t-distribution samples @var{x} with arbitrary covariance matrix
+## @var{sigma}, the following scaling might be used:
+## @code{x = mvtrnd (sigma, nu, n) * diag (sqrt (diag (sigma)))}.
 ##
 ## @item
 ## @var{nu} is the degrees of freedom for the multivariate t-distribution.
