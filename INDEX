@@ -50,6 +50,7 @@ Regression
  anovan
  monotone_smooth
  princomp
+ plsregress
  regress
  regress_gp
 Plots
