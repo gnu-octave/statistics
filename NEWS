@@ -4,7 +4,11 @@ Summary of important user-visible changes for statistics 1.2.0:
  ** The following functions are new:
 
       regress_gp  dendogram   plsregress
- 
+
+ ** New functions for the generalized extreme value (GEV) distribution:
+      
+      gevcdf gevfit gevinv gevlike gevpdf gevrnd gevstat
+      
  ** The interface of the following functions has been modified:
 
       mvnrnd
