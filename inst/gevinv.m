@@ -64,7 +64,7 @@ function [X] = gevinv (P, k = 0, sigma = 1, mu = 0)
   
   ii = (k == 0);
   X(ii) = mu(ii) - sigma(ii) .* log(-log(P(ii)));
-  X(~ii) = mu(~ii) + sigma(~ii) .* (-1 - (log(P(~ii)).^ -k(~ii))) ./ k(~ii);
+  X(~ii) = mu(~ii) + (sigma(~ii) ./ k(~ii)) .* (((-log(P(~ii))).^ (-k(~ii))) - 1);
 
 endfunction
 
@@ -80,6 +80,15 @@ endfunction
 %!test
 %! p = 0.1:0.1:0.9;
 %! k = 1;
+%! sigma = 1;
+%! mu = 0;
+%! x = gevinv (p, k, sigma, mu);
+%! c = gevcdf(x, k, sigma, mu);
+%! assert (c, p, 0.001);
+
+%!test
+%! p = 0.1:0.1:0.9;
+%! k = 0.3;
 %! sigma = 1;
 %! mu = 0;
 %! x = gevinv (p, k, sigma, mu);
