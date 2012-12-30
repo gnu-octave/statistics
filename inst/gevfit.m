@@ -14,7 +14,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{paramhat}, @var{paramci} =} gevfit (@var{data})
+## @deftypefn {Function File} {@var{paramhat}, @var{paramci} =} gevfit (@var{data}, @var{parmguess})
 ## Find the maximum likelihood estimator (@var{paramhat}) of the generalized extreme value (GEV) distribution to fit @var{data}.
 ##
 ## @subheading Arguments
@@ -22,14 +22,15 @@
 ## @itemize @bullet
 ## @item
 ## @var{data} is the vector of given values.
-##
+## @item
+## @var{parmguess} is an initial guess for the maximum likelihood parameter vector. If not given, this defaults to [0; 1; 0].
 ## @end itemize
 ##
 ## @subheading Return values
 ##
 ## @itemize @bullet
 ## @item
-## @var{parmhat} is the 3-parameter maximum-likelihood parameter vector [@var{k}, @var{sigma}, @var{mu}], where @var{k} is the shape parameter of the GEV distribution, @var{sigma} is the scale parameter of the GEV distribution, and @var{mu} is the location parameter of the GEV distribution.
+## @var{parmhat} is the 3-parameter maximum-likelihood parameter vector [@var{k}; @var{sigma}; @var{mu}], where @var{k} is the shape parameter of the GEV distribution, @var{sigma} is the scale parameter of the GEV distribution, and @var{mu} is the location parameter of the GEV distribution.
 ## @item
 ## @var{paramci} has the approximate 95% confidence intervals of the parameter values based on the Fisher information matrix at the maximum-likelihood position.
 ## 
@@ -51,24 +52,21 @@
 ## Author: Nir Krakauer <nkrakauer@ccny.cuny.edu>
 ## Description: Maximum likelihood parameter estimation for the generalized extreme value distribution
 
-function [paramhat, paramci] = gevfit (data)
+function [paramhat, paramci] = gevfit (data, parmguess=[0; 1; 0])
 
   # Check arguments
   if (nargin < 1)
     print_usage;
   endif
   
-  #initial guess for parameter values
-  p0 = [0 1 0]';
-  
   #cost function to minimize
   f = @(p) gevlike(p, data);
   
-  paramhat = fminunc(f, p0);
+  paramhat = fminunc(f, parmguess);
   
   if nargout > 1
   	[nlogL, ACOV] = gevlike (paramhat, data);
-  	param_se = sqrt(diag(-ACOV));
+  	param_se = sqrt(diag(inv(-ACOV)));
   	paramci(:, 1) = paramhat - 1.96*param_se;
   	paramci(:, 2) = paramhat + 1.96*param_se;
   endif
