@@ -11,7 +11,7 @@ Distributions
  gamlike
  gamstat
  geostat
- gevcdf gevfit gevinv gevlike gevpdf gevrnd gevstat 
+ gevcdf gevfit gevfit_lmom gevinv gevlike gevpdf gevrnd gevstat 
  hygestat
  jsucdf
  jsupdf

@@ -7,7 +7,7 @@ Summary of important user-visible changes for statistics 1.2.0:
 
  ** New functions for the generalized extreme value (GEV) distribution:
       
-      gevcdf gevfit gevinv gevlike gevpdf gevrnd gevstat
+      gevcdf gevfit gevfit_lmom gevinv gevlike gevpdf gevrnd gevstat
       
  ** The interface of the following functions has been modified:
 
