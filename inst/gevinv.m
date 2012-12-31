@@ -62,9 +62,12 @@ function [X] = gevinv (P, k = 0, sigma = 1, mu = 0)
 
   X = P;
   
-  ii = (k == 0);
-  X(ii) = mu(ii) - sigma(ii) .* log(-log(P(ii)));
-  X(~ii) = mu(~ii) + (sigma(~ii) ./ k(~ii)) .* (((-log(P(~ii))).^ (-k(~ii))) - 1);
+  llP = log(-log(P));
+  kllP = k .* llP;
+  
+  ii = (abs(kllP) < 1E-4); #use the Taylor series expansion of the exponential to avoid roundoff error or dividing by zero when k is small
+  X(ii) = mu(ii) - sigma(ii) .* llP(ii) .* (1 - kllP(ii) .* (1 - kllP(ii)));
+  X(~ii) = mu(~ii) + (sigma(~ii) ./ k(~ii)) .* (exp(-kllP(~ii)) - 1);
 
 endfunction
 
