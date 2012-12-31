@@ -62,11 +62,11 @@ function [paramhat, paramci] = gevfit (data, parmguess=[0; 1; 0])
   #cost function to minimize
   f = @(p) gevlike(p, data);
   
-  paramhat = fminunc(f, parmguess);
-  
+  paramhat = fminunc(f, parmguess, optimset("GradObj", "on"));
+    
   if nargout > 1
-  	[nlogL, ACOV] = gevlike (paramhat, data);
-  	param_se = sqrt(diag(inv(-ACOV)));
+  	[nlogL, ~, ACOV] = gevlike (paramhat, data);
+  	param_se = sqrt(diag(inv(ACOV)));
   	paramci(:, 1) = paramhat - 1.96*param_se;
   	paramci(:, 2) = paramhat + 1.96*param_se;
   endif
@@ -78,6 +78,7 @@ endfunction
 %!test
 %! data = 1:50;
 %! [pfit, pci] = gevfit (data);
-%! sigma = 0.3;
 %! expected_p = [-0.44 15.19 21.53]';
+%! expected_pu = [-0.13 19.31 26.49]';
 %! assert (pfit, expected_p, 0.1);
+%! assert (pci(:, 2), expected_pu, 0.1);

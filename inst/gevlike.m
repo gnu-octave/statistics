@@ -14,7 +14,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{nlogL}, @var{ACOV}, @var{Grad} =} gevlike (@var{params}, @var{data})
+## @deftypefn {Function File} {@var{nlogL}, @var{Grad}, @var{ACOV} =} gevlike (@var{params}, @var{data})
 ## Compute the negative log-likelihood of data under the generalized extreme value (GEV) distribution with given parameter values.
 ##
 ## @subheading Arguments
@@ -33,8 +33,9 @@
 ## @item
 ## @var{nlogL} is the negative log-likelihood.
 ## @item
-## @var{ACOV} is the 3 by 3 Fisher information matrix (negative second derivative of the log likelihood with respect to the parameter values)
 ## @var{Grad} is the 3 by 1 gradient vector (first derivative of the log likelihood with respect to the parameter values)
+## @item
+## @var{ACOV} is the 3 by 3 Fisher information matrix (second derivative of the negative log likelihood with respect to the parameter values)
 ## 
 ## @end itemize
 ##
@@ -46,7 +47,7 @@
 ## k = -0.2;
 ## sigma = 0.3;
 ## mu = 0.5;
-## [L, C] = gevlike ([k sigma mu], x);
+## [L, ~, C] = gevlike ([k sigma mu], x);
 ## @end group
 ## @end example
 ##
@@ -63,7 +64,7 @@
 ## Author: Nir Krakauer <nkrakauer@ccny.cuny.edu>
 ## Description: Negative log-likelihood for the generalized extreme value distribution
 
-function [nlogL, ACOV, Grad] = gevlike (params, data)
+function [nlogL, Grad, ACOV] = gevlike (params, data)
 
   # Check arguments
   if (nargin != 2)
@@ -75,13 +76,17 @@ function [nlogL, ACOV, Grad] = gevlike (params, data)
   mu = params(3);
   
   #calculate negative log likelihood
-  nlogL = sum(gevnll (data, k, sigma, mu) (:));
-
-  if nargout > 1
-  	ACOV = -gevfim (data, k, sigma, mu);
-    if nargout > 2
-  	  Grad = gevgrad (data, k, sigma, mu);
-  	endif
+  if isargout(1)
+    nlogL = sum(gevnll (data, k, sigma, mu) (:));
+  endif
+  
+  #optionally calculate the first and second derivatives of the negative log likelihood with respect to parameters
+  if isargout(2)
+  	 Grad = gevgrad (data, k, sigma, mu);
+  endif
+    
+  if isargout(3)
+  	ACOV = gevfim (data, k, sigma, mu);
   endif
 
 endfunction
@@ -151,48 +156,48 @@ G(3) = sum(g(:));
 
 endfunction
 
-function ACOV = gevfim (x, k, sigma, mu)
+function C = gevfim (x, k, sigma, mu)
 #internal function to calculate the (negative) Fisher information matrix for gevlike
 #no input checking done
 
 #calculate the various second derivatives (used Maxima to find the expressions)
 
-ACOV = ones(3);
+C = ones(3);
 
 if k == 0 ##use the expressions for second derivatives that are the limits as k --> 0
   #k, k
   a = (x - mu) ./ sigma;
   f = exp(a);
   der = (x .* (24 * mu .^ 2 .* sigma .* (f - 1) + 24 * mu .* sigma .^ 2 .* f - 12 * mu .^ 3) + x .^ 3 .* (8 * sigma .* (f - 1) - 12*mu) + x .^ 2 .* (-12 * sigma .^ 2 .* f + 24 * mu .* sigma .* (1 - f) + 18 * mu .^ 2) - 12 * mu .^ 2 .* sigma .^ 2 .* f + 8 * mu .^ 3 .* sigma .* (1 - f) + 3 * (x .^ 4 + mu .^ 4)) ./ (12 .* f .* sigma .^ 4);
-  ACOV(1, 1) = sum(der(:));
+  C(1, 1) = sum(der(:));
 
   #sigma, sigma
   der = (sigma .^ -2) .* ...
     ((-2*a ./ f) + ...
     a .^ 2 ./ f + ...
     2*a - 1);
-  ACOV(2, 2) = sum(der(:));
+  C(2, 2) = sum(der(:));
 
   #mu, mu
   der = (sigma .^ -2) ./ f;
-  ACOV(3, 3) = sum(der(:));
+  C(3, 3) = sum(der(:));
 
   #k, sigma
   der =  (x .^2 .* (2*sigma .* (f - 1) - 3*mu) + ...
   x .* (-2 * sigma .^ 2 .* f + 4 * mu .* sigma .* (1 - f) + 3 .* mu .^ 2) + ...
   2 * mu .^ 2 .* sigma .* (f - 1) + 2 * mu * sigma .^ 2 * f + x .^ 3 - mu .^ 3) ...
   ./ (2 .* f .* sigma .^ 4);
-  ACOV(1, 2) = ACOV(2, 1) = sum(der(:));
+  C(1, 2) = C(2, 1) = sum(der(:));
 
   #k, mu
   der = (x .* (2*sigma .* (f - 1) - 2*mu) - 2 * f .* sigma .^ 2 + ...
   2 .* mu .* sigma .* (1 - f) + x .^ 2 + mu .^ 2)...
   ./ (2 .* f .* sigma .^ 3);
-  ACOV(1, 3) = ACOV(3, 1) = sum(der(:));
+  C(1, 3) = C(3, 1) = sum(der(:));
 
   #sigma, mu
   der = (sigma + (x - sigma - mu) ./ f) ./ (sigma .^ 3);
-  ACOV(2, 3) = ACOV(3, 2) = sum(der(:));
+  C(2, 3) = C(3, 2) = sum(der(:));
 
   return
 endif
@@ -203,7 +208,7 @@ endif
 z = 1 + k .* (x - mu) ./ sigma;
 
 if any (z <= 0)
-  ACOV(:) = 0; #negative log likelihood is locally infinite
+  C(:) = 0; #negative log likelihood is locally infinite
   return
 end
 
@@ -216,7 +221,7 @@ der = ((((c ./ k.^2) - (a ./ (k .* b))) .^ 2) ./ (b .^ (1 ./ k))) + ...
   ((-2*c ./ k.^3) + (2*a ./ (k.^2 .* b)) + ((a ./ b) .^ 2 ./ k)) ./ (b .^ (1 ./ k)) + ...
   2*c ./ k.^3 - ...
   (2*a ./ (k.^2 .* b)) - (d .* (a ./ b) .^ 2);
-ACOV(1, 1) = sum(der(:));
+C(1, 1) = sum(der(:));
 
 #sigma, sigma
 der = (sigma .^ -2) .* (...
@@ -224,13 +229,13 @@ der = (sigma .^ -2) .* (...
   d .* k .* a .^ 2 .* (b .^ (-d-1)) + ...
   2 .* d .* k .* a ./ b - ...
   d .* (k .* a ./ b) .^ 2 - 1);
-ACOV(2, 2) = sum(der(:));
+C(2, 2) = sum(der(:));
 
 #mu, mu
 der = (d .* (sigma .^ -2)) .*  (...
   k .* (b .^ (-d-1)) - ...
   (k ./ b) .^ 2);
-ACOV(3, 3) = sum(der(:));
+C(3, 3) = sum(der(:));
 
 #k, sigma
 der = (a ./ sigma) .* (...
@@ -238,20 +243,20 @@ der = (a ./ sigma) .* (...
 -a .* (b .^ (-d-1)) + ...
 ((1 ./ k) - d) ./ b + ...
 a .* k .* d ./ (b .^ 2));
-ACOV(1, 2) = ACOV(2, 1) = sum(der(:));
+C(1, 2) = C(2, 1) = sum(der(:));
 
 #k, mu
 der = ( (b .^ (-d)) .* (c ./ k  - a ./ b) ./ k - ...
 a .* (b .^ (-d-1)) + ...
 ((1 ./ k) - d) ./ b +
 a .* k .* d ./ (b .^ 2)) ./ sigma;
-ACOV(1, 3) = ACOV(3, 1) = sum(der(:));
+C(1, 3) = C(3, 1) = sum(der(:));
 
 #sigma, mu
 der = ( -(b .^ (-d)) + ...
 a .* k .* d .* (b .^ (-d-1)) + ...
 (d .* k ./ b) - a .* (k./b).^2 .* d) ./ (sigma .^ 2);
-ACOV(2, 3) = ACOV(3, 2) = sum(der(:));
+C(2, 3) = C(3, 2) = sum(der(:));
 
 endfunction
 
@@ -263,9 +268,9 @@ endfunction
 %! k = 0.2;
 %! sigma = 0.3;
 %! mu = 0.5;
-%! [L, C] = gevlike ([k sigma mu], x);
+%! [L, ~, C] = gevlike ([k sigma mu], x);
 %! expected_L = 0.75942;
-%! expected_C = -[-0.12547 1.77884 1.06731; 1.77884 16.40761 8.48877; 1.06731 8.48877 0.27979];
+%! expected_C = [-0.12547 1.77884 1.06731; 1.77884 16.40761 8.48877; 1.06731 8.48877 0.27979];
 %! assert (L, expected_L, 0.001);
 %! assert (C, expected_C, 0.001);
 
@@ -274,9 +279,9 @@ endfunction
 %! k = 0;
 %! sigma = 0.3;
 %! mu = 0.5;
-%! [L, C] = gevlike ([k sigma mu], x);
+%! [L, ~, C] = gevlike ([k sigma mu], x);
 %! expected_L = 0.65157;
-%! expected_C = -[0.090036 3.41229 2.047337; 3.412229 24.760027 12.510190; 2.047337 12.510190 2.098618];
+%! expected_C = [0.090036 3.41229 2.047337; 3.412229 24.760027 12.510190; 2.047337 12.510190 2.098618];
 %! assert (L, expected_L, 0.001);
 %! assert (C, expected_C, 0.001);
 
@@ -285,8 +290,8 @@ endfunction
 %! k = -0.2;
 %! sigma = 0.3;
 %! mu = 0.5;
-%! [L, C] = gevlike ([k sigma mu], x);
+%! [L, ~, C] = gevlike ([k sigma mu], x);
 %! expected_L = 3786.4;
-%! expected_C = [-1.4937e+06 1.0083e+06 -6.1837e+04; 1.0083e+06 -8.1138e+05 4.0917e+04; -6.1837e+04 4.0917e+04 -2.0422e+03];
+%! expected_C = -[-1.4937e+06 1.0083e+06 -6.1837e+04; 1.0083e+06 -8.1138e+05 4.0917e+04; -6.1837e+04 4.0917e+04 -2.0422e+03];
 %! assert (L, expected_L, -0.001);
 %! assert (C, expected_C, -0.001);
