@@ -33,7 +33,7 @@
 ## @item
 ## @var{nlogL} is the negative log-likelihood.
 ## @item
-## @var{Grad} is the 3 by 1 gradient vector (first derivative of the log likelihood with respect to the parameter values)
+## @var{Grad} is the 3 by 1 gradient vector (first derivative of the negative log likelihood with respect to the parameter values)
 ## @item
 ## @var{ACOV} is the 3 by 3 Fisher information matrix (second derivative of the negative log likelihood with respect to the parameter values)
 ## 
@@ -76,18 +76,15 @@ function [nlogL, Grad, ACOV] = gevlike (params, data)
   mu = params(3);
   
   #calculate negative log likelihood
-  if isargout(1)
-    [nll, k_terms] = gevnll (data, k, sigma, mu);
-    nlogL = sum(nll(:));
-  endif
+  [nll, k_terms] = gevnll (data, k, sigma, mu);
+  nlogL = sum(nll(:));
   
   #optionally calculate the first and second derivatives of the negative log likelihood with respect to parameters
-  if isargout(2)
-  	 [Grad, kk_terms] = gevgrad (data, k, sigma, mu, k_terms);
-  endif
-    
-  if isargout(3)
-  	ACOV = gevfim (data, k, sigma, mu, k_terms, kk_terms);
+  if nargout > 1
+  	 [Grad, kk_terms] = gevgrad (data, k, sigma, mu, k_terms);    
+    if nargout > 2
+    	ACOV = gevfim (data, k, sigma, mu, k_terms, kk_terms);
+    endif
   endif
 
 endfunction
@@ -104,11 +101,11 @@ function [nlogL, k_terms] = gevnll (x, k, sigma, mu)
     nlogL = exp(-a) + a + log(sigma);
   else
     aa = k .* a;
-    if min(abs(aa)) < 1E-4 && max(abs(aa)) < 0.5 #use a series expansion to find the log likelihood more accurately when k is small
+    if min(abs(aa)) < 1E-3 && max(abs(aa)) < 0.5 #use a series expansion to find the log likelihood more accurately when k is small
       k_terms = 1; sgn = 1; i = 0;
       while 1
         sgn = -sgn; i++;
-        newterm = sgn * (aa .^ i) / (i + 1);
+        newterm = (sgn  / (i + 1)) * (aa .^ i);
         k_terms = k_terms + newterm;
         if max(abs(newterm)) <= eps
           break
@@ -168,7 +165,7 @@ if nargin > 4 && ~isempty(k_terms) #use a series expansion to find the gradient 
   kk_terms = 0.5; sgn = 1; i = 0;
   while 1
     sgn = -sgn; i++;
-    newterm = sgn * (aa .^ i) * ((i + 1) / (i + 2));
+    newterm = (sgn * (i + 1) / (i + 2)) * (aa .^ i);
     kk_terms = kk_terms + newterm;
     if max(abs(newterm)) <= eps
       break
@@ -257,7 +254,7 @@ if nargin > 5 && ~isempty(kk_terms) #use a series expansion to find the derivati
   kkk_terms = 2/3; sgn = 1; i = 0;
   while 1
     sgn = -sgn; i++;
-    newterm = sgn * (aa .^ i) * ((i + 1) * (i + 2) / (i + 3));
+    newterm = (sgn * (i + 1) * (i + 2) / (i + 3)) * (aa .^ i);
     kkk_terms = kkk_terms + newterm;
     if max(abs(newterm)) <= eps
       break
