@@ -1,1 +1,89 @@
-See individual files for licenses
+inst/private/tbl_delim.m.m      GPLv3+
+inst/anderson_darling_cdf.m     public domain
+inst/anderson_darling_test.m    public domain
+inst/anovan.m                   GPLv3+
+inst/betastat.m                 GPLv3+
+inst/binostat.m                 GPLv3+
+inst/boxplot.m                  GPLv3+
+inst/caseread.m                 GPLv3+
+inst/casewrite.m                GPLv3+
+inst/chi2stat.m                 GPLv3+
+inst/cl_multinom.m              GPLv3+
+inst/combnk.m                   GPLv3+
+inst/copulacdf.m                GPLv3+
+inst/copulapdf.m                GPLv3+
+inst/copularnd.m                GPLv3+
+inst/dendogram.m                GPLv3+
+inst/expstat.m                  GPLv3+
+inst/ff2n.m                     public domain
+inst/fstat.m                    GPLv3+
+inst/fullfact.m                 public domain
+inst/gamfit.m                   public domain
+inst/gamlike.m                  public domain
+inst/gamstat.m                  GPLv3+
+inst/geomean.m                  GPLv3+
+inst/geostat.m                  GPLv3+
+inst/gevcdf.m                   GPLv3+
+inst/gevfit_lmom.m              GPLv3+
+inst/gevfit.m                   GPLv3+
+inst/gevinv.m                   GPLv3+
+inst/gevlike.m                  GPLv3+
+inst/gevpdf.m                   GPLv3+
+inst/gevrnd.m                   GPLv3+
+inst/gevstat.m                  GPLv3+
+inst/harmmean.m                 GPLv3+
+inst/histfit.m                  GPLv3+
+inst/hmmestimate.m              GPLv3+
+inst/hmmgenerate.m              GPLv3+
+inst/hmmviterbi.m               GPLv3+
+inst/hygestat.m                 GPLv3+
+inst/jackknife.m                GPLv3+
+inst/jsucdf.m                   GPLv3+
+inst/jsupdf.m                   GPLv3+
+inst/kmeans.m                   GPLv3+
+inst/linkage.m                  GPLv3+
+inst/lognstat.m                 GPLv3+
+inst/mad.m                      GPLv3+
+inst/mnpdf.m                    GPLv3+
+inst/mnrnd.m                    GPLv3+
+inst/monotone_smooth.m          GPLv3+
+inst/mvncdf.m                   GPLv3+
+inst/mvnpdf.m                   public domain
+inst/mvnrnd.m                   GPLv3+
+inst/mvtcdf.m                   GPLv3+
+inst/mvtrnd.m                   GPLv3+
+inst/nanmax.m                   GPLv3+
+inst/nanmean.m                  GPLv3+
+inst/nanmedian.m                GPLv3+
+inst/nanmin.m                   GPLv3+
+inst/nanstd.m                   GPLv3+
+inst/nansum.m                   GPLv3+
+inst/nanvar.m.m                 GPLv3+
+inst/nbinstat.m                 GPLv3+
+inst/normalise_distribution.m   GPLv3+
+inst/normplot.m                 public domain
+inst/normstat.m                 GPLv3+
+inst/pdist.m                    GPLv3+
+inst/plsregress.m               GPLv3+
+inst/poisstat.m                 GPLv3+
+inst/princomp.m                 public domain
+inst/random.m                   GPLv3+
+inst/raylcdf.m                  GPLv3+
+inst/raylinv.m                  GPLv3+
+inst/raylpdf.m                  GPLv3+
+inst/raylrnd.m                  GPLv3+
+inst/raylstat.m                 GPLv3+
+inst/regress_gp.m               GPLv3+
+inst/regress.m                  GPLv3+
+inst/repanova.m.m               GPLv3+
+inst/squareform.m               GPLv3+
+inst/tabulate.m                 GPLv3+
+inst/tblread.m                  GPLv3+
+inst/tblwrite.m                 GPLv3+
+inst/trimmean.m                 GPLv3+
+inst/tstat.m                    GPLv3+
+inst/unidstat.m                 GPLv3+
+inst/unifstat.m                 GPLv3+
+inst/vmpdf.m                    GPLv3+
+inst/vmrnd.m                    GPLv3+
+inst/wblstat.m.m                GPLv3+
