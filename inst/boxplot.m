@@ -312,14 +312,14 @@ function [s hs] = boxplot (data, varargin)
     hs.outliers = h(no);
   end
   if ~isempty (outliers2_y)
-    no2 = no(end) + [1:size(outliers2_y,2)];
+    no2 = nm(end) + [1:size(outliers2_y,2)];
     hs.outliers2 = h(no2);
   end
 
 endfunction
 
 %!demo
-%! title ("Grade 3 heights");
 %! axis ([0,3]);
-%! tics ("x", 1:2, {"girls"; "boys"});
 %! boxplot ({randn(10,1)*5+140, randn(13,1)*8+135});
+%! set(gca (), "xtick", [1 2], "xticklabel", {"girls", "boys"})
+%! title ("Grade 3 heights");
