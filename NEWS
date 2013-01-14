@@ -22,6 +22,8 @@ Summary of important user-visible changes for statistics 1.2.0:
 
  ** The help text of `mvtrnd' has been improved.
 
+ ** Package is no longer autoloaded.
+
 Summary of important user-visible changes for statistics 1.1.3:
 -------------------------------------------------------------------
 

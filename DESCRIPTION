@@ -1,12 +1,11 @@
 Name: Statistics
 Version: 1.2.0
-Date: 2013-01-04
+Date: 2013-01-14
 Author: various authors
 Maintainer: Arno Onken <asnelt@asnelt.org>
 Title: Statistics
 Description: Additional statistics functions for Octave.
 Categories: Statistics
 Depends: octave (>= 3.6.1), io (>= 1.0.18)
-Autoload: yes
 License: GPLv3+, public domain
 Url: http://octave.sf.net
