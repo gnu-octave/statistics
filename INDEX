@@ -51,6 +51,8 @@ Regression
  anovan
  monotone_smooth
  princomp
+ pcares
+ pcacov
  plsregress
  regress
  regress_gp
