@@ -17,13 +17,22 @@
 %% @deftypefn {Function File} {@var{p} = } dendogram (@var{tree})
 %% Plots a dendogram using the output of function @command{linkage}.
 %%
+%% @deftypefn {Function File} {@var{p, t} = } dendogram (@var{tree})
+%% Plots the dendrogram and returns a vector t of containing the leaf
+%%  node number for each object in the original dataset.  For now, all
+%% objects are leaf nodes.
+%%
+%% @deftypefn {Function File} {@var{p, t, perm} = } dendogram (@var{tree})
+%% Plots the dendrogram, and returns the permutation of the input objects
+%% used to display the dendrogram, in left-to-right order.
+%%
 %% TODO: Return handle to lines to set properties
 %% TODO: Rescale the plot automatically base don data.
 %%
 %% @seealso{linkage}
 %% @end deftypefn
 
-function p = dendogram (tree)
+function [p, t, perm] = dendogram (tree)
 
   [m d] = size (tree);
   if d != 3
@@ -31,12 +40,17 @@ function p = dendogram (tree)
   end
   n = m + 1;
 
+  % t is the leaf node number for all objects in the original dataset.
+  % TODO: Add support for collapsing the tree.
+  % For now, we always display all objects, so this is the identity map.
+  t = (1:m)';
+
   nc = max(tree(:,1:2)(:));
 
   % Vector with the horizontal and vertical position of each cluster
   p = zeros (nc,2);
 
-  labels = zeros (n,1);
+  perm = zeros (n,1);
 
   %% Ordering by depth-first search
   nodecount = 0;
@@ -52,7 +66,7 @@ function p = dendogram (tree)
     if currentnode <= n && p(currentnode,1) == 0
       nodecount +=1;
       p(currentnode,1) = nodecount;
-      labels(nodecount) = currentnode;
+      perm(nodecount) = currentnode;
     end
 
   end
@@ -76,7 +90,7 @@ function p = dendogram (tree)
   tmp     = line ([p(1:nc,1) p(1:nc,1)]',y');
 
   xticks = 1:n;
-  xl_txt = arrayfun (@num2str, labels,"uniformoutput",false);
+  xl_txt = arrayfun (@num2str, perm,"uniformoutput",false);
   set (gca,"xticklabel",xl_txt,"xtick",xticks);
   axis ([0.5 n+0.5 0 max(tree(:,3))+0.1*min(tree(:,3))]);
 
