@@ -3,7 +3,7 @@ Summary of important user-visible changes for statistics 1.2.1:
 
  ** The following functions are new:
 
-      pcares  pcacov
+      pcares  pcacov  stepwisefit
 
  ** dendogram now returns the leaf node numbers and order that the nodes were
     displayed in.
