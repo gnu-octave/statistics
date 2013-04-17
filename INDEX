@@ -68,6 +68,7 @@ Models
  hmmestimate hmmgenerate hmmviterbi
 Hypothesis testing
  anderson_darling_test
+ runstest
 Fitting
  gamfit
 Clustering
