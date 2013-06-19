@@ -41,7 +41,7 @@ function s = mvnrnd (mu, Sigma, K, tol=eps*norm (Sigma, "fro"))
   % * Add docs for argument K
 
   % 2012 Juan Pablo Carbajal <carbajal@ifi.uzh.ch>
-  % * Uses Octave 3.6.2 boradcast.
+  % * Uses Octave 3.6.2 broadcast.
   % * Stabilizes chol by perturbing Sigma with a epsilon multiple of the identity.
   %   The effect on the generated samples is to add additional independent noise
   %   of variance epsilon. Ref: GPML Rasmussen & Williams. 2006. pp 200-201
@@ -49,7 +49,7 @@ function s = mvnrnd (mu, Sigma, K, tol=eps*norm (Sigma, "fro"))
   % * Added tolerance to the positive definite check
   % * Used chol with option 'upper'.
 
-  warning ("off", "Octave:broadcast");
+  warning ("off", "Octave:broadcast","local");
 
   % If mu is column vector and Sigma not a scalar then assume user didn't read
   % help but let them off and flip mu. Don't be more liberal than this or it will
