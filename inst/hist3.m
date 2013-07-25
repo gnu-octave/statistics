@@ -48,7 +48,7 @@
 ##
 ## @seealso{hist, mesh}
 ## @end deftypefn
-##
+
 ## Authors: Paul Kienzle (segments borrowed from hist2d),
 ##          Roman Stanchak (addition of matlab compatible syntax, bin edge arg)
 
