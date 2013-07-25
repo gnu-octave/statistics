@@ -14,11 +14,8 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{COEFF}]} = pcacov(@var{X})
-## @end deftypefn
-## @deftypefn {Function File} {[@var{COEFF},@var{latent}]} = pcacov(@var{X})
-## @end deftypefn
-## @deftypefn {Function File} {[@var{COEFF},@var{latent},@var{explained}]} = pcacov(@var{X})
-## @end deftypefn
+## @deftypefnx {Function File} {[@var{COEFF},@var{latent}]} = pcacov(@var{X})
+## @deftypefnx {Function File} {[@var{COEFF},@var{latent},@var{explained}]} = pcacov(@var{X})
 ## @itemize @bullet
 ## @item
 ## pcacov performs principal component analysis on the nxn covariance matrix X
@@ -38,6 +35,7 @@
 ## Jolliffe, I. T., Principal Component Analysis, 2nd Edition, Springer, 2002
 ## 
 ## @end enumerate
+## @end deftypefn
 
 ## Author: Fernando Damian Nieuwveldt <fdnieuwveldt@gmail.com>
 ## Description:  Principal Components Analysis using a covariance matrix

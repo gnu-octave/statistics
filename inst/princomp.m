@@ -14,15 +14,10 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{COEFF}]} = princomp(@var{X})
-## @end deftypefn
-## @deftypefn {Function File} {[@var{COEFF},@var{SCORE}]} = princomp(@var{X})
-## @end deftypefn
-## @deftypefn {Function File} {[@var{COEFF},@var{SCORE},@var{latent}]} = princomp(@var{X})
-## @end deftypefn
-## @deftypefn {Function File} {[@var{COEFF},@var{SCORE},@var{latent},@var{tsquare}]} = princomp(@var{X})
-## @end deftypefn
-## @deftypefn {Function File} {[...]} = princomp(@var{X},'econ')
-## @end deftypefn
+## @deftypefnx {Function File} {[@var{COEFF},@var{SCORE}]} = princomp(@var{X})
+## @deftypefnx {Function File} {[@var{COEFF},@var{SCORE},@var{latent}]} = princomp(@var{X})
+## @deftypefnx {Function File} {[@var{COEFF},@var{SCORE},@var{latent},@var{tsquare}]} = princomp(@var{X})
+## @deftypefnx {Function File} {[...]} = princomp(@var{X},'econ')
 ## @itemize @bullet
 ## @item
 ## princomp performs principal component analysis on a NxP data matrix X
@@ -52,6 +47,7 @@
 ## Jolliffe, I. T., Principal Component Analysis, 2nd Edition, Springer, 2002
 ## 
 ## @end enumerate
+## @end deftypefn
 
 function [COEFF,SCORE,latent,tsquare] = princomp(X,varargin)
 
