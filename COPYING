@@ -32,6 +32,7 @@ inst/gevpdf.m                   GPLv3+
 inst/gevrnd.m                   GPLv3+
 inst/gevstat.m                  GPLv3+
 inst/harmmean.m                 GPLv3+
+inst/hist3.m                    GPLv3+
 inst/histfit.m                  GPLv3+
 inst/hmmestimate.m              GPLv3+
 inst/hmmgenerate.m              GPLv3+
@@ -63,6 +64,8 @@ inst/nbinstat.m                 GPLv3+
 inst/normalise_distribution.m   GPLv3+
 inst/normplot.m                 public domain
 inst/normstat.m                 GPLv3+
+inst/pcacov.m                   GPLv3+
+inst/pcares.m                   GPLv3+
 inst/pdist.m                    GPLv3+
 inst/plsregress.m               GPLv3+
 inst/poisstat.m                 GPLv3+
@@ -76,7 +79,9 @@ inst/raylstat.m                 GPLv3+
 inst/regress_gp.m               GPLv3+
 inst/regress.m                  GPLv3+
 inst/repanova.m.m               GPLv3+
+inst/runtest.m                  GPLv3+
 inst/squareform.m               GPLv3+
+inst/stepwisefit.m              GPLv3+
 inst/tabulate.m                 GPLv3+
 inst/tblread.m                  GPLv3+
 inst/tblwrite.m                 GPLv3+
