@@ -30,11 +30,11 @@
 %% Plots the dendrogram, and returns the permutation of the input objects
 %% used to display the dendrogram, in left-to-right order.
 %%
-%% @seealso{linkage}
-%% @end deftypefn
-%%
 %% TODO: Return handle to lines to set properties
 %% TODO: Rescale the plot automatically based on data.
+%%
+%% @seealso{linkage}
+%% @end deftypefn
 
 function [p, t, perm] = dendogram (tree)
 
