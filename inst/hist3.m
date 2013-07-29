@@ -19,7 +19,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} hist3(@var{X})
-## @deftypefns {Function File} hist3(@var{X}, @var{nbins})
+## @deftypefnx {Function File} hist3(@var{X}, @var{nbins})
 ## @deftypefnx {Function File} hist3(@var{X}, 'Nbins', @var{nbins})
 ## @deftypefnx {Function File} hist3(@var{X}, @var{centers})
 ## @deftypefnx {Function File} hist3(@var{X}, 'Centers', @var{centers})
