@@ -22,27 +22,37 @@
 ## Plots a 2D histogram of the N x 2 matrix @var{X} with 10 equally spaced
 ## bins in both the x and y direction using the @code{mesh} function
 ##
-## @deftypefnx {Function File} hist3(@var{X}, @var{nbins})
+## @end deftypefn
+##
+## @deftypefn {Function File} hist3(@var{X}, @var{nbins})
 ## @deftypefnx {Function File} hist3(@var{X}, 'Nbins', @var{nbins})
 ## Use @var{nbins} equally spaced bins to compute histogram.  If @var{nbins} is
 ## a 2 element vector, use the two values as the number of bins in the x and y
 ## axis, respectively, otherwise, use the same value for each.
 ##
-## @deftypefnx {Function File} hist3(@var{X}, @var{centers})
+## @end deftypefn
+##
+## @deftypefn {Function File} hist3(@var{X}, @var{centers})
 ## @deftypefnx {Function File} hist3(@var{X}, 'Centers', @var{centers})
 ## Specify the centers of the histogram bins.  @var{centers} should be a cell
 ## array containing two arrays of the bin centers on the x and y axis,
 ## respectively.
 ##
-## @deftypefnx {Function File} hist3(@var{X}, 'Edges', @var{edges})
+## @end deftypefn
+##
+## @deftypefn {Function File} hist3(@var{X}, 'Edges', @var{edges})
 ## Specify the edges of the histogram bins.  @var{edges} should be a cell array
 ## containing two arrays of the bin edges on the x and y axis, respectively.
 ##
-## @deftypefnx {Function File} {@var{N} =} hist3(@var{X}, ...)
+## @end deftypefn
+##
+## @deftypefn {Function File} {@var{N} =} hist3(@var{X}, ...)
 ## returns the 2D array of bin counts in @var{N}, and does not plot the
 ## histogram
 ##
-## @deftypefnx {Function File} {[@var{N}, @var{C}] =} hist3(@var{X}, ...)
+## @end deftypefn
+##
+## @deftypefn {Function File} {[@var{N}, @var{C}] =} hist3(@var{X}, ...)
 ## returns the 2D array of bin counts in @var{N} and the bin centers in the
 ## 2 element cell array @var{C}, and does not plot the histogram
 ##

@@ -17,20 +17,24 @@
 %% @deftypefn {Function File} {@var{p} = } dendogram (@var{tree})
 %% Plots a dendogram using the output of function @command{linkage}.
 %%
-%% @deftypefnx {Function File} {@var{p, t} = } dendogram (@var{tree})
+%% @end deftypefn
+%%
+%% @deftypefn {Function File} {@var{p, t} = } dendogram (@var{tree})
 %% Plots the dendrogram and returns a vector t of containing the leaf
 %%  node number for each object in the original dataset.  For now, all
 %% objects are leaf nodes.
 %%
-%% @deftypefnx {Function File} {@var{p, t, perm} = } dendogram (@var{tree})
+%% @end deftypefn
+%%
+%% @deftypefn {Function File} {@var{p, t, perm} = } dendogram (@var{tree})
 %% Plots the dendrogram, and returns the permutation of the input objects
 %% used to display the dendrogram, in left-to-right order.
 %%
-%% TODO: Return handle to lines to set properties
-%% TODO: Rescale the plot automatically base don data.
-%%
 %% @seealso{linkage}
 %% @end deftypefn
+%%
+%% TODO: Return handle to lines to set properties
+%% TODO: Rescale the plot automatically based on data.
 
 function [p, t, perm] = dendogram (tree)
 
