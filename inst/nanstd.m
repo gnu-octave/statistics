@@ -81,6 +81,8 @@ function v = nanstd (X, opt, varargin)
     else
       error ("std: unrecognized normalization type");
     endif
-
+    
+    ## make sure that we return a real number
+    v = real (v);
   endif
 endfunction
