@@ -307,12 +307,13 @@ function [s hs] = boxplot (data, varargin)
   nm = nw(end)+ [1:size(median_x,2)];
   hs.median = h(nm);
 
+  no = nm;
   if ~isempty (outliers_y)
     no = nm(end) + [1:size(outliers_y,2)];
     hs.outliers = h(no);
   end
   if ~isempty (outliers2_y)
-    no2 = nm(end) + [1:size(outliers2_y,2)];
+    no2 = no(end) + [1:size(outliers2_y,2)];
     hs.outliers2 = h(no2);
   end
 
