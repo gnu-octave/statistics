@@ -31,12 +31,12 @@ function [v, idx] = nanmax (X, Y, DIM)
   elseif nargin == 1 || (nargin == 2 && isempty(Y))
     nanvals = isnan(X);
     X(nanvals) = -Inf;
-    v = max (X);
+    [v, idx] = max (X);
     v(all(nanvals)) = NaN;
   elseif (nargin == 3 && isempty(Y))
     nanvals = isnan(X);
     X(nanvals) = -Inf;
-    v = max (X,[],DIM);
+    [v, idx] = max (X,[],DIM);
     v(all(nanvals,DIM)) = NaN;
   else
     Xnan = isnan(X);
@@ -44,9 +44,9 @@ function [v, idx] = nanmax (X, Y, DIM)
     X(Xnan) = -Inf;
     Y(Ynan) = -Inf;
     if (nargin == 3)
-      v = max(X,Y,DIM);
+      [v, idx] = max(X,Y,DIM);
     else
-      v = max(X,Y);
+      [v, idx] = max(X,Y);
     endif
     v(Xnan & Ynan) = NaN;
   endif

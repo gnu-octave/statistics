@@ -32,12 +32,12 @@ function [v, idx] = nanmin (X, Y, DIM)
   elseif nargin == 1 || (nargin == 2 && isempty(Y))
     nanvals = isnan(X);
     X(nanvals) = Inf;
-    v = min (X);
+    [v, idx] = min (X);
     v(all(nanvals)) = NaN;
   elseif (nargin == 3 && isempty(Y))
     nanvals = isnan(X);
     X(nanvals) = Inf;
-    v = min (X,[],DIM);
+    [v, idx] = min (X,[],DIM);
     v(all(nanvals,DIM)) = NaN;
   else
     Xnan = isnan(X);
@@ -45,9 +45,9 @@ function [v, idx] = nanmin (X, Y, DIM)
     X(Xnan) = Inf;
     Y(Ynan) = Inf;
     if (nargin == 3)
-      v = min(X,Y,DIM);
+      [v, idx] = min(X,Y,DIM);
     else
-      v = min(X,Y);
+      [v, idx] = min(X,Y);
     endif
     v(Xnan & Ynan) = NaN;
   endif

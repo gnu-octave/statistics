@@ -3,6 +3,8 @@ Summary of important user-visible changes for statistics 1.2.3:
 
  ** Made sure that output of nanstd is real.
 
+ ** Fixed second output of nanmax and nanmin.
+
 Summary of important user-visible changes for statistics 1.2.2:
 -------------------------------------------------------------------
 
