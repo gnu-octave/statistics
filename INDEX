@@ -13,6 +13,7 @@ Distributions
  geostat
  gevcdf gevfit gevfit_lmom gevinv gevlike gevpdf gevrnd gevstat 
  hygestat
+ iwishrnd
  jsucdf
  jsupdf
  lognstat
@@ -30,6 +31,7 @@ Distributions
  unifstat
  vmpdf vmrnd
  wblstat
+ wishrnd
 Descriptive statistics
  nansum
  nanmax
