@@ -14,7 +14,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{y} =} gevstat (@var{k}, @var{sigma}, @var{mu})
+## @deftypefn {Function File} {[@var{m}, @var{v}] =} gevstat (@var{k}, @var{sigma}, @var{mu})
 ## Compute the mean and variance of the generalized extreme value (GEV) distribution.
 ##
 ## @subheading Arguments
