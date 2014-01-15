@@ -6,10 +6,12 @@ Summary of important user-visible changes for statistics 1.2.3:
  ** Fixed second output of nanmax and nanmin.
 
  ** Corrected handle for outliers in boxplot.
+
+ ** Bug fix and enhanced functionality for mvnrnd.
  
  ** The following functions are new:
  
-    wishrnd iwishrnd 
+    wishrnd iwishrnd wishpdf iwishpdf
 
 Summary of important user-visible changes for statistics 1.2.2:
 -------------------------------------------------------------------

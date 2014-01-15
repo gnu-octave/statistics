@@ -1,39 +1,27 @@
 ## Copyright (C) 2003 Iain Murray
 ##
-## This program is free software; you can redistribute it and/or modify it under
-## the terms of the GNU General Public License as published by the Free Software
-## Foundation; either version 3 of the License, or (at your option) any later
-## version.
+## This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 ##
-## This program is distributed in the hope that it will be useful, but WITHOUT
-## ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-## FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-## details.
+## This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 ##
-## You should have received a copy of the GNU General Public License along with
-## this program; if not, see <http://www.gnu.org/licenses/>.
+## You should have received a copy of the GNU General Public License along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} @var{s} = mvnrnd (@var{mu}, @var{Sigma})
 ## @deftypefnx{Function File} @var{s} = mvnrnd (@var{mu}, @var{Sigma}, @var{n})
 ## @deftypefnx{Function File} @var{s} = mvnrnd (@dots{}, @var{tol})
-## Draw @var{n} random @var{d}-dimensional vectors from a multivariate Gaussian
-## distribution with mean @var{mu}(@var{n}x@var{d}) and covariance matrix
+## Draw @var{n} random @var{d}-dimensional vectors from a multivariate Gaussian distribution with mean @var{mu}(@var{n}x@var{d}) and covariance matrix
 ## @var{Sigma}(@var{d}x@var{d}).
 ##
-## If @var{n} is given then @var{mu} can be a 1-by-@var{d} vector. If it is not
-## given @var{mu} must be @var{n}-by-@var{d}.
+## @var{mu} must be @var{n}-by-@var{d} (or 1-by-@var{d} if @var{n} is given) or a scalar.
 ##
-## If the argument @var{tol} is given the eigenvalues of @var{Sigma} are checked
-## for positivity against -100*tol. the default value of tol is @code{eps*norm (Sigma, "fro")}.
+## If the argument @var{tol} is given the eigenvalues of @var{Sigma} are checked for positivity against -100*tol. The default value of tol is @code{eps*norm (Sigma, "fro")}.
 ##
 ## @end deftypefn
 
 function s = mvnrnd (mu, Sigma, K, tol=eps*norm (Sigma, "fro"))
 
-  % Iain Murray 2003 -- I got sick of this simple thing not being in Octave and
-  %                     locking up a stats-toolbox license in Matlab for no good
-  %                     reason.
+  % Iain Murray 2003 -- I got sick of this simple thing not being in Octave and locking up a stats-toolbox license in Matlab for no good reason.
   % May 2004 take a third arg, cases. Makes it more compatible with Matlab's.
 
   % Paul Kienzle <pkienzle@users.sf.net>
@@ -43,30 +31,39 @@ function s = mvnrnd (mu, Sigma, K, tol=eps*norm (Sigma, "fro"))
   % 2012 Juan Pablo Carbajal <carbajal@ifi.uzh.ch>
   % * Uses Octave 3.6.2 broadcast.
   % * Stabilizes chol by perturbing Sigma with a epsilon multiple of the identity.
-  %   The effect on the generated samples is to add additional independent noise
-  %   of variance epsilon. Ref: GPML Rasmussen & Williams. 2006. pp 200-201
+  %   The effect on the generated samples is to add additional independent noise of variance epsilon. Ref: GPML Rasmussen & Williams. 2006. pp 200-201
   % * Improved doc.
   % * Added tolerance to the positive definite check
   % * Used chol with option 'upper'.
 
-  warning ("off", "Octave:broadcast","local");
+  % 2014 Nir Krakauer <nkrakauer@ccny.cuny.edu>
+  % * Add tests.
+  % * Allow mu to be scalar, in which case it's assumed that all elements share this mean.
+  
+  
+  %perform some input checking
+  if ~issquare (Sigma)
+    error ('Sigma must be a square covariance matrix.');
+  end
+    
+  d = size(Sigma, 1);
 
-  % If mu is column vector and Sigma not a scalar then assume user didn't read
-  % help but let them off and flip mu. Don't be more liberal than this or it will
-  % encourage errors (eg what should you do if mu is square?).
-  if (size (mu, 2) == 1) && (size (Sigma) != [1,1])
+  % If mu is column vector and Sigma not a scalar then assume user didn't read help but let them off and flip mu. Don't be more liberal than this or it will encourage errors (eg what should you do if mu is square?).
+  if (size (mu, 2) == 1) && (d != 1)
     mu = mu';
   end
 
-  [n,d] = size (mu);
-
   if nargin >= 3
-     n = K;
+    n = K;
+  else
+    n = size(mu, 1); %1 if mu is scalar
   end
 
-  if size (Sigma) != [d,d]
-    error ('Sigma must have dimensions dxd where mu is nxd.');
+  if (~isscalar (mu)) && any(size (mu) != [1,d]) && any(size (mu) != [n,d])
+    error ('mu must be nxd, 1xd, or scalar, where Sigma has dimensions dxd.');
   end
+  
+  warning ("off", "Octave:broadcast","local");
 
   try
     U = chol (Sigma + tol*eye (d),"upper");
@@ -74,7 +71,7 @@ function s = mvnrnd (mu, Sigma, K, tol=eps*norm (Sigma, "fro"))
     [E , Lambda] = eig (Sigma);
 
     if min (diag (Lambda)) < -100*tol
-      error('Sigma must be positive semi-definite. Lowest eigenvaluen %g', ...
+      error('Sigma must be positive semi-definite. Lowest eigenvalue %g', ...
             min (diag (Lambda)));
     else
       Lambda(Lambda<0) = 0;
@@ -122,11 +119,22 @@ endfunction
 % so we can give up.
 %
 % Paul Kienzle adds:
-%   Where it exists, chol(Sigma) is numerically well behaved.  chol(hilb(12))
-%   for doubles and for 100 digit floating point differ in the last digit.
-%   Where chol(Sigma) doesn't exist, X*sqrt(Lambda)*E' will be somewhat
-%   accurate.  For example, the elements of sqrt(Lambda)*E' for hilb(12),
-%   hilb(55) and hilb(120) are accurate to around 1e-8 or better.  This was
-%   tested using the TNT+JAMA for eig and chol templates, and qlib for
-%   100 digit precision.
+%   Where it exists, chol(Sigma) is numerically well behaved.  chol(hilb(12)) for doubles and for 100 digit floating point differ in the last digit.
+%   Where chol(Sigma) doesn't exist, X*sqrt(Lambda)*E' will be somewhat accurate.  For example, the elements of sqrt(Lambda)*E' for hilb(12), hilb(55) and hilb(120) are accurate to around 1e-8 or better.  This was tested using the TNT+JAMA for eig and chol templates, and qlib for 100 digit precision.
 % }}}
+
+%!shared m, n, C, rho
+%! m = 10; n = 3; rho = 0.4; C = rho*ones(n, n) + (1 - rho)*eye(n);
+%!assert(size(mvnrnd(0, C, m)), [m n])
+%!assert(size(mvnrnd(zeros(1, n), C, m)), [m n])
+%!assert(size(mvnrnd(zeros(n, 1), C, m)), [m n])
+%!assert(size(mvnrnd(zeros(m, n), C, m)), [m n])
+%!assert(size(mvnrnd(zeros(m, n), C)), [m n])
+%!assert(size(mvnrnd(zeros(1, n), C)), [1 n])
+%!assert(size(mvnrnd(zeros(n, 1), C)), [1 n])
+%!error(mvnrnd(zeros(m+1, n), C, m))
+%!error(mvnrnd(zeros(1, n+1), C, m))
+%!error(mvnrnd(zeros(n+1, 1), C, m))
+%!error(mvnrnd(zeros(m, n), eye(n+1), m))
+%!error(mvnrnd(zeros(m, n), eye(n+1, n), m))
+
