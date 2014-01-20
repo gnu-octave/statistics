@@ -74,6 +74,7 @@ Hypothesis testing
 Fitting
  gamfit
 Clustering
+ cmdscale
  kmeans
  linkage
  pdist
