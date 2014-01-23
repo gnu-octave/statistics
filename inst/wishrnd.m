@@ -15,7 +15,7 @@
 ##
 ## Output: a random @var{p} x @var{p}  matrix @var{W} from the Wishart(@var{Sigma}, @var{df}) distribution. If @var{n} > 1, then @var{W} is @var{p} x @var{p} x @var{n} and holds @var{n} such random matrices. (Optionally, the Cholesky factor @var{D} of @var{Sigma} is also returned.)
 ##
-## Averaged across many samples, the mean of @var{W} should approach @var{df}*@var{Sigma}, and the variance of each element @var{W}_{ij} should approach @var{df}*(@var{Sigma}_{ij}^2 + @var{Sigma}_{ii}*@var{Sigma}_{jj})
+## Averaged across many samples, the mean of @var{W} should approach @var{df}*@var{Sigma}, and the variance of each element @var{W}_ij should approach @var{df}*(@var{Sigma}_ij^2 + @var{Sigma}_ii*@var{Sigma}_jj)
 ##
 ## Reference: Yu-Cheng Ku and Peter Bloomfield (2010), Generating Random Wishart Matrices with Fractional Degrees of Freedom in OX, http://www.gwu.edu/~forcpgm/YuChengKu-030510final-WishartYu-ChengKu.pdf
 ## 
