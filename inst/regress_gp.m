@@ -83,7 +83,7 @@ endfunction
 %!
 %! [m K yi dy] = regress_gp (x,y,[],xi);
 %!
-%! plot (x,y,'xk',xi,yi,'r-',xi,yi+[-dy +dy],'b-');
+%! plot (x,y,'xk',xi,yi,'r-',xi,bsxfun(@plus, yi, [-dy +dy]),'b-');
 
 %!demo
 %! % 2D Data
@@ -132,5 +132,5 @@ endfunction
 %! axis tight
 %! axis manual
 %! hold on
-%! plot (xi,yi+[-dy +dy],'b-');
+%! plot (xi,bsxfun(@plus, yi, [-dy +dy]),'b-');
 %! hold off

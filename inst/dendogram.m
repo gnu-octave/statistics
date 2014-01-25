@@ -103,7 +103,7 @@ endfunction
 
 %!demo
 %! v = 2*rand(30,1)-1;
-%! d = abs(v(:,1)-v(:,1)');
+%! d = abs(bsxfun(@minus, v(:,1), v(:,1)'));
 %! y = linkage (squareform(d,"tovector"));
 %! figure(gcf); clf;
 %! dendogram(y);
