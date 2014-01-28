@@ -99,10 +99,11 @@ function [COEFF,SCORE,latent,tsquare] = princomp(X,varargin)
 
     endif
 
-    # This is the same as the eigenvalues of the covariance matrix of X
-    latent  = (diag(S'*S)/(size(Xcentered,1)-1))(1:r);
-
     if nargout > 2
+
+      # This is the same as the eigenvalues of the covariance matrix of X
+      latent  = (diag(S'*S)/(size(Xcentered,1)-1))(1:r);
+
       if !(nargin == 2 && strcmpi ( varargin{:} , "econ"))
 	  latent= [latent;zeros(nvars-r,1)];
       endif

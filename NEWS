@@ -1,6 +1,8 @@
 Summary of important user-visible changes for statistics 1.2.4:
 -------------------------------------------------------------------
 
+ ** Make princomp work with nargout < 2.
+
  ** The following functions are new:
  
     cdf
