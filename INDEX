@@ -3,6 +3,7 @@ Distributions
  anderson_darling_cdf
  betastat
  binostat
+ cdf
  chi2stat
  cl_multinom
  copulacdf copulapdf copularnd
