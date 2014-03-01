@@ -66,7 +66,7 @@ Plots
  histfit
  hist3
  repanova
- dendogram
+ dendrogram
 Models
  hmmestimate hmmgenerate hmmviterbi
 Hypothesis testing

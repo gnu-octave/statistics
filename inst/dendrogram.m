@@ -14,10 +14,10 @@
 %%    along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 %% -*- texinfo -*-
-%% @deftypefn {Function File} {@var{p} = } dendogram (@var{tree})
-%% @deftypefnx {Function File} {@var{p, t} = } dendogram (@var{tree})
-%% @deftypefnx {Function File} {@var{p, t, perm} = } dendogram (@var{tree})
-%% Plots a dendogram using the output of function @command{linkage}.
+%% @deftypefn {Function File} {@var{p} = } dendrogram (@var{tree})
+%% @deftypefnx {Function File} {@var{p, t} = } dendrogram (@var{tree})
+%% @deftypefnx {Function File} {@var{p, t, perm} = } dendrogram (@var{tree})
+%% Plots a dendrogram using the output of function @command{linkage}.
 %%
 %% t is a vector containing the leaf node number for each object in the
 %% original dataset.  For now, all objects are leaf nodes.
@@ -31,7 +31,7 @@
 %% @seealso{linkage}
 %% @end deftypefn
 
-function [p, t, perm] = dendogram (tree)
+function [p, t, perm] = dendrogram (tree)
 
   [m d] = size (tree);
   if d != 3
@@ -99,11 +99,11 @@ endfunction
 %! y      = [4 5; 2 6; 3 7; 8 9; 1 10];
 %! y(:,3) = 1:5;
 %! figure(gcf); clf;
-%! dendogram(y);
+%! dendrogram(y);
 
 %!demo
 %! v = 2*rand(30,1)-1;
 %! d = abs(bsxfun(@minus, v(:,1), v(:,1)'));
 %! y = linkage (squareform(d,"tovector"));
 %! figure(gcf); clf;
-%! dendogram(y);
+%! dendrogram(y);
