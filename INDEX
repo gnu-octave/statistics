@@ -72,6 +72,9 @@ Models
 Hypothesis testing
  anderson_darling_test
  runstest
+ ttest
+ ttest2
+ ztest
 Fitting
  gamfit
 Clustering

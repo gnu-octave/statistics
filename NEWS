@@ -7,7 +7,7 @@ Summary of important user-visible changes for statistics 1.2.4:
 
  ** The following functions are new:
  
-    cdf
+    cdf ttest ttest2 ztest
 
 Summary of important user-visible changes for statistics 1.2.3:
 -------------------------------------------------------------------
