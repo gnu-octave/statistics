@@ -28,34 +28,32 @@
 ## ttest (@var{x}, @var{y})
 ##
 ## {[@var{h}, @var{pval}, @var{ci}, @var{stats} ] =} 
-## ttest (..., @var{alpha})
+## ttest (@var{x}, @var{m}, @var{Name}, @var{Value})
 ##
 ## {[@var{h}, @var{pval}, @var{ci}, @var{stats} ] =} 
-## ttest (...,  @var{alpha}, @var{tail})
-##
-## {[@var{h}, @var{pval}, @var{ci}, @var{stats} ] =} 
-## ttest (...,  @var{alpha}, @var{tail}, @var{dim})
+## ttest (@var{x}, @var{y}, @var{Name}, @var{Value})
 ##
 ## Perform a T-test of the null hypothesis @code{mean (@var{x}) ==
 ## @var{m}} for a sample @var{x} from a normal distribution with unknown
 ## mean and unknown std deviation.  Under the null, the test statistic
-## @var{t} has a Student's t distribution.
+## @var{t} has a Student's t distribution.  The default value of
+## @var{m} is 0.
 ##
 ## If the second argument @var{y} is a vector, a paired-t test of the
 ## hypothesis mean(x) = mean(y) is performed.
 ##
-## The argument @var{alpha} can be used to specify the significance level
-## of the test (the default value is 0.05).  The string
-## argument @var{tail}, can be used to select the desired alternative
-## hypotheses.  If @var{alt} is @qcode{"both"} (default) the null is 
-## tested against the two-sided alternative @code{mean (@var{x}) != @var{m}}.
-## If @var{alt} is @qcode{"right"} the one-sided 
-## alternative @code{mean (@var{x}) > @var{m}} is considered.
-## Similarly for @qcode{"left"}, the one-sided alternative @code{mean
-## (@var{x}) < @var{m}} is considered.  When argument @var{x} is a matrix
-## the @var{dim} argument can be used to selection the dimension over 
-## which to perform the test.  (The default is the first non-singleton
-## dimension.)
+## Name-Value pair arguments can be used to set various options.
+## @var{'alpha'} can be used to specify the significance level
+## of the test (the default value is 0.05).  @var{'tail'}, can be used
+## to select the desired alternative hypotheses.  If the value is
+## @qcode{'both'} (default) the null is tested against the two-sided 
+## alternative @code{mean (@var{x}) != @var{m}}.
+## If it is @qcode{'right'} the one-sided alternative @code{mean (@var{x})
+## > @var{m}} is considered.  Similarly for @qcode{'left'}, the one-sided 
+## alternative @code{mean (@var{x}) < @var{m}} is considered.  
+## When argument @var{x} is a matrix, @var{'dim'} can be used to selection
+## the dimension over which to perform the test.  (The default is the 
+## first non-singleton dimension.)
 ##
 ## If @var{h} is 0 the null hypothesis is accepted, if it is 1 the null
 ## hypothesis is rejected. The p-value of the test is returned in @var{pval}.
@@ -67,43 +65,45 @@
 ## @end deftypefn
 
 ## Author: Tony Richardson <richardson.tony@gmail.com>
-## Description: Hypothesis test for mean of a normal sample with unknown variance
+## Description: Test for mean of a normal sample with known variance
 
-function [h, p, ci, stats] = ttest(x, my, alpha, tail, dim)
+function [h, p, ci, stats] = ttest(x, my, varargin)
   
+  % Set default arguments
   my_default = 0;
-  alpha_default = 0.05;
-  tail_default  = 'both';
+  alpha = 0.05;
+  tail  = 'both';
 
   % Find the first non-singleton dimension of x
-  dim_default = min(find(size(x)~=1));
-  if isempty(dim_default), dim_default = 1; end
+  dim = min(find(size(x)~=1));
+  if isempty(dim), dim = 1; end
 
-  % Set the default argument values if input arguments are not present  
-  switch (nargin)
-    case 1
-      my = my_default;
-      alpha = alpha_default;
-      tail = tail_default;
-      dim = dim_default;
-    case 2
-      alpha = alpha_default;
-      tail = tail_default;
-      dim = dim_default;
-    case 3  
-      tail = tail_default;
-      dim = dim_default;
-    case 4
-      dim = dim_default;
-    case 5
-      % Do nothing here.
-      % This is a valid case
-    otherwise
-      err_msg = 'Invalid call to ttest. Correct usage is:';
-      err_msg = [err_msg '\n\n     ttest(x, m) or ttest(x, y)\n\n'];
-      error(err_msg,[]);
+  if (nargin == 1)
+    my = my_default;
+  end 
+  
+  i = 1;
+  while ( i <= length(varargin) )
+    switch lower(varargin{i})
+      case 'alpha'
+        i = i + 1;
+        alpha = varargin{i};
+      case 'tail'
+        i = i + 1;
+        tail = varargin{i};
+      case 'dim'
+        i = i + 1;
+        dim = varargin{i};
+      otherwise
+        error('Invalid Name argument.',[]);
+    end
+    i = i + 1;
   end
   
+  if ~isa(tail, 'char')
+    error('tail argument to vartest2 must be a string\n',[]);
+  end
+    
   if any(and(~isscalar(my),size(x)~=size(my)))
     error('Arrays in paired test must be the same size.');
   end
@@ -112,20 +112,7 @@ function [h, p, ci, stats] = ttest(x, my, alpha, tail, dim)
   if isempty(my)
     my = my_default;
   end
-  if isempty(alpha)
-    alpha = alpha_default;
-  end
-  if isempty(tail)
-    tail = tail_default;
-  end
-  if isempty(dim)
-    dim = dim_default;
-  end
-  
-  if ~isa(tail, 'char')
-    error('Fifth argument to ttest must be a string\n',[]);
-  end
-  
+    
   % This adjustment allows everything else to remain the
   % same for both the one-sample t test and paired tests.
   x = x - my;

@@ -22,31 +22,25 @@
 ## ztest (@var{x}, @var{m}, @var{s})
 ##
 ## {[@var{h}, @var{pval}, @var{ci}, @var{z}, @var{zcrit} ] =} 
-## ztest (@var{x}, @var{m}, @var{s}, @var{alpha})
-##
-## {[@var{h}, @var{pval}, @var{ci}, @var{z}, @var{zcrit} ] =} 
-## ztest (@var{x}, @var{m}, @var{s}, @var{alpha}, @var{tail})
-##
-## {[@var{h}, @var{pval}, @var{ci}, @var{z}, @var{zcrit} ] =} 
-## ztest (@var{x}, @var{m}, @var{s}, @var{alpha}, @var{tail}, @var{dim})
+## ztest (@var{x}, @var{m}, @var{s}, @var{Name}, @var{Value})
 ##
 ## Perform a Z-test of the null hypothesis @code{mean (@var{x}) ==
 ## @var{m}} for a sample @var{x} from a normal distribution with unknown
 ## mean and known std deviation @var{s}.  Under the null, the test statistic
 ## @var{z} follows a standard normal distribution.
 ##
-## The argument @var{alpha} can be used to specify the significance level
-## of the test (the default value is 0.05).  The string
-## argument @var{tail}, can be used to select the desired alternative
-## hypotheses.  If @var{alt} is @qcode{"both"} (default) the null is 
-## tested against the two-sided alternative @code{mean (@var{x}) != @var{m}}.
-## If @var{alt} is @qcode{"right"} the one-sided 
-## alternative @code{mean (@var{x}) > @var{m}} is considered.
-## Similarly for @qcode{"left"}, the one-sided alternative @code{mean
-## (@var{x}) < @var{m}} is considered.  When argument @var{x} is a matrix
-## the @var{dim} argument can be used to selection the dimension over 
-## which to perform the test.  (The default is the first non-singleton
-## dimension.)
+## Name-Value pair arguments can be used to set various options.
+## @var{'alpha'} can be used to specify the significance level
+## of the test (the default value is 0.05).  @var{'tail'}, can be used
+## to select the desired alternative hypotheses.  If the value is
+## @qcode{'both'} (default) the null is tested against the two-sided 
+## alternative @code{mean (@var{x}) != @var{m}}.
+## If it is @qcode{'right'} the one-sided alternative @code{mean (@var{x})
+## > @var{m}} is considered.  Similarly for @qcode{'left'}, the one-sided 
+## alternative @code{mean (@var{x}) < @var{m}} is considered.  
+## When argument @var{x} is a matrix, @var{'dim'} can be used to selection
+## the dimension over which to perform the test.  (The default is the 
+## first non-singleton dimension.)
 ##
 ## If @var{h} is 0 the null hypothesis is accepted, if it is 1 the null
 ## hypothesis is rejected. The p-value of the test is returned in @var{pval}.
@@ -56,50 +50,37 @@
 ## @end deftypefn
 
 ## Author: Tony Richardson <richardson.tony@gmail.com>
-## Description: Hypothesis test for mean of a normal sample with known variance
+## Description: Test for mean of a normal sample with known variance
 
-function [h, p, ci, zval, zcrit] = ztest(x, m, sigma, alpha, tail, dim)
+function [h, p, ci, zval, zcrit] = ztest(x, m, sigma, varargin)
   
-  alpha_default = 0.05;
-  tail_default  = 'both';
+  alpha = 0.05;
+  tail  = 'both';
 
   % Find the first non-singleton dimension of x
-  dim_default = min(find(size(x)~=1));
-  if isempty(dim_default), dim_default = 1; end
-  
-  % Set the default argument values if input arguments are not present
-  switch (nargin)
-    case 3
-      alpha = alpha_default;
-      tail = tail_default;
-      dim = dim_default;
-    case 4  
-      tail = tail_default;
-      dim = dim_default;
-    case 5
-      dim = dim_default;
-    case 6
-      % Do nothing here.
-      % This is a valid case
-    otherwise
-      err_msg = 'Invalid call to ztest. Correct usage is:';
-      err_msg = [err_msg '\n\n     ztest(x, m, sigma)\n\n'];
-      error(err_msg,[]);
-  end
-  
-  % Set default values if arguments are present but empty
-  if isempty(alpha)
-    alpha = alpha_default;
-  end
-  if isempty(tail)
-    tail = tail_default;
-  end
-  if isempty(dim)
-    dim = dim_default;
+  dim = min(find(size(x)~=1));
+  if isempty(dim), dim = 1; end
+
+  i = 1;
+  while ( i <= length(varargin) )
+    switch lower(varargin{i})
+      case 'alpha'
+        i = i + 1;
+        alpha = varargin{i};
+      case 'tail'
+        i = i + 1;
+        tail = varargin{i};
+      case 'dim'
+        i = i + 1;
+        dim = varargin{i};
+      otherwise
+        error('Invalid Name argument.',[]);
+    end
+    i = i + 1;
   end
   
   if ~isa(tail, 'char')
-    error('Fifth argument to ztest must be a string\n',[]);
+    error('tail argument to ztest must be a string\n',[]);
   end
   
   % Calculate the test statistic value (zval)

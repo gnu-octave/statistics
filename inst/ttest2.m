@@ -22,16 +22,7 @@
 ## ttest2 (@var{x}, @var{y})
 ##
 ## {[@var{h}, @var{pval}, @var{ci}, @var{stats} ] =} 
-## ttest2 (@var{x}, @var{y}, @var{alpha})
-##
-## {[@var{h}, @var{pval}, @var{ci}, @var{stats} ] =} 
-## ttest2 (@var{x}, @var{y},  @var{alpha}, @var{tail})
-##
-## {[@var{h}, @var{pval}, @var{ci}, @var{stats} ] =} 
-## ttest2 (@var{x}, @var{y},  @var{alpha}, @var{tail}, @var{vartype})
-##
-## {[@var{h}, @var{pval}, @var{ci}, @var{stats} ] =} 
-## ttest2 (@var{x}, @var{y},  @var{alpha}, @var{tail}, @var{vartype}, @var{dim})
+## ttest2 (@var{x}, @var{y}, @var{Name}, @var{Value})
 ##
 ## Perform a T-test of the null hypothesis @code{mean (@var{x}) ==
 ## @var{m}} for a sample @var{x} from a normal distribution with unknown
@@ -66,59 +57,41 @@
 ## @end deftypefn
 
 ## Author: Tony Richardson <richardson.tony@gmail.com>
-## Description: Two sample Hypothesis test for mean of a normal sample with unknown variance
+## Description: Test for mean of a normal sample with known variance
 
-function [h, p, ci, stats] = ttest2(x, y, alpha, tail, vartype, dim)
+function [h, p, ci, stats] = ttest2(x, y, varargin)
   
-  alpha_default = 0.05;
-  tail_default  = 'both';
-  vartype_default = 'equal';
+  alpha = 0.05;
+  tail  = 'both';
+  vartype = 'equal';
 
   % Find the first non-singleton dimension of x
-  dim_default = min(find(size(x)~=1));
-  if isempty(dim_default), dim_default = 1; end
+  dim = min(find(size(x)~=1));
+  if isempty(dim), dim = 1; end
 
-  % Set the default argument values if input arguments are not present  
-  switch (nargin)
-    case 2
-      alpha = alpha_default;
-      tail = tail_default;
-      vartype = vartype_default;
-      dim = dim_default;
-    case 3  
-      tail = tail_default;
-      vartype = vartype_default;
-      dim = dim_default;
-    case 4
-      vartype = vartype_default;
-      dim = dim_default;
-    case 5
-      dim = dim_default;
-    case 6
-      % Do nothing here.
-      % This is a valid case
-    otherwise
-      err_msg = 'Invalid call to ttest2. Correct usage is:';
-      err_msg = [err_msg '\n\n     ttest2(x, y)\n\n'];
-      error(err_msg,[]);
-  end
-  
-  % Set default values if arguments are present but empty
-  if isempty(alpha)
-    alpha = alpha_default;
-  end
-  if isempty(tail)
-    tail = tail_default;
-  end
-  if isempty(vartype)
-    vartype = vartype_default;
-  end
-  if isempty(dim)
-    dim = dim_default;
+  i = 1;
+  while ( i <= length(varargin) )
+    switch lower(varargin{i})
+      case 'alpha'
+        i = i + 1;
+        alpha = varargin{i};
+      case 'tail'
+        i = i + 1;
+        tail = varargin{i};
+      case 'vartype'
+        i = i + 1;
+        vartype = varargin{i};
+      case 'dim'
+        i = i + 1;
+        dim = varargin{i};
+      otherwise
+        error('Invalid Name argument.',[]);
+    end
+    i = i + 1;
   end
   
   if ~isa(tail, 'char')
-    error('Fourth argument to ttest2 must be a string\n',[]);
+    error('Tail argument to ttest2 must be a string\n',[]);
   end
   
   m = size(x, dim);
@@ -148,7 +121,7 @@ function [h, p, ci, stats] = ttest2(x, y, alpha, tail, vartype, dim)
 
   stats.tstat = x_bar./x_bar_std;
 
-      % Based on the "tail" argument determine the P-value, the critical values,
+  % Based on the "tail" argument determine the P-value, the critical values,
   % and the confidence interval.
   switch lower(tail)
     case 'both'
