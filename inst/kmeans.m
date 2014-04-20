@@ -50,12 +50,14 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
   if (length (varargin) > 0)
     ## check for the 'emptyaction' property
     found = find (strcmpi (prop, "emptyaction") == 1);
-    switch (lower (prop{found+1}))
-      case "singleton"
-        emptyaction = "singleton";
-      otherwise
-        error ("kmeans: unsupported empty cluster action parameter");
-    endswitch
+    if (~isempty (found))
+      switch (lower (prop{found+1}))
+        case "singleton"
+          emptyaction = "singleton";
+        otherwise
+          error ("kmeans: unsupported empty cluster action parameter");
+      endswitch
+    endif
   endif
 
   ## check for the 'start' property

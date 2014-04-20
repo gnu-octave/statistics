@@ -5,6 +5,8 @@ Summary of important user-visible changes for statistics 1.2.4:
 
  ** Renamed dendogram to dendrogram.
 
+ ** Added isempty check to kmeans.
+
  ** The following functions are new:
  
     cdf ttest ttest2 ztest
