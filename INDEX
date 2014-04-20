@@ -74,6 +74,8 @@ Hypothesis testing
  runstest
  ttest
  ttest2
+ vartest
+ vartest2
  ztest
 Fitting
  gamfit
