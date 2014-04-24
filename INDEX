@@ -72,6 +72,7 @@ Models
 Hypothesis testing
  anderson_darling_test
  runstest
+ signtest
  ttest
  ttest2
  vartest
