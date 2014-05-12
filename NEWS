@@ -7,6 +7,8 @@ Summary of important user-visible changes for statistics 1.2.4:
 
  ** Added isempty check to kmeans.
 
+ ** Transposed output of hist3.
+
  ** The following functions are new:
  
     cdf signtest ttest ttest2 vartest vartest2 ztest

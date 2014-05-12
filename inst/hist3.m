@@ -62,9 +62,12 @@ function varargout = hist3(varargin)
   ybins=10;
   edges={};
   M=varargin{1};
+  if size(M,2) ~= 2
+    error('X must be a two column marix');
+  end
   if nargin>=2,
     % is a binning method is specified?
-    if isstr(varargin{2}),
+    if ischar(varargin{2}),
       method = find(strcmp(methods,varargin{2}));
       if isempty(method),
         error('Unknown property string');
@@ -96,7 +99,7 @@ function varargout = hist3(varargin)
     hi = max(M);
     if isscalar(xbins)
       xbins = linspace(lo(1),hi(1),xbins+1);
-        xbins = (xbins(1:end-1)+xbins(2:end))/2;
+      xbins = (xbins(1:end-1)+xbins(2:end))/2;
     end
     if isscalar(ybins)
       ybins = linspace(lo(2),hi(2),ybins+1);
@@ -126,10 +129,11 @@ function varargout = hist3(varargin)
     xbins = (edges{1}(1:end-1)+edges{1}(2:end))/2;
     ybins = (edges{2}(1:end-1)+edges{2}(2:end))/2;
   end
-  counts = sparse(yidx,xidx,1,length(ybins), length(xbins), 'sum');
+
+  counts = sparse(yidx,xidx,1,length(ybins),length(xbins),'sum');
 
   if nargout
-    varargout{1} = full(counts);
+    varargout{1} = full(counts');
     if nargout>1
       varargout{2} = {xbins,ybins};
     end
