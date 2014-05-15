@@ -64,9 +64,9 @@ function varargout = hist3(varargin)
   M=varargin{1};
   if size(M,2) ~= 2
     error('X must be a two column marix');
-  end
+  endif
   if nargin>=2,
-    % is a binning method is specified?
+    # is a binning method is specified?
     if ischar(varargin{2}),
       method = find(strcmp(methods,varargin{2}));
       if isempty(method),
@@ -78,44 +78,44 @@ function varargout = hist3(varargin)
         ybins = varargin{3}{2};
       elseif method==3
         edges = varargin{3};
-      end
-    elseif iscell(varargin{2}) % second argument contains centers
+      endif
+    elseif iscell(varargin{2})    # second argument contains centers
       method = 2;
       xbins = varargin{2}{1};
       ybins = varargin{2}{2};
     elseif isscalar(varargin{2}),
       xbins = ybins = varargin{2};
-    elseif isvector(varargin{2}), % second argument contain number of bins
+    elseif isvector(varargin{2}), # second argument contain number of bins
       xbins = varargin{2}(1);
       ybins = varargin{2}(2);
     else
       error('Unsupported type for 2nd argument');
-    end
-  end
+    endif
+  endif
 
-  % If n bins, find centers based on n+1 bin edges
+  # If n bins, find centers based on n+1 bin edges
   if method==1,
     lo = min(M);
     hi = max(M);
     if isscalar(xbins)
       xbins = linspace(lo(1),hi(1),xbins+1);
       xbins = (xbins(1:end-1)+xbins(2:end))/2;
-    end
+    endif
     if isscalar(ybins)
       ybins = linspace(lo(2),hi(2),ybins+1);
       ybins = (ybins(1:end-1)+ybins(2:end))/2;
-    end
+    endif
     method=2;
-  end
+  endif
 
   if method==2,
-    % centers specified, compute edges
+    # centers specified, compute edges
     xcut = (xbins(1:end-1)+xbins(2:end))/2;
     ycut = (ybins(1:end-1)+ybins(2:end))/2;
     xidx = lookup(xcut,M(:,1))+1;
     yidx = lookup(ycut,M(:,2))+1;
   else,
-    % edges specified.  Filter points outside edge range
+    # edges specified.  Filter points outside edge range
     xidx = lookup(edges{1},M(:,1));
     yidx = lookup(edges{2},M(:,2));
     idx = find(xidx>0);
@@ -125,19 +125,50 @@ function varargout = hist3(varargin)
     xidx=xidx(idx);
     yidx=yidx(idx);
 
-    % compute centers for plotting
+    # compute bin centers
     xbins = (edges{1}(1:end-1)+edges{1}(2:end))/2;
     ybins = (edges{2}(1:end-1)+edges{2}(2:end))/2;
-  end
+  endif
 
-  counts = sparse(yidx,xidx,1,length(ybins),length(xbins),'sum');
+  counts = accumarray([yidx,xidx],1);
 
   if nargout
-    varargout{1} = full(counts');
+    varargout{1} = counts';
     if nargout>1
       varargout{2} = {xbins,ybins};
-    end
+    endif
   else
-    mesh(xbins,ybins,full(counts));
-  end
-end
+    mesh(xbins,ybins,counts);
+  endif
+
+endfunction
+
+%!test
+%!
+%! N_exp = [ 0, 0, 0, 5,20; ...
+%!           0, 0,10,15, 0; ...
+%!           0,15,10, 0, 0; ...
+%!          20, 5, 0, 0, 0];
+%!
+%! n = 100;
+%! x = [1:n]';
+%! y = [n:-1:1]';
+%! D = [x,y];
+%! N = hist3(D, [4,5]);
+%! assert(N, N_exp);
+
+%!test
+%!
+%! N_exp = [0, 0, 0, 0, 1; ...
+%!          0, 0, 0, 0, 1; ...
+%!          0, 0, 0, 0, 1; ...
+%!          1, 1, 1, 1,93];
+%!
+%! n = 100;
+%! x = [1:n]';
+%! y = [n:-1:1]';
+%! D = [x,y];
+%! C{1} = [1,1.7,3,4];
+%! C{2} = [1:5];
+%! N = hist3(D, C);
+%! assert(N, N_exp);
