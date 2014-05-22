@@ -25,6 +25,7 @@ Distributions
  normalise_distribution
  normstat
  poisstat
+ qrandn
  random
  raylcdf raylinv raylpdf raylrnd raylstat
  tstat
