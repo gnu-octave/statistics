@@ -1,13 +1,15 @@
 Summary of important user-visible changes for statistics 1.2.4:
 -------------------------------------------------------------------
 
- ** Make princomp work with nargout < 2.
+ ** Made princomp work with nargout < 2.
 
  ** Renamed dendogram to dendrogram.
 
  ** Added isempty check to kmeans.
 
  ** Transposed output of hist3.
+
+ ** Converted calculation in hmmviterbi to log space.
 
  ** The following functions are new:
  

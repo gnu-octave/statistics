@@ -189,17 +189,16 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
     endif
   endif
 
-  # Each row in transprob and outprob should contain probabilities
-  # => scale so that the sum is 1
-  # A zero row remains zero
+  # Each row in transprob and outprob should contain log probabilities
+  # => scale so that the sum is 1 and convert to log space
   # - for transprob
   s = sum (transprob, 2);
   s(s == 0) = 1;
-  transprob = transprob ./ (s * ones (1, columns (transprob)));
+  transprob = log (transprob ./ (s * ones (1, columns (transprob))));
   # - for outprob
   s = sum (outprob, 2);
   s(s == 0) = 1;
-  outsprob = outprob ./ (s * ones (1, columns (outprob))); 
+  outprob = log (outprob ./ (s * ones (1, columns (outprob)))); 
 
   # Store the path starting from i in spath(i, :)
   spath = ones (nstate, len + 1);
@@ -211,7 +210,7 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
   # Find the most likely paths for the given output sequence
   for i = 1:len
     # Calculate the new probabilities of the continuation with each state
-    nextpathprob = ((spathprob' .* outprob(:, sequence(i))) * ones (1, nstate)) .* transprob;
+    nextpathprob = ((spathprob' + outprob(:, sequence(i))) * ones (1, nstate)) + transprob;
     # Find the paths with the highest probabilities
     [spathprob, mindex] = max (nextpathprob);
     # Update spath and spathprob with the new paths
