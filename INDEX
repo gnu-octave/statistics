@@ -35,20 +35,21 @@ Distributions
  wblstat
  wishpdf wishrnd
 Descriptive statistics
- nansum
+ combnk
+ dcov
+ geomean
+ harmmean
+ jackknife
+ mad
  nanmax
  nanmean
  nanmedian
  nanmin
  nanstd
+ nansum
  nanvar
- geomean
- harmmean
- mad
  trimmean
  tabulate
- combnk
- jackknife
 Experimental design
  fullfact ff2n
 Regression
@@ -63,13 +64,15 @@ Regression
  stepwisefit
 Plots
  boxplot
- normplot
+ dendrogram
  histfit
  hist3
+ normplot
  repanova
- dendrogram
 Models
- hmmestimate hmmgenerate hmmviterbi
+ hmmestimate 
+ hmmgenerate 
+ hmmviterbi
 Hypothesis testing
  anderson_darling_test
  runstest
