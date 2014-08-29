@@ -84,7 +84,7 @@
 ## @item "chebychev"
 ## Chebychev distance: the maximum coordinate difference.
 ## @end table 
-## @seealso{linkage, mahalanobis, squareform}
+## @seealso{linkage, mahalanobis, squareform, pdist2}
 ## @end deftypefn
 
 ## Author: Francesco Potortì  <pot@gnu.org>

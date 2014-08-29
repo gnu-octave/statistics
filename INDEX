@@ -91,6 +91,7 @@ Clustering
  kmeans
  linkage
  pdist
+ pdist2
  squareform
 Reading and Writing
  caseread

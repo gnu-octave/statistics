@@ -67,6 +67,7 @@ inst/normstat.m                 GPLv3+
 inst/pcacov.m                   GPLv3+
 inst/pcares.m                   GPLv3+
 inst/pdist.m                    GPLv3+
+inst/pdist2.m                   GPLv3+
 inst/plsregress.m               GPLv3+
 inst/poisstat.m                 GPLv3+
 inst/princomp.m                 public domain
