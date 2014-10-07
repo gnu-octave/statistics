@@ -27,6 +27,7 @@ Distributions
  poisstat
  qrandn
  random
+ randsample
  raylcdf raylinv raylpdf raylrnd raylstat
  tstat
  unidstat
