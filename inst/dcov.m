@@ -1,6 +1,6 @@
 ## Copyright (C) 2014 - Maria L. Rizzo and Gabor J. Szekely
 ## Copyright (C) 2014 Juan Pablo Carbajal
-## This work is derivated fomr the R energy package. Was adapted 
+## This work is derived from the R energy package. It was adapted 
 ## for Octave by Juan Pablo Carbajal.
 ## 
 ## This progrm is free software; you can redistribute it and/or modify
