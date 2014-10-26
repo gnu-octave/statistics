@@ -53,6 +53,10 @@
 
 function [X_use, b, bint, r, rint, stats] = stepwisefit(y, X, penter = 0.05, premove = 0.1)
 
+#remove any rows with missing entries
+notnans = !any (isnan ([y X]) , 2);
+y = y(notnans);
+X = X(notnans,:);
 
 n = numel(y); #number of data points
 k = size(X, 2); #number of predictors
@@ -60,8 +64,13 @@ k = size(X, 2); #number of predictors
 X_use = [];
 v = 0; #number of predictor variables in regression model
 
+iter = 0;
+max_iters = 100; #maximum number of interations to do
+
 r = y;
 while 1
+
+  iter++;
   #decide which variable to add to regression, if any
   added = false;
   if numel(X_use) < k
@@ -85,17 +94,22 @@ while 1
   dropped = false;
   if v > 0
     t_ratio = tinv(1 - premove/2, n - v - 1) / tinv(1 - penter/2, n - v - 1); #estimate the ratio between the z score corresponding to premove to that corresponding to penter
-    [z_min, i_min] = min(abs(b(2:end)) / (bint(2:end, 2) - b(2:end)));
+    [z_min, i_min] = min(abs(b(2:end)) ./ (bint(2:end, 2) - b(2:end)));
     if z_min < t_ratio #drop a variable
       dropped = true;
       X_use(i_min) = [];
       [b, bint, r, rint, stats] = regress(y, [ones(n, 1) X(:, X_use)], penter);      
-      v = v - 1;  
+      v = v - 1;
     endif
   endif
   
   #terminate if no change in the list of regression variables
   if ~added && ~dropped
+    break
+  endif
+
+  if iter >= max_iters
+    warning('stepwisefit: maximum iteration count exceeded before convergence')
     break
   endif
   
