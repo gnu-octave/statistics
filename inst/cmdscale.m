@@ -73,7 +73,7 @@
 ## @end deftypefn
 
 ## Author: JD Walsh <walsh@math.gatech.edu>
-## Created: 2014-10-25
+## Created: 2014-10-31
 ## Description: Classical multidimensional scaling
 ## Keywords: multidimensional-scaling mds distance clustering
 
@@ -81,23 +81,26 @@
 
 function [Y, e] = cmdscale (D)
 
-  % Check for input
-  if (nargin == 0)
-    print_usage ();
+  % Check for matrix input
+  if ((nargin ~= 1) || ...
+      (~any(strcmp ({'matrix' 'scalar' 'range'}, typeinfo(D)))))
+    usage ('cmdscale: input must be vector or matrix; see help');
   endif
 
-  % Convert vector input to matrix
-  if isvector (D)
+  % If vector, convert to matrix; otherwise, check for square symmetric input
+  if (isvector (D))
     D = squareform (D);
+  elseif ((~issquare (D)) || (norm (D - D', 1) > 0))
+    usage ('cmdscale: matrix input must be square symmetric; see help');
   endif
 
   n = size (D,1);
   % Check for valid format (see help above); If similarity matrix, convert
-  if (~all (D >= 0))
-    print_usage ();
+  if (any (any (D < 0)))
+    usage ('cmdscale: entries must be nonnegative; see help');
   elseif (trace (D) ~= 0)
       if ((~all (diag (D) == 1)) || (~all (D <= 1)))
-        print_usage ();
+        usage ('cmdscale: input must be distance vector or matrix; see help');
       endif
       D = sqrt (ones (n,n) - D);
   endif
@@ -108,6 +111,7 @@ function [Y, e] = cmdscale (D)
   [Q, e] = eig (B);
   e = diag (e);
   etmp = e;
+  e = sort(e, 'descend');
 
   % Remove complex eigenpairs (only possible due to machine approximation)
   if (iscomplex (etmp))
@@ -126,6 +130,12 @@ function [Y, e] = cmdscale (D)
   cmp = (etmp > 0);
   etmp = etmp(cmp);
   Q = Q(:,cmp);
+
+  % Test for n-dimensional results
+  if (size(etmp,1) == n)
+    etmp = etmp(1:n-1);
+    Q = Q(:, 1:n-1);
+  endif
 
   % Build output matrix Y
   Y = Q * diag (sqrt (etmp));
