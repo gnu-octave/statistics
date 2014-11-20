@@ -11,7 +11,8 @@ Summary of important user-visible changes for statistics 1.2.4:
 
  ** Converted calculation in hmmviterbi to log space.
  
- ** Bug fix in stepwisefit.
+ ** Bug fixes for
+    stepwisefit   wishrnd.
 
  ** Rewrite of cmdscale for improved compatibility.
 
