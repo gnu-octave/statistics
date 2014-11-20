@@ -27,7 +27,7 @@
 
 function [W, D] = wishrnd(Sigma, df, D, n=1)
 
-if (nargin < 3)
+if (nargin < 2)
   print_usage ();
 endif
 
@@ -35,7 +35,7 @@ if nargin < 3 || isempty(D)
   try
     D = chol(Sigma);
   catch
-    error('Cholesky decomposition failed; Sigma probably not positive definite')
+    error('wishrnd: Cholesky decomposition failed; Sigma probably not positive definite')
   end_try_catch
 endif
 
@@ -84,5 +84,4 @@ endfunction
 %% Test input validation
 %!error wishrnd ()
 %!error wishrnd (1)
-%!error wishrnd ([-3 1; 1 3],1)
-%!error wishrnd ([1; 1],1)
+%!error wishrnd ([1; 1], 2)
