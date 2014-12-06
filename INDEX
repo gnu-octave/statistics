@@ -55,6 +55,7 @@ Experimental design
  fullfact ff2n
 Regression
  anovan
+ crossval
  monotone_smooth
  princomp
  pcares
@@ -96,3 +97,9 @@ Reading and Writing
  casewrite
  tblread
  tblwrite
+Cvpartition (class of set partitions for cross-validation, used in crossval)
+ @cvpartition/cvpartition
+ @cvpartition/display
+ @cvpartition/repartition
+ @cvpartition/test
+ @cvpartition/training
