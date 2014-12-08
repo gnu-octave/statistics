@@ -57,23 +57,25 @@ function results = crossval (f, X, y, varargin)
     error('X, y sizes incompatible')
   endif
   
-  #extract optional arguments
-  vargs = varargin;
-  nargs = numel (vargs);
-  names = vargs(1:2:nargs);
-  values = vargs(2:2:nargs);
-  validnames = {'KFold', 'HoldOut', 'LeaveOut', 'Partition', 'Given', 'stratify', 'mcreps'};    
-  for i = 1:numel(names)
-     names(i) = validatestring (names(i){:}, validnames);
-  end
-  for i = 1:numel(validnames)
-    name = validnames(i){:};
-    name_pos = strmatch (name, names);
-    if !isempty(name_pos)
-      eval([name ' = values(name_pos){:};'])
-    endif
-  endfor
-  
+  #extract optional parameter-value argument pairs
+  if numel(varargin) > 1
+    vargs = varargin;
+    nargs = numel (vargs);
+    values = vargs(2:2:nargs);
+    names = vargs(1:2:nargs)(1:numel(values));
+    validnames = {'KFold', 'HoldOut', 'LeaveOut', 'Partition', 'Given', 'stratify', 'mcreps'};    
+    for i = 1:numel(names)
+       names(i) = validatestring (names(i){:}, validnames);
+    end
+    for i = 1:numel(validnames)
+      name = validnames(i){:};
+      name_pos = strmatch (name, names);
+      if !isempty(name_pos)
+        eval([name ' = values(name_pos){:};'])
+      endif
+    endfor
+  endif
+    
   #construct CV partition
   if exist ("Partition", "var")
     P = Partition;
@@ -137,8 +139,7 @@ endfunction
 %! results4 = crossval (f, X, y, 'LeaveOut', 1);
 %! mcreps = 2; n_holdout = 20;
 %! results5 = crossval (f, X, y, 'HoldOut', n_holdout, 'mcreps', mcreps);
-## ensure equal representation of iris species in the training set -- tends to slightly reduce cross-validation mean square error
-%! results6 = crossval (f, X, y, 'KFold', 5, 'stratify', fisheriris(:, 1)); 
+%! results6 = crossval (f, X, y, 'KFold', 5, 'stratify', fisheriris(:, 1)); ## ensure equal representation of iris species in the training set -- tends to slightly reduce cross-validation mean square error 
 %! assert (results0, results1);
 %! assert (results2, results3);
 %! assert (size(results4), [1 numel(y)]);
