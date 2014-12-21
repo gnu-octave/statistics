@@ -14,34 +14,27 @@
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn{Function File}{@var{inds} =} test (@var{C}, [@var{i}])
-## Return logical vector for testing-subset indices from a cvpartition object.
+## @deftypefn{Function File}@var{s} = get (@var{c}, [@var{f}])
+## Get a field from a @samp{cvpartition} object.
 ##
-## @var{C} should be a cvpartition object. @var{i} is the fold index (default is 1).
-##
-## @seealso{cvpartition, @cvpartition/training}
+## @seealso{cvpartition}
 ## @end deftypefn
 
-## Author: Nir Krakauer
-
-function inds = test (C, i = [])
-
-  if (nargin < 1 || nargin > 2)
+function s = get (c, f)
+  if (nargin == 1)
+    s = c;
+  elseif (nargin == 2)
+    if (ischar (f))
+      switch (f)
+        case {"classes", "inds", "n_classes", "NumObservations", "NumTestSets", "TestSize", "TrainSize", "Type"}
+          s = eval(["struct(c)." f]);
+        otherwise
+          error ("get: invalid property %s", f);
+      endswitch
+    else
+      error ("get: expecting the property to be a string");
+    endif
+  else
     print_usage ();
   endif
-
-  if nargin < 2 || isempty (i)
-    i = 1;
-  endif
-
-  switch C.Type
-    case {'kfold' 'given'}
-      inds = C.inds == i;
-    case 'holdout'
-      inds = C.inds;
-    case 'leaveout'
-      inds = zeros(C.NumObservations, 1, "logical");
-      inds(i) = true;
-    case 'resubstitution'
-      inds = ones(C.NumObservations, 1, "logical");
-  endswitch
+endfunction

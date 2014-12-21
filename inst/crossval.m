@@ -103,9 +103,9 @@ function results = crossval (f, X, y, varargin)
     P = cvpartition (stratify, "KFold");
   endif
   
-  nr = struct(P).NumTestSets; #number of test sets to do cross validation on
+  nr = get(P, "NumTestSets"); #number of test sets to do cross validation on
   nreps = 1;
-  if strcmp(struct(P).Type, 'holdout') && exist("mcreps", "var") && mcreps > 1
+  if strcmp(get(P, "Type"), 'holdout') && exist("mcreps", "var") && mcreps > 1
     nreps = mcreps;
   endif
   results = nan (nreps, nr);

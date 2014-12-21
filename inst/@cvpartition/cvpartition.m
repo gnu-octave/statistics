@@ -34,6 +34,27 @@
 ## Subset indices are as given in @var{X}.
 ## @end table
 ##
+## The following fields are defined for the @samp{cvpartition} class:
+## 
+## @table @asis
+## @item @samp{classes}
+## Class designations for the elements.
+## @item @samp{inds}
+## Subset indices for the elements.
+## @item @samp{n_classes}
+## Number of different classes.
+## @item @samp{NumObservations}
+## @var{n}, number of elements in data set.
+## @item @samp{NumTestSets}
+## Number of testing subsets.
+## @item @samp{TestSize}
+## Number of elements in (each) testing subset.
+## @item @samp{TrainSize}
+## Number of elements in (each) training subset.
+## @item @samp{Type}
+## Partition type.
+## @end table
+##
 ## @seealso{crossval}
 ## @end deftypefn
 

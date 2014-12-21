@@ -101,6 +101,8 @@ Reading and Writing
 Cvpartition (class of set partitions for cross-validation, used in crossval)
  @cvpartition/cvpartition
  @cvpartition/display
+ @cvpartition/get 
  @cvpartition/repartition
+ @cvpartition/set
  @cvpartition/test
  @cvpartition/training
