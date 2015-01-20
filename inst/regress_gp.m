@@ -15,7 +15,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{m}, @var{K}] =} regress_gp (@var{x}, @var{y}, @var{Sp})
-## @deftypefnx {Function File} {[@dots{} @var{yi} @var{dy}] =} sqp (@dots{}, @var{xi})
+## @deftypefnx {Function File} {[@dots{} @var{yi} @var{dy}] =} regress_gp (@dots{}, @var{xi})
 ## Linear scalar regression using gaussian processes.
 ##
 ## It estimates the model @var{y} = @var{x}'*m for @var{x} R^D and @var{y} in R.
