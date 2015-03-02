@@ -85,28 +85,6 @@
 ##
 ## @end deftypefn
 
-## Author: Alberto Terruzzi <t-albert@libero.it>
-## Version: 1.4
-## Created: 6 January 2002
-
-## Version: 1.4.1
-## Author: Alberto Pose <apose@alu.itba.edu.ar>
-## Updated: 3 September 2006
-## - Replaced deprecated is_nan_or_na(X) with (isnan(X) | isna(X))
-## (now works with this software 2.9.7 and foward)
-
-## Version: 1.4.2
-## Author: Pascal Dupuis <Pascal.Dupuis@worldonline.be>
-## Updated: 14 October 2011
-## - Added support for named arguments
-
-## Version: 1.4.2
-## Author: Juan Pablo Carbajal <carbajal@ifi.uzh.ch>
-## Updated: 01 March 2012
-## - Returns structure with handles to plot elements
-## - Added example as demo
-
-%# function s = boxplot (data,notched,symbol,vertical,maxwhisker)
 function [s hs] = boxplot (data, varargin)
 
   ## assign parameter defaults
@@ -324,3 +302,4 @@ endfunction
 %! boxplot ({randn(10,1)*5+140, randn(13,1)*8+135});
 %! set(gca (), "xtick", [1 2], "xticklabel", {"girls", "boys"})
 %! title ("Grade 3 heights");
+
