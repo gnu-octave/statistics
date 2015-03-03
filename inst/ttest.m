@@ -14,21 +14,12 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} 
-## {[@var{h}, @var{pval}, @var{ci}, @var{stats} ] =} 
-## ttest (@var{x})
-##
-## {[@var{h}, @var{pval}, @var{ci}, @var{stats} ] =} 
-## ttest (@var{x}, @var{m})
-##
-## {[@var{h}, @var{pval}, @var{ci}, @var{stats} ] =} 
-## ttest (@var{x}, @var{y})
-##
-## {[@var{h}, @var{pval}, @var{ci}, @var{stats} ] =} 
-## ttest (@var{x}, @var{m}, @var{Name}, @var{Value})
-##
-## {[@var{h}, @var{pval}, @var{ci}, @var{stats} ] =} 
-## ttest (@var{x}, @var{y}, @var{Name}, @var{Value})
+## @deftypefn  {Function File} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} ttest (@var{x})
+## @deftypefnx {Function File} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} ttest (@var{x}, @var{m})
+## @deftypefnx {Function File} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} ttest (@var{x}, @var{y})
+## @deftypefnx {Function File} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} ttest (@var{x}, @var{m}, @var{Name}, @var{Value})
+## @deftypefnx {Function File} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} ttest (@var{x}, @var{y}, @var{Name}, @var{Value})
+## Test for mean of a normal sample with known variance.
 ##
 ## Perform a T-test of the null hypothesis @code{mean (@var{x}) ==
 ## @var{m}} for a sample @var{x} from a normal distribution with unknown
@@ -37,20 +28,20 @@
 ## @var{m} is 0.
 ##
 ## If the second argument @var{y} is a vector, a paired-t test of the
-## hypothesis mean(x) = mean(y) is performed.
+## hypothesis @code{mean (@var{x}) = mean (@var{y})} is performed.
 ##
 ## Name-Value pair arguments can be used to set various options.
-## @var{'alpha'} can be used to specify the significance level
-## of the test (the default value is 0.05).  @var{'tail'}, can be used
+## @qcode{"alpha"} can be used to specify the significance level
+## of the test (the default value is 0.05).  @qcode{"tail"}, can be used
 ## to select the desired alternative hypotheses.  If the value is
-## @qcode{'both'} (default) the null is tested against the two-sided 
+## @qcode{"both"} (default) the null is tested against the two-sided 
 ## alternative @code{mean (@var{x}) != @var{m}}.
-## If it is @qcode{'right'} the one-sided alternative @code{mean (@var{x})
-## > @var{m}} is considered.  Similarly for @qcode{'left'}, the one-sided 
-## alternative @code{mean (@var{x}) < @var{m}} is considered.  
-## When argument @var{x} is a matrix, @var{'dim'} can be used to selection
+## If it is @qcode{"right"} the one-sided alternative @code{mean (@var{x})
+## > @var{m}} is considered.  Similarly for @qcode{"left"}, the one-sided 
+## alternative @code{mean (@var{x}) < @var{m}} is considered.
+## When argument @var{x} is a matrix, @qcode{"dim"} can be used to selection
 ## the dimension over which to perform the test.  (The default is the 
-## first non-singleton dimension.)
+## first non-singleton dimension).
 ##
 ## If @var{h} is 0 the null hypothesis is accepted, if it is 1 the null
 ## hypothesis is rejected. The p-value of the test is returned in @var{pval}.
@@ -62,7 +53,6 @@
 ## @end deftypefn
 
 ## Author: Tony Richardson <richardson.tony@gmail.com>
-## Description: Test for mean of a normal sample with known variance
 
 function [h, p, ci, stats] = ttest(x, my, varargin)
   

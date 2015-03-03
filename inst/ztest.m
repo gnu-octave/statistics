@@ -14,40 +14,36 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} 
-## {[@var{h}, @var{pval}, @var{ci}, @var{z}, @var{zcrit} ] =} 
-## ztest (@var{x}, @var{m}, @var{s})
+## @deftypefn  {Function File} {[@var{h}, @var{pval}, @var{ci}, @var{z}, @var{zcrit}] =} ztest (@var{x}, @var{m}, @var{s})
+## @deftypefnx {Function File} {[@var{h}, @var{pval}, @var{ci}, @var{z}, @var{zcrit}] =} ztest (@var{x}, @var{m}, @var{s}, @var{Name}, @var{Value})
+## Test for mean of a normal sample with known variance.
 ##
-## {[@var{h}, @var{pval}, @var{ci}, @var{z}, @var{zcrit} ] =} 
-## ztest (@var{x}, @var{m}, @var{s}, @var{Name}, @var{Value})
-##
-## Perform a Z-test of the null hypothesis @code{mean (@var{x}) ==
-## @var{m}} for a sample @var{x} from a normal distribution with unknown
+## Perform a Z-test of the null hypothesis @code{mean (@var{x}) == @var{m}}
+## for a sample @var{x} from a normal distribution with unknown
 ## mean and known std deviation @var{s}.  Under the null, the test statistic
 ## @var{z} follows a standard normal distribution.
 ##
 ## Name-Value pair arguments can be used to set various options.
-## @var{'alpha'} can be used to specify the significance level
-## of the test (the default value is 0.05).  @var{'tail'}, can be used
+## @qcode{"alpha"} can be used to specify the significance level
+## of the test (the default value is 0.05).  @qcode{"tail"}, can be used
 ## to select the desired alternative hypotheses.  If the value is
-## @qcode{'both'} (default) the null is tested against the two-sided 
+## @qcode{"both"} (default) the null is tested against the two-sided 
 ## alternative @code{mean (@var{x}) != @var{m}}.
-## If it is @qcode{'right'} the one-sided alternative @code{mean (@var{x})
-## > @var{m}} is considered.  Similarly for @qcode{'left'}, the one-sided 
+## If it is @qcode{"right"} the one-sided alternative @code{mean (@var{x})
+## > @var{m}} is considered.  Similarly for @qcode{"left"}, the one-sided 
 ## alternative @code{mean (@var{x}) < @var{m}} is considered.  
-## When argument @var{x} is a matrix, @var{'dim'} can be used to selection
+## When argument @var{x} is a matrix, @qcode{"dim"} can be used to selection
 ## the dimension over which to perform the test.  (The default is the 
 ## first non-singleton dimension.)
 ##
 ## If @var{h} is 0 the null hypothesis is accepted, if it is 1 the null
 ## hypothesis is rejected. The p-value of the test is returned in @var{pval}.
-%% A 100(1-alpha)% confidence interval is returned in @var{ci}.  The test statistic
+## A 100(1-alpha)% confidence interval is returned in @var{ci}.  The test statistic
 ## value is returned in @var{z} and the z critical value in @var{zcrit}.
 ##
 ## @end deftypefn
 
 ## Author: Tony Richardson <richardson.tony@gmail.com>
-## Description: Test for mean of a normal sample with known variance
 
 function [h, p, ci, zval, zcrit] = ztest(x, m, sigma, varargin)
   

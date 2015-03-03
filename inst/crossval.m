@@ -14,10 +14,15 @@
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn{Function File}{@var{results} =} crossval (@var{f}, @var{X}, @var{y}[, @var{params}])
+## @deftypefn {Function File} {@var{results} =} crossval (@var{f}, @var{X}, @var{y}[, @var{params}])
 ## Perform cross validation on given data.
 ##
-## @var{f} should be a function that takes 4 inputs @var{xtrain}, @var{ytrain}, @var{xtest}, @var{ytest}, fits a model based on @var{xtrain}, @var{ytrain}, applies the fitted model to @var{xtest}, and returns a goodness of fit measure based on comparing the predicted and actual @var{ytest}. {crossval} returns an array containing the values returned by @var{f} for every cross-validation fold or resampling applied to the given data.
+## @var{f} should be a function that takes 4 inputs @var{xtrain}, @var{ytrain},
+## @var{xtest}, @var{ytest}, fits a model based on @var{xtrain}, @var{ytrain},
+## applies the fitted model to @var{xtest}, and returns a goodness of fit
+## measure based on comparing the predicted and actual @var{ytest}.
+## @code{crossval} returns an array containing the values returned by @var{f}
+## for every cross-validation fold or resampling applied to the given data.
 ##
 ## @var{X} should be an @var{n} by @var{m} matrix of predictor values
 ##
@@ -26,23 +31,43 @@
 ## @var{params} may include parameter-value pairs as follows:
 ##
 ## @table @asis
-## @item @samp{KFold}
-## Divide set into @var{k} equal-size subsets, using each one successively for validation.
-## @item @samp{HoldOut}
-## Divide set into two subsets, training and validation. If the value @var{k} is a fraction, that is the fraction of values put in the validation subset (by default @var{k}=0.1); if it is a positive integer, that is the number of values in the validation subset.
-## @item @samp{LeaveOut}
-## Leave-one-out partition (each element is placed in its own subset). The value is ignored.
-## @item @samp{Partition}
+## @item @qcode{"KFold"}
+## Divide set into @var{k} equal-size subsets, using each one successively
+## for validation.
+##
+## @item @qcode{"HoldOut"}
+## Divide set into two subsets, training and validation. If the value
+## @var{k} is a fraction, that is the fraction of values put in the
+## validation subset (by default @var{k}=0.1); if it is a positive integer,
+## that is the number of values in the validation subset.
+##
+## @item @qcode{"LeaveOut"}
+## Leave-one-out partition (each element is placed in its own subset).
+## The value is ignored.
+##
+## @item @qcode{"Partition"}
 ## The value should be a @var{cvpartition} object.
-## @item @samp{Given}
-## The value should be an @var{n} by @var{1} vector specifying in which partition to put each element.
-## @item @samp{stratify}
-## The value should be an @var{n} by @var{1} vector containing class designations for the elements, in which case the @samp{KFold} and @samp{HoldOut} partitionings attempt to ensure each partition represents the classes proportionately.
-## @item @samp{mcreps}
-## The value should be a positive integer specifying the number of times to resample based on different partitionings. Currently only works with the partition type @samp{HoldOut}. 
+##
+## @item @qcode{"Given"}
+## The value should be an @var{n} by @var{1} vector specifying in which
+## partition to put each element.
+##
+## @item @qcode{"stratify"}
+## The value should be an @var{n} by @var{1} vector containing class
+## designations for the elements, in which case the @qcode{"KFold"} and
+## @qcode{"HoldOut"} partitionings attempt to ensure each partition
+## represents the classes proportionately.
+##
+## @item @qcode{"mcreps"}
+## The value should be a positive integer specifying the number of times
+## to resample based on different partitionings. Currently only works with
+## the partition type @qcode{"HoldOut"}.
+##
 ## @end table
 ##
-## Only one of @samp{KFold}, @samp{HoldOut}, @samp{LeaveOut}, @samp{Given}, @samp{Partition} should be specified. If none is specified, the default is @samp{KFold} with @var{k}=10.
+## Only one of @qcode{"KFold"}, @qcode{"HoldOut"}, @qcode{"LeaveOut"},
+## @qcode{"Given"}, @qcode{"Partition"} should be specified. If none is
+## specified, the default is @qcode{"KFold"} with @var{k} = 10.
 ##
 ## @seealso{cvpartition}
 ## @end deftypefn
@@ -123,9 +148,6 @@ function results = crossval (f, X, y, varargin)
 
 endfunction
 
-
-
-
 %!test
 %! load fisheriris.txt
 %! y = fisheriris(:, 2);
@@ -139,9 +161,14 @@ endfunction
 %! results4 = crossval (f, X, y, 'LeaveOut', 1);
 %! mcreps = 2; n_holdout = 20;
 %! results5 = crossval (f, X, y, 'HoldOut', n_holdout, 'mcreps', mcreps);
-%! results6 = crossval (f, X, y, 'KFold', 5, 'stratify', fisheriris(:, 1)); ## ensure equal representation of iris species in the training set -- tends to slightly reduce cross-validation mean square error 
+%!
+%! ## ensure equal representation of iris species in the training set -- tends
+%! ## to slightly reduce cross-validation mean square error 
+%! results6 = crossval (f, X, y, 'KFold', 5, 'stratify', fisheriris(:, 1));
+%!
 %! assert (results0, results1);
 %! assert (results2, results3);
 %! assert (size(results4), [1 numel(y)]);
 %! assert (mean(results4), 4.5304, 1E-4);
 %! assert (size(results5), [mcreps 1]);
+

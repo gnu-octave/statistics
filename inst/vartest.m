@@ -14,30 +14,25 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} 
-## {[@var{h}, @var{pval}, @var{ci}, @var{stats} ] =} 
-## vartest (@var{x}, @var{y})
-##
-## {[@var{h}, @var{pval}, @var{ci}, @var{stats} ] =} 
-## vartest (@var{x}, @var{y},  @var{Name}, @var{Value})
-##
+## @deftypefn  {Function File} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} vartest (@var{x}, @var{y})
+## @deftypefnx {Function File} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} vartest (@var{x}, @var{y}, @var{Name}, @var{Value})
 ## Perform a F-test for equal variances.
 ##
 ## If the second argument @var{y} is a vector, a paired-t test of the
-## hypothesis mean(x) = mean(y) is performed.
+## hypothesis @code{mean (@var{x}) = mean (@var{y})} is performed.
 ##
-## The argument @var{alpha} can be used to specify the significance level
+## The argument @qcode{"alpha"} can be used to specify the significance level
 ## of the test (the default value is 0.05).  The string
-## argument @var{tail}, can be used to select the desired alternative
-## hypotheses.  If @var{alt} is @qcode{"both"} (default) the null is 
+## argument @qcode{"tail"}, can be used to select the desired alternative
+## hypotheses.  If @qcode{"alt"} is @qcode{"both"} (default) the null is 
 ## tested against the two-sided alternative @code{mean (@var{x}) != @var{m}}.
-## If @var{alt} is @qcode{"right"} the one-sided 
+## If @qcode{"alt"} is @qcode{"right"} the one-sided 
 ## alternative @code{mean (@var{x}) > @var{m}} is considered.
 ## Similarly for @qcode{"left"}, the one-sided alternative @code{mean
-## (@var{x}) < @var{m}} is considered.  When @var{vartype} is 'equal'
+## (@var{x}) < @var{m}} is considered.  When @qcode{"vartype"} is @qcode{"equal"}
 ## the variances are assumed to be equal (this is the default).  When
-## @var{vartype} is 'unequal' the variances are not assumed equal.
-## When argument @var{x} is a matrix the @var{dim} argument can be 
+## @qcode{"vartype"} is @qcode{"unequal"} the variances are not assumed equal.
+## When argument @var{x} is a matrix the @qcode{"dim"} argument can be 
 ## used to selection the dimension over which to perform the test.
 ## (The default is the first non-singleton dimension.)
 ##

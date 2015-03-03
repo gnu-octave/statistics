@@ -19,7 +19,7 @@
 ##
 ## @var{C} should be a cvpartition object. @var{i} is the fold index (default is 1).
 ##
-## @seealso{cvpartition, @cvpartition/test}
+## @seealso{cvpartition, @@cvpartition/test}
 ## @end deftypefn
 
 ## Author: Nir Krakauer

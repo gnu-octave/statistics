@@ -14,39 +14,32 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} 
-## {[@var{pval}, @var{h}, @var{stats} ] =} 
-## signtest (@var{x})
+## @deftypefn  {Function File} {[@var{pval}, @var{h}, @var{stats}] =} signtest (@var{x})
+## @deftypefnx {Function File} {[@var{pval}, @var{h}, @var{stats}] =} signtest (@var{x}, @var{m})
+## @deftypefnx {Function File} {[@var{pval}, @var{h}, @var{stats}] =} signtest (@var{x}, @var{y})
+## @deftypefnx {Function File} {[@var{pval}, @var{h}, @var{stats}] =} signtest (@var{x}, @var{y}, @var{Name}, @var{Value})
+## Test for median.
 ##
-## {[@var{pval}, @var{h}, @var{stats} ] =} 
-## signtest (@var{x}, @var{m})
-##
-## {[@var{pval}, @var{h}, @var{stats} ] =} 
-## signtest (@var{x}, @var{y})
-##
-## {[@var{pval}, @var{h}, @var{stats} ] =} 
-## signtest (@var{x}, @var{y}, @var{Name}, @var{Value})
-##
-## Perform a signtest of the null hypothesis that X is from a distribution
+## Perform a signtest of the null hypothesis that @var{x} is from a distribution
 ## that has a zero median.
 ##
 ## If the second argument @var{m} is a scalar, the null hypothesis is that
 ## X has median m.
 ##
 ## If the second argument @var{y} is a vector, the null hypothesis is that
-## the distribution of X - Y has zero median.
+## the distribution of @code{@var{x} - @var{y}} has zero median.
 ##
-## The argument @var{alpha} can be used to specify the significance level
+## The argument @qcode{"alpha"} can be used to specify the significance level
 ## of the test (the default value is 0.05).  The string
-## argument @var{tail}, can be used to select the desired alternative
-## hypotheses.  If @var{alt} is @qcode{"both"} (default) the null is 
+## argument @qcode{"tail"}, can be used to select the desired alternative
+## hypotheses.  If @qcode{"alt"} is @qcode{"both"} (default) the null is 
 ## tested against the two-sided alternative @code{median (@var{x}) != @var{m}}.
-## If @var{alt} is @qcode{"right"} the one-sided 
+## If @qcode{"alt"} is @qcode{"right"} the one-sided 
 ## alternative @code{median (@var{x}) > @var{m}} is considered.
 ## Similarly for @qcode{"left"}, the one-sided alternative @code{median
-## (@var{x}) < @var{m}} is considered.  When @var{method} is 'exact'
+## (@var{x}) < @var{m}} is considered.  When @qcode{"method"} is @qcode{"exact"}
 ## the p-value is computed using an exact method (this is the default).  When
-## @var{method} is 'approximate' a normal approximation is used for the
+## @qcode{"method"} is @qcode{"approximate"} a normal approximation is used for the
 ## test statistic.
 ##
 ## The p-value of the test is returned in @var{pval}. If @var{h} is 0 the 
@@ -58,7 +51,6 @@
 ## @end deftypefn
 
 ## Author: Tony Richardson <richardson.tony@gmail.com>
-## Description: Test for median
 
 function [p, h, stats] = signtest(x, my, varargin)
   

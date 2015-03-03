@@ -15,8 +15,8 @@
 ## <http:##www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {} pdist2 (@var{x}, @var{y})
-## @deftypefn {Function File} {} pdist2 (@var{x}, @var{y}, @var{metric})
+## @deftypefn  {Function File} {} pdist2 (@var{x}, @var{y})
+## @deftypefnx {Function File} {} pdist2 (@var{x}, @var{y}, @var{metric})
 ## Compute pairwise distance between two sets of vectors.
 ##
 ## Let @var{X} be an MxP matrix representing m points in P-dimensional space
