@@ -7,12 +7,16 @@ inst/binostat.m                 GPLv3+
 inst/boxplot.m                  GPLv3+
 inst/caseread.m                 GPLv3+
 inst/casewrite.m                GPLv3+
+inst/cdf.m                      GPLv3+
 inst/chi2stat.m                 GPLv3+
 inst/cl_multinom.m              GPLv3+
+inst/cmdscale.m                 GPLv3+
 inst/combnk.m                   GPLv3+
 inst/copulacdf.m                GPLv3+
 inst/copulapdf.m                GPLv3+
 inst/copularnd.m                GPLv3+
+inst/crossval.m                 GPLv3+
+inst/dcov.m                     GPLv3+
 inst/dendogram.m                GPLv3+
 inst/expstat.m                  GPLv3+
 inst/ff2n.m                     public domain
@@ -37,6 +41,8 @@ inst/histfit.m                  GPLv3+
 inst/hmmestimate.m              GPLv3+
 inst/hmmgenerate.m              GPLv3+
 inst/hmmviterbi.m               GPLv3+
+inst/iwishpdf.m                 GPLv3+
+inst/iwishrnd.m                 GPLv3+
 inst/hygestat.m                 GPLv3+
 inst/jackknife.m                GPLv3+
 inst/jsucdf.m                   GPLv3+
@@ -71,7 +77,9 @@ inst/pdist2.m                   GPLv3+
 inst/plsregress.m               GPLv3+
 inst/poisstat.m                 GPLv3+
 inst/princomp.m                 public domain
+inst/qrandn.m                   GPLv3+
 inst/random.m                   GPLv3+
+inst/randsample.m               GPLv3+
 inst/raylcdf.m                  GPLv3+
 inst/raylinv.m                  GPLv3+
 inst/raylpdf.m                  GPLv3+
@@ -81,6 +89,7 @@ inst/regress_gp.m               GPLv3+
 inst/regress.m                  GPLv3+
 inst/repanova.m.m               GPLv3+
 inst/runtest.m                  GPLv3+
+inst/signtest.m                 GPLv3+
 inst/squareform.m               GPLv3+
 inst/stepwisefit.m              GPLv3+
 inst/tabulate.m                 GPLv3+
@@ -88,8 +97,15 @@ inst/tblread.m                  GPLv3+
 inst/tblwrite.m                 GPLv3+
 inst/trimmean.m                 GPLv3+
 inst/tstat.m                    GPLv3+
+inst/ttest.m                    GPLv3+
+inst/ttest2.m                   GPLv3+
 inst/unidstat.m                 GPLv3+
 inst/unifstat.m                 GPLv3+
+inst/vartest.m                  GPLv3+
+inst/vartest2.m                 GPLv3+
 inst/vmpdf.m                    GPLv3+
 inst/vmrnd.m                    GPLv3+
-inst/wblstat.m.m                GPLv3+
+inst/wblstat.m                  GPLv3+
+inst/wishpdf.m                  GPLv3+
+inst/wishrnd.m                  GPLv3+
+inst/ztest.m                    GPLv3+
