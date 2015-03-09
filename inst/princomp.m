@@ -67,7 +67,7 @@ function [COEFF,SCORE,latent,tsquare] = princomp(X,varargin)
    # Check if there are more variables then observations
    if nvars <= nobs
 		
-      [U,S,COEFF] = svd(Xcentered);
+      [U,S,COEFF] = svd(Xcentered, "econ");
 
    else
 
@@ -116,7 +116,29 @@ function [COEFF,SCORE,latent,tsquare] = princomp(X,varargin)
 
 endfunction
 
-%!shared COEFF,SCORE,latent,tsquare,m,x
+%!shared COEFF,SCORE,latent,tsquare,m,x,R,V,lambda,i,S,F
+
+#NIST Engineering Statistics Handbook example (6.5.5.2)
+%!test
+%! x=[7 4 3
+%!    4 1 8
+%!    6 3 5
+%!    8 6 1
+%!    8 5 7
+%!    7 2 9
+%!    5 3 3
+%!    9 5 8
+%!    7 4 5
+%!    8 2 2];
+%! R = corrcoef (x);
+%! [V, lambda] = eig (R);
+%! [~, i] = sort(diag(lambda), "descend"); #arrange largest PC first
+%! S = V(:, i) * diag(sqrt(diag(lambda)(i)));
+%!assert(diag(S(:, 1:2)*S(:, 1:2)'), [0.8662; 0.8420; 0.9876], 1E-4); #contribution of first 2 PCs to each original variable
+%! B = V(:, i) * diag( 1./ sqrt(diag(lambda)(i)));
+%! F = zscore(x)*B;
+%! [COEFF,SCORE,latent,tsquare] = princomp(zscore(x, 1));
+%!assert(tsquare,sumsq(F, 2),1E4*eps);
 
 %!test
 %! x=[1,2,3;2,1,3]';
@@ -128,7 +150,7 @@ endfunction
 %!assert(COEFF,m(1:2,:),10*eps);
 %!assert(SCORE,-m,10*eps);
 %!assert(latent,[1.5;.5],10*eps);
-%!assert(tsquare,[4;4;4]/3,10*eps);
+%!assert(tsquare,[2;2;2],10*eps);
 
 %!test
 %! x=x';
@@ -142,5 +164,13 @@ endfunction
 %!assert(SCORE(:,1),-m(1:2,1),10*eps);
 %!assert(SCORE(:,2:3),zeros(2),10*eps);
 %!assert(latent,[1;0;0],10*eps);
-%!xtest
-%! assert(tsquare,[0.5;0.5],10*eps)
+%!assert(tsquare,[1;1],10*eps)
+
+%!test
+%! [COEFF,SCORE,latent,tsquare] = princomp(x, "econ");
+
+%!assert(COEFF,m(:, 1),10*eps);
+%!assert(SCORE,-m(1:2,1),10*eps);
+%!assert(latent,[1],10*eps);
+%!assert(tsquare,[1;1],10*eps)
+
