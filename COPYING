@@ -35,6 +35,7 @@ inst/gevlike.m                  GPLv3+
 inst/gevpdf.m                   GPLv3+
 inst/gevrnd.m                   GPLv3+
 inst/gevstat.m                  GPLv3+
+inst/grp2idx.m                  GPLv3+
 inst/harmmean.m                 GPLv3+
 inst/hist3.m                    GPLv3+
 inst/histfit.m                  GPLv3+

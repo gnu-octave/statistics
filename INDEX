@@ -106,3 +106,5 @@ Cvpartition (class of set partitions for cross-validation, used in crossval)
  @cvpartition/set
  @cvpartition/test
  @cvpartition/training
+Categorical data
+ grp2idx
