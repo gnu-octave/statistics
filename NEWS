@@ -4,6 +4,7 @@ Summary of important user-visible changes for statistics x.x.x:
  ** The following functions are new:
 
       grp2idx
+      mvtpdf
 
 Summary of important user-visible changes for statistics 1.2.4:
 -------------------------------------------------------------------

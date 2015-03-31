@@ -20,7 +20,7 @@ Distributions
  lognstat
  mvnpdf mvnrnd mvncdf
  mnpdf mnrnd
- mvtcdf mvtrnd
+ mvtcdf mvtpdf mvtrnd
  nbinstat
  normalise_distribution
  normstat
