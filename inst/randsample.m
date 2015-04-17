@@ -42,8 +42,8 @@ function y = randsample(v,k,replacement=false,w=[])
     error ('Octave:invalid-input-arg', 'The input v must be a vector or positive integer.');
   endif
    
-  if k < 0 || k > n
-    error ('Octave:invalid-input-arg', 'The input k must be an integer between 0 and n.');
+  if k < 0
+    error ('Octave:invalid-input-arg', 'The input k must be a positive integer.');
   endif
 
 
