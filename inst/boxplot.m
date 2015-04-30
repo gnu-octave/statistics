@@ -79,7 +79,7 @@
 ## @example
 ## title ("Grade 3 heights");
 ## axis ([0,3]);
-## tics ("x", 1:2, @{"girls"; "boys"@});
+## set(gca (), "xtick", [1 2], "xticklabel", {"girls", "boys"})
 ## boxplot (@{randn(10,1)*5+140, randn(13,1)*8+135@});
 ## @end example
 ##
@@ -302,4 +302,3 @@ endfunction
 %! boxplot ({randn(10,1)*5+140, randn(13,1)*8+135});
 %! set(gca (), "xtick", [1 2], "xticklabel", {"girls", "boys"})
 %! title ("Grade 3 heights");
-
