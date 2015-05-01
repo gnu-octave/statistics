@@ -169,15 +169,15 @@ function y = pdist (x, metric, varargin)
         if (rows(X) == 1)
           error ("pdist: correlation distance between scalars not defined")
         endif
-        corr = cor (X);
-        y = 1 - corr (sub2ind (size (corr), Xi, Yi))';
+        cor = corr (X);
+        y = 1 - cor (sub2ind (size (cor), Xi, Yi))';
 
       case "spearman"
         if (rows(X) == 1)
           error ("pdist: spearman distance between scalars not defined")
         endif
-        corr = spearman (X);
-        y = 1 - corr (sub2ind (size (corr), Xi, Yi))';
+        cor = spearman (X);
+        y = 1 - cor (sub2ind (size (cor), Xi, Yi))';
 
       case "hamming"
         d = logical (X(:,Xi) - X(:,Yi));
