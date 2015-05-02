@@ -75,7 +75,7 @@ while 1
   added = false;
   if numel(X_use) < k
     X_inds = zeros(k, 1, "logical"); X_inds(X_use) = 1;
-    [~, i_max_corr] = max(abs(corrcoef(X(:, ~X_inds), r))); #try adding the variable with the highest correlation to the residual from current regression
+    [~, i_max_corr] = max(abs(corr(X(:, ~X_inds), r))); #try adding the variable with the highest correlation to the residual from current regression
     i_max_corr = (1:k)(~X_inds)(i_max_corr); #index within the original predictor set
     [b_new, bint_new, r_new, rint_new, stats_new] = regress(y, [ones(n, 1) X(:, [X_use i_max_corr])], penter);
     z_new = abs(b_new(end)) / (bint_new(end, 2) - b_new(end));
