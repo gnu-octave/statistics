@@ -94,7 +94,7 @@ function p = gevcdf (x, k, sigma, mu)
   p(z <= 0 & x < mu) = 0;
   p(z <= 0 & x > mu) = 1;  
   
-  inds = (k == 0); %use a different formula
+  inds = (abs (k) < 1e-11); %use a different formula
   if any(inds)
     z = (mu(inds) - x(inds)) ./ sigma(inds);
     p(inds) = exp(-exp(z));

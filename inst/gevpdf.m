@@ -93,7 +93,7 @@ function y = gevpdf (x, k, sigma, mu)
 
   y(z <= 0) = 0;
   
-  inds = (k == 0); %use a different formula
+  inds = (abs (k) < 1e-11); %use a different formula
   if any(inds)
     z = (mu(inds) - x(inds)) ./ sigma(inds);
     y(inds) = exp(z-exp(z)) ./ sigma(inds);
