@@ -78,7 +78,7 @@ function y = gevpdf (x, k, sigma, mu)
   endif
 
   if (isempty (x) || isempty (k) || isempty (sigma) || isempty (mu) || ~ismatrix (x) || ~ismatrix (k) || ~ismatrix (sigma) || ~ismatrix (mu))
-    error ("gevpdf: inputs must be a numeric matrices");
+    error ("gevpdf: inputs must be numeric matrices");
   endif
 
   [retval, x, k, sigma, mu] = common_size (x, k, sigma, mu);
@@ -93,7 +93,7 @@ function y = gevpdf (x, k, sigma, mu)
 
   y(z <= 0) = 0;
   
-  inds = (abs (k) < 1e-11); %use a different formula
+  inds = (abs (k) < (eps^0.7)); %use a different formula if k is very close to zero
   if any(inds)
     z = (mu(inds) - x(inds)) ./ sigma(inds);
     y(inds) = exp(z-exp(z)) ./ sigma(inds);
