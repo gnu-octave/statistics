@@ -187,23 +187,8 @@ function [ normalised ] = normalise_distribution ( data, distribution, dimension
       [ ignore, ignore, target_indices ] = unique ( data (:, k ) );
 
       #Put normalised values in the places where they belong.
-
-      ## A regression in the 3.4 series made this no longer work so we behave
-      ## differently depending on octave version. This applies the fix for all
-      ## 3.4 releases but it may have appeared on 3.2.4 (can someone check?)
-      ## See https://savannah.gnu.org/bugs/index.php?34765
-      ## FIXME Once package dependency increases beyond an octave version that
-      ## has this fixed, remove this
-      if (compare_versions (OCTAVE_VERSION, "3.4", "<") || compare_versions (OCTAVE_VERSION, "3.6.2", ">="))
-        ## this is how it should work
-        f_remap = @( k ) ( normal ( k ) );
-        normalised ( :, k ) = arrayfun ( f_remap, target_indices );
-      else
-        ## this is the workaround because of bug in 3.4.??
-        for index = 1:numel(target_indices)
-          normalised ( index, k ) = normal(target_indices(index));
-        endfor
-      endif
+      f_remap = @( k ) ( normal ( k ) );
+      normalised ( :, k ) = arrayfun ( f_remap, target_indices );
 
     end
 
