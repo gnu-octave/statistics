@@ -9,6 +9,7 @@ Summary of important user-visible changes for statistics x.x.x:
  ** Other functions that have been changed for smaller bugfixes, increased
     Matlab compatibility, or performance:
 
+      betastat
       squareform
 
 

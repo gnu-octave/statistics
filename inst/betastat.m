@@ -92,32 +92,33 @@ function [m, v] = betastat (a, b)
     endif
   endif
 
-  # Calculate moments
-  m = a ./ (a + b);
-  v = (a .* b) ./ (((a + b) .^ 2) .* (a + b + 1));
+  k = ! (a > 0) | ! (a < Inf) | ! (b > 0) | ! (b < Inf);
 
-  # Continue argument check
-  k = find (! (a > 0) | ! (a < Inf) | ! (b > 0) | ! (b < Inf));
-  if (any (k))
-    m(k) = NaN;
+  # Calculate moments
+  a_b = a + b;
+  m = a ./ (a_b);
+  m(k) = NaN;
+
+  if (nargout > 1)
+    v = (a .* b) ./ ((a_b .^ 2) .* (a_b + 1));
     v(k) = NaN;
   endif
 
 endfunction
 
 %!test
-%! a = 1:6;
-%! b = 1:0.2:2;
+%! a = -2:6;
+%! b = 0.4:0.2:2;
 %! [m, v] = betastat (a, b);
-%! expected_m = [0.5000, 0.6250, 0.6818, 0.7143, 0.7353, 0.7500];
-%! expected_v = [0.0833, 0.0558, 0.0402, 0.0309, 0.0250, 0.0208];
-%! assert (m, expected_m, 0.001);
+%! expected_m = [NaN NaN NaN 1/2 2/3.2 3/4.4 4/5.6 5/6.8 6/8];
+%! expected_v = [NaN NaN NaN 0.0833, 0.0558, 0.0402, 0.0309, 0.0250, 0.0208];
+%! assert (m, expected_m, eps*100);
 %! assert (v, expected_v, 0.001);
 
 %!test
-%! a = 1:6;
+%! a = -2:1:6;
 %! [m, v] = betastat (a, 1.5);
-%! expected_m = [0.4000, 0.5714, 0.6667, 0.7273, 0.7692, 0.8000];
-%! expected_v = [0.0686, 0.0544, 0.0404, 0.0305, 0.0237, 0.0188];
-%! assert (m, expected_m, 0.001);
+%! expected_m = [NaN NaN NaN 1/2.5 2/3.5 3/4.5 4/5.5 5/6.5 6/7.5];
+%! expected_v = [NaN NaN NaN 0.0686, 0.0544, 0.0404, 0.0305, 0.0237, 0.0188];
+%! assert (m, expected_m);
 %! assert (v, expected_v, 0.001);
