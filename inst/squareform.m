@@ -1,4 +1,3 @@
-## Copyright (C) 2014 JD Walsh. Based on code (C) 2006, 2008 Bill Denney
 ## Copyright (C) 2015 Carnë Draug <carandraug@octave.org>
 ##
 ## This program is free software; you can redistribute it and/or modify
@@ -19,15 +18,22 @@
 ## @deftypefn  {Function File} {@var{y} =} squareform (@var{z})
 ## @deftypefnx {Function File} {@var{z} =} squareform (@var{y}, @qcode{"tovector"})
 ## @deftypefnx {Function File} {@var{y} =} squareform (@var{z}, @qcode{"tomatrix"})
-## Converts a vector from the @code{pdist} function into a distance matrix or
-## a distance matrix back to vector form.
+## Interchange between distance matrix and distance vector formats.
 ##
-## If @var{x} is a vector, it must have
-## @code{length(@var{x}) = @var{n} * (@var{n} - 1) / 2} for some integer
-## @var{n}. The resulting matrix will be @var{n} by @var{n}.
+## Converts between an hollow (diagonal filled with zeros), square, and
+## symmetric matrix and a vector with of the lower triangular part.
+##
+## Its target application is the conversion of the vector returned by
+## @code{pdist} into a distance matrix.  It performs the opposite operation
+## if input is a matrix.
+##
+## If @var{x} is a vector, its number of elements must fit into the
+## triangular part of a matrix (main diagonal excluded).  In other words,
+## @code{numel (@var{x}) = @var{n} * (@var{n} - 1) / 2} for some integer
+## @var{n}.  The resulting matrix will be @var{n} by @var{n}.
 ##
 ## If @var{x} is a distance matrix, it must be square and the diagonal entries
-## of @var{x} must all be zeros. @code{squareform} will generate a warning if
+## of @var{x} must all be zeros.  @code{squareform} will generate a warning if
 ## @var{x} is not symmetric.
 ##
 ## The second argument is used to specify the output type in case there
@@ -36,10 +42,7 @@
 ## @seealso{pdist}
 ## @end deftypefn
 
-## Author: JD Walsh <walsh@math.gatech.edu>
-## Created: 2014-11-09
-## Description: Convert distance matrix from vector to square form and back
-## Keywords: distance format
+## Author: Carnë Draug <carandraug@octave.org>
 
 function y = squareform (x, method)
 
@@ -61,58 +64,59 @@ function y = squareform (x, method)
 
   switch (tolower (method))
     case "tovector"
-      if (~issquare (x))
-        usage ('squareform: x is not a square matrix');
-      elseif (any (diag (x) ~= 0))
-        usage ('squareform: x is not a hollow matrix');
-      elseif (~issymmetric(x))
-        warning ('squareform:symmetric', ...
-                 'squareform: x is not a symmetric matrix');
+      if (! issquare (x))
+        error ("squareform: Z is not a square matrix");
+      elseif (any (diag (x) != 0))
+        error ("squareform: Z is not a hollow matrix, i.e., with diagonal entries all zero");
+      elseif (! issymmetric(x))
+        warning ("squareform:symmetric",
+                 "squareform: Z is not a symmetric matrix");
       endif
 
-      sx = size (x, 1);
-      y = zeros (1, (sx - 1) * sx / 2);
-      idx = 1;
-      for i = 2 : sx
-        newidx = idx + sx - i;
-        y(1, idx:newidx) = x(i:sx, i-1);
-        idx = newidx + 1;
-      endfor
+      y = vec (tril (x, -1, "pack"), 2);
 
     case "tomatrix"
-      ## make sure that x is a column
-      x = x(:);
-
       ## the dimensions of y are the solution to the quadratic formula for:
       ## length (x) = (sy - 1) * (sy / 2)
-      sy = (1 + sqrt (1 + 8 * length (x))) / 2;
-      if (floor (sy) ~= sy)
-        usage ('squareform: incorrect vector size; see help');
-      else
-        y = zeros (sy);
-        for i = 1 : sy-1
-          step = sy - i;
-          y((sy-step+1):sy, i) = x(1:step);
-          x(1:step) = [];
-        endfor
-        y = y + y';
+      sy = (1 + sqrt (1 + 8 * numel (x))) / 2;
+      if (fix (sy) != sy)
+        error ("squareform: the numel of Y cannot form a square matrix");
       endif
+
+      y = zeros (sy, class (x));
+      y(tril (true (sy), -1)) = x;  # fill lower triangular part
+      y += y.'; # and then the upper triangular part
+
     otherwise
       error ("squareform: invalid METHOD '%s'", method);
   endswitch
 
 endfunction
 
+%!shared v, m
+%! v = 1:6;
+%! m = [0 1 2 3;1 0 4 5;2 4 0 6;3 5 6 0];
+
 ## make sure that it can go both directions automatically
-%!assert(squareform(1:6), [0 1 2 3;1 0 4 5;2 4 0 6;3 5 6 0])
-%!assert(squareform(squareform(1:6)),[1:6])
-%!assert(squareform([0 1 2 3;1 0 4 5;2 4 0 6;3 5 6 0]), [1:6])
+%!assert (squareform (v), m)
+%!assert (squareform (squareform (v)), v)
+%!assert (squareform (m), v)
 
-## make sure that the command arguments force the correct behavior
-## squareform(1, "tovector") correctly throws an error: invalid distance matrix
-%!assert(squareform(1), [0 1;1 0])
-%!assert(squareform(1, "tomatrix"), [0 1;1 0])
-%!assert(squareform(0, "tovector"), zeros(1,0))
+## treat row and column vectors equally
+%!assert (squareform (v'), m)
 
-## default to "tomatrix" for 1 element input
-%!assert (squareform (1), [0 1; 1 0])
+## handle 1 element input properly
+%!assert (squareform (1), [0 1;1 0])
+%!assert (squareform (1, "tomatrix"), [0 1; 1 0])
+%!assert (squareform (0, "tovector"), zeros (1, 0))
+
+%!warning <not a symmetric matrix> squareform ([0 1 2; 3 0 4; 5 6 0]);
+
+## confirm that it respects input class
+%!test
+%! for c = {@single, @double, @uint8, @uint32, @uint64}
+%!   f = c{1};
+%!   assert (squareform (f (v)), f (m))
+%!   assert (squareform (f (m)), f (v))
+%! endfor
+
