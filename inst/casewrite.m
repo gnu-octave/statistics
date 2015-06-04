@@ -58,9 +58,13 @@ function names = casewrite (s="", f="")
 
 endfunction
 
-## Tests
-%!shared s
-%! s = ["a  ";"bcd";"ef "];
 %!test
-%! casewrite (s, "casewrite.dat")
-%! assert(caseread ("casewrite.dat"), s);
+%!  fname = [tempname() ".dat"];
+%!  unwind_protect
+%!    s = ["a  ";"bcd";"ef "];
+%!    casewrite (s, fname)
+%!    names = caseread (fname);
+%!  unwind_protect_cleanup
+%!    unlink (fname);
+%!  end_unwind_protect
+%!  assert(names, s);
