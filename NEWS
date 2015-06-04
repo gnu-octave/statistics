@@ -6,6 +6,12 @@ Summary of important user-visible changes for statistics x.x.x:
       grp2idx
       mvtpdf
 
+ ** Other functions that have been changed for smaller bugfixes, increased
+    Matlab compatibility, or performance:
+
+      squareform
+
+
 Summary of important user-visible changes for statistics 1.2.4:
 -------------------------------------------------------------------
 
