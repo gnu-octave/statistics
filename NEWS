@@ -10,6 +10,7 @@ Summary of important user-visible changes for statistics x.x.x:
     Matlab compatibility, or performance:
 
       betastat
+      binostat
       squareform
 
 

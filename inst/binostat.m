@@ -1,4 +1,5 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
+## Copyright (C) 2015 Carnë Draug <carandraug@octave.org>
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -73,33 +74,20 @@
 
 function [m, v] = binostat (n, p)
 
-  # Check arguments
   if (nargin != 2)
     print_usage ();
+  elseif (! isscalar (n) && ! isscalar (p) && ! size_equal (n, p))
+    error ("binostat: N and P must be of common size or scalar");
   endif
 
-  if (! isempty (n) && ! ismatrix (n))
-    error ("binostat: n must be a numeric matrix");
-  endif
-  if (! isempty (p) && ! ismatrix (p))
-    error ("binostat: p must be a numeric matrix");
-  endif
-
-  if (! isscalar (n) || ! isscalar (p))
-    [retval, n, p] = common_size (n, p);
-    if (retval > 0)
-      error ("binostat: n and p must be of common size or scalar");
-    endif
-  endif
+  k = find (! (n > 0 & fix (n) == n & p >= 0 & p <= 1));
 
   # Calculate moments
   m = n .* p;
-  v = n .* p .* (1 - p);
+  m(k) = NaN;
 
-  # Continue argument check
-  k = find (! (n > 0) | ! (n < Inf) | ! (n == round (n)) | ! (p >= 0) | ! (p <= 1));
-  if (any (k))
-    m(k) = NaN;
+  if (nargout > 1)
+    v = m .* (1 - p);
     v(k) = NaN;
   endif
 
@@ -121,3 +109,20 @@ endfunction
 %! expected_v = [0.25, 0.50, 0.75, 1.00, 1.25, 1.50];
 %! assert (m, expected_m, 0.001);
 %! assert (v, expected_v, 0.001);
+
+%!test
+%! n = [-Inf -3 5 0.5 3 NaN 100, Inf];
+%! [m, v] = binostat (n, 0.5);
+%! assert (isnan (m), [true true false true false true false false])
+%! assert (isnan (v), [true true false true false true false false])
+%! assert (m(end), Inf);
+%! assert (v(end), Inf);
+
+%!assert (nthargout (1:2, @binostat, 5, []), {[], []})
+%!assert (nthargout (1:2, @binostat, [], 5), {[], []})
+%!assert (nthargout (1:2, @binostat, "", 5), {[], []})
+%!assert (nthargout (1:2, @binostat, true, 5), {NaN, NaN})
+%!assert (nthargout (1:2, @binostat, 5, true), {5, 0})
+
+%!assert (size (binostat (randi (100, 10, 5, 4), rand (10, 5, 4))), [10 5 4])
+%!assert (size (binostat (randi (100, 10, 5, 4), 7)), [10 5 4])
