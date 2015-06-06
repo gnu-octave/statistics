@@ -73,23 +73,10 @@
 
 function [m, v] = betastat (a, b)
 
-  # Check arguments
   if (nargin != 2)
     print_usage ();
-  endif
-
-  if (! isempty (a) && ! ismatrix (a))
-    error ("betastat: a must be a numeric matrix");
-  endif
-  if (! isempty (b) && ! ismatrix (b))
-    error ("betastat: b must be a numeric matrix");
-  endif
-
-  if (! isscalar (a) || ! isscalar (b))
-    [retval, a, b] = common_size (a, b);
-    if (retval > 0)
-      error ("betastat: a and b must be of common size or scalar");
-    endif
+  elseif (! isscalar (a) && ! isscalar (b) && ! size_equal (a, b))
+    error ("betastat: a and b must be of common size or scalar");
   endif
 
   k = find (! (a > 0 & b > 0));
@@ -131,4 +118,12 @@ endfunction
 %! expected_v = [168/18252 NaN NaN NaN 120/11132];
 %! assert (m, expected_m);
 %! assert (v, expected_v);
+
+%!assert (nthargout (1:2, @betastat, 5, []), {[], []})
+%!assert (nthargout (1:2, @betastat, [], 5), {[], []})
+%!assert (nthargout (1:2, @betastat, "", 5), {[], []})
+%!assert (nthargout (1:2, @betastat, true, 5), {1/6, 5/252})
+
+%!assert (size (betastat (rand (10, 5, 4), rand (10, 5, 4))), [10 5 4])
+%!assert (size (betastat (rand (10, 5, 4), 7)), [10 5 4])
 
