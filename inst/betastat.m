@@ -92,7 +92,7 @@ function [m, v] = betastat (a, b)
     endif
   endif
 
-  k = ! (a > 0) | ! (a < Inf) | ! (b > 0) | ! (b < Inf);
+  k = find (! (a > 0 & b > 0));
 
   # Calculate moments
   a_b = a + b;
@@ -122,3 +122,13 @@ endfunction
 %! expected_v = [NaN NaN NaN 0.0686, 0.0544, 0.0404, 0.0305, 0.0237, 0.0188];
 %! assert (m, expected_m);
 %! assert (v, expected_v, 0.001);
+
+%!test
+%! a = [14  Inf   10  NaN  10];
+%! b = [12    9  NaN  Inf  12];
+%! [m, v] = betastat (a, b);
+%! expected_m = [14/26 NaN NaN NaN 10/22];
+%! expected_v = [168/18252 NaN NaN NaN 120/11132];
+%! assert (m, expected_m);
+%! assert (v, expected_v);
+
