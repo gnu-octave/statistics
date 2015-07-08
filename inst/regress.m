@@ -77,7 +77,7 @@
 
 ## References:
 ## - Matlab 7.0 documentation (pdf)
-## - 《大学数学实验》 姜启源 等 (textbook)
+## - 隆露麓贸脩搂脢媒脩搂脢碌脩茅隆路 陆陋脝么脭麓 碌脠 (textbook)
 ## - http://www.netnam.vn/unescocourse/statistics/12_5.htm
 ## - wsolve.m in octave-forge
 ## - http://www.stanford.edu/class/ee263/ls_ln_matlab.pdf
