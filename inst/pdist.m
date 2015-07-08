@@ -1,4 +1,4 @@
-## Copyright (C) 2008 Francesco Potortì <pot@gnu.org>
+## Copyright (C) 2008 Francesco PotortÃ¬ <pot@gnu.org>
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -87,7 +87,7 @@
 ## @seealso{linkage, mahalanobis, squareform, pdist2}
 ## @end deftypefn
 
-## Author: Francesco Potortì  <pot@gnu.org>
+## Author: Francesco PotortÃ¬  <pot@gnu.org>
 
 function y = pdist (x, metric, varargin)
 
