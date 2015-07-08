@@ -124,7 +124,7 @@ function y = pdist (x, metric, varargin)
     switch (metric)
       case "euclidean"
         d = X(:,Xi) - X(:,Yi);
-        y = sqrt (sumsq (d, 1));
+        y = norm (d, "cols");
 
       case "seuclidean"
         d = X(:,Xi) - X(:,Yi);
@@ -150,7 +150,7 @@ function y = pdist (x, metric, varargin)
         if (nargin > 2)
           p = varargin{1};      # explicitly assigned
         endif;
-        y = (sum ((abs (d)).^p, 1)).^(1/p);
+        y = norm (d, p, "cols");
 
       case "cosine"
         prod = X(:,Xi) .* X(:,Yi);
@@ -182,7 +182,7 @@ function y = pdist (x, metric, varargin)
 
       case "chebychev"
         d = X(:,Xi) - X(:,Yi);
-        y = max (abs (d), [], 1);
+        y = norm (d, Inf, "cols");
 
     endswitch
   endif
