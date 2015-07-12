@@ -3,6 +3,8 @@ Summary of important user-visible changes for statistics x.x.x:
 
  ** The following functions are new:
 
+      fitgmdist
+      gmdistribution
       grp2idx
       mvtpdf
 
@@ -11,6 +13,7 @@ Summary of important user-visible changes for statistics x.x.x:
 
       betastat
       binostat
+      randsample
       squareform
 
 
