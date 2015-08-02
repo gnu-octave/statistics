@@ -60,7 +60,11 @@ function retval = __combnk__ (data, k)
       C = __combnk__ (data ((j+1):end), k-1);
       C = cat (2, repmat (data (j), rows (C), 1), C);
       if (!isempty (C))
-        retval = [retval; C];
+        if (isempty (retval))
+          retval = C;
+        else
+          retval = [retval; C];
+        endif
       endif
     endfor
   endif
