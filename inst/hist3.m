@@ -183,7 +183,21 @@ endfunction
 %! assert (c, exp_c);
 %! assert (nn, {0:4, 0:4});
 
+## Failing test because we are returning the input edges instead of the
+## actual bin centers.
+
 %!test
 %! for i = 10
-%!   assert (size (hist3 (rand (9, 2), "Edges", {[0:.2:1]; [0:.2:1]})), [5 5])
+%!   assert (size (hist3 (rand (9, 2), "Edges", {[0:.2:1]; [0:.2:1]})), [6 6])
 %! endfor
+
+%!test
+%! edge_1 = linspace (0, 10, 10);
+%! edge_2 = linspace (0, 50, 10);
+%! [c, nn] = hist3 ([1:10; 1:5:50]', "Edges", {edge_1, edge_2});
+%! exp_c = zeros (10, 10);
+%! exp_c([1 12 13 24 35 46 57 68 79 90]) = 1;
+%! assert (c, exp_c);
+%!
+%! assert (nn{1}, edge_1 + edge_1(2)/2)
+%! assert (nn{2}, edge_2 + edge_2(2)/2)
