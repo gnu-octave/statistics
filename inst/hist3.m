@@ -130,7 +130,8 @@ function varargout = hist3(varargin)
     ybins = (edges{2}(1:end-1)+edges{2}(2:end))/2;
   endif
 
-  counts = accumarray([yidx,xidx],1);
+  counts_size = [numel(ybins) numel(xbins)];
+  counts = accumarray([yidx, xidx], 1, counts_size);
 
   if nargout
     varargout{1} = counts';
@@ -172,3 +173,17 @@ endfunction
 %! C{2} = [1:5];
 %! N = hist3(D, C);
 %! assert(N, N_exp);
+
+## bug 44987
+%!test
+%! D = [1 1; 3 1; 3 3; 3 1];
+%! [c, nn] = hist3(D, {0:4, 0:4});
+%! exp_c = zeros (5);
+%! exp_c([7 9 19]) = [1 2 1];
+%! assert (c, exp_c);
+%! assert (nn, {0:4, 0:4});
+
+%!test
+%! for i = 10
+%!   assert (size (hist3 (rand (9, 2), "Edges", {[0:.2:1]; [0:.2:1]})), [5 5])
+%! endfor

@@ -14,6 +14,7 @@ Summary of important user-visible changes for statistics x.x.x:
       betastat
       binostat
       combnk
+      hist3
       linkage
       randsample
       squareform
