@@ -123,6 +123,16 @@ function [N, C] = hist3 (X, varargin)
       have_centers = true;
       centers = val;
       [r_edges, c_edges] = edges_from_centers (val);
+    case "centers"
+      ## This was supported until 1.2.4 when the Matlab compatible option
+      ## 'Ctrs' was added.
+      persistent warned = false;
+      if (! warned)
+        warning ("hist3: option `centers' is deprecated.  Use `ctrs'");
+      endif
+      have_centers = true;
+      centers = val;
+      [r_edges, c_edges] = edges_from_centers (val);
     case "edges"
       if (! iscell (val) || numel (val) != 2
           || ! all (cellfun (@isvector, val)))
