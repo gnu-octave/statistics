@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2016 Carnë Draug
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.  This file is offered as-is,
+without any warranty.
+-->
+<component type="addon">
+  <id>octave-statistics</id>
+  <extends>www.octave.org-octave.desktop</extends>
+  <name>Statistics</name>
+  <summary>Additional statistics functions for GNU Octave.</summary>
+  <keywords>
+    <keyword>statistics</keyword>
+    <keyword>cross-validation</keyword>
+    <keyword>probability distributions</keyword>
+    <keyword>regression</keyword>
+    <keyword>data fitting</keyword>
+    <keyword>ANOVA</keyword>
+    <keyword>boxplot</keyword>
+    <keyword>dendrogram</keyword>
+    <keyword>Hidden Markov models</keyword>
+    <keyword>Hypothesis testing</keyword>
+    <keyword>randomization</keyword>
+    <keyword>machine learning</keyword>
+    <keyword>PCA</keyword>
+    <keyword>principal component analysis</keyword>
+    <keyword>k-means</keyword>
+    <keyword>clustering</keyword>
+  </keywords>
+  <url type="homepage">http://octave.sourceforge.net/statistics</url>
+  <url type="bugtracker">https://savannah.gnu.org/bugs/?func=additem&amp;group=octave</url>
+  <project_license>GPL-3.0+</project_license>
+  <update_contact>maintainers@octave.org</update_contact>
+  <metadata_license>FSFAP</metadata_license>
+</component>
