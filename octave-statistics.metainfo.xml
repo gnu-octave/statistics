@@ -11,7 +11,7 @@ without any warranty.
   <id>octave-statistics</id>
   <extends>www.octave.org-octave.desktop</extends>
   <name>Statistics</name>
-  <summary>Additional statistics functions for GNU Octave.</summary>
+  <summary>Additional statistics functions for GNU Octave</summary>
   <keywords>
     <keyword>statistics</keyword>
     <keyword>cross-validation</keyword>
