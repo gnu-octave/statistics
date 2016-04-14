@@ -1,3 +1,11 @@
+## Copyright 2015-2016 Carnë Draug
+## Copyright 2015-2016 Oliver Heimlich
+##
+## Copying and distribution of this file, with or without modification,
+## are permitted in any medium without royalty provided the copyright
+## notice and this notice are preserved.  This file is offered as-is,
+## without any warranty.
+
 PACKAGE = $(shell grep "^Name: " DESCRIPTION | cut -f2 -d" ")
 VERSION = $(shell grep "^Version: " DESCRIPTION | cut -f2 -d" ")
 
