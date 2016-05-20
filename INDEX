@@ -1,8 +1,10 @@
 statistics >> Statistics
 Distributions
  anderson_darling_cdf
+ bbscdf bbsinv bbspdf bbsrnd
  betastat
  binostat
+ burrcdf burrinv burrpdf burrrnd
  cdf
  chi2stat
  cl_multinom
@@ -14,6 +16,7 @@ Distributions
  geostat
  gevcdf gevfit gevfit_lmom gevinv gevlike gevpdf gevrnd gevstat
  gmdistribution
+ gpcdf gpinv gppdf gprnd
  hygestat
  iwishpdf iwishrnd
  jsucdf
@@ -22,6 +25,7 @@ Distributions
  mvnpdf mvnrnd mvncdf
  mnpdf mnrnd
  mvtcdf mvtpdf mvtrnd
+ nakacdf nakainv nakapdf nakarnd
  nbinstat
  normalise_distribution
  normstat
@@ -31,6 +35,7 @@ Distributions
  randsample
  raylcdf raylinv raylpdf raylrnd raylstat
  tstat
+ tricdf triinv tripdf trirnd
  unidstat
  unifstat
  vmpdf vmrnd
