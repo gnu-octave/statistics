@@ -78,19 +78,19 @@ function inv = bbsinv (x, location, scale, shape)
 endfunction
 
 
-%!shared x,y
-#%! f = @(x,a,b,c) (a + b * (c * norminv (x) + sqrt (4 + (c * norminv(x))^2))^2) / 4;
+%!shared x,y,f
+%! f = @(x,a,b,c) (a + b * (c * norminv (x) + sqrt (4 + (c * norminv(x))^2))^2) / 4;
 %! x = [-1, 0, 1/4, 1/2, 1, 2];
-%! y = [0, 0, 0.51565488603842446, 1, Inf, NaN];
-%!assert (bbsinv (x, zeros (1,6), ones (1,6), ones (1,6)), y, eps)
-%!assert (bbsinv (x, zeros (1,6), 1, 1), y, eps)
-%!assert (bbsinv (x, 0, ones (1,6), 1), y, eps)
-%!assert (bbsinv (x, 0, 1, ones (1,6)), y, eps)
-%!assert (bbsinv (x, 0, 1, 1), y, eps)
-%!assert (bbsinv (x, [0, 0, 0, NaN, 0, 0], 1, 1), [y(1:3), NaN, y(5:6)], eps)
-%!assert (bbsinv (x, 0, [1, 1, 1, NaN, 1, 1], 1), [y(1:3), NaN, y(5:6)], eps)
-%!assert (bbsinv (x, 0, 1, [1, 1, 1, NaN, 1, 1]), [y(1:3), NaN, y(5:6)], eps)
-%!assert (bbsinv ([x, NaN], 0, 1, 1), [y, NaN], eps)
+%! y = [0, 0, f(1/4, 0, 1, 1), 1, Inf, NaN];
+%!assert (bbsinv (x, zeros (1,6), ones (1,6), ones (1,6)), y)
+%!assert (bbsinv (x, zeros (1,6), 1, 1), y)
+%!assert (bbsinv (x, 0, ones (1,6), 1), y)
+%!assert (bbsinv (x, 0, 1, ones (1,6)), y)
+%!assert (bbsinv (x, 0, 1, 1), y)
+%!assert (bbsinv (x, [0, 0, 0, NaN, 0, 0], 1, 1), [y(1:3), NaN, y(5:6)])
+%!assert (bbsinv (x, 0, [1, 1, 1, NaN, 1, 1], 1), [y(1:3), NaN, y(5:6)])
+%!assert (bbsinv (x, 0, 1, [1, 1, 1, NaN, 1, 1]), [y(1:3), NaN, y(5:6)])
+%!assert (bbsinv ([x, NaN], 0, 1, 1), [y, NaN])
 
 ## Test class of input preserved
 %!assert (bbsinv (single ([x, NaN]), 0, 1, 1), single ([y, NaN]))
