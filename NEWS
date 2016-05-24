@@ -21,6 +21,7 @@ Summary of important user-visible changes for statistics x.x.x:
       combnk
       gevfit
       hist3
+      kmeans
       linkage
       randsample
       squareform
