@@ -120,15 +120,15 @@ function [h, p, ci, stats] = ttest(x, my, varargin)
     case 'both'
       p = 2*(1 - tcdf(abs(tval),n-1));
       tcrit = -tinv(alpha/2,n-1);
-      ci = [x_bar-tcrit*x_bar_std; x_bar+tcrit*x_bar_std];
+      ci = [x_bar-tcrit*x_bar_std; x_bar+tcrit*x_bar_std] + my;
     case 'left'
       p = tcdf(tval,n-1);
       tcrit = -tinv(alpha,n-1);
-      ci = [-inf*ones(size(x_bar)); x_bar+tcrit*x_bar_std];
+      ci = [-inf*ones(size(x_bar)); my+x_bar+tcrit*x_bar_std];
     case 'right'
       p = 1 - tcdf(tval,n-1);
       tcrit = -tinv(alpha,n-1);
-      ci = [x_bar-tcrit*x_bar_std; inf*ones(size(x_bar))];
+      ci = [my+x_bar-tcrit*x_bar_std; inf*ones(size(x_bar))];
     otherwise
       error('Invalid fifth (tail) argument to ttest\n',[]);
   end
@@ -144,3 +144,14 @@ function [h, p, ci, stats] = ttest(x, my, varargin)
   % MATLAB returns this a double instead of a logical array
   h = double(p < alpha);  
 end
+
+%!test
+%! x = 8:0.1:12;
+%! [h, pval, ci] = ttest (x, 10);
+%! assert (h, 0)
+%! assert (pval, 1)
+%! assert (ci, [9.6219 10.3781], 1E-5)
+%! [h, pval, ci0] = ttest (x, 0);
+%! assert (h, 1)
+%! assert (pval, 0)
+%! assert (ci0, ci)
