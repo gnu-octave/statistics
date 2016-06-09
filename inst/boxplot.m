@@ -17,9 +17,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{s} =} boxplot (@var{data}, @var{notched}, @
+## @deftypefn {} {@var{s} =} boxplot (@var{data}, @var{notched}, @
 ## @var{symbol}, @var{vertical}, @var{maxwhisker}, @dots{})
-## @deftypefnx {Function File} {[@dots{} @var{h}]=} boxplot (@dots{})
+## @deftypefnx {} {[@dots{} @var{h}]=} boxplot (@dots{})
 ##
 ## Produce a box plot.
 ##
@@ -71,7 +71,7 @@
 ## @item 7 @tab Upper confidence limit for median
 ## @end multitable
 ##
-## The returned structure @var{h} has hanldes to the plot elements, allowing
+## The returned structure @var{h} has handles to the plot elements, allowing
 ## customization of the visualization using set/get functions.
 ##
 ## Example
