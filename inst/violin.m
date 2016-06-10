@@ -130,12 +130,9 @@ function h = violin (ax, varargin)
 
   try
     [nb, c, sf, r0, width] = to_cell (nb, c, sf, r0, width, Nc);
-  catch
-    msg = lastwarn ();
-    id = lasterr ();
-
-    if strcmp (id, "element_idx")
-      n = str2num (msg);
+  catch err
+    if strcmp (err.identifier, "to_cell:element_idx")
+      n = str2num (err.message);
       txt = {"Nbins", "Color", "SmoothFactor", "Bandwidth", "Width"};
       error ("Octave:invaid-input-arg", ...
              ["options should be scalars or call/array with as many values as" ...
@@ -251,15 +248,17 @@ function varargout = to_cell (varargin)
       if (isscalar (x)) x = repmat (x, m, 1); endif
 
       if (iscell (x))
+        if (numel(x) ~= m) # no dimension equals m
+          error ("to_cell:element_idx", "%d\n",i);
+        endif
         varargout{i} = x;
         continue
       endif
 
       sz = size (x);
-      d  = find (sz == m);
+      d  = find (sz == m)
       if (isempty (d)) # no dimension equals m
-        warning ("%d\n",i);
-        error("element_idx\n");
+        error ("to_cell:element_idx", "%d\n",i);
       elseif (length (d) == 2)
         #both dims are m, choose 1st
       elseif (d == 1) # 2nd dimension is m --> transpose
