@@ -27,7 +27,12 @@
 ## are not uniformly sampled.
 ##
 ## The following @var{property} can be set using @var{property}/@var{value} pairs
-## (default values in parenthesis):
+## (default values in parenthesis).
+## The value of the property can be a scalar indicating that it applies
+## to all the variables in the data.
+## It can also be a cell/array, indicating the property for each variable.
+## In this case it should have m columns (as many as variables).
+##
 ## @table @asis
 ##
 ## @item Color
@@ -37,10 +42,6 @@
 ## (50) Internally, the function calls @command{hist} to compute the histogram of the data.
 ## This property indicates how many bins to use. See @command{help hist}
 ## for more details.
-## The value of this property can be a scalar indicating the number of bins to
-## use for all the variables in the data.
-## It can also be a cell, indicating the number of bins for each histogram.
-## If it is a cell, it should have m elements (as many as variables).
 ##
 ## @item SmoothFactor
 ## (4) The fuction performs simple kernel density estimation and automatically
@@ -98,6 +99,7 @@ function h = violin (ax, varargin)
   res = parser.Results;
 
   c        = res.Color;        # Color of violins
+  if (ischar (c)) c = c(:); endif
   nb       = res.Nbins;        # Number of bins in histogram
   sf       = res.SmoothFactor; # Smoothing factor for kernel estimation
   r0       = res.Bandwidth;    # User value for KDE bandwth to prevent optimization
@@ -105,10 +107,7 @@ function h = violin (ax, varargin)
   width    = res.Width;        # Width of the violins
   clear parser res
   ######################
-
-  # get hold state
   old_hold = ishold ();
-
   # First argument is not an axis
   if (~ishandle (ax))
     if (~old_hold)
@@ -121,26 +120,44 @@ function h = violin (ax, varargin)
     x = varargin{1};
   endif
 
+  ## Make everything a cell for code simplicity
   if (~iscell (x))
     [N Nc] = size (x);
     x      = mat2cell (x, N, ones (1, Nc));
+  else
+    Nc = numel (x);
   endif
 
-  if (iscell (nb))
-    if (numel (nb) ~= numel (x))
+  try
+    [nb, c, sf, r0, width] = to_cell (nb, c, sf, r0, width, Nc);
+  catch
+    msg = lastwarn ();
+    id = lasterr ();
+
+    if strcmp (id, "element_idx")
+      n = str2num (msg);
+      txt = {"Nbins", "Color", "SmoothFactor", "Bandwidth", "Width"};
       error ("Octave:invaid-input-arg", ...
-             "You must specify as many bin numbers as varibales in the data.");
+             ["options should be scalars or call/array with as many values as" ...
+              " numbers of variables in the data (wrong size of %s)."], txt{n});
+    else
+      rethrow (lasterror())
     endif
-    [px py mx] = cellfun (@(y,n)build_polygon(y, n, sf, r0), x, nb, "unif", 0);
-  else
-    [px py mx] = cellfun (@(y)build_polygon(y, nb, sf, r0), x, "unif", 0);
-  endif
+  end
+
+  ## Build violins
+  [px py mx] = cellfun (@(y,n,s,r)build_polygon(y, n, s, r), ...
+                          x, nb, sf, r0, "unif", 0);
 
   Nc    = 1:numel (px);
   Ncc   = mat2cell (Nc, 1, ones (1, Nc(end)));
 
+  # get hold state
+  old_hold = ishold ();
+
   # Draw plain violins
-  tmp      = cellfun (@(x,y,z)patch(ax, (width .* x + z)(:), y(:) ,c), px, py, Ncc);
+  tmp      = cellfun (@(x,y,n,u, w)patch(ax, (w * x + n)(:), y(:) ,u), ...
+                        px, py, Ncc, c, width);
   h.violin = tmp;
 
   hold on
@@ -221,7 +238,40 @@ function tf = swap_axes (h)
     tf = true;
 endfunction
 
+function varargout = to_cell (varargin)
+
+    m = varargin{end};
+    varargin(end) = [];
+
+    for i = 1:numel(varargin)
+      x  = varargin{i};
+      if (isscalar (x)) x = repmat (x, m, 1); endif
+
+      if (iscell (x))
+        varargout{i} = x;
+        continue
+      endif
+
+      sz = size (x);
+      d  = find (sz == m);
+      if (isempty (d)) # no dimension equals m
+        warning ("%d\n",i);
+        error("element_idx\n");
+      elseif (length (d) == 2)
+        #both dims are m, choose 1st
+      elseif (d == 1) # 2nd dimension is m --> transpose
+        x  = x.';
+        sz = fliplr (sz);
+      endif
+
+      varargout{i} = mat2cell (x, sz(1), ones (m,1));
+
+    endfor
+
+endfunction
+
 %!demo
+%! clf
 %! x = zeros (9e2, 10);
 %! for i=1:10
 %!   x(:,i) = (0.1 * randn (3e2, 3) * (randn (3,1) + 1) + ...
@@ -235,6 +285,7 @@ endfunction
 %! ylabel ("Values")
 
 %!demo
+%! clf
 %! data = {randn(100,1)*5+140, randn(130,1)*8+135};
 %! subplot (1,2,1)
 %! title ("Grade 3 heights - vertical");
@@ -249,6 +300,26 @@ endfunction
 %! axis tight
 
 %!demo
+%! clf
 %! data = exprnd (0.1, 500,4);
-%! violin (data, "Nbins", {5,10,50,100});
+%! violin (data, "nbins", {5,10,50,100});
 %! axis ([0 5 0 max(data(:))])
+
+%!demo
+%! clf
+%! data = exprnd (0.1, 500,4);
+%! violin (data, "color", jet(4));
+%! axis ([0 5 0 max(data(:))])
+
+%!demo
+%! clf
+%! data = repmat(exprnd (0.1, 500,1), 1, 4);
+%! violin (data, "width", linspace (0.1,0.5,4));
+%! axis ([0 5 0 max(data(:))])
+
+%!demo
+%! clf
+%! data = repmat(exprnd (0.1, 500,1), 1, 4);
+%! violin (data, "nbins", [5,10,50,100], "smoothfactor", [4 4 8 10]);
+%! axis ([0 5 0 max(data(:))])
+
