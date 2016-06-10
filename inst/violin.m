@@ -109,7 +109,7 @@ function h = violin (ax, varargin)
   ######################
   old_hold = ishold ();
   # First argument is not an axis
-  if (~ishandle (ax))
+  if (~ishandle (ax) || ~isscalar (ax))
     if (~old_hold)
       cla
     endif
@@ -175,6 +175,9 @@ function h = violin (ax, varargin)
   tmp  = cellfun (@(x,y,z)errorbar(ax, x, y, z(1),z(2)), Ncc, Mx, LUBU)(:);
   # Flatten errorbar output handles
   tmp2       = allchild (tmp);
+  if (~iscell (tmp2))
+    tmp2 = mat2cell (tmp2, ones(length (tmp2), 1), 1);
+  endif
   tmp        = mat2cell (tmp, ones (length (tmp), 1), 1);
   tmp        = cellfun (@vertcat, tmp, tmp2, "unif", 0);
   h.quartile = cell2mat (tmp);
