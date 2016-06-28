@@ -1,4 +1,5 @@
-## Copyright (C) 2013 Pantxo Diribarne
+## Copyright (C) 2016 Andreas Stahel
+## strongly based on cdf.m by  2013 Pantxo Diribarne
 ## 
 ## This program is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -14,10 +15,10 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*- 
-## @deftypefn {Function File} {@var{retval} =} cdf (@var{name}, @var{X}, @dots{})
-## Return cumulative density function of @var{name} function for value
+## @deftypefn {Function File} {@var{retval} =} pdf (@var{name}, @var{X}, @dots{})
+## Return probability density function of @var{name} function for value
 ## @var{x}.
-## This is a wrapper around various @var{name}cdf and @var{name}_cdf
+## This is a wrapper around various @var{name}pdf and @var{name}_pdf
 ## functions. See the individual functions help to learn the signification of
 ## the arguments after @var{x}. Supported functions and corresponding number of
 ## additional arguments are:
@@ -36,7 +37,7 @@
 ## @item @tab "gev" @tab "generalized extreme value" @tab  3
 ## @item @tab "hyge" @tab "hypergeometric" @tab 3
 ## @item @tab "kolmogorov_smirnov" @tab @tab 1
-## @item @tab "laplace" @tab @tab 0
+## @item @tab "laplace" @tab @tab 2
 ## @item @tab "logistic" @tab  @tab 0
 ## @item @tab "logn" @tab "lognormal" @tab 2
 ## @item @tab "norm" @tab "normal" @tab 2
@@ -47,35 +48,34 @@
 ## @item @tab "wbl" @tab "weibull" @tab 2
 ## @end multitable
 ## 
-## @seealso{betacdf, binocdf, cauchy_cdf, chi2cdf, discrete_cdf,
-## expcdf, fcdf, gamcdf, geocdf, gevcdf, hygecdf,
-## kolmogorov_smirnov_cdf, laplace_cdf, logistic_cdf, logncdf,
-## normcdf, poisscdf, raylcdf, tcdf, unifcdf, wblcdf}
+## @seealso{betapdf, binopdf, cauchy_pdf, chi2pdf, discrete_pdf,
+## exppdf, fpdf, gampdf, geopdf, gevpdf, hygepdf, laplace_pdf,
+## logistic_pdf, lognpdf, normpdf, poisspdf, raylpdf, tpdf,
+## unifpdf, wblpdf}
 ## @end deftypefn
 
-function [retval] = cdf (varargin)
+function [retval] = pdf (varargin)
   ## implemented functions
-  persistent allcdf = {{"beta", "beta"}, @betacdf, 2, ...
-            {"bino", "binomial"}, @binocdf, 2, ...
-            {"cauchy"}, @cauchy_cdf, 2, ...
-            {"chi2", "chisquare"}, @chi2cdf, 1, ...
-            {"discrete"}, @discrete_cdf, 2, ...
-            {"exp", "exponential"}, @expcdf, 1, ...
-            {"f"}, @fcdf, 2, ...
-            {"gam", "gamma"}, @gamcdf, 2, ...
-            {"geo", "geometric"}, @geocdf, 1, ...
-            {"gev", "generalized extreme value"}, @gevcdf, 3, ...
-            {"hyge", "hypergeometric"}, @hygecdf, 3, ...
-            {"kolmogorov_smirnov"}, @kolmogorov_smirnov_cdf, 1, ...
-            {"laplace"}, @laplace_cdf, 0, ...
-            {"logistic"}, @logistic_cdf, 0, ... # ML has 2 args here
-            {"logn", "lognormal"}, @logncdf, 2, ...
-            {"norm", "normal"}, @normcdf, 2, ...
-            {"poiss", "poisson"}, @poisscdf, 1, ...
-            {"rayl", "rayleigh"}, @raylcdf, 1, ...
-            {"t"}, @tcdf, 1, ...
-            {"unif", "uniform"}, @unifcdf, 2, ...
-            {"wbl", "weibull"}, @wblcdf, 2};
+  persistent allpdf = {{"beta", "beta"}, @betapdf, 2, ...
+            {"bino", "binomial"}, @binopdf, 2, ...
+            {"cauchy"}, @cauchy_pdf, 2, ...
+            {"chi2", "chisquare"}, @chi2pdf, 1, ...
+            {"discrete"}, @discrete_pdf, 2, ...
+            {"exp", "exponential"}, @exppdf, 1, ...
+            {"f"}, @fpdf, 2, ...
+            {"gam", "gamma"}, @gampdf, 2, ...
+            {"geo", "geometric"}, @geopdf, 1, ...
+            {"gev", "generalized extreme value"}, @gevpdf, 3, ...
+            {"hyge", "hypergeometric"}, @hygepdf, 3, ...
+            {"laplace"}, @laplace_pdf, 1, ...
+            {"logistic"}, @logistic_pdf, 0, ... # ML has 2 args here
+            {"logn", "lognormal"}, @lognpdf, 2, ...
+            {"norm", "normal"}, @normpdf, 2, ...
+            {"poiss", "poisson"}, @poisspdf, 1, ...
+            {"rayl", "rayleigh"}, @raylpdf, 1, ...
+            {"t"}, @tpdf, 1, ...
+            {"unif", "uniform"}, @unifpdf, 2, ...
+            {"wbl", "weibull"}, @wblpdf, 2};
 
   if (numel (varargin) < 2 || ! ischar (varargin{1}))
     print_usage ();
@@ -87,23 +87,23 @@ function [retval] = cdf (varargin)
   varargin(1:2) = [];
   nargs = numel (varargin);
 
-  cdfnames = allcdf(1:3:end);
-  cdfhdl = allcdf(2:3:end);
-  cdfargs = allcdf(3:3:end);
+  pdfnames = allpdf(1:3:end);
+  pdfhdl = allpdf(2:3:end);
+  pdfargs = allpdf(3:3:end);
 
-  idx = cellfun (@(x) any (strcmpi (name, x)), cdfnames);
+  idx = cellfun (@(x) any (strcmpi (name, x)), pdfnames);
   
   if (any (idx))
-    if (nargs == cdfargs{idx})
-      retval = feval (cdfhdl{idx}, x, varargin{:});
+    if (nargs == pdfargs{idx})
+      retval = feval (pdfhdl{idx}, x, varargin{:});
     else
-      error ("cdf: %s requires %d arguments", name, cdfargs{idx})
+      error ("pdf: %s requires %d arguments", name, pdfargs{idx})
     endif
   else
-    error ("cdf: %s not implemented", name);
+    error ("pdf: %s not implemented", name);
   endif
   
 endfunction
 
 %!test
-%! assert(cdf ('norm', 1, 0, 1), normcdf (1, 0, 1))
+%! assert(pdf ('norm', 1, 0, 1), normpdf (1, 0, 1))

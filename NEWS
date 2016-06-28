@@ -12,6 +12,7 @@ Summary of important user-visible changes for statistics x.x.x:
       grp2idx
       mvtpdf
       nakacdf nakainv nakapdf nakarnd
+      pdf
       tricdf triinv tripdf trirnd
       violin
 
@@ -20,6 +21,7 @@ Summary of important user-visible changes for statistics x.x.x:
 
       betastat
       binostat
+      cdf
       combnk
       gevfit
       hist3

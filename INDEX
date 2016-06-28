@@ -29,6 +29,7 @@ Distributions
  nbinstat
  normalise_distribution
  normstat
+ pdf
  poisstat
  qrandn
  random
