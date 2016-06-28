@@ -3,7 +3,7 @@ Distributions
  anderson_darling_cdf
  bbscdf bbsinv bbspdf bbsrnd
  betastat
- binostat
+ binostat binotest
  burrcdf burrinv burrpdf burrrnd
  cdf
  chi2stat

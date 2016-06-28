@@ -4,6 +4,7 @@ Summary of important user-visible changes for statistics x.x.x:
  ** The following functions are new:
 
       bbscdf bbsinv bbspdf bbsrnd
+      binotest
       burrcdf burrinv burrpdf burrrnd
       fitgmdist
       gmdistribution
