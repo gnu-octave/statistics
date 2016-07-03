@@ -2,9 +2,18 @@ inst/private/tbl_delim.m.m      GPLv3+
 inst/anderson_darling_cdf.m     public domain
 inst/anderson_darling_test.m    public domain
 inst/anovan.m                   GPLv3+
+inst/bbscdf.m                   GPLv3+
+inst/bbsinv.m                   GPLv3+
+inst/bbspdf.m                   GPLv3+
+inst/bbsrnd.m                   GPLv3+
 inst/betastat.m                 GPLv3+
 inst/binostat.m                 GPLv3+
+inst/binotest.m                 GPLv3+
 inst/boxplot.m                  GPLv3+
+inst/burrcdf.m                  GPLv3+
+inst/burrinv.m                  GPLv3+
+inst/burrpdf.m                  GPLv3+
+inst/burrrnd.m                  GPLv3+
 inst/caseread.m                 GPLv3+
 inst/casewrite.m                GPLv3+
 inst/cdf.m                      GPLv3+
@@ -20,6 +29,7 @@ inst/dcov.m                     GPLv3+
 inst/dendogram.m                GPLv3+
 inst/expstat.m                  GPLv3+
 inst/ff2n.m                     public domain
+inst/fitgmdist.m                GPLv3+
 inst/fstat.m                    GPLv3+
 inst/fullfact.m                 public domain
 inst/gamfit.m                   public domain
@@ -35,6 +45,11 @@ inst/gevlike.m                  GPLv3+
 inst/gevpdf.m                   GPLv3+
 inst/gevrnd.m                   GPLv3+
 inst/gevstat.m                  GPLv3+
+inst/gmdistribution.m           GPLv3+
+inst/gpcdf.m                    GPLv3+
+inst/gpinv.m                    GPLv3+
+inst/gppdf.m                    GPLv3+
+inst/gprnd.m                    GPLv3+
 inst/grp2idx.m                  GPLv3+
 inst/harmmean.m                 GPLv3+
 inst/hist3.m                    GPLv3+
@@ -59,20 +74,26 @@ inst/mvncdf.m                   GPLv3+
 inst/mvnpdf.m                   public domain
 inst/mvnrnd.m                   GPLv3+
 inst/mvtcdf.m                   GPLv3+
+inst/mvtpdf.m                   GPLv3+
 inst/mvtrnd.m                   GPLv3+
+inst/nakacdf.m                  GPLv3+
+inst/nakainv.m                  GPLv3+
+inst/nakapdf.m                  GPLv3+
+inst/nakarnd.m                  GPLv3+
 inst/nanmax.m                   GPLv3+
 inst/nanmean.m                  GPLv3+
 inst/nanmedian.m                GPLv3+
 inst/nanmin.m                   GPLv3+
 inst/nanstd.m                   GPLv3+
 inst/nansum.m                   GPLv3+
-inst/nanvar.m.m                 GPLv3+
+inst/nanvar.m                   GPLv3+
 inst/nbinstat.m                 GPLv3+
 inst/normalise_distribution.m   GPLv3+
 inst/normplot.m                 public domain
 inst/normstat.m                 GPLv3+
 inst/pcacov.m                   GPLv3+
 inst/pcares.m                   GPLv3+
+inst/pdf.m                      GPLv3+
 inst/pdist.m                    GPLv3+
 inst/pdist2.m                   GPLv3+
 inst/plsregress.m               GPLv3+
@@ -96,7 +117,11 @@ inst/stepwisefit.m              GPLv3+
 inst/tabulate.m                 GPLv3+
 inst/tblread.m                  GPLv3+
 inst/tblwrite.m                 GPLv3+
+inst/tricdf.m                   GPLv3+
+inst/triinv.m                   GPLv3+
 inst/trimmean.m                 GPLv3+
+inst/tripdf.m                   GPLv3+
+inst/trirnd.m                   GPLv3+
 inst/tstat.m                    GPLv3+
 inst/ttest.m                    GPLv3+
 inst/ttest2.m                   GPLv3+
@@ -104,6 +129,7 @@ inst/unidstat.m                 GPLv3+
 inst/unifstat.m                 GPLv3+
 inst/vartest.m                  GPLv3+
 inst/vartest2.m                 GPLv3+
+inst/violin.m                   GPLv3+
 inst/vmpdf.m                    GPLv3+
 inst/vmrnd.m                    GPLv3+
 inst/wblstat.m                  GPLv3+

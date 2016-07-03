@@ -45,7 +45,7 @@
 ## @table @code
 ## @item @var{Start}
 ## The initialization method for the centroids.
-##  @table
+##  @table @code
 ##  @item @code{plus}
 ##        (Default) The k-means++ algorithm.
 ##  @item @code{sample}

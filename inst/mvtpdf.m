@@ -39,6 +39,7 @@
 ## @itemize @bullet
 ## @item
 ## @var{p} is the probability density for each row of @var{x}. (@var{n} by 1 vector)
+## @end itemize
 ##
 ## @subheading Examples
 ##
@@ -49,6 +50,7 @@
 ## nu = 4;
 ## p = mvtpdf (x, sigma, nu)
 ## @end group
+## @end example
 ##
 ## @subheading References
 ##
