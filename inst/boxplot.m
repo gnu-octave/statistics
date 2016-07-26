@@ -175,7 +175,6 @@ function [s hs] = boxplot (data, varargin)
       dummy(indopt) = data(group == nc(indopt));
     end
     data = dummy; group = nc(:).'; nc = length (nc); 
-    keyboard
   end
 
   ## compute statistics
