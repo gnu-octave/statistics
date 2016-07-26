@@ -114,7 +114,7 @@ function [s hs] = boxplot (data, varargin)
         if (2 ~= indopt)
           error ('Boxplot.m: grouping vector may only be passed as second arg');
         endif
-        group = dummy;
+        groups = dummy;
       else  
         %# old way: positional argument
         switch indopt
@@ -158,23 +158,23 @@ function [s hs] = boxplot (data, varargin)
   a = 1-notched;
 
   ## figure out how many data sets we have
-  if (isempty (group))
+  if (isempty (groups))
     if (iscell (data))
       nc = length (data);
     else
       if (isvector (data)) data = data(:); endif
       nc = columns (data);
     endif
-    group = (1:nc);
+    groups = (1:nc);
   else
     if (~isvector (data))
       error ('Boxplot.m: with the formalism (data, group), both must be vectors');
     end
-    nc = unique (group); dummy = cell (1, length (nc));
+    nc = unique (groups); dummy = cell (1, length (nc));
     for indopt = (1:length (nc))
-      dummy(indopt) = data(group == nc(indopt));
+      dummy(indopt) = data(groups == nc(indopt));
     end
-    data = dummy; group = nc(:).'; nc = length (nc); 
+    data = dummy; groups = nc(:).'; nc = length (nc); 
   end
 
   ## compute statistics
@@ -184,7 +184,7 @@ function [s hs] = boxplot (data, varargin)
   ##    6,7    lower and upper confidence intervals for median
   s = zeros (7, nc);
   box = zeros (1, nc);
-  whisker_x = ones (2,1)*[group, group];
+  whisker_x = ones (2,1)*[groups, groups];
   whisker_y = zeros (2, 2*nc);
   outliers_x = [];
   outliers_y = [];
@@ -217,15 +217,15 @@ function [s hs] = boxplot (data, varargin)
       ## outliers beyond 1 and 2 inter-quartile ranges
       outliers = col((col < s(2, indi)-IQR & col >= s(2, indi)-2*IQR) | (col > s(4, indi)+IQR & col <= s(4, indi)+2*IQR));
       outliers2 = col(col < s(2, indi)-2*IQR | col > s(4, indi)+2*IQR);
-      outliers_x = [outliers_x; indi*ones(size(outliers))];
+      outliers_x = [outliers_x; groups(indi)*ones(size(outliers))];
       outliers_y = [outliers_y; outliers];
-      outliers2_x = [outliers2_x; indi*ones(size(outliers2))];
+      outliers2_x = [outliers2_x; groups(indi)*ones(size(outliers2))];
       outliers2_y = [outliers2_y; outliers2];
     elseif (1 == nd)
       ## all statistics collapse to the value of the point
       s(:, indi) = col;
       ## single point data sets are plotted as outliers.
-      outliers_x = [outliers_x; indi];
+      outliers_x = [outliers_x; groups(indi)];
       outliers_y = [outliers_y; col];
     else
       ## no statistics if no points
@@ -239,11 +239,11 @@ function [s hs] = boxplot (data, varargin)
   ## Draw a box around the quartiles, with width proportional to the number of
   ## items in the box. Draw notches if desired.
   box *= 0.4/max (box);
-  quartile_x = ones (11,1)*group + [-a;-1;-1;1;1;a;1;1;-1;-1;-a]*box;
+  quartile_x = ones (11,1)*groups + [-a;-1;-1;1;1;a;1;1;-1;-1;-a]*box;
   quartile_y = s([3,7,4,4,7,3,6,2,2,6,3],:);
 
   ## Draw a line through the median
-  median_x = ones (2,1)*group + [-a;+a]*box;
+  median_x = ones (2,1)*groups + [-a;+a]*box;
   median_y = s([3,3],:);
 
   ## Chop all boxes which don't have enough stats
