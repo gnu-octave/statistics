@@ -17,9 +17,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {@var{s} =} boxplot (@var{data}, @var{notched}, @
+## @deftypefn {Function File} {@var{s} =} boxplot (@var{data}, @var{notched}, @
 ## @var{symbol}, @var{vertical}, @var{maxwhisker}, @dots{})
-## @deftypefnx {} {[@dots{} @var{h}]=} boxplot (@dots{})
+## @deftypefnx {Function File} {@var{s} =} boxplot (@var{data}, @var{group})
+## @deftypefnx {Function File} {[@dots{} @var{h}]=} boxplot (@dots{})
 ##
 ## Produce a box plot.
 ##
@@ -79,7 +80,7 @@
 ## @example
 ## title ("Grade 3 heights");
 ## axis ([0,3]);
-## set(gca (), "xtick", [1 2], "xticklabel", @{"girls", "boys"@})
+## set(gca (), "xtick", [1 2], "xticklabel", @{"girls", "boys"@});
 ## boxplot (@{randn(10,1)*5+140, randn(13,1)*8+135@});
 ## @end example
 ##
@@ -106,17 +107,25 @@ function [s hs] = boxplot (data, varargin)
   while (numarg)
     dummy = varargin{indopt++};
     if (!ischar (dummy))
-      %# old way: positional argument
-      switch indopt
-        case 2
-          notched = dummy;
-        case 4
-          vertical = dummy;
-        case 5
-          maxwhisker = dummy;
-        otherwise
-          error("No positional argument allowed at position %d", --indopt);
-      endswitch
+      %# MatLAB allows passing the second argument as a grouping vector
+      if (iscell (dummy) || length (dummy) > 1)
+        if (~iscell (data))
+          data = {data};
+        endif
+        data(1, end+1) = dummy;
+      else  
+        %# old way: positional argument
+        switch indopt
+          case 2
+            notched = dummy;
+          case 4
+            vertical = dummy;
+          case 5
+            maxwhisker = dummy;
+          otherwise
+            error("No positional argument allowed at position %d", --indopt);
+        endswitch
+      endif
       numarg--; continue;
     else
       if (3 == indopt && length (dummy) <= 2)
