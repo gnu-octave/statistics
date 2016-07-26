@@ -2,6 +2,7 @@
 ## Copyright (C) 2006 Alberto Pose <apose@alu.itba.edu.ar>
 ## Copyright (C) 2011 Pascal Dupuis <Pascal.Dupuis@worldonline.be>
 ## Copyright (C) 2012 Juan Pablo Carbajal <carbajal@ifi.uzh.ch>
+## Copyright (C) 2016 Pascal Dupuis <cdemills@gmail.com>
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -99,7 +100,8 @@ function [s hs] = boxplot (data, varargin)
   symbol = ['+', 'o'];
   notched = 0;
   plot_opts = {};
-
+  groups = [];
+  
   %# Optional arguments analysis
   numarg = nargin - 1;
   option_args = ['Notch'; 'Symbol'; 'Vertical'; 'Maxwhisker'];
@@ -108,11 +110,11 @@ function [s hs] = boxplot (data, varargin)
     dummy = varargin{indopt++};
     if (!ischar (dummy))
       %# MatLAB allows passing the second argument as a grouping vector
-      if (iscell (dummy) || length (dummy) > 1)
-        if (~iscell (data))
-          data = {data};
+      if (length (dummy) > 1)
+        if (2 ~= indopt)
+          error ('Boxplot.m: grouping vector may only be passed as second arg');
         endif
-        data(1, end+1) = dummy;
+        group = dummy;
       else  
         %# old way: positional argument
         switch indopt
@@ -156,22 +158,35 @@ function [s hs] = boxplot (data, varargin)
   a = 1-notched;
 
   ## figure out how many data sets we have
-  if (iscell (data))
-    nc = length (data);
+  if (isempty (group))
+    if (iscell (data))
+      nc = length (data);
+    else
+      if (isvector (data)) data = data(:); endif
+      nc = columns (data);
+    endif
+    group = (1:nc);
   else
-    if (isvector (data)) data = data(:); endif
-    nc = columns (data);
-  endif
+    if (~isvector (data))
+      error ('Boxplot.m: with the formalism (data, group), both must be vectors');
+    end
+    nc = unique (group); dummy = cell (1, length (nc));
+    for indopt = (1:length (nc))
+      dummy(indopt) = data(group == nc(indopt));
+    end
+    data = dummy; group = nc(:).'; nc = length (nc); 
+    keyboard
+  end
 
   ## compute statistics
   ## s will contain
   ##    1,5    min and max
   ##    2,3,4  1st, 2nd and 3rd quartile
   ##    6,7    lower and upper confidence intervals for median
-  s = zeros (7,nc);
-  box = zeros (1,nc);
-  whisker_x = ones (2,1)*[1:nc,1:nc];
-  whisker_y = zeros (2,2*nc);
+  s = zeros (7, nc);
+  box = zeros (1, nc);
+  whisker_x = ones (2,1)*[group, group];
+  whisker_y = zeros (2, 2*nc);
   outliers_x = [];
   outliers_y = [];
   outliers2_x = [];
@@ -225,11 +240,11 @@ function [s hs] = boxplot (data, varargin)
   ## Draw a box around the quartiles, with width proportional to the number of
   ## items in the box. Draw notches if desired.
   box *= 0.4/max (box);
-  quartile_x = ones (11,1)*[1:nc] + [-a;-1;-1;1;1;a;1;1;-1;-1;-a]*box;
+  quartile_x = ones (11,1)*group + [-a;-1;-1;1;1;a;1;1;-1;-1;-a]*box;
   quartile_y = s([3,7,4,4,7,3,6,2,2,6,3],:);
 
   ## Draw a line through the median
-  median_x = ones (2,1)*[1:nc] + [-a;+a]*box;
+  median_x = ones (2,1)*group + [-a;+a]*box;
   median_y = s([3,3],:);
 
   ## Chop all boxes which don't have enough stats
