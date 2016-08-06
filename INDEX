@@ -99,6 +99,7 @@ Clustering
  cmdscale
  kmeans
  linkage
+ mahal
  pdist
  pdist2
  squareform

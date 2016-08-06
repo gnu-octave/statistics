@@ -10,6 +10,7 @@ Summary of important user-visible changes for statistics x.x.x:
       gmdistribution
       gpcdf gpinv gppdf gprnd
       grp2idx
+      mahal
       mvtpdf
       nakacdf nakainv nakapdf nakarnd
       pdf
