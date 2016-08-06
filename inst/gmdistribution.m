@@ -312,6 +312,7 @@ classdef gmdistribution
     endmethods
 endclassdef
 
+%!test
 %! mu = eye(2);
 %! Sigma = eye(2);
 %! GM = gmdistribution (mu, Sigma);

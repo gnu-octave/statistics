@@ -67,6 +67,7 @@ inst/kmeans.m                   GPLv3+
 inst/linkage.m                  GPLv3+
 inst/lognstat.m                 GPLv3+
 inst/mad.m                      GPLv3+
+inst/mahal.m                    GPLv3+
 inst/mnpdf.m                    GPLv3+
 inst/mnrnd.m                    GPLv3+
 inst/monotone_smooth.m          GPLv3+
