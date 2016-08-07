@@ -63,7 +63,7 @@ function retval = mahal (y, x)
     x = double (x);
   endif
 
-  xm = mean (x);
+  xm = mean (x, 1);
 
   ## Center data by subtracting mean of x
   x = bsxfun (@minus, x, xm);
