@@ -29,7 +29,6 @@ inst/dcov.m                     GPLv3+
 inst/dendogram.m                GPLv3+
 inst/expstat.m                  GPLv3+
 inst/ff2n.m                     public domain
-inst/fitgmdist.m                GPLv3+
 inst/fstat.m                    GPLv3+
 inst/fullfact.m                 public domain
 inst/gamfit.m                   public domain
@@ -45,7 +44,6 @@ inst/gevlike.m                  GPLv3+
 inst/gevpdf.m                   GPLv3+
 inst/gevrnd.m                   GPLv3+
 inst/gevstat.m                  GPLv3+
-inst/gmdistribution.m           GPLv3+
 inst/gpcdf.m                    GPLv3+
 inst/gpinv.m                    GPLv3+
 inst/gppdf.m                    GPLv3+

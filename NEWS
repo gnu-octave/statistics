@@ -1,4 +1,4 @@
-Summary of important user-visible changes for statistics x.x.x:
+Summary of important user-visible changes for statistics 1.3.0:
 -------------------------------------------------------------------
 
  ** The following functions are new:
@@ -6,8 +6,6 @@ Summary of important user-visible changes for statistics x.x.x:
       bbscdf bbsinv bbspdf bbsrnd
       binotest
       burrcdf burrinv burrpdf burrrnd
-      fitgmdist
-      gmdistribution
       gpcdf gpinv gppdf gprnd
       grp2idx
       mahal
