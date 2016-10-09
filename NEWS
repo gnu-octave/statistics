@@ -1,3 +1,15 @@
+Summary of important user-visible changes for statistics x.x.x:
+-------------------------------------------------------------------
+
+ ** The following functions are new:
+
+      fitgmdist
+      gmdistribution
+
+ ** Other functions that have been changed for smaller bugfixes, increased
+    Matlab compatibility, or performance:
+
+
 Summary of important user-visible changes for statistics 1.3.0:
 -------------------------------------------------------------------
 

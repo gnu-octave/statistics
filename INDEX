@@ -15,6 +15,7 @@ Distributions
  gamstat
  geostat
  gevcdf gevfit gevfit_lmom gevinv gevlike gevpdf gevrnd gevstat
+ gmdistribution
  gpcdf gpinv gppdf gprnd
  hygestat
  iwishpdf iwishrnd
@@ -92,6 +93,7 @@ Hypothesis testing
  vartest2
  ztest
 Fitting
+ fitgmdist
  gamfit
 Clustering
  cmdscale
