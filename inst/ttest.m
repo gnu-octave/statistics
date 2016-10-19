@@ -149,7 +149,7 @@ end
 %! x = 8:0.1:12;
 %! [h, pval, ci] = ttest (x, 10);
 %! assert (h, 0)
-%! assert (pval, 1)
+%! assert (pval, 1, eps)
 %! assert (ci, [9.6219 10.3781], 1E-5)
 %! [h, pval, ci0] = ttest (x, 0);
 %! assert (h, 1)
