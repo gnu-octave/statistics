@@ -88,7 +88,7 @@ function [h, p, ci, stats] = ttest(x, my, varargin)
   end
   
   if ~isa(tail, 'char')
-    error('tail argument to vartest2 must be a string\n',[]);
+    error('tail argument to ttest must be a string\n',[]);
   end
     
   if any(and(~isscalar(my),size(x)~=size(my)))
@@ -151,6 +151,10 @@ end
 %! assert (h, 0)
 %! assert (pval, 1, eps)
 %! assert (ci, [9.6219 10.3781], 1E-5)
+%! [h, pval, ci] = ttest (x, 10, "tail", "right", "dim", 2, "alpha", 0.05);
+%! assert (h, 0)
+%! assert (pval, 0.5, eps)
+%! assert (ci, [9.68498 Inf], 1E-5)
 %! [h, pval, ci0] = ttest (x, 0);
 %! assert (h, 1)
 %! assert (pval, 0)
