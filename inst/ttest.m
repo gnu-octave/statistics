@@ -130,7 +130,7 @@ function [h, p, ci, stats] = ttest(x, my, varargin)
       tcrit = -tinv(alpha,n-1);
       ci = [my+x_bar-tcrit*x_bar_std; inf*ones(size(x_bar))];
     otherwise
-      error('Invalid fifth (tail) argument to ttest\n',[]);
+      error('Invalid tail argument to ttest\n',[]);
   end
 
   % Reshape the ci array to match MATLAB shaping
