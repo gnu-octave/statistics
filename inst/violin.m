@@ -256,7 +256,7 @@ function varargout = to_cell (varargin)
       endif
 
       sz = size (x);
-      d  = find (sz == m)
+      d  = find (sz == m);
       if (isempty (d)) # no dimension equals m
         error ("to_cell:element_idx", "%d\n",i);
       elseif (length (d) == 2)
@@ -324,4 +324,3 @@ endfunction
 %! data = repmat(exprnd (0.1, 500,1), 1, 4);
 %! violin (data, "nbins", [5,10,50,100], "smoothfactor", [4 4 8 10]);
 %! axis ([0 5 0 max(data(:))])
-
