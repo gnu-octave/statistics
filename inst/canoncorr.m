@@ -1,14 +1,15 @@
 function [A,B,r,U,V] = canoncorr (X,Y)
 
-# -*- texinfo -*-
-## @deftypefn{Function File}{[@var{A} @var{B} @var{r} @var{U} @var{V}] =} bin_values(@var{X}, @var{Y})
+## -*- texinfo -*-
+## @deftypefn {Function File} {[@var{A} @var{B} @var{r} @var{U} @var{V}] =} canoncorr (@var{X}, @var{Y})
+## Canonical correlation analysis
 ##
-## Canonical correlation analysis@*
-## Given @var{X} (size @var{k}*@var{m}) and @var{Y} (@var{k}*@var{n}), returns projection matrices of canonical coefficients @var{A} (size @var{m}*@var{d}, where @var{d}=@fun{min}(@var{m}, @var{n})) and @var{B} (size @var{m}*@var{d}); the canonical correlations @var{r} (1*@var{d}, arranged in decreasing order); and the canonical variables @var{U}, @var{V} (both @var{k}*@var{d}, with orthonormal columns).
+## Given @var{X} (size @var{k}*@var{m}) and @var{Y} (@var{k}*@var{n}), returns projection matrices of canonical coefficients @var{A} (size @var{m}*@var{d}, where @var{d}=@code{min}(@var{m}, @var{n})) and @var{B} (size @var{m}*@var{d}); the canonical correlations @var{r} (1*@var{d}, arranged in decreasing order); and the canonical variables @var{U}, @var{V} (both @var{k}*@var{d}, with orthonormal columns).
 ##
 ## Reference: William H. Press (2011), Canonical Correlation Clarified by Singular Value Decomposition, http://numerical.recipes/whp/notes/CanonCorrBySVD.pdf
 ##
 ## @seealso{princomp}
+## @end deftypefn
 
 #	Copyright (C) 2016 by Nir Krakauer <mail@nirkrakauer.net>
 
