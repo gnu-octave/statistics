@@ -62,6 +62,7 @@ Experimental design
  fullfact ff2n
 Regression
  anovan
+ canoncorr
  crossval
  monotone_smooth
  princomp
