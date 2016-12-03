@@ -64,7 +64,7 @@
 ##
 ## @example
 ## [counts, centers] = hist3 (data);
-## imagesc (centers@{1@}, centers@{2@}, data)
+## imagesc (centers@{1@}, centers@{2@}, counts)
 ## @end example
 ##
 ## If there is no output argument, or if the axes graphics handle
