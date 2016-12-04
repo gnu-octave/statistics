@@ -1,12 +1,14 @@
-function [A,B,r,U,V] = canoncorr (X,Y)
+function [A,B,r,U,V,stats] = canoncorr (X,Y)
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{A} @var{B} @var{r} @var{U} @var{V}] =} canoncorr (@var{X}, @var{Y})
 ## Canonical correlation analysis
 ##
-## Given @var{X} (size @var{k}*@var{m}) and @var{Y} (@var{k}*@var{n}), returns projection matrices of canonical coefficients @var{A} (size @var{m}*@var{d}, where @var{d}=@code{min}(@var{m}, @var{n})) and @var{B} (size @var{m}*@var{d}); the canonical correlations @var{r} (1*@var{d}, arranged in decreasing order); and the canonical variables @var{U}, @var{V} (both @var{k}*@var{d}, with orthonormal columns).
+## Given @var{X} (size @var{k}*@var{m}) and @var{Y} (@var{k}*@var{n}), returns projection matrices of canonical coefficients @var{A} (size @var{m}*@var{d}, where @var{d}=@code{min}(@var{m}, @var{n})) and @var{B} (size @var{m}*@var{d}); the canonical correlations @var{r} (1*@var{d}, arranged in decreasing order); the canonical variables @var{U}, @var{V} (both @var{k}*@var{d}, with orthonormal columns); and @var{stats}, a structure containing results from Bartlett's chi-square and Rao's F tests of significance.
 ##
-## Reference: William H. Press (2011), Canonical Correlation Clarified by Singular Value Decomposition, http://numerical.recipes/whp/notes/CanonCorrBySVD.pdf
+## References: @*
+##   William H. Press (2011), Canonical Correlation Clarified by Singular Value Decomposition, http://numerical.recipes/whp/notes/CanonCorrBySVD.pdf @*
+##   Philip B. Ender, Multivariate Analysis: Canonical Correlation Analysis, http://www.philender.com/courses/multivariate/notes2/can1.html
 ##
 ## @seealso{princomp}
 ## @end deftypefn
@@ -28,7 +30,9 @@ function [A,B,r,U,V] = canoncorr (X,Y)
 
 
 k = size (X, 1); #should also be size (Y, 1)
-d = min (size(X, 2), size(Y, 2));
+m = size (X, 2);
+n = size (Y, 2);
+d = min (m, n);
 
 X = center (X);
 Y = center (Y);
@@ -46,7 +50,7 @@ f = sqrt (k-1);
 A .*= f;
 B .*= f;
 
-if isargout (3)
+if isargout(3) || isargout(6)
   r = max(0, min(diag(S), 1))';
 endif
 if isargout (4)
@@ -56,9 +60,29 @@ if isargout (5)
   V = Y * B;
 endif
 
-%!shared X,Y,A,B,r,U,V
-%! X = [1:10; sin(1:10); cos(1:10)]'; Y = [tan(1:10); tanh((1:10)/10)]';
-%! [A,B,r,U,V] = canoncorr (X,Y);
+if isargout (6)
+  Wilks = fliplr(cumprod(fliplr((1 - r .^ 2))));
+  chisq = - (k - 1 - (m + n + 1)/2) * log(Wilks);
+  df1 = (m - (1:d) + 1) .* (n - (1:d) + 1);
+  pChisq = 1 - chi2cdf (chisq, df1);
+  s = sqrt((df1.^2 - 4) ./ ((m - (1:d) + 1).^2 + (n - (1:d) + 1).^2 - 5));
+  df2 = (k - 1 - (m + n + 1)/2) * s - df1/2 + 1;
+  ls = Wilks .^ (1 ./ s);
+  F = (1 ./ ls  -  1) .* (df2 ./ df1);
+  pF = 1 - fcdf (F, df1, df2);
+  stats.Wilks = Wilks;
+  stats.df1 = df1;
+  stats.df2 = df2;
+  stats.F = F;
+  stats.pF = pF;
+  stats.chisq = chisq;
+  stats.pChisq = pChisq;
+endif
+
+%!shared X,Y,A,B,r,U,V,k
+%! k = 10;
+%! X = [1:k; sin(1:k); cos(1:k)]'; Y = [tan(1:k); tanh((1:k)/k)]';
+%! [A,B,r,U,V,stats] = canoncorr (X,Y);
 %!assert (A, [-0.329229   0.072908; 0.074870   1.389318; -0.069302  -0.024109], 1E-6);
 %!assert (B, [-0.017086  -0.398402; -4.475049  -0.824538], 1E-6);
 %!assert (r, [0.99590   0.26754], 1E-5);
