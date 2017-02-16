@@ -119,3 +119,5 @@ Cvpartition (class of set partitions for cross-validation, used in crossval)
  @cvpartition/training
 Categorical data
  grp2idx
+Other
+ sigma_pts
