@@ -94,7 +94,7 @@ function [N, C] = hist3 (X, varargin)
   if (! ismatrix (X) || columns (X) != 2)
     error ("hist3: X must be a 2 columns matrix");
   endif
-  X(any (isnan (X), 2)) = [];
+  X(any (isnan (X), 2), :) = [];
 
   method = "nbins";
   val = [10 10];
@@ -349,3 +349,11 @@ endfunction
 %! N_exp = zeros (7, 5);
 %! N_exp([1 9 10 18 26 27 35]) = [2 1 1 2 1 1 2];
 %! assert (hist3 (Xv, [7 5]), N_exp)
+
+%!test
+%! D = [1 1; NaN 2; 3 1; 3 3; 1 NaN; 3 1];
+%! [c, nn] = hist3 (D, {0:4, 0:4});
+%! exp_c = zeros (5);
+%! exp_c([7 9 19]) = [1 2 1];
+%! assert (c, exp_c)
+%! assert (nn, {0:4, 0:4})
