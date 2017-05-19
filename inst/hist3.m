@@ -94,7 +94,6 @@ function [N, C] = hist3 (X, varargin)
   if (! ismatrix (X) || columns (X) != 2)
     error ("hist3: X must be a 2 columns matrix");
   endif
-  X(any (isnan (X), 2), :) = [];
 
   method = "nbins";
   val = [10 10];
@@ -148,6 +147,13 @@ function [N, C] = hist3 (X, varargin)
       error ("hist3: invalid binning method `%s'", method);
   endswitch
 
+  ## We only remove the NaN now, after having computed the bin edges,
+  ## because the extremes from each column that define the edges may
+  ## be paired with a NaN.  While such values do not appear on the
+  ## histogram, they must still be used to compute the histogram
+  ## edges.
+  X(any (isnan (X), 2), :) = [];
+
   r_idx = lookup (r_edges, X(:,1), "l");
   c_idx = lookup (c_edges, X(:,2), "l");
 
@@ -183,9 +189,19 @@ function [r_edges, c_edges] = edges_from_nbins (X, nbins)
   if (! isnumeric (nbins) || numel (nbins) != 2)
     error ("hist3: NBINS must be a 2 element vector");
   endif
-  inits = min (X);
-  ends  = max (X);
+  inits = min (X, [], 1);
+  ends  = max (X, [], 1);
   ends -= (ends - inits) ./ vec (nbins, 2);
+
+  ## If any histogram side has an empty range, then still make NBINS
+  ## but then place that value at the centre of the centre bin so that
+  ## they appear in the centre in the plot.
+  single_bins = inits == ends;
+  if (any (single_bins))
+    inits(single_bins) -= (floor (nbins(single_bins) ./2)) + 0.5;
+    ends(single_bins) = inits(single_bins) + nbins(single_bins) -1;
+  endif
+
   r_edges = linspace (inits(1), ends(1), nbins(1));
   c_edges = linspace (inits(2), ends(2), nbins(2));
 endfunction
@@ -350,10 +366,54 @@ endfunction
 %! N_exp([1 9 10 18 26 27 35]) = [2 1 1 2 1 1 2];
 %! assert (hist3 (Xv, [7 5]), N_exp)
 
-%!test
+%!test # bug #51059
 %! D = [1 1; NaN 2; 3 1; 3 3; 1 NaN; 3 1];
 %! [c, nn] = hist3 (D, {0:4, 0:4});
 %! exp_c = zeros (5);
 %! exp_c([7 9 19]) = [1 2 1];
 %! assert (c, exp_c)
 %! assert (nn, {0:4, 0:4})
+
+## Single row of data or cases where all elements have the same value
+## on one side of the histogram.
+%!test
+%! [c, nn] = hist3 ([1 8]);
+%! exp_c = zeros (10, 10);
+%! exp_c(6, 6) = 1;
+%! exp_nn = {-4:5, 3:12};
+%! assert (c, exp_c)
+%! assert (nn, exp_nn, eps)
+%!
+%! [c, nn] = hist3 ([1 8], [10 11]);
+%! exp_c = zeros (10, 11);
+%! exp_c(6, 6) = 1;
+%! exp_nn = {-4:5, 3:13};
+%! assert (c, exp_c)
+%! assert (nn, exp_nn, eps)
+
+## NaNs paired with values defining the histogram edges.
+%!test
+%! [c, nn] = hist3 ([1 NaN; 2 3; 6 9; 8 NaN]);
+%! exp_c = zeros (10, 10);
+%! exp_c(2, 1) = 1;
+%! exp_c(8, 10) = 1;
+%! exp_nn = {linspace(1.35, 7.65, 10) linspace(3.3, 8.7, 10)};
+%! assert (c, exp_c)
+%! assert (nn, exp_nn, eps*100)
+
+## Columns full of NaNs (recent Matlab versions seem to throw an error
+## but this did work like this on R2010b at least).
+%!test
+%! [c, nn] = hist3 ([1 NaN; 2 NaN; 6 NaN; 8 NaN]);
+%! exp_c = zeros (10, 10);
+%! exp_nn = {linspace(1.35, 7.65, 10) NaN(1, 10)};
+%! assert (c, exp_c)
+%! assert (nn, exp_nn, eps*100)
+
+## Behaviour of an empty X after removal of rows with NaN.
+%!test
+%! [c, nn] = hist3 ([1 NaN; NaN 3; NaN 9; 8 NaN]);
+%! exp_c = zeros (10, 10);
+%! exp_nn = {linspace(1.35, 7.65, 10) linspace(3.3, 8.7, 10)};
+%! assert (c, exp_c)
+%! assert (nn, exp_nn, eps*100)
