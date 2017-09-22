@@ -34,8 +34,8 @@
 function [dCov, dCor, dVarX, dVarY] = dcov (x,y,index=1.0)
   %x = abs(x - x.');
   %y = abs(y - y.');
-  x = bsxfun (@minus, x, x.');
-  y = bsxfun (@minus, y, y.');
+  x = abs (bsxfun (@minus, x, x.'));
+  y = abs (bsxfun (@minus, y, y.'));
   
   [n nc] = size (x);
   [m mc] = size (y);
