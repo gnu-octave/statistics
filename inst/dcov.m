@@ -77,51 +77,66 @@ function c = Akl (x, index)
 endfunction
 
 %!demo
-%! x = randn (1e3,1); x = (x- mean(x))./(max(x)-mean(x));
-%! z = randn (1e3,1);
+%base=@(x) (x- min(x))./(max(x)-min(x));
+%! N = 5e2;
+%! x = randn (N,1); x = base (x);
+%! z = randn (N,1); z = base (z);
 %! # Linear relations
-%! ly = x.*[1 0.55 0.3 0 -0.3 -0.55 -1];
+%! cy = [1 0.55 0.3 0 -0.3 -0.55 -1];
+%! ly = x .* cy;
+%! ly(:,[1:3 5:end]) = base (ly(:,[1:3 5:end]));
 %! # Correlated Gaussian
-%! gy =  ly + [0 0.45 0.7 1 0.7 0.45 0].*z;
+%! cz = 1 - abs (cy);
+%! gy = base ( ly + cz.*z);
 %! # Shapes
-%! sx = repmat (x,7);
-%! sy = zeros (size (ly));
-%! sy(:,1) = cos(pi*x) + z;
-%! R =@(d) [cosd(d) sind(d); -sind(d) cosd(d)];
-%! tmp     = R(35) * [x.';z.'];
-%! sx(:,2) = tmp(1,:) - mean (tmp(1,:)); sy(:,2) = tmp(2,:);
-%! tmp     = R(45) * [x.';z.'];
-%! sx(:,3) = tmp(1,:) - mean (tmp(1,:)); sy(:,3) = tmp(2,:);
-%! sy(:,4) = x.^2 + 2*abs(z);
-%! sy(:,5) = x.^2 .* z;
-%! sx(:,6) = cos (pi*x);
-%! sy(:,6) = sin (pi*x);
-%! tf      = [(x>=0  & z>=0) (x<0 & z>=0) (x>=0 & z<0) (x<0 & z<0)];
-%! sy(:,7) = gy(:,4) .* sum((2*tf-1),2);
-%!
+%! sx      = repmat (x,1,7);
+%! sy      = zeros (size (ly));
+%! v       = 2 * rand (size(x,1),2) - 1;
+%! sx(:,1) = v(:,1); sy(:,1) = cos(2*pi*sx(:,1)) + 0.5*v(:,2).*exp(-sx(:,1).^2/0.5);
+%! R       =@(d) [cosd(d) sind(d); -sind(d) cosd(d)];
+%! tmp     = R(35) * v.';
+%! sx(:,2) = tmp(1,:); sy(:,2) = tmp(2,:);
+%! tmp     = R(45) * v.';
+%! sx(:,3) = tmp(1,:); sy(:,3) = tmp(2,:);
+%! sx(:,4) = v(:,1); sy(:,4) = sx(:,4).^2 + 0.5*v(:,2);
+%! sx(:,5) = v(:,1); sy(:,5) = 3*sign(v(:,2)).*(sx(:,5)).^2  + v(:,2);
+%! sx(:,6) = cos (2*pi*v(:,1)) + 0.5*(x-0.5);
+%! sy(:,6) = sin (2*pi*v(:,1)) + 0.5*(z-0.5);
+%! sx(:,7) = x + sign(v(:,1)); sy(:,7) = z + sign(v(:,2));
+%! sy      = base (sy);
+%! sx      = base (sx);
+%! # scaled shape
+%! sc  = 1/3;
+%! ssy = (sy-0.5) * sc + 0.5;
 %! n = size (ly,2);
-%! ym = max ([gy(:) ly(:) sy(:)]);
-%! xm = 0;
+%! ym = 1.2;
+%! xm = 0.5;
 %! fmt={'horizontalalignment','center'};
+%! ff = "%! .2f";
 %! figure (1)
 %! for i=1:n
-%!  subplot(3,n,i);
-%!  plot (x, gy(:,i), '.b');
-%!  axis equal
-%!  axis off
-%!  text (xm,ym(1)*1.5,sprintf ("%.1f", dcov (x,gy(:,i))),fmt{:})
+%!   subplot(4,n,i);
+%!   plot (x, gy(:,i), '.b');
+%!   axis tight
+%!   axis off
+%!   text (xm,ym,sprintf (ff, dcov (x,gy(:,i))),fmt{:})
 %!
-%!  subplot(3,n,i+n);
-%!  plot (x, ly(:,i), '.b');
-%!  axis equal
-%!  axis off
-%!  text (xm,ym(2)*1.5,sprintf ("%.1f", dcov (x,ly(:,i))),fmt{:})
+%!   subplot(4,n,i+n);
+%!   plot (x, ly(:,i), '.b');
+%!   axis tight
+%!   axis off
+%!   text (xm,ym,sprintf (ff, dcov (x,ly(:,i))),fmt{:})
 %!
-%!  subplot(3,n,i+2*n);
-%!  plot (x, sy(:,i), '.b');
-%!  axis equal
-%!  axis off
-%!  text (xm,ym(3)*1.5,sprintf ("%.1f", dcov (x,sy(:,i))),fmt{:})
+%!   subplot(4,n,i+2*n);
+%!   plot (sx(:,i), sy(:,i), '.b');
+%!   axis tight
+%!   axis off
+%!   text (xm,ym,sprintf (ff, dcov (sx(:,i),sy(:,i))),fmt{:})
+%!   v = axis ();
+%!   
+%!   subplot(4,n,i+3*n);
+%!   plot (sx(:,i), ssy(:,i), '.b');
+%!   axis (v)
+%!   axis off
+%!   text (xm,ym,sprintf (ff, dcov (sx(:,i),ssy(:,i))),fmt{:})
 %! endfor
-
-
