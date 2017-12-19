@@ -20,7 +20,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{dCor}, @var{dCov}, @var{dVarX}, @var{dVarY}] =} dcov (@var{x}, @var{y}, @var{index}=1)
-## Distance covariance and correlation statistics.
+## Distance correlation, covariance and correlation statistics.
 ##
 ## It returns distace correlation (@var{dCor}), 
 ## distance covariance (@var{dCov}), diatance variace on x (@var{dVarX}) and
@@ -28,10 +28,10 @@
 ##
 ## Reference: https://en.wikipedia.org/wiki/Distance_correlation
 ##
-## @seealso{cov}
+## @seealso{corr, cov}
 ## @end deftypefn
 
-function [dCov, dCor, dVarX, dVarY] = dcov (x,y,index=1.0)
+function [dCor, dCov, dVarX, dVarY] = dcov (x,y,index=1.0)
   %x = abs(x - x.');
   %y = abs(y - y.');
   x = abs (bsxfun (@minus, x, x.'));
@@ -54,7 +54,7 @@ function [dCov, dCor, dVarX, dVarY] = dcov (x,y,index=1.0)
 
   A = Akl (x, index);
   B = Akl (y, index);
-  
+
   dCov  = sqrt (mean (A(:) .* B(:)));
   dVarX = sqrt (mean (A(:).^2) );
   dVarY = sqrt (mean (B(:).^2) );
@@ -69,9 +69,59 @@ function [dCov, dCor, dVarX, dVarY] = dcov (x,y,index=1.0)
 endfunction
 
 function c = Akl (x, index)
+# Double centered distance
         d = x .^ index;
-        m = mean (d, 2);
-        M = mean (d(:));
-        %c = d - m - m.' + M;
-        c = d - bsxfun (@plus, m, m.') + M;
+        rm = mean (d, 2); # row mean
+        gm = mean (d(:)); # grand mean
+        c  = d - bsxfun (@plus, rm, rm.') + gm;
 endfunction
+
+%!demo
+%! x = randn (1e3,1); x = (x- mean(x))./(max(x)-mean(x));
+%! z = randn (1e3,1);
+%! # Linear relations
+%! ly = x.*[1 0.55 0.3 0 -0.3 -0.55 -1];
+%! # Correlated Gaussian
+%! gy =  ly + [0 0.45 0.7 1 0.7 0.45 0].*z;
+%! # Shapes
+%! sx = repmat (x,7);
+%! sy = zeros (size (ly));
+%! sy(:,1) = cos(pi*x) + z;
+%! R =@(d) [cosd(d) sind(d); -sind(d) cosd(d)];
+%! tmp     = R(35) * [x.';z.'];
+%! sx(:,2) = tmp(1,:) - mean (tmp(1,:)); sy(:,2) = tmp(2,:);
+%! tmp     = R(45) * [x.';z.'];
+%! sx(:,3) = tmp(1,:) - mean (tmp(1,:)); sy(:,3) = tmp(2,:);
+%! sy(:,4) = x.^2 + 2*abs(z);
+%! sy(:,5) = x.^2 .* z;
+%! sx(:,6) = cos (pi*x);
+%! sy(:,6) = sin (pi*x);
+%! tf      = [(x>=0  & z>=0) (x<0 & z>=0) (x>=0 & z<0) (x<0 & z<0)];
+%! sy(:,7) = gy(:,4) .* sum((2*tf-1),2);
+%!
+%! n = size (ly,2);
+%! ym = max ([gy(:) ly(:) sy(:)]);
+%! xm = 0;
+%! fmt={'horizontalalignment','center'};
+%! figure (1)
+%! for i=1:n
+%!  subplot(3,n,i);
+%!  plot (x, gy(:,i), '.b');
+%!  axis equal
+%!  axis off
+%!  text (xm,ym(1)*1.5,sprintf ("%.1f", dcov (x,gy(:,i))),fmt{:})
+%!
+%!  subplot(3,n,i+n);
+%!  plot (x, ly(:,i), '.b');
+%!  axis equal
+%!  axis off
+%!  text (xm,ym(2)*1.5,sprintf ("%.1f", dcov (x,ly(:,i))),fmt{:})
+%!
+%!  subplot(3,n,i+2*n);
+%!  plot (x, sy(:,i), '.b');
+%!  axis equal
+%!  axis off
+%!  text (xm,ym(3)*1.5,sprintf ("%.1f", dcov (x,sy(:,i))),fmt{:})
+%! endfor
+
+
