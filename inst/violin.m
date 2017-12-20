@@ -111,7 +111,7 @@ function h = violin (ax, varargin)
   # First argument is not an axis
   if (~ishandle (ax) || ~isscalar (ax))
     if (~old_hold)
-      cla
+      clf
     endif
 
     x  = ax;
@@ -205,27 +205,31 @@ function k = kde(x,r)
 endfunction
 
 function [px py mx] = build_polygon (x, nb, sf, r)
-  N = size (x, 1);
+  N  = size (x, 1);
   mx = mean (x);
   sx = std (x);
-  X = (x - mx ) / sx;
+  X  = (x - mx ) / sx;
 
   [count bin] = hist (X, nb);
-  count /= max (count);
+  count      /= max (count);
 
-  X  = X - bin;
+  Y  = X - bin;
   if isna (r)
     r0 = 1.06 * N^(1/5);
-    r  = sqp (r0, @(r)sumsq (kde(X,r) - count), [], [], 1e-3, 1e2);
+    r  = sqp (r0, @(r)sumsq (kde(Y,r) - count), [], [], 1e-3, 1e2);
   else
     sf = 1;
   endif
+  sig = sf * r;
 
-  v  = kde (X, sf * r).';
+  ## Create violin polygon
+  # smooth tails: extend to 1.83 sigmas, i.e. ~99% of data.
+  xx  = linspace (0, 1.83 * sig, 5);
+  bin = [bin(1)-fliplr(xx) bin bin(end)+xx];
+  py  = [bin; fliplr(bin)].'  * sx + mx;
 
+  v  = kde (X-bin, sig).';
   px = [v -flipud(v)];
-  bin = bin * sx + mx;
-  py = [bin; fliplr(bin)].';
 
 endfunction
 
