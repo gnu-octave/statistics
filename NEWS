@@ -12,6 +12,7 @@ Summary of important user-visible changes for statistics x.x.x:
     Matlab compatibility, or performance:
 
       dcov: returned dcov instead of dcor. added demo.
+      violin: can be used with subplots. violin quality improved.
 
 Summary of important user-visible changes for statistics 1.3.0:
 -------------------------------------------------------------------
