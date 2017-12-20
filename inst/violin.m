@@ -82,6 +82,21 @@
 ## @end defun
 
 function h = violin (ax, varargin)
+
+  old_hold = ishold ();
+  # First argument is not an axis
+  if (~ishandle (ax) || ~isscalar (ax))
+    if (~old_hold)
+      clf
+    endif
+
+    x  = ax;
+    ax = gca ();
+  else
+    x = varargin{1};
+    varargin(1) = [];
+  endif
+
   ######################
   ## Parse parameters ##
   parser = inputParser ();
@@ -107,18 +122,6 @@ function h = violin (ax, varargin)
   width    = res.Width;        # Width of the violins
   clear parser res
   ######################
-  old_hold = ishold ();
-  # First argument is not an axis
-  if (~ishandle (ax) || ~isscalar (ax))
-    if (~old_hold)
-      clf
-    endif
-
-    x  = ax;
-    ax = gca ();
-  else
-    x = varargin{1};
-  endif
 
   ## Make everything a cell for code simplicity
   if (~iscell (x))
