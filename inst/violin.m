@@ -86,10 +86,6 @@ function h = violin (ax, varargin)
   old_hold = ishold ();
   # First argument is not an axis
   if (~ishandle (ax) || ~isscalar (ax))
-    if (~old_hold)
-      clf
-    endif
-
     x  = ax;
     ax = gca ();
   else
