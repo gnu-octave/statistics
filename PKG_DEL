@@ -1,7 +1,12 @@
-## two problems:
+## three problems:
 ## - the directory returned by 'mfilename' must not be added also
 ##   (endless loop)
 ## - 'genpath' of Octave 4.0 includes directories indiscriminately,
 ##    e.g. 'private' directories
-rmpath (fullfile (fileparts (mfilename ("fullpath")),
-                  {"base", "distributions", "models", "tests"}){:})
+## - PKG_ADD (and PKG_DEL?) is run during installation, too, from the
+##   root directory of the package, where no such subdirectories
+## exist.
+if (isdir (fullfile (fileparts (mfilename ("fullpath")), "base")))
+  rmpath (fullfile (fileparts (mfilename ("fullpath")),
+                    {"base", "distributions", "models", "tests"}){:});
+endif
