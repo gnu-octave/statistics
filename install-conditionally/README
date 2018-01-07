@@ -1,0 +1,14 @@
+This directory contains functions currently or previously available in
+core Octave. Of these functions, only those not present in the local
+Octave version will be installed by the package. Under this directory:
+
+Only statistics functions available in some core Octave versions
+should be added. (Functions with different names than (former) core
+Octave functions should be placed under inst/ .)
+
+If functions are added, they should also be added to the file
+utils/functions_to_install.
+
+Newer function versions than contained in core Octave can be
+developed, but this should only be done for functions removed (or
+scheduled for removal) from core Octave.

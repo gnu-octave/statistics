@@ -1,0 +1,8 @@
+## two problems:
+## - the directory returned by 'mfilename' must not be added also
+##   (endless loop)
+## - 'genpath' of Octave 4.0 includes directories indiscriminately,
+##    e.g. 'private' directories
+addpath (fullfile (fileparts (mfilename ("fullpath")),
+                   {"base", "distributions", "models", "tests"}){:})
+
