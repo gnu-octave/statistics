@@ -123,9 +123,9 @@ endfunction
 ##        option implemented.  See code for code to uncomment once it is
 ##        implemented in core.
 ## Test that order when handling strings is by order of appearance
-%!assert (nthargout (1:3, @grp2idx, ["sci"; "oct"; "sci"; "oct"; "oct"]),
+%!xtest assert (nthargout (1:3, @grp2idx, ["sci"; "oct"; "sci"; "oct"; "oct"]),
 %!        {[1; 2; 1; 2; 2] {"sci"; "oct"} ["sci"; "oct"]});
-%!assert (nthargout (1:3, @grp2idx, {"sci"; "oct"; "sci"; "oct"; "oct"}),
+%!xtest assert (nthargout (1:3, @grp2idx, {"sci"; "oct"; "sci"; "oct"; "oct"}),
 %!        {[1; 2; 1; 2; 2] {"sci"; "oct"} {"sci"; "oct"}});
-%!assert (nthargout (1:3, @grp2idx, {"sa" "et" "et" "" "sa"}),
+%!xtest assert (nthargout (1:3, @grp2idx, {"sa" "et" "et" "" "sa"}),
 %!        {[1; 2; 2; NaN; 1] {"sa"; "et"} {"sa"; "et"}})
