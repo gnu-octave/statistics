@@ -56,6 +56,7 @@ function names = caseread (f="")
 endfunction
 
 ## Tests
-%!shared n
+%!shared n, casereadfile
 %! n = ["a  ";"bcd";"ef "];
-%!assert (caseread ("caseread.dat"), n);
+%! casereadfile = file_in_loadpath("test/caseread.dat");
+%!assert (caseread (casereadfile), n);

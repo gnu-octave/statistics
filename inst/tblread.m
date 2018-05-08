@@ -61,37 +61,39 @@ function [data, varnames, casenames] = tblread (f="", d=" ")
 endfunction
 
 ## Tests
-%!shared d, v, c
+%!shared d, v, c, tblreadspacefile, tblreadtabfile
 %! d = [1 2;3 4];
 %! v = ["a ";"bc"];
 %! c = ["de";"f "];
+%! tblreadspacefile = file_in_loadpath("test/tblread-space.dat");
+%! tblreadtabfile = file_in_loadpath("test/tblread-tab.dat");
 %!test
-%! [dt vt ct] = tblread ("tblread-space.dat");
+%! [dt vt ct] = tblread (tblreadspacefile);
 %! assert (dt, d);
 %! assert (vt, v);
 %! assert (ct, c);
 %!test
-%! [dt vt ct] = tblread ("tblread-space.dat", " ");
+%! [dt vt ct] = tblread (tblreadspacefile, " ");
 %! assert (dt, d);
 %! assert (vt, v);
 %! assert (ct, c);
 %!test
-%! [dt vt ct] = tblread ("tblread-space.dat", "space");
+%! [dt vt ct] = tblread (tblreadspacefile, "space");
 %! assert (dt, d);
 %! assert (vt, v);
 %! assert (ct, c);
 %!test
-%! [dt vt ct] = tblread ("tblread-tab.dat", "tab");
+%! [dt vt ct] = tblread (tblreadtabfile, "tab");
 %! assert (dt, d);
 %! assert (vt, v);
 %! assert (ct, c);
 %!test
-%! [dt vt ct] = tblread ("tblread-tab.dat", "\t");
+%! [dt vt ct] = tblread (tblreadtabfile, "\t");
 %! assert (dt, d);
 %! assert (vt, v);
 %! assert (ct, c);
 %!test
-%! [dt vt ct] = tblread ("tblread-tab.dat", '\t');
+%! [dt vt ct] = tblread (tblreadtabfile, '\t');
 %! assert (dt, d);
 %! assert (vt, v);
 %! assert (ct, c);

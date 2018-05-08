@@ -20,11 +20,12 @@ ifndef OCTAVE
 OCTAVE := @OCTAVE@
 endif
 OCTAVE := $(OCTAVE) --no-gui --silent --norc
+CP ?= cp
 
 cond_srcdir := ../install-conditionally
 
 instdir := ../inst
-
+testdir := ../test
 utilsdir := ../utils
 
 crosscompiling := @crosscompiling@
@@ -35,14 +36,19 @@ cond_inst := conditional_installation
 
 .PHONY: all clean
 
-all:
+all: | $(instdir)/test
 	$(OCTAVE) --eval 'addpath ("$(utilsdir)");' \
                   --eval '$(cond_inst) ("$(cond_srcdir)", "$(instdir)", $(crosscompiling));'
+	$(CP) $(testdir)/*.dat $(instdir)/test/
+
+$(instdir)/test:
+	@mkdir -p "$@"
 
 ## remove files corresponding to files under the directory for
 ## conditional installation
 clean:
 	$(RM) `cd $(cond_srcdir) && find . -name '*.m' -printf '$(instdir)/%p '`
+	-$(RM) `cd $(testdir) && find . -name '*.dat' -printf '$(instdir)/data/%p '`
 
 distclean: clean
 	$(RM) config.log config.status
