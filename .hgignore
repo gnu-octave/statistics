@@ -29,3 +29,6 @@ syntax: regexp
 
 # Other text editors often create these
 (^|/)~.*
+
+# target/build directory
+^target$
