@@ -78,11 +78,11 @@ endfunction
 %!shared x,y
 %! x = [-1, 0, 1, 2, Inf];
 %! y = [0, 0, 0.63212055882855778, 0.98168436111126578, 1];
-%!assert (nakacdf (x, ones (1,5), ones (1,5)), y)
-%!assert (nakacdf (x, 1, 1), y)
+%!assert (nakacdf (x, ones (1,5), ones (1,5)), y, eps)
+%!assert (nakacdf (x, 1, 1), y, eps)
 %!assert (nakacdf (x, [1, 1, NaN, 1, 1], 1), [y(1:2), NaN, y(4:5)])
 %!assert (nakacdf (x, 1, [1, 1, NaN, 1, 1]), [y(1:2), NaN, y(4:5)])
-%!assert (nakacdf ([x, NaN], 1, 1), [y, NaN])
+%!assert (nakacdf ([x, NaN], 1, 1), [y, NaN], eps)
 
 ## Test class of input preserved
 %!assert (nakacdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps('single'))
