@@ -72,55 +72,56 @@ endfunction
 
 ## Tests
 ## The defaults
-%!test
+## NOTE: currently commented out as cant run private tests
+%!notest
 %! [d err] = tbl_delim (" ");
 %! assert (d, " ");
 %! assert (err, "");
 ## Named delimiters
-%!test
+%!notest
 %! [d err] = tbl_delim ("space");
 %! assert (d, " ");
 %! assert (err, "");
-%!test
+%!notest
 %! [d err] = tbl_delim ("tab");
 %! assert (d, sprintf ("\t"));
 %! assert (err, "");
-%!test
+%!notest
 %! [d err] = tbl_delim ("comma");
 %! assert (d, ",");
 %! assert (err, "");
-%!test
+%!notest
 %! [d err] = tbl_delim ("semi");
 %! assert (d, ";");
 %! assert (err, "");
-%!test
+%!notest
 %! [d err] = tbl_delim ("bar");
 %! assert (d, "|");
 %! assert (err, "");
 ## An arbitrary character
-%!test
+%!notest
 %! [d err] = tbl_delim ("x");
 %! assert (d, "x");
 %! assert (err, "");
 ## An arbitrary escape string
-%!test
+%!notest
 %! [d err] = tbl_delim ('\r');
 %! assert (d, sprintf ('\r'))
 %! assert (err, "");
 ## Errors
-%!test
+%!notest
 %! [d err] = tbl_delim ("bars");
 %! assert (isnan (d));
 %! assert (! isempty (err));
-%!test
+%!notest
 %! [d err] = tbl_delim ("");
 %! assert (isnan (d));
 %! assert (! isempty (err));
-%!test
+%!notest
 %! [d err] = tbl_delim (5);
 %! assert (isnan (d));
 %! assert (! isempty (err));
-%!test
+%!notest
 %! [d err] = tbl_delim ({"."});
 %! assert (isnan (d));
 %! assert (! isempty (err));
