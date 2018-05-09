@@ -1,3 +1,4 @@
+## Copyright (C) 2018 John Donoghue <john.donoghue@ieee.org>
 ## Copyright (C) 2015 Lachlan Andrew <lachlanbis@gmail.com>
 ##
 ## This program is free software; you can redistribute it and/or modify it under
@@ -85,6 +86,11 @@
 ## @end deftypefn
 
 function obj = fitgmdist(data, k, varargin)
+
+  if nargin < 2 || mod (nargin, 2) == 1
+    print_usage;
+  endif
+
   [~, prop] = parseparams (varargin);
 
   ## defaults for options
@@ -102,7 +108,7 @@ function obj = fitgmdist(data, k, varargin)
   # Remove rows containing NaN / NA
   data = data(!any (isnan (data), 2),:);
 
-  #used for getting the number of samples
+  # used for getting the number of samples
   nRows = rows (data);
   nCols = columns (data);
 
@@ -520,7 +526,7 @@ endfunction
 %!
 %! ## Plot the result
 %! figure
-%! [heights, bins] = hist3([c1; c2]);
+%! [heights, bins] = hist3([C1; C2]);
 %! [xx, yy] = meshgrid(bins{1}, bins{2});
 %! bbins = [xx(:), yy(:)];
 %! contour (reshape (GMModel.pdf (bbins), heights));
