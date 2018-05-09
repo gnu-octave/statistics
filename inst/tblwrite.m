@@ -84,43 +84,43 @@ function x = __makecell__ (x, name)
 endfunction
 
 ## Tests
-%!shared d, v, c
+%!shared d, v, c, tempfilename
 %! d = [1 2;3 4];
 %! v = ["a ";"bc"];
 %! c = ["de";"f "];
+%! tempfilename = tempname;
 %!test
-%! tblwrite (d, v, c, "tblwrite-space.dat");
-%! [dt vt ct] = tblread ("tblwrite-space.dat", " ");
+%! tblwrite (d, v, c, tempfilename);
+%! [dt vt ct] = tblread (tempfilename, " ");
 %! assert (dt, d);
 %! assert (vt, v);
 %! assert (ct, c);
+%! delete (tempfilename);
 %!test
-%! tblwrite (d, v, c, "tblwrite-space.dat", " ");
-%! [dt vt ct] = tblread ("tblwrite-space.dat", " ");
+%! tblwrite (d, v, c, tempfilename, " ");
+%! [dt vt ct] = tblread (tempfilename, " ");
 %! assert (dt, d);
 %! assert (vt, v);
 %! assert (ct, c);
+%! delete (tempfilename);
 %!test
-%! tblwrite (d, v, c, "tblwrite-space.dat", "space");
-%! [dt vt ct] = tblread ("tblwrite-space.dat");
+%! tblwrite (d, v, c, tempfilename, "space");
+%! [dt vt ct] = tblread (tempfilename);
 %! assert (dt, d);
 %! assert (vt, v);
 %! assert (ct, c);
+%! delete (tempfilename);
 %!test
-%! tblwrite (d, v, c, "tblwrite-tab.dat", "tab");
-%! [dt vt ct] = tblread ("tblwrite-tab.dat", "tab");
+%! tblwrite (d, v, c, tempfilename, "tab");
+%! [dt vt ct] = tblread (tempfilename, "tab");
 %! assert (dt, d);
 %! assert (vt, v);
 %! assert (ct, c);
+%! delete (tempfilename);
 %!test
-%! tblwrite (d, v, c, "tblwrite-tab.dat", "\t");
-%! [dt vt ct] = tblread ("tblwrite-tab.dat", "\t");
+%! tblwrite (d, v, c, tempfilename, "\t");
+%! [dt vt ct] = tblread (tempfilename, "\t");
 %! assert (dt, d);
 %! assert (vt, v);
 %! assert (ct, c);
-%!test
-%! tblwrite (d, v, c, "tblwrite-tab.dat", '\t');
-%! [dt vt ct] = tblread ("tblwrite-tab.dat", '\t');
-%! assert (dt, d);
-%! assert (vt, v);
-%! assert (ct, c);
+%! delete (tempfilename);
