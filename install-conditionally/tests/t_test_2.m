@@ -55,8 +55,14 @@ function [pval, t, df] = t_test_2 (x, y, alt)
   mu_x = sum (x) / n_x;
   mu_y = sum (y) / n_y;
   v    = sumsq (x - mu_x) + sumsq (y - mu_y);
-  t    = (mu_x - mu_y) * sqrt ((n_x * n_y * df) / (v * (n_x + n_y)));
-  cdf  = tcdf (t, df);
+  if (v != 0)
+    t    = (mu_x - mu_y) * sqrt ((n_x * n_y * df) / (v * (n_x + n_y)));
+    cdf  = tcdf (t, df);
+  elseif (mu_x == mu_y)
+    t    = NaN;
+  else
+    t    = Inf;
+  endif
 
   if (nargin == 2)
     alt = "!=";
@@ -66,11 +72,23 @@ function [pval, t, df] = t_test_2 (x, y, alt)
     error ("t_test_2: ALT must be a string");
   endif
   if (strcmp (alt, "!=") || strcmp (alt, "<>"))
-    pval = 2 * min (cdf, 1 - cdf);
+    if (v != 0) 
+      pval = 2 * min (cdf, 1 - cdf);
+    else
+      pval = (mu_x == mu_y);
+    endif
   elseif (strcmp (alt, ">"))
-    pval = 1 - cdf;
+    if (v != 0)
+      pval = 1 - cdf;
+    else
+      pval = (mu_x <= mu_y);
+    endif
   elseif (strcmp (alt, "<"))
-    pval = cdf;
+    if (v != 0) 
+      pval = cdf;
+    else
+      pval = (mu_x >= mu_y);
+    endif
   else
     error ("t_test_2: option %s not recognized", alt);
   endif

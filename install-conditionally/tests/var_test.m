@@ -51,9 +51,15 @@ function [pval, f, df_num, df_den] = var_test (x, y, alt)
 
   df_num = length (x) - 1;
   df_den = length (y) - 1;
-  f      = var (x) / var (y);
-  cdf    = fcdf (f, df_num, df_den);
-
+  if (var(y) != 0)
+    f      = var (x) / var (y);
+    cdf    = fcdf (f, df_num, df_den);
+  elseif (var(x) == 0 )
+    f      = NaN;
+  else
+    f      = Inf;
+  endif
+  
   if (nargin == 2)
     alt = "!=";
   endif
@@ -62,11 +68,23 @@ function [pval, f, df_num, df_den] = var_test (x, y, alt)
     error ("var_test: ALT must be a string");
   endif
   if (strcmp (alt, "!=") || strcmp (alt, "<>"))
-    pval = 2 * min (cdf, 1 - cdf);
+    if (var(y) != 0)
+      pval = 2 * min (cdf, 1 - cdf);
+    else
+      pval = (var(x) == 0);
+    endif
   elseif (strcmp (alt, ">"))
-    pval = 1 - cdf;
+    if (var(y) != 0)
+      pval = 1 - cdf;
+    else
+      pval = (var(x) <= 0);
+    endif
   elseif (strcmp (alt, "<"))
-    pval = cdf;
+    if (var(y) != 0)
+      pval = cdf;
+    else
+      pval = (var(x) >= 0);
+    endif
   else
     error ("var_test: option %s not recognized", alt);
   endif

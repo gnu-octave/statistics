@@ -82,12 +82,23 @@ function [pval, f, df_b, df_w] = anova (y, g)
   SSB = sum (group_count .* (group_mean - total_mean) .^ 2);
   SST = sumsq (reshape (y, n, 1) - total_mean);
   SSW = SST - SSB;
+  if (SSW < 0) # machine error if SSB == SSW
+    SSW = 0;
+  endif
   df_b = k - 1;
   df_w = n - k;
   v_b = SSB / df_b;
   v_w = SSW / df_w;
-  f = v_b / v_w;
-  pval = 1 - fcdf (f, df_b, df_w);
+  if (v_w != 0)
+    f = v_b / v_w;
+    pval = 1 - fcdf (f, df_b, df_w);
+  elseif (v_b == 0)
+    f = NaN;
+    pval = 1;
+  else
+    f = Inf;
+    pval = 0;
+  endif
 
   if (nargout == 0)
     ## This eventually needs to be done more cleanly ...
