@@ -1,3 +1,4 @@
+## Copyright (C) 2018 John Donoghue
 ## Copyright (C) 1995-2017 Kurt Hornik
 ##
 ## This program is free software: you can redistribute it and/or
@@ -67,9 +68,9 @@ function [pval, b, n] = sign_test (x, y, alt)
   endif
   if (strcmp (alt, "!=") || strcmp (alt, "<>"))
     pval = 2 * min (cdf, 1 - cdf);
-  elseif (strcmp (alt, ">"))
-    pval = 1 - cdf;
   elseif (strcmp (alt, "<"))
+    pval = 1 - cdf;
+  elseif (strcmp (alt, ">"))
     pval = cdf;
   else
     error ("sign_test: option %s not recognized", alt);
@@ -80,3 +81,10 @@ function [pval, b, n] = sign_test (x, y, alt)
   endif
 
 endfunction
+
+%!error sign_test ()
+%!error sign_test ([])
+%!assert (sign_test (zeros(1,10), ones(1,10)), sign_test (zeros(1,10), ones(1,10), "!="))
+%!assert (sign_test (zeros(1,10), ones(1,10)), sign_test (zeros(1,10), ones(1,10), "<>"))
+%!assert (sign_test (ones(1,10), zeros(1,10), '<'), 0)
+%!assert (sign_test (ones(1,10), zeros(1,10), '>'), 1)
