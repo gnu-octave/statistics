@@ -150,7 +150,7 @@ endfunction
 %!assert(COEFF,m(1:2,:),10*eps);
 %!assert(SCORE,-m,10*eps);
 %!assert(latent,[1.5;.5],10*eps);
-%!assert(tsquare,[2;2;2],10*eps);
+%!assert(tsquare,[4;4;4]/3,10*eps);
 
 %!test
 %! x=x';
@@ -164,7 +164,7 @@ endfunction
 %!assert(SCORE(:,1),-m(1:2,1),10*eps);
 %!assert(SCORE(:,2:3),zeros(2),10*eps);
 %!assert(latent,[1;0;0],10*eps);
-%!assert(tsquare,[1;1],10*eps)
+%!assert(tsquare,[0.5;0.5],10*eps)
 
 %!test
 %! [COEFF,SCORE,latent,tsquare] = princomp(x, "econ");
@@ -172,5 +172,5 @@ endfunction
 %!assert(COEFF,m(:, 1),10*eps);
 %!assert(SCORE,-m(1:2,1),10*eps);
 %!assert(latent,[1],10*eps);
-%!assert(tsquare,[1;1],10*eps)
+%!assert(tsquare,[0.5;0.5],10*eps)
 
