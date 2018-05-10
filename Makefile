@@ -195,7 +195,7 @@ clean-install:
 ## Recipes for testing purposes
 ##
 
-.PHONY: run doctest check
+.PHONY: run doctest check clean-check
 
 ## Start an Octave session with the package directories on the path for
 ## interactice test of development sources.
@@ -211,11 +211,16 @@ doctest: $(install_stamp)
 
 
 ## Test package.
-octave_test_commands = \
+orig_octave_test_commands = \
 ' dirs = {"inst", "src"}; \
   dirs(cellfun (@ (x) ! isdir (x), dirs)) = []; \
   if (isempty (dirs)) error ("no \"inst\" or \"src\" directory"); exit (1); \
     else __run_test_suite__ (dirs, {}); endif '
+octave_test_commands = \
+' pkgs = pkg("list", "$(package)"); \
+  cd ("$(target_dir)/"); \
+  dirs = {sprintf(".installation/%s-%s", pkgs{1}.name, pkgs{1}.version)}; \
+  __run_test_suite__ (dirs, {}); '
 ## the following works, too, but provides no overall summary output as
 ## __run_test_suite__ does:
 ##
@@ -223,6 +228,9 @@ octave_test_commands = \
 check: $(install_stamp)
 	$(run_in_place) --eval $(octave_test_commands)
 
+clean-check:
+	@echo "## Removing fntests.log ..."
+	test -e $(target_dir)/fntests.log && rm -f $(target_dir)/fntests.log || true
 
 ##
 ## CLEAN
@@ -230,7 +238,7 @@ check: $(install_stamp)
 
 .PHONY: clean
 
-clean: clean-tarballs clean-unpacked-release clean-install
+clean: clean-tarballs clean-unpacked-release clean-install clean-check
 	@echo "## Removing target directory (if empty)..."
 	-rmdir $(target_dir)
 	@echo
