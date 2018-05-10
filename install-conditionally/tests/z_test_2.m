@@ -90,7 +90,7 @@ endfunction
 %!test
 %! ## Two-sided (also the default option)
 %! x = randn (100, 1); v_x = 2; x = v_x * x;
-%! [pval, z] = z_test_2 (x, x, v_x, v_x);
+%! [pval, zval] = z_test_2 (x, x, v_x, v_x);
 %! zval_exp = 0; pval_exp = 1.0;
 %! assert (zval, zval_exp, eps);
 %! assert (pval, pval_exp, eps);
@@ -111,7 +111,7 @@ endfunction
 
 %!test
 %! x = randn (100, 1); v_x = 2; x = v_x * x;
-%! [pval, z] = z_test_2 (x, x, v_x, v_x, ">");
+%! [pval, zval] = z_test_2 (x, x, v_x, v_x, ">");
 %! zval_exp = 0; pval_exp = 0.5;
 %! assert (zval, zval_exp, eps);
 %! assert (pval, pval_exp, eps);
