@@ -1,4 +1,5 @@
 ## Copyright (C) 2007-2017 David Bateman
+## Copyright (C) 2017 Nicholas R. Jankowski
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -55,6 +56,40 @@ function [m, f, c] = mode (x, dim)
     endif
   endif
 
+  if (isempty (x))
+    %% codepath for Matlab compatibility. empty x produces NaN output, but 
+    %% m f and c shape depends on size of x.  
+    if ((nargin == 1) && (nd == 2) && (sz == [0 0]))
+      f = 0; %seems to always be a double even if x is single
+      if (isa (x, "single"))
+        m = single (NaN);
+        c = {(single (NaN (0, 1)))};
+      else
+        m = NaN;
+        c = {(NaN (0, 1))}; 
+      endif
+    else
+       if (nargin == 2)
+         sz(dim) = 1;
+       else
+         sz (find ((sz ~= 1), 1)) = 1;
+       endif
+      f = zeros (sz); %seems to always be a double even if x is single
+      if (isa (x, "single"))
+        m = single (NaN (sz));
+        c = cell (sz);
+        c(:) = {(single (NaN (1, 0)))};
+      else
+        m = NaN (sz);
+        c = cell (sz);
+        c(:) = {(NaN (1, 0))};
+      endif
+    endif
+  
+    return
+
+  endif
+
   if (dim > nd)
     ## Special case of mode over non-existent dimension.
     m = x;
@@ -107,14 +142,14 @@ endfunction
 
 %!test
 %! [m, f, c] = mode (toeplitz (1:5));
-%! assert (m, [1,2,2,2,1]);
-%! assert (f, [1,2,2,2,1]);
-%! assert (c, {[1;2;3;4;5],[2],[2;3],[2],[1;2;3;4;5]});
+%! assert (m, [1, 2, 2, 2, 1]);
+%! assert (f, [1, 2, 2, 2, 1]);
+%! assert (c, {[1; 2; 3; 4; 5], [2], [2; 3], [2], [1; 2; 3; 4; 5]});
 %!test
 %! [m, f, c] = mode (toeplitz (1:5), 2);
-%! assert (m, [1;2;2;2;1]);
-%! assert (f, [1;2;2;2;1]);
-%! assert (c, {[1;2;3;4;5];[2];[2;3];[2];[1;2;3;4;5]});
+%! assert (m, [1; 2; 2; 2; 1]);
+%! assert (f, [1; 2; 2; 2; 1]);
+%! assert (c, {[1; 2; 3; 4; 5]; [2]; [2; 3]; [2]; [1; 2; 3; 4; 5]});
 %!test
 %! a = sprandn (32, 32, 0.05);
 %! sp0 = sparse (0);
@@ -123,24 +158,24 @@ endfunction
 %! assert (m, sparse (m2));
 %! assert (f, sparse (f2));
 %! c_exp(1:length (a)) = { sp0 };
-%! assert (c ,c_exp);
-%! assert (c2,c_exp);
+%! assert (c , c_exp);
+%! assert (c2, c_exp);
 
-%!assert (mode ([2,3,1,2,3,4],1),[2,3,1,2,3,4])
-%!assert (mode ([2,3,1,2,3,4],2),2)
-%!assert (mode ([2,3,1,2,3,4]),2)
-%!assert (mode (single ([2,3,1,2,3,4])), single (2))
-%!assert (mode (int8 ([2,3,1,2,3,4])), int8 (2))
+%!assert (mode ([2, 3, 1, 2, 3, 4] ,1), [2, 3, 1, 2, 3, 4])
+%!assert (mode ([2, 3, 1, 2, 3, 4], 2), 2)
+%!assert (mode ([2, 3, 1, 2, 3, 4]), 2)
+%!assert (mode (single ([2, 3, 1, 2, 3, 4])), single (2))
+%!assert (mode (int8 ([2, 3, 1, 2, 3, 4])), int8 (2))
 
-%!assert (mode ([2;3;1;2;3;4],1),2)
-%!assert (mode ([2;3;1;2;3;4],2),[2;3;1;2;3;4])
-%!assert (mode ([2;3;1;2;3;4]),2)
+%!assert (mode ([2; 3; 1; 2; 3; 4], 1), 2)
+%!assert (mode ([2; 3; 1; 2; 3; 4], 2), [2; 3; 1; 2; 3; 4])
+%!assert (mode ([2; 3; 1; 2; 3; 4]), 2)
 
 %!test
 %! x = magic (3);
 %! [m, f, c] = mode (x, 3);
 %! assert (m, x);
-%! assert (f, ones (3,3));
+%! assert (f, ones (3, 3));
 %! assert (c, num2cell (x));
 
 %!shared x
@@ -179,3 +214,234 @@ endfunction
 %!error <DIM must be an integer> mode (1, ones (2,2))
 %!error <DIM must be an integer> mode (1, 1.5)
 %!error <DIM must be .* a valid dimension> mode (1, 0)
+
+## Tests for empty input Matlab compatibility (bug #48690)
+%!test
+%! [m, f, c] = mode ([]);
+%! assert (m, NaN);
+%! assert (f, 0);
+%! assert (c, {(NaN (0, 1))});
+%!test
+%! [m, f, c] = mode (single ([]));
+%! assert (m, single (NaN));
+%! assert (f, double (0));
+%! assert (c, {(single (NaN (0, 1)))});
+%!test
+%! [m, f, c] = mode (ones (0, 1));
+%! assert (m, NaN);
+%! assert (f, 0);
+%! assert (c, {(NaN (1, 0))});
+%!test
+%! [m, f, c] = mode (ones (1, 0));
+%! assert (m, NaN);
+%! assert (f, 0);
+%! assert (c, {(NaN (1, 0))});
+%!test
+%! [m, f, c] = mode (single (ones (1, 0)));
+%! assert (m, single (NaN));
+%! assert (f, double (0));
+%! assert (c, {(single (NaN (1, 0)))});
+%!test
+%! [m, f, c] = mode (ones (2, 0));
+%! assert (m, NaN (1, 0));
+%! assert (f, zeros (1, 0));
+%! assert (c, cell (1, 0));
+%!test
+%! [m, f, c] = mode (ones (0, 2));
+%! assert (m, NaN (1, 2));
+%! assert (f, zeros (1, 2));
+%! assert (c, {(NaN (1, 0)),(NaN (1, 0))});
+%!test
+%! [m, f, c] = mode (single (ones (2, 0)));
+%! assert (m, single (NaN (1, 0)));
+%! assert (f, zeros (1, 0));
+%! assert (c, cell (1, 0));
+%!test
+%! [m, f, c] = mode (ones (0, 0, 1, 0));
+%! assert (m, NaN (1, 0, 1, 0));
+%! assert (f, zeros (1, 0, 1, 0));
+%! assert (c, cell (1, 0, 1, 0));
+%!test
+%! [m, f, c] = mode (ones (1, 1, 1, 0));
+%! assert (m, NaN (1, 1));
+%! assert (f, zeros (1, 1));
+%! assert (c, {(NaN (1, 0))});
+
+%!assert (mode (ones (0, 0, 0, 0)), NaN (1, 0, 0, 0))
+%!assert (mode (ones (0, 0, 0, 1)), NaN (1, 0, 0, 1))
+%!assert (mode (ones (0, 0, 0, 2)), NaN (1, 0, 0, 2))
+%!assert (mode (ones (0, 0, 1, 0)), NaN (1, 0, 1, 0))
+%!assert (mode (ones (0, 0, 1, 1)), NaN (1, 1, 1, 1))
+%!assert (mode (ones (0, 0, 1, 2)), NaN (1, 0, 1, 2))
+%!assert (mode (ones (0, 0, 2, 0)), NaN (1, 0, 2, 0))
+%!assert (mode (ones (0, 0, 2, 1)), NaN (1, 0, 2, 1))
+%!assert (mode (ones (0, 0, 2, 2)), NaN (1, 0, 2, 2))
+%!assert (mode (ones (0, 1, 0, 0)), NaN (1, 1, 0, 0))
+%!assert (mode (ones (0, 1, 0, 1)), NaN (1, 1, 0, 1))
+%!assert (mode (ones (0, 1, 0, 2)), NaN (1, 1, 0, 2))
+%!assert (mode (ones (0, 1, 1, 0)), NaN (1, 1, 1, 0))
+%!assert (mode (ones (0, 1, 1, 1)), NaN (1, 1, 1, 1))
+%!assert (mode (ones (0, 1, 1, 2)), NaN (1, 1, 1, 2))
+%!assert (mode (ones (0, 1, 2, 0)), NaN (1, 1, 2, 0))
+%!assert (mode (ones (0, 1, 2, 1)), NaN (1, 1, 2, 1))
+%!assert (mode (ones (0, 1, 2, 2)), NaN (1, 1, 2, 2))
+%!assert (mode (ones (0, 2, 0, 0)), NaN (1, 2, 0, 0))
+%!assert (mode (ones (0, 2, 0, 1)), NaN (1, 2, 0, 1))
+%!assert (mode (ones (0, 2, 0, 2)), NaN (1, 2, 0, 2))
+%!assert (mode (ones (0, 2, 1, 0)), NaN (1, 2, 1, 0))
+%!assert (mode (ones (0, 2, 1, 1)), NaN (1, 2, 1, 1))
+%!assert (mode (ones (0, 2, 1, 2)), NaN (1, 2, 1, 2))
+%!assert (mode (ones (0, 2, 2, 0)), NaN (1, 2, 2, 0))
+%!assert (mode (ones (0, 2, 2, 1)), NaN (1, 2, 2, 1))
+%!assert (mode (ones (0, 2, 2, 2)), NaN (1, 2, 2, 2))
+%!assert (mode (ones (1, 0, 0, 0)), NaN (1, 1, 0, 0))
+%!assert (mode (ones (1, 0, 0, 1)), NaN (1, 1, 0, 1))
+%!assert (mode (ones (1, 0, 0, 2)), NaN (1, 1, 0, 2))
+%!assert (mode (ones (1, 0, 1, 0)), NaN (1, 1, 1, 0))
+%!assert (mode (ones (1, 0, 1, 1)), NaN (1, 1, 1, 1))
+%!assert (mode (ones (1, 0, 1, 2)), NaN (1, 1, 1, 2))
+%!assert (mode (ones (1, 0, 2, 0)), NaN (1, 1, 2, 0))
+%!assert (mode (ones (1, 0, 2, 1)), NaN (1, 1, 2, 1))
+%!assert (mode (ones (1, 0, 2, 2)), NaN (1, 1, 2, 2))
+%!assert (mode (ones (1, 1, 0, 0)), NaN (1, 1, 1, 0))
+%!assert (mode (ones (1, 1, 0, 1)), NaN (1, 1, 1, 1))
+%!assert (mode (ones (1, 1, 0, 2)), NaN (1, 1, 1, 2))
+%!assert (mode (ones (1, 1, 1, 0)), NaN (1, 1, 1, 1))
+%!assert (mode (ones (1, 1, 2, 0)), NaN (1, 1, 1, 0))
+%!assert (mode (ones (1, 2, 0, 0)), NaN (1, 1, 0, 0))
+%!assert (mode (ones (1, 2, 0, 1)), NaN (1, 1, 0, 1))
+%!assert (mode (ones (1, 2, 0, 2)), NaN (1, 1, 0, 2))
+%!assert (mode (ones (1, 2, 1, 0)), NaN (1, 1, 1, 0))
+%!assert (mode (ones (1, 2, 2, 0)), NaN (1, 1, 2, 0))
+%!assert (mode (ones (2, 0, 0, 0)), NaN (1, 0, 0, 0))
+%!assert (mode (ones (2, 0, 0, 1)), NaN (1, 0, 0, 1))
+%!assert (mode (ones (2, 0, 0, 2)), NaN (1, 0, 0, 2))
+%!assert (mode (ones (2, 0, 1, 0)), NaN (1, 0, 1, 0))
+%!assert (mode (ones (2, 0, 1, 1)), NaN (1, 0, 1, 1))
+%!assert (mode (ones (2, 0, 1, 2)), NaN (1, 0, 1, 2))
+%!assert (mode (ones (2, 0, 2, 0)), NaN (1, 0, 2, 0))
+%!assert (mode (ones (2, 0, 2, 1)), NaN (1, 0, 2, 1))
+%!assert (mode (ones (2, 0, 2, 2)), NaN (1, 0, 2, 2))
+%!assert (mode (ones (2, 1, 0, 0)), NaN (1, 1, 0, 0))
+%!assert (mode (ones (2, 1, 0, 1)), NaN (1, 1, 0, 1))
+%!assert (mode (ones (2, 1, 0, 2)), NaN (1, 1, 0, 2))
+%!assert (mode (ones (2, 1, 1, 0)), NaN (1, 1, 1, 0))
+%!assert (mode (ones (2, 1, 2, 0)), NaN (1, 1, 2, 0))
+%!assert (mode (ones (2, 2, 0, 0)), NaN (1, 2, 0, 0))
+%!assert (mode (ones (2, 2, 0, 1)), NaN (1, 2, 0, 1))
+%!assert (mode (ones (2, 2, 0, 2)), NaN (1, 2, 0, 2))
+%!assert (mode (ones (2, 2, 1, 0)), NaN (1, 2, 1, 0))
+%!assert (mode (ones (2, 2, 2, 0)), NaN (1, 2, 2, 0))
+%!assert (mode (ones (1, 1, 0, 0, 0)), NaN (1, 1, 1, 0, 0))
+%!assert (mode (ones (1, 1, 1, 1, 0)), NaN (1, 1, 1, 1, 1))
+%!assert (mode (ones (2, 1, 1, 1, 0)), NaN (1, 1, 1, 1, 0))
+%!assert (mode (ones (1, 2, 1, 1, 0)), NaN (1, 1, 1, 1, 0))
+
+## Tests for empty input with DIM call
+%!test
+%! [m, f, c] = mode ([], 1);
+%! assert (m, NaN (1,0));
+%! assert (f, zeros (1,0));
+%! assert (c, cell (1,0));
+
+%!test
+%! [m, f, c] = mode ([], 2);
+%! assert (m, NaN (0,1));
+%! assert (f, zeros (0,1));
+%! assert (c, cell (0,1));
+
+%!test
+%! [m, f, c] = mode ([], 3);
+%! assert (m, []);
+%! assert (f, []);
+%! assert (c, {});
+
+%!test
+%! [m, f, c] = mode (single([]), 1);
+%! assert (m, single (NaN (1,0)));
+%! assert (f, double (zeros (1,0)));
+%! assert (c, cell (1,0));
+
+%!test
+%! [m, f, c] = mode (single([]), 2);
+%! assert (m, single (NaN (0,1)));
+%! assert (f, double (zeros (0,1)));
+%! assert (c, cell (0,1));
+
+%!test
+%! [m, f, c] = mode (single([]), 3);
+%! assert (m, single([]));
+%! assert (f, []);
+%! assert (c, {});
+
+%!test
+%! [m, f, c] = mode (ones(1,0), 1);
+%! assert (m, NaN (1,0));
+%! assert (f, zeros (1,0));
+%! assert (c, cell (1,0));
+
+%!test
+%! [m, f, c] = mode (ones(1,0), 2);
+%! assert (m, NaN);
+%! assert (f, 0);
+%! assert (c, {(NaN (1,0))});
+
+%!test
+%! [m, f, c] = mode (ones(1,0), 3);
+%! assert (m, NaN (1,0));
+%! assert (f, zeros (1,0));
+%! assert (c, cell (1,0));
+
+%!test
+%! [m, f, c] = mode (ones(0,1), 1);
+%! assert (m, NaN);
+%! assert (f, 0);
+%! assert (c, {(NaN (1,0))});
+
+%!test
+%! [m, f, c] = mode (ones(0,1), 2);
+%! assert (m, NaN (0,1));
+%! assert (f, zeros (0,1));
+%! assert (c, cell (0,1));
+
+%!test
+%! [m, f, c] = mode (ones(0,1), 3);
+%! assert (m, NaN (0,1));
+%! assert (f, zeros (0,1));
+%! assert (c, cell (0,1));
+
+%!test
+%! [m, f, c] = mode (ones(0,0,1), 1);
+%! assert (m, NaN (1,0));
+%! assert (f, zeros (1,0));
+%! assert (c, cell (1,0));
+
+%!test
+%! [m, f, c] = mode (ones(0,0,1), 2);
+%! assert (m, NaN (0,1));
+%! assert (f, zeros (0,1));
+%! assert (c, cell (0,1));
+
+%!test
+%! [m, f, c] = mode (ones(0,0,1), 3);
+%! assert (m, []);
+%! assert (f, []);
+%! assert (c, {});
+
+%!test
+%! [m, f, c] = mode (ones(1,0,1), 1);
+%! assert (m, NaN (1,0));
+%! assert (f, zeros (1,0));
+%! assert (c, cell (1,0));
+
+%!test
+%! [m, f, c] = mode (ones(1,0,1), 2);
+%! assert (m, NaN);
+%! assert (f, 0);
+%! assert (c, {(NaN (1,0))});
+
+%!test
+%! [m, f, c] = mode (ones(1,0,1), 3);
+%! assert (m, NaN (1,0));
+%! assert (f, zeros (1,0));
+%! assert (c, cell (1,0));

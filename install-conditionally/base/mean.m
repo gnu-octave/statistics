@@ -64,7 +64,7 @@
 ## Author: KH <Kurt.Hornik@wu-wien.ac.at>
 ## Description: Compute arithmetic, geometric, and harmonic mean
 
-function y = mean (x, opt1, opt2)
+function retval = mean (x, opt1, opt2)
 
   if (nargin < 1 || nargin > 3)
     print_usage ();
@@ -113,17 +113,36 @@ function y = mean (x, opt1, opt2)
   endif
 
   n = size (x, dim);
+  
+  if (isempty (x))
+    %% codepath for Matlab compatibility. empty x produces NaN output, but 
+    %% for ndim > 2, output depends on size of x and whether DIM is set.  
+    if ((nd == 2) && (max (sz) < 2) && need_dim)
+      retval = NaN;
+    else
+      if (~need_dim)
+        sz(dim) = 1;
+      else  
+        sz (find ((sz ~= 1), 1)) = 1;
+      endif  
+      retval = NaN (sz);
+    endif
 
-  if (strcmp (opt, "a"))
-    y = sum (x, dim) / n;
+    if (isa (x, "single"))
+      retval = single (retval);  
+    endif
+ 
+  elseif (strcmp (opt, "a"))
+    retval = sum (x, dim) / n;
+
   elseif (strcmp (opt, "g"))
     if (all (x(:) >= 0))
-      y = exp (sum (log (x), dim) ./ n);
+      retval = exp (sum (log (x), dim) ./ n);
     else
       error ("mean: X must not contain any negative values");
     endif
   elseif (strcmp (opt, "h"))
-    y = n ./ sum (1 ./ x, dim);
+    retval = n ./ sum (1 ./ x, dim);
   else
     error ("mean: option '%s' not recognized", opt);
   endif
@@ -140,7 +159,7 @@ endfunction
 %! assert (mean (z), [0, 10]);
 
 ## Test small numbers
-%!assert (mean (repmat (0.1,1,1000), "g"), 0.1, 20*eps)
+%!assert (mean (repmat (0.1, 1, 1000), "g"), 0.1, 20*eps)
 
 %!assert (mean (magic (3), 1), [5, 5, 5])
 %!assert (mean (magic (3), 2), [5; 5; 5])
@@ -150,12 +169,96 @@ endfunction
 %!assert (mean (single ([1 0 1 1])), single (0.75))
 %!assert (mean ([1 2], 3), [1 2])
 
+##tests for empty input Matlab compatibility (bug #48690)
+%!assert (mean ([]), NaN)
+%!assert (mean (single([])), single(NaN))
+%!assert (mean (ones (0, 0, 0, 0)), NaN (1, 0, 0, 0))
+%!assert (mean (ones (0, 0, 0, 1)), NaN (1, 0, 0, 1))
+%!assert (mean (ones (0, 0, 0, 2)), NaN (1, 0, 0, 2))
+%!assert (mean (ones (0, 0, 1, 0)), NaN (1, 0, 1, 0))
+%!assert (mean (ones (0, 0, 1, 1)), NaN (1, 1, 1, 1))
+%!assert (mean (ones (0, 0, 1, 2)), NaN (1, 0, 1, 2))
+%!assert (mean (ones (0, 0, 2, 0)), NaN (1, 0, 2, 0))
+%!assert (mean (ones (0, 0, 2, 1)), NaN (1, 0, 2, 1))
+%!assert (mean (ones (0, 0, 2, 2)), NaN (1, 0, 2, 2))
+%!assert (mean (ones (0, 1, 0, 0)), NaN (1, 1, 0, 0))
+%!assert (mean (ones (0, 1, 0, 1)), NaN (1, 1, 0, 1))
+%!assert (mean (ones (0, 1, 0, 2)), NaN (1, 1, 0, 2))
+%!assert (mean (ones (0, 1, 1, 0)), NaN (1, 1, 1, 0))
+%!assert (mean (ones (0, 1, 1, 1)), NaN (1, 1, 1, 1))
+%!assert (mean (ones (0, 1, 1, 2)), NaN (1, 1, 1, 2))
+%!assert (mean (ones (0, 1, 2, 0)), NaN (1, 1, 2, 0))
+%!assert (mean (ones (0, 1, 2, 1)), NaN (1, 1, 2, 1))
+%!assert (mean (ones (0, 1, 2, 2)), NaN (1, 1, 2, 2))
+%!assert (mean (ones (0, 2, 0, 0)), NaN (1, 2, 0, 0))
+%!assert (mean (ones (0, 2, 0, 1)), NaN (1, 2, 0, 1))
+%!assert (mean (ones (0, 2, 0, 2)), NaN (1, 2, 0, 2))
+%!assert (mean (ones (0, 2, 1, 0)), NaN (1, 2, 1, 0))
+%!assert (mean (ones (0, 2, 1, 1)), NaN (1, 2, 1, 1))
+%!assert (mean (ones (0, 2, 1, 2)), NaN (1, 2, 1, 2))
+%!assert (mean (ones (0, 2, 2, 0)), NaN (1, 2, 2, 0))
+%!assert (mean (ones (0, 2, 2, 1)), NaN (1, 2, 2, 1))
+%!assert (mean (ones (0, 2, 2, 2)), NaN (1, 2, 2, 2))
+%!assert (mean (ones (1, 0, 0, 0)), NaN (1, 1, 0, 0))
+%!assert (mean (ones (1, 0, 0, 1)), NaN (1, 1, 0, 1))
+%!assert (mean (ones (1, 0, 0, 2)), NaN (1, 1, 0, 2))
+%!assert (mean (ones (1, 0, 1, 0)), NaN (1, 1, 1, 0))
+%!assert (mean (ones (1, 0, 1, 1)), NaN (1, 1, 1, 1))
+%!assert (mean (ones (1, 0, 1, 2)), NaN (1, 1, 1, 2))
+%!assert (mean (ones (1, 0, 2, 0)), NaN (1, 1, 2, 0))
+%!assert (mean (ones (1, 0, 2, 1)), NaN (1, 1, 2, 1))
+%!assert (mean (ones (1, 0, 2, 2)), NaN (1, 1, 2, 2))
+%!assert (mean (ones (1, 1, 0, 0)), NaN (1, 1, 1, 0))
+%!assert (mean (ones (1, 1, 0, 1)), NaN (1, 1, 1, 1))
+%!assert (mean (ones (1, 1, 0, 2)), NaN (1, 1, 1, 2))
+%!assert (mean (ones (1, 1, 1, 0)), NaN (1, 1, 1, 1))
+%!assert (mean (ones (1, 1, 2, 0)), NaN (1, 1, 1, 0))
+%!assert (mean (ones (1, 2, 0, 0)), NaN (1, 1, 0, 0))
+%!assert (mean (ones (1, 2, 0, 1)), NaN (1, 1, 0, 1))
+%!assert (mean (ones (1, 2, 0, 2)), NaN (1, 1, 0, 2))
+%!assert (mean (ones (1, 2, 1, 0)), NaN (1, 1, 1, 0))
+%!assert (mean (ones (1, 2, 2, 0)), NaN (1, 1, 2, 0))
+%!assert (mean (ones (2, 0, 0, 0)), NaN (1, 0, 0, 0))
+%!assert (mean (ones (2, 0, 0, 1)), NaN (1, 0, 0, 1))
+%!assert (mean (ones (2, 0, 0, 2)), NaN (1, 0, 0, 2))
+%!assert (mean (ones (2, 0, 1, 0)), NaN (1, 0, 1, 0))
+%!assert (mean (ones (2, 0, 1, 1)), NaN (1, 0, 1, 1))
+%!assert (mean (ones (2, 0, 1, 2)), NaN (1, 0, 1, 2))
+%!assert (mean (ones (2, 0, 2, 0)), NaN (1, 0, 2, 0))
+%!assert (mean (ones (2, 0, 2, 1)), NaN (1, 0, 2, 1))
+%!assert (mean (ones (2, 0, 2, 2)), NaN (1, 0, 2, 2))
+%!assert (mean (ones (2, 1, 0, 0)), NaN (1, 1, 0, 0))
+%!assert (mean (ones (2, 1, 0, 1)), NaN (1, 1, 0, 1))
+%!assert (mean (ones (2, 1, 0, 2)), NaN (1, 1, 0, 2))
+%!assert (mean (ones (2, 1, 1, 0)), NaN (1, 1, 1, 0))
+%!assert (mean (ones (2, 1, 2, 0)), NaN (1, 1, 2, 0))
+%!assert (mean (ones (2, 2, 0, 0)), NaN (1, 2, 0, 0))
+%!assert (mean (ones (2, 2, 0, 1)), NaN (1, 2, 0, 1))
+%!assert (mean (ones (2, 2, 0, 2)), NaN (1, 2, 0, 2))
+%!assert (mean (ones (2, 2, 1, 0)), NaN (1, 2, 1, 0))
+%!assert (mean (ones (2, 2, 2, 0)), NaN (1, 2, 2, 0))
+%!assert (mean (ones (1, 1, 0, 0, 0)), NaN (1, 1, 1, 0, 0))
+%!assert (mean (ones (1, 1, 1, 1, 0)), NaN (1, 1, 1, 1, 1))
+%!assert (mean (ones (2, 1, 1, 1, 0)), NaN (1, 1, 1, 1, 0))
+%!assert (mean (ones (1, 2, 1, 1, 0)), NaN (1, 1, 1, 1, 0))
+%!assert (mean (ones (1, 3, 0, 2)), NaN (1, 1, 0, 2)) 
+%!assert (mean (single (ones (1, 3, 0, 2))), single (NaN (1, 1, 0, 2)))
+%!assert (mean ([], 1), NaN (1, 0))
+%!assert (mean ([], 2), NaN (0, 1))
+%!assert (mean ([], 3), [])
+%!assert (mean (ones (1, 0), 1), NaN (1, 0))
+%!assert (mean (ones (1, 0), 2), NaN)
+%!assert (mean (ones (1, 0), 3), NaN (1, 0))
+%!assert (mean (ones (0, 1), 1), NaN)
+%!assert (mean (ones (0, 1), 2), NaN (0, 1))
+%!assert (mean (ones (0, 1), 3), NaN (0, 1))
+
 ## Test input validation
 %!error mean ()
 %!error mean (1, 2, 3, 4)
 %!error <X must be a numeric> mean ({1:5})
 %!error <OPT must be a string> mean (1, 2, 3)
-%!error <DIM must be an integer> mean (1, ones (2,2))
+%!error <DIM must be an integer> mean (1, ones (2, 2))
 %!error <DIM must be an integer> mean (1, 1.5)
 %!error <DIM must be .* a valid dimension> mean (1, 0)
 %!error <X must not contain any negative values> mean ([1 -1], "g")

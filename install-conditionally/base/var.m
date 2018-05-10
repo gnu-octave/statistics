@@ -92,7 +92,27 @@ function retval = var (x, opt = 0, dim)
   endif
 
   n = size (x, dim);
-  if (n == 1)
+  
+  if (isempty (x))
+    %% codepath for Matlab compatibility. empty x produces NaN output, but 
+    %% for ndim > 2, output depends on size of x. 
+    if ((nargin < 3) && (nd == 2) && (max (sz) < 2))
+      retval = NaN;
+    else
+      if (nargin == 3)
+        sz(dim) = 1;
+      else
+        sz (find ((sz ~= 1), 1)) = 1;
+      endif
+      retval = NaN (sz);
+    endif
+
+    if (isa (x, "single"))
+        retval = single (retval);  
+    endif
+  
+  elseif (n == 1)  
+ 
     if (isa (x, "single"))
       retval = zeros (sz, "single");
     else
@@ -106,22 +126,116 @@ function retval = var (x, opt = 0, dim)
 
 endfunction
 
-
 %!assert (var (13), 0)
 %!assert (var (single (13)), single (0))
-%!assert (var ([1,2,3]), 1)
-%!assert (var ([1,2,3], 1), 2/3, eps)
-%!assert (var ([1,2,3], [], 1), [0,0,0])
-%!assert (var ([1,2,3], [], 3), [0,0,0])
+%!assert (var ([1, 2, 3]), 1)
+%!assert (var ([1, 2, 3], 1), 2/3, eps)
+%!assert (var ([1, 2, 3], [], 1), [0, 0, 0])
+%!assert (var ([1, 2, 3], [], 3), [0, 0, 0])
+
+##tests for empty input Matlab compatibility (bug #48690)
+%!assert (var ([]), NaN)
+%!assert (var (single ([])), single (NaN))
+%!assert (var (ones (0, 0, 0, 0)), NaN (1, 0, 0, 0))
+%!assert (var (ones (0, 0, 0, 1)), NaN (1, 0, 0, 1))
+%!assert (var (ones (0, 0, 0, 2)), NaN (1, 0, 0, 2))
+%!assert (var (ones (0, 0, 1, 0)), NaN (1, 0, 1, 0))
+%!assert (var (ones (0, 0, 1, 1)), NaN (1, 1, 1, 1))
+%!assert (var (ones (0, 0, 1, 2)), NaN (1, 0, 1, 2))
+%!assert (var (ones (0, 0, 2, 0)), NaN (1, 0, 2, 0))
+%!assert (var (ones (0, 0, 2, 1)), NaN (1, 0, 2, 1))
+%!assert (var (ones (0, 0, 2, 2)), NaN (1, 0, 2, 2))
+%!assert (var (ones (0, 1, 0, 0)), NaN (1, 1, 0, 0))
+%!assert (var (ones (0, 1, 0, 1)), NaN (1, 1, 0, 1))
+%!assert (var (ones (0, 1, 0, 2)), NaN (1, 1, 0, 2))
+%!assert (var (ones (0, 1, 1, 0)), NaN (1, 1, 1, 0))
+%!assert (var (ones (0, 1, 1, 1)), NaN (1, 1, 1, 1))
+%!assert (var (ones (0, 1, 1, 2)), NaN (1, 1, 1, 2))
+%!assert (var (ones (0, 1, 2, 0)), NaN (1, 1, 2, 0))
+%!assert (var (ones (0, 1, 2, 1)), NaN (1, 1, 2, 1))
+%!assert (var (ones (0, 1, 2, 2)), NaN (1, 1, 2, 2))
+%!assert (var (ones (0, 2, 0, 0)), NaN (1, 2, 0, 0))
+%!assert (var (ones (0, 2, 0, 1)), NaN (1, 2, 0, 1))
+%!assert (var (ones (0, 2, 0, 2)), NaN (1, 2, 0, 2))
+%!assert (var (ones (0, 2, 1, 0)), NaN (1, 2, 1, 0))
+%!assert (var (ones (0, 2, 1, 1)), NaN (1, 2, 1, 1))
+%!assert (var (ones (0, 2, 1, 2)), NaN (1, 2, 1, 2))
+%!assert (var (ones (0, 2, 2, 0)), NaN (1, 2, 2, 0))
+%!assert (var (ones (0, 2, 2, 1)), NaN (1, 2, 2, 1))
+%!assert (var (ones (0, 2, 2, 2)), NaN (1, 2, 2, 2))
+%!assert (var (ones (1, 0, 0, 0)), NaN (1, 1, 0, 0))
+%!assert (var (ones (1, 0, 0, 1)), NaN (1, 1, 0, 1))
+%!assert (var (ones (1, 0, 0, 2)), NaN (1, 1, 0, 2))
+%!assert (var (ones (1, 0, 1, 0)), NaN (1, 1, 1, 0))
+%!assert (var (ones (1, 0, 1, 1)), NaN (1, 1, 1, 1))
+%!assert (var (ones (1, 0, 1, 2)), NaN (1, 1, 1, 2))
+%!assert (var (ones (1, 0, 2, 0)), NaN (1, 1, 2, 0))
+%!assert (var (ones (1, 0, 2, 1)), NaN (1, 1, 2, 1))
+%!assert (var (ones (1, 0, 2, 2)), NaN (1, 1, 2, 2))
+%!assert (var (ones (1, 1, 0, 0)), NaN (1, 1, 1, 0))
+%!assert (var (ones (1, 1, 0, 1)), NaN (1, 1, 1, 1))
+%!assert (var (ones (1, 1, 0, 2)), NaN (1, 1, 1, 2))
+%!assert (var (ones (1, 1, 1, 0)), NaN (1, 1, 1, 1))
+%!assert (var (ones (1, 1, 2, 0)), NaN (1, 1, 1, 0))
+%!assert (var (ones (1, 2, 0, 0)), NaN (1, 1, 0, 0))
+%!assert (var (ones (1, 2, 0, 1)), NaN (1, 1, 0, 1))
+%!assert (var (ones (1, 2, 0, 2)), NaN (1, 1, 0, 2))
+%!assert (var (ones (1, 2, 1, 0)), NaN (1, 1, 1, 0))
+%!assert (var (ones (1, 2, 2, 0)), NaN (1, 1, 2, 0))
+%!assert (var (ones (2, 0, 0, 0)), NaN (1, 0, 0, 0))
+%!assert (var (ones (2, 0, 0, 1)), NaN (1, 0, 0, 1))
+%!assert (var (ones (2, 0, 0, 2)), NaN (1, 0, 0, 2))
+%!assert (var (ones (2, 0, 1, 0)), NaN (1, 0, 1, 0))
+%!assert (var (ones (2, 0, 1, 1)), NaN (1, 0, 1, 1))
+%!assert (var (ones (2, 0, 1, 2)), NaN (1, 0, 1, 2))
+%!assert (var (ones (2, 0, 2, 0)), NaN (1, 0, 2, 0))
+%!assert (var (ones (2, 0, 2, 1)), NaN (1, 0, 2, 1))
+%!assert (var (ones (2, 0, 2, 2)), NaN (1, 0, 2, 2))
+%!assert (var (ones (2, 1, 0, 0)), NaN (1, 1, 0, 0))
+%!assert (var (ones (2, 1, 0, 1)), NaN (1, 1, 0, 1))
+%!assert (var (ones (2, 1, 0, 2)), NaN (1, 1, 0, 2))
+%!assert (var (ones (2, 1, 1, 0)), NaN (1, 1, 1, 0))
+%!assert (var (ones (2, 1, 2, 0)), NaN (1, 1, 2, 0))
+%!assert (var (ones (2, 2, 0, 0)), NaN (1, 2, 0, 0))
+%!assert (var (ones (2, 2, 0, 1)), NaN (1, 2, 0, 1))
+%!assert (var (ones (2, 2, 0, 2)), NaN (1, 2, 0, 2))
+%!assert (var (ones (2, 2, 1, 0)), NaN (1, 2, 1, 0))
+%!assert (var (ones (2, 2, 2, 0)), NaN (1, 2, 2, 0))
+%!assert (var (ones (1, 1, 0, 0, 0)), NaN (1, 1, 1, 0, 0))
+%!assert (var (ones (1, 1, 1, 1, 0)), NaN (1, 1, 1, 1, 1))
+%!assert (var (ones (2, 1, 1, 1, 0)), NaN (1, 1, 1, 1, 0))
+%!assert (var (ones (1, 2, 1, 1, 0)), NaN (1, 1, 1, 1, 0))
+%!assert (var (ones (1, 3, 0, 2)), NaN (1, 1, 0, 2)) 
+%!assert (var (single (ones (1, 3, 0, 2))), single (NaN (1, 1, 0, 2)))
+
+%!assert (var ([], 0, 1), NaN (1, 0))
+%!assert (var ([], 0, 2), NaN (0, 1))
+%!assert (var ([], 0, 3), [])
+%!assert (var (ones (1, 0), 0, 1), NaN (1, 0))
+%!assert (var (ones (1, 0), 0, 2), NaN)
+%!assert (var (ones (1, 0), 0, 3), NaN (1, 0))
+%!assert (var (ones (0, 1), 0, 1), NaN)
+%!assert (var (ones (0, 1), 0, 2), NaN (0, 1))
+%!assert (var (ones (0, 1), 0, 3), NaN (0, 1))
+
+%!assert (var ([], 1, 1), NaN (1, 0))
+%!assert (var ([], 1, 2), NaN (0, 1))
+%!assert (var ([], 1, 3), [])
+%!assert (var (ones (1, 0), 1, 1), NaN (1, 0))
+%!assert (var (ones (1, 0), 1, 2), NaN)
+%!assert (var (ones (1, 0), 1, 3), NaN (1, 0))
+%!assert (var (ones (0, 1), 1, 1), NaN)
+%!assert (var (ones (0, 1), 1, 2), NaN (0, 1))
+%!assert (var (ones (0, 1), 1, 3), NaN (0, 1))
 
 ## Test input validation
 %!error var ()
-%!error var (1,2,3,4)
+%!error var (1, 2, 3, 4)
 %!error <X must be a numeric> var (['A'; 'B'])
 %!error <OPT must be 0 or 1> var (1, -1)
 %!error <FLAG must be 0 or 1> skewness (1, 2)
 %!error <FLAG must be 0 or 1> skewness (1, [1 0])
-%!error <DIM must be an integer> var (1, [], ones (2,2))
+%!error <DIM must be an integer> var (1, [], ones (2, 2))
 %!error <DIM must be an integer> var (1, [], 1.5)
 %!error <DIM must be .* a valid dimension> var (1, [], 0)
 %!error <X must not be empty> var ([], 1)

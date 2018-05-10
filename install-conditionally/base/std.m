@@ -89,12 +89,32 @@ function retval = std (x, opt = 0, dim)
   endif
 
   n = size (x, dim);
-  if (n == 1 || isempty (x))
+
+  if (isempty (x))
+    %% codepath for Matlab compatibility. empty x produces NaN output, but 
+    %% for ndim > 2, output depends on size of x.  
+    if ((nargin < 3) && (nd == 2) && (max (sz) < 2))
+      retval = NaN;
+    else
+      if (nargin == 3)
+        sz(dim) = 1;
+      else
+        sz (find ((sz ~= 1), 1)) = 1;
+      endif
+      retval = NaN (sz);
+    endif
+
+    if (isa (x, "single"))
+        retval = single (retval);  
+    endif
+    
+  elseif (n == 1)
     if (isa (x, "single"))
       retval = zeros (sz, "single");
     else
       retval = zeros (sz);
     endif
+
   else
     retval = sqrt (sumsq (center (x, dim), dim) / (n - 1 + opt));
   endif
@@ -114,15 +134,108 @@ endfunction
 %!assert (std ([1 2], 1), 0.5, 5*eps)
 %!assert (std (1), 0)
 %!assert (std (single (1)), single (0))
-%!assert (std ([]), [])
-%!assert (std (ones (1,3,0,2)), ones (1,3,0,2))
 %!assert (std ([1 2 3], [], 3), [0 0 0])
+
+##tests for empty input Matlab compatibility (bug #48690)
+%!assert (std ([]), NaN)
+%!assert (std (single ([])), single (NaN))
+%!assert (std (ones (0, 0, 0, 0)), NaN (1, 0, 0, 0))
+%!assert (std (ones (0, 0, 0, 1)), NaN (1, 0, 0, 1))
+%!assert (std (ones (0, 0, 0, 2)), NaN (1, 0, 0, 2))
+%!assert (std (ones (0, 0, 1, 0)), NaN (1, 0, 1, 0))
+%!assert (std (ones (0, 0, 1, 1)), NaN (1, 1, 1, 1))
+%!assert (std (ones (0, 0, 1, 2)), NaN (1, 0, 1, 2))
+%!assert (std (ones (0, 0, 2, 0)), NaN (1, 0, 2, 0))
+%!assert (std (ones (0, 0, 2, 1)), NaN (1, 0, 2, 1))
+%!assert (std (ones (0, 0, 2, 2)), NaN (1, 0, 2, 2))
+%!assert (std (ones (0, 1, 0, 0)), NaN (1, 1, 0, 0))
+%!assert (std (ones (0, 1, 0, 1)), NaN (1, 1, 0, 1))
+%!assert (std (ones (0, 1, 0, 2)), NaN (1, 1, 0, 2))
+%!assert (std (ones (0, 1, 1, 0)), NaN (1, 1, 1, 0))
+%!assert (std (ones (0, 1, 1, 1)), NaN (1, 1, 1, 1))
+%!assert (std (ones (0, 1, 1, 2)), NaN (1, 1, 1, 2))
+%!assert (std (ones (0, 1, 2, 0)), NaN (1, 1, 2, 0))
+%!assert (std (ones (0, 1, 2, 1)), NaN (1, 1, 2, 1))
+%!assert (std (ones (0, 1, 2, 2)), NaN (1, 1, 2, 2))
+%!assert (std (ones (0, 2, 0, 0)), NaN (1, 2, 0, 0))
+%!assert (std (ones (0, 2, 0, 1)), NaN (1, 2, 0, 1))
+%!assert (std (ones (0, 2, 0, 2)), NaN (1, 2, 0, 2))
+%!assert (std (ones (0, 2, 1, 0)), NaN (1, 2, 1, 0))
+%!assert (std (ones (0, 2, 1, 1)), NaN (1, 2, 1, 1))
+%!assert (std (ones (0, 2, 1, 2)), NaN (1, 2, 1, 2))
+%!assert (std (ones (0, 2, 2, 0)), NaN (1, 2, 2, 0))
+%!assert (std (ones (0, 2, 2, 1)), NaN (1, 2, 2, 1))
+%!assert (std (ones (0, 2, 2, 2)), NaN (1, 2, 2, 2))
+%!assert (std (ones (1, 0, 0, 0)), NaN (1, 1, 0, 0))
+%!assert (std (ones (1, 0, 0, 1)), NaN (1, 1, 0, 1))
+%!assert (std (ones (1, 0, 0, 2)), NaN (1, 1, 0, 2))
+%!assert (std (ones (1, 0, 1, 0)), NaN (1, 1, 1, 0))
+%!assert (std (ones (1, 0, 1, 1)), NaN (1, 1, 1, 1))
+%!assert (std (ones (1, 0, 1, 2)), NaN (1, 1, 1, 2))
+%!assert (std (ones (1, 0, 2, 0)), NaN (1, 1, 2, 0))
+%!assert (std (ones (1, 0, 2, 1)), NaN (1, 1, 2, 1))
+%!assert (std (ones (1, 0, 2, 2)), NaN (1, 1, 2, 2))
+%!assert (std (ones (1, 1, 0, 0)), NaN (1, 1, 1, 0))
+%!assert (std (ones (1, 1, 0, 1)), NaN (1, 1, 1, 1))
+%!assert (std (ones (1, 1, 0, 2)), NaN (1, 1, 1, 2))
+%!assert (std (ones (1, 1, 1, 0)), NaN (1, 1, 1, 1))
+%!assert (std (ones (1, 1, 2, 0)), NaN (1, 1, 1, 0))
+%!assert (std (ones (1, 2, 0, 0)), NaN (1, 1, 0, 0))
+%!assert (std (ones (1, 2, 0, 1)), NaN (1, 1, 0, 1))
+%!assert (std (ones (1, 2, 0, 2)), NaN (1, 1, 0, 2))
+%!assert (std (ones (1, 2, 1, 0)), NaN (1, 1, 1, 0))
+%!assert (std (ones (1, 2, 2, 0)), NaN (1, 1, 2, 0))
+%!assert (std (ones (2, 0, 0, 0)), NaN (1, 0, 0, 0))
+%!assert (std (ones (2, 0, 0, 1)), NaN (1, 0, 0, 1))
+%!assert (std (ones (2, 0, 0, 2)), NaN (1, 0, 0, 2))
+%!assert (std (ones (2, 0, 1, 0)), NaN (1, 0, 1, 0))
+%!assert (std (ones (2, 0, 1, 1)), NaN (1, 0, 1, 1))
+%!assert (std (ones (2, 0, 1, 2)), NaN (1, 0, 1, 2))
+%!assert (std (ones (2, 0, 2, 0)), NaN (1, 0, 2, 0))
+%!assert (std (ones (2, 0, 2, 1)), NaN (1, 0, 2, 1))
+%!assert (std (ones (2, 0, 2, 2)), NaN (1, 0, 2, 2))
+%!assert (std (ones (2, 1, 0, 0)), NaN (1, 1, 0, 0))
+%!assert (std (ones (2, 1, 0, 1)), NaN (1, 1, 0, 1))
+%!assert (std (ones (2, 1, 0, 2)), NaN (1, 1, 0, 2))
+%!assert (std (ones (2, 1, 1, 0)), NaN (1, 1, 1, 0))
+%!assert (std (ones (2, 1, 2, 0)), NaN (1, 1, 2, 0))
+%!assert (std (ones (2, 2, 0, 0)), NaN (1, 2, 0, 0))
+%!assert (std (ones (2, 2, 0, 1)), NaN (1, 2, 0, 1))
+%!assert (std (ones (2, 2, 0, 2)), NaN (1, 2, 0, 2))
+%!assert (std (ones (2, 2, 1, 0)), NaN (1, 2, 1, 0))
+%!assert (std (ones (2, 2, 2, 0)), NaN (1, 2, 2, 0))
+%!assert (std (ones (1, 1, 0, 0, 0)), NaN (1, 1, 1, 0, 0))
+%!assert (std (ones (1, 1, 1, 1, 0)), NaN (1, 1, 1, 1, 1))
+%!assert (std (ones (2, 1, 1, 1, 0)), NaN (1, 1, 1, 1, 0))
+%!assert (std (ones (1, 2, 1, 1, 0)), NaN (1, 1, 1, 1, 0))
+%!assert (std (ones (1, 3, 0, 2)), NaN (1, 1, 0, 2)) 
+%!assert (std (single (ones (1, 3, 0, 2))), single (NaN (1, 1, 0, 2)))
+
+%!assert (std ([], 0, 1), NaN (1, 0))
+%!assert (std ([], 0, 2), NaN (0, 1))
+%!assert (std ([], 0, 3), [])
+%!assert (std (ones (1, 0), 0, 1), NaN (1, 0))
+%!assert (std (ones (1, 0), 0, 2), NaN)
+%!assert (std (ones (1, 0), 0, 3), NaN (1, 0))
+%!assert (std (ones (0, 1), 0, 1), NaN)
+%!assert (std (ones (0, 1), 0, 2), NaN (0, 1))
+%!assert (std (ones (0, 1), 0, 3), NaN (0, 1))
+
+%!assert (std ([], 1, 1), NaN (1, 0))
+%!assert (std ([], 1, 2), NaN (0, 1))
+%!assert (std ([], 1, 3), [])
+%!assert (std (ones (1, 0), 1, 1), NaN (1, 0))
+%!assert (std (ones (1, 0), 1, 2), NaN)
+%!assert (std (ones (1, 0), 1, 3), NaN (1, 0))
+%!assert (std (ones (0, 1), 1, 1), NaN)
+%!assert (std (ones (0, 1), 1, 2), NaN (0, 1))
+%!assert (std (ones (0, 1), 1, 3), NaN (0, 1))
 
 ## Test input validation
 %!error std ()
 %!error std (1, 2, 3, 4)
 %!error <X must be a numeric> std (['A'; 'B'])
 %!error <OPT must be 0 or 1> std (1, 2)
-%!error <DIM must be an integer> std (1, [], ones (2,2))
+%!error <DIM must be an integer> std (1, [], ones (2, 2))
 %!error <DIM must be an integer> std (1, [], 1.5)
 %!error <DIM must be .* a valid dimension> std (1, [], 0)

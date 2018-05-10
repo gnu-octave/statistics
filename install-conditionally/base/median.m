@@ -64,10 +64,6 @@ function retval = median (x, dim)
     error ("median: X must be a numeric vector or matrix");
   endif
 
-  if (isempty (x))
-    error ("median: X cannot be an empty matrix");
-  endif
-
   nd = ndims (x);
   sz = size (x);
   if (nargin < 2)
@@ -81,14 +77,35 @@ function retval = median (x, dim)
 
   n = size (x, dim);
   k = floor ((n+1) / 2);
-  if (mod (n, 2) == 1)
+
+  if (isempty (x))
+    %% codepath for Matlab compatibility. empty x produces NaN output, but 
+    %% for ndim > 2, output depends on size of x. 
+    if ((nd == 2) && (max (sz) < 2) && (nargin ~= 2))
+      retval = NaN;
+    else
+      if (nargin == 2)
+        sz(dim) = 1;
+      else  
+        sz (find ((sz ~= 1), 1)) = 1;
+      endif
+      retval = NaN (sz);
+    endif
+
+    if (isa (x, "single"))
+      retval = single (retval);  
+    endif
+
+  elseif (mod (n, 2) == 1)
     retval = nth_element (x, k, dim);
+
   else
     retval = sum (nth_element (x, k:k+1, dim), dim, "native") / 2;
     if (islogical (x))
       retval = logical (retval);
     endif
   endif
+
   ## Inject NaNs where needed, to be consistent with Matlab.
   if (isfloat (x))
     retval(any (isnan (x), dim)) = NaN;
@@ -108,20 +125,104 @@ endfunction
 %! assert (median ([x2, 2*x2]), [3.5, 7]);
 %! assert (median ([y2, 3*y2]), [4, 12]);
 
-%!assert (median (single ([1,2,3])), single (2))
-%!assert (median ([1,2,NaN;4,5,6;NaN,8,9]), [NaN, 5, NaN])
-%!assert (median ([1,2], 3), [1,2])
+%!assert (median (single ([1, 2, 3])), single (2))
+%!assert (median ([1, 2, NaN; 4, 5, 6; NaN, 8, 9]), [NaN, 5, NaN])
+%!assert (median ([1, 2], 3), [1, 2])
 
 ## Test multidimensional arrays
 %!shared a, b, x, y
 %! rand ("seed", 2);
-%! a = rand (2,3,4,5);
-%! b = rand (3,4,6,5);
+%! a = rand (2, 3, 4, 5);
+%! b = rand (3, 4, 6, 5);
 %! x = sort (a, 4);
 %! y = sort (b, 3);
-%!assert <*35679> (median (a, 4), x(:, :, :, 3))
-%!assert <*35679> (median (b, 3), (y(:, :, 3, :) + y(:, :, 4, :))/2)
+%!assert <35679> (median (a, 4), x(:, :, :, 3))
+%!assert <35679> (median (b, 3), (y(:, :, 3, :) + y(:, :, 4, :))/2)
 
+##tests for empty input Matlab compatibility (bug #48690)
+%!assert (median ([]), NaN)
+%!assert (median (single ([])), single (NaN))
+%!assert (median (ones (0, 0, 0, 0)), NaN (1, 0, 0, 0))
+%!assert (median (ones (0, 0, 0, 1)), NaN (1, 0, 0, 1))
+%!assert (median (ones (0, 0, 0, 2)), NaN (1, 0, 0, 2))
+%!assert (median (ones (0, 0, 1, 0)), NaN (1, 0, 1, 0))
+%!assert (median (ones (0, 0, 1, 1)), NaN (1, 1, 1, 1))
+%!assert (median (ones (0, 0, 1, 2)), NaN (1, 0, 1, 2))
+%!assert (median (ones (0, 0, 2, 0)), NaN (1, 0, 2, 0))
+%!assert (median (ones (0, 0, 2, 1)), NaN (1, 0, 2, 1))
+%!assert (median (ones (0, 0, 2, 2)), NaN (1, 0, 2, 2))
+%!assert (median (ones (0, 1, 0, 0)), NaN (1, 1, 0, 0))
+%!assert (median (ones (0, 1, 0, 1)), NaN (1, 1, 0, 1))
+%!assert (median (ones (0, 1, 0, 2)), NaN (1, 1, 0, 2))
+%!assert (median (ones (0, 1, 1, 0)), NaN (1, 1, 1, 0))
+%!assert (median (ones (0, 1, 1, 1)), NaN (1, 1, 1, 1))
+%!assert (median (ones (0, 1, 1, 2)), NaN (1, 1, 1, 2))
+%!assert (median (ones (0, 1, 2, 0)), NaN (1, 1, 2, 0))
+%!assert (median (ones (0, 1, 2, 1)), NaN (1, 1, 2, 1))
+%!assert (median (ones (0, 1, 2, 2)), NaN (1, 1, 2, 2))
+%!assert (median (ones (0, 2, 0, 0)), NaN (1, 2, 0, 0))
+%!assert (median (ones (0, 2, 0, 1)), NaN (1, 2, 0, 1))
+%!assert (median (ones (0, 2, 0, 2)), NaN (1, 2, 0, 2))
+%!assert (median (ones (0, 2, 1, 0)), NaN (1, 2, 1, 0))
+%!assert (median (ones (0, 2, 1, 1)), NaN (1, 2, 1, 1))
+%!assert (median (ones (0, 2, 1, 2)), NaN (1, 2, 1, 2))
+%!assert (median (ones (0, 2, 2, 0)), NaN (1, 2, 2, 0))
+%!assert (median (ones (0, 2, 2, 1)), NaN (1, 2, 2, 1))
+%!assert (median (ones (0, 2, 2, 2)), NaN (1, 2, 2, 2))
+%!assert (median (ones (1, 0, 0, 0)), NaN (1, 1, 0, 0))
+%!assert (median (ones (1, 0, 0, 1)), NaN (1, 1, 0, 1))
+%!assert (median (ones (1, 0, 0, 2)), NaN (1, 1, 0, 2))
+%!assert (median (ones (1, 0, 1, 0)), NaN (1, 1, 1, 0))
+%!assert (median (ones (1, 0, 1, 1)), NaN (1, 1, 1, 1))
+%!assert (median (ones (1, 0, 1, 2)), NaN (1, 1, 1, 2))
+%!assert (median (ones (1, 0, 2, 0)), NaN (1, 1, 2, 0))
+%!assert (median (ones (1, 0, 2, 1)), NaN (1, 1, 2, 1))
+%!assert (median (ones (1, 0, 2, 2)), NaN (1, 1, 2, 2))
+%!assert (median (ones (1, 1, 0, 0)), NaN (1, 1, 1, 0))
+%!assert (median (ones (1, 1, 0, 1)), NaN (1, 1, 1, 1))
+%!assert (median (ones (1, 1, 0, 2)), NaN (1, 1, 1, 2))
+%!assert (median (ones (1, 1, 1, 0)), NaN (1, 1, 1, 1))
+%!assert (median (ones (1, 1, 2, 0)), NaN (1, 1, 1, 0))
+%!assert (median (ones (1, 2, 0, 0)), NaN (1, 1, 0, 0))
+%!assert (median (ones (1, 2, 0, 1)), NaN (1, 1, 0, 1))
+%!assert (median (ones (1, 2, 0, 2)), NaN (1, 1, 0, 2))
+%!assert (median (ones (1, 2, 1, 0)), NaN (1, 1, 1, 0))
+%!assert (median (ones (1, 2, 2, 0)), NaN (1, 1, 2, 0))
+%!assert (median (ones (2, 0, 0, 0)), NaN (1, 0, 0, 0))
+%!assert (median (ones (2, 0, 0, 1)), NaN (1, 0, 0, 1))
+%!assert (median (ones (2, 0, 0, 2)), NaN (1, 0, 0, 2))
+%!assert (median (ones (2, 0, 1, 0)), NaN (1, 0, 1, 0))
+%!assert (median (ones (2, 0, 1, 1)), NaN (1, 0, 1, 1))
+%!assert (median (ones (2, 0, 1, 2)), NaN (1, 0, 1, 2))
+%!assert (median (ones (2, 0, 2, 0)), NaN (1, 0, 2, 0))
+%!assert (median (ones (2, 0, 2, 1)), NaN (1, 0, 2, 1))
+%!assert (median (ones (2, 0, 2, 2)), NaN (1, 0, 2, 2))
+%!assert (median (ones (2, 1, 0, 0)), NaN (1, 1, 0, 0))
+%!assert (median (ones (2, 1, 0, 1)), NaN (1, 1, 0, 1))
+%!assert (median (ones (2, 1, 0, 2)), NaN (1, 1, 0, 2))
+%!assert (median (ones (2, 1, 1, 0)), NaN (1, 1, 1, 0))
+%!assert (median (ones (2, 1, 2, 0)), NaN (1, 1, 2, 0))
+%!assert (median (ones (2, 2, 0, 0)), NaN (1, 2, 0, 0))
+%!assert (median (ones (2, 2, 0, 1)), NaN (1, 2, 0, 1))
+%!assert (median (ones (2, 2, 0, 2)), NaN (1, 2, 0, 2))
+%!assert (median (ones (2, 2, 1, 0)), NaN (1, 2, 1, 0))
+%!assert (median (ones (2, 2, 2, 0)), NaN (1, 2, 2, 0))
+%!assert (median (ones (1, 1, 0, 0, 0)), NaN (1, 1, 1, 0, 0))
+%!assert (median (ones (1, 1, 1, 1, 0)), NaN (1, 1, 1, 1, 1))
+%!assert (median (ones (2, 1, 1, 1, 0)), NaN (1, 1, 1, 1, 0))
+%!assert (median (ones (1, 2, 1, 1, 0)), NaN (1, 1, 1, 1, 0))
+%!assert (median (ones (1, 3, 0, 2)), NaN (1, 1, 0, 2)) 
+%!assert (median (single (ones (1, 3, 0, 2))), single (NaN (1, 1, 0, 2)))
+%!assert (median ([], 1), NaN (1, 0))
+%!assert (median ([], 2), NaN (0, 1))
+%!assert (median ([], 3), [])
+%!assert (median (ones (1, 0), 1), NaN (1, 0))
+%!assert (median (ones (1, 0), 2), NaN)
+%!assert (median (ones (1, 0), 3), NaN (1, 0))
+%!assert (median (ones (0, 1), 1), NaN)
+%!assert (median (ones (0, 1), 2), NaN (0, 1))
+%!assert (median (ones (0, 1), 3), NaN (0, 1))
+ 
 ## Test non-floating point types
 %!assert (median ([true, false]), true)
 %!assert (median (uint8 ([1, 3])), uint8 (2))
@@ -133,7 +234,6 @@ endfunction
 %!error median ()
 %!error median (1, 2, 3)
 %!error <X must be a numeric> median ({1:5})
-%!error <X cannot be an empty matrix> median ([])
-%!error <DIM must be an integer> median (1, ones (2,2))
+%!error <DIM must be an integer> median (1, ones (2, 2))
 %!error <DIM must be an integer> median (1, 1.5)
 %!error <DIM must be .* a valid dimension> median (1, 0)
