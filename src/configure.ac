@@ -13,8 +13,8 @@ else
 fi  
 
 # Checks for programs.
-AC_CHECK_PROG(OCTAVE, octave-cli, octave-cli)
-if test -z "$OCTAVE"; then
+AC_CHECK_PROG(OCTAVE_CLI, octave-cli, octave-cli)
+if test -z "$OCTAVE_CLI"; then
 AC_MSG_ERROR([octave-cli not found], 1);
 fi
 

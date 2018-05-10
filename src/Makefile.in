@@ -16,10 +16,7 @@
 ## along with this program; if not, see
 ## <http://www.gnu.org/licenses/>.
 
-ifndef OCTAVE
-OCTAVE := @OCTAVE@
-endif
-OCTAVE := $(OCTAVE) --no-gui --silent --norc
+OCTAVE := @OCTAVE_CLI@ --no-gui --silent --norc
 CP ?= cp
 
 cond_srcdir := ../install-conditionally
