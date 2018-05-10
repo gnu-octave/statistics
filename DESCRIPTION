@@ -2,7 +2,7 @@ Name: statistics
 Version: 1.3.0
 Date: 2016-10-09
 Author: various authors
-Maintainer: Arno Onken <asnelt@asnelt.org>
+Maintainer: Octave-Forge community <maintainers@octave.org>
 Title: Statistics
 Description: Additional statistics functions for Octave.
 Categories: Statistics
