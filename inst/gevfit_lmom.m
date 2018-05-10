@@ -106,7 +106,7 @@ function c = limdiv(a, b)
 endfunction
 
 
-%!test
+%!xtest <31070>
 %! data = 1:50;
 %! [pfit, pci] = gevfit_lmom (data);
 %! expected_p = [-0.28 15.01 20.22]';
