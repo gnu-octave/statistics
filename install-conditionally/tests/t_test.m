@@ -101,7 +101,7 @@ endfunction
 %! pval = t_test (x, u0, ">");
 %! tval = tinv (1-pval, n-1);
 %! unew = tval * std(x)/sqrt(n) + u0;
-%! assert (mean (x), unew, 100*eps);
+%! assert (mean (x), unew, 1000*eps);
 
 %!test
 %! x = rand (10,1); n = length (x);
