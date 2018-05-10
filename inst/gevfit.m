@@ -62,7 +62,7 @@ function [paramhat, paramci] = gevfit (data, paramguess)
   if (nargin < 2) || isempty(paramguess)
     paramguess = zeros (3, 1);
     paramguess(2) = (sqrt(6)/pi) * std (data);
-    paramguess(3) = mean(data) - 0.5772156649*paramguess(2) #expectation involves Euler–Mascheroni constant
+    paramguess(3) = mean(data) - 0.5772156649*paramguess(2); #expectation involves Euler–Mascheroni constant
   endif
 
   #cost function to minimize
@@ -83,8 +83,6 @@ function [paramhat, paramci] = gevfit (data, paramguess)
   endif
 
 endfunction
-
-
 
 %!test
 %! data = 1:50;
