@@ -108,18 +108,18 @@ endfunction
 
 %!shared x
 %! x = [-1 0 0.75 1 2];
-%!assert (betainv (x, ones (1,5), 2*ones (1,5)), [NaN 0 0.5 1 NaN])
-%!assert (betainv (x, 1, 2*ones (1,5)), [NaN 0 0.5 1 NaN])
-%!assert (betainv (x, ones (1,5), 2), [NaN 0 0.5 1 NaN])
+%!assert (betainv (x, ones (1,5), 2*ones (1,5)), [NaN 0 0.5 1 NaN], eps)
+%!assert (betainv (x, 1, 2*ones (1,5)), [NaN 0 0.5 1 NaN], eps)
+%!assert (betainv (x, ones (1,5), 2), [NaN 0 0.5 1 NaN], eps)
 %!assert (betainv (x, [1 0 NaN 1 1], 2), [NaN NaN NaN 1 NaN])
 %!assert (betainv (x, 1, 2*[1 0 NaN 1 1]), [NaN NaN NaN 1 NaN])
 %!assert (betainv ([x(1:2) NaN x(4:5)], 1, 2), [NaN 0 NaN 1 NaN])
 
 ## Test class of input preserved
-%!assert (betainv ([x, NaN], 1, 2), [NaN 0 0.5 1 NaN NaN])
+%!assert (betainv ([x, NaN], 1, 2), [NaN 0 0.5 1 NaN NaN], eps)
 %!assert (betainv (single ([x, NaN]), 1, 2), single ([NaN 0 0.5 1 NaN NaN]))
-%!assert (betainv ([x, NaN], single (1), 2), single ([NaN 0 0.5 1 NaN NaN]))
-%!assert (betainv ([x, NaN], 1, single (2)), single ([NaN 0 0.5 1 NaN NaN]))
+%!assert (betainv ([x, NaN], single (1), 2), single ([NaN 0 0.5 1 NaN NaN]), eps("single"))
+%!assert (betainv ([x, NaN], 1, single (2)), single ([NaN 0 0.5 1 NaN NaN]), eps("single"))
 
 ## Test input validation
 %!error betainv ()
