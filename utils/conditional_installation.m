@@ -14,11 +14,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {} conditional_installation (@var{srcdir}, @var{destdir}, @var{crosscompiling})
+## @deftypefn {Function File} {} conditional_installation (@var{srcdir}, @var{destdir}, @var{crosscompiling}, @var{indexfilename})
 ## Undocumented internal function.
 ## @end deftypefn
 
-function conditional_installation (srcdir, destdir, crosscompiling)
+function conditional_installation (srcdir, destdir, crosscompiling, indexfilename)
 
   ## Cross-compilation: some version of Octave must be callable at the
   ## build system, and this file here has to be configured as follows:
@@ -35,6 +35,7 @@ function conditional_installation (srcdir, destdir, crosscompiling)
   ##                   "functions_to_install")); # defines variable
   ##                                             # 'install_functions'
 
+  installed_functions = {};
   subdirs = {"base", "distributions", "models", "tests"};
   
   if (crosscompiling && ! configured)
@@ -65,6 +66,8 @@ function conditional_installation (srcdir, destdir, crosscompiling)
     for tfcn = install_functions
 
       fcn = tfcn{:};
+  
+      installed_functions{end+1} = fcn;
 
       if (! ([status, msg] = ...
              copyfile (fullfile (srcdir, fcn), fullfile (destdir, fcn))))
@@ -106,6 +109,8 @@ function conditional_installation (srcdir, destdir, crosscompiling)
 
         if (! flag)
 
+          installed_functions{end+1} = fcn;
+
           if (! ([status, msg] = ...
                  copyfile (file, fullfile (destdir, subdir, [fcn, ".m"]))))
 
@@ -121,6 +126,7 @@ function conditional_installation (srcdir, destdir, crosscompiling)
 
   endif
 
+  update_index_file (indexfilename, fullfile (srcdir, "INDEX.in"), installed_functions);
 endfunction
 
 function assert_dir (directory)
@@ -136,3 +142,4 @@ function assert_dir (directory)
   endif
 
 endfunction
+

@@ -34,8 +34,9 @@ cond_inst := conditional_installation
 .PHONY: all clean
 
 all: | $(instdir)/test
+	$(CP) ../INDEX.in ../INDEX
 	$(OCTAVE) --eval 'addpath ("$(utilsdir)");' \
-                  --eval '$(cond_inst) ("$(cond_srcdir)", "$(instdir)", $(crosscompiling));'
+                  --eval '$(cond_inst) ("$(cond_srcdir)", "$(instdir)", $(crosscompiling), "../INDEX");'
 	$(CP) $(testdir)/*.dat $(instdir)/test/
 
 $(instdir)/test:
