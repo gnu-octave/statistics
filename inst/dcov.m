@@ -112,7 +112,7 @@ endfunction
 %! ym = 1.2;
 %! xm = 0.5;
 %! fmt={'horizontalalignment','center'};
-%! ff = "%! .2f";
+%! ff = "% .2f";
 %! figure (1)
 %! for i=1:n
 %!   subplot(4,n,i);
