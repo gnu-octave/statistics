@@ -515,7 +515,7 @@ function obj = fitgmdist(data, k, varargin)
   endif
 endfunction
 
-%!demo
+%!xdemo <50286>
 %! ## Generate a two-cluster problem
 %! C1 = randn (100, 2) + 1;
 %! C2 = randn (100, 2) - 1;

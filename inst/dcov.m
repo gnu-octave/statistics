@@ -77,7 +77,7 @@ function c = Akl (x, index)
 endfunction
 
 %!demo
-%base=@(x) (x- min(x))./(max(x)-min(x));
+%! base=@(x) (x- min(x))./(max(x)-min(x));
 %! N = 5e2;
 %! x = randn (N,1); x = base (x);
 %! z = randn (N,1); z = base (z);
