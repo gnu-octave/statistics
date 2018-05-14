@@ -91,7 +91,7 @@ Distributions
  gaminv
  unifrnd
 Models
- logistic_regression.m
+ logistic_regression
 Hypothesis testing
  kolmogorov_smirnov_test_2
  t_test_2
@@ -124,7 +124,7 @@ Descriptive statistics
  probit
  corrcoef
  kendall
- var.m
+ var
  lscov
  quantile
  logit
