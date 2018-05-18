@@ -15,7 +15,7 @@
 
 ## Author: Juan Pablo Carbajal <ajuanpi+dev@gmail.com>
 
-## -*- textinfo -*-
+## -*- texinfo -*-
 ## @deftypefn {} {@var{pts} =} sigma_pts (@var{n})
 ## @deftypefnx {@var{pts} =} sigma_pts (@var{n}, @var{m})
 ## @deftypefnx {@var{pts} =} sigma_pts (@var{n}, @var{m}, @var{K})
@@ -28,9 +28,9 @@
 ##
 ## If only the dimension @var{n} is given the resulting points have zero mean
 ## and identity covariance matrix.
-## If the mean @{m} or the covaraince matrix @{K} are given, then the resulting points
+## If the mean @var{m} or the covaraince matrix @var{K} are given, then the resulting points
 ## will have those statistics.
-## The factor @{l} scaled the points away from the mean. It is useful to tune
+## The factor @var{l} scaled the points away from the mean. It is useful to tune
 ## the accuracy of the unscented transfrom.
 ##
 ## There is no unique way of computing sigma points, this function implements the
