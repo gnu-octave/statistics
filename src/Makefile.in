@@ -1,6 +1,7 @@
 ## Makefile for statistics package for Octave
 ##
 ## Copyright (C) 2017 Olaf Till <i7tiol@t-online.de>
+##               2018 Oliver Heimlich <oheim@posteo.de>
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,7 +17,11 @@
 ## along with this program; if not, see
 ## <http://www.gnu.org/licenses/>.
 
-OCTAVE := @OCTAVE_CLI@ --no-gui --silent --norc
+## During pkg install, these will be provided by the calling Octave
+MKOCTFILE ?= mkoctfile
+OCTAVE_CONFIG ?= octave-config
+OCTAVE ?= octave
+
 CP ?= cp
 
 cond_srcdir := ../install-conditionally
@@ -35,8 +40,12 @@ cond_inst := conditional_installation
 
 all: | $(instdir)/test
 	$(CP) ../INDEX.in ../INDEX
-	$(OCTAVE) --eval 'addpath ("$(utilsdir)");' \
-                  --eval '$(cond_inst) ("$(cond_srcdir)", "$(instdir)", $(crosscompiling), "../INDEX");'
+	$(OCTAVE) \
+	  --no-gui \
+	  --silent \
+	  --norc \
+	  --eval 'addpath ("$(utilsdir)");' \
+	  --eval '$(cond_inst) ("$(cond_srcdir)", "$(instdir)", $(crosscompiling), "../INDEX");'
 	$(CP) $(testdir)/*.dat $(instdir)/test/
 
 $(instdir)/test:

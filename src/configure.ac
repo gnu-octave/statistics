@@ -12,11 +12,5 @@ else
   AC_SUBST([crosscompiling], [false])
 fi  
 
-# Checks for programs.
-AC_CHECK_PROG(OCTAVE_CLI, octave-cli, octave-cli)
-if test -z "$OCTAVE_CLI"; then
-AC_MSG_ERROR([octave-cli not found], 1);
-fi
-
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
