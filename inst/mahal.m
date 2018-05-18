@@ -87,7 +87,7 @@ endfunction
 
 %!test
 %! X = [1 0; 0 1; 1 1; 0 0];
-%! assert (mahal (X, X), [1.5; 1.5; 1.5; 1.5], eps)
-%! assert (mahal (X, X+1), [7.5; 7.5; 1.5; 13.5], eps)
+%! assert (mahal (X, X), [1.5; 1.5; 1.5; 1.5], 10*eps)
+%! assert (mahal (X, X+1), [7.5; 7.5; 1.5; 13.5], 10*eps)
 
 %!assert (mahal ([true; true], [false; true]), [0.5; 0.5], eps)
