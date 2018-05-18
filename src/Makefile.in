@@ -22,6 +22,12 @@ MKOCTFILE ?= mkoctfile
 OCTAVE_CONFIG ?= octave-config
 OCTAVE ?= octave
 
+HAVE_WINDOWS := @HAVE_WINDOWS@
+
+ifeq ($(HAVE_WINDOWS),1)
+OCTAVE := @OCTAVE_CLI@
+endif
+
 CP ?= cp
 
 cond_srcdir := ../install-conditionally
