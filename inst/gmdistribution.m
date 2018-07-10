@@ -231,7 +231,7 @@ classdef gmdistribution
         ## Random numbers from Gaussian mixture distribution
       function c = random (obj,n)
           c = zeros (n, obj.NumVariables);
-          classes = randsample (obj.NumVariables, n, true, obj.ComponentProportion);
+          classes = randsample (obj.NumComponents, n, true, obj.ComponentProportion);
           if (obj.SharedCovariance)
               if (obj.DiagonalCovariance)
                   sig = diag (obj.Sigma);
