@@ -230,6 +230,9 @@ classdef gmdistribution
         ########################################
         ## Random numbers from Gaussian mixture distribution
       function c = random (obj,n)
+          if nargin == 1
+	    n = 1;
+	  endif
           c = zeros (n, obj.NumVariables);
           classes = randsample (obj.NumComponents, n, true, obj.ComponentProportion);
           if (obj.SharedCovariance)
@@ -339,4 +342,7 @@ endclassdef
 %!
 %! R = GM.random(20);
 %! assert (size(R), [20, 2]);
+%!
+%! R = GM.random();
+%! assert (size(R), [1, 2]);
 
