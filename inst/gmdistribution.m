@@ -1,4 +1,5 @@
 ## Copyright (C) 2015 Lachlan Andrew <lachlanbis@gmail.com>
+## Copyright (C) 2018 John Donoghue <john.donoghue@ieee.org>
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -262,7 +263,7 @@ classdef gmdistribution
     methods (Static)
       ## Gaussian mixture parameter estimates
       function c = fit  (X,k,varargin)
-          c = fitgmdist (X,k,varargin);
+          c = fitgmdist (X,k,varargin{:});
       endfunction
     endmethods
 
