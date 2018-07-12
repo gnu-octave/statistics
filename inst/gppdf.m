@@ -1,3 +1,4 @@
+## Copyright (C) 2018 John Donoghue
 ## Copyright (C) 2016 Dag Lyberg
 ## Copyright (C) 1997-2015 Kurt Hornik
 ##
@@ -69,13 +70,13 @@ function pdf = gppdf (x, location, scale, shape)
 
     j = k & (shape > 0) & (z >= 0);
     if (any (j))
-      pdf(j) = (shape * z(j) + 1).^(-(shape + 1) / shape);
+      pdf(j) = (shape * z(j) + 1).^(-(shape + 1) / shape) ./ scale;
     endif
 
     if (shape < 0)
       j = k & (shape < 0) & (0 <= z) & (z <= -1. / shape);
       if (any (j))
-        pdf(j) = (shape * z(j) + 1).^(-(shape + 1) / shape);
+        pdf(j) = (shape * z(j) + 1).^(-(shape + 1) / shape) ./ scale;
       endif
     endif
   else
@@ -88,13 +89,13 @@ function pdf = gppdf (x, location, scale, shape)
 
     j = k & (shape > 0) & (z >= 0);
     if (any (j))
-      pdf(j) = (shape(j) .* z(j) + 1).^(-(shape(j) + 1) ./ shape(j));
+      pdf(j) = (shape(j) .* z(j) + 1).^(-(shape(j) + 1) ./ shape(j)) ./ scale(j);
     endif
 
     if (any (shape < 0))
       j = k & (shape < 0) & (0 <= z) & (z <= -1 ./ shape);
       if (any (j))
-        pdf(j) = (shape(j) .* z(j) + 1).^(-(shape(j) + 1) ./ shape(j));
+        pdf(j) = (shape(j) .* z(j) + 1).^(-(shape(j) + 1) ./ shape(j)) ./ scale(j);
       endif
     endif
   endif
