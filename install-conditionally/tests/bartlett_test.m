@@ -55,7 +55,7 @@ function [pval, chisq, df] = bartlett_test (varargin)
   v_tot = sum (f .* v) / f_tot;
   c     = 1 + (sum (1 ./ f) - 1 / f_tot) / (3 * (k - 1));
   chisq = (f_tot * log (v_tot) - sum (f .* log (v))) / c;
-  df    = k;
+  df    = k - 1;
   pval  = 1 - chi2cdf (chisq, df);
 
   if (nargout == 0)
