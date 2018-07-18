@@ -1,3 +1,4 @@
+## Copyright (C) 2018 John Donoghue
 ## Copyright (C) 2016 Dag Lyberg
 ## Copyright (C) 1997-2015 Kurt Hornik
 ##
@@ -18,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} gpcdf (@var{x}, @var{location}, @var{scale}, @var{shape})
+## @deftypefn {} {} gpcdf (@var{x}, @var{shape}, @var{scale}, @var{location})
 ## Compute the cumulative distribution function (CDF) at @var{x} of the
 ## generalized Pareto distribution with parameters @var{location}, @var{scale},
 ## and @var{shape}.
@@ -27,7 +28,7 @@
 ## Author: Dag Lyberg <daglyberg80@gmail.com>
 ## Description: PDF of the generalized Pareto distribution
 
-function cdf = gpcdf (x, location, scale, shape)
+function cdf = gpcdf (x, shape, scale, location)
 
   if (nargin != 4)
     print_usage ();
@@ -113,50 +114,50 @@ endfunction
 %! y3 = [0, 0, 0, 1/2, 1, 1];
 %! seps = eps('single')*5;
 %!assert (gpcdf (x, zeros (1,6), ones (1,6), zeros (1,6)), y1, eps)
-%!assert (gpcdf (x, zeros (1,6), 1, 0), y1, eps)
-%!assert (gpcdf (x, 0, ones (1,6), 0), y1, eps)
 %!assert (gpcdf (x, 0, 1, zeros (1,6)), y1, eps)
+%!assert (gpcdf (x, 0, ones (1,6), 0), y1, eps)
+%!assert (gpcdf (x, zeros (1,6), 1, 0), y1, eps)
 %!assert (gpcdf (x, 0, 1, 0), y1, eps)
-%!assert (gpcdf (x, [0, 0, 0, NaN, 0, 0], 1, 0), [y1(1:3), NaN, y1(5:6)], eps)
-%!assert (gpcdf (x, 0, [1, 1, 1, NaN, 1, 1], 0), [y1(1:3), NaN, y1(5:6)], eps)
 %!assert (gpcdf (x, 0, 1, [0, 0, 0, NaN, 0, 0]), [y1(1:3), NaN, y1(5:6)], eps)
+%!assert (gpcdf (x, 0, [1, 1, 1, NaN, 1, 1], 0), [y1(1:3), NaN, y1(5:6)], eps)
+%!assert (gpcdf (x, [0, 0, 0, NaN, 0, 0], 1, 0), [y1(1:3), NaN, y1(5:6)], eps)
 %!assert (gpcdf ([x(1:3), NaN, x(5:6)], 0, 1, 0), [y1(1:3), NaN, y1(5:6)], eps)
 
-%!assert (gpcdf (x, zeros (1,6), ones (1,6), ones (1,6)), y2, eps)
-%!assert (gpcdf (x, zeros (1,6), 1, 1), y2, eps)
-%!assert (gpcdf (x, 0, ones (1,6), 1), y2, eps)
-%!assert (gpcdf (x, 0, 1, ones (1,6)), y2, eps)
-%!assert (gpcdf (x, 0, 1, 1), y2, eps)
-%!assert (gpcdf (x, [0, 0, 0, NaN, 0, 0], 1, 1), [y2(1:3), NaN, y2(5:6)], eps)
-%!assert (gpcdf (x, 0, [1, 1, 1, NaN, 1, 1], 1), [y2(1:3), NaN, y2(5:6)], eps)
-%!assert (gpcdf (x, 0, 1, [1, 1, 1, NaN, 1, 1]), [y2(1:3), NaN, y2(5:6)], eps)
-%!assert (gpcdf ([x(1:3), NaN, x(5:6)], 0, 1, 1), [y2(1:3), NaN, y2(5:6)], eps)
+%!assert (gpcdf (x, ones (1,6), ones (1,6), zeros (1,6)), y2, eps)
+%!assert (gpcdf (x, 1, 1, zeros (1,6)), y2, eps)
+%!assert (gpcdf (x, 1, ones (1,6), 0), y2, eps)
+%!assert (gpcdf (x, ones (1,6), 1, 0), y2, eps)
+%!assert (gpcdf (x, 1, 1, 0), y2, eps)
+%!assert (gpcdf (x, 1, 1, [0, 0, 0, NaN, 0, 0]), [y2(1:3), NaN, y2(5:6)], eps)
+%!assert (gpcdf (x, 1, [1, 1, 1, NaN, 1, 1], 0), [y2(1:3), NaN, y2(5:6)], eps)
+%!assert (gpcdf (x, [1, 1, 1, NaN, 1, 1], 1, 0), [y2(1:3), NaN, y2(5:6)], eps)
+%!assert (gpcdf ([x(1:3), NaN, x(5:6)], 1, 1, 0), [y2(1:3), NaN, y2(5:6)], eps)
 
-%!assert (gpcdf (x, zeros (1,6), ones (1,6), -ones (1,6)), y3, eps)
-%!assert (gpcdf (x, zeros (1,6), 1, -1), y3, eps)
-%!assert (gpcdf (x, 0, ones (1,6), -1), y3, eps)
-%!assert (gpcdf (x, 0, 1, -ones (1,6)), y3, eps)
-%!assert (gpcdf (x, 0, 1, -1), y3, eps)
-%!assert (gpcdf (x, [0, 0, 0, NaN, 0, 0], 1, -1), [y1(1:3), NaN, y3(5:6)], eps)
-%!assert (gpcdf (x, 0, [1, 1, 1, NaN, 1, 1], -1), [y1(1:3), NaN, y3(5:6)], eps)
-%!assert (gpcdf (x, 0, 1, [-1, -1, -1, NaN, -1, -1]), [y1(1:3), NaN, y3(5:6)], eps)
-%!assert (gpcdf ([x(1:3), NaN, x(5:6)], 0, 1, -1), [y1(1:3), NaN, y3(5:6)], eps)
+%!assert (gpcdf (x, -ones (1,6), ones (1,6), zeros (1,6)), y3, eps)
+%!assert (gpcdf (x, -1, 1, zeros (1,6)), y3, eps)
+%!assert (gpcdf (x, -1, ones (1,6), 0), y3, eps)
+%!assert (gpcdf (x, -ones (1,6), 1, 0), y3, eps)
+%!assert (gpcdf (x, -1, 1, 0), y3, eps)
+%!assert (gpcdf (x, -1, 1, [0, 0, 0, NaN, 0, 0]), [y1(1:3), NaN, y3(5:6)], eps)
+%!assert (gpcdf (x, -1, [1, 1, 1, NaN, 1, 1], 0), [y1(1:3), NaN, y3(5:6)], eps)
+%!assert (gpcdf (x, [-1, -1, -1, NaN, -1, -1], 1, 0), [y1(1:3), NaN, y3(5:6)], eps)
+%!assert (gpcdf ([x(1:3), NaN, x(5:6)], -1, 1, 0), [y1(1:3), NaN, y3(5:6)], eps)
 
 ## Test class of input preserved
 %!assert (gpcdf (single ([x, NaN]), 0, 1, 0), single ([y1, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], single (0), 1, 0), single ([y1, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], 0, single (1), 0), single ([y1, NaN]), eps('single'))
 %!assert (gpcdf ([x, NaN], 0, 1, single (0)), single ([y1, NaN]), eps('single'))
+%!assert (gpcdf ([x, NaN], 0, single (1), 0), single ([y1, NaN]), eps('single'))
+%!assert (gpcdf ([x, NaN], single (0), 1, 0), single ([y1, NaN]), eps('single'))
 
-%!assert (gpcdf (single ([x, NaN]), 0, 1, 1), single ([y2, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], single (0), 1, 1), single ([y2, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], 0, single (1), 1), single ([y2, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], 0, 1, single (1)), single ([y2, NaN]), eps('single'))
+%!assert (gpcdf (single ([x, NaN]), 1, 1, 0), single ([y2, NaN]), eps('single'))
+%!assert (gpcdf ([x, NaN], 1, 1, single (0)), single ([y2, NaN]), eps('single'))
+%!assert (gpcdf ([x, NaN], 1, single (1), 0), single ([y2, NaN]), eps('single'))
+%!assert (gpcdf ([x, NaN], single (1), 1, 0), single ([y2, NaN]), eps('single'))
 
-%!assert (gpcdf (single ([x, NaN]), 0, 1, -1), single ([y3, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], single (0), 1, -1), single ([y3, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], 0, single (1), -1), single ([y3, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], 0, 1, single (-1)), single ([y3, NaN]), eps('single'))
+%!assert (gpcdf (single ([x, NaN]), -1, 1, 0), single ([y3, NaN]), eps('single'))
+%!assert (gpcdf ([x, NaN], -1, 1, single (0)), single ([y3, NaN]), eps('single'))
+%!assert (gpcdf ([x, NaN], -1, single (1), 0), single ([y3, NaN]), eps('single'))
+%!assert (gpcdf ([x, NaN], single (-1), 1, 0), single ([y3, NaN]), eps('single'))
 
 ## Test input validation
 %!error gpcdf ()
@@ -165,9 +166,9 @@ endfunction
 %!error gpcdf (1,2,3)
 %!error gpcdf (1,2,3,4,5)
 %!error gpcdf (ones (3), ones (2), ones (2), ones (2))
-%!error gpcdf (ones (2), ones (3), ones (2), ones (2))
-%!error gpcdf (ones (2), ones (2), ones (3), ones (2))
 %!error gpcdf (ones (2), ones (2), ones (2), ones (3))
+%!error gpcdf (ones (2), ones (2), ones (3), ones (2))
+%!error gpcdf (ones (2), ones (3), ones (2), ones (2))
 %!error gpcdf (i, 2, 2, 2)
 %!error gpcdf (2, i, 2, 2)
 %!error gpcdf (2, 2, i, 2)

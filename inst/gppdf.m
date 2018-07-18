@@ -19,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} gppdf (@var{x}, @var{location}, @var{scale}, @var{shape})
+## @deftypefn {} {} gppdf (@var{x}, @var{shape}, @var{scale}, @var{location})
 ## Compute the probability density function (PDF) at @var{x} of the
 ## generalized Pareto distribution with parameters @var{location}, @var{scale},
 ## and @var{shape}.
@@ -28,7 +28,7 @@
 ## Author: Dag Lyberg <daglyberg80@gmail.com>
 ## Description: PDF of the generalized Pareto distribution
 
-function pdf = gppdf (x, location, scale, shape)
+function pdf = gppdf (x, shape, scale, location)
 
   if (nargin != 4)
     print_usage ();
@@ -109,50 +109,50 @@ endfunction
 %! y2 = [0, 0, 1, 4/9, 1/4, 0];
 %! y3 = [0, 0, 1, 1, 1, 0];
 %!assert (gppdf (x, zeros (1,6), ones (1,6), zeros (1,6)), y1, eps)
-%!assert (gppdf (x, zeros (1,6), 1, 0), y1, eps)
-%!assert (gppdf (x, 0, ones (1,6), 0), y1, eps)
 %!assert (gppdf (x, 0, 1, zeros (1,6)), y1, eps)
+%!assert (gppdf (x, 0, ones (1,6), 0), y1, eps)
+%!assert (gppdf (x, zeros (1,6), 1, 0), y1, eps)
 %!assert (gppdf (x, 0, 1, 0), y1, eps)
-%!assert (gppdf (x, [0, 0, 0, NaN, 0, 0], 1, 0), [y1(1:3), NaN, y1(5:6)])
-%!assert (gppdf (x, 0, [1, 1, 1, NaN, 1, 1], 0), [y1(1:3), NaN, y1(5:6)])
 %!assert (gppdf (x, 0, 1, [0, 0, 0, NaN, 0, 0]), [y1(1:3), NaN, y1(5:6)])
+%!assert (gppdf (x, 0, [1, 1, 1, NaN, 1, 1], 0), [y1(1:3), NaN, y1(5:6)])
+%!assert (gppdf (x, [0, 0, 0, NaN, 0, 0], 1, 0), [y1(1:3), NaN, y1(5:6)])
 %!assert (gppdf ([x(1:3), NaN, x(5:6)], 0, 1, 0), [y1(1:3), NaN, y1(5:6)])
 
-%!assert (gppdf (x, zeros (1,6), ones (1,6), ones (1,6)), y2, eps)
-%!assert (gppdf (x, zeros (1,6), 1, 1), y2, eps)
-%!assert (gppdf (x, 0, ones (1,6), 1), y2, eps)
-%!assert (gppdf (x, 0, 1, ones (1,6)), y2, eps)
-%!assert (gppdf (x, 0, 1, 1), y2, eps)
-%!assert (gppdf (x, [0, 0, 0, NaN, 0, 0], 1, 1), [y2(1:3), NaN, y2(5:6)])
-%!assert (gppdf (x, 0, [1, 1, 1, NaN, 1, 1], 1), [y2(1:3), NaN, y2(5:6)])
-%!assert (gppdf (x, 0, 1, [1, 1, 1, NaN, 1, 1]), [y2(1:3), NaN, y2(5:6)])
-%!assert (gppdf ([x(1:3), NaN, x(5:6)], 0, 1, 1), [y2(1:3), NaN, y2(5:6)])
+%!assert (gppdf (x, ones (1,6), ones (1,6), zeros (1,6)), y2, eps)
+%!assert (gppdf (x, 1, 1, zeros (1,6)), y2, eps)
+%!assert (gppdf (x, 1, ones (1,6), 0), y2, eps)
+%!assert (gppdf (x, ones (1,6), 1, 0), y2, eps)
+%!assert (gppdf (x, 1, 1, 0), y2, eps)
+%!assert (gppdf (x, 1, 1, [0, 0, 0, NaN, 0, 0]), [y2(1:3), NaN, y2(5:6)])
+%!assert (gppdf (x, 1, [1, 1, 1, NaN, 1, 1], 0), [y2(1:3), NaN, y2(5:6)])
+%!assert (gppdf (x, [1, 1, 1, NaN, 1, 1], 1, 0), [y2(1:3), NaN, y2(5:6)])
+%!assert (gppdf ([x(1:3), NaN, x(5:6)], 1, 1, 0), [y2(1:3), NaN, y2(5:6)])
 
-%!assert (gppdf (x, zeros (1,6), ones (1,6), -ones (1,6)), y3, eps)
-%!assert (gppdf (x, zeros (1,6), 1, -1), y3, eps)
-%!assert (gppdf (x, 0, ones (1,6), -1), y3, eps)
-%!assert (gppdf (x, 0, 1, -ones (1,6)), y3, eps)
-%!assert (gppdf (x, 0, 1, -1), y3, eps)
-%!assert (gppdf (x, [0, 0, 0, NaN, 0, 0], 1, -1), [y3(1:3), NaN, y3(5:6)])
-%!assert (gppdf (x, 0, [1, 1, 1, NaN, 1, 1], -1), [y3(1:3), NaN, y3(5:6)])
-%!assert (gppdf (x, 0, 1, [-1, -1, -1, NaN, -1, -1]), [y3(1:3), NaN, y3(5:6)])
-%!assert (gppdf ([x(1:3), NaN, x(5:6)], 0, 1, -1), [y3(1:3), NaN, y3(5:6)])
+%!assert (gppdf (x, -ones (1,6), ones (1,6), zeros (1,6)), y3, eps)
+%!assert (gppdf (x, -1, 1, zeros (1,6)), y3, eps)
+%!assert (gppdf (x, -1, ones (1,6), 0), y3, eps)
+%!assert (gppdf (x, -ones (1,6), 1, 0), y3, eps)
+%!assert (gppdf (x, -1, 1, 0), y3, eps)
+%!assert (gppdf (x, -1, 1, [0, 0, 0, NaN, 0, 0]), [y3(1:3), NaN, y3(5:6)])
+%!assert (gppdf (x, -1, [1, 1, 1, NaN, 1, 1], 0), [y3(1:3), NaN, y3(5:6)])
+%!assert (gppdf (x, [-1, -1, -1, NaN, -1, -1], 1, 0), [y3(1:3), NaN, y3(5:6)])
+%!assert (gppdf ([x(1:3), NaN, x(5:6)], -1, 1, 0), [y3(1:3), NaN, y3(5:6)])
 
 ## Test class of input preserved
 %!assert (gppdf (single ([x, NaN]), 0, 1, 0), single ([y1, NaN]))
-%!assert (gppdf ([x, NaN], single (0), 1, 0), single ([y1, NaN]))
-%!assert (gppdf ([x, NaN], 0, single (1), 0), single ([y1, NaN]))
 %!assert (gppdf ([x, NaN], 0, 1, single (0)), single ([y1, NaN]))
+%!assert (gppdf ([x, NaN], 0, single (1), 0), single ([y1, NaN]))
+%!assert (gppdf ([x, NaN], single (0), 1, 0), single ([y1, NaN]))
 
-%!assert (gppdf (single ([x, NaN]), 0, 1, 1), single ([y2, NaN]))
-%!assert (gppdf ([x, NaN], single (0), 1, 1), single ([y2, NaN]))
-%!assert (gppdf ([x, NaN], 0, single (1), 1), single ([y2, NaN]))
-%!assert (gppdf ([x, NaN], 0, 1, single (1)), single ([y2, NaN]))
+%!assert (gppdf (single ([x, NaN]), 1, 1, 0), single ([y2, NaN]))
+%!assert (gppdf ([x, NaN], 1, 1, single (0)), single ([y2, NaN]))
+%!assert (gppdf ([x, NaN], 1, single (1), 0), single ([y2, NaN]))
+%!assert (gppdf ([x, NaN], single (1), 1, 0), single ([y2, NaN]))
 
-%!assert (gppdf (single ([x, NaN]), 0, 1, -1), single ([y3, NaN]))
-%!assert (gppdf ([x, NaN], single (0), 1, -1), single ([y3, NaN]))
-%!assert (gppdf ([x, NaN], 0, single (1), -1), single ([y3, NaN]))
-%!assert (gppdf ([x, NaN], 0, 1, single (-1)), single ([y3, NaN]))
+%!assert (gppdf (single ([x, NaN]), -1, 1, 0), single ([y3, NaN]))
+%!assert (gppdf ([x, NaN], -1, 1, single (0)), single ([y3, NaN]))
+%!assert (gppdf ([x, NaN], -1, single (1), 0), single ([y3, NaN]))
+%!assert (gppdf ([x, NaN], single (-1), 1, 0), single ([y3, NaN]))
 
 ## Test input validation
 %!error gppdf ()
@@ -160,9 +160,9 @@ endfunction
 %!error gppdf (1,2)
 %!error gppdf (1,2,3)
 %!error gppdf (1,2,3,4,5)
-%!error gppdf (1, ones (3), ones (2), ones (2))
-%!error gppdf (1, ones (2), ones (3), ones (2))
 %!error gppdf (1, ones (2), ones (2), ones (3))
+%!error gppdf (1, ones (2), ones (3), ones (2))
+%!error gppdf (1, ones (3), ones (2), ones (2))
 %!error gppdf (i, 2, 2, 2)
 %!error gppdf (2, i, 2, 2)
 %!error gppdf (2, 2, i, 2)
