@@ -1,3 +1,4 @@
+## Copyright (C) 2018 John Donoghue
 ## Copyright (C) 2016 Dag Lyberg
 ## Copyright (C) 1995-2015 Kurt Hornik
 ##
@@ -18,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} bbsinv (@var{x}, @var{location}, @var{scale}, @var{shape})
+## @deftypefn {} {} bbsinv (@var{x}, @var{shape}, @var{scale}, @var{location})
 ## For each element of @var{x}, compute the quantile (the inverse of the CDF)
 ## at @var{x} of the Birnbaum-Saunders distribution with parameters
 ## @var{location}, @var{scale}, and @var{shape}.
@@ -27,7 +28,7 @@
 ## Author: Dag Lyberg <daglyberg80@gmail.com>
 ## Description: Quantile function of the Birnbaum-Saunders distribution
 
-function inv = bbsinv (x, location, scale, shape)
+function inv = bbsinv (x, shape, scale, location)
 
   if (nargin != 4)
     print_usage ();
@@ -82,21 +83,21 @@ endfunction
 %! f = @(x,a,b,c) (a + b * (c * norminv (x) + sqrt (4 + (c * norminv(x))^2))^2) / 4;
 %! x = [-1, 0, 1/4, 1/2, 1, 2];
 %! y = [0, 0, f(1/4, 0, 1, 1), 1, Inf, NaN];
-%!assert (bbsinv (x, zeros (1,6), ones (1,6), ones (1,6)), y)
-%!assert (bbsinv (x, zeros (1,6), 1, 1), y)
-%!assert (bbsinv (x, 0, ones (1,6), 1), y)
-%!assert (bbsinv (x, 0, 1, ones (1,6)), y)
-%!assert (bbsinv (x, 0, 1, 1), y)
-%!assert (bbsinv (x, [0, 0, 0, NaN, 0, 0], 1, 1), [y(1:3), NaN, y(5:6)])
-%!assert (bbsinv (x, 0, [1, 1, 1, NaN, 1, 1], 1), [y(1:3), NaN, y(5:6)])
-%!assert (bbsinv (x, 0, 1, [1, 1, 1, NaN, 1, 1]), [y(1:3), NaN, y(5:6)])
-%!assert (bbsinv ([x, NaN], 0, 1, 1), [y, NaN])
+%!assert (bbsinv (x, ones (1,6), ones (1,6), zeros (1,6)), y)
+%!assert (bbsinv (x, 1, 1, zeros (1,6)), y)
+%!assert (bbsinv (x, 1, ones (1,6), 0), y)
+%!assert (bbsinv (x, ones (1,6), 1, 0), y)
+%!assert (bbsinv (x, 1, 1, 0), y)
+%!assert (bbsinv (x, 1, 1, [0, 0, 0, NaN, 0, 0]), [y(1:3), NaN, y(5:6)])
+%!assert (bbsinv (x, 1, [1, 1, 1, NaN, 1, 1], 0), [y(1:3), NaN, y(5:6)])
+%!assert (bbsinv (x, [1, 1, 1, NaN, 1, 1], 1, 0), [y(1:3), NaN, y(5:6)])
+%!assert (bbsinv ([x, NaN], 1, 1, 0), [y, NaN])
 
 ## Test class of input preserved
-%!assert (bbsinv (single ([x, NaN]), 0, 1, 1), single ([y, NaN]))
-%!assert (bbsinv ([x, NaN], single (0), 1, 1), single ([y, NaN]))
-%!assert (bbsinv ([x, NaN], 0, single (1), 1), single ([y, NaN]))
-%!assert (bbsinv ([x, NaN], 0, 1, single (1)), single ([y, NaN]))
+%!assert (bbsinv (single ([x, NaN]), 1, 1, 0), single ([y, NaN]))
+%!assert (bbsinv ([x, NaN], 1, 1, single (0)), single ([y, NaN]))
+%!assert (bbsinv ([x, NaN], 1, single (1), 0), single ([y, NaN]))
+%!assert (bbsinv ([x, NaN], single (1), 1, 0), single ([y, NaN]))
 
 ## Test input validation
 %!error bbsinv ()
@@ -107,8 +108,8 @@ endfunction
 %!error bbsinv (ones (2), ones (3), ones(2), ones(2))
 %!error bbsinv (ones (2), ones (2), ones(3), ones(2))
 %!error bbsinv (ones (2), ones (2), ones(2), ones(3))
-%!error bbsinv (i, 2, 3, 4)
-%!error bbsinv (1, i, 3, 4)
-%!error bbsinv (1, 2, i, 4)
-%!error bbsinv (1, 2, 3, i)
+%!error bbsinv (i, 4, 3, 2)
+%!error bbsinv (1, i, 3, 2)
+%!error bbsinv (1, 4, i, 2)
+%!error bbsinv (1, 4, 3, i)
 

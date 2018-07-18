@@ -1,3 +1,4 @@
+## Copyright (C) 2018 John Donoghue
 ## Copyright (C) 2016 Dag Lyberg
 ## Copyright (C) 1995-2015 Kurt Hornik
 ##
@@ -18,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} bbscdf (@var{x}, @var{location}, @var{scale}, @var{shape})
+## @deftypefn {} {} bbscdf (@var{x}, @var{shape}, @var{scale}, @var{location})
 ## For each element of @var{x}, compute the cumulative distribution function
 ## (CDF) at @var{x} of the Birnbaum-Saunders distribution with parameters
 ## @var{location}, @var{scale} and @var{shape}.
@@ -27,7 +28,7 @@
 ## Author: Dag Lyberg <daglyberg80@gmail.com>
 ## Description: CDF of the Birnbaum-Saunders distribution
 
-function cdf = bbscdf (x, location, scale, shape)
+function cdf = bbscdf (x, shape, scale, location)
 
   if (nargin != 4)
     print_usage ();
@@ -74,21 +75,21 @@ endfunction
 %!shared x,y
 %! x = [-1, 0, 1, 2, Inf];
 %! y = [0, 0, 1/2, 0.76024993890652337, 1];
-%!assert (bbscdf (x, zeros (1,5), ones (1,5), ones (1,5)), y, eps)
-%!assert (bbscdf (x, zeros (1,5), 1, 1), y, eps)
-%!assert (bbscdf (x, 0, ones (1,5), 1), y, eps)
-%!assert (bbscdf (x, 0, 1, ones (1,5)), y, eps)
-%!assert (bbscdf (x, 0, 1, 1), y, eps)
-%!assert (bbscdf (x, [0, 0, NaN, 0, 0], 1, 1), [y(1:2), NaN, y(4:5)], eps)
-%!assert (bbscdf (x, 0, [1, 1, NaN, 1, 1], 1), [y(1:2), NaN, y(4:5)], eps)
-%!assert (bbscdf (x, 0, 1, [1, 1, NaN, 1, 1]), [y(1:2), NaN, y(4:5)], eps)
-%!assert (bbscdf ([x, NaN], 0, 1, 1), [y, NaN], eps)
+%!assert (bbscdf (x, ones (1,5), ones (1,5), zeros (1,5)), y, eps)
+%!assert (bbscdf (x, 1, 1, zeros (1,5)), y, eps)
+%!assert (bbscdf (x, 1, ones (1,5), 0), y, eps)
+%!assert (bbscdf (x, ones (1,5), 1, 0), y, eps)
+%!assert (bbscdf (x, 1, 1, 0), y, eps)
+%!assert (bbscdf (x, 1, 1, [0, 0, NaN, 0, 0]), [y(1:2), NaN, y(4:5)], eps)
+%!assert (bbscdf (x, 1, [1, 1, NaN, 1, 1], 0), [y(1:2), NaN, y(4:5)], eps)
+%!assert (bbscdf (x, [1, 1, NaN, 1, 1], 1, 0), [y(1:2), NaN, y(4:5)], eps)
+%!assert (bbscdf ([x, NaN], 1, 1, 0), [y, NaN], eps)
 
 ## Test class of input preserved
-%!assert (bbscdf (single ([x, NaN]), 0, 1, 1), single ([y, NaN]), eps('single'))
-%!assert (bbscdf ([x, NaN], single (0), 1, 1), single ([y, NaN]), eps('single'))
-%!assert (bbscdf ([x, NaN], 0, single (1), 1), single ([y, NaN]), eps('single'))
-%!assert (bbscdf ([x, NaN], 0, 1, single (1)), single ([y, NaN]), eps('single'))
+%!assert (bbscdf (single ([x, NaN]), 1, 1, 0), single ([y, NaN]), eps('single'))
+%!assert (bbscdf ([x, NaN], 1, 1, single (0)), single ([y, NaN]), eps('single'))
+%!assert (bbscdf ([x, NaN], 1, single (1), 0), single ([y, NaN]), eps('single'))
+%!assert (bbscdf ([x, NaN], single (1), 1, 0), single ([y, NaN]), eps('single'))
 
 ## Test input validation
 %!error bbscdf ()
@@ -99,8 +100,8 @@ endfunction
 %!error bbscdf (ones (2), ones (3), ones(2), ones(2))
 %!error bbscdf (ones (2), ones (2), ones(3), ones(2))
 %!error bbscdf (ones (2), ones (2), ones(2), ones(3))
-%!error bbscdf (i, 2, 3, 4)
-%!error bbscdf (1, i, 3, 4)
-%!error bbscdf (1, 2, i, 4)
-%!error bbscdf (1, 2, 3, i)
+%!error bbscdf (i, 4, 3, 2)
+%!error bbscdf (1, i, 3, 2)
+%!error bbscdf (1, 4, i, 2)
+%!error bbscdf (1, 4, 3, i)
 

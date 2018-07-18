@@ -1,3 +1,4 @@
+## Copyright (C) 2018 John Donoghue
 ## Copyright (C) 2016 Dag Lyberg
 ## Copyright (C) 1995-2015 Kurt Hornik
 ##
@@ -18,10 +19,10 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} bbsrnd (@var{location}, @var{scale}, @var{shape})
-## @deftypefnx {} {} bbsrnd (@var{location}, @var{scale}, @var{shape}, @var{r})
-## @deftypefnx {} {} bbsrnd (@var{location}, @var{scale}, @var{shape}, @var{r}, @var{c}, @dots{})
-## @deftypefnx {} {} bbsrnd (@var{location}, @var{scale}, @var{shape}, [@var{sz}])
+## @deftypefn  {} {} bbsrnd (@var{shape}, @var{scale}, @var{location})
+## @deftypefnx {} {} bbsrnd (@var{shape}, @var{scale}, @var{location}, @var{r})
+## @deftypefnx {} {} bbsrnd (@var{shape}, @var{scale}, @var{location}, @var{r}, @var{c}, @dots{})
+## @deftypefnx {} {} bbsrnd (@var{shape}, @var{scale}, @var{location}, [@var{sz}])
 ## Return a matrix of random samples from the Birnbaum-Saunders
 ##  distribution with parameters @var{location}, @var{scale} and @var{shape}.
 ##
@@ -38,7 +39,7 @@
 ## Author: Dag Lyberg <daglyberg80@gmail.com>
 ## Description: Random deviates from the Birnbaum-Saunders distribution
 
-function rnd = bbsrnd (location, scale, shape, varargin)
+function rnd = bbsrnd (shape, scale, location, varargin)
 
   if (nargin < 3)
     print_usage ();
@@ -105,25 +106,25 @@ function rnd = bbsrnd (location, scale, shape, varargin)
 endfunction
 
 
-%!assert (size (bbsrnd (0, 1, 1)), [1 1])
-%!assert (size (bbsrnd (zeros (2,1), 1, 1)), [2, 1])
-%!assert (size (bbsrnd (zeros (2,2), 1, 1)), [2, 2])
-%!assert (size (bbsrnd (0, ones (2,1), 1)), [2, 1])
-%!assert (size (bbsrnd (0, ones (2,2), 1)), [2, 2])
-%!assert (size (bbsrnd (0, 1, ones (2,1))), [2, 1])
-%!assert (size (bbsrnd (0, 1, ones (2,2))), [2, 2])
-%!assert (size (bbsrnd (0, 1, 1, 3)), [3, 3])
-%!assert (size (bbsrnd (0, 1, 1, [4 1])), [4, 1])
-%!assert (size (bbsrnd (0, 1, 1, 4, 1)), [4, 1])
+%!assert (size (bbsrnd (1, 1, 0)), [1 1])
+%!assert (size (bbsrnd (1, 1, zeros (2,1))), [2, 1])
+%!assert (size (bbsrnd (1, 1, zeros (2,2))), [2, 2])
+%!assert (size (bbsrnd (1, ones (2,1), 0)), [2, 1])
+%!assert (size (bbsrnd (1, ones (2,2), 0)), [2, 2])
+%!assert (size (bbsrnd (ones (2,1), 1, 0)), [2, 1])
+%!assert (size (bbsrnd (ones (2,2), 1, 0)), [2, 2])
+%!assert (size (bbsrnd (1, 1, 0, 3)), [3, 3])
+%!assert (size (bbsrnd (1, 1, 0, [4 1])), [4, 1])
+%!assert (size (bbsrnd (1, 1, 0, 4, 1)), [4, 1])
 
 ## Test class of input preserved
-%!assert (class (bbsrnd (0,1,1)), "double")
-%!assert (class (bbsrnd (single (0),1,1)), "single")
-%!assert (class (bbsrnd (single ([0 0]),1,1)), "single")
-%!assert (class (bbsrnd (0,single (1),1)), "single")
-%!assert (class (bbsrnd (0,single ([1 1]),1)), "single")
-%!assert (class (bbsrnd (0,1,single (1))), "single")
-%!assert (class (bbsrnd (0,1,single ([1 1]))), "single")
+%!assert (class (bbsrnd (1,1,0)), "double")
+%!assert (class (bbsrnd (1, 1, single (0))), "single")
+%!assert (class (bbsrnd (1, 1, single ([0 0]))), "single")
+%!assert (class (bbsrnd (1, single (1), 0)), "single")
+%!assert (class (bbsrnd (1, single ([1 1]), 0)), "single")
+%!assert (class (bbsrnd (single (1), 1, 0)), "single")
+%!assert (class (bbsrnd (single ([1 1]), 1, 0)), "single")
 
 ## Test input validation
 %!error bbsrnd ()
@@ -138,7 +139,7 @@ endfunction
 %!error bbsrnd (1,2,3, -1)
 %!error bbsrnd (1,2,3, ones (2))
 %!error bbsrnd (1,2,3, [2 -1 2])
-%!error bbsrnd (ones (2),1,2, 3)
-%!error bbsrnd (ones (2),1,2, [3, 2])
-%!error bbsrnd (ones (2),1,2, 3, 2)
+%!error bbsrnd (2, 1, ones (2), 3)
+%!error bbsrnd (2, 1, ones (2), [3, 2])
+%!error bbsrnd (2, 1, ones (2), 3, 2)
 
