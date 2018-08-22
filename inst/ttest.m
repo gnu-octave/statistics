@@ -154,7 +154,7 @@ end
 %! [h, pval, ci0] = ttest (x, 0);
 %! assert (h, 1)
 %! assert (pval, 0)
-%! assert (ci0, ci)
+%! assert (ci0, ci, 2e-15)
 %! [h, pval, ci] = ttest (x, 10, "tail", "right", "dim", 2, "alpha", 0.05);
 %! assert (h, 0)
 %! assert (pval, 0.5, 10*eps)
