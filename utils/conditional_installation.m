@@ -35,6 +35,10 @@ function conditional_installation (srcdir, destdir, crosscompiling, indexfilenam
   ##                   "functions_to_install")); # defines variable
   ##                                             # 'install_functions'
 
+  if exist ("isfolder") == 0
+    isfolder = @(n) isdir(n);
+  endif
+
   installed_functions = {};
   subdirs = {"base", "distributions", "models", "tests"};
   
@@ -51,7 +55,7 @@ function conditional_installation (srcdir, destdir, crosscompiling, indexfilenam
 
     assert_dir (fullfile (destdir, subdir));
 
-    if (isdir (private_dir = fullfile (srcdir, subdir, "private"))
+    if (isfolder (private_dir = fullfile (srcdir, subdir, "private"))
         && ! ([status, msg] = ...
               copyfile (private_dir, fullfile (destdir, subdir))))
 
@@ -131,7 +135,11 @@ endfunction
 
 function assert_dir (directory)
 
-  if (! isdir (directory))
+  if exist ("isfolder") == 0
+    isfolder = @(n) isdir(n);
+  endif
+
+  if (! isfolder (directory))
 
     if (! ([succ, msg] = mkdir (directory)))
 
