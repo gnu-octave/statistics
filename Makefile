@@ -2,11 +2,13 @@
 ## Copyright 2015-2016 Oliver Heimlich
 ## Copyright 2017 Julien Bect <jbect@users.sf.net>
 ## Copyright 2017 Olaf Till <i7tiol@t-online.de>
+## Copyright 2018 John Donoghue <john.donoghue@ieee.org>
 ##
 ## Copying and distribution of this file, with or without modification,
 ## are permitted in any medium without royalty provided the copyright
 ## notice and this notice are preserved.  This file is offered as-is,
 ## without any warranty.
+TOPDIR := $(shell pwd)
 
 ## Some basic tools (can be overriden using environment variables)
 SED ?= sed
@@ -218,8 +220,7 @@ orig_octave_test_commands = \
     else __run_test_suite__ (dirs, {}); endif '
 octave_test_commands = \
 ' pkgs = pkg("list", "$(package)"); \
-  cd ("$(target_dir)/"); \
-  dirs = {sprintf(".installation/%s-%s", pkgs{1}.name, pkgs{1}.version)}; \
+  dirs = {pkgs{1}.dir}; \
   __run_test_suite__ (dirs, {}); '
 ## the following works, too, but provides no overall summary output as
 ## __run_test_suite__ does:
