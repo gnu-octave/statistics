@@ -511,7 +511,7 @@ function obj = fitgmdist(data, k, varargin)
   obj = gmdistribution (best_params.mu, best_params.Sigma, best_params.p');
   if (Display == 1)
     fprintf ("  %d iterations   log-likelihood = %g\n", ...
-              -extra.NegativeLogLikelihood, extra.NumIterations);
+              extra.NumIterations, -extra.NegativeLogLikelihood);
   endif
 endfunction
 
