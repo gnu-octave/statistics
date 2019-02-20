@@ -71,12 +71,12 @@ endfunction
 %!shared x,y
 %! x = [-Inf 1 2 Inf];
 %! y = 1/sqrt(2*pi)*exp (-(x-1).^2/2);
-%!assert (normpdf (x, ones (1,4), ones (1,4)), y)
-%!assert (normpdf (x, 1, ones (1,4)), y)
-%!assert (normpdf (x, ones (1,4), 1), y)
-%!assert (normpdf (x, [0 -Inf NaN Inf], 1), [y(1) NaN NaN NaN])
-%!assert (normpdf (x, 1, [Inf NaN -1 0]), [NaN NaN NaN NaN])
-%!assert (normpdf ([x, NaN], 1, 1), [y, NaN])
+%!assert (normpdf (x, ones (1,4), ones (1,4)), y, eps)
+%!assert (normpdf (x, 1, ones (1,4)), y, eps)
+%!assert (normpdf (x, ones (1,4), 1), y, eps)
+%!assert (normpdf (x, [0 -Inf NaN Inf], 1), [y(1) NaN NaN NaN], eps)
+%!assert (normpdf (x, 1, [Inf NaN -1 0]), [NaN NaN NaN NaN], eps)
+%!assert (normpdf ([x, NaN], 1, 1), [y, NaN], eps)
 
 ## Test class of input preserved
 %!assert (normpdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps ("single"))
