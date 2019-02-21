@@ -1,4 +1,4 @@
-## Copyright (C) 2014 Piotr Dollar <pdollar@gmail.com>
+## Copyright (C) 2014-2019 Piotr Dollar <pdollar@gmail.com>
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -152,7 +152,7 @@ endfunction
 function dists = distEucSq (x, y)
   xx = sumsq (x, 2);
   yy = sumsq (y, 2)';
-  dists = bsxfun (@plus, xx, yy) - 2 * x * (y');
+  dists = max (0, bsxfun (@plus, xx, yy) - 2 * x * (y'));
 endfunction
 
 ## euclidean distance as loop for testing purposes
