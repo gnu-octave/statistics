@@ -6,7 +6,14 @@
 ## - PKG_ADD (and PKG_DEL?) is run during installation, too, from the
 ##   root directory of the package, where no such subdirectories
 ## exist.
-if (isdir (fullfile (fileparts (mfilename ("fullpath")), "base")))
-  addpath (fullfile (fileparts (mfilename ("fullpath")),
-                     {"base", "distributions", "models", "tests"}){:});
+if exist ("isfolder") == 0
+  if (isdir (fullfile (fileparts (mfilename ("fullpath")), "base")))
+    addpath (fullfile (fileparts (mfilename ("fullpath")),
+                       {"base", "distributions", "models", "tests"}){:});
+  endif
+else
+  if (isfolder (fullfile (fileparts (mfilename ("fullpath")), "base")))
+    addpath (fullfile (fileparts (mfilename ("fullpath")),
+                       {"base", "distributions", "models", "tests"}){:});
+  endif
 endif
