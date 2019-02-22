@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([statistics], [1.4.0])
+AC_INIT([statistics], [1.4.1])
 
 AC_CANONICAL_TARGET
 

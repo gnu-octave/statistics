@@ -1,6 +1,16 @@
-Summary of important user-visible changes for statistics 1.4.0+:
+Summary of important user-visible changes for statistics 1.4.1:
 -------------------------------------------------------------------
  ** update install scripts for octave 5.0 depreciated functions
+
+ ** bug fixes to the following functions:
+      pdist2.m: use max in distEucSq (Bug #50377)
+      normpdf: use eps tolerance in tests (Bug #51963)
+      fitgmdist: fix an output bug in fitgmdist
+      t_test: Set tolerance on t_test BISTS (Bug #54557)
+      gpXXXXX: change order of inputs to match matlab (Bug #54009)
+      bartlett_test: df = k-1 (Bug #45894)
+      gppdf: apply scale factor (Bug #54009)
+      gmdistribution: updates for bug #54278, ##54279
 
 Summary of important user-visible changes for statistics 1.4.0:
 -------------------------------------------------------------------
