@@ -1,3 +1,8 @@
+Summary of important user-visible changes for statistics 1.4.2:
+-------------------------------------------------------------------
+
+ ** bug fix to wishrnd
+
 Summary of important user-visible changes for statistics 1.4.1:
 -------------------------------------------------------------------
  ** update install scripts for octave 5.0 depreciated functions
@@ -22,12 +27,12 @@ Summary of important user-visible changes for statistics 1.4.0:
       gmdistribution
       sigma_pts
 
- ** The following functions have been moved from the statisctics package but are
-    condtionally installed:
+ ** The following functions have been moved from the statistics package but are
+    conditionally installed:
 
       mad
 
- ** The following functions have been moved from octave to be condtionally
+ ** The following functions have been moved from octave to be conditionally
     installed:
 
     BASE

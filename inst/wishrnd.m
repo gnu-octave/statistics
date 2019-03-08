@@ -1,4 +1,4 @@
-## Copyright (C) 2013 Nir Krakauer <nkrakauer@ccny.cuny.edu>
+## Copyright (C) 2013-2019 Nir Krakauer <mail@nirkrakauer.net>
 ##
 ## This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 ##
@@ -22,8 +22,8 @@
 ## @seealso{iwishrnd, wishpdf}
 ## @end deftypefn
 
-## Author: Nir Krakauer <nkrakauer@ccny.cuny.edu>
-## Description: Compute the probability density function of the Wishart distribution
+## Author: Nir Krakauer <mail@nirkrakauer.net>
+## Description: Sample from the Wishart distribution
 
 function [W, D] = wishrnd(Sigma, df, D, n=1)
 
@@ -33,7 +33,7 @@ endif
 
 if nargin < 3 || isempty(D)
   try
-    D = chol(Sigma);
+    D = chol(Sigma, 'lower');
   catch
     error('wishrnd: Cholesky decomposition failed; Sigma probably not positive definite')
   end_try_catch
