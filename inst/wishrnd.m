@@ -59,17 +59,14 @@ endif
 
 for i = 1:n
   if df_isint
-    Z = randn(df, p) * D;
-    W(:, :, i) = Z'*Z;
+    Z = D * randn(p, df);
   else
     Z = diag(sqrt(chi2rnd(df - (0:(p-1))))); #fill diagonal
     #note: chi2rnd(x) is equivalent to 2*randg(x/2), but the latter seems to offer no performance advantage
     Z(ii > jj) = randn(p*(p-1)/2, 1); #fill lower triangle with normally distributed variates
     Z = D * Z;
-    W(:, :, i) = Z*Z';
   endif
-
-  
+  W(:, :, i) = Z*Z';
 endfor
 
 endfunction
