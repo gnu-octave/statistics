@@ -10,7 +10,7 @@
 ## @deftypefn  {Function File} {} [@var{W}[, @var{D}]] = wishrnd (@var{Sigma}, @var{df}[, @var{D}][, @var{n}=1])
 ## Return a random matrix sampled from the Wishart distribution with given parameters
 ##
-## Inputs: the @var{p} x @var{p} positive definite matrix @var{Sigma} and scalar degrees of freedom parameter @var{df} (and optionally the lower-triangular Cholesky factor @var{D} of @var{Sigma}).
+## Inputs: the @var{p} x @var{p} positive definite matrix @var{Sigma} (or the lower-triangular Cholesky factor @var{D} of @var{Sigma}) and scalar degrees of freedom parameter @var{df}.
 ## @var{df} can be non-integer as long as @var{df} > @var{p}
 ##
 ## Output: a random @var{p} x @var{p}  matrix @var{W} from the Wishart(@var{Sigma}, @var{df}) distribution. If @var{n} > 1, then @var{W} is @var{p} x @var{p} x @var{n} and holds @var{n} such random matrices. (Optionally, the lower-triangular Cholesky factor @var{D} of @var{Sigma} is also returned.)
@@ -72,7 +72,7 @@ endfor
 endfunction
 
 
-
+%!assert(size (wishrnd (1,2)), [1, 1]);
 %!assert(size (wishrnd (1,2,1)), [1, 1]);
 %!assert(size (wishrnd ([],2,1)), [1, 1]);
 %!assert(size (wishrnd ([3 1; 1 3], 2.00001, [], 1)), [2, 2]);
