@@ -73,6 +73,7 @@ endfunction
 
 
 %!assert(size (wishrnd (1,2)), [1, 1]);
+%!assert(size (wishrnd (1,2,[])), [1, 1]);
 %!assert(size (wishrnd (1,2,1)), [1, 1]);
 %!assert(size (wishrnd ([],2,1)), [1, 1]);
 %!assert(size (wishrnd ([3 1; 1 3], 2.00001, [], 1)), [2, 2]);
