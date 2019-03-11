@@ -10,10 +10,10 @@
 ## @deftypefn  {Function File} {} [@var{W}[, @var{D}]] = wishrnd (@var{Sigma}, @var{df}[, @var{D}][, @var{n}=1])
 ## Return a random matrix sampled from the Wishart distribution with given parameters
 ##
-## Inputs: the @var{p} x @var{p} positive definite matrix @var{Sigma} and scalar degrees of freedom parameter @var{df} (and optionally the Cholesky factor @var{D} of @var{Sigma}).
+## Inputs: the @var{p} x @var{p} positive definite matrix @var{Sigma} and scalar degrees of freedom parameter @var{df} (and optionally the lower-triangular Cholesky factor @var{D} of @var{Sigma}).
 ## @var{df} can be non-integer as long as @var{df} > @var{p}
 ##
-## Output: a random @var{p} x @var{p}  matrix @var{W} from the Wishart(@var{Sigma}, @var{df}) distribution. If @var{n} > 1, then @var{W} is @var{p} x @var{p} x @var{n} and holds @var{n} such random matrices. (Optionally, the Cholesky factor @var{D} of @var{Sigma} is also returned.)
+## Output: a random @var{p} x @var{p}  matrix @var{W} from the Wishart(@var{Sigma}, @var{df}) distribution. If @var{n} > 1, then @var{W} is @var{p} x @var{p} x @var{n} and holds @var{n} such random matrices. (Optionally, the lower-triangular Cholesky factor @var{D} of @var{Sigma} is also returned.)
 ##
 ## Averaged across many samples, the mean of @var{W} should approach @var{df}*@var{Sigma}, and the variance of each element @var{W}_ij should approach @var{df}*(@var{Sigma}_ij^2 + @var{Sigma}_ii*@var{Sigma}_jj)
 ##
