@@ -1,8 +1,3 @@
-Summary of important user-visible changes for statistics 1.4.2:
--------------------------------------------------------------------
-
- ** bug fix to wishrnd
-
 Summary of important user-visible changes for statistics 1.4.1:
 -------------------------------------------------------------------
  ** update install scripts for octave 5.0 depreciated functions
@@ -16,6 +11,7 @@ Summary of important user-visible changes for statistics 1.4.1:
       bartlett_test: df = k-1 (Bug #45894)
       gppdf: apply scale factor (Bug #54009)
       gmdistribution: updates for bug #54278, ##54279
+      wishrnd: Bug #55860
 
 Summary of important user-visible changes for statistics 1.4.0:
 -------------------------------------------------------------------
