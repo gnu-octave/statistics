@@ -1,4 +1,4 @@
-## Copyright (C) 2013 Fernando Damian Nieuwveldt <fdnieuwveldt@gmail.com>
+## Copyright (C) 2013-2019 Fernando Damian Nieuwveldt <fdnieuwveldt@gmail.com>
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -18,9 +18,9 @@
 ## @deftypefnx {Function File} {[@var{COEFF},@var{SCORE},@var{latent}]} = princomp(@var{X})
 ## @deftypefnx {Function File} {[@var{COEFF},@var{SCORE},@var{latent},@var{tsquare}]} = princomp(@var{X})
 ## @deftypefnx {Function File} {[...]} = princomp(@var{X},'econ')
+## Performs a principal component analysis on a NxP data matrix X
+##
 ## @itemize @bullet
-## @item
-## princomp performs principal component analysis on a NxP data matrix X
 ## @item
 ## @var{COEFF} : returns the principal component coefficients
 ## @item

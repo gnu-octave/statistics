@@ -1,4 +1,4 @@
-## Copyright (C) 2012 Fernando Damian Nieuwveldt <fdnieuwveldt@gmail.com>
+## Copyright (C) 2012-2019 Fernando Damian Nieuwveldt <fdnieuwveldt@gmail.com>
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -13,8 +13,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{XLOADINGS},@var{YLOADINGS},@var{XSCORES},@var{YSCORES},@var{coefficients},@var{fitted}] =} ...
-##        plsregress(@var{X}, @var{Y}, @var{NCOMP})
+## @deftypefn {Function File} {[@var{XLOADINGS},@var{YLOADINGS},@var{XSCORES},@var{YSCORES},@var{coefficients},@var{fitted}] =} plsregress(@var{X}, @var{Y}, @var{NCOMP})
+## Calculate partial least squares regression
+##
 ## @itemize @bullet
 ## @item
 ## @var{X}: Matrix of observations

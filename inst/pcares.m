@@ -1,4 +1,4 @@
-## Copyright (C) 2013 Fernando Damian Nieuwveldt <fdnieuwveldt@gmail.com>
+## Copyright (C) 2013-2019 Fernando Damian Nieuwveldt <fdnieuwveldt@gmail.com>
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -14,6 +14,8 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{residuals},@var{reconstructed}]}=pcares(@var{X}, @var{NDIM})
+## Calulate residuals from principal component analysis
+##
 ## @itemize @bullet
 ## @item
 ## @var{X} : N x P Matrix with N observations and P variables, the variables will be mean centered

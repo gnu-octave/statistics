@@ -17,7 +17,9 @@
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {@var{yy} =} monotone_smooth (@var{x}, @var{y}, @var{h})
 ## Produce a smooth monotone increasing approximation to a sampled functional
-## dependence y(x) using a kernel method (an Epanechnikov smoothing kernel is
+## dependence
+##
+## A kernel method is used (an Epanechnikov smoothing kernel is
 ## applied to y(x); this is integrated to yield the monotone increasing form.
 ## See Reference 1 for details.)
 ##

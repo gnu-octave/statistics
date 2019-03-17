@@ -1,4 +1,4 @@
-## Copyright (C) 2013 Fernando Damian Nieuwveldt <fdnieuwveldt@gmail.com>
+## Copyright (C) 2013-2019 Fernando Damian Nieuwveldt <fdnieuwveldt@gmail.com>
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -16,9 +16,9 @@
 ## @deftypefn {Function File} {[@var{COEFF}]} = pcacov(@var{X})
 ## @deftypefnx {Function File} {[@var{COEFF},@var{latent}]} = pcacov(@var{X})
 ## @deftypefnx {Function File} {[@var{COEFF},@var{latent},@var{explained}]} = pcacov(@var{X})
+## Perform principal component analysis on the nxn covariance matrix X
+##
 ## @itemize @bullet
-## @item
-## pcacov performs principal component analysis on the nxn covariance matrix X
 ## @item
 ## @var{COEFF} : a nxn matrix with columns containing the principal component coefficients
 ## @item
