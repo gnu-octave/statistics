@@ -392,6 +392,13 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
   centers = best_centers;
   sumd = best';
 
+  ## Compute distances
+  for i = 1:k
+    D (:, i) = dist (data, centers(i, :));
+  endfor
+  ## Classify
+  [~, classes] = min (D, [], 2);
+
   final_classes = NA (original_rows,1);
   final_classes(data_idx) = classes;        ## other positions already NaN / NA
   classes = final_classes;
