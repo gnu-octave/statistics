@@ -143,9 +143,9 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
   replicates_set_explicitly = false;
 
   ## Remove rows containing NaN / NA, but record which rows are used
-  data_idx = ! any (isnan (data), 2);
+  data_idx      = ! any (isnan (data), 2);
   original_rows = rows (data);
-  data = data(data_idx,:);
+  data          = data(data_idx,:);
 
   #used for getting the number of samples
   n_rows = rows (data);
@@ -236,11 +236,14 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
       if (isempty (k))
         k = rows (start);
       elseif (rows (start) != k)
-        error ("kmeans: Number of initializers (%d) should match number of centroids (%d)", rows (start), k);
+        error (["kmeans: Number of initializers (%d) " ...
+                "should match number of centroids (%d)"], rows (start), k);
       endif
       if (replicates_set_explicitly)
         if (replicates != size (start, 3))
-           error ("kmeans: The third dimension of the initializer (%d) should match the number of replicates (%d)", size (start, 3), replicates);
+           error (["kmeans: The third dimension of the initializer (%d) " ...
+                   "should match the number of replicates (%d)"], ...
+                   size (start, 3), replicates);
         endif
       else
         replicates = size (start, 3);
@@ -251,32 +254,32 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
   ## dist  returns the distance btwn each row of matrix x and a row vector c
   switch (lower (distance))
     case "sqeuclidean"
-      dist = @(x, c) (sumsq (bsxfun (@minus, x, c), 2));
-      centroid  = @(x) (mean (x,1));
+      dist     = @(x, c) sumsq (bsxfun (@minus, x, c), 2);
+      centroid = @(x) mean (x, 1);
     case "cityblock"
-      dist = @(x, c) (sum (abs (bsxfun (@minus, x, c)), 2));
-      centroid  = @(x) (median (x,1));
+      dist     = @(x, c) sum (abs (bsxfun (@minus, x, c)), 2);
+      centroid = @(x) median (x, 1);
     case "cosine"
         ## Pre-normalize all data.
         ## (when Octave implements normr, will use  data = normr (data) )
       for i = 1:rows (data)
         data(i,:) = data(i,:) / sqrt (sumsq (data(i,:)));
       endfor
-      dist = @(x, c) (1 - (x * c') ./ sqrt (sumsq (c)));
-      centroid = @(x) (mean (x,1));   ## already normalized
+      dist     = @(x, c) 1 - (x * c') ./ sqrt (sumsq (c));
+      centroid = @(x) mean (x, 1);   ## already normalized
     case "correlation"
-        ## Pre-normalize all data.
+      ## Pre-normalize all data.
       data = data - mean (data, 2);
-        ## (when Octave implements normr, will use  data = normr (data) )
+      ## (when Octave implements normr, will use  data = normr (data) )
       for i = 1:rows (data)
         data(i,:) = data(i,:) / sqrt (sumsq (data(i,:)));
       endfor
-
-      dist = @(x, c) (1 - (x * (c-mean (c))') ./ sqrt (sumsq (c-mean (c))));
-      centroid  = @(x) (mean (x,1));   ## already normalized
+      dist     = @(x, c) 1 - (x * (c - mean (c))') ...
+                          ./ sqrt (sumsq (c - mean (c)));
+      centroid = @(x) mean (x, 1);   ## already normalized
     case "hamming"
-      dist = @(x, c) (sum (bsxfun (@ne, x, c), 2));
-      centroid  = @(x) (median (x,1));
+      dist     = @(x, c) sum (bsxfun (@ne, x, c), 2);
+      centroid = @(x) median (x, 1);
     otherwise
       error ("kmeans: unsupported distance parameter %s", distance);
   endswitch
@@ -285,7 +288,6 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
   ########################################
 
   ## Now that  k  has been set (possibly by 'replicates' option), check/use it.
-
   if (! isscalar (k))
     error ("kmeans: second input argument must be a scalar");
   endif
@@ -293,27 +295,27 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
   ## used to hold the distances from each sample to each class
   D = zeros (n_rows, k);
 
-  best = Inf;
+  best         = Inf;
   best_centers = [];
   for rep = 1:replicates
     ## check for the 'start' property
     switch (lower (start))
       case "sample"
-        idx = randperm (n_rows, k);
+        idx     = randperm (n_rows, k);
         centers = data(idx, :);
       case "plus"                  # k-means++, by Arthur and Vassilios(?)
         centers(1,:) = data(randi (n_rows),:);
-	d = inf (n_rows, 1);       # Distance to nearest centroid so far
-	for i = 2:k
-	  d = min (d, dist (data, centers(i-1, :)));
-	  centers(i,:) = data(find (cumsum (d) > rand * sum (d), 1), :);
-	endfor
+        d            = inf (n_rows, 1);    # Distance to nearest centroid so far
+        for i = 2:k
+          d            = min (d, dist (data, centers(i - 1, :)));
+          centers(i,:) = data(find (cumsum (d) > rand * sum (d), 1), :);
+        endfor
       case "cluster"
-        idx = randperm (n_rows, max (k, ceil (n_rows/10)));
-        [~, centers] = kmeans (data(idx,:), k, "start", "sample",
+        idx          = randperm (n_rows, max (k, ceil (n_rows / 10)));
+        [~, centers] = kmeans (data(idx,:), k, "start", "sample", ...
                                "distance", distance);
       case "uniform"
-	# vectorised 'min_data + range .* rand'
+        # vectorised 'min_data + range .* rand'
         centers = bsxfun (@plus, min_data,
                           bsxfun (@times, range, rand (k, columns (data))));
       otherwise
@@ -323,13 +325,9 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
     ## Run the algorithm
     iter = 1;
 
-        ## Classify once before the loop; to set sumd, and  if  max_iter == 0
+    ## Classify once before the loop; to set sumd, and  if  max_iter == 0
     ## Compute distances and classify
-    for i = 1:k
-      D (:, i) = dist (data, centers(i, :));
-    endfor
-    [~, classes] = min (D, [], 2);
-    sumd = obj_cost (D, classes);
+    [D, classes, sumd] = update_dist (data, centers, D, k, dist);
 
     while (err > 0.001 && iter++ <= max_iter)
       ## Calculate new centroids
@@ -345,18 +343,18 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
             ## farthest from any centroid (and not replacing an empty cluster
             ## from earlier in this pass) and add it to the empty cluster
             case 'singleton'
-             available = setdiff(1:n_rows, replaced_centroids);
-             [~, idx] = max (min (D(available,:)'));
-             idx = available(idx);
+             available          = setdiff (1:n_rows, replaced_centroids);
+             [~, idx]           = max (min (D(available,:)'));
+             idx                = available(idx);
              replaced_centroids = [replaced_centroids, idx];
 
-             classes(idx) = i;
-             membership(idx)=1;
+             classes(idx)    = i;
+             membership(idx) = 1;
 
            ## if 'drop' then set C and D to NA
            case 'drop'
             centers(i,:) = NA;
-            D(i,:) = NA;
+            D(i,:)       = NA;
 
            ## if 'error' then throw the error
             otherwise
@@ -370,16 +368,9 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
         endif
       endfor
 
-      ## Compute distances
-      for i = 1:k
-        D (:, i) = dist (data, centers(i, :));
-      endfor
-
-      ## Classify
-      [~, classes] = min (D, [], 2);
-
+      ## Compute distances, classes and sums
+      [D, classes, new_sumd] = update_dist (data, centers, D, k, dist);
       ## calculate the difference in the sum of distances
-      new_sumd = obj_cost (D, classes);
       err  = sum (sumd - new_sumd);
       ## update the current sum of distances
       sumd = new_sumd;
@@ -390,29 +381,30 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
     endif
   endfor
   centers = best_centers;
-  sumd = best';
+  ## Compute final distances, classes and sums
+  [D, classes, sumd] = update_dist (data, centers, D, k, dist);
 
-  ## Compute distances
-  for i = 1:k
-    D (:, i) = dist (data, centers(i, :));
-  endfor
-  ## Classify
-  [~, classes] = min (D, [], 2);
+  ## Return with equal size as inputs
+  if (original_rows != rows (data))
+    final           = NA (original_rows,1);
+    final(data_idx) = classes;        ## other positions already NaN / NA
+    classes         = final;
+  endif
 
-  final_classes = NA (original_rows,1);
-  final_classes(data_idx) = classes;        ## other positions already NaN / NA
-  classes = final_classes;
 endfunction
 
-## calculate the sum of within-class distances
-function obj = obj_cost (D, classes)
-  obj = zeros (1,columns (D));
-  for i = 1:columns (D)
-    idx = (classes == i);
-    obj(i) = sum (D(idx,i));
-  end
+## Update distances, classes and sums
+function [D, classes, sumd] = update_dist (data, centers, D, k, dist)
+    for i = 1:k
+      D (:, i) = dist (data, centers(i, :));
+    endfor
+    [~, classes] = min (D, [], 2);
+    ## calculate the sum of within-class distances
+    sumd = zeros (k, 1);
+    for i = 1:k
+      sumd(i) = sum (D(classes == i,i));
+    endfor
 endfunction
-
 ## Test input parsing
 %!error kmeans (rand (3,2), 4);
 
