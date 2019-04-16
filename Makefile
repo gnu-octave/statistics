@@ -58,6 +58,13 @@ ifeq ($(vcs),git)
 release_dir_dep := .git/index
 endif
 
+HG           := hg
+HG_CMD        = $(HG) --config alias.$(1)=$(1) --config defaults.$(1)= $(1)
+HG_ID        := $(shell $(call HG_CMD,identify) --id | sed -e 's/+//' )
+HG_TIMESTAMP := $(firstword $(shell $(call HG_CMD,log) --rev $(HG_ID) --template '{date|hgdate}'))
+
+TAR_REPRODUCIBLE_OPTIONS := --sort=name --mtime="@$(HG_TIMESTAMP)" --owner=0 --group=0 --numeric-owner
+TAR_OPTIONS  := --format=ustar $(TAR_REPRODUCIBLE_OPTIONS)
 
 ## .PHONY indicates targets that are not filenames
 ## (https://www.gnu.org/software/make/manual/html_node/Phony-Targets.html)
@@ -96,7 +103,7 @@ html: $(html_tarball)
 
 ## An implicit rule with a recipe to build the tarballs correctly.
 %.tar.gz: %
-	$(TAR) -c -f - --posix -C "$(target_dir)/" "$(notdir $<)" | gzip -9n > "$@"
+	$(TAR) -cf - $(TAR_OPTIONS) -C "$(target_dir)/" "$(notdir $<)" | gzip -9n > "$@"
 
 clean-tarballs:
 	@echo "## Cleaning release tarballs (package + html)..."
