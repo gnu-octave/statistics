@@ -1,10 +1,7 @@
 Summary of important user-visible changes for statistics x.x.x:
 -------------------------------------------------------------------
 
- ** Changed for smaller bugfixes, increased
-    Matlab compatibility, or performance:
-
-      cannoncorr: allow more variables than observations
+ ** canoncorr: allow more variables than observations
 
 Summary of important user-visible changes for statistics 1.4.1:
 -------------------------------------------------------------------
