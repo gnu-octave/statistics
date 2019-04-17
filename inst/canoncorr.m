@@ -4,7 +4,7 @@ function [A,B,r,U,V,stats] = canoncorr (X,Y)
 ## @deftypefn {Function File} {[@var{A} @var{B} @var{r} @var{U} @var{V}] =} canoncorr (@var{X}, @var{Y})
 ## Canonical correlation analysis
 ##
-## Given @var{X} (size @var{k}*@var{m}) and @var{Y} (@var{k}*@var{n}), returns projection matrices of canonical coefficients @var{A} (size @var{m}*@var{d}, where @var{d}=@code{min}(@var{m}, @var{n})) and @var{B} (size @var{m}*@var{d}); the canonical correlations @var{r} (1*@var{d}, arranged in decreasing order); the canonical variables @var{U}, @var{V} (both @var{k}*@var{d}, with orthonormal columns); and @var{stats}, a structure containing results from Bartlett's chi-square and Rao's F tests of significance.
+## Given @var{X} (size @var{k}*@var{m}) and @var{Y} (@var{k}*@var{n}), returns projection matrices of canonical coefficients @var{A} (size @var{m}*@var{d}, where @var{d} is the smallest of @var{m}, @var{n}, @var{d}) and @var{B} (size @var{m}*@var{d}); the canonical correlations @var{r} (1*@var{d}, arranged in decreasing order); the canonical variables @var{U}, @var{V} (both @var{k}*@var{d}, with orthonormal columns); and @var{stats}, a structure containing results from Bartlett's chi-square and Rao's F tests of significance.
 ##
 ## References: @*
 ##   William H. Press (2011), Canonical Correlation Clarified by Singular Value Decomposition, http://numerical.recipes/whp/notes/CanonCorrBySVD.pdf @*
@@ -13,7 +13,7 @@ function [A,B,r,U,V,stats] = canoncorr (X,Y)
 ## @seealso{princomp}
 ## @end deftypefn
 
-#	Copyright (C) 2016 by Nir Krakauer <mail@nirkrakauer.net>
+#	Copyright (C) 2016-2019 by Nir Krakauer <mail@nirkrakauer.net>
 
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ function [A,B,r,U,V,stats] = canoncorr (X,Y)
 k = size (X, 1); #should also be size (Y, 1)
 m = size (X, 2);
 n = size (Y, 2);
-d = min (m, n);
+d = min ([k m n]);
 
 X = center (X);
 Y = center (Y);
@@ -40,7 +40,7 @@ Y = center (Y);
 [Qx Rx] = qr (X, 0);
 [Qy Ry] = qr (Y, 0);
 
-[U S V] = svd (Qx' * Qy, 0);
+[U S V] = svd (Qx' * Qy, "econ");
 
 A = Rx \ U(:, 1:d);
 B = Ry \ V(:, 1:d);
@@ -90,4 +90,5 @@ endif
 %!assert (V, center(Y) * B, 10*eps);
 %!assert (cov(U), eye(size(U, 2)), 10*eps);
 %!assert (cov(V), eye(size(V, 2)), 10*eps);
-
+%! rand ("state", 1); [A,B,r] = canoncorr (rand(5, 10),rand(5, 20));
+%!assert (r, ones(1, 5), 10*eps);
