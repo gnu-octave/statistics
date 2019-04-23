@@ -1,11 +1,10 @@
-## Author: Martijn van Oosterhout <kleptog@svana.org>
-## This program is granted to the public domain.
+
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {@var{MLE} =} gamfit (@var{data})
 ## Calculate gamma distribution parameters.
 ##
-## Find the maximum likelihood estimators (@var{mle}s) of the Gamma distribution
+## Find the maximum likelihood estimate parameters of the Gamma distribution
 ## of @var{data}.  @var{MLE} is a two element vector with shape parameter
 ## @var{A} and scale @var{B}.
 ##
@@ -13,7 +12,7 @@
 ## @end deftypefn
 
 ## This function works by minimizing the value of gamlike for the vector R.
-## Just about any minimization function will work, all it has to do a
+## Just about any minimization function will work, all it has to do is
 ## minimize for one variable. Although the gamma distribution has two
 ## parameters, their product is the mean of the data. so a helper function
 ## for the search takes one parameter, calculates the other and then returns
@@ -24,6 +23,24 @@
 ## Matlab. To work for Matlab, value of b needs to be inverted in a few
 ## places (marked with **)
 
+## Author: Martijn van Oosterhout <kleptog@svana.org>
+## This program is granted to the public domain.
+#	 Revisions copyright (C) 2019 by Nir Krakauer <mail@nirkrakauer.net> under GPL (below).
+
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program; If not, see <http://www.gnu.org/licenses/>.
+
+
 function res = gamfit(R)
 
   if (nargin != 1)
@@ -32,19 +49,26 @@ function res = gamfit(R)
 
   avg = mean(R);
 
-  # This can be just about any search function. I choose this because it
-  # seemed to be the only one that might work in this situaition...
-  a=nmsmax( @gamfit_search, 1, [], [], avg, R );
+  # Optimize with respect to log(a), since both a and b must be positive
+  x = fminsearch( @(x) gamfit_search(x, avg, R), 0 );
+  a = exp(x);
 
-  b=a/avg;      # **
+  b = a/avg;      # **
 
-  res=[a 1/b];
+  res = [a 1/b];
 endfunction
 
-# Helper function so we only have to minimize for one variable. Also to
-# inverting the output of gamlike, incase the optimisation function wants to
-# maximize rather than minimize.
-function res = gamfit_search( a, avg, R )
-  b=a/avg;      # **
-  res = -gamlike([a 1/b], R);
+# Helper function so we only have to minimize for one variable.
+function res = gamfit_search( x, avg, R )
+  a = exp(x);
+  b = a/avg;      # **
+  res = gamlike([a 1/b], R);
 endfunction
+
+
+#example data from https://www.real-statistics.com/distribution-fitting/distribution-fitting-via-maximum-likelihood/fitting-gamma-parameters-mle/
+%!shared v, res
+%! v = [1.2 1.6 1.7 1.8 1.9 2.0 2.2 2.6 3.0 3.5 4.0 4.8 5.6 6.6 7.6];
+%! res = gamfit(v);
+%!assert (res(1), 3.425, 1E-3);
+%!assert (res(2), 0.975, 1E-3);
