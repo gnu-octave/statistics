@@ -1,5 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2019 Anthony Morast
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -81,7 +82,7 @@ function rnd = unifrnd (a, b, varargin)
   endif
 
   if (isscalar (a) && isscalar (b))
-    if ((-Inf < a) && (a < b) && (b < Inf))
+    if ((-Inf < a) && (a <= b) && (b < Inf))
       rnd = a + (b - a) * rand (sz, cls);
     else
       rnd = NaN (sz, cls);
@@ -89,7 +90,7 @@ function rnd = unifrnd (a, b, varargin)
   else
     rnd = a + (b - a) .* rand (sz, cls);
 
-    k = !(-Inf < a) | !(a < b) | !(b < Inf);
+    k = !(-Inf < a) | !(a <= b) | !(b < Inf);
     rnd(k) = NaN;
   endif
 
@@ -127,3 +128,8 @@ endfunction
 %!error unifrnd (ones (2,2), 2, 3)
 %!error unifrnd (ones (2,2), 2, [3, 2])
 %!error unifrnd (ones (2,2), 2, 2, 3)
+
+%!assert (unifrnd (0,0), 0)
+%!assert (unifrnd (1,1), 1)
+%!assert (unifrnd (1,0), NaN)
+
