@@ -1,4 +1,4 @@
-## Copyright (C) 1995-2017 Kurt Hornik
+## Copyright (C) 1995-2019 Kurt Hornik
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -64,16 +64,15 @@ function [pval, ks] = kolmogorov_smirnov_test (x, dist, varargin)
 
   n = length (x);
   s = sort (x);
-  try
+
+  if exist (sprintf ("%scdf", dist))
     f = str2func (sprintf ("%scdf", dist));
-  catch
-    try
-      f = str2func (sprintf ("%s_cdf", dist));
-    catch
-      error ("kolmogorov_smirnov_test: no %scdf or %s_cdf function found",
-             dist, dist);
-    end_try_catch
-  end_try_catch
+  elseif exist (sprintf ("%s_cdf", dist))
+    f = str2func (sprintf ("%s_cdf", dist));
+  else
+    error ("kolmogorov_smirnov_test: no %scdf or %s_cdf function found",
+           dist, dist);
+  endif
 
   alt = "!=";
 
