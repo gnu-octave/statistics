@@ -248,7 +248,7 @@ clean-check:
 
 clean: clean-tarballs clean-unpacked-release clean-install clean-check
 	@echo "## Removing target directory (if empty)..."
-	-rmdir $(target_dir)
+	test -e $(target_dir) && rmdir $(target_dir) || true
 	@echo
 	@echo "## Cleaning done"
 	@echo
