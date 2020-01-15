@@ -3,6 +3,10 @@ Summary of important user-visible changes for statistics x.x.x:
 
  ** canoncorr: allow more variables than observations
 
+ ** unifrnd.m: changed unifrnd(a,a) to return a 0 rather than NaN
+
+ ** updates for usage of depreciated octave functions
+
 Summary of important user-visible changes for statistics 1.4.1:
 -------------------------------------------------------------------
  ** update install scripts for octave 5.0 depreciated functions
