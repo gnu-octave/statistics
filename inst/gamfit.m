@@ -18,11 +18,6 @@
 ## for the search takes one parameter, calculates the other and then returns
 ## the value of gamlike.
 
-## FIXME is this still true???
-## Note: Octave uses the inverse scale parameter, which is the opposite of
-## Matlab. To work for Matlab, value of b needs to be inverted in a few
-## places (marked with **)
-
 ## Author: Martijn van Oosterhout <kleptog@svana.org>
 ## This program is granted to the public domain.
 #	 Revisions copyright (C) 2019 by Nir Krakauer <mail@nirkrakauer.net> under GPL (below).
@@ -53,16 +48,16 @@ function res = gamfit(R)
   x = fminsearch( @(x) gamfit_search(x, avg, R), 0 );
   a = exp(x);
 
-  b = a/avg;      # **
+  b = avg/a;
 
-  res = [a 1/b];
+  res = [a b];
 endfunction
 
 # Helper function so we only have to minimize for one variable.
 function res = gamfit_search( x, avg, R )
   a = exp(x);
-  b = a/avg;      # **
-  res = gamlike([a 1/b], R);
+  b = avg/a;
+  res = gamlike([a b], R);
 endfunction
 
 
