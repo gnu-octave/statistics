@@ -499,19 +499,20 @@ function obj = fitgmdist(data, k, varargin)
   endif
   params = params*size (Sigma, 3) + 2*rows (mu) - 1;
 
-  extra.NegativeLogLikelihood = -best;
-  extra.AIC = -2*(best - params);
-  extra.BIC = -2*best + params * log (raw_samples);
-  extra.Converged = (incr <= TolFun);
-  extra.NumIterations = iter-1;
-  extra.RegularizationValue = Regularizer;
-
   # This works in Octave, but not in Matlab
   #obj = gmdistribution (best_params.mu, best_params.Sigma, best_params.p', extra);
   obj = gmdistribution (best_params.mu, best_params.Sigma, best_params.p');
+
+  obj.NegativeLogLikelihood = -best;
+  obj.AIC = -2*(best - params);
+  obj.BIC = -2*best + params * log (raw_samples);
+  obj.Converged = (incr <= TolFun);
+  obj.NumIterations = iter-1;
+  obj.RegularizationValue = Regularizer;
+
   if (Display == 1)
     fprintf ("  %d iterations   log-likelihood = %g\n", ...
-              extra.NumIterations, -extra.NegativeLogLikelihood);
+              obj.NumIterations, -obj.NegativeLogLikelihood);
   endif
 endfunction
 
