@@ -20,8 +20,8 @@
 ## For each element of @var{x}, compute the quantile (the inverse of the CDF)
 ## at @var{x} of the geometric distribution with parameter @var{p}.
 ##
-## The geometric distribution models the number of failures (@var{x}-1) of a
-## Bernoulli trial with probability @var{p} before the first success (@var{x}).
+## The geometric distribution models the number of failures (@var{x}) of a
+## Bernoulli trial with probability @var{p} before the first success.
 ## @end deftypefn
 
 ## Author: KH <Kurt.Hornik@wu-wien.ac.at>
