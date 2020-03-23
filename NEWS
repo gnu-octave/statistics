@@ -1,9 +1,19 @@
-Summary of important user-visible changes for statistics x.x.x:
+Summary of important user-visible changes for statistics 1.4.2:
 -------------------------------------------------------------------
 
  ** canoncorr: allow more variables than observations
 
- ** unifrnd.m: changed unifrnd(a,a) to return a 0 rather than NaN
+ ** fitgmdist: return fitgmdist parameters (Bug #57917)
+
+ ** gamfit: invert parameter per docs (Bug #57849)
+
+ ** geoXXX: update docs 'number of failures (X-1)' => 'number of failures (X)' (Bug #57606)
+
+ ** kolmogorov_smirnov_test.m: update function handle usage from octave6+ (Bug #57351)
+
+ ** linkage.m: fix octave6+ parse error (Bug #57348)
+
+ ** unifrnd: changed unifrnd(a,a) to return a 0 rather than NaN (Bug #56342)
 
  ** updates for usage of depreciated octave functions
 
