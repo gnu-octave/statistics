@@ -120,6 +120,9 @@
 ## @item 'Widths' @tab scalar @tab Scaling factor for box widths (default
 ## value is 0.4).
 ##
+## @item 'CapWidths' @tab scalar @tab Scaling factor for whisker cap widths
+## (default value is 1, which results to 'Widths'/8 halflength)
+##
 ## @item 'BoxStyle' @tab 'outline' @tab Draw boxes as outlines (default value).
 ## @item @tab 'filled' @tab Fill boxes with a color (outlines are still
 ## plotted).
@@ -200,6 +203,7 @@ function [s_o, hs_o] = boxplot (data, varargin)
   outlier_tags = 0;
   box_width = "proportional";
   widths = 0.4;
+  capwid = 1;
   box_style = 0;
   positions = [];
   labels = {};
@@ -338,6 +342,14 @@ function [s_o, hs_o] = boxplot (data, varargin)
             widths = varargin{indopt};
             if (! isscalar (widths) || ! (isnumeric (widths) && isreal (widths)))
               msg = ["boxplot: 'Widths' input argument accepts only", ...
+                    " a real scalar value as value"];
+              error (msg);
+            endif
+
+          case "capwidths"
+            capwid = varargin{indopt};
+            if (! isscalar (capwid) || ! (isnumeric (capwid) && isreal (capwid)))
+              msg = ["boxplot: 'CapWidths' input argument accepts only", ...
                     " a real scalar value as value"];
               error (msg);
             endif
@@ -651,11 +663,11 @@ function [s_o, hs_o] = boxplot (data, varargin)
   ## Add caps to the remaining whiskers
   cap_x = whisker_x;
   if (strcmpi (box_width, "proportional"))
-    cap_x(1, :) -= repmat (((box .* (widths ./ max (box))) / 8), 1, 2);
-    cap_x(2, :) += repmat (((box .* (widths ./ max (box))) / 8), 1, 2);
+    cap_x(1, :) -= repmat (((capwid * box .* (widths ./ max (box))) / 8), 1, 2);
+    cap_x(2, :) += repmat (((capwid * box .* (widths ./ max (box))) / 8), 1, 2);
   else
-    cap_x(1, :) -= repmat ((widths / 8), 1, 2);
-    cap_x(2, :) += repmat ((widths / 8), 1, 2);
+    cap_x(1, :) -= repmat ((capwid * widths / 8), 1, 2);
+    cap_x(2, :) += repmat ((capwid * widths / 8), 1, 2);
   endif
   cap_y = whisker_y([1, 1], :);
 
@@ -870,6 +882,9 @@ endfunction
 %!error <'Widths' input argument accepts only> boxplot (5, "widths", "a")
 %!error <'Widths' input argument accepts only> boxplot (5, "widths", [1:4])
 %!error <'Widths' input argument accepts only> boxplot (5, "widths", [])
+%!error <'CapWidths' input argument accepts only> boxplot (5, "capwidths", "a")
+%!error <'CapWidths' input argument accepts only> boxplot (5, "capwidths", [1:4])
+%!error <'CapWidths' input argument accepts only> boxplot (5, "capwidths", [])
 %!error <'BoxStyle' input argument accepts only> boxplot (1, "Boxstyle", 1)
 %!error <'BoxStyle' input argument accepts only> boxplot (1, "Boxstyle", "garbage")
 %!error <'Positions' input argument accepts only> boxplot (1, "positions", "aa")
