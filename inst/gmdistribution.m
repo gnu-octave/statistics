@@ -1,5 +1,5 @@
 ## Copyright (C) 2015 Lachlan Andrew <lachlanbis@gmail.com>
-## Copyright (C) 2018 John Donoghue <john.donoghue@ieee.org>
+## Copyright (C) 2018-2020 John Donoghue <john.donoghue@ieee.org>
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -13,38 +13,39 @@
 ##
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
-##
-## -*- texinfo -*-
-## @deftypefn {Function File} {@var{GMdist} =} gmdistribution (@var{mu}, @var{Sigma})
-## @deftypefnx {Function File} {@var{GMdist} =} gmdistribution (@var{mu}, @var{Sigma}, @var{p})
-## @deftypefnx {Function File} {@var{GMdist} =} gmdistribution (@var{mu}, @var{Sigma}, @var{p}, @var{extra})
-## Create an object of the  gmdistribution  class which represents a Gaussian
-## mixture model with k components of n-dimensional Gaussians.
-##
-## Input @var{mu} is a k-by-n matrix specifying the n-dimensional mean of each
-## of the k components of the distribution.
-##
-## Input @var{Sigma} is an array that specifies the variances of the
-## distributions, in one of four forms depending on its dimension.
-## @itemize
-##   @item n-by-n-by-k: Slice @var{Sigma}(:,:,i) is the variance of the
-##         i'th component
-##   @item 1-by-n-by-k: Slice diag(@var{Sigma}(1,:,i)) is the variance of the
-##         i'th component
-##   @item n-by-n: @var{Sigma} is the variance of every component
-##   @item 1-by-n-by-k: Slice diag(@var{Sigma}) is the variance of every
-##         component
-## @end itemize
-##
-## If @var{p} is specified, it is a vector of length k specifying the proportion
-## of each component.  If it is omitted or empty, each component has an equal
-## proportion.
-##
-## Input @var{extra} is used by fitgmdist to indicate the parameters of the
-## fitting process.
-## @seealso{fitgmdist}
-## @end deftypefn
+
 classdef gmdistribution
+   ## -*- texinfo -*-
+   ## @deftypefn {Function File} {@var{GMdist} =} gmdistribution (@var{mu}, @var{Sigma})
+   ## @deftypefnx {Function File} {@var{GMdist} =} gmdistribution (@var{mu}, @var{Sigma}, @var{p})
+   ## @deftypefnx {Function File} {@var{GMdist} =} gmdistribution (@var{mu}, @var{Sigma}, @var{p}, @var{extra})
+   ## Create an object of the  gmdistribution  class which represents a Gaussian
+   ## mixture model with k components of n-dimensional Gaussians.
+   ##
+   ## Input @var{mu} is a k-by-n matrix specifying the n-dimensional mean of each
+   ## of the k components of the distribution.
+   ##
+   ## Input @var{Sigma} is an array that specifies the variances of the
+   ## distributions, in one of four forms depending on its dimension.
+   ## @itemize
+   ##   @item n-by-n-by-k: Slice @var{Sigma}(:,:,i) is the variance of the
+   ##         i'th component
+   ##   @item 1-by-n-by-k: Slice diag(@var{Sigma}(1,:,i)) is the variance of the
+   ##         i'th component
+   ##   @item n-by-n: @var{Sigma} is the variance of every component
+   ##   @item 1-by-n-by-k: Slice diag(@var{Sigma}) is the variance of every
+   ##         component
+   ## @end itemize
+   ##
+   ## If @var{p} is specified, it is a vector of length k specifying the proportion
+   ## of each component.  If it is omitted or empty, each component has an equal
+   ## proportion.
+   ##
+   ## Input @var{extra} is used by fitgmdist to indicate the parameters of the
+   ## fitting process.
+   ## @seealso{fitgmdist}
+   ## @end deftypefn
+
    properties
       mu                        ## means
       Sigma                     ## covariances
