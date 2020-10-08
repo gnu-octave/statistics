@@ -6,6 +6,8 @@ Summary of important user-visible changes for statistics 1.4.3:
     BoxStyle, Positions, Labels, Colors) and an Octave-specific one
     (CapWidhts); demos added; texinfo improved (patch #9930)
 
+ ** confusionmat: new function (patch #9971)
+
 Summary of important user-visible changes for statistics 1.4.2:
 -------------------------------------------------------------------
 

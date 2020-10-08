@@ -120,3 +120,4 @@ Categorical data
  grp2idx
 Other
  sigma_pts
+ confusionmat
