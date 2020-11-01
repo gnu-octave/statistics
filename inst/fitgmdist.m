@@ -191,7 +191,7 @@ function obj = fitgmdist(data, k, varargin)
       try
         mu    = start.mu;
         Sigma = start.Sigma;
-        if (isfield (start, 'ComponentProprition'))
+        if (isfield (start, 'ComponentProportion'))
           p = start.ComponentProportion(:)';
         end
         if (any (size (data, 2) ~= [size(mu,2), size(Sigma)]) || ...
@@ -201,9 +201,6 @@ function obj = fitgmdist(data, k, varargin)
       catch
         error ("fitgmdist: invalid start parameter");
       end_try_catch
-      if (isfield (start, "ComponentProprition"))
-        p = start.ComponentProportion(:)';
-      endif
     else
       validIndices = 0;
       mu = zeros (k, nRows);
