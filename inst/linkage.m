@@ -94,7 +94,7 @@
 function dgram = linkage (d, method = "single", distarg, savememory)
 
   ## check the input
-  if (nargin == 4) && (strcmp (savememory, "savememory"))
+  if (nargin == 4) && (strcmpi (savememory, "savememory"))
     warning ("linkage: option 'savememory' not implemented");
   elseif (nargin < 1) || (nargin > 3)
     print_usage ();
@@ -107,13 +107,13 @@ function dgram = linkage (d, method = "single", distarg, savememory)
   methods = struct ...
   ("name", { "single"; "complete"; "average"; "weighted";
             "centroid"; "median"; "ward" },
-   "distfunc", {(@(x) min(x))                                # single
-                (@(x) max(x))                                # complete
+   "distfunc", {(@(x) min(x))                                     # single
+                (@(x) max(x))                                     # complete
                 (@(x,i,j,w) sum(diag(w([i,j]))*x)/sum(w([i,j])))  # average
-                (@(x) mean(x))                               # weighted
-                (@massdist)                                  # centroid
-                (@(x,i) massdist(x,i))                       # median
-                (@inertialdist)                              # ward
+                (@(x) mean(x))                                    # weighted
+                (@massdist)                                       # centroid
+                (@(x,i) massdist(x,i))                            # median
+                (@inertialdist)                                   # ward
    });
   mask = strcmp (lower (method), {methods.name});
   if (! any (mask))
@@ -137,18 +137,18 @@ function dgram = linkage (d, method = "single", distarg, savememory)
     print_usage ();
   endif
 
-  d = squareform (d, "tomatrix");      # dissimilarity NxN matrix
-  n = rows (d);                        # the number of observations
-  diagidx = sub2ind ([n,n], 1:n, 1:n); # indices of diagonal elements
-  d(diagidx) = Inf;             # consider a cluster as far from itself
+  d = squareform (d, "tomatrix");       # dissimilarity NxN matrix
+  n = rows (d);                         # the number of observations
+  diagidx = sub2ind ([n,n], 1:n, 1:n);  # indices of diagonal elements
+  d(diagidx) = Inf;                     # consider a cluster as far from itself
   ## For equal-distance nodes, the order in which clusters are
   ## merged is arbitrary.  Rotating the initial matrix produces an
   ## ordering similar to Matlab's.
-  cname = n:-1:1;               # cluster names in d
-  d = rot90 (d, 2);             # exchange low and high cluster numbers
-  weight = ones (1, n);         # cluster weights
-  dgram = zeros (n-1, 3);       # clusters from n+1 to 2*n-1
-  for cluster = n+1:2*n-1
+  cname = n:-1:1;                       # cluster names in d
+  d = rot90 (d, 2);                     # exchange low and high cluster numbers
+  weight = ones (1, n);                 # cluster weights
+  dgram = zeros (n-1, 3);               # clusters from n+1 to 2*n-1
+  for cluster = n+1 : 2*n-1
     ## Find the two nearest clusters
     [m midx] = min (d(:));
     [r, c] = ind2sub (size (d), midx);
@@ -157,9 +157,18 @@ function dgram = linkage (d, method = "single", distarg, savememory)
     ## Put it in place of the first one and remove the second
     cname(r) = cluster;
     cname(c) = [];
-    ## Compute the new distances
-    newd = dist (d([r c], :), r, c, weight);
-    newd(r) = Inf;              # take care of the diagonal element
+    ## Compute the new distances.
+    ## (Octave-7+ needs switch stmt to avoid 'called with too many inputs' err.)
+    switch find (mask)
+      case {1, 2, 4}                    # 1 arg
+        newd = dist (d([r c], :));
+      case {3, 5, 7}                    # 4 args
+        newd = dist (d([r c], :), r, c, weight);
+      case 6                            # 2 args
+        newd = dist (d([r c], :), r);
+      otherwise
+    endswitch
+    newd(r) = Inf;                      # Take care of the diagonal element
     ## Put distances in place of the first ones, remove the second ones
     d(r,:) = newd;
     d(:,r) = newd';
@@ -174,12 +183,13 @@ function dgram = linkage (d, method = "single", distarg, savememory)
 
   ## Check that distances are monotonically increasing
   if (any (diff (dgram(:,3)) < 0))
-    warning ("clustering",
+    warning ("Octave:clustering",
              "linkage: cluster distances do not monotonically increase\n\
         you should probably use a method different from \"%s\"", method);
   endif
 
 endfunction
+
 
 ## Take two row vectors, which are the Euclidean distances of clusters I
 ## and J from the others.  Column I of second row contains the distance
@@ -188,14 +198,15 @@ endfunction
 ## clusters. Use the law of cosines to find the distances of the new
 ## cluster from all the others.
 function y = massdist (x, i, j, w)
-  x .^= 2;                      # squared Euclidean distances
-  if (nargin == 2)              # median distance
-    qi = 0.5;                   # equal weights ("weighted")
-  else                          # centroid distance
-    qi = 1 / (1 + w(j) / w(i)); # proportional weights ("unweighted")
+  x .^= 2;                              # Squared Euclidean distances
+  if (nargin == 2)                      # Median distance
+    qi = 0.5;                           # Equal weights ("weighted")
+  else                                  # Centroid distance
+    qi = 1 / (1 + w(j) / w(i));         # Proportional weights ("unweighted")
   endif
-  y = sqrt (qi*x(1,:) + (1-qi)*(x(2,:) - qi*x(2,i)));
+  y = sqrt (qi * x(1, :) + (1 - qi) * (x(2, :) - qi * x(2, i)));
 endfunction
+
 
 ## Take two row vectors, which are the inertial distances of clusters I
 ## and J from the others.  Column I of second row contains the inertial
@@ -206,34 +217,46 @@ endfunction
 ## other clusters, convert them back to inertial distances and return
 ## them.
 function y = inertialdist (x, i, j, w)
-  wi = w(i); wj = w(j); # the cluster weights
-  s = [wi + w; wj + w]; # sum of weights for all cluster pairs
-  p = [wi * w; wj * w]; # product of weights for all cluster pairs
-  x = x.^2 .* s ./ p;   # convert inertial dist. to squared Eucl.
-  sij = wi + wj;        # sum of weights of I and J
-  qi = wi/sij;          # normalise the weight of I
+  wi = w(i);                            # The cluster
+  wj = w(j);                            # weights.
+  s = [wi + w;                          # Sum of weights for
+  wj + w];                              # all cluster pairs.
+  p = [wi * w;                          # Product of weights for
+  wj * w];                              # all cluster pairs.
+  x = x.^2 .* s ./ p;                   # Convert inertial dist. to squared Eucl.
+  sij = wi + wj;                        # Sum of weights of I and J
+  qi = wi / sij;                        # Normalise the weight of I
   ## Squared Euclidean distances between all clusters and new cluster K
-  x = qi*x(1,:) + (1-qi)*(x(2,:) - qi*x(2,i));
+  x = qi * x(1, :) + (1 - qi) * (x(2, :) - qi * x(2, i));
   y = sqrt (x * sij .* w ./ (sij + w)); # convert Eucl. dist. to inertial
 endfunction
 
+
 %!shared x, t
-%! x = reshape(mod(magic(6),5),[],3);
+%! x = reshape (mod (magic (6),5), [], 3);
 %! t = 1e-6;
-%!assert (cond (linkage (pdist (x))),              34.119045,t);
-%!assert (cond (linkage (pdist (x), "complete")),  21.793345,t);
-%!assert (cond (linkage (pdist (x), "average")),   27.045012,t);
-%!assert (cond (linkage (pdist (x), "weighted")),  27.412889,t);
+
+%!assert (cond (linkage (pdist (x))),                   34.119045, t);
+%!assert (cond (linkage (pdist (x), "complete")),       21.793345, t);
+%!assert (cond (linkage (pdist (x), "average")),        27.045012, t);
+%!assert (cond (linkage (pdist (x), "weighted")),       27.412889, t);
+
 %! lastwarn(); # Clear last warning before the test
-%!warning <clustering> linkage (pdist (x), "centroid");
-%!test warning off clustering
-%! assert (cond (linkage (pdist (x), "centroid")), 27.457477,t);
-%! warning on clustering
-%!warning <clustering> linkage (pdist (x), "median");
-%!test warning off clustering
-%! assert (cond (linkage (pdist (x), "median")),   27.683325,t);
-%! warning on clustering
-%!assert (cond (linkage (pdist (x), "ward")),      17.195198,t);
-%!assert (cond (linkage(x,"ward","euclidean")),    17.195198,t);
-%!assert (cond (linkage(x,"ward",{"euclidean"})),  17.195198,t);
-%!assert (cond (linkage(x,"ward",{"minkowski",2})),17.195198,t);
+%!warning <cluster distances> linkage (pdist (x), "centroid");
+
+%!test
+%! warning off Octave:clustering
+%! assert (cond (linkage (pdist (x), "centroid")),      27.457477, t);
+%! warning on Octave:clustering
+
+%!warning <cluster distances> linkage (pdist (x), "median");
+
+%!test
+%! warning off Octave:clustering
+%! assert (cond (linkage (pdist (x), "median")),        27.683325, t);
+%! warning on Octave:clustering
+
+%!assert (cond (linkage (pdist (x), "ward")),           17.195198, t);
+%!assert (cond (linkage (x, "ward", "euclidean")),      17.195198, t);
+%!assert (cond (linkage (x, "ward", {"euclidean"})),    17.195198, t);
+%!assert (cond (linkage (x, "ward", {"minkowski", 2})), 17.195198, t);
