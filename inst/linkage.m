@@ -91,10 +91,10 @@
 
 ## Author: Francesco Potortì  <pot@gnu.org>
 
-function dgram = linkage (d, method = "single", distarg, savememmory)
+function dgram = linkage (d, method = "single", distarg, savememory)
 
   ## check the input
-  if (nargin == 5) && (strcmp (savememmory, "savememory"))
+  if (nargin == 4) && (strcmp (savememory, "savememory"))
     warning ("linkage: option 'savememory' not implemented");
   elseif (nargin < 1) || (nargin > 3)
     print_usage ();
@@ -121,7 +121,7 @@ function dgram = linkage (d, method = "single", distarg, savememmory)
   endif
   dist = {methods.distfunc}{mask};
 
-  if (nargin >= 3 && ~ isvector (d))
+  if (nargin >= 3 && ! isvector (d))
     if (ischar (distarg))
       d = pdist (d, distarg);
     elseif (iscell (distarg))
@@ -130,7 +130,7 @@ function dgram = linkage (d, method = "single", distarg, savememmory)
       print_usage ();
     endif
   elseif (nargin < 3)
-    if (~ isvector (d))
+    if (! isvector (d))
       d = pdist (d);
     endif
   else
@@ -140,7 +140,7 @@ function dgram = linkage (d, method = "single", distarg, savememmory)
   d = squareform (d, "tomatrix");      # dissimilarity NxN matrix
   n = rows (d);                        # the number of observations
   diagidx = sub2ind ([n,n], 1:n, 1:n); # indices of diagonal elements
-  d(diagidx) = Inf;     # consider a cluster as far from itself
+  d(diagidx) = Inf;             # consider a cluster as far from itself
   ## For equal-distance nodes, the order in which clusters are
   ## merged is arbitrary.  Rotating the initial matrix produces an
   ## ordering similar to Matlab's.
