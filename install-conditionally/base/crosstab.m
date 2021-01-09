@@ -1,3 +1,4 @@
+## Copyright (C) 2021 Stefano Guidoni
 ## Copyright (C) 2018 John Donoghue
 ## Copyright (C) 1995-2017 Kurt Hornik
 ##
@@ -16,48 +17,115 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {@var{t} =} crosstab (@var{x}, @var{y})
+## @deftypefn {} {@var{t} =} crosstab (@var{x1}, @var{x2})
+## @deftypefnx {Function File} @
+##   {@var{t} =} crosstab (@var{x1}, ..., @var{xn})
+## @deftypefnx {Function File} @
+##   {[@var{t}, @var{chi-2}, @var{p}, @var{labels}] =} crosstab (...)
 ## Create a cross-tabulation (contingency table) @var{t} from data vectors.
 ##
-## The inputs @var{x}, @var{y} must be vectors of equal length with a data
-## type of numeric, logical, or char.
+## The inputs @var{x1}, @var{x2}, ... @var{xn} must be vectors of equal length 
+## with a data type of numeric, logical, char, or string (cell array).
 ##
-## Currently, only 1- and 2-dimensional tables are supported.
+## As additional return values @code{crosstab} returns the chi-square statistics 
+## @var{chi-2}, its p-value @var{p} and a cell array @var{labels}, containing
+## the labels of each input argument.
+##
+## Currently @var{chi-2} and @var{p} are available only for 1 or 2-dimensional
+## @var{t}, with @code{crosstab} returning a NaN value for both @var{chi-2} and 
+## @var{p} for 3-dimensional, or more, @var{t}.
 ## @end deftypefn
+##
+## @seealso{grp2idx,tabulate}
 
-function t = crosstab (x, y)
-
-  if (nargin != 2)
+function [t, chi2, p, labels] = crosstab (varargin)
+  
+  ## check input
+  if (nargin < 2)
     print_usage ();
   endif
-
-  if (! (   isvector (x) && isreal (x)
-         && isvector (y) && isreal (y)
-         && (numel (x) == numel (y))))
-    error ("crosstab: X and Y must be real vectors of the same length");
-  endif
-
-  x = x(:);
-  y = y(:);
-  v = unique (x);
-  w = unique (y);
-  for i = 1 : length (v)
-    for j = 1 : length (w)
-      t(i,j) = sum ((x == v(i) | isnan (v(i)) * isnan (x)) &
-                    (y == w(j) | isnan (w(j)) * isnan (y)));
-    endfor
+  
+  v_length = length (varargin{1});
+  
+  for i = 1 : nargin
+    if ((! isvector (varargin{i})) || (v_length != length (varargin{i})))
+      error ("crosstab: x1, x2 ... xn must be vectors of the same length");
+    endif
   endfor
-
+  
+  
+  ## main - begin
+  v_reshape = [];                    # vector of the dimensions of t
+  X = [];                            # matrix of the indexed input values
+  labels = {};                       # cell array of labels
+  
+  for k = 1 : nargin
+    [g, gn] = grp2idx (varargin{k});
+    
+    X = [X, g];
+    for h = 1 : length (gn)
+      labels{h, k} = gn{h, 1};
+    endfor
+    v_reshape(k) = length (unique (varargin{k}));
+  endfor
+  
+  v = unique (X(:, nargin));
+  t = [];
+  
+  ## core logic, this employs a recursive function "crosstab_recursive"
+  ## given (x1, x2, x3, ... xn) as inputs
+  ## t(i,j,k,...) = sum (x1(:) == v1(i) & x2(:) == v2(j) & ...)
+  for i = 1 : length (v)
+    t = [t, (crosstab_recursive (nargin - 1,...
+      (X(:, nargin) == v(i) | isnan (v(i)) * isnan (X(:, nargin)))))];
+  endfor
+  
+  t = reshape(t, v_reshape);         # build the nargin-dimensional matrix
+  
+  ## additional statistics
+  if (length (v_reshape) == 2)
+    [p, chi2] = chisquare_test_independence(t);
+  elseif (length (v_reshape) > 2)
+    ## FIXME!
+    ## chisquare_test_independence works with 2D matrices only
+    warning ("crosstab: chi-square test only available for 2D results");
+    p = NaN;                         # placeholder
+    chi2 = NaN;                      # placeholder
+  endif
+  ## main - end
+  
+  
+  ## function: crosstab_recursive
+  ## while there are input vectors, let's do iterations over them
+  function t_partial = crosstab_recursive (x_idx, t_parent)
+    y = X(:, x_idx);
+    w = unique (y);
+    
+    t_partial = [];
+    if (x_idx == 1)
+      ## we have reached the last vector,
+      ## let the computation begin
+      for j = 1 : length (w)
+        t_partial = [t_partial, ...
+          sum(t_parent & (y == w(j) | isnan (w(j)) * isnan (y)));];
+      endfor
+    else
+      ## if there are more vectors,
+      ## just add data and pass it through to the next iteration
+      for j = 1 : length (w)
+        t_partial = [t_partial, ...
+          (crosstab_recursive (x_idx - 1, ...
+            (t_parent & (y == w(j) | isnan (w(j)) * isnan (y)))))];
+      endfor
+    endif
+  endfunction
 endfunction
 
 
 ## Test input validation
 %!error crosstab ()
 %!error crosstab (1)
-%!error crosstab (1, 2, 3)
-%!error <X .* must be .* vector> crosstab (ones (2), [1 1])
-%!error <Y must be .* vector> crosstab ([1 1], ones (2))
-%!error <X .* must be real> crosstab ({true, true}, [1 1])
-%!error <Y must be real> crosstab ([1 1], {true, true})
-%!error <X and Y must be .* of the same length> crosstab ([1], [1 1])
-%!error <X and Y must be .* of the same length> crosstab ([1 1], [1])
+%!error <x1, x2 .* must be vectors .*> crosstab (ones (2), [1 1])
+%!error <x1, x2 .* must be vectors .*> crosstab ([1 1], ones (2))
+%!error <x1, x2 .* must be vectors of the same length> crosstab ([1], [1 1])
+%!error <x1, x2 .* must be vectors of the same length> crosstab ([1 1], [1])
