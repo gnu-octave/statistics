@@ -95,7 +95,8 @@ function dgram = linkage (d, method = "single", distarg, savememory)
 
   ## check the input
   if (nargin == 4) && (strcmpi (savememory, "savememory"))
-    warning ("linkage: option 'savememory' not implemented");
+    warning ("Octave:linkage_savemem", ...
+             "linkage: option 'savememory' not implemented");
   elseif (nargin < 1) || (nargin > 3)
     print_usage ();
   endif
