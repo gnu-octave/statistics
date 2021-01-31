@@ -4,13 +4,13 @@ Summary of important user-visible changes for statistics 1.4.3:
  New functions:
  ==============
 
- ** confusionmat      (patch #9971)
-
- ** inconsistent      (patch #10008)
-
  ** cluster           (patch #10009)
 
  ** clusterdata       (patch #10012)
+
+ ** confusionmat      (patch #9971)
+
+ ** inconsistent      (patch #10008)
 
  Improvements:
  =============
@@ -19,6 +19,8 @@ Summary of important user-visible changes for statistics 1.4.3:
     plot options added (OutlierTags, Sample_IDs, BoxWidth, Widths,
     BoxStyle, Positions, Labels, Colors) and an Octave-specific one
     (CapWidhts); demos added; texinfo improved (patch #9930)
+
+ ** crosstab.m: make n-dimensional (patch #10014))
 
  ** fitgmdist.m: fix typo in ComponentProportion (bug #59386)
  
