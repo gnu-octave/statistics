@@ -12,6 +12,8 @@ Summary of important user-visible changes for statistics 1.4.3:
 
  ** inconsistent      (patch #10008)
  
+ ** mhsample.m        (patch #10016)
+ 
  ** slicesample       (patch #10019)
 
  Improvements:

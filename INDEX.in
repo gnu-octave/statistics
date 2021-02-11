@@ -83,6 +83,7 @@ Models
  hmmestimate 
  hmmgenerate 
  hmmviterbi
+ mhsample
  slicesample
 Hypothesis testing
  anderson_darling_test
