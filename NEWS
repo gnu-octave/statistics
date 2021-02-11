@@ -11,6 +11,8 @@ Summary of important user-visible changes for statistics 1.4.3:
  ** confusionmat      (patch #9971)
 
  ** inconsistent      (patch #10008)
+ 
+ ** slicesample       (patch #10019)
 
  Improvements:
  =============
