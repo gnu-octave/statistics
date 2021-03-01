@@ -4,17 +4,19 @@ Summary of important user-visible changes for statistics 1.4.3:
  New functions:
  ==============
 
- ** cluster           (patch #10009)
+ ** cluster            (patch #10009)
 
- ** clusterdata       (patch #10012)
+ ** clusterdata        (patch #10012)
 
- ** confusionmat      (patch #9971)
+ ** confusionmat       (patch #9971)
 
- ** inconsistent      (patch #10008)
+ ** inconsistent       (patch #10008)
  
- ** mhsample.m        (patch #10016)
+ ** mhsample.m         (patch #10016)
  
- ** slicesample       (patch #10019)
+ ** optimalleaforder.m (patch #10034)
+ 
+ ** slicesample        (patch #10019)
 
  Improvements:
  =============

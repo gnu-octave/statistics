@@ -102,6 +102,7 @@ Clustering
  kmeans
  linkage
  mahal
+ optimalleaforder
  pdist
  pdist2
  squareform
