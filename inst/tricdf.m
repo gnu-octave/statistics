@@ -63,7 +63,7 @@ function cdf = tricdf (x, a, b, c)
     cdf(k_temp) += full_area;
 
     k_temp = k & (a < x) & (x < c);
-    area = (x(k_temp) - a).^2 * h;
+    area = (x(k_temp) - a).^2 * h / (2 * ( c - a));
     cdf(k_temp) += area;
 
     k_temp = k & (b <= x);
@@ -71,7 +71,7 @@ function cdf = tricdf (x, a, b, c)
     cdf(k_temp) += full_area;
 
     k_temp = k & (c < x) & (x < b);
-    area = (b-x(k_temp)).^2 * h;
+    area = (b-x(k_temp)).^2 * h / (2 * (b - c));
     cdf(k_temp) += full_area - area;
   else
     h = 2 ./ (b-a);
@@ -81,7 +81,7 @@ function cdf = tricdf (x, a, b, c)
     cdf(k_temp) += full_area;
 
     k_temp = k & (a <= x) & (x < c);
-    area = (x(k_temp) - a(k_temp)).^2 .* h(k_temp);
+    area = (x(k_temp) - a(k_temp)).^2 .* h(k_temp) ./ (2 * (c(k_temp) - a(k_temp)));
     cdf(k_temp) += area;
 
     k_temp = k & (b <= x);
@@ -89,7 +89,7 @@ function cdf = tricdf (x, a, b, c)
     cdf(k_temp) += full_area;
 
     k_temp = k & (c <= x) & (x < b);
-    area = (b(k_temp)-x(k_temp)).^2 .* h(k_temp);
+    area = (b(k_temp)-x(k_temp)).^2 .* h(k_temp) ./ (2 * (b(k_temp) - c(k_temp)));
     cdf(k_temp) += full_area - area;
   endif
 
