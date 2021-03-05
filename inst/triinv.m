@@ -58,11 +58,11 @@ function inv = triinv (x, a, b, c)
     w = c-a;
     area1 = h * w / 2;
     j = k & (x <= area1);
-    inv(j) += (x(j) * (h/2) * w).^0.5 + a;
+    inv(j) += (x(j) * 2 * w / h).^0.5 + a;
 
     w = b-c;
     j = k & (area1 < x) & (x < 1);
-    inv(j) += b - ((1-x(j)) * (h/2) * w).^0.5;
+    inv(j) += b - ((1-x(j)) * 2 * w / h).^0.5;
 
     j = k & (x == 1);
     inv(j) = b;
@@ -71,11 +71,11 @@ function inv = triinv (x, a, b, c)
     w = c-a;
     area1 = h .* w / 2;
     j = k & (x <= area1);
-    inv(j) += (x(j) .* (h(j)/2) .* w(j)).^0.5 + a(j);
+    inv(j) += (2 * x(j) .* (w(j) ./ h(j))).^0.5 + a(j);
 
     w = b-c;
     j = k & (area1 < x) & (x < 1);
-    inv(j) += b(j) - ((1-x(j)) .* (h(j)/2) .* w(j)).^0.5;
+    inv(j) += b(j) - (2 * (1-x(j)) .* (w(j) ./ h(j))).^0.5;
 
     j = k & (x == 1);
     inv(j) = b(j);
