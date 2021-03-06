@@ -28,6 +28,8 @@ Summary of important user-visible changes for statistics 1.4.3:
 
  ** crosstab.m: make n-dimensional (patch #10014))
 
+ ** dendrogram.m: many improvements (patch #10036)
+
  ** fitgmdist.m: fix typo in ComponentProportion (bug #59386)
  
 
