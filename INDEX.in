@@ -99,6 +99,7 @@ Fitting
  gamfit
 Clustering
  cmdscale
+ cophenet
  kmeans
  linkage
  mahal

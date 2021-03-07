@@ -10,6 +10,8 @@ Summary of important user-visible changes for statistics 1.4.3:
 
  ** confusionmat       (patch #9971)
 
+ ** cophenet           (patch #10040)
+
  ** inconsistent       (patch #10008)
  
  ** mhsample.m         (patch #10016)
