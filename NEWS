@@ -8,6 +8,8 @@ Summary of important user-visible changes for statistics 1.4.3:
 
  ** clusterdata        (patch #10012)
 
+ ** confusionchart     (patch #9985)
+
  ** confusionmat       (patch #9971)
 
  ** cophenet           (patch #10040)

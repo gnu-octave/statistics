@@ -73,6 +73,7 @@ Regression
  stepwisefit
 Plots
  boxplot
+ confusionchart
  dendrogram
  histfit
  hist3
