@@ -111,14 +111,26 @@
 ## What to do when a centroid is not the closest to any data sample.
 ##  @table @code
 ##  @item @qcode{error}
-##        (Default) Throw an error.
+##        Throw an error.
 ##  @item @qcode{singleton}
-##        Select the row of @var{data} that has the highest error and
+##        (Default) Select the row of @var{data} that has the highest error and
 ##        use that as the new centroid.
 ##  @item @qcode{drop}
 ##        Remove the centroid, and continue computation with one fewer centroid.
 ##        The dimensions of the outputs @var{centroids} and @var{d}
 ##        are unchanged, with values for omitted centroids replaced by NA.
+##        
+##  @end table
+##
+## @item @var{Display}
+## Display a text summary.
+##  @table @code
+##  @item @qcode{off}
+##        (Default) Display no summary.
+##  @item @qcode{final}
+##        Display a summary for each clustering operation.
+##  @item @qcode{iter}
+##        Display a summary for each iteration of a clustering operation.
 ##        
 ##  @end table
 ## @end table
@@ -134,11 +146,12 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
   [reg, prop] = parseparams (varargin);
 
   ## defaults for options
-  emptyaction = "error";
+  emptyaction = "singleton";
   start       = "plus";
   replicates  = 1;
   max_iter    = 100;
   distance    = "sqeuclidean";
+  display     = "off";
 
   replicates_set_explicitly = false;
 
@@ -173,8 +186,9 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
 
       case "replicates"  replicates  = prop{2};
                          replicates_set_explicitly = true;
-
-      case {"display", "onlinephase", "options"}
+                         
+      case "display"     display = prop{2};
+      case {"onlinephase", "options"}
         warning ("kmeans: Ignoring unimplemented option '%s'", prop{1});
 
       otherwise
@@ -284,6 +298,19 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
       error ("kmeans: unsupported distance parameter %s", distance);
   endswitch
 
+  ## check for the 'display' property
+  if (! strcmp (display, "off"))
+    display = lower (display);
+    switch (display)
+      case {"off", "final"} ;
+      case "iter"
+        printf ("%6s\t%6s\t%8s\t%12s\n", "iter", "phase", "num", "sum");
+      otherwise
+        error ("kmeans: invalid display parameter %s", display);
+    endswitch
+  endif
+  
+  
   ## Done processing options
   ########################################
 
@@ -291,13 +318,17 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
   if (! isscalar (k))
     error ("kmeans: second input argument must be a scalar");
   endif
-
+  
   ## used to hold the distances from each sample to each class
   D = zeros (n_rows, k);
 
   best         = Inf;
   best_centers = [];
   for rep = 1:replicates
+    ## keep track of the number of data points that change class
+    old_classes = zeros (rows (data), 1);
+    n_changes = -1;
+    
     ## check for the 'start' property
     switch (lower (start))
       case "sample"
@@ -329,7 +360,7 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
     ## Compute distances and classify
     [D, classes, sumd] = update_dist (data, centers, D, k, dist);
 
-    while (err > 0.001 && iter++ <= max_iter)
+    while (err > 0.001 && iter++ <= max_iter && n_changes != 0)
       ## Calculate new centroids
       replaced_centroids = [];        ## Used by "emptyaction = singleton"
       for i = 1:k
@@ -374,15 +405,40 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
       err  = sum (sumd - new_sumd);
       ## update the current sum of distances
       sumd = new_sumd;
+      ## compute the number of class changes
+      n_changes = sum (old_classes != classes);
+      old_classes = classes;
+      
+      ## display iteration status
+      if (strcmp (display, "iter"))
+        printf ("%6d\t%6d\t%8d\t%12.3f\n", (iter - 1), 1, ...
+          n_changes, sum (sumd));
+      endif
     endwhile
+    ## throw a warning if the algorithm did not converge
+    if (iter > max_iter && err > 0.001 && n_changes != 0)
+      warning ("kmeans: failed to converge in %d iterations", max_iter);
+    endif
+    
     if (sum (sumd) < sum (best) || isinf (best))
       best = sumd;
       best_centers = centers;
+    endif
+    
+    ## display final results
+    if (strcmp (display, "final"))
+      printf ("Replicate %d, %d iterations, total sum of distances = %.3f.\n", ...
+        rep, iter, sum (sumd));
     endif
   endfor
   centers = best_centers;
   ## Compute final distances, classes and sums
   [D, classes, sumd] = update_dist (data, centers, D, k, dist);
+  
+  ## display final results
+  if (strcmp (display, "final") || strcmp (display, "iter"))
+    printf ("Best total sum of distances = %.3f\n", sum (sumd));
+  endif
 
   ## Return with equal size as inputs
   if (original_rows != rows (data))
