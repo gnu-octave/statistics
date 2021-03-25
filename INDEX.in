@@ -80,6 +80,7 @@ Plots
  hist3
  normplot
  repanova
+ silhouette
  violin
 Models
  hmmestimate 
