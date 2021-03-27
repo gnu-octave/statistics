@@ -75,6 +75,7 @@ Plots
  boxplot
  confusionchart
  dendrogram
+ gscatter
  histfit
  hist3
  normplot
