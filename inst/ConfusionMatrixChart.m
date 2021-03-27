@@ -13,39 +13,44 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-## NOTE:
-## Some specific properties of this class are:
-##
-## @table @asis
-## @item @qcode{"DiagonalColor"}
-## The color of the patches on the diagonal, default is [0.0, 0.4471, 0.7412].
-##
-## @item @qcode{"OffDiagonalColor"}
-## The color of the patches off the diagonal, default is [0.851, 0.3255, 0.098].
-##
-## @item @qcode{"GridVisible"}
-## Available values: @qcode{on} (default), @qcode{off}.
-##
-## @item @qcode{"Normalization"}
-## Available values: @qcode{absolute} (default), @qcode{column-normalized},
-## @qcode{row-normalized}, @qcode{total-normalized}.
-##
-## @item @qcode{"ColumnSummary"}
-## Available values: @qcode{off} (default), @qcode{absolute},
-## @qcode{column-normalized},@qcode{total-normalized}.
-##
-## @item @qcode{"RowSummary"}
-## Available values: @qcode{off} (default), @qcode{absolute},
-## @qcode{row-normalized}, @qcode{total-normalized}.
-## @end table
-##
-## MATLAB compatibility -- the not implemented properties are: FontColor,
-## PositionConstraint, OuterPosition, InnerPosition, Position, Units, Layout,
-## HandleVisibility.
 ##
 ## Author: Stefano Guidoni <ilguido@users.sf.net>
 
 classdef ConfusionMatrixChart < handle
+
+  ## -*- texinfo -*-
+  ## @deftypefn {} {@var{p} =} ConfusionMatrixChart ()
+  ## Create object @var{p}, a Confusion Matrix Chart object.
+  ##
+  ## @table @asis
+  ## @item @qcode{"DiagonalColor"}
+  ## The color of the patches on the diagonal, default is [0.0, 0.4471, 0.7412].
+  ##
+  ## @item @qcode{"OffDiagonalColor"}
+  ## The color of the patches off the diagonal, default is [0.851, 0.3255, 0.098].
+  ##
+  ## @item @qcode{"GridVisible"}
+  ## Available values: @qcode{on} (default), @qcode{off}.
+  ##
+  ## @item @qcode{"Normalization"}
+  ## Available values: @qcode{absolute} (default), @qcode{column-normalized},
+  ## @qcode{row-normalized}, @qcode{total-normalized}.
+  ##
+  ## @item @qcode{"ColumnSummary"}
+  ## Available values: @qcode{off} (default), @qcode{absolute},
+  ## @qcode{column-normalized},@qcode{total-normalized}.
+  ##
+  ## @item @qcode{"RowSummary"}
+  ## Available values: @qcode{off} (default), @qcode{absolute},
+  ## @qcode{row-normalized}, @qcode{total-normalized}.
+  ## @end table
+  ##
+  ## MATLAB compatibility -- the not implemented properties are: FontColor,
+  ## PositionConstraint, OuterPosition, InnerPosition, Position, Units, Layout,
+  ## HandleVisibility.
+  ##
+  ## @seealso{confusionchart}
+  ## @end deftypefn
 
   properties (Access = public)
     ## text properties
