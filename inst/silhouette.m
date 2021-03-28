@@ -93,7 +93,7 @@ function [si, h] = silhouette (X, clust, metric = "sqeuclidean", varargin)
     metric = lower (metric);
     switch (metric)
       case "sqeuclidean"
-        metric = "seuclidean";
+        metric = "squaredeuclidean";
       case { "euclidean", "cityblock", "cosine", ...
            "correlation", "hamming", "jaccard" }
         ;

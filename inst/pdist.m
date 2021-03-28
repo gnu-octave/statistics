@@ -46,6 +46,10 @@
 ## @item "euclidean"
 ## Euclidean distance (default).
 ##
+## @item "squaredeuclidean"
+## Squared Euclidean distance. It omits the square root from the calculation
+## of the Euclidean distance. It does not satisfy the triangle inequality.
+##
 ## @item "seuclidean"
 ## Standardized Euclidean distance. Each coordinate in the sum of
 ## squares is inverse weighted by the sample variance of that
@@ -125,6 +129,10 @@ function y = pdist (x, metric, varargin)
       case "euclidean"
         d = X(:,Xi) - X(:,Yi);
         y = norm (d, "cols");
+      
+      case "squaredeuclidean"
+        d = X(:,Xi) - X(:,Yi);
+        y = sumsq (d);
 
       case "seuclidean"
         d = X(:,Xi) - X(:,Yi);
