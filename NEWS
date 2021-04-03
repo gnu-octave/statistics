@@ -14,6 +14,8 @@ Summary of important user-visible changes for statistics 1.4.3:
 
  ** cophenet           (patch #10040)
  
+ ** evalclusters
+ 
  ** gscatter           (patch #10043)
 
  ** inconsistent       (patch #10008)

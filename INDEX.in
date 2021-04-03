@@ -105,6 +105,7 @@ Clustering
  clusterdata
  cmdscale
  cophenet
+ evalclusters
  inconsistent
  kmeans
  linkage
