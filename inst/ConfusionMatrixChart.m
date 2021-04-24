@@ -46,8 +46,7 @@ classdef ConfusionMatrixChart < handle
   ## @end table
   ##
   ## MATLAB compatibility -- the not implemented properties are: FontColor,
-  ## PositionConstraint, OuterPosition, InnerPosition, Position, Units, Layout,
-  ## HandleVisibility.
+  ## PositionConstraint, InnerPosition, Layout.
   ##
   ## @seealso{confusionchart}
   ## @end deftypefn
@@ -71,6 +70,11 @@ classdef ConfusionMatrixChart < handle
     RowSummary = "off";
 
     GridVisible = "on";
+    
+    HandleVisibility = "";
+    OuterPosition = [];
+    Position = [];
+    Units = "";
   endproperties
 
   properties (GetAccess = public, SetAccess = private)
@@ -135,6 +139,14 @@ classdef ConfusionMatrixChart < handle
               this.RowSummary = args{pair_idx + 1};
             case "GridVisible"
               this.GridVisible = args{pair_idx + 1};
+            case "HandleVisibility"
+              this.HandleVisibility = args{pair_idx + 1};
+            case "OuterPosition"
+              this.OuterPosition = args{pair_idx + 1};
+            case "Position"
+              this.Position = args{pair_idx + 1};
+            case "Units"
+              this.Units = args{pair_idx + 1};
           otherwise
               close (this.Parent);
               error ("confusionchart: invalid property %s", args{pair_idx});
@@ -263,6 +275,43 @@ classdef ConfusionMatrixChart < handle
 
       this.GridVisible = string;
       setGridVisibility (this);
+    endfunction
+    
+    function set.HandleVisibility (this, string)
+      if (! any (strcmp (string, {"off", "on", "callback"})))
+        close (this.Parent);
+        error ("confusionchart: invalid value for HandleVisibility");
+      endif
+
+      set (this.hax, "handlevisibility", string);
+    endfunction
+    
+    function set.OuterPosition (this, vector)
+      if (! isvector (vector) || ! isnumeric (vector) || length (vector) != 4)
+        close (this.Parent);
+        error ("confusionchart: invalid value for OuterPosition");
+      endif
+
+      set (this.hax, "outerposition", vector);
+    endfunction
+    
+    function set.Position (this, vector)
+      if (! isvector (vector) || ! isnumeric (vector) || length (vector) != 4)
+        close (this.Parent);
+        error ("confusionchart: invalid value for Position");
+      endif
+
+      set (this.hax, "position", vector);
+    endfunction
+    
+    function set.Units (this, string)
+      if (! any (strcmp (string, {"centimeters", "characters", "inches", ...
+                                  "normalized", "pixels", "points"})))
+        close (this.Parent);
+        error ("confusionchart: invalid value for Units");
+      endif
+
+      set (this.hax, "units", string);
     endfunction
 
     ## display method

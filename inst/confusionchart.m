@@ -171,6 +171,10 @@ endfunction
 %!error <.* invalid .* ColumnSummary> confusionchart ([1 2], [0 1], "ColumnSummary", [])
 %!error <.* invalid .* RowSummary> confusionchart ([1 2], [0 1], "RowSummary", 1)
 %!error <.* invalid .* GridVisible> confusionchart ([1 2], [0 1], "GridVisible", .1)
+%!error <.* invalid .* HandleVisibility> confusionchart ([1 2], [0 1], "HandleVisibility", .1)
+%!error <.* invalid .* OuterPosition> confusionchart ([1 2], [0 1], "OuterPosition", .1)
+%!error <.* invalid .* Position> confusionchart ([1 2], [0 1], "Position", .1)
+%!error <.* invalid .* Units> confusionchart ([1 2], [0 1], "Units", .1)
 
 ## Demonstration using the confusion matrix example from
 ## R.Bonnin, "Machine Learning for Developers", pp. 55-56
