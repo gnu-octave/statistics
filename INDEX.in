@@ -22,8 +22,8 @@ Distributions
  jsucdf
  jsupdf
  lognstat
- mvnpdf mvnrnd mvncdf
  mnpdf mnrnd
+ mvnpdf mvnrnd mvncdf
  mvtcdf mvtpdf mvtrnd
  nakacdf nakainv nakapdf nakarnd
  nbinstat
@@ -35,8 +35,8 @@ Distributions
  random
  randsample
  raylcdf raylinv raylpdf raylrnd raylstat
- tstat
  tricdf triinv tripdf trirnd
+ tstat
  unidstat
  unifstat
  vmpdf vmrnd
@@ -64,10 +64,10 @@ Regression
  canoncorr
  crossval
  monotone_smooth
- princomp
- pcares
  pcacov
+ pcares
  plsregress
+ princomp
  regress
  regress_gp
  stepwisefit
@@ -101,8 +101,11 @@ Fitting
  fitgmdist
  gamfit
 Clustering
+ cluster
+ clusterdata
  cmdscale
  cophenet
+ inconsistent
  kmeans
  linkage
  mahal
@@ -125,6 +128,8 @@ Cvpartition (class of set partitions for cross-validation, used in crossval)
  @cvpartition/training
 Categorical data
  grp2idx
+Classification Performance Evaluation
+ confusionchart
+ confusionmat
 Other
  sigma_pts
- confusionmat
