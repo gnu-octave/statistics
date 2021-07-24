@@ -27,7 +27,7 @@
 ##
 ## Randomization is performed using rand().
 ##
-## @seealso{randperm}
+## @seealso{datasample, randperm}
 ## @end deftypefn
 
 function y = randsample(v,k,replacement=false,w=[])

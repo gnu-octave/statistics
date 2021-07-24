@@ -9,6 +9,7 @@ Distributions
  chi2stat
  cl_multinom
  copulacdf copulapdf copularnd
+ datasample
  expstat
  fstat
  gamlike
