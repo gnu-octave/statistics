@@ -10,6 +10,7 @@ Distributions
  cl_multinom
  copulacdf copulapdf copularnd
  datasample
+ expfit
  expstat
  fstat
  gamlike
