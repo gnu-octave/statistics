@@ -70,7 +70,7 @@ function [m, v] = expfit (s, alpha = 0.05, c = [], f = [])
     s = double(s);
   endif
 
-  ## guarantee working with a column vectors
+  ## guarantee working with column vectors
   if isvector (s)
 
     s = s(:);
@@ -187,6 +187,7 @@ function [m, v] = expfit (s, alpha = 0.05, c = [], f = [])
     if (nargout == 2)
       v(:,null_columns) = NaN;
     endif
+  endif
 
 endfunction
 
