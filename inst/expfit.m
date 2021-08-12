@@ -57,6 +57,7 @@
 ##
 ## @end deftypefn
 ##
+## @seealso{expcdf, expinv, explike, exppdf, exprnd, expstat}
 ## @seealso{expstat, exprnd, expcdf, expinv}
 
 function [m, v] = expfit (s, alpha = 0.05, c = [], f = [])

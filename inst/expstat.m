@@ -56,6 +56,7 @@
 ## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
 ## Processes}. McGraw-Hill, New York, second edition, 1984.
 ## @end enumerate
+## @seealso{expcdf, expfit, expinv, explike, exppdf, exprnd}
 ## @end deftypefn
 
 ## Author: Arno Onken <asnelt@asnelt.org>
