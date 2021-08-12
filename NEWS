@@ -46,6 +46,8 @@ Summary of important user-visible changes for statistics 1.4.3:
  ** dendrogram.m: many improvements (patch #10036)
 
  ** fitgmdist.m: fix typo in ComponentProportion (bug #59386)
+
+ ** anovan.m: use double instead of toascii (bug #60514)
  
 
 Summary of important user-visible changes for statistics 1.4.2:

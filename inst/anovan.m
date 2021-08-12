@@ -304,13 +304,13 @@ function printout( stats, stats_tbl );
   [jnk,order]= sort( sum(stats_tbl,2) );
 
   printf('\n%d-way ANOVA Table (Factors A%s):\n\n', nw, ...
-         sprintf(',%c',toascii('A')+(1:nw-1)) );
+         sprintf(',%c',double('A')+(1:nw-1)) );
   printf('Source of Variation        Sum Sqr   df      MeanSS    Fval   p-value\n');
   printf('*********************************************************************\n');
   printf('Error                  %10.2f  %4d %10.2f\n', stats( size(stats,1),1:3));
   
   for i= order(:)'
-      str=  sprintf(' %c x',toascii('A')+find(stats_tbl(i,:)>0)-1 );
+      str=  sprintf(' %c x',double('A')+find(stats_tbl(i,:)>0)-1 );
       str= str(1:length(str)-2); # remove x
       printf('Factor %15s %10.2f  %4d %10.2f  %7.3f  %7.6f\n', ...
          str, stats(i,:) );
