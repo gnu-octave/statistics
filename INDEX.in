@@ -66,6 +66,7 @@ Regression
  canoncorr
  crossval
  monotone_smooth
+ pca
  pcacov
  pcares
  plsregress
