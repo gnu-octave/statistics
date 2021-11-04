@@ -67,17 +67,16 @@
 ##
 ## @example
 ## x = meshgrid (1:6);
-## x = x + normrnd (0, 1, 5, 5);
-## anova1 (x, [], 'off');
-## [p, atab] = anova1(x);
+## x = x + normrnd (0, 1, 6, 6);
+## [p, atab] = kruskalwallis(x);
 ## @end example
 ##
 ##
 ## @example
 ## x = ones (50, 4) .* [-2, 0, 1, 5];
 ## x = x + normrnd (0, 2, 50, 4);
-## group = {"A", "B", "C", "D"};
-## anova1 (x, group);
+## group = @{"A", "B", "C", "D"@};
+## kruskalwallis (x, group);
 ## @end example
 ##
 ## @end deftypefn
