@@ -61,6 +61,7 @@ Descriptive statistics
 Experimental design
  fullfact ff2n
 Regression
+ anova1
  anovan
  canoncorr
  crossval
@@ -91,6 +92,7 @@ Models
  slicesample
 Hypothesis testing
  anderson_darling_test
+ kruskalwallis
  runstest
  signtest
  ttest

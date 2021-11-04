@@ -4,6 +4,9 @@ Summary of important user-visible changes for statistics 1.4.3:
  New functions:
  ==============
 
+ ** anova1            (patch #10127)
+    kruskalwallis
+
  ** cluster            (patch #10009)
 
  ** clusterdata        (patch #10012)
