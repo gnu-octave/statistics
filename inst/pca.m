@@ -89,6 +89,9 @@
 ## data are not centered
 ## @end itemize
 ##
+## Matlab compatibility note:  the alternating least square method 'als' and 
+## associated options 'Coeff0', 'Score0', and 'Options' are not yet implemented
+##
 ## @subheading References
 ##
 ## @enumerate
@@ -209,6 +212,8 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (X, varargin)
             error ("pca: %s is an invalid value for rows", ...
                    varargin{pair_index + 1});
         endswitch
+      case {"Coeff0", "Score0", "Options"}
+        error ("pca: parameter %s is only valid with the 'als' method, which is not yet implemented", varargin{pair_index});
       otherwise
         error ("pca: unknown property %s", varargin{pair_index});
     endswitch
@@ -264,7 +269,7 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (X, varargin)
       endif
     endif
     
-    Xc = X .- mu;
+    Xc = X - mu;
   else
     Xc = X;
     

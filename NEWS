@@ -31,6 +31,8 @@ Summary of important user-visible changes for statistics 1.4.3:
  ** mhsample.m         (patch #10016)
  
  ** optimalleaforder.m (patch #10034)
+ 
+ ** pca                (patch #10104)
 
  ** silhouette         (patch #9743)
  
@@ -51,8 +53,6 @@ Summary of important user-visible changes for statistics 1.4.3:
  ** fitgmdist.m: fix typo in ComponentProportion (bug #59386)
 
  ** anovan.m: use double instead of toascii (bug #60514)
- 
- ** pca.m: many improvements, renamed from princomp
  
 
 Summary of important user-visible changes for statistics 1.4.2:
