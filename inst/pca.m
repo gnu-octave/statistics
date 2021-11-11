@@ -102,7 +102,11 @@
 ## @end deftypefn
 
 ## BUGS:
-## - tsquared with weights
+## - tsquared with weights (xtest below)
+
+##FIXME
+## -- can change isnan to ismissing once the latter is implemented in Octave
+## -- change mystd to std and remove the helper function mystd once weighting is available in the Octave function 
 
 function [coeff, score, latent, tsquared, explained, mu] = pca (X, varargin)
 
@@ -212,7 +216,7 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (X, varargin)
             error ("pca: %s is an invalid value for rows", ...
                    varargin{pair_index + 1});
         endswitch
-      case {"Coeff0", "Score0", "Options"}
+      case {"coeff0", "score0", "options"}
         error ("pca: parameter %s is only valid with the 'als' method, which is not yet implemented", varargin{pair_index});
       otherwise
         error ("pca: unknown property %s", varargin{pair_index});
@@ -229,12 +233,12 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (X, varargin)
                 "set to 'pairwise'"]);
     endif
     
-    TF = ismissing (X);
+    TF = isnan (X);
     missingRows = zeros (nobs, 1);
     nmissing = 0;
   else
     ## "complete": remove all the rows with missing values
-    TF = ismissing (X);
+    TF = isnan (X);
     missingRows = any (TF, 2);
     nmissing = sum (missingRows);
   endif
@@ -288,7 +292,7 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (X, varargin)
         ## unbiased variance estimation: the bias when using reliability weights 
         ## is 1 - var(weights) / std(weigths)^2
         sqrtBias = sqrt (1 - (sumsq (optWeights) / sum (optWeights) ^ 2));
-        optVariableWeights = std (X, optWeights) / sqrtBias;
+        optVariableWeights = mystd (X, optWeights) / sqrtBias;
       endif
     endif
     Xc = Xc ./ optVariableWeights;
@@ -445,6 +449,15 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (X, varargin)
   endif
 endfunction
 
+#return the weighted standard deviation
+function retval = mystd (x, w)
+  (dim = find (size(x) != 1, 1)) || (dim = 1);
+  den = sum (w);
+  mu = sum (w .* x, dim) ./ sum (w);
+  retval = sum (w .* ((x - mu) .^ 2), dim) / den;
+  retval = sqrt (retval);
+endfunction
+
 %!shared COEFF,SCORE,latent,tsquare,m,x,R,V,lambda,i,S,F
 
 #NIST Engineering Statistics Handbook example (6.5.5.2)
@@ -480,6 +493,13 @@ endfunction
 %!assert(SCORE,-m,10*eps);
 %!assert(latent,[1.5;.5],10*eps);
 %!assert(tsquare,[4;4;4]/3,10*eps);
+
+#test with observation weights (using Matlab's results for this case as a reference)
+%! [COEFF,SCORE,latent,tsquare] = pca(x, "Economy", false, "weights", [1 2 1], "variableweights", "variance");
+%!assert(COEFF, [0.632455532033676 -0.632455532033676; 0.741619848709566 0.741619848709566], 10*eps);
+%!assert(SCORE, [-0.622019449426284 0.959119380657905; -0.505649896847432 -0.505649896847431; 1.633319243121148 0.052180413036957], 10*eps);
+%!assert(latent, [1.783001790889027; 0.716998209110974], 10*eps);
+%!xtest assert(tsquare, [1.5; 0.5; 1.5], 10*eps);  #currently, [4; 2; 4]/3 is actually returned; see comments above
 
 %!test
 %! x=x';
