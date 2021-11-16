@@ -46,14 +46,14 @@
 ## @var{f} need not be integers.  Any NaN elements in the frequency array will
 ## produce a NaN output for @var{mu}.
 ##
-## Options can be skipped using by [] to revert to the default.
+## Options can be skipped by using [] to revert to the default.
 ##
-## Matlab incompatibility note: Matlab's @code{expfit} produces unpredictable
-## results for some cases with higher dimensions (specifically 1 x m x n x ...
-## arrays).  Octave's implementation allows for n-D arrays, consistently
-## performing calculations on individual column vectors.  Additionally, @var{c}
-## and @var{f} can be used with arrays of any size, whereas Matlab only allows
-## there use when @var{s} is a vector.
+## Matlab incompatibility: Matlab's @code{expfit} produces unpredictable results
+## for some cases with higher dimensions (specifically 1 x m x n x ... arrays).
+## Octave's implementation allows for n-D arrays, consistently performing
+## calculations on individual column vectors.  Additionally, @var{c} and @var{f}
+## can be used with arrays of any size, whereas Matlab only allows their use
+## when @var{s} is a vector.
 ##
 ## @end deftypefn
 ##
