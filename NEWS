@@ -54,6 +54,8 @@ Summary of important user-visible changes for statistics 1.4.3:
 
  ** anovan.m: use double instead of toascii (bug #60514)
  
+ ** tricdf, triinv: fixes (bug #60113)
+ 
 
 Summary of important user-visible changes for statistics 1.4.2:
 -------------------------------------------------------------------
