@@ -1,3 +1,4 @@
+## Copyright (C) 2015 Michael Leitner <michael.leitner@frm2.tum.de>
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
 ##
@@ -103,12 +104,12 @@ function rnd = binornd (n, p, varargin)
 
     k = (n > 0) & (n < Inf) & (n == fix (n)) & (p >= 0) & (p <= 1);
     if (any (k(:)))
-      N = max (n(k));
       L = sum (k(:));
-      tmp = rand (N, L);
-      ind = repmat ((1 : N)', 1, L);
-      rnd(k) = sum ((tmp < repmat (p(k)(:)', N, 1)) &
-                    (ind <= repmat (n(k)(:)', N, 1)), 1);
+      tmp = rand (sum(n(k)), 1);
+      p_ext = repelems (p(k), [(1 : L); n(k)'])';
+      ind = cumsum (n(k));
+      tmp = cumsum (tmp < p_ext);
+      rnd(k) = tmp(ind) - [0; tmp(ind(1:end-1))];
     endif
   endif
 
