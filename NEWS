@@ -42,6 +42,8 @@ Summary of important user-visible changes for statistics 1.4.3:
 
  Improvements:
  =============
+ 
+ ** binocdf: new option "upper" (bug #43721)
 
  ** boxplot: better Matlab compatibility; several Matlab-compatible
     plot options added (OutlierTags, Sample_IDs, BoxWidth, Widths,

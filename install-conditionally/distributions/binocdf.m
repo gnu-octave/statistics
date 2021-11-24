@@ -16,20 +16,35 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} binocdf (@var{x}, @var{n}, @var{p})
+## @deftypefn {Function File} {} binocdf (@var{x}, @var{n}, @var{p})
+## @deftypefnx {Function File} {} binocdf (@var{x}, @var{n}, @var{p}, 'upper')
+##
 ## For each element of @var{x}, compute the cumulative distribution function
 ## (CDF) at @var{x} of the binomial distribution with parameters @var{n} and
 ## @var{p}, where @var{n} is the number of trials and @var{p} is the
 ## probability of success.
+##
+## binocdf (@var{x}, @var{n}, @var{p}, 'upper') computes the complement 
+## of the cumulative distribution function.
 ## @end deftypefn
 
 ## Author: KH <Kurt.Hornik@wu-wien.ac.at>
 ## Description: CDF of the binomial distribution
 
-function cdf = binocdf (x, n, p)
+function cdf = binocdf (x, n, p, upper)
 
-  if (nargin != 3)
+  if (nargin != 3 && nargin != 4)
     print_usage ();
+  endif
+
+  if (nargin == 4)
+    if (strcmp (upper, 'upper'))
+       upper = true;
+    else
+       error ("binocdf: 4th parameter can only be  'upper'\n");
+    endif
+  else
+     upper = false;
   endif
 
   if (! isscalar (n) || ! isscalar (p))
@@ -44,37 +59,53 @@ function cdf = binocdf (x, n, p)
   endif
 
   if (isa (x, "single") || isa (n, "single") || isa (p, "single"));
-    cdf = zeros (size (x), "single");
+    cdf = nan (size (x), "single");
   else
-    cdf = zeros (size (x));
+    cdf = nan (size (x));
   endif
 
-  k = isnan (x) | !(n >= 0) | (n != fix (n)) | !(p >= 0) | !(p <= 1);
-  cdf(k) = NaN;
-
   k = (x >= n) & (n >= 0) & (n == fix (n) & (p >= 0) & (p <= 1));
-  cdf(k) = 1;
+  cdf(k) = !upper;
+
+  k = (x < 0) & (n >= 0) & (n == fix (n) & (p >= 0) & (p <= 1));
+  cdf(k) = upper;
 
   k = (x >= 0) & (x < n) & (n == fix (n)) & (p >= 0) & (p <= 1);
   tmp = floor (x(k));
-  if (isscalar (n) && isscalar (p))
-    cdf(k) = betainc (1 - p, n - tmp, tmp + 1);
+  if !upper
+    if (isscalar (n) && isscalar (p))
+      cdf(k) = betainc (1 - p, n - tmp, tmp + 1);
+    else
+      cdf(k) = betainc (1 .- p(k), n(k) - tmp, tmp + 1);
+    endif
   else
-    cdf(k) = betainc (1 .- p(k), n(k) - tmp, tmp + 1);
+    if (isscalar (n) && isscalar (p));
+      cdf(k) = betainc (p, tmp + 1, n - tmp);
+    else
+      cdf(k) = betainc (p(k), tmp + 1, n(k) - tmp);
+    endif
   endif
 
 endfunction
 
 
-%!shared x,y
+%!shared x,y,y1
 %! x = [-1 0 1 2 3];
 %! y = [0 1/4 3/4 1 1];
+%! y1 = 1-y;
 %!assert (binocdf (x, 2*ones (1,5), 0.5*ones (1,5)), y, eps)
 %!assert (binocdf (x, 2, 0.5*ones (1,5)), y, eps)
 %!assert (binocdf (x, 2*ones (1,5), 0.5), y, eps)
 %!assert (binocdf (x, 2*[0 -1 NaN 1.1 1], 0.5), [0 NaN NaN NaN 1])
 %!assert (binocdf (x, 2, 0.5*[0 -1 NaN 3 1]), [0 NaN NaN NaN 1])
 %!assert (binocdf ([x(1:2) NaN x(4:5)], 2, 0.5), [y(1:2) NaN y(4:5)], eps)
+%!assert (binocdf(99, 100, 0.1, 'upper'), 1e-100, 1e-112);
+%!assert (binocdf (x, 2*ones (1,5), 0.5*ones (1,5), 'upper'), y1, eps)
+%!assert (binocdf (x, 2, 0.5*ones (1,5), 'upper'), y1, eps)
+%!assert (binocdf (x, 2*ones (1,5), 0.5, 'upper'), y1, eps)
+%!assert (binocdf (x, 2*[0 -1 NaN 1.1 1], 0.5, 'upper'), [1 NaN NaN NaN 0])
+%!assert (binocdf (x, 2, 0.5*[0 -1 NaN 3 1], 'upper'), [1 NaN NaN NaN 0])
+%!assert (binocdf ([x(1:2) NaN x(4:5)], 2, 0.5, 'upper'), [y1(1:2) NaN y1(4:5)])
 
 ## Test class of input preserved
 %!assert (binocdf ([x, NaN], 2, 0.5), [y, NaN], eps)
