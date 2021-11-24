@@ -30,6 +30,8 @@ Summary of important user-visible changes for statistics 1.4.3:
  
  ** mhsample.m         (patch #10016)
  
+ ** ncx2pdf            (patch #9711)
+ 
  ** optimalleaforder.m (patch #10034)
  
  ** pca                (patch #10104)

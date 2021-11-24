@@ -28,6 +28,7 @@ Distributions
  mvtcdf mvtpdf mvtrnd
  nakacdf nakainv nakapdf nakarnd
  nbinstat
+ ncx2pdf
  normalise_distribution
  normstat
  pdf

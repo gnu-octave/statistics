@@ -38,3 +38,8 @@ function t = sum_expression(j,v,n,l)
   t = sum(numerator ./ denominator);
 end
 
+
+%!assert (ncx2pdf (3, 4, 0), chi2pdf(3, 4), eps)
+%!assert (ncx2pdf (5, 3, 1), 0.091858459565020, 1E-15) #compared with Matlab's values
+%!assert (ncx2pdf (4, 5, 2), 0.109411958414115, 1E-15)
+
