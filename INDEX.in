@@ -85,6 +85,7 @@ Plots
  repanova
  silhouette
  violin
+ wblplot
 Models
  hmmestimate 
  hmmgenerate 

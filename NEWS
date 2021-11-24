@@ -37,6 +37,8 @@ Summary of important user-visible changes for statistics 1.4.3:
  ** silhouette         (patch #9743)
  
  ** slicesample        (patch #10019)
+ 
+ ** wblplot            (patch #8579)
 
  Improvements:
  =============
