@@ -48,14 +48,16 @@ Summary of important user-visible changes for statistics 1.4.3:
     BoxStyle, Positions, Labels, Colors) and an Octave-specific one
     (CapWidhts); demos added; texinfo improved (patch #9930)
 
- ** crosstab.m: make n-dimensional (patch #10014))
+ ** crosstab.m: make n-dimensional (patch #10014)
 
  ** dendrogram.m: many improvements (patch #10036)
 
  ** fitgmdist.m: fix typo in ComponentProportion (bug #59386)
 
  ** anovan.m: use double instead of toascii (bug #60514)
- 
+
+ ** stepwisefit.m: give another option to select predictors (patch #8584) 
+
  ** tricdf, triinv: fixes (bug #60113)
  
 
