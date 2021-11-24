@@ -21,38 +21,35 @@
 ## @deftypefnx {wblplot.m}  {[@var{handle} @var{param}] =} wblplot (@var{data} , @var{censor}, @var{freq})
 ## @deftypefnx {wblplot.m}  {[@var{handle} @var{param}] =} wblplot (@var{data} , @var{censor}, @var{freq}, @var{confint})
 ## @deftypefnx {wblplot.m}  {[@var{handle} @var{param}] =} wblplot (@var{data} , @var{censor}, @var{freq}, @var{confint}, @var{fancygrid})
-## @deftypefnx {wblplot.m}  {[@var{handle} @var{param}] =} wblplot (@var{data} , @var{censor}, @var{freq}, @var{confint}, @var{fancygrid}, @var{showtext})
-##
-##
-##
+## @deftypefnx {wblplot.m}  {[@var{handle} @var{param}] =} wblplot (@var{data} , @var{censor}, @var{freq}, @var{confint}, @var{fancygrid}, @var{showlegend})
 ##
 ##
 ## @noindent
-## Plot singel column vector @var{data} on a Weibull probability plot using Rank Regression on Y.
+## Plot a column vector @var{data} on a Weibull probability plot using rank regression.
 ##
-## @var{censor} optional parameter is a singel vector of same size as @var{data} 
+## @var{censor}: optional parameter is a column vector of same size as @var{data} 
 ##  with 1 for right censored data and 0 for exact observation. 
-## Pass [] when no censor data are available to modify next variable. 
+## Pass [] when no censor data are available. 
 ##
-## @var{freq} optional vector same size as data with the number of occurencies for corresponding data.
-## Pass [] when no frequency data are available to modify next variable.
+## @var{freq}: optional vector same size as data with the number of occurences for corresponding data.
+## Pass [] when no frequency data are available.
 ##
-## @var{confint} optional confidens limits ploting upper and lower 
-## confidens band using beta binomial confidence bounds. If a single 
+## @var{confint}: optional confidence limits for ploting upper and lower 
+## confidence bands using beta binomial confidence bounds. If a single 
 ## value is given this will be used such as LOW = a and HIGH = 1 - a.
-## Pass [] to modify next variable if confidens bounds is not requested.
+## Pass [] if confidence bounds is not requested.
 ##
-## @var{fancygrid} optional paramter which if set to anything but 1 will turn of the the fancy gridlines. 
+## @var{fancygrid}: optional parameter which if set to anything but 1 will turn of the the fancy gridlines. 
 ##
-## @var{showlegend} optional paramter that when set to zero(0) turns off the legend.
+## @var{showlegend}: optional parameter that when set to zero(0) turns off the legend.
 ## 
-## If one output argument is given a @var{handle} for the data marker and plotlines are returned 
-## which can be used for further modification of line-, marker-style.
+## If one output argument is given, a @var{handle} for the data marker and plotlines are returned 
+## which can be used for further modification of line and marker style.
 ##
-## If a second output argument is specified a @var{param} vector with scale, 
+## If a second output argument is specified, a @var{param} vector with scale, 
 ## shape and correlation factor is returned.
 ## 
-## @seealso{}
+## @seealso{normplot, wblpdf}
 ## @end deftypefn
 
 ## Author: Björn Vennberg <m95vebj@gmail.com>
@@ -117,7 +114,7 @@ function [handle param] = wblplot (data , censor=[],  freq=[], confint=[], fancy
     end
   end
 
-  ## Determin the order number 
+  ## Determine the order number 
   wbdat=zeros(length(find(censor==0)),3);
   Op = 0;
   Oi = 0;
@@ -366,3 +363,11 @@ endfunction
 %! f=[1 1 1 1 1 1 4];
 %! ## Subtract 30.92 from x to simulate a 3 parameter wbl with gamma = 30.92
 %! wblplot(x-30.92,c,f,0.05);
+
+%!test
+%! x=[16, 34, 53, 75, 93, 120, 150, 191, 240 ,339];
+%! [h p]=wblplot(x,[],[],0.05);
+%! assert(numel(h), 4)
+%! assert(p(1), 146.2545, 1E-4)
+%! assert(p(2), 1.1973, 1E-4)
+%! assert(p(3), 0.9999, 5E-5)
