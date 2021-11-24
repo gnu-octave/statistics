@@ -1,4 +1,4 @@
-## Copyright (C) 2012-2016 Nir Krakauer <nkrakauer@ccny.cuny.edu>
+## Copyright (C) 2012-2021 Nir Krakauer <nkrakauer@ccny.cuny.edu>
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -30,7 +30,7 @@
 ##
 ## @itemize @bullet
 ## @item
-## @var{parmhat} is the 3-parameter maximum-likelihood parameter vector [@var{k}; @var{sigma}; @var{mu}], where @var{k} is the shape parameter of the GEV distribution, @var{sigma} is the scale parameter of the GEV distribution, and @var{mu} is the location parameter of the GEV distribution.
+## @var{parmhat} is the 3-parameter maximum-likelihood parameter vector [@var{k} @var{sigma} @var{mu}], where @var{k} is the shape parameter of the GEV distribution, @var{sigma} is the scale parameter of the GEV distribution, and @var{mu} is the location parameter of the GEV distribution.
 ## @item
 ## @var{paramci} has the approximate 95% confidence intervals of the parameter values based on the Fisher information matrix at the maximum-likelihood position.
 ## 
@@ -68,17 +68,21 @@ function [paramhat, paramci] = gevfit (data, paramguess)
   #cost function to minimize
   f = @(p) gevlike (p, data);
   
-  paramhat = fminunc(f, paramguess, optimset("GradObj", "on"));
-    
+  [paramhat, ~, info] = fminunc(f, paramguess, optimset("GradObj", "on"));
+  if info <= 0
+    warning ('gevfit: optimization did not converge, results may be unreliable')
+  endif
+  paramhat = paramhat(:)'; #return a row vector for Matlab compatibility
+  
   if nargout > 1
   	[nlogL, ~, ACOV] = gevlike (paramhat, data);
-  	param_se = sqrt(diag(inv(ACOV)));
+  	param_se = sqrt(diag(inv(ACOV)))';
     if any(iscomplex(param_se))
       warning ('gevfit: Fisher information matrix not positive definite; parameter optimization likely did not converge')
       paramci = nan (3, 2);
     else
-      paramci(:, 1) = paramhat - 1.96*param_se;
-      paramci(:, 2) = paramhat + 1.96*param_se;
+      paramci(1, :) = paramhat - 1.96*param_se;
+      paramci(2, :) = paramhat + 1.96*param_se;
     endif
   endif
 
@@ -87,7 +91,7 @@ endfunction
 %!test
 %! data = 1:50;
 %! [pfit, pci] = gevfit (data);
-%! expected_p = [-0.44 15.19 21.53]';
-%! expected_pu = [-0.13 19.31 26.49]';
+%! expected_p = [-0.44 15.19 21.53];
+%! expected_pu = [-0.13 19.31 26.49];
 %! assert (pfit, expected_p, 0.1);
-%! assert (pci(:, 2), expected_pu, 0.1);
+%! assert (pci(2, :), expected_pu, 0.1);

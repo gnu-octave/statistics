@@ -53,6 +53,8 @@ Summary of important user-visible changes for statistics 1.4.3:
  ** dendrogram.m: many improvements (patch #10036)
 
  ** fitgmdist.m: fix typo in ComponentProportion (bug #59386)
+ 
+ ** gevfit: change orientation of results for Matlab compatibility (bug #47369)
 
  ** anovan.m: use double instead of toascii (bug #60514)
 
