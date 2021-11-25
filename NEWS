@@ -54,6 +54,9 @@ Summary of important user-visible changes for statistics 1.4.3:
     BoxStyle, Positions, Labels, Colors) and an Octave-specific one
     (CapWidhts); demos added; texinfo improved (patch #9930)
 
+ ** auto MPG (carbig) sample dataset added from 
+    https://archive.ics.uci.edu/ml/datasets/Auto+MPG (patch #10045)
+
  ** crosstab.m: make n-dimensional (patch #10014)
 
  ** dendrogram.m: many improvements (patch #10036)
