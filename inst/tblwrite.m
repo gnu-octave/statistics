@@ -84,6 +84,88 @@ function x = __makecell__ (x, name)
 endfunction
 
 ## Tests
+
+%!shared privpath
+%! privpath = [fileparts(which('tblwrite')) filesep() 'private'];
+## Tests for tbl_delim (private function)
+%!test
+%! addpath (privpath,'-end')
+%! [d err] = tbl_delim (" ");
+%! assert (d, " ");
+%! assert (err, "");
+%! rmpath (privpath);
+## Named delimiters
+%!test
+%! addpath (privpath,'-end')
+%! [d err] = tbl_delim ("space");
+%! assert (d, " ");
+%! assert (err, "");
+%! rmpath (privpath);
+%!test
+%! addpath (privpath,'-end')
+%! [d err] = tbl_delim ("tab");
+%! assert (d, sprintf ("\t"));
+%! assert (err, "");
+%! rmpath (privpath);
+%!test
+%! addpath (privpath,'-end')
+%! [d err] = tbl_delim ("comma");
+%! assert (d, ",");
+%! assert (err, "");
+%! rmpath (privpath);
+%!test
+%! addpath (privpath,'-end')
+%! [d err] = tbl_delim ("semi");
+%! assert (d, ";");
+%! assert (err, "");
+%! rmpath (privpath);
+%!test
+%! addpath (privpath,'-end')
+%! [d err] = tbl_delim ("bar");
+%! assert (d, "|");
+%! assert (err, "");
+%! rmpath (privpath);
+## An arbitrary character
+%!test
+%! addpath (privpath,'-end')
+%! [d err] = tbl_delim ("x");
+%! assert (d, "x");
+%! assert (err, "");
+%! rmpath (privpath);
+## An arbitrary escape string
+%!test
+%! addpath (privpath,'-end')
+%! [d err] = tbl_delim ('\r');
+%! assert (d, sprintf ('\r'))
+%! assert (err, "");
+%! rmpath (privpath);
+## Errors
+%!test
+%! addpath (privpath,'-end')
+%! [d err] = tbl_delim ("bars");
+%! assert (isnan (d));
+%! assert (! isempty (err));
+%! rmpath (privpath);
+%!test
+%! addpath (privpath,'-end')
+%! [d err] = tbl_delim ("");
+%! assert (isnan (d));
+%! assert (! isempty (err));
+%! rmpath (privpath);
+%!test
+%! addpath (privpath,'-end')
+%! [d err] = tbl_delim (5);
+%! assert (isnan (d));
+%! assert (! isempty (err));
+%! rmpath (privpath);
+%!test
+%! addpath (privpath,'-end')
+%! [d err] = tbl_delim ({"."});
+%! assert (isnan (d));
+%! assert (! isempty (err));
+%! rmpath (privpath);
+
+## Tests for tblwrite
 %!shared d, v, c, tempfilename
 %! d = [1 2;3 4];
 %! v = ["a ";"bc"];
