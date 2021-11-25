@@ -49,7 +49,32 @@ function cdf = tcdf (x, n)
     cdf = zeros (size (x));
   endif
 
-  k = ! isinf (x) & (n > 0);
+  k = isnan (x) | !(n > 0);
+  cdf(k) = NaN;
+
+  k = (x == Inf) & (n > 0);
+  cdf(k) = 1;
+  #(for x == -Inf, the cdf is already 0, so doesn't need setting)
+
+  k = isfinite (x) & (n > 0);
+
+  max_int_n = 1E4;
+  ks = k & (fix (n) == n) & (n <= max_int_n);
+  if any (ks(:))
+    if (isscalar (n))
+      cdf(ks) = tcdf_integer_df (x(ks), n);
+      return
+    else
+      nn = unique (n(ks));
+      ni = numel (nn);
+      for i = 1:ni
+        ki = k & (n == nn(i));
+        cdf(ki) = tcdf_integer_df (x(ki), nn(i));
+      endfor
+    endif
+  endif
+
+  k &= !ks;
 
   xx = x .^ 2;
   x_big_abs = (xx > n);
@@ -75,14 +100,47 @@ function cdf = tcdf (x, n)
     cdf(k) = 1 - cdf(k);
   endif
 
-  k = isnan (x) | !(n > 0);
-  cdf(k) = NaN;
-
-  k = (x == Inf) & (n > 0);
-  cdf(k) = 1;
-
 endfunction
 
+
+function cdf = tcdf_integer_df (x, n)
+
+# compute the t distribution CDF efficiently (without calling betainc) when n is a small positive integer
+# Reference: Christian Walck (2007), Hand-book on Statistical Distributions for Experimentalists, University of Stockholm Internal Report SUF-PFY/96-01, Section 38.12, url: http://www.fysik.su.se/~walck/suf9601.pdf
+
+  if (n == 1)
+    cdf = 0.5 + atan(x)/pi;
+  
+  elseif (n == 2)
+    cdf = 0.5 + x ./ (2 * sqrt(2 + x .^ 2));
+    
+  else
+    xs = x ./ sqrt(n);
+    xxf = 1 ./ (1 + xs .^ 2);
+    u = s = 1; 
+
+    if mod (n, 2) #n odd
+
+      m = (n - 1) / 2;      
+      for i = 2:m
+        u .*= (1 - 1/(2*i - 1)) .* xxf;
+        s += u;
+      endfor
+      cdf = 0.5 + (xs .* xxf .* s + atan(xs)) / pi;      
+      
+    else #n even
+
+      m = n / 2;
+      for i = 1:(m - 1)
+        u .*= (1 - 1/(2*i)) .* xxf;
+        s += u;
+      endfor
+      cdf = 0.5 + (xs .* sqrt(xxf) .* s) / 2;
+
+    endif
+
+  endif
+endfunction
 
 %!shared x,y
 %! x = [-Inf 0 1 Inf];
