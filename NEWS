@@ -45,6 +45,8 @@ Summary of important user-visible changes for statistics 1.4.3:
  Improvements:
  =============
  
+ ** anovan.m: use double instead of toascii (bug #60514)
+ 
  ** binocdf: new option "upper" (bug #43721)
 
  ** boxplot: better Matlab compatibility; several Matlab-compatible
@@ -60,7 +62,7 @@ Summary of important user-visible changes for statistics 1.4.3:
  
  ** gevfit: change orientation of results for Matlab compatibility (bug #47369)
 
- ** anovan.m: use double instead of toascii (bug #60514)
+ ** pdist: option for squared Euclidean distance (patch #10051) 
 
  ** stepwisefit.m: give another option to select predictors (patch #8584) 
 
