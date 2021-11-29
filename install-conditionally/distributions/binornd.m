@@ -105,11 +105,9 @@ function rnd = binornd (n, p, varargin)
     k = (n > 0) & (n < Inf) & (n == fix (n)) & (p >= 0) & (p <= 1);
     if (any (k(:)))
       L = sum (k(:));
-      tmp = rand (sum(n(k)), 1);
-      p_ext = repelems (p(k), [(1 : L); n(k)'])';
-      ind = cumsum (n(k));
-      tmp = cumsum (tmp < p_ext);
-      rnd(k) = tmp(ind) - [0; tmp(ind(1:end-1))];
+      ind = repelems ((1 : L), [(1 : L); n(k)(:)'])';
+      p_ext = p(k)(ind)(:);
+      rnd(k) = accumarray (ind, rand (sum(n(k)(:)), 1) < p_ext);
     endif
   endif
 
