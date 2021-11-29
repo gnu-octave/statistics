@@ -70,7 +70,7 @@ classdef ConfusionMatrixChart < handle
     RowSummary = "off";
 
     GridVisible = "on";
-    
+
     HandleVisibility = "";
     OuterPosition = [];
     Position = [];
@@ -276,7 +276,7 @@ classdef ConfusionMatrixChart < handle
       this.GridVisible = string;
       setGridVisibility (this);
     endfunction
-    
+
     function set.HandleVisibility (this, string)
       if (! any (strcmp (string, {"off", "on", "callback"})))
         close (this.Parent);
@@ -285,7 +285,7 @@ classdef ConfusionMatrixChart < handle
 
       set (this.hax, "handlevisibility", string);
     endfunction
-    
+
     function set.OuterPosition (this, vector)
       if (! isvector (vector) || ! isnumeric (vector) || length (vector) != 4)
         close (this.Parent);
@@ -294,7 +294,7 @@ classdef ConfusionMatrixChart < handle
 
       set (this.hax, "outerposition", vector);
     endfunction
-    
+
     function set.Position (this, vector)
       if (! isvector (vector) || ! isnumeric (vector) || length (vector) != 4)
         close (this.Parent);
@@ -303,7 +303,7 @@ classdef ConfusionMatrixChart < handle
 
       set (this.hax, "position", vector);
     endfunction
-    
+
     function set.Units (this, string)
       if (! any (strcmp (string, {"centimeters", "characters", "inches", ...
                                   "normalized", "pixels", "points"})))
@@ -837,8 +837,8 @@ classdef ConfusionMatrixChart < handle
       main_values = diag (cm);
       ct_values = sum (cm)';
       rt_values = sum (cm, 2);
-      cd_values = ct_values .- main_values;
-      rd_values = rt_values .- main_values;
+      cd_values = ct_values - main_values;
+      rd_values = rt_values - main_values;
 
       ## column summary
       x_cs = [[indices_b indices_b];

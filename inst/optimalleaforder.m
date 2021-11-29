@@ -123,7 +123,7 @@ function leafOrder = optimalleaforder ( varargin )
   if (strcmpi (transformation, "linear"))
     ## linear similarity
     maxD = max (max (D));
-    S = maxD .- D;
+    S = maxD - D;
   elseif (strcmpi (transformation, "inverse"))
     ## similarity as inverted distance
     S = 1 ./ D;

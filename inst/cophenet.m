@@ -113,8 +113,8 @@ function [c, d] = cophenet (Z, y)
   y_mean = mean (y);
   z_mean = mean (d);
 
-  Y_sigma = y .- y_mean;
-  Z_sigma = d .- z_mean;
+  Y_sigma = y - y_mean;
+  Z_sigma = d - z_mean;
 
   c = sum (Z_sigma .* Y_sigma) / sqrt (sum (Y_sigma .^ 2) * sum (Z_sigma .^ 2));
 

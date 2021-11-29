@@ -24,7 +24,7 @@
 ## @var{p}, where @var{n} is the number of trials and @var{p} is the
 ## probability of success.
 ##
-## binocdf (@var{x}, @var{n}, @var{p}, 'upper') computes the complement 
+## binocdf (@var{x}, @var{n}, @var{p}, 'upper') computes the complement
 ## of the cumulative distribution function.
 ## @end deftypefn
 
@@ -76,7 +76,7 @@ function cdf = binocdf (x, n, p, upper)
     if (isscalar (n) && isscalar (p))
       cdf(k) = betainc (1 - p, n - tmp, tmp + 1);
     else
-      cdf(k) = betainc (1 .- p(k), n(k) - tmp, tmp + 1);
+      cdf(k) = betainc (1 - p(k), n(k) - tmp, tmp + 1);
     endif
   else
     if (isscalar (n) && isscalar (p));
