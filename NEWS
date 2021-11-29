@@ -65,6 +65,8 @@ Summary of important user-visible changes for statistics 1.4.3:
  
  ** gevfit: change orientation of results for Matlab compatibility (bug #47369)
 
+ ** kmeans: efficiency and compatibility tweaks (patch #10042)
+
  ** pdist: option for squared Euclidean distance (patch #10051) 
 
  ** stepwisefit.m: give another option to select predictors (patch #8584) 
