@@ -66,11 +66,15 @@ function pdf = hygepdf (x, t, m, n)
   k = ! nel & ! zel;
   if (any (k(:)))
     if (isscalar (t) && isscalar (m) && isscalar (n))
-      pdf(k) = (bincoeff (m, x(k)) .* bincoeff (t-m, n-x(k))
-                / bincoeff (t, n));
+      pdf(k) = exp (gammaln (m+1) - gammaln (m-x(k)+1) - gammaln (x(k)+1) +...
+                 gammaln (t-m+1) - gammaln (t-m-n+x(k)+1) - ...
+                 gammaln (n-x(k)+1) - gammaln (t+1) + gammaln (t-n+1) + ...
+                 gammaln (n+1));
     else
-      pdf(k) = (bincoeff (m(k), x(k)) .* bincoeff (t(k)-m(k), n(k)-x(k))
-                ./ bincoeff (t(k), n(k)));
+      pdf(k) = exp (gammaln (m(k)+1) - gammaln (m(k)-x(k)+1) - ...
+                 gammaln (x(k)+1) + gammaln (t(k)-m(k)+1) - ...
+                 gammaln (t(k)-m(k)-n(k)+x(k)+1) - gammaln (n(k)-x(k)+1) - ...
+                 gammaln (t(k)+1) + gammaln (t(k)-n(k)+1) + gammaln (n(k)+1));
     endif
   endif
 
@@ -80,21 +84,21 @@ endfunction
 %!shared x,y
 %! x = [-1 0 1 2 3];
 %! y = [0 1/6 4/6 1/6 0];
-%!assert (hygepdf (x, 4*ones (1,5), 2, 2), y)
-%!assert (hygepdf (x, 4, 2*ones (1,5), 2), y)
-%!assert (hygepdf (x, 4, 2, 2*ones (1,5)), y)
-%!assert (hygepdf (x, 4*[1 -1 NaN 1.1 1], 2, 2), [0 NaN NaN NaN 0])
-%!assert (hygepdf (x, 4, 2*[1 -1 NaN 1.1 1], 2), [0 NaN NaN NaN 0])
-%!assert (hygepdf (x, 4, 5, 2), [NaN NaN NaN NaN NaN])
-%!assert (hygepdf (x, 4, 2, 2*[1 -1 NaN 1.1 1]), [0 NaN NaN NaN 0])
-%!assert (hygepdf (x, 4, 2, 5), [NaN NaN NaN NaN NaN])
+%!assert (hygepdf (x, 4*ones (1,5), 2, 2), y, eps)
+%!assert (hygepdf (x, 4, 2*ones (1,5), 2), y, eps)
+%!assert (hygepdf (x, 4, 2, 2*ones (1,5)), y, eps)
+%!assert (hygepdf (x, 4*[1 -1 NaN 1.1 1], 2, 2), [0 NaN NaN NaN 0], eps)
+%!assert (hygepdf (x, 4, 2*[1 -1 NaN 1.1 1], 2), [0 NaN NaN NaN 0], eps)
+%!assert (hygepdf (x, 4, 5, 2), [NaN NaN NaN NaN NaN], eps)
+%!assert (hygepdf (x, 4, 2, 2*[1 -1 NaN 1.1 1]), [0 NaN NaN NaN 0], eps)
+%!assert (hygepdf (x, 4, 2, 5), [NaN NaN NaN NaN NaN], eps)
 %!assert (hygepdf ([x, NaN], 4, 2, 2), [y, NaN], eps)
 
-## Test class of input preserved
-%!assert (hygepdf (single ([x, NaN]), 4, 2, 2), single ([y, NaN]))
-%!assert (hygepdf ([x, NaN], single (4), 2, 2), single ([y, NaN]))
-%!assert (hygepdf ([x, NaN], 4, single (2), 2), single ([y, NaN]))
-%!assert (hygepdf ([x, NaN], 4, 2, single (2)), single ([y, NaN]))
+#### Test class of input preserved
+%!assert (hygepdf (single ([x, NaN]), 4, 2, 2), single ([y, NaN]), eps("single"))
+%!assert (hygepdf ([x, NaN], single (4), 2, 2), single ([y, NaN]), eps("single"))
+%!assert (hygepdf ([x, NaN], 4, single (2), 2), single ([y, NaN]), eps("single"))
+%!assert (hygepdf ([x, NaN], 4, 2, single (2)), single ([y, NaN]), eps("single"))
 
 ## Test input validation
 %!error hygepdf ()
