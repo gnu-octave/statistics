@@ -360,3 +360,4 @@ classdef GapEvaluation < ClusterCriterion
         error (["GapEvaluation: unexpected error, please report this bug"]);
       endif
     endfunction
+endclassdef

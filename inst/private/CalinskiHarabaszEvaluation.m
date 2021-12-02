@@ -202,3 +202,4 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
       endfor
     endfunction
   endmethods
+endclassdef

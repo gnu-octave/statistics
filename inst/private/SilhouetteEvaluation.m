@@ -254,3 +254,4 @@ classdef SilhouetteEvaluation < ClusterCriterion
       this.OptimalY = this.ClusteringSolutions(:, this.OptimalIndex(1));
     endfunction
   endmethods
+endclassdef
