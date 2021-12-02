@@ -150,6 +150,8 @@ Descriptive statistics
  runlength
 Other
  center
+ ismissing
+ rmmissing
 Plots
  qqplot
  ppplot
