@@ -51,7 +51,7 @@ all: | $(instdir)/test
 	  --silent \
 	  --norc \
 	  --eval 'addpath ("$(utilsdir)");' \
-	  --eval '$(cond_inst) ("$(cond_srcdir)", "$(instdir)", $(crosscompiling), "../INDEX");'
+	  --eval '$(inst) ("$(cond_srcdir)", "$(instdir)", $(crosscompiling), "../INDEX");'
 	$(CP) $(testdir)/*.dat $(instdir)/test/
 
 $(instdir)/test:

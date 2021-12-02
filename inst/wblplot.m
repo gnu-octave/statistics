@@ -1,4 +1,4 @@
-## Copyright (C) 2014 Björn Vennberg
+## Copyright (C) 2014 Bj{\"o}rn Vennberg
 ## 
 ## This program is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@
 ## @seealso{normplot, wblpdf}
 ## @end deftypefn
 
-## Author: Björn Vennberg <m95vebj@gmail.com>
+## Author: Bj{\"o}rn Vennberg <m95vebj@gmail.com>
 ## Created: 2014-11-11
 ## 2014-11-22 Updated argin check
 ## 2014-11-22 Code clean up, error checking

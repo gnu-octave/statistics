@@ -144,7 +144,7 @@ classdef GapEvaluation < ClusterCriterion
       this.ReferenceDistribution = lower (referenceDistribution);
 
       if (! ischar (searchMethod) || ! any (strcmpi (searchMethod), ...
-          {"globalmaxse", "firstmaxse"})))
+          {"globalmaxse", "firstmaxse"}))
         error (["evalclusters: the search method must be either" ...
                 "'globalMaxSE' or 'firstMaxSE'"]);
       endif
