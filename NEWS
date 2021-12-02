@@ -16,30 +16,34 @@ Summary of important user-visible changes for statistics 1.4.3:
  ** confusionmat       (patch #9971)
 
  ** cophenet           (patch #10040)
- 
+
  ** datasample         (patch #10050)
- 
+
  ** evalclusters       (patch #10052)
- 
+
  ** expfit             (patch #10092)
     explike
- 
+
  ** gscatter           (patch #10043)
 
+ ** ismissing          (patch #10102)
+
  ** inconsistent       (patch #10008)
- 
+
  ** mhsample.m         (patch #10016)
- 
+
  ** ncx2pdf            (patch #9711)
- 
+
  ** optimalleaforder.m (patch #10034)
- 
+
  ** pca                (patch #10104)
 
+ ** rmmissing          (patch #10102)
+
  ** silhouette         (patch #9743)
- 
+
  ** slicesample        (patch #10019)
- 
+
  ** wblplot            (patch #8579)
 
  Improvements:
