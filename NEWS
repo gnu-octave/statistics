@@ -65,6 +65,8 @@ Summary of important user-visible changes for statistics 1.4.3:
  
  ** gevfit: change orientation of results for Matlab compatibility (bug #47369)
 
+ ** hygepdf: avoid overflow for certain inputs (bug #35827)
+
  ** kmeans: efficiency and compatibility tweaks (patch #10042)
 
  ** pdist: option for squared Euclidean distance (patch #10051) 
