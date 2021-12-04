@@ -18,7 +18,7 @@
 ### <http://www.gnu.org/licenses/>.
 
 AC_PREREQ([2.69])
-AC_INIT([statistics], [1.4.2])
+AC_INIT([statistics], [1.4.3])
 
 AC_CANONICAL_TARGET
 

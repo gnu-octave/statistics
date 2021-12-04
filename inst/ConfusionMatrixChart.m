@@ -435,10 +435,10 @@ classdef ConfusionMatrixChart < handle
       av = av(:, Idx);
       this.AbsoluteValues = av;
 
-      cv = cv([Idx ( Idx .+ cm_size )]);
+      cv = cv([Idx ( Idx + cm_size )]);
       this.ColumnSummaryAbsoluteValues = cv;
 
-      rv = rv([Idx ( Idx .+ cm_size )]);
+      rv = rv([Idx ( Idx + cm_size )]);
       this.RowSummaryAbsoluteValues = rv;
 
       ## ...and the class labels
@@ -489,14 +489,14 @@ classdef ConfusionMatrixChart < handle
           t_pos(1) = find (Idx == (t_pos(1) + 1)) - 1;
           set (t_kids(i), "userdata", t_pos);
 
-          t_pos = t_pos([2 1]) .+ 0.5;
+          t_pos = t_pos([2 1]) + 0.5;
           set (t_kids(i), "position", t_pos);
         elseif (t_pos(1) > cm_size)
           ## column summary
           t_pos(2) = find (Idx == (t_pos(2) + 1)) - 1;
           set (t_kids(i), "userdata", t_pos);
 
-          t_pos = t_pos([2 1]) .+ 0.5;
+          t_pos = t_pos([2 1]) + 0.5;
           set (t_kids(i), "position", t_pos);
         else
           ## main chart
@@ -504,7 +504,7 @@ classdef ConfusionMatrixChart < handle
           t_pos(2) = find (Idx == (t_pos(2) + 1)) - 1;
           set (t_kids(i), "userdata", t_pos);
 
-          t_pos = t_pos([2 1]) .+ 0.5;
+          t_pos = t_pos([2 1]) + 0.5;
           set (t_kids(i), "position", t_pos);
         endif
       endfor
@@ -808,13 +808,13 @@ classdef ConfusionMatrixChart < handle
 
       ## the patches of the main chart
       x_patch = [indices_vx;
-                ( indices_vx .+ 1 );
-                ( indices_vx .+ 1 );
+                ( indices_vx + 1 );
+                ( indices_vx + 1 );
                 indices_vx];
       y_patch = [indices_vy;
                 indices_vy;
-                ( indices_vy .+ 1 );
-                ( indices_vy .+ 1 )];
+                ( indices_vy + 1 );
+                ( indices_vy + 1 )];
       c_patch = vec (cm_norm(1 : cm_size, 1 : cm_size));
 
       ## display the patches
@@ -825,7 +825,7 @@ classdef ConfusionMatrixChart < handle
       ## display the labels
       userdata = [indices_vy; indices_vx]';
       nonzero_idx = find (cm_labels != 0);
-      th = text ((x_patch(1, nonzero_idx) .+ 0.5), (y_patch(1, nonzero_idx) .+...
+      th = text ((x_patch(1, nonzero_idx) + 0.5), (y_patch(1, nonzero_idx) +...
           0.5), num2str (cm_labels(nonzero_idx)), "parent", this.hax );
 
       set (th, "horizontalalignment", "center");
@@ -842,12 +842,12 @@ classdef ConfusionMatrixChart < handle
 
       ## column summary
       x_cs = [[indices_b indices_b];
-              ( [indices_b indices_b].+ 1 );
-              ( [indices_b indices_b] .+ 1 );
+              ( [indices_b indices_b] + 1 );
+              ( [indices_b indices_b] + 1 );
               [indices_b indices_b]];
-      y_cs = [(repmat ([1 1 2 2]', 1, cm_size)) (repmat ([2 2 3 3]', 1, cm_size))] .+...
+      y_cs = [(repmat ([1 1 2 2]', 1, cm_size)) (repmat ([2 2 3 3]', 1, cm_size))] +...
           cm_size;
-      c_cs = [(round (63 * (main_values ./ ct_values)) .+ 64);
+      c_cs = [(round (63 * (main_values ./ ct_values)) + 64);
               (round (63 * (cd_values ./ ct_values)))];
       c_cs(isnan (c_cs)) = 0;
       l_cs = [main_values; cd_values];
@@ -859,7 +859,7 @@ classdef ConfusionMatrixChart < handle
 
       userdata = [y_cs(1,:); x_cs(1,:)]';
       nonzero_idx = find (l_cs != 0);
-      th = text ((x_cs(1,nonzero_idx) .+ 0.5), (y_cs(1,nonzero_idx) .+ 0.5),...
+      th = text ((x_cs(1,nonzero_idx) + 0.5), (y_cs(1,nonzero_idx) + 0.5),...
           num2str (l_cs(nonzero_idx)), "parent", this.hax);
 
       set (th, "horizontalalignment", "center");
@@ -871,7 +871,7 @@ classdef ConfusionMatrixChart < handle
       ## row summary
       x_rs = y_cs;
       y_rs = x_cs;
-      c_rs = [(round (63 * (main_values ./ rt_values)) .+ 64);
+      c_rs = [(round (63 * (main_values ./ rt_values)) + 64);
               (round (63 * (rd_values ./ rt_values)))];
       c_rs(isnan (c_rs)) = 0;
       l_rs = [main_values; rd_values];
@@ -883,7 +883,7 @@ classdef ConfusionMatrixChart < handle
 
       userdata = [y_rs(1,:); x_rs(1,:)]';
       nonzero_idx = find (l_rs != 0);
-      th = text ((x_rs(1,nonzero_idx) .+ 0.5), (y_rs(1,nonzero_idx) .+ 0.5),...
+      th = text ((x_rs(1,nonzero_idx) + 0.5), (y_rs(1,nonzero_idx) + 0.5),...
           num2str (l_rs(nonzero_idx)), "parent", this.hax);
 
       set (th, "horizontalalignment", "center");
