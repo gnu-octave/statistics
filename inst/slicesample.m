@@ -292,7 +292,7 @@ endfunction
 
 
 %!test
-%! start = rand (1, 1);
+%! start = 0.5;
 %! nsamples = 1e3;
 %! pdf = @(x) exp (-.5*(x-1).^2)/(2*pi)^.5;
 %! [smpl, accept] = slicesample (start, nsamples, "pdf", pdf, "thin", 2, "burnin", 0, "width", 5);
