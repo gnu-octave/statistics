@@ -204,4 +204,5 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
         C(iter, :) = mean (X(vIndicesI, :));
       endfor
     endfunction
+  endmethods
 endclassdef

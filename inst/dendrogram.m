@@ -342,13 +342,22 @@ function [H, T, perm] = dendrogram (tree, varargin)
 endfunction
 
 
+## Get current figure visibility so it can be restored after tests
+%!shared visibility_setting
+%! visibility_setting = get (0, "DefaultFigureVisible");
+
 ## Test input validation
 %!error dendrogram ()
 %!error <tree must be .*> dendrogram (ones (2, 2), 1)
 %!error <unknown property .*> dendrogram ([1 2 1], 1, "xxx", "xxx")
 %!error <reorder.*> dendrogram ([1 2 1], "Reorder", "xxx")
 %!error <reorder.*> dendrogram ([1 2 1], "Reorder", [1 2 3 4])
-%!error <invalid orientation .*> dendrogram ([1 2 1], "Orientation", "north")
+
+%!test
+%! set (0, "DefaultFigureVisible", "off");
+%! fail ('dendrogram ([1 2 1], "Orientation", "north")', "invalid orientation .*")
+%! set (0, "DefaultFigureVisible", visibility_setting);
+
 
 ## Demonstrations
 ## 1.

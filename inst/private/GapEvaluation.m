@@ -143,8 +143,8 @@ classdef GapEvaluation < ClusterCriterion
       endif
       this.ReferenceDistribution = lower (referenceDistribution);
 
-      if (! ischar (searchMethod) || ! any (strcmpi (searchMethod), ...
-          {"globalmaxse", "firstmaxse"}))
+      if (! ischar (searchMethod) || ! any (strcmpi (searchMethod, ...
+          {"globalmaxse", "firstmaxse"})))
         error (["evalclusters: the search method must be either" ...
                 "'globalMaxSE' or 'firstMaxSE'"]);
       endif
@@ -360,4 +360,5 @@ classdef GapEvaluation < ClusterCriterion
         error (["GapEvaluation: unexpected error, please report this bug"]);
       endif
     endfunction
+  endmethods
 endclassdef
