@@ -233,7 +233,7 @@ function [H, T, perm] = dendrogram (tree, varargin)
   ## figure
   x = [];
 
-  hd = figure (gcf);
+  hd = gcf ();
 
   ## ticks and tricks
   xticks = 1:P;
