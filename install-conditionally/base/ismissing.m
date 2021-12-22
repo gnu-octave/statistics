@@ -27,16 +27,16 @@
 ## @deftypefn {} {@var{TF} =} ismissing (@var{A})
 ## @deftypefnx {} {@var{TF} =} ismissing (@var{A}, @var{indicator})
 ##
-## Find missing data in a matrix or a string array.
+## Find missing data in a numeric or string array.
 ##
-## Given an input vector, matrix or array of cell strings @var{A},
-## @code{ismissing} returns a logical vector or matrix @var{TF} with the same
-## dimensions as @var{A}, where @code{true} values match missing values in the
-## input data.
+## Given an input numeric data array, char array, or array of cell strings
+## @var{A}, @code{ismissing} returns a logical array @var{TF} with
+## the same dimensions as @var{A}, where @code{true} values match missing
+## values in the input data.
 ##
-## The optional input @var{indicator} is an array of values, which represent
-## missing values in the input data.  The values which represent missing data by
-## default depend on the data type of @var{A}:
+## The optional input @var{indicator} is an array of values that represent
+## missing values in the input data.  The values which represent missing data
+## by default depend on the data type of @var{A}:
 ##
 ## @itemize
 ## @item
@@ -49,88 +49,129 @@
 ## @code{@{''@}}: string cells.
 ## @end itemize
 ##
+## Compatability Note: logical and numeric data types may be used
+## in any combination for @var{A} and @var{indicator}, and indicator values
+## will be automatically type-converted as necessary.  Note that logical and
+## other numeric data types have no default 'missing' value. As such, unless
+## @var{indicator} is specified such inputs will always result in a TF output
+## of @code{false(size(@var{A}))}.
+##
 ## @end deftypefn
 ##
-## @seealso{all, any, isempty, isnan, rmmissing}
+## @seealso{rmmissing, standardizeMissing}
 
 function TF = ismissing (A, indicator)
+
+  if (nargin < 1) || (nargin > 2)
+    print_usage ();
+  endif
 
   ## check "indicator"
   if (nargin != 2)
      indicator = [];
-  else
-    if (! isvector (indicator))
-      error ("ismissing: invalid format for 'indicator'");
-    endif
+  endif
 
-    if ((isnumeric (A) && ! isnumeric (indicator)) ||
-        (ischar (A) && ! ischar (indicator)) ||
-        (iscellstr (A) && ! (iscellstr (indicator) || ischar (indicator))))
-      error ("ismissing: 'indicator' and 'A' must have the same data type");
-    endif
+  ## if A is an array of cell strings and indicator just a string,
+  ## convert indicator to a cell string with one element
+  if (iscellstr (A) && ischar (indicator) && ! iscellstr (indicator))
+    indicator = {indicator};
+  endif
 
-    ## if A is an array of cell strings and indicator just a string,
-    ## convert indicator to a cell string with one element
-    if (iscellstr (A) && ischar (indicator) && ! iscellstr (indicator))
-      tmpstr = indicator;
-      indicator = {};
-
-      indicator = {tmpstr};
-    endif
+  if ((! isempty (indicator)) &&
+      ((isnumeric (A) && ! (isnumeric (indicator) || islogical (indicator))) ||
+       (ischar (A) && ! ischar (indicator)) ||
+       (iscellstr (A) && ! (iscellstr (indicator)))))
+    error ("ismissing: 'indicator' and 'A' must have the same data type");
   endif
 
   ## main logic
-  if (iscellstr (A) && isempty (indicator))
-    TF = false (1, length (A));
-    ## remove all empty strings
-    for iter = 1 : length (A)
-      if (isempty (A{iter}))
-        TF(iter) = true;
-      endif
-    endfor
-  elseif (ismatrix (A) && isempty (indicator))
-    if (isnumeric (A))
-      ## numeric matrix: just remove the NaNs
+  if (isempty (indicator))
+    if (iscellstr (A))
+      ## cell strings - find empty cells
+      TF = cellfun ('isempty', A);
+
+    elseif (isnumeric (A))
+      ## numeric matrix: just find the NaNs
       TF = isnan (A);
+
     elseif (ischar (A))
-      ## char matrix: remove the white spaces
+      ## char matrix: find the white spaces
       TF = isspace (A);
+
+    elseif (islogical (A))
+      ##do nothing
+      TF = false (size (A));
+
     else
       error ("ismissing: unsupported data type");
     endif
 
-    TF = logical (TF);
-  elseif (! isempty (indicator))
-    ## special cases with custom values for missing data
-    [r, c] = size (A);
-    TF = false (r, c);
-
+  else
+    ## indicator specified for missing data
+    TF = false (size (A));
     if (iscellstr (A))
-      for iter = 1 : length (indicator)
+      for iter = 1 : numel (indicator)
         TF(find (strcmp (A, indicator(iter)))) = true;
       endfor
-    elseif (ismatrix (A))
-      for iter = 1 : length (indicator)
+    elseif (isnumeric(A) || ischar (A) || islogical (A))
+      for iter = 1 : numel (indicator)
         TF(find (A == indicator(iter))) = true;
       endfor
     else
       error ("ismissing: unsupported data format");
     endif
-  else
-    error ("ismissing: unsupported data format");
   endif
 endfunction
-
 
 %!assert (ismissing ([1,NaN,3]), [false,true,false])
 %!assert (ismissing ('abcd f'), [false,false,false,false,true,false])
 %!assert (ismissing ({'xxx','','xyz'}), [false,true,false])
+%!assert (ismissing ({'x','','y'}), [false,true,false])
+%!assert (ismissing ({'x','','y';'z','a',''}), logical([0,1,0;0,0,1]))
 %!assert (ismissing ([1,2;NaN,2]), [false,false;true,false])
 
+## test nD array data
+%!assert (ismissing (cat(3,magic(2),magic(2))), logical (zeros (2,2,2)))
+%!assert (ismissing (cat(3,magic(2),[1 2;3 NaN])), logical (cat(3,[0,0;0,0],[0,0;0,1])))
+%!assert (ismissing ([1 2; 3 4], [5 1; 2 0]), logical([1 1; 0 0]))
+%!assert (ismissing (cat(3,'f oo','ba r')), logical(cat(3,[0 1 0 0],[0 0 1 0])))
+%!assert (ismissing (cat(3,{'foo'},{''},{'bar'})), logical(cat(3,0,1,0)))
+
+## test data type handling
+%!assert (ismissing (double (NaN)), true)
+%!assert (ismissing (single (NaN)), true)
+%!assert (ismissing (' '), true)
+%!assert (ismissing ({''}), true)
+%!assert (ismissing ({' '}), false)
+%!assert (ismissing (logical ([1 0 1])), [false false false])
+%!assert (ismissing (int32 ([1 2 3])), [false false false])
+%!assert (ismissing (uint32 ([1 2 3])), [false false false])
+%!assert (ismissing (double (eye(3)), single (1)), logical(eye(3)))
+%!assert (ismissing (double (eye(3)), true), logical(eye(3)))
+%!assert (ismissing (double (eye(3)), int32 (1)), logical(eye(3)))
+%!assert (ismissing (single (eye(3)), true), logical(eye(3)))
+%!assert (ismissing (single (eye(3)), double (1)), logical(eye(3)))
+%!assert (ismissing (single(eye(3)), int32 (1)), logical(eye(3)))
+%!assert (ismissing (logical (eye(3)), true), logical(eye(3)))
+%!assert (ismissing (logical (eye(3)), double (1)), logical(eye(3)))
+%!assert (ismissing (logical (eye(3)), single (1)), logical(eye(3)))
+%!assert (ismissing (logical (eye(3)), int32 (1)), logical(eye(3)))
+%!assert (ismissing (int32 (eye(3)), int32 (1)), logical(eye(3)))
+%!assert (ismissing (int32 (eye(3)), true), logical(eye(3)))
+%!assert (ismissing (int32 (eye(3)), double (1)), logical(eye(3)))
+%!assert (ismissing (int32 (eye(3)), single (1)), logical(eye(3)))
+
+## test empty input handling
+%!assert (ismissing ([]), logical([]))
+%!assert (ismissing (''), logical([]))
+%!assert (ismissing (ones (0,1)), logical(ones(0,1)))
+%!assert (ismissing (ones (1,0)), logical(ones(1,0)))
+%!assert (ismissing (ones (1,2,0)), logical(ones(1,2,0)))
+
 ## Test input validation
-%!error ismissing ();
-%!error ismissing ({1, 2, 3});
-%!error ismissing ([1 2; 3 4], [5 1; 2 0]);
-%!error ismissing ([1 2; 3 4], "abc");
-%!error ismissing ({"", "", ""}, 1);
-%!error ismissing ({1, 2, 3});
+%!error ismissing ()
+%!error ismissing ({1, 2, 3})
+%!error ismissing ([1 2; 3 4], "abc")
+%!error ismissing ({"", "", ""}, 1)
+%!error ismissing ({'123', 123})
+

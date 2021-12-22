@@ -29,12 +29,12 @@
 ## @deftypefnx {} {@var{R} =} rmmissing (@dots{}, @var{Name}, @var{Value})
 ## @deftypefnx {} {[@var{R} @var{TF}] =} rmmissing (@dots{})
 ##
-## Remove missing or incomplete data from an array or a matrix.
+## Remove missing or incomplete data from an array.
 ##
-## Given an input array or matrix @var{A}, remove rows or columns with
-## missing data from a matrix, or remove missing data from an array.  @var{A}
-## can be a numeric or char matrix, a vector or an array of cell strings.
-## @var{R} is the return matrix or array, after the removal of missing data.
+## Given an input vector or matrix (2-D array) @var{A}, remove missing data
+## from a vector or missing rows or columns from a matrix.  @var{A}
+## can be a numeric array, char array, or an array of cell strings.
+## @var{R} returns the array after removal of missing data.
 ##
 ## The values which represent missing data depend on the data type of @var{A}:
 ##
@@ -60,6 +60,10 @@
 ## @code{2}: columns.
 ## @end itemize
 ##
+## Compatibility Note: logical and other numeric data types have no default
+## 'missing' value. As such, such inputs will always result in R == A and
+## a TF output of @code{false(size(@var{A}))}.
+##
 ## Additional optional parameters are set by @var{Name}-@var{Value} pairs.
 ## These are:
 ##
@@ -76,12 +80,16 @@
 ##
 ## @end deftypefn
 ##
-## @seealso{ismissing, isnan}
+## @seealso{ismissing, standardizeMissing}
 
 function [R, TF] = rmmissing (A, varargin)
 
-  if (nargin < 1)
+  if ((nargin < 1) || (nargin > 4))
      print_usage ();
+  endif
+
+  if ndims(A) > 2
+    error ("rmmissing: input dimension cannot exceed 2");
   endif
 
   optDimensionI = 2; # default dimension: rows
@@ -137,18 +145,16 @@ function [R, TF] = rmmissing (A, varargin)
   endif
 
   ## main logic
-  if (iscellstr (A) || isvector (A))
-    TF = ismissing (A);
+  TF = ismissing (A);
+  if (isvector (A))
+    R = A(TF == 0);
 
-    R = A(find (TF == 0));
-  elseif (ismatrix (A))
-    ## matrix: ismissing returns a matrix, so it must be converted to a row or
+  elseif (iscellstr(A) || ismatrix (A))
+    ## matrix: ismissing returns a array, so it must be converted to a row or
     ## column vector according to the "dim" of choice
-    TF = ismissing (A);
-
     if (optMinNumMissingI > 1)
       TF = sum (TF, optDimensionI);
-      TF(find (TF < optMinNumMissingI)) = 0;
+      TF(TF < optMinNumMissingI) = 0;
       TF = logical (TF);
     else
       TF = any (TF, optDimensionI);
@@ -156,30 +162,70 @@ function [R, TF] = rmmissing (A, varargin)
 
     if (optDimensionI == 2)
       ## remove the rows
-      R = A(find (TF == 0), :);
+      R = A((TF == 0), :);
     else
-      ## remove the columns 
-      R = A(:, find (TF == 0));
+      ## remove the columns
+      R = A(:, (TF == 0));
     endif
   else
     error ("rmmissing: unsupported data");
   endif
 endfunction
 
-
 %!assert (rmmissing ([1,NaN,3]), [1,3])
 %!assert (rmmissing ('abcd f'), 'abcdf')
 %!assert (rmmissing ({'xxx','','xyz'}), {'xxx','xyz'})
+%!assert (rmmissing ({'xxx','';'xyz','yyy'}), {'xyz','yyy'})
+%!assert (rmmissing ({'xxx','';'xyz','yyy'}, 2), {'xxx';'xyz'})
 %!assert (rmmissing ([1,2;NaN,2]), [1,2])
 %!assert (rmmissing ([1,2;NaN,2], 2), [2,2]')
 %!assert (rmmissing ([1,2;NaN,4;NaN,NaN],"MinNumMissing", 2), [1,2;NaN,4])
 
+## Test second output
+%!test
+%! x = [1:6];
+%! x([2,4]) = NaN;
+%! [~, idx] = rmmissing (x);
+%! assert (idx, logical ([0, 1, 0, 1, 0, 0]));
+%! assert (class(idx), 'logical');
+%! x = reshape (x, [2, 3]);
+%! [~, idx] = rmmissing (x);
+%! assert (idx, logical ([0; 1]));
+%! assert (class(idx), 'logical');
+%! [~, idx] = rmmissing (x, 2);
+%! assert (idx, logical ([1, 1, 0]));
+%! assert (class(idx), 'logical');
+%! [~, idx] = rmmissing (x, 1, "MinNumMissing", 2);
+%! assert (idx, logical ([0; 1]));
+%! assert (class(idx), 'logical');
+%! [~, idx] = rmmissing (x, 2, "MinNumMissing", 2);
+%! assert (idx, logical ([0, 0, 0]));
+%! assert (class(idx), 'logical');
+
+## Test data type handling
+%!assert (rmmissing (single ([1 2 NaN; 3 4 5])), single ([3 4 5]))
+%!assert (rmmissing (logical (ones (3))), logical (ones (3)))
+%!assert (rmmissing (int32 (ones (3))), int32 (ones (3)))
+%!assert (rmmissing (uint32 (ones (3))), uint32 (ones (3)))
+
+## Test empty input handling
+%!assert (rmmissing ([]), [])
+%!assert (rmmissing (ones (1,0)), ones (1,0))
+%!assert (rmmissing (ones (1,0), 1), ones (1,0))
+%!assert (rmmissing (ones (1,0), 2), ones (1,0))
+%!assert (rmmissing (ones (0,1)), ones (0,1))
+%!assert (rmmissing (ones (0,1), 1), ones (0,1))
+%!assert (rmmissing (ones (0,1), 2), ones (0,1))
+%!error <input dimension> rmmissing (ones (0,1,2))
+
 ## Test input validation
-%!error rmmissing ();
-%!error rmmissing ({1, 2, 3});
-%!error <must be either 1 or 2> rmmissing ([1 2; 3 4], 5);
-%!error <unknown parameter name> rmmissing ([1 2; 3 4], "XXX", 1);
-%!error <'MinNumMissing'> rmmissing ([1 2; 3 4], 2, "MinNumMissing", -2);
-%!error <'MinNumMissing'> rmmissing ([1 2; 3 4], "MinNumMissing", 3.8);
-%!error <'MinNumMissing'> rmmissing ([1 2; 3 4], "MinNumMissing", [1 2 3]);
-%!error <'MinNumMissing'> rmmissing ([1 2; 3 4], "MinNumMissing", 'xxx');
+%!error rmmissing ()
+%!error rmmissing ({1, 2, 3})
+%!error <input dimension> rmmissing (ones(2,2,2))
+%!error <must be either 1 or 2> rmmissing ([1 2; 3 4], 5)
+%!error <unknown parameter name> rmmissing ([1 2; 3 4], "XXX", 1)
+%!error <'MinNumMissing'> rmmissing ([1 2; 3 4], 2, "MinNumMissing", -2)
+%!error <'MinNumMissing'> rmmissing ([1 2; 3 4], "MinNumMissing", 3.8)
+%!error <'MinNumMissing'> rmmissing ([1 2; 3 4], "MinNumMissing", [1 2 3])
+%!error <'MinNumMissing'> rmmissing ([1 2; 3 4], "MinNumMissing", 'xxx')
+

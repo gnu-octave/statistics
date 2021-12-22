@@ -4,9 +4,16 @@ Summary of important user-visible changes for statistics 1.4.4:
  New functions:
  ==============
 
+ ** standardizeMissing (patch #10102)
 
  Improvements:
  =============
+
+ ** ismissing.m: corrects n-D array handling and improves
+    matlab compatibility for different data types. (patch #10102)
+ 
+ ** rmmissing.m: corrects cellstr array handling and
+    improves matlab compatibility for different data types. (patch #10102)
 
 
 Summary of important user-visible changes for statistics 1.4.3:
