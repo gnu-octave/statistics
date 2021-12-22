@@ -1,3 +1,14 @@
+Summary of important user-visible changes for statistics 1.4.4:
+-------------------------------------------------------------------
+
+ New functions:
+ ==============
+
+
+ Improvements:
+ =============
+
+
 Summary of important user-visible changes for statistics 1.4.3:
 -------------------------------------------------------------------
 
@@ -48,9 +59,9 @@ Summary of important user-visible changes for statistics 1.4.3:
 
  Improvements:
  =============
- 
+
  ** anovan.m: use double instead of toascii (bug #60514)
- 
+
  ** binocdf: new option "upper" (bug #43721)
 
  ** boxplot: better Matlab compatibility; several Matlab-compatible
@@ -58,7 +69,7 @@ Summary of important user-visible changes for statistics 1.4.3:
     BoxStyle, Positions, Labels, Colors) and an Octave-specific one
     (CapWidhts); demos added; texinfo improved (patch #9930)
 
- ** auto MPG (carbig) sample dataset added from 
+ ** auto MPG (carbig) sample dataset added from
     https://archive.ics.uci.edu/ml/datasets/Auto+MPG (patch #10045)
 
  ** crosstab.m: make n-dimensional (patch #10014)
@@ -66,19 +77,19 @@ Summary of important user-visible changes for statistics 1.4.3:
  ** dendrogram.m: many improvements (patch #10036)
 
  ** fitgmdist.m: fix typo in ComponentProportion (bug #59386)
- 
+
  ** gevfit: change orientation of results for Matlab compatibility (bug #47369)
 
  ** hygepdf: avoid overflow for certain inputs (bug #35827)
 
  ** kmeans: efficiency and compatibility tweaks (patch #10042)
 
- ** pdist: option for squared Euclidean distance (patch #10051) 
+ ** pdist: option for squared Euclidean distance (patch #10051)
 
- ** stepwisefit.m: give another option to select predictors (patch #8584) 
+ ** stepwisefit.m: give another option to select predictors (patch #8584)
 
  ** tricdf, triinv: fixes (bug #60113)
- 
+
 
 Summary of important user-visible changes for statistics 1.4.2:
 -------------------------------------------------------------------
@@ -267,7 +278,7 @@ Summary of important user-visible changes for statistics 1.4.0:
       fitgmdist: test number inputs to function
       hist3: fix removal of rows with NaN values
 
- ** added the packages test data to install 
+ ** added the packages test data to install
 
 
 Summary of important user-visible changes for statistics 1.3.0:
@@ -315,7 +326,7 @@ Summary of important user-visible changes for statistics 1.2.4:
  ** Transposed output of hist3.
 
  ** Converted calculation in hmmviterbi to log space.
- 
+
  ** Bug fixes for
     stepwisefit   wishrnd.
 
@@ -324,13 +335,13 @@ Summary of important user-visible changes for statistics 1.2.4:
  ** Fix in squareform for improved compatibility.
 
  ** New cvpartition class, with methods:
-  
+
     display repartition test training
 
  ** New sample data file fisheriris.txt for tests
 
  ** The following functions are new:
- 
+
     cdf crossval dcov pdist2 qrandn randsample signtest ttest ttest2
     vartest vartest2 ztest
 
@@ -345,9 +356,9 @@ Summary of important user-visible changes for statistics 1.2.3:
  ** Corrected handle for outliers in boxplot.
 
  ** Bug fix and enhanced functionality for mvnrnd.
- 
+
  ** The following functions are new:
- 
+
     wishrnd iwishrnd wishpdf iwishpdf cmdscale
 
 Summary of important user-visible changes for statistics 1.2.2:
@@ -374,9 +385,9 @@ Summary of important user-visible changes for statistics 1.2.0:
       regress_gp  dendogram   plsregress
 
  ** New functions for the generalized extreme value (GEV) distribution:
-      
+
       gevcdf gevfit gevfit_lmom gevinv gevlike gevpdf gevrnd gevstat
-      
+
  ** The interface of the following functions has been modified:
 
       mvnrnd
