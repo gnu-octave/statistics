@@ -60,9 +60,8 @@
 ## @code{2}: columns.
 ## @end itemize
 ##
-## Compatibility Note: logical and other numeric data types have no default
-## 'missing' value. As such, such inputs will always result in R == A and
-## a TF output of @code{false(size(@var{A}))}.
+## Note: data types with no default 'missing' value will always result in
+## @code{R == A} and a TF output of @code{false(size(@var{A}))}.
 ##
 ## Additional optional parameters are set by @var{Name}-@var{Value} pairs.
 ## These are:
@@ -150,7 +149,7 @@ function [R, TF] = rmmissing (A, varargin)
     R = A(TF == 0);
 
   elseif (iscellstr(A) || ismatrix (A))
-    ## matrix: ismissing returns a array, so it must be converted to a row or
+    ## matrix: ismissing returns an array, so it must be converted to a row or
     ## column vector according to the "dim" of choice
     if (optMinNumMissingI > 1)
       TF = sum (TF, optDimensionI);
@@ -207,6 +206,8 @@ endfunction
 %!assert (rmmissing (logical (ones (3))), logical (ones (3)))
 %!assert (rmmissing (int32 (ones (3))), int32 (ones (3)))
 %!assert (rmmissing (uint32 (ones (3))), uint32 (ones (3)))
+%!assert (rmmissing ({1, 2, 3}), {1, 2, 3})
+%!assert (rmmissing ([struct, struct, struct]), [struct, struct, struct])
 
 ## Test empty input handling
 %!assert (rmmissing ([]), [])
@@ -220,7 +221,6 @@ endfunction
 
 ## Test input validation
 %!error rmmissing ()
-%!error rmmissing ({1, 2, 3})
 %!error <input dimension> rmmissing (ones(2,2,2))
 %!error <must be either 1 or 2> rmmissing ([1 2; 3 4], 5)
 %!error <unknown parameter name> rmmissing ([1 2; 3 4], "XXX", 1)

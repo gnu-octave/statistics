@@ -150,6 +150,7 @@ Descriptive statistics
  runlength
 Other
  center
+ fillmissing
  ismissing
  rmmissing
 Plots

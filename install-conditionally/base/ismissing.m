@@ -49,12 +49,14 @@
 ## @code{@{''@}}: string cells.
 ## @end itemize
 ##
-## Compatability Note: logical and numeric data types may be used
-## in any combination for @var{A} and @var{indicator}, and indicator values
-## will be automatically type-converted as necessary.  Note that logical and
-## other numeric data types have no default 'missing' value. As such, unless
-## @var{indicator} is specified such inputs will always result in a TF output
-## of @code{false(size(@var{A}))}.
+## Note: logical and numeric data types may be used in any combination
+## for @var{A} and @var{indicator}. @var{A} and the indicator values will be
+## compared as type double, and the output will have the same class as @var{A}.
+## Data types other than those specified above have no defined 'missing' value.
+## As such, the TF output for those inputs will always be
+## @code{false(size(@var{A}))}. The exception to this is that @var{indicator}
+## can be specified for logical and numeric inputs to designate values that
+## will register as 'missing'.
 ##
 ## @end deftypefn
 ##
@@ -86,39 +88,43 @@ function TF = ismissing (A, indicator)
 
   ## main logic
   if (isempty (indicator))
-    if (iscellstr (A))
+
+    if (isnumeric (A))
+      ## numeric matrix: just find the NaNs
+      ## integer types have no missing value, but isnan will return false
+      TF = isnan (A);
+
+    elseif (iscellstr (A))
       ## cell strings - find empty cells
       TF = cellfun ('isempty', A);
-
-    elseif (isnumeric (A))
-      ## numeric matrix: just find the NaNs
-      TF = isnan (A);
 
     elseif (ischar (A))
       ## char matrix: find the white spaces
       TF = isspace (A);
 
-    elseif (islogical (A))
-      ##do nothing
-      TF = false (size (A));
-
     else
-      error ("ismissing: unsupported data type");
+      ##no missing type defined, return false
+      TF = false (size (A));
     endif
 
   else
     ## indicator specified for missing data
     TF = false (size (A));
-    if (iscellstr (A))
+    if (isnumeric(A) || ischar (A) || islogical (A))
       for iter = 1 : numel (indicator)
-        TF(find (strcmp (A, indicator(iter)))) = true;
+        if (isnan (indicator(iter)))
+          TF(isnan(A)) = true;
+        else
+          TF(A == indicator(iter)) = true;
+        endif
       endfor
-    elseif (isnumeric(A) || ischar (A) || islogical (A))
+    elseif (iscellstr (A))
       for iter = 1 : numel (indicator)
-        TF(find (A == indicator(iter))) = true;
+        TF(strcmp (A, indicator(iter))) = true;
       endfor
     else
-      error ("ismissing: unsupported data format");
+      error ("ismissing: indicators not supported for data type '%s'", ...
+               class(A));
     endif
   endif
 endfunction
@@ -129,6 +135,9 @@ endfunction
 %!assert (ismissing ({'x','','y'}), [false,true,false])
 %!assert (ismissing ({'x','','y';'z','a',''}), logical([0,1,0;0,0,1]))
 %!assert (ismissing ([1,2;NaN,2]), [false,false;true,false])
+%!assert (ismissing ([1,2;NaN,2], 2), [false,true;false,true])
+%!assert (ismissing ([1,2;NaN,2], [1 2]), [true,true;false,true])
+%!assert (ismissing ([1,2;NaN,2], NaN), [false,false;true,false])
 
 ## test nD array data
 %!assert (ismissing (cat(3,magic(2),magic(2))), logical (zeros (2,2,2)))
@@ -143,15 +152,20 @@ endfunction
 %!assert (ismissing (' '), true)
 %!assert (ismissing ({''}), true)
 %!assert (ismissing ({' '}), false)
-%!assert (ismissing (logical ([1 0 1])), [false false false])
-%!assert (ismissing (int32 ([1 2 3])), [false false false])
-%!assert (ismissing (uint32 ([1 2 3])), [false false false])
 %!assert (ismissing (double (eye(3)), single (1)), logical(eye(3)))
 %!assert (ismissing (double (eye(3)), true), logical(eye(3)))
 %!assert (ismissing (double (eye(3)), int32 (1)), logical(eye(3)))
 %!assert (ismissing (single (eye(3)), true), logical(eye(3)))
 %!assert (ismissing (single (eye(3)), double (1)), logical(eye(3)))
 %!assert (ismissing (single(eye(3)), int32 (1)), logical(eye(3)))
+
+## test data types without missing values
+%!assert (ismissing ({'123', '', 123}), [false false false])
+%!assert (ismissing (logical ([1 0 1])), [false false false])
+%!assert (ismissing (int32 ([1 2 3])), [false false false])
+%!assert (ismissing (uint32 ([1 2 3])), [false false false])
+%!assert (ismissing ({1, 2, 3}), [false false false])
+%!assert (ismissing ([struct struct struct]), [false false false])
 %!assert (ismissing (logical (eye(3)), true), logical(eye(3)))
 %!assert (ismissing (logical (eye(3)), double (1)), logical(eye(3)))
 %!assert (ismissing (logical (eye(3)), single (1)), logical(eye(3)))
@@ -170,8 +184,7 @@ endfunction
 
 ## Test input validation
 %!error ismissing ()
-%!error ismissing ({1, 2, 3})
-%!error ismissing ([1 2; 3 4], "abc")
-%!error ismissing ({"", "", ""}, 1)
-%!error ismissing ({'123', 123})
-
+%!error <'indicator' and 'A' must have the same> ismissing ([1 2; 3 4], "abc")
+%!error <'indicator' and 'A' must have the same> ismissing ({"", "", ""}, 1)
+%!error <'indicator' and 'A' must have the same> ismissing (1, struct)
+%!error <indicators not supported for data type> ismissing (struct, 1)
