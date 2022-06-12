@@ -61,23 +61,23 @@
 ## a 2-by-3-by-4 array, then @code{geomean(@var{x}, [1 2]} returns a 1-by-1-by-4
 ## array. Each element of the output array is the geometric mean of the elements
 ## on the corresponding page of @var{x}.  NOTE! @var{vecdim} MUST index at least
-## N-2 dimensions of @var{x}.
+## N-2 dimensions of @var{x}, where @code{N = length (size (@var{x}))} and N < 8.
 ##
 ## @code{geomean(@dots{}, @var{nanflag})} specifies whether to exclude NaN
 ## values from the calculation, using any of the input argument combinations in
 ## previous syntaxes. By default, geomean includes NaN values in the calculation
-## (@var{nanflag} has the value "includenan"). To exclude NaN values, set the
+## (@var{nanflag} has the value "includenan").  To exclude NaN values, set the
 ## value of @var{nanflag} to "omitnan".
 ##
 ## @seealso{harmmean, mean}
 ## @end deftypefn
 
-function m = geomean(x, varargin)
+function m = geomean (x, varargin)
   if (nargin < 1 || nargin > 3)
     print_usage ();
   endif
   if (! isnumeric (x) && ! isbool (x))
-    error ("mean: X must be either numeric or boolean vector or matrix");
+    error ("X must be either numeric or boolean vector or matrix");
   endif
   ## check for omitnan option
   omitnan = false;
