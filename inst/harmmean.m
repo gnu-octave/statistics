@@ -86,14 +86,19 @@ function m = harmmean (x, varargin)
   endif
   ## check for omitnan option
   omitnan = false;
-  if ((nargin == 2 && ischar (varargin{1}) && ...
-       strcmpi (varargin{1}, "omitnan")) || (nargin == 3 && ...
-       ischar (varargin{2}) && strcmpi (varargin{2}, "omitnan")))
-    omitnan = true;
+  nanflag_option = false;
+  if nargin > 1
+    for i = 1:nargin - 1
+      if (ischar (varargin{i}) && strcmpi (varargin{i}, "omitnan"))
+        omitnan = true;
+        nanflag_option = true;
+      elseif (ischar (varargin{i}) && strcmpi (varargin{i}, "includenan"))
+        nanflag_option = true;
+      endif
+    endfor
   endif
   ## for single input argument or with option omitnan
-  if (nargin == 1 || (nargin == 2 && ischar (varargin{1}) && ...
-      strcmpi (varargin{1}, "omitnan")))
+  if (nargin == 1 || (nargin == 2 && nanflag_option))
     sz = size (x);
     dim = find (sz > 1, 1);
     if length (dim) == 0
@@ -197,6 +202,7 @@ endfunction
 %! assert (harmmean (z, "all"), NaN);
 %! m = [24.59488458841874 NaN 34.71244385944397];
 %! assert (harmmean (z'), m, 4e-14);
+%! assert (harmmean (z', "includenan"), m, 4e-14);
 %! m = [24.59488458841874 29.84104075528276 34.71244385944397];
 %! assert (harmmean (z', "omitnan"), m, 4e-14);
 %! assert (harmmean (z, 2, "omitnan"), m', 4e-14);
