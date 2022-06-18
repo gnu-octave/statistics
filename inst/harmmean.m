@@ -58,10 +58,12 @@
 ##
 ## @code{harmmean(@var{x}, @var{vecdim})} returns the harmonic mean over the
 ## dimensions specified in the vector @var{vecdim}.  For example, if @var{x} is
-## a 2-by-3-by-4 array, then @code{harmmean(@var{x}, [1 2]} returns a 1-by-4
+## a 2-by-3-by-4 array, then @code{harmmean(@var{x}, [1 2])} returns a 1-by-4
 ## array. Each element of the output array is the harmonic mean of the elements
 ## on the corresponding page of @var{x}.  NOTE! @var{vecdim} MUST index at least
 ## N-2 dimensions of @var{x}, where @code{N = length (size (@var{x}))} and N < 8.
+## If @var{vecdim} indexes all dimensions of @var{x}, then it is equivalent to
+## @code{geomean(@var{x}, "all")}.
 ##
 ## @code{harmmean(@dots{}, @var{nanflag})} specifies whether to exclude NaN
 ## values from the calculation, using any of the input argument combinations in
@@ -97,13 +99,11 @@ function m = harmmean (x, varargin)
     if length (dim) == 0
       dim = 1;
     endif
-    n = size (x, dim);
-    ## n ./ sum (1 ./ x, dim); ##
     if omitnan
       m = sum (! isnan (x), dim) ./ nansum (1 ./ x, dim);
       m(m == Inf) = 0;
     else
-      m = n ./ sum (1 ./ x, dim);
+      m = size (x, dim) ./ sum (1 ./ x, dim);
       m(m == Inf) = 0;
     endif
   endif
@@ -141,8 +141,17 @@ function m = harmmean (x, varargin)
     for i = 1:length (vecdim)
       misdim(misdim == vecdim(i)) = []; 
     endfor
+    ## if all dimensions are given, compute x(:)
+    if length (misdim) == 0
+      if omitnan
+        m = length (x(! isnan (x))) ./ nansum (1 ./ x(:), 1);
+        m(m == Inf) = 0;
+      else
+        m = length (x(:)) ./ sum (1 ./ x(:), 1);
+        m(m == Inf) = 0;
+      endif
     ## for 1 dimension left, return column vector
-    if length (misdim) == 1
+    elseif length (misdim) == 1
       x = permute (x, [misdim, vecdim]);
       for i = 1:size (x, 1)
         x_vec = x(i,:,:,:,:,:,:)(:);
@@ -209,6 +218,7 @@ endfunction
 %! assert (size (harmmean (x, [1 2])), [6 3]);
 %! assert (size (harmmean (x, [1 2 4])), [1 6]);
 %! assert (size (harmmean (x, [1 4 3])), [1 40]);
+%! assert (size (harmmean (x, [1 2 3 4])), [1 1]);
 
 ## Test results with vecdim in n-dimensional arrays and "omitnan"
 %!test
