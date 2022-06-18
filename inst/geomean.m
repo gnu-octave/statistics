@@ -83,14 +83,19 @@ function m = geomean (x, varargin)
   endif
   ## check for omitnan option
   omitnan = false;
-  if ((nargin == 2 && ischar (varargin{1}) && ...
-       strcmpi (varargin{1}, "omitnan")) || (nargin == 3 && ...
-       ischar (varargin{2}) && strcmpi (varargin{2}, "omitnan")))
-    omitnan = true;
+  nanflag_option = false;
+  if nargin > 1
+    for i = 1:nargin - 1
+      if (ischar (varargin{i}) && strcmpi (varargin{i}, "omitnan"))
+        omitnan = true;
+        nanflag_option = true;
+      elseif (ischar (varargin{i}) && strcmpi (varargin{i}, "includenan"))
+        nanflag_option = true;
+      endif
+    endfor
   endif
   ## for single input argument or with option omitnan
-  if (nargin == 1 || (nargin == 2 && ischar (varargin{1}) && ...
-      strcmpi (varargin{1}, "omitnan")))
+  if (nargin == 1 || (nargin == 2 && nanflag_option))
     sz = size (x);
     dim = find (sz > 1, 1);
     if length (dim) == 0
@@ -182,6 +187,7 @@ endfunction
 %! assert (geomean (z, "all"), NaN);
 %! m = [19.02099329497543 NaN 13.60912525683438];
 %! assert (geomean (z'), m, 4e-14);
+%! assert (geomean (z', "includenan"), m, 4e-14);
 %! m = [19.02099329497543 24.59957418295707 13.60912525683438];
 %! assert (geomean (z', "omitnan"), m, 4e-14);
 %! assert (geomean (z, 2, "omitnan"), m', 4e-14);
