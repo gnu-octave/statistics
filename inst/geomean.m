@@ -58,10 +58,12 @@
 ##
 ## @code{geomean(@var{x}, @var{vecdim})} returns the geometric mean over the
 ## dimensions specified in the vector @var{vecdim}.  For example, if @var{x} is
-## a 2-by-3-by-4 array, then @code{geomean(@var{x}, [1 2]} returns a 1-by-1-by-4
+## a 2-by-3-by-4 array, then @code{geomean(@var{x}, [1 2])} returns a 1-by-4
 ## array. Each element of the output array is the geometric mean of the elements
 ## on the corresponding page of @var{x}.  NOTE! @var{vecdim} MUST index at least
 ## N-2 dimensions of @var{x}, where @code{N = length (size (@var{x}))} and N < 8.
+## If @var{vecdim} indexes all dimensions of @var{x}, then it is equivalent to
+## @code{geomean(@var{x}, "all")}.
 ##
 ## @code{geomean(@dots{}, @var{nanflag})} specifies whether to exclude NaN
 ## values from the calculation, using any of the input argument combinations in
@@ -94,11 +96,10 @@ function m = geomean (x, varargin)
     if length (dim) == 0
       dim = 1;
     endif
-    n = size (x, dim);
     if omitnan
       m = exp (nansum (log (x), dim) ./ sum (! isnan (x), dim));
     else
-      m = exp (sum (log (x), dim) ./ n);
+      m = exp (sum (log (x), dim) ./ size (x, dim));
     endif
   endif
   ## for option "all"
@@ -131,8 +132,15 @@ function m = geomean (x, varargin)
     for i = 1:length (vecdim)
       misdim(misdim == vecdim(i)) = []; 
     endfor
+    ## if all dimensions are given, compute x(:)
+    if length (misdim) == 0
+      if omitnan
+        m = exp (nansum (log (x(:)), 1) ./ length (x(! isnan (x))));
+      else
+        m = exp (sum (log (x(:)), 1) ./ length (x(:)));
+      endif
     ## for 1 dimension left, return column vector
-    if length (misdim) == 1
+    elseif length (misdim) == 1
       x = permute (x, [misdim, vecdim]);
       for i = 1:size (x, 1)
         x_vec = x(i,:,:,:,:,:,:)(:);
@@ -195,6 +203,7 @@ endfunction
 %! assert (size (geomean (x, [1 2])), [6 3]);
 %! assert (size (geomean (x, [1 2 4])), [1 6]);
 %! assert (size (geomean (x, [1 4 3])), [1 40]);
+%! assert (size (geomean (x, [1 2 3 4])), [1 1]);
 
 ## Test results with vecdim in n-dimensional arrays and "omitnan"
 %!test
