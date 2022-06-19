@@ -161,9 +161,8 @@ function y = pdist (x, metric, varargin)
         y = norm (d, p, "cols");
 
       case "cosine"
-        prod = X(:,Xi) .* X(:,Yi);
-        weights = sumsq (X(:,Xi), 1) .* sumsq (X(:,Yi), 1);
-        y = 1 - sum (prod, 1) ./ sqrt (weights);
+        w = sqrt (sumsq (X, 1));
+        y = 1 - ((X'*X)./(w.*w'))(((1:rows(x))'>(1:rows(x)))(:))';
 
       case "correlation"
         if (rows(X) == 1)
