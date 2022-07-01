@@ -47,9 +47,6 @@ function [r, tieadj] = tiedrank (x, tieflag, bidir)
   if (nargin < 3)
     bidir = false;
   endif
-  ##if (nargin < 4)
-  ##  epsx = zeros (size (x));
-  ##endif
   ## X must be a vector
   if isvector (x)
     ## Sort X and leave NaNs at the end of vector
