@@ -2,51 +2,46 @@ statistics >> Statistics
 Distributions
  anderson_darling_cdf
  bbscdf bbsinv bbspdf bbsrnd
- betastat
- binostat binotest
+ betacdf betainv betapdf betarrnd
+ binocdf binoinv binopdf binornd
  burrcdf burrinv burrpdf burrrnd
- cdf
- chi2stat
- cl_multinom
+ cauchy_cdf cauchy_inv cauchy_pdf cauchy_rnd
+ chi2cdf chi2inv chi2pdf chi2rnd
  copulacdf copulapdf copularnd
- datasample
- expfit explike expstat
- fstat
- gamlike
- gamstat
- geostat
- gevcdf gevfit gevfit_lmom gevinv gevlike gevpdf gevrnd gevstat
- gmdistribution
+ expcdf expinv exppdf exprnd
+ fcdf finv fpdf frnd
+ gamcdf gaminv gampdf gamrnd
+ geocdf geoinv geopdf geornd
+ gevcdf gevinv gevpdf gevrnd
  gpcdf gpinv gppdf gprnd
- hygestat
+ hygecdf hygeinv hygepdf hygernd
  iwishpdf iwishrnd
- jsucdf
- jsupdf
- lognstat
+ jsucdf jsupdf
+ kolmogorov_smirnov_cdf
+ laplace_cdf laplace_inv laplace_pdf laplace_rnd
+ logistic_cdf logistic_inv logistic_pdf logistic_rnd
+ logncdf logninv lognpdf lognrnd
  mnpdf mnrnd
- mvnpdf mvnrnd mvncdf
+ mvncdf mvnpdf mvnrnd
  mvtcdf mvtpdf mvtrnd
  nakacdf nakainv nakapdf nakarnd
- nbinstat
- ncx2pdf
- normalise_distribution
- normstat
- pdf
- poisstat
- qrandn
- random
- randsample
- raylcdf raylinv raylpdf raylrnd raylstat
+ nbincdf nbininv nbinpdf nbinrnd
+ normcdf norminv normpdf normrnd
+ poisscdf poissinv poisspdf poissrnd
+ raylcdf raylinv raylpdf raylrnd
+ stdnormal_cdf stdnormal_inv stdnormal_pdf stdnormal_rnd
+ tcdf tinv tpdf trnd
  tricdf triinv tripdf trirnd
- tstat
- unidstat
- unifstat
+ unidcdf unidinv unidpdf unidrnd
+ unifcdf unifinv unifpdf unifrnd
  vmpdf vmrnd
- wblstat
+ wblcdf wblinv wblpdf wblrnd
+ wienrnd
  wishpdf wishrnd
 Descriptive statistics
  combnk
  dcov
+ mean
  geomean
  harmmean
  jackknife
@@ -63,6 +58,7 @@ Experimental design
  fullfact ff2n
 Regression
  anova1
+ anova2
  anovan
  canoncorr
  crossval
@@ -83,6 +79,8 @@ Plots
  histfit
  hist3
  normplot
+ ppplot
+ qqplot
  repanova
  silhouette
  violin
@@ -95,7 +93,9 @@ Models
  slicesample
 Hypothesis testing
  anderson_darling_test
+ friedman
  kruskalwallis
+ ranksum
  runstest
  signtest
  ttest

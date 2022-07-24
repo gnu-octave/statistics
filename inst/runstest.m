@@ -30,18 +30,24 @@
 ##
 ## @itemize @bullet
 ## @item
-## @var{h} is true if serial correlation is detected at the 95% confidence level (two-tailed), false otherwise.
+## @var{h} is true if serial correlation is detected at the 95% confidence level
+## (two-tailed), false otherwise.
 ## @item
-## @var{p} is the probablity of obtaining a test statistic of the magnitude found under the null hypothesis of no serial correlation.
+## @var{p} is the probablity of obtaining a test statistic of the magnitude
+## found under the null hypothesis of no serial correlation.
 ## @item
-## @var{stats} is the structure containing as fields the number of runs @var{nruns}; the numbers of positive and negative values of @code{x - v}, @var{n1} and @var{n0}; and the test statistic @var{z}.
+## @var{stats} is the structure containing as fields the number of runs
+## @var{nruns}; the numbers of positive and negative values of @code{x - v},
+## @var{n1} and @var{n0}; and the test statistic @var{z}.
 ## 
 ## @end itemize
 ##
-## Note: the large-sample normal approximation is used to find @var{h} and @var{p}. This is accurate if @var{n1}, @var{n0} are both greater than 10.
+## Note: the large-sample normal approximation is used to find @var{h} and
+## @var{p}. This is accurate if @var{n1}, @var{n0} are both greater than 10.
 ##
 ## Reference: 
-## NIST Engineering Statistics Handbook, 1.3.5.13. Runs Test for Detecting Non-randomness, http://www.itl.nist.gov/div898/handbook/eda/section3/eda35d.htm
+## NIST Engineering Statistics Handbook, 1.3.5.13. Runs Test for Detecting
+## Non-randomness, http://www.itl.nist.gov/div898/handbook/eda/section3/eda35d.htm
 ##
 ## @seealso{}
 ## @end deftypefn
