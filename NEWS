@@ -1,9 +1,20 @@
-Summary of important user-visible changes for statistics 1.4.4:
+Summary of important user-visible changes for statistics 1.5.0:
 -------------------------------------------------------------------
 
+ Important Notice: dependency change to Octave>=6.1.0
+ 
  New functions:
  ==============
 
+ ** friedman (fully Matlab compatible)
+ 
+ ** ranksum (fully Matlab compatible. bug #42079)
+    tiedrank
+    
+ ** anova2 (fully Matlab compatible)
+ 
+ ** mean (fully Matlab compatible, it shadows mean from core Octave)
+          
  ** fillmissing (patch #10102)
 
  ** standardizeMissing (patch #10102)
@@ -11,11 +22,26 @@ Summary of important user-visible changes for statistics 1.4.4:
  Improvements:
  =============
 
+ ** pdist.m: updated the 'cosine' metric to be more efficient (bug #62495)
+ 
+ ** harmmean.m: fully Matlab compatible.
+ 
+ ** geomean.m: fully Matlab compatible. (patch #59410)
+ 
+ ** wblplot.m: fixed coding style and help texinfo. (patch #8579)
+ 
  ** ismissing.m: corrects handling of n-D arrays, NaN indicators, and improves
     matlab compatibility for different data types. (patch #10102)
 
  ** rmmissing.m: corrects cellstr array handling and
     improves matlab compatibility for different data types. (patch #10102)
+    
+ Removed Functions:
+ ==================
+ 
+ ** wilcoxon_test (replaced by ranksum)
+ 
+ ** kruskal_wallis_test (replaced by kruskalwallis)
 
 
 Summary of important user-visible changes for statistics 1.4.3:
