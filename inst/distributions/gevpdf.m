@@ -61,7 +61,9 @@
 ##
 ## @enumerate
 ## @item
-## Rolf-Dieter Reiss and Michael Thomas. @cite{Statistical Analysis of Extreme Values with Applications to Insurance, Finance, Hydrology and Other Fields}. Chapter 1, pages 16-17, Springer, 2007.
+## Rolf-Dieter Reiss and Michael Thomas. @cite{Statistical Analysis of Extreme
+## Values with Applications to Insurance, Finance, Hydrology and Other Fields}.
+## Chapter 1, pages 16-17, Springer, 2007.
 ##
 ## @end enumerate
 ## @seealso{gevcdf, gevfit, gevinv, gevlike, gevrnd, gevstat}
@@ -77,7 +79,8 @@ function y = gevpdf (x, k, sigma, mu)
     print_usage ();
   endif
 
-  if (isempty (x) || isempty (k) || isempty (sigma) || isempty (mu) || ~ismatrix (x) || ~ismatrix (k) || ~ismatrix (sigma) || ~ismatrix (mu))
+  if (isempty (x) || isempty (k) || isempty (sigma) || isempty (mu) || ...
+      ~ismatrix (x) || ~ismatrix (k) || ~ismatrix (sigma) || ~ismatrix (mu))
     error ("gevpdf: inputs must be numeric matrices");
   endif
 
@@ -93,7 +96,8 @@ function y = gevpdf (x, k, sigma, mu)
 
   y(z <= 0) = 0;
   
-  inds = (abs (k) < (eps^0.7)); %use a different formula if k is very close to zero
+  ## Use a different formula if k is very close to zero
+  inds = (abs (k) < (eps^0.7));
   if any(inds)
     z = (mu(inds) - x(inds)) ./ sigma(inds);
     y(inds) = exp(z-exp(z)) ./ sigma(inds);
