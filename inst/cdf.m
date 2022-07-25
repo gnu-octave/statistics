@@ -1,3 +1,4 @@
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2013 Pantxo Diribarne
 ## 
 ## This program is free software; you can redistribute it and/or modify it
@@ -24,25 +25,42 @@
 ## 
 ## @multitable @columnfractions 0.02 0.3 0.45 0.2
 ## @headitem @tab function @tab alternative @tab args
-## @item @tab "beta" @tab "beta" @tab 2
+## @item @tab "bbs" @tab "Birnbaum-Saunders" @tab 3
+## @item @tab "beta" @tab @tab 2
 ## @item @tab "bino" @tab "binomial" @tab 2
-## @item @tab "cauchy" @tab @tab 2
-## @item @tab "chi2" @tab "chisquare" @tab 1
+## @item @tab "burr" @tab "Burr" @tab 2
+## @item @tab "cauchy" @tab "Cauchy" @tab 2
+## @item @tab "chi2" @tab "chi-square" @tab 1
+## @item @tab "copula" @tab "Copula family" @tab 2
+## @item @tab "copula" @tab "Copula family" @tab 3 include nu
 ## @item @tab "discrete" @tab @tab 2
 ## @item @tab "exp" @tab "exponential" @tab 1
 ## @item @tab "f" @tab @tab 2
 ## @item @tab "gam" @tab "gamma" @tab  2
 ## @item @tab "geo" @tab "geometric" @tab 1
 ## @item @tab "gev" @tab "generalized extreme value" @tab  3
+## @item @tab "gp" @tab "generalized Pareto" @tab  3
 ## @item @tab "hyge" @tab "hypergeometric" @tab 3
-## @item @tab "kolmogorov_smirnov" @tab @tab 1
+## @item @tab "jsu" @tab "Johnson SU" @tab 2
+## @item @tab "ks" @tab "Kolmogorov-Smirnov" @tab 1
 ## @item @tab "laplace" @tab @tab 0
 ## @item @tab "logistic" @tab  @tab 0
+## @item @tab "logn" @tab "lognormal" @tab 0  defaults: mu=0,sigma=1
 ## @item @tab "logn" @tab "lognormal" @tab 2
+## @item @tab "mvn" @tab "multivariate normal" @tab 2
+## @item @tab "mvn" @tab "multivariate normal" @tab 3 include low limit a
+## @item @tab "mvt" @tab "multivariate Student" @tab 2
+## @item @tab "mvt" @tab "multivariate Student" @tab 3 include low limit a
+## @item @tab "naka" @tab "Nakagami" @tab 2
+## @item @tab "nbin" @tab "negative binomial" @tab 2
 ## @item @tab "norm" @tab "normal" @tab 2
-## @item @tab "poiss" @tab "poisson" @tab 1
-## @item @tab "rayl" @tab "rayleigh" @tab 1
+## @item @tab "poiss" @tab "Poisson" @tab 1
+## @item @tab "rayl" @tab "Rayleigh" @tab 1
+## @item @tab "stdnormal" @tab "standard normal" @tab 0
 ## @item @tab "t" @tab @tab 1
+## @item @tab "tri" @tab "triangular" @tab 3
+## @item @tab "unid" @tab "uniform discrete" @tab 1
+## @item @tab "unif" @tab "uniform" @tab 0  defaults: a=0,b=1
 ## @item @tab "unif" @tab "uniform" @tab 2
 ## @item @tab "wbl" @tab "weibull" @tab 2
 ## @end multitable
@@ -55,25 +73,42 @@
 
 function [retval] = cdf (varargin)
   ## implemented functions
-  persistent allcdf = {{"beta", "beta"}, @betacdf, 2, ...
+  persistent allcdf = { ...
+            {"bbs", "Birnbaum-Saunders"}, @bbscdf, 3, ...
+            {"beta"}, @betacdf, 2, ...
             {"bino", "binomial"}, @binocdf, 2, ...
-            {"cauchy"}, @cauchy_cdf, 2, ...
-            {"chi2", "chisquare"}, @chi2cdf, 1, ...
+            {"cauchy", "Cauchy"}, @cauchy_cdf, 2, ...
+            {"chi2", "chi-square"}, @chi2cdf, 1, ...
+            {"copula", "Copula family"}, @copulacdf, 2, ...
+            {"copula", "Copula family"}, @copulacdf, 3, ... ## include nu
             {"discrete"}, @discrete_cdf, 2, ...
             {"exp", "exponential"}, @expcdf, 1, ...
             {"f"}, @fcdf, 2, ...
             {"gam", "gamma"}, @gamcdf, 2, ...
             {"geo", "geometric"}, @geocdf, 1, ...
             {"gev", "generalized extreme value"}, @gevcdf, 3, ...
+            {"gp", "generalized Pareto"}, @gpcdf, 3, ...
             {"hyge", "hypergeometric"}, @hygecdf, 3, ...
-            {"kolmogorov_smirnov"}, @kolmogorov_smirnov_cdf, 1, ...
+            {"jsu", "Johnson SU"}, @jsucdf, 2, ...
+            {"ks", "kolmogorov-smirnov"}, @kolmogorov_smirnov_cdf, 1, ...
             {"laplace"}, @laplace_cdf, 0, ...
-            {"logistic"}, @logistic_cdf, 0, ... # ML has 2 args here
+            {"logistic"}, @logistic_cdf, 0, ...
+            {"logn", "lognormal"}, @logncdf, 0, ... ## mu = 0, sigma = 1
             {"logn", "lognormal"}, @logncdf, 2, ...
+            {"mvn", "multivariate normal"}, @mvncdf, 2, ...
+            {"mvn", "multivariate normal"}, @mvncdf, 3, ... ## include alpha
+            {"mvt", "multivariate Student"}, @mvncdf, 2, ...
+            {"mvt", "multivariate Student"}, @mvncdf, 3, ... ## include alpha
+            {"naka", "Nakagami"}, @nakacdf, 2, ...
+            {"nbin", "negative binomial"}, @nbincdf, 2, ...
             {"norm", "normal"}, @normcdf, 2, ...
-            {"poiss", "poisson"}, @poisscdf, 1, ...
-            {"rayl", "rayleigh"}, @raylcdf, 1, ...
+            {"poiss", "Poisson"}, @poisscdf, 1, ...
+            {"rayl", "Rayleigh"}, @raylcdf, 1, ...
+            {"stdnormal",  "standard normal"}, @stdnormal_cdf, 0, ...
             {"t"}, @tcdf, 1, ...
+            {"tri", "triangular"}, @tricdf, 3, ...
+            {"unit", "uniform discrete"}, @unidcdf, 1, ...
+            {"unif", "uniform"}, @unifcdf, 0, ...
             {"unif", "uniform"}, @unifcdf, 2, ...
             {"wbl", "weibull"}, @wblcdf, 2};
 
@@ -91,11 +126,21 @@ function [retval] = cdf (varargin)
   cdfhdl = allcdf(2:3:end);
   cdfargs = allcdf(3:3:end);
 
-  idx = cellfun (@(x) any (strcmpi (name, x)), cdfnames);
+  idx = cellfun (@(x, y)any(strcmpi (name, x) & nargs == y), cdfnames, cdfargs);
+  ## Add special list
+  special = {"copula", "Copula family", "mvn", "multivariate normal", ...
+             "mvt", "multivariate Student"};
   
   if (any (idx))
-    if (nargs == cdfargs{idx})
+    if (nargs == cdfargs{idx} && ! any (strcmpi (name, special)))
       retval = feval (cdfhdl{idx}, x, varargin{:});
+    elseif (nargs == cdfargs{idx} && any (strcmpi (name, special)))
+      if ((any (strcmpi (name, special(3:6))) && nargs == 3) ||
+          any (strcmpi (name, special(1:2))))
+        retval = feval (cdfhdl{idx}, varargin{1}, x, varargin{2:end});
+      else
+        retval = feval (cdfhdl{idx}, x, varargin{:});
+      endif
     else
       error ("cdf: %s requires %d arguments", name, cdfargs{idx})
     endif
@@ -106,4 +151,22 @@ function [retval] = cdf (varargin)
 endfunction
 
 %!test
-%! assert(cdf ('norm', 1, 0, 1), normcdf (1, 0, 1))
+%! assert (cdf ("norm", 1, 0, 1), normcdf (1, 0, 1))
+%!test
+%! x = [0.2:0.2:0.6; 0.2:0.2:0.6];
+%! theta = [1; 2];
+%! assert (cdf ("copula", x, "Clayton", theta), copulacdf ("Clayton", x, theta))
+%!test
+%! x = [-1, 0, 1, 2, Inf];
+%! y = [0, 0, 1/2, 0.76024993890652337, 1];
+%! assert (cdf ("bbs", x, ones (1,5), ones (1,5), zeros (1,5)), ...
+%!         bbscdf (x, ones (1,5), ones (1,5), zeros (1,5)))
+%!test
+%! x = [1 2];
+%! mu = [0.5 1.5];
+%! sigma = [1.0 0.5; 0.5 1.0];
+%! assert (cdf ("multivariate normal", x, mu, sigma), ...
+%!         mvncdf (x, mu, sigma), 0.01)
+%! a = [-inf 0];
+%! assert (cdf ("mvn", x, a, mu, sigma), ...
+%!         mvncdf (a, x, mu, sigma), 0.01)
