@@ -28,23 +28,25 @@
 ## @item @tab "bbs" @tab "Birnbaum-Saunders" @tab 3
 ## @item @tab "beta" @tab @tab 2
 ## @item @tab "bino" @tab "binomial" @tab 2
+## @item @tab "bino" @tab "binomial" @tab 3 include 'upper'
 ## @item @tab "burr" @tab "Burr" @tab 2
 ## @item @tab "cauchy" @tab "Cauchy" @tab 2
 ## @item @tab "chi2" @tab "chi-square" @tab 1
 ## @item @tab "copula" @tab "Copula family" @tab 2
 ## @item @tab "copula" @tab "Copula family" @tab 3 include nu
-## @item @tab "discrete" @tab @tab 2
+## @item @tab "discrete" @tab "univariate discrete" @tab 2
+## @item @tab "empirical" @tab "univariate empirical" @tab 1
 ## @item @tab "exp" @tab "exponential" @tab 1
 ## @item @tab "f" @tab @tab 2
 ## @item @tab "gam" @tab "gamma" @tab  2
 ## @item @tab "geo" @tab "geometric" @tab 1
 ## @item @tab "gev" @tab "generalized extreme value" @tab  3
-## @item @tab "gp" @tab "generalized Pareto" @tab  3
+## @item @tab "gp" @tab "generalized Pareto" @tab 3
 ## @item @tab "hyge" @tab "hypergeometric" @tab 3
 ## @item @tab "jsu" @tab "Johnson SU" @tab 2
 ## @item @tab "ks" @tab "Kolmogorov-Smirnov" @tab 1
-## @item @tab "laplace" @tab @tab 0
-## @item @tab "logistic" @tab  @tab 0
+## @item @tab "laplace" @tab "Laplace" @tab 0
+## @item @tab "logistic" @tab @tab 0
 ## @item @tab "logn" @tab "lognormal" @tab 0  defaults: mu=0,sigma=1
 ## @item @tab "logn" @tab "lognormal" @tab 2
 ## @item @tab "mvn" @tab "multivariate normal" @tab 2
@@ -53,6 +55,7 @@
 ## @item @tab "mvt" @tab "multivariate Student" @tab 3 include low limit a
 ## @item @tab "naka" @tab "Nakagami" @tab 2
 ## @item @tab "nbin" @tab "negative binomial" @tab 2
+## @item @tab "norm" @tab "normal" @tab 0  defaults: mu=0,sigma=1
 ## @item @tab "norm" @tab "normal" @tab 2
 ## @item @tab "poiss" @tab "Poisson" @tab 1
 ## @item @tab "rayl" @tab "Rayleigh" @tab 1
@@ -62,13 +65,10 @@
 ## @item @tab "unid" @tab "uniform discrete" @tab 1
 ## @item @tab "unif" @tab "uniform" @tab 0  defaults: a=0,b=1
 ## @item @tab "unif" @tab "uniform" @tab 2
-## @item @tab "wbl" @tab "weibull" @tab 2
+## @item @tab "wbl" @tab "Weibull" @tab 2
 ## @end multitable
 ## 
-## @seealso{betacdf, binocdf, cauchy_cdf, chi2cdf, discrete_cdf,
-## expcdf, fcdf, gamcdf, geocdf, gevcdf, hygecdf,
-## kolmogorov_smirnov_cdf, laplace_cdf, logistic_cdf, logncdf,
-## normcdf, poisscdf, raylcdf, tcdf, unifcdf, wblcdf}
+## @seealso{pdf, rnd}
 ## @end deftypefn
 
 function [retval] = cdf (varargin)
@@ -77,11 +77,14 @@ function [retval] = cdf (varargin)
             {"bbs", "Birnbaum-Saunders"}, @bbscdf, 3, ...
             {"beta"}, @betacdf, 2, ...
             {"bino", "binomial"}, @binocdf, 2, ...
+            {"bino", "binomial"}, @binocdf, 3, ... ## include 'upper'
+            {"burr", "Burr"}, @burrcdf, 2, ...
             {"cauchy", "Cauchy"}, @cauchy_cdf, 2, ...
             {"chi2", "chi-square"}, @chi2cdf, 1, ...
             {"copula", "Copula family"}, @copulacdf, 2, ...
             {"copula", "Copula family"}, @copulacdf, 3, ... ## include nu
-            {"discrete"}, @discrete_cdf, 2, ...
+            {"discrete", "univariate discrete"}, @discrete_cdf, 2, ...
+            {"empirical", "univariate empirical"}, @empirical_cdf, 1, ...
             {"exp", "exponential"}, @expcdf, 1, ...
             {"f"}, @fcdf, 2, ...
             {"gam", "gamma"}, @gamcdf, 2, ...
@@ -91,7 +94,7 @@ function [retval] = cdf (varargin)
             {"hyge", "hypergeometric"}, @hygecdf, 3, ...
             {"jsu", "Johnson SU"}, @jsucdf, 2, ...
             {"ks", "kolmogorov-smirnov"}, @kolmogorov_smirnov_cdf, 1, ...
-            {"laplace"}, @laplace_cdf, 0, ...
+            {"laplace", "Laplace"}, @laplace_cdf, 0, ...
             {"logistic"}, @logistic_cdf, 0, ...
             {"logn", "lognormal"}, @logncdf, 0, ... ## mu = 0, sigma = 1
             {"logn", "lognormal"}, @logncdf, 2, ...
@@ -101,6 +104,7 @@ function [retval] = cdf (varargin)
             {"mvt", "multivariate Student"}, @mvncdf, 3, ... ## include alpha
             {"naka", "Nakagami"}, @nakacdf, 2, ...
             {"nbin", "negative binomial"}, @nbincdf, 2, ...
+            {"norm", "normal"}, @normcdf, 0, ... ## mu = 0, sigma = 1
             {"norm", "normal"}, @normcdf, 2, ...
             {"poiss", "Poisson"}, @poisscdf, 1, ...
             {"rayl", "Rayleigh"}, @raylcdf, 1, ...
@@ -110,7 +114,7 @@ function [retval] = cdf (varargin)
             {"unit", "uniform discrete"}, @unidcdf, 1, ...
             {"unif", "uniform"}, @unifcdf, 0, ...
             {"unif", "uniform"}, @unifcdf, 2, ...
-            {"wbl", "weibull"}, @wblcdf, 2};
+            {"wbl", "Weibull"}, @wblcdf, 2};
 
   if (numel (varargin) < 2 || ! ischar (varargin{1}))
     print_usage ();
@@ -158,7 +162,6 @@ endfunction
 %! assert (cdf ("copula", x, "Clayton", theta), copulacdf ("Clayton", x, theta))
 %!test
 %! x = [-1, 0, 1, 2, Inf];
-%! y = [0, 0, 1/2, 0.76024993890652337, 1];
 %! assert (cdf ("bbs", x, ones (1,5), ones (1,5), zeros (1,5)), ...
 %!         bbscdf (x, ones (1,5), ones (1,5), zeros (1,5)))
 %!test
