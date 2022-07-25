@@ -1,4 +1,5 @@
 ## Copyright (C) 2016 - Juan Pablo Carbajal
+## Copyright (C) 2022 - Andreas Bertsatos
 ##
 ## This progrm is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -22,9 +23,9 @@
 ## @defunx {@var{h} =} violin (@dots{}, @asis{"horizontal"})
 ## Produce a Violin plot of the data @var{x}.
 ##
-## The input data @var{x} can be a N-by-m array containg N observations of m variables.
-## It can also be a cell with m elements, for the case in which the varibales
-## are not uniformly sampled.
+## The input data @var{x} can be a N-by-m array containg N observations of m
+## variables.  It can also be a cell with m elements, for the case in which the
+## varibales are not uniformly sampled.
 ##
 ## The following @var{property} can be set using @var{property}/@var{value} pairs
 ## (default values in parenthesis).
@@ -39,27 +40,28 @@
 ## (@asis{"y"}) Indicates the filling color of the violins.
 ##
 ## @item Nbins
-## (50) Internally, the function calls @command{hist} to compute the histogram of the data.
-## This property indicates how many bins to use. See @command{help hist}
-## for more details.
+## (50) Internally, the function calls @command{hist} to compute the histogram
+## of the data.  This property indicates how many bins to use.
+## See @command{help hist} for more details.
 ##
 ## @item SmoothFactor
 ## (4) The fuction performs simple kernel density estimation and automatically
-## finds the bandwith of the kernel function that best approximates the histogram
-## using optimization (@command{sqp}).
+## finds the bandwith of the kernel function that best approximates the
+## histogram using optimization (@command{sqp}).
 ## The result is in general very noisy. To smooth the result the bandwidth is
 ## multiplied by the value of this property. The higher the value the smoother
-## the violings, but values too high might remove features from the data distribution.
+## the violings, but values too high might remove features from the data
+## distribution.
 ##
 ## @item Bandwidth
-## (NA) If this property is given a value other than NA, it sets the bandwith of the
-## kernel function. No optimization is peformed and the property @asis{SmoothFactor}
-## is ignored.
+## (NA) If this property is given a value other than NA, it sets the bandwith of
+## the kernel function. No optimization is peformed and the property
+## @asis{SmoothFactor} is ignored.
 ##
 ## @item Width
-## (0.5) Sets the maximum width of the violins. Violins are centered at integer axis
-## values. The distance between two violin middle axis is 1. Setting a value
-## higher thna 1 in this property will cause the violins to overlap.
+## (0.5) Sets the maximum width of the violins. Violins are centered at integer
+## axis values.  The distance between two violin middle axis is 1.  Setting a
+## value higher thna 1 in this property will cause the violins to overlap.
 ## @end table
 ##
 ## If the string @asis{"Horizontal"} is among the input arguments, the violin
@@ -110,10 +112,12 @@ function h = violin (ax, varargin)
   res = parser.Results;
 
   c        = res.Color;        # Color of violins
-  if (ischar (c)) c = c(:); endif
+  if (ischar (c))
+    c = c(:);
+  endif
   nb       = res.Nbins;        # Number of bins in histogram
   sf       = res.SmoothFactor; # Smoothing factor for kernel estimation
-  r0       = res.Bandwidth;    # User value for KDE bandwth to prevent optimization
+  r0       = res.Bandwidth;    # User value for KDE bandwith to prevent optimization
   is_horiz = res.Horizontal;   # Whether the plot must be rotated
   width    = res.Width;        # Width of the violins
   clear parser res
@@ -133,9 +137,9 @@ function h = violin (ax, varargin)
     if strcmp (err.identifier, "to_cell:element_idx")
       n = str2num (err.message);
       txt = {"Nbins", "Color", "SmoothFactor", "Bandwidth", "Width"};
-      error ("Octave:invaid-input-arg", ...
-             ["options should be scalars or call/array with as many values as" ...
-              " numbers of variables in the data (wrong size of %s)."], txt{n});
+      error ("Octave:invalid-input-arg", ...
+            ["options should be scalars or call/array with as many values as" ...
+             " numbers of variables in the data (wrong size of %s)."], txt{n});
     else
       rethrow (lasterror())
     endif
@@ -152,7 +156,7 @@ function h = violin (ax, varargin)
   old_hold = ishold ();
 
   # Draw plain violins
-  tmp      = cellfun (@(x,y,n,u, w)patch(ax, (w * x + n)(:), y(:) ,u), ...
+  tmp      = cellfun (@(x,y,n,u, w)patch(ax, (w * x + n)(:), y(:) ,u'), ...
                         px, py, Ncc, c, width);
   h.violin = tmp;
 
