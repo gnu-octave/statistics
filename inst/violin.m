@@ -25,7 +25,7 @@
 ##
 ## The input data @var{x} can be a N-by-m array containg N observations of m
 ## variables.  It can also be a cell with m elements, for the case in which the
-## varibales are not uniformly sampled.
+## variables are not uniformly sampled.
 ##
 ## The following @var{property} can be set using @var{property}/@var{value} pairs
 ## (default values in parenthesis).
