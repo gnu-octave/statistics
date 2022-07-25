@@ -21,7 +21,7 @@
 ## @deftypefnx {Function File} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} ttest (@var{x}, @var{y}, @var{Name}, @var{Value})
 ## Test for mean of a normal sample with unknown variance.
 ##
-## Perform a T-test of the null hypothesis @code{mean (@var{x}) ==
+## Perform a t-test of the null hypothesis @code{mean (@var{x}) ==
 ## @var{m}} for a sample @var{x} from a normal distribution with unknown
 ## mean and unknown std deviation.  Under the null, the test statistic
 ## @var{t} has a Student's t distribution.  The default value of
@@ -43,12 +43,15 @@
 ## the dimension over which to perform the test.  (The default is the 
 ## first non-singleton dimension).
 ##
-## If @var{h} is 0 the null hypothesis is accepted, if it is 1 the null
-## hypothesis is rejected. The p-value of the test is returned in @var{pval}.
-## A 100(1-alpha)% confidence interval is returned in @var{ci}. @var{stats}
-## is a structure containing the value of the test statistic (@var{tstat}),
-## the degrees of freedom (@var{df}) and the sample standard deviation
-## (@var{sd}).
+## If @var{h} is 1 the null hypothesis is rejected, meaning that the tested
+## sample does not come from a Student's t distribution.  If @var{h} is 0, then
+## the null hypothesis cannot be rejected and it can be assumed that @var{x}
+## follows a Student's t distribution.  The p-value of the test is returned in
+## @var{pval}.  A 100(1-alpha)% confidence interval is returned in @var{ci}.
+##
+## @var{stats} is a structure containing the value of the test statistic
+## (@var{tstat}), the degrees of freedom (@var{df}) and the sample's standard
+## deviation (@var{sd}).
 ##
 ## @end deftypefn
 
