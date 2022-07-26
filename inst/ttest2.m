@@ -87,11 +87,11 @@ function [h, p, ci, stats] = ttest2(x, y, varargin)
     error('Tail argument to ttest2 must be a string\n',[]);
   end
   
-  m = size(x, dim);
-  n = size(y, dim);
-  x_bar = mean(x,dim)-mean(y,dim);
-  s1_var = var(x, 0, dim);
-  s2_var = var(y, 0, dim);
+  m = size (x(!isnan(x)), dim);
+  n = size (y(!isnan(y)), dim);
+  x_bar = nanmean(x,dim) - nanmean(y,dim);
+  s1_var = nanvar(x, 0, dim);
+  s2_var = nanvar(y, 0, dim);
 
   switch lower(vartype)
     case 'equal'
@@ -147,3 +147,15 @@ function [h, p, ci, stats] = ttest2(x, y, varargin)
   % MATLAB returns this a double instead of a logical array
   h = double(p < alpha);  
 end
+
+%!test
+%! a = 1:5;
+%! b = 6:10;
+%! b(5) = NaN;
+%! [h,p,ci,stats] = ttest2(a,b);
+%! assert (h, 1);
+%! assert (p, 0.002535996080258229, 1e-14);
+%! assert (ci, [-6.822014919225481, -2.17798508077452], 1e-14);
+%! assert (stats.tstat, -4.582575694955839, 1e-14);
+%! assert (stats.df, 7);
+%! assert (stats.sd, 1.4638501094228, 1e-13);
