@@ -21,7 +21,15 @@ Summary of important user-visible changes for statistics 1.5.0:
 
  Improvements:
  =============
-
+ 
+ 
+ ** binopdf.m: implement high accuracy Loader algorithm for m>=10 (bug #34362)
+ 
+ ** violin.m: fix parsing color vector affecting Octave>=6.1.0 (bug #62805)
+ 
+ ** cdf.m: extended to include all available distributions
+    pdf.m
+    
  ** pdist.m: updated the 'cosine' metric to be more efficient (bug #62495)
  
  ** harmmean.m: fully Matlab compatible.
@@ -42,7 +50,24 @@ Summary of important user-visible changes for statistics 1.5.0:
  ** wilcoxon_test (replaced by ranksum)
  
  ** kruskal_wallis_test (replaced by kruskalwallis)
-
+ 
+ Available Data Sets:
+ ====================
+ 
+ ** acetylene     Chemical reaction data with correlated predictors
+ ** arrhythmia    Cardiac arrhythmia data from the UCI machine learning repository
+ ** carbig        Measurements of cars, 1970–1982
+ ** carsmall      Subset of carbig. Measurements of cars, 1970, 1976, 1982
+ ** cereal        Breakfast cereal ingredients
+ ** examgrades    Exam grades on a scale of 0–100
+ ** fisheriris    Fisher's 1936 iris data
+ ** hald          Heat of cement vs. mix of ingredients
+ ** kmeansdata    Four-dimensional clustered data
+ ** mileage       Mileage data for three car models from two factories
+ ** morse         Recognition of Morse code distinctions by non-coders
+ ** popcorn       Popcorn yield by popper type and brand
+ ** stockreturns  Simulated stock returns
+ ** weather       Daily high temperatures in the same month in two consecutive years
 
 Summary of important user-visible changes for statistics 1.4.3:
 -------------------------------------------------------------------
