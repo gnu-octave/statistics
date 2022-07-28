@@ -71,34 +71,6 @@
 ## @seealso{anova2, kruskalwallis, multcompare}
 ## @end deftypefn
 
-%FRIEDMAN Nonparametric two-way analysis of variance.
-%   P = FRIEDMAN(x,REPS,DISPLAYOPT) performs Friedman's test, a
-%   nonparametric version of balanced two-way ANOVA.  FRIEDMAN compares
-%   columns of data in x, adjusting for possible row effects, and returns
-%   the p-value for the null hypothesis that there are no column effects.
-%   The data are assumed to be independent samples from continuous
-%   distributions that are identical except possibly for location shifts
-%   due to row and column effects, but are otherwise arbitrary.  If there
-%   is more than one observation per row-column "cell", use the scalar
-%   argument REPS to indicate the number of observations per cell.  Each
-%   cell corresponds to REPS consecutive rows in one column of x.
-%   DISPLAYOPT can be 'on' (the default) to display the table, or 'off' to
-%   skip the display.
-%
-%   In typical use the columns represent different levels of a treatment
-%   factor to be tested, and the rows represent different blocks.  If both
-%   rows and columns represent effects of a factor to be tested, run
-%   FRIEDMAN twice, once using x and again using the transpose x'.
-%
-%   [P,TABLE] = FRIEDMAN(...) returns a cell array containing the ANOVA
-%   table values.
-%
-%   [P,TABLE,STATS] = FRIEDMAN(...) returns an additional structure of
-%   statistics useful for performing a multiple comparison of cell medians
-%   with the MULTCOMPARE function.
-%
-%   See also ANOVA2, KRUSKALWALLIS, MULTCOMPARE.
-
 function [p, table, stats] = friedman (x, reps, displayopt)
   
   ## Check for valid number of input arguments
