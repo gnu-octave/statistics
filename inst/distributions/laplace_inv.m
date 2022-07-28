@@ -24,9 +24,9 @@
 ## Author: KH <Kurt.Hornik@wu-wien.ac.at>
 ## Description: Quantile function of the Laplace distribution
 
-function inv = laplace_inv (x)
+function inv = laplace_inv (x, mu = 0, beta = 1)
 
-  if (nargin != 1)
+  if (nargin < 1 || nargin > 3)
     print_usage ();
   endif
 
@@ -41,8 +41,8 @@ function inv = laplace_inv (x)
   endif
 
   k = (x >= 0) & (x <= 1);
-  inv(k) = ((x(k) < 1/2) .* log (2 * x(k))
-            - (x(k) > 1/2) .* log (2 * (1 - x(k))));
+  inv(k) = mu + beta * ((x(k) < 1/2) .* log (2 * x(k)) - ...
+                        (x(k) > 1/2) .* log (2 * (1 - x(k))));
 
 endfunction
 
@@ -57,5 +57,5 @@ endfunction
 
 ## Test input validation
 %!error laplace_inv ()
-%!error laplace_inv (1,2)
+%!error laplace_inv (1,2, 3, 4)
 %!error laplace_inv (i)

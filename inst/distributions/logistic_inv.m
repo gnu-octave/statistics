@@ -17,16 +17,18 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {} {} logistic_inv (@var{x})
+## @deftypefnx {} {} logistic_pdf (@var{x}, @var{mu}, @var{scale})
 ## For each element of @var{x}, compute the quantile (the inverse of the CDF)
-## at @var{x} of the logistic distribution.
+## at @var{x} of the logistic distribution with mean @var{mu} and scale
+## parameter @{scale}.
 ## @end deftypefn
 
 ## Author: KH <Kurt.Hornik@wu-wien.ac.at>
 ## Description: Quantile function of the logistic distribution
 
-function inv = logistic_inv (x)
+function inv = logistic_inv (x, mu = 0, scale = 1)
 
-  if (nargin != 1)
+  if (nargin < 1 || nargin > 3)
     print_usage ();
   endif
 
@@ -47,7 +49,7 @@ function inv = logistic_inv (x)
   inv(k) = Inf;
 
   k = (x > 0) & (x < 1);
-  inv(k) = - log (1 ./ x(k) - 1);
+  inv(k) = mu + scale * log (x(k) / (1 - x(k)));
 
 endfunction
 
@@ -62,5 +64,5 @@ endfunction
 
 ## Test input validation
 %!error logistic_inv ()
-%!error logistic_inv (1,2)
+%!error logistic_inv (1,2,3,4)
 %!error logistic_inv (i)

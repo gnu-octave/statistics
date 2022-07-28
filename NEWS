@@ -22,6 +22,14 @@ Summary of important user-visible changes for statistics 1.5.0:
  Improvements:
  =============
  
+ ** laplace_cdf.m: allow for parameters mu and scale (bug #58688)
+    laplace_inv.m
+    loplace.pdf.m
+    logistic_cdf.m
+    logistic_inv.m
+    logistic_pdf.m
+    
+ ** ttest2.m: can hale NaN values as missing data (bug #58697)
  
  ** binopdf.m: implement high accuracy Loader algorithm for m>=10 (bug #34362)
  

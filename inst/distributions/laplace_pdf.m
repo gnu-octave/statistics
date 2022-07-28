@@ -17,16 +17,18 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {} {} laplace_pdf (@var{x})
+## @deftypefnx {} {} laplace_pdf (@var{x}, @var{mu}, @var{beta})
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the Laplace distribution.
+## at @var{x} of the Laplace distribution with a location parameter @var{mu} and
+## a scale parameter (i.e. "diversity") @var{beta}.
 ## @end deftypefn
 
 ## Author: KH <Kurt.Hornik@wu-wien.ac.at>
 ## Description: PDF of the Laplace distribution
 
-function pdf = laplace_pdf (x)
+function pdf = laplace_pdf (x, mu = 0, beta = 1)
 
-  if (nargin != 1)
+  if (nargin < 1 || nargin > 3)
     print_usage ();
   endif
 
@@ -34,7 +36,7 @@ function pdf = laplace_pdf (x)
     error ("laplace_pdf: X must not be complex");
   endif
 
-  pdf = exp (- abs (x)) / 2;
+  pdf = exp (- abs (x - mu) / beta) / (2 * beta);
 
 endfunction
 
@@ -49,5 +51,5 @@ endfunction
 
 ## Test input validation
 %!error laplace_pdf ()
-%!error laplace_pdf (1,2)
+%!error laplace_pdf (1,2,3,4)
 %!error laplace_pdf (i)

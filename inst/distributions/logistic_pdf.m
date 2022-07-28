@@ -16,16 +16,17 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {} {} logistic_pdf (@var{x})
+## @deftypefnx {} {} logistic_pdf (@var{x}, @var{mu}, @var{scale})
 ## For each element of @var{x}, compute the PDF at @var{x} of the
-## logistic distribution.
+## logistic distribution with mean @var{mu} and scale parameter @{scale}.
 ## @end deftypefn
 
 ## Author: KH <Kurt.Hornik@wu-wien.ac.at>
 ## Description: PDF of the logistic distribution
 
-function pdf = logistic_pdf (x)
+function pdf = logistic_pdf (x, mu = 0, scale = 1)
 
-  if (nargin != 1)
+  if (nargin < 1 || nargin > 3)
     print_usage ();
   endif
 
@@ -33,7 +34,7 @@ function pdf = logistic_pdf (x)
     error ("logistic_pdf: X must not be complex");
   endif
 
-  cdf = logistic_cdf (x);
+  cdf = logistic_cdf (x, mu, scale);
   pdf = cdf .* (1 - cdf);
 
 endfunction
@@ -49,5 +50,5 @@ endfunction
 
 ## Test input validation
 %!error logistic_pdf ()
-%!error logistic_pdf (1,2)
+%!error logistic_pdf (1,2,3,4)
 %!error logistic_pdf (i)

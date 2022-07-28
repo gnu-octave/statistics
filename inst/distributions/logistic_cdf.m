@@ -17,16 +17,18 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {} {} logistic_cdf (@var{x})
+## @deftypefnx {} {} logistic_cdf (@var{x}, @var{mu}, @var{scale})
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the logistic distribution.
+## (CDF) at @var{x} of the logistic distribution with mean @var{mu} and scale
+## parameter @{scale}.
 ## @end deftypefn
 
 ## Author: KH <Kurt.Hornik@wu-wien.ac.at>
 ## Description: CDF of the logistic distribution
 
-function cdf = logistic_cdf (x)
+function cdf = logistic_cdf (x, mu = 0, scale = 1)
 
-  if (nargin != 1)
+  if (nargin < 1 || nargin > 3)
     print_usage ();
   endif
 
@@ -34,7 +36,7 @@ function cdf = logistic_cdf (x)
     error ("logistic_cdf: X must not be complex");
   endif
 
-  cdf = 1 ./ (1 + exp (-x));
+  cdf = 1 ./ (1 + exp (- (x - mu) / scale));
 
 endfunction
 
@@ -49,5 +51,5 @@ endfunction
 
 ## Test input validation
 %!error logistic_cdf ()
-%!error logistic_cdf (1,2)
+%!error logistic_cdf (1,2,3,4)
 %!error logistic_cdf (i)

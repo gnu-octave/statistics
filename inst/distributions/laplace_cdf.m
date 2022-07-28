@@ -17,14 +17,16 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {} {} laplace_cdf (@var{x})
+## @deftypefnx {} {} laplace_pdf (@var{x}, @var{mu}, @var{beta})
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the Laplace distribution.
+## (CDF) at @var{x} of the Laplace distribution with a location parameter
+## @var{mu} and a scale parameter (i.e. "diversity") @var{beta}.
 ## @end deftypefn
 
 ## Author: KH <Kurt.Hornik@wu-wien.ac.at>
 ## Description: CDF of the Laplace distribution
 
-function cdf = laplace_cdf (x)
+function cdf = laplace_cdf (x, mu = 0, beta = 1)
 
   if (nargin != 1)
     print_usage ();
@@ -34,7 +36,7 @@ function cdf = laplace_cdf (x)
     error ("laplace_cdf: X must not be complex");
   endif
 
-  cdf = (1 + sign (x) .* (1 - exp (- abs (x)))) / 2;
+  cdf = (1 + sign (x - mu) .* (1 - exp (- abs (x - mu) / beta))) / 2;
 
 endfunction
 
@@ -49,5 +51,5 @@ endfunction
 
 ## Test input validation
 %!error laplace_cdf ()
-%!error laplace_cdf (1,2)
+%!error laplace_cdf (1,2,3,4)
 %!error laplace_cdf (i)
