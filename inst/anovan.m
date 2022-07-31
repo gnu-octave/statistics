@@ -1,322 +1,333 @@
-## Copyright (C) 2003-2005 Andy Adler <adler@ncf.ca>
-##
-## This program is free software; you can redistribute it and/or modify it under
-## the terms of the GNU General Public License as published by the Free Software
-## Foundation; either version 3 of the License, or (at your option) any later
-## version.
-##
-## This program is distributed in the hope that it will be useful, but WITHOUT
-## ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-## FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-## details.
-##
-## You should have received a copy of the GNU General Public License along with
-## this program; if not, see <http://www.gnu.org/licenses/>.
+%  --Function File:  p = anovan (Y, GROUP, )
+%  --Function File:  p = anovan (Y, GROUP, 'name', value, ...)
+%  --Function File:  [p table] = anovan (...)
+%  --Function File:  [p table stats] = anovan (...)
+%  --Function File:  [p table stats terms] = anovan (...)
+%
+%  Perform a multi-way analysis of variance (ANOVA) for categorical factors.
+%  When sample sizes are unequal, the sums-of-squared residuals are calculated 
+%  sequentially (Type I).
+% 
+%  Data is a single vector Y with groups specified by a corresponding matrix of 
+%  group labels GROUP, where GROUP has the same number of rows as @var{data}. 
+%  For example, if Y = [1.1;1.2]; GROUP = [1,2,1; 1,5,2]; then observation 1.1 
+%  was measured under conditions 1,2,1 and observation 1.2 was measured under 
+%  conditions 1,5,2. Note that groups do not need to be sequentially numbered.
+% 
+%  By default, a 'linear' model is used, computing the N main effects
+%  with no interactions. 
+%
+%  The settings of anovan can be configured with the following name-value pairs.
+%  
+%  p = anovan (data, groups, 'model', modeltype)
+%  The model to use (modeltype) can specified as one of the following:
+%  - modeltype = 'linear': compute N main effects
+%  - modeltype = 'interaction': compute N effects and
+%                                N*(N-1) two-factor interactions
+%  - an integer representing the maximum interaction order
+%  - an matrix of term definitions: each row is a term and each column is a factor
+%    For example, a two-way ANOVA with interaction would be: [1 0; 0 1; 1 1]
+% 
+%  p = anovan (data, groups, 'varnames', varnames)
+%  - varnames = {'X1','X2','X3',...}(default): cell array of character arrays
+%  
+%  p = anovan (data, groups, 'display', 'on')
+%  - 'on' (default) | 'off': switch display of ANOVA table on/off
+%
+%  [p, table] = anovan (...) returns a cell array containing the ANOVA table
+%
+%  [p, table, stats] = anovan (...) returns a structure containing additional
+%  statistics, including coefficients of the linear model, the model residuals, 
+%  and the number of levels in each factor.
+% 
+%  [p, table, stats, terms] = anovan (...) returns the model term definitions
+%
+%  Author: Andrew Penn <a.c.penn@sussex.ac.uk>
+%  Includes some code by: Christial Scholz, and Andy Adler <adler@ncf.ca>
+% 
+%  Copyright (C) 2022 Andrew Penn <A.C.Penn@sussex.ac.uk>
+%  Copyright (C) 2003-2005 Andy Adler <adler@ncf.ca>
+%
+%  This program is free software; you can redistribute it and/or modify it under
+%  the terms of the GNU General Public License as published by the Free Software
+%  Foundation; either version 3 of the License, or (at your option) any later
+%  version.
+% 
+%  This program is distributed in the hope that it will be useful, but WITHOUT
+%  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+%  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+%  details.
+% 
+%  You should have received a copy of the GNU General Public License along with
+%  this program; if not, see <http://www.gnu.org/licenses/>.
 
-## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{pval}, @var{f}, @var{df_b}, @var{df_e}] =} anovan (@var{data}, @var{grps})
-## @deftypefnx {Function File} {[@var{pval}, @var{f}, @var{df_b}, @var{df_e}] =} anovan (@var{data}, @var{grps}, 'param1', @var{value1})
-## Perform a multi-way analysis of variance (ANOVA).  The goal is to test
-## whether the population means of data taken from @var{k} different
-## groups are all equal.
-##
-## Data is a single vector @var{data} with groups specified by
-## a corresponding matrix of group labels @var{grps}, where @var{grps}
-## has the same number of rows as @var{data}. For example, if
-## @var{data} = [1.1;1.2]; @var{grps}= [1,2,1; 1,5,2];
-## then data point 1.1 was measured under conditions 1,2,1 and
-## data point 1.2 was measured under conditions 1,5,2.
-## Note that groups do not need to be sequentially numbered.
-##
-## By default, a 'linear' model is used, computing the N main effects
-## with no interactions. this may be modified by param 'model'
-##
-## p= anovan(data,groups, 'model', modeltype)
-## - modeltype = 'linear': compute N main effects
-## - modeltype = 'interaction': compute N effects and
-##                               N*(N-1) two-factor interactions
-## - modeltype = 'full': compute interactions at all levels
-##
-## Under the null of constant means, the statistic @var{f} follows an F
-## distribution with @var{df_b} and @var{df_e} degrees of freedom.
-##
-## The p-value (1 minus the CDF of this distribution at @var{f}) is
-## returned in @var{pval}.
-##
-## If no output argument is given, the standard one-way ANOVA table is
-## printed.
-##
-## BUG: DFE is incorrect for modeltypes != full
-## @end deftypefn
 
-## Author: Andy Adler <adler@ncf.ca>
-## Based on code by: KH <Kurt.Hornik@ci.tuwien.ac.at>
-## $Id$
-##
-## TESTING RESULTS:
-##  1. ANOVA ACCURACY: www.itl.nist.gov/div898/strd/anova/anova.html
-##     Passes 'easy' test. Comes close on 'Average'. Fails 'Higher'.
-##     This could be fixed with higher precision arithmetic
-##  2. Matlab anova2 test
-##      www.mathworks.com/access/helpdesk/help/toolbox/stats/anova2.html
-##     % From web site:
-##      popcorn= [  5.5 4.5 3.5; 5.5 4.5 4.0; 6.0 4.0 3.0;
-##                  6.5 5.0 4.0; 7.0 5.5 5.0; 7.0 5.0 4.5];
-##     % Define groups so reps = 3
-##      groups = [  1 1;1 2;1 3;1 1;1 2;1 3;1 1;1 2;1 3;
-##                  2 1;2 2;2 3;2 1;2 2;2 3;2 1;2 2;2 3 ];
-##      anovan( vec(popcorn'), groups, 'model', 'full')
-##     % Results same as Matlab output
-##  3. Matlab anovan test
-##      www.mathworks.com/access/helpdesk/help/toolbox/stats/anovan.html
-##    % From web site
-##      y = [52.7 57.5 45.9 44.5 53.0 57.0 45.9 44.0]';
-##      g1 = [1 2 1 2 1 2 1 2]; 
-##      g2 = {'hi';'hi';'lo';'lo';'hi';'hi';'lo';'lo'}; 
-##      g3 = {'may'; 'may'; 'may'; 'may'; 'june'; 'june'; 'june'; 'june'}; 
-##      anovan( y', [g1',g2',g3'])
-##    % Fails because we always do interactions
-
-function [PVAL, FSTAT, DF_B, DFE] = anovan (data, grps, varargin)
-
+function [p, ANOVA_table, STATS, TERMS] = aovn (data, grps, varargin)
+      
     if nargin <= 1
-        usage ("anovan (data, grps)");
+      error ('anovan usage: ''anovan (data, grps)''; atleast 2 input arguments required');
     end
 
-    # test supplied parameters
-    modeltype= 'linear';
-    for idx= 3:2:nargin
-       param= varargin{idx-2};
-       value= varargin{idx-1};
-
-       if strcmp(param, 'model')
-          modeltype= value;
-#      elseif strcmp(param    # add other parameters here
-       else 
-          error(sprintf('parameter %s is not supported', param));
-       end
+    % Check supplied parameters
+    modeltype = 'linear';
+    display = 'on';
+    varnames = [];
+    for idx = 3:2:nargin
+      param= varargin{idx-2};
+      value= varargin{idx-1};
+      if strcmpi (param, 'model')
+        modeltype = value;
+      elseif strcmpi (param, 'varnames')
+        varnames = value;
+      elseif strcmpi (param, 'display')
+        display = value;   
+      else 
+        error (sprintf('anovan: parameter %s is not supported', param));
+      end
     end
-
-    if ~isvector (data)
-          error ("anova: for `anova (data, grps)', data must be a vector");
-    endif
-
-    nd = size (grps,1); # number of data points
-    nw = size (grps,2); # number of anova "ways"
-    if (~ isvector (data) || (length(data) ~= nd))
-      error ("anova: grps must be a matrix of the same number of rows as data");
-    endif
-
-    [g,grp_map]   = relabel_groups (grps);
-    if strcmp(modeltype, 'linear')
-       max_interact  = 1;
-    elseif strcmp(modeltype,'interaction')
-       max_interact  = 2;
-    elseif strcmp(modeltype,'full')
-       max_interact  = rows(grps);
+     % Remove NaN or non-finite observations
+    excl = logical (isnan(data) + isinf(data));
+    data(excl) = [];
+    grps(excl,:) = [];
+    N = numel (data);
+    if prod (size (data)) ~= N
+      error ('anovan: for ''anovan (data, grps)'', data must be a vector');
+    end
+    if (size (data, 2) > 1)
+      data = data(:);
+    end
+    n = size (grps,2); # number of anova "ways"
+    if (size (grps,1) ~= N)
+      error ('anovan: grps must be a matrix of the same number of rows as data');
+    end
+    if ~isempty (varnames) 
+      if iscell (varnames)
+        if all (cellfun (@ischar, varnames))
+          ng = numel(varnames);
+        else
+          error ('anovan: all variable names must be character or character arrays');
+        end
+      elseif ischar (varnames)
+        ng = 1;
+        varnames = {varnames};
+      elseif isstring (varnames)
+        ng = 1;
+        varnames = {char(varnames)};
+      else
+        error ('anovan: varnames is not of a valid type. Must be cell array of character arrays, character array or string');
+      end
     else
-       error(sprintf('modeltype %s is not supported', modeltype));
+      ng = n;
+      varnames = arrayfun(@(x) ['X',num2str(x)], 1:n, 'UniformOutput', 0);
     end
-    ng = length(grp_map);
-    int_tbl       = interact_tbl (nw, ng, max_interact );
-    [gn, gs, gss] = raw_sums(data, g, ng, int_tbl);
-
-    stats_tbl = int_tbl(2:size(int_tbl,1),:)>0;
-    nstats= size(stats_tbl,1);
-    stats= zeros( nstats+1, 5); # SS, DF, MS, F, p
-    for i= 1:nstats
-        [SS, DF, MS]= factor_sums( gn, gs, gss, stats_tbl(i,:), ng, nw);
-        stats(i,1:3)= [SS, DF, MS];
+    if (ng ~= n)
+      error ('anovan: number of variable names is not equal to number of grouping variables');
     end
-
-    # The Mean squared error is the data - avg for each possible measurement
-    # This calculation doesn't work unless there is replication for all grps
-#   SSE= sum( gss(sel) ) - sum( gs(sel).^2 ./ gn(sel) );  
-    SST= gss(1) - gs(1)^2/gn(1);
-    SSE= SST - sum(stats(:,1));
-    sel = select_pat( ones(1,nw), ng, nw); %incorrect for modeltypes != full
-    DFE= sum( (gn(sel)-1).*(gn(sel)>0) );
-    MSE= SSE/DFE;
-    stats(nstats+1,1:3)= [SSE, DFE, MSE];
-
-    for i= 1:nstats
-        MS= stats(i,3);
-        DF= stats(i,2);
-        F= MS/MSE;
-        pval = 1 - fcdf (F, DF, DFE);
-        stats(i,4:5)= [F, pval];
-    end
-
-    if nargout==0;
-        printout( stats, stats_tbl );
-    else
-        PVAL= stats(1:nstats,5);
-        FSTAT=stats(1:nstats,4);
-        DF_B= stats(1:nstats,2);
-        DF_E= DFE;
-    end
-endfunction
-
-
-# relabel groups to a mapping from 1 to ng
-# Input
-#   grps    input grouping
-# Output
-#   g       relabelled grouping
-#   grp_map map from output to input grouping
-function [g,grp_map] = relabel_groups(grps)
-    grp_vec= vec(grps);
-    s= sort (grp_vec);
-    uniq = 1+[0;find(diff(s))];
-    # mapping from new grps to old groups
-    grp_map = s(uniq);
-    # create new group g
-    ngroups= length(uniq);
-    g= zeros(size(grp_vec));
-    for i = 1:ngroups
-        g( find( grp_vec== grp_map(i) ) ) = i;
-    end
-    g= reshape(g, size(grps));
-endfunction
-
-# Create interaction table
-#
-# Input: 
-#    nw            number of "ways"
-#    ng            number of ANOVA groups
-#    max_interact  maximum number of interactions to consider
-#                  default is nw
-function int_tbl =interact_tbl(nw, ng, max_interact)
-    combin= 2^nw;
-    inter_tbl= zeros( combin, nw);
-    idx= (0:combin-1)';
-    for i=1:nw;
-       inter_tbl(:,i) = ( rem(idx,2^i) >= 2^(i-1) ); 
-    end
-
-    # find elements with more than max_interact 1's
-    idx = ( sum(inter_tbl',1) > max_interact );
-    inter_tbl(idx,:) =[];
-    combin= size(inter_tbl,1); # update value
-
-    #scale inter_tbl 
-    # use ng+1 to map combinations of groups to integers
-    # this would be lots easier with a hash data structure
-    int_tbl = inter_tbl .* (ones(combin,1) * (ng+1).^(0:nw-1) );
-endfunction 
-
-# Calculate sums for each combination
-#
-# Input: 
-#    g             relabelled grouping matrix
-#    ng            number of ANOVA groups
-#    max_interact
-#
-# Output (virtual (ng+1)x(nw) matrices):
-#    gn            number of data sums in each group
-#    gs            sum of data in each group
-#    gss           sumsqr of data in each group
-function    [gn, gs, gss] = raw_sums(data, g, ng, int_tbl);
-    nw=    size(g,2);
-    ndata= size(g,1);
-    gn= gs= gss=  zeros((ng+1)^nw, 1);
-    for i=1:ndata
-        # need offset by one for indexing
-        datapt= data(i);
-        idx = 1+ int_tbl*g(i,:)';
-        gn(idx)  +=1;
-        gs(idx)  +=datapt;
-        gss(idx) +=datapt^2;
-    end
-endfunction
-
-# Calcualte the various factor sums
-# Input:  
-#    gn            number of data sums in each group
-#    gs            sum of data in each group
-#    gss           sumsqr of data in each group
-#    select        binary vector of factor for this "way"?
-#    ng            number of ANOVA groups
-#    nw            number of ways
-
-function [SS,DF]= raw_factor_sums( gn, gs, gss, select, ng, nw);
-   sel= select_pat( select, ng, nw);
-   ss_raw=   gs(sel).^2 ./ gn(sel);
-   SS= sum( ss_raw( ~isnan(ss_raw) ));
-   if length(find(select>0))==1
-       DF= sum(gn(sel)>0)-1;
-   else
-       DF= 1; #this isn't the real DF, but needed to multiply
-   end
-endfunction
-
-function [SS, DF, MS]= factor_sums( gn, gs, gss, select, ng, nw);
-   SS=0;
-   DF=1;
-
-   ff = find(select);
-   lff= length(ff);
-   # zero terms added, one term subtracted, two added, etc
-   for i= 0:2^lff-1
-       remove= find( rem( floor( i * 2.^(-lff+1:0) ), 2) );
-       sel1= select;
-       if ~isempty(remove)
-           sel1( ff( remove ) )=0;
-       end
-       [raw_sum,raw_df]= raw_factor_sums(gn,gs,gss,sel1,ng,nw);
-       
-       add_sub= (-1)^length(remove);
-       SS+= add_sub*raw_sum;
-       DF*= raw_df;
-   end
-
-   MS=  SS/DF;
-endfunction
-
-# Calcualte the various factor sums
-# Input:  
-#    select        binary vector of factor for this "way"?
-#    ng            number of ANOVA groups
-#    nw            number of ways
-function sel= select_pat( select, ng, nw);
-   # if select(i) is zero, remove nonzeros
-   # if select(i) is zero, remove zero terms for i
-   field=[];
-
-   if length(select) ~= nw;
-       error("length of select must be = nw");
-   end
-   ng1= ng+1;
-
-   if isempty(field)
-       # expand 0:(ng+1)^nw in base ng+1
-       field= (0:(ng1)^nw-1)'* ng1.^(-nw+1:0);
-       field= rem( floor( field), ng1);
-       # select zero or non-zero elements
-       field= field>0;
-   end
-   sel= find( all( field == ones(ng1^nw,1)*select(:)', 2) );
-endfunction
-
-
-function printout( stats, stats_tbl );
-  nw= size( stats_tbl,2);
-  [jnk,order]= sort( sum(stats_tbl,2) );
-
-  printf('\n%d-way ANOVA Table (Factors A%s):\n\n', nw, ...
-         sprintf(',%c',double('A')+(1:nw-1)) );
-  printf('Source of Variation        Sum Sqr   df      MeanSS    Fval   p-value\n');
-  printf('*********************************************************************\n');
-  printf('Error                  %10.2f  %4d %10.2f\n', stats( size(stats,1),1:3));
   
-  for i= order(:)'
-      str=  sprintf(' %c x',double('A')+find(stats_tbl(i,:)>0)-1 );
-      str= str(1:length(str)-2); # remove x
-      printf('Factor %15s %10.2f  %4d %10.2f  %7.3f  %7.6f\n', ...
-         str, stats(i,:) );
+    % Evaluate model type input argument and create terms matrix if not provided
+    if (isnumeric (modeltype) && numel (modeltype == 1))
+      switch modeltype
+        case 1
+          modeltype = 'linear';
+        case 2
+          modeltype = 'interaction';
+        otherwise
+          error ('anovan: interactions involving more than two factors are not supported')
+      end
+    end
+    if ~isnumeric (modeltype)
+      if strcmpi (modeltype, 'full') && (n < 3)
+        modeltype = 'interaction';
+      end
+      switch lower(modeltype)
+        case 'linear'
+          nx = 0;
+          TERMS = zeros (n + nx, n);
+          TERMS(1:n,:) = diag (ones (n, 1));
+        case 'interaction'
+          nx = nchoosek (n, 2);
+          TERMS = zeros (n + nx, n);
+          TERMS(1:n,:) = diag (ones (n, 1));
+          for j = 1:n
+            for i = j:n-1
+              TERMS(n+j+i-1,j) = 1;
+              TERMS(n+j+i-1,i+1) = 1;
+            end
+          end
+        case 'full'
+          error ('anovan: interactions involving more than two factors are not supported')
+      end
+    else
+      % Assume that the user provided a terms matrix
+    end
+    TERMS = logical(TERMS);
+    % Evaluate terms matrix
+    ng = sum (TERMS, 2); 
+    if any(diff(ng) < 0)
+      error ('anovan: the model terms matrix must list main effects above interactions')
+    end
+    main = (ng == 1);
+    inte = (ng == 2);
+    if any (ng > 2)
+      error ('anovan: interactions involving more than two factors are not supported')
+    end
+    nm = sum (main);
+    nx = sum (inte);
+    nt = nm + nx;
+
+    % Calculate total sum-of-squares
+    ct  = sum (data)^2 / N;   % correction term
+    sst = sum (data.^2) - ct;
+    dft = N - 1;
+
+    % Fit linear models, and calculate sums-of-squares for ANOVA
+    % Type I sequential sums-of-squares
+    R = sst;
+    ss = zeros (nt,1);
+    df = zeros (nt,1);
+    [X, grpnames, nlevels, df, termcols] = dummy_coder (grps, TERMS, main, inte, N, nm, nx);
+    for j = 1:nt
+      XS = cell2mat (X(1:j+1));
+      [b, sse, resid] = lmfit (XS, data);
+      ss(j) = R - sse;
+      R = sse;
+    end
+    dfe = dft - sum (df);
+    ms = ss ./ df;
+    mse = sse / dfe;
+    F = ms / mse;
+    p = 1 - fcdf (F, df, dfe);
+    
+    % Prepare stats output structure
+    % Note that the information provided by STATS is not sufficient for MATLAB's multcompare function
+    STATS = struct ('source','anovan', ...
+                    'resid', resid, ...
+                    'coeffs', b, ...
+                    'Rtr', [], ...           % Not used in Octave
+                    'rowbasis', [], ...      % Not used in Octave
+                    'dfe', dfe, ...
+                    'mse', mse, ...
+                    'nullproject', [], ...   % Not used in Octave
+                    'terms', TERMS, ...
+                    'nlevels', nlevels, ...  
+                    'continuous', [], ...
+                    'vmeans', [], ...        % Not used since 'continuous' argument name not supported
+                    'termcols', termcols, ...
+                    'coeffnames', [], ...    % Not used in Octave
+                    'vars', [], ...          % Not used in Octave
+                    'varnames', {varnames}, ...
+                    'grpnames', {grpnames}, ...
+                    'vnested', [], ...       % Not used since 'nested' argument name not supported
+                    'ems', [], ...           % Not used since 'nested' argument name not supported
+                    'denom', [], ...         % Not used since 'random' argument name not supported
+                    'dfdenom', [], ...       % Not used since 'random' argument name not supported
+                    'msdenom', [], ...       % Not used since 'random' argument name not supported
+                    'varest', [], ...        % Not used since 'random' argument name not supported
+                    'varci', [], ...         % Not used since 'random' argument name not supported
+                    'txtdenom', [], ...      % Not used since 'random' argument name not supported
+                    'txtems', [], ...        % Not used since 'random' argument name not supported
+                    'rtnames', []);          % Not used since 'random' argument name not supported
+    
+    % Prepare cell array containing the ANOVA table
+    ANOVA_table = cell (nt+3, 6);
+    ANOVA_table(1,:) = {'Source','Sum Sq.','d.f.','Mean Sq.','F','Prob>F'};
+    ANOVA_table(2:nt+1,2:6) = num2cell([ss df ms F p]);
+    ANOVA_table(end-1,1:4) = {'Error',sse,dfe,mse};
+    ANOVA_table(end,1:3) = {'Total',sst,dft};
+    for i=1:nt
+      str = sprintf('%s*',varnames{find(TERMS(i,:))});
+      ANOVA_table(i+1,1) = str(1:end-1);
+    end
+    
+    % Print ANOVA table 
+    if strcmpi(display,'on')
+      % Get dimensions of ANOVA_table
+      [nrows,ncols] = size (ANOVA_table);
+      % Scale p-values by 1000 so that we can format them in the printed table in APA style 
+      ps = round (p * 1e+03);
+      ps(ps>999) = 999;
+      ANOVA_table(2:nrows-2,ncols) = num2cell(ps);
+      % Print table
+      printf('\n%d-way ANOVA Table:\n\n', nm);
+      printf('Source                    Sum Sq.   d.f.   Mean Sq.           F  Prob>F\n');
+      printf('***********************************************************************\n');  
+      for i = 1:nt
+        printf('%-22s  %9.5g %6d  %9.5g %11.2f    .%03u \n', ANOVA_table{i+1,:});
+      end
+      printf('Error                   %9.5g %6d %10.2f\n', ANOVA_table{end-1,2:4});               
+      printf('Total                   %9.5g %6d \n', ANOVA_table{end,2:3});  
+      printf('\n');
+    elseif strcmp(display,'off')
+      % do nothing
+    else
+      error ('anovan: unknown display option');    
+    end
+  
+end
+
+
+function [X, levels, nlevels, df, termcols] = dummy_coder (grps, TERMS, main, inte, N, nm, nx)
+  
+  % Returns a cell array of dummy-coded levels for each term in the linear model
+  
+  % Fetch factor levels from each column (i.e. factor) in grps
+  levels = cell (nm, 1);
+  gid = zeros (N, nm);
+  nlevels = zeros (nm, 1);
+  df = zeros (nm + nx, 1);
+  termcols = ones (1 + nm + nx, 1);
+  for j = 1:nm
+    m = find (TERMS(j,:));
+    [levels{j}, jnk, gid(:,j)] = unique (grps (:,m), 'legacy');
+    nlevels(j) = numel (levels{j});
+    termcols(j+1) = nlevels(j);
+    df(j) = nlevels(j) - 1;
   end
-  printf('\n');
-endfunction
+ 
+  % Create contrast matrix C and dummy variables X
+  % Prepare dummy variables for main effects
+  X = cell (1, 1 + nm + nx);
+  X(1) = ones (N, 1);
+  for j = 1:nm
+    C = contr_sum (nlevels(j));
+    func = @(x) x(gid(:,j));
+    X(1+j) = cell2mat (cellfun (func, num2cell (C, 1), 'UniformOutput', false));
+  end
+  % If applicable, prepare dummy variables for all two-factor interactions
+  if (nx > 0)
+    pairs = TERMS(inte,:);
+    for i = 1:nx
+      I = 1 + find (pairs(i,:));
+      X(1+nm+i) = bsxfun (@times, X{I});
+      df(nm+i) = prod (df(I-1));
+      termcols(1+nm+i) = prod (df(I-1) + 1);
+    end
+  end
+
+end
+
+
+function C = contr_sum (n)
+
+  % Create contrast matrix using deviation coding 
+  % These contrasts sum to 0
+  C = cat (1, diag (ones (n-1, 1)), - (ones (1,n-1)));
+  
+end
+
+
+function [b, sse, resid] = lmfit (X,Y)
+  
+  % Solve linear equation by QR decomposition 
+  % (this achieves the same thing as b = X \ Y)
+  [Q, R] = qr (X,0); 
+  b = R \ Q' * Y ; 
+  fit = X * b;
+  resid = Y - fit;
+  sse = sum ((resid).^2);
+  
+end
+
 
 #{
 # Test Data from http://maths.sci.shu.ac.uk/distance/stats/14.shtml
@@ -353,7 +364,16 @@ grp = [1,1;1,2;1,3;
 data=[23  27  43  41  15  17   3   9  20  63  55  90];
 grp= [ 1    1   1   1   2   2   2   2   3   3   3   3;
        1    1   2   2   1   1   2   2   1   1   2   2]';
+# Test Data from Table 24.4 in Kutner et al., Applied Linear Statistical Models. 5th ed.
+# Three-way ANOVA example (2x2x2) with 3 replicates
+data = [24.1 29.2 24.6 20 21.9 17.6 14.6 15.3 12.3 16.1 9.3 10.8 ...
+       17.6 18.8 23.2 14.8 10.3 11.3 14.9 20.4 12.8 10.1 14.4 6.1]';
+grp = [1,1,1;2,1,1;1,1,1;2,1,1;1,1,1;2,1,1;1,1,2;2,1,2;
+       1,1,2;2,1,2;1,1,2;2,1,2;1,2,1;2,2,1;1,2,1;2,2,1;
+       1,2,1;2,2,1;1,2,2;2,2,2;1,2,2;2,2,2;1,2,2;2,2,2];
+# Test Data for unbalanced two-way ANOVA example (2x2)   
+salary = [24 26 25 24 27 24 27 23 15 17 20, ...
+          16 25 29 27 19 18 21 20 21 22 19]';
+gender = [1 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2]';
+degree = [1 1 1 1 1 1 1 1 0 0 0 0 1 1 1 0 0 0 0 0 0 0]',
 #}
-
-
-
