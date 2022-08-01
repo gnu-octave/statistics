@@ -51,6 +51,8 @@ Summary of important user-visible changes for statistics 1.5.0:
  ** rmmissing.m: corrects cellstr array handling and
     improves matlab compatibility for different data types. (patch #10102)
  
+ ** signtest.m: fix erroneous results, fully Matlab compatible (bug #49961)
+ 
  ** ttest2.m: can hale NaN values as missing data (bug #58697)
  
  ** violin.m: fix parsing color vector affecting Octave>=6.1.0 (bug #62805)
