@@ -9,7 +9,7 @@ Summary of important user-visible changes for statistics 1.5.0:
  
  ** anova2 (fully Matlab compatible)
  
- ** chi2gof (bug #46764)
+ ** chi2gof (fully Matlab compatible. bug #46764)
  
  ** friedman (fully Matlab compatible)
  

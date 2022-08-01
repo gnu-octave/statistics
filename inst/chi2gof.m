@@ -74,9 +74,12 @@
 ## @item @tab "nbins" @tab he number of bins to use.  Default is 10.
 ## @item @tab "binctrs" @tab A vector of bin centers.
 ## @item @tab "binedges" @tab A vector of bin binedges.
-## @item @tab "cdf" @tab A fully specified cumulative distribution function
+## @item @tab "cdf" @tab A fully specified cumulative distribution function or a
+## a function handle. Alternatively, a cell array whose first element is a
+## function handle and all later elements are parameter values, one per cell.
 ## provided in a cell array whose first element is a function handle, and whose
-## later elements are parameter values, one per cell.
+## later elements are parameter values, one per cell.  The function must take X
+## values as its first argument, and other parameters as later arguments.
 ## @item @tab "expected" @tab A vector with one element per bin specifying the
 ## expected counts for each bin.
 ## @item @tab "nparams" @tab The number of estimated parameters; used to adjust
@@ -92,7 +95,7 @@
 ## @end multitable
 ##
 ## You should specify either "cdf" or "expected" parameters, but not both.  If
-## your "cdf" input cell array contain extra parameters, these are accounted for
+## your "cdf" input contains extra parameters, these are accounted for
 ## automatically and there is no need to specify "nparams".  If your "expected"
 ## input depends on estimated parameters, you should use the "nparams" parameter
 ## to ensure that the degrees of freedom for the test is correct.
@@ -227,6 +230,54 @@ function [h, p, stats] = chi2gof (x, varargin)
       if isempty (nparams)
         nparams = 2;
       endif
+    elseif isa (cdf_spec, "function_handle")
+      ## Split function handle to get function name and optional parameters
+      cstr = ostrsplit (func2str (cdf_spec), ",");
+      ## Simple function handle, no parameters: e.g. @normcdf
+      if isempty (strfind (cstr, "@")) && numel (cstr) == 1
+        cdffunc = str2func (char (strcat ("@", cstr)));
+        if isempty (nparams)
+          nparams = numel (cdfargs);
+        endif
+      ## Complex function handle, no parameters: e.g. @(x) normcdf(x)
+      elseif ! isempty (strfind (cstr, "@")) && numel (cstr) == 1
+        ## Remove white spaces
+        cstr = char (cstr);
+        cstr(strfind (cstr, " ")) = [];
+        ## Remove input argument in parentheses
+        while length (strfind (cstr,"("))
+          cstr(index (cstr, "("):index (cstr, ")")) = [];
+        endwhile
+        cdffunc = str2func (cstr);
+        if isempty (nparams)
+          nparams = numel (cdfargs);
+        endif
+      elseif ! isempty (strfind (cstr, "@")) && numel (cstr) > 1
+        ## Evaluate function name in first cell
+        cstr_f = char (cstr(1));
+        cstr_f(strfind (cstr_f, " ")) = [];
+        cstr_f(index (cstr_f, "("):index (cstr_f, ")")) = [];
+        cstr_f(index (cstr_f, "("):end) = [];
+        cdffunc = str2func (cstr_f);
+        ## Evaluate optional parameters in remaining cells
+        cstr_idx = 2;
+        while cstr_idx <= numel (cstr)
+          cstr_p = char (cstr(cstr_idx));
+          cstr_p(strfind (cstr_p, " ")) = [];
+          ## Check for numerical value
+          if isscalar (str2num (cstr_p))
+            cdfargs{cstr_idx - 1} = cstr_p;
+          else
+            ## Get function handle: e.g. mean
+            cstr_p(index (cstr_p, "("):end) = [];
+            cdfargs{cstr_idx - 1} = feval (str2func (cstr_p), x .* frequency);
+            cstr_idx += 1;
+          endif
+        endwhile
+        if isempty (nparams)
+          nparams = numel (cdfargs);
+        endif
+      endif
     elseif iscell (cdf_spec)
       % Get function and args from cell array
       cdffunc = cdf_spec{1};
@@ -356,6 +407,7 @@ endfunction
 %!demo
 %! x = normrnd (50, 5, 100, 1);
 %! [h, p, stats] = chi2gof (x)
+%! [h, p, stats] = chi2gof (x, "cdf", @(x)normcdf (x, mean(x), std(x)))
 %! [h, p, stats] = chi2gof (x, "cdf", {@normcdf, mean(x), std(x)})
 %!demo
 %! x = rand (100,1 );
