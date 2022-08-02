@@ -71,7 +71,7 @@
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab Name @tab Value
-## @item @tab "nbins" @tab he number of bins to use.  Default is 10.
+## @item @tab "nbins" @tab The number of bins to use.  Default is 10.
 ## @item @tab "binctrs" @tab A vector of bin centers.
 ## @item @tab "binedges" @tab A vector of bin binedges.
 ## @item @tab "cdf" @tab A fully specified cumulative distribution function or a
