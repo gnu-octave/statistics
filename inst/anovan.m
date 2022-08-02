@@ -20,8 +20,9 @@
 ##
 ##  Perform a multi-way analysis of variance (ANOVA) with categorical predictors.
 ##  When interpreting the results from an analysis of an unbalanced design, be  
-##  aware that this function calculates sum-of-squared residuals are sequentially 
-##  from means that are weighted by sample size (i.e. 'sstype' = 1).
+##  aware that this function calculates sum-of-squared residuals sequentially 
+##  from means that are weighted by sample size (i.e. 'sstype' = 1) and that
+##  the order of the factors (columns in @var{GROUP}) matters.
 ## 
 ##  Data is a single vector @var{Y} with groups specified by a corresponding matrix or 
 ##  cell array of group labels @var{GROUP}, where each column of @var{GROUP} has the same 
@@ -75,7 +76,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     # Check supplied parameters
     modeltype = 'linear';
     display = 'on';
-    sstype = 1; # default: this is not optional
+    sstype = 1; # default: this is not optional (yet)
     varnames = [];
     for idx = 3:2:nargin
       name = varargin{idx-2};
@@ -86,6 +87,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         varnames = value;
       elseif strcmpi (name, 'display')
         display = value;   
+      elseif strcmpi (name, 'sstype') 
+        sstype = value;
       else 
         error (sprintf('anovan: parameter %s is not supported', name));
       end
@@ -219,7 +222,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           R = sse;
         end
       otherwise
-        # sstype 2, 3, or 'h' not supported
+        # sstype 2, 3, or 'h' not supported (yet)
+        error ('anovan: only sstype = 1 is currently supported')
     end
     dfe = dft - sum (df);
     ms = ss ./ df;
@@ -369,51 +373,29 @@ function [b, sse, resid] = lmfit (X,Y)
 end
 
 
-#{
-# Test Data from http://maths.sci.shu.ac.uk/distance/stats/14.shtml
-data=[7  9  9  8 12 10 ...
-      9  8 10 11 13 13 ...
-      9 10 10 12 10 12]';
-grp = [1,1; 1,1; 1,2; 1,2; 1,3; 1,3;
-       2,1; 2,1; 2,2; 2,2; 2,3; 2,3;
-       3,1; 3,1; 3,2; 3,2; 3,3; 3,3];
-data=[7  9  9  8 12 10  9  8 ...
-      9  8 10 11 13 13 10 11 ...
-      9 10 10 12 10 12 10 12]';
-grp = [1,4; 1,4; 1,5; 1,5; 1,6; 1,6; 1,7; 1,7;
-       2,4; 2,4; 2,5; 2,5; 2,6; 2,6; 2,7; 2,7;
-       3,4; 3,4; 3,5; 3,5; 3,6; 3,6; 3,7; 3,7];
-# Test Data from http://maths.sci.shu.ac.uk/distance/stats/9.shtml
-data=[9.5 11.1 11.9 12.8 ...
-     10.9 10.0 11.0 11.9 ...
-     11.2 10.4 10.8 13.4]';
-grp= [1:4,1:4,1:4]';
-# Test Data from http://maths.sci.shu.ac.uk/distance/stats/13.shtml
-data=[7.56  9.68 11.65  ...
-      9.98  9.69 10.69  ...
-      7.23 10.49 11.77  ...
-      8.22  8.55 10.72  ...
-      7.59  8.30 12.36]'; 
-grp = [1,1;1,2;1,3;
-       2,1;2,2;2,3;
-       3,1;3,2;3,3;
-       4,1;4,2;4,3;
-       5,1;5,2;5,3];
-# Test Data from www.mathworks.com/
-#                access/helpdesk/help/toolbox/stats/linear10.shtml
-data=[23  27  43  41  15  17   3   9  20  63  55  90];
-grp= [ 1    1   1   1   2   2   2   2   3   3   3   3;
-       1    1   2   2   1   1   2   2   1   1   2   2]';
-# Test Data from Table 24.4 in Kutner et al., Applied Linear Statistical Models. 5th ed.
-# Three-way ANOVA example (2x2x2) with 3 replicates
-data = [24.1 29.2 24.6 20 21.9 17.6 14.6 15.3 12.3 16.1 9.3 10.8 ...
-       17.6 18.8 23.2 14.8 10.3 11.3 14.9 20.4 12.8 10.1 14.4 6.1]';
-grp = [1,1,1;2,1,1;1,1,1;2,1,1;1,1,1;2,1,1;1,1,2;2,1,2;
-       1,1,2;2,1,2;1,1,2;2,1,2;1,2,1;2,2,1;1,2,1;2,2,1;
-       1,2,1;2,2,1;1,2,2;2,2,2;1,2,2;2,2,2;1,2,2;2,2,2];
-# Test Data for unbalanced two-way ANOVA example (2x2)   
-salary = [24 26 25 24 27 24 27 23 15 17 20, ...
-          16 25 29 27 19 18 21 20 21 22 19]';
-gender = [1 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2]';
-degree = [1 1 1 1 1 1 1 1 0 0 0 0 1 1 1 0 0 0 0 0 0 0]',
-#}
+## Test for unbalanced two-way ANOVA (2x2) from Maxwell, Delaney and Kelly (2018): Chapter 7, Table 15)
+## https://designingexperiments.com/csv-chapter-data/
+## Test compares to results in matlab 
+%!test
+%! salary = [24 26 25 24 27 24 27 23 15 17 20 16, ...
+%!           25 29 27 19 18 21 20 21 22 19]';
+%! gender = {'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f'...
+%!           'm' 'm' 'm' 'm' 'm' 'm' 'm' 'm' 'm' 'm'}';
+%! degree = [1 1 1 1 1 1 1 1 0 0 0 0 1 1 1 0 0 0 0 0 0 0]';
+%! [P, T] = anovan (salary,{gender, degree}, 'model', 'interaction', 'sstype', 1, 'display','off')
+%! assert (P(1), 0.747462549227232, 1e-12);
+%! assert (P(2), 1.03809316857694e-08, 1e-12);
+%! assert (P(3), 0.523689833702691, 1e-12);
+%! assert (T{2,2}, 0.296969696969699, 1e-12);
+%! assert (T{3,2}, 272.391841491841, 1e-12);
+%! assert (T{4,2}, 1.17482517482512, 1e-12);
+%! [P, T] = anovan (salary,{degree, gender}, 'model', 'interaction', 'sstype', 1, 'display','off')
+%! assert (P(1), 2.53445097305047e-08, 1e-12);
+%! assert (P(2), 0.00388133678528749, 1e-12);
+%! assert (P(3), 0.523689833702671, 1e-12);
+%! assert (T{2,2}, 242.227272727273, 1e-12);
+%! assert (T{3,2}, 30.4615384615384, 1e-12);
+%! assert (T{4,2}, 1.17482517482523, 1e-12);
+
+
+
