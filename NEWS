@@ -2,62 +2,71 @@ Summary of important user-visible changes for statistics 1.5.0:
 -------------------------------------------------------------------
 
  Important Notice: dependency change to Octave>=6.1.0
+                   mean shadows core Octave's respective function
  
  New functions:
  ==============
-
- ** friedman (fully Matlab compatible)
  
- ** ranksum (fully Matlab compatible. bug #42079)
-    tiedrank
-    
  ** anova2 (fully Matlab compatible)
  
- ** mean (fully Matlab compatible, it shadows mean from core Octave)
-          
+ ** chi2gof (fully Matlab compatible. bug #46764)
+ 
+ ** friedman (fully Matlab compatible)
+ 
  ** fillmissing (patch #10102)
-
+ 
+ ** mean (fully Matlab compatible, it shadows mean from core Octave)
+ 
+ ** ranksum (fully Matlab compatible. bug #42079)
+    
  ** standardizeMissing (patch #10102)
+ 
+ ** tiedrank (complementary to ranksum)
 
  Improvements:
  =============
- 
- ** laplace_cdf.m: allow for parameters mu and scale (bug #58688)
-    laplace_inv.m
-    loplace.pdf.m
-    logistic_cdf.m
-    logistic_inv.m
-    logistic_pdf.m
-    
- ** ttest2.m: can hale NaN values as missing data (bug #58697)
- 
+  
  ** binopdf.m: implement high accuracy Loader algorithm for m>=10 (bug #34362)
  
- ** violin.m: fix parsing color vector affecting Octave>=6.1.0 (bug #62805)
- 
  ** cdf.m: extended to include all available distributions
-    pdf.m
-    
- ** pdist.m: updated the 'cosine' metric to be more efficient (bug #62495)
- 
- ** harmmean.m: fully Matlab compatible.
  
  ** geomean.m: fully Matlab compatible. (patch #59410)
  
- ** wblplot.m: fixed coding style and help texinfo. (patch #8579)
+ ** harmmean.m: fully Matlab compatible.
  
  ** ismissing.m: corrects handling of n-D arrays, NaN indicators, and improves
     matlab compatibility for different data types. (patch #10102)
-
+ 
+ ** laplace_cdf.m: allow for parameters mu and scale (bug #58688)
+    laplace_inv.m
+    laplace_pdf.m
+    logistic_cdf.m
+    logistic_inv.m
+    logistic_pdf.m
+ 
+ ** pdf.m: extended to include all available distributions
+    
+ ** pdist.m: updated the 'cosine' metric to be more efficient (bug #62495)
+ 
  ** rmmissing.m: corrects cellstr array handling and
     improves matlab compatibility for different data types. (patch #10102)
-    
+ 
+ ** signtest.m: fix erroneous results, fully Matlab compatible (bug #49961)
+ 
+ ** ttest2.m: can hale NaN values as missing data (bug #58697)
+ 
+ ** violin.m: fix parsing color vector affecting Octave>=6.1.0 (bug #62805)
+ 
+ ** wblplot.m: fixed coding style and help texinfo. (patch #8579)
+  
  Removed Functions:
  ==================
  
  ** wilcoxon_test (replaced by ranksum)
  
  ** kruskal_wallis_test (replaced by kruskalwallis)
+ 
+ ** sign_test (replaced by updated signtest)
  
  Available Data Sets:
  ====================
