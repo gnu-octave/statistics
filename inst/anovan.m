@@ -282,7 +282,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       for i = 1:nt
         str = T{i+1,1};
         l = numel(str);  # Needed to truncate source term name at 21 characters
-        # Format and print tehe statistics for each model term
+        # Format and print the statistics for each model term
         # Format F statistics and p-values in APA style
         if (P(i) < 0.001)
           fprintf ('%-21s  %10.5g  %6d  %10.5g %11.2f   <.001 \n', str(1:min(21,l)), T{i+1,2:end-1});
