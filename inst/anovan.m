@@ -323,7 +323,7 @@ function [X, levels, nlevels, df, termcols] = make_design_matrix (GROUP, TERMS, 
   end
  
   # Create contrast matrix C and dummy variables X
-  # Prepare dummy variables for main effects
+  # Prepare design matrix columns for the main effects
   X = cell (1, 1 + nm + nx);
   X(1) = ones (N, 1);
   for j = 1:nm
@@ -331,7 +331,7 @@ function [X, levels, nlevels, df, termcols] = make_design_matrix (GROUP, TERMS, 
     func = @(x) x(gid(:,j));
     X(1+j) = cell2mat (cellfun (func, num2cell (C, 1), 'UniformOutput', false));
   end
-  # If applicable, prepare dummy variables for all two-factor interactions
+  # If applicable, prepare design matrix columns for all two-factor interactions
   if (nx > 0)
     pairs = TERMS(inte,:);
     for i = 1:nx
