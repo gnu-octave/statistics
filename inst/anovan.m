@@ -213,8 +213,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         # Type I sequential sums-of-squares (sstype = 1)
         R = sst;
         ss = zeros (nt,1);
-        df = zeros (nt,1);
-        [X, grpnames, nlevels, df, termcols] = mk_design_matrix (GROUP, TERMS, main, inte, N, nm, nx);
+        [X, grpnames, nlevels, df, termcols] = make_design_matrix (GROUP, TERMS, main, inte, N, nm, nx);
         for j = 1:nt
           XS = cell2mat (X(1:j+1));
           [b, sse, resid] = lmfit (XS, Y);
@@ -305,7 +304,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 end
 
 
-function [X, levels, nlevels, df, termcols] = mk_design_matrix (GROUP, TERMS, main, inte, N, nm, nx)
+function [X, levels, nlevels, df, termcols] = make_design_matrix (GROUP, TERMS, main, inte, N, nm, nx)
   
   # Returns a cell array of dummy-coded levels for each term in the linear model
   
