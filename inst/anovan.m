@@ -71,7 +71,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       
     if nargin <= 1
       error ('anovan usage: ''anovan (Y, GROUP)''; atleast 2 input arguments required');
-    end
+    endif
 
     # Check supplied parameters
     modeltype = 'linear';
@@ -91,8 +91,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         sstype = value;
       else 
         error (sprintf('anovan: parameter %s is not supported', name));
-      end
-    end
+      endif
+    endfor
     
     # Remove NaN or non-finite observations
     excl = logical (isnan(Y) + isinf(Y));
@@ -101,10 +101,10 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     n = numel (Y);
     if (prod (size (Y)) ~= n)
       error ('anovan: for ''anovan (Y, GROUP)'', Y must be a vector');
-    end
+    endif
     if (size (Y, 2) > 1)
       Y = Y(:);
-    end
+    endif
     N = size (GROUP,2); # number of anova "ways"
     # Accomodate for different formats for GROUP 
     # GROUP can be a matrix of numeric identifiers of a cell arrays of strings or numeric idenitiers
@@ -115,25 +115,25 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
             tmp(:,k) = cellstr (num2str (GROUP{k}));
           else
             tmp(:,k) = GROUP{k};
-          end
-        end
+          endif
+        endfor
         GROUP = tmp;
       else
         for k = 1:N
           tmp(:,k) = cellstr (char (GROUP{k}));
-        end
-      end
-    end
+        endfor
+      endif
+    endif
     if (size (GROUP,1) ~= n)
       error ('anovan: GROUP must be a matrix of the same number of rows as Y');
-    end
+    endif
     if ~isempty (varnames) 
       if iscell (varnames)
         if all (cellfun (@ischar, varnames))
           nvarnames = numel(varnames);
         else
           error ('anovan: all variable names must be character or character arrays');
-        end
+        endif
       elseif ischar (varnames)
         nvarnames = 1;
         varnames = {varnames};
@@ -142,14 +142,14 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         varnames = {char(varnames)};
       else
         error ('anovan: varnames is not of a valid type. Must be cell array of character arrays, character array or string');
-      end
+      endif
     else
       nvarnames = N;
       varnames = arrayfun(@(x) ['X',num2str(x)], 1:N, 'UniformOutput', 0);
-    end
+    endif
     if (nvarnames ~= N)
       error ('anovan: number of variable names is not equal to number of grouping variables');
-    end
+    endif
 
     # Evaluate model type input argument and create terms matrix if not provided
     if ischar (modeltype)
@@ -160,33 +160,47 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           modeltype = 2;
         case 'full'
           modeltype = N;
-      end
-    end
+      endswitch
+    endif
     if isscalar (modeltype)
-      nx = zeros (1, N-1);
-      nx = 0;
-      for k=1:N
-        nx = nx + nchoosek(N,k);
-      end
       TERMS = cell (modeltype,1);
       v = false (1,N);
-      for j = 1:modeltype
-        v(1:j) = 1;
-        TERMS(j) = flipud (unique (perms (v), 'rows'));
-      end
-      TERMS = cell2mat (TERMS);
+      if (modeltype == 1)
+        TERMS = eye (N);
+      elseif (modeltype == 2)
+        nx = nchoosek (N, 2);
+        TERMS = zeros (N + nx, N);
+        TERMS(1:N,:) = eye (N);
+        for j = 1:N
+          for i = j:N-1
+            TERMS(N+j+i-1,j) = 1;
+            TERMS(N+j+i-1,i+1) = 1;
+          endfor
+        endfor
+      else
+        nx = zeros (1, N-1);
+        nx = 0;
+        for k=1:N
+          nx = nx + nchoosek(N,k);
+        endfor
+        for j = 1:modeltype
+          v(1:j) = 1;
+          TERMS(j) = flipud (unique (perms (v), 'rows'));
+        endfor
+        TERMS = cell2mat (TERMS);
+      endif
     else
       # Assume that the user provided a suitable matrix of term definitions
       if (size (modeltype, 2) > N)
         error ('anovan: the number of columns in the term definitions cannot exceed the number of columns of GROUP')
-      end
+      endif
       TERMS = logical (modeltype);
-    end
+    endif
     # Evaluate terms matrix
     ng = sum (TERMS, 2); 
     if any (diff (ng) < 0)
       error ('anovan: the model terms matrix must list main effects above interactions')
-    end
+    endif
     nm = sum (ng == 1);
     nx = sum (ng > 1);
     nt = nm + nx;
@@ -208,11 +222,11 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           [b, sse, resid] = lmfit (XS, Y);
           ss(j) = R - sse;
           R = sse;
-        end
+        endfor
       otherwise
         # sstype 2, 3, or 'h' not supported (yet)
         error ('anovan: only sstype = 1 is currently supported')
-    end
+    endswitch
     dfe = dft - sum (df);
     ms = ss ./ df;
     mse = sse / dfe;
@@ -258,7 +272,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     for i=1:nt
       str = sprintf('%s*',varnames{find(TERMS(i,:))});
       T(i+1,1) = str(1:end-1);
-    end
+    endfor
     
     # Print ANOVA table 
     if strcmpi(display,'on')
@@ -279,8 +293,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           fprintf ('%-21s  %10.5g  %6d  %10.5g %11.2f    .%03u \n', str(1:min(21,l)), T{i+1,2:end-1}, round (P(i) * 1e+03));
         else
           fprintf ('%-21s  %10.5g  %6d  %10.5g %11.2f   1.000 \n', str(1:min(21,l)), T{i+1,2:end-1}); 
-        end
-      end
+        endif
+      endfor
       fprintf('Error                  %10.5g  %6d  %10.5g\n', T{end-1,2:4});               
       fprintf('Total                  %10.5g  %6d \n', T{end,2:3});  
       fprintf('\n');
@@ -288,9 +302,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       # do nothing
     else
       error ('anovan: unknown display option');    
-    end
+    endif
   
-end
+endfunction
 
 
 function [X, levels, nlevels, df, termcols] = make_design_matrix (GROUP, TERMS, n, nm, nx, ng)
@@ -309,7 +323,7 @@ function [X, levels, nlevels, df, termcols] = make_design_matrix (GROUP, TERMS, 
     nlevels(j) = numel (levels{j});
     termcols(j+1) = nlevels(j);
     df(j) = nlevels(j) - 1;
-  end
+  endfor
  
   # Create contrast matrix C and dummy variables X
   # Prepare design matrix columns for the main effects
@@ -319,7 +333,7 @@ function [X, levels, nlevels, df, termcols] = make_design_matrix (GROUP, TERMS, 
     C = contr_sum (nlevels(j));
     func = @(x) x(gid(:,j));
     X(1+j) = cell2mat (cellfun (func, num2cell (C, 1), 'UniformOutput', false));
-  end
+  endfor
   # If applicable, prepare design matrix columns for all the interaction terms
   if (nx > 0)
     row = TERMS((ng > 1),:);
@@ -330,20 +344,20 @@ function [X, levels, nlevels, df, termcols] = make_design_matrix (GROUP, TERMS, 
       X{1+nm+i} = X{1};
       for k = 1:numel(I)
         X(1+nm+i) = bsxfun (@times, X{1+nm+i}, X{I(k)});
-      end
-    end
-  end
+      endfor
+    endfor
+  endif
 
-end
+endfunction
 
 
-function C = contr_sum (n)
+function C = contr_sum (N)
 
   # Create contrast matrix (of doubles) using deviation coding 
   # These contrasts sum to 0
-  C =  cat (1, diag (ones (n-1, 1)), - (ones (1,n-1)));
+  C =  cat (1, eye (N-1), - (ones (1,N-1)));
   
-end
+endfunction
 
 
 function [b, sse, resid] = lmfit (X,Y)
@@ -361,7 +375,7 @@ function [b, sse, resid] = lmfit (X,Y)
   # Calculate residual sums-of-squares
   sse = sum ((resid).^2);
   
-end
+endfunction
 
 
 ## Test for unbalanced two-way ANOVA (2x2) from Maxwell, Delaney and Kelly (2018): Chapter 7, Table 15)
