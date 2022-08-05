@@ -1,3 +1,4 @@
+## Copyright (C) 2022 Nicholas R. Jankowski
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1997-2016 Kurt Hornik
 ##
@@ -65,16 +66,34 @@ function inv = hygeinv (x, t, m, n)
       inv(x == 0) = 0;  # Hack to return correct value for start of distribution
     endif
   else
-    for i = find (ok(:)')  # Must be row vector arg to for loop
-      v = 0 : n(i);
-      if (x(i) == 0)
-        inv(i) = 0;  # Hack to return correct value for start of distribution
-      else
-        inv(i) = discrete_inv (x(i), v, hygepdf (v, t(i), m(i), n(i)));
-      endif
-    endfor
-  endif
+    k = (x == 0);
+    inv (ok & k) = 0; # set any x=0 to 0 if not already set to output NaN
+    k = (x == 1);
+    inv (ok & k) = n(ok & k);
+    ok &= (x>0 & x<1); #remove 0's and x's outside (0,1), leave unfilled as NaN
 
+    if any(ok(:))
+      n = n(ok);
+      v = 0 : max (n(:));
+
+      ## manually perform discrete_inv to enable vectorizing with array input
+      p = cumsum (hygepdf (v, t(ok), m(ok), n, "vectorexpand"), 2);
+      sz_p = size (p);
+      end_locs = sub2ind (sz_p, [1 : numel(n)]', n(:) + 1);
+
+      ## manual row-wise vectorization of lookup, which returns index of element
+      ## less than or equal to test value, zero if test value less than lowest
+      ## number, and max index if greater than highest number. operated on
+      ## flipped p, adjusting for different vector lengths in array rows.
+      p = (p ./ p(end_locs))(:, end:-1:1) - x(ok)(:);
+      p(p>=0) = NaN;
+      [p_match, p_match_idx] = max (p, [], 2);
+      p_match_idx(isnan(p_match)) = v(end) + 2;
+
+      inv(ok) = v(v(end) - p_match_idx + 3);
+
+    endif
+  endif
 endfunction
 
 

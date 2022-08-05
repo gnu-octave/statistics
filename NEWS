@@ -36,6 +36,14 @@ Summary of important user-visible changes for statistics 1.5.0:
  
  ** harmmean.m: fully Matlab compatible.
  
+ ** hygepdf.m: added optional parameter "vectorexpand" to facilitate
+    vectorization of other hyge functions. Allows different inputs lengths 
+    for x and t,m,n parameters, with broadcast expanded output (bug #34363)
+    
+ ** hygecdf.m: improved vectorization for non-scalar inputs.
+    hygeinv.m
+    hygernd.m
+ 
  ** ismissing.m: corrects handling of n-D arrays, NaN indicators, and improves
     matlab compatibility for different data types. (patch #10102)
  

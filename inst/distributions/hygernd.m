@@ -1,3 +1,4 @@
+## Copyright (C) 2022 Nicholas R. Jankowski
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1997-2016 Kurt Hornik
 ##
@@ -97,12 +98,21 @@ function rnd = hygernd (t, m, n, varargin)
     endif
   else
     rnd = NaN (sz, cls);
-    rn = rand (sz);
-    for i = find (ok(:)')  # Must be row vector arg to for loop
-      v = 0 : n(i);
-      p = hygepdf (v, t(i), m(i), n(i));
-      rnd(i) = v(lookup (cumsum (p(1 : end-1)) / sum (p), rn(i)) + 1);
-    endfor
+    n = n(ok);
+    num_n = numel (n);
+    v = 0 : max (n(:));
+    p = cumsum (hygepdf (v, t(ok), m(ok), n, "vectorexpand"), 2);
+
+    ## manual row-wise vectorization of lookup, which returns index of element
+    ## less than or equal to test value, zero if test value is less than lowest
+    ## number, and max index if greater than highest number.
+
+    end_locs = sub2ind (size (p), [1 : num_n]', n(:) + 1);
+    p = (p ./ p(end_locs)) - rand (num_n, 1);
+    p(p>=0) = NaN;  #NaN values ignored by max
+    [p_match, p_match_idx] = max (p, [], 2);
+    p_match_idx(isnan(p_match)) = 0; #rand < min(p) gives NaN, reset to 0
+    rnd(ok) = v(p_match_idx + 1);
   endif
 
 endfunction

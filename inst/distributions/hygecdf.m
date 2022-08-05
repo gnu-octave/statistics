@@ -1,3 +1,4 @@
+## Copyright (C) 2022 Nicholas R. Jankowski
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1997-2016 Kurt Hornik
 ##
@@ -63,10 +64,19 @@ function cdf = hygecdf (x, t, m, n)
       cdf = discrete_cdf (x, 0 : n, hygepdf (0 : n, t, m, n));
     endif
   else
-    for i = find (ok(:)')  # Must be row vector arg to for loop
-      v = 0 : n(i);
-      cdf(i) = discrete_cdf (x(i), v, hygepdf (v, t(i), m(i), n(i)));
-    endfor
+    ok &= ! isnan (x);
+    n = n(ok);
+    num_n = numel (n);
+    v = 0 : max (n(:));
+
+    ## manually perform discrete_cdf to enable vectorizing with array input
+    p = cumsum (hygepdf (v, t(ok), m(ok), n, "vectorexpand"), 2);
+    sz_p = size (p);
+    end_locs = sub2ind (sz_p, [1 : num_n]', n(:) + 1);
+    p ./= (p(end_locs));
+    v_col_idx = min (lookup (v, x(ok)(:)) + 1, n(:) + 2);
+    cdf(ok) = [zeros(num_n, 1), p](sub2ind (sz_p + [0,1], ...
+                                                    [1 : num_n]', v_col_idx));
   endif
 
 endfunction
