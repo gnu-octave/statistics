@@ -1,4 +1,5 @@
 ## Copyright (C) 2022 Andrew Penn <A.C.Penn@sussex.ac.uk>
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2003-2005 Andy Adler <adler@ncf.ca>
 ##
 ## This program is free software; you can redistribute it and/or modify it under
@@ -79,7 +80,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       error ('anovan usage: ''anovan (Y, GROUP)''; atleast 2 input arguments required');
     endif
 
-    # Check supplied parameters
+    ## Check supplied parameters
     modeltype = 'linear';
     display = 'on';
     sstype = 3;
@@ -100,7 +101,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       endif
     endfor
     
-    # Remove NaN or non-finite observations
+    ## Remove NaN or non-finite observations
     excl = logical (isnan(Y) + isinf(Y));
     Y(excl) = [];
     GROUP(excl,:) = [];
@@ -111,9 +112,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     if (size (Y, 2) > 1)
       Y = Y(:);
     endif
-    N = size (GROUP,2); # number of anova "ways"
-    # Accomodate for different formats for GROUP 
-    # GROUP can be a matrix of numeric identifiers of a cell arrays of strings or numeric idenitiers
+    N = size (GROUP,2); ## number of anova "ways"
+    ## Accomodate for different formats for GROUP 
+    ## GROUP can be a matrix of numeric identifiers of a cell arrays of strings or numeric idenitiers
     if iscell(GROUP)
       if (size(GROUP, 1) == 1)
         for k = 1:N
@@ -157,7 +158,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       error ('anovan: number of variable names is not equal to number of grouping variables');
     endif
 
-    # Evaluate model type input argument and create terms matrix if not provided
+    ## Evaluate model type input argument and create terms matrix if not provided
     if ischar (modeltype)
       switch lower(modeltype)
         case 'linear'
@@ -175,10 +176,10 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       v = false (1, N);
       switch lower (modeltype)
         case 1
-          # Create term definitions for an additive linear model
+          ## Create term definitions for an additive linear model
           TERMS = eye (N);
         case 2
-          # Create term definitions for a model with two factor interactions
+          ## Create term definitions for a model with two factor interactions
           Nx = nchoosek (N, 2);
           TERMS = zeros (N + Nx, N);
           TERMS(1:N,:) = eye (N);
@@ -192,7 +193,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           if modeltype > N
             error ('anovan: the number of columns in the term definitions cannot exceed the number of columns of GROUP')
           endif
-          # Create term definitions for a full model
+          ## Create term definitions for a full model
           Nx = zeros (1, N-1);
           Nx = 0;
           for k = 1:N
@@ -205,13 +206,13 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           TERMS = cell2mat (TERMS);
       endswitch
     else
-      # Assume that the user provided a suitable matrix of term definitions
+      ## Assume that the user provided a suitable matrix of term definitions
       if (size (modeltype, 2) > N)
         error ('anovan: the number of columns in the term definitions cannot exceed the number of columns of GROUP')
       endif
       TERMS = logical (modeltype);
     endif
-    # Evaluate terms matrix
+    ## Evaluate terms matrix
     Ng = sum (TERMS, 2); 
     if any (diff (Ng) < 0)
       error ('anovan: the model terms matrix must list main effects above interactions')
@@ -223,15 +224,15 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       error ('anovan: all factors involved in interactions must have a main effect')  
     end
     
-    # Calculate total sum-of-squares
+    ## Calculate total sum-of-squares
     ct  = sum (Y)^2 / n;   % correction term
     sst = sum (Y.^2) - ct;
     dft = n - 1;
     
-    # Fit linear models, and calculate sums-of-squares for ANOVA
+    ## Fit linear models, and calculate sums-of-squares for ANOVA
     switch lower (sstype)
       case 1
-        # Type I sequential sums-of-squares (sstype = 1)
+        ## Type I sequential sums-of-squares (sstype = 1)
         R = sst;
         ss = zeros (Nt,1);
         [X, grpnames, nlevels, df, termcols] = make_design_matrix (GROUP, TERMS, n, Nm, Nx, Ng);
@@ -243,7 +244,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         endfor
         sstype_char = 'I';
       case 2
-        # Type II (hierarchical, or partially sequential) sums of squares
+        ## Type II (hierarchical, or partially sequential) sums of squares
         ss = zeros (Nt,1);
         [X, grpnames, nlevels, df, termcols]  = make_design_matrix (GROUP, TERMS, n, Nm, Nx, Ng);
         for j = 1:Nt
@@ -259,7 +260,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         [b, sse, resid] = lmfit (cell2mat (X), Y);
         sstype_char = 'II';
       case 3
-        # Type III (constrained, marginal or orthogonal) sums of squares
+        ## Type III (constrained, marginal or orthogonal) sums of squares
         ss = zeros (Nt, 1);
         [X, grpnames, nlevels, df, termcols] = make_design_matrix (GROUP, TERMS, n, Nm, Nx, Ng);
         [b, sse, resid] = lmfit (cell2mat (X), Y);
@@ -270,7 +271,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         endfor
         sstype_char = 'III';
       otherwise
-        # sstype 'h' not supported
+        ## sstype 'h' not supported
         error ('anovan: only sstype 1, 2 and 3 are supported')
     endswitch
     dfe = dft - sum (df);
@@ -281,8 +282,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     F = ms / mse;
     P = 1 - fcdf (F, df, dfe);
 
-    # Prepare stats output structure
-    # Note that the information provided by STATS is not sufficient for MATLAB's multcompare function
+    ## Prepare stats output structure
+    ## Note that the information provided by STATS is not sufficient for MATLAB's multcompare function
     STATS = struct ('source','anovan', ...
                     'resid', resid, ...
                     'coeffs', b, ...
@@ -313,7 +314,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                     'eta_squared', eta_sq,...
                     'partial_eta_squared', partial_eta_sq);
     
-    # Prepare cell array containing the ANOVA table (T)
+    ## Prepare cell array containing the ANOVA table (T)
     T = cell (Nt + 3, 7);
     T(1,:) = {'Source','Sum Sq.','d.f.','Mean Sq.','Eta Sq.','F','Prob>F'};
     T(2:Nt+1,2:7) = num2cell([ss df ms eta_sq F P]);
@@ -324,19 +325,19 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       T(i+1,1) = str(1:end-1);
     endfor
     
-    # Print ANOVA table 
+    ## Print ANOVA table 
     if strcmpi(display,'on')
-      # Get dimensions of the ANOVA table
+      ## Get dimensions of the ANOVA table
       [nrows, ncols] = size (T);
-      # Print table
+      ## Print table
       fprintf('\n%d-way ANOVA table (Type %s sums of squares):\n\n', Nm, sstype_char);
       fprintf('Source                    Sum Sq.    d.f.    Mean Sq.  Eta Sq.           F  Prob>F\n');
       fprintf('**********************************************************************************\n');  
       for i = 1:Nt
         str = T{i+1,1};
-        l = numel(str);  # Needed to truncate source term name at 21 characters
-        # Format and print the statistics for each model term
-        # Format F statistics and p-values in APA style
+        l = numel(str);  ## Needed to truncate source term name at 21 characters
+        ## Format and print the statistics for each model term
+        ## Format F statistics and p-values in APA style
         if (P(i) < 0.001)
           fprintf ('%-21s  %10.5g  %6d  %10.5g %8.3f %11.2f   <.001 \n', str(1:min(21,l)), T{i+1,2:end-1});
         elseif (P(i) < 1.0)
@@ -349,7 +350,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       fprintf('Total                  %10.5g  %6d \n', T{end,2:3});  
       fprintf('\n');
     elseif strcmp(display,'off')
-      # do nothing
+      ## do nothing
     else
       error ('anovan: unknown display option');    
     endif
@@ -359,9 +360,9 @@ endfunction
 
 function [X, levels, nlevels, df, termcols] = make_design_matrix (GROUP, TERMS, n, Nm, Nx, Ng)
   
-  # Returns a cell array of the design matrix for each term in the model
+  ## Returns a cell array of the design matrix for each term in the model
   
-  # Fetch factor levels from each column (i.e. factor) in GROUP
+  ## Fetch factor levels from each column (i.e. factor) in GROUP
   levels = cell (Nm, 1);
   gid = zeros (n, Nm);
   nlevels = zeros (Nm, 1);
@@ -375,8 +376,8 @@ function [X, levels, nlevels, df, termcols] = make_design_matrix (GROUP, TERMS, 
     df(j) = nlevels(j) - 1;
   endfor
  
-  # Create contrast matrix C and dummy variables X
-  # Prepare design matrix columns for the main effects
+  ## Create contrast matrix C and dummy variables X
+  ## Prepare design matrix columns for the main effects
   X = cell (1, 1 + Nm + Nx);
   X(1) = ones (n, 1);
   for j = 1:Nm
@@ -384,7 +385,7 @@ function [X, levels, nlevels, df, termcols] = make_design_matrix (GROUP, TERMS, 
     func = @(x) x(gid(:,j));
     X(1+j) = cell2mat (cellfun (func, num2cell (C, 1), 'UniformOutput', false));
   endfor
-  # If applicable, prepare design matrix columns for all the interaction terms
+  ## If applicable, prepare design matrix columns for all the interaction terms
   if (Nx > 0)
     row = TERMS((Ng > 1),:);
     for i = 1:Nx
@@ -403,8 +404,8 @@ endfunction
 
 function C = contr_sum (N)
 
-  # Create contrast matrix (of doubles) using deviation coding 
-  # These contrasts sum to 0
+  ## Create contrast matrix (of doubles) using deviation coding 
+  ## These contrasts sum to 0
   C =  cat (1, eye (N-1), - (ones (1,N-1)));
   
 endfunction
@@ -412,17 +413,17 @@ endfunction
 
 function [b, sse, resid] = lmfit (X, Y)
   
-  # Get model coefficients by solving the linear equation by QR decomposition 
-  # (this achieves the same thing as b = X \ Y)
-  # The number of free parameters (i.e. intercept + coefficients) is equal to n - dfe
+  ## Get model coefficients by solving the linear equation by QR decomposition 
+  ## (this achieves the same thing as b = X \ Y)
+  ## The number of free parameters (i.e. intercept + coefficients) is equal to n - dfe
   [Q, R] = qr (X, 0);
   b = R \ Q' * Y;
  
-  # Get fitted values 
+  ## Get fitted values 
   fit = X * b;
-  # Get residuals from the fit
+  ## Get residuals from the fit
   resid = Y - fit;
-  # Calculate residual sums-of-squares
+  ## Calculate residual sums-of-squares
   sse = sum ((resid).^2);
   
 endfunction
