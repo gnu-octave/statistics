@@ -19,10 +19,6 @@
 ## @deftypefnx {Function File} {[@var{P}, @var{T}, @var{STATS}, @var{TERMS}] =}  anovan (@var{Y}, @var{GROUP}, 'name', @var{value})
 ##
 ##  Perform a multi-way analysis of variance (ANOVA) with categorical predictors.
-##  When interpreting the results from an analysis of an unbalanced design, be  
-##  aware that this function calculates sum-of-squared residuals sequentially 
-##  from means that are weighted by sample size (i.e. 'sstype' = 1) and that
-##  the order of the factors (columns in @var{GROUP}) matters.
 ## 
 ##  Data is a single vector @var{Y} with groups specified by a corresponding matrix or 
 ##  cell array of group labels @var{GROUP}, where each column of @var{GROUP} has the same 
@@ -38,12 +34,15 @@
 ##  
 ##  @var{P} = anovan (@var{Y}, @var{GROUP}, 'model', modeltype)
 ##  The model to use (modeltype) can specified as one of the following:
-##  - modeltype = 'linear': compute n main effects
-##  - modeltype = 'interaction': compute n effects and n*(n-1) two-factor interactions
-##  - modeltype = 'full': compute the n main effects and interactions at all levels
-##  - an integer representing the maximum interaction order
-##  - an matrix of term definitions: each row is a term and each column is a factor
+##    modeltype = 'linear' to compute n main effects,
+##    modeltype = 'interaction' to compute n effects and n*(n-1) two-factor interactions,
+##    modeltype = 'full' to compute the n main effects and interactions at all levels,
+##    an integer representing the maximum interaction order, or
+##    a matrix of term definitions, where each row is a term and each column is a factor.
 ##    For example, a two-way ANOVA with interaction would be: [1 0; 0 1; 1 1]
+##
+##  @var{P} = anovan (@var{Y}, @var{GROUP}, 'sstype', sstype)
+##  The type of sum-of-squares 1, 2 or 3 (default = 3)
 ## 
 ##  @var{P} = anovan (@var{Y}, @var{GROUP}, 'varnames', varnames)
 ##  - optionally, a factor name for each column of GROUP can be provided in the 
@@ -76,7 +75,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     # Check supplied parameters
     modeltype = 'linear';
     display = 'on';
-    sstype = 1; # default: this is not optional (yet)
+    sstype = 3;
     varnames = [];
     for idx = 3:2:nargin
       name = varargin{idx-2};
@@ -165,30 +164,34 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     if isscalar (modeltype)
       TERMS = cell (modeltype,1);
       v = false (1,N);
-      if (modeltype == 1)
-        TERMS = eye (N);
-      elseif (modeltype == 2)
-        nx = nchoosek (N, 2);
-        TERMS = zeros (N + nx, N);
-        TERMS(1:N,:) = eye (N);
-        for j = 1:N
-          for i = j:N-1
-            TERMS(N+j+i-1,j) = 1;
-            TERMS(N+j+i-1,i+1) = 1;
+      switch lower (modeltype)
+        case 1
+          # Create term definitions for an additive linear model
+          TERMS = eye (N);
+        case 2
+          # Create term definitions for a model with two factor interactions
+          Nx = nchoosek (N, 2);
+          TERMS = zeros (N + Nx, N);
+          TERMS(1:N,:) = eye (N);
+          for j = 1:N
+            for i = j:N-1
+              TERMS(N+j+i-1,j) = 1;
+              TERMS(N+j+i-1,i+1) = 1;
+            endfor
           endfor
-        endfor
-      else
-        nx = zeros (1, N-1);
-        nx = 0;
-        for k=1:N
-          nx = nx + nchoosek(N,k);
-        endfor
-        for j = 1:modeltype
-          v(1:j) = 1;
-          TERMS(j) = flipud (unique (perms (v), 'rows'));
-        endfor
-        TERMS = cell2mat (TERMS);
-      endif
+        otherwise
+          # Create term definitions for a full model
+          Nx = zeros (1, N-1);
+          Nx = 0;
+          for k = 1:N
+            Nx = Nx + nchoosek(N,k);
+          endfor
+          for j = 1:modeltype
+            v(1:j) = 1;
+            TERMS(j) = flipud (unique (perms (v), 'rows'));
+          endfor
+          TERMS = cell2mat (TERMS);
+      endswitch
     else
       # Assume that the user provided a suitable matrix of term definitions
       if (size (modeltype, 2) > N)
@@ -197,35 +200,66 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       TERMS = logical (modeltype);
     endif
     # Evaluate terms matrix
-    ng = sum (TERMS, 2); 
-    if any (diff (ng) < 0)
+    Ng = sum (TERMS, 2); 
+    if any (diff (Ng) < 0)
       error ('anovan: the model terms matrix must list main effects above interactions')
     endif
-    nm = sum (ng == 1);
-    nx = sum (ng > 1);
-    nt = nm + nx;
-
+    Nm = sum (Ng == 1);
+    Nx = sum (Ng > 1);
+    Nt = Nm + Nx;
+    if any (any (TERMS(1:Nm,:)) ~= any (TERMS))
+      error ('anovan: all factors involved in interactions must have a main effect')  
+    end
+    
     # Calculate total sum-of-squares
     ct  = sum (Y)^2 / n;   % correction term
     sst = sum (Y.^2) - ct;
     dft = n - 1;
-
+    
     # Fit linear models, and calculate sums-of-squares for ANOVA
     switch lower (sstype)
       case 1
         # Type I sequential sums-of-squares (sstype = 1)
         R = sst;
-        ss = zeros (nt,1);
-        [X, grpnames, nlevels, df, termcols] = make_design_matrix (GROUP, TERMS, n, nm, nx, ng);
-        for j = 1:nt
+        ss = zeros (Nt,1);
+        [X, grpnames, nlevels, df, termcols] = make_design_matrix (GROUP, TERMS, n, Nm, Nx, Ng);
+        for j = 1:Nt
           XS = cell2mat (X(1:j+1));
           [b, sse, resid] = lmfit (XS, Y);
           ss(j) = R - sse;
           R = sse;
         endfor
+        sstype_char = 'I';
+      case 2
+        # Type II (hierarchical, or partially sequential) sums of squares
+        ss = zeros (Nt,1);
+        [X, grpnames, nlevels, df, termcols]  = make_design_matrix (GROUP, TERMS, n, Nm, Nx, Ng);
+        for j = 1:Nt
+          i = find (TERMS(j,:)); 
+          k = cat (1, 1, 1 + find (any (~TERMS(:,i),2)));
+          XS = cell2mat (X(k)); 
+          [jnk, R1] = lmfit (XS, Y);
+          k = cat (1, j+1, k);
+          XS = cell2mat (X(k));
+          [jnk, R2] = lmfit (XS, Y);
+          ss(j) = R1 - R2;
+        end
+        [b, sse, resid] = lmfit (cell2mat (X), Y);
+        sstype_char = 'II';
+      case 3
+        # Type III (constrained, marginal or orthogonal) sums of squares
+        ss = zeros (Nt, 1);
+        [X, grpnames, nlevels, df, termcols] = make_design_matrix (GROUP, TERMS, n, Nm, Nx, Ng);
+        [b, sse, resid] = lmfit (cell2mat (X), Y);
+        for j = 1:Nt
+          XS = cell2mat (X(1:Nt+1 ~= j+1));
+          [jnk, R, resid] = lmfit (XS, Y);
+          ss(j) = R - sse;
+        endfor
+        sstype_char = 'III';
       otherwise
-        # sstype 2, 3, or 'h' not supported (yet)
-        error ('anovan: only sstype = 1 is currently supported')
+        # sstype 'h' not supported
+        error ('anovan: only sstype 1, 2 and 3 are supported')
     endswitch
     dfe = dft - sum (df);
     ms = ss ./ df;
@@ -264,12 +298,12 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                     'rtnames', []);          # Not used since 'random' argument name not supported
     
     # Prepare cell array containing the ANOVA table (T)
-    T = cell (nt + 3, 6);
+    T = cell (Nt + 3, 6);
     T(1,:) = {'Source','Sum Sq.','d.f.','Mean Sq.','F','Prob>F'};
-    T(2:nt+1,2:6) = num2cell([ss df ms F P]);
+    T(2:Nt+1,2:6) = num2cell([ss df ms F P]);
     T(end-1,1:4) = {'Error',sse,dfe,mse};
     T(end,1:3) = {'Total',sst,dft};
-    for i=1:nt
+    for i = 1:Nt
       str = sprintf('%s*',varnames{find(TERMS(i,:))});
       T(i+1,1) = str(1:end-1);
     endfor
@@ -279,10 +313,10 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       # Get dimensions of the ANOVA table
       [nrows, ncols] = size (T);
       # Print table
-      fprintf('\n%d-way ANOVA Table:\n\n', nm);
+      fprintf('\n%d-way ANOVA table (Type %s sums of squares):\n\n', Nm, sstype_char);
       fprintf('Source                    Sum Sq.    d.f.    Mean Sq.           F  Prob>F\n');
       fprintf('*************************************************************************\n');  
-      for i = 1:nt
+      for i = 1:Nt
         str = T{i+1,1};
         l = numel(str);  # Needed to truncate source term name at 21 characters
         # Format and print the statistics for each model term
@@ -307,17 +341,17 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 endfunction
 
 
-function [X, levels, nlevels, df, termcols] = make_design_matrix (GROUP, TERMS, n, nm, nx, ng)
+function [X, levels, nlevels, df, termcols] = make_design_matrix (GROUP, TERMS, n, Nm, Nx, Ng)
   
   # Returns a cell array of the design matrix for each term in the model
   
   # Fetch factor levels from each column (i.e. factor) in GROUP
-  levels = cell (nm, 1);
-  gid = zeros (n, nm);
-  nlevels = zeros (nm, 1);
-  df = zeros (nm + nx, 1);
-  termcols = ones (1 + nm + nx, 1);
-  for j = 1:nm
+  levels = cell (Nm, 1);
+  gid = zeros (n, Nm);
+  nlevels = zeros (Nm, 1);
+  df = zeros (Nm + Nx, 1);
+  termcols = ones (1 + Nm + Nx, 1);
+  for j = 1:Nm
     m = find (TERMS(j,:));
     [levels{j}, jnk, gid(:,j)] = unique (GROUP (:,m), 'legacy');
     nlevels(j) = numel (levels{j});
@@ -327,23 +361,23 @@ function [X, levels, nlevels, df, termcols] = make_design_matrix (GROUP, TERMS, 
  
   # Create contrast matrix C and dummy variables X
   # Prepare design matrix columns for the main effects
-  X = cell (1, 1 + nm + nx);
+  X = cell (1, 1 + Nm + Nx);
   X(1) = ones (n, 1);
-  for j = 1:nm
+  for j = 1:Nm
     C = contr_sum (nlevels(j));
     func = @(x) x(gid(:,j));
     X(1+j) = cell2mat (cellfun (func, num2cell (C, 1), 'UniformOutput', false));
   endfor
   # If applicable, prepare design matrix columns for all the interaction terms
-  if (nx > 0)
-    row = TERMS((ng > 1),:);
-    for i = 1:nx
+  if (Nx > 0)
+    row = TERMS((Ng > 1),:);
+    for i = 1:Nx
       I = 1 + find (row(i,:));
-      df(nm+i) = prod (df(I-1));
-      termcols(1+nm+i) = prod (df(I-1) + 1);
-      X{1+nm+i} = X{1};
+      df(Nm+i) = prod (df(I-1));
+      termcols(1+Nm+i) = prod (df(I-1) + 1);
+      X{1+Nm+i} = X{1};
       for k = 1:numel(I)
-        X(1+nm+i) = bsxfun (@times, X{1+nm+i}, X{I(k)});
+        X(1+Nm+i) = bsxfun (@times, X{1+Nm+i}, X{I(k)});
       endfor
     endfor
   endif
@@ -360,7 +394,7 @@ function C = contr_sum (N)
 endfunction
 
 
-function [b, sse, resid] = lmfit (X,Y)
+function [b, sse, resid] = lmfit (X, Y)
   
   # Get model coefficients by solving the linear equation by QR decomposition 
   # (this achieves the same thing as b = X \ Y)
@@ -387,20 +421,37 @@ endfunction
 %! gender = {'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f'...
 %!           'm' 'm' 'm' 'm' 'm' 'm' 'm' 'm' 'm' 'm'}';
 %! degree = [1 1 1 1 1 1 1 1 0 0 0 0 1 1 1 0 0 0 0 0 0 0]';
-%! [P, T] = anovan (salary,{gender, degree}, 'model', 'interaction', 'sstype', 1, 'display','off');
+%! [P, T] = anovan (salary,{gender, degree}, 'model', 'full', 'sstype', 1, 'display','off');
 %! assert (P(1), 0.747462549227232, 1e-12);
 %! assert (P(2), 1.03809316857694e-08, 1e-12);
 %! assert (P(3), 0.523689833702691, 1e-12);
 %! assert (T{2,2}, 0.296969696969699, 1e-12);
 %! assert (T{3,2}, 272.391841491841, 1e-12);
 %! assert (T{4,2}, 1.17482517482512, 1e-12);
-%! [P, T] = anovan (salary,{degree, gender}, 'model', 'interaction', 'sstype', 1, 'display','off');
+%! assert (T{5,2}, 50.0000000000001, 1e-12);
+%! [P, T] = anovan (salary,{degree, gender}, 'model', 'full', 'sstype', 1, 'display','off');
 %! assert (P(1), 2.53445097305047e-08, 1e-12);
 %! assert (P(2), 0.00388133678528749, 1e-12);
 %! assert (P(3), 0.523689833702671, 1e-12);
 %! assert (T{2,2}, 242.227272727273, 1e-12);
 %! assert (T{3,2}, 30.4615384615384, 1e-12);
 %! assert (T{4,2}, 1.17482517482523, 1e-12);
-
+%! assert (T{5,2}, 50.0000000000001, 1e-12);
+%! [P, T] = anovan (salary,{gender, degree}, 'model', 'full', 'sstype', 2, 'display','off');
+%! assert (P(1), 0.00388133678528743, 1e-12);
+%! assert (P(2), 1.03809316857694e-08, 1e-12);
+%! assert (P(3), 0.523689833702691, 1e-12);
+%! assert (T{2,2}, 30.4615384615385, 1e-12);
+%! assert (T{3,2}, 272.391841491841, 1e-12);
+%! assert (T{4,2}, 1.17482517482512, 1e-12);
+%! assert (T{5,2}, 50.0000000000001, 1e-12);
+%! [P, T] = anovan (salary,{gender, degree}, 'model', 'full', 'sstype', 3, 'display','off');
+%! assert (P(1), 0.00442898146583742, 1e-12);
+%! assert (P(2), 1.30634252053587e-08, 1e-12);
+%! assert (P(3), 0.523689833702691, 1e-12);
+%! assert (T{2,2}, 29.3706293706294, 1e-12);
+%! assert (T{3,2}, 264.335664335664, 1e-12);
+%! assert (T{4,2}, 1.17482517482512, 1e-12);
+%! assert (T{5,2}, 50.0000000000001, 1e-12);
 
 
