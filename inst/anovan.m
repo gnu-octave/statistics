@@ -19,20 +19,19 @@
 ## @deftypefn {Function File} [@var{P}, @var{T}, @var{STATS}, @var{TERMS}] = anovan (@var{Y}, @var{GROUP})
 ## @deftypefnx {Function File} [@var{P}, @var{T}, @var{STATS}, @var{TERMS}] = anovan (@var{Y}, @var{GROUP}, "name", @var{value})
 ##
-##  Perform a multi-way analysis of variance (ANOVA) with categorical predictors.
-##  A range of experimental designs can be analysed with anovan, including fully 
-##  crossed designs using additive or interaction models, or randomized block
-##  (or within-subjects) designs. Examples can be found in the tests listed at 
-##  the end of the function (.m) file. The algorithms used make anovan suitable 
-##  for balanced or unbalanced designs. 
+## Perform a multi (N)-way analysis of variance (ANOVA) to evaluate the effect  
+## of a categorical predictor, or multiple predictors, on a continuous outcome. 
+## The algorithms used make anovan suitable for balanced or unbalanced designs. 
+## A range of experimental designs can be analysed using @code{anovan}, Examples
+## of function usage can be found by entering the command @code{demo anovan}. 
+##
 ## 
-##  Data is a single vector @var{Y} with groups specified by a corresponding 
-##  matrix or cell array of group labels @var{GROUP}, where each column of 
-##  @var{GROUP} has the same number of rows as @var{Y}. For example, if 
-##  @var{Y} = [1.1;1.2]; @var{GROUP} = [1,2,1; 1,5,2]; then observation 1.1 was 
-##  measured under conditions 1,2,1 and observation 1.2 was measured under 
-##  conditions 1,5,2. Note that groups do not need to be sequentially numbered.
-## 
+## Data is a single vector @var{Y} with groups specified by a corresponding 
+## matrix or cell array of group labels @var{GROUP}, where each column of 
+## @var{GROUP} has the same number of rows as @var{Y}. For example, if 
+## @var{Y} = [1.1;1.2]; @var{GROUP} = [1,2,1; 1,5,2]; then observation 1.1 was 
+## measured under conditions 1,2,1 and observation 1.2 was measured under 
+## conditions 1,5,2. Note that groups do not need to be sequentially numbered.
 ##
 ## @code{anovan} can take a number of optional parameters as name-value pairs.
 ##
@@ -105,6 +104,7 @@
 ## 
 ## [@var{P}, @var{T}, @var{STATS}, @var{TERMS}] = anovan (@dots{}) returns the
 ## model term definitions.
+##
 ##
 ## @end deftypefn
 
@@ -356,7 +356,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     # Prepare cell array containing the ANOVA table (T)
     T = cell (Nt + 3, 7);
     T(1,:) = {"Source","Sum Sq.","d.f.","Mean Sq.","Eta Sq.","F","Prob>F"};
-    T(2:Nt+1,2:7) = num2cell([ss df ms eta_sq F P]);
+    T(2:Nt+1,2:7) = num2cell([ss df ms partial_eta_sq F P]);
     T(end-1,1:4) = {"Error",sse,dfe,mse};
     T(end,1:3) = {"Total",sst,dft};
     for i = 1:Nt
@@ -370,23 +370,23 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       [nrows, ncols] = size (T);
       # Print table
       fprintf("\n%d-way ANOVA table (Type %s sums of squares):\n\n", Nm, sstype_char);
-      fprintf("Source                    Sum Sq.    d.f.    Mean Sq.  Eta Sq.           F  Prob>F\n");
-      fprintf("**********************************************************************************\n");  
+      fprintf("Source                   Sum Sq.    d.f.    Mean Sq.  R Sq.            F  Prob>F\n");
+      fprintf("********************************************************************************\n");  
       for i = 1:Nt
         str = T{i+1,1};
-        l = numel(str);  # Needed to truncate source term name at 21 characters
+        l = numel(str);  # Needed to truncate source term name at 18 characters
         # Format and print the statistics for each model term
         # Format F statistics and p-values in APA style
         if (P(i) < 0.001)
-          fprintf ("%-21s  %10.5g  %6d  %10.5g %8.3f %11.2f   <.001 \n", str(1:min(21,l)), T{i+1,2:end-1});
+          fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f   <.001 \n", str(1:min(18,l)), T{i+1,2:end-1});
         elseif (P(i) < 1.0)
-          fprintf ("%-21s  %10.5g  %6d  %10.5g %8.3f %11.2f    .%03u \n", str(1:min(21,l)), T{i+1,2:end-1}, round (P(i) * 1e+03));
+          fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f    .%03u \n", str(1:min(18,l)), T{i+1,2:end-1}, round (P(i) * 1e+03));
         else
-          fprintf ("%-21s  %10.5g  %6d  %10.5g %8.3f %11.2f   1.000 \n", str(1:min(21,l)), T{i+1,2:end-1}); 
+          fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f   1.000 \n", str(1:min(18,l)), T{i+1,2:end-1}); 
         endif
       endfor
-      fprintf("Error                  %10.5g  %6d  %10.5g\n", T{end-1,2:4});               
-      fprintf("Total                  %10.5g  %6d \n", T{end,2:3});  
+      fprintf("Error                 %10.5g  %6d  %10.5g\n", T{end-1,2:4});               
+      fprintf("Total                 %10.5g  %6d \n", T{end,2:3});  
       fprintf("\n");
     elseif strcmp(display,"off")
       # do nothing
@@ -468,32 +468,125 @@ function [b, sse, resid] = lmfit (X, Y)
 endfunction
 
 %!demo
+%!
+%! # Two-sample unpaired test on independent samples (equivalent to Student's 
+%! # t-test). Note that the t-statistic can be obtained by taking the square 
+%! # root of the reported F statistic. In this example, t = sqrt (1.44) = 1.20.
+%!
+%! score = [54 23 45 54 45 43 34 65 77 46 65]';
+%! gender = {"male" "male" "male" "male" "male" "female" "female" "female" ...
+%!           "female" "female" "female"}'; 
+%!
+%! [P, T] = anovan (score, gender, "display", "on", "varnames", "gender");
+
+%!demo
+%!
+%! # Two-sample paired test on dependent or matched samples equivalent to a 
+%! # paired t-test. As for the first example, the t-statistic can be obtained by 
+%! # taking the square root of the reported F statistic.
+%!
+%! score = [4.5 5.6; 3.7 6.4; 5.3 6.4; 5.4 6.0; 3.9 5.7]';
+%! treatment = {"before" "after"; "before" "after"; "before" "after"; 
+%!              "before" "after"; "before" "after"}';
+%! subject = {"GS" "GS"; "JM" "JM"; "HM" "HM"; "JW" "JW"; "PS" "PS"}';
+%!
+%! [P, T] = anovan (score(:), {treatment(:), subject(:)}, "display", "on",...
+%!                  "sstype", 2, "varnames", {"treatment", "subject"});
+
+%!demo
+%!
+%! # One-way ANOVA on the data from a study on the strength of structural beams, 
+%! # in Hogg and Ledolter (1987) Engineering Statistics. New York: MacMillan
+%!
+%! strength = [82 86 79 83 84 85 86 87 74 82 ...
+%!            78 75 76 77 79 79 77 78 82 79]';
+%! alloy = {"st","st","st","st","st","st","st","st",...
+%!          "al1","al1","al1","al1","al1","al1",...
+%!          "al2","al2","al2","al2","al2","al2"}';
+%!
+%! [P, T] = anovan (strength, alloy, "display", "on", "varnames", "alloy");
+
+%!demo
+%!
+%! # One-way repeated measures ANOVA on the data from a study on the number of 
+%! # words recalled by 10 subjects for three time condtions, in Loftus & Masson 
+%! # (1994) Psychon Bull Rev. 1(4):476-490, Table 2
+%!
+%! words = [10 13 13; 6 8 8; 11 14 14; 22 23 25; 16 18 20; ... 
+%!          15 17 17; 1 1 4; 12 15 17;  9 12 12;  8 9 12];
+%! seconds = [1 2 5; 1 2 5; 1 2 5; 1 2 5; 1 2 5; ...
+%!            1 2 5; 1 2 5; 1 2 5; 1 2 5; 1 2 5;];
+%! subject = [ 1  1  1;  2  2  2;  3  3  3;  4  4  4;  5  5  5; ...
+%!             6  6  6;  7  7  7;  8  8  8;  9  9  9; 10 10 10];
+%!
+%! [P, T] = anovan (words(:), {seconds(:), subject(:)}, "display", "on",...
+%!                  "sstype", 2, "varnames", {"seconds", "subject"});
+
+%!demo
+%!
+%! # Balanced two-way ANOVA with interaction on the data from a study of popcorn 
+%! # brands and popper types, in Hogg and Ledolter (1987) Engineering Statistics. 
+%! # New York: MacMillan
+%!
+%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
+%! brands = {"Gourmet", "National", "Generic"; ...
+%!           "Gourmet", "National", "Generic"; ...
+%!           "Gourmet", "National", "Generic"; ...
+%!           "Gourmet", "National", "Generic"; ...
+%!           "Gourmet", "National", "Generic"; ...
+%!           "Gourmet", "National", "Generic"};
+%! popper = {"oil", "oil", "oil"; "oil", "oil", "oil"; "oil", "oil", "oil"; ...
+%!           "air", "air", "air"; "air", "air", "air"; "air", "air", "air"};
+%!
+%! [P, T] = anovan (popcorn(:), {brands(:), popper(:)}, "display", "on",...
+%!                  "model", "full", "varnames", {"brands", "popper"});
+
+%!demo
+%!
+%! # Unbalanced two-way ANOVA (2x2) on the data from a study on the effects of
+%! # gender and having a college degree on salaries of company employees,  
+%! # in Maxwell, Delaney and Kelly (2018): Chapter 7, Table 15
+%!
 %! salary = [24 26 25 24 27 24 27 23 15 17 20 16, ...
 %!           25 29 27 19 18 21 20 21 22 19]';
 %! gender = {"f" "f" "f" "f" "f" "f" "f" "f" "f" "f" "f" "f"...
 %!           "m" "m" "m" "m" "m" "m" "m" "m" "m" "m"}';
 %! degree = [1 1 1 1 1 1 1 1 0 0 0 0 1 1 1 0 0 0 0 0 0 0]';
-%! [P, T] = anovan (salary,{gender, degree}, "model", "interaction", ...
-%!                  "sstype", 3, "display", "on");
+%!
+%! [P, T] = anovan (salary, {gender, degree}, "model", "full", ...
+%!                  "sstype", 3, "display", "on", "varnames", ...
+%!                  {"gender", "degree"});
 
 %!demo
-%! milk = {"yes" "no" "no" "yes" "yes" "no" "yes" "yes" "yes" ... 
-%!         "no" "no" "yes" "no" "no" "no" "no" "no" "yes"}';
+%!
+%! # Unbalanced two-way ANOVA (3x2) on the data from a study of the effect of 
+%! # adding sugar and/or milk on the tendency of coffee to make people babble, 
+%! # in from Navarro (2019): 16.10
+%!
 %! sugar = {"real" "fake" "fake" "real" "real" "real" "none" "none" "none" ...
 %!          "fake" "fake" "fake" "real" "real" "real" "none" "none" "fake"}';
+%! milk = {"yes" "no" "no" "yes" "yes" "no" "yes" "yes" "yes" ... 
+%!         "no" "no" "yes" "no" "no" "no" "no" "no" "yes"}';
 %! babble = [4.6 4.4 3.9 5.6 5.1 5.5 3.9 3.5 3.7... 
 %!           5.6 4.7 5.9 6.0 5.4 6.6 5.8 5.3 5.7]';
+%!
 %! [P, T] = anovan (babble, {sugar, milk}, "model", "full", "sstype", 3,...
-%!                 "display","on");
+%!                 "display", "on", "varnames", {"sugar", "milk"});
 
 %!demo
+%!
+%! # Balanced three-way ANOVA (3x2x2) on the data from a study of the effects 
+%! # of three different drugs, biofeedback and diet on patient blood pressure, 
+%! # from Maxwell, Delaney and Kelly (2018): Chapter 8, Table 12
+%!
 %! drug = {"X" "X" "X" "X" "X" "X" "X" "X" "X" "X" "X" "X" ... 
 %!         "X" "X" "X" "X" "X" "X" "X" "X" "X" "X" "X" "X";
 %!         "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" ...
 %!         "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y";
 %!         "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" ...
 %!         "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z"};
-%! biofeedback = [1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0;
+%! feedback = [1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0;
 %!                1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0;
 %!                1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0];
 %! diet = [0 0 0 0 0 0 1 1 1 1 1 1 0 0 0 0 0 0 1 1 1 1 1 1
@@ -505,28 +598,28 @@ endfunction
 %!       189 194 217 206 199 195 171 173 196 199 180 203;
 %!       180 187 199 170 204 194 162 184 183 156 180 173 ...
 %!       202 228 190 206 224 204 205 199 170 160 179 179];
-%! [P, T] = anovan (BP(:), {drug(:), biofeedback(:), diet(:)}, ...
-%!                 "model", "full", "sstype", 3, "display","on");
+%!
+%! [P, T] = anovan (BP(:), {drug(:), feedback(:), diet(:)}, ...
+%!                 "model", "full", "sstype", 3, "display", "on", ...
+%!                 "varnames", {"drug", "feedback", "diet"});
 
 %!demo
+%!
+%! # Balanced three-way ANOVA (2x2x2) with one of the factors being a blocking
+%! # factor. The data is from a randomized block design study on the effects 
+%! # of antioxidant treatment on glutathione-S-transferase (GST) levels in 
+%! # different mouse strains, from Festing (2014), ILAR Journal, 55(3):427-476
+%!
 %! measurement = [444 614 423 625 408  856 447 719 ...
 %!                764 831 586 782 609 1002 606 766]';
 %! block = [1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2]';
 %! strain= {"NIH","NIH","BALB/C","BALB/C","A/J","A/J","129/Ola","129/Ola",...
 %!          "NIH","NIH","BALB/C","BALB/C","A/J","A/J","129/Ola","129/Ola"}';
 %! treatment={"C" "T" "C" "T" "C" "T" "C" "T" "C" "T" "C" "T" "C" "T" "C" "T"}';
-%! [P, T] = anovan (measurement/10,{block,strain,treatment}, ...
-%!                  "model", [1 0 0;0 1 0;0 0 1;0 1 1], "display","on");
-
-%!demo
-%! words = [10 13 13; 6 8 8; 11 14 14; 22 23 25; 16 18 20; ... 
-%!          15 17 17; 1 1 4; 12 15 17;  9 12 12;  8 9 12];
-%! subject = [ 1  1  1;  2  2  2;  3  3  3;  4  4  4;  5  5  5; ...
-%!             6  6  6;  7  7  7;  8  8  8;  9  9  9; 10 10 10];
-%! seconds = [1 2 5; 1 2 5; 1 2 5; 1 2 5; 1 2 5; ...
-%!            1 2 5; 1 2 5; 1 2 5; 1 2 5; 1 2 5;];
-%! [P, T] = anovan (words(:),{seconds(:),subject(:)},"model", "linear", ...
-%!                  "display","on","varnames",{"seconds","subject"});
+%!
+%! [P, T] = anovan (measurement/10, {block, strain, treatment}, "sstype", 2, ...
+%!                  "model", [1 0 0;0 1 0;0 0 1;0 1 1], "display", "on", ...
+%!                  "varnames", {"block", "strain", "treatment"});
 
 ## Test 1: Unbalanced two-way ANOVA (2x2) from Maxwell, Delaney and Kelly (2018): Chapter 7, Table 15
 ## https://designingexperiments.com/csv-chapter-data/
@@ -574,10 +667,10 @@ endfunction
 ## https://github.com/djnavarro/rbook/blob/master/original/data/coffee.Rdata
 ## Test compares to results in matlab 
 %!test
-%! milk = {"yes" "no" "no" "yes" "yes" "no" "yes" "yes" "yes" ... 
-%!         "no" "no" "yes" "no" "no" "no" "no" "no" "yes"}';
 %! sugar = {"real" "fake" "fake" "real" "real" "real" "none" "none" "none" ...
 %!          "fake" "fake" "fake" "real" "real" "real" "none" "none" "fake"}';
+%! milk = {"yes" "no" "no" "yes" "yes" "no" "yes" "yes" "yes" ... 
+%!         "no" "no" "yes" "no" "no" "no" "no" "no" "yes"}';
 %! babble = [4.6 4.4 3.9 5.6 5.1 5.5 3.9 3.5 3.7... 
 %!           5.6 4.7 5.9 6.0 5.4 6.6 5.8 5.3 5.7]';
 %! [P, T] = anovan (babble, {sugar, milk}, "model", "full", "sstype", 1, "display","off");
@@ -623,9 +716,9 @@ endfunction
 %!         "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y";
 %!         "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" ...
 %!         "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z"};
-%! biofeedback = [1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0;
-%!                1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0;
-%!                1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0];
+%! feedback = [1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0;
+%!             1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0;
+%!             1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0];
 %! diet = [0 0 0 0 0 0 1 1 1 1 1 1 0 0 0 0 0 0 1 1 1 1 1 1
 %!         0 0 0 0 0 0 1 1 1 1 1 1 0 0 0 0 0 0 1 1 1 1 1 1
 %!         0 0 0 0 0 0 1 1 1 1 1 1 0 0 0 0 0 0 1 1 1 1 1 1];
@@ -635,7 +728,7 @@ endfunction
 %!       189 194 217 206 199 195 171 173 196 199 180 203;
 %!       180 187 199 170 204 194 162 184 183 156 180 173 ...
 %!       202 228 190 206 224 204 205 199 170 160 179 179];
-%! [P, T] = anovan (BP(:), {drug(:), biofeedback(:), diet(:)}, "model", "full", "sstype", 3, "display","off");
+%! [P, T] = anovan (BP(:), {drug(:), feedback(:), diet(:)}, "model", "full", "sstype", 3, "display","off");
 %! assert (P(1), 5.0186242618449e-05,  1e-09);
 %! assert (P(2), 0.00061507193609995,  1e-09);
 %! assert (P(3), 3.05330772859274e-07,  1e-09);
@@ -685,12 +778,10 @@ endfunction
 %!             6  6  6;  7  7  7;  8  8  8;  9  9  9; 10 10 10];
 %! seconds = [1 2 5; 1 2 5; 1 2 5; 1 2 5; 1 2 5; ...
 %!            1 2 5; 1 2 5; 1 2 5; 1 2 5; 1 2 5;];
-%! [P, T] = anovan (words(:),{seconds(:),subject(:)},"model", "linear", "display","off","varnames",{"seconds","subject"});
+%! [P, T] = anovan (words(:),{seconds(:),subject(:)},"model","linear","sstype",2,"display","off","varnames",{"seconds","subject"});
 %! assert (P(1), 1.51865926758752e-07,  1e-09);
 %! assert (P(2), 1.49150337808586e-15,  1e-09);
 %! assert (T{2,2}, 52.2666666666667,  1e-09);
 %! assert (T{3,2}, 942.533333333333,  1e-09);
 %! assert (T{4,2}, 11.0666666666667,  1e-09);
-
-
 
