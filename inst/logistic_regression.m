@@ -24,14 +24,14 @@
 ## @var{x}.  Then
 ##
 ## @example
-## [theta, beta] = logistic_regression (y, x)
+## [@var{theta}, @var{beta}] = logistic_regression (@var{y}, @var{x})
 ## @end example
 ##
 ## @noindent
 ## fits the model
 ##
 ## @example
-## logit (gamma_i (x)) = theta_i - beta' * x,   i = 1 @dots{} k-1
+## logit (gamma_i (@var{x})) = @var{x} * @var{beta} + @var{theta}_i,   i = 1 @dots{} k-1
 ## @end example
 ##
 ## The number of ordinal categories, @var{k}, is taken to be the number
@@ -39,15 +39,15 @@
 ## @var{y} is binary and the model is ordinary logistic regression.  The
 ## matrix @var{x} is assumed to have full column rank.
 ##
-## Given @var{y} only, @code{theta = logistic_regression (y)}
+## Given @var{y} only, @code{@var{theta} = logistic_regression (@var{y})}
 ## fits the model with baseline logit odds only.
 ##
 ## The full form is
 ##
 ## @example
 ## @group
-## [theta, beta, dev, dl, d2l, gamma]
-##    = logistic_regression (y, x, print, theta, beta)
+## [@var{theta}, @var{beta}, @var{dev}, @var{dl}, @var{d2l}, @var{gamma}]
+##    = logistic_regression (@var{y}, @var{x}, @var{print}, @var{theta}, @var{beta})
 ## @end group
 ## @end example
 ##

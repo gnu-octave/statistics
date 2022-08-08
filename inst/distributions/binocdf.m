@@ -99,7 +99,7 @@ endfunction
 %!assert (binocdf (x, 2*[0 -1 NaN 1.1 1], 0.5), [0 NaN NaN NaN 1])
 %!assert (binocdf (x, 2, 0.5*[0 -1 NaN 3 1]), [0 NaN NaN NaN 1])
 %!assert (binocdf ([x(1:2) NaN x(4:5)], 2, 0.5), [y(1:2) NaN y(4:5)], eps)
-%!assert (binocdf(99, 100, 0.1, 'upper'), 1e-100, 1e-112);
+%!assert (binocdf (99, 100, 0.1, 'upper'), 1e-100, 1e-112);
 %!assert (binocdf (x, 2*ones (1,5), 0.5*ones (1,5), 'upper'), y1, eps)
 %!assert (binocdf (x, 2, 0.5*ones (1,5), 'upper'), y1, eps)
 %!assert (binocdf (x, 2*ones (1,5), 0.5, 'upper'), y1, eps)
