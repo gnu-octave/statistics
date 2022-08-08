@@ -1,5 +1,6 @@
 ## Copyright (C) 2022 Andrew Penn <A.C.Penn@sussex.ac.uk>
 ## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2021 Christian Scholz
 ## Copyright (C) 2003-2005 Andy Adler <adler@ncf.ca>
 ##
 ## This program is free software; you can redistribute it and/or modify it under
@@ -21,8 +22,8 @@
 ##
 ## Perform a multi (N)-way analysis of variance (ANOVA) to evaluate the effect  
 ## of a categorical predictor, or multiple predictors, on a continuous outcome. 
-## The algorithms used make anovan suitable for balanced or unbalanced designs. 
-## A range of experimental designs can be analysed using @code{anovan}, Examples
+## The algorithms used make @code{anovan} suitable for balanced or unbalanced designs. 
+## A range of experimental designs can be analysed using @code{anovan}. Examples
 ## of function usage can be found by entering the command @code{demo anovan}. 
 ##
 ## 
@@ -109,7 +110,7 @@
 ## @end deftypefn
 
 ##  Author: Andrew Penn <a.c.penn@sussex.ac.uk>
-##  Includes some code by: Andy Adler <adler@ncf.ca> and Christian Scholz
+##  Includes some code by: Andy Adler <adler@ncf.ca>, Christian Scholz and Andreas Bertsatos
 ## 
 
 function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
@@ -126,33 +127,27 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     for idx = 3:2:nargin
       name = varargin{idx-2};
       value = varargin{idx-1};
-      if strcmpi (name, "model")
-        modeltype = value;
-      elseif strcmpi (name, "varnames")
-        varnames = value;
-      elseif strcmpi (name, "display")
-        display = value;   
-      elseif strcmpi (name, "sstype") 
-        sstype = value;
-      else 
-        error (sprintf("anovan: parameter %s is not supported", name));
-      endif
+      switch lower (name)
+        case "model"
+          modeltype = value;
+        case "varnames"
+          varnames = value;
+        case "display"
+          display = value;   
+        case "sstype"
+          sstype = value;
+        otherwise 
+          error (sprintf("anovan: parameter %s is not supported", name));
+      endswitch
     endfor
     
-    # Remove NaN or non-finite observations
-    excl = logical (isnan(Y) + isinf(Y));
-    Y(excl) = [];
-    GROUP(excl,:) = [];
-    n = numel (Y);
+    # Accomodate for different formats for GROUP 
+    # GROUP can be a matrix of numeric identifiers of a cell arrays of strings or numeric idenitiers
+    N = size (GROUP,2); # number of anova "ways"
+    n = numel (Y);      # total number of observations
     if (prod (size (Y)) ~= n)
       error ("anovan: for ""anovan (Y, GROUP)"", Y must be a vector");
     endif
-    if (size (Y, 2) > 1)
-      Y = Y(:);
-    endif
-    N = size (GROUP,2); # number of anova "ways"
-    # Accomodate for different formats for GROUP 
-    # GROUP can be a matrix of numeric identifiers of a cell arrays of strings or numeric idenitiers
     if iscell(GROUP)
       if (size(GROUP, 1) == 1)
         for k = 1:N
@@ -195,6 +190,15 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     if (nvarnames ~= N)
       error ("anovan: number of variable names is not equal to number of grouping variables");
     endif
+    
+    # Remove NaN or non-finite observations
+    excl = logical (isnan(Y) + isinf(Y));
+    Y(excl) = [];
+    GROUP(excl,:) = [];
+    if (size (Y, 1) == 1)
+      Y = Y.';         # if Y is a row vector, make it a column vector
+    endif
+    n = numel (Y);     # recalculate total number of observations
 
     # Evaluate model type input argument and create terms matrix if not provided
     msg = "anovan: the number of columns in the term definitions cannot exceed the number of columns of GROUP";
@@ -365,34 +369,35 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     endfor
     
     # Print ANOVA table 
-    if strcmpi(display,"on")
-      # Get dimensions of the ANOVA table
-      [nrows, ncols] = size (T);
-      # Print table
-      fprintf("\n%d-way ANOVA table (Type %s sums of squares):\n\n", Nm, sstype_char);
-      fprintf("Source                   Sum Sq.    d.f.    Mean Sq.  R Sq.            F  Prob>F\n");
-      fprintf("********************************************************************************\n");  
-      for i = 1:Nt
-        str = T{i+1,1};
-        l = numel(str);  # Needed to truncate source term name at 18 characters
-        # Format and print the statistics for each model term
-        # Format F statistics and p-values in APA style
-        if (P(i) < 0.001)
-          fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f   <.001 \n", str(1:min(18,l)), T{i+1,2:end-1});
-        elseif (P(i) < 1.0)
-          fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f    .%03u \n", str(1:min(18,l)), T{i+1,2:end-1}, round (P(i) * 1e+03));
-        else
-          fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f   1.000 \n", str(1:min(18,l)), T{i+1,2:end-1}); 
-        endif
-      endfor
-      fprintf("Error                 %10.5g  %6d  %10.5g\n", T{end-1,2:4});               
-      fprintf("Total                 %10.5g  %6d \n", T{end,2:3});  
-      fprintf("\n");
-    elseif strcmp(display,"off")
-      # do nothing
-    else
-      error ("anovan: wrong value for ""display"" parameter.");    
-    endif
+    switch lower (display)
+      case "on"
+        # Get dimensions of the ANOVA table
+        [nrows, ncols] = size (T);
+        # Print table
+        fprintf("\n%d-way ANOVA table (Type %s sums of squares):\n\n", Nm, sstype_char);
+        fprintf("Source                   Sum Sq.    d.f.    Mean Sq.  R Sq.            F  Prob>F\n");
+        fprintf("********************************************************************************\n");  
+        for i = 1:Nt
+          str = T{i+1,1};
+          l = numel(str);  # Needed to truncate source term name at 18 characters
+          # Format and print the statistics for each model term
+          # Format F statistics and p-values in APA style
+          if (P(i) < 0.001)
+            fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f   <.001 \n", str(1:min(18,l)), T{i+1,2:end-1});
+          elseif (P(i) < 1.0)
+            fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f    .%03u \n", str(1:min(18,l)), T{i+1,2:end-1}, round (P(i) * 1e+03));
+          else
+            fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f   1.000 \n", str(1:min(18,l)), T{i+1,2:end-1}); 
+          endif
+        endfor
+        fprintf("Error                 %10.5g  %6d  %10.5g\n", T{end-1,2:4});               
+        fprintf("Total                 %10.5g  %6d \n", T{end,2:3});  
+        fprintf("\n");
+      case "off"
+        # do nothing
+      otherwise
+        error ("anovan: wrong value for ""display"" parameter.");    
+    endswitch
   
 endfunction
 
@@ -415,7 +420,7 @@ function [X, levels, nlevels, df, termcols] = make_design_matrix (GROUP, TERMS, 
     df(j) = nlevels(j) - 1;
   endfor
  
-  # Create contrast matrix C and dummy variables X
+  # Create contrast matrix C and design matrix X
   # Prepare design matrix columns for the main effects
   X = cell (1, 1 + Nm + Nx);
   X(1) = ones (n, 1);
@@ -470,8 +475,9 @@ endfunction
 %!demo
 %!
 %! # Two-sample unpaired test on independent samples (equivalent to Student's 
-%! # t-test). Note that the t-statistic can be obtained by taking the square 
-%! # root of the reported F statistic. In this example, t = sqrt (1.44) = 1.20.
+%! # t-test). Note that the absolute value of t-statistic can be obtained by 
+%! # taking the square root of the reported F statistic. In this example, 
+%! # t = sqrt (1.44) = 1.20.
 %!
 %! score = [54 23 45 54 45 43 34 65 77 46 65]';
 %! gender = {"male" "male" "male" "male" "male" "female" "female" "female" ...
@@ -576,9 +582,11 @@ endfunction
 
 %!demo
 %!
-%! # Balanced three-way ANOVA (3x2x2) on the data from a study of the effects 
+%! # Unbalanced three-way ANOVA (3x2x2) on the data from a study of the effects 
 %! # of three different drugs, biofeedback and diet on patient blood pressure, 
-%! # from Maxwell, Delaney and Kelly (2018): Chapter 8, Table 12
+%! # adapted* from Maxwell, Delaney and Kelly (2018): Chapter 8, Table 12
+%! # * Missing values introduced to make the sample sizes unequal to test the
+%! #   calculation of different types of sums-of-squares
 %!
 %! drug = {"X" "X" "X" "X" "X" "X" "X" "X" "X" "X" "X" "X" ... 
 %!         "X" "X" "X" "X" "X" "X" "X" "X" "X" "X" "X" "X";
@@ -587,17 +595,17 @@ endfunction
 %!         "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" ...
 %!         "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z"};
 %! feedback = [1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0;
-%!                1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0;
-%!                1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0];
-%! diet = [0 0 0 0 0 0 1 1 1 1 1 1 0 0 0 0 0 0 1 1 1 1 1 1
-%!         0 0 0 0 0 0 1 1 1 1 1 1 0 0 0 0 0 0 1 1 1 1 1 1
+%!             1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0;
+%!             1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0];
+%! diet = [0 0 0 0 0 0 1 1 1 1 1 1 0 0 0 0 0 0 1 1 1 1 1 1;
+%!         0 0 0 0 0 0 1 1 1 1 1 1 0 0 0 0 0 0 1 1 1 1 1 1;
 %!         0 0 0 0 0 0 1 1 1 1 1 1 0 0 0 0 0 0 1 1 1 1 1 1];
 %! BP = [170 175 165 180 160 158 161 173 157 152 181 190 ...
 %!       173 194 197 190 176 198 164 190 169 164 176 175;
 %!       186 194 201 215 219 209 164 166 159 182 187 174 ...
-%!       189 194 217 206 199 195 171 173 196 199 180 203;
+%!       189 194 217 206 199 195 171 173 196 199 180 NaN;
 %!       180 187 199 170 204 194 162 184 183 156 180 173 ...
-%!       202 228 190 206 224 204 205 199 170 160 179 179];
+%!       202 228 190 206 224 204 205 199 170 160 NaN NaN];
 %!
 %! [P, T] = anovan (BP(:), {drug(:), feedback(:), diet(:)}, ...
 %!                 "model", "full", "sstype", 3, "display", "on", ...
@@ -621,16 +629,95 @@ endfunction
 %!                  "model", [1 0 0;0 1 0;0 0 1;0 1 1], "display", "on", ...
 %!                  "varnames", {"block", "strain", "treatment"});
 
-## Test 1: Unbalanced two-way ANOVA (2x2) from Maxwell, Delaney and Kelly (2018): Chapter 7, Table 15
-## https://designingexperiments.com/csv-chapter-data/
-## Test compares to results in matlab 
+## Test 1 for anovan example 1 
+## Test compares anovan to results from MATLAB's anovan and ttest2 functions
+%!test
+%! score = [54 23 45 54 45 43 34 65 77 46 65]';
+%! gender = {'male' 'male' 'male' 'male' 'male' 'female' 'female' 'female' ...
+%!           'female' 'female' 'female'}'; 
+%!
+%! [P, T] = anovan (score, gender, 'display', 'off', 'varnames', 'gender');
+%! assert (P(1), 0.2612876773271042,  1e-09);              # compared to p calculated by MATLAB anovan
+%! assert (sqrt(T{2,6}), abs(1.198608733288208),  1e-09);  # compared to abs(t) calculated from sqrt(F) by MATLAB anovan
+%! assert (P(1), 0.2612876773271047,  1e-09);              # compared to p calculated by MATLAB ttest2
+%! assert (sqrt(T{2,6}), abs(-1.198608733288208),  1e-09); # compared to abs(t) calculated by MATLAB ttest2
+
+## Test 2 for anovan example 2
+## Test compares anovan to results from MATLAB's anovan and ttest functions
+%!test
+%! score = [4.5 5.6; 3.7 6.4; 5.3 6.4; 5.4 6.0; 3.9 5.7]';
+%! treatment = {'before' 'after'; 'before' 'after'; 'before' 'after'; 
+%!              'before' 'after'; 'before' 'after'}';
+%! subject = {'GS' 'GS'; 'JM' 'JM'; 'HM' 'HM'; 'JW' 'JW'; 'PS' 'PS'}';
+%!
+%! [P, T] = anovan (score(:), {treatment(:), subject(:)}, 'display', 'off',...
+%!                  'sstype', 2, 'varnames', {'treatment', 'subject'});
+%! assert (P(1), 0.016004356735364,  1e-09);              # compared to p calculated by MATLAB anovan
+%! assert (sqrt(T{2,6}), abs(4.00941576558195),  1e-09);  # compared to abs(t) calculated from sqrt(F) by MATLAB anovan
+%! assert (P(1), 0.016004356735364,  1e-09);              # compared to p calculated by MATLAB ttest2
+%! assert (sqrt(T{2,6}), abs(-4.00941576558195),  1e-09); # compared to abs(t) calculated by MATLAB ttest2
+
+## Test 3 for anovan example 3 
+## Test compares anovan to results from MATLAB's anovan and anova1 functions
+%!test
+%! strength = [82 86 79 83 84 85 86 87 74 82 ...
+%!            78 75 76 77 79 79 77 78 82 79]';
+%! alloy = {'st','st','st','st','st','st','st','st',...
+%!          'al1','al1','al1','al1','al1','al1',...
+%!          'al2','al2','al2','al2','al2','al2'}';
+%!
+%! [P, T] = anovan (strength, {alloy}, 'display', 'off', 'varnames', {'alloy'});
+%! assert (P(1), 0.000152643638830491,  1e-09);
+%! assert (T{2,6}, 15.4,  1e-09);
+
+## Test 4 for anovan example 4
+## Test compares anovan to results from MATLAB's anovan function
+%!test
+%! words = [10 13 13; 6 8 8; 11 14 14; 22 23 25; 16 18 20; ... 
+%!          15 17 17; 1 1 4; 12 15 17;  9 12 12;  8 9 12];
+%! subject = [ 1  1  1;  2  2  2;  3  3  3;  4  4  4;  5  5  5; ...
+%!             6  6  6;  7  7  7;  8  8  8;  9  9  9; 10 10 10];
+%! seconds = [1 2 5; 1 2 5; 1 2 5; 1 2 5; 1 2 5; ...
+%!            1 2 5; 1 2 5; 1 2 5; 1 2 5; 1 2 5;];
+%! [P, T] = anovan (words(:),{seconds(:),subject(:)},'model','linear','sstype',2,'display','off','varnames',{'seconds','subject'});
+%! assert (P(1), 1.51865926758752e-07,  1e-09);
+%! assert (P(2), 1.49150337808586e-15,  1e-09);
+%! assert (T{2,2}, 52.2666666666667,  1e-09);
+%! assert (T{3,2}, 942.533333333333,  1e-09);
+%! assert (T{4,2}, 11.0666666666667,  1e-09);
+
+## Test 5 for anovan example 5
+## Test compares anovan to results from MATLAB's anovan function
+%!test
+%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
+%! brands = {'Gourmet', 'National', 'Generic'; ...
+%!           'Gourmet', 'National', 'Generic'; ...
+%!           'Gourmet', 'National', 'Generic'; ...
+%!           'Gourmet', 'National', 'Generic'; ...
+%!           'Gourmet', 'National', 'Generic'; ...
+%!           'Gourmet', 'National', 'Generic'};
+%! popper = {'oil', 'oil', 'oil'; 'oil', 'oil', 'oil'; 'oil', 'oil', 'oil'; ...
+%!           'air', 'air', 'air'; 'air', 'air', 'air'; 'air', 'air', 'air'};
+%!
+%! [P, T] = anovan (popcorn(:), {brands(:), popper(:)}, 'display', 'off',...
+%!                  'model', 'full', 'varnames', {'brands', 'popper'});
+%! assert (P(1), 7.67895738278171e-07,  1e-09);
+%! assert (P(2), 0.000100373896304998,  1e-09);
+%! assert (P(3), 0.746215396636649,  1e-09);
+%! assert (T{2,6}, 56.7,  1e-09);
+%! assert (T{3,6}, 32.4,  1e-09);
+%! assert (T{4,6}, 0.29999999999997,  1e-09);
+
+## Test 6 for anovan example 6
+## Test compares anovan to results from MATLAB's anovan function
 %!test
 %! salary = [24 26 25 24 27 24 27 23 15 17 20 16, ...
 %!           25 29 27 19 18 21 20 21 22 19]';
-%! gender = {"f" "f" "f" "f" "f" "f" "f" "f" "f" "f" "f" "f"...
-%!           "m" "m" "m" "m" "m" "m" "m" "m" "m" "m"}';
+%! gender = {'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f'...
+%!           'm' 'm' 'm' 'm' 'm' 'm' 'm' 'm' 'm' 'm'}';
 %! degree = [1 1 1 1 1 1 1 1 0 0 0 0 1 1 1 0 0 0 0 0 0 0]';
-%! [P, T] = anovan (salary,{gender, degree}, "model", "full", "sstype", 1, "display","off");
+%! [P, T] = anovan (salary,{gender, degree}, 'model', 'full', 'sstype', 1, 'display','off');
 %! assert (P(1), 0.747462549227232,  1e-09);
 %! assert (P(2), 1.03809316857694e-08,  1e-09);
 %! assert (P(3), 0.523689833702691,  1e-09);
@@ -638,7 +725,7 @@ endfunction
 %! assert (T{3,2}, 272.391841491841,  1e-09);
 %! assert (T{4,2}, 1.17482517482512,  1e-09);
 %! assert (T{5,2}, 50.0000000000001,  1e-09);
-%! [P, T] = anovan (salary,{degree, gender}, "model", "full", "sstype", 1, "display","off");
+%! [P, T] = anovan (salary,{degree, gender}, 'model', 'full', 'sstype', 1, 'display','off');
 %! assert (P(1), 2.53445097305047e-08,  1e-09);
 %! assert (P(2), 0.00388133678528749,  1e-09);
 %! assert (P(3), 0.523689833702671,  1e-09);
@@ -646,7 +733,7 @@ endfunction
 %! assert (T{3,2}, 30.4615384615384,  1e-09);
 %! assert (T{4,2}, 1.17482517482523,  1e-09);
 %! assert (T{5,2}, 50.0000000000001,  1e-09);
-%! [P, T] = anovan (salary,{gender, degree}, "model", "full", "sstype", 2, "display","off");
+%! [P, T] = anovan (salary,{gender, degree}, 'model', 'full', 'sstype', 2, 'display','off');
 %! assert (P(1), 0.00388133678528743,  1e-09);
 %! assert (P(2), 1.03809316857694e-08,  1e-09);
 %! assert (P(3), 0.523689833702691,  1e-09);
@@ -654,7 +741,7 @@ endfunction
 %! assert (T{3,2}, 272.391841491841,  1e-09);
 %! assert (T{4,2}, 1.17482517482512,  1e-09);
 %! assert (T{5,2}, 50.0000000000001,  1e-09);
-%! [P, T] = anovan (salary,{gender, degree}, "model", "full", "sstype", 3, "display","off");
+%! [P, T] = anovan (salary,{gender, degree}, 'model', 'full', 'sstype', 3, 'display','off');
 %! assert (P(1), 0.00442898146583742,  1e-09);
 %! assert (P(2), 1.30634252053587e-08,  1e-09);
 %! assert (P(3), 0.523689833702691,  1e-09);
@@ -663,17 +750,16 @@ endfunction
 %! assert (T{4,2}, 1.17482517482512,  1e-09);
 %! assert (T{5,2}, 50.0000000000001,  1e-09);
 
-## Test 2: Unbalanced two-way ANOVA (2x3) from Navarro (2019): 16.10
-## https://github.com/djnavarro/rbook/blob/master/original/data/coffee.Rdata
-## Test compares to results in matlab 
+## Test 7 for anovan example 7
+## Test compares anovan to results from MATLAB's anovan function
 %!test
-%! sugar = {"real" "fake" "fake" "real" "real" "real" "none" "none" "none" ...
-%!          "fake" "fake" "fake" "real" "real" "real" "none" "none" "fake"}';
-%! milk = {"yes" "no" "no" "yes" "yes" "no" "yes" "yes" "yes" ... 
-%!         "no" "no" "yes" "no" "no" "no" "no" "no" "yes"}';
+%! sugar = {'real' 'fake' 'fake' 'real' 'real' 'real' 'none' 'none' 'none' ...
+%!          'fake' 'fake' 'fake' 'real' 'real' 'real' 'none' 'none' 'fake'}';
+%! milk = {'yes' 'no' 'no' 'yes' 'yes' 'no' 'yes' 'yes' 'yes' ... 
+%!         'no' 'no' 'yes' 'no' 'no' 'no' 'no' 'no' 'yes'}';
 %! babble = [4.6 4.4 3.9 5.6 5.1 5.5 3.9 3.5 3.7... 
 %!           5.6 4.7 5.9 6.0 5.4 6.6 5.8 5.3 5.7]';
-%! [P, T] = anovan (babble, {sugar, milk}, "model", "full", "sstype", 1, "display","off");
+%! [P, T] = anovan (babble, {sugar, milk}, 'model', 'full', 'sstype', 1, 'display','off');
 %! assert (P(1), 0.0108632139833963,  1e-09);
 %! assert (P(2), 0.0810606976703546,  1e-09);
 %! assert (P(3), 0.00175433329935627,  1e-09);
@@ -681,7 +767,7 @@ endfunction
 %! assert (T{3,2}, 0.956108477471702,  1e-09);
 %! assert (T{4,2}, 5.94386771300448,  1e-09);
 %! assert (T{5,2}, 3.1625,  1e-09);
-%! [P, T] = anovan (babble, {milk, sugar}, "model", "full", "sstype", 1, "display","off");
+%! [P, T] = anovan (babble, {milk, sugar}, 'model', 'full', 'sstype', 1, 'display','off');
 %! assert (P(1), 0.0373333189297505,  1e-09);
 %! assert (P(2), 0.017075098787169,  1e-09);
 %! assert (P(3), 0.00175433329935627,  1e-09);
@@ -689,7 +775,7 @@ endfunction
 %! assert (T{3,2}, 3.06963228699552,  1e-09);
 %! assert (T{4,2}, 5.94386771300448,  1e-09);
 %! assert (T{5,2}, 3.1625,  1e-09);
-%! [P, T] = anovan (babble, {sugar, milk}, "model", "full", "sstype", 2, "display","off");
+%! [P, T] = anovan (babble, {sugar, milk}, 'model', 'full', 'sstype', 2, 'display','off');
 %! assert (P(1), 0.017075098787169,  1e-09);
 %! assert (P(2), 0.0810606976703546,  1e-09);
 %! assert (P(3), 0.00175433329935627,  1e-09);
@@ -697,7 +783,7 @@ endfunction
 %! assert (T{3,2}, 0.956108477471702,  1e-09);
 %! assert (T{4,2}, 5.94386771300448,  1e-09);
 %! assert (T{5,2}, 3.1625,  1e-09);
-%! [P, T] = anovan (babble, {sugar, milk}, "model", "full", "sstype", 3, "display","off");
+%! [P, T] = anovan (babble, {sugar, milk}, 'model', 'full', 'sstype', 3, 'display','off');
 %! assert (P(1), 0.0454263063473954,  1e-09);
 %! assert (P(2), 0.0746719907091438,  1e-09);
 %! assert (P(3), 0.00175433329935627,  1e-09);
@@ -706,58 +792,86 @@ endfunction
 %! assert (T{4,2}, 5.94386771300448,  1e-09);
 %! assert (T{5,2}, 3.1625,  1e-09);
 
-## Test 3: Balanced three-way ANOVA (2x2x3) modified from Maxwell, Delaney and Kelly (2018): Chapter 8, Table 12
-## https://designingexperiments.com/csv-chapter-data/
-## Test compares to results in matlab 
+## Test 8 for anovan example 8
+## Test compares anovan to results from MATLAB's anovan function
 %!test
-%! drug = {"X" "X" "X" "X" "X" "X" "X" "X" "X" "X" "X" "X" ... 
-%!         "X" "X" "X" "X" "X" "X" "X" "X" "X" "X" "X" "X";
-%!         "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" ...
-%!         "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y";
-%!         "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" ...
-%!         "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z"};
+%! drug = {'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' ... 
+%!         'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X';
+%!         'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' ...
+%!         'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y';
+%!         'Z' 'Z' 'Z' 'Z' 'Z' 'Z' 'Z' 'Z' 'Z' 'Z' 'Z' 'Z' ...
+%!         'Z' 'Z' 'Z' 'Z' 'Z' 'Z' 'Z' 'Z' 'Z' 'Z' 'Z' 'Z'};
 %! feedback = [1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0;
 %!             1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0;
 %!             1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0];
-%! diet = [0 0 0 0 0 0 1 1 1 1 1 1 0 0 0 0 0 0 1 1 1 1 1 1
-%!         0 0 0 0 0 0 1 1 1 1 1 1 0 0 0 0 0 0 1 1 1 1 1 1
+%! diet = [0 0 0 0 0 0 1 1 1 1 1 1 0 0 0 0 0 0 1 1 1 1 1 1;
+%!         0 0 0 0 0 0 1 1 1 1 1 1 0 0 0 0 0 0 1 1 1 1 1 1;
 %!         0 0 0 0 0 0 1 1 1 1 1 1 0 0 0 0 0 0 1 1 1 1 1 1];
 %! BP = [170 175 165 180 160 158 161 173 157 152 181 190 ...
 %!       173 194 197 190 176 198 164 190 169 164 176 175;
 %!       186 194 201 215 219 209 164 166 159 182 187 174 ...
-%!       189 194 217 206 199 195 171 173 196 199 180 203;
+%!       189 194 217 206 199 195 171 173 196 199 180 NaN;
 %!       180 187 199 170 204 194 162 184 183 156 180 173 ...
-%!       202 228 190 206 224 204 205 199 170 160 179 179];
-%! [P, T] = anovan (BP(:), {drug(:), feedback(:), diet(:)}, "model", "full", "sstype", 3, "display","off");
-%! assert (P(1), 5.0186242618449e-05,  1e-09);
-%! assert (P(2), 0.00061507193609995,  1e-09);
-%! assert (P(3), 3.05330772859274e-07,  1e-09);
-%! assert (P(4), 0.44245654726106,  1e-09);
-%! assert (P(5), 0.0638152703169747,  1e-09);
-%! assert (P(6), 0.652937411422913,  1e-09);
-%! assert (P(7), 0.0388342264589005,  1e-09);
-%! assert (T{2,2}, 3675,  1e-09);
-%! assert (T{3,2}, 2048,  1e-09);
-%! assert (T{4,2}, 5202,  1e-09);
-%! assert (T{5,2}, 259.000000000002,  1e-09);
-%! assert (T{6,2}, 902.999999999998,  1e-09);
-%! assert (T{7,2}, 32,  1e-09);
-%! assert (T{8,2}, 1075,  1e-09);
-%! assert (T{9,2}, 9400,  1e-09);
+%!       202 228 190 206 224 204 205 199 170 160 NaN NaN];
+%! [P, T] = anovan (BP(:), {drug(:), feedback(:), diet(:)}, 'model', 'full', 'sstype', 1, 'display','off');
+%! assert (P(1), 7.02561843825325e-05,  1e-09);
+%! assert (P(2), 0.000425806013389362,  1e-09);
+%! assert (P(3), 6.16780773446401e-07,  1e-09);
+%! assert (P(4), 0.261347622678438,  1e-09);
+%! assert (P(5), 0.0542278432357043,  1e-09);
+%! assert (P(6), 0.590353225626655,  1e-09);
+%! assert (P(7), 0.0861628249564267,  1e-09);
+%! assert (T{2,2}, 3614.70355731226,  1e-09);
+%! assert (T{3,2}, 2227.46639771024,  1e-09);
+%! assert (T{4,2}, 5008.25614451819,  1e-09);
+%! assert (T{5,2}, 437.066007908781,  1e-09);
+%! assert (T{6,2}, 976.180770397332,  1e-09);
+%! assert (T{7,2}, 46.616653365254,  1e-09);
+%! assert (T{8,2}, 814.345251396648,  1e-09);
+%! assert (T{9,2}, 9065.8,  1e-09);
+%! [P, T] = anovan (BP(:), {drug(:), feedback(:), diet(:)}, 'model', 'full', 'sstype', 2, 'display','off');
+%! assert (P(1), 9.4879638470754e-05,  1e-09);
+%! assert (P(2), 0.00124177666315809,  1e-09);
+%! assert (P(3), 6.86162012732911e-07,  1e-09);
+%! assert (P(4), 0.260856132341256,  1e-09);
+%! assert (P(5), 0.0523758623892078,  1e-09);
+%! assert (P(6), 0.590353225626655,  1e-09);
+%! assert (P(7), 0.0861628249564267,  1e-09);
+%! assert (T{2,2}, 3481.72176560122,  1e-09);
+%! assert (T{3,2}, 1837.08812970469,  1e-09);
+%! assert (T{4,2}, 4957.20277938622,  1e-09);
+%! assert (T{5,2}, 437.693674777847,  1e-09);
+%! assert (T{6,2}, 988.431929811402,  1e-09);
+%! assert (T{7,2}, 46.616653365254,  1e-09);
+%! assert (T{8,2}, 814.345251396648,  1e-09);
+%! assert (T{9,2}, 9065.8,  1e-09);
+%! [P, T] = anovan (BP(:), {drug(:), feedback(:), diet(:)}, 'model', 'full', 'sstype', 3, 'display','off');
+%! assert (P(1), 0.000106518678028207,  1e-09);
+%! assert (P(2), 0.00125371366571508,  1e-09);
+%! assert (P(3), 5.30813260778464e-07,  1e-09);
+%! assert (P(4), 0.308353667232981,  1e-09);
+%! assert (P(5), 0.0562901327343161,  1e-09);
+%! assert (P(6), 0.599091042141092,  1e-09);
+%! assert (P(7), 0.0861628249564267,  1e-09);
+%! assert (T{2,2}, 3430.88156424581,  1e-09);
+%! assert (T{3,2}, 1833.68031496063,  1e-09);
+%! assert (T{4,2}, 5080.48346456693,  1e-09);
+%! assert (T{5,2}, 382.07709497207,  1e-09);
+%! assert (T{6,2}, 963.037988826813,  1e-09);
+%! assert (T{7,2}, 44.4519685039322,  1e-09);
+%! assert (T{8,2}, 814.345251396648,  1e-09);
+%! assert (T{9,2}, 9065.8,  1e-09);
 
-## Test 4: Balanced three-way ANOVA (2x2x2) with a blocking factor (randomized bloack design) from Festing (2014), ILAR Journal, 55(3):427-476, Table 1
-## Design is similar to a two way repeated measures ANOVA except that each block is mouse strain, with more than 1 subject
-## https://academic.oup.com/ilarjournal/article/55/3/472/645707
-## Note that for the analysis whose ANOVA table is shown in Table 2 of the same reference, the measurements were scaled by dividing them by 10
-## Test compares to results in matlab 
+## Test 9 for anovan example 9
+## Test compares anovan to results from MATLAB's anovan function
 %!test
 %! measurement = [444 614 423 625 408  856 447 719 ...
 %!                764 831 586 782 609 1002 606 766]';
 %! block = [1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2]';
-%! strain= {"NIH","NIH","BALB/C","BALB/C","A/J","A/J","129/Ola","129/Ola",...
-%!          "NIH","NIH","BALB/C","BALB/C","A/J","A/J","129/Ola","129/Ola"}';
-%! treatment={"C" "T" "C" "T" "C" "T" "C" "T" "C" "T" "C" "T" "C" "T" "C" "T"}';
-%! [P, T] = anovan (measurement/10,{block,strain,treatment},"model", [1 0 0;0 1 0;0 0 1;0 1 1], "display","off");
+%! strain= {'NIH','NIH','BALB/C','BALB/C','A/J','A/J','129/Ola','129/Ola',...
+%!          'NIH','NIH','BALB/C','BALB/C','A/J','A/J','129/Ola','129/Ola'}';
+%! treatment={'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T'}';
+%! [P, T] = anovan (measurement/10,{block,strain,treatment},'model', [1 0 0;0 1 0;0 0 1;0 1 1], 'display','off');
 %! assert (P(1), 0.000339814602130731,  1e-09);
 %! assert (P(2), 0.0914352969909372,  1e-09);
 %! assert (P(3), 5.04077373924908e-05,  1e-09);
@@ -768,20 +882,4 @@ endfunction
 %! assert (T{5,2}, 495.905000000001,  1e-09);
 %! assert (T{6,2}, 207.007499999999,  1e-09);
 
-## Test 5: One-way repeated measures ANOVA from Loftus & Masson (1994) Psychon Bull Rev. 1(4):476-490, Table 2
-## https://link.springer.com/article/10.3758/BF03210951
-## Test compares to results in matlab 
-%!test
-%! words = [10 13 13; 6 8 8; 11 14 14; 22 23 25; 16 18 20; ... 
-%!          15 17 17; 1 1 4; 12 15 17;  9 12 12;  8 9 12];
-%! subject = [ 1  1  1;  2  2  2;  3  3  3;  4  4  4;  5  5  5; ...
-%!             6  6  6;  7  7  7;  8  8  8;  9  9  9; 10 10 10];
-%! seconds = [1 2 5; 1 2 5; 1 2 5; 1 2 5; 1 2 5; ...
-%!            1 2 5; 1 2 5; 1 2 5; 1 2 5; 1 2 5;];
-%! [P, T] = anovan (words(:),{seconds(:),subject(:)},"model","linear","sstype",2,"display","off","varnames",{"seconds","subject"});
-%! assert (P(1), 1.51865926758752e-07,  1e-09);
-%! assert (P(2), 1.49150337808586e-15,  1e-09);
-%! assert (T{2,2}, 52.2666666666667,  1e-09);
-%! assert (T{3,2}, 942.533333333333,  1e-09);
-%! assert (T{4,2}, 11.0666666666667,  1e-09);
 
