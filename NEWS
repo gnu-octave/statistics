@@ -15,11 +15,15 @@ Summary of important user-visible changes for statistics 1.5.0:
  
  ** fillmissing (patch #10102)
  
+ ** libsvmread, libsvmwrite (I/O functions for LIBSVM data files)
+ 
  ** mean (fully Matlab compatible, it shadows mean from core Octave)
  
  ** ranksum (fully Matlab compatible. bug #42079)
     
  ** standardizeMissing (patch #10102)
+ 
+ ** svmpredict, svmtrain (wrappers for LIBSVM 3.25)
  
  ** tiedrank (complementary to ranksum)
 
