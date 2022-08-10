@@ -151,6 +151,13 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           error (sprintf("anovan: parameter %s is not supported", name));
       endswitch
     endfor
+    if isnumeric (CONTINUOUS)
+      if any (CONTINUOUS ~= abs (fix (CONTINUOUS)))
+        error ("anovan: the value provided for the continuous parameter must be a positive integer")
+      endif
+    else
+      error ("anovan: the value provided for the continuous parameter must be numeric")
+    endif
     
     # Accomodate for different formats for GROUP 
     # GROUP can be a matrix of numeric identifiers of a cell arrays of strings or numeric idenitiers
@@ -159,6 +166,14 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     if (prod (size (Y)) ~= n)
       error ("anovan: for ""anovan (Y, GROUP)"", Y must be a vector");
     endif
+    
+    if (numel (unique (CONTINUOUS)) > N)
+      error ("anovan: the number of factors assigned as continuous cannot exceed the number of factors in GROUP")
+    endif
+    if any ((CONTINUOUS > N) || any (CONTINUOUS <= 0))
+      error ("anovan: one or more indices provided in the value for the continuous parameter are out of range")
+    endif
+    
     if iscell(GROUP)
       if (size(GROUP, 1) == 1)
         for j = 1:N
@@ -170,7 +185,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
             endif
           else
             if any (CONTINUOUS == j)
-              error ('anovan: continuous factors must be a numeric datatype')
+              error ("anovan: continuous factors must be a numeric datatype")
             endif
             tmp(:,j) = GROUP{j};
           endif
@@ -283,7 +298,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     Nt = Nm + Nx;
     if any (any (TERMS(1:Nm,:)) ~= any (TERMS))
       error ("anovan: all factors involved in interactions must have a main effect");  
-    end
+    endif
     
     # Calculate total sum-of-squares
     ct  = sum (Y)^2 / n;   % correction term
@@ -317,7 +332,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           XS = cell2mat (X(k));
           [jnk, R2] = lmfit (XS, Y);
           ss(j) = R1 - R2;
-        end
+        endfor
         [b, sse, resid] = lmfit (cell2mat (X), Y);
         sstype_char = "II";
       case 3
