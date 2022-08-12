@@ -1,6 +1,9 @@
 ## Copyright (C) 2011 Soren Hauberg <soren@hauberg.org>
 ## Copyright (C) 2012 Daniel Ward <dwa012@gmail.com>
 ## Copyright (C) 2015-2016 Lachlan Andrew <lachlanbis@gmail.com>
+## Copyright (C) 2016 Michael Bentley <mikebentley15@gmail.com>
+## Copyright (C) 2021 Stefano Guidoni <ilguido@users.sf.net>
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -22,6 +25,7 @@
 ## in which case @var{k} is set to the number of rows of @var{start}.
 ##
 ## The outputs are:
+##
 ## @table @code
 ## @item @var{idx}
 ## An @var{N}x1 vector whose @var{i}th element is the class to which row @var{i}
@@ -42,26 +46,27 @@
 ## 
 ## The following parameters may be placed in any order.  Each parameter
 ## must be followed by its value.
+##
 ## @table @code
 ## @item @var{Start}
 ## The initialization method for the centroids.
-##  @table @code
-##  @item @code{plus}
-##        (Default) The k-means++ algorithm.
-##  @item @code{sample}
-#         A subset of @var{k} rows from @var{data},
-##        sampled uniformly without replacement.
-##  @item @code{cluster}
-##        Perform a pilot clustering on 10% of the rows of @var{data}.
-##  @item @code{uniform}
-##        Each component of each centroid is drawn uniformly
-##        from the interval between the maximum and minimum values of that
-##        component within @var{data}.
-##        This performs poorly and is implemented only for Matlab compatibility.
-##  @item A
-##        A @var{k}x@var{D}x@var{r} matrix, where @var{r} is the number of
-##        replicates.
-##  @end table
+## @table @code
+## @item @code{plus}
+##       (Default) The k-means++ algorithm.
+## @item @code{sample}
+##       A subset of @var{k} rows from @var{data},
+##       sampled uniformly without replacement.
+## @item @code{cluster}
+##       Perform a pilot clustering on 10% of the rows of @var{data}.
+## @item @code{uniform}
+##       Each component of each centroid is drawn uniformly
+##       from the interval between the maximum and minimum values of that
+##       component within @var{data}.
+##       This performs poorly and is implemented only for Matlab compatibility.
+## @item A
+##       A @var{k}x@var{D}x@var{r} matrix, where @var{r} is the number of
+##       replicates.
+## @end table
 ##
 ## @item @var{Replicates}
 ## An positive integer specifying the number of independent clusterings to
@@ -69,7 +74,7 @@
 ## The output values are the values for the best clustering, i.e.,
 ## the one with the smallest value of @var{sumd}.
 ## If @var{Start} is numeric, then @var{Replicates} defaults to
-# (and must equal) the size of the third dimension of @var{Start}.
+## (and must equal) the size of the third dimension of @var{Start}.
 ## Otherwise it defaults to 1.
 ## 
 ## @item @var{MaxIter}
@@ -80,64 +85,70 @@
 ##
 ## @item @var{Distance}
 ## The distance measure used for partitioning and calculating centroids.
-##  @table @code
-##  @item @qcode{sqeuclidean}
-##  The squared Euclidean distance, i.e.,
-##  the sum of the squares of the differences between corresponding components.
-##  In this case, the centroid is the arithmetic mean of all samples in
-##  its cluster.
-##  This is the only distance for which this algorithm is truly "k-means".
 ##
-##  @item @qcode{cityblock}
-##  The sum metric, or L1 distance, i.e.,
-##  the sum of the absolute differences between corresponding components.
-##  In this case, the centroid is the median of all samples in its cluster.
-##  This gives the k-medians algorithm.
+## @table @code
+## @item @qcode{sqeuclidean}
+## The squared Euclidean distance. i.e. the sum of the squares of the
+## differences between corresponding components.  In this case, the centroid is
+## the arithmetic mean of all samples in its cluster.
+## This is the only distance for which this algorithm is truly "k-means".
 ##
-##  @item @qcode{cosine}
-##  (Documentation incomplete.)
+## @item @qcode{cityblock}
+## The sum metric, or L1 distance, i.e.,
+## the sum of the absolute differences between corresponding components.
+## In this case, the centroid is the median of all samples in its cluster.
+## This gives the k-medians algorithm.
+##
+## @item @qcode{cosine}
+## One minus the cosine of the included angle between points (treated as
+## vectors). Each centroid is the mean of the points in that cluster, after
+## normalizing those points to unit Euclidean length.
 ##
 ## @item @qcode{correlation}
-##  (Documentation incomplete.)
+## One minus the sample correlation between points (treated as sequences of
+## values). Each centroid is the component-wise mean of the points in that
+## cluster, after centering and normalizing those points to zero mean and unit
+## standard deviation.
 ##
-##  @item @qcode{hamming}
-##  The number of components in which the sample and the centroid differ.
-##  In this case, the centroid is the median of all samples in its cluster.
-##  Unlike Matlab, Octave allows non-logical @var{data}.
+## @item @qcode{hamming}
+## The number of components in which the sample and the centroid differ.
+## In this case, the centroid is the median of all samples in its cluster.
+## Unlike Matlab, Octave allows non-logical @var{data}.
 ## 
-##  @end table
+## @end table
 ##
 ## @item @var{EmptyAction}
 ## What to do when a centroid is not the closest to any data sample.
-##  @table @code
-##  @item @qcode{error}
-##        Throw an error.
-##  @item @qcode{singleton}
-##        (Default) Select the row of @var{data} that has the highest error and
-##        use that as the new centroid.
-##  @item @qcode{drop}
-##        Remove the centroid, and continue computation with one fewer centroid.
-##        The dimensions of the outputs @var{centroids} and @var{d}
-##        are unchanged, with values for omitted centroids replaced by NA.
+##
+## @table @code
+## @item @qcode{error}
+##       Throw an error.
+## @item @qcode{singleton}
+##       (Default) Select the row of @var{data} that has the highest error and
+##       use that as the new centroid.
+## @item @qcode{drop}
+##       Remove the centroid, and continue computation with one fewer centroid.
+##       The dimensions of the outputs @var{centroids} and @var{d}
+##       are unchanged, with values for omitted centroids replaced by NA.
 ##        
-##  @end table
+## @end table
 ##
 ## @item @var{Display}
 ## Display a text summary.
-##  @table @code
-##  @item @qcode{off}
-##        (Default) Display no summary.
-##  @item @qcode{final}
-##        Display a summary for each clustering operation.
-##  @item @qcode{iter}
-##        Display a summary for each iteration of a clustering operation.
+## @table @code
+## @item @qcode{off}
+##       (Default) Display no summary.
+## @item @qcode{final}
+##       Display a summary for each clustering operation.
+## @item @qcode{iter}
+##       Display a summary for each iteration of a clustering operation.
 ##        
-##  @end table
+## @end table
 ## @end table
 ##
 ## Example:
 ##
-##  [~,c] = kmeans (rand(10, 3), 2, "emptyaction", "singleton");
+## [~,c] = kmeans (rand(10, 3), 2, "emptyaction", "singleton");
 ##
 ## @seealso{linkage}
 ## @end deftypefn
@@ -179,18 +190,21 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
       error ("kmeans: Option '%s' has no argument", prop{1});
     endif
     switch (lower (prop{1}))
-      case "emptyaction" emptyaction = prop{2};
-      case "start"       start       = prop{2};
-      case "maxiter"     max_iter    = prop{2};
-      case "distance"    distance    = prop{2};
-
-      case "replicates"  replicates  = prop{2};
-                         replicates_set_explicitly = true;
-                         
-      case "display"     display = prop{2};
+      case "emptyaction"
+        emptyaction = prop{2};
+      case "start"
+        start = prop{2};
+      case "maxiter"
+        max_iter = prop{2};
+      case "distance"
+        distance = prop{2};
+      case "replicates"
+        replicates = prop{2};
+        replicates_set_explicitly = true;      
+      case "display"
+        display = prop{2};
       case {"onlinephase", "options"}
         warning ("kmeans: Ignoring unimplemented option '%s'", prop{1});
-
       otherwise
         error ("kmeans: Unknown option %s", prop{1});
     endswitch
