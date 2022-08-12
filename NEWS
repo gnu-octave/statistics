@@ -2,7 +2,7 @@ Summary of important user-visible changes for statistics 1.5.0:
 -------------------------------------------------------------------
 
  Important Notice: dependency change to Octave>=6.1.0
-                   mean shadows core Octave's respective function
+                   `mean` shadows core Octave's respective function
  
  New functions:
  ==============
@@ -20,6 +20,8 @@ Summary of important user-visible changes for statistics 1.5.0:
  ** grpstats (complementary to manova1)
  
  ** libsvmread, libsvmwrite (I/O functions for LIBSVM data files)
+ 
+ ** manova1 (fully Matlab compatible)
  
  ** mean (fully Matlab compatible, it shadows mean from core Octave)
  
@@ -82,29 +84,38 @@ Summary of important user-visible changes for statistics 1.5.0:
  Removed Functions:
  ==================
  
- ** wilcoxon_test (replaced by ranksum)
+ ** anova (replaced by anova1)
+ 
+ ** caseread, casewrite (do not belong here)
  
  ** kruskal_wallis_test (replaced by kruskalwallis)
  
+ ** manova (replaced by manova1)
+ 
  ** sign_test (replaced by updated signtest)
+ 
+ ** tblread, tblwrite (belong to `io` package when tables are implemented)
+ 
+ ** wilcoxon_test (replaced by ranksum)
  
  Available Data Sets:
  ====================
  
- ** acetylene     Chemical reaction data with correlated predictors
- ** arrhythmia    Cardiac arrhythmia data from the UCI machine learning repository
- ** carbig        Measurements of cars, 1970–1982
- ** carsmall      Subset of carbig. Measurements of cars, 1970, 1976, 1982
- ** cereal        Breakfast cereal ingredients
- ** examgrades    Exam grades on a scale of 0–100
- ** fisheriris    Fisher's 1936 iris data
- ** hald          Heat of cement vs. mix of ingredients
- ** kmeansdata    Four-dimensional clustered data
- ** mileage       Mileage data for three car models from two factories
- ** morse         Recognition of Morse code distinctions by non-coders
- ** popcorn       Popcorn yield by popper type and brand
- ** stockreturns  Simulated stock returns
- ** weather       Daily high temperatures in the same month in two consecutive years
+ ** acetylene         Chemical reaction data with correlated predictors
+ ** arrhythmia        Cardiac arrhythmia data from the UCI machine learning repository
+ ** carbig            Measurements of cars, 1970–1982
+ ** carsmall          Subset of carbig. Measurements of cars, 1970, 1976, 1982
+ ** cereal            Breakfast cereal ingredients
+ ** examgrades        Exam grades on a scale of 0–100
+ ** fisheriris        Fisher's 1936 iris data
+ ** hald              Heat of cement vs. mix of ingredients
+ ** heart_scale.dat   Used for SVM testing
+ ** kmeansdata        Four-dimensional clustered data
+ ** mileage           Mileage data for three car models from two factories
+ ** morse             Recognition of Morse code distinctions by non-coders
+ ** popcorn           Popcorn yield by popper type and brand
+ ** stockreturns      Simulated stock returns
+ ** weather           Daily high temperatures in the same month in two consecutive years
 
 Summary of important user-visible changes for statistics 1.4.3:
 -------------------------------------------------------------------
