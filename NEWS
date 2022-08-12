@@ -3,6 +3,7 @@ Summary of important user-visible changes for statistics 1.5.0:
 
  Important Notice: dependency change to Octave>=6.1.0
                    `mean` shadows core Octave's respective function
+                   removed dependency on `io` package
  
  New functions:
  ==============
