@@ -34,7 +34,7 @@
 ## by @var{whichstats}, as separate arrays @var{a}, @var{b}, @dots{}.
 ## @var{whichstats} can be a single function name, or a cell array containing
 ## multiple function names.  The number of output arguments must match the
-## number function handles and names in @var{whichstats}.
+## number of function names in @var{whichstats}.
 ## Names in @var{whichstats} can be chosen from among the following:
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75

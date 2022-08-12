@@ -68,8 +68,8 @@
 ## levels are completely enumerated by the unique values that appear in the
 ## corresponding column of @var{x}.
 ##
-## @code{@var{d} = x2fx (@var{x}, @var{model}, @var{categ}, @var{catlevels)}
-## accepts a vector @var{catlevels) the same length as @var{categ}, specifying
+## @code{@var{d} = x2fx (@var{x}, @var{model}, @var{categ}, @var{catlevels})}
+## accepts a vector @var{catlevels} the same length as @var{categ}, specifying
 ## the number of levels in each categorical variable.  In this case, values in
 ## the corresponding column of @var{x} must be integers in the range from 1 to
 ## the specified number of levels.  Not all of the levels need to appear in

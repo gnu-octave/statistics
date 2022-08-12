@@ -20,7 +20,7 @@
 ## @deftypefnx {} {} logistic_pdf (@var{x}, @var{mu}, @var{scale})
 ## For each element of @var{x}, compute the quantile (the inverse of the CDF)
 ## at @var{x} of the logistic distribution with mean @var{mu} and scale
-## parameter @{scale}.
+## parameter @var{scale}.
 ## @end deftypefn
 
 ## Author: KH <Kurt.Hornik@wu-wien.ac.at>
