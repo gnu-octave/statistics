@@ -1,3 +1,4 @@
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2018 John Donoghue <john.donoghue@ieee.org>
 ## Copyright (C) 2015 Lachlan Andrew <lachlanbis@gmail.com>
 ##
@@ -53,7 +54,7 @@
 ##                    number of free parameters.
 ##       @end itemize
 ##
-##    @item 'Option'        A structure with all of the following fields:
+##    @item 'Options'        A structure with all of the following fields:
 ##       @itemize
 ##       @item 'MaxIter'    Maximum number of EM iterations (default 100)
 ##       @item 'TolFun'     Threshold increase in likelihood to terminate EM
@@ -85,7 +86,7 @@
 ## @seealso{gmdistribution, kmeans}
 ## @end deftypefn
 
-function obj = fitgmdist(data, k, varargin)
+function obj = fitgmdist (data, k, varargin)
 
   if nargin < 2 || mod (nargin, 2) == 1
     print_usage;
@@ -116,21 +117,22 @@ function obj = fitgmdist(data, k, varargin)
   while (!isempty (prop))
     try
       switch (lower (prop{1}))
-        case {"sharedcovariance",...
-              "sharedcov"},          sharedCovar    = prop{2};
-        case {"covariancetype",...
-             "covartype"},           diagonalCovar  = prop{2};
-        case {"regularizationvalue",...
-              "regularize"},         Regularizer    = prop{2};
-        case "replicates",           replicates     = prop{2};
-        case "start",                start          = prop{2};
-        case "weights",              weights        = prop{2};
-
-        case "option"
-            option.MaxIter = prop{2}.MaxIter;
-            option.TolFun  = prop{2}.TolFun;
-            option.Display = prop{2}.Display;
-
+        case {"sharedcovariance", "sharedcov"}
+          sharedCovar = prop{2};
+        case {"covariancetype", "covartype"}
+          diagonalCovar  = prop{2};
+        case {"regularizationvalue", "regularize"}
+          Regularizer = prop{2};
+        case "replicates"
+          replicates = prop{2};
+        case "start"
+          start = prop{2};
+        case "weights"
+          weights = prop{2};
+        case "options"
+          option.MaxIter = prop{2}.MaxIter;
+          option.TolFun  = prop{2}.TolFun;
+          option.Display = prop{2}.Display;
         otherwise
           error ("fitgmdist: Unknown option %s", prop{1});
       endswitch
@@ -194,8 +196,8 @@ function obj = fitgmdist(data, k, varargin)
         if (isfield (start, 'ComponentProportion'))
           p = start.ComponentProportion(:)';
         end
-        if (any (size (data, 2) ~= [size(mu,2), size(Sigma)]) || ...
-            any (k ~= [size(mu,1), size(p,2)]))
+        if (any (size (data, 2) != [size(mu, 2), size(Sigma, 1)]) || ...
+            any (k != [size(mu,1), size(p,2)]))
           error ('fitgmdist: Start parameter has mismatched dimensions');
         endif
       catch
@@ -513,10 +515,10 @@ function obj = fitgmdist(data, k, varargin)
   endif
 endfunction
 
-%!xdemo <50286>
+%!demo
 %! ## Generate a two-cluster problem
-%! C1 = randn (100, 2) + 1;
-%! C2 = randn (100, 2) - 1;
+%! C1 = randn (100, 2) + 2;
+%! C2 = randn (100, 2) - 2;
 %! data = [C1; C2];
 %!
 %! ## Perform clustering
@@ -527,7 +529,15 @@ endfunction
 %! [heights, bins] = hist3([C1; C2]);
 %! [xx, yy] = meshgrid(bins{1}, bins{2});
 %! bbins = [xx(:), yy(:)];
-%! contour (reshape (GMModel.pdf (bbins), heights));
-%! hold on
-%! plot (centers (:, 1), centers (:, 2), "kv", "markersize", 10);
-%! hold off
+%! contour (reshape (GMModel.pdf (bbins), size (heights)));
+
+%!demo
+%! Angle_Theta = [ 30 + 10 * randn(1, 10),  60 + 10 * randn(1, 10) ]';
+%! nbOrientations = 2;
+%! initial_orientations = [38.0; 18.0];
+%! initial_weights = ones (1, nbOrientations) / nbOrientations;
+%! initial_Sigma = 10 * ones (1, 1, nbOrientations);
+%! start = struct ("mu", initial_orientations, "Sigma", initial_Sigma, ...
+%!                 "ComponentProportion", initial_weights);
+%! GMModel_Theta = fitgmdist (Angle_Theta, nbOrientations, "Start", start , ...
+%!                            "RegularizationValue", 0.0001)
