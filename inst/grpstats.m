@@ -59,7 +59,7 @@
 ##
 ## @example
 ## load carsmall;
-## [m,p,g] = grpstats (Weight, Model_Year, {"mean", "predci", "gname"})
+## [m,p,g] = grpstats (Weight, Model_Year, @{"mean", "predci", "gname"@})
 ## n = length(m);
 ## errorbar((1:n)',m,p(:,2)-m)
 ## set (gca, "xtick", 1:n, "xticklabel", g);
