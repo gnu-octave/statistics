@@ -1,0 +1,10 @@
+dirlist = {"datasets", "distributions"};
+dirname = fileparts (canonicalize_file_name (mfilename ("fullpath")));
+
+for ii=1:length (dirlist)
+  addpath (fullfile (dirname, "..", dirlist{ii}))
+endfor
+
+clear dirlist dirname ii
+
+warning ("off", "Octave:data-file-in-path")

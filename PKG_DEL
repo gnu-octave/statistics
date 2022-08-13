@@ -1,1 +1,10 @@
 clear -f libsvmread libsvmwrite svmpredict svmtrain
+
+dirlist = {"datasets", "distributions"};
+dirname = fileparts (canonicalize_file_name (mfilename ("fullpath")));
+
+for ii=1:length (dirlist)
+  rmpath (fullfile (dirname, "..", dirlist{ii}))
+endfor
+
+clear dirlist dirname ii

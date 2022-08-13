@@ -20,7 +20,7 @@
 ## @deftypefnx {} {} logistic_cdf (@var{x}, @var{mu}, @var{scale})
 ## For each element of @var{x}, compute the cumulative distribution function
 ## (CDF) at @var{x} of the logistic distribution with mean @var{mu} and scale
-## parameter @{scale}.
+## parameter @var{scale}.
 ## @end deftypefn
 
 ## Author: KH <Kurt.Hornik@wu-wien.ac.at>

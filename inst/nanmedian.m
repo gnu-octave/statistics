@@ -67,3 +67,10 @@ function v = nanmedian (X, varargin)
     error ("nanmedian: invalid matrix argument");
   endif
 endfunction
+
+%!error nanmedian (4)
+%!error nanmedian ()
+%!error nanmedian ([2,3,4], 34, "option")
+%!test
+%! x = [1 2 nan 3 4 5];
+%! assert (nanmedian (x), median (x(! isnan (x))), 10*eps)

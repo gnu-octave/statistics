@@ -6,6 +6,6 @@ Maintainer: Andreas Bertsatos <abertsatos@biol.uoa.gr>
 Title: Statistics
 Description: The Statistics package for GNU Octave.
 Categories: Statistics
-Depends: octave (>= 6.1.0), io (>= 1.0.18)
+Depends: octave (>= 6.1.0)
 License: GPLv3+, public domain
 Url: https://github.com/gnu-octave/statistics

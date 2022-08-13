@@ -18,8 +18,8 @@
 ## @deftypefnx{Function File} {@var{v} =} nanmean (@var{X}, @var{dim})
 ## Compute the mean value while ignoring NaN values.
 ##
-## @code{nanmean} is identical to the @code{mean} function except that NaN values
-## are ignored.  If all values are NaN, the mean is returned as NaN. 
+## This is a legacy function.  It is best to use the @code{mean} function with
+## the "omitnan" flag. 
 ##
 ## @seealso{mean, nanmin, nanmax, nansum, nanmedian}
 ## @end deftypefn
@@ -34,3 +34,7 @@ function v = nanmean (X, varargin)
     v = sum (X, varargin{:}) ./ n;
   endif
 endfunction
+
+%!test
+%! x = [1 2 nan 3 4 5];
+%! assert (nanmean (x), mean (x(! isnan (x)), "omitnan"), 10*eps)

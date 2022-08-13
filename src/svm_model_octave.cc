@@ -23,7 +23,7 @@ this program; if not, see <http://www.gnu.org/licenses/>.
 #include <octave/dMatrix.h>
 #include <octave/dColVector.h>
 #include <string.h>
-#include "../svm.h"
+#include "svm.h"
 
 #define NUM_OF_RETURN_FIELD 11
 

@@ -1,21 +1,32 @@
 Summary of important user-visible changes for statistics 1.5.0:
 -------------------------------------------------------------------
 
- Important Notice: dependency change to Octave>=6.1.0
-                   mean shadows core Octave's respective function
+ Important Notice: 1) dependency change to Octave>=6.1.0
+                   2) `mean` shadows core Octave's respective function
+                   3) removed dependency on `io` package
  
  New functions:
  ==============
  
  ** anova2 (fully Matlab compatible)
  
+ ** cdfcalc, cdfplot
+ 
  ** chi2gof (fully Matlab compatible. bug #46764)
+ 
+ ** f2fx (missing function: bug #48146)
  
  ** friedman (fully Matlab compatible)
  
  ** fillmissing (patch #10102)
  
+ ** grpstats (complementary to manova1)
+ 
  ** libsvmread, libsvmwrite (I/O functions for LIBSVM data files)
+ 
+ ** manova1 (fully Matlab compatible)
+ 
+ ** manovacluster (fully Matlab compatible)
  
  ** mean (fully Matlab compatible, it shadows mean from core Octave)
  
@@ -51,12 +62,16 @@ Summary of important user-visible changes for statistics 1.5.0:
  ** ismissing.m: corrects handling of n-D arrays, NaN indicators, and improves
     matlab compatibility for different data types. (patch #10102)
  
+ ** kmeans.m: improved help file, evaluate efficieny (bug #8959)
+ 
  ** laplace_cdf.m: allow for parameters mu and scale (bug #58688)
     laplace_inv.m
     laplace_pdf.m
     logistic_cdf.m
     logistic_inv.m
     logistic_pdf.m
+ 
+ ** normplot.m: fix ploting error (bug #62394), updated features
  
  ** pdf.m: extended to include all available distributions
     
@@ -76,498 +91,35 @@ Summary of important user-visible changes for statistics 1.5.0:
  Removed Functions:
  ==================
  
- ** wilcoxon_test (replaced by ranksum)
+ ** anova (replaced by anova1)
+ 
+ ** caseread, casewrite (do not belong here)
  
  ** kruskal_wallis_test (replaced by kruskalwallis)
  
+ ** manova (replaced by manova1)
+ 
  ** sign_test (replaced by updated signtest)
+ 
+ ** tblread, tblwrite (belong to `io` package when tables are implemented)
+ 
+ ** wilcoxon_test (replaced by ranksum)
  
  Available Data Sets:
  ====================
  
- ** acetylene     Chemical reaction data with correlated predictors
- ** arrhythmia    Cardiac arrhythmia data from the UCI machine learning repository
- ** carbig        Measurements of cars, 1970–1982
- ** carsmall      Subset of carbig. Measurements of cars, 1970, 1976, 1982
- ** cereal        Breakfast cereal ingredients
- ** examgrades    Exam grades on a scale of 0–100
- ** fisheriris    Fisher's 1936 iris data
- ** hald          Heat of cement vs. mix of ingredients
- ** kmeansdata    Four-dimensional clustered data
- ** mileage       Mileage data for three car models from two factories
- ** morse         Recognition of Morse code distinctions by non-coders
- ** popcorn       Popcorn yield by popper type and brand
- ** stockreturns  Simulated stock returns
- ** weather       Daily high temperatures in the same month in two consecutive years
-
-Summary of important user-visible changes for statistics 1.4.3:
--------------------------------------------------------------------
-
- New functions:
- ==============
-
- ** anova1            (patch #10127)
-    kruskalwallis
-
- ** cluster            (patch #10009)
-
- ** clusterdata        (patch #10012)
-
- ** confusionchart     (patch #9985)
-
- ** confusionmat       (patch #9971)
-
- ** cophenet           (patch #10040)
-
- ** datasample         (patch #10050)
-
- ** evalclusters       (patch #10052)
-
- ** expfit             (patch #10092)
-    explike
-
- ** gscatter           (patch #10043)
-
- ** ismissing          (patch #10102)
-
- ** inconsistent       (patch #10008)
-
- ** mhsample.m         (patch #10016)
-
- ** ncx2pdf            (patch #9711)
-
- ** optimalleaforder.m (patch #10034)
-
- ** pca                (patch #10104)
-
- ** rmmissing          (patch #10102)
-
- ** silhouette         (patch #9743)
-
- ** slicesample        (patch #10019)
-
- ** wblplot            (patch #8579)
-
- Improvements:
- =============
-
- ** anovan.m: use double instead of toascii (bug #60514)
-
- ** binocdf: new option "upper" (bug #43721)
-
- ** boxplot: better Matlab compatibility; several Matlab-compatible
-    plot options added (OutlierTags, Sample_IDs, BoxWidth, Widths,
-    BoxStyle, Positions, Labels, Colors) and an Octave-specific one
-    (CapWidhts); demos added; texinfo improved (patch #9930)
-
- ** auto MPG (carbig) sample dataset added from
-    https://archive.ics.uci.edu/ml/datasets/Auto+MPG (patch #10045)
-
- ** crosstab.m: make n-dimensional (patch #10014)
-
- ** dendrogram.m: many improvements (patch #10036)
-
- ** fitgmdist.m: fix typo in ComponentProportion (bug #59386)
-
- ** gevfit: change orientation of results for Matlab compatibility (bug #47369)
-
- ** hygepdf: avoid overflow for certain inputs (bug #35827)
-
- ** kmeans: efficiency and compatibility tweaks (patch #10042)
-
- ** pdist: option for squared Euclidean distance (patch #10051)
-
- ** stepwisefit.m: give another option to select predictors (patch #8584)
-
- ** tricdf, triinv: fixes (bug #60113)
-
-
-Summary of important user-visible changes for statistics 1.4.2:
--------------------------------------------------------------------
-
- ** canoncorr: allow more variables than observations
-
- ** fitgmdist: return fitgmdist parameters (Bug #57917)
-
- ** gamfit: invert parameter per docs (Bug #57849)
-
- ** geoXXX: update docs 'number of failures (X-1)' => 'number of failures (X)' (Bug #57606)
-
- ** kolmogorov_smirnov_test.m: update function handle usage from octave6+ (Bug #57351)
-
- ** linkage.m: fix octave6+ parse error (Bug #57348)
-
- ** unifrnd: changed unifrnd(a,a) to return a 0 rather than NaN (Bug #56342)
-
- ** updates for usage of depreciated octave functions
-
-Summary of important user-visible changes for statistics 1.4.1:
--------------------------------------------------------------------
- ** update install scripts for octave 5.0 depreciated functions
-
- ** bug fixes to the following functions:
-      pdist2.m: use max in distEucSq (Bug #50377)
-      normpdf: use eps tolerance in tests (Bug #51963)
-      fitgmdist: fix an output bug in fitgmdist
-      t_test: Set tolerance on t_test BISTS (Bug #54557)
-      gpXXXXX: change order of inputs to match matlab (Bug #54009)
-      bartlett_test: df = k-1 (Bug #45894)
-      gppdf: apply scale factor (Bug #54009)
-      gmdistribution: updates for bug #54278, ##54279
-      wishrnd: Bug #55860
-
-Summary of important user-visible changes for statistics 1.4.0:
--------------------------------------------------------------------
-
- ** The following functions are new:
-
-      canoncorr
-      fitgmdist
-      gmdistribution
-      sigma_pts
-
- ** The following functions have been moved from the statistics package but are
-    conditionally installed:
-
-      mad
-
- ** The following functions have been moved from octave to be conditionally
-    installed:
-
-    BASE
-      cloglog
-      logit
-      prctile
-      probit
-      qqplot
-      table  (renamed to crosstab)
-
-    DISTRIBUTIONS
-      betacdf
-      betainv
-      betapdf
-      betarnd
-      binocdf
-      binoinv
-      binopdf
-      binornd
-      cauchy_cdf
-      cauchy_inv
-      cauchy_pdf
-      cauchy_rnd
-      chi2cdf
-      chi2inv
-      chi2pdf
-      chi2rnd
-      expcdf
-      expinv
-      exppdf
-      exprnd
-      fcdf
-      finv
-      fpdf
-      frnd
-      gamcdf
-      gaminv
-      gampdf
-      gamrnd
-      geocdf
-      geoinv
-      geopdf
-      geornd
-      hygecdf
-      hygeinv
-      hygepdf
-      hygernd
-      kolmogorov_smirnov_cdf
-      laplace_cdf
-      laplace_inv
-      laplace_pdf
-      laplace_rnd
-      logistic_cdf
-      logistic_inv
-      logistic_pdf
-      logistic_rnd
-      logncdf
-      logninv
-      lognpdf
-      lognrnd
-      nbincdf
-      nbininv
-      nbinpdf
-      nbinrnd
-      normcdf
-      norminv
-      normpdf
-      normrnd
-      poisscdf
-      poissinv
-      poisspdf
-      poissrnd
-      stdnormal_cdf
-      stdnormal_inv
-      stdnormal_pdf
-      stdnormal_rnd
-      tcdf
-      tinv
-      tpdf
-      trnd
-      unidcdf
-      unidinv
-      unidpdf
-      unidrnd
-      unifcdf
-      unifinv
-      unifpdf
-      unifrnd
-      wblcdf
-      wblinv
-      wblpdf
-      wblrnd
-      wienrnd
-
-    MODELS
-      logistic_regression
-
-    TESTS
-      anova
-      bartlett_test
-      chisquare_test_homogeneity
-      chisquare_test_independence
-      cor_test
-      f_test_regression
-      hotelling_test
-      hotelling_test_2
-      kolmogorov_smirnov_test
-      kolmogorov_smirnov_test_2
-      kruskal_wallis_test
-      manova
-      mcnemar_test
-      prop_test_2
-      run_test
-      sign_test
-      t_test
-      t_test_2
-      t_test_regression
-      u_test
-      var_test
-      welch_test
-      wilcoxon_test
-      z_test
-      z_test_2
-
- ** Functions marked with known test failures:
-      grp2idx: bug #51928
-      gevfir_lmom: bug #31070
-
- ** Other functions that have been changed for smaller bugfixes, increased
-    Matlab compatibility, or performance:
-
-      dcov: returned dcov instead of dcor. added demo.
-      violin: can be used with subplots. violin quality improved.
-      princomp: Fix expected values of tsquare in unit tests
-      fitgmdist: test number inputs to function
-      hist3: fix removal of rows with NaN values
-
- ** added the packages test data to install
-
-
-Summary of important user-visible changes for statistics 1.3.0:
--------------------------------------------------------------------
-
- ** The following functions are new:
-
-      bbscdf bbsinv bbspdf bbsrnd
-      binotest
-      burrcdf burrinv burrpdf burrrnd
-      gpcdf gpinv gppdf gprnd
-      grp2idx
-      mahal
-      mvtpdf
-      nakacdf nakainv nakapdf nakarnd
-      pdf
-      tricdf triinv tripdf trirnd
-      violin
-
- ** Other functions that have been changed for smaller bugfixes, increased
-    Matlab compatibility, or performance:
-
-      betastat
-      binostat
-      cdf
-      combnk
-      gevfit
-      hist3
-      kmeans
-      linkage
-      randsample
-      squareform
-      ttest
-
-
-Summary of important user-visible changes for statistics 1.2.4:
--------------------------------------------------------------------
-
- ** Made princomp work with nargout < 2.
-
- ** Renamed dendogram to dendrogram.
-
- ** Added isempty check to kmeans.
-
- ** Transposed output of hist3.
-
- ** Converted calculation in hmmviterbi to log space.
-
- ** Bug fixes for
-    stepwisefit   wishrnd.
-
- ** Rewrite of cmdscale for improved compatibility.
-
- ** Fix in squareform for improved compatibility.
-
- ** New cvpartition class, with methods:
-
-    display repartition test training
-
- ** New sample data file fisheriris.txt for tests
-
- ** The following functions are new:
-
-    cdf crossval dcov pdist2 qrandn randsample signtest ttest ttest2
-    vartest vartest2 ztest
-
-
-Summary of important user-visible changes for statistics 1.2.3:
--------------------------------------------------------------------
-
- ** Made sure that output of nanstd is real.
-
- ** Fixed second output of nanmax and nanmin.
-
- ** Corrected handle for outliers in boxplot.
-
- ** Bug fix and enhanced functionality for mvnrnd.
-
- ** The following functions are new:
-
-    wishrnd iwishrnd wishpdf iwishpdf cmdscale
-
-Summary of important user-visible changes for statistics 1.2.2:
--------------------------------------------------------------------
-
- ** Fixed documentation of dendogram and hist3 to work with TexInfo 5.
-
-Summary of important user-visible changes for statistics 1.2.1:
--------------------------------------------------------------------
-
- ** The following functions are new:
-
-      pcares  pcacov  runstest  stepwisefit hist3
-
- ** dendogram now returns the leaf node numbers and order that the nodes were displayed in.
-
- ** New faster implementation of princomp.
-
-Summary of important user-visible changes for statistics 1.2.0:
--------------------------------------------------------------------
-
- ** The following functions are new:
-
-      regress_gp  dendogram   plsregress
-
- ** New functions for the generalized extreme value (GEV) distribution:
-
-      gevcdf gevfit gevfit_lmom gevinv gevlike gevpdf gevrnd gevstat
-
- ** The interface of the following functions has been modified:
-
-      mvnrnd
-
- ** `kmeans' has been fixed to deal with clusters that contain only
-    one element.
-
- ** `normplot' has been fixed to avoid use of functions that have been
-    removed from Octave core. Also, the plot produced should now display some
-    aesthetic elements and appropriate legends.
-
- ** The help text of `mvtrnd' has been improved.
-
- ** Package is no longer autoloaded.
-
-Summary of important user-visible changes for statistics 1.1.3:
--------------------------------------------------------------------
-
- ** The following functions are new in 1.1.3:
-
-      copularnd mvtrnd
-
- ** The functions mnpdf and mnrnd are now also usable for greater numbers
-    of categories for which the rows do not exactly sum to 1.
-
-Summary of important user-visible changes for statistics 1.1.2:
--------------------------------------------------------------------
-
- ** The following functions are new in 1.1.2:
-
-      mnpdf mnrnd
-
- ** The package is now dependent on the io package (version 1.0.18 or
-    later) since the functions that it depended of from miscellaneous
-    package have been moved to io.
-
- ** The function `kmeans' now accepts the 'emptyaction' property with
-    the 'singleton' value. This allows for the kmeans algorithm to handle
-    empty cluster better. It also throws an error if the user does not
-    request an empty cluster handling, and there is an empty cluster.
-    Plus, the returned items are now a closer match to Matlab.
-
-Summary of important user-visible changes for statistics 1.1.1:
--------------------------------------------------------------------
-
- ** The following functions are new in 1.1.1:
-
-      monotone_smooth kmeans jackknife
-
- ** Bug fixes on the functions:
-
-      normalise_distribution  combnk
-      repanova
-
- ** The following functions were removed since equivalents are now
-    part of GNU octave core:
-
-      zscore
-
- ** boxplot.m now returns a structure with handles to the plot elemenets.
-
-Summary of important user-visible changes for statistics 1.1.0:
--------------------------------------------------------------------
-
- ** IMPORTANT note about `fstat' shadowing core library function:
-
-    GNU octave's 3.2 release added a new function `fstat' to return
-    information of a file. Statistics' `fstat' computes F mean and
-    variance. Since MatLab's `fstat' is the equivalent to statistics'
-    `fstat' (not to core's `fstat'), and to avoid problems with the
-    statistics package, `fstat' has been deprecated in octave 3.4
-    and will be removed in Octave 3.8. In the mean time, please
-    ignore this warning when installing the package.
-
- ** The following functions are new in 1.1.0:
-
-      normalise_distribution  repanova  combnk
-
- ** The following functions were removed since equivalents are now
-    part of GNU octave core:
-
-      prctile
-
- ** The __tbl_delim__ function is now private.
-
- ** The function `boxplot' now accepts named arguments.
-
- ** Bug fixes on the functions:
-
-      harmmean  nanmax  nanmin  regress
-
- ** Small improvements on help text.
+ ** acetylene         Chemical reaction data with correlated predictors
+ ** arrhythmia        Cardiac arrhythmia data from the UCI machine learning repository
+ ** carbig            Measurements of cars, 1970–1982
+ ** carsmall          Subset of carbig. Measurements of cars, 1970, 1976, 1982
+ ** cereal            Breakfast cereal ingredients
+ ** examgrades        Exam grades on a scale of 0–100
+ ** fisheriris        Fisher's 1936 iris data
+ ** hald              Heat of cement vs. mix of ingredients
+ ** heart_scale.dat   Used for SVM testing
+ ** kmeansdata        Four-dimensional clustered data
+ ** mileage           Mileage data for three car models from two factories
+ ** morse             Recognition of Morse code distinctions by non-coders
+ ** popcorn           Popcorn yield by popper type and brand
+ ** stockreturns      Simulated stock returns
+ ** weather           Daily high temperatures in the same month in two consecutive years

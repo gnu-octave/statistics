@@ -128,7 +128,7 @@ specified by @var{filename}.  @var{data} must be a sparse matrix.  Both \
 
 /*
 %!shared L, D
-%! [L, D] = libsvmread ("heart_scale.dat");
+%! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
 %!error <libsvmwrite: error opening file for write.> libsvmwrite ("", L, D);
 %!error <libsvmwrite: length of label vector does not match instances.> libsvmwrite ("filename", [L;L], D);
 %!error <libsvmwrite: wrong number of output arguments.> OUT = libsvmwrite ("filename", L, D);

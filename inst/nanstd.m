@@ -1,4 +1,5 @@
 ## Copyright (C) 2001 Paul Kienzle <pkienzle@users.sf.net>
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -19,24 +20,24 @@
 ## @deftypefnx{Function File} {@var{v} =} nanstd (@var{X}, @var{opt}, @var{dim})
 ## Compute the standard deviation while ignoring NaN values.
 ##
-## @code{nanstd} is identical to the @code{std} function except that NaN values are
-## ignored.  If all values are NaN, the standard deviation is returned as NaN.
-## If there is only a single non-NaN value, the deviation is returned as 0. 
+## @code{nanstd} is identical to the @code{std} function except that NaN values
+## are ignored.  If all values are NaN, the standard deviation is returned as
+## NaN.  If there is only a single non-NaN value, the deviation is returned as 0. 
 ##
-## The argument @var{opt} determines the type of normalization to use. Valid values
-## are
+## The argument @var{opt} determines the type of normalization to use. Valid
+## values are:
 ##
 ## @table @asis 
 ## @item 0:
-##   normalizes with @math{N-1}, provides the square root of best unbiased estimator of 
-##   the variance [default]
+##   normalizes with @math{N-1}, provides the square root of best unbiased
+##   estimator of the variance [default]
 ## @item 1:
-##   normalizes with @math{N}, this provides the square root of the second moment around 
-##   the mean
+##   normalizes with @math{N}, this provides the square root of the second
+##   moment around  the mean
 ## @end table
 ##
-## The third argument @var{dim} determines the dimension along which the standard
-## deviation is calculated.
+## The third argument @var{dim} determines the dimension along which the
+## standard deviation is calculated.
 ##
 ## @seealso{std, nanmin, nanmax, nansum, nanmedian, nanmean}
 ## @end deftypefn
@@ -86,3 +87,11 @@ function v = nanstd (X, opt, varargin)
     v = real (v);
   endif
 endfunction
+
+## Tests
+%!shared x
+%! x = [1 2 nan 3 4 5];
+%!assert (nanstd (x), std (x(! isnan (x))), 10*eps)
+%!assert (nanstd (x,1), std (x(! isnan (x)),1), 10*eps)
+%!assert (nanstd ([x',x'], [], 1), std ([x(! isnan (x))',x(! isnan (x))'], [], 1), 10*eps)
+%!assert (nanstd ([x;x], [], 2), std ([x(! isnan (x));x(! isnan (x))], [], 2), 10*eps)

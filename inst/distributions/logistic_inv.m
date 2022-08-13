@@ -20,7 +20,7 @@
 ## @deftypefnx {} {} logistic_pdf (@var{x}, @var{mu}, @var{scale})
 ## For each element of @var{x}, compute the quantile (the inverse of the CDF)
 ## at @var{x} of the logistic distribution with mean @var{mu} and scale
-## parameter @{scale}.
+## parameter @var{scale}.
 ## @end deftypefn
 
 ## Author: KH <Kurt.Hornik@wu-wien.ac.at>
@@ -49,7 +49,7 @@ function inv = logistic_inv (x, mu = 0, scale = 1)
   inv(k) = Inf;
 
   k = (x > 0) & (x < 1);
-  inv(k) = mu + scale * log (x(k) / (1 - x(k)));
+  inv(k) = mu + scale * log (x(k) ./ (1 - x(k)));
 
 endfunction
 
@@ -57,6 +57,10 @@ endfunction
 %!shared x
 %! x = [-1 0 0.5 1 2];
 %!assert (logistic_inv (x), [NaN -Inf 0 Inf NaN])
+
+%!test
+%! p = [0.01:0.01:0.99];
+%! assert (logistic_inv (p), log (p ./ (1-p)), 25*eps);
 
 ## Test class of input preserved
 %!assert (logistic_inv ([x, NaN]), [NaN -Inf 0 Inf NaN NaN])

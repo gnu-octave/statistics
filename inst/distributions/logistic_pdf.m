@@ -18,7 +18,7 @@
 ## @deftypefn {} {} logistic_pdf (@var{x})
 ## @deftypefnx {} {} logistic_pdf (@var{x}, @var{mu}, @var{scale})
 ## For each element of @var{x}, compute the PDF at @var{x} of the
-## logistic distribution with mean @var{mu} and scale parameter @{scale}.
+## logistic distribution with mean @var{mu} and scale parameter @var{scale}.
 ## @end deftypefn
 
 ## Author: KH <Kurt.Hornik@wu-wien.ac.at>
