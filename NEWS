@@ -24,6 +24,8 @@ Summary of important user-visible changes for statistics 1.5.0:
  
  ** manova1 (fully Matlab compatible)
  
+ ** manovacluster (fully Matlab compatible)
+ 
  ** mean (fully Matlab compatible, it shadows mean from core Octave)
  
  ** ranksum (fully Matlab compatible. bug #42079)
