@@ -6,3 +6,5 @@ for ii=1:length (dirlist)
 endfor
 
 clear dirlist dirname ii
+
+warning ("off", "Octave:data-file-in-path")
