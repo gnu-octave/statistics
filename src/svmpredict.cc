@@ -447,7 +447,7 @@ same as 'Label' field in the @var{model} structure. \
 
 /*
 %!test
-%! [L, D] = libsvmread ("heart_scale.dat");
+%! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
 %! model = svmtrain (L, D, '-c 1 -g 0.07');
 %! [predict_label, accuracy, dec_values] = svmpredict (L, D, model);
 %! assert (size (predict_label), size (dec_values));
@@ -456,7 +456,7 @@ same as 'Label' field in the @var{model} structure. \
 %! assert (dec_values(2), -0.3212992933043805, 1e-14);
 %! assert (predict_label(1), 1);
 %!shared L, D, model
-%! [L, D] = libsvmread ("heart_scale.dat");
+%! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
 %! model = svmtrain (L, D, '-c 1 -g 0.07');
 %!error <svmpredict: wrong number of output arguments.> [p, a] = svmpredict (L, D, model);
 %!error <svmpredict: wrong number of input arguments.> p = svmpredict (L, D);

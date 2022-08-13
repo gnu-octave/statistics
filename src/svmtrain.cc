@@ -564,7 +564,7 @@ accuracy for classification and mean-squared error for regression. \
 
 /*
 %!test
-%! [L, D] = libsvmread ("heart_scale.dat");
+%! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
 %! model = svmtrain(L, D, '-c 1 -g 0.07');
 %! [predict_label, accuracy, dec_values] = svmpredict(L, D, model);
 %! assert (isstruct (model), true);
@@ -573,7 +573,7 @@ accuracy for classification and mean-squared error for regression. \
 %! assert (model.nr_class, 2);
 %! assert (size (model.Label), [2, 1]);
 %!shared L, D
-%! [L, D] = libsvmread ("heart_scale.dat");
+%! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
 %!error <svmtrain: wrong number of output arguments.> [L, D] = svmtrain (L, D);
 %!error <svmtrain: label vector and instance matrix must be double.> model = svmtrain (single (L), D);
 %!error <svmtrain: wrong number of input arguments.> model = svmtrain (L, D, "", "");

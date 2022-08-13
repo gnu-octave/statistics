@@ -228,11 +228,11 @@ function. \
 %!error <libsvmread: filename must be a string.> [L, D] = libsvmread (24);
 %!error <libsvmread: wrong number of input or output arguments.> D = libsvmread ("filename");
 %!test
-%! [L, D] = libsvmread ("heart_scale.dat");
+%! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
 %! assert (size (L), [270, 1]);
 %! assert (size (D), [270, 13]);
 %!test
-%! [L, D] = libsvmread ("heart_scale.dat");
+%! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
 %! assert (issparse (L), false);
 %! assert (issparse (D), true);
 */
