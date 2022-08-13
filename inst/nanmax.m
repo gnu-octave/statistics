@@ -51,3 +51,9 @@ function [v, idx] = nanmax (X, Y, DIM)
     v(Xnan & Ynan) = NaN;
   endif
 endfunction
+
+%!assert (nanmax ([2 4 NaN 7]), 7)
+%!assert (nanmax ([2 4 NaN Inf]), Inf)
+%!assert (nanmax ([1 NaN 3; NaN 5 6; 7 8 NaN]), [7, 8, 6])
+%!assert (nanmax ([1 NaN 3; NaN 5 6; 7 8 NaN]'), [3, 6, 8])
+%!assert (nanmax (single ([1 NaN 3; NaN 5 6; 7 8 NaN])), single ([7 8 6]))

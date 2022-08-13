@@ -1,5 +1,6 @@
 ## Copyright (C) 2001 Paul Kienzle <pkienzle@users.sf.net>
 ## Copyright (C) 2003 Alois Schloegl <alois.schloegl@ist.ac.at>
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -52,3 +53,9 @@ function [v, idx] = nanmin (X, Y, DIM)
     v(Xnan & Ynan) = NaN;
   endif
 endfunction
+
+%!assert (nanmin ([2 4 NaN 7]), 2)
+%!assert (nanmin ([2 4 NaN Inf]), 2)
+%!assert (nanmin ([1 NaN 3; NaN 5 6; 7 8 NaN]), [1, 5, 3])
+%!assert (nanmin ([1 NaN 3; NaN 5 6; 7 8 NaN]'), [1, 5, 7])
+%!assert (nanmin (single ([1 NaN 3; NaN 5 6; 7 8 NaN])), single ([1 5 3]))
