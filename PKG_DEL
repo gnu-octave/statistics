@@ -7,4 +7,4 @@ for ii=1:length (dirlist)
   rmpath (fullfile (dirname, "..", dirlist{ii}))
 endfor
 
-clear dirlist dirname
+clear dirlist dirname ii
