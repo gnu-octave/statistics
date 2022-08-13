@@ -149,9 +149,9 @@ function results = crossval (f, X, y, varargin)
 endfunction
 
 %!test
-%! load fisheriris.txt
-%! y = fisheriris(:, 2);
-%! X = [ones(size(y)) fisheriris(:, 3:5)];
+%! load fisheriris
+%! y = meas(:, 1);
+%! X = [ones(size(y)) meas(:, 2:4)];
 %! f = @(X1, y1, X2, y2) meansq (y2 - X2*regress(y1, X1));
 %! results0 = crossval (f, X, y);
 %! results1 = crossval (f, X, y, 'KFold', 10);
@@ -164,11 +164,11 @@ endfunction
 %!
 %! ## ensure equal representation of iris species in the training set -- tends
 %! ## to slightly reduce cross-validation mean square error 
-%! results6 = crossval (f, X, y, 'KFold', 5, 'stratify', fisheriris(:, 1));
+%! results6 = crossval (f, X, y, 'KFold', 5, 'stratify', grp2idx(species));
 %!
 %! assert (results0, results1);
 %! assert (results2, results3);
 %! assert (size(results4), [1 numel(y)]);
-%! assert (mean(results4), 4.5304, 1E-4);
+%! assert (mean(results4), 0.1018, 1e-4);
 %! assert (size(results5), [mcreps 1]);
 
