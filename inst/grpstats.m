@@ -71,7 +71,7 @@
 
 function [varargout] = grpstats (x ,group, whichstats, alpha)
   ## Check input arguments
-  narginchk(1,4)
+  narginchk (1, 4)
   ## Check X being a vector or 2d matrix of real values
   if ndims (x) > 2 || ! isnumeric (x) || islogical (x)
     error ("grpstats: X must be a vector or 2d matrix of real values.");
