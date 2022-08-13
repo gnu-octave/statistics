@@ -10,6 +10,8 @@ Summary of important user-visible changes for statistics 1.5.0:
  
  ** anova2 (fully Matlab compatible)
  
+ ** cdfcalc, cdfplot
+ 
  ** chi2gof (fully Matlab compatible. bug #46764)
  
  ** f2fx (missing function: bug #48146)
@@ -68,6 +70,8 @@ Summary of important user-visible changes for statistics 1.5.0:
     logistic_cdf.m
     logistic_inv.m
     logistic_pdf.m
+ 
+ ** normplot.m: fix ploting error (bug #62394), updated features
  
  ** pdf.m: extended to include all available distributions
     
