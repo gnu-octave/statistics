@@ -21,15 +21,20 @@
 ## @deftypefnx {Function File} normplot (@var{ax}, @var{x})
 ## @deftypefnx {Function File} @var{h} = normplot (@dots{})
 ##
-## Produce normal probability plot for each column of @var{x}.
+## Produce normal probability plot of the data in @var{x}.  If @var{x} is a
+## matrix, @code{normplot} plots the data for each column.  NaN values are
+## ignored.
 ##
-## The line joing the 1st and 3rd quantile is drawn on the
-## graph.  If the underlying distribution is normal, the
-## points will cluster around this line.
+## @code{@var{h} = normplot (@var{ax}, @var{x})} takes a handle @var{ax} in
+## addition to the data in @var{x} and it uses that axes for ploting.  You may
+## get this handle of an existing plot with @code{gca}/.
 ##
-## Note that this function sets the title, xlabel, ylabel,
-## axis, grid, tics and hold properties of the graph.  These 
-## need to be cleared before subsequent graphs using 'clf'.
+## The line joing the 1st and 3rd quantile is drawn solid whereas its extensions
+## to both ends are dotted.  If the underlying distribution is normal, the
+## points will cluster around the solid part of the line.  Other distribution
+## types will introduce curvature in the plot.
+##
+## @seealso{cdfplot, wblplot}
 ## @end deftypefn
 
 function h = normplot (varargin)
