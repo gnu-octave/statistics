@@ -333,11 +333,13 @@ endfunction
 
 %!test
 %! data = exprnd (0.1, 500,4);
+%! h = figure ("visible", "off");
 %! violin (data, "color", jet(4));
 %! axis ([0 5 0 max(data(:))])
 %! close
 %!test
 %! data = {randn(100,1)*5+140, randn(130,1)*8+135};
+%! h = figure ("visible", "off");
 %! subplot (1,2,1)
 %! title ("Grade 3 heights - vertical");
 %! set (gca, "xtick", 1:2, "xticklabel", {"girls"; "boys"});
@@ -346,6 +348,7 @@ endfunction
 %! close
 %!test
 %! data = {randn(100,1)*5+140, randn(130,1)*8+135};
+%! h = figure ("visible", "off");
 %! subplot (1,2,1)
 %! title ("Grade 3 heights - vertical");
 %! set (gca, "xtick", 1:2, "xticklabel", {"girls"; "boys"});
@@ -359,11 +362,13 @@ endfunction
 %! close
 %!test
 %! data = repmat(exprnd (0.1, 500,1), 1, 4);
+%! h = figure ("visible", "off");
 %! violin (data, "nbins", [5,10,50,100], "smoothfactor", [4 4 8 10]);
 %! axis ([0 5 0 max(data(:))])
 %! close
 %!test
 %! data = repmat(exprnd (0.1, 500,1), 1, 4);
+%! h = figure ("visible", "off");
 %! violin (data, "width", linspace (0.1,0.5,4));
 %! axis ([0 5 0 max(data(:))])
 %! close
