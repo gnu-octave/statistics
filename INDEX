@@ -62,6 +62,7 @@ Regression
  anovan
  canoncorr
  crossval
+ manova1
  monotone_smooth
  pca
  pcacov
@@ -73,11 +74,13 @@ Regression
  stepwisefit
 Plots
  boxplot
+ cdfplot
  confusionchart
  dendrogram
  gscatter
  histfit
  hist3
+ manovacluster
  normplot
  ppplot
  qqplot
@@ -91,10 +94,15 @@ Models
  hmmviterbi
  mhsample
  slicesample
+ svmpredict
+ svmtrain
 Hypothesis testing
  anderson_darling_test
+ binotest
+ chi2gof
  friedman
  kruskalwallis
+ kstest2
  ranksum
  runstest
  signtest
@@ -121,10 +129,8 @@ Clustering
  pdist2
  squareform
 Reading and Writing
- caseread
- casewrite
- tblread
- tblwrite
+ libsvmread
+ libwvmwrite
 Cvpartition (class of set partitions for cross-validation, used in crossval)
  @cvpartition/cvpartition
  @cvpartition/display
@@ -135,6 +141,7 @@ Cvpartition (class of set partitions for cross-validation, used in crossval)
  @cvpartition/training
 Categorical data
  grp2idx
+ grpstats
 Classification Performance Evaluation
  confusionchart
  confusionmat
