@@ -108,8 +108,10 @@
 ## ANOVA table.
 ##
 ## [@var{P}, @var{T}, @var{STATS}] = anovan (@dots{}) returns a structure 
-## containing additional statistics, including coefficients of the linear model,
-## the model residuals, and the number of levels in each factor.
+## containing additional statistics, including coefficients, degrees of freedom 
+## and effect sizes for each term in the linear model (based on deviation 
+## contrasts), the design matrix, the variance-covariance matrix, model 
+## residuals, and the mean squared error.
 ## 
 ## [@var{P}, @var{T}, @var{STATS}, @var{TERMS}] = anovan (@dots{}) returns the
 ## model term definitions.
@@ -166,14 +168,14 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     if (prod (size (Y)) ~= n)
       error ("anovan: for ""anovan (Y, GROUP)"", Y must be a vector");
     endif
-    
     if (numel (unique (CONTINUOUS)) > N)
       error ("anovan: the number of factors assigned as continuous cannot exceed the number of factors in GROUP")
     endif
     if any ((CONTINUOUS > N) || any (CONTINUOUS <= 0))
       error ("anovan: one or more indices provided in the value for the continuous parameter are out of range")
     endif
-    
+    cont_vec = false (1, N);
+    cont_vec(CONTINUOUS) = true;
     if iscell(GROUP)
       if (size(GROUP, 1) == 1)
         for j = 1:N
@@ -286,6 +288,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       if (size (MODELTYPE, 2) > N)
         error (msg);
       endif
+      if ~all(ismember(MODELTYPE(:), [0,1]))
+        error ("anovan: elements of the model terms matrix must be either 0 or 1")
+      endif
       TERMS = logical (MODELTYPE);
     endif
     # Evaluate terms matrix
@@ -311,18 +316,19 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         # Type I sequential sums-of-squares (SSTYPE = 1)
         R = sst;
         ss = zeros (Nt,1);
-        [X, grpnames, nlevels, df, termcols, vmeans] = make_design_matrix (GROUP, TERMS, CONTINUOUS, n, Nm, Nx, Ng);
+        [X, grpnames, nlevels, df, termcols, vmeans, gid] = make_design_matrix (GROUP, TERMS, CONTINUOUS, n, Nm, Nx, Ng);
         for j = 1:Nt
           XS = cell2mat (X(1:j+1));
-          [b, sse, resid] = lmfit (XS, Y);
+          [b, sse] = lmfit (XS, Y);
           ss(j) = R - sse;
           R = sse;
         endfor
+        [b, sse, resid, ucov] = lmfit (XS, Y);
         sstype_char = "I";
       case {2,'h'}
         # Type II (hierarchical, or partially sequential) sums of squares
         ss = zeros (Nt,1);
-        [X, grpnames, nlevels, df, termcols, vmeans]  = make_design_matrix (GROUP, TERMS, CONTINUOUS, n, Nm, Nx, Ng);
+        [X, grpnames, nlevels, df, termcols, vmeans, gid]  = make_design_matrix (GROUP, TERMS, CONTINUOUS, n, Nm, Nx, Ng);
         for j = 1:Nt
           i = find (TERMS(j,:)); 
           k = cat (1, 1, 1 + find (any (~TERMS(:,i),2)));
@@ -333,13 +339,13 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           [jnk, R2] = lmfit (XS, Y);
           ss(j) = R1 - R2;
         endfor
-        [b, sse, resid] = lmfit (cell2mat (X), Y);
+        [b, sse, resid, ucov] = lmfit (cell2mat (X), Y);
         sstype_char = "II";
       case 3
         # Type III (constrained, marginal or orthogonal) sums of squares
         ss = zeros (Nt, 1);
-        [X, grpnames, nlevels, df, termcols, vmeans] = make_design_matrix (GROUP, TERMS, CONTINUOUS, n, Nm, Nx, Ng);
-        [b, sse, resid] = lmfit (cell2mat (X), Y);
+        [X, grpnames, nlevels, df, termcols, vmeans, gid] = make_design_matrix (GROUP, TERMS, CONTINUOUS, n, Nm, Nx, Ng);
+        [b, sse, resid, ucov] = lmfit (cell2mat (X), Y);
         for j = 1:Nt
           XS = cell2mat (X(1:Nt+1 ~= j+1));
           [jnk, R, resid] = lmfit (XS, Y);
@@ -356,38 +362,6 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     partial_eta_sq = ss ./ (ss + sse);
     F = ms / mse;
     P = 1 - fcdf (F, df, dfe);
-
-    # Prepare stats output structure
-    # Note that the information provided by STATS is not sufficient for MATLAB's multcompare function
-    STATS = struct ("source","anovan", ...
-                    "resid", resid, ...
-                    "coeffs", b, ...
-                    "Rtr", [], ...           # Not used by Octave
-                    "rowbasis", [], ...      # Not used by Octave
-                    "dfe", dfe, ...
-                    "mse", mse, ...
-                    "nullproject", [], ...   # Not used by Octave
-                    "terms", TERMS, ...
-                    "nlevels", nlevels, ...  
-                    "continuous", CONTINUOUS, ...
-                    "vmeans", vmeans, ...        
-                    "termcols", termcols, ...
-                    "coeffnames", [], ...    # Not used by Octave
-                    "vars", [], ...          # Not used by Octave
-                    "varnames", {VARNAMES}, ...
-                    "grpnames", {grpnames}, ...
-                    "vnested", [], ...       # Not used since "nested" argument name not supported
-                    "ems", [], ...           # Not used since "nested" argument name not supported
-                    "denom", [], ...         # Not used since "random" argument name not supported
-                    "dfdenom", [], ...       # Not used since "random" argument name not supported
-                    "msdenom", [], ...       # Not used since "random" argument name not supported
-                    "varest", [], ...        # Not used since "random" argument name not supported
-                    "varci", [], ...         # Not used since "random" argument name not supported
-                    "txtdenom", [], ...      # Not used since "random" argument name not supported
-                    "txtems", [], ...        # Not used since "random" argument name not supported
-                    "rtnames", [],...        # Not used since "random" argument name not supported
-                    "eta_squared", eta_sq,...
-                    "partial_eta_squared", partial_eta_sq);
     
     # Prepare cell array containing the ANOVA table (T)
     T = cell (Nt + 3, 7);
@@ -399,6 +373,46 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       str = sprintf("%s*",VARNAMES{find(TERMS(i,:))});
       T(i+1,1) = str(1:end-1);
     endfor
+    
+    # If requested, prepare stats output structure
+    # Note that the information provided by STATS is not sufficient for MATLAB's
+    # and vice versa multcompare function
+    if (nargout > 2)
+      STATS = struct ("source","anovan", ...
+                      "resid", resid, ...
+                      "coeffs", b, ...
+                      "Rtr", [], ...           # Not used by Octave
+                      "rowbasis", [], ...      # Not used by Octave
+                      "dfe", dfe, ...
+                      "mse", mse, ...
+                      "nullproject", [], ...   # Not used by Octave
+                      "terms", TERMS, ...
+                      "nlevels", nlevels, ...  
+                      "continuous", cont_vec, ...
+                      "vmeans", vmeans, ...        
+                      "termcols", termcols, ...
+                      "coeffnames", [], ...    # Not used by Octave
+                      "vars", [], ...          # Not used by Octave
+                      "varnames", {VARNAMES}, ...
+                      "grpnames", {grpnames}, ...
+                      "vnested", [], ...       # Not used since "nested" argument name not supported
+                      "ems", [], ...           # Not used since "nested" argument name not supported
+                      "denom", [], ...         # Not used since "random" argument name not supported
+                      "dfdenom", [], ...       # Not used since "random" argument name not supported
+                      "msdenom", [], ...       # Not used since "random" argument name not supported
+                      "varest", [], ...        # Not used since "random" argument name not supported
+                      "varci", [], ...         # Not used since "random" argument name not supported
+                      "txtdenom", [], ...      # Not used since "random" argument name not supported
+                      "txtems", [], ...        # Not used since "random" argument name not supported
+                      "rtnames", [],...        # Not used since "random" argument name not supported
+                      # Additional STATS fields created and used exclusively by Octave 
+                      "df", df, .....
+                      "X", sparse (cell2mat (X)), ...
+                      "vcov", sparse (ucov * mse), ...
+                      "grps", gid, ...
+                      "eta_squared", eta_sq, ...
+                      "partial_eta_squared", partial_eta_sq); 
+     endif
     
     # Print ANOVA table 
     switch lower (DISPLAY)
@@ -434,7 +448,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 endfunction
 
 
-function [X, levels, nlevels, df, termcols, vmeans] = make_design_matrix (GROUP, TERMS, CONTINUOUS, n, Nm, Nx, Ng)
+function [X, levels, nlevels, df, termcols, vmeans, gid] = make_design_matrix (GROUP, TERMS, CONTINUOUS, n, Nm, Nx, Ng)
   
   # Returns a cell array of the design matrix for each term in the model
 
@@ -454,7 +468,7 @@ function [X, levels, nlevels, df, termcols, vmeans] = make_design_matrix (GROUP,
       df(j) = 1;
     else
       # Categorical predictor
-      [levels{j}, jnk, gid(:,j)] = unique (GROUP (:,m), "legacy");
+      [levels{j}, jnk, gid(:,j)] = unique (GROUP (:,m));
       nlevels(j) = numel (levels{j});
       termcols(j+1) = nlevels(j);
       df(j) = nlevels(j) - 1;
@@ -491,32 +505,35 @@ function [X, levels, nlevels, df, termcols, vmeans] = make_design_matrix (GROUP,
     endfor
   endif
 
+  function C = contr_sum (N)
+ 
+    # Create contrast matrix (of doubles) using deviation coding 
+    # These contrasts sum to 0
+    C =  cat (1, eye (N-1), - (ones (1,N-1)));
+  
   endfunction
-
-
-function C = contr_sum (N)
-
-  # Create contrast matrix (of doubles) using deviation coding 
-  # These contrasts sum to 0
-  C =  cat (1, eye (N-1), - (ones (1,N-1)));
   
 endfunction
 
 
-function [b, sse, resid] = lmfit (X, Y)
+function [b, sse, resid, ucov] = lmfit (X, Y)
   
   # Get model coefficients by solving the linear equation by QR decomposition 
   # (this achieves the same thing as b = X \ Y)
   # The number of free parameters (i.e. intercept + coefficients) is equal to n - dfe
   [Q, R] = qr (X, 0);
   b = R \ Q' * Y;
- 
+
   # Get fitted values 
   fit = X * b;
   # Get residuals from the fit
   resid = Y - fit;
   # Calculate residual sums-of-squares
   sse = sum ((resid).^2);
+  # Calculate unscaled covariance matrix
+  if nargout > 3
+    ucov = R \ Q' / X';
+  end
   
 endfunction
 
