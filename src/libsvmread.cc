@@ -40,7 +40,7 @@ this program; if not, see <http://www.gnu.org/licenses/>.
 
 using namespace std;
 
-typedef int mwIndex;
+typedef int64_t mwIndex;
 
 static char *line;
 static int max_line_len;
@@ -140,8 +140,8 @@ void read(string filename, octave_value_list &retval)
   }
 	labels = (double*)retval(0).mex_get_data();
 	samples = (double*)retval(1).mex_get_data();
-	ir = retval(1).mex_get_ir();
-	jc = retval(1).mex_get_jc();
+	ir = (octave_idx_type*)retval(1).mex_get_ir();
+	jc = (octave_idx_type*)retval(1).mex_get_jc();
 
 	k=0;
 	for(i=0;i<l;i++)

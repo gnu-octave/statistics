@@ -41,8 +41,8 @@ void read_sparse_instance(const SparseMatrix &args, int index, struct svm_node *
 	octave_idx_type *ir, *jc;
 	double *samples;
 
-	ir = args.mex_get_ir();
-	jc = args.mex_get_jc();
+	ir = (octave_idx_type*)args.mex_get_ir();
+	jc = (octave_idx_type*)args.mex_get_jc();
 	samples = (double *)args.mex_get_data();
 
 	// each column is one instance
@@ -102,8 +102,8 @@ void predict(int nlhs, octave_value_list &plhs, const octave_value_list &args, s
 		return;
 	}
 
-	ptr_instance = (double *)args(1).mex_get_data();
-	ptr_label    = (double *)args(0).mex_get_data();
+	ptr_instance = (double*)args(1).mex_get_data();
+	ptr_label    = (double*)args(0).mex_get_data();
 	
 	// transpose instance matrix
 	Matrix t_data(0,0);
