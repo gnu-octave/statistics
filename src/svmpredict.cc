@@ -69,12 +69,12 @@ void predict(int nlhs, octave_value_list &plhs, const octave_value_list &args,
 	int label_vector_row_num, label_vector_col_num;
 	int feature_number, testing_instance_number;
 	int instance_index;
-	double *ptr_instance, *ptr_label, *ptr_predict_label; 
+	double *ptr_instance, *ptr_label, *ptr_predict_label;
 	double *ptr_prob_estimates, *ptr_dec_values, *ptr;
 	struct svm_node *x;
 	SparseMatrix pplhs(0,0); // transposed instance sparse matrix
 	octave_value_list tplhs(3); // temporary storage for plhs[]
-	
+
 	int correct = 0;
 	int total = 0;
 	double error = 0;
@@ -102,10 +102,10 @@ void predict(int nlhs, octave_value_list &plhs, const octave_value_list &args,
 		fake_answer(nlhs, plhs);
 		return;
 	}
-  
+
   ColumnVector label_vec = args(0).matrix_value();
 	ptr_label    = (double*)label_vec.data();
-	
+
 	// transpose instance matrix
 	Matrix t_data(0,0);
 	if(args(1).issparse())
@@ -172,9 +172,9 @@ void predict(int nlhs, octave_value_list &plhs, const octave_value_list &args,
 		}
 	}
 
-	ptr_predict_label = (double*)tplhs(0).column_vector_value().mex_get_data();
-	ptr_prob_estimates = (double*)tplhs(2).matrix_value().mex_get_data();
-	ptr_dec_values = (double*)tplhs(2).matrix_value().mex_get_data();
+	ptr_predict_label = (double*)tplhs(0).column_vector_value().data();
+	ptr_prob_estimates = (double*)tplhs(2).matrix_value().data();
+	ptr_dec_values = (double*)tplhs(2).matrix_value().data();
 	x = (struct svm_node*)malloc((feature_number+1)*sizeof(struct svm_node));
 	for(instance_index=0;instance_index<testing_instance_number;instance_index++)
 	{
@@ -228,7 +228,7 @@ void predict(int nlhs, octave_value_list &plhs, const octave_value_list &args,
 			{
 				double *dec_values = (double *) malloc(sizeof(double) * nr_class*(nr_class-1)/2);
 				predict_label = svm_predict_values(model, x, dec_values);
-				if(nr_class == 1) 
+				if(nr_class == 1)
         {
 					ptr_dec_values[instance_index] = 1;
         }
@@ -270,8 +270,7 @@ void predict(int nlhs, octave_value_list &plhs, const octave_value_list &args,
   }
 	// return accuracy, mean squared error, squared correlation coefficient
 	ColumnVector cv_acc(3);
-		//tplhs[1] = mxCreateDoubleMatrix(3, 1, mxREAL);
-	ptr = (double*)cv_acc.mex_get_data();//mxGetPr(tplhs[1]);
+	ptr = (double*)cv_acc.data();
 	ptr[0] = (double)correct/total*100;
 	ptr[1] = error/total;
 	ptr[2] = ((total*sumpt-sump*sumt)*(total*sumpt-sump*sumt))/
@@ -361,7 +360,7 @@ same as 'Label' field in the @var{model} structure. \
 		error ("svmpredict: wrong number of output arguments.");
 	}
   if(nrhs > 4 || nrhs < 3)
-  
+
 	{
 		error ("svmpredict: wrong number of input arguments.");
 	}
@@ -433,7 +432,7 @@ same as 'Label' field in the @var{model} structure. \
 			if(svm_check_probability_model(model)!=0)
 				info("Model supports probability estimates, but disabled in prediction.\n");
 		}
-    
+
 		predict(nlhs, plhs, args, model, prob_estimate_flag);
 		// destroy model
 		svm_free_and_destroy_model(&model);

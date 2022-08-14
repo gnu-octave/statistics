@@ -58,13 +58,13 @@ const char *model_to_octave_structure(octave_value_list &plhs, int num_of_featur
 	cm_parameters(3) = model->param.gamma;
 	cm_parameters(4) = model->param.coef0;
 	osm_model.assign("Parameters", cm_parameters);
-  
+
 	// nr_class
 	osm_model.assign("nr_class", octave_value(model->nr_class));
-	
+
 	// total SV
 	osm_model.assign("totalSV", octave_value(model->l));
-	
+
 	// rho
 	n = model->nr_class*(model->nr_class-1)/2;
 	ColumnVector cm_rho(n);
@@ -82,7 +82,7 @@ const char *model_to_octave_structure(octave_value_list &plhs, int num_of_featur
     {
       cm_label(i) = model->label[i];
     }
-		osm_model.assign("Label", cm_label); 
+		osm_model.assign("Label", cm_label);
 	}
   else
   {
@@ -103,7 +103,7 @@ const char *model_to_octave_structure(octave_value_list &plhs, int num_of_featur
   {
 		osm_model.assign("sv_indices", ColumnVector(0));
 	}
-	
+
 	// probA
 	if(model->probA != NULL)
 	{
@@ -133,7 +133,7 @@ const char *model_to_octave_structure(octave_value_list &plhs, int num_of_featur
   {
 		osm_model.assign("ProbB", ColumnVector(0));
 	}
-  
+
 	// nSV
 	if(model->nSV)
 	{
@@ -159,12 +159,12 @@ const char *model_to_octave_structure(octave_value_list &plhs, int num_of_featur
     }
   }
 	osm_model.assign("sv_coef", m_sv_coef);
-  
+
 	// SVs
 	{
 		int ir_index, nonzero_element;
 		octave_idx_type *ir, *jc;
-		//mxArray *pprhs[1], *pplhs[1];	
+		//mxArray *pprhs[1], *pplhs[1];
 
 		if(model->param.kernel_type == PRECOMPUTED)
 		{
@@ -177,7 +177,7 @@ const char *model_to_octave_structure(octave_value_list &plhs, int num_of_featur
 			for(i = 0; i < model->l; i++)
       {
 				j = 0;
-				while(model->SV[i][j].index != -1) 
+				while(model->SV[i][j].index != -1)
 				{
 					nonzero_element++;
 					j++;
@@ -187,16 +187,16 @@ const char *model_to_octave_structure(octave_value_list &plhs, int num_of_featur
 
 		// SV in column, easier accessing
 		SparseMatrix sm_rhs = SparseMatrix((octave_idx_type)num_of_feature, (octave_idx_type)model->l, (octave_idx_type)nonzero_element);
-		ir = sm_rhs.mex_get_ir();
-		jc = sm_rhs.mex_get_jc();
-		ptr = (double*) sm_rhs.mex_get_data();
-		jc[0] = ir_index = 0;		
+		ir = sm_rhs.ridx();
+		jc = sm_rhs.cidx();
+		ptr = (double*) sm_rhs.data();
+		jc[0] = ir_index = 0;
 		for(i = 0; i < model->l; i++)
 		{
 			if(model->param.kernel_type == PRECOMPUTED)
 			{
 				// make a (1 x model->l) matrix
-				ir[ir_index] = 0; 
+				ir[ir_index] = 0;
 				ptr[ir_index] = model->SV[i][0].value;
 				ir_index++;
 				jc[i+1] = jc[i] + 1;
@@ -206,7 +206,7 @@ const char *model_to_octave_structure(octave_value_list &plhs, int num_of_featur
 				int x_index = 0;
 				while (model->SV[i][x_index].index != -1)
 				{
-					ir[ir_index] = model->SV[i][x_index].index - 1; 
+					ir[ir_index] = model->SV[i][x_index].index - 1;
 					ptr[ir_index] = model->SV[i][x_index].value;
 					ir_index++, x_index++;
 				}
@@ -230,7 +230,7 @@ struct svm_model *octave_matrix_to_model(octave_scalar_map &octave_model, const 
 	int id = 0;
 	struct svm_node *x_space;
 	struct svm_model *model;
-	
+
 	model = Malloc(struct svm_model, 1);
 	model->rho = NULL;
 	model->probA = NULL;
@@ -250,10 +250,10 @@ struct svm_model *octave_matrix_to_model(octave_scalar_map &octave_model, const 
 
 	//nr_class
 	model->nr_class = (int)octave_model.getfield("nr_class").int_value();
-	
+
 	//total SV
 	model->l = (int)octave_model.getfield("totalSV").int_value();
-	
+
 	//rho
 	n = model->nr_class * (model->nr_class-1)/2;
 	model->rho = (double*) malloc(n*sizeof(double));
@@ -262,7 +262,7 @@ struct svm_model *octave_matrix_to_model(octave_scalar_map &octave_model, const 
   {
     model->rho[i] = cm_rho(i);
   }
-	
+
 	//label
 	if (!octave_model.getfield("Label").isempty())
   {
@@ -295,7 +295,7 @@ struct svm_model *octave_matrix_to_model(octave_scalar_map &octave_model, const 
       model->probA[i] = cv_proba(i);
     }
 	}
-	
+
 	// probB
 	if(!octave_model.getfield("ProbB").isempty())
 	{
@@ -320,7 +320,7 @@ struct svm_model *octave_matrix_to_model(octave_scalar_map &octave_model, const 
 
 	// sv_coef
 	Matrix m_sv_coef = octave_model.getfield("sv_coef").matrix_value();
-	ptr = (double*) m_sv_coef.mex_get_data();
+	ptr = (double*) m_sv_coef.data();
 	model->sv_coef = (double**) malloc((model->nr_class-1)*sizeof(double));
 	for(i = 0; i < model->nr_class - 1; i++ )
   {
@@ -339,7 +339,7 @@ struct svm_model *octave_matrix_to_model(octave_scalar_map &octave_model, const 
 		int sr, sc, elements;
 		int num_samples;
 		octave_idx_type *ir, *jc;
-		
+
 		// transpose SV
 		SparseMatrix sm_sv = octave_model.getfield("SVs").sparse_matrix_value();
 		sm_sv = sm_sv.transpose();
@@ -347,9 +347,9 @@ struct svm_model *octave_matrix_to_model(octave_scalar_map &octave_model, const 
 		sr = (int)sm_sv.cols();
 		sc = (int)sm_sv.rows();
 
-		ptr = (double*)sm_sv.mex_get_data();
-		ir = sm_sv.mex_get_ir();
-		jc = sm_sv.mex_get_jc();
+		ptr = (double*)sm_sv.data();
+		ir = sm_sv.ridx();
+		jc = sm_sv.cidx();
 
 		num_samples = (int)sm_sv.nzmax();
 
@@ -366,7 +366,7 @@ struct svm_model *octave_matrix_to_model(octave_scalar_map &octave_model, const 
 			model->SV[i] = &x_space[low+i];
 			for(j = low; j < high; j++)
 			{
-				model->SV[i][x_index].index = (int)ir[j] + 1; 
+				model->SV[i][x_index].index = (int)ir[j] + 1;
 				model->SV[i][x_index].value = ptr[j];
 				x_index++;
 			}
