@@ -65,7 +65,7 @@ static char* readline(FILE *input)
 }
 
 // read the file in libsvm format
-void read(string filename, octave_value_list &retval)
+void read(string filename, ColumnVector &label_vec, SparseMatrix &instance_mat)
 {
 	int max_index, min_index, inst_max_index;
 	size_t elements, k, i, l=0;
@@ -120,26 +120,26 @@ void read(string filename, octave_value_list &retval)
 	rewind(fp);
   
 	// y
-	retval(0) = ColumnVector(l, 1);
+  label_vec = ColumnVector(l, 1);
 	// x^T
-	if (min_index <= 0)
+  if (min_index <= 0)
   {
     octave_idx_type r = max_index-min_index+1;
     octave_idx_type c = l;
     octave_idx_type val = elements;
-		retval(1) = SparseMatrix(r, c, val);
+    instance_mat = SparseMatrix(r, c, val);
   }
-	else
+  else
   {
     octave_idx_type r = max_index-min_index+1;
     octave_idx_type c = l;
     octave_idx_type val = elements;
-		retval(1) = SparseMatrix(r, c, val);
+    instance_mat = SparseMatrix(r, c, val);
   }
-	labels = (double*)retval(0).mex_get_data();
-	samples = (double*)retval(1).mex_get_data();
-	ir = (octave_idx_type*)retval(1).mex_get_ir();
-	jc = (octave_idx_type*)retval(1).mex_get_jc();
+	labels = (double*)label_vec.data();
+	samples = (double*)instance_mat.data();
+	ir = (octave_idx_type*)instance_mat.ridx();
+	jc = (octave_idx_type*)instance_mat.cidx();
 
 	k=0;
 	for(i=0;i<l;i++)
@@ -190,8 +190,7 @@ void read(string filename, octave_value_list &retval)
 	free(line);
   
   // transpose instance sparse matrix in row format
-  SparseMatrix instance_mat_row = retval(1).sparse_matrix_value();
-	retval(1) = instance_mat_row.transpose();
+  instance_mat.transpose();
 }
 
 
@@ -218,7 +217,11 @@ function. \
   }
   string filename = args(0).string_value();
   octave_value_list retval(nargout);
-	read(filename, retval);
+  ColumnVector label_vec;
+  SparseMatrix instance_mat;
+	read(filename, label_vec, instance_mat);
+  retval(0) = label_vec;
+  retval(1) = instance_mat.transpose();
 	return retval;
 }
 

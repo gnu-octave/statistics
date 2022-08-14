@@ -41,9 +41,9 @@ void read_sparse_instance(const SparseMatrix &args, int index, struct svm_node *
 	octave_idx_type *ir, *jc;
 	double *samples;
 
-	ir = (octave_idx_type*)args.mex_get_ir();
-	jc = (octave_idx_type*)args.mex_get_jc();
-	samples = (double *)args.mex_get_data();
+	ir = (octave_idx_type*)args.ridx();
+	jc = (octave_idx_type*)args.cidx();
+	samples = (double*)args.data();
 
 	// each column is one instance
 	j = 0;
@@ -63,7 +63,8 @@ static void fake_answer(int nlhs, octave_value_list &plhs)
 	for(i=0;i<nlhs;i++) plhs(i) = Matrix(0,0);
 }
 
-void predict(int nlhs, octave_value_list &plhs, const octave_value_list &args, struct svm_model *model, const int predict_probability)
+void predict(int nlhs, octave_value_list &plhs, const octave_value_list &args,
+             struct svm_model *model, const int predict_probability)
 {
 	int label_vector_row_num, label_vector_col_num;
 	int feature_number, testing_instance_number;
@@ -79,9 +80,9 @@ void predict(int nlhs, octave_value_list &plhs, const octave_value_list &args, s
 	double error = 0;
 	double sump = 0, sumt = 0, sumpp = 0, sumtt = 0, sumpt = 0;
 
-	int svm_type=svm_get_svm_type(model);
-	int nr_class=svm_get_nr_class(model);
-	double *prob_estimates=NULL;
+	int svm_type = svm_get_svm_type(model);
+	int nr_class = svm_get_nr_class(model);
+	double *prob_estimates = NULL;
 
 	// args[1] = testing instance matrix
 	feature_number = (int)args(1).columns();
@@ -89,21 +90,21 @@ void predict(int nlhs, octave_value_list &plhs, const octave_value_list &args, s
 	label_vector_row_num = (int)args(0).rows();
 	label_vector_col_num = (int)args(0).columns();
 
-	if(label_vector_row_num!=testing_instance_number)
+	if(label_vector_row_num != testing_instance_number)
 	{
 		printf("svmpredict: length of label vector does not match # of instances.\n");
 		fake_answer(nlhs, plhs);
 		return;
 	}
-	if(label_vector_col_num!=1)
+	if(label_vector_col_num != 1)
 	{
 		printf("svmpredict: label (1st argument) should be a vector (# of column is 1).\n");
 		fake_answer(nlhs, plhs);
 		return;
 	}
-
-	ptr_instance = (double*)args(1).mex_get_data();
-	ptr_label    = (double*)args(0).mex_get_data();
+  
+  ColumnVector label_vec = args(0).matrix_value();
+	ptr_label    = (double*)label_vec.data();
 	
 	// transpose instance matrix
 	Matrix t_data(0,0);
@@ -119,12 +120,12 @@ void predict(int nlhs, octave_value_list &plhs, const octave_value_list &args, s
 			//If it's a sparse matrix with a non PRECOMPUTED kernel, transpose it
 			pplhs = args(1).sparse_matrix_value().transpose();
 		}
-	}
+  }
   else
   {
 		t_data = args(1).matrix_value();
 	}
-	ptr_instance = (double *)t_data.mex_get_data();// mxGetPr(args[1]);
+	ptr_instance = (double*)t_data.data();
 	if(predict_probability)
 	{
 		if(svm_type==NU_SVR || svm_type==EPSILON_SVR)
@@ -133,7 +134,7 @@ void predict(int nlhs, octave_value_list &plhs, const octave_value_list &args, s
     }
 		else
     {
-			prob_estimates = (double *) malloc(nr_class*sizeof(double));
+			prob_estimates = (double*) malloc(nr_class*sizeof(double));
     }
 	}
 
@@ -142,7 +143,7 @@ void predict(int nlhs, octave_value_list &plhs, const octave_value_list &args, s
 	if(predict_probability)
 	{
 		// prob estimates are in plhs[2]
-		if(svm_type==C_SVC || svm_type==NU_SVC)
+		if(svm_type == C_SVC || svm_type == NU_SVC)
     {
 			Matrix m_pe(testing_instance_number, nr_class);
 			tplhs(2) = m_pe;
@@ -188,7 +189,7 @@ void predict(int nlhs, octave_value_list &plhs, const octave_value_list &args, s
     }
 		else
 		{
-			for(i=0;i<feature_number;i++)
+			for(i = 0; i < feature_number; i++)
 			{
 				x[i].index = i+1;
 				x[i].value = ptr_instance[testing_instance_number*i+instance_index];
@@ -198,11 +199,11 @@ void predict(int nlhs, octave_value_list &plhs, const octave_value_list &args, s
 
 		if(predict_probability)
 		{
-			if(svm_type==C_SVC || svm_type==NU_SVC)
+			if(svm_type == C_SVC || svm_type == NU_SVC)
 			{
 				predict_label = svm_predict_probability(model, x, prob_estimates);
 				ptr_predict_label[instance_index] = predict_label;
-				for(i=0;i<nr_class;i++)
+				for(i = 0; i < nr_class; i++)
         {
 					ptr_prob_estimates[instance_index + i * testing_instance_number] = prob_estimates[i];
         }
@@ -233,7 +234,7 @@ void predict(int nlhs, octave_value_list &plhs, const octave_value_list &args, s
         }
 				else
         {
-					for(i=0;i<(nr_class*(nr_class-1))/2;i++)
+					for(i = 0; i < (nr_class * (nr_class - 1)) / 2; i++)
           {
 						ptr_dec_values[instance_index + i * testing_instance_number] = dec_values[i];
           }
@@ -430,9 +431,9 @@ same as 'Label' field in the @var{model} structure. \
 		else
 		{
 			if(svm_check_probability_model(model)!=0)
-				info("Model supports probability estimates, but disabled in predicton.\n");
+				info("Model supports probability estimates, but disabled in prediction.\n");
 		}
-
+    
 		predict(nlhs, plhs, args, model, prob_estimate_flag);
 		// destroy model
 		svm_free_and_destroy_model(&model);
@@ -441,7 +442,6 @@ same as 'Label' field in the @var{model} structure. \
 	{
 		error ("svmpredict: model should be a struct array.");
 	}
-
 	return plhs;
 }
 

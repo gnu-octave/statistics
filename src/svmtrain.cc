@@ -212,8 +212,8 @@ int read_problem_dense(ColumnVector &label_vec, Matrix &instance_mat)
 	prob.y = NULL;
 	x_space = NULL;
 
-	labels = (double*)label_vec.mex_get_data();//mxGetPr(label_vec);
-	samples = (double*)instance_mat.mex_get_data();
+	labels = (double*)label_vec.data();//mxGetPr(label_vec);
+	samples = (double*)instance_mat.data();
 	sc = (int)instance_mat.cols();
 
 	elements = 0;
@@ -293,10 +293,10 @@ int read_problem_sparse(ColumnVector &label_vec, SparseMatrix &instance_mat)
 	x_space = NULL;
 
 	// each column is one instance
-	labels = (double*)label_vec.mex_get_data();
-	samples = (double*)instance_mat_col.mex_get_data();
-	ir = (octave_idx_type*)instance_mat_col.mex_get_ir();
-	jc = (octave_idx_type*)instance_mat_col.mex_get_jc();
+	labels = (double*)label_vec.data();
+	samples = (double*)instance_mat_col.data();
+	ir = (octave_idx_type*)instance_mat_col.ridx();
+	jc = (octave_idx_type*)instance_mat_col.cidx();
 
 	num_samples = (int)instance_mat_col.nzmax();
 

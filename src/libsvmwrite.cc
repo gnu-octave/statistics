@@ -56,10 +56,10 @@ void write(string filename, ColumnVector label_vec, SparseMatrix instance_mat)
     size_t i, l, label_vector_row_num;
     double *samples, *labels;
     // each column is one instance
-    labels = (double*)label_vec.mex_get_data();
-    samples = (double*)instance_mat_col.mex_get_data();
-    ir = (octave_idx_type*)instance_mat_col.mex_get_ir();
-    jc = (octave_idx_type*)instance_mat_col.mex_get_jc();
+    labels = (double*)label_vec.data();
+    samples = (double*)instance_mat_col.data();
+    ir = (octave_idx_type*)instance_mat_col.ridx();
+    jc = (octave_idx_type*)instance_mat_col.cidx();
     for(int i = 0; i < lv_rows; i++)
     {
       fprintf(fp, "%.17g", labels[i]);
