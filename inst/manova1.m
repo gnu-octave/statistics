@@ -76,13 +76,13 @@
 ## C(:,1), and so on.
 ##
 ## @end deftypefn
- 
+
 function [d, p, stats] = manova1 (x, group, alpha)
-  
+
   ## Check input arguments
   narginchk(2,3)
   nargoutchk(1,3)
-  
+
   ## Validate alpha value if parsed or add default
   if (nargin > 2)
     if (length (alpha) > 1 || ! isreal (alpha))
@@ -93,7 +93,7 @@ function [d, p, stats] = manova1 (x, group, alpha)
   else
     alpha = 0.05;
   endif
-  
+
   ## Convert group to cell array from character array
   if (ischar (group))
     group = cellstr (group);
@@ -117,7 +117,7 @@ function [d, p, stats] = manova1 (x, group, alpha)
   ## Get group names and indices
   [group_idx, group_names] = grp2idx (group);
   ngroups = length (group_names);
-  
+
   ## Remove NaN values from updated GROUP
   no_nan = ! isnan (group_idx);
   if (! all (no_nan))
@@ -125,7 +125,7 @@ function [d, p, stats] = manova1 (x, group, alpha)
     x = x(no_nan,: );
     is_nan(! is_nan) = ! no_nan;
   endif
-  
+
   ## Get number of samples and variables
   [nsample, nvar] = size(x);
   realgroups = ismember(1:ngroups, group_idx);
@@ -166,7 +166,7 @@ function [d, p, stats] = manova1 (x, group, alpha)
   if (min(e) <= -1)
      error ("manova1: wrong value in eigenvector: singular sum of squares.");
   endif
-  
+
   ## Compute Barlett's statistic for each dimension
   dims = 0:(min (nrgroups - 1, nvar) - 1);
   lambda = flipud (1 ./ cumprod (e + 1));
@@ -245,11 +245,11 @@ endfunction
 %! [d,p] = manova1([MPG, Acceleration, Weight, Displacement], Origin);
 %! assert (d, 3);
 %! assert (p, [0, 3.140583347827075e-07, 0.007510999577743149, ...
-%!             0.1934100745898493]', [1e-14, 1e-14, 1e-14, 1e-14]');
+%!             0.1934100745898493]', [1e-12, 1e-12, 1e-12, 1e-12]');
 
 %!test
 %! load carbig
 %! [d,p] = manova1([MPG, Acceleration, Weight], Origin);
 %! assert (d, 2);
 %! assert (p, [0, 0.00516082975137544, 0.1206528056514453]', ...
-%!            [1e-14, 1e-14, 1e-14]');
+%!            [1e-12, 1e-12, 1e-12]');

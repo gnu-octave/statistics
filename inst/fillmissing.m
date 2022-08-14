@@ -1959,6 +1959,15 @@ endfunction
 ## part of endvalues unlike all other methods, (3) ignores samplepoint values
 ##  when calcuating move_fcn results. should review against future versions.
 %!test
+%!function A = testfcn (x,y,z)
+%!  if isempty (y)
+%!    A = z;
+%!  elseif (numel (y) == 1)
+%!    A = repelem (x(1), numel(z));
+%!  else
+%!    A = interp1 (y, x, z, "linear","extrap");
+%!  endif
+%!endfunction
 %! x = reshape ([1:24], 3, 4, 2);
 %! x([1,2,5,6,8,10,13,16,18,19,20,21,22]) = NaN;
 %! y = x;
@@ -1970,21 +1979,21 @@ endfunction
 %! y= x;
 %! y(isnan(x)) = 99; y(8) = 8;
 %! assert (fillmissing (x, @testfcn, 3, "endvalues", 99), y)
-##%! y = x;
-##%! y([1,2,5,6,8,10,18,20,21]) = [4,11,11,6,11,7,18,20,21];
-##%! assert (fillmissing (x, @testfcn, 3, 2), y);
-##%! assert (fillmissing (x, @testfcn, [1 1], 2), y);
-##%! assert (fillmissing (x, @testfcn, 3, 2, "endvalues", "extrap"), y);
-##%! assert (fillmissing (x, @testfcn, 3, 2, "samplepoints", [1 2 3 4]), y);
-##%! y(1) = NaN; y([6,18,21]) = [9,24,24];
-##%! assert (fillmissing (x, @testfcn, 3, 2, "samplepoints", [0 2 3 4]), y);
-##%! y = x;
-##%! y([1,2,5,6,10,13,16,18,19,20,21,22]) = 99; y(8) = [8];
-##%! assert (fillmissing (x, @testfcn, 3, "endvalues", 99), y);
-##%! y([6,18,20,21]) = [6,18,20,21]; y(8)=99;
-##%! assert (fillmissing (x, @testfcn, 3, 2, "endvalues", 99), y);
-##%! y([6,18,20,21]) = 99;
-##%! assert (fillmissing (x, @testfcn, 3, 3, "endvalues", 99), y);
+%! y = x;
+%! y([1,2,5,6,8,10,18,20,21]) = [4,11,11,6,11,7,18,20,21];
+%! assert (fillmissing (x, @testfcn, 3, 2), y);
+%! assert (fillmissing (x, @testfcn, [1 1], 2), y);
+%! assert (fillmissing (x, @testfcn, 3, 2, "endvalues", "extrap"), y);
+%! assert (fillmissing (x, @testfcn, 3, 2, "samplepoints", [1 2 3 4]), y);
+%! y(1) = NaN; y([6,18,21]) = [9,24,24];
+%! assert (fillmissing (x, @testfcn, 3, 2, "samplepoints", [0 2 3 4]), y);
+%! y = x;
+%! y([1,2,5,6,10,13,16,18,19,20,21,22]) = 99; y(8) = [8];
+%! assert (fillmissing (x, @testfcn, 3, "endvalues", 99), y);
+%! y([6,18,20,21]) = [6,18,20,21]; y(8)=99;
+%! assert (fillmissing (x, @testfcn, 3, 2, "endvalues", 99), y);
+%! y([6,18,20,21]) = 99;
+%! assert (fillmissing (x, @testfcn, 3, 3, "endvalues", 99), y);
 
 ##test maxgap for mid and end points
 %!assert (fillmissing ([1 2 3], "constant", 0, "maxgap", 1), [1 2 3])
@@ -2140,7 +2149,6 @@ endfunction
 %!assert (fillmissing ({'foo', '', 'bar'}, "next", 1), {'foo', '', 'bar'})
 %!assert (fillmissing ({'foo', '', 'bar'}, "nearest", 1), {'foo', '', 'bar'})
 %!assert (fillmissing ("abc ", @(x,y,z) x+y+z, 2), "abcj")
-%!assert (fillmissing (" bcdef  i k lm op", @(x,y,z) repelem(x(1), numel(z)), 2), "bbcdefffiikklmmop")
 %!assert (fillmissing ({'foo', '', 'bar'}, @(x,y,z) x(1), 3), {'foo','foo','bar'})
 
 %!test
