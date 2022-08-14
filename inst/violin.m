@@ -152,28 +152,28 @@ function h = violin (ax, varargin)
   Nc    = 1:numel (px);
   Ncc   = mat2cell (Nc, 1, ones (1, Nc(end)));
 
-  # get hold state
+  ## get hold state
   old_hold = ishold ();
 
-  # Draw plain violins
+  ## Draw plain violins
   tmp      = cellfun (@(x,y,n,u, w)patch(ax, (w * x + n)(:), y(:) ,u'), ...
                         px, py, Ncc, c, width);
   h.violin = tmp;
 
   hold on
-  # Overlay mean value
+  ## Overlay mean value
   tmp    = cellfun (@(z,y)plot(ax, z, y,'.k', "markersize", 6), Ncc, mx);
   h.mean = tmp;
 
-  # Overlay median
+  ## Overlay median
   Mx       = cellfun (@median, x, "unif", 0);
   tmp      = cellfun (@(z,y)plot(ax, z, y, 'ok'), Ncc, Mx);
   h.median = tmp;
 
-  # Overlay 1nd and 3th quartiles
+  ## Overlay 1nd and 3th quartiles
   LUBU = cellfun (@(x,y)abs(quantile(x,[0.25 0.75])-y), x, Mx, "unif", 0);
   tmp  = cellfun (@(x,y,z)errorbar(ax, x, y, z(1),z(2)), Ncc, Mx, LUBU)(:);
-  # Flatten errorbar output handles
+  ## Flatten errorbar output handles
   tmp2       = allchild (tmp);
   if (~iscell (tmp2))
     tmp2 = mat2cell (tmp2, ones(length (tmp2), 1), 1);
@@ -184,7 +184,7 @@ function h = violin (ax, varargin)
 
   hold off
 
-  # Rotate the plot if it is horizontal
+  ## Rotate the plot if it is horizontal
   if (is_horiz)
     structfun (@swap_axes, h);
     set (ax, "ytick", Nc);
@@ -196,7 +196,7 @@ function h = violin (ax, varargin)
     clear h;
   endif
 
-  # restore hold state
+  ## restore hold state
   if (old_hold)
     hold on
   endif
@@ -226,7 +226,7 @@ function [px py mx] = build_polygon (x, nb, sf, r)
   sig = sf * r;
 
   ## Create violin polygon
-  # smooth tails: extend to 1.83 sigmas, i.e. ~99% of data.
+  ## smooth tails: extend to 1.83 sigmas, i.e. ~99% of data.
   xx  = linspace (0, 1.83 * sig, 5);
   bin = [bin(1)-fliplr(xx) bin bin(end)+xx];
   py  = [bin; fliplr(bin)].'  * sx + mx;
@@ -238,7 +238,6 @@ endfunction
 
 function tf = swap_axes (h)
     tmp  = mat2cell (h(:), ones (length (h),1), 1);
-%    tmp  = cellfun (@(x)[x; allchild(x)], tmp, "unif", 0);
     tmpy = cellfun(@(x)get(x, "ydata"), tmp, "unif", 0);
     tmpx = cellfun(@(x)get(x, "xdata"), tmp, "unif", 0);
     cellfun (@(h,x,y)set (h, "xdata", y, "ydata", x), tmp, tmpx, tmpy);
@@ -267,7 +266,7 @@ function varargout = to_cell (varargin)
       if (isempty (d)) # no dimension equals m
         error ("to_cell:element_idx", "%d\n",i);
       elseif (length (d) == 2)
-        #both dims are m, choose 1st
+        ## both dims are m, choose 1st
       elseif (d == 1) # 2nd dimension is m --> transpose
         x  = x.';
         sz = fliplr (sz);
@@ -331,3 +330,41 @@ endfunction
 %! data = repmat(exprnd (0.1, 500,1), 1, 4);
 %! violin (data, "nbins", [5,10,50,100], "smoothfactor", [4 4 8 10]);
 %! axis ([0 5 0 max(data(:))])
+
+%!test
+%! data = exprnd (0.1, 500,4);
+%! violin (data, "color", jet(4));
+%! axis ([0 5 0 max(data(:))])
+%! close
+%!test
+%! data = {randn(100,1)*5+140, randn(130,1)*8+135};
+%! subplot (1,2,1)
+%! title ("Grade 3 heights - vertical");
+%! set (gca, "xtick", 1:2, "xticklabel", {"girls"; "boys"});
+%! violin (data, "Nbins", 10);
+%! axis tight
+%! close
+%!test
+%! data = {randn(100,1)*5+140, randn(130,1)*8+135};
+%! subplot (1,2,1)
+%! title ("Grade 3 heights - vertical");
+%! set (gca, "xtick", 1:2, "xticklabel", {"girls"; "boys"});
+%! violin (data, "Nbins", 10);
+%! axis tight
+%! subplot(1,2,2)
+%! title ("Grade 3 heights - horizontal");
+%! set (gca, "ytick", 1:2, "yticklabel", {"girls"; "boys"});
+%! violin (data, "horizontal", "Nbins", 10);
+%! axis tight
+%! close
+%!test
+%! data = repmat(exprnd (0.1, 500,1), 1, 4);
+%! violin (data, "nbins", [5,10,50,100], "smoothfactor", [4 4 8 10]);
+%! axis ([0 5 0 max(data(:))])
+%! close
+%!test
+%! data = repmat(exprnd (0.1, 500,1), 1, 4);
+%! violin (data, "width", linspace (0.1,0.5,4));
+%! axis ([0 5 0 max(data(:))])
+%! close
+
