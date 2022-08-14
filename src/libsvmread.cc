@@ -40,8 +40,6 @@ this program; if not, see <http://www.gnu.org/licenses/>.
 
 using namespace std;
 
-typedef int64_t mwIndex;
-
 static char *line;
 static int max_line_len;
 
@@ -174,7 +172,7 @@ void read(string filename, octave_value_list &retval)
 				break;
       }
       // precomputed kernel has <index> start from 0
-			ir[k] = (mwIndex) (strtol(idx,&endptr,10) - min_index);
+			ir[k] = strtol(idx,&endptr,10) - min_index;
 
 			errno = 0;
 			samples[k] = strtod(val,&endptr);
