@@ -1,20 +1,22 @@
 ## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2013 Pantxo Diribarne
-## 
+##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
-## 
+##
 ## This program is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-## 
+##
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-## -*- texinfo -*- 
+## -*- texinfo -*-
 ## @deftypefn {Function File} {@var{retval} =} cdf (@var{name}, @var{X}, @dots{})
 ## Return cumulative density function of @var{name} function for value
 ## @var{x}.
@@ -22,7 +24,7 @@
 ## functions. See the individual functions help to learn the signification of
 ## the arguments after @var{x}. Supported functions and corresponding number of
 ## additional arguments are:
-## 
+##
 ## @multitable @columnfractions 0.02 0.3 0.45 0.2
 ## @headitem @tab function @tab alternative @tab args
 ## @item @tab "bbs" @tab "Birnbaum-Saunders" @tab 3
@@ -67,7 +69,7 @@
 ## @item @tab "unif" @tab "uniform" @tab 2
 ## @item @tab "wbl" @tab "Weibull" @tab 2
 ## @end multitable
-## 
+##
 ## @seealso{pdf, rnd}
 ## @end deftypefn
 
@@ -122,7 +124,7 @@ function [retval] = cdf (varargin)
 
   name = varargin{1};
   x = varargin{2};
-  
+
   varargin(1:2) = [];
   nargs = numel (varargin);
 
@@ -134,7 +136,7 @@ function [retval] = cdf (varargin)
   ## Add special list
   special = {"copula", "Copula family", "mvn", "multivariate normal", ...
              "mvt", "multivariate Student"};
-  
+
   if (any (idx))
     if (nargs == cdfargs{idx} && ! any (strcmpi (name, special)))
       retval = feval (cdfhdl{idx}, x, varargin{:});
@@ -151,7 +153,7 @@ function [retval] = cdf (varargin)
   else
     error ("cdf: %s not implemented", name);
   endif
-  
+
 endfunction
 
 %!test

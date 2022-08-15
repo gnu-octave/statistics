@@ -1,5 +1,7 @@
 ## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -67,7 +69,7 @@
 ## @end deftypefn
 
 function [p, anovatab, stats] = anova2 (x, reps, displayopt)
-  
+
   ## Check for valid number of input arguments
   narginchk (1, 3);
   ## Check for NaN values in X
@@ -86,7 +88,7 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt)
   ## Calculate group numbers
   FFGn = size (x, 1) / reps;            ## Number of groups in 1st Factor
   SFGn = size (x, 2);                   ## Number of groups in 2nd Factor
-  
+
   ## Check for valid repetitions
   if (! (int16 (FFGn) == FFGn))
     error ("The number of rows in X must be a multiple of REPS.");
@@ -99,12 +101,12 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt)
       idx_e += reps;
     endfor
   endif
-  
+
   ## Calculate group sample sizes
   GTsz = length (x(:));                 ## Number of total samples
   FFGs = prod (size (x(RIdx(1,:),:)));  ## Number of group samples of 1st Factor
   SFGs = size (x, 1);                   ## Number of group samples of 2nd Factor
-  
+
   ## Calculate group means
   GTmu = sum (x(:)) / GTsz;                 ## Grand mean of groups
   for i = 1:FFGn                            ## Group means of 1st Factor
@@ -113,14 +115,14 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt)
   for i = 1:SFGn                            ## Group means of 2nd Factor
     SFGm(i) = mean (x(:,i));
   endfor
-  
+
   ## Calculate Sum of Squares for 1st and 2nd Factors
   SSR = sum (FFGs * ((FFGm - GTmu) .^ 2));  ## Rows Sum of Squares
   SSC = sum (SFGs * ((SFGm - GTmu) .^ 2));  ## Columns Sum of Squares
-  
+
   ## Calculate Total Sum of Squares
   SST = (x(:) - GTmu)' * (x(:) - GTmu);
-  
+
   ## Calculate Sum of Squares Error (Within)
   SSE = 0;
   for i = 1:FFGn
@@ -128,7 +130,7 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt)
       SSE += sum ((x(RIdx(i,:),j) - mean (x(RIdx(i,:),j))) .^ 2);
     endfor
   endfor
-    
+
   ## Calculate degrees of freedom and Sum of Squares Interaction (if applicable)
   df_SSR = FFGn - 1;                ## 1st Factor
   df_SSC = SFGn - 1;                ## 2nd Factor
@@ -140,7 +142,7 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt)
     SSI = SST - SSR - SSC - SSE;    ## Interaction: Sum of Squares
   endif
   df_tot = GTsz - 1;                ## Total
-  
+
   ## Calculate Mean Squares, F statistics, and p values
   if (SSE != 0)
     MSE = SSE / df_SSE;           ## Mean Square for Error (Within)
@@ -187,10 +189,10 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt)
     elseif (reps > 1)             ## Replication with Interaction
       MSI = SSI / df_SSI;
       F_MSI = Inf;
-      p_MSI = 0;      
+      p_MSI = 0;
     endif
   endif
-  
+
   ## Create p output (if requested)
   if (nargout > 0)
     if (reps > 1)
@@ -199,7 +201,7 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt)
       p = [p_MSC, p_MSR];
     endif
   endif
-  
+
   ## Create results table (if requested)
   if (nargout > 1 && reps > 1)
     anovatab = {"Source", "SS", "df", "MS", "F", "Prob>F"; ...
@@ -215,7 +217,7 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt)
                 "Error", SSE, df_SSE, MSE, "", ""; ...
                 "Total", SST, df_tot, "", "", ""};
   endif
-  
+
   ## Create stats structure (if requested) for MULTCOMPARE
   if (nargout > 2)
     stats.source = 'anova2';
@@ -228,7 +230,7 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt)
     stats.pval = p_MSI;
     stats.df = df_SSE;
   endif
-  
+
   ## Print results table on screen if no output argument was requested
   if (nargout == 0 || plotdata)
     printf("                      ANOVA Table\n");
@@ -238,7 +240,7 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt)
             SSC, df_SSC, MSC, F_MSC, p_MSC);
     printf("Rows         %10.4f %5.0f %10.4f %8.2f %9.4f\n", ...
             SSR, df_SSR, MSR, F_MSR, p_MSR);
-    if reps > 1
+    if (reps > 1)
       printf("Interaction  %10.4f %5.0f %10.4f %8.2f %9.4f\n", ...
               SSI, df_SSI, MSI, F_MSI, p_MSI);
     endif

@@ -6,6 +6,8 @@
 ## Copyright (C) 2020 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2020 Philip Nienhuis (prnienhuis@users.sf.net)
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later

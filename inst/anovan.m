@@ -3,6 +3,8 @@
 ## Copyright (C) 2021 Christian Scholz
 ## Copyright (C) 2003-2005 Andy Adler <adler@ncf.ca>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -20,14 +22,14 @@
 ## @deftypefn {Function File} [@var{P}, @var{T}, @var{STATS}, @var{TERMS}] = anovan (@var{Y}, @var{GROUP})
 ## @deftypefnx {Function File} [@var{P}, @var{T}, @var{STATS}, @var{TERMS}] = anovan (@var{Y}, @var{GROUP}, "name", @var{value})
 ##
-## Perform a multi (N)-way analysis of (co)variance (ANOVA or ANCOVA) to   
-## evaluate the effect of one or more categorical or continuous predictors  
-## on a continuous outcome. The algorithms used make @code{anovan} suitable 
-## for balanced or unbalanced designs. Examples of function usage can be found 
-## by entering the command @code{demo anovan}. 
-## 
-## Data is a single vector @var{Y} with groups specified by a corresponding 
-## matrix or cell array of group labels @var{GROUP}, where each column of 
+## Perform a multi (N)-way analysis of (co)variance (ANOVA or ANCOVA) to
+## evaluate the effect of one or more categorical or continuous predictors
+## on a continuous outcome. The algorithms used make @code{anovan} suitable
+## for balanced or unbalanced designs. Examples of function usage can be found
+## by entering the command @code{demo anovan}.
+##
+## Data is a single vector @var{Y} with groups specified by a corresponding
+## matrix or cell array of group labels @var{GROUP}, where each column of
 ## @var{GROUP} has the same number of rows as @var{Y}. For example, if @var{Y}
 ## = [1.1;1.2]; @var{GROUP} = [1,2,1; 1,5,2]; then observation 1.1 was measured
 ## under conditions 1,2,1 and observation 1.2 was measured under conditions
@@ -40,7 +42,7 @@
 ## @itemize
 ## @item
 ## @var{continuous} is a vector of indices indicating which of the columns (i.e.
-## factors) in @var{GROUP} should be treated as continuous predictors rather 
+## factors) in @var{GROUP} should be treated as continuous predictors rather
 ## than as categorical predictors.
 ## @end itemize
 ##
@@ -92,7 +94,7 @@
 ## @item
 ## @var{varnames} must be a cell array of strings with each element containing a
 ## factor name for each column of GROUP.  By default (if not parsed as optional
-## argument), @var{varnames} are "X1","X2","X3", etc. 
+## argument), @var{varnames} are "X1","X2","X3", etc.
 ## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "display", @var{dispopt})}
@@ -107,12 +109,12 @@
 ## [@var{P}, @var{T}] = anovan (@dots{}) returns a cell array containing the
 ## ANOVA table.
 ##
-## [@var{P}, @var{T}, @var{STATS}] = anovan (@dots{}) returns a structure 
-## containing additional statistics, including coefficients, degrees of freedom 
-## and effect sizes for each term in the linear model (based on deviation 
-## contrasts), the design matrix, the variance-covariance matrix, model 
+## [@var{P}, @var{T}, @var{STATS}] = anovan (@dots{}) returns a structure
+## containing additional statistics, including coefficients, degrees of freedom
+## and effect sizes for each term in the linear model (based on deviation
+## contrasts), the design matrix, the variance-covariance matrix, model
 ## residuals, and the mean squared error.
-## 
+##
 ## [@var{P}, @var{T}, @var{STATS}, @var{TERMS}] = anovan (@dots{}) returns the
 ## model term definitions.
 ##
@@ -121,11 +123,11 @@
 
 ##  Author: Andrew Penn <a.c.penn@sussex.ac.uk>
 ##  Includes some code by: Andy Adler <adler@ncf.ca>, Christian Scholz and Andreas Bertsatos
-## 
+##
 
 function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
-      
-    if nargin <= 1
+
+    if (nargin <= 1)
       error ("anovan usage: ""anovan (Y, GROUP)""; atleast 2 input arguments required");
     endif
 
@@ -138,7 +140,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     for idx = 3:2:nargin
       name = varargin{idx-2};
       value = varargin{idx-1};
-      switch lower (name)
+      switch (lower (name))
         case "model"
           MODELTYPE = value;
         case "continuous"
@@ -148,20 +150,20 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         case "varnames"
           VARNAMES = value;
         case "display"
-          DISPLAY = value;   
-        otherwise 
+          DISPLAY = value;
+        otherwise
           error (sprintf("anovan: parameter %s is not supported", name));
       endswitch
     endfor
-    if isnumeric (CONTINUOUS)
-      if any (CONTINUOUS ~= abs (fix (CONTINUOUS)))
+    if (isnumeric (CONTINUOUS))
+      if (any (CONTINUOUS ~= abs (fix (CONTINUOUS))))
         error ("anovan: the value provided for the continuous parameter must be a positive integer")
       endif
     else
       error ("anovan: the value provided for the continuous parameter must be numeric")
     endif
-    
-    # Accomodate for different formats for GROUP 
+
+    # Accomodate for different formats for GROUP
     # GROUP can be a matrix of numeric identifiers of a cell arrays of strings or numeric idenitiers
     N = size (GROUP,2); # number of anova "ways"
     n = numel (Y);      # total number of observations
@@ -171,22 +173,22 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     if (numel (unique (CONTINUOUS)) > N)
       error ("anovan: the number of factors assigned as continuous cannot exceed the number of factors in GROUP")
     endif
-    if any ((CONTINUOUS > N) || any (CONTINUOUS <= 0))
+    if (any ((CONTINUOUS > N) || any (CONTINUOUS <= 0)))
       error ("anovan: one or more indices provided in the value for the continuous parameter are out of range")
     endif
     cont_vec = false (1, N);
     cont_vec(CONTINUOUS) = true;
-    if iscell(GROUP)
+    if (iscell(GROUP))
       if (size(GROUP, 1) == 1)
         for j = 1:N
-          if isnumeric (GROUP{j})
-            if any (CONTINUOUS == j)
+          if (isnumeric (GROUP{j}))
+            if (any (CONTINUOUS == j))
               tmp(:,j) = num2cell (GROUP{j});
             else
               tmp(:,j) = cellstr (num2str (GROUP{j}));
             endif
           else
-            if any (CONTINUOUS == j)
+            if (any (CONTINUOUS == j))
               error ("anovan: continuous factors must be a numeric datatype")
             endif
             tmp(:,j) = GROUP{j};
@@ -202,17 +204,17 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     if (size (GROUP,1) ~= n)
       error ("anovan: GROUP must be a matrix of the same number of rows as Y");
     endif
-    if ~isempty (VARNAMES) 
-      if iscell (VARNAMES)
-        if all (cellfun (@ischar, VARNAMES))
+    if (! isempty (VARNAMES))
+      if (iscell (VARNAMES))
+        if (all (cellfun (@ischar, VARNAMES)))
           nvarnames = numel(VARNAMES);
         else
           error ("anovan: all variable names must be character or character arrays");
         endif
-      elseif ischar (VARNAMES)
+      elseif (ischar (VARNAMES))
         nvarnames = 1;
         VARNAMES = {VARNAMES};
-      elseif isstring (VARNAMES)
+      elseif (isstring (VARNAMES))
         nvarnames = 1;
         VARNAMES = {char(VARNAMES)};
       else
@@ -222,10 +224,10 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       nvarnames = N;
       VARNAMES = arrayfun(@(x) ["X",num2str(x)], 1:N, "UniformOutput", 0);
     endif
-    if (nvarnames ~= N)
+    if (nvarnames != N)
       error ("anovan: number of variable names is not equal to number of grouping variables");
     endif
-    
+
     # Remove NaN or non-finite observations
     excl = logical (isnan(Y) + isinf(Y));
     Y(excl) = [];
@@ -237,8 +239,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
     # Evaluate model type input argument and create terms matrix if not provided
     msg = "anovan: the number of columns in the term definitions cannot exceed the number of columns of GROUP";
-    if ischar (MODELTYPE)
-      switch lower(MODELTYPE)
+    if (ischar (MODELTYPE))
+      switch (lower (MODELTYPE))
         case "linear"
           MODELTYPE = 1;
         case "interaction"
@@ -249,10 +251,10 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           error ("anovan: model type not recognised");
       endswitch
     endif
-    if isscalar (MODELTYPE)
+    if (isscalar (MODELTYPE))
       TERMS = cell (MODELTYPE,1);
       v = false (1, N);
-      switch lower (MODELTYPE)
+      switch (lower (MODELTYPE))
         case 1
           # Create term definitions for an additive linear model
           TERMS = eye (N);
@@ -268,7 +270,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
             endfor
           endfor
         otherwise
-          if MODELTYPE > N
+          if (MODELTYPE > N)
             error (msg);
           endif
           # Create term definitions for a full model
@@ -288,35 +290,36 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       if (size (MODELTYPE, 2) > N)
         error (msg);
       endif
-      if ~all(ismember(MODELTYPE(:), [0,1]))
+      if (! all (ismember (MODELTYPE(:), [0,1])))
         error ("anovan: elements of the model terms matrix must be either 0 or 1")
       endif
       TERMS = logical (MODELTYPE);
     endif
     # Evaluate terms matrix
-    Ng = sum (TERMS, 2); 
-    if any (diff (Ng) < 0)
+    Ng = sum (TERMS, 2);
+    if (any (diff (Ng) < 0))
       error ("anovan: the model terms matrix must list main effects above/before interactions");
     endif
     Nm = sum (Ng == 1);
     Nx = sum (Ng > 1);
     Nt = Nm + Nx;
-    if any (any (TERMS(1:Nm,:)) ~= any (TERMS))
-      error ("anovan: all factors involved in interactions must have a main effect");  
+    if (any (any (TERMS(1:Nm,:)) != any (TERMS)))
+      error ("anovan: all factors involved in interactions must have a main effect");
     endif
-    
+
     # Calculate total sum-of-squares
     ct  = sum (Y)^2 / n;   % correction term
     sst = sum (Y.^2) - ct;
     dft = n - 1;
-    
+
     # Fit linear models, and calculate sums-of-squares for ANOVA
-    switch lower (SSTYPE)
+    switch (lower (SSTYPE))
       case 1
         # Type I sequential sums-of-squares (SSTYPE = 1)
         R = sst;
         ss = zeros (Nt,1);
-        [X, grpnames, nlevels, df, termcols, vmeans, gid] = make_design_matrix (GROUP, TERMS, CONTINUOUS, n, Nm, Nx, Ng);
+        [X, grpnames, nlevels, df, termcols, vmeans, gid] = ...
+                  make_design_matrix (GROUP, TERMS, CONTINUOUS, n, Nm, Nx, Ng);
         for j = 1:Nt
           XS = cell2mat (X(1:j+1));
           [b, sse] = lmfit (XS, Y);
@@ -328,11 +331,12 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       case {2,'h'}
         # Type II (hierarchical, or partially sequential) sums of squares
         ss = zeros (Nt,1);
-        [X, grpnames, nlevels, df, termcols, vmeans, gid]  = make_design_matrix (GROUP, TERMS, CONTINUOUS, n, Nm, Nx, Ng);
+        [X, grpnames, nlevels, df, termcols, vmeans, gid] = ...
+                  make_design_matrix (GROUP, TERMS, CONTINUOUS, n, Nm, Nx, Ng);
         for j = 1:Nt
-          i = find (TERMS(j,:)); 
+          i = find (TERMS(j,:));
           k = cat (1, 1, 1 + find (any (~TERMS(:,i),2)));
-          XS = cell2mat (X(k)); 
+          XS = cell2mat (X(k));
           [jnk, R1] = lmfit (XS, Y);
           k = cat (1, j+1, k);
           XS = cell2mat (X(k));
@@ -344,7 +348,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       case 3
         # Type III (constrained, marginal or orthogonal) sums of squares
         ss = zeros (Nt, 1);
-        [X, grpnames, nlevels, df, termcols, vmeans, gid] = make_design_matrix (GROUP, TERMS, CONTINUOUS, n, Nm, Nx, Ng);
+        [X, grpnames, nlevels, df, termcols, vmeans, gid] = ...
+                  make_design_matrix (GROUP, TERMS, CONTINUOUS, n, Nm, Nx, Ng);
         [b, sse, resid, ucov] = lmfit (cell2mat (X), Y);
         for j = 1:Nt
           XS = cell2mat (X(1:Nt+1 ~= j+1));
@@ -362,18 +367,18 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     partial_eta_sq = ss ./ (ss + sse);
     F = ms / mse;
     P = 1 - fcdf (F, df, dfe);
-    
+
     # Prepare cell array containing the ANOVA table (T)
     T = cell (Nt + 3, 7);
     T(1,:) = {"Source","Sum Sq.","d.f.","Mean Sq.","Eta Sq.","F","Prob>F"};
-    T(2:Nt+1,2:7) = num2cell([ss df ms partial_eta_sq F P]);
-    T(end-1,1:4) = {"Error",sse,dfe,mse};
-    T(end,1:3) = {"Total",sst,dft};
+    T(2:Nt+1,2:7) = num2cell ([ss df ms partial_eta_sq F P]);
+    T(end-1,1:4) = {"Error", sse, dfe, mse};
+    T(end,1:3) = {"Total", sst, dft};
     for i = 1:Nt
-      str = sprintf("%s*",VARNAMES{find(TERMS(i,:))});
+      str = sprintf ("%s*", VARNAMES{find (TERMS(i,:))});
       T(i+1,1) = str(1:end-1);
     endfor
-    
+
     # If requested, prepare stats output structure
     # Note that the information provided by STATS is not sufficient for MATLAB's
     # and vice versa multcompare function
@@ -387,9 +392,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                       "mse", mse, ...
                       "nullproject", [], ...   # Not used by Octave
                       "terms", TERMS, ...
-                      "nlevels", nlevels, ...  
+                      "nlevels", nlevels, ...
                       "continuous", cont_vec, ...
-                      "vmeans", vmeans, ...        
+                      "vmeans", vmeans, ...
                       "termcols", termcols, ...
                       "coeffnames", [], ...    # Not used by Octave
                       "vars", [], ...          # Not used by Octave
@@ -405,24 +410,24 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                       "txtdenom", [], ...      # Not used since "random" argument name not supported
                       "txtems", [], ...        # Not used since "random" argument name not supported
                       "rtnames", [],...        # Not used since "random" argument name not supported
-                      # Additional STATS fields created and used exclusively by Octave 
+                      # Additional STATS fields created and used exclusively by Octave
                       "df", df, .....
                       "X", sparse (cell2mat (X)), ...
                       "vcov", sparse (ucov * mse), ...
                       "grps", gid, ...
                       "eta_squared", eta_sq, ...
-                      "partial_eta_squared", partial_eta_sq); 
+                      "partial_eta_squared", partial_eta_sq);
      endif
-    
-    # Print ANOVA table 
-    switch lower (DISPLAY)
+
+    # Print ANOVA table
+    switch (lower (DISPLAY))
       case "on"
         # Get dimensions of the ANOVA table
         [nrows, ncols] = size (T);
         # Print table
         fprintf("\nANOVA table (Type %s sums of squares):\n\n", sstype_char);
         fprintf("Source                   Sum Sq.    d.f.    Mean Sq.  R Sq.            F  Prob>F\n");
-        fprintf("********************************************************************************\n");  
+        fprintf("********************************************************************************\n");
         for i = 1:Nt
           str = T{i+1,1};
           l = numel(str);  # Needed to truncate source term name at 18 characters
@@ -433,23 +438,24 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           elseif (P(i) < 1.0)
             fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f    .%03u \n", str(1:min(18,l)), T{i+1,2:end-1}, round (P(i) * 1e+03));
           else
-            fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f   1.000 \n", str(1:min(18,l)), T{i+1,2:end-1}); 
+            fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f   1.000 \n", str(1:min(18,l)), T{i+1,2:end-1});
           endif
         endfor
-        fprintf("Error                 %10.5g  %6d  %10.5g\n", T{end-1,2:4});               
-        fprintf("Total                 %10.5g  %6d \n", T{end,2:3});  
+        fprintf("Error                 %10.5g  %6d  %10.5g\n", T{end-1,2:4});
+        fprintf("Total                 %10.5g  %6d \n", T{end,2:3});
         fprintf("\n");
       case "off"
         # do nothing
       otherwise
-        error ("anovan: wrong value for ""display"" parameter.");    
+        error ("anovan: wrong value for ""display"" parameter.");
     endswitch
-  
+
 endfunction
 
 
-function [X, levels, nlevels, df, termcols, vmeans, gid] = make_design_matrix (GROUP, TERMS, CONTINUOUS, n, Nm, Nx, Ng)
-  
+function [X, levels, nlevels, df, termcols, vmeans, gid] = ...
+                    make_design_matrix (GROUP, TERMS, CONTINUOUS, n, Nm, Nx, Ng)
+
   # Returns a cell array of the design matrix for each term in the model
 
   # Fetch factor levels from each column (i.e. factor) in GROUP
@@ -461,7 +467,7 @@ function [X, levels, nlevels, df, termcols, vmeans, gid] = make_design_matrix (G
   vmeans = zeros (Nm, 1);
   for j = 1:Nm
     m = find (TERMS(j,:));
-    if any (j == CONTINUOUS)
+    if (any (j == CONTINUOUS))
       # Continuous predictor
       nlevels(j) = 1;
       termcols(j+1) = 1;
@@ -474,13 +480,13 @@ function [X, levels, nlevels, df, termcols, vmeans, gid] = make_design_matrix (G
       df(j) = nlevels(j) - 1;
     endif
   endfor
- 
+
   # Create design matrix
   # Prepare design matrix columns for the main effects
   X = cell (1, 1 + Nm + Nx);
   X(1) = ones (n, 1);
   for j = 1:Nm
-    if any (j == CONTINUOUS)
+    if (any (j == CONTINUOUS))
       # Continuous predictor
       X(1+j) = cell2mat (GROUP(:,j));
       vmeans(j) = mean ([X{1+j}]);
@@ -506,58 +512,58 @@ function [X, levels, nlevels, df, termcols, vmeans, gid] = make_design_matrix (G
   endif
 
   function C = contr_sum (N)
- 
-    # Create contrast matrix (of doubles) using deviation coding 
+
+    # Create contrast matrix (of doubles) using deviation coding
     # These contrasts sum to 0
     C =  cat (1, eye (N-1), - (ones (1,N-1)));
-  
+
   endfunction
-  
+
 endfunction
 
 
 function [b, sse, resid, ucov] = lmfit (X, Y)
-  
-  # Get model coefficients by solving the linear equation by QR decomposition 
+
+  # Get model coefficients by solving the linear equation by QR decomposition
   # (this achieves the same thing as b = X \ Y)
   # The number of free parameters (i.e. intercept + coefficients) is equal to n - dfe
   [Q, R] = qr (X, 0);
   b = R \ Q' * Y;
 
-  # Get fitted values 
+  # Get fitted values
   fit = X * b;
   # Get residuals from the fit
   resid = Y - fit;
   # Calculate residual sums-of-squares
   sse = sum ((resid).^2);
   # Calculate unscaled covariance matrix
-  if nargout > 3
+  if (nargout > 3)
     ucov = R \ Q' / X';
   end
-  
+
 endfunction
 
 %!demo
 %!
-%! # Two-sample unpaired test on independent samples (equivalent to Student's 
-%! # t-test). Note that the absolute value of t-statistic can be obtained by 
-%! # taking the square root of the reported F statistic. In this example, 
+%! # Two-sample unpaired test on independent samples (equivalent to Student's
+%! # t-test). Note that the absolute value of t-statistic can be obtained by
+%! # taking the square root of the reported F statistic. In this example,
 %! # t = sqrt (1.44) = 1.20.
 %!
 %! score = [54 23 45 54 45 43 34 65 77 46 65]';
 %! gender = {"male" "male" "male" "male" "male" "female" "female" "female" ...
-%!           "female" "female" "female"}'; 
+%!           "female" "female" "female"}';
 %!
 %! [P, T] = anovan (score, gender, "display", "on", "varnames", "gender");
 
 %!demo
 %!
-%! # Two-sample paired test on dependent or matched samples equivalent to a 
-%! # paired t-test. As for the first example, the t-statistic can be obtained by 
+%! # Two-sample paired test on dependent or matched samples equivalent to a
+%! # paired t-test. As for the first example, the t-statistic can be obtained by
 %! # taking the square root of the reported F statistic.
 %!
 %! score = [4.5 5.6; 3.7 6.4; 5.3 6.4; 5.4 6.0; 3.9 5.7]';
-%! treatment = {"before" "after"; "before" "after"; "before" "after"; 
+%! treatment = {"before" "after"; "before" "after"; "before" "after";
 %!              "before" "after"; "before" "after"}';
 %! subject = {"GS" "GS"; "JM" "JM"; "HM" "HM"; "JW" "JW"; "PS" "PS"}';
 %!
@@ -566,7 +572,7 @@ endfunction
 
 %!demo
 %!
-%! # One-way ANOVA on the data from a study on the strength of structural beams, 
+%! # One-way ANOVA on the data from a study on the strength of structural beams,
 %! # in Hogg and Ledolter (1987) Engineering Statistics. New York: MacMillan
 %!
 %! strength = [82 86 79 83 84 85 86 87 74 82 ...
@@ -579,11 +585,11 @@ endfunction
 
 %!demo
 %!
-%! # One-way repeated measures ANOVA on the data from a study on the number of 
-%! # words recalled by 10 subjects for three time condtions, in Loftus & Masson 
+%! # One-way repeated measures ANOVA on the data from a study on the number of
+%! # words recalled by 10 subjects for three time condtions, in Loftus & Masson
 %! # (1994) Psychon Bull Rev. 1(4):476-490, Table 2
 %!
-%! words = [10 13 13; 6 8 8; 11 14 14; 22 23 25; 16 18 20; ... 
+%! words = [10 13 13; 6 8 8; 11 14 14; 22 23 25; 16 18 20; ...
 %!          15 17 17; 1 1 4; 12 15 17;  9 12 12;  8 9 12];
 %! seconds = [1 2 5; 1 2 5; 1 2 5; 1 2 5; 1 2 5; ...
 %!            1 2 5; 1 2 5; 1 2 5; 1 2 5; 1 2 5;];
@@ -595,8 +601,8 @@ endfunction
 
 %!demo
 %!
-%! # Balanced two-way ANOVA with interaction on the data from a study of popcorn 
-%! # brands and popper types, in Hogg and Ledolter (1987) Engineering Statistics. 
+%! # Balanced two-way ANOVA with interaction on the data from a study of popcorn
+%! # brands and popper types, in Hogg and Ledolter (1987) Engineering Statistics.
 %! # New York: MacMillan
 %!
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
@@ -616,7 +622,7 @@ endfunction
 %!demo
 %!
 %! # Unbalanced two-way ANOVA (2x2) on the data from a study on the effects of
-%! # gender and having a college degree on salaries of company employees,  
+%! # gender and having a college degree on salaries of company employees,
 %! # in Maxwell, Delaney and Kelly (2018): Chapter 7, Table 15
 %!
 %! salary = [24 26 25 24 27 24 27 23 15 17 20 16, ...
@@ -631,15 +637,15 @@ endfunction
 
 %!demo
 %!
-%! # Unbalanced two-way ANOVA (3x2) on the data from a study of the effect of 
-%! # adding sugar and/or milk on the tendency of coffee to make people babble, 
+%! # Unbalanced two-way ANOVA (3x2) on the data from a study of the effect of
+%! # adding sugar and/or milk on the tendency of coffee to make people babble,
 %! # in from Navarro (2019): 16.10
 %!
 %! sugar = {"real" "fake" "fake" "real" "real" "real" "none" "none" "none" ...
 %!          "fake" "fake" "fake" "real" "real" "real" "none" "none" "fake"}';
-%! milk = {"yes" "no" "no" "yes" "yes" "no" "yes" "yes" "yes" ... 
+%! milk = {"yes" "no" "no" "yes" "yes" "no" "yes" "yes" "yes" ...
 %!         "no" "no" "yes" "no" "no" "no" "no" "no" "yes"}';
-%! babble = [4.6 4.4 3.9 5.6 5.1 5.5 3.9 3.5 3.7... 
+%! babble = [4.6 4.4 3.9 5.6 5.1 5.5 3.9 3.5 3.7...
 %!           5.6 4.7 5.9 6.0 5.4 6.6 5.8 5.3 5.7]';
 %!
 %! [P, T] = anovan (babble, {sugar, milk}, "model", "full", "sstype", 3,...
@@ -647,13 +653,13 @@ endfunction
 
 %!demo
 %!
-%! # Unbalanced three-way ANOVA (3x2x2) on the data from a study of the effects 
-%! # of three different drugs, biofeedback and diet on patient blood pressure, 
+%! # Unbalanced three-way ANOVA (3x2x2) on the data from a study of the effects
+%! # of three different drugs, biofeedback and diet on patient blood pressure,
 %! # adapted* from Maxwell, Delaney and Kelly (2018): Chapter 8, Table 12
 %! # * Missing values introduced to make the sample sizes unequal to test the
 %! #   calculation of different types of sums-of-squares
 %!
-%! drug = {"X" "X" "X" "X" "X" "X" "X" "X" "X" "X" "X" "X" ... 
+%! drug = {"X" "X" "X" "X" "X" "X" "X" "X" "X" "X" "X" "X" ...
 %!         "X" "X" "X" "X" "X" "X" "X" "X" "X" "X" "X" "X";
 %!         "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" ...
 %!         "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y";
@@ -679,8 +685,8 @@ endfunction
 %!demo
 %!
 %! # Balanced three-way ANOVA (2x2x2) with one of the factors being a blocking
-%! # factor. The data is from a randomized block design study on the effects 
-%! # of antioxidant treatment on glutathione-S-transferase (GST) levels in 
+%! # factor. The data is from a randomized block design study on the effects
+%! # of antioxidant treatment on glutathione-S-transferase (GST) levels in
 %! # different mouse strains, from Festing (2014), ILAR Journal, 55(3):427-476
 %!
 %! measurement = [444 614 423 625 408  856 447 719 ...
@@ -715,9 +721,9 @@ endfunction
 %!                         'varnames', {"species", "temp"});
 
 %!demo
-%! 
-%! # Factorial ANCOVA on data from a study of the effects of treatment and 
-%! # exercise on stress reduction score after adjusting for age. Data from R 
+%!
+%! # Factorial ANCOVA on data from a study of the effects of treatment and
+%! # exercise on stress reduction score after adjusting for age. Data from R
 %! # datarium package).
 %!
 %! score = [95.6 82.2 97.2 96.4 81.4 83.6 89.4 83.8 83.3 85.7 ...
@@ -734,7 +740,7 @@ endfunction
 %!              "no"  "no"  "no"  "no"  "no"  "no"  "no"  "no"  "no"  "no"}';
 %! exercise = {"lo"  "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  ...
 %!             "mid" "mid" "mid" "mid" "mid" "mid" "mid" "mid" "mid" "mid" ...
-%!             "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  ... 
+%!             "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  ...
 %!             "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  ...
 %!             "mid" "mid" "mid" "mid" "mid" "mid" "mid" "mid" "mid" "mid" ...
 %!             "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"}';
@@ -746,12 +752,12 @@ endfunction
 %!                 'continuous', 3, 'sstype', 'h', 'display', 'on', ...
 %!                 'varnames', {'treatment','exercise','age'});
 
-## Test 1 for anovan example 1 
+## Test 1 for anovan example 1
 ## Test compares anovan to results from MATLAB's anovan and ttest2 functions
 %!test
 %! score = [54 23 45 54 45 43 34 65 77 46 65]';
 %! gender = {'male' 'male' 'male' 'male' 'male' 'female' 'female' 'female' ...
-%!           'female' 'female' 'female'}'; 
+%!           'female' 'female' 'female'}';
 %!
 %! [P, T] = anovan (score,gender,'display','off');
 %! assert (P(1), 0.2612876773271042,  1e-09);              # compared to p calculated by MATLAB anovan
@@ -763,7 +769,7 @@ endfunction
 ## Test compares anovan to results from MATLAB's anovan and ttest functions
 %!test
 %! score = [4.5 5.6; 3.7 6.4; 5.3 6.4; 5.4 6.0; 3.9 5.7]';
-%! treatment = {'before' 'after'; 'before' 'after'; 'before' 'after'; 
+%! treatment = {'before' 'after'; 'before' 'after'; 'before' 'after';
 %!              'before' 'after'; 'before' 'after'}';
 %! subject = {'GS' 'GS'; 'JM' 'JM'; 'HM' 'HM'; 'JW' 'JW'; 'PS' 'PS'}';
 %!
@@ -773,7 +779,7 @@ endfunction
 %! assert (P(1), 0.016004356735364,  1e-09);              # compared to p calculated by MATLAB ttest2
 %! assert (sqrt(T{2,6}), abs(-4.00941576558195),  1e-09); # compared to abs(t) calculated by MATLAB ttest2
 
-## Test 3 for anovan example 3 
+## Test 3 for anovan example 3
 ## Test compares anovan to results from MATLAB's anovan and anova1 functions
 %!test
 %! strength = [82 86 79 83 84 85 86 87 74 82 ...
@@ -789,7 +795,7 @@ endfunction
 ## Test 4 for anovan example 4
 ## Test compares anovan to results from MATLAB's anovan function
 %!test
-%! words = [10 13 13; 6 8 8; 11 14 14; 22 23 25; 16 18 20; ... 
+%! words = [10 13 13; 6 8 8; 11 14 14; 22 23 25; 16 18 20; ...
 %!          15 17 17; 1 1 4; 12 15 17;  9 12 12;  8 9 12];
 %! subject = [ 1  1  1;  2  2  2;  3  3  3;  4  4  4;  5  5  5; ...
 %!             6  6  6;  7  7  7;  8  8  8;  9  9  9; 10 10 10];
@@ -870,9 +876,9 @@ endfunction
 %!test
 %! sugar = {'real' 'fake' 'fake' 'real' 'real' 'real' 'none' 'none' 'none' ...
 %!          'fake' 'fake' 'fake' 'real' 'real' 'real' 'none' 'none' 'fake'}';
-%! milk = {'yes' 'no' 'no' 'yes' 'yes' 'no' 'yes' 'yes' 'yes' ... 
+%! milk = {'yes' 'no' 'no' 'yes' 'yes' 'no' 'yes' 'yes' 'yes' ...
 %!         'no' 'no' 'yes' 'no' 'no' 'no' 'no' 'no' 'yes'}';
-%! babble = [4.6 4.4 3.9 5.6 5.1 5.5 3.9 3.5 3.7... 
+%! babble = [4.6 4.4 3.9 5.6 5.1 5.5 3.9 3.5 3.7...
 %!           5.6 4.7 5.9 6.0 5.4 6.6 5.8 5.3 5.7]';
 %! [P, T] = anovan (babble,{sugar,milk},'model','full','sstype',1,'display','off');
 %! assert (P(1), 0.0108632139833963,  1e-09);
@@ -910,7 +916,7 @@ endfunction
 ## Test 8 for anovan example 8
 ## Test compares anovan to results from MATLAB's anovan function
 %!test
-%! drug = {'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' ... 
+%! drug = {'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' ...
 %!         'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X';
 %!         'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' ...
 %!         'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y';
@@ -1035,7 +1041,7 @@ endfunction
 %!              'no'  'no'  'no'  'no'  'no'  'no'  'no'  'no'  'no'  'no'}';
 %! exercise = {'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  ...
 %!             'mid' 'mid' 'mid' 'mid' 'mid' 'mid' 'mid' 'mid' 'mid' 'mid' ...
-%!             'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  ... 
+%!             'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  ...
 %!             'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  ...
 %!             'mid' 'mid' 'mid' 'mid' 'mid' 'mid' 'mid' 'mid' 'mid' 'mid' ...
 %!             'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'}';

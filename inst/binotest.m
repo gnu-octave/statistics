@@ -1,4 +1,6 @@
-## Copyright (C) 2016 Andreas Stahel
+## Copyright (C) 2016 Andreas Stahel<Andreas.Stahel@bfh.ch>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -26,7 +28,7 @@
 ## @qcode{"alpha"} can be used to specify the significance level
 ## of the test (the default value is 0.05). The option @qcode{"tail"},
 ## can be used to select the desired alternative hypotheses.  If the
-## value is @qcode{"both"} (default) the null is tested against the two-sided 
+## value is @qcode{"both"} (default) the null is tested against the two-sided
 ## alternative @code{@var{p} != @var{p0}}. The value of @var{pval} is
 ## determined by adding the probabilities of all event less or equally
 ## likely than the observed number @var{pos} of positive events.
@@ -41,16 +43,12 @@
 ##
 ## @end deftypefn
 
-
-## Author: Andreas Stahel <Andreas.Stahel@bfh.ch.
-## based on the code ttest.m by Tony Richardson <richardson.tony@gmail.com>
-
 function [h, p, ci] = binotest(pos,n,p0,varargin)
-  
+
   % Set default arguments
   alpha = 0.05;
   tail  = 'both';
-  
+
   i = 1;
   while ( i <= length(varargin) )
     switch lower(varargin{i})
@@ -65,7 +63,7 @@ function [h, p, ci] = binotest(pos,n,p0,varargin)
     end
     i = i + 1;
   end
-  
+
   if ~isa(tail,'char')
     error('tail argument to vartest must be a string\n',[]);
   end

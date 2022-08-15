@@ -1,5 +1,7 @@
 ## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -31,7 +33,7 @@
 ## @code{[@var{yCDF}, @var{xCDF}, @var{n}, @var{emsg}, @var{eid}] = cdfcalc
 ## (@var{x})} also returns an error message and error id if @var{x} is not a
 ## vector or if it contains no values other than NaN.
-## 
+##
 ## @seealso{cdfplot}
 ## @end deftypefn
 
@@ -44,7 +46,7 @@ function [yCDF, xCDF, n, emsg, eid] = cdfcalc (x)
   xCDF = [];
   n = 0;
   ## Check that x is a vector
-  if ! isvector (x)
+  if (! isvector (x))
     warning ("cdfcalc: vector required as input.");
     emsg = "VectorRequired";
     eid = "VectorRequired";
@@ -53,13 +55,13 @@ function [yCDF, xCDF, n, emsg, eid] = cdfcalc (x)
   ## Remove NaNs and check if there are remaining data to calculate ecdf
   x = x(! isnan (x));
   n = length (x);
-  if n == 0
+  if (n == 0)
     warning ("cdfcalc: not enough data.");
     emsg = "NotEnoughData";
     eid = "NotEnoughData";
     return
   endif
-  ## Sort data in ascending order 
+  ## Sort data in ascending order
   x = sort (x(:));
   ## Get cumulative sums
   yCDF = (1:n)' / n;

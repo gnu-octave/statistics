@@ -107,10 +107,10 @@
 function [h, p, stats] = chi2gof (x, varargin)
 
   ## Check imput arguments
-  if nargin < 1
+  if (nargin < 1)
     error ("chi2gof: At least one imput argument is required.");
   endif
-  if ! isvector(x) || ! isreal(x)
+  if (! isvector(x) || ! isreal(x))
     error ("chi2gof: X must ba a vector of real numbers.");
   endif
   ## Add initial parameters
@@ -128,7 +128,7 @@ function [h, p, stats] = chi2gof (x, varargin)
   argpos = 1;
   while (numarg)
     argname = varargin{argpos};
-    switch lower (argname)
+    switch (lower (argname))
       case "nbins"
         nbins = varargin{argpos + 1};
       case "ctrs"
@@ -152,54 +152,54 @@ function [h, p, stats] = chi2gof (x, varargin)
     argpos += 2;
   endwhile
   ## Check additional arguments for errors
-  if (! isempty (nbins) + ! isempty (binctrs) + ! isempty (binedges)) > 1
+  if ((! isempty (nbins) + ! isempty (binctrs) + ! isempty (binedges)) > 1)
     error ("chi2gof: Inconsistent Arguments.");
   endif
-  if (! isempty (cdf_spec) + ! isempty (expected)) > 1
+  if ((! isempty (cdf_spec) + ! isempty (expected)) > 1)
     error ("chi2gof: Conflicted Arguments.");
   endif
-  if ! isempty (frequency)
-   if ! isvector (frequency) || numel (frequency) != numel (x)
+  if (! isempty (frequency))
+   if (! isvector (frequency) || numel (frequency) != numel (x))
        error ("chi2gof: X and Frequency vectors mismatch.");
    endif
-   if any (frequency < 0)
+   if (any (frequency < 0))
        error ("chi2gof: Frequency vector contains negative numbers.");
    endif
   endif
-  if ! isscalar (emin) || emin < 0 || emin != round (emin) || ! isreal (emin)
+  if (! isscalar (emin) || emin < 0 || emin != round (emin) || ! isreal (emin))
     error("chi2gof: 'emin' must be a positive integer.");
   endif
-  if ! isempty (nparams)
-    if ! isscalar (nparams) || nparams < 0 || nparams != round (nparams) ...
-                                           || ! isreal (nparams)
+  if (! isempty (nparams))
+    if (! isscalar (nparams) || nparams < 0 || nparams != round (nparams) ...
+                                           || ! isreal (nparams))
       error ("chi2gof: Wrong number of parameters.");
     endif
   endif
-  if ! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1
+  if (! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1)
      error ("chi2gof: Wrong value of alpha.");
   endif
   ## Make X a column vector
   x = x(:);
   ## Parse or create a frequeny vector
-  if isempty (frequency)
+  if (isempty (frequency))
      frequency = ones (size (x));
   else
      frequency = frequency(:);
   endif
   ## Remove NaNs if any
   remove_NaNs = isnan (frequency) | isnan (x);
-  if any (remove_NaNs)
+  if (any (remove_NaNs))
     x(remove_NaNs) = [];
     frequency(remove_NaNs) = [];
   endif
   ## Check for bin numbers, centers, or edges and calculate bins accordingly
-  if ! isempty (binctrs)
+  if (! isempty (binctrs))
     [Observed, binedges] = calculatebins (x, frequency, "ctrs", binctrs);
-  elseif ! isempty (binedges)
+  elseif (! isempty (binedges))
     [Observed, binedges] = calculatebins (x, frequency, "edges", binedges);
   else
-    if isempty (nbins)
-      if isempty (expected)
+    if (isempty (nbins))
+      if (isempty (expected))
         nbins = 10;                   ## default number of bins
       else
         nbins = length (expected);    ## determined by Expected vector
@@ -211,50 +211,50 @@ function [h, p, stats] = chi2gof (x, varargin)
   nbins = length (Observed);
   ## Calculate expected vector
   cdfargs = {};
-  if ! isempty (expected)
+  if (! isempty (expected))
     ## Provided as input argument
-    if ! isvector (expected) || numel (expected) != nbins
+    if (! isvector (expected) || numel (expected) != nbins)
       error ("chi2gof: Expected counts vector is the wrong size.");
     endif
-    if any (expected < 0)
+    if (any (expected < 0))
       error ("chi2gof: Expected counts vector has negative values.");
     endif
     Expected = expected(:);
   else
     ## Calculate from the cdf
-    if isempty (cdf_spec)
+    if (isempty (cdf_spec))
       ## Use estimated normal as default
       cdffunc = @normcdf;
       sumfreq = sum (frequency);
       mu = sum (x.*frequency)/sumfreq;
       sigma = sqrt (sum ((x.*frequency - mu) .^ 2) / (sumfreq-1));
       cdfargs = {mu, sigma};
-      if isempty (nparams)
+      if (isempty (nparams))
         nparams = 2;
       endif
-    elseif isa (cdf_spec, "function_handle")
+    elseif (isa (cdf_spec, "function_handle"))
       ## Split function handle to get function name and optional parameters
       cstr = ostrsplit (func2str (cdf_spec), ",");
       ## Simple function handle, no parameters: e.g. @normcdf
-      if isempty (strfind (cstr, "@")) && numel (cstr) == 1
+      if (isempty (strfind (cstr, "@")) && numel (cstr) == 1)
         cdffunc = str2func (char (strcat ("@", cstr)));
-        if isempty (nparams)
+        if (isempty (nparams))
           nparams = numel (cdfargs);
         endif
       ## Complex function handle, no parameters: e.g. @(x) normcdf(x)
-      elseif ! isempty (strfind (cstr, "@")) && numel (cstr) == 1
+      elseif (! isempty (strfind (cstr, "@")) && numel (cstr) == 1)
         ## Remove white spaces
         cstr = char (cstr);
         cstr(strfind (cstr, " ")) = [];
         ## Remove input argument in parentheses
-        while length (strfind (cstr,"("))
+        while (length (strfind (cstr,"(")))
           cstr(index (cstr, "("):index (cstr, ")")) = [];
         endwhile
         cdffunc = str2func (cstr);
-        if isempty (nparams)
+        if (isempty (nparams))
           nparams = numel (cdfargs);
         endif
-      elseif ! isempty (strfind (cstr, "@")) && numel (cstr) > 1
+      elseif (! isempty (strfind (cstr, "@")) && numel (cstr) > 1)
         ## Evaluate function name in first cell
         cstr_f = char (cstr(1));
         cstr_f(strfind (cstr_f, " ")) = [];
@@ -263,11 +263,11 @@ function [h, p, stats] = chi2gof (x, varargin)
         cdffunc = str2func (cstr_f);
         ## Evaluate optional parameters in remaining cells
         cstr_idx = 2;
-        while cstr_idx <= numel (cstr)
+        while (cstr_idx <= numel (cstr))
           cstr_p = char (cstr(cstr_idx));
           cstr_p(strfind (cstr_p, " ")) = [];
           ## Check for numerical value
-          if isscalar (str2num (cstr_p))
+          if (isscalar (str2num (cstr_p)))
             cdfargs{cstr_idx - 1} = cstr_p;
           else
             ## Get function handle: e.g. mean
@@ -276,19 +276,19 @@ function [h, p, stats] = chi2gof (x, varargin)
             cstr_idx += 1;
           endif
         endwhile
-        if isempty (nparams)
+        if (isempty (nparams))
           nparams = numel (cdfargs);
         endif
       endif
-    elseif iscell (cdf_spec)
+    elseif (iscell (cdf_spec))
       % Get function and args from cell array
       cdffunc = cdf_spec{1};
       cdfargs = cdf_spec(2:end);
-      if isempty (nparams)
+      if (isempty (nparams))
         nparams = numel(cdfargs);
       endif
     endif
-    if ! is_function_handle (cdffunc)
+    if (! is_function_handle (cdffunc))
       error ("chi2gof: Poorly specified cumulative distribution function.");
     else
       cdfname = func2str (cdffunc);
@@ -298,7 +298,7 @@ function [h, p, stats] = chi2gof (x, varargin)
     interioredges = binedges(2:end-1);
     ## Compute the cumulative probabilities
     Fcdf = feval (cdffunc, interioredges, cdfargs{:});
-    if ! isvector(Fcdf) || numel (Fcdf) != (nbins - 1)
+    if (! isvector(Fcdf) || numel (Fcdf) != (nbins - 1))
       msg = sprintf("chi2gof: Wrong number of outputs from: %s\n", cdfname);
       error (msg);
     endif
@@ -306,18 +306,18 @@ function [h, p, stats] = chi2gof (x, varargin)
     Expected = sum(Observed) * diff([0;Fcdf(:);1]);
   endif
   ## Avoid too small expected values
-  if any (Expected < emin)
+  if (any (Expected < emin))
     [Expected, Observed, binedges] = poolbins (Expected, Observed, binedges, emin);
     nbins = length (Expected);
   end
   ## Compute test statistic
   cstat = sum(((Observed - Expected) .^ 2) ./ Expected);
   ## Calculate degrees of freedom
-  if isempty (nparams)
+  if (isempty (nparams))
     nparams = 0;
   endif
   df = nbins - 1 - nparams;
-  if df > 0
+  if (df > 0)
     p = 1 - chi2cdf (cstat, df);
   else
     df = 0;
@@ -325,7 +325,7 @@ function [h, p, stats] = chi2gof (x, varargin)
   endif
   h = cast (p <= alpha, "double");
   ## Create 3rd output argument if necessary
-  if nargout > 2
+  if (nargout > 2)
     stats.chi2stat = cstat;
     stats.df = df;
     stats.edges = binedges;
@@ -341,7 +341,7 @@ function [Expected, Observed, binedges] = poolbins (Expected, ...
   j = length(Expected);
   while (i < j - 1 && (Expected(i) < emin || Expected(i + 1) < emin || ...
                        Expected(j) < emin || Expected(j - 1) < emin))
-    if Expected(i) < Expected(j)
+    if (Expected(i) < Expected(j))
       Expected(i+1) = Expected(i+1) + Expected(i);
       Observed(i+1) = Observed(i+1) + Observed(i);
       i = i + 1;
@@ -362,14 +362,14 @@ function [Observed, binedges] = calculatebins (x, frequency, binspec, specval)
   lo = double (min (x(:)));
   hi = double (max (x(:)));
   ## Check binspec for bin count, bin centers, or bin edges.
-  switch binspec
+  switch (binspec)
     case "nbins"
       nbins = specval;
-      if isempty(x)
+      if (isempty (x))
         lo = 0;
         hi = 1;
       endif
-      if lo == hi
+      if (lo == hi)
           lo = lo - floor (nbins / 2) - 0.5;
           hi = hi + ceil (nbins / 2) - 0.5;
       endif
@@ -387,9 +387,9 @@ function [Observed, binedges] = calculatebins (x, frequency, binspec, specval)
   ## Update bins
   nbins = length (binedges) - 1;
   ## Calculate bin numbers
-  if isempty(x)
+  if (isempty (x))
     binnum = x;
-  elseif ! isequal (binspec, "edges")
+  elseif (! isequal (binspec, "edges"))
     binedges = binedges + eps(binedges);
     [ignore, binnum] = histc (x, [-Inf binedges(2:end-1) Inf]);
   else
@@ -397,7 +397,7 @@ function [Observed, binedges] = calculatebins (x, frequency, binspec, specval)
     binnum(binnum == nbins + 1) = nbins;
   end
   ## Remove empty bins
-  if any (binnum == 0)
+  if (any (binnum == 0))
     frequency(binnum == 0) = [];
     binnum(binnum == 0) = [];
   end

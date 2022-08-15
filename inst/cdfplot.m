@@ -1,5 +1,7 @@
 ## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -42,7 +44,7 @@
 ## @item @tab STATS.median @tab sample median (50th percentile) of @var{x}
 ## @item @tab STATS.std @tab sample standard deviation of @var{x}
 ## @end multitable
-## 
+##
 ## @seealso{qqplot, cdfcalc}
 ## @end deftypefn
 
@@ -52,9 +54,9 @@ function [hCDF, stats] = cdfplot (x)
   ## Calculate sample cdf
   [yy, xx, ~, ~, eid] = cdfcalc (x);
   ## Check for errors returned from cdfcalc
-  if strcmpi (eid, "VectorRequired")
+  if (strcmpi (eid, "VectorRequired"))
     error ("cdfplot: vector required as input.");
-  elseif strcmpi (eid, "NotEnoughData")
+  elseif (strcmpi (eid, "NotEnoughData"))
     error("cdfplot: not enough data.");
   endif
   ## Create vectors for plotting
@@ -70,15 +72,15 @@ function [hCDF, stats] = cdfplot (x)
   title ("CDF plot of x");
 
   ## Return requested output arguments
-  if nargout > 0
+  if (nargout > 0)
     hCDF = h;
   endif
-  if nargout > 1
-     stats.min = nanmin(x);
-     stats.max = nanmax(x);
-     stats.mean = mean(x, "omitnan");
-     stats.median = nanmedian(x);
-     stats.std = nanstd(x);
+  if (nargout > 1)
+    stats.min = nanmin(x);
+    stats.max = nanmax(x);
+    stats.mean = mean(x, "omitnan");
+    stats.median = nanmedian(x);
+    stats.std = nanstd(x);
   endif
 endfunction
 
