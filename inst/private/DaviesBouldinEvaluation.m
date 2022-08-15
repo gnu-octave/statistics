@@ -1,5 +1,7 @@
 ## Copyright (C) 2021 Stefano Guidoni <ilguido@users.sf.net>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -25,7 +27,7 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
   ## criterion.
   ##
   ## The Davies-Bouldin criterion is based on the ratio between the distances
-  ## between clusters and within clusters, that is the distances between the 
+  ## between clusters and within clusters, that is the distances between the
   ## centroids and the distances between each datapoint and its centroid.
   ##
   ## The best solution according to the Davies-Bouldin criterion is the one
@@ -57,11 +59,11 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
     ## add new cluster sizes to evaluate
     function this = addK (this, K)
       addK@ClusterCriterion(this, K);
-      
+
       ## if we have new data, we need a new evaluation
       if (this.OptimalK == 0)
         Centroids_tmp = {};
-        pS = 0; # position shift of the elements of Centroids 
+        pS = 0; # position shift of the elements of Centroids
         for iter = 1 : length (this.InspectedK)
           ## reorganize Centroids according to the new list of cluster numbers
           if (any (this.InspectedK(iter) == K))
@@ -158,7 +160,7 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
           endif
 
           ## Davies-Bouldin value
-          ## an evaluation of the ratio between within-cluster and 
+          ## an evaluation of the ratio between within-cluster and
           ## between-cluster distances
 
           ## mean distances between cluster members and their centroid

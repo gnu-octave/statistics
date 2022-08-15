@@ -1,5 +1,7 @@
 ## Copyright (C) 2021 Stefano Guidoni <ilguido@users.sf.net>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -48,7 +50,7 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
     ## constructor
     function this = CalinskiHarabaszEvaluation (x, clust, KList)
       this@ClusterCriterion(x, clust, KList);
-      
+
       this.CriterionName = "CalinskiHarabasz";
       this.evaluate(this.InspectedK); # evaluate the list of cluster numbers
     endfunction
@@ -63,7 +65,7 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
       ## if we have new data, we need a new evaluation
       if (this.OptimalK == 0)
         Centroids_tmp = {};
-        pS = 0; # position shift of the elements of Centroids 
+        pS = 0; # position shift of the elements of Centroids
         for iter = 1 : length (this.InspectedK)
           ## reorganize Centroids according to the new list of cluster numbers
           if (any (this.InspectedK(iter) == K))
@@ -176,7 +178,7 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
           endfor
           S = (this.NumObservations - 1) * cov (UsableX); # within clusters cov.
           B = S - W; # between clusters means
-          
+
           ## tr(B) / tr(W) * (N-k) / (k-1)
           this.CriterionValues(iter) = (this.NumObservations - ...
             this.InspectedK(iter)) * trace (B) / ...

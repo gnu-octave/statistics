@@ -1,5 +1,7 @@
 ## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -22,7 +24,7 @@
 ## Reference:  Cyrus R. Mehta & Nitin R. Patel (1980) A network algorithm for
 ## the exact treatment of the 2×k contingency table, Communications in
 ## Statistics - Simulation and Computation, 9:6, 649-664,
-## DOI: 10.1080/03610918008812182 
+## DOI: 10.1080/03610918008812182
 ##
 ## @end deftypefn
 
@@ -143,10 +145,10 @@ function p_val = forward_scan (nodes, arcs, rsstat)
   stack(1,4) = 1;        ## probability so far of reaching this node
   N = size (stack, 1);
   i1 = 0; i2 = 0; i3 = 0;
-  while(1)
+  while (1)
     ## Get next lowest level node to process
     minlevel = min(stack((stack(1:N)>0)));
-    if isinf(minlevel)
+    if (isinf (minlevel))
       break;
     endif
     sp = find (stack(1:N) == minlevel);
@@ -172,33 +174,33 @@ function p_val = forward_scan (nodes, arcs, rsstat)
       thisP = pastP * arcprob(k);
       len = pastL + thisL;
       ## No paths from node J are signicant
-      if len + LP(tonode) < rsstat - seps
+      if (len + LP(tonode) < rsstat - seps)
         p_val(1) = p_val(1) + thisP * TP(tonode);
       ## All paths from node J are significant
-      elseif len + SP(tonode) > rsstat + seps
+      elseif (len + SP(tonode) > rsstat + seps)
         p_val(3) = p_val(3) + thisP * TP(tonode);
       ## Single match from node J
-      elseif SP(tonode) == LP(tonode)
+      elseif (SP(tonode) == LP(tonode))
         p_val(2) = p_val(2) + thisP * TP(tonode);
       ## Match node J with another already stored node
       else
         ## Find a stored node that matches this one
         r = find(stack(:,1) == L+1);
-        if any(r)
+        if (any (r))
           r = r(stack(r,2) == tonode);
-          if any (r)
+          if (any (r))
              r = r(abs (stack(r,3) - len) < seps);
           endif
         endif
         ## If any one is found, merge node J with it
-        if any(r)
+        if (any (r))
           sp = r(1);
           stack(sp,4) = stack(sp,4) + thisP;
           i1 = i1 + 1;
         ## Otherwise add a new node
         else
           z = find(isinf(stack(:,1)));
-          if isempty (z)
+          if (isempty (z))
              i2 = i2 +1;
              block = zeros (NROWS, 4);
              block(:,1) = Inf;

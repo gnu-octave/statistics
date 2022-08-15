@@ -1,5 +1,7 @@
 ## Copyright (C) 2021 Stefano Guidoni <ilguido@users.sf.net>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -26,37 +28,37 @@ classdef GapEvaluation < ClusterCriterion
   ##
   ## List of public properties specific to @code{SilhouetteEvaluation}:
   ## @table @code
-  ## @item @qcode{B} 
+  ## @item @qcode{B}
   ## the number of reference datasets to generate.
   ##
-  ## @item @qcode{Distance} 
+  ## @item @qcode{Distance}
   ## a valid distance metric name, or a function handle as accepted by the
   ## @code{pdist} function.
-  ##  
-  ## @item @qcode{ExpectedLogW} 
-  ## a vector of the expected values for the logarithm of the within clusters 
+  ##
+  ## @item @qcode{ExpectedLogW}
+  ## a vector of the expected values for the logarithm of the within clusters
   ## dispersion.
-  ##  
-  ## @item @qcode{LogW} 
+  ##
+  ## @item @qcode{LogW}
   ## a vector of the values of the logarithm of the within clusters dispersion.
   ##
-  ## @item @qcode{ReferenceDistribution} 
+  ## @item @qcode{ReferenceDistribution}
   ## a valid name for the reference distribution, namely: @code{PCA} (default)
   ## or @code{uniform}.
-  ##  
-  ## @item @qcode{SE} 
-  ## a vector of the standard error of the expected values for the logarithm 
+  ##
+  ## @item @qcode{SE}
+  ## a vector of the standard error of the expected values for the logarithm
   ## of the within clusters dispersion.
-  ##  
-  ## @item @qcode{SearchMethod} 
+  ##
+  ## @item @qcode{SearchMethod}
   ## a valid name for the search method to use: @code{globalMaxSE} (default) or
   ## @code{firstMaxSE}.
-  ##  
-  ## @item @qcode{StdLogW} 
-  ## a vector of the standard deviation of the expected values for the logarithm 
+  ##
+  ## @item @qcode{StdLogW}
+  ## a vector of the standard deviation of the expected values for the logarithm
   ## of the within clusters dispersion.
   ## @end table
-  ## 
+  ##
   ## The best solution according to the gap criterion depends on the chosen
   ## search method.  When the search method is @code{globalMaxSE}, the chosen
   ## gap value is the smaller one which is inside a standard error from the
@@ -209,7 +211,7 @@ classdef GapEvaluation < ClusterCriterion
   methods (Access = protected)
     ## evaluate
     ## do the evaluation
-    function this = evaluate (this, K)      
+    function this = evaluate (this, K)
       ## Monte-Carlo runs
       for mcrun = 1 : (this.B + 1)
         ## use complete observations only
@@ -225,7 +227,7 @@ classdef GapEvaluation < ClusterCriterion
             UsableX(:, col) = colMins(col) + rand (this.NumObservations, 1) *...
                               (colMaxs(col) - colMins(col));
           endfor
-        endif  
+        endif
 
         if (! isempty (this.ClusteringFunction))
           ## build the clusters
