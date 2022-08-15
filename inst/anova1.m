@@ -1,4 +1,6 @@
-## Copyright (C) 2021 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2021-2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -14,11 +16,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{p} =} anova1 (@var{x})
-## @deftypefnx {Function File} {@var{p} =} anova1 (@var{x}, @var{group})
-## @deftypefnx {Function File} {@var{p} =} anova1 (@var{x}, @var{group}, @var{displayopt})
-## @deftypefnx {Function File} {[@var{p}, @var{atab}] =} anova1 (@var{x}, @dots{})
-## @deftypefnx {Function File} {[@var{p}, @var{atab}, @var{stats}] =} anova1 (@var{x}, @dots{})
+## @deftypefn {Function File} @var{p} = anova1 (@var{x})
+## @deftypefnx {Function File} @var{p} = anova1 (@var{x}, @var{group})
+## @deftypefnx {Function File} @var{p} = anova1 (@var{x}, @var{group}, @var{displayopt})
+## @deftypefnx {Function File} [@var{p}, @var{atab}] = anova1 (@var{x}, @dots{})
+## @deftypefnx {Function File} [@var{p}, @var{atab}, @var{stats}] = anova1 (@var{x}, @dots{})
 ##
 ## Perform a one-way analysis of variance (ANOVA) for comparing the means of two
 ## or more groups of data under the null hypothesis that the groups are drawn
@@ -61,7 +63,7 @@
 ## If anova1 is called without any output arguments, then it prints the results
 ## in a one-way ANOVA table to the standard output.  It is also printed when
 ## @var{displayopt} is 'on'.
-## 
+##
 ##
 ## Examples:
 ##
@@ -83,7 +85,7 @@
 ## @end deftypefn
 
 function [p, anovatab, stats] = anova1 (x, group, displayopt)
-  
+
   ## check for valid number of input arguments
   narginchk (1, 3);
   ## add defaults
@@ -123,7 +125,7 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt)
   nonan = ~isnan (x);
   x = x(nonan);
   group = group(nonan, :);
-  
+
   ## Convert group to indices and separate names
   [group_id, group_names] = grp2idx (group);
   group_id = group_id(:);
@@ -134,7 +136,7 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt)
   mu = mean(x);
   x = x - mu;
   xr = x;
-  
+
   ## Get group size and mean for each group
   groups = size (group_names, 1);
   xs = zeros (1, groups);
@@ -144,7 +146,7 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt)
     xs(j) = length (group_size);
     xm(j) = mean (xr(group_size));
   endfor
-  
+
   ## Calculate statistics
   lx = length (xr);                       ## Number of samples in groups
   gm = mean (xr);                         ## Grand mean of groups

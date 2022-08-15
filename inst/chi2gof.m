@@ -1,5 +1,7 @@
 ## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -103,7 +105,7 @@
 ## @end deftypefn
 
 function [h, p, stats] = chi2gof (x, varargin)
-  
+
   ## Check imput arguments
   if nargin < 1
     error ("chi2gof: At least one imput argument is required.");
@@ -214,7 +216,7 @@ function [h, p, stats] = chi2gof (x, varargin)
     if ! isvector (expected) || numel (expected) != nbins
       error ("chi2gof: Expected counts vector is the wrong size.");
     endif
-    if any (expected < 0) 
+    if any (expected < 0)
       error ("chi2gof: Expected counts vector has negative values.");
     endif
     Expected = expected(:);
@@ -300,7 +302,7 @@ function [h, p, stats] = chi2gof (x, varargin)
       msg = sprintf("chi2gof: Wrong number of outputs from: %s\n", cdfname);
       error (msg);
     endif
-    % Compute the expected values 
+    % Compute the expected values
     Expected = sum(Observed) * diff([0;Fcdf(:);1]);
   endif
   ## Avoid too small expected values
@@ -391,7 +393,7 @@ function [Observed, binedges] = calculatebins (x, frequency, binspec, specval)
     binedges = binedges + eps(binedges);
     [ignore, binnum] = histc (x, [-Inf binedges(2:end-1) Inf]);
   else
-    [ignore, binnum] = histc (x, binedges); 
+    [ignore, binnum] = histc (x, binedges);
     binnum(binnum == nbins + 1) = nbins;
   end
   ## Remove empty bins
@@ -437,9 +439,9 @@ endfunction
 %!error chi2gof ([1,2,3,4], "cdf", @normcdff)
 %!test
 %! x = [1 2 1 3 2 4 3 2 4 3 2 2];
-%! [p, h, stats] = chi2gof (x);
-%! assert (p, 0);
-%! assert (h, NaN);
+%! [h, p, stats] = chi2gof (x);
+%! assert (h, 0);
+%! assert (p, NaN);
 %! assert (stats.chi2stat, 0.1205375022748029, 1e-14);
 %! assert (stats.df, 0);
 %! assert (stats.edges, [1, 2.5, 4], 1e-14);
