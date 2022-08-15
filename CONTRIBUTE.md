@@ -127,4 +127,5 @@ for i = 1:n
 end
 ```
 
-That's about it all I suppose! Just keep more or less consistent with what's in the other function files of the statistics packages and you should be fine :)
+**That's about it all I suppose!** Just keep more or less consistent with what's in the other function files of the statistics packages and you should be fine :smile:
+
