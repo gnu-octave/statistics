@@ -1,5 +1,7 @@
 ## Copyright (C) 2014 Nir Krakauer
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 3 of the License, or
@@ -22,26 +24,24 @@
 ## @seealso{cvpartition, @@cvpartition/training}
 ## @end deftypefn
 
-## Author: Nir Krakauer
-
 function inds = test (C, i = [])
 
   if (nargin < 1 || nargin > 2)
     print_usage ();
   endif
 
-  if nargin < 2 || isempty (i)
+  if (nargin < 2 || isempty (i))
     i = 1;
   endif
 
-  switch C.Type
-    case {'kfold' 'given'}
+  switch (C.Type)
+    case {"kfold", "given"}
       inds = C.inds == i;
-    case 'holdout'
+    case "holdout"
       inds = C.inds;
-    case 'leaveout'
+    case "leaveout"
       inds = zeros(C.NumObservations, 1, "logical");
       inds(i) = true;
-    case 'resubstitution'
+    case "resubstitution"
       inds = ones(C.NumObservations, 1, "logical");
   endswitch

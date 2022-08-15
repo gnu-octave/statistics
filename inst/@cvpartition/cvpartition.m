@@ -1,5 +1,7 @@
 ## Copyright (C) 2014 Nir Krakauer
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 3 of the License, or
@@ -35,7 +37,7 @@
 ## @end table
 ##
 ## The following fields are defined for the @samp{cvpartition} class:
-## 
+##
 ## @table @asis
 ## @item @samp{classes}
 ## Class designations for the elements.
@@ -58,51 +60,50 @@
 ## @seealso{crossval}
 ## @end deftypefn
 
-## Author: Nir Krakauer
-
-function C = cvpartition (X, partition_type = 'KFold', k = [])
+function C = cvpartition (X, partition_type = "KFold", k = [])
 
   if (nargin < 1 || nargin > 3 || !isvector(X))
     print_usage ();
   endif
-  
-  if isscalar (X)
+
+  if (isscalar (X))
     n = X;
     n_classes = 1;
   else
     n = numel (X);
   endif
 
-  switch tolower(partition_type)
-    case {'kfold' 'holdout' 'leaveout' 'resubstitution' 'given'}
+  switch (tolower (partition_type))
+    case {"kfold", "holdout", "leaveout", "resubstitution", "given"}
     otherwise
-      warning ('unrecognized type, using KFold')
-      partition_type = 'KFold';
+      warning ("unrecognized type, using KFold")
+      partition_type = "KFold";
   endswitch
 
-  switch tolower(partition_type)
-    case {'kfold' 'holdout' 'given'}  
-      if !isscalar (X)  
+  switch (tolower (partition_type))
+    case {"kfold", "holdout", "given"}
+      if (! isscalar (X))
         [y, ~, j] = unique (X(:));
         n_per_class = accumarray (j, 1);
         n_classes = numel (n_per_class);
       endif
   endswitch
 
-  C = struct ("classes", [], "inds", [], "n_classes", [], "NumObservations", [], "NumTestSets", [], "TestSize", [], "TrainSize", [], "Type", []);
+  C = struct ("classes", [], "inds", [], "n_classes", [], "NumObservations", ...
+            [], "NumTestSets", [], "TestSize", [], "TrainSize", [], "Type", []);
   #The non-Matlab fields classes, inds, n_classes are only useful for some methods
 
-  switch tolower(partition_type)
-    case 'kfold'
-      if isempty (k)
+  switch (tolower (partition_type))
+    case "kfold"
+      if (isempty (k))
         k = 10;
       endif
-      if n_classes == 1
+      if (n_classes == 1)
         inds = floor((0:(n-1))' * (k / n)) + 1;
       else
         inds = nan(n, 1);
         for i = 1:n_classes
-          if mod (i, 2) #alternate ordering over classes so that the subsets are more nearly the same size
+          if (mod (i, 2)) # alternate ordering over classes so that the subsets are more nearly the same size
             inds(j == i) = floor((0:(n_per_class(i)-1))' * (k / n_per_class(i))) + 1;
           else
             inds(j == i) = floor(((n_per_class(i)-1):-1:0)' * (k / n_per_class(i))) + 1;
@@ -112,26 +113,26 @@ function C = cvpartition (X, partition_type = 'KFold', k = [])
       C.inds = inds;
       C.NumTestSets = k;
       [~, ~, jj] = unique (inds);
-      n_per_subset = accumarray (jj, 1);     
+      n_per_subset = accumarray (jj, 1);
       C.TrainSize = n - n_per_subset;
       C.TestSize = n_per_subset;
-    case 'given'
+    case "given"
       C.inds = j;
       C.NumTestSets = n_classes;
       C.TrainSize = n - n_per_class;
-      C.TestSize = n_per_class;          
-    case 'holdout'
-      if isempty (k)
+      C.TestSize = n_per_class;
+    case "holdout"
+      if (isempty (k))
         k = 0.1;
       endif
-      if k < 1
+      if (k < 1)
         f = k; #target fraction to sample
         k = round (k * n); #number of samples
       else
         f = k / n;
       endif
       inds = zeros (n, 1, "logical");
-      if n_classes == 1
+      if (n_classes == 1)
         inds(randsample(n, k)) = true; #indices for test set
       else #sample from each class
         k_check = 0;
@@ -140,27 +141,27 @@ function C = cvpartition (X, partition_type = 'KFold', k = [])
           inds(find(j == i)(randsample(n_per_class(i), ki))) = true;
           k_check += ki;
         endfor
-        if k_check < k #add random elements to test set to make it k
+        if (k_check < k)       # add random elements to test set to make it k
           inds(find(!inds)(randsample(n - k_check, k - k_check))) = true;
-        elseif k_check > k #remove random elements from test set
+        elseif (k_check > k)   # remove random elements from test set
           inds(find(inds)(randsample(k_check, k_check - k))) = false;
         endif
         C.classes = j;
-      endif        
+      endif
       C.n_classes = n_classes;
       C.TrainSize = n - k;
       C.TestSize = k;
       C.NumTestSets = 1;
-      C.inds = inds;    
-    case 'leaveout'
+      C.inds = inds;
+    case "leaveout"
       C.TrainSize = ones (n, 1);
       C.TestSize = (n-1)  * ones (n, 1);
       C.NumTestSets = n;
-    case 'resubstitution'
+    case "resubstitution"
       C.TrainSize = C.TestSize = n;
       C.NumTestSets = 1;
   endswitch
-  
+
   C.NumObservations = n;
   C.Type = tolower (partition_type);
 
@@ -172,15 +173,14 @@ endfunction
 %!demo
 %! # Partition with Fisher iris dataset (n = 150)
 %! # Stratified by species
-%! load fisheriris.txt
-%! y = fisheriris(:, 1);
+%! load fisheriris
+%! y = species;
 %! # 10-fold cross-validation partition
-%! c = cvpartition (y, 'KFold', 10)
+%! c = cvpartition (species, 'KFold', 10)
 %! # leave-10-out partition
-%! c1 = cvpartition (y, 'HoldOut', 10)
+%! c1 = cvpartition (species, 'HoldOut', 10)
 %! idx1 = test (c, 2);
 %! idx2 = training (c, 2);
 %! # another leave-10-out partition
 %! c2 = repartition (c1)
-#plot(struct(c).inds, '*')
 

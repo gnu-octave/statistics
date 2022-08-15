@@ -1,5 +1,7 @@
 ## Copyright (C) 2014 Nir Krakauer
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 3 of the License, or
@@ -20,31 +22,29 @@
 ## @seealso{cvpartition}
 ## @end deftypefn
 
-## Author: Nir Krakauer
-
 function display (C)
 
-  if nargin != 1
+  if (nargin != 1)
     print_usage ();
   endif
-  
+
   switch C.Type
-    case 'kfold'
-      str = 'K-fold';
-    case 'given'
-      str = 'Given';
-    case 'holdout'
-      str = 'HoldOut';
-    case 'leaveout'
-      str = 'Leave-One-Out';
-    case 'resubstitution'
-      str = 'Resubstitution';
+    case "kfold"
+      str = "K-fold";
+    case "given"
+      str = "Given";
+    case "holdout"
+      str = "HoldOut";
+    case "leaveout"
+      str = "Leave-One-Out";
+    case "resubstitution"
+      str = "Resubstitution";
     otherwise
-      str = 'Unknown-type';
-  endswitch 
-  
-disp([str ' cross validation partition'])
-disp(['          N: ' num2str(C.NumObservations)])
-disp(['NumTestSets: ' num2str(C.NumTestSets)])
-disp(['  TrainSize: ' num2str(C.TrainSize')])
-disp(['   TestSize: ' num2str(C.TestSize')])
+      str = "Unknown-type";
+  endswitch
+
+disp([str " cross validation partition"])
+disp(["          N: " num2str(C.NumObservations)])
+disp(["NumTestSets: " num2str(C.NumTestSets)])
+disp(["  TrainSize: " num2str(C.TrainSize')])
+disp(["   TestSize: " num2str(C.TestSize')])

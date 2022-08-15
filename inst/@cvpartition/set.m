@@ -1,5 +1,7 @@
 ## Copyright (C) 2014 Nir Krakauer
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 3 of the License, or
@@ -31,7 +33,8 @@ function s = set (c, varargin)
     varargin(1:2) = [];
     if (ischar (prop))
       switch (prop)
-        case {"classes", "inds", "n_classes", "NumObservations", "NumTestSets", "TestSize", "TrainSize", "Type"}
+        case {"classes", "inds", "n_classes", "NumObservations", ...
+              "NumTestSets", "TestSize", "TrainSize", "Type"}
           s = setfield (s, prop, val);
         otherwise
           error ("set: invalid property %s", f);
