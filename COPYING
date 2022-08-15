@@ -1,6 +1,7 @@
-inst/private/tbl_delim.m.m      GPLv3+
 inst/anderson_darling_cdf.m     public domain
 inst/anderson_darling_test.m    public domain
+inst/anova1.m                   GPLv3+
+inst/anova2.m                   GPLv3+
 inst/anovan.m                   GPLv3+
 inst/bbscdf.m                   GPLv3+
 inst/bbsinv.m                   GPLv3+
@@ -90,7 +91,7 @@ inst/nansum.m                   GPLv3+
 inst/nanvar.m                   GPLv3+
 inst/nbinstat.m                 GPLv3+
 inst/normalise_distribution.m   GPLv3+
-inst/normplot.m                 public domain
+inst/normplot.m                 GPLv3+
 inst/normstat.m                 GPLv3+
 inst/pcacov.m                   GPLv3+
 inst/pcares.m                   GPLv3+
