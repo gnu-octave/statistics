@@ -1,5 +1,7 @@
 ## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -73,35 +75,35 @@ function [varargout] = grpstats (x ,group, whichstats, alpha)
   ## Check input arguments
   narginchk (1, 4)
   ## Check X being a vector or 2d matrix of real values
-  if ndims (x) > 2 || ! isnumeric (x) || islogical (x)
+  if (ndims (x) > 2 || ! isnumeric (x) || islogical (x))
     error ("grpstats: X must be a vector or 2d matrix of real values.");
   endif
   ## If X is a vector, make it a column vector
-  if isvector (x)
+  if (isvector (x))
     x = x(:);
   endif
   ## Check groups and if empty make a single group for all X
   [r, c] = size (x);
-  if nargin < 2 || isempty (group)
+  if (nargin < 2 || isempty (group))
     group = ones (r, 1);
   endif
   ## Get group names and indices
   [group_idx, group_names] = grp2idx (group);
   ngroups = length (group_names);
-  if length (group_idx) != r
+  if (length (group_idx) != r)
     error ("grpstats: samples in X and GROUPS mismatch.");
   endif
   ## Add default for whichstats and check for 3rd input argument
   func_names = {};
-  if nargin > 2 && ischar (whichstats)
+  if (nargin > 2 && ischar (whichstats))
     func_names = {whichstats};
-  elseif nargin > 2 && iscell (whichstats)
+  elseif (nargin > 2 && iscell (whichstats))
     func_names = whichstats;
   endif
   ## Add default for alpha and check for 4th input argument
-  if nargin > 3
-    if ! (isnumeric (alpha) && isscalar (alpha) ...
-          && alpha > 0 && alpha < 1)
+  if (nargin > 3)
+    if (! (isnumeric (alpha) && isscalar (alpha) ...
+          && alpha > 0 && alpha < 1))
       error ("grpstats: ALPHA must be a real scalar in the range (0,1).");
     endif
   else
@@ -109,9 +111,9 @@ function [varargout] = grpstats (x ,group, whichstats, alpha)
   endif
 
   ## Calculate functions
-  if isempty (func_names)
+  if (isempty (func_names))
     ## Check consistent number of output arguments
-    if nargout == 1
+    if (nargout == 1)
       for j = 1:ngroups
         group_x = x(find (group_idx == j), :);
         group_mean(j,:) = mean (group_x, 1, "omitnan") ;
@@ -123,7 +125,7 @@ function [varargout] = grpstats (x ,group, whichstats, alpha)
   else
     func_num = length (func_names);
     ## Check consistent number of output arguments
-    if nargout != func_num
+    if (nargout != func_num)
       error ("grpstats: incosistent number of output arguments.");
     endif
     for l = 1:func_num

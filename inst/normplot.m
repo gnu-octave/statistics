@@ -1,6 +1,8 @@
 ## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Based on previous work by Paul Kienzle <pkienzle@users.sf.net>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -38,33 +40,33 @@
 ## @end deftypefn
 
 function h = normplot (varargin)
-  
+
   ## Check for valid input arguments
   narginchk (1, 2);
   ## Parse input arguments
-  if nargin == 1
+  if (nargin == 1)
     ax = [];
     x = varargin{1};
   else
     ax = varargin{1};
     ## Check that ax is a valid axis handle
     try
-      isstruct (get (ax));  
+      isstruct (get (ax));
     catch
       error ("normplot: invalid handle %f.", ax);
     end_try_catch
-    x = varargin{2};    
+    x = varargin{2};
   endif
   ## Check that x is a vector or a 2-D matrix
-  if isscalar (x) || ndims (x) > 2
+  if (isscalar (x) || ndims (x) > 2)
     error ("normplot: x must be a vecctor or a 2-D matrix handle.");
   endif
   ## If x is a vector, make it a column vector
-  if rows (x) == 1
+  if (rows (x) == 1)
     x = x(:);
   endif
   ## If ax is empty, create a new axes
-  if isempty(ax)
+  if (isempty (ax))
     ax = newplot();
   end
   ## Get number of column vectors in x
@@ -76,7 +78,7 @@ function h = normplot (varargin)
     xc = x(:,i);
     ## Remove NaNs, get min, max, and range
     xc(isnan(xc)) = [];
-    if isempty (xc)
+    if (isempty (xc))
       break;
     endif
     ## Transform data
@@ -104,7 +106,7 @@ function h = normplot (varargin)
     mx = [minx; maxx];
     my = [miny; maxy];
     ## Plot data and corresponding reference lines in the same color,
-    ## following the default color order.  Plot reference line first, 
+    ## following the default color order.  Plot reference line first,
     ## followed by the data, so that data will be on top of reference line.
     h_end(i) = line (ax, mx, my, "LineStyle", "-.", "Marker", "none", ...
                                  "color", color{mod(i,8)});
@@ -115,13 +117,13 @@ function h = normplot (varargin)
   endfor
   hold off;
   ## Change colors for single column vector
-  if i == 1
+  if (i == 1)
     set (h_dat, "Color", "b");
     set (h_mid, "Color", "r");
     set (h_end, "Color", "r");
   endif
   ## Bundle handles together if output requested
-  if nargout > 0
+  if (nargout > 0)
     h = [h_dat, h_mid, h_end]';
   endif
   ## Plot labels
@@ -137,7 +139,7 @@ function h = normplot (varargin)
   set (ax, "ytick", tick, "yticklabel", label);
   ## Set view range with a bit of space around data
   range = nanmax (x(:)) - nanmin (x(:));
-  if range > 0
+  if (range > 0)
     minxaxis = nanmin (x(:)) - 0.025 * range;
     maxxaxis = nanmax (x(:)) + 0.025 * range;
   else

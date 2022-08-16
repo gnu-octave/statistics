@@ -1,5 +1,7 @@
 ## Copyright (C) 2020-2021 Stefano Guidoni <ilguido@users.sf.net>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -138,8 +140,8 @@ function cm = confusionchart (varargin)
   endwhile
 
   ## prepare the labels
-  if (!iscellstr (labarr))
-    if (!ischar (labarr))
+  if (! iscellstr (labarr))
+    if (! ischar (labarr))
       labarr = num2str (labarr);
     endif
 

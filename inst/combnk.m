@@ -1,5 +1,7 @@
 ## Copyright (C) 2010 Soren Hauberg <soren@hauberg.org>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -51,7 +53,7 @@ function retval = __combnk__ (data, k)
   else
     ## Process data
     n = numel (data);
-    if iscell (data)
+    if (iscell (data))
       retval = {};
     else
       retval = [];
@@ -59,7 +61,7 @@ function retval = __combnk__ (data, k)
     for j = 1:n
       C = __combnk__ (data ((j+1):end), k-1);
       C = cat (2, repmat (data (j), rows (C), 1), C);
-      if (!isempty (C))
+      if (! isempty (C))
         if (isempty (retval))
           retval = C;
         else

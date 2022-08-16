@@ -1,5 +1,7 @@
 ## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -20,7 +22,7 @@
 ## @deftypefnx {Function File} [@var{d}, @var{model}, @var{termstart}, @var{termend}] = x2fx (@var{x}, @var{model}, @var{categ}, @var{catlevels})
 ##
 ## Convert predictors to design matrix.
-## 
+##
 ## @code{@var{d} = x2fx (@var{x}, @var{model})} converts a matrix of predictors
 ## @var{x} to a design matrix @var{d} for regression analysis.  Distinct
 ## predictor variables should appear in different columns of @var{x}.
@@ -81,34 +83,34 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
   ## Get matrix size
   [m,n]  = size(x);
   ## Get data class
-  if isa (x, "single")
+  if (isa (x, "single"))
     data_class = 'single';
   else
     data_class = 'double';
   endif
   ## Check for input arguments
-  if nargin < 2 || isempty (model)
+  if (nargin < 2 || isempty (model))
     model = 'linear';
   endif
-  if nargin < 3
+  if (nargin < 3)
     categ = [];
   endif
-  if nargin < 4
+  if (nargin < 4)
     catlevels = [];
   endif
 
   ## Convert models parsed as strings to numerical matrix
-  if ischar (model)
-    if strcmpi (model, "linear") || strcmpi (model, "additive")
+  if (ischar (model))
+    if (strcmpi (model, "linear") || strcmpi (model, "additive"))
       interactions = false;
       quadratic = false;
-    elseif strcmpi (model, "interactions")
+    elseif (strcmpi (model, "interactions"))
       interactions = true;
       quadratic = false;
-    elseif strcmpi (model, "quadratic")
+    elseif (strcmpi (model, "quadratic"))
       interactions = true;
       quadratic = true;
-    elseif strcmpi (model, "purequadratic")
+    elseif (strcmpi (model, "purequadratic"))
       interactions = false;
       quadratic = true;
     else
@@ -119,7 +121,7 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
     endif
     I = eye(n);
     ## Construct interactions part
-    if interactions && n > 1
+    if (interactions && n > 1)
       [r, c] = find (tril (ones (n) ,-1));
       nt = length(r);
       intpart = zeros(nt,n);
@@ -129,7 +131,7 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
         intpart = zeros(0,n);
     endif
     ## Construct quadratic part
-    if quadratic
+    if (quadratic)
       quadpart = 2 * I;
       quadpart(categ,:) = [];
     else
@@ -138,11 +140,11 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
     model = [zeros(1,n); I];
     model = [model; intpart; quadpart];
   endif
-  
+
   ## Process each categorical variable
   catmember = ismember (1:n, categ);
   var_DF = ones(1,n);
-  if isempty(catlevels)
+  if (isempty (catlevels))
     ## Get values of each categorical variable and replace them with integers
     for idx=1:length(categ)
       categ_idx = categ(idx);
@@ -155,7 +157,7 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
     var_DF(categ) = catlevels - 1;
     for idx = 1:length (categ)
       categ_idx = categ(idx);
-      if any (! ismember (x(:,categ_idx), 1:catlevels(idx)))
+      if (any (! ismember (x(:,categ_idx), 1:catlevels(idx))))
         error("x2fx: wrong value %f in category %d.", ...
               catlevels(idx), categ_idx);
       endif
@@ -165,11 +167,11 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
   ## Get size of model martix
   [r, c] = size (model);
   ## Check for equal number of columns between x and model
-  if c != n
+  if (c != n)
     error("x2fx: wrong number of columns between x and model");
   endif
   ## Check model category column for values greater than 1
-  if any (model(:,categ) > 1, 1)
+  if (any (model(:,categ) > 1, 1))
     error("x2fx: wrong values in model's category column");
   endif
 
@@ -184,8 +186,8 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
     pwrs = model(idx,:);
     t = pwrs > 0;
     C = 1;
-    if any(t)
-      if any (pwrs(!catmember));
+    if (any (t))
+      if (any (pwrs(! catmember));)
         pwrs_cat = pwrs .* !catmember;
         C = ones (size (x, 1), 1);
         collist = find (pwrs_cat > 0);
@@ -194,7 +196,7 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
           C = C .* x(:,categ_idx) .^ pwrs_cat(categ_idx);
         endfor
       endif
-      if any (pwrs(catmember) > 0)
+      if (any (pwrs(catmember) > 0))
         Z = zeros (m, termdf(idx));
         collist = find (pwrs > 0 & catmember);
         xcol = x(:,collist(1));
@@ -205,9 +207,9 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
           cumdf = cumdf * var_DF(collist(idx-1));
           xcol = x(:,collist(idx));
           keep = keep & (xcol <= var_DF(collist(idx)));
-          colnum = colnum + cumdf * (xcol - 1); 
+          colnum = colnum + cumdf * (xcol - 1);
         endfor
-        if length (C) > 1
+        if (length (C) > 1)
           C = C(keep);
         endif
         Z(sub2ind(size(Z),allrows(keep),colnum(keep))) = C;
