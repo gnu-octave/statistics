@@ -187,7 +187,7 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
     t = pwrs > 0;
     C = 1;
     if (any (t))
-      if (any (pwrs(! catmember));)
+      if (any (pwrs(! catmember)))
         pwrs_cat = pwrs .* !catmember;
         C = ones (size (x, 1), 1);
         collist = find (pwrs_cat > 0);
