@@ -1,8 +1,52 @@
 statistics >> Statistics
+Categorical data
+ grp2idx
+ grpstats
+Clustering
+ cluster
+ clusterdata
+ cmdscale
+ cophenet
+ evalclusters
+ inconsistent
+ kmeans
+ linkage
+ mahal
+ optimalleaforder
+ pdist
+ pdist2
+ squareform
+CVpartition (class of set partitions for cross-validation, used in crossval)
+ @cvpartition/cvpartition
+ @cvpartition/display
+ @cvpartition/get
+ @cvpartition/repartition
+ @cvpartition/set
+ @cvpartition/test
+ @cvpartition/training
+Classification Performance Evaluation
+ confusionchart
+ confusionmat
+Descriptive statistics
+ combnk
+ dcov
+ mean
+ geomean
+ harmmean
+ jackknife
+ nanmax
+ nanmean
+ nanmedian
+ nanmin
+ nanstd
+ nansum
+ nanvar
+ trimmean
+ tabulate
 Distributions
  anderson_darling_cdf
  bbscdf bbsinv bbspdf bbsrnd
- betacdf betainv betapdf betarrnd
+ betacdf betainv betapdf betarnd
  binocdf binoinv binopdf binornd
  burrcdf burrinv burrpdf burrrnd
  cauchy_cdf cauchy_inv cauchy_pdf cauchy_rnd
@@ -38,24 +82,57 @@ Distributions
  wblcdf wblinv wblpdf wblrnd
  wienrnd
  wishpdf wishrnd
-Descriptive statistics
- combnk
- dcov
- mean
- geomean
- harmmean
- jackknife
- nanmax
- nanmean
- nanmedian
- nanmin
- nanstd
- nansum
- nanvar
- trimmean
- tabulate
 Experimental design
- fullfact ff2n
+ fullfact
+ ff2n
+Fitting
+ fitgmdist
+ gamfit
+Hypothesis testing
+ anderson_darling_test
+ binotest
+ chi2gof
+ friedman
+ kruskalwallis
+ kstest
+ kstest2
+ ranksum
+ runstest
+ signtest
+ ttest
+ ttest2
+ vartest
+ vartest2
+ ztest
+I/O
+ libsvmread
+ libsvmwrite
+Models
+ hmmestimate
+ hmmgenerate
+ hmmviterbi
+ mhsample
+ sigma_pts
+ slicesample
+ svmpredict
+ svmtrain
+Plots
+ boxplot
+ cdfplot
+ confusionchart
+ dendrogram
+ ecdf
+ gscatter
+ histfit
+ hist3
+ manovacluster
+ normplot
+ ppplot
+ qqplot
+ repanova
+ silhouette
+ violin
+ wblplot
 Regression
  anova1
  anova2
@@ -72,78 +149,6 @@ Regression
  regress
  regress_gp
  stepwisefit
-Plots
- boxplot
- cdfplot
- confusionchart
- dendrogram
- gscatter
- histfit
- hist3
- manovacluster
- normplot
- ppplot
- qqplot
- repanova
- silhouette
- violin
- wblplot
-Models
- hmmestimate 
- hmmgenerate 
- hmmviterbi
- mhsample
- slicesample
- svmpredict
- svmtrain
-Hypothesis testing
- anderson_darling_test
- binotest
- chi2gof
- friedman
- kruskalwallis
- kstest2
- ranksum
- runstest
- signtest
- ttest
- ttest2
- vartest
- vartest2
- ztest
-Fitting
- fitgmdist
- gamfit
-Clustering
- cluster
- clusterdata
- cmdscale
- cophenet
- evalclusters
- inconsistent
- kmeans
- linkage
- mahal
- optimalleaforder
- pdist
- pdist2
- squareform
-Reading and Writing
- libsvmread
- libwvmwrite
-Cvpartition (class of set partitions for cross-validation, used in crossval)
- @cvpartition/cvpartition
- @cvpartition/display
- @cvpartition/get 
- @cvpartition/repartition
- @cvpartition/set
- @cvpartition/test
- @cvpartition/training
-Categorical data
- grp2idx
- grpstats
-Classification Performance Evaluation
- confusionchart
- confusionmat
-Other
- sigma_pts
+Wrappers
+ cdf
+ pdf
