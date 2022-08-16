@@ -92,6 +92,11 @@ Please, add BISTs, they help a lot with the maintenance :wink::innocent: of the 
 
 The coding style of GNU Octave should be used. In general, limit the lines at 80 characters long.
 - Use `##` for comments. Don't use `%` or `%%` as in Matlab.
+- Use `!` instead of `~` for logical NOT.
+```
+a != 0;
+b(! isnnan (a)) = [];
+```
 - **Don't use tabs!** Indent the bodies of statement blocks with 2 spaces.
 - When calling functions, put spaces after commas and before the calling parentheses, as shown below:
 ```
