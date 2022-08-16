@@ -1,5 +1,7 @@
 ## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -43,7 +45,7 @@
 ## @end deftypefn
 
 function h = manovacluster (stats, method)
-  
+
   ## Check for valid input arguments
   narginchk (1, 2);
   if nargin > 1
@@ -83,3 +85,14 @@ endfunction
 %! X = [MPG Acceleration Weight Displacement];
 %! [d, p, stats] = manova1 (X, Origin);
 %! manovacluster (stats)
+
+%!error manovacluster (stats, "some");
+%!shared visibility_setting
+%! visibility_setting = get (0, "DefaultFigureVisible");
+%!test
+%! set (0, "DefaultFigureVisible", "off");
+%! load carbig
+%! X = [MPG Acceleration Weight Displacement];
+%! [d, p, stats] = manova1 (X, Origin);
+%! manovacluster (stats);
+%! set (0, "DefaultFigureVisible", visibility_setting);

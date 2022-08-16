@@ -317,3 +317,9 @@ endfunction
 %! assert (Flo, Flo_out, ones (10,1) * 1e-4);
 %! Fup_out = [NaN, 0.2063, 0.3262, 0.6081, 0.7619, 0.8939, 0.9509, 1, 1, NaN]';
 %! assert (Fup, Fup_out, ones (10,1) * 1e-4);
+%!shared visibility_setting
+%! visibility_setting = get (0, "DefaultFigureVisible");
+%!test
+%! x = [2, 3, 4, 3, 5, 4, 6, 5, 8, 3, 7, 8, 9, 0];
+%! ecdf (x);
+%! set (0, "DefaultFigureVisible", visibility_setting);
