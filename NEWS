@@ -14,6 +14,8 @@ Summary of important user-visible changes for statistics 1.5.0:
 
  ** chi2gof (fully Matlab compatible. bug #46764)
 
+ ** ecdf (fully Matlab compatible)
+
  ** f2fx (missing function: bug #48146)
 
  ** friedman (fully Matlab compatible)
@@ -21,6 +23,8 @@ Summary of important user-visible changes for statistics 1.5.0:
  ** fillmissing (patch #10102)
 
  ** grpstats (complementary to manova1)
+
+ ** kstest (fully Matlab compatible)
 
  ** kstest2 (fully Matlab compatible. bug #56572)
 
@@ -96,6 +100,8 @@ Summary of important user-visible changes for statistics 1.5.0:
  ** anova (replaced by anova1)
 
  ** caseread, casewrite (do not belong here)
+
+ ** kolmogorov_smirnov_test (replaced by kstest)
 
  ** kolmogorov_smirnov_test_2 (replaced by kstest2)
 
