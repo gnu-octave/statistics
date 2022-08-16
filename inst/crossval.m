@@ -1,5 +1,7 @@
 ## Copyright (C) 2014 Nir Krakauer
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 3 of the License, or
@@ -76,70 +78,71 @@
 
 function results = crossval (f, X, y, varargin)
 
-  [n m] = size (X);
-  
-  if numel(y) != n
-    error('X, y sizes incompatible')
+  [n, m] = size (X);
+
+  if (numel (y) != n)
+    error ("X, y sizes incompatible")
   endif
-  
-  #extract optional parameter-value argument pairs
-  if numel(varargin) > 1
+
+  ## extract optional parameter-value argument pairs
+  if (numel (varargin) > 1)
     vargs = varargin;
     nargs = numel (vargs);
     values = vargs(2:2:nargs);
     names = vargs(1:2:nargs)(1:numel(values));
-    validnames = {'KFold', 'HoldOut', 'LeaveOut', 'Partition', 'Given', 'stratify', 'mcreps'};    
-    for i = 1:numel(names)
-       names(i) = validatestring (names(i){:}, validnames);
+    validnames = {"KFold", "HoldOut", "LeaveOut", "Partition", ...
+                  "Given", "stratify", "mcreps"};
+    for i = 1:numel (names)
+      names(i) = validatestring (names(i){:}, validnames);
     end
     for i = 1:numel(validnames)
       name = validnames(i){:};
       name_pos = strmatch (name, names);
-      if !isempty(name_pos)
-        eval([name ' = values(name_pos){:};'])
+      if (! isempty (name_pos))
+        eval ([name " = values(name_pos){:};"])
       endif
     endfor
   endif
-    
-  #construct CV partition
+
+  ## construct CV partition
   if exist ("Partition", "var")
     P = Partition;
   elseif exist ("Given", "var")
     P = cvpartition (Given, "Given");
   elseif exist ("KFold", "var")
-    if !exist ("stratify", "var")
+    if (! exist ("stratify", "var"))
       stratify = n;
     endif
     P = cvpartition (stratify, "KFold", KFold);
-  elseif exist ("HoldOut", "var")
-    if !exist ("stratify", "var")
+  elseif (exist ("HoldOut", "var"))
+    if (! exist ("stratify", "var"))
       stratify = n;
     endif
     P = cvpartition (stratify, "HoldOut", HoldOut);
-    if !exist ("mcreps", "var") || isempty (mcreps)
+    if (! exist ("mcreps", "var") || isempty (mcreps))
       mcreps = 1;
     endif
-  elseif exist ("LeaveOut", "var")
+  elseif (exist ("LeaveOut", "var"))
     P = cvpartition (n, "LeaveOut");
   else #KFold
-    if !exist ("stratify", "var")
+    if (! exist ("stratify", "var"))
       stratify = n;
     endif
     P = cvpartition (stratify, "KFold");
   endif
-  
-  nr = get(P, "NumTestSets"); #number of test sets to do cross validation on
+
+  nr = get (P, "NumTestSets"); # number of test sets to do cross validation on
   nreps = 1;
-  if strcmp(get(P, "Type"), 'holdout') && exist("mcreps", "var") && mcreps > 1
+  if (strcmp (get (P, "Type"), "holdout") && exist ("mcreps", "var") && mcreps > 1)
     nreps = mcreps;
   endif
   results = nan (nreps, nr);
   for rep = 1:nreps
-    if rep > 1
+    if (rep > 1)
       P = repartition (P);
     endif
     for i = 1:nr
-      inds_train = training (P, i);  
+      inds_train = training (P, i);
       inds_test = test (P, i);
       result = f (X(inds_train, :), y(inds_train), X(inds_test, :), y(inds_test));
       results(rep, i) = result;
@@ -163,7 +166,7 @@ endfunction
 %! results5 = crossval (f, X, y, 'HoldOut', n_holdout, 'mcreps', mcreps);
 %!
 %! ## ensure equal representation of iris species in the training set -- tends
-%! ## to slightly reduce cross-validation mean square error 
+%! ## to slightly reduce cross-validation mean square error
 %! results6 = crossval (f, X, y, 'KFold', 5, 'stratify', grp2idx(species));
 %!
 %! assert (results0, results1);
