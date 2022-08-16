@@ -22,7 +22,7 @@
 ## Summary statistics by group.  @code{grpstats} computes groupwise summary
 ## statistics, for data in a matrix @var{x}.  @code{grpstats} treats NaNs as
 ## missing values, and removes them.
-## 
+##
 ## @code{@var{means} = grpstats (@var{x}, @var{group})}, when X is a matrix of
 ## observations, returns the means of each column of @var{x} by @var{group}.
 ## @var{group} is a grouping variable defined as a categorical variable,
@@ -90,7 +90,7 @@ function [varargout] = grpstats (x ,group, whichstats, alpha)
   ngroups = length (group_names);
   if length (group_idx) != r
     error ("grpstats: samples in X and GROUPS mismatch.");
-  endif  
+  endif
   ## Add default for whichstats and check for 3rd input argument
   func_names = {};
   if nargin > 2 && ischar (whichstats)
@@ -107,7 +107,7 @@ function [varargout] = grpstats (x ,group, whichstats, alpha)
   else
     alpha = 0.05;
   endif
-  
+
   ## Calculate functions
   if isempty (func_names)
     ## Check consistent number of output arguments
@@ -226,20 +226,20 @@ endfunction
 
 %!test
 %! load carsmall
-%! means = grpstats(Acceleration,Origin);
-%! assert (means, [18.050; 16.378; 15.500; 15.887; 16.600; 14.438], 0.001);
+%! means = grpstats (Acceleration, Origin);
+%! assert (means, [14.4377; 18.0500; 15.8867; 16.3778; 16.6000; 15.5000], 0.001);
 %!test
 %! load carsmall
-%! [grpMin,grpMax,grp] = grpstats(Acceleration,Origin, {"min","max","gname"});
-%! assert (grpMin, [15.3; 12.2; 15.5; 13.9; 15.7; 8.0]);
-%! assert (grpMax, [21.9; 24.6; 15.5; 18.2; 17.5; 22.2]);
+%! [grpMin,grpMax,grp] = grpstats (Acceleration, Origin, {"min","max","gname"});
+%! assert (grpMin, [8.0; 15.3; 13.9; 12.2; 15.7; 15.5]);
+%! assert (grpMax, [22.2; 21.9; 18.2; 24.6; 17.5; 15.5]);
 %!test
 %! load carsmall
-%! [grpMin,grpMax,grp] = grpstats(Acceleration,Origin, {"min","max","gname"});
-%! assert (grp', {"France", "Germany", "Italy", "Japan", "Sweden", "USA"});
+%! [grpMin,grpMax,grp] = grpstats (Acceleration, Origin, {"min","max","gname"});
+%! assert (grp', {"USA", "France", "Japan", "Germany", "Sweden", "Italy"});
 %!test
 %! load carsmall
-%! [m,p,g] = grpstats ([Acceleration,Weight/1000],Cylinders, ...
+%! [m,p,g] = grpstats ([Acceleration,Weight/1000], Cylinders, ...
 %!                     {"mean", "meanci", "gname"}, 0.05);
-%! assert (p(:,1), [16.13845847655224, 16.16222663683362, 11.17621760075134]', ...
+%! assert (p(:,1), [11.17621760075134, 16.13845847655224, 16.16222663683362]', ...
 %!                 [1e-14, 1e-14, 1e-14]');

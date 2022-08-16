@@ -69,7 +69,7 @@ endfunction
 %!error chi2test ([1,2,3,4,5]);
 %!error chi2test ([1,2;2;1+3i]);
 %!error chi2test ([NaN,6;34,12]);
-%!warning chi2test (ones (3,3));
+%!warning p = chi2test (ones (3,3));
 %!test
 %! x = [11, 3, 8; 2, 9, 14; 12, 13, 28];
 %! p = chi2test (x);
