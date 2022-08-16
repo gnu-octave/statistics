@@ -138,7 +138,7 @@
 ## and p-values, which relate to the contrasts. The number appended to each term
 ## name in @var{STATS}.coeffnames relates to the column number in the corresponding
 ## contrast matrix for that factor.
-## 
+##
 ## [@var{P}, @var{T}, @var{STATS}, @var{TERMS}] = anovan (@dots{}) returns the
 ## model term definitions.
 ##
@@ -152,10 +152,11 @@
 function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
     if (nargin <= 1)
-      error ("anovan usage: ""anovan (Y, GROUP)""; atleast 2 input arguments required");
+      error (strcat (["anovan usage: ""anovan (Y, GROUP)""; "], ...
+                      [" atleast 2 input arguments required"]));
     endif
 
-    # Check supplied parameters
+    ## Check supplied parameters
     MODELTYPE = "linear";
     DISPLAY = "on";
     SSTYPE = 3;
@@ -176,32 +177,37 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           VARNAMES = value;
         case "display"
           DISPLAY = value;
-        case "contrasts" 
+        case "contrasts"
           CONTRASTS = value;
-        otherwise 
-          error (sprintf("anovan: parameter %s is not supported", name));
+        otherwise
+          error (sprintf ("anovan: parameter %s is not supported", name));
       endswitch
     endfor
     if (isnumeric (CONTINUOUS))
       if (any (CONTINUOUS != abs (fix (CONTINUOUS))))
-        error ("anovan: the value provided for the continuous parameter must be a positive integer")
+        error (strcat (["anovan: the value provided for the continuous"], ...
+                       [" parameter must be a positive integer"]));
       endif
     else
-      error ("anovan: the value provided for the continuous parameter must be numeric")
+      error (strcat (["anovan: the value provided for the continuous"], ...
+                     ["  parameter must be numeric"]));
     endif
 
-    # Accomodate for different formats for GROUP
-    # GROUP can be a matrix of numeric identifiers of a cell arrays of strings or numeric idenitiers
+    ## Accomodate for different formats for GROUP
+    ## GROUP can be a matrix of numeric identifiers of a cell arrays
+    ## of strings or numeric idenitiers
     N = size (GROUP,2); # number of anova "ways"
     n = numel (Y);      # total number of observations
     if (prod (size (Y)) != n)
       error ("anovan: for ""anovan (Y, GROUP)"", Y must be a vector");
     endif
     if (numel (unique (CONTINUOUS)) > N)
-      error ("anovan: the number of factors assigned as continuous cannot exceed the number of factors in GROUP");
+      error (strcat (["anovan: the number of factors assigned as"], ...
+                 [" continuous cannot exceed the number of factors in GROUP"]));
     endif
     if (any ((CONTINUOUS > N) || any (CONTINUOUS <= 0)))
-      error ("anovan: one or more indices provided in the value for the continuous parameter are out of range");
+      error (strcat (["anovan: one or more indices provided in the"], ...
+                 [" value for the continuous parameter are out of range"]));
     endif
     cont_vec = false (1, N);
     cont_vec(CONTINUOUS) = true;
@@ -216,7 +222,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
             endif
           else
             if (any (CONTINUOUS == j))
-              error ("anovan: continuous factors must be a numeric datatype")
+              error ("anovan: continuous factors must be a numeric datatype");
             endif
             tmp(:,j) = GROUP{j};
           endif
@@ -236,7 +242,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         if (all (cellfun (@ischar, VARNAMES)))
           nvarnames = numel(VARNAMES);
         else
-          error ("anovan: all variable names must be character or character arrays");
+          error (strcat (["anovan: all variable names must be character"], ...
+                         [" or character arrays"]));
         endif
       elseif (ischar (VARNAMES))
         nvarnames = 1;
@@ -245,17 +252,19 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         nvarnames = 1;
         VARNAMES = {char(VARNAMES)};
       else
-        error ("anovan: varnames is not of a valid type. Must be cell array of character arrays, character array or string");
+        error (strcat (["anovan: varnames is not of a valid type. Must be"], ...
+               [" cell array of character arrays, character array or string"]));
       endif
     else
       nvarnames = N;
       VARNAMES = arrayfun(@(x) ["X",num2str(x)], 1:N, "UniformOutput", 0);
     endif
     if (nvarnames != N)
-      error ("anovan: number of variable names is not equal to number of grouping variables");
+      error (strcat (["anovan: number of variable names is not equal"], ...
+                     ["  to number of grouping variables"]));
     endif
 
-    # Evaluate contrasts (if applicable)
+    ## Evaluate contrasts (if applicable)
     if isempty (CONTRASTS)
       CONTRASTS = cell (1, N);
     else
@@ -263,20 +272,23 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         CONTRASTS = {CONTRASTS};
       endif
       if (numel (CONTRASTS) != N)
-        error ("anovan: the number of contrast matrices in CONTRASTS does not match the number of main effects")
+        error (strcat (["anovan: the number of contrast matrices in"], ...
+                 ["  CONTRASTS does not match the number of main effects"]));
       endif
       for i = 1:N
         if (! isempty (CONTRASTS{i}))
-          # Check that the columns sum to 0
-          if (any (abs (sum (CONTRASTS{i})) > eps("single")) && strcmpi (num2str (SSTYPE), "3"))
-            # Contrasts must sum to 0 for SSTYPE 3. If they don't, use SSTYPE 2 instead
+          ## Check that the columns sum to 0
+          if (any (abs (sum (CONTRASTS{i})) > eps("single")) ...
+                        && strcmpi (num2str (SSTYPE), "3"))
+            ## Contrasts must sum to 0 for SSTYPE 3.
+            ## If they don't, use SSTYPE 2 instead
             SSTYPE = 2;
           endif
         endif
       endfor
     endif
 
-    # Remove NaN or non-finite observations
+    ## Remove NaN or non-finite observations
     excl = logical (isnan(Y) + isinf(Y));
     Y(excl) = [];
     GROUP(excl,:) = [];
@@ -285,8 +297,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     endif
     n = numel (Y);     # recalculate total number of observations
 
-    # Evaluate model type input argument and create terms matrix if not provided
-    msg = "anovan: the number of columns in the term definitions cannot exceed the number of columns of GROUP";
+    ## Evaluate model type input argument and create terms matrix if not provided
+    msg = strcat (["anovan: the number of columns in the term definitions"], ...
+                  ["  cannot exceed the number of columns of GROUP"]);
     if (ischar (MODELTYPE))
       switch (lower (MODELTYPE))
         case "linear"
@@ -304,10 +317,10 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       v = false (1, N);
       switch (lower (MODELTYPE))
         case 1
-          # Create term definitions for an additive linear model
+          ## Create term definitions for an additive linear model
           TERMS = eye (N);
         case 2
-          # Create term definitions for a model with two factor interactions
+          ## Create term definitions for a model with two factor interactions
           Nx = nchoosek (N, 2);
           TERMS = zeros (N + Nx, N);
           TERMS(1:N,:) = eye (N);
@@ -321,7 +334,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           if (MODELTYPE > N)
             error (msg);
           endif
-          # Create term definitions for a full model
+          ## Create term definitions for a full model
           Nx = zeros (1, N-1);
           Nx = 0;
           for k = 1:N
@@ -334,41 +347,44 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           TERMS = cell2mat (TERMS);
       endswitch
     else
-      # Assume that the user provided a suitable matrix of term definitions
+      ## Assume that the user provided a suitable matrix of term definitions
       if (size (MODELTYPE, 2) > N)
         error (msg);
       endif
       if (! all (ismember (MODELTYPE(:), [0,1])))
-        error ("anovan: elements of the model terms matrix must be either 0 or 1");
+        error (strcat (["anovan: elements of the model terms matrix"], ...
+                       [" must be either 0 or 1"]));
       endif
       TERMS = logical (MODELTYPE);
     endif
-    # Evaluate terms matrix
+    ## Evaluate terms matrix
     Ng = sum (TERMS, 2);
     if (any (diff (Ng) < 0))
-      error ("anovan: the model terms matrix must list main effects above/before interactions");
+      error (strcat (["anovan: the model terms matrix must list main"], ...
+                     [" effects above/before interactions"]));
     endif
     Nm = sum (Ng == 1);
     Nx = sum (Ng > 1);
     Nt = Nm + Nx;
     if (any (any (TERMS(1:Nm,:), 1) != any (TERMS, 1)))
-      error ("anovan: all factors involved in interactions must have a main effect");
+      error (strcat (["anovan: all factors involved in interactions"], ...
+                     [" must have a main effect"]));
     endif
 
-    # Calculate total sum-of-squares
+    ## Calculate total sum-of-squares
     ct  = sum (Y)^2 / n;   % correction term
     sst = sum (Y.^2) - ct;
     dft = n - 1;
 
-    # Fit linear models, and calculate sums-of-squares for ANOVA
+    ## Fit linear models, and calculate sums-of-squares for ANOVA
     switch (lower (SSTYPE))
       case 1
-        # Type I sequential sums-of-squares (SSTYPE = 1)
+        ## Type I sequential sums-of-squares (SSTYPE = 1)
         R = sst;
         ss = zeros (Nt,1);
-        [X, grpnames, nlevels, df, termcols, coeffnames, vmeans, gid, CONTRASTS] = ...
-                  make_design_matrix (GROUP, TERMS, CONTINUOUS, CONTRASTS, VARNAMES, ...
-                                      n, Nm, Nx, Ng);
+        [X, grpnames, nlevels, df, termcols, coeffnames, vmeans, gid, ...
+         CONTRASTS] = make_design_matrix (GROUP, TERMS, CONTINUOUS, ...
+                      CONTRASTS, VARNAMES, n, Nm, Nx, Ng);
         for j = 1:Nt
           XS = cell2mat (X(1:j+1));
           [b, sse] = lmfit (XS, Y);
@@ -380,9 +396,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       case {2,'h'}
         # Type II (hierarchical, or partially sequential) sums of squares
         ss = zeros (Nt,1);
-        [X, grpnames, nlevels, df, termcols, coeffnames, vmeans, gid, CONTRASTS] = ...
-                  make_design_matrix (GROUP, TERMS, CONTINUOUS, CONTRASTS, VARNAMES, ...
-                                      n, Nm, Nx, Ng);
+        [X, grpnames, nlevels, df, termcols, coeffnames, vmeans, gid, ...
+         CONTRASTS] = make_design_matrix (GROUP, TERMS, CONTINUOUS, ...
+                      CONTRASTS, VARNAMES, n, Nm, Nx, Ng);
         for j = 1:Nt
           i = find (TERMS(j,:));
           k = cat (1, 1, 1 + find (any (!TERMS(:,i),2)));
@@ -396,11 +412,11 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         [b, sse, resid, ucov] = lmfit (cell2mat (X), Y);
         sstype_char = "II";
       case 3
-        # Type III (constrained, marginal or orthogonal) sums of squares
+        ## Type III (constrained, marginal or orthogonal) sums of squares
         ss = zeros (Nt, 1);
-        [X, grpnames, nlevels, df, termcols, coeffnames, vmeans, gid, CONTRASTS] = ...
-              make_design_matrix (GROUP, TERMS, CONTINUOUS, CONTRASTS, VARNAMES, ...
-                                  n, Nm, Nx, Ng);
+        [X, grpnames, nlevels, df, termcols, coeffnames, vmeans, gid, ...
+         CONTRASTS] = make_design_matrix (GROUP, TERMS, CONTINUOUS, ...
+                      CONTRASTS, VARNAMES, n, Nm, Nx, Ng);
         [b, sse, resid, ucov] = lmfit (cell2mat (X), Y);
         for j = 1:Nt
           XS = cell2mat (X(1:Nt+1 != j+1));
@@ -419,9 +435,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     F = ms / mse;
     P = 1 - fcdf (F, df, dfe);
 
-    # Prepare cell array containing the ANOVA table (T)
+    ## Prepare cell array containing the ANOVA table (T)
     T = cell (Nt + 3, 7);
-    T(1,:) = {"Source","Sum Sq.","d.f.","Mean Sq.","Eta Sq.","F","Prob>F"};
+    T(1,:) = {"Source", "Sum Sq.", "d.f.", "Mean Sq.", "Eta Sq.", "F", "Prob>F"};
     T(2:Nt+1,2:7) = num2cell ([ss df ms partial_eta_sq F P]);
     T(end-1,1:4) = {"Error", sse, dfe, mse};
     T(end,1:3) = {"Total", sst, dft};
@@ -430,13 +446,13 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       T(i+1,1) = str(1:end-1);
     endfor
 
-    # If requested, prepare stats output structure
-    # Note that the information provided by STATS is not sufficient for MATLAB's
-    # and vice versa multcompare function
+    ## If requested, prepare stats output structure
+    ## Note that the information provided by STATS is not sufficient
+    ## for multcompare function as yet
     if (nargout > 2)
 
-      # Calculate a standard error, t-statistic and p-value for each 
-      # of the regression coefficients 
+      ## Calculate a standard error, t-statistic and p-value for each
+      ## of the regression coefficients
       se = sqrt (diag (ucov) * mse);
       t =  b ./ se;
       coeff_stats = zeros (1 + sum (df), 4);
@@ -472,7 +488,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                       "txtdenom", [], ...      # Not used since "random" argument name not supported
                       "txtems", [], ...        # Not used since "random" argument name not supported
                       "rtnames", [], ...       # Not used since "random" argument name not supported
-                      # Additional STATS fields created and used exclusively by Octave
+                      ## Additional STATS fields used exclusively by Octave
                       "df", df, ...
                       "contrasts", {CONTRASTS}, ...
                       "X", sparse (cell2mat (X)), ...
@@ -480,7 +496,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                       "grps", gid, ...
                       "eta_squared", eta_sq, ...
                       "partial_eta_squared", partial_eta_sq);
-     endif
+    endif
 
     # Print ANOVA table
     switch (lower (DISPLAY))
@@ -497,11 +513,14 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           # Format and print the statistics for each model term
           # Format F statistics and p-values in APA style
           if (P(i) < 0.001)
-            fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f   <.001 \n", str(1:min(18,l)), T{i+1,2:end-1});
+            fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f   <.001 \n", ...
+                      str(1:min(18,l)), T{i+1,2:end-1});
           elseif (P(i) < 1.0)
-            fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f    .%03u \n", str(1:min(18,l)), T{i+1,2:end-1}, round (P(i) * 1e+03));
+            fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f   .%03u \n", ...
+                      str(1:min(18,l)), T{i+1,2:end-1}, round (P(i) * 1e+03));
           else
-            fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f   1.000 \n", str(1:min(18,l)), T{i+1,2:end-1});
+            fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f   1.000 \n", ...
+                      str(1:min(18,l)), T{i+1,2:end-1});
           endif
         endfor
         fprintf("Error                 %10.5g  %6d  %10.5g\n", T{end-1,2:4});
@@ -516,13 +535,13 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 endfunction
 
 
-function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, CONTRASTS] = ...
-                    make_design_matrix (GROUP, TERMS, CONTINUOUS, CONTRASTS, VARNAMES, ...
-                                        n, Nm, Nx, Ng)
+function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, ...
+          CONTRASTS] = make_design_matrix (GROUP, TERMS, CONTINUOUS, ...
+                       CONTRASTS, VARNAMES, n, Nm, Nx, Ng)
 
-  # Returns a cell array of the design matrix for each term in the model
+  ## Returns a cell array of the design matrix for each term in the model
 
-  # Fetch factor levels from each column (i.e. factor) in GROUP
+  ## Fetch factor levels from each column (i.e. factor) in GROUP
   levels = cell (Nm, 1);
   gid = zeros (n, Nm);
   nlevels = zeros (Nm, 1);
@@ -531,12 +550,12 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, CONTRASTS] 
   for j = 1:Nm
     m = find (TERMS(j,:));
     if (any (j == CONTINUOUS))
-      # Continuous predictor
+      ## Continuous predictor
       nlevels(j) = 1;
       termcols(j+1) = 1;
       df(j) = 1;
     else
-      # Categorical predictor
+      ## Categorical predictor
       levels{j} = unique (GROUP(:,m), "stable");
       if isnumeric (levels{j})
         levels{j} = num2cell (levels{j});
@@ -550,8 +569,8 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, CONTRASTS] 
     endif
   endfor
 
-  # Create design matrix
-  # Prepare design matrix columns for the main effects
+  ## Create design matrix
+  ## Prepare design matrix columns for the main effects
   X = cell (1, 1 + Nm + Nx);
   X(1) = ones (n, 1);
   coeffnames = cell (1 + sum (df), 1);
@@ -560,29 +579,33 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, CONTRASTS] 
   vmeans = zeros (Nm, 1);
   for j = 1:Nm
     if (any (j == CONTINUOUS))
-      # Continuous predictor
+      ## Continuous predictor
       X(1+j) = cell2mat (GROUP(:,j));
       vmeans(j) = mean ([X{1+j}]);
-      #X(1+j) = [X{1+j}] - vmeans(j);
+      ##X(1+j) = [X{1+j}] - vmeans(j);
       if (isempty (CONTRASTS{j}))
         CONTRASTS{j} = [];
       end
       coeffnames{1+c} = VARNAMES{j};
       c += 1;
     else
-      # Categorical predictor
+      ## Categorical predictor
       if (isempty (CONTRASTS{j}))
         CONTRASTS{j} = contr_sum (nlevels(j));
       else
-        # Check that the contrast matrix provided is the correct size
+        ## Check that the contrast matrix provided is the correct size
         if (! all (size (CONTRASTS{j},1) == nlevels(j)))
-          error ("anovan: the number of rows in the contrast matrices should equal the number of factor levels");
+          error (strcat (["anovan: the number of rows in the contrast"], ...
+                       [" matrices should equal the number of factor levels"]));
         endif
         if (! all (size (CONTRASTS{j},2) == df(j)))
-          error ("anovan: the number of columns in each contrast matrix should equal the degrees of freedom (i.e. number of levels minus 1) for that factor");
-        endif   
+          error (strcat (["anovan: the number of columns in each contrast"], ...
+                  [" matrix should equal the degrees of freedom (i.e."], ...
+                  [" number of levels minus 1) for that factor"]));
+        endif
         if (! all (any (CONTRASTS{j})))
-          error ("anovan: a contrast must be coded in each column of the contrast matrices");
+          error (strcat (["anovan: a contrast must be coded in each"], ...
+                         [" column of the contrast matrices"]));
         endif
       endif
       C = CONTRASTS{j};
@@ -594,7 +617,7 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, CONTRASTS] 
       endfor
     endif
   endfor
-  # If applicable, prepare design matrix columns for all the interaction terms
+  ## If applicable, prepare design matrix columns for all the interaction terms
   if (Nx > 0)
     row = TERMS((Ng > 1),:);
     for i = 1:Nx
@@ -614,8 +637,8 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, CONTRASTS] 
 
   function C = contr_sum (N)
 
-    # Create contrast matrix (of doubles) using deviation effect coding 
-    # These contrasts are centered (i.e. sum to 0)
+    ## Create contrast matrix (of doubles) using deviation effect coding
+    ## These contrasts are centered (i.e. sum to 0)
     C =  cat (1, eye (N-1), - (ones (1,N-1)));
 
   endfunction
@@ -625,19 +648,20 @@ endfunction
 
 function [b, sse, resid, ucov] = lmfit (X, Y)
 
-  # Get model coefficients by solving the linear equation by QR decomposition
-  # (this achieves the same thing as b = X \ Y)
-  # The number of free parameters (i.e. intercept + coefficients) is equal to n - dfe
+  ## Get model coefficients by solving the linear equation by QR decomposition
+  ## (this achieves the same thing as b = X \ Y)
+  ## The number of free parameters (i.e. intercept + coefficients) is equal
+  ## to n - dfe
   [Q, R] = qr (X, 0);
   b = R \ Q' * Y;
 
-  # Get fitted values
+  ## Get fitted values
   fit = X * b;
-  # Get residuals from the fit
+  ## Get residuals from the fit
   resid = Y - fit;
-  # Calculate residual sums-of-squares
+  ## Calculate residual sums-of-squares
   sse = sum ((resid).^2);
-  # Calculate unscaled covariance matrix
+  ## Calculate unscaled covariance matrix
   if (nargout > 3)
     ucov = R \ Q' / X';
   end
@@ -855,7 +879,7 @@ endfunction
 %!                 'varnames', {'treatment','exercise','age'});
 
 %!demo
-%! 
+%!
 %! # Unbalanced one-way ANOVA with custom, orthogonal contrasts. The ANOVA
 %! # table is displayed followed by a matrix with columns from left-to-right
 %! # corresponding to regression coefficients and their standard errors,
