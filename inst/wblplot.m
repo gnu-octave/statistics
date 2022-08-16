@@ -1,19 +1,21 @@
 ## Copyright (C) 2014 Bj{\"o}rn Vennberg
-## 
+##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
-## 
+##
 ## This program is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-## 
+##
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-## -*- texinfo -*- 
+## -*- texinfo -*-
 ## @deftypefn {wblplot.m} wblplot (@var{data}, @dots{})
 ## @deftypefnx {wblplot.m} @var{handle} = wblplot (@var{data}, @dots{})
 ## @deftypefnx {wblplot.m} [@var{handle}, @var{param}] = wblplot (@var{data})
@@ -29,31 +31,31 @@
 ## regression.
 ##
 ## @var{censor}: optional parameter is a column vector of same size as
-## @var{data} with 1 for right censored data and 0 for exact observation. 
-## Pass [] when no censor data are available. 
+## @var{data} with 1 for right censored data and 0 for exact observation.
+## Pass [] when no censor data are available.
 ##
 ## @var{freq}: optional vector same size as @var{data} with the number of
 ## occurences for corresponding data.
 ## Pass [] when no frequency data are available.
 ##
-## @var{confint}: optional confidence limits for ploting upper and lower 
-## confidence bands using beta binomial confidence bounds.  If a single 
+## @var{confint}: optional confidence limits for ploting upper and lower
+## confidence bands using beta binomial confidence bounds.  If a single
 ## value is given this will be used such as LOW = a and HIGH = 1 - a.
 ## Pass [] if confidence bounds is not requested.
 ##
 ## @var{fancygrid}: optional parameter which if set to anything but 1 will turn
-## off the fancy gridlines. 
+## off the fancy gridlines.
 ##
 ## @var{showlegend}: optional parameter that when set to zero(0) turns off the
 ## legend.
-## 
+##
 ## If one output argument is given, a @var{handle} for the data marker and
 ## plotlines is returned, which can be used for further modification of line and
 ## marker style.
 ##
-## If a second output argument is specified, a @var{param} vector with scale, 
+## If a second output argument is specified, a @var{param} vector with scale,
 ## shape and correlation factor is returned.
-## 
+##
 ## @seealso{normplot, wblpdf}
 ## @end deftypefn
 
@@ -65,27 +67,27 @@
 ## 2014-11-23 Censored data check and inclusion of demo samples. Help info updates.
 
 function [handle, param] = wblplot (data, censor = [], freq = [], ...
-                                    confint = [], fancygrid = 1, showlegend = 1)   
+                                    confint = [], fancygrid = 1, showlegend = 1)
   [mm, nn] = size (data);
-  if mm > 1 && nn > 1
+  if (mm > 1 && nn > 1)
     error ("wblplot: can only handle a single data vector")
-  elseif mm == 1 && nn > 1
+  elseif (mm == 1 && nn > 1)
     data = data(:);
     mm = nn;
   endif
-  if any (data<=0) 
+  if (any (data <= 0))
     error ("wblplot: data vector must be positive and non zero")
   endif
 
-  if isempty (freq)
+  if (isempty (freq))
     freq = ones (mm, 1);
-    N = mm;    
+    N = mm;
   else
     [mmf nnf] = size (freq);
-    if (mmf == mm && nnf == 1) || (mmf == 1 && nnf == mm)
+    if ((mmf == mm && nnf == 1) || (mmf == 1 && nnf == mm))
       freq = freq(:);
-      N = sum (freq);	## Total number of samples  
-      if any (freq <= 0) 
+      N = sum (freq);	## Total number of samples
+      if (any (freq <= 0))
 	      error ("wblplot: frequency vector must be positive non zero integers")
       endif
     else
@@ -93,22 +95,22 @@ function [handle, param] = wblplot (data, censor = [], freq = [], ...
     endif
   endif
 
-  if isempty (censor)
+  if (isempty (censor))
       censor = zeros(mm,1);
   else
     [mmc, nnc] = size(censor);
-    if (mmc == mm && nnc == 1) || (mmc == 1 && nnc == mm)
+    if ((mmc == mm && nnc == 1) || (mmc == 1 && nnc == mm))
       censor = censor(:);
     else
       error ("wblplot: censor must be a vector of same length as data")
     endif
-    ## Make sure censored data is sorted corectly so that no censored samples 
+    ## Make sure censored data is sorted corectly so that no censored samples
     ## are processed before failures if they have the same time.
-    if any (censor > 0) 
+    if (any (censor > 0))
        ind = find (censor > 0);
        ind2 = find (data(1:end-1) == data(2:end));
-       if (! isempty (ind)) && (! isempty (ind2))
-         if any (ind == ind2) 
+       if ((! isempty (ind)) && (! isempty (ind2)))
+         if (any (ind == ind2))
            tmp = censor(ind2);
            censor(ind2) = censor(ind2 + 1);
            censor(ind2+1) = tmp;
@@ -120,14 +122,14 @@ function [handle, param] = wblplot (data, censor = [], freq = [], ...
     endif
   endif
 
-  ## Determine the order number 
+  ## Determine the order number
   wbdat = zeros (length (find (censor == 0)), 3);
   Op = 0;
   Oi = 0;
   c = N;
   nf = 0;
   for k = 1 : mm
-    if censor(k, 1) == 0 
+    if (censor(k, 1) == 0)
       nf = nf + 1;
       wbdat(nf, 1) = data(k, 1);
       for s = 1 : freq(k, 1);
@@ -143,9 +145,9 @@ function [handle, param] = wblplot (data, censor = [], freq = [], ...
   ## Compute median rank
   a = wbdat(:, 3) ./ (N - wbdat(:, 3) + 1);
   f = finv(0.5, 2 * (N - wbdat(:, 3) + 1), 2 * wbdat(:, 3));
-  
+
   wbdat(:, 2) = a ./ (f+a);
-  
+
   datx = log (wbdat(:,1));
   daty = log (log (1 ./ (1 - wbdat(:,2))));
 
@@ -155,26 +157,26 @@ function [handle, param] = wblplot (data, censor = [], freq = [], ...
   beta_rry = poly(1);
   ## Scale factor
   eta_rry = exp (-(poly(2) / beta_rry));
-  
+
   ## Determine min-max values of view port
   aa = ceil (log10 (max (wbdat(:,1))));
   bb = log10 (max (wbdat(:,1)));
-  if (aa - bb) < 0.2
+  if ((aa - bb) < 0.2)
     aa = ceil (log10 (max (wbdat(:,1)))) + 1;
   endif
   xmax = 10 ^ aa;
-  
-  if (log10 (min (wbdat(:,1))) - floor (log10 (min (wbdat(:,1))))) < 0.2
+
+  if ((log10 (min (wbdat(:,1))) - floor (log10 (min (wbdat(:,1))))) < 0.2)
     xmin = 10 ^ (floor (log10 (min (wbdat(:,1)))) - 1);
   else
-    xmin = 10 ^ floor (log10 (min (wbdat(:,1))));      
+    xmin = 10 ^ floor (log10 (min (wbdat(:,1))));
   endif
 
-  if min (wbdat(:,2)) > 0.20
+  if (min (wbdat(:,2)) > 0.20)
     ymin = log (log (1 / (1 - 0.1)));
-  elseif min (wbdat(:,2)) > 0.02
+  elseif (min (wbdat(:,2)) > 0.02)
     ymin = log (log (1 / (1 - 0.01)));
-  elseif min (wbdat(:,2))>0.002
+  elseif (min (wbdat(:,2)) > 0.002)
     ymin = log (log (1 / (1 - 0.001)));
   else
     ymin = log (log (1 / (1 - 0.0001)));
@@ -193,9 +195,9 @@ function [handle, param] = wblplot (data, censor = [], freq = [], ...
   newplot();
   x(1, 1) = xmin;
   x(2, 1) = xmax;
-  if fancygrid == 1
+  if (fancygrid == 1)
     for k = 1 : 4
-      ## Y major grids      
+      ## Y major grids
       x(1, 1) = xmin;
       x(2, 1) = xmax*10;
       y(1, 1) = log (log (1 / (1 - 10 ^ (-k))));
@@ -209,7 +211,7 @@ function [handle, param] = wblplot (data, censor = [], freq = [], ...
     for m = 1 : 4
       for k = 1 : 8
         y(1, 1) = log (log (1 / (1 - ((k + 1) / (10 ^ m)))));
-        y(2, 1) = y(1, 1); 
+        y(2, 1) = y(1, 1);
         yminorgrid(k) = line (x, y, 'LineStyle', '-', 'Marker', 'none', ...
                         'Color', [0.75 1 0.75], 'LineWidth', 0.1);
       endfor
@@ -235,7 +237,7 @@ function [handle, param] = wblplot (data, censor = [], freq = [], ...
   endif
 
   set (gca, 'XScale', 'log');
-  set (gca, 'YTick', tick, 'YTickLabel', label);  
+  set (gca, 'YTick', tick, 'YTickLabel', label);
 
   xlabel ('Data', 'FontSize', 12);
   ylabel ('Unreliability, F(t)=1-R(t)', 'FontSize', 12);
@@ -243,18 +245,18 @@ function [handle, param] = wblplot (data, censor = [], freq = [], ...
   set (gcf, 'Color', [0.9, 0.9, 0.9]);
   set (gcf, 'name', 'WblPlot');
   hold on
-  
+
   h = plot (wbdat(:,1), daty, 'o');
   set (h, 'markerfacecolor', [0, 0, 1]);
   set (h, 'markersize', 8);
   h2 = line (xbf, ybf, 'LineStyle', '-', 'Marker', 'none', ...
             'Color', [0.25 0.25 1], 'LineWidth', 1);
-  ## If requested plot beta binomial confidens bounds 
-  if ! isempty (confint)
+  ## If requested plot beta binomial confidens bounds
+  if (! isempty (confint))
     cb_high = [];
     cb_low = [];
-    if length (confint) == 1
-      if confint > 0.5
+    if (length (confint) == 1)
+      if (confint > 0.5)
         cb_high = confint;
         cb_low = 1 - confint;
       else
@@ -275,8 +277,8 @@ function [handle, param] = wblplot (data, censor = [], freq = [], ...
     conf(:, 3) = medianranks (cb_high, N, N2);
     confy = log (log (1 ./ (1 - conf(:,2:3))));
     confu = [conf(:,1) confy];
-    
-    if conf(1,1) > xmin ## It looks better to extend the lines.
+
+    if (conf(1,1) > xmin)  ## It looks better to extend the lines.
       p1 = polyfit (log (conf(1:2,1)), confy(1:2,1), 1);
       y1 = polyval (p1, log (xmin));
       p2 = polyfit (log (conf(1:2,1)), confy(1:2,2), 1);
@@ -284,7 +286,7 @@ function [handle, param] = wblplot (data, censor = [], freq = [], ...
       confu = [xmin y1 y2; confu];
     endif
 
-    if conf(end,1) < xmax
+    if (conf(end,1) < xmax)
       p3 = polyfit (log (conf(end-1:end,1)), confy(end-1:end,1), 1);
       y3 = polyval (p3, log (xmax));
       p4 = polyfit (log (conf(end-1:end,1)), confy(end-1:end,2), 1);
@@ -297,10 +299,10 @@ function [handle, param] = wblplot (data, censor = [], freq = [], ...
   ## Correlation coefficient
   rsq = corr (datx, daty);
 
-  if showlegend == 1
+  if (showlegend == 1)
     s1 = sprintf (' RRY\n \\beta=%.3f \n \\eta=%.2f  \n \\rho=%.4f', ...
                   beta_rry, eta_rry, rsq);
-    if ! isempty (confint)
+    if (! isempty (confint))
       s2 = sprintf ('CB_H=%.2f', cb_high);
       s3 = sprintf ('CB_L=%.2f', cb_low);
       legend ([h; h2; h3], "Data", s1, s2, s3, "location", "northeastoutside");
@@ -311,17 +313,17 @@ function [handle, param] = wblplot (data, censor = [], freq = [], ...
   endif
   axis ([xmin, xmax, ymin, (log (log (1 / (1 - 0.99))))]);
   hold off
-  
-  if nargout >= 2
+
+  if (nargout >= 2)
     param = [eta_rry, beta_rry, rsq];
-    if ! isempty (confint)
+    if (! isempty (confint))
       handle = [h; h2; h3];
     else
       handle = [h; h2];
     endif
   endif
-  if nargout == 1
-    if ! isempty (confint)
+  if (nargout == 1)
+    if (! isempty (confint))
       handle = [h; h2; h3];
     else
       handle = [h; h2];
@@ -330,7 +332,7 @@ function [handle, param] = wblplot (data, censor = [], freq = [], ...
 endfunction
 
 
-function [ret] = medianranks (alpha, n, ii)
+function ret = medianranks (alpha, n, ii)
   a = ii ./ (n - ii + 1);
   f = finv (alpha, 2 * (n - ii + 1), 2 * ii);
   ret = a ./ (f + a);
@@ -366,7 +368,6 @@ endfunction
 ## Get current figure visibility so it can be restored after tests
 %!shared visibility_setting
 %! visibility_setting = get (0, "DefaultFigureVisible");
-
 %!test
 %! set (0, "DefaultFigureVisible", "off");
 %! x = [16, 34, 53, 75, 93, 120, 150, 191, 240 ,339];
