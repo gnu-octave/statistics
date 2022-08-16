@@ -14,6 +14,8 @@ Summary of important user-visible changes for statistics 1.5.0:
 
  ** chi2gof (fully Matlab compatible. bug #46764)
 
+ ** chi2test (bug #58838)
+
  ** ecdf (fully Matlab compatible)
 
  ** f2fx (missing function: bug #48146)
@@ -47,52 +49,56 @@ Summary of important user-visible changes for statistics 1.5.0:
  Improvements:
  =============
 
- ** anovan.m: added more options (patch #10123, Github PR #1)
+ ** anovan: added more options (patch #10123, Github PR #1)
 
- ** binopdf.m: implement high accuracy Loader algorithm for m>=10 (bug #34362)
+ ** binopdf: implement high accuracy Loader algorithm for m>=10 (bug #34362)
 
- ** cdf.m: extended to include all available distributions
+ ** cdf: extended to include all available distributions
 
- ** geomean.m: fully Matlab compatible. (patch #59410)
+ ** crosstab: can handle char arrays, fixed ordering of groups
 
- ** harmmean.m: fully Matlab compatible.
+ ** geomean: fully Matlab compatible. (patch #59410)
 
- ** hygepdf.m: added optional parameter "vectorexpand" to facilitate
+ ** grp2idx (fully Matlab compatible, indexes in order of appeearance)
+
+ ** harmmean: fully Matlab compatible.
+
+ ** hygepdf: added optional parameter "vectorexpand" to facilitate
     vectorization of other hyge functions. Allows different inputs lengths
     for x and t,m,n parameters, with broadcast expanded output (bug #34363)
 
- ** hygecdf.m: improved vectorization for non-scalar inputs.
-    hygeinv.m
-    hygernd.m
+ ** hygecdf: improved vectorization for non-scalar inputs.
+    hygeinv
+    hygernd
 
- ** ismissing.m: corrects handling of n-D arrays, NaN indicators, and improves
+ ** ismissing: corrects handling of n-D arrays, NaN indicators, and improves
     matlab compatibility for different data types. (patch #10102)
 
- ** kmeans.m: improved help file, evaluate efficieny (bug #8959)
+ ** kmeans: improved help file, evaluate efficieny (bug #8959)
 
- ** laplace_cdf.m: allow for parameters mu and scale (bug #58688)
-    laplace_inv.m
-    laplace_pdf.m
-    logistic_cdf.m
-    logistic_inv.m
-    logistic_pdf.m
+ ** laplace_cdf: allow for parameters mu and scale (bug #58688)
+    laplace_inv
+    laplace_pdf
+    logistic_cdf
+    logistic_inv
+    logistic_pdf
 
- ** normplot.m: fix ploting error (bug #62394), updated features
+ ** normplot: fix ploting error (bug #62394), updated features
 
- ** pdf.m: extended to include all available distributions
+ ** pdf: extended to include all available distributions
 
- ** pdist.m: updated the 'cosine' metric to be more efficient (bug #62495)
+ ** pdist: updated the 'cosine' metric to be more efficient (bug #62495)
 
- ** rmmissing.m: corrects cellstr array handling and
+ ** rmmissing: corrects cellstr array handling and
     improves matlab compatibility for different data types. (patch #10102)
 
- ** signtest.m: fix erroneous results, fully Matlab compatible (bug #49961)
+ ** signtest: fix erroneous results, fully Matlab compatible (bug #49961)
 
- ** ttest2.m: can hale NaN values as missing data (bug #58697)
+ ** ttest2: can hale NaN values as missing data (bug #58697)
 
- ** violin.m: fix parsing color vector affecting Octave>=6.1.0 (bug #62805)
+ ** violin: fix parsing color vector affecting Octave>=6.1.0 (bug #62805)
 
- ** wblplot.m: fixed coding style and help texinfo. (patch #8579)
+ ** wblplot: fixed coding style and help texinfo. (patch #8579)
 
  Removed Functions:
  ==================
@@ -100,6 +106,10 @@ Summary of important user-visible changes for statistics 1.5.0:
  ** anova (replaced by anova1)
 
  ** caseread, casewrite (do not belong here)
+
+ ** chisquare_test_homogeneity (replaced by chi2test)
+
+ ** chisquare_test_independence (replaced by chi2test)
 
  ** kolmogorov_smirnov_test (replaced by kstest)
 
@@ -112,6 +122,8 @@ Summary of important user-visible changes for statistics 1.5.0:
  ** sign_test (replaced by updated signtest)
 
  ** tblread, tblwrite (belong to `io` package when tables are implemented)
+
+ ** t_test, t_test_2 (deprecated: use ttest & ttest2)
 
  ** wilcoxon_test (replaced by ranksum)
 

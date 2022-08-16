@@ -92,6 +92,7 @@ Hypothesis testing
  anderson_darling_test
  binotest
  chi2gof
+ chi2test
  friedman
  kruskalwallis
  kstest
