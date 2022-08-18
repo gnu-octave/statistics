@@ -33,6 +33,9 @@
 
 function p = bvncdf (X, mu, rho)
   ## Check input arguments and add defaults
+  if (size (X, 2) != 2)
+    error ("bvncdf: X must be an Nx2 matrix with each variable a column vector.");
+  endif
   if (isempty (mu))
     mu = [0,0];
   endif
@@ -191,5 +194,6 @@ endfunction
 %!          0.9813597788804785, 0.9821977956568989, ...
 %!          0.9824283794464095, 0.9824809345614861]';
 %! assert (p([616:625]), p_out, 1e-16);
+%!error bvncdf (randn (25,3), [], [1, 1; 1, 1]);
 %!error bvncdf (randn (25,2), [], [1, 1; 1, 1]);
 %!error bvncdf (randn (25,2), [], ones (3, 2));
