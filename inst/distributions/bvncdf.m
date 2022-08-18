@@ -28,7 +28,7 @@
 ##
 ## @end deftypefn
 
-## code adapted from Thomas H. Jørgensen's work in BVNcdf.m function retrieved
+## Code adapted from Thomas H. Jørgensen's work in BVNcdf.m function retrieved
 ## from https://www.tjeconomics.com/code/
 
 function p = bvncdf (X, mu, rho)
