@@ -49,6 +49,7 @@ Distributions
  betacdf betainv betapdf betarnd
  binocdf binoinv binopdf binornd
  burrcdf burrinv burrpdf burrrnd
+ bvncdf
  cauchy_cdf cauchy_inv cauchy_pdf cauchy_rnd
  chi2cdf chi2inv chi2pdf chi2rnd
  copulacdf copulapdf copularnd
@@ -152,4 +153,5 @@ Regression
  stepwisefit
 Wrappers
  cdf
+ cholcov
  pdf

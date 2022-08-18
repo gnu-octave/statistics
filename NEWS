@@ -10,11 +10,15 @@ Summary of important user-visible changes for statistics 1.5.0:
 
  ** anova2 (fully Matlab compatible)
 
+ ** bvncsf
+
  ** cdfcalc, cdfplot
 
  ** chi2gof (fully Matlab compatible. bug #46764)
 
  ** chi2test (bug #58838)
+
+ ** cholcov (fully Matlab compatible)
 
  ** ecdf (fully Matlab compatible)
 
