@@ -69,6 +69,7 @@ Distributions
  mnpdf mnrnd
  mvncdf mvnpdf mvnrnd
  mvtcdf mvtpdf mvtrnd
+ mvtcdfqmc
  nakacdf nakainv nakapdf nakarnd
  nbincdf nbininv nbinpdf nbinrnd
  normcdf norminv normpdf normrnd
@@ -155,3 +156,4 @@ Wrappers
  cdf
  cholcov
  pdf
+ random
