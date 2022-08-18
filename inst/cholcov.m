@@ -97,7 +97,7 @@ function [T, p] = cholcov (sigma, flag)
     endif
   else
     T = zeros (0, is_type);
-    p = nan (size (sigma), is_type);
+    p = NaN (is_type);
   endif
   if (is_sparse)
     T = sparse(T);
