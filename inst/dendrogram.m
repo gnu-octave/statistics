@@ -1,5 +1,8 @@
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2021 Stefano Guidoni <ilguido@users.sf.net>
 ## Copyright (c) 2012 Juan Pablo Carbajal <carbajal@ifi.uzh.ch>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -233,8 +236,6 @@ function [H, T, perm] = dendrogram (tree, varargin)
   ## figure
   x = [];
 
-  hd = gcf ();
-
   ## ticks and tricks
   xticks = 1:P;
   perm = zeros (P, 1);
@@ -275,7 +276,7 @@ function [H, T, perm] = dendrogram (tree, varargin)
     H = line (x(:, 3:4)', x(:, 1:2)', "color", "blue");
     set (gca, "yticklabel", perm, "ytick", xticks);
   else
-    close (hd);
+    close (H);
     error ("dendrogram: invalid orientation '%s'", orientation);
   endif
 
@@ -342,43 +343,21 @@ function [H, T, perm] = dendrogram (tree, varargin)
 endfunction
 
 
-## Get current figure visibility so it can be restored after tests
-%!shared visibility_setting
-%! visibility_setting = get (0, "DefaultFigureVisible");
-
-## Test input validation
-%!error dendrogram ()
-%!error <tree must be .*> dendrogram (ones (2, 2), 1)
-%!error <unknown property .*> dendrogram ([1 2 1], 1, "xxx", "xxx")
-%!error <reorder.*> dendrogram ([1 2 1], "Reorder", "xxx")
-%!error <reorder.*> dendrogram ([1 2 1], "Reorder", [1 2 3 4])
-
-%!test
-%! set (0, "DefaultFigureVisible", "off");
-%! fail ('dendrogram ([1 2 1], "Orientation", "north")', "invalid orientation .*")
-%! set (0, "DefaultFigureVisible", visibility_setting);
-
-
-## Demonstrations
-## 1.
-%!demo 1
-%! y      = [4 5; 2 6; 3 7; 8 9; 1 10];
+%!demo "simple 1"
+%! y = [4, 5; 2, 6; 3, 7; 8, 9; 1, 10];
 %! y(:,3) = 1:5;
-%! figure (gcf); clf;
 %! dendrogram (y);
-## 2.
-%!demo 2
+
+%!demo "simple 2"
 %! v = 2 * rand (30, 1) - 1;
 %! d = abs (bsxfun (@minus, v(:, 1), v(:, 1)'));
 %! y = linkage (squareform (d, "tovector"));
-%! figure (gcf); clf;
 %! dendrogram (y);
-## 3. collapsed tree
+
 %!demo "collapsed tree, find all the leaves of node 5"
 %! X = randn (60, 2);
 %! D = pdist (X);
 %! y = linkage (D, "average");
-%! figure (gcf); clf;
 %! subplot (2, 1, 1);
 %! title ("original tree");
 %! dendrogram (y, 0);
@@ -386,20 +365,19 @@ endfunction
 %! title ("collapsed tree");
 %! [~, t] = dendrogram (y, 20);
 %! find(t == 5)
-## 4. optimal leaf order
+
 %!demo "optimal leaf order"
 %! X = randn (30, 2);
 %! D = pdist (X);
 %! y = linkage (D, "average");
 %! order = optimalleaforder (y, D);
-%! figure (gcf); clf;
 %! subplot (2, 1, 1);
 %! title ("original leaf order");
 %! dendrogram (y);
 %! subplot (2, 1, 2);
 %! title ("optimal leaf order");
 %! dendrogram (y, "Reorder", order);
-## 5. orientation
+
 %!demo "horizontal orientation and labels"
 %! X = randn (8, 2);
 %! D = pdist (X);
@@ -408,3 +386,40 @@ endfunction
 %! y = linkage (D, "average");
 %! dendrogram (y, "Orientation", "left", "Labels", L);
 
+## Get current figure visibility so it can be restored after tests
+%!shared visibility_setting
+%! visibility_setting = get (0, "DefaultFigureVisible");
+%!test
+%! set (0, "DefaultFigureVisible", "off");
+%!test
+%! y = [4, 5; 2, 6; 3, 7; 8, 9; 1, 10];
+%! y(:,3) = 1:5;
+%! dendrogram (y);
+%!test
+%! y = [4, 5; 2, 6; 3, 7; 8, 9; 1, 10];
+%! y(:,3) = 1:5;
+%! dendrogram (y);
+%!test
+%! v = 2 * rand (30, 1) - 1;
+%! d = abs (bsxfun (@minus, v(:, 1), v(:, 1)'));
+%! y = linkage (squareform (d, "tovector"));
+%! dendrogram (y);
+%!test
+%! X = randn (30, 2);
+%! D = pdist (X);
+%! y = linkage (D, "average");
+%! order = optimalleaforder (y, D);
+%! subplot (2, 1, 1);
+%! title ("original leaf order");
+%! dendrogram (y);
+%! subplot (2, 1, 2);
+%! title ("optimal leaf order");
+%! dendrogram (y, "Reorder", order);
+## Test input validation
+%!error dendrogram ();
+%!error <tree must be .*> dendrogram (ones (2, 2), 1);
+%!error <unknown property .*> dendrogram ([1 2 1], 1, "xxx", "xxx");
+%!error <reorder.*> dendrogram ([1 2 1], "Reorder", "xxx");
+%!error <reorder.*> dendrogram ([1 2 1], "Reorder", [1 2 3 4]);
+%! fail ('dendrogram ([1 2 1], "Orientation", "north")', "invalid orientation .*")
+%! set (0, "DefaultFigureVisible", visibility_setting);
