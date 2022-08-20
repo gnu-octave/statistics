@@ -27,6 +27,8 @@
 ## 1 through @var{n_i} for each factor @var{i}.
 ##
 ## Values in @var{N} must be positive integers.
+##
+## @seealso {ff2n}
 ## @end deftypefn
 
 function A = fullfact(n)
@@ -34,13 +36,14 @@ function A = fullfact(n)
     error ("fullfact: wrong number of input arguments.");
   endif
   if length(n) == 1
-    if (floor (n) != n)
+    if (floor (n) != n || n < 1 || ! isfinite (n) || ! isreal (n))
       error ("fullfact: @var{N} must be a positive integer.");
     endif
     ## Combinatorial design with n binary choices
     A = fullfact(2*ones(1,n))-1;
   else
-    if (any (floor (n) != n) || any (n < 1))
+    if (any (floor (n) != n) || any (n < 1) || any (! isfinite (n)) ...
+                             || any (! isreal (n)))
       error ("fullfact: values in @var{N} must be positive integers.");
     endif
     ## Combinatorial design with n(i) ordinal choices
@@ -64,8 +67,13 @@ endfunction
 %!error fullfact (2.5);
 %!error fullfact (0);
 %!error fullfact (-3);
+%!error fullfact (3+2i);
+%!error fullfact (Inf);
+%!error fullfact (NaN);
 %!error fullfact ([1, 2, -3]);
 %!error fullfact ([0, 1, 2]);
+%!error fullfact ([1, 2, NaN]);
+%!error fullfact ([1, 2, Inf]);
 %!test
 %! A = fullfact (2);
 %! assert (A, [0, 0; 0, 1; 1, 0; 1, 1]);
