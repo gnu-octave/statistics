@@ -25,8 +25,9 @@
 ## Perform a multi (N)-way analysis of (co)variance (ANOVA or ANCOVA) to
 ## evaluate the effect of one or more categorical or continuous predictors
 ## on a continuous outcome. The algorithms used make @code{anovan} suitable
-## for balanced or unbalanced designs. Examples of function usage can be found
-## by entering the command @code{demo anovan}.
+## for balanced or unbalanced factorial (crossed) designs. Examples of function
+## usage can be found by entering the command @code{demo anovan}. Note that
+## nested ANOVA designs are not supported.
 ##
 ## Data is a single vector @var{Y} with groups specified by a corresponding
 ## matrix or cell array of group labels @var{GROUP}, where each column of
@@ -394,7 +395,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         [b, sse, resid, ucov] = lmfit (XS, Y);
         sstype_char = "I";
       case {2,'h'}
-        # Type II (hierarchical, or partially sequential) sums of squares
+        ## Type II (hierarchical, or partially sequential) sums of squares
         ss = zeros (Nt,1);
         [X, grpnames, nlevels, df, termcols, coeffnames, vmeans, gid, ...
          CONTRASTS] = make_design_matrix (GROUP, TERMS, CONTINUOUS, ...
@@ -412,7 +413,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         [b, sse, resid, ucov] = lmfit (cell2mat (X), Y);
         sstype_char = "II";
       case 3
-        ## Type III (constrained, marginal or orthogonal) sums of squares
+        ## Type III (constrained or marginal) sums of squares
         ss = zeros (Nt, 1);
         [X, grpnames, nlevels, df, termcols, coeffnames, vmeans, gid, ...
          CONTRASTS] = make_design_matrix (GROUP, TERMS, CONTINUOUS, ...
@@ -474,7 +475,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                       "continuous", cont_vec, ...
                       "vmeans", vmeans, ...
                       "termcols", termcols, ...
-                      "coeffnames", {coeffnames}, ...
+                      "coeffnames", {vertcat(coeffnames{:})}, ...
                       "vars", [], ...          # Not used by Octave
                       "varnames", {VARNAMES}, ...
                       "grpnames", {grpnames}, ...
@@ -498,20 +499,20 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                       "partial_eta_squared", partial_eta_sq);
     endif
 
-    # Print ANOVA table
+    ## Print ANOVA table
     switch (lower (DISPLAY))
       case "on"
-        # Get dimensions of the ANOVA table
+        ## Get dimensions of the ANOVA table
         [nrows, ncols] = size (T);
-        # Print table
+        ## Print table
         fprintf("\nANOVA table (Type %s sums of squares):\n\n", sstype_char);
         fprintf("Source                   Sum Sq.    d.f.    Mean Sq.  R Sq.            F  Prob>F\n");
         fprintf("********************************************************************************\n");
         for i = 1:Nt
           str = T{i+1,1};
           l = numel(str);  # Needed to truncate source term name at 18 characters
-          # Format and print the statistics for each model term
-          # Format F statistics and p-values in APA style
+          ## Format and print the statistics for each model term
+          ## Format F statistics and p-values in APA style
           if (P(i) < 0.001)
             fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f   <.001 \n", ...
                       str(1:min(18,l)), T{i+1,2:end-1});
@@ -527,7 +528,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         fprintf("Total                 %10.5g  %6d \n", T{end,2:3});
         fprintf("\n");
       case "off"
-        # do nothing
+        ## do nothing
       otherwise
         error ("anovan: wrong value for ""display"" parameter.");
     endswitch
@@ -548,21 +549,22 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, ...
   df = zeros (Nm + Nx, 1);
   termcols = ones (1 + Nm + Nx, 1);
   for j = 1:Nm
-    m = find (TERMS(j,:));
     if (any (j == CONTINUOUS))
       ## Continuous predictor
       nlevels(j) = 1;
       termcols(j+1) = 1;
       df(j) = 1;
+      GROUP{:,j};
+      gid(:,j) = [GROUP{:,j}]';
     else
       ## Categorical predictor
-      levels{j} = unique (GROUP(:,m), "stable");
+      levels{j} = unique (GROUP(:,j), "stable");
       if isnumeric (levels{j})
         levels{j} = num2cell (levels{j});
       endif
       nlevels(j) = numel (levels{j});
       for k = 1:nlevels(j)
-        gid(ismember (GROUP(:,m),levels{j}{k}),j) = k;
+        gid(ismember (GROUP(:,j),levels{j}{k}),j) = k;
       endfor
       termcols(j+1) = nlevels(j);
       df(j) = nlevels(j) - 1;
@@ -573,21 +575,19 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, ...
   ## Prepare design matrix columns for the main effects
   X = cell (1, 1 + Nm + Nx);
   X(1) = ones (n, 1);
-  coeffnames = cell (1 + sum (df), 1);
-  coeffnames{1} = "(Intercept)";
-  c = 1;
+  coeffnames = cell (1, 1 + Nm + Nx);
+  coeffnames(1) = "(Intercept)";
   vmeans = zeros (Nm, 1);
   for j = 1:Nm
     if (any (j == CONTINUOUS))
       ## Continuous predictor
       X(1+j) = cell2mat (GROUP(:,j));
       vmeans(j) = mean ([X{1+j}]);
-      ##X(1+j) = [X{1+j}] - vmeans(j);
+      #X(1+j) = [X{1+j}] - vmeans(j); # Like Matlab, we won't center continuous factors
       if (isempty (CONTRASTS{j}))
         CONTRASTS{j} = [];
       end
-      coeffnames{1+c} = VARNAMES{j};
-      c += 1;
+      coeffnames{1+j} = VARNAMES{j};
     else
       ## Categorical predictor
       if (isempty (CONTRASTS{j}))
@@ -611,9 +611,9 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, ...
       C = CONTRASTS{j};
       func = @(x) x(gid(:,j));
       X(1+j) = cell2mat (cellfun (func, num2cell (C, 1), "UniformOutput", false));
+      coeffnames{1+j} = cell (df(j),1);
       for v = 1:df(j)
-        coeffnames{1+c} = sprintf ("%s_%u", VARNAMES{j}, v);
-        c += 1;
+        coeffnames{1+j}{v} = sprintf ("%s_%u", VARNAMES{j}, v);
       endfor
     endif
   endfor
@@ -624,13 +624,18 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, ...
       I = 1 + find (row(i,:));
       df(Nm+i) = prod (df(I-1));
       termcols(1+Nm+i) = prod (df(I-1) + 1);
-      X{1+Nm+i} = X{1};
-      for k = 1:numel(I)
-        X(1+Nm+i) = bsxfun (@times, X{1+Nm+i}, X{I(k)});
+      tmp = ones (n,1);
+      for j = 1:numel(I);
+        tmp = num2cell (tmp, 1);
+        for k = 1:numel(tmp)
+          tmp(k) = bsxfun (@times, tmp{k}, X{I(j)});
+        endfor
+        tmp = cell2mat(tmp);
       endfor
+      X{1+Nm+i} = tmp;
+      coeffnames{1+Nm+i} = cell (df(Nm+i),1);
       for v = 1:df(Nm+i)
-        coeffnames{1+c} = cat (2, sprintf ("%s_", VARNAMES{I-1}), num2str (v));
-        c += 1;
+        coeffnames{1+Nm+i}{v} = cat (2, sprintf ("%s_", VARNAMES{I-1}), num2str (v));
       endfor
     endfor
   endif
