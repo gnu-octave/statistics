@@ -3,6 +3,8 @@ Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 Adapted from MATLAB libsvmwrite.c file from the LIBSVM 3.25 (2021) library
 by Chih-Chung Chang and Chih-Jen Lin.
 
+This file is part of the statistics package for GNU Octave.
+
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
 Foundation; either version 3 of the License, or (at your option) any later
@@ -118,7 +120,7 @@ void read(string filename, ColumnVector &label_vec, SparseMatrix &instance_mat)
 		l++;
 	}
 	rewind(fp);
-  
+
 	// y
   label_vec = ColumnVector(l, 1);
 	// x^T
@@ -188,7 +190,7 @@ void read(string filename, ColumnVector &label_vec, SparseMatrix &instance_mat)
 
 	fclose(fp);
 	free(line);
-  
+
   // transpose instance sparse matrix in row format
   instance_mat.transpose();
 }

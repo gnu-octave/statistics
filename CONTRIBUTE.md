@@ -91,6 +91,7 @@ Please, add BISTs, they help a lot with the maintenance :wink::innocent: of the 
 #### 4. Coding style
 
 The coding style of GNU Octave should be used. In general, limit the lines at 80 characters long.
+- Use `LF` (unix) for end of lines, and NOT `CRLF` (windows).
 - Use `##` for comments. Don't use `%` or `%%` as in Matlab.
 - Use `!` instead of `~` for logical NOT.
 ```
