@@ -46,11 +46,11 @@
 ## interaction
 ##
 ## @item
-## "linear" (default) : compute both main effects without an interaction (e.g.
+## "linear" (default): compute both main effects without an interaction (e.g.
 ## balanced randomized block design).
 ##
 ## @item
-## "nested" : treat the row factor as nested within columns. Note that the row
+## "nested": treat the row factor as nested within columns. Note that the row
 ## factor is considered a random factor in the calculation of the statistics.
 ##
 ## @end itemize
