@@ -18,7 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn {Function File} @var{p} = anova2 (@var{x}, @var{reps})
 ## @deftypefnx {Function File} @var{p} = anova2 (@var{x}, @var{reps}, @var{displayopt})
-## @deftypefnx {Function File} @var{p} = anova2 (@var{x}, @var{reps}, @var{displayopt}, @var{nested})
+## @deftypefnx {Function File} @var{p} = anova2 (@var{x}, @var{reps}, @var{displayopt}, @var{model})
 ## @deftypefnx {Function File} [@var{p}, @var{atab}] = anova2 (@dots{})
 ## @deftypefnx {Function File} [@var{p}, @var{atab}, @var{stats}] = anova2 (@dots{})
 ##
@@ -37,10 +37,21 @@
 ## @var{displayopt} is an optional parameter for displaying the ANOVA table,
 ## when it is 'on' (default) and suppressing the display when it is 'off'.
 ## @item
-## @var{nested} is an optional logical scalar (true or false) to specify whether
-## to treat the row factor as nested within columns. Note that the row factor is
-## considered a random factor in the calculation of the statistics. By default,
-## @var{nested} is false.
+## @var{model} is an optional parameter to specify the model type as either:
+## 
+## @itemize
+## @item
+## "interaction" or "full" (default): compute both main effects and their
+## interaction
+##
+## @item
+## "linear" (default) : compute both main effects without an interaction (e.g.
+## balanced randomized block design).
+##
+## @item
+## "nested" : treat the row factor as nested within columns. Note that the row
+## factor is considered a random factor in the calculation of the statistics.
+##
 ## @end itemize
 ##
 ## @qcode{anova2} returns up to three output arguments:
@@ -74,7 +85,7 @@
 ##
 ## @end deftypefn
 
-function [p, anovatab, stats] = anova2 (x, reps, displayopt, nested)
+function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
 
   ## Check for valid number of input arguments
   narginchk (1, 4);
@@ -90,7 +101,7 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, nested)
     displayopt = 'on';
   endif
   if (nargin < 4)
-    nested = false;
+    model = "interaction";
   endif
   plotdata = ~(strcmp (displayopt, 'off'));
 
@@ -158,40 +169,69 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, nested)
   endif
   df_tot = GTsz - 1;                ## Total
 
-  ## Pool Row Factor and Interaction terms if Row Factor is nested within the  
-  ## Column Factor. This calculation is based on the equalities for partitioning 
-  ## variance in fully balanced crossed and fully balanced nested designs.
-  if nested
-    SSR += SSI;
-    df_SSR += df_SSI;
-    SSI = 0;
-    df_SSI = 0;
-    reps = 1;                     ## Set reps to 1 to avoid printing interaction
-  endif
+  ## Model-specific calculations of sums-of-squares, mean squares and degrees of 
+  ## freedom. The calculations are based on equalities for the partitioning of
+  ## variance in fully balanced designs.
+  switch (lower (model))
+    case {"interaction","full"}
+      ## TWO-WAY ANOVA WITH INTERACTION (full factorial model)
+      ## Sums--of-squares are already partitioned into main effects and
+      ## interaction. Just calculate mean-squares and degrees of fredom
+      model = "interaction";
+      MSE = SSE / df_SSE;           ## Mean Square for Error (Within)
+      MSR = SSR / df_SSR;           ## Mean Square for Row Factor
+      MS_DENOM = MSE;
+      df_DENOM = df_SSE;
+    case "linear"
+      ## TWO-WAY ANOVA WITHOUT INTERACTION (additive, linear model)
+      ## Pool Error and Interaction term
+      model = "linear";
+      SSE += SSI;
+      df_SSE += df_SSI;
+      SSI = 0;
+      df_SSI = 0;
+      reps = 1;                   ## Set reps to 1 to avoid printing interaction
+      MSE = SSE / df_SSE;         ## Mean Square for Error (Within)
+      MSR = SSR / df_SSR;         ## Mean Square for Row Factor
+      MS_DENOM = MSE;
+      df_DENOM = df_SSE;
+    case "nested"
+      ## NESTED ANOVA
+      ## Row Factor is nested within Column Factor. Treat Row factor as random.
+      ## Pool Row Factor and Interaction term
+      model = "nested";
+      SSR += SSI;
+      df_SSR += df_SSI;
+      SSI = 0;
+      df_SSI = 0;
+      reps = 1;                   ## Set reps to 1 to avoid printing interaction
+      MSE = SSE / df_SSE;         ## Mean Square for Error (Within)
+      MSR = SSR / df_SSR;         ## Mean Square for Row Factor
+      MS_DENOM = MSR;             ## Row factor is random so MSR is denominator
+      df_DENOM = df_SSR;          ## Row factor is random so df_SSR is denominator
+    otherwise
+      error ("model type not recognised");
+  endswitch
 
-  ## Calculate Mean Squares, F statistics, and p values
-    MSE = SSE / df_SSE;           ## Mean Square for Error (Within)
-    MSR = SSR / df_SSR;           ## Mean Square for Row Factor
-    F_MSR = MSR / MSE;            ## F statistic for Row Factor
-    p_MSR = 1 - fcdf (F_MSR, df_SSR, df_SSE);
-    MSC = SSC / df_SSC;           ## Mean Square for Column Factor
-    if nested
-      F_MSC = MSC / MSR;          ## F statistic for Column Factor (Row is random)
-      p_MSC = 1 - fcdf (F_MSC, df_SSC, df_SSR);
-    else
-      F_MSC = MSC / MSE;          ## F statistic for Column Factor
-      p_MSC = 1 - fcdf (F_MSC, df_SSC, df_SSE);
-    endif
-    ## With replication
-    if (reps > 1)
-      MSI = SSI / df_SSI;         ## Mean Square for Interaction
-      F_MSI = MSI / MSE;          ## F statistic for Interaction
-      p_MSI = 1 - fcdf (F_MSI, df_SSI, df_SSE);
-    else
-      MSI = 0;
-      F_MSI = 0;
-      p_MSI = NaN;
-    endif
+  ## Calculate F statistics and p values
+  MSE = SSE / df_SSE;           ## Mean Square for Error (Within)
+  MSR = SSR / df_SSR;           ## Mean Square for Row Factor
+  F_MSR = MSR / MSE;            ## F statistic for Row Factor
+  p_MSR = 1 - fcdf (F_MSR, df_SSR, df_SSE);
+  MSC = SSC / df_SSC;           ## Mean Square for Column Factor
+  F_MSC = MSC / MS_DENOM;          ## F statistic for Column Factor
+  p_MSC = 1 - fcdf (F_MSC, df_SSC, df_DENOM);
+
+  ## With replication
+  if (reps > 1)
+    MSI = SSI / df_SSI;         ## Mean Square for Interaction
+    F_MSI = MSI / MSE;          ## F statistic for Interaction
+    p_MSI = 1 - fcdf (F_MSI, df_SSI, df_SSE);
+  else
+    MSI = 0;
+    F_MSI = 0;
+    p_MSI = NaN;                
+  endif
 
   ## Create p output (if requested)
   if (nargout > 0)
@@ -229,7 +269,7 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, nested)
     stats.inter = (reps > 1);
     stats.pval = p_MSI;
     stats.df = df_SSE;
-    stats.nested = nested;
+    stats.model = model;
   endif
 
   ## Print results table on screen if no output argument was requested
@@ -271,7 +311,7 @@ endfunction
 %!         5.1873 12.4188 16.5927; 3.3579 14.3951 10.2129; ...
 %!         6.3092 8.5986 9.8934; 3.2831 3.4945 10.0203];
 %!
-%! [p, atab, stats] = anova2 (data,4,"on",true);
+%! [p, atab, stats] = anova2 (data,4,"on","nested");
 
 
 ## testing against popcorn data and results from Matlab
@@ -302,7 +342,7 @@ endfunction
 %!         6.1605 13.1147 22.66; 2.3374 15.2654 24.1283; ...
 %!         5.1873 12.4188 16.5927; 3.3579 14.3951 10.2129; ...
 %!         6.3092 8.5986 9.8934; 3.2831 3.4945 10.0203];
-%! [p, atab, stats] = anova2 (data,4,"off",true);
+%! [p, atab, stats] = anova2 (data,4,"off","nested");
 %! assert (atab{2,2}, 745.360306290833, 1e-10);
 %! assert (atab{3,2}, 278.01854140125, 1e-10);
 %! assert (atab{4,2}, 180.180377467501, 1e-10);
