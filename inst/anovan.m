@@ -774,8 +774,8 @@ endfunction
 %!
 %! strength = [82 86 79 83 84 85 86 87 74 82 ...
 %!            78 75 76 77 79 79 77 78 82 79]';
-%! alloy = {"st","st","st","st","st","st","st","st",...
-%!          "al1","al1","al1","al1","al1","al1",...
+%! alloy = {"st","st","st","st","st","st","st","st", ...
+%!          "al1","al1","al1","al1","al1","al1", ...
 %!          "al2","al2","al2","al2","al2","al2"}';
 %!
 %! [P, T] = anovan (strength, alloy, "display", "on", "varnames", "alloy");
@@ -816,7 +816,7 @@ endfunction
 %! popper = {"oil", "oil", "oil"; "oil", "oil", "oil"; "oil", "oil", "oil"; ...
 %!           "air", "air", "air"; "air", "air", "air"; "air", "air", "air"};
 %!
-%! [P, T] = anovan (popcorn(:), {brands(:), popper(:)}, "display", "on",...
+%! [P, T] = anovan (popcorn(:), {brands(:), popper(:)}, "display", "on", ...
 %!                  "model", "full", "varnames", {"brands", "popper"});
 
 %!demo
@@ -848,7 +848,7 @@ endfunction
 %! babble = [4.6 4.4 3.9 5.6 5.1 5.5 3.9 3.5 3.7...
 %!           5.6 4.7 5.9 6.0 5.4 6.6 5.8 5.3 5.7]';
 %!
-%! [P, T] = anovan (babble, {sugar, milk}, "model", "full", "sstype", 3,...
+%! [P, T] = anovan (babble, {sugar, milk}, "model", "full", "sstype", 3, ...
 %!                 "display", "on", "varnames", {"sugar", "milk"});
 
 %!demo
@@ -894,7 +894,7 @@ endfunction
 %! measurement = [444 614 423 625 408  856 447 719 ...
 %!                764 831 586 782 609 1002 606 766]';
 %! block = [1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2]';
-%! strain= {"NIH","NIH","BALB/C","BALB/C","A/J","A/J","129/Ola","129/Ola",...
+%! strain= {"NIH","NIH","BALB/C","BALB/C","A/J","A/J","129/Ola","129/Ola", ...
 %!          "NIH","NIH","BALB/C","BALB/C","A/J","A/J","129/Ola","129/Ola"}';
 %! treatment={"C" "T" "C" "T" "C" "T" "C" "T" "C" "T" "C" "T" "C" "T" "C" "T"}';
 %!
@@ -988,10 +988,10 @@ endfunction
 %!           'female' 'female' 'female'}';
 %!
 %! [P, T, STATS] = anovan (score,gender,'display','off');
-%! assert (P(1), 0.2612876773271042,  1e-09);              # compared to p calculated by MATLAB anovan
-%! assert (sqrt(T{2,6}), abs(1.198608733288208),  1e-09);  # compared to abs(t) calculated from sqrt(F) by MATLAB anovan
-%! assert (P(1), 0.2612876773271047,  1e-09);              # compared to p calculated by MATLAB ttest2
-%! assert (sqrt(T{2,6}), abs(-1.198608733288208),  1e-09); # compared to abs(t) calculated by MATLAB ttest2
+%! assert (P(1), 0.2612876773271042, 1e-09);              # compared to p calculated by MATLAB anovan
+%! assert (sqrt(T{2,6}), abs(1.198608733288208), 1e-09);  # compared to abs(t) calculated from sqrt(F) by MATLAB anovan
+%! assert (P(1), 0.2612876773271047, 1e-09);              # compared to p calculated by MATLAB ttest2
+%! assert (sqrt(T{2,6}), abs(-1.198608733288208), 1e-09); # compared to abs(t) calculated by MATLAB ttest2
 
 ## Test 2 for anovan example 2
 ## Test compares anovan to results from MATLAB's anovan and ttest functions
@@ -1002,23 +1002,23 @@ endfunction
 %! subject = {'GS' 'GS'; 'JM' 'JM'; 'HM' 'HM'; 'JW' 'JW'; 'PS' 'PS'}';
 %!
 %! [P, T, STATS] = anovan (score(:),{treatment(:),subject(:)},'display','off','sstype',2);
-%! assert (P(1), 0.016004356735364,  1e-09);              # compared to p calculated by MATLAB anovan
-%! assert (sqrt(T{2,6}), abs(4.00941576558195),  1e-09);  # compared to abs(t) calculated from sqrt(F) by MATLAB anovan
-%! assert (P(1), 0.016004356735364,  1e-09);              # compared to p calculated by MATLAB ttest2
-%! assert (sqrt(T{2,6}), abs(-4.00941576558195),  1e-09); # compared to abs(t) calculated by MATLAB ttest2
+%! assert (P(1), 0.016004356735364, 1e-09);              # compared to p calculated by MATLAB anovan
+%! assert (sqrt(T{2,6}), abs(4.00941576558195), 1e-09);  # compared to abs(t) calculated from sqrt(F) by MATLAB anovan
+%! assert (P(1), 0.016004356735364, 1e-09);              # compared to p calculated by MATLAB ttest2
+%! assert (sqrt(T{2,6}), abs(-4.00941576558195), 1e-09); # compared to abs(t) calculated by MATLAB ttest2
 
 ## Test 3 for anovan example 3
 ## Test compares anovan to results from MATLAB's anovan and anova1 functions
 %!test
 %! strength = [82 86 79 83 84 85 86 87 74 82 ...
 %!            78 75 76 77 79 79 77 78 82 79]';
-%! alloy = {'st','st','st','st','st','st','st','st',...
-%!          'al1','al1','al1','al1','al1','al1',...
+%! alloy = {'st','st','st','st','st','st','st','st', ...
+%!          'al1','al1','al1','al1','al1','al1', ...
 %!          'al2','al2','al2','al2','al2','al2'}';
 %!
 %! [P, T, STATS] = anovan (strength,{alloy},'display','off');
-%! assert (P(1), 0.000152643638830491,  1e-09);
-%! assert (T{2,6}, 15.4,  1e-09);
+%! assert (P(1), 0.000152643638830491, 1e-09);
+%! assert (T{2,6}, 15.4, 1e-09);
 
 ## Test 4 for anovan example 4
 ## Test compares anovan to results from MATLAB's anovan function
@@ -1030,11 +1030,11 @@ endfunction
 %! seconds = [1 2 5; 1 2 5; 1 2 5; 1 2 5; 1 2 5; ...
 %!            1 2 5; 1 2 5; 1 2 5; 1 2 5; 1 2 5;];
 %! [P, T, STATS] = anovan (words(:),{seconds(:),subject(:)},'model','full','random',2,'sstype',2,'display','off');
-%! assert (P(1), 1.51865926758752e-07,  1e-09);
-%! assert (P(2), 1.49150337808586e-15,  1e-09);
-%! assert (T{2,2}, 52.2666666666667,  1e-09);
-%! assert (T{3,2}, 942.533333333333,  1e-09);
-%! assert (T{4,2}, 11.0666666666667,  1e-09);
+%! assert (P(1), 1.51865926758752e-07, 1e-09);
+%! assert (P(2), 1.49150337808586e-15, 1e-09);
+%! assert (T{2,2}, 52.2666666666667, 1e-09);
+%! assert (T{3,2}, 942.533333333333, 1e-09);
+%! assert (T{4,2}, 11.0666666666667, 1e-09);
 
 ## Test 5 for anovan example 5
 ## Test compares anovan to results from MATLAB's anovan function
@@ -1051,12 +1051,12 @@ endfunction
 %!           'air', 'air', 'air'; 'air', 'air', 'air'; 'air', 'air', 'air'};
 %!
 %! [P, T, STATS] = anovan (popcorn(:),{brands(:),popper(:)},'display','off','model','full');
-%! assert (P(1), 7.67895738278171e-07,  1e-09);
-%! assert (P(2), 0.000100373896304998,  1e-09);
-%! assert (P(3), 0.746215396636649,  1e-09);
-%! assert (T{2,6}, 56.7,  1e-09);
-%! assert (T{3,6}, 32.4,  1e-09);
-%! assert (T{4,6}, 0.29999999999997,  1e-09);
+%! assert (P(1), 7.67895738278171e-07, 1e-09);
+%! assert (P(2), 0.000100373896304998, 1e-09);
+%! assert (P(3), 0.746215396636649, 1e-09);
+%! assert (T{2,6}, 56.7, 1e-09);
+%! assert (T{3,6}, 32.4, 1e-09);
+%! assert (T{4,6}, 0.29999999999997, 1e-09);
 
 ## Test 6 for anovan example 6
 ## Test compares anovan to results from MATLAB's anovan function
@@ -1067,37 +1067,37 @@ endfunction
 %!           'm' 'm' 'm' 'm' 'm' 'm' 'm' 'm' 'm' 'm'}';
 %! degree = [1 1 1 1 1 1 1 1 0 0 0 0 1 1 1 0 0 0 0 0 0 0]';
 %! [P, T, STATS] = anovan (salary,{gender,degree},'model','full','sstype',1,'display','off');
-%! assert (P(1), 0.747462549227232,  1e-09);
-%! assert (P(2), 1.03809316857694e-08,  1e-09);
-%! assert (P(3), 0.523689833702691,  1e-09);
-%! assert (T{2,2}, 0.296969696969699,  1e-09);
-%! assert (T{3,2}, 272.391841491841,  1e-09);
-%! assert (T{4,2}, 1.17482517482512,  1e-09);
-%! assert (T{5,2}, 50.0000000000001,  1e-09);
+%! assert (P(1), 0.747462549227232, 1e-09);
+%! assert (P(2), 1.03809316857694e-08, 1e-09);
+%! assert (P(3), 0.523689833702691, 1e-09);
+%! assert (T{2,2}, 0.296969696969699, 1e-09);
+%! assert (T{3,2}, 272.391841491841, 1e-09);
+%! assert (T{4,2}, 1.17482517482512, 1e-09);
+%! assert (T{5,2}, 50.0000000000001, 1e-09);
 %! [P, T, STATS] = anovan (salary,{degree,gender},'model','full','sstype',1,'display','off');
-%! assert (P(1), 2.53445097305047e-08,  1e-09);
-%! assert (P(2), 0.00388133678528749,  1e-09);
-%! assert (P(3), 0.523689833702671,  1e-09);
-%! assert (T{2,2}, 242.227272727273,  1e-09);
-%! assert (T{3,2}, 30.4615384615384,  1e-09);
-%! assert (T{4,2}, 1.17482517482523,  1e-09);
-%! assert (T{5,2}, 50.0000000000001,  1e-09);
+%! assert (P(1), 2.53445097305047e-08, 1e-09);
+%! assert (P(2), 0.00388133678528749, 1e-09);
+%! assert (P(3), 0.523689833702671, 1e-09);
+%! assert (T{2,2}, 242.227272727273, 1e-09);
+%! assert (T{3,2}, 30.4615384615384, 1e-09);
+%! assert (T{4,2}, 1.17482517482523, 1e-09);
+%! assert (T{5,2}, 50.0000000000001, 1e-09);
 %! [P, T, STATS] = anovan (salary,{gender,degree},'model','full','sstype',2,'display','off');
-%! assert (P(1), 0.00388133678528743,  1e-09);
-%! assert (P(2), 1.03809316857694e-08,  1e-09);
-%! assert (P(3), 0.523689833702691,  1e-09);
-%! assert (T{2,2}, 30.4615384615385,  1e-09);
-%! assert (T{3,2}, 272.391841491841,  1e-09);
-%! assert (T{4,2}, 1.17482517482512,  1e-09);
-%! assert (T{5,2}, 50.0000000000001,  1e-09);
+%! assert (P(1), 0.00388133678528743, 1e-09);
+%! assert (P(2), 1.03809316857694e-08, 1e-09);
+%! assert (P(3), 0.523689833702691, 1e-09);
+%! assert (T{2,2}, 30.4615384615385, 1e-09);
+%! assert (T{3,2}, 272.391841491841, 1e-09);
+%! assert (T{4,2}, 1.17482517482512, 1e-09);
+%! assert (T{5,2}, 50.0000000000001, 1e-09);
 %! [P, T, STATS] = anovan (salary,{gender,degree},'model','full','sstype',3,'display','off');
-%! assert (P(1), 0.00442898146583742,  1e-09);
-%! assert (P(2), 1.30634252053587e-08,  1e-09);
-%! assert (P(3), 0.523689833702691,  1e-09);
-%! assert (T{2,2}, 29.3706293706294,  1e-09);
-%! assert (T{3,2}, 264.335664335664,  1e-09);
-%! assert (T{4,2}, 1.17482517482512,  1e-09);
-%! assert (T{5,2}, 50.0000000000001,  1e-09);
+%! assert (P(1), 0.00442898146583742, 1e-09);
+%! assert (P(2), 1.30634252053587e-08, 1e-09);
+%! assert (P(3), 0.523689833702691, 1e-09);
+%! assert (T{2,2}, 29.3706293706294, 1e-09);
+%! assert (T{3,2}, 264.335664335664, 1e-09);
+%! assert (T{4,2}, 1.17482517482512, 1e-09);
+%! assert (T{5,2}, 50.0000000000001, 1e-09);
 
 ## Test 7 for anovan example 7
 ## Test compares anovan to results from MATLAB's anovan function
@@ -1109,37 +1109,37 @@ endfunction
 %! babble = [4.6 4.4 3.9 5.6 5.1 5.5 3.9 3.5 3.7...
 %!           5.6 4.7 5.9 6.0 5.4 6.6 5.8 5.3 5.7]';
 %! [P, T, STATS] = anovan (babble,{sugar,milk},'model','full','sstype',1,'display','off');
-%! assert (P(1), 0.0108632139833963,  1e-09);
-%! assert (P(2), 0.0810606976703546,  1e-09);
-%! assert (P(3), 0.00175433329935627,  1e-09);
-%! assert (T{2,2}, 3.55752380952381,  1e-09);
-%! assert (T{3,2}, 0.956108477471702,  1e-09);
-%! assert (T{4,2}, 5.94386771300448,  1e-09);
-%! assert (T{5,2}, 3.1625,  1e-09);
+%! assert (P(1), 0.0108632139833963, 1e-09);
+%! assert (P(2), 0.0810606976703546, 1e-09);
+%! assert (P(3), 0.00175433329935627, 1e-09);
+%! assert (T{2,2}, 3.55752380952381, 1e-09);
+%! assert (T{3,2}, 0.956108477471702, 1e-09);
+%! assert (T{4,2}, 5.94386771300448, 1e-09);
+%! assert (T{5,2}, 3.1625, 1e-09);
 %! [P, T, STATS] = anovan (babble,{milk,sugar},'model','full','sstype',1,'display','off');
-%! assert (P(1), 0.0373333189297505,  1e-09);
-%! assert (P(2), 0.017075098787169,  1e-09);
-%! assert (P(3), 0.00175433329935627,  1e-09);
-%! assert (T{2,2}, 1.444,  1e-09);
-%! assert (T{3,2}, 3.06963228699552,  1e-09);
-%! assert (T{4,2}, 5.94386771300448,  1e-09);
-%! assert (T{5,2}, 3.1625,  1e-09);
+%! assert (P(1), 0.0373333189297505, 1e-09);
+%! assert (P(2), 0.017075098787169, 1e-09);
+%! assert (P(3), 0.00175433329935627, 1e-09);
+%! assert (T{2,2}, 1.444, 1e-09);
+%! assert (T{3,2}, 3.06963228699552, 1e-09);
+%! assert (T{4,2}, 5.94386771300448, 1e-09);
+%! assert (T{5,2}, 3.1625, 1e-09);
 %! [P, T, STATS] = anovan (babble,{sugar,milk},'model','full','sstype',2,'display','off');
-%! assert (P(1), 0.017075098787169,  1e-09);
-%! assert (P(2), 0.0810606976703546,  1e-09);
-%! assert (P(3), 0.00175433329935627,  1e-09);
-%! assert (T{2,2}, 3.06963228699552,  1e-09);
-%! assert (T{3,2}, 0.956108477471702,  1e-09);
-%! assert (T{4,2}, 5.94386771300448,  1e-09);
+%! assert (P(1), 0.017075098787169, 1e-09);
+%! assert (P(2), 0.0810606976703546, 1e-09);
+%! assert (P(3), 0.00175433329935627, 1e-09);
+%! assert (T{2,2}, 3.06963228699552, 1e-09);
+%! assert (T{3,2}, 0.956108477471702, 1e-09);
+%! assert (T{4,2}, 5.94386771300448, 1e-09);
 %! assert (T{5,2}, 3.1625,  1e-09);
 %! [P, T, STATS] = anovan (babble,{sugar,milk},'model','full','sstype',3,'display','off');
-%! assert (P(1), 0.0454263063473954,  1e-09);
-%! assert (P(2), 0.0746719907091438,  1e-09);
-%! assert (P(3), 0.00175433329935627,  1e-09);
-%! assert (T{2,2}, 2.13184977578476,  1e-09);
-%! assert (T{3,2}, 1.00413461538462,  1e-09);
-%! assert (T{4,2}, 5.94386771300448,  1e-09);
-%! assert (T{5,2}, 3.1625,  1e-09);
+%! assert (P(1), 0.0454263063473954, 1e-09);
+%! assert (P(2), 0.0746719907091438, 1e-09);
+%! assert (P(3), 0.00175433329935627, 1e-09);
+%! assert (T{2,2}, 2.13184977578476, 1e-09);
+%! assert (T{3,2}, 1.00413461538462, 1e-09);
+%! assert (T{4,2}, 5.94386771300448, 1e-09);
+%! assert (T{5,2}, 3.1625, 1e-09);
 
 ## Test 8 for anovan example 8
 ## Test compares anovan to results from MATLAB's anovan function
@@ -1163,53 +1163,53 @@ endfunction
 %!       180 187 199 170 204 194 162 184 183 156 180 173 ...
 %!       202 228 190 206 224 204 205 199 170 160 NaN NaN];
 %! [P, T, STATS] = anovan (BP(:),{drug(:),feedback(:),diet(:)},'model','full','sstype', 1,'display','off');
-%! assert (P(1), 7.02561843825325e-05,  1e-09);
-%! assert (P(2), 0.000425806013389362,  1e-09);
-%! assert (P(3), 6.16780773446401e-07,  1e-09);
-%! assert (P(4), 0.261347622678438,  1e-09);
-%! assert (P(5), 0.0542278432357043,  1e-09);
-%! assert (P(6), 0.590353225626655,  1e-09);
-%! assert (P(7), 0.0861628249564267,  1e-09);
-%! assert (T{2,2}, 3614.70355731226,  1e-09);
-%! assert (T{3,2}, 2227.46639771024,  1e-09);
-%! assert (T{4,2}, 5008.25614451819,  1e-09);
-%! assert (T{5,2}, 437.066007908781,  1e-09);
-%! assert (T{6,2}, 976.180770397332,  1e-09);
-%! assert (T{7,2}, 46.616653365254,  1e-09);
-%! assert (T{8,2}, 814.345251396648,  1e-09);
+%! assert (P(1), 7.02561843825325e-05, 1e-09);
+%! assert (P(2), 0.000425806013389362, 1e-09);
+%! assert (P(3), 6.16780773446401e-07, 1e-09);
+%! assert (P(4), 0.261347622678438, 1e-09);
+%! assert (P(5), 0.0542278432357043, 1e-09);
+%! assert (P(6), 0.590353225626655, 1e-09);
+%! assert (P(7), 0.0861628249564267, 1e-09);
+%! assert (T{2,2}, 3614.70355731226, 1e-09);
+%! assert (T{3,2}, 2227.46639771024, 1e-09);
+%! assert (T{4,2}, 5008.25614451819, 1e-09);
+%! assert (T{5,2}, 437.066007908781, 1e-09);
+%! assert (T{6,2}, 976.180770397332, 1e-09);
+%! assert (T{7,2}, 46.616653365254, 1e-09);
+%! assert (T{8,2}, 814.345251396648, 1e-09);
 %! assert (T{9,2}, 9065.8,  1e-09);
 %! [P, T, STATS] = anovan (BP(:),{drug(:),feedback(:),diet(:)},'model','full','sstype',2,'display','off');
-%! assert (P(1), 9.4879638470754e-05,  1e-09);
-%! assert (P(2), 0.00124177666315809,  1e-09);
-%! assert (P(3), 6.86162012732911e-07,  1e-09);
-%! assert (P(4), 0.260856132341256,  1e-09);
-%! assert (P(5), 0.0523758623892078,  1e-09);
-%! assert (P(6), 0.590353225626655,  1e-09);
-%! assert (P(7), 0.0861628249564267,  1e-09);
-%! assert (T{2,2}, 3481.72176560122,  1e-09);
-%! assert (T{3,2}, 1837.08812970469,  1e-09);
-%! assert (T{4,2}, 4957.20277938622,  1e-09);
-%! assert (T{5,2}, 437.693674777847,  1e-09);
-%! assert (T{6,2}, 988.431929811402,  1e-09);
-%! assert (T{7,2}, 46.616653365254,  1e-09);
-%! assert (T{8,2}, 814.345251396648,  1e-09);
+%! assert (P(1), 9.4879638470754e-05, 1e-09);
+%! assert (P(2), 0.00124177666315809, 1e-09);
+%! assert (P(3), 6.86162012732911e-07, 1e-09);
+%! assert (P(4), 0.260856132341256, 1e-09);
+%! assert (P(5), 0.0523758623892078, 1e-09);
+%! assert (P(6), 0.590353225626655, 1e-09);
+%! assert (P(7), 0.0861628249564267, 1e-09);
+%! assert (T{2,2}, 3481.72176560122, 1e-09);
+%! assert (T{3,2}, 1837.08812970469, 1e-09);
+%! assert (T{4,2}, 4957.20277938622, 1e-09);
+%! assert (T{5,2}, 437.693674777847, 1e-09);
+%! assert (T{6,2}, 988.431929811402, 1e-09);
+%! assert (T{7,2}, 46.616653365254, 1e-09);
+%! assert (T{8,2}, 814.345251396648, 1e-09);
 %! assert (T{9,2}, 9065.8,  1e-09);
 %! [P, T, STATS] = anovan (BP(:),{drug(:),feedback(:),diet(:)},'model','full','sstype', 3,'display','off');
-%! assert (P(1), 0.000106518678028207,  1e-09);
-%! assert (P(2), 0.00125371366571508,  1e-09);
-%! assert (P(3), 5.30813260778464e-07,  1e-09);
-%! assert (P(4), 0.308353667232981,  1e-09);
-%! assert (P(5), 0.0562901327343161,  1e-09);
-%! assert (P(6), 0.599091042141092,  1e-09);
-%! assert (P(7), 0.0861628249564267,  1e-09);
-%! assert (T{2,2}, 3430.88156424581,  1e-09);
-%! assert (T{3,2}, 1833.68031496063,  1e-09);
-%! assert (T{4,2}, 5080.48346456693,  1e-09);
-%! assert (T{5,2}, 382.07709497207,  1e-09);
-%! assert (T{6,2}, 963.037988826813,  1e-09);
-%! assert (T{7,2}, 44.4519685039322,  1e-09);
-%! assert (T{8,2}, 814.345251396648,  1e-09);
-%! assert (T{9,2}, 9065.8,  1e-09);
+%! assert (P(1), 0.000106518678028207, 1e-09);
+%! assert (P(2), 0.00125371366571508, 1e-09);
+%! assert (P(3), 5.30813260778464e-07, 1e-09);
+%! assert (P(4), 0.308353667232981, 1e-09);
+%! assert (P(5), 0.0562901327343161, 1e-09);
+%! assert (P(6), 0.599091042141092, 1e-09);
+%! assert (P(7), 0.0861628249564267, 1e-09);
+%! assert (T{2,2}, 3430.88156424581, 1e-09);
+%! assert (T{3,2}, 1833.68031496063, 1e-09);
+%! assert (T{4,2}, 5080.48346456693, 1e-09);
+%! assert (T{5,2}, 382.07709497207, 1e-09);
+%! assert (T{6,2}, 963.037988826813, 1e-09);
+%! assert (T{7,2}, 44.4519685039322, 1e-09);
+%! assert (T{8,2}, 814.345251396648, 1e-09);
+%! assert (T{9,2}, 9065.8, 1e-09);
 
 ## Test 9 for anovan example 9
 ## Test compares anovan to results from MATLAB's anovan function
@@ -1217,19 +1217,19 @@ endfunction
 %! measurement = [444 614 423 625 408  856 447 719 ...
 %!                764 831 586 782 609 1002 606 766]';
 %! block = [1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2]';
-%! strain= {'NIH','NIH','BALB/C','BALB/C','A/J','A/J','129/Ola','129/Ola',...
+%! strain= {'NIH','NIH','BALB/C','BALB/C','A/J','A/J','129/Ola','129/Ola', ...
 %!          'NIH','NIH','BALB/C','BALB/C','A/J','A/J','129/Ola','129/Ola'}';
 %! treatment={'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T'}';
 %! [P, T, STATS] = anovan (measurement/10,{block,strain,treatment},'model','full','random',1,'display','off');
-%! assert (P(1), 0.000339814602130731,  1e-09);
-%! assert (P(2), 0.0914352969909372,  1e-09);
-%! assert (P(3), 5.04077373924908e-05,  1e-09);
-%! assert (P(4), 0.0283196918836667,  1e-09);
-%! assert (T{2,2}, 1242.5625,  1e-09);
-%! assert (T{3,2}, 286.132500000002,  1e-09);
-%! assert (T{4,2}, 2275.29,  1e-09);
-%! assert (T{5,2}, 495.905000000001,  1e-09);
-%! assert (T{6,2}, 207.007499999999,  1e-09);
+%! assert (P(1), 0.000339814602130731, 1e-09);
+%! assert (P(2), 0.0914352969909372, 1e-09);
+%! assert (P(3), 5.04077373924908e-05, 1e-09);
+%! assert (P(4), 0.0283196918836667, 1e-09);
+%! assert (T{2,2}, 1242.5625, 1e-09);
+%! assert (T{3,2}, 286.132500000002, 1e-09);
+%! assert (T{4,2}, 2275.29, 1e-09);
+%! assert (T{5,2}, 495.905000000001, 1e-09);
+%! assert (T{6,2}, 207.007499999999, 1e-09);
 
 ## Test 10 for anovan example 10
 ## Test compares anovan to results from MATLAB's anovan function
@@ -1244,13 +1244,13 @@ endfunction
 %!            'ex' 'ex' 'ex' 'niv' 'niv' 'niv' 'niv' 'niv' 'niv' 'niv' ...
 %!            'niv' 'niv' 'niv' 'niv' 'niv' 'niv' 'niv' 'niv' 'niv' 'niv'};
 %! [P, T, STATS] = anovan (pulse,{species,temp},'model','linear','continuous',2,'sstype','h','display','off');
-%! assert (P(1), 6.27153318786007e-14,  1e-09);
-%! assert (P(2), 2.48773241196644e-25,  1e-09);
-%! assert (T{2,2}, 598.003953318404,  1e-09);
-%! assert (T{3,2}, 4376.08256843712,  1e-09);
-%! assert (T{4,2}, 89.3498685376726,  1e-09);
-%! assert (T{2,6}, 187.399388123951,  1e-09);
-%! assert (T{3,6}, 1371.35413763454,  1e-09);
+%! assert (P(1), 6.27153318786007e-14, 1e-09);
+%! assert (P(2), 2.48773241196644e-25, 1e-09);
+%! assert (T{2,2}, 598.003953318404, 1e-09);
+%! assert (T{3,2}, 4376.08256843712, 1e-09);
+%! assert (T{4,2}, 89.3498685376726, 1e-09);
+%! assert (T{2,6}, 187.399388123951, 1e-09);
+%! assert (T{3,6}, 1371.35413763454, 1e-09);
 
 ## Test 11 for anovan example 11
 ## Test compares anovan to results from MATLAB's anovan function
@@ -1277,18 +1277,18 @@ endfunction
 %!        58 56 57 59 59 60 55 53 55 58 68 62 61 54 59 63 60 67 60 67 ...
 %!        75 54 57 62 65 60 58 61 65 57 56 58 58 58 52 53 60 62 61 61]';
 %! [P, T, STATS] = anovan (score,{treatment,exercise,age},'model','full','continuous',3,'sstype','h','display','off');
-%! assert (P(5), 0.9245630968248468,  1e-09);
-%! assert (P(6), 0.791115159521822,  1e-09);
-%! assert (P(7), 0.9296668751457956,  1e-09);
+%! assert (P(5), 0.9245630968248468, 1e-09);
+%! assert (P(6), 0.791115159521822, 1e-09);
+%! assert (P(7), 0.9296668751457956, 1e-09);
 %! [P, T, STATS] = anovan (score,{treatment,exercise,age},'model',[1 0 0; 0 1 0; 0 0 1; 1 1 0],'continuous',3,'sstype','h','display','off');
-%! assert (P(1), 0.00158132928938933,  1e-09);
-%! assert (P(2), 2.12537505039986e-07,  1e-09);
-%! assert (P(3), 0.00390292555160047,  1e-09);
-%! assert (P(4), 0.0164086580775543,  1e-09);
-%! assert (T{2,6}, 11.0956027650549,  1e-09);
-%! assert (T{3,6}, 20.8195665467178,  1e-09);
-%! assert (T{4,6}, 9.10966630720186,  1e-09);
-%! assert (T{5,6}, 4.4457923698584,  1e-09);
+%! assert (P(1), 0.00158132928938933, 1e-09);
+%! assert (P(2), 2.12537505039986e-07, 1e-09);
+%! assert (P(3), 0.00390292555160047, 1e-09);
+%! assert (P(4), 0.0164086580775543, 1e-09);
+%! assert (T{2,6}, 11.0956027650549, 1e-09);
+%! assert (T{3,6}, 20.8195665467178, 1e-09);
+%! assert (T{4,6}, 9.10966630720186, 1e-09);
+%! assert (T{5,6}, 4.4457923698584, 1e-09);
 
 ## Test 12 for anovan example 12
 ## Test compares anovan regression coefficients to R:
@@ -1306,22 +1306,22 @@ endfunction
 %!      -0.6002401  0.0000000  0.0  0.5
 %!      -0.6002401  0.0000000  0.0 -0.5];
 %! [P,T,STATS] = anovan (dv,g,'contrasts',{C},'display','off');
-%! assert (STATS.coeffs(1,1), 19.4001,  1e-04);
-%! assert (STATS.coeffs(2,1), -9.3297,  1e-04);
-%! assert (STATS.coeffs(3,1), -5.0000,  1e-04);
-%! assert (STATS.coeffs(4,1), -8.0000,  1e-04);
-%! assert (STATS.coeffs(5,1), -8.0000,  1e-04);
-%! assert (STATS.coeffs(1,2), 0.4831,  1e-04);
-%! assert (STATS.coeffs(2,2), 0.9694,  1e-04);
-%! assert (STATS.coeffs(3,2), 1.3073,  1e-04);
-%! assert (STATS.coeffs(4,2), 1.6411,  1e-04);
-%! assert (STATS.coeffs(5,2), 1.4507,  1e-04);
-%! assert (STATS.coeffs(1,3), 40.161,  1e-03);
-%! assert (STATS.coeffs(2,3), -9.624,  1e-03);
-%! assert (STATS.coeffs(3,3), -3.825,  1e-03);
-%! assert (STATS.coeffs(4,3), -4.875,  1e-03);
-%! assert (STATS.coeffs(5,3), -5.515,  1e-03);
-%! assert (STATS.coeffs(2,4), 5.74e-11,  1e-12);
-%! assert (STATS.coeffs(3,4), 0.000572,  1e-06);
-%! assert (STATS.coeffs(4,4), 2.86e-05,  1e-07);
-%! assert (STATS.coeffs(5,4), 4.44e-06,  1e-08);
+%! assert (STATS.coeffs(1,1), 19.4001, 1e-04);
+%! assert (STATS.coeffs(2,1), -9.3297, 1e-04);
+%! assert (STATS.coeffs(3,1), -5.0000, 1e-04);
+%! assert (STATS.coeffs(4,1), -8.0000, 1e-04);
+%! assert (STATS.coeffs(5,1), -8.0000, 1e-04);
+%! assert (STATS.coeffs(1,2), 0.4831, 1e-04);
+%! assert (STATS.coeffs(2,2), 0.9694, 1e-04);
+%! assert (STATS.coeffs(3,2), 1.3073, 1e-04);
+%! assert (STATS.coeffs(4,2), 1.6411, 1e-04);
+%! assert (STATS.coeffs(5,2), 1.4507, 1e-04);
+%! assert (STATS.coeffs(1,3), 40.161, 1e-03);
+%! assert (STATS.coeffs(2,3), -9.624, 1e-03);
+%! assert (STATS.coeffs(3,3), -3.825, 1e-03);
+%! assert (STATS.coeffs(4,3), -4.875, 1e-03);
+%! assert (STATS.coeffs(5,3), -5.515, 1e-03);
+%! assert (STATS.coeffs(2,4), 5.74e-11, 1e-12);
+%! assert (STATS.coeffs(3,4), 0.000572, 1e-06);
+%! assert (STATS.coeffs(4,4), 2.86e-05, 1e-07);
+%! assert (STATS.coeffs(5,4), 4.44e-06, 1e-08);

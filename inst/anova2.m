@@ -215,12 +215,10 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
   endswitch
 
   ## Calculate F statistics and p values
-  MSE = SSE / df_SSE;           ## Mean Square for Error (Within)
-  MSR = SSR / df_SSR;           ## Mean Square for Row Factor
   F_MSR = MSR / MSE;            ## F statistic for Row Factor
   p_MSR = 1 - fcdf (F_MSR, df_SSR, df_SSE);
   MSC = SSC / df_SSC;           ## Mean Square for Column Factor
-  F_MSC = MSC / MS_DENOM;          ## F statistic for Column Factor
+  F_MSC = MSC / MS_DENOM;       ## F statistic for Column Factor
   p_MSC = 1 - fcdf (F_MSC, df_SSC, df_DENOM);
 
   ## With replication
