@@ -18,11 +18,12 @@
 ## -*- texinfo -*-
 ## @deftypefn {Function File} @var{p} = anova2 (@var{x}, @var{reps})
 ## @deftypefnx {Function File} @var{p} = anova2 (@var{x}, @var{reps}, @var{displayopt})
+## @deftypefnx {Function File} @var{p} = anova2 (@var{x}, @var{reps}, @var{displayopt}, @var{model})
 ## @deftypefnx {Function File} [@var{p}, @var{atab}] = anova2 (@dots{})
 ## @deftypefnx {Function File} [@var{p}, @var{atab}, @var{stats}] = anova2 (@dots{})
 ##
-## Performs two-way analysis of variance (ANOVA) with balanced designs.  For
-## unbalanced designs use @qcode{anovan}.
+## Performs two-way factorial (crossed) or a nested analysis of variance (ANOVA)  
+## for balanced designs. For unbalanced factorial designs use @qcode{anovan}.
 ##
 ## @qcode{anova2} requires two input arguments with an optional third:
 ##
@@ -35,6 +36,22 @@
 ## @item
 ## @var{displayopt} is an optional parameter for displaying the ANOVA table,
 ## when it is 'on' (default) and suppressing the display when it is 'off'.
+## @item
+## @var{model} is an optional parameter to specify the model type as either:
+## 
+## @itemize
+## @item
+## "interaction" or "full" (default): compute both main effects and their
+## interaction
+##
+## @item
+## "linear" (default) : compute both main effects without an interaction (e.g.
+## balanced randomized block design).
+##
+## @item
+## "nested" : treat the row factor as nested within columns. Note that the row
+## factor is considered a random factor in the calculation of the statistics.
+##
 ## @end itemize
 ##
 ## @qcode{anova2} returns up to three output arguments:
@@ -68,10 +85,10 @@
 ##
 ## @end deftypefn
 
-function [p, anovatab, stats] = anova2 (x, reps, displayopt)
+function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
 
   ## Check for valid number of input arguments
-  narginchk (1, 3);
+  narginchk (1, 4);
   ## Check for NaN values in X
   if (any (isnan( x(:))))
     error ("NaN values in input are not allowed.  Use anovan instead.");
@@ -82,6 +99,9 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt)
   endif
   if (nargin < 3)
     displayopt = 'on';
+  endif
+  if (nargin < 4)
+    model = "interaction";
   endif
   plotdata = ~(strcmp (displayopt, 'off'));
 
@@ -124,73 +144,93 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt)
   SST = (x(:) - GTmu)' * (x(:) - GTmu);
 
   ## Calculate Sum of Squares Error (Within)
-  SSE = 0;
-  for i = 1:FFGn
-    for j = 1:SFGn
-      SSE += sum ((x(RIdx(i,:),j) - mean (x(RIdx(i,:),j))) .^ 2);
+  if (reps > 1)
+    SSE = 0;
+    for i = 1:FFGn
+      for j = 1:SFGn
+        SSE += sum ((x(RIdx(i,:),j) - mean (x(RIdx(i,:),j))) .^ 2);
+      endfor
     endfor
-  endfor
+  else
+    SSE = SST - SSC - SSR;
+  endif
 
   ## Calculate degrees of freedom and Sum of Squares Interaction (if applicable)
   df_SSR = FFGn - 1;                ## 1st Factor
   df_SSC = SFGn - 1;                ## 2nd Factor
-  if (reps == 1)
-    df_SSE = df_SSR * df_SSC;       ## No replication, assuming additive model
-  else
+  if (reps > 1)
     df_SSE = GTsz - (FFGn * SFGn);  ## Error with replication
     df_SSI = df_SSR * df_SSC;       ## Interaction: Degrees of Freedom
     SSI = SST - SSR - SSC - SSE;    ## Interaction: Sum of Squares
+  else
+    df_SSE = df_SSR * df_SSC;       ## No replication, assuming additive model
+    df_SSI = 0;
+    SSI = 0;
   endif
   df_tot = GTsz - 1;                ## Total
 
-  ## Calculate Mean Squares, F statistics, and p values
-  if (SSE != 0)
-    MSE = SSE / df_SSE;           ## Mean Square for Error (Within)
-    MSR = SSR / df_SSR;           ## Mean Square for Row Factor
-    F_MSR = MSR / MSE;            ## F statistic for Row Factor
-    p_MSR = 1 - fcdf (F_MSR, df_SSR, df_SSE);
-    MSC = SSC / df_SSC;           ## Mean Square for Column Factor
-    F_MSC = MSC / MSE;            ## F statistic for Column Factor
-    p_MSC = 1 - fcdf (F_MSC, df_SSC, df_SSE);
-    ## With replication
-    if (reps > 1)
-      MSI = SSI / df_SSI;         ## Mean Square for Interaction
-      F_MSI = MSI / MSE;          ## F statistic for Interaction
-      p_MSI = 1 - fcdf (F_MSI, df_SSI, df_SSE);
-    endif
-  else      ## Special cases with no error
-    if (df_SSE > 0)
-        MSE = 0;                  ## Mean Square for Error (Within)
-    else
-        MSE = NaN;
-    endif
-    if (SSR == 0)                 ## No variability in Row Factor
-      MSR = 0;
-      F_MSR = 1;
-      p_MSR = 0;
-    else
-      MSR = SSR / df_SSR;
-      F_MSR = Inf;
-      p_MSR = 1;
-    endif
-    if (SSC == 0)                 ## No variability in Column Factor
-      MSC = 0;
-      F_MSC = 0;
-      p_MSC = 1;
-    else
-      MSC = SSC / df_SSC;
-      F_MSC = Inf;
-      p_MSC = 0;
-    endif
-    if (reps > 1 && SSI == 0)     ## Replication with no Interaction
-      MSI = 0;
-      F_MSI = 0;
-      p_MSI = 1;
-    elseif (reps > 1)             ## Replication with Interaction
-      MSI = SSI / df_SSI;
-      F_MSI = Inf;
-      p_MSI = 0;
-    endif
+  ## Model-specific calculations of sums-of-squares, mean squares and degrees of 
+  ## freedom. The calculations are based on equalities for the partitioning of
+  ## variance in fully balanced designs.
+  switch (lower (model))
+    case {"interaction","full"}
+      ## TWO-WAY ANOVA WITH INTERACTION (full factorial model)
+      ## Sums--of-squares are already partitioned into main effects and
+      ## interaction. Just calculate mean-squares and degrees of fredom
+      model = "interaction";
+      MSE = SSE / df_SSE;           ## Mean Square for Error (Within)
+      MSR = SSR / df_SSR;           ## Mean Square for Row Factor
+      MS_DENOM = MSE;
+      df_DENOM = df_SSE;
+    case "linear"
+      ## TWO-WAY ANOVA WITHOUT INTERACTION (additive, linear model)
+      ## Pool Error and Interaction term
+      model = "linear";
+      SSE += SSI;
+      df_SSE += df_SSI;
+      SSI = 0;
+      df_SSI = 0;
+      reps = 1;                   ## Set reps to 1 to avoid printing interaction
+      MSE = SSE / df_SSE;         ## Mean Square for Error (Within)
+      MSR = SSR / df_SSR;         ## Mean Square for Row Factor
+      MS_DENOM = MSE;
+      df_DENOM = df_SSE;
+    case "nested"
+      ## NESTED ANOVA
+      ## Row Factor is nested within Column Factor. Treat Row factor as random.
+      ## Pool Row Factor and Interaction term
+      model = "nested";
+      SSR += SSI;
+      df_SSR += df_SSI;
+      SSI = 0;
+      df_SSI = 0;
+      reps = 1;                   ## Set reps to 1 to avoid printing interaction
+      MSE = SSE / df_SSE;         ## Mean Square for Error (Within)
+      MSR = SSR / df_SSR;         ## Mean Square for Row Factor
+      MS_DENOM = MSR;             ## Row factor is random so MSR is denominator
+      df_DENOM = df_SSR;          ## Row factor is random so df_SSR is denominator
+    otherwise
+      error ("model type not recognised");
+  endswitch
+
+  ## Calculate F statistics and p values
+  MSE = SSE / df_SSE;           ## Mean Square for Error (Within)
+  MSR = SSR / df_SSR;           ## Mean Square for Row Factor
+  F_MSR = MSR / MSE;            ## F statistic for Row Factor
+  p_MSR = 1 - fcdf (F_MSR, df_SSR, df_SSE);
+  MSC = SSC / df_SSC;           ## Mean Square for Column Factor
+  F_MSC = MSC / MS_DENOM;          ## F statistic for Column Factor
+  p_MSC = 1 - fcdf (F_MSC, df_SSC, df_DENOM);
+
+  ## With replication
+  if (reps > 1)
+    MSI = SSI / df_SSI;         ## Mean Square for Interaction
+    F_MSI = MSI / MSE;          ## F statistic for Interaction
+    p_MSI = 1 - fcdf (F_MSI, df_SSI, df_SSE);
+  else
+    MSI = 0;
+    F_MSI = 0;
+    p_MSI = NaN;                
   endif
 
   ## Create p output (if requested)
@@ -221,19 +261,24 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt)
   ## Create stats structure (if requested) for MULTCOMPARE
   if (nargout > 2)
     stats.source = 'anova2';
-    stats.sigmasq = MSE;
+    stats.sigmasq = MS_DENOM; ## MS used to calculate F relating to stats.pval
     stats.colmeans = SFGm(:)';
     stats.coln = SFGs;
     stats.rowmeans = FFGm(:)';
     stats.rown = FFGs;
     stats.inter = (reps > 1);
-    stats.pval = p_MSI;
-    stats.df = df_SSE;
+    if stats.inter
+      stats.pval = p_MSI;     ## Interaction p-value if stats.inter is true
+    else
+      stats.pval = p_MSC;     ## Column Factor p-value if stats.inter is false
+    end
+    stats.df = df_DENOM;      ## Degrees of freedom used to calculate stats.pval
+    stats.model = model;
   endif
 
   ## Print results table on screen if no output argument was requested
   if (nargout == 0 || plotdata)
-    printf("                      ANOVA Table\n");
+    printf("\n                      ANOVA Table\n");
     printf("Source             SS      df        MS       F      Prob>F\n");
     printf("-----------------------------------------------------------\n");
     printf("Columns      %10.4f %5.0f %10.4f %8.2f %9.4f\n", ...
@@ -245,19 +290,33 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt)
               SSI, df_SSI, MSI, F_MSI, p_MSI);
     endif
     printf("Error        %10.4f %5.0f %10.4f\n", SSE, df_SSE, MSE);
-    printf("Total        %10.4f %5.0f\n", SST, df_tot);
+    printf("Total        %10.4f %5.0f\n\n", SST, df_tot);
   endif
 endfunction
 
 
 %!demo
-%! load popcorn;
+%!
+%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! anova2 (popcorn, 3);
 
 %!demo
-%! load popcorn;
+%!
+%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! [p, atab] = anova2(popcorn, 3, "off");
 %! disp (p);
+
+%!demo
+%!
+%! data = [4.5924 7.3809 21.322; -0.5488 9.2085 25.0426; ...
+%!         6.1605 13.1147 22.66; 2.3374 15.2654 24.1283; ...
+%!         5.1873 12.4188 16.5927; 3.3579 14.3951 10.2129; ...
+%!         6.3092 8.5986 9.8934; 3.2831 3.4945 10.0203];
+%!
+%! [p, atab, stats] = anova2 (data,4,"on","nested");
+
 
 ## testing against popcorn data and results from Matlab
 %!test
@@ -282,3 +341,20 @@ endfunction
 %! assert (stats.inter, 1, 0);
 %! assert (stats.pval, 0.7462153966366274, 1e-14);
 %! assert (stats.df, 12);
+%!test
+%! data = [4.5924 7.3809 21.322; -0.5488 9.2085 25.0426; ...
+%!         6.1605 13.1147 22.66; 2.3374 15.2654 24.1283; ...
+%!         5.1873 12.4188 16.5927; 3.3579 14.3951 10.2129; ...
+%!         6.3092 8.5986 9.8934; 3.2831 3.4945 10.0203];
+%! [p, atab, stats] = anova2 (data,4,"off","nested");
+%! assert (atab{2,2}, 745.360306290833, 1e-10);
+%! assert (atab{3,2}, 278.01854140125, 1e-10);
+%! assert (atab{4,2}, 180.180377467501, 1e-10);
+%! assert (atab{5,2}, 1203.55922515958, 1e-10);
+%! assert (atab{2,4}, 372.680153145417, 1e-10);
+%! assert (atab{3,4}, 92.67284713375, 1e-10);
+%! assert (atab{4,4}, 10.0100209704167, 1e-10);
+%! assert (atab{2,5}, 4.02146005730833, 1e-10);
+%! assert (atab{3,5}, 9.25800729165627, 1e-10);
+%! assert (atab{2,6}, 0.141597630656771, 1e-10);
+%! assert (atab{3,6}, 0.000636643812875719, 1e-10);

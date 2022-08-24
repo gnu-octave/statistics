@@ -24,10 +24,10 @@
 ##
 ## Perform a multi (N)-way analysis of (co)variance (ANOVA or ANCOVA) to
 ## evaluate the effect of one or more categorical or continuous predictors
-## on a continuous outcome. The algorithms used make @code{anovan} suitable
-## for balanced or unbalanced factorial (crossed) designs. Examples of function
-## usage can be found by entering the command @code{demo anovan}. Note that
-## nested ANOVA designs are not supported.
+## on a continuous outcome. The algorithms used make @qcode{anovan} suitable
+## for balanced or unbalanced factorial (crossed) designs. By default, @qcode{anovan}
+## treats all factors as fixed. Examples of function usage can be found by
+## entering the command @code{demo anovan}.
 ##
 ## Data is a single vector @var{Y} with groups specified by a corresponding
 ## matrix or cell array of group labels @var{GROUP}, where each column of
@@ -36,7 +36,7 @@
 ## under conditions 1,2,1 and observation 1.2 was measured under conditions
 ## 1,5,2. Note that @var{GROUP} do not need to be sequentially numbered.
 ##
-## @code{anovan} can take a number of optional parameters as name-value pairs.
+## @qcode{anovan} can take a number of optional parameters as name-value pairs.
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "continuous", @var{continuous})}
 ##
@@ -44,7 +44,22 @@
 ## @item
 ## @var{continuous} is a vector of indices indicating which of the columns (i.e.
 ## factors) in @var{GROUP} should be treated as continuous predictors rather
-## than as categorical predictors.
+## than as categorical predictors. The relationship between continuous predictors 
+## and the outcome should be linear.
+## @end itemize
+##
+## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "random", @var{random})}
+##
+## @itemize
+## @item
+## @var{random} is a vector of indices indicating which of the columns (i.e.
+## factors) in @var{GROUP} should be treated as random effects rather than fixed
+## effects. Octave @qcode{anovan} provides only basic support for random effects.
+## Specifically, since all F-statistics in @qcode{anovan} are calculated using
+## the mean-squared error (MSE), any interaction terms containing a random effect
+## are dropped from the model term definitions and their associated variance 
+## is pooled with the residual, unexplained variance making up the MSE. Variable 
+## names for random factors are appended with a ' symbol.
 ## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "model", @var{modeltype})}
@@ -79,7 +94,7 @@
 ##
 ## @itemize
 ## @item
-## 1 : Type I sequential sums-of-squares
+## 1 : Type I sequential sums-of-squares.
 ##
 ## @item
 ## 2 or 'h': Type II hierarchical (or partially sequential) sums-of-squares
@@ -121,10 +136,10 @@
 ## deviation effect coding. Cells corresponding to continuous factors are ignored
 ## and can be left empty. Note that SSTYPE 3 cannot be calculated if columns in
 ## the contrast matrices do not sum to zero (at single precision), in which case
-## @code{anovan} will fall back to SSTYPE 2.
+## @qcode{anovan} will fall back to SSTYPE 2.
 ## @end itemize
 ##
-## @code{anovan} can return up to four output arguments:
+## @qcode{anovan} can return up to four output arguments:
 ##
 ## @var{P} = anovan (@dots{}) returns a vector of p-values, one for each term.
 ##
@@ -158,11 +173,15 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     endif
 
     ## Check supplied parameters
+    if ((numel (varargin) / 2) != fix (numel (varargin) / 2))
+      error ("anovan: wrong number of arguments.")
+    endif
     MODELTYPE = "linear";
     DISPLAY = "on";
     SSTYPE = 3;
     VARNAMES = [];
     CONTINUOUS = [];
+    RANDOM = [];
     CONTRASTS = {};
     for idx = 3:2:nargin
       name = varargin{idx-2};
@@ -172,6 +191,11 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           MODELTYPE = value;
         case "continuous"
           CONTINUOUS = value;
+        case "random"
+          RANDOM = value;
+        case "nested"
+          error (strcat (["anovan: nested ANOVA is not supported. Please use"], ... 
+                         [" anova2 for fully balanced nested ANOVA designs."]));
         case "sstype"
           SSTYPE = value;
         case "varnames"
@@ -186,12 +210,12 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     endfor
     if (isnumeric (CONTINUOUS))
       if (any (CONTINUOUS != abs (fix (CONTINUOUS))))
-        error (strcat (["anovan: the value provided for the continuous"], ...
+        error (strcat (["anovan: the value provided for the CONTINUOUS"], ...
                        [" parameter must be a positive integer"]));
       endif
     else
-      error (strcat (["anovan: the value provided for the continuous"], ...
-                     ["  parameter must be numeric"]));
+      error (strcat (["anovan: the value provided for the CONTINUOUS"], ...
+                     [" parameter must be numeric"]));
     endif
 
     ## Accomodate for different formats for GROUP
@@ -265,6 +289,32 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                      ["  to number of grouping variables"]));
     endif
 
+    ## Evaluate random argument (if applicable)
+    if (! isempty(RANDOM))
+      if (isnumeric (RANDOM))
+        if (any (RANDOM != abs (fix (RANDOM))))
+          error (strcat (["anovan: the value provided for the RANDOM"], ...
+                         [" parameter must be a positive integer"]));
+        endif
+      else
+        error (strcat (["anovan: the value provided for the RANDOM"], ...
+                     ["  parameter must be numeric"]));
+      endif
+      if (numel (RANDOM) > N)
+        error (strcat (["anovan: the number of elements in RANDOM cannot"], ...
+               [" exceed the number of columns in GROUP."]));
+      endif
+      if (max (RANDOM) > N)
+        error (strcat (["anovan: the indices listed in RANDOM cannot"], ...
+               [" exceed the number of columns in GROUP."]));
+      endif
+      for v = 1:N
+        if (ismember (v, RANDOM))
+          VARNAMES{v} = strcat (VARNAMES{v},"'");
+        endif
+      endfor
+    endif
+
     ## Evaluate contrasts (if applicable)
     if isempty (CONTRASTS)
       CONTRASTS = cell (1, N);
@@ -300,7 +350,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
     ## Evaluate model type input argument and create terms matrix if not provided
     msg = strcat (["anovan: the number of columns in the term definitions"], ...
-                  ["  cannot exceed the number of columns of GROUP"]);
+                  [" cannot exceed the number of columns of GROUP"]);
     if (ischar (MODELTYPE))
       switch (lower (MODELTYPE))
         case "linear"
@@ -347,6 +397,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           endfor
           TERMS = cell2mat (TERMS);
       endswitch
+      TERMS = logical (TERMS);
     else
       ## Assume that the user provided a suitable matrix of term definitions
       if (size (MODELTYPE, 2) > N)
@@ -365,6 +416,10 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                      [" effects above/before interactions"]));
     endif
     Nm = sum (Ng == 1);
+    ## Drop terms that include interactions with random effects.
+    drop = any (bsxfun (@and, TERMS(:,RANDOM), (Ng > 1)), 2);
+    TERMS (drop, :) = [];
+    Ng(drop) = [];
     Nx = sum (Ng > 1);
     Nt = Nm + Nx;
     if (any (any (TERMS(1:Nm,:), 1) != any (TERMS, 1)))
@@ -479,16 +534,16 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                       "vars", [], ...          # Not used by Octave
                       "varnames", {VARNAMES}, ...
                       "grpnames", {grpnames}, ...
-                      "vnested", [], ...       # Not used since "nested" argument name not supported
-                      "ems", [], ...           # Not used since "nested" argument name not supported
-                      "denom", [], ...         # Not used since "random" argument name not supported
-                      "dfdenom", [], ...       # Not used since "random" argument name not supported
-                      "msdenom", [], ...       # Not used since "random" argument name not supported
-                      "varest", [], ...        # Not used since "random" argument name not supported
-                      "varci", [], ...         # Not used since "random" argument name not supported
-                      "txtdenom", [], ...      # Not used since "random" argument name not supported
-                      "txtems", [], ...        # Not used since "random" argument name not supported
-                      "rtnames", [], ...       # Not used since "random" argument name not supported
+                      "vnested", [], ...       # Not used since "nested" argument name is not supported
+                      "ems", [], ...           # Not used since "nested" argument name is not supported
+                      "denom", [], ...         # Not used since interactions with random effects is not supported
+                      "dfdenom", [], ...       # Not used since interactions with random effects is not supported
+                      "msdenom", [], ...       # Not used since interactions with random effects is not supported
+                      "varest", [], ...        # Not used since interactions with random effects is not supported
+                      "varci", [], ...         # Not used since interactions with random effects is not supported
+                      "txtdenom", [], ...      # Not used since interactions with random effects is not supported
+                      "txtems", [], ...        # Not used since interactions with random effects is not supported
+                      "rtnames", [], ...       # Not used since interactions with random effects is not supported
                       ## Additional STATS fields used exclusively by Octave
                       "df", df, ...
                       "contrasts", {CONTRASTS}, ...
@@ -554,8 +609,11 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, ...
       nlevels(j) = 1;
       termcols(j+1) = 1;
       df(j) = 1;
-      GROUP{:,j};
-      gid(:,j) = [GROUP{:,j}]';
+      if iscell (GROUP(:,j))
+        gid(:,j) = cell2mat ([GROUP(:,j)]);
+      else
+        gid(:,j) = GROUP(:,j);
+      end
     else
       ## Categorical predictor
       levels{j} = unique (GROUP(:,j), "stable");
@@ -581,12 +639,17 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, ...
   for j = 1:Nm
     if (any (j == CONTINUOUS))
       ## Continuous predictor
-      X(1+j) = cell2mat (GROUP(:,j));
+      if iscell (GROUP(:,j))
+        X(1+j) = cell2mat (GROUP(:,j));
+      else
+        X(1+j) = GROUP(:,j);
+      end
       vmeans(j) = mean ([X{1+j}]);
       #X(1+j) = [X{1+j}] - vmeans(j); # Like Matlab, we won't center continuous factors
       if (isempty (CONTRASTS{j}))
         CONTRASTS{j} = [];
       end
+      ## Create names of the coefficients relating to continuous main effects
       coeffnames{1+j} = VARNAMES{j};
     else
       ## Categorical predictor
@@ -611,6 +674,7 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, ...
       C = CONTRASTS{j};
       func = @(x) x(gid(:,j));
       X(1+j) = cell2mat (cellfun (func, num2cell (C, 1), "UniformOutput", false));
+      ## Create names of the coefficients relating to continuous main effects
       coeffnames{1+j} = cell (df(j),1);
       for v = 1:df(j)
         coeffnames{1+j}{v} = sprintf ("%s_%u", VARNAMES{j}, v);
@@ -635,7 +699,7 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, ...
       X{1+Nm+i} = tmp;
       coeffnames{1+Nm+i} = cell (df(Nm+i),1);
       for v = 1:df(Nm+i)
-        coeffnames{1+Nm+i}{v} = cat (2, sprintf ("%s_", VARNAMES{I-1}), num2str (v));
+        coeffnames{1+Nm+i}{v} = strcat (sprintf ("%s_", VARNAMES{I-1}), num2str (v));
       endfor
     endfor
   endif
@@ -690,15 +754,18 @@ endfunction
 %!
 %! # Two-sample paired test on dependent or matched samples equivalent to a
 %! # paired t-test. As for the first example, the t-statistic can be obtained by
-%! # taking the square root of the reported F statistic.
+%! # taking the square root of the reported F statistic. Note that the interaction
+%! # between treatment x subject was dropped from the full model by assigning 
+%! # subject as a random factor (').
 %!
 %! score = [4.5 5.6; 3.7 6.4; 5.3 6.4; 5.4 6.0; 3.9 5.7]';
 %! treatment = {"before" "after"; "before" "after"; "before" "after";
 %!              "before" "after"; "before" "after"}';
 %! subject = {"GS" "GS"; "JM" "JM"; "HM" "HM"; "JW" "JW"; "PS" "PS"}';
 %!
-%! [P, T] = anovan (score(:), {treatment(:), subject(:)}, "display", "on",...
-%!                  "sstype", 2, "varnames", {"treatment", "subject"});
+%! [P, T] = anovan (score(:), {treatment(:), subject(:)}, "model", "full", ...
+%!                  "random", 2, "sstype", 2, "display", "on", ...
+%!                  "varnames", {"treatment", "subject"});
 
 %!demo
 %!
@@ -717,7 +784,9 @@ endfunction
 %!
 %! # One-way repeated measures ANOVA on the data from a study on the number of
 %! # words recalled by 10 subjects for three time condtions, in Loftus & Masson
-%! # (1994) Psychon Bull Rev. 1(4):476-490, Table 2
+%! # (1994) Psychon Bull Rev. 1(4):476-490, Table 2. Note that the interaction
+%! # between seconds x subject was dropped from the full model by assigning 
+%! # subject as a random factor (').
 %!
 %! words = [10 13 13; 6 8 8; 11 14 14; 22 23 25; 16 18 20; ...
 %!          15 17 17; 1 1 4; 12 15 17;  9 12 12;  8 9 12];
@@ -726,8 +795,9 @@ endfunction
 %! subject = [ 1  1  1;  2  2  2;  3  3  3;  4  4  4;  5  5  5; ...
 %!             6  6  6;  7  7  7;  8  8  8;  9  9  9; 10 10 10];
 %!
-%! [P, T] = anovan (words(:), {seconds(:), subject(:)}, "display", "on",...
-%!                  "sstype", 2, "varnames", {"seconds", "subject"});
+%! [P, T] = anovan (words(:), {seconds(:), subject(:)}, "model", "full", ...
+%!                  "random", 2, "sstype", 2, "display", "on", ...
+%!                  "varnames", {"seconds", "subject"});
 
 %!demo
 %!
@@ -817,7 +887,9 @@ endfunction
 %! # Balanced three-way ANOVA (2x2x2) with one of the factors being a blocking
 %! # factor. The data is from a randomized block design study on the effects
 %! # of antioxidant treatment on glutathione-S-transferase (GST) levels in
-%! # different mouse strains, from Festing (2014), ILAR Journal, 55(3):427-476
+%! # different mouse strains, from Festing (2014), ILAR Journal, 55(3):427-476.
+%! # Note that all interactions involving block were dropped from the full model 
+%! # by assigning block as a random factor (').
 %!
 %! measurement = [444 614 423 625 408  856 447 719 ...
 %!                764 831 586 782 609 1002 606 766]';
@@ -827,7 +899,7 @@ endfunction
 %! treatment={"C" "T" "C" "T" "C" "T" "C" "T" "C" "T" "C" "T" "C" "T" "C" "T"}';
 %!
 %! [P, T] = anovan (measurement/10, {block, strain, treatment}, "sstype", 2, ...
-%!                  "model", [1 0 0;0 1 0;0 0 1;0 1 1], "display", "on", ...
+%!                  "model", "full", "random", 1, "display", "on", ...
 %!                  "varnames", {"block", "strain", "treatment"});
 
 %!demo
@@ -957,7 +1029,7 @@ endfunction
 %!             6  6  6;  7  7  7;  8  8  8;  9  9  9; 10 10 10];
 %! seconds = [1 2 5; 1 2 5; 1 2 5; 1 2 5; 1 2 5; ...
 %!            1 2 5; 1 2 5; 1 2 5; 1 2 5; 1 2 5;];
-%! [P, T, STATS] = anovan (words(:),{seconds(:),subject(:)},'model','linear','sstype',2,'display','off');
+%! [P, T, STATS] = anovan (words(:),{seconds(:),subject(:)},'model','full','random',2,'sstype',2,'display','off');
 %! assert (P(1), 1.51865926758752e-07,  1e-09);
 %! assert (P(2), 1.49150337808586e-15,  1e-09);
 %! assert (T{2,2}, 52.2666666666667,  1e-09);
@@ -1148,7 +1220,7 @@ endfunction
 %! strain= {'NIH','NIH','BALB/C','BALB/C','A/J','A/J','129/Ola','129/Ola',...
 %!          'NIH','NIH','BALB/C','BALB/C','A/J','A/J','129/Ola','129/Ola'}';
 %! treatment={'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T'}';
-%! [P, T, STATS] = anovan (measurement/10,{block,strain,treatment},'model',[1 0 0;0 1 0;0 0 1;0 1 1],'display','off');
+%! [P, T, STATS] = anovan (measurement/10,{block,strain,treatment},'model','full','random',1,'display','off');
 %! assert (P(1), 0.000339814602130731,  1e-09);
 %! assert (P(2), 0.0914352969909372,  1e-09);
 %! assert (P(3), 5.04077373924908e-05,  1e-09);
