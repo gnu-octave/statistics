@@ -25,9 +25,9 @@
 ## Perform a multi (N)-way analysis of (co)variance (ANOVA or ANCOVA) to
 ## evaluate the effect of one or more categorical or continuous predictors
 ## on a continuous outcome. The algorithms used make @qcode{anovan} suitable
-## for balanced or unbalanced factorial (crossed) designs. By default, @qcode{anovan} 
-## treats all factors as fixed. Examples of function usage can be found by 
-## entering the command @code{demo anovan}. 
+## for balanced or unbalanced factorial (crossed) designs. By default, @qcode{anovan}
+## treats all factors as fixed. Examples of function usage can be found by
+## entering the command @code{demo anovan}.
 ##
 ## Data is a single vector @var{Y} with groups specified by a corresponding
 ## matrix or cell array of group labels @var{GROUP}, where each column of
@@ -193,6 +193,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           CONTINUOUS = value;
         case "random"
           RANDOM = value;
+        case "nested"
+          error (strcat (["anovan: nested ANOVA is not supported. Please use"], ... 
+                         [" anova2 for fully balanced nested ANOVA designs."]));
         case "sstype"
           SSTYPE = value;
         case "varnames"
