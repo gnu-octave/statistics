@@ -158,14 +158,14 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
   ## Calculate degrees of freedom and Sum of Squares Interaction (if applicable)
   df_SSR = FFGn - 1;                ## 1st Factor
   df_SSC = SFGn - 1;                ## 2nd Factor
-  if (reps == 1)
-    df_SSE = df_SSR * df_SSC;       ## No replication, assuming additive model
-    df_SSI = 0;
-    SSI = 0;
-  else
+  if (reps > 1)
     df_SSE = GTsz - (FFGn * SFGn);  ## Error with replication
     df_SSI = df_SSR * df_SSC;       ## Interaction: Degrees of Freedom
     SSI = SST - SSR - SSC - SSE;    ## Interaction: Sum of Squares
+  else
+    df_SSE = df_SSR * df_SSC;       ## No replication, assuming additive model
+    df_SSI = 0;
+    SSI = 0;
   endif
   df_tot = GTsz - 1;                ## Total
 
@@ -261,14 +261,18 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
   ## Create stats structure (if requested) for MULTCOMPARE
   if (nargout > 2)
     stats.source = 'anova2';
-    stats.sigmasq = MSE;
+    stats.sigmasq = MS_DENOM; ## MS used to calculate F relating to stats.pval
     stats.colmeans = SFGm(:)';
     stats.coln = SFGs;
     stats.rowmeans = FFGm(:)';
     stats.rown = FFGs;
     stats.inter = (reps > 1);
-    stats.pval = p_MSI;
-    stats.df = df_SSE;
+    if stats.inter
+      stats.pval = p_MSI;     ## Interaction p-value if stats.inter is true
+    else
+      stats.pval = p_MSC;     ## Column Factor p-value if stats.inter is false
+    end
+    stats.df = df_DENOM;      ## Degrees of freedom used to calculate stats.pval
     stats.model = model;
   endif
 
