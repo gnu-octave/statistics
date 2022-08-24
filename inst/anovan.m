@@ -97,10 +97,10 @@
 ## 1 : Type I sequential sums-of-squares.
 ##
 ## @item
-## 2 or 'h': Type II hierarchical (or partially sequential) sums-of-squares
+## 2 or 'h': Type II partially sequential (or hierarchical) sums-of-squares
 ##
 ## @item
-## 3 (default): Type III constrained, marginal or orthogonal sums-of-squares
+## 3 (default): Type III partial, constrained or marginal sums-of-squares
 ##
 ## @end itemize
 ##
@@ -450,7 +450,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         [b, sse, resid, ucov] = lmfit (XS, Y);
         sstype_char = "I";
       case {2,'h'}
-        ## Type II (hierarchical, or partially sequential) sums of squares
+        ## Type II (partially sequential, or hierarchical) sums-of-squares
         ss = zeros (Nt,1);
         [X, grpnames, nlevels, df, termcols, coeffnames, vmeans, gid, ...
          CONTRASTS] = make_design_matrix (GROUP, TERMS, CONTINUOUS, ...
@@ -468,7 +468,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         [b, sse, resid, ucov] = lmfit (cell2mat (X), Y);
         sstype_char = "II";
       case 3
-        ## Type III (constrained or marginal) sums of squares
+        ## Type III (partial, constrained or marginal) sums-of-squares
         ss = zeros (Nt, 1);
         [X, grpnames, nlevels, df, termcols, coeffnames, vmeans, gid, ...
          CONTRASTS] = make_design_matrix (GROUP, TERMS, CONTINUOUS, ...
@@ -560,7 +560,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         ## Get dimensions of the ANOVA table
         [nrows, ncols] = size (T);
         ## Print table
-        fprintf("\nANOVA table (Type %s sums of squares):\n\n", sstype_char);
+        fprintf("\nANOVA table (Type %s sums-of-squares):\n\n", sstype_char);
         fprintf("Source                   Sum Sq.    d.f.    Mean Sq.  R Sq.            F  Prob>F\n");
         fprintf("********************************************************************************\n");
         for i = 1:Nt
