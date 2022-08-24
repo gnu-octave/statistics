@@ -18,11 +18,12 @@
 ## -*- texinfo -*-
 ## @deftypefn {Function File} @var{p} = anova2 (@var{x}, @var{reps})
 ## @deftypefnx {Function File} @var{p} = anova2 (@var{x}, @var{reps}, @var{displayopt})
+## @deftypefnx {Function File} @var{p} = anova2 (@var{x}, @var{reps}, @var{displayopt}, @var{nested})
 ## @deftypefnx {Function File} [@var{p}, @var{atab}] = anova2 (@dots{})
 ## @deftypefnx {Function File} [@var{p}, @var{atab}, @var{stats}] = anova2 (@dots{})
 ##
-## Performs two-way analysis of variance (ANOVA) with balanced designs.  For
-## unbalanced designs use @qcode{anovan}.
+## Performs two-way factorial (crossed) or a nested analysis of variance (ANOVA)  
+## for balanced designs. For unbalanced factorial designs use @qcode{anovan}.
 ##
 ## @qcode{anova2} requires two input arguments with an optional third:
 ##
@@ -35,6 +36,11 @@
 ## @item
 ## @var{displayopt} is an optional parameter for displaying the ANOVA table,
 ## when it is 'on' (default) and suppressing the display when it is 'off'.
+## @item
+## @var{nested} is an optional logical scalar (true or false) to specify whether
+## to treat the row factor as nested within columns. Note that the row factor is
+## considered a random factor in the calculation of the statistics. By default,
+## @var{nested} is false.
 ## @end itemize
 ##
 ## @qcode{anova2} returns up to three output arguments:
@@ -68,10 +74,10 @@
 ##
 ## @end deftypefn
 
-function [p, anovatab, stats] = anova2 (x, reps, displayopt)
+function [p, anovatab, stats] = anova2 (x, reps, displayopt, nested)
 
   ## Check for valid number of input arguments
-  narginchk (1, 3);
+  narginchk (1, 4);
   ## Check for NaN values in X
   if (any (isnan( x(:))))
     error ("NaN values in input are not allowed.  Use anovan instead.");
@@ -82,6 +88,9 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt)
   endif
   if (nargin < 3)
     displayopt = 'on';
+  endif
+  if (nargin < 4)
+    nested = false;
   endif
   plotdata = ~(strcmp (displayopt, 'off'));
 
@@ -124,18 +133,24 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt)
   SST = (x(:) - GTmu)' * (x(:) - GTmu);
 
   ## Calculate Sum of Squares Error (Within)
-  SSE = 0;
-  for i = 1:FFGn
-    for j = 1:SFGn
-      SSE += sum ((x(RIdx(i,:),j) - mean (x(RIdx(i,:),j))) .^ 2);
+  if (reps > 1)
+    SSE = 0;
+    for i = 1:FFGn
+      for j = 1:SFGn
+        SSE += sum ((x(RIdx(i,:),j) - mean (x(RIdx(i,:),j))) .^ 2);
+      endfor
     endfor
-  endfor
+  else
+    SSE = SST - SSC - SSR;
+  endif
 
   ## Calculate degrees of freedom and Sum of Squares Interaction (if applicable)
   df_SSR = FFGn - 1;                ## 1st Factor
   df_SSC = SFGn - 1;                ## 2nd Factor
   if (reps == 1)
     df_SSE = df_SSR * df_SSC;       ## No replication, assuming additive model
+    df_SSI = 0;
+    SSI = 0;
   else
     df_SSE = GTsz - (FFGn * SFGn);  ## Error with replication
     df_SSI = df_SSR * df_SSC;       ## Interaction: Degrees of Freedom
@@ -143,55 +158,40 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt)
   endif
   df_tot = GTsz - 1;                ## Total
 
+  ## Pool Row Factor and Interaction terms if Row Factor is nested within the  
+  ## Column Factor. This calculation is based on the equalities for partitioning 
+  ## variance in fully balanced crossed and fully balanced nested designs.
+  if nested
+    SSR += SSI;
+    df_SSR += df_SSI;
+    SSI = 0;
+    df_SSI = 0;
+    reps = 1;                     ## Set reps to 1 to avoid printing interaction
+  endif
+
   ## Calculate Mean Squares, F statistics, and p values
-  if (SSE != 0)
     MSE = SSE / df_SSE;           ## Mean Square for Error (Within)
     MSR = SSR / df_SSR;           ## Mean Square for Row Factor
     F_MSR = MSR / MSE;            ## F statistic for Row Factor
     p_MSR = 1 - fcdf (F_MSR, df_SSR, df_SSE);
     MSC = SSC / df_SSC;           ## Mean Square for Column Factor
-    F_MSC = MSC / MSE;            ## F statistic for Column Factor
-    p_MSC = 1 - fcdf (F_MSC, df_SSC, df_SSE);
+    if nested
+      F_MSC = MSC / MSR;          ## F statistic for Column Factor (Row is random)
+      p_MSC = 1 - fcdf (F_MSC, df_SSC, df_SSR);
+    else
+      F_MSC = MSC / MSE;          ## F statistic for Column Factor
+      p_MSC = 1 - fcdf (F_MSC, df_SSC, df_SSE);
+    endif
     ## With replication
     if (reps > 1)
       MSI = SSI / df_SSI;         ## Mean Square for Interaction
       F_MSI = MSI / MSE;          ## F statistic for Interaction
       p_MSI = 1 - fcdf (F_MSI, df_SSI, df_SSE);
-    endif
-  else      ## Special cases with no error
-    if (df_SSE > 0)
-        MSE = 0;                  ## Mean Square for Error (Within)
     else
-        MSE = NaN;
-    endif
-    if (SSR == 0)                 ## No variability in Row Factor
-      MSR = 0;
-      F_MSR = 1;
-      p_MSR = 0;
-    else
-      MSR = SSR / df_SSR;
-      F_MSR = Inf;
-      p_MSR = 1;
-    endif
-    if (SSC == 0)                 ## No variability in Column Factor
-      MSC = 0;
-      F_MSC = 0;
-      p_MSC = 1;
-    else
-      MSC = SSC / df_SSC;
-      F_MSC = Inf;
-      p_MSC = 0;
-    endif
-    if (reps > 1 && SSI == 0)     ## Replication with no Interaction
       MSI = 0;
       F_MSI = 0;
-      p_MSI = 1;
-    elseif (reps > 1)             ## Replication with Interaction
-      MSI = SSI / df_SSI;
-      F_MSI = Inf;
-      p_MSI = 0;
+      p_MSI = NaN;
     endif
-  endif
 
   ## Create p output (if requested)
   if (nargout > 0)
@@ -229,11 +229,12 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt)
     stats.inter = (reps > 1);
     stats.pval = p_MSI;
     stats.df = df_SSE;
+    stats.nested = nested;
   endif
 
   ## Print results table on screen if no output argument was requested
   if (nargout == 0 || plotdata)
-    printf("                      ANOVA Table\n");
+    printf("\n                      ANOVA Table\n");
     printf("Source             SS      df        MS       F      Prob>F\n");
     printf("-----------------------------------------------------------\n");
     printf("Columns      %10.4f %5.0f %10.4f %8.2f %9.4f\n", ...
@@ -245,19 +246,33 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt)
               SSI, df_SSI, MSI, F_MSI, p_MSI);
     endif
     printf("Error        %10.4f %5.0f %10.4f\n", SSE, df_SSE, MSE);
-    printf("Total        %10.4f %5.0f\n", SST, df_tot);
+    printf("Total        %10.4f %5.0f\n\n", SST, df_tot);
   endif
 endfunction
 
 
 %!demo
-%! load popcorn;
+%!
+%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! anova2 (popcorn, 3);
 
 %!demo
-%! load popcorn;
+%!
+%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! [p, atab] = anova2(popcorn, 3, "off");
 %! disp (p);
+
+%!demo
+%!
+%! data = [4.5924 7.3809 21.322; -0.5488 9.2085 25.0426; ...
+%!         6.1605 13.1147 22.66; 2.3374 15.2654 24.1283; ...
+%!         5.1873 12.4188 16.5927; 3.3579 14.3951 10.2129; ...
+%!         6.3092 8.5986 9.8934; 3.2831 3.4945 10.0203];
+%!
+%! [p, atab, stats] = anova2 (data,4,"on",true);
+
 
 ## testing against popcorn data and results from Matlab
 %!test
@@ -282,3 +297,20 @@ endfunction
 %! assert (stats.inter, 1, 0);
 %! assert (stats.pval, 0.7462153966366274, 1e-14);
 %! assert (stats.df, 12);
+%!test
+%! data = [4.5924 7.3809 21.322; -0.5488 9.2085 25.0426; ...
+%!         6.1605 13.1147 22.66; 2.3374 15.2654 24.1283; ...
+%!         5.1873 12.4188 16.5927; 3.3579 14.3951 10.2129; ...
+%!         6.3092 8.5986 9.8934; 3.2831 3.4945 10.0203];
+%! [p, atab, stats] = anova2 (data,4,"off",true);
+%! assert (atab{2,2}, 745.360306290833, 1e-10);
+%! assert (atab{3,2}, 278.01854140125, 1e-10);
+%! assert (atab{4,2}, 180.180377467501, 1e-10);
+%! assert (atab{5,2}, 1203.55922515958, 1e-10);
+%! assert (atab{2,4}, 372.680153145417, 1e-10);
+%! assert (atab{3,4}, 92.67284713375, 1e-10);
+%! assert (atab{4,4}, 10.0100209704167, 1e-10);
+%! assert (atab{2,5}, 4.02146005730833, 1e-10);
+%! assert (atab{3,5}, 9.25800729165627, 1e-10);
+%! assert (atab{2,6}, 0.141597630656771, 1e-10);
+%! assert (atab{3,6}, 0.000636643812875719, 1e-10);
