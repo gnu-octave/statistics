@@ -35,19 +35,24 @@
 ## @var{GROUP} has the same number of rows as @var{Y}. For example, if @var{Y}
 ## = [1.1;1.2]; @var{GROUP} = [1,2,1; 1,5,2]; then observation 1.1 was measured
 ## under conditions 1,2,1 and observation 1.2 was measured under conditions
-## 1,5,2. Note that @var{GROUP} do not need to be sequentially numbered.
+## 1,5,2.
 ##
 ## @qcode{anovan} can take a number of optional parameters as name-value pairs.
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "continuous", @var{continuous})}
 ##
+## @itemize
+## @item
 ## @var{continuous} is a vector of indices indicating which of the columns (i.e.
 ## factors) in @var{GROUP} should be treated as continuous predictors rather
 ## than as categorical predictors. The relationship between continuous predictors
 ## and the outcome should be linear.
+## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "random", @var{random})}
 ##
+## @itemize
+## @item
 ## @var{random} is a vector of indices indicating which of the columns (i.e.
 ## factors) in @var{GROUP} should be treated as random effects rather than fixed
 ## effects. Octave @qcode{anovan} provides only basic support for random effects.
@@ -56,9 +61,12 @@
 ## are dropped from the model term definitions and their associated variance
 ## is pooled with the residual, unexplained variance making up the MSE. Variable
 ## names for random factors are appended with a ' symbol.
+## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "model", @var{modeltype})}
 ##
+## @itemize
+## @item
 ## @var{modeltype} can specified as one of the following:
 ##
 ## @itemize
@@ -83,8 +91,12 @@
 ## A two-way ANOVA with interaction would be: [1 0; 0 1; 1 1]
 ## @end example
 ##
+## @end itemize
+##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "sstype", @var{sstype})}
 ##
+## @itemize
+## @item
 ## @var{sstype} can specified as one of the following:
 ##
 ## @itemize
@@ -98,45 +110,48 @@
 ## 3 (default): Type III partial, constrained or marginal sums-of-squares
 ##
 ## @end itemize
+## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "varnames", @var{varnames})}
 ##
+## @itemize
+## @item
 ## @var{varnames} must be a cell array of strings with each element containing a
 ## factor name for each column of GROUP.  By default (if not parsed as optional
 ## argument), @var{varnames} are "X1","X2","X3", etc.
+## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "alpha", @var{alpha})}
 ##
+## @itemize
+## @item
 ## @var{alpha} must be a scalar value between 0 and 1 requesting 100*(1-alpha)%
 ## confidence bounds for the regression coefficients returned in STATS.coeffs
 ## (default 0.05 for 95% confidence)
-##
+## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "display", @var{dispopt})}
 ##
+## @itemize
+## @item
 ## @var{dispopt} can be either "on" (default) or "off" and switches the display
 ## of the ANOVA table.
+## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "contrasts", @var{contrasts})}
 ##
-## @var{contrasts} can be a cell array, where each cell contains a matrix
-## of the contrast coding scheme (i.e. the generalized inverse of contrast
-## weights) for the corresponding column (i.e. factor) in @var{GROUP} (unless
-## @var{GROUP} contains only one factor in which case the contrast matrix need
-## not be provided within in a cell array). Rows in the contrast matrices
-## correspond to factor levels in the order that they first appear in the
-## corresponding @var{GROUP} column (and as they appear in @var{STATS}.grpnames).
-## If cells are left empty, then the default contrasts are applied, specifically
-## simple contrast coding. Cells corresponding to continuous factors are ignored
-## and can be left empty. Note that SSTYPE 3 cannot be calculated if columns in
-## the contrast matrices do not sum to zero (at single precision), in which case
-## @qcode{anovan} will fall back to SSTYPE 2. @qcode{anovan} also includes
-## builtin contrasts, which can be specified simply as one of the following.
+## @itemize
+## @item
+## @var{contrasts} can be specified as one of the following:
 ##
 ## @itemize
 ## @item
-## "simple" (default): Simple (ANOVA) contrasts.The first level appearing in
-## the @var{GROUP} column is the reference level.
+## A string defining one of the built-in contrasts:
+##
+## @itemize
+## @item
+## "simple" (default): Simple (ANOVA) contrasts. (The first level appearing in
+## the @var{GROUP} column is the reference level)
 ##
 ## @item
 ## "poly": Polynomial contrasts for trend analysis.
@@ -146,6 +161,22 @@
 ##
 ## @item
 ## "effect": Deviation effect coding.
+## @end itemize
+##
+## @item
+## A matrix containing a contrast coding scheme (i.e. the generalized inverse of 
+## contrast weights). Rows in the contrast matrices correspond to factor levels 
+## in the order that they first appear in the @var{GROUP} column. 
+## @end itemize
+##
+## If the anovan model contains more than one factor and a built-in contrast
+## coding scheme was specified, then those contrasts are applied to all factors. 
+## To specify different contrasts for different factors in the model, @var{contrasts} 
+## should be a cell array with the same number of cells as there are columns in 
+## @var{GROUP}. Each cell should define contrasts for the respective columns in 
+## @var{GROUP} by one of the methods described above. If cells are left empty, 
+## then the default contrasts are applied. Contrasts for cells corresponding to 
+## continuous factors are ignored.
 ## @end itemize
 ##
 ## @qcode{anovan} can return up to four output arguments:
