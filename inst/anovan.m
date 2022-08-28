@@ -146,7 +146,7 @@
 ##
 ## @itemize
 ## @item
-## A string defining one of the built-in contrasts:
+## A string corresponding to one of the built-in contrasts listed below:
 ##
 ## @itemize
 ## @item
@@ -164,18 +164,20 @@
 ## @end itemize
 ##
 ## @item
-## A matrix containing a contrast coding scheme (i.e. the generalized inverse of 
-## contrast weights). Rows in the contrast matrices correspond to factor levels 
-## in the order that they first appear in the @var{GROUP} column. 
+## A matrix containing a custom contrast coding scheme (i.e. the generalized
+## inverse of contrast weights). Rows in the contrast matrices correspond to
+## factor levels in the order that they first appear in the @var{GROUP} column.
+## The matrix must contain the same number of columns as there are the number of
+## factor levels minus one.
 ## @end itemize
 ##
 ## If the anovan model contains more than one factor and a built-in contrast
-## coding scheme was specified, then those contrasts are applied to all factors. 
-## To specify different contrasts for different factors in the model, @var{contrasts} 
+## coding scheme was specified, then those contrasts are applied to all factors.
+## To specify different contrasts for different factors in the model, @var{contrasts}
 ## should be a cell array with the same number of cells as there are columns in 
-## @var{GROUP}. Each cell should define contrasts for the respective columns in 
-## @var{GROUP} by one of the methods described above. If cells are left empty, 
-## then the default contrasts are applied. Contrasts for cells corresponding to 
+## @var{GROUP}. Each cell should define contrasts for the respective column in
+## @var{GROUP} by one of the methods described above. If cells are left empty,
+## then the default contrasts are applied. Contrasts for cells corresponding to
 ## continuous factors are ignored.
 ## @end itemize
 ##
