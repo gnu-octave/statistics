@@ -23,11 +23,12 @@
 ## @deftypefnx {Function File} [@var{P}, @var{T}, @var{STATS}, @var{TERMS}] = anovan (@var{Y}, @var{GROUP}, "name", @var{value})
 ##
 ## Perform a multi (N)-way analysis of (co)variance (ANOVA or ANCOVA) to
-## evaluate the effect of one or more categorical or continuous predictors
-## on a continuous outcome. The algorithms used make @qcode{anovan} suitable
-## for balanced or unbalanced factorial (crossed) designs. By default, @qcode{anovan}
-## treats all factors as fixed. Examples of function usage can be found by
-## entering the command @code{demo anovan}.
+## evaluate the effect of one or more categorical or continuous predictors (i.e.
+## independent variables) on a continuous outcome (i.e. dependent variable). The
+## algorithms used make @qcode{anovan} suitable for balanced or unbalanced
+## factorial (crossed) designs. By default, @qcode{anovan} treats all factors
+## as fixed. Examples of function usage can be found by entering the command
+## @code{demo anovan}.
 ##
 ## Data is a single vector @var{Y} with groups specified by a corresponding
 ## matrix or cell array of group labels @var{GROUP}, where each column of
@@ -40,18 +41,13 @@
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "continuous", @var{continuous})}
 ##
-## @itemize
-## @item
 ## @var{continuous} is a vector of indices indicating which of the columns (i.e.
 ## factors) in @var{GROUP} should be treated as continuous predictors rather
 ## than as categorical predictors. The relationship between continuous predictors 
 ## and the outcome should be linear.
-## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "random", @var{random})}
 ##
-## @itemize
-## @item
 ## @var{random} is a vector of indices indicating which of the columns (i.e.
 ## factors) in @var{GROUP} should be treated as random effects rather than fixed
 ## effects. Octave @qcode{anovan} provides only basic support for random effects.
@@ -60,7 +56,6 @@
 ## are dropped from the model term definitions and their associated variance 
 ## is pooled with the residual, unexplained variance making up the MSE. Variable 
 ## names for random factors are appended with a ' symbol.
-## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "model", @var{modeltype})}
 ##
@@ -106,26 +101,25 @@
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "varnames", @var{varnames})}
 ##
-## @itemize
-## @item
 ## @var{varnames} must be a cell array of strings with each element containing a
 ## factor name for each column of GROUP.  By default (if not parsed as optional
 ## argument), @var{varnames} are "X1","X2","X3", etc.
-## @end itemize
+##
+## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "alpha", @var{alpha})}
+##
+## @var{alpha} must be a scalar value between 0 and 1 requesting 100*(1-alpha)%
+## confidence bounds for the regression coefficients returned in STATS.coeffs
+## (default 0.05 for 95% confidence)
+##
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "display", @var{dispopt})}
 ##
-## @itemize
-## @item
 ## @var{dispopt} can be either "on" (default) or "off" and switches the display
 ## of the ANOVA table.
-## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "contrasts", @var{contrasts})}
 ##
-## @itemize
-## @item
-## @var{contrasts} must be a cell array, where each cell contains a matrix
+## @var{contrasts} can be a cell array, where each cell contains a matrix
 ## of the contrast coding scheme (i.e. the generalized inverse of contrast
 ## weights) for the corresponding column (i.e. factor) in @var{GROUP} (unless
 ## @var{GROUP} contains only one factor in which case the contrast matrix need
@@ -133,10 +127,25 @@
 ## correspond to factor levels in the order that they first appear in the
 ## corresponding @var{GROUP} column (and as they appear in @var{STATS}.grpnames).
 ## If cells are left empty, then the default contrasts are applied, specifically
-## deviation effect coding. Cells corresponding to continuous factors are ignored
+## simple contrast coding. Cells corresponding to continuous factors are ignored
 ## and can be left empty. Note that SSTYPE 3 cannot be calculated if columns in
 ## the contrast matrices do not sum to zero (at single precision), in which case
-## @qcode{anovan} will fall back to SSTYPE 2.
+## @qcode{anovan} will fall back to SSTYPE 2. @qcode{anovan} also includes
+## builtin contrasts, which can be specified simply as one of the following.
+##
+## @itemize
+## @item
+## "simple" (default): Simple (ANOVA) contrasts.The first level appearing in 
+## the @var{GROUP} column is the reference level.
+##
+## @item
+## "poly": Polynomial contrasts for trend analysis.
+##
+## @item
+## "helmert": Helmert contrasts.
+##
+## @item
+## "effect": Deviation effect coding.
 ## @end itemize
 ##
 ## @qcode{anovan} can return up to four output arguments:
@@ -150,10 +159,10 @@
 ## containing additional statistics, including degrees of freedom and effect
 ## sizes for each term in the linear model, the design matrix, the variance-covariance
 ## matrix, model residuals, and the mean squared error. The columns of @var{STATS}.coeffs
-## (from left-to-right) report the model coefficients, standard errors, t-statistics
-## and p-values, which relate to the contrasts. The number appended to each term
-## name in @var{STATS}.coeffnames relates to the column number in the corresponding
-## contrast matrix for that factor.
+## (from left-to-right) report the model coefficients, standard errors, lower and
+## upper 100*(1-alpha)% confidence interval bounds, t-statistics, and p-values 
+## relating to the contrasts. The number appended to each term name in @var{STATS}.coeffnames 
+## corresponds to the column number in the relevant contrast matrix for that factor.
 ##
 ## [@var{P}, @var{T}, @var{STATS}, @var{TERMS}] = anovan (@dots{}) returns the
 ## model term definitions.
@@ -183,6 +192,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     CONTINUOUS = [];
     RANDOM = [];
     CONTRASTS = {};
+    ALPHA = 0.05;
     for idx = 3:2:nargin
       name = varargin{idx-2};
       value = varargin{idx-1};
@@ -204,10 +214,14 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           DISPLAY = value;
         case "contrasts"
           CONTRASTS = value;
+        case "alpha"
+          ALPHA = value;
         otherwise
           error (sprintf ("anovan: parameter %s is not supported", name));
       endswitch
     endfor
+
+    ## Evaluate continuous input argument
     if (isnumeric (CONTINUOUS))
       if (any (CONTINUOUS != abs (fix (CONTINUOUS))))
         error (strcat (["anovan: the value provided for the CONTINUOUS"], ...
@@ -319,25 +333,42 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     if isempty (CONTRASTS)
       CONTRASTS = cell (1, N);
     else
+      if (ischar(CONTRASTS))
+        contr_str = CONTRASTS;
+        CONTRASTS = cell (1, N);
+        CONTRASTS(:) = {contr_str};
+      endif
       if (! iscell (CONTRASTS))
         CONTRASTS = {CONTRASTS};
       endif
-      if (numel (CONTRASTS) != N)
-        error (strcat (["anovan: the number of contrast matrices in"], ...
-                 ["  CONTRASTS does not match the number of main effects"]));
-      endif
       for i = 1:N
         if (! isempty (CONTRASTS{i}))
-          ## Check that the columns sum to 0
-          if (any (abs (sum (CONTRASTS{i})) > eps("single")) ...
-                        && strcmpi (num2str (SSTYPE), "3"))
-            ## Contrasts must sum to 0 for SSTYPE 3.
-            ## If they don't, use SSTYPE 2 instead
-            SSTYPE = 2;
+          if (isnumeric(CONTRASTS{i}))
+            ## Check that the columns sum to 0
+            if (any (abs (sum (CONTRASTS{i})) > eps("single")) ...
+                          && strcmpi (num2str (SSTYPE), "3"))
+              ## Contrasts must sum to 0 for SSTYPE 3.
+              ## If they don't, use SSTYPE 2 instead
+              SSTYPE = 2;
+            endif
+          else
+            if (! ismember (CONTRASTS{i}, ...
+                            {"simple","poly","helmert","effect"}))
+              error (strcat(["anovan: the choices for built-in contrasts"], ... 
+                     [" are 'simple', 'poly', 'helmert', or 'effect'"]));
+            endif
           endif
         endif
       endfor
     endif
+
+    ## Evaluate alpha input argument
+    if (! isa (ALPHA,'numeric') || numel (ALPHA) != 1)
+      error("anovan:alpha must be a numeric scalar value");
+    end
+    if ((ALPHA <= 0) || (ALPHA >= 1))
+      error("anovan: alpha must be a value between 0 and 1");
+    end
 
     ## Remove NaN or non-finite observations
     excl = logical (isnan(Y) + isinf(Y));
@@ -511,11 +542,14 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       ## of the regression coefficients
       se = sqrt (diag (ucov) * mse);
       t =  b ./ se;
+      t_crit = tinv (1 - ALPHA / 2, dfe);
       coeff_stats = zeros (1 + sum (df), 4);
       coeff_stats(:,1) = b;                                # coefficients
       coeff_stats(:,2) = se;                               # standard errors
-      coeff_stats(:,3) = t;                                # t-statistics
-      coeff_stats(:,4) = 2 * (1 - (tcdf (abs (t), dfe)));  # p-values
+      coeff_stats(:,3) = b - se * t_crit;                  # Lower CI bound
+      coeff_stats(:,4) = b + se * t_crit;                  # Upper CI bound
+      coeff_stats(:,5) = t;                                # t-statistics
+      coeff_stats(:,6) = 2 * (1 - (tcdf (abs (t), dfe)));  # p-values
 
       STATS = struct ("source","anovan", ...
                       "resid", resid, ...
@@ -545,6 +579,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                       "txtems", [], ...        # Not used since interactions with random effects is not supported
                       "rtnames", [], ...       # Not used since interactions with random effects is not supported
                       ## Additional STATS fields used exclusively by Octave
+                      "alpha", ALPHA, ...
                       "df", df, ...
                       "contrasts", {CONTRASTS}, ...
                       "X", sparse (cell2mat (X)), ...
@@ -597,7 +632,7 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, ...
 
   ## Returns a cell array of the design matrix for each term in the model
 
-  ## Fetch factor levels from each column (i.e. factor) in GROUP
+  ## EVALUATE FACTOR LEVELS
   levels = cell (Nm, 1);
   gid = zeros (n, Nm);
   nlevels = zeros (Nm, 1);
@@ -605,7 +640,8 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, ...
   termcols = ones (1 + Nm + Nx, 1);
   for j = 1:Nm
     if (any (j == CONTINUOUS))
-      ## Continuous predictor
+
+      ## CONTINUOUS PREDICTOR
       nlevels(j) = 1;
       termcols(j+1) = 1;
       df(j) = 1;
@@ -614,8 +650,10 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, ...
       else
         gid(:,j) = GROUP(:,j);
       end
+
     else
-      ## Categorical predictor
+
+      ## CATEGORICAL PREDICTOR
       levels{j} = unique (GROUP(:,j), "stable");
       if isnumeric (levels{j})
         levels{j} = num2cell (levels{j});
@@ -626,11 +664,13 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, ...
       endfor
       termcols(j+1) = nlevels(j);
       df(j) = nlevels(j) - 1;
+
     endif
   endfor
 
-  ## Create design matrix
-  ## Prepare design matrix columns for the main effects
+  ## MAKE DESIGN MATRIX
+  
+  ## MAIN EFFECTS
   X = cell (1, 1 + Nm + Nx);
   X(1) = ones (n, 1);
   coeffnames = cell (1, 1 + Nm + Nx);
@@ -638,7 +678,8 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, ...
   vmeans = zeros (Nm, 1);
   for j = 1:Nm
     if (any (j == CONTINUOUS))
-      ## Continuous predictor
+
+      ## CONTINUOUS PREDICTOR
       if iscell (GROUP(:,j))
         X(1+j) = cell2mat (GROUP(:,j));
       else
@@ -651,25 +692,44 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, ...
       end
       ## Create names of the coefficients relating to continuous main effects
       coeffnames{1+j} = VARNAMES{j};
+
     else
-      ## Categorical predictor
+
+      ## CATEGORICAL PREDICTOR
       if (isempty (CONTRASTS{j}))
-        CONTRASTS{j} = contr_sum (nlevels(j));
+        CONTRASTS{j} = contr_simple (nlevels(j));
       else
-        ## Check that the contrast matrix provided is the correct size
-        if (! all (size (CONTRASTS{j},1) == nlevels(j)))
-          error (strcat (["anovan: the number of rows in the contrast"], ...
-                       [" matrices should equal the number of factor levels"]));
-        endif
-        if (! all (size (CONTRASTS{j},2) == df(j)))
-          error (strcat (["anovan: the number of columns in each contrast"], ...
-                  [" matrix should equal the degrees of freedom (i.e."], ...
-                  [" number of levels minus 1) for that factor"]));
-        endif
-        if (! all (any (CONTRASTS{j})))
-          error (strcat (["anovan: a contrast must be coded in each"], ...
-                         [" column of the contrast matrices"]));
-        endif
+        switch (lower (CONTRASTS{j}))
+          case "simple"
+            ## SIMPLE EFFECT CODING (DEFAULT)
+            ## The first level is the reference level
+            CONTRASTS{j} = contr_simple (nlevels(j));
+          case "poly"
+            ## POLYNOMIAL CONTRAST CODING
+            CONTRASTS{j} = contr_poly (nlevels(j));
+          case "helmert"
+            ## HELMERT CONTRAST CODING
+            CONTRASTS{j} = contr_helmert (nlevels(j));
+          case "effect"
+            ## DEVIATION EFFECT CONTRAST CODING
+            CONTRASTS{j} = contr_sum (nlevels(j));
+          otherwise
+            ## EVALUATE CUSTOM CONTRAST MATRIX
+            ## Check that the contrast matrix provided is the correct size
+            if (! all (size (CONTRASTS{j},1) == nlevels(j)))
+              error (strcat (["anovan: the number of rows in the contrast"], ...
+                           [" matrices should equal the number of factor levels"]));
+            endif
+            if (! all (size (CONTRASTS{j},2) == df(j)))
+              error (strcat (["anovan: the number of columns in each contrast"], ...
+                      [" matrix should equal the degrees of freedom (i.e."], ...
+                      [" number of levels minus 1) for that factor"]));
+            endif
+            if (! all (any (CONTRASTS{j})))
+              error (strcat (["anovan: a contrast must be coded in each"], ...
+                             [" column of the contrast matrices"]));
+            endif
+        endswitch
       endif
       C = CONTRASTS{j};
       func = @(x) x(gid(:,j));
@@ -679,9 +739,11 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, ...
       for v = 1:df(j)
         coeffnames{1+j}{v} = sprintf ("%s_%u", VARNAMES{j}, v);
       endfor
+
     endif
   endfor
-  ## If applicable, prepare design matrix columns for all the interaction terms
+  
+  ## INTERACTION TERMS
   if (Nx > 0)
     row = TERMS((Ng > 1),:);
     for i = 1:Nx
@@ -704,16 +766,55 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, ...
     endfor
   endif
 
-  function C = contr_sum (N)
+endfunction
 
-    ## Create contrast matrix (of doubles) using deviation effect coding
-    ## These contrasts are centered (i.e. sum to 0)
-    C =  cat (1, eye (N-1), - (ones (1,N-1)));
 
-  endfunction
+## BUILT IN CONTRAST CODING FUNCTIONS
+
+function C = contr_simple (N)
+
+  ## Create contrast matrix (of doubles) using simple contrast coding
+  ## These contrasts are centered (i.e. sum to 0)
+  ## Ideal for unordered factors, with comparison to a reference level
+  ## The first factor level is the reference level 
+  C =  cat (1, zeros (1,N-1), eye(N-1)) - 1/N;
 
 endfunction
 
+function C = contr_poly (N)
+
+  ## Create contrast matrix (of doubles) using polynomial contrast coding
+  ## for trend analysis of ordered categorical factor levels
+  ## These contrasts are orthogonal and centered (i.e. sum to 0)
+  ## Ideal for ordered factors
+  [C, jnk] = qr (bsxfun (@power, [1:N]' - mean ([1:N]'), [0:N-1]));
+  C(:,1) = [];
+  s = ones (1, N-1);
+  s(1:2:N-1) *= -1;
+  f = (sign(C(1,:)) != s);
+  C(:,f) *= -1;
+  
+endfunction
+
+function C = contr_helmert (N)
+
+  ## Create contrast matrix (of doubles) using Helmert coding contrasts
+  ## These contrasts are orthogonal and centered (i.e. sum to 0)
+  C = cat (1, tril (-ones (N-1), -1) + diag (N-1:-1:1), ...
+              -ones (1, N-1)) ./ (N:-1:2);
+
+endfunction
+
+function C = contr_sum (N)
+
+  ## Create contrast matrix (of doubles) using deviation effect coding
+  ## These contrasts are centered (i.e. sum to 0)
+  C =  cat (1, - (ones (1,N-1)), eye (N-1));
+
+endfunction
+
+
+## FUNCTION TO FIT THE LINEAR MODEL
 
 function [b, sse, resid, ucov] = lmfit (X, Y)
 
@@ -960,7 +1061,7 @@ endfunction
 %! # Unbalanced one-way ANOVA with custom, orthogonal contrasts. The ANOVA
 %! # table is displayed followed by a matrix with columns from left-to-right
 %! # corresponding to regression coefficients and their standard errors,
-%! # t-statistics and p-values
+%! # lower and upper 95% confidence interval bounds, t-statistics and p-values
 %!
 %! dv =  [ 8.706 10.362 11.552  6.941 10.983 10.092  6.421 14.943 15.931 ...
 %!        22.968 18.590 16.567 15.944 21.637 14.492 17.965 18.851 22.891 ...
@@ -976,7 +1077,7 @@ endfunction
 %!      -0.6002401  0.0000000  0.0 -0.5];
 %!
 %! [P,T,STATS] = anovan (dv, g, "contrasts", {C}, "varnames", "score", ...
-%!                       "display", "on");
+%!                       "alpha", 0.05, "display", "on");
 %! disp (STATS.coeffnames)
 %! disp (STATS.coeffs)
 
@@ -1316,12 +1417,12 @@ endfunction
 %! assert (STATS.coeffs(3,2), 1.3073, 1e-04);
 %! assert (STATS.coeffs(4,2), 1.6411, 1e-04);
 %! assert (STATS.coeffs(5,2), 1.4507, 1e-04);
-%! assert (STATS.coeffs(1,3), 40.161, 1e-03);
-%! assert (STATS.coeffs(2,3), -9.624, 1e-03);
-%! assert (STATS.coeffs(3,3), -3.825, 1e-03);
-%! assert (STATS.coeffs(4,3), -4.875, 1e-03);
-%! assert (STATS.coeffs(5,3), -5.515, 1e-03);
-%! assert (STATS.coeffs(2,4), 5.74e-11, 1e-12);
-%! assert (STATS.coeffs(3,4), 0.000572, 1e-06);
-%! assert (STATS.coeffs(4,4), 2.86e-05, 1e-07);
-%! assert (STATS.coeffs(5,4), 4.44e-06, 1e-08);
+%! assert (STATS.coeffs(1,5), 40.161, 1e-03);
+%! assert (STATS.coeffs(2,5), -9.624, 1e-03);
+%! assert (STATS.coeffs(3,5), -3.825, 1e-03);
+%! assert (STATS.coeffs(4,5), -4.875, 1e-03);
+%! assert (STATS.coeffs(5,5), -5.515, 1e-03);
+%! assert (STATS.coeffs(2,6), 5.74e-11, 1e-12);
+%! assert (STATS.coeffs(3,6), 0.000572, 1e-06);
+%! assert (STATS.coeffs(4,6), 2.86e-05, 1e-07);
+%! assert (STATS.coeffs(5,6), 4.44e-06, 1e-08);
