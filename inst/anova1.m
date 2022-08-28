@@ -24,7 +24,8 @@
 ##
 ## Perform a one-way analysis of variance (ANOVA) for comparing the means of two
 ## or more groups of data under the null hypothesis that the groups are drawn
-## from the same distribution, i.e. the group means are equal.
+## from the same distribution, i.e. the group means are equal. For planned
+## contrasts in a one-way ANOVA, use @qcode{anovan}.
 ##
 ## anova1 can take up to three input arguments:
 ##
@@ -33,6 +34,7 @@
 ## @var{x} contains the data and it can either be a vector or matrix.
 ## If @var{x} is a matrix, then each column is treated as a separate group.
 ## If @var{x} is a vector, then the @var{group} argument is mandatory.
+##
 ## @item
 ## @var{group} contains the names for each group.  If @var{x} is a matrix, then
 ## @var{group} can either be a cell array of strings of a character array, with
@@ -41,6 +43,7 @@
 ## of the same length, or a string array or cell array of strings with one row
 ## for each element of @var{x}.  @var{x} values corresponding to the same value
 ## of @var{group} are placed in the same group.
+##
 ## @item
 ## @var{displayopt} is an optional parameter for displaying the groups contained
 ## in the data in a boxplot.  If omitted, it is 'on' by default.  If group names
@@ -53,8 +56,10 @@
 ## @itemize
 ## @item
 ## @var{p} is the p-value of the null hypothesis that all group means are equal.
+##
 ## @item
 ## @var{atab} is a cell array containing the results in a standard ANOVA table.
+##
 ## @item
 ## @var{stats} is a structure containing statistics useful for performing
 ## a multiple comparison of means with the MULTCOMPARE function.

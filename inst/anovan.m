@@ -19,8 +19,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} [@var{P}, @var{T}, @var{STATS}, @var{TERMS}] = anovan (@var{Y}, @var{GROUP})
-## @deftypefnx {Function File} [@var{P}, @var{T}, @var{STATS}, @var{TERMS}] = anovan (@var{Y}, @var{GROUP}, "name", @var{value})
+## @deftypefn {Function File} @var{p} = anovan (@var{Y}, @var{GROUP})
+## @deftypefnx {Function File} @var{p} = anovan (@var{Y}, @var{GROUP}, "name", @var{value})
+## @deftypefnx {Function File} [@var{p}, @var{atab}] = anovan (...)
+## @deftypefnx {Function File} [@var{p}, @var{atab}, @var{stats}] = anovan (...)
+## @deftypefnx {Function File} [@var{p}, @var{atab}, @var{stats}, @var{terms}] = anovan (...)
 ##
 ## Perform a multi (N)-way analysis of (co)variance (ANOVA or ANCOVA) to
 ## evaluate the effect of one or more categorical or continuous predictors (i.e.
@@ -185,21 +188,21 @@
 ##
 ## @qcode{anovan} can return up to four output arguments:
 ##
-## @var{P} = anovan (@dots{}) returns a vector of p-values, one for each term.
+## @var{p} = anovan (@dots{}) returns a vector of p-values, one for each term.
 ##
-## [@var{P}, @var{T}] = anovan (@dots{}) returns a cell array containing the
+## [@var{p}, @var{atab}] = anovan (@dots{}) returns a cell array containing the
 ## ANOVA table.
 ##
-## [@var{P}, @var{T}, @var{STATS}] = anovan (@dots{}) returns a structure
+## [@var{p}, @var{atab}, @var{stats}] = anovan (@dots{}) returns a structure
 ## containing additional statistics, including degrees of freedom and effect
 ## sizes for each term in the linear model, the design matrix, the variance-covariance
-## matrix, model residuals, and the mean squared error. The columns of @var{STATS}.coeffs
+## matrix, model residuals, and the mean squared error. The columns of @var{stats}.coeffs
 ## (from left-to-right) report the model coefficients, standard errors, lower and
 ## upper 100*(1-alpha)% confidence interval bounds, t-statistics, and p-values
-## relating to the contrasts. The number appended to each term name in @var{STATS}.coeffnames
+## relating to the contrasts. The number appended to each term name in @var{stats}.coeffnames
 ## corresponds to the column number in the relevant contrast matrix for that factor.
 ##
-## [@var{P}, @var{T}, @var{STATS}, @var{TERMS}] = anovan (@dots{}) returns the
+## [@var{p}, @var{atab}, @var{stats}, @var{terms}] = anovan (@dots{}) returns the
 ## model term definitions.
 ##
 ## @seealso{anova1, anova2}

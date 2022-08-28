@@ -24,7 +24,8 @@
 ## @deftypefnx {Function File} [@var{p}, @var{atab}, @var{stats}] = anova2 (@dots{})
 ##
 ## Performs two-way factorial (crossed) or a nested analysis of variance (ANOVA)
-## for balanced designs. For unbalanced factorial designs use @qcode{anovan}.
+## for balanced designs. For unbalanced factorial designs or planned contrasts, 
+## use @qcode{anovan}.
 ##
 ## @qcode{anova2} requires two input arguments with an optional third and fourth:
 ##
