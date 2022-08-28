@@ -26,7 +26,7 @@
 ## Performs two-way factorial (crossed) or a nested analysis of variance (ANOVA)
 ## for balanced designs. For unbalanced factorial designs use @qcode{anovan}.
 ##
-## @qcode{anova2} requires two input arguments with an optional third:
+## @qcode{anova2} requires two input arguments with an optional third and fourth:
 ##
 ## @itemize
 ## @item
@@ -53,6 +53,7 @@
 ## "nested": treat the row factor as nested within columns. Note that the row
 ## factor is considered a random factor in the calculation of the statistics.
 ##
+## @end itemize
 ## @end itemize
 ##
 ## @qcode{anova2} returns up to three output arguments:
