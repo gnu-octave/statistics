@@ -43,7 +43,7 @@
 ##
 ## @var{continuous} is a vector of indices indicating which of the columns (i.e.
 ## factors) in @var{GROUP} should be treated as continuous predictors rather
-## than as categorical predictors. The relationship between continuous predictors 
+## than as categorical predictors. The relationship between continuous predictors
 ## and the outcome should be linear.
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "random", @var{random})}
@@ -53,8 +53,8 @@
 ## effects. Octave @qcode{anovan} provides only basic support for random effects.
 ## Specifically, since all F-statistics in @qcode{anovan} are calculated using
 ## the mean-squared error (MSE), any interaction terms containing a random effect
-## are dropped from the model term definitions and their associated variance 
-## is pooled with the residual, unexplained variance making up the MSE. Variable 
+## are dropped from the model term definitions and their associated variance
+## is pooled with the residual, unexplained variance making up the MSE. Variable
 ## names for random factors are appended with a ' symbol.
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "model", @var{modeltype})}
@@ -135,7 +135,7 @@
 ##
 ## @itemize
 ## @item
-## "simple" (default): Simple (ANOVA) contrasts.The first level appearing in 
+## "simple" (default): Simple (ANOVA) contrasts.The first level appearing in
 ## the @var{GROUP} column is the reference level.
 ##
 ## @item
@@ -160,19 +160,15 @@
 ## sizes for each term in the linear model, the design matrix, the variance-covariance
 ## matrix, model residuals, and the mean squared error. The columns of @var{STATS}.coeffs
 ## (from left-to-right) report the model coefficients, standard errors, lower and
-## upper 100*(1-alpha)% confidence interval bounds, t-statistics, and p-values 
-## relating to the contrasts. The number appended to each term name in @var{STATS}.coeffnames 
+## upper 100*(1-alpha)% confidence interval bounds, t-statistics, and p-values
+## relating to the contrasts. The number appended to each term name in @var{STATS}.coeffnames
 ## corresponds to the column number in the relevant contrast matrix for that factor.
 ##
 ## [@var{P}, @var{T}, @var{STATS}, @var{TERMS}] = anovan (@dots{}) returns the
 ## model term definitions.
 ##
-##
+## @seealso{anova1, anova2}
 ## @end deftypefn
-
-##  Author: Andrew Penn <a.c.penn@sussex.ac.uk>
-##  Includes some code by: Andy Adler <adler@ncf.ca>, Christian Scholz and Andreas Bertsatos
-##
 
 function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
@@ -204,7 +200,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         case "random"
           RANDOM = value;
         case "nested"
-          error (strcat (["anovan: nested ANOVA is not supported. Please use"], ... 
+          error (strcat (["anovan: nested ANOVA is not supported. Please use"], ...
                          [" anova2 for fully balanced nested ANOVA designs."]));
         case "sstype"
           SSTYPE = value;
@@ -354,7 +350,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           else
             if (! ismember (CONTRASTS{i}, ...
                             {"simple","poly","helmert","effect"}))
-              error (strcat(["anovan: the choices for built-in contrasts"], ... 
+              error (strcat(["anovan: the choices for built-in contrasts"], ...
                      [" are 'simple', 'poly', 'helmert', or 'effect'"]));
             endif
           endif
@@ -669,7 +665,7 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, ...
   endfor
 
   ## MAKE DESIGN MATRIX
-  
+
   ## MAIN EFFECTS
   X = cell (1, 1 + Nm + Nx);
   X(1) = ones (n, 1);
@@ -742,7 +738,7 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, ...
 
     endif
   endfor
-  
+
   ## INTERACTION TERMS
   if (Nx > 0)
     row = TERMS((Ng > 1),:);
@@ -776,7 +772,7 @@ function C = contr_simple (N)
   ## Create contrast matrix (of doubles) using simple contrast coding
   ## These contrasts are centered (i.e. sum to 0)
   ## Ideal for unordered factors, with comparison to a reference level
-  ## The first factor level is the reference level 
+  ## The first factor level is the reference level
   C =  cat (1, zeros (1,N-1), eye(N-1)) - 1/N;
 
 endfunction
@@ -793,7 +789,7 @@ function C = contr_poly (N)
   s(1:2:N-1) *= -1;
   f = (sign(C(1,:)) != s);
   C(:,f) *= -1;
-  
+
 endfunction
 
 function C = contr_helmert (N)
@@ -856,7 +852,7 @@ endfunction
 %! # Two-sample paired test on dependent or matched samples equivalent to a
 %! # paired t-test. As for the first example, the t-statistic can be obtained by
 %! # taking the square root of the reported F statistic. Note that the interaction
-%! # between treatment x subject was dropped from the full model by assigning 
+%! # between treatment x subject was dropped from the full model by assigning
 %! # subject as a random factor (').
 %!
 %! score = [4.5 5.6; 3.7 6.4; 5.3 6.4; 5.4 6.0; 3.9 5.7]';
@@ -886,7 +882,7 @@ endfunction
 %! # One-way repeated measures ANOVA on the data from a study on the number of
 %! # words recalled by 10 subjects for three time condtions, in Loftus & Masson
 %! # (1994) Psychon Bull Rev. 1(4):476-490, Table 2. Note that the interaction
-%! # between seconds x subject was dropped from the full model by assigning 
+%! # between seconds x subject was dropped from the full model by assigning
 %! # subject as a random factor (').
 %!
 %! words = [10 13 13; 6 8 8; 11 14 14; 22 23 25; 16 18 20; ...
@@ -989,7 +985,7 @@ endfunction
 %! # factor. The data is from a randomized block design study on the effects
 %! # of antioxidant treatment on glutathione-S-transferase (GST) levels in
 %! # different mouse strains, from Festing (2014), ILAR Journal, 55(3):427-476.
-%! # Note that all interactions involving block were dropped from the full model 
+%! # Note that all interactions involving block were dropped from the full model
 %! # by assigning block as a random factor (').
 %!
 %! measurement = [444 614 423 625 408  856 447 719 ...

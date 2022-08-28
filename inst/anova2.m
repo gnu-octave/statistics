@@ -23,7 +23,7 @@
 ## @deftypefnx {Function File} [@var{p}, @var{atab}] = anova2 (@dots{})
 ## @deftypefnx {Function File} [@var{p}, @var{atab}, @var{stats}] = anova2 (@dots{})
 ##
-## Performs two-way factorial (crossed) or a nested analysis of variance (ANOVA)  
+## Performs two-way factorial (crossed) or a nested analysis of variance (ANOVA)
 ## for balanced designs. For unbalanced factorial designs use @qcode{anovan}.
 ##
 ## @qcode{anova2} requires two input arguments with an optional third:
@@ -39,7 +39,7 @@
 ## when it is 'on' (default) and suppressing the display when it is 'off'.
 ## @item
 ## @var{model} is an optional parameter to specify the model type as either:
-## 
+##
 ## @itemize
 ## @item
 ## "interaction" or "full" (default): compute both main effects and their
@@ -84,6 +84,7 @@
 ## disp (p);
 ## @end example
 ##
+## @seealso{anova1, anovan}
 ## @end deftypefn
 
 function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
@@ -170,7 +171,7 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
   endif
   df_tot = GTsz - 1;                ## Total
 
-  ## Model-specific calculations of sums-of-squares, mean squares and degrees of 
+  ## Model-specific calculations of sums-of-squares, mean squares and degrees of
   ## freedom. The calculations are based on equalities for the partitioning of
   ## variance in fully balanced designs.
   switch (lower (model))
@@ -229,7 +230,7 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
   else
     MSI = 0;
     F_MSI = 0;
-    p_MSI = NaN;                
+    p_MSI = NaN;
   endif
 
   ## Create p output (if requested)

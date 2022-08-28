@@ -82,6 +82,7 @@
 ## anova1 (x, groups);
 ## @end example
 ##
+## @seealso{anova2, anovan}
 ## @end deftypefn
 
 function [p, anovatab, stats] = anova1 (x, group, displayopt)

@@ -37,9 +37,9 @@
 ## Currently @var{chi-2} and @var{p} are available only for 1 or 2-dimensional
 ## @var{t}, with @code{crosstab} returning a NaN value for both @var{chi-2} and
 ## @var{p} for 3-dimensional, or more, @var{t}.
-## @end deftypefn
 ##
 ## @seealso{grp2idx,tabulate}
+## @end deftypefn
 
 function [t, chi2, p, labels] = crosstab (varargin)
 

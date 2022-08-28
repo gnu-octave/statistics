@@ -29,7 +29,7 @@
 ## NaNs and empty strings in @var{s} appear as NaN in @var{g} and are
 ## not present on either @var{gn} and @var{gl}.
 ##
-## @seealso{cellstr, num2str, unique}
+## @seealso{grpstats}
 ## @end deftypefn
 
 function [g, gn, gl] = grp2idx (s)

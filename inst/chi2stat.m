@@ -60,9 +60,6 @@
 ## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <asnelt@asnelt.org>
-## Description: Moments of the chi-square distribution
-
 function [m, v] = chi2stat (n)
 
   # Check arguments
