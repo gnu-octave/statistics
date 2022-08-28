@@ -374,8 +374,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
             ## Check that the columns sum to 0
             if (any (abs (sum (CONTRASTS{i})) > eps("single")) ...
                           && strcmpi (num2str (SSTYPE), "3"))
-              ## Contrasts must sum to 0 for SSTYPE 3.
-              ## If they don't, use SSTYPE 2 instead
+              warning (strcat(["anovan: columns in CONTRASTS must sum to"], ...
+                     [" 0 for SSTYPE 3. Switching to SSTYPE 2 instead."]));
               SSTYPE = 2;
             endif
           else
