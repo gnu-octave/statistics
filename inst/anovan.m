@@ -59,8 +59,10 @@
 ## Specifically, since all F-statistics in @qcode{anovan} are calculated using
 ## the mean-squared error (MSE), any interaction terms containing a random effect
 ## are dropped from the model term definitions and their associated variance
-## is pooled with the residual, unexplained variance making up the MSE. Variable
-## names for random factors are appended with a ' symbol.
+## is pooled with the residual, unexplained variance making up the MSE. With
+## respect to the fixed effects of interest, the model fitted effectively equates
+## to a random intercept linear mixed model. Variable names for random factors
+## are appended with a ' symbol.
 ## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "model", @var{modeltype})}
