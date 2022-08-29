@@ -19,8 +19,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} [@var{P}, @var{T}, @var{STATS}, @var{TERMS}] = anovan (@var{Y}, @var{GROUP})
-## @deftypefnx {Function File} [@var{P}, @var{T}, @var{STATS}, @var{TERMS}] = anovan (@var{Y}, @var{GROUP}, "name", @var{value})
+## @deftypefn {Function File} @var{p} = anovan (@var{Y}, @var{GROUP})
+## @deftypefnx {Function File} @var{p} = anovan (@var{Y}, @var{GROUP}, "name", @var{value})
+## @deftypefnx {Function File} [@var{p}, @var{atab}] = anovan (...)
+## @deftypefnx {Function File} [@var{p}, @var{atab}, @var{stats}] = anovan (...)
+## @deftypefnx {Function File} [@var{p}, @var{atab}, @var{stats}, @var{terms}] = anovan (...)
 ##
 ## Perform a multi (N)-way analysis of (co)variance (ANOVA or ANCOVA) to
 ## evaluate the effect of one or more categorical or continuous predictors (i.e.
@@ -59,8 +62,10 @@
 ## Specifically, since all F-statistics in @qcode{anovan} are calculated using
 ## the mean-squared error (MSE), any interaction terms containing a random effect
 ## are dropped from the model term definitions and their associated variance
-## is pooled with the residual, unexplained variance making up the MSE. Variable
-## names for random factors are appended with a ' symbol.
+## is pooled with the residual, unexplained variance making up the MSE. With
+## respect to the fixed effects of interest, the model fitted effectively equates
+## to a random intercept linear mixed model. Variable names for random factors
+## are appended with a ' symbol.
 ## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "model", @var{modeltype})}
@@ -146,7 +151,7 @@
 ##
 ## @itemize
 ## @item
-## A string defining one of the built-in contrasts:
+## A string corresponding to one of the built-in contrasts listed below:
 ##
 ## @itemize
 ## @item
@@ -164,38 +169,40 @@
 ## @end itemize
 ##
 ## @item
-## A matrix containing a contrast coding scheme (i.e. the generalized inverse of 
-## contrast weights). Rows in the contrast matrices correspond to factor levels 
-## in the order that they first appear in the @var{GROUP} column. 
+## A matrix containing a custom contrast coding scheme (i.e. the generalized
+## inverse of contrast weights). Rows in the contrast matrices correspond to
+## factor levels in the order that they first appear in the @var{GROUP} column.
+## The matrix must contain the same number of columns as there are the number of
+## factor levels minus one.
 ## @end itemize
 ##
 ## If the anovan model contains more than one factor and a built-in contrast
-## coding scheme was specified, then those contrasts are applied to all factors. 
-## To specify different contrasts for different factors in the model, @var{contrasts} 
+## coding scheme was specified, then those contrasts are applied to all factors.
+## To specify different contrasts for different factors in the model, @var{contrasts}
 ## should be a cell array with the same number of cells as there are columns in 
-## @var{GROUP}. Each cell should define contrasts for the respective columns in 
-## @var{GROUP} by one of the methods described above. If cells are left empty, 
-## then the default contrasts are applied. Contrasts for cells corresponding to 
+## @var{GROUP}. Each cell should define contrasts for the respective column in
+## @var{GROUP} by one of the methods described above. If cells are left empty,
+## then the default contrasts are applied. Contrasts for cells corresponding to
 ## continuous factors are ignored.
 ## @end itemize
 ##
 ## @qcode{anovan} can return up to four output arguments:
 ##
-## @var{P} = anovan (@dots{}) returns a vector of p-values, one for each term.
+## @var{p} = anovan (@dots{}) returns a vector of p-values, one for each term.
 ##
-## [@var{P}, @var{T}] = anovan (@dots{}) returns a cell array containing the
+## [@var{p}, @var{atab}] = anovan (@dots{}) returns a cell array containing the
 ## ANOVA table.
 ##
-## [@var{P}, @var{T}, @var{STATS}] = anovan (@dots{}) returns a structure
+## [@var{p}, @var{atab}, @var{stats}] = anovan (@dots{}) returns a structure
 ## containing additional statistics, including degrees of freedom and effect
 ## sizes for each term in the linear model, the design matrix, the variance-covariance
-## matrix, model residuals, and the mean squared error. The columns of @var{STATS}.coeffs
+## matrix, model residuals, and the mean squared error. The columns of @var{stats}.coeffs
 ## (from left-to-right) report the model coefficients, standard errors, lower and
 ## upper 100*(1-alpha)% confidence interval bounds, t-statistics, and p-values
-## relating to the contrasts. The number appended to each term name in @var{STATS}.coeffnames
+## relating to the contrasts. The number appended to each term name in @var{stats}.coeffnames
 ## corresponds to the column number in the relevant contrast matrix for that factor.
 ##
-## [@var{P}, @var{T}, @var{STATS}, @var{TERMS}] = anovan (@dots{}) returns the
+## [@var{p}, @var{atab}, @var{stats}, @var{terms}] = anovan (@dots{}) returns the
 ## model term definitions.
 ##
 ## @seealso{anova1, anova2}
@@ -374,8 +381,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
             ## Check that the columns sum to 0
             if (any (abs (sum (CONTRASTS{i})) > eps("single")) ...
                           && strcmpi (num2str (SSTYPE), "3"))
-              ## Contrasts must sum to 0 for SSTYPE 3.
-              ## If they don't, use SSTYPE 2 instead
+              warning (strcat(["anovan: columns in CONTRASTS must sum to"], ...
+                     [" 0 for SSTYPE 3. Switching to SSTYPE 2 instead."]));
               SSTYPE = 2;
             endif
           else

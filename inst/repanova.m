@@ -14,8 +14,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{pval}, @var{table}, @var{st}] =} repanova (@var{X}, @var{cond})
-## @deftypefnx {Function File} {[@var{pval}, @var{table}, @var{st}] =} repanova (@var{X}, @var{cond}, ['string' | 'cell'])
+## @deftypefn {Function File} @var{p} = repanova (@var{X}, @var{cond})
+## @deftypefnx {Function File} @var{p} = repanova (@var{X}, @var{cond}, ['string' | 'cell'])
+## @deftypefnx {Function File} [@var{p}, @var{atab}] = repanova (...)
+## @deftypefnx {Function File} [@var{p}, @var{atab}, @var{stats}] = repanova (...)
+##
 ## Perform a repeated measures analysis of variance (Repeated ANOVA).
 ## X is formated such that each row is a subject and each column is a condition.
 ##

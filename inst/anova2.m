@@ -24,7 +24,8 @@
 ## @deftypefnx {Function File} [@var{p}, @var{atab}, @var{stats}] = anova2 (@dots{})
 ##
 ## Performs two-way factorial (crossed) or a nested analysis of variance (ANOVA)
-## for balanced designs. For unbalanced factorial designs use @qcode{anovan}.
+## for balanced designs. For unbalanced factorial designs or planned contrasts, 
+## use @qcode{anovan}.
 ##
 ## @qcode{anova2} requires two input arguments with an optional third and fourth:
 ##
@@ -32,11 +33,14 @@
 ## @item
 ## @var{x} contains the data and it must be a matrix of at least two columns and
 ## two rows.
+##
 ## @item
 ## @var{reps} is the number of replicates for each combination of factor groups.
+##
 ## @item
 ## @var{displayopt} is an optional parameter for displaying the ANOVA table,
 ## when it is 'on' (default) and suppressing the display when it is 'off'.
+##
 ## @item
 ## @var{model} is an optional parameter to specify the model type as either:
 ##
@@ -46,8 +50,9 @@
 ## interaction
 ##
 ## @item
-## "linear" (default): compute both main effects without an interaction (e.g.
-## balanced randomized block design).
+## "linear": compute both main effects without an interaction (e.g. for one-way
+##  repeated measures design when @var{reps} equals 1, or balanced randomized
+##  block design when @var{reps} > 1).
 ##
 ## @item
 ## "nested": treat the row factor as nested within columns. Note that the row
@@ -61,8 +66,10 @@
 ## @itemize
 ## @item
 ## @var{p} is the p-value of the null hypothesis that all group means are equal.
+##
 ## @item
 ## @var{atab} is a cell array containing the results in a standard ANOVA table.
+##
 ## @item
 ## @var{stats} is a structure containing statistics useful for performing
 ## a multiple comparison of means with the MULTCOMPARE function.
