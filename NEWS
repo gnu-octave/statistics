@@ -55,7 +55,7 @@ Summary of important user-visible changes for statistics 1.5.0:
  Improvements:
  =============
 
- ** anovan: added more options (patch #10123, Github PR #1)
+ ** anovan: added more options (patch #10123, Github PR #1-12)
 
  ** binopdf: implement high accuracy Loader algorithm for m>=10 (bug #34362)
 

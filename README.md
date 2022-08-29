@@ -33,7 +33,7 @@ to download and install it.
 
 If you need to install a specific release, for example `1.4.2`, type:
 
-    `pkg install "https://github.com/gnu-octave/statistics/archive/refs/tags/release-1.4.2.tar.gz"`
+  `pkg install "https://github.com/gnu-octave/statistics/archive/refs/tags/release-1.4.2.tar.gz"`
 
 After installation, type:
 - `pkg load statistics` to load the **statistics** package.
