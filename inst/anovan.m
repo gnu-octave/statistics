@@ -62,10 +62,9 @@
 ## Specifically, since all F-statistics in @qcode{anovan} are calculated using
 ## the mean-squared error (MSE), any interaction terms containing a random effect
 ## are dropped from the model term definitions and their associated variance
-## is pooled with the residual, unexplained variance making up the MSE. With
-## respect to the fixed effects of interest, the model fitted effectively equates
-## to a random intercept linear mixed model. Variable names for random factors
-## are appended with a ' symbol.
+## is pooled with the residual, unexplained variance making up the MSE. In effect,
+## the model then fitted equates to a linear mixed model with random intercept(s).
+## Variable names for random factors are appended with a ' symbol.
 ## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "model", @var{modeltype})}
@@ -165,7 +164,8 @@
 ## "helmert": Helmert contrasts.
 ##
 ## @item
-## "effect": Deviation effect coding.
+## "effect": Deviation effect coding. (The first level appearing in the @var{GROUP}
+## column is omitted).
 ## @end itemize
 ##
 ## @item
@@ -389,7 +389,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
             if (! ismember (CONTRASTS{i}, ...
                             {"simple","poly","helmert","effect"}))
               error (strcat(["anovan: the choices for built-in contrasts"], ...
-                     [" are 'simple', 'poly', 'helmert', or 'effect'"]));
+                     [" are ""simple"", ""poly"", ""helmert"", or ""effect"""]));
             endif
           endif
         endif
@@ -636,25 +636,25 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         fprintf("\nMODEL FORMULA (in equivalent Wilkinson-Rogers-Pinheiro-Bates notation):\n\n%s\n", formula);
         ## Parameter estimates correspond to the contrasts we set
         fprintf("\nMODEL PARAMETERS (i.e. contrasts)\n\n");
-        fprintf("Parameter               Estimate      SE  Lower.CI  Upper.CI         t  Prob>|t|\n");
+        fprintf("Parameter               Estimate        SE  Lower.CI  Upper.CI        t Prob>|t|\n");
         fprintf("********************************************************************************\n");
         
         for j = 1:numel(b)
           if (p(j) < 0.001)
-            fprintf ("%-20s  %10.5g  %6.3g  %8.3g  %8.3g  %8.2f     <.001 \n", ...
+            fprintf ("%-20s  %10.3g %9.3g %9.3g %9.3g %8.2f    <.001 \n", ...
                      STATS.coeffnames{j}, STATS.coeffs(j,1:end-1));
           elseif (p(j) < 0.9995)
-            fprintf ("%-20s  %10.5g  %6.3g  %8.3g  %8.3g  %8.2f      .%03u \n", ...
+            fprintf ("%-20s  %10.3g %9.3g %9.3g %9.3g %8.2f     .%03u \n", ...
                      STATS.coeffnames{j}, STATS.coeffs(j,1:end-1), round (p(j) * 1e+03));
           else
-            fprintf ("%-20s  %10.5g  %6.3g  %8.3g  %8.3g  %8.2f     1.000 \n", ...
+            fprintf ("%-20s  %10.3g %9.3g %9.3g %9.3g %8.2f    1.000 \n", ...
                      STATS.coeffnames{j}, STATS.coeffs(j,1:end-1));
           end
         endfor
         ## Get dimensions of the ANOVA table
         [nrows, ncols] = size (T);
         ## Print table
-        fprintf("\nANOVA table (Type %s sums-of-squares):\n\n", sstype_char);
+        fprintf("\nANOVA TABLE (Type %s sums-of-squares):\n\n", sstype_char);
         fprintf("Source                   Sum Sq.    d.f.    Mean Sq.  R Sq.            F  Prob>F\n");
         fprintf("********************************************************************************\n");
         for i = 1:Nt
