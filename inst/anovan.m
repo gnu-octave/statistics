@@ -139,8 +139,8 @@
 ##
 ## @itemize
 ## @item
-## @var{dispopt} can be either "on" (default) or "off" and switches the display
-## of the ANOVA table.
+## @var{dispopt} can be either "on" (default) or "off" and controls the display
+## of the model formula, table of model parameters and the ANOVA table.
 ## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "contrasts", @var{contrasts})}
@@ -556,7 +556,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     F = ms / mse;
     P = 1 - fcdf (F, df, dfe);
 
-    ## Prepare model formula and cell array containing the ANOVA table (ATAB)
+    ## Prepare model formula and cell array containing the ANOVA table
     T = cell (Nt + 3, 7);
     T(1,:) = {"Source", "Sum Sq.", "d.f.", "Mean Sq.", "Eta Sq.", "F", "Prob>F"};
     T(2:Nt+1,2:7) = num2cell ([ss df ms partial_eta_sq F P]);
@@ -570,75 +570,87 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       str = regexprep (str, "\\*", ":");
       if (strcmp (str(end-1), "'"))
         ## Random intercept term
-        formula = sprintf ("%s + (1|%s)", formula, str(1:end-2));
+        formula = sprintf ("%s + (1|%s)", formula, str(1:end-1));
       else
         ## Fixed effect term
         formula = sprintf ("%s + %s", formula, str(1:end-1));
       end
     endfor
 
-    ## If requested, prepare stats output structure
-    ## Note that the information provided by STATS is not sufficient
-    ## for multcompare function as yet
-    if (nargout > 2)
+    ## Calculate a standard error, t-statistic and p-value for each
+    ## of the regression coefficients
+    t_crit = tinv (1 - ALPHA / 2, dfe);
+    se = sqrt (diag (ucov) * mse);
+    t =  b ./ se;
+    p = 2 * (1 - (tcdf (abs (t), dfe)));
+    coeff_stats = zeros (1 + sum (df), 4);
+    coeff_stats(:,1) = b;                                # coefficients
+    coeff_stats(:,2) = se;                               # standard errors
+    coeff_stats(:,3) = b - se * t_crit;                  # Lower CI bound
+    coeff_stats(:,4) = b + se * t_crit;                  # Upper CI bound
+    coeff_stats(:,5) = t;                                # t-statistics
+    coeff_stats(:,6) = p;                                # p-values
 
-      ## Calculate a standard error, t-statistic and p-value for each
-      ## of the regression coefficients
-      se = sqrt (diag (ucov) * mse);
-      t =  b ./ se;
-      t_crit = tinv (1 - ALPHA / 2, dfe);
-      coeff_stats = zeros (1 + sum (df), 4);
-      coeff_stats(:,1) = b;                                # coefficients
-      coeff_stats(:,2) = se;                               # standard errors
-      coeff_stats(:,3) = b - se * t_crit;                  # Lower CI bound
-      coeff_stats(:,4) = b + se * t_crit;                  # Upper CI bound
-      coeff_stats(:,5) = t;                                # t-statistics
-      coeff_stats(:,6) = 2 * (1 - (tcdf (abs (t), dfe)));  # p-values
-
-      STATS = struct ("source","anovan", ...
-                      "resid", resid, ...
-                      "coeffs", coeff_stats, ...
-                      "Rtr", [], ...           # Not used by Octave
-                      "rowbasis", [], ...      # Not used by Octave
-                      "dfe", dfe, ...
-                      "mse", mse, ...
-                      "nullproject", [], ...   # Not used by Octave
-                      "terms", TERMS, ...
-                      "nlevels", nlevels, ...
-                      "continuous", cont_vec, ...
-                      "vmeans", vmeans, ...
-                      "termcols", termcols, ...
-                      "coeffnames", {vertcat(coeffnames{:})}, ...
-                      "vars", [], ...          # Not used by Octave
-                      "varnames", {VARNAMES}, ...
-                      "grpnames", {grpnames}, ...
-                      "vnested", [], ...       # Not used since "nested" argument name is not supported
-                      "ems", [], ...           # Not used since "nested" argument name is not supported
-                      "denom", [], ...         # Not used since interactions with random effects is not supported
-                      "dfdenom", [], ...       # Not used since interactions with random effects is not supported
-                      "msdenom", [], ...       # Not used since interactions with random effects is not supported
-                      "varest", [], ...        # Not used since interactions with random effects is not supported
-                      "varci", [], ...         # Not used since interactions with random effects is not supported
-                      "txtdenom", [], ...      # Not used since interactions with random effects is not supported
-                      "txtems", [], ...        # Not used since interactions with random effects is not supported
-                      "rtnames", [], ...       # Not used since interactions with random effects is not supported
-                      ## Additional STATS fields used exclusively by Octave
-                      "formula", formula, ...
-                      "alpha", ALPHA, ...
-                      "df", df, ...
-                      "contrasts", {CONTRASTS}, ...
-                      "X", sparse (cell2mat (X)), ...
-                      "vcov", sparse (ucov * mse), ...
-                      "grps", gid, ...
-                      "eta_squared", eta_sq, ...
-                      "partial_eta_squared", partial_eta_sq);
-    endif
+    STATS = struct ("source","anovan", ...
+                    "resid", resid, ...
+                    "coeffs", coeff_stats, ...
+                    "Rtr", [], ...           # Not used by Octave
+                    "rowbasis", [], ...      # Not used by Octave
+                    "dfe", dfe, ...
+                    "mse", mse, ...
+                    "nullproject", [], ...   # Not used by Octave
+                    "terms", TERMS, ...
+                    "nlevels", nlevels, ...
+                    "continuous", cont_vec, ...
+                    "vmeans", vmeans, ...
+                    "termcols", termcols, ...
+                    "coeffnames", {vertcat(coeffnames{:})}, ...
+                    "vars", [], ...          # Not used by Octave
+                    "varnames", {VARNAMES}, ...
+                    "grpnames", {grpnames}, ...
+                    "vnested", [], ...       # Not used since "nested" argument name is not supported
+                    "ems", [], ...           # Not used since "nested" argument name is not supported
+                    "denom", [], ...         # Not used since interactions with random effects is not supported
+                    "dfdenom", [], ...       # Not used since interactions with random effects is not supported
+                    "msdenom", [], ...       # Not used since interactions with random effects is not supported
+                    "varest", [], ...        # Not used since interactions with random effects is not supported
+                    "varci", [], ...         # Not used since interactions with random effects is not supported
+                    "txtdenom", [], ...      # Not used since interactions with random effects is not supported
+                    "txtems", [], ...        # Not used since interactions with random effects is not supported
+                    "rtnames", [], ...       # Not used since interactions with random effects is not supported
+                    ## Additional STATS fields used exclusively by Octave
+                    "formula", formula, ...
+                    "alpha", ALPHA, ...
+                    "df", df, ...
+                    "contrasts", {CONTRASTS}, ...
+                    "X", sparse (cell2mat (X)), ...
+                    "vcov", sparse (ucov * mse), ...
+                    "grps", gid, ...
+                    "eta_squared", eta_sq, ...
+                    "partial_eta_squared", partial_eta_sq);
 
     ## Print ANOVA table
     switch (lower (DISPLAY))
       case "on"
         ## Print model formula 
-        fprintf("\nMODEL (Wilkinson-Rogers-Pinheiro-Bates formula):\n\n%s\n", formula);
+        fprintf("\nMODEL FORMULA (in equivalent Wilkinson-Rogers-Pinheiro-Bates notation):\n\n%s\n", formula);
+        ## Parameter estimates correspond to the contrasts we set
+        fprintf("\nMODEL PARAMETERS (i.e. contrasts)\n\n");
+        fprintf("Parameter               Estimate      SE  Lower.CI  Upper.CI         t  Prob>|t|\n");
+        fprintf("********************************************************************************\n");
+        
+        for j = 1:numel(b)
+          if (p(j) < 0.001)
+            fprintf ("%-20s  %10.5g  %6.3g  %8.3g  %8.3g  %8.2f     <.001 \n", ...
+                     STATS.coeffnames{j}, STATS.coeffs(j,1:end-1));
+          elseif (p(j) < 0.9995)
+            fprintf ("%-20s  %10.5g  %6.3g  %8.3g  %8.3g  %8.2f      .%03u \n", ...
+                     STATS.coeffnames{j}, STATS.coeffs(j,1:end-1), round (p(j) * 1e+03));
+          else
+            fprintf ("%-20s  %10.5g  %6.3g  %8.3g  %8.3g  %8.2f     1.000 \n", ...
+                     STATS.coeffnames{j}, STATS.coeffs(j,1:end-1));
+          end
+        endfor
         ## Get dimensions of the ANOVA table
         [nrows, ncols] = size (T);
         ## Print table
@@ -653,11 +665,11 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           if (P(i) < 0.001)
             fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f   <.001 \n", ...
                       str(1:min(18,l)), T{i+1,2:end-1});
-          elseif (P(i) < 1.0)
-            fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f   .%03u \n", ...
+          elseif (P(i) < 0.9995)
+            fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f    .%03u \n", ...
                       str(1:min(18,l)), T{i+1,2:end-1}, round (P(i) * 1e+03));
           else
-            fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f   1.000 \n", ...
+            fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f    1.000 \n", ...
                       str(1:min(18,l)), T{i+1,2:end-1});
           endif
         endfor
@@ -808,7 +820,8 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, ...
       X{1+Nm+i} = tmp;
       coeffnames{1+Nm+i} = cell (df(Nm+i),1);
       for v = 1:df(Nm+i)
-        coeffnames{1+Nm+i}{v} = strcat (sprintf ("%s_", VARNAMES{I-1}), num2str (v));
+        str = sprintf ("%s:", VARNAMES{I-1});
+        coeffnames{1+Nm+i}{v} = strcat (str(1:end-1), "_", num2str (v));
       endfor
     endfor
   endif
@@ -945,9 +958,9 @@ endfunction
 %! subject = [ 1  1  1;  2  2  2;  3  3  3;  4  4  4;  5  5  5; ...
 %!             6  6  6;  7  7  7;  8  8  8;  9  9  9; 10 10 10];
 %!
-%! [P, T] = anovan (words(:), {seconds(:), subject(:)}, "model", "full", ...
-%!                  "random", 2, "sstype", 2, "display", "on", ...
-%!                  "varnames", {"seconds", "subject"});
+%! [P, ATAB, STATS] = anovan (words(:), {seconds(:), subject(:)}, ...
+%!                            "model", "full", "random", 2, "sstype", 2, ...
+%!                            "display", "on", "varnames", {"seconds", "subject"});
 
 %!demo
 %!
@@ -1111,10 +1124,9 @@ endfunction
 
 %!demo
 %!
-%! # Unbalanced one-way ANOVA with custom, orthogonal contrasts. The ANOVA
-%! # table is displayed followed by a matrix with columns from left-to-right
-%! # corresponding to regression coefficients and their standard errors,
-%! # lower and upper 95% confidence interval bounds, t-statistics and p-values
+%! # Unbalanced one-way ANOVA with custom, orthogonal contrasts. The statistics
+%! # relating to the contrasts are shown in the table of model parameters, and
+%! # can be retrieved from the STATS.coeffs output.
 %!
 %! dv =  [ 8.706 10.362 11.552  6.941 10.983 10.092  6.421 14.943 15.931 ...
 %!        22.968 18.590 16.567 15.944 21.637 14.492 17.965 18.851 22.891 ...
@@ -1131,8 +1143,6 @@ endfunction
 %!
 %! [P,ATAB, STATS] = anovan (dv, g, "contrasts", {C}, "varnames", "score", ...
 %!                          "alpha", 0.05, "display", "on");
-%! disp (STATS.coeffnames)
-%! disp (STATS.coeffs)
 
 ## Test 1 for anovan example 1
 ## Test compares anovan to results from MATLAB's anovan and ttest2 functions
