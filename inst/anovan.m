@@ -556,15 +556,25 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     F = ms / mse;
     P = 1 - fcdf (F, df, dfe);
 
-    ## Prepare cell array containing the ANOVA table (T)
+    ## Prepare model formula and cell array containing the ANOVA table (ATAB)
     T = cell (Nt + 3, 7);
     T(1,:) = {"Source", "Sum Sq.", "d.f.", "Mean Sq.", "Eta Sq.", "F", "Prob>F"};
     T(2:Nt+1,2:7) = num2cell ([ss df ms partial_eta_sq F P]);
     T(end-1,1:4) = {"Error", sse, dfe, mse};
     T(end,1:3) = {"Total", sst, dft};
+    formula = sprintf ("Y ~ 1");  # Initialise model formula
     for i = 1:Nt
       str = sprintf ("%s*", VARNAMES{find (TERMS(i,:))});
       T(i+1,1) = str(1:end-1);
+      ## Append model term to formula
+      str = regexprep (str, "\\*", ":");
+      if (strcmp (str(end-1), "'"))
+        ## Random intercept term
+        formula = sprintf ("%s + (1|%s)", formula, str(1:end-2));
+      else
+        ## Fixed effect term
+        formula = sprintf ("%s + %s", formula, str(1:end-1));
+      end
     endfor
 
     ## If requested, prepare stats output structure
@@ -613,6 +623,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                       "txtems", [], ...        # Not used since interactions with random effects is not supported
                       "rtnames", [], ...       # Not used since interactions with random effects is not supported
                       ## Additional STATS fields used exclusively by Octave
+                      "formula", formula, ...
                       "alpha", ALPHA, ...
                       "df", df, ...
                       "contrasts", {CONTRASTS}, ...
@@ -626,6 +637,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     ## Print ANOVA table
     switch (lower (DISPLAY))
       case "on"
+        ## Print model formula 
+        fprintf("\nMODEL (Wilkinson-Rogers-Pinheiro-Bates formula):\n\n%s\n", formula);
         ## Get dimensions of the ANOVA table
         [nrows, ncols] = size (T);
         ## Print table
@@ -1033,15 +1046,15 @@ endfunction
 %!
 %! measurement = [444 614 423 625 408  856 447 719 ...
 %!                764 831 586 782 609 1002 606 766]';
-%! block = [1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2]';
 %! strain= {"NIH","NIH","BALB/C","BALB/C","A/J","A/J","129/Ola","129/Ola", ...
 %!          "NIH","NIH","BALB/C","BALB/C","A/J","A/J","129/Ola","129/Ola"}';
 %! treatment={"C" "T" "C" "T" "C" "T" "C" "T" "C" "T" "C" "T" "C" "T" "C" "T"}';
+%! block = [1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2]';
 %!
-%! [P, ATAB, STATS] = anovan (measurement/10, {block, strain, treatment}, ...
-%!                            "sstype", 2, "model", "full", "random", 1, ...
+%! [P, ATAB, STATS] = anovan (measurement/10, {strain, treatment, block}, ...
+%!                            "sstype", 2, "model", "full", "random", 3, ...
 %!                            "display", "on", ...
-%!                            "varnames", {"block", "strain", "treatment"});
+%!                            "varnames", {"strain", "treatment", "block"});
 
 %!demo
 %!
@@ -1357,18 +1370,18 @@ endfunction
 %!test
 %! measurement = [444 614 423 625 408  856 447 719 ...
 %!                764 831 586 782 609 1002 606 766]';
-%! block = [1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2]';
 %! strain= {'NIH','NIH','BALB/C','BALB/C','A/J','A/J','129/Ola','129/Ola', ...
 %!          'NIH','NIH','BALB/C','BALB/C','A/J','A/J','129/Ola','129/Ola'}';
 %! treatment={'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T'}';
-%! [P, ATAB, STATS] = anovan (measurement/10,{block,strain,treatment},'model','full','random',1,'display','off');
-%! assert (P(1), 0.000339814602130731, 1e-09);
-%! assert (P(2), 0.0914352969909372, 1e-09);
-%! assert (P(3), 5.04077373924908e-05, 1e-09);
+%! block = [1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2]';
+%! [P, ATAB, STATS] = anovan (measurement/10,{strain,treatment,block},'model','full','random',3,'display','off');
+%! assert (P(1), 0.0914352969909372, 1e-09);
+%! assert (P(2), 5.04077373924908e-05, 1e-09);
+%! assert (P(3), 0.000339814602130731, 1e-09);
 %! assert (P(4), 0.0283196918836667, 1e-09);
-%! assert (ATAB{2,2}, 1242.5625, 1e-09);
-%! assert (ATAB{3,2}, 286.132500000002, 1e-09);
-%! assert (ATAB{4,2}, 2275.29, 1e-09);
+%! assert (ATAB{2,2}, 286.132500000002, 1e-09);
+%! assert (ATAB{3,2}, 2275.29, 1e-09);
+%! assert (ATAB{4,2}, 1242.5625, 1e-09);
 %! assert (ATAB{5,2}, 495.905000000001, 1e-09);
 %! assert (ATAB{6,2}, 207.007499999999, 1e-09);
 
