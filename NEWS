@@ -127,6 +127,8 @@ Summary of important user-visible changes for statistics 1.5.0:
 
  ** manova (replaced by manova1)
 
+ ** repanova (replaced by anova2)
+
  ** sign_test (replaced by updated signtest)
 
  ** tblread, tblwrite (belong to `io` package when tables are implemented)
