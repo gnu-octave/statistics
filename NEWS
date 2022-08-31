@@ -55,7 +55,9 @@ Summary of important user-visible changes for statistics 1.5.0:
  Improvements:
  =============
 
- ** anovan: added more options (patch #10123, Github PR #1-12)
+ ** anova1: added extra feature for performing Welch's ANOVA (PR #15)
+
+ ** anovan: added more options (patch #10123, PR #1-14)
 
  ** binopdf: implement high accuracy Loader algorithm for m>=10 (bug #34362)
 
