@@ -571,7 +571,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       str = regexprep (str, "\\*", ":");
       if (strcmp (str(end-1), "'"))
         ## Random intercept term
-        formula = sprintf ("%s + (1|%s)", formula, str(1:end-1));
+        formula = sprintf ("%s + (1|%s)", formula, str(1:end-2));
       else
         ## Fixed effect term
         formula = sprintf ("%s + %s", formula, str(1:end-1));
