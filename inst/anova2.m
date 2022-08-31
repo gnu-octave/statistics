@@ -286,7 +286,7 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
 
   ## Print results table on screen if no output argument was requested
   if (nargout == 0 || plotdata)
-    printf("\n                      ANOVA Table\n");
+    printf("\n                      ANOVA Table\n\n");
     printf("Source             SS      df        MS       F      Prob>F\n");
     printf("-----------------------------------------------------------\n");
     printf("Columns      %10.4f %5.0f %10.4f %8.2f %9.4f\n", ...
