@@ -1,0 +1,3 @@
+if (compare_versions (version (), "8", "<"))
+  addpath (fullfile (fileparts (mfilename ("fullpath")), "mean"));
+endif
