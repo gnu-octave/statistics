@@ -139,7 +139,8 @@
 ## @itemize
 ## @item
 ## @var{dispopt} can be either "on" (default) or "off" and controls the display
-## of the model formula, table of model parameters and the ANOVA table.
+## of the model formula, table of model parameters and the ANOVA table. The
+## F-statistic and p-values are formatted in APA-style.
 ## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "contrasts", @var{contrasts})}
