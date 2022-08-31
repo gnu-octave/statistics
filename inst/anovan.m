@@ -637,7 +637,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         ## Parameter estimates correspond to the contrasts we set
         fprintf("\nMODEL PARAMETERS (i.e. contrasts)\n\n");
         fprintf("Parameter               Estimate        SE  Lower.CI  Upper.CI        t Prob>|t|\n");
-        fprintf("********************************************************************************\n");
+        fprintf("--------------------------------------------------------------------------------\n");
         
         for j = 1:numel(b)
           if (p(j) < 0.001)
@@ -656,7 +656,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         ## Print table
         fprintf("\nANOVA TABLE (Type %s sums-of-squares):\n\n", sstype_char);
         fprintf("Source                   Sum Sq.    d.f.    Mean Sq.  R Sq.            F  Prob>F\n");
-        fprintf("********************************************************************************\n");
+        fprintf("--------------------------------------------------------------------------------\n");
         for i = 1:Nt
           str = T{i+1,1};
           l = numel(str);  # Needed to truncate source term name at 18 characters
