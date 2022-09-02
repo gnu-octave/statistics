@@ -107,7 +107,9 @@ function [h, p, ci, stats] = ttest(x, my, varargin)
   % This adjustment allows everything else to remain the
   % same for both the one-sample t test and paired tests.
   x = x - my;
-  my = 0;
+  if ~isscalar(my)
+    my = 0;
+  end
 
   % Calculate the test statistic value (tval)
   n = size(x, dim);
