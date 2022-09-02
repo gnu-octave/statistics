@@ -573,8 +573,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         ## Random intercept term
         formula = sprintf ("%s + (1|%s)", formula, str(1:end-2));
         ## Remove statistics for random effects from the ANOVA table
-        T(RANDOM+1,4:7) = cell(1,4);
-        P(RANDOM) = NaN;
+        #T(RANDOM+1,4:7) = cell(1,4);
+        #P(RANDOM) = NaN;
       else
         ## Fixed effect term
         formula = sprintf ("%s + %s", formula, str(1:end-1));
@@ -644,7 +644,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         ## Print model formula 
         fprintf("\nMODEL FORMULA (in equivalent Wilkinson-Rogers-Pinheiro-Bates notation):\n\n%s\n", formula);
         ## Parameter estimates correspond to the contrasts we set
-        fprintf("\nMODEL PARAMETERS (i.e. contrasts for fixed effects)\n\n");
+        fprintf("\nMODEL PARAMETERS (contrasts for the fixed effects)\n\n");
         fprintf("Parameter               Estimate        SE  Lower.CI  Upper.CI        t Prob>|t|\n");
         fprintf("--------------------------------------------------------------------------------\n");
         
