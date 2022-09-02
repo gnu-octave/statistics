@@ -572,6 +572,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       if (strcmp (str(end-1), "'"))
         ## Random intercept term
         formula = sprintf ("%s + (1|%s)", formula, str(1:end-2));
+        ## Remove statistics for random effects from the ANOVA table
+        T(RANDOM+1,4:7) = cell(1,4);
+        P(RANDOM) = NaN;
       else
         ## Fixed effect term
         formula = sprintf ("%s + %s", formula, str(1:end-1));
@@ -579,7 +582,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     endfor
 
     ## Calculate a standard error, t-statistic and p-value for each
-    ## of the regression coefficients
+    ## of the regression coefficients (fixed effects only)
     t_crit = tinv (1 - ALPHA / 2, dfe);
     se = sqrt (diag (ucov) * mse);
     t =  b ./ se;
@@ -591,7 +594,12 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     coeff_stats(:,4) = b + se * t_crit;                  # Upper CI bound
     coeff_stats(:,5) = t;                                # t-statistics
     coeff_stats(:,6) = p;                                # p-values
+    ## Assign NaN to p-value to avoid printing statistics relating to 
+    ## coefficients for 'random' effects
+    hi = 1 + cumsum(df);
+    p(hi(RANDOM)-df(RANDOM)+1:hi(RANDOM)) = NaN;
 
+    ## Create STATS structure for MULTCOMPARE
     STATS = struct ("source","anovan", ...
                     "resid", resid, ...
                     "coeffs", coeff_stats, ...
@@ -636,17 +644,20 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         ## Print model formula 
         fprintf("\nMODEL FORMULA (in equivalent Wilkinson-Rogers-Pinheiro-Bates notation):\n\n%s\n", formula);
         ## Parameter estimates correspond to the contrasts we set
-        fprintf("\nMODEL PARAMETERS (i.e. contrasts)\n\n");
+        fprintf("\nMODEL PARAMETERS (i.e. contrasts for fixed effects)\n\n");
         fprintf("Parameter               Estimate        SE  Lower.CI  Upper.CI        t Prob>|t|\n");
         fprintf("--------------------------------------------------------------------------------\n");
         
-        for j = 1:numel(b)
+        for j = 1:size (coeff_stats, 1)
           if (p(j) < 0.001)
             fprintf ("%-20s  %10.3g %9.3g %9.3g %9.3g %8.2f    <.001 \n", ...
                      STATS.coeffnames{j}, STATS.coeffs(j,1:end-1));
           elseif (p(j) < 0.9995)
             fprintf ("%-20s  %10.3g %9.3g %9.3g %9.3g %8.2f     .%03u \n", ...
                      STATS.coeffnames{j}, STATS.coeffs(j,1:end-1), round (p(j) * 1e+03));
+          elseif (isnan(p(j)))
+            ## Don't display coefficients for 'random' effects since they were 
+            ## treated as fixed effects
           else
             fprintf ("%-20s  %10.3g %9.3g %9.3g %9.3g %8.2f    1.000 \n", ...
                      STATS.coeffnames{j}, STATS.coeffs(j,1:end-1));
@@ -669,6 +680,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           elseif (P(i) < 0.9995)
             fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f    .%03u \n", ...
                       str(1:min(18,l)), T{i+1,2:end-1}, round (P(i) * 1e+03));
+          elseif (isnan(P(i)))
+            fprintf ("%-20s  %10.5g  %6d \n", str(1:min(18,l)), T{i+1,2:3});
           else
             fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f    1.000 \n", ...
                       str(1:min(18,l)), T{i+1,2:end-1});
@@ -816,7 +829,7 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, ...
         for k = 1:numel(tmp)
           tmp(k) = bsxfun (@times, tmp{k}, X{I(j)});
         endfor
-        tmp = cell2mat(tmp);
+        tmp = cell2mat (tmp);
       endfor
       X{1+Nm+i} = tmp;
       coeffnames{1+Nm+i} = cell (df(Nm+i),1);
@@ -1196,7 +1209,6 @@ endfunction
 %!            1 2 5; 1 2 5; 1 2 5; 1 2 5; 1 2 5;];
 %! [P, ATAB, STATS] = anovan (words(:),{seconds(:),subject(:)},'model','full','random',2,'sstype',2,'display','off');
 %! assert (P(1), 1.51865926758752e-07, 1e-09);
-%! assert (P(2), 1.49150337808586e-15, 1e-09);
 %! assert (ATAB{2,2}, 52.2666666666667, 1e-09);
 %! assert (ATAB{3,2}, 942.533333333333, 1e-09);
 %! assert (ATAB{4,2}, 11.0666666666667, 1e-09);
@@ -1388,7 +1400,6 @@ endfunction
 %! [P, ATAB, STATS] = anovan (measurement/10,{strain,treatment,block},'model','full','random',3,'display','off');
 %! assert (P(1), 0.0914352969909372, 1e-09);
 %! assert (P(2), 5.04077373924908e-05, 1e-09);
-%! assert (P(3), 0.000339814602130731, 1e-09);
 %! assert (P(4), 0.0283196918836667, 1e-09);
 %! assert (ATAB{2,2}, 286.132500000002, 1e-09);
 %! assert (ATAB{3,2}, 2275.29, 1e-09);
