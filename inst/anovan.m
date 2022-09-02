@@ -1155,7 +1155,7 @@ endfunction
 %!      -0.6002401  0.0000000  0.0  0.5
 %!      -0.6002401  0.0000000  0.0 -0.5];
 %!
-%! [P,ATAB, STATS] = anovan (dv, g, "contrasts", {C}, "varnames", "score", ...
+%! [P,ATAB, STATS] = anovan (dv, g, "contrasts", C, "varnames", "score", ...
 %!                          "alpha", 0.05, "display", "on");
 
 ## Test 1 for anovan example 1
