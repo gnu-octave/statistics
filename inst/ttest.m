@@ -1,5 +1,6 @@
-## Copyright (C) 2014 Tony Richardson
+## Copyright (C) 2014 Tony Richardson <richardson.tony@gmail.com>
 ## Copyright (C) 2022 Andrew Penn <A.C.Penn@sussex.ac.uk>
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,11 +18,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {Function File} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} ttest (@var{x})
-## @deftypefnx {Function File} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} ttest (@var{x}, @var{m})
-## @deftypefnx {Function File} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} ttest (@var{x}, @var{y})
-## @deftypefnx {Function File} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} ttest (@var{x}, @var{m}, @var{Name}, @var{Value})
-## @deftypefnx {Function File} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} ttest (@var{x}, @var{y}, @var{Name}, @var{Value})
+## @deftypefn  {Function File} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest (@var{x})
+## @deftypefnx {Function File} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest (@var{x}, @var{m})
+## @deftypefnx {Function File} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest (@var{x}, @var{y})
+## @deftypefnx {Function File} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest (@var{x}, @var{m}, @var{Name}, @var{Value})
+## @deftypefnx {Function File} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest (@var{x}, @var{y}, @var{Name}, @var{Value})
 ## Test for mean of a normal sample with unknown variance.
 ##
 ## Perform a t-test of the null hypothesis @code{mean (@var{x}) ==
@@ -58,101 +59,101 @@
 ##
 ## @end deftypefn
 
-## Author: Tony Richardson <richardson.tony@gmail.com>
-
 function [h, p, ci, stats] = ttest(x, my, varargin)
 
-  % Set default arguments
+  ## Set default arguments
   my_default = 0;
   alpha = 0.05;
-  tail  = 'both';
+  tail = "both";
 
-  % Find the first non-singleton dimension of x
-  dim = min(find(size(x)~=1));
-  if isempty(dim), dim = 1; end
+  ## Find the first non-singleton dimension of x
+  dim = min (find (size (x) != 1));
+  if (isempty (dim))
+    dim = 1;
+  endif
 
   if (nargin == 1)
     my = my_default;
-  end
+  endif
 
   i = 1;
-  while ( i <= length(varargin) )
-    switch lower(varargin{i})
-      case 'alpha'
+  while (i <= length (varargin))
+    switch lower (varargin{i})
+      case "alpha"
         i = i + 1;
         alpha = varargin{i};
-      case 'tail'
+      case "tail"
         i = i + 1;
         tail = varargin{i};
-      case 'dim'
+      case "dim"
         i = i + 1;
         dim = varargin{i};
       otherwise
-        error('Invalid Name argument.',[]);
-    end
+        error ("ttest: Invalid Name argument.");
+    endswitch
     i = i + 1;
-  end
+  endwhile
 
-  if ~isa(tail, 'char')
-    error('tail argument to ttest must be a string\n',[]);
-  end
+  if (! isa (tail, "char"))
+    error ("ttest: tail argument must be a string.");
+  endif
 
-  if any(and(~isscalar(my),size(x)~=size(my)))
-    error('Arrays in paired test must be the same size.');
-  end
+  if (any (and (! isscalar (my), size (x) != size (my))))
+    error ("ttest: Arrays in paired test must be the same size.");
+  endif
 
-  % Set default values if arguments are present but empty
-  if isempty(my)
+  ## Set default values if arguments are present but empty
+  if (isempty (my))
     my = my_default;
-  end
+  endif
 
-  % This adjustment allows everything else to remain the
-  % same for both the one-sample t test and paired tests.
+  ## This adjustment allows everything else to remain the
+  ## same for both the one-sample t test and paired tests.
   x = x - my;
-  if ~isscalar(my)
+  if (! isscalar (my))
     my = 0;
-  end
+  endif
 
-  % Calculate the test statistic value (tval)
-  n = size(x, dim);
-  x_bar = mean(x, dim);
+  ## Calculate the test statistic value (tval)
+  n = size (x, dim);
+  x_bar = mean (x, dim);
   stats.tstat = 0;
-  stats.df = n-1;
-  stats.sd = std(x, 0, dim);
-  x_bar_std = stats.sd/sqrt(n);
-  tval = (x_bar)./x_bar_std;
+  stats.df = n - 1;
+  stats.sd = std (x, 0, dim);
+  x_bar_std = stats.sd / sqrt(n);
+  tval = (x_bar) ./ x_bar_std;
   stats.tstat = tval;
 
-  % Based on the "tail" argument determine the P-value, the critical values,
-  % and the confidence interval.
-  switch lower(tail)
-    case 'both'
-      p = 2*(1 - tcdf(abs(tval),n-1));
-      tcrit = -tinv(alpha/2,n-1);
+  ## Based on the "tail" argument determine the P-value, the critical values,
+  ## and the confidence interval.
+  switch lower (tail)
+    case "both"
+      p = 2 * (1 - tcdf (abs (tval), n - 1));
+      tcrit = - tinv (alpha / 2, n - 1);
       ci = [x_bar-tcrit*x_bar_std; x_bar+tcrit*x_bar_std] + my;
-    case 'left'
-      p = tcdf(tval,n-1);
-      tcrit = -tinv(alpha,n-1);
+    case "left"
+      p = tcdf (tval, n - 1);
+      tcrit = - tinv (alpha, n - 1);
       ci = [-inf*ones(size(x_bar)); my+x_bar+tcrit*x_bar_std];
-    case 'right'
-      p = 1 - tcdf(tval,n-1);
-      tcrit = -tinv(alpha,n-1);
+    case "right"
+      p = 1 - tcdf (tval, n - 1);
+      tcrit = - tinv (alpha, n - 1);
       ci = [my+x_bar-tcrit*x_bar_std; inf*ones(size(x_bar))];
     otherwise
-      error('Invalid tail argument to ttest\n',[]);
-  end
+      error ("ttest: Invalid value for tail argument.");
+  endswitch
 
-  % Reshape the ci array to match MATLAB shaping
-  if and(isscalar(x_bar), dim==2)
+  ## Reshape the ci array to match MATLAB shaping
+  if (isscalar (x_bar) && dim == 2)
     ci = ci(:)';
-  elseif size(x_bar,2)<size(x_bar,1)
-    ci = reshape(ci(:),length(x_bar),2);
-  end
+  elseif (size (x_bar, 2) < size (x_bar, 1))
+    ci = reshape (ci(:), length (x_bar), 2);
+  endif
 
-  % Determine the test outcome
-  % MATLAB returns this a double instead of a logical array
-  h = double(p < alpha);
-end
+  ## Determine the test outcome
+  ## MATLAB returns this a double instead of a logical array
+  h = double (p < alpha);
+endfunction
 
 %!test
 %! x = 8:0.1:12;
@@ -168,3 +169,5 @@ end
 %! assert (h, 0)
 %! assert (pval, 0.5, 10*eps)
 %! assert (ci, [9.68498 Inf], 1E-5)
+%!error ttest ([8:0.1:12], 10, "tail", "invalid");
+%!error ttest ([8:0.1:12], 10, "tail", 25);

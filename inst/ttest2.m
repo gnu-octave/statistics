@@ -1,5 +1,6 @@
-## Copyright (C) 2014 Tony Richardson
+## Copyright (C) 2014 Tony Richardson <richardson.tony@gmail.com>
 ## Copyright (C) 2022 Andrew Penn <A.C.Penn@sussex.ac.uk>
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -48,103 +49,103 @@
 ##
 ## @end deftypefn
 
-## Author: Tony Richardson <richardson.tony@gmail.com>
-
 function [h, p, ci, stats] = ttest2(x, y, varargin)
 
   alpha = 0.05;
-  tail  = 'both';
-  vartype = 'equal';
+  tail = "both";
+  vartype = "equal";
 
-  % Find the first non-singleton dimension of x
-  dim = min(find(size(x)~=1));
-  if isempty(dim), dim = 1; end
+  ## Find the first non-singleton dimension of x
+  dim = min (find (size (x) != 1));
+  if (isempty (dim))
+    dim = 1;
+  endif
 
   i = 1;
   while ( i <= length(varargin) )
     switch lower(varargin{i})
-      case 'alpha'
+      case "alpha"
         i = i + 1;
         alpha = varargin{i};
-      case 'tail'
+      case "tail"
         i = i + 1;
         tail = varargin{i};
-      case 'vartype'
+      case "vartype"
         i = i + 1;
         vartype = varargin{i};
-      case 'dim'
+      case "dim"
         i = i + 1;
         dim = varargin{i};
       otherwise
-        error('Invalid Name argument.',[]);
-    end
+        error ("ttest2: Invalid Name argument.");
+    endswitch
     i = i + 1;
-  end
+  endwhile
 
-  if ~isa(tail, 'char')
-    error('Tail argument to ttest2 must be a string\n',[]);
-  end
+  if (! isa (tail, "char"))
+    error ("ttest2: tail argument must be a string.");
+  endif
 
-  m = size (x(!isnan(x)), dim);
-  n = size (y(!isnan(y)), dim);
-  x_bar = nanmean(x,dim) - nanmean(y,dim);
-  s1_var = nanvar(x, 0, dim);
-  s2_var = nanvar(y, 0, dim);
+  m = size (x(! isnan (x)), dim);
+  n = size (y(! isnan (y)), dim);
+  x_bar = mean (x, dim, "omitnan") - mean (y, dim, "omitnan");
+  s1_var = nanvar (x, 0, dim);
+  s2_var = nanvar (y, 0, dim);
 
-  switch lower(vartype)
-    case 'equal'
+  switch lower (vartype)
+    case "equal"
       stats.tstat = 0;
-      stats.df = (m + n - 2)*ones(size(x_bar));
-      sp_var = ((m-1)*s1_var + (n-1)*s2_var)./stats.df;
-      stats.sd = sqrt(sp_var);
-      x_bar_std = sqrt(sp_var*(1/m+1/n));
-    case 'unequal'
+      stats.df = (m + n - 2) * ones (size (x_bar));
+      sp_var = ((m - 1) * s1_var + (n - 1) * s2_var) ./ stats.df;
+      stats.sd = sqrt (sp_var);
+      x_bar_std = sqrt (sp_var * (1 / m + 1 / n));
+    case "unequal"
       stats.tstat = 0;
-      se1 = sqrt(s1_var/m);
-      se2 = sqrt(s2_var/n);
-      sp_var = s1_var/m + s2_var/n;
-      stats.df = ((se1.^2+se2.^2).^2 ./ (se1.^4/(m-1) + se2.^4/(n-1)));
+      se1 = sqrt (s1_var / m);
+      se2 = sqrt (s2_var / n);
+      sp_var = s1_var / m + s2_var / n;
+      stats.df = ((se1 .^ 2 + se2 .^ 2) .^ 2 ./ ...
+                  (se1 .^ 4 / (m - 1) + se2 .^ 4 / (n - 1)));
       stats.sd = [sqrt(s1_var); sqrt(s2_var)];
-      x_bar_std = sqrt(sp_var);
+      x_bar_std = sqrt (sp_var);
     otherwise
-      error('Invalid fifth (vartype) argument to ttest2\n',[]);
+      error ("ttest2: Invalid value for vartype argument.");
   end
 
-  stats.tstat = x_bar./x_bar_std;
+  stats.tstat = x_bar ./ x_bar_std;
 
-  % Based on the "tail" argument determine the P-value, the critical values,
-  % and the confidence interval.
+  ## Based on the "tail" argument determine the P-value, the critical values,
+  ## and the confidence interval.
   switch lower(tail)
-    case 'both'
-      p = 2*(1 - tcdf(abs(stats.tstat),stats.df));
-      tcrit = -tinv(alpha/2,stats.df);
-      %ci = [x_bar-tcrit*stats.sd; x_bar+tcrit*stats.sd];
+    case "both"
+      p = 2 * (1 - tcdf (abs (stats.tstat), stats.df));
+      tcrit = - tinv (alpha / 2, stats.df);
       ci = [x_bar-tcrit.*x_bar_std; x_bar+tcrit.*x_bar_std];
-    case 'left'
-      p = tcdf(stats.tstat,stats.df);
-      tcrit = -tinv(alpha,stats.df);
+    case "left"
+      p = tcdf (stats.tstat, stats.df);
+      tcrit = - tinv (alpha, stats.df);
       ci = [-inf*ones(size(x_bar)); x_bar+tcrit.*x_bar_std];
-    case 'right'
-      p = 1 - tcdf(stats.tstat,stats.df);
-      tcrit = -tinv(alpha,stats.df);
+    case "right"
+      p = 1 - tcdf (stats.tstat, stats.df);
+      tcrit = - tinv (alpha, stats.df);
       ci = [x_bar-tcrit.*x_bar_std; inf*ones(size(x_bar))];
     otherwise
-      error('Invalid fourth (tail) argument to ttest2\n',[]);
-  end
+      error ("ttest2: Invalid value for tail argument.");
+  endswitch
 
-  % Reshape the ci array to match MATLAB shaping
-  if and(isscalar(x_bar), dim==2)
+  ## Reshape the ci array to match MATLAB shaping
+  if (isscalar (x_bar) && dim == 2)
     ci = ci(:)';
     stats.sd = stats.sd(:)';
-  elseif size(x_bar,2)<size(x_bar,1)
-    ci = reshape(ci(:),length(x_bar),2);
-    stats.sd = reshape(stats.sd(:),length(x_bar),2);
-  end
+  elseif (size (x_bar, 2) < size (x_bar, 1))
+    ci = reshape (ci(:), length (x_bar), 2);
+    stats.sd = reshape (stats.sd(:), length (x_bar), 2);
+  endif
 
-  % Determine the test outcome
-  % MATLAB returns this a double instead of a logical array
-  h = double(p < alpha);
-end
+  ## Determine the test outcome
+  ## MATLAB returns this a double instead of a logical array
+  h = double (p < alpha);
+endfunction
 
 %!test
 %! a = 1:5;
@@ -157,3 +158,5 @@ end
 %! assert (stats.tstat, -4.582575694955839, 1e-14);
 %! assert (stats.df, 7);
 %! assert (stats.sd, 1.4638501094228, 1e-13);
+%!error ttest ([8:0.1:12], [8:0.1:12], "tail", "invalid");
+%!error ttest ([8:0.1:12], [8:0.1:12], "tail", 25);
