@@ -158,5 +158,5 @@ endfunction
 %! assert (stats.tstat, -4.582575694955839, 1e-14);
 %! assert (stats.df, 7);
 %! assert (stats.sd, 1.4638501094228, 1e-13);
-%!error ttest ([8:0.1:12], [8:0.1:12], "tail", "invalid");
-%!error ttest ([8:0.1:12], [8:0.1:12], "tail", 25);
+%!error ttest2 ([8:0.1:12], [8:0.1:12], "tail", "invalid");
+%!error ttest2 ([8:0.1:12], [8:0.1:12], "tail", 25);
