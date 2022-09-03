@@ -1,6 +1,8 @@
 ## Copyright (C) 2014 Tony Richardson
 ## Copyright (C) 2022 Andrew Penn <A.C.Penn@sussex.ac.uk>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -25,15 +27,15 @@
 ## The argument @qcode{"alpha"} can be used to specify the significance level
 ## of the test (the default value is 0.05).  The string
 ## argument @qcode{"tail"}, can be used to select the desired alternative
-## hypotheses.  If @qcode{"tail"} is @qcode{"both"} (default) the null is 
+## hypotheses.  If @qcode{"tail"} is @qcode{"both"} (default) the null is
 ## tested against the two-sided alternative @code{mean (@var{x}) != @var{m}}.
-## If @qcode{"tail"} is @qcode{"right"} the one-sided 
+## If @qcode{"tail"} is @qcode{"right"} the one-sided
 ## alternative @code{mean (@var{x}) > @var{m}} is considered.
 ## Similarly for @qcode{"left"}, the one-sided alternative @code{mean
 ## (@var{x}) < @var{m}} is considered.  When @qcode{"vartype"} is @qcode{"equal"}
 ## the variances are assumed to be equal (this is the default).  When
 ## @qcode{"vartype"} is @qcode{"unequal"} the variances are not assumed equal.
-## When argument @var{x} is a matrix the @qcode{"dim"} argument can be 
+## When argument @var{x} is a matrix the @qcode{"dim"} argument can be
 ## used to selection the dimension over which to perform the test.
 ## (The default is the first non-singleton dimension.)
 ##
@@ -49,7 +51,7 @@
 ## Author: Tony Richardson <richardson.tony@gmail.com>
 
 function [h, p, ci, stats] = ttest2(x, y, varargin)
-  
+
   alpha = 0.05;
   tail  = 'both';
   vartype = 'equal';
@@ -78,11 +80,11 @@ function [h, p, ci, stats] = ttest2(x, y, varargin)
     end
     i = i + 1;
   end
-  
+
   if ~isa(tail, 'char')
     error('Tail argument to ttest2 must be a string\n',[]);
   end
-  
+
   m = size (x(!isnan(x)), dim);
   n = size (y(!isnan(y)), dim);
   x_bar = nanmean(x,dim) - nanmean(y,dim);
@@ -141,7 +143,7 @@ function [h, p, ci, stats] = ttest2(x, y, varargin)
 
   % Determine the test outcome
   % MATLAB returns this a double instead of a logical array
-  h = double(p < alpha);  
+  h = double(p < alpha);
 end
 
 %!test

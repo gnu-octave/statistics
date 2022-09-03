@@ -1,6 +1,8 @@
 ## Copyright (C) 2014 Tony Richardson
 ## Copyright (C) 2022 Andrew Penn <A.C.Penn@sussex.ac.uk>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -35,13 +37,13 @@
 ## @qcode{"alpha"} can be used to specify the significance level
 ## of the test (the default value is 0.05).  @qcode{"tail"}, can be used
 ## to select the desired alternative hypotheses.  If the value is
-## @qcode{"both"} (default) the null is tested against the two-sided 
+## @qcode{"both"} (default) the null is tested against the two-sided
 ## alternative @code{mean (@var{x}) != @var{m}}.
 ## If it is @qcode{"right"} the one-sided alternative @code{mean (@var{x})
-## > @var{m}} is considered.  Similarly for @qcode{"left"}, the one-sided 
+## > @var{m}} is considered.  Similarly for @qcode{"left"}, the one-sided
 ## alternative @code{mean (@var{x}) < @var{m}} is considered.
 ## When argument @var{x} is a matrix, @qcode{"dim"} can be used to selection
-## the dimension over which to perform the test.  (The default is the 
+## the dimension over which to perform the test.  (The default is the
 ## first non-singleton dimension).
 ##
 ## If @var{h} is 1 the null hypothesis is rejected, meaning that the tested
@@ -59,7 +61,7 @@
 ## Author: Tony Richardson <richardson.tony@gmail.com>
 
 function [h, p, ci, stats] = ttest(x, my, varargin)
-  
+
   % Set default arguments
   my_default = 0;
   alpha = 0.05;
@@ -71,8 +73,8 @@ function [h, p, ci, stats] = ttest(x, my, varargin)
 
   if (nargin == 1)
     my = my_default;
-  end 
-  
+  end
+
   i = 1;
   while ( i <= length(varargin) )
     switch lower(varargin{i})
@@ -90,11 +92,11 @@ function [h, p, ci, stats] = ttest(x, my, varargin)
     end
     i = i + 1;
   end
-  
+
   if ~isa(tail, 'char')
     error('tail argument to ttest must be a string\n',[]);
   end
-    
+
   if any(and(~isscalar(my),size(x)~=size(my)))
     error('Arrays in paired test must be the same size.');
   end
@@ -103,7 +105,7 @@ function [h, p, ci, stats] = ttest(x, my, varargin)
   if isempty(my)
     my = my_default;
   end
-    
+
   % This adjustment allows everything else to remain the
   % same for both the one-sample t test and paired tests.
   x = x - my;
@@ -149,7 +151,7 @@ function [h, p, ci, stats] = ttest(x, my, varargin)
 
   % Determine the test outcome
   % MATLAB returns this a double instead of a logical array
-  h = double(p < alpha);  
+  h = double(p < alpha);
 end
 
 %!test
