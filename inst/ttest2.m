@@ -1,4 +1,5 @@
 ## Copyright (C) 2014 Tony Richardson
+## Copyright (C) 2022 Andrew Penn <A.C.Penn@sussex.ac.uk>
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -16,22 +17,17 @@
 ## -*- texinfo -*-
 ## @deftypefn  {Function File} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} ttest2 (@var{x}, @var{y})
 ## @deftypefnx {Function File} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} ttest2 (@var{x}, @var{y}, @var{Name}, @var{Value})
-## Test for mean of a normal sample with known variance.
 ##
-## Perform a T-test of the null hypothesis @code{mean (@var{x}) ==
-## @var{m}} for a sample @var{x} from a normal distribution with unknown
-## mean and unknown std deviation.  Under the null, the test statistic
-## @var{t} has a Student's t distribution.
-##
-## If the second argument @var{y} is a vector, a paired-t test of the
-## hypothesis @code{mean (@var{x}) = mean (@var{y})} is performed.
+## Perform a t-test to compare the means of two groups of data under the null
+## hypothesis that the groups are drawn from distributions with the same mean.
+## For a nested t-test, use @qcode{anova2}.
 ##
 ## The argument @qcode{"alpha"} can be used to specify the significance level
 ## of the test (the default value is 0.05).  The string
 ## argument @qcode{"tail"}, can be used to select the desired alternative
-## hypotheses.  If @qcode{"alt"} is @qcode{"both"} (default) the null is 
+## hypotheses.  If @qcode{"tail"} is @qcode{"both"} (default) the null is 
 ## tested against the two-sided alternative @code{mean (@var{x}) != @var{m}}.
-## If @qcode{"alt"} is @qcode{"right"} the one-sided 
+## If @qcode{"tail"} is @qcode{"right"} the one-sided 
 ## alternative @code{mean (@var{x}) > @var{m}} is considered.
 ## Similarly for @qcode{"left"}, the one-sided alternative @code{mean
 ## (@var{x}) < @var{m}} is considered.  When @qcode{"vartype"} is @qcode{"equal"}

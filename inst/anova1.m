@@ -20,7 +20,7 @@
 ## @deftypefn {Function File} @var{p} = anova1 (@var{x})
 ## @deftypefnx {Function File} @var{p} = anova1 (@var{x}, @var{group})
 ## @deftypefnx {Function File} @var{p} = anova1 (@var{x}, @var{group}, @var{displayopt})
-## @deftypefnx {Function File} @var{p} = anova1 (@var{x}, @var{group}, @var{displayopt}, @var{equal_var})
+## @deftypefnx {Function File} @var{p} = anova1 (@var{x}, @var{group}, @var{displayopt}, @var{vartype})
 ## @deftypefnx {Function File} [@var{p}, @var{atab}] = anova1 (@var{x}, @dots{})
 ## @deftypefnx {Function File} [@var{p}, @var{atab}, @var{stats}] = anova1 (@var{x}, @dots{})
 ##
@@ -53,10 +53,12 @@
 ## boxplot. Use 'off' to omit displaying this figure.
 ##
 ## @item
-## @var{equal_var} is an optional logical scalar to used to indicate whether
-## the groups can be assumed to come from populations with equal variance.
-## The default value for this parameter is true. If @var{equal_var} is false,
-## then Welch's ANOVA test is used.
+## @var{vartype} is an optional parameter to used to indicate whether the
+## groups can be assumed to come from populations with equal variance. When
+## @qcode{vartype} is @qcode{"equal"} the variances are assumed to be equal
+## (this is the default). When @qcode{vartype} is @qcode{"unequal"} the
+## population variances are not assumed to be equal and Welch's ANOVA test is
+## used instead.
 ## @end itemize
 ##
 ## anova1 can return up to three output arguments:
@@ -98,7 +100,7 @@
 ## @seealso{anova2, anovan}
 ## @end deftypefn
 
-function [p, anovatab, stats] = anova1 (x, group, displayopt, equal_var)
+function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
 
   ## check for valid number of input arguments
   narginchk (1, 4);
@@ -110,7 +112,7 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, equal_var)
     displayopt = 'on';
   endif
   if (nargin < 4)
-    equal_var = true;
+    vartype = "equal";
   endif
   plotdata = ~(strcmp (displayopt, 'off'));
 
@@ -186,26 +188,29 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, equal_var)
   endif
   ## Calculate F statistic
   if (SSE != 0)                     ## Regular Matrix case.
-    if (equal_var)
-      ## Assume equal variances (Fisher's One-way ANOVA)
-      F = (SSM / dfm) / MSE;
-    else 
-      ## Accomodate for unequal variances (Welch's One-way ANOVA)
-      ## Calculate the sampling variance for each group (i.e. the square of the SEM)
-      sv = xv ./ xs;
-      ## Calculate weights as the reciprocal of the sampling variance
-      w = 1 ./ sv;
-      ## Calculate the origin
-      ori = sum (w .* xm) ./ sum (w);
-      ## Calculate Welch's F statistic
-      F = (groups - 1)^-1 * sum (w .* (xm - ori).^2) /...
-          (1 + ((2 * (groups - 2)/(groups^2 - 1)) * ...
-          sum ((1 - w / sum (w)).^2 .* (xs - 1).^-1)));
-      ## Welch's test does not use a pooled error term
-      MSE = NaN;
-      ## Correct the error degrees of freedom
-      dfe = (3 /(groups^2 - 1) * sum ((1 - w / sum (w)).^2 .* (xs-1).^-1))^-1;
-    endif
+    switch (lower (vartype))
+      case "equal"
+        ## Assume equal variances (Fisher's One-way ANOVA)
+        F = (SSM / dfm) / MSE;
+      case "unequal"
+        ## Accomodate for unequal variances (Welch's One-way ANOVA)
+        ## Calculate the sampling variance for each group (i.e. the square of the SEM)
+        sv = xv ./ xs;
+        ## Calculate weights as the reciprocal of the sampling variance
+        w = 1 ./ sv;
+        ## Calculate the origin
+        ori = sum (w .* xm) ./ sum (w);
+        ## Calculate Welch's F statistic
+        F = (groups - 1)^-1 * sum (w .* (xm - ori).^2) /...
+            (1 + ((2 * (groups - 2)/(groups^2 - 1)) * ...
+            sum ((1 - w / sum (w)).^2 .* (xs - 1).^-1)));
+        ## Welch's test does not use a pooled error term
+        MSE = NaN;
+        ## Correct the error degrees of freedom
+        dfe = (3 /(groups^2 - 1) * sum ((1 - w / sum (w)).^2 .* (xs-1).^-1))^-1;
+      otherwise
+        error('Invalid fourth (vartype) argument to anova1\n',[]);
+    endswitch
     p = 1 - fcdf (F, dfm, dfe);     ## Probability of F given equal means.
   elseif (SSM == 0)                 ## Constant Matrix case.
     F = 0;
@@ -217,15 +222,16 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, equal_var)
 
   ## Create results table (if requested)
   if (nargout > 1)
-    if (equal_var)
-      anovatab = {"Source", "SS", "df", "MS", "F", "Prob>F"; ...
-                  "Groups", SSM, dfm, MSM, F, p; ...
-                  "Error", SSE, dfe, MSE, "", ""; ...
-                  "Total", SST, dfm + dfe, "", "", ""};
-    else
-      anovatab = {"Source", "F", "df", "dfe", "F", "Prob>F"; ...
-                  "Groups", SSM, dfm, dfe, F, p};
-    endif
+    switch (lower (vartype))
+      case "equal"
+        anovatab = {"Source", "SS", "df", "MS", "F", "Prob>F"; ...
+                    "Groups", SSM, dfm, MSM, F, p; ...
+                    "Error", SSE, dfe, MSE, "", ""; ...
+                    "Total", SST, dfm + dfe, "", "", ""};
+      case "unequal"
+        anovatab = {"Source", "F", "df", "dfe", "F", "Prob>F"; ...
+                    "Groups", SSM, dfm, dfe, F, p};
+    endswitch
   endif
   ## Create stats structure (if requested) for MULTCOMPARE
   if (nargout > 2)
@@ -236,7 +242,7 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, equal_var)
     end
     stats.n = xs;
     stats.source = 'anova1';
-    stats.equal_var = equal_var;
+    stats.vartype = vartype;
     stats.means = xm + mu;
     stats.vars = xv; 
     stats.df = dfe;
@@ -244,19 +250,20 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, equal_var)
   endif
   ## Print results table on screen if no output argument was requested
   if (nargout == 0 || plotdata)
-    if (equal_var)
-      printf("\n                      ANOVA Table\n\n");
-      printf("Source        SS      df        MS       F      Prob>F\n");
-      printf("------------------------------------------------------\n");
-      printf("Groups  %10.4f %5.0f %10.4f %8.2f %9.4f\n", SSM, dfm, MSM, F, p);
-      printf("Error   %10.4f %5.0f %10.4f\n", SSE, dfe, MSE);
-      printf("Total   %10.4f %5.0f\n\n", SST, dfm + dfe);
-    else
-      printf("\n           Welch's ANOVA Table\n\n");
-      printf("Source        F     df     dfe     Prob>F\n");
-      printf("-----------------------------------------\n");
-      printf("Groups  %8.2f %5.0f %7.2f %10.4f\n\n", F, dfm, dfe, p);
-    endif
+    switch (lower (vartype))
+      case "equal"
+        printf("\n                      ANOVA Table\n\n");
+        printf("Source        SS      df        MS       F      Prob>F\n");
+        printf("------------------------------------------------------\n");
+        printf("Groups  %10.4f %5.0f %10.4f %8.2f %9.4f\n", SSM, dfm, MSM, F, p);
+        printf("Error   %10.4f %5.0f %10.4f\n", SSE, dfe, MSE);
+        printf("Total   %10.4f %5.0f\n\n", SST, dfm + dfe);
+      case "unequal"
+        printf("\n           Welch's ANOVA Table\n\n");
+        printf("Source        F     df     dfe     Prob>F\n");
+        printf("-----------------------------------------\n");
+        printf("Groups  %8.2f %5.0f %7.2f %10.4f\n\n", F, dfm, dfe, p);
+    endswitch
   endif
   ## Plot data using BOXPLOT (unless opted out)
   if (plotdata)
@@ -284,7 +291,7 @@ endfunction
 %!demo
 %! y = [54 87 45; 23 98 39; 45 64 51; 54 77 49; 45 89 50; 47 NaN 55];
 %! g = [1  2  3 ; 1  2  3 ; 1  2  3 ; 1  2  3 ; 1  2  3 ; 1  2  3 ];
-%! anova1 (y(:), g(:), "off", false);
+%! anova1 (y(:), g(:), "on", "unequal");
 
 ## testing against GEAR.DAT data file and results for one-factor ANOVA from
 ## https://www.itl.nist.gov/div898/handbook/eda/section3/eda354.htm
@@ -322,12 +329,12 @@ endfunction
 %!test
 %! y = [54 87 45; 23 98 39; 45 64 51; 54 77 49; 45 89 50; 47 NaN 55];
 %! g = [1  2  3 ; 1  2  3 ; 1  2  3 ; 1  2  3 ; 1  2  3 ; 1  2  3 ];
-%! [p, tbl] = anova1 (y(:), g(:), "off", true);
+%! [p, tbl] = anova1 (y(:), g(:), "off", "equal");
 %! assert (p, 0.00004163, 1e-6);
 %! assert (tbl{2,5}, 22.573418, 1e-6);
 %! assert (tbl{2,3}, 2, 0);
 %! assert (tbl{3,3}, 14, 0);
-%! [p, tbl] = anova1 (y(:), g(:), "off", false);
+%! [p, tbl] = anova1 (y(:), g(:), "off", "unequal");
 %! assert (p, 0.00208877, 1e-8);
 %! assert (tbl{2,5}, 15.523192, 1e-6);
 %! assert (tbl{2,3}, 2, 0);

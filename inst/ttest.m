@@ -1,4 +1,5 @@
 ## Copyright (C) 2014 Tony Richardson
+## Copyright (C) 2022 Andrew Penn <A.C.Penn@sussex.ac.uk>
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -106,7 +107,10 @@ function [h, p, ci, stats] = ttest(x, my, varargin)
   % This adjustment allows everything else to remain the
   % same for both the one-sample t test and paired tests.
   x = x - my;
-  
+  if ~isscalar(my)
+    my = 0;
+  end
+
   % Calculate the test statistic value (tval)
   n = size(x, dim);
   x_bar = mean(x, dim);
