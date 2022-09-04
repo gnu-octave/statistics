@@ -211,7 +211,7 @@
 
 function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
-    if (nargin <= 1)
+    if (nargin < 2)
       error (strcat (["anovan usage: ""anovan (Y, GROUP)""; "], ...
                       [" atleast 2 input arguments required"]));
     endif
@@ -759,7 +759,7 @@ function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, ...
         X(1+j) = GROUP(:,j);
       end
       vmeans(j) = mean ([X{1+j}]);
-      #X(1+j) = [X{1+j}] - vmeans(j); # Like Matlab, we won't center continuous factors
+      X(1+j) = [X{1+j}] - vmeans(j);
       if (isempty (CONTRASTS{j}))
         CONTRASTS{j} = [];
       end
