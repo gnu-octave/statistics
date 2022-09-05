@@ -273,9 +273,10 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
 
     ## Calculate confidence intervals of the estimated marginal means
     ## with central coverage such that the intervals start to overlap where
-    ## the difference reaches a p-value of 0.05
-    M(:,3) = M(:,1) - M(:,2) * critval / sqrt(2) ;
-    M(:,4) = M(:,1) + M(:,2) * critval / sqrt(2) ;
+    ## the difference reaches a two-tailed p-value of ALPHA. When ALPHA is 0.05,
+    ## central coverage is approximately 83.4%
+    M(:,3) = M(:,1) - M(:,2) * critval / sqrt(2);
+    M(:,4) = M(:,1) + M(:,2) * critval / sqrt(2);
 
     ## If requested, plot graph of the difference means for each comparison
     ## with central coverage of confidence intervals at 100*(1-alpha)%
