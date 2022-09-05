@@ -24,14 +24,15 @@
 ##
 ## Perform posthoc multiple comparison tests after ANOVA or ANCOVA tests.
 ##
-## @code{@var{C} = multcompare (@var{stats})} performs a multiple comparison
+## @code{@var{C} = multcompare (@var{STATS})} performs a multiple comparison
 ## using a @var{STATS} structure that is obtained as output from any of
 ## the following functions:  anovan.
 ## The return value @var{C} is a matrix with one row per comparison and six
 ## columns. Columns 1-2 are the indices of the two samples being compared.
 ## Columns 3-5 are a lower bound, estimate, and upper bound for their difference,
-## where the bounds are for confidence intervals. Column 6 is the multiplicity
-## adjusted p-value for each individual comparison.
+## where the bounds are for confidence intervals. Column 6-8 are the multiplicity
+## adjusted p-value for each individual comparison, the test-statistic and the
+## degrees of freedom. For @qcode{anovan}, the test statistic is the t-statistic.
 ##
 ## @qcode{multcompare} can take a number of optional parameters as name-value 
 ## pairs.
@@ -215,6 +216,12 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         t = nan (Np, 1);
         sed = nan (Np, 1);
         for j = 1:Np
+          ## In balanced ANOVA designs, standard error of the difference can
+          ## be calculated simply by:
+          ##      sed = sqrt (M(pairs(:,1),2).^2 + (M(pairs(:,2),2).^2))
+          ## However, to generalise the calculations for unbalanced N-way ANOVA
+          ## we need to take into account correlations, so we use the covariance
+          ## matrix of the estimated marginal means instead
           L(j, pairs(j,:)) = [1,-1];
           sed(j) = sqrt (L(j,:) * gcov * L(j,:)');
           t(j) = (M(pairs(j,1),1) - M(pairs(j,2),1)) / sed(j);
@@ -246,21 +253,29 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         critval = sqrt ((Ng - 1) * finv (1 - ALPHA, Ng - 1, dfe));
       case "bonferroni"
         ALPHA = ALPHA / Np;
-        critval = tinv (1 - ALPHA / 2, STATS.dfe);
+        critval = tinv (1 - ALPHA / 2, dfe);
       otherwise
         ## No adjustment
-        critval = tinv (1 - ALPHA / 2, STATS.dfe);
+        critval = tinv (1 - ALPHA / 2, dfe);
     endswitch
 
-    ## reate comparisons matrix and calculate confidence intervals and
+    ## Create matrix of comparisons and calculate confidence intervals and
     ## multiplicity adjusted p-values for the comparisons
-    C = zeros (Np, 6);
+    C = zeros (Np, 7);
     C(:,1:2) = pairs;
     C(:,4) = (M(pairs(:, 1),1) - M(pairs(:, 2),1));
     C(:,3) = C(:,4) - sed * critval;
     C(:,5) = C(:,4) + sed * critval;
     p = 2 * (1 - tcdf (abs (t), dfe));
     C(:,6) = feval (CTYPE, p, t, Ng, dfe);
+    C(:,7) = t;     # Unlike Matlab, we include the t-statistic
+    C(:,8) = dfe;   # Unlike Matlab, we include the degrees of freedom
+
+    ## Calculate confidence intervals of the estimated marginal means
+    ## with central coverage such that the intervals start to overlap where
+    ## the difference reaches a p-value of 0.05
+    M(:,3) = M(:,1) - M(:,2) * critval / sqrt(2) ;
+    M(:,4) = M(:,1) + M(:,2) * critval / sqrt(2) ;
 
     ## If requested, plot graph of the difference means for each comparison
     ## with central coverage of confidence intervals at 100*(1-alpha)%
@@ -286,7 +301,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
       hold off
       xlabel (sprintf ("%g%% confidence interval for the difference",...
                        100 * (1 - ALPHA)));
-      ylabel ("Comparison matrix (C) row number");  
+      ylabel ("Row number in matrix of comparisons (C)");  
     endif
 
 endfunction
@@ -493,3 +508,4 @@ endfunction
 %! assert (M(3,2), 1.0177537954095, 1e-09);
 %! assert (M(4,2), 1.0880245732889, 1e-09);
 %! assert (M(5,2), 0.959547480416536, 1e-09);
+
