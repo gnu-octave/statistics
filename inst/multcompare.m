@@ -29,10 +29,11 @@
 ## the following functions:  anovan.
 ## The return value @var{C} is a matrix with one row per comparison and six
 ## columns. Columns 1-2 are the indices of the two samples being compared.
-## Columns 3-5 are a lower bound, estimate, and upper bound for their difference,
-## where the bounds are for confidence intervals. Column 6-8 are the multiplicity
-## adjusted p-value for each individual comparison, the test-statistic and the
-## degrees of freedom. For @qcode{anovan}, the test statistic is the t-statistic.
+## Columns 3-5 are a lower bound, estimate, and upper bound for their
+## difference, where the bounds are for 95% confidence intervals. Column 6-8
+## are the multiplicity adjusted p-values for each individual comparison, the
+## test-statistic and the degrees of freedom. For @qcode{anovan}, the test
+## statistic is the t-statistic.
 ##
 ## @qcode{multcompare} can take a number of optional parameters as name-value 
 ## pairs.
@@ -41,19 +42,19 @@
 ##
 ## @itemize
 ## @item
-## @var{ALPHA} specifies the significance level as ALPHA, and the central 
-## coverage of two-sided confidence intervals as 100*(1-@var{ALPHA})% 
-## (default ALPHA is 0.05).
+## @var{ALPHA} sets the significance level of null hypothesis significance
+## tests to ALPHA, and the central coverage of two-sided confidence intervals to
+## 100*(1-@var{ALPHA})%. (Default ALPHA is 0.05).
 ## @end itemize
 ##
-## @code{[@dots{}] = multcompare (@var{STATS}, "ctype", @var{DISPLAY})}
+## @code{[@dots{}] = multcompare (@var{STATS}, "ControlGroup", @var{REF})}
 ##
 ## @itemize
 ## @item
-## @var{DISPLAY} is either "on" (the default) to display a graph of the comparisons
-## (e.g. difference between means) and their 100*(1-@var{ALPHA})% intervals, or
-## "off" to omit the graph. Markers and error bars colored red have multiplicity
-## adjusted p-values < ALPHA, otherise the markers and error bars are blue.
+## @var{REF} is the index of the control group to limit comparisons to. The
+## index must be a positive integer scalar value. For each dimension (d) listed
+## in @var{DIM}, multcompare uses STATS.grpnames@{d@}(idx) as the control group.
+## (Default is empty, i.e. [], for full pairwise comparisons)
 ## @end itemize
 ##
 ## @code{[@dots{}] = multcompare (@var{STATS}, "ctype", @var{CTYPE})}
@@ -61,12 +62,13 @@
 ## @itemize
 ## @item
 ## @var{CTYPE} is the type of comparison test to use. In order of increasing power,
-## the choices are "scheffe', "bonferroni", "holm" (default), "fdr", "lsd". The
-## first three control the family-wise error rate. The "fdr" method contraols
+## the choices are: "scheffe', "bonferroni", "holm" (default), "fdr", "lsd". The
+## first three control the family-wise error rate. The "fdr" method controls the
 ## false discovery rate. The final method, "lsd" is Fisher's least significant
 ## difference, which makes no attempt to control the Type 1 error rate of
 ## multiple comparisons. The coverage of confidence intervals are only corrected
-## for multiple comparisons in the case where CTYPE is "scheffe" or "bonferroni".
+## for multiple comparisons in the cases where CTYPE is "scheffe" or "bonferroni",
+## where control of the Type 1 error rate is for simultaneous inference.
 ## @end itemize
 ##
 ## @code{[@dots{}] = multcompare (@var{STATS}, "dim", @var{DIM})}
@@ -75,26 +77,33 @@
 ## @item
 ## @var{DIM} is a vector specifying the dimension or dimensions over which the
 ## estimated marginal means are to be calculated. Used only if STATS comes from
-## anovan. The default is to compute over the first dimension associated with a
-## categorical (non-continuous) factor. The value [1 3], for example, computes
-## the estimated marginal mean for each combination of the first and third
-## predictor values.
+## anovan. The value [1 3], for example, computes the estimated marginal mean
+## for each combination of the first and third predictor values. The default is
+## to compute over the first dimension (i.e. 1). If the specified dimension is,
+## or includes, a continuous factor then @qcode{multcompare} will return an error.
 ## @end itemize
 ##
-## @code{[@dots{}] = multcompare (@var{STATS}, "ControlGroup", @var{REF})}
+## @code{[@dots{}] = multcompare (@var{STATS}, "display", @var{DISPLAY})}
 ##
 ## @itemize
 ## @item
-## @var{REF} is the index of the control group for Dunnett's test, specified as 
-## a positive integer value. For each dimension (d) listed in @var{DIM},
-## multcompare uses STATS.grpnames@{d@}(idx) as the control group.
+## @var{DISPLAY} is either "on" (the default) to display a graph of the comparisons
+## (e.g. difference between means) and their 100*(1-@var{ALPHA})% intervals, or
+## "off" to omit the graph. Markers and error bars colored red have multiplicity
+## adjusted p-values < ALPHA, otherwise the markers and error bars are blue.
 ## @end itemize
 ##
 ## [@var{C}, @var{M}, @var{H}, @var{GNAMES}] = multcompare (@dots{}) returns
-## additional outputs. @var{M} is a matrix with columns equal to the estimated
-## marginal means and their standard errors. @var{H} is a handle to the figure
-## containing the graph. @var{GNAMES} is a cell array with one row for each
-## group, containing the names of the groups.
+## additional outputs. @var{M} is a matrix where columns 1-2 are the estimated
+## marginal means and their standard errors, and columns 3-4 are lower and upper
+## bounds of the confidence intervals for the means; the critical value of the
+## test statistic is scaled by a factor of 2^(-0.5) before multiplying by the
+## standard errors of the group means so that the intervals overlap when the
+## difference in means becomes significant at the level @var{ALPHA}. When
+## @var{ALPHA} is 0.05, this corresponds to confidence intervals with 83.4%
+## central coverage. @var{H} is a handle to the figure containing the graph.
+## @var{GNAMES} is a cell array with one row for each group, containing the
+## names of the groups.
 ##
 ## @seealso{anovan}
 ## @end deftypefn
