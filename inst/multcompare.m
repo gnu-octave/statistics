@@ -97,7 +97,7 @@
 ## additional outputs. @var{M} is a matrix where columns 1-2 are the estimated
 ## marginal means and their standard errors, and columns 3-4 are lower and upper
 ## bounds of the confidence intervals for the means; the critical value of the
-## test statistic is scaled by a factor of 2^-0.5 before multiplying by the
+## test statistic is scaled by a factor of 2^(-0.5) before multiplying by the
 ## standard errors of the group means so that the intervals overlap when the
 ## difference in means becomes significant at the level @var{ALPHA}. When
 ## @var{ALPHA} is 0.05, this corresponds to confidence intervals with 83.4%
