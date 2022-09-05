@@ -1,4 +1,9 @@
-dirlist = {"datasets", "distributions"};
+if (compare_versions (version (), "8", "<"))
+  dirlist = {"datasets", "distributions", "shadow"};
+else
+  dirlist = {"datasets", "distributions"};
+endif
+
 dirname = fileparts (canonicalize_file_name (mfilename ("fullpath")));
 
 for ii=1:length (dirlist)
