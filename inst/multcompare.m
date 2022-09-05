@@ -123,9 +123,9 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         case "controlgroup"
           REF = value;
         case {"ctype","CriticalValueType"}
-          CTYPE = value;
+          CTYPE = lower (value);
         case "display"
-          DISPLAY = value;
+          DISPLAY = lower (value);
         case {"dim","dimension"}
           DIM = value;
         otherwise
@@ -142,7 +142,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     endif
 
     ## Evaluate CTYPE input argument
-    if (~ismember (lower (CTYPE),{"scheffe","bonferroni","holm","fdr","lsd"}))
+    if (! ismember (lower (CTYPE), {"scheffe","bonferroni","holm","fdr","lsd"}))
       error ("multcompare: '%s' is not a supported value for CTYPE", CTYPE)
     endif
 
@@ -151,14 +151,14 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
       case "anovan"
 
         % Our calculations treat all effects as fixed
-        if (~isempty (STATS.ems))
+        if (! isempty (STATS.ems))
           warning (strcat (["multcompare: ignoring random effects"], ... 
                            [" (all effects treated as fixed)"]));
         endif
 
         if (any (STATS.nlevels(DIM) < 2))
           error (strcat (["multcompare: DIM must specify only categorical"], ...
-                          [" factors with 2 or more degrees of freedom."]));
+                         [" factors with 2 or more degrees of freedom."]));
         end
 
         ## Calculate estimated marginal means
@@ -172,8 +172,8 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         Nt = numel (k);
         L = zeros (n, sum (df) + 1);
         for j = 1:Nt
-          L(:, i(k(j))-df(k(j)) + 1 : i(k(j))) = STATS.X(:,i(k(j)) - ...
-                                                 df(k(j)) + 1 : i(k(j)));
+          L(:, i(k(j)) - df(k(j)) + 1 : i(k(j))) = STATS.X(:,i(k(j)) - ...
+                                                   df(k(j)) + 1 : i(k(j)));
         endfor
         L(:,1) = 1;
         U = unique (L, "rows", "stable");
@@ -243,7 +243,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     ## statistic
     switch (lower (CTYPE)) 
       case "scheffe"
-        critval = sqrt ((Ng - 1) * finv (1 - ALPHA, Ng-1, dfe));
+        critval = sqrt ((Ng - 1) * finv (1 - ALPHA, Ng - 1, dfe));
       case "bonferroni"
         ALPHA = ALPHA / Np;
         critval = tinv (1 - ALPHA / 2, STATS.dfe);
@@ -264,7 +264,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
 
     ## If requested, plot graph of the difference means for each comparison
     ## with central coverage of confidence intervals at 100*(1-alpha)%
-    if (strcmpi (DISPLAY, "on"))
+    if (strcmp (DISPLAY, "on"))
       H = figure;
       plot ([0; 0], [0; Np + 1]',"k:"); # Plot vertical dashed line at 0 effect
       set (gca, "Ydir", "reverse")      # Flip y-axis direction
@@ -313,7 +313,7 @@ function pairs = trt_vs_ctrl (Ng, REF)
   gid = [1:Ng]';  # Create numeric group ID
   pairs = zeros (Ng - 1, 2);
   pairs(:, 1) = REF;
-  pairs(:, 2) = gid(gid ~= REF);
+  pairs(:, 2) = gid(gid != REF);
         
 endfunction
 
@@ -379,7 +379,7 @@ function padj = fdr (p)
   padj = nan (m,1);
   padj(m) = ps(m);
   for j = 1:m-1
-    i = m-j;
+    i = m - j;
     padj(i) = min (padj(i + 1), m / i * ps(i));
   endfor
 
