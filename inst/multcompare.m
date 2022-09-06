@@ -62,13 +62,25 @@
 ## @itemize
 ## @item
 ## @var{CTYPE} is the type of comparison test to use. In order of increasing power,
-## the choices are: "bonferroni", "scheffe', "holm" (default), "fdr", "lsd". The
-## first three control the family-wise error rate. The "fdr" method controls the
-## false discovery rate. The final method, "lsd", is Fisher's least significant
-## difference, which makes no attempt to control the Type 1 error rate of
-## multiple comparisons. The coverage of confidence intervals are only corrected
-## for multiple comparisons in the cases where CTYPE is "bonferroni" or "scheffe",
-## where control of the Type 1 error rate is for simultaneous inference.
+## the choices are: "bonferroni", "scheffe', "mvt (default)", "holm", "fdr", "lsd".
+## The first four methods control the family-wise error rate. The "fdr" method
+## controls false discovery rate. The final method, "lsd", is Fisher's least
+## significant difference, which makes no attempt to control the Type 1 error
+## rate of multiple comparisons. The coverage of confidence intervals are only
+## corrected for multiple comparisons in the cases where @var{CTYPE} is
+## "bonferroni", "scheffe" or "mvt", which control the Type 1 error rate
+## for simultaneous inference. 
+##
+## The "mvt" method uses the multivariate t distribution to assess the probability
+## or critical value for the maximum ststistic across the tests, thereby accounting
+## for correlations among comparisons in the control of the family-wise error
+## rate. In the case of pairwise comparisons, it simulates Tukey's test, and
+## in the case of comparisons with a single control group, it simulates Dunnett's
+## test. Since the algorithm uses a Monte Carlo method (of 2e+05 random samples),
+## you can expect the results to fluctuate slightly with each call to multcompare.
+## @var{CTYPE} values "tukey-kramer" and "hsd" are recognised but set the value
+## of @var{CTYPE} and @var{REF} to "mvt" and empty respectively. Note that
+## p-values calculated by the "mvt" are truncated at .0001
 ## @end itemize
 ##
 ## @code{[@dots{}] = multcompare (@var{STATS}, "dim", @var{DIM})}
@@ -124,6 +136,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     CTYPE = "holm";
     DISPLAY = "on";
     DIM = 1;
+    R = [];
     for idx = 3:2:nargin
       name = varargin{idx-2};
       value = varargin{idx-1};
@@ -134,6 +147,9 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
           REF = value;
         case {"ctype","CriticalValueType"}
           CTYPE = lower (value);
+          if ismember (CTYPE, {"tukey-kramer", "hsd"})
+            CTYPE = "mvt";
+          endif
         case "display"
           DISPLAY = lower (value);
         case {"dim","dimension"}
@@ -152,7 +168,8 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     endif
 
     ## Evaluate CTYPE input argument
-    if (! ismember (lower (CTYPE), {"scheffe","bonferroni","holm","fdr","lsd"}))
+    if (! ismember (lower (CTYPE), ...
+                    {"bonferroni","scheffe","mvt","holm","fdr","lsd"}))
       error ("multcompare: '%s' is not a supported value for CTYPE", CTYPE)
     endif
 
@@ -213,10 +230,10 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         ## Make comparison matrix
         if (isempty (REF))
           ## Pairwise comparisons
-          pairs = pairwise (Ng);
+          [pairs, R] = pairwise (Ng);
         else 
           ## Treatment vs. Control comparisons
-          pairs = trt_vs_ctrl (Ng, REF);
+          [pairs, R] = trt_vs_ctrl (Ng, REF);
         endif
         Np = size (pairs, 1);
 
@@ -237,6 +254,12 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         sed = sqrt (diag (L * gcov * L'));
         t =  mean_diff ./ sed;
 
+        ## Calculate correlation matrix. We can get a better estimate of this
+        ## than the one simply based on the hypothesis matrix alone
+        vcov = L * gcov * L';
+        R = vcov ./ (sed * sed');
+        R = (R + R') / 2; # This step ensures that the matrix is positive definite
+
       otherwise
 
         error (strcat (sprintf ("multcompare: the STATS structure from %s", ...
@@ -250,36 +273,23 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     ## - M: Ng-by-2 matrix of group means (column 1) and standard errors (column 2)
     ## - Np: number of comparisons (pairs of groups being compaired)
     ## - pairs: Np-by-2 matrix of numeric group IDs - each row is a comparison
+    ## - R: correlation matrix for the comparisons
     ## - sed: vector containing SE of the difference for each comparisons
     ## - t: vector containing t for the difference relating to each comparisons
     ## - dfe: residual/error degrees of freedom
     ## - GNAMES: a cell array containing the names of the groups being compared
-
-    ## If applicable, control simultaneous coverage of confidence intervals
-    ## for multiple comparisons by modifying the critical value of the test
-    ## statistic
-    switch (lower (CTYPE)) 
-      case "scheffe"
-        critval = sqrt ((Ng - 1) * finv (1 - ALPHA, Ng - 1, dfe));
-      case "bonferroni"
-        ALPHA = ALPHA / Np;
-        critval = tinv (1 - ALPHA / 2, dfe);
-      otherwise
-        ## No adjustment to confidence interval coverage
-        critval = tinv (1 - ALPHA / 2, dfe);
-    endswitch
 
     ## Create matrix of comparisons and calculate confidence intervals and
     ## multiplicity adjusted p-values for the comparisons
     C = zeros (Np, 7);
     C(:,1:2) = pairs;
     C(:,4) = (M(pairs(:, 1),1) - M(pairs(:, 2),1));
-    C(:,3) = C(:,4) - sed * critval;
-    C(:,5) = C(:,4) + sed * critval;
-    p = 2 * (1 - tcdf (abs (t), dfe));
-    C(:,6) = feval (CTYPE, p, t, Ng, dfe);
     C(:,7) = t;     # Unlike Matlab, we include the t-statistic
     C(:,8) = dfe;   # Unlike Matlab, we include the degrees of freedom
+    p = 2 * (1 - tcdf (abs (t), dfe));
+    [C(:,6), critval] = feval (CTYPE, p, t, Ng, dfe, R, ALPHA);
+    C(:,3) = C(:,4) - sed * critval;
+    C(:,5) = C(:,4) + sed * critval;
 
     ## Calculate confidence intervals of the estimated marginal means with
     ## central coverage such that the intervals start to overlap where the
@@ -312,7 +322,9 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
       hold off
       xlabel (sprintf ("%g%% confidence interval for the difference",...
                        100 * (1 - ALPHA)));
-      ylabel ("Row number in matrix of comparisons (C)");  
+      ylabel ("Row number in matrix of comparisons (C)");
+    else
+      H = [];
     endif
 
 endfunction
@@ -320,7 +332,7 @@ endfunction
 
 ## Posthoc comparisons
 
-function pairs = pairwise (Ng)
+function [pairs, R] = pairwise (Ng)
 
   ## Create pairs matrix for pairwise comparisons
   gid = [1:Ng]';  # Create numeric group ID
@@ -330,51 +342,97 @@ function pairs = pairwise (Ng)
   ridx = (pairs(:, 2) == 0);
   pairs(ridx, :) = [];
 
+  ## Calculate correlation matrix (required for CTYPE "mvt")
+  Np = size (pairs, 1);
+  L = zeros (Np, Ng);
+  for j = 1:Np
+    L(j, pairs(j,:)) = [1,-1];  # Hypothesis matrix
+  endfor
+  R = corr (L');
+
 endfunction
 
 
-function pairs = trt_vs_ctrl (Ng, REF)
+function [pairs, R] = trt_vs_ctrl (Ng, REF)
 
   ## Create pairs matrix for comparisons with control (REF)
   gid = [1:Ng]';  # Create numeric group ID
   pairs = zeros (Ng - 1, 2);
   pairs(:, 1) = REF;
   pairs(:, 2) = gid(gid != REF);
+  
+  ## Calculate correlation matrix (required for CTYPE "mvt")
+  Np = size (pairs, 1);
+  L = zeros (Np, Ng);
+  for j = 1:Np
+    L(j, pairs(j,:)) = [1,-1];  # Hypothesis matrix
+  endfor
+  R = corr (L');
         
 endfunction
 
 
 ## Methods to control family-wise error rate in multiple comparisons
 
-function padj = scheffe (p, t, Ng, dfe)
+function [padj, critval] = scheffe (p, t, Ng, dfe, R, ALPHA)
   
-  padj = 1 - fcdf ((t.^2)/(Ng - 1), Ng - 1, dfe);
+  padj = 1 - fcdf ((t.^2) / (Ng - 1), Ng - 1, dfe);
+
+  ## Calculate critical value at Scheffe-adjusted ALPHA level
+  critval = sqrt ((Ng - 1) * finv (1 - ALPHA, Ng - 1, dfe));
 
 endfunction
 
 
-function padj = bonferroni (p)
+function [padj, critval] = bonferroni (p, t, Ng, dfe, R, ALPHA)
   
   ## Bonferroni procedure
-  k = numel (p);
-  padj = min (p * k, 1.0);
+  Np = numel (p);
+  padj = min (p * Np, 1.0);
+
+  ## Calculate critical value at Bonferroni-adjusted ALPHA level
+  critval = tinv (1 - ALPHA / Np * 0.5, dfe);
 
 endfunction
 
+function [padj, critval] = mvt (p, t, Ng, dfe, R, ALPHA)
 
-function padj = holm (p)
+  ## Monte Carlo simulation of the maximum test statistic in random samples
+  ## generated from a multivariate T. This method accounts for correlations
+  ## among comparisons. This method simulates Tukey's test in the case of
+  ## pairwise comparisons or Dunnett's tests in the case of trt_vs_ctrl.
+  ## The "mvt" method is equivalent to methods used in R packages: 
+  ##   - the "mvt" adjust method in emmeans
+  ##   - the "single-step" adjustment in multcomp.
+
+  ## Set simulation size
+  nsim = 2e+05;
+
+  ## Generate distribution of (correlated) t-statistics under the null, and
+  ## and calculate the maximum test statistic for each random sample
+  maxT = max (abs (mvtrnd (R, dfe, nsim)'), [], 1);
+
+  ## Calculate multiplicity adjusted p-value (to 4 decimal places)
+  padj = max (sum (bsxfun (@ge, maxT, abs (t)), 2) / nsim, 2 / nsim);
+
+  ## Calculate critical value adjusted by the maxT procedure
+  critval = quantile (maxT, 1 - ALPHA);
+
+endfunction
+
+function [padj, critval] = holm (p, t, Ng, dfe, R, ALPHA)
 
   ## Holm's step-down Bonferroni procedure
 
   ## Order raw p-values
   [ps, idx] = sort (p, "ascend");
-  m = numel(ps);
+  Np = numel(ps);
 
   ## Implement Holm's step-down Bonferroni procedure
-  padj = nan (m,1);
-  padj(1) = m * ps(1);
-  for i = 2:m
-    padj(i) = max (padj(i - 1), (m - i + 1) * ps(i));
+  padj = nan (Np,1);
+  padj(1) = Np * ps(1);
+  for i = 2:Np
+    padj(i) = max (padj(i - 1), (Np - i + 1) * ps(i));
   endfor
 
   ## Reorder the adjusted p-values to match the order of the original p-values
@@ -384,29 +442,33 @@ function padj = holm (p)
   ## Truncate adjusted p-values to 1.0
   padj(padj>1) = 1;
 
+  ## Calculate critical value at ALPHA
+  ## No adjustment to confidence interval coverage
+  critval = tinv (1 - ALPHA / 2, dfe);
+
 endfunction
 
 
-function padj = fdr (p)
+function [padj, critval] = fdr (p, t, Ng, dfe, R, ALPHA)
   
   ## Benjamini-Hochberg procedure to control the false discovery rate (FDR)
   ## This procedure does not control the family-wise error rate
 
   ## Order raw p-values
   [ps, idx] = sort (p, "ascend");
-  m = numel(ps);
+  Np = numel (ps);
 
   ## Initialize
-  m = numel(p);
-  padj = nan(m,1);
-  alpha = nan(m,1);
+  m = numel (p);
+  padj = nan (Np,1);
+  alpha = nan (Np,1);
 
   ## Benjamini-Hochberg step-up procedure to control the false discovery rate
-  padj = nan (m,1);
-  padj(m) = ps(m);
-  for j = 1:m-1
-    i = m - j;
-    padj(i) = min (padj(i + 1), m / i * ps(i));
+  padj = nan (Np,1);
+  padj(Np) = ps(Np);
+  for j = 1:Np-1
+    i = Np - j;
+    padj(i) = min (padj(i + 1), Np / i * ps(i));
   endfor
 
   ## Reorder the adjusted p-values to match the order of the original p-values
@@ -416,14 +478,22 @@ function padj = fdr (p)
   ## Truncate adjusted p-values to 1.0
   padj(padj>1) = 1;
 
+  ## Calculate critical value at ALPHA
+  ## No adjustment to confidence interval coverage
+  critval = tinv (1 - ALPHA / 2, dfe);
+
 endfunction
 
 
-function padj = lsd (p)
+function [padj, critval] = lsd (p, t, Ng, dfe, R, ALPHA)
   
   ## Fisher's Least Significant Difference
   ## No control of the type I error rate across multiple comparisons
   padj = p;
+
+  ## Calculate critical value at ALPHA
+  ## No adjustment to confidence interval coverage
+  critval = tinv (1 - ALPHA / 2, dfe);
 
 endfunction
 
