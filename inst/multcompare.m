@@ -62,12 +62,12 @@
 ## @itemize
 ## @item
 ## @var{CTYPE} is the type of comparison test to use. In order of increasing power,
-## the choices are: "scheffe', "bonferroni", "holm" (default), "fdr", "lsd". The
+## the choices are: "bonferroni", "scheffe', "holm" (default), "fdr", "lsd". The
 ## first three control the family-wise error rate. The "fdr" method controls the
-## false discovery rate. The final method, "lsd" is Fisher's least significant
+## false discovery rate. The final method, "lsd", is Fisher's least significant
 ## difference, which makes no attempt to control the Type 1 error rate of
 ## multiple comparisons. The coverage of confidence intervals are only corrected
-## for multiple comparisons in the cases where CTYPE is "scheffe" or "bonferroni",
+## for multiple comparisons in the cases where CTYPE is "bonferroni" or "scheffe",
 ## where control of the Type 1 error rate is for simultaneous inference.
 ## @end itemize
 ##
@@ -161,7 +161,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
       case "anovan"
 
         % Our calculations treat all effects as fixed
-        if (! isempty (STATS.ems))
+        if (! isempty (STATS.random))
           warning (strcat (["multcompare: ignoring random effects"], ... 
                            [" (all effects treated as fixed)"]));
         endif
@@ -219,22 +219,23 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
           pairs = trt_vs_ctrl (Ng, REF);
         endif
         Np = size (pairs, 1);
-    
-        ## Calculate vector t-statistics corresponding to the comparisons
+
+        ## Calculate vector t-statistics corresponding to the comparisons. In
+        ## balanced ANOVA designs, for the calculation of the t-statistics, the
+        ## mean and standard error of the difference can be calculated simply by:
+        ##      mean_diff = M(pairs(:,1) - M(pairs(:,2)
+        ##      sed = sqrt (M(pairs(:,1),2).^2 + (M(pairs(:,2),2).^2))
+        ##      t = mean_diff ./ sed
+        ## However, to generalise the calculations for unbalanced N-way ANOVA
+        ## we need to take into account correlations, so we use the covariance
+        ## matrix of the estimated marginal means instead.
         L = zeros (Np, Ng);
-        t = nan (Np, 1);
-        sed = nan (Np, 1);
         for j = 1:Np
-          ## In balanced ANOVA designs, standard error of the difference can
-          ## be calculated simply by:
-          ##      sed = sqrt (M(pairs(:,1),2).^2 + (M(pairs(:,2),2).^2))
-          ## However, to generalise the calculations for unbalanced N-way ANOVA
-          ## we need to take into account correlations, so we use the covariance
-          ## matrix of the estimated marginal means instead
-          L(j, pairs(j,:)) = [1,-1];
-          sed(j) = sqrt (L(j,:) * gcov * L(j,:)');
-          t(j) = (M(pairs(j,1),1) - M(pairs(j,2),1)) / sed(j);
+          L(j, pairs(j,:)) = [1,-1];  # Hypothesis matrix
         endfor
+        mean_diff = sum (L * diag (M(:, 1)), 2);
+        sed = sqrt (diag (L * gcov * L'));
+        t =  mean_diff ./ sed;
 
       otherwise
 
@@ -264,7 +265,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         ALPHA = ALPHA / Np;
         critval = tinv (1 - ALPHA / 2, dfe);
       otherwise
-        ## No adjustment
+        ## No adjustment to confidence interval coverage
         critval = tinv (1 - ALPHA / 2, dfe);
     endswitch
 
@@ -280,9 +281,9 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     C(:,7) = t;     # Unlike Matlab, we include the t-statistic
     C(:,8) = dfe;   # Unlike Matlab, we include the degrees of freedom
 
-    ## Calculate confidence intervals of the estimated marginal means
-    ## with central coverage such that the intervals start to overlap where
-    ## the difference reaches a two-tailed p-value of ALPHA. When ALPHA is 0.05,
+    ## Calculate confidence intervals of the estimated marginal means with
+    ## central coverage such that the intervals start to overlap where the
+    ## difference reaches a two-tailed p-value of ALPHA. When ALPHA is 0.05,
     ## central coverage is approximately 83.4%
     M(:,3) = M(:,1) - M(:,2) * critval / sqrt(2);
     M(:,4) = M(:,1) + M(:,2) * critval / sqrt(2);
