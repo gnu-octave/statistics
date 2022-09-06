@@ -91,8 +91,8 @@ function x = mvtrnd (sigma, nu, n)
   if (nargin < 2)
     print_usage ();
   endif
-
-  if (! ismatrix (sigma) || any (any (sigma != sigma')) || min (eig (sigma)) <= 0)
+  [jnk, p] = cholcov (sigma); # This is a more robust check for positive definite
+  if (! ismatrix (sigma) || any (any (sigma != sigma')) || (p != 0))
     error ("mvtrnd: sigma must be a positive definite matrix");
   endif
 
