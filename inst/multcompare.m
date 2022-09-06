@@ -398,9 +398,9 @@ endfunction
 function [padj, critval] = mvt (p, t, Ng, dfe, R, ALPHA)
 
   ## Monte Carlo simulation of the maximum test statistic in random samples
-  ## generated from a multivariate T. This method accounts for correlations
-  ## among comparisons. This method simulates Tukey's test in the case of
-  ## pairwise comparisons or Dunnett's tests in the case of trt_vs_ctrl.
+  ## generated from a multivariate T distribution. This method accounts for
+  ## correlations among comparisons. This method simulates Tukey's test in the
+  ## case of pairwise comparisons or Dunnett's tests in the case of trt_vs_ctrl.
   ## The "mvt" method is equivalent to methods used in R packages: 
   ##   - the "mvt" adjust method in emmeans
   ##   - the "single-step" adjustment in multcomp.
