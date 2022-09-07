@@ -62,7 +62,7 @@
 ## @itemize
 ## @item
 ## @var{CTYPE} is the type of comparison test to use. In order of increasing power,
-## the choices are: "bonferroni", "scheffe', "mvt (default)", "holm", "fdr", "lsd".
+## the choices are: "bonferroni", "scheffe", "mvt" (default), "holm", "fdr", "lsd".
 ## The first four methods control the family-wise error rate. The "fdr" method
 ## controls false discovery rate. The final method, "lsd", is Fisher's least
 ## significant difference, which makes no attempt to control the Type 1 error
@@ -72,7 +72,7 @@
 ## for simultaneous inference. 
 ##
 ## The "mvt" method uses the multivariate t distribution to assess the probability
-## or critical value for the maximum ststistic across the tests, thereby accounting
+## or critical value for the maximum stastistic across the tests, thereby accounting
 ## for correlations among comparisons in the control of the family-wise error
 ## rate. In the case of pairwise comparisons, it simulates Tukey's test, and
 ## in the case of comparisons with a single control group, it simulates Dunnett's
