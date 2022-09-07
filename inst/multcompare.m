@@ -71,16 +71,21 @@
 ## "bonferroni", "scheffe" or "mvt", which control the Type 1 error rate
 ## for simultaneous inference. 
 ##
-## The "mvt" method uses the multivariate t distribution to assess the probability
-## or critical value for the maximum stastistic across the tests, thereby accounting
+## The "mvt" method uses the multivariate t-distribution to assess the probability
+## or critical value of the maximum statistic across the tests, thereby accounting
 ## for correlations among comparisons in the control of the family-wise error
-## rate. In the case of pairwise comparisons, it simulates Tukey's test, and
-## in the case of comparisons with a single control group, it simulates Dunnett's
-## test. Since the algorithm uses a Monte Carlo method (of 2e+05 random samples),
-## you can expect the results to fluctuate slightly with each call to multcompare.
-## @var{CTYPE} values "tukey-kramer" and "hsd" are recognised but set the value
-## of @var{CTYPE} and @var{REF} to "mvt" and empty respectively. Note that
-## p-values calculated by the "mvt" are truncated at .0001
+## rate with simultaneous inference. In the case of pairwise comparisons, it
+## simulates Tukey's test, in the case of comparisons with a single control group,
+## it simulates Dunnett's test. @var{CTYPE} values "tukey-kramer" and "hsd" are
+## recognised but set the value of @var{CTYPE} and @var{REF} to "mvt" and empty
+## respectively. A @var{CTYPE} value "dunnett" is recognised but sets the value
+## of @var{CTYPE} to "mvt", and if @var{REF} is empty, sets @var{REF} to 1. Since
+## the algorithm uses a Monte Carlo method (of 1e+06 random samples), you can
+## expect the results to fluctuate slightly with each call to multcompare and
+## the calculations may be slow to complete for a large number of comparisons.
+## If the parallel package is installed and loaded, @qcode{multcompare} will
+## automatically accelerate computations by parallel processing. Note that
+## p-values calculated by the "mvt" are truncated at 1e-06.
 ## @end itemize
 ##
 ## @code{[@dots{}] = multcompare (@var{STATS}, "dim", @var{DIM})}
@@ -136,20 +141,16 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     CTYPE = "holm";
     DISPLAY = "on";
     DIM = 1;
-    R = [];
     for idx = 3:2:nargin
       name = varargin{idx-2};
       value = varargin{idx-1};
       switch (lower (name))
         case "alpha"
           ALPHA = value;
-        case "controlgroup"
+        case {"controlgroup","ref"}
           REF = value;
         case {"ctype","CriticalValueType"}
           CTYPE = lower (value);
-          if ismember (CTYPE, {"tukey-kramer", "hsd"})
-            CTYPE = "mvt";
-          endif
         case "display"
           DISPLAY = lower (value);
         case {"dim","dimension"}
@@ -168,25 +169,36 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     endif
 
     ## Evaluate CTYPE input argument
-    if (! ismember (lower (CTYPE), ...
+    if (ismember (CTYPE, {"tukey-kramer", "hsd"}))
+      CTYPE = "mvt";
+      REF = [];
+    elseif (strcmp (CTYPE, "dunnett"))
+      CTYPE = "mvt";
+      if (isempty (REF))
+        REF = 1;
+      endif
+    endif
+    if (! ismember (CTYPE, ...
                     {"bonferroni","scheffe","mvt","holm","fdr","lsd"}))
       error ("multcompare: '%s' is not a supported value for CTYPE", CTYPE)
     endif
 
+    ## Perform test specific calculations
     switch (STATS.source)
 
       case "anovan"
 
-        % Our calculations treat all effects as fixed
+        ## Our calculations treat all effects as fixed
         if (! isempty (STATS.random))
           warning (strcat (["multcompare: ignoring random effects"], ... 
                            [" (all effects treated as fixed)"]));
         endif
 
+        ## Check what type of factor is requested in DIM 
         if (any (STATS.nlevels(DIM) < 2))
           error (strcat (["multcompare: DIM must specify only categorical"], ...
                          [" factors with 2 or more degrees of freedom."]));
-        end
+        endif
 
         ## Calculate estimated marginal means
         Nd = numel (DIM);
@@ -255,7 +267,8 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         t =  mean_diff ./ sed;
 
         ## Calculate correlation matrix. We can get a better estimate of this
-        ## than the one simply based on the hypothesis matrix alone
+        ## for unbalanced N-way ANOVA than the one simply based on the hypothesis
+        ## matrix alone
         vcov = L * gcov * L';
         R = vcov ./ (sed * sed');
         R = (R + R') / 2; # This step ensures that the matrix is positive definite
@@ -401,24 +414,49 @@ function [padj, critval] = mvt (p, t, Ng, dfe, R, ALPHA)
   ## generated from a multivariate T distribution. This method accounts for
   ## correlations among comparisons. This method simulates Tukey's test in the
   ## case of pairwise comparisons or Dunnett's tests in the case of trt_vs_ctrl.
-  ## The "mvt" method is equivalent to methods used in R packages: 
-  ##   - the "mvt" adjust method in emmeans
-  ##   - the "single-step" adjustment in multcomp.
+  ## The "mvt" method is equivalent to methods used in the following R packages:
+  ##   - emmeans: the "mvt" adjust method in functions within emmeans
+  ##   - glht: the "single-step" adjustment in the multcomp.function
 
-  ## Set simulation size
-  nsim = 2e+05;
+  ## Check if we can use parallel processing to accelerate computations
+  pat = '^parallel';
+  software = pkg('list');
+  names = cellfun (@(S) S.name, software, 'UniformOutput', false);
+  status = cellfun (@(S) S.loaded, software, 'UniformOutput', false);
+  index = find (! cellfun (@isempty, regexpi (names, pat)));
+  if (! isempty (index))
+    if (logical (status{index}))
+      PARALLEL = true;
+    else
+      PARALLEL = false;
+    endif
+  else
+    PARALLEL = false;
+  endif
 
-  ## Generate distribution of (correlated) t-statistics under the null, and
-  ## and calculate the maximum test statistic for each random sample
-  maxT = max (abs (mvtrnd (R, dfe, nsim)'), [], 1);
+  ## Generate the distribution of (correlated) t-statistics under the null, and
+  ## calculate the maximum test statistic for each random sample. Computations
+  ## are performed in chunks to prevent memory issues when the
+  ## number of comparisons is large.
+  chunkSize = 1000;
+  numChunks = 1000;
+  nsim = chunkSize * numChunks;
+  func = @() max (abs (mvtrnd (R, dfe, chunkSize)'), [], 1);
+  if (PARALLEL)
+    maxT = cell2mat (parcellfun (nproc, func, ...
+                                 cell (1, numChunks), 'UniformOutput', false));
+  else
+    maxT = cell2mat (cellfun (func, cell (1, numChunks), 'UniformOutput', false));
+  endif
 
   ## Calculate multiplicity adjusted p-value (to 4 decimal places)
-  padj = max (sum (bsxfun (@ge, maxT, abs (t)), 2) / nsim, 2 / nsim);
+  padj = max (sum (bsxfun (@ge, maxT, abs (t)), 2) / nsim, 1 / nsim);
 
   ## Calculate critical value adjusted by the maxT procedure
   critval = quantile (maxT, 1 - ALPHA);
 
 endfunction
+
 
 function [padj, critval] = holm (p, t, Ng, dfe, R, ALPHA)
 
@@ -426,7 +464,7 @@ function [padj, critval] = holm (p, t, Ng, dfe, R, ALPHA)
 
   ## Order raw p-values
   [ps, idx] = sort (p, "ascend");
-  Np = numel(ps);
+  Np = numel (ps);
 
   ## Implement Holm's step-down Bonferroni procedure
   padj = nan (Np,1);
@@ -459,7 +497,6 @@ function [padj, critval] = fdr (p, t, Ng, dfe, R, ALPHA)
   Np = numel (ps);
 
   ## Initialize
-  m = numel (p);
   padj = nan (Np,1);
   alpha = nan (Np,1);
 
@@ -567,7 +604,7 @@ endfunction
 %!
 %! [P,ATAB, STATS] = anovan (dv, g, 'varnames', 'score', 'display', 'off');
 %!
-%! [C, M, ~, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'lsd', ...
+%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'lsd', ...
 %!                                  'display', 'off');
 %! assert (C(1,6), 2.85812420217898e-05, 1e-09);
 %! assert (C(2,6), 5.22936741204085e-07, 1e-09);
