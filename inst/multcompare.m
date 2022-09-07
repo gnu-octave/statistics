@@ -32,8 +32,8 @@
 ## Columns 3-5 are a lower bound, estimate, and upper bound for their
 ## difference, where the bounds are for 95% confidence intervals. Column 6-8
 ## are the multiplicity adjusted p-values for each individual comparison, the
-## test-statistic and the degrees of freedom. For @qcode{anovan}, the test
-## statistic is the t-statistic.
+## test statistic and the degrees of freedom. For @qcode{anovan}, the test
+## statistic is the t statistic.
 ##
 ## @qcode{multcompare} can take a number of optional parameters as name-value 
 ## pairs.
@@ -71,7 +71,7 @@
 ## "bonferroni", "scheffe" or "mvt", which control the Type 1 error rate
 ## for simultaneous inference. 
 ##
-## The "mvt" method uses the multivariate t-distribution to assess the probability
+## The "mvt" method uses the multivariate t distribution to assess the probability
 ## or critical value of the maximum statistic across the tests, thereby accounting
 ## for correlations among comparisons in the control of the family-wise error
 ## rate with simultaneous inference. In the case of pairwise comparisons, it
@@ -249,8 +249,8 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         endif
         Np = size (pairs, 1);
 
-        ## Calculate vector t-statistics corresponding to the comparisons. In
-        ## balanced ANOVA designs, for the calculation of the t-statistics, the
+        ## Calculate vector t statistics corresponding to the comparisons. In
+        ## balanced ANOVA designs, for the calculation of the t statistics, the
         ## mean and standard error of the difference can be calculated simply by:
         ##      mean_diff = M(pairs(:,1) - M(pairs(:,2)
         ##      sed = sqrt (M(pairs(:,1),2).^2 + (M(pairs(:,2),2).^2))
@@ -297,7 +297,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     C = zeros (Np, 7);
     C(:,1:2) = pairs;
     C(:,4) = (M(pairs(:, 1),1) - M(pairs(:, 2),1));
-    C(:,7) = t;     # Unlike Matlab, we include the t-statistic
+    C(:,7) = t;     # Unlike Matlab, we include the t statistic
     C(:,8) = dfe;   # Unlike Matlab, we include the degrees of freedom
     p = 2 * (1 - tcdf (abs (t), dfe));
     [C(:,6), critval] = feval (CTYPE, p, t, Ng, dfe, R, ALPHA);
@@ -411,7 +411,7 @@ endfunction
 function [padj, critval] = mvt (p, t, Ng, dfe, R, ALPHA)
 
   ## Monte Carlo simulation of the maximum test statistic in random samples
-  ## generated from a multivariate T distribution. This method accounts for
+  ## generated from a multivariate t distribution. This method accounts for
   ## correlations among comparisons. This method simulates Tukey's test in the
   ## case of pairwise comparisons or Dunnett's tests in the case of trt_vs_ctrl.
   ## The "mvt" method is equivalent to methods used in the following R packages:
@@ -434,7 +434,7 @@ function [padj, critval] = mvt (p, t, Ng, dfe, R, ALPHA)
     PARALLEL = false;
   endif
 
-  ## Generate the distribution of (correlated) t-statistics under the null, and
+  ## Generate the distribution of (correlated) t statistics under the null, and
   ## calculate the maximum test statistic for each random sample. Computations
   ## are performed in chunks to prevent memory issues when the
   ## number of comparisons is large.
