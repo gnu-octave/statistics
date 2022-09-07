@@ -239,13 +239,15 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
           str = "";
         endfor
 
-        ## Make comparison matrix
+        ## Make matrix of requested comparisons (pairs)
+        ## Also return the corresponding correlation matrix (R) and hypothesis
+        ## matrix (L)
         if (isempty (REF))
           ## Pairwise comparisons
-          [pairs, R] = pairwise (Ng);
+          [pairs, R, L] = pairwise (Ng);
         else 
           ## Treatment vs. Control comparisons
-          [pairs, R] = trt_vs_ctrl (Ng, REF);
+          [pairs, R, L] = trt_vs_ctrl (Ng, REF);
         endif
         Np = size (pairs, 1);
 
@@ -255,13 +257,10 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         ##      mean_diff = M(pairs(:,1) - M(pairs(:,2)
         ##      sed = sqrt (M(pairs(:,1),2).^2 + (M(pairs(:,2),2).^2))
         ##      t = mean_diff ./ sed
-        ## However, to generalise the calculations for unbalanced N-way ANOVA
-        ## we need to take into account correlations, so we use the covariance
-        ## matrix of the estimated marginal means instead.
-        L = zeros (Np, Ng);
-        for j = 1:Np
-          L(j, pairs(j,:)) = [1,-1];  # Hypothesis matrix
-        endfor
+        ## The above can be done for anova1 and anova2 STATS output. However, to
+        ## generalise the calculations for unbalanced N-way ANOVA we need to take
+        ## into account correlations, so we use the covariance matrix of the
+        ## estimated marginal means instead.
         mean_diff = sum (L * diag (M(:, 1)), 2);
         sed = sqrt (diag (L * gcov * L'));
         t =  mean_diff ./ sed;
@@ -286,7 +285,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     ## - M: Ng-by-2 matrix of group means (column 1) and standard errors (column 2)
     ## - Np: number of comparisons (pairs of groups being compaired)
     ## - pairs: Np-by-2 matrix of numeric group IDs - each row is a comparison
-    ## - R: correlation matrix for the comparisons
+    ## - R: correlation matrix for the requested comparisons
     ## - sed: vector containing SE of the difference for each comparisons
     ## - t: vector containing t for the difference relating to each comparisons
     ## - dfe: residual/error degrees of freedom
@@ -345,7 +344,7 @@ endfunction
 
 ## Posthoc comparisons
 
-function [pairs, R] = pairwise (Ng)
+function [pairs, R, L] = pairwise (Ng)
 
   ## Create pairs matrix for pairwise comparisons
   gid = [1:Ng]';  # Create numeric group ID
@@ -366,7 +365,7 @@ function [pairs, R] = pairwise (Ng)
 endfunction
 
 
-function [pairs, R] = trt_vs_ctrl (Ng, REF)
+function [pairs, R, L] = trt_vs_ctrl (Ng, REF)
 
   ## Create pairs matrix for comparisons with control (REF)
   gid = [1:Ng]';  # Create numeric group ID
