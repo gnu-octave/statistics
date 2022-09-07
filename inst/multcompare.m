@@ -450,7 +450,7 @@ function [padj, critval] = mvt (p, t, Ng, dfe, R, ALPHA)
   endif
 
   ## Calculate multiplicity adjusted p-value
-  padj = max (sum (bsxfun (@ge, maxT, abs (t)), 2) / nsim, 1 / nsim);
+  padj = max (sum (bsxfun (@ge, maxT, abs (t)), 2) / nsim, nsim^-1);
 
   ## Calculate critical value adjusted by the maxT procedure
   critval = quantile (maxT, 1 - ALPHA);
