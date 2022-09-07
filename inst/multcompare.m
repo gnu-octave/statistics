@@ -189,7 +189,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
       case "anovan"
 
         ## Our calculations treat all effects as fixed
-        if (! isempty (STATS.random))
+        if (ismember (STATS.random, DIM))
           warning (strcat (["multcompare: ignoring random effects"], ... 
                            [" (all effects treated as fixed)"]));
         endif
@@ -231,11 +231,11 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         for i = 1:Ng
           str = "";
           for j = 1:Nd
-            str = sprintf("%s%s=%s,", str, ...
+            str = sprintf("%s%s=%s, ", str, ...
                       num2str(STATS.varnames{DIM(j)}), ...
                       num2str(STATS.grpnames{DIM(j)}{STATS.grps(idx(i),DIM(j))}));
           endfor
-          GNAMES{i} = str(1:end-1);
+          GNAMES{i} = str(1:end-2);
           str = "";
         endfor
 
