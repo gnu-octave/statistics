@@ -904,9 +904,9 @@ function [b, sse, resid, ucov] = lmfit (X, Y)
   fit = X * b;
   ## Get residuals from the fit
   resid = Y - fit;
-  ## Calculate residual sums-of-squares
+  ## Calculate the residual sums-of-squares
   sse = sum ((resid).^2);
-  ## Calculate unscaled covariance matrix
+  ## Calculate the unscaled covariance matrix (i.e. inv (X'*X ))
   if (nargout > 3)
     ucov = R \ Q' / X';
   end
