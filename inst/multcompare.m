@@ -449,7 +449,7 @@ function [padj, critval] = mvt (p, t, Ng, dfe, R, ALPHA)
     maxT = cell2mat (cellfun (func, cell (1, numChunks), 'UniformOutput', false));
   endif
 
-  ## Calculate multiplicity adjusted p-value (to 4 decimal places)
+  ## Calculate multiplicity adjusted p-value
   padj = max (sum (bsxfun (@ge, maxT, abs (t)), 2) / nsim, 1 / nsim);
 
   ## Calculate critical value adjusted by the maxT procedure
