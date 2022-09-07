@@ -33,7 +33,7 @@
 ## difference, where the bounds are for 95% confidence intervals. Column 6-8
 ## are the multiplicity adjusted p-values for each individual comparison, the
 ## test statistic and the degrees of freedom. For @qcode{anovan}, the test
-## statistic is the t statistic.
+## statistic is the t statistic. All tests by multcompare are two-tailed.
 ##
 ## @qcode{multcompare} can take a number of optional parameters as name-value 
 ## pairs.
@@ -449,7 +449,7 @@ function [padj, critval] = mvt (p, t, Ng, dfe, R, ALPHA)
     maxT = cell2mat (cellfun (func, cell (1, numChunks), 'UniformOutput', false));
   endif
 
-  ## Calculate multiplicity adjusted p-value
+  ## Calculate multiplicity adjusted p-value (two-tailed)
   padj = max (sum (bsxfun (@ge, maxT, abs (t)), 2) / nsim, nsim^-1);
 
   ## Calculate critical value adjusted by the maxT procedure
