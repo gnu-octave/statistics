@@ -360,7 +360,7 @@ function [pairs, R, L] = pairwise (Ng)
   for j = 1:Np
     L(j, pairs(j,:)) = [1,-1];  # Hypothesis matrix
   endfor
-  R = corr (L');
+  R = corr (L'); # Correlation matrix
 
 endfunction
 
@@ -379,7 +379,7 @@ function [pairs, R, L] = trt_vs_ctrl (Ng, REF)
   for j = 1:Np
     L(j, pairs(j,:)) = [1,-1];  # Hypothesis matrix
   endfor
-  R = corr (L');
+  R = corr (L'); # Correlation matrix
         
 endfunction
 
