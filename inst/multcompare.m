@@ -436,8 +436,8 @@ function [padj, critval] = mvt (p, t, Ng, dfe, R, ALPHA)
 
   ## Generate the distribution of (correlated) t statistics under the null, and
   ## calculate the maximum test statistic for each random sample. Computations
-  ## are performed in chunks to prevent memory issues when the
-  ## number of comparisons is large.
+  ## are performed in chunks to prevent memory issues when the number of
+  ## comparisons is large.
   chunkSize = 1000;
   numChunks = 1000;
   nsim = chunkSize * numChunks;
