@@ -140,7 +140,9 @@
 ## @item
 ## @var{dispopt} can be either "on" (default) or "off" and controls the display
 ## of the model formula, table of model parameters and the ANOVA table. The
-## F-statistic and p-values are formatted in APA-style.
+## F-statistic and p-values are formatted in APA-style. To avoid p-hacking, the
+## table of model parameters is only displayed if we set planned contrasts (see
+## below).
 ## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "contrasts", @var{contrasts})}
@@ -367,6 +369,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     ## Evaluate contrasts (if applicable)
     if isempty (CONTRASTS)
       CONTRASTS = cell (1, N);
+      planned = false;
     else
       if (ischar(CONTRASTS))
         contr_str = CONTRASTS;
@@ -395,6 +398,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           endif
         endif
       endfor
+      planned = true;
     endif
 
     ## Evaluate alpha input argument
@@ -644,26 +648,28 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       case "on"
         ## Print model formula 
         fprintf("\nMODEL FORMULA (in equivalent Wilkinson-Rogers-Pinheiro-Bates notation):\n\n%s\n", formula);
-        ## Parameter estimates correspond to the contrasts we set
-        fprintf("\nMODEL PARAMETERS (contrasts for the fixed effects)\n\n");
-        fprintf("Parameter               Estimate        SE  Lower.CI  Upper.CI        t Prob>|t|\n");
-        fprintf("--------------------------------------------------------------------------------\n");
-        
-        for j = 1:size (coeff_stats, 1)
-          if (p(j) < 0.001)
-            fprintf ("%-20s  %10.3g %9.3g %9.3g %9.3g %8.2f    <.001 \n", ...
-                     STATS.coeffnames{j}, STATS.coeffs(j,1:end-1));
-          elseif (p(j) < 0.9995)
-            fprintf ("%-20s  %10.3g %9.3g %9.3g %9.3g %8.2f     .%03u \n", ...
-                     STATS.coeffnames{j}, STATS.coeffs(j,1:end-1), round (p(j) * 1e+03));
-          elseif (isnan(p(j)))
-            ## Don't display coefficients for 'random' effects since they were 
-            ## treated as fixed effects
-          else
-            fprintf ("%-20s  %10.3g %9.3g %9.3g %9.3g %8.2f    1.000 \n", ...
-                     STATS.coeffnames{j}, STATS.coeffs(j,1:end-1));
-          end
-        endfor
+        if (planned)
+          ## Parameter estimates correspond to the contrasts we set. To avoid
+          ## p-hacking, don't print contrasts if we don't specify them to start with
+          fprintf("\nMODEL PARAMETERS (contrasts for the fixed effects)\n\n");
+          fprintf("Parameter               Estimate        SE  Lower.CI  Upper.CI        t Prob>|t|\n");
+          fprintf("--------------------------------------------------------------------------------\n");
+          for j = 1:size (coeff_stats, 1)
+            if (p(j) < 0.001)
+              fprintf ("%-20s  %10.3g %9.3g %9.3g %9.3g %8.2f    <.001 \n", ...
+                       STATS.coeffnames{j}, STATS.coeffs(j,1:end-1));
+            elseif (p(j) < 0.9995)
+              fprintf ("%-20s  %10.3g %9.3g %9.3g %9.3g %8.2f     .%03u \n", ...
+                       STATS.coeffnames{j}, STATS.coeffs(j,1:end-1), round (p(j) * 1e+03));
+            elseif (isnan(p(j)))
+              ## Don't display coefficients for 'random' effects since they were 
+              ## treated as fixed effects
+            else
+              fprintf ("%-20s  %10.3g %9.3g %9.3g %9.3g %8.2f    1.000 \n", ...
+                       STATS.coeffnames{j}, STATS.coeffs(j,1:end-1));
+            end
+          endfor
+        end
         ## Get dimensions of the ANOVA table
         [nrows, ncols] = size (T);
         ## Print table
