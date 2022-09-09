@@ -29,11 +29,10 @@
 ## the following functions:  anovan, anova1 and anova2.
 ## The return value @var{C} is a matrix with one row per comparison and six
 ## columns. Columns 1-2 are the indices of the two samples being compared.
-## Columns 3-5 are a lower bound, estimate, and upper bound for their
-## difference, where the bounds are for 95% confidence intervals. Column 6-8
-## are the multiplicity adjusted p-values for each individual comparison, the
-## test statistic and the degrees of freedom. For @qcode{anovan}, the test
-## statistic is the t statistic. All tests by multcompare are two-tailed.
+## Columns 3-5 are a lower bound, estimate, and upper bound for their difference,
+## where the bounds are for 95% confidence intervals. Column 6-8 are the 
+## multiplicity adjusted p-values for each individual comparison, the test
+## statistic and the degrees of freedom. All tests by multcompare are two-tailed.
 ##
 ## @qcode{multcompare} can take a number of optional parameters as name-value 
 ## pairs.
@@ -97,6 +96,18 @@
 ## for each combination of the first and third predictor values. The default is
 ## to compute over the first dimension (i.e. 1). If the specified dimension is,
 ## or includes, a continuous factor then @qcode{multcompare} will return an error.
+## @end itemize
+##
+## @code{[@dots{}] = multcompare (@var{STATS}, "estimate", @var{ESTIMATE})}
+##
+## @itemize
+## @item
+## @var{ESTIMATE} is a string specifying the estimates to be compared when 
+## computing multiple comparisons after anova2; this argument is ignored by
+## anovan and anova1. Accepted values for @var{ESTIMATE} are either "column"
+## (default) to compare column means, or "row" to compare row means. If the model
+## type in anova2 was "linear" or "nested" then only "column" is accepted for
+## @var{ESTIMATE} since the row factor is assumed to be a random effect.
 ## @end itemize
 ##
 ## @code{[@dots{}] = multcompare (@var{STATS}, "display", @var{DISPLAY})}
