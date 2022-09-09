@@ -23,9 +23,9 @@
 ## @deftypefnx {Function File} [@var{p}, @var{atab}] = anova2 (@dots{})
 ## @deftypefnx {Function File} [@var{p}, @var{atab}, @var{stats}] = anova2 (@dots{})
 ##
-## Performs two-way factorial (crossed) or a nested analysis of variance (ANOVA)
-## for balanced designs. For unbalanced factorial designs or planned contrasts, 
-## use @qcode{anovan}.
+## Performs two-way factorial (crossed) or a nested analysis of variance
+## (ANOVA) for balanced designs. For unbalanced factorial designs, diagnostic
+## plots and/or planned contrasts, use @qcode{anovan} instead.
 ##
 ## @qcode{anova2} requires two input arguments with an optional third and fourth:
 ##
@@ -50,9 +50,11 @@
 ## interaction
 ##
 ## @item
-## "linear": compute both main effects without an interaction (e.g. for one-way
-##  repeated measures design when @var{reps} equals 1, or balanced randomized
-##  block design when @var{reps} > 1).
+## "linear": compute both main effects without an interaction. When @var{reps}
+## > 1 the test is suitable for a balanced randomized block design. When
+## @var{reps} == 1, the test becomes a One-way Repeated Measures (RM)-ANOVA
+## with Greenhouse-Geisser correction to the column factor degrees of freedom
+## to make the test robust to violations of sphericity
 ##
 ## @item
 ## "nested": treat the row factor as nested within columns. Note that the row
@@ -113,11 +115,12 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
   if (nargin < 4)
     model = "interaction";
   endif
+  epsilonhat = [];
   plotdata = ~(strcmp (displayopt, 'off'));
 
   ## Calculate group numbers
-  FFGn = size (x, 1) / reps;            ## Number of groups in 1st Factor
-  SFGn = size (x, 2);                   ## Number of groups in 2nd Factor
+  FFGn = size (x, 1) / reps;            ## Number of groups in Row Factor
+  SFGn = size (x, 2);                   ## Number of groups in Column Factor
 
   ## Check for valid repetitions
   if (! (int16 (FFGn) == FFGn))
@@ -134,19 +137,19 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
 
   ## Calculate group sample sizes
   GTsz = length (x(:));                 ## Number of total samples
-  FFGs = prod (size (x(RIdx(1,:),:)));  ## Number of group samples of 1st Factor
-  SFGs = size (x, 1);                   ## Number of group samples of 2nd Factor
+  FFGs = prod (size (x(RIdx(1,:),:)));  ## Number of group samples of Row Factor
+  SFGs = size (x, 1);                   ## Number of group samples of Column Factor
 
   ## Calculate group means
   GTmu = sum (x(:)) / GTsz;                 ## Grand mean of groups
-  for i = 1:FFGn                            ## Group means of 1st Factor
+  for i = 1:FFGn                            ## Group means of Row Factor
     FFGm(i) = mean (x(RIdx(i,:),:), "all");
   endfor
-  for i = 1:SFGn                            ## Group means of 2nd Factor
+  for i = 1:SFGn                            ## Group means of Column Factor
     SFGm(i) = mean (x(:,i));
   endfor
 
-  ## Calculate Sum of Squares for 1st and 2nd Factors
+  ## Calculate Sum of Squares for Row and Column Factors
   SSR = sum (FFGs * ((FFGm - GTmu) .^ 2));  ## Rows Sum of Squares
   SSC = sum (SFGs * ((SFGm - GTmu) .^ 2));  ## Columns Sum of Squares
 
@@ -166,8 +169,8 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
   endif
 
   ## Calculate degrees of freedom and Sum of Squares Interaction (if applicable)
-  df_SSR = FFGn - 1;                ## 1st Factor
-  df_SSC = SFGn - 1;                ## 2nd Factor
+  df_SSR = FFGn - 1;                ## Row Factor
+  df_SSC = SFGn - 1;                ## Column Factor
   if (reps > 1)
     df_SSE = GTsz - (FFGn * SFGn);  ## Error with replication
     df_SSI = df_SSR * df_SSC;       ## Interaction: Degrees of Freedom
@@ -200,6 +203,19 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
       df_SSE += df_SSI;
       SSI = 0;
       df_SSI = 0;
+      if (reps == 1)
+        ## Assume one-way repeated measures ANOVA. Perform calculations for a
+        ## correction factor (epsilonhat) to make tests of the Column factor
+        ## robust to violations of sphericity
+        vcov = cov (x);
+        N = SFGn^2 * (mean (diag (vcov)) - mean (mean (vcov)))^2;
+        D = (SFGn - 1) * ...
+                 (sum (sumsq (vcov)) - 2 * SFGn * sum ((mean (vcov, 2).^2)) + ...
+                  SFGn^2 * mean (mean (vcov))^2);
+        epsilonhat = N / D;
+        dfN_GG = epsilonhat * (SFGn - 1);
+        dfD_GG = epsilonhat * (FFGn - 1) * (SFGn - 1);
+      endif
       reps = 1;                   ## Set reps to 1 to avoid printing interaction
       MSE = SSE / df_SSE;         ## Mean Square for Error (Within)
       MSR = SSR / df_SSR;         ## Mean Square for Row Factor
@@ -228,7 +244,12 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
   p_MSR = 1 - fcdf (F_MSR, df_SSR, df_SSE);
   MSC = SSC / df_SSC;           ## Mean Square for Column Factor
   F_MSC = MSC / MS_DENOM;       ## F statistic for Column Factor
-  p_MSC = 1 - fcdf (F_MSC, df_SSC, df_DENOM);
+  if (isempty(epsilonhat))
+    p_MSC = 1 - fcdf (F_MSC, df_SSC, df_DENOM);
+  else
+    ## Apply correction for sphericity to the p-value of the column factor
+    p_MSC = 1 - fcdf (F_MSC, dfN_GG, dfD_GG);
+  endif
 
   ## With replication
   if (reps > 1)
@@ -299,6 +320,11 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
     endif
     printf("Error        %10.4f %5.0f %10.4f\n", SSE, df_SSE, MSE);
     printf("Total        %10.4f %5.0f\n\n", SST, df_tot);
+    if (! isempty(epsilonhat))
+      printf(strcat (["Note: Greenhouse-Geisser correction was applied to the\n"], ...
+                     ["degrees of freedom for the Column factor: F(%.2f,%.2f)\n\n"]),...
+                     dfN_GG, dfD_GG) 
+    endif
   endif
 endfunction
 
