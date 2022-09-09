@@ -841,6 +841,37 @@ endfunction
 %! assert (C(9,6), 3.27179208291358e-07, 1e-09);
 %! assert (C(10,6), 2.22213674087620e-05, 1e-09);
 %!
+%! # Compare "hsd" adjusted p-values to those obtained using 'hsd' in Matlab
+%! # Since we use a Monte Carlo method, we need to reduce the Tol in these tests
+%!
+%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'hsd', ...
+%!                                  'display', 'off');
+%! assert (C(1,6), 0.000261058010276427, 2e-03);
+%! assert (C(2,6), 4.99073964554952e-06, 2e-03);
+%! assert (C(3,6), 2.15682704807207e-07, 2e-03);
+%! assert (C(4,6), 9.92322390924727e-09, 2e-03);
+%! assert (C(5,6), 0.972576004491222, 2e-03);
+%! assert (C(6,6), 0.402338001214431, 2e-03);
+%! assert (C(7,6), 9.2070755930429e-07, 2e-03);
+%! assert (C(8,6), 0.667399809894558, 2e-03);
+%! assert (C(9,6), 4.04451370283887e-07, 2e-03);
+%! assert (C(10,6), 4.16029613220514e-05, 2e-03);
+%!
+%! # Compare "scheffe" adjusted p-values to those obtained using 'scheffe' in Matlab
+%!
+%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'scheffe', ...
+%!                                  'display', 'off');
+%! assert (C(1,6), 0.00108105386141085, 1e-09);
+%! assert (C(2,6), 2.7779386789517e-05, 1e-09);
+%! assert (C(3,6), 1.3599854038198e-06, 1e-09);
+%! assert (C(4,6), 7.58830197867751e-13, 1e-09);
+%! assert (C(5,6), 0.984039948220281, 1e-09);
+%! assert (C(6,6), 0.539077018557706, 1e-09);
+%! assert (C(7,6), 5.59475764460574e-06, 1e-09);
+%! assert (C(8,6), 0.771173490574105, 1e-09);
+%! assert (C(9,6), 2.52838425729905e-06, 1e-09);
+%! assert (C(10,6), 0.000200719143889168, 1e-09);
+%!
 %! # Compare "bonferroni" adjusted p-values to those obtained using p.adjust in R
 %!
 %! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'bonferroni', ...
@@ -915,6 +946,18 @@ endfunction
 
 %!test 
 %!
+%! # Test for anova2 ("linear") - comparison with results from GraphPad Prism 8
+%! words = [10 13 13; 6 8 8; 11 14 14; 22 23 25; 16 18 20; ...
+%!          15 17 17; 1 1 4; 12 15 17;  9 12 12;  8 9 12];
+%! [P, ATAB, STATS] = anova2 (words, 1, "off", "linear");
+%! [C, M, H, GNAMES] = multcompare (STATS, 'estimate', 'column',...
+%!                                  'ctype', 'lsd', 'display', 'off');
+%! assert (C(1,6), 0.000020799832702, 1e-09);
+%! assert (C(2,6), 0.000000035812410, 1e-09);
+%! assert (C(3,6), 0.003038942449215, 1e-09);
+
+%!test 
+%!
 %! # Test for anova2 ("nested") - comparison with results from GraphPad Prism 8
 %! data = [4.5924 7.3809 21.322; -0.5488 9.2085 25.0426; ...
 %!         6.1605 13.1147 22.66; 2.3374 15.2654 24.1283; ...
@@ -927,14 +970,3 @@ endfunction
 %! assert (C(2,6), 0.065879755907745, 1e-09);
 %! assert (C(3,6), 0.241874613529270, 1e-09);
 
-%!test 
-%!
-%! # Test for anova2 ("nested") - comparison with results from GraphPad Prism 8
-%! words = [10 13 13; 6 8 8; 11 14 14; 22 23 25; 16 18 20; ...
-%!          15 17 17; 1 1 4; 12 15 17;  9 12 12;  8 9 12];
-%! [P, ATAB, STATS] = anova2 (words, 1, "off", "linear");
-%! [C, M, H, GNAMES] = multcompare (STATS, 'estimate', 'column',...
-%!                                  'ctype', 'lsd', 'display', 'off');
-%! assert (C(1,6), 0.000020799832702, 1e-09);
-%! assert (C(2,6), 0.000000035812410, 1e-09);
-%! assert (C(3,6), 0.003038942449215, 1e-09);
