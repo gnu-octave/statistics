@@ -1,15 +1,18 @@
 if (compare_versions (version (), "8", "<"))
-  dirlist = {"datasets", "distributions", "shadow"};
+  a1_e324kporit985_itogj3_dirlist = {"datasets", "distributions", "shadow"};
 else
-  dirlist = {"datasets", "distributions"};
+  a1_e324kporit985_itogj3_dirlist = {"datasets", "distributions"};
 endif
 
-dirname = fileparts (canonicalize_file_name (mfilename ("fullpath")));
+d_2seRTE546_oyi_795jg09_dirname = fileparts (canonicalize_file_name ...
+                                             (mfilename ("fullpath")));
 
-for ii=1:length (dirlist)
-  addpath (fullfile (dirname, "..", dirlist{ii}))
+for iiII123DRT_idx = 1:length (a1_e324kporit985_itogj3_dirlist)
+  addpath (fullfile (d_2seRTE546_oyi_795jg09_dirname, "..", ...
+           a1_e324kporit985_itogj3_dirlist{iiII123DRT_idx}));
 endfor
 
-clear dirlist dirname ii
+clear a1_e324kporit985_itogj3_dirlist
+clear d_2seRTE546_oyi_795jg09_dirname iiII123DRT_idx
 
 warning ("off", "Octave:data-file-in-path")
