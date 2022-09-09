@@ -337,6 +337,10 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         ## Create cell array of group names corresponding to each row of m
         GNAMES = STATS.gnames;
 
+      case "anova2"
+
+        ## Add support for 2-way ANOVA here
+
       otherwise
 
         error (strcat (sprintf ("multcompare: the STATS structure from %s", ...
@@ -668,7 +672,8 @@ endfunction
 %!test
 %! 
 %! # Tests using unbalanced one-way ANOVA example from anovan and anova1
-%! # Comparison to matlab
+%!
+%! # Test for anovan - compare pairwise comparisons with matlab for CTYPE "lsd"
 %!
 %! dv =  [ 8.706 10.362 11.552  6.941 10.983 10.092  6.421 14.943 15.931 ...
 %!        22.968 18.590 16.567 15.944 21.637 14.492 17.965 18.851 22.891 ...
@@ -703,6 +708,53 @@ endfunction
 %! assert (M(4,2), 1.0880245732889, 1e-09);
 %! assert (M(5,2), 0.959547480416536, 1e-09);
 %!
+%! # Compare "fdr" adjusted p-values to those obtained using p.adjust in R
+%!
+%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'fdr', ...
+%!                                  'display', 'off');
+%! assert (C(1,6), 4.08303457454140e-05, 1e-09);
+%! assert (C(2,6), 1.04587348240817e-06, 1e-09);
+%! assert (C(3,6), 1.06397381604573e-07, 1e-09);
+%! assert (C(4,6), 7.82091664406946e-14, 1e-09);
+%! assert (C(5,6), 5.46591417210693e-01, 1e-09);
+%! assert (C(6,6), 1.05737243156806e-01, 1e-09);
+%! assert (C(7,6), 2.36859139493832e-07, 1e-09);
+%! assert (C(8,6), 2.09859420867852e-01, 1e-09);
+%! assert (C(9,6), 1.36324670121399e-07, 1e-09);
+%! assert (C(10,6), 7.40712246958735e-06, 1e-09);
+%!
+%! # Compare "holm" adjusted p-values to those obtained using p.adjust in R
+%!
+%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'holm', ...
+%!                                  'display', 'off');
+%! assert (C(1,6), 1.14324968087159e-04, 1e-09);
+%! assert (C(2,6), 3.13762044722451e-06, 1e-09);
+%! assert (C(3,6), 1.91515286888231e-07, 1e-09);
+%! assert (C(4,6), 7.82091664406946e-14, 1e-09);
+%! assert (C(5,6), 5.46591417210693e-01, 1e-09);
+%! assert (C(6,6), 2.53769383576334e-01, 1e-09);
+%! assert (C(7,6), 6.63205590582730e-07, 1e-09);
+%! assert (C(8,6), 3.77746957562134e-01, 1e-09);
+%! assert (C(9,6), 3.27179208291358e-07, 1e-09);
+%! assert (C(10,6), 2.22213674087620e-05, 1e-09);
+%!
+%! # Compare "bonferroni" adjusted p-values to those obtained using p.adjust in R
+%!
+%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'bonferroni', ...
+%!                                  'display', 'off');
+%! assert (C(1,6), 2.85812420217898e-04, 1e-09);
+%! assert (C(2,6), 5.22936741204085e-06, 1e-09);
+%! assert (C(3,6), 2.12794763209146e-07, 1e-09);
+%! assert (C(4,6), 7.82091664406946e-14, 1e-09);
+%! assert (C(5,6), 1.00000000000000e+00, 1e-09);
+%! assert (C(6,6), 8.45897945254446e-01, 1e-09);
+%! assert (C(7,6), 9.47436557975328e-07, 1e-09);
+%! assert (C(8,6), 1.00000000000000e+00, 1e-09);
+%! assert (C(9,6), 4.08974010364197e-07, 1e-09);
+%! assert (C(10,6), 4.44427348175241e-05, 1e-09);
+%!
+%! # Test for anova1 ("equal")- comparison of results from Matlab
+%!
 %! [P,ATAB, STATS] = anova1 (dv, g, 'off', 'equal');
 %!
 %! [C, M, H, GNAMES] = multcompare (STATS, 'ctype', 'lsd', 'display', 'off');
@@ -727,7 +779,7 @@ endfunction
 %! assert (M(4,2), 1.0880245732889, 1e-09);
 %! assert (M(5,2), 0.959547480416536, 1e-09);
 %!
-%! # Comparison with results from GraphPad Prism 8
+%! # Test for anova1 ("unequal") - comparison with results from GraphPad Prism 8
 %! [P,ATAB, STATS] = anova1 (dv, g, 'off', 'unequal');
 %!
 %! [C, M, H, GNAMES] = multcompare (STATS, 'ctype', 'lsd', 'display', 'off');
