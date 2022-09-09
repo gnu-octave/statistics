@@ -26,7 +26,7 @@
 ##
 ## @code{@var{C} = multcompare (@var{STATS})} performs a multiple comparison
 ## using a @var{STATS} structure that is obtained as output from any of
-## the following functions:  anovan.
+## the following functions:  anovan and anova1.
 ## The return value @var{C} is a matrix with one row per comparison and six
 ## columns. Columns 1-2 are the indices of the two samples being compared.
 ## Columns 3-5 are a lower bound, estimate, and upper bound for their
@@ -62,7 +62,7 @@
 ## @itemize
 ## @item
 ## @var{CTYPE} is the type of comparison test to use. In order of increasing power,
-## the choices are: "bonferroni", "scheffe", "mvt" (default), "holm", "fdr", "lsd".
+## the choices are: "bonferroni", "scheffe", "mvt", "holm" (default), "fdr", "lsd".
 ## The first four methods control the family-wise error rate. The "fdr" method
 ## controls false discovery rate. The final method, "lsd", is Fisher's least
 ## significant difference, which makes no attempt to control the Type 1 error
@@ -75,17 +75,17 @@
 ## or critical value of the maximum statistic across the tests, thereby accounting
 ## for correlations among comparisons in the control of the family-wise error
 ## rate with simultaneous inference. In the case of pairwise comparisons, it
-## simulates Tukey's test, in the case of comparisons with a single control group,
-## it simulates Dunnett's test. @var{CTYPE} values "tukey-kramer" and "hsd" are
-## recognised but set the value of @var{CTYPE} and @var{REF} to "mvt" and empty
-## respectively. A @var{CTYPE} value "dunnett" is recognised but sets the value
-## of @var{CTYPE} to "mvt", and if @var{REF} is empty, sets @var{REF} to 1. Since
-## the algorithm uses a Monte Carlo method (of 1e+06 random samples), you can
-## expect the results to fluctuate slightly with each call to multcompare and
-## the calculations may be slow to complete for a large number of comparisons.
-## If the parallel package is installed and loaded, @qcode{multcompare} will
-## automatically accelerate computations by parallel processing. Note that
-## p-values calculated by the "mvt" are truncated at 1e-06.
+## simulates Tukey's (or the Games-Howell) test, in the case of comparisons with
+## a single control group, it simulates Dunnett's test. @var{CTYPE} values
+## "tukey-kramer" and "hsd" are recognised but set the value of @var{CTYPE} and
+## @var{REF} to "mvt" and empty respectively. A @var{CTYPE} value "dunnett" is
+## recognised but sets the value of @var{CTYPE} to "mvt", and if @var{REF} is
+## empty, sets @var{REF} to 1. Since the algorithm uses a Monte Carlo method (of
+## 1e+06 random samples), you can expect the results to fluctuate slightly with
+## each call to multcompare and the calculations may be slow to complete for a
+## large number of comparisons. If the parallel package is installed and loaded,
+## @qcode{multcompare} will automatically accelerate computations by parallel
+## processing. Note that p-values calculated by the "mvt" are truncated at 1e-06.
 ## @end itemize
 ##
 ## @code{[@dots{}] = multcompare (@var{STATS}, "dim", @var{DIM})}
@@ -116,8 +116,8 @@
 ## bounds of the confidence intervals for the means; the critical value of the
 ## test statistic is scaled by a factor of 2^(-0.5) before multiplying by the
 ## standard errors of the group means so that the intervals overlap when the
-## difference in means becomes significant at the level @var{ALPHA}. When
-## @var{ALPHA} is 0.05, this corresponds to confidence intervals with 83.4%
+## difference in means becomes significant at approximately the level @var{ALPHA}.
+## When @var{ALPHA} is 0.05, this corresponds to confidence intervals with 83.4%
 ## central coverage. @var{H} is a handle to the figure containing the graph.
 ## @var{GNAMES} is a cell array with one row for each group, containing the
 ## names of the groups.
@@ -189,7 +189,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
       case "anovan"
 
         ## Our calculations treat all effects as fixed
-        if (! isempty (STATS.random))
+        if (ismember (STATS.random, DIM))
           warning (strcat (["multcompare: ignoring random effects"], ... 
                            [" (all effects treated as fixed)"]));
         endif
@@ -200,7 +200,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
                          [" factors with 2 or more degrees of freedom."]));
         endif
 
-        ## Calculate estimated marginal means
+        ## Calculate estimated marginal means and their standard errors
         Nd = numel (DIM);
         n = numel (STATS.resid);
         df = STATS.df;
@@ -224,37 +224,37 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         gmeans = U * STATS.coeffs(:,1);     # Estimated marginal means
         gcov = U * STATS.vcov * U';
         gvar = diag (gcov);                 # Sampling variance 
-        M = cat (2, gmeans, sqrt(gvar));
+        M = zeros (Ng, 4);
+        M(:,1:2) = cat (2, gmeans, sqrt(gvar));
 
         ## Create cell array of group names corresponding to each row of m
         GNAMES = cell (Ng, 1);
         for i = 1:Ng
           str = "";
           for j = 1:Nd
-            str = sprintf("%s%s=%s,", str, ...
+            str = sprintf("%s%s=%s, ", str, ...
                       num2str(STATS.varnames{DIM(j)}), ...
                       num2str(STATS.grpnames{DIM(j)}{STATS.grps(idx(i),DIM(j))}));
           endfor
-          GNAMES{i} = str(1:end-1);
+          GNAMES{i} = str(1:end-2);
           str = "";
         endfor
 
         ## Make matrix of requested comparisons (pairs)
-        ## Also return the corresponding correlation matrix (R) and hypothesis
-        ## matrix (L)
+        ## Also return the corresponding hypothesis matrix (L)
         if (isempty (REF))
           ## Pairwise comparisons
-          [pairs, R, L] = pairwise (Ng);
+          [pairs, L] = pairwise (Ng);
         else 
           ## Treatment vs. Control comparisons
-          [pairs, R, L] = trt_vs_ctrl (Ng, REF);
+          [pairs, L] = trt_vs_ctrl (Ng, REF);
         endif
         Np = size (pairs, 1);
 
         ## Calculate vector t statistics corresponding to the comparisons. In
         ## balanced ANOVA designs, for the calculation of the t statistics, the
         ## mean and standard error of the difference can be calculated simply by:
-        ##      mean_diff = M(pairs(:,1) - M(pairs(:,2)
+        ##      mean_diff = M(pairs(:,1)) - M(pairs(:,2))
         ##      sed = sqrt (M(pairs(:,1),2).^2 + (M(pairs(:,2),2).^2))
         ##      t = mean_diff ./ sed
         ## The above can be done for anova1 and anova2 STATS output. However, to
@@ -265,12 +265,81 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         sed = sqrt (diag (L * gcov * L'));
         t =  mean_diff ./ sed;
 
-        ## Calculate correlation matrix. We can get a better estimate of this
-        ## for unbalanced N-way ANOVA than the one simply based on the hypothesis
-        ## matrix alone
+        ## Calculate correlation matrix.
         vcov = L * gcov * L';
         R = vcov ./ (sed * sed');
         R = (R + R') / 2; # This step ensures that the matrix is positive definite
+
+      case "anova1"
+
+        ## Make matrix of requested comparisons (pairs)
+        ## Also return the corresponding hypothesis matrix (L)
+        n = STATS.n(:);
+        Ng = numel (n);
+         if (isempty (REF))
+          ## Pairwise comparisons
+          [pairs, L] = pairwise (Ng);
+        else 
+          ## Treatment vs. Control comparisons
+          [pairs, L] = trt_vs_ctrl (Ng, REF);
+        endif
+        Np = size (pairs, 1);
+
+        switch (STATS.vartype)
+
+          case "equal"
+
+            ## Calculate estimated marginal means and their standard errors
+            gmeans = STATS.means(:);
+            gvar = (STATS.s^2) ./ n;       # Sampling variance 
+            Ng = numel (gmeans);
+            M = zeros (Ng, 4);
+            M(:,1:2)  = cat (2, gmeans, sqrt(gvar));
+
+            ## Get the error degrees of freedom from anova1 output
+            dfe = STATS.df;
+
+          case "unequal"
+
+            ## Error checking
+            if (strcmp (CTYPE, "scheffe"))
+              error (strcat (["multcompare: the CTYPE value 'scheffe'"], ...
+                 [" does not support tests with varying degrees of freedom "]));
+            endif
+
+            ## Calculate estimated marginal means and their standard errors
+            gmeans = STATS.means(:);
+            gvar = STATS.vars(:) ./ n;     # Sampling variance 
+            dfe = STATS.df;
+            Ng = numel (gmeans);
+            M = zeros (Ng, 4);
+            M(:,1:2) = cat (2, gmeans, sqrt (gvar));
+
+            ## Calculate Welch's corrected degrees of freedom
+            dfe = sum (gvar(pairs), 2).^2 ./ ...
+                  sum ((gvar(pairs).^2 ./ (n(pairs) - 1)), 2);
+
+        endswitch
+
+        ## Calculate vector t statistics corresponding to the comparisons. In
+        ## balanced ANOVA designs, for the calculation of the t statistics, the
+        ## mean and standard error of the difference can be calculated simply by:
+        mean_diff = M(pairs(:,1)) - M(pairs(:,2));
+        sed = sqrt (M(pairs(:,1),2).^2 + (M(pairs(:,2),2).^2));
+        t = mean_diff ./ sed;
+
+        ## Calculate correlation matrix
+        gcov = diag (gvar);
+        vcov = L * gcov * L';
+        R = vcov ./ (sed * sed');
+        R = (R + R') / 2;
+
+        ## Create cell array of group names corresponding to each row of m
+        GNAMES = STATS.gnames;
+
+      case "anova2"
+
+        ## Add support for 2-way ANOVA here
 
       otherwise
 
@@ -292,7 +361,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     ## - GNAMES: a cell array containing the names of the groups being compared
 
     ## Create matrix of comparisons and calculate confidence intervals and
-    ## multiplicity adjusted p-values for the comparisons
+    ## multiplicity adjusted p-values for the comparisons.
     C = zeros (Np, 7);
     C(:,1:2) = pairs;
     C(:,4) = (M(pairs(:, 1),1) - M(pairs(:, 2),1));
@@ -300,15 +369,18 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     C(:,8) = dfe;   # Unlike Matlab, we include the degrees of freedom
     p = 2 * (1 - tcdf (abs (t), dfe));
     [C(:,6), critval] = feval (CTYPE, p, t, Ng, dfe, R, ALPHA);
-    C(:,3) = C(:,4) - sed * critval;
-    C(:,5) = C(:,4) + sed * critval;
+    C(:,3) = C(:,4) - sed .* critval;
+    C(:,5) = C(:,4) + sed .* critval;
 
     ## Calculate confidence intervals of the estimated marginal means with
     ## central coverage such that the intervals start to overlap where the
     ## difference reaches a two-tailed p-value of ALPHA. When ALPHA is 0.05,
     ## central coverage is approximately 83.4%
-    M(:,3) = M(:,1) - M(:,2) * critval / sqrt(2);
-    M(:,4) = M(:,1) + M(:,2) * critval / sqrt(2);
+    if (! isscalar(dfe))
+      critval = max (critval);
+    endif
+    M(:,3) = M(:,1) - M(:,2) .* critval / sqrt(2);
+    M(:,4) = M(:,1) + M(:,2) .* critval / sqrt(2);
 
     ## If requested, plot graph of the difference means for each comparison
     ## with central coverage of confidence intervals at 100*(1-alpha)%
@@ -344,7 +416,7 @@ endfunction
 
 ## Posthoc comparisons
 
-function [pairs, R, L] = pairwise (Ng)
+function [pairs, L, R] = pairwise (Ng)
 
   ## Create pairs matrix for pairwise comparisons
   gid = [1:Ng]';  # Create numeric group ID
@@ -360,12 +432,12 @@ function [pairs, R, L] = pairwise (Ng)
   for j = 1:Np
     L(j, pairs(j,:)) = [1,-1];  # Hypothesis matrix
   endfor
-  R = corr (L');
+  R = corr (L'); # Correlation matrix
 
 endfunction
 
 
-function [pairs, R, L] = trt_vs_ctrl (Ng, REF)
+function [pairs, L, R] = trt_vs_ctrl (Ng, REF)
 
   ## Create pairs matrix for comparisons with control (REF)
   gid = [1:Ng]';  # Create numeric group ID
@@ -379,7 +451,7 @@ function [pairs, R, L] = trt_vs_ctrl (Ng, REF)
   for j = 1:Np
     L(j, pairs(j,:)) = [1,-1];  # Hypothesis matrix
   endfor
-  R = corr (L');
+  R = corr (L'); # Correlation matrix
         
 endfunction
 
@@ -387,7 +459,8 @@ endfunction
 ## Methods to control family-wise error rate in multiple comparisons
 
 function [padj, critval] = scheffe (p, t, Ng, dfe, R, ALPHA)
-  
+
+  ## Calculate the p-value
   padj = 1 - fcdf ((t.^2) / (Ng - 1), Ng - 1, dfe);
 
   ## Calculate critical value at Scheffe-adjusted ALPHA level
@@ -417,6 +490,14 @@ function [padj, critval] = mvt (p, t, Ng, dfe, R, ALPHA)
   ##   - emmeans: the "mvt" adjust method in functions within emmeans
   ##   - glht: the "single-step" adjustment in the multcomp.function
 
+  ## Lower bound for error degrees of freedom to ensure type 1 error rate isn't
+  ## exceeded for any test
+  if (! isscalar(dfe))
+    warning (strcat (["multcompare: CTYPE value 'mvt' may be conservative"], ...
+                     [" when there isn't a common error degrees of freedom"]))
+    dfe = min (dfe);
+  endif
+
   ## Check if we can use parallel processing to accelerate computations
   pat = '^parallel';
   software = pkg('list');
@@ -440,7 +521,7 @@ function [padj, critval] = mvt (p, t, Ng, dfe, R, ALPHA)
   chunkSize = 1000;
   numChunks = 1000;
   nsim = chunkSize * numChunks;
-  func = @() max (abs (mvtrnd (R, dfe, chunkSize)'), [], 1);
+  func = @(jnk) max (abs (mvtrnd (R, dfe, chunkSize)'), [], 1);
   if (PARALLEL)
     maxT = cell2mat (parcellfun (nproc, func, ...
                                  cell (1, numChunks), 'UniformOutput', false));
@@ -590,8 +671,9 @@ endfunction
 
 %!test
 %! 
-%! # Test using unbalanced one-way ANOVA example from anovan
-%! # Comparison to matlab
+%! # Tests using unbalanced one-way ANOVA example from anovan and anova1
+%!
+%! # Test for anovan - compare pairwise comparisons with matlab for CTYPE "lsd"
 %!
 %! dv =  [ 8.706 10.362 11.552  6.941 10.983 10.092  6.421 14.943 15.931 ...
 %!        22.968 18.590 16.567 15.944 21.637 14.492 17.965 18.851 22.891 ...
@@ -625,4 +707,90 @@ endfunction
 %! assert (M(3,2), 1.0177537954095, 1e-09);
 %! assert (M(4,2), 1.0880245732889, 1e-09);
 %! assert (M(5,2), 0.959547480416536, 1e-09);
+%!
+%! # Compare "fdr" adjusted p-values to those obtained using p.adjust in R
+%!
+%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'fdr', ...
+%!                                  'display', 'off');
+%! assert (C(1,6), 4.08303457454140e-05, 1e-09);
+%! assert (C(2,6), 1.04587348240817e-06, 1e-09);
+%! assert (C(3,6), 1.06397381604573e-07, 1e-09);
+%! assert (C(4,6), 7.82091664406946e-14, 1e-09);
+%! assert (C(5,6), 5.46591417210693e-01, 1e-09);
+%! assert (C(6,6), 1.05737243156806e-01, 1e-09);
+%! assert (C(7,6), 2.36859139493832e-07, 1e-09);
+%! assert (C(8,6), 2.09859420867852e-01, 1e-09);
+%! assert (C(9,6), 1.36324670121399e-07, 1e-09);
+%! assert (C(10,6), 7.40712246958735e-06, 1e-09);
+%!
+%! # Compare "holm" adjusted p-values to those obtained using p.adjust in R
+%!
+%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'holm', ...
+%!                                  'display', 'off');
+%! assert (C(1,6), 1.14324968087159e-04, 1e-09);
+%! assert (C(2,6), 3.13762044722451e-06, 1e-09);
+%! assert (C(3,6), 1.91515286888231e-07, 1e-09);
+%! assert (C(4,6), 7.82091664406946e-14, 1e-09);
+%! assert (C(5,6), 5.46591417210693e-01, 1e-09);
+%! assert (C(6,6), 2.53769383576334e-01, 1e-09);
+%! assert (C(7,6), 6.63205590582730e-07, 1e-09);
+%! assert (C(8,6), 3.77746957562134e-01, 1e-09);
+%! assert (C(9,6), 3.27179208291358e-07, 1e-09);
+%! assert (C(10,6), 2.22213674087620e-05, 1e-09);
+%!
+%! # Compare "bonferroni" adjusted p-values to those obtained using p.adjust in R
+%!
+%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'bonferroni', ...
+%!                                  'display', 'off');
+%! assert (C(1,6), 2.85812420217898e-04, 1e-09);
+%! assert (C(2,6), 5.22936741204085e-06, 1e-09);
+%! assert (C(3,6), 2.12794763209146e-07, 1e-09);
+%! assert (C(4,6), 7.82091664406946e-14, 1e-09);
+%! assert (C(5,6), 1.00000000000000e+00, 1e-09);
+%! assert (C(6,6), 8.45897945254446e-01, 1e-09);
+%! assert (C(7,6), 9.47436557975328e-07, 1e-09);
+%! assert (C(8,6), 1.00000000000000e+00, 1e-09);
+%! assert (C(9,6), 4.08974010364197e-07, 1e-09);
+%! assert (C(10,6), 4.44427348175241e-05, 1e-09);
+%!
+%! # Test for anova1 ("equal")- comparison of results from Matlab
+%!
+%! [P,ATAB, STATS] = anova1 (dv, g, 'off', 'equal');
+%!
+%! [C, M, H, GNAMES] = multcompare (STATS, 'ctype', 'lsd', 'display', 'off');
+%! assert (C(1,6), 2.85812420217898e-05, 1e-09);
+%! assert (C(2,6), 5.22936741204085e-07, 1e-09);
+%! assert (C(3,6), 2.12794763209146e-08, 1e-09);
+%! assert (C(4,6), 7.82091664406946e-15, 1e-09);
+%! assert (C(5,6), 0.546591417210693, 1e-09);
+%! assert (C(6,6), 0.0845897945254446, 1e-09);
+%! assert (C(7,6), 9.47436557975328e-08, 1e-09);
+%! assert (C(8,6), 0.188873478781067, 1e-09);
+%! assert (C(9,6), 4.08974010364197e-08, 1e-09);
+%! assert (C(10,6), 4.44427348175241e-06, 1e-09);
+%! assert (M(1,1), 10, 1e-09);
+%! assert (M(2,1), 18, 1e-09);
+%! assert (M(3,1), 19, 1e-09);
+%! assert (M(4,1), 21.0001428571429, 1e-09);
+%! assert (M(5,1), 29.0001111111111, 1e-09);
+%! assert (M(1,2), 1.0177537954095, 1e-09);
+%! assert (M(2,2), 1.28736803631001, 1e-09);
+%! assert (M(3,2), 1.0177537954095, 1e-09);
+%! assert (M(4,2), 1.0880245732889, 1e-09);
+%! assert (M(5,2), 0.959547480416536, 1e-09);
+%!
+%! # Test for anova1 ("unequal") - comparison with results from GraphPad Prism 8
+%! [P,ATAB, STATS] = anova1 (dv, g, 'off', 'unequal');
+%!
+%! [C, M, H, GNAMES] = multcompare (STATS, 'ctype', 'lsd', 'display', 'off');
+%! assert (C(1,6), 0.001247025266382, 1e-09);
+%! assert (C(2,6), 0.000018037115146, 1e-09);
+%! assert (C(3,6), 0.000002974595187, 1e-09);
+%! assert (C(4,6), 0.000000000786046, 1e-09);
+%! assert (C(5,6), 0.569319288665011, 1e-09);
+%! assert (C(6,6), 0.110501699029767, 1e-09);
+%! assert (C(7,6), 0.000131226488700, 1e-09);
+%! assert (C(8,6), 0.191210140971601, 1e-09);
+%! assert (C(9,6), 0.000005385256394, 1e-09);
+%! assert (C(10,6), 0.000074089106171, 1e-09);
 

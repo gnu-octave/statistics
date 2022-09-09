@@ -140,7 +140,9 @@
 ## @item
 ## @var{dispopt} can be either "on" (default) or "off" and controls the display
 ## of the model formula, table of model parameters and the ANOVA table. The
-## F-statistic and p-values are formatted in APA-style.
+## F-statistic and p-values are formatted in APA-style. To avoid p-hacking, the
+## table of model parameters is only displayed if we set planned contrasts (see
+## below).
 ## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "contrasts", @var{contrasts})}
@@ -309,7 +311,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       endif
     endif
     if (size (GROUP,1) != n)
-      error ("anovan: GROUP must be a matrix of the same number of rows as Y");
+      error ("anovan: GROUP must be a matrix with the same number of rows as Y");
     endif
     if (! isempty (VARNAMES))
       if (iscell (VARNAMES))
@@ -367,6 +369,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     ## Evaluate contrasts (if applicable)
     if isempty (CONTRASTS)
       CONTRASTS = cell (1, N);
+      planned = false;
     else
       if (ischar(CONTRASTS))
         contr_str = CONTRASTS;
@@ -395,6 +398,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           endif
         endif
       endfor
+      planned = true;
     endif
 
     ## Evaluate alpha input argument
@@ -641,32 +645,38 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
     ## Print ANOVA table
     switch (lower (DISPLAY))
+
       case "on"
+
         ## Print model formula 
         fprintf("\nMODEL FORMULA (in equivalent Wilkinson-Rogers-Pinheiro-Bates notation):\n\n%s\n", formula);
-        ## Parameter estimates correspond to the contrasts we set
-        fprintf("\nMODEL PARAMETERS (contrasts for the fixed effects)\n\n");
-        fprintf("Parameter               Estimate        SE  Lower.CI  Upper.CI        t Prob>|t|\n");
-        fprintf("--------------------------------------------------------------------------------\n");
-        
-        for j = 1:size (coeff_stats, 1)
-          if (p(j) < 0.001)
-            fprintf ("%-20s  %10.3g %9.3g %9.3g %9.3g %8.2f    <.001 \n", ...
-                     STATS.coeffnames{j}, STATS.coeffs(j,1:end-1));
-          elseif (p(j) < 0.9995)
-            fprintf ("%-20s  %10.3g %9.3g %9.3g %9.3g %8.2f     .%03u \n", ...
-                     STATS.coeffnames{j}, STATS.coeffs(j,1:end-1), round (p(j) * 1e+03));
-          elseif (isnan(p(j)))
-            ## Don't display coefficients for 'random' effects since they were 
-            ## treated as fixed effects
-          else
-            fprintf ("%-20s  %10.3g %9.3g %9.3g %9.3g %8.2f    1.000 \n", ...
-                     STATS.coeffnames{j}, STATS.coeffs(j,1:end-1));
-          end
-        endfor
-        ## Get dimensions of the ANOVA table
+
+        ## If applicable, print parameter estimates (a.k.a contrasts) for fixed effects
+        if (planned)
+          ## Parameter estimates correspond to the contrasts we set. To avoid
+          ## p-hacking, don't print contrasts if we don't specify them to start with
+          fprintf("\nMODEL PARAMETERS (contrasts for the fixed effects)\n\n");
+          fprintf("Parameter               Estimate        SE  Lower.CI  Upper.CI        t Prob>|t|\n");
+          fprintf("--------------------------------------------------------------------------------\n");
+          for j = 1:size (coeff_stats, 1)
+            if (p(j) < 0.001)
+              fprintf ("%-20s  %10.3g %9.3g %9.3g %9.3g %8.2f    <.001 \n", ...
+                       STATS.coeffnames{j}, STATS.coeffs(j,1:end-1));
+            elseif (p(j) < 0.9995)
+              fprintf ("%-20s  %10.3g %9.3g %9.3g %9.3g %8.2f     .%03u \n", ...
+                       STATS.coeffnames{j}, STATS.coeffs(j,1:end-1), round (p(j) * 1e+03));
+            elseif (isnan(p(j)))
+              ## Don't display coefficients for 'random' effects since they were 
+              ## treated as fixed effects
+            else
+              fprintf ("%-20s  %10.3g %9.3g %9.3g %9.3g %8.2f    1.000 \n", ...
+                       STATS.coeffnames{j}, STATS.coeffs(j,1:end-1));
+            end
+          endfor
+        end
+
+        ## Print ANOVA table
         [nrows, ncols] = size (T);
-        ## Print table
         fprintf("\nANOVA TABLE (Type %s sums-of-squares):\n\n", sstype_char);
         fprintf("Source                   Sum Sq.    d.f.    Mean Sq.  R Sq.            F  Prob>F\n");
         fprintf("--------------------------------------------------------------------------------\n");
@@ -691,10 +701,45 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         fprintf("Error                 %10.5g  %6d  %10.5g\n", T{end-1,2:4});
         fprintf("Total                 %10.5g  %6d \n", T{end,2:3});
         fprintf("\n");
+
+        ## Make figure of diagnostic plots
+        figure("Name", "Diagnostic plots: Standardized Model Residuals");
+        resid = STATS.resid;
+        std_resid = zscore (resid);
+        fit = STATS.X * STATS.coeffs(:,1);
+        ## Checks for Normality assumption of model residuals
+        ## Histogram superimposed with fitted Normal distribution
+        subplot (2, 2, 1);
+        histfit (std_resid);
+        title ("Histogram")
+        xlabel ("Standardized Residuals");
+        ## Normal probability plot
+        subplot (2, 2, 2);
+        normplot (std_resid);
+        xlabel ("Standardized Residuals");
+        ## Checks for homoskedasticity assumption
+        subplot (2, 2, 3);
+        plot (fit, std_resid, "b+");
+        xlabel ("Fitted values");
+        ylabel ("Standardized Residuals");
+        title ("Standardized residuals vs Fitted values")
+        ax1 = get (gca); 
+        hold on; plot (ax1.xlim, zeros (1, 2), "r-."); grid ("on"); hold off;
+        ## Checks for outliers and heteroskedasticity
+        subplot (2, 2, 4);
+        plot (fit, sqrt (std_resid), "b+");
+        xlabel ("Fitted values");
+        ylabel ("sqrt (Standardized Residuals)");
+        title ("Spread-Location Plot")
+
       case "off"
+
         ## do nothing
+
       otherwise
-        error ("anovan: wrong value for ""display"" parameter.");
+
+        error ("anovan: wrong value for 'display' parameter.");
+
     endswitch
 
 endfunction

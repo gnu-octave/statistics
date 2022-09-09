@@ -26,8 +26,8 @@
 ##
 ## Perform a one-way analysis of variance (ANOVA) for comparing the means of two
 ## or more groups of data under the null hypothesis that the groups are drawn
-## from distributions with the same mean. For planned contrasts in a one-way
-## ANOVA, use @qcode{anovan}.
+## from distributions with the same mean. For planned contrasts and/or diagnostic 
+## plots, use @qcode{anovan} instead.
 ##
 ## anova1 can take up to three input arguments:
 ##
@@ -124,7 +124,7 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
     group = group';
   endif
 
-  ## If X is a matrix, convert it to column vector and create a
+  ## If x is a matrix, convert it to column vector and create a
   ## corresponging column vector for groups
   if (length (x) < prod (size (x)))
     [n, m] = size (x);
@@ -135,8 +135,13 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
     elseif (size (group, 1) == m)     ## group names exist and match columns
       group = group(gi,:);
     else
-      error("X columns and GROUP length do not match.");
+      error ("x columns and GROUP length do not match.");
     endif
+  endif
+
+  ## Check that x and group are the same size
+  if (! all (size (x) == size (group)))
+      error ("GROUP must be a vector with the same number of rows as x.");
   endif
 
   ## Identify NaN values (if any) and remove them from X along with
