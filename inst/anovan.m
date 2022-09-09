@@ -311,7 +311,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       endif
     endif
     if (size (GROUP,1) != n)
-      error ("anovan: GROUP must be a matrix of the same number of rows as Y");
+      error ("anovan: GROUP must be a matrix with the same number of rows as Y");
     endif
     if (! isempty (VARNAMES))
       if (iscell (VARNAMES))
