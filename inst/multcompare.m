@@ -62,14 +62,13 @@
 ## @itemize
 ## @item
 ## @var{CTYPE} is the type of comparison test to use. In order of increasing power,
-## the choices are: "bonferroni", "scheffe", "mvt", "holm" (default), "fdr", "lsd".
-## The first four methods control the family-wise error rate. The "fdr" method
-## controls false discovery rate. The final method, "lsd", is Fisher's least
-## significant difference, which makes no attempt to control the Type 1 error
-## rate of multiple comparisons. The coverage of confidence intervals are only
-## corrected for multiple comparisons in the cases where @var{CTYPE} is
-## "bonferroni", "scheffe" or "mvt", which control the Type 1 error rate
-## for simultaneous inference. 
+## the choices are: "bonferroni", "scheffe", "mvt", "holm" (default), "hochberg",
+## "fdr", "lsd". The first five methods control the family-wise error rate. The
+## "fdr" method controls false discovery rate. The final method, "lsd" (or "none"),
+## makes no attempt to control the Type 1 error rate of multiple comparisons. 
+## The coverage of confidence intervals are only corrected for multiple comparisons
+## in the cases where @var{CTYPE} is "bonferroni", "scheffe" or "mvt", which control
+## the Type 1 error rate for simultaneous inference. 
 ##
 ## The "mvt" method uses the multivariate t distribution to assess the probability
 ## or critical value of the maximum statistic across the tests, thereby accounting
@@ -141,6 +140,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     CTYPE = "holm";
     DISPLAY = "on";
     DIM = 1;
+    ESTIMATE = "column";
     for idx = 3:2:nargin
       name = varargin{idx-2};
       value = varargin{idx-1};
@@ -155,6 +155,8 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
           DISPLAY = lower (value);
         case {"dim","dimension"}
           DIM = value;
+        case "estimate"
+          ESTIMATE = lower (value);
         otherwise
           error (sprintf ("multcompare: parameter %s is not supported", name));
       endswitch
@@ -177,14 +179,130 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
       if (isempty (REF))
         REF = 1;
       endif
+    elseif (strcmp (CTYPE, "none"))
+      CTYPE = "lsd";
     endif
     if (! ismember (CTYPE, ...
-                    {"bonferroni","scheffe","mvt","holm","fdr","lsd"}))
+                    {"bonferroni","scheffe","mvt","holm","hochberg","fdr","lsd"}))
       error ("multcompare: '%s' is not a supported value for CTYPE", CTYPE)
     endif
 
     ## Perform test specific calculations
     switch (STATS.source)
+
+      case "anova1"
+
+        ## Make matrix of requested comparisons (pairs)
+        ## Also return the corresponding hypothesis matrix (L)
+        n = STATS.n(:);
+        Ng = numel (n);
+         if (isempty (REF))
+          ## Pairwise comparisons
+          [pairs, L] = pairwise (Ng);
+        else 
+          ## Treatment vs. Control comparisons
+          [pairs, L] = trt_vs_ctrl (Ng, REF);
+        endif
+        Np = size (pairs, 1);
+
+        switch (STATS.vartype)
+
+          case "equal"
+
+            ## Calculate estimated marginal means and their standard errors
+            gmeans = STATS.means(:);
+            gvar = (STATS.s^2) ./ n;       # Sampling variance 
+            Ng = numel (gmeans);
+            M = zeros (Ng, 4);
+            M(:,1:2)  = cat (2, gmeans, sqrt(gvar));
+
+            ## Get the error degrees of freedom from anova1 output
+            dfe = STATS.df;
+
+          case "unequal"
+
+            ## Error checking
+            if (strcmp (CTYPE, "scheffe"))
+              error (strcat (["multcompare: the CTYPE value 'scheffe'"], ...
+                 [" does not support tests with varying degrees of freedom "]));
+            endif
+
+            ## Calculate estimated marginal means and their standard errors
+            gmeans = STATS.means(:);
+            gvar = STATS.vars(:) ./ n;     # Sampling variance 
+            dfe = STATS.df;
+            Ng = numel (gmeans);
+            M = zeros (Ng, 4);
+            M(:,1:2) = cat (2, gmeans, sqrt (gvar));
+
+            ## Calculate Welch's corrected degrees of freedom
+            dfe = sum (gvar(pairs), 2).^2 ./ ...
+                  sum ((gvar(pairs).^2 ./ (n(pairs) - 1)), 2);
+
+        endswitch
+
+        ## Calculate vector t statistics corresponding to the comparisons. In
+        ## balanced ANOVA designs, for the calculation of the t statistics, the
+        ## mean and standard error of the difference can be calculated simply by:
+        mean_diff = M(pairs(:,1)) - M(pairs(:,2));
+        sed = sqrt (M(pairs(:,1),2).^2 + (M(pairs(:,2),2).^2));
+        t = mean_diff ./ sed;
+
+        ## Calculate correlation matrix
+        gcov = diag (gvar);
+        vcov = L * gcov * L';
+        R = vcov ./ (sed * sed');
+        R = (R + R') / 2;
+
+        ## Create cell array of group names corresponding to each row of m
+        GNAMES = STATS.gnames;
+
+      case "anova2"
+
+        ## Fetch estimate specific information from the STATS structure
+        switch (ESTIMATE)
+          case {"column","columns","col","cols"}
+            gmeans = STATS.colmeans(:);
+            Ng = numel (gmeans);
+            n = STATS.coln;
+          case {"row","rows"}
+            if (ismember (STATS.model, {"linear","nested"}))
+              error (strcat (["multcompare: no support for the row factor"],... 
+                             [" (random effect) in a 'nested' or 'linear' anova2 model"]));
+            endif
+            gmeans = STATS.rowmeans(:);
+            Ng = numel (gmeans);
+            n = STATS.rown;
+        endswitch
+
+        ## Make matrix of requested comparisons (pairs)
+        ## Also return the corresponding hypothesis matrix (L)
+         if (isempty (REF))
+          ## Pairwise comparisons
+          [pairs, L, R] = pairwise (Ng);
+        else 
+          ## Treatment vs. Control comparisons
+          [pairs, L, R] = trt_vs_ctrl (Ng, REF);
+        endif
+        Np = size (pairs, 1);
+
+        ## Calculate estimated marginal means and their standard errors
+        gvar = ((STATS.sigmasq) / n) * ones (Ng, 1);  # Sampling variance 
+        M = zeros (Ng, 4);
+        M(:,1:2) = cat (2, gmeans, sqrt (gvar));
+
+        ## Get the error degrees of freedom from anova2 output
+        dfe = STATS.df;
+
+        ## Calculate vector t statistics corresponding to the comparisons. In
+        ## balanced ANOVA designs, for the calculation of the t statistics, the
+        ## mean and standard error of the difference can be calculated simply by:
+        mean_diff = M(pairs(:,1)) - M(pairs(:,2));
+        sed = sqrt (M(pairs(:,1),2).^2 + (M(pairs(:,2),2).^2));
+        t = mean_diff ./ sed;
+
+        ## Create character array of group names corresponding to each row of m
+        GNAMES = cellstr (num2str ([1:Ng]'));
 
       case "anovan"
 
@@ -270,77 +388,6 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         R = vcov ./ (sed * sed');
         R = (R + R') / 2; # This step ensures that the matrix is positive definite
 
-      case "anova1"
-
-        ## Make matrix of requested comparisons (pairs)
-        ## Also return the corresponding hypothesis matrix (L)
-        n = STATS.n(:);
-        Ng = numel (n);
-         if (isempty (REF))
-          ## Pairwise comparisons
-          [pairs, L] = pairwise (Ng);
-        else 
-          ## Treatment vs. Control comparisons
-          [pairs, L] = trt_vs_ctrl (Ng, REF);
-        endif
-        Np = size (pairs, 1);
-
-        switch (STATS.vartype)
-
-          case "equal"
-
-            ## Calculate estimated marginal means and their standard errors
-            gmeans = STATS.means(:);
-            gvar = (STATS.s^2) ./ n;       # Sampling variance 
-            Ng = numel (gmeans);
-            M = zeros (Ng, 4);
-            M(:,1:2)  = cat (2, gmeans, sqrt(gvar));
-
-            ## Get the error degrees of freedom from anova1 output
-            dfe = STATS.df;
-
-          case "unequal"
-
-            ## Error checking
-            if (strcmp (CTYPE, "scheffe"))
-              error (strcat (["multcompare: the CTYPE value 'scheffe'"], ...
-                 [" does not support tests with varying degrees of freedom "]));
-            endif
-
-            ## Calculate estimated marginal means and their standard errors
-            gmeans = STATS.means(:);
-            gvar = STATS.vars(:) ./ n;     # Sampling variance 
-            dfe = STATS.df;
-            Ng = numel (gmeans);
-            M = zeros (Ng, 4);
-            M(:,1:2) = cat (2, gmeans, sqrt (gvar));
-
-            ## Calculate Welch's corrected degrees of freedom
-            dfe = sum (gvar(pairs), 2).^2 ./ ...
-                  sum ((gvar(pairs).^2 ./ (n(pairs) - 1)), 2);
-
-        endswitch
-
-        ## Calculate vector t statistics corresponding to the comparisons. In
-        ## balanced ANOVA designs, for the calculation of the t statistics, the
-        ## mean and standard error of the difference can be calculated simply by:
-        mean_diff = M(pairs(:,1)) - M(pairs(:,2));
-        sed = sqrt (M(pairs(:,1),2).^2 + (M(pairs(:,2),2).^2));
-        t = mean_diff ./ sed;
-
-        ## Calculate correlation matrix
-        gcov = diag (gvar);
-        vcov = L * gcov * L';
-        R = vcov ./ (sed * sed');
-        R = (R + R') / 2;
-
-        ## Create cell array of group names corresponding to each row of m
-        GNAMES = STATS.gnames;
-
-      case "anova2"
-
-        ## Add support for 2-way ANOVA here
-
       otherwise
 
         error (strcat (sprintf ("multcompare: the STATS structure from %s", ...
@@ -377,6 +424,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     ## difference reaches a two-tailed p-value of ALPHA. When ALPHA is 0.05,
     ## central coverage is approximately 83.4%
     if (! isscalar(dfe))
+      # Upper bound critval (corresponding to lower bound dfe)
       critval = max (critval);
     endif
     M(:,3) = M(:,1) - M(:,2) .* critval / sqrt(2);
@@ -567,6 +615,36 @@ function [padj, critval] = holm (p, t, Ng, dfe, R, ALPHA)
 endfunction
 
 
+function [padj, critval] = hochberg (p, t, Ng, dfe, R, ALPHA)
+
+  ## Hochberg's step-up Bonferroni procedure
+
+  ## Order raw p-values
+  [ps, idx] = sort (p, "ascend");
+  Np = numel (ps);
+
+  ## Implement Hochberg's step-down Bonferroni procedure
+  padj = nan (Np,1);
+  padj(Np) = ps(Np);
+  for j = 1:Np-1
+    i = Np - j;
+    padj(i) = min (padj(i + 1), (Np -i + 1) * ps(i));
+  endfor
+
+  ## Reorder the adjusted p-values to match the order of the original p-values
+  [jnk, original_order] = sort (idx, "ascend");
+  padj = padj(original_order);
+
+  ## Truncate adjusted p-values to 1.0
+  padj(padj>1) = 1;
+
+  ## Calculate critical value at ALPHA
+  ## No adjustment to confidence interval coverage
+  critval = tinv (1 - ALPHA / 2, dfe);
+
+endfunction
+
+
 function [padj, critval] = fdr (p, t, Ng, dfe, R, ALPHA)
   
   ## Benjamini-Hochberg procedure to control the false discovery rate (FDR)
@@ -683,8 +761,7 @@ endfunction
 %! g = [1 1 1 1 1 1 1 1 2 2 2 2 2 3 3 3 3 3 3 3 3 ...
 %!      4 4 4 4 4 4 4 5 5 5 5 5 5 5 5 5]';
 %!
-%! [P,ATAB, STATS] = anovan (dv, g, 'varnames', 'score', 'display', 'off');
-%!
+%! [P, ATAB, STATS] = anovan (dv, g, 'varnames', 'score', 'display', 'off');
 %! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'lsd', ...
 %!                                  'display', 'off');
 %! assert (C(1,6), 2.85812420217898e-05, 1e-09);
@@ -723,6 +800,21 @@ endfunction
 %! assert (C(9,6), 1.36324670121399e-07, 1e-09);
 %! assert (C(10,6), 7.40712246958735e-06, 1e-09);
 %!
+%! # Compare "hochberg" adjusted p-values to those obtained using p.adjust in R
+%!
+%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'hochberg', ...
+%!                                  'display', 'off');
+%! assert (C(1,6), 1.14324968087159e-04, 1e-09);
+%! assert (C(2,6), 3.13762044722451e-06, 1e-09);
+%! assert (C(3,6), 1.91515286888231e-07, 1e-09);
+%! assert (C(4,6), 7.82091664406946e-14, 1e-09);
+%! assert (C(5,6), 5.46591417210693e-01, 1e-09);
+%! assert (C(6,6), 2.53769383576334e-01, 1e-09);
+%! assert (C(7,6), 6.63205590582730e-07, 1e-09);
+%! assert (C(8,6), 3.77746957562134e-01, 1e-09);
+%! assert (C(9,6), 3.27179208291358e-07, 1e-09);
+%! assert (C(10,6), 2.22213674087620e-05, 1e-09);
+%!
 %! # Compare "holm" adjusted p-values to those obtained using p.adjust in R
 %!
 %! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'holm', ...
@@ -755,8 +847,7 @@ endfunction
 %!
 %! # Test for anova1 ("equal")- comparison of results from Matlab
 %!
-%! [P,ATAB, STATS] = anova1 (dv, g, 'off', 'equal');
-%!
+%! [P, ATAB, STATS] = anova1 (dv, g, 'off', 'equal');
 %! [C, M, H, GNAMES] = multcompare (STATS, 'ctype', 'lsd', 'display', 'off');
 %! assert (C(1,6), 2.85812420217898e-05, 1e-09);
 %! assert (C(2,6), 5.22936741204085e-07, 1e-09);
@@ -780,8 +871,7 @@ endfunction
 %! assert (M(5,2), 0.959547480416536, 1e-09);
 %!
 %! # Test for anova1 ("unequal") - comparison with results from GraphPad Prism 8
-%! [P,ATAB, STATS] = anova1 (dv, g, 'off', 'unequal');
-%!
+%! [P, ATAB, STATS] = anova1 (dv, g, 'off', 'unequal');
 %! [C, M, H, GNAMES] = multcompare (STATS, 'ctype', 'lsd', 'display', 'off');
 %! assert (C(1,6), 0.001247025266382, 1e-09);
 %! assert (C(2,6), 0.000018037115146, 1e-09);
@@ -794,3 +884,46 @@ endfunction
 %! assert (C(9,6), 0.000005385256394, 1e-09);
 %! assert (C(10,6), 0.000074089106171, 1e-09);
 
+%!test
+%!
+%! # Test for anova2 ("interaction") - comparison with results from Matlab for column effect
+%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
+%! [P, ATAB, STATS] = anova2 (popcorn, 3, 'off');
+%! [C, M, H, GNAMES] = multcompare (STATS, 'estimate', 'column',...
+%!                                  'ctype', 'lsd', 'display', 'off');
+%! assert (C(1,6), 1.49311100811177e-05, 1e-09);
+%! assert (C(2,6), 2.20506904243535e-07, 1e-09);
+%! assert (C(3,6), 0.00449897860490058, 1e-09);
+%! assert (M(1,1), 6.25, 1e-09);
+%! assert (M(2,1), 4.75, 1e-09);
+%! assert (M(3,1), 4, 1e-09);
+%! assert (M(1,2), 0.152145154862547, 1e-09);
+%! assert (M(2,2), 0.152145154862547, 1e-09);
+%! assert (M(3,2), 0.152145154862547, 1e-09);
+
+%!test 
+%!
+%! # Test for anova2 ("nested") - comparison with results from GraphPad Prism 8
+%! data = [4.5924 7.3809 21.322; -0.5488 9.2085 25.0426; ...
+%!         6.1605 13.1147 22.66; 2.3374 15.2654 24.1283; ...
+%!         5.1873 12.4188 16.5927; 3.3579 14.3951 10.2129; ...
+%!         6.3092 8.5986 9.8934; 3.2831 3.4945 10.0203];
+%! [P, ATAB, STATS] = anova2 (data, 4, "off", "nested");
+%! [C, M, H, GNAMES] = multcompare (STATS, 'estimate', 'column',...
+%!                                  'ctype', 'lsd', 'display', 'off');
+%! assert (C(1,6), 0.261031111511073, 1e-09);
+%! assert (C(2,6), 0.065879755907745, 1e-09);
+%! assert (C(3,6), 0.241874613529270, 1e-09);
+
+%!test 
+%!
+%! # Test for anova2 ("nested") - comparison with results from GraphPad Prism 8
+%! words = [10 13 13; 6 8 8; 11 14 14; 22 23 25; 16 18 20; ...
+%!          15 17 17; 1 1 4; 12 15 17;  9 12 12;  8 9 12];
+%! [P, ATAB, STATS] = anova2 (words, 1, "off", "linear");
+%! [C, M, H, GNAMES] = multcompare (STATS, 'estimate', 'column',...
+%!                                  'ctype', 'lsd', 'display', 'off');
+%! assert (C(1,6), 0.000020799832702, 1e-09);
+%! assert (C(2,6), 0.000000035812410, 1e-09);
+%! assert (C(3,6), 0.003038942449215, 1e-09);
