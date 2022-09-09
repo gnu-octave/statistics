@@ -97,7 +97,7 @@
 ## anova1 (x, groups);
 ## @end example
 ##
-## @seealso{anova2, anovan}
+## @seealso{anova2, anovan, multcompare}
 ## @end deftypefn
 
 function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)

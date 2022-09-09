@@ -26,7 +26,7 @@
 ##
 ## @code{@var{C} = multcompare (@var{STATS})} performs a multiple comparison
 ## using a @var{STATS} structure that is obtained as output from any of
-## the following functions:  anovan, anova1 and anova2.
+## the following functions:  anova1, anova2 and anovan.
 ## The return value @var{C} is a matrix with one row per comparison and six
 ## columns. Columns 1-2 are the indices of the two samples being compared.
 ## Columns 3-5 are a lower bound, estimate, and upper bound for their difference,
@@ -132,7 +132,7 @@
 ## @var{GNAMES} is a cell array with one row for each group, containing the
 ## names of the groups.
 ##
-## @seealso{anovan}
+## @seealso{anova1, anova2, anovan}
 ## @end deftypefn
 
 function [C, M, H, GNAMES] = multcompare (STATS, varargin)

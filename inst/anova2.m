@@ -94,7 +94,7 @@
 ## disp (p);
 ## @end example
 ##
-## @seealso{anova1, anovan}
+## @seealso{anova1, anovan, multcompare}
 ## @end deftypefn
 
 function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
