@@ -645,9 +645,13 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
     ## Print ANOVA table
     switch (lower (DISPLAY))
+
       case "on"
+
         ## Print model formula 
         fprintf("\nMODEL FORMULA (in equivalent Wilkinson-Rogers-Pinheiro-Bates notation):\n\n%s\n", formula);
+
+        ## If applicable, print parameter estimates (a.k.a contrasts) for fixed effects
         if (planned)
           ## Parameter estimates correspond to the contrasts we set. To avoid
           ## p-hacking, don't print contrasts if we don't specify them to start with
@@ -670,9 +674,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
             end
           endfor
         end
-        ## Get dimensions of the ANOVA table
+
+        ## Print ANOVA table
         [nrows, ncols] = size (T);
-        ## Print table
         fprintf("\nANOVA TABLE (Type %s sums-of-squares):\n\n", sstype_char);
         fprintf("Source                   Sum Sq.    d.f.    Mean Sq.  R Sq.            F  Prob>F\n");
         fprintf("--------------------------------------------------------------------------------\n");
@@ -697,10 +701,45 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         fprintf("Error                 %10.5g  %6d  %10.5g\n", T{end-1,2:4});
         fprintf("Total                 %10.5g  %6d \n", T{end,2:3});
         fprintf("\n");
+
+        ## Make figure of diagnostic plots
+        figure("Name", "Diagnostic plots: Standardized Model Residuals");
+        resid = STATS.resid;
+        std_resid = zscore (resid);
+        fit = STATS.X * STATS.coeffs(:,1);
+        ## Checks for Normality assumption of model residuals
+        ## Histogram superimposed with fitted Normal distribution
+        subplot (2, 2, 1);
+        histfit (std_resid);
+        title ("Histogram")
+        xlabel ("Standardized Residuals");
+        ## Normal probability plot
+        subplot (2, 2, 2);
+        normplot (std_resid);
+        xlabel ("Standardized Residuals");
+        ## Checks for homoskedasticity assumption
+        subplot (2, 2, 3);
+        plot (fit, std_resid, "b+");
+        xlabel ("Fitted values");
+        ylabel ("Standardized Residuals");
+        title ("Standardized residuals vs Fitted values")
+        ax1 = get (gca); 
+        hold on; plot (ax1.xlim, zeros (1, 2), "r-."); grid ("on"); hold off;
+        ## Checks for outliers and heteroskedasticity
+        subplot (2, 2, 4);
+        plot (fit, sqrt (std_resid), "b+");
+        xlabel ("Fitted values");
+        ylabel ("sqrt (Standardized Residuals)");
+        title ("Spread-Location Plot")
+
       case "off"
+
         ## do nothing
+
       otherwise
-        error ("anovan: wrong value for ""display"" parameter.");
+
+        error ("anovan: wrong value for 'display' parameter.");
+
     endswitch
 
 endfunction
