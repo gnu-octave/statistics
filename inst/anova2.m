@@ -356,7 +356,7 @@ endfunction
 
 %!demo
 %!
-%! # Balanced One-way Nested ANOVA (Rows are a nested random factor)
+%! # Balanced Nested One-way ANOVA (Rows are a nested random factor)
 %!
 %! data = [4.5924 7.3809 21.322; -0.5488 9.2085 25.0426; ...
 %!         6.1605 13.1147 22.66; 2.3374 15.2654 24.1283; ...
