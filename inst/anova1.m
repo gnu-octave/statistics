@@ -97,7 +97,7 @@
 ## anova1 (x, groups);
 ## @end example
 ##
-## @seealso{anova2, anovan}
+## @seealso{anova2, anovan, multcompare}
 ## @end deftypefn
 
 function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
@@ -140,7 +140,7 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
   endif
 
   ## Check that x and group are the same size
-  if (! all (size (x) == size (group)))
+  if (! all (numel (x) == numel (group)))
       error ("GROUP must be a vector with the same number of rows as x.");
   endif
 

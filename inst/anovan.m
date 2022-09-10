@@ -208,7 +208,7 @@
 ## [@var{p}, @var{atab}, @var{stats}, @var{terms}] = anovan (@dots{}) returns the
 ## model term definitions.
 ##
-## @seealso{anova1, anova2}
+## @seealso{anova1, anova2, multcompare}
 ## @end deftypefn
 
 function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)

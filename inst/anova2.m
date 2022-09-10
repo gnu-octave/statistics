@@ -23,9 +23,9 @@
 ## @deftypefnx {Function File} [@var{p}, @var{atab}] = anova2 (@dots{})
 ## @deftypefnx {Function File} [@var{p}, @var{atab}, @var{stats}] = anova2 (@dots{})
 ##
-## Performs two-way factorial (crossed) or a nested analysis of variance (ANOVA)
-## for balanced designs. For unbalanced factorial designs or planned contrasts, 
-## use @qcode{anovan}.
+## Performs two-way factorial (crossed) or a nested analysis of variance
+## (ANOVA) for balanced designs. For unbalanced factorial designs, diagnostic
+## plots and/or planned contrasts, use @qcode{anovan} instead.
 ##
 ## @qcode{anova2} requires two input arguments with an optional third and fourth:
 ##
@@ -50,9 +50,11 @@
 ## interaction
 ##
 ## @item
-## "linear": compute both main effects without an interaction (e.g. for one-way
-##  repeated measures design when @var{reps} equals 1, or balanced randomized
-##  block design when @var{reps} > 1).
+## "linear": compute both main effects without an interaction. When @var{reps}
+## > 1 the test is suitable for a balanced randomized block design. When
+## @var{reps} == 1, the test becomes a One-way Repeated Measures (RM)-ANOVA
+## with Greenhouse-Geisser correction to the column factor degrees of freedom
+## to make the test robust to violations of sphericity
 ##
 ## @item
 ## "nested": treat the row factor as nested within columns. Note that the row
@@ -92,7 +94,7 @@
 ## disp (p);
 ## @end example
 ##
-## @seealso{anova1, anovan}
+## @seealso{anova1, anovan, multcompare}
 ## @end deftypefn
 
 function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
@@ -113,11 +115,12 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
   if (nargin < 4)
     model = "interaction";
   endif
+  epsilonhat = [];
   plotdata = ~(strcmp (displayopt, 'off'));
 
   ## Calculate group numbers
-  FFGn = size (x, 1) / reps;            ## Number of groups in 1st Factor
-  SFGn = size (x, 2);                   ## Number of groups in 2nd Factor
+  FFGn = size (x, 1) / reps;            ## Number of groups in Row Factor
+  SFGn = size (x, 2);                   ## Number of groups in Column Factor
 
   ## Check for valid repetitions
   if (! (int16 (FFGn) == FFGn))
@@ -134,19 +137,19 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
 
   ## Calculate group sample sizes
   GTsz = length (x(:));                 ## Number of total samples
-  FFGs = prod (size (x(RIdx(1,:),:)));  ## Number of group samples of 1st Factor
-  SFGs = size (x, 1);                   ## Number of group samples of 2nd Factor
+  FFGs = prod (size (x(RIdx(1,:),:)));  ## Number of group samples of Row Factor
+  SFGs = size (x, 1);                   ## Number of group samples of Column Factor
 
   ## Calculate group means
   GTmu = sum (x(:)) / GTsz;                 ## Grand mean of groups
-  for i = 1:FFGn                            ## Group means of 1st Factor
+  for i = 1:FFGn                            ## Group means of Row Factor
     FFGm(i) = mean (x(RIdx(i,:),:), "all");
   endfor
-  for i = 1:SFGn                            ## Group means of 2nd Factor
+  for i = 1:SFGn                            ## Group means of Column Factor
     SFGm(i) = mean (x(:,i));
   endfor
 
-  ## Calculate Sum of Squares for 1st and 2nd Factors
+  ## Calculate Sum of Squares for Row and Column Factors
   SSR = sum (FFGs * ((FFGm - GTmu) .^ 2));  ## Rows Sum of Squares
   SSC = sum (SFGs * ((SFGm - GTmu) .^ 2));  ## Columns Sum of Squares
 
@@ -166,8 +169,8 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
   endif
 
   ## Calculate degrees of freedom and Sum of Squares Interaction (if applicable)
-  df_SSR = FFGn - 1;                ## 1st Factor
-  df_SSC = SFGn - 1;                ## 2nd Factor
+  df_SSR = FFGn - 1;                ## Row Factor
+  df_SSC = SFGn - 1;                ## Column Factor
   if (reps > 1)
     df_SSE = GTsz - (FFGn * SFGn);  ## Error with replication
     df_SSI = df_SSR * df_SSC;       ## Interaction: Degrees of Freedom
@@ -200,6 +203,19 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
       df_SSE += df_SSI;
       SSI = 0;
       df_SSI = 0;
+      if (reps == 1)
+        ## Assume one-way repeated measures ANOVA. Perform calculations for a
+        ## correction factor (epsilonhat) to make tests of the Column factor
+        ## robust to violations of sphericity
+        vcov = cov (x);
+        N = SFGn^2 * (mean (diag (vcov)) - mean (mean (vcov)))^2;
+        D = (SFGn - 1) * ...
+                 (sum (sumsq (vcov)) - 2 * SFGn * sum ((mean (vcov, 2).^2)) + ...
+                  SFGn^2 * mean (mean (vcov))^2);
+        epsilonhat = N / D;
+        dfN_GG = epsilonhat * (SFGn - 1);
+        dfD_GG = epsilonhat * (FFGn - 1) * (SFGn - 1);
+      endif
       reps = 1;                   ## Set reps to 1 to avoid printing interaction
       MSE = SSE / df_SSE;         ## Mean Square for Error (Within)
       MSR = SSR / df_SSR;         ## Mean Square for Row Factor
@@ -228,7 +244,12 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
   p_MSR = 1 - fcdf (F_MSR, df_SSR, df_SSE);
   MSC = SSC / df_SSC;           ## Mean Square for Column Factor
   F_MSC = MSC / MS_DENOM;       ## F statistic for Column Factor
-  p_MSC = 1 - fcdf (F_MSC, df_SSC, df_DENOM);
+  if (isempty(epsilonhat))
+    p_MSC = 1 - fcdf (F_MSC, df_SSC, df_DENOM);
+  else
+    ## Apply correction for sphericity to the p-value of the column factor
+    p_MSC = 1 - fcdf (F_MSC, dfN_GG, dfD_GG);
+  endif
 
   ## With replication
   if (reps > 1)
@@ -299,38 +320,57 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
     endif
     printf("Error        %10.4f %5.0f %10.4f\n", SSE, df_SSE, MSE);
     printf("Total        %10.4f %5.0f\n\n", SST, df_tot);
+    if (! isempty(epsilonhat))
+      printf(strcat (["Note: Greenhouse-Geisser's correction was applied to the\n"], ...
+                     ["degrees of freedom for the Column factor: F(%.2f,%.2f)\n\n"]),...
+                     dfN_GG, dfD_GG);
+    endif
+    if (strcmpi (model, "nested"))
+      printf(strcat (["Note: Rows are a random factor nested within the columns.\n"], ...
+                     ["The Column F statistic uses the Row MS instead of the MSE.\n\n"]));
+    endif
   endif
 endfunction
 
 
 %!demo
 %!
-%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
-%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
-%! anova2 (popcorn, 3);
-
-%!demo
+%! # Factorial (Crossed) Two-way ANOVA with Interaction
 %!
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
-%! [p, atab] = anova2(popcorn, 3, "off");
-%! disp (p);
+%!
+%! [p, atab, stats] = anova2(popcorn, 3, "on");
 
 %!demo
+%!
+%! # One-way Repeated Measures ANOVA (Rows are a crossed random factor)
+%!
+%! data = [54, 43, 78, 111;
+%!         23, 34, 37, 41;
+%!         45, 65, 99, 78;
+%!         31, 33, 36, 35;
+%!         15, 25, 30, 26];
+%!
+%! [p, atab, stats] = anova2 (data, 1, "on", "linear");
+
+%!demo
+%!
+%! # Balanced One-way Nested ANOVA (Rows are a nested random factor)
 %!
 %! data = [4.5924 7.3809 21.322; -0.5488 9.2085 25.0426; ...
 %!         6.1605 13.1147 22.66; 2.3374 15.2654 24.1283; ...
 %!         5.1873 12.4188 16.5927; 3.3579 14.3951 10.2129; ...
 %!         6.3092 8.5986 9.8934; 3.2831 3.4945 10.0203];
 %!
-%! [p, atab, stats] = anova2 (data,4,"on","nested");
-
+%! [p, atab, stats] = anova2 (data, 4, "on", "nested");
 
 ## testing against popcorn data and results from Matlab
 %!test
+%! # Test for anova2 ("interaction") - comparison with results from Matlab for column effect
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
-%! [p, atab] = anova2 (popcorn, 3, "off");
+%! [p, atab, stats] = anova2 (popcorn, 3, "off");
 %! assert (p(1), 7.678957383294716e-07, 1e-14);
 %! assert (p(2), 0.0001003738963050171, 1e-14);
 %! assert (p(3), 0.7462153966366274, 1e-14);
@@ -338,10 +378,6 @@ endfunction
 %! assert (atab{2,3}, 2, 0);
 %! assert (atab{4,2}, 0.08333333333333348, 1e-14);
 %! assert (atab{5,4}, 0.1388888888888889, 1e-14);
-%!test
-%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
-%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
-%! [p, atab, stats] = anova2 (popcorn, 3, "off");
 %! assert (atab{5,2}, 1.666666666666667, 1e-14);
 %! assert (atab{6,2}, 22);
 %! assert (stats.source, "anova2");
@@ -349,12 +385,34 @@ endfunction
 %! assert (stats.inter, 1, 0);
 %! assert (stats.pval, 0.7462153966366274, 1e-14);
 %! assert (stats.df, 12);
+
 %!test
+%! # Test for anova2 ("linear") - comparison with results from GraphPad Prism 8
+%! data = [54, 43, 78, 111;
+%!         23, 34, 37, 41;
+%!         45, 65, 99, 78;
+%!         31, 33, 36, 35;
+%!         15, 25, 30, 26];
+%! [p, atab, stats] = anova2 (data, 1, "off", "linear");
+%! assert (atab{2,2}, 2174.95, 1e-10);
+%! assert (atab{3,2}, 8371.7, 1e-10);
+%! assert (atab{4,2}, 2404.3, 1e-10);
+%! assert (atab{5,2}, 12950.95, 1e-10);
+%! assert (atab{2,4}, 724.983333333333, 1e-10);
+%! assert (atab{3,4}, 2092.925, 1e-10);
+%! assert (atab{4,4}, 200.358333333333, 1e-10);
+%! assert (atab{2,5}, 3.61843363972882, 1e-10);
+%! assert (atab{3,5}, 10.445909412303, 1e-10);
+%! assert (atab{2,6}, 0.087266112738617, 1e-10);
+%! assert (atab{3,6}, 0.000698397753556, 1e-10);
+
+%!test
+%! # Test for anova2 ("nested") - comparison with results from GraphPad Prism 8
 %! data = [4.5924 7.3809 21.322; -0.5488 9.2085 25.0426; ...
 %!         6.1605 13.1147 22.66; 2.3374 15.2654 24.1283; ...
 %!         5.1873 12.4188 16.5927; 3.3579 14.3951 10.2129; ...
 %!         6.3092 8.5986 9.8934; 3.2831 3.4945 10.0203];
-%! [p, atab, stats] = anova2 (data,4,"off","nested");
+%! [p, atab, stats] = anova2 (data, 4, "off", "nested");
 %! assert (atab{2,2}, 745.360306290833, 1e-10);
 %! assert (atab{3,2}, 278.01854140125, 1e-10);
 %! assert (atab{4,2}, 180.180377467501, 1e-10);
