@@ -552,9 +552,8 @@ function [padj, critval] = mvt (p, t, Ng, dfe, R, ALPHA)
   ## Lower bound for error degrees of freedom to ensure type 1 error rate isn't
   ## exceeded for any test
   if (! isscalar(dfe))
-    warning (strcat (["multcompare: CTYPE value 'mvt' may be conservative"], ...
-                     [" when there isn't a common error degrees of freedom"]))
-    dfe = min (dfe);
+    dfe = max (1, round (min (dfe)));
+    fprintf ("Note: df set to %u\n", dfe);
   endif
 
   ## Check if we can use parallel processing to accelerate computations

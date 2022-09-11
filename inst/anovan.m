@@ -108,10 +108,10 @@
 ## 1 : Type I sequential sums-of-squares.
 ##
 ## @item
-## 2 or "h": Type II partially sequential (or hierarchical) sums-of-squares
+## 2 or "h" : Type II partially sequential (or hierarchical) sums-of-squares
 ##
 ## @item
-## 3 (default): Type III partial, constrained or marginal sums-of-squares
+## 3 (default) : Type III partial, constrained or marginal sums-of-squares
 ##
 ## @end itemize
 ## @end itemize
