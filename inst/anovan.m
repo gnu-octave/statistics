@@ -508,7 +508,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         ## Type I sequential sums-of-squares (SSTYPE = 1)
         R = sst;
         ss = zeros (Nt,1);
-        make_design_matrix ();
+        mDesignMatrix ();
         for j = 1:Nt
           XS = cell2mat (X(1:j+1));
           [b, sse] = lmfit (XS, Y);
@@ -520,7 +520,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       case {2,'h'}
         ## Type II (partially sequential, or hierarchical) sums-of-squares
         ss = zeros (Nt,1);
-        make_design_matrix ();
+        mDesignMatrix ();
         for j = 1:Nt
           i = find (TERMS(j,:));
           k = cat (1, 1, 1 + find (any (!TERMS(:,i),2)));
@@ -536,7 +536,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       case 3
         ## Type III (partial, constrained or marginal) sums-of-squares
         ss = zeros (Nt, 1);
-        make_design_matrix ();
+        mDesignMatrix ();
         [b, sse, resid, ucov] = lmfit (cell2mat (X), Y);
         for j = 1:Nt
           XS = cell2mat (X(1:Nt+1 != j+1));
@@ -736,7 +736,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
     endswitch
 
-    function make_design_matrix ()
+    function mDesignMatrix ()
 
       ## Nested function that returns a cell array of the design matrix for
       ## each term in the model
