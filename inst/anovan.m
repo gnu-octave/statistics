@@ -508,9 +508,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         ## Type I sequential sums-of-squares (SSTYPE = 1)
         R = sst;
         ss = zeros (Nt,1);
-        [X, grpnames, nlevels, df, termcols, coeffnames, vmeans, gid, ...
-         CONTRASTS] = make_design_matrix (GROUP, TERMS, CONTINUOUS, ...
-                      CONTRASTS, VARNAMES, n, Nm, Nx, Ng);
+        make_design_matrix ();
         for j = 1:Nt
           XS = cell2mat (X(1:j+1));
           [b, sse] = lmfit (XS, Y);
@@ -522,9 +520,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       case {2,'h'}
         ## Type II (partially sequential, or hierarchical) sums-of-squares
         ss = zeros (Nt,1);
-        [X, grpnames, nlevels, df, termcols, coeffnames, vmeans, gid, ...
-         CONTRASTS] = make_design_matrix (GROUP, TERMS, CONTINUOUS, ...
-                      CONTRASTS, VARNAMES, n, Nm, Nx, Ng);
+        make_design_matrix ();
         for j = 1:Nt
           i = find (TERMS(j,:));
           k = cat (1, 1, 1 + find (any (!TERMS(:,i),2)));
@@ -540,9 +536,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       case 3
         ## Type III (partial, constrained or marginal) sums-of-squares
         ss = zeros (Nt, 1);
-        [X, grpnames, nlevels, df, termcols, coeffnames, vmeans, gid, ...
-         CONTRASTS] = make_design_matrix (GROUP, TERMS, CONTINUOUS, ...
-                      CONTRASTS, VARNAMES, n, Nm, Nx, Ng);
+        make_design_matrix ();
         [b, sse, resid, ucov] = lmfit (cell2mat (X), Y);
         for j = 1:Nt
           XS = cell2mat (X(1:Nt+1 != j+1));
@@ -620,7 +614,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                     "coeffnames", {vertcat(coeffnames{:})}, ...
                     "vars", [], ...          # Not used by Octave
                     "varnames", {VARNAMES}, ...
-                    "grpnames", {grpnames}, ...
+                    "grpnames", {levels}, ...
                     "vnested", [], ...       # Not used since "nested" argument name is not supported
                     "ems", [], ...           # Not used since "nested" argument name is not supported
                     "denom", [], ...         # Not used since interactions with random effects is not supported
@@ -742,152 +736,153 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
     endswitch
 
-endfunction
+    function make_design_matrix ()
 
+      ## Nested function that returns a cell array of the design matrix for
+      ## each term in the model
+      ## Input variables it uses:
+      ##  GROUP, TERMS, CONTINUOUS, CONTRASTS, VARNAMES, n, Nm, Nx, Ng
+      ## Variables it creates or modifies:
+      ##  X, grpnames, nlevels, df, termcols, coeffnames, vmeans, gid, CONTRASTS
 
-function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, ...
-          CONTRASTS] = make_design_matrix (GROUP, TERMS, CONTINUOUS, ...
-                       CONTRASTS, VARNAMES, n, Nm, Nx, Ng)
+      ## EVALUATE FACTOR LEVELS
+      levels = cell (Nm, 1);
+      gid = zeros (n, Nm);
+      nlevels = zeros (Nm, 1);
+      df = zeros (Nm + Nx, 1);
+      termcols = ones (1 + Nm + Nx, 1);
+      for j = 1:Nm
+        if (any (j == CONTINUOUS))
 
-  ## Returns a cell array of the design matrix for each term in the model
+          ## CONTINUOUS PREDICTOR
+          nlevels(j) = 1;
+          termcols(j+1) = 1;
+          df(j) = 1;
+          if iscell (GROUP(:,j))
+            gid(:,j) = cell2mat ([GROUP(:,j)]);
+          else
+            gid(:,j) = GROUP(:,j);
+          end
 
-  ## EVALUATE FACTOR LEVELS
-  levels = cell (Nm, 1);
-  gid = zeros (n, Nm);
-  nlevels = zeros (Nm, 1);
-  df = zeros (Nm + Nx, 1);
-  termcols = ones (1 + Nm + Nx, 1);
-  for j = 1:Nm
-    if (any (j == CONTINUOUS))
+        else
 
-      ## CONTINUOUS PREDICTOR
-      nlevels(j) = 1;
-      termcols(j+1) = 1;
-      df(j) = 1;
-      if iscell (GROUP(:,j))
-        gid(:,j) = cell2mat ([GROUP(:,j)]);
-      else
-        gid(:,j) = GROUP(:,j);
-      end
+          ## CATEGORICAL PREDICTOR
+          levels{j} = unique (GROUP(:,j), "stable");
+          if isnumeric (levels{j})
+            levels{j} = num2cell (levels{j});
+          endif
+          nlevels(j) = numel (levels{j});
+          for k = 1:nlevels(j)
+            gid(ismember (GROUP(:,j),levels{j}{k}),j) = k;
+          endfor
+          termcols(j+1) = nlevels(j);
+          df(j) = nlevels(j) - 1;
 
-    else
-
-      ## CATEGORICAL PREDICTOR
-      levels{j} = unique (GROUP(:,j), "stable");
-      if isnumeric (levels{j})
-        levels{j} = num2cell (levels{j});
-      endif
-      nlevels(j) = numel (levels{j});
-      for k = 1:nlevels(j)
-        gid(ismember (GROUP(:,j),levels{j}{k}),j) = k;
+        endif
       endfor
-      termcols(j+1) = nlevels(j);
-      df(j) = nlevels(j) - 1;
 
-    endif
-  endfor
+      ## MAKE DESIGN MATRIX
 
-  ## MAKE DESIGN MATRIX
+      ## MAIN EFFECTS
+      X = cell (1, 1 + Nm + Nx);
+      X(1) = ones (n, 1);
+      coeffnames = cell (1, 1 + Nm + Nx);
+      coeffnames(1) = "(Intercept)";
+      vmeans = zeros (Nm, 1);
+      for j = 1:Nm
+        if (any (j == CONTINUOUS))
 
-  ## MAIN EFFECTS
-  X = cell (1, 1 + Nm + Nx);
-  X(1) = ones (n, 1);
-  coeffnames = cell (1, 1 + Nm + Nx);
-  coeffnames(1) = "(Intercept)";
-  vmeans = zeros (Nm, 1);
-  for j = 1:Nm
-    if (any (j == CONTINUOUS))
+          ## CONTINUOUS PREDICTOR
+          if iscell (GROUP(:,j))
+            X(1+j) = cell2mat (GROUP(:,j));
+          else
+            X(1+j) = GROUP(:,j);
+          end
+          vmeans(j) = mean ([X{1+j}]);
+          X(1+j) = [X{1+j}] - vmeans(j);
+          if (isempty (CONTRASTS{j}))
+            CONTRASTS{j} = [];
+          end
+          ## Create names of the coefficients relating to continuous main effects
+          coeffnames{1+j} = VARNAMES{j};
 
-      ## CONTINUOUS PREDICTOR
-      if iscell (GROUP(:,j))
-        X(1+j) = cell2mat (GROUP(:,j));
-      else
-        X(1+j) = GROUP(:,j);
-      end
-      vmeans(j) = mean ([X{1+j}]);
-      X(1+j) = [X{1+j}] - vmeans(j);
-      if (isempty (CONTRASTS{j}))
-        CONTRASTS{j} = [];
-      end
-      ## Create names of the coefficients relating to continuous main effects
-      coeffnames{1+j} = VARNAMES{j};
+        else
 
-    else
-
-      ## CATEGORICAL PREDICTOR
-      if (isempty (CONTRASTS{j}))
-        CONTRASTS{j} = contr_simple (nlevels(j));
-      else
-        switch (lower (CONTRASTS{j}))
-          case "simple"
-            ## SIMPLE EFFECT CODING (DEFAULT)
-            ## The first level is the reference level
+          ## CATEGORICAL PREDICTOR
+          if (isempty (CONTRASTS{j}))
             CONTRASTS{j} = contr_simple (nlevels(j));
-          case "poly"
-            ## POLYNOMIAL CONTRAST CODING
-            CONTRASTS{j} = contr_poly (nlevels(j));
-          case "helmert"
-            ## HELMERT CONTRAST CODING
-            CONTRASTS{j} = contr_helmert (nlevels(j));
-          case "effect"
-            ## DEVIATION EFFECT CONTRAST CODING
-            CONTRASTS{j} = contr_sum (nlevels(j));
-          otherwise
-            ## EVALUATE CUSTOM CONTRAST MATRIX
-            ## Check that the contrast matrix provided is the correct size
-            if (! all (size (CONTRASTS{j},1) == nlevels(j)))
-              error (strcat (["anovan: the number of rows in the contrast"], ...
-                           [" matrices should equal the number of factor levels"]));
-            endif
-            if (! all (size (CONTRASTS{j},2) == df(j)))
-              error (strcat (["anovan: the number of columns in each contrast"], ...
-                      [" matrix should equal the degrees of freedom (i.e."], ...
-                      [" number of levels minus 1) for that factor"]));
-            endif
-            if (! all (any (CONTRASTS{j})))
-              error (strcat (["anovan: a contrast must be coded in each"], ...
-                             [" column of the contrast matrices"]));
-            endif
-        endswitch
-      endif
-      C = CONTRASTS{j};
-      func = @(x) x(gid(:,j));
-      X(1+j) = cell2mat (cellfun (func, num2cell (C, 1), "UniformOutput", false));
-      ## Create names of the coefficients relating to continuous main effects
-      coeffnames{1+j} = cell (df(j),1);
-      for v = 1:df(j)
-        coeffnames{1+j}{v} = sprintf ("%s_%u", VARNAMES{j}, v);
+          else
+            switch (lower (CONTRASTS{j}))
+              case "simple"
+                ## SIMPLE EFFECT CODING (DEFAULT)
+                ## The first level is the reference level
+                CONTRASTS{j} = contr_simple (nlevels(j));
+              case "poly"
+                ## POLYNOMIAL CONTRAST CODING
+                CONTRASTS{j} = contr_poly (nlevels(j));
+              case "helmert"
+                ## HELMERT CONTRAST CODING
+                CONTRASTS{j} = contr_helmert (nlevels(j));
+              case "effect"
+                ## DEVIATION EFFECT CONTRAST CODING
+                CONTRASTS{j} = contr_sum (nlevels(j));
+              otherwise
+                ## EVALUATE CUSTOM CONTRAST MATRIX
+                ## Check that the contrast matrix provided is the correct size
+                if (! all (size (CONTRASTS{j},1) == nlevels(j)))
+                  error (strcat (["anovan: the number of rows in the contrast"], ...
+                               [" matrices should equal the number of factor levels"]));
+                endif
+                if (! all (size (CONTRASTS{j},2) == df(j)))
+                  error (strcat (["anovan: the number of columns in each contrast"], ...
+                          [" matrix should equal the degrees of freedom (i.e."], ...
+                          [" number of levels minus 1) for that factor"]));
+                endif
+                if (! all (any (CONTRASTS{j})))
+                  error (strcat (["anovan: a contrast must be coded in each"], ...
+                                 [" column of the contrast matrices"]));
+                endif
+            endswitch
+          endif
+          C = CONTRASTS{j};
+          func = @(x) x(gid(:,j));
+          X(1+j) = cell2mat (cellfun (func, num2cell (C, 1), "UniformOutput", false));
+          ## Create names of the coefficients relating to continuous main effects
+          coeffnames{1+j} = cell (df(j),1);
+          for v = 1:df(j)
+            coeffnames{1+j}{v} = sprintf ("%s_%u", VARNAMES{j}, v);
+          endfor
+
+        endif
       endfor
 
-    endif
-  endfor
-
-  ## INTERACTION TERMS
-  if (Nx > 0)
-    row = TERMS((Ng > 1),:);
-    for i = 1:Nx
-      I = 1 + find (row(i,:));
-      df(Nm+i) = prod (df(I-1));
-      termcols(1+Nm+i) = prod (df(I-1) + 1);
-      tmp = ones (n,1);
-      for j = 1:numel(I);
-        tmp = num2cell (tmp, 1);
-        for k = 1:numel(tmp)
-          tmp(k) = bsxfun (@times, tmp{k}, X{I(j)});
+      ## INTERACTION TERMS
+      if (Nx > 0)
+        row = TERMS((Ng > 1),:);
+        for i = 1:Nx
+          I = 1 + find (row(i,:));
+          df(Nm+i) = prod (df(I-1));
+          termcols(1+Nm+i) = prod (df(I-1) + 1);
+          tmp = ones (n,1);
+          for j = 1:numel(I);
+            tmp = num2cell (tmp, 1);
+            for k = 1:numel(tmp)
+              tmp(k) = bsxfun (@times, tmp{k}, X{I(j)});
+            endfor
+            tmp = cell2mat (tmp);
+          endfor
+          X{1+Nm+i} = tmp;
+          coeffnames{1+Nm+i} = cell (df(Nm+i),1);
+          for v = 1:df(Nm+i)
+            str = sprintf ("%s:", VARNAMES{I-1});
+            coeffnames{1+Nm+i}{v} = strcat (str(1:end-1), "_", num2str (v));
+          endfor
         endfor
-        tmp = cell2mat (tmp);
-      endfor
-      X{1+Nm+i} = tmp;
-      coeffnames{1+Nm+i} = cell (df(Nm+i),1);
-      for v = 1:df(Nm+i)
-        str = sprintf ("%s:", VARNAMES{I-1});
-        coeffnames{1+Nm+i}{v} = strcat (str(1:end-1), "_", num2str (v));
-      endfor
-    endfor
-  endif
+      endif
+
+    endfunction
 
 endfunction
-
 
 ## BUILT IN CONTRAST CODING FUNCTIONS
 
