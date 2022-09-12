@@ -426,7 +426,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     C(:,7) = t;     # Unlike Matlab, we include the t statistic
     C(:,8) = dfe;   # Unlike Matlab, we include the degrees of freedom
     p = 2 * (1 - tcdf (abs (t), dfe));
-    [C(:,6), critval] = feval (CTYPE, p, t, Ng, dfe, R, ALPHA);
+    [C(:,6), critval, C(:,8)] = feval (CTYPE, p, t, Ng, dfe, R, ALPHA);
     C(:,3) = C(:,4) - sed .* critval;
     C(:,5) = C(:,4) + sed .* critval;
 
@@ -517,7 +517,7 @@ endfunction
 
 ## Methods to control family-wise error rate in multiple comparisons
 
-function [padj, critval] = scheffe (p, t, Ng, dfe, R, ALPHA)
+function [padj, critval, dfe] = scheffe (p, t, Ng, dfe, R, ALPHA)
 
   ## Calculate the p-value
   padj = 1 - fcdf ((t.^2) / (Ng - 1), Ng - 1, dfe);
@@ -528,7 +528,7 @@ function [padj, critval] = scheffe (p, t, Ng, dfe, R, ALPHA)
 endfunction
 
 
-function [padj, critval] = bonferroni (p, t, Ng, dfe, R, ALPHA)
+function [padj, critval, dfe] = bonferroni (p, t, Ng, dfe, R, ALPHA)
   
   ## Bonferroni procedure
   Np = numel (p);
@@ -539,7 +539,7 @@ function [padj, critval] = bonferroni (p, t, Ng, dfe, R, ALPHA)
 
 endfunction
 
-function [padj, critval] = mvt (p, t, Ng, dfe, R, ALPHA)
+function [padj, critval, dfe] = mvt (p, t, Ng, dfe, R, ALPHA)
 
   ## Monte Carlo simulation of the maximum test statistic in random samples
   ## generated from a multivariate t distribution. This method accounts for
@@ -553,7 +553,7 @@ function [padj, critval] = mvt (p, t, Ng, dfe, R, ALPHA)
   ## exceeded for any test
   if (! isscalar(dfe))
     dfe = max (1, round (min (dfe)));
-    fprintf ("Note: df set to %u\n", dfe);
+    fprintf ("Note: df set to %u (lower bound)\n", dfe);
   endif
 
   ## Check if we can use parallel processing to accelerate computations
@@ -596,7 +596,7 @@ function [padj, critval] = mvt (p, t, Ng, dfe, R, ALPHA)
 endfunction
 
 
-function [padj, critval] = holm (p, t, Ng, dfe, R, ALPHA)
+function [padj, critval, dfe] = holm (p, t, Ng, dfe, R, ALPHA)
 
   ## Holm's step-down Bonferroni procedure
 
@@ -625,7 +625,7 @@ function [padj, critval] = holm (p, t, Ng, dfe, R, ALPHA)
 endfunction
 
 
-function [padj, critval] = hochberg (p, t, Ng, dfe, R, ALPHA)
+function [padj, critval, dfe] = hochberg (p, t, Ng, dfe, R, ALPHA)
 
   ## Hochberg's step-up Bonferroni procedure
 
@@ -655,7 +655,7 @@ function [padj, critval] = hochberg (p, t, Ng, dfe, R, ALPHA)
 endfunction
 
 
-function [padj, critval] = fdr (p, t, Ng, dfe, R, ALPHA)
+function [padj, critval, dfe] = fdr (p, t, Ng, dfe, R, ALPHA)
   
   ## Benjamini-Hochberg procedure to control the false discovery rate (FDR)
   ## This procedure does not control the family-wise error rate
@@ -690,7 +690,7 @@ function [padj, critval] = fdr (p, t, Ng, dfe, R, ALPHA)
 endfunction
 
 
-function [padj, critval] = lsd (p, t, Ng, dfe, R, ALPHA)
+function [padj, critval, dfe] = lsd (p, t, Ng, dfe, R, ALPHA)
   
   ## Fisher's Least Significant Difference
   ## No control of the type I error rate across multiple comparisons
