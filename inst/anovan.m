@@ -486,7 +486,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                      [" effects above/before interactions"]));
     endif
     Nm = sum (Ng == 1);
-    ## Drop terms that include interactions with random effects.
+    ## Drop terms that include interactions with factors specified as random effects.
     drop = any (bsxfun (@and, TERMS(:,RANDOM), (Ng > 1)), 2);
     TERMS (drop, :) = [];
     Ng(drop) = [];
@@ -570,7 +570,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       if (strcmp (str(end-1), "'"))
         ## Random intercept term
         formula = sprintf ("%s + (1|%s)", formula, str(1:end-2));
-        ## Remove statistics for random effects from the ANOVA table
+        ## Remove statistics for random factors from the ANOVA table
         #T(RANDOM+1,4:7) = cell(1,4);
         #P(RANDOM) = NaN;
       else
@@ -617,14 +617,14 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                     "grpnames", {levels}, ...
                     "vnested", [], ...       # Not used since "nested" argument name is not supported
                     "ems", [], ...           # Not used since "nested" argument name is not supported
-                    "denom", [], ...         # Not used since interactions with random effects is not supported
-                    "dfdenom", [], ...       # Not used since interactions with random effects is not supported
-                    "msdenom", [], ...       # Not used since interactions with random effects is not supported
-                    "varest", [], ...        # Not used since interactions with random effects is not supported
-                    "varci", [], ...         # Not used since interactions with random effects is not supported
-                    "txtdenom", [], ...      # Not used since interactions with random effects is not supported
-                    "txtems", [], ...        # Not used since interactions with random effects is not supported
-                    "rtnames", [], ...       # Not used since interactions with random effects is not supported
+                    "denom", [], ...         # Not used since interactions with random factors is not supported
+                    "dfdenom", [], ...       # Not used since interactions with random factors is not supported
+                    "msdenom", [], ...       # Not used since interactions with random factors is not supported
+                    "varest", [], ...        # Not used since interactions with random factors is not supported
+                    "varci", [], ...         # Not used since interactions with random factors is not supported
+                    "txtdenom", [], ...      # Not used since interactions with random factors is not supported
+                    "txtems", [], ...        # Not used since interactions with random factors is not supported
+                    "rtnames", [], ...       # Not used since interactions with random factors is not supported
                     ## Additional STATS fields used exclusively by Octave
                     "random", RANDOM, ...
                     "formula", formula, ...
