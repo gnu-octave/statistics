@@ -189,6 +189,16 @@
 ## continuous factors are ignored.
 ## @end itemize
 ##
+## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "weights", @var{weights})}
+##
+## @itemize
+## @item
+## @var{weights} is an optional vector of weights to be used when fitting the
+## linear model. Weighted least squares (WLS) is used with weights (that is,
+## minimizing sum (weights * residuals.^2)); otherwise ordinary least squares
+## (OLS) is used (default is empty for OLS).
+## @end itemize
+##
 ## @qcode{anovan} can return up to four output arguments:
 ##
 ## @var{p} = anovan (@dots{}) returns a vector of p-values, one for each term.
@@ -230,6 +240,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     RANDOM = [];
     CONTRASTS = {};
     ALPHA = 0.05;
+    WEIGHTS = [];
     for idx = 3:2:nargin
       name = varargin{idx-2};
       value = varargin{idx-1};
@@ -253,6 +264,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           CONTRASTS = value;
         case "alpha"
           ALPHA = value;
+        case "weights"
+          WEIGHTS = value;
         otherwise
           error (sprintf ("anovan: parameter %s is not supported", name));
       endswitch
@@ -272,7 +285,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     ## Accomodate for different formats for GROUP
     ## GROUP can be a matrix of numeric identifiers of a cell arrays
     ## of strings or numeric idenitiers
-    N = size (GROUP,2); # number of anova "ways"
+    N = size (GROUP, 2); # number of anova "ways"
     n = numel (Y);      # total number of observations
     if (prod (size (Y)) != n)
       error ("anovan: for ""anovan (Y, GROUP)"", Y must be a vector");
@@ -418,6 +431,24 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     endif
     n = numel (Y);     # recalculate total number of observations
 
+    ## Evaluate weights input argument
+    if (! isempty(WEIGHTS))
+      if (! isnumeric(WEIGHTS))
+        error ("anovan: WEIGHTS must be a numeric datatype");
+      endif
+      if (any (size (WEIGHTS) != [n,1]))
+        error ("anovan: WEIGHTS must be a vector with the same dimensions as Y");
+      endif
+      if (any(!(WEIGHTS > 0)) || any (isinf (WEIGHTS)))
+        error ("anovan: WEIGHTS must be a vector of positive finite values");
+      endif
+      # Create diaganal matrix of normalized weights
+      W = diag (WEIGHTS / mean (WEIGHTS));
+    else
+      # Create identity matrix
+      W = eye (n);;
+    endif
+
     ## Evaluate model type input argument and create terms matrix if not provided
     msg = strcat (["anovan: the number of columns in the term definitions"], ...
                   [" cannot exceed the number of columns of GROUP"]);
@@ -511,11 +542,11 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         mDesignMatrix ();
         for j = 1:Nt
           XS = cell2mat (X(1:j+1));
-          [b, sse] = lmfit (XS, Y);
+          [b, sse] = lmfit (XS, Y, W);
           ss(j) = R - sse;
           R = sse;
         endfor
-        [b, sse, resid, ucov] = lmfit (XS, Y);
+        [b, sse, resid, ucov] = lmfit (XS, Y, W);
         sstype_char = "I";
       case {2,'h'}
         ## Type II (partially sequential, or hierarchical) sums-of-squares
@@ -525,22 +556,22 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           i = find (TERMS(j,:));
           k = cat (1, 1, 1 + find (any (!TERMS(:,i),2)));
           XS = cell2mat (X(k));
-          [jnk, R1] = lmfit (XS, Y);
+          [jnk, R1] = lmfit (XS, Y, W);
           k = cat (1, j+1, k);
           XS = cell2mat (X(k));
-          [jnk, R2] = lmfit (XS, Y);
+          [jnk, R2] = lmfit (XS, Y, W);
           ss(j) = R1 - R2;
         endfor
-        [b, sse, resid, ucov] = lmfit (cell2mat (X), Y);
+        [b, sse, resid, ucov] = lmfit (cell2mat (X), Y, W);
         sstype_char = "II";
       case 3
         ## Type III (partial, constrained or marginal) sums-of-squares
         ss = zeros (Nt, 1);
         mDesignMatrix ();
-        [b, sse, resid, ucov] = lmfit (cell2mat (X), Y);
+        [b, sse, resid, ucov] = lmfit (cell2mat (X), Y, W);
         for j = 1:Nt
           XS = cell2mat (X(1:Nt+1 != j+1));
-          [jnk, R, resid] = lmfit (XS, Y);
+          [jnk, R, resid] = lmfit (XS, Y, W);
           ss(j) = R - sse;
         endfor
         sstype_char = "III";
@@ -721,9 +752,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         hold on; plot (ax1.xlim, zeros (1, 2), "r-."); grid ("on"); hold off;
         ## Checks for outliers and heteroskedasticity
         subplot (2, 2, 4);
-        plot (fit, sqrt (std_resid), "b+");
+        plot (fit, sqrt (abs (std_resid)), "b+");
         xlabel ("Fitted values");
-        ylabel ("sqrt (Standardized Residuals)");
+        ylabel ("sqrt ( |Standardized Residuals| )");
         title ("Spread-Location Plot")
 
       case "off"
@@ -931,25 +962,33 @@ endfunction
 
 ## FUNCTION TO FIT THE LINEAR MODEL
 
-function [b, sse, resid, ucov] = lmfit (X, Y)
+function [b, sse, resid, ucov] = lmfit (X, Y, W)
 
   ## Get model coefficients by solving the linear equation by QR decomposition
-  ## (this achieves the same thing as b = X \ Y)
   ## The number of free parameters (i.e. intercept + coefficients) is equal
-  ## to n - dfe
-  [Q, R] = qr (X, 0);
-  b = R \ Q' * Y;
+  ## to n - dfe. If optional arument W is provided, it should be a diagonal
+  ## matrix of weights or a positive definite covariance matrix
+  if (nargin < 3)
+    ## If no weights are provided, create an identity matrix
+    n = numel (Y);
+    W = eye (n);
+  endif
+  C = chol (W);
+  XW = C*X;
+  YW = C*Y;
+  [Q, R] = qr (XW, 0);
+  b = R \ Q' * YW;
 
   ## Get fitted values
-  fit = X * b;
+  fit = XW * b;
   ## Get residuals from the fit
-  resid = Y - fit;
+  resid = YW - fit;
   ## Calculate the residual sums-of-squares
   sse = sum ((resid).^2);
   ## Calculate the unscaled covariance matrix (i.e. inv (X'*X ))
   if (nargout > 3)
-    ucov = R \ Q' / X';
-  end
+    ucov = R \ Q' / XW';
+  endif
 
 endfunction
 
