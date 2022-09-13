@@ -108,10 +108,10 @@
 ## 1 : Type I sequential sums-of-squares.
 ##
 ## @item
-## 2 or "h": Type II partially sequential (or hierarchical) sums-of-squares
+## 2 or "h" : Type II partially sequential (or hierarchical) sums-of-squares
 ##
 ## @item
-## 3 (default): Type III partial, constrained or marginal sums-of-squares
+## 3 (default) : Type III partial, constrained or marginal sums-of-squares
 ##
 ## @end itemize
 ## @end itemize
@@ -189,6 +189,16 @@
 ## continuous factors are ignored.
 ## @end itemize
 ##
+## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "weights", @var{weights})}
+##
+## @itemize
+## @item
+## @var{weights} is an optional vector of weights to be used when fitting the
+## linear model. Weighted least squares (WLS) is used with weights (that is,
+## minimizing sum (weights * residuals.^2)); otherwise ordinary least squares
+## (OLS) is used (default is empty for OLS).
+## @end itemize
+##
 ## @qcode{anovan} can return up to four output arguments:
 ##
 ## @var{p} = anovan (@dots{}) returns a vector of p-values, one for each term.
@@ -230,6 +240,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     RANDOM = [];
     CONTRASTS = {};
     ALPHA = 0.05;
+    WEIGHTS = [];
     for idx = 3:2:nargin
       name = varargin{idx-2};
       value = varargin{idx-1};
@@ -253,6 +264,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           CONTRASTS = value;
         case "alpha"
           ALPHA = value;
+        case "weights"
+          WEIGHTS = value;
         otherwise
           error (sprintf ("anovan: parameter %s is not supported", name));
       endswitch
@@ -272,7 +285,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     ## Accomodate for different formats for GROUP
     ## GROUP can be a matrix of numeric identifiers of a cell arrays
     ## of strings or numeric idenitiers
-    N = size (GROUP,2); # number of anova "ways"
+    N = size (GROUP, 2); # number of anova "ways"
     n = numel (Y);      # total number of observations
     if (prod (size (Y)) != n)
       error ("anovan: for ""anovan (Y, GROUP)"", Y must be a vector");
@@ -418,6 +431,24 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     endif
     n = numel (Y);     # recalculate total number of observations
 
+    ## Evaluate weights input argument
+    if (! isempty(WEIGHTS))
+      if (! isnumeric(WEIGHTS))
+        error ("anovan: WEIGHTS must be a numeric datatype");
+      endif
+      if (any (size (WEIGHTS) != [n,1]))
+        error ("anovan: WEIGHTS must be a vector with the same dimensions as Y");
+      endif
+      if (any(!(WEIGHTS > 0)) || any (isinf (WEIGHTS)))
+        error ("anovan: WEIGHTS must be a vector of positive finite values");
+      endif
+      # Create diaganal matrix of normalized weights
+      W = diag (WEIGHTS / mean (WEIGHTS));
+    else
+      # Create identity matrix
+      W = eye (n);;
+    endif
+
     ## Evaluate model type input argument and create terms matrix if not provided
     msg = strcat (["anovan: the number of columns in the term definitions"], ...
                   [" cannot exceed the number of columns of GROUP"]);
@@ -486,7 +517,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                      [" effects above/before interactions"]));
     endif
     Nm = sum (Ng == 1);
-    ## Drop terms that include interactions with random effects.
+    ## Drop terms that include interactions with factors specified as random effects.
     drop = any (bsxfun (@and, TERMS(:,RANDOM), (Ng > 1)), 2);
     TERMS (drop, :) = [];
     Ng(drop) = [];
@@ -508,45 +539,39 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         ## Type I sequential sums-of-squares (SSTYPE = 1)
         R = sst;
         ss = zeros (Nt,1);
-        [X, grpnames, nlevels, df, termcols, coeffnames, vmeans, gid, ...
-         CONTRASTS] = make_design_matrix (GROUP, TERMS, CONTINUOUS, ...
-                      CONTRASTS, VARNAMES, n, Nm, Nx, Ng);
+        mDesignMatrix ();
         for j = 1:Nt
           XS = cell2mat (X(1:j+1));
-          [b, sse] = lmfit (XS, Y);
+          [b, sse] = lmfit (XS, Y, W);
           ss(j) = R - sse;
           R = sse;
         endfor
-        [b, sse, resid, ucov] = lmfit (XS, Y);
+        [b, sse, resid, ucov] = lmfit (XS, Y, W);
         sstype_char = "I";
       case {2,'h'}
         ## Type II (partially sequential, or hierarchical) sums-of-squares
         ss = zeros (Nt,1);
-        [X, grpnames, nlevels, df, termcols, coeffnames, vmeans, gid, ...
-         CONTRASTS] = make_design_matrix (GROUP, TERMS, CONTINUOUS, ...
-                      CONTRASTS, VARNAMES, n, Nm, Nx, Ng);
+        mDesignMatrix ();
         for j = 1:Nt
           i = find (TERMS(j,:));
           k = cat (1, 1, 1 + find (any (!TERMS(:,i),2)));
           XS = cell2mat (X(k));
-          [jnk, R1] = lmfit (XS, Y);
+          [jnk, R1] = lmfit (XS, Y, W);
           k = cat (1, j+1, k);
           XS = cell2mat (X(k));
-          [jnk, R2] = lmfit (XS, Y);
+          [jnk, R2] = lmfit (XS, Y, W);
           ss(j) = R1 - R2;
         endfor
-        [b, sse, resid, ucov] = lmfit (cell2mat (X), Y);
+        [b, sse, resid, ucov] = lmfit (cell2mat (X), Y, W);
         sstype_char = "II";
       case 3
         ## Type III (partial, constrained or marginal) sums-of-squares
         ss = zeros (Nt, 1);
-        [X, grpnames, nlevels, df, termcols, coeffnames, vmeans, gid, ...
-         CONTRASTS] = make_design_matrix (GROUP, TERMS, CONTINUOUS, ...
-                      CONTRASTS, VARNAMES, n, Nm, Nx, Ng);
-        [b, sse, resid, ucov] = lmfit (cell2mat (X), Y);
+        mDesignMatrix ();
+        [b, sse, resid, ucov] = lmfit (cell2mat (X), Y, W);
         for j = 1:Nt
           XS = cell2mat (X(1:Nt+1 != j+1));
-          [jnk, R, resid] = lmfit (XS, Y);
+          [jnk, R, resid] = lmfit (XS, Y, W);
           ss(j) = R - sse;
         endfor
         sstype_char = "III";
@@ -576,7 +601,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       if (strcmp (str(end-1), "'"))
         ## Random intercept term
         formula = sprintf ("%s + (1|%s)", formula, str(1:end-2));
-        ## Remove statistics for random effects from the ANOVA table
+        ## Remove statistics for random factors from the ANOVA table
         #T(RANDOM+1,4:7) = cell(1,4);
         #P(RANDOM) = NaN;
       else
@@ -620,17 +645,17 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                     "coeffnames", {vertcat(coeffnames{:})}, ...
                     "vars", [], ...          # Not used by Octave
                     "varnames", {VARNAMES}, ...
-                    "grpnames", {grpnames}, ...
+                    "grpnames", {levels}, ...
                     "vnested", [], ...       # Not used since "nested" argument name is not supported
                     "ems", [], ...           # Not used since "nested" argument name is not supported
-                    "denom", [], ...         # Not used since interactions with random effects is not supported
-                    "dfdenom", [], ...       # Not used since interactions with random effects is not supported
-                    "msdenom", [], ...       # Not used since interactions with random effects is not supported
-                    "varest", [], ...        # Not used since interactions with random effects is not supported
-                    "varci", [], ...         # Not used since interactions with random effects is not supported
-                    "txtdenom", [], ...      # Not used since interactions with random effects is not supported
-                    "txtems", [], ...        # Not used since interactions with random effects is not supported
-                    "rtnames", [], ...       # Not used since interactions with random effects is not supported
+                    "denom", [], ...         # Not used since interactions with random factors is not supported
+                    "dfdenom", [], ...       # Not used since interactions with random factors is not supported
+                    "msdenom", [], ...       # Not used since interactions with random factors is not supported
+                    "varest", [], ...        # Not used since interactions with random factors is not supported
+                    "varci", [], ...         # Not used since interactions with random factors is not supported
+                    "txtdenom", [], ...      # Not used since interactions with random factors is not supported
+                    "txtems", [], ...        # Not used since interactions with random factors is not supported
+                    "rtnames", [], ...       # Not used since interactions with random factors is not supported
                     ## Additional STATS fields used exclusively by Octave
                     "random", RANDOM, ...
                     "formula", formula, ...
@@ -727,9 +752,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         hold on; plot (ax1.xlim, zeros (1, 2), "r-."); grid ("on"); hold off;
         ## Checks for outliers and heteroskedasticity
         subplot (2, 2, 4);
-        plot (fit, sqrt (std_resid), "b+");
+        plot (fit, sqrt (abs (std_resid)), "b+");
         xlabel ("Fitted values");
-        ylabel ("sqrt (Standardized Residuals)");
+        ylabel ("sqrt ( |Standardized Residuals| )");
         title ("Spread-Location Plot")
 
       case "off"
@@ -742,152 +767,153 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
     endswitch
 
-endfunction
+    function mDesignMatrix ()
 
+      ## Nested function that returns a cell array of the design matrix for
+      ## each term in the model
+      ## Input variables it uses:
+      ##  GROUP, TERMS, CONTINUOUS, CONTRASTS, VARNAMES, n, Nm, Nx, Ng
+      ## Variables it creates or modifies:
+      ##  X, grpnames, nlevels, df, termcols, coeffnames, vmeans, gid, CONTRASTS
 
-function [X, levels, nlevels, df, termcols, coeffnames, vmeans, gid, ...
-          CONTRASTS] = make_design_matrix (GROUP, TERMS, CONTINUOUS, ...
-                       CONTRASTS, VARNAMES, n, Nm, Nx, Ng)
+      ## EVALUATE FACTOR LEVELS
+      levels = cell (Nm, 1);
+      gid = zeros (n, Nm);
+      nlevels = zeros (Nm, 1);
+      df = zeros (Nm + Nx, 1);
+      termcols = ones (1 + Nm + Nx, 1);
+      for j = 1:Nm
+        if (any (j == CONTINUOUS))
 
-  ## Returns a cell array of the design matrix for each term in the model
+          ## CONTINUOUS PREDICTOR
+          nlevels(j) = 1;
+          termcols(j+1) = 1;
+          df(j) = 1;
+          if iscell (GROUP(:,j))
+            gid(:,j) = cell2mat ([GROUP(:,j)]);
+          else
+            gid(:,j) = GROUP(:,j);
+          end
 
-  ## EVALUATE FACTOR LEVELS
-  levels = cell (Nm, 1);
-  gid = zeros (n, Nm);
-  nlevels = zeros (Nm, 1);
-  df = zeros (Nm + Nx, 1);
-  termcols = ones (1 + Nm + Nx, 1);
-  for j = 1:Nm
-    if (any (j == CONTINUOUS))
+        else
 
-      ## CONTINUOUS PREDICTOR
-      nlevels(j) = 1;
-      termcols(j+1) = 1;
-      df(j) = 1;
-      if iscell (GROUP(:,j))
-        gid(:,j) = cell2mat ([GROUP(:,j)]);
-      else
-        gid(:,j) = GROUP(:,j);
-      end
+          ## CATEGORICAL PREDICTOR
+          levels{j} = unique (GROUP(:,j), "stable");
+          if isnumeric (levels{j})
+            levels{j} = num2cell (levels{j});
+          endif
+          nlevels(j) = numel (levels{j});
+          for k = 1:nlevels(j)
+            gid(ismember (GROUP(:,j),levels{j}{k}),j) = k;
+          endfor
+          termcols(j+1) = nlevels(j);
+          df(j) = nlevels(j) - 1;
 
-    else
-
-      ## CATEGORICAL PREDICTOR
-      levels{j} = unique (GROUP(:,j), "stable");
-      if isnumeric (levels{j})
-        levels{j} = num2cell (levels{j});
-      endif
-      nlevels(j) = numel (levels{j});
-      for k = 1:nlevels(j)
-        gid(ismember (GROUP(:,j),levels{j}{k}),j) = k;
+        endif
       endfor
-      termcols(j+1) = nlevels(j);
-      df(j) = nlevels(j) - 1;
 
-    endif
-  endfor
+      ## MAKE DESIGN MATRIX
 
-  ## MAKE DESIGN MATRIX
+      ## MAIN EFFECTS
+      X = cell (1, 1 + Nm + Nx);
+      X(1) = ones (n, 1);
+      coeffnames = cell (1, 1 + Nm + Nx);
+      coeffnames(1) = "(Intercept)";
+      vmeans = zeros (Nm, 1);
+      for j = 1:Nm
+        if (any (j == CONTINUOUS))
 
-  ## MAIN EFFECTS
-  X = cell (1, 1 + Nm + Nx);
-  X(1) = ones (n, 1);
-  coeffnames = cell (1, 1 + Nm + Nx);
-  coeffnames(1) = "(Intercept)";
-  vmeans = zeros (Nm, 1);
-  for j = 1:Nm
-    if (any (j == CONTINUOUS))
+          ## CONTINUOUS PREDICTOR
+          if iscell (GROUP(:,j))
+            X(1+j) = cell2mat (GROUP(:,j));
+          else
+            X(1+j) = GROUP(:,j);
+          end
+          vmeans(j) = mean ([X{1+j}]);
+          X(1+j) = [X{1+j}] - vmeans(j);
+          if (isempty (CONTRASTS{j}))
+            CONTRASTS{j} = [];
+          end
+          ## Create names of the coefficients relating to continuous main effects
+          coeffnames{1+j} = VARNAMES{j};
 
-      ## CONTINUOUS PREDICTOR
-      if iscell (GROUP(:,j))
-        X(1+j) = cell2mat (GROUP(:,j));
-      else
-        X(1+j) = GROUP(:,j);
-      end
-      vmeans(j) = mean ([X{1+j}]);
-      X(1+j) = [X{1+j}] - vmeans(j);
-      if (isempty (CONTRASTS{j}))
-        CONTRASTS{j} = [];
-      end
-      ## Create names of the coefficients relating to continuous main effects
-      coeffnames{1+j} = VARNAMES{j};
+        else
 
-    else
-
-      ## CATEGORICAL PREDICTOR
-      if (isempty (CONTRASTS{j}))
-        CONTRASTS{j} = contr_simple (nlevels(j));
-      else
-        switch (lower (CONTRASTS{j}))
-          case "simple"
-            ## SIMPLE EFFECT CODING (DEFAULT)
-            ## The first level is the reference level
+          ## CATEGORICAL PREDICTOR
+          if (isempty (CONTRASTS{j}))
             CONTRASTS{j} = contr_simple (nlevels(j));
-          case "poly"
-            ## POLYNOMIAL CONTRAST CODING
-            CONTRASTS{j} = contr_poly (nlevels(j));
-          case "helmert"
-            ## HELMERT CONTRAST CODING
-            CONTRASTS{j} = contr_helmert (nlevels(j));
-          case "effect"
-            ## DEVIATION EFFECT CONTRAST CODING
-            CONTRASTS{j} = contr_sum (nlevels(j));
-          otherwise
-            ## EVALUATE CUSTOM CONTRAST MATRIX
-            ## Check that the contrast matrix provided is the correct size
-            if (! all (size (CONTRASTS{j},1) == nlevels(j)))
-              error (strcat (["anovan: the number of rows in the contrast"], ...
-                           [" matrices should equal the number of factor levels"]));
-            endif
-            if (! all (size (CONTRASTS{j},2) == df(j)))
-              error (strcat (["anovan: the number of columns in each contrast"], ...
-                      [" matrix should equal the degrees of freedom (i.e."], ...
-                      [" number of levels minus 1) for that factor"]));
-            endif
-            if (! all (any (CONTRASTS{j})))
-              error (strcat (["anovan: a contrast must be coded in each"], ...
-                             [" column of the contrast matrices"]));
-            endif
-        endswitch
-      endif
-      C = CONTRASTS{j};
-      func = @(x) x(gid(:,j));
-      X(1+j) = cell2mat (cellfun (func, num2cell (C, 1), "UniformOutput", false));
-      ## Create names of the coefficients relating to continuous main effects
-      coeffnames{1+j} = cell (df(j),1);
-      for v = 1:df(j)
-        coeffnames{1+j}{v} = sprintf ("%s_%u", VARNAMES{j}, v);
+          else
+            switch (lower (CONTRASTS{j}))
+              case "simple"
+                ## SIMPLE EFFECT CODING (DEFAULT)
+                ## The first level is the reference level
+                CONTRASTS{j} = contr_simple (nlevels(j));
+              case "poly"
+                ## POLYNOMIAL CONTRAST CODING
+                CONTRASTS{j} = contr_poly (nlevels(j));
+              case "helmert"
+                ## HELMERT CONTRAST CODING
+                CONTRASTS{j} = contr_helmert (nlevels(j));
+              case "effect"
+                ## DEVIATION EFFECT CONTRAST CODING
+                CONTRASTS{j} = contr_sum (nlevels(j));
+              otherwise
+                ## EVALUATE CUSTOM CONTRAST MATRIX
+                ## Check that the contrast matrix provided is the correct size
+                if (! all (size (CONTRASTS{j},1) == nlevels(j)))
+                  error (strcat (["anovan: the number of rows in the contrast"], ...
+                               [" matrices should equal the number of factor levels"]));
+                endif
+                if (! all (size (CONTRASTS{j},2) == df(j)))
+                  error (strcat (["anovan: the number of columns in each contrast"], ...
+                          [" matrix should equal the degrees of freedom (i.e."], ...
+                          [" number of levels minus 1) for that factor"]));
+                endif
+                if (! all (any (CONTRASTS{j})))
+                  error (strcat (["anovan: a contrast must be coded in each"], ...
+                                 [" column of the contrast matrices"]));
+                endif
+            endswitch
+          endif
+          C = CONTRASTS{j};
+          func = @(x) x(gid(:,j));
+          X(1+j) = cell2mat (cellfun (func, num2cell (C, 1), "UniformOutput", false));
+          ## Create names of the coefficients relating to continuous main effects
+          coeffnames{1+j} = cell (df(j),1);
+          for v = 1:df(j)
+            coeffnames{1+j}{v} = sprintf ("%s_%u", VARNAMES{j}, v);
+          endfor
+
+        endif
       endfor
 
-    endif
-  endfor
-
-  ## INTERACTION TERMS
-  if (Nx > 0)
-    row = TERMS((Ng > 1),:);
-    for i = 1:Nx
-      I = 1 + find (row(i,:));
-      df(Nm+i) = prod (df(I-1));
-      termcols(1+Nm+i) = prod (df(I-1) + 1);
-      tmp = ones (n,1);
-      for j = 1:numel(I);
-        tmp = num2cell (tmp, 1);
-        for k = 1:numel(tmp)
-          tmp(k) = bsxfun (@times, tmp{k}, X{I(j)});
+      ## INTERACTION TERMS
+      if (Nx > 0)
+        row = TERMS((Ng > 1),:);
+        for i = 1:Nx
+          I = 1 + find (row(i,:));
+          df(Nm+i) = prod (df(I-1));
+          termcols(1+Nm+i) = prod (df(I-1) + 1);
+          tmp = ones (n,1);
+          for j = 1:numel(I);
+            tmp = num2cell (tmp, 1);
+            for k = 1:numel(tmp)
+              tmp(k) = bsxfun (@times, tmp{k}, X{I(j)});
+            endfor
+            tmp = cell2mat (tmp);
+          endfor
+          X{1+Nm+i} = tmp;
+          coeffnames{1+Nm+i} = cell (df(Nm+i),1);
+          for v = 1:df(Nm+i)
+            str = sprintf ("%s:", VARNAMES{I-1});
+            coeffnames{1+Nm+i}{v} = strcat (str(1:end-1), "_", num2str (v));
+          endfor
         endfor
-        tmp = cell2mat (tmp);
-      endfor
-      X{1+Nm+i} = tmp;
-      coeffnames{1+Nm+i} = cell (df(Nm+i),1);
-      for v = 1:df(Nm+i)
-        str = sprintf ("%s:", VARNAMES{I-1});
-        coeffnames{1+Nm+i}{v} = strcat (str(1:end-1), "_", num2str (v));
-      endfor
-    endfor
-  endif
+      endif
+
+    endfunction
 
 endfunction
-
 
 ## BUILT IN CONTRAST CODING FUNCTIONS
 
@@ -936,25 +962,33 @@ endfunction
 
 ## FUNCTION TO FIT THE LINEAR MODEL
 
-function [b, sse, resid, ucov] = lmfit (X, Y)
+function [b, sse, resid, ucov] = lmfit (X, Y, W)
 
   ## Get model coefficients by solving the linear equation by QR decomposition
-  ## (this achieves the same thing as b = X \ Y)
   ## The number of free parameters (i.e. intercept + coefficients) is equal
-  ## to n - dfe
-  [Q, R] = qr (X, 0);
-  b = R \ Q' * Y;
+  ## to n - dfe. If optional arument W is provided, it should be a diagonal
+  ## matrix of weights or a positive definite covariance matrix
+  if (nargin < 3)
+    ## If no weights are provided, create an identity matrix
+    n = numel (Y);
+    W = eye (n);
+  endif
+  C = chol (W);
+  XW = C*X;
+  YW = C*Y;
+  [Q, R] = qr (XW, 0);
+  b = R \ Q' * YW;
 
   ## Get fitted values
-  fit = X * b;
+  fit = XW * b;
   ## Get residuals from the fit
-  resid = Y - fit;
+  resid = YW - fit;
   ## Calculate the residual sums-of-squares
   sse = sum ((resid).^2);
   ## Calculate the unscaled covariance matrix (i.e. inv (X'*X ))
   if (nargout > 3)
-    ucov = R \ Q' / X';
-  end
+    ucov = R \ Q' / XW';
+  endif
 
 endfunction
 

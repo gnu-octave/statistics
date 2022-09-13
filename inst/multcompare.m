@@ -86,6 +86,17 @@
 ## processing. Note that p-values calculated by the "mvt" are truncated at 1e-06.
 ## @end itemize
 ##
+## @code{[@dots{}] = multcompare (@var{STATS}, "df", @var{DF})}
+##
+## @itemize
+## @item
+## @var{DF} is an optional scalar value to set the number of degrees of freedom
+## in the calculation of p-values for the multiple comparison tests. By default,
+## this value is extracted from the @var{STATS} structure of the ANOVA test, but
+## setting @var{DF} maybe necessary to approximate Satterthwaite correction if
+## @qcode{anovan} was performed using weights.
+## @end itemize
+##
 ## @code{[@dots{}] = multcompare (@var{STATS}, "dim", @var{DIM})}
 ##
 ## @itemize
@@ -152,6 +163,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     DISPLAY = "on";
     DIM = 1;
     ESTIMATE = "column";
+    DFE = [];
     for idx = 3:2:nargin
       name = varargin{idx-2};
       value = varargin{idx-1};
@@ -168,6 +180,8 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
           DIM = value;
         case "estimate"
           ESTIMATE = lower (value);
+        case {"df","dfe"}
+          DFE = value;
         otherwise
           error (sprintf ("multcompare: parameter %s is not supported", name));
       endswitch
@@ -196,6 +210,16 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     if (! ismember (CTYPE, ...
                     {"bonferroni","scheffe","mvt","holm","hochberg","fdr","lsd"}))
       error ("multcompare: '%s' is not a supported value for CTYPE", CTYPE)
+    endif
+
+    ## Evaluate DFE input argument
+    if (! isempty (DFE))
+      if (! isscalar (DFE)) 
+        error ("multcompare: df must be a scalar value.");
+      endif
+      if (!(DFE > 0) || isinf (DFE))
+        error ("multcompare: df must be a positive finite value.");
+      endif
     endif
 
     ## Perform test specific calculations
@@ -228,7 +252,9 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
             M(:,1:2)  = cat (2, gmeans, sqrt(gvar));
 
             ## Get the error degrees of freedom from anova1 output
-            dfe = STATS.df;
+            if (isempty (DFE))
+              DFE = STATS.df;
+            endif
 
           case "unequal"
 
@@ -241,14 +267,15 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
             ## Calculate estimated marginal means and their standard errors
             gmeans = STATS.means(:);
             gvar = STATS.vars(:) ./ n;     # Sampling variance 
-            dfe = STATS.df;
             Ng = numel (gmeans);
             M = zeros (Ng, 4);
             M(:,1:2) = cat (2, gmeans, sqrt (gvar));
 
             ## Calculate Welch's corrected degrees of freedom
-            dfe = sum (gvar(pairs), 2).^2 ./ ...
-                  sum ((gvar(pairs).^2 ./ (n(pairs) - 1)), 2);
+            if (isempty (DFE))
+              DFE = sum (gvar(pairs), 2).^2 ./ ...
+                    sum ((gvar(pairs).^2 ./ (n(pairs) - 1)), 2);
+            endif
 
         endswitch
 
@@ -303,7 +330,9 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         M(:,1:2) = cat (2, gmeans, sqrt (gvar));
 
         ## Get the error degrees of freedom from anova2 output
-        dfe = STATS.df;
+        if (isempty (DFE))
+          DFE = STATS.df;
+        endif
 
         ## Calculate vector t statistics corresponding to the comparisons. In
         ## balanced ANOVA designs, for the calculation of the t statistics, the
@@ -333,7 +362,9 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         Nd = numel (DIM);
         n = numel (STATS.resid);
         df = STATS.df;
-        dfe = STATS.dfe;
+        if (isempty (DFE))
+          DFE = STATS.dfe;
+        endif
         i = 1 + cumsum(df);
         k = find (sum (STATS.terms(:,DIM), 2) == sum (STATS.terms, 2));
         Nb = 1 + sum(df(k));
@@ -415,7 +446,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     ## - R: correlation matrix for the requested comparisons
     ## - sed: vector containing SE of the difference for each comparisons
     ## - t: vector containing t for the difference relating to each comparisons
-    ## - dfe: residual/error degrees of freedom
+    ## - DFE: residual/error degrees of freedom
     ## - GNAMES: a cell array containing the names of the groups being compared
 
     ## Create matrix of comparisons and calculate confidence intervals and
@@ -424,9 +455,9 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     C(:,1:2) = pairs;
     C(:,4) = (M(pairs(:, 1),1) - M(pairs(:, 2),1));
     C(:,7) = t;     # Unlike Matlab, we include the t statistic
-    C(:,8) = dfe;   # Unlike Matlab, we include the degrees of freedom
-    p = 2 * (1 - tcdf (abs (t), dfe));
-    [C(:,6), critval] = feval (CTYPE, p, t, Ng, dfe, R, ALPHA);
+    C(:,8) = DFE;   # Unlike Matlab, we include the degrees of freedom
+    p = 2 * (1 - tcdf (abs (t), DFE));
+    [C(:,6), critval, C(:,8)] = feval (CTYPE, p, t, Ng, DFE, R, ALPHA);
     C(:,3) = C(:,4) - sed .* critval;
     C(:,5) = C(:,4) + sed .* critval;
 
@@ -434,8 +465,8 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     ## central coverage such that the intervals start to overlap where the
     ## difference reaches a two-tailed p-value of ALPHA. When ALPHA is 0.05,
     ## central coverage is approximately 83.4%
-    if (! isscalar(dfe))
-      # Upper bound critval (corresponding to lower bound dfe)
+    if (! isscalar(DFE))
+      # Upper bound critval (corresponding to lower bound DFE)
       critval = max (critval);
     endif
     M(:,3) = M(:,1) - M(:,2) .* critval / sqrt(2);
@@ -517,7 +548,7 @@ endfunction
 
 ## Methods to control family-wise error rate in multiple comparisons
 
-function [padj, critval] = scheffe (p, t, Ng, dfe, R, ALPHA)
+function [padj, critval, dfe] = scheffe (p, t, Ng, dfe, R, ALPHA)
 
   ## Calculate the p-value
   padj = 1 - fcdf ((t.^2) / (Ng - 1), Ng - 1, dfe);
@@ -528,7 +559,7 @@ function [padj, critval] = scheffe (p, t, Ng, dfe, R, ALPHA)
 endfunction
 
 
-function [padj, critval] = bonferroni (p, t, Ng, dfe, R, ALPHA)
+function [padj, critval, dfe] = bonferroni (p, t, Ng, dfe, R, ALPHA)
   
   ## Bonferroni procedure
   Np = numel (p);
@@ -539,7 +570,7 @@ function [padj, critval] = bonferroni (p, t, Ng, dfe, R, ALPHA)
 
 endfunction
 
-function [padj, critval] = mvt (p, t, Ng, dfe, R, ALPHA)
+function [padj, critval, dfe] = mvt (p, t, Ng, dfe, R, ALPHA)
 
   ## Monte Carlo simulation of the maximum test statistic in random samples
   ## generated from a multivariate t distribution. This method accounts for
@@ -552,9 +583,8 @@ function [padj, critval] = mvt (p, t, Ng, dfe, R, ALPHA)
   ## Lower bound for error degrees of freedom to ensure type 1 error rate isn't
   ## exceeded for any test
   if (! isscalar(dfe))
-    warning (strcat (["multcompare: CTYPE value 'mvt' may be conservative"], ...
-                     [" when there isn't a common error degrees of freedom"]))
-    dfe = min (dfe);
+    dfe = max (1, round (min (dfe)));
+    fprintf ("Note: df set to %u (lower bound)\n", dfe);
   endif
 
   ## Check if we can use parallel processing to accelerate computations
@@ -597,7 +627,7 @@ function [padj, critval] = mvt (p, t, Ng, dfe, R, ALPHA)
 endfunction
 
 
-function [padj, critval] = holm (p, t, Ng, dfe, R, ALPHA)
+function [padj, critval, dfe] = holm (p, t, Ng, dfe, R, ALPHA)
 
   ## Holm's step-down Bonferroni procedure
 
@@ -626,7 +656,7 @@ function [padj, critval] = holm (p, t, Ng, dfe, R, ALPHA)
 endfunction
 
 
-function [padj, critval] = hochberg (p, t, Ng, dfe, R, ALPHA)
+function [padj, critval, dfe] = hochberg (p, t, Ng, dfe, R, ALPHA)
 
   ## Hochberg's step-up Bonferroni procedure
 
@@ -656,7 +686,7 @@ function [padj, critval] = hochberg (p, t, Ng, dfe, R, ALPHA)
 endfunction
 
 
-function [padj, critval] = fdr (p, t, Ng, dfe, R, ALPHA)
+function [padj, critval, dfe] = fdr (p, t, Ng, dfe, R, ALPHA)
   
   ## Benjamini-Hochberg procedure to control the false discovery rate (FDR)
   ## This procedure does not control the family-wise error rate
@@ -691,7 +721,7 @@ function [padj, critval] = fdr (p, t, Ng, dfe, R, ALPHA)
 endfunction
 
 
-function [padj, critval] = lsd (p, t, Ng, dfe, R, ALPHA)
+function [padj, critval, dfe] = lsd (p, t, Ng, dfe, R, ALPHA)
   
   ## Fisher's Least Significant Difference
   ## No control of the type I error rate across multiple comparisons
@@ -840,22 +870,6 @@ endfunction
 %! assert (C(8,6), 3.77746957562134e-01, 1e-09);
 %! assert (C(9,6), 3.27179208291358e-07, 1e-09);
 %! assert (C(10,6), 2.22213674087620e-05, 1e-09);
-%!
-%! # Compare "hsd" adjusted p-values to those obtained using 'hsd' in Matlab
-%! # Since we use a Monte Carlo method, we need to reduce the Tol in these tests
-%!
-%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'hsd', ...
-%!                                  'display', 'off');
-%! assert (C(1,6), 0.000261058010276427, 2e-03);
-%! assert (C(2,6), 4.99073964554952e-06, 2e-03);
-%! assert (C(3,6), 2.15682704807207e-07, 2e-03);
-%! assert (C(4,6), 9.92322390924727e-09, 2e-03);
-%! assert (C(5,6), 0.972576004491222, 2e-03);
-%! assert (C(6,6), 0.402338001214431, 2e-03);
-%! assert (C(7,6), 9.2070755930429e-07, 2e-03);
-%! assert (C(8,6), 0.667399809894558, 2e-03);
-%! assert (C(9,6), 4.04451370283887e-07, 2e-03);
-%! assert (C(10,6), 4.16029613220514e-05, 2e-03);
 %!
 %! # Compare "scheffe" adjusted p-values to those obtained using 'scheffe' in Matlab
 %!
