@@ -1242,9 +1242,12 @@ endfunction
 %!demo
 %!
 %! # One-way ANOVA with the linear model fit by weighted least squares to
-%! # account for heteroskedasticity. In this example, weights are estimated
-%! # by initially fitting the model without weights and regressing the absolute
-%! # residuals on the fitted values.
+%! # account for heteroskedasticity. In this example, the variance appears
+%! # proportional to the outcome, so weights have been estimated by initially
+%! # fitting the model without weights and regressing the absolute residuals on
+%! # the fitted values. Although this data could have been analysed by Welch's
+%! # ANOVA test, the approach here can generalize to ANOVA models with more than
+%! # one factor. 
 %!
 %! g = [1, 1, 1, 1, 1, 1, 1, 1, ...
 %!      2, 2, 2, 2, 2, 2, 2, 2, ...
