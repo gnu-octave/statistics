@@ -1239,6 +1239,28 @@ endfunction
 %! [P,ATAB, STATS] = anovan (dv, g, "contrasts", C, "varnames", "score", ...
 %!                          "alpha", 0.05, "display", "on");
 
+%!demo
+%!
+%! # One-way ANOVA with the linear model fit by weighted least squares to
+%! # account for heteroskedasticity. In this example, weights are estimated
+%! # by initially fitting the model without weights and regressing the absolute
+%! # residuals on the fitted values.
+%!
+%! g = [1, 1, 1, 1, 1, 1, 1, 1, ...
+%!      2, 2, 2, 2, 2, 2, 2, 2, ...
+%!      3, 3, 3, 3, 3, 3, 3, 3]';
+%!
+%! y = [13, 16, 16,  7, 11,  5,  1,  9, ...
+%!      10, 25, 66, 43, 47, 56,  6, 39, ...
+%!      11, 39, 26, 35, 25, 14, 24, 17]';
+%!
+%! [P,ATAB,STATS] = anovan(y, g, "display", "off");
+%! fitted = y - STATS.resid;
+%! b = polyfit (fitted, abs (STATS.resid), 1);
+%! v = polyval (b, fitted);  # Variance as a function of the fitted values
+%! [P,ATAB,STATS] = anovan (y, g, "weights", v.^-1);
+
+
 ## Test 1 for anovan example 1
 ## Test compares anovan to results from MATLAB's anovan and ttest2 functions
 %!test
