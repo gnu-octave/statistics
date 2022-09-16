@@ -578,6 +578,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       otherwise
         error ("anovan: sstype value not supported");
     endswitch
+    ss = max (0, ss); # Truncate negative SS at 0 
     dfe = dft - sum (df);
     ms = ss ./ df;
     mse = sse / dfe;
