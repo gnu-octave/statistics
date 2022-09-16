@@ -571,13 +571,14 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         [b, sse, resid, ucov] = lmfit (cell2mat (X), Y, W);
         for j = 1:Nt
           XS = cell2mat (X(1:Nt+1 != j+1));
-          [jnk, R, resid] = lmfit (XS, Y, W);
+          [jnk, R] = lmfit (XS, Y, W);
           ss(j) = R - sse;
         endfor
         sstype_char = "III";
       otherwise
         error ("anovan: sstype value not supported");
     endswitch
+    ss = max (0, ss); # Truncate negative SS at 0 
     dfe = dft - sum (df);
     ms = ss ./ df;
     mse = sse / dfe;
