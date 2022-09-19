@@ -1264,6 +1264,10 @@ endfunction
 %! fitted = y - STATS.resid;
 %! b = polyfit (fitted, abs (STATS.resid), 1);
 %! v = polyval (b, fitted);  # Variance as a function of the fitted values
+%! figure("Name", "Regression of the absolute residuals on the fitted values");
+%! plot (fitted, abs (STATS.resid),'ob');hold on; plot(fitted,v,'-r'); hold off;
+%! xlabel("Fitted values"); ylabel("Absolute residuals");
+
 %! [P,ATAB,STATS] = anovan (y, g, "weights", v.^-1);
 
 
