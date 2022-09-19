@@ -516,11 +516,12 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       error (strcat (["anovan: the model terms matrix must list main"], ...
                      [" effects above/before interactions"]));
     endif
-    Nm = sum (Ng == 1);
     ## Drop terms that include interactions with factors specified as random effects.
     drop = any (bsxfun (@and, TERMS(:,RANDOM), (Ng > 1)), 2);
     TERMS (drop, :) = [];
     Ng(drop) = [];
+    ## Evaluate terms
+    Nm = sum (Ng == 1);
     Nx = sum (Ng > 1);
     Nt = Nm + Nx;
     if (any (any (TERMS(1:Nm,:), 1) != any (TERMS, 1)))
@@ -627,7 +628,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     ## Assign NaN to p-value to avoid printing statistics relating to 
     ## coefficients for 'random' effects
     hi = 1 + cumsum(df);
-    p(hi(RANDOM)-df(RANDOM)+1:hi(RANDOM)) = NaN;
+    for ignore = RANDOM
+      p(hi(ignore)-df(ignore)+1:hi(ignore)) = NaN;
+    endfor
 
     ## Create STATS structure for MULTCOMPARE
     STATS = struct ("source","anovan", ...
