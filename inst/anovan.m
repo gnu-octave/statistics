@@ -323,8 +323,10 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         endfor
       endif
     endif
-    if (size (GROUP,1) != n)
-      error ("anovan: GROUP must be a matrix with the same number of rows as Y");
+    if (! isempty (GROUP))
+      if (size (GROUP,1) != n)
+        error ("anovan: GROUP must be a matrix with the same number of rows as Y");
+      endif
     endif
     if (! isempty (VARNAMES))
       if (iscell (VARNAMES))
@@ -681,7 +683,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         fprintf("\nMODEL FORMULA (in equivalent Wilkinson-Rogers-Pinheiro-Bates notation):\n\n%s\n", formula);
 
         ## If applicable, print parameter estimates (a.k.a contrasts) for fixed effects
-        if (planned)
+        if (planned && ! isempty(GROUP))
           ## Parameter estimates correspond to the contrasts we set. To avoid
           ## p-hacking, don't print contrasts if we don't specify them to start with
           fprintf("\nMODEL PARAMETERS (contrasts for the fixed effects)\n\n");
