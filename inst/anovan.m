@@ -38,7 +38,8 @@
 ## @var{GROUP} has the same number of rows as @var{Y}. For example, if @var{Y}
 ## = [1.1;1.2]; @var{GROUP} = [1,2,1; 1,5,2]; then observation 1.1 was measured
 ## under conditions 1,2,1 and observation 1.2 was measured under conditions
-## 1,5,2.
+## 1,5,2. If the @var{GROUP} provided is empty, then the linear model is fit
+## with just the intercept (no predictors).
 ##
 ## @qcode{anovan} can take a number of optional parameters as name-value pairs.
 ##
