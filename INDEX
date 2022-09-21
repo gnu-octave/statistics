@@ -129,6 +129,7 @@ Plots
  histfit
  hist3
  manovacluster
+ multcompare
  normplot
  ppplot
  qqplot
