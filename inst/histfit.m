@@ -17,14 +17,14 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} histfit (@var{data}, @var{nbins})
+## @deftypefn {Function File} histfit (@var{x}, @var{nbins})
 ##
 ## Plot histogram with superimposed fitted normal density.
 ##
-## @code{histfit (@var{data}, @var{nbins})} plots a histogram of the values in
-## the vector @var{data} using @var{nbins} bars in the histogram. With one input
+## @code{histfit (@var{x}, @var{nbins})} plots a histogram of the values in
+## the vector @var{x} using @var{nbins} bars in the histogram. With one input
 ## argument, @var{nbins} is set to the square root of the number of elements in
-## data.
+## @var{x}.
 ##
 ## Example
 ##
@@ -35,31 +35,31 @@
 ## @seealso{bar, hist, pareto}
 ## @end deftypefn
 
-function histfit (data, nbins)
+function histfit (x, nbins)
 
   if (nargin < 1 || nargin > 2)
     print_usage;
   endif
 
   if (! isnumeric (x) || ! isreal (x) || ! isvector (x) || isscalar (x))
-    error ("histfit: data must be a numeric vector of real numbers.");
+    error ("histfit: X must be a numeric vector of real numbers.");
   endif
 
-  row = sum (! isnan (data));
+  row = sum (! isnan (x));
 
   if (nargin < 2)
     nbins = ceil (sqrt (row));
   endif
 
-  [n, xbin] = hist (data, nbins);
+  [n, xbin] = hist (x, nbins);
   if (any (abs (diff (xbin, 2)) > 10 * max (abs (xbin)) * eps))
     error ("histfit: bins must have uniform width.");
   endif
 
   ## Compute mu and sigma parameters
-  mr = mean (data, "omitnan");
-  sr = std (data);
-  ## Evenly spaced samples of the expected data range
+  mr = mean (x, "omitnan");
+  sr = std (x);
+  ## Evenly spaced samples of the expected range in X
   x = (-3*sr+mr:0.1*sr:3*sr+mr)';
   [xb, yb] = bar (xbin, n);
   y = normpdf (x, mr, sr);
@@ -83,7 +83,7 @@ endfunction
 %! histfit (x);
 %! x = [2, 4, 3, 2, NaN, 3, 2, 5, 6, 4, 7, 5, 9, 8, 10, 4, 11];
 %! histfit (x);
-%! histfit (x, 2);
+%! histfit (x, 3);
 %!error histfit ();
 %!error histfit ([x',x']);
 %! set (0, "DefaultFigureVisible", visibility_setting);
