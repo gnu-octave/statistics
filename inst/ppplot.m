@@ -85,8 +85,9 @@ endfunction
 
 ## Test input validation
 %!error ppplot ()
-%!error ppplot (ones (2,2))
-%!error ppplot (1, 2)
+%!error <ppplot: X must be a numeric vector> ppplot (ones (2,2))
+%!error <ppplot: X must be a numeric vector> ppplot (1, 2)
+%!error <ppplot: DIST must be a strin> ppplot ([1 2 3 4], 2)
 ## Test plotting
 %!shared visibility_setting
 %! visibility_setting = get (0, "DefaultFigureVisible");

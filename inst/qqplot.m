@@ -114,7 +114,8 @@ endfunction
 %!error qqplot ()
 %!error <qqplot: X must be a numeric vector> qqplot ({1})
 %!error <qqplot: X must be a numeric vector> qqplot (ones (2,2))
-%!error <no inverse CDF found> qqplot (1, "foobar")
+%!error <qqplot: X must be a numeric vecto> qqplot (1, "foobar")
+%!error <qqplot: no inverse CDF found> qqplot ([1 2 3], "foobar")
 ## Test plotting
 %!shared visibility_setting
 %! visibility_setting = get (0, "DefaultFigureVisible");
