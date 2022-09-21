@@ -467,6 +467,39 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
           DFE = Ng - 1;
         endif
 
+      case "kruskalwallis"
+        ## Get stats from structure
+        gmeans = STATS.meanranks
+        sumt = STATS.sumt;
+        Ng = length (gmeans);
+        n = STATS.n(:);
+        N = sum (n);
+        ## Make group names
+        GNAMES = STATS.gnames;
+        ## Make matrix of requested comparisons (pairs)
+        ## Also return the corresponding hypothesis matrix (L)
+        if (isempty (REF))
+          ## Pairwise comparisons
+          [pairs, L] = pairwise (Ng);
+        else
+          ## Treatment vs. Control comparisons
+          [pairs, L] = trt_vs_ctrl (Ng, REF);
+        endif
+        Np = size (pairs, 1);
+        ## Calculate t value and standard error
+        gcov = diag (((N * (N + 1) / 12) - (sumt / (12 * (N - 1)))) ./ n);
+        [t, sed] = tValue (gmeans, gcov, Ng);
+        ## Create matrix with group means and standard errors
+        M = cat (2, gmeans, sqrt (diag (gcov)));
+        ## Calculate correlation matrix
+        vcov = L * gcov * L';
+        R = vcov ./ (sed * sed');
+        R = (R + R') / 2;
+        ## Calculate degrees of freedom from number of groups
+        if (isempty (DFE))
+          DFE = Ng - 1;
+        endif
+
       otherwise
 
         error (strcat (sprintf ("multcompare: the STATS structure from %s", ...
