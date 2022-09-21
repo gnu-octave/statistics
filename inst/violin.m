@@ -333,19 +333,23 @@ endfunction
 ## Get current figure visibility so it can be restored after tests
 %!shared visibility_setting
 %! visibility_setting = get (0, "DefaultFigureVisible");
-%! set (0, "DefaultFigureVisible", "off");
 %!test
+%! set (0, "DefaultFigureVisible", "off");
 %! data = exprnd (0.1, 500,4);
 %! violin (data, "color", jet(4));
 %! axis ([0 5 0 max(data(:))])
+%! set (0, "DefaultFigureVisible", visibility_setting);
 %!test
+%! set (0, "DefaultFigureVisible", "off");
 %! data = {randn(100,1)*5+140, randn(130,1)*8+135};
 %! subplot (1,2,1)
 %! title ("Grade 3 heights - vertical");
 %! set (gca, "xtick", 1:2, "xticklabel", {"girls"; "boys"});
 %! violin (data, "Nbins", 10);
 %! axis tight
+%! set (0, "DefaultFigureVisible", visibility_setting);
 %!test
+%! set (0, "DefaultFigureVisible", "off");
 %! data = {randn(100,1)*5+140, randn(130,1)*8+135};
 %! subplot (1,2,1)
 %! title ("Grade 3 heights - vertical");
@@ -357,11 +361,15 @@ endfunction
 %! set (gca, "ytick", 1:2, "yticklabel", {"girls"; "boys"});
 %! violin (data, "horizontal", "Nbins", 10);
 %! axis tight
+%! set (0, "DefaultFigureVisible", visibility_setting);
 %!test
+%! set (0, "DefaultFigureVisible", "off");
 %! data = repmat(exprnd (0.1, 500,1), 1, 4);
 %! violin (data, "nbins", [5,10,50,100], "smoothfactor", [4 4 8 10]);
 %! axis ([0 5 0 max(data(:))])
+%! set (0, "DefaultFigureVisible", visibility_setting);
 %!test
+%! set (0, "DefaultFigureVisible", "off");
 %! data = repmat(exprnd (0.1, 500,1), 1, 4);
 %! violin (data, "width", linspace (0.1,0.5,4));
 %! axis ([0 5 0 max(data(:))])

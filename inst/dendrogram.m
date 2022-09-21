@@ -389,21 +389,27 @@ endfunction
 ## Get current figure visibility so it can be restored after tests
 %!shared visibility_setting
 %! visibility_setting = get (0, "DefaultFigureVisible");
+%!test
 %! set (0, "DefaultFigureVisible", "off");
-%!test
 %! y = [4, 5; 2, 6; 3, 7; 8, 9; 1, 10];
 %! y(:,3) = 1:5;
 %! dendrogram (y);
+%! set (0, "DefaultFigureVisible", visibility_setting);
 %!test
+%! set (0, "DefaultFigureVisible", "off");
 %! y = [4, 5; 2, 6; 3, 7; 8, 9; 1, 10];
 %! y(:,3) = 1:5;
 %! dendrogram (y);
+%! set (0, "DefaultFigureVisible", visibility_setting);
 %!test
+%! set (0, "DefaultFigureVisible", "off");
 %! v = 2 * rand (30, 1) - 1;
 %! d = abs (bsxfun (@minus, v(:, 1), v(:, 1)'));
 %! y = linkage (squareform (d, "tovector"));
 %! dendrogram (y);
+%! set (0, "DefaultFigureVisible", visibility_setting);
 %!test
+%! set (0, "DefaultFigureVisible", "off");
 %! X = randn (30, 2);
 %! D = pdist (X);
 %! y = linkage (D, "average");
@@ -414,6 +420,7 @@ endfunction
 %! subplot (2, 1, 2);
 %! title ("optimal leaf order");
 %! dendrogram (y, "Reorder", order);
+%! set (0, "DefaultFigureVisible", visibility_setting);
 
 ## Test input validation
 %!error dendrogram ();
@@ -422,4 +429,3 @@ endfunction
 %!error <reorder.*> dendrogram ([1 2 1], "Reorder", "xxx");
 %!error <reorder.*> dendrogram ([1 2 1], "Reorder", [1 2 3 4]);
 %! fail ('dendrogram ([1 2 1], "Orientation", "north")', "invalid orientation .*")
-%! set (0, "DefaultFigureVisible", visibility_setting);

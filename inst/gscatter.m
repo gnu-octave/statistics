@@ -250,8 +250,8 @@ endfunction
 ## testing demonstration
 %!shared visibility_setting
 %! visibility_setting = get (0, "DefaultFigureVisible");
-%! set (0, "DefaultFigureVisible", "off");
 %!test
+%! set (0, "DefaultFigureVisible", "off");
 %! load fisheriris;
 %! X = meas(:,3:4);
 %! cidcs = kmeans (X, 3, "Replicates", 5);
