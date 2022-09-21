@@ -389,7 +389,6 @@ endfunction
 ## Get current figure visibility so it can be restored after tests
 %!shared visibility_setting
 %! visibility_setting = get (0, "DefaultFigureVisible");
-%!test
 %! set (0, "DefaultFigureVisible", "off");
 %!test
 %! y = [4, 5; 2, 6; 3, 7; 8, 9; 1, 10];
@@ -415,6 +414,7 @@ endfunction
 %! subplot (2, 1, 2);
 %! title ("optimal leaf order");
 %! dendrogram (y, "Reorder", order);
+
 ## Test input validation
 %!error dendrogram ();
 %!error <tree must be .*> dendrogram (ones (2, 2), 1);

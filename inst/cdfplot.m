@@ -91,20 +91,18 @@ endfunction
 ## Get current figure visibility so it can be restored after tests
 %!shared visibility_setting
 %! visibility_setting = get (0, "DefaultFigureVisible");
+%! set (0, "DefaultFigureVisible", "off");
 %!test
 %! x = [2, 4, 3, 2, 4, 3, 2, 5, 6, 4];
-%! set (0, "DefaultFigureVisible", "off");
 %! [hCDF, stats] = cdfplot (x);
 %! assert (stats.min, 2);
 %! assert (stats.max, 6);
 %! assert (stats.median, 3.5);
 %! assert (stats.std, 1.35400640077266, 1e-14);
-%! set (0, "DefaultFigureVisible", visibility_setting);
 %!error cdfplot ();
 %!error cdfplot ([x',x']);
 %!error cdfplot ([NaN, NaN, NaN, NaN]);
 %!test
-%! set (0, "DefaultFigureVisible", "off");
 %! x = randn(100,1);
 %! cdfplot (x);
 %! set (0, "DefaultFigureVisible", visibility_setting);
