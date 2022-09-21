@@ -77,13 +77,13 @@ endfunction
 ## testing
 %!shared visibility_setting
 %! visibility_setting = get (0, "DefaultFigureVisible");
-%! set (0, "DefaultFigureVisible", "off");
 %!test
+%! set (0, "DefaultFigureVisible", "off");
 %! x = [2, 4, 3, 2, 4, 3, 2, 5, 6, 4, 7, 5, 9, 8, 10, 4, 11];
 %! histfit (x);
 %! x = [2, 4, 3, 2, NaN, 3, 2, 5, 6, 4, 7, 5, 9, 8, 10, 4, 11];
 %! histfit (x);
 %! histfit (x, 3);
+%! set (0, "DefaultFigureVisible", visibility_setting);
 %!error histfit ();
 %!error histfit ([x',x']);
-%! set (0, "DefaultFigureVisible", visibility_setting);
