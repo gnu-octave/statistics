@@ -1,4 +1,5 @@
 ## Copyright (C) 2022 Andrew Penn <A.C.Penn@sussex.ac.uk>
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -29,12 +30,13 @@
 ## the following functions:  anova1, anova2 and anovan.
 ## The return value @var{C} is a matrix with one row per comparison and six
 ## columns. Columns 1-2 are the indices of the two samples being compared.
-## Columns 3-5 are a lower bound, estimate, and upper bound for their difference,
-## where the bounds are for 95% confidence intervals. Column 6-8 are the 
-## multiplicity adjusted p-values for each individual comparison, the test
-## statistic and the degrees of freedom. All tests by multcompare are two-tailed.
+## Columns 3-5 are a lower bound, estimate, and upper bound for their
+## difference, where the bounds are for 95% confidence intervals. Column 6-8 are
+## the multiplicity adjusted p-values for each individual comparison, the test
+## statistic and the degrees of freedom.
+## All tests by multcompare are two-tailed.
 ##
-## @qcode{multcompare} can take a number of optional parameters as name-value 
+## @qcode{multcompare} can take a number of optional parameters as name-value
 ## pairs.
 ##
 ## @code{[@dots{}] = multcompare (@var{STATS}, "alpha", @var{ALPHA})}
@@ -60,30 +62,32 @@
 ##
 ## @itemize
 ## @item
-## @var{CTYPE} is the type of comparison test to use. In order of increasing power,
-## the choices are: "bonferroni", "scheffe", "mvt", "holm" (default), "hochberg",
-## "fdr", "lsd". The first five methods control the family-wise error rate. The
-## "fdr" method controls false discovery rate. The final method, "lsd" (or "none"),
-## makes no attempt to control the Type 1 error rate of multiple comparisons. 
-## The coverage of confidence intervals are only corrected for multiple comparisons
-## in the cases where @var{CTYPE} is "bonferroni", "scheffe" or "mvt", which control
-## the Type 1 error rate for simultaneous inference. 
+## @var{CTYPE} is the type of comparison test to use. In order of increasing
+## power, the choices are: "bonferroni", "scheffe", "mvt", "holm" (default),
+## "hochberg", "fdr", "lsd". The first five methods control the family-wise
+## error rate.  The "fdr" method controls false discovery rate.  The final
+## method, "lsd" (or "none"), makes no attempt to control the Type 1 error rate
+## of multiple comparisons.  The coverage of confidence intervals are only
+## corrected for multiple comparisons in the cases where @var{CTYPE} is
+## "bonferroni", "scheffe" or "mvt", which control the Type 1 error rate for
+## simultaneous inference.
 ##
-## The "mvt" method uses the multivariate t distribution to assess the probability
-## or critical value of the maximum statistic across the tests, thereby accounting
-## for correlations among comparisons in the control of the family-wise error
-## rate with simultaneous inference. In the case of pairwise comparisons, it
-## simulates Tukey's (or the Games-Howell) test, in the case of comparisons with
-## a single control group, it simulates Dunnett's test. @var{CTYPE} values
-## "tukey-kramer" and "hsd" are recognised but set the value of @var{CTYPE} and
-## @var{REF} to "mvt" and empty respectively. A @var{CTYPE} value "dunnett" is
-## recognised but sets the value of @var{CTYPE} to "mvt", and if @var{REF} is
-## empty, sets @var{REF} to 1. Since the algorithm uses a Monte Carlo method (of
-## 1e+06 random samples), you can expect the results to fluctuate slightly with
-## each call to multcompare and the calculations may be slow to complete for a
-## large number of comparisons. If the parallel package is installed and loaded,
-## @qcode{multcompare} will automatically accelerate computations by parallel
-## processing. Note that p-values calculated by the "mvt" are truncated at 1e-06.
+## The "mvt" method uses the multivariate t distribution to assess the
+## probability or critical value of the maximum statistic across the tests,
+## thereby accounting for correlations among comparisons in the control of the
+## family-wise error rate with simultaneous inference.  In the case of pairwise
+## comparisons, it simulates Tukey's (or the Games-Howell) test, in the case of
+## comparisons with a single control group, it simulates Dunnett's test.
+## @var{CTYPE} values "tukey-kramer" and "hsd" are recognised but set the value
+## of @var{CTYPE} and @var{REF} to "mvt" and empty respectively.  A @var{CTYPE}
+## value "dunnett" is recognised but sets the value of @var{CTYPE} to "mvt", and
+## if @var{REF} is empty, sets @var{REF} to 1.  Since the algorithm uses a Monte
+## Carlo method (of 1e+06 random samples), you can expect the results to
+## fluctuate slightly with each call to multcompare and the calculations may be
+## slow to complete for a large number of comparisons.  If the parallel package
+## is installed and loaded, @qcode{multcompare} will automatically accelerate
+## computations by parallel processing.  Note that p-values calculated by the
+## "mvt" are truncated at 1e-06.
 ## @end itemize
 ##
 ## @code{[@dots{}] = multcompare (@var{STATS}, "df", @var{DF})}
@@ -106,29 +110,31 @@
 ## anovan. The value [1 3], for example, computes the estimated marginal mean
 ## for each combination of the first and third predictor values. The default is
 ## to compute over the first dimension (i.e. 1). If the specified dimension is,
-## or includes, a continuous factor then @qcode{multcompare} will return an error.
+## or includes, a continuous factor then @qcode{multcompare} will return an
+## error.
 ## @end itemize
 ##
 ## @code{[@dots{}] = multcompare (@var{STATS}, "estimate", @var{ESTIMATE})}
 ##
 ## @itemize
 ## @item
-## @var{ESTIMATE} is a string specifying the estimates to be compared when 
+## @var{ESTIMATE} is a string specifying the estimates to be compared when
 ## computing multiple comparisons after anova2; this argument is ignored by
 ## anovan and anova1. Accepted values for @var{ESTIMATE} are either "column"
-## (default) to compare column means, or "row" to compare row means. If the model
-## type in anova2 was "linear" or "nested" then only "column" is accepted for
-## @var{ESTIMATE} since the row factor is assumed to be a random effect.
+## (default) to compare column means, or "row" to compare row means. If the
+## model type in anova2 was "linear" or "nested" then only "column" is accepted
+## for @var{ESTIMATE} since the row factor is assumed to be a random effect.
 ## @end itemize
 ##
 ## @code{[@dots{}] = multcompare (@var{STATS}, "display", @var{DISPLAY})}
 ##
 ## @itemize
 ## @item
-## @var{DISPLAY} is either "on" (the default) to display a graph of the comparisons
-## (e.g. difference between means) and their 100*(1-@var{ALPHA})% intervals, or
-## "off" to omit the graph. Markers and error bars colored red have multiplicity
-## adjusted p-values < ALPHA, otherwise the markers and error bars are blue.
+## @var{DISPLAY} is either "on" (the default) to display a graph of the
+## comparisons (e.g. difference between means) and their 100*(1-@var{ALPHA})%
+## intervals, or "off" to omit the graph.  Markers and error bars colored red
+## have multiplicity adjusted p-values < ALPHA, otherwise the markers and error
+## bars are blue.
 ## @end itemize
 ##
 ## [@var{C}, @var{M}, @var{H}, @var{GNAMES}] = multcompare (@dots{}) returns
@@ -137,11 +143,11 @@
 ## bounds of the confidence intervals for the means; the critical value of the
 ## test statistic is scaled by a factor of 2^(-0.5) before multiplying by the
 ## standard errors of the group means so that the intervals overlap when the
-## difference in means becomes significant at approximately the level @var{ALPHA}.
-## When @var{ALPHA} is 0.05, this corresponds to confidence intervals with 83.4%
-## central coverage. @var{H} is a handle to the figure containing the graph.
-## @var{GNAMES} is a cell array with one row for each group, containing the
-## names of the groups.
+## difference in means becomes significant at approximately the level
+## @var{ALPHA}.  When @var{ALPHA} is 0.05, this corresponds to confidence
+## intervals with 83.4% central coverage.  @var{H} is a handle to the figure
+## containing the graph.  @var{GNAMES} is a cell array with one row for each
+## group, containing the names of the groups.
 ##
 ## @seealso{anova1, anova2, anovan}
 ## @end deftypefn
@@ -214,7 +220,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
 
     ## Evaluate DFE input argument
     if (! isempty (DFE))
-      if (! isscalar (DFE)) 
+      if (! isscalar (DFE))
         error ("multcompare: df must be a scalar value.");
       endif
       if (!(DFE > 0) || isinf (DFE))
@@ -234,7 +240,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
          if (isempty (REF))
           ## Pairwise comparisons
           [pairs, L] = pairwise (Ng);
-        else 
+        else
           ## Treatment vs. Control comparisons
           [pairs, L] = trt_vs_ctrl (Ng, REF);
         endif
@@ -246,7 +252,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
 
             ## Calculate estimated marginal means and their standard errors
             gmeans = STATS.means(:);
-            gvar = (STATS.s^2) ./ n;       # Sampling variance 
+            gvar = (STATS.s^2) ./ n;       # Sampling variance
             Ng = numel (gmeans);
             M = zeros (Ng, 4);
             M(:,1:2)  = cat (2, gmeans, sqrt(gvar));
@@ -266,7 +272,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
 
             ## Calculate estimated marginal means and their standard errors
             gmeans = STATS.means(:);
-            gvar = STATS.vars(:) ./ n;     # Sampling variance 
+            gvar = STATS.vars(:) ./ n;     # Sampling variance
             Ng = numel (gmeans);
             M = zeros (Ng, 4);
             M(:,1:2) = cat (2, gmeans, sqrt (gvar));
@@ -305,7 +311,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
             n = STATS.coln;
           case {"row","rows"}
             if (ismember (STATS.model, {"linear","nested"}))
-              error (strcat (["multcompare: no support for the row factor"],... 
+              error (strcat (["multcompare: no support for the row factor"],...
                              [" (random effect) in a 'nested' or 'linear' anova2 model"]));
             endif
             gmeans = STATS.rowmeans(:);
@@ -318,14 +324,14 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
          if (isempty (REF))
           ## Pairwise comparisons
           [pairs, L, R] = pairwise (Ng);
-        else 
+        else
           ## Treatment vs. Control comparisons
           [pairs, L, R] = trt_vs_ctrl (Ng, REF);
         endif
         Np = size (pairs, 1);
 
         ## Calculate estimated marginal means and their standard errors
-        gvar = ((STATS.sigmasq) / n) * ones (Ng, 1);  # Sampling variance 
+        gvar = ((STATS.sigmasq) / n) * ones (Ng, 1);  # Sampling variance
         M = zeros (Ng, 4);
         M(:,1:2) = cat (2, gmeans, sqrt (gvar));
 
@@ -348,11 +354,11 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
 
         ## Our calculations treat all effects as fixed
         if (ismember (STATS.random, DIM))
-          warning (strcat (["multcompare: ignoring random effects"], ... 
+          warning (strcat (["multcompare: ignoring random effects"], ...
                            [" (all effects treated as fixed)"]));
         endif
 
-        ## Check what type of factor is requested in DIM 
+        ## Check what type of factor is requested in DIM
         if (any (STATS.nlevels(DIM) < 2))
           error (strcat (["multcompare: DIM must specify only categorical"], ...
                          [" factors with 2 or more degrees of freedom."]));
@@ -383,7 +389,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         endfor
         gmeans = U * STATS.coeffs(:,1);     # Estimated marginal means
         gcov = U * STATS.vcov * U';
-        gvar = diag (gcov);                 # Sampling variance 
+        gvar = diag (gcov);                 # Sampling variance
         M = zeros (Ng, 4);
         M(:,1:2) = cat (2, gmeans, sqrt(gvar));
 
@@ -405,7 +411,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         if (isempty (REF))
           ## Pairwise comparisons
           [pairs, L] = pairwise (Ng);
-        else 
+        else
           ## Treatment vs. Control comparisons
           [pairs, L] = trt_vs_ctrl (Ng, REF);
         endif
@@ -430,6 +436,37 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         R = vcov ./ (sed * sed');
         R = (R + R') / 2; # This step ensures that the matrix is positive definite
 
+      case "friedman"
+        ## Get stats from structure
+        gmeans = STATS.meanranks
+        Ng = length (gmeans);
+        sigma = STATS.sigma;
+        ## Make group names
+        GNAMES = strjust (num2str ((1:Ng)'), "left");
+        ## Make matrix of requested comparisons (pairs)
+        ## Also return the corresponding hypothesis matrix (L)
+        if (isempty (REF))
+          ## Pairwise comparisons
+          [pairs, L] = pairwise (Ng);
+        else
+          ## Treatment vs. Control comparisons
+          [pairs, L] = trt_vs_ctrl (Ng, REF);
+        endif
+        Np = size (pairs, 1);
+        ## Calculate t value and standard error
+        gcov = ((sigma ^ 2) / STATS.n) * eye (Ng);
+        [t, sed] = tValue (gmeans, gcov, Ng);
+        ## Create matrix with group means and standard errors
+        M = cat (2, gmeans, sqrt (diag (gcov)));
+        ## Calculate correlation matrix
+        vcov = L * gcov * L';
+        R = vcov ./ (sed * sed');
+        R = (R + R') / 2;
+        ## Calculate degrees of freedom from number of groups
+        if (isempty (DFE))
+          DFE = Ng - 1;
+        endif
+
       otherwise
 
         error (strcat (sprintf ("multcompare: the STATS structure from %s", ...
@@ -440,7 +477,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     ## The test specific code above needs to create the following variables in
     ## order to proceed with the remainder of the function tasks
     ## - Ng: number of groups involved in comparisons
-    ## - M: Ng-by-2 matrix of group means (column 1) and standard errors (column 2)
+    ## - M: Ng-by-2 matrix of group means (col 1) and standard errors (col 2)
     ## - Np: number of comparisons (pairs of groups being compaired)
     ## - pairs: Np-by-2 matrix of numeric group IDs - each row is a comparison
     ## - R: correlation matrix for the requested comparisons
@@ -482,12 +519,12 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
       hold on                           # Plot on the same axis
       for j = 1:Np
         if (C(j,6) < ALPHA)
-          ## Plot marker for the difference in means 
+          ## Plot marker for the difference in means
           plot (C(j,4), j,"or","MarkerFaceColor", "r");
           ## Plot line for each confidence interval
-          plot ([C(j,3), C(j,5)], j * ones(2,1), "r-");   
+          plot ([C(j,3), C(j,5)], j * ones(2,1), "r-");
         else
-          ## Plot marker for the difference in means 
+          ## Plot marker for the difference in means
           plot (C(j,4), j,"ob","MarkerFaceColor", "b");
           ## Plot line for each confidence interval
           plot ([C(j,3), C(j,5)], j * ones(2,1), "b-");
@@ -534,7 +571,7 @@ function [pairs, L, R] = trt_vs_ctrl (Ng, REF)
   pairs = zeros (Ng - 1, 2);
   pairs(:, 1) = REF;
   pairs(:, 2) = gid(gid != REF);
-  
+
   ## Calculate correlation matrix (required for CTYPE "mvt")
   Np = size (pairs, 1);
   L = zeros (Np, Ng);
@@ -542,7 +579,7 @@ function [pairs, L, R] = trt_vs_ctrl (Ng, REF)
     L(j, pairs(j,:)) = [1,-1];  # Hypothesis matrix
   endfor
   R = corr (L'); # Correlation matrix
-        
+
 endfunction
 
 
@@ -560,7 +597,7 @@ endfunction
 
 
 function [padj, critval, dfe] = bonferroni (p, t, Ng, dfe, R, ALPHA)
-  
+
   ## Bonferroni procedure
   Np = numel (p);
   padj = min (p * Np, 1.0);
@@ -687,7 +724,7 @@ endfunction
 
 
 function [padj, critval, dfe] = fdr (p, t, Ng, dfe, R, ALPHA)
-  
+
   ## Benjamini-Hochberg procedure to control the false discovery rate (FDR)
   ## This procedure does not control the family-wise error rate
 
@@ -710,7 +747,7 @@ function [padj, critval, dfe] = fdr (p, t, Ng, dfe, R, ALPHA)
   ## Reorder the adjusted p-values to match the order of the original p-values
   [jnk, original_order] = sort (idx, "ascend");
   padj = padj(original_order);
-  
+
   ## Truncate adjusted p-values to 1.0
   padj(padj>1) = 1;
 
@@ -722,7 +759,7 @@ endfunction
 
 
 function [padj, critval, dfe] = lsd (p, t, Ng, dfe, R, ALPHA)
-  
+
   ## Fisher's Least Significant Difference
   ## No control of the type I error rate across multiple comparisons
   padj = p;
@@ -735,8 +772,8 @@ endfunction
 
 
 %!demo
-%! 
-%! # Demonstration using unbalanced one-way ANOVA example from anovan
+%!
+%! ## Demonstration using unbalanced one-way ANOVA example from anovan
 %!
 %! dv =  [ 8.706 10.362 11.552  6.941 10.983 10.092  6.421 14.943 15.931 ...
 %!        22.968 18.590 16.567 15.944 21.637 14.492 17.965 18.851 22.891 ...
@@ -753,8 +790,8 @@ endfunction
 %!
 
 %!demo
-%! 
-%! # Demonstration using factorial ANCOVA example from anovan
+%!
+%! ## Demonstration using factorial ANCOVA example from anovan
 %!
 %! score = [95.6 82.2 97.2 96.4 81.4 83.6 89.4 83.8 83.3 85.7 ...
 %! 97.2 78.2 78.9 91.8 86.9 84.1 88.6 89.8 87.3 85.4 ...
@@ -789,8 +826,8 @@ endfunction
 
 %!demo
 %!
-%! # Demonstration using one-way ANOVA from anovan, with fit by weighted least
-%! # squares to account for heteroskedasticity.
+%! ## Demonstration using one-way ANOVA from anovan, with fit by weighted least
+%! ## squares to account for heteroskedasticity.
 %!
 %! g = [1, 1, 1, 1, 1, 1, 1, 1, ...
 %!      2, 2, 2, 2, 2, 2, 2, 2, ...
@@ -808,10 +845,10 @@ endfunction
 %! [C, M] =  multcompare (STATS, "display", "on", "ctype", "mvt")
 
 %!test
-%! 
-%! # Tests using unbalanced one-way ANOVA example from anovan and anova1
 %!
-%! # Test for anovan - compare pairwise comparisons with matlab for CTYPE "lsd"
+%! ## Tests using unbalanced one-way ANOVA example from anovan and anova1
+%!
+%! ## Test for anovan - compare pairwise comparisons with matlab for CTYPE "lsd"
 %!
 %! dv =  [ 8.706 10.362 11.552  6.941 10.983 10.092  6.421 14.943 15.931 ...
 %!        22.968 18.590 16.567 15.944 21.637 14.492 17.965 18.851 22.891 ...
@@ -821,9 +858,9 @@ endfunction
 %! g = [1 1 1 1 1 1 1 1 2 2 2 2 2 3 3 3 3 3 3 3 3 ...
 %!      4 4 4 4 4 4 4 5 5 5 5 5 5 5 5 5]';
 %!
-%! [P, ATAB, STATS] = anovan (dv, g, 'varnames', 'score', 'display', 'off');
-%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'lsd', ...
-%!                                  'display', 'off');
+%! [P, ATAB, STATS] = anovan (dv, g, "varnames", "score", "display", "off");
+%! [C, M, H, GNAMES] = multcompare (STATS, "dim", 1, "ctype", "lsd", ...
+%!                                  "display", "off");
 %! assert (C(1,6), 2.85812420217898e-05, 1e-09);
 %! assert (C(2,6), 5.22936741204085e-07, 1e-09);
 %! assert (C(3,6), 2.12794763209146e-08, 1e-09);
@@ -845,10 +882,10 @@ endfunction
 %! assert (M(4,2), 1.0880245732889, 1e-09);
 %! assert (M(5,2), 0.959547480416536, 1e-09);
 %!
-%! # Compare "fdr" adjusted p-values to those obtained using p.adjust in R
+%! ## Compare "fdr" adjusted p-values to those obtained using p.adjust in R
 %!
-%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'fdr', ...
-%!                                  'display', 'off');
+%! [C, M, H, GNAMES] = multcompare (STATS, "dim", 1, "ctype", "fdr", ...
+%!                                  "display", "off");
 %! assert (C(1,6), 4.08303457454140e-05, 1e-09);
 %! assert (C(2,6), 1.04587348240817e-06, 1e-09);
 %! assert (C(3,6), 1.06397381604573e-07, 1e-09);
@@ -860,10 +897,10 @@ endfunction
 %! assert (C(9,6), 1.36324670121399e-07, 1e-09);
 %! assert (C(10,6), 7.40712246958735e-06, 1e-09);
 %!
-%! # Compare "hochberg" adjusted p-values to those obtained using p.adjust in R
+%! ## Compare "hochberg" adjusted p-values to those obtained using p.adjust in R
 %!
-%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'hochberg', ...
-%!                                  'display', 'off');
+%! [C, M, H, GNAMES] = multcompare (STATS, "dim", 1, "ctype", "hochberg", ...
+%!                                  "display", "off");
 %! assert (C(1,6), 1.14324968087159e-04, 1e-09);
 %! assert (C(2,6), 3.13762044722451e-06, 1e-09);
 %! assert (C(3,6), 1.91515286888231e-07, 1e-09);
@@ -875,10 +912,10 @@ endfunction
 %! assert (C(9,6), 3.27179208291358e-07, 1e-09);
 %! assert (C(10,6), 2.22213674087620e-05, 1e-09);
 %!
-%! # Compare "holm" adjusted p-values to those obtained using p.adjust in R
+%! ## Compare "holm" adjusted p-values to those obtained using p.adjust in R
 %!
-%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'holm', ...
-%!                                  'display', 'off');
+%! [C, M, H, GNAMES] = multcompare (STATS, "dim", 1, "ctype", "holm", ...
+%!                                  "display", "off");
 %! assert (C(1,6), 1.14324968087159e-04, 1e-09);
 %! assert (C(2,6), 3.13762044722451e-06, 1e-09);
 %! assert (C(3,6), 1.91515286888231e-07, 1e-09);
@@ -890,10 +927,10 @@ endfunction
 %! assert (C(9,6), 3.27179208291358e-07, 1e-09);
 %! assert (C(10,6), 2.22213674087620e-05, 1e-09);
 %!
-%! # Compare "scheffe" adjusted p-values to those obtained using 'scheffe' in Matlab
+%! ## Compare "scheffe" adjusted p-values to those obtained using 'scheffe' in Matlab
 %!
-%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'scheffe', ...
-%!                                  'display', 'off');
+%! [C, M, H, GNAMES] = multcompare (STATS, "dim", 1, "ctype", "scheffe", ...
+%!                                  "display", "off");
 %! assert (C(1,6), 0.00108105386141085, 1e-09);
 %! assert (C(2,6), 2.7779386789517e-05, 1e-09);
 %! assert (C(3,6), 1.3599854038198e-06, 1e-09);
@@ -905,10 +942,10 @@ endfunction
 %! assert (C(9,6), 2.52838425729905e-06, 1e-09);
 %! assert (C(10,6), 0.000200719143889168, 1e-09);
 %!
-%! # Compare "bonferroni" adjusted p-values to those obtained using p.adjust in R
+%! ## Compare "bonferroni" adjusted p-values to those obtained using p.adjust in R
 %!
-%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'bonferroni', ...
-%!                                  'display', 'off');
+%! [C, M, H, GNAMES] = multcompare (STATS, "dim", 1, "ctype", "bonferroni", ...
+%!                                  "display", "off");
 %! assert (C(1,6), 2.85812420217898e-04, 1e-09);
 %! assert (C(2,6), 5.22936741204085e-06, 1e-09);
 %! assert (C(3,6), 2.12794763209146e-07, 1e-09);
@@ -920,10 +957,10 @@ endfunction
 %! assert (C(9,6), 4.08974010364197e-07, 1e-09);
 %! assert (C(10,6), 4.44427348175241e-05, 1e-09);
 %!
-%! # Test for anova1 ("equal")- comparison of results from Matlab
+%! ## Test for anova1 ("equal")- comparison of results from Matlab
 %!
-%! [P, ATAB, STATS] = anova1 (dv, g, 'off', 'equal');
-%! [C, M, H, GNAMES] = multcompare (STATS, 'ctype', 'lsd', 'display', 'off');
+%! [P, ATAB, STATS] = anova1 (dv, g, "off", "equal");
+%! [C, M, H, GNAMES] = multcompare (STATS, "ctype", "lsd", "display", "off");
 %! assert (C(1,6), 2.85812420217898e-05, 1e-09);
 %! assert (C(2,6), 5.22936741204085e-07, 1e-09);
 %! assert (C(3,6), 2.12794763209146e-08, 1e-09);
@@ -945,9 +982,9 @@ endfunction
 %! assert (M(4,2), 1.0880245732889, 1e-09);
 %! assert (M(5,2), 0.959547480416536, 1e-09);
 %!
-%! # Test for anova1 ("unequal") - comparison with results from GraphPad Prism 8
-%! [P, ATAB, STATS] = anova1 (dv, g, 'off', 'unequal');
-%! [C, M, H, GNAMES] = multcompare (STATS, 'ctype', 'lsd', 'display', 'off');
+%! ## Test for anova1 ("unequal") - comparison with results from GraphPad Prism 8
+%! [P, ATAB, STATS] = anova1 (dv, g, "off", "unequal");
+%! [C, M, H, GNAMES] = multcompare (STATS, "ctype", "lsd", "display", "off");
 %! assert (C(1,6), 0.001247025266382, 1e-09);
 %! assert (C(2,6), 0.000018037115146, 1e-09);
 %! assert (C(3,6), 0.000002974595187, 1e-09);
@@ -961,12 +998,12 @@ endfunction
 
 %!test
 %!
-%! # Test for anova2 ("interaction") - comparison with results from Matlab for column effect
+%! ## Test for anova2 ("interaction") - comparison with results from Matlab for column effect
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
-%! [P, ATAB, STATS] = anova2 (popcorn, 3, 'off');
-%! [C, M, H, GNAMES] = multcompare (STATS, 'estimate', 'column',...
-%!                                  'ctype', 'lsd', 'display', 'off');
+%! [P, ATAB, STATS] = anova2 (popcorn, 3, "off");
+%! [C, M, H, GNAMES] = multcompare (STATS, "estimate", "column",...
+%!                                  "ctype", "lsd", "display", "off");
 %! assert (C(1,6), 1.49311100811177e-05, 1e-09);
 %! assert (C(2,6), 2.20506904243535e-07, 1e-09);
 %! assert (C(3,6), 0.00449897860490058, 1e-09);
@@ -977,28 +1014,28 @@ endfunction
 %! assert (M(2,2), 0.152145154862547, 1e-09);
 %! assert (M(3,2), 0.152145154862547, 1e-09);
 
-%!test 
+%!test
 %!
-%! # Test for anova2 ("linear") - comparison with results from GraphPad Prism 8
+%! ## Test for anova2 ("linear") - comparison with results from GraphPad Prism 8
 %! words = [10 13 13; 6 8 8; 11 14 14; 22 23 25; 16 18 20; ...
 %!          15 17 17; 1 1 4; 12 15 17;  9 12 12;  8 9 12];
 %! [P, ATAB, STATS] = anova2 (words, 1, "off", "linear");
-%! [C, M, H, GNAMES] = multcompare (STATS, 'estimate', 'column',...
-%!                                  'ctype', 'lsd', 'display', 'off');
+%! [C, M, H, GNAMES] = multcompare (STATS, "estimate", "column",...
+%!                                  "ctype", "lsd", "display", "off");
 %! assert (C(1,6), 0.000020799832702, 1e-09);
 %! assert (C(2,6), 0.000000035812410, 1e-09);
 %! assert (C(3,6), 0.003038942449215, 1e-09);
 
-%!test 
+%!test
 %!
-%! # Test for anova2 ("nested") - comparison with results from GraphPad Prism 8
+%! ## Test for anova2 ("nested") - comparison with results from GraphPad Prism 8
 %! data = [4.5924 7.3809 21.322; -0.5488 9.2085 25.0426; ...
 %!         6.1605 13.1147 22.66; 2.3374 15.2654 24.1283; ...
 %!         5.1873 12.4188 16.5927; 3.3579 14.3951 10.2129; ...
 %!         6.3092 8.5986 9.8934; 3.2831 3.4945 10.0203];
 %! [P, ATAB, STATS] = anova2 (data, 4, "off", "nested");
-%! [C, M, H, GNAMES] = multcompare (STATS, 'estimate', 'column',...
-%!                                  'ctype', 'lsd', 'display', 'off');
+%! [C, M, H, GNAMES] = multcompare (STATS, "estimate", "column",...
+%!                                  "ctype", "lsd", "display", "off");
 %! assert (C(1,6), 0.261031111511073, 1e-09);
 %! assert (C(2,6), 0.065879755907745, 1e-09);
 %! assert (C(3,6), 0.241874613529270, 1e-09);
