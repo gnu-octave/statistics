@@ -112,13 +112,13 @@ endfunction
 
 ## Test input validation
 %!error qqplot ()
-%!error <X must be a numeric> qqplot ({1})
-%!error <X must be a .* vector> qqplot (ones (2,2))
+%!error <qqplot: X must be a numeric vector> qqplot ({1})
+%!error <qqplot: X must be a numeric vector> qqplot (ones (2,2))
 %!error <no inverse CDF found> qqplot (1, "foobar")
 ## Test plotting
 %!shared visibility_setting
 %! visibility_setting = get (0, "DefaultFigureVisible");
-%! set (0, "DefaultFigureVisible", "off");
 %!test
+%! set (0, "DefaultFigureVisible", "off");
 %! qqplot ([2 3 3 4 4 5 6 5 6 7 8 9 8 7 8 9 0 8 7 6 5 4 6 13 8 15 9 9]);
 %! set (0, "DefaultFigureVisible", visibility_setting);

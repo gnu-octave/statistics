@@ -86,11 +86,11 @@ endfunction
 ## Test input validation
 %!error ppplot ()
 %!error ppplot (ones (2,2))
-%!error <DIST must be a string> ppplot (1, 2)
+%!error ppplot (1, 2)
 ## Test plotting
 %!shared visibility_setting
 %! visibility_setting = get (0, "DefaultFigureVisible");
-%! set (0, "DefaultFigureVisible", "off");
 %!test
+%! set (0, "DefaultFigureVisible", "off");
 %! ppplot ([2 3 3 4 4 5 6 5 6 7 8 9 8 7 8 9 0 8 7 6 5 4 6 13 8 15 9 9]);
 %! set (0, "DefaultFigureVisible", visibility_setting);
