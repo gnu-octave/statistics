@@ -1,4 +1,7 @@
 ## Copyright (C) 1995-2017 Kurt Hornik
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -45,17 +48,14 @@
 ## @seealso{qqplot}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Perform a PP-plot (probability plot)
-
 function [p, y] = ppplot (x, dist, varargin)
 
   if (nargin < 1)
     print_usage ();
   endif
 
-  if (! isvector (x))
-    error ("ppplot: X must be a vector");
+  if (! isnumeric (x) || ! isreal (x) || ! isvector (x) || isscalar (x))
+    error ("ppplot: X must be a numeric vector of real numbers");
   endif
 
   s = sort (x);
@@ -87,3 +87,10 @@ endfunction
 %!error ppplot ()
 %!error ppplot (ones (2,2))
 %!error <DIST must be a string> ppplot (1, 2)
+## Test plotting
+%!shared visibility_setting
+%! visibility_setting = get (0, "DefaultFigureVisible");
+%! set (0, "DefaultFigureVisible", "off");
+%!test
+%! ppplot ([2 3 3 4 4 5 6 5 6 7 8 9 8 7 8 9 0 8 7 6 5 4 6 13 8 15 9 9]);
+%! set (0, "DefaultFigureVisible", visibility_setting);
