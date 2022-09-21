@@ -38,7 +38,8 @@
 ## @var{GROUP} has the same number of rows as @var{Y}. For example, if @var{Y}
 ## = [1.1;1.2]; @var{GROUP} = [1,2,1; 1,5,2]; then observation 1.1 was measured
 ## under conditions 1,2,1 and observation 1.2 was measured under conditions
-## 1,5,2.
+## 1,5,2. If the @var{GROUP} provided is empty, then the linear model is fit
+## with just the intercept (no predictors).
 ##
 ## @qcode{anovan} can take a number of optional parameters as name-value pairs.
 ##
@@ -323,8 +324,10 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         endfor
       endif
     endif
-    if (size (GROUP,1) != n)
-      error ("anovan: GROUP must be a matrix with the same number of rows as Y");
+    if (! isempty (GROUP))
+      if (size (GROUP,1) != n)
+        error ("anovan: GROUP must be a matrix with the same number of rows as Y");
+      endif
     endif
     if (! isempty (VARNAMES))
       if (iscell (VARNAMES))
@@ -681,7 +684,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         fprintf("\nMODEL FORMULA (in equivalent Wilkinson-Rogers-Pinheiro-Bates notation):\n\n%s\n", formula);
 
         ## If applicable, print parameter estimates (a.k.a contrasts) for fixed effects
-        if (planned)
+        if (planned && ! isempty(GROUP))
           ## Parameter estimates correspond to the contrasts we set. To avoid
           ## p-hacking, don't print contrasts if we don't specify them to start with
           fprintf("\nMODEL PARAMETERS (contrasts for the fixed effects)\n\n");
