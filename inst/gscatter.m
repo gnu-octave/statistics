@@ -1,4 +1,7 @@
 ## Copyright (C) 2021 Stefano Guidoni <ilguido@users.sf.net>
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -25,27 +28,27 @@
 ##
 ## @code{gscatter} is a utility function to draw a scatter plot of @var{x} and
 ## @var{y}, according to the groups defined by @var{g}.  Input @var{x} and
-## @var{y} are numeric vectors of the same size, while @var{g} is either a 
+## @var{y} are numeric vectors of the same size, while @var{g} is either a
 ## vector of the same size as @var{x} or a character matrix with the same number
-## of rows as the size of @var{x}.  As a vector @var{g} can be numeric, logical, 
-## a character array, a string array (not implemented), a cell string or cell 
+## of rows as the size of @var{x}.  As a vector @var{g} can be numeric, logical,
+## a character array, a string array (not implemented), a cell string or cell
 ## array.
 ##
 ## A number of optional inputs change the appearance of the plot:
 ## @itemize @bullet
 ## @item @var{"clr"}
-## defines the color for each group; if not enough colors are defined by 
+## defines the color for each group; if not enough colors are defined by
 ## @var{"clr"}, @code{gscatter} cycles through the specified colors.  Colors can
 ## be defined as named colors, as rgb triplets or as indices for the current
 ## @code{colormap}.  The default value is a different color for each group,
 ## according to the current @code{colormap}.
 ##
 ## @item @var{"sym"}
-## is a char array of symbols for each group; if not enough symbols are defined 
+## is a char array of symbols for each group; if not enough symbols are defined
 ## by @var{"sym"}, @code{gscatter} cycles through the specified symbols.
 ##
 ## @item @var{"siz"}
-## is a numeric array of sizes for each group; if not enough sizes are defined 
+## is a numeric array of sizes for each group; if not enough sizes are defined
 ## by @var{"siz"}, @code{gscatter} cycles through the specified sizes.
 ##
 ## @item @var{"doleg"}
@@ -59,7 +62,7 @@
 ## is a character array, the name for the y axis.
 ## @end itemize
 ##
-## Output @var{h} is an array of graphics handles to the @code{line} object of 
+## Output @var{h} is an array of graphics handles to the @code{line} object of
 ## each group.
 ##
 ## @end deftypefn
@@ -74,16 +77,16 @@ function h = gscatter (varargin)
     varargin = varargin(2:end);
     nargin--;
   endif
-  
+
   ## check the input parameters
   if (nargin < 3)
     print_usage ();
   endif
-  
+
   ##
   ## necessary parameters
   ##
-  
+
   ## x coordinates
   if (isvector (varargin{1}) &&
       isnumeric (varargin{1}))
@@ -104,7 +107,7 @@ function h = gscatter (varargin)
   else
     error ("gscatter: y must be a numeric vector");
   endif
-  
+
   ## groups
   if (isrow (varargin{3}))
     varargin{3} = transpose (varargin{3});
@@ -135,17 +138,17 @@ function h = gscatter (varargin)
     error (["gscatter: g must be a numeric or logical or char vector, "...
       "or a cell or cellstr array, or a char matrix"]);
   endif
-  
+
   ##
   ## optional parameters
   ##
-  
+
   ## Note: this parameters are passed as they are to 'line',
   ##       the validity check is delegated to 'line'
   g_col = lines (g_len);
   g_size = 6 * ones (g_len, 1);
   g_sym = repmat ('o', 1, g_len);
-  
+
   ## optional parameters for legend and axes labels
   do_legend = 1; # legend shown by default
   ## MATLAB compatibility: by default MATLAB uses the variable name as
@@ -153,7 +156,7 @@ function h = gscatter (varargin)
   mygetname = @(x) inputname(1); # to retrieve the name of a variable
   x_nam = mygetname (varargin{1}); # this should retrieve the name of the var,
   y_nam = mygetname (varargin{2}); # but it does not work
-  
+
   ## parameters are all in fixed positions
   for i = 4 : nargin
     switch (i)
@@ -164,19 +167,19 @@ function h = gscatter (varargin)
           c_list = transpose (c_list);
         endif
         c_list_len = rows (c_list);
-        
+
         g_col = repmat (c_list, ceil (g_len / c_list_len));
       case {5, 6}
         ## size and symbols
         s_list = varargin{i};
         s_list_len = length (s_list);
-        
+
         g_tmp = repmat (s_list, ceil (g_len / s_list_len));
         if (i == 6)
           g_size = g_tmp;
         else
           g_sym = g_tmp;
-        endif 
+        endif
       case 7
         ## legend
         switch (lower (varargin{7}))
@@ -205,10 +208,10 @@ function h = gscatter (varargin)
   if (! exist ("hax", "var"))
     hax = gca ();
   endif
-  
+
   ## return value
   h = [];
-  
+
   hold on;
   for i = 1 : g_len
     idcs = find (g == i);
@@ -227,6 +230,14 @@ function h = gscatter (varargin)
   hold off;
 endfunction
 
+## demonstration
+%!demo
+%! load fisheriris;
+%! X = meas(:,3:4);
+%! cidcs = kmeans (X, 3, "Replicates", 5);
+%! gscatter (X(:,1), X(:,2), cidcs, [.75 .75 0; 0 .75 .75; .75 0 .75], "os^");
+%! title ("Fisher's iris data");
+
 ## input tests
 %!error gscatter();
 %!error gscatter([1]);
@@ -236,12 +247,14 @@ endfunction
 %!error <y must be a numeric vector> gscatter([1 2 3], 'abc', [1]);
 %!error <g must have the same size as x and y> gscatter([1 2], [1 2], [1]);
 %!error <invalid dolegend> gscatter([1 2], [1 2], [1 2], 'rb', 'so', 12, 'xxx');
-
-## demonstration
-%!demo
+## testing demonstration
+%!shared visibility_setting
+%! visibility_setting = get (0, "DefaultFigureVisible");
+%! set (0, "DefaultFigureVisible", "off");
+%!test
 %! load fisheriris;
 %! X = meas(:,3:4);
 %! cidcs = kmeans (X, 3, "Replicates", 5);
 %! gscatter (X(:,1), X(:,2), cidcs, [.75 .75 0; 0 .75 .75; .75 0 .75], "os^");
 %! title ("Fisher's iris data");
-
+%! set (0, "DefaultFigureVisible", visibility_setting);
