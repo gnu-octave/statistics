@@ -49,8 +49,8 @@
 ## @item
 ## @var{continuous} is a vector of indices indicating which of the columns (i.e.
 ## factors) in @var{GROUP} should be treated as continuous predictors rather
-## than as categorical predictors. The relationship between continuous predictors
-## and the outcome should be linear.
+## than as categorical predictors. The relationship between continuous
+## predictors and the outcome should be linear.
 ## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "random", @var{random})}
@@ -58,14 +58,15 @@
 ## @itemize
 ## @item
 ## @var{random} is a vector of indices indicating which of the columns (i.e.
-## factors) in @var{GROUP} should be treated as random effects rather than fixed
-## effects. Octave @qcode{anovan} provides only basic support for random effects.
-## Specifically, since all F-statistics in @qcode{anovan} are calculated using
-## the mean-squared error (MSE), any interaction terms containing a random effect
-## are dropped from the model term definitions and their associated variance
-## is pooled with the residual, unexplained variance making up the MSE. In effect,
-## the model then fitted equates to a linear mixed model with random intercept(s).
-## Variable names for random factors are appended with a ' symbol.
+## factors) in @var{GROUP} should be treated as random effects rather than
+## fixed effects. Octave @qcode{anovan} provides only basic support for random
+## effects. Specifically, since all F-statistics in @qcode{anovan} are
+## calculated using the mean-squared error (MSE), any interaction terms
+## containing a random effect are dropped from the model term definitions and
+## their associated variance is pooled with the residual, unexplained variance
+## making up the MSE. In effect, the model then fitted equates to a linear mixed
+## model with random intercept(s). Variable names for random factors are
+## appended with a ' symbol.
 ## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "model", @var{modeltype})}
@@ -182,12 +183,12 @@
 ##
 ## If the anovan model contains more than one factor and a built-in contrast
 ## coding scheme was specified, then those contrasts are applied to all factors.
-## To specify different contrasts for different factors in the model, @var{contrasts}
-## should be a cell array with the same number of cells as there are columns in 
-## @var{GROUP}. Each cell should define contrasts for the respective column in
-## @var{GROUP} by one of the methods described above. If cells are left empty,
-## then the default contrasts are applied. Contrasts for cells corresponding to
-## continuous factors are ignored.
+## To specify different contrasts for different factors in the model, 
+## @var{contrasts} should be a cell array with the same number of cells as there
+## are columns in @var{GROUP}. Each cell should define contrasts for the
+## respective column in @var{GROUP} by one of the methods described above. If
+## cells are left empty, then the default contrasts are applied. Contrasts for
+## cells corresponding to continuous factors are ignored.
 ## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "weights", @var{weights})}
@@ -209,15 +210,17 @@
 ##
 ## [@var{p}, @var{atab}, @var{stats}] = anovan (@dots{}) returns a structure
 ## containing additional statistics, including degrees of freedom and effect
-## sizes for each term in the linear model, the design matrix, the variance-covariance
-## matrix, model residuals, and the mean squared error. The columns of @var{stats}.coeffs
-## (from left-to-right) report the model coefficients, standard errors, lower and
-## upper 100*(1-alpha)% confidence interval bounds, t-statistics, and p-values
-## relating to the contrasts. The number appended to each term name in @var{stats}.coeffnames
-## corresponds to the column number in the relevant contrast matrix for that factor.
+## sizes for each term in the linear model, the design matrix, the
+## variance-covariance matrix, (weighted) model residuals, and the mean squared
+## error. The columns of @var{stats}.coeffs (from left-to-right) report the
+## model coefficients, standard errors, lower and upper 100*(1-alpha)%
+## confidence interval bounds, t-statistics, and p-values relating to the
+## contrasts. The number appended to each term name in @var{stats}.coeffnames
+## corresponds to the column number in the relevant contrast matrix for that
+## factor.
 ##
-## [@var{p}, @var{atab}, @var{stats}, @var{terms}] = anovan (@dots{}) returns the
-## model term definitions.
+## [@var{p}, @var{atab}, @var{stats}, @var{terms}] = anovan (@dots{}) returns
+## the model term definitions.
 ##
 ## @seealso{anova1, anova2, multcompare}
 ## @end deftypefn
@@ -637,7 +640,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
     ## Create STATS structure for MULTCOMPARE
     STATS = struct ("source","anovan", ...
-                    "resid", resid, ...
+                    "resid", resid, ...      # These are weighted (not raw) residuals
                     "coeffs", coeff_stats, ...
                     "Rtr", [], ...           # Not used by Octave
                     "rowbasis", [], ...      # Not used by Octave
