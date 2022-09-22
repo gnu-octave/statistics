@@ -27,7 +27,7 @@
 ##
 ## @code{@var{C} = multcompare (@var{STATS})} performs a multiple comparison
 ## using a @var{STATS} structure that is obtained as output from any of
-## the following functions:  anova1, anova2 and anovan.
+## the following functions:  anova1, anova2, anovan, kruskalwallis and friedman.
 ## The return value @var{C} is a matrix with one row per comparison and six
 ## columns. Columns 1-2 are the indices of the two samples being compared.
 ## Columns 3-5 are a lower bound, estimate, and upper bound for their
@@ -149,7 +149,7 @@
 ## containing the graph.  @var{GNAMES} is a cell array with one row for each
 ## group, containing the names of the groups.
 ##
-## @seealso{anova1, anova2, anovan}
+## @seealso{anova1, anova2, anovan, kruskalwallis, friedman}
 ## @end deftypefn
 
 function [C, M, H, GNAMES] = multcompare (STATS, varargin)
@@ -253,6 +253,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
             ## Calculate estimated marginal means and their standard errors
             gmeans = STATS.means(:);
             gvar = (STATS.s^2) ./ n;       # Sampling variance
+            gcov = diag (gvar);
             Ng = numel (gmeans);
             M = zeros (Ng, 4);
             M(:,1:2)  = cat (2, gmeans, sqrt(gvar));
@@ -273,6 +274,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
             ## Calculate estimated marginal means and their standard errors
             gmeans = STATS.means(:);
             gvar = STATS.vars(:) ./ n;     # Sampling variance
+            gcov = diag (gvar);
             Ng = numel (gmeans);
             M = zeros (Ng, 4);
             M(:,1:2) = cat (2, gmeans, sqrt (gvar));
@@ -285,18 +287,12 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
 
         endswitch
 
-        ## Calculate vector t statistics corresponding to the comparisons. In
-        ## balanced ANOVA designs, for the calculation of the t statistics, the
-        ## mean and standard error of the difference can be calculated simply by:
-        mean_diff = M(pairs(:,1)) - M(pairs(:,2));
-        sed = sqrt (M(pairs(:,1),2).^2 + (M(pairs(:,2),2).^2));
-        t = mean_diff ./ sed;
+        ## Calculate t statistics corresponding to the comparisons defined in L
+        [mean_diff, sed, t] = tValue (gmeans, gcov, L);
 
         ## Calculate correlation matrix
-        gcov = diag (gvar);
         vcov = L * gcov * L';
-        R = vcov ./ (sed * sed');
-        R = (R + R') / 2;
+        R = cov2corr (vcov);
 
         ## Create cell array of group names corresponding to each row of m
         GNAMES = STATS.gnames;
@@ -332,6 +328,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
 
         ## Calculate estimated marginal means and their standard errors
         gvar = ((STATS.sigmasq) / n) * ones (Ng, 1);  # Sampling variance
+        gcov = diag (gvar);
         M = zeros (Ng, 4);
         M(:,1:2) = cat (2, gmeans, sqrt (gvar));
 
@@ -340,12 +337,8 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
           DFE = STATS.df;
         endif
 
-        ## Calculate vector t statistics corresponding to the comparisons. In
-        ## balanced ANOVA designs, for the calculation of the t statistics, the
-        ## mean and standard error of the difference can be calculated simply by:
-        mean_diff = M(pairs(:,1)) - M(pairs(:,2));
-        sed = sqrt (M(pairs(:,1),2).^2 + (M(pairs(:,2),2).^2));
-        t = mean_diff ./ sed;
+        ## Calculate t statistics corresponding to the comparisons defined in L
+        [mean_diff, sed, t] = tValue (gmeans, gcov, L);
 
         ## Create character array of group names corresponding to each row of m
         GNAMES = cellstr (num2str ([1:Ng]'));
@@ -417,32 +410,23 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         endif
         Np = size (pairs, 1);
 
-        ## Calculate vector t statistics corresponding to the comparisons. In
-        ## balanced ANOVA designs, for the calculation of the t statistics, the
-        ## mean and standard error of the difference can be calculated simply by:
-        ##      mean_diff = M(pairs(:,1)) - M(pairs(:,2))
-        ##      sed = sqrt (M(pairs(:,1),2).^2 + (M(pairs(:,2),2).^2))
-        ##      t = mean_diff ./ sed
-        ## The above can be done for anova1 and anova2 STATS output. However, to
-        ## generalise the calculations for unbalanced N-way ANOVA we need to take
-        ## into account correlations, so we use the covariance matrix of the
-        ## estimated marginal means instead.
-        mean_diff = sum (L * diag (M(:, 1)), 2);
-        sed = sqrt (diag (L * gcov * L'));
-        t =  mean_diff ./ sed;
+        ## Calculate t statistics corresponding to the comparisons defined in L
+        [mean_diff, sed, t] = tValue (gmeans, gcov, L);
 
         ## Calculate correlation matrix.
         vcov = L * gcov * L';
-        R = vcov ./ (sed * sed');
-        R = (R + R') / 2; # This step ensures that the matrix is positive definite
+        R = cov2corr (vcov);
 
       case "friedman"
+
         ## Get stats from structure
-        gmeans = STATS.meanranks
+        gmeans = STATS.meanranks(:);
         Ng = length (gmeans);
         sigma = STATS.sigma;
+
         ## Make group names
         GNAMES = strjust (num2str ((1:Ng)'), "left");
+
         ## Make matrix of requested comparisons (pairs)
         ## Also return the corresponding hypothesis matrix (L)
         if (isempty (REF))
@@ -453,27 +437,34 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
           [pairs, L] = trt_vs_ctrl (Ng, REF);
         endif
         Np = size (pairs, 1);
-        ## Calculate t value and standard error
+
+        ## Calculate covariance matrix
         gcov = ((sigma ^ 2) / STATS.n) * eye (Ng);
-        [t, sed] = tValue (gmeans, gcov, Ng);
+
         ## Create matrix with group means and standard errors
         M = cat (2, gmeans, sqrt (diag (gcov)));
+
+        ## Calculate t statistics corresponding to the comparisons defined in L
+        [mean_diff, sed, t] = tValue (gmeans, gcov, L); # z-statistic (not t)
+
         ## Calculate correlation matrix
         vcov = L * gcov * L';
-        R = vcov ./ (sed * sed');
-        R = (R + R') / 2;
+        R = cov2corr (vcov);
+
         ## Calculate degrees of freedom from number of groups
         if (isempty (DFE))
-          DFE = Ng - 1;
+          DFE = inf;  # this is a z-statistic so infinite degrees of freedom
         endif
 
       case "kruskalwallis"
+
         ## Get stats from structure
-        gmeans = STATS.meanranks
+        gmeans = STATS.meanranks(:);
         sumt = STATS.sumt;
         Ng = length (gmeans);
         n = STATS.n(:);
         N = sum (n);
+
         ## Make group names
         GNAMES = STATS.gnames;
         ## Make matrix of requested comparisons (pairs)
@@ -486,18 +477,23 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
           [pairs, L] = trt_vs_ctrl (Ng, REF);
         endif
         Np = size (pairs, 1);
-        ## Calculate t value and standard error
+
+        ## Calculate covariance matrix
         gcov = diag (((N * (N + 1) / 12) - (sumt / (12 * (N - 1)))) ./ n);
-        [t, sed] = tValue (gmeans, gcov, Ng);
+
         ## Create matrix with group means and standard errors
         M = cat (2, gmeans, sqrt (diag (gcov)));
+
+        ## Calculate t statistics corresponding to the comparisons defined in L
+        [mean_diff, sed, t] = tValue (gmeans, gcov, L); # z-statistic (not t)
+
         ## Calculate correlation matrix
         vcov = L * gcov * L';
-        R = vcov ./ (sed * sed');
-        R = (R + R') / 2;
+        R = cov2corr (vcov);
+
         ## Calculate degrees of freedom from number of groups
         if (isempty (DFE))
-          DFE = Ng - 1;
+          DFE = inf;  # this is a z-statistic so infinite degrees of freedom
         endif
 
       otherwise
@@ -526,7 +522,11 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     C(:,4) = (M(pairs(:, 1),1) - M(pairs(:, 2),1));
     C(:,7) = t;     # Unlike Matlab, we include the t statistic
     C(:,8) = DFE;   # Unlike Matlab, we include the degrees of freedom
-    p = 2 * (1 - tcdf (abs (t), DFE));
+    if (isinf (DFE))
+      p = 2 * (1 - normcdf (abs (t)));
+    else
+      p = 2 * (1 - tcdf (abs (t), DFE));
+    endif
     [C(:,6), critval, C(:,8)] = feval (CTYPE, p, t, Ng, DFE, R, ALPHA);
     C(:,3) = C(:,4) - sed .* critval;
     C(:,5) = C(:,4) + sed .* critval;
@@ -615,16 +615,44 @@ function [pairs, L, R] = trt_vs_ctrl (Ng, REF)
 
 endfunction
 
+function [mn, se, t] = tValue (gmeans, gcov, L)
+
+  ## Calculate means, standard errors and t (or z) statistics
+  ## corresponding to the comparisons defined in L.
+  mn = sum (L * diag (gmeans), 2);
+  se = sqrt (diag (L * gcov * L'));
+  t =  mn ./ se;
+
+endfunction
+
+function R = cov2corr (vcov)
+
+   ## Convert covariance matrix to correlation matrix
+   sed = sqrt (diag (vcov));
+   R = vcov ./ (sed * sed');
+   R = (R + R') / 2; # This step ensures that the matrix is positive definite
+
+endfunction
+
 
 ## Methods to control family-wise error rate in multiple comparisons
 
 function [padj, critval, dfe] = scheffe (p, t, Ng, dfe, R, ALPHA)
 
   ## Calculate the p-value
-  padj = 1 - fcdf ((t.^2) / (Ng - 1), Ng - 1, dfe);
+  if (isinf (dfe))
+    padj = 1 - chi2cdf (t.^2, Ng - 1);
+  else
+    padj = 1 - fcdf ((t.^2) / (Ng - 1), Ng - 1, dfe);
+  endif
 
   ## Calculate critical value at Scheffe-adjusted ALPHA level
-  critval = sqrt ((Ng - 1) * finv (1 - ALPHA, Ng - 1, dfe));
+  if (isinf (dfe))
+    tmp = chi2inv (1 - ALPHA, Ng - 1) / (Ng - 1);
+  else
+    tmp = finv (1 - ALPHA, Ng - 1, dfe);
+  end
+  critval = sqrt ((Ng - 1) * tmp);
 
 endfunction
 
@@ -680,7 +708,13 @@ function [padj, critval, dfe] = mvt (p, t, Ng, dfe, R, ALPHA)
   chunkSize = 1000;
   numChunks = 1000;
   nsim = chunkSize * numChunks;
-  func = @(jnk) max (abs (mvtrnd (R, dfe, chunkSize)'), [], 1);
+  if (isinf (dfe))
+    # Multivariate z-statistics
+    func = @(jnk) max (abs (mvnrnd (0, R, chunkSize)'), [], 1);
+  else
+    # Multivariate t-statistics
+    func = @(jnk) max (abs (mvtrnd (R, dfe, chunkSize)'), [], 1);
+  endif
   if (PARALLEL)
     maxT = cell2mat (parcellfun (nproc, func, ...
                                  cell (1, numChunks), 'UniformOutput', false));
@@ -1072,4 +1106,43 @@ endfunction
 %! assert (C(1,6), 0.261031111511073, 1e-09);
 %! assert (C(2,6), 0.065879755907745, 1e-09);
 %! assert (C(3,6), 0.241874613529270, 1e-09);
+
+%!test
+%!
+%! ## Test for kruskalwallis - comparison with results from MATLAB
+%! data = [3,2,4; 5,4,4; 4,2,4; 4,2,4; 4,1,5; ...
+%!         4,2,3; 4,3,5; 4,2,4; 5,2,4; 5,3,3];
+%! group = [1:3] .* ones (10,3);
+%! [P, ATAB, STATS] = kruskalwallis (data(:), group(:), "off");
+%! C = multcompare(STATS,"ctype","lsd","display","off");
+%! assert (C(1,6), 0.000163089828959986, 1e-09);
+%! assert (C(2,6), 0.630298044801257, 1e-09);
+%! assert (C(3,6), 0.00100567660695682, 1e-09);
+%! C = multcompare(STATS,"ctype","bonferroni","display","off");
+%! assert (C(1,6), 0.000489269486879958, 1e-09);
+%! assert (C(2,6), 1, 1e-09);
+%! assert (C(3,6), 0.00301702982087047, 1e-09);
+%! C = multcompare(STATS,"ctype","scheffe","display","off");
+%! assert (C(1,6), 0.000819054880289573, 1e-09);
+%! assert (C(2,6), 0.890628039849261, 1e-09);
+%! assert (C(3,6), 0.00447816059021654, 1e-09);
+
+%!test
+%!
+%! ## Test for friedman - comparison with results from MATLAB
+%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
+%! [P, ATAB, STATS] = friedman (popcorn, 3, "off");
+%! C = multcompare(STATS,"ctype","lsd","display","off");
+%! assert (C(1,6), 0.227424558028569, 1e-09);
+%! assert (C(2,6), 0.0327204848315735, 1e-09);
+%! assert (C(3,6), 0.353160353315988, 1e-09);
+%! C = multcompare(STATS,"ctype","bonferroni","display","off");
+%! assert (C(1,6), 0.682273674085708, 1e-09);
+%! assert (C(2,6), 0.0981614544947206, 1e-09);
+%! assert (C(3,6), 1, 1e-09);
+%! C = multcompare(STATS,"ctype","scheffe","display","off");
+%! assert (C(1,6), 0.482657360384373, 1e-09);
+%! assert (C(2,6), 0.102266573027672, 1e-09);
+%! assert (C(3,6), 0.649836502233148, 1e-09);
 
