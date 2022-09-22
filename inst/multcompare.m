@@ -27,7 +27,7 @@
 ##
 ## @code{@var{C} = multcompare (@var{STATS})} performs a multiple comparison
 ## using a @var{STATS} structure that is obtained as output from any of
-## the following functions:  anova1, anova2, anovan, kruskalwallis and friedman.
+## the following functions: anova1, anova2, anovan, kruskalwallis, and friedman.
 ## The return value @var{C} is a matrix with one row per comparison and six
 ## columns. Columns 1-2 are the indices of the two samples being compared.
 ## Columns 3-5 are a lower bound, estimate, and upper bound for their
@@ -1107,42 +1107,50 @@ endfunction
 %! assert (C(2,6), 0.065879755907745, 1e-09);
 %! assert (C(3,6), 0.241874613529270, 1e-09);
 
+%!shared visibility_setting
+%! visibility_setting = get (0, "DefaultFigureVisible");
+
 %!test
+%! set (0, "DefaultFigureVisible", "off");
 %!
 %! ## Test for kruskalwallis - comparison with results from MATLAB
 %! data = [3,2,4; 5,4,4; 4,2,4; 4,2,4; 4,1,5; ...
 %!         4,2,3; 4,3,5; 4,2,4; 5,2,4; 5,3,3];
 %! group = [1:3] .* ones (10,3);
 %! [P, ATAB, STATS] = kruskalwallis (data(:), group(:), "off");
-%! C = multcompare(STATS,"ctype","lsd","display","off");
+%! C = multcompare (STATS, "ctype", "lsd");
 %! assert (C(1,6), 0.000163089828959986, 1e-09);
 %! assert (C(2,6), 0.630298044801257, 1e-09);
 %! assert (C(3,6), 0.00100567660695682, 1e-09);
-%! C = multcompare(STATS,"ctype","bonferroni","display","off");
+%! C = multcompare (STATS, "ctype", "bonferroni", "display", "off");
 %! assert (C(1,6), 0.000489269486879958, 1e-09);
 %! assert (C(2,6), 1, 1e-09);
 %! assert (C(3,6), 0.00301702982087047, 1e-09);
-%! C = multcompare(STATS,"ctype","scheffe","display","off");
+%! C = multcompare(STATS, "ctype", "scheffe");
 %! assert (C(1,6), 0.000819054880289573, 1e-09);
 %! assert (C(2,6), 0.890628039849261, 1e-09);
 %! assert (C(3,6), 0.00447816059021654, 1e-09);
+%! set (0, "DefaultFigureVisible", visibility_setting);
 
 %!test
-%!
+%! set (0, "DefaultFigureVisible", "off");
 %! ## Test for friedman - comparison with results from MATLAB
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! [P, ATAB, STATS] = friedman (popcorn, 3, "off");
-%! C = multcompare(STATS,"ctype","lsd","display","off");
+%! C = multcompare(STATS, "ctype", "lsd");
 %! assert (C(1,6), 0.227424558028569, 1e-09);
 %! assert (C(2,6), 0.0327204848315735, 1e-09);
 %! assert (C(3,6), 0.353160353315988, 1e-09);
-%! C = multcompare(STATS,"ctype","bonferroni","display","off");
+%! C = multcompare(STATS, "ctype", "bonferroni");
 %! assert (C(1,6), 0.682273674085708, 1e-09);
 %! assert (C(2,6), 0.0981614544947206, 1e-09);
 %! assert (C(3,6), 1, 1e-09);
-%! C = multcompare(STATS,"ctype","scheffe","display","off");
+%! C = multcompare(STATS, "ctype", "scheffe", "display", "off");
 %! assert (C(1,6), 0.482657360384373, 1e-09);
 %! assert (C(2,6), 0.102266573027672, 1e-09);
 %! assert (C(3,6), 0.649836502233148, 1e-09);
+%! set (0, "DefaultFigureVisible", visibility_setting);
+
+
 
