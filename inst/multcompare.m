@@ -431,10 +431,10 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         ## Also return the corresponding hypothesis matrix (L)
         if (isempty (REF))
           ## Pairwise comparisons
-          [pairs, L] = pairwise (Ng);
+          [pairs, L, R] = pairwise (Ng);
         else
           ## Treatment vs. Control comparisons
-          [pairs, L] = trt_vs_ctrl (Ng, REF);
+          [pairs, L, R] = trt_vs_ctrl (Ng, REF);
         endif
         Np = size (pairs, 1);
 
@@ -446,10 +446,6 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
 
         ## Calculate t statistics corresponding to the comparisons defined in L
         [mean_diff, sed, t] = tValue (gmeans, gcov, L); # z-statistic (not t)
-
-        ## Calculate correlation matrix
-        vcov = L * gcov * L';
-        R = cov2corr (vcov);
 
         ## Calculate degrees of freedom from number of groups
         if (isempty (DFE))
@@ -1151,6 +1147,4 @@ endfunction
 %! assert (C(2,6), 0.102266573027672, 1e-09);
 %! assert (C(3,6), 0.649836502233148, 1e-09);
 %! set (0, "DefaultFigureVisible", visibility_setting);
-
-
 
