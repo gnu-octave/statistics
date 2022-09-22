@@ -253,6 +253,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
             ## Calculate estimated marginal means and their standard errors
             gmeans = STATS.means(:);
             gvar = (STATS.s^2) ./ n;       # Sampling variance
+            gcov = diag (gvar);
             Ng = numel (gmeans);
             M = zeros (Ng, 4);
             M(:,1:2)  = cat (2, gmeans, sqrt(gvar));
@@ -273,6 +274,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
             ## Calculate estimated marginal means and their standard errors
             gmeans = STATS.means(:);
             gvar = STATS.vars(:) ./ n;     # Sampling variance
+            gcov = diag (gvar);
             Ng = numel (gmeans);
             M = zeros (Ng, 4);
             M(:,1:2) = cat (2, gmeans, sqrt (gvar));
@@ -285,18 +287,12 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
 
         endswitch
 
-        ## Calculate vector t statistics corresponding to the comparisons. In
-        ## balanced ANOVA designs, for the calculation of the t statistics, the
-        ## mean and standard error of the difference can be calculated simply by:
-        mean_diff = M(pairs(:,1)) - M(pairs(:,2));
-        sed = sqrt (M(pairs(:,1),2).^2 + (M(pairs(:,2),2).^2));
-        t = mean_diff ./ sed;
+        ## Calculate t statistics corresponding to the comparisons defined in L
+        [mean_diff, sed, t] = tValue (gmeans, gcov, L);
 
         ## Calculate correlation matrix
-        gcov = diag (gvar);
         vcov = L * gcov * L';
-        R = vcov ./ (sed * sed');
-        R = (R + R') / 2;
+        R = cov2corr (vcov);
 
         ## Create cell array of group names corresponding to each row of m
         GNAMES = STATS.gnames;
@@ -332,6 +328,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
 
         ## Calculate estimated marginal means and their standard errors
         gvar = ((STATS.sigmasq) / n) * ones (Ng, 1);  # Sampling variance
+        gcov = diag (gvar);
         M = zeros (Ng, 4);
         M(:,1:2) = cat (2, gmeans, sqrt (gvar));
 
@@ -340,12 +337,8 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
           DFE = STATS.df;
         endif
 
-        ## Calculate vector t statistics corresponding to the comparisons. In
-        ## balanced ANOVA designs, for the calculation of the t statistics, the
-        ## mean and standard error of the difference can be calculated simply by:
-        mean_diff = M(pairs(:,1)) - M(pairs(:,2));
-        sed = sqrt (M(pairs(:,1),2).^2 + (M(pairs(:,2),2).^2));
-        t = mean_diff ./ sed;
+        ## Calculate t statistics corresponding to the comparisons defined in L
+        [mean_diff, sed, t] = tValue (gmeans, gcov, L);
 
         ## Create character array of group names corresponding to each row of m
         GNAMES = cellstr (num2str ([1:Ng]'));
@@ -417,24 +410,12 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         endif
         Np = size (pairs, 1);
 
-        ## Calculate vector t statistics corresponding to the comparisons. In
-        ## balanced ANOVA designs, for the calculation of the t statistics, the
-        ## mean and standard error of the difference can be calculated simply by:
-        ##      mean_diff = M(pairs(:,1)) - M(pairs(:,2))
-        ##      sed = sqrt (M(pairs(:,1),2).^2 + (M(pairs(:,2),2).^2))
-        ##      t = mean_diff ./ sed
-        ## The above can be done for anova1 and anova2 STATS output. However, to
-        ## generalise the calculations for unbalanced N-way ANOVA we need to take
-        ## into account correlations, so we use the covariance matrix of the
-        ## estimated marginal means instead.
-        mean_diff = sum (L * diag (M(:, 1)), 2);
-        sed = sqrt (diag (L * gcov * L'));
-        t =  mean_diff ./ sed;
+        ## Calculate t statistics corresponding to the comparisons defined in L
+        [mean_diff, sed, t] = tValue (gmeans, gcov, L);
 
         ## Calculate correlation matrix.
         vcov = L * gcov * L';
-        R = vcov ./ (sed * sed');
-        R = (R + R') / 2; # This step ensures that the matrix is positive definite
+        R = cov2corr (vcov);
 
       case "friedman"
 
@@ -463,15 +444,12 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         ## Create matrix with group means and standard errors
         M = cat (2, gmeans, sqrt (diag (gcov)));
 
-        ## Calculate standard error of the difference and z-statistic
-        mean_diff = M(pairs(:,1)) - M(pairs(:,2));
-        sed = sqrt (M(pairs(:,1),2).^2 + (M(pairs(:,2),2).^2));
-        t = mean_diff ./ sed; # this is actually a z-statistic
+        ## Calculate t statistics corresponding to the comparisons defined in L
+        [mean_diff, sed, t] = tValue (gmeans, gcov, L); # z-statistic (not t)
 
         ## Calculate correlation matrix
         vcov = L * gcov * L';
-        R = vcov ./ (sed * sed');
-        R = (R + R') / 2;
+        R = cov2corr (vcov);
 
         ## Calculate degrees of freedom from number of groups
         if (isempty (DFE))
@@ -506,15 +484,12 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         ## Create matrix with group means and standard errors
         M = cat (2, gmeans, sqrt (diag (gcov)));
 
-        ## Calculate standard error of the difference and z-statistic
-        mean_diff = M(pairs(:,1)) - M(pairs(:,2));
-        sed = sqrt (M(pairs(:,1),2).^2 + (M(pairs(:,2),2).^2));
-        t = mean_diff ./ sed;  # this is actually a z-statistic
+        ## Calculate t statistics corresponding to the comparisons defined in L
+        [mean_diff, sed, t] = tValue (gmeans, gcov, L); # z-statistic (not t)
 
         ## Calculate correlation matrix
         vcov = L * gcov * L';
-        R = vcov ./ (sed * sed');
-        R = (R + R') / 2;
+        R = cov2corr (vcov);
 
         ## Calculate degrees of freedom from number of groups
         if (isempty (DFE))
@@ -637,6 +612,25 @@ function [pairs, L, R] = trt_vs_ctrl (Ng, REF)
     L(j, pairs(j,:)) = [1,-1];  # Hypothesis matrix
   endfor
   R = corr (L'); # Correlation matrix
+
+endfunction
+
+function [mn, se, t] = tValue (gmeans, gcov, L)
+
+  ## Calculate means, standard errors and t (or z) statistics
+  ## corresponding to the comparisons defined in L.
+  mn = sum (L * diag (gmeans), 2);
+  se = sqrt (diag (L * gcov * L'));
+  t =  mn ./ se;
+
+endfunction
+
+function R = cov2corr (vcov)
+
+   ## Convert covariance matrix to correlation matrix
+   sed = sqrt (diag (vcov));
+   R = vcov ./ (sed * sed');
+   R = (R + R') / 2; # This step ensures that the matrix is positive definite
 
 endfunction
 
