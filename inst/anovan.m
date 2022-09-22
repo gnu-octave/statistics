@@ -1267,7 +1267,7 @@ endfunction
 %!      11, 39, 26, 35, 25, 14, 24, 17]';
 %!
 %! [P,ATAB,STATS] = anovan(y, g, "display", "off");
-%! fitted = y - STATS.resid;
+%! fitted = STATS.X * STATS.coeffs(:,1); # fitted values
 %! b = polyfit (fitted, abs (STATS.resid), 1);
 %! v = polyval (b, fitted);  # Variance as a function of the fitted values
 %! figure("Name", "Regression of the absolute residuals on the fitted values");
