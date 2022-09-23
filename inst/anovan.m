@@ -171,6 +171,12 @@
 ## @item
 ## "effect": Deviation effect coding. (The first level appearing in the @var{GROUP}
 ## column is omitted).
+##
+## @item
+## "treatment": Treatment contrast (or dummy) coding. (The first level appearing
+## in the @var{GROUP} column is the reference level). These contrasts are not
+## compatible with SSTYPE 3.
+##
 ## @end itemize
 ##
 ## @item
@@ -400,19 +406,24 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       endif
       for i = 1:N
         if (! isempty (CONTRASTS{i}))
+          msg = strcat(["anovan: columns in CONTRASTS must sum to"], ...
+                       [" 0 for SSTYPE 3. Switching to SSTYPE 2 instead."]);
           if (isnumeric(CONTRASTS{i}))
             ## Check that the columns sum to 0
             if (any (abs (sum (CONTRASTS{i})) > eps("single")) ...
                           && strcmpi (num2str (SSTYPE), "3"))
-              warning (strcat(["anovan: columns in CONTRASTS must sum to"], ...
-                     [" 0 for SSTYPE 3. Switching to SSTYPE 2 instead."]));
+              warning (msg);
               SSTYPE = 2;
             endif
           else
             if (! ismember (CONTRASTS{i}, ...
-                            {"simple","poly","helmert","effect"}))
-              error (strcat(["anovan: the choices for built-in contrasts"], ...
-                     [" are ""simple"", ""poly"", ""helmert"", or ""effect"""]));
+                            {"simple","poly","helmert","effect","treatment"}))
+              error (strcat(["anovan: the choices for built-in contrasts are"], ...
+                     [" ""simple"", ""poly"", ""helmert"", ""effect"", or ""treatment"""]));
+            endif
+            if (strcmpi (CONTRASTS{i}, "treatment") && (SSTYPE==3))
+              warning (msg);
+              SSTYPE = 2; 
             endif
           endif
         endif
@@ -870,6 +881,10 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
               case "effect"
                 ## DEVIATION EFFECT CONTRAST CODING
                 CONTRASTS{j} = contr_sum (nlevels(j));
+                ## SIMPLE EFFECT CODING (DEFAULT)
+              case "treatment"
+                ## The first level is the reference level
+                CONTRASTS{j} = contr_treatment (nlevels(j));
               otherwise
                 ## EVALUATE CUSTOM CONTRAST MATRIX
                 ## Check that the contrast matrix provided is the correct size
@@ -969,6 +984,16 @@ function C = contr_sum (N)
   ## Create contrast matrix (of doubles) using deviation effect coding
   ## These contrasts are centered (i.e. sum to 0)
   C =  cat (1, - (ones (1,N-1)), eye (N-1));
+
+endfunction
+
+function C = contr_treatment (N)
+
+  ## Create contrast matrix (of doubles) using simple contrast coding
+  ## Not compatible with SSTYPE 3 since contrasts are not centered
+  ## Ideal for unordered factors, with comparison to a reference level
+  ## The first factor level is the reference level
+  C =  cat (1, zeros (1,N-1), eye(N-1));
 
 endfunction
 
