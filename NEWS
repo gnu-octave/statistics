@@ -95,6 +95,8 @@ Summary of important user-visible changes for statistics 1.5.0:
     logistic_inv
     logistic_pdf
 
+ ** logistic_regression: fixed incorrect results (bug #60348)
+
  ** mvncdf: improved performance and accuracy (bug #44130)
 
  ** normplot: fix ploting error (bug #62394), updated features
