@@ -30,6 +30,8 @@ Summary of important user-visible changes for statistics 1.5.0:
 
  ** grpstats (complementary to manova1)
 
+ ** kruskalwallis (fully Matlab compatible)
+
  ** kstest (fully Matlab compatible)
 
  ** kstest2 (fully Matlab compatible. bug #56572)
@@ -41,6 +43,8 @@ Summary of important user-visible changes for statistics 1.5.0:
  ** manovacluster (fully Matlab compatible)
 
  ** mean (fully Matlab compatible, it shadows mean from core Octave)
+
+ ** multcompare (fully Matlab compatible)
 
  ** mvtcdfqmc
 
@@ -57,7 +61,7 @@ Summary of important user-visible changes for statistics 1.5.0:
 
  ** anova1: added extra feature for performing Welch's ANOVA (PR #15)
 
- ** anovan: added more options (patch #10123, PR #1-14)
+ ** anovan: fully Matlab compatible, extra features. (patch #10123, PR #1-42)
 
  ** binopdf: implement high accuracy Loader algorithm for m>=10 (bug #34362)
 
