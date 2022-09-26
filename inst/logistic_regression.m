@@ -113,13 +113,13 @@
 function [intercept, slope, dev, dl, d2l, P, stats] = logistic_regression (y, x, print, intercept, slope)
 
   ## check input
-  y = round (vec (y));
+  y = round (y(:));
   if (nargin < 2)
     x = zeros (my, 0);
   endif;
-  missing = (isnan (y) | any (isnan (x), 2));
-  y(missing) = [];
-  x(missing,:) = [];
+  xymissing = (isnan (y) | any (isnan (x), 2));
+  y(xymissing) = [];
+  x(xymissing,:) = [];
   [my, ny] = size (y);
   [mx, nx] = size (x);
   if (mx != my)
