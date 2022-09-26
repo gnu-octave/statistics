@@ -114,13 +114,13 @@ function [intercept, slope, dev, dl, d2l, P, stats] = logistic_regression (y, x,
 
   ## check input
   y = round (vec (y));
+  if (nargin < 2)
+    x = zeros (my, 0);
+  endif;
   missing = (isnan (y) | any (isnan (x), 2));
   y(missing) = [];
   x(missing,:) = [];
   [my, ny] = size (y);
-  if (nargin < 2)
-    x = zeros (my, 0);
-  endif;
   [mx, nx] = size (x);
   if (mx != my)
     error ("logistic_regression: X and Y must have the same number of observations");
