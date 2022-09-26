@@ -99,23 +99,12 @@
 ## @end itemize
 ## @end deftypefn
 
-## Original for MATLAB written by Gordon K Smyth <gks@maths.uq.oz.au>,
-## U of Queensland, Australia, on Nov 19, 1990.  Last revision Aug 3,
-## 1992.
-
-## Author: Gordon K Smyth <gks@maths.uq.oz.au>,
-## Adapted-By: KH <Kurt.Hornik@wu-wien.ac.at> and AP <A.C.Penn@sussex.ac.uk>
-## Description: Ordinal logistic regression
-
-## Uses the auxiliary functions logistic_regression_derivatives and
-## logistic_regression_likelihood.
-
 function [intercept, slope, dev, dl, d2l, P, stats] = logistic_regression (y, x, print, intercept, slope)
 
   ## check input
   y = round (y(:));
   if (nargin < 2)
-    x = zeros (my, 0);
+    x = zeros (length (y), 0);
   endif;
   xymissing = (isnan (y) | any (isnan (x), 2));
   y(xymissing) = [];
