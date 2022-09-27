@@ -87,8 +87,9 @@ Distributions
 Experimental design
  fullfact
  ff2n
-Fitting
+Model Fitting
  fitgmdist
+ fitlm
  gamfit
 Hypothesis testing
  anderson_darling_test
@@ -142,6 +143,7 @@ Regression
  anovan
  canoncorr
  crossval
+ logistic_regression
  manova1
  monotone_smooth
  pca
