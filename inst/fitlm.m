@@ -136,7 +136,7 @@ function [T, STATS] = fitlm (X, y, varargin)
                       [" atleast 2 input arguments required"]));
     endif
     if (nargout > 3)
-      error ("invalid number of output arguments requested");
+      error ("fitlm: invalid number of output arguments requested");
     endif
 
     ## Evaluate input data 
@@ -170,11 +170,11 @@ function [T, STATS] = fitlm (X, y, varargin)
     if (ischar (MODELSPEC))
       MODELSPEC = lower (MODELSPEC);
       if (! isempty (regexp (MODELSPEC, "~")))
-        error ("model formulae are not a supported format for MODELSPEC")
+        error ("fitlm: model formulae are not a supported format for MODELSPEC")
       endif
       if (! ismember (MODELSPEC, {"constant", "linear", "interaction", ...
                                   "interactions", "full"}))
-        error ("character vector for model specification not recognised")
+        error ("fitlm: character vector for model specification not recognised")
       endif
       if strcmp (MODELSPEC, "constant") 
         X = [];
@@ -184,13 +184,13 @@ function [T, STATS] = fitlm (X, y, varargin)
       endif
     else
       if (size (MODELSPEC, 1) < N + 1)
-        error ("number of rows in MODELSPEC must  1 + number of columns in X");
+        error ("fitlm: number of rows in MODELSPEC must  1 + number of columns in X");
       endif
       if (size (MODELSPEC, 2) != N + 1)
-        error ("number of columns in MODELSPEC must = 1 + number of columns in X");
+        error ("fitlm: number of columns in MODELSPEC must = 1 + number of columns in X");
       endif
       if (! all (ismember (MODELSPEC(:), [0,1])))
-        error (strcat (["elements of the model terms matrix must be "], ...
+        error (strcat (["fitlm: elements of the model terms matrix must be "], ...
                        [" either 0 or 1. Higher order terms are not supported"]));
       endif
       MODELSPEC = logical (MODELSPEC(2:N+1,1:N));
@@ -198,8 +198,8 @@ function [T, STATS] = fitlm (X, y, varargin)
 
     ## Check for unsupported options used by anovan
     if (any (strcmpi ("MODEL", options)))
-      error (strcat(["modelspec should be specified in the third input"], ...
-                    [" argument of fitlm (if at all)"]));
+      error (strcat(["fitlm: modelspec should be specified in the third"], ...
+                    [" input argument of fitlm (if at all)"]));
     endif
 
     ## Check and set variable types
@@ -238,7 +238,7 @@ function [T, STATS] = fitlm (X, y, varargin)
           if (! isempty (CONTRASTS{i}))
             if (! ismember (CONTRASTS{i}, ...
                             {"simple","poly","helmert","effect","treatment"}))
-              error (strcat(["anovan: the choices for built-in contrasts are"], ...
+              error (strcat(["fitlm: the choices for built-in contrasts are"], ...
                      [" ""simple"", ""poly"", ""helmert"", ""effect"", or ""treatment"""]));
             endif
           endif

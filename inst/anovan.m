@@ -240,7 +240,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
     ## Check supplied parameters
     if ((numel (varargin) / 2) != fix (numel (varargin) / 2))
-      error ("wrong number of arguments.")
+      error ("anovan: wrong number of arguments.")
     endif
     MODELTYPE = "linear";
     DISPLAY = "on";
@@ -262,7 +262,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         case "random"
           RANDOM = value;
         case "nested"
-          error (strcat (["nested ANOVA is not supported. Please use"], ...
+          error (strcat (["anovan: nested ANOVA is not supported. Please use"], ...
                          [" anova2 for fully balanced nested ANOVA designs."]));
         case "sstype"
           SSTYPE = value;
@@ -277,18 +277,18 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         case "weights"
           WEIGHTS = value;
         otherwise
-          error (sprintf ("parameter %s is not supported", name));
+          error (sprintf ("anovan: parameter %s is not supported", name));
       endswitch
     endfor
 
     ## Evaluate continuous input argument
     if (isnumeric (CONTINUOUS))
       if (any (CONTINUOUS != abs (fix (CONTINUOUS))))
-        error (strcat (["the value provided for the CONTINUOUS"], ...
+        error (strcat (["anovan: the value provided for the CONTINUOUS"], ...
                        [" parameter must be a positive integer"]));
       endif
     else
-      error (strcat (["the value provided for the CONTINUOUS"], ...
+      error (strcat (["anovan: the value provided for the CONTINUOUS"], ...
                      [" parameter must be numeric"]));
     endif
 
@@ -298,14 +298,14 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     N = size (GROUP, 2); # number of anova "ways"
     n = numel (Y);      # total number of observations
     if (prod (size (Y)) != n)
-      error ("for ""anovan (Y, GROUP)"", Y must be a vector");
+      error ("anovan: for ""anovan (Y, GROUP)"", Y must be a vector");
     endif
     if (numel (unique (CONTINUOUS)) > N)
-      error (strcat (["the number of factors assigned as continuous"], ...
+      error (strcat (["anovan: the number of factors assigned as continuous"], ...
                  [" cannot exceed the number of factors in GROUP"]));
     endif
     if (any ((CONTINUOUS > N) || any (CONTINUOUS <= 0)))
-      error (strcat (["one or more indices provided in the value"], ...
+      error (strcat (["anovan: one or more indices provided in the value"], ...
                  [" for the continuous parameter are out of range"]));
     endif
     cont_vec = false (1, N);
@@ -322,7 +322,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
             endif
           else
             if (ismember (j, CONTINUOUS))
-              error ("continuous factors must be a numeric datatype");
+              error ("anovan: continuous factors must be a numeric datatype");
             endif
             tmp(:,j) = GROUP{j};
           endif
@@ -332,7 +332,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     endif
     if (! isempty (GROUP))
       if (size (GROUP,1) != n)
-        error ("GROUP must be a matrix with the same number of rows as Y");
+        error ("anovan: GROUP must be a matrix with the same number of rows as Y");
       endif
     endif
     if (! isempty (VARNAMES))
@@ -340,7 +340,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         if (all (cellfun (@ischar, VARNAMES)))
           nvarnames = numel(VARNAMES);
         else
-          error (strcat (["all variable names must be character"], ...
+          error (strcat (["anovan: all variable names must be character"], ...
                          [" or character arrays"]));
         endif
       elseif (ischar (VARNAMES))
@@ -350,7 +350,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         nvarnames = 1;
         VARNAMES = {char(VARNAMES)};
       else
-        error (strcat (["varnames is not of a valid type. Must be a cell"], ...
+        error (strcat (["anovan: varnames is not of a valid type. Must be a cell"], ...
                [" array of character arrays, character array or string"]));
       endif
     else
@@ -358,7 +358,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       VARNAMES = arrayfun(@(x) ["X",num2str(x)], 1:N, "UniformOutput", 0);
     endif
     if (nvarnames != N)
-      error (strcat (["number of variable names is not equal"], ...
+      error (strcat (["anovan: number of variable names is not equal"], ...
                      ["  to number of grouping variables"]));
     endif
 
@@ -366,19 +366,19 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     if (! isempty(RANDOM))
       if (isnumeric (RANDOM))
         if (any (RANDOM != abs (fix (RANDOM))))
-          error (strcat (["the value provided for the RANDOM"], ...
+          error (strcat (["anovan: the value provided for the RANDOM"], ...
                          [" parameter must be a positive integer"]));
         endif
       else
-        error (strcat (["the value provided for the RANDOM"], ...
+        error (strcat (["anovan: the value provided for the RANDOM"], ...
                      ["  parameter must be numeric"]));
       endif
       if (numel (RANDOM) > N)
-        error (strcat (["the number of elements in RANDOM cannot"], ...
+        error (strcat (["anovan: the number of elements in RANDOM cannot"], ...
                [" exceed the number of columns in GROUP."]));
       endif
       if (max (RANDOM) > N)
-        error (strcat (["the indices listed in RANDOM cannot"], ...
+        error (strcat (["anovan: the indices listed in RANDOM cannot"], ...
                [" exceed the number of columns in GROUP."]));
       endif
       for v = 1:N
@@ -415,7 +415,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           else
             if (! ismember (CONTRASTS{i}, ...
                             {"simple","poly","helmert","effect","treatment"}))
-              error (strcat(["the choices for built-in contrasts are"], ...
+              error (strcat(["anovan: the choices for built-in contrasts are"], ...
                      [" ""simple"", ""poly"", ""helmert"", ""effect"", or ""treatment"""]));
             endif
             if (strcmpi (CONTRASTS{i}, "treatment") && (SSTYPE==3))
@@ -430,10 +430,10 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
     ## Evaluate alpha input argument
     if (! isa (ALPHA,'numeric') || numel (ALPHA) != 1)
-      error("anovan:alpha must be a numeric scalar value");
+      error("anovan: alpha must be a numeric scalar value");
     end
     if ((ALPHA <= 0) || (ALPHA >= 1))
-      error("alpha must be a value between 0 and 1");
+      error("anovan: alpha must be a value between 0 and 1");
     end
 
     ## Remove NaN or non-finite observations
@@ -456,13 +456,13 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     ## Evaluate weights input argument
     if (! isempty(WEIGHTS))
       if (! isnumeric(WEIGHTS))
-        error ("WEIGHTS must be a numeric datatype");
+        error ("anovan: WEIGHTS must be a numeric datatype");
       endif
       if (any (size (WEIGHTS) != [n,1]))
-        error ("WEIGHTS must be a vector with the same dimensions as Y");
+        error ("anovan: WEIGHTS must be a vector with the same dimensions as Y");
       endif
       if (any(!(WEIGHTS > 0)) || any (isinf (WEIGHTS)))
-        error ("WEIGHTS must be a vector of positive finite values");
+        error ("anovan: WEIGHTS must be a vector of positive finite values");
       endif
       # Create diaganal matrix of normalized weights
       W = diag (WEIGHTS / mean (WEIGHTS));
@@ -472,7 +472,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     endif
 
     ## Evaluate model type input argument and create terms matrix if not provided
-    msg = strcat (["the number of columns in the term definitions"], ...
+    msg = strcat (["anovan: the number of columns in the term definitions"], ...
                   [" cannot exceed the number of columns of GROUP"]);
     if (ischar (MODELTYPE))
       switch (lower (MODELTYPE))
@@ -483,7 +483,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         case "full"
           MODELTYPE = N;
         otherwise
-          error ("model type not recognised");
+          error ("anovan: model type not recognised");
       endswitch
     endif
     if (isscalar (MODELTYPE))
@@ -531,7 +531,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         error (msg);
       endif
       if (! all (ismember (MODELTYPE(:), [0,1])))
-        error (strcat (["elements of the model terms matrix"], ...
+        error (strcat (["anovan: elements of the model terms matrix"], ...
                        [" must be either 0 or 1"]));
       endif
       TERMS = logical (MODELTYPE);
@@ -539,7 +539,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     ## Evaluate terms matrix
     Ng = sum (TERMS, 2);
     if (any (diff (Ng) < 0))
-      error (strcat (["the model terms matrix must list main"], ...
+      error (strcat (["anovan: the model terms matrix must list main"], ...
                      [" effects above/before interactions"]));
     endif
     ## Drop terms that include interactions with factors specified as random effects.
@@ -551,7 +551,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     Nx = sum (Ng > 1);
     Nt = Nm + Nx;
     if (any (any (TERMS(1:Nm,:), 1) != any (TERMS, 1)))
-      error (strcat (["all factors involved in interactions"], ...
+      error (strcat (["anovan: all factors involved in interactions"], ...
                      [" must have a main effect"]));
     endif
 
@@ -603,7 +603,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         endfor
         sstype_char = "III";
       otherwise
-        error ("sstype value not supported");
+        error ("anovan: sstype value not supported");
     endswitch
     ss = max (0, ss); # Truncate negative SS at 0 
     dfe = dft - sum (df);
@@ -797,7 +797,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
       otherwise
 
-        error ("wrong value for 'display' parameter.");
+        error ("anovan: wrong value for 'display' parameter.");
 
     endswitch
 
@@ -904,16 +904,16 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                 ## EVALUATE CUSTOM CONTRAST MATRIX
                 ## Check that the contrast matrix provided is the correct size
                 if (! all (size (CONTRASTS{j},1) == nlevels(j)))
-                  error (strcat (["the number of rows in the contrast"], ...
+                  error (strcat (["anovan: the number of rows in the contrast"], ...
                                [" matrices should equal the number of factor levels"]));
                 endif
                 if (! all (size (CONTRASTS{j},2) == df(j)))
-                  error (strcat (["the number of columns in each contrast"], ...
+                  error (strcat (["anovan: the number of columns in each contrast"], ...
                           [" matrix should equal the degrees of freedom (i.e."], ...
                           [" number of levels minus 1) for that factor"]));
                 endif
                 if (! all (any (CONTRASTS{j})))
-                  error (strcat (["a contrast must be coded in each"], ...
+                  error (strcat (["anovan: a contrast must be coded in each"], ...
                                  [" column of the contrast matrices"]));
                 endif
             endswitch
