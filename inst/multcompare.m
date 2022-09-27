@@ -149,7 +149,7 @@
 ## containing the graph.  @var{GNAMES} is a cell array with one row for each
 ## group, containing the names of the groups.
 ##
-## @seealso{anova1, anova2, anovan, kruskalwallis, friedman}
+## @seealso{anova1, anova2, anovan, kruskalwallis, friedman, fitlm}
 ## @end deftypefn
 
 function [C, M, H, GNAMES] = multcompare (STATS, varargin)
@@ -343,7 +343,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         ## Create character array of group names corresponding to each row of m
         GNAMES = cellstr (num2str ([1:Ng]'));
 
-      case "anovan"
+      case {"anovan","fitlm"}
 
         ## Our calculations treat all effects as fixed
         if (ismember (STATS.random, DIM))
@@ -355,6 +355,12 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         if (any (STATS.nlevels(DIM) < 2))
           error (strcat (["multcompare: DIM must specify only categorical"], ...
                          [" factors with 2 or more degrees of freedom."]));
+        endif
+
+        ## Check that continuous variables were centered
+        if (! STATS.center_continuous)
+          error (strcat (["use a STATS structure from a model refit with"], ...
+                         [" sum-to-zero contrasts coding, e.g. ""simple"""]))
         endif
 
         ## Calculate estimated marginal means and their standard errors
@@ -1148,3 +1154,35 @@ endfunction
 %! assert (C(3,6), 0.649836502233148, 1e-09);
 %! set (0, "DefaultFigureVisible", visibility_setting);
 
+%!test
+%! set (0, "DefaultFigureVisible", "off");
+%! ## Test for fitlm - same comparisons as for first anovan example
+%! y =  [ 8.706 10.362 11.552  6.941 10.983 10.092  6.421 14.943 15.931 ...
+%!        22.968 18.590 16.567 15.944 21.637 14.492 17.965 18.851 22.891 ...
+%!        22.028 16.884 17.252 18.325 25.435 19.141 21.238 22.196 18.038 ...
+%!        22.628 31.163 26.053 24.419 32.145 28.966 30.207 29.142 33.212 ...
+%!        25.694 ]';
+%! X = [1 1 1 1 1 1 1 1 2 2 2 2 2 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 5 5 5 5 5 5 5 5 5]';
+%! [TAB,STATS] = fitlm (X,y,"linear","categorical",1,"display","off");
+%! [C, M] = multcompare(STATS, "ctype", "lsd");
+%! assert (C(1,6), 2.85812420217898e-05, 1e-09);
+%! assert (C(2,6), 5.22936741204085e-07, 1e-09);
+%! assert (C(3,6), 2.12794763209146e-08, 1e-09);
+%! assert (C(4,6), 7.82091664406946e-15, 1e-09);
+%! assert (C(5,6), 0.546591417210693, 1e-09);
+%! assert (C(6,6), 0.0845897945254446, 1e-09);
+%! assert (C(7,6), 9.47436557975328e-08, 1e-09);
+%! assert (C(8,6), 0.188873478781067, 1e-09);
+%! assert (C(9,6), 4.08974010364197e-08, 1e-09);
+%! assert (C(10,6), 4.44427348175241e-06, 1e-09);
+%! assert (M(1,1), 10, 1e-09);
+%! assert (M(2,1), 18, 1e-09);
+%! assert (M(3,1), 19, 1e-09);
+%! assert (M(4,1), 21.0001428571429, 1e-09);
+%! assert (M(5,1), 29.0001111111111, 1e-09);
+%! assert (M(1,2), 1.0177537954095, 1e-09);
+%! assert (M(2,2), 1.28736803631001, 1e-09);
+%! assert (M(3,2), 1.0177537954095, 1e-09);
+%! assert (M(4,2), 1.0880245732889, 1e-09);
+%! assert (M(5,2), 0.959547480416536, 1e-09);
+%! set (0, "DefaultFigureVisible", visibility_setting);

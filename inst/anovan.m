@@ -223,12 +223,12 @@
 ## confidence interval bounds, t-statistics, and p-values relating to the
 ## contrasts. The number appended to each term name in @var{stats}.coeffnames
 ## corresponds to the column number in the relevant contrast matrix for that
-## factor.
+## factor. The @var{stats} structure can be used as input for @qcode{multcompare}.
 ##
 ## [@var{p}, @var{atab}, @var{stats}, @var{terms}] = anovan (@dots{}) returns
 ## the model term definitions.
 ##
-## @seealso{anova1, anova2, multcompare}
+## @seealso{anova1, anova2, multcompare, fitlm}
 ## @end deftypefn
 
 function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
@@ -301,36 +301,33 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       error ("anovan: for ""anovan (Y, GROUP)"", Y must be a vector");
     endif
     if (numel (unique (CONTINUOUS)) > N)
-      error (strcat (["anovan: the number of factors assigned as"], ...
-                 [" continuous cannot exceed the number of factors in GROUP"]));
+      error (strcat (["anovan: the number of factors assigned as continuous"], ...
+                 [" cannot exceed the number of factors in GROUP"]));
     endif
     if (any ((CONTINUOUS > N) || any (CONTINUOUS <= 0)))
-      error (strcat (["anovan: one or more indices provided in the"], ...
-                 [" value for the continuous parameter are out of range"]));
+      error (strcat (["anovan: one or more indices provided in the value"], ...
+                 [" for the continuous parameter are out of range"]));
     endif
     cont_vec = false (1, N);
     cont_vec(CONTINUOUS) = true;
     if (iscell (GROUP))
-      if (size(GROUP, 1) == 1)
+      if (size (GROUP, 1) == 1)
+        tmp = cell (n, N);
         for j = 1:N
           if (isnumeric (GROUP{j}))
-            if (any (CONTINUOUS == j))
+            if (ismember (j, CONTINUOUS))
               tmp(:,j) = num2cell (GROUP{j});
             else
               tmp(:,j) = cellstr (num2str (GROUP{j}));
             endif
           else
-            if (any (CONTINUOUS == j))
+            if (ismember (j, CONTINUOUS))
               error ("anovan: continuous factors must be a numeric datatype");
             endif
             tmp(:,j) = GROUP{j};
           endif
         endfor
         GROUP = tmp;
-      else
-        for j = 1:N
-          tmp(:,j) = cellstr (char (GROUP{j}));
-        endfor
       endif
     endif
     if (! isempty (GROUP))
@@ -353,8 +350,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         nvarnames = 1;
         VARNAMES = {char(VARNAMES)};
       else
-        error (strcat (["anovan: varnames is not of a valid type. Must be"], ...
-               [" cell array of character arrays, character array or string"]));
+        error (strcat (["anovan: varnames is not of a valid type. Must be a cell"], ...
+               [" array of character arrays, character array or string"]));
       endif
     else
       nvarnames = N;
@@ -406,7 +403,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       endif
       for i = 1:N
         if (! isempty (CONTRASTS{i}))
-          msg = strcat(["anovan: columns in CONTRASTS must sum to"], ...
+          msg = strcat(["columns in CONTRASTS must sum to"], ...
                        [" 0 for SSTYPE 3. Switching to SSTYPE 2 instead."]);
           if (isnumeric(CONTRASTS{i}))
             ## Check that the columns sum to 0
@@ -433,16 +430,24 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
     ## Evaluate alpha input argument
     if (! isa (ALPHA,'numeric') || numel (ALPHA) != 1)
-      error("anovan:alpha must be a numeric scalar value");
+      error("anovan: alpha must be a numeric scalar value");
     end
     if ((ALPHA <= 0) || (ALPHA >= 1))
       error("anovan: alpha must be a value between 0 and 1");
     end
 
     ## Remove NaN or non-finite observations
-    excl = logical (isnan(Y) + isinf(Y));
+    if (isempty (GROUP))
+      excl = any ([isnan(Y), isinf(Y)], 2);
+    else
+      XC = GROUP(:,CONTINUOUS);
+      if iscell(XC)
+        XC = cell2mat (XC);
+      endif
+      excl = any ([isnan(Y), isinf(Y), any(isnan(XC),2), any(isinf(XC),2)], 2);
+      GROUP(excl,:) = [];
+    endif
     Y(excl) = [];
-    GROUP(excl,:) = [];
     if (size (Y, 1) == 1)
       Y = Y.';         # if Y is a row vector, make it a column vector
     endif
@@ -473,7 +478,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       switch (lower (MODELTYPE))
         case "linear"
           MODELTYPE = 1;
-        case "interaction"
+        case {"interaction","interactions"}
           MODELTYPE = 2;
         case "full"
           MODELTYPE = N;
@@ -490,7 +495,11 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           TERMS = eye (N);
         case 2
           ## Create term definitions for a model with two factor interactions
-          Nx = nchoosek (N, 2);
+          if (N > 1)
+            Nx = nchoosek (N, 2);
+          else
+            Nx = 0;
+          endif
           TERMS = zeros (N + Nx, N);
           TERMS(1:N,:) = eye (N);
           for j = 1:N
@@ -663,7 +672,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                     "continuous", cont_vec, ...
                     "vmeans", vmeans, ...
                     "termcols", termcols, ...
-                    "coeffnames", {vertcat(coeffnames{:})}, ...
+                    "coeffnames", {cellstr(char(coeffnames{:}))}, ...
                     "vars", [], ...          # Not used by Octave
                     "varnames", {VARNAMES}, ...
                     "grpnames", {levels}, ...
@@ -678,6 +687,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                     "txtems", [], ...        # Not used since interactions with random factors is not supported
                     "rtnames", [], ...       # Not used since interactions with random factors is not supported
                     ## Additional STATS fields used exclusively by Octave
+                    "center_continuous", center_continuous, ...
                     "random", RANDOM, ...
                     "formula", formula, ...
                     "alpha", ALPHA, ...
@@ -698,7 +708,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       case "on"
 
         ## Print model formula 
-        fprintf("\nMODEL FORMULA (in equivalent Wilkinson-Rogers-Pinheiro-Bates notation):\n\n%s\n", formula);
+        fprintf("\nMODEL FORMULA (based on Wilkinson's notation):\n\n%s\n", formula);
 
         ## If applicable, print parameter estimates (a.k.a contrasts) for fixed effects
         if (planned && ! isempty(GROUP))
@@ -844,6 +854,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       coeffnames = cell (1, 1 + Nm + Nx);
       coeffnames(1) = "(Intercept)";
       vmeans = zeros (Nm, 1);
+      center_continuous = true;
       for j = 1:Nm
         if (any (j == CONTINUOUS))
 
@@ -853,10 +864,14 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           else
             X(1+j) = GROUP(:,j);
           end
-          vmeans(j) = mean ([X{1+j}]);
-          X(1+j) = [X{1+j}] - vmeans(j);
-          if (isempty (CONTRASTS{j}))
+          if (strcmpi (CONTRASTS{j}, 'treatment'))
+            ## Don't center continuous variables if contrasts are 'treatment'
+            center_continuous = false;
             CONTRASTS{j} = [];
+          else
+            center_continuous = true;
+            vmeans(j) = mean ([X{1+j}]);
+            X(1+j) = [X{1+j}] - vmeans(j);
           end
           ## Create names of the coefficients relating to continuous main effects
           coeffnames{1+j} = VARNAMES{j};
@@ -1289,7 +1304,6 @@ endfunction
 %! g = [1, 1, 1, 1, 1, 1, 1, 1, ...
 %!      2, 2, 2, 2, 2, 2, 2, 2, ...
 %!      3, 3, 3, 3, 3, 3, 3, 3]';
-%!
 %! y = [13, 16, 16,  7, 11,  5,  1,  9, ...
 %!      10, 25, 66, 43, 47, 56,  6, 39, ...
 %!      11, 39, 26, 35, 25, 14, 24, 17]';
@@ -1354,6 +1368,7 @@ endfunction
 %!             6  6  6;  7  7  7;  8  8  8;  9  9  9; 10 10 10];
 %! seconds = [1 2 5; 1 2 5; 1 2 5; 1 2 5; 1 2 5; ...
 %!            1 2 5; 1 2 5; 1 2 5; 1 2 5; 1 2 5;];
+%!
 %! [P, ATAB, STATS] = anovan (words(:),{seconds(:),subject(:)},'model','full','random',2,'sstype',2,'display','off');
 %! assert (P(1), 1.51865926758752e-07, 1e-09);
 %! assert (ATAB{2,2}, 52.2666666666667, 1e-09);
@@ -1390,6 +1405,7 @@ endfunction
 %! gender = {'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f'...
 %!           'm' 'm' 'm' 'm' 'm' 'm' 'm' 'm' 'm' 'm'}';
 %! degree = [1 1 1 1 1 1 1 1 0 0 0 0 1 1 1 0 0 0 0 0 0 0]';
+%!
 %! [P, ATAB, STATS] = anovan (salary,{gender,degree},'model','full','sstype',1,'display','off');
 %! assert (P(1), 0.747462549227232, 1e-09);
 %! assert (P(2), 1.03809316857694e-08, 1e-09);
@@ -1432,6 +1448,7 @@ endfunction
 %!         'no' 'no' 'yes' 'no' 'no' 'no' 'no' 'no' 'yes'}';
 %! babble = [4.6 4.4 3.9 5.6 5.1 5.5 3.9 3.5 3.7...
 %!           5.6 4.7 5.9 6.0 5.4 6.6 5.8 5.3 5.7]';
+%!
 %! [P, ATAB, STATS] = anovan (babble,{sugar,milk},'model','full','sstype',1,'display','off');
 %! assert (P(1), 0.0108632139833963, 1e-09);
 %! assert (P(2), 0.0810606976703546, 1e-09);
@@ -1486,6 +1503,7 @@ endfunction
 %!       189 194 217 206 199 195 171 173 196 199 180 NaN;
 %!       180 187 199 170 204 194 162 184 183 156 180 173 ...
 %!       202 228 190 206 224 204 205 199 170 160 NaN NaN];
+%!
 %! [P, ATAB, STATS] = anovan (BP(:),{drug(:),feedback(:),diet(:)},'model','full','sstype', 1,'display','off');
 %! assert (P(1), 7.02561843825325e-05, 1e-09);
 %! assert (P(2), 0.000425806013389362, 1e-09);
@@ -1544,6 +1562,7 @@ endfunction
 %!          'NIH','NIH','BALB/C','BALB/C','A/J','A/J','129/Ola','129/Ola'}';
 %! treatment={'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T'}';
 %! block = [1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2]';
+%!
 %! [P, ATAB, STATS] = anovan (measurement/10,{strain,treatment,block},'model','full','random',3,'display','off');
 %! assert (P(1), 0.0914352969909372, 1e-09);
 %! assert (P(2), 5.04077373924908e-05, 1e-09);
@@ -1566,6 +1585,7 @@ endfunction
 %! species = {'ex' 'ex' 'ex' 'ex' 'ex' 'ex' 'ex' 'ex' 'ex' 'ex' 'ex' ...
 %!            'ex' 'ex' 'ex' 'niv' 'niv' 'niv' 'niv' 'niv' 'niv' 'niv' ...
 %!            'niv' 'niv' 'niv' 'niv' 'niv' 'niv' 'niv' 'niv' 'niv' 'niv'};
+%!
 %! [P, ATAB, STATS] = anovan (pulse,{species,temp},'model','linear','continuous',2,'sstype','h','display','off');
 %! assert (P(1), 6.27153318786007e-14, 1e-09);
 %! assert (P(2), 2.48773241196644e-25, 1e-09);
@@ -1599,6 +1619,7 @@ endfunction
 %! age = [59 65 70 66 61 65 57 61 58 55 62 61 60 59 55 57 60 63 62 57 ...
 %!        58 56 57 59 59 60 55 53 55 58 68 62 61 54 59 63 60 67 60 67 ...
 %!        75 54 57 62 65 60 58 61 65 57 56 58 58 58 52 53 60 62 61 61]';
+%!
 %! [P, ATAB, STATS] = anovan (score,{treatment,exercise,age},'model','full','continuous',3,'sstype','h','display','off');
 %! assert (P(5), 0.9245630968248468, 1e-09);
 %! assert (P(6), 0.791115159521822, 1e-09);
@@ -1628,6 +1649,7 @@ endfunction
 %!       0.4001601 -0.6666667  0.0  0.0
 %!      -0.6002401  0.0000000  0.0  0.5
 %!      -0.6002401  0.0000000  0.0 -0.5];
+%!
 %! [P,ATAB,STATS] = anovan (dv,g,'contrasts',{C},'display','off');
 %! assert (STATS.coeffs(1,1), 19.4001, 1e-04);
 %! assert (STATS.coeffs(2,1), -9.3297, 1e-04);
