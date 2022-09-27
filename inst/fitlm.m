@@ -121,9 +121,9 @@
 ## corresponds to the column number in the relevant contrast matrix for that
 ## factor. The @var{stats} structure can be used as input for @qcode{multcompare}.
 ## Note that if the model contains a continuous variable and you wish to use
-## the @var{STATS} output as input to @qcode{multcompare}, it needs to be
-## refit with "contrast" parameter set to sum-to-zero contrast coding scheme,
-## e.g."simple".
+## the @var{STATS} output as input to @qcode{multcompare}, then the model needs
+## to be refit with the "contrast" parameter set to a sum-to-zero contrast
+## coding scheme, e.g."simple".
 ##
 ## @seealso{anovan, multcompare}
 ## @end deftypefn
