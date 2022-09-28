@@ -1033,11 +1033,14 @@ function [b, sse, resid, ucov] = lmfit (X, Y, W)
   b = R \ Q' * YW;
 
   ## Get fitted values
-  fit = XW * b;
+  fit = Q'\R * b;  # This is equivalent to fit = XW * b;
+
   ## Get residuals from the fit
   resid = YW - fit;
+
   ## Calculate the residual sums-of-squares
-  sse = sum ((resid).^2);
+  sse = sum (resid.^2);
+
   ## Calculate the unscaled covariance matrix (i.e. inv (X'*X ))
   if (nargout > 3)
     ucov = R \ Q' / XW';

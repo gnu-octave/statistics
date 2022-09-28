@@ -24,7 +24,7 @@ Summary of important user-visible changes for statistics 1.5.0:
 
  ** f2fx (missing function: bug #48146)
 
- ** fitlm (fully Matlab compatible)
+ ** fitlm (mostly Matlab compatible)
 
  ** fillmissing (patch #10102)
 
