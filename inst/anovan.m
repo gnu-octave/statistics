@@ -854,7 +854,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       coeffnames = cell (1, 1 + Nm + Nx);
       coeffnames(1) = "(Intercept)";
       vmeans = zeros (Nm, 1);
-      center_continuous = true;
+      center_continuous = cont_vec;
       for j = 1:Nm
         if (any (j == CONTINUOUS))
 
@@ -866,10 +866,10 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           end
           if (strcmpi (CONTRASTS{j}, 'treatment'))
             ## Don't center continuous variables if contrasts are 'treatment'
-            center_continuous = false;
+            center_continuous(j) = false;
             CONTRASTS{j} = [];
           else
-            center_continuous = true;
+            center_continuous(j) = true;
             vmeans(j) = mean ([X{1+j}]);
             X(1+j) = [X{1+j}] - vmeans(j);
           end

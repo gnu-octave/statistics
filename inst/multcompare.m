@@ -357,10 +357,10 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
                          [" factors with 2 or more degrees of freedom."]));
         endif
 
-        ## Check that continuous variables were centered
-        if (! STATS.center_continuous)
+        ## Check that all continuous variables were centered
+        if (any (STATS.continuous - STATS.center_continuous))
           error (strcat (["use a STATS structure from a model refit with"], ...
-                         [" sum-to-zero contrasts coding, e.g. ""simple"""]))
+                         [" sum-to-zero contrast coding, e.g. ""simple"""]))
         endif
 
         ## Calculate estimated marginal means and their standard errors
