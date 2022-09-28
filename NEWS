@@ -75,6 +75,8 @@ Summary of important user-visible changes for statistics 1.5.0:
 
  ** crosstab: can handle char arrays, fixed ordering of groups
 
+ ** gaminv: fixed accuracy for small 1st argument (bug #56453)
+
  ** geomean: fully Matlab compatible. (patch #59410)
 
  ** gevlike: fully Matlab compatible. ACOV output is the inverse Fisher Inf Mat
@@ -107,7 +109,7 @@ Summary of important user-visible changes for statistics 1.5.0:
 
  ** mvncdf: improved performance and accuracy (bug #44130)
 
- ** normplot: fix ploting error (bug #62394), updated features
+ ** normplot: fixed ploting error (bug #62394), updated features
 
  ** pdf: extended to include all available distributions
 
