@@ -1,4 +1,7 @@
 ## Copyright (C) 2012 Nir Krakauer <nkrakauer@ccny.cuny.edu>
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -14,17 +17,18 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{m}, @var{v}] =} gevstat (@var{k}, @var{sigma}, @var{mu})
-## Compute the mean and variance of the generalized extreme value (GEV) distribution.
+## @deftypefn {Function File} [@var{m}, @var{v}] = gevstat (@var{k}, @var{sigma}, @var{mu})
+## Compute the mean and variance of the generalized extreme value distribution.
 ##
 ## @subheading Arguments
 ##
 ## @itemize @bullet
 ## @item
-## @var{k} is the shape parameter of the GEV distribution. (Also denoted gamma or xi.)
+## @var{k} is the shape parameter of the GEV distribution.
+## (Also denoted gamma or xi.)
 ## @item
-## @var{sigma} is the scale parameter of the GEV distribution. The elements
-## of @var{sigma} must be positive.
+## @var{sigma} is the scale parameter of the GEV distribution.
+## The elements of @var{sigma} must be positive.
 ## @item
 ## @var{mu} is the location parameter of the GEV distribution.
 ## @end itemize
@@ -42,17 +46,15 @@
 ## @seealso{gevcdf, gevfit, gevinv, gevlike, gevpdf, gevrnd}
 ## @end deftypefn
 
-## Author: Nir Krakauer <nkrakauer@ccny.cuny.edu>
-## Description: Moments of the generalized extreme value distribution
-
 function [m, v] = gevstat (k, sigma, mu)
 
-  # Check arguments
+  ## Check arguments
   if (nargin < 3)
     print_usage ();
   endif
 
-  if (isempty (k) || isempty (sigma) || isempty (mu) || ~ismatrix (k) || ~ismatrix (sigma) || ~ismatrix (mu))
+  if (isempty (k) || isempty (sigma) || isempty (mu) || ...
+      ! ismatrix (k) || ~ismatrix (sigma) || ~ismatrix (mu))
     error ("gevstat: inputs must be numeric matrices");
   endif
 
@@ -60,31 +62,32 @@ function [m, v] = gevstat (k, sigma, mu)
   if (retval > 0)
     error ("gevstat: inputs must be of common size or scalars");
   endif
-
-  eg = 0.57721566490153286; %Euler-Mascheroni constant
+  ## Euler-Mascheroni constant
+  eg = 0.57721566490153286;
 
   m = v = k;
-  
-  #find the mean  
+
+  ## Find the mean
   m(k >= 1) = Inf;
   m(k == 0) = mu(k == 0) + eg*sigma(k == 0);
-  m(k < 1 & k ~= 0) = mu(k < 1 & k ~= 0) + sigma(k < 1 & k ~= 0) .* (gamma(1-k(k < 1 & k ~= 0)) - 1) ./ k(k < 1 & k ~= 0);
-  
-  #find the variance
+  m(k < 1 & k ~= 0) = mu(k < 1 & k ~= 0) + sigma(k < 1 & k ~= 0) .* ...
+                        (gamma(1-k(k < 1 & k ~= 0)) - 1) ./ k(k < 1 & k ~= 0);
+
+  ## Find the variance
   v(k >= 0.5) = Inf;
   v(k == 0) = (pi^2 / 6) * sigma(k == 0) .^ 2;
-  v(k < 0.5 & k ~= 0) = (gamma(1-2*k(k < 0.5 & k ~= 0)) - gamma(1-k(k < 0.5 & k ~= 0)).^2) .* (sigma(k < 0.5 & k ~= 0) ./ k(k < 0.5 & k ~= 0)) .^ 2;  
-  
-  
+  v(k < 0.5 & k ~= 0) = (gamma(1-2*k(k < 0.5 & k ~= 0)) - ...
+                         gamma(1-k(k < 0.5 & k ~= 0)).^2) .* ...
+                        (sigma(k < 0.5 & k ~= 0) ./ k(k < 0.5 & k ~= 0)) .^ 2;
 
 endfunction
 
 %!test
-%! k = [-1 -0.5 0 0.2 0.4 0.5 1];
+%! k = [-1, -0.5, 0, 0.2, 0.4, 0.5, 1];
 %! sigma = 2;
 %! mu = 1;
 %! [m, v] = gevstat (k, sigma, mu);
-%! expected_m = [1 1.4551 2.1544 2.6423   3.4460   4.0898      Inf];
-%! expected_v = [4 3.4336 6.5797 13.3761   59.3288       Inf       Inf];
+%! expected_m = [1, 1.4551, 2.1544, 2.6423, 3.4460, 4.0898, Inf];
+%! expected_v = [4, 3.4336, 6.5797, 13.3761, 59.3288, Inf, Inf];
 %! assert (m, expected_m, -0.001);
 %! assert (v, expected_v, -0.001);
