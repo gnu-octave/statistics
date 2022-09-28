@@ -120,7 +120,7 @@ Summary of important user-visible changes for statistics 1.5.0:
 
  ** signtest: fix erroneous results, fully Matlab compatible (bug #49961)
 
- ** ttest2: can hale NaN values as missing data (bug #58697)
+ ** ttest2: can handle NaN values as missing data (bug #58697)
 
  ** violin: fix parsing color vector affecting Octave>=6.1.0 (bug #62805)
 
