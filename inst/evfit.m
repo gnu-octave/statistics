@@ -151,7 +151,7 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
     x_0 = (x - x_max) ./ x_range;
     ## Get a rough initial estimate for scale parameter
     if (uncensored_x_range > 0)
-      [F_y, y] = ecdf (x_0, "censoring", censor', "frequency", freq');
+      [F_y, y] = ecdf (x_0, "censoring", censor, "frequency", freq);
       pmid = (F_y(1:(end-1)) + F_y(2:end)) / 2;
       linefit = polyfit (log (- log (1 - pmid)), y(2:end), 1);
       initial_sigma_parm = linefit(1);
@@ -169,18 +169,18 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
     while (evscale_lkeq (lower, x_0, freq, uncensored_weights) > 0)
       upper = lower;
       lower = 0.5 * upper;
-      if (lower <= 0)
+      if (lower <= realmin('double'))
         error ("evfit: no solution for maximum likelihood estimates.");
       endif
     endwhile
     boundaries = [lower, upper];
   else
     lower = initial_sigma_parm;
-    upper = 0.5 * lower;
-    while (evscale_lkeq (lower, x_0, freq, uncensored_weights) < 0)
+    upper = 2 * lower;
+    while (evscale_lkeq (upper, x_0, freq, uncensored_weights) < 0)
       lower = upper;
-      upper = 0.5 * lower;
-      if (upper > 0)
+      upper = 2 * lower;
+      if (upper > realmax('double'))
         error ("evfit: no solution for maximum likelihood estimates.");
       endif
     endwhile
@@ -189,7 +189,7 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
   ## Compute maximum likelihood for scale parameter as the root of the equation
   fhandle = @(sigmahat) evscale_lkeq (initial_sigma_parm, x_0, ...
                                       freq, uncensored_weights);
-  [sigmahat, ~, err] = fzero(@fhandle, boundaries, options);
+  [sigmahat, ~, err] = fzero(fhandle, x_0, options);
   ## Check for invalid solution
   if (err < 0)
     error ("evfit: no solution for maximum likelihood estimates.");
