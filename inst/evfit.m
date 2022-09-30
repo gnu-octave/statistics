@@ -60,6 +60,10 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
   if (! isvector (x) || length (x) < 2 || ! isa (x, "double"))
     error ("evfit: X must be a double-precision vector.");
   endif
+  ## If X is a column vector, make it a row vector
+  if (size (x, 1) > 1)
+    x = x.';
+  endif
   ## Check that X does not contain missing values (NaNs)
   if (any (isnan (x)))
     error ("evfit: X must NOT contain missing values (NaNs).");
