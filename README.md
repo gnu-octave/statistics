@@ -19,7 +19,9 @@ As of 10.6.2022, the developemnt of the **statistics** package has move from [So
 
 ## 2. Install statistics
 
-To install the current development version you need Octave (>=6.1.0) installed on your system.
+To install the latest version (1.5.0) you need Octave (>=6.1.0) installed on your system. If you have Octave (>=7.2.0) you can install it by typing:
+
+  `pkg install -forge statistics`
 
 You may download the latest development version of the **statistics** package [here](https://github.com/gnu-octave/statistics/archive/refs/heads/main.zip) and install it by typing:
 
