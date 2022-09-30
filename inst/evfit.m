@@ -151,7 +151,7 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
     x_0 = (x - x_max) ./ x_range;
     ## Get a rough initial estimate for scale parameter
     if (uncensored_x_range > 0)
-      [F_y, y] = ecdf (x_0, "censoring", censor, "frequency", freq);
+      [F_y, y] = ecdf (x_0, "censoring", censor', "frequency", freq');
       pmid = (F_y(1:(end-1)) + F_y(2:end)) / 2;
       linefit = polyfit (log (- log (1 - pmid)), y(2:end), 1);
       initial_sigma_parm = linefit(1);
@@ -161,15 +161,15 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
     uncensored_weights = sum (freq .* x_0 .* (1 - censor)) ./ ...
                               uncensored_sample_size;
   endif
-  ## Find lower upper boundaries for bracketing the likelihood equation for the
-  ## extreme value scale parameter assessed in fzero function later on
+  ## Find lower and upper boundaries for bracketing the likelihood equation for
+  ## the extreme value scale parameter assessed in fzero function later on
   if (evscale_lkeq (initial_sigma_parm, x_0, freq, uncensored_weights) > 0)
     upper = initial_sigma_parm;
     lower = 0.5 * upper;
     while (evscale_lkeq (lower, x_0, freq, uncensored_weights) > 0)
       upper = lower;
       lower = 0.5 * upper;
-      if (lower <= realmin('double'))
+      if (lower <= realmin ("double"))
         error ("evfit: no solution for maximum likelihood estimates.");
       endif
     endwhile
@@ -180,28 +180,54 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
     while (evscale_lkeq (upper, x_0, freq, uncensored_weights) < 0)
       lower = upper;
       upper = 2 * lower;
-      if (upper > realmax('double'))
+      if (upper > realmax ("double"))
         error ("evfit: no solution for maximum likelihood estimates.");
       endif
     endwhile
     boundaries = [lower, upper];
   endif
   ## Compute maximum likelihood for scale parameter as the root of the equation
-  fhandle = @(sigmahat) evscale_lkeq (initial_sigma_parm, x_0, ...
-                                      freq, uncensored_weights);
-  [sigmahat, ~, err] = fzero(fhandle, x_0, options);
-  ## Check for invalid solution
-  if (err < 0)
+  ## Custom code for finding the value within the boundaries [lower, upper] that
+  ## evscale_lkeq function returns zero
+  ## First check that there is a root within the boundaries
+  new_lo = boundaries(1);
+  new_up = boundaries(2);
+  v_lower = evscale_lkeq (new_lo, x_0, freq, uncensored_weights);
+  v_upper = evscale_lkeq (new_up, x_0, freq, uncensored_weights);
+  if (! (sign (v_lower) * sign (v_upper) <= 0))
     error ("evfit: no solution for maximum likelihood estimates.");
-  elseif (err == 0)
-    warning (strcat (["evfit: maximum number of iterations or function"], ...
-                     [" evaluations has been reached."]));
+  endif
+  ## Get a value at mid boundary range
+  old_sigma = new_lo;
+  new_sigma = (new_lo + new_up) / 2;
+  new_fzero = evscale_lkeq (new_sigma, x_0, freq, uncensored_weights);
+  ## Start searching
+  cur_iter = 0;
+  max_iter = 1e+3;
+  while (cur_iter < max_iter && abs (old_sigma - new_sigma) > options.TolX)
+    cur_iter++;
+    if (new_fzero < 0)
+      old_sigma = new_sigma;
+      new_lo = new_sigma;
+      new_sigma = (new_lo + new_up) / 2;
+      new_fzero = evscale_lkeq (new_sigma, x_0, freq, uncensored_weights);
+    else
+      old_sigma = new_sigma;
+      new_up = new_sigma;
+      new_sigma = (new_lo + new_up) / 2;
+      new_fzero = evscale_lkeq (new_sigma, x_0, freq, uncensored_weights);
+    endif
+  endwhile
+  ## Check for maximum number of iterations
+  if (cur_iter == max_iter)
+    warning (strcat (["evfit: maximum number of function "], ...
+                     [" evaluations (1e+4) has been reached."]));
   endif
   ## Compute mu
-  muhat = sigmahat .* log (sum (freq .* exp (x_0 ./ sigmahat)) ./ ...
-                           uncensored_sample_size );
+  muhat = new_sigma .* log (sum (freq .* exp (x_0 ./ new_sigma)) ./ ...
+                                             uncensored_sample_size);
   ## Transform mu and sigma back to original location and scale
-  paramhat = [(x_range*muhat)+x_max, x_range*sigmahat];
+  paramhat = [(x_range*muhat)+x_max, x_range*new_sigma];
   ## Compute the CI for mu and sigma
   if (nargout == 2)
     probs = [alpha/2; 1-alpha/2];
@@ -215,9 +241,9 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
 endfunction
 
 ## Likelihood equation for the extreme value scale parameter.
-function v = evscale_lkeq (sigma, x, w, x_weighted_uncensored)
-w = w .* exp (x ./ sigma);
-v = sigma + x_weighted_uncensored - sum (x .* w) / sum(w);
+function v = evscale_lkeq (sigma, x, freq, x_weighted_uncensored)
+  freq = freq .* exp (x ./ sigma);
+  v = sigma + x_weighted_uncensored - sum (x .* freq) / sum (freq);
 endfunction
 
 %!error<evfit: X must be a double-precision vector.> evfit (ones (2,5));
@@ -227,4 +253,15 @@ endfunction
 %!error<evfit: Censoring vector must> evfit ([1, 2, 3, 4, 5], 0.05, [1 1 0]);
 %!error<evfit: Frequency vector must> evfit ([1, 2, 3, 4, 5], 0.05, [], [1 1 0]);
 %!error<evfit: 'options' 5th argument> evfit ([1, 2, 3, 4, 5], 0.05, [], [], 2);
-
+%!test
+%! data = 1:50;
+%! [paramhat, paramci] = evfit (data);
+%! paramhat_out = [32.6811, 13.0509];
+%! paramci_out = [28.8504, 10.5294; 36.5118, 16.1763];
+%! assert (paramhat, paramhat_out, 1e-4);
+%! assert (paramci, paramci_out, 1e-4);
+%!test
+%! data = 1:50;
+%! [paramhat, paramci] = evfit (data, 0.01);
+%! paramci_out = [27.6468, 9.8426; 37.7155, 17.3051];
+%! assert (paramci, paramci_out, 1e-4);
