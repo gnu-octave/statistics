@@ -60,5 +60,5 @@ If you find a bug and fix it, just [clone](https://github.com/gnu-octave/statist
 
 Make sure you follow the coding style already used in the **statistics** package (similar to GNU Octave). For a summary of the coding style rules used in the package see [Contribute](https://github.com/gnu-octave/statistics/blob/main/CONTRIBUTE.md).
 
-Contributing is not only about fixing bugs. Improving the texinfo of the fucntions help files or adding BISTs and demos at the end of the function files is also important. There are currently 54 functions missing BISTs and it would be invaluable to add tests to these. Fixing a typo in the help file is still of value though. So don't hesitate to contribute! :+1:
+Contributing is not only about fixing bugs. Improving the texinfo of the fucntions help files or adding BISTs and demos at the end of the function files is also important. There are currently 44 functions missing BISTs and it would be invaluable to add tests to these. Fixing a typo in the help file is still of value though. So don't hesitate to contribute! :+1:
 
