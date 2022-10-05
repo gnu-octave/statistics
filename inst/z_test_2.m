@@ -87,6 +87,11 @@ function [pval, z] = z_test_2 (x, y, v_x, v_y, alt)
 
 endfunction
 
+%!shared restore_nstate
+%! old_nstate = randn ("state");
+%! restore_nstate = onCleanup (@() randn ("state", old_nstate));
+%! randn ("state", 42); # initialize generator to make behavior reproducible
+
 %!test
 %! ## Two-sided (also the default option)
 %! x = randn (100, 1); v_x = 2; x = v_x * x;
