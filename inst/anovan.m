@@ -224,6 +224,8 @@
 ## contrasts. The number appended to each term name in @var{stats}.coeffnames
 ## corresponds to the column number in the relevant contrast matrix for that
 ## factor. The @var{stats} structure can be used as input for @qcode{multcompare}.
+## The @var{stats} structure is also recognised by the functions @qcode{bootcoeff}
+## and @qcode{bootemm} from the statistics-bootstrap package.
 ##
 ## [@var{p}, @var{atab}, @var{stats}, @var{terms}] = anovan (@dots{}) returns
 ## the model term definitions.
@@ -1318,7 +1320,7 @@ endfunction
 %! figure("Name", "Regression of the absolute residuals on the fitted values");
 %! plot (fitted, abs (STATS.resid),'ob');hold on; plot(fitted,v,'-r'); hold off;
 %! xlabel("Fitted values"); ylabel("Absolute residuals");
-
+%!
 %! [P,ATAB,STATS] = anovan (y, g, "weights", v.^-1);
 
 
