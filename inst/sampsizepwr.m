@@ -83,7 +83,7 @@
 ## @code{@var{n} = sampsizepwr (@var{testtype}, @var{effsz}, @var{pow}, @var{alpha}, @var{tails})}
 ## also sets whether the test is one-sided or two-sided (Default is 2)
 ##
-## @seealso{ztest, z_test, z_test2, ttest, ttest2, corr}
+## @seealso{ztest, z_test, z_test_2, ttest, ttest2, corr}
 ## @end deftypefn
 
 function n = sampsizepwr (testtype, effsz, power, alpha, tails, ncomp)
