@@ -103,7 +103,7 @@ function n = sampsizepwr (testtype, effsz, power, alpha, tails, ncomp)
     if (nargin < 5)
       tails = 2;
     endif
-  
+
     ## Error checking
     if (ischar (testtype))
       if (!ismember (testtype, {"t2", "t", "z2", "z", "r"}))
@@ -112,7 +112,7 @@ function n = sampsizepwr (testtype, effsz, power, alpha, tails, ncomp)
     else
       error ("sampsizepwr: TESTTYPE must be a character string")
     endif
-  
+
     ## Perform sample size calculation
     if strcmpi (testtype, "r")
       if (ischar (effsz))
@@ -149,8 +149,7 @@ function n = sampsizepwr (testtype, effsz, power, alpha, tails, ncomp)
       endif
       c = 0;
     endif
-    
-  
+
     ## Sample size calculations for the difference between means
     ## Assume effect size is Cohen's d
     k = numel (testtype);
