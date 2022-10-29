@@ -89,83 +89,86 @@
 
 function n = sampsizepwr (testtype, effsz, power, alpha, tails, ncomp)
 
-  ## Set default values
-  if (nargin < 2)
-    error ("sampsizepwr: at least two input arguments required")
-  endif
-  if (nargin < 3)
-    power = 0.8; 
-  end
-  if (nargin < 4)
-    alpha = 0.05;
-  endif
-  if (nargin < 5)
-    tails = 2;
-  endif
-
-  ## Error checking
-  if (ischar (testtype))
-    if (!ismember (testtype, {"t2", "t", "z2", "z", "r"}))
-      error ("sampsizepwr: TESTTYPE not supported")
+    ## Set default values
+    if (nargin < 2)
+      error (strcat (["sampsizepwr usage: ""sampsizepwr (TESTTYPE, EFFSZ)"""], ...
+                        ["; atleast 2 input arguments required"]));
     endif
-  endif
-
-  ## Perform sample size calculation
-  if strcmpi (testtype, "r")
-    if (ischar (effsz))
-      switch (lower (effsz))
-        case "small"
-          STAT = 0.1;
-        case "medium"
-          STAT = 0.3;
-        case "large"
-          STAT = 0.5;
-        otherwise
-          error ("sampsizepwr: string description for EFFSIZE not recognised")
-      endswitch
-    else 
-      STAT = abs (effsz);
+    if (nargin < 3)
+      power = 0.8; 
+    end
+    if (nargin < 4)
+      alpha = 0.05;
     endif
-    STAT = atanh (STAT);
-    testtype = "z";
-    c = 3;
-  else 
-    if (ischar (effsz))
-      switch (lower (effsz))
-        case "small"
-          STAT = 0.2;
-        case "medium"
-          STAT = 0.5;
-        case "large"
-          STAT = 0.8;
-        otherwise
-          error ("sampsizepwr: string description for EFFSIZE not recognised")
-      endswitch
-    else 
-      STAT = abs (effsz);
+    if (nargin < 5)
+      tails = 2;
     endif
-    c = 0;
-  endif
   
+    ## Error checking
+    if (ischar (testtype))
+      if (!ismember (testtype, {"t2", "t", "z2", "z", "r"}))
+        error ("sampsizepwr: TESTTYPE not supported")
+      endif
+    else
+      error ("sampsizepwr: TESTTYPE must be a character string")
+    endif
+  
+    ## Perform sample size calculation
+    if strcmpi (testtype, "r")
+      if (ischar (effsz))
+        switch (lower (effsz))
+          case "small"
+            STAT = 0.1;
+          case "medium"
+            STAT = 0.3;
+          case "large"
+            STAT = 0.5;
+          otherwise
+            error ("sampsizepwr: string description for EFFSIZE not recognised")
+        endswitch
+      else 
+        STAT = abs (effsz);
+      endif
+      STAT = atanh (STAT);
+      testtype = "z";
+      c = 3;
+    else 
+      if (ischar (effsz))
+        switch (lower (effsz))
+          case "small"
+            STAT = 0.2;
+          case "medium"
+            STAT = 0.5;
+          case "large"
+            STAT = 0.8;
+          otherwise
+            error ("sampsizepwr: string description for EFFSIZE not recognised")
+        endswitch
+      else 
+        STAT = abs (effsz);
+      endif
+      c = 0;
+    endif
+    
+  
+    ## Sample size calculations for the difference between means
+    ## Assume effect size is Cohen's d
+    k = numel (testtype);
+    ## Calculate group sample size based on Normal approximation
+    n0 = k * (((norminv (power) + norminv (1 - alpha / tails)) / STAT)^2 + c);
+    switch ( lower (testtype) )
+      case {"z","z2"}
+        n = ceil (n0);
+      case {"t","t2"}
+        ## Create function to optimize sample size based on Student-t distribution
+        ## and n * k - k degrees of freedom
+        func = @(n) n - k * ...
+                 (((tinv (power, n * k - k) + ...
+                  tinv (1 - alpha / tails, n * k - k)) / STAT)^2 + c);
+        n = ceil (fzero (func, n0)); # Find the root using fzero
+    endswitch
 
-  ## Sample size calculations for the difference between means
-  ## Assume effect size is Cohen's d
-  k = numel (testtype);
-  ## Calculate group sample size based on Normal approximation
-  n0 = k * (((norminv (power) + norminv (1 - alpha / tails)) / STAT)^2 + c);
-  switch ( lower (testtype) )
-    case {"z","z2"}
-      n = ceil (n0);
-    case {"t","t2"}
-      ## Create function to optimize sample size based on Student-t distribution
-      ## and n * k - k degrees of freedom
-      func = @(n) n - k * ...
-               (((tinv (power, n * k - k) + ...
-                tinv (1 - alpha / tails, n * k - k)) / STAT)^2 + c);
-      n = ceil (fzero (func, n0)); # Find the root using fzero
-  endswitch
-
-end
+endfunction
 
 %!demo
 %!
