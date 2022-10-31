@@ -20,7 +20,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} @var{p} = anovan (@var{Y}, @var{GROUP})
-## @deftypefnx {Function File} @var{p} = anovan (@var{Y}, @var{GROUP}, "name", @var{value})
+## @deftypefnx {Function File} @var{p} = anovan (@var{Y}, @var{GROUP}, @var{name}, @var{value})
 ## @deftypefnx {Function File} [@var{p}, @var{atab}] = anovan (...)
 ## @deftypefnx {Function File} [@var{p}, @var{atab}, @var{stats}] = anovan (...)
 ## @deftypefnx {Function File} [@var{p}, @var{atab}, @var{stats}, @var{terms}] = anovan (...)
@@ -189,7 +189,7 @@
 ##
 ## If the anovan model contains more than one factor and a built-in contrast
 ## coding scheme was specified, then those contrasts are applied to all factors.
-## To specify different contrasts for different factors in the model, 
+## To specify different contrasts for different factors in the model,
 ## @var{contrasts} should be a cell array with the same number of cells as there
 ## are columns in @var{GROUP}. Each cell should define contrasts for the
 ## respective column in @var{GROUP} by one of the methods described above. If
@@ -422,7 +422,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
             endif
             if (strcmpi (CONTRASTS{i}, "treatment") && (SSTYPE==3))
               warning (msg);
-              SSTYPE = 2; 
+              SSTYPE = 2;
             endif
           endif
         endif
@@ -607,7 +607,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       otherwise
         error ("anovan: sstype value not supported");
     endswitch
-    ss = max (0, ss); # Truncate negative SS at 0 
+    ss = max (0, ss); # Truncate negative SS at 0
     dfe = dft - sum (df);
     ms = ss ./ df;
     mse = sse / dfe;
@@ -653,7 +653,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     coeff_stats(:,4) = b + se * t_crit;                  # Upper CI bound
     coeff_stats(:,5) = t;                                # t-statistics
     coeff_stats(:,6) = p;                                # p-values
-    ## Assign NaN to p-value to avoid printing statistics relating to 
+    ## Assign NaN to p-value to avoid printing statistics relating to
     ## coefficients for 'random' effects
     hi = 1 + cumsum(df);
     for ignore = RANDOM
@@ -709,7 +709,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
       case "on"
 
-        ## Print model formula 
+        ## Print model formula
         fprintf("\nMODEL FORMULA (based on Wilkinson's notation):\n\n%s\n", formula);
 
         ## If applicable, print parameter estimates (a.k.a contrasts) for fixed effects
@@ -727,7 +727,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
               fprintf ("%-20s  %10.3g %9.3g %9.3g %9.3g %8.2f     .%03u \n", ...
                        STATS.coeffnames{j}, STATS.coeffs(j,1:end-1), round (p(j) * 1e+03));
             elseif (isnan(p(j)))
-              ## Don't display coefficients for 'random' effects since they were 
+              ## Don't display coefficients for 'random' effects since they were
               ## treated as fixed effects
             else
               fprintf ("%-20s  %10.3g %9.3g %9.3g %9.3g %8.2f    1.000 \n", ...
@@ -784,7 +784,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         xlabel ("Fitted values");
         ylabel ("Standardized Residuals");
         title ("Standardized residuals vs Fitted values")
-        ax1 = get (gca); 
+        ax1 = get (gca);
         hold on; plot (ax1.xlim, zeros (1, 2), "r-."); grid ("on"); hold off;
         ## Checks for outliers and heteroskedasticity
         subplot (2, 2, 4);
@@ -1304,7 +1304,7 @@ endfunction
 %! # fitting the model without weights and regressing the absolute residuals on
 %! # the fitted values. Although this data could have been analysed by Welch's
 %! # ANOVA test, the approach here can generalize to ANOVA models with more than
-%! # one factor. 
+%! # one factor.
 %!
 %! g = [1, 1, 1, 1, 1, 1, 1, 1, ...
 %!      2, 2, 2, 2, 2, 2, 2, 2, ...
