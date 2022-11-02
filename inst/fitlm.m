@@ -16,13 +16,13 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{p} = fitlm (@var{X}, @var{y})
-## @deftypefnx {Function File} @var{p} = fitlm (@var{X}, @var{y}, "name", @var{value})
-## @deftypefnx {Function File} @var{p} = fitlm (@var{X}, @var{y}, @var{modelspec})
-## @deftypefnx {Function File} @var{p} = fitlm (@var{X}, @var{y}, @var{modelspec}, "name", @var{value})
-## @deftypefnx {Function File} [@var{p}, @var{tab}] = fitlm (...)
-## @deftypefnx {Function File} [@var{p}, @var{tab}, @var{stats}] = fitlm (...)
-## @deftypefnx {Function File} [@var{p}, @var{tab}, @var{stats}, @var{modelspec}] = fitlm (...)
+## @deftypefn {Function File} @var{tab} = fitlm (@var{X}, @var{y})
+## @deftypefnx {Function File} @var{tab} = fitlm (@var{X}, @var{y}, "name", @var{value})
+## @deftypefnx {Function File} @var{tab} = fitlm (@var{X}, @var{y}, @var{modelspec})
+## @deftypefnx {Function File} @var{tab} = fitlm (@var{X}, @var{y}, @var{modelspec}, "name", @var{value})
+## @deftypefnx {Function File} [@var{tab}] = fitlm (...)
+## @deftypefnx {Function File} [@var{tab}, @var{stats}] = fitlm (...)
+## @deftypefnx {Function File} [@var{tab}, @var{stats}] = fitlm (...)
 ##
 ## Regress the continuous outcome (i.e. dependent variable) @var{y} on
 ## continuous or categorical predictors (i.e. independent variables) @var{X}
@@ -182,7 +182,6 @@ function [T, STATS] = fitlm (X, y, varargin)
         X = [];
         MODELSPEC = "linear";
         N = 0;
-        
       endif
     else
       if (size (MODELSPEC, 1) < N + 1)
