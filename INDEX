@@ -27,22 +27,26 @@ CVpartition (class of set partitions for cross-validation, used in crossval)
 Classification Performance Evaluation
  confusionchart
  confusionmat
+Data
+ combnk
+ datasample
+ fixvarsize
+ tabulate
 Descriptive statistics
  combnk
  dcov
- mean
+ fixvarsize
  geomean
  harmmean
  jackknife
+ mean
  nanmax
- nanmean
  nanmedian
  nanmin
  nanstd
  nansum
  nanvar
  trimmean
- tabulate
 Distributions
  anderson_darling_cdf
  bbscdf bbsinv bbspdf bbsrnd
@@ -72,6 +76,7 @@ Distributions
  mvtcdfqmc
  nakacdf nakainv nakapdf nakarnd
  nbincdf nbininv nbinpdf nbinrnd
+ nctcdf
  normcdf norminv normpdf normrnd
  poisscdf poissinv poisspdf poissrnd
  raylcdf raylinv raylpdf raylrnd
@@ -84,15 +89,46 @@ Distributions
  wblcdf wblinv wblpdf wblrnd
  wienrnd
  wishpdf wishrnd
+Distribution fitting
+ cdfcalc
+ evfit
+ evlike
+ expfit
+ explike
+ gamfit
+ gamlike
+ gevfit_lmom
+ gevfit
+ gevlike
+Distribution statistics
+ betastat
+ binostat
+ chi2stat
+ explike
+ expstat
+ fstat
+ gamstat
+ geostat
+ gevstat
+ hygestat
+ lognstat
+ nbinstat
+ normstat
+ poisstat
+ raylstat
+ unidstat
+ unifstat
 Experimental design
  fullfact
  ff2n
+ x2fx
 Model Fitting
  fitgmdist
  fitlm
  gamfit
 Hypothesis testing
  anderson_darling_test
+ bartlett_test
  binotest
  chi2gof
  chi2test
