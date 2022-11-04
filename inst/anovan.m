@@ -1,7 +1,7 @@
-## Copyright (C) 2022 Andrew Penn <A.C.Penn@sussex.ac.uk>
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
-## Copyright (C) 2021 Christian Scholz
 ## Copyright (C) 2003-2005 Andy Adler <adler@ncf.ca>
+## Copyright (C) 2021 Christian Scholz
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022 Andrew Penn <A.C.Penn@sussex.ac.uk>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
