@@ -42,11 +42,8 @@
 ## @code{cluster} uses "distance" as a criterion for defining new clusters when
 ## it is used the 'MaxClust' method.
 ##
+## @seealso{clusterdata, dendrogram, inconsistent, kmeans, linkage, pdist}
 ## @end deftypefn
-##
-## @seealso{clusterdata,dendrogram,inconsistent,kmeans,linkage,pdist}
-
-## Author: Stefano Guidoni <ilguido@users.sf.net>
 
 function T = cluster (Z, opt, varargin)
   switch (lower (opt))

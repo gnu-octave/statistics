@@ -33,11 +33,8 @@
 ## for @code{cluster}. The method and metric used by @code{linkage}, are
 ## defined through the 'linkage' and 'distance' arguments.
 ##
+## @seealso{cluster, dendrogram, inconsistent, kmeans, linkage, pdist}
 ## @end deftypefn
-##
-## @seealso{cluster,dendrogram,inconsistent,kmeans,linkage,pdist}
-
-## Author: Stefano Guidoni <ilguido@users.sf.net>
 
 function T = clusterdata (X, varargin)
 

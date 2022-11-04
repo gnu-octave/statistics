@@ -1,5 +1,7 @@
 ## Copyright (C) 1995-2017 Kurt Hornik
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
 ## published by the Free Software Foundation, either version 3 of the
@@ -28,9 +30,6 @@
 ##
 ## If no output argument is given, the p-value is displayed.
 ## @end deftypefn
-
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Bartlett test for homogeneity of variances
 
 function [pval, chisq, df] = bartlett_test (varargin)
 
