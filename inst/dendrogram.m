@@ -1,6 +1,6 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
-## Copyright (C) 2021 Stefano Guidoni <ilguido@users.sf.net>
 ## Copyright (c) 2012 Juan Pablo Carbajal <carbajal@ifi.uzh.ch>
+## Copyright (C) 2021 Stefano Guidoni <ilguido@users.sf.net>
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -76,9 +76,8 @@
 ## leaf; the label is dispayed only for nodes with just one leaf.
 ## @end itemize
 ##
-## @end deftypefn
-##
 ## @seealso{cluster, clusterdata, cophenet, inconsistent, linkage, pdist}
+## @end deftypefn
 
 function [H, T, perm] = dendrogram (tree, varargin)
 

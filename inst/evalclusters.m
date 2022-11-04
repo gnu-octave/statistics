@@ -1,5 +1,7 @@
 ## Copyright (C) 2021 Stefano Guidoni <ilguido@users.sf.net>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -25,30 +27,30 @@
 ## variables.
 ## The evaluation criterion @var{criterion} is one of the following:
 ## @table @code
-## @item @qcode{CalinskiHarabasz} 
+## @item @qcode{CalinskiHarabasz}
 ## to create a @code{CalinskiHarabaszEvaluation} object.
 ##
-## @item @qcode{DaviesBouldin} 
+## @item @qcode{DaviesBouldin}
 ## to create a @code{DaviesBouldinEvaluation} object.
 ##
-## @item @qcode{gap} 
+## @item @qcode{gap}
 ## to create a @code{GapEvaluation} object.
 ##
-## @item @qcode{silhouette} 
+## @item @qcode{silhouette}
 ## to create a @code{SilhouetteEvaluation} object.
 ##
 ## @end table
 ## The clustering algorithm @var{clust} is one of the following:
 ## @table @code
-## @item @qcode{kmeans} 
+## @item @qcode{kmeans}
 ## to cluster the data using @code{kmeans} with @code{EmptyAction} set to
 ## @code{singleton} and @code{Replicates} set to 5.
 ##
-## @item @qcode{linkage} 
+## @item @qcode{linkage}
 ## to cluster the data using @code{clusterdata} with @code{linkage} set to
 ## @code{Ward}.
 ##
-## @item @qcode{gmdistribution} 
+## @item @qcode{gmdistribution}
 ## to cluster the data using @code{fitgmdist} with @code{SharedCov} set to
 ## @code{true} and @code{Replicates} set to 5.
 ##
@@ -63,48 +65,48 @@
 ## one of the @var{k} clusters.  In the latter case, each observation is assigned
 ## to the cluster with the higher value.
 ## If the @var{criterion} is @code{CalinskiHarabasz}, @code{DaviesBouldin}, or
-## @code{silhouette}, @var{clust} can also be a matrix of size @code{n} by 
+## @code{silhouette}, @var{clust} can also be a matrix of size @code{n} by
 ## @code{k}, where @code{k} is the number of proposed clustering solutions, so
 ## that each column of @var{clust} is a clustering solution.
 ##
 ## In addition to the obligatory @var{x}, @var{clust} and @var{criterion} inputs
-## there is a number of optional arguments, specified as pairs of @code{Name} 
+## there is a number of optional arguments, specified as pairs of @code{Name}
 ## and @code{Value} options.  The known @code{Name} arguments are:
 ## @table @code
-## @item @qcode{KList} 
+## @item @qcode{KList}
 ## a vector of positive integer numbers, that is the cluster sizes to evaluate.
-## This option is necessary, unless @var{clust} is a matrix of proposed 
+## This option is necessary, unless @var{clust} is a matrix of proposed
 ## clustering solutions.
 ##
-## @item @qcode{Distance} 
+## @item @qcode{Distance}
 ## a distance metric as accepted by the chosen @var{clust}.  It can be the
 ## name of the distance metric as a string or a function handle.  When
-## @var{criterion} is @code{silhouette}, it can be a vector as created by 
+## @var{criterion} is @code{silhouette}, it can be a vector as created by
 ## function @code{pdist}.  Valid distance metric strings are: @code{sqEuclidean}
-## (default), @code{Euclidean}, @code{cityblock}, @code{cosine}, 
+## (default), @code{Euclidean}, @code{cityblock}, @code{cosine},
 ## @code{correlation}, @code{Hamming}, @code{Jaccard}.
 ## Only used by @code{silhouette} and @code{gap} evaluation.
 ##
-## @item @qcode{ClusterPriors} 
+## @item @qcode{ClusterPriors}
 ## the prior probabilities of each cluster, which can be either @code{empirical}
 ## (default), or @code{equal}.  When @code{empirical} the silhouette value is
 ## the average of the silhouette values of all points; when @code{equal} the
 ## silhouette value is the average of the average silhouette value of each
 ## cluster.  Only used by @code{silhouette} evaluation.
 ##
-## @item @qcode{B} 
+## @item @qcode{B}
 ## the number of reference datasets generated from the reference distribution.
 ## Only used by @code{gap} evaluation.
 ##
-## @item @qcode{ReferenceDistribution} 
+## @item @qcode{ReferenceDistribution}
 ## the reference distribution used to create the reference data.  It can be
 ## @code{PCA} (default) for a distribution based on the principal components of
 ## @var{X}, or @code{uniform} for a uniform distribution based on the range of
 ## the observed data.  @code{PCA} is currently not implemented.
 ## Only used by @code{gap} evaluation.
 ##
-## @item @qcode{SearchMethod} 
-## the method for selecting the optimal value with a @code{gap} evaluation.  It 
+## @item @qcode{SearchMethod}
+## the method for selecting the optimal value with a @code{gap} evaluation.  It
 ## can be either @code{globalMaxSE} (default) for selecting the smallest number
 ## of clusters which is inside the standard error of the maximum gap value, or
 ## @code{firstMaxSE} for selecting the first number of clusters which is inside
@@ -117,7 +119,7 @@
 ##
 ## @end deftypefn
 ##
-## @seealso{CalinskiHarabaszEvaluation, DaviesBouldinEvaluation, GapEvaluation, 
+## @seealso{CalinskiHarabaszEvaluation, DaviesBouldinEvaluation, GapEvaluation,
 ## SilhouetteEvaluation}
 
 function cc = evalclusters (x, clust, criterion, varargin)
@@ -178,7 +180,7 @@ function cc = evalclusters (x, clust, criterion, varargin)
     if (! ischar (varargin{pair_index}))
       error ("evalclusters: invalid property, string expected");
     endif
-    
+
     ## now parse the parameter
     switch (lower (varargin{pair_index}))
       case "klist"
@@ -264,16 +266,16 @@ function cc = evalclusters (x, clust, criterion, varargin)
     endswitch
 
     pair_index += 2;
-  endwhile 
+  endwhile
 
   ## check if there are parameters without a value or a name left
   if (nargin - 2 - pair_index)
     if (ischar (varargin{pair_index}))
       error ("evalclusters: invalid parameter '%s'", varargin{pair_index});
-    else 
+    else
       error ("evalclusters: invalid parameter '%d'", varargin{pair_index});
     endif
-  endif 
+  endif
 
   ## another check on klist
   if (isempty (klist) && (ischar (clust) || isa (clust, "function_handle")))
@@ -284,7 +286,7 @@ function cc = evalclusters (x, clust, criterion, varargin)
   ## main
   switch (lower (criterion))
     case "calinskiharabasz"
-      ## further compatibility checks between the chosen parameters are 
+      ## further compatibility checks between the chosen parameters are
       ## delegated to the class constructor
       if (isempty (klist))
         klist = 1 : columns (clust);
@@ -292,7 +294,7 @@ function cc = evalclusters (x, clust, criterion, varargin)
       cc = CalinskiHarabaszEvaluation (x, clust, klist);
 
     case "daviesbouldin"
-      ## further compatibility checks between the chosen parameters are 
+      ## further compatibility checks between the chosen parameters are
       ## delegated to the class constructor
       if (isempty (klist))
         klist = 1 : columns (clust);
@@ -300,7 +302,7 @@ function cc = evalclusters (x, clust, criterion, varargin)
       cc = DaviesBouldinEvaluation (x, clust, klist);
 
     case "silhouette"
-      ## further compatibility checks between the chosen parameters are 
+      ## further compatibility checks between the chosen parameters are
       ## delegated to the class constructor
       if (isempty (klist))
         klist = 1 : columns (clust);
@@ -311,7 +313,7 @@ function cc = evalclusters (x, clust, criterion, varargin)
       ## gap cannot be used with a pre-computed solution, i.e. a matrix for
       ## 'clust', and klist must be specified
       if (isnumeric (clust))
-        error (["evalclusters: 'clust' must be a clustering algorithm when "... 
+        error (["evalclusters: 'clust' must be a clustering algorithm when "...
                 "using the gap criterion"]);
       endif
       if (isempty (klist))
