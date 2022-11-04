@@ -1,6 +1,8 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
-## Copyright (C) 2018 John Donoghue <john.donoghue@ieee.org>
 ## Copyright (C) 2015 Lachlan Andrew <lachlanbis@gmail.com>
+## Copyright (C) 2018 John Donoghue <john.donoghue@ieee.org>
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -82,7 +84,7 @@
 ##                    variance is set to at least @var{weight}(i,2), to
 ##                    prevent spurious components with zero variance.
 ##    @end itemize
-##    
+##
 ## @seealso{gmdistribution, kmeans}
 ## @end deftypefn
 
