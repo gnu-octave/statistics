@@ -1,4 +1,5 @@
 ## Copyright (C) 2020 Stefano Guidoni <ilguido@users.sf.net>
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -19,7 +20,7 @@
 ## @deftypefn {Function File} @
 ##  {@var{C} =} confusionmat (@var{group}, @var{grouphat})
 ## @deftypefnx {Function File} @
-##  {@var{C} =} confusionmat (@var{group}, @var{grouphat}, 'Order', @var{grouporder})
+##  {@var{C} =} confusionmat (@var{group}, @var{grouphat}, "Order", @var{grouporder})
 ## @deftypefnx {Function File} @
 ##  {[@var{C}, @var{order}] =} confusionmat (@var{group}, @var{grouphat})
 ##
@@ -44,176 +45,165 @@
 ## @var{grouporder} variable. The data type of @var{grouporder} must be the
 ## same of @var{group} and @var{grouphat}.
 ##
-## @end deftypefn
+## MATLAB compatibility: Octave misses string arrays and categorical vectors.
 ##
 ## @seealso{crosstab}
+## @end deftypefn
 
-## Author: Stefano Guidoni <ilguido@users.sf.net>
-## MATLAB compatibility: Octave misses string arrays, categorical vectors and
-##                       undefined values.
+function [C, order] = confusionmat (group, grouphat, opt = "Order", grouporder)
 
-function [C, order] = confusionmat (group, grouphat, opt = 'Order', grouporder)
-
-## check the input parameters
-if ((nargin < 2) || (nargin > 4))
-  print_usage();
-endif
-
-y_true = group;
-y_pred = grouphat;
-
-if (class (y_true) != class (y_pred))
-  error ("confusionmat: group and grouphat must be of the same data type" );
-endif
-
-if (length (y_true) != length (y_pred))
-  error ("confusionmat: group and grouphat must be of the same length" );
-endif
-
-if ((nargin > 3) && strcmp (opt, "Order"))
-  unique_tokens = grouporder;
-
-  if class( y_true ) != class( unique_tokens )
-    error ("confusionmat: group and grouporder must be of the same data type" );
+  ## check the input parameters
+  if ((nargin < 2) || (nargin > 4))
+    print_usage();
   endif
-endif
 
-if (isvector (y_true))
-  if (isrow (y_true))
-    y_true = vec(y_true);
+  y_true = group;
+  y_pred = grouphat;
+
+  if (class (y_true) != class (y_pred))
+    error ("confusionmat: group and grouphat must be of the same data type");
   endif
-else
-  error ("confusionmat: group must be a vector or array" );
-endif
 
-if (isvector (y_pred))
-  if (isrow (y_pred))
-    y_pred = vec(y_pred);
+  if (length (y_true) != length (y_pred))
+    error ("confusionmat: group and grouphat must be of the same length");
   endif
-else
-  error ("confusionmat: grouphat must be a vector or array" );
-endif
 
-if (exist ( "unique_tokens", "var"))
-  if (isvector (unique_tokens))
-    if (isrow (unique_tokens))
-      unique_tokens = vec(unique_tokens);
+  if ((nargin > 3) && strcmp (opt, "Order"))
+    unique_tokens = grouporder;
+
+    if class( y_true ) != class( unique_tokens )
+      error ("confusionmat: group and grouporder must be of the same data type");
+    endif
+  endif
+
+  if (isvector (y_true))
+    if (isrow (y_true))
+      y_true = vec(y_true);
     endif
   else
-    error ("confusionmat: grouporder must be a vector or array");
-  endif
-endif
-
-## compute the confusion matrix
-if (isa (y_true, "numeric") || isa (y_true, "logical"))
-  ## numeric or boolean vector
-
-  ## MATLAB compatibility:
-  ## remove NaN values from grouphat
-  nan_indices = find (isnan (y_pred));
-  y_pred(nan_indices) = [];
-
-  ## MATLAB compatibility:
-  ## numeric and boolean values
-  ## are sorted in ascending order
-  if (! exist ("unique_tokens", "var"))
-    unique_tokens = union (y_true, y_pred);
+    error ("confusionmat: group must be a vector or array");
   endif
 
-  y_true(nan_indices) = [];
-
-  C_size = length (unique_tokens);
-
-  C = zeros ( C_size );
-
-  for i = 1:length (y_true)
-    row_index = find( unique_tokens == y_true(i) );
-    col_index = find( unique_tokens == y_pred(i) );
-
-    C(row_index, col_index)++;
-  endfor
-
-elseif (iscellstr (y_true))
-  ## string cells
-
-  ## MATLAB compatibility:
-  ## remove empty values from grouphat
-  empty_indices = [];
-  for i = 1:length (y_pred)
-    if (isempty (y_pred{i}))
-      empty_indices = [empty_indices; i];
+  if (isvector (y_pred))
+    if (isrow (y_pred))
+      y_pred = vec(y_pred);
     endif
-  endfor
-
-  y_pred(empty_indices) = [];
-
-  ## MATLAB compatibility:
-  ## string values are sorted according to their
-  ## first appearance in group and grouphat
-  if (! exist ("unique_tokens", "var"))
-    all_tokens = vertcat (y_true, y_pred);
-    unique_tokens = [all_tokens(1)];
-
-    for i = 2:length( all_tokens )
-      if (! any (strcmp (all_tokens(i), unique_tokens)))
-        unique_tokens = [unique_tokens; all_tokens(i)];
-      endif
-    endfor
+  else
+    error ("confusionmat: grouphat must be a vector or array");
   endif
 
-  y_true(empty_indices) = [];
-
-  C_size = length (unique_tokens);
-
-  C = zeros (C_size);
-
-
-  for i = 1:length (y_true)
-    row_index = find (strcmp (y_true{i}, unique_tokens));
-    col_index = find (strcmp (y_pred{i}, unique_tokens));
-
-    C(row_index, col_index)++;
-  endfor
-
-elseif (ischar (y_true))
-  ## character array
-
-  ## MATLAB compatibility:
-  ## character values are sorted according to their
-  ## first appearance in group and grouphat
-  if (! exist ("unique_tokens", "var"))
-    all_tokens = vertcat (y_true, y_pred);
-    unique_tokens = [all_tokens(1)];
-
-    for i = 2:length (all_tokens)
-      if (! any (find (unique_tokens == all_tokens(i))))
-        unique_tokens = [unique_tokens; all_tokens(i)];
+  if (exist ( "unique_tokens", "var"))
+    if (isvector (unique_tokens))
+      if (isrow (unique_tokens))
+        unique_tokens = vec(unique_tokens);
       endif
-    endfor
+    else
+      error ("confusionmat: grouporder must be a vector or array");
+    endif
   endif
 
-  C_size = length ( unique_tokens );
+  ## compute the confusion matrix
+  if (isa (y_true, "numeric") || isa (y_true, "logical"))
+    ## numeric or boolean vector
 
-  C = zeros ( C_size );
+    ## MATLAB compatibility:
+    ## remove NaN values from grouphat
+    nan_indices = find (isnan (y_pred));
+    y_pred(nan_indices) = [];
 
-  for i = 1:length( y_true)
-    row_index = find( unique_tokens == y_true(i) );
-    col_index = find( unique_tokens == y_pred(i) );
+    ## MATLAB compatibility:
+    ## numeric and boolean values
+    ## are sorted in ascending order
+    if (! exist ("unique_tokens", "var"))
+      unique_tokens = union (y_true, y_pred);
+    endif
 
-    C(row_index, col_index)++;
-  endfor
+    y_true(nan_indices) = [];
 
-elseif (isstring (y_true))
-  ## string array
-  ## FIXME: not implemented yet
+    C_size = length (unique_tokens);
 
-  error ("confusionmat: string array not implemented yet");
-else
-  error ("confusionmat: invalid data type");
-endif
+    C = zeros (C_size);
 
-order = unique_tokens;
+    for i = 1:length (y_true)
+      row_index = find (unique_tokens == y_true(i));
+      col_index = find (unique_tokens == y_pred(i));
 
+      C(row_index, col_index)++;
+    endfor
+
+  elseif (iscellstr (y_true))
+    ## string cells
+
+    ## MATLAB compatibility:
+    ## remove empty values from grouphat
+    empty_indices = [];
+    for i = 1:length (y_pred)
+      if (isempty (y_pred{i}))
+        empty_indices = [empty_indices; i];
+      endif
+    endfor
+
+    y_pred(empty_indices) = [];
+
+    ## MATLAB compatibility:
+    ## string values are sorted according to their
+    ## first appearance in group and grouphat
+    if (! exist ("unique_tokens", "var"))
+      all_tokens = vertcat (y_true, y_pred);
+      unique_tokens = [all_tokens(1)];
+
+      for i = 2:length( all_tokens )
+        if (! any (strcmp (all_tokens(i), unique_tokens)))
+          unique_tokens = [unique_tokens; all_tokens(i)];
+        endif
+      endfor
+    endif
+
+    y_true(empty_indices) = [];
+    C_size = length (unique_tokens);
+    C = zeros (C_size);
+
+    for i = 1:length (y_true)
+      row_index = find (strcmp (y_true{i}, unique_tokens));
+      col_index = find (strcmp (y_pred{i}, unique_tokens));
+      C(row_index, col_index)++;
+    endfor
+
+  elseif (ischar (y_true))
+    ## character array
+
+    ## MATLAB compatibility:
+    ## character values are sorted according to their
+    ## first appearance in group and grouphat
+    if (! exist ("unique_tokens", "var"))
+      all_tokens = vertcat (y_true, y_pred);
+      unique_tokens = [all_tokens(1)];
+      for i = 2:length (all_tokens)
+        if (! any (find (unique_tokens == all_tokens(i))))
+          unique_tokens = [unique_tokens; all_tokens(i)];
+        endif
+      endfor
+    endif
+
+    C_size = length ( unique_tokens );
+    C = zeros ( C_size );
+
+    for i = 1:length( y_true)
+      row_index = find (unique_tokens == y_true(i));
+      col_index = find (unique_tokens == y_pred(i));
+      C(row_index, col_index)++;
+    endfor
+
+  elseif (isstring (y_true))
+    ## string array
+    ## FIXME: not implemented yet
+
+    error ("confusionmat: string array not implemented yet");
+  else
+    error ("confusionmat: invalid data type");
+  endif
+
+  order = unique_tokens;
 endfunction
 
 ## Test the confusion matrix example from

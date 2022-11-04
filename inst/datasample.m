@@ -1,5 +1,7 @@
 ## Copyright (C) 2021 Stefano Guidoni <ilguido@users.sf.net>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -51,9 +53,6 @@
 ## @end deftypefn
 ##
 ## @seealso{rand, randi, randperm, randsample}
-
-## MATLAB compatibility: there are no random number streams in Octave
-## Author: Stefano Guidoni <ilguido@users.sf.net>
 
 function [y, idcs] = datasample (data, k, varargin)
 

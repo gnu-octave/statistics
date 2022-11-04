@@ -67,11 +67,8 @@
 ##
 ## Run @code{demo confusionchart} to see some examples.
 ##
-## @end deftypefn
-##
 ## @seealso{confusionmat, sortClasses}
-
-## Author: Stefano Guidoni <ilguido@users.sf.net>
+## @end deftypefn
 
 function cm = confusionchart (varargin)
 
