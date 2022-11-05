@@ -100,23 +100,25 @@
 function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
 
   ## Check for valid number of input arguments
-  narginchk (1, 4);
+  if (nargin < 1 || nargin >4)
+    error ("anova2: invalid number of input arguments.");
+  endif
   ## Check for NaN values in X
   if (any (isnan( x(:))))
-    error ("NaN values in input are not allowed.  Use anovan instead.");
+    error ("anova2: NaN values in input are not allowed.  Use anovan instead.");
   endif
   ## Add defaults
   if (nargin == 1)
     reps = 1;
   endif
   if (nargin < 3)
-    displayopt = 'on';
+    displayopt = "on";
   endif
   if (nargin < 4)
     model = "interaction";
   endif
   epsilonhat = [];
-  plotdata = ~(strcmp (displayopt, 'off'));
+  plotdata = ! (strcmp (displayopt, "off"));
 
   ## Calculate group numbers
   FFGn = size (x, 1) / reps;            ## Number of groups in Row Factor
@@ -124,7 +126,7 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
 
   ## Check for valid repetitions
   if (! (int16 (FFGn) == FFGn))
-    error ("The number of rows in X must be a multiple of REPS.");
+    error ("anova2: the number of rows in X must be a multiple of REPS.");
   else
     idx_s = 1;
     idx_e = reps;
@@ -186,7 +188,7 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
   ## freedom. The calculations are based on equalities for the partitioning of
   ## variance in fully balanced designs.
   switch (lower (model))
-    case {"interaction","full"}
+    case {"interaction", "full"}
       ## TWO-WAY ANOVA WITH INTERACTION (full factorial model)
       ## Sums--of-squares are already partitioned into main effects and
       ## interaction. Just calculate mean-squares and degrees of fredom
@@ -210,15 +212,15 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
         vcov = cov (x);
         N = SFGn^2 * (mean (diag (vcov)) - mean (mean (vcov)))^2;
         D = (SFGn - 1) * ...
-                 (sum (sumsq (vcov)) - 2 * SFGn * sum ((mean (vcov, 2).^2)) + ...
-                  SFGn^2 * mean (mean (vcov))^2);
+            (sum (sumsq (vcov)) - 2 * SFGn * sum ((mean (vcov, 2).^2)) + ...
+             SFGn^2 * mean (mean (vcov))^2);
         epsilonhat = N / D;
         dfN_GG = epsilonhat * (SFGn - 1);
         dfD_GG = epsilonhat * (FFGn - 1) * (SFGn - 1);
       endif
-      reps = 1;                   ## Set reps to 1 to avoid printing interaction
-      MSE = SSE / df_SSE;         ## Mean Square for Error (Within)
-      MSR = SSR / df_SSR;         ## Mean Square for Row Factor
+      reps = 1;                 ## Set reps to 1 to avoid printing interaction
+      MSE = SSE / df_SSE;       ## Mean Square for Error (Within)
+      MSR = SSR / df_SSR;       ## Mean Square for Row Factor
       MS_DENOM = MSE;
       df_DENOM = df_SSE;
     case "nested"
@@ -230,13 +232,13 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
       df_SSR += df_SSI;
       SSI = 0;
       df_SSI = 0;
-      reps = 1;                   ## Set reps to 1 to avoid printing interaction
-      MSE = SSE / df_SSE;         ## Mean Square for Error (Within)
-      MSR = SSR / df_SSR;         ## Mean Square for Row Factor
-      MS_DENOM = MSR;             ## Row factor is random so MSR is denominator
-      df_DENOM = df_SSR;          ## Row factor is random so df_SSR is denominator
+      reps = 1;                 ## Set reps to 1 to avoid printing interaction
+      MSE = SSE / df_SSE;       ## Mean Square for Error (Within)
+      MSR = SSR / df_SSR;       ## Mean Square for Row Factor
+      MS_DENOM = MSR;           ## Row factor is random so MSR is denominator
+      df_DENOM = df_SSR;        ## Row factor is random so df_SSR is denominator
     otherwise
-      error ("model type not recognised");
+      error ("anova2: model type not recognised");
   endswitch
 
   ## Calculate F statistics and p values
@@ -289,7 +291,7 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
 
   ## Create stats structure (if requested) for MULTCOMPARE
   if (nargout > 2)
-    stats.source = 'anova2';
+    stats.source = "anova2";
     stats.sigmasq = MS_DENOM; ## MS used to calculate F relating to stats.pval
     stats.colmeans = SFGm(:)';
     stats.coln = SFGs;
@@ -320,14 +322,14 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
     endif
     printf("Error        %10.4f %5.0f %10.4f\n", SSE, df_SSE, MSE);
     printf("Total        %10.4f %5.0f\n\n", SST, df_tot);
-    if (! isempty(epsilonhat))
-      printf(strcat (["Note: Greenhouse-Geisser's correction was applied to the\n"], ...
-                     ["degrees of freedom for the Column factor: F(%.2f,%.2f)\n\n"]),...
-                     dfN_GG, dfD_GG);
+    if (! isempty (epsilonhat))
+      printf (strcat (["Note: Greenhouse-Geisser's correction was applied to the\n"], ...
+                      ["degrees of freedom for the Column factor: F(%.2f,%.2f)\n\n"]),...
+                      dfN_GG, dfD_GG);
     endif
     if (strcmpi (model, "nested"))
-      printf(strcat (["Note: Rows are a random factor nested within the columns.\n"], ...
-                     ["The Column F statistic uses the Row MS instead of the MSE.\n\n"]));
+      printf (strcat (["Note: Rows are a random factor nested within the columns.\n"], ...
+                      ["The Column F statistic uses the Row MS instead of the MSE.\n\n"]));
     endif
   endif
 endfunction
@@ -367,7 +369,8 @@ endfunction
 
 ## testing against popcorn data and results from Matlab
 %!test
-%! # Test for anova2 ("interaction") - comparison with results from Matlab for column effect
+%! ## Test for anova2 ("interaction")
+%! ## comparison with results from Matlab for column effect
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! [p, atab, stats] = anova2 (popcorn, 3, "off");
@@ -387,7 +390,7 @@ endfunction
 %! assert (stats.df, 12);
 
 %!test
-%! # Test for anova2 ("linear") - comparison with results from GraphPad Prism 8
+%! ## Test for anova2 ("linear") - comparison with results from GraphPad Prism 8
 %! data = [54, 43, 78, 111;
 %!         23, 34, 37, 41;
 %!         45, 65, 99, 78;
@@ -407,7 +410,7 @@ endfunction
 %! assert (atab{3,6}, 0.000698397753556, 1e-10);
 
 %!test
-%! # Test for anova2 ("nested") - comparison with results from GraphPad Prism 8
+%! ## Test for anova2 ("nested") - comparison with results from GraphPad Prism 8
 %! data = [4.5924 7.3809 21.322; -0.5488 9.2085 25.0426; ...
 %!         6.1605 13.1147 22.66; 2.3374 15.2654 24.1283; ...
 %!         5.1873 12.4188 16.5927; 3.3579 14.3951 10.2129; ...

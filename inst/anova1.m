@@ -26,7 +26,7 @@
 ##
 ## Perform a one-way analysis of variance (ANOVA) for comparing the means of two
 ## or more groups of data under the null hypothesis that the groups are drawn
-## from distributions with the same mean. For planned contrasts and/or diagnostic 
+## from distributions with the same mean. For planned contrasts and/or diagnostic
 ## plots, use @qcode{anovan} instead.
 ##
 ## anova1 can take up to three input arguments:
@@ -103,22 +103,24 @@
 function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
 
   ## check for valid number of input arguments
-  narginchk (1, 4);
+  if (nargin < 1 || nargin >4)
+    error ("anova1: invalid number of input arguments.");
+  endif
   ## add defaults
   if (nargin < 2)
     group = [];
   endif
   if (nargin < 3)
-    displayopt = 'on';
+    displayopt = "on";
   endif
   if (nargin < 4)
     vartype = "equal";
   endif
-  plotdata = ~(strcmp (displayopt, 'off'));
+  plotdata = ! (strcmp (displayopt, 'off'));
 
   ## Convert group to cell array from character array, make it a column
   if (! isempty (group) && ischar (group))
-    group = cellstr(group);
+    group = cellstr (group);
   endif
   if (size (group, 1) == 1)
     group = group';
@@ -135,13 +137,13 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
     elseif (size (group, 1) == m)     ## group names exist and match columns
       group = group(gi,:);
     else
-      error ("x columns and GROUP length do not match.");
+      error ("anova1: columns in X and GROUP length do not match.");
     endif
   endif
 
   ## Check that x and group are the same size
   if (! all (numel (x) == numel (group)))
-      error ("GROUP must be a vector with the same number of rows as x.");
+    error ("anova1: GROUP must be a vector with the same number of rows as x.");
   endif
 
   ## Identify NaN values (if any) and remove them from X along with
@@ -214,7 +216,7 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
         ## Correct the error degrees of freedom
         dfe = (3 /(groups^2 - 1) * sum ((1 - w / sum (w)).^2 .* (xs-1).^-1))^-1;
       otherwise
-        error('Invalid fourth (vartype) argument to anova1\n',[]);
+        error ("anova1: invalid fourth (vartype) argument to anova1.");
     endswitch
     p = 1 - fcdf (F, dfm, dfe);     ## Probability of F given equal means.
   elseif (SSM == 0)                 ## Constant Matrix case.
@@ -249,7 +251,7 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
     stats.source = 'anova1';
     stats.vartype = vartype;
     stats.means = xm + mu;
-    stats.vars = xv; 
+    stats.vars = xv;
     stats.df = dfe;
     stats.s = sqrt (MSE);
   endif
@@ -272,7 +274,7 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
   endif
   ## Plot data using BOXPLOT (unless opted out)
   if (plotdata)
-    boxplot (x, group_id, 'Notch', "on", 'Labels', group_names);
+    boxplot (x, group_id, "Notch", "on", "Labels", group_names);
   endif
 endfunction
 

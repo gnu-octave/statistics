@@ -418,7 +418,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
             if (! ismember (CONTRASTS{i}, ...
                             {"simple","poly","helmert","effect","treatment"}))
               error (strcat(["anovan: the choices for built-in contrasts are"], ...
-                     [" ""simple"", ""poly"", ""helmert"", ""effect"", or ""treatment"""]));
+            [" ""simple"", ""poly"", ""helmert"", ""effect"", or ""treatment"""]));
             endif
             if (strcmpi (CONTRASTS{i}, "treatment") && (SSTYPE==3))
               warning (msg);
