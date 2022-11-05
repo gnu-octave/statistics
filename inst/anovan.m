@@ -773,7 +773,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         subplot (2, 2, 1);
         histfit (std_resid);
         title ("Histogram")
-        xlabel ("Standardized Residuals");
+        xlabel ("Binned Standardized Residuals");
+        ylabel ("Count");
         ## Normal probability plot
         subplot (2, 2, 2);
         normplot (std_resid);
@@ -783,7 +784,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         plot (fit, std_resid, "b+");
         xlabel ("Fitted values");
         ylabel ("Standardized Residuals");
-        title ("Standardized residuals vs Fitted values")
+        title ("Residuals vs Fitted Values")
         ax1 = get (gca);
         hold on; plot (ax1.xlim, zeros (1, 2), "r-."); grid ("on"); hold off;
         ## Checks for outliers and heteroskedasticity
@@ -792,6 +793,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         xlabel ("Fitted values");
         ylabel ("sqrt ( |Standardized Residuals| )");
         title ("Spread-Location Plot")
+        set (findall ( gcf, '-property', 'FontSize'), 'FontSize', 7)
 
       case "off"
 
