@@ -35,7 +35,6 @@ Data
 Descriptive statistics
  combnk
  dcov
- fixvarsize
  geomean
  harmmean
  jackknife
@@ -103,9 +102,7 @@ Distribution fitting
 Distribution statistics
  betastat
  binostat
- chi2stat
- explike
- expstat
+ chi2stat expstat
  fstat
  gamstat
  geostat
