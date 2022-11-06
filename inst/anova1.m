@@ -102,11 +102,11 @@
 
 function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
 
-  ## check for valid number of input arguments
-  if (nargin < 1 || nargin >4)
+  ## Check for valid number of input arguments
+  if (nargin < 1 || nargin > 4)
     error ("anova1: invalid number of input arguments.");
   endif
-  ## add defaults
+  ## Add defaults
   if (nargin < 2)
     group = [];
   endif
@@ -148,7 +148,7 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
 
   ## Identify NaN values (if any) and remove them from X along with
   ## their corresponding values from group vector
-  nonan = ~isnan (x);
+  nonan = ! isnan (x);
   x = x(nonan);
   group = group(nonan, :);
 
