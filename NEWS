@@ -183,11 +183,13 @@ Summary of important user-visible changes for statistics 1.5.1:
  New functions:
  ==============
 
- ** sampsizepwr (fully Matlab compatible with extra functionality)
+ ** barttest (fully Matlab compatible)
 
  ** fixvarsize (resembles MATLAB's distchck functionality)
 
  ** nctcdf
+ 
+ ** sampsizepwr (fully Matlab compatible with extra functionality)
 
  Improvements:
  =============
@@ -198,7 +200,7 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  Removed Functions:
  ==================
-
+ 
  ** cloglog
 
  ** nanmean (replaced by mean)

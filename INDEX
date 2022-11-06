@@ -127,6 +127,7 @@ Model Fitting
 Hypothesis testing
  anderson_darling_test
  bartlett_test
+ barttest
  binotest
  chi2gof
  chi2test
