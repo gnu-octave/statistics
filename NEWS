@@ -187,12 +187,16 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** fixvarsize (resembles MATLAB's distchck functionality)
 
+ ** levene_test (options for testtypes, handling NaNs and GROUPS like anova1)
+
  ** nctcdf
- 
+
  ** sampsizepwr (fully Matlab compatible with extra functionality)
 
  Improvements:
  =============
+
+ ** bartlett_test: improved functionality, hanlding NaNs and GROUPS like anova1
 
  ** chi2test: improved functionality, handles 3-way tables
 
@@ -200,7 +204,7 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  Removed Functions:
  ==================
- 
+
  ** cloglog
 
  ** nanmean (replaced by mean)
