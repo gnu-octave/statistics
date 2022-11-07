@@ -1,117 +1,205 @@
 ## Copyright (C) 2014 Tony Richardson
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
-## This program is free software; you can redistribute it and/or modify it under
-## the terms of the GNU General Public License as published by the Free Software
-## Foundation; either version 3 of the License, or (at your option) any later
-## version.
+## This file is part of the statistics package for GNU Octave.
 ##
-## This program is distributed in the hope that it will be useful, but WITHOUT
-## ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-## FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-## details.
+## This program is free software: you can redistribute it and/or
+## modify it under the terms of the GNU General Public License as
+## published by the Free Software Foundation, either version 3 of the
+## License, or (at your option) any later version.
 ##
-## You should have received a copy of the GNU General Public License along with
-## this program; if not, see <http://www.gnu.org/licenses/>.
+## This program is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+## General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; see the file COPYING.  If not, see
+## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {Function File} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} vartest (@var{x}, @var{y})
-## @deftypefnx {Function File} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} vartest (@var{x}, @var{y}, @var{Name}, @var{Value})
-## Perform a F-test for equal variances.
+## @deftypefn {Function File} @var{h} = vartest (@var{x}, @var{v})
+## @deftypefnx {Function File} @var{h} = vartest (@var{x}, @var{v}, @var{name}, @var{value})
+## @deftypefnx {Function File} [@var{h}, @var{pval}] = vartest (@dots{})
+## @deftypefnx {Function File} [@var{h}, @var{pval}, @var{ci}] = vartest (@dots{})
+## @deftypefnx {Function File} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = vartest (@dots{})
 ##
-## If the second argument @var{y} is a vector, a paired-t test of the
-## hypothesis @code{mean (@var{x}) = mean (@var{y})} is performed.
+## One-sample test of variance.
 ##
-## The argument @qcode{"alpha"} can be used to specify the significance level
-## of the test (the default value is 0.05).  The string
-## argument @qcode{"tail"}, can be used to select the desired alternative
-## hypotheses.  If @qcode{"alt"} is @qcode{"both"} (default) the null is 
-## tested against the two-sided alternative @code{mean (@var{x}) != @var{m}}.
-## If @qcode{"alt"} is @qcode{"right"} the one-sided 
-## alternative @code{mean (@var{x}) > @var{m}} is considered.
-## Similarly for @qcode{"left"}, the one-sided alternative @code{mean
-## (@var{x}) < @var{m}} is considered.  When @qcode{"vartype"} is @qcode{"equal"}
-## the variances are assumed to be equal (this is the default).  When
-## @qcode{"vartype"} is @qcode{"unequal"} the variances are not assumed equal.
-## When argument @var{x} is a matrix the @qcode{"dim"} argument can be 
-## used to selection the dimension over which to perform the test.
-## (The default is the first non-singleton dimension.)
+## @code{@var{h} = vartest (@var{x}, @var{v})} performs a chi-square test of the
+## hypothesis that the data in the vector @var{x} come from a normal
+## distribution with variance @var{v}, against the alternative that X comes from
+## a normal distribution with a different variance.  The result is @var{h} = 0
+## if the null hypothesis ("variance is V") cannot be rejected at the 5%
+## significance level, or H=1 if the null hypothesis can be rejected at the 5%
+## level.
 ##
-## If @var{h} is 0 the null hypothesis is accepted, if it is 1 the null
-## hypothesis is rejected. The p-value of the test is returned in @var{pval}.
-## A 100(1-alpha)% confidence interval is returned in @var{ci}. @var{stats}
-## is a structure containing the value of the test statistic (@var{tstat}),
-## the degrees of freedom (@var{df}) and the sample standard deviation
-## (@var{sd}).
+## @var{x} may also be a matrix or an N-D array.  For matrices, @code{vartest}
+## performs separate tests along each column of @var{x}, and returns a vector of
+## results.  For N-D arrays, @code{vartest} works along the first non-singleton
+## dimension of @var{x}.  @var{v} must be a scalar.
 ##
+## @code{vartest} treats NaNs as missing values, and ignores them.
+##
+## @code{[@var{h}, @var{pval}] = vartest (@dots{})} returns the p-value.  That
+## is the probability of observing the given result, or one more extreme, by
+## chance if the null hypothesisis true.
+##
+## @code{[@var{h}, @var{pval}, @var{ci}] = vartest (@dots{})} returns a
+## 100 * (1 - @var{alpha})% confidence interval for the true variance.
+##
+## @code{[@var{h}, @var{pval}, @var{ci}, @var{stats}] = vartest (@dots{})}
+## returns a structure with the following fields:
+##
+## @multitable @columnfractions 0.05 0.2 0.75
+## @item @tab "chisqstat" @tab the value of the test statistic
+## @item @tab "df" @tab the degrees of freedom of the test
+## @end multitable
+##
+## @code{[@dots{}] = vartest (@dots{}, @var{name}, @var{value}), @dots{}}
+## specifies one or more of the following name/value pairs:
+##
+## @multitable @columnfractions 0.05 0.2 0.75
+## @headitem @tab Name @tab Value
+## @item @tab "alpha" @tab the significance level. Default is 0.05.
+##
+## @item @tab "dim" @tab dimension to work along a matrix or an N-D array.
+##
+## @item @tab "tail" @tab a string specifying the alternative hypothesis:
+## @end multitable
+## @multitable @columnfractions 0.1 0.15 0.75
+## @item @tab "both" @tab "variance is not @var{v}" (two-tailed, default)
+## @item @tab "left" @tab "variance is less than @var{v}" (left-tailed)
+## @item @tab "right" @tab "variance is greater than @var{v}" (right-tailed)
+## @end multitable
+##
+## @seealso{ttest, ztest, kstest}
 ## @end deftypefn
 
-## Author: Tony Richardson <richardson.tony@gmail.com>
-## Description: Test for mean of a normal sample with known variance
+function [h, pval, ci, stats] = vartest (x, v, varargin)
 
-function [h, p, ci, stats] = vartest(x, v, varargin)
-  
-  % Set default arguments
+  ## Validate input arguments
+  if (nargin < 2)
+    error ("vartest: too few input arguments.");
+  endif
+  if (! isscalar (v) || ! isnumeric(v) || ! isreal(v) || v < 0)
+    error ("vartest: invalid value for variance.");
+  endif
+  ## Add defaults
   alpha = 0.05;
-  tail  = 'both';
-  % Find the first non-singleton dimension of x
-  dim = min(find(size(x)~=1));
-  if isempty(dim), dim = 1; end
+  tail = "both";
+  dim = [];
+  if (nargin > 2)
+    for idx = 3:2:nargin
+      name = varargin{idx-2};
+      value = varargin{idx-1};
+      switch (lower (name))
+        case "alpha"
+          alpha = value;
+          if (! isscalar (alpha) || ! isnumeric (alpha) || ...
+                alpha <= 0 || alpha >= 1)
+            error ("vartest: invalid value for alpha.");
+          endif
+        case "tail"
+          tail = value;
+          if (! any (strcmpi (tail, {"both", "left", "right"})))
+            error ("vartest: invalid value for tail.");
+          endif
+        case "dim"
+          dim = value;
+          if (! isscalar (dim) || ! ismember (dim, 1:ndims (x)))
+            error ("vartest: invalid value for operating dimension.");
+          endif
+        otherwise
+          error ("vartest: invalid name for optional arguments.");
+      endswitch
+    endfor
+  endif
+  ## Figure out which dimension mean will work along
+  if (isempty (dim))
+    dim = find (size (x) != 1, 1);
+  endif
+  ## Replace all NaNs with zeros
+  is_nan = isnan (x);
+  x_dims = ndims (x);
+  x(is_nan) = 0;
+  ## Find sample size for each group (if more than one)
+  if (any (is_nan(:)))
+    sz = sum (! is_nan, dim);
+  else
+    sz = size (x, dim);
+  endif
+  ## Find degrees of freedom for each group (if more than one)
+  df = max (sz - 1, 0);
+  ## Calculate mean for each group (if more than one)
+  x_mean = sum (x, dim) ./ max (1, sz);
+  ## Center data
+  if (isscalar (x_mean))
+    x_centered = x - x_mean;
+  else
+    rep = ones (1, x_dims);
+    rep(dim) = size (x, dim);
+    x_centered = x - repmat (x_mean, rep);
+  endif
+  ## Replace all NaNs with zeros
+  x_centered(is_nan) = 0;
+  ## Calculate chi-square statistic
+  sumsq = sum (abs (x_centered) .^ 2, dim);
+  if (v > 0)
+    chisqstat = sumsq ./ v;
+  else
+    chisqstat = Inf (size (sumsq));
+    chisqstat(sumsq == 0) = NaN;
+  endif
+  ## Calculate p-value for the test and confidence intervals (if requested)
+  if (strcmpi (tail, "both"))
+    pval = chi2cdf (chisqstat, df);
+    pval = 2 * min (pval, 1-pval);
+    if (nargout > 2)
+      ci = cat (dim, sumsq ./ chi2inv (1 - alpha / 2, df), ...
+                     sumsq ./ chi2inv (alpha / 2, df));
+    endif
+  elseif (strcmpi (tail, "right"))
+    pval = chi2pval (chisqstat, df);
+    if (nargout > 2)
+      ci = cat (dim, sumsq ./ chi2inv (1 - alpha, df), Inf (size (pval)));
+    endif
+  elseif (strcmpi (tail, "left"))
+    pval = chi2cdf (chisqstat, df);
+    if (nargout > 2)
+      ci = cat (dim, zeros (size (pval)), sumsq ./ chi2inv (alpha, df));
+    endif
+  endif
+  ## Determine the test outcome
+  h = double (pval < alpha);
+  h(isnan (pval)) = NaN;
+  ## Create stats output structure (if requested)
+  if (nargout > 3)
+    stats = struct ("chisqstat", chisqstat, "df", df);
+  endif
 
-  i = 1;
-  while ( i <= length(varargin) )
-    switch lower(varargin{i})
-      case 'alpha'
-        i = i + 1;
-        alpha = varargin{i};
-      case 'tail'
-        i = i + 1;
-        tail = varargin{i};
-      case 'dim'
-        i = i + 1;
-        dim = varargin{i};
-      otherwise
-        error('Invalid Name argument.',[]);
-    end
-    i = i + 1;
-  end
-  
-  if ~isa(tail, 'char')
-    error('tail argument to vartest must be a string\n',[]);
-  end
-    
-  s_var = var(x, 0, dim);
-  
-  df = size(x, dim) - 1;
-  stats.chisqstat = df*s_var/v;
+endfunction
 
-  % Based on the "tail" argument determine the P-value, the critical values,
-  % and the confidence interval.
-  switch lower(tail)
-    case 'both'
-      p = 2*min(chi2cdf(stats.chisqstat,df),1-chi2cdf(stats.chisqstat,df));
-      ci = [df*s_var ./ (chi2inv(1-alpha/2,df)); df*s_var ./ (chi2inv(alpha/2,df))];
-    case 'left'
-      p = chi2cdf(stats.chisqstat,df);
-      chi2crit = chi2inv(alpha,df);
-      ci = [zeros(size(stats.chisqstat)); df*s_var ./ (chi2inv(alpha,df))];
-    case 'right'
-      p = 1 - chi2cdf(stats.chisqstat,df);
-      chi2crit = chi2inv(1-alpha,df);
-      ci = [df*s_var ./ (chi2inv(1-alpha,df)); inf*ones(size(stats.chisqstat))];
-    otherwise
-      error('Invalid fourth (tail) argument to vartest\n',[]);
-  end
-
-  % Reshape the ci array to match MATLAB shaping
-  if and(isscalar(stats.chisqstat), dim==2)
-    ci = ci(:)';
-  elseif size(stats.chisqstat,2)<size(stats.chisqstat,1)
-    ci = reshape(ci(:),length(stats.chisqstat),2);
-  end
-
-  stats.df = df*ones(size(stats.chisqstat));
-  
-  % Determine the test outcome
-  % MATLAB returns this a double instead of a logical array
-  h = double(p < alpha);  
-end
+## Test input validation
+%!error<vartest: too few input arguments.> vartest ();
+%!error<vartest: invalid value for variance.> vartest ([1, 2, 3, 4], -0.5);
+%!error<vartest: invalid value for alpha.> ...
+%! vartest ([1, 2, 3, 4], 1, "alpha", 0);
+%!error<vartest: invalid value for alpha.> ...
+%! vartest ([1, 2, 3, 4], 1, "alpha", 1.2);
+%!error<vartest: invalid value for alpha.> ...
+%! vartest ([1, 2, 3, 4], 1, "alpha", "val");
+%!error<vartest: invalid value for tail.>  ...
+%! vartest ([1, 2, 3, 4], 1, "tail", "val");
+%!error<vartest: invalid value for tail.>  ...
+%! vartest ([1, 2, 3, 4], 1, "alpha", 0.01, "tail", "val");
+%!error<vartest: invalid value for operating dimension.> ...
+%! vartest ([1, 2, 3, 4], 1, "dim", 3);
+%!error<vartest: invalid value for operating dimension.> ...
+%! vartest ([1, 2, 3, 4], 1, "alpha", 0.01, "tail", "both", "dim", 3);
+%!test
+%! load carsmall
+%! [h, pval, ci] = vartest (MPG, 7^2);
+%! assert (h, 1);
+%! assert (pval, 0.04335086742174443, 1e-14);
+%! assert (ci, [49.397; 88.039], 1e-3);
