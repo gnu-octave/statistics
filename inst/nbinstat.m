@@ -1,5 +1,7 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -14,18 +16,18 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{m}, @var{v}] =} nbinstat (@var{n}, @var{p})
+## @deftypefn {Function File} [@var{m}, @var{v}] = nbinstat (@var{n}, @var{p})
 ## Compute mean and variance of the negative binomial distribution.
 ##
 ## @subheading Arguments
 ##
 ## @itemize @bullet
 ## @item
-## @var{n} is the first parameter of the negative binomial distribution. The elements
-## of @var{n} must be natural numbers
+## @var{n} is the first parameter of the negative binomial distribution.  The
+## elements of @var{n} must be natural numbers
 ##
 ## @item
-## @var{p} is the second parameter of the negative binomial distribution. The
+## @var{p} is the second parameter of the negative binomial distribution.  The
 ## elements of @var{p} must be probabilities
 ## @end itemize
 ## @var{n} and @var{p} must be of common size or one of them must be scalar
@@ -67,9 +69,6 @@
 ## Processes}. McGraw-Hill, New York, second edition, 1984.
 ## @end enumerate
 ## @end deftypefn
-
-## Author: Arno Onken <asnelt@asnelt.org>
-## Description: Moments of the negative binomial distribution
 
 function [m, v] = nbinstat (n, p)
 
