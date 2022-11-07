@@ -102,7 +102,8 @@ Distribution fitting
 Distribution statistics
  betastat
  binostat
- chi2stat expstat
+ chi2stat
+ expstat
  fstat
  gamstat
  geostat
@@ -116,6 +117,7 @@ Distribution statistics
  tstat
  unidstat
  unifstat
+ wblstat
 Experimental design
  fullfact
  ff2n
@@ -135,6 +137,7 @@ Hypothesis testing
  kruskalwallis
  kstest
  kstest2
+ levene_test
  ranksum
  runstest
  signtest
