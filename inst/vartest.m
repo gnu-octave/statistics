@@ -154,7 +154,7 @@ function [h, pval, ci, stats] = vartest (x, v, varargin)
   ## Calculate p-value for the test and confidence intervals (if requested)
   if (strcmpi (tail, "both"))
     pval = chi2cdf (chisqstat, df);
-    pval = 2 * min (pval, 1-pval);
+    pval = 2 * min (pval, 1 - pval);
     if (nargout > 2)
       ci = cat (dim, sumsq ./ chi2inv (1 - alpha / 2, df), ...
                      sumsq ./ chi2inv (alpha / 2, df));
