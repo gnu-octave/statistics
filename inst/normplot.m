@@ -1,5 +1,6 @@
 ## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
-## Based on previous work by Paul Kienzle <pkienzle@users.sf.net>
+## Based on previous work by Paul Kienzle <pkienzle@users.sf.net> originally
+## granted to the public domain.
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -15,8 +16,6 @@
 ##
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
-## Author: Paul Kienzle <pkienzle@users.sf.net>
-## This program is granted to the public domain.
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} normplot (@var{x})
