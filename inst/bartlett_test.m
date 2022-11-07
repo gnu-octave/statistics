@@ -81,7 +81,7 @@ function [h, pval, chisq, df] = bartlett_test (x, varargin)
   ## Check for 2nd argument being ALPHA or GROUP
   if (nargin > 1)
     if (isscalar (varargin{1}) && isnumeric (varargin{1}) ...
-                               && numel (varargin{1} == 1))
+                               && numel (varargin{1}) == 1)
       alpha = varargin{1};
       ## Check for valid alpha value
       if (alpha <= 0 || alpha >= 1)
@@ -95,7 +95,7 @@ function [h, pval, chisq, df] = bartlett_test (x, varargin)
         error ("bartlett_test: GROUP and X mismatch.");
       endif
     elseif (isempty (varargin{1}))
-      group = varargin{1};
+      ## Do nothing
     else
       error ("bartlett_test: invalid second input argument.");
     endif
