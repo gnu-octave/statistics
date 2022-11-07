@@ -160,7 +160,7 @@ function [h, pval, ci, stats] = vartest (x, v, varargin)
                      sumsq ./ chi2inv (alpha / 2, df));
     endif
   elseif (strcmpi (tail, "right"))
-    pval = chi2pval (chisqstat, df);
+    pval = chi2cdf (chisqstat, df);
     if (nargout > 2)
       ci = cat (dim, sumsq ./ chi2inv (1 - alpha, df), Inf (size (pval)));
     endif
