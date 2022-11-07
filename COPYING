@@ -33,8 +33,8 @@ inst/ff2n.m                     GPLv3+
 inst/fitgmdist.m                GPLv3+
 inst/fstat.m                    GPLv3+
 inst/fullfact.m                 GPLv3+
-inst/gamfit.m                   public domain
-inst/gamlike.m                  public domain
+inst/gamfit.m                   GPLv3+
+inst/gamlike.m                  GPLv3+
 inst/gamstat.m                  GPLv3+
 inst/geomean.m                  GPLv3+
 inst/geostat.m                  GPLv3+
