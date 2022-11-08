@@ -106,7 +106,7 @@ endfunction
 %! [ndim, pval, chisq] = barttest (x);
 %! assert (ndim, 2);
 %! assert (pval, 0);
-%! assert (chisq, Inf);
+%! assert (chisq, 512.0558, 1e-4);
 %!test
 %! x = [0.53767,  0.62702,   -0.10224,   -0.25485,   1.4193,   1.5237  ; ...
 %!      1.8339,   1.6452,    -0.24145,   -0.23444,   0.29158,  0.1634  ; ...

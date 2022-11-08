@@ -19,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{X} = gamlike (@var{params}, @var{R})
+## @deftypefn {Function File} @var{nLogL} = gamlike (@var{params}, @var{R})
 ##
 ## Calculates the negative log-likelihood function for the Gamma
 ## distribution over vector @var{R}, with the given parameters @var{A} and
@@ -28,7 +28,7 @@
 ## @seealso{gamcdf, gampdf, gaminv, gamrnd, gamfit}
 ## @end deftypefn
 
-function res = gamlike (params, R)
+function nLogL = gamlike (params, R)
 
   if (nargin != 2)
     print_usage;
@@ -37,12 +37,13 @@ function res = gamlike (params, R)
   a = params(1);
   b = params(2);
 
-  res = -sum (log (gampdf (R, a, b)));
+  nLogL = -sum (log (gampdf (R, a, b)));
+
 endfunction
 
 ## Tests
 %!error gamlike (1);
 %!error gamlike (1, 2, 3);
 %!test
-%! [nlogL] = gamlike([2, 3], [2, 3, 4, 5, 6, 7, 8, 9]);
+%! [nLogL] = gamlike([2, 3], [2, 3, 4, 5, 6, 7, 8, 9]);
 %! assert (nLogL, 19.4426, 1e-4);
