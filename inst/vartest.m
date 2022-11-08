@@ -28,11 +28,11 @@
 ##
 ## @code{@var{h} = vartest (@var{x}, @var{v})} performs a chi-square test of the
 ## hypothesis that the data in the vector @var{x} come from a normal
-## distribution with variance @var{v}, against the alternative that X comes from
-## a normal distribution with a different variance.  The result is @var{h} = 0
-## if the null hypothesis ("variance is V") cannot be rejected at the 5%
-## significance level, or H=1 if the null hypothesis can be rejected at the 5%
-## level.
+## distribution with variance @var{v}, against the alternative that @var{x}
+## comes from a normal distribution with a different variance.  The result is
+## @var{h} = 0 if the null hypothesis ("variance is V") cannot be rejected at
+## the 5% significance level, or @var{h} = 1 if the null hypothesis can be
+## rejected at the 5% level.
 ##
 ## @var{x} may also be a matrix or an N-D array.  For matrices, @code{vartest}
 ## performs separate tests along each column of @var{x}, and returns a vector of
@@ -197,6 +197,8 @@ endfunction
 %! vartest ([1, 2, 3, 4], 1, "dim", 3);
 %!error<vartest: invalid value for operating dimension.> ...
 %! vartest ([1, 2, 3, 4], 1, "alpha", 0.01, "tail", "both", "dim", 3);
+%!error<vartest: invalid name for optional arguments.> ...
+%! vartest ([1, 2, 3, 4], 1, 2, "alpha", 0.01, "tail", "both", "badoption", 3);
 %!test
 %! load carsmall
 %! [h, pval, ci] = vartest (MPG, 7^2);
