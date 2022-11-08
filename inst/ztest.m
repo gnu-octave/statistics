@@ -1,115 +1,194 @@
-## Copyright (C) 2014 Tony Richardson
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
-## This program is free software; you can redistribute it and/or modify it under
-## the terms of the GNU General Public License as published by the Free Software
-## Foundation; either version 3 of the License, or (at your option) any later
-## version.
+## This file is part of the statistics package for GNU Octave.
 ##
-## This program is distributed in the hope that it will be useful, but WITHOUT
-## ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-## FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-## details.
+## This program is free software: you can redistribute it and/or
+## modify it under the terms of the GNU General Public License as
+## published by the Free Software Foundation, either version 3 of the
+## License, or (at your option) any later version.
 ##
-## You should have received a copy of the GNU General Public License along with
-## this program; if not, see <http://www.gnu.org/licenses/>.
+## This program is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+## General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; see the file COPYING.  If not, see
+## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {Function File} {[@var{h}, @var{pval}, @var{ci}, @var{z}, @var{zcrit}] =} ztest (@var{x}, @var{m}, @var{s})
-## @deftypefnx {Function File} {[@var{h}, @var{pval}, @var{ci}, @var{z}, @var{zcrit}] =} ztest (@var{x}, @var{m}, @var{s}, @var{Name}, @var{Value})
-## Test for mean of a normal sample with known variance.
+## @deftypefn {Function File} @var{h} = ztest (@var{x}, @var{v}, @var{sigma})
+## @deftypefnx {Function File} @var{h} = ztest (@var{x}, @var{v}, @var{sigma}, @var{name}, @var{value})
+## @deftypefnx {Function File} [@var{h}, @var{pval}] = ztest (@dots{})
+## @deftypefnx {Function File} [@var{h}, @var{pval}, @var{ci}] = ztest (@dots{})
+## @deftypefnx {Function File} [@var{h}, @var{pval}, @var{ci}, @var{zvalue}] = ztest (@dots{})
 ##
-## Perform a Z-test of the null hypothesis @code{mean (@var{x}) == @var{m}}
-## for a sample @var{x} from a normal distribution with unknown
-## mean and known std deviation @var{s}.  Under the null, the test statistic
-## @var{z} follows a standard normal distribution.
+## One-sample Z-test.
 ##
-## Name-Value pair arguments can be used to set various options.
-## @qcode{"alpha"} can be used to specify the significance level
-## of the test (the default value is 0.05).  @qcode{"tail"}, can be used
-## to select the desired alternative hypotheses.  If the value is
-## @qcode{"both"} (default) the null is tested against the two-sided 
-## alternative @code{mean (@var{x}) != @var{m}}.
-## If it is @qcode{"right"} the one-sided alternative @code{mean (@var{x})
-## > @var{m}} is considered.  Similarly for @qcode{"left"}, the one-sided 
-## alternative @code{mean (@var{x}) < @var{m}} is considered.  
-## When argument @var{x} is a matrix, @qcode{"dim"} can be used to selection
-## the dimension over which to perform the test.  (The default is the 
-## first non-singleton dimension.)
+## @code{@var{h} = ztest (@var{x}, @var{v})} performs a Z-test of the hypothesis
+## that the data in the vector @var{x} come from a normal distribution with mean
+## @var{m}, against the alternative that @var{x} comes from a normal
+## distribution with a different mean @var{m}.  The result is @var{h} = 0 if the
+## null hypothesis ("mean is M") cannot be rejected at the 5% significance
+## level, or @var{h} = 1 if the null hypothesis can be rejected at the 5% level.
 ##
-## If @var{h} is 0 the null hypothesis is accepted, if it is 1 the null
-## hypothesis is rejected. The p-value of the test is returned in @var{pval}.
-## A 100(1-alpha)% confidence interval is returned in @var{ci}.  The test statistic
-## value is returned in @var{z} and the z critical value in @var{zcrit}.
+## @var{x} may also be a matrix or an N-D array.  For matrices, @code{ztest}
+## performs separate tests along each column of @var{x}, and returns a vector of
+## results.  For N-D arrays, @code{ztest} works along the first non-singleton
+## dimension of @var{x}.  @var{v} and @var{sigma} must be a scalars.
 ##
+## @code{vartest} treats NaNs as missing values, and ignores them.
+##
+## @code{[@var{h}, @var{pval}] = ztest (@dots{})} returns the p-value.  That
+## is the probability of observing the given result, or one more extreme, by
+## chance if the null hypothesisis true.
+##
+## @code{[@var{h}, @var{pval}, @var{ci}] = ztest (@dots{})} returns a
+## 100 * (1 - @var{alpha})% confidence interval for the true mean.
+##
+## @code{[@var{h}, @var{pval}, @var{ci}, @var{zvalue}] = vartest (@dots{})}
+## returns the value of the test statistic.
+##
+## @code{[@dots{}] = vartest (@dots{}, @var{name}, @var{value}), @dots{}}
+## specifies one or more of the following name/value pairs:
+##
+## @multitable @columnfractions 0.05 0.2 0.75
+## @headitem @tab Name @tab Value
+## @item @tab "alpha" @tab the significance level. Default is 0.05.
+##
+## @item @tab "dim" @tab dimension to work along a matrix or an N-D array.
+##
+## @item @tab "tail" @tab a string specifying the alternative hypothesis:
+## @end multitable
+## @multitable @columnfractions 0.1 0.15 0.75
+## @item @tab "both" @tab "variance is not @var{v}" (two-tailed, default)
+## @item @tab "left" @tab "variance is less than @var{v}" (left-tailed)
+## @item @tab "right" @tab "variance is greater than @var{v}" (right-tailed)
+## @end multitable
+##
+## @seealso{ttest, vartest, signtest, kstest}
 ## @end deftypefn
 
-## Author: Tony Richardson <richardson.tony@gmail.com>
+function [h, pval, ci, zvalue] = ztest (x, m, sigma, varargin)
 
-function [h, p, ci, zval, zcrit] = ztest(x, m, sigma, varargin)
-  
+  ## Validate input arguments
+  if (nargin < 3)
+    error ("ztest: too few input arguments.");
+  endif
+  if (! isscalar (m) || ! isnumeric(m) || ! isreal(m))
+    error ("ztest: invalid value for mean.");
+  endif
+  if (! isscalar (sigma) || ! isnumeric(sigma) || ! isreal(sigma) || sigma < 0)
+    error ("ztest: invalid value for standard deviation.");
+  endif
+## Add defaults
   alpha = 0.05;
-  tail  = 'both';
+  tail = "both";
+  dim = [];
+  if (nargin > 3)
+    for idx = 4:2:nargin
+      name = varargin{idx-3};
+      value = varargin{idx-2};
+      switch (lower (name))
+        case "alpha"
+          alpha = value;
+          if (! isscalar (alpha) || ! isnumeric (alpha) || ...
+                alpha <= 0 || alpha >= 1)
+            error ("ztest: invalid value for alpha.");
+          endif
+        case "tail"
+          tail = value;
+          if (! any (strcmpi (tail, {"both", "left", "right"})))
+            error ("ztest: invalid value for tail.");
+          endif
+        case "dim"
+          dim = value;
+          if (! isscalar (dim) || ! ismember (dim, 1:ndims (x)))
+            error ("ztest: invalid value for operating dimension.");
+          endif
+        otherwise
+          error ("ztest: invalid name for optional arguments.");
+      endswitch
+    endfor
+  endif
+  ## Figure out which dimension mean will work along
+  if (isempty (dim))
+    dim = find (size (x) != 1, 1);
+  endif
+  ## Replace all NaNs with zeros
+  is_nan = isnan (x);
+  ## Find sample size for each group (if more than one)
+  if (any (is_nan(:)))
+    sz = sum (! is_nan, dim);
+  else
+    sz = size (x, dim);
+  endif
+  ## Calculate mean, strandard error and z-value for each group
+  x_mean = sum (x(! is_nan), dim) ./ max (1, sz);
+  stderr = sigma ./ sqrt (sz);
+  zvalue = (x_mean - m) ./ stderr;
+  ## Calculate p-value for the test and confidence intervals (if requested)
+  if (strcmpi (tail, "both"))
+    pval = 2 * normcdf (- abs (zvalue), 0, 1);
+    if (nargout > 2)
+      crit = norminv (1 - alpha / 2, 0, 1) .* stderr;
+      ci = cat (dim, x_mean - crit, x_mean + crit);
+    endif
+  elseif (strcmpi (tail, "right"))
+    p = normcdf (- zvalue,0,1);
+    if (nargout > 2)
+      crit = norminv (1 - alpha, 0, 1) .* stderr;
+      ci = cat (dim, x_mean - crit, Inf (size (p)));
+    endif
+  elseif (strcmpi (tail, "left"))
+    p = normcdf (zvalue, 0, 1);
+    if (nargout > 2)
+      crit = norminv (1 - alpha, 0, 1) .* stderr;
+      ci = cat (dim, - Inf (size (p)), x_mean + crit);
+    endif
+  endif
+  ## Determine the test outcome
+  h = double (pval < alpha);
+  h(isnan (pval)) = NaN;
 
-  % Find the first non-singleton dimension of x
-  dim = min(find(size(x)~=1));
-  if isempty(dim), dim = 1; end
+endfunction
 
-  i = 1;
-  while ( i <= length(varargin) )
-    switch lower(varargin{i})
-      case 'alpha'
-        i = i + 1;
-        alpha = varargin{i};
-      case 'tail'
-        i = i + 1;
-        tail = varargin{i};
-      case 'dim'
-        i = i + 1;
-        dim = varargin{i};
-      otherwise
-        error('Invalid Name argument.',[]);
-    end
-    i = i + 1;
-  end
-  
-  if ~isa(tail, 'char')
-    error('tail argument to ztest must be a string\n',[]);
-  end
-  
-  % Calculate the test statistic value (zval)
-  n = size(x, dim);
-  x_bar = mean(x, dim);
-  x_bar_std = sigma/sqrt(n);
-  zval = (x_bar - m)./x_bar_std;
-  
-  % Based on the "tail" argument determine the P-value, the critical values,
-  % and the confidence interval.
-  switch lower(tail)
-    case 'both'
-      p = 2*(1 - normcdf(abs(zval)));
-      zcrit = -norminv(alpha/2);
-      ci = [x_bar-zcrit*x_bar_std; x_bar+zcrit*x_bar_std];
-    case 'left'
-      p = normcdf(zval);
-      zcrit = -norminv(alpha);
-      ci = [-inf*ones(size(x_bar)); x_bar+zcrit*x_bar_std];
-    case 'right'
-      p = 1 - normcdf(zval);
-      zcrit = -norminv(alpha);
-      ci = [x_bar-zcrit*x_bar_std; inf*ones(size(x_bar))];
-    otherwise
-      error('Invalid fifth (tail) argument to ztest\n',[]);
-  end
-  
-  % Reshape the ci array to match MATLAB shaping
-  if and(isscalar(x_bar), dim==2)
-    ci = ci(:)';
-  elseif size(x_bar,2)<size(x_bar,1)
-    ci = reshape(ci(:),length(x_bar),2);
-  end
-
-  % Determine the test outcome
-  % MATLAB returns this a double instead of a logical array
-  h = double(p < alpha);
-  
-end
+## Test input validation
+%!error<ztest: too few input arguments.> ztest ();
+%!error<ztest: invalid value for standard deviation.> ...
+%! ztest ([1, 2, 3, 4], 2, -0.5);
+%!error<ztest: invalid value for alpha.> ...
+%! ztest ([1, 2, 3, 4], 1, 2, "alpha", 0);
+%!error<ztest: invalid value for alpha.> ...
+%! ztest ([1, 2, 3, 4], 1, 2, "alpha", 1.2);
+%!error<ztest: invalid value for alpha.> ...
+%! ztest ([1, 2, 3, 4], 1, 2, "alpha", "val");
+%!error<ztest: invalid value for tail.>  ...
+%! ztest ([1, 2, 3, 4], 1, 2, "tail", "val");
+%!error<ztest: invalid value for tail.>  ...
+%! ztest ([1, 2, 3, 4], 1, 2, "alpha", 0.01, "tail", "val");
+%!error<ztest: invalid value for operating dimension.> ...
+%! ztest ([1, 2, 3, 4], 1, 2, "dim", 3);
+%!error<ztest: invalid value for operating dimension.> ...
+%! ztest ([1, 2, 3, 4], 1, 2, "alpha", 0.01, "tail", "both", "dim", 3);
+%!error<ztest: invalid name for optional arguments.> ...
+%! ztest ([1, 2, 3, 4], 1, 2, "alpha", 0.01, "tail", "both", "badoption", 3);
+## Test results
+%!test
+%! load carsmall
+%! [h, pval, ci] = ztest (MPG, mean (MPG, "omitnan"), nanstd (MPG));
+%! assert (h, 0);
+%! assert (pval, 1, 1e-14);
+%! assert (ci, [22.094; 25.343], 1e-3);
+%!test
+%! load carsmall
+%! [h, pval, ci] = ztest (MPG, 26, 8);
+%! assert (h, 1);
+%! assert (pval, 0.00568359158544743, 1e-14);
+%! assert (ci, [22.101; 25.335], 1e-3);
+%!test
+%! load carsmall
+%! [h, pval, ci] = ztest (MPG, 26, 4);
+%! assert (h, 1);
+%! assert (pval, 3.184168011941316e-08, 1e-14);
+%! assert (ci, [22.909; 24.527], 1e-3);
