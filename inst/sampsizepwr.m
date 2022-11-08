@@ -252,13 +252,13 @@ function [out, N2] = sampsizepwr (TestType, params, p1, power, n, varargin)
   endif
   ## Expand non-empty P1/POWER/N so they are all the same size
   if (isempty (p1))
-    [err, power, n, alpha, ratio] = fixvarsize (power, n, alpha, ratio);
+    [err, power, n, alpha, ratio] = common_size (power, n, alpha, ratio);
     outclass = getclass (power, n, alpha, ratio);
   elseif (isempty (power))
-    [err, p1, n, alpha, ratio] = fixvarsize (p1, n, alpha, ratio);
+    [err, p1, n, alpha, ratio] = common_size (p1, n, alpha, ratio);
     outclass = getclass (p1, n, alpha, ratio);
   else # n is empty
-    [err, p1, power, alpha, ratio] = fixvarsize (p1, power, alpha, ratio);
+    [err, p1, power, alpha, ratio] = common_size (p1, power, alpha, ratio);
     outclass = getclass (power, p1, alpha, ratio);
   endif
   if (err > 0)

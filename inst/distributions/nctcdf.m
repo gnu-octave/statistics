@@ -42,7 +42,7 @@ function p = nctcdf (x, df, delta, uflag)
     error ("nctcdf: too few imputs.");
   endif
   ## Check and fix size of input arguments
- [err, x, df, delta] = fixvarsize (x, df, delta);
+ [err, x, df, delta] = common_size (x, df, delta);
   if (err > 0)
     error ("nctcdf: input size mismatch.");
   endif
