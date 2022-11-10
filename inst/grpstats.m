@@ -41,6 +41,7 @@
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @item @tab "mean" @tab mean
+## @item @tab "median" @tab median
 ## @item @tab "sem" @tab standard error of the mean
 ## @item @tab "std" @tab standard deviation
 ## @item @tab "var" @tab variance
@@ -133,7 +134,13 @@ function [varargout] = grpstats (x ,group, whichstats, alpha)
         case "mean"
           for j = 1:ngroups
             group_x = x(find (group_idx == j), :);
-            group_mean(j,:) = mean (group_x, 1, "omitnan") ;
+            group_mean(j,:) = mean (group_x, 1, "omitnan");
+          endfor
+          varargout{l} = group_mean;
+        case "median"
+          for j = 1:ngroups
+            group_x = x(find (group_idx == j), :);
+            group_mean(j,:) = nanmedian (group_x, 1);
           endfor
           varargout{l} = group_mean;
         case "sem"
