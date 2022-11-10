@@ -89,7 +89,7 @@ function [h, pval, ci, stats] = vartest (x, v, varargin)
   alpha = 0.05;
   tail = "both";
   dim = [];
-  if (nargin > 2)
+  if (nargin > 2 && mod (numel (varargin(:)), 2) == 0)
     for idx = 3:2:nargin
       name = varargin{idx-2};
       value = varargin{idx-1};
@@ -114,6 +114,8 @@ function [h, pval, ci, stats] = vartest (x, v, varargin)
           error ("vartest: invalid name for optional arguments.");
       endswitch
     endfor
+  elseif (nargin > 2 && mod (numel (varargin(:)), 2) != 0)
+    error ("vartest: optional arguments must be in name/value pairs.");
   endif
   ## Figure out which dimension mean will work along
   if (isempty (dim))
@@ -198,7 +200,10 @@ endfunction
 %!error<vartest: invalid value for operating dimension.> ...
 %! vartest ([1, 2, 3, 4], 1, "alpha", 0.01, "tail", "both", "dim", 3);
 %!error<vartest: invalid name for optional arguments.> ...
-%! vartest ([1, 2, 3, 4], 1, 2, "alpha", 0.01, "tail", "both", "badoption", 3);
+%! vartest ([1, 2, 3, 4], 1, "alpha", 0.01, "tail", "both", "badoption", 3);
+%!error<vartest: optional arguments must be in name/value pairs.> ...
+%! vartest ([1, 2, 3, 4], 1, "alpha", 0.01, "tail");
+## Test results
 %!test
 %! load carsmall
 %! [h, pval, ci] = vartest (MPG, 7^2);
