@@ -1,121 +1,242 @@
 ## Copyright (C) 2014 Tony Richardson
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
-## This program is free software; you can redistribute it and/or modify it under
-## the terms of the GNU General Public License as published by the Free Software
-## Foundation; either version 3 of the License, or (at your option) any later
-## version.
+## This file is part of the statistics package for GNU Octave.
 ##
-## This program is distributed in the hope that it will be useful, but WITHOUT
-## ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-## FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-## details.
+## This program is free software: you can redistribute it and/or
+## modify it under the terms of the GNU General Public License as
+## published by the Free Software Foundation, either version 3 of the
+## License, or (at your option) any later version.
 ##
-## You should have received a copy of the GNU General Public License along with
-## this program; if not, see <http://www.gnu.org/licenses/>.
-
+## This program is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+## General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; see the file COPYING.  If not, see
+## <http://www.gnu.org/licenses/>.
+##
 ## -*- texinfo -*-
-## @deftypefn  {Function File} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} vartest2 (@var{x}, @var{y})
-## @deftypefnx {Function File} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} vartest2 (@var{x}, @var{y}, @var{Name}, @var{Value})
-## Perform a F-test for equal variances.
+## @deftypefn {Function File} @var{h} = vartest2 (@var{x}, @var{y})
+## @deftypefnx {Function File} @var{h} = vartest2 (@var{x}, @var{y}, @var{name}, @var{value})
+## @deftypefnx {Function File} [@var{h}, @var{pval}] = vartest2 (@dots{})
+## @deftypefnx {Function File} [@var{h}, @var{pval}, @var{ci}] = vartest2 (@dots{})
+## @deftypefnx {Function File} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = vartest2 (@dots{})
 ##
-## If the second argument @var{y} is a vector, a paired-t test of the
-## hypothesis @code{mean (@var{x}) = mean (@var{y})} is performed.
+## Two-sample F test for equal variances.
 ##
-## The argument @qcode{"alpha"} can be used to specify the significance level
-## of the test (the default value is 0.05).  The string
-## argument @qcode{"tail"}, can be used to select the desired alternative
-## hypotheses.  If @qcode{"alt"} is @qcode{"both"} (default) the null is 
-## tested against the two-sided alternative @code{mean (@var{x}) != @var{m}}.
-## If @qcode{"alt"} is @qcode{"right"} the one-sided 
-## alternative @code{mean (@var{x}) > @var{m}} is considered.
-## Similarly for @qcode{"left"}, the one-sided alternative @code{mean
-## (@var{x}) < @var{m}} is considered.  When @qcode{"vartype"} is @qcode{"equal"}
-## the variances are assumed to be equal (this is the default).  When
-## @qcode{"vartype"} is @qcode{"unequal"} the variances are not assumed equal.
-## When argument @var{x} is a matrix the @qcode{"dim"} argument can be 
-## used to selection the dimension over which to perform the test.
-## (The default is the first non-singleton dimension.)
+## @code{@var{h} = vartest2 (@var{x}, @var{y})} performs an F test of the
+## hypothesis that the independent data in vectors @var{x} and @var{y} come from
+## normal distributions with equal variance, against the alternative that they
+## comes from normal distributions with different variances.  The result is
+## @var{h} = 0 if the null hypothesis ("variance are equal") cannot be rejected
+## at the 5% significance level, or @var{h} = 1 if the null hypothesis can be
+## rejected at the 5% level.
 ##
-## If @var{h} is 0 the null hypothesis is accepted, if it is 1 the null
-## hypothesis is rejected. The p-value of the test is returned in @var{pval}.
-## A 100(1-alpha)% confidence interval is returned in @var{ci}. @var{stats}
-## is a structure containing the value of the test statistic (@var{tstat}),
-## the degrees of freedom (@var{df}) and the sample standard deviation
-## (@var{sd}).
+## @var{x} and @var{y} may also be matrices or N-D arrays.  For matrices,
+## @code{vartest2} performs separate tests along each column and returns a
+## vector of results.  For N-D arrays, @code{vartest2} works along the first
+## non-singleton dimension and @var{x} and @var{y} must have the same size along
+## all the remaining dimensions.
 ##
+## @code{vartest} treats NaNs as missing values, and ignores them.
+##
+## @code{[@var{h}, @var{pval}] = vartest (@dots{})} returns the p-value.  That
+## is the probability of observing the given result, or one more extreme, by
+## chance if the null hypothesisis true.
+##
+## @code{[@var{h}, @var{pval}, @var{ci}] = vartest (@dots{})} returns a 100 *
+## (1 - @var{alpha})% confidence interval for the true ratio var(X)/var(Y).
+##
+## @code{[@var{h}, @var{pval}, @var{ci}, @var{stats}] = vartest (@dots{})}
+## returns a structure with the following fields:
+##
+## @multitable @columnfractions 0.05 0.2 0.75
+## @item @tab "fstat" @tab the value of the test statistic
+## @item @tab "df1" @tab the numerator degrees of freedom of the test
+## @item @tab "df2" @tab the denominator degrees of freedom of the test
+## @end multitable
+##
+## @code{[@dots{}] = vartest (@dots{}, @var{name}, @var{value}), @dots{}}
+## specifies one or more of the following name/value pairs:
+##
+## @multitable @columnfractions 0.05 0.2 0.75
+## @headitem @tab Name @tab Value
+## @item @tab "alpha" @tab the significance level. Default is 0.05.
+##
+## @item @tab "dim" @tab dimension to work along a matrix or an N-D array.
+##
+## @item @tab "tail" @tab a string specifying the alternative hypothesis:
+## @end multitable
+## @multitable @columnfractions 0.1 0.15 0.75
+## @item @tab "both" @tab "variance is not @var{v}" (two-tailed, default)
+## @item @tab "left" @tab "variance is less than @var{v}" (left-tailed)
+## @item @tab "right" @tab "variance is greater than @var{v}" (right-tailed)
+## @end multitable
+##
+## @seealso{ttest2, kstest2, bartlett_test, levene_test}
 ## @end deftypefn
 
-## Author: Tony Richardson <richardson.tony@gmail.com>
-## Description: Test for mean of a normal sample with known variance
+function [h, pval, ci, stats] = vartest2 (x, y, varargin)
 
-function [h, p, ci, stats] = vartest2(x, y, varargin)
-  
-  % Set default arguments
+  ## Validate input arguments
+  if (nargin < 2)
+    error ("vartest2: too few input arguments.");
+  endif
+  if (isscalar (x) || isscalar(y))
+    error ("vartest2: X and Y must be vectors or matrices or N-D arrays.");
+  endif
+  ## If X and Y are vectors make them the same orientation
+  if (isvector (x) && isvector (y))
+    if (size (x, 1) == 1)
+        y = y(:)';
+    else
+        y = y(:);
+    endif
+  endif
+  ## Add defaults
   alpha = 0.05;
-  tail  = 'both';
-  % Find the first non-singleton dimension of x
-  dim = min(find(size(x)~=1));
-  if isempty(dim), dim = 1; end
+  tail = "both";
+  dim = [];
+  if (nargin > 2 && mod (numel (varargin(:)), 2) == 0)
+    for idx = 3:2:nargin
+      name = varargin{idx-2};
+      value = varargin{idx-1};
+      switch (lower (name))
+        case "alpha"
+          alpha = value;
+          if (! isscalar (alpha) || ! isnumeric (alpha) || ...
+                alpha <= 0 || alpha >= 1)
+            error ("vartest2: invalid value for alpha.");
+          endif
+        case "tail"
+          tail = value;
+          if (! any (strcmpi (tail, {"both", "left", "right"})))
+            error ("vartest2: invalid value for tail.");
+          endif
+        case "dim"
+          dim = value;
+          if (! isscalar (dim) || ! ismember (dim, 1:ndims (x)))
+            error ("vartest2: invalid value for operating dimension.");
+          endif
+        otherwise
+          error ("vartest2: invalid name for optional arguments.");
+      endswitch
+    endfor
+  elseif (nargin > 2 && mod (numel (varargin(:)), 2) != 0)
+    error ("vartest2: optional arguments must be in name/value pairs.");
+  endif
+  ## Figure out which dimension mean will work along
+  if (isempty (dim))
+    dim = find (size (x) != 1, 1);
+  endif
+  ## Check that all non-working dimensions of X and Y are of equal size
+  x_size = size (x);
+  y_size = size (y);
+  x_size(dim) = 1;
+  y_size(dim) = 1;
+  if (! isequal (x_size, y_size))
+    error ("vartestt2: input size mismatch.");
+  endif
+  ## Compute statistics for each sample
+  [df1, x_var] = getstats(x,dim);
+  [df2, y_var] = getstats(y,dim);
+  ## Compute F statistic
+  F = NaN (size (x_var));
+  t1 = (y_var > 0);
+  F(t1) = x_var(t1) ./ y_var(t1);
+  t2 = (x_var > 0) & ! t1;
+  F(t2) = Inf;
+  ## Calculate p-value for the test and confidence intervals (if requested)
+  if (strcmpi (tail, "both"))
+    pval = 2 * min (fcdf (F, df1, df2), 1 - fcdf (F, df1, df2));
+    if (nargout > 2)
+      ci = cat (dim, F .* finv (alpha / 2, df2, df1), ...
+                     F ./ finv (alpha / 2, df1, df2));
+    endif
+  elseif (strcmpi (tail, "right"))
+    pval = 1 - fcdf (F, df1, df2);
+    if (nargout > 2)
+      ci = cat (dim, F .* finv (alpha, df2, df1), Inf (size (F)));
+    endif
+  elseif (strcmpi (tail, "left"))
+    pval = fcdf (F, df1, df2);
+    if (nargout > 2)
+      ci = cat (dim, zeros (size (F)), F ./ finv (alpha, df1, df2));
+    endif
+  endif
+  ## Determine the test outcome
+  h = double (pval < alpha);
+  h(isnan (pval)) = NaN;
+  ## Create stats output structure (if requested)
+  if (nargout > 3)
+    stats = struct ("fstat", F, "df1", df1, "df2", df2);
+  endif
 
-  i = 1;
-  while ( i <= length(varargin) )
-    switch lower(varargin{i})
-      case 'alpha'
-        i = i + 1;
-        alpha = varargin{i};
-      case 'tail'
-        i = i + 1;
-        tail = varargin{i};
-      case 'dim'
-        i = i + 1;
-        dim = varargin{i};
-      otherwise
-        error('Invalid Name argument.',[]);
-    end
-    i = i + 1;
-  end
-  
-  if ~isa(tail, 'char')
-    error('tail argument to vartest2 must be a string\n',[]);
-  end
-    
-  s1_var = var(x, 0, dim);
-  s2_var = var(y, 0, dim);
-  
-  stats.fstat = s1_var ./ s2_var;
-  df1= size(x, dim) - 1;
-  df2 = size(y, dim) - 1;
+endfunction
 
-  % Based on the "tail" argument determine the P-value, the critical values,
-  % and the confidence interval.
-  switch lower(tail)
-    case 'both'
-      p = 2*min(fcdf(stats.fstat,df1,df2),1 - fcdf(stats.fstat,df1,df2));
-      fcrit = finv(1-alpha/2,df1,df2);
-      ci = [s1_var ./ (fcrit*s2_var); fcrit*s1_var ./ s2_var];
-    case 'left'
-      p = fcdf(stats.fstat,df1,df2);
-      fcrit = finv(alpha,df1,df2);
-      ci = [zeros(size(stats.fstat)); s1_var ./ (fcrit*s2_var)];
-    case 'right'
-      p = 1 - fcdf(stats.fstat,df1,df2);
-      fcrit = finv(1-alpha,df1,df2);
-      ci = [s1_var ./ (fcrit*s2_var); inf*ones(size(stats.fstat))];
-    otherwise
-      error('Invalid fourth (tail) argument to vartest2\n',[]);
+## Compute statistics for one sample
+function [df, data_var] = getstats (data, dim)
+  ## Calculate sample size and df by ignoring NaNs
+  is_nan = isnan (data);
+  n_data = sum (! is_nan, dim);
+  df = max (n_data - 1, 0);
+  ## Calculate mean
+  data(is_nan) = 0;
+  m_data = sum (data, dim) ./ max (1, n_data);
+  ## Calculate variance
+  if (isscalar (m_data))
+     c_data = data - m_data;
+  else
+     rep = ones (1, ndims (data));
+     rep(dim) = size (data, dim);
+     c_data = data - repmat (m_data, rep);
   end
-
-  % Reshape the ci array to match MATLAB shaping
-  if and(isscalar(stats.fstat), dim==2)
-    ci = ci(:)';
-  elseif size(stats.fstat,2)<size(stats.fstat,1)
-    ci = reshape(ci(:),length(stats.fstat),2);
+  c_data(is_nan) = 0;
+  data_var = sum (abs (c_data) .^ 2,dim);
+  t = (df > 0);
+  data_var(t) = data_var(t) ./ df(t);
+  data_var(! t) = NaN;
+  ## Make df a scalar if possible
+  if (numel (df) > 1 && all (df(:) == df(1)))
+     df = df(1);
   end
+endfunction
 
-  stats.df1 = df1*ones(size(stats.fstat));
-  stats.df2 = df2*ones(size(stats.fstat));
-  
-  % Determine the test outcome
-  % MATLAB returns this a double instead of a logical array
-  h = double(p < alpha);  
-end
+## Test input validation
+%!error<vartest2: too few input arguments.> vartest2 ();
+%!error<vartest2: too few input arguments.> vartest2 (ones (20,1));
+%!error<vartest2: X and Y must be vectors or matrices or N-D arrays.> ...
+%! vartest2 (rand (20,1), 5);
+%!error<vartest2: invalid value for alpha.> ...
+%! vartest2 (rand (20,1), rand (25,1)*2, "alpha", 0);
+%!error<vartest2: invalid value for alpha.> ...
+%! vartest2 (rand (20,1), rand (25,1)*2, "alpha", 1.2);
+%!error<vartest2: invalid value for alpha.> ...
+%! vartest2 (rand (20,1), rand (25,1)*2, "alpha", "some");
+%!error<vartest2: invalid value for alpha.> ...
+%! vartest2 (rand (20,1), rand (25,1)*2, "alpha", [0.05, 0.001]);
+%!error<vartest2: invalid value for tail.> ...
+%! vartest2 (rand (20,1), rand (25,1)*2, "tail", [0.05, 0.001]);
+%!error<vartest2: invalid value for tail.> ...
+%! vartest2 (rand (20,1), rand (25,1)*2, "tail", "some");
+%!error<vartest2: invalid value for operating dimension.> ...
+%! vartest2 (rand (20,1), rand (25,1)*2, "dim", 3);
+%!error<vartest2: invalid value for operating dimension.> ...
+%! vartest2 (rand (20,1), rand (25,1)*2, "alpha", 0.001, "dim", 3);
+%!error<vartest2: invalid name for optional arguments.> ...
+%! vartest2 (rand (20,1), rand (25,1)*2, "some", 3);
+%!error<vartest2: optional arguments must be in name/value pairs.> ...
+%! vartest2 (rand (20,1), rand (25,1)*2, "some");
+## Test results
+%!test
+%! load carsmall
+%! [h, pval, ci, stat] = vartest2 (MPG(Model_Year==82), MPG(Model_Year==76));
+%! assert (h, 0);
+%! assert (pval, 0.6288022362718455, 1e-14);
+%! assert (ci, [0.4139; 1.7193], 1e-4);
+%! assert (stat.fstat, 0.8384, 1e-4);
+%! assert (stat.df1, 30);
+%! assert (stat.df2, 33);
+
