@@ -145,6 +145,7 @@ Hypothesis testing
  ttest2
  vartest
  vartest2
+ vartestn
  ztest
 I/O
  libsvmread
