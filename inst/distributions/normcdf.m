@@ -105,8 +105,8 @@ function [varargout] = normcdf (x, varargin)
   endif
   ## Check for common size of x, mu, and sigma
   if (! isscalar (mu) || ! isscalar (sigma))
-    [retval, x, mu, sigma] = common_size (x, mu, sigma);
-    if (retval > 0)
+    [err, x, mu, sigma] = common_size (x, mu, sigma);
+    if (err > 0)
       error ("normcdf: X, MU, and SIGMA must be of common size or scalars.");
     endif
   endif
