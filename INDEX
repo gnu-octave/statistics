@@ -56,6 +56,7 @@ Distributions
  cauchy_cdf cauchy_inv cauchy_pdf cauchy_rnd
  chi2cdf chi2inv chi2pdf chi2rnd
  copulacdf copulapdf copularnd
+ evcdf evinv evpdf evrnd
  expcdf expinv exppdf exprnd
  fcdf finv fpdf frnd
  gamcdf gaminv gampdf gamrnd
@@ -103,6 +104,7 @@ Distribution statistics
  betastat
  binostat
  chi2stat
+ evstat
  expstat
  fstat
  gamstat
@@ -125,7 +127,6 @@ Experimental design
 Model Fitting
  fitgmdist
  fitlm
- gamfit
 Hypothesis testing
  anderson_darling_test
  bartlett_test

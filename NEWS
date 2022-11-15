@@ -185,11 +185,19 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** barttest (fully Matlab compatible)
 
- ** fixvarsize (resembles MATLAB's distchck functionality)
+ ** evcdf (fully Matlab compatible)
+
+ ** evinv (fully Matlab compatible)
+
+ ** evpdf (fully Matlab compatible)
+
+ ** evrnd (fully Matlab compatible)
+
+ ** evstat (fully Matlab compatible)
 
  ** levene_test (options for testtypes, handling NaNs and GROUPS like anova1)
 
- ** nctcdf
+ ** nctcdf (fully Matlab compatible)
 
  ** sampsizepwr (fully Matlab compatible with extra functionality)
 
@@ -205,6 +213,8 @@ Summary of important user-visible changes for statistics 1.5.1:
  ** evfit: fixed bug that caused an error when x is a row vector
 
  ** normcdf: added "upper" option and confidence bounds
+
+ ** tcdf: added "upper" option
 
  ** vartest: fixed MATLAB compatibility
 
