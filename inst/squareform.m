@@ -1,5 +1,7 @@
 ## Copyright (C) 2015 Carnë Draug <carandraug@octave.org>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 3 of the License, or
@@ -42,14 +44,12 @@
 ## @seealso{pdist}
 ## @end deftypefn
 
-## Author: Carnë Draug <carandraug@octave.org>
-
 function y = squareform (x, method)
 
   if (nargin < 1 || nargin > 2)
     print_usage ();
   elseif (! isnumeric (x) || ! ismatrix (x))
-    error ("squareform: Y or Z must be a numeric matrix or vector");
+    error ("squareform: Y or Z must be a numeric matrix or vector.");
   endif
 
   if (nargin == 1)
@@ -65,9 +65,9 @@ function y = squareform (x, method)
   switch (tolower (method))
     case "tovector"
       if (! issquare (x))
-        error ("squareform: Z is not a square matrix");
+        error ("squareform: Z is not a square matrix.");
       elseif (any (diag (x) != 0))
-        error ("squareform: Z is not a hollow matrix, i.e., with diagonal entries all zero");
+        error ("squareform: Z is not a hollow matrix.");
       elseif (! issymmetric(x))
         warning ("squareform:symmetric",
                  "squareform: Z is not a symmetric matrix");
@@ -80,7 +80,7 @@ function y = squareform (x, method)
       ## length (x) = (sy - 1) * (sy / 2)
       sy = (1 + sqrt (1 + 8 * numel (x))) / 2;
       if (fix (sy) != sy)
-        error ("squareform: the numel of Y cannot form a square matrix");
+        error ("squareform: the numel of Y cannot form a square matrix.");
       endif
 
       y = zeros (sy, class (x));
@@ -88,7 +88,7 @@ function y = squareform (x, method)
       y += y.'; # and then the upper triangular part
 
     otherwise
-      error ("squareform: invalid METHOD '%s'", method);
+      error ("squareform: invalid METHOD '%s'.", method);
   endswitch
 
 endfunction
