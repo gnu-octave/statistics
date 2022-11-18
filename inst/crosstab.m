@@ -1,7 +1,7 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
-## Copyright (C) 2021 Stefano Guidoni
-## Copyright (C) 2018 John Donoghue
 ## Copyright (C) 1995-2017 Kurt Hornik
+## Copyright (C) 2018 John Donoghue
+## Copyright (C) 2021 Stefano Guidoni
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
