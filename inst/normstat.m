@@ -1,5 +1,7 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -15,6 +17,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {[@var{mn}, @var{v}] =} normstat (@var{m}, @var{s})
+##
 ## Compute mean and variance of the normal distribution.
 ##
 ## @subheading Arguments
@@ -67,9 +70,6 @@
 ## Processes}. McGraw-Hill, New York, second edition, 1984.
 ## @end enumerate
 ## @end deftypefn
-
-## Author: Arno Onken <asnelt@asnelt.org>
-## Description: Moments of the normal distribution
 
 function [mn, v] = normstat (m, s)
 
