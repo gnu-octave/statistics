@@ -1,30 +1,22 @@
-########################################################################
+## Copyright (C) 1995-2022 The Octave Project Developers
 ##
-## Copyright (C) 1995-2021 The Octave Project Developers
+## This file is part of the statistics package for GNU Octave.
 ##
-## See the file COPYRIGHT.md in the top-level directory of this
-## distribution or <https://octave.org/copyright/>.
+## This program is free software; you can redistribute it and/or modify it under
+## the terms of the GNU General Public License as published by the Free Software
+## Foundation; either version 3 of the License, or (at your option) any later
+## version.
 ##
-## This file is part of Octave.
+## This program is distributed in the hope that it will be useful, but WITHOUT
+## ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+## FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+## details.
 ##
-## Octave is free software: you can redistribute it and/or modify it
-## under the terms of the GNU General Public License as published by
-## the Free Software Foundation, either version 3 of the License, or
-## (at your option) any later version.
-##
-## Octave is distributed in the hope that it will be useful, but
-## WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-##
-## You should have received a copy of the GNU General Public License
-## along with Octave; see the file COPYING.  If not, see
-## <https://www.gnu.org/licenses/>.
-##
-########################################################################
+## You should have received a copy of the GNU General Public License along with
+## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {@var{B} =} standardizeMissing (@var{A}, @var{indicator})
+## @deftypefn {Function File} @var{B} = standardizeMissing (@var{A}, @var{indicator})
 ##
 ## Replace data values specified by @var{indicator} in @var{A} by the
 ## standard 'missing' data value for that data type.
@@ -108,10 +100,10 @@ function A = standardizeMissing (A, indicator)
         if iscellstr(A)
           missing_val = {''};
         else
-          error("stardardizeMissing: only cells of strings are supported")
+          error("stardardizeMissing: only cells of strings are supported.")
         endif
     otherwise
-      error ("standardizeMissing: unsupported data type %s", input_class);
+      error ("standardizeMissing: unsupported data type %s.", input_class);
     endswitch
   endif
 
@@ -126,7 +118,8 @@ function A = standardizeMissing (A, indicator)
     if ((isnumeric (A) && ! (isnumeric (indicator)|| islogical (indicator))) ||
         (ischar (A) && ! ischar (indicator)) ||
         (iscellstr (A) && ! (iscellstr (indicator))))
-      error ("standardizeMissing: 'indicator' and 'A' must have the same data type");
+      error (strcat (["standardizeMissing: 'indicator' and 'A' must"], ...
+                     [" have the same data type."]));
     endif
 
     A(ismember (A, indicator)) = missing_val;
