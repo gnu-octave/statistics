@@ -1,5 +1,7 @@
 ## Copyright (C) 2008 Francesco Potortì <pot@gnu.org>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -85,11 +87,9 @@
 ## Ward, J. H. Hierarchical Grouping to Optimize an Objective Function
 ## J. Am. Statist. Assoc. 1963, 58, 236-244,
 ## @url{http://iv.slis.indiana.edu/sw/data/ward.pdf}.
-## @end deftypefn
 ##
 ## @seealso{pdist,squareform}
-
-## Author: Francesco Potortì  <pot@gnu.org>
+## @end deftypefn
 
 function dgram = linkage (d, method = "single", distarg, savememory)
 
