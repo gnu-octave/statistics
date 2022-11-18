@@ -74,8 +74,6 @@
 ## @seealso{cvpartition}
 ## @end deftypefn
 
-## Author: Nir Krakauer
-
 function results = crossval (f, X, y, varargin)
 
   [n, m] = size (X);
