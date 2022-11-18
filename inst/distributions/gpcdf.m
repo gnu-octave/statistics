@@ -114,7 +114,7 @@ function p = gpcdf (x, varargin)
   ## Calculate (x-location)/scale => 0 and force zero below that
   z = (x - location) ./ scale;
   z(z < 0) = 0;
-  ## Compute cases for SHAPE = 0
+  ## Compute cases for SHAPE == 0
   kz = (abs (shape) < eps (is_class));
   if (uflag)
     p(kz) = exp (-z(kz));
