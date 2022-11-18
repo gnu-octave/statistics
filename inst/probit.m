@@ -1,5 +1,7 @@
 ## Copyright (C) 1995-2017 Kurt Hornik
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
 ## published by the Free Software Foundation, either version 3 of the
@@ -15,14 +17,14 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} probit (@var{p})
+## @deftypefn {Function File} @var{y} = probit (@var{p})
+##
+## Probit transformation
+##
 ## Return the probit (the quantile of the standard normal distribution) for
 ## each element of @var{p}.
 ## @seealso{logit}
 ## @end deftypefn
-
-## Written by KH <Kurt.Hornik@wu-wien.ac.at> on 1995/02/04
-## Description: Probit transformation
 
 function y = probit (p)
 
