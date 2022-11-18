@@ -1,4 +1,7 @@
 ## Copyright (C) 2014 - Nir Krakauer
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -13,24 +16,27 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-## Author: Nir Krakauer <nkrakauer@ccny.cuny.com>
-
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{y} =} randsample (@var{v}, @var{k}, @var{replacement}=false [, @var{w}])
-## Elements sampled from a vector.
+## @deftypefn {Function File} @var{y} = randsample (@var{v}, @var{k}, @var{replacement}=false [, @var{w}])
 ##
-## Returns @var{k} random elements from a vector @var{v} with @var{n} elements, sampled without or with @var{replacement}.
+## Sample elements from a vector.
+##
+## Returns @var{k} random elements from a vector @var{v} with @var{n} elements,
+## sampled without or with @var{replacement}.
 ##
 ## If @var{v} is a scalar, samples from 1:@var{v}.
 ##
-## If a weight vector @var{w} of the same size as @var{v} is specified, the probablility of each element being sampled is proportional to @var{w}.  Unlike Matlab's function of the same name, this can be done for sampling with or without replacement.
+## If a weight vector @var{w} of the same size as @var{v} is specified, the
+## probablility of each element being sampled is proportional to @var{w}.
+## Unlike Matlab's function of the same name, this can be done for sampling with
+## or without replacement.
 ##
 ## Randomization is performed using rand().
 ##
 ## @seealso{datasample, randperm}
 ## @end deftypefn
 
-function y = randsample(v,k,replacement=false,w=[])
+function y = randsample (v, k, replacement=false ,w=[])
 
   if (isscalar (v) && isreal (v))
     n = v;
@@ -39,54 +45,56 @@ function y = randsample(v,k,replacement=false,w=[])
     n = numel (v);
     vector_v = true;
   else
-    error ('Octave:invalid-input-arg', 'randsample: The input v must be a vector or positive integer.');
+    error ("randsample: The input v must be a vector or positive integer.");
   endif
-   
+
   if k < 0 || ( k > n && !replacement )
-    error ('Octave:invalid-input-arg', 'randsample: The input k must be a non-negative integer. Sampling without replacement needs k <= n.');
+    error (strcat (["randsample: The input k must be a non-negative "], ...
+                   ["integer. Sampling without replacement needs k <= n."]));
   endif
 
   if (all (length (w) != [0, n]))
-    error ('Octave:invalid-input-arg', 'randsample: the size w (%d) must match the first argument (%d)', length(w), n);
+    error ("randsample: the size w (%d) must match the first argument (%d)", ...
+           length(w), n);
   endif
 
 
   if (replacement)               # sample with replacement
     if (isempty (w))             # all elements are equally likely to be sampled
-      y = round (n * rand(1, k) + 0.5);
+      y = round (n * rand (1, k) + 0.5);
     else
       y = weighted_replacement (k, w);
     endif
-   else                           # sample without replacement
-     if (isempty (w))             # all elements are equally likely to be sampled
+   else                          # sample without replacement
+     if (isempty (w))            # all elements are equally likely to be sampled
        y = randperm (n, k);
-     else                         # use "accept-reject"-like sampling
+     else                        # use "accept-reject"-like sampling
        y = weighted_replacement (k, w);
        while (1)
-         [yy, idx] = sort (y);    # Note: sort keeps order of equal elements.
+         [yy, idx] = sort (y);   # Note: sort keeps order of equal elements.
          Idup = [false, (diff (yy)==0)];
-         if !any (Idup)
+         if (! any (Idup))
            break
          else
-           Idup(idx) = Idup;      # find duplicates in original vector
-           w(y) = 0;              # don't permit resampling
-                      # remove duplicates, then sample again
-           y = [y(~Idup), (weighted_replacement (sum (Idup), w))];
+           Idup(idx) = Idup;     # find duplicates in original vector
+           w(y) = 0;             # don't permit resampling
+           ## remove duplicates, then sample again
+           y = [y(! Idup), (weighted_replacement (sum (Idup), w))];
          endif
        endwhile
      endif
   endif
-  
+
   if vector_v
     y = v(y);
   endif
-  
-endfunction 
- 
+
+endfunction
+
 function y = weighted_replacement (k, w)
-  w = w / sum(w);
-  w = [0 cumsum(w(:))'];
-        # distribute k uniform random deviates based on the given weighting
+  w = w / sum (w);
+  w = [0, cumsum(w(:))'];
+  ## distribute k uniform random deviates based on the given weighting
   y = arrayfun (@(x) find (w <= x, 1, "last"), rand (1, k));
 endfunction
 
