@@ -93,8 +93,6 @@
 ## @seealso{linkage, mahalanobis, squareform, pdist2}
 ## @end deftypefn
 
-## Author: Francesco Potortì  <pot@gnu.org>
-
 function y = pdist (x, metric, varargin)
 
   if (nargin < 1)
