@@ -1,5 +1,7 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2014 Tony Richardson
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -34,9 +36,9 @@
 ## The argument @qcode{"alpha"} can be used to specify the significance level
 ## of the test (the default value is 0.05).  The string
 ## argument @qcode{"tail"}, can be used to select the desired alternative
-## hypotheses.  If @qcode{"tail"} is @qcode{"both"} (default) the null is 
+## hypotheses.  If @qcode{"tail"} is @qcode{"both"} (default) the null is
 ## tested against the two-sided alternative @code{median (@var{x}) != @var{m}}.
-## If @qcode{"tail"} is @qcode{"right"} the one-sided 
+## If @qcode{"tail"} is @qcode{"right"} the one-sided
 ## alternative @code{median (@var{x}) > @var{m}} is considered.
 ## Similarly for @qcode{"left"}, the one-sided alternative @code{median
 ## (@var{x}) < @var{m}} is considered.
@@ -48,8 +50,8 @@
 ## the @qcode{"exact"} method is computed, otherwise the @qcode{"approximate"}
 ## method is used.
 ##
-## The p-value of the test is returned in @var{pval}. If @var{h} is 0 the 
-## null hypothesis is accepted, if it is 1 the null hypothesis is rejected. 
+## The p-value of the test is returned in @var{pval}. If @var{h} is 0 the
+## null hypothesis is accepted, if it is 1 the null hypothesis is rejected.
 ## @var{stats} is a structure containing the value of the test statistic
 ## (@var{sign}) and the value of the z statistic (@var{zval}) (only computed
 ## when the 'method' is 'approximate'.
@@ -57,7 +59,7 @@
 ## @end deftypefn
 
 function [p, h, stats] = signtest (x, my, varargin)
-  
+
   ## Check X being a vector
   if ! isvector (x)
     error ("signtest: X must be a vector.");
