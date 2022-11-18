@@ -1,21 +1,22 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2016 Andreas Stahel
-## strongly based on cdf.m by  2013 Pantxo Diribarne
-## 
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
-## 
+##
 ## This program is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-## 
+##
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-## -*- texinfo -*- 
+## -*- texinfo -*-
 ## @deftypefn {Function File} {@var{retval} =} pdf (@var{name}, @var{X}, @dots{})
 ## Return probability density function of @var{name} function for value
 ## @var{x}.
@@ -23,7 +24,7 @@
 ## functions. See the individual functions help to learn the signification of
 ## the arguments after @var{x}. Supported functions and corresponding number of
 ## additional arguments are:
-## 
+##
 ## @multitable @columnfractions 0.02 0.3 0.45 0.2
 ## @headitem @tab function @tab alternative @tab args
 ## @item @tab "bbs" @tab "Birnbaum-Saunders" @tab 3
@@ -73,7 +74,7 @@
 ## @item @tab "wish" @tab "Wishart" @tab 2
 ## @item @tab "wish" @tab "Wishart" @tab 3 set log_y=true
 ## @end multitable
-## 
+##
 ## @seealso{cdf, rnd}
 ## @end deftypefn
 
@@ -133,7 +134,7 @@ function [retval] = pdf (varargin)
 
   name = varargin{1};
   x = varargin{2};
-  
+
   varargin(1:2) = [];
   nargs = numel (varargin);
 
@@ -144,7 +145,7 @@ function [retval] = pdf (varargin)
   idx = cellfun (@(x, y)any(strcmpi (name, x) & nargs == y), pdfnames, pdfargs);
   ## Add special list
   special = {"copula", "Copula family"};
-  
+
   if (any (idx))
     if (nargs == pdfargs{idx} && ! any (strcmpi (name, special)))
       retval = feval (pdfhdl{idx}, x, varargin{:});
@@ -156,7 +157,7 @@ function [retval] = pdf (varargin)
   else
     error ("pdf: %s not implemented", name);
   endif
-  
+
 endfunction
 
 %!test
