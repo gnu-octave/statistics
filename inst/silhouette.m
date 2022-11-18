@@ -1,5 +1,7 @@
-## Copyright (C) 2021 Stefano Guidoni <ilguido@users.sf.net>
 ## Copyright (C) 2016 Nan Zhou <zhnanx@gmail.com>
+## Copyright (C) 2021 Stefano Guidoni <ilguido@users.sf.net>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -25,11 +27,11 @@
 ## @var{X} is a n-by-p matrix of n data points in a p-dimensional space.  Each
 ## datapoint is assigned to a cluster using @var{clust}, a vector of n elements,
 ## one cluster assignment for each data point.
-## 
+##
 ## Each silhouette value of @var{si}, a vector of size n, is a measure of the
-## likelihood that a data point is accurately classified to the right cluster.  
-## Defining "a" as the mean distance between a point and the other points from 
-## its cluster, and "b" as the mean distance between that point and the points 
+## likelihood that a data point is accurately classified to the right cluster.
+## Defining "a" as the mean distance between a point and the other points from
+## its cluster, and "b" as the mean distance between that point and the points
 ## from other clusters, the silhouette value of the i-th point is:
 ##
 ## @tex
@@ -38,9 +40,9 @@
 ## @end tex
 ## @ifnottex
 ## @verbatim
-##          bi - ai  
+##          bi - ai
 ## Si =  ------------
-##        max(ai,bi)    
+##        max(ai,bi)
 ## @end verbatim
 ## @end ifnottex
 ##
@@ -66,7 +68,7 @@
 ## Optional return value @var{h} is a handle to the silhouette plot.
 ##
 ## @strong{Reference}
-## Peter J. Rousseeuw, Silhouettes: a Graphical Aid to the Interpretation and 
+## Peter J. Rousseeuw, Silhouettes: a Graphical Aid to the Interpretation and
 ## Validation of Cluster Analysis. 1987. doi:10.1016/0377-0427(87)90125-7
 ## @end deftypefn
 ##
@@ -77,9 +79,9 @@ function [si, h] = silhouette (X, clust, metric = "sqeuclidean", varargin)
   if (nargin < 2)
     print_usage ();
   endif
-  
+
   n = size (clust, 1);
-  
+
   ## check size
   if (! isempty (X))
     if (size (X, 1) != n)
@@ -87,7 +89,7 @@ function [si, h] = silhouette (X, clust, metric = "sqeuclidean", varargin)
         size (X, 1), n);
     endif
   endif
-  
+
   ## check metric
   if (ischar (metric))
     metric = lower (metric);
@@ -108,12 +110,12 @@ function [si, h] = silhouette (X, clust, metric = "sqeuclidean", varargin)
         size (distMatrix, 1), n);
     endif
   endif
-  
+
   ## main
   si = zeros(n, 1);
   clusterIDs = unique (clust); # eg [1; 2; 3; 4]
   m = length (clusterIDs);
-  
+
   ## if only one cluster is defined, the silhouette value is not defined
   if (m == 1)
     si = NaN * ones (n, 1);
@@ -124,10 +126,10 @@ function [si, h] = silhouette (X, clust, metric = "sqeuclidean", varargin)
   if (! exist ('distMatrix', 'var'))
     distMatrix = squareform (pdist (X, metric, varargin{:}));
   endif
-  
+
   ## calculate values of si one by one
   for iii = 1 : length (si)
-    
+
     ## allocate values to clusters
     groupedValues = {};
     for jjj = 1 : m
@@ -135,7 +137,7 @@ function [si, h] = silhouette (X, clust, metric = "sqeuclidean", varargin)
                                         clust == clusterIDs(jjj))];
     endfor
     ## end allocation
-    
+
     ## calculate a(i)
     ## average distance of iii to all other objects in the same cluster
     if (length (groupedValues{clust(iii)}) == 1)
@@ -146,8 +148,8 @@ function [si, h] = silhouette (X, clust, metric = "sqeuclidean", varargin)
             (length (groupedValues{clust(iii)}) - 1);
     endif
     ## end a(i)
-    
-    
+
+
     ## calculate b(i)
     clusterIDs_new = clusterIDs;
     ## remove the cluster iii in
@@ -159,8 +161,8 @@ function [si, h] = silhouette (X, clust, metric = "sqeuclidean", varargin)
     endfor
     b_i = min (a_iii_2others);
     ## end b(i)
-    
-    
+
+
     ## calculate s(i)
     si(iii) = (b_i - a_i) / (max ([a_i; b_i]));
     ## end s(i)
@@ -171,23 +173,23 @@ function [si, h] = silhouette (X, clust, metric = "sqeuclidean", varargin)
   vBarsc = zeros (m, 1);
   vPadding = [0; 0; 0; 0];
   Bars = vPadding;
-  
+
   for i = 1 : m
     vBar = si(find (clust == clusterIDs(i)));
     vBarsc(i) = length (Bars) + (length (vBar) / 2);
     Bars = [Bars; (sort (vBar, "descend")); vPadding];
   endfor
-  
+
   figure();
   h = barh (Bars, "hist", "facecolor", [0 0.4471 0.7412]);
-  
+
   xlabel ("Silhouette Value");
   ylabel ("Cluster");
   set (gca, "ytick", vBarsc, "yticklabel", clusterIDs);
   ylim ([0 (length (Bars))]);
   axis ("ij");
 endfunction
- 
+
 %!error silhouette ();
 %!error silhouette ([1 2; 1 1]);
 %!error <X .* doesn't match .* clust> silhouette ([1 2; 1 1], [1 2 3]');
