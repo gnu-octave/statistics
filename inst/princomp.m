@@ -1,5 +1,7 @@
 ## Copyright (C) 2013-2019 Fernando Damian Nieuwveldt <fdnieuwveldt@gmail.com>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
 ## as published by the Free Software Foundation; either version 3
@@ -13,29 +15,30 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{COEFF}]} = princomp(@var{X})
-## @deftypefnx {Function File} {[@var{COEFF},@var{SCORE}]} = princomp(@var{X})
-## @deftypefnx {Function File} {[@var{COEFF},@var{SCORE},@var{latent}]} = princomp(@var{X})
-## @deftypefnx {Function File} {[@var{COEFF},@var{SCORE},@var{latent},@var{tsquare}]} = princomp(@var{X})
-## @deftypefnx {Function File} {[...]} = princomp(@var{X},'econ')
+## @deftypefn {Function File} @var{COEFF} = princomp (@var{X})
+## @deftypefnx {Function File} [@var{COEFF}, @var{SCORE}] = princomp (@var{X})
+## @deftypefnx {Function File} [@var{COEFF}, @var{SCORE}, @var{latent}] = princomp (@var{X})
+## @deftypefnx {Function File} [@var{COEFF}, @var{SCORE}, @var{latent}, @var{tsquare}] = princomp (@var{X})
+## @deftypefnx {Function File} [@dots{}] = princomp (@var{X}, "econ")
+##
 ## Performs a principal component analysis on a NxP data matrix X
 ##
 ## @itemize @bullet
 ## @item
 ## @var{COEFF} : returns the principal component coefficients
 ## @item
-## @var{SCORE} : returns the principal component scores, the representation of X 
+## @var{SCORE} : returns the principal component scores, the representation of X
 ## in the principal component space
 ## @item
-## @var{LATENT} : returns the principal component variances, i.e., the 
+## @var{LATENT} : returns the principal component variances, i.e., the
 ## eigenvalues of the covariance matrix X.
 ## @item
-## @var{TSQUARE} : returns Hotelling's T-squared Statistic for each observation in X 
+## @var{TSQUARE} : returns Hotelling's T-squared Statistic for each observation in X
 ## @item
-## [...] = princomp(X,'econ') returns only the elements of latent that are not 
-## necessarily zero, and the corresponding columns of COEFF and SCORE, that is, 
-## when n <= p, only the first n-1. This can be significantly faster when p is 
-## much larger than n. In this case the svd will be applied on the transpose of 
+## [...] = princomp(X,'econ') returns only the elements of latent that are not
+## necessarily zero, and the corresponding columns of COEFF and SCORE, that is,
+## when n <= p, only the first n-1. This can be significantly faster when p is
+## much larger than n. In this case the svd will be applied on the transpose of
 ## the data matrix X
 ##
 ## @end itemize
@@ -45,28 +48,28 @@
 ## @enumerate
 ## @item
 ## Jolliffe, I. T., Principal Component Analysis, 2nd Edition, Springer, 2002
-## 
+##
 ## @end enumerate
 ## @end deftypefn
 
-function [COEFF,SCORE,latent,tsquare] = princomp(X,varargin)
+function [COEFF, SCORE, latent, tsquare] = princomp (X, varargin)
 
    if (nargin < 1 || nargin > 2)
       print_usage ();
    endif
-	
+
    if (nargin == 2 && ! strcmpi (varargin{:}, "econ"))
       error ("princomp: if a second input argument is present, it must be the string  'econ'");
    endif
 
    [nobs nvars] = size(X);
-	 
+
    # Center the columns to mean zero
    Xcentered = bsxfun(@minus,X,mean(X));
 
    # Check if there are more variables then observations
    if nvars <= nobs
-		
+
       [U,S,COEFF] = svd(Xcentered, "econ");
 
    else
@@ -76,7 +79,7 @@ function [COEFF,SCORE,latent,tsquare] = princomp(X,varargin)
 	     [COEFF,S,V] = svd(Xcentered' , 'econ');
       else
 	     [COEFF,S,V] = svd(Xcentered');
-      endif	
+      endif
 
    endif
 
@@ -84,17 +87,17 @@ function [COEFF,SCORE,latent,tsquare] = princomp(X,varargin)
 
       # Get the Scores
       SCORE = Xcentered*COEFF;
-	
-      # Get the rank of the SCORE matrix	
-      r = rank(SCORE); 
+
+      # Get the rank of the SCORE matrix
+      r = rank(SCORE);
 
       # Only use the first r columns, pad rest with zeros if economy != 'econ'
-      SCORE = SCORE(:,1:r) ; 
-	 
+      SCORE = SCORE(:,1:r) ;
+
       if !(nargin == 2 && strcmpi ( varargin{:} , "econ"))
 	    SCORE = [SCORE, zeros(nobs , nvars-r)];
       else
-	    COEFF   = COEFF(: , 1:r);   
+	    COEFF   = COEFF(: , 1:r);
       endif
 
     endif
