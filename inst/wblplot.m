@@ -16,15 +16,14 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {wblplot.m} wblplot (@var{data}, @dots{})
-## @deftypefnx {wblplot.m} @var{handle} = wblplot (@var{data}, @dots{})
-## @deftypefnx {wblplot.m} [@var{handle}, @var{param}] = wblplot (@var{data})
-## @deftypefnx {wblplot.m} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor})
-## @deftypefnx {wblplot.m} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor}, @var{freq})
-## @deftypefnx {wblplot.m} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor}, @var{freq}, @var{confint})
-## @deftypefnx {wblplot.m} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor}, @var{freq}, @var{confint}, @var{fancygrid})
-## @deftypefnx {wblplot.m} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor}, @var{freq}, @var{confint}, @var{fancygrid}, @var{showlegend})
-##
+## @deftypefn {Function File} wblplot (@var{data}, @dots{})
+## @deftypefnx {Function File} @var{handle} = wblplot (@var{data}, @dots{})
+## @deftypefnx {Function File} [@var{handle}, @var{param}] = wblplot (@var{data})
+## @deftypefnx {Function File} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor})
+## @deftypefnx {Function File} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor}, @var{freq})
+## @deftypefnx {Function File} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor}, @var{freq}, @var{confint})
+## @deftypefnx {Function File} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor}, @var{freq}, @var{confint}, @var{fancygrid})
+## @deftypefnx {Function File} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor}, @var{freq}, @var{confint}, @var{fancygrid}, @var{showlegend})
 ##
 ## @noindent
 ## Plot a column vector @var{data} on a Weibull probability plot using rank
@@ -58,13 +57,6 @@
 ##
 ## @seealso{normplot, wblpdf}
 ## @end deftypefn
-
-## Author: Bj{\"o}rn Vennberg <m95vebj@gmail.com>
-## Created: 2014-11-11
-## 2014-11-22 Updated argin check
-## 2014-11-22 Code clean up, error checking
-## 2014-11-23 Turn off legend box, check for zero and negative values in data.
-## 2014-11-23 Censored data check and inclusion of demo samples. Help info updates.
 
 function [handle, param] = wblplot (data, censor = [], freq = [], ...
                                     confint = [], fancygrid = 1, showlegend = 1)
