@@ -1,5 +1,7 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -57,9 +59,6 @@
 ## Processes}. McGraw-Hill, New York, second edition, 1984.
 ## @end enumerate
 ## @end deftypefn
-
-## Author: Arno Onken <asnelt@asnelt.org>
-## Description: Moments of the geometric distribution
 
 function [m, v] = geostat (p)
 
