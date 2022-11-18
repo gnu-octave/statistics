@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{m}, @var{v}] =} unidstat (@var{n})
+## @deftypefn {Function File} [@var{m}, @var{v}] = unidstat (@var{n})
 ##
 ## Compute mean and variance of the discrete uniform distribution.
 ##
