@@ -1,5 +1,8 @@
 ## Copyright (C) 2015 Lachlan Andrew <lachlanbis@gmail.com>
 ## Copyright (C) 2018-2020 John Donoghue <john.donoghue@ieee.org>
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -19,11 +22,12 @@ classdef gmdistribution
    ## @deftypefn {Function File} {@var{GMdist} =} gmdistribution (@var{mu}, @var{Sigma})
    ## @deftypefnx {Function File} {@var{GMdist} =} gmdistribution (@var{mu}, @var{Sigma}, @var{p})
    ## @deftypefnx {Function File} {@var{GMdist} =} gmdistribution (@var{mu}, @var{Sigma}, @var{p}, @var{extra})
+   ##
    ## Create an object of the  gmdistribution  class which represents a Gaussian
    ## mixture model with k components of n-dimensional Gaussians.
    ##
-   ## Input @var{mu} is a k-by-n matrix specifying the n-dimensional mean of each
-   ## of the k components of the distribution.
+   ## Input @var{mu} is a k-by-n matrix specifying the n-dimensional mean of
+   ## each of the k components of the distribution.
    ##
    ## Input @var{Sigma} is an array that specifies the variances of the
    ## distributions, in one of four forms depending on its dimension.
@@ -37,9 +41,9 @@ classdef gmdistribution
    ##         component
    ## @end itemize
    ##
-   ## If @var{p} is specified, it is a vector of length k specifying the proportion
-   ## of each component.  If it is omitted or empty, each component has an equal
-   ## proportion.
+   ## If @var{p} is specified, it is a vector of length k specifying the
+   ## proportion of each component.  If it is omitted or empty, each component
+   ## has an equal proportion.
    ##
    ## Input @var{extra} is used by fitgmdist to indicate the parameters of the
    ## fitting process.
@@ -81,7 +85,8 @@ classdef gmdistribution
         obj.NumComponents = rows (mu);
         obj.NumVariables = columns (mu);
         if (isempty (p))
-          obj.ComponentProportion = ones (1,obj.NumComponents) / obj.NumComponents;
+          obj.ComponentProportion = ones (1,obj.NumComponents) / ...
+                                            obj.NumComponents;
         else
           if any (p < 0)
             error ("gmmdistribution: component weights must be non-negative");
@@ -107,7 +112,7 @@ classdef gmdistribution
           obj.CovarianceType = 'full';
         endif
 
-        if (!isempty (extra))
+        if (! isempty (extra))
           obj.AIC                   = extra.AIC;
           obj.BIC                   = extra.BIC;
           obj.Converged             = extra.Converged;
@@ -118,8 +123,8 @@ classdef gmdistribution
         endif
       endfunction
 
-        ########################################
-        ## Cumulative distribution function for Gaussian mixture distribution
+      ########################################
+      ## Cumulative distribution function for Gaussian mixture distribution
       function c = cdf (obj, X)
         X = checkX (obj, X, "cdf");
         p_x_l = zeros (rows (X), obj.NumComponents);
@@ -131,7 +136,7 @@ classdef gmdistribution
           endif
         endif
         for i = 1:obj.NumComponents
-          if (!obj.SharedCovariance)
+          if (! obj.SharedCovariance)
             if (obj.DiagonalCovariance)
               sig = diag (obj.Sigma(:,:,i));
             else
@@ -143,10 +148,9 @@ classdef gmdistribution
         c = sum (p_x_l, 2);
       endfunction
 
-        ########################################
-        ## Construct clusters from Gaussian mixture distribution
-        ##
-      function [idx,nlogl,P,logpdf,M] = cluster (obj,X)
+      ########################################
+      ## Construct clusters from Gaussian mixture distribution
+      function [idx, nlogl, P, logpdf, M] = cluster (obj,X)
         X = checkX (obj, X, "cluster");
         [p_x_l, M] = componentProb (obj, X);
         [~, idx] = max (p_x_l, [], 2);
@@ -160,114 +164,118 @@ classdef gmdistribution
         endif
       endfunction
 
-        ########################################
-        ## Display Gaussian mixture distribution object
+      ########################################
+      ## Display Gaussian mixture distribution object
       function c = disp (obj)
-          fprintf("Gaussian mixture distribution with %d components in %d dimension(s)\n", obj.NumComponents, columns (obj.mu));
-          for i = 1:obj.NumComponents
-              fprintf("Clust %d: weight %d\n\tMean: ", i, obj.ComponentProportion(i));
-              fprintf("%g ", obj.mu(i,:));
-              fprintf("\n");
-              if (!obj.SharedCovariance)
-                  fprintf("\tVariance:");
-                  if (!obj.DiagonalCovariance)
-                      if columns (obj.mu) > 1
-                        fprintf("\n");
-                      endif
-                      disp(squeeze(obj.Sigma(:,:,i)))
-                  else
-                      fprintf(" diag(");
-                      fprintf("%g ", obj.Sigma(:,:,i));
-                      fprintf(")\n");
-                  endif
+        msg = ["Gaussian mixture distribution with %d ", ...
+               "components in %d dimension(s)\n"];
+        fprintf (msg, obj.NumComponents, columns (obj.mu));
+        for i = 1:obj.NumComponents
+          fprintf ("Clust %d: weight %d\n\tMean: ", ...
+                          i, obj.ComponentProportion(i));
+          fprintf ("%g ", obj.mu(i,:));
+          fprintf ("\n");
+          if (! obj.SharedCovariance)
+            fprintf ("\tVariance:");
+            if (! obj.DiagonalCovariance)
+              if (columns (obj.mu) > 1)
+                fprintf ("\n");
               endif
-          endfor
-          if (obj.SharedCovariance)
-              fprintf("Shared variance\n");
-              if (!obj.DiagonalCovariance)
-                  obj.Sigma
-              else
-                  fprintf(" diag(");
-                  fprintf("%g ", obj.Sigma);
-                  fprintf(")\n");
-              endif
+              disp (squeeze (obj.Sigma(:,:,i)))
+            else
+              fprintf (" diag(");
+              fprintf ("%g ", obj.Sigma(:,:,i));
+              fprintf (")\n");
+            endif
           endif
-          if (!isempty (obj.AIC))
-              fprintf("AIC=%g BIC=%g NLogL=%g Iter=%d Cged=%d Reg=%g\n", ...
-                  obj.AIC, obj.BIC, obj.NegativeLogLikelihood, ...
-                  obj.NumIterations, obj.Converged, obj.RegularizationValue);
+        endfor
+        if (obj.SharedCovariance)
+          fprintf ("Shared variance\n");
+          if (! obj.DiagonalCovariance)
+            obj.Sigma
+          else
+            fprintf (" diag(");
+            fprintf ("%g ", obj.Sigma);
+            fprintf (")\n");
           endif
+        endif
+        if (! isempty (obj.AIC))
+          fprintf ("AIC=%g BIC=%g NLogL=%g Iter=%d Cged=%d Reg=%g\n", ...
+                    obj.AIC, obj.BIC, obj.NegativeLogLikelihood, ...
+                    obj.NumIterations, obj.Converged, obj.RegularizationValue);
+        endif
       endfunction
 
-        ########################################
-        ## Display Gaussian mixture distribution object
+      ########################################
+      ## Display Gaussian mixture distribution object
       function c = display (obj)
-          disp(obj);
+        disp(obj);
       endfunction
 
-        ########################################
-        ## Mahalanobis distance to component means
+      ########################################
+      ## Mahalanobis distance to component means
       function D = mahal (obj,X)
         X = checkX (obj, X, "mahal");
         [~, D] = componentProb (obj,X);
       endfunction
 
-        ########################################
-        ## Probability density function for Gaussian mixture distribution
+      ########################################
+      ## Probability density function for Gaussian mixture distribution
       function c = pdf (obj,X)
         X = checkX (obj, X, "pdf");
         p_x_l = componentProb (obj, X);
         c = sum (p_x_l, 2);
       endfunction
 
-        ########################################
-        ## Posterior probabilities of components
+      ########################################
+      ## Posterior probabilities of components
       function c = posterior (obj,X)
         X = checkX (obj, X, "posterior");
         p_x_l = componentProb (obj, X);
         c = bsxfun(@rdivide, p_x_l, sum (p_x_l, 2));
       endfunction
 
-        ########################################
-        ## Random numbers from Gaussian mixture distribution
+      ########################################
+      ## Random numbers from Gaussian mixture distribution
       function c = random (obj,n)
-          if nargin == 1
-	    n = 1;
-	  endif
-          c = zeros (n, obj.NumVariables);
-          classes = randsample (obj.NumComponents, n, true, obj.ComponentProportion);
-          if (obj.SharedCovariance)
-              if (obj.DiagonalCovariance)
-                  sig = diag (obj.Sigma);
-              else
-                  sig = obj.Sigma;
-              endif
+        if nargin == 1
+	        n = 1;
+	      endif
+        c = zeros (n, obj.NumVariables);
+        classes = randsample (obj.NumComponents, n, true, ...
+                              obj.ComponentProportion);
+        if (obj.SharedCovariance)
+          if (obj.DiagonalCovariance)
+            sig = diag (obj.Sigma);
+          else
+            sig = obj.Sigma;
           endif
-          for i = 1:obj.NumComponents
-              idx = (classes == i);
-              k = sum(idx);
-              if k > 0
-                if (!obj.SharedCovariance)
-                  if (obj.DiagonalCovariance)
-                      sig = diag (obj.Sigma(:,:,i));
-                  else
-                      sig = obj.Sigma(:,:,i);
-                  endif
-                endif
-                        # [sig] forces [sig] not to have class "diagonal",
-                        # since mvnrnd uses automatic broadcast,
-                        # which fails on structured matrices
-                c(idx,:) = mvnrnd ([obj.mu(i,:)], [sig], k);
+        endif
+        for i = 1:obj.NumComponents
+          idx = (classes == i);
+          k = sum(idx);
+          if (k > 0)
+            if (! obj.SharedCovariance)
+              if (obj.DiagonalCovariance)
+                sig = diag (obj.Sigma(:,:,i));
+              else
+                sig = obj.Sigma(:,:,i);
               endif
-          endfor
+            endif
+            # [sig] forces [sig] not to have class "diagonal",
+            # since mvnrnd uses automatic broadcast,
+            # which fails on structured matrices
+            c(idx,:) = mvnrnd ([obj.mu(i,:)], [sig], k);
+          endif
+        endfor
       endfunction
     endmethods
 
     ########################################
     methods (Static)
       ## Gaussian mixture parameter estimates
-      function c = fit  (X,k,varargin)
-          c = fitgmdist (X,k,varargin{:});
+      function c = fit  (X, k, varargin)
+        c = fitgmdist (X, k, varargin{:});
       endfunction
     endmethods
 
@@ -287,23 +295,24 @@ classdef gmdistribution
         endif
         for i = 1:obj.NumComponents
           dev = bsxfun (@minus, X, obj.mu(i,:));
-          if (!obj.SharedCovariance)
+          if (! obj.SharedCovariance)
             if (obj.DiagonalCovariance)
-                r = diag (sqrt (obj.Sigma(:,:,i)));
+              r = diag (sqrt (obj.Sigma(:,:,i)));
             else
-                r = chol (obj.Sigma(:,:,i));
+              r = chol (obj.Sigma(:,:,i));
             endif
           endif
           M(:,i) = sumsq (dev / r, 2);
           dets(i) = prod (diag (r));
         endfor
         p_x_l = exp (-M/2);
-        coeff = obj.ComponentProportion ./ ((2*pi)^(obj.NumVariables/2).*dets);
+        coeff = obj.ComponentProportion ./ ...
+                    ((2 * pi) ^ (obj.NumVariables / 2) .* dets);
         p_x_l = bsxfun (@times, p_x_l, coeff);
       endfunction
 
-        ########################################
-        ## Check format of argument X
+      ########################################
+      ## Check format of argument X
       function X = checkX (obj, X, name)
         if (columns (X) != obj.NumVariables)
           if (columns (X) == 1 && rows (X) == obj.NumVariables)
