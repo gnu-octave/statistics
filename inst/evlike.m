@@ -55,7 +55,7 @@
 ## log likelihood with respect to the parameter value.
 ## @end itemize
 ##
-## @seealso{evfit}
+## @seealso{evcdf, evinv, evpdf, evrnd, evfit, evstat}
 ## @end deftypefn
 
 function [nlogL, avar] = evlike (params, data, censor, freq)

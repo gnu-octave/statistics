@@ -49,7 +49,7 @@
 ##
 ## @code{[@dots{}] = evfit (@dots{}, @var{options})}
 ##
-## @seealso{gevfit, evlike}
+## @seealso{evcdf, evinv, evpdf, evrnd, evlike, evstat}
 ## @end deftypefn
 
 function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
