@@ -1,6 +1,8 @@
 ## Copyright (C) 2016 - Juan Pablo Carbajal
 ## Copyright (C) 2022 - Andreas Bertsatos
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This progrm is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 3 of the License, or
@@ -14,13 +16,13 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-## Author: Juan Pablo Carbajal <ajuanpi+dev@gmail.com>
-
 ## -*- texinfo -*-
-## @defun {@var{h} =} violin (@var{x})
-## @defunx {@var{h} =} violin (@dots{}, @var{property}, @var{value}, @dots{})
-## @defunx {@var{h} =} violin (@var{hax}, @dots{})
-## @defunx {@var{h} =} violin (@dots{}, @asis{"horizontal"})
+## @deftypefn {Functrion File} violin (@var{x})
+## @deftypefnx {Functrion File} @var{h} = violin (@var{x})
+## @deftypefnx {Functrion File} @var{h} = violin (@dots{}, @var{property}, @var{value}, @dots{})
+## @deftypefnx {Functrion File} @var{h} = violin (@var{hax}, @dots{})
+## @deftypefnx {Functrion File} @var{h} = violin (@dots{}, @asis{"horizontal"})
+##
 ## Produce a Violin plot of the data @var{x}.
 ##
 ## The input data @var{x} can be a N-by-m array containg N observations of m
@@ -81,7 +83,7 @@
 ## @end example
 ##
 ## @seealso{boxplot, hist}
-## @end defun
+## @end deftypefn
 
 function h = violin (ax, varargin)
 
