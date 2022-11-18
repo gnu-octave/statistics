@@ -151,7 +151,6 @@ endfunction
 %! y2u = [1, 1, 1, 2/3, 1/2, 0];
 %! y3 = [0, 0, 0, 1/2, 1, 1];
 %! y3u = [1, 1, 1, 1/2, 0, 0];
-%! seps = eps('single')*5;
 %!assert (gpcdf (x, zeros (1,6), ones (1,6), zeros (1,6)), y1, eps)
 %!assert (gpcdf (x, 0, 1, zeros (1,6)), y1, eps)
 %!assert (gpcdf (x, 0, ones (1,6), 0), y1, eps)
@@ -214,20 +213,20 @@ endfunction
 %!                          [y3u(1:3), NaN, y3u(5:6)], eps)
 
 ## Test class of input preserved
-%!assert (gpcdf (single ([x, NaN]), 0, 1, 0), single ([y1, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], 0, 1, single (0)), single ([y1, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], 0, single (1), 0), single ([y1, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], single (0), 1, 0), single ([y1, NaN]), eps('single'))
+%!assert (gpcdf (single ([x, NaN]), 0, 1, 0), single ([y1, NaN]), eps("single"))
+%!assert (gpcdf ([x, NaN], 0, 1, single (0)), single ([y1, NaN]), eps("single"))
+%!assert (gpcdf ([x, NaN], 0, single (1), 0), single ([y1, NaN]), eps("single"))
+%!assert (gpcdf ([x, NaN], single (0), 1, 0), single ([y1, NaN]), eps("single"))
 
-%!assert (gpcdf (single ([x, NaN]), 1, 1, 0), single ([y2, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], 1, 1, single (0)), single ([y2, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], 1, single (1), 0), single ([y2, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], single (1), 1, 0), single ([y2, NaN]), eps('single'))
+%!assert (gpcdf (single ([x, NaN]), 1, 1, 0), single ([y2, NaN]), eps("single"))
+%!assert (gpcdf ([x, NaN], 1, 1, single (0)), single ([y2, NaN]), eps("single"))
+%!assert (gpcdf ([x, NaN], 1, single (1), 0), single ([y2, NaN]), eps("single"))
+%!assert (gpcdf ([x, NaN], single (1), 1, 0), single ([y2, NaN]), eps("single"))
 
-%!assert (gpcdf (single ([x, NaN]), -1, 1, 0), single ([y3, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], -1, 1, single (0)), single ([y3, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], -1, single (1), 0), single ([y3, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], single (-1), 1, 0), single ([y3, NaN]), eps('single'))
+%!assert (gpcdf (single ([x, NaN]), -1, 1, 0), single ([y3, NaN]), eps("single"))
+%!assert (gpcdf ([x, NaN], -1, 1, single (0)), single ([y3, NaN]), eps("single"))
+%!assert (gpcdf ([x, NaN], -1, single (1), 0), single ([y3, NaN]), eps("single"))
+%!assert (gpcdf ([x, NaN], single (-1), 1, 0), single ([y3, NaN]), eps("single"))
 
 ## Test input validation
 %!error gpcdf ()
