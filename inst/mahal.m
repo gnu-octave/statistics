@@ -1,5 +1,7 @@
 ## Copyright (C) 2015 Lachlan Andrew
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 3 of the License, or (at
@@ -15,7 +17,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {} mahal (@var{y}, @var{x})
+## @deftypefn {Function File} @var{d} = mahal (@var{y}, @var{x})
+##
 ## Mahalanobis' D-square distance.
 ##
 ## Return the Mahalanobis' D-square distance of the points in
@@ -33,10 +36,6 @@
 ## (columns), but may have a different number of observations (rows).
 ##
 ## @end deftypefn
-
-## Author: Lachlan Andrew <lachlanbis@gmail.com>
-## Created: September 2015
-## Based on function mahalanobis by Friedrich Leisch
 
 function retval = mahal (y, x)
 
