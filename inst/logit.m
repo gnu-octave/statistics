@@ -1,5 +1,7 @@
 ## Copyright (C) 1995-2017 Kurt Hornik
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
 ## published by the Free Software Foundation, either version 3 of the
@@ -15,7 +17,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} logit (@var{p})
+## @deftypefn {Function File} @var{y} = logit (@var{p})
+##
 ## Compute the logit for each value of @var{p}
 ##
 ## The logit is defined as
@@ -33,9 +36,6 @@
 ## @end ifnottex
 ## @seealso{probit, logistic_cdf}
 ## @end deftypefn
-
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Logit transformation
 
 function y = logit (p)
 
