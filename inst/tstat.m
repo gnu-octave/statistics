@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{m}, @var{v}] =} tstat (@var{n})
+## @deftypefn {Function File} [@var{m}, @var{v}] = tstat (@var{n})
 ##
 ## Compute mean and variance of the t (Student) distribution.
 ##
@@ -63,7 +63,7 @@
 
 function [m, v] = tstat (n)
 
-  # Check arguments
+  ## Check arguments
   if (nargin != 1)
     print_usage ();
   endif
@@ -72,11 +72,11 @@ function [m, v] = tstat (n)
     error ("tstat: n must be a numeric matrix");
   endif
 
-  # Calculate moments
+  ## Calculate moments
   m = zeros (size (n));
   v = n ./ (n - 2);
 
-  # Continue argument check
+  ## Continue argument check
   k = find (! (n > 1) | ! (n < Inf));
   if (any (k))
     m(k) = NaN;
