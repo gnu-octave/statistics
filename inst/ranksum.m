@@ -1,5 +1,7 @@
 ## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -37,7 +39,7 @@
 ##
 ## @code{[@var{p}, @var{h}] = ranksum (@var{x}, @var{y})} also returns the
 ## result of the hypothesis test with @code{@var{h} = 1} indicating a rejection
-## of the null hypothesis at the default alpha = 0.05 significance level, and 
+## of the null hypothesis at the default alpha = 0.05 significance level, and
 ## @code{@var{h} = 0} indicating a failure to reject the null hypothesis at the
 ## same significance level.
 ##
@@ -89,7 +91,7 @@
 ## @end deftypefn
 
 function [p, h, stats] = ranksum(x, y, varargin)
-  
+
   ## Check that x and y are vectors
   if ! isvector (x) || ! isvector (y)
      error ("X and Y must be vectors");
@@ -103,7 +105,7 @@ function [p, h, stats] = ranksum(x, y, varargin)
   if isempty (y)
     error ("Not enough data in Y");
   endif
-  
+
   ## Check for extra input arguments
   alpha = 0.05;
   method = [];
@@ -146,7 +148,7 @@ function [p, h, stats] = ranksum(x, y, varargin)
     arg_pairs -= 2;
     num_pair += 2;
   endwhile
-  
+
   ## Determine method
   nx = length (x);
   ny = length (y);
@@ -230,7 +232,7 @@ function [p, h, stats] = ranksum(x, y, varargin)
       [p_net, p_val] = exact2xkCT (ct, weights, ranksumstat);
       ## Check if p = NaN
       if any (isnan (p_net)) || any (isnan (p_val))
-        p = NaN;        
+        p = NaN;
       else
         switch tail
           case "both"
@@ -285,7 +287,7 @@ function [p, h, stats] = ranksum(x, y, varargin)
         stats.zval = z;
       endif
   endswitch
-  
+
   ## For additional output arguments
   if nargout > 1,
      h = (p <= alpha);
