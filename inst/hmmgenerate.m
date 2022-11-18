@@ -1,5 +1,7 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -17,6 +19,9 @@
 ## @deftypefn {Function File} {[@var{sequence}, @var{states}] =} hmmgenerate (@var{len}, @var{transprob}, @var{outprob})
 ## @deftypefnx {Function File} {} hmmgenerate (@dots{}, 'symbols', @var{symbols})
 ## @deftypefnx {Function File} {} hmmgenerate (@dots{}, 'statenames', @var{statenames})
+##
+## Output sequence and hidden states of a hidden Markov model.
+##
 ## Generate an output sequence and hidden states of a hidden Markov model.
 ## The model starts in state @code{1} at step @code{0} but will not include
 ## step @code{0} in the generated states and sequence.
@@ -93,9 +98,6 @@
 ## 77(2), pages 257-286, February 1989.
 ## @end enumerate
 ## @end deftypefn
-
-## Author: Arno Onken <asnelt@asnelt.org>
-## Description: Output sequence and hidden states of a hidden Markov model
 
 function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
 

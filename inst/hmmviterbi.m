@@ -1,5 +1,7 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -17,6 +19,9 @@
 ## @deftypefn {Function File} {@var{vpath} =} hmmviterbi (@var{sequence}, @var{transprob}, @var{outprob})
 ## @deftypefnx {Function File} {} hmmviterbi (@dots{}, 'symbols', @var{symbols})
 ## @deftypefnx {Function File} {} hmmviterbi (@dots{}, 'statenames', @var{statenames})
+##
+## Viterbi path of a hidden Markov model.
+##
 ## Use the Viterbi algorithm to find the Viterbi path of a hidden Markov
 ## model given a sequence of outputs. The model assumes that the generation
 ## starts in state @code{1} at step @code{0} but does not include step
@@ -93,9 +98,6 @@
 ## 77(2), pages 257-286, February 1989.
 ## @end enumerate
 ## @end deftypefn
-
-## Author: Arno Onken <asnelt@asnelt.org>
-## Description: Viterbi path of a hidden Markov model
 
 function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
 
@@ -198,7 +200,7 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
   # - for outprob
   s = sum (outprob, 2);
   s(s == 0) = 1;
-  outprob = log (outprob ./ (s * ones (1, columns (outprob)))); 
+  outprob = log (outprob ./ (s * ones (1, columns (outprob))));
 
   # Store the path starting from i in spath(i, :)
   spath = ones (nstate, len + 1);
@@ -215,7 +217,7 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
     [spathprob, mindex] = max (nextpathprob);
     # Update spath and spathprob with the new paths
     spath = spath(mindex, :);
-    spath(:, i + 1) = (1:nstate)';  
+    spath(:, i + 1) = (1:nstate)';
   endfor
 
   # Set vpath to the most likely path
