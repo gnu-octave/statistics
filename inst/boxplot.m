@@ -896,18 +896,20 @@ endfunction
 %!error <Sample_IDs must match the data> boxplot (randn (10, 3), 'Sample_IDs', {"a", "b"})
 %!error <with the formalism> boxplot (rand (3, 3), [1 2])
 
+## Get current figure visibility so it can be restored after tests
+%!shared visibility_setting
+%! visibility_setting = get (0, "DefaultFigureVisible");
 %!test
-%! h = figure ("visible", "off");
+%! set (0, "DefaultFigureVisible", "off");
 %! [a, b] = boxplot (rand (10, 3));
-%! close (h);
 %! assert (size (a), [7, 3]);
 %! assert (numel (b.box), 3);
 %! assert (numel (b.whisker), 12);
 %! assert (numel (b.median), 3);
-
+%! set (0, "DefaultFigureVisible", visibility_setting);
 %!test
-%! h = figure ("visible", "off");
+%! set (0, "DefaultFigureVisible", "off");
 %! [~, b] = boxplot (rand (10, 3), "BoxStyle", "filled", "colors", "ybc");
-%! close (h);
 %! assert (numel (b.box_fill), 3);
+%! set (0, "DefaultFigureVisible", visibility_setting);
 
