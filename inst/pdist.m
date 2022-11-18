@@ -1,5 +1,7 @@
 ## Copyright (C) 2008 Francesco Potortì <pot@gnu.org>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -87,7 +89,7 @@
 ##
 ## @item "chebychev"
 ## Chebychev distance: the maximum coordinate difference.
-## @end table 
+## @end table
 ## @seealso{linkage, mahalanobis, squareform, pdist2}
 ## @end deftypefn
 
@@ -129,7 +131,7 @@ function y = pdist (x, metric, varargin)
       case "euclidean"
         d = X(:,Xi) - X(:,Yi);
         y = norm (d, "cols");
-      
+
       case "squaredeuclidean"
         d = X(:,Xi) - X(:,Yi);
         y = sumsq (d);
