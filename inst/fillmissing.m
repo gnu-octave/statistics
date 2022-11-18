@@ -1,4 +1,4 @@
-## Copyright (C) 1995-2021 The Octave Project Developers
+## Copyright (C) 1995-2022 The Octave Project Developers
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -187,9 +187,9 @@
 ## used by @code{fillmissing}. Attempting to call this method will produce
 ## an error until the method is implemented in @code{interp1}.
 ## @end itemize
-## @end deftypefn
 ##
 ## @seealso{ismissing, rmmissing, standardizeMissing}
+## @end deftypefn
 
 function [A, idx_out] = fillmissing (A, varargin)
 
