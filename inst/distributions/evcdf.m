@@ -66,7 +66,7 @@ function [varargout] = evcdf (x, varargin)
   if (nargin > 1 && strcmpi (varargin{end}, "upper"))
     uflag = true;
     varargin(end) = [];
-  elseif (nargin > 1  && ischar (varargin{end}) && ...
+  elseif (nargin > 1 && ischar (varargin{end}) && ...
           ! strcmpi (varargin{end}, "upper"))
     error ("evcdf: invalid argument for upper tail.");
   else
