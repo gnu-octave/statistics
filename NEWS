@@ -203,6 +203,8 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** levene_test (options for testtypes, handling NaNs and GROUPS like anova1)
 
+ ** ncfcdf (fully Matlab compatible)
+
  ** nctcdf (fully Matlab compatible)
 
  ** ncx2cdf (fully Matlab compatible)

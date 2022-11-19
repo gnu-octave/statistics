@@ -76,6 +76,7 @@ Distributions
  mvtcdfqmc
  nakacdf nakainv nakapdf nakarnd
  nbincdf nbininv nbinpdf nbinrnd
+ ncfcdf
  nctcdf
  ncx2cdf
  normcdf norminv normpdf normrnd
