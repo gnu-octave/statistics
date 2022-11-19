@@ -209,6 +209,10 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** ncx2cdf (fully Matlab compatible)
 
+ ** ncx2inv (fully Matlab compatible)
+
+ ** ncx2rnd (fully Matlab compatible)
+
  ** sampsizepwr (fully Matlab compatible with extra functionality)
 
  ** vartestn (fully Matlab compatible)
@@ -229,6 +233,8 @@ Summary of important user-visible changes for statistics 1.5.1:
  ** gamcdf: added "upper" option and confidence bounds
 
  ** gpcdf: added "upper" option and confidence bounds
+
+ ** ncx2pdf: reimplemented to be fully MATLAB compatible
 
  ** normcdf: added "upper" option and confidence bounds
 
