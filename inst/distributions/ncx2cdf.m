@@ -223,16 +223,17 @@ endfunction
 %! ## chi-square cdf with the same number of degrees of freedom (4):
 %!
 %! x = (0:0.1:10)';
-%! ncx2 = ncx2cdf(x,4,2);
-%! chi2 = chi2cdf(x,4);
-%! plot(x,ncx2,'b-','LineWidth',2);
+%! ncx2 = ncx2cdf (x, 4, 2);
+%! chi2 = chi2cdf (x, 4);
+%! plot(x, ncx2, "b-", "LineWidth", 2);
 %! hold on
-%! plot (x, chi2, "g--", "LineWidth",2);
+%! plot (x, chi2, "g--", "LineWidth", 2);
 %! legend ("ncx2", "chi2", "Location", "NorthWest");
 
 ## Input validation tests
+%!error<ncx2cdf: too few imputs.> p = ncx2cdf (2);
 %!error<ncx2cdf: too few imputs.> p = ncx2cdf (2, 4);
-%!error<ncx2cdf: input size mismatch.> p = ncx2cdf (2, [4, 3], [3, 4, 5]);
+%!error<ncx2cdf: input size mismatch.> p = ncx2cdf (2,  [4, 3], [3, 4, 5]);
 %!error<ncx2cdf: improper definition of upper tail option.> ...
 %! p = ncx2cdf (2, 4, 2, "lower");
 
@@ -245,14 +246,14 @@ endfunction
 %! assert (p(30), 6.665480510026046e-05, 1e-14);
 %! assert (p(41), 0.002406447308399836, 1e-14);
 %!test
-%! p = ncx2cdf(12, 10, 3);
+%! p = ncx2cdf (12, 10, 3);
 %! assert (p, 0.4845555602398649, 1e-14);
 %!test
-%! p = ncx2cdf(2, 3, 2);
+%! p = ncx2cdf (2, 3, 2);
 %! assert (p, 0.2207330870741212, 1e-14);
 %!test
-%! p = ncx2cdf(2, 3, 2, "upper");
+%! p = ncx2cdf (2, 3, 2, "upper");
 %! assert (p, 0.7792669129258789, 1e-14);
 %!test
-%! p = ncx2cdf([3, 6], 3, 2, "upper");
+%! p = ncx2cdf ([3, 6], 3, 2, "upper");
 %! assert (p, [0.6423318186400054, 0.3152299878943012], 1e-14);
