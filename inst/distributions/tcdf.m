@@ -49,7 +49,7 @@ function p = tcdf (x, v, uflag)
   ## Check for 'upper' flag
   if (nargin > 2 && strcmpi (uflag, "upper"))
     x = -x;
-  elseif (nargin > 2  && ischar (uflag) && ! strcmpi (uflag, "upper"))
+  elseif (nargin > 2  && ! strcmpi (uflag, "upper"))
     error ("tcdf: invalid argument for upper tail.");
   endif
 
@@ -190,6 +190,7 @@ endfunction
 %!error<tcdf: invalid number of input arguments.> tcdf (1)
 %!error tcdf (1,2,3,4)
 %!error<tcdf: invalid argument for upper tail.> tcdf (1, 2, "uper")
+%!error<tcdf: invalid argument for upper tail.> tcdf (1, 2, 3)
 %!error<tcdf: X and V must be of common size or scalars.> ...
 %! tcdf (ones (3), ones (2))
 %!error<tcdf: X and V must be of common size or scalars.> ...
