@@ -1,5 +1,5 @@
-## Copyright (C) 1995-2016 Kurt Hornik
 ## Copyright (C) 2012 Rik Wehbring
+## Copyright (C) 1995-2016 Kurt Hornik
 ## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
