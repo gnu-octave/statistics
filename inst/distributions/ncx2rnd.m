@@ -82,8 +82,8 @@ function r = ncx2rnd (df, delta, varargin)
   size_out = size (df);
 
   ## Return NaNs for out of range values of DF and DELTA
-  df(df < 0) = NaN;
-  delta(delta < 0) = NaN;
+  df(df <= 0) = NaN;
+  delta(delta <= 0) = NaN;
 
   ## Generate noncentral chi-square random sampling
   r = randp (delta ./ 2);
