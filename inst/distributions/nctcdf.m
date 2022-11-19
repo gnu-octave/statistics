@@ -37,25 +37,29 @@
 ## @end deftypefn
 
 function p = nctcdf (x, df, delta, uflag)
+
   ## Check for valid input arguments
   if (nargin <  3)
     error ("nctcdf: too few imputs.");
   endif
+
   ## Check and fix size of input arguments
- [err, x, df, delta] = common_size (x, df, delta);
+  [err, x, df, delta] = common_size (x, df, delta);
   if (err > 0)
     error ("nctcdf: input size mismatch.");
   endif
+
   ## Check for upper tail option
   if (nargin > 3)
     if (! strcmpi (uflag, "upper"))
       error ("nctcdf: improper definition of upper tail option.");
     else
-      uppertail = true;
+      uflag = true;
     endif
   else
-    uppertail = false;
+    uflag = false;
   endif
+
   ## Initialize p
   if (isa (x, "single") || isa (df, "single") || isa (delta, "single"))
     p = zeros (size (x), "single");
@@ -64,8 +68,9 @@ function p = nctcdf (x, df, delta, uflag)
     p = zeros (size (x));
     c_eps = eps;
   endif
+
   ## Find NaNs in input arguments (if any) and propagate them to p
-  is_nan = isnan(x) | isnan(df) | isnan(delta);
+  is_nan = isnan (x) | isnan (df) | isnan (delta);
   p(is_nan) = NaN;
 
   ## Find special cases for delta==0 and x<0; and x = Inf.
@@ -79,20 +84,21 @@ function p = nctcdf (x, df, delta, uflag)
   flag_Xzero = any (case_Xzero(:));
   flag_Xinf = any (case_Xinf(:));
   flag_DFbig = any (case_DFbig(:));
+
   ## Handle special cases
   if (flag_Dinf || flag_Dzero || flag_Xzero || flag_Xinf || flag_DFbig)
     if (flag_Dinf)
       p(case_Dinf) = NaN;
     endif
     if (flag_Dzero)
-      if (uppertail == true)
+      if (uflag)
         p(case_Dzero) = tcdf (x(case_Dzero), df(case_Dzero), "upper");
       else
         p(case_Dzero) = tcdf (x(case_Dzero), df(case_Dzero));
       endif
     endif
     if (flag_Xinf)
-      if (uppertail == true)
+      if (uflag)
         p(case_Xinf) = 0;
       else
         p(case_Xinf) = 1;
@@ -101,7 +107,7 @@ function p = nctcdf (x, df, delta, uflag)
     if (flag_DFbig)
       s = 1 - 1 ./ (4 * df);
       d = sqrt (1 + x .^ 2 ./ (2 * df));
-      if (uppertail == true)
+      if (uflag)
         p(case_DFbig) = normcdf (x(case_DFbig) .* s(case_DFbig), ...
                                  delta(case_DFbig), d(case_DFbig), "upper");
       else
@@ -111,14 +117,14 @@ function p = nctcdf (x, df, delta, uflag)
     endif
     fp = ! (case_Dinf | case_Dzero | case_Xzero | case_Xinf | case_DFbig);
     if (any (fp(:)))
-      if (uppertail == true)
+      if (uflag)
         p(fp) = nctcdf (x(fp), df(fp), delta(fp), "upper");
       else
         p(fp) = nctcdf (x(fp), df(fp), delta(fp));
       endif
     endif
     if (flag_Xzero)
-      if (uppertail == true)
+      if (uflag)
         p(case_Xzero) = nctcdf (-x(case_Xzero), df(case_Xzero), ...
                                 -delta(case_Xzero));
       else
@@ -138,7 +144,7 @@ function p = nctcdf (x, df, delta, uflag)
   d_square = delta .^ 2;
 
   ## Compute probability P[TD<0] (first term)
-  if uppertail==true
+  if (uflag)
     x_zero = x == 0 & ! is_nan;
     if (any (x_zero(:)))
       fx = normcdf (- delta, 0, 1, "upper");
@@ -147,6 +153,7 @@ function p = nctcdf (x, df, delta, uflag)
   else
     p(! is_nan) = normcdf (- delta(! is_nan), 0, 1);
   endif
+
   ## Compute probability P[0<TD<x] (second term)
   x_notzero = find (x != 0 & ! is_nan);
   if (any (x_notzero(:)))
@@ -157,8 +164,8 @@ function p = nctcdf (x, df, delta, uflag)
     d_sign = sign (delta(x_notzero));
     subtotal = zeros (size (x_notzero));
 
-    % Start looping over term jj and higher, this should be near the
-    % peak of the E part of the term (see below)
+    ## Start looping over term jj and higher, this should be near the
+    ## peak of the E part of the term (see below)
     jj = 2 * floor(d_square/2);
 
     ## Compute an infinite sum using Johnson & Kotz eq 9, or new
@@ -180,7 +187,7 @@ function p = nctcdf (x, df, delta, uflag)
     TD = (P < 0.5);
     B1 = zeros (size (P));
     B2 = zeros (size (P));
-    if (uppertail == true)
+    if (uflag)
       if any(TD)
         B1(TD) = betainc (P(TD), (jj(TD) + 1) / 2, df(TD) / 2, "upper");
         B2(TD) = betainc (P(TD), (jj(TD) + 2) / 2, df(TD) / 2, "upper");
@@ -205,6 +212,7 @@ function p = nctcdf (x, df, delta, uflag)
              gammaln (df / 2) + ((jj + 1) / 2) .* log (P) + (df / 2) .* log(Q));
     R2 = exp (gammaln ((jj + 2) / 2 + df / 2) - gammaln ((jj + 4) / 2) - ...
              gammaln (df / 2) + ((jj + 2) / 2) .* log (P) + (df / 2) .* log(Q));
+
     ## Keep terms
     E10 = E1; E20 = E2; B10 = B1; B20 = B2; R10 = R1; R20 = R2; j0 = jj;
     TD = true (size (d_square));
@@ -221,7 +229,7 @@ function p = nctcdf (x, df, delta, uflag)
       jj = jj+2;
       E1(TD) = E1(TD) .* d_square(TD) ./ (jj(TD));
       E2(TD) = E2(TD) .* d_square(TD) ./ (jj(TD) + 1);
-      if (uppertail == true)
+      if (uflag)
         B1(TD) = betainc (P(TD), (jj(TD) + 1) / 2, df(TD) / 2, "upper");
         B2(TD) = betainc (P(TD), (jj(TD) + 2) / 2, df(TD) / 2, "upper");
       else
@@ -231,6 +239,7 @@ function p = nctcdf (x, df, delta, uflag)
         R2(TD) = R2(TD) .* P(TD) .* (jj(TD)+df(TD)  ) ./ (jj(TD)+2);
       endif
     endwhile
+
     ## Go back to the peak and start looping downward as far as necessary.
     E1 = E10; E2 = E20; B1 = B10; B2 = B20; R1 = R10; R2 = R20;
     jj = j0;
@@ -241,7 +250,7 @@ function p = nctcdf (x, df, delta, uflag)
       E2(TD) = E2(TD) .* (JJ+1) ./ d_square(TD);
       R1(TD) = R1(TD) .* (JJ+1) ./ ((JJ+df(TD)-1) .* P(TD));
       R2(TD) = R2(TD) .* (JJ+2) ./ ((JJ+df(TD))   .* P(TD));
-      if (uppertail == true)
+      if (uflag)
         B1(TD) = betainc (P(TD), (JJ - 1) / 2, df(TD) / 2, "upper");
         B2(TD) = betainc (P(TD), JJ / 2, df(TD) / 2, "upper");
       else
@@ -256,6 +265,7 @@ function p = nctcdf (x, df, delta, uflag)
     endwhile
     p(x_notzero) = min (1, max (0, p(x_notzero) + subtotal / 2));
   endif
+
 endfunction
 
 %!demo
@@ -263,9 +273,9 @@ endfunction
 %! ## with the same number of degrees of freedom (10).
 %!
 %! x = (-5:0.1:5)';
-%! p1 = nctcdf(x,10,1);
-%! p = tcdf(x,10);
-%! plot(x,p,'-',x,p1,':')
+%! p1 = nctcdf (x, 10, 1);
+%! p = tcdf (x, 10);
+%! plot (x, p, "-", x, p1, ":")
 
 ## Input validation tests
 %!error<nctcdf: too few imputs.> p = nctcdf (2, 4);
@@ -283,6 +293,15 @@ endfunction
 %! assert (p(41), 0.8076115625303751, 1e-14);
 %!test
 %! p = nctcdf(12, 10, 3);
-%! assert (p(1), 0.9997719343243797, 1e-14);
+%! assert (p, 0.9997719343243797, 1e-14);
+%!test
+%! p = nctcdf(2, 3, 2);
+%! assert (p, 0.4430757822176028, 1e-14);
+%!test
+%! p = nctcdf(2, 3, 2, "upper");
+%! assert (p, 0.5569242177823971, 1e-14);
+%!test
+%! p = nctcdf([3, 6], 3, 2, "upper");
+%! assert (p, [0.3199728259444777, 0.07064855592441913], 1e-14);
 
 
