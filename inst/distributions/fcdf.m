@@ -20,7 +20,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn {Function File} @var{p} = tcdf (@var{x}, @var{v1}, @var{v2})
-## @deftypefn {Function File} @var{p} = tcdf (@var{x}, @var{v1}, @var{v2}, "upper")
+## @deftypefnx {Function File} @var{p} = tcdf (@var{x}, @var{v1}, @var{v2}, "upper")
 ##
 ## F cumulative distribution function.
 ##
