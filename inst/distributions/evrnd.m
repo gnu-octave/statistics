@@ -62,7 +62,8 @@ function r = evrnd (mu, sigma, varargin)
       size_dim = varargin{1};
       ## Check for empty input argument
       if (isempty (size_dim))
-        error ("evrnd: extra argument for size of output array cannot be empty.");
+        error (strcat (["evrnd: extra argument for size of output"], ...
+                       [" array cannot be empty."]));
       endif
       dim_vec = zeros (size_dim, is_class);
     elseif (extra_varargin > 1)
@@ -76,7 +77,8 @@ function r = evrnd (mu, sigma, varargin)
   if (! isscalar (mu) || ! isscalar (sigma) || ! isscalar (dim_vec))
     [err, mu, sigma, dim_vec] = common_size (mu, sigma, dim_vec);
     if (err > 0)
-      error ("evrnd: MU, SIGMA, and DIM vector must be of common size or scalars.");
+      error (strcat (["evrnd: MU, SIGMA, and DIM vector must be of"], ...
+                     [" common size or scalars."]));
     endif
   endif
   ## Get final dimensions of returning random array
@@ -98,3 +100,9 @@ endfunction
 %! evrnd (ones (2), ones (2), 3, 2)
 %!error<evrnd: MU, SIGMA, and DIM vector must be of common size or scalars.> ...
 %! evrnd (ones (2), ones (2), 1, 2)
+
+## Output validation tests
+%!assert (size (evrnd (2, 3, 3, 5, 7)), [3, 5, 7])
+%!assert (size (evrnd (2, 3, [3, 5, 7])), [3, 5, 7])
+%!assert (size (evrnd (ones (3, 5), 2 * ones (3, 5), [3, 5])), [3, 5])
+%!assert (size (evrnd (2, 3)), [1, 1])
