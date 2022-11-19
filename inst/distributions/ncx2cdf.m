@@ -23,7 +23,7 @@
 ##
 ## @code{@var{p} = ncx2cdf (@var{x}, @var{df}, @var{delta})} returns the
 ## noncentral chi-square cdf with @var{df} degrees of freedom and noncentrality
-## parameter @var{delta} at the values of @var{X}.
+## parameter @var{delta} at the values of @var{x}.
 ##
 ## The size of @var{p} is the common size of the input arguments. Scalar input
 ## arguments @var{x}, @var{df}, @var{delta} are regarded as constant matrices of
