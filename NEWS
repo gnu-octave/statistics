@@ -205,6 +205,8 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** nctcdf (fully Matlab compatible)
 
+ ** ncx2cdf (fully Matlab compatible)
+
  ** sampsizepwr (fully Matlab compatible with extra functionality)
 
  ** vartestn (fully Matlab compatible)
