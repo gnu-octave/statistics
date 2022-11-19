@@ -292,16 +292,16 @@ endfunction
 %! assert (p(3), 0.005052800319478737, 1e-14);
 %! assert (p(41), 0.8076115625303751, 1e-14);
 %!test
-%! p = nctcdf(12, 10, 3);
+%! p = nctcdf (12, 10, 3);
 %! assert (p, 0.9997719343243797, 1e-14);
 %!test
-%! p = nctcdf(2, 3, 2);
+%! p = nctcdf (2, 3, 2);
 %! assert (p, 0.4430757822176028, 1e-14);
 %!test
-%! p = nctcdf(2, 3, 2, "upper");
+%! p = nctcdf (2, 3, 2, "upper");
 %! assert (p, 0.5569242177823971, 1e-14);
 %!test
-%! p = nctcdf([3, 6], 3, 2, "upper");
+%! p = nctcdf ([3, 6], 3, 2, "upper");
 %! assert (p, [0.3199728259444777, 0.07064855592441913], 1e-14);
 
 
