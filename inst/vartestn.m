@@ -88,7 +88,6 @@
 ## test statistic, and "df1" and "df2" containing its numerator and denominator
 ## degrees of freedom.
 ##
-##
 ## @seealso{vartest, vartest2, anova1, bartlett_test, levene_test}
 ## @end deftypefn
 
