@@ -58,19 +58,20 @@
 ## when called in the form @code{[@dots{}] = chi2test (@var{x}, "name", value)},
 ## it can perform the following tests:
 ##
-## @multitable @columnfractions 0.1 0.1 0.8
+## @multitable @columnfractions 0.2 0.1 0.7
 ## @headitem Name @tab Value @tab Description
 ## @item "mutual" @tab [] @tab Mutual independence.  All variables are
 ## independent from each other, (A, B, C).  Value must be an empty matrix.
 ## @item "joint" @tab scalar @tab Joint independence.  Two variables are jointly
 ## independent of the third, (AB, C). The scalar value corresponds to the
-## dimension of the independent variable (i.e. C).
-## @item "marginal" @tab scalar @var{dF} @tab Marginal independence.  Two
-## variables are independent if you ignore the third, (A, C).  The scalar value
-## corresponds to the dimension of the variable to be ignored (i.e. B).
+## dimension of the independent variable (i.e. 3 for C).
+## @item "marginal" @tab scalar @tab Marginal independence.  Two variables are
+## independent if you ignore the third, (A, C).  The scalar value corresponds
+## to the dimension of the variable to be ignored (i.e. 2 for B).
 ## @item "conditional" @tab scalar @tab Conditional independence.  Two variables
 ## are independent given the third, (AC, BC).  The scalar value corresponds to
-## the dimension of the variable that forms the conditional dependence (i.e. C).
+## the dimension of the variable that forms the conditional dependence
+## (i.e. 3 for C).
 ## @item "homogeneous" @tab [] @tab Homogeneous associations.  Conditional
 ## (partial) odds-ratios are not related on the value of the third,
 ## (AB, AC, BC).  Value must be an empty matrix.

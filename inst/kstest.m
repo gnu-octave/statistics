@@ -25,7 +25,7 @@
 ##
 ## @code{@var{h} = kstest (@var{x})} performs a Kolmogorov-Smirnov (K-S) test to
 ## determine if a random sample @var{x} could have come from a standard normal
-## distribution.  @var{h} indicates the resuults of the null hypothesis test.
+## distribution.  @var{h} indicates the results of the null hypothesis test.
 ##
 ## @itemize
 ## @item @var{h} = 0 => Do not reject the null hypothesis at the 5% significance
