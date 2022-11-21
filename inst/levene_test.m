@@ -28,7 +28,7 @@
 ## @deftypefnx {Function File} [@var{h}, @var{pval}, @var{W}] = levene_test (@dots{})
 ## @deftypefnx {Function File} [@var{h}, @var{pval}, @var{W}, @var{df}] = levene_test (@dots{})
 ##
-## Perform a Bartlett test for the homogeneity of variances.
+## Perform a Levene's test for the homogeneity of variances.
 ##
 ## Under the null hypothesis of equal variances, the test statistic @var{W}
 ## approximately follows an F distribution with @var{df} degrees of

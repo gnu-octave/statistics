@@ -15,84 +15,82 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program; see the file COPYING.  If not, see
 ## <http://www.gnu.org/licenses/>.
-##
+
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{h} = vartest2 (@var{x}, @var{y})
-## @deftypefnx {Function File} @var{h} = vartest2 (@var{x}, @var{y}, @var{name}, @var{value})
-## @deftypefnx {Function File} [@var{h}, @var{pval}] = vartest2 (@dots{})
-## @deftypefnx {Function File} [@var{h}, @var{pval}, @var{ci}] = vartest2 (@dots{})
-## @deftypefnx {Function File} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = vartest2 (@dots{})
+## @deftypefn {Function File} vartestn (@var{x})
+## @deftypefnx {Function File} vartestn (@var{x}, @var{group})
+## @deftypefnx {Function File} vartestn (@dots{}, @var{name}, @var{value})
+## @deftypefnx {Function File} @var{p} = vartestn (@dots{})
+## @deftypefnx {Function File} [@var{p}, @var{stats}] = vartestn (@dots{})
+## @deftypefnx {Function File} [@var{p}, @var{stats}] = vartestn (@dots{}, @var{name}, @var{value})
 ##
 ## Test for equal variances across multiple groups.
 ##
+## @code{@var{h} = vartestn (@var{x})} performs Bartlett's test for equal
+## variances for the columns of the matrix @var{x}.  This is a test of the null
+## hypothesis that the columns of @var{x} come from normal distributions with
+## the same variance, against the alternative that they come from normal
+## distributions with different variances.  The result is displayed in a summary
+## table of statistics as well as a box plot of the groups.
 ##
+## @code{vartestn (@var{x}, @var{group})} requires a vector @var{x}, and a
+## @var{group} argument that is a categorical variable, vector, string array, or
+## cell array of strings with one row for each element of @var{x}.  Values of
+## @var{x} corresponding to the same value of @var{group} are placed in the same
+## group.
+##
+## @code{vartestn} treats NaNs as missing values, and ignores them.
+##
+## @code{@var{p} = vartestn (@dots{})} returns the probability of observing the
+## given result, or one more extreme, by chance under the null hypothesis that
+## all groups have equal variances.  Small values of @var{p} cast doubt on the
+## validity of the null hypothesis.
+##
+## @code{[@var{p}, @var{stats}] = vartestn (@dots{})} returns a structure with
+## the following fields:
+##
+## @multitable @columnfractions 0.05 0.2 0.75
+## @item @tab "chistat" @tab -- the value of the test statistic
+## @item @tab "df" @tab -- the degrees of freedom of the test
+## @end multitable
+##
+##
+## @code{[@var{p}, @var{stats}] = vartestn (@dots{}, @var{name}, @var{value})}
+## specifies one or more of the following @var{name}/@var{value} pairs:
+##
+## @multitable @columnfractions 0.20 0.8
+## @item "display" @tab "on" to display a boxplot and table, or "off" to omit
+## omit these displays. Default "on".
+##
+## @item "testtype" @tab One of the following strings to control the type of
+## test to perform:
+## @end multitable
+##
+## @multitable @columnfractions 0.03 0.25 0.72
+## @item @tab "Bartlett" @tab Bartlett's test (default).
+##
+## @item @tab "LeveneQuadratic" @tab Levene's test computed by performing anova
+## on the squared deviations of the data values from their group means.
+##
+## @item @tab "LeveneAbsolute" @tab Levene's test computed by performing anova
+## on the absolute deviations of the data values from their group means.
+##
+## @item @tab "BrownForsythe" @tab Brown-Forsythe test computed by performing
+## anova on the absolute deviations of the data values from the group medians.
+##
+## @item @tab "OBrien" @tab O'Brien's modification of Levene's test with W=0.5.
+## @end multitable
+##
+## The classical 'Bartlett' test is sensitive to the assumption that the
+## distribution in each group is normal.  The other test types are more robust
+## to non-normal distributions, especially ones prone to outliers.  For these
+## tests, the STATS output structure has a field named "fstat" containing the
+## test statistic, and "df1" and "df2" containing its numerator and denominator
+## degrees of freedom.
 ##
 ##
 ## @seealso{vartest, vartest2, anova1, bartlett_test, levene_test}
 ## @end deftypefn
-
-%VARTESTN Test for equal variances across multiple groups.
-%   VARTESTN(X) performs Bartlett's test for equal variances for the
-%   columns of the matrix X.  This is a test of the null hypothesis
-%   that the columns of X come from normal distributions with the same
-%   variance, against the alternative that they come from normal
-%   distributions with different variances.  The result is a display
-%   of a box plot of the groups, and a summary table of statistics.
-%
-%   VARTESTN(X,GROUP) requires a vector X, and a GROUP argument that is a
-%   categorical variable, vector, string array, or cell array of strings
-%   with one row for each element of X.  X values corresponding to the same
-%   value of GROUP are placed in the same group.  The function tests for
-%   equal variances across groups.
-%
-%   VARTESTN treats NaNs as missing values, and ignores them.
-%
-%   P = VARTESTN(...) returns the p-value, i.e., the probability of
-%   observing the given result, or one more extreme, by chance if the null
-%   hypothesis of equal variances is true.  Small values of P cast doubt
-%   on the validity of the null hypothesis.
-%
-%   [P,STATS] = VARTESTN(...) returns a structure with the following
-%   fields:
-%      'chistat' -- the value of the test statistic
-%      'df'      -- the degrees of freedom of the test
-%
-%  [...] = VARTESTN(...,'PARAM1',val1,'PARAM2',val2,...) specifies one or
-%  more of the following name/value pairs:
-%
-%       Parameter       Value
-%       'display'       'on' to display a boxplot and table, or 'off' to
-%                       omit these displays. Default 'on'.
-%       'testtype'      One of the following strings to control the type
-%                       of test to perform:
-%          'Bartlett'          Bartlett's test (default)
-%          'LeveneQuadratic'   Levene's test computed by performing anova
-%                              on the squared deviations of the data values
-%                              from their group means
-%          'LeveneAbsolute'    Levene's test computed by performing anova
-%                              on the absolute deviations of the data
-%                              values from their group means
-%          'BrownForsythe'     Brown-Forsythe test computed by performing
-%                              anova on the absolute deviations of the data
-%                              values from the group medians
-%          'OBrien'            O'Brien's modification of Levene's test with
-%                              W=0.5.
-%
-%   The classical 'Bartlett' test is sensitive to the assumption that the
-%   distribution in each group is normal. The other test types are more
-%   robust to non-normal distributions, especially ones prone to outliers.
-%   For these tests, the STATS output structure has a field named 'fstat'
-%   containing the test statistic, and 'df1' and 'df2' containing its
-%   numerator and denominator degrees of freedom.
-%
-%   Example:  Does the variance of mileage measurements differ
-%             significantly from one model year to another?
-%      load carsmall
-%      vartestn(MPG,Model_Year)
-%
-%   See also VARTEST, VARTEST2, ANOVA1.
-
-%   Copyright 2005-2018 The MathWorks, Inc.
 
 function [p, stats] = vartestn (x, group, varargin)
 
