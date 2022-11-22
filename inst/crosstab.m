@@ -20,28 +20,27 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {@var{t} =} crosstab (@var{x1}, @var{x2})
-## @deftypefnx {Function File} @
-##   {@var{t} =} crosstab (@var{x1}, ..., @var{xn})
-## @deftypefnx {Function File} @
-##   {[@var{t}, @var{chi-2}, @var{p}, @var{labels}] =} crosstab (...)
+## @deftypefn {Function File} @var{t} = crosstab (@var{x1}, @var{x2})
+## @deftypefnx {Function File} @var{t} = crosstab (@var{x1}, @dots{}, @var{xn})
+## @deftypefnx {Function File} [@var{t}, @var{chisq}, @var{p}, @var{labels}] = crosstab (@dots{})
+##
 ## Create a cross-tabulation (contingency table) @var{t} from data vectors.
 ##
 ## The inputs @var{x1}, @var{x2}, ... @var{xn} must be vectors of equal length
 ## with a data type of numeric, logical, char, or string (cell array).
 ##
 ## As additional return values @code{crosstab} returns the chi-square statistics
-## @var{chi-2}, its p-value @var{p} and a cell array @var{labels}, containing
+## @var{chisq}, its p-value @var{p} and a cell array @var{labels}, containing
 ## the labels of each input argument.
 ##
-## Currently @var{chi-2} and @var{p} are available only for 1 or 2-dimensional
-## @var{t}, with @code{crosstab} returning a NaN value for both @var{chi-2} and
-## @var{p} for 3-dimensional, or more, @var{t}.
+## Currently @var{chisq} and @var{p} are available only for 2 or 3-dimensional
+## @var{t}, with @code{crosstab} returning a NaN value for both @var{chisq} and
+## @var{p} for 4-dimensional, or more, @var{t}.
 ##
-## @seealso{grp2idx,tabulate}
+## @seealso{grp2idx, tabulate}
 ## @end deftypefn
 
-function [t, chi2, p, labels] = crosstab (varargin)
+function [t, chisq, p, labels] = crosstab (varargin)
 
   ## check input
   if (nargin < 2)
@@ -86,14 +85,14 @@ function [t, chi2, p, labels] = crosstab (varargin)
   t = reshape(t, v_reshape);         # build the nargin-dimensional matrix
 
   ## additional statistics
-  if (length (v_reshape) == 2)
-    [p, chi2] = chi2test (t);
-  elseif (length (v_reshape) > 2)
+  if (length (v_reshape) <= 3)
+    [p, chisq] = chi2test (t);
+  elseif (length (v_reshape) > 3)
     ## FIXME!
-    ## chisquare_test_independence works with 2D matrices only
-    warning ("crosstab: chi-square test only available for 2D results");
+    ## chi2test works with 2D and 3D matrices only
+    warning ("crosstab: chi^2 test only available for 2-way and 3-way tables.");
     p = NaN;                         # placeholder
-    chi2 = NaN;                      # placeholder
+    chisq = NaN;                     # placeholder
   endif
   ## main - end
 
@@ -134,14 +133,12 @@ endfunction
 %!error <x1, x2 .* must be vectors of the same length> crosstab ([1 2], [1])
 %!test
 %! load carbig
-%! warning ("off")
-%! [table, chi2, p, labels] = crosstab (cyl4, when, org);
+%! [table, chisq, p, labels] = crosstab (cyl4, when, org);
 %! assert (table(2,3,1), 38);
 %! assert (labels{3,3}, "Japan");
 %!test
 %! load carbig
-%! warning ("off")
-%! [table, chi2, p, labels] = crosstab (cyl4, when, org);
+%! [table, chisq, p, labels] = crosstab (cyl4, when, org);
 %! assert (table(2,3,2), 17);
 %! assert (labels{1,3}, "USA");
 
