@@ -35,7 +35,7 @@ function y = ncx2pdf (x, df, delta)
 
   ## Check for valid input arguments
   if (nargin <  3)
-    error ("ncx2pdf: too few imputs.");
+    error ("ncx2pdf: too few input arguments.");
   endif
 
   ## Check and fix size of input arguments
@@ -77,7 +77,7 @@ function y = ncx2pdf (x, df, delta)
   if (isempty (td))
     return;
   endif
-  
+
   ## Reset input variables to remaining cases
   x = x(td);
   delta = delta(td);
@@ -273,8 +273,8 @@ function BP = BinoPoisson (x, np)
 endfunction
 
 ## Input validation tests
-%!error<ncx2pdf: too few imputs.> p = ncx2pdf (2);
-%!error<ncx2pdf: too few imputs.> p = ncx2pdf (2, 4);
+%!error<ncx2pdf: too few input arguments.> p = ncx2pdf (2);
+%!error<ncx2pdf: too few input arguments.> p = ncx2pdf (2, 4);
 %!error<ncx2pdf: input size mismatch.> p = ncx2pdf (2,  [4, 3], [3, 4, 5]);
 
 ## Output validation tests

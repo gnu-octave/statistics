@@ -41,7 +41,7 @@ function p = ncx2cdf (x, df, delta, uflag)
 
   ## Check for valid input arguments
   if (nargin <  3)
-    error ("ncx2cdf: too few imputs.");
+    error ("ncx2cdf: too few input arguments.");
   endif
 
   ## Check and fix size of input arguments
@@ -231,8 +231,8 @@ endfunction
 %! legend ("ncx2", "chi2", "Location", "NorthWest");
 
 ## Input validation tests
-%!error<ncx2cdf: too few imputs.> p = ncx2cdf (2);
-%!error<ncx2cdf: too few imputs.> p = ncx2cdf (2, 4);
+%!error<ncx2cdf: too few input arguments.> p = ncx2cdf (2);
+%!error<ncx2cdf: too few input arguments.> p = ncx2cdf (2, 4);
 %!error<ncx2cdf: input size mismatch.> p = ncx2cdf (2,  [4, 3], [3, 4, 5]);
 %!error<ncx2cdf: improper definition of upper tail option.> ...
 %! p = ncx2cdf (2, 4, 2, "lower");

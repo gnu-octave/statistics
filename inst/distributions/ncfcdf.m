@@ -41,7 +41,7 @@ function p = ncfcdf (x, df1, df2, delta, uflag)
 
   ## Check for valid input arguments
   if (nargin <  4)
-    error ("ncfcdf: too few imputs.");
+    error ("ncfcdf: too few input arguments.");
   endif
 
   ## Check and fix size of input arguments
@@ -201,8 +201,8 @@ function x = localgammaln (y)
 endfunction
 
 %!demo
-%! ## Compare the noncentral chi-square cdf with DELTA = 2 to the
-%! ## chi-square cdf with the same number of degrees of freedom (4):
+%! ## Compare the noncentral F cdf with DELTA = 10 to the F cdf with the
+%! ## same number of numerator and denominator degrees of freedom (5, 20)
 %!
 %! x = (0.01:0.1:10.01)';
 %! p1 = ncfcdf (x, 5, 20, 10);
@@ -210,8 +210,8 @@ endfunction
 %! plot (x, p, "-", x, p1, "-");
 
 ## Input validation tests
-%!error<ncfcdf: too few imputs.> p = ncfcdf (2, 4);
-%!error<ncfcdf: too few imputs.> p = ncfcdf (2, 4, 3);
+%!error<ncfcdf: too few input arguments.> p = ncfcdf (2, 4);
+%!error<ncfcdf: too few input arguments.> p = ncfcdf (2, 4, 3);
 %!error<ncfcdf: input size mismatch.> p = ncfcdf (2, 2, [4, 3], [3, 4, 5]);
 %!error<ncfcdf: improper definition of upper tail option.> ...
 %! p = ncfcdf (2, 4, 2, 3, "lower");
