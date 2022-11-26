@@ -49,7 +49,7 @@ function y = ncx2pdf (x, df, delta)
     y = zeros (size (x), "single");
   else
     y = zeros (size (x));
-  end
+  endif
 
   ## Find NaNs in input arguments (if any) and propagate them to p
   is_nan = isnan (x) | isnan (df) | isnan (delta);
@@ -77,6 +77,8 @@ function y = ncx2pdf (x, df, delta)
   if (isempty (td))
     return;
   endif
+  
+  ## Reset input variables to remaining cases
   x = x(td);
   delta = delta(td);
   df = df(td) - 1;

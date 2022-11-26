@@ -123,7 +123,7 @@ function x = ncx2inv (p, df, delta)
 
   if (count == count_limit)
     warning ("ncx2inv: did not converge.");
-    fprintf("ncx2inv: Last Step: %13.8f\n",h);
+    fprintf ("ncx2inv: Last Step: %13.8f\n", h);
   endif
 
 endfunction
