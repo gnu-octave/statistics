@@ -18,7 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn {Function File} @var{x} = ncx2inv (@var{p}, @var{df}, @var{delta})
 ##
-## Inverse of the non-central chi-square cdf.
+## Inverse of the non-central chi-square cumulative distribution function (cdf).
 ##
 ## @code{@var{x} = ncx2inv (@var{p}, @var{df}, @var{delta})} returns the inverse
 ## of the noncentral chi-square distribution with @var{df} degrees of freedom
