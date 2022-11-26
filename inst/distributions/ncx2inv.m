@@ -100,8 +100,7 @@ function x = ncx2inv (p, df, delta)
   ## Start iteration with a break out loop
   while (count < count_limit)
     count = count + 1;
-    d0 = ncx2pdf (xk, df(k), delta(k));
-    h = (F - pk) ./ d0;
+    h = (F - pk) ./ ncx2pdf (xk, df(k), delta(k));
     xnew = max (xk / 50, min (5 * xk, xk - h));
     newF = ncx2cdf (xnew, df(k), delta(k));
     while (true)
