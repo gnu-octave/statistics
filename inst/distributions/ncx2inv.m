@@ -58,6 +58,10 @@ function x = ncx2inv (p, df, delta)
   d0 = delta == 0;
   if (any (d0(:)))
     x(d0) = chi2inv (p(d0), df(d0));
+    ## If delta == 0 for all entries, then return
+    if (all (d0(:)))
+      return;
+    endif
   endif
 
   ## CDF with 0 d.d0. has a step at x=0.
