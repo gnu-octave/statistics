@@ -28,8 +28,8 @@
 ## common size of @var{df1}, @var{df2}, and @var{delta}.  A scalar input
 ## functions as a constant matrix of the same size as the other input.
 ##
-## @code{@var{r} = ncx2rnd (@var{df1}, @var{df2}, @var{delta}, @var{m}, @var{n},
-## @dots{})} or @code{@var{r} = ncx2rnd (@var{df1}, @var{df2}, @var{delta},
+## @code{@var{r} = ncfrnd (@var{df1}, @var{df2}, @var{delta}, @var{m}, @var{n},
+## @dots{})} or @code{@var{r} = ncfrnd (@var{df1}, @var{df2}, @var{delta},
 ## [@var{m}, @var{n}, @dots{}])} returns an M-by-N-by-... array.
 ##
 ## @code{ncfrnd} generates values using the definition of a noncentral F random

@@ -21,9 +21,9 @@
 ## Noncentral F probability density function (pdf).
 ##
 ## @code{@var{y} = ncfpdf (@var{x}, @var{df1}, @var{df2}, @var{delta})} returns
-## the noncentral F distribution with @var{df1} numerator degrees
-## of freedom, @var{df2} denumerator degrees of freedom, and noncentrality
-## parameter @var{delta}, at the values of @var{x}.
+## the noncentral F distribution with @var{df1} and @var{df2} numerator and
+## denumerator degrees of freedom, respectively, and noncentrality parameter
+## @var{delta}, at the values of @var{x}.
 ##
 ## The size of @var{y} is the common size of @var{df} and @var{delta}.  A scalar
 ## input functions as a constant matrix of the same size as the K_all inputs.
@@ -334,6 +334,7 @@ function BP = BinoPoisson (x, np)
 endfunction
 
 ## Input validation tests
+%!error<ncfpdf: too few input arguments.> p = ncfpdf ();
 %!error<ncfpdf: too few input arguments.> p = ncfpdf (2);
 %!error<ncfpdf: too few input arguments.> p = ncfpdf (2, 4);
 %!error<ncfpdf: too few input arguments.> p = ncfpdf (2, 4, 3);
