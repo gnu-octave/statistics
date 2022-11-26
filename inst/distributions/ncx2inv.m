@@ -135,6 +135,7 @@ endfunction
 ## Input validation tests
 %!error<ncx2inv: too few input arguments.> p = ncx2inv ();
 %!error<ncx2inv: too few input arguments.> p = ncx2inv (1);
+%!error<ncx2inv: too few input arguments.> p = ncx2inv (1, 2);
 %!error<ncx2inv: input size mismatch.> p = ncx2inv (1, [4, 3], [3, 4, 5]);
 
 ## Output validation tests
