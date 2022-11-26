@@ -35,7 +35,7 @@ function [m, v] = ncx2stat (df, delta)
 
   ## Check for valid input arguments
   if (nargin <  2)
-    error ("ncx2stat: too few imputs.");
+    error ("ncx2stat: too few input arguments.");
   endif
 
   ## Check and fix size of input arguments
@@ -63,8 +63,8 @@ function [m, v] = ncx2stat (df, delta)
 endfunction
 
 ## Input validation tests
-%!error<ncx2stat: too few imputs.> p = ncx2stat ();
-%!error<ncx2stat: too few imputs.> p = ncx2stat (1);
+%!error<ncx2stat: too few input arguments.> p = ncx2stat ();
+%!error<ncx2stat: too few input arguments.> p = ncx2stat (1);
 %!error<ncx2stat: input size mismatch.> p = ncx2stat ([4, 3], [3, 4, 5]);
 
 ## Output validation tests
