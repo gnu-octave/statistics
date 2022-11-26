@@ -76,8 +76,8 @@ Distributions
  mvtcdfqmc
  nakacdf nakainv nakapdf nakarnd
  nbincdf nbininv nbinpdf nbinrnd
- ncfcdf
- nctcdf
+ ncfcdf ncfinv ncfpdf ncfrnd
+ nctcdf nctinv nctpdf nctrnd
  ncx2cdf ncx2inv ncx2pdf ncx2rnd
  normcdf norminv normpdf normrnd
  poisscdf poissinv poisspdf poissrnd
@@ -118,6 +118,8 @@ Distribution statistics
  hygestat
  lognstat
  nbinstat
+ ncfstat
+ nctstat
  ncx2stat
  normstat
  poisstat

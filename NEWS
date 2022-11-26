@@ -205,13 +205,31 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** ncfcdf (fully Matlab compatible)
 
+ ** ncfinv (fully Matlab compatible)
+
+ ** ncfpdf (fully Matlab compatible)
+
+ ** ncfrnd (fully Matlab compatible)
+ 
+ ** ncfstat (fully Matlab compatible)
+
  ** nctcdf (fully Matlab compatible)
+
+ ** nctinv (fully Matlab compatible)
+
+ ** nctpdf (fully Matlab compatible)
+
+ ** nctrnd (fully Matlab compatible)
+ 
+ ** nctstat (fully Matlab compatible)
 
  ** ncx2cdf (fully Matlab compatible)
 
  ** ncx2inv (fully Matlab compatible)
 
  ** ncx2rnd (fully Matlab compatible)
+ 
+ ** ncx2stat (fully Matlab compatible)
 
  ** sampsizepwr (fully Matlab compatible with extra functionality)
 
