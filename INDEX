@@ -104,6 +104,7 @@ Distribution fitting
  gevlike
  gpfit
  gplike
+ normlike
 Distribution statistics
  betastat
  binostat

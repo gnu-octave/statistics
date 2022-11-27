@@ -79,10 +79,16 @@
 ##
 ## When testing for homogeneous associations in 3-way tables, the iterative
 ## proportional fitting procedure is used.  For small samples it is better to
-## use the Cochran-Mantel-Haenszel Test.  K-way tables for k > 3 are not
-## supported (yet), but it is better to use multinomial logistic regression for
-## such cases.
+## use the Cochran-Mantel-Haenszel Test.  K-way tables for k > 3 are supported
+## only for testing mutual independence.  Similar to 2-way tables, no optional
+## parameters are required for k > 3 multi-way tables.
 ##
+## @code{chi2test} produces a warning if any cell of a 2x2 table has an expected
+## frequency less than 5 or if more than 20% of the cells in larger 2-way tables
+## have expected frequencies less than 5 or any cell with expected frequency
+## less than 1.  In such cases, use @code{fishertest}.
+##
+## @seealso{fishertest}
 ## @end deftypefn
 
 function [pval, chisq, df, E] = chi2test (x, varargin)
@@ -117,8 +123,8 @@ function [pval, chisq, df, E] = chi2test (x, varargin)
     error (strcat (["chi2test: value must be empty or scalar in optional"], ...
                    [" argument name/value pair, for 3-way tables."]));
   endif
-  if (dim >= 4)
-    error ("chi2test: k-way tables for k>3 are not supported yet.");
+  if (dim >= 4 && nargin > 1)
+    error ("chi2test: optional arguments are not supported for k>3.");
   endif
   ## Calculate total sample size
   n = sum (x(:));
@@ -129,7 +135,7 @@ function [pval, chisq, df, E] = chi2test (x, varargin)
     ## Calculate expected values
     E = sum (x')' * sum (x) / n;
   ## For 3-way contigency table
-  else
+  elseif (length (sz) == 3)
     ## Check optional arguments
     if (nargin == 1 || strcmpi (varargin{1}, "mutual"))
       ## Calculate degrees of freedom
@@ -288,10 +294,52 @@ function [pval, chisq, df, E] = chi2test (x, varargin)
     else
       error ("chi2test: invalid model name for testing a 3-way table.");
     endif
+  ## For k-way contigency table, where k > 3
+  else
+    ## Calculate degrees of freedom
+    df = prod (sz) - sum (sz) + 2;
+    ## Calculate squared sample size
+    ns = sum (x(:)) ^ (dim - 1);
+    ## Calculate marginal table sums for each available dimension
+    for i = 1:dim
+      qi(i) = {x};
+      remdim = [1:dim];
+      remdim(remdim == i) = [];
+      for j = 1:length (remdim)
+        qi(i) = sum (qi{i}, remdim(j));
+      endfor
+      qi(i) = squeeze (qi{i});
+    endfor
+    ## Iterate through all cells
+    cn = numel (x);
+    for i = 1:cn
+      E(i) = 1;
+      cid = i;
+      ## Keep track of indexing
+      for d = dim - 1:-1:1
+        idx(d+1) = ceil (cid / prod (sz(1:d)));
+        if (idx(d+1) > 1)
+          cid -= (idx(d+1) - 1) * prod (sz(1:d));
+        endif
+      endfor
+      idx(1) = cid;
+      ## Calculate the expected value
+      for j = 1:dim
+        E(i) = E(i) * qi{j}(idx(j));
+      endfor
+      E(i) = E(i) / ns;
+    endfor
+    ## Reshape to original dimensions
+    E = reshape (E, sz);
   endif
-  ## Check that expected values are >= 5
-  if (any (E(:) < 5))
+  ## Check expected values and display warnings
+  if ((dim == 2 && isequal (sz, [2, 2]) && any (E(:) < 5)) || ...
+      (dim == 2 && any (sz > 2) && sum (E(:) < 5) > 0.2 * numel (E)) || ...
+      (dim > 2 && sum (E(:) < 5) > 0.2 * numel (E)))
     warning ("chi2test: Expected values less than 5.");
+  endif
+  if (any (E(:) < 1))
+    warning ("chi2test: Expected values less than 1.");
   endif
   ## Calculate chi-squared and p-value
   cells = ((x - E) .^2) ./ E;
@@ -319,11 +367,13 @@ endfunction
 %! p = chi2test (ones (3, 3, 3), "joint", ["a"]);
 %!error<chi2test: value must be empty or scalar in optional argument> ...
 %! p = chi2test (ones (3, 3, 3), "joint", [2, 3]);
-%!error<chi2test: k-way tables for k> p = chi2test (ones (3, 3, 3, 4))
+%!error<chi2test: optional arguments are not supported for k> ...
+%! p = chi2test (ones (3, 3, 3, 4), "mutual", [])
 
 ## Check warning
-%!warning<chi2test: Expected values less than 5.> p = chi2test (ones (3, 3));
-
+%!warning<chi2test: Expected values less than 5.> p = chi2test (ones (2));
+%!warning<chi2test: Expected values less than 5.> p = chi2test (ones (3, 2));
+%!warning<chi2test: Expected values less than 1.> p = chi2test (0.4 * ones (3));
 ## Output validation tests
 %!test
 %! x = [11, 3, 8; 2, 9, 14; 12, 13, 28];

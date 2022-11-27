@@ -33,10 +33,6 @@
 ## @var{chisq}, its p-value @var{p} and a cell array @var{labels}, containing
 ## the labels of each input argument.
 ##
-## Currently @var{chisq} and @var{p} are available only for 2 or 3-dimensional
-## @var{t}, with @code{crosstab} returning a NaN value for both @var{chisq} and
-## @var{p} for 4-dimensional, or more, @var{t}.
-##
 ## @seealso{grp2idx, tabulate}
 ## @end deftypefn
 
@@ -85,14 +81,8 @@ function [t, chisq, p, labels] = crosstab (varargin)
   t = reshape(t, v_reshape);         # build the nargin-dimensional matrix
 
   ## additional statistics
-  if (length (v_reshape) <= 3)
+  if (length (v_reshape) > 1)
     [p, chisq] = chi2test (t);
-  elseif (length (v_reshape) > 3)
-    ## FIXME!
-    ## chi2test works with 2D and 3D matrices only
-    warning ("crosstab: chi^2 test only available for 2-way and 3-way tables.");
-    p = NaN;                         # placeholder
-    chisq = NaN;                     # placeholder
   endif
   ## main - end
 

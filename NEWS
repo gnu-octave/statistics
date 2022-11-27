@@ -210,7 +210,7 @@ Summary of important user-visible changes for statistics 1.5.1:
  ** ncfpdf (fully Matlab compatible)
 
  ** ncfrnd (fully Matlab compatible)
- 
+
  ** ncfstat (fully Matlab compatible)
 
  ** nctcdf (fully Matlab compatible)
@@ -220,7 +220,7 @@ Summary of important user-visible changes for statistics 1.5.1:
  ** nctpdf (fully Matlab compatible)
 
  ** nctrnd (fully Matlab compatible)
- 
+
  ** nctstat (fully Matlab compatible)
 
  ** ncx2cdf (fully Matlab compatible)
@@ -228,8 +228,10 @@ Summary of important user-visible changes for statistics 1.5.1:
  ** ncx2inv (fully Matlab compatible)
 
  ** ncx2rnd (fully Matlab compatible)
- 
+
  ** ncx2stat (fully Matlab compatible)
+
+ ** normlike (fully Matlab compatible)
 
  ** sampsizepwr (fully Matlab compatible with extra functionality)
 
@@ -242,9 +244,9 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** chi2cdf: added "upper" option and confidence bounds
 
- ** chi2test: improved functionality, handles 3-way tables
+ ** chi2test: improved functionality, handles multi-way tables
 
- ** crosstab: returns chi-square and p-value for 3-way tables
+ ** crosstab: returns chi-square and p-value for multiway tables
 
  ** evfit: fixed bug that caused an error when x is a row vector
 
