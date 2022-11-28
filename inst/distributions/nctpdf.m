@@ -16,18 +16,18 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{y} = nctpdf (@var{x}, @var{df}, @var{delta})
+## @deftypefn {statistics} @var{y} = nctpdf (@var{x}, @var{df}, @var{delta})
 ##
 ## Noncentral Τ probability density function (pdf).
 ##
-## @code{@var{y} = nctpdf (@var{x}, @var{df1}, @var{df2}, @var{delta})} returns
+## @code{@var{y} = nctpdf (@var{x}, @var{df}, @var{delta})} returns
 ## the noncentral T distribution with @var{df} degrees of freedom and
 ## noncentrality parameter @var{delta}, at the values of @var{x}.
 ##
 ## The size of @var{y} is the common size of @var{df} and @var{delta}.  A scalar
 ## input functions as a constant matrix of the same size as the K_all inputs.
 ##
-## @seealso{nctcdf, nctinv, nctrnd, nctstat}
+## @seealso{nctcdf, nctinv, nctrnd, nctstat, tpdf, pdf}
 ## @end deftypefn
 
 function y = nctpdf (x, df, delta)
@@ -94,10 +94,10 @@ function y = nctpdf (x, df, delta)
 endfunction
 
 ## Input validation tests
-%!error<nctpdf: too few input arguments.> p = nctpdf ();
-%!error<nctpdf: too few input arguments.> p = nctpdf (2);
-%!error<nctpdf: too few input arguments.> p = nctpdf (2, 4);
-%!error<nctpdf: input size mismatch.> p = nctpdf (5, [4, 3], [3, 4, 5]);
+%!error<nctpdf: too few input arguments.> y = nctpdf ();
+%!error<nctpdf: too few input arguments.> y = nctpdf (2);
+%!error<nctpdf: too few input arguments.> y = nctpdf (2, 4);
+%!error<nctpdf: input size mismatch.> y = nctpdf (5, [4, 3], [3, 4, 5]);
 
 ## Output validation tests
 %!shared x1, df, delta

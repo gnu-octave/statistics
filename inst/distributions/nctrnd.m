@@ -20,7 +20,7 @@
 ## @deftypefnx {Function File} @var{r} = nctrnd (@var{df}, @var{delta}, @var{m}, @var{n}, @dots{})
 ## @deftypefnx {Function File} @var{r} = nctrnd (@var{df}, @var{delta}, [@var{m}, @var{n}, @dots{}])
 ##
-## Random arrays from the noncentral F distribution.
+## Random arrays from the noncentral T distribution.
 ##
 ## @code{@var{x} = nctrnd (@var{p}, @var{df}, @var{delta})} returns an array of
 ## random numbers chosen from the noncentral F distribution with parameters
