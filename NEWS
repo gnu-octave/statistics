@@ -256,6 +256,10 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** gpcdf: added "upper" option and confidence bounds
 
+ ** mvnpdf: fixed MATLAB compatibility
+
+ ** mvnrnd: fixed MATLAB compatibility
+
  ** ncx2pdf: reimplemented to be fully MATLAB compatible
 
  ** normcdf: added "upper" option and confidence bounds
@@ -274,6 +278,8 @@ Summary of important user-visible changes for statistics 1.5.1:
  ** cloglog
 
  ** nanmean (replaced by mean)
+
+ ** kolmogorov_smirnov_cdf (unused by new kstest, kstest2 functions)
 
  ** u_test (replaced by ranksum)
 

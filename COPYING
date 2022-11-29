@@ -73,7 +73,7 @@ inst/mnpdf.m                    GPLv3+
 inst/mnrnd.m                    GPLv3+
 inst/monotone_smooth.m          GPLv3+
 inst/mvncdf.m                   GPLv3+
-inst/mvnpdf.m                   public domain
+inst/mvnpdf.m                   GPLv3+
 inst/mvnrnd.m                   GPLv3+
 inst/mvtcdf.m                   GPLv3+
 inst/mvtpdf.m                   GPLv3+
@@ -100,7 +100,7 @@ inst/pdist.m                    GPLv3+
 inst/pdist2.m                   GPLv3+
 inst/plsregress.m               GPLv3+
 inst/poisstat.m                 GPLv3+
-inst/princomp.m                 public domain
+inst/princomp.m                 GPLv3+
 inst/qrandn.m                   GPLv3+
 inst/random.m                   GPLv3+
 inst/randsample.m               GPLv3+

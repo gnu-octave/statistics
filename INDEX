@@ -66,7 +66,6 @@ Distributions
  hygecdf hygeinv hygepdf hygernd
  iwishpdf iwishrnd
  jsucdf jsupdf
- kolmogorov_smirnov_cdf
  laplace_cdf laplace_inv laplace_pdf laplace_rnd
  logistic_cdf logistic_inv logistic_pdf logistic_rnd
  logncdf logninv lognpdf lognrnd
