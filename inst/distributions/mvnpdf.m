@@ -60,6 +60,7 @@ function y = mvnpdf (x, mu, sigma)
   if (nargin < 3)
     sigma = [];
   endif
+
   ## Check for valid size of data
   [row, col] = size (x);
   if (col < 1)
@@ -67,6 +68,7 @@ function y = mvnpdf (x, mu, sigma)
   elseif (ndims (x) != 2)
     error ("mvnpdf: wrong dimensions in X.");
   endif
+
   ## Check for second input argument or assume zero mean
   if (nargin < 2 || isempty (mu))
     xc = x;                 # already centered
@@ -87,6 +89,7 @@ function y = mvnpdf (x, mu, sigma)
     error ("mvnpdf: wrong size of MU.");
   endif
   [row, col] = size (xc);
+
   ## Check for third input argument or assume identity covariance
   if (nargin < 2 || isempty (sigma))
     ## already standardized
@@ -114,7 +117,7 @@ function y = mvnpdf (x, mu, sigma)
     ## Check sigma for correct size
     if (rs != cs)
       error ("mvnpdf: bad covariance matrix.");
-    elseif (! (rs == col && cs == col))
+    elseif (rs != col)
       error ("mvnpdf: covariance matrix mismatch.");
     else
       if (is_diag)
@@ -137,7 +140,7 @@ function y = mvnpdf (x, mu, sigma)
     endif
   elseif (ndims (sigma) == 3)
     ## Multiple covariance matrices
-    sd = size(sigma);
+    sd = size (sigma);
     if (sd(1) == 1 && sd(2) > 1)
       sd(1) = sd(2);  # sigma passed as a diagonal
       sigma = reshape (sigma, sd(2), sd(3))';
