@@ -1,140 +1,205 @@
-## Copyright (C) 2003 Iain Murray
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
-## This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+## This file is part of the statistics package for GNU Octave.
 ##
-## This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+## This program is free software: you can redistribute it and/or
+## modify it under the terms of the GNU General Public License as
+## published by the Free Software Foundation, either version 3 of the
+## License, or (at your option) any later version.
 ##
-## You should have received a copy of the GNU General Public License along with this program; if not, see <http://www.gnu.org/licenses/>.
+## This program is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+## General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; see the file COPYING.  If not, see
+## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{s} = mvnrnd (@var{mu}, @var{Sigma})
-## @deftypefnx{Function File} @var{s} = mvnrnd (@var{mu}, @var{Sigma}, @var{n})
-## @deftypefnx{Function File} @var{s} = mvnrnd (@dots{}, @var{tol})
-## Draw @var{n} random @var{d}-dimensional vectors from a multivariate Gaussian distribution with mean @var{mu}(@var{n}x@var{d}) and covariance matrix
-## @var{Sigma}(@var{d}x@var{d}).
+## @deftypefn {statistics} @var{r} = mvnrnd (@var{mu}, @var{sigma})
+## @deftypefnx {statistics} @var{r} = mvnrnd (@var{mu}, @var{sigma}, @var{n})
+## @deftypefnx {statistics} @var{r} = mvnrnd (@var{mu}, @var{sigma}, @var{n}, @var{T})
+## @deftypefnx {statistics} [@var{r}, @var{T}] = mvnrnd (@dots{})
 ##
-## @var{mu} must be @var{n}-by-@var{d} (or 1-by-@var{d} if @var{n} is given) or a scalar.
+## Random vectors from the multivariate normal distribution.
 ##
-## If the argument @var{tol} is given the eigenvalues of @var{Sigma} are checked for positivity against -100*tol. The default value of tol is @code{eps*norm (Sigma, "fro")}.
+## @code{@var{r} = mvnrnd (@var{mu}, @var{sigma})} returns an N-by-D matrix
+## @var{r} of random vectors chosen from the multivariate normal distribution
+## with mean vector @var{mu} and covariance matrix @var{sigma}.  @var{mu} is an
+## N-by-D matrix, and @code{mvnrnd} generates each N of @var{r} using the
+## corresponding N of @var{mu}.  @var{sigma} is a D-by-D symmetric positive
+## semi-definite matrix, or a D-by-D-by-N array.  If @var{sigma} is an array,
+## @code{mvnrnd} generates each N of @var{r} using the corresponding page of
+## @var{sigma}, i.e., @code{mvnrnd} computes @var{r(i,:)} using @var{mu(i,:)}
+## and @var{sigma(:,:,i)}.  If the covariance matrix is diagonal, containing
+## variances along the diagonal and zero covariances off the diagonal,
+## @var{sigma} may also be specified as a 1-by-D matrix or a 1-by-D-by-N array,
+## containing just the diagonal.  If @var{mu} is a 1-by-D vector, @code{mvnrnd}
+## replicates it to match the trailing dimension of SIGMA.
 ##
+## @code{@var{r} = mvnrnd (@var{mu}, @var{sigma}, @var{n})} returns a N-by-D
+## matrix R of random vectors chosen from the multivariate normal distribution
+## with 1-by-D mean vector @var{mu}, and D-by-D covariance matrix @var{sigma}.
+##
+## @code{@var{r} = mvnrnd (@var{mu}, @var{sigma}, @var{n}, @var{T})} supplies
+## the Cholesky factor @var{T} of @var{sigma}, so that @var{sigma(:,:,J)} ==
+## @var{T(:,:,J)}'*@var{T(:,:,J)} if @var{sigma} is a 3D array or @var{sigma} ==
+## @var{T}'*@var{T} if @var{sigma} is a matrix.  No error checking is done on
+## @var{T}.
+##
+## @code{[@var{r}, @var{T}] = mvnrnd (@dots{})} returns the Cholesky factor
+## @var{T}, so it can be re-used to make later calls more efficient, although
+## there are greater efficiency gains when SIGMA can be specified as a diagonal
+## instead.
+##
+## @seealso{mvncdf, mvnpdf, normrnd, random}
 ## @end deftypefn
 
-function s = mvnrnd (mu, Sigma, K, tol=eps*norm (Sigma, "fro"))
+function [r, T] = mvnrnd (mu, sigma, N, T)
 
-  % Iain Murray 2003 -- I got sick of this simple thing not being in Octave and locking up a stats-toolbox license in Matlab for no good reason.
-  % May 2004 take a third arg, cases. Makes it more compatible with Matlab's.
+  ## Check input arguments
+  if (nargin < 2 || isempty (mu) || isempty (sigma))
+    error ("mvnrnd: too few input arguments.");
+  elseif (ndims (mu) > 2)
+    error ("mvnrnd: wrong size of MU.");
+  elseif (ndims (sigma) > 3)
+    error ("mvnrnd: wrong size of SIGMA.");
+  endif
 
-  % Paul Kienzle <pkienzle@users.sf.net>
-  % * Add GPL notice.
-  % * Add docs for argument K
-
-  % 2012 Juan Pablo Carbajal <carbajal@ifi.uzh.ch>
-  % * Uses Octave 3.6.2 broadcast.
-  % * Stabilizes chol by perturbing Sigma with a epsilon multiple of the identity.
-  %   The effect on the generated samples is to add additional independent noise of variance epsilon. Ref: GPML Rasmussen & Williams. 2006. pp 200-201
-  % * Improved doc.
-  % * Added tolerance to the positive definite check
-  % * Used chol with option 'upper'.
-
-  % 2014 Nir Krakauer <nkrakauer@ccny.cuny.edu>
-  % * Add tests.
-  % * Allow mu to be scalar, in which case it's assumed that all elements share this mean.
-  
-  
-  %perform some input checking
-  if ~issquare (Sigma)
-    error ('Sigma must be a square covariance matrix.');
-  end
-    
-  d = size(Sigma, 1);
-
-  % If mu is column vector and Sigma not a scalar then assume user didn't read help but let them off and flip mu. Don't be more liberal than this or it will encourage errors (eg what should you do if mu is square?).
-  if (size (mu, 2) == 1) && (d != 1)
-    mu = mu';
-  end
-
-  if nargin >= 3
-    n = K;
+  ## Get data type
+  if (isa (mu, "single") || isa (sigma, "single"))
+    is_class = "single";
   else
-    n = size(mu, 1); %1 if mu is scalar
-  end
+    is_class = "double";
+  endif
 
-  if (~isscalar (mu)) && any(size (mu) != [1,d]) && any(size (mu) != [n,d])
-    error ('mu must be nxd, 1xd, or scalar, where Sigma has dimensions dxd.');
-  end
-  
-  warning ("off", "Octave:broadcast","local");
+  ## Check whether sigma is passed as a diagonal or a matrix
+  sd = size (sigma);
+  if (sd(1) == 1 && sd(2) > 1)
+    sd(1) = sd(2);
+    is_diag = true;
+  else
+    is_diag = false;
+  endif
 
-  try
-    U = chol (Sigma + tol*eye (d),"upper");
-  catch
-    [E , Lambda] = eig (Sigma);
+  ## Get size of mean vector
+  [rm, cm] = size (mu);
+  ## Make sure MU is a row vector
+  if (cm == 1 && rm == sd(1))
+    mu = mu';
+    [rm, cm] = size (mu);
+  endif
 
-    if min (diag (Lambda)) < -100*tol
-      error('Sigma must be positive semi-definite. Lowest eigenvalue %g', ...
-            min (diag (Lambda)));
+  ## Check for valid N input argument
+  if (nargin < 3 || isempty (N))
+    N_empty = true;
+  else
+    N_empty = false;
+    ## If MU is a row vector, rep it out to match N
+    if (rm == 1)
+      rm = N;
+      mu = repmat (mu, rm, 1);
+    elseif (rm != N)
+      error ("mvnrnd: size mismatch of N and MU.");
+    endif
+  endif
+
+  ## For single covariance matrix
+  if (ndims (sigma) == 2)
+    ## Check sigma for correct size
+    if (sd(1) != sd(2))
+      error ("mvnpdf: bad covariance matrix.");
+    elseif (! sd(1) == cm)
+      error ("mvnpdf: covariance matrix mismatch.");
+    endif
+    ## Check for Cholesky factor T
+    if (nargin > 3)
+      r = randn (rm, size (T, 1), is_class) * T + mu;
+    elseif (is_diag)
+      ## Check sigma for invalid values
+      if (any (sigma <= 0))
+        error ("mvnpdf: sigma diagonal contains negative or zero values.");
+      endif
+      t = sqrt (sigma);
+      if (nargout > 1)
+        T = diag (t);
+      endif
+      r = bsxfun (@times, randn (rm, cm, is_class), t) + mu;
     else
-      Lambda(Lambda<0) = 0;
-    end
-    warning ("mvnrnd:InvalidInput","Cholesky factorization failed. Using diagonalized matrix.")
-    U = sqrt (Lambda) * E';
-  end
+      ## Compute a Cholesky factorization
+      [T, err] = cholcov (sigma);
+      if (err != 0)
+        error ("mvnrnd: covariance matrix is not positive definite.");
+      endif
+      r = randn (rm, size (T, 1), is_class) * T + mu;
+    endif
+  endif
 
-  s = randn(n,d)*U + mu;
+  ## For multiple covariance matrices
+  if (ndims (sigma) == 3)
+    ## If MU is a row vector, rep it out to match sigma
+    if (rm == 1 && N_empty)
+      rm = sd(3);
+      mu = repmat (mu, rm, 1);
+    endif
+    ## Check sigma for correct size
+    if (sd(1) != sd(2))
+      error ("mvnpdf: bad multiple covariance matrix.");
+    elseif (sd(1) != cm)
+      error ("mvnpdf: multiple covariance matrix mismatch.");
+    elseif (sd(3) != rm)
+      error ("mvnpdf: multiple covariance pages mismatch.");
+    endif
+    ## Check for Cholesky factor T
+    if (nargin < 4)   # T not present
+      if (nargout > 1)
+        T = zeros (sd, is_class);
+      endif
+      if (is_diag)
+        sigma = reshape(sigma,sd(2),sd(3))';
+        ## Check sigma for invalid values
+        if (any (sigma(:) <= 0))
+          error ("mvnpdf: sigma diagonals contain negative or zero values.");
+        endif
+        R = sqrt(sigma);
+        r = bsxfun (@times, randn (rm, cm, is_class), R) + mu;
+        if (nargout > 1)
+          for i = 1:rm
+            T(:,:,i) = diag (R(i,:));
+          endfor
+        endif
+      else
+        r = zeros (rm, cm, is_class);
+          for i = 1:rm
+            [R, err] = cholcov (sigma(:,:,i));
+            if (err != 0)
+              error (strcat (["mvnrnd: multiple covariance matrix"], ...
+                             [" is not positive definite."]));
+            endif
+            Rrows = size (R,1);
+            r(i,:) = randn (1, Rrows, is_class) * R + mu(i,:);
+            if (nargout > 1)
+              T(1:Rrows,:,i) = R;
+            endif
+          endfor
+      endif
+    else              # T present
+      r = zeros (rm, cm, is_class);
+      for i = 1:rm
+        r(i,:) = randn (1, cm, is_class) * T(:,:,i) + mu(i,:);
+      endfor
+    endif
+  endif
 
-  warning ("on", "Octave:broadcast");
 endfunction
 
-% {{{ END OF CODE --- Guess I should provide an explanation:
-%
-% We can draw from axis aligned unit Gaussians with randn(d)
-%   x ~ A*exp(-0.5*x'*x)
-% We can then rotate this distribution using
-%   y = U'*x
-% Note that
-%   x = inv(U')*y
-% Our new variable y is distributed according to:
-%   y ~ B*exp(-0.5*y'*inv(U'*U)*y)
-% or
-%   y ~ N(0,Sigma)
-% where
-%   Sigma = U'*U
-% For a given Sigma we can use the chol function to find the corresponding U,
-% draw x and find y. We can adjust for a non-zero mean by just adding it on.
-%
-% But the Cholsky decomposition function doesn't always work...
-% Consider Sigma=[1 1;1 1]. Now inv(Sigma) doesn't actually exist, but Matlab's
-% mvnrnd provides samples with this covariance st x(1)~N(0,1) x(2)=x(1). The
-% fast way to deal with this would do something similar to chol but be clever
-% when the rows aren't linearly independent. However, I can't be bothered, so
-% another way of doing the decomposition is by diagonalising Sigma (which is
-% slower but works).
-% if
-%   [E,Lambda]=eig(Sigma)
-% then
-%   Sigma = E*Lambda*E'
-% so
-%   U = sqrt(Lambda)*E'
-% If any Lambdas are negative then Sigma just isn't even positive semi-definite
-% so we can give up.
-%
-% Paul Kienzle adds:
-%   Where it exists, chol(Sigma) is numerically well behaved.  chol(hilb(12)) for doubles and for 100 digit floating point differ in the last digit.
-%   Where chol(Sigma) doesn't exist, X*sqrt(Lambda)*E' will be somewhat accurate.  For example, the elements of sqrt(Lambda)*E' for hilb(12), hilb(55) and hilb(120) are accurate to around 1e-8 or better.  This was tested using the TNT+JAMA for eig and chol templates, and qlib for 100 digit precision.
-% }}}
+## Test input validation
+%!error<mvnrnd: too few input arguments.> mvnrnd ()
+%!error<mvnrnd: too few input arguments.> mvnrnd ([2, 3, 4])
+%!error<mvnrnd: wrong size of MU.> mvnrnd (ones (2, 2, 2), ones (1, 2, 3, 4))
+%!error<mvnrnd: wrong size of SIGMA.> mvnrnd (ones (1, 3), ones (1, 2, 3, 4))
 
-%!shared m, n, C, rho
-%! m = 10; n = 3; rho = 0.4; C = rho*ones(n, n) + (1 - rho)*eye(n);
-%!assert(size(mvnrnd(0, C, m)), [m n])
-%!assert(size(mvnrnd(zeros(1, n), C, m)), [m n])
-%!assert(size(mvnrnd(zeros(n, 1), C, m)), [m n])
-%!assert(size(mvnrnd(zeros(m, n), C, m)), [m n])
-%!assert(size(mvnrnd(zeros(m, n), C)), [m n])
-%!assert(size(mvnrnd(zeros(1, n), C)), [1 n])
-%!assert(size(mvnrnd(zeros(n, 1), C)), [1 n])
-%!error(mvnrnd(zeros(m+1, n), C, m))
-%!error(mvnrnd(zeros(1, n+1), C, m))
-%!error(mvnrnd(zeros(n+1, 1), C, m))
-%!error(mvnrnd(zeros(m, n), eye(n+1), m))
-%!error(mvnrnd(zeros(m, n), eye(n+1, n), m))
-
+## Output validation tests
+%!assert (size (mvnrnd ([2, 3, 4], [2, 2, 2]), [1, 3]))
+%!assert (size (mvnrnd ([2, 3, 4], [2, 2, 2], 10), [10, 3]))
