@@ -19,7 +19,7 @@
 ## -*- texinfo -*-
 ## @deftypefn {Function File} @var{x} = evinv (@var{p})
 ## @deftypefnx {Function File} @var{x} = evcdf (@var{p}, @var{mu})
-## @deftypefnx {Function File} @varx} = evinv (@var{p}, @var{mu}, @var{sigma})
+## @deftypefnx {Function File} @var{x} = evinv (@var{p}, @var{mu}, @var{sigma})
 ## @deftypefnx {Function File} [@var{x}, @var{xlo}, @var{xup}] = evinv (@var{x}, @var{mu}, @var{sigma}, @var{pcov})
 ## @deftypefnx {Function File} [@var{x}, @var{xlo}, @var{xup}] = evinv (@var{x}, @var{mu}, @var{sigma}, @var{pcov}, @var{alpha})
 ##

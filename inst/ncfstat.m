@@ -25,7 +25,7 @@
 ## and @var{df2} degrees of freedom and noncentrality parameter @var{delta}.
 ##
 ## The size of @var{m} and @var{v} is the common size of the input arguments.
-## Scalar input arguments @var{df1}, @Var{df2}, and @var{delta} are regarded as
+## Scalar input arguments @var{df1}, @var{df2}, and @var{delta} are regarded as
 ## constant matrices of the same size as the other input.
 ##
 ## @seealso{ncfcdf, ncfinv, ncfpdf, ncfrnd}
