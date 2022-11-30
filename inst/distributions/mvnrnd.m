@@ -201,5 +201,5 @@ endfunction
 %!error<mvnrnd: wrong size of SIGMA.> mvnrnd (ones (1, 3), ones (1, 2, 3, 4))
 
 ## Output validation tests
-%!assert (size (mvnrnd ([2, 3, 4], [2, 2, 2]), [1, 3]))
-%!assert (size (mvnrnd ([2, 3, 4], [2, 2, 2], 10), [10, 3]))
+%!assert (size (mvnrnd ([2, 3, 4], [2, 2, 2])), [1, 3])
+%!assert (size (mvnrnd ([2, 3, 4], [2, 2, 2], 10)), [10, 3])

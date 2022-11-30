@@ -124,7 +124,6 @@ endfunction
 ## Test input validation
 %!error<normlike: too few input arguments.> normlike ([12, 15]);
 %!error<normlike: DATA must be a vector.> normlike ([12, 15], ones (2));
-%!error normlike ([12, 15], 3, 5, 6, 8);
 %!error<normlike: PARAMS must be a two-element vector.> ...
 %! normlike ([12, 15, 3], [1:50]);
 %!error<normlike: DATA and CENSOR vectors mismatch.> ...

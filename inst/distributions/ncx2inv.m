@@ -95,7 +95,7 @@ function x = ncx2inv (p, df, delta)
   sigma = -2 * log (mn) + temp;
   xk = exp (norminv (pk, mu, sigma));
   F = ncx2cdf (xk, df(k), delta(k));
-  h = ones(size(xk),'like',xk);
+  h = ones(size(xk), class (xk));
 
   ## Start iteration with a break out loop
   while (count < count_limit)
