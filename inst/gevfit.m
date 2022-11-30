@@ -136,7 +136,7 @@ function [paramhat, paramci] = gevfit (data, varargin)
   if (isempty (paramguess))
     F = (0.5:1:(sample_size - 0.5))' ./ sample_size;
     k_0 = fminsearch (@(k) 1 - corr (data, gevinv (F, k, 1, 0)), 0);
-    paramguess = [k_0, polyfit(gevinv(F,k_0,1,0),data,1)];
+    paramguess = [k_0, polyfit(gevinv(F,k_0,1,0),data',1)];
     #paramguess = [k_0, tmp(1), tmp(2)];
     ## Check if data support initial parameters or fall back to unbounded evfit
     if (k_0 < 0 && (max (data) > - paramguess(2) / k_0 + paramguess(3)) || ...
