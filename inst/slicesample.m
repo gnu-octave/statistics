@@ -290,7 +290,7 @@ endfunction
 %! pdf = @(x) exp (-.5*(x-1).^2)/(2*pi)^.5;
 %! [smpl, accept] = slicesample (start, nsamples, "pdf", pdf, "thin", 2, "burnin", 0, "width", 5);
 %! assert (mean (smpl, 1), 1, .1);
-%! assert (var (smpl, 1), 1, .1);
+%! assert (var (smpl, 1), 1, .2);
 
 %!error slicesample ();
 %!error slicesample (1);
