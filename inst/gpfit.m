@@ -258,7 +258,7 @@ endfunction
 %! x = gprnd (shape, scale, 0, 1, 100000);
 %! [hat, ci] = gpfit (x);
 %! assert (hat, [shape, scale], 1e-1);
-%! assert (ci, [shape, scale; shape, scale], 1e-1);
+%! assert (ci, [shape, scale; shape, scale], 2e-1);
 
 %!test
 %! shape = 1; scale = 1;

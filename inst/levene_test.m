@@ -323,13 +323,13 @@ endfunction
 %! load examgrades
 %! [h, pval, W, df] = levene_test (grades(:,[3,4]), "quadratic");
 %! assert (h, 0);
-%! assert (pval, 0.1807494957440653, 1e-14);
+%! assert (pval, 0.1807494957440653, 2e-14);
 %! assert (W, 1.80200, 1e-5);
 %! assert (df, [1, 238]);
 %!test
 %! load examgrades
 %! [h, pval, W, df] = levene_test (grades(:,[3,4]), "median");
 %! assert (h, 0);
-%! assert (pval, 0.1978225622063785, 1e-14);
+%! assert (pval, 0.1978225622063785, 2e-14);
 %! assert (W, 1.66768, 1e-5);
 %! assert (df, [1, 238]);

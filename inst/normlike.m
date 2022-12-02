@@ -167,4 +167,4 @@ endfunction
 %! avar_out = [24.4824488866131, -10.6649544179636; ...
 %!             -10.6649544179636, 6.22827849965737];
 %! assert (nlogL, 86.9254371829733, 1e-12);
-%! assert (avar, avar_out, 1e-14);
+%! assert (avar, avar_out, 8e-14);
