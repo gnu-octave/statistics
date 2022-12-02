@@ -524,7 +524,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     C(:,4) = (M(pairs(:, 1),1) - M(pairs(:, 2),1));
     C(:,7) = t;     # Unlike Matlab, we include the t statistic
     C(:,8) = DFE;   # Unlike Matlab, we include the degrees of freedom
-    if (isinf (DFE))
+    if (any (isinf (DFE)))
       p = 2 * (1 - normcdf (abs (t)));
     else
       p = 2 * (1 - tcdf (abs (t), DFE));
