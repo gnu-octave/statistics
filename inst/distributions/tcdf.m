@@ -20,26 +20,26 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{p} = tcdf (@var{x}, @var{v})
-## @deftypefnx {Function File} @var{p} = tcdf (@var{x}, @var{v}, "upper")
+## @deftypefn {Function File} @var{p} = tcdf (@var{x}, @var{df})
+## @deftypefnx {Function File} @var{p} = tcdf (@var{x}, @var{df}, "upper")
 ##
 ## Student's T cumulative distribution function (cdf).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the t (Student) distribution with @var{v} degrees of
+## (CDF) at @var{x} of the t (Student) distribution with @var{df} degrees of
 ## freedom.
 ##
-## The size of @var{p} is the common size of @var{x} and @var{v}. A scalar input
+## The size of @var{p} is the common size of @var{x} and @var{df}. A scalar input
 ## functions as a constant matrix of the same size as the other input.
 ##
-## @code{@var{p} = tcdf (@var{x}, @var{v}, "upper")} computes the upper tail
-## probability of the Student's T distribution with @var{v} degrees of freedom,
+## @code{@var{p} = tcdf (@var{x}, @var{df}, "upper")} computes the upper tail
+## probability of the Student's T distribution with @var{df} degrees of freedom,
 ## at the values in @var{x}.
 ##
 ## @seealso{tinv, tpdf, trnd, tstat}
 ## @end deftypefn
 
-function p = tcdf (x, v, uflag)
+function p = tcdf (x, df, uflag)
 
   ## Check for valid number of input arguments
   if (nargin < 2 || nargin > 3)
@@ -53,47 +53,47 @@ function p = tcdf (x, v, uflag)
     error ("tcdf: invalid argument for upper tail.");
   endif
 
-  ## Check for common size of x and v
-  if (! isscalar (x) || ! isscalar (v))
-    [err, x, v] = common_size (x, v);
+  ## Check for common size of V and DF
+  if (! isscalar (x) || ! isscalar (df))
+    [err, x, df] = common_size (x, df);
     if (err > 0)
       error ("tcdf: X and V must be of common size or scalars.");
     endif
   endif
 
-  ## Check for X and V being reals
-  if (iscomplex (x) || iscomplex (v))
+  ## Check for X and DF being reals
+  if (iscomplex (x) || iscomplex (df))
     error ("tcdf: X and V must not be complex.");
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (v, "single"))
+  if (isa (x, "single") || isa (df, "single"))
     p = zeros (size (x), "single");
   else
     p = zeros (size (x));
   endif
 
-  ## Check for NaNs or df <= 0
-  is_nan = isnan (x) | ! (v > 0);
+  ## Check for NaNs or DF <= 0
+  is_nan = isnan (x) | ! (df > 0);
   p(is_nan) = NaN;
 
-  ## Check for Inf where df > 0 (for -Inf is already 0)
-  k = (x == Inf) & (v > 0);
+  ## Check for Inf where DF > 0 (for -Inf is already 0)
+  k = (x == Inf) & (df > 0);
   p(k) = 1;
 
-  ## Find finite values in X where df > 0
-  k = isfinite (x) & (v > 0);
+  ## Find finite values in X where DF > 0
+  k = isfinite (x) & (df > 0);
 
   ## Process more efficiently small positive integer DF up to 1e4
-  ks = k & (fix (v) == v) & (v <= 1e4);
+  ks = k & (fix (df) == df) & (df <= 1e4);
   if any (ks(:))
-    if (isscalar (v))
-      p(ks) = tcdf_integer_df (x(ks), v);
+    if (isscalar (df))
+      p(ks) = tcdf_integer_df (x(ks), df);
       return
     else
-      vu = unique (v(ks));
+      vu = unique (df(ks));
       for i = 1:numel (vu)
-        ki = k & (v == vu(i));
+        ki = k & (df == vu(i));
         p(ki) = tcdf_integer_df (x(ki), vu(i));
       endfor
     endif
@@ -104,23 +104,22 @@ function p = tcdf (x, v, uflag)
 
   ## Distinguish between small and big abs(x)
   xx = x .^ 2;
-  x_big_abs = (xx > v);
+  x_big_abs = (xx > df);
 
   ## Deal with the case "abs(x) big"
   kk = k & x_big_abs;
-  if (isscalar (v))
-    p(kk) = betainc (v ./ (v + xx(kk)), v/2, 1/2) / 2;
+  if (isscalar (df))
+    p(kk) = betainc (df ./ (df + xx(kk)), df/2, 1/2) / 2;
   else
-    p(kk) = betainc (v(kk) ./ (v(kk) + xx(kk)), v(kk)/2, 1/2) / 2;
+    p(kk) = betainc (df(kk) ./ (df(kk) + xx(kk)), df(kk)/2, 1/2) / 2;
   endif
 
   ## Deal with the case "abs(x) small"
   kk = k & ! x_big_abs;
-  if (isscalar (v))
-    p(kk) = 0.5 * (1 - betainc (xx(kk) ./ (v + xx(kk)), 1/2, v/2, "lower"));
+  if (isscalar (df))
+    p(kk) = 0.5 * (1 - betainc (xx(kk) ./ (df + xx(kk)), 1/2, df/2));
   else
-    p(kk) = 0.5 * (1 - betainc (xx(kk) ./ (v(kk) + xx(kk)), ...
-                                  1/2, v(kk)/2, "upper"));
+    p(kk) = 0.5 * (1 - betainc (xx(kk) ./ (df(kk) + xx(kk)), 1/2, df(kk)/2));
   endif
 
   ## For x > 0, F(x) = 1 - F(-|x|).
@@ -132,7 +131,7 @@ function p = tcdf (x, v, uflag)
   ## Special case for Cauchy distribution
   ## Use acot(-x) instead of the usual (atan x)/pi + 0.5 to avoid roundoff error
   xpos = (x > 0);
-  c = (v == 1);
+  c = (df == 1);
   p(c) = xpos(c) + acot (-x(c)) / pi;
 
   ## Make the result exact for the median
@@ -142,25 +141,25 @@ endfunction
 
 ## Compute the t distribution CDF efficiently (without calling betainc)
 ## for small positive integer DF up to 1e4
-function p = tcdf_integer_df (x, v)
+function p = tcdf_integer_df (x, df)
 
-  if (v == 1)
+  if (df == 1)
     p = 0.5 + atan(x)/pi;
-  elseif (v == 2)
+  elseif (df == 2)
     p = 0.5 + x ./ (2 * sqrt(2 + x .^ 2));
   else
-    xs = x ./ sqrt(v);
+    xs = x ./ sqrt(df);
     xxf = 1 ./ (1 + xs .^ 2);
     u = s = 1;
-    if mod (v, 2)  ## odd DF
-      m = (v - 1) / 2;
+    if mod (df, 2)  ## odd DF
+      m = (df - 1) / 2;
       for i = 2:m
         u .*= (1 - 1/(2*i - 1)) .* xxf;
         s += u;
       endfor
       p = 0.5 + (xs .* xxf .* s + atan(xs)) / pi;
-    else           ## even DF
-      m = v / 2;
+    else            ## even DF
+      m = df / 2;
       for i = 1:(m - 1)
         u .*= (1 - 1/(2*i)) .* xxf;
         s += u;
