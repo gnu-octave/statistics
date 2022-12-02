@@ -65,8 +65,8 @@
 ## is a 2-by-3-by-4 array, then @code{mean(@var{x}, [1 2])} returns a 1-by-4
 ## array.  Each element of the output array is the mean of the elements on
 ## the corresponding page of @var{x}.  NOTE! @var{vecdim} MUST index at least
-## N-2 dimensions of @var{x}, where @code{N = length (size (@var{x}))} and
-## N < 8.  If @var{vecdim} indexes all dimensions of @var{x}, then it is
+## N-3 dimensions of @var{x}, where @code{N = length (size (@var{x}))} and
+## N <= 10.  If @var{vecdim} indexes all dimensions of @var{x}, then it is
 ## equivalent to @code{mean(@var{x}, "all")}.
 ##
 ## @code{mean(@dots{}, @var{outtype})} returns the mean with a specified data
@@ -149,7 +149,7 @@ function y = mean (x, varargin)
     ## Two numeric input arguments, dimensions given.  Note scalar is vector!
     vecdim = varargin{1};
     if (! (isvector (vecdim) && all (vecdim)) || any (rem (vecdim, 1)))
-      error ("mean: Dimension must be a positive integer scalar or vector");
+      error ("mean: DIM must be a positive integer scalar or vector");
     endif
 
     if (isscalar (vecdim))
@@ -184,9 +184,12 @@ function y = mean (x, varargin)
 
         ## for 1 dimension left, return column vector
         case 1
+          if (ndims > 10)
+            error ("mean: vecdim works on X of up to 10 dimensions");
+          endif
           x = permute (x, [misdim, vecdim]);
           for i = 1:size (x, 1)
-            x_vec = x(i,:,:,:,:,:,:)(:);
+            x_vec = x(i,:,:,:,:,:,:,:,:,:)(:);
             if (omitnan)
               x_vec = x_vec(! isnan (x_vec));
             endif
@@ -195,10 +198,13 @@ function y = mean (x, varargin)
 
         ## for 2 dimensions left, return matrix
         case 2
+          if (ndims > 10)
+            error ("mean: vecdim works on X of up to 10 dimensions");
+          endif
           x = permute (x, [misdim, vecdim]);
           for i = 1:size (x, 1)
             for j = 1:size (x, 2)
-              x_vec = x(i,j,:,:,:,:,:)(:);
+              x_vec = x(i,j,:,:,:,:,:,:,:,:)(:);
               if (omitnan)
                 x_vec = x_vec(! isnan (x_vec));
               endif
@@ -206,9 +212,26 @@ function y = mean (x, varargin)
             endfor
           endfor
 
-        ## for more that 2 dimensions left, print usage
+        ## for 3 dimensions left, return matrix
+        case 3
+          if (ndims > 10)
+            error ("mean: vecdim works on X of up to 10 dimensions");
+          endif
+          x = permute (x, [misdim, vecdim]);
+          for i = 1:size (x, 1)
+            for j = 1:size (x, 2)
+              for k = 1:size (x, 2)
+                x_vec = x(i,j,k,:,:,:,:,:,:,:)(:);
+                if (omitnan)
+                  x_vec = x_vec(! isnan (x_vec));
+                endif
+                y(i,j,k) = sum (x_vec, 1) ./ length (x_vec);
+              endfor
+            endfor
+          endfor
+        ## for more that 3 dimensions left, print usage
         otherwise
-          error ("vecdim must index at least N-2 dimensions of X");
+          error ("mean: vecdim must index at least N-3 dimensions of X");
       endswitch
 
     endif
@@ -253,13 +276,17 @@ endfunction
 %!error <Invalid call to mean.  Correct usage is> mean (1, "all", 3)
 %!error <Invalid call to mean.  Correct usage is> mean (1, "b")
 %!error <Invalid call to mean.  Correct usage is> mean (1, 1, "foo")
-%!error <X must be either a numeric or boolean> mean ({1:5})
-%!error <X must be either a numeric or boolean> mean ("char")
-%!error <Dimension must be a positive integer> mean (1, ones (2,2))
-%!error <Dimension must be a positive integer> mean (1, 1.5)
-%!error <Dimension must be a positive integer> mean (1, 0)
-%!error <vecdim must index at least N-2 dimensions of X> ...
-%!  mean (repmat ([1:20;6:25], [5 2 6 3 5]), [1 2])
+%!error <mean: X must be either a numeric or boolean> mean ({1:5})
+%!error <mean: X must be either a numeric or boolean> mean ("char")
+%!error <mean: DIM must be a positive integer> mean (1, ones (2,2))
+%!error <mean: DIM must be a positive integer> mean (1, 1.5)
+%!error <mean: DIM must be a positive integer> mean (1, 0)
+%!error <mean: vecdim works on X of up to 10 dimensions> ...
+%! mean (repmat ([1:20;6:25], [5 2 6 3 5 3 4 2 5 5 11]), [1 2 3 4 5 6 7 8 9])
+%!error <mean: vecdim works on X of up to 10 dimensions> ...
+%! mean (repmat ([1:20;6:25], [5 2 6 3 5 3 4 2 5 5 11]), [1 2 3 4 5 6 7 8])
+%!error <mean: vecdim must index at least N-3 dimensions of X> ...
+%!  mean (repmat ([1:20;6:25], [5 2 6 3 5 2]), [1 2])
 
 ## Test outtype option
 %!test
