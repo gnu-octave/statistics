@@ -286,7 +286,7 @@ endfunction
 %!error <mean: vecdim works on X of up to 10 dimensions> ...
 %! mean (repmat ([1:20;6:25], [5 2 6 3 5 3 4 2 5 5 11]), [1 2 3 4 5 6 7 8])
 %!error <mean: vecdim must index at least N-3 dimensions of X> ...
-%!  mean (repmat ([1:20;6:25], [5 2 6 3 5 2]), [1 2])
+%! mean (repmat ([1:20;6:25], [5 2 6 3 5 2]), [1 2])
 
 ## Test outtype option
 %!test
