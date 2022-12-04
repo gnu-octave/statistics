@@ -22,6 +22,7 @@
 ## @deftypefnx {Function File} [@var{C}, @var{M}] = multcompare (...)
 ## @deftypefnx {Function File} [@var{C}, @var{M}, @var{H}] = multcompare (...)
 ## @deftypefnx {Function File} [@var{C}, @var{M}, @var{H}, @var{GNAMES}] = multcompare (...)
+## @deftypefnx {Function File} @var{padj} = multcompare (@var{p})
 ## @deftypefnx {Function File} @var{padj} = multcompare (@var{p}, "ctype", @var{CTYPE})
 ##
 ## Perform posthoc multiple comparison tests or p-value adjustments to control
@@ -67,12 +68,12 @@
 ## @var{CTYPE} is the type of comparison test to use. In order of increasing
 ## power, the choices are: "bonferroni", "scheffe", "mvt", "holm" (default),
 ## "hochberg", "fdr", "lsd". The first five methods control the family-wise
-## error rate.  The "fdr" method controls false discovery rate.  The final
-## method, "lsd" (or "none"), makes no attempt to control the Type 1 error rate
-## of multiple comparisons.  The coverage of confidence intervals are only
-## corrected for multiple comparisons in the cases where @var{CTYPE} is
-## "bonferroni", "scheffe" or "mvt", which control the Type 1 error rate for
-## simultaneous inference.
+## error rate.  The "fdr" method controls false discovery rate (by the original
+## Benjamini-Hochberg step-up procedure). The final method, "lsd" (or "none"),
+## makes no attempt to control the Type 1 error rate of multiple comparisons. 
+## The coverage of confidence intervals are only corrected for multiple
+## comparisons in the cases where @var{CTYPE} is "bonferroni", "scheffe" or
+## "mvt", which control the Type 1 error rate for simultaneous inference.
 ##
 ## The "mvt" method uses the multivariate t distribution to assess the
 ## probability or critical value of the maximum statistic across the tests,
@@ -151,10 +152,15 @@
 ## figure containing the graph.  @var{GNAMES} is a cell array with one row for
 ## each group, containing the names of the groups.
 ##
+## @code{@var{padj} = multcompare (@var{p})} calculates and returns adjusted
+## p-values (@var{padj}) using the Holm-step down Bonferroni procedure to
+## control the family-wise error rate.
+##
 ## @code{@var{padj} = multcompare (@var{p}, "ctype", @var{CTYPE})} calculates
 ## and returns adjusted p-values (@var{padj}) computed using the method
-## @var{CTYPE}. In order of increasing power, @var{CTYPE} can be either
-## "bonferroni", "holm" (default), "hochberg", and "fdr".
+## @var{CTYPE}. In order of increasing power, @var{CTYPE} for p-value adjustment
+## can be either "bonferroni", "holm" (default), "hochberg", and "fdr". See
+## above for further information about the @var{CTYPE} methods.
 ##
 ## @seealso{anova1, anova2, anovan, kruskalwallis, friedman, fitlm}
 ## @end deftypefn
@@ -235,7 +241,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
       endif
     endif
 
-    ## If STATS is numeric, assume they are a vector of p-values
+    ## If STATS is numeric, assume it is a vector of p-values
     if (isnumeric (STATS))
       if (! ismember (CTYPE, {"bonferroni","holm","hochberg","fdr"}))
         error ("multcompare: '%s' is not a supported p-adjustment method", CTYPE)
@@ -244,7 +250,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
       if (all (size (p) > 1))
         error ("multcompare: p-values must be a vector")
       endif
-      [padj, critval] = feval (CTYPE, p, [], [], [], [], ALPHA);
+      padj = feval (CTYPE, p);
       if (size (p, 1) > 1)
         C = padj;
       else 
@@ -690,8 +696,10 @@ function [padj, critval, dfe] = bonferroni (p, t, Ng, dfe, R, ALPHA)
   Np = numel (p);
   padj = min (p * Np, 1.0);
 
-  ## Calculate critical value at Bonferroni-adjusted ALPHA level
-  critval = tinv (1 - ALPHA / Np * 0.5, dfe);
+  ## If requested, calculate critical value at Bonferroni-adjusted ALPHA level
+  if (nargout > 1)
+    critval = tinv (1 - ALPHA / Np * 0.5, dfe);
+  endif
 
 endfunction
 
@@ -780,9 +788,11 @@ function [padj, critval, dfe] = holm (p, t, Ng, dfe, R, ALPHA)
   ## Truncate adjusted p-values to 1.0
   padj(padj>1) = 1;
 
-  ## Calculate critical value at ALPHA
+  ## If requested, calculate critical value at ALPHA
   ## No adjustment to confidence interval coverage
-  critval = tinv (1 - ALPHA / 2, dfe);
+  if (nargout > 1)
+    critval = tinv (1 - ALPHA / 2, dfe);
+  endif
 
 endfunction
 
@@ -810,9 +820,11 @@ function [padj, critval, dfe] = hochberg (p, t, Ng, dfe, R, ALPHA)
   ## Truncate adjusted p-values to 1.0
   padj(padj>1) = 1;
 
-  ## Calculate critical value at ALPHA
+  ## If requested, calculate critical value at ALPHA
   ## No adjustment to confidence interval coverage
-  critval = tinv (1 - ALPHA / 2, dfe);
+  if (nargout > 1)
+    critval = tinv (1 - ALPHA / 2, dfe);
+  endif
 
 endfunction
 
@@ -845,9 +857,11 @@ function [padj, critval, dfe] = fdr (p, t, Ng, dfe, R, ALPHA)
   ## Truncate adjusted p-values to 1.0
   padj(padj>1) = 1;
 
-  ## Calculate critical value at ALPHA
+  ## If requested, calculate critical value at ALPHA
   ## No adjustment to confidence interval coverage
-  critval = tinv (1 - ALPHA / 2, dfe);
+  if (nargout > 1)
+    critval = tinv (1 - ALPHA / 2, dfe);
+  endif
 
 endfunction
 
