@@ -160,7 +160,7 @@
 ## and returns adjusted p-values (@var{padj}) computed using the method
 ## @var{CTYPE}. In order of increasing power, @var{CTYPE} for p-value adjustment
 ## can be either "bonferroni", "holm" (default), "hochberg", or "fdr". See
-## above for further information about the @var{CTYPE} methods.
+## above for further information about the @var{CTYPE} methods. 
 ##
 ## @seealso{anova1, anova2, anovan, kruskalwallis, friedman, fitlm}
 ## @end deftypefn
@@ -243,6 +243,17 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
 
     ## If STATS is numeric, assume it is a vector of p-values
     if (isnumeric (STATS))
+      if (nargout > 1)
+        error (strcat (["multcompare: invalid number of output arguments"], ...
+                       [" if only used to adjust p-values"]))
+      endif
+      if (!isempty (varargin))
+        if (!any (strcmpi (varargin{1}, {"ctype","CriticalValueType"})) ...
+            || (nargin > 3) )
+          error (strcat(["multcompare: invalid input arguments if only"], ...
+                        [" used to adjust p-values"]))
+        endif
+      endif
       if (! ismember (CTYPE, {"bonferroni","holm","hochberg","fdr"}))
         error ("multcompare: '%s' is not a supported p-adjustment method", CTYPE)
       endif
