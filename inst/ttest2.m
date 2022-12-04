@@ -23,6 +23,13 @@
 ##
 ## Perform a t-test to compare the means of two groups of data under the null
 ## hypothesis that the groups are drawn from distributions with the same mean.
+##
+## @var{x} and @var{y} can be vectors or matrices. For matrices, ttest2 performs
+## separate t-tests along each column, and returns a vector of results. @var{x}
+## and @var{y} must have the same number of columns. The Type I error rate of
+## the resulting vector of p-values can be controlled by using the p-values as
+## input to the function @qcode{multcompare}.
+##
 ## For a nested t-test, use @qcode{anova2}.
 ##
 ## The argument @qcode{"alpha"} can be used to specify the significance level
@@ -36,8 +43,8 @@
 ## (@var{x}) < @var{m}} is considered.  When @qcode{"vartype"} is @qcode{"equal"}
 ## the variances are assumed to be equal (this is the default).  When
 ## @qcode{"vartype"} is @qcode{"unequal"} the variances are not assumed equal.
-## When argument @var{x} is a matrix the @qcode{"dim"} argument can be
-## used to selection the dimension over which to perform the test.
+## When argument @var{x} and @var{y} are matrices the @qcode{"dim"} argument can
+## be used to select the dimension over which to perform the test.
 ## (The default is the first non-singleton dimension.)
 ##
 ## If @var{h} is 0 the null hypothesis is accepted, if it is 1 the null
@@ -47,20 +54,22 @@
 ## the degrees of freedom (@var{df}) and the sample standard deviation
 ## (@var{sd}).
 ##
+## @seealso{anova2, multcompare}
 ## @end deftypefn
 
 function [h, p, ci, stats] = ttest2(x, y, varargin)
 
+  ## Set defaults 
   alpha = 0.05;
   tail = "both";
   vartype = "equal";
-
   ## Find the first non-singleton dimension of x
   dim = min (find (size (x) != 1));
   if (isempty (dim))
     dim = 1;
   endif
 
+  ## Evaluate optional input arguments
   i = 1;
   while ( i <= length(varargin) )
     switch lower(varargin{i})
@@ -82,36 +91,43 @@ function [h, p, ci, stats] = ttest2(x, y, varargin)
     i = i + 1;
   endwhile
 
+  ## Error checking
   if (! isa (tail, "char"))
     error ("ttest2: tail argument must be a string.");
   endif
+  if (size (x, abs (dim - 3)) != size (y, abs (dim - 3)))
+    error ("ttest2: The data in a 2-sample t-test must be commensurate")
+  endif
 
-  m = size (x(! isnan (x)), dim);
-  n = size (y(! isnan (y)), dim);
+  ## Calculate mean, variance and size of each sample
+  m = sum (!isnan (x), dim);
+  n = sum (!isnan (y), dim);
   x_bar = mean (x, dim, "omitnan") - mean (y, dim, "omitnan");
   s1_var = nanvar (x, 0, dim);
   s2_var = nanvar (y, 0, dim);
 
+  ## Perform test-specific calculations
   switch lower (vartype)
     case "equal"
-      stats.tstat = 0;
-      stats.df = (m + n - 2) * ones (size (x_bar));
-      sp_var = ((m - 1) * s1_var + (n - 1) * s2_var) ./ stats.df;
+      stats.tstat = [];
+      stats.df = (m + n - 2);
+      sp_var = ((m - 1) .* s1_var + (n - 1) .* s2_var) ./ stats.df;
       stats.sd = sqrt (sp_var);
-      x_bar_std = sqrt (sp_var * (1 / m + 1 / n));
+      x_bar_std = sqrt (sp_var .* (1 ./ m + 1 ./ n));
+      n_sd = 1;
     case "unequal"
-      stats.tstat = 0;
-      se1 = sqrt (s1_var / m);
-      se2 = sqrt (s2_var / n);
-      sp_var = s1_var / m + s2_var / n;
+      stats.tstat = [];
+      se1 = sqrt (s1_var ./ m);
+      se2 = sqrt (s2_var ./ n);
+      sp_var = s1_var ./ m + s2_var ./ n;
       stats.df = ((se1 .^ 2 + se2 .^ 2) .^ 2 ./ ...
-                  (se1 .^ 4 / (m - 1) + se2 .^ 4 / (n - 1)));
+                  (se1 .^ 4 ./ (m - 1) + se2 .^ 4 ./ (n - 1)));
       stats.sd = [sqrt(s1_var); sqrt(s2_var)];
       x_bar_std = sqrt (sp_var);
+      n_sd = 2;
     otherwise
       error ("ttest2: Invalid value for vartype argument.");
   end
-
   stats.tstat = x_bar ./ x_bar_std;
 
   ## Based on the "tail" argument determine the P-value, the critical values,
@@ -139,12 +155,13 @@ function [h, p, ci, stats] = ttest2(x, y, varargin)
     stats.sd = stats.sd(:)';
   elseif (size (x_bar, 2) < size (x_bar, 1))
     ci = reshape (ci(:), length (x_bar), 2);
-    stats.sd = reshape (stats.sd(:), length (x_bar), 2);
+    stats.sd = reshape (stats.sd(:), length (x_bar), n_sd);
   endif
 
   ## Determine the test outcome
   ## MATLAB returns this a double instead of a logical array
   h = double (p < alpha);
+
 endfunction
 
 %!test
