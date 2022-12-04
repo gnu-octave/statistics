@@ -67,7 +67,7 @@
 ## @item
 ## @var{CTYPE} is the type of comparison test to use. In order of increasing
 ## power, the choices are: "bonferroni", "scheffe", "mvt", "holm" (default),
-## "hochberg", "fdr", "lsd". The first five methods control the family-wise
+## "hochberg", "fdr", or "lsd". The first five methods control the family-wise
 ## error rate.  The "fdr" method controls false discovery rate (by the original
 ## Benjamini-Hochberg step-up procedure). The final method, "lsd" (or "none"),
 ## makes no attempt to control the Type 1 error rate of multiple comparisons. 
@@ -159,7 +159,7 @@
 ## @code{@var{padj} = multcompare (@var{p}, "ctype", @var{CTYPE})} calculates
 ## and returns adjusted p-values (@var{padj}) computed using the method
 ## @var{CTYPE}. In order of increasing power, @var{CTYPE} for p-value adjustment
-## can be either "bonferroni", "holm" (default), "hochberg", and "fdr". See
+## can be either "bonferroni", "holm" (default), "hochberg", or "fdr". See
 ## above for further information about the @var{CTYPE} methods.
 ##
 ## @seealso{anova1, anova2, anovan, kruskalwallis, friedman, fitlm}
@@ -951,6 +951,16 @@ endfunction
 %! v = polyval (b, fitted);  # Variance as a function of the fitted values
 %! [P,ATAB,STATS] = anovan (y, g, "weights", v.^-1, "display", "off");
 %! [C, M] =  multcompare (STATS, "display", "on", "ctype", "mvt")
+ 
+%!demo
+%!
+%! ## Demonstration of p-value adjustments to control the false discovery rate
+%! ## Data from Westfall (1997) JASA. 92(437):299-306
+%!
+%! p = [.005708; .023544; .024193; .044895; ...
+%!       .048805; .221227; .395867; .693051; .775755];
+%!
+%! padj = multcompare(p,'ctype','fdr')
 
 %!test
 %!
@@ -1225,3 +1235,49 @@ endfunction
 %! assert (M(4,2), 1.0880245732889, 1e-09);
 %! assert (M(5,2), 0.959547480416536, 1e-09);
 %! set (0, "DefaultFigureVisible", visibility_setting);
+
+%!test
+%! ## Test p-value adjustments compared to R stats package function p.adjust
+%! ## Data from Westfall (1997) JASA. 92(437):299-306
+%! p = [.005708; .023544; .024193; .044895; ...
+%!       .048805; .221227; .395867; .693051; .775755];
+%! padj = multcompare (p);
+%! assert (padj(1), 0.051372, 1e-06);
+%! assert (padj(2), 0.188352, 1e-06);
+%! assert (padj(3), 0.188352, 1e-06);
+%! assert (padj(4), 0.269370, 1e-06);
+%! assert (padj(5), 0.269370, 1e-06);
+%! assert (padj(6), 0.884908, 1e-06);
+%! assert (padj(7), 1.000000, 1e-06);
+%! assert (padj(8), 1.000000, 1e-06);
+%! assert (padj(9), 1.000000, 1e-06);
+%! padj = multcompare(p,'ctype','holm');
+%! assert (padj(1), 0.051372, 1e-06);
+%! assert (padj(2), 0.188352, 1e-06);
+%! assert (padj(3), 0.188352, 1e-06);
+%! assert (padj(4), 0.269370, 1e-06);
+%! assert (padj(5), 0.269370, 1e-06);
+%! assert (padj(6), 0.884908, 1e-06);
+%! assert (padj(7), 1.000000, 1e-06);
+%! assert (padj(8), 1.000000, 1e-06);
+%! assert (padj(9), 1.000000, 1e-06);
+%! padj = multcompare(p,'ctype','hochberg');
+%! assert (padj(1), 0.051372, 1e-06);
+%! assert (padj(2), 0.169351, 1e-06);
+%! assert (padj(3), 0.169351, 1e-06);
+%! assert (padj(4), 0.244025, 1e-06);
+%! assert (padj(5), 0.244025, 1e-06);
+%! assert (padj(6), 0.775755, 1e-06);
+%! assert (padj(7), 0.775755, 1e-06);
+%! assert (padj(8), 0.775755, 1e-06);
+%! assert (padj(9), 0.775755, 1e-06);
+%! padj = multcompare(p,'ctype','fdr');
+%! assert (padj(1), 0.0513720, 1e-07);
+%! assert (padj(2), 0.0725790, 1e-07);
+%! assert (padj(3), 0.0725790, 1e-07);
+%! assert (padj(4), 0.0878490, 1e-07);
+%! assert (padj(5), 0.0878490, 1e-07);
+%! assert (padj(6), 0.3318405, 1e-07);
+%! assert (padj(7), 0.5089719, 1e-07);
+%! assert (padj(8), 0.7757550, 1e-07);
+%! assert (padj(9), 0.7757550, 1e-07);
