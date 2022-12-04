@@ -22,8 +22,10 @@
 ## @deftypefnx {Function File} [@var{C}, @var{M}] = multcompare (...)
 ## @deftypefnx {Function File} [@var{C}, @var{M}, @var{H}] = multcompare (...)
 ## @deftypefnx {Function File} [@var{C}, @var{M}, @var{H}, @var{GNAMES}] = multcompare (...)
+## @deftypefnx {Function File} @var{padj} = multcompare (@var{p}, "ctype", @var{CTYPE})
 ##
-## Perform posthoc multiple comparison tests after ANOVA or ANCOVA tests.
+## Perform posthoc multiple comparison tests or p-value adjustments to control
+## the family-wise error rate (FWER) or false discovery rate (FDR).
 ##
 ## @code{@var{C} = multcompare (@var{STATS})} performs a multiple comparison
 ## using a @var{STATS} structure that is obtained as output from any of
@@ -137,17 +139,22 @@
 ## bars are blue.
 ## @end itemize
 ##
-## [@var{C}, @var{M}, @var{H}, @var{GNAMES}] = multcompare (@dots{}) returns
-## additional outputs. @var{M} is a matrix where columns 1-2 are the estimated
-## marginal means and their standard errors, and columns 3-4 are lower and upper
-## bounds of the confidence intervals for the means; the critical value of the
-## test statistic is scaled by a factor of 2^(-0.5) before multiplying by the
-## standard errors of the group means so that the intervals overlap when the
-## difference in means becomes significant at approximately the level
-## @var{ALPHA}.  When @var{ALPHA} is 0.05, this corresponds to confidence
-## intervals with 83.4% central coverage.  @var{H} is a handle to the figure
-## containing the graph.  @var{GNAMES} is a cell array with one row for each
-## group, containing the names of the groups.
+## @code{[@var{C}, @var{M}, @var{H}, @var{GNAMES}] = multcompare (@dots{})}
+## returns additional outputs. @var{M} is a matrix where columns 1-2 are the
+## estimated marginal means and their standard errors, and columns 3-4 are lower
+## and upper bounds of the confidence intervals for the means; the critical
+## value of the test statistic is scaled by a factor of 2^(-0.5) before
+## multiplying by the standard errors of the group means so that the intervals
+## overlap when the difference in means becomes significant at approximately
+## the level @var{ALPHA}. When @var{ALPHA} is 0.05, this corresponds to
+## confidence intervals with 83.4% central coverage.  @var{H} is a handle to the
+## figure containing the graph.  @var{GNAMES} is a cell array with one row for
+## each group, containing the names of the groups.
+##
+## @code{@var{padj} = multcompare (@var{p}, "ctype", @var{CTYPE})} calculates
+## and returns adjusted p-values (@var{padj}) computed using the method
+## @var{CTYPE}. In order of increasing power, @var{CTYPE} can be either
+## "bonferroni", "holm" (default), "hochberg", and "fdr".
 ##
 ## @seealso{anova1, anova2, anovan, kruskalwallis, friedman, fitlm}
 ## @end deftypefn
@@ -155,8 +162,8 @@
 function [C, M, H, GNAMES] = multcompare (STATS, varargin)
 
     if (nargin < 1)
-      error (strcat (["multcompare usage: ""multcompare (STATS)""; "], ...
-                      [" atleast 1 input arguments required"]));
+      error (strcat (["multcompare usage: ""multcompare (ARG)""; "], ...
+                      [" atleast 1 input argument required"]));
     endif
 
     ## Check supplied parameters
@@ -200,7 +207,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     if ((ALPHA <= 0) || (ALPHA >= 1))
       error("anovan: alpha must be a value between 0 and 1");
     endif
-
+    
     ## Evaluate CTYPE input argument
     if (ismember (CTYPE, {"tukey-kramer", "hsd"}))
       CTYPE = "mvt";
@@ -226,6 +233,24 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
       if (!(DFE > 0) || isinf (DFE))
         error ("multcompare: df must be a positive finite value.");
       endif
+    endif
+
+    ## If STATS is numeric, assume they are a vector of p-values
+    if (isnumeric (STATS))
+      if (! ismember (CTYPE, {"bonferroni","holm","hochberg","fdr"}))
+        error ("multcompare: '%s' is not a supported p-adjustment method", CTYPE)
+      endif
+      p = STATS;
+      if (all (size (p) > 1))
+        error ("multcompare: p-values must be a vector")
+      endif
+      [padj, critval] = feval (CTYPE, p, [], [], [], [], ALPHA);
+      if (size (p, 1) > 1)
+        C = padj;
+      else 
+        C = padj';
+      endif
+      return
     endif
 
     ## Perform test specific calculations
