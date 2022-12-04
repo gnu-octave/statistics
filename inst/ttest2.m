@@ -24,11 +24,13 @@
 ## Perform a t-test to compare the means of two groups of data under the null
 ## hypothesis that the groups are drawn from distributions with the same mean.
 ##
-## @var{x} and @var{y} can be vectors or matrices. For matrices, ttest2 performs
-## separate t-tests along each column, and returns a vector of results. @var{x}
-## and @var{y} must have the same number of columns. The Type I error rate of
-## the resulting vector of p-values can be controlled by using the p-values as
-## input to the function @qcode{multcompare}.
+## @var{x} and @var{y} can be vectors or matrices. For matrices, @qcode{ttest2}
+## performs separate t-tests along each column, and returns a vector of results.
+## @var{x} and @var{y} must have the same number of columns. The Type I error
+## rate of the resulting vector of @var{pval} can be controlled by entering
+## @var{pval} as input to the function @qcode{multcompare}.
+##
+## @qcode{ttest2} treats NaNs as missing values, and ignores them.
 ##
 ## For a nested t-test, use @qcode{anova2}.
 ##

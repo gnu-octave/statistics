@@ -27,12 +27,21 @@
 ##
 ## Perform a t-test of the null hypothesis @code{mean (@var{x}) ==
 ## @var{m}} for a sample @var{x} from a normal distribution with unknown
-## mean and unknown std deviation.  Under the null, the test statistic
+## mean and unknown standard deviation.  Under the null, the test statistic
 ## @var{t} has a Student's t distribution.  The default value of
 ## @var{m} is 0.
 ##
 ## If the second argument @var{y} is a vector, a paired-t test of the
-## hypothesis @code{mean (@var{x}) = mean (@var{y})} is performed.
+## hypothesis @code{mean (@var{x}) = mean (@var{y})} is performed. If @var{x}
+## and @var{y} are vectors, they must have the same size and dimensions.
+##
+## @var{x} (and @var{y}) can also be matrices. For matrices, @qcode{ttest}
+## performs separate t-tests along each column, and returns a vector of results.
+## @var{x} and @var{y} must have the same number of columns. The Type I error
+## rate of the resulting vector of @var{pval} can be controlled by entering
+## @var{pval} as input to the function @qcode{multcompare}.
+##
+## @qcode{ttest} treats NaNs as missing values, and ignores them.
 ##
 ## Name-Value pair arguments can be used to set various options.
 ## @qcode{"alpha"} can be used to specify the significance level
@@ -115,12 +124,12 @@ function [h, p, ci, stats] = ttest(x, my, varargin)
   endif
 
   ## Calculate the test statistic value (tval)
-  n = size (x, dim);
-  x_bar = mean (x, dim);
-  stats.tstat = 0;
+  n = sum (!isnan (x), dim);
+  x_bar = mean (x, dim, "omitnan");
+  stats.tstat = [];
   stats.df = n - 1;
-  stats.sd = std (x, 0, dim);
-  x_bar_std = stats.sd / sqrt(n);
+  stats.sd = nanstd (x, 0, dim);
+  x_bar_std = stats.sd ./ sqrt(n);
   tval = (x_bar) ./ x_bar_std;
   stats.tstat = tval;
 
@@ -130,15 +139,15 @@ function [h, p, ci, stats] = ttest(x, my, varargin)
     case "both"
       p = 2 * (1 - tcdf (abs (tval), n - 1));
       tcrit = - tinv (alpha / 2, n - 1);
-      ci = [x_bar-tcrit*x_bar_std; x_bar+tcrit*x_bar_std] + my;
+      ci = [x_bar-tcrit.*x_bar_std; x_bar+tcrit.*x_bar_std] + my;
     case "left"
       p = tcdf (tval, n - 1);
       tcrit = - tinv (alpha, n - 1);
-      ci = [-inf*ones(size(x_bar)); my+x_bar+tcrit*x_bar_std];
+      ci = [-inf*ones(size(x_bar)); my+x_bar+tcrit.*x_bar_std];
     case "right"
       p = 1 - tcdf (tval, n - 1);
       tcrit = - tinv (alpha, n - 1);
-      ci = [my+x_bar-tcrit*x_bar_std; inf*ones(size(x_bar))];
+      ci = [my+x_bar-tcrit.*x_bar_std; inf*ones(size(x_bar))];
     otherwise
       error ("ttest: Invalid value for tail argument.");
   endswitch
