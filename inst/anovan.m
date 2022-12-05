@@ -159,8 +159,8 @@
 ##
 ## @itemize
 ## @item
-## "simple" (default): Simple (ANOVA) contrasts. (The first level appearing in
-## the @var{GROUP} column is the reference level)
+## "simple" or "anova" (default): Simple (ANOVA) contrasts. (The first level
+## appearing in the @var{GROUP} column is the reference level)
 ##
 ## @item
 ## "poly": Polynomial contrasts for trend analysis.
@@ -415,10 +415,11 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
               SSTYPE = 2;
             endif
           else
-            if (! ismember (CONTRASTS{i}, ...
-                            {"simple","poly","helmert","effect","treatment"}))
-              error (strcat(["anovan: the choices for built-in contrasts are"], ...
-            [" ""simple"", ""poly"", ""helmert"", ""effect"", or ""treatment"""]));
+            if (! ismember (lower (CONTRASTS{i}), ...
+                            {"simple","anova","poly","helmert","effect","treatment"}))
+              error (strcat(["anovan: valid built-in contrasts are:"], ...
+                            [" ""simple"" (or ""anova""), ""poly"","],...
+                            [" ""helmert"", ""effect"", or ""treatment"""]));
             endif
             if (strcmpi (CONTRASTS{i}, "treatment") && (SSTYPE==3))
               warning (msg);
@@ -887,7 +888,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
             CONTRASTS{j} = contr_simple (nlevels(j));
           else
             switch (lower (CONTRASTS{j}))
-              case "simple"
+              case {"simple","anova"}
                 ## SIMPLE EFFECT CODING (DEFAULT)
                 ## The first level is the reference level
                 CONTRASTS{j} = contr_simple (nlevels(j));
@@ -966,7 +967,7 @@ endfunction
 
 function C = contr_simple (N)
 
-  ## Create contrast matrix (of doubles) using simple contrast coding
+  ## Create contrast matrix (of doubles) using simple (ANOVA) contrast coding
   ## These contrasts are centered (i.e. sum to 0)
   ## Ideal for unordered factors, with comparison to a reference level
   ## The first factor level is the reference level
@@ -1008,7 +1009,7 @@ endfunction
 
 function C = contr_treatment (N)
 
-  ## Create contrast matrix (of doubles) using simple contrast coding
+  ## Create contrast matrix (of doubles) using treatment contrast coding
   ## Not compatible with SSTYPE 3 since contrasts are not centered
   ## Ideal for unordered factors, with comparison to a reference level
   ## The first factor level is the reference level
