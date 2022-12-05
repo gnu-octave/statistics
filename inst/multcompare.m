@@ -140,6 +140,14 @@
 ## bars are blue.
 ## @end itemize
 ##
+## @code{[@dots{}] = multcompare (@var{STATS}, "seed", @var{SEED})}
+##
+## @itemize
+## @item
+## @var{SEED} is a scalar value used to initialize the random number generator
+## so that @var{CTYPE} "mvt" produces reproducible results.
+## @end itemize
+##
 ## @code{[@var{C}, @var{M}, @var{H}, @var{GNAMES}] = multcompare (@dots{})}
 ## returns additional outputs. @var{M} is a matrix where columns 1-2 are the
 ## estimated marginal means and their standard errors, and columns 3-4 are lower
@@ -201,6 +209,11 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
           ESTIMATE = lower (value);
         case {"df","dfe"}
           DFE = value;
+        case {"seed"}
+          SEED = value;
+          ## Set random seed for mvtrnd and mvnrnd
+          randn ('seed', SEED);
+          randg ('seed', SEED);
         otherwise
           error (sprintf ("multcompare: parameter %s is not supported", name));
       endswitch
