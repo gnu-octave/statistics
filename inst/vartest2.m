@@ -29,7 +29,7 @@
 ## @code{@var{h} = vartest2 (@var{x}, @var{y})} performs an F test of the
 ## hypothesis that the independent data in vectors @var{x} and @var{y} come from
 ## normal distributions with equal variance, against the alternative that they
-## comes from normal distributions with different variances.  The result is
+## come from normal distributions with different variances.  The result is
 ## @var{h} = 0 if the null hypothesis ("variance are equal") cannot be rejected
 ## at the 5% significance level, or @var{h} = 1 if the null hypothesis can be
 ## rejected at the 5% level.
