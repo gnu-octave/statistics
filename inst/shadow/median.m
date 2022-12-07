@@ -57,27 +57,26 @@
 ## operates along the first nonsingleton dimension of @var{x}.
 ## @end itemize
 ##
-## @code{median(@var{x}, "all")} returns the median of all the elements in
+## @code{median (@var{x}, "all")} returns the median of all the elements in
 ## @var{x}.
 ##
-## @code{median(@var{x}, @var{dim})} returns the median along the
+## @code{median (@var{x}, @var{dim})} returns the median along the
 ## operating dimension @var{dim} of @var{x}.
 ##
-## @code{median(@var{x}, @var{vecdim})} returns the median over the
+## @code{median (@var{x}, @var{vecdim})} returns the median over the
 ## dimensions specified in the vector @var{vecdim}.  For example, if @var{x}
-## is a 2-by-3-by-4 array, then @code{median(@var{x}, [1 2])} returns a 1-by-4
-## array.  Each element of the output array is the median of the elements on
-## the corresponding page of @var{x}.  NOTE! @var{vecdim} MUST index at least
-## N-3 dimensions of @var{x}, where @code{N = length (size (@var{x}))} and
-## N <= 10.  If @var{vecdim} indexes all dimensions of @var{x}, then it is
-## equivalent to @code{median(@var{x}, "all")}.
+## is a 2-by-3-by-4 array, then @code{median (@var{x}, [1 2])} returns a
+## 1-by-1-by-4 array.  Each element of the output array is the median of the
+## elements on the corresponding page of @var{x}.  If @var{vecdim} indexes all
+## dimensions of @var{x}, then it is equivalent to
+## @code{median (@var{x}, "all")}.
 ##
-## @code{median(@dots{}, @var{outtype})} returns the median with a specified
+## @code{median (@dots{}, @var{outtype})} returns the median with a specified
 ## data type, using any of the input arguments in the previous syntaxes.
 ## @var{outtype} can be "default", "double", or "native".
 ##
-## @code{median(@dots{}, @var{nanflag})} specifies whether to exclude NaN values
-## from the calculation, using any of the input argument combinations in
+## @code{median (@dots{}, @var{nanflag})} specifies whether to exclude NaN
+## values from the calculation, using any of the input argument combinations in
 ## previous syntaxes.  By default, NaN values are included in the calculation
 ## (@var{nanflag} has the value "includenan").  To exclude NaN values, set the
 ## value of @var{nanflag} to "omitnan".
@@ -213,121 +212,77 @@ function y = median (x, varargin)
 
     else
 
-      sz = size (x);
-      ndims = length (sz);
-      misdim = [1:ndims];
+      ## Check that vecdim contains valid dimensions
+      if (any (vecdim > ndims (x)))
+        error ("median: VECDIM contains invalid dimensions");
+      endif
 
-      ## keep remaining dimensions
-      for i = 1:length (vecdim)
-        misdim(misdim == vecdim(i)) = [];
-      endfor
+      ## Calculate permutation vector
+      remdims = 1:ndims (x);    # all dimensions
+      remdims(vecdim) = [];     # delete dimensions specified by vecdim
+      nremd = numel (remdims);
+      
+      ## If all dimensions are given, it is similar to all flag
+      if (nremd == 0)
+        if (omitnan)
+          x = x(! isnan (x));
+        endif
+        n = length (x(:));
+        x = sort (x(:), 1);
+        k = floor ((n + 1) / 2);
+        if (mod (n, 2) == 1)
+          y = x(k);
+        else
+          y = x(k) + x(k+1) / 2;
+        endif
+        ## Inject NaNs where needed, to be consistent with Matlab.
+        if (! omitnan && ! islogical (x))
+          y(any (isnan (x))) = NaN;
+        endif
+      
+      else
+        ## Permute to bring remaining dims forward
+        perm = [remdims, vecdim];
+        y = permute (x, perm);
 
-      switch (length (misdim))
-        ## if all dimensions are given, compute x(:)
-        case 0
-          if (omitnan)
-            x = x(! isnan (x));
-          endif
-          n = length (x(:));
-          x = sort (x(:), 1);
-          k = floor ((n + 1) / 2);
-          if (mod (n, 2) == 1)
-            y = x(k);
+        ## Reshape to put all vecdims in final dimension
+        szy = size (y);
+        sznew = [szy(1:nremd), prod(szy(nremd+1:end))];
+        y = reshape (y, sznew);
+
+        ## Calculate median on single, squashed dimension
+        dim = nremd + 1;
+        y = sort (y, dim);
+        if (omitnan)
+          n = sum (! isnan (y), dim);
+        else
+          n = sum (isnan (y) | ! isnan (y), dim);
+        endif
+        k = floor ((n + 1) ./ 2);
+        for i = 1:numel (k)
+          if (mod (n(i), 2) == 1)
+            z(i) = {(nth_element (y, k(i), dim))};
           else
-            y = x(k) + x(k+1) / 2;
+            z(i) = {(sum (nth_element (y, k(i):k(i)+1, dim), dim, "native") ...
+                     / 2)};
           endif
-          ## Inject NaNs where needed, to be consistent with Matlab.
-          if (! omitnan && ! islogical (x))
-            y(any (isnan (x))) = NaN;
-          endif
+        endfor
+        ## Collect correct elements
+        szargs = cell (1, ndims (x));
+        szz = size (z{1});
+        for i = 1:numel (k)
+          [szargs{:}] = ind2sub (szz, i);
+          yy(szargs{:}) = z{i}(szargs{:});
+        endfor
+        ## Inject NaNs where needed, to be consistent with Matlab.
+        if (! omitnan && ! islogical (x))
+          yy(any (isnan (y), dim)) = NaN;
+        endif
 
-        ## for 1 dimension left, return column vector
-        case 1
-          if (ndims > 10)
-            error ("median: vecdim works on X of up to 10 dimensions");
-          endif
-          x = permute (x, [misdim, vecdim]);
-          for i = 1:size (x, 1)
-            x_vec = x(i,:,:,:,:,:,:,:,:,:)(:);
-            if (omitnan)
-              x_vec = x_vec(! isnan (x_vec));
-            endif
-            n = length (x_vec(:));
-            x_vec = sort (x_vec(:), 1);
-            k = floor ((n + 1) / 2);
-            if (mod (n, 2) == 1)
-              y(i) = x_vec(k);
-            else
-              y(i) = (x_vec(k) + x_vec(k+1)) / 2;
-            endif
-            ## Inject NaNs where needed, to be consistent with Matlab.
-            if (! omitnan && any (isnan (x_vec)) && ! islogical (x))
-              y(i) = NaN;
-            endif
-          endfor
-
-        ## for 2 dimensions left, return matrix
-        case 2
-          if (ndims > 10)
-            error ("median: vecdim works on X of up to 10 dimensions");
-          endif
-          x = permute (x, [misdim, vecdim]);
-          for i = 1:size (x, 1)
-            for j = 1:size (x, 2)
-              x_vec = x(i,j,:,:,:,:,:,:,:,:)(:);
-              if (omitnan)
-                x_vec = x_vec(! isnan (x_vec));
-              endif
-              n = length (x_vec(:));
-              x_vec = sort (x_vec(:), 1);
-              k = floor ((n + 1) / 2);
-              if (mod (n, 2) == 1)
-                y(i,j) = x_vec(k);
-              else
-                y(i,j) = (x_vec(k) + x_vec(k+1)) / 2;
-              endif
-              ## Inject NaNs where needed, to be consistent with Matlab.
-              if (! omitnan && any (isnan (x_vec)) && ! islogical (x))
-                y(i,j) = NaN;
-              endif
-            endfor
-          endfor
-
-        ## for 3 dimensions left, return matrix
-        case 3
-          if (ndims > 10)
-            error ("median: vecdim works on X of up to 10 dimensions");
-          endif
-          x = permute (x, [misdim, vecdim]);
-          for i = 1:size (x, 1)
-            for j = 1:size (x, 2)
-              for l = 1:size (x, 2)
-                x_vec = x(i,j,k,:,:,:,:,:,:,:)(:);
-                if (omitnan)
-                  x_vec = x_vec(! isnan (x_vec));
-                endif
-                n = length (x_vec(:));
-                x_vec = sort (x_vec(:), 1);
-                k = floor ((n + 1) / 2);
-                if (mod (n, 2) == 1)
-                  y(i,j,l) = x_vec(k);
-                else
-                  y(i,j,l) = (x_vec(k) + x_vec(k+1)) / 2;
-                endif
-                ## Inject NaNs where needed, to be consistent with Matlab.
-                if (! omitnan && any (isnan (x_vec)) && ! islogical (x))
-                  y(i,j,l) = NaN;
-                endif
-              endfor
-            endfor
-          endfor
-        ## for more that 3 dimensions left, print usage
-        otherwise
-          error ("median: vecdim must index at least N-3 dimensions of X");
-      endswitch
-
+        ## Inverse permute back to correct dimensions
+        y = ipermute (yy, perm);
+      endif
     endif
-
   endif
 
   ## Convert output as requested
@@ -359,12 +314,8 @@ endfunction
 %!error <median: DIM must be a positive integer> median (1, ones (2,2))
 %!error <median: DIM must be a positive integer> median (1, 1.5)
 %!error <median: DIM must be a positive integer> median (1, 0)
-%!error <median: vecdim works on X of up to 10 dimensions> ...
-%! median (repmat ([1:20;6:25], [5 2 6 3 5 3 4 2 5 5 11]), [1 2 3 4 5 6 7 8 9])
-%!error <median: vecdim works on X of up to 10 dimensions> ...
-%! median (repmat ([1:20;6:25], [5 2 6 3 5 3 4 2 5 5 11]), [1 2 3 4 5 6 7 8])
-%!error <median: vecdim must index at least N-3 dimensions of X> ...
-%! median (repmat ([1:20;6:25], [5 2 6 3 5 2]), [1 2])
+%!error <median: VECDIM contains invalid dimensions> ...
+%! median (repmat ([1:20;6:25], [5 2 6 3]), [1 2 5 6])
 
 ## Test outtype option
 %!test
@@ -425,17 +376,17 @@ endfunction
 ## Test dimension indexing with vecdim in n-dimensional arrays
 %!test
 %! x = repmat ([1:20;6:25], [5 2 6 3]);
-%! assert (size (median (x, [3 2])), [10 3]);
-%! assert (size (median (x, [1 2])), [6 3]);
-%! assert (size (median (x, [1 2 4])), [1 6]);
+%! assert (size (median (x, [3 2])), [10 1 1 3]);
+%! assert (size (median (x, [1 2])), [1 1 6 3]);
+%! assert (size (median (x, [1 2 4])), [1 1 6]);
 %! assert (size (median (x, [1 4 3])), [1 40]);
 %! assert (size (median (x, [1 2 3 4])), [1 1]);
 
 ## Test results with vecdim in n-dimensional arrays and "omitnan"
 %!test
 %! x = repmat ([2 2.1 2.2 2 NaN; 3 1 2 NaN 5; 1 1.1 1.4 5 3], [1, 1, 4]);
-%! assert (median (x, [3 2]), [NaN NaN 1.4]);
-%! assert (median (x, [3 2], "omitnan"), [2.05 2.5 1.4]);
+%! assert (median (x, [3 2]), [NaN NaN 1.4]');
+%! assert (median (x, [3 2], "omitnan"), [2.05 2.5 1.4]');
 %! assert (median (x, [1 3]), [2 1.1 2 NaN NaN]);
 %! assert (median (x, [1 3], "omitnan"), [2 1.1 2 3.5 4]);
 
