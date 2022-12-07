@@ -14,23 +14,24 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{h} = kstest2 (@var{x1}, @var{x2})
-## @deftypefnx {Function File} @var{h} = kstest2 (@var{x1}, @var{x2}, @var{name}, @var{value})
-## @deftypefnx {Function File} [@var{h}, @var{p}] = kstest2 (@dots{})
-## @deftypefnx {Function File} [@var{h}, @var{p}, @var{ks2stat}] = kstest2 (@dots{})
+## @deftypefn  {statistics} @var{h} = kstest2 (@var{x1}, @var{x2})
+## @deftypefnx {statistics} @var{h} = kstest2 (@var{x1}, @var{x2}, @var{name}, @var{value})
+## @deftypefnx {statistics} [@var{h}, @var{p}] = kstest2 (@dots{})
+## @deftypefnx {statistics} [@var{h}, @var{p}, @var{ks2stat}] = kstest2 (@dots{})
 ##
 ## Two-sample Kolmogorov-Smirnov goodness-of-fit hypothesis test.
 ##
 ## @code{@var{h} = kstest2 (@var{x1}, @var{x2})} returns a test decision for the
-## null hypothesis that the data in vectors x1 and x2 are from the same
-## continuous distribution, using the two-sample Kolmogorov-Smirnov test.
-## The alternative hypothesis is that x1 and x2 are from different continuous
-## distributions. The result h is 1 if the test rejects the null hypothesis at
-## the 5% significance level, and 0 otherwise.
+## null hypothesis that the data in vectors @var{x1} and @var{x2} are from the
+## same continuous distribution, using the two-sample Kolmogorov-Smirnov test.
+## The alternative hypothesis is that @var{x1} and @var{x2} are from different
+## continuous distributions.  The result @var{h} is 1 if the test rejects the
+## null hypothesis at the 5% significance level, and 0 otherwise.
 ## 
-## @code{@var{h} = kstest2 (@var{x1}, @var{x2}, @var{name}, @var{value})} returns
-## a test decision for a two-sample Kolmogorov-Smirnov test with additional
-## options specified by one or more name-value pair arguments as shown below.
+## @code{@var{h} = kstest2 (@var{x1}, @var{x2}, @var{name}, @var{value})}
+## returns a test decision for a two-sample Kolmogorov-Smirnov test with
+## additional options specified by one or more name-value pair arguments as
+## shown below.
 ##
 ## @multitable @columnfractions 0.20 0.8
 ## @item "alpha" @tab A value @var{alpha} between 0 and 1 specifying the
@@ -40,15 +41,22 @@
 ## @end multitable
 ##
 ## @multitable @columnfractions 0.03 0.2 0.77
-## @item @tab "unequal" @tab "F1(x) not equal to F2(x)" (two-sided test) (Default)
+## @item @tab "unequal" @tab "F(X1) not equal to F(X2)" (two-sided) [Default]
 ##
-## @item @tab "larger" @tab "F1(x) > F2(x)" (one-sided test)
+## @item @tab "larger" @tab "F(X1) > F(X2)" (one-sided)
 ##
-## @item @tab "smaller" @tab "F1(x) < F2(x)" (one-sided test)
+## @item @tab "smaller" @tab "F(X1) < F(X2)" (one-sided)
 ## @end multitable
 ##
-## For @code{tail} = "unequal", "larger", and "smaller", the test statistics are
-## max|S1(x) - S2(x)|, max[S1(x) - S2(x)], and max[S2(x) - S1(x)], respectively.
+## The two-sided test uses the maximum absolute difference between the cdfs of
+## the distributions of the two data vectors.  The test statistic is
+## @code{D* = max(|F1(x) - F2(x)|)}, where F1(x) is the proportion of @var{x1}
+## values less or equal to x and F2(x) is the proportion of @var{x2} values less
+## than or equal to x.  The one-sided test uses the actual value of the
+## difference between the cdfs of the distributions of the two data vectors
+## rather than the absolute value. The test statistic is
+## @code{D* = max(F1(x) - F2(x))} or @code{D* = max(F2(x) - F1(x))} for 
+## @code{tail} = "larger" or "smaller", respectively.
 ##
 ## @code{[@var{h}, @var{p}] = kstest2 (@dots{})} also returns the
 ## asymptotic p-value @var{p}.
