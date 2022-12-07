@@ -16,7 +16,7 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program; see the file COPYING.  If not, see
 ## <http://www.gnu.org/licenses/>.
-##
+
 ## -*- texinfo -*-
 ## @deftypefn {Function File} @var{h} = vartest2 (@var{x}, @var{y})
 ## @deftypefnx {Function File} @var{h} = vartest2 (@var{x}, @var{y}, @var{name}, @var{value})
