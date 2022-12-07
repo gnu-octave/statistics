@@ -187,16 +187,17 @@ function y = mean (x, varargin)
 
         ## Reshape to put all vecdims in final dimension
         szy = size (y);
-        sznew = [szy(1:nremd), prod(szy(nremd+1 : end))];
+        sznew = [szy(1:nremd), prod(szy(nremd+1:end))];
         y = reshape (y, sznew);
 
         ## Calculate mean on single, squashed dimension
-        n = size (y, nremd + 1);
+        dim = nremd + 1;
+        n = size (y, dim);
         if (omitnan)
-          n = sum (! isnan (y), nremd + 1);
+          n = sum (! isnan (y), dim);
           y(isnan (y)) = 0;
         endif
-        y = sum (y, nremd + 1) ./ n;
+        y = sum (y, dim) ./ n;
 
         ## Inverse permute back to correct dimensions
         y = ipermute (y, perm);
