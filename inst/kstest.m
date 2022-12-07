@@ -16,10 +16,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{h} = kstest (@var{x})
-## @deftypefnx {Function File} @var{h} = kstest (@var{x}, @var{name}, @var{value})
-## @deftypefnx {Function File} [@var{h}, @var{p}] = kstest (@dots{})
-## @deftypefnx {Function File} [@var{h}, @var{p}, @var{ksstat}, @var{cv}] = kstest (@dots{})
+## @deftypefn  {statistics} @var{h} = kstest (@var{x})
+## @deftypefnx {statistics} @var{h} = kstest (@var{x}, @var{name}, @var{value})
+## @deftypefnx {statistics} [@var{h}, @var{p}] = kstest (@dots{})
+## @deftypefnx {statistics} [@var{h}, @var{p}, @var{ksstat}, @var{cv}] = kstest (@dots{})
 ##
 ## Single sample Kolmogorov-Smirnov (K-S) goodness-of-fit hypothesis test.
 ##
@@ -33,10 +33,10 @@
 ## @end itemize
 ##
 ## @var{x} is a vector representing a random sample from some unknown
-## distribution with a cumulative distribution function F(x).  Missing values
+## distribution with a cumulative distribution function F(X).  Missing values
 ## declared as NaNs in @var{x} are ignored.
 ##
-## @code{@var{h} = kstest (@var{x1}, @var{name}, @var{value})} returns
+## @code{@var{h} = kstest (@var{x}, @var{name}, @var{value})} returns
 ## a test decision for a single-sample K-S test with additional options
 ## specified by one or more name-value pair arguments as shown below.
 ##
@@ -53,18 +53,18 @@
 ## @end multitable
 ##
 ## @multitable @columnfractions 0.03 0.2 0.77
-## @item @tab "unequal" @tab "F(x) not equal to CDF(x)" (two-sided test) (Default)
+## @item @tab "unequal" @tab "F(X) not equal to CDF(X)" (two-sided) (Default)
 ##
-## @item @tab "larger" @tab "F(x) > CDF(x)" (one-sided test)
+## @item @tab "larger" @tab "F(X) > CDF(X)" (one-sided)
 ##
-## @item @tab "smaller" @tab "CDF(x) < F(x)" (one-sided test)
+## @item @tab "smaller" @tab "CDF(X) < F(X)" (one-sided)
 ## @end multitable
 ##
-## Let S(X) be the empirical c.d.f. estimated from the sample vector X, F(X) be
-## the corresponding true (but unknown) population c.d.f., and CDF be the known
-## input c.d.f. specified under the null hypothesis.
+## Let S(X) be the empirical c.d.f. estimated from the sample vector @var{x},
+## F(X) be the corresponding true (but unknown) population c.d.f., and CDF be
+## the known input c.d.f. specified under the null hypothesis.
 ## For @code{tail} = "unequal", "larger", and "smaller", the test statistics are
-## max|S(x) - CDF(x)|, max[S(x) - CDF(x)], and max[CDF(x) - S(x)], respectively.
+## max|S(X) - CDF(X)|, max[S(X) - CDF(X)], and max[CDF(X) - S(X)], respectively.
 ##
 ## @code{[@var{h}, @var{p}] = kstest (@dots{})} also returns the asymptotic
 ## p-value @var{p}.
@@ -75,12 +75,12 @@
 ##
 ## In the matrix version of CDF, column 1 contains the x-axis data and column 2
 ## the corresponding y-axis c.d.f data.  Since the K-S test statistic will
-## occur at one of the observations in X, the calculation is most efficient when
-## CDF is only specified at the observations in X.  When column 1 of CDF
-## represents x-axis points independent of X, CDF is linearly interpolated at
-## the observations found in the vector @var{x}.  In this case, the interval
-## along the x-axis (the column 1 spread of CDF) must span the observations in
-## @var{x} for successful interpolation.
+## occur at one of the observations in @var{x}, the calculation is most
+## efficient when CDF is only specified at the observations in @var{x}.  When
+## column 1 of CDF represents x-axis points independent of @var{x}, CDF is
+## linearly interpolated at the observations found in the vector @var{x}.  In
+## this case, the interval along the x-axis (the column 1 spread of CDF) must
+## span the observations in @var{x} for successful interpolation.
 ##
 ## The decision to reject the null hypothesis is based on comparing the p-value
 ## @var{p} with the "alpha" value, not by comparing the statistic @var{ksstat}
