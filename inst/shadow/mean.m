@@ -62,12 +62,10 @@
 ##
 ## @code{mean(@var{x}, @var{vecdim})} returns the mean over the
 ## dimensions specified in the vector @var{vecdim}.  For example, if @var{x}
-## is a 2-by-3-by-4 array, then @code{mean(@var{x}, [1 2])} returns a 1-by-4
-## array.  Each element of the output array is the mean of the elements on
-## the corresponding page of @var{x}.  NOTE! @var{vecdim} MUST index at least
-## N-3 dimensions of @var{x}, where @code{N = length (size (@var{x}))} and
-## N <= 10.  If @var{vecdim} indexes all dimensions of @var{x}, then it is
-## equivalent to @code{mean(@var{x}, "all")}.
+## is a 2-by-3-by-4 array, then @code{mean (@var{x}, [1 2])} returns a
+## 1-by-1-by-4 array.  Each element of the output array is the mean of the
+## elements on the corresponding page of @var{x}.  If @var{vecdim} indexes all
+## dimensions of @var{x}, then it is equivalent to @code{mean(@var{x}, "all")}.
 ##
 ## @code{mean(@dots{}, @var{outtype})} returns the mean with a specified data
 ## type, using any of the input arguments in the previous syntaxes.
@@ -163,79 +161,47 @@ function y = mean (x, varargin)
 
     else
 
-      sz = size (x);
-      ndims = length (sz);
-      misdim = [1:ndims];
+      ## Check that vecdim contains valid dimensions
+      if (any (vecdim > ndims (x)))
+        error ("mean: VECDIM contains invalid dimensions");
+      endif
 
-      ## keep remaining dimensions
-      for i = 1:length (vecdim)
-        misdim(misdim == vecdim(i)) = [];
-      endfor
+      ## Calculate permutation vector
+      remdims = 1:ndims (x);    # all dimensions
+      remdims(vecdim) = [];     # delete dimensions specified by vecdim
+      nremd = numel (remdims);
+      
+      ## If all dimensions are given, it is similar to all flag
+      if (nremd == 0)
+        n = length (x(:));
+        if (omitnan)
+          n = length (x(! isnan (x)));
+          x(isnan (x)) = 0;
+        endif
+        y = sum (x(:), 1) ./ n;
+      
+      else
+        ## Permute to bring remaining dims forward
+        perm = [remdims, vecdim];
+        y = permute (x, perm);
 
-      switch (length (misdim))
-        ## if all dimensions are given, compute x(:)
-        case 0
-          n = length (x(:));
-          if (omitnan)
-            n = length (x(! isnan (x)));
-            x(isnan (x)) = 0;
-          endif
-          y = sum (x(:), 1) ./ n;
+        ## Reshape to put all vecdims in final dimension
+        szy = size (y);
+        sznew = [szy(1:nremd), prod(szy(nremd+1 : end))];
+        y = reshape (y, sznew);
 
-        ## for 1 dimension left, return column vector
-        case 1
-          if (ndims > 10)
-            error ("mean: vecdim works on X of up to 10 dimensions");
-          endif
-          x = permute (x, [misdim, vecdim]);
-          for i = 1:size (x, 1)
-            x_vec = x(i,:,:,:,:,:,:,:,:,:)(:);
-            if (omitnan)
-              x_vec = x_vec(! isnan (x_vec));
-            endif
-            y(i) = sum (x_vec, 1) ./ length (x_vec);
-          endfor
+        ## Calculate mean on single, squashed dimension
+        n = size (y, nremd + 1);
+        if (omitnan)
+          n = sum (! isnan (y), nremd + 1);
+          y(isnan (y)) = 0;
+        endif
+        y = sum (y, nremd + 1) ./ n;
 
-        ## for 2 dimensions left, return matrix
-        case 2
-          if (ndims > 10)
-            error ("mean: vecdim works on X of up to 10 dimensions");
-          endif
-          x = permute (x, [misdim, vecdim]);
-          for i = 1:size (x, 1)
-            for j = 1:size (x, 2)
-              x_vec = x(i,j,:,:,:,:,:,:,:,:)(:);
-              if (omitnan)
-                x_vec = x_vec(! isnan (x_vec));
-              endif
-              y(i,j) = sum (x_vec, 1) ./ length (x_vec);
-            endfor
-          endfor
-
-        ## for 3 dimensions left, return matrix
-        case 3
-          if (ndims > 10)
-            error ("mean: vecdim works on X of up to 10 dimensions");
-          endif
-          x = permute (x, [misdim, vecdim]);
-          for i = 1:size (x, 1)
-            for j = 1:size (x, 2)
-              for k = 1:size (x, 2)
-                x_vec = x(i,j,k,:,:,:,:,:,:,:)(:);
-                if (omitnan)
-                  x_vec = x_vec(! isnan (x_vec));
-                endif
-                y(i,j,k) = sum (x_vec, 1) ./ length (x_vec);
-              endfor
-            endfor
-          endfor
-        ## for more that 3 dimensions left, print usage
-        otherwise
-          error ("mean: vecdim must index at least N-3 dimensions of X");
-      endswitch
-
+        ## Inverse permute back to correct dimensions
+        y = ipermute (y, perm);
+      endif
     endif
-
   endif
 
   ## Convert output as requested
@@ -281,12 +247,8 @@ endfunction
 %!error <mean: DIM must be a positive integer> mean (1, ones (2,2))
 %!error <mean: DIM must be a positive integer> mean (1, 1.5)
 %!error <mean: DIM must be a positive integer> mean (1, 0)
-%!error <mean: vecdim works on X of up to 10 dimensions> ...
-%! mean (repmat ([1:20;6:25], [5 2 6 3 5 3 4 2 5 5 11]), [1 2 3 4 5 6 7 8 9])
-%!error <mean: vecdim works on X of up to 10 dimensions> ...
-%! mean (repmat ([1:20;6:25], [5 2 6 3 5 3 4 2 5 5 11]), [1 2 3 4 5 6 7 8])
-%!error <mean: vecdim must index at least N-3 dimensions of X> ...
-%! mean (repmat ([1:20;6:25], [5 2 6 3 5 2]), [1 2])
+%!error <mean: VECDIM contains invalid dimensions> ...
+%! mean (repmat ([1:20;6:25], [5 2 6 3]), [1 2 5 6])
 
 ## Test outtype option
 %!test
@@ -349,19 +311,19 @@ endfunction
 ## Test dimension indexing with vecdim in n-dimensional arrays
 %!test
 %! x = repmat ([1:20;6:25], [5 2 6 3]);
-%! assert (size (mean (x, [3 2])), [10 3]);
-%! assert (size (mean (x, [1 2])), [6 3]);
-%! assert (size (mean (x, [1 2 4])), [1 6]);
+%! assert (size (mean (x, [3 2])), [10 1 1 3]);
+%! assert (size (mean (x, [1 2])), [1 1 6 3]);
+%! assert (size (mean (x, [1 2 4])), [1 1 6]);
 %! assert (size (mean (x, [1 4 3])), [1 40]);
 %! assert (size (mean (x, [1 2 3 4])), [1 1]);
 
 ## Test results with vecdim in n-dimensional arrays and "omitnan"
 %!test
 %! x = repmat ([1:20;6:25], [5 2 6 3]);
-%! m = repmat ([10.5;15.5], [5,3]);
+%! m = repmat ([10.5;15.5], [5 1 1 3]);
 %! assert (mean (x, [3 2]), m, 4e-14);
 %! x(2,5,6,3) = NaN;
-%! m(2,3) = NaN;
+%! m(2,1,1,3) = NaN;
 %! assert (mean (x, [3 2]), m, 4e-14);
-%! m(2,3) = 15.52301255230125;
+%! m(2,1,1,3) = 15.52301255230125;
 %! assert (mean (x, [3 2], "omitnan"), m, 4e-14);
