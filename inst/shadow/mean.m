@@ -55,23 +55,23 @@
 ## operates along the first nonsingleton dimension of @var{x}.
 ## @end itemize
 ##
-## @code{mean(@var{x}, "all")} returns the mean of all the elements in @var{x}.
+## @code{mean (@var{x}, "all")} returns the mean of all the elements in @var{x}.
 ##
-## @code{mean(@var{x}, @var{dim})} returns the mean along the
+## @code{mean (@var{x}, @var{dim})} returns the mean along the
 ## operating dimension @var{dim} of @var{x}.
 ##
-## @code{mean(@var{x}, @var{vecdim})} returns the mean over the
+## @code{mean (@var{x}, @var{vecdim})} returns the mean over the
 ## dimensions specified in the vector @var{vecdim}.  For example, if @var{x}
 ## is a 2-by-3-by-4 array, then @code{mean (@var{x}, [1 2])} returns a
 ## 1-by-1-by-4 array.  Each element of the output array is the mean of the
 ## elements on the corresponding page of @var{x}.  If @var{vecdim} indexes all
-## dimensions of @var{x}, then it is equivalent to @code{mean(@var{x}, "all")}.
+## dimensions of @var{x}, then it is equivalent to @code{mean (@var{x}, "all")}.
 ##
-## @code{mean(@dots{}, @var{outtype})} returns the mean with a specified data
+## @code{mean (@dots{}, @var{outtype})} returns the mean with a specified data
 ## type, using any of the input arguments in the previous syntaxes.
 ## @var{outtype} can be "default", "double", or "native".
 ##
-## @code{mean(@dots{}, @var{nanflag})} specifies whether to exclude NaN values
+## @code{mean (@dots{}, @var{nanflag})} specifies whether to exclude NaN values
 ## from the calculation, using any of the input argument combinations in
 ## previous syntaxes.  By default, NaN values are included in the calculation
 ## (@var{nanflag} has the value "includenan").  To exclude NaN values, set the
