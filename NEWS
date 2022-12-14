@@ -315,3 +315,12 @@ Summary of important user-visible changes for statistics 1.5.1:
  ** ttest: added support for NaN values and matrix inputs
  
  ** ttest2: added support for matrices and multiple t-tests
+
+ Removed Functions:
+ ==================
+
+ ** nanmedian (replaced by median)
+
+ ** nanstd (replaced by std)
+
+ ** nanvar (replaced by var)
