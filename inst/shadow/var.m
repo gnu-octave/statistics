@@ -251,7 +251,11 @@ function [y, m] = var (x, varargin)
       endif
       n = length (wx);
       m = sum (wx) ./ sum (wv);
-      y = sum (wv .* (abs (wx - m) .^ 2)) ./ (n - 1 + w);
+      if (weighted)
+        y = sum (wv .* (abs (wx - m) .^ 2)) ./ sum (weights(:));
+      else
+        y = sum (wv .* (abs (wx - m) .^ 2)) ./ (n - 1 + w);
+      endif
     else
       sz = size (x);
       dim = find (sz > 1, 1);
