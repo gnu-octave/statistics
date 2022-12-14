@@ -28,17 +28,17 @@
 ##
 ## @itemize
 ## @item
-## If @var{x} is a vector, then @code{var(@var{x})} returns the
-## var of the elements in @var{x} defined as
+## If @var{x} is a vector, then @code{var(@var{x})} returns the variance of the
+## elements in @var{x} defined as
 ## @tex
-## $$ {\rm var}(x) = \bar{x} = {1\over N} \sum_{i=1}^N x_i $$
+## $$ {\rm var}(x) = {1\over N-1} \sum_{i=1}^N |x_i - \bar x |^2 $$
 ## where $N$ is the number of elements of @var{x}.
 ##
 ## @end tex
 ## @ifnottex
 ##
 ## @example
-## var (@var{x}) = SUM_i @var{x}(i) / N
+## var (@var{v}) = (1 / (N-1)) * SUM_i (|@var{x}(i) - mean (@var{x})|^2)
 ## @end example
 ##
 ## @noindent
@@ -47,32 +47,49 @@
 ## @end ifnottex
 ##
 ## @item
-## If @var{x} is a matrix, then @code{var(@var{x})} returns a row vector with
+## If @var{x} is a matrix, then @code{var (@var{x})} returns a row vector with
 ## the variance of each columns in @var{x}.
 ##
 ## @item
-## If @var{x} is a multidimensional array, then @code{var(@var{x})} operates
+## If @var{x} is a multidimensional array, then @code{var (@var{x})} operates
 ## along the first nonsingleton dimension of @var{x}.
 ## @end itemize
 ##
-## @code{var(@var{x}, "all")} returns the variance of all the elements in
+## @code{var (@var{x}, @var{w})} specifies a weighting scheme.   When @var{w} =
+## 0 (default), the variance is normalized by N-1 (population variance), where N
+## is the number of observations.  When @var{w} = 1, the variance is normalized
+## by the number of observations (sample variance).  To use the default value
+## you may pass an empty input argument [] before entering other options.
+##
+## @var{w} can also be a weight vector, matrix or N-D array containing
+## nonnegative elements.  When @var{w} is a vector, its length must equal the
+## length of the dimension over which var is operating.  When "all" flag is
+## used, the length of @var{w} must equal the elements in @var{x}.  When @var{w}
+## is a matrix or N-D array, its size must equal the size of @var{x}.  NaN
+## values in @var{w} are treated accordingly to those in @var{x}.
+##
+## @code{var (@var{x}, "all")} returns the variance of all the elements in
 ## @var{x}.
 ##
-## @code{var(@var{x}, @var{dim})} returns the variance along the operating
+## @code{var (@var{x}, @var{dim})} returns the variance along the operating
 ## dimension @var{dim} of @var{x}.
 ##
-## @code{var(@var{x}, @var{vecdim})} returns the variance over the dimensions
+## @code{var (@var{x}, @var{vecdim})} returns the variance over the dimensions
 ## specified in the vector @var{vecdim}.  For example, if @var{x}
 ## is a 2-by-3-by-4 array, then @code{var (@var{x}, [1 2])} returns a
 ## 1-by-1-by-4 array.  Each element of the output array is the variance of the
 ## elements on the corresponding page of @var{x}.  If @var{vecdim} indexes all
-## dimensions of @var{x}, then it is equivalent to @code{var(@var{x}, "all")}.
+## dimensions of @var{x}, then it is equivalent to @code{var (@var{x}, "all")}.
 ##
-## @code{var(@dots{}, @var{nanflag})} specifies whether to exclude NaN values
+## @code{var (@dots{}, @var{nanflag})} specifies whether to exclude NaN values
 ## from the calculation, using any of the input argument combinations in
 ## previous syntaxes.  By default, NaN values are included in the calculation
 ## (@var{nanflag} has the value "includenan").  To exclude NaN values, set the
 ## value of @var{nanflag} to "omitnan".
+##
+## @code{[@var{v}, @var{m}] = var (@dots{})} also returns the mean of the
+## elements of @var{x} used to calculate the variance.  If @var{v} is the
+## weighted variance, then @var{m} is the weighted mean.
 ##
 ## @seealso{std, mean}
 ## @end deftypefn
@@ -82,7 +99,7 @@ function [y, m] = var (x, varargin)
   if (nargin < 1 || nargin > 4 || any (cellfun (@isnumeric, varargin(3:end))))
     print_usage ();
   endif
-
+  
   ## Check all char arguments.
   all_flag = false;
   omitnan = false;
@@ -169,6 +186,18 @@ function [y, m] = var (x, varargin)
     if (! isvector (weights) && ! (isequal (size (weights), size (x))))
       error ("var: weight matrix or array does not match X in size");
     endif
+  endif
+
+  ## Force output for X being empty or scalar
+  if (isempty (x))
+    y = NaN;
+    m = NaN;
+    return;
+  endif
+  if (isnumeric (x) && isscalar (x))
+    y = 0;
+    m = x;
+    return;
   endif
 
   if (length (varargin) == 0)
@@ -438,3 +467,12 @@ endfunction
 %! x(2,5,6,3) = NaN;
 %! [v, m] = var (x, 0, [3 2], "omitnan");
 %! assert (m, mean (x, [3 2], "omitnan"));
+
+## Test empty and scalar X
+%!test
+%! [v, m] = var ([]);
+%! assert (v, NaN);
+%! assert (m, NaN);
+%! [v, m] = var (3);
+%! assert (v, 0);
+%! assert (m, 3);
