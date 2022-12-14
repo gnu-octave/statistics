@@ -226,13 +226,13 @@ function [y, m] = std (x, varargin)
         x(xn) = 0;
       endif
       m = sum (x, dim) ./ n;
-      if (omitnan)
-        dims = ones (1, ndims (x));
-        dims(dim) = size (x, dim);
-        m_exp = repmat (m, dims);
+      dims = ones (1, ndims (x));
+      dims(dim) = size (x, dim);
+      m_exp = repmat (m, dims);
+      if (omitnan)        
         x(xn) = m_exp(xn);
       endif
-      y = sqrt (sumsq (x - m, dim) ./ (n - 1 + w));
+      y = sqrt (sumsq (x - m_exp, dim) ./ (n - 1 + w));
     endif
 
   elseif (length (varargin) == 1)
@@ -250,10 +250,15 @@ function [y, m] = std (x, varargin)
         xn = wx;
         wx = wx(! isnan (xn));
         wv = wv(! isnan (xn));
+        xv = xv(! isnan (xn));
       endif
       n = length (wx);
       m = sum (wx) ./ sum (wv);
-      y = sqrt (sum (wv .* (abs (wx - m) .^ 2)) ./ (n - 1 + w));
+      if (weighted)
+        y = sqrt (sum (wv .* (abs (xv - m) .^ 2)) ./ sum (weights(:)));
+      else
+        y = sqrt (sum (wv .* (abs (xv - m) .^ 2)) ./ (n - 1 + w));
+      endif
     else
       sz = size (x);
       dim = find (sz > 1, 1);
@@ -272,16 +277,21 @@ function [y, m] = std (x, varargin)
         n = sum (! isnan (wx), dim);
         xn = isnan (wx);
         wx(xn) = 0;
-        wv(xn) = 0;  ## = wv(! isnan (xn));
+        wv(xn) = 0;
       endif
       m = sum (wx, dim) ./ sum (wv, dim);
+      dims = ones (1, ndims (wx));
+      dims(dim) = size (wx, dim);
+      m_exp = repmat (m, dims);
       if (omitnan)
-        dims = ones (1, ndims (wx));
-        dims(dim) = size (wx, dim);
-        m_exp = repmat (m, dims);
-        wx(xn) = m_exp(xn);
+        x(xn) = m_exp(xn);
       endif
-      y = sqrt (sumsq (wx - m, dim) ./ (n - 1 + w));
+      if (weighted)
+        y = sqrt (sum (wv .* ((x - m_exp) .* (x - m_exp)), dim) ./ ...
+                  sum (weights(:)));
+      else
+        y = sqrt (sumsq (x - m_exp, dim) ./ (n - 1 + w));
+      endif
     endif
 
   elseif (length (varargin) == 2)
@@ -300,16 +310,21 @@ function [y, m] = std (x, varargin)
         n = sum (! isnan (wx), vecdim);
         xn = isnan (wx);
         wx(xn) = 0;
-        wv(xn) = 0;  ## = wv(! isnan (xn));
+        wv(xn) = 0;
       endif
       m = sum (wx, vecdim) ./ sum (wv, vecdim);
+      dims = ones (1, ndims (wx));
+      dims(vecdim) = size (wx, vecdim);
+      m_exp = repmat (m, dims);
       if (omitnan)
-        dims = ones (1, ndims (wx));
-        dims(vecdim) = size (wx, vecdim);
-        m_exp = repmat (m, dims);
-        wx(xn) = m_exp(xn);
+        x(xn) = m_exp(xn);
       endif
-      y = sqrt (sumsq (wx - m, vecdim) ./ (n - 1 + w));
+      if (weighted)
+        y = sqrt (sum (wv .* ((x - m_exp) .* (x - m_exp)), dim) ./ ...
+                  sum (weights(:)));
+      else
+        y = sqrt (sumsq (x - m_exp, vecdim) ./ (n - 1 + w));
+      endif
     else
       # Calculate permutation vector
       remdims = 1:ndims (x);    # all dimensions
@@ -329,10 +344,15 @@ function [y, m] = std (x, varargin)
           xn = wx;
           wx = wx(! isnan (xn));
           wv = wv(! isnan (xn));
+          xv = xv(! isnan (xn));
         endif
         n = length (wx);
         m = sum (wx) ./ sum (wv);
-        y = sqrt (sum (wv .* (abs (wx - m) .^ 2)) ./ (n - 1 + w));
+        if (weighted)
+          y = sqrt (sum (wv .* (abs (xv - m) .^ 2)) ./ sum (weights(:)));
+        else
+          y = sqrt (sum (wv .* (abs (xv - m) .^ 2)) ./ (n - 1 + w));
+        endif
       else
         ## Apply weights
         if (weighted)
@@ -346,12 +366,14 @@ function [y, m] = std (x, varargin)
         perm = [remdims, vecdim];
         wx = permute (wx, perm);
         wv = permute (wv, perm);
+        x = permute (x, perm);
 
         ## Reshape to put all vecdims in final dimension
         szwx = size (wx);
         sznew = [szwx(1:nremd), prod(szwx(nremd+1:end))];
         wx = reshape (wx, sznew);
         wv = reshape (wv, sznew);
+        x = reshape (x, sznew);
 
         ## Calculate var on single, squashed dimension
         dim = nremd + 1;
@@ -365,9 +387,14 @@ function [y, m] = std (x, varargin)
         m = sum (wx, dim) ./ sum (wv, dim);
         m_exp = zeros (size (wx)) + shiftdim (m, 0);
         if (omitnan)
-          wx(xn) = m_exp(xn);
+          x(xn) = m_exp(xn);
         endif
-        y = sqrt (sumsq (wx - m_exp, dim) ./ (n - 1 + w));
+        if (weighted)
+          y = sqrt (sum (wv .* ((x - m_exp) .* (x - m_exp)), dim) ./ ...
+                    sum (weights(:)));
+        else
+          y = sqrt (sumsq (x - m_exp, dim) ./ (n - 1 + w));
+        endif
 
         ## Inverse permute back to correct dimensions
         y = ipermute (y, perm);
@@ -470,6 +497,12 @@ endfunction
 %! x(2,5,6,3) = NaN;
 %! [v, m] = std (x, 0, [3 2], "omitnan");
 %! assert (m, mean (x, [3 2], "omitnan"));
+
+## Test weighted mean and variance output
+%!test
+%! [v, m] = std (4 * eye (2), [1, 3]);
+%! assert (v, sqrt ([3, 3]), 1e-14);
+%! assert (m, [1, 3]);
 
 ## Test empty and scalar X
 %!test
