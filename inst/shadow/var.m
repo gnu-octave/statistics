@@ -224,13 +224,13 @@ function [y, m] = var (x, varargin)
         x(xn) = 0;
       endif
       m = sum (x, dim) ./ n;
-      if (omitnan)
-        dims = ones (1, ndims (x));
-        dims(dim) = size (x, dim);
-        m_exp = repmat (m, dims);
+      dims = ones (1, ndims (x));
+      dims(dim) = size (x, dim);
+      m_exp = repmat (m, dims);
+      if (omitnan)        
         x(xn) = m_exp(xn);
       endif
-      y = sumsq (x - m, dim) ./ (n - 1 + w);
+      y = sumsq (x - m_exp, dim) ./ (n - 1 + w);
     endif
 
   elseif (length (varargin) == 1)
@@ -273,13 +273,17 @@ function [y, m] = var (x, varargin)
         wv(xn) = 0;
       endif
       m = sum (wx, dim) ./ sum (wv, dim);
+      dims = ones (1, ndims (wx));
+      dims(dim) = size (wx, dim);
+      m_exp = repmat (m, dims);
       if (omitnan)
-        dims = ones (1, ndims (wx));
-        dims(dim) = size (wx, dim);
-        m_exp = repmat (m, dims);
-        wx(xn) = m_exp(xn);
+        x(xn) = m_exp(xn);
       endif
-      y = sumsq (wx - m, dim) ./ (n - 1 + w);
+      if (weighted)
+        y = sum (wv .* ((x - m_exp) .* (x - m_exp)), dim) ./ sum (weights(:));
+      else
+        y = sumsq (x - m_exp, dim) ./ (n - 1 + w);
+      endif
     endif
 
   elseif (length (varargin) == 2)
@@ -301,13 +305,17 @@ function [y, m] = var (x, varargin)
         wv(xn) = 0;
       endif
       m = sum (wx, vecdim) ./ sum (wv, vecdim);
+      dims = ones (1, ndims (wx));
+      dims(vecdim) = size (wx, vecdim);
+      m_exp = repmat (m, dims);
       if (omitnan)
-        dims = ones (1, ndims (wx));
-        dims(vecdim) = size (wx, vecdim);
-        m_exp = repmat (m, dims);
-        wx(xn) = m_exp(xn);
+        x(xn) = m_exp(xn);
       endif
-      y = sumsq (wx - m, vecdim) ./ (n - 1 + w);
+      if (weighted)
+        y = sum (wv .* ((x - m_exp) .* (x - m_exp)), dim) ./ sum (weights(:));
+      else
+        y = sumsq (x - m_exp, vecdim) ./ (n - 1 + w);
+      endif
     else
       # Calculate permutation vector
       remdims = 1:ndims (x);    # all dimensions
@@ -344,12 +352,14 @@ function [y, m] = var (x, varargin)
         perm = [remdims, vecdim];
         wx = permute (wx, perm);
         wv = permute (wv, perm);
+        x = permute (x, perm);
 
         ## Reshape to put all vecdims in final dimension
         szwx = size (wx);
         sznew = [szwx(1:nremd), prod(szwx(nremd+1:end))];
         wx = reshape (wx, sznew);
         wv = reshape (wv, sznew);
+        x = reshape (x, sznew);
 
         ## Calculate var on single, squashed dimension
         dim = nremd + 1;
@@ -363,9 +373,13 @@ function [y, m] = var (x, varargin)
         m = sum (wx, dim) ./ sum (wv, dim);
         m_exp = zeros (size (wx)) + shiftdim (m, 0);
         if (omitnan)
-          wx(xn) = m_exp(xn);
+          x(xn) = m_exp(xn);
         endif
-        y = sumsq (wx - m_exp, dim) ./ (n - 1 + w);
+        if (weighted)
+          y = sum (wv .* ((x - m_exp) .* (x - m_exp)), dim) ./ sum (weights(:));
+        else
+          y = sumsq (x - m_exp, dim) ./ (n - 1 + w);
+        endif        
 
         ## Inverse permute back to correct dimensions
         y = ipermute (y, perm);
