@@ -39,13 +39,16 @@ Descriptive statistics
  harmmean
  jackknife
  mean
+ median
  nanmax
  nanmedian
  nanmin
  nanstd
  nansum
  nanvar
+ std
  trimmean
+ var
 Distributions
  anderson_darling_cdf
  bbscdf bbsinv bbspdf bbsrnd
