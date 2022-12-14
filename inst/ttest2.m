@@ -105,8 +105,8 @@ function [h, p, ci, stats] = ttest2(x, y, varargin)
   m = sum (!isnan (x), dim);
   n = sum (!isnan (y), dim);
   x_bar = mean (x, dim, "omitnan") - mean (y, dim, "omitnan");
-  s1_var = nanvar (x, 0, dim);
-  s2_var = nanvar (y, 0, dim);
+  s1_var = var (x, 0, dim, "omitnan");
+  s2_var = var (y, 0, dim, "omitnan");
 
   ## Perform test-specific calculations
   switch lower (vartype)
