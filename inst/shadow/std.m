@@ -212,7 +212,7 @@ function [y, m] = std (x, varargin)
       endif
       n = length (x);
       m = sum (x) ./ n;
-      y = sqrt (sum (abs (x - m) .^ 2) ./ (n - 1 - w));
+      y = sqrt (sum (abs (x - m) .^ 2) ./ (n - 1 + w));
     else
       sz = size (x);
       dim = find (sz > 1, 1);
@@ -253,7 +253,7 @@ function [y, m] = std (x, varargin)
       endif
       n = length (wx);
       m = sum (wx) ./ sum (wv);
-      y = sqrt (sum (wv .* (abs (wx - m) .^ 2)) ./ (n - 1 - w));
+      y = sqrt (sum (wv .* (abs (wx - m) .^ 2)) ./ (n - 1 + w));
     else
       sz = size (x);
       dim = find (sz > 1, 1);
@@ -332,7 +332,7 @@ function [y, m] = std (x, varargin)
         endif
         n = length (wx);
         m = sum (wx) ./ sum (wv);
-        y = sqrt (sum (wv .* (abs (wx - m) .^ 2)) ./ (n - 1 - w));
+        y = sqrt (sum (wv .* (abs (wx - m) .^ 2)) ./ (n - 1 + w));
       else
         ## Apply weights
         if (weighted)

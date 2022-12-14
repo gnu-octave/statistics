@@ -210,7 +210,7 @@ function [y, m] = var (x, varargin)
       endif
       n = length (x);
       m = sum (x) ./ n;
-      y = sum (abs (x - m) .^ 2) ./ (n - 1 - w);
+      y = sum (abs (x - m) .^ 2) ./ (n - 1 + w);
     else
       sz = size (x);
       dim = find (sz > 1, 1);
@@ -251,7 +251,7 @@ function [y, m] = var (x, varargin)
       endif
       n = length (wx);
       m = sum (wx) ./ sum (wv);
-      y = sum (wv .* (abs (wx - m) .^ 2)) ./ (n - 1 - w);
+      y = sum (wv .* (abs (wx - m) .^ 2)) ./ (n - 1 + w);
     else
       sz = size (x);
       dim = find (sz > 1, 1);
@@ -270,7 +270,7 @@ function [y, m] = var (x, varargin)
         n = sum (! isnan (wx), dim);
         xn = isnan (wx);
         wx(xn) = 0;
-        wv(xn) = 0;  ## = wv(! isnan (xn));
+        wv(xn) = 0;
       endif
       m = sum (wx, dim) ./ sum (wv, dim);
       if (omitnan)
@@ -298,7 +298,7 @@ function [y, m] = var (x, varargin)
         n = sum (! isnan (wx), vecdim);
         xn = isnan (wx);
         wx(xn) = 0;
-        wv(xn) = 0;  ## = wv(! isnan (xn));
+        wv(xn) = 0;
       endif
       m = sum (wx, vecdim) ./ sum (wv, vecdim);
       if (omitnan)
@@ -330,7 +330,7 @@ function [y, m] = var (x, varargin)
         endif
         n = length (wx);
         m = sum (wx) ./ sum (wv);
-        y = sum (wv .* (abs (wx - m) .^ 2)) ./ (n - 1 - w);
+        y = sum (wv .* (abs (wx - m) .^ 2)) ./ (n - 1 + w);
       else
         ## Apply weights
         if (weighted)
