@@ -69,14 +69,14 @@
 ## is a matrix or N-D array, its size must equal the size of @var{x}.  NaN
 ## values in @var{w} are treated accordingly to those in @var{x}.
 ##
-## @code{std (@var{x}, "all")} returns the standard deviation of all the elements
-## in @var{x}.
+## @code{std (@var{x}, "all")} returns the standard deviation of all the
+## elements in @var{x}.
 ##
-## @code{std (@var{x}, @var{dim})} returns the standard deviation along the
+## @code{std (@var{x}, [], @var{dim})} returns the standard deviation along the
 ## operating dimension @var{dim} of @var{x}.
 ##
-## @code{std (@var{x}, @var{vecdim})} returns the standard deviation over the
-## dimensions specified in the vector @var{vecdim}.  For example, if @var{x}
+## @code{std (@var{x}, [], @var{vecdim})} returns the standard deviation over
+## the dimensions specified in the vector @var{vecdim}.  For example, if @var{x}
 ## is a 2-by-3-by-4 array, then @code{var (@var{x}, [1 2])} returns a
 ## 1-by-1-by-4 array.  Each element of the output array is the standard
 ## deviation of the elements on the corresponding page of @var{x}.

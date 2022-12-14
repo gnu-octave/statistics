@@ -71,11 +71,11 @@
 ## @code{var (@var{x}, "all")} returns the variance of all the elements in
 ## @var{x}.
 ##
-## @code{var (@var{x}, @var{dim})} returns the variance along the operating
+## @code{var (@var{x}, [], @var{dim})} returns the variance along the operating
 ## dimension @var{dim} of @var{x}.
 ##
-## @code{var (@var{x}, @var{vecdim})} returns the variance over the dimensions
-## specified in the vector @var{vecdim}.  For example, if @var{x}
+## @code{var (@var{x}, [], @var{vecdim})} returns the variance over the
+## dimensions specified in the vector @var{vecdim}.  For example, if @var{x}
 ## is a 2-by-3-by-4 array, then @code{var (@var{x}, [1 2])} returns a
 ## 1-by-1-by-4 array.  Each element of the output array is the variance of the
 ## elements on the corresponding page of @var{x}.  If @var{vecdim} indexes all
