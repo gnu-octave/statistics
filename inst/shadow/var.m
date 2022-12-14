@@ -248,13 +248,14 @@ function [y, m] = var (x, varargin)
         xn = wx;
         wx = wx(! isnan (xn));
         wv = wv(! isnan (xn));
+        xv = xv(! isnan (xn));
       endif
       n = length (wx);
       m = sum (wx) ./ sum (wv);
       if (weighted)
-        y = sum (wv .* (abs (wx - m) .^ 2)) ./ sum (weights(:));
+        y = sum (wv .* (abs (xv - m) .^ 2)) ./ sum (weights(:));
       else
-        y = sum (wv .* (abs (wx - m) .^ 2)) ./ (n - 1 + w);
+        y = sum (wv .* (abs (xv - m) .^ 2)) ./ (n - 1 + w);
       endif
     else
       sz = size (x);
@@ -339,10 +340,15 @@ function [y, m] = var (x, varargin)
           xn = wx;
           wx = wx(! isnan (xn));
           wv = wv(! isnan (xn));
+          xv = xv(! isnan (xn));
         endif
         n = length (wx);
         m = sum (wx) ./ sum (wv);
-        y = sum (wv .* (abs (wx - m) .^ 2)) ./ (n - 1 + w);
+        if (weighted)
+          y = sum (wv .* (abs (xv - m) .^ 2)) ./ sum (weights(:));
+        else
+          y = sum (wv .* (abs (xv - m) .^ 2)) ./ (n - 1 + w);
+        endif
       else
         ## Apply weights
         if (weighted)
@@ -383,7 +389,7 @@ function [y, m] = var (x, varargin)
           y = sum (wv .* ((x - m_exp) .* (x - m_exp)), dim) ./ sum (weights(:));
         else
           y = sumsq (x - m_exp, dim) ./ (n - 1 + w);
-        endif        
+        endif
 
         ## Inverse permute back to correct dimensions
         y = ipermute (y, perm);
@@ -485,6 +491,12 @@ endfunction
 %! x(2,5,6,3) = NaN;
 %! [v, m] = var (x, 0, [3 2], "omitnan");
 %! assert (m, mean (x, [3 2], "omitnan"));
+
+## Test weighted mean and variance output
+%!test
+%! [v, m] = var (4 * eye (2), [1, 3]);
+%! assert (v, [3, 3]);
+%! assert (m, [1, 3]);
 
 ## Test empty and scalar X
 %!test
