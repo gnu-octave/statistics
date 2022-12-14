@@ -140,26 +140,26 @@ function [varargout] = grpstats (x ,group, whichstats, alpha)
         case "median"
           for j = 1:ngroups
             group_x = x(find (group_idx == j), :);
-            group_mean(j,:) = nanmedian (group_x, 1);
+            group_mean(j,:) = median (group_x, 1, "omitnan");
           endfor
           varargout{l} = group_mean;
         case "sem"
           for j = 1:ngroups
             group_x = x(find (group_idx == j), :);
-            group_sem(j,:) = nanstd (group_x, 0, 1) / ...
+            group_sem(j,:) = std (group_x, 0, 1, "omitnan") / ...
                             sqrt (size (group_x, 1) - sum (isnan (group_x), 1));
           endfor
           varargout{l} = group_sem;
         case "std"
           for j = 1:ngroups
             group_x = x(find (group_idx == j), :);
-            group_std(j,:) = nanstd (group_x, 0, 1);
+            group_std(j,:) = std (group_x, 0, 1, "omitnan");
           endfor
           varargout{l} = group_std;
         case "var"
           for j = 1:ngroups
             group_x = x(find (group_idx == j), :);
-            group_var(j,:) = nanvar (group_x, 0, 1);
+            group_var(j,:) = var (group_x, 0, 1, "omitnan");
           endfor
           varargout{l} = group_var;
         case "min"
@@ -192,7 +192,7 @@ function [varargout] = grpstats (x ,group, whichstats, alpha)
             group_x = x(find (group_idx == j), :);
             m = mean (group_x, 1, "omitnan") ;
             n = size (x, 1) - sum (isnan (group_x), 1);
-            s = nanstd (group_x, 0, 1) ./ sqrt (n);
+            s = std (group_x, 0, 1, "omitnan") ./ sqrt (n);
             d = s .* - tinv (alpha / 2, max (n - 1, [], 1));
             group_meanci(j,:) = [m-d, m+d];
           endfor
@@ -202,7 +202,7 @@ function [varargout] = grpstats (x ,group, whichstats, alpha)
             group_x = x(find (group_idx == j), :);
             m = mean (group_x, 1, "omitnan") ;
             n = size (x, 1) - sum (isnan (group_x), 1);
-            s = nanstd (group_x, 0, 1) ./ sqrt (1 + (1 ./ n));
+            s = std (group_x, 0, 1, "omitnan") ./ sqrt (1 + (1 ./ n));
             d = s .* - tinv (alpha / 2, max (n - 1, [], 1));
             group_predci(j,:) = [m-d, m+d];
           endfor
