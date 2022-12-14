@@ -286,3 +286,32 @@ Summary of important user-visible changes for statistics 1.5.1:
  ** var_test (replaced by vartest)
 
  ** z_test (replaced by ztest)
+
+ 
+ Summary of important user-visible changes for statistics 1.5.2:
+-------------------------------------------------------------------
+
+ Important Notice: 1) `mean`, `median`, `std`, and `var` functions
+                       shadow core Octave's respective functions
+                   2) incompatibility with the `nan` package
+ New functions:
+ ==============
+
+ ** median (fully Matlab compatible)
+ 
+ ** std (fully Matlab compatible)
+ 
+ ** var (fully Matlab compatible)
+
+ Improvements:
+ =============
+
+ ** mean: fixed MATLAB compatibility
+ 
+ ** multcompare: fixed erroneous results for Welch ANOVA, updated features
+ 
+ ** tcdf: fixed erroneous results
+ 
+ ** ttest: added support for NaN values and matrix inputs
+ 
+ ** ttest2: added support for matrices and multiple t-tests
