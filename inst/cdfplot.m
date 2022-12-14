@@ -76,11 +76,11 @@ function [hCDF, stats] = cdfplot (x)
     hCDF = h;
   endif
   if (nargout > 1)
-    stats.min = nanmin(x);
-    stats.max = nanmax(x);
-    stats.mean = mean(x, "omitnan");
-    stats.median = nanmedian(x);
-    stats.std = nanstd(x);
+    stats.min = nanmin (x);
+    stats.max = nanmax (x);
+    stats.mean = mean (x, "omitnan");
+    stats.median = median (x, "omitnan");
+    stats.std = std (x, "omitnan");
   endif
 endfunction
 
