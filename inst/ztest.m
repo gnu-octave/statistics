@@ -177,7 +177,7 @@ endfunction
 ## Test results
 %!test
 %! load carsmall
-%! [h, pval, ci] = ztest (MPG, mean (MPG, "omitnan"), nanstd (MPG));
+%! [h, pval, ci] = ztest (MPG, mean (MPG, "omitnan"), std (MPG, "omitnan"));
 %! assert (h, 0);
 %! assert (pval, 1, 1e-14);
 %! assert (ci, [22.094; 25.343], 1e-3);
