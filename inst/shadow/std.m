@@ -150,6 +150,9 @@ function [y, m] = std (x, varargin)
     if (! (isvector (vecdim) && all (vecdim)) || any (rem (vecdim, 1)))
       error ("std: DIM must be a positive integer scalar or vector");
     endif
+    if (! isequal (vecdim, unique (vecdim, "stable")))
+      error ("std: VECDIM must contain non-repeating positive integers");
+    endif
     if (any (vecdim > ndims (x)))
       error ("std: VECDIM contains invalid dimensions");
     endif
@@ -422,6 +425,8 @@ endfunction
 %!error <std: DIM must be a positive integer> std (1, [], ones (2,2))
 %!error <std: DIM must be a positive integer> std (1, 0, 1.5)
 %!error <std: DIM must be a positive integer> std (1, [], 0)
+%!error <std: VECDIM must contain non-repeating positive integers> ...
+%! std (repmat ([1:20;6:25], [5 2 6 3]), 0, [1 2 2 2])
 %!error <std: VECDIM contains invalid dimensions> ...
 %! std (repmat ([1:20;6:25], [5 2 6 3]), 0, [1 2 5 6])
 %!error <std: VECDIM contains invalid dimensions> std ([1 2 3], 0, [1 3])
