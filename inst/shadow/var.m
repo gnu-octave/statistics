@@ -317,7 +317,8 @@ function [y, m] = var (x, varargin)
         x(xn) = m_exp(xn);
       endif
       if (weighted)
-        y = sum (wv .* ((x - m_exp) .* (x - m_exp)), dim) ./ sum (weights(:));
+        y = sum (wv .* ((x - m_exp) .* (x - m_exp)), vecdim) ./ ...
+            sum (weights(:));
       else
         y = sumsq (x - m_exp, vecdim) ./ (n - 1 + w);
       endif
@@ -497,6 +498,10 @@ endfunction
 %! [v, m] = var (4 * eye (2), [1, 3]);
 %! assert (v, [3, 3]);
 %! assert (m, [1, 3]);
+
+## Testing from core octave
+%!assert (var (ones (2,2,2), [1:2], 3), [(zeros (2, 2))]);
+%!assert (var (magic (3), [1:9], "all"), 6.6666666666666, 1e-10);
 
 ## Test empty and scalar X
 %!test
