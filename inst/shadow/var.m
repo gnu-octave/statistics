@@ -499,9 +499,9 @@ endfunction
 %! assert (v, [3, 3]);
 %! assert (m, [1, 3]);
 
-## Testing from core octave
+## Testing weights vector
 %!assert (var (ones (2,2,2), [1:2], 3), [(zeros (2, 2))]);
-%!assert (var (magic (3), [1:9], "all"), 6.6666666666666, 1e-10);
+%!assert (var (magic (3), [1:9], "all"), 6.666666666666667, 1e-14);
 
 ## Test empty and scalar X
 %!test
