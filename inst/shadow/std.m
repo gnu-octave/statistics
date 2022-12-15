@@ -160,7 +160,10 @@ function [y, m] = std (x, varargin)
   endif
 
   ## Check for conflicting input arguments
-  if (weighted && isempty (vecdim))
+  if (all_flag && ! isempty (vecdim))
+    error ("std: 'all' flag cannot be used with DIM or VECDIM options");
+  endif
+  if (weighted && isempty (vecdim) && ! all_flag)
     sz = size (x);
     dim = find (sz > 1, 1);
     if length (dim) == 0
@@ -173,13 +176,10 @@ function [y, m] = std (x, varargin)
     if (isvector (weights) && numel (weights) != size (x, vecdim))
       error ("std: weight vector does not match given operating dimension");
     endif
-  elseif (weighted && ! isscalar (vecdim))
+  elseif (weighted && isvector (vecdim))
     if (! (isequal (size (weights), size (x))))
       error ("std: weight matrix or array does not match X in size");
     endif
-  endif
-  if (all_flag && ! isempty (vecdim))
-    error ("std: 'all' flag cannot be used with DIM or VECDIM options");
   endif
   if (all_flag && weighted)
     if (isvector (weights) && numel (weights) != numel (x))
@@ -320,7 +320,7 @@ function [y, m] = std (x, varargin)
         x(xn) = m_exp(xn);
       endif
       if (weighted)
-        y = sqrt (sum (wv .* ((x - m_exp) .* (x - m_exp)), dim) ./ ...
+        y = sqrt (sum (wv .* ((x - m_exp) .* (x - m_exp)), vecdim) ./ ...
                   sum (weights(:)));
       else
         y = sqrt (sumsq (x - m_exp, vecdim) ./ (n - 1 + w));
@@ -503,6 +503,10 @@ endfunction
 %! [v, m] = std (4 * eye (2), [1, 3]);
 %! assert (v, sqrt ([3, 3]), 1e-14);
 %! assert (m, [1, 3]);
+
+## Testing weights vector
+%!assert (std (ones (2,2,2), [1:2], 3), [(zeros (2, 2))]);
+%!assert (std (magic (3), [1:9], "all"), 2.581988897471611, 1e-14);
 
 ## Test empty and scalar X
 %!test
