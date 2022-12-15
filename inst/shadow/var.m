@@ -158,7 +158,10 @@ function [y, m] = var (x, varargin)
   endif
 
   ## Check for conflicting input arguments
-  if (weighted && isempty (vecdim))
+  if (all_flag && ! isempty (vecdim))
+    error ("var: 'all' flag cannot be used with DIM or VECDIM options");
+  endif
+  if (weighted && isempty (vecdim) && ! all_flag)
     sz = size (x);
     dim = find (sz > 1, 1);
     if length (dim) == 0
@@ -171,13 +174,10 @@ function [y, m] = var (x, varargin)
     if (isvector (weights) && numel (weights) != size (x, vecdim))
       error ("var: weight vector does not match given operating dimension");
     endif
-  elseif (weighted && ! isscalar (vecdim))
+  elseif (weighted && isvector (vecdim))
     if (! (isequal (size (weights), size (x))))
       error ("var: weight matrix or array does not match X in size");
     endif
-  endif
-  if (all_flag && ! isempty (vecdim))
-    error ("var: 'all' flag cannot be used with DIM or VECDIM options");
   endif
   if (all_flag && weighted)
     if (isvector (weights) && numel (weights) != numel (x))
