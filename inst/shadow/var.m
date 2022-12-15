@@ -148,6 +148,9 @@ function [y, m] = var (x, varargin)
     if (! (isvector (vecdim) && all (vecdim)) || any (rem (vecdim, 1)))
       error ("var: DIM must be a positive integer scalar or vector");
     endif
+    if (! isequal (vecdim, unique (vecdim, "stable")))
+      error ("var: VECDIM must contain non-repeating positive integers");
+    endif
     if (any (vecdim > ndims (x)))
       error ("var: VECDIM contains invalid dimensions");
     endif
@@ -418,6 +421,8 @@ endfunction
 %!error <var: DIM must be a positive integer> var (1, [], ones (2,2))
 %!error <var: DIM must be a positive integer> var (1, 0, 1.5)
 %!error <var: DIM must be a positive integer> var (1, [], 0)
+%!error <var: VECDIM must contain non-repeating positive integers> ...
+%! var (repmat ([1:20;6:25], [5 2 6 3]), 0, [1 2 2 2])
 %!error <var: VECDIM contains invalid dimensions> ...
 %! var (repmat ([1:20;6:25], [5 2 6 3]), 0, [1 2 5 6])
 %!error <var: VECDIM contains invalid dimensions> var ([1 2 3], 0, [1 3])
