@@ -99,7 +99,7 @@ function [y, m] = var (x, varargin)
   if (nargin < 1 || nargin > 4 || any (cellfun (@isnumeric, varargin(3:end))))
     print_usage ();
   endif
-  
+
   ## Check all char arguments.
   all_flag = false;
   omitnan = false;
@@ -151,8 +151,13 @@ function [y, m] = var (x, varargin)
     if (! isequal (vecdim, unique (vecdim, "stable")))
       error ("var: VECDIM must contain non-repeating positive integers");
     endif
-    if (any (vecdim > ndims (x)))
+    if (! isscalar (vecdim) && isvector (vecdim) && any (vecdim > ndims (x)))
       error ("var: VECDIM contains invalid dimensions");
+    endif
+    if (isscalar (vecdim) && vecdim > ndims (x))
+      y = zeros (size (x));
+      m = x;
+      return;
     endif
   endif
 
@@ -230,7 +235,7 @@ function [y, m] = var (x, varargin)
       dims = ones (1, ndims (x));
       dims(dim) = size (x, dim);
       m_exp = repmat (m, dims);
-      if (omitnan)        
+      if (omitnan)
         x(xn) = m_exp(xn);
       endif
       y = sumsq (x - m_exp, dim) ./ (n - 1 + w);
