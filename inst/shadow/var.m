@@ -69,9 +69,9 @@
 ## values in @var{w} are treated accordingly to those in @var{x}.
 ##
 ## @code{var (@var{x}, [], @var{dim})} returns the variance along the operating
-## dimension @var{dim} of @var{x}.  For @var{dim} greater than @code{ndims (x)},
-## @var{v} is returned as zeros of the same size as @var{x} and
-## @code{@var{m} = @var{x}}.
+## dimension @var{dim} of @var{x}.  For @var{dim} greater than
+## @code{ndims (@var{x})}, then @var{v} is returned as zeros of the same size as
+## @var{x} and @var{m} = @var{x}.
 ##
 ## @code{var (@var{x}, [], @var{vecdim})} returns the variance over the
 ## dimensions specified in the vector @var{vecdim}.  For example, if @var{x}
