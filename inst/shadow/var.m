@@ -68,11 +68,10 @@
 ## is a matrix or N-D array, its size must equal the size of @var{x}.  NaN
 ## values in @var{w} are treated accordingly to those in @var{x}.
 ##
-## @code{var (@var{x}, "all")} returns the variance of all the elements in
-## @var{x}.
-##
 ## @code{var (@var{x}, [], @var{dim})} returns the variance along the operating
-## dimension @var{dim} of @var{x}.
+## dimension @var{dim} of @var{x}.  For @var{dim} greater than @code{ndims (x)},
+## @var{v} is returned as zeros of the same size as @var{x} and
+## @code{@var{m} = @var{x}}.
 ##
 ## @code{var (@var{x}, [], @var{vecdim})} returns the variance over the
 ## dimensions specified in the vector @var{vecdim}.  For example, if @var{x}
@@ -80,6 +79,11 @@
 ## 1-by-1-by-4 array.  Each element of the output array is the variance of the
 ## elements on the corresponding page of @var{x}.  If @var{vecdim} indexes all
 ## dimensions of @var{x}, then it is equivalent to @code{var (@var{x}, "all")}.
+## Any dimension in @var{vecdim} greater than @code{ndims (@var{x})} is ignored.
+##
+## @code{var (@var{x}, "all")} returns the variance of all the elements in
+## @var{x}.  The optional flag "all" cannot be used together with @var{dim} or
+## @var{vecdim} input arguments.
 ##
 ## @code{var (@dots{}, @var{nanflag})} specifies whether to exclude NaN values
 ## from the calculation, using any of the input argument combinations in
@@ -150,9 +154,6 @@ function [y, m] = var (x, varargin)
     endif
     if (! isequal (vecdim, unique (vecdim, "stable")))
       error ("var: VECDIM must contain non-repeating positive integers");
-    endif
-    if (! isscalar (vecdim) && isvector (vecdim) && any (vecdim > ndims (x)))
-      error ("var: VECDIM contains invalid dimensions");
     endif
     if (isscalar (vecdim) && vecdim > ndims (x))
       y = zeros (size (x));
@@ -330,8 +331,12 @@ function [y, m] = var (x, varargin)
       else
         y = sumsq (x - m_exp, vecdim) ./ (n - 1 + w);
       endif
+
     else
-      # Calculate permutation vector
+
+      ## Ignore exceeding dimensions in VECDIM
+      vecdim(find (vecdim > ndims (x))) = [];
+      ## Calculate permutation vector
       remdims = 1:ndims (x);    # all dimensions
       remdims(vecdim) = [];     # delete dimensions specified by vecdim
       nremd = numel (remdims);
@@ -358,7 +363,9 @@ function [y, m] = var (x, varargin)
         else
           y = sum (wv .* (abs (xv - m) .^ 2)) ./ (n - 1 + w);
         endif
+
       else
+
         ## Apply weights
         if (weighted)
           wv = weights;
@@ -428,9 +435,6 @@ endfunction
 %!error <var: DIM must be a positive integer> var (1, [], 0)
 %!error <var: VECDIM must contain non-repeating positive integers> ...
 %! var (repmat ([1:20;6:25], [5 2 6 3]), 0, [1 2 2 2])
-%!error <var: VECDIM contains invalid dimensions> ...
-%! var (repmat ([1:20;6:25], [5 2 6 3]), 0, [1 2 5 6])
-%!error <var: VECDIM contains invalid dimensions> var ([1 2 3], 0, [1 3])
 %!error <var: weight vector does not match first operating dimension> ...
 %! var ([1 2 3; 2 3 4], [1 3 4])
 %!error <var: weight vector does not match given operating dimension> ...
@@ -512,6 +516,14 @@ endfunction
 ## Testing weights vector
 %!assert (var (ones (2,2,2), [1:2], 3), [(zeros (2, 2))]);
 %!assert (var (magic (3), [1:9], "all"), 6.666666666666667, 1e-14);
+
+## Test exceeding dimensions
+%!assert (var (ones (2,2), [], 3), zeros (2,2));
+%!assert (var (ones (2,2,2), [], 99), zeros (2,2,2));
+%!assert (var (magic (3), [], 3), zeros (3,3));
+%!assert (var (magic (3), [], 1), [7, 16, 7]);
+%!assert (var (magic (3), [], [1 3]), [7, 16, 7]);
+%!assert (var (magic (3), [], [1 99]), [7, 16, 7]);
 
 ## Test empty and scalar X
 %!test
