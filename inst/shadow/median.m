@@ -57,11 +57,9 @@
 ## operates along the first nonsingleton dimension of @var{x}.
 ## @end itemize
 ##
-## @code{median (@var{x}, "all")} returns the median of all the elements in
-## @var{x}.
-##
-## @code{median (@var{x}, @var{dim})} returns the median along the
-## operating dimension @var{dim} of @var{x}.
+## @code{median (@var{x}, @var{dim})} returns the median along the operating
+## dimension @var{dim} of @var{x}.  For @var{dim} greater than
+## @code{ndims (@var{x})}, then @var{y} = @var{x}.
 ##
 ## @code{median (@var{x}, @var{vecdim})} returns the median over the
 ## dimensions specified in the vector @var{vecdim}.  For example, if @var{x}
@@ -69,7 +67,12 @@
 ## 1-by-1-by-4 array.  Each element of the output array is the median of the
 ## elements on the corresponding page of @var{x}.  If @var{vecdim} indexes all
 ## dimensions of @var{x}, then it is equivalent to
-## @code{median (@var{x}, "all")}.
+## @code{median (@var{x}, "all")}.  Any dimension in @var{vecdim} greater than
+## @code{ndims (@var{x})} is ignored.
+##
+## @code{median (@var{x}, "all")} returns the median of all the elements in
+## @var{x}.  The optional flag "all" cannot be used together with @var{dim} or
+## @var{vecdim} input arguments.
 ##
 ## @code{median (@dots{}, @var{outtype})} returns the median with a specified
 ## data type, using any of the input arguments in the previous syntaxes.
@@ -212,16 +215,13 @@ function y = median (x, varargin)
 
     else
 
-      ## Check that vecdim contains valid dimensions
-      if (any (vecdim > ndims (x)))
-        error ("median: VECDIM contains invalid dimensions");
-      endif
-
+      ## Ignore exceeding dimensions in VECDIM
+      vecdim(find (vecdim > ndims (x))) = [];
       ## Calculate permutation vector
       remdims = 1:ndims (x);    # all dimensions
       remdims(vecdim) = [];     # delete dimensions specified by vecdim
       nremd = numel (remdims);
-      
+
       ## If all dimensions are given, it is similar to all flag
       if (nremd == 0)
         if (omitnan)
@@ -239,7 +239,7 @@ function y = median (x, varargin)
         if (! omitnan && ! islogical (x))
           y(any (isnan (x))) = NaN;
         endif
-      
+
       else
         ## Permute to bring remaining dims forward
         perm = [remdims, vecdim];
@@ -314,8 +314,6 @@ endfunction
 %!error <median: DIM must be a positive integer> median (1, ones (2,2))
 %!error <median: DIM must be a positive integer> median (1, 1.5)
 %!error <median: DIM must be a positive integer> median (1, 0)
-%!error <median: VECDIM contains invalid dimensions> ...
-%! median (repmat ([1:20;6:25], [5 2 6 3]), [1 2 5 6])
 
 ## Test outtype option
 %!test
@@ -381,6 +379,13 @@ endfunction
 %! assert (size (median (x, [1 2 4])), [1 1 6]);
 %! assert (size (median (x, [1 4 3])), [1 40]);
 %! assert (size (median (x, [1 2 3 4])), [1 1]);
+
+## Test exceeding dimensions
+%!assert (median (ones (2,2), 3), ones (2,2));
+%!assert (median (ones (2,2,2), 99), ones (2,2,2));
+%!assert (median (magic (3), 3), magic (3));
+%!assert (median (magic (3), [1 3]), [4, 5, 6]);
+%!assert (median (magic (3), [1 99]), [4, 5, 6]);
 
 ## Test results with vecdim in n-dimensional arrays and "omitnan"
 %!test
