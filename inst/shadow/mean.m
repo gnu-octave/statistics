@@ -55,10 +55,9 @@
 ## operates along the first nonsingleton dimension of @var{x}.
 ## @end itemize
 ##
-## @code{mean (@var{x}, "all")} returns the mean of all the elements in @var{x}.
-##
-## @code{mean (@var{x}, @var{dim})} returns the mean along the
-## operating dimension @var{dim} of @var{x}.
+## @code{mean (@var{x}, @var{dim})} returns the mean along the operating
+## dimension @var{dim} of @var{x}.  For @var{dim} greater than
+## @code{ndims (@var{x})}, then @var{y} = @var{x}.
 ##
 ## @code{mean (@var{x}, @var{vecdim})} returns the mean over the
 ## dimensions specified in the vector @var{vecdim}.  For example, if @var{x}
@@ -66,6 +65,11 @@
 ## 1-by-1-by-4 array.  Each element of the output array is the mean of the
 ## elements on the corresponding page of @var{x}.  If @var{vecdim} indexes all
 ## dimensions of @var{x}, then it is equivalent to @code{mean (@var{x}, "all")}.
+## Any dimension in @var{vecdim} greater than @code{ndims (@var{x})} is ignored.
+##
+## @code{mean (@var{x}, "all")} returns the mean of all the elements in @var{x}.
+## The optional flag "all" cannot be used together with @var{dim} or
+## @var{vecdim} input arguments.
 ##
 ## @code{mean (@dots{}, @var{outtype})} returns the mean with a specified data
 ## type, using any of the input arguments in the previous syntaxes.
@@ -161,16 +165,13 @@ function y = mean (x, varargin)
 
     else
 
-      ## Check that vecdim contains valid dimensions
-      if (any (vecdim > ndims (x)))
-        error ("mean: VECDIM contains invalid dimensions");
-      endif
-
+      ## Ignore exceeding dimensions in VECDIM
+      vecdim(find (vecdim > ndims (x))) = [];
       ## Calculate permutation vector
       remdims = 1:ndims (x);    # all dimensions
       remdims(vecdim) = [];     # delete dimensions specified by vecdim
       nremd = numel (remdims);
-      
+
       ## If all dimensions are given, it is similar to all flag
       if (nremd == 0)
         n = length (x(:));
@@ -179,7 +180,7 @@ function y = mean (x, varargin)
           x(isnan (x)) = 0;
         endif
         y = sum (x(:), 1) ./ n;
-      
+
       else
         ## Permute to bring remaining dims forward
         perm = [remdims, vecdim];
@@ -248,8 +249,6 @@ endfunction
 %!error <mean: DIM must be a positive integer> mean (1, ones (2,2))
 %!error <mean: DIM must be a positive integer> mean (1, 1.5)
 %!error <mean: DIM must be a positive integer> mean (1, 0)
-%!error <mean: VECDIM contains invalid dimensions> ...
-%! mean (repmat ([1:20;6:25], [5 2 6 3]), [1 2 5 6])
 
 ## Test outtype option
 %!test
@@ -317,6 +316,13 @@ endfunction
 %! assert (size (mean (x, [1 2 4])), [1 1 6]);
 %! assert (size (mean (x, [1 4 3])), [1 40]);
 %! assert (size (mean (x, [1 2 3 4])), [1 1]);
+
+## Test exceeding dimensions
+%!assert (mean (ones (2,2), 3), ones (2,2));
+%!assert (mean (ones (2,2,2), 99), ones (2,2,2));
+%!assert (mean (magic (3), 3), magic (3));
+%!assert (mean (magic (3), [1 3]), [5, 5, 5]);
+%!assert (mean (magic (3), [1 99]), [5, 5, 5]);
 
 ## Test results with vecdim in n-dimensional arrays and "omitnan"
 %!test
