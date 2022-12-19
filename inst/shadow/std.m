@@ -73,7 +73,9 @@
 ## elements in @var{x}.
 ##
 ## @code{std (@var{x}, [], @var{dim})} returns the standard deviation along the
-## operating dimension @var{dim} of @var{x}.
+## operating dimension @var{dim} of @var{x}.  For @var{dim} greater than
+## @code{ndims (x)}, @var{v} is returned as zeros of the same size as @var{x}
+## and @code{@var{m} = @var{x}}.
 ##
 ## @code{std (@var{x}, [], @var{vecdim})} returns the standard deviation over
 ## the dimensions specified in the vector @var{vecdim}.  For example, if @var{x}
@@ -81,7 +83,12 @@
 ## 1-by-1-by-4 array.  Each element of the output array is the standard
 ## deviation of the elements on the corresponding page of @var{x}.
 ## If @var{vecdim} indexes all dimensions of @var{x}, then it is equivalent to
-## @code{std (@var{x}, "all")}.
+## @code{std (@var{x}, "all")}.  Any dimension in @var{vecdim} greater than
+## @code{ndims (@var{x})} is ignored.
+##
+## @code{std (@var{x}, "all")} returns the standard deviation of all the
+## elements in @var{x}.  The optional flag "all" cannot be used together with
+## @var{dim} or @var{vecdim} input arguments.
 ##
 ## @code{std (@dots{}, @var{nanflag})} specifies whether to exclude NaN values
 ## from the calculation, using any of the input argument combinations in
@@ -152,9 +159,6 @@ function [y, m] = std (x, varargin)
     endif
     if (! isequal (vecdim, unique (vecdim, "stable")))
       error ("std: VECDIM must contain non-repeating positive integers");
-    endif
-    if (! isscalar (vecdim) && isvector (vecdim) && any (vecdim > ndims (x)))
-      error ("std: VECDIM contains invalid dimensions");
     endif
     if (isscalar (vecdim) && vecdim > ndims (x))
       y = zeros (size (x));
@@ -333,7 +337,11 @@ function [y, m] = std (x, varargin)
       else
         y = sqrt (sumsq (x - m_exp, vecdim) ./ (n - 1 + w));
       endif
+
     else
+
+      ## Ignore exceeding dimensions in VECDIM
+      vecdim(find (vecdim > ndims (x))) = [];
       # Calculate permutation vector
       remdims = 1:ndims (x);    # all dimensions
       remdims(vecdim) = [];     # delete dimensions specified by vecdim
@@ -361,7 +369,9 @@ function [y, m] = std (x, varargin)
         else
           y = sqrt (sum (wv .* (abs (xv - m) .^ 2)) ./ (n - 1 + w));
         endif
+
       else
+
         ## Apply weights
         if (weighted)
           wv = weights;
@@ -432,9 +442,6 @@ endfunction
 %!error <std: DIM must be a positive integer> std (1, [], 0)
 %!error <std: VECDIM must contain non-repeating positive integers> ...
 %! std (repmat ([1:20;6:25], [5 2 6 3]), 0, [1 2 2 2])
-%!error <std: VECDIM contains invalid dimensions> ...
-%! std (repmat ([1:20;6:25], [5 2 6 3]), 0, [1 2 5 6])
-%!error <std: VECDIM contains invalid dimensions> std ([1 2 3], 0, [1 3])
 %!error <std: weight vector does not match first operating dimension> ...
 %! std ([1 2 3; 2 3 4], [1 3 4])
 %!error <std: weight vector does not match given operating dimension> ...
@@ -517,6 +524,14 @@ endfunction
 ## Testing weights vector
 %!assert (std (ones (2,2,2), [1:2], 3), [(zeros (2, 2))]);
 %!assert (std (magic (3), [1:9], "all"), 2.581988897471611, 1e-14);
+
+## Test exceeding dimensions
+%!assert (std (ones (2,2), [], 3), zeros (2,2));
+%!assert (std (ones (2,2,2), [], 99), zeros (2,2,2));
+%!assert (std (magic (3), [], 3), zeros (3,3));
+%!assert (std (magic (3), [], 1), sqrt ([7, 16, 7]));
+%!assert (std (magic (3), [], [1 3]), sqrt ([7, 16, 7]));
+%!assert (std (magic (3), [], [1 99]), sqrt ([7, 16, 7]));
 
 ## Test empty and scalar X
 %!test
