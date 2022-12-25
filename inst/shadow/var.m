@@ -131,16 +131,25 @@ function [y, m] = var (x, varargin)
     print_usage ();
   endif
 
+  if (! (isnumeric (x)))
+    error ("var: X must be a numeric vector or matrix");
+  endif
+  if (isa (x, "single"))
+    outtype = "single";
+  else
+    outtype = "double";
+  endif
+
   w = 0;
   weighted = false;
   if (length (varargin) > 0 && isscalar (varargin{1}))
     w = varargin{1};
-    if (! (w == 0 || w == 1))
+    if (! (w == 0 || w == 1) && ! isscalar (x))
       error ("var: normalization scalar must be either 0 or 1");
     endif
   elseif (length (varargin) > 0 && numel (varargin{1}) > 1)
     weights = varargin{1};
-    if (any (weights(:) < 0))
+    if (any (weights(:) < 0) && ! isscalar (x))
       error ("var: weights must not contain any negative values");
     endif
     weighted = true;
@@ -156,14 +165,10 @@ function [y, m] = var (x, varargin)
       error ("var: VECDIM must contain non-repeating positive integers");
     endif
     if (isscalar (vecdim) && vecdim > ndims (x))
-      y = zeros (size (x));
+      y = zeros (size (x), outtype);
       m = x;
       return;
     endif
-  endif
-
-  if (! (isnumeric (x)))
-    error ("var: X must be a numeric vector or matrix");
   endif
 
   ## Check for conflicting input arguments
@@ -178,6 +183,9 @@ function [y, m] = var (x, varargin)
     endif
     if (isvector (weights) && numel (weights) != size (x, dim))
       error ("var: weight vector does not match first operating dimension");
+    endif
+    if (! isvector (weights) && numel (weights) != size (x, dim))
+      error ("var: weight matrix or array does not match X in size");
     endif
   elseif (weighted && isscalar (vecdim))
     if (isvector (weights) && numel (weights) != size (x, vecdim))
@@ -203,8 +211,8 @@ function [y, m] = var (x, varargin)
     m = NaN;
     return;
   endif
-  if (isnumeric (x) && isscalar (x))
-    y = 0;
+  if (isscalar (x))
+    y = cast (0, outtype);
     m = x;
     return;
   endif
@@ -220,6 +228,9 @@ function [y, m] = var (x, varargin)
       n = length (x);
       m = sum (x) ./ n;
       y = sum (abs (x - m) .^ 2) ./ (n - 1 + w);
+      if (n == 1)
+        y = 0;
+      endif
     else
       sz = size (x);
       dim = find (sz > 1, 1);
@@ -240,6 +251,12 @@ function [y, m] = var (x, varargin)
         x(xn) = m_exp(xn);
       endif
       y = sumsq (x - m_exp, dim) ./ (n - 1 + w);
+      if (numel (n) == 1)
+        divby0 = repmat (n, size (y)) == 1;
+      else
+         divby0 = n == 1;
+      endif
+      y(divby0) = 0;
     endif
 
   elseif (length (varargin) == 1)
@@ -265,6 +282,9 @@ function [y, m] = var (x, varargin)
         y = sum (wv .* (abs (xv - m) .^ 2)) ./ sum (weights(:));
       else
         y = sum (wv .* (abs (xv - m) .^ 2)) ./ (n - 1 + w);
+        if (n == 1)
+          y = 0;
+        endif
       endif
     else
       sz = size (x);
@@ -297,6 +317,12 @@ function [y, m] = var (x, varargin)
         y = sum (wv .* ((x - m_exp) .* (x - m_exp)), dim) ./ sum (weights(:));
       else
         y = sumsq (x - m_exp, dim) ./ (n - 1 + w);
+        if (numel (n) == 1)
+          divby0 = repmat (n, size (y)) == 1;
+        else
+           divby0 = n == 1;
+        endif
+        y(divby0) = 0;
       endif
     endif
 
@@ -330,6 +356,12 @@ function [y, m] = var (x, varargin)
             sum (weights(:));
       else
         y = sumsq (x - m_exp, vecdim) ./ (n - 1 + w);
+        if (numel (n) == 1)
+          divby0 = repmat (n, size (y)) == 1;
+        else
+           divby0 = n == 1;
+        endif
+        y(divby0) = 0;
       endif
 
     else
@@ -362,6 +394,9 @@ function [y, m] = var (x, varargin)
           y = sum (wv .* (abs (xv - m) .^ 2)) ./ sum (weights(:));
         else
           y = sum (wv .* (abs (xv - m) .^ 2)) ./ (n - 1 + w);
+          if (n == 1)
+            y = 0;
+          endif
         endif
 
       else
@@ -405,6 +440,12 @@ function [y, m] = var (x, varargin)
           y = sum (wv .* ((x - m_exp) .* (x - m_exp)), dim) ./ sum (weights(:));
         else
           y = sumsq (x - m_exp, dim) ./ (n - 1 + w);
+          if (numel (n) == 1)
+            divby0 = repmat (n, size (y)) == 1;
+          else
+             divby0 = n == 1;
+          endif
+          y(divby0) = 0;
         endif
 
         ## Inverse permute back to correct dimensions
@@ -413,6 +454,10 @@ function [y, m] = var (x, varargin)
       endif
     endif
   endif
+
+  ## Preserve class type
+  y = cast (y, outtype);
+  m = cast (m, outtype);
 
 endfunction
 
@@ -424,8 +469,8 @@ endfunction
 %!error <Invalid call to var.  Correct usage is> var (1, 2, 3, 4, 5)
 %!error <Invalid call to var.  Correct usage is> var (1, "foo")
 %!error <Invalid call to var.  Correct usage is> var (1, [], "foo")
-%!error <var: normalization scalar must be either 0 or 1> var (1, 2, "all")
-%!error <var: normalization scalar must be either 0 or 1> var (1, 0.5, "all")
+%!error <var: normalization scalar must be either 0 or 1> var ([1 2], 2, "all")
+%!error <var: normalization scalar must be either 0 or 1> var ([1 2],0.5, "all")
 %!error <var: weights must not contain any negative values> ...
 %! var ([1 2 3], [1 -1 0])
 %!error <var: X must be a numeric vector or matrix> var ({1:5})
@@ -437,6 +482,8 @@ endfunction
 %! var (repmat ([1:20;6:25], [5 2 6 3]), 0, [1 2 2 2])
 %!error <var: weight vector does not match first operating dimension> ...
 %! var ([1 2 3; 2 3 4], [1 3 4])
+%!error <var: weight matrix or array does not match X in size> ...
+%! var ([1 2], eye (2))
 %!error <var: weight vector does not match given operating dimension> ...
 %! var ([1 2 3; 2 3 4], [1 3 4], 1)
 %!error <var: weight vector does not match given operating dimension> ...
@@ -533,3 +580,241 @@ endfunction
 %! [v, m] = var (3);
 %! assert (v, 0);
 %! assert (m, 3);
+
+####
+#### BISTs from core Octave
+####
+
+%!assert (var (13), 0)
+%!assert (var (single (13)), single (0))
+%!assert (var ([1,2,3]), 1)
+%!assert (var ([1,2,3], 1), 2/3, eps)
+%!assert (var ([1,2,3], [], 1), [0,0,0])
+%!assert (var ([1,2,3], [], 3), [0,0,0])
+%!assert (var (5, 99), 0)
+%!assert (var (5, 99, 1), 0)
+%!assert (var (5, 99, 2), 0)
+%!assert (var ([5 3], [99 99], 2), 1)
+%!assert (var ([1:7], [1:7]), 3)
+%!assert (var ([eye(3)], [1:3]), [5/36, 2/9, 1/4], eps)
+%!assert (var (ones (2,2,2), [1:2], 3), [(zeros (2,2))])
+%!assert (var ([1 2; 3 4], 0, 'all'), var ([1:4]))
+%!assert (var (reshape ([1:8], 2, 2, 2), 0, [1 3]), [17/3 17/3], eps)
+%!assert (var ([1 2 3;1 2 3], [], [1 2]), 0.8, eps)
+
+## Test empty inputs
+%!assert (var ([]), NaN)
+#%!assert (var ([],[],1), NaN(1,0))
+#%!assert (var ([],[],2), NaN(0,1))
+#%!assert (var ([],[],3), [])
+%!assert (var (ones (0,1)), NaN)
+%!assert (var (ones (1,0)), NaN)
+#%!assert (var (ones (1,0), [], 1), NaN(1,0))
+%!assert (var (ones (1,0), [], 2), NaN)
+#%!assert (var (ones (1,0), [], 3), NaN(1,0))
+%!assert (var (ones (0,1)), NaN)
+%!assert (var (ones (0,1), [], 1), NaN)
+#%!assert (var (ones (0,1), [], 2), NaN(0,1))
+#%!assert (var (ones (0,1), [], 3), NaN(0,1))
+#%!assert (var (ones (1,3,0,2)), NaN(1,1,0,2))
+#%!assert (var (ones (1,3,0,2), [], 1), NaN(1,3,0,2))
+#%!assert (var (ones (1,3,0,2), [], 2), NaN(1,1,0,2))
+#%!assert (var (ones (1,3,0,2), [], 3), NaN(1,3,1,2))
+#%!assert (var (ones (1,3,0,2), [], 4), NaN(1,3,0))
+
+## Test second output
+%!test <*62395>
+%! [~, m] = var (13);
+%! assert (m, 13);
+%! [~, m] = var (single(13));
+%! assert (m, single(13));
+%! [~, m] = var ([1, 2, 3; 3 2 1], []);
+%! assert (m, [2 2 2]);
+%! [~, m] = var ([1, 2, 3; 3 2 1], [], 1);
+%! assert (m, [2 2 2]);
+%! [~, m] = var ([1, 2, 3; 3 2 1], [], 2);
+%! assert (m, [2 2]');
+%! [~, m] = var ([1, 2, 3; 3 2 1], [], 3);
+%! assert (m, [1 2 3; 3 2 1]);
+
+## 2nd output, weighted inputs, vector dims
+%!test <*62395>
+%! [~, m] = var(5,99);
+%! assert (m, 5);
+%! [~, m] = var ([1:7], [1:7]);
+%! assert (m, 5);
+%! [~, m] = var ([eye(3)], [1:3]);
+%! assert (m, [1/6, 1/3, 0.5], eps);
+%! [~, m] = var (ones (2,2,2), [1:2], 3);
+%! assert (m, ones (2,2));
+%! [~, m] = var ([1 2; 3 4], 0, 'all');
+%! assert (m, 2.5, eps);
+%! [~, m] = var (reshape ([1:8], 2, 2, 2), 0, [1 3]);
+%! assert (m, [3.5, 5.5], eps);
+
+## 2nd output, empty inputs
+%!test <*62395>
+%! [~, m] = var ([]);
+%! assert (m, NaN);
+#%! [~, m] = var ([],[],1);
+#%! assert (m, NaN(1,0));
+#%! [~, m] = var ([],[],2);
+#%! assert (m, NaN(0,1));
+#%! [~, m] = var ([],[],3);
+#%! assert (m, []);
+#%! [~, m] = var (ones (1,3,0,2));
+#%! assert (m, NaN(1,1,0,2));
+
+## Test Inf and NaN inputs
+%!test <*63203>
+%! [v, m] = var (Inf);
+%! assert (v, NaN);
+%! assert (m, Inf);
+%!test <*63203>
+%! [v, m] = var (NaN);
+%! assert (v, NaN);
+%! assert (m, NaN);
+%!test <*63203>
+%! [v, m] = var ([1, Inf, 3]);
+%! assert (v, NaN);
+%! assert (m, Inf);
+%!test <*63203>
+%! [v, m] = var ([1, Inf, 3]');
+%! assert (v, NaN);
+%! assert (m, Inf);
+%!test <*63203>
+%! [v, m] = var ([1, NaN, 3]);
+%! assert (v, NaN);
+%! assert (m, NaN);
+%!test <*63203>
+%! [v, m] = var ([1, NaN, 3]');
+%! assert (v, NaN);
+%! assert (m, NaN);
+%!test <*63203>
+%! [v, m] = var ([1, Inf, 3], [], 1);
+%! assert (v, [0, NaN, 0]);
+%! assert (m, [1, Inf, 3]);
+%!test <*63203>
+%! [v, m] = var ([1, Inf, 3], [], 2);
+%! assert (v, NaN);
+%! assert (m, Inf);
+%!test <*63203>
+%! [v, m] = var ([1, Inf, 3], [], 3);
+%! assert (v, [0, NaN, 0]);
+%! assert (m, [1, Inf, 3]);
+%!test <*63203>
+%! [v, m] = var ([1, NaN, 3], [], 1);
+%! assert (v, [0, NaN, 0]);
+%! assert (m, [1, NaN, 3]);
+%!test <*63203>
+%! [v, m] = var ([1, NaN, 3], [], 2);
+%! assert (v, NaN);
+%! assert (m, NaN);
+%!test <*63203>
+%! [v, m] = var ([1, NaN, 3], [], 3);
+%! assert (v, [0, NaN, 0]);
+%! assert (m, [1, NaN, 3]);
+%!test <*63203>
+%! [v, m] = var ([1, 2, 3; 3, Inf, 5]);
+%! assert (v, [2, NaN, 2]);
+%! assert (m, [2, Inf, 4]);
+%!test <*63203>
+%! [v, m] = var ([1, Inf, 3; 3, Inf, 5]);
+%! assert (v, [2, NaN, 2]);
+%! assert (m, [2, Inf, 4]);
+%!test <*63203>
+%! [v, m] = var ([1, 2, 3; 3, NaN, 5]);
+%! assert (v, [2, NaN, 2]);
+%! assert (m, [2, NaN, 4]);
+%!test <*63203>
+%! [v, m] = var ([1, NaN, 3; 3, NaN, 5]);
+%! assert (v, [2, NaN, 2]);
+%! assert (m, [2, NaN, 4]);
+%!test <*63203>
+%! [v, m] = var ([Inf, 2, NaN]);
+%! assert (v, NaN);
+%! assert (m, NaN);
+%!test <*63203>
+%! [v, m] = var ([Inf, 2, NaN]');
+%! assert (v, NaN);
+%! assert (m, NaN);
+%!test <*63203>
+%! [v, m] = var ([NaN, 2, Inf]);
+%! assert (v, NaN);
+%! assert (m, NaN);
+%!test <*63203>
+%! [v, m] = var ([NaN, 2, Inf]');
+%! assert (v, NaN);
+%! assert (m, NaN);
+%!test <*63203>
+%! [v, m] = var ([Inf, 2, NaN], [], 1);
+%! assert (v, [NaN, 0, NaN]);
+%! assert (m, [Inf, 2, NaN]);
+%!test <*63203>
+%! [v, m] = var ([Inf, 2, NaN], [], 2);
+%! assert (v, NaN);
+%! assert (m, NaN);
+%!test <*63203>
+%! [v, m] = var ([NaN, 2, Inf], [], 1);
+%! assert (v, [NaN, 0, NaN]);
+%! assert (m, [NaN, 2, Inf]);
+%!test <*63203>
+%! [v, m] = var ([NaN, 2, Inf], [], 2);
+%! assert (v, NaN);
+%! assert (m, NaN);
+%!test <*63203>
+%! [v, m] = var ([1, 3, NaN; 3, 5, Inf]);
+%! assert (v, [2, 2, NaN]);
+%! assert (m, [2, 4, NaN]);
+%!test <*63203>
+%! [v, m] = var ([1, 3, Inf; 3, 5, NaN]);
+%! assert (v, [2, 2, NaN]);
+%! assert (m, [2, 4, NaN]);
+
+## Test sparse/diagonal inputs
+%!test <*63291>
+%! [v, m] = var (2 * eye (2));
+%! assert (v, [2, 2]);
+%! assert (m, [1, 1]);
+%!test <*63291>
+%! [v, m] = var (4 * eye (2), [1, 3]);
+%! assert (v, [3, 3]);
+%! assert (m, [1, 3]);
+%!test <*63291>
+%! [v, m] = var (sparse (2 * eye (2)));
+%! assert (full (v), [2, 2]);
+%! assert (full (m), [1, 1]);
+%!test <*63291>
+%! [v, m] = var (sparse (4 * eye (2)), [1, 3]);
+%! assert (full (v), [3, 3]);
+%! assert (full (m), [1, 3]);
+
+%!test <63291>
+%! [v, m] = var (sparse (eye (2)));
+%! assert (issparse (v));
+%! assert (issparse (m));
+%!test <63291>
+%! [v, m] = var (sparse (eye (2)), [1, 3]);
+%! assert (issparse (v));
+%! assert (issparse (m));
+
+## Test input validation
+%!error <Invalid call> var ()
+%!error <var: X must be a numeric vector or matrix> var (['A'; 'B'])
+%!error <var: normalization scalar must be either 0 or 1> var ([1 2 3], 2)
+%!error <var: weights must not contain any negative values> var ([1 2], [-1 0])
+%!error <var: weight matrix or array does not match X in size> ...
+%! var ([1 2], eye (2))
+%!error <var: weight matrix or array does not match X in size> ...
+%! var (ones (2, 2), [1 2], [1 2])
+%!error <var: weight vector does not match first operating dimension> ...
+%! var ([1 2], [1 2 3])
+%!error <var: weight vector does not match first operating dimension> ...
+%! var (1, [1 2])
+%!error <var: weight vector does not match given operating dimension> ...
+%! var ([1 2], [1 2], 1)
+%!error <var: DIM must be a positive integer scalar or vector> ...
+%! var (1, [], ones (2,2))
+%!error <var: DIM must be a positive integer scalar or vector> var (1, [], 1.5)
+%!error <var: DIM must be a positive integer scalar or vector> var (1, [], 0)
+
