@@ -660,7 +660,7 @@ endfunction
 
 ## 2nd output, weighted inputs, vector dims
 %!test <*62395>
-%! [~, m] = var(5,99);
+%! [~, m] = var (5,99);
 %! assert (m, 5);
 %! [~, m] = var ([1:7], [1:7]);
 %! assert (m, 5);
@@ -838,4 +838,3 @@ endfunction
 %! var (1, [], ones (2,2))
 %!error <var: DIM must be a positive integer scalar or vector> var (1, [], 1.5)
 %!error <var: DIM must be a positive integer scalar or vector> var (1, [], 0)
-
