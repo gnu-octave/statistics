@@ -228,7 +228,7 @@ endfunction
 %!test
 %! A = rand (1000,1);
 %! N = normalise_distribution (A, "unifcdf");
-%! assert (mean (vec (N)), 0, 0.1)
+%! assert (mean (vec (N)), 0, 0.2)
 %! assert (std (vec (N)), 1, 0.1)
 
 %!test
