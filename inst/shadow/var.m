@@ -164,8 +164,10 @@ function [y, m] = var (x, varargin)
     if (! isequal (vecdim, unique (vecdim, "stable")))
       error ("var: VECDIM must contain non-repeating positive integers");
     endif
-    if (isscalar (vecdim) && vecdim > ndims (x))
+    if (! isempty (x) && isscalar (vecdim) && vecdim > ndims (x))
       y = zeros (size (x), outtype);
+      yn = ! isfinite (x);
+      y(yn) = NaN;
       m = x;
       return;
     endif
@@ -207,12 +209,29 @@ function [y, m] = var (x, varargin)
 
   ## Force output for X being empty or scalar
   if (isempty (x))
-    y = NaN;
-    m = NaN;
-    return;
+    if (isempty (vecdim) && all ((size (x)) == 0))
+      y = NaN;
+      m = NaN;
+      return;
+    elseif (isempty (vecdim) && ndims (x) == 2)
+      y = NaN;
+      m = NaN;
+      return;
+    endif
+    if (isscalar (vecdim))
+      nanvec = size (x);
+      nanvec(vecdim) = 1;
+      y = NaN(nanvec);
+      m = NaN(nanvec);
+      return;
+    endif
   endif
   if (isscalar (x))
-    y = cast (0, outtype);
+    if (isfinite (x))
+      y = cast (0, outtype);
+    else
+      y = cast (NaN, outtype);
+    endif
     m = x;
     return;
   endif
@@ -355,13 +374,16 @@ function [y, m] = var (x, varargin)
         y = sum (wv .* ((x - m_exp) .* (x - m_exp)), vecdim) ./ ...
             sum (weights(:));
       else
-        y = sumsq (x - m_exp, vecdim) ./ (n - 1 + w);
+        y = sumsq (x - m_exp, vecdim);
+        yn = isnan (y);
+        y = y ./ (n - 1 + w);
         if (numel (n) == 1)
           divby0 = repmat (n, size (y)) == 1;
         else
-           divby0 = n == 1;
+          divby0 = n == 1;
         endif
         y(divby0) = 0;
+        y(yn) = NaN;
       endif
 
     else
@@ -604,23 +626,22 @@ endfunction
 
 ## Test empty inputs
 %!assert (var ([]), NaN)
-#%!assert (var ([],[],1), NaN(1,0))
-#%!assert (var ([],[],2), NaN(0,1))
-#%!assert (var ([],[],3), [])
-%!assert (var (ones (0,1)), NaN)
+%!assert (var ([],[],1), NaN(1,0))
+%!assert (var ([],[],2), NaN(0,1))
+%!assert (var ([],[],3), [])
 %!assert (var (ones (1,0)), NaN)
-#%!assert (var (ones (1,0), [], 1), NaN(1,0))
+%!assert (var (ones (1,0), [], 1), NaN(1,0))
 %!assert (var (ones (1,0), [], 2), NaN)
-#%!assert (var (ones (1,0), [], 3), NaN(1,0))
+%!assert (var (ones (1,0), [], 3), NaN(1,0))
 %!assert (var (ones (0,1)), NaN)
 %!assert (var (ones (0,1), [], 1), NaN)
-#%!assert (var (ones (0,1), [], 2), NaN(0,1))
-#%!assert (var (ones (0,1), [], 3), NaN(0,1))
-#%!assert (var (ones (1,3,0,2)), NaN(1,1,0,2))
-#%!assert (var (ones (1,3,0,2), [], 1), NaN(1,3,0,2))
-#%!assert (var (ones (1,3,0,2), [], 2), NaN(1,1,0,2))
-#%!assert (var (ones (1,3,0,2), [], 3), NaN(1,3,1,2))
-#%!assert (var (ones (1,3,0,2), [], 4), NaN(1,3,0))
+%!assert (var (ones (0,1), [], 2), NaN(0,1))
+%!assert (var (ones (0,1), [], 3), NaN(0,1))
+%!assert (var (ones (1,3,0,2)), NaN(1,1,0,2))
+%!assert (var (ones (1,3,0,2), [], 1), NaN(1,3,0,2))
+%!assert (var (ones (1,3,0,2), [], 2), NaN(1,1,0,2))
+%!assert (var (ones (1,3,0,2), [], 3), NaN(1,3,1,2))
+%!assert (var (ones (1,3,0,2), [], 4), NaN(1,3,0))
 
 ## Test second output
 %!test <*62395>
