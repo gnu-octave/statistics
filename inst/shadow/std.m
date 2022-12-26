@@ -133,16 +133,25 @@ function [y, m] = std (x, varargin)
     print_usage ();
   endif
 
+  if (! (isnumeric (x)))
+    error ("std: X must be a numeric vector or matrix");
+  endif
+  if (isa (x, "single"))
+    outtype = "single";
+  else
+    outtype = "double";
+  endif
+
   w = 0;
   weighted = false;
   if (length (varargin) > 0 && isscalar (varargin{1}))
     w = varargin{1};
-    if (! (w == 0 || w == 1))
+    if (! (w == 0 || w == 1) && ! isscalar (x))
       error ("std: normalization scalar must be either 0 or 1");
     endif
   elseif (length (varargin) > 0 && numel (varargin{1}) > 1)
     weights = varargin{1};
-    if (any (weights(:) < 0))
+    if (any (weights(:) < 0) && ! isscalar (x))
       error ("std: weights must not contain any negative values");
     endif
     weighted = true;
@@ -157,15 +166,13 @@ function [y, m] = std (x, varargin)
     if (! isequal (vecdim, unique (vecdim, "stable")))
       error ("std: VECDIM must contain non-repeating positive integers");
     endif
-    if (isscalar (vecdim) && vecdim > ndims (x))
-      y = zeros (size (x));
+    if (! isempty (x) && isscalar (vecdim) && vecdim > ndims (x))
+      y = zeros (size (x), outtype);
+      yn = ! isfinite (x);
+      y(yn) = NaN;
       m = x;
       return;
     endif
-  endif
-
-  if (! (isnumeric (x)))
-    error ("std: X must be a numeric vector or matrix");
   endif
 
   ## Check for conflicting input arguments
@@ -180,6 +187,9 @@ function [y, m] = std (x, varargin)
     endif
     if (isvector (weights) && numel (weights) != size (x, dim))
       error ("std: weight vector does not match first operating dimension");
+    endif
+    if (! isvector (weights) && numel (weights) != size (x, dim))
+      error ("std: weight matrix or array does not match X in size");
     endif
   elseif (weighted && isscalar (vecdim))
     if (isvector (weights) && numel (weights) != size (x, vecdim))
@@ -201,12 +211,29 @@ function [y, m] = std (x, varargin)
 
   ## Force output for X being empty or scalar
   if (isempty (x))
-    y = NaN;
-    m = NaN;
-    return;
+    if (isempty (vecdim) && all ((size (x)) == 0))
+      y = NaN;
+      m = NaN;
+      return;
+    elseif (isempty (vecdim) && ndims (x) == 2)
+      y = NaN;
+      m = NaN;
+      return;
+    endif
+    if (isscalar (vecdim))
+      nanvec = size (x);
+      nanvec(vecdim) = 1;
+      y = NaN(nanvec);
+      m = NaN(nanvec);
+      return;
+    endif
   endif
-  if (isnumeric (x) && isscalar (x))
-    y = 0;
+  if (isscalar (x))
+    if (isfinite (x))
+      y = cast (0, outtype);
+    else
+      y = cast (NaN, outtype);
+    endif
     m = x;
     return;
   endif
@@ -222,6 +249,9 @@ function [y, m] = std (x, varargin)
       n = length (x);
       m = sum (x) ./ n;
       y = sqrt (sum (abs (x - m) .^ 2) ./ (n - 1 + w));
+      if (n == 1)
+        y = 0;
+      endif
     else
       sz = size (x);
       dim = find (sz > 1, 1);
@@ -242,6 +272,12 @@ function [y, m] = std (x, varargin)
         x(xn) = m_exp(xn);
       endif
       y = sqrt (sumsq (x - m_exp, dim) ./ (n - 1 + w));
+      if (numel (n) == 1)
+        divby0 = repmat (n, size (y)) == 1;
+      else
+         divby0 = n == 1;
+      endif
+      y(divby0) = 0;
     endif
 
   elseif (length (varargin) == 1)
@@ -267,6 +303,9 @@ function [y, m] = std (x, varargin)
         y = sqrt (sum (wv .* (abs (xv - m) .^ 2)) ./ sum (weights(:)));
       else
         y = sqrt (sum (wv .* (abs (xv - m) .^ 2)) ./ (n - 1 + w));
+        if (n == 1)
+          y = 0;
+        endif
       endif
     else
       sz = size (x);
@@ -300,6 +339,12 @@ function [y, m] = std (x, varargin)
                   sum (weights(:)));
       else
         y = sqrt (sumsq (x - m_exp, dim) ./ (n - 1 + w));
+        if (numel (n) == 1)
+          divby0 = repmat (n, size (y)) == 1;
+        else
+           divby0 = n == 1;
+        endif
+        y(divby0) = 0;
       endif
     endif
 
@@ -332,14 +377,23 @@ function [y, m] = std (x, varargin)
         y = sqrt (sum (wv .* ((x - m_exp) .* (x - m_exp)), vecdim) ./ ...
                   sum (weights(:)));
       else
-        y = sqrt (sumsq (x - m_exp, vecdim) ./ (n - 1 + w));
+        y = sumsq (x - m_exp, vecdim);
+        yn = isnan (y);
+        y = sqrt (y ./ (n - 1 + w));
+        if (numel (n) == 1)
+          divby0 = repmat (n, size (y)) == 1;
+        else
+          divby0 = n == 1;
+        endif
+        y(divby0) = 0;
+        y(yn) = NaN;
       endif
 
     else
 
       ## Ignore exceeding dimensions in VECDIM
       vecdim(find (vecdim > ndims (x))) = [];
-      # Calculate permutation vector
+      ## Calculate permutation vector
       remdims = 1:ndims (x);    # all dimensions
       remdims(vecdim) = [];     # delete dimensions specified by vecdim
       nremd = numel (remdims);
@@ -365,6 +419,9 @@ function [y, m] = std (x, varargin)
           y = sqrt (sum (wv .* (abs (xv - m) .^ 2)) ./ sum (weights(:)));
         else
           y = sqrt (sum (wv .* (abs (xv - m) .^ 2)) ./ (n - 1 + w));
+          if (n == 1)
+            y = 0;
+          endif
         endif
 
       else
@@ -409,6 +466,12 @@ function [y, m] = std (x, varargin)
                     sum (weights(:)));
         else
           y = sqrt (sumsq (x - m_exp, dim) ./ (n - 1 + w));
+          if (numel (n) == 1)
+            divby0 = repmat (n, size (y)) == 1;
+          else
+             divby0 = n == 1;
+          endif
+          y(divby0) = 0;
         endif
 
         ## Inverse permute back to correct dimensions
@@ -417,6 +480,10 @@ function [y, m] = std (x, varargin)
       endif
     endif
   endif
+
+  ## Preserve class type
+  y = cast (y, outtype);
+  m = cast (m, outtype);
 
 endfunction
 
@@ -428,8 +495,8 @@ endfunction
 %!error <Invalid call to std.  Correct usage is> std (1, 2, 3, 4, 5)
 %!error <Invalid call to std.  Correct usage is> std (1, "foo")
 %!error <Invalid call to std.  Correct usage is> std (1, [], "foo")
-%!error <std: normalization scalar must be either 0 or 1> std (1, 2, "all")
-%!error <std: normalization scalar must be either 0 or 1> std (1, 0.5, "all")
+%!error <std: normalization scalar must be either 0 or 1> std ([1 2], 2, "all")
+%!error <std: normalization scalar must be either 0 or 1> std ([1 2],0.5, "all")
 %!error <std: weights must not contain any negative values> ...
 %! std ([1 2 3], [1 -1 0])
 %!error <std: X must be a numeric vector or matrix> std ({1:5})
@@ -441,6 +508,8 @@ endfunction
 %! std (repmat ([1:20;6:25], [5 2 6 3]), 0, [1 2 2 2])
 %!error <std: weight vector does not match first operating dimension> ...
 %! std ([1 2 3; 2 3 4], [1 3 4])
+%!error <std: weight matrix or array does not match X in size> ...
+%! std ([1 2], eye (2))
 %!error <std: weight vector does not match given operating dimension> ...
 %! std ([1 2 3; 2 3 4], [1 3 4], 1)
 %!error <std: weight vector does not match given operating dimension> ...
@@ -538,3 +607,239 @@ endfunction
 %! [v, m] = std (3);
 %! assert (v, 0);
 %! assert (m, 3);
+
+####
+#### BISTs from core Octave
+####
+
+%!assert (std (13), 0)
+%!assert (std (single (13)), single (0))
+%!assert (std ([1,2,3]), 1)
+%!assert (std ([1,2,3], 1), sqrt (2/3), eps)
+%!assert (std ([1,2,3], [], 1), [0,0,0])
+%!assert (std ([1,2,3], [], 3), [0,0,0])
+%!assert (std (5, 99), 0)
+%!assert (std (5, 99, 1), 0)
+%!assert (std (5, 99, 2), 0)
+%!assert (std ([5 3], [99 99], 2), 1)
+%!assert (std ([1:7], [1:7]), sqrt (3))
+%!assert (std ([eye(3)], [1:3]), sqrt ([5/36, 2/9, 1/4]), eps)
+%!assert (std (ones (2,2,2), [1:2], 3), [(zeros (2,2))])
+%!assert (std ([1 2; 3 4], 0, 'all'), std ([1:4]))
+%!assert (std (reshape ([1:8], 2, 2, 2), 0, [1 3]), sqrt ([17/3 17/3]), eps)
+%!assert (std ([1 2 3;1 2 3], [], [1 2]), sqrt (0.8), eps)
+
+## Test empty inputs
+%!assert (std ([]), NaN)
+%!assert (std ([],[],1), NaN(1,0))
+%!assert (std ([],[],2), NaN(0,1))
+%!assert (std ([],[],3), [])
+%!assert (std (ones (1,0)), NaN)
+%!assert (std (ones (1,0), [], 1), NaN(1,0))
+%!assert (std (ones (1,0), [], 2), NaN)
+%!assert (std (ones (1,0), [], 3), NaN(1,0))
+%!assert (std (ones (0,1)), NaN)
+%!assert (std (ones (0,1), [], 1), NaN)
+%!assert (std (ones (0,1), [], 2), NaN(0,1))
+%!assert (std (ones (0,1), [], 3), NaN(0,1))
+%!assert (std (ones (1,3,0,2)), NaN(1,1,0,2))
+%!assert (std (ones (1,3,0,2), [], 1), NaN(1,3,0,2))
+%!assert (std (ones (1,3,0,2), [], 2), NaN(1,1,0,2))
+%!assert (std (ones (1,3,0,2), [], 3), NaN(1,3,1,2))
+%!assert (std (ones (1,3,0,2), [], 4), NaN(1,3,0))
+
+## Test second output
+%!test <*62395>
+%! [~, m] = std (13);
+%! assert (m, 13);
+%! [~, m] = std (single(13));
+%! assert (m, single(13));
+%! [~, m] = std ([1, 2, 3; 3 2 1], []);
+%! assert (m, [2 2 2]);
+%! [~, m] = std ([1, 2, 3; 3 2 1], [], 1);
+%! assert (m, [2 2 2]);
+%! [~, m] = std ([1, 2, 3; 3 2 1], [], 2);
+%! assert (m, [2 2]');
+%! [~, m] = std ([1, 2, 3; 3 2 1], [], 3);
+%! assert (m, [1 2 3; 3 2 1]);
+
+## 2nd output, weighted inputs, vector dims
+%!test <*62395>
+%! [~, m] = std (5,99);
+%! assert (m, 5);
+%! [~, m] = std ([1:7], [1:7]);
+%! assert (m, 5);
+%! [~, m] = std ([eye(3)], [1:3]);
+%! assert (m, [1/6, 1/3, 0.5], eps);
+%! [~, m] = std (ones (2,2,2), [1:2], 3);
+%! assert (m, ones (2,2));
+%! [~, m] = std ([1 2; 3 4], 0, 'all');
+%! assert (m, 2.5, eps);
+%! [~, m] = std (reshape ([1:8], 2, 2, 2), 0, [1 3]);
+%! assert (m, [3.5, 5.5], eps);
+
+## 2nd output, empty inputs
+%!test <*62395>
+%! [~, m] = std ([]);
+%! assert (m, NaN);
+#%! [~, m] = std ([],[],1);
+#%! assert (m, NaN(1,0));
+#%! [~, m] = std ([],[],2);
+#%! assert (m, NaN(0,1));
+#%! [~, m] = std ([],[],3);
+#%! assert (m, []);
+#%! [~, m] = std (ones (1,3,0,2));
+#%! assert (m, NaN(1,1,0,2));
+
+## Test Inf and NaN inputs
+%!test <*63203>
+%! [v, m] = std (Inf);
+%! assert (v, NaN);
+%! assert (m, Inf);
+%!test <*63203>
+%! [v, m] = std (NaN);
+%! assert (v, NaN);
+%! assert (m, NaN);
+%!test <*63203>
+%! [v, m] = std ([1, Inf, 3]);
+%! assert (v, NaN);
+%! assert (m, Inf);
+%!test <*63203>
+%! [v, m] = std ([1, Inf, 3]');
+%! assert (v, NaN);
+%! assert (m, Inf);
+%!test <*63203>
+%! [v, m] = std ([1, NaN, 3]);
+%! assert (v, NaN);
+%! assert (m, NaN);
+%!test <*63203>
+%! [v, m] = std ([1, NaN, 3]');
+%! assert (v, NaN);
+%! assert (m, NaN);
+%!test <*63203>
+%! [v, m] = std ([1, Inf, 3], [], 1);
+%! assert (v, [0, NaN, 0]);
+%! assert (m, [1, Inf, 3]);
+%!test <*63203>
+%! [v, m] = std ([1, Inf, 3], [], 2);
+%! assert (v, NaN);
+%! assert (m, Inf);
+%!test <*63203>
+%! [v, m] = std ([1, Inf, 3], [], 3);
+%! assert (v, [0, NaN, 0]);
+%! assert (m, [1, Inf, 3]);
+%!test <*63203>
+%! [v, m] = std ([1, NaN, 3], [], 1);
+%! assert (v, [0, NaN, 0]);
+%! assert (m, [1, NaN, 3]);
+%!test <*63203>
+%! [v, m] = std ([1, NaN, 3], [], 2);
+%! assert (v, NaN);
+%! assert (m, NaN);
+%!test <*63203>
+%! [v, m] = std ([1, NaN, 3], [], 3);
+%! assert (v, [0, NaN, 0]);
+%! assert (m, [1, NaN, 3]);
+%!test <*63203>
+%! [v, m] = std ([1, 2, 3; 3, Inf, 5]);
+%! assert (v, sqrt ([2, NaN, 2]));
+%! assert (m, [2, Inf, 4]);
+%!test <*63203>
+%! [v, m] = std ([1, Inf, 3; 3, Inf, 5]);
+%! assert (v, sqrt ([2, NaN, 2]));
+%! assert (m, [2, Inf, 4]);
+%!test <*63203>
+%! [v, m] = std ([1, 2, 3; 3, NaN, 5]);
+%! assert (v, sqrt ([2, NaN, 2]));
+%! assert (m, [2, NaN, 4]);
+%!test <*63203>
+%! [v, m] = std ([1, NaN, 3; 3, NaN, 5]);
+%! assert (v, sqrt ([2, NaN, 2]));
+%! assert (m, [2, NaN, 4]);
+%!test <*63203>
+%! [v, m] = std ([Inf, 2, NaN]);
+%! assert (v, NaN);
+%! assert (m, NaN);
+%!test <*63203>
+%! [v, m] = std ([Inf, 2, NaN]');
+%! assert (v, NaN);
+%! assert (m, NaN);
+%!test <*63203>
+%! [v, m] = std ([NaN, 2, Inf]);
+%! assert (v, NaN);
+%! assert (m, NaN);
+%!test <*63203>
+%! [v, m] = std ([NaN, 2, Inf]');
+%! assert (v, NaN);
+%! assert (m, NaN);
+%!test <*63203>
+%! [v, m] = std ([Inf, 2, NaN], [], 1);
+%! assert (v, [NaN, 0, NaN]);
+%! assert (m, [Inf, 2, NaN]);
+%!test <*63203>
+%! [v, m] = std ([Inf, 2, NaN], [], 2);
+%! assert (v, NaN);
+%! assert (m, NaN);
+%!test <*63203>
+%! [v, m] = std ([NaN, 2, Inf], [], 1);
+%! assert (v, [NaN, 0, NaN]);
+%! assert (m, [NaN, 2, Inf]);
+%!test <*63203>
+%! [v, m] = std ([NaN, 2, Inf], [], 2);
+%! assert (v, NaN);
+%! assert (m, NaN);
+%!test <*63203>
+%! [v, m] = std ([1, 3, NaN; 3, 5, Inf]);
+%! assert (v, sqrt ([2, 2, NaN]));
+%! assert (m, [2, 4, NaN]);
+%!test <*63203>
+%! [v, m] = std ([1, 3, Inf; 3, 5, NaN]);
+%! assert (v, sqrt ([2, 2, NaN]));
+%! assert (m, [2, 4, NaN]);
+
+## Test sparse/diagonal inputs
+%!test <*63291>
+%! [v, m] = std (2 * eye (2));
+%! assert (v, sqrt ([2, 2]));
+%! assert (m, [1, 1]);
+%!test <*63291>
+%! [v, m] = std (4 * eye (2), [1, 3]);
+%! assert (v, sqrt ([3, 3]));
+%! assert (m, [1, 3]);
+%!test <*63291>
+%! [v, m] = std (sparse (2 * eye (2)));
+%! assert (full (v), sqrt ([2, 2]));
+%! assert (full (m), [1, 1]);
+%!test <*63291>
+%! [v, m] = std (sparse (4 * eye (2)), [1, 3]);
+%! assert (full (v), sqrt ([3, 3]));
+%! assert (full (m), [1, 3]);
+
+%!test <63291>
+%! [v, m] = std (sparse (eye (2)));
+%! assert (issparse (v));
+%! assert (issparse (m));
+%!test <63291>
+%! [v, m] = std (sparse (eye (2)), [1, 3]);
+%! assert (issparse (v));
+%! assert (issparse (m));
+
+## Test input validation
+%!error <Invalid call> std ()
+%!error <std: X must be a numeric vector or matrix> std (['A'; 'B'])
+%!error <std: normalization scalar must be either 0 or 1> std ([1 2 3], 2)
+%!error <std: weights must not contain any negative values> std ([1 2], [-1 0])
+%!error <std: weight matrix or array does not match X in size> ...
+%! std ([1 2], eye (2))
+%!error <std: weight matrix or array does not match X in size> ...
+%! std (ones (2, 2), [1 2], [1 2])
+%!error <std: weight vector does not match first operating dimension> ...
+%! std ([1 2], [1 2 3])
+%!error <std: weight vector does not match first operating dimension> ...
+%! std (1, [1 2])
+%!error <std: weight vector does not match given operating dimension> ...
+%! std ([1 2], [1 2], 1)
+%!error <std: DIM must be a positive integer scalar or vector> ...
+%! std (1, [], ones (2,2))
+%!error <std: DIM must be a positive integer scalar or vector> std (1, [], 1.5)
+%!error <std: DIM must be a positive integer scalar or vector> std (1, [], 0)
