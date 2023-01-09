@@ -30,7 +30,6 @@ Classification Performance Evaluation
 Data
  combnk
  datasample
- fixvarsize
  tabulate
 Descriptive statistics
  combnk
@@ -41,11 +40,8 @@ Descriptive statistics
  mean
  median
  nanmax
- nanmedian
  nanmin
- nanstd
  nansum
- nanvar
  std
  trimmean
  var
