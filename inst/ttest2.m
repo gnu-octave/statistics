@@ -18,8 +18,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {Function File} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest2 (@var{x}, @var{y})
-## @deftypefnx {Function File} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest2 (@var{x}, @var{y}, @var{Name}, @var{Value})
+## @deftypefn  {statistics} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest2 (@var{x}, @var{y})
+## @deftypefnx {statistics} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest2 (@var{x}, @var{y}, @var{Name}, @var{Value})
 ##
 ## Perform a t-test to compare the means of two groups of data under the null
 ## hypothesis that the groups are drawn from distributions with the same mean.
@@ -35,16 +35,18 @@
 ## For a nested t-test, use @qcode{anova2}.
 ##
 ## The argument @qcode{"alpha"} can be used to specify the significance level
-## of the test (the default value is 0.05).  The string
-## argument @qcode{"tail"}, can be used to select the desired alternative
-## hypotheses.  If @qcode{"tail"} is @qcode{"both"} (default) the null is
-## tested against the two-sided alternative @code{mean (@var{x}) != @var{m}}.
-## If @qcode{"tail"} is @qcode{"right"} the one-sided
-## alternative @code{mean (@var{x}) > @var{m}} is considered.
-## Similarly for @qcode{"left"}, the one-sided alternative @code{mean
-## (@var{x}) < @var{m}} is considered.  When @qcode{"vartype"} is @qcode{"equal"}
-## the variances are assumed to be equal (this is the default).  When
-## @qcode{"vartype"} is @qcode{"unequal"} the variances are not assumed equal.
+## of the test (the default value is 0.05).  The string argument @qcode{"tail"},
+## can be used to select the desired alternative hypotheses.  If @qcode{"tail"}
+## is @qcode{"both"} (default) the null is tested against the two-sided
+## alternative @code{mean (@var{x}) != @var{m}}.  If @qcode{"tail"} is
+## @qcode{"right"} the one-sided alternative @code{mean (@var{x}) > @var{m}} is
+## considered.  Similarly for @qcode{"left"}, the one-sided alternative
+## @code{mean (@var{x}) < @var{m}} is considered.
+##
+## When @qcode{"vartype"} is @qcode{"equal"} the variances are assumed to be
+## equal (this is the default).  When @qcode{"vartype"} is @qcode{"unequal"} the
+## variances are not assumed equal.
+##
 ## When argument @var{x} and @var{y} are matrices the @qcode{"dim"} argument can
 ## be used to select the dimension over which to perform the test.
 ## (The default is the first non-singleton dimension.)
@@ -61,7 +63,7 @@
 
 function [h, p, ci, stats] = ttest2(x, y, varargin)
 
-  ## Set defaults 
+  ## Set defaults
   alpha = 0.05;
   tail = "both";
   vartype = "equal";
@@ -170,7 +172,7 @@ endfunction
 %! a = 1:5;
 %! b = 6:10;
 %! b(5) = NaN;
-%! [h,p,ci,stats] = ttest2(a,b);
+%! [h,p,ci,stats] = ttest2 (a,b);
 %! assert (h, 1);
 %! assert (p, 0.002535996080258229, 1e-14);
 %! assert (ci, [-6.822014919225481, -2.17798508077452], 1e-14);
