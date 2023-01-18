@@ -67,10 +67,10 @@
 ## (@var{tstat}), the degrees of freedom (@var{df}) and the sample's standard
 ## deviation (@var{sd}).
 ##
-## @seealso{ttest2, hotelling_ttest, regression_ttest}
+## @seealso{hotelling_ttest, ttest2, hotelling_ttest2}
 ## @end deftypefn
 
-function [h, p, ci, stats] = ttest(x, my, varargin)
+function [h, p, ci, stats] = ttest (x, my, varargin)
 
   ## Set default arguments
   my_default = 0;
