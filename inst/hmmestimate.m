@@ -1,4 +1,5 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,11 +17,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{transprobest}, @var{outprobest}] =} hmmestimate (@var{sequence}, @var{states})
-## @deftypefnx {Function File} {} hmmestimate (@dots{}, 'statenames', @var{statenames})
-## @deftypefnx {Function File} {} hmmestimate (@dots{}, 'symbols', @var{symbols})
-## @deftypefnx {Function File} {} hmmestimate (@dots{}, 'pseudotransitions', @var{pseudotransitions})
-## @deftypefnx {Function File} {} hmmestimate (@dots{}, 'pseudoemissions', @var{pseudoemissions})
+## @deftypefn  {statistics} [@var{transprobest}, @var{outprobest}] = hmmestimate (@var{sequence}, @var{states})
+## @deftypefnx {statistics} [@dots{}] = hmmestimate (@dots{}, "statenames", @var{statenames})
+## @deftypefnx {statistics} [@dots{}] = hmmestimate (@dots{}, "symbols", @var{symbols})
+## @deftypefnx {statistics} [@dots{}] = hmmestimate (@dots{}, "pseudotransitions", @var{pseudotransitions})
+## @deftypefnx {statistics} [@dots{}] = hmmestimate (@dots{}, "pseudoemissions", @var{pseudoemissions})
 ##
 ## Estimation of a hidden Markov model for a given sequence.
 ##
@@ -93,20 +94,23 @@
 ## @end group
 ##
 ## @group
-## symbols = @{'A', 'B', 'C'@};
-## statenames = @{'One', 'Two'@};
-## [sequence, states] = hmmgenerate (25, transprob, outprob,
-##                      'symbols', symbols, 'statenames', statenames);
-## [transprobest, outprobest] = hmmestimate (sequence, states,
-##                              'symbols', symbols,
-##                              'statenames', statenames)
+## symbols = @{"A", "B", "C"@};
+## statenames = @{"One", "Two"@};
+## [sequence, states] = hmmgenerate (25, transprob, outprob, ...
+##                                   "symbols", symbols, ...
+##                                   "statenames", statenames);
+## [transprobest, outprobest] = hmmestimate (sequence, states, ...
+##                                   "symbols', symbols, ...
+##                                   "statenames', statenames)
 ## @end group
 ##
 ## @group
 ## pseudotransitions = [8, 2; 4, 6];
 ## pseudoemissions = [2, 4, 4; 7, 2, 1];
 ## [sequence, states] = hmmgenerate (25, transprob, outprob);
-## [transprobest, outprobest] = hmmestimate (sequence, states, 'pseudotransitions', pseudotransitions, 'pseudoemissions', pseudoemissions)
+## [transprobest, outprobest] = hmmestimate (sequence, states, ...
+##                              "pseudotransitions", pseudotransitions, ...
+##                              "pseudoemissions", pseudoemissions)
 ## @end group
 ## @end example
 ##
@@ -124,9 +128,6 @@
 ## 77(2), pages 257-286, February 1989.
 ## @end enumerate
 ## @end deftypefn
-
-## Author: Arno Onken <asnelt@asnelt.org>
-## Description: Estimation of a hidden Markov model for a given sequence
 
 function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
 
@@ -171,7 +172,8 @@ function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
       # Use the following argument as an initial count for transitions
       transprobest = varargin{i + 1};
       if (! ismatrix (transprobest))
-        error ("hmmestimate: pseudotransitions must be a non-empty numeric matrix");
+        error (strcat (["hmmestimate: pseudotransitions must be a"], ...
+                       [" non-empty numeric matrix"]));
       endif
       if (rows (transprobest) != columns (transprobest))
         error ("hmmestimate: pseudotransitions must be a square matrix");
@@ -180,10 +182,13 @@ function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
       # Use the following argument as an initial count for outputs
       outprobest = varargin{i + 1};
       if (! ismatrix (outprobest))
-        error ("hmmestimate: pseudoemissions must be a non-empty numeric matrix");
+        error (strcat (["hmmestimate: pseudoemissions must be a non-empty"], ...
+                       [" numeric matrix"]));
       endif
     else
-      error ("hmmestimate: expected 'symbols', 'statenames', 'pseudotransitions' or 'pseudoemissions' but found '%s'", varargin{i});
+      error (strcat (["hmmestimate: expected 'symbols', 'statenames',"], ...
+                     [" 'pseudotransitions' or 'pseudoemissions' but"], ...
+                     sprintf (" found '%s'", varargin{i})));
     endif
   endfor
 
@@ -281,7 +286,8 @@ function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
     # Number of outputs is specified by pseudoemissions
     noutput = columns (outprobest);
     if (rows (outprobest) != nstate)
-      error ("hmmestimate: pseudoemissions must have the same number of rows as pseudotransitions");
+      error (strcat (["hmmestimate: pseudoemissions must have the same"], ...
+                     [" number of rows as pseudotransitions"]));
     endif
   endif
 
@@ -312,8 +318,10 @@ function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
 endfunction
 
 %!test
-%! sequence = [1, 2, 1, 1, 1, 2, 2, 1, 2, 3, 3, 3, 3, 2, 3, 1, 1, 1, 1, 3, 3, 2, 3, 1, 3];
-%! states = [1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1];
+%! sequence = [1, 2, 1, 1, 1, 2, 2, 1, 2, 3, 3, ...
+%!             3, 3, 2, 3, 1, 1, 1, 1, 3, 3, 2, 3, 1, 3];
+%! states =   [1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1, ...
+%!             1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1];
 %! [transprobest, outprobest] = hmmestimate (sequence, states);
 %! expectedtransprob = [0.88889, 0.11111; 0.28571, 0.71429];
 %! expectedoutprob = [0.16667, 0.33333, 0.50000; 1.00000, 0.00000, 0.00000];
@@ -321,23 +329,31 @@ endfunction
 %! assert (outprobest, expectedoutprob, 0.001);
 
 %!test
-%! sequence = {'A', 'B', 'A', 'A', 'A', 'B', 'B', 'A', 'B', 'C', 'C', 'C', 'C', 'B', 'C', 'A', 'A', 'A', 'A', 'C', 'C', 'B', 'C', 'A', 'C'};
-%! states = {'One', 'One', 'Two', 'Two', 'Two', 'One', 'One', 'One', 'One', 'One', 'One', 'One', 'One', 'One', 'One', 'Two', 'Two', 'Two', 'Two', 'One', 'One', 'One', 'One', 'One', 'One'};
-%! symbols = {'A', 'B', 'C'};
-%! statenames = {'One', 'Two'};
-%! [transprobest, outprobest] = hmmestimate (sequence, states, 'symbols', symbols, 'statenames', statenames);
+%! sequence = {"A", "B", "A", "A", "A", "B", "B", "A", "B", "C", "C", "C", ...
+%!             "C", "B", "C", "A", "A", "A", "A", "C", "C", "B", "C", "A", "C"};
+%! states = {"One", "One", "Two", "Two", "Two", "One", "One", "One", "One", ...
+%!           "One", "One", "One", "One", "One", "One", "Two", "Two", "Two", ...
+%!           "Two", "One", "One", "One", "One", "One", "One"};
+%! symbols = {"A", "B", "C"};
+%! statenames = {"One", "Two"};
+%! [transprobest, outprobest] = hmmestimate (sequence, states, "symbols", ...
+%!                                           symbols, "statenames", statenames);
 %! expectedtransprob = [0.88889, 0.11111; 0.28571, 0.71429];
 %! expectedoutprob = [0.16667, 0.33333, 0.50000; 1.00000, 0.00000, 0.00000];
 %! assert (transprobest, expectedtransprob, 0.001);
 %! assert (outprobest, expectedoutprob, 0.001);
 
 %!test
-%! sequence = [1, 2, 1, 1, 1, 2, 2, 1, 2, 3, 3, 3, 3, 2, 3, 1, 1, 1, 1, 3, 3, 2, 3, 1, 3];
-%! states = [1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1];
+%! sequence = [1, 2, 1, 1, 1, 2, 2, 1, 2, 3, 3, 3, ...
+%!             3, 2, 3, 1, 1, 1, 1, 3, 3, 2, 3, 1, 3];
+%! states =   [1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, ...
+%!             1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1];
 %! pseudotransitions = [8, 2; 4, 6];
 %! pseudoemissions = [2, 4, 4; 7, 2, 1];
-%! [transprobest, outprobest] = hmmestimate (sequence, states, 'pseudotransitions', pseudotransitions, 'pseudoemissions', pseudoemissions);
+%! [transprobest, outprobest] = hmmestimate (sequence, states, ...
+%!  "pseudotransitions", pseudotransitions, "pseudoemissions", pseudoemissions);
 %! expectedtransprob = [0.85714, 0.14286; 0.35294, 0.64706];
-%! expectedoutprob = [0.178571, 0.357143, 0.464286; 0.823529, 0.117647, 0.058824];
+%! expectedoutprob = [0.178571, 0.357143, 0.464286; ...
+%!                    0.823529, 0.117647, 0.058824];
 %! assert (transprobest, expectedtransprob, 0.001);
 %! assert (outprobest, expectedoutprob, 0.001);

@@ -16,9 +16,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{vpath} =} hmmviterbi (@var{sequence}, @var{transprob}, @var{outprob})
-## @deftypefnx {Function File} {} hmmviterbi (@dots{}, 'symbols', @var{symbols})
-## @deftypefnx {Function File} {} hmmviterbi (@dots{}, 'statenames', @var{statenames})
+## @deftypefn  {statistics} @var{vpath} = hmmviterbi (@var{sequence}, @var{transprob}, @var{outprob})
+## @deftypefnx {statistics} @var{vpath} = hmmviterbi (@dots{}, "symbols", @var{symbols})
+## @deftypefnx {statistics} @var{vpath} = hmmviterbi (@dots{}, "statenames", @var{statenames})
 ##
 ## Viterbi path of a hidden Markov model.
 ##
@@ -55,11 +55,11 @@
 ## @code{columns (transprob)}.
 ## @end itemize
 ##
-## If @code{'symbols'} is specified, then @var{sequence} is expected to be a
+## If @code{"symbols"} is specified, then @var{sequence} is expected to be a
 ## sequence of the elements of @var{symbols} instead of integers ranging
 ## from @code{1} to @code{columns (outprob)}. @var{symbols} can be a cell array.
 ##
-## If @code{'statenames'} is specified, then the elements of
+## If @code{"statenames"} is specified, then the elements of
 ## @var{statenames} are used for the states in @var{vpath} instead of
 ## integers ranging from @code{1} to @code{columns (transprob)}.
 ## @var{statenames} can be a cell array.
@@ -70,17 +70,17 @@
 ## @group
 ## transprob = [0.8, 0.2; 0.4, 0.6];
 ## outprob = [0.2, 0.4, 0.4; 0.7, 0.2, 0.1];
-## [sequence, states] = hmmgenerate (25, transprob, outprob)
-## vpath = hmmviterbi (sequence, transprob, outprob)
+## [sequence, states] = hmmgenerate (25, transprob, outprob);
+## vpath = hmmviterbi (sequence, transprob, outprob);
 ## @end group
 ##
 ## @group
-## symbols = @{'A', 'B', 'C'@};
-## statenames = @{'One', 'Two'@};
-## [sequence, states] = hmmgenerate (25, transprob, outprob,
-##                      'symbols', symbols, 'statenames', statenames)
-## vpath = hmmviterbi (sequence, transprob, outprob,
-##         'symbols', symbols, 'statenames', statenames)
+## symbols = @{"A", "B", "C"@};
+## statenames = @{"One", "Two"@};
+## [sequence, states] = hmmgenerate (25, transprob, outprob, ...
+##                      "symbols", symbols, "statenames", statenames);
+## vpath = hmmviterbi (sequence, transprob, outprob, ...
+##         "symbols", symbols, "statenames", statenames);
 ## @end group
 ## @end example
 ##
@@ -212,7 +212,8 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
   # Find the most likely paths for the given output sequence
   for i = 1:len
     # Calculate the new probabilities of the continuation with each state
-    nextpathprob = ((spathprob' + outprob(:, sequence(i))) * ones (1, nstate)) + transprob;
+    nextpathprob = ((spathprob' + outprob(:, sequence(i))) * ...
+                    ones (1, nstate)) + transprob;
     # Find the paths with the highest probabilities
     [spathprob, mindex] = max (nextpathprob);
     # Update spath and spathprob with the new paths
@@ -233,19 +234,25 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
 endfunction
 
 %!test
-%! sequence = [1, 2, 1, 1, 1, 2, 2, 1, 2, 3, 3, 3, 3, 2, 3, 1, 1, 1, 1, 3, 3, 2, 3, 1, 3];
+%! sequence = [1, 2, 1, 1, 1, 2, 2, 1, 2, 3, 3, 3, ...
+%!             3, 2, 3, 1, 1, 1, 1, 3, 3, 2, 3, 1, 3];
 %! transprob = [0.8, 0.2; 0.4, 0.6];
 %! outprob = [0.2, 0.4, 0.4; 0.7, 0.2, 0.1];
 %! vpath = hmmviterbi (sequence, transprob, outprob);
-%! expected = [1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1];
+%! expected = [1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, ...
+%!             1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1];
 %! assert (vpath, expected);
 
 %!test
-%! sequence = {'A', 'B', 'A', 'A', 'A', 'B', 'B', 'A', 'B', 'C', 'C', 'C', 'C', 'B', 'C', 'A', 'A', 'A', 'A', 'C', 'C', 'B', 'C', 'A', 'C'};
+%! sequence = {"A", "B", "A", "A", "A", "B", "B", "A", "B", "C", "C", "C", ...
+%!             "C", "B", "C", "A", "A", "A", "A", "C", "C", "B", "C", "A", "C"};
 %! transprob = [0.8, 0.2; 0.4, 0.6];
 %! outprob = [0.2, 0.4, 0.4; 0.7, 0.2, 0.1];
-%! symbols = {'A', 'B', 'C'};
-%! statenames = {'One', 'Two'};
-%! vpath = hmmviterbi (sequence, transprob, outprob, 'symbols', symbols, 'statenames', statenames);
-%! expected = {'One', 'One', 'Two', 'Two', 'Two', 'One', 'One', 'One', 'One', 'One', 'One', 'One', 'One', 'One', 'One', 'Two', 'Two', 'Two', 'Two', 'One', 'One', 'One', 'One', 'One', 'One'};
+%! symbols = {"A", "B", "C"};
+%! statenames = {"One", "Two"};
+%! vpath = hmmviterbi (sequence, transprob, outprob, "symbols", symbols, ...
+%!                                                   "statenames", statenames);
+%! expected = {"One", "One", "Two", "Two", "Two", "One", "One", "One", ...
+%!             "One", "One", "One", "One", "One", "One", "One", "Two", ...
+%!             "Two", "Two", "Two", "One", "One", "One", "One", "One", "One"};
 %! assert (vpath, expected);

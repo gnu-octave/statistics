@@ -1,4 +1,5 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,9 +17,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{sequence}, @var{states}] =} hmmgenerate (@var{len}, @var{transprob}, @var{outprob})
-## @deftypefnx {Function File} {} hmmgenerate (@dots{}, 'symbols', @var{symbols})
-## @deftypefnx {Function File} {} hmmgenerate (@dots{}, 'statenames', @var{statenames})
+## @deftypefn  {statistics} [@var{sequence}, @var{states}] = hmmgenerate (@var{len}, @var{transprob}, @var{outprob})
+## @deftypefnx {statistics} [@dots{}] = hmmgenerate (@dots{}, "symbols", @var{symbols})
+## @deftypefnx {statistics} [@dots{}] = hmmgenerate (@dots{}, "statenames", @var{statenames})
 ##
 ## Output sequence and hidden states of a hidden Markov model.
 ##
@@ -49,22 +50,22 @@
 ## @itemize @bullet
 ## @item
 ## @var{sequence} is a vector of length @var{len} of the generated
-## outputs. The outputs are integers ranging from @code{1} to
+## outputs.  The outputs are integers ranging from @code{1} to
 ## @code{columns (outprob)}.
 ##
 ## @item
 ## @var{states} is a vector of length @var{len} of the generated hidden
-## states. The states are integers ranging from @code{1} to
+## states.  The states are integers ranging from @code{1} to
 ## @code{columns (transprob)}.
 ## @end itemize
 ##
-## If @code{'symbols'} is specified, then the elements of @var{symbols} are
+## If @code{"symbols"} is specified, then the elements of @var{symbols} are
 ## used for the output sequence instead of integers ranging from @code{1} to
-## @code{columns (outprob)}. @var{symbols} can be a cell array.
+## @code{columns (outprob)}.  @var{symbols} can be a cell array.
 ##
-## If @code{'statenames'} is specified, then the elements of
+## If @code{"statenames"} is specified, then the elements of
 ## @var{statenames} are used for the states instead of integers ranging from
-## @code{1} to @code{columns (transprob)}. @var{statenames} can be a cell
+## @code{1} to @code{columns (transprob)}.  @var{statenames} can be a cell
 ## array.
 ##
 ## @subheading Examples
@@ -77,10 +78,11 @@
 ## @end group
 ##
 ## @group
-## symbols = @{'A', 'B', 'C'@};
-## statenames = @{'One', 'Two'@};
-## [sequence, states] = hmmgenerate (25, transprob, outprob,
-##                      'symbols', symbols, 'statenames', statenames)
+## symbols = @{"A", "B", "C"@};
+## statenames = @{"One", "Two"@};
+## [sequence, states] = hmmgenerate (25, transprob, outprob, ...
+##                                   "symbols", symbols, ...
+##                                   "statenames", statenames)
 ## @end group
 ## @end example
 ##
@@ -129,7 +131,8 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
     error ("hmmgenerate: transprob must be a square matrix");
   endif
   if (rows (outprob) != nstate)
-    error ("hmmgenerate: outprob must have the same number of rows as transprob");
+    error (strcat (["hmmgenerate: outprob must have the same number"], ...
+                   [" of rows as transprob"]));
   endif
 
   # Flag for symbols
@@ -147,7 +150,8 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
     lowerarg = lower (varargin{i});
     if (strcmp (lowerarg, 'symbols'))
       if (length (varargin{i + 1}) != noutput)
-        error ("hmmgenerate: number of symbols does not match number of possible outputs");
+        error (strcat (["hmmgenerate: number of symbols does not match"], ...
+                       [" number of possible outputs"]));
       endif
       usesym = true;
       # Use the following argument as symbols
@@ -155,13 +159,15 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
     # The same for statenames
     elseif (strcmp (lowerarg, 'statenames'))
       if (length (varargin{i + 1}) != nstate)
-        error ("hmmgenerate: number of statenames does not match number of states");
+        error (strcat (["hmmgenerate: number of statenames does not"], ...
+                       [" match number of states"]));
       endif
       usesn = true;
       # Use the following argument as statenames
       statenames = varargin{i + 1};
     else
-      error ("hmmgenerate: expected 'symbols' or 'statenames' but found '%s'", varargin{i});
+      error (strcat (["hmmgenerate: expected 'symbols' or 'statenames'"], ...
+                     sprintf (" but found '%s'", varargin{i}));
     endif
   endfor
 
@@ -177,8 +183,7 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
   s(s == 0) = 1;
   outprob = outprob ./ repmat (s, 1, noutput);
 
-  # Generate sequences of uniformly distributed random numbers between 0 and
-  # 1
+  # Generate sequences of uniformly distributed random numbers between 0 and 1
   # - for the state transitions
   transdraw = rand (1, len);
   # - for the outputs
@@ -244,10 +249,12 @@ endfunction
 %! len = 25;
 %! transprob = [0.8, 0.2; 0.4, 0.6];
 %! outprob = [0.2, 0.4, 0.4; 0.7, 0.2, 0.1];
-%! symbols = {'A', 'B', 'C'};
-%! statenames = {'One', 'Two'};
-%! [sequence, states] = hmmgenerate (len, transprob, outprob, 'symbols', symbols, 'statenames', statenames);
+%! symbols = {"A", "B", "C"};
+%! statenames = {"One", "Two"};
+%! [sequence, states] = hmmgenerate (len, transprob, outprob, ...
+%!                      "symbols", symbols, "statenames", statenames);
 %! assert (length (sequence), len);
 %! assert (length (states), len);
-%! assert (strcmp (sequence, 'A') + strcmp (sequence, 'B') + strcmp (sequence, 'C') == ones (1, len));
-%! assert (strcmp (states, 'One') + strcmp (states, 'Two') == ones (1, len));
+%! assert (strcmp (sequence, "A") + strcmp (sequence, "B") + ...
+%!                                  strcmp (sequence, "C") == ones (1, len));
+%! assert (strcmp (states, "One") + strcmp (states, "Two") == ones (1, len));
