@@ -58,10 +58,10 @@
 ## the degrees of freedom (@var{df}) and the sample standard deviation
 ## (@var{sd}).
 ##
-## @seealso{ttest, hotelling_ttest2, regression_ttest, anova1}
+## @seealso{hotelling_ttest2, anova1, hotelling_ttest, ttest}
 ## @end deftypefn
 
-function [h, p, ci, stats] = ttest2(x, y, varargin)
+function [h, p, ci, stats] = ttest2 (x, y, varargin)
 
   ## Set defaults
   alpha = 0.05;
