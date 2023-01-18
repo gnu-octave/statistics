@@ -67,7 +67,7 @@
 ## (@var{tstat}), the degrees of freedom (@var{df}) and the sample's standard
 ## deviation (@var{sd}).
 ##
-## @seealso{multcompare}
+## @seealso{ttest2, hotelling_ttest, regression_ttest}
 ## @end deftypefn
 
 function [h, p, ci, stats] = ttest(x, my, varargin)
