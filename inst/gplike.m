@@ -17,8 +17,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{nlogL} = gplike (@var{params}, @var{data})
-## @deftypefnx {Function File} [@var{nlogL}, @var{avar}] = gplike (@var{params}, @var{data})
+## @deftypefn  {statistics} @var{nlogL} = gplike (@var{params}, @var{data})
+## @deftypefnx {statistics} [@var{nlogL}, @var{avar}] = gplike (@var{params}, @var{data})
 ##
 ## Negative log-likelihood for the generalized Pareto distribution.
 ##

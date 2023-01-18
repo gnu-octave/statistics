@@ -18,14 +18,12 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {} dendrogram (@var{tree})
-## @deftypefnx {Function File} {} dendrogram (@var{tree}, @var{p})
-## @deftypefnx {Function File} {} dendrogram (@var{tree}, @var{prop}, @var{val})
-## @deftypefnx {Function File} @
-##   {} dendrogram (@var{tree}, @var{p}, @var{prop}, @var{val} )
-## @deftypefnx {Function File} {@var{h} = } dendrogram (@dots{})
-## @deftypefnx {Function File} @
-##   {[@var{h}, @var{t}, @var{perm}] = } dendrogram (@dots{})
+## @deftypefn  {statistics} {} dendrogram (@var{tree})
+## @deftypefnx {statistics} {} dendrogram (@var{tree}, @var{p})
+## @deftypefnx {statistics} {} dendrogram (@var{tree}, @var{prop}, @var{val})
+## @deftypefnx {statistics} {} dendrogram (@var{tree}, @var{p}, @var{prop}, @var{val} )
+## @deftypefnx {statistics} @var{h} = dendrogram (@dots{})
+## @deftypefnx {statistics} [@var{h}, @var{t}, @var{perm}] = dendrogram (@dots{})
 ##
 ## Plot a dendrogram of a hierarchical binary cluster tree.
 ##

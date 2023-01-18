@@ -16,9 +16,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{T} =} clusterdata (@var{X}, @var{cutoff})
-## @deftypefnx {Function File} @
-##   {@var{T} =} clusterdata (@var{X}, @var{Name}, @var{Value})
+## @deftypefn  {statistics} @var{T} = clusterdata (@var{X}, @var{cutoff})
+## @deftypefnx {statistics} @var{T} = clusterdata (@var{X}, @var{Name}, @var{Value})
 ##
 ## Wrapper function for @code{linkage} and @code{cluster}.
 ##
@@ -26,12 +25,12 @@
 ## @code{cluster} with default value, using @var{cutoff} as a threshold value
 ## for @code{cluster}. If @var{cutoff} is an integer and greater or equal to 2,
 ## then @var{cutoff} is interpreted as the maximum number of cluster desired
-## and the 'MaxClust' option is used for @code{cluster}.
+## and the "MaxClust" option is used for @code{cluster}.
 ##
 ## If @var{cutoff} is not used, then @code{clusterdata} expects a list of pair
-## arguments. Then you must specify either the 'Cutoff' or 'MaxClust' option
+## arguments. Then you must specify either the "Cutoff" or "MaxClust" option
 ## for @code{cluster}. The method and metric used by @code{linkage}, are
-## defined through the 'linkage' and 'distance' arguments.
+## defined through the "linkage" and "distance" arguments.
 ##
 ## @seealso{cluster, dendrogram, inconsistent, kmeans, linkage, pdist}
 ## @end deftypefn

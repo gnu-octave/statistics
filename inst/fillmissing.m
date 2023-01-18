@@ -16,13 +16,13 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} @var{B} = fillmissing (@var{A}, 'constant', @var{v})
-## @deftypefnx {} @var{B} = fillmissing (@var{A}, @var{method})
-## @deftypefnx {} @var{B} = fillmissing (@var{A}, @var{move_method}, @var{window_size})
-## @deftypefnx {} @var{B} = fillmissing (@var{A}, @var{fill_function}, @var{window_size})
-## @deftypefnx {} @var{B} = fillmissing (@dots{}, @var{dim})
-## @deftypefnx {} @var{B} = fillmissing (@dots{}, @var{PropertyName}, @var{PropertyValue})
-## @deftypefnx {} [@var{B}, @var{idx}] = fillmissing (@dots{})
+## @deftypefn  {statistics} @var{B} = fillmissing (@var{A}, 'constant', @var{v})
+## @deftypefnx {statistics} @var{B} = fillmissing (@var{A}, @var{method})
+## @deftypefnx {statistics} @var{B} = fillmissing (@var{A}, @var{move_method}, @var{window_size})
+## @deftypefnx {statistics} @var{B} = fillmissing (@var{A}, @var{fill_function}, @var{window_size})
+## @deftypefnx {statistics} @var{B} = fillmissing (@dots{}, @var{dim})
+## @deftypefnx {statistics} @var{B} = fillmissing (@dots{}, @var{PropertyName}, @var{PropertyValue})
+## @deftypefnx {statistics} [@var{B}, @var{idx}] = fillmissing (@dots{})
 ##
 ## Replace missing entries of array @var{A} either with values in @var{v} or
 ## as determined by other specified methods.  'missing' values are determined

@@ -22,13 +22,14 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{s} =} boxplot (@var{data})
-## @deftypefnx {Function File} {@var{s} =} boxplot (@var{data}, @var{group})
-## @deftypefnx {Function File} {@var{s} =} boxplot (@var{data}, @var{notched}, @var{symbol}, @var{orientation}, @var{whisker}, @dots{})
-## @deftypefnx {Function File} {@var{s} =} boxplot (@var{data}, @var{group}, @var{notched}, @var{symbol}, @var{orientation}, @var{whisker}, @dots{})
-## @deftypefnx {Function File} {@var{s} =} boxplot (@var{data}, @var{options})
-## @deftypefnx {Function File} {@var{s} =} boxplot (@var{data}, @var{group}, @var{options}, @dots{})
-## @deftypefnx {Function File} {[@dots{} @var{h}]=} boxplot (@var{data}, @dots{})
+## @deftypefn  {statistics} @var{s} = boxplot (@var{data})
+## @deftypefnx {statistics} @var{s} = boxplot (@var{data}, @var{group})
+## @deftypefnx {statistics} @var{s} = boxplot (@var{data}, @var{notched}, @var{symbol}, @var{orientation}, @var{whisker}, @dots{})
+## @deftypefnx {statistics} @var{s} = boxplot (@var{data}, @var{group}, @var{notched}, @var{symbol}, @var{orientation}, @var{whisker}, @dots{})
+## @deftypefnx {statistics} @var{s} = boxplot (@var{data}, @var{options})
+## @deftypefnx {statistics} @var{s} = boxplot (@var{data}, @var{group}, @var{options}, @dots{})
+## @deftypefnx {statistics} [@dots{}, @var{h}] = boxplot (@var{data}, @dots{})
+##
 ## Produce a box plot.
 ##
 ## A box plot is a graphical display that simultaneously describes several

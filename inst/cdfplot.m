@@ -16,8 +16,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{hCDF} = cdfplot (@var{x})
-## @deftypefnx {Function File} [@var{hCDF}, @var{stats}] = cdfplot (@var{x})
+## @deftypefn  {statistics} @var{hCDF} = cdfplot (@var{x})
+## @deftypefnx {statistics} [@var{hCDF}, @var{stats}] = cdfplot (@var{x})
 ##
 ## Display an empirical cumulative distribution function.
 ##

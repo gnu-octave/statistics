@@ -17,12 +17,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @
-##  {@var{C} =} confusionmat (@var{group}, @var{grouphat})
-## @deftypefnx {Function File} @
-##  {@var{C} =} confusionmat (@var{group}, @var{grouphat}, "Order", @var{grouporder})
-## @deftypefnx {Function File} @
-##  {[@var{C}, @var{order}] =} confusionmat (@var{group}, @var{grouphat})
+## @deftypefn  {statistics} @var{C} = confusionmat (@var{group}, @var{grouphat})
+## @deftypefnx {statistics} @var{C} = confusionmat (@var{group}, @var{grouphat}, "Order", @var{grouporder})
+## @deftypefnx {statistics} [@var{C}, @var{order}] = confusionmat (@var{group}, @var{grouphat})
 ##
 ## Compute a confusion matrix for classification problems
 ##

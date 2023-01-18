@@ -16,12 +16,13 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {Function File} {[@var{h}, @var{pval}, @var{ci}] =} binotest (@var{pos},@var{N},@var{p0})
-## @deftypefnx  {Function File} {[@var{h}, @var{pval}, @var{ci}] =} binotest (@var{pos},@var{N},@var{p0},@var{Name},@var{Value})
+## @deftypefn  {statistics} [@var{h}, @var{pval}, @var{ci}] = binotest (@var{pos}, @var{N}, @var{p0})
+## @deftypefnx {statistics} [@var{h}, @var{pval}, @var{ci}] = binotest (@var{pos}, @var{N}, @var{p0}, @var{Name}, @var{Value})
+##
 ## Test for probability @var{p} of a binomial sample
 ##
 ## Perform a test of the null hypothesis @var{p} ==  @var{p0} for a sample
-## of size @var{N} with @var{pos} positive results
+## of size @var{N} with @var{pos} positive results.
 ##
 ##
 ## Name-Value pair arguments can be used to set various options.

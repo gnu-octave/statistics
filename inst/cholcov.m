@@ -16,9 +16,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{T} = cholcov (@var{sigma})
-## @deftypefnx {Function File} [@var{T}, @var{p} = cholcov (@var{sigma})
-## @deftypefnx {Function File} [@dots{}] = cholcov (@var{sigma}, @var{flag})
+## @deftypefn  {statistics} @var{T} = cholcov (@var{sigma})
+## @deftypefnx {statistics} [@var{T}, @var{p} = cholcov (@var{sigma})
+## @deftypefnx {statistics} [@dots{}] = cholcov (@var{sigma}, @var{flag})
 ##
 ## Cholesky-like decomposition for covariance matrix.
 ##

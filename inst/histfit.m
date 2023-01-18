@@ -17,7 +17,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} histfit (@var{x}, @var{nbins})
+## @deftypefn  {statistics} histfit (@var{x}, @var{nbins})
 ##
 ## Plot histogram with superimposed fitted normal density.
 ##

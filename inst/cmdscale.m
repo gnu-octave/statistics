@@ -16,8 +16,9 @@
 ## along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{Y} = cmdscale (@var{D})
-## @deftypefnx{Function File} [@var{Y}, @var{e} ] = cmdscale (@var{D})
+## @deftypefn  {statistics} @var{Y} = cmdscale (@var{D})
+## @deftypefnx {statistics} [@var{Y}, @var{e}] = cmdscale (@var{D})
+##
 ## Classical multidimensional scaling of a matrix.
 ##
 ## Takes an @var{n} by @var{n} distance (or difference, similarity, or
@@ -73,13 +74,6 @@
 ##
 ## @seealso{pdist}
 ## @end deftypefn
-
-## Author: JD Walsh <walsh@math.gatech.edu>
-## Created: 2014-10-31
-## Description: Classical multidimensional scaling
-## Keywords: multidimensional-scaling mds distance clustering
-
-## TO DO: include missing functions `mdscale' and `procrustes' in @seealso
 
 function [Y, e] = cmdscale (D)
 

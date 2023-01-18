@@ -16,13 +16,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{y} =} datasample (@var{data}, @var{k})
-## @deftypefnx {Function File} @
-##   {@var{y} =} datasample (@var{data}, @var{k}, @var{dim})
-## @deftypefnx {Function File} @
-##   {@var{y} =} datasample (@dots{}, Name, Value)
-## @deftypefnx {Function File} @
-##   {[@var{y} @var{idcs}] =} datasample (@dots{})
+## @deftypefn  {statistics} @var{y} = datasample (@var{data}, @var{k})
+## @deftypefnx {statistics} @var{y} = datasample (@var{data}, @var{k}, @var{dim})
+## @deftypefnx {statistics} @var{y} = datasample (@dots{}, @var{Name}, @var{Value})
+## @deftypefnx {statistics} [@var{y} @var{idcs}] = datasample (@dots{})
 ##
 ## Randomly sample data.
 ##
@@ -35,8 +32,8 @@
 ## Output @var{y} is the returned sampled data. Optional output @var{idcs} is
 ## the vector of the indices to build @var{y} from @var{data}.
 ##
-## Additional options are set through pairs of parameter name and value.  The
-## known parameters are:
+## Additional options are set through pairs of parameter name and value.
+## Available parameters are:
 ##
 ## @table @code
 ## @item @qcode{Replace}

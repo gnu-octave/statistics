@@ -16,10 +16,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{nlogL} = evlike (@var{params}, @var{data})
-## @deftypefnx {Function File} [@var{nlogL}, @var{avar}] = evlike (@var{params}, @var{data})
-## @deftypefnx {Function File} [@dots{}] = evlike (@var{params}, @var{data}, @var{censor})
-## @deftypefnx {Function File} [@dots{}] = evlike (@var{params}, @var{data}, @var{censor}, @var{freq})
+## @deftypefn  {statistics} @var{nlogL} = evlike (@var{params}, @var{data})
+## @deftypefnx {statistics} [@var{nlogL}, @var{avar}] = evlike (@var{params}, @var{data})
+## @deftypefnx {statistics} [@dots{}] = evlike (@var{params}, @var{data}, @var{censor})
+## @deftypefnx {statistics} [@dots{}] = evlike (@var{params}, @var{data}, @var{censor}, @var{freq})
 ##
 ## Negative log-likelihood for the extreme value distribution.
 ##

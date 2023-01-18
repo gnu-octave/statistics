@@ -17,12 +17,12 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{paramhat} = evfit (@var{data})
-## @deftypefnx {Function File} [@var{paramhat}, @var{paramci}] = evfit (@var{data})
-## @deftypefnx {Function File} [@var{paramhat}, @var{paramci}] = evfit (@var{data}, @var{alpha})
-## @deftypefnx {Function File} [@dots{}] = evfit (@var{data}, @var{alpha}, @var{censor})
-## @deftypefnx {Function File} [@dots{}] = evfit (@var{data}, @var{alpha}, @var{censor}, @var{freq})
-## @deftypefnx {Function File} [@dots{}] = evfit (@var{data}, @var{alpha}, @var{censor}, @var{freq}, @var{options})
+## @deftypefn  {statistics} @var{paramhat} = evfit (@var{data})
+## @deftypefnx {statistics} [@var{paramhat}, @var{paramci}] = evfit (@var{data})
+## @deftypefnx {statistics} [@var{paramhat}, @var{paramci}] = evfit (@var{data}, @var{alpha})
+## @deftypefnx {statistics} [@dots{}] = evfit (@var{data}, @var{alpha}, @var{censor})
+## @deftypefnx {statistics} [@dots{}] = evfit (@var{data}, @var{alpha}, @var{censor}, @var{freq})
+## @deftypefnx {statistics} [@dots{}] = evfit (@var{data}, @var{alpha}, @var{censor}, @var{freq}, @var{options})
 ##
 ## Estimate parameters and confidence intervals for extreme value data.
 ##

@@ -1,5 +1,5 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2012-2021 Nir Krakauer <nkrakauer@ccny.cuny.edu>
+## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,10 +17,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} [@var{paramhat}, @var{paramci}] = gevfit (@var{data})
-## @deftypefnx {Function File} [@var{paramhat}, @var{paramci}] = gevfit (@var{data}, @var{paramguess})
-## @deftypefnx {Function File} [@var{paramhat}, @var{paramci}] = gevfit (@var{data}, @var{alpha})
-## @deftypefnx {Function File} [@var{paramhat}, @var{paramci}] = gevfit (@dots{}, @var{options})
+## @deftypefn  {statistics} [@var{paramhat}, @var{paramci}] = gevfit (@var{data})
+## @deftypefnx {statistics} [@var{paramhat}, @var{paramci}] = gevfit (@var{data}, @var{paramguess})
+## @deftypefnx {statistics} [@var{paramhat}, @var{paramci}] = gevfit (@var{data}, @var{alpha})
+## @deftypefnx {statistics} [@var{paramhat}, @var{paramci}] = gevfit (@dots{}, @var{options})
 ##
 ## Find the maximum likelihood estimator @var{paramhat} of the generalized
 ## extreme value (GEV) distribution to fit @var{data}.

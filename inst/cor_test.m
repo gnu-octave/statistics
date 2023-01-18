@@ -15,7 +15,9 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} cor_test (@var{x}, @var{y}, @var{alt}, @var{method})
+## @deftypefn  {statistics} @var{t} = cor_test (@var{x}, @var{y})
+## @deftypefnx {statistics} @var{t} = cor_test (@var(x), @var{y}, @var{alt}, @var{method})
+##
 ## Test whether two samples @var{x} and @var{y} come from uncorrelated
 ## populations.
 ##
@@ -34,7 +36,7 @@
 ## Spearman's rank correlation rho is used.  Only the first character is
 ## necessary.
 ##
-## The output is a structure with the following elements:
+## The output @var{t} is a structure with the following elements:
 ##
 ## @table @var
 ## @item pval
@@ -58,10 +60,6 @@
 ##
 ## If no output argument is given, the p-value is displayed.
 ## @end deftypefn
-
-## Author: FL <Friedrich.Leisch@ci.tuwien.ac.at>
-## Adapted-by: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Test for zero correlation
 
 function t = cor_test (x, y, alt, method)
 

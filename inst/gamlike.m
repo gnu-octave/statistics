@@ -19,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{nLogL} = gamlike (@var{params}, @var{R})
+## @deftypefn  {statistics} @var{nLogL} = gamlike (@var{params}, @var{R})
 ##
 ## Calculates the negative log-likelihood function for the Gamma
 ## distribution over vector @var{R}, with the given parameters @var{A} and

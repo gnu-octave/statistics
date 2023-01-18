@@ -14,8 +14,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{paramhat}, @var{paramci} =} gevfit_lmom (@var{data})
-## Find an estimator (@var{paramhat}) of the generalized extreme value (GEV) distribution fitting @var{data} using the method of L-moments.
+## @deftypefn  {statistics} [@var{paramhat}, @var{paramci}] = gevfit_lmom (@var{data})
+##
+## Find an estimator (@var{paramhat}) of the generalized extreme value (GEV)
+## distribution fitting @var{data} using the method of L-moments.
 ##
 ## @subheading Arguments
 ##
@@ -28,9 +30,13 @@
 ##
 ## @itemize @bullet
 ## @item
-## @var{parmhat} is the 3-parameter maximum-likelihood parameter vector [@var{k}; @var{sigma}; @var{mu}], where @var{k} is the shape parameter of the GEV distribution, @var{sigma} is the scale parameter of the GEV distribution, and @var{mu} is the location parameter of the GEV distribution.
+## @var{parmhat} is the 3-parameter maximum-likelihood parameter vector
+## [@var{k}; @var{sigma}; @var{mu}], where @var{k} is the shape parameter of the
+## GEV distribution, @var{sigma} is the scale parameter of the GEV distribution,
+## and @var{mu} is the location parameter of the GEV distribution.
 ## @item
-## @var{paramci} has the approximate 95% confidence intervals of the parameter values (currently not implemented).
+## @var{paramci} has the approximate 95% confidence intervals of the parameter
+## values (currently not implemented).
 ## 
 ## @end itemize
 ##
@@ -50,13 +56,11 @@
 ##
 ## @enumerate
 ## @item
-## Ailliot, P.; Thompson, C. & Thomson, P. Mixed methods for fitting the GEV distribution, Water Resources Research, 2011, 47, W05551
+## Ailliot, P.; Thompson, C. & Thomson, P. Mixed methods for fitting the GEV
+## distribution, Water Resources Research, 2011, 47, W05551
 ##
 ## @end enumerate
 ## @end deftypefn
-
-## Author: Nir Krakauer <nkrakauer@ccny.cuny.edu>
-## Description: L-moments parameter estimation for the generalized extreme value distribution
 
 function [paramhat, paramci] = gevfit_lmom (data)
 

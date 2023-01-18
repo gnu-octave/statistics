@@ -14,11 +14,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{m} = geomean (@var{x})
-## @deftypefnx{Function File} @var{m} = geomean (@var{x}, "all")
-## @deftypefnx{Function File} @var{m} = geomean (@var{x}, @var{dim})
-## @deftypefnx{Function File} @var{m} = geomean (@var{x}, @var{vecdim})
-## @deftypefnx{Function File} @var{m} = geomean (@dots{}, @var{nanflag})
+## @deftypefn  {statistics} @var{m} = geomean (@var{x})
+## @deftypefnx {statistics} @var{m} = geomean (@var{x}, "all")
+## @deftypefnx {statistics} @var{m} = geomean (@var{x}, @var{dim})
+## @deftypefnx {statistics} @var{m} = geomean (@var{x}, @var{vecdim})
+## @deftypefnx {statistics} @var{m} = geomean (@dots{}, @var{nanflag})
 ##
 ## Compute the geometric mean of @var{x}.
 ##

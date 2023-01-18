@@ -18,7 +18,7 @@
 classdef ConfusionMatrixChart < handle
 
   ## -*- texinfo -*-
-  ## @deftypefn {} {@var{p} =} ConfusionMatrixChart ()
+  ## @deftypefn {statistics} @var{p} = ConfusionMatrixChart ()
   ## Create object @var{p}, a Confusion Matrix Chart object.
   ##
   ## @table @asis

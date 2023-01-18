@@ -16,11 +16,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{pval} = chi2test (@var{x})
-## @deftypefnx {Function File} [@var{pval}, @var{chisq}] = chi2test (@var{x})
-## @deftypefnx {Function File} [@var{pval}, @var{chisq}, @var{dF}] = chi2test (@var{x})
-## @deftypefnx {Function File} [@var{pval}, @var{chisq}, @var{dF}, @var{E}] = chi2test (@var{x})
-## @deftypefnx {Function File} [@dots{}] = chi2test (@var{x}, "name", value)
+## @deftypefn  {statistics} @var{pval} = chi2test (@var{x})
+## @deftypefnx {statistics} [@var{pval}, @var{chisq}] = chi2test (@var{x})
+## @deftypefnx {statistics} [@var{pval}, @var{chisq}, @var{dF}] = chi2test (@var{x})
+## @deftypefnx {statistics} [@var{pval}, @var{chisq}, @var{dF}, @var{E}] = chi2test (@var{x})
+## @deftypefnx {statistics} [@dots{}] = chi2test (@var{x}, @var{name}, @var{value})
 ##
 ## Perform a chi-squared test (for independence or homogeneity).
 ##
@@ -55,11 +55,11 @@
 ## which involve three categorical variables (each in a different dimension of
 ## @var{x}.  In its simplest form, @code{[@dots{}] = chi2test (@var{x})} will
 ## will test for mutual independence among the three variables.  Alternatively,
-## when called in the form @code{[@dots{}] = chi2test (@var{x}, "name", value)},
-## it can perform the following tests:
+## when called in the form @code{[@dots{}] = chi2test (@var{x}, @var{name},
+## @var{value})}, it can perform the following tests:
 ##
 ## @multitable @columnfractions 0.2 0.1 0.7
-## @headitem Name @tab Value @tab Description
+## @headitem @var{name} @tab @var{value} @tab Description
 ## @item "mutual" @tab [] @tab Mutual independence.  All variables are
 ## independent from each other, (A, B, C).  Value must be an empty matrix.
 ## @item "joint" @tab scalar @tab Joint independence.  Two variables are jointly

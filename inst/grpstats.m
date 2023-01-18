@@ -16,10 +16,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{mean} = grpstats (@var{x})
-## @deftypefnx {Function File} @var{mean} = grpstats (@var{x}, @var{group})
-## @deftypefnx {Function File} [@var{a}, @var{b}, @dots{}] = grpstats (@var{x}, @var{group}, @var{whichstats})
-## @deftypefnx {Function File} [@var{a}, @var{b}, @dots{}] = grpstats (@var{x}, @var{group}, @var{whichstats}, @var{alpha})
+## @deftypefn  {statistics} @var{mean} = grpstats (@var{x})
+## @deftypefnx {statistics} @var{mean} = grpstats (@var{x}, @var{group})
+## @deftypefnx {statistics} [@var{a}, @var{b}, @dots{}] = grpstats (@var{x}, @var{group}, @var{whichstats})
+## @deftypefnx {statistics} [@var{a}, @var{b}, @dots{}] = grpstats (@var{x}, @var{group}, @var{whichstats}, @var{alpha})
 ##
 ## Summary statistics by group.  @code{grpstats} computes groupwise summary
 ## statistics, for data in a matrix @var{x}.  @code{grpstats} treats NaNs as

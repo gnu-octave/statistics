@@ -16,12 +16,12 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} [@var{f}, @var{x}] = ecdf (@var{y})
-## @deftypefnx {Function File} [@var{f}, @var{x}, @var{flo}, @var{fup}] = ecdf (@var{y})
-## @deftypefnx {Function File} ecdf (@dots{})
-## @deftypefnx {Function File} ecdf (@var{ax}, @dots{})
-## @deftypefnx {Function File} [@dots{}] = ecdf (@var{y}, @var{name}, @var{value}, @dots{})
-## @deftypefnx {Function File} [@dots{}] = ecdf (@var{ax}, @var{y}, @var{name}, @var{value}, @dots{})
+## @deftypefn  {statistics} [@var{f}, @var{x}] = ecdf (@var{y})
+## @deftypefnx {statistics} [@var{f}, @var{x}, @var{flo}, @var{fup}] = ecdf (@var{y})
+## @deftypefnx {statistics} ecdf (@dots{})
+## @deftypefnx {statistics} ecdf (@var{ax}, @dots{})
+## @deftypefnx {statistics} [@dots{}] = ecdf (@var{y}, @var{name}, @var{value}, @dots{})
+## @deftypefnx {statistics} [@dots{}] = ecdf (@var{ax}, @var{y}, @var{name}, @var{value}, @dots{})
 ##
 ## Empirical (Kaplan-Meier) cumulative distribution function.
 ##
@@ -43,7 +43,7 @@
 ## additional parameter name/value pairs chosen from the following:
 ##
 ## @multitable @columnfractions 0.20 0.8
-## @headitem Name @tab Value
+## @headitem @var{name} @tab @var{value}
 ## @item "censoring" @tab A boolean vector of the same size as Y that is 1 for
 ## observations that are right-censored and 0 for observations that are observed
 ## exactly.  Default is all observations observed exactly.

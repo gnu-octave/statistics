@@ -17,11 +17,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{p} = anova2 (@var{x}, @var{reps})
-## @deftypefnx {Function File} @var{p} = anova2 (@var{x}, @var{reps}, @var{displayopt})
-## @deftypefnx {Function File} @var{p} = anova2 (@var{x}, @var{reps}, @var{displayopt}, @var{model})
-## @deftypefnx {Function File} [@var{p}, @var{atab}] = anova2 (@dots{})
-## @deftypefnx {Function File} [@var{p}, @var{atab}, @var{stats}] = anova2 (@dots{})
+## @deftypefn  {statistics} @var{p} = anova2 (@var{x}, @var{reps})
+## @deftypefnx {statistics} @var{p} = anova2 (@var{x}, @var{reps}, @var{displayopt})
+## @deftypefnx {statistics} @var{p} = anova2 (@var{x}, @var{reps}, @var{displayopt}, @var{model})
+## @deftypefnx {statistics} [@var{p}, @var{atab}] = anova2 (@dots{})
+## @deftypefnx {statistics} [@var{p}, @var{atab}, @var{stats}] = anova2 (@dots{})
 ##
 ## Performs two-way factorial (crossed) or a nested analysis of variance
 ## (ANOVA) for balanced designs. For unbalanced factorial designs, diagnostic

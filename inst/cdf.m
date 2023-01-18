@@ -17,9 +17,10 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{retval} =} cdf (@var{name}, @var{X}, @dots{})
-## Return cumulative density function of @var{name} function for value
-## @var{x}.
+## @deftypefn  {statistics} @var{retval} = cdf (@var{name}, @var{X}, @dots{})
+##
+## Return cumulative density function of @var{name} function for value @var{x}.
+##
 ## This is a wrapper around various @var{name}cdf and @var{name}_cdf
 ## functions. See the individual functions help to learn the signification of
 ## the arguments after @var{x}. Supported functions and corresponding number of

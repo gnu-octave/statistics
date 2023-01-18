@@ -17,12 +17,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {} gscatter (@var{x}, @var{y}, @var{g})
-## @deftypefnx {Function File} @
-##   {} gscatter (@var{x}, @var{y}, @var{g}, @var{clr}, @var{sym}, @var{siz})
-## @deftypefnx {Function File} @
-##   {} gscatter (@dots{}, @var{doleg}, @var{xnam}, @var{ynam})
-## @deftypefnx {Function File} {@var{h} =} gscatter (@dots{})
+## @deftypefn  {statistics} {} gscatter (@var{x}, @var{y}, @var{g})
+## @deftypefnx {statistics} {} gscatter (@var{x}, @var{y}, @var{g}, @var{clr}, @var{sym}, @var{siz})
+## @deftypefnx {statistics} {} gscatter (@dots{}, @var{doleg}, @var{xnam}, @var{ynam})
+## @deftypefnx {statistics} @var{h} = gscatter (@dots{})
 ##
 ## Draw a scatter plot with grouped data.
 ##

@@ -14,29 +14,35 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
+## @deftypefn  {statistics} @var{CL} = cl_multinom (@var{x}, @var{N}, @var{b}, @var{calculation_type})
 ##
-## @deftypefn {Function File} {@var{CL} =} cl_multinom (@var{x}, @var{N}, @var{b}, @var{calculation_type} ) - Confidence level of multinomial portions
-##    Returns confidence level of multinomial parameters estimated @math{ p = x / sum(x) } with predefined confidence interval @var{b}.
-##    Finite population is also considered.
+## Confidence level of multinomial portions.  Returns confidence level of
+## multinomial parameters estimated @math{ p = x / sum(x) } with predefined
+## confidence interval @var{b}.  Finite population is also considered.
 ##
-## This function calculates the level of confidence at which the samples represent the true distribution
-## given that there is a predefined tolerance (confidence interval).
-## This is the upside down case of the typical excercises at which we want to get the confidence interval
-## given the confidence level (and the estimated parameters of the underlying distribution).
+## This function calculates the level of confidence at which the samples
+## represent the true distribution given that there is a predefined tolerance
+## (confidence interval). This is the upside down case of the typical excercises
+## at which we want to get the confidence interval given the confidence level
+## (and the estimated parameters of the underlying distribution).
 ## But once we accept (lets say at elections) that we have a standard predefined
-## maximal acceptable error rate (e.g. @var{b}=0.02 ) in the estimation and we just want to know that how sure we
-## can be that the measured proportions are the same as in the
-## entire population (ie. the expected value and mean of the samples are roghly the same) we need to use this function.
+## maximal acceptable error rate (e.g. @var{b}=0.02 ) in the estimation and we
+## just want to know that how sure we can be that the measured proportions are
+## the same as in the entire population (ie. the expected value and mean of the
+## samples are roghly the same) we need to use this function.
 ##
 ## @subheading Arguments
 ## @itemize @bullet
-## @item @var{x}  : int vector  : sample frequencies bins
-## @item @var{N}  : int         : Population size that was sampled by x. If N<sum(x), infinite number assumed
-## @item @var{b}  : real, vector :  confidence interval
-##            if vector, it should be the size of x containing confence interval for each cells
-##            if scalar, each cell will have the same value of b unless it is zero or -1
-##            if value is 0, b=.02 is assumed which is standard choice at elections
-##            otherwise it is calculated in a way that one sample in a cell alteration defines the confidence interval
+## @item @var{x}  : int vector  : sample frequencies bins.
+## @item @var{N}  : int         : Population size that was sampled by x.
+## If N<sum(x), infinite number assumed.
+## @item @var{b}  : real, vector :  confidence interval.
+##
+## If vector, it should be the size of x containing confence interval for each cells
+## If scalar, each cell will have the same value of b unless it is zero or -1
+## If value is 0, b=.02 is assumed which is standard choice at elections
+## otherwise it is calculated in a way that one sample in a cell alteration
+## defines the confidence interval.
 ## @item @var{calculation_type}  : string    : (Optional), described below
 ##           "bromaghin"     (default) - do not change it unless you have a good reason to do so
 ##           "cochran"

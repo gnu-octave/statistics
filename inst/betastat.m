@@ -16,7 +16,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{m}, @var{v}] =} betastat (@var{a}, @var{b})
+## @deftypefn  {statistics} [@var{m}, @var{v}] = betastat (@var{a}, @var{b})
+##
 ## Compute mean and variance of the beta distribution.
 ##
 ## @subheading Arguments
@@ -69,9 +70,6 @@
 ## Processes}. McGraw-Hill, New York, second edition, 1984.
 ## @end enumerate
 ## @end deftypefn
-
-## Author: Arno Onken <asnelt@asnelt.org>
-## Description: Moments of the beta distribution
 
 function [m, v] = betastat (a, b)
 

@@ -17,15 +17,16 @@
 ## <http:##www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {Function File} {} hist3 (@var{X})
-## @deftypefnx {Function File} {} hist3 (@var{X}, @var{nbins})
-## @deftypefnx {Function File} {} hist3 (@var{X}, @qcode{"Nbins"}, @var{nbins})
-## @deftypefnx {Function File} {} hist3 (@var{X}, @var{centers})
-## @deftypefnx {Function File} {} hist3 (@var{X}, @qcode{"Ctrs"}, @var{centers})
-## @deftypefnx {Function File} {} hist3 (@var{X}, @qcode{"Edges"}, @var{edges})
-## @deftypefnx {Function File} {[@var{N}, @var{C}] =} hist3 (@dots{})
-## @deftypefnx {Function File} {} hist3 (@dots{}, @var{prop}, @var{val}, @dots{})
-## @deftypefnx {Function File} {} hist3 (@var{hax}, @dots{})
+## @deftypefn  {statistics} {} hist3 (@var{X})
+## @deftypefnx {statistics} {} hist3 (@var{X}, @var{nbins})
+## @deftypefnx {statistics} {} hist3 (@var{X}, @qcode{"Nbins"}, @var{nbins})
+## @deftypefnx {statistics} {} hist3 (@var{X}, @var{centers})
+## @deftypefnx {statistics} {} hist3 (@var{X}, @qcode{"Ctrs"}, @var{centers})
+## @deftypefnx {statistics} {} hist3 (@var{X}, @qcode{"Edges"}, @var{edges})
+## @deftypefnx {statistics} [@var{N}, @var{C}] = hist3 (@dots{})
+## @deftypefnx {statistics} {} hist3 (@dots{}, @var{prop}, @var{val}, @dots{})
+## @deftypefnx {statistics} {} hist3 (@var{hax}, @dots{})
+##
 ## Produce bivariate (2D) histogram counts or plots.
 ##
 ## The elements to produce the histogram are taken from the Nx2 matrix

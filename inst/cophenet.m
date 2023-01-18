@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{c}, @var{d}] =} cophenet (@var{Z}, @var{y})
+## @deftypefn  {statistics} [@var{c}, @var{d}] = cophenet (@var{Z}, @var{y})
 ##
 ## Compute the cophenetic correlation coefficient.
 ##

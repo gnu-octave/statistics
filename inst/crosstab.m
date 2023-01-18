@@ -20,9 +20,9 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{t} = crosstab (@var{x1}, @var{x2})
-## @deftypefnx {Function File} @var{t} = crosstab (@var{x1}, @dots{}, @var{xn})
-## @deftypefnx {Function File} [@var{t}, @var{chisq}, @var{p}, @var{labels}] = crosstab (@dots{})
+## @deftypefn  {statistics} @var{t} = crosstab (@var{x1}, @var{x2})
+## @deftypefnx {statistics} @var{t} = crosstab (@var{x1}, @dots{}, @var{xn})
+## @deftypefnx {statistics} [@var{t}, @var{chisq}, @var{p}, @var{labels}] = crosstab (@dots{})
 ##
 ## Create a cross-tabulation (contingency table) @var{t} from data vectors.
 ##

@@ -1,5 +1,6 @@
 ## Copyright (C) 2014 - Maria L. Rizzo and Gabor J. Szekely
 ## Copyright (C) 2014 Juan Pablo Carbajal
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,32 +18,33 @@
 ## along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} [@var{dCor}, @var{dCov}, @var{dVarX}, @var{dVarY}] = dcov (@var{x}, @var{y}, @var{index}=1)
+## @deftypefn  {statistics} [@var{dCor}, @var{dCov}, @var{dVarX}, @var{dVarY}] = dcov (@var{x}, @var{y}, @var{index}=1)
+##
 ## Distance correlation, covariance and correlation statistics.
 ##
-## It returns distace correlation (@var{dCor}),
-## distance covariance (@var{dCov}), diatance variace on x (@var{dVarX}) and
-## distance variance on y (@var{dVarY}).
+## It returns the distance correlation (@var{dCor}) and the distance covariance
+## (@var{dCov}) between @var{x} and @var{y}, the distance variance of @var{x}
+## in (@var{dVarX}) and the distance variance of @var{y} in (@var{dVarY}).
 ##
 ## @seealso{corr, cov}
 ## @end deftypefn
 
-function [dCor, dCov, dVarX, dVarY] = dcov (x,y,index=1.0)
+function [dCor, dCov, dVarX, dVarY] = dcov (x, y, index=1.0)
   x = abs (bsxfun (@minus, x, x.'));
   y = abs (bsxfun (@minus, y, y.'));
 
   [n nc] = size (x);
   [m mc] = size (y);
   if (n != m)
-    error ("Octave:invalid-input-arg", "Sample sizes must agree.");
+    error ("dcov: Sample sizes must agree.");
   endif
 
-  if  any (isnan (x) | isnan (y))
-      error ("Octave:invalid-input-arg","Data contains missing or infinite values.");
+  if (any (isnan (x) | isnan (y)))
+    error ("dcov: Data contains missing or infinite values.");
   endif
 
-  if index < 0 || index > 2
-    warning ("Octave:invalid-input-arg","index must be in [0,2), using default index=1");
+  if (index < 0 || index > 2)
+    warning ("dcov: index must be in [0,2), using default index=1");
     index = 1.0;
   endif
 
@@ -50,8 +52,8 @@ function [dCor, dCov, dVarX, dVarY] = dcov (x,y,index=1.0)
   B = Akl (y, index);
 
   dCov  = sqrt (mean (A(:) .* B(:)));
-  dVarX = sqrt (mean (A(:).^2) );
-  dVarY = sqrt (mean (B(:).^2) );
+  dVarX = sqrt (mean (A(:).^2));
+  dVarY = sqrt (mean (B(:).^2));
   V     = sqrt (dVarX .* dVarY);
 
   if V > 0

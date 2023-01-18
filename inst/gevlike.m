@@ -17,7 +17,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} [@var{nlogL}, @var{Grad}, @var{ACOV}] = gevlike (@var{params}, @var{data})
+## @deftypefn  {statistics} [@var{nlogL}, @var{Grad}, @var{ACOV}] = gevlike (@var{params}, @var{data})
 ##
 ## Compute the negative log-likelihood of data under the generalized extreme
 ## value (GEV) distribution with given parameter values.

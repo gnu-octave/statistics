@@ -14,11 +14,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{p} = friedman (@var{x})
-## @deftypefnx {Function File} @var{p} = friedman (@var{x}, @var{reps})
-## @deftypefnx {Function File} @var{p} = friedman (@var{x}, @var{reps}, @var{displayopt})
-## @deftypefnx {Function File} [@var{p}, @var{atab}] = friedman (@dots{})
-## @deftypefnx {Function File} [@var{p}, @var{atab}, @var{stats}] = friedman (@dots{})
+## @deftypefn  {statistics} @var{p} = friedman (@var{x})
+## @deftypefnx {statistics} @var{p} = friedman (@var{x}, @var{reps})
+## @deftypefnx {statistics} @var{p} = friedman (@var{x}, @var{reps}, @var{displayopt})
+## @deftypefnx {statistics} [@var{p}, @var{atab}] = friedman (@dots{})
+## @deftypefnx {statistics} [@var{p}, @var{atab}, @var{stats}] = friedman (@dots{})
 ##
 ## Performs the nonparametric Friedman's test to compare column effects in a
 ## two-way layout.  @qcode{friedman} tests the null hypothesis that the column

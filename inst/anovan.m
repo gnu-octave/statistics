@@ -19,11 +19,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{p} = anovan (@var{Y}, @var{GROUP})
-## @deftypefnx {Function File} @var{p} = anovan (@var{Y}, @var{GROUP}, @var{name}, @var{value})
-## @deftypefnx {Function File} [@var{p}, @var{atab}] = anovan (...)
-## @deftypefnx {Function File} [@var{p}, @var{atab}, @var{stats}] = anovan (...)
-## @deftypefnx {Function File} [@var{p}, @var{atab}, @var{stats}, @var{terms}] = anovan (...)
+## @deftypefn  {statistics} @var{p} = anovan (@var{Y}, @var{GROUP})
+## @deftypefnx {statistics} @var{p} = anovan (@var{Y}, @var{GROUP}, @var{name}, @var{value})
+## @deftypefnx {statistics} [@var{p}, @var{atab}] = anovan (...)
+## @deftypefnx {statistics} [@var{p}, @var{atab}, @var{stats}] = anovan (...)
+## @deftypefnx {statistics} [@var{p}, @var{atab}, @var{stats}, @var{terms}] = anovan (...)
 ##
 ## Perform a multi (N)-way analysis of (co)variance (ANOVA or ANCOVA) to
 ## evaluate the effect of one or more categorical or continuous predictors (i.e.

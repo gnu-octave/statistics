@@ -18,7 +18,8 @@
 ## <http:##www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} [@var{g}, @var{gn}, @var{gl}] = grp2idx (@var{s})
+## @deftypefn  {statistics} [@var{g}, @var{gn}, @var{gl}] = grp2idx (@var{s})
+##
 ## Get index for group variables.
 ##
 ## For variable @var{s}, returns the indices @var{g}, into the variable

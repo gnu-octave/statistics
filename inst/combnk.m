@@ -16,8 +16,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{c} =} combnk (@var{data}, @var{k})
+## @deftypefn  {statistics} @var{c} = combnk (@var{data}, @var{k})
+##
 ## Return all combinations of @var{k} elements in @var{data}.
+##
 ## @end deftypefn
 
 function retval = combnk (data, k)
@@ -40,7 +42,8 @@ function retval = combnk (data, k)
     retval = __combnk__ (data, k);
   endif
 
-  ## For some odd reason Matlab seems to treat strings differently compared to other data-types...
+  ## For some odd reason Matlab seems to treat strings differently compared to
+  ## other data-types...
   if (ischar (data))
      retval = flipud (retval);
   endif

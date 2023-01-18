@@ -17,17 +17,17 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{p} = anova1 (@var{x})
-## @deftypefnx {Function File} @var{p} = anova1 (@var{x}, @var{group})
-## @deftypefnx {Function File} @var{p} = anova1 (@var{x}, @var{group}, @var{displayopt})
-## @deftypefnx {Function File} @var{p} = anova1 (@var{x}, @var{group}, @var{displayopt}, @var{vartype})
-## @deftypefnx {Function File} [@var{p}, @var{atab}] = anova1 (@var{x}, @dots{})
-## @deftypefnx {Function File} [@var{p}, @var{atab}, @var{stats}] = anova1 (@var{x}, @dots{})
+## @deftypefn  {statistics} @var{p} = anova1 (@var{x})
+## @deftypefnx {statistics} @var{p} = anova1 (@var{x}, @var{group})
+## @deftypefnx {statistics} @var{p} = anova1 (@var{x}, @var{group}, @var{displayopt})
+## @deftypefnx {statistics} @var{p} = anova1 (@var{x}, @var{group}, @var{displayopt}, @var{vartype})
+## @deftypefnx {statistics} [@var{p}, @var{atab}] = anova1 (@var{x}, @dots{})
+## @deftypefnx {statistics} [@var{p}, @var{atab}, @var{stats}] = anova1 (@var{x}, @dots{})
 ##
 ## Perform a one-way analysis of variance (ANOVA) for comparing the means of two
 ## or more groups of data under the null hypothesis that the groups are drawn
-## from distributions with the same mean. For planned contrasts and/or diagnostic
-## plots, use @qcode{anovan} instead.
+## from distributions with the same mean. For planned contrasts and/or
+## diagnostic plots, use @qcode{anovan} instead.
 ##
 ## anova1 can take up to three input arguments:
 ##

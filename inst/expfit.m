@@ -14,11 +14,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{mu} =} expfit (@var{s})
-## @deftypefnx {Function File} {[@var{mu}, @var{ci}] =} expfit (@var{s})
-## @deftypefnx {Function File} {[@var{mu}, @var{ci}] =} expfit (@var{s}, @var{alpha})
-## @deftypefnx {Function File} {@dots{} =} expfit (@var{s}, @var{alpha}, @var{c})
-## @deftypefnx {Function File} {@dots{} =} expfit (@var{s}, @var{alpha}, @var{c}, @var{f})
+## @deftypefn  {statistics} @var{mu} = expfit (@var{s})
+## @deftypefnx {statistics} [@var{mu}, @var{ci}] = expfit (@var{s})
+## @deftypefnx {statistics} [@var{mu}, @var{ci}] = expfit (@var{s}, @var{alpha})
+## @deftypefnx {statistics} @dots{} = expfit (@var{s}, @var{alpha}, @var{c})
+## @deftypefnx {statistics} @dots{} = expfit (@var{s}, @var{alpha}, @var{c}, @var{f})
 ##
 ## Estimate the mean of the exponential probability distribution function from
 ## which sample data @var{s} has been taken.  @var{s} is expected to be a

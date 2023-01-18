@@ -16,12 +16,12 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} confusionchart (@var{trueLabels}, @var{predictedLabels})
-## @deftypefnx {} {} confusionchart (@var{m})
-## @deftypefnx {} {} confusionchart (@var{m}, @var{classLabels})
-## @deftypefnx {} {} confusionchart (@var{parent}, @dots{})
-## @deftypefnx {} {} confusionchart (@dots{}, @var{prop}, @var{val}, @dots{})
-## @deftypefnx {} {@var{cm} =} confusionchart (@dots{})
+## @deftypefn  {statistics} {} confusionchart (@var{trueLabels}, @var{predictedLabels})
+## @deftypefnx {statistics} {} confusionchart (@var{m})
+## @deftypefnx {statistics} {} confusionchart (@var{m}, @var{classLabels})
+## @deftypefnx {statistics} {} confusionchart (@var{parent}, @dots{})
+## @deftypefnx {statistics} {} confusionchart (@dots{}, @var{prop}, @var{val}, @dots{})
+## @deftypefnx {statistics} @var{cm} = confusionchart (@dots{})
 ##
 ## Display a chart of a confusion matrix.
 ##

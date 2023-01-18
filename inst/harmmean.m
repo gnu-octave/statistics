@@ -14,11 +14,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{m} = harmmean (@var{x})
-## @deftypefnx{Function File} @var{m} = harmmean (@var{x}, "all")
-## @deftypefnx{Function File} @var{m} = harmmean (@var{x}, @var{dim})
-## @deftypefnx{Function File} @var{m} = harmmean (@var{x}, @var{vecdim})
-## @deftypefnx{Function File} @var{m} = harmmean (@dots{}, @var{nanflag})
+## @deftypefn  {statistics} @var{m} = harmmean (@var{x})
+## @deftypefnx {statistics} @var{m} = harmmean (@var{x}, "all")
+## @deftypefnx {statistics} @var{m} = harmmean (@var{x}, @var{dim})
+## @deftypefnx {statistics} @var{m} = harmmean (@var{x}, @var{vecdim})
+## @deftypefnx {statistics} @var{m} = harmmean (@dots{}, @var{nanflag})
 ##
 ## Compute the harmonic mean of @var{x}.
 ##

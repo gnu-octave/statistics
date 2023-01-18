@@ -16,7 +16,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{m}, @var{v}] =} chi2stat (@var{n})
+## @deftypefn  {statistics} {[@var{m}, @var{v}] =} chi2stat (@var{n})
+##
 ## Compute mean and variance of the chi-square distribution.
 ##
 ## @subheading Arguments

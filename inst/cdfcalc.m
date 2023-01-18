@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} [@var{yCDF}, @var{xCDF}, @var{n}, @var{emsg}, @var{eid}] = cdfcalc (@var{x})
+## @deftypefn {statistics} [@var{yCDF}, @var{xCDF}, @var{n}, @var{emsg}, @var{eid}] = cdfcalc (@var{x})
 ##
 ## Calculate an empirical cumulative distribution function.
 ##

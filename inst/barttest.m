@@ -16,10 +16,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{ndim} = barttest (@var{x})
-## @deftypefnx {Function File} @var{ndim} = barttest (@var{x}, @var{alpha})
-## @deftypefnx {Function File} [@var{ndim}, @var{pval}] = barttest (@var{x}, @var{alpha})
-## @deftypefnx {Function File} [@var{ndim}, @var{pval}, @var{chisq}] = barttest (@var{x}, @var{alpha})
+## @deftypefn  {statistics} @var{ndim} = barttest (@var{x})
+## @deftypefnx {statistics} @var{ndim} = barttest (@var{x}, @var{alpha})
+## @deftypefnx {statistics} [@var{ndim}, @var{pval}] = barttest (@var{x}, @var{alpha})
+## @deftypefnx {statistics} [@var{ndim}, @var{pval}, @var{chisq}] = barttest (@var{x}, @var{alpha})
 ##
 ## Bartlett's test of sphericity for correlation.
 ##

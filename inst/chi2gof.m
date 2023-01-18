@@ -16,10 +16,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{h} = chi2gof (@var{x})
-## @deftypefnx {Function File} [@var{h}, @var{p}] = chi2gof (@var{x})
-## @deftypefnx {Function File} [@var{p}, @var{h}, @var{stats}] = chi2gof (@var{x})
-## @deftypefnx {Function File} [@dots{}] = chi2gof (@var{x}, @var{name1}, @var{value1}, @dots{})
+## @deftypefn  {statistics} @var{h} = chi2gof (@var{x})
+## @deftypefnx {statistics} [@var{h}, @var{p}] = chi2gof (@var{x})
+## @deftypefnx {statistics} [@var{p}, @var{h}, @var{stats}] = chi2gof (@var{x})
+## @deftypefnx {statistics} [@dots{}] = chi2gof (@var{x}, @var{name1}, @var{value1}, @dots{})
 ##
 ## Chi-square goodness-of-fit test.
 ##
