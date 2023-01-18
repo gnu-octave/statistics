@@ -1,4 +1,5 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -125,7 +126,8 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
     error ("hmmviterbi: transprob must be a square matrix");
   endif
   if (rows (outprob) != nstate)
-    error ("hmmviterbi: outprob must have the same number of rows as transprob");
+    error (strcat (["hmmviterbi: outprob must have the same number of"], ...
+                   [" rows as transprob"]));
   endif
 
   # Flag for symbols
@@ -143,7 +145,8 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
     lowerarg = lower (varargin{i});
     if (strcmp (lowerarg, 'symbols'))
       if (length (varargin{i + 1}) != noutput)
-        error ("hmmviterbi: number of symbols does not match number of possible outputs");
+        error (strcat (["hmmviterbi: number of symbols does not match"], ...
+                       [" number of possible outputs"]));
       endif
       usesym = true;
       # Use the following argument as symbols
@@ -151,13 +154,15 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
     # The same for statenames
     elseif (strcmp (lowerarg, 'statenames'))
       if (length (varargin{i + 1}) != nstate)
-        error ("hmmviterbi: number of statenames does not match number of states");
+        error (strcat (["hmmviterbi: number of statenames does not match"], ...
+                       [" number of states"]));
       endif
       usesn = true;
       # Use the following argument as statenames
       statenames = varargin{i + 1};
     else
-      error ("hmmviterbi: expected 'symbols' or 'statenames' but found '%s'", varargin{i});
+      error (strcat (["hmmviterbi: expected 'symbols' or 'statenames'"], ...
+                     sprintf (" but found '%s'", varargin{i})));
     endif
   endfor
 
