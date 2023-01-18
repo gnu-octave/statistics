@@ -1,4 +1,5 @@
 ## Copyright (C) 1996-2017 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -15,56 +16,125 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {[@var{pval}, @var{tsq}] =} hotelling_test (@var{x}, @var{m})
+## @deftypefn  {statistics} [@var{h}, @var{pval}, @var{stats}] = hotelling_t2test (@var{x})
+## @deftypefnx {statistics} [@dots{}] = hotelling_t2test (@var{x}, @var{m})
+## @deftypefnx {statistics} [@dots{}] = hotelling_t2test (@var{x}, @var{y})
+## @deftypefnx {statistics} [@dots{}] = hotelling_t2test (@var{x}, @var{m}, @var{Name}, @var{Value})
+## @deftypefnx {statistics} [@dots{}] = hotelling_t2test (@var{x}, @var{y}, @var{Name}, @var{Value})
+##
+## Compute Hotelling's T^2 ("T-squared") test for a single sample or two
+## dependent samples (paired-samples).
+##
 ## For a sample @var{x} from a multivariate normal distribution with unknown
 ## mean and covariance matrix, test the null hypothesis that
 ## @code{mean (@var{x}) == @var{m}}.
 ##
-## Hotelling's @math{T^2} is returned in @var{tsq}.  Under the null,
+## For two dependent samples @var{x} and @var{y} from a multivariate normal
+## distributions with unknown means and covariance matrices, test the null
+## hypothesis that @code{mean (@var{x} - @var{y}) == 0}.
+##
+## @qcode{hotelling_t2test} treats NaNs as missing values, and ignores the
+## corresponding rows.
+##
+## Name-Value pair arguments can be used to set statistical significance.
+## @qcode{"alpha"} can be used to specify the significance level of the test
+## (the default value is 0.05).
+##
+## If @var{h} is 1 the null hypothesis is rejected, meaning that the tested
+## sample does not come from a multivariate distribution with mean @var{m}, or
+## in case of two dependent samples that they do not come from the same
+## multivariate distribution.  If @var{h} is 0, then the null hypothesis cannot
+## be rejected and it can be assumed that it holds true.
+##
+## The p-value of the test is returned in @var{pval}.
+##
+## @var{stats} is a structure containing the value of the Hotelling's @math{T^2}
+## test statistic in the field "Tsq", and the degrees of freedom of the F
+## distribution in the fields "df1" and "df2".  Under the null hypothesis,
 ## @math{(n-p) T^2 / (p(n-1))} has an F distribution with @math{p} and
 ## @math{n-p} degrees of freedom, where @math{n} and @math{p} are the
 ## numbers of samples and variables, respectively.
 ##
-## The p-value of the test is returned in @var{pval}.
-##
-## If no output argument is given, the p-value of the test is displayed.
+## @seealso{hotelling_t2test2}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Test for mean of a multivariate normal
+function [h, pval, stats] = hotelling_t2test (x, my, varargin)
 
-function [pval, Tsq] = hotelling_test (x, m)
-
-  if (nargin != 2)
-    print_usage ();
+  ## Check X being a valid data set
+  if (isscalar (x) || ndims (x) > 2)
+    error ("hotelling_t2test: X must be a vector or a 2D matrix");
   endif
 
+  ## Set default arguments
+  alpha = 0.05;
+  tail = "both";
+
+  ## Fix MY when X is a single input argument
+  if (nargin == 1)
+    if (isvector (x))
+      my = 0;
+    elseif (ismatrix (x))
+      [n, p] = size (x);
+      my = zeros (1, p);
+    endif
+  endif
+  
+  ## When X and MY are of equal size, then assume paired-sample
+  if (isequal (size (x), size(my)))
+    x = x - my;
+    if (isvector (x))
+      my = 0;
+    elseif (ismatrix (x))
+      [n, p] = size (x);
+      my = zeros (1, p);
+    endif
+  endif
+  
+  ## Remove rows containing any NaNs
+  x = rmmissing (x);
+  
+  ## Check additional options
+  i = 1;
+  while (i <= length (varargin))
+    switch lower (varargin{i})
+      case "alpha"
+        i = i + 1;
+        alpha = varargin{i};
+      otherwise
+        error ("hotelling_t2test: Invalid Name argument.");
+    endswitch
+    i = i + 1;
+  endwhile
+  
+  ## Conditional error checking for X being a vector or matrix
   if (isvector (x))
-    if (! isscalar (m))
-      error ("hotelling_test: if X is a vector, M must be a scalar");
+    if (! isscalar (my))
+      error ("hotelling_t2test: if X is a vector, MY must be a scalar");
     endif
     n = length (x);
     p = 1;
   elseif (ismatrix (x))
     [n, p] = size (x);
     if (n <= p)
-      error ("hotelling_test: X must have more rows than columns");
+      error ("hotelling_t2test: X must have more rows than columns");
     endif
-    if (isvector (m) && length (m) == p)
-      m = reshape (m, 1, p);
+    if (isvector (my) && length (my) == p)
+      my = reshape (my, 1, p);
     else
-      error ("hotelling_test: if X is a matrix, M must be a vector of length columns (X)");
+      error (strcat (["hotelling_t2test: if X is a matrix, MY must be a"], ...
+                     [" vector of length columns (X)"]));
     endif
-  else
-    error ("hotelling_test: X must be a matrix or vector");
   endif
 
-  d    = mean (x) - m;
-  Tsq  = n * d * (cov (x) \ d');
-  pval = 1 - fcdf ((n-p) * Tsq / (p * (n-1)), p, n-p);
-
-  if (nargout == 0)
-    printf ("  pval: %g\n", pval);
-  endif
-
+  ## Calculate the necessary statistics
+  d = mean (x) - my;
+  stats.Tsq = n * d * (cov (x) \ d');
+  stats.df1 = p;
+  stats.df2 = n - p;
+  pval = 1 - fcdf ((n-p) * stats.Tsq / (p * (n-1)), stats.df1, stats.df2);
+  
+  ## Determine the test outcome
+  ## MATLAB returns this a double instead of a logical array
+  h = double (pval < alpha);
+  
 endfunction
