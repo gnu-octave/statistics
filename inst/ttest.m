@@ -18,11 +18,12 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {Function File} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest (@var{x})
-## @deftypefnx {Function File} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest (@var{x}, @var{m})
-## @deftypefnx {Function File} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest (@var{x}, @var{y})
-## @deftypefnx {Function File} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest (@var{x}, @var{m}, @var{Name}, @var{Value})
-## @deftypefnx {Function File} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest (@var{x}, @var{y}, @var{Name}, @var{Value})
+## @deftypefn  {statistics} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest (@var{x})
+## @deftypefnx {statistics} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest (@var{x}, @var{m})
+## @deftypefnx {statistics} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest (@var{x}, @var{y})
+## @deftypefnx {statistics} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest (@var{x}, @var{m}, @var{Name}, @var{Value})
+## @deftypefnx {statistics} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest (@var{x}, @var{y}, @var{Name}, @var{Value})
+##
 ## Test for mean of a normal sample with unknown variance.
 ##
 ## Perform a t-test of the null hypothesis @code{mean (@var{x}) ==
@@ -52,7 +53,7 @@
 ## If it is @qcode{"right"} the one-sided alternative @code{mean (@var{x})
 ## > @var{m}} is considered.  Similarly for @qcode{"left"}, the one-sided
 ## alternative @code{mean (@var{x}) < @var{m}} is considered.
-## When argument @var{x} is a matrix, @qcode{"dim"} can be used to selection
+## When argument @var{x} is a matrix, @qcode{"dim"} can be used to select
 ## the dimension over which to perform the test.  (The default is the
 ## first non-singleton dimension).
 ##
