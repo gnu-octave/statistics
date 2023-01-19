@@ -324,3 +324,83 @@ Summary of important user-visible changes for statistics 1.5.1:
  ** nanstd (replaced by std)
 
  ** nanvar (replaced by var)
+
+ 
+ Summary of important user-visible changes for statistics 1.5.3:
+-------------------------------------------------------------------
+
+ Important Notice: 1) `mean`, `median`, `std`, and `var` functions
+                       shadow core Octave's respective functions
+                   2) incompatibility with the `nan` package
+ New functions:
+ ==============
+
+ ** adtest (fully Matlab compatible)
+ 
+ ** fishertest (fully Matlab compatible, extra functionality)
+ 
+ ** hotelling_t2test (new functionality, replacing old hotelling_test)
+ 
+ ** hotelling_t2test2 (new functionality, replacing old hotelling_test_2)
+ 
+ ** regression_ftest (new functionality, replacing old f_test_regression)
+ 
+ ** regression_ttest (new functionality, replacing old t_test_regression)
+
+ Improvements:
+ =============
+
+ ** betacdf: added "upper" option
+ 
+ ** binocdf: added "upper" option
+ 
+ ** expcdf: added "upper" option and confidence bounds
+ 
+ ** geocdf: added "upper" option
+ 
+ ** geomean: fixed MATLAB compatibility
+ 
+ ** gevcdf: added "upper" option
+ 
+ ** harmmean: fixed MATLAB compatibility
+ 
+ ** hygecdf: added "upper" option
+ 
+ ** logncdf: added "upper" option and confidence bounds
+ 
+ ** mean: fixed MATLAB compatibility
+ 
+ ** median: fixed MATLAB compatibility
+ 
+ ** multcompare: fixed erroneous results, produce MATLAB like plot
+ 
+ ** nbincdf: added "upper" option
+ 
+ ** poisscdf: added "upper" option
+ 
+ ** raylcdf: added "upper" option
+ 
+ ** std: fixed MATLAB compatibility
+ 
+ ** unidcdf: added "upper" option
+ 
+ ** unifcdf: added "upper" option
+ 
+ ** var: fixed MATLAB compatibility
+ 
+ ** wblcdf: added "upper" option and confidence bounds
+
+ Removed Functions:
+ ==================
+
+ ** anderson_darling_cdf (replaced by adtest)
+ 
+ ** anderson_darling_test (replaced by adtest)
+
+ ** hotelling_test (replaced by hotelling_t2test)
+
+ ** hotelling_test_2 (replaced by hotelling_t2test2)
+
+ ** f_test_regression (replaced by regression_ftest)
+
+ ** t_test_regression (replaced by regression_ttest)

@@ -46,7 +46,6 @@ Descriptive statistics
  trimmean
  var
 Distributions
- anderson_darling_cdf
  bbscdf bbsinv bbspdf bbsrnd
  betacdf betainv betapdf betarnd
  binocdf binoinv binopdf binornd
@@ -135,18 +134,23 @@ Model Fitting
  fitgmdist
  fitlm
 Hypothesis testing
- anderson_darling_test
+ adtest
  bartlett_test
  barttest
  binotest
  chi2gof
  chi2test
+ fishertest
  friedman
+ hotelling_t2test
+ hotelling_t2test2
  kruskalwallis
  kstest
  kstest2
  levene_test
  ranksum
+ regression_ftest
+ regression_ttest
  runstest
  signtest
  ttest
