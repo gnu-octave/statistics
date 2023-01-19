@@ -372,7 +372,7 @@ Summary of important user-visible changes for statistics 1.5.1:
  
  ** median: fixed MATLAB compatibility
  
- ** multcompare: fixed erroneous results, produce MATLAB like plot
+ ** multcompare: print PostHoc Test table, produce additional MATLAB-like plot
  
  ** nbincdf: added "upper" option
  
