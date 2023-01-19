@@ -1,5 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,22 +17,19 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {} binocdf (@var{x}, @var{n}, @var{p})
-## @deftypefnx {Function File} {} binocdf (@var{x}, @var{n}, @var{p}, 'upper')
+## @deftypefn {statistics} @var{y} = binocdf (@var{x}, @var{n}, @var{p})
+## @deftypefnx {statistics} @var{y} = binocdf (@var{x}, @var{n}, @var{p}, "upper")
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
 ## (CDF) at @var{x} of the binomial distribution with parameters @var{n} and
 ## @var{p}, where @var{n} is the number of trials and @var{p} is the
 ## probability of success.
 ##
-## binocdf (@var{x}, @var{n}, @var{p}, 'upper') computes the complement
+## binocdf (@var{x}, @var{n}, @var{p}, "upper") computes the complement
 ## of the cumulative distribution function.
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: CDF of the binomial distribution
-
-function cdf = binocdf (x, n, p, upper)
+function y = binocdf (x, n, p, upper)
 
   if (nargin != 3 && nargin != 4)
     print_usage ();
@@ -41,7 +39,7 @@ function cdf = binocdf (x, n, p, upper)
     if (strcmp (upper, 'upper'))
        upper = true;
     else
-       error ("binocdf: 4th parameter can only be  'upper'\n");
+       error ("binocdf: 4th parameter can only be 'upper'.");
     endif
   else
      upper = false;
@@ -50,39 +48,39 @@ function cdf = binocdf (x, n, p, upper)
   if (! isscalar (n) || ! isscalar (p))
     [retval, x, n, p] = common_size (x, n, p);
     if (retval > 0)
-      error ("binocdf: X, N, and P must be of common size or scalars");
+      error ("binocdf: X, N, and P must be of common size or scalars.");
     endif
   endif
 
   if (iscomplex (x) || iscomplex (n) || iscomplex (p))
-    error ("binocdf: X, N, and P must not be complex");
+    error ("binocdf: X, N, and P must not be complex.");
   endif
 
   if (isa (x, "single") || isa (n, "single") || isa (p, "single"));
-    cdf = nan (size (x), "single");
+    y = nan (size (x), "single");
   else
-    cdf = nan (size (x));
+    y = nan (size (x));
   endif
 
   k = (x >= n) & (n >= 0) & (n == fix (n) & (p >= 0) & (p <= 1));
-  cdf(k) = !upper;
+  y(k) = !upper;
 
   k = (x < 0) & (n >= 0) & (n == fix (n) & (p >= 0) & (p <= 1));
-  cdf(k) = upper;
+  y(k) = upper;
 
   k = (x >= 0) & (x < n) & (n == fix (n)) & (p >= 0) & (p <= 1);
   tmp = floor (x(k));
   if !upper
     if (isscalar (n) && isscalar (p))
-      cdf(k) = betainc (1 - p, n - tmp, tmp + 1);
+      y(k) = betainc (1 - p, n - tmp, tmp + 1);
     else
-      cdf(k) = betainc (1 - p(k), n(k) - tmp, tmp + 1);
+      y(k) = betainc (1 - p(k), n(k) - tmp, tmp + 1);
     endif
   else
     if (isscalar (n) && isscalar (p));
-      cdf(k) = betainc (p, tmp + 1, n - tmp);
+      y(k) = betainc (p, tmp + 1, n - tmp);
     else
-      cdf(k) = betainc (p(k), tmp + 1, n(k) - tmp);
+      y(k) = betainc (p(k), tmp + 1, n(k) - tmp);
     endif
   endif
 
@@ -114,13 +112,16 @@ endfunction
 %!assert (binocdf ([x, NaN], 2, single (0.5)), single ([y, NaN]))
 
 ## Test input validation
-%!error binocdf ()
-%!error binocdf (1)
-%!error binocdf (1,2)
-%!error binocdf (1,2,3,4)
-%!error binocdf (ones (3), ones (2), ones (2))
-%!error binocdf (ones (2), ones (3), ones (2))
-%!error binocdf (ones (2), ones (2), ones (3))
-%!error binocdf (i, 2, 2)
-%!error binocdf (2, i, 2)
-%!error binocdf (2, 2, i)
+%!error<Invalid call to binocdf.  Correct usage is:> binocdf ()
+%!error<Invalid call to binocdf.  Correct usage is:> binocdf (1)
+%!error<Invalid call to binocdf.  Correct usage is:> binocdf (1,2)
+%!error<binocdf: 4th parameter can only be 'upper'.> binocdf (1,2,3,4)
+%!error<binocdf: X, N, and P must be of common size or scalars.> ...
+%! binocdf (ones (3), ones (2), ones (2))
+%!error<binocdf: X, N, and P must be of common size or scalars.> ...
+%! binocdf (ones (2), ones (3), ones (2))
+%!error<binocdf: X, N, and P must be of common size or scalars.> ...
+%! binocdf (ones (2), ones (2), ones (3))
+%!error<binocdf: X, N, and P must not be complex.> binocdf (i, 2, 2)
+%!error<binocdf: X, N, and P must not be complex.> binocdf (2, i, 2)
+%!error<binocdf: X, N, and P must not be complex.> binocdf (2, 2, i)
