@@ -574,7 +574,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
 
     ## Create matrix of comparisons and calculate confidence intervals and
     ## multiplicity adjusted p-values for the comparisons.
-    C = zeros (Np, 7);
+    C = zeros (Np, 8);
     C(:,1:2) = pairs;
     C(:,4) = (M(pairs(:, 1),1) - M(pairs(:, 2),1));
     C(:,7) = t;     # Unlike Matlab, we include the t statistic
@@ -626,6 +626,22 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
       ylabel ("Row number in matrix of comparisons (C)");
     else
       H = [];
+    endif
+    
+    ## Print multcompare table on screen if no output argument was requested
+    if (nargout == 0 || strcmp (DISPLAY, "on"))
+      printf ("\n          Multiple Comparison (Post Hoc) Test for %s\n\n", ...
+             upper (STATS.source));
+      header = strcat (["Group ID  Group ID    LBoundDiff    EstimatedDiff"],...
+                       ["    UBoundDiff      p-value\n"], ...
+                       ["-------------------------------------------------"],...
+                       ["---------------------------\n"]);
+      printf ("%s", header);
+      for j = 1:Np
+        printf ("%5i     %5i      %10.3f     %10.3f      %10.3f     %9.6f\n",...
+                C(j,1), C(j,2), C(j,3), C(j,4), C(j,5), C(j,6));
+      endfor
+      printf ("\n");
     endif
 
 endfunction
@@ -902,6 +918,15 @@ function [padj, critval, dfe] = lsd (p, t, Ng, dfe, R, ALPHA)
 
 endfunction
 
+%!demo
+%!
+%! ## Demonstration using balanced one-way ANOVA from anova1
+%!
+%! x = ones (50, 4) .* [-2, 0, 1, 5];
+%! x = x + normrnd (0, 2, 50, 4);
+%! groups = {"A", "B", "C", "D"};
+%! [p, tbl, stats] = anova1 (x, groups, "off");
+%! multcompare (stats);
 
 %!demo
 %!
