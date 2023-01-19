@@ -65,6 +65,10 @@
 
 function [h, pval, stats] = hotelling_t2test2 (x, y, varargin)
 
+  ## Check for minimum number of input arguments
+  if (nargin < 2)
+    print_usage ();
+  endif
   ## Check X being a valid data set
   if (isscalar (x) || ndims (x) > 2)
     error ("hotelling_t2test2: X must be a vector or a 2D matrix.");
@@ -73,6 +77,9 @@ function [h, pval, stats] = hotelling_t2test2 (x, y, varargin)
   if (isscalar (y) || ndims (y) > 2)
     error ("hotelling_t2test2: Y must be a vector or a 2D matrix.");
   endif
+  
+  ## Set default arguments
+  alpha = 0.05;
   
   ## Remove rows containing any NaNs
   x = rmmissing (x);
@@ -85,8 +92,13 @@ function [h, pval, stats] = hotelling_t2test2 (x, y, varargin)
       case "alpha"
         i = i + 1;
         alpha = varargin{i};
+        ## Check for valid alpha
+        if (! isscalar (alpha) || ! isnumeric (alpha) || ...
+                    alpha <= 0 || alpha >= 1)
+          error ("hotelling_t2test2: invalid value for alpha.");
+        endif
       otherwise
-        error ("hotelling_t2test2: Invalid Name argument.");
+        error ("hotelling_t2test2: invalid Name argument.");
     endswitch
     i = i + 1;
   endwhile
@@ -115,7 +127,7 @@ function [h, pval, stats] = hotelling_t2test2 (x, y, varargin)
   stats.Tsq  = (n_x * n_y / (n_x + n_y)) * d * (S \ d');
   stats.df1 = p;
   stats.df2 = n_x + n_y - p - 1;
-  pval = 1 - fcdf ((n_x + n_y - p - 1) * Tsq / (p * (n_x + n_y - 2)), ...
+  pval = 1 - fcdf ((n_x + n_y - p - 1) * stats.Tsq / (p * (n_x + n_y - 2)), ...
                     stats.df1, stats.df2);
 
   ## Determine the test outcome
@@ -123,3 +135,37 @@ function [h, pval, stats] = hotelling_t2test2 (x, y, varargin)
   h = double (pval < alpha);
 
 endfunction
+
+## Test input validation
+%!error<Invalid call to hotelling_t2test2.  Correct usage> hotelling_t2test2 ();
+%!error<Invalid call to hotelling_t2test2.  Correct usage> ...
+%! hotelling_t2test2 ([2, 3, 4, 5, 6]);
+%!error<hotelling_t2test2: X must be a vector or a 2D matrix.> ...
+%! hotelling_t2test2 (1, [2, 3, 4, 5, 6]);
+%!error<hotelling_t2test2: X must be a vector or a 2D matrix.> ...
+%! hotelling_t2test2 (ones (2,2,2), [2, 3, 4, 5, 6]);
+%!error<hotelling_t2test2: Y must be a vector or a 2D matrix.> ...
+%! hotelling_t2test2 ([2, 3, 4, 5, 6], 2);
+%!error<hotelling_t2test2: Y must be a vector or a 2D matrix.> ...
+%! hotelling_t2test2 ([2, 3, 4, 5, 6], ones (2,2,2));
+%!error<hotelling_t2test2: invalid value for alpha.> ...
+%! hotelling_t2test2 (ones (20,2), ones (20,2), "alpha", 1);
+%!error<hotelling_t2test2: invalid value for alpha.> ...
+%! hotelling_t2test2 (ones (20,2), ones (20,2), "alpha", -0.2);
+%!error<hotelling_t2test2: invalid value for alpha.> ...
+%! hotelling_t2test2 (ones (20,2), ones (20,2), "alpha", "a");
+%!error<hotelling_t2test2: invalid value for alpha.> ...
+%! hotelling_t2test2 (ones (20,2), ones (20,2), "alpha", [0.01, 0.05]);
+%!error<hotelling_t2test2: invalid Name argument.> ...
+%! hotelling_t2test2 (ones (20,2), ones (20,2), "name", 0.01);
+%!error<hotelling_t2test2: if X is a vector, Y must also be a vector.> ...
+%! hotelling_t2test2 (ones (20,1), ones (20,2));
+%!error<hotelling_t2test2: X and Y must have the same number of columns.> ...
+%! hotelling_t2test2 (ones (20,2), ones (25,3));
+
+## Test results
+%!test
+%! [h, pval, stats] = hotelling_t2test2 (randn(5000,5), randn(3000,5));
+%! assert (h, 0);
+%! assert (stats.df1, 5);
+%! assert (stats.df2, 7994);

@@ -60,14 +60,18 @@
 
 function [h, pval, stats] = hotelling_t2test (x, my, varargin)
 
+  ## Check for minimum number of input arguments
+  if (nargin < 1)
+    print_usage ();
+  endif
+  
   ## Check X being a valid data set
   if (isscalar (x) || ndims (x) > 2)
-    error ("hotelling_t2test: X must be a vector or a 2D matrix");
+    error ("hotelling_t2test: X must be a vector or a 2D matrix.");
   endif
 
   ## Set default arguments
   alpha = 0.05;
-  tail = "both";
 
   ## Fix MY when X is a single input argument
   if (nargin == 1)
@@ -100,8 +104,13 @@ function [h, pval, stats] = hotelling_t2test (x, my, varargin)
       case "alpha"
         i = i + 1;
         alpha = varargin{i};
+        ## Check for valid alpha
+        if (! isscalar (alpha) || ! isnumeric (alpha) || ...
+                    alpha <= 0 || alpha >= 1)
+          error ("hotelling_t2test: invalid value for alpha.");
+        endif
       otherwise
-        error ("hotelling_t2test: Invalid Name argument.");
+        error ("hotelling_t2test: invalid Name argument.");
     endswitch
     i = i + 1;
   endwhile
@@ -109,20 +118,20 @@ function [h, pval, stats] = hotelling_t2test (x, my, varargin)
   ## Conditional error checking for X being a vector or matrix
   if (isvector (x))
     if (! isscalar (my))
-      error ("hotelling_t2test: if X is a vector, MY must be a scalar");
+      error ("hotelling_t2test: if X is a vector, M must be a scalar.");
     endif
     n = length (x);
     p = 1;
   elseif (ismatrix (x))
     [n, p] = size (x);
     if (n <= p)
-      error ("hotelling_t2test: X must have more rows than columns");
+      error ("hotelling_t2test: X must have more rows than columns.");
     endif
     if (isvector (my) && length (my) == p)
       my = reshape (my, 1, p);
     else
-      error (strcat (["hotelling_t2test: if X is a matrix, MY must be a"], ...
-                     [" vector of length columns (X)"]));
+      error (strcat (["hotelling_t2test: if X is a matrix, M must be a"], ...
+                     [" vector of length equal to the columns of X."]));
     endif
   endif
 
@@ -138,3 +147,33 @@ function [h, pval, stats] = hotelling_t2test (x, my, varargin)
   h = double (pval < alpha);
   
 endfunction
+
+## Test input validation
+%!error<Invalid call to hotelling_t2test.  Correct usage> hotelling_t2test ();
+%!error<hotelling_t2test: X must be a vector or a 2D matrix.> ...
+%! hotelling_t2test (1);
+%!error<hotelling_t2test: X must be a vector or a 2D matrix.> ...
+%! hotelling_t2test (ones(2,2,2));
+%!error<hotelling_t2test: invalid value for alpha.> ...
+%! hotelling_t2test (ones(20,2), [0, 0], "alpha", 1);
+%!error<hotelling_t2test: invalid value for alpha.> ...
+%! hotelling_t2test (ones(20,2), [0, 0], "alpha", -0.2);
+%!error<hotelling_t2test: invalid value for alpha.> ...
+%! hotelling_t2test (ones(20,2), [0, 0], "alpha", "a");
+%!error<hotelling_t2test: invalid value for alpha.> ...
+%! hotelling_t2test (ones(20,2), [0, 0], "alpha", [0.01, 0.05]);
+%!error<hotelling_t2test: invalid Name argument.> ...
+%! hotelling_t2test (ones(20,2), [0, 0], "name", 0.01);
+%!error<hotelling_t2test: if X is a vector, M must be a scalar.> ...
+%! hotelling_t2test (ones(20,1), [0, 0]);
+%!error<hotelling_t2test: X must have more rows than columns.> ...
+%! hotelling_t2test (ones(4,5), [0, 0, 0, 0, 0]);
+%!error<hotelling_t2test: if X is a matrix, M must be a vector of length> ...
+%! hotelling_t2test (ones(20,5), [0, 0, 0, 0]);
+
+## Test results
+%!test
+%! [h, pval, stats] = hotelling_t2test (randn(5000,5));
+%! assert (h, 0);
+%! assert (stats.df1, 5);
+%! assert (stats.df2, 4995);
