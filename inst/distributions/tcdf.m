@@ -1,7 +1,7 @@
 ## Copyright (C) 1995-2016 Kurt Hornik
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 2013-2017 Julien Bect
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -20,8 +20,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{p} = tcdf (@var{x}, @var{df})
-## @deftypefnx {Function File} @var{p} = tcdf (@var{x}, @var{df}, "upper")
+## @deftypefn {statistics} @var{p} = tcdf (@var{x}, @var{df})
+## @deftypefnx {statistics} @var{p} = tcdf (@var{x}, @var{df}, "upper")
 ##
 ## Student's T cumulative distribution function (cdf).
 ##
@@ -46,24 +46,24 @@ function p = tcdf (x, df, uflag)
     error ("tcdf: invalid number of input arguments.");
   endif
 
-  ## Check for 'upper' flag
+  ## Check for "upper" flag
   if (nargin > 2 && strcmpi (uflag, "upper"))
     x = -x;
   elseif (nargin > 2  && ! strcmpi (uflag, "upper"))
     error ("tcdf: invalid argument for upper tail.");
   endif
 
-  ## Check for common size of V and DF
+  ## Check for common size of X and DF
   if (! isscalar (x) || ! isscalar (df))
     [err, x, df] = common_size (x, df);
     if (err > 0)
-      error ("tcdf: X and V must be of common size or scalars.");
+      error ("tcdf: X and DF must be of common size or scalars.");
     endif
   endif
 
   ## Check for X and DF being reals
   if (iscomplex (x) || iscomplex (df))
-    error ("tcdf: X and V must not be complex.");
+    error ("tcdf: X and DF must not be complex.");
   endif
 
   ## Check for class type
@@ -190,14 +190,14 @@ endfunction
 %!error tcdf (1,2,3,4)
 %!error<tcdf: invalid argument for upper tail.> tcdf (1, 2, "uper")
 %!error<tcdf: invalid argument for upper tail.> tcdf (1, 2, 3)
-%!error<tcdf: X and V must be of common size or scalars.> ...
+%!error<tcdf: X and DF must be of common size or scalars.> ...
 %! tcdf (ones (3), ones (2))
-%!error<tcdf: X and V must be of common size or scalars.> ...
+%!error<tcdf: X and DF must be of common size or scalars.> ...
 %! tcdf (ones (3), ones (2))
-%!error<tcdf: X and V must be of common size or scalars.> ...
+%!error<tcdf: X and DF must be of common size or scalars.> ...
 %! tcdf (ones (3), ones (2), "upper")
-%!error<tcdf: X and V must not be complex.> tcdf (i, 2)
-%!error<tcdf: X and V must not be complex.> tcdf (2, i)
+%!error<tcdf: X and DF must not be complex.> tcdf (i, 2)
+%!error<tcdf: X and DF must not be complex.> tcdf (2, i)
 
 ## Check some reference values
 
