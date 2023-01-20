@@ -487,42 +487,6 @@ function [s, m] = std (x, varargin)
 
 endfunction
 
-
-## Test input validation
-%!error <Invalid call to std.  Correct usage is> std ()
-%!error <Invalid call to std.  Correct usage is> std (1, 2, "omitnan", 3)
-%!error <Invalid call to std.  Correct usage is> std (1, 2, 3, 4)
-%!error <Invalid call to std.  Correct usage is> std (1, 2, 3, 4, 5)
-%!error <Invalid call to std.  Correct usage is> std (1, "foo")
-%!error <Invalid call to std.  Correct usage is> std (1, [], "foo")
-%!error <std: normalization scalar must be either 0 or 1> std ([1 2], 2, "all")
-%!error <std: normalization scalar must be either 0 or 1> std ([1 2],0.5, "all")
-%!error <std: weights must not contain any negative values> ...
-%! std ([1 2 3], [1 -1 0])
-%!error <std: X must be a numeric vector or matrix> std ({1:5})
-%!error <std: X must be a numeric vector or matrix> std ("char")
-%!error <std: DIM must be a positive integer> std (1, [], ones (2,2))
-%!error <std: DIM must be a positive integer> std (1, 0, 1.5)
-%!error <std: DIM must be a positive integer> std (1, [], 0)
-%!error <std: VECDIM must contain non-repeating positive integers> ...
-%! std (repmat ([1:20;6:25], [5 2 6 3]), 0, [1 2 2 2])
-%!error <std: weight vector does not match first operating dimension> ...
-%! std ([1 2 3; 2 3 4], [1 3 4])
-%!error <std: weight matrix or array does not match X in size> ...
-%! std ([1 2], eye (2))
-%!error <std: weight vector does not match given operating dimension> ...
-%! std ([1 2 3; 2 3 4], [1 3 4], 1)
-%!error <std: weight vector does not match given operating dimension> ...
-%! std ([1 2 3; 2 3 4], [1 3], 2)
-%!error <std: weight matrix or array does not match X in size> ...
-%! std (repmat ([1:20;6:25], [5 2 6 3]), repmat ([1:20;6:25], [5 2 3]), [2 3])
-%!error <std: 'all' flag cannot be used with DIM or VECDIM options> ...
-%! std (1, [], 1, "all")
-%!error <std: elements in weight vector do not match elements in X> ...
-%! std ([1 2 3; 2 3 4], [1 3], "all")
-%!error <std: weight matrix or array does not match X in size> ...
-%! std (repmat ([1:20;6:25], [5 2 6 3]), repmat ([1:20;6:25], [5 2 3]), "all")
-
 ## Test single input and optional arguments "all", DIM, "omitnan")
 %!test
 %! x = [-10:10];
@@ -843,3 +807,37 @@ endfunction
 %! std (1, [], ones (2,2))
 %!error <std: DIM must be a positive integer scalar or vector> std (1, [], 1.5)
 %!error <std: DIM must be a positive integer scalar or vector> std (1, [], 0)
+
+%!error <Invalid call to std.  Correct usage is> std ()
+%!error <Invalid call to std.  Correct usage is> std (1, 2, "omitnan", 3)
+%!error <Invalid call to std.  Correct usage is> std (1, 2, 3, 4)
+%!error <Invalid call to std.  Correct usage is> std (1, 2, 3, 4, 5)
+%!error <Invalid call to std.  Correct usage is> std (1, "foo")
+%!error <Invalid call to std.  Correct usage is> std (1, [], "foo")
+%!error <std: normalization scalar must be either 0 or 1> std ([1 2], 2, "all")
+%!error <std: normalization scalar must be either 0 or 1> std ([1 2],0.5, "all")
+%!error <std: weights must not contain any negative values> ...
+%! std ([1 2 3], [1 -1 0])
+%!error <std: X must be a numeric vector or matrix> std ({1:5})
+%!error <std: X must be a numeric vector or matrix> std ("char")
+%!error <std: DIM must be a positive integer> std (1, [], ones (2,2))
+%!error <std: DIM must be a positive integer> std (1, 0, 1.5)
+%!error <std: DIM must be a positive integer> std (1, [], 0)
+%!error <std: VECDIM must contain non-repeating positive integers> ...
+%! std (repmat ([1:20;6:25], [5 2 6 3]), 0, [1 2 2 2])
+%!error <std: weight vector does not match first operating dimension> ...
+%! std ([1 2 3; 2 3 4], [1 3 4])
+%!error <std: weight matrix or array does not match X in size> ...
+%! std ([1 2], eye (2))
+%!error <std: weight vector does not match given operating dimension> ...
+%! std ([1 2 3; 2 3 4], [1 3 4], 1)
+%!error <std: weight vector does not match given operating dimension> ...
+%! std ([1 2 3; 2 3 4], [1 3], 2)
+%!error <std: weight matrix or array does not match X in size> ...
+%! std (repmat ([1:20;6:25], [5 2 6 3]), repmat ([1:20;6:25], [5 2 3]), [2 3])
+%!error <std: 'all' flag cannot be used with DIM or VECDIM options> ...
+%! std (1, [], 1, "all")
+%!error <std: elements in weight vector do not match elements in X> ...
+%! std ([1 2 3; 2 3 4], [1 3], "all")
+%!error <std: weight matrix or array does not match X in size> ...
+%! std (repmat ([1:20;6:25], [5 2 6 3]), repmat ([1:20;6:25], [5 2 3]), "all")

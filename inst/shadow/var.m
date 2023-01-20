@@ -484,41 +484,6 @@ function [v, m] = var (x, varargin)
 endfunction
 
 
-## Test input validation
-%!error <Invalid call to var.  Correct usage is> var ()
-%!error <Invalid call to var.  Correct usage is> var (1, 2, "omitnan", 3)
-%!error <Invalid call to var.  Correct usage is> var (1, 2, 3, 4)
-%!error <Invalid call to var.  Correct usage is> var (1, 2, 3, 4, 5)
-%!error <Invalid call to var.  Correct usage is> var (1, "foo")
-%!error <Invalid call to var.  Correct usage is> var (1, [], "foo")
-%!error <var: normalization scalar must be either 0 or 1> var ([1 2], 2, "all")
-%!error <var: normalization scalar must be either 0 or 1> var ([1 2],0.5, "all")
-%!error <var: weights must not contain any negative values> ...
-%! var ([1 2 3], [1 -1 0])
-%!error <var: X must be a numeric vector or matrix> var ({1:5})
-%!error <var: X must be a numeric vector or matrix> var ("char")
-%!error <var: DIM must be a positive integer> var (1, [], ones (2,2))
-%!error <var: DIM must be a positive integer> var (1, 0, 1.5)
-%!error <var: DIM must be a positive integer> var (1, [], 0)
-%!error <var: VECDIM must contain non-repeating positive integers> ...
-%! var (repmat ([1:20;6:25], [5 2 6 3]), 0, [1 2 2 2])
-%!error <var: weight vector does not match first operating dimension> ...
-%! var ([1 2 3; 2 3 4], [1 3 4])
-%!error <var: weight matrix or array does not match X in size> ...
-%! var ([1 2], eye (2))
-%!error <var: weight vector does not match given operating dimension> ...
-%! var ([1 2 3; 2 3 4], [1 3 4], 1)
-%!error <var: weight vector does not match given operating dimension> ...
-%! var ([1 2 3; 2 3 4], [1 3], 2)
-%!error <var: weight matrix or array does not match X in size> ...
-%! var (repmat ([1:20;6:25], [5 2 6 3]), repmat ([1:20;6:25], [5 2 3]), [2 3])
-%!error <var: 'all' flag cannot be used with DIM or VECDIM options> ...
-%! var (1, [], 1, "all")
-%!error <var: elements in weight vector do not match elements in X> ...
-%! var ([1 2 3; 2 3 4], [1 3], "all")
-%!error <var: weight matrix or array does not match X in size> ...
-%! var (repmat ([1:20;6:25], [5 2 6 3]), repmat ([1:20;6:25], [5 2 3]), "all")
-
 ## Test single input and optional arguments "all", DIM, "omitnan")
 %!test
 %! x = [-10:10];
@@ -838,3 +803,38 @@ endfunction
 %! var (1, [], ones (2,2))
 %!error <var: DIM must be a positive integer scalar or vector> var (1, [], 1.5)
 %!error <var: DIM must be a positive integer scalar or vector> var (1, [], 0)
+
+%!error <Invalid call to var.  Correct usage is> var ()
+%!error <Invalid call to var.  Correct usage is> var (1, 2, "omitnan", 3)
+%!error <Invalid call to var.  Correct usage is> var (1, 2, 3, 4)
+%!error <Invalid call to var.  Correct usage is> var (1, 2, 3, 4, 5)
+%!error <Invalid call to var.  Correct usage is> var (1, "foo")
+%!error <Invalid call to var.  Correct usage is> var (1, [], "foo")
+%!error <var: normalization scalar must be either 0 or 1> var ([1 2], 2, "all")
+%!error <var: normalization scalar must be either 0 or 1> var ([1 2],0.5, "all")
+%!error <var: weights must not contain any negative values> ...
+%! var ([1 2 3], [1 -1 0])
+%!error <var: X must be a numeric vector or matrix> var ({1:5})
+%!error <var: X must be a numeric vector or matrix> var ("char")
+%!error <var: DIM must be a positive integer> var (1, [], ones (2,2))
+%!error <var: DIM must be a positive integer> var (1, 0, 1.5)
+%!error <var: DIM must be a positive integer> var (1, [], 0)
+%!error <var: VECDIM must contain non-repeating positive integers> ...
+%! var (repmat ([1:20;6:25], [5 2 6 3]), 0, [1 2 2 2])
+%!error <var: weight vector does not match first operating dimension> ...
+%! var ([1 2 3; 2 3 4], [1 3 4])
+%!error <var: weight matrix or array does not match X in size> ...
+%! var ([1 2], eye (2))
+%!error <var: weight vector does not match given operating dimension> ...
+%! var ([1 2 3; 2 3 4], [1 3 4], 1)
+%!error <var: weight vector does not match given operating dimension> ...
+%! var ([1 2 3; 2 3 4], [1 3], 2)
+%!error <var: weight matrix or array does not match X in size> ...
+%! var (repmat ([1:20;6:25], [5 2 6 3]), repmat ([1:20;6:25], [5 2 3]), [2 3])
+%!error <var: 'all' flag cannot be used with DIM or VECDIM options> ...
+%! var (1, [], 1, "all")
+%!error <var: elements in weight vector do not match elements in X> ...
+%! var ([1 2 3; 2 3 4], [1 3], "all")
+%!error <var: weight matrix or array does not match X in size> ...
+%! var (repmat ([1:20;6:25], [5 2 6 3]), repmat ([1:20;6:25], [5 2 3]), "all")
+
