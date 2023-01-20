@@ -98,7 +98,7 @@
 ## @seealso{std, mean}
 ## @end deftypefn
 
-function [y, m] = var (x, varargin)
+function [v, m] = var (x, varargin)
 
   if (nargin < 1 || nargin > 4 || any (cellfun (@isnumeric, varargin(3:end))))
     print_usage ();
@@ -165,9 +165,9 @@ function [y, m] = var (x, varargin)
       error ("var: VECDIM must contain non-repeating positive integers");
     endif
     if (! isempty (x) && isscalar (vecdim) && vecdim > ndims (x))
-      y = zeros (size (x), outtype);
-      yn = ! isfinite (x);
-      y(yn) = NaN;
+      v = zeros (size (x), outtype);
+      vn = ! isfinite (x);
+      v(vn) = NaN;
       m = x;
       return;
     endif
@@ -210,27 +210,27 @@ function [y, m] = var (x, varargin)
   ## Force output for X being empty or scalar
   if (isempty (x))
     if (isempty (vecdim) && all ((size (x)) == 0))
-      y = NaN;
+      v = NaN;
       m = NaN;
       return;
     elseif (isempty (vecdim) && ndims (x) == 2)
-      y = NaN;
+      v = NaN;
       m = NaN;
       return;
     endif
     if (isscalar (vecdim))
       nanvec = size (x);
       nanvec(vecdim) = 1;
-      y = NaN(nanvec);
+      v = NaN(nanvec);
       m = NaN(nanvec);
       return;
     endif
   endif
   if (isscalar (x))
     if (isfinite (x))
-      y = cast (0, outtype);
+      v = cast (0, outtype);
     else
-      y = cast (NaN, outtype);
+      v = cast (NaN, outtype);
     endif
     m = x;
     return;
@@ -246,9 +246,9 @@ function [y, m] = var (x, varargin)
       endif
       n = length (x);
       m = sum (x) ./ n;
-      y = sum (abs (x - m) .^ 2) ./ (n - 1 + w);
+      v = sum (abs (x - m) .^ 2) ./ (n - 1 + w);
       if (n == 1)
-        y = 0;
+        v = 0;
       endif
     else
       sz = size (x);
@@ -269,13 +269,13 @@ function [y, m] = var (x, varargin)
       if (omitnan)
         x(xn) = m_exp(xn);
       endif
-      y = sumsq (x - m_exp, dim) ./ (n - 1 + w);
+      v = sumsq (x - m_exp, dim) ./ (n - 1 + w);
       if (numel (n) == 1)
-        divby0 = repmat (n, size (y)) == 1;
+        divby0 = repmat (n, size (v)) == 1;
       else
          divby0 = n == 1;
       endif
-      y(divby0) = 0;
+      v(divby0) = 0;
     endif
 
   elseif (length (varargin) == 1)
@@ -298,11 +298,11 @@ function [y, m] = var (x, varargin)
       n = length (wx);
       m = sum (wx) ./ sum (wv);
       if (weighted)
-        y = sum (wv .* (abs (xv - m) .^ 2)) ./ sum (weights(:));
+        v = sum (wv .* (abs (xv - m) .^ 2)) ./ sum (weights(:));
       else
-        y = sum (wv .* (abs (xv - m) .^ 2)) ./ (n - 1 + w);
+        v = sum (wv .* (abs (xv - m) .^ 2)) ./ (n - 1 + w);
         if (n == 1)
-          y = 0;
+          v = 0;
         endif
       endif
     else
@@ -333,15 +333,15 @@ function [y, m] = var (x, varargin)
         x(xn) = m_exp(xn);
       endif
       if (weighted)
-        y = sum (wv .* ((x - m_exp) .* (x - m_exp)), dim) ./ sum (weights(:));
+        v = sum (wv .* ((x - m_exp) .* (x - m_exp)), dim) ./ sum (weights(:));
       else
-        y = sumsq (x - m_exp, dim) ./ (n - 1 + w);
+        v = sumsq (x - m_exp, dim) ./ (n - 1 + w);
         if (numel (n) == 1)
-          divby0 = repmat (n, size (y)) == 1;
+          divby0 = repmat (n, size (v)) == 1;
         else
            divby0 = n == 1;
         endif
-        y(divby0) = 0;
+        v(divby0) = 0;
       endif
     endif
 
@@ -371,19 +371,19 @@ function [y, m] = var (x, varargin)
         x(xn) = m_exp(xn);
       endif
       if (weighted)
-        y = sum (wv .* ((x - m_exp) .* (x - m_exp)), vecdim) ./ ...
+        v = sum (wv .* ((x - m_exp) .* (x - m_exp)), vecdim) ./ ...
             sum (weights(:));
       else
-        y = sumsq (x - m_exp, vecdim);
-        yn = isnan (y);
-        y = y ./ (n - 1 + w);
+        v = sumsq (x - m_exp, vecdim);
+        vn = isnan (v);
+        v = v ./ (n - 1 + w);
         if (numel (n) == 1)
-          divby0 = repmat (n, size (y)) == 1;
+          divby0 = repmat (n, size (v)) == 1;
         else
           divby0 = n == 1;
         endif
-        y(divby0) = 0;
-        y(yn) = NaN;
+        v(divby0) = 0;
+        v(vn) = NaN;
       endif
 
     else
@@ -413,11 +413,11 @@ function [y, m] = var (x, varargin)
         n = length (wx);
         m = sum (wx) ./ sum (wv);
         if (weighted)
-          y = sum (wv .* (abs (xv - m) .^ 2)) ./ sum (weights(:));
+          v = sum (wv .* (abs (xv - m) .^ 2)) ./ sum (weights(:));
         else
-          y = sum (wv .* (abs (xv - m) .^ 2)) ./ (n - 1 + w);
+          v = sum (wv .* (abs (xv - m) .^ 2)) ./ (n - 1 + w);
           if (n == 1)
-            y = 0;
+            v = 0;
           endif
         endif
 
@@ -459,26 +459,26 @@ function [y, m] = var (x, varargin)
           x(xn) = m_exp(xn);
         endif
         if (weighted)
-          y = sum (wv .* ((x - m_exp) .* (x - m_exp)), dim) ./ sum (weights(:));
+          v = sum (wv .* ((x - m_exp) .* (x - m_exp)), dim) ./ sum (weights(:));
         else
-          y = sumsq (x - m_exp, dim) ./ (n - 1 + w);
+          v = sumsq (x - m_exp, dim) ./ (n - 1 + w);
           if (numel (n) == 1)
-            divby0 = repmat (n, size (y)) == 1;
+            divby0 = repmat (n, size (v)) == 1;
           else
              divby0 = n == 1;
           endif
-          y(divby0) = 0;
+          v(divby0) = 0;
         endif
 
         ## Inverse permute back to correct dimensions
-        y = ipermute (y, perm);
+        v = ipermute (v, perm);
         m = ipermute (m, perm);
       endif
     endif
   endif
 
   ## Preserve class type
-  y = cast (y, outtype);
+  v = cast (v, outtype);
   m = cast (m, outtype);
 
 endfunction
