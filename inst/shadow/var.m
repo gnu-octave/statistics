@@ -48,29 +48,29 @@
 ##
 ## @item
 ## If @var{x} is a matrix, then @code{var (@var{x})} returns a row vector with
-## the variance of each columns in @var{x}.
+## the variance of each column in @var{x}.
 ##
 ## @item
-## If @var{x} is a multidimensional array, then @code{var (@var{x})} operates
-## along the first nonsingleton dimension of @var{x}.
+## If @var{x} is a multi-dimensional array, then @code{var (@var{x})} operates
+## along the first non-singleton dimension of @var{x}.
 ## @end itemize
 ##
-## @code{var (@var{x}, @var{w})} specifies a weighting scheme.   When @var{w} =
-## 0 (default), the variance is normalized by N-1 (population variance), where N
-## is the number of observations.  When @var{w} = 1, the variance is normalized
-## by the number of observations (sample variance).  To use the default value
-## you may pass an empty input argument [] before entering other options.
+## @code{var (@var{x}, @var{w})} specifies a weighting scheme.  When @var{w} = 0
+## (default), the variance is normalized by N-1 (population variance) where N is
+## the number of observations.  When @var{w} = 1, the variance is normalized by
+## the number of observations (sample variance).  To use the default value you
+## may pass an empty input argument [] before entering other options.
 ##
-## @var{w} can also be a weight vector, matrix or N-D array containing
-## nonnegative elements.  When @var{w} is a vector, its length must equal the
-## length of the dimension over which var is operating.  When "all" flag is
-## used, the length of @var{w} must equal the elements in @var{x}.  When @var{w}
-## is a matrix or N-D array, its size must equal the size of @var{x}.  NaN
-## values in @var{w} are treated accordingly to those in @var{x}.
+## @var{w} can also be non-scalar.  When @var{w} is a vector, it must have the
+## same length as the number of elements in the operating dimension of @var{x}.
+## If @var{w} is a matrix or n-D array, or the operating dimension is supplied
+## as a @var{vecdim} or "all", @var{w} must be the same size as @var{x}.  NaN
+## values are permitted in @var{w}, will be multiplied with the associated
+## values in @var{x}, and can be excluded by the @var{nanflag} option.
 ##
 ## @code{var (@var{x}, [], @var{dim})} returns the variance along the operating
 ## dimension @var{dim} of @var{x}.  For @var{dim} greater than
-## @code{ndims (@var{x})}, then @var{v} is returned as zeros of the same size as
+## @code{ndims (@var{x})} @var{v} is returned as zeros of the same size as
 ## @var{x} and @var{m} = @var{x}.
 ##
 ## @code{var (@var{x}, [], @var{vecdim})} returns the variance over the
@@ -86,10 +86,10 @@
 ## @var{vecdim} input arguments.
 ##
 ## @code{var (@dots{}, @var{nanflag})} specifies whether to exclude NaN values
-## from the calculation, using any of the input argument combinations in
-## previous syntaxes.  By default, NaN values are included in the calculation
-## (@var{nanflag} has the value "includenan").  To exclude NaN values, set the
-## value of @var{nanflag} to "omitnan".
+## from the calculation using any of the input argument combinations in previous
+## syntaxes.  The default value for @var{nanflag} is "includenan", and keeps NaN
+## values in the calculation. To exclude NaN values, set the value of
+## @var{nanflag} to "omitnan".
 ##
 ## @code{[@var{v}, @var{m}] = var (@dots{})} also returns the mean of the
 ## elements of @var{x} used to calculate the variance.  If @var{v} is the
