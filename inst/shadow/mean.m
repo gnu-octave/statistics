@@ -96,7 +96,7 @@
 ## @seealso{median, mode}
 ## @end deftypefn
 
-function y = mean (x, varargin)
+function m = mean (x, varargin)
 
   if (nargin < 1 || nargin > 4 || any (cellfun (@isnumeric, varargin(2:end))))
     print_usage ();
@@ -143,7 +143,7 @@ function y = mean (x, varargin)
         n = length (x(! isnan (x)));
         x(isnan (x)) = 0;
       endif
-      y = sum (x(:), 1) ./ n;
+      m = sum (x(:), 1) ./ n;
     else
       sz = size (x);
       dim = find (sz > 1, 1);
@@ -155,7 +155,7 @@ function y = mean (x, varargin)
         n = sum (! isnan (x), dim);
         x(isnan (x)) = 0;
       endif
-      y = sum (x, dim) ./ n;
+      m = sum (x, dim) ./ n;
     endif
 
   else
@@ -173,7 +173,7 @@ function y = mean (x, varargin)
         n = sum (! isnan (x), vecdim);
         x(isnan (x)) = 0;
       endif
-      y = sum (x, vecdim) ./ n;
+      m = sum (x, vecdim) ./ n;
 
     else
 
@@ -191,29 +191,29 @@ function y = mean (x, varargin)
           n = length (x(! isnan (x)));
           x(isnan (x)) = 0;
         endif
-        y = sum (x(:), 1) ./ n;
+        m = sum (x(:), 1) ./ n;
 
       else
         ## Permute to bring remaining dims forward
         perm = [remdims, vecdim];
-        y = permute (x, perm);
+        m = permute (x, perm);
 
         ## Reshape to put all vecdims in final dimension
-        szy = size (y);
-        sznew = [szy(1:nremd), prod(szy(nremd+1:end))];
-        y = reshape (y, sznew);
+        szm = size (m);
+        sznew = [szm(1:nremd), prod(szm(nremd+1:end))];
+        m = reshape (m, sznew);
 
         ## Calculate mean on single, squashed dimension
         dim = nremd + 1;
-        n = size (y, dim);
+        n = size (m, dim);
         if (omitnan)
-          n = sum (! isnan (y), dim);
-          y(isnan (y)) = 0;
+          n = sum (! isnan (m), dim);
+          m(isnan (m)) = 0;
         endif
-        y = sum (y, dim) ./ n;
+        m = sum (m, dim) ./ n;
 
         ## Inverse permute back to correct dimensions
-        y = ipermute (y, perm);
+        m = ipermute (m, perm);
       endif
     endif
   endif
@@ -223,10 +223,10 @@ function y = mean (x, varargin)
     case "default"
       ## do nothing, the operators already do the right thing
     case "double"
-      y = double (y);
+      m = double (m);
     case "native"
       if (! islogical (x))
-        y = cast (y, class (x));
+        m = cast (m, class (x));
       endif
     otherwise
       error ("mean: OUTTYPE '%s' not recognized", outtype);

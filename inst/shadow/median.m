@@ -99,7 +99,7 @@
 ## @seealso{mean, mode}
 ## @end deftypefn
 
-function y = median (x, varargin)
+function m = median (x, varargin)
 
   if (nargin < 1 || nargin > 4 || any (cellfun (@isnumeric, varargin(2:end))))
     print_usage ();
@@ -148,13 +148,13 @@ function y = median (x, varargin)
       x = sort (x(:), 1);
       k = floor ((n + 1) / 2);
       if (mod (n, 2) == 1)
-        y = x(k);
+        m = x(k);
       else
-        y = x(k) + x(k+1) / 2;
+        m = x(k) + x(k+1) / 2;
       endif
       ## Inject NaNs where needed, to be consistent with Matlab.
       if (! omitnan && ! islogical (x))
-        y(any (isnan (x))) = NaN;
+        m(any (isnan (x))) = NaN;
       endif
     else
       sz = size (x);
@@ -181,11 +181,11 @@ function y = median (x, varargin)
       szz = size (z{1});
       for i = 1:numel (k)
         [szargs{:}] = ind2sub (szz, i);
-        y(szargs{:}) = z{i}(szargs{:});
+        m(szargs{:}) = z{i}(szargs{:});
       endfor
       ## Inject NaNs where needed, to be consistent with Matlab.
       if (! omitnan && ! islogical (x))
-        y(any (isnan (x), dim)) = NaN;
+        m(any (isnan (x), dim)) = NaN;
       endif
     endif
 
@@ -218,11 +218,11 @@ function y = median (x, varargin)
       szz = size (z{1});
       for i = 1:numel (k)
         [szargs{:}] = ind2sub (szz, i);
-        y(szargs{:}) = z{i}(szargs{:});
+        m(szargs{:}) = z{i}(szargs{:});
       endfor
       ## Inject NaNs where needed, to be consistent with Matlab.
       if (! omitnan && ! islogical (x))
-        y(any (isnan (x), dim)) = NaN;
+        m(any (isnan (x), dim)) = NaN;
       endif
 
     else
@@ -243,39 +243,39 @@ function y = median (x, varargin)
         x = sort (x(:), 1);
         k = floor ((n + 1) / 2);
         if (mod (n, 2) == 1)
-          y = x(k);
+          m = x(k);
         else
-          y = x(k) + x(k+1) / 2;
+          m = x(k) + x(k+1) / 2;
         endif
         ## Inject NaNs where needed, to be consistent with Matlab.
         if (! omitnan && ! islogical (x))
-          y(any (isnan (x))) = NaN;
+          m(any (isnan (x))) = NaN;
         endif
 
       else
         ## Permute to bring remaining dims forward
         perm = [remdims, vecdim];
-        y = permute (x, perm);
+        m = permute (x, perm);
 
         ## Reshape to put all vecdims in final dimension
-        szy = size (y);
-        sznew = [szy(1:nremd), prod(szy(nremd+1:end))];
-        y = reshape (y, sznew);
+        szm = size (m);
+        sznew = [szm(1:nremd), prod(szm(nremd+1:end))];
+        m = reshape (m, sznew);
 
         ## Calculate median on single, squashed dimension
         dim = nremd + 1;
-        y = sort (y, dim);
+        m = sort (m, dim);
         if (omitnan)
-          n = sum (! isnan (y), dim);
+          n = sum (! isnan (m), dim);
         else
-          n = sum (isnan (y) | ! isnan (y), dim);
+          n = sum (isnan (m) | ! isnan (m), dim);
         endif
         k = floor ((n + 1) ./ 2);
         for i = 1:numel (k)
           if (mod (n(i), 2) == 1)
-            z(i) = {(nth_element (y, k(i), dim))};
+            z(i) = {(nth_element (m, k(i), dim))};
           else
-            z(i) = {(sum (nth_element (y, k(i):k(i)+1, dim), dim, "native") ...
+            z(i) = {(sum (nth_element (m, k(i):k(i)+1, dim), dim, "native") ...
                      / 2)};
           endif
         endfor
@@ -284,15 +284,15 @@ function y = median (x, varargin)
         szz = size (z{1});
         for i = 1:numel (k)
           [szargs{:}] = ind2sub (szz, i);
-          yy(szargs{:}) = z{i}(szargs{:});
+          mm(szargs{:}) = z{i}(szargs{:});
         endfor
         ## Inject NaNs where needed, to be consistent with Matlab.
         if (! omitnan && ! islogical (x))
-          yy(any (isnan (y), dim)) = NaN;
+          mm(any (isnan (m), dim)) = NaN;
         endif
 
         ## Inverse permute back to correct dimensions
-        y = ipermute (yy, perm);
+        m = ipermute (mm, perm);
       endif
     endif
   endif
@@ -302,10 +302,10 @@ function y = median (x, varargin)
     case "default"
       ## do nothing, the operators already do the right thing
     case "double"
-      y = double (y);
+      m = double (m);
     case "native"
       if (! islogical (x))
-        y = cast (y, class (x));
+        m = cast (m, class (x));
       endif
     otherwise
       error ("mean: OUTTYPE '%s' not recognized", outtype);
