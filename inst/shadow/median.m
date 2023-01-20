@@ -314,19 +314,6 @@ function m = median (x, varargin)
 endfunction
 
 
-## Test input validation
-%!error <Invalid call to median.  Correct usage is> median ()
-%!error <Invalid call to median.  Correct usage is> median (1, 2, 3)
-%!error <Invalid call to median.  Correct usage is> median (1, 2, 3, 4)
-%!error <Invalid call to median.  Correct usage is> median (1, "all", 3)
-%!error <Invalid call to median.  Correct usage is> median (1, "b")
-%!error <Invalid call to median.  Correct usage is> median (1, 1, "foo")
-%!error <median: X must be either a numeric or boolean> median ({1:5})
-%!error <median: X must be either a numeric or boolean> median ("char")
-%!error <median: DIM must be a positive integer> median (1, ones (2,2))
-%!error <median: DIM must be a positive integer> median (1, 1.5)
-%!error <median: DIM must be a positive integer> median (1, 0)
-
 ## Test outtype option
 %!test
 %! in = [1 2 3];
@@ -406,4 +393,17 @@ endfunction
 %! assert (median (x, [3 2], "omitnan"), [2.05 2.5 1.4]');
 %! assert (median (x, [1 3]), [2 1.1 2 NaN NaN]);
 %! assert (median (x, [1 3], "omitnan"), [2 1.1 2 3.5 4]);
+
+## Test input validation
+%!error <Invalid call to median.  Correct usage is> median ()
+%!error <Invalid call to median.  Correct usage is> median (1, 2, 3)
+%!error <Invalid call to median.  Correct usage is> median (1, 2, 3, 4)
+%!error <Invalid call to median.  Correct usage is> median (1, "all", 3)
+%!error <Invalid call to median.  Correct usage is> median (1, "b")
+%!error <Invalid call to median.  Correct usage is> median (1, 1, "foo")
+%!error <median: X must be either a numeric or boolean> median ({1:5})
+%!error <median: X must be either a numeric or boolean> median ("char")
+%!error <median: DIM must be a positive integer> median (1, ones (2,2))
+%!error <median: DIM must be a positive integer> median (1, 1.5)
+%!error <median: DIM must be a positive integer> median (1, 0)
 

@@ -249,19 +249,6 @@ endfunction
 %!assert (mean (single ([1 0 1 1])), single (0.75))
 %!assert (mean ([1 2], 3), [1 2])
 
-## Test input validation
-%!error <Invalid call to mean.  Correct usage is> mean ()
-%!error <Invalid call to mean.  Correct usage is> mean (1, 2, 3)
-%!error <Invalid call to mean.  Correct usage is> mean (1, 2, 3, 4)
-%!error <Invalid call to mean.  Correct usage is> mean (1, "all", 3)
-%!error <Invalid call to mean.  Correct usage is> mean (1, "b")
-%!error <Invalid call to mean.  Correct usage is> mean (1, 1, "foo")
-%!error <mean: X must be either a numeric or boolean> mean ({1:5})
-%!error <mean: X must be either a numeric or boolean> mean ("char")
-%!error <mean: DIM must be a positive integer> mean (1, ones (2,2))
-%!error <mean: DIM must be a positive integer> mean (1, 1.5)
-%!error <mean: DIM must be a positive integer> mean (1, 0)
-
 ## Test outtype option
 %!test
 %! in = [1 2 3];
@@ -346,3 +333,16 @@ endfunction
 %! assert (mean (x, [3 2]), m, 4e-14);
 %! m(2,1,1,3) = 15.52301255230125;
 %! assert (mean (x, [3 2], "omitnan"), m, 4e-14);
+
+## Test input validation
+%!error <Invalid call to mean.  Correct usage is> mean ()
+%!error <Invalid call to mean.  Correct usage is> mean (1, 2, 3)
+%!error <Invalid call to mean.  Correct usage is> mean (1, 2, 3, 4)
+%!error <Invalid call to mean.  Correct usage is> mean (1, "all", 3)
+%!error <Invalid call to mean.  Correct usage is> mean (1, "b")
+%!error <Invalid call to mean.  Correct usage is> mean (1, 1, "foo")
+%!error <mean: X must be either a numeric or boolean> mean ({1:5})
+%!error <mean: X must be either a numeric or boolean> mean ("char")
+%!error <mean: DIM must be a positive integer> mean (1, ones (2,2))
+%!error <mean: DIM must be a positive integer> mean (1, 1.5)
+%!error <mean: DIM must be a positive integer> mean (1, 0)
