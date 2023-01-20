@@ -101,7 +101,7 @@
 
 function m = median (x, varargin)
 
-  if (nargin < 1 || nargin > 4 || any (cellfun (@isnumeric, varargin(2:end))))
+  if (nargin < 1 || nargin > 4)
     print_usage ();
   endif
 
@@ -109,8 +109,13 @@ function m = median (x, varargin)
   all_flag = false;
   omitnan = false;
   outtype = "default";
+  nvarg = numel (varargin);
 
-  for i = 1:length (varargin)
+  if (nvarg == 2 && isnumeric (varargin{2}))
+    print_usage ();
+  endif
+
+  for i = 1:nvarg
     if (ischar (varargin{i}))
       switch (varargin{i})
         case "all"
@@ -127,9 +132,10 @@ function m = median (x, varargin)
     endif
   endfor
   varargin(cellfun (@ischar, varargin)) = [];
+  nvarg = numel (varargin);
 
-  if (((length (varargin) == 1) && ! (isnumeric (varargin{1}))) ...
-      || (length (varargin) > 1))
+  if (((nvarg == 1) && ! (isnumeric (varargin{1}))) ...
+      || (nvarg > 1))
     print_usage ();
   endif
 
@@ -137,7 +143,7 @@ function m = median (x, varargin)
     error ("median: X must be either a numeric or boolean");
   endif
 
-  if (length (varargin) == 0)
+  if (nvarg == 0)
 
     ## Single numeric input argument, no dimensions given.
     if (all_flag)
