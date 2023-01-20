@@ -16,12 +16,12 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = median (@var{x})
-## @deftypefnx {statistics} @var{y} = median (@var{x}, "all")
-## @deftypefnx {statistics} @var{y} = median (@var{x}, @var{dim})
-## @deftypefnx {statistics} @var{y} = median (@var{x}, @var{vecdim})
-## @deftypefnx {statistics} @var{y} = median (@dots{}, @var{outtype})
-## @deftypefnx {statistics} @var{y} = median (@dots{}, @var{nanflag})
+## @deftypefn  {statistics} @var{m} = median (@var{x})
+## @deftypefnx {statistics} @var{m} = median (@var{x}, "all")
+## @deftypefnx {statistics} @var{m} = median (@var{x}, @var{dim})
+## @deftypefnx {statistics} @var{m} = median (@var{x}, @var{vecdim})
+## @deftypefnx {statistics} @var{m} = median (@dots{}, @var{outtype})
+## @deftypefnx {statistics} @var{m} = median (@dots{}, @var{nanflag})
 ##
 ## Compute the median of the elements of @var{x}.
 ##
@@ -40,7 +40,7 @@
 ##
 ## @example
 ## @group
-##              |  @var{s}(ceil(N/2))           N odd
+##              |  @var{s}(ceil (N/2))          N odd
 ## median (@var{x}) = |
 ##              | (@var{s}(N/2) + @var{s}(N/2+1))/2   N even
 ## @end group
@@ -49,17 +49,17 @@
 ## @end ifnottex
 ## @itemize
 ## @item
-## If @var{x} is a matrix, then @code{median(@var{x})} returns a row vector
-## with the mean of each columns in @var{x}.
+## If @var{x} is a matrix, then @code{median (@var{x})} returns a row vector
+## with the mean of each column in @var{x}.
 ##
 ## @item
-## If @var{x} is a multidimensional array, then @code{median(@var{x})}
-## operates along the first nonsingleton dimension of @var{x}.
+## If @var{x} is a multidimensional array, then @code{median (@var{x})}
+## operates along the first non-singleton dimension of @var{x}.
 ## @end itemize
 ##
 ## @code{median (@var{x}, @var{dim})} returns the median along the operating
 ## dimension @var{dim} of @var{x}.  For @var{dim} greater than
-## @code{ndims (@var{x})}, then @var{y} = @var{x}.
+## @code{ndims (@var{x})}, then @var{m} = @var{x}.
 ##
 ## @code{median (@var{x}, @var{vecdim})} returns the median over the
 ## dimensions specified in the vector @var{vecdim}.  For example, if @var{x}
@@ -76,7 +76,19 @@
 ##
 ## @code{median (@dots{}, @var{outtype})} returns the median with a specified
 ## data type, using any of the input arguments in the previous syntaxes.
-## @var{outtype} can be "default", "double", or "native".
+## @var{outtype} can take the following values:
+## @table
+## @item "default"
+## Output is of type double, unless the input is single in which case the output
+## is of type single.
+##
+## @item "double"
+## Output is of type double.
+##
+## @item "native".
+## Output is of the same type as the input (@code{class (@var{x})}), unless the
+## input is logical in which case the output is of type double.
+## @end table
 ##
 ## @code{median (@dots{}, @var{nanflag})} specifies whether to exclude NaN
 ## values from the calculation, using any of the input argument combinations in

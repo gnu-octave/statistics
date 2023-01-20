@@ -17,12 +17,12 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = mean (@var{x})
-## @deftypefnx {statistics} @var{y} = mean (@var{x}, "all")
-## @deftypefnx {statistics} @var{y} = mean (@var{x}, @var{dim})
-## @deftypefnx {statistics} @var{y} = mean (@var{x}, @var{vecdim})
-## @deftypefnx {statistics} @var{y} = mean (@dots{}, @var{outtype})
-## @deftypefnx {statistics} @var{y} = mean (@dots{}, @var{nanflag})
+## @deftypefn  {statistics} @var{m} = mean (@var{x})
+## @deftypefnx {statistics} @var{m} = mean (@var{x}, "all")
+## @deftypefnx {statistics} @var{m} = mean (@var{x}, @var{dim})
+## @deftypefnx {statistics} @var{m} = mean (@var{x}, @var{vecdim})
+## @deftypefnx {statistics} @var{m} = mean (@dots{}, @var{outtype})
+## @deftypefnx {statistics} @var{m} = mean (@dots{}, @var{nanflag})
 ##
 ## Compute the mean of the elements of @var{x}.
 ##
@@ -47,17 +47,17 @@
 ## @end ifnottex
 ##
 ## @item
-## If @var{x} is a matrix, then @code{mean(@var{x})} returns a row vector
-## with the mean of each columns in @var{x}.
+## If @var{x} is a matrix, then @code{mean (@var{x})} returns a row vector
+## with the mean of each column in @var{x}.
 ##
 ## @item
-## If @var{x} is a multidimensional array, then @code{mean(@var{x})}
-## operates along the first nonsingleton dimension of @var{x}.
+## If @var{x} is a multidimensional array, then @code{mean (@var{x})}
+## operates along the first non-singleton dimension of @var{x}.
 ## @end itemize
 ##
 ## @code{mean (@var{x}, @var{dim})} returns the mean along the operating
 ## dimension @var{dim} of @var{x}.  For @var{dim} greater than
-## @code{ndims (@var{x})}, then @var{y} = @var{x}.
+## @code{ndims (@var{x})}, then @var{m} = @var{x}.
 ##
 ## @code{mean (@var{x}, @var{vecdim})} returns the mean over the
 ## dimensions specified in the vector @var{vecdim}.  For example, if @var{x}
@@ -73,7 +73,19 @@
 ##
 ## @code{mean (@dots{}, @var{outtype})} returns the mean with a specified data
 ## type, using any of the input arguments in the previous syntaxes.
-## @var{outtype} can be "default", "double", or "native".
+## @var{outtype} can take the following values:
+## @table
+## @item "default"
+## Output is of type double, unless the input is single in which case the output
+## is of type single.
+##
+## @item "double"
+## Output is of type double.
+##
+## @item "native".
+## Output is of the same type as the input (@code{class (@var{x})}), unless the
+## input is logical in which case the output is of type double.
+## @end table
 ##
 ## @code{mean (@dots{}, @var{nanflag})} specifies whether to exclude NaN values
 ## from the calculation, using any of the input argument combinations in
