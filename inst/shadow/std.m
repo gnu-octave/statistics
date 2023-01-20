@@ -102,15 +102,20 @@
 
 function [s, m] = std (x, varargin)
 
-  if (nargin < 1 || nargin > 4 || any (cellfun (@isnumeric, varargin(3:end))))
+  if (nargin < 1 || nargin > 4)
     print_usage ();
   endif
 
   ## Check all char arguments.
   all_flag = false;
   omitnan = false;
+  nvarg = numel (varargin);
 
-  for i = 1:length (varargin)
+  if (nvarg == 3 && isnumeric (varargin{3}))
+    print_usage ();
+  endif
+
+  for i = 1:nvarg
     if (ischar (varargin{i}))
       switch (varargin{i})
         case "all"
@@ -125,11 +130,13 @@ function [s, m] = std (x, varargin)
     endif
   endfor
   varargin(cellfun (@ischar, varargin)) = [];
+  nvarg = numel (varargin);
+
 
   ## Check all numeric arguments
-  if (((length (varargin) == 1) && ! (isnumeric (varargin{1}))) ...
-      || ((length (varargin) == 2) && (! (isnumeric (varargin{1})) ...
-          || ! (isnumeric (varargin{2})))) || (length (varargin) > 2))
+  if (((nvarg == 1) && ! (isnumeric (varargin{1}))) ...
+      || ((nvarg == 2) && (! (isnumeric (varargin{1})) ...
+          || ! (isnumeric (varargin{2})))) || (nvarg > 2))
     print_usage ();
   endif
 
@@ -144,12 +151,12 @@ function [s, m] = std (x, varargin)
 
   w = 0;
   weighted = false;
-  if (length (varargin) > 0 && isscalar (varargin{1}))
+  if (nvarg > 0 && isscalar (varargin{1}))
     w = varargin{1};
     if (! (w == 0 || w == 1) && ! isscalar (x))
       error ("std: normalization scalar must be either 0 or 1");
     endif
-  elseif (length (varargin) > 0 && numel (varargin{1}) > 1)
+  elseif (nvarg > 0 && numel (varargin{1}) > 1)
     weights = varargin{1};
     if (any (weights(:) < 0) && ! isscalar (x))
       error ("std: weights must not contain any negative values");
@@ -158,7 +165,7 @@ function [s, m] = std (x, varargin)
   endif
 
   vecdim = [];
-  if (length (varargin) > 1)
+  if (nvarg > 1)
     vecdim = varargin{2};
     if (! (isvector (vecdim) && all (vecdim)) || any (rem (vecdim, 1)))
       error ("std: DIM must be a positive integer scalar or vector");
@@ -238,7 +245,7 @@ function [s, m] = std (x, varargin)
     return;
   endif
 
-  if (length (varargin) == 0)
+  if (nvarg == 0)
 
     ## Single numeric input argument, no dimensions or weights given.
     if (all_flag)
@@ -280,7 +287,7 @@ function [s, m] = std (x, varargin)
       s(divby0) = 0;
     endif
 
-  elseif (length (varargin) == 1)
+  elseif (nvarg == 1)
 
     ## Two numeric input arguments, w or weights given.
     if (all_flag)
@@ -348,7 +355,7 @@ function [s, m] = std (x, varargin)
       endif
     endif
 
-  elseif (length (varargin) == 2)
+  elseif (nvarg == 2)
 
     ## Three numeric input arguments, both w or weights and dim or vecdim given.
     if (isscalar (vecdim))
