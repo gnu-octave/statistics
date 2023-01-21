@@ -136,7 +136,8 @@ function [v, m] = var (x, varargin)
   w = 0;
   weighted = false; # true if weight vector applied to individual values of x
   vecdim = [];
-  vecdim_scalar_vector = [false, false]; # false false for empty vecdim
+  vecempty = true;
+  vecdim_scalar_vector = [false, false]; # [false, false] for empty vecdim
   szx = size (x);
 
   ## Check numeric arguments
@@ -169,13 +170,16 @@ function [v, m] = var (x, varargin)
     if (nvarg > 1)
     ## Process dimension input
       vecdim = varargin{2};
-      if (! (isvector (vecdim) && all (vecdim)) || any (rem (vecdim, 1)))
+      if (! (vecempty = isempty (vecdim)))
+        vecdim_scalar_vector = [isscalar(vecdim), isvector(vecdim)];
+      endif
+      if (! (vecdim_scalar_vector(2) && all (vecdim)) || any (rem (vecdim, 1)))
         error ("var: DIM must be a positive integer scalar or vector");
       endif
-      if (! isequal (vecdim, unique (vecdim, "stable")))
+      if (numel (vecdim) != numel (unique (vecdim)))
         error ("var: VECDIM must contain non-repeating positive integers");
       endif
-      if (! isempty (x) && isscalar (vecdim) && vecdim > ndims (x))
+      if (! isempty (x) && vecdim_scalar_vector(1) && vecdim > ndims (x))
         v = zeros (szx, outtype);
         vn = ! isfinite (x);
         v(vn) = NaN;
@@ -186,10 +190,10 @@ function [v, m] = var (x, varargin)
   endif
 
   ## Check for conflicting input arguments
-  if (all_flag && ! isempty (vecdim))
+  if (all_flag && ! vecempty)
     error ("var: 'all' flag cannot be used with DIM or VECDIM options");
   endif
-  if (weighted && isempty (vecdim) && ! all_flag)
+  if (weighted && vecempty && ! all_flag)
     dim = find (szx > 1, 1);
     if length (dim) == 0
       dim = 1;
@@ -200,11 +204,11 @@ function [v, m] = var (x, varargin)
     if (! isvector (weights) && numel (weights) != szx(dim))
       error ("var: weight matrix or array does not match X in size");
     endif
-  elseif (weighted && isscalar (vecdim))
+  elseif (weighted && vecdim_scalar_vector(1))
     if (isvector (weights) && numel (weights) != szx(vecdim))
       error ("var: weight vector does not match given operating dimension");
     endif
-  elseif (weighted && isvector (vecdim))
+  elseif (weighted && vecdim_scalar_vector(2))
     if (! (isequal (size (weights), szx)))
       error ("var: weight matrix or array does not match X in size");
     endif
@@ -220,16 +224,16 @@ function [v, m] = var (x, varargin)
 
   ## Force output for X being empty or scalar
   if (isempty (x))
-    if (isempty (vecdim) && all ((szx) == 0))
+    if (vecempty && all ((szx) == 0))
       v = NaN;
       m = NaN;
       return;
-    elseif (isempty (vecdim) && ndims (x) == 2)
+    elseif (vecempty && ndims (x) == 2)
       v = NaN;
       m = NaN;
       return;
     endif
-    if (isscalar (vecdim))
+    if (vecdim_scalar_vector(1))
       nanvec = szx;
       nanvec(vecdim) = 1;
       v = NaN(nanvec);
@@ -357,7 +361,7 @@ function [v, m] = var (x, varargin)
   elseif (nvarg == 2)
 
     ## Three numeric input arguments, both w or weights and dim or vecdim given.
-    if (isscalar (vecdim))
+    if (vecdim_scalar_vector(1))
       if (weighted)
         wv = weights(:);
       else
