@@ -239,18 +239,17 @@ function [s, m] = std (x, varargin)
       return;
     endif
     if (vecdim_scalar_vector(1))
-      nanvec = szx;
-      nanvec(vecdim) = 1;
-      s = NaN(nanvec);
-      m = NaN(nanvec);
+      szx(vecdim) = 1;
+      s = NaN(szx);
+      m = NaN(szx);
       return;
     endif
   endif
   if (isscalar (x))
     if (isfinite (x))
-      s = cast (0, outtype);
+      s = zeros (outtype);
     else
-      s = cast (NaN, outtype);
+      s = NaN (outtype);
     endif
     m = x;
     return;
@@ -498,8 +497,14 @@ function [s, m] = std (x, varargin)
   endif
 
   ## Preserve class type
-  s = cast (s, outtype);
-  m = cast (m, outtype);
+  switch outtype
+    case 'single'
+      s = single (s);
+      m = single (m);
+    case 'double'
+      s = double (s);
+      m = double (m);
+  endswitch
 
 endfunction
 
