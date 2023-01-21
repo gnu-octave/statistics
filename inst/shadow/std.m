@@ -136,7 +136,7 @@ function [s, m] = std (x, varargin)
   endif
 
   w = 0;
-  weighted = false; # true if weight vector applied to individual values of x
+  weighted = false; # true if weight vector/array used
   vecdim = [];
   vecempty = true;
   vecdim_scalar_vector = [false, false]; # [false, false] for empty vecdim
@@ -196,31 +196,33 @@ function [s, m] = std (x, varargin)
   if (all_flag && ! vecempty)
     error ("std: 'all' flag cannot be used with DIM or VECDIM options");
   endif
-  if (weighted && vecempty && ! all_flag)
-    dim = find (szx > 1, 1);
-    if length (dim) == 0
-      dim = 1;
-    endif
-    if (isvector (weights) && numel (weights) != szx(dim))
-      error ("std: weight vector does not match first operating dimension");
-    endif
-    if (! isvector (weights) && numel (weights) != szx(dim))
-      error ("std: weight matrix or array does not match X in size");
-    endif
-  elseif (weighted && vecdim_scalar_vector(1))
-    if (isvector (weights) && numel (weights) != szx(vecdim))
-      error ("std: weight vector does not match given operating dimension");
-    endif
-  elseif (weighted && vecdim_scalar_vector(2))
-    if (! (isequal (size (weights), szx)))
-      error ("std: weight matrix or array does not match X in size");
-    endif
-  endif
-  if (all_flag && weighted)
-    if (isvector (weights) && numel (weights) != numel (x))
-      error ("std: elements in weight vector do not match elements in X");
-    endif
-    if (! isvector (weights) && ! (isequal (size (weights), szx)))
+  if (weighted)
+    if (all_flag)
+      if (isvector (weights))
+        if (numel (weights) != numel (x))
+          error ("std: elements in weight vector do not match elements in X");
+        endif
+      elseif (! (isequal (size (weights), szx)))
+        error ("std: weight matrix or array does not match X in size");
+      endif
+
+    elseif (vecempty)
+      dim = find (szx > 1, 1);
+      if length (dim) == 0
+        dim = 1;
+      endif
+      if (numel (weights) != szx(dim))
+        if (isvector (weights))
+          error ("std: weight vector does not match first operating dimension");
+        else
+          error ("std: weight matrix or array does not match X in size");
+        endif
+      endif
+    elseif (vecdim_scalar_vector(1))
+      if (isvector (weights) && numel (weights) != szx(vecdim))
+        error ("std: weight vector does not match given operating dimension");
+      endif
+    elseif (vecdim_scalar_vector(2) && ! (isequal (size (weights), szx)))
       error ("std: weight matrix or array does not match X in size");
     endif
   endif
