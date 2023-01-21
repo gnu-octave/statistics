@@ -139,6 +139,7 @@ function [v, m] = var (x, varargin)
   vecempty = true;
   vecdim_scalar_vector = [false, false]; # [false, false] for empty vecdim
   szx = size (x);
+  ndx = ndims (x);
 
   ## Check numeric arguments
   if (! (isnumeric (x)))
@@ -179,7 +180,7 @@ function [v, m] = var (x, varargin)
       if (numel (vecdim) != numel (unique (vecdim)))
         error ("var: VECDIM must contain non-repeating positive integers");
       endif
-      if (! isempty (x) && vecdim_scalar_vector(1) && vecdim > ndims (x))
+      if (! isempty (x) && vecdim_scalar_vector(1) && vecdim > ndx)
         v = zeros (szx, outtype);
         vn = ! isfinite (x);
         v(vn) = NaN;
@@ -230,7 +231,7 @@ function [v, m] = var (x, varargin)
       v = NaN;
       m = NaN;
       return;
-    elseif (vecempty && ndims (x) == 2)
+    elseif (vecempty && ndx == 2)
       v = NaN;
       m = NaN;
       return;
@@ -278,7 +279,7 @@ function [v, m] = var (x, varargin)
         x(xn) = 0;
       endif
       m = sum (x, dim) ./ n;
-      dims = ones (1, ndims (x));
+      dims = ones (1, ndx);
       dims(dim) = szx(dim);
       m_exp = repmat (m, dims);
       if (omitnan)
@@ -403,9 +404,9 @@ function [v, m] = var (x, varargin)
     else
 
       ## Ignore exceeding dimensions in VECDIM
-      vecdim(find (vecdim > ndims (x))) = [];
+      vecdim(find (vecdim > ndx)) = [];
       ## Calculate permutation vector
-      remdims = 1:ndims (x);    # all dimensions
+      remdims = 1:ndx;    # all dimensions
       remdims(vecdim) = [];     # delete dimensions specified by vecdim
       nremd = numel (remdims);
 
