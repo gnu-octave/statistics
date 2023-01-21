@@ -351,8 +351,7 @@ function [s, m] = std (x, varargin)
         x(xn) = m_exp(xn);
       endif
       if (weighted)
-        s = sqrt (sum (wv .* ((x - m_exp) .* (x - m_exp)), dim) ./ ...
-                  sum (weights(:)));
+        s = sqrt (sum (wv .* ((x - m_exp) .^ 2), dim) ./ sum (weights(:)));
       else
         s = sqrt (sumsq (x - m_exp, dim) ./ (n - 1 + w));
         if (numel (n) == 1)
@@ -390,8 +389,7 @@ function [s, m] = std (x, varargin)
         x(xn) = m_exp(xn);
       endif
       if (weighted)
-        s = sqrt (sum (wv .* ((x - m_exp) .* (x - m_exp)), vecdim) ./ ...
-                  sum (weights(:)));
+        s = sqrt (sum (wv .* ((x - m_exp) .^ 2), vecdim) ./ sum (weights(:)));
       else
         s = sumsq (x - m_exp, vecdim);
         sn = isnan (s);
@@ -478,8 +476,7 @@ function [s, m] = std (x, varargin)
           x(xn) = m_exp(xn);
         endif
         if (weighted)
-          s = sqrt (sum (wv .* ((x - m_exp) .* (x - m_exp)), dim) ./ ...
-                    sum (weights(:)));
+          s = sqrt (sum (wv .* ((x - m_exp) .^ 2), dim) ./ sum (weights(:)));
         else
           s = sqrt (sumsq (x - m_exp, dim) ./ (n - 1 + w));
           if (numel (n) == 1)

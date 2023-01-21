@@ -348,7 +348,7 @@ function [v, m] = var (x, varargin)
         x(xn) = m_exp(xn);
       endif
       if (weighted)
-        v = sum (wv .* ((x - m_exp) .* (x - m_exp)), dim) ./ sum (weights(:));
+        v = sum (wv .* ((x - m_exp) .^ 2), dim) ./ sum (weights(:));
       else
         v = sumsq (x - m_exp, dim) ./ (n - 1 + w);
         if (numel (n) == 1)
@@ -386,8 +386,7 @@ function [v, m] = var (x, varargin)
         x(xn) = m_exp(xn);
       endif
       if (weighted)
-        v = sum (wv .* ((x - m_exp) .* (x - m_exp)), vecdim) ./ ...
-            sum (weights(:));
+        v = sum (wv .* ((x - m_exp) .^ 2), vecdim) ./ sum (weights(:));
       else
         v = sumsq (x - m_exp, vecdim);
         vn = isnan (v);
@@ -474,7 +473,7 @@ function [v, m] = var (x, varargin)
           x(xn) = m_exp(xn);
         endif
         if (weighted)
-          v = sum (wv .* ((x - m_exp) .* (x - m_exp)), dim) ./ sum (weights(:));
+          v = sum (wv .* ((x - m_exp) .^ 2), dim) ./ sum (weights(:));
         else
           v = sumsq (x - m_exp, dim) ./ (n - 1 + w);
           if (numel (n) == 1)
