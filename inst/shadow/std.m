@@ -62,12 +62,13 @@
 ## standard deviation).  To use the default value you may pass an empty input
 ## argument [] before entering other options.
 ##
-## @var{w} can also be non-scalar.  When @var{w} is a vector, it must have the
-## same length as the number of elements in the operating dimension of @var{x}.
-## If @var{w} is a matrix or n-D array, or the operating dimension is supplied
-## as a @var{vecdim} or "all", @var{w} must be the same size as @var{x}.  NaN
-## values are permitted in @var{w}, will be multiplied with the associated
-## values in @var{x}, and can be excluded by the @var{nanflag} option.
+## @var{w} can also be an array of non-negative numbers.  When @var{w} is a
+## vector, it must have the same length as the number of elements in the
+## operating dimension of @var{x}.  If @var{w} is a matrix or n-D array, or the
+## operating dimension is supplied as a @var{vecdim} or "all", @var{w} must be
+## the same size as @var{x}.  NaN values are permitted in @var{w}, will be
+## multiplied with the associated values in @var{x}, and can be excluded by the
+## @var{nanflag} option.
 ##
 ## @code{std (@var{x}, [], @var{dim})} returns the standard deviation along the
 ## operating dimension @var{dim} of @var{x}.  For @var{dim} greater than
@@ -135,9 +136,9 @@ function [s, m] = std (x, varargin)
   endif
 
   w = 0;
-  weighted = false;
+  weighted = false; # true if weight vector applied to individual values of x
   vecdim = [];
-  vecdim_scalar_vector = [false, false];
+  vecdim_scalar_vector = [false, false]; # false false for empty vecdim
   szx = size (x);
 
   ## Check numeric arguments
@@ -154,6 +155,11 @@ function [s, m] = std (x, varargin)
     if (nvarg > 2 || any (! cellfun ('isnumeric', varargin)))
       print_usage ();
     endif
+    ## Process weight input
+    if (any (varargin{1} < 0))
+      error ("std: weights must not contain any negative values");
+    endif
+
     if (isscalar (varargin{1}))
       w = varargin{1};
       if (! (w == 0 || w == 1) && ! isscalar (x))
@@ -161,13 +167,10 @@ function [s, m] = std (x, varargin)
       endif
     elseif (numel (varargin{1}) > 1)
       weights = varargin{1};
-      if (any (weights(:) < 0) && ! isscalar (x))
-        error ("std: weights must not contain any negative values");
-      endif
       weighted = true;
     endif
-
     if (nvarg > 1)
+      ## Process dimension input
       vecdim = varargin{2};
       if (! (isvector (vecdim) && all (vecdim)) || any (rem (vecdim, 1)))
         error ("std: DIM must be a positive integer scalar or vector");
@@ -823,6 +826,8 @@ endfunction
 %!error <Invalid call to std.  Correct usage is> std (1, [], "foo")
 %!error <std: normalization scalar must be either 0 or 1> std ([1 2], 2, "all")
 %!error <std: normalization scalar must be either 0 or 1> std ([1 2],0.5, "all")
+%!error <std: weights must not contain any negative values> std (1, -1)
+%!error <std: weights must not contain any negative values> std (1, [1 -1])
 %!error <std: weights must not contain any negative values> ...
 %! std ([1 2 3], [1 -1 0])
 %!error <std: X must be a numeric vector or matrix> std ({1:5})

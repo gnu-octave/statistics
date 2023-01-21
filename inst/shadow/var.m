@@ -61,12 +61,13 @@
 ## the number of observations (sample variance).  To use the default value you
 ## may pass an empty input argument [] before entering other options.
 ##
-## @var{w} can also be non-scalar.  When @var{w} is a vector, it must have the
-## same length as the number of elements in the operating dimension of @var{x}.
-## If @var{w} is a matrix or n-D array, or the operating dimension is supplied
-## as a @var{vecdim} or "all", @var{w} must be the same size as @var{x}.  NaN
-## values are permitted in @var{w}, will be multiplied with the associated
-## values in @var{x}, and can be excluded by the @var{nanflag} option.
+## @var{w} can also be an array of non-negative numbers.  When @var{w} is a
+## vector, it must have the same length as the number of elements in the
+## operating dimension of @var{x}.  If @var{w} is a matrix or n-D array, or the
+## operating dimension is supplied as a @var{vecdim} or "all", @var{w} must be
+## the same size as @var{x}.  NaN values are permitted in @var{w}, will be
+## multiplied with the associated values in @var{x}, and can be excluded by the
+## @var{nanflag} option.
 ##
 ## @code{var (@var{x}, [], @var{dim})} returns the variance along the operating
 ## dimension @var{dim} of @var{x}.  For @var{dim} greater than
@@ -133,9 +134,9 @@ function [v, m] = var (x, varargin)
   endif
 
   w = 0;
-  weighted = false;
+  weighted = false; # true if weight vector applied to individual values of x
   vecdim = [];
-  vecdim_scalar_vector = [false, false];
+  vecdim_scalar_vector = [false, false]; # false false for empty vecdim
   szx = size (x);
 
   ## Check numeric arguments
@@ -152,6 +153,10 @@ function [v, m] = var (x, varargin)
     if (nvarg > 2 || any (! cellfun ('isnumeric', varargin)))
       print_usage ();
     endif
+    ## Process weight input
+    if (any (varargin{1} < 0))
+      error ("var: weights must not contain any negative values");
+    endif
     if (isscalar (varargin{1}))
       w = varargin{1};
       if (! (w == 0 || w == 1) && ! isscalar (x))
@@ -159,12 +164,10 @@ function [v, m] = var (x, varargin)
       endif
     elseif (numel (varargin{1}) > 1)
       weights = varargin{1};
-      if (any (weights(:) < 0) && ! isscalar (x))
-        error ("var: weights must not contain any negative values");
-      endif
       weighted = true;
     endif
     if (nvarg > 1)
+    ## Process dimension input
       vecdim = varargin{2};
       if (! (isvector (vecdim) && all (vecdim)) || any (rem (vecdim, 1)))
         error ("var: DIM must be a positive integer scalar or vector");
@@ -818,6 +821,8 @@ endfunction
 %!error <Invalid call to var.  Correct usage is> var (1, [], "foo")
 %!error <var: normalization scalar must be either 0 or 1> var ([1 2], 2, "all")
 %!error <var: normalization scalar must be either 0 or 1> var ([1 2],0.5, "all")
+%!error <var: weights must not contain any negative values> var (1, -1)
+%!error <var: weights must not contain any negative values> var (1, [1 -1])
 %!error <var: weights must not contain any negative values> ...
 %! var ([1 2 3], [1 -1 0])
 %!error <var: X must be a numeric vector or matrix> var ({1:5})
