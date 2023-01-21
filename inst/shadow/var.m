@@ -152,7 +152,6 @@ function [v, m] = var (x, varargin)
     if (nvarg > 2 || any (! cellfun ('isnumeric', varargin)))
       print_usage ();
     endif
-
     if (isscalar (varargin{1}))
       w = varargin{1};
       if (! (w == 0 || w == 1) && ! isscalar (x))

@@ -154,12 +154,12 @@ function [s, m] = std (x, varargin)
     if (nvarg > 2 || any (! cellfun ('isnumeric', varargin)))
       print_usage ();
     endif
-    if (nvarg > 0 && isscalar (varargin{1}))
+    if (isscalar (varargin{1}))
       w = varargin{1};
       if (! (w == 0 || w == 1) && ! isscalar (x))
         error ("std: normalization scalar must be either 0 or 1");
       endif
-    elseif (nvarg > 0 && numel (varargin{1}) > 1)
+    elseif (numel (varargin{1}) > 1)
       weights = varargin{1};
       if (any (weights(:) < 0) && ! isscalar (x))
         error ("std: weights must not contain any negative values");
