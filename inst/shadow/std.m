@@ -177,20 +177,22 @@ function [s, m] = std (x, varargin)
       ## Process dimension input
       vecdim = varargin{2};
       if (! (vecempty = isempty (vecdim)))
+        ## Check for empty vecdim, won't change vsv if nonzero size empty
         vecdim_scalar_vector = [isscalar(vecdim), isvector(vecdim)];
       endif
       if (! (vecdim_scalar_vector(2) && all (vecdim)) || any (rem (vecdim, 1)))
         error ("std: DIM must be a positive integer scalar or vector");
       endif
-      if (numel (vecdim) != numel (unique (vecdim)))
-        error ("std: VECDIM must contain non-repeating positive integers");
-      endif
-      if (! isempty (x) && vecdim_scalar_vector(1) && vecdim > ndx)
+      if (vecdim_scalar_vector(1) && vecdim > ndx && ! isempty (x))
         s = zeros (szx, outtype);
         sn = ! isfinite (x);
         s(sn) = NaN;
         m = x;
         return;
+      endif
+      if (vecdim_scalar_vector == [0 1] && ...
+           numel (vecdim) != numel (unique (vecdim)))
+        error ("std: VECDIM must contain non-repeating positive integers");
       endif
     endif
   endif
