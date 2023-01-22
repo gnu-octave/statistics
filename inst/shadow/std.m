@@ -257,7 +257,7 @@ function [s, m] = std (x, varargin)
   endif
 
   if (nvarg == 0)
-    ## Single numeric input argument, no dimensions or weights given.
+    ## Only numeric input argument, no dimensions or weights.
     if (all_flag)
       x = x(:);
       if (omitnan)
@@ -305,53 +305,52 @@ function [s, m] = std (x, varargin)
     if (all_flag)
       x = x(:);
       if (weighted)
-        wv = weights(:);
-        wx = wv .* x;
+        weights = weights(:);
+        wx = weights .* x;
       else
-        wv = ones (length (x), 1);
+        weights = ones (length (x), 1);
         wx = x;
       endif
 
       if (omitnan)
         xn = isnan (wx);
         wx = wx(! xn);
-        wv = wv(! xn);
+        weights = weights(! xn);
         x = x(! xn);
       endif
       n = length (wx);
-      m = sum (wx) ./ sum (wv);
+      m = sum (wx) ./ sum (weights);
       if (weighted)
-        s = sqrt (sum (wv .* (abs (x - m) .^ 2)) ./ sum (wv));
+        s = sqrt (sum (weights .* (abs (x - m) .^ 2)) ./ sum (weights));
       else
-        s = sqrt (sum (wv .* (abs (x - m) .^ 2)) ./ (n - 1 + w));
+        s = sqrt (sum (weights .* (abs (x - m) .^ 2)) ./ (n - 1 + w));
         if (n == 1)
           s = 0;
         endif
       endif
+
     else
       dim = find (szx > 1, 1);
       if length (dim) == 0
         dim = 1;
       endif
       if (! weighted)
-        wv = ones (szx);
+        weights = ones (szx);
         wx = x;
       else
         if (isvector (weights))
-          wv = zeros (szx) + shiftdim (weights(:), 1 - dim);
-        else
-          wv = weights;
+          weights = zeros (szx) + shiftdim (weights(:), 1 - dim);
         endif
-        wx = wv .* x;
+        wx = weights .* x;
       endif
       n = size (wx, dim);
       if (omitnan)
         xn = isnan (wx);
         n = sum (! xn, dim);
         wx(xn) = 0;
-        wv(xn) = 0;
+        weights(xn) = 0;
       endif
-      m = sum (wx, dim) ./ sum (wv, dim);
+      m = sum (wx, dim) ./ sum (weights, dim);
       dims = ones (1, ndims (wx));
       dims(dim) = size (wx, dim);
       if (sprs_x)
@@ -363,7 +362,8 @@ function [s, m] = std (x, varargin)
         x(xn) = m_exp(xn);
       endif
       if (weighted)
-        s = sqrt (sum (wv .* ((x - m_exp) .^ 2), dim) ./ sum (wv, dim));
+        s = sqrt (sum (weights .* ((x - m_exp) .^ 2), dim) ...
+              ./ sum (weights, dim));
       else
         s = sqrt (sumsq (x - m_exp, dim) ./ (n - 1 + w));
         if (numel (n) == 1)
@@ -379,24 +379,22 @@ function [s, m] = std (x, varargin)
     ## Three numeric input arguments, both w or weights and dim or vecdim given.
     if (vecdim_scalar_vector(1))
       if (!weighted)
-        wv = ones (szx);
+        weights = ones (szx);
         wx = x;
       else
         if (isvector (weights))
-          wv = zeros (szx) + shiftdim (weights(:), 1 - vecdim);
-        else
-          wv = weights;
+          weights = zeros (szx) + shiftdim (weights(:), 1 - vecdim);
         endif
-        wx = wv .* x;
+        wx = weights .* x;
       endif
       n = size (wx, vecdim);
       if (omitnan)
         n = sum (! isnan (wx), vecdim);
         xn = isnan (wx);
         wx(xn) = 0;
-        wv(xn) = 0;
+        weights(xn) = 0;
       endif
-      m = sum (wx, vecdim) ./ sum (wv, vecdim);
+      m = sum (wx, vecdim) ./ sum (weights, vecdim);
       dims = ones (1, ndims (wx));
       dims(vecdim) = size (wx, vecdim);
       if (sprs_x)
@@ -408,7 +406,8 @@ function [s, m] = std (x, varargin)
         x(xn) = m_exp(xn);
       endif
       if (weighted)
-        s = sqrt (sum (wv .* ((x - m_exp) .^ 2), vecdim) ./ sum (wv, vecdim));
+        s = sqrt (sum (weights .* ((x - m_exp) .^ 2), vecdim) ...
+              ./ sum (weights, vecdim));
       else
         s = sumsq (x - m_exp, vecdim);
         sn = isnan (s);
@@ -462,24 +461,23 @@ function [s, m] = std (x, varargin)
       else
         ## Apply weights
         if (weighted)
-          wv = weights;
-          wx = wv .* x;
+          wx = weights .* x;
         else
-          wv = ones (szx);
+          weights = ones (szx);
           wx = x;
         endif
 
         ## Permute to bring remaining dims forward
         perm = [remdims, vecdim];
         wx = permute (wx, perm);
-        wv = permute (wv, perm);
+        weights = permute (weights, perm);
         x = permute (x, perm);
 
         ## Reshape to put all vecdims in final dimension
         szwx = size (wx);
         sznew = [szwx(1:nremd), prod(szwx(nremd+1:end))];
         wx = reshape (wx, sznew);
-        wv = reshape (wv, sznew);
+        weights = reshape (weights, sznew);
         x = reshape (x, sznew);
 
         ## Calculate var on single, squashed dimension
@@ -489,15 +487,16 @@ function [s, m] = std (x, varargin)
           xn = isnan (wx);
           n = sum (! xn, dim);
           wx(xn) = 0;
-          wv(xn) = 0;
+          weights(xn) = 0;
         endif
-        m = sum (wx, dim) ./ sum (wv, dim);
+        m = sum (wx, dim) ./ sum (weights, dim);
         m_exp = zeros (size (wx)) + shiftdim (m, 0);
         if (omitnan)
           x(xn) = m_exp(xn);
         endif
         if (weighted)
-          s = sqrt (sum (wv .* ((x - m_exp) .^ 2), dim) ./ sum (wv, dim));
+          s = sqrt (sum (weights .* ((x - m_exp) .^ 2), dim) ...
+                ./ sum (weights, dim));
         else
           s = sqrt (sumsq (x - m_exp, dim) ./ (n - 1 + w));
           if (numel (n) == 1)
