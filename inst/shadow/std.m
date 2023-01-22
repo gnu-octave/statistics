@@ -120,7 +120,7 @@ function [s, m] = std (x, varargin)
 
   if (any (varg_chars))
     for i = varargin(varg_chars)
-      switch (i{:})
+      switch (lower (i{:}))
         case "all"
           all_flag = true;
         case "omitnan"
@@ -215,7 +215,7 @@ function [s, m] = std (x, varargin)
       if (numel (weights) != szx(dim))
         if (isvector (weights))
           error ("std: weight vector does not match first operating dimension");
-        else
+        elseif (! isequal (size (weights), szx))
           error ("std: weight matrix or array does not match X in size");
         endif
       endif
@@ -230,19 +230,15 @@ function [s, m] = std (x, varargin)
 
   ## Force output for X being empty or scalar
   if (isempty (x))
-    if (vecempty && all (szx == 0))
-      s = NaN;
-      m = NaN;
-      return;
-    elseif (vecempty && ndx == 2)
+    if (vecempty && (ndx == 2 || all ((szx) == 0)))
       s = NaN;
       m = NaN;
       return;
     endif
     if (vecdim_scalar_vector(1))
       szx(vecdim) = 1;
-      s = NaN(szx);
-      m = NaN(szx);
+      s = NaN (szx);
+      m = NaN (szx);
       return;
     endif
   endif
@@ -257,7 +253,6 @@ function [s, m] = std (x, varargin)
   endif
 
   if (nvarg == 0)
-
     ## Single numeric input argument, no dimensions or weights given.
     if (all_flag)
       x = x(:);
@@ -298,28 +293,29 @@ function [s, m] = std (x, varargin)
     endif
 
   elseif (nvarg == 1)
-
     ## Two numeric input arguments, w or weights given.
     if (all_flag)
-      xv = x(:);
+      x = x(:);
       if (weighted)
         wv = weights(:);
+        wx = wv .* x;
       else
-        wv = ones (prod (size (xv)), 1);
+        wv = ones (length (x), 1);
+        wx = x;
       endif
-      wx = wv .* xv;
+
       if (omitnan)
-        xn = wx;
-        wx = wx(! isnan (xn));
-        wv = wv(! isnan (xn));
-        xv = xv(! isnan (xn));
+        xn = isnan (wx);
+        wx = wx(! xn);
+        wv = wv(! xn);
+        x = x(! xn);
       endif
       n = length (wx);
       m = sum (wx) ./ sum (wv);
       if (weighted)
-        s = sqrt (sum (wv .* (abs (xv - m) .^ 2)) ./ sum (weights(:)));
+        s = sqrt (sum (wv .* (abs (x - m) .^ 2)) ./ sum (wv));
       else
-        s = sqrt (sum (wv .* (abs (xv - m) .^ 2)) ./ (n - 1 + w));
+        s = sqrt (sum (wv .* (abs (x - m) .^ 2)) ./ (n - 1 + w));
         if (n == 1)
           s = 0;
         endif
@@ -329,17 +325,21 @@ function [s, m] = std (x, varargin)
       if length (dim) == 0
         dim = 1;
       endif
-      if (weighted)
-        wv = weights(:);
+      if (! weighted)
+        wv = ones (szx);
+        wx = x;
       else
-        wv = ones (szx(dim), 1);
+        if (isvector (weights))
+          wv = zeros (szx) + shiftdim (weights(:), 1 - dim);
+        else
+          wv = weights;
+        endif
+        wx = wv .* x;
       endif
-      wv = zeros (szx) + shiftdim (wv, 1 - dim);
-      wx = wv .* x;
       n = size (wx, dim);
       if (omitnan)
-        n = sum (! isnan (wx), dim);
         xn = isnan (wx);
+        n = sum (! xn, dim);
         wx(xn) = 0;
         wv(xn) = 0;
       endif
@@ -351,7 +351,7 @@ function [s, m] = std (x, varargin)
         x(xn) = m_exp(xn);
       endif
       if (weighted)
-        s = sqrt (sum (wv .* ((x - m_exp) .^ 2), dim) ./ sum (weights(:)));
+        s = sqrt (sum (wv .* ((x - m_exp) .^ 2), dim) ./ sum (wv, dim));
       else
         s = sqrt (sumsq (x - m_exp, dim) ./ (n - 1 + w));
         if (numel (n) == 1)
@@ -364,16 +364,19 @@ function [s, m] = std (x, varargin)
     endif
 
   elseif (nvarg == 2)
-
     ## Three numeric input arguments, both w or weights and dim or vecdim given.
     if (vecdim_scalar_vector(1))
-      if (weighted)
-        wv = weights(:);
+      if (!weighted)
+        wv = ones (szx);
+        wx = x;
       else
-        wv = ones (szx(vecdim), 1);
+        if (isvector (weights))
+          wv = zeros (szx) + shiftdim (weights(:), 1 - vecdim);
+        else
+          wv = weights;
+        endif
+        wx = wv .* x;
       endif
-      wv = zeros (szx) + shiftdim (wv, 1 - vecdim);
-      wx = wv .* x;
       n = size (wx, vecdim);
       if (omitnan)
         n = sum (! isnan (wx), vecdim);
@@ -389,7 +392,7 @@ function [s, m] = std (x, varargin)
         x(xn) = m_exp(xn);
       endif
       if (weighted)
-        s = sqrt (sum (wv .* ((x - m_exp) .^ 2), vecdim) ./ sum (weights(:)));
+        s = sqrt (sum (wv .* ((x - m_exp) .^ 2), vecdim) ./ sum (wv, vecdim));
       else
         s = sumsq (x - m_exp, vecdim);
         sn = isnan (s);
@@ -404,49 +407,51 @@ function [s, m] = std (x, varargin)
       endif
 
     else
+    ## Weights and nonscalar vecdim specified
 
-      ## Ignore exceeding dimensions in VECDIM
+    ## Ignore exceeding dimensions in VECDIM
+      remdims = 1:ndx;    # all dimensions
       vecdim(find (vecdim > ndx)) = [];
       ## Calculate permutation vector
-      remdims = 1:ndx;    # all dimensions
       remdims(vecdim) = [];     # delete dimensions specified by vecdim
       nremd = numel (remdims);
 
       ## If all dimensions are given, it is similar to all flag
       if (nremd == 0)
-        xv = x(:);
+        x = x(:);
         if (weighted)
-          wv = weights(:);
+          weights = weights(:);
+          wx = weights .* x;
         else
-          wv = ones (prod (size (xv)), 1);
+          weights = ones (length (x), 1);
+          wx = x;
         endif
-        wx = wv .* xv;
         if (omitnan)
-          xn = wx;
-          wx = wx(! isnan (xn));
-          wv = wv(! isnan (xn));
-          xv = xv(! isnan (xn));
+          xn = isnan (wx);
+          wx = wx(! xn);
+          weights = weights(! xn);
+          x = x(! xn);
         endif
         n = length (wx);
-        m = sum (wx) ./ sum (wv);
+        m = sum (wx) ./ sum (weights);
         if (weighted)
-          s = sqrt (sum (wv .* (abs (xv - m) .^ 2)) ./ sum (weights(:)));
+          s = sqrt (sum (weights .* (abs (x - m) .^ 2)) ./ sum (weights));
         else
-          s = sqrt (sum (wv .* (abs (xv - m) .^ 2)) ./ (n - 1 + w));
+          s = sqrt (sum (weights .* (abs (x - m) .^ 2)) ./ (n - 1 + w));
           if (n == 1)
             s = 0;
           endif
         endif
 
       else
-
         ## Apply weights
         if (weighted)
           wv = weights;
+          wx = wv .* x;
         else
           wv = ones (szx);
+          wx = x;
         endif
-        wx = wv .* x;
 
         ## Permute to bring remaining dims forward
         perm = [remdims, vecdim];
@@ -465,8 +470,8 @@ function [s, m] = std (x, varargin)
         dim = nremd + 1;
         n = size (wx, dim);
         if (omitnan)
-          n = sum (! isnan (wx), dim);
           xn = isnan (wx);
+          n = sum (! xn, dim);
           wx(xn) = 0;
           wv(xn) = 0;
         endif
@@ -476,7 +481,7 @@ function [s, m] = std (x, varargin)
           x(xn) = m_exp(xn);
         endif
         if (weighted)
-          s = sqrt (sum (wv .* ((x - m_exp) .^ 2), dim) ./ sum (weights(:)));
+          s = sqrt (sum (wv .* ((x - m_exp) .^ 2), dim) ./ sum (wv, dim));
         else
           s = sqrt (sumsq (x - m_exp, dim) ./ (n - 1 + w));
           if (numel (n) == 1)
@@ -506,6 +511,7 @@ function [s, m] = std (x, varargin)
 
 endfunction
 
+
 ## Test single input and optional arguments "all", DIM, "omitnan")
 %!test
 %! x = [-10:10];
@@ -524,6 +530,41 @@ endfunction
 %! assert (std (y, [], 2, "omitnan"), ...
 %!         sqrt ([38.5; 37.81842105263158; 38.5]), 1e-14);
 
+## Tests for different weight and omitnan code paths
+%!assert (std ([4 NaN 6], [1 2 1], "omitnan"), 1, eps)
+%!assert (std ([4 5 6], [1 NaN 1], "omitnan"), 1, eps)
+%!assert (std (magic(3), [1 NaN 3], "omitnan"), sqrt(3)*[1 2 1], eps)
+%!assert (std ([4 NaN 6], [1 2 1], "omitnan", "all"), 1, eps)
+%!assert (std ([4 NaN 6], [1 2 1], "all", "omitnan"), 1, eps)
+%!assert (std ([4 5 6], [1 NaN 1], "omitnan", "all"), 1, eps)
+%!assert (std ([4 NaN 6], [1 2 1], 2, "omitnan"), 1, eps)
+%!assert (std ([4 5 6], [1 NaN 1], 2, "omitnan"), 1, eps)
+%!assert (std (magic(3), [1 NaN 3], 1, "omitnan"), sqrt(3)*[1 2 1], eps)
+%!assert (std (magic(3), [1 NaN 3], 2, "omitnan"), sqrt(3)*[0.5;1;0.5], eps)
+%!assert (std (4*[4 5; 6 7; 8 9], [1 3], 2, 'omitnan'), sqrt(3)*[1;1;1], eps)
+%!assert (std ([4 NaN; 6 7; 8 9], [1 1 3], 1, 'omitnan'), [1.6 sqrt(3)/2], eps)
+%!assert (std (4*[4 NaN; 6 7; 8 9], [1 3], 2, 'omitnan'), sqrt(3)*[0;1;1], eps)
+%!assert (std (3*reshape(1:18, [3 3 2]), [1 2 3], 1, 'omitnan'), sqrt(5)*ones(1,3,2), eps)
+%!assert (std (reshape(1:18, [3 3 2]), [1 2 3], 2, 'omitnan'), sqrt(5)*ones(3,1,2), eps)
+%!assert (std (3*reshape(1:18, [3 3 2]), ones (3,3,2), [1 2], 'omitnan'), sqrt(60)*ones(1,1,2),eps)
+%!assert (std (3*reshape(1:18, [3 3 2]), ones (3,3,2), [1 4], 'omitnan'), sqrt(6)*ones(1,3,2),eps)
+%!assert (std (6*reshape(1:18, [3 3 2]), ones (3,3,2), [1:3], 'omitnan'), sqrt(969),eps)
+%!test
+%! x = reshape(1:18, [3 3 2]);
+%! x([2, 14]) = NaN;
+%! w = ones (3,3,2);
+%! assert (std (16*x, w, [1:3], 'omitnan'), sqrt(6519), eps);
+%!test
+%! x = reshape(1:18, [3 3 2]);
+%! w = ones (3,3,2);
+%! w([2, 14]) = NaN;
+%! assert (std (16*x, w, [1:3], 'omitnan'), sqrt(6519), eps);
+
+## Test input case insensitivity
+%!assert (std ([1 2 3], "aLl"), 1);
+%!assert (std ([1 2 3], "OmitNan"), 1);
+%!assert (std ([1 2 3], "IncludeNan"), 1);
+
 ## Test dimension indexing with vecdim in n-dimensional arrays
 %!test
 %! x = repmat ([1:20;6:25], [5, 2, 6, 3]);
@@ -532,6 +573,24 @@ endfunction
 %! assert (size (std (x, [], [1 2 4])), [1, 1, 6]);
 %! assert (size (std (x, 0, [1 4 3])), [1, 40]);
 %! assert (size (std (x, [], [1 2 3 4])), [1, 1]);
+
+## Test matrix with vecdim, weighted, matrix weights, omitnan
+%!assert (std (3*magic(3)), sqrt([63 144 63]), eps)
+%!assert (std (3*magic(3), 'omitnan'), sqrt([63 144 63]), eps)
+%!assert (std (3*magic(3), 1), sqrt([42 96 42]), eps)
+%!assert (std (3*magic(3), 1, 'omitnan'), sqrt([42 96 42]), eps)
+%!assert (std (3*magic(3), ones(1,3), 1), sqrt([42 96 42]), eps)
+%!assert (std (3*magic(3), ones(1,3), 1, 'omitnan'), sqrt([42 96 42]), eps)
+%!assert (std (2*magic(3), [1 1 NaN], 1, 'omitnan'), [5 4 1], eps)
+%!assert (std (3*magic(3), ones(3,3)), sqrt([42 96 42]), eps)
+%!assert (std (3*magic(3), ones(3,3), 'omitnan'), sqrt([42 96 42]), eps)
+%!assert (std (3*magic(3), [1 1 1; 1 1 1; 1 NaN 1], 'omitnan'), sqrt([42 36 42]), eps)
+%!assert (std (3*magic(3), ones(3,3), 1), sqrt([42 96 42]), eps)
+%!assert (std (3*magic(3), ones(3,3), 1, 'omitnan'), sqrt([42 96 42]), eps)
+%!assert (std (3*magic(3), [1 1 1; 1 1 1; 1 NaN 1], 1, 'omitnan'), sqrt([42 36 42]), eps)
+%!assert (std (3*magic(3), ones(3,3), [1 4]), sqrt([42 96 42]), eps)
+%!assert (std (3*magic(3), ones(3,3), [1 4], 'omitnan'), sqrt([42 96 42]), eps)
+%!assert (std (3*magic(3), [1 1 1; 1 1 1; 1 NaN 1],[1 4],'omitnan'), sqrt([42 36 42]), eps)
 
 ## Test results with vecdim in n-dimensional arrays and "omitnan"
 %!test
