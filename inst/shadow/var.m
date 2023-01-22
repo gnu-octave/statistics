@@ -133,6 +133,8 @@ function [v, m] = var (x, varargin)
     nvarg = numel (varargin);
   endif
 
+  # FIXME: when sparse can use broadcast ops, remove sparse checks and hacks
+  sprs_x = issparse (x);
   w = 0;
   weighted = false; # true if weight vector/array used
   vecdim = [];
@@ -276,15 +278,19 @@ function [v, m] = var (x, varargin)
       m = sum (x, dim) ./ n;
       dims = ones (1, ndx);
       dims(dim) = szx(dim);
-      m_exp = repmat (m, dims);
+      if (sprs_x)
+        m_exp = repmat (m, dims);
+      else
+        m_exp = m .* ones (dims);
+      endif
       if (omitnan)
         x(xn) = m_exp(xn);
       endif
       v = sumsq (x - m_exp, dim) ./ (n - 1 + w);
       if (numel (n) == 1)
-        divby0 = repmat (n, size (v)) == 1;
+        divby0 = n .* ones (size (v)) == 1;
       else
-         divby0 = n == 1;
+        divby0 = n == 1;
       endif
       v(divby0) = 0;
     endif
@@ -344,7 +350,11 @@ function [v, m] = var (x, varargin)
       m = sum (wx, dim) ./ sum (wv, dim);
       dims = ones (1, ndims (wx));
       dims(dim) = size (wx, dim);
-      m_exp = repmat (m, dims);
+      if (sprs_x)
+        m_exp = repmat (m, dims);
+      else
+        m_exp = m .* ones (dims);
+      endif
       if (omitnan)
         x(xn) = m_exp(xn);
       endif
@@ -353,9 +363,9 @@ function [v, m] = var (x, varargin)
       else
         v = sumsq (x - m_exp, dim) ./ (n - 1 + w);
         if (numel (n) == 1)
-          divby0 = repmat (n, size (v)) == 1;
+          divby0 = n .* ones (size (v)) == 1;
         else
-           divby0 = n == 1;
+          divby0 = n == 1;
         endif
         v(divby0) = 0;
       endif
@@ -385,7 +395,11 @@ function [v, m] = var (x, varargin)
       m = sum (wx, vecdim) ./ sum (wv, vecdim);
       dims = ones (1, ndims (wx));
       dims(vecdim) = size (wx, vecdim);
-      m_exp = repmat (m, dims);
+      if (sprs_x)
+        m_exp = repmat (m, dims);
+      else
+        m_exp = m .* ones (dims);
+      endif
       if (omitnan)
         x(xn) = m_exp(xn);
       endif
@@ -396,7 +410,7 @@ function [v, m] = var (x, varargin)
         vn = isnan (v);
         v = v ./ (n - 1 + w);
         if (numel (n) == 1)
-          divby0 = repmat (n, size (v)) == 1;
+          divby0 = n .* ones (size (v)) == 1;
         else
           divby0 = n == 1;
         endif
@@ -488,9 +502,9 @@ function [v, m] = var (x, varargin)
         else
           v = sumsq (x - m_exp, dim) ./ (n - 1 + w);
           if (numel (n) == 1)
-            divby0 = repmat (n, size (v)) == 1;
+            divby0 = n .* ones (size (v)) == 1;
           else
-             divby0 = n == 1;
+            divby0 = n == 1;
           endif
           v(divby0) = 0;
         endif
@@ -631,7 +645,7 @@ endfunction
 %! assert (v, [3, 3]);
 %! assert (m, [1, 3]);
 
-## Testing weights vector
+## Testing weights vector & arrays
 %!assert (var (ones (2,2,2), [1:2], 3), [(zeros (2, 2))]);
 %!assert (var (magic (3), [1:9], "all"), 6.666666666666667, 1e-14);
 

@@ -135,6 +135,8 @@ function [s, m] = std (x, varargin)
     nvarg = numel (varargin);
   endif
 
+  # FIXME: when sparse can use broadcast ops, remove sparse checks and hacks
+  sprs_x = issparse (x);
   w = 0;
   weighted = false; # true if weight vector/array used
   vecdim = [];
@@ -279,15 +281,19 @@ function [s, m] = std (x, varargin)
       m = sum (x, dim) ./ n;
       dims = ones (1, ndx);
       dims(dim) = szx(dim);
-      m_exp = repmat (m, dims);
+      if (sprs_x)
+        m_exp = repmat (m, dims);
+      else
+        m_exp = m .* ones (dims);
+      endif
       if (omitnan)
         x(xn) = m_exp(xn);
       endif
       s = sqrt (sumsq (x - m_exp, dim) ./ (n - 1 + w));
       if (numel (n) == 1)
-        divby0 = repmat (n, size (s)) == 1;
+        divby0 = n .* ones (size (s)) == 1;
       else
-         divby0 = n == 1;
+        divby0 = n == 1;
       endif
       s(divby0) = 0;
     endif
@@ -346,7 +352,11 @@ function [s, m] = std (x, varargin)
       m = sum (wx, dim) ./ sum (wv, dim);
       dims = ones (1, ndims (wx));
       dims(dim) = size (wx, dim);
-      m_exp = repmat (m, dims);
+      if (sprs_x)
+        m_exp = repmat (m, dims);
+      else
+        m_exp = m .* ones (dims);
+      endif
       if (omitnan)
         x(xn) = m_exp(xn);
       endif
@@ -355,9 +365,9 @@ function [s, m] = std (x, varargin)
       else
         s = sqrt (sumsq (x - m_exp, dim) ./ (n - 1 + w));
         if (numel (n) == 1)
-          divby0 = repmat (n, size (s)) == 1;
+          divby0 = n .* ones (size (s)) == 1;
         else
-           divby0 = n == 1;
+          divby0 = n == 1;
         endif
         s(divby0) = 0;
       endif
@@ -387,7 +397,11 @@ function [s, m] = std (x, varargin)
       m = sum (wx, vecdim) ./ sum (wv, vecdim);
       dims = ones (1, ndims (wx));
       dims(vecdim) = size (wx, vecdim);
-      m_exp = repmat (m, dims);
+      if (sprs_x)
+        m_exp = repmat (m, dims);
+      else
+        m_exp = m .* ones (dims);
+      endif
       if (omitnan)
         x(xn) = m_exp(xn);
       endif
@@ -398,7 +412,7 @@ function [s, m] = std (x, varargin)
         sn = isnan (s);
         s = sqrt (s ./ (n - 1 + w));
         if (numel (n) == 1)
-          divby0 = repmat (n, size (s)) == 1;
+          divby0 = n .* ones (size (s)) == 1;
         else
           divby0 = n == 1;
         endif
@@ -485,9 +499,9 @@ function [s, m] = std (x, varargin)
         else
           s = sqrt (sumsq (x - m_exp, dim) ./ (n - 1 + w));
           if (numel (n) == 1)
-            divby0 = repmat (n, size (s)) == 1;
+            divby0 = n .* ones (size (s)) == 1;
           else
-             divby0 = n == 1;
+            divby0 = n == 1;
           endif
           s(divby0) = 0;
         endif
