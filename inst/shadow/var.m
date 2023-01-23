@@ -338,7 +338,9 @@ function [v, m] = var (x, varargin)
         wx = x;
       else
         if (isvector (weights))
-          weights = zeros (szx) + shiftdim (weights(:), 1 - dim); ## FIXME look for faster way of creating repeated array
+          dims = 1:ndx;
+          dims([1, dim]) = [dim, 1];
+          weights = zeros (szx) + permute (weights(:), dims);
         endif
         wx = weights .* x;
       endif
@@ -381,7 +383,9 @@ function [v, m] = var (x, varargin)
         wx = x;
       else
         if (isvector (weights))
-          weights = zeros (szx) + shiftdim (weights(:), 1 - vecdim); ## FIXME look for faster way of creating repeated array
+          dims = 1:ndx;
+          dims([1, vecdim]) = [vecdim, 1];
+          weights = zeros (szx) + permute (weights(:), dims);
         endif
         wx = weights .* x;
       endif
@@ -492,7 +496,7 @@ function [v, m] = var (x, varargin)
           weights(xn) = 0;
         endif
         m = sum (wx, dim) ./ sum (weights, dim);
-        m_exp = zeros (size (wx)) + shiftdim (m, 0);
+        m_exp = zeros (sznew) + m;
         if (omitnan)
           x(xn) = m_exp(xn);
         endif

@@ -339,7 +339,9 @@ function [s, m] = std (x, varargin)
         wx = x;
       else
         if (isvector (weights))
-          weights = zeros (szx) + shiftdim (weights(:), 1 - dim);
+          dims = 1:ndx;
+          dims([1, dim]) = [dim, 1];
+          weights = zeros (szx) + permute (weights(:), dims);
         endif
         wx = weights .* x;
       endif
@@ -383,7 +385,9 @@ function [s, m] = std (x, varargin)
         wx = x;
       else
         if (isvector (weights))
-          weights = zeros (szx) + shiftdim (weights(:), 1 - vecdim);
+          dims = 1:ndx;
+          dims([1, vecdim]) = [vecdim, 1];
+          weights = zeros (szx) + permute (weights(:), dims);
         endif
         wx = weights .* x;
       endif
@@ -490,7 +494,7 @@ function [s, m] = std (x, varargin)
           weights(xn) = 0;
         endif
         m = sum (wx, dim) ./ sum (weights, dim);
-        m_exp = zeros (size (wx)) + shiftdim (m, 0);
+        m_exp = zeros (size (wx)) + m;
         if (omitnan)
           x(xn) = m_exp(xn);
         endif
