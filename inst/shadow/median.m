@@ -105,6 +105,10 @@ function m = median (x, varargin)
     print_usage ();
   endif
 
+  if (! (isnumeric (x) || islogical (x)))
+    error ("median: X must be either numeric or logical");
+  endif
+
   ## Check all char arguments.
   all_flag = false;
   omitnan = false;
@@ -139,10 +143,6 @@ endif
     print_usage ();
   endif
 
-  if (! (isnumeric (x) || islogical (x)))
-    error ("median: X must be either numeric or logical");
-  endif
-
   if (nvarg == 0)
 
     ## Single numeric input argument, no dimensions given.
@@ -164,7 +164,7 @@ endif
       endif
     else
       sz = size (x);
-      (dim = find (sz > 1, 1)) || (dim = 1);
+      (dim = find (sz != 1, 1)) || (dim = 1);
       x = sort (x, dim);
       if (omitnan)
         n = sum (! isnan (x), dim);
@@ -316,6 +316,24 @@ endif
 
 endfunction
 
+%!assert (median (1), 1)
+%!assert (median ([1,2,3]), 2)
+%!assert (median ([3,1,2]), 2)
+%!assert (median ([2,4,6,8]), 5)
+%!assert (median ([8,2,6,4]), 5)
+%!assert (median (single ([1,2,3])), single (2))
+%!assert (median ([1,2], 3), [1,2])
+
+%!test
+%! x = [1, 2, 3, 4, 5, 6];
+%! x2 = x';
+%! y = [1, 2, 3, 4, 5, 6, 7];
+%! y2 = y';
+%!
+%! assert (median (x) == median (x2) && median (x) == 3.5);
+%! assert (median (y) == median (y2) && median (y) == 4);
+%! assert (median ([x2, 2*x2]), [3.5, 7]);
+%! assert (median ([y2, 3*y2]), [4, 12]);
 
 ## Test outtype option
 %!test
@@ -399,41 +417,73 @@ endfunction
 
 
 ## Test empty, NaN, Inf inputs
-
-
-
-## Test input validation
-%!error <Invalid call to median.  Correct usage is> median ()
-%!error <Invalid call to median.  Correct usage is> median (1, 2, 3)
-%!error <Invalid call to median.  Correct usage is> median (1, 2, 3, 4)
-%!error <Invalid call to median.  Correct usage is> median (1, "all", 3)
-%!error <Invalid call to median.  Correct usage is> median (1, "b")
-%!error <Invalid call to median.  Correct usage is> median (1, 1, "foo")
-%!error <median: X must be either numeric or logical> median ({1:5})
-%!error <median: X must be either numeric or logical> median ("char")
-%!error <median: DIM must be a positive integer> median (1, ones (2,2))
-%!error <median: DIM must be a positive integer> median (1, 1.5)
-%!error <median: DIM must be a positive integer> median (1, 0)
-
-
-##
-## Tests from octave core
-##
-
-%!test
-%! x = [1, 2, 3, 4, 5, 6];
-%! x2 = x';
-%! y = [1, 2, 3, 4, 5, 6, 7];
-%! y2 = y';
-%!
-%! assert (median (x) == median (x2) && median (x) == 3.5);
-%! assert (median (y) == median (y2) && median (y) == 4);
-%! assert (median ([x2, 2*x2]), [3.5, 7]);
-%! assert (median ([y2, 3*y2]), [4, 12]);
-
-%!assert (median (single ([1,2,3])), single (2))
+%!assert (median (NaN), NaN)
+%!assert <12345> (median (NaN, 'omitnan'), NaN)
+%!assert (median (NaN (2)), [NaN NaN])
+%!assert <12345> (median (NaN (2), 'omitnan'), [NaN NaN])
+%!assert (median ([1 NaN 3]), NaN)
+%!assert (median ([1 NaN 3], 1), [1 NaN 3])
+%!assert (median ([1 NaN 3], 2), NaN)
+%!assert (median ([1 NaN 3]'), NaN)
+%!assert (median ([1 NaN 3]', 1), NaN)
+%!assert (median ([1 NaN 3]', 2), [1; NaN; 3])
+%!assert (median ([1 NaN 3], 'omitnan'), 2)
+%!assert (median ([1 NaN 3]', 'omitnan'), 2)
+%!assert <12345> (median ([1 NaN 3], 1, 'omitnan'), [1 NaN 3])
+%!assert (median ([1 NaN 3], 2, 'omitnan'), 2)
+%!assert (median ([1 NaN 3]', 1, 'omitnan'), 2)
+%!assert <12345> (median ([1 NaN 3]', 2, 'omitnan'), [1; NaN; 3])
+%!assert (median ([1 2 NaN 3]), NaN)
+%!assert (median ([1 2 NaN 3], 'omitnan'), 2)
 %!assert (median ([1,2,NaN;4,5,6;NaN,8,9]), [NaN, 5, NaN])
-%!assert (median ([1,2], 3), [1,2])
+%!assert (median ([1 2 ; NaN 4]), [NaN 3])
+%!assert (median ([1 2 ; NaN 4], 'omitnan'), [1 3])
+%!assert (median ([1 2 ; NaN 4], 1, 'omitnan'), [1 3])
+%!assert (median ([1 2 ; NaN 4], 2, 'omitnan'), [1.5; 4], eps)
+%!assert <12345> (median ([1 2 ; NaN 4], 3, 'omitnan'), [1 2 ; NaN 4])
+%!assert (median ([NaN 2 ; NaN 4]), [NaN 3])
+%!assert <12345> (median ([NaN 2 ; NaN 4], 'omitnan'), [NaN 3])
+%!assert <12345> (median (ones (1, 0, 3)), NaN (1, 1, 3))
+
+%!assert (median (NaN('single')), NaN('single'));
+%!assert <12345> (median (NaN('single'), 'omitnan'), NaN('single'));
+%!assert (median (NaN('single'), 'double'), NaN('double'));
+%!assert (median (single([1 2 ; NaN 4])), single([NaN 3]));
+%!assert <12345> (median (single([1 2 ; NaN 4]), 'double'), double([1 3]));
+%!assert (median (single([1 2 ; NaN 4]), 'omitnan'), single([1 3]));
+%!assert (median (single([1 2 ; NaN 4]), 'omitnan', 'double'), double([1 3]));
+%!assert (median (single([NaN 2 ; NaN 4]), 'double'), double([NaN 3]));
+%!assert <12345> (median (single([NaN 2 ; NaN 4]), 'omitnan'), single([NaN 3]));
+%!assert <12345> (median (single([NaN 2 ; NaN 4]), 'omitnan', 'double'), double([NaN 3]));
+
+%!assert (median (Inf), Inf);
+%!assert (median (-Inf), -Inf);
+%!assert (median ([-Inf Inf]), NaN);
+%!assert (median ([3 Inf]), Inf);
+%!assert (median ([3 4 Inf]), 4);
+%!assert (median ([Inf 3 4]), 4);
+%!assert (median ([Inf 3 Inf]), Inf);
+
+%!assert <12345> (median ([]), NaN);
+%!assert <12345> (median (ones(1,0)), NaN);
+%!assert <12345> (median (ones(0,1)), NaN);
+%!assert <12345> (median ([], 1), NaN(1,0));
+%!assert <12345> (median ([], 2), NaN(0,1));
+%!assert <12345> (median ([], 3), NaN(0,1));
+%!assert <12345> (median (ones(1,0), 1), NaN(1,0));
+%!assert <12345> (median (ones(1,0), 2), NaN(1,1));
+%!assert <12345> (median (ones(1,0), 3), NaN(1,0));
+%!assert <12345> (median (ones(0,1), 1), NaN(1,1));
+%!assert <12345> (median (ones(0,1), 2), NaN(0,1));
+%!assert <12345> (median (ones(0,1), 3), NaN(0,1));
+%!assert <12345> (median (ones(0,1,0,1), 1), NaN(1,1,0));
+%!assert <12345> (median (ones(0,1,0,1), 2), NaN(0,1,0));
+%!assert <12345> (median (ones(0,1,0,1), 3), NaN(0,1,1));
+%!assert <12345> (median (ones(0,1,0,1), 4), NaN(0,1,0));
+
+## Test complex inputs (should sort by abs(a))
+%!assert (median([1 3 3i 2 1i]), 2)
+%!assert (median([1 2 4i; 3 2i 4]), [2, 1+1i, 2+2i])
 
 ## Test multidimensional arrays
 %!shared a, b, x, y
@@ -446,17 +496,28 @@ endfunction
 %! y = sort (b, 3);
 %!assert <*35679> (median (a, 4), x(:, :, :, 3))
 %!assert <*35679> (median (b, 3), (y(:, :, 3, :) + y(:, :, 4, :))/2)
+%!shared   ## Clear shared to prevent variable echo for any later test failures
 
 ## Test non-floating point types
-##%!assert (median ([true, false]), true)
-##%!assert (median (uint8 ([1, 3])), uint8 (2))
-##%!assert (median (int8 ([1, 3, 4])), int8 (3))
-##%!assert (median (single ([1, 3, 4])), single (3))
-##%!assert (median (single ([1, 3, NaN])), single (NaN))
+%!assert <12345> (median ([true, false]), true)
+%!assert <12345> (median (logical ([])), logical ([NaN]))
+%!assert (median (uint8 ([1, 3])), uint8 (2))
+%!assert <12345> (median (uint8 ([])), uint8 ([NaN]))
+%!assert (median (uint8 ([NaN 10])), uint8 (5))
+%!assert (median (int8 ([1, 3, 4])), int8 (3))
+%!assert <12345> (median (int8 ([])), int8 (NaN))
+%!assert (median (single ([1, 3, 4])), single (3))
+%!assert (median (single ([1, 3, NaN])), single (NaN))
 
 ## Test input validation
 %!error <Invalid call> median ()
+%!error <Invalid call> median (1, 2, 3)
+%!error <Invalid call> median (1, 2, 3, 4)
+%!error <Invalid call> median (1, "all", 3)
+%!error <Invalid call> median (1, "b")
+%!error <Invalid call> median (1, 1, "foo")
 %!error <X must be either numeric or logical> median ({1:5})
+%!error <X must be either numeric or logical> median ("char")
 %!error <DIM must be a positive integer> median (1, ones (2,2))
 %!error <DIM must be a positive integer> median (1, 1.5)
 %!error <DIM must be a positive integer> median (1, 0)
