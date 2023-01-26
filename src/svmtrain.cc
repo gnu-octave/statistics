@@ -575,6 +575,8 @@ accuracy for classification and mean-squared error for regression. \
 %!shared L, D
 %! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
 %!error <svmtrain: wrong number of output arguments.> [L, D] = svmtrain (L, D);
-%!error <svmtrain: label vector and instance matrix must be double.> model = svmtrain (single (L), D);
-%!error <svmtrain: wrong number of input arguments.> model = svmtrain (L, D, "", "");
+%!error <svmtrain: label vector and instance matrix must be double.> ...
+%! model = svmtrain (single (L), D);
+%!error <svmtrain: wrong number of input arguments.> ...
+%! model = svmtrain (L, D, "", "");
 */

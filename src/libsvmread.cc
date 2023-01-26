@@ -229,7 +229,8 @@ function. \
 
 /*
 %!error <libsvmread: filename must be a string.> [L, D] = libsvmread (24);
-%!error <libsvmread: wrong number of input or output arguments.> D = libsvmread ("filename");
+%!error <libsvmread: wrong number of input or output arguments.> ...
+%! D = libsvmread ("filename");
 %!test
 %! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
 %! assert (size (L), [270, 1]);

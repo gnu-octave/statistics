@@ -457,8 +457,10 @@ same as 'Label' field in the @var{model} structure. \
 %!shared L, D, model
 %! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
 %! model = svmtrain (L, D, '-c 1 -g 0.07');
-%!error <svmpredict: wrong number of output arguments.> [p, a] = svmpredict (L, D, model);
+%!error <svmpredict: wrong number of output arguments.> ...
+%! [p, a] = svmpredict (L, D, model);
 %!error <svmpredict: wrong number of input arguments.> p = svmpredict (L, D);
-%!error <svmpredict: label vector and instance matrix must be double.> p = svmpredict (single (L), D, model);
+%!error <svmpredict: label vector and instance matrix must be double.> ...
+%! p = svmpredict (single (L), D, model);
 %!error <svmpredict: model should be a struct array.> p = svmpredict (L, D, 123);
 */

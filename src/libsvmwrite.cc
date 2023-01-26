@@ -132,10 +132,17 @@ specified by @var{filename}.  @var{data} must be a sparse matrix.  Both \
 %!shared L, D
 %! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
 %!error <libsvmwrite: error opening file for write.> libsvmwrite ("", L, D);
-%!error <libsvmwrite: length of label vector does not match instances.> libsvmwrite ("filename", [L;L], D);
-%!error <libsvmwrite: wrong number of output arguments.> OUT = libsvmwrite ("filename", L, D);
-%!error <libsvmwrite: label vector and instance matrix must be double.> libsvmwrite ("filename", single (L), D);
+%!error <libsvmwrite: length of label vector does not match instances.> ...
+%! libsvmwrite (fullfile (tempdir (), "filename"), [L;L], D);
+%!test
+%! delete (fullfile (tempdir (), "filename"));
+%!error <libsvmwrite: wrong number of output arguments.> ...
+%! OUT = libsvmwrite ("filename", L, D);
+%!error <libsvmwrite: label vector and instance matrix must be double.> ...
+%! libsvmwrite ("filename", single (L), D);
 %!error <libsvmwrite: filename must be a string.> libsvmwrite (13412, L, D);
-%!error <libsvmwrite: instance_matrix must be sparse.> libsvmwrite ("filename", L, full (D));
-%!error <libsvmwrite: wrong number of input arguments.> libsvmwrite ("filename", L, D, D);
+%!error <libsvmwrite: instance_matrix must be sparse.> ...
+%! libsvmwrite ("filename", L, full (D));
+%!error <libsvmwrite: wrong number of input arguments.> ...
+%! libsvmwrite ("filename", L, D, D);
 */
