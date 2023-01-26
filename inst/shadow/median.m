@@ -159,24 +159,21 @@ endif
         m = x(k) + x(k+1) / 2;
       endif
       ## Inject NaNs where needed, to be consistent with Matlab.
-      if (! omitnan && ! islogical (x))
+      if (! (omitnan || islogical (x)))
         m(any (isnan (x))) = NaN;
       endif
     else
       sz = size (x);
-      dim = find (sz > 1, 1);
-      if length (dim) == 0
-        dim = 1;
-      endif
+      (dim = find (sz > 1, 1)) || (dim = 1);
       x = sort (x, dim);
       if (omitnan)
         n = sum (! isnan (x), dim);
       else
-        n = sum (isnan (x) | ! isnan (x), dim);
+        n = sum (ones (sz), dim);
       endif
       k = floor ((n + 1) ./ 2);
       for i = 1:numel (k)
-        if (mod (n(i), 2) == 1)
+        if (mod (n(i), 2))
           z(i) = {(nth_element (x, k(i), dim))};
         else
           z(i) = {(sum (nth_element (x, k(i):k(i)+1, dim), dim, "native") / 2)};
@@ -190,7 +187,7 @@ endif
         m(szargs{:}) = z{i}(szargs{:});
       endfor
       ## Inject NaNs where needed, to be consistent with Matlab.
-      if (! omitnan && ! islogical (x))
+      if (! (omitnan || islogical (x)))
         m(any (isnan (x), dim)) = NaN;
       endif
     endif
