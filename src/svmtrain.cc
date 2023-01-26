@@ -348,7 +348,7 @@ static void fake_answer(int nlhs, octave_value_list &plhs)
 
 DEFUN_DLD (svmtrain, args, nargout,
            "-*- texinfo -*-\n\
-@deftypefn{Function} @var{model} = svmtrain (@var{labels}, @var{data}, 'libsvm_options')\n\
+@deftypefn  {statistics} @var{model} = svmtrain (@var{labels}, @var{data}, 'libsvm_options')\n\
 \n\
 \n\
 This function trains an SVM @var{model} based on known @var{labels} and their \

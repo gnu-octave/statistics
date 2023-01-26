@@ -84,7 +84,7 @@ void write(string filename, ColumnVector label_vec, SparseMatrix instance_mat)
 
 DEFUN_DLD (libsvmwrite, args, nargout,
            "-*- texinfo -*-\n\
-@deftypefn{Function} libsvmwrite (@var{filename}, @var{labels}, @var{data})\n\
+@deftypefn  {statistics} libsvmwrite (@var{filename}, @var{labels}, @var{data})\n\
 \n\
 \n\
 This function saves the labels and the corresponding instance_matrix in a file \
