@@ -630,16 +630,24 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     
     ## Print multcompare table on screen if no output argument was requested
     if (nargout == 0 || strcmp (DISPLAY, "on"))
-      printf ("\n          Multiple Comparison (Post Hoc) Test for %s\n\n", ...
-             upper (STATS.source));
-      header = strcat (["Group ID  Group ID    LBoundDiff    EstimatedDiff"],...
-                       ["    UBoundDiff      p-value\n"], ...
+      printf ("\n        %s Multiple Comparison (Post Hoc) Test for %s\n\n", ...
+             upper (CTYPE), upper (STATS.source));
+      header = strcat (["Group ID  Group ID   LBoundDiff   EstimatedDiff"],...
+                       ["   UBoundDiff   p-value\n"], ...
                        ["-------------------------------------------------"],...
-                       ["---------------------------\n"]);
+                       ["---------------------\n"]);
       printf ("%s", header);
       for j = 1:Np
-        printf ("%5i     %5i      %10.3f     %10.3f      %10.3f     %9.6f\n",...
-                C(j,1), C(j,2), C(j,3), C(j,4), C(j,5), C(j,6));
+        if (C(j,6) < 0.001)
+          printf ("%5i     %5i     %10.3f    %10.3f     %10.3f      <.001\n",...
+                  C(j,1), C(j,2), C(j,3), C(j,4), C(j,5));
+        elseif (C(j,6) < 0.9995)
+          printf ("%5i     %5i     %10.3f    %10.3f     %10.3f       .%03u\n",...
+                  C(j,1), C(j,2), C(j,3), C(j,4), C(j,5), round (C(j,6) * 1e+03));
+        else
+          printf ("%5i     %5i     %10.3f    %10.3f     %10.3f      1.000\n",...
+                  C(j,1), C(j,2), C(j,3), C(j,4), C(j,5));
+        endif
       endfor
       printf ("\n");
     endif
@@ -1218,7 +1226,7 @@ endfunction
 %!         4,2,3; 4,3,5; 4,2,4; 5,2,4; 5,3,3];
 %! group = [1:3] .* ones (10,3);
 %! [P, ATAB, STATS] = kruskalwallis (data(:), group(:), "off");
-%! C = multcompare (STATS, "ctype", "lsd");
+%! C = multcompare (STATS, "ctype", "lsd", "display", "off");
 %! assert (C(1,6), 0.000163089828959986, 1e-09);
 %! assert (C(2,6), 0.630298044801257, 1e-09);
 %! assert (C(3,6), 0.00100567660695682, 1e-09);
@@ -1226,7 +1234,7 @@ endfunction
 %! assert (C(1,6), 0.000489269486879958, 1e-09);
 %! assert (C(2,6), 1, 1e-09);
 %! assert (C(3,6), 0.00301702982087047, 1e-09);
-%! C = multcompare(STATS, "ctype", "scheffe");
+%! C = multcompare(STATS, "ctype", "scheffe", "display", "off");
 %! assert (C(1,6), 0.000819054880289573, 1e-09);
 %! assert (C(2,6), 0.890628039849261, 1e-09);
 %! assert (C(3,6), 0.00447816059021654, 1e-09);
@@ -1238,11 +1246,11 @@ endfunction
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! [P, ATAB, STATS] = friedman (popcorn, 3, "off");
-%! C = multcompare(STATS, "ctype", "lsd");
+%! C = multcompare(STATS, "ctype", "lsd", "display", "off");
 %! assert (C(1,6), 0.227424558028569, 1e-09);
 %! assert (C(2,6), 0.0327204848315735, 1e-09);
 %! assert (C(3,6), 0.353160353315988, 1e-09);
-%! C = multcompare(STATS, "ctype", "bonferroni");
+%! C = multcompare(STATS, "ctype", "bonferroni", "display", "off");
 %! assert (C(1,6), 0.682273674085708, 1e-09);
 %! assert (C(2,6), 0.0981614544947206, 1e-09);
 %! assert (C(3,6), 1, 1e-09);
@@ -1262,7 +1270,7 @@ endfunction
 %!        25.694 ]';
 %! X = [1 1 1 1 1 1 1 1 2 2 2 2 2 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 5 5 5 5 5 5 5 5 5]';
 %! [TAB,STATS] = fitlm (X,y,"linear","categorical",1,"display","off");
-%! [C, M] = multcompare(STATS, "ctype", "lsd");
+%! [C, M] = multcompare(STATS, "ctype", "lsd", "display", "off");
 %! assert (C(1,6), 2.85812420217898e-05, 1e-09);
 %! assert (C(2,6), 5.22936741204085e-07, 1e-09);
 %! assert (C(3,6), 2.12794763209146e-08, 1e-09);
