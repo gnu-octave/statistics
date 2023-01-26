@@ -49,6 +49,9 @@ void write(string filename, ColumnVector label_vec, SparseMatrix instance_mat)
     int lv_rows = (int)label_vec.rows();
     if(im_rows != lv_rows)
     {
+      // close file
+      fclose (fp);
+      remove (filename.c_str());
       error ("libsvmwrite: length of label vector does not match instances.");
     }
     // transpose instance sparse matrix in column format
@@ -134,8 +137,6 @@ specified by @var{filename}.  @var{data} must be a sparse matrix.  Both \
 %!error <libsvmwrite: error opening file for write.> libsvmwrite ("", L, D);
 %!error <libsvmwrite: length of label vector does not match instances.> ...
 %! libsvmwrite (fullfile (tempdir (), "filename"), [L;L], D);
-%!test
-%! delete (fullfile (tempdir (), "filename"));
 %!error <libsvmwrite: wrong number of output arguments.> ...
 %! OUT = libsvmwrite ("filename", L, D);
 %!error <libsvmwrite: label vector and instance matrix must be double.> ...
