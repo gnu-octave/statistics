@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} [@var{m}, @var{v}] = wblstat (@var{scale}, @var{shape})
+## @deftypefn  {statistics} [@var{m}, @var{v}] = wblstat (@var{scale}, @var{shape})
 ##
 ## Compute mean and variance of the Weibull distribution.
 ##

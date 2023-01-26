@@ -16,18 +16,19 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{v}, @var{idx}] =} nanmin (@var{X})
-## @deftypefnx{Function File} {[@var{v}, @var{idx}] =} nanmin (@var{X}, @var{Y})
+## @deftypefn  {statistics} [@var{v}, @var{idx}] = nanmin (@var{X})
+## @deftypefnx {statistics} [@var{v}, @var{idx}] = nanmin (@var{X}, @var{Y})
+##
 ## Find the minimal element while ignoring NaN values.
 ##
 ## @code{nanmin} is identical to the @code{min} function except that NaN values
-## are ignored.  If all values in a column are NaN, the minimum is 
-## returned as NaN rather than []. 
+## are ignored.  If all values in a column are NaN, the minimum is
+## returned as NaN rather than [].
 ##
 ## @seealso{min, nansum, nanmax, nanmean, nanmedian}
 ## @end deftypefn
 
-function [v, idx] = nanmin (X, Y, DIM) 
+function [v, idx] = nanmin (X, Y, DIM)
   if nargin < 1 || nargin > 3
     print_usage;
   elseif nargin == 1 || (nargin == 2 && isempty(Y))

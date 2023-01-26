@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} [@var{m}, @var{v}] = nctstat (@var{df}, @var{delta})
+## @deftypefn  {statistics} [@var{m}, @var{v}] = nctstat (@var{df}, @var{delta})
 ##
 ## Mean and variance for the noncentral T distribution.
 ##

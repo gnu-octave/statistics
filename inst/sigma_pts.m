@@ -16,10 +16,11 @@
 ## along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {@var{pts} =} sigma_pts (@var{n})
-## @deftypefnx {@var{pts} =} sigma_pts (@var{n}, @var{m})
-## @deftypefnx {@var{pts} =} sigma_pts (@var{n}, @var{m}, @var{K})
-## @deftypefnx {@var{pts} =} sigma_pts (@var{n}, @var{m}, @var{K}, @var{l})
+## @deftypefn  {statistics} @var{pts} = sigma_pts (@var{n})
+## @deftypefnx {statistics} @var{pts} = sigma_pts (@var{n}, @var{m})
+## @deftypefnx {statistics} @var{pts} = sigma_pts (@var{n}, @var{m}, @var{K})
+## @deftypefnx {statistics} @var{pts} = sigma_pts (@var{n}, @var{m}, @var{K}, @var{l})
+##
 ## Calculates 2*@var{n}+1 sigma points in @var{n} dimensions.
 ##
 ## Sigma points are used in the unscented transfrom to estimate

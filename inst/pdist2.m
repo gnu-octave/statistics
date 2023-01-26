@@ -17,8 +17,9 @@
 ## <http:##www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {Function File} {} pdist2 (@var{x}, @var{y})
-## @deftypefnx {Function File} {} pdist2 (@var{x}, @var{y}, @var{metric})
+## @deftypefn  {statistics} @var{d} = pdist2 (@var{x}, @var{y})
+## @deftypefnx {statistics} @var{d} = pdist2 (@var{x}, @var{y}, @var{metric})
+##
 ## Compute pairwise distance between two sets of vectors.
 ##
 ## Let @var{X} be an MxP matrix representing m points in P-dimensional space
@@ -62,9 +63,6 @@
 ##
 ## @seealso{pdist}
 ## @end deftypefn
-
-## Taken from Piotr's Computer Vision Matlab Toolbox Version 2.52, with
-## author permission to distribute under GPLv3
 
 function D = pdist2 (X, Y, metric = "euclidean")
 

@@ -17,7 +17,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{b}, @var{bint}, @var{r}, @var{rint}, @var{stats}] =} regress (@var{y}, @var{X}, [@var{alpha}])
+## @deftypefn  {statistics} [@var{b}, @var{bint}, @var{r}, @var{rint}, @var{stats}] = regress (@var{y}, @var{X}, [@var{alpha}])
+##
 ## Multiple Linear Regression using Least Squares Fit of @var{y} on @var{X}
 ## with the model @code{y = X * beta + e}.
 ##
@@ -76,13 +77,6 @@
 ## NaN values in @var{y} and @var{X} are removed before calculation begins.
 ##
 ## @end deftypefn
-
-## References:
-## - Matlab 7.0 documentation (pdf)
-## - ¡¶´óÑ§ÊýÑ§ÊµÑé¡· ½ªÆôÔ´ µÈ (textbook)
-## - http://www.netnam.vn/unescocourse/statistics/12_5.htm
-## - wsolve.m in octave-forge
-## - http://www.stanford.edu/class/ee263/ls_ln_matlab.pdf
 
 function [b, bint, r, rint, stats] = regress (y, X, alpha)
 

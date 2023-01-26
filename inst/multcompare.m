@@ -17,13 +17,13 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{C} = multcompare (@var{STATS})
-## @deftypefnx {Function File} @var{C} = multcompare (@var{STATS}, "name", @var{value})
-## @deftypefnx {Function File} [@var{C}, @var{M}] = multcompare (...)
-## @deftypefnx {Function File} [@var{C}, @var{M}, @var{H}] = multcompare (...)
-## @deftypefnx {Function File} [@var{C}, @var{M}, @var{H}, @var{GNAMES}] = multcompare (...)
-## @deftypefnx {Function File} @var{padj} = multcompare (@var{p})
-## @deftypefnx {Function File} @var{padj} = multcompare (@var{p}, "ctype", @var{CTYPE})
+## @deftypefn  {statistics} @var{C} = multcompare (@var{STATS})
+## @deftypefnx {statistics} @var{C} = multcompare (@var{STATS}, "name", @var{value})
+## @deftypefnx {statistics} [@var{C}, @var{M}] = multcompare (...)
+## @deftypefnx {statistics} [@var{C}, @var{M}, @var{H}] = multcompare (...)
+## @deftypefnx {statistics} [@var{C}, @var{M}, @var{H}, @var{GNAMES}] = multcompare (...)
+## @deftypefnx {statistics} @var{padj} = multcompare (@var{p})
+## @deftypefnx {statistics} @var{padj} = multcompare (@var{p}, "ctype", @var{CTYPE})
 ##
 ## Perform posthoc multiple comparison tests or p-value adjustments to control
 ## the family-wise error rate (FWER) or false discovery rate (FDR).
@@ -70,7 +70,7 @@
 ## "hochberg", "fdr", or "lsd". The first five methods control the family-wise
 ## error rate.  The "fdr" method controls false discovery rate (by the original
 ## Benjamini-Hochberg step-up procedure). The final method, "lsd" (or "none"),
-## makes no attempt to control the Type 1 error rate of multiple comparisons. 
+## makes no attempt to control the Type 1 error rate of multiple comparisons.
 ## The coverage of confidence intervals are only corrected for multiple
 ## comparisons in the cases where @var{CTYPE} is "bonferroni", "scheffe" or
 ## "mvt", which control the Type 1 error rate for simultaneous inference.
@@ -168,7 +168,7 @@
 ## and returns adjusted p-values (@var{padj}) computed using the method
 ## @var{CTYPE}. In order of increasing power, @var{CTYPE} for p-value adjustment
 ## can be either "bonferroni", "holm" (default), "hochberg", or "fdr". See
-## above for further information about the @var{CTYPE} methods. 
+## above for further information about the @var{CTYPE} methods.
 ##
 ## @seealso{anova1, anova2, anovan, kruskalwallis, friedman, fitlm}
 ## @end deftypefn
@@ -226,7 +226,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     if ((ALPHA <= 0) || (ALPHA >= 1))
       error("anovan: alpha must be a value between 0 and 1");
     endif
-    
+
     ## Evaluate CTYPE input argument
     if (ismember (CTYPE, {"tukey-kramer", "hsd"}))
       CTYPE = "mvt";
@@ -277,7 +277,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
       padj = feval (CTYPE, p);
       if (size (p, 1) > 1)
         C = padj;
-      else 
+      else
         C = padj';
       endif
       return
@@ -627,7 +627,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     else
       H = [];
     endif
-    
+
     ## Print multcompare table on screen if no output argument was requested
     if (nargout == 0 || strcmp (DISPLAY, "on"))
       printf ("\n          Multiple Comparison (Post Hoc) Test for %s\n\n", ...
@@ -1000,7 +1000,7 @@ endfunction
 %! v = polyval (b, fitted);  # Variance as a function of the fitted values
 %! [P,ATAB,STATS] = anovan (y, g, "weights", v.^-1, "display", "off");
 %! [C, M] =  multcompare (STATS, "display", "on", "ctype", "mvt")
- 
+
 %!demo
 %!
 %! ## Demonstration of p-value adjustments to control the false discovery rate

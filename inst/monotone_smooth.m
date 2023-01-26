@@ -15,13 +15,14 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{yy} =} monotone_smooth (@var{x}, @var{y}, @var{h})
-## Produce a smooth monotone increasing approximation to a sampled functional
-## dependence
+## @deftypefn  {statistics} @var{yy} = monotone_smooth (@var{x}, @var{y}, @var{h})
 ##
-## A kernel method is used (an Epanechnikov smoothing kernel is
-## applied to y(x); this is integrated to yield the monotone increasing form.
-## See Reference 1 for details.)
+## Produce a smooth monotone increasing approximation to a sampled functional
+## dependence.
+##
+## A kernel method is used (an Epanechnikov smoothing kernel is applied to y(x);
+## this is integrated to yield the monotone increasing form.  See Reference 1
+## for details.)
 ##
 ## @subheading Arguments
 ##
@@ -36,8 +37,8 @@
 ## they are noisy.
 ##
 ## @item
-## @var{h} is the kernel bandwidth to use. If @var{h} is not given, a "reasonable"
-## value is computed.
+## @var{h} is the kernel bandwidth to use. If @var{h} is not given,
+## a "reasonable" value is computed.
 ##
 ## @end itemize
 ##
@@ -45,7 +46,8 @@
 ##
 ## @itemize @bullet
 ## @item
-## @var{yy} is the vector of smooth monotone increasing function values at @var{x}.
+## @var{yy} is the vector of smooth monotone increasing function values at
+## @var{x}.
 ##
 ## @end itemize
 ##
@@ -54,10 +56,11 @@
 ## @example
 ## @group
 ## x = 0:0.1:10;
-## y = (x .^ 2) + 3 * randn(size(x)); %typically non-monotonic from the added noise
-## ys = ([y(1) y(1:(end-1))] + y + [y(2:end) y(end)])/3; %crudely smoothed via
+## y = (x .^ 2) + 3 * randn(size(x)); # typically non-monotonic from the added
+## noise
+## ys = ([y(1) y(1:(end-1))] + y + [y(2:end) y(end)])/3; # crudely smoothed via
 ## moving average, but still typically non-monotonic
-## yy = monotone_smooth(x, ys); %yy is monotone increasing in x
+## yy = monotone_smooth(x, ys); # yy is monotone increasing in x
 ## plot(x, y, '+', x, ys, x, yy)
 ## @end group
 ## @end example
@@ -67,16 +70,14 @@
 ## @enumerate
 ## @item
 ## Holger Dette, Natalie Neumeyer and Kay F. Pilz (2006), A simple nonparametric
-## estimator of a strictly monotone regression function, @cite{Bernoulli}, 12:469-490
+## estimator of a strictly monotone regression function, @cite{Bernoulli},
+## 12:469-490
 ## @item
 ## Regine Scheder (2007), R Package 'monoProc', Version 1.0-6,
 ## @url{http://cran.r-project.org/web/packages/monoProc/monoProc.pdf} (The
 ## implementation here is based on the monoProc function mono.1d)
 ## @end enumerate
 ## @end deftypefn
-
-## Author: Nir Krakauer <nkrakauer@ccny.cuny.edu>
-## Description: Nonparametric monotone increasing regression
 
 function yy = monotone_smooth (x, y, h)
 
@@ -120,7 +121,7 @@ function yy = monotone_smooth (x, y, h)
   monotone_inverse = @(t) K_epanech_int((y - t) / h);
 
   %find the value of the monotone smooth function at each point in x
-  niter_max = 150; %maximum number of iterations for estimating each value (should not be reached in most cases) 
+  niter_max = 150; %maximum number of iterations for estimating each value (should not be reached in most cases)
   for l = 1:n
 
     tmax = y_max;

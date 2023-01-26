@@ -16,10 +16,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} manovacluster (@var{stats})
-## @deftypefnx {Function File} manovacluster (@var{stats}, @var{method})
-## @deftypefnx {Function File} @var{h} = manovacluster (@var{stats})
-## @deftypefnx {Function File} @var{h} = manovacluster (@var{stats}, @var{method})
+## @deftypefn  {statistics} manovacluster (@var{stats})
+## @deftypefnx {statistics} manovacluster (@var{stats}, @var{method})
+## @deftypefnx {statistics} @var{h} = manovacluster (@var{stats})
+## @deftypefnx {statistics} @var{h} = manovacluster (@var{stats}, @var{method})
 ##
 ## Cluster group means using manova1 output.
 ##

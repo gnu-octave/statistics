@@ -16,10 +16,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} [@var{d}, @var{model}, @var{termstart}, @var{termend}] = x2fx (@var{x})
-## @deftypefnx {Function File} [@var{d}, @var{model}, @var{termstart}, @var{termend}] = x2fx (@var{x}, @var{model})
-## @deftypefnx {Function File} [@var{d}, @var{model}, @var{termstart}, @var{termend}] = x2fx (@var{x}, @var{model}, @var{categ})
-## @deftypefnx {Function File} [@var{d}, @var{model}, @var{termstart}, @var{termend}] = x2fx (@var{x}, @var{model}, @var{categ}, @var{catlevels})
+## @deftypefn  {statistics} [@var{d}, @var{model}, @var{termstart}, @var{termend}] = x2fx (@var{x})
+## @deftypefnx {statistics} [@var{d}, @var{model}, @var{termstart}, @var{termend}] = x2fx (@var{x}, @var{model})
+## @deftypefnx {statistics} [@var{d}, @var{model}, @var{termstart}, @var{termend}] = x2fx (@var{x}, @var{model}, @var{categ})
+## @deftypefnx {statistics} [@var{d}, @var{model}, @var{termstart}, @var{termend}] = x2fx (@var{x}, @var{model}, @var{categ}, @var{catlevels})
 ##
 ## Convert predictors to design matrix.
 ##

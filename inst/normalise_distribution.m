@@ -17,15 +17,17 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn{Function File} @var{NORMALISED} = normalise_distribution (@var{DATA})
-## @deftypefnx{Function File} @var{NORMALISED} = normalise_distribution (@var{DATA}, @var{DISTRIBUTION})
-## @deftypefnx{Function File} @var{NORMALISED} = normalise_distribution (@var{DATA}, @var{DISTRIBUTION}, @var{DIMENSION})
+## @deftypefn  {statistics} @var{NORMALISED} = normalise_distribution (@var{DATA})
+## @deftypefnx {statistics} @var{NORMALISED} = normalise_distribution (@var{DATA}, @var{DISTRIBUTION})
+## @deftypefnx {statistics} @var{NORMALISED} = normalise_distribution (@var{DATA}, @var{DISTRIBUTION}, @var{DIMENSION})
 ##
 ## Transform a set of data so as to be N(0,1) distributed according to an idea
 ## by van Albada and Robinson.
+##
 ## This is achieved by first passing it through its own cumulative distribution
 ## function (CDF) in order to get a uniform distribution, and then mapping
 ## the uniform to a normal distribution.
+##
 ## The data must be passed as a vector or matrix in @var{DATA}.
 ## If the CDF is unknown, then [] can be passed in @var{DISTRIBUTION}, and in
 ## this case the empirical CDF will be used.

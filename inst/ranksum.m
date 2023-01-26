@@ -16,12 +16,12 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{p} = ranksum (@var{x}, @var{y})
-## @deftypefnx {Function File} @var{p} = ranksum (@var{x}, @var{y}, @var{alpha})
-## @deftypefnx {Function File} @var{p} = ranksum (@var{x}, @var{y}, @var{alpha}, @var{Name}, @var{Value})
-## @deftypefnx {Function File} @var{p} = ranksum (@var{x}, @var{y}, @var{Name}, @var{Value})
-## @deftypefnx {Function File} [@var{p}, @var{h}] = ranksum (@var{x}, @var{y}, @dots{})
-## @deftypefnx {Function File} [@var{p}, @var{h}, @var{stats}] = ranksum (@var{x}, @var{y}, @dots{})
+## @deftypefn  {statistics} @var{p} = ranksum (@var{x}, @var{y})
+## @deftypefnx {statistics} @var{p} = ranksum (@var{x}, @var{y}, @var{alpha})
+## @deftypefnx {statistics} @var{p} = ranksum (@var{x}, @var{y}, @var{alpha}, @var{Name}, @var{Value})
+## @deftypefnx {statistics} @var{p} = ranksum (@var{x}, @var{y}, @var{Name}, @var{Value})
+## @deftypefnx {statistics} [@var{p}, @var{h}] = ranksum (@var{x}, @var{y}, @dots{})
+## @deftypefnx {statistics} [@var{p}, @var{h}, @var{stats}] = ranksum (@var{x}, @var{y}, @dots{})
 ##
 ## Wilcoxon rank sum test for equal medians.  This test is equivalent to a
 ## Mann-Whitney U-test.

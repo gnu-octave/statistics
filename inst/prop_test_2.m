@@ -17,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {[@var{pval}, @var{z}] =} prop_test_2 (@var{x1}, @var{n1}, @var{x2}, @var{n2}, @var{alt})
+## @deftypefn {statistics} [@var{pval}, @var{z}] = prop_test_2 (@var{x1}, @var{n1}, @var{x2}, @var{n2}, @var{alt})
 ##
 ## Compare two proportions
 ##

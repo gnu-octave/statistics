@@ -16,16 +16,15 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} wblplot (@var{data}, @dots{})
-## @deftypefnx {Function File} @var{handle} = wblplot (@var{data}, @dots{})
-## @deftypefnx {Function File} [@var{handle}, @var{param}] = wblplot (@var{data})
-## @deftypefnx {Function File} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor})
-## @deftypefnx {Function File} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor}, @var{freq})
-## @deftypefnx {Function File} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor}, @var{freq}, @var{confint})
-## @deftypefnx {Function File} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor}, @var{freq}, @var{confint}, @var{fancygrid})
-## @deftypefnx {Function File} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor}, @var{freq}, @var{confint}, @var{fancygrid}, @var{showlegend})
+## @deftypefn  {statistics} {} wblplot (@var{data}, @dots{})
+## @deftypefnx {statistics} @var{handle} = wblplot (@var{data}, @dots{})
+## @deftypefnx {statistics} [@var{handle}, @var{param}] = wblplot (@var{data})
+## @deftypefnx {statistics} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor})
+## @deftypefnx {statistics} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor}, @var{freq})
+## @deftypefnx {statistics} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor}, @var{freq}, @var{confint})
+## @deftypefnx {statistics} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor}, @var{freq}, @var{confint}, @var{fancygrid})
+## @deftypefnx {statistics} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor}, @var{freq}, @var{confint}, @var{fancygrid}, @var{showlegend})
 ##
-## @noindent
 ## Plot a column vector @var{data} on a Weibull probability plot using rank
 ## regression.
 ##

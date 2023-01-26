@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {Function File} [@var{smpl}, @var{accept}] = mhsample (@var{start}, @var{nsamples}, @var{property}, @var{value}, ...)
+## @deftypefn  {statistics} [@var{smpl}, @var{accept}] = mhsample (@var{start}, @var{nsamples}, @var{property}, @var{value}, @dots{})
 ##
 ## Draws @var{nsamples} samples from a target stationary distribution @var{pdf}
 ## using Metropolis-Hastings algorithm.

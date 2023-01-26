@@ -14,11 +14,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {Built-in Function} {} nansum (@var{x})
-## @deftypefnx {Built-in Function} {} nansum (@var{x}, @var{dim})
-## @deftypefnx {Built-in Function} {} nansum (@dots{}, @qcode{"native"})
-## @deftypefnx {Built-in Function} {} nansum (@dots{}, @qcode{"double"})
-## @deftypefnx {Built-in Function} {} nansum (@dots{}, @qcode{"extra"})
+## @deftypefn  {statistics} s = nansum (@var{x})
+## @deftypefnx {statistics} s = nansum (@var{x}, @var{dim})
+## @deftypefnx {statistics} s = nansum (@dots{}, @qcode{"native"})
+## @deftypefnx {statistics} s = nansum (@dots{}, @qcode{"double"})
+## @deftypefnx {statistics} s = nansum (@dots{}, @qcode{"extra"})
 ## Compute the sum while ignoring NaN values.
 ##
 ## @code{nansum} is identical to the @code{sum} function except that NaN

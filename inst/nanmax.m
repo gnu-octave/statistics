@@ -14,13 +14,14 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{v}, @var{idx}] =} nanmax (@var{X})
-## @deftypefnx{Function File} {[@var{v}, @var{idx}] =} nanmax (@var{X}, @var{Y})
+## @deftypefn  {statistics} [@var{v}, @var{idx}] = nanmax (@var{X})
+## @deftypefnx {statistics} [@var{v}, @var{idx}] = nanmax (@var{X}, @var{Y})
+##
 ## Find the maximal element while ignoring NaN values.
 ##
 ## @code{nanmax} is identical to the @code{max} function except that NaN values
-## are ignored.  If all values in a column are NaN, the maximum is 
-## returned as NaN rather than []. 
+## are ignored.  If all values in a column are NaN, the maximum is
+## returned as NaN rather than [].
 ##
 ## @seealso{max, nansum, nanmin, nanmean, nanmedian}
 ## @end deftypefn

@@ -15,7 +15,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {[@var{pval}, @var{chisq}] =} run_test (@var{x})
+## @deftypefn  {statistics} [@var{pval}, @var{chisq}] = run_test (@var{x})
+##
 ## Perform a chi-square test with 6 degrees of freedom based on the upward
 ## runs in the columns of @var{x}.
 ##
@@ -26,9 +27,6 @@
 ##
 ## If no output argument is given, the p-value is displayed.
 ## @end deftypefn
-
-## Author: FL <Friedrich.Leisch@ci.tuwien.ac.at>
-## Description: Run test for independence
 
 function [pval, chisq] = run_test (x)
 

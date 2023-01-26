@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} [@var{m}, @var{v}] = tstat (@var{n})
+## @deftypefn  {statistics} [@var{m}, @var{v}] = tstat (@var{n})
 ##
 ## Compute mean and variance of the t (Student) distribution.
 ##

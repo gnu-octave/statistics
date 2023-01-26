@@ -1,5 +1,5 @@
 ## Copyright (C) 2013-2021 Nir Krakauer <nkrakauer@ccny.cuny.edu>
-## Copyright (C) 2014 by Mikael Kurula <mkurula@abo.fi>
+## Copyright (C) 2014 Mikael Kurula <mkurula@abo.fi>
 
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -15,7 +15,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{X_use}, @var{b}, @var{bint}, @var{r}, @var{rint}, @var{stats} =} stepwisefit (@var{y}, @var{X}, @var{penter} = 0.05, @var{premove} = 0.1, @var{method} = "corr")
+## @deftypefn  {statistics} [@var{X_use}, @var{b}, @var{bint}, @var{r}, @var{rint}, @var{stats}] = stepwisefit (@var{y}, @var{X}, @var{penter} = 0.05, @var{premove} = 0.1, @var{method} = "corr")
+##
 ## Linear regression with stepwise variable selection.
 ##
 ## @subheading Arguments
@@ -52,9 +53,6 @@
 ## @seealso{regress}
 ## @end deftypefn
 
-## Author: Nir Krakauer <nkrakauer@ccny.cuny.edu>
-## Description: Linear regression with stepwise variable selection
-
 function [X_use, b, bint, r, rint, stats] = stepwisefit(y, X, penter = 0.05, premove = 0.1, method = "corr")
 
 if nargin >= 3 && isempty(penter)
@@ -88,12 +86,12 @@ while 1
   added = false;
   if numel(X_use) < k
     X_inds = zeros(k, 1, "logical"); X_inds(X_use) = 1;
-    
+
     switch lower (method)
       case {"corr"}
         [~, i_to_add] = max(abs(corr(X(:, ~X_inds), r))); #try adding the variable with the highest correlation to the residual from current regression
         i_to_add = (1:k)(~X_inds)(i_to_add); #index within the original predictor set
-        [b_new, bint_new, r_new, rint_new, stats_new] = regress(y, [ones(n, 1) X(:, [X_use i_to_add])], penter);      
+        [b_new, bint_new, r_new, rint_new, stats_new] = regress(y, [ones(n, 1) X(:, [X_use i_to_add])], penter);
       case {"p"}
         z_vals=zeros(k,1);
         for j=1:k
@@ -107,7 +105,7 @@ while 1
       otherwise
         error("stepwisefit: invalid value for method")
     endswitch
-    
+
     z_new = abs(b_new(end)) / (bint_new(end, 2) - b_new(end));
     if z_new > 1 #accept new variable
       added = true;
@@ -120,7 +118,7 @@ while 1
       v = v + 1;
     endif
   endif
-  
+
   #decide which variable to drop from regression, if any
   dropped = false;
   if v > 0
@@ -129,11 +127,11 @@ while 1
     if z_min < t_ratio #drop a variable
       dropped = true;
       X_use(i_min) = [];
-      [b, bint, r, rint, stats] = regress(y, [ones(n, 1) X(:, X_use)], penter);      
+      [b, bint, r, rint, stats] = regress(y, [ones(n, 1) X(:, X_use)], penter);
       v = v - 1;
     endif
   endif
-  
+
   #terminate if no change in the list of regression variables
   if ~added && ~dropped
     break
@@ -143,7 +141,7 @@ while 1
     warning('stepwisefit: maximum iteration count exceeded before convergence')
     break
   endif
-  
+
 endwhile
 
 endfunction

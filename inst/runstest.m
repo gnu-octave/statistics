@@ -16,7 +16,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{h}, @var{p}, @var{stats} =} runstest (@var{x}, @var{v})
+## @deftypefn  {statistics} [@var{h}, @var{p}, @var{stats}] = runstest (@var{x}, @var{v})
+##
 ## Runs test for detecting serial correlation in the vector @var{x}.
 ##
 ## @subheading Arguments
@@ -25,7 +26,8 @@
 ## @item
 ## @var{x} is the vector of given values.
 ## @item
-## @var{v} is the value to subtract from @var{x} to get runs (defaults to @code{median(x)})
+## @var{v} is the value to subtract from @var{x} to get runs
+## (defaults to @code{median(x)})
 ## @end itemize
 ##
 ## @subheading Return values
@@ -61,22 +63,22 @@ function [h, p, stats] = runstest (x, x2)
     print_usage;
   endif
 
-  if nargin > 1 && isnumeric(x2)
+  if (nargin > 1 && isnumeric (x2))
     v = x2;
   else
-    v = median(x);
+    v = median (x);
   endif
 
-  x = x(~isnan(x)); #delete missing values
-  x = sign(x - v);
-  x = x(x ~= 0); #delete any zeros
+  x = x(! isnan (x)); #delete missing values
+  x = sign (x - v);
+  x = x(x != 0);      #delete any zeros
 
-  R = sum((x(1:(end-1)) .* x(2:end)) < 0) + 1; #number of runs
+  R = sum ((x(1:(end-1)) .* x(2:end)) < 0) + 1;   #number of runs
 
   ## Expected number of runs for an iid sequence
-  n1 = sum(x > 0);
-  n2 = sum(x < 0);
-  R_bar = 1 + 2*n1*n2/(n1 + n2);
+  n1 = sum (x > 0);
+  n2 = sum (x < 0);
+  R_bar = 1 + 2 * n1 * n2 / (n1 + n2);
 
   ## Standard deviation of number of runs for an iid sequence
   s_R = sqrt(2*n1*n2*(2*n1*n2 - n1 - n2)/((n1 + n2)^2 * (n1 + n2 - 1)));

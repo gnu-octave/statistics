@@ -13,7 +13,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{residuals},@var{reconstructed}]}=pcares(@var{X}, @var{NDIM})
+## @deftypefn  {statistics} [@var{residuals}, @var{reconstructed}] = pcares (@var{X}, @var{NDIM})
+##
 ## Calulate residuals from principal component analysis
 ##
 ## @itemize @bullet
@@ -28,18 +29,15 @@
 ## @enumerate
 ## @item
 ## Jolliffe, I. T., Principal Component Analysis, 2nd Edition, Springer, 2002
-## 
+##
 ## @end enumerate
 ## @end deftypefn
-
-## Author: Fernando Damian Nieuwveldt <fdnieuwveldt@gmail.com>
-## Description: Residuals from Principal Components Analysis
 
 function [residuals,reconstructed] = pcares(X,NDIM)
 
   if (nargin ~= 2)
     error('pcares takes two inputs: The data Matrix X and number of principal components NDIM')
-  endif    
+  endif
 
   # Mean center data
   Xcentered = bsxfun(@minus,X,mean(X));
@@ -52,14 +50,14 @@ function [residuals,reconstructed] = pcares(X,NDIM)
 
   if (nargout == 2)
     # Calculate the residuals
-    residuals = Xcentered - Xcentered * (v*v'); 
-				  
+    residuals = Xcentered - Xcentered * (v*v');
+
     # Reconstructed data using ndim PCA components
     reconstructed = X - residuals;
   else
      # Calculate the residuals
-     residuals = Xcentered - Xcentered * (v*v'); 
-  endif    
+     residuals = Xcentered - Xcentered * (v*v');
+  endif
 endfunction
 %!demo
 %! X = [ 7    26     6    60;
@@ -74,9 +72,9 @@ endfunction
 %!      21    47     4    26;
 %!       1    40    23    34;
 %!      11    66     9    12;
-%!      10    68     8    12 
+%!      10    68     8    12
 %!     ];
-%! # As we increase the number of principal components, the norm 
+%! # As we increase the number of principal components, the norm
 %! # of the residuals matrix will decrease
 %! r1 = pcares(X,1);
 %! n1 = norm(r1)
@@ -86,4 +84,4 @@ endfunction
 %! n3 = norm(r3)
 %! r4 = pcares(X,4);
 %! n4 = norm(r4)
-    
+

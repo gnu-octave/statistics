@@ -14,7 +14,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{a} =} trimmean (@var{x}, @var{p})
+## @deftypefn  {statistics} @var{a} = trimmean (@var{x}, @var{p})
 ##
 ## Compute the trimmed mean.
 ##
@@ -46,13 +46,17 @@ function a = trimmean(x, p, varargin)
   sz = size(x);
   if nargin < 3
     dim = min(find(sz>1));
-    if isempty(dim), dim=1; endif;
+    if isempty(dim)
+      dim=1;
+    endif
   else
     dim = varargin{1};
   endif
   idx = cell (0);
-  for i=1:length(sz), idx{i} = 1:sz(i); end;
-  trim = round(sz(dim)*p*0.01);
-  idx{dim} = 1+trim : sz(dim)-trim;
+  for i=1:length (sz)
+    idx{i} = 1:sz(i);
+  endfor
+  trim = round (sz(dim) * p * 0.01);
+  idx{dim} = 1+trim:sz(dim)-trim;
   a = mean (y (idx{:}), varargin{:});
 endfunction
