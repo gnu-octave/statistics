@@ -23,7 +23,7 @@
 ## @deftypefnx {statistics} @var{m} = median (@dots{}, @var{outtype})
 ## @deftypefnx {statistics} @var{m} = median (@dots{}, @var{nanflag})
 ##
-## Compute the median of the elements of @var{x}.
+## Compute the median value of the elements of @var{x}.
 ##
 ## When the elements of @var{x} are sorted, say
 ## @code{@var{s} = sort (@var{x})}, the median is defined as
@@ -110,37 +110,37 @@ function m = median (x, varargin)
   omitnan = false;
   outtype = "default";
   nvarg = numel (varargin);
+  varg_chars = cellfun ('ischar', varargin);
 
-  if (nvarg == 2 && isnumeric (varargin{2}))
+  if (nvarg == 2 && ! varg_chars(2))
     print_usage ();
   endif
 
-  for i = 1:nvarg
-    if (ischar (varargin{i}))
-      switch (varargin{i})
-        case "all"
-          all_flag = true;
-        case "omitnan"
-          omitnan = true;
-        case "includenan"
-          omitnan = false;
-        case {"default", "double", "native"}
-          outtype = varargin{i};
-        otherwise
-          print_usage ();
-      endswitch
-    endif
+if (any (varg_chars))
+  for idx = varargin(varg_chars)
+    switch (tolower (idx{:}))
+      case "all"
+        all_flag = true;
+      case "omitnan"
+        omitnan = true;
+      case "includenan"
+        omitnan = false;
+      case {"default", "double", "native"}
+        outtype = idx{:};
+      otherwise
+        print_usage ();
+    endswitch
   endfor
-  varargin(cellfun (@ischar, varargin)) = [];
+  varargin(varg_chars) = [];
   nvarg = numel (varargin);
+endif
 
-  if (((nvarg == 1) && ! (isnumeric (varargin{1}))) ...
-      || (nvarg > 1))
+  if (((nvarg == 1) && ! (isnumeric (varargin{1}))) || (nvarg > 1))
     print_usage ();
   endif
 
   if (! (isnumeric (x) || islogical (x)))
-    error ("median: X must be either a numeric or boolean");
+    error ("median: X must be either numeric or logical");
   endif
 
   if (nvarg == 0)
@@ -153,7 +153,7 @@ function m = median (x, varargin)
       n = length (x(:));
       x = sort (x(:), 1);
       k = floor ((n + 1) / 2);
-      if (mod (n, 2) == 1)
+      if (mod (n, 2))
         m = x(k);
       else
         m = x(k) + x(k+1) / 2;
@@ -400,6 +400,11 @@ endfunction
 %! assert (median (x, [1 3]), [2 1.1 2 NaN NaN]);
 %! assert (median (x, [1 3], "omitnan"), [2 1.1 2 3.5 4]);
 
+
+## Test empty, NaN, Inf inputs
+
+
+
 ## Test input validation
 %!error <Invalid call to median.  Correct usage is> median ()
 %!error <Invalid call to median.  Correct usage is> median (1, 2, 3)
@@ -407,9 +412,55 @@ endfunction
 %!error <Invalid call to median.  Correct usage is> median (1, "all", 3)
 %!error <Invalid call to median.  Correct usage is> median (1, "b")
 %!error <Invalid call to median.  Correct usage is> median (1, 1, "foo")
-%!error <median: X must be either a numeric or boolean> median ({1:5})
-%!error <median: X must be either a numeric or boolean> median ("char")
+%!error <median: X must be either numeric or logical> median ({1:5})
+%!error <median: X must be either numeric or logical> median ("char")
 %!error <median: DIM must be a positive integer> median (1, ones (2,2))
 %!error <median: DIM must be a positive integer> median (1, 1.5)
 %!error <median: DIM must be a positive integer> median (1, 0)
+
+
+##
+## Tests from octave core
+##
+
+%!test
+%! x = [1, 2, 3, 4, 5, 6];
+%! x2 = x';
+%! y = [1, 2, 3, 4, 5, 6, 7];
+%! y2 = y';
+%!
+%! assert (median (x) == median (x2) && median (x) == 3.5);
+%! assert (median (y) == median (y2) && median (y) == 4);
+%! assert (median ([x2, 2*x2]), [3.5, 7]);
+%! assert (median ([y2, 3*y2]), [4, 12]);
+
+%!assert (median (single ([1,2,3])), single (2))
+%!assert (median ([1,2,NaN;4,5,6;NaN,8,9]), [NaN, 5, NaN])
+%!assert (median ([1,2], 3), [1,2])
+
+## Test multidimensional arrays
+%!shared a, b, x, y
+%! old_state = rand ("state");
+%! restore_state = onCleanup (@() rand ("state", old_state));
+%! rand ("state", 2);
+%! a = rand (2,3,4,5);
+%! b = rand (3,4,6,5);
+%! x = sort (a, 4);
+%! y = sort (b, 3);
+%!assert <*35679> (median (a, 4), x(:, :, :, 3))
+%!assert <*35679> (median (b, 3), (y(:, :, 3, :) + y(:, :, 4, :))/2)
+
+## Test non-floating point types
+##%!assert (median ([true, false]), true)
+##%!assert (median (uint8 ([1, 3])), uint8 (2))
+##%!assert (median (int8 ([1, 3, 4])), int8 (3))
+##%!assert (median (single ([1, 3, 4])), single (3))
+##%!assert (median (single ([1, 3, NaN])), single (NaN))
+
+## Test input validation
+%!error <Invalid call> median ()
+%!error <X must be either numeric or logical> median ({1:5})
+%!error <DIM must be a positive integer> median (1, ones (2,2))
+%!error <DIM must be a positive integer> median (1, 1.5)
+%!error <DIM must be a positive integer> median (1, 0)
 

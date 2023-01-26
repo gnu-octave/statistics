@@ -24,7 +24,7 @@
 ## @deftypefnx {statistics} @var{m} = mean (@dots{}, @var{outtype})
 ## @deftypefnx {statistics} @var{m} = mean (@dots{}, @var{nanflag})
 ##
-## Compute the mean of the elements of @var{x}.
+## Compute the mean value of the elements of @var{x}.
 ##
 ## @itemize
 ## @item
