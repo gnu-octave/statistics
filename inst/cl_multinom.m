@@ -38,15 +38,17 @@
 ## If N<sum(x), infinite number assumed.
 ## @item @var{b}  : real, vector :  confidence interval.
 ##
-## If vector, it should be the size of x containing confence interval for each cells
-## If scalar, each cell will have the same value of b unless it is zero or -1
-## If value is 0, b=.02 is assumed which is standard choice at elections
+## If vector, it should be the size of x containing confence interval for each
+## cells.  If scalar, each cell will have the same value of b unless it is zero
+## or -1.  If value is 0, b=.02 is assumed which is standard choice at elections
 ## otherwise it is calculated in a way that one sample in a cell alteration
 ## defines the confidence interval.
 ## @item @var{calculation_type}  : string    : (Optional), described below
-##           "bromaghin"     (default) - do not change it unless you have a good reason to do so
+##           "bromaghin"     (default) - do not change it unless you have a good
+##                           reason to do so
 ##           "cochran"
-##           "agresti_cull"  this is not exactly the solution at reference given below but an adjustment of the solutions above
+##           "agresti_cull"  this is not exactly the solution at reference given
+##                           below but an adjustment of the solutions above
 ## @end itemize
 ##
 ## @subheading Returns
@@ -58,73 +60,90 @@
 ##
 ## @subheading References
 ##
-## "bromaghin" calculation type (default) is based on
+## "bromaghin" calculation type (default)
 ## is based on the article
-##   Jeffrey F. Bromaghin, "Sample Size Determination for Interval Estimation of Multinomial Probabilities", The American Statistician  vol 47, 1993, pp 203-206.
+##   Jeffrey F. Bromaghin, "Sample Size Determination for Interval Estimation
+##   of Multinomial Probabilities", The American Statistician  vol 47, 1993,
+##   pp 203-206.
 ##
 ## "cochran" calculation type
 ## is based on article
-##   Robert T. Tortora, "A Note on Sample Size Estimation for Multinomial Populations", The American Statistician, , Vol 32. 1978,  pp 100-102.
+##   Robert T. Tortora, "A Note on Sample Size Estimation for Multinomial
+##   Populations", The American Statistician, , Vol 32. 1978,  pp 100-102.
 ##
 ## "agresti_cull" calculation type
 ## is based on article in which Quesenberry Hurst and Goodman result is combined
-##   A. Agresti and B.A. Coull, "Approximate is better than \"exact\" for interval estimation of binomial portions", The American Statistician, Vol. 52, 1998, pp 119-126
+##   A. Agresti and B.A. Coull, "Approximate is better than \"exact\" for
+##   interval estimation of binomial portions", The American Statistician,
+##   Vol. 52, 1998, pp 119-126
 ##
 ## @end deftypefn
 
-function CL = cl_multinom( x, N, b = .05, calculation_type = "bromaghin")
+function CL = cl_multinom (x, N, b = .05, calculation_type = "bromaghin")
 
-    if (nargin < 2 || nargin > 4)
-        print_usage;
-    elseif (!ischar (calculation_type))
-        error ("Argument calculation_type must be a string");
+  if (nargin < 2 || nargin > 4)
+    print_usage;
+  elseif (! ischar (calculation_type))
+    error ("cl_multinom: argument calculation_type must be a string.");
+  endif
+
+  k = rows (x);
+  nn = sum (x);
+  p = x / nn;
+
+  if (isscalar (b))
+    if (b==0)
+      b=0.02;
     endif
-
-    k = rows(x);
-    nn = sum(x);
-    p = x / nn;
-
-    if (isscalar( b ))
-        if (b==0) b=0.02; endif
-        b = ones( rows(x), 1 ) * b;
-
-        if (b<0)  b=1 ./ max( x, 1 ); endif
+    b = ones (rows (x), 1 ) * b;
+    if (b<0)
+      b = 1 ./ max (x, 1);
     endif
-    bb = b .* b;
+  endif
+  bb = b .* b;
 
-    if (N==nn)
-        CL = 1;
-        return;
-    endif
+  if (N == nn)
+    CL = 1;
+    return;
+  endif
 
-    if (N<nn)
-        fpc = 1;
-    else
-        fpc = (N-1) / (N-nn); # finite population correction tag
-    endif
+  if (N < nn)
+    fpc = 1;
+  else
+    fpc = (N - 1) / (N - nn); # finite population correction tag
+  endif
 
-    beta = p.*(1-p);
+  beta = p .* (1 - p);
 
-    switch calculation_type
-      case {"cochran"}
-        t = sqrt( fpc * nn * bb ./ beta )
-        alpha = ( 1 - normcdf( t )) * 2
+  switch lower (calculation_type)
+    case "cochran"
+      t = sqrt (fpc * nn * bb ./ beta);
+      alpha = (1 - normcdf (t)) * 2;
 
-      case {"bromaghin"}
-        t = sqrt(  fpc * (nn * 2 * bb )./ ( beta - 2 * bb + sqrt( beta .* beta - bb .* ( 4*beta - 1 ))) );
-        alpha = ( 1 - normcdf( t )) * 2;
+    case "bromaghin"
+      t = sqrt (fpc * (nn * 2 * bb ) ./ ...
+               (beta - 2 * bb + sqrt (beta .* beta - bb .* (4 * beta - 1))));
+      alpha = (1 - normcdf (t)) * 2;
 
-      case {"agresti_cull"}
-        ts = fpc * nn * bb ./ beta ;
-        if ( k<=2 )
-          alpha = 1 - chi2cdf( ts, k-1 ); % adjusted Wilson interval
-        else
-          alpha = 1 - chi2cdf( ts/k, 1 ); % Goodman interval with Bonferroni argument
-        endif
-      otherwise
-        error ("Unknown calculation type '%s'", calculation_type);
-    endswitch
+    case "agresti_cull"
+      ts = fpc * nn * bb ./ beta ;
+      if (k <= 2)
+        alpha = 1 - chi2cdf (ts, k - 1); # adjusted Wilson interval
+      else
+        alpha = 1 - chi2cdf (ts / k, 1); # Goodman interval with Bonferroni arg.
+      endif
+    otherwise
+      error ("cl_multinom: unknown calculation type '%s'", calculation_type);
+  endswitch
 
-    CL = 1 - max( alpha );
+  CL = 1 - max( alpha );
 
 endfunction
+
+## Test input validation
+%!error<Invalid call to cl_multinom.  Correct usage> cl_multinom ();
+%!error cl_multinom (1, 2, 3, 4, 5);
+%!error<cl_multinom: argument calculation_type must be a string.> ...
+%! cl_multinom (1, 2, 3, 4);
+%!error<cl_multinom: unknown calculation type.> ...
+%! cl_multinom (1, 2, 3, "some string");
