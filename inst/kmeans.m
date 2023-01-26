@@ -3,7 +3,7 @@
 ## Copyright (C) 2015-2016 Lachlan Andrew <lachlanbis@gmail.com>
 ## Copyright (C) 2016 Michael Bentley <mikebentley15@gmail.com>
 ## Copyright (C) 2021 Stefano Guidoni <ilguido@users.sf.net>
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -19,9 +19,16 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {[@var{idx}, @var{centers}, @var{sumd}, @var{dist}] =} kmeans (@var{data}, @var{k}, @var{param1}, @var{value1}, @dots{})
+## @deftypefn  {statistics} @var{idx} = kmeans (@var{data}, @var{k})
+## @deftypefnx {statistics} [@var{idx}, @var{centers}] = kmeans (@var{data}, @var{k})
+## @deftypefnx {statistics} [@var{idx}, @var{centers}, @var{sumd}] = kmeans (@var{data}, @var{k})
+## @deftypefnx {statistics} [@var{idx}, @var{centers}, @var{sumd}, @var{dist}] = kmeans (@var{data}, @var{k})
+## @deftypefnx {statistics} [@dots{}] = kmeans (@var{data}, @var{k}, @var{param1}, @var{value1}, @dots{})
+## @deftypefnx {statistics} [@dots{}] = kmeans (@var{data}, [], @qcode{"start"}, @var{start}, @dots{})
+##
 ## Perform a @var{k}-means clustering of the @var{N}x@var{D} table @var{data}.
-## If parameter @qcode{start} is specified, then @var{k} may be empty
+##
+## If parameter @qcode{"start"} is specified, then @var{k} may be empty
 ## in which case @var{k} is set to the number of rows of @var{start}.
 ##
 ## The outputs are:
@@ -30,7 +37,7 @@
 ## @item @var{idx}
 ## An @var{N}x1 vector whose @var{i}th element is the class to which row @var{i}
 ## of @var{data} is assigned.
-## 
+##
 ## @item @var{centers}
 ## A @var{K}x@var{D} array whose @var{i}th row is the centroid of cluster
 ## @var{i}.
@@ -42,8 +49,8 @@
 ## @item @var{dist}
 ## An @var{N}x@var{k} matrix whose @var{i}@var{j}th element is
 ## the distance from sample @var{i} to centroid @var{j}.
-## @end table 
-## 
+## @end table
+##
 ## The following parameters may be placed in any order.  Each parameter
 ## must be followed by its value.
 ##
@@ -76,7 +83,7 @@
 ## If @var{Start} is numeric, then @var{Replicates} defaults to
 ## (and must equal) the size of the third dimension of @var{Start}.
 ## Otherwise it defaults to 1.
-## 
+##
 ## @item @var{MaxIter}
 ## The maximum number of iterations to perform for each replicate.
 ## If the maximum change of any centroid is less than 0.001, then
@@ -114,7 +121,7 @@
 ## The number of components in which the sample and the centroid differ.
 ## In this case, the centroid is the median of all samples in its cluster.
 ## Unlike Matlab, Octave allows non-logical @var{data}.
-## 
+##
 ## @end table
 ##
 ## @item @var{EmptyAction}
@@ -130,7 +137,7 @@
 ##       Remove the centroid, and continue computation with one fewer centroid.
 ##       The dimensions of the outputs @var{centroids} and @var{d}
 ##       are unchanged, with values for omitted centroids replaced by NA.
-##        
+##
 ## @end table
 ##
 ## @item @var{Display}
@@ -142,7 +149,7 @@
 ##       Display a summary for each clustering operation.
 ## @item @qcode{iter}
 ##       Display a summary for each iteration of a clustering operation.
-##        
+##
 ## @end table
 ## @end table
 ##
@@ -200,7 +207,7 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
         distance = prop{2};
       case "replicates"
         replicates = prop{2};
-        replicates_set_explicitly = true;      
+        replicates_set_explicitly = true;
       case "display"
         display = prop{2};
       case {"onlinephase", "options"}
@@ -323,8 +330,8 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
         error ("kmeans: invalid display parameter %s", display);
     endswitch
   endif
-  
-  
+
+
   ## Done processing options
   ########################################
 
@@ -332,7 +339,7 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
   if (! isscalar (k))
     error ("kmeans: second input argument must be a scalar");
   endif
-  
+
   ## used to hold the distances from each sample to each class
   D = zeros (n_rows, k);
 
@@ -342,7 +349,7 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
     ## keep track of the number of data points that change class
     old_classes = zeros (rows (data), 1);
     n_changes = -1;
-    
+
     ## check for the 'start' property
     switch (lower (start))
       case "sample"
@@ -422,7 +429,7 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
       ## compute the number of class changes
       n_changes = sum (old_classes != classes);
       old_classes = classes;
-      
+
       ## display iteration status
       if (strcmp (display, "iter"))
         printf ("%6d\t%6d\t%8d\t%12.3f\n", (iter - 1), 1, ...
@@ -433,12 +440,12 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
     if (iter > max_iter && err > 0.001 && n_changes != 0)
       warning ("kmeans: failed to converge in %d iterations", max_iter);
     endif
-    
+
     if (sum (sumd) < sum (best) || isinf (best))
       best = sumd;
       best_centers = centers;
     endif
-    
+
     ## display final results
     if (strcmp (display, "final"))
       printf ("Replicate %d, %d iterations, total sum of distances = %.3f.\n", ...
@@ -448,7 +455,7 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
   centers = best_centers;
   ## Compute final distances, classes and sums
   [D, classes, sumd] = update_dist (data, centers, D, k, dist);
-  
+
   ## display final results
   if (strcmp (display, "final") || strcmp (display, "iter"))
     printf ("Best total sum of distances = %.3f\n", sum (sumd));
