@@ -287,7 +287,7 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** z_test (replaced by ztest)
 
- 
+
  Summary of important user-visible changes for statistics 1.5.2:
 -------------------------------------------------------------------
 
@@ -298,22 +298,22 @@ Summary of important user-visible changes for statistics 1.5.1:
  ==============
 
  ** median (fully Matlab compatible)
- 
+
  ** std (fully Matlab compatible)
- 
+
  ** var (fully Matlab compatible)
 
  Improvements:
  =============
 
  ** mean: fixed MATLAB compatibility
- 
+
  ** multcompare: fixed erroneous results for Welch ANOVA, updated features
- 
+
  ** tcdf: fixed erroneous results
- 
+
  ** ttest: added support for NaN values and matrix inputs
- 
+
  ** ttest2: added support for matrices and multiple t-tests
 
  Removed Functions:
@@ -325,7 +325,7 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** nanvar (replaced by var)
 
- 
+
  Summary of important user-visible changes for statistics 1.5.3:
 -------------------------------------------------------------------
 
@@ -336,65 +336,63 @@ Summary of important user-visible changes for statistics 1.5.1:
  ==============
 
  ** adtest (fully Matlab compatible)
- 
- ** fishertest (fully Matlab compatible, extra functionality)
- 
+
  ** hotelling_t2test (new functionality, replacing old hotelling_test)
- 
+
  ** hotelling_t2test2 (new functionality, replacing old hotelling_test_2)
- 
+
  ** regression_ftest (new functionality, replacing old f_test_regression)
- 
+
  ** regression_ttest (new functionality, replacing old t_test_regression)
 
  Improvements:
  =============
 
  ** betacdf: added "upper" option
- 
+
  ** binocdf: added "upper" option
- 
+
  ** expcdf: added "upper" option and confidence bounds
- 
+
  ** geocdf: added "upper" option
- 
+
  ** geomean: fixed MATLAB compatibility
- 
+
  ** gevcdf: added "upper" option
- 
+
  ** harmmean: fixed MATLAB compatibility
- 
+
  ** hygecdf: added "upper" option
- 
+
  ** logncdf: added "upper" option and confidence bounds
- 
+
  ** mean: fixed MATLAB compatibility
- 
+
  ** median: fixed MATLAB compatibility
- 
- ** multcompare: print PostHoc Test table, produce additional MATLAB-like plot
- 
+
+ ** multcompare: print PostHoc Test table
+
  ** nbincdf: added "upper" option
- 
+
  ** poisscdf: added "upper" option
- 
+
  ** raylcdf: added "upper" option
- 
+
  ** std: fixed MATLAB compatibility
- 
+
  ** unidcdf: added "upper" option
- 
+
  ** unifcdf: added "upper" option
- 
+
  ** var: fixed MATLAB compatibility
- 
+
  ** wblcdf: added "upper" option and confidence bounds
 
  Removed Functions:
  ==================
 
  ** anderson_darling_cdf (replaced by adtest)
- 
+
  ** anderson_darling_test (replaced by adtest)
 
  ** hotelling_test (replaced by hotelling_t2test)
