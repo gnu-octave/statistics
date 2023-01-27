@@ -133,11 +133,12 @@
 ##
 ## @itemize
 ## @item
-## @var{DISPLAY} is either "on" (the default) to display a graph of the
-## comparisons (e.g. difference between means) and their 100*(1-@var{ALPHA})%
-## intervals, or "off" to omit the graph.  Markers and error bars colored red
-## have multiplicity adjusted p-values < ALPHA, otherwise the markers and error
-## bars are blue.
+## @var{DISPLAY} is either "on" (the default): to display a table and graph of
+## the comparisons (e.g. difference between means), their 100*(1-@var{ALPHA})%
+## intervals and multiplicity adjusted p-values in APA style; or "off": to omit
+## the table and graph. On the graph, markers and error bars colored red have
+## multiplicity adjusted p-values < ALPHA, otherwise the markers and error bars
+## are blue.
 ## @end itemize
 ##
 ## @code{[@dots{}] = multcompare (@var{STATS}, "seed", @var{SEED})}
