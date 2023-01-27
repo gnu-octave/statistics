@@ -14,10 +14,11 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{x} =} copularnd (@var{family}, @var{theta}, @var{n})
-## @deftypefnx {Function File} {} copularnd (@var{family}, @var{theta}, @var{n}, @var{d})
-## @deftypefnx {Function File} {} copularnd ('t', @var{theta}, @var{nu}, @var{n})
-## Generate random samples from a copula family.
+## @deftypefn  {Function File} @var{r} = copularnd (@var{family}, @var{theta}, @var{n})
+## @deftypefnx {Function File} @var{r} = copularnd (@var{family}, @var{theta}, @var{n}, @var{d})
+## @deftypefnx {Function File} @var{r} = copularnd ('t', @var{theta}, @var{df}, @var{n})
+##
+## Random arrays from the copula family distributions.
 ##
 ## @subheading Arguments
 ##
@@ -35,7 +36,7 @@
 ## be generated or be scalar.
 ##
 ## @item
-## @var{nu} is the degrees of freedom for the Student's t family. @var{nu} must
+## @var{df} is the degrees of freedom for the Student's t family. @var{df} must
 ## be a vector with the same number of elements as samples to be generated or
 ## be scalar.
 ##
@@ -53,7 +54,7 @@
 ##
 ## @itemize @bullet
 ## @item
-## @var{x} is a matrix of random samples from the copula with @var{n} samples
+## @var{r} is a matrix of random samples from the copula with @var{n} samples
 ## of distribution dimension @var{d}.
 ## @end itemize
 ##
@@ -62,19 +63,19 @@
 ## @example
 ## @group
 ## theta = 0.5;
-## x = copularnd ("Gaussian", theta);
+## r = copularnd ("Gaussian", theta);
 ## @end group
 ##
 ## @group
 ## theta = 0.5;
-## nu = 2;
-## x = copularnd ("t", theta, nu);
+## df = 2;
+## r = copularnd ("t", theta, df);
 ## @end group
 ##
 ## @group
 ## theta = 0.5;
 ## n = 2;
-## x = copularnd ("Clayton", theta, n);
+## r = copularnd ("Clayton", theta, n);
 ## @end group
 ## @end example
 ##
@@ -87,38 +88,36 @@
 ## @end enumerate
 ## @end deftypefn
 
-## Author: Arno Onken <asnelt@asnelt.org>
-## Description: Random samples from a copula family
+function r = copularnd (family, theta, df, n)
 
-function x = copularnd (family, theta, nu, n)
-
-  # Check arguments
+  ## Check arguments
   if (nargin < 2)
     print_usage ();
   endif
 
   if (! ischar (family))
-    error ("copularnd: family must be one of 'Gaussian', 't', and 'Clayton'");
+    error ("copularnd: family must be one of 'Gaussian', 't', and 'Clayton'.");
   endif
 
   lower_family = lower (family);
 
-  # Check family and copula parameters
+  ## Check family and copula parameters
   switch (lower_family)
 
     case {"gaussian"}
-      # Gaussian family
+      ## Gaussian family
       if (isscalar (theta))
-        # Expand a scalar to a correlation matrix
+        ## Expand a scalar to a correlation matrix
         theta = [1, theta; theta, 1];
       endif
-      if (! ismatrix (theta) || any (diag (theta) != 1) || any (any (theta != theta')) || min (eig (theta)) <= 0)
-        error ("copularnd: theta must be a correlation matrix");
+      if (! ismatrix (theta) || any (diag (theta) != 1) || ...
+          any (any (theta != theta')) || min (eig (theta)) <= 0)
+        error ("copularnd: THETA must be a correlation matrix.");
       endif
       if (nargin > 3)
         d = n;
         if (! isscalar (d) || d != size (theta, 1))
-          error ("copularnd: d must correspond to dimension of theta");
+          error ("copularnd: D must correspond to dimension of theta.");
         endif
       else
         d = size (theta, 1);
@@ -126,109 +125,113 @@ function x = copularnd (family, theta, nu, n)
       if (nargin < 3)
         n = 1;
       else
-        n = nu;
+        n = df;
         if (! isscalar (n) || (n < 0) || round (n) != n)
-          error ("copularnd: n must be a non-negative integer");
+          error ("copularnd: N must be a non-negative integer.");
         endif
       endif
 
     case {"t"}
-      # Student's t family
+      ## Student's t family
       if (nargin < 3)
         print_usage ();
       endif
       if (isscalar (theta))
-        # Expand a scalar to a correlation matrix
+        ## Expand a scalar to a correlation matrix
         theta = [1, theta; theta, 1];
       endif
-      if (! ismatrix (theta) || any (diag (theta) != 1) || any (any (theta != theta')) || min (eig (theta)) <= 0)
-        error ("copularnd: theta must be a correlation matrix");
+      if (! ismatrix (theta) || any (diag (theta) != 1) || ...
+          any (any (theta != theta')) || min (eig (theta)) <= 0)
+        error ("copularnd: THETA must be a correlation matrix.");
       endif
-      if (! isscalar (nu) && (! isvector (nu) || length (nu) != n))
-        error ("copularnd: nu must be a vector with the same number of rows as x or be scalar");
+      if (! isscalar (df) && (! isvector (df) || length (df) != n))
+        error (strcat (["copularnd: DF must be a vector with the same"], ...
+                       [" number of rows as r or be scalar."]));
       endif
-      nu = nu(:);
+      df = df(:);
       if (nargin < 4)
         n = 1;
       else
         if (! isscalar (n) || (n < 0) || round (n) != n)
-          error ("copularnd: n must be a non-negative integer");
+          error ("copularnd: N must be a non-negative integer.");
         endif
       endif
 
     case {"clayton"}
-      # Archimedian one parameter family
+      ## Archimedian one parameter family
       if (nargin < 4)
-        # Default is bivariate
+        ## Default is bivariate
         d = 2;
       else
         d = n;
         if (! isscalar (d) || (d < 2) || round (d) != d)
-          error ("copularnd: d must be an integer greater than 1");
+          error ("copularnd: D must be an integer greater than 1.");
         endif
       endif
       if (nargin < 3)
-        # Default is one sample
+        ## Default is one sample
         n = 1;
       else
-        n = nu;
+        n = df;
         if (! isscalar (n) || (n < 0) || round (n) != n)
-          error ("copularnd: n must be a non-negative integer");
+          error ("copularnd: N must be a non-negative integer.");
         endif
       endif
       if (! isvector (theta) || (! isscalar (theta) && size (theta, 1) != n))
-        error ("copularnd: theta must be a column vector with the number of rows equal to n or be scalar");
+        error (strcaty (["copularnd: THETA must be a column vector with"], ...
+                        [" the number of rows equal to N or be scalar."]));
       endif
       if (n > 1 && isscalar (theta))
         theta = repmat (theta, n, 1);
       endif
 
     otherwise
-      error ("copularnd: unknown copula family '%s'", family);
+      error ("copularnd: unknown copula family '%s'.", family);
 
   endswitch
 
   if (n == 0)
-    # Input is empty
-    x = zeros (0, d);
+    ## Input is empty
+    r = zeros (0, d);
   else
 
-    # Draw random samples according to family
+    ## Draw random samples according to family
     switch (lower_family)
 
       case {"gaussian"}
-        # The Gaussian family
-        x = normcdf (mvnrnd (zeros (1, d), theta, n), 0, 1);
-        # No parameter bounds check
+        ## The Gaussian family
+        r = normcdf (mvnrnd (zeros (1, d), theta, n), 0, 1);
+        ## No parameter bounds check
         k = [];
 
       case {"t"}
-        # The Student's t family
-        x = tcdf (mvtrnd (theta, nu, n), nu);
-        # No parameter bounds check
+        ## The Student's t family
+        r = tcdf (mvtrnd (theta, df, n), df);
+        ## No parameter bounds check
         k = [];
 
       case {"clayton"}
-        # The Clayton family
+        ## The Clayton family
         u = rand (n, d);
         if (d == 2)
-          x = zeros (n, 2);
-          # Conditional distribution method for the bivariate case which also
-          # works for theta < 0
-          x(:, 1) = u(:, 1);
-          x(:, 2) = (1 + u(:, 1) .^ (-theta) .* (u(:, 2) .^ (-theta ./ (1 + theta)) - 1)) .^ (-1 ./ theta);
+          r = zeros (n, 2);
+          ## Conditional distribution method for the bivariate case which also
+          ## works for theta < 0
+          r(:, 1) = u(:, 1);
+          r(:, 2) = (1 + u(:, 1) .^ (-theta) .* (u(:, 2) .^ ...
+                    (-theta ./ (1 + theta)) - 1)) .^ (-1 ./ theta);
         else
-          # Apply the algorithm by Marshall and Olkin:
-          # Frailty distribution for Clayton copula is gamma
+          ## Apply the algorithm by Marshall and Olkin:
+          ## Frailty distribution for Clayton copula is gamma
           y = randg (1 ./ theta, n, 1);
-          x = (1 - log (u) ./ repmat (y, 1, d)) .^ (-1 ./ repmat (theta, 1, d));
+          r = (1 - log (u) ./ repmat (y, 1, d)) .^ (-1 ./ repmat (theta, 1, d));
         endif
         k = find (theta == 0);
         if (any (k))
-          # Produkt copula at columns k
-          x(k, :) = u(k, :);
+          ## Product copula at columns k
+          r(k, :) = u(k, :);
         endif
-        # Continue argument check
+        ## Continue argument check
         if (d == 2)
           k = find (! (theta >= -1) | ! (theta < inf));
         else
@@ -237,9 +240,9 @@ function x = copularnd (family, theta, nu, n)
 
     endswitch
 
-    # Out of bounds parameters
+    ## Out of bounds parameters
     if (any (k))
-      x(k, :) = NaN;
+      r(k, :) = NaN;
     endif
 
   endif
@@ -248,34 +251,34 @@ endfunction
 
 %!test
 %! theta = 0.5;
-%! x = copularnd ("Gaussian", theta);
-%! assert (size (x), [1, 2]);
-%! assert (all ((x >= 0) & (x <= 1)));
+%! r = copularnd ("Gaussian", theta);
+%! assert (size (r), [1, 2]);
+%! assert (all ((r >= 0) & (r <= 1)));
 
 %!test
 %! theta = 0.5;
-%! nu = 2;
-%! x = copularnd ("t", theta, nu);
-%! assert (size (x), [1, 2]);
-%! assert (all ((x >= 0) & (x <= 1)));
+%! df = 2;
+%! r = copularnd ("t", theta, df);
+%! assert (size (r), [1, 2]);
+%! assert (all ((r >= 0) & (r <= 1)));
 
 %!test
 %! theta = 0.5;
-%! x = copularnd ("Clayton", theta);
-%! assert (size (x), [1, 2]);
-%! assert (all ((x >= 0) & (x <= 1)));
+%! r = copularnd ("Clayton", theta);
+%! assert (size (r), [1, 2]);
+%! assert (all ((r >= 0) & (r <= 1)));
 
 %!test
 %! theta = 0.5;
 %! n = 2;
-%! x = copularnd ("Clayton", theta, n);
-%! assert (size (x), [n, 2]);
-%! assert (all ((x >= 0) & (x <= 1)));
+%! r = copularnd ("Clayton", theta, n);
+%! assert (size (r), [n, 2]);
+%! assert (all ((r >= 0) & (r <= 1)));
 
 %!test
 %! theta = [1; 2];
 %! n = 2;
 %! d = 3;
-%! x = copularnd ("Clayton", theta, n, d);
-%! assert (size (x), [n, d]);
-%! assert (all ((x >= 0) & (x <= 1)));
+%! r = copularnd ("Clayton", theta, n, d);
+%! assert (size (r), [n, d]);
+%! assert (all ((r >= 0) & (r <= 1)));

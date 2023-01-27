@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,15 +17,15 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{p} = evcdf (@var{x})
-## @deftypefnx {Function File} @var{p} = evcdf (@var{x}, @var{mu})
-## @deftypefnx {Function File} @var{p} = evcdf (@var{x}, @var{mu}, @var{sigma})
-## @deftypefnx {Function File} @var{p} = evcdf (@dots{}, "upper")
-## @deftypefnx {Function File} [@var{p}, @var{plo}, @var{pup}] = evcdf (@var{x}, @var{mu}, @var{sigma}, @var{pcov})
-## @deftypefnx {Function File} [@var{p}, @var{plo}, @var{pup}] = evcdf (@var{x}, @var{mu}, @var{sigma}, @var{pcov}, @var{alpha})
-## @deftypefnx {Function File} [@var{p}, @var{plo}, @var{pup}] = evcdf (@dots{}, "upper")
+## @deftypefn  {statistics} @var{p} = evcdf (@var{x})
+## @deftypefnx {statistics} @var{p} = evcdf (@var{x}, @var{mu})
+## @deftypefnx {statistics} @var{p} = evcdf (@var{x}, @var{mu}, @var{sigma})
+## @deftypefnx {statistics} @var{p} = evcdf (@dots{}, "upper")
+## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = evcdf (@var{x}, @var{mu}, @var{sigma}, @var{pcov})
+## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = evcdf (@var{x}, @var{mu}, @var{sigma}, @var{pcov}, @var{alpha})
+## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = evcdf (@dots{}, "upper")
 ##
-## Extreme value cumulative distribution function (cdf).
+## Extreme value cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
 ## (CDF) of the type 1 extreme values CDF at @var{x} of the normal distribution

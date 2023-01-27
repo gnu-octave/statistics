@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,9 +17,9 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{r} = evrnd (@var{mu}, @var{sigma})
-## @deftypefnx {Function File} @var{r} = evrnd (@var{mu}, @var{sigma}, @var{m}, @var{n}, @dots{})
-## @deftypefnx {Function File} @var{r} = evrnd (@var{mu}, @var{sigma}, [@var{m}, @var{n}, @dots{}])
+## @deftypefn  {statistics} @var{r} = evrnd (@var{mu}, @var{sigma})
+## @deftypefnx {statistics} @var{r} = evrnd (@var{mu}, @var{sigma}, @var{m}, @var{n}, @dots{})
+## @deftypefnx {statistics} @var{r} = evrnd (@var{mu}, @var{sigma}, [@var{m}, @var{n}, @dots{}])
 ##
 ## Random arrays from the extreme value distribution.
 ##

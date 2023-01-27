@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,13 +17,13 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{x} = evinv (@var{p})
-## @deftypefnx {Function File} @var{x} = evcdf (@var{p}, @var{mu})
-## @deftypefnx {Function File} @var{x} = evinv (@var{p}, @var{mu}, @var{sigma})
-## @deftypefnx {Function File} [@var{x}, @var{xlo}, @var{xup}] = evinv (@var{x}, @var{mu}, @var{sigma}, @var{pcov})
-## @deftypefnx {Function File} [@var{x}, @var{xlo}, @var{xup}] = evinv (@var{x}, @var{mu}, @var{sigma}, @var{pcov}, @var{alpha})
+## @deftypefn  {statistics} @var{x} = evinv (@var{p})
+## @deftypefnx {statistics} @var{x} = evcdf (@var{p}, @var{mu})
+## @deftypefnx {statistics} @var{x} = evinv (@var{p}, @var{mu}, @var{sigma})
+## @deftypefnx {statistics} [@var{x}, @var{xlo}, @var{xup}] = evinv (@var{x}, @var{mu}, @var{sigma}, @var{pcov})
+## @deftypefnx {statistics} [@var{x}, @var{xlo}, @var{xup}] = evinv (@var{x}, @var{mu}, @var{sigma}, @var{pcov}, @var{alpha})
 ##
-## Inverse of the extreme value cumulative distribution function (cdf).
+## Inverse of the extreme value cumulative distribution function (iCDF).
 ##
 ## For each element of @var{p}, compute the inverse cdf for a type 1 extreme
 ## value distribution with location parameter @var{mu} and scale parameter

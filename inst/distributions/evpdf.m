@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,11 +17,11 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{y} = evpdf (@var{x})
-## @deftypefnx {Function File} @var{y} = evpdf (@var{x}, @var{mu})
-## @deftypefnx {Function File} @var{y} = evpdf (@var{x}, @var{mu}, @var{sigma})
+## @deftypefn  {statistics} @var{y} = evpdf (@var{x})
+## @deftypefnx {statistics} @var{y} = evpdf (@var{x}, @var{mu})
+## @deftypefnx {statistics} @var{y} = evpdf (@var{x}, @var{mu}, @var{sigma})
 ##
-## Extreme value probability density function (pdf).
+## Extreme value probability density function (PDF).
 ##
 ## @code{@var{y} = evpdf (@var{x}, @var{mu}, @var{sigma})} returns the pdf of
 ## the type 1 extreme value distribution with location parameter @var{mu} and
