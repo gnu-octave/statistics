@@ -109,7 +109,6 @@ function m = median (x, varargin)
     error ("median: X must be either numeric or logical");
   endif
 
-
   ## Set initial conditions
   all_flag = false;
   omitnan = false;
@@ -202,8 +201,6 @@ function m = median (x, varargin)
       endif
     endif
 
-
-
   else
     ## Dim not provided.  Determine scalar dimension
     if (all_flag)
@@ -229,7 +226,6 @@ function m = median (x, varargin)
       sz_out(dim) = 1;
     endif
   endif
-
 
   if isempty (x)
     switch (outtype)
@@ -275,7 +271,6 @@ function m = median (x, varargin)
     # set flag to ipermute at end of function
     perm_flag = true;
   endif
-
 
   if (! any (hasnan = any (isnan(x), dim)))
     ## use simpler path if no NaNs present
@@ -340,7 +335,6 @@ function m = median (x, varargin)
         endif
 
       else
-
         n = szx(dim);
         k = floor ((n + 1) / 2);
         k_vector = cell (1, ndx);
@@ -366,108 +360,6 @@ function m = median (x, varargin)
     endif
   endif
 
-##  else
-##
-##    ## Two numeric input arguments, dimensions given.  Note scalar is vector!
-##
-##    if (isscalar (vecdim))
-##      dim = vecdim;
-##      x = sort (x, dim);
-##      if (omitnan)
-##        n = sum (! isnan (x), dim);
-##      else
-##        n = sum (isnan (x) | ! isnan (x), dim);
-##      endif
-##      k = floor ((n + 1) ./ 2);
-##      for i = 1:numel (k)
-##        if (mod (n(i), 2) == 1)
-##          z(i) = {(nth_element (x, k(i), dim))};
-##        else
-##          z(i) = {(sum (nth_element (x, k(i):k(i)+1, dim), dim, "native") / 2)};
-##        endif
-##      endfor
-##      ## Collect correct elements
-##      szargs = cell (1, ndims (x));
-##      szz = size (z{1});
-##      for i = 1:numel (k)
-##        [szargs{:}] = ind2sub (szz, i);
-##        m(szargs{:}) = z{i}(szargs{:});
-##      endfor
-##      ## Inject NaNs where needed, to be consistent with Matlab.
-##      if (! omitnan && ! islogical (x))
-##        m(any (isnan (x), dim)) = NaN;
-##      endif
-##
-##    else
-##
-##      ## Ignore exceeding dimensions in VECDIM
-##      vecdim(find (vecdim > ndims (x))) = [];
-##      ## Calculate permutation vector
-##      remdims = 1:ndims (x);    # all dimensions
-##      remdims(vecdim) = [];     # delete dimensions specified by vecdim
-##      nremd = numel (remdims);
-##
-##      ## If all dimensions are given, it is similar to all flag
-##      if (nremd == 0)
-##        if (omitnan)
-##          x = x(! isnan (x));
-##        endif
-##        n = length (x(:));
-##        x = sort (x(:), 1);
-##        k = floor ((n + 1) / 2);
-##        if (mod (n, 2) == 1)
-##          m = x(k);
-##        else
-##          m = x(k) + x(k+1) / 2;
-##        endif
-##        ## Inject NaNs where needed, to be consistent with Matlab.
-##        if (! omitnan && ! islogical (x))
-##          m(any (isnan (x))) = NaN;
-##        endif
-##
-##      else
-##        ## Permute to bring remaining dims forward
-##        perm = [remdims, vecdim];
-##        m = permute (x, perm);
-##
-##        ## Reshape to put all vecdims in final dimension
-##        szm = size (m);
-##        sznew = [szm(1:nremd), prod(szm(nremd+1:end))];
-##        m = reshape (m, sznew);
-##
-##        ## Calculate median on single, squashed dimension
-##        dim = nremd + 1;
-##        m = sort (m, dim);
-##        if (omitnan)
-##          n = sum (! isnan (m), dim);
-##        else
-##          n = sum (isnan (m) | ! isnan (m), dim);
-##        endif
-##        k = floor ((n + 1) ./ 2);
-##        for i = 1:numel (k)
-##          if (mod (n(i), 2) == 1)
-##            z(i) = {(nth_element (m, k(i), dim))};
-##          else
-##            z(i) = {(sum (nth_element (m, k(i):k(i)+1, dim), dim, "native") ...
-##                     / 2)};
-##          endif
-##        endfor
-##        ## Collect correct elements
-##        szargs = cell (1, ndims (x));
-##        szz = size (z{1});
-##        for i = 1:numel (k)
-##          [szargs{:}] = ind2sub (szz, i);
-##          mm(szargs{:}) = z{i}(szargs{:});
-##        endfor
-##        ## Inject NaNs where needed, to be consistent with Matlab.
-##        if (! omitnan && ! islogical (x))
-##          mm(any (isnan (m), dim)) = NaN;
-##        endif
-##
-##      endif
-##    endif
-##  endif
-
   if (perm_flag)
     ## Inverse permute back to correct dimensions
     m = ipermute (m, perm_vect);
@@ -477,21 +369,11 @@ function m = median (x, varargin)
   ##fixme do speedtests
   if (! strcmp (class (m), outtype))
     m = outtype_convert (m, outtype);
-##    switch (outtype)
-##      case "single"
-##        m = single (m);
-##      case "double"
-##        m = double (m);
-##      otherwise
-##        m = cast (m, outtype);
-##    endswitch
   endif
-
 
 endfunction
 
 function m = outtype_convert (m, outtype)
-
   switch (outtype)
     case "single"
       m = single (m);
@@ -500,7 +382,6 @@ function m = outtype_convert (m, outtype)
     otherwise
       m = cast (m, outtype);
   endswitch
-
 endfunction
 
 %!assert (median (1), 1)
