@@ -84,7 +84,7 @@ function x = bbsinv (p, shape, scale, location)
 
 endfunction
 
-
+## Test results
 %!shared p,y,f
 %! f = @(p,a,b,c) (a + b * (c * norminv (p) + sqrt (4 + (c * norminv(p))^2))^2) / 4;
 %! p = [-1, 0, 1/4, 1/2, 1, 2];

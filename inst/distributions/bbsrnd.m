@@ -111,7 +111,7 @@ function r = bbsrnd (shape, scale, location, varargin)
   endif
 endfunction
 
-
+## Test results
 %!assert (size (bbsrnd (1, 1, 0)), [1 1])
 %!assert (size (bbsrnd (1, 1, zeros (2,1))), [2, 1])
 %!assert (size (bbsrnd (1, 1, zeros (2,2))), [2, 2])

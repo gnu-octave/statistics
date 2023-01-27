@@ -18,6 +18,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} @var{p} = cauchy_cdf (@var{x})
+## @deftypefnx {statistics} @var{p} = cauchy_cdf (@var{x}, @var{location})
 ## @deftypefnx {statistics} @var{p} = cauchy_cdf (@var{x}, @var{location}, @var{scale})
 ##
 ## Cauchy cumulative distribution function (CDF).
@@ -35,7 +36,7 @@
 
 function p = cauchy_cdf (x, location = 0, scale = 1)
 
-  if (nargin != 1 && nargin != 3)
+  if (nargin < 1 || nargin > 3)
     print_usage ();
   endif
 
@@ -85,7 +86,6 @@ endfunction
 
 ## Test input validation
 %!error cauchy_cdf ()
-%!error cauchy_cdf (1,2)
 %!error cauchy_cdf (1,2,3,4)
 %!error cauchy_cdf (ones (3), ones (2), ones (2))
 %!error cauchy_cdf (ones (2), ones (3), ones (2))

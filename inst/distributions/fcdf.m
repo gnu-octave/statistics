@@ -46,7 +46,7 @@ function p = fcdf (x, df1, df2, uflag)
     error ("fcdf: too few input arguments.");
   endif
 
-  ## Check for 'upper' flag
+  ## Check for "upper" flag
   if (nargin > 3 && strcmpi (uflag, "upper"))
     notnan = ! isnan (x);
     x(notnan) = 1 ./ max (0, x(notnan));
@@ -57,7 +57,7 @@ function p = fcdf (x, df1, df2, uflag)
     error ("fcdf: invalid argument for upper tail.");
   endif
 
-  ## Check for common size of X, V1 and V2
+  ## Check for common size of X, DF1, and DF2
   if (! isscalar (x) || ! isscalar (df1) || ! isscalar (df2))
     [err, x, df1, df2] = common_size (x, df1, df2);
     if (err > 0)
@@ -65,7 +65,7 @@ function p = fcdf (x, df1, df2, uflag)
     endif
   endif
 
-  ## Check for X, V1 and V2 being reals
+  ## Check for X, DF1, and DF2 being reals
   if (iscomplex (x) || iscomplex (df1) || iscomplex (df2))
     error ("tcdf: X, DF1, and DF2 must not be complex.");
   endif

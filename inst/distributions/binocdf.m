@@ -35,20 +35,20 @@
 ## @seealso{binoinv, binopdf, binornd, binostat, binotest}
 ## @end deftypefn
 
-function p = binocdf (x, n, ps, upper)
+function p = binocdf (x, n, ps, uflag)
 
-  if (nargin != 3 && nargin != 4)
+  if (nargin < 3 || nargin > 4)
     print_usage ();
   endif
 
   if (nargin == 4)
-    if (strcmp (upper, 'upper'))
-       upper = true;
+    if (strcmp (uflag, "upper"))
+       uflag = true;
     else
        error ("binocdf: 4th parameter can only be 'upper'.");
     endif
   else
-     upper = false;
+     uflag = false;
   endif
 
   if (! isscalar (n) || ! isscalar (ps))
@@ -69,14 +69,14 @@ function p = binocdf (x, n, ps, upper)
   endif
 
   k = (x >= n) & (n >= 0) & (n == fix (n) & (ps >= 0) & (ps <= 1));
-  p(k) = !upper;
+  p(k) = !uflag;
 
   k = (x < 0) & (n >= 0) & (n == fix (n) & (ps >= 0) & (ps <= 1));
-  p(k) = upper;
+  p(k) = uflag;
 
   k = (x >= 0) & (x < n) & (n == fix (n)) & (ps >= 0) & (ps <= 1);
   tmp = floor (x(k));
-  if !upper
+  if !uflag
     if (isscalar (n) && isscalar (ps))
       p(k) = betainc (1 - ps, n - tmp, tmp + 1);
     else
@@ -103,13 +103,13 @@ endfunction
 %!assert (binocdf (x, 2*[0 -1 NaN 1.1 1], 0.5), [0 NaN NaN NaN 1])
 %!assert (binocdf (x, 2, 0.5*[0 -1 NaN 3 1]), [0 NaN NaN NaN 1])
 %!assert (binocdf ([x(1:2) NaN x(4:5)], 2, 0.5), [p(1:2) NaN p(4:5)], eps)
-%!assert (binocdf (99, 100, 0.1, 'upper'), 1e-100, 1e-112);
-%!assert (binocdf (x, 2*ones (1,5), 0.5*ones (1,5), 'upper'), p1, eps)
-%!assert (binocdf (x, 2, 0.5*ones (1,5), 'upper'), p1, eps)
-%!assert (binocdf (x, 2*ones (1,5), 0.5, 'upper'), p1, eps)
-%!assert (binocdf (x, 2*[0 -1 NaN 1.1 1], 0.5, 'upper'), [1 NaN NaN NaN 0])
-%!assert (binocdf (x, 2, 0.5*[0 -1 NaN 3 1], 'upper'), [1 NaN NaN NaN 0])
-%!assert (binocdf ([x(1:2) NaN x(4:5)], 2, 0.5, 'upper'), [p1(1:2) NaN p1(4:5)])
+%!assert (binocdf (99, 100, 0.1, "upper"), 1e-100, 1e-112);
+%!assert (binocdf (x, 2*ones (1,5), 0.5*ones (1,5), "upper"), p1, eps)
+%!assert (binocdf (x, 2, 0.5*ones (1,5), "upper"), p1, eps)
+%!assert (binocdf (x, 2*ones (1,5), 0.5, "upper"), p1, eps)
+%!assert (binocdf (x, 2*[0 -1 NaN 1.1 1], 0.5, "upper"), [1 NaN NaN NaN 0])
+%!assert (binocdf (x, 2, 0.5*[0 -1 NaN 3 1], "upper"), [1 NaN NaN NaN 0])
+%!assert (binocdf ([x(1:2) NaN x(4:5)], 2, 0.5, "upper"), [p1(1:2) NaN p1(4:5)])
 
 ## Test class of input preserved
 %!assert (binocdf ([x, NaN], 2, 0.5), [p, NaN], eps)

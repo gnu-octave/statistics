@@ -1,5 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,48 +17,52 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} geopdf (@var{x}, @var{p})
+## @deftypefn  {statistics} @var{y} = geopdf (@var{x}, @var{ps})
+##
+## Geometric probability density function (PDF).
+##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the geometric distribution with parameter @var{p}.
+## at @var{x} of the geometric distribution with parameter @var{ps}.  The size
+## of @var{y} is the common size of @var{x} and @var{ps}.  A scalar input
+## functions as a constant matrix of the same size as the other inputs.
 ##
 ## The geometric distribution models the number of failures (@var{x}) of a
-## Bernoulli trial with probability @var{p} before the first success.
+## Bernoulli trial with probability @var{ps} before the first success.
+##
+## @seealso{geocdf, geoinv, geornd, geostat}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: PDF of the geometric distribution
-
-function pdf = geopdf (x, p)
+function y = geopdf (x, ps)
 
   if (nargin != 2)
     print_usage ();
   endif
 
-  if (! isscalar (p))
-    [retval, x, p] = common_size (x, p);
+  if (! isscalar (ps))
+    [retval, x, ps] = common_size (x, ps);
     if (retval > 0)
-      error ("geopdf: X and P must be of common size or scalars");
+      error ("geopdf: X and PS must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (x) || iscomplex (p))
-    error ("geopdf: X and P must not be complex");
+  if (iscomplex (x) || iscomplex (ps))
+    error ("geopdf: X and PS must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (p, "single"))
-    pdf = zeros (size (x), "single");
+  if (isa (x, "single") || isa (ps, "single"))
+    y = zeros (size (x), "single");
   else
-    pdf = zeros (size (x));
+    y = zeros (size (x));
   endif
 
-  k = isnan (x) | (x == Inf) | !(p >= 0) | !(p <= 1);
-  pdf(k) = NaN;
+  k = isnan (x) | (x == Inf) | !(ps >= 0) | !(ps <= 1);
+  y(k) = NaN;
 
-  k = (x >= 0) & (x < Inf) & (x == fix (x)) & (p > 0) & (p <= 1);
-  if (isscalar (p))
-    pdf(k) = p * ((1 - p) .^ x(k));
+  k = (x >= 0) & (x < Inf) & (x == fix (x)) & (ps > 0) & (ps <= 1);
+  if (isscalar (ps))
+    y(k) = ps * ((1 - ps) .^ x(k));
   else
-    pdf(k) = p(k) .* ((1 - p(k)) .^ x(k));
+    y(k) = ps(k) .* ((1 - ps(k)) .^ x(k));
   endif
 
 endfunction
