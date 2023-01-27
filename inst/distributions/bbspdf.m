@@ -43,14 +43,14 @@ function y = bbspdf (x, shape, scale, location)
     [retval, x, location, scale, shape] = ...
         common_size (x, location, scale, shape);
     if (retval > 0)
-      error (strcat (["bbspdf: X, SHAPE, SCALE and LOCATION must be of"], ...
-                     [" common size or scalars"]));
+      error (strcat (["bbspdf: X, SHAPE, SCALE, and LOCATION must be of"], ...
+                     [" common size or scalars."]));
     endif
   endif
 
   if (iscomplex (x) || iscomplex (location) ...
       || iscomplex (scale) || iscomplex(shape))
-    error ("bbspdf: X, SHAPE, SCALE and LOCATION must not be complex");
+    error ("bbspdf: X, SHAPE, SCALE, and LOCATION must not be complex.");
   endif
 
   if (isa (x, "single") || isa (location, "single") || isa (scale, "single") ...

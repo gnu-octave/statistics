@@ -45,7 +45,7 @@ function y = binopdf (x, n, ps)
   ## ensure all equal size arrays or scalars, expand scalars to common size.
   [size_mismatch, x, n, ps] = common_size (x, n, ps);
   if (size_mismatch > 0)
-    error ("binopdf: X, N, and PS must be of common size or scalars");
+    error ("binopdf: X, N, and PS must be of common size or scalars.");
   endif
 
   sz_x = size (x); ## save original size for reshape later

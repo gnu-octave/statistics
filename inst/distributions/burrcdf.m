@@ -1,5 +1,6 @@
-## Copyright (C) 2016 Dag Lyberg
 ## Copyright (C) 1995-2015 Kurt Hornik
+## Copyright (C) 2016 Dag Lyberg
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of Octave.
 ##
@@ -18,48 +19,52 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} burrcdf (@var{x}, @var{c}, @var{k})
+## @deftypefn  {statistics} @var{p} = burrcdf (@var{x}, @var{c}, @var{k})
+##
+## Burr type XII cumulative distribution function (CDF).
+##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the Burr distribution with scale parameter @var{alpha}
-## and shape parameters @var{c} and @var{k}.
+## (CDF) at @var{x} of the Burr type XII distribution with parameters @var{a},
+## @var{c}, and @var{k}.  The size of @var{x} is the common size of @var{p},
+## @var{a}, @var{c}, and @var{k}.  A scalar input functions as a constant matrix
+## of the same size as the other inputs.
+##
+## @seealso{burrinv, burrpdf, burrrnd}
 ## @end deftypefn
 
-## Author: Dag Lyberg <daglyberg80@gmail.com>
-## Description: CDF of the Burr distribution
-
-function cdf = burrcdf (x, alpha, c, k)
+function p = burrcdf (x, a, c, k)
 
   if (nargin != 4)
     print_usage ();
   endif
 
-  if (! isscalar (alpha) || ! isscalar (c) || ! isscalar (k) )
-    [retval, x, alpha, c, k] = common_size (x, alpha, c, k);
+  if (! isscalar (x) || ! isscalar (a) || ! isscalar (c) || ! isscalar (k))
+    [retval, x, a, c, k] = common_size (x, a, c, k);
     if (retval > 0)
-      error ("burrcdf: X, ALPHA, C AND K must be of common size or scalars");
+      error ("burrcdf: X, A, C, AND K must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (x) || iscomplex(alpha) || iscomplex (c) || iscomplex (k))
-    error ("burrcdf: X, ALPHA, C AND K must not be complex");
+  if (iscomplex (x) || iscomplex(a) || iscomplex (c) || iscomplex (k))
+    error ("burrcdf: X, A, C, AND K must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (alpha, "single") || isa (c, "single") ...
+  if (isa (x, "single") || isa (a, "single") || isa (c, "single") ...
       || isa (k, "single"))
-    cdf = zeros (size (x), "single");
+    p = zeros (size (x), "single");
   else
-    cdf = zeros (size (x));
+    p = zeros (size (x));
   endif
 
-  j = isnan (x) | ! (alpha > 0) | ! (c > 0) | ! (k > 0);
-  cdf(j) = NaN;
+  j = isnan (x) | ! (a > 0) | ! (c > 0) | ! (k > 0);
+  p(j) = NaN;
 
-  j = (x > 0) & (0 < alpha) & (alpha < Inf) & (0 < c) & (c < Inf) ...
+  j = (x > 0) & (0 < a) & (a < Inf) & (0 < c) & (c < Inf) ...
     & (0 < k) & (k < Inf);
-  if (isscalar (alpha) && isscalar(c) && isscalar(k))
-    cdf(j) = 1 - (1 + (x(j) / alpha).^c).^(-k);
+  if (isscalar (a) && isscalar(c) && isscalar(k))
+    p(j) = 1 - (1 + (x(j) / a).^c).^(-k);
   else
-    cdf(j) = 1 - (1 + (x(j) ./ alpha(j)).^c(j)).^(-k(j));
+    p(j) = 1 - (1 + (x(j) ./ a(j)).^c(j)).^(-k(j));
   endif
 
 endfunction

@@ -39,12 +39,12 @@ function y = betapdf (x, a, b)
   if (! isscalar (a) || ! isscalar (b))
     [retval, x, a, b] = common_size (x, a, b);
     if (retval > 0)
-      error ("betapdf: X, A, and B must be of common size or scalars");
+      error ("betapdf: X, A, and B must be of common size or scalars.");
     endif
   endif
 
   if (iscomplex (x) || iscomplex (a) || iscomplex (b))
-    error ("betapdf: X, A, and B must not be complex");
+    error ("betapdf: X, A, and B must not be complex.");
   endif
 
   if (isa (x, "single") || isa (a, "single") || isa (b, "single"));

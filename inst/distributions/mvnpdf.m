@@ -48,7 +48,7 @@
 ## If @var{x} is a 1-by-D vector, @code{mcvpdf} replicates it to match the
 ## leading dimension of @var{mu} or the trailing dimension of @var{sigma}.
 ##
-## @seealso{mvncdf, mvnrnd, normpdf, pdf}
+## @seealso{mvncdf, mvnrnd}
 ## @end deftypefn
 
 function y = mvnpdf (x, mu, sigma)

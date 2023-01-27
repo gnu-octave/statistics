@@ -73,6 +73,7 @@
 ## integrand has converged successfully.
 ## @end multitable
 ##
+## @seealso{mvncdf, mvnpdf, mvnrnd, bvncdf}
 ## @end deftypefn
 
 function [y, err] = mvncdf (varargin)

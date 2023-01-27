@@ -43,14 +43,14 @@ function x = bbsinv (p, shape, scale, location)
     [retval, p, location, scale, shape] = ...
         common_size (p, location, scale, shape);
     if (retval > 0)
-      error (strcat (["bbsinv: P, SHAPE, SCALE and LOCATION must be of"], ...
+      error (strcat (["bbsinv: P, SHAPE, SCALE, and LOCATION must be of"], ...
                      [" common size or scalars."]));
     endif
   endif
 
   if (iscomplex (p) || iscomplex (location) ...
       || iscomplex (scale) || iscomplex(shape))
-    error ("bbsinv: P, SHAPE, SCALE and LOCATION must not be complex.");
+    error ("bbsinv: P, SHAPE, SCALE, and LOCATION must not be complex.");
   endif
 
   if (isa (p, "single") || isa (location, "single") ...

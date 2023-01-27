@@ -21,8 +21,8 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} @var{r} = bbsrnd (@var{shape}, @var{scale}, @var{location})
-## @deftypefnx {statistics} @var{r} = bbsrnd (@var{shape}, @var{scale}, @var{location}, @var{m})
-## @deftypefnx {statistics} @var{r} = bbsrnd (@var{shape}, @var{scale}, @var{location}, @var{m}, @var{n}, @dots{})
+## @deftypefnx {statistics} @var{r} = bbsrnd (@var{shape}, @var{scale}, @var{location}, @var{rows})
+## @deftypefnx {statistics} @var{r} = bbsrnd (@var{shape}, @var{scale}, @var{location}, @var{rows}, @var{cols}, @dots{})
 ## @deftypefnx {statistics} @var{r} = bbsrnd (@var{shape}, @var{scale}, @var{location}, [@var{sz}])
 ##
 ## Random arrays from the Birnbaum-Saunders distribution.
@@ -45,7 +45,7 @@
 ## @seealso{bbscdf, bbsinv, bbspdf}
 ## @end deftypefn
 
-function rnd = bbsrnd (shape, scale, location, varargin)
+function r = bbsrnd (shape, scale, location, varargin)
 
   if (nargin < 3)
     print_usage ();
@@ -54,13 +54,13 @@ function rnd = bbsrnd (shape, scale, location, varargin)
   if (! isscalar (location) || ! isscalar (scale) || ! isscalar (shape))
     [retval, location, scale, shape] = common_size (location, scale, shape);
     if (retval > 0)
-      error (strcat (["bbsrnd: SHAPE, SCALE and LOCATION must be of"], ...
+      error (strcat (["bbsrnd: SHAPE, SCALE, and LOCATION must be of"], ...
                      [" common size or scalars."]));
     endif
   endif
 
   if (iscomplex (location) || iscomplex (scale) || iscomplex (shape))
-    error ("bbsrnd: SHAPE, SCALE and LOCATION must not be complex");
+    error ("bbsrnd: SHAPE, SCALE, and LOCATION must not be complex");
   endif
 
   if (nargin == 3)
@@ -76,13 +76,13 @@ function rnd = bbsrnd (shape, scale, location, varargin)
     endif
   elseif (nargin > 3)
     if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
-      error ("bbsrnd: dimensions must be non-negative integers");
+      error ("bbsrnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
   if (! isscalar (location) && ! isequal (size (location), sz))
-    error ("bbsrnd: SHAPE, SCALE and LOCATION must be scalar or of size SZ.");
+    error ("bbsrnd: SHAPE, SCALE, and LOCATION must be scalar or of size SZ.");
   endif
 
   if (isa (location, "single") || isa (scale, "single") ...
@@ -96,21 +96,21 @@ function rnd = bbsrnd (shape, scale, location, varargin)
     if ((-Inf < location) && (location < Inf) ...
         && (0 < scale) && (scale < Inf) ...
         && (0 < shape) && (shape < Inf))
-      rnd = rand(sz,cls);
-      y = shape * norminv (rnd);
-      rnd = location + scale * (y + sqrt (4 + y.^2)).^2 / 4;
+      r = rand(sz,cls);
+      y = shape * norminv (r);
+      r = location + scale * (y + sqrt (4 + y.^2)).^2 / 4;
     else
-      rnd = NaN (sz, cls);
+      r = NaN (sz, cls);
     endif
   else
-    rnd = NaN (sz, cls);
+    r = NaN (sz, cls);
 
     k = (-Inf < location) & (location < Inf) ...
         & (0 < scale) & (scale < Inf) ...
         & (0 < shape) & (shape < Inf);
-    rnd(k) = rand(sum(k(:)),1);
-    y = shape(k) .* norminv (rnd(k));
-    rnd(k) = location(k) + scale(k) .* (y + sqrt (4 + y.^2)).^2 / 4;
+    r(k) = rand(sum(k(:)),1);
+    y = shape(k) .* norminv (r(k));
+    r(k) = location(k) + scale(k) .* (y + sqrt (4 + y.^2)).^2 / 4;
   endif
 endfunction
 

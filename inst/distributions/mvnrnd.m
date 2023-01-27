@@ -17,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} @var{r} = mvnrnd (@var{mu}, @var{sigma})
+## @deftypefn  {statistics} @var{r} = mvnrnd (@var{mu}, @var{sigma})
 ## @deftypefnx {statistics} @var{r} = mvnrnd (@var{mu}, @var{sigma}, @var{n})
 ## @deftypefnx {statistics} @var{r} = mvnrnd (@var{mu}, @var{sigma}, @var{n}, @var{T})
 ## @deftypefnx {statistics} [@var{r}, @var{T}] = mvnrnd (@dots{})
@@ -53,7 +53,7 @@
 ## there are greater efficiency gains when SIGMA can be specified as a diagonal
 ## instead.
 ##
-## @seealso{mvncdf, mvnpdf, normrnd, random}
+## @seealso{mvncdf, mvnpdf}
 ## @end deftypefn
 
 function [r, T] = mvnrnd (mu, sigma, N, T)
