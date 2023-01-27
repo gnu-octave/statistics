@@ -1,5 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,12 +17,18 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} frnd (@var{m}, @var{n})
-## @deftypefnx {} {} frnd (@var{m}, @var{n}, @var{r})
-## @deftypefnx {} {} frnd (@var{m}, @var{n}, @var{r}, @var{c}, @dots{})
-## @deftypefnx {} {} frnd (@var{m}, @var{n}, [@var{sz}])
-## Return a matrix of random samples from the F distribution with
-## @var{m} and @var{n} degrees of freedom.
+## @deftypefn  {statistics} @var{r} = frnd (@var{df1}, @var{df2})
+## @deftypefnx {statistics} @var{r} = frnd (@var{df1}, @var{df2}, @var{rows})
+## @deftypefnx {statistics} @var{r} = frnd (@var{df1}, @var{df2}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} @var{r} = frnd (@var{df1}, @var{df2}, [@var{sz}])
+##
+## Random arrays from the F distribution.
+##
+## @code{@var{r} = frnd (@var{df1}, @var{df2})} returns an array of random
+## numbers chosen from the F distribution with @var{df1} and @var{df2} degrees
+## of freedom.  The size of @var{r} is the common size of @var{df1} and
+## @var{df2}.  A scalar input functions as a constant matrix of the same size as
+## the other inputs.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -29,68 +36,65 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## If no size arguments are given then the result matrix is the common size of
-## @var{m} and @var{n}.
+## @seealso{fcdf, finv, fpdf, fstat}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Random deviates from the F distribution
-
-function rnd = frnd (m, n, varargin)
+function r = frnd (df1, df2, varargin)
 
   if (nargin < 2)
     print_usage ();
   endif
 
-  if (! isscalar (m) || ! isscalar (n))
-    [retval, m, n] = common_size (m, n);
+  if (! isscalar (df1) || ! isscalar (df2))
+    [retval, df1, df2] = common_size (df1, df2);
     if (retval > 0)
-      error ("frnd: M and N must be of common size or scalars");
+      error ("frnd: DF1 and DF2 must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (m) || iscomplex (n))
-    error ("frnd: M and N must not be complex");
+  if (iscomplex (df1) || iscomplex (df2))
+    error ("frnd: DF1 and DF2 must not be complex.");
   endif
 
   if (nargin == 2)
-    sz = size (m);
+    sz = size (df1);
   elseif (nargin == 3)
     if (isscalar (varargin{1}) && varargin{1} >= 0)
       sz = [varargin{1}, varargin{1}];
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error ("frnd: dimension vector must be row vector of non-negative integers");
+      error (strcat (["frnd: dimension vector must be row vector of"], ...
+                     [" non-negative integers."]));
     endif
   elseif (nargin > 3)
     if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
-      error ("frnd: dimensions must be non-negative integers");
+      error ("frnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
-  if (! isscalar (m) && ! isequal (size (m), sz))
-    error ("frnd: M and N must be scalar or of size SZ");
+  if (! isscalar (df1) && ! isequal (size (df1), sz))
+    error ("frnd: DF1 and DF2 must be scalar or of size SZ.");
   endif
 
-  if (isa (m, "single") || isa (n, "single"))
+  if (isa (df1, "single") || isa (df2, "single"))
     cls = "single";
   else
     cls = "double";
   endif
 
-  if (isscalar (m) && isscalar (n))
-    if ((m > 0) && (m < Inf) && (n > 0) && (n < Inf))
-      rnd = n/m * randg (m/2, sz, cls) ./ randg (n/2, sz, cls);
+  if (isscalar (df1) && isscalar (df2))
+    if ((df1 > 0) && (df1 < Inf) && (df2 > 0) && (df2 < Inf))
+      r = df2/df1 * randg (df1/2, sz, cls) ./ randg (df2/2, sz, cls);
     else
-      rnd = NaN (sz, cls);
+      r = NaN (sz, cls);
     endif
   else
-    rnd = NaN (sz, cls);
+    r = NaN (sz, cls);
 
-    k = (m > 0) & (m < Inf) & (n > 0) & (n < Inf);
-    rnd(k) = n(k) ./ m(k) .* randg (m(k)/2, cls) ./ randg (n(k)/2, cls);
+    k = (df1 > 0) & (df1 < Inf) & (df2 > 0) & (df2 < Inf);
+    r(k) = df2(k) ./ df1(k) .* randg (df1(k)/2, cls) ./ randg (df2(k)/2, cls);
   endif
 
 endfunction

@@ -1,5 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,12 +17,16 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} exprnd (@var{lambda})
-## @deftypefnx {} {} exprnd (@var{lambda}, @var{r})
-## @deftypefnx {} {} exprnd (@var{lambda}, @var{r}, @var{c}, @dots{})
-## @deftypefnx {} {} exprnd (@var{lambda}, [@var{sz}])
-## Return a matrix of random samples from the exponential distribution with
-## mean @var{lambda}.
+## @deftypefn  {statistics} @var{r} = exprnd (@var{mu})
+## @deftypefnx {statistics} @var{r} = exprnd (@var{mu}, @var{rows})
+## @deftypefnx {statistics} @var{r} = exprnd (@var{mu}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} @var{r} = exprnd (@var{mu}, [@var{sz}])
+##
+## Random arrays from the exponential distribution.
+##
+## @code{@var{r} = exprnd (@var{mu})} returns an array of random numbers chosen
+## from the exponential distribution with mean parameter @var{mu}.  The size of
+## @var{r} is the size of @var{mu}.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -29,28 +34,25 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## If no size arguments are given then the result matrix is the size of
-## @var{lambda}.
+## @seealso{expcdf, expinv, exppdf, expfit, explike, expstat}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Random deviates from the exponential distribution
-
-function rnd = exprnd (lambda, varargin)
+function r = exprnd (mu, varargin)
 
   if (nargin < 1)
     print_usage ();
   endif
 
   if (nargin == 1)
-    sz = size (lambda);
+    sz = size (mu);
   elseif (nargin == 2)
     if (isscalar (varargin{1}) && varargin{1} >= 0)
       sz = [varargin{1}, varargin{1}];
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error ("exprnd: dimension vector must be row vector of non-negative integers");
+      error (strcat (["exprnd: dimension vector must be row vector of"], ...
+                     [" non-negative integers."]));
     endif
   elseif (nargin > 2)
     if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
@@ -59,31 +61,31 @@ function rnd = exprnd (lambda, varargin)
     sz = [varargin{:}];
   endif
 
-  if (! isscalar (lambda) && ! isequal (size (lambda), sz))
-    error ("exprnd: LAMBDA must be scalar or of size SZ");
+  if (! isscalar (mu) && ! isequal (size (mu), sz))
+    error ("exprnd: MU must be scalar or of size SZ.");
   endif
 
-  if (iscomplex (lambda))
-    error ("exprnd: LAMBDA must not be complex");
+  if (iscomplex (mu))
+    error ("exprnd: MU must not be complex.");
   endif
 
-  if (isa (lambda, "single"))
+  if (isa (mu, "single"))
     cls = "single";
   else
     cls = "double";
   endif
 
-  if (isscalar (lambda))
-    if ((lambda > 0) && (lambda < Inf))
-      rnd = rande (sz, cls) * lambda;
+  if (isscalar (mu))
+    if ((mu > 0) && (mu < Inf))
+      r = rande (sz, cls) * mu;
     else
-      rnd = NaN (sz, cls);
+      r = NaN (sz, cls);
     endif
   else
-    rnd = NaN (sz, cls);
+    r = NaN (sz, cls);
 
-    k = (lambda > 0) & (lambda < Inf);
-    rnd(k) = rande (sum (k(:)), 1, cls) .* lambda(k)(:);
+    k = (mu > 0) & (mu < Inf);
+    r(k) = rande (sum (k(:)), 1, cls) .* mu(k)(:);
   endif
 
 endfunction

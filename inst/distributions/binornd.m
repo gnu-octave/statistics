@@ -37,9 +37,6 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## If no size arguments are given then the result matrix is the common size of
-## @var{n} and @var{ps}.
-##
 ## @seealso{binocdf, binoinv, binopdf, binostat, binotest}
 ## @end deftypefn
 

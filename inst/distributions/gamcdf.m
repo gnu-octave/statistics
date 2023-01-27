@@ -1,6 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -19,14 +19,14 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{p} = gamcdf (@var{x}, @var{a})
-## @deftypefnx {Function File} @var{p} = gamcdf (@var{x}, @var{a}, @var{b})
-## @deftypefnx {Function File} @var{p} = gamcdf (@dots{}, "upper")
-## @deftypefnx {Function File} [@var{p}, @var{plo}, @var{pup}] = evcdf (@var{x}, @var{a}, @var{b}, @var{pcov})
-## @deftypefnx {Function File} [@var{p}, @var{plo}, @var{pup}] = evcdf (@var{x}, @var{a}, @var{b}, @var{pcov}, @var{alpha})
-## @deftypefnx {Function File} [@var{p}, @var{plo}, @var{pup}] = evcdf (@dots{}, "upper")
+## @deftypefn  {statistics} @var{p} = gamcdf (@var{x}, @var{a})
+## @deftypefnx {statistics} @var{p} = gamcdf (@var{x}, @var{a}, @var{b})
+## @deftypefnx {statistics} @var{p} = gamcdf (@dots{}, "upper")
+## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = evcdf (@var{x}, @var{a}, @var{b}, @var{pcov})
+## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = evcdf (@var{x}, @var{a}, @var{b}, @var{pcov}, @var{alpha})
+## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = evcdf (@dots{}, "upper")
 ##
-## Gamma cumulative distribution function.
+## Gamma cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
 ## (CDF) at @var{x} of the Gamma distribution with shape parameter @var{a} and

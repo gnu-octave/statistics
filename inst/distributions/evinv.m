@@ -57,6 +57,7 @@ function [x, xlo, xup] = evinv (p, mu, sigma, pcov, alpha)
   if (nargin < 1 || nargin > 5)
     error ("evinv: invalid number of input arguments.");
   endif
+
   ## Add defaults (if missing input arguments)
   if (nargin < 2)
     mu = 0;
@@ -64,15 +65,18 @@ function [x, xlo, xup] = evinv (p, mu, sigma, pcov, alpha)
   if (nargin < 3)
     sigma = 1;
   endif
+
   ## Check if PCOV is provided when confidence bounds are requested
   if (nargout > 2)
     if (nargin < 4)
       error ("evinv: covariance matrix is required for confidence bounds.");
     endif
+
     ## Check for valid covariance matrix 2x2
     if (! isequal (size (pcov), [2, 2]))
       error ("evinv: invalid size of covariance matrix.");
     endif
+
     ## Check for valid alpha value
     if (nargin < 5)
       alpha = 0.05;
@@ -80,6 +84,7 @@ function [x, xlo, xup] = evinv (p, mu, sigma, pcov, alpha)
       error ("evinv: invalid value for alpha.");
     endif
   endif
+
   ## Check for common size of P, MU, and SIGMA
   if (! isscalar (p) || ! isscalar (mu) || ! isscalar (sigma))
     [err, p, mu, sigma] = common_size (p, mu, sigma);
@@ -87,16 +92,19 @@ function [x, xlo, xup] = evinv (p, mu, sigma, pcov, alpha)
       error ("evinv: P, MU, and SIGMA must be of common size or scalars.");
     endif
   endif
+
   ## Check for P, MU, and SIGMA being reals
   if (iscomplex (p) || iscomplex (mu) || iscomplex (sigma))
     error ("evinv: P, MU, and SIGMA must not be complex.");
   endif
+
   ## Check for appropriate class
   if (isa (p, "single") || isa (mu, "single") || isa (sigma, "single"));
     is_class = "single";
   else
     is_class = "double";
   endif
+
   ## Compute inverse of type 1 extreme value cdf
   k = (eps <= p & p < 1);
   if (all (k(:)))
@@ -110,9 +118,11 @@ function [x, xlo, xup] = evinv (p, mu, sigma, pcov, alpha)
       ## Return NaN for out of range values of P
       q(p < 0 | 1 < p | isnan (p)) = NaN;
   endif
+
   ## Return NaN for out of range values of SIGMA
   sigma(sigma <= 0) = NaN;
   x = sigma .* q + mu;
+
   ## Compute confidence bounds if requested.
   if (nargout >= 2)
     xvar = pcov(1,1) + 2 * pcov(1,2) * q + pcov(2,2) * q .^ 2;

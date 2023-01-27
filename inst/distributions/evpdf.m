@@ -46,6 +46,7 @@ function y = evpdf (x, mu, sigma)
   if (nargin < 1)
     error ("evpdf: too few input arguments.");
   endif
+
   ## Add defaults (if missing input arguments)
   if (nargin < 2)
     mu = 0;
@@ -53,6 +54,7 @@ function y = evpdf (x, mu, sigma)
   if (nargin < 3)
     sigma = 1;
   endif
+
   ## Check for common size of X, MU, and SIGMA
   if (! isscalar (x) || ! isscalar (mu) || ! isscalar (sigma))
     [err, x, mu, sigma] = common_size (x, mu, sigma);
@@ -60,15 +62,19 @@ function y = evpdf (x, mu, sigma)
       error ("evpdf: X, MU, and SIGMA must be of common size or scalars.");
     endif
   endif
+
   ## Check for X, MU, and SIGMA being reals
   if (iscomplex (x) || iscomplex (mu) || iscomplex (sigma))
     error ("evpdf: X, MU, and SIGMA must not be complex.");
   endif
+
   ## Return NaNs for out of range parameters
   sigma(sigma <= 0) = NaN;
+
   ## Compute pdf of type 1 extreme value distribution
   z = (x - mu) ./ sigma;
   y = exp (z - exp (z)) ./ sigma;
+
   ## Force 0 for extreme right tail, instead of getting exp (Inf - Inf) = NaN
   y(z == Inf) = 0;
 

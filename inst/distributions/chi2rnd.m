@@ -34,9 +34,6 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## If no size arguments are given then the result matrix is the size of
-## @var{df}.
-##
 ## @seealso{chi2cdf, chi2inv, chi2pdf, chi2stat}
 ## @end deftypefn
 

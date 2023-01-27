@@ -1,5 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,12 +17,18 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} gamrnd (@var{a}, @var{b})
-## @deftypefnx {} {} gamrnd (@var{a}, @var{b}, @var{r})
-## @deftypefnx {} {} gamrnd (@var{a}, @var{b}, @var{r}, @var{c}, @dots{})
-## @deftypefnx {} {} gamrnd (@var{a}, @var{b}, [@var{sz}])
-## Return a matrix of random samples from the Gamma distribution with
-## shape parameter @var{a} and scale @var{b}.
+## @deftypefn  {statistics} @var{r} = gamrnd (@var{a}, @var{b})
+## @deftypefnx {statistics} @var{r} = gamrnd (@var{a}, @var{b}, @var{rows})
+## @deftypefnx {statistics} @var{r} = gamrnd (@var{a}, @var{b}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} @var{r} = gamrnd (@var{a}, @var{b}, [@var{sz}])
+##
+## Random arrays from the Gamma distribution.
+##
+## @code{@var{r} = gamrnd (@var{a}, @var{b})} returns an array of random numbers
+## chosen from the Gamma distribution with shape parameter @var{a} and scale
+## parameter @var{b}.  The size of @var{r} is the common size of @var{a} and
+## @var{b}.  A scalar input functions as a constant matrix of the same size as
+## the other inputs.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -29,14 +36,10 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## If no size arguments are given then the result matrix is the common size of
-## @var{a} and @var{b}.
+## @seealso{gamcdf, gaminv, gampdf, gamfit, gamlike, gamstat}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Random deviates from the Gamma distribution
-
-function rnd = gamrnd (a, b, varargin)
+function r = gamrnd (a, b, varargin)
 
   if (nargin < 2)
     print_usage ();
@@ -45,12 +48,12 @@ function rnd = gamrnd (a, b, varargin)
   if (! isscalar (a) || ! isscalar (b))
     [retval, a, b] = common_size (a, b);
     if (retval > 0)
-      error ("gamrnd: A and B must be of common size or scalars");
+      error ("gamrnd: A and B must be of common size or scalars.");
     endif
   endif
 
   if (iscomplex (a) || iscomplex (b))
-    error ("gamrnd: A and B must not be complex");
+    error ("gamrnd: A and B must not be complex.");
   endif
 
   if (nargin == 2)
@@ -61,17 +64,18 @@ function rnd = gamrnd (a, b, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error ("gamrnd: dimension vector must be row vector of non-negative integers");
+      error (strcat (["gamrnd: dimension vector must be row vector of"], ...
+                     [" non-negative integers."]));
     endif
   elseif (nargin > 3)
     if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
-      error ("gamrnd: dimensions must be non-negative integers");
+      error ("gamrnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
   if (! isscalar (a) && ! isequal (size (a), sz))
-    error ("gamrnd: A and B must be scalar or of size SZ");
+    error ("gamrnd: A and B must be scalar or of size SZ.");
   endif
 
   if (isa (a, "single") || isa (b, "single"))
@@ -82,15 +86,15 @@ function rnd = gamrnd (a, b, varargin)
 
   if (isscalar (a) && isscalar (b))
     if ((a > 0) && (a < Inf) && (b > 0) && (b < Inf))
-      rnd = b * randg (a, sz, cls);
+      r = b * randg (a, sz, cls);
     else
-      rnd = NaN (sz, cls);
+      r = NaN (sz, cls);
     endif
   else
-    rnd = NaN (sz, cls);
+    r = NaN (sz, cls);
 
     k = (a > 0) & (a < Inf) & (b > 0) & (b < Inf);
-    rnd(k) = b(k) .* randg (a(k), cls);
+    r(k) = b(k) .* randg (a(k), cls);
   endif
 
 endfunction

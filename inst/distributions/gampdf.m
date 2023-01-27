@@ -1,5 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,16 +17,20 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} gampdf (@var{x}, @var{a}, @var{b})
-## For each element of @var{x}, return the probability density function
-## (PDF) at @var{x} of the Gamma distribution with shape parameter @var{a} and
-## scale @var{b}.
+## @deftypefn  {statistics} @var{y} = gampdf (@var{x}, @var{a}, @var{b})
+##
+## Gamma probability density function (PDF).
+##
+## For each element of @var{x}, compute the probability density function (PDF)
+## at @var{x} of the Gamma distribution with shape parameter @var{a} and
+## scale parameter @var{b}.  The size of @var{y} is the common size of @var{x},
+## @var{a} and @var{b}.  A scalar input functions as a constant matrix of the
+## same size as the other inputs.
+##
+## @seealso{gamcdf, gaminv, gamrnd, gamfit, gamlike, gamstat}
 ## @end deftypefn
 
-## Author: TT <Teresa.Twaroch@ci.tuwien.ac.at>
-## Description: PDF of the Gamma distribution
-
-function pdf = gampdf (x, a, b)
+function y = gampdf (x, a, b)
 
   if (nargin != 3)
     print_usage ();
@@ -34,38 +39,38 @@ function pdf = gampdf (x, a, b)
   if (! isscalar (a) || ! isscalar (b))
     [retval, x, a, b] = common_size (x, a, b);
     if (retval > 0)
-      error ("gampdf: X, A, and B must be of common size or scalars");
+      error ("gampdf: X, A, and B must be of common size or scalars.");
     endif
   endif
 
   if (iscomplex (x) || iscomplex (a) || iscomplex (b))
-    error ("gampdf: X, A, and B must not be complex");
+    error ("gampdf: X, A, and B must not be complex.");
   endif
 
   if (isa (x, "single") || isa (a, "single") || isa (b, "single"))
-    pdf = zeros (size (x), "single");
+    y = zeros (size (x), "single");
   else
-    pdf = zeros (size (x));
+    y = zeros (size (x));
   endif
 
   k = !(a > 0) | !(b > 0) | isnan (x);
-  pdf(k) = NaN;
+  y(k) = NaN;
 
   k = (x >= 0) & (a > 0) & (a <= 1) & (b > 0);
   if (isscalar (a) && isscalar (b))
-    pdf(k) = (x(k) .^ (a - 1)) ...
+    y(k) = (x(k) .^ (a - 1)) ...
               .* exp (- x(k) / b) / gamma (a) / (b ^ a);
   else
-    pdf(k) = (x(k) .^ (a(k) - 1)) ...
+    y(k) = (x(k) .^ (a(k) - 1)) ...
               .* exp (- x(k) ./ b(k)) ./ gamma (a(k)) ./ (b(k) .^ a(k));
   endif
 
   k = (x >= 0) & (a > 1) & (b > 0);
   if (isscalar (a) && isscalar (b))
-    pdf(k) = exp (- a * log (b) + (a-1) * log (x(k))
+    y(k) = exp (- a * log (b) + (a-1) * log (x(k))
                   - x(k) / b - gammaln (a));
   else
-    pdf(k) = exp (- a(k) .* log (b(k)) + (a(k)-1) .* log (x(k))
+    y(k) = exp (- a(k) .* log (b(k)) + (a(k)-1) .* log (x(k))
                   - x(k) ./ b(k) - gammaln (a(k)));
   endif
 

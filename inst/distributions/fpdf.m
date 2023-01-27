@@ -1,5 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,58 +17,62 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} fpdf (@var{x}, @var{m}, @var{n})
+## @deftypefn  {statistics} @var{y} = fpdf (@var{x}, @var{df1}, @var{df2})
+##
+## F probability density function (PDF).
+##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the F distribution with @var{m} and @var{n} degrees of
-## freedom.
+## at @var{x} of the F distribution with @var{df1} and @var{df2} degrees of
+## freedom.  The size of @var{y} is the common size of @var{x}, @var{df1}, and
+## @var{df2}.  A scalar input functions as a constant matrix of the same size as
+## the other inputs.
+##
+## @seealso{fcdf, finv, frnd, fstat}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: PDF of the F distribution
-
-function pdf = fpdf (x, m, n)
+function y = fpdf (x, df1, df2)
 
   if (nargin != 3)
     print_usage ();
   endif
 
-  if (! isscalar (m) || ! isscalar (n))
-    [retval, x, m, n] = common_size (x, m, n);
+  if (! isscalar (df1) || ! isscalar (df2))
+    [retval, x, df1, df2] = common_size (x, df1, df2);
     if (retval > 0)
-      error ("fpdf: X, M, and N must be of common size or scalars");
+      error ("fpdf: X, DF1, and DF2 must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (x) || iscomplex (m) || iscomplex (n))
-    error ("fpdf: X, M, and N must not be complex");
+  if (iscomplex (x) || iscomplex (df1) || iscomplex (df2))
+    error ("fpdf: X, DF1, and DF2 must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (m, "single") || isa (n, "single"))
-    pdf = zeros (size (x), "single");
+  if (isa (x, "single") || isa (df1, "single") || isa (df2, "single"))
+    y = zeros (size (x), "single");
   else
-    pdf = zeros (size (x));
+    y = zeros (size (x));
   endif
 
-  k = isnan (x) | !(m > 0) | !(m < Inf) | !(n > 0) | !(n < Inf);
-  pdf(k) = NaN;
+  k = isnan (x) | !(df1 > 0) | !(df1 < Inf) | !(df2 > 0) | !(df2 < Inf);
+  y(k) = NaN;
 
-  k = (x > 0) & (x < Inf) & (m > 0) & (m < Inf) & (n > 0) & (n < Inf);
-  if (isscalar (m) && isscalar (n))
-    tmp = m / n * x(k);
-    pdf(k) = (exp ((m/2 - 1) * log (tmp)
-                   - ((m + n) / 2) * log (1 + tmp))
-              * (m / n) ./ beta (m/2, n/2));
+  k = (x > 0) & (x < Inf) & (df1 > 0) & (df1 < Inf) & (df2 > 0) & (df2 < Inf);
+  if (isscalar (df1) && isscalar (df2))
+    tmp = df1 / df2 * x(k);
+    y(k) = (exp ((df1/2 - 1) * log (tmp) ...
+                   - ((df1 + df2) / 2) * log (1 + tmp)) ...
+              * (df1 / df2) ./ beta (df1/2, df2/2));
   else
-    tmp = m(k) .* x(k) ./ n(k);
-    pdf(k) = (exp ((m(k)/2 - 1) .* log (tmp)
-                   - ((m(k) + n(k)) / 2) .* log (1 + tmp))
-              .* (m(k) ./ n(k)) ./ beta (m(k)/2, n(k)/2));
+    tmp = df1(k) .* x(k) ./ df2(k);
+    y(k) = (exp ((df1(k)/2 - 1) .* log (tmp) ...
+                   - ((df1(k) + df2(k)) / 2) .* log (1 + tmp)) ...
+              .* (df1(k) ./ df2(k)) ./ beta (df1(k)/2, df2(k)/2));
   endif
 
 endfunction
 
 
-## F (x, 1, m) == T distribution (sqrt (x), m) / sqrt (x)
+## F (x, 1, df1) == T distribution (sqrt (x), df1) / sqrt (x)
 %!test
 %! x = rand (10,1);
 %! x = x(x > 0.1 & x < 0.9);

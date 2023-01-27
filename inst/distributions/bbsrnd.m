@@ -39,9 +39,6 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## If no size arguments are given then the result matrix is the common size of
-## @var{location}, @var{scale} and @var{shape}.
-##
 ## @seealso{bbscdf, bbsinv, bbspdf}
 ## @end deftypefn
 
@@ -60,7 +57,7 @@ function r = bbsrnd (shape, scale, location, varargin)
   endif
 
   if (iscomplex (location) || iscomplex (scale) || iscomplex (shape))
-    error ("bbsrnd: SHAPE, SCALE, and LOCATION must not be complex");
+    error ("bbsrnd: SHAPE, SCALE, and LOCATION must not be complex.");
   endif
 
   if (nargin == 3)

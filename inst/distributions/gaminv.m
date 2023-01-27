@@ -1,6 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -19,43 +19,50 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} gaminv (@var{x}, @var{a}, @var{b})
-## For each element of @var{x}, compute the quantile (the inverse of the CDF)
-## at @var{x} of the Gamma distribution with shape parameter @var{a} and
-## scale @var{b}.
+## @deftypefn  {statistics} @var{x} = gaminv (@var{p}, @var{a}, @var{b})
+##
+## Inverse of the Gamma cumulative distribution function (iCDF).
+##
+## For each element of @var{p}, compute the quantile (the inverse of the CDF)
+## at @var{p} of the Gamma distribution with shape parameter @var{a} and
+## scale @var{b}.  The size of @var{x} is the common size of @var{p}, @var{a},
+## and @var{b}.  A scalar input functions as a constant matrix of the same size
+## as the other inputs.
+##
+## @seealso{gamcdf, gampdf, gamrnd, gamfit, gamlike, gamstat}
 ## @end deftypefn
 
-function inv = gaminv (x, a, b)
+function x = gaminv (p, a, b)
 
   if (nargin != 3)
     print_usage ();
   endif
 
   if (! isscalar (a) || ! isscalar (b))
-    [retval, x, a, b] = common_size (x, a, b);
+    [retval, p, a, b] = common_size (p, a, b);
     if (retval > 0)
-      error ("gaminv: X, A, and B must be of common size or scalars");
+      error ("gaminv: P, A, and B must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (x) || iscomplex (a) || iscomplex (b))
-    error ("gaminv: X, A, and B must not be complex");
+  if (iscomplex (p) || iscomplex (a) || iscomplex (b))
+    error ("gaminv: P, A, and B must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (a, "single") || isa (b, "single"))
-    inv = zeros (size (x), "single");
+  if (isa (p, "single") || isa (a, "single") || isa (b, "single"))
+    x = zeros (size (p), "single");
   else
-    inv = zeros (size (x));
+    x = zeros (size (p));
   endif
 
-  k = ((x < 0) | (x > 1) | isnan (x) ...
+  k = ((p < 0) | (p > 1) | isnan (p) ...
        | !(a > 0) | !(a < Inf) | !(b > 0) | !(b < Inf));
-  inv(k) = NaN;
+  x(k) = NaN;
 
-  k = (x == 1) & (a > 0) & (a < Inf) & (b > 0) & (b < Inf);
-  inv(k) = Inf;
+  k = (p == 1) & (a > 0) & (a < Inf) & (b > 0) & (b < Inf);
+  x(k) = Inf;
 
-  k = find ((x > 0) & (x < 1) & (a > 0) & (a < Inf) & (b > 0) & (b < Inf));
+  k = find ((p > 0) & (p < 1) & (a > 0) & (a < Inf) & (b > 0) & (b < Inf));
   if (! isempty (k))
     if (! isscalar (a) || ! isscalar (b))
       a = a(k);
@@ -64,31 +71,31 @@ function inv = gaminv (x, a, b)
     else
       y = a * b * ones (size (k));
     endif
-    x = x(k);
+    p = p(k);
 
     ## Call GAMMAINCINV to find a root of GAMMAINC
-    q = gammaincinv (x, a);
+    q = gammaincinv (p, a);
     tol = sqrt (eps (ones (1, 1, class(q))));
-    check_cdf = ((abs (gammainc (q, a) - x) ./ x) > tol);
+    check_cdf = ((abs (gammainc (q, a) - p) ./ p) > tol);
     ## Check for any cdf being far off from tolerance
     if (any (check_cdf(:)))
-      warning ("gaminv: calculation failed to converge for some values");
+      warning ("gaminv: calculation failed to converge for some values.");
     endif
-    inv(k) = q .* b;
+    x(k) = q .* b;
   endif
 endfunction
 
-%!shared x
-%! x = [-1 0 0.63212055882855778 1 2];
-%!assert (gaminv (x, ones (1,5), ones (1,5)), [NaN 0 1 Inf NaN], eps)
-%!assert (gaminv (x, 1, ones (1,5)), [NaN 0 1 Inf NaN], eps)
-%!assert (gaminv (x, ones (1,5), 1), [NaN 0 1 Inf NaN], eps)
-%!assert (gaminv (x, [1 -Inf NaN Inf 1], 1), [NaN NaN NaN NaN NaN])
-%!assert (gaminv (x, 1, [1 -Inf NaN Inf 1]), [NaN NaN NaN NaN NaN])
-%!assert (gaminv ([x(1:2) NaN x(4:5)], 1, 1), [NaN 0 NaN Inf NaN])
-%!assert (gaminv ([x(1:2) NaN x(4:5)], 1, 1), [NaN 0 NaN Inf NaN])
+%!shared p
+%! p = [-1 0 0.63212055882855778 1 2];
+%!assert (gaminv (p, ones (1,5), ones (1,5)), [NaN 0 1 Inf NaN], eps)
+%!assert (gaminv (p, 1, ones (1,5)), [NaN 0 1 Inf NaN], eps)
+%!assert (gaminv (p, ones (1,5), 1), [NaN 0 1 Inf NaN], eps)
+%!assert (gaminv (p, [1 -Inf NaN Inf 1], 1), [NaN NaN NaN NaN NaN])
+%!assert (gaminv (p, 1, [1 -Inf NaN Inf 1]), [NaN NaN NaN NaN NaN])
+%!assert (gaminv ([p(1:2) NaN p(4:5)], 1, 1), [NaN 0 NaN Inf NaN])
+%!assert (gaminv ([p(1:2) NaN p(4:5)], 1, 1), [NaN 0 NaN Inf NaN])
 
-## Test for accuracy when x is small. Results compared to Matlab
+## Test for accuracy when p is small. Results compared to Matlab
 %!assert (gaminv (1e-16, 1, 1), 1e-16, eps)
 %!assert (gaminv (1e-16, 1, 2), 2e-16, eps)
 %!assert (gaminv (1e-20, 3, 5), 1.957434012161815e-06, eps)
@@ -96,10 +103,13 @@ endfunction
 %!assert (gaminv (1e-35, 1, 1), 1e-35, eps)
 
 ## Test class of input preserved
-%!assert (gaminv ([x, NaN], 1, 1), [NaN 0 1 Inf NaN NaN], eps)
-%!assert (gaminv (single ([x, NaN]), 1, 1), single ([NaN 0 1 Inf NaN NaN]), eps ("single"))
-%!assert (gaminv ([x, NaN], single (1), 1), single ([NaN 0 1 Inf NaN NaN]), eps ("single"))
-%!assert (gaminv ([x, NaN], 1, single (1)), single ([NaN 0 1 Inf NaN NaN]), eps ("single"))
+%!assert (gaminv ([p, NaN], 1, 1), [NaN 0 1 Inf NaN NaN], eps)
+%!assert (gaminv (single ([p, NaN]), 1, 1), single ([NaN 0 1 Inf NaN NaN]), ...
+%! eps ("single"))
+%!assert (gaminv ([p, NaN], single (1), 1), single ([NaN 0 1 Inf NaN NaN]), ...
+%! eps ("single"))
+%!assert (gaminv ([p, NaN], 1, single (1)), single ([NaN 0 1 Inf NaN NaN]), ...
+%! eps ("single"))
 
 ## Test input validation
 %!error gaminv ()
