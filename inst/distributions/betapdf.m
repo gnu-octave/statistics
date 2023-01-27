@@ -1,6 +1,7 @@
+## Copyright (C) 2010 Christos Dimitrakakis
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
-## Copyright (C) 2010 Christos Dimitrakakis
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -17,15 +18,19 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} betapdf (@var{x}, @var{a}, @var{b})
+## @deftypefn  {statistics} @var{y} = betapdf (@var{x}, @var{a}, @var{b})
+##
+## Beta probability density function (PDF).
+##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the Beta distribution with parameters @var{a} and @var{b}.
+## at @var{x} of the Beta distribution with parameters @var{a} and @var{b}.  The
+## size of @var{y} is the common size of @var{x}, @var{a} and @var{b}.  A scalar
+## input functions as a constant matrix of the same size as the other inputs.
+##
+## @seealso{betacdf, betainv, betarnd, betastat}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>, CD <christos.dimitrakakis@gmail.com>
-## Description: PDF of the Beta distribution
-
-function pdf = betapdf (x, a, b)
+function y = betapdf (x, a, b)
 
   if (nargin != 3)
     print_usage ();
@@ -43,21 +48,21 @@ function pdf = betapdf (x, a, b)
   endif
 
   if (isa (x, "single") || isa (a, "single") || isa (b, "single"));
-    pdf = zeros (size (x), "single");
+    y = zeros (size (x), "single");
   else
-    pdf = zeros (size (x));
+    y = zeros (size (x));
   endif
 
   k = !(a > 0) | !(b > 0) | isnan (x);
-  pdf(k) = NaN;
+  y(k) = NaN;
 
   k = (x > 0) & (x < 1) & (a > 0) & (b > 0) & ((a != 1) | (b != 1));
   if (isscalar (a) && isscalar (b))
-    pdf(k) = exp ((a - 1) * log (x(k))
+    y(k) = exp ((a - 1) * log (x(k))
                   + (b - 1) * log (1 - x(k))
                   + gammaln (a + b) - gammaln (a) - gammaln (b));
   else
-    pdf(k) = exp ((a(k) - 1) .* log (x(k))
+    y(k) = exp ((a(k) - 1) .* log (x(k))
                   + (b(k) - 1) .* log (1 - x(k))
                   + gammaln (a(k) + b(k)) - gammaln (a(k)) - gammaln (b(k)));
   endif
@@ -65,27 +70,27 @@ function pdf = betapdf (x, a, b)
   ## Most important special cases when the density is finite.
   k = (x == 0) & (a == 1) & (b > 0) & (b != 1);
   if (isscalar (a) && isscalar (b))
-    pdf(k) = exp (gammaln (a + b) - gammaln (a) - gammaln (b));
+    y(k) = exp (gammaln (a + b) - gammaln (a) - gammaln (b));
   else
-    pdf(k) = exp (gammaln (a(k) + b(k)) - gammaln (a(k)) - gammaln (b(k)));
+    y(k) = exp (gammaln (a(k) + b(k)) - gammaln (a(k)) - gammaln (b(k)));
   endif
 
   k = (x == 1) & (b == 1) & (a > 0) & (a != 1);
   if (isscalar (a) && isscalar (b))
-    pdf(k) = exp (gammaln (a + b) - gammaln (a) - gammaln (b));
+    y(k) = exp (gammaln (a + b) - gammaln (a) - gammaln (b));
   else
-    pdf(k) = exp (gammaln (a(k) + b(k)) - gammaln (a(k)) - gammaln (b(k)));
+    y(k) = exp (gammaln (a(k) + b(k)) - gammaln (a(k)) - gammaln (b(k)));
   endif
 
   k = (x >= 0) & (x <= 1) & (a == 1) & (b == 1);
-  pdf(k) = 1;
+  y(k) = 1;
 
   ## Other special case when the density at the boundary is infinite.
   k = (x == 0) & (a < 1);
-  pdf(k) = Inf;
+  y(k) = Inf;
 
   k = (x == 1) & (b < 1);
-  pdf(k) = Inf;
+  y(k) = Inf;
 
 endfunction
 

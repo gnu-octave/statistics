@@ -1,5 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,12 +17,18 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} betarnd (@var{a}, @var{b})
-## @deftypefnx {} {} betarnd (@var{a}, @var{b}, @var{r})
-## @deftypefnx {} {} betarnd (@var{a}, @var{b}, @var{r}, @var{c}, @dots{})
-## @deftypefnx {} {} betarnd (@var{a}, @var{b}, [@var{sz}])
-## Return a matrix of random samples from the Beta distribution with parameters
-## @var{a} and @var{b}.
+## @deftypefn  {statistics} @var{r} = betarnd (@var{a}, @var{b})
+## @deftypefnx {statistics} @var{r} = betarnd (@var{a}, @var{b}, @var{m})
+## @deftypefnx {statistics} @var{r} = betarnd (@var{a}, @var{b}, @var{m}, @var{n}, @dots{})
+## @deftypefnx {statistics} @var{r} = betarnd (@var{a}, @var{b}, [@var{sz}])
+##
+## Random arrays from the Beta distribution.
+##
+## @code{@var{r} = betarnd (@var{a}, @var{b})} returns an array of random
+## numbers chosen from the Beta distribution with parameters @var{a} and
+## @var{b}.  The size of @var{r} is the common size of @var{a} and @var{b}.
+## A scalar input functions as a constant matrix of the same size as the other
+## inputs.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -31,12 +38,11 @@
 ##
 ## If no size arguments are given then the result matrix is the common size of
 ## @var{a} and @var{b}.
+##
+## @seealso{betacdf, betainv, betapdf, betastat}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Random deviates from the Beta distribution
-
-function rnd = betarnd (a, b, varargin)
+function r = betarnd (a, b, varargin)
 
   if (nargin < 2)
     print_usage ();
@@ -45,12 +51,12 @@ function rnd = betarnd (a, b, varargin)
   if (! isscalar (a) || ! isscalar (b))
     [retval, a, b] = common_size (a, b);
     if (retval > 0)
-      error ("betarnd: A and B must be of common size or scalars");
+      error ("betarnd: A and B must be of common size or scalars.");
     endif
   endif
 
   if (iscomplex (a) || iscomplex (b))
-    error ("betarnd: A and B must not be complex");
+    error ("betarnd: A and B must not be complex.");
   endif
 
   if (nargin == 2)
@@ -61,17 +67,18 @@ function rnd = betarnd (a, b, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error ("betarnd: dimension vector must be row vector of non-negative integers");
+      error (strcat (["betarnd: dimension vector must be row vector of"], ...
+                     ["non-negative integers."]));
     endif
   elseif (nargin > 3)
     if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
-      error ("betarnd: dimensions must be non-negative integers");
+      error ("betarnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
   if (! isscalar (a) && ! isequal (size (a), sz))
-    error ("betarnd: A and B must be scalar or of size SZ");
+    error ("betarnd: A and B must be scalar or of size SZ.");
   endif
 
   if (isa (a, "single") || isa (b, "single"))
@@ -82,17 +89,17 @@ function rnd = betarnd (a, b, varargin)
 
   if (isscalar (a) && isscalar (b))
     if ((a > 0) && (a < Inf) && (b > 0) && (b < Inf))
-      r = randg (a, sz, cls);
-      rnd = r ./ (r + randg (b, sz, cls));
+      tmpr = randg (a, sz, cls);
+      r = tmpr ./ (tmpr + randg (b, sz, cls));
     else
-      rnd = NaN (sz, cls);
+      r = NaN (sz, cls);
     endif
   else
-    rnd = NaN (sz, cls);
+    r = NaN (sz, cls);
 
     k = (a > 0) & (a < Inf) & (b > 0) & (b < Inf);
-    r = randg (a(k), cls);
-    rnd(k) = r ./ (r + randg (b(k), cls));
+    tmpr = randg (a(k), cls);
+    r(k) = tmpr ./ (tmpr + randg (b(k), cls));
   endif
 
 endfunction

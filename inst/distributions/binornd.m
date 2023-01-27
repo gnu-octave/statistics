@@ -17,13 +17,18 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} binornd (@var{n}, @var{p})
-## @deftypefnx {} {} binornd (@var{n}, @var{p}, @var{r})
-## @deftypefnx {} {} binornd (@var{n}, @var{p}, @var{r}, @var{c}, @dots{})
-## @deftypefnx {} {} binornd (@var{n}, @var{p}, [@var{sz}])
+## @deftypefn  {statistics} {} binornd (@var{n}, @var{ps})
+## @deftypefnx {statistics} {} binornd (@var{n}, @var{ps}, @var{r})
+## @deftypefnx {statistics} {} binornd (@var{n}, @var{ps}, @var{r}, @var{c}, @dots{})
+## @deftypefnx {statistics} {} binornd (@var{n}, @var{ps}, [@var{sz}])
+##
+## Random arrays from the Binomial distribution
+##
 ## Return a matrix of random samples from the binomial distribution with
-## parameters @var{n} and @var{p}, where @var{n} is the number of trials
-## and @var{p} is the probability of success.
+## parameters @var{n} and @var{ps}, where @var{n} is the number of trials
+## and @var{ps} is the probability of success.  The size of @var{r} is the
+## common size of @var{n} and @var{ps}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -32,27 +37,26 @@
 ## be specified with a vector of dimensions @var{sz}.
 ##
 ## If no size arguments are given then the result matrix is the common size of
-## @var{n} and @var{p}.
+## @var{n} and @var{ps}.
+##
+## @seealso{binocdf, binoinv, binopdf, binostat, binotest}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Random deviates from the binomial distribution
-
-function rnd = binornd (n, p, varargin)
+function r = binornd (n, ps, varargin)
 
   if (nargin < 2)
     print_usage ();
   endif
 
-  if (! isscalar (n) || ! isscalar (p))
-    [retval, n, p] = common_size (n, p);
+  if (! isscalar (n) || ! isscalar (ps))
+    [retval, n, ps] = common_size (n, ps);
     if (retval > 0)
-      error ("binornd: N and P must be of common size or scalars");
+      error ("binornd: N and PS must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (n) || iscomplex (p))
-    error ("binornd: N and P must not be complex");
+  if (iscomplex (n) || iscomplex (ps))
+    error ("binornd: N and PS must not be complex.");
   endif
 
   if (nargin == 2)
@@ -63,51 +67,52 @@ function rnd = binornd (n, p, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error ("binornd: dimension vector must be row vector of non-negative integers");
+      error (strcat (["binornd: dimension vector must be row vector of"], ...
+                     [" non-negative integers."]));
     endif
   elseif (nargin > 3)
     if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
-      error ("binornd: dimensions must be non-negative integers");
+      error ("binornd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
   if (! isscalar (n) && ! isequal (size (n), sz))
-    error ("binornd: N and P must be scalar or of size SZ");
+    error ("binornd: N and PS must be scalar or of size SZ.");
   endif
 
-  if (isa (n, "single") || isa (p, "single"))
+  if (isa (n, "single") || isa (ps, "single"))
     cls = "single";
   else
     cls = "double";
   endif
 
-  if (isscalar (n) && isscalar (p))
-    if ((n > 0) && (n < Inf) && (n == fix (n)) && (p >= 0) && (p <= 1))
+  if (isscalar (n) && isscalar (ps))
+    if ((n > 0) && (n < Inf) && (n == fix (n)) && (ps >= 0) && (ps <= 1))
       nel = prod (sz);
       tmp = rand (n, nel);
-      rnd = sum (tmp < p, 1);
-      rnd = reshape (rnd, sz);
+      r = sum (tmp < ps, 1);
+      r = reshape (r, sz);
       if (strcmp (cls, "single"))
-        rnd = single (rnd);
+        r = single (r);
       endif
-    elseif ((n == 0) && (p >= 0) && (p <= 1))
-      rnd = zeros (sz, cls);
+    elseif ((n == 0) && (ps >= 0) && (ps <= 1))
+      r = zeros (sz, cls);
     else
-      rnd = NaN (sz, cls);
+      r = NaN (sz, cls);
     endif
   else
-    rnd = zeros (sz, cls);
+    r = zeros (sz, cls);
 
-    k = !(n >= 0) | !(n < Inf) | !(n == fix (n)) | !(p >= 0) | !(p <= 1);
-    rnd(k) = NaN;
+    k = !(n >= 0) | !(n < Inf) | !(n == fix (n)) | !(ps >= 0) | !(ps <= 1);
+    r(k) = NaN;
 
-    k = (n > 0) & (n < Inf) & (n == fix (n)) & (p >= 0) & (p <= 1);
+    k = (n > 0) & (n < Inf) & (n == fix (n)) & (ps >= 0) & (ps <= 1);
     if (any (k(:)))
       L = sum (k(:));
       ind = repelems ((1 : L), [(1 : L); n(k)(:)'])';
-      p_ext = p(k)(ind)(:);
-      rnd(k) = accumarray (ind, rand (sum(n(k)(:)), 1) < p_ext);
+      p_ext = ps(k)(ind)(:);
+      r(k) = accumarray (ind, rand (sum(n(k)(:)), 1) < p_ext);
     endif
   endif
 
