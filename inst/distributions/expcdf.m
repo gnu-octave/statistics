@@ -57,7 +57,7 @@ function [varargout] = expcdf (x, varargin)
     error ("expcdf: invalid number of input arguments.");
   endif
 
-  ## Check for 'upper' flag
+  ## Check for "upper" flag
   if (nargin > 1 && strcmpi (varargin{end}, "upper"))
     uflag = true;
     varargin(end) = [];

@@ -1,4 +1,5 @@
 ## Copyright (C) 2012 Nir Krakauer <nkrakauer@ccny.cuny.edu>
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -14,48 +15,15 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{y} =} gevpdf (@var{x}, @var{k}, @var{sigma}, @var{mu})
-## Compute the probability density function of the generalized extreme value (GEV) distribution.
+## @deftypefn  {statistics} @var{y} = gevpdf (@var{x}, @var{k}, @var{sigma}, @var{mu})
 ##
-## @subheading Arguments
+## Generalized extreme value (GEV) probability density function (PDF).
 ##
-## @itemize @bullet
-## @item
-## @var{x} is the support.
-##
-## @item
-## @var{k} is the shape parameter of the GEV distribution. (Also denoted gamma or xi.)
-## @item
-## @var{sigma} is the scale parameter of the GEV distribution. The elements
-## of @var{sigma} must be positive.
-## @item
-## @var{mu} is the location parameter of the GEV distribution.
-## @end itemize
-## The inputs must be of common size, or some of them must be scalar.
-##
-## @subheading Return values
-##
-## @itemize @bullet
-## @item
-## @var{y} is the probability density of the GEV distribution at each
-## element of @var{x} and corresponding parameter values.
-## @end itemize
-##
-## @subheading Examples
-##
-## @example
-## @group
-## x = 0:0.5:2.5;
-## sigma = 1:6;
-## k = 1;
-## mu = 0;
-## y = gevpdf (x, k, sigma, mu)
-## @end group
-##
-## @group
-## y = gevpdf (x, k, 0.5, mu)
-## @end group
-## @end example
+## For each element of @var{x}, compute the probability density function (PDF)
+## at @var{x} of the GEV distribution with shape parameter @var{k}, scale
+## parameter @var{sigma}, and location parameter @var{mu}.  The size of @var{x}
+## is the common size of the input arguments.  A scalar input functions as a
+## constant matrix of the same size as the other inputs.
 ##
 ## @subheading References
 ##
@@ -64,29 +32,27 @@
 ## Rolf-Dieter Reiss and Michael Thomas. @cite{Statistical Analysis of Extreme
 ## Values with Applications to Insurance, Finance, Hydrology and Other Fields}.
 ## Chapter 1, pages 16-17, Springer, 2007.
-##
 ## @end enumerate
-## @seealso{gevcdf, gevfit, gevinv, gevlike, gevrnd, gevstat}
+##
+## @seealso{gevcdf, gevinv, gevrnd, gevfit, gevlike, gevstat}
 ## @end deftypefn
-
-## Author: Nir Krakauer <nkrakauer@ccny.cuny.edu>
-## Description: PDF of the generalized extreme value distribution
 
 function y = gevpdf (x, k, sigma, mu)
 
-  # Check arguments
+  ## Check arguments
   if (nargin != 4)
     print_usage ();
   endif
 
   if (isempty (x) || isempty (k) || isempty (sigma) || isempty (mu) || ...
-      ~ismatrix (x) || ~ismatrix (k) || ~ismatrix (sigma) || ~ismatrix (mu))
-    error ("gevpdf: inputs must be numeric matrices");
+      ! ismatrix (x) || ! ismatrix (k) || ! ismatrix (sigma) || ! ismatrix (mu))
+    error ("gevpdf: inputs must be numeric matrices.");
   endif
 
+  ## Check for common size of X, K, SIGMA, and MU
   [retval, x, k, sigma, mu] = common_size (x, k, sigma, mu);
   if (retval > 0)
-    error ("gevpdf: inputs must be of common size or scalars");
+    error ("gevpdf: X, K, SIGMA, and MU must be of common size or scalars");
   endif
 
   z = 1 + k .* (x - mu) ./ sigma;
@@ -95,14 +61,13 @@ function y = gevpdf (x, k, sigma, mu)
   y = exp(-(z .^ (-1 ./ k))) .* (z .^ (-1 - 1 ./ k)) ./ sigma;
 
   y(z <= 0) = 0;
-  
+
   ## Use a different formula if k is very close to zero
   inds = (abs (k) < (eps^0.7));
-  if any(inds)
+  if (any (inds))
     z = (mu(inds) - x(inds)) ./ sigma(inds);
-    y(inds) = exp(z-exp(z)) ./ sigma(inds);
+    y(inds) = exp (z - exp (z)) ./ sigma(inds);
   endif
-  
 
 endfunction
 

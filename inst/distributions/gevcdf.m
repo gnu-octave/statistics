@@ -1,4 +1,5 @@
 ## Copyright (C) 2012 Nir Krakauer <nkrakauer@ccny.cuny.edu>
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -14,92 +15,140 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{p} =} gevcdf (@var{x}, @var{k}, @var{sigma}, @var{mu})
-## Compute the cumulative distribution function of the generalized extreme value (GEV) distribution.
+## @deftypefn  {statistics} @var{p} = gevcdf (@var{x})
+## @deftypefnx {statistics} @var{p} = gevcdf (@var{x}, @var{k})
+## @deftypefnx {statistics} @var{p} = gevcdf (@var{x}, @var{k}, @var{sigma})
+## @deftypefnx {statistics} @var{p} = gevcdf (@var{x}, @var{k}, @var{sigma}, @var{mu})
+## @deftypefnx {statistics} @var{p} = gevcdf (@dots{}, "upper")
 ##
-## @subheading Arguments
+## Generalized extreme value (GEV) cumulative distribution function (CDF).
 ##
-## @itemize @bullet
-## @item
-## @var{x} is the support.
+## @code{@var{p} = gevcdf (@var{x}, @var{k}, @var{sigma}, @var{mu})} returns the
+## CDF of the generalized extreme value (GEV) distribution with shape parameter
+## @var{k}, scale parameter @var{sigma}, and location parameter @var{mu},
+## evaluated at the values in @var{x}.  The size of @var{p} is the common size
+## of the input arguments.  A scalar input functions as a constant matrix of the
+## same size as the other inputs.
 ##
-## @item
-## @var{k} is the shape parameter of the GEV distribution. (Also denoted gamma or xi.)
-## @item
-## @var{sigma} is the scale parameter of the GEV distribution. The elements
-## of @var{sigma} must be positive.
-## @item
-## @var{mu} is the location parameter of the GEV distribution.
-## @end itemize
-## The inputs must be of common size, or some of them must be scalar.
+## Default values for K, SIGMA, and MU are 0, 1, and 0, respectively.
 ##
-## @subheading Return values
+## When @var{k} < 0, the GEV is the type III extreme value distribution.  When
+## @var{k} > 0, the GEV distribution is the type II, or Frechet, extreme value
+## distribution.  If W has a Weibull distribution as computed by the
+## @code{wblcdf} function, then -W has a type III extreme value distribution and
+## 1/W has a type II extreme value distribution.  In the limit as @var{k}
+## approaches 0, the GEV is the mirror image of the type I extreme value
+## distribution as computed by the @code{evcdf} function.
 ##
-## @itemize @bullet
-## @item
-## @var{p} is the cumulative distribution of the GEV distribution at each
-## element of @var{x} and corresponding parameter values.
-## @end itemize
+## The mean of the GEV distribution is not finite when @var{k} >= 1, and the
+## variance is not finite when @var{k} >= 1/2.  The GEV distribution has
+## positive density only for values of @var{x} such that K*(X-MU)/SIGMA > -1.
 ##
-## @subheading Examples
-##
-## @example
-## @group
-## x = 0:0.5:2.5;
-## sigma = 1:6;
-## k = 1;
-## mu = 0;
-## y = gevcdf (x, k, sigma, mu)
-## @end group
-##
-## @group
-## y = gevcdf (x, k, 0.5, mu)
-## @end group
-## @end example
+## @code{@var{p} = gevcdf (@dots{}, "upper")} returns the upper tail probability
+## of the generalized extreme value distribution.
 ##
 ## @subheading References
 ##
 ## @enumerate
 ## @item
-## Rolf-Dieter Reiss and Michael Thomas. @cite{Statistical Analysis of Extreme Values with Applications to Insurance, Finance, Hydrology and Other Fields}. Chapter 1, pages 16-17, Springer, 2007.
-##
+## Rolf-Dieter Reiss and Michael Thomas. @cite{Statistical Analysis of Extreme
+## Values with Applications to Insurance, Finance, Hydrology and Other Fields}.
+## Chapter 1, pages 16-17, Springer, 2007.
 ## @end enumerate
-## @seealso{gevfit, gevinv, gevlike, gevpdf, gevrnd, gevstat}
+##
+## @seealso{gevinv, gevpdf, gevrnd, gevfit, gevlike, gevstat}
 ## @end deftypefn
 
-## Author: Nir Krakauer <nkrakauer@ccny.cuny.edu>
-## Description: CDF of the generalized extreme value distribution
+function p = gevcdf (x, varargin)
 
-function p = gevcdf (x, k, sigma, mu)
-
-  # Check arguments
-  if (nargin != 4)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 2 || nargin > 5)
+    error ("gevcdf: invalid number of input arguments.");
   endif
 
-  if (isempty (x) || isempty (k) || isempty (sigma) || isempty (mu) || ~ismatrix (x) || ~ismatrix (k) || ~ismatrix (sigma) || ~ismatrix (mu))
-    error ("gevcdf: inputs must be a numeric matrices");
+  ## Check for "upper" flag
+  if (nargin > 1 && strcmpi (varargin{end}, "upper"))
+    uflag = true;
+    varargin(end) = [];
+  elseif (nargin > 1 && ischar (varargin{end}) && ...
+          ! strcmpi (varargin{end}, "upper"))
+    error ("gevcdf: invalid argument for upper tail.");
+  else
+    uflag = false;
   endif
 
-  [retval, x, k, sigma, mu] = common_size (x, k, sigma, mu);
-  if (retval > 0)
-    error ("gevcdf: inputs must be of common size or scalars");
+  ## Get extra arguments (if they exist) or add defaults
+  if (numel (varargin) > 0)
+    k = varargin{1};
+  else
+    k = 0;
+  endif
+  if (numel (varargin) > 1)
+    sigma = varargin{2};
+  else
+    sigma = 1;
+  endif
+  if (numel (varargin) > 2)
+    mu = varargin{3};
+  else
+    mu = 0;
   endif
 
-  z = 1 + k .* (x - mu) ./ sigma;
-
-  # Calculate pdf
-  p = exp(-(z .^ (-1 ./ k)));
-
-  p(z <= 0 & x < mu) = 0;
-  p(z <= 0 & x > mu) = 1;  
-  
-  inds = (abs (k) < (eps^0.7)); %use a different formula if k is very close to zero
-  if any(inds)
-    z = (mu(inds) - x(inds)) ./ sigma(inds);
-    p(inds) = exp(-exp(z));
+  ## Check for common size of X, K, SIGMA, and MU
+  if (! isscalar (x) || ! isscalar (k) || ! isscalar (sigma) || ! isscalar (mu))
+    [err, x, k, sigma, mu] = common_size (x, k, sigma, mu);
+    if (err > 0)
+      error ("gevcdf: X, K, SIGMA, and MU must be of common size or scalars.");
+    endif
   endif
-  
+
+  ## Check for X, K, SIGMA, and MU being reals
+  if (iscomplex (x) || iscomplex (k) || iscomplex (sigma) || iscomplex (mu))
+    error ("gevcdf: X, K, SIGMA, and MU must not be complex.");
+  endif
+
+  ## Check for appropriate class
+  if (isa (x, "single") || isa (k, "single") ...
+                        || isa (sigma, "single") || isa (mu, "single"));
+    is_class = "single";
+  else
+    is_class = "double";
+  endif
+
+  ## Prepare output
+  p = zeros (size (x), is_class);
+
+  ## Return NaN for out of range parameter SIGMA.
+  sigma(sigma <= 0) = NaN;
+
+  ## Calculate z
+  z = (x - mu) ./ sigma;
+
+  ## Process k == 0
+  k_0 = (abs(k) < eps);
+  if (uflag)
+    p(k_0) = -expm1 (-exp (-z(k_0)));
+  else
+    p(k_0) = exp (-exp (-z(k_0)));
+  endif
+
+  ## Process k != 0
+  k_0 = ! k_0;
+  t = z .* k;
+  if (uflag)
+    p(k_0) = -expm1 (-exp (-(1 ./ k(k_0)) .* log1p (t(k_0))));
+  else
+    p(k_0) = exp (-exp (-(1 ./ k(k_0)) .* log1p (t(k_0))));
+  endif
+
+  ## Return 0 or 1 for 1 + k.*(x-mu)/sigma > 0
+  k_1 = k_0 & (t<=-1);
+  t(k_1) = 0;
+  if uflag == true
+    p(k_1) = (k(k_1) >= 0);
+  else
+    p(k_1) = (k(k_1) < 0);
+  endif
 
 endfunction
 
@@ -109,7 +158,7 @@ endfunction
 %! k = 1;
 %! mu = 0;
 %! p = gevcdf (x, k, sigma, mu);
-%! expected_p = [0.36788   0.44933   0.47237   0.48323   0.48954   0.49367];
+%! expected_p = [0.36788, 0.44933, 0.47237, 0.48323, 0.48954, 0.49367];
 %! assert (p, expected_p, 0.001);
 
 %!test
@@ -118,7 +167,7 @@ endfunction
 %! k = 1;
 %! mu = 0;
 %! p = gevcdf (x, k, sigma, mu);
-%! expected_p = [0   0.36788   0.60653   0.71653   0.77880   0.81873   0.84648];
+%! expected_p = [0, 0.36788, 0.60653, 0.71653, 0.77880, 0.81873, 0.84648];
 %! assert (p, expected_p, 0.001);
 
 %!test #check for continuity for k near 0
@@ -127,5 +176,16 @@ endfunction
 %! k = -0.03:0.01:0.03;
 %! mu = 0;
 %! p = gevcdf (x, k, sigma, mu);
-%! expected_p = [0.88062   0.87820   0.87580   0.87342   0.87107   0.86874   0.86643];
+%! expected_p = [0.88062, 0.87820, 0.87580, 0.87342, 0.87107, 0.86874, 0.86643];
 %! assert (p, expected_p, 0.001);
+
+## Test input validation
+%!error<gevcdf: invalid number of input arguments.> gevcdf ()
+%!error<gevcdf: invalid number of input arguments.> gevcdf (1, 2 ,3 ,4 ,5, 6)
+%!error<gevcdf: invalid argument for upper tail.> gevcdf (1, 2, 3, 4, "uper")
+%!error<gevcdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
+%! gevcdf (ones (3), ones (2))
+%!error<gevcdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
+%! gevcdf (ones (3), ones (2), 3)
+%!error<gevcdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
+%! gevcdf (1 , ones (2), 3, ones (3))

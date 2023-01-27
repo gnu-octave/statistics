@@ -1,4 +1,5 @@
 ## Copyright (C) 2012 Nir Krakauer <nkrakauer@ccny.cuny.edu>
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -14,60 +15,54 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{X} =} gevinv (@var{P}, @var{k}, @var{sigma}, @var{mu})
-## Compute a desired quantile (inverse CDF) of the generalized extreme value (GEV) distribution.
+## @deftypefn  {statistics} @var{x} = gevinv (@var{p}, @var{k}, @var{sigma}, @var{mu})
 ##
-## @subheading Arguments
+## Inverse of the generalized extreme value (GEV) cumulative distribution
+## function (iCDF).
 ##
-## @itemize @bullet
-## @item
-## @var{P} is the desired quantile of the GEV distribution. (Between 0 and 1.)
-## @item
-## @var{k} is the shape parameter of the GEV distribution. (Also denoted gamma or xi.)
-## @item
-## @var{sigma} is the scale parameter of the GEV distribution. The elements
-## of @var{sigma} must be positive.
-## @item
-## @var{mu} is the location parameter of the GEV distribution.
-## @end itemize
-## The inputs must be of common size, or some of them must be scalar.
+## For each element of @var{p}, compute the quantile (the inverse of the CDF)
+## at @var{p} of the GEV distribution with shape parameter @var{k}, scale
+## parameter @var{sigma}, and location parameter @var{mu}.  The size of @var{x}
+## is the common size of the input arguments.  A scalar input functions as a
+## constant matrix of the same size as the other inputs.
 ##
-## @subheading Return values
+## Default values for K, SIGMA, and MU are 0, 1, and 0, respectively.
 ##
-## @itemize @bullet
-## @item
-## @var{X} is the value corresponding to each quantile of the GEV distribution
-## @end itemize
 ## @subheading References
 ##
 ## @enumerate
 ## @item
-## Rolf-Dieter Reiss and Michael Thomas. @cite{Statistical Analysis of Extreme Values with Applications to Insurance, Finance, Hydrology and Other Fields}. Chapter 1, pages 16-17, Springer, 2007.
-## @item
-## J. R. M. Hosking (2012). @cite{L-moments}. R package, version 1.6. URL: http://CRAN.R-project.org/package=lmom.
-##
+## Rolf-Dieter Reiss and Michael Thomas. @cite{Statistical Analysis of Extreme
+## Values with Applications to Insurance, Finance, Hydrology and Other Fields}.
+## Chapter 1, pages 16-17, Springer, 2007.
 ## @end enumerate
-## @seealso{gevcdf, gevfit, gevlike, gevpdf, gevrnd, gevstat}
+##
+## @seealso{gevcdf, gevpdf, gevrnd, gevfit, gevlike, gevstat}
 ## @end deftypefn
 
-## Author: Nir Krakauer <nkrakauer@ccny.cuny.edu>
-## Description: Inverse CDF of the generalized extreme value distribution
+function x = gevinv (p, k = 0, sigma = 1, mu = 0)
 
-function [X] = gevinv (P, k = 0, sigma = 1, mu = 0)
-
-  [retval, P, k, sigma, mu] = common_size (P, k, sigma, mu);
-  if (retval > 0)
-    error ("gevinv: inputs must be of common size or scalars");
+  ## Check for valid number of input arguments
+  if (nargin < 1)
+    error ("gevcdf: too few input arguments.");
   endif
 
-  X = P;
-  
-  llP = log(-log(P));
+  ## Check for common size of P, K, SIGMA, and MU
+  [retval, p, k, sigma, mu] = common_size (p, k, sigma, mu);
+  if (retval > 0)
+    error ("gevinv: P, K, SIGMA, and MU must be of common size or scalars.");
+  endif
+
+  x = p;
+
+  llP = log (-log (p));
   kllP = k .* llP;
-  
-  ii = (abs(kllP) < 1E-4); #use the Taylor series expansion of the exponential to avoid roundoff error or dividing by zero when k is small
-  X(ii) = mu(ii) - sigma(ii) .* llP(ii) .* (1 - kllP(ii) .* (1 - kllP(ii)));
-  X(~ii) = mu(~ii) + (sigma(~ii) ./ k(~ii)) .* (exp(-kllP(~ii)) - 1);
+
+  ## Use the Taylor series expansion of the exponential to
+  ## avoid roundoff error or dividing by zero when k is small
+  ii = (abs(kllP) < 1E-4);
+  x(ii) = mu(ii) - sigma(ii) .* llP(ii) .* (1 - kllP(ii) .* (1 - kllP(ii)));
+  x(~ii) = mu(~ii) + (sigma(~ii) ./ k(~ii)) .* (exp(-kllP(~ii)) - 1);
 
 endfunction
 
@@ -97,4 +92,11 @@ endfunction
 %! x = gevinv (p, k, sigma, mu);
 %! c = gevcdf(x, k, sigma, mu);
 %! assert (c, p, 0.001);
+
+## Test input validation
+%!error<gevcdf: too few input arguments.> gevinv ()
+%!error<gevinv: P, K, SIGMA, and MU must be of common size or scalars.> ...
+%! gevinv (ones (3), ones (2))
+%!error<gevinv: P, K, SIGMA, and MU must be of common size or scalars.> ...
+%! gevinv (ones (3), ones (2), 1)
 

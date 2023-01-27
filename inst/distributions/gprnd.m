@@ -1,7 +1,8 @@
-## Copyright (C) 2016 Dag Lyberg
 ## Copyright (C) 1995-2015 Kurt Hornik
+## Copyright (C) 2016 Dag Lyberg
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
-## This file is part of Octave.
+## This file is part of the statistics package for GNU Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -18,12 +19,18 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} gprnd (@var{shape}, @var{scale}, @var{location})
-## @deftypefnx {} {} gprnd (@var{shape}, @var{scale}, @var{location}, @var{r})
-## @deftypefnx {} {} gprnd (@var{shape}, @var{scale}, @var{location}, @var{r}, @var{c}, @dots{})
-## @deftypefnx {} {} gprnd (@var{shape}, @var{scale}, @var{location}, [@var{sz}])
-## Return a matrix of random samples from the generalized Pareto distribution
-## with parameters @var{location}, @var{scale} and @var{shape}.
+## @deftypefn  {statistics} @var{r} = gprnd (@var{shape}, @var{scale}, @var{location})
+## @deftypefnx {statistics} @var{r} = gprnd (@var{shape}, @var{scale}, @var{location}, @var{rows})
+## @deftypefnx {statistics} @var{r} = gprnd (@var{shape}, @var{scale}, @var{location}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} @var{r} = gprnd (@var{shape}, @var{scale}, @var{location}, [@var{sz}])
+##
+## Random arrays from the generalized Pareto distribution.
+##
+## @code{@var{r} = gprnd (@var{shape}, @var{scale}, @var{location})} returns an
+## array of random numbers chosen from the generalized Pareto distribution with
+## parameters @var{shape}, @var{scale}, and @var{location}.  The size of @var{r}
+## is the common size of @var{shape}, @var{scale}, and @var{location}.  A scalar
+## input functions as a constant matrix of the same size as the other inputs.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -31,14 +38,10 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## If no size arguments are given then the result matrix is the common size of
-## @var{location}, @var{scale} and @var{shape}.
+## @seealso{gpcdf, gpinv, gppdf, gpfit, gplike, gpstat}
 ## @end deftypefn
 
-## Author: Dag Lyberg <daglyberg80@gmail.com>
-## Description: Random deviates from the generalized Pareto distribution
-
-function rnd = gprnd (shape, scale, location, varargin)
+function r = gprnd (shape, scale, location, varargin)
 
   if (nargin < 3)
     print_usage ();
@@ -47,12 +50,13 @@ function rnd = gprnd (shape, scale, location, varargin)
   if (! isscalar (location) || ! isscalar (scale) || ! isscalar (shape))
     [retval, location, scale, shape] = common_size (location, scale, shape);
     if (retval > 0)
-      error ("gpgrnd: LOCATION, SCALE and SHAPE must be of common size or scalars");
+      error (strcat (["gpgrnd: SHAPE, SCALE, and LOCATION must be of"], ...
+                     [" common size or scalars."]));
     endif
   endif
 
   if (iscomplex (location) || iscomplex (scale) || iscomplex (shape))
-    error ("gprnd: LOCATION, SCALE and SHAPE must not be complex");
+    error ("gprnd: SHAPE, SCALE, and LOCATION must not be complex.");
   endif
 
   if (nargin == 3)
@@ -63,20 +67,22 @@ function rnd = gprnd (shape, scale, location, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error ("gprnd: dimension vector must be row vector of non-negative integers");
+      error (strcat (["gprnd: dimension vector must be row vector of"], ...
+                     [" non-negative integers."]));
     endif
   elseif (nargin > 4)
     if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
-      error ("gprnd: dimensions must be non-negative integers");
+      error ("gprnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
   if (! isscalar (location) && ! isequal (size (location), sz))
-    error ("gprnd: LOCATION, SCALE and SHAPE must be scalar or of size SZ");
+    error ("gprnd: SHAPE, SCALE, and LOCATION must be scalar or of size SZ.");
   endif
 
-  if (isa (location, "single") || isa (scale, "single") || isa (shape, "single"))
+  if (isa (location, "single") || isa (scale, "single") ...
+                               || isa (shape, "single"))
     cls = "single";
   else
     cls = "double";
@@ -85,29 +91,29 @@ function rnd = gprnd (shape, scale, location, varargin)
   if (isscalar (location) && isscalar (scale) && isscalar (shape))
     if ((-Inf < location) && (location < Inf) && (0 < scale) && (scale < Inf) ...
           && (-Inf < shape) && (shape < Inf))
-      rnd = rand(sz,cls);
+      r = rand (sz, cls);
       if (shape == 0)
-        rnd = -log(1 - rnd);
-        rnd = scale * rnd + location;
+        r = -log (1 - r);
+        r = scale * r + location;
       elseif ((shape < 0) || (shape > 0))
-        rnd = (1 - rnd).^(-shape) - 1;
-        rnd = (scale / shape) * rnd + location;
+        r = (1 - r).^(-shape) - 1;
+        r = (scale / shape) * r + location;
       end
     else
-      rnd = NaN (sz, cls);
+      r = NaN (sz, cls);
     endif
   else
-    rnd = NaN (sz, cls);
-    
+    r = NaN (sz, cls);
+
     k = (-Inf < location) & (location < Inf) & (scale > 0) ...
         & (-Inf < shape) & (shape < Inf);
-    rnd(k(:)) = rand (1, sum(k(:)), cls);
+    r(k(:)) = rand (1, sum(k(:)), cls);
     if (any (shape == 0))
-        rnd(k) = -log(1 - rnd(k));
-        rnd(k) = scale(k) .* rnd(k) + location(k);
+        r(k) = -log(1 - r(k));
+        r(k) = scale(k) .* r(k) + location(k);
     elseif (any (shape < 0 | shape > 0))
-      rnd(k) = (1 - rnd(k)).^(-shape(k)) - 1;
-      rnd(k) = (scale(k) ./ shape(k)) .* rnd(k) + location(k);
+      r(k) = (1 - r(k)) .^ (-shape(k)) - 1;
+      r(k) = (scale(k) ./ shape(k)) .* r(k) + location(k);
     end
   endif
 endfunction
