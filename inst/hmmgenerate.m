@@ -109,14 +109,14 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
   endif
 
   if (! isscalar (len) || len < 0 || round (len) != len)
-    error ("hmmgenerate: len must be a non-negative scalar integer")
+    error ("hmmgenerate: len must be a non-negative scalar integer.")
   endif
 
   if (! ismatrix (transprob))
-    error ("hmmgenerate: transprob must be a non-empty numeric matrix");
+    error ("hmmgenerate: transprob must be a non-empty numeric matrix.");
   endif
   if (! ismatrix (outprob))
-    error ("hmmgenerate: outprob must be a non-empty numeric matrix");
+    error ("hmmgenerate: outprob must be a non-empty numeric matrix.");
   endif
 
   # nstate is the number of states of the hidden Markov model
@@ -128,11 +128,11 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
   # Check whether transprob and outprob are feasible for a hidden Markov
   # model
   if (columns (transprob) != nstate)
-    error ("hmmgenerate: transprob must be a square matrix");
+    error ("hmmgenerate: transprob must be a square matrix.");
   endif
   if (rows (outprob) != nstate)
     error (strcat (["hmmgenerate: outprob must have the same number"], ...
-                   [" of rows as transprob"]));
+                   [" of rows as transprob."]));
   endif
 
   # Flag for symbols
@@ -151,7 +151,7 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
     if (strcmp (lowerarg, 'symbols'))
       if (length (varargin{i + 1}) != noutput)
         error (strcat (["hmmgenerate: number of symbols does not match"], ...
-                       [" number of possible outputs"]));
+                       [" number of possible outputs."]));
       endif
       usesym = true;
       # Use the following argument as symbols
@@ -160,14 +160,14 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
     elseif (strcmp (lowerarg, 'statenames'))
       if (length (varargin{i + 1}) != nstate)
         error (strcat (["hmmgenerate: number of statenames does not"], ...
-                       [" match number of states"]));
+                       [" match number of states."]));
       endif
       usesn = true;
       # Use the following argument as statenames
       statenames = varargin{i + 1};
     else
       error (strcat (["hmmgenerate: expected 'symbols' or 'statenames'"], ...
-                     sprintf (" but found '%s'", varargin{i}));
+                     sprintf (" but found '%s'.", varargin{i})));
     endif
   endfor
 

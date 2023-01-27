@@ -16,7 +16,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} @var{t} = cor_test (@var{x}, @var{y})
-## @deftypefnx {statistics} @var{t} = cor_test (@var(x), @var{y}, @var{alt}, @var{method})
+## @deftypefnx {statistics} @var{t} = cor_test (@var{x}, @var{y}, @var{alt}, @var{method})
 ##
 ## Test whether two samples @var{x} and @var{y} come from uncorrelated
 ## populations.
@@ -38,7 +38,7 @@
 ##
 ## The output @var{t} is a structure with the following elements:
 ##
-## @table @var
+## @itemize
 ## @item pval
 ## The p-value of the test.
 ##
@@ -56,7 +56,7 @@
 ##
 ## @item method
 ## The method used for testing.
-## @end table
+## @end itemize
 ##
 ## If no output argument is given, the p-value is displayed.
 ## @end deftypefn
