@@ -19,8 +19,8 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {} binornd (@var{n}, @var{ps})
-## @deftypefnx {statistics} {} binornd (@var{n}, @var{ps}, @var{r})
-## @deftypefnx {statistics} {} binornd (@var{n}, @var{ps}, @var{r}, @var{c}, @dots{})
+## @deftypefnx {statistics} {} binornd (@var{n}, @var{ps}, @var{rows})
+## @deftypefnx {statistics} {} binornd (@var{n}, @var{ps}, @var{rows}, @var{cols}, @dots{})
 ## @deftypefnx {statistics} {} binornd (@var{n}, @var{ps}, [@var{sz}])
 ##
 ## Random arrays from the Binomial distribution

@@ -18,8 +18,8 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} @var{r} = betarnd (@var{a}, @var{b})
-## @deftypefnx {statistics} @var{r} = betarnd (@var{a}, @var{b}, @var{m})
-## @deftypefnx {statistics} @var{r} = betarnd (@var{a}, @var{b}, @var{m}, @var{n}, @dots{})
+## @deftypefnx {statistics} @var{r} = betarnd (@var{a}, @var{b}, @var{rows})
+## @deftypefnx {statistics} @var{r} = betarnd (@var{a}, @var{b}, @var{rows}, @var{cols}, @dots{})
 ## @deftypefnx {statistics} @var{r} = betarnd (@var{a}, @var{b}, [@var{sz}])
 ##
 ## Random arrays from the Beta distribution.

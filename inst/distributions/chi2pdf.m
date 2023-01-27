@@ -1,5 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,32 +17,36 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} chi2pdf (@var{x}, @var{n})
+## @deftypefn  {statistics} @var{y} = chi2pdf (@var{x}, @var{df})
+##
+## Chi-square probability density function (PDF).
+##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the chi-square distribution with @var{n} degrees of freedom.
+## at @var{x} of the chi-square distribution with @var{df} degrees of freedom.
+## The size of @var{y} is the common size of @var{x} and @var{df}.  A scalar
+## input functions as a constant matrix of the same size as the other inputs.
+##
+## @seealso{chi2cdf, chi2inv, chi2rnd, chi2stat}
 ## @end deftypefn
 
-## Author: TT <Teresa.Twaroch@ci.tuwien.ac.at>
-## Description: PDF of the chi-square distribution
-
-function pdf = chi2pdf (x, n)
+function y = chi2pdf (x, df)
 
   if (nargin != 2)
     print_usage ();
   endif
 
-  if (! isscalar (n))
-    [retval, x, n] = common_size (x, n);
+  if (! isscalar (x) || ! isscalar (df))
+    [retval, x, df] = common_size (x, df);
     if (retval > 0)
-      error ("chi2pdf: X and N must be of common size or scalars");
+      error ("chi2pdf: X and DF must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (x) || iscomplex (n))
-    error ("chi2pdf: X and N must not be complex");
+  if (iscomplex (x) || iscomplex (df))
+    error ("chi2pdf: X and DF must not be complex.");
   endif
 
-  pdf = gampdf (x, n/2, 2);
+  y = gampdf (x, df/2, 2);
 
 endfunction
 

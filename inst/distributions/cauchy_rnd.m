@@ -1,5 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,12 +17,18 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} cauchy_rnd (@var{location}, @var{scale})
-## @deftypefnx {} {} cauchy_rnd (@var{location}, @var{scale}, @var{r})
-## @deftypefnx {} {} cauchy_rnd (@var{location}, @var{scale}, @var{r}, @var{c}, @dots{})
-## @deftypefnx {} {} cauchy_rnd (@var{location}, @var{scale}, [@var{sz}])
-## Return a matrix of random samples from the Cauchy distribution with
-## parameters @var{location} and @var{scale}.
+## @deftypefn  {statistics} @var{r} = cauchy_rnd (@var{location}, @var{scale})
+## @deftypefnx {statistics} @var{r} = cauchy_rnd (@var{location}, @var{scale}, @var{rows})
+## @deftypefnx {statistics} @var{r} = cauchy_rnd (@var{location}, @var{scale}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} @var{r} = cauchy_rnd (@var{location}, @var{scale}, [@var{sz}])
+##
+## Random arrays from the Cauchy distribution.
+##
+## @code{@var{r} = cauchy_rnd (@var{location}, @var{scale})} returns an array of
+## random numbers chosen from the Cauchy distribution with parameters
+## @var{location} and @var{scale}.  The size of @var{r} is the common size of
+## @var{location} and @var{scale}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -31,12 +38,11 @@
 ##
 ## If no size arguments are given then the result matrix is the common size of
 ## @var{location} and @var{scale}.
+##
+## @seealso{cauchy_cdf, cauchy_inv, cauchy_pdf}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Random deviates from the Cauchy distribution
-
-function rnd = cauchy_rnd (location, scale, varargin)
+function r = cauchy_rnd (location, scale, varargin)
 
   if (nargin < 2)
     print_usage ();
@@ -45,12 +51,13 @@ function rnd = cauchy_rnd (location, scale, varargin)
   if (! isscalar (location) || ! isscalar (scale))
     [retval, location, scale] = common_size (location, scale);
     if (retval > 0)
-      error ("cauchy_rnd: LOCATION and SCALE must be of common size or scalars");
+      error (strcat (["cauchy_rnd: LOCATION and SCALE must be of common"], ...
+                     [" size or scalars."]));
     endif
   endif
 
   if (iscomplex (location) || iscomplex (scale))
-    error ("cauchy_rnd: LOCATION and SCALE must not be complex");
+    error ("cauchy_rnd: LOCATION and SCALE must not be complex.");
   endif
 
   if (nargin == 2)
@@ -61,17 +68,18 @@ function rnd = cauchy_rnd (location, scale, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error ("cauchy_rnd: dimension vector must be row vector of non-negative integers");
+      error (strcat (["cauchy_rnd: dimension vector must be row vector"], ...
+                     [" of non-negative integers."]));
     endif
   elseif (nargin > 3)
     if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
-      error ("cauchy_rnd: dimensions must be non-negative integers");
+      error ("cauchy_rnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
   if (! isscalar (location) && ! isequal (size (location), sz))
-    error ("cauchy_rnd: LOCATION and SCALE must be scalar or of size SZ");
+    error ("cauchy_rnd: LOCATION and SCALE must be scalar or of size SZ.");
   endif
 
   if (isa (location, "single") || isa (scale, "single"))
@@ -82,15 +90,15 @@ function rnd = cauchy_rnd (location, scale, varargin)
 
   if (isscalar (location) && isscalar (scale))
     if (! isinf (location) && (scale > 0) && (scale < Inf))
-      rnd = location - cot (pi * rand (sz, cls)) * scale;
+      r = location - cot (pi * rand (sz, cls)) * scale;
     else
-      rnd = NaN (sz, cls);
+      r = NaN (sz, cls);
     endif
   else
-    rnd = NaN (sz, cls);
+    r = NaN (sz, cls);
 
     k = ! isinf (location) & (scale > 0) & (scale < Inf);
-    rnd(k) = location(k)(:) ...
+    r(k) = location(k)(:) ...
              - cot (pi * rand (sum (k(:)), 1, cls)) .* scale(k)(:);
   endif
 
