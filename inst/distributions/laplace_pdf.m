@@ -36,17 +36,40 @@
 ## @seealso{laplace_cdf, laplace_inv, laplace_rnd}
 ## @end deftypefn
 
-function pdf = laplace_pdf (x, mu = 0, beta = 1)
+function y = laplace_pdf (x, mu = 0, beta = 1)
 
+  ## Check for valid number of input arguments
   if (nargin < 1 || nargin > 3)
     print_usage ();
   endif
 
-  if (iscomplex (x))
-    error ("laplace_pdf: X must not be complex");
+  ## Check for common size of X, MU, and SIGMA
+  if (! isscalar (x) || ! isscalar (mu) || ! isscalar(beta))
+    [retval, x, mu, beta] = ...
+        common_size (x, mu, beta);
+    if (retval > 0)
+      error (strcat (["laplace_pdf: X, MU, and BETA must be of"], ...
+                     [" common size or scalars."]));
+    endif
   endif
 
-  pdf = exp (- abs (x - mu) / beta) / (2 * beta);
+  ## Check for X, MU, and SIGMA being reals
+  if (iscomplex (x) || iscomplex (mu) || iscomplex (beta))
+    error ("laplace_pdf: X, MU, and BETA must not be complex.");
+  endif
+
+  ## Check for appropriate class
+  if (isa (x, "single") || isa (mu, "single") || isa (beta, "single"));
+    is_class = "single";
+  else
+    is_class = "double";
+  endif
+
+  ## Compute Laplace PDF
+  y = exp (- abs (x - mu) ./ beta) ./ (2 .* beta);
+
+  ## Cast to appropriate class
+  y = cast (y, is_class);
 
 endfunction
 
@@ -61,5 +84,13 @@ endfunction
 
 ## Test input validation
 %!error laplace_pdf ()
-%!error laplace_pdf (1,2,3,4)
-%!error laplace_pdf (i)
+%!error laplace_pdf (1, 2, 3, 4)
+%!error<laplace_pdf: X, MU, and BETA must be of common size or scalars.> ...
+%! laplace_pdf (1, ones (2), ones (3))
+%!error<laplace_pdf: X, MU, and BETA must be of common size or scalars.> ...
+%! laplace_pdf (ones (2), 1, ones (3))
+%!error<laplace_pdf: X, MU, and BETA must be of common size or scalars.> ...
+%! laplace_pdf (ones (2), ones (3), 1)
+%!error<laplace_pdf: X, MU, and BETA must not be complex.> laplace_pdf (i, 2, 3)
+%!error<laplace_pdf: X, MU, and BETA must not be complex.> laplace_pdf (1, i, 3)
+%!error<laplace_pdf: X, MU, and BETA must not be complex.> laplace_pdf (1, 2, i)
