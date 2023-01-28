@@ -44,7 +44,7 @@ function x = gevinv (p, k = 0, sigma = 1, mu = 0)
 
   ## Check for valid number of input arguments
   if (nargin < 1)
-    error ("gevcdf: too few input arguments.");
+    error ("gevinv: too few input arguments.");
   endif
 
   ## Check for common size of P, K, SIGMA, and MU
@@ -94,7 +94,7 @@ endfunction
 %! assert (c, p, 0.001);
 
 ## Test input validation
-%!error<gevcdf: too few input arguments.> gevinv ()
+%!error<gevinv: too few input arguments.> gevinv ()
 %!error<gevinv: P, K, SIGMA, and MU must be of common size or scalars.> ...
 %! gevinv (ones (3), ones (2))
 %!error<gevinv: P, K, SIGMA, and MU must be of common size or scalars.> ...
