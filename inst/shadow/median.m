@@ -110,10 +110,11 @@ function m = median (x, varargin)
   endif
 
   ## Set initial conditions
-  all_flag = false;
-  omitnan = false;
-  perm_flag = false;
-  out_flag = false;
+  all_flag = 0;
+  omitnan = 0;
+  perm_flag = 0;
+  out_flag = 0;
+  vecdim_flag = 0;
   dim = [];
 
   nvarg = numel (varargin);
@@ -132,11 +133,11 @@ function m = median (x, varargin)
     for idx = varargin(varg_chars)
       switch (tolower (idx{:}))
         case "all"
-          all_flag = true;
+          all_flag = 1;
         case "omitnan"
-          omitnan = true;
+          omitnan = 1;
         case "includenan"
-          omitnan = false;
+          omitnan = 1;
         case {"double", "native", "default"}
           if (out_flag)
             error ("median: only one OUTTYPE can be specified")
@@ -154,7 +155,7 @@ function m = median (x, varargin)
                 outtype = "double";
             endswitch
           endif
-          out_flag = true;
+          out_flag = 1;
         otherwise
           print_usage ();
       endswitch
@@ -175,6 +176,7 @@ function m = median (x, varargin)
     endif
 
     dim = varargin{1};
+    vecdim_flag = ! isscalar (dim);
 
     if (! (isvector (dim) && all (dim)) || any (rem (dim, 1)))
       error ("median: DIM must be a positive integer scalar or vector");
@@ -186,7 +188,12 @@ function m = median (x, varargin)
     szx(ndx+1:max(dim)) = 1;
 
     if (! isscalar (dim))
-      ## DIM = Vecdim - try to simplify first
+
+      if (numel (dim) != numel (unique (dim)))
+         error ("median: VECDIM must contain non-repeating positive integers");
+      endif
+
+      ## VECDIM - try to simplify first
 
       ## dims > ndims(x) don't affect median, nor do dims only one element long
       dim(dim > ndx | szx(dim) == 1) = [];
@@ -194,7 +201,7 @@ function m = median (x, varargin)
       if (isempty (dim))
         dim = ndx + 1;  # Set dim to singleton > ndims(x) for shortcut
 
-      elseif (isequal(dim, find(szx != 1)))
+      elseif (isequal (dim, find (szx != 1)))
       ## if DIMs cover all nonsingleton ndims(x), equivalent to "all"
         ## set all flag, next block will simplify
         all_flag = true;
@@ -210,14 +217,14 @@ function m = median (x, varargin)
       dim = 1;
       sz_out = [1 1];
 
-    elseif (isequal(szx, [0, 0]))
-      ## Special case []: Do not apply normal sz_out(dim)=1 change
-      dim = 1;
-      sz_out = [1, 1];
-
     elseif (isrow (x))
       ## Special case row vector: Avoid setting dim to 1.
       dim = 2;
+      sz_out = [1, 1];
+
+    elseif (isequal (szx, [0, 0]))
+      ## Special case []: Do not apply normal sz_out(dim)=1 change
+      dim = 1;
       sz_out = [1, 1];
 
     else
@@ -239,42 +246,46 @@ function m = median (x, varargin)
     return;
   endif
 
-  if (size(x, dim) == 1)  ##simplify by handling dim>ndim?
+  if (szx(dim) == 1)
     ## Operation along singleton dimension - nothing to do
     m = x;
     m = outtype_convert (m, outtype);
     return;
   endif
 
-  ## permute dim to simplify all operations along dim1
-  if (length (dim) > 1 || (dim != 1 && ! isvector (x)))
-    perm_vect = 1 : ndims (x);
+  ## permute dim to simplify all operations along dim1. ipermute at end of func.
+  if ((length (dim) > 1) || (dim != 1 && ! isvector (x)))
+    perm_vect = 1 : ndx;
 
     if (isscalar (dim))
+      ## move dim to dim 1
       perm_vect([1, dim]) = [dim, 1];
       x = permute (x, perm_vect);
       szx([1, dim]) = szx([dim, 1]);
       dim = 1;
+
     else
-      ## merge operating dimensions into dim 1
+      ## move vecdims to front
       perm_vect(dim) = [];
       perm_vect = [dim, perm_vect];
       x = permute (x, perm_vect);
 
-      szx_new = prod (szx(dim));
+      ## reshape all vecdims into dim1
+      num_dim = prod (szx(dim));
       szx(dim) = [];
-      szx = [ones(1, numel(dim)), szx];
-      szx(1) = prod(szx_new);
+      szx = [ones(1, length(dim)), szx];
+      szx(1) = prod (num_dim);
       x = reshape (x, szx);
       dim = 1;
     endif
-    # set flag to ipermute at end of function
+
     perm_flag = true;
   endif
 
+  ## find locations of NaNs
   if (! any (hasnan = any (isnan(x), dim)))
     ## use simpler path if no NaNs present
-    omitnan = false;
+    omitnan = 0;
   endif
 
   x = sort (x, dim); #pushes any NaN's to end
@@ -600,4 +611,4 @@ endfunction
 %!error <DIM must be a positive integer> median (1, ones (2,2))
 %!error <DIM must be a positive integer> median (1, 1.5)
 %!error <DIM must be a positive integer> median (1, 0)
-
+%!error <VECDIM must contain non-repeating> median(1, [1 2 2])
