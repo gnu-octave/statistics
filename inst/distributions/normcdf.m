@@ -1,6 +1,6 @@
 ## Copyright (C) 1995-2016 Kurt Hornik
 ## Copyright (C) 2012 Rik Wehbring
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -19,13 +19,13 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{p} = normcdf (@var{x})
-## @deftypefnx {Function File} @var{p} = normcdf (@var{x}, @var{mu})
-## @deftypefnx {Function File} @var{p} = normcdf (@var{x}, @var{mu}, @var{sigma})
-## @deftypefnx {Function File} @var{p} = normcdf (@dots{}, "upper")
-## @deftypefnx {Function File} [@var{p}, @var{plo}, @var{pup}] = normcdf (@var{x}, @var{mu}, @var{sigma}, @var{pcov})
-## @deftypefnx {Function File} [@var{p}, @var{plo}, @var{pup}] = normcdf (@var{x}, @var{mu}, @var{sigma}, @var{pcov}, @var{alpha})
-## @deftypefnx {Function File} [@var{p}, @var{plo}, @var{pup}] = normcdf (@dots{}, "upper")
+## @deftypefn  {statistics} @var{p} = normcdf (@var{x})
+## @deftypefnx {statistics} @var{p} = normcdf (@var{x}, @var{mu})
+## @deftypefnx {statistics} @var{p} = normcdf (@var{x}, @var{mu}, @var{sigma})
+## @deftypefnx {statistics} @var{p} = normcdf (@dots{}, "upper")
+## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = normcdf (@var{x}, @var{mu}, @var{sigma}, @var{pcov})
+## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = normcdf (@var{x}, @var{mu}, @var{sigma}, @var{pcov}, @var{alpha})
+## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = normcdf (@dots{}, "upper")
 ##
 ## Normal cumulative distribution function (cdf).
 ##
@@ -60,7 +60,8 @@ function [varargout] = normcdf (x, varargin)
   if (nargin < 1 || nargin > 6)
     error ("normcdf: invalid number of input arguments.");
   endif
-  ## Check for 'upper' flag
+
+  ## Check for "upper" flag
   if (nargin > 1 && strcmpi (varargin{end}, "upper"))
     uflag = true;
     varargin(end) = [];
@@ -70,6 +71,7 @@ function [varargout] = normcdf (x, varargin)
   else
     uflag = false;
   endif
+
   ## Get extra arguments (if they exist) or add defaults
   if (numel (varargin) > 0)
     mu = varargin{1};
@@ -103,6 +105,7 @@ function [varargout] = normcdf (x, varargin)
   else
     alpha = 0.05;
   endif
+
   ## Check for common size of x, mu, and sigma
   if (! isscalar (mu) || ! isscalar (sigma))
     [err, x, mu, sigma] = common_size (x, mu, sigma);
@@ -110,27 +113,32 @@ function [varargout] = normcdf (x, varargin)
       error ("normcdf: X, MU, and SIGMA must be of common size or scalars.");
     endif
   endif
+
   ## Check for x, mu, and sigma being reals
   if (iscomplex (x) || iscomplex (mu) || iscomplex (sigma))
     error ("normcdf: X, MU, and SIGMA must not be complex.");
   endif
+
   ## Compute normal cdf
   z = (x - mu) ./ sigma;
   if (uflag)
     z = -z;
   endif
+
   ## Check for appropriate class
   if (isa (x, "single") || isa (mu, "single") || isa (sigma, "single"));
     is_class = "single";
   else
     is_class = "double";
   endif
+
   ## Prepare output
   p = NaN (size (z), is_class);
   if (nargout > 1)
     plo = NaN (size (z), is_class);
     pup = NaN (size (z), is_class);
   endif
+
   ## Check sigma
   if (isscalar (sigma))
     if (sigma > 0)
@@ -153,6 +161,7 @@ function [varargout] = normcdf (x, varargin)
     sigma_p = sigma > 0;
     sigma_z = sigma == 0;
   endif
+
   ## Set edge cases when sigma = 0
   if (uflag)
     p(sigma_z & x < mu) = 1;
@@ -173,24 +182,26 @@ function [varargout] = normcdf (x, varargin)
       pup(sigma_z & x >= mu) = 1;
     endif
   endif
+
   ## Compute cases when sigma > 0
   p(sigma_p) = 0.5 * erfc (-z(sigma_p) ./ sqrt (2));
   varargout{1} = p;
+
   ## Compute confidence bounds (if requested)
   if (nargout >= 2)
-   zvar = (pcov(1,1) + 2 * pcov(1,2) * z(sigma_p) + ...
+    zvar = (pcov(1,1) + 2 * pcov(1,2) * z(sigma_p) + ...
            pcov(2,2) * z(sigma_p) .^ 2) ./ (sigma .^ 2);
-   if (any (zvar < 0))
+    if (any (zvar < 0))
       error ("normcdf: bad covariance matrix.");
-   endif
-   normz = -norminv (alpha / 2);
-   halfwidth = normz * sqrt (zvar);
-   zlo = z(sigma_p) - halfwidth;
-   zup = z(sigma_p) + halfwidth;
-   plo(sigma_p) = 0.5 * erfc (-zlo ./ sqrt (2));
-   pup(sigma_p) = 0.5 * erfc (-zup ./ sqrt (2));
-   varargout{2} = plo;
-   varargout{3} = pup;
+    endif
+    normz = -norminv (alpha / 2);
+    halfwidth = normz * sqrt (zvar);
+    zlo = z(sigma_p) - halfwidth;
+    zup = z(sigma_p) + halfwidth;
+    plo(sigma_p) = 0.5 * erfc (-zlo ./ sqrt (2));
+    pup(sigma_p) = 0.5 * erfc (-zup ./ sqrt (2));
+    varargout{2} = plo;
+    varargout{3} = pup;
   endif
 
 endfunction
