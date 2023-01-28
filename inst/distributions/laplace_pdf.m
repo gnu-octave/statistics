@@ -45,8 +45,7 @@ function y = laplace_pdf (x, mu = 0, beta = 1)
 
   ## Check for common size of X, MU, and BETA
   if (! isscalar (x) || ! isscalar (mu) || ! isscalar(beta))
-    [retval, x, mu, beta] = ...
-        common_size (x, mu, beta);
+    [retval, x, mu, beta] = common_size (x, mu, beta);
     if (retval > 0)
       error (strcat (["laplace_pdf: X, MU, and BETA must be of"], ...
                      [" common size or scalars."]));
