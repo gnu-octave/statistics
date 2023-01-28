@@ -30,7 +30,8 @@
 ## random numbers chosen from the Laplace distribution with parameters @var{mu}
 ## and @var{beta}.  The size of @var{r} is the common size of @var{mu} and
 ## @var{beta}.  A scalar input functions as a constant matrix of the same size
-## as the other inputs.
+## as the other inputs.  Both parameters must be reals and @var{beta} > 0.  For
+## @var{beta} <= 0, NaN is returned.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -48,7 +49,7 @@ function r = laplace_rnd (mu, beta, varargin)
     print_usage ();
   endif
 
-  ## Check for common size of MU, and SIGMA
+  ## Check for common size of MU, and BETA
   if (! isscalar (mu) || ! isscalar (beta))
     [retval, mu, beta] = common_size (mu, beta);
     if (retval > 0)
@@ -97,6 +98,10 @@ function r = laplace_rnd (mu, beta, varargin)
   r = ((tmp < 1/2) .* log (2 * tmp) - ...
        (tmp > 1/2) .* log (2 * (1 - tmp))) .* beta + mu;
 
+  ## Force output to NaN for invalid parameter BETA <= 0
+  k = (beta <= 0);
+  r(k) = NaN;
+
 endfunction
 
 ## Test results
@@ -111,6 +116,9 @@ endfunction
 %!assert (size (laplace_rnd (1, 1, 3)), [3, 3])
 %!assert (size (laplace_rnd (1, 1, [4 1])), [4, 1])
 %!assert (size (laplace_rnd (1, 1, 4, 1)), [4, 1])
+%!test
+%! r =  laplace_rnd (1, [1, 0, -1]);
+%! assert (r([2:3]), [NaN, NaN])
 
 ## Test class of input preserved
 %!assert (class (laplace_rnd (1, 0)), "double")

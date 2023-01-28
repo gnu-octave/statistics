@@ -31,7 +31,8 @@
 ## common size of @var{p}, @var{mu}, and @var{beta}.  A scalar input functions
 ## as a constant matrix of the same size as the other inputs.
 ##
-## Default values are @var{mu} = 0, @var{beta} = 1.
+## Default values are @var{mu} = 0, @var{beta} = 1.  Both parameters must be
+## reals and @var{beta} > 0.  For @var{beta} <= 0, NaN is returned.
 ##
 ## @seealso{laplace_inv, laplace_pdf, laplace_rnd}
 ## @end deftypefn
@@ -65,7 +66,7 @@ function x = laplace_inv (p, mu = 0, beta = 1)
   endif
 
   ## Compute Laplace iCDF
-  k = (p >= 0) & (p <= 1);
+  k = (p >= 0) & (p <= 1) & (beta > 0);
   x(k) = mu(k) + beta(k) .* ((p(k) < 1/2) .* log (2 .* p(k)) - ...
                              (p(k) > 1/2) .* log (2 .* (1 - p(k))));
 
@@ -75,6 +76,7 @@ endfunction
 %!shared p
 %! p = [-1 0 0.5 1 2];
 %!assert (laplace_inv (p), [NaN -Inf 0 Inf NaN])
+%!assert (laplace_inv (p, 0, [-2, -1, 0, 1, 2]), [nan(1, 3), Inf, NaN])
 
 ## Test class of input preserved
 %!assert (laplace_inv ([p, NaN]), [NaN -Inf 0 Inf NaN NaN])

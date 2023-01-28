@@ -31,7 +31,8 @@
 ## common size of @var{x}, @var{mu}, and @var{beta}.  A scalar input functions
 ## as a constant matrix of the same size as the other inputs.
 ##
-## Default values are @var{mu} = 0, @var{beta} = 1.
+## Default values are @var{mu} = 0, @var{beta} = 1.  Both parameters must be
+## reals and @var{beta} > 0.  For @var{beta} <= 0, NaN is returned.
 ##
 ## @seealso{laplace_cdf, laplace_inv, laplace_rnd}
 ## @end deftypefn
@@ -59,24 +60,26 @@ function y = laplace_pdf (x, mu = 0, beta = 1)
 
   ## Check for appropriate class
   if (isa (x, "single") || isa (mu, "single") || isa (beta, "single"));
-    is_class = "single";
+    y = NaN (size (x), "single");
   else
-    is_class = "double";
+    y = NaN (size (x));
   endif
 
   ## Compute Laplace PDF
-  y = exp (- abs (x - mu) ./ beta) ./ (2 .* beta);
+  k1 = ((x == -Inf) & (beta > 0)) | ((x == Inf) & (beta > 0));
+  y(k1) = 0;
 
-  ## Cast to appropriate class
-  y = cast (y, is_class);
+  k = ! k1 & (beta > 0);
+  y(k) = exp (- abs (x(k) - mu(k)) ./ beta(k)) ./ (2 .* beta(k));
 
 endfunction
 
 
-%!shared x,y
+%!shared x, y
 %! x = [-Inf -log(2) 0 log(2) Inf];
 %! y = [0, 1/4, 1/2, 1/4, 0];
 %!assert (laplace_pdf ([x, NaN]), [y, NaN])
+%!assert (laplace_pdf (x, 0, [-2, -1, 0, 1, 2]), [nan(1, 3), 0.25, 0])
 
 ## Test class of input preserved
 %!assert (laplace_pdf (single ([x, NaN])), single ([y, NaN]))

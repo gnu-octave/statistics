@@ -31,7 +31,8 @@
 ## @var{p} is the common size of @var{x}, @var{mu}, and @var{beta}.  A scalar
 ## input functions as a constant matrix of the same size as the other inputs.
 ##
-## Default values are @var{mu} = 0, @var{beta} = 1.
+## Default values are @var{mu} = 0, @var{beta} = 1.  Both parameters must be
+## reals and @var{beta} > 0.  For @var{beta} <= 0, NaN is returned.
 ##
 ## @seealso{laplace_inv, laplace_pdf, laplace_rnd}
 ## @end deftypefn
@@ -59,16 +60,21 @@ function p = laplace_cdf (x, mu = 0, beta = 1)
 
   ## Check for appropriate class
   if (isa (x, "single") || isa (mu, "single") || isa (beta, "single"));
-    is_class = "single";
+    p = NaN (size (x), "single");
   else
-    is_class = "double";
+    p = NaN (size (x));
   endif
 
   ## Compute Laplace CDF
-  p = (1 + sign (x - mu) .* (1 - exp (- abs (x - mu) ./ beta))) ./ 2;
+  k1 = (x == -Inf) & (beta > 0);
+  p(k1) = 0;
 
-  ## Cast to appropriate class
-  p = cast (p, is_class);
+  k2 = (x == Inf) & (beta > 0);
+  p(k2) = 1;
+
+  k = ! k1 & ! k2 & (beta > 0);
+  p(k) = (1 + sign (x(k) - mu(k)) .* ...
+          (1 - exp (- abs (x(k) - mu(k)) ./ beta(k)))) ./ 2;
 
 endfunction
 
@@ -77,6 +83,7 @@ endfunction
 %! x = [-Inf -log(2) 0 log(2) Inf];
 %! y = [0, 1/4, 1/2, 3/4, 1];
 %!assert (laplace_cdf ([x, NaN]), [y, NaN])
+%!assert (laplace_cdf (x, 0, [-2, -1, 0, 1, 2]), [nan(1, 3), 0.75, 1])
 
 ## Test class of input preserved
 %!assert (laplace_cdf (single ([x, NaN])), single ([y, NaN]))
