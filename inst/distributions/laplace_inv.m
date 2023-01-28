@@ -43,7 +43,7 @@ function x = laplace_inv (p, mu = 0, beta = 1)
     print_usage ();
   endif
 
-  ## Check for common size of P, MU, and SIGMA
+  ## Check for common size of P, MU, and BETA
   if (! isscalar (p) || ! isscalar (mu) || ! isscalar(beta))
     [retval, p, mu, beta] = ...
         common_size (p, mu, beta);
@@ -53,7 +53,7 @@ function x = laplace_inv (p, mu = 0, beta = 1)
     endif
   endif
 
-  ## Check for X, MU, and SIGMA being reals
+  ## Check for X, MU, and BETA being reals
   if (iscomplex (p) || iscomplex (mu) || iscomplex (beta))
     error ("laplace_inv: P, MU, and BETA must not be complex.");
   endif
