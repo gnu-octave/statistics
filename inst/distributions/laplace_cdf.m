@@ -21,7 +21,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} @var{p} = laplace_cdf (@var{x})
 ## @deftypefnx {statistics} @var{p} = laplace_cdf (@var{x}, @var{mu})
-## @deftypefnx {statistics} @var{p} = laplace_pdf (@var{x}, @var{mu}, @var{beta})
+## @deftypefnx {statistics} @var{p} = laplace_cdf (@var{x}, @var{mu}, @var{beta})
 ##
 ## Laplace cumulative distribution function (CDF).
 ##
@@ -31,7 +31,7 @@
 ## @var{p} is the common size of @var{x}, @var{mu}, and @var{beta}.  A scalar
 ## input functions as a constant matrix of the same size as the other inputs.
 ##
-## Default values are @var{nu} = 0, @var{beta} = 1.
+## Default values are @var{mu} = 0, @var{beta} = 1.
 ##
 ## @seealso{laplace_inv, laplace_pdf, laplace_rnd}
 ## @end deftypefn
@@ -84,13 +84,13 @@ endfunction
 
 ## Test input validation
 %!error laplace_cdf ()
-%!error laplace_cdf (1,2,3,4)
+%!error laplace_cdf (1, 2, 3, 4)
 %!error<laplace_cdf: X, MU, and BETA must be of common size or scalars.> ...
 %! laplace_cdf (1, ones (2), ones (3))
 %!error<laplace_cdf: X, MU, and BETA must be of common size or scalars.> ...
 %! laplace_cdf (ones (2), 1, ones (3))
 %!error<laplace_cdf: X, MU, and BETA must be of common size or scalars.> ...
 %! laplace_cdf (ones (2), ones (3), 1)
-%!error laplace_cdf (i, 2, 3)
-%!error laplace_cdf (1, i, 3)
-%!error laplace_cdf (1, 2, i)
+%!error<laplace_cdf: X, MU, and BETA must not be complex.> laplace_cdf (i, 2, 3)
+%!error<laplace_cdf: X, MU, and BETA must not be complex.> laplace_cdf (1, i, 3)
+%!error<laplace_cdf: X, MU, and BETA must not be complex.> laplace_cdf (1, 2, i)
