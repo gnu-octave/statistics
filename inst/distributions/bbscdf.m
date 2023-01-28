@@ -40,22 +40,23 @@ function p = bbscdf (x, shape, scale, location)
     print_usage ();
   endif
 
-  if (! isscalar (location) || ! isscalar (scale) || ! isscalar(shape))
-    [retval, x, location, scale, shape] = ...
-        common_size (x, location, scale, shape);
+  if (! isscalar (x) || ! isscalar (shape) || ! isscalar (scale) ...
+                     || ! isscalar (location))
+    [retval, x, shape, scale, location] = ...
+        common_size (x, shape, scale, location);
     if (retval > 0)
       error (strcat (["bbscdf: X, SHAPE, SCALE, and LOCATION must be of"], ...
                      [" common size or scalars."]));
     endif
   endif
 
-  if (iscomplex (x) || iscomplex (location) || iscomplex (scale) ...
-      || iscomplex(shape))
-    error ("bbscdf: X, SHAPE, SCALE, and LOCATION must not be complex");
+  if (iscomplex (x) || iscomplex (shape) || iscomplex (scale) ...
+                    || iscomplex(location))
+    error ("bbscdf: X, SHAPE, SCALE, and LOCATION must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (location, "single") || isa (scale, "single") ...
-      || isa (shape, "single"))
+  if (isa (x, "single") || isa (shape, "single") || isa (scale, "single") ...
+                        || isa (location, "single"))
     p = zeros (size (x), "single");
   else
     p = zeros (size (x));

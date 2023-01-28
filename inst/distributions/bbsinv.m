@@ -39,22 +39,23 @@ function x = bbsinv (p, shape, scale, location)
     print_usage ();
   endif
 
-  if (! isscalar (location) || ! isscalar (scale) || ! isscalar(shape))
-    [retval, p, location, scale, shape] = ...
-        common_size (p, location, scale, shape);
+  if (! isscalar (p) || ! isscalar (shape) || ! isscalar (scale) ...
+                     || ! isscalar(location))
+    [retval, p, shape, scale, location] = ...
+        common_size (p, shape, scale, location);
     if (retval > 0)
       error (strcat (["bbsinv: P, SHAPE, SCALE, and LOCATION must be of"], ...
                      [" common size or scalars."]));
     endif
   endif
 
-  if (iscomplex (p) || iscomplex (location) ...
-      || iscomplex (scale) || iscomplex(shape))
+  if (iscomplex (p) || iscomplex (shape) || iscomplex (scale) ...
+                    || iscomplex(location))
     error ("bbsinv: P, SHAPE, SCALE, and LOCATION must not be complex.");
   endif
 
-  if (isa (p, "single") || isa (location, "single") ...
-      || isa (scale, "single") || isa (shape, "single"))
+  if (isa (p, "single") || isa (shape, "single") || isa (scale, "single") ...
+                        || isa (location, "single"))
     x = zeros (size (p), "single");
   else
     x = zeros (size (p));
