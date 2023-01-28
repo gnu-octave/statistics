@@ -93,7 +93,7 @@ function r = bbsrnd (shape, scale, location, varargin)
     if ((-Inf < location) && (location < Inf) ...
         && (0 < scale) && (scale < Inf) ...
         && (0 < shape) && (shape < Inf))
-      r = rand(sz,cls);
+      r = rand (sz, cls);
       y = shape * norminv (r);
       r = location + scale * (y + sqrt (4 + y.^2)).^2 / 4;
     else
@@ -105,7 +105,7 @@ function r = bbsrnd (shape, scale, location, varargin)
     k = (-Inf < location) & (location < Inf) ...
         & (0 < scale) & (scale < Inf) ...
         & (0 < shape) & (shape < Inf);
-    r(k) = rand(sum(k(:)),1);
+    r(k) = rand (sum (k(:)),1);
     y = shape(k) .* norminv (r(k));
     r(k) = location(k) + scale(k) .* (y + sqrt (4 + y.^2)).^2 / 4;
   endif
