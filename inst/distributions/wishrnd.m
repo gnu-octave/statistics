@@ -15,7 +15,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {Function File} {} [@var{W}[, @var{D}]] = wishrnd (@var{Sigma}, @var{df}[, @var{D}][, @var{n}=1])
+## @deftypefn  {statistics} [@var{W}, @var{D}] = wishrnd (@var{Sigma}, @var{df}, @var{D}, @var{n}=1)
+##
 ## Return a random matrix sampled from the Wishart distribution with given
 ## parameters
 ##
@@ -35,17 +36,19 @@
 ## @var{df}*@var{Sigma}, and the variance of each element @var{W}_ij should
 ## approach @var{df}*(@var{Sigma}_ij^2 + @var{Sigma}_ii*@var{Sigma}_jj)
 ##
-## Reference: Yu-Cheng Ku and Peter Bloomfield (2010), Generating Random Wishart
-## Matrices with Fractional Degrees of Freedom in OX,
+## @subheading References
+##
+## @enumerate
+## @item
+## Yu-Cheng Ku and Peter Bloomfield (2010), Generating Random Wishart Matrices
+## with Fractional Degrees of Freedom in OX,
 ## http://www.gwu.edu/~forcpgm/YuChengKu-030510final-WishartYu-ChengKu.pdf
-## 
-## @seealso{iwishrnd, wishpdf}
+## @end enumerate
+##
+## @seealso{wishpdf, iwishpdf, iwishrnd}
 ## @end deftypefn
 
-## Author: Nir Krakauer <mail@nirkrakauer.net>
-## Description: Sample from the Wishart distribution
-
-function [W, D] = wishrnd(Sigma, df, D, n=1)
+function [W, D] = wishrnd (Sigma, df, D, n=1)
 
   if (nargin < 2)
     print_usage ();
@@ -55,7 +58,8 @@ function [W, D] = wishrnd(Sigma, df, D, n=1)
     try
       D = chol(Sigma, 'lower');
     catch
-      error('wishrnd: Cholesky decomposition failed; Sigma probably not positive definite')
+      error (strcat (["iwishrnd: Cholesky decomposition failed;"], ...
+                     [" SIGMA probably not positive definite."]));
     end_try_catch
   endif
 
@@ -64,7 +68,7 @@ function [W, D] = wishrnd(Sigma, df, D, n=1)
   if df < p
     df = floor(df); #distribution not defined for small noninteger df
     df_isint = 1;
-  else 
+  else
   #check for integer degrees of freedom
    df_isint = (df == floor(df));
   endif
