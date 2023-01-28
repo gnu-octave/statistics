@@ -178,7 +178,7 @@ function m = median (x, varargin)
     dim = varargin{1};
     vecdim_flag = ! isscalar (dim);
 
-    if (! (isvector (dim) && all (dim)) || any (rem (dim, 1)))
+    if (! (isvector (dim) && all (dim >0)) || any (rem (dim, 1)))
       error ("median: DIM must be a positive integer scalar or vector");
     endif
 
@@ -611,4 +611,5 @@ endfunction
 %!error <DIM must be a positive integer> median (1, ones (2,2))
 %!error <DIM must be a positive integer> median (1, 1.5)
 %!error <DIM must be a positive integer> median (1, 0)
+%!error <DIM must be a positive integer> median ([1 2 3], [-1 1])
 %!error <VECDIM must contain non-repeating> median(1, [1 2 2])

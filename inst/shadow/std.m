@@ -180,7 +180,8 @@ function [s, m] = std (x, varargin)
         ## Check for empty vecdim, won't change vsv if nonzero size empty
         vecdim_scalar_vector = [isscalar(vecdim), isvector(vecdim)];
       endif
-      if (! (vecdim_scalar_vector(2) && all (vecdim)) || any (rem (vecdim, 1)))
+      if (! (vecdim_scalar_vector(2) && all (vecdim > 0)) ...
+              || any (rem (vecdim, 1)))
         error ("std: DIM must be a positive integer scalar or vector");
       endif
       if (vecdim_scalar_vector(1) && vecdim > ndx && ! isempty (x))
@@ -922,6 +923,7 @@ endfunction
 %!error <std: DIM must be a positive integer> std (1, [], ones (2,2))
 %!error <std: DIM must be a positive integer> std (1, 0, 1.5)
 %!error <std: DIM must be a positive integer> std (1, [], 0)
+%!error <DIM must be a positive integer> var ([1 2 3], [], [-1 1])
 %!error <std: VECDIM must contain non-repeating positive integers> ...
 %! std (repmat ([1:20;6:25], [5 2 6 3]), 0, [1 2 2 2])
 %!error <std: weight vector does not match first operating dimension> ...
