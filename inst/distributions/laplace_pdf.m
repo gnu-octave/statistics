@@ -1,5 +1,8 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,15 +19,22 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} laplace_pdf (@var{x})
-## @deftypefnx {} {} laplace_pdf (@var{x}, @var{mu}, @var{beta})
+## @deftypefn  {statistics} @var{y} = laplace_pdf (@var{x})
+## @deftypefnx {statistics} @var{y} = laplace_pdf (@var{x}, @var{mu})
+## @deftypefnx {statistics} @var{y} = laplace_pdf (@var{x}, @var{mu}, @var{beta})
+##
+## Laplace probability density function (PDF).
+##
 ## For each element of @var{x}, compute the probability density function (PDF)
 ## at @var{x} of the Laplace distribution with a location parameter @var{mu} and
-## a scale parameter (i.e. "diversity") @var{beta}.
+## a scale parameter (i.e. "diversity") @var{beta}.  The size of @var{y} is the
+## common size of @var{x}, @var{mu}, and @var{beta}.  A scalar input functions
+## as a constant matrix of the same size as the other inputs.
+##
+## Default values are @var{mu} = 0, @var{beta} = 1.
+##
+## @seealso{laplace_cdf, laplace_inv, laplace_rnd}
 ## @end deftypefn
-
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: PDF of the Laplace distribution
 
 function pdf = laplace_pdf (x, mu = 0, beta = 1)
 
