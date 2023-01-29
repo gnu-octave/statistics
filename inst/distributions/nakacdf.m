@@ -1,7 +1,8 @@
 ## Copyright (C) 2016 Dag Lyberg
 ## Copyright (C) 1995-2015 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
-## This file is part of Octave.
+## This file is part of the statistics package for GNU Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -18,58 +19,66 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} nakacdf (@var{x}, @var{m}, @var{w})
+## @deftypefn  {statistics} @var{p} = nakacdf (@var{x}, @var{m}, @var{w})
+##
+## Nakagami cumulative distribution function (CDF).
+##
 ## For each element of @var{x}, compute the cumulative distribution function
 ## (CDF) at @var{x} of the Nakagami distribution with shape parameter @var{m}
-## and scale parameter @var{w}.
+## and scale parameter @var{w}.  The size of @var{p} is the common size of
+## @var{x}, @var{m}, and @var{w}.  A scalar input functions as a constant matrix
+## of the same size as the other inputs.
 ##
+## @seealso{nakainv, nakapdf, nakarnd}
 ## @end deftypefn
 
-## Author: Dag Lyberg <daglyberg80@gmail.com>
-## Description: CDF of the Nakagami distribution
+function p = nakacdf (x, m, w)
 
-function cdf = nakacdf (x, m, w)
-
+  ## Check for valid number of input arguments
   if (nargin != 3)
     print_usage ();
   endif
 
-  if (! isscalar (m) || ! isscalar (w))
+  ## Check for common size of X, M, and W
+  if (! isscalar (x) || ! isscalar (m) || ! isscalar (w))
     [retval, x, m, w] = common_size (x, m, w);
     if (retval > 0)
-      error ("nakacdf: X, M and W must be of common size or scalars");
+      error ("nakacdf: X, M and W must be of common size or scalars.");
     endif
   endif
 
+  ## Check for X, M, and W being reals
   if (iscomplex (x) || iscomplex (m) || iscomplex (w))
-    error ("nakacdf: X, M and W must not be complex");
+    error ("nakacdf: X, M and W must not be complex.");
   endif
 
+  ## Check for appropriate class
   if (isa (x, "single") || isa (m, "single") || isa (w, "single"))
     inv = zeros (size (x), "single");
   else
     inv = zeros (size (x));
   endif
 
+  ## Compute Nakagami CDF
   k = isnan (x) | ! (m > 0) | ! (w > 0);
-  cdf(k) = NaN;
+  p(k) = NaN;
 
   k = (x == Inf) & (0 < m) & (m < Inf) & (0 < w) & (w < Inf);
-  cdf(k) = 1;
-  
+  p(k) = 1;
+
   k = (0 < x) & (x < Inf) & (0 < m) & (m < Inf) & (0 < w) & (w < Inf);
   if (isscalar(x) && isscalar (m) && isscalar(w))
     left = m;
     right = (m/w) * x^2;
-    cdf(k) = gammainc(right, left);
+    p(k) = gammainc(right, left);
   elseif (isscalar (m) && isscalar(w))
     left = m * ones(size(x));
     right = (m/w) * x.^2;
-    cdf(k) = gammainc(right(k), left(k));
+    p(k) = gammainc(right(k), left(k));
   else
     left = m .* ones(size(x));
     right = (m./w) .* x.^2;
-    cdf(k) = gammainc(right(k), left(k));
+    p(k) = gammainc(right(k), left(k));
   endif
 
 endfunction

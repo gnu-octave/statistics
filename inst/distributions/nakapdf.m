@@ -1,7 +1,8 @@
 ## Copyright (C) 2016 Dag Lyberg
 ## Copyright (C) 1995-2015 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
-## This file is part of Octave.
+## This file is part of the statistics package for GNU Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -18,48 +19,57 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} nakapdf (@var{x}, @var{m}, @var{w})
+## @deftypefn  {statistics} @var{y} = nakapdf (@var{x}, @var{m}, @var{w})
+##
+## Nakagami probability density function (PDF).
+##
 ## For each element of @var{x}, compute the probability density function (PDF)
 ## at @var{x} of the Nakagami distribution with shape parameter @var{m} and
-## scale parameter @var{w}.
+## scale parameter @var{w}.  The size of @var{p} is the common size of @var{x},
+## @var{m}, and @var{w}.  A scalar input functions as a constant matrix of the
+## same size as the other inputs.
+##
+## @seealso{nakacdf, nakainv, nakarnd}
 ## @end deftypefn
 
-## Author: Dag Lyberg <daglyberg80@gmail.com>
-## Description: PDF of the Nakagami distribution
+function y = nakapdf (x, m, w)
 
-function pdf = nakapdf (x, m, w)
-
+  ## Check for valid number of input arguments
   if (nargin != 3)
     print_usage ();
   endif
 
-  if (! isscalar (m) || ! isscalar (w))
+  ## Check for common size of X, M, and W
+  if (! isscalar (x) || ! isscalar (m) || ! isscalar (w))
     [retval, x, m, w] = common_size (x, m, w);
     if (retval > 0)
-      error ("nakapdf: X, M and W must be of common size or scalars");
+      error ("nakapdf: X, M and W must be of common size or scalars.");
     endif
   endif
 
+  ## Check for X, M, and W being reals
   if (iscomplex (x) || iscomplex (m) || iscomplex (w))
-    error ("nakapdf: X, M and W must not be complex");
+    error ("nakapdf: X, M and W must not be complex.");
   endif
 
+  ## Check for appropriate class
   if (isa (x, "single") || isa (m, "single") || isa (w, "single"))
-    pdf = zeros (size (x), "single");
+    y = zeros (size (x), "single");
   else
-    pdf = zeros (size (x));
+    y = zeros (size (x));
   endif
 
+  ## Compute Nakagami PDF
   k = isnan (x) | ! (m > 0.5) | ! (w > 0);
-  pdf(k) = NaN;
+  y(k) = NaN;
 
   k = (0 < x) & (x < Inf) & (0 < m) & (m < Inf) & (0 < w) & (w < Inf);
   if (isscalar (m) && isscalar(w))
-    pdf(k) = exp (log (2) + m*log (m) - log (gamma (m)) - ...
+    y(k) = exp (log (2) + m*log (m) - log (gamma (m)) - ...
                m*log (w) + (2*m-1) * ...
                log (x(k)) - (m/w) * x(k).^2);
   else
-    pdf(k) = exp(log(2) + m(k).*log (m(k)) - log (gamma (m(k))) - ...
+    y(k) = exp(log(2) + m(k).*log (m(k)) - log (gamma (m(k))) - ...
                m(k).*log (w(k)) + (2*m(k)-1) ...
                .* log (x(k)) - (m(k)./w(k)) .* x(k).^2);
   endif
