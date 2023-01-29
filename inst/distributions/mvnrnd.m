@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -119,7 +119,7 @@ function [r, T] = mvnrnd (mu, sigma, N, T)
     elseif (is_diag)
       ## Check sigma for invalid values
       if (any (sigma <= 0))
-        error ("mvnpdf: sigma diagonal contains negative or zero values.");
+        error ("mvnpdf: SIGMA diagonal contains negative or zero values.");
       endif
       t = sqrt (sigma);
       if (nargout > 1)
@@ -160,7 +160,7 @@ function [r, T] = mvnrnd (mu, sigma, N, T)
         sigma = reshape(sigma,sd(2),sd(3))';
         ## Check sigma for invalid values
         if (any (sigma(:) <= 0))
-          error ("mvnpdf: sigma diagonals contain negative or zero values.");
+          error ("mvnpdf: SIGMA diagonals contain negative or zero values.");
         endif
         R = sqrt(sigma);
         r = bsxfun (@times, randn (rm, cm, is_class), R) + mu;
