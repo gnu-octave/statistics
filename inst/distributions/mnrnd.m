@@ -96,27 +96,27 @@ function r = mnrnd (n, pk, s)
   # Check arguments
   if (nargin == 3)
     if (! isscalar (n) || n < 0 || round (n) != n)
-      error ("mnrnd: n must be a non-negative integer.");
+      error ("mnrnd: N must be a non-negative integer.");
     endif
     if (! isvector (pk) || any (pk < 0 | pk > 1))
-      error ("mnrnd: pk must be a vector of probabilities.");
+      error ("mnrnd: PK must be a vector of probabilities.");
     endif
     if (! isscalar (s) || s < 0 || round (s) != s)
-      error ("mnrnd: s must be a non-negative integer.");
+      error ("mnrnd: S must be a non-negative integer.");
     endif
   elseif (nargin == 2)
     if (isvector (pk) && size (pk, 1) > 1)
       pk = pk';
     endif
     if (! isvector (n) || any (n < 0 | round (n) != n) || size (n, 2) > 1)
-      error ("mnrnd: n must be a non-negative integer column vector.");
+      error ("mnrnd: N must be a non-negative integer column vector.");
     endif
     if (! ismatrix (pk) || isempty (pk) || any (pk < 0 | pk > 1))
-      error (strcat (["mnrnd: pk must be a non-empty matrix with"], ...
+      error (strcat (["mnrnd: PK must be a non-empty matrix with"], ...
                      [" rows of probabilities."]));
     endif
     if (! isscalar (n) && size (pk, 1) > 1 && length (n) != size (pk, 1))
-      error ("mnrnd: the length of n must match the number of rows of pk.");
+      error ("mnrnd: the length of N must match the number of rows of PK.");
     endif
   else
     print_usage ();

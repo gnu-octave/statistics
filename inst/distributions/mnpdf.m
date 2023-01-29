@@ -84,10 +84,10 @@ function y = mnpdf (x, pk)
   endif
 
   if (! ismatrix (x) || any (x(:) < 0 | round (x(:) != x(:))))
-    error ("mnpdf: x must be a matrix of non-negative integer values.");
+    error ("mnpdf: X must be a matrix of non-negative integer values.");
   endif
   if (! ismatrix (pk) || any (pk(:) < 0))
-    error ("mnpdf: pk must be a non-empty matrix with rows of probabilities.");
+    error ("mnpdf: PK must be a non-empty matrix with rows of probabilities.");
   endif
 
   # Adjust input sizes
@@ -106,7 +106,7 @@ function y = mnpdf (x, pk)
   endif
   # Continue argument check
   if (any (size (x) != size (pk)))
-    error ("mnpdf: x and pk must have compatible sizes.");
+    error ("mnpdf: X and PK must have compatible sizes.");
   endif
 
   # Count total number of elements of each multinomial sample
