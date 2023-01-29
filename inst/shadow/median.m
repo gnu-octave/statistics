@@ -334,7 +334,7 @@ function m = median (x, varargin)
     if (! all (hasnan))
 
       if isvector (x)
-        ## Verified with szx(dim)==1 check above that dim is along vector ##MAYBE NOT TRUE
+        ## checks above verify either dim1 or dim2 vector
         n = length (x);
         k = floor ((n + 1) / 2);
         if (mod (n,2))
@@ -346,21 +346,16 @@ function m = median (x, varargin)
         endif
 
       else
-        n = szx(dim);
+        ## nonvector, all operations permuted to be along dim 1
+        n = szx(1);
         k = floor ((n + 1) / 2);
-        k_vector = cell (1, ndx);
-        k_vector(:) = ':';
-        k_vector(dim) = k;
-
+        m = NaN ([1, szx(2:end)]);
         if (mod (n,2))
           # odd
-          m = x(k_vector{:});
+          m(1, :) = x(k, :);
         else
           #even
-          m = x(k_vector{:});
-          k_vector(dim) = k + 1;
-          m2 = x(k_vector{:});
-          m = (m + m2) / 2;
+          m(1, :) = (x(k, :) + x(k+1, :)) / 2;
         endif
       endif
       if (any (hasnan))
