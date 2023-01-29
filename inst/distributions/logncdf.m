@@ -105,7 +105,7 @@ function [varargout] = logncdf (x, varargin)
   endif
 
   ## Check for common size of x, mu, and sigma
-  if (! isscalar (mu) || ! isscalar (sigma))
+  if (! isscalar (x) || ! isscalar (mu) || ! isscalar (sigma))
     [err, x, mu, sigma] = common_size (x, mu, sigma);
     if (err > 0)
       error ("logncdf: X, MU, and SIGMA must be of common size or scalars.");
