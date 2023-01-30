@@ -1,7 +1,8 @@
+## Copyright (C) 1997-2015 Kurt Hornik
 ## Copyright (C) 2016 Dag Lyberg
-## Copyright (C) 1995-2015 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
-## This file is part of Octave.
+## This file is part of the statistics package for GNU Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -18,25 +19,27 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} trirnd (@var{a}, @var{b}, @var{c})
-## @deftypefnx {} {} trirnd (@var{a}, @var{b}, @var{c}, @var{r})
-## @deftypefnx {} {} trirnd (@var{a}, @var{b}, @var{c}, @var{r}, @var{c}, @dots{})
-## @deftypefnx {} {} trirnd (@var{a}, @var{b}, @var{c}, [@var{sz}])
-## Return a matrix of random samples from the rectangular distribution with
-## parameters @var{a}, @var{b}, and @var{c} on the interval [@var{a}, @var{b}].
+## @deftypefn  {statistics} @var{r} = trirnd (@var{a}, @var{b}, @var{c})
+## @deftypefnx {statistics} @var{r} = trirnd (@var{a}, @var{b}, @var{c}, @var{rows})
+## @deftypefnx {statistics} @var{r} = trirnd (@var{a}, @var{b}, @var{c}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} @var{r} = trirnd (@var{a}, @var{b}, @var{c}, [@var{sz}])
+##
+## Random arrays from the triangular distribution.
+##
+## @code{@var{r} = raylrnd (@var{sigma})} returns an array of random numbers
+## chosen from the triangular distribution with parameters @var{a}, @var{b}, and
+## @var{c} on the interval [@var{a}, @var{b}].  The size of @var{y} is the
+## common size of the input arguments.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
 ## first two arguments are taken as the number of rows and columns and any
 ## further arguments specify additional matrix dimensions.  The size may also
-## be specified with a vector of dimensions @var{sz}.
+## be specified with a vector of dimensions @var{sz}..
 ##
-## If no size arguments are given then the result matrix is the common size of
-## @var{a}, @var{b} and @var{c}.
+## @seealso{tricdf, triinv, tripdf}
 ## @end deftypefn
-
-## Author: Dag Lyberg <daglyberg80@gmail.com>
-## Description: Random deviates from the triangular distribution
 
 function rnd = trirnd (a, b, c, varargin)
 
@@ -46,13 +49,16 @@ function rnd = trirnd (a, b, c, varargin)
 
   if (! isscalar (a) || ! isscalar (b) || ! isscalar (c))
     [retval, a, b, c] = common_size (a, b, c);
+    scalarABC = false;
     if (retval > 0)
-      error ("trirnd: A, B, and C must be of common size or scalars");
+      error ("trirnd: A, B, and C must be of common size or scalars.");
     endif
+  else
+    scalarABC = true;
   endif
 
   if (iscomplex (a) || iscomplex (b) || iscomplex (c))
-    error ("trirnd: A, B, and C must not be complex");
+    error ("trirnd: A, B, and C must not be complex.");
   endif
 
   if (nargin == 3)
@@ -63,17 +69,18 @@ function rnd = trirnd (a, b, c, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error ("trirnd: dimension vector must be row vector of non-negative integers");
+      error (strcat (["trirnd: dimension vector must be row vector of"], ...
+                     [" non-negative integers."]));
     endif
   elseif (nargin > 4)
     if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
-      error ("trirnd: dimensions must be non-negative integers");
+      error ("trirnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
   if (! isscalar (a) && ! isequal (size (b), sz))
-    error ("trirnd: A, B, and C must be scalar or of size SZ");
+    error ("trirnd: A, B, and C must be scalar or of size SZ.");
   endif
 
   if (isa (a, "single") || isa (b, "single") || isa (c, "single"))
@@ -82,7 +89,7 @@ function rnd = trirnd (a, b, c, varargin)
     cls = "double";
   endif
 
-  if (isscalar (a) && isscalar (b) && isscalar (c))
+  if (scalarABC)
     if ((-Inf < a) && (a < b) && (a <= c) && (c <= b) && (b < Inf))
       w = b-a;
       left_width = c-a;

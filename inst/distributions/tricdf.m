@@ -1,7 +1,8 @@
-## Copyright (C) 2016 Dag Lyberg
 ## Copyright (C) 1997-2015 Kurt Hornik
+## Copyright (C) 2016 Dag Lyberg
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
-## This file is part of Octave.
+## This file is part of the statistics package for GNU Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -18,41 +19,45 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} tricdf (@var{x}, @var{a}, @var{b}, @var{c})
-## Compute the cumulative distribution function (CDF) at @var{x} of the
-## triangular distribution with parameters @var{a}, @var{b}, and @var{c}
-## on the interval [@var{a}, @var{b}].
+## @deftypefn  {statistics} @var{p} = tricdf (@var{x}, @var{a}, @var{b}, @var{c})
+##
+## Triangular cumulative distribution function (CDF).
+##
+## For each element of @var{x}, compute the cumulative distribution function
+## (CDF) at @var{x} of the triangular distribution with parameters @var{a},
+## @var{b}, and @var{c} on the interval [@var{a}, @var{b}].  The size of @var{p}
+## is the common size of the input arguments.  A scalar input functions as a
+## constant matrix of the same size as the other inputs.
+##
+## @seealso{triinv, tripdf, trirnd}
 ## @end deftypefn
 
-## Author: Dag Lyberg <daglyberg80@gmail.com>
-## Description: CDF of the triangle distribution
-
-function cdf = tricdf (x, a, b, c)
+function p = tricdf (x, a, b, c)
 
   if (nargin != 4)
     print_usage ();
   endif
 
-  if (! isscalar (a) || ! isscalar (b) || ! isscalar (c))
+  if (! isscalar (x) || ! isscalar (a) || ! isscalar (b) || ! isscalar (c))
     [retval, x, a, b, c] = common_size (x, a, b, c);
     if (retval > 0)
-      error ("tricdf: X, A, B, and C must be of common size or scalars");
+      error ("tricdf: X, A, B, and C must be of common size or scalars.");
     endif
   endif
 
   if (iscomplex (x) || iscomplex (a) || iscomplex (b) || iscomplex (c))
-    error ("tricdf: X, A, B, and C must not be complex");
+    error ("tricdf: X, A, B, and C must not be complex ");
   endif
 
   if (isa (x, "single") || isa (a, "single")
       || isa (b, "single") || isa (c, "single"))
-    cdf = zeros (size (x), "single");
+    p = zeros (size (x), "single");
   else
-    cdf = zeros (size (x));
+    p = zeros (size (x));
   endif
 
   k = isnan (x) | !(a < b) | !(c >= a) | !(c <= b) ;
-  cdf(k) = NaN;
+  p(k) = NaN;
 
   k = (x > a) & (a < b) & (a <= c) & (c <= b);
   if (isscalar (a) && isscalar (b) && isscalar (c))
@@ -60,37 +65,39 @@ function cdf = tricdf (x, a, b, c)
 
     k_temp = k & (c <= x);
     full_area = (c-a) * h / 2;
-    cdf(k_temp) += full_area;
+    p(k_temp) += full_area;
 
     k_temp = k & (a < x) & (x < c);
     area = (x(k_temp) - a).^2 * h / (2 * ( c - a));
-    cdf(k_temp) += area;
+    p(k_temp) += area;
 
     k_temp = k & (b <= x);
     full_area = (b-c) * h / 2;
-    cdf(k_temp) += full_area;
+    p(k_temp) += full_area;
 
     k_temp = k & (c < x) & (x < b);
     area = (b-x(k_temp)).^2 * h / (2 * (b - c));
-    cdf(k_temp) += full_area - area;
+    p(k_temp) += full_area - area;
   else
     h = 2 ./ (b-a);
 
     k_temp = k & (c <= x);
     full_area = (c(k_temp)-a(k_temp)) .* h(k_temp) / 2;
-    cdf(k_temp) += full_area;
+    p(k_temp) += full_area;
 
     k_temp = k & (a <= x) & (x < c);
-    area = (x(k_temp) - a(k_temp)).^2 .* h(k_temp) ./ (2 * (c(k_temp) - a(k_temp)));
-    cdf(k_temp) += area;
+    area = (x(k_temp) - a(k_temp)).^2 .* h(k_temp) ./ ...
+           (2 * (c(k_temp) - a(k_temp)));
+    p(k_temp) += area;
 
     k_temp = k & (b <= x);
     full_area = (b(k_temp)-c(k_temp)) .* h(k_temp) / 2;
-    cdf(k_temp) += full_area;
+    p(k_temp) += full_area;
 
     k_temp = k & (c <= x) & (x < b);
-    area = (b(k_temp)-x(k_temp)).^2 .* h(k_temp) ./ (2 * (b(k_temp) - c(k_temp)));
-    cdf(k_temp) += full_area - area;
+    area = (b(k_temp)-x(k_temp)).^2 .* h(k_temp) ./ ...
+           (2 * (b(k_temp) - c(k_temp)));
+    p(k_temp) += full_area - area;
   endif
 
 endfunction
@@ -104,16 +111,23 @@ endfunction
 %!assert (tricdf (x, 1, 2*ones (1,7), 1.5), y, eps)
 %!assert (tricdf (x, 1, 2, 1.5*ones (1,7)), y, eps)
 %!assert (tricdf (x, 1, 2, 1.5), y, eps)
-%!assert (tricdf (x, [1, 1, NaN, 1, 1, 1, 1], 2, 1.5), [y(1:2), NaN, y(4:7)], eps)
-%!assert (tricdf (x, 1, 2*[1, 1, NaN, 1, 1, 1, 1], 1.5), [y(1:2), NaN, y(4:7)], eps)
-%!assert (tricdf (x, 1, 2, 1.5*[1, 1, NaN, 1, 1, 1, 1]), [y(1:2), NaN, y(4:7)], eps)
+%!assert (tricdf (x, [1, 1, NaN, 1, 1, 1, 1], 2, 1.5), ...
+%! [y(1:2), NaN, y(4:7)], eps)
+%!assert (tricdf (x, 1, 2*[1, 1, NaN, 1, 1, 1, 1], 1.5), ...
+%! [y(1:2), NaN, y(4:7)], eps)
+%!assert (tricdf (x, 1, 2, 1.5*[1, 1, NaN, 1, 1, 1, 1]), ...
+%! [y(1:2), NaN, y(4:7)], eps)
 %!assert (tricdf ([x, NaN], 1, 2, 1.5), [y, NaN], eps)
 
 ## Test class of input preserved
-%!assert (tricdf (single ([x, NaN]), 1, 2, 1.5), single ([y, NaN]), eps('single'))
-%!assert (tricdf ([x, NaN], single (1), 2, 1.5), single ([y, NaN]), eps('single'))
-%!assert (tricdf ([x, NaN], 1, single (2), 1.5), single ([y, NaN]), eps('single'))
-%!assert (tricdf ([x, NaN], 1, 2, single (1.5)), single ([y, NaN]), eps('single'))
+%!assert (tricdf (single ([x, NaN]), 1, 2, 1.5), ...
+%! single ([y, NaN]), eps("single"))
+%!assert (tricdf ([x, NaN], single (1), 2, 1.5), ...
+%! single ([y, NaN]), eps("single"))
+%!assert (tricdf ([x, NaN], 1, single (2), 1.5), ...
+%! single ([y, NaN]), eps("single"))
+%!assert (tricdf ([x, NaN], 1, 2, single (1.5)), ...
+%! single ([y, NaN]), eps("single"))
 
 ## Test input validation
 %!error tricdf ()
