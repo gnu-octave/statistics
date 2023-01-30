@@ -1,5 +1,8 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,9 +19,17 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} poisscdf (@var{x}, @var{lambda})
+## @deftypefn {statistics} @var{p} = poisscdf (@var{x}, @var{lambda})
+## @deftypefn {statistics} @var{p} = poisscdf (@var{x}, @var{lambda}, "upper")
+##
+## Poisson cumulative distribution function (CDF).
+##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the Poisson distribution with parameter @var{lambda}.
+## (CDF) at @var{x} of the Poisson distribution with parameter @var{lambda}. The
+## size of @var{p} is the common size of @var{x} and @var{lambda}.  A scalar
+## input functions as a constant matrix of the same size as the other inputs.
+##
+## @seealso{poissinv, poisspdf, poissrnd, poisstat}
 ## @end deftypefn
 
 ## Author: KH <Kurt.Hornik@wu-wien.ac.at>
