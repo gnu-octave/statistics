@@ -1,5 +1,8 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,53 +19,63 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} normpdf (@var{x})
-## @deftypefnx {} {} normpdf (@var{x}, @var{mu}, @var{sigma})
+## @deftypefn  {statistics} @var{y} = normpdf (@var{x})
+## @deftypefnx {statistics} @var{y} = normpdf (@var{x}, @var{mu})
+## @deftypefnx {statistics} @var{y} = (@var{x}, @var{mu}, @var{sigma})
+##
+## Normal probability density function (PDF).
+##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the normal distribution with mean @var{mu} and
-## standard deviation @var{sigma}.
+## at @var{x} of the normal distribution with mean @var{mu} and standard
+## deviation @var{sigma}.  The size of @var{p} is the common size of @var{p},
+## @var{mu} and @var{sigma}.  A scalar input functions as a constant matrix of
+## the same size as the other inputs.
 ##
 ## Default values are @var{mu} = 0, @var{sigma} = 1.
+##
+## @seealso{norminv, norminv, normrnd, normfit, normlike, normstat}
 ## @end deftypefn
 
-## Author: TT <Teresa.Twaroch@ci.tuwien.ac.at>
-## Description: PDF of the normal distribution
+function y = normpdf (x, mu = 0, sigma = 1)
 
-function pdf = normpdf (x, mu = 0, sigma = 1)
-
-  if (nargin != 1 && nargin != 3)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 1 || nargin > 3)
+    error ("normpdf: invalid number of input arguments.");
   endif
 
-  if (! isscalar (mu) || ! isscalar (sigma))
+  ## Check for common size of X, MU, and SIGMA
+  if (! isscalar (x) || ! isscalar (mu) || ! isscalar (sigma))
     [retval, x, mu, sigma] = common_size (x, mu, sigma);
     if (retval > 0)
-      error ("normpdf: X, MU, and SIGMA must be of common size or scalars");
+      error ("normpdf: X, MU, and SIGMA must be of common size or scalars.");
     endif
   endif
 
+  ## Check for X, MU, and SIGMA being reals
   if (iscomplex (x) || iscomplex (mu) || iscomplex (sigma))
-    error ("normpdf: X, MU, and SIGMA must not be complex");
+    error ("normpdf: X, MU, and SIGMA must not be complex.");
   endif
 
+  ## Check for appropriate class
   if (isa (x, "single") || isa (mu, "single") || isa (sigma, "single"))
-    pdf = zeros (size (x), "single");
+    y = zeros (size (x), "single");
   else
-    pdf = zeros (size (x));
+    y = zeros (size (x));
   endif
 
+  ## Compute normal PDF
   if (isscalar (mu) && isscalar (sigma))
     if (isfinite (mu) && (sigma > 0) && (sigma < Inf))
-      pdf = stdnormal_pdf ((x - mu) / sigma) / sigma;
+      y = stdnormal_pdf ((x - mu) / sigma) / sigma;
     else
-      pdf = NaN (size (x), class (pdf));
+      y = NaN (size (x), class (y));
     endif
   else
     k = isinf (mu) | !(sigma > 0) | !(sigma < Inf);
-    pdf(k) = NaN;
+    y(k) = NaN;
 
     k = ! isinf (mu) & (sigma > 0) & (sigma < Inf);
-    pdf(k) = stdnormal_pdf ((x(k) - mu(k)) ./ sigma(k)) ./ sigma(k);
+    y(k) = stdnormal_pdf ((x(k) - mu(k)) ./ sigma(k)) ./ sigma(k);
   endif
 
 endfunction

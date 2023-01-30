@@ -27,7 +27,7 @@
 ## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = normcdf (@var{x}, @var{mu}, @var{sigma}, @var{pcov}, @var{alpha})
 ## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = normcdf (@dots{}, "upper")
 ##
-## Normal cumulative distribution function (cdf).
+## Normal cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
 ## (CDF) at @var{x} of the normal distribution with mean @var{mu} and standard
@@ -106,7 +106,7 @@ function [varargout] = normcdf (x, varargin)
     alpha = 0.05;
   endif
 
-  ## Check for common size of x, mu, and sigma
+  ## Check for common size of X, MU, and SIGMA
   if (! isscalar (mu) || ! isscalar (sigma))
     [err, x, mu, sigma] = common_size (x, mu, sigma);
     if (err > 0)
@@ -114,7 +114,7 @@ function [varargout] = normcdf (x, varargin)
     endif
   endif
 
-  ## Check for x, mu, and sigma being reals
+  ## Check for X, MU, and SIGMA being reals
   if (iscomplex (x) || iscomplex (mu) || iscomplex (sigma))
     error ("normcdf: X, MU, and SIGMA must not be complex.");
   endif
@@ -139,7 +139,7 @@ function [varargout] = normcdf (x, varargin)
     pup = NaN (size (z), is_class);
   endif
 
-  ## Check sigma
+  ## Check SIGMA
   if (isscalar (sigma))
     if (sigma > 0)
       sigma_p = true (size (z));
@@ -162,7 +162,7 @@ function [varargout] = normcdf (x, varargin)
     sigma_z = sigma == 0;
   endif
 
-  ## Set edge cases when sigma = 0
+  ## Set edge cases when SIGMA = 0
   if (uflag)
     p(sigma_z & x < mu) = 1;
     p(sigma_z & x >= mu) = 0;
@@ -183,7 +183,7 @@ function [varargout] = normcdf (x, varargin)
     endif
   endif
 
-  ## Compute cases when sigma > 0
+  ## Compute cases when SIGMA > 0
   p(sigma_p) = 0.5 * erfc (-z(sigma_p) ./ sqrt (2));
   varargout{1} = p;
 
