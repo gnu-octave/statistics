@@ -123,7 +123,7 @@ function m = median (x, varargin)
   ndx = ndims (x);
   outtype = class (x);
 
-  if (nvarg > 1 && any (! varg_chars(2:end)))
+  if (nvarg > 1 && ! varg_chars(2:end))
     ## Only first varargin can be numeric
     print_usage ();
   endif
@@ -134,32 +134,43 @@ function m = median (x, varargin)
       switch (tolower (idx{:}))
         case "all"
           all_flag = 1;
+
         case "omitnan"
           omitnan = 1;
+
         case "includenan"
           omitnan = 1;
-        case {"double", "native", "default"}
+
+        case "native"
           if (out_flag)
             error ("median: only one OUTTYPE can be specified")
-          else
-            switch (tolower (idx{:}))
-              case {"native"}
-                if (strcmp (outtype, "logical"))
-                  outtype = "double";
-                endif
-              case {"default"}
-                if (! strcmp (outtype, "single"))
-                  outtype = "double";
-                endif
-              otherwise
-                outtype = "double";
-            endswitch
+          endif
+          if (strcmp (outtype, "logical"))
+            outtype = "double";
           endif
           out_flag = 1;
+
+        case "default"
+          if (out_flag)
+            error ("median: only one OUTTYPE can be specified")
+          endif
+          if (! strcmp (outtype, "single"))
+            outtype = "double";
+          endif
+          out_flag = 1;
+
+        case "double"
+          if (out_flag)
+            error ("median: only one OUTTYPE can be specified")
+          endif
+          outtype = "double";
+          out_flag = 1;
+
         otherwise
           print_usage ();
       endswitch
     endfor
+
     varargin(varg_chars) = [];
     nvarg = numel (varargin);
   endif
@@ -190,7 +201,6 @@ function m = median (x, varargin)
     if (vecdim_flag)
       ## VECDIM - try to simplify first
       dim = sort (dim);
-
       if (! all (diff (dim)))
          error ("median: VECDIM must contain non-repeating positive integers");
       endif
@@ -201,14 +211,18 @@ function m = median (x, varargin)
 
       if (isempty (dim))
         ## no dims left to process, return input as output.
-        m = outtype_convert (x, outtype);
+        if (! strcmp (class (x), outtype))
+          m = outtype_convert (x, outtype);
+        else
+          m = x;
+        endif
         return;
-
       elseif  ((length(dim) == length(sing_dim_x)) ...
                    && unique ([dim, sing_dim_x]) == dim)
         ## if DIMs cover all nonsingleton ndims(x), equivalent to "all"
         all_flag = true;
       endif
+
     endif
 
   else
@@ -251,7 +265,11 @@ function m = median (x, varargin)
 
   if (szx(dim) == 1)
     ## Operation along singleton dimension - nothing to do
-    m = outtype_convert (x, outtype);
+    if (! strcmp (class (x), outtype))
+      m = outtype_convert (x, outtype);
+    else
+      m = x;
+    endif
     return;
   endif
 
@@ -285,7 +303,8 @@ function m = median (x, varargin)
   endif
 
   ## find column locations of NaNs
-  if (! any (hasnan = any (isnan(x), dim)))
+  hasnan = any (isnan(x), dim);
+  if (! hasnan(:) && omitnan)
     ## use simpler path if no NaNs present
     omitnan = 0;
   endif
@@ -312,24 +331,23 @@ function m = median (x, varargin)
     else
       n = sum (! isnan (x), 1);
       k = floor ((n + 1) ./ 2);
-      allnan = ! n;
-      k(allnan) = 1; # any all nan columns will pull NaN from first row
-      m_odd = mod(n,2) | allnan;
-      m_even = ! m_odd;
+      k(! n) = 1; # any all nan columns will pull NaN from first row
+      m_odd = mod (n, 2) & n;
+      m_even = ! m_odd & n;
       m = NaN ([1, szx(2:end)]);
 
       if (ndims (x) > 2)
         szx = [szx(1), prod(szx(2:end))];
-      else
-        szx = szx;
       endif
 
+      ## Grab k value from each column according to number of non-nan elements
       m_idx_odd = sub2ind (szx, (k(m_odd))(:)', (1 : szx(2))(m_odd)(:)');
       m_idx_even = sub2ind (szx, [(k(m_even))(:)'; (k(m_even) + 1)(:)'], ...
                                (1 : szx(2))(m_even)([1 1], :));
 
       m(m_odd) = x(m_idx_odd);
       m(m_even) = sum (x(m_idx_even), 1) / 2;
+
     endif
 
   else
@@ -361,7 +379,7 @@ function m = median (x, varargin)
           m(1, :) = (x(k, :) + x(k+1, :)) / 2;
         endif
       endif
-      if (any (hasnan))
+      if (any (hasnan(:)))
         m(hasnan) = NaN;
       endif
     else
