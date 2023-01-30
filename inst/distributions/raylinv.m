@@ -1,4 +1,7 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -14,45 +17,16 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{x} =} raylinv (@var{p}, @var{sigma})
-## Compute the quantile of the Rayleigh distribution. The quantile is the
-## inverse of the cumulative distribution function.
+## @deftypefn  {statistics} @var{x} = raylinv (@var{p}, @var{sigma})
 ##
-## @subheading Arguments
+## Inverse of the Rayleigh cumulative distribution function (iCDF).
 ##
-## @itemize @bullet
-## @item
-## @var{p} is the cumulative distribution. The elements of @var{p} must be
-## probabilities.
+## For each element of @var{p}, compute the quantile (the inverse of the CDF)
+## at @var{p} of the Rayleigh distribution with parameter @var{sigma}.  The size
+## of @var{p} is the common size of @var{x} and @var{sigma}.  A scalar input
+## functions as a constant matrix of the same size as the other inputs.
 ##
-## @item
-## @var{sigma} is the parameter of the Rayleigh distribution. The elements
-## of @var{sigma} must be positive.
-## @end itemize
-## @var{p} and @var{sigma} must be of common size or one of them must be
-## scalar.
-##
-## @subheading Return values
-##
-## @itemize @bullet
-## @item
-## @var{x} is the quantile of the Rayleigh distribution at each element of
-## @var{p} and corresponding parameter @var{sigma}.
-## @end itemize
-##
-## @subheading Examples
-##
-## @example
-## @group
-## p = 0:0.1:0.5;
-## sigma = 1:6;
-## x = raylinv (p, sigma)
-## @end group
-##
-## @group
-## x = raylinv (p, 0.5)
-## @end group
-## @end example
+## Default value is @var{sigma} = 1.
 ##
 ## @subheading References
 ##
@@ -67,41 +41,43 @@
 ## Processes}. pages 104 and 148, McGraw-Hill, New York, second edition,
 ## 1984.
 ## @end enumerate
+##
+## @seealso{raylcdf, raylpdf, raylrnd, raylstat}
 ## @end deftypefn
-
-## Author: Arno Onken <asnelt@asnelt.org>
-## Description: Quantile of the Rayleigh distribution
 
 function x = raylinv (p, sigma)
 
   # Check arguments
-  if (nargin != 2)
+  if (nargin < 1 || nargin > 2)
     print_usage ();
   endif
 
-  if (! isempty (p) && ! ismatrix (p))
-    error ("raylinv: p must be a numeric matrix");
-  endif
-  if (! isempty (sigma) && ! ismatrix (sigma))
-    error ("raylinv: sigma must be a numeric matrix");
+  if (nargin < 1)
+    sigma = 1;
   endif
 
+  ## Check for common size of P and SIGMA
   if (! isscalar (p) || ! isscalar (sigma))
     [retval, p, sigma] = common_size (p, sigma);
     if (retval > 0)
-      error ("raylinv: p and sigma must be of common size or scalar");
+      error ("raylinv: P and SIGMA must be of common size or scalars.");
     endif
   endif
 
-  # Calculate quantile
+  ## Check for X and SIGMA being reals
+  if (iscomplex (p) || iscomplex (sigma))
+    error ("raylcdf: P and SIGMA must not be complex.");
+  endif
+
+  # Calculate Rayleigh iCDF
   x = sqrt (-2 .* log (1 - p) .* sigma .^ 2);
 
+  ## Check for valid parameter and support
   k = find (p == 1);
   if (any (k))
     x(k) = Inf;
   endif
 
-  # Continue argument check
   k = find (! (p >= 0) | ! (p <= 1) | ! (sigma > 0));
   if (any (k))
     x(k) = NaN;
@@ -121,3 +97,12 @@ endfunction
 %! x = raylinv (p, 0.5);
 %! expected_x = [0.0000, 0.2295, 0.3340, 0.4223, 0.5054, 0.5887];
 %! assert (x, expected_x, 0.001);
+
+## Test input validation
+%!error poissinv ()
+%!error poissinv (1)
+%!error poissinv (1,2,3)
+%!error poissinv (ones (3), ones (2))
+%!error poissinv (ones (2), ones (3))
+%!error poissinv (i, 2)
+%!error poissinv (2, i)

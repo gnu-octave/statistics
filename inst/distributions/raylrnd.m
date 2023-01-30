@@ -1,4 +1,7 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -14,59 +17,23 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{x} =} raylrnd (@var{sigma})
-## @deftypefnx {Function File} {@var{x} =} raylrnd (@var{sigma}, @var{sz})
-## @deftypefnx {Function File} {@var{x} =} raylrnd (@var{sigma}, @var{r}, @var{c})
-## Generate a matrix of random samples from the Rayleigh distribution.
+## @deftypefn  {statistics} @var{r} = raylrnd (@var{sigma})
+## @deftypefnx {statistics} @var{r} = raylrnd (@var{sigma}, @var{rows})
+## @deftypefnx {statistics} @var{r} = raylrnd (@var{sigma}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} @var{r} = raylrnd (@var{sigma}, [@var{sz}])
 ##
-## @subheading Arguments
+## Random arrays from the Rayleigh distribution.
 ##
-## @itemize @bullet
-## @item
-## @var{sigma} is the parameter of the Rayleigh distribution. The elements
-## of @var{sigma} must be positive.
+## @code{@var{r} = raylrnd (@var{sigma})} returns an array of random numbers
+## chosen from the Rayleigh distribution with scale parameter @var{sigma}.  The
+## size of @var{r} is the size of @var{sigma}.  @var{sigma} must be a finite
+## real number greater than 0, otherwise NaN is returned.
 ##
-## @item
-## @var{sz} is the size of the matrix to be generated. @var{sz} must be a
-## vector of non-negative integers.
-##
-## @item
-## @var{r} is the number of rows of the matrix to be generated. @var{r} must
-## be a non-negative integer.
-##
-## @item
-## @var{c} is the number of columns of the matrix to be generated. @var{c}
-## must be a non-negative integer.
-## @end itemize
-##
-## @subheading Return values
-##
-## @itemize @bullet
-## @item
-## @var{x} is a matrix of random samples from the Rayleigh distribution with
-## corresponding parameter @var{sigma}. If neither @var{sz} nor @var{r} and
-## @var{c} are specified, then @var{x} is of the same size as @var{sigma}.
-## @end itemize
-##
-## @subheading Examples
-##
-## @example
-## @group
-## sigma = 1:6;
-## x = raylrnd (sigma)
-## @end group
-##
-## @group
-## sz = [2, 3];
-## x = raylrnd (0.5, sz)
-## @end group
-##
-## @group
-## r = 2;
-## c = 3;
-## x = raylrnd (0.5, r, c)
-## @end group
-## @end example
+## When called with a single size argument, return a square matrix with
+## the dimension specified.  When called with more than one scalar argument the
+## first two arguments are taken as the number of rows and columns and any
+## further arguments specify additional matrix dimensions.  The size may also
+## be specified with a vector of dimensions @var{sz}.
 ##
 ## @subheading References
 ##
@@ -81,77 +48,92 @@
 ## Processes}. pages 104 and 148, McGraw-Hill, New York, second edition,
 ## 1984.
 ## @end enumerate
+##
+## @seealso{raylcdf, raylinv, raylrnd, raylstat}
 ## @end deftypefn
 
-## Author: Arno Onken <asnelt@asnelt.org>
-## Description: Random samples from the Rayleigh distribution
+function r = raylrnd (sigma, varargin)
 
-function x = raylrnd (sigma, r, c)
+  ## Check for valid number of input arguments
+  if (nargin < 1)
+    print_us
+  endif
 
-  # Check arguments
+  ## Check for SIGMA being real
+  if (iscomplex (sigma))
+    error ("raylrnd: SIGMA must not be complex.");
+  endif
+
+  ## Check for SIZE vector or DIMENSION input arguments
   if (nargin == 1)
     sz = size (sigma);
   elseif (nargin == 2)
-    if (! isvector (r) || any ((r < 0) | round (r) != r))
-      error ("raylrnd: sz must be a vector of non-negative integers")
+    if (isscalar (varargin{1}) && varargin{1} >= 0)
+      sz = [varargin{1}, varargin{1}];
+    elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
+      sz = varargin{1};
+    else
+      error (strcat (["raylrnd: dimension vector must be row vector"], ...
+                     [" of non-negative integers."]));
     endif
-    sz = r(:)';
-    if (! isscalar (sigma) && ! isempty (sigma) && (length (size (sigma)) != length (sz) || any (size (sigma) != sz)))
-      error ("raylrnd: sigma must be scalar or of size sz");
+  elseif (nargin > 2)
+    if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
+      error ("raylrnd: dimensions must be non-negative integers.");
     endif
-  elseif (nargin == 3)
-    if (! isscalar (r) || any ((r < 0) | round (r) != r))
-      error ("raylrnd: r must be a non-negative integer")
-    endif
-    if (! isscalar (c) || any ((c < 0) | round (c) != c))
-      error ("raylrnd: c must be a non-negative integer")
-    endif
-    sz = [r, c];
-    if (! isscalar (sigma) && ! isempty (sigma) && (length (size (sigma)) != length (sz) || any (size (sigma) != sz)))
-      error ("raylrnd: sigma must be scalar or of size [r, c]");
-    endif
-  else
-    print_usage ();
+    sz = [varargin{:}];
   endif
 
-  if (! isempty (sigma) && ! ismatrix (sigma))
-    error ("raylrnd: sigma must be a numeric matrix");
+  ## Check that parameters match requested dimensions in size
+  if (! isscalar (sigma) && ! isequal (size (sigma), sz))
+    error ("raylrnd: SIGMA must be scalar or of size SZ.");
   endif
 
-  if (isempty (sigma))
-    x = [];
-  elseif (isscalar (sigma) && ! (sigma > 0))
-    x = NaN .* ones (sz); 
-  else
-    # Draw random samples
-    x = sqrt (-2 .* log (1 - rand (sz)) .* sigma .^ 2);
+  ## Generate random sample from Rayleigh distribution
+  r = sqrt (-2 .* log (1 - rand (sz)) .* sigma .^ 2);
 
-    # Continue argument check
-    k = find (! (sigma > 0));
-    if (any (k))
-      x(k) = NaN;
-    endif
+  ## Check for valid parameter
+  k = find (! (sigma > 0));
+  if (any (k))
+    r(k) = NaN;
+  endif
+
+  ## Cast into appropriate class
+  if (isa (sigma, "single"))
+    r = cast (r, "single");
   endif
 
 endfunction
 
 %!test
 %! sigma = 1:6;
-%! x = raylrnd (sigma);
-%! assert (size (x), size (sigma));
-%! assert (all (x >= 0));
+%! r = raylrnd (sigma);
+%! assert (size (r), size (sigma));
+%! assert (all (r >= 0));
 
 %!test
 %! sigma = 0.5;
 %! sz = [2, 3];
-%! x = raylrnd (sigma, sz);
-%! assert (size (x), sz);
-%! assert (all (x >= 0));
+%! r = raylrnd (sigma, sz);
+%! assert (size (r), sz);
+%! assert (all (r >= 0));
 
 %!test
 %! sigma = 0.5;
-%! r = 2;
-%! c = 3;
-%! x = raylrnd (sigma, r, c);
-%! assert (size (x), [r, c]);
-%! assert (all (x >= 0));
+%! rows = 2;
+%! cols = 3;
+%! r = raylrnd (sigma, rows, cols);
+%! assert (size (r), [rows, cols]);
+%! assert (all (r >= 0));
+
+
+## Test input validation
+%!error poissrnd ()
+%!error poissrnd (1, -1)
+%!error poissrnd (1, ones (2))
+%!error poissrnd (1, 2, ones (2))
+%!error poissrnd (i)
+%!error poissrnd (1, 2, -1)
+%!error poissrnd (1, [2 -1 2])
+%!error poissrnd (ones (2,2), 3)
+%!error poissrnd (ones (2,2), [3, 2])
+%!error poissrnd (ones (2,2), 2, 3)
