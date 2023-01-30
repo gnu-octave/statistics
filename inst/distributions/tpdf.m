@@ -1,5 +1,8 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,48 +19,52 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} tpdf (@var{x}, @var{n})
+## @deftypefn {statistics} @var{p} = tpdf (@var{x}, @var{df})
+##
+## Student's T probability density function (PDF).
+##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the @var{t} (Student) distribution with
-## @var{n} degrees of freedom.
+## at @var{x} of the Student's T distribution with @var{df} degrees of freedom.
+##
+## The size of @var{y} is the common size of @var{x} and @var{df}. A scalar
+## input functions as a constant matrix of the same size as the other input.
+##
+## @seealso{tcdf, tpdf, trnd, tstat}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: PDF of the t distribution
-
-function pdf = tpdf (x, n)
+function y = tpdf (x, df)
 
   if (nargin != 2)
     print_usage ();
   endif
 
-  if (! isscalar (n))
-    [retval, x, n] = common_size (x, n);
+  if (! isscalar (df))
+    [retval, x, df] = common_size (x, df);
     if (retval > 0)
-      error ("tpdf: X and N must be of common size or scalars");
+      error ("tpdf: X and DF must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (x) || iscomplex (n))
-    error ("tpdf: X and N must not be complex");
+  if (iscomplex (x) || iscomplex (df))
+    error ("tpdf: X and DF must not be complex");
   endif
 
-  if (isa (x, "single") || isa (n, "single"))
-    pdf = zeros (size (x), "single");
+  if (isa (x, "single") || isa (df, "single"))
+    y = zeros (size (x), "single");
   else
-    pdf = zeros (size (x));
+    y = zeros (size (x));
   endif
 
-  k = isnan (x) | !(n > 0) | !(n < Inf);
-  pdf(k) = NaN;
+  k = isnan (x) | !(df > 0) | !(df < Inf);
+  y(k) = NaN;
 
-  k = isfinite (x) & (n > 0) & (n < Inf);
-  if (isscalar (n))
-    pdf(k) = (exp (- (n + 1) * log (1 + x(k) .^ 2 / n)/2)
-              / (sqrt (n) * beta (n/2, 1/2)));
+  k = isfinite (x) & (df > 0) & (df < Inf);
+  if (isscalar (df))
+    y(k) = (exp (- (df + 1) * log (1 + x(k) .^ 2 / df)/2)
+               / (sqrt (df) * beta (df/2, 1/2)));
   else
-    pdf(k) = (exp (- (n(k) + 1) .* log (1 + x(k) .^ 2 ./ n(k))/2)
-              ./ (sqrt (n(k)) .* beta (n(k)/2, 1/2)));
+    y(k) = (exp (- (df(k) + 1) .* log (1 + x(k) .^ 2 ./ df(k))/2)
+              ./ (sqrt (df(k)) .* beta (df(k)/2, 1/2)));
   endif
 
 endfunction
