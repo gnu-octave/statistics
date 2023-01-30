@@ -1,5 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -30,7 +31,7 @@
 ## @seealso{poisscdf, poissinv, poissrnd, poisstat}
 ## @end deftypefn
 
-function pdf = poisspdf (x, lambda)
+function y = poisspdf (x, lambda)
 
   if (nargin != 2)
     print_usage ();
@@ -48,19 +49,19 @@ function pdf = poisspdf (x, lambda)
   endif
 
   if (isa (x, "single") || isa (lambda, "single"))
-    pdf = zeros (size (x), "single");
+    y = zeros (size (x), "single");
   else
-    pdf = zeros (size (x));
+    y = zeros (size (x));
   endif
 
   k = isnan (x) | !(lambda > 0);
-  pdf(k) = NaN;
+  y(k) = NaN;
 
   k = (x >= 0) & (x < Inf) & (x == fix (x)) & (lambda > 0);
   if (isscalar (lambda))
-    pdf(k) = exp (x(k) * log (lambda) - lambda - gammaln (x(k) + 1));
+    y(k) = exp (x(k) * log (lambda) - lambda - gammaln (x(k) + 1));
   else
-    pdf(k) = exp (x(k) .* log (lambda(k)) - lambda(k) - gammaln (x(k) + 1));
+    y(k) = exp (x(k) .* log (lambda(k)) - lambda(k) - gammaln (x(k) + 1));
   endif
 
 endfunction
