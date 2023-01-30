@@ -47,7 +47,7 @@ function r = poissrnd (lambda, varargin)
     print_usage ();
   endif
 
-  ## Check for LAMBDAA being reals
+  ## Check for LAMBDA being real
   if (iscomplex (lambda))
     error ("normrnd: LAMBDA must not be complex.");
   endif
