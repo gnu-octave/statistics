@@ -1,5 +1,8 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,26 +19,28 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} stdnormal_cdf (@var{x})
+## @deftypefn  {statistics} @var{p} = stdnormal_cdf (@var{x})
+##
+## Standard normal cumulative distribution function (CDF).
+##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the standard normal distribution
-## (mean = 0, standard deviation = 1).
+## (CDF) at @var{x} of the standard normal distribution (mean = 0, standard
+## deviation = 1).
+##
+## @seealso{normcdf, stdnormal_inv, stdnormal_pdf, stdnormal_rnd}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: CDF of the standard normal distribution
-
-function cdf = stdnormal_cdf (x)
+function p = stdnormal_cdf (x)
 
   if (nargin != 1)
     print_usage ();
   endif
 
   if (iscomplex (x))
-    error ("stdnormal_cdf: X must not be complex");
+    error ("stdnormal_cdf: X must not be complex.");
   endif
 
-  cdf = erfc (x / (-sqrt(2))) / 2;
+  p = erfc (x / (-sqrt(2))) / 2;
 
 endfunction
 

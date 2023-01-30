@@ -1,5 +1,8 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,16 +19,18 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} stdnormal_pdf (@var{x})
+## @deftypefn  {statistics} @var{y} = stdnormal_pdf (@var{x})
+##
+## Standard normal probability density function (PDF).
+##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the standard normal distribution
-## (mean = 0, standard deviation = 1).
+## at @var{x} of the standard normal distribution (mean = 0, standard
+## deviation = 1).
+##
+## @seealso{normpdf, stdnormal_cdf, stdnormal_inv, stdnormal_rnd}
 ## @end deftypefn
 
-## Author: TT <Teresa.Twaroch@ci.tuwien.ac.at>
-## Description: PDF of the standard normal distribution
-
-function pdf = stdnormal_pdf (x)
+function y = stdnormal_pdf (x)
 
   if (nargin != 1)
     print_usage ();
@@ -35,7 +40,7 @@ function pdf = stdnormal_pdf (x)
     error ("stdnormal_pdf: X must not be complex");
   endif
 
-  pdf = (2 * pi)^(- 1/2) * exp (- x .^ 2 / 2);
+  y = (2 * pi)^(- 1/2) * exp (- x .^ 2 / 2);
 
 endfunction
 
