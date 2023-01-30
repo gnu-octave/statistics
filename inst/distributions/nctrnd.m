@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,9 +16,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{r} = nctrnd (@var{df}, @var{delta})
-## @deftypefnx {Function File} @var{r} = nctrnd (@var{df}, @var{delta}, @var{m}, @var{n}, @dots{})
-## @deftypefnx {Function File} @var{r} = nctrnd (@var{df}, @var{delta}, [@var{m}, @var{n}, @dots{}])
+## @deftypefn  {statistics} @var{r} = nctrnd (@var{df}, @var{delta})
+## @deftypefnx {statistics} @var{r} = nctrnd (@var{df}, @var{delta}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} @var{r} = nctrnd (@var{df}, @var{delta}, [@var{sz}])
 ##
 ## Random arrays from the noncentral T distribution.
 ##
@@ -28,9 +28,11 @@
 ## of @var{df1}, @var{df2}, and @var{delta}.  A scalar input functions as a
 ## constant matrix of the same size as the other input.
 ##
-## @code{@var{r} = nctrnd (@var{df}, @var{delta}, @var{m}, @var{n}, @dots{})} or
-## @code{@var{r} = nctrnd (@var{df}, @var{delta}, [@var{m}, @var{n}, @dots{}])}
-## returns an M-by-N-by-... array.
+## When called with a single size argument, return a square matrix with
+## the dimension specified.  When called with more than one scalar argument the
+## first two arguments are taken as the number of rows and columns and any
+## further arguments specify additional matrix dimensions.  The size may also
+## be specified with a vector of dimensions @var{sz}.
 ##
 ## @code{nctrnd} generates values using the definition of a noncentral T random
 ## variable, as the ratio of a normal with non-zero mean and the sqrt of a
