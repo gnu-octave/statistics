@@ -1,5 +1,8 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 2007-2016 David Bateman
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,57 +19,64 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} unidinv (@var{x}, @var{n})
-## For each element of @var{x}, compute the quantile (the inverse of the CDF)
-## at @var{x} of the discrete uniform distribution which assumes
-## the integer values 1--@var{n} with equal probability.
+## @deftypefn  {statistics} @var{x} = unidinv (@var{p}, @var{df})
+##
+## Inverse of the discrete uniform cumulative distribution function (iCDF).
+##
+## For each element of @var{p}, compute the quantile (the inverse of the CDF)
+## at @var{p} of the discrete uniform distribution which assumes the integer
+## values 1--@var{df} with equal probability.  The size of @var{p} is the common
+## size of @var{x} and @var{df}.  A scalar input functions as a constant matrix
+## of the same size as the other inputs.
+##
+## @seealso{unidcdf, unidpdf, unidrnd, unidstat}
 ## @end deftypefn
 
-function inv = unidinv (x, n)
+function x = unidinv (p, df)
 
+  ## Check for valid number of input arguments
   if (nargin != 2)
     print_usage ();
   endif
 
-  if (! isscalar (n))
-    [retval, x, n] = common_size (x, n);
+  ## Check for common size of X and DF
+  if (! isscalar (p) || ! isscalar (df))
+    [retval, p, df] = common_size (p, df);
     if (retval > 0)
-      error ("unidcdf: X and N must be of common size or scalars");
+      error ("unidcdf: P and DF must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (x) || iscomplex (n))
-    error ("unidinv: X and N must not be complex");
+  ## Check for X and DF being reals
+  if (iscomplex (p) || iscomplex (df))
+    error ("unidinv: P and DF must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (n, "single"))
-    inv = NaN (size (x), "single");
+  ## Check for class type
+  if (isa (p, "single") || isa (df, "single"))
+    x = NaN (size (p), "single");
   else
-    inv = NaN (size (x));
+    x = NaN (size (p));
   endif
 
   ## For Matlab compatibility, unidinv(0) = NaN
-  k = (x > 0) & (x <= 1) & (n > 0 & n == fix (n));
-  if (isscalar (n))
-    inv(k) = floor (x(k) * n);
-  else
-    inv(k) = floor (x(k) .* n(k));
-  endif
+  k = (p > 0) & (p <= 1) & (df > 0 & df == fix (df));
+  x(k) = floor (p(k) .* df(k));
 
 endfunction
 
 
-%!shared x
-%! x = [-1 0 0.5 1 2];
-%!assert (unidinv (x, 10*ones (1,5)), [NaN NaN 5 10 NaN], eps)
-%!assert (unidinv (x, 10), [NaN NaN 5 10 NaN], eps)
-%!assert (unidinv (x, 10*[0 1 NaN 1 1]), [NaN NaN NaN 10 NaN], eps)
-%!assert (unidinv ([x(1:2) NaN x(4:5)], 10), [NaN NaN NaN 10 NaN], eps)
+%!shared p
+%! p = [-1 0 0.5 1 2];
+%!assert (unidinv (p, 10*ones (1,5)), [NaN NaN 5 10 NaN], eps)
+%!assert (unidinv (p, 10), [NaN NaN 5 10 NaN], eps)
+%!assert (unidinv (p, 10*[0 1 NaN 1 1]), [NaN NaN NaN 10 NaN], eps)
+%!assert (unidinv ([p(1:2) NaN p(4:5)], 10), [NaN NaN NaN 10 NaN], eps)
 
 ## Test class of input preserved
-%!assert (unidinv ([x, NaN], 10), [NaN NaN 5 10 NaN NaN], eps)
-%!assert (unidinv (single ([x, NaN]), 10), single ([NaN NaN 5 10 NaN NaN]), eps)
-%!assert (unidinv ([x, NaN], single (10)), single ([NaN NaN 5 10 NaN NaN]), eps)
+%!assert (unidinv ([p, NaN], 10), [NaN NaN 5 10 NaN NaN], eps)
+%!assert (unidinv (single ([p, NaN]), 10), single ([NaN NaN 5 10 NaN NaN]), eps)
+%!assert (unidinv ([p, NaN], single (10)), single ([NaN NaN 5 10 NaN NaN]), eps)
 
 ## Test input validation
 %!error unidinv ()
