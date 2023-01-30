@@ -1,5 +1,8 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,53 +19,98 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} unifcdf (@var{x})
-## @deftypefnx {} {} unifcdf (@var{x}, @var{a}, @var{b})
+## @deftypefn  {statistics} @var{p} = unifcdf (@var{x})
+## @deftypefnx {statistics} @var{p} = unifcdf (@var{x}, @var{a})
+## @deftypefnx {statistics} @var{p} = unifcdf (@var{x}, @var{a}, @var{b})
+## @deftypefnx {statistics} @var{p} = unifcdf (@dots{}, "upper")
+##
+## Uniform cumulative distribution function (CDF).
+##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the uniform distribution on the interval
-## [@var{a}, @var{b}].
+## (CDF) at @var{x} of the uniform distribution on the interval [@var{a},
+## @var{b}].  The size of @var{p} is the common size of the input arguments.
+## A scalar input functions as a constant matrix of the same size as the other
+## inputs.
 ##
 ## Default values are @var{a} = 0, @var{b} = 1.
+##
+## @code{[@dots{}] = unifcdf (@dots{}, "upper")} computes the upper tail
+## probability of the lognormal distribution.
+##
+## @seealso{unifinv, unifpdf, unifrnd, unifstat}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: CDF of the uniform distribution
+function p = unifcdf (x, varargin)
 
-function cdf = unifcdf (x, a = 0, b = 1)
-
-  if (nargin != 1 && nargin != 3)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 1 || nargin > 4)
+    error ("unifcdf: invalid number of input arguments.");
   endif
 
-  if (! isscalar (a) || ! isscalar (b))
+  ## Check for "upper" flag
+  if (nargin > 1 && strcmpi (varargin{end}, "upper"))
+    uflag = true;
+    varargin(end) = [];
+  elseif (nargin > 1 && ischar (varargin{end}) && ...
+                      ! strcmpi (varargin{end}, "upper"))
+    error ("unifcdf: invalid argument for upper tail.");
+  elseif (nargin > 3 && ! strcmpi (varargin{end}, "upper"))
+    error ("unifcdf: invalid argument for upper tail.");
+  else
+    uflag = false;
+  endif
+
+  ## Get extra arguments (if they exist) or add defaults
+  if (numel (varargin) > 0)
+    a = varargin{1};
+  else
+    a = 0;
+  endif
+  if (numel (varargin) > 1)
+    b = varargin{2};
+  else
+    b = 1;
+  endif
+
+  ## Check for common size of X, A, and B
+  if (! isscalar (x) || ! isscalar (a) || ! isscalar (b))
     [retval, x, a, b] = common_size (x, a, b);
     if (retval > 0)
-      error ("unifcdf: X, A, and B must be of common size or scalars");
+      error ("unifcdf: X, A, and B must be of common size or scalars.");
     endif
   endif
 
+  ## Check for X and SIGMA being reals
   if (iscomplex (x) || iscomplex (a) || iscomplex (b))
-    error ("unifcdf: X, A, and B must not be complex");
+    error ("unifcdf: X, A, and B must not be complex.");
   endif
 
+  ## Check for appropriate class
   if (isa (x, "single") || isa (a, "single") || isa (b, "single"))
-    cdf = zeros (size (x), "single");
+    p = zeros (size (x), "single");
   else
-    cdf = zeros (size (x));
+    p = zeros (size (x));
   endif
 
-  k = isnan (x) | !(a < b);
-  cdf(k) = NaN;
-
-  k = (x >= b) & (a < b);
-  cdf(k) = 1;
-
-  k = (x > a) & (x < b);
-  if (isscalar (a) && isscalar (b))
-    cdf(k) = (x(k) < b) .* (x(k) - a) / (b - a);
+  ## Calculate Rayleigh CDF for valid parameter and data range
+  k = find(x > a & x < b & a < b);
+  if (uflag)
+    p(x <= a & a < b) = 1;
+    p(x >= b & a < b) = 0;
+    if any(k)
+      p(k) = (b(k)- x(k)) ./ (b(k) - a(k));
+    endif
   else
-    cdf(k) = (x(k) < b(k)) .* (x(k) - a(k)) ./ (b(k) - a(k));
+    p(x <= a & a < b) = 0;
+    p(x >= b & a < b) = 1;
+    if any(k)
+      p(k) = (x(k) - a(k)) ./ (b(k) - a(k));
+    endif
   endif
+
+  ## Continue argument check
+  p(a >= b) = NaN;
+  p(isnan(x) | isnan(a) | isnan(b)) = NaN;
 
 endfunction
 
@@ -71,11 +119,17 @@ endfunction
 %! x = [-1 0 0.5 1 2] + 1;
 %! y = [0 0 0.5 1 1];
 %!assert (unifcdf (x, ones (1,5), 2*ones (1,5)), y)
+%!assert (unifcdf (x, ones (1,5), 2*ones (1,5), "upper"), 1 - y)
 %!assert (unifcdf (x, 1, 2*ones (1,5)), y)
+%!assert (unifcdf (x, 1, 2*ones (1,5), "upper"), 1 - y)
 %!assert (unifcdf (x, ones (1,5), 2), y)
+%!assert (unifcdf (x, ones (1,5), 2, "upper"), 1 - y)
 %!assert (unifcdf (x, [2 1 NaN 1 1], 2), [NaN 0 NaN 1 1])
+%!assert (unifcdf (x, [2 1 NaN 1 1], 2, "upper"), 1 - [NaN 0 NaN 1 1])
 %!assert (unifcdf (x, 1, 2*[0 1 NaN 1 1]), [NaN 0 NaN 1 1])
+%!assert (unifcdf (x, 1, 2*[0 1 NaN 1 1], "upper"), 1 - [NaN 0 NaN 1 1])
 %!assert (unifcdf ([x(1:2) NaN x(4:5)], 1, 2), [y(1:2) NaN y(4:5)])
+%!assert (unifcdf ([x(1:2) NaN x(4:5)], 1, 2, "upper"), 1 - [y(1:2) NaN y(4:5)])
 
 ## Test class of input preserved
 %!assert (unifcdf ([x, NaN], 1, 2), [y, NaN])
@@ -85,8 +139,8 @@ endfunction
 
 ## Test input validation
 %!error unifcdf ()
-%!error unifcdf (1,2)
-%!error unifcdf (1,2,3,4)
+%!error unifcdf (1, 2, 3, 4)
+%!error unifcdf (1, 2, 3,"upper", 4)
 %!error unifcdf (ones (3), ones (2), ones (2))
 %!error unifcdf (ones (2), ones (3), ones (2))
 %!error unifcdf (ones (2), ones (2), ones (3))
