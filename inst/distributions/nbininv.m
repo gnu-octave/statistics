@@ -41,21 +41,25 @@
 
 function x = nbininv (p, n, ps)
 
+  ## Check for valid number of input arguments
   if (nargin != 3)
     print_usage ();
   endif
 
-  if (! isscalar (n) || ! isscalar (ps))
+  ## Check for common size of P, N, and PS
+  if (! isscalar (p) || ! isscalar (n) || ! isscalar (ps))
     [retval, p, n, ps] = common_size (p, n, ps);
     if (retval > 0)
       error ("nbininv: P, N, and PS must be of common size or scalars.");
     endif
   endif
 
+  ## Check for P, N, and PS being reals
   if (iscomplex (p) || iscomplex (n) || iscomplex (ps))
     error ("nbininv: P, N, and PS must not be complex.");
   endif
 
+  ## Check for appropriate class
   if (isa (p, "single") || isa (n, "single") || isa (ps, "single"))
     x = zeros (size (p), "single");
   else
