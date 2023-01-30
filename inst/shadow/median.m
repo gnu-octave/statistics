@@ -178,32 +178,35 @@ function m = median (x, varargin)
     dim = varargin{1};
     vecdim_flag = ! isscalar (dim);
 
-    if (! (isvector (dim) && all (dim >0)) || any (rem (dim, 1)))
+    if (! (isvector (dim) && (dim > 0)) || any (rem (dim, 1)))
       error ("median: DIM must be a positive integer scalar or vector");
     endif
 
     ## adjust sz_out, account for possible dim > ndx by appending singletons
-    sz_out(ndx+1:max(dim)) = 1;
-    sz_out(dim(dim<=ndx)) = 1;
-    szx(ndx+1:max(dim)) = 1;
+    sz_out(ndx + 1 : max (dim)) = 1;
+    sz_out(dim(dim <= ndx)) = 1;
+    szx(ndx + 1 : max (dim)) = 1;
 
-    if (! isscalar (dim))
+    if (vecdim_flag)
+      ## VECDIM - try to simplify first
+      dim = sort (dim);
 
-      if (numel (dim) != numel (unique (dim)))
+      if (! all (diff (dim)))
          error ("median: VECDIM must contain non-repeating positive integers");
       endif
 
-      ## VECDIM - try to simplify first
-
       ## dims > ndims(x) don't affect median, nor do dims only one element long
+      sing_dim_x = find (szx != 1);
       dim(dim > ndx | szx(dim) == 1) = [];
 
       if (isempty (dim))
-        dim = ndx + 1;  # Set dim to singleton > ndims(x) for shortcut
+        ## no dims left to process, return input as output.
+        m = outtype_convert (x, outtype);
+        return;
 
-      elseif (isequal (dim, find (szx != 1)))
-      ## if DIMs cover all nonsingleton ndims(x), equivalent to "all"
-        ## set all flag, next block will simplify
+      elseif  ((length(dim) == length(sing_dim_x)) ...
+                   && unique ([dim, sing_dim_x]) == dim)
+        ## if DIMs cover all nonsingleton ndims(x), equivalent to "all"
         all_flag = true;
       endif
     endif
@@ -222,7 +225,7 @@ function m = median (x, varargin)
       dim = 2;
       sz_out = [1, 1];
 
-    elseif (isequal (szx, [0, 0]))
+    elseif (isempty (x) && isequal (szx, [0, 0]))
       ## Special case []: Do not apply normal sz_out(dim)=1 change
       dim = 1;
       sz_out = [1, 1];
@@ -234,7 +237,7 @@ function m = median (x, varargin)
     endif
   endif
 
-  if isempty (x)
+  if (isempty (x))
     switch (outtype)
       case {"double", "single"}
         m = NaN(sz_out, outtype);
@@ -248,8 +251,7 @@ function m = median (x, varargin)
 
   if (szx(dim) == 1)
     ## Operation along singleton dimension - nothing to do
-    m = x;
-    m = outtype_convert (m, outtype);
+    m = outtype_convert (x, outtype);
     return;
   endif
 
@@ -257,7 +259,7 @@ function m = median (x, varargin)
   if ((length (dim) > 1) || (dim != 1 && ! isvector (x)))
     perm_vect = 1 : ndx;
 
-    if (isscalar (dim))
+    if (! vecdim_flag)
       ## move dim to dim 1
       perm_vect([1, dim]) = [dim, 1];
       x = permute (x, perm_vect);
@@ -282,7 +284,7 @@ function m = median (x, varargin)
     perm_flag = true;
   endif
 
-  ## find locations of NaNs
+  ## find column locations of NaNs
   if (! any (hasnan = any (isnan(x), dim)))
     ## use simpler path if no NaNs present
     omitnan = 0;
@@ -295,7 +297,7 @@ function m = median (x, varargin)
     ## different number of non-NaN data points.
 
     if isvector (x)
-      ## Verified with szx(dim)==1 check above that dim is along vector  ## FIXME _ NO LONGER TRUE
+      ## checks above verify either dim1 or dim2 vector
       x = x(! isnan (x));
       n = length (x);
       k = floor ((n + 1) / 2);
@@ -306,6 +308,7 @@ function m = median (x, varargin)
         #even
         m = (x(k) + x(k+1)) /2;
       endif
+
     else
       n = sum (! isnan (x), 1);
       k = floor ((n + 1) ./ 2);
@@ -372,7 +375,6 @@ function m = median (x, varargin)
   endif
 
   ## Convert output as requested
-  ##fixme do speedtests
   if (! strcmp (class (m), outtype))
     m = outtype_convert (m, outtype);
   endif
@@ -495,9 +497,9 @@ endfunction
 
 ## Test empty, NaN, Inf inputs
 %!assert (median (NaN), NaN)
-%!assert <12345> (median (NaN, 'omitnan'), NaN)
+%!assert (median (NaN, 'omitnan'), NaN)
 %!assert (median (NaN (2)), [NaN NaN])
-%!assert <12345> (median (NaN (2), 'omitnan'), [NaN NaN])
+%!assert (median (NaN (2), 'omitnan'), [NaN NaN])
 %!assert (median ([1 NaN 3]), NaN)
 %!assert (median ([1 NaN 3], 1), [1 NaN 3])
 %!assert (median ([1 NaN 3], 2), NaN)
@@ -506,10 +508,10 @@ endfunction
 %!assert (median ([1 NaN 3]', 2), [1; NaN; 3])
 %!assert (median ([1 NaN 3], 'omitnan'), 2)
 %!assert (median ([1 NaN 3]', 'omitnan'), 2)
-%!assert <12345> (median ([1 NaN 3], 1, 'omitnan'), [1 NaN 3])
+%!assert (median ([1 NaN 3], 1, 'omitnan'), [1 NaN 3])
 %!assert (median ([1 NaN 3], 2, 'omitnan'), 2)
 %!assert (median ([1 NaN 3]', 1, 'omitnan'), 2)
-%!assert <12345> (median ([1 NaN 3]', 2, 'omitnan'), [1; NaN; 3])
+%!assert (median ([1 NaN 3]', 2, 'omitnan'), [1; NaN; 3])
 %!assert (median ([1 2 NaN 3]), NaN)
 %!assert (median ([1 2 NaN 3], 'omitnan'), 2)
 %!assert (median ([1,2,NaN;4,5,6;NaN,8,9]), [NaN, 5, NaN])
@@ -517,21 +519,21 @@ endfunction
 %!assert (median ([1 2 ; NaN 4], 'omitnan'), [1 3])
 %!assert (median ([1 2 ; NaN 4], 1, 'omitnan'), [1 3])
 %!assert (median ([1 2 ; NaN 4], 2, 'omitnan'), [1.5; 4], eps)
-%!assert <12345> (median ([1 2 ; NaN 4], 3, 'omitnan'), [1 2 ; NaN 4])
+%!assert (median ([1 2 ; NaN 4], 3, 'omitnan'), [1 2 ; NaN 4])
 %!assert (median ([NaN 2 ; NaN 4]), [NaN 3])
-%!assert <12345> (median ([NaN 2 ; NaN 4], 'omitnan'), [NaN 3])
-%!assert <12345> (median (ones (1, 0, 3)), NaN (1, 1, 3))
+%!assert (median ([NaN 2 ; NaN 4], 'omitnan'), [NaN 3])
+%!assert (median (ones (1, 0, 3)), NaN (1, 1, 3))
 
 %!assert (median (NaN('single')), NaN('single'));
-%!assert <12345> (median (NaN('single'), 'omitnan'), NaN('single'));
+%!assert (median (NaN('single'), 'omitnan'), NaN('single'));
 %!assert (median (NaN('single'), 'double'), NaN('double'));
 %!assert (median (single([1 2 ; NaN 4])), single([NaN 3]));
-%!assert <12345> (median (single([1 2 ; NaN 4]), 'double'), double([NaN 3]));
+%!assert (median (single([1 2 ; NaN 4]), 'double'), double([NaN 3]));
 %!assert (median (single([1 2 ; NaN 4]), 'omitnan'), single([1 3]));
 %!assert (median (single([1 2 ; NaN 4]), 'omitnan', 'double'), double([1 3]));
 %!assert (median (single([NaN 2 ; NaN 4]), 'double'), double([NaN 3]));
-%!assert <12345> (median (single([NaN 2 ; NaN 4]), 'omitnan'), single([NaN 3]));
-%!assert <12345> (median (single([NaN 2 ; NaN 4]), 'omitnan', 'double'), double([NaN 3]));
+%!assert (median (single([NaN 2 ; NaN 4]), 'omitnan'), single([NaN 3]));
+%!assert (median (single([NaN 2 ; NaN 4]), 'omitnan', 'double'), double([NaN 3]));
 
 %!assert (median (Inf), Inf);
 %!assert (median (-Inf), -Inf);
@@ -541,22 +543,22 @@ endfunction
 %!assert (median ([Inf 3 4]), 4);
 %!assert (median ([Inf 3 Inf]), Inf);
 
-%!assert <12345> (median ([]), NaN);
-%!assert <12345> (median (ones(1,0)), NaN);
-%!assert <12345> (median (ones(0,1)), NaN);
-%!assert <12345> (median ([], 1), NaN(1,0));
-%!assert <12345> (median ([], 2), NaN(0,1));
-%!assert <12345> (median ([], 3), NaN(0,0));
-%!assert <12345> (median (ones(1,0), 1), NaN(1,0));
-%!assert <12345> (median (ones(1,0), 2), NaN(1,1));
-%!assert <12345> (median (ones(1,0), 3), NaN(1,0));
-%!assert <12345> (median (ones(0,1), 1), NaN(1,1));
-%!assert <12345> (median (ones(0,1), 2), NaN(0,1));
-%!assert <12345> (median (ones(0,1), 3), NaN(0,1));
-%!assert <12345> (median (ones(0,1,0,1), 1), NaN(1,1,0));
-%!assert <12345> (median (ones(0,1,0,1), 2), NaN(0,1,0));
-%!assert <12345> (median (ones(0,1,0,1), 3), NaN(0,1,1));
-%!assert <12345> (median (ones(0,1,0,1), 4), NaN(0,1,0));
+%!assert (median ([]), NaN);
+%!assert (median (ones(1,0)), NaN);
+%!assert (median (ones(0,1)), NaN);
+%!assert (median ([], 1), NaN(1,0));
+%!assert (median ([], 2), NaN(0,1));
+%!assert (median ([], 3), NaN(0,0));
+%!assert (median (ones(1,0), 1), NaN(1,0));
+%!assert (median (ones(1,0), 2), NaN(1,1));
+%!assert (median (ones(1,0), 3), NaN(1,0));
+%!assert (median (ones(0,1), 1), NaN(1,1));
+%!assert (median (ones(0,1), 2), NaN(0,1));
+%!assert (median (ones(0,1), 3), NaN(0,1));
+%!assert (median (ones(0,1,0,1), 1), NaN(1,1,0));
+%!assert (median (ones(0,1,0,1), 2), NaN(0,1,0));
+%!assert (median (ones(0,1,0,1), 3), NaN(0,1,1));
+%!assert (median (ones(0,1,0,1), 4), NaN(0,1,0));
 
 ## Test complex inputs (should sort by abs(a))
 %!assert (median([1 3 3i 2 1i]), 2)
@@ -576,13 +578,13 @@ endfunction
 %!shared   ## Clear shared to prevent variable echo for any later test failures
 
 ## Test non-floating point types
-%!assert <12345> (median ([true, false]), true)
-%!assert <12345> (median (logical ([])), false)
+%!assert (median ([true, false]), true)
+%!assert (median (logical ([])), false)
 %!assert (median (uint8 ([1, 3])), uint8 (2))
-%!assert <12345> (median (uint8 ([])), uint8 (NaN))
+%!assert (median (uint8 ([])), uint8 (NaN))
 %!assert (median (uint8 ([NaN 10])), uint8 (5))
 %!assert (median (int8 ([1, 3, 4])), int8 (3))
-%!assert <12345> (median (int8 ([])), int8 (NaN))
+%!assert (median (int8 ([])), int8 (NaN))
 %!assert (median (single ([1, 3, 4])), single (3))
 %!assert (median (single ([1, 3, NaN])), single (NaN))
 
