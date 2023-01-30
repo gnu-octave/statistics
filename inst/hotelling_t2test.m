@@ -1,6 +1,8 @@
 ## Copyright (C) 1996-2017 Kurt Hornik
 ## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
 ## published by the Free Software Foundation, either version 3 of the
@@ -64,7 +66,7 @@ function [h, pval, stats] = hotelling_t2test (x, my, varargin)
   if (nargin < 1)
     print_usage ();
   endif
-  
+
   ## Check X being a valid data set
   if (isscalar (x) || ndims (x) > 2)
     error ("hotelling_t2test: X must be a vector or a 2D matrix.");
@@ -82,7 +84,7 @@ function [h, pval, stats] = hotelling_t2test (x, my, varargin)
       my = zeros (1, p);
     endif
   endif
-  
+
   ## When X and MY are of equal size, then assume paired-sample
   if (isequal (size (x), size(my)))
     x = x - my;
@@ -93,10 +95,10 @@ function [h, pval, stats] = hotelling_t2test (x, my, varargin)
       my = zeros (1, p);
     endif
   endif
-  
+
   ## Remove rows containing any NaNs
   x = rmmissing (x);
-  
+
   ## Check additional options
   i = 1;
   while (i <= length (varargin))
@@ -114,7 +116,7 @@ function [h, pval, stats] = hotelling_t2test (x, my, varargin)
     endswitch
     i = i + 1;
   endwhile
-  
+
   ## Conditional error checking for X being a vector or matrix
   if (isvector (x))
     if (! isscalar (my))
@@ -141,11 +143,11 @@ function [h, pval, stats] = hotelling_t2test (x, my, varargin)
   stats.df1 = p;
   stats.df2 = n - p;
   pval = 1 - fcdf ((n-p) * stats.Tsq / (p * (n-1)), stats.df1, stats.df2);
-  
+
   ## Determine the test outcome
   ## MATLAB returns this a double instead of a logical array
   h = double (pval < alpha);
-  
+
 endfunction
 
 ## Test input validation

@@ -1,5 +1,5 @@
 ## Copyright (C) 1995-2017 Kurt Hornik
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -19,7 +19,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {} ppplot (@var{x}, @var{dist})
-## @deftypefnx {statistics} {} = ppplot (@var{x}, @var{dist}, @var{params})
+## @deftypefnx {statistics} {} ppplot (@var{x}, @var{dist}, @var{params})
 ## @deftypefnx {statistics} [@var{p}, @var{y}] = ppplot (@var{x}, @var{dist}, @var{params})
 ##
 ## Perform a PP-plot (probability plot).

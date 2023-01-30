@@ -1,5 +1,7 @@
 ## Copyright (C) 2012 Nir Krakauer <nkrakauer@ccny.cuny.edu>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -37,7 +39,7 @@
 ## @item
 ## @var{paramci} has the approximate 95% confidence intervals of the parameter
 ## values (currently not implemented).
-## 
+##
 ## @end itemize
 ##
 ## @subheading Examples
@@ -68,7 +70,7 @@ function [paramhat, paramci] = gevfit_lmom (data)
   if (nargin < 1)
     print_usage;
   endif
-  
+
   # find the L-moments
   data = sort (data(:))';
   n = numel(data);
@@ -81,7 +83,7 @@ function [paramhat, paramci] = gevfit_lmom (data)
   #first find k based on L3/L2
   f = @(k) (L3/L2 + 3)/2 - limdiv((1 - 3^(k)), (1 - 2^(k)));
   k = fzero(f, 0);
-  
+
   #next find sigma and mu given k
   if abs(k) < 1E-8
     sigma = L2 / log(2);
@@ -91,9 +93,9 @@ function [paramhat, paramci] = gevfit_lmom (data)
     sigma = -k*L2 / (gamma(1 - k) * (1 - 2^(k)));
     mu = L1 - sigma * ((gamma(1 - k) - 1) / k);
   endif
-  
+
   paramhat = [k; sigma; mu];
-  
+
   if nargout > 1
     paramci = NaN;
   endif

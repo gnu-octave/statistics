@@ -1,4 +1,6 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -26,7 +28,7 @@
 ## @item If @var{x} is a vector, then @code{geomean(@var{x})} returns the
 ## geometric mean of the elements in @var{x} defined as
 ## @tex
-## $$ {\rm geomean}(x) = \left( \prod_{i=1}^N x_i \right)^\frac{1}{N} 
+## $$ {\rm geomean}(x) = \left( \prod_{i=1}^N x_i \right)^\frac{1}{N}
 ## = exp \left({1\over N} \sum_{i=1}^N log x_i \right) $$
 ## where $N$ is the number of elements of @var{x}.
 ## @end tex
@@ -135,7 +137,7 @@ function m = geomean (x, varargin)
     misdim = [1:ndims];
     ## keep remaining dimensions
     for i = 1:length (vecdim)
-      misdim(misdim == vecdim(i)) = []; 
+      misdim(misdim == vecdim(i)) = [];
     endfor
     ## if all dimensions are given, compute x(:)
     if length (misdim) == 0

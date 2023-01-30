@@ -1,5 +1,7 @@
 ## Copyright (C) 1996-2017 Kurt Hornik
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
 ## published by the Free Software Foundation, either version 3 of the
@@ -15,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} [@var{pval}, @var{chisq}, @var{df}] = mcnemar_test (@var{x})
+## @deftypefn  {statistics} [@var{pval}, @var{chisq}, @var{df}] = mcnemar_test (@var{x})
 ##
 ## Perform a McNemar's test.
 ##

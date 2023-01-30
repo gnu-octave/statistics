@@ -17,6 +17,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} [@var{m}, @var{v}] = gamstat (@var{a}, @var{b})
+##
 ## Compute mean and variance of the gamma distribution.
 ##
 ## @subheading Arguments
