@@ -59,6 +59,8 @@
 ## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
 ## Processes}. McGraw-Hill, New York, second edition, 1984.
 ## @end enumerate
+##
+## @seealso{poisscdf, poissinv, poisspdf, poissrnd}
 ## @end deftypefn
 
 function [m, v] = poisstat (lambda)
