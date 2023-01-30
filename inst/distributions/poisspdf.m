@@ -1,6 +1,8 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
 ## published by the Free Software Foundation, either version 3 of the
@@ -16,13 +18,17 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} poisspdf (@var{x}, @var{lambda})
+## @deftypefn {statistics} @var{y} = poisspdf (@var{x}, @var{lambda})
+##
+## Poisson probability density function (PDF).
+##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the Poisson distribution with parameter @var{lambda}.
+## at @var{x} of the Poisson distribution with parameter @var{lambda}.  The size
+## of @var{p} is the common size of @var{x} and @var{lambda}.  A scalar input
+## functions as a constant matrix of the same size as the other inputs.
+##
+## @seealso{poisscdf, poissinv, poissrnd, poisstat}
 ## @end deftypefn
-
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: PDF of the Poisson distribution
 
 function pdf = poisspdf (x, lambda)
 
@@ -30,15 +36,15 @@ function pdf = poisspdf (x, lambda)
     print_usage ();
   endif
 
-  if (! isscalar (lambda))
+  if (! isscalar (x) || ! isscalar (lambda))
     [retval, x, lambda] = common_size (x, lambda);
     if (retval > 0)
-      error ("poisspdf: X and LAMBDA must be of common size or scalars");
+      error ("poisspdf: X and LAMBDA must be of common size or scalars.");
     endif
   endif
 
   if (iscomplex (x) || iscomplex (lambda))
-    error ("poisspdf: X and LAMBDA must not be complex");
+    error ("poisspdf: X and LAMBDA must not be complex.");
   endif
 
   if (isa (x, "single") || isa (lambda, "single"))

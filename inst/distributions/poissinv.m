@@ -1,7 +1,10 @@
-## Copyright (C) 1995-2017 Kurt Hornik
-## Copyright (C) 2016 Lachlan Andrew
-## Copyright (C) 2014 Mike Giles
 ## Copyright (C) 2012 Rik Wehbring
+## Copyright (C) 2014 Mike Giles
+## Copyright (C) 2016 Lachlan Andrew
+## Copyright (C) 1995-2017 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -18,78 +21,79 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} poissinv (@var{x}, @var{lambda})
-## For each element of @var{x}, compute the quantile (the inverse of the CDF)
-## at @var{x} of the Poisson distribution with parameter @var{lambda}.
+## @deftypefn {statistics} @var{x} = poissinv (@var{p}, @var{lambda})
+##
+## Inverse of the Poisson cumulative distribution function (iCDF).
+##
+## For each element of @var{p}, compute the quantile (the inverse of the CDF)
+## at @var{p} of the Poisson distribution with parameter @var{lambda}.  The size
+## of @var{p} is the common size of @var{x} and @var{lambda}.  A scalar input
+## functions as a constant matrix of the same size as the other inputs.
+##
+## @seealso{poisscdf, poisspdf, poissrnd, poisstat}
 ## @end deftypefn
 
-## Author: Lachlan <lachlanbis@gmail.com>
-## based on code by
-##      KH <Kurt.Hornik@wu-wien.ac.at>
-##      Mike Giles <mike.giles@maths.ox.ac.uk>
-## Description: Quantile function of the Poisson distribution
-
-function inv = poissinv (x, lambda)
+function x = poissinv (p, lambda)
 
   if (nargin != 2)
     print_usage ();
   endif
 
-  if (! isscalar (lambda))
-    [retval, x, lambda] = common_size (x, lambda);
+  if (! isscalar (p) || ! isscalar (lambda))
+    [retval, p, lambda] = common_size (p, lambda);
     if (retval > 0)
-      error ("poissinv: X and LAMBDA must be of common size or scalars");
+      error ("poissinv: P and LAMBDA must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (x) || iscomplex (lambda))
-    error ("poissinv: X and LAMBDA must not be complex");
+  if (iscomplex (p) || iscomplex (lambda))
+    error ("poissinv: P and LAMBDA must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (lambda, "single"))
-    inv = zeros (size (x), "single");
+  if (isa (p, "single") || isa (lambda, "single"))
+    x = zeros (size (p), "single");
   else
-    inv = zeros (size (x));
+    x = zeros (size (p));
   endif
 
-  k = (x < 0) | (x > 1) | isnan (x) | !(lambda > 0);
-  inv(k) = NaN;
+  k = (p < 0) | (p > 1) | isnan (p) | !(lambda > 0);
+  x(k) = NaN;
 
-  k = (x == 1) & (lambda > 0);
-  inv(k) = Inf;
+  k = (p == 1) & (lambda > 0);
+  x(k) = Inf;
 
-  k = (x > 0) & (x < 1) & (lambda > 0);
+  k = (p > 0) & (p < 1) & (lambda > 0);
   if (any (k(:)))
-    limit = 20;                         # After 'limit' iterations, use approx
+    limit = 20;                       # After 'limit' iterations, use approx
     if (isscalar (lambda))
       cdf = [(cumsum (poisspdf (0:limit-1,lambda))), 2];
-      y = x(:);                         # force to column
+      y = p(:);                       # force to column
       r = bsxfun (@le, y(k), cdf);
-      [~, inv(k)] = max (r, [], 2);     # find first instance of x <= cdf
-      inv(k) -= 1;
+      [~, x(k)] = max (r, [], 2);     # find first instance of p <= cdf
+      x(k) -= 1;
     else
       kk = find (k);
       cdf = exp (-lambda(kk));
       for i = 1:limit
-        m = find (cdf < x(kk));
+        m = find (cdf < p(kk));
         if (isempty (m))
           break;
         else
-          inv(kk(m)) += 1;
+          x(kk(m)) += 1;
           cdf(m) += poisspdf (i, lambda(kk(m)));
         endif
       endfor
     endif
 
-    ## Use Mike Giles's magic when inv isn't < limit
-    k &= (inv == limit);
+    ## Use Mike Giles's magic when x isn't < limit
+    k &= (x == limit);
     if (any (k(:)))
       if (isscalar (lambda))
-        lam = repmat (lambda, size (x));
+        lam = repmat (lambda, size (p));
       else
         lam = lambda;
       endif
-      inv(k) = analytic_approx (x(k), lam(k));
+      x(k) = analytic_approx (p(k), lam(k));
     endif
   endif
 
@@ -102,9 +106,9 @@ endfunction
 ## and is provided under the terms of the GNU GPLv3 license:
 ## http://www.gnu.org/licenses/gpl.html
 
-function inv = analytic_approx (x, lambda)
+function x = analytic_approx (p, lambda)
 
-  s = norminv (x, 0, 1) ./ sqrt (lambda);
+  s = norminv (p, 0, 1) ./ sqrt (lambda);
   k = (s > -0.6833501) & (s < 1.777993);
   ## use polynomial approximations in central region
   if (any (k))
@@ -162,7 +166,7 @@ function inv = analytic_approx (x, lambda)
     y  =    -0.0198011178 + y.*rm;
     y ./= lam;
 
-    inv(k) = floor (lam + (y+t)+lam.*rm);
+    x(k) = floor (lam + (y+t)+lam.*rm);
   endif
 
   k = ! k & (s > -sqrt (2));
@@ -182,23 +186,23 @@ function inv = analytic_approx (x, lambda)
     endwhile
     t = log (r);
     y = lambda(k) .* r + log (sqrt (2*r.*((1-r) + r.*t)) ./ abs (r-1)) ./ t;
-    inv(k) = floor (y - 0.0218 ./ (y + 0.065 * lambda(k)));
+    x(k) = floor (y - 0.0218 ./ (y + 0.065 * lambda(k)));
   endif
 
 endfunction
 
 
-%!shared x
-%! x = [-1 0 0.5 1 2];
-%!assert (poissinv (x, ones (1,5)), [NaN 0 1 Inf NaN])
-%!assert (poissinv (x, 1), [NaN 0 1 Inf NaN])
-%!assert (poissinv (x, [1 0 NaN 1 1]), [NaN NaN NaN Inf NaN])
-%!assert (poissinv ([x(1:2) NaN x(4:5)], 1), [NaN 0 NaN Inf NaN])
+%!shared p
+%! p = [-1 0 0.5 1 2];
+%!assert (poissinv (p, ones (1,5)), [NaN 0 1 Inf NaN])
+%!assert (poissinv (p, 1), [NaN 0 1 Inf NaN])
+%!assert (poissinv (p, [1 0 NaN 1 1]), [NaN NaN NaN Inf NaN])
+%!assert (poissinv ([p(1:2) NaN p(4:5)], 1), [NaN 0 NaN Inf NaN])
 
 ## Test class of input preserved
-%!assert (poissinv ([x, NaN], 1), [NaN 0 1 Inf NaN NaN])
-%!assert (poissinv (single ([x, NaN]), 1), single ([NaN 0 1 Inf NaN NaN]))
-%!assert (poissinv ([x, NaN], single (1)), single ([NaN 0 1 Inf NaN NaN]))
+%!assert (poissinv ([p, NaN], 1), [NaN 0 1 Inf NaN NaN])
+%!assert (poissinv (single ([p, NaN]), 1), single ([NaN 0 1 Inf NaN NaN]))
+%!assert (poissinv ([p, NaN], single (1)), single ([NaN 0 1 Inf NaN NaN]))
 
 ## Test input validation
 %!error poissinv ()
