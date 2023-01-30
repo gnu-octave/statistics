@@ -21,7 +21,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} @var{x} = poissinv (@var{p}, @var{lambda})
+## @deftypefn  {statistics} @var{x} = poissinv (@var{p}, @var{lambda})
 ##
 ## Inverse of the Poisson cumulative distribution function (iCDF).
 ##

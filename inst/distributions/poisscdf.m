@@ -19,8 +19,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} @var{p} = poisscdf (@var{x}, @var{lambda})
-## @deftypefn {statistics} @var{p} = poisscdf (@var{x}, @var{lambda}, "upper")
+## @deftypefn  {statistics} @var{p} = poisscdf (@var{x}, @var{lambda})
+## @deftypefnx {statistics} @var{p} = poisscdf (@var{x}, @var{lambda}, "upper")
 ##
 ## Poisson cumulative distribution function (CDF).
 ##
