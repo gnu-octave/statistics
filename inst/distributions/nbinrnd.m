@@ -41,7 +41,7 @@
 ## @seealso{nbininv, nbininv, nbinpdf, nbinstat}
 ## @end deftypefn
 
-function rnd = nbinrnd (n, ps, varargin)
+function r = nbinrnd (n, ps, varargin)
 
   ## Check for valid number of input arguments
   if (nargin < 2)
@@ -95,20 +95,20 @@ function rnd = nbinrnd (n, ps, varargin)
   ## Generate random sample from negative binomial distribution
   if (isscalar (n) && isscalar (ps))
     if ((n > 0) && (n < Inf) && (ps > 0) && (ps <= 1))
-      rnd = randp ((1 - ps) ./ ps .* randg (n, sz, cls), cls);
+      r = randp ((1 - ps) ./ ps .* randg (n, sz, cls), cls);
     elseif ((n > 0) && (n < Inf) && (ps == 0))
-      rnd = zeros (sz, cls);
+      r = zeros (sz, cls);
     else
-      rnd = NaN (sz, cls);
+      r = NaN (sz, cls);
     endif
   else
-    rnd = NaN (sz, cls);
+    r = NaN (sz, cls);
 
     k = (n > 0) & (n < Inf) & (ps == 0);
-    rnd(k) = 0;
+    r(k) = 0;
 
     k = (n > 0) & (n < Inf) & (ps > 0) & (ps <= 1);
-    rnd(k) = randp ((1 - ps(k)) ./ ps(k) .* randg (n(k), cls));
+    r(k) = randp ((1 - ps(k)) ./ ps(k) .* randg (n(k), cls));
   endif
 
 endfunction
