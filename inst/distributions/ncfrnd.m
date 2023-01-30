@@ -16,9 +16,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{r} = ncfrnd (@var{df1}, @var{df2}, @var{delta})
-## @deftypefnx {Function File} @var{r} = ncfrnd (@var{df1}, @var{df2}, @var{delta}, @var{m}, @var{n}, @dots{})
-## @deftypefnx {Function File} @var{r} = ncfrnd (@var{df1}, @var{df2}, @var{delta}, [@var{m}, @var{n}, @dots{}])
+## @deftypefn  {statistics} @var{r} = ncfrnd (@var{df1}, @var{df2}, @var{delta})
+## @deftypefnx {statistics} @var{r} = ncfrnd (@var{df1}, @var{df2}, @var{delta}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} @var{r} = ncfrnd (@var{df1}, @var{df2}, @var{delta}, [@var{sz}])
 ##
 ## Random arrays from the noncentral F distribution.
 ##
@@ -28,9 +28,11 @@
 ## common size of @var{df1}, @var{df2}, and @var{delta}.  A scalar input
 ## functions as a constant matrix of the same size as the other input.
 ##
-## @code{@var{r} = ncfrnd (@var{df1}, @var{df2}, @var{delta}, @var{m}, @var{n},
-## @dots{})} or @code{@var{r} = ncfrnd (@var{df1}, @var{df2}, @var{delta},
-## [@var{m}, @var{n}, @dots{}])} returns an M-by-N-by-... array.
+## When called with a single size argument, return a square matrix with
+## the dimension specified.  When called with more than one scalar argument the
+## first two arguments are taken as the number of rows and columns and any
+## further arguments specify additional matrix dimensions.  The size may also
+## be specified with a vector of dimensions @var{sz}.
 ##
 ## @code{ncfrnd} generates values using the definition of a noncentral F random
 ## variable, as the ratio of a noncentral chi-square and a (central) chi-square.
