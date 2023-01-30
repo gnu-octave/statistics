@@ -45,12 +45,12 @@ function y = unidpdf (x, df)
   if (! isscalar (x) || ! isscalar (df))
     [retval, x, df] = common_size (x, df);
     if (retval > 0)
-      error ("unidpdf: X and N must be of common size or scalars");
+      error ("unidpdf: X and DF must be of common size or scalars.");
     endif
   endif
 
   if (iscomplex (x) || iscomplex (df))
-    error ("unidpdf: X and N must not be complex");
+    error ("unidpdf: X and DF must not be complex.");
   endif
 
   if (isa (x, "single") || isa (df, "single"))
