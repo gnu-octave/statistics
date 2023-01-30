@@ -49,7 +49,7 @@ function r = poissrnd (lambda, varargin)
 
   ## Check for LAMBDA being real
   if (iscomplex (lambda))
-    error ("normrnd: LAMBDA must not be complex.");
+    error ("poissrnd: LAMBDA must not be complex.");
   endif
 
   if (nargin == 1)
