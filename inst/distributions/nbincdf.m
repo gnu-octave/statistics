@@ -32,11 +32,14 @@
 ##
 ## The algorithm uses the cumulative sums of the binomial masses.
 ##
-## The number of failures in a Bernoulli experiment with success probability
-## @var{ps} before the @var{n}-th success follows this distribution.
-##
 ## @code{@var{p} = nbincdf (@var{x}, @var{n}, @var{ps}, "upper")} computes the
 ## upper tail probability of the lognormal distribution.
+##
+## When @var{n} is integer this is the Pascal distribution.
+## When @var{n} is extended to real numbers this is the Polya distribution.
+##
+## The number of failures in a Bernoulli experiment with success probability
+## @var{ps} before the @var{n}-th success follows this distribution.
 ##
 ## @seealso{nbininv, nbinpdf, nbinrnd, nbinstat}
 ## @end deftypefn
@@ -81,7 +84,7 @@ function p = nbincdf (x, n, ps, uflag)
   endif
 
   ## Force NaN for out of range or missing parameters and missing data NaN
-  is_nan = (isnan (x) | isnan (n) | (n < 1) | (n == Inf) | (ps < 0) | (ps > 1));
+  is_nan = (isnan (x) | isnan (n) | (n <= 0) | (n == Inf) | (ps < 0) | (ps > 1));
   p(is_nan) = NaN;
 
   ## Compute P for X >= 0

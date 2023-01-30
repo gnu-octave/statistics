@@ -1,5 +1,8 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,54 +19,62 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} nbinpdf (@var{x}, @var{n}, @var{p})
+## @deftypefn  {statistics} @var{y} = nbinpdf (@var{x}, @var{n}, @var{ps})
+##
+## Negative binomial probability density function (PDF).
+##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the negative binomial distribution with parameters
-## @var{n} and @var{p}.
+## at @var{x} of the negative binomial distribution with parameters @var{n} and
+## @var{ps}.  The size of @var{p} is the common size of @var{x}, @var{n}, and
+## @var{ps}.  A scalar input functions as a constant matrix of the same size as
+## the other inputs.
 ##
 ## When @var{n} is integer this is the Pascal distribution.
 ## When @var{n} is extended to real numbers this is the Polya distribution.
 ##
 ## The number of failures in a Bernoulli experiment with success probability
-## @var{p} before the @var{n}-th success follows this distribution.
+## @var{ps} before the @var{n}-th success follows this distribution.
+##
+## @seealso{nbininv, nbininv, nbinrnd, nbinstat}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: PDF of the Pascal (negative binomial) distribution
+function y = nbinpdf (x, n, ps)
 
-function pdf = nbinpdf (x, n, p)
-
+  ## Check for valid number of input arguments
   if (nargin != 3)
     print_usage ();
   endif
 
-  if (! isscalar (n) || ! isscalar (p))
-    [retval, x, n, p] = common_size (x, n, p);
+  ## Check for common size of X, N, and PS
+  if (! isscalar (x) || ! isscalar (n) || ! isscalar (ps))
+    [retval, x, n, ps] = common_size (x, n, ps);
     if (retval > 0)
-      error ("nbinpdf: X, N, and P must be of common size or scalars");
+      error ("nbinpdf: X, N, and PS must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (x) || iscomplex (n) || iscomplex (p))
-    error ("nbinpdf: X, N, and P must not be complex");
+  ## Check for X, N, and PS being reals
+  if (iscomplex (x) || iscomplex (n) || iscomplex (ps))
+    error ("nbinpdf: X, N, and PS must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (n, "single") || isa (p, "single"))
-    pdf = NaN (size (x), "single");
+  ## Check for appropriate class
+  if (isa (x, "single") || isa (n, "single") || isa (ps, "single"))
+    y = NaN (size (x), "single");
   else
-    pdf = NaN (size (x));
+    y = NaN (size (x));
   endif
 
-  ok = (x < Inf) & (x == fix (x)) & (n > 0) & (n < Inf) & (p >= 0) & (p <= 1);
+  ok = (x < Inf) & (x == fix (x)) & (n > 0) & (n < Inf) & (ps >= 0) & (ps <= 1);
 
   k = (x < 0) & ok;
-  pdf(k) = 0;
+  y(k) = 0;
 
   k = (x >= 0) & ok;
-  if (isscalar (n) && isscalar (p))
-    pdf(k) = bincoeff (-n, x(k)) .* (p ^ n) .* ((p - 1) .^ x(k));
+  if (isscalar (n) && isscalar (ps))
+    y(k) = bincoeff (-n, x(k)) .* (ps ^ n) .* ((ps - 1) .^ x(k));
   else
-    pdf(k) = bincoeff (-n(k), x(k)) .* (p(k) .^ n(k)) .* ((p(k) - 1) .^ x(k));
+    y(k) = bincoeff (-n(k), x(k)) .* (ps(k) .^ n(k)) .* ((ps(k) - 1) .^ x(k));
   endif
 
 
