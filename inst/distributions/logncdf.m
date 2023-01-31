@@ -66,6 +66,9 @@ function [varargout] = logncdf (x, varargin)
   elseif (nargin > 1  && ischar (varargin{end}) && ...
           ! strcmpi (varargin{end}, "upper"))
     error ("logncdf: invalid argument for upper tail.");
+  elseif (nargin > 2 && isempty (varargin{end}))
+    uflag = false;
+    varargin(end) = [];
   else
     uflag = false;
   endif
@@ -99,12 +102,12 @@ function [varargout] = logncdf (x, varargin)
     ## Check for valid alpha value
     if (! isnumeric (alpha) || numel (alpha) !=1 || alpha <= 0 || alpha >= 1)
       error ("logncdf: invalid value for alpha.");
-   end
+    endif
   else
     alpha = 0.05;
   endif
 
-  ## Check for common size of x, mu, and sigma
+  ## Check for common size of X, MU, and SIGMA
   if (! isscalar (x) || ! isscalar (mu) || ! isscalar (sigma))
     [err, x, mu, sigma] = common_size (x, mu, sigma);
     if (err > 0)
@@ -112,7 +115,7 @@ function [varargout] = logncdf (x, varargin)
     endif
   endif
 
-  ## Check for x, mu, and sigma being reals
+  ## Check for X, MU, and SIGMA being reals
   if (iscomplex (x) || iscomplex (mu) || iscomplex (sigma))
     error ("logncdf: X, MU, and SIGMA must not be complex.");
   endif
@@ -166,6 +169,7 @@ endfunction
 %! x = [-1 0 1 e Inf];
 %! y = [0, 0, 0.5, 1/2+1/2*erf(1/2), 1];
 %!assert (logncdf (x, zeros (1,5), sqrt(2)*ones (1,5)), y, eps)
+%!assert (logncdf (x, zeros (1,5), sqrt(2)*ones (1,5), []), y, eps)
 %!assert (logncdf (x, 0, sqrt(2)*ones (1,5)), y, eps)
 %!assert (logncdf (x, zeros (1,5), sqrt(2)), y, eps)
 %!assert (logncdf (x, [0 1 NaN 0 1], sqrt(2)), [0 0 NaN y(4:5)], eps)

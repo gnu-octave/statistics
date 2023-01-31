@@ -271,6 +271,7 @@ endfunction
 %! y = [0, gammainc(x(2:end), 1)];
 %! u = [0, NaN, NaN, 1, 0.1353352832366127, 0];
 %!assert (gamcdf (x, ones (1,6), ones (1,6)), y, eps)
+%!assert (gamcdf (x, ones (1,6), ones (1,6), []), y, eps)
 %!assert (gamcdf (x, 1, ones (1,6)), y, eps)
 %!assert (gamcdf (x, ones (1,6), 1), y, eps)
 %!assert (gamcdf (x, [0, -Inf, NaN, Inf, 1, 1], 1), [1, NaN, NaN, 0, y(5:6)], eps)
