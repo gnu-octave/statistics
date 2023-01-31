@@ -1,5 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,74 +17,127 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} geocdf (@var{x}, @var{p})
-## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the geometric distribution with parameter @var{p}.
+## @deftypefn  {statistics} @var{p} = geocdf (@var{x}, @var{ps})
+## @deftypefnx {statistics} @var{p} = geocdf (@var{x}, @var{ps}, "upper")
+##
+## Geometric cumulative distribution function (CDF).
 ##
 ## The geometric distribution models the number of failures (@var{x}) of a
-## Bernoulli trial with probability @var{p} before the first success.
+## Bernoulli trial with probability @var{ps} before the first success.
+##
+## For each element of @var{x}, compute the cumulative distribution function
+## (CDF) at @var{x} of the geometric distribution with parameter @var{ps}.  The
+## size of @var{p} is the common size of @var{x} and @var{ps}.  A scalar input
+## functions as a constant matrix of the same size as the other inputs.
+##
+## @code{@var{p} = geocdf (@var{x}, @var{ps}, "upper")} computes the upper tail
+## probability of the geometric distribution with probability parameter
+## @var{ps}.
+##
+## @seealso{geoinv, geopdf, geornd, geostat}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: CDF of the geometric distribution
+function p = geocdf (x, ps, uflag)
 
-function cdf = geocdf (x, p)
-
-  if (nargin != 2)
+  ## Check for valid number of input arguments
+  if (nargin < 2 || nargin > 3)
     print_usage ();
   endif
 
-  if (! isscalar (p))
-    [retval, x, p] = common_size (x, p);
+  ## Check for common size of X and PS
+  if (! isscalar (x) || ! isscalar (ps))
+    [retval, x, ps] = common_size (x, ps);
     if (retval > 0)
-      error ("geocdf: X and P must be of common size or scalars");
+      error ("geocdf: X and PS must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (x) || iscomplex (p))
-    error ("geocdf: X and P must not be complex");
+  ## Check for X and PS being reals
+  if (iscomplex (x) || iscomplex (ps))
+    error ("geocdf: X and PS must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (p, "single"))
-    cdf = zeros (size (x), "single");
+  ## Initialize P according to appropriate class type
+  if (isa (x, "single") || isa (ps, "single"))
+    p = zeros (size (x), "single");
   else
-    cdf = zeros (size (x));
+    p = zeros (size (x));
   endif
 
-  k = isnan (x) | !(p >= 0) | !(p <= 1);
-  cdf(k) = NaN;
+  ## Return NaN for out of range parameters
+  k = isnan (x) | ! (ps >= 0) | ! (ps <= 1);
+  p(k) = NaN;
 
-  k = (x == Inf) & (p >= 0) & (p <= 1);
-  cdf(k) = 1;
+  ## Return 1 for valid range parameters when X = Inf
+  k = (x == Inf) & (ps >= 0) & (ps <= 1);
+  p(k) = 1;
 
-  k = (x >= 0) & (x < Inf) & (x == fix (x)) & (p > 0) & (p <= 1);
-  if (isscalar (p))
-    cdf(k) = 1 - ((1 - p) .^ (x(k) + 1));
+  ## Return 0 for X < 0
+  x(x < 0) = -1;
+
+  ## Check for "upper" flag
+  if (nargin > 2 && strcmpi (uflag, "upper"))
+    uflag = true;
+  elseif (nargin > 2  && ! strcmpi (uflag, "upper"))
+    error ("geocdf: invalid argument for upper tail.");
   else
-    cdf(k) = 1 - ((1 - p(k)) .^ (x(k) + 1));
+    uflag = false;
+  endif
+
+  ## Get valid instances
+  k = (x >= 0) & (x < Inf) & (x == fix (x)) & (ps > 0) & (ps <= 1);
+
+  ## Compute CDF
+  if (uflag)
+    if (any (k))
+      p(k) = betainc (ps(k), 1, (x(k)) + 1, "upper");
+    endif
+  else
+    if (isscalar (ps))
+      p(k) = 1 - ((1 - ps) .^ (x(k) + 1));
+    else
+      p(k) = 1 - ((1 - ps(k)) .^ (x(k) + 1));
+    endif
   endif
 
 endfunction
 
+## Test results
+%!test
+%! p = geocdf ([1, 2, 3, 4], 0.25);
+%! assert (p(1), 0.4375000000, 1e-14);
+%! assert (p(2), 0.5781250000, 1e-14);
+%! assert (p(3), 0.6835937500, 1e-14);
+%! assert (p(4), 0.7626953125, 1e-14);
+%!test
+%! p = geocdf ([1, 2, 3, 4], 0.25, "upper");
+%! assert (p(1), 0.5625000000, 1e-14);
+%! assert (p(2), 0.4218750000, 1e-14);
+%! assert (p(3), 0.3164062500, 1e-14);
+%! assert (p(4), 0.2373046875, 1e-14);
 
-%!shared x,y
+%!shared x, p
 %! x = [-1 0 1 Inf];
-%! y = [0 0.5 0.75 1];
-%!assert (geocdf (x, 0.5*ones (1,4)), y)
-%!assert (geocdf (x, 0.5), y)
-%!assert (geocdf (x, 0.5*[-1 NaN 4 1]), [NaN NaN NaN y(4)])
-%!assert (geocdf ([x(1:2) NaN x(4)], 0.5), [y(1:2) NaN y(4)])
+%! p = [0 0.5 0.75 1];
+%!assert (geocdf (x, 0.5*ones (1,4)), p)
+%!assert (geocdf (x, 0.5), p)
+%!assert (geocdf (x, 0.5*[-1 NaN 4 1]), [NaN NaN NaN p(4)])
+%!assert (geocdf ([x(1:2) NaN x(4)], 0.5), [p(1:2) NaN p(4)])
 
 ## Test class of input preserved
-%!assert (geocdf ([x, NaN], 0.5), [y, NaN])
-%!assert (geocdf (single ([x, NaN]), 0.5), single ([y, NaN]))
-%!assert (geocdf ([x, NaN], single (0.5)), single ([y, NaN]))
+%!assert (geocdf ([x, NaN], 0.5), [p, NaN])
+%!assert (geocdf (single ([x, NaN]), 0.5), single ([p, NaN]))
+%!assert (geocdf ([x, NaN], single (0.5)), single ([p, NaN]))
 
 ## Test input validation
-%!error geocdf ()
-%!error geocdf (1)
-%!error geocdf (1,2,3)
-%!error geocdf (ones (3), ones (2))
-%!error geocdf (ones (2), ones (3))
-%!error geocdf (i, 2)
-%!error geocdf (2, i)
+%!error<Invalid call to geocdf.  Correct usage> geocdf ()
+%!error<Invalid call to geocdf.  Correct usage> geocdf (1)
+%!error<geocdf: X and PS must be of common size or scalars.> ...
+%! geocdf (ones (3), ones (2))
+%!error<geocdf: X and PS must be of common size or scalars.> ...
+%! geocdf (ones (2), ones (3))
+%!error<geocdf: X and PS must not be complex.> geocdf (i, 2)
+%!error<geocdf: X and PS must not be complex.> geocdf (2, i)
+%!error<geocdf: invalid argument for upper tail.> geocdf (2, 3, "tail")
+%!error<geocdf: invalid argument for upper tail.> geocdf (2, 3, 5)
+

@@ -1,5 +1,7 @@
 ## Copyright (C) 1995-2017 Kurt Hornik
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
 ## published by the Free Software Foundation, either version 3 of the
@@ -16,7 +18,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} @var{t} = cor_test (@var{x}, @var{y})
-## @deftypefnx {statistics} @var{t} = cor_test (@var(x), @var{y}, @var{alt}, @var{method})
+## @deftypefnx {statistics} @var{t} = cor_test (@var{x}, @var{y}, @var{alt}, @var{method})
 ##
 ## Test whether two samples @var{x} and @var{y} come from uncorrelated
 ## populations.
@@ -38,7 +40,7 @@
 ##
 ## The output @var{t} is a structure with the following elements:
 ##
-## @table @var
+## @itemize
 ## @item pval
 ## The p-value of the test.
 ##
@@ -56,7 +58,7 @@
 ##
 ## @item method
 ## The method used for testing.
-## @end table
+## @end itemize
 ##
 ## If no output argument is given, the p-value is displayed.
 ## @end deftypefn

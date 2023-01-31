@@ -16,9 +16,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{y} = ncfpdf (@var{x}, @var{df1}, @var{df2}, @var{delta})
+## @deftypefn  {statistics} @var{y} = ncfpdf (@var{x}, @var{df1}, @var{df2}, @var{delta})
 ##
-## Noncentral F probability density function (pdf).
+## Noncentral F probability density function (PDF).
 ##
 ## @code{@var{y} = ncfpdf (@var{x}, @var{df1}, @var{df2}, @var{delta})} returns
 ## the noncentral F distribution with @var{df1} and @var{df2} numerator and

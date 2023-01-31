@@ -17,11 +17,11 @@
 ## along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Functrion File} violin (@var{x})
-## @deftypefnx {Functrion File} @var{h} = violin (@var{x})
-## @deftypefnx {Functrion File} @var{h} = violin (@dots{}, @var{property}, @var{value}, @dots{})
-## @deftypefnx {Functrion File} @var{h} = violin (@var{hax}, @dots{})
-## @deftypefnx {Functrion File} @var{h} = violin (@dots{}, @asis{"horizontal"})
+## @deftypefn  {statistics} {} violin (@var{x})
+## @deftypefnx {statistics} @var{h} = violin (@var{x})
+## @deftypefnx {statistics} @var{h} = violin (@dots{}, @var{property}, @var{value}, @dots{})
+## @deftypefnx {statistics} @var{h} = violin (@var{hax}, @dots{})
+## @deftypefnx {statistics} @var{h} = violin (@dots{}, @asis{"horizontal"})
 ##
 ## Produce a Violin plot of the data @var{x}.
 ##

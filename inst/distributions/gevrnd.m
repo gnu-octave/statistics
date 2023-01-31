@@ -1,4 +1,5 @@
 ## Copyright (C) 2012 Nir Krakauer <nkrakauer@ccny.cuny.edu>
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -15,48 +16,58 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {Function File} {} gevrnd (@var{k}, @var{sigma}, @var{mu})
-## @deftypefnx {Function File} {} gevrnd (@var{k}, @var{sigma}, @var{mu}, @var{r})
-## @deftypefnx {Function File} {} gevrnd (@var{k}, @var{sigma}, @var{mu}, @var{r}, @var{c}, @dots{})
-## @deftypefnx {Function File} {} gevrnd (@var{k}, @var{sigma}, @var{mu}, [@var{sz}])
-## Return a matrix of random samples from the generalized extreme value (GEV) distribution with parameters
-## @var{k}, @var{sigma}, @var{mu}.
+## @deftypefn  {statistics} {} gevrnd (@var{k}, @var{sigma}, @var{mu})
+## @deftypefnx {statistics} {} gevrnd (@var{k}, @var{sigma}, @var{mu}, @var{rows})
+## @deftypefnx {statistics} {} gevrnd (@var{k}, @var{sigma}, @var{mu}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {} gevrnd (@var{k}, @var{sigma}, @var{mu}, [@var{sz}])
+##
+## Random arrays from the generalized extreme value (GEV) distribution.
+##
+## @code{@var{r} = gevrnd (@var{k}, @var{sigma}, @var{mu}} returns an array of
+## random numbers chosen from the GEV distribution with shape parameter @var{k},
+## scale parameter @var{sigma}, and location parameter @var{mu}.  The size of
+## @var{r} is the common size of the input arguments.  A scalar input functions
+## as a constant matrix of the same size as the other inputs.
 ##
 ## When called with a single size argument, returns a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
 ## first two arguments are taken as the number of rows and columns and any
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector @var{sz} of dimensions.
-## 
-## If no size arguments are given, then the result matrix is the common size of
-## the input parameters.
-## @seealso{gevcdf, gevfit, gevinv, gevlike, gevpdf, gevstat}
+##
+## @subheading References
+##
+## @enumerate
+## @item
+## Rolf-Dieter Reiss and Michael Thomas. @cite{Statistical Analysis of Extreme
+## Values with Applications to Insurance, Finance, Hydrology and Other Fields}.
+## Chapter 1, pages 16-17, Springer, 2007.
+## @end enumerate
+##
+## @seealso{gevcdf, gevinv, gevpdf, gevfit, gevlike, gevstat}
 ## @end deftypefn
 
-## Author: Nir Krakauer <nkrakauer@ccny.cuny.edu>
-## Description: Random deviates from the generalized extreme value distribution
-
-function rnd = gevrnd (k, sigma, mu, varargin)
+function r = gevrnd (k, sigma, mu, varargin)
 
   if (nargin < 3)
     print_usage ();
   endif
 
   if any (sigma <= 0)
-    error ("gevrnd: sigma must be positive");    
+    error ("gevrnd: sigma must be positive.");
   endif
 
   if (!isscalar (k) || !isscalar (sigma) || !isscalar (mu))
     [retval, k, sigma, mu] = common_size (k, sigma, mu);
     if (retval > 0)
-      error ("gevrnd: k, sigma, mu must be of common size or scalars");
+      error ("gevrnd: k, sigma, mu must be of common size or scalars.");
     endif
   endif
 
   if (iscomplex (k) || iscomplex (sigma) || iscomplex (mu))
     error ("gevrnd: k, sigma, mu must not be complex");
   endif
-  
+
   if (nargin == 3)
     sz = size (k);
   elseif (nargin == 4)
@@ -65,17 +76,18 @@ function rnd = gevrnd (k, sigma, mu, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error ("gevrnd: dimension vector must be row vector of non-negative integers");
+      error (strcat (["gevrnd: dimension vector must be row vector of"], ...
+                     [" non-negative integers."]));
     endif
   elseif (nargin > 4)
     if (any (cellfun (@(x) (!isscalar (x) || x < 0), varargin)))
-      error ("gevrnd: dimensions must be non-negative integers");
+      error ("gevrnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
   if (!isscalar (k) && !isequal (size (k), sz))
-    error ("gevrnd: k, sigma, mu must be scalar or of size SZ");
+    error ("gevrnd: k, sigma, mu must be scalar or of size SZ.");
   endif
 
   if (isa (k, "single") || isa (sigma, "single") || isa (mu, "single"))
@@ -84,10 +96,10 @@ function rnd = gevrnd (k, sigma, mu, varargin)
     cls = "double";
   endif
 
-  rnd = gevinv (rand(sz), k, sigma, mu);
+  r = gevinv (rand(sz), k, sigma, mu);
 
   if (strcmp (cls, "single"))
-    rnd = single (rnd);
+    r = single (r);
   endif
 
 endfunction

@@ -1,5 +1,8 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,12 +19,18 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} nbinrnd (@var{n}, @var{p})
-## @deftypefnx {} {} nbinrnd (@var{n}, @var{p}, @var{r})
-## @deftypefnx {} {} nbinrnd (@var{n}, @var{p}, @var{r}, @var{c}, @dots{})
-## @deftypefnx {} {} nbinrnd (@var{n}, @var{p}, [@var{sz}])
-## Return a matrix of random samples from the negative binomial distribution
-## with parameters @var{n} and @var{p}.
+## @deftypefn  {statistics} @var{r} = nbinrnd (@var{n}, @var{ps})
+## @deftypefnx {statistics} @var{r} = nbinrnd (@var{n}, @var{ps}, @var{rows})
+## @deftypefnx {statistics} @var{r} = nbinrnd (@var{n}, @var{ps}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} @var{r} = nbinrnd (@var{n}, @var{ps}, [@var{sz}])
+##
+## Random arrays from the negative binomial distribution.
+##
+## @code{@var{r} = nbinrnd (@var{n}, @var{ps})} returns an array of random
+## numbers chosen from the Laplace distribution with parameters @var{n} and
+## @var{ps}.  The size of @var{r} is the common size of @var{n} and @var{ps}.
+## A scalar input functions as a constant matrix of the same size as the other
+## inputs.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -29,30 +38,30 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## If no size arguments are given then the result matrix is the common size of
-## @var{n} and @var{p}.
+## @seealso{nbininv, nbininv, nbinpdf, nbinstat}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Random deviates from the Pascal distribution
+function r = nbinrnd (n, ps, varargin)
 
-function rnd = nbinrnd (n, p, varargin)
-
+  ## Check for valid number of input arguments
   if (nargin < 2)
     print_usage ();
   endif
 
-  if (! isscalar (n) || ! isscalar (p))
-    [retval, n, p] = common_size (n, p);
+  ## Check for common size N and PS
+  if (! isscalar (n) || ! isscalar (ps))
+    [retval, n, ps] = common_size (n, ps);
     if (retval > 0)
-      error ("nbinrnd: N and P must be of common size or scalars");
+      error ("nbinrnd: N and PS must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (n) || iscomplex (p))
-    error ("nbinrnd: N and P must not be complex");
+  ## Check for N and PS being reals
+  if (iscomplex (n) || iscomplex (ps))
+    error ("nbinrnd: N and PS must not be complex.");
   endif
 
+  ## Check for SIZE vector or DIMENSION input arguments
   if (nargin == 2)
     sz = size (n);
   elseif (nargin == 3)
@@ -61,41 +70,45 @@ function rnd = nbinrnd (n, p, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error ("nbinrnd: dimension vector must be row vector of non-negative integers");
+      error (strcat (["nbinrnd: dimension vector must be row vector"], ...
+                     [" of non-negative integers."]));
     endif
   elseif (nargin > 3)
     if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
-      error ("nbinrnd: dimensions must be non-negative integers");
+      error ("nbinrnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
+  ## Check that parameters match requested dimensions in size
   if (! isscalar (n) && ! isequal (size (n), sz))
-    error ("nbinrnd: N and P must be scalar or of size SZ");
+    error ("nbinrnd: N and PS must be scalar or of size SZ.");
   endif
 
-  if (isa (n, "single") || isa (p, "single"))
+  ## Check for appropriate class
+  if (isa (n, "single") || isa (ps, "single"))
     cls = "single";
   else
     cls = "double";
   endif
 
-  if (isscalar (n) && isscalar (p))
-    if ((n > 0) && (n < Inf) && (p > 0) && (p <= 1))
-      rnd = randp ((1 - p) ./ p .* randg (n, sz, cls), cls);
-    elseif ((n > 0) && (n < Inf) && (p == 0))
-      rnd = zeros (sz, cls);
+  ## Generate random sample from negative binomial distribution
+  if (isscalar (n) && isscalar (ps))
+    if ((n > 0) && (n < Inf) && (ps > 0) && (ps <= 1))
+      r = randp ((1 - ps) ./ ps .* randg (n, sz, cls), cls);
+    elseif ((n > 0) && (n < Inf) && (ps == 0))
+      r = zeros (sz, cls);
     else
-      rnd = NaN (sz, cls);
+      r = NaN (sz, cls);
     endif
   else
-    rnd = NaN (sz, cls);
+    r = NaN (sz, cls);
 
-    k = (n > 0) & (n < Inf) & (p == 0);
-    rnd(k) = 0;
+    k = (n > 0) & (n < Inf) & (ps == 0);
+    r(k) = 0;
 
-    k = (n > 0) & (n < Inf) & (p > 0) & (p <= 1);
-    rnd(k) = randp ((1 - p(k)) ./ p(k) .* randg (n(k), cls));
+    k = (n > 0) & (n < Inf) & (ps > 0) & (ps <= 1);
+    r(k) = randp ((1 - ps(k)) ./ ps(k) .* randg (n(k), cls));
   endif
 
 endfunction

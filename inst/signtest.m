@@ -17,10 +17,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {Function File} {[@var{pval}, @var{h}, @var{stats}] =} signtest (@var{x})
-## @deftypefnx {Function File} {[@var{pval}, @var{h}, @var{stats}] =} signtest (@var{x}, @var{m})
-## @deftypefnx {Function File} {[@var{pval}, @var{h}, @var{stats}] =} signtest (@var{x}, @var{y})
-## @deftypefnx {Function File} {[@var{pval}, @var{h}, @var{stats}] =} signtest (@var{x}, @var{y}, @var{Name}, @var{Value})
+## @deftypefn  {statistics} [@var{pval}, @var{h}, @var{stats}] = signtest (@var{x})
+## @deftypefnx {statistics} [@var{pval}, @var{h}, @var{stats}] = signtest (@var{x}, @var{m})
+## @deftypefnx {statistics} [@var{pval}, @var{h}, @var{stats}] = signtest (@var{x}, @var{y})
+## @deftypefnx {statistics} [@var{pval}, @var{h}, @var{stats}] = signtest (@var{x}, @var{y}, @var{Name}, @var{Value})
 ##
 ## Test for median.
 ##

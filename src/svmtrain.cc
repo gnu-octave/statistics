@@ -348,7 +348,7 @@ static void fake_answer(int nlhs, octave_value_list &plhs)
 
 DEFUN_DLD (svmtrain, args, nargout,
            "-*- texinfo -*-\n\
-@deftypefn{Function} @var{model} = svmtrain (@var{labels}, @var{data}, 'libsvm_options')\n\
+@deftypefn  {statistics} @var{model} = svmtrain (@var{labels}, @var{data}, 'libsvm_options')\n\
 \n\
 \n\
 This function trains an SVM @var{model} based on known @var{labels} and their \
@@ -575,6 +575,8 @@ accuracy for classification and mean-squared error for regression. \
 %!shared L, D
 %! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
 %!error <svmtrain: wrong number of output arguments.> [L, D] = svmtrain (L, D);
-%!error <svmtrain: label vector and instance matrix must be double.> model = svmtrain (single (L), D);
-%!error <svmtrain: wrong number of input arguments.> model = svmtrain (L, D, "", "");
+%!error <svmtrain: label vector and instance matrix must be double.> ...
+%! model = svmtrain (single (L), D);
+%!error <svmtrain: wrong number of input arguments.> ...
+%! model = svmtrain (L, D, "", "");
 */

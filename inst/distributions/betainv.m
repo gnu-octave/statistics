@@ -1,5 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,44 +17,48 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} betainv (@var{x}, @var{a}, @var{b})
-## For each element of @var{x}, compute the quantile (the inverse of the CDF)
-## at @var{x} of the Beta distribution with parameters @var{a} and @var{b}.
+## @deftypefn  {statistics} @var{x} = betainv (@var{p}, @var{a}, @var{b})
+##
+## Inverse of the Beta distribution (iCDF).
+##
+## For each element of @var{p}, compute the quantile (the inverse of the CDF)
+## at @var{p} of the Beta distribution with parameters @var{a} and @var{b}.  The
+## size of @var{x} is the common size of @var{x}, @var{a} and @var{b}.  A scalar
+## input functions as a constant matrix of the same size as the other inputs.
+##
+## @seealso{betacdf, betapdf, betarnd, betastat}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Quantile function of the Beta distribution
-
-function inv = betainv (x, a, b)
+function x = betainv (p, a, b)
 
   if (nargin != 3)
     print_usage ();
   endif
 
   if (! isscalar (a) || ! isscalar (b))
-    [retval, x, a, b] = common_size (x, a, b);
+    [retval, p, a, b] = common_size (p, a, b);
     if (retval > 0)
-      error ("betainv: X, A, and B must be of common size or scalars");
+      error ("betainv: P, A, and B must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (x) || iscomplex (a) || iscomplex (b))
-    error ("betainv: X, A, and B must not be complex");
+  if (iscomplex (p) || iscomplex (a) || iscomplex (b))
+    error ("betainv: P, A, and B must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (a, "single") || isa (b, "single"))
-    inv = zeros (size (x), "single");
+  if (isa (p, "single") || isa (a, "single") || isa (b, "single"))
+    x = zeros (size (p), "single");
   else
-    inv = zeros (size (x));
+    x = zeros (size (p));
   endif
 
-  k = (x < 0) | (x > 1) | !(a > 0) | !(b > 0) | isnan (x);
-  inv(k) = NaN;
+  k = (p < 0) | (p > 1) | !(a > 0) | !(b > 0) | isnan (p);
+  x(k) = NaN;
 
-  k = (x == 1) & (a > 0) & (b > 0);
-  inv(k) = 1;
+  k = (p == 1) & (a > 0) & (b > 0);
+  x(k) = 1;
 
-  k = find ((x > 0) & (x < 1) & (a > 0) & (b > 0));
+  k = find ((p > 0) & (p < 1) & (a > 0) & (b > 0));
   if (! isempty (k))
     if (! isscalar (a) || ! isscalar (b))
       a = a(k);
@@ -62,7 +67,7 @@ function inv = betainv (x, a, b)
     else
       y = a / (a + b) * ones (size (k));
     endif
-    x = x(k);
+    p = p(k);
 
     if (isa (y, "single"))
       myeps = eps ("single");
@@ -83,7 +88,7 @@ function inv = betainv (x, a, b)
     loopcnt = 0;
     do
       y_old = y_new;
-      h     = (betacdf (y_old, a, b) - x) ./ betapdf (y_old, a, b);
+      h     = (betacdf (y_old, a, b) - p) ./ betapdf (y_old, a, b);
       y_new = y_old - h;
       ind   = find (y_new <= myeps);
       if (any (ind))
@@ -97,29 +102,29 @@ function inv = betainv (x, a, b)
     until (max (abs (h)) < sqrt (myeps) || ++loopcnt == 40)
 
     if (loopcnt == 40)
-      warning ("betainv: calculation failed to converge for some values");
+      warning ("betainv: calculation failed to converge for some values.");
     endif
 
-    inv(k) = y_new;
+    x(k) = y_new;
   endif
 
 endfunction
 
 
-%!shared x
-%! x = [-1 0 0.75 1 2];
-%!assert (betainv (x, ones (1,5), 2*ones (1,5)), [NaN 0 0.5 1 NaN], eps)
-%!assert (betainv (x, 1, 2*ones (1,5)), [NaN 0 0.5 1 NaN], eps)
-%!assert (betainv (x, ones (1,5), 2), [NaN 0 0.5 1 NaN], eps)
-%!assert (betainv (x, [1 0 NaN 1 1], 2), [NaN NaN NaN 1 NaN])
-%!assert (betainv (x, 1, 2*[1 0 NaN 1 1]), [NaN NaN NaN 1 NaN])
-%!assert (betainv ([x(1:2) NaN x(4:5)], 1, 2), [NaN 0 NaN 1 NaN])
+%!shared p
+%! p = [-1 0 0.75 1 2];
+%!assert (betainv (p, ones (1,5), 2*ones (1,5)), [NaN 0 0.5 1 NaN], eps)
+%!assert (betainv (p, 1, 2*ones (1,5)), [NaN 0 0.5 1 NaN], eps)
+%!assert (betainv (p, ones (1,5), 2), [NaN 0 0.5 1 NaN], eps)
+%!assert (betainv (p, [1 0 NaN 1 1], 2), [NaN NaN NaN 1 NaN])
+%!assert (betainv (p, 1, 2*[1 0 NaN 1 1]), [NaN NaN NaN 1 NaN])
+%!assert (betainv ([p(1:2) NaN p(4:5)], 1, 2), [NaN 0 NaN 1 NaN])
 
 ## Test class of input preserved
-%!assert (betainv ([x, NaN], 1, 2), [NaN 0 0.5 1 NaN NaN], eps)
-%!assert (betainv (single ([x, NaN]), 1, 2), single ([NaN 0 0.5 1 NaN NaN]))
-%!assert (betainv ([x, NaN], single (1), 2), single ([NaN 0 0.5 1 NaN NaN]), eps("single"))
-%!assert (betainv ([x, NaN], 1, single (2)), single ([NaN 0 0.5 1 NaN NaN]), eps("single"))
+%!assert (betainv ([p, NaN], 1, 2), [NaN 0 0.5 1 NaN NaN], eps)
+%!assert (betainv (single ([p, NaN]), 1, 2), single ([NaN 0 0.5 1 NaN NaN]))
+%!assert (betainv ([p, NaN], single (1), 2), single ([NaN 0 0.5 1 NaN NaN]), eps("single"))
+%!assert (betainv ([p, NaN], 1, single (2)), single ([NaN 0 0.5 1 NaN NaN]), eps("single"))
 
 ## Test input validation
 %!error betainv ()

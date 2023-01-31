@@ -1,5 +1,8 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,12 +19,19 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} normrnd (@var{mu}, @var{sigma})
-## @deftypefnx {} {} normrnd (@var{mu}, @var{sigma}, @var{r})
-## @deftypefnx {} {} normrnd (@var{mu}, @var{sigma}, @var{r}, @var{c}, @dots{})
-## @deftypefnx {} {} normrnd (@var{mu}, @var{sigma}, [@var{sz}])
-## Return a matrix of random samples from the normal distribution with
-## parameters mean @var{mu} and standard deviation @var{sigma}.
+## @deftypefn  {statistics} @var{r} = normrnd (@var{mu}, @var{sigma})
+## @deftypefnx {statistics} @var{r} = normrnd (@var{mu}, @var{sigma}, @var{rows})
+## @deftypefnx {statistics} @var{r} = normrnd (@var{mu}, @var{sigma}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} @var{r} = normrnd (@var{mu}, @var{sigma}, [@var{sz}])
+##
+## Random arrays from the normal distribution.
+##
+## @code{@var{r} = normrnd (@var{mu}, @var{sigma})} returns an array of random
+## numbers chosen from the normal distribution with parameters @var{mu} and
+## @var{sigma}.  The size of @var{r} is the common size of @var{mu} and
+## @var{sigma}.  A scalar input functions as a constant matrix of the same size
+## as the other inputs.  Both parameters must be finite real numbers and
+## @var{sigma} > 0, otherwise NaN is returned.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -29,30 +39,30 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## If no size arguments are given then the result matrix is the common size of
-## @var{mu} and @var{sigma}.
+## @seealso{norminv, norminv, normpdf, normfit, normlike, normstat}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Random deviates from the normal distribution
+function r = normrnd (mu, sigma, varargin)
 
-function rnd = normrnd (mu, sigma, varargin)
-
+  ## Check for valid number of input arguments
   if (nargin < 2)
     print_usage ();
   endif
 
+  ## Check for common MU and SIGMA
   if (! isscalar (mu) || ! isscalar (sigma))
     [retval, mu, sigma] = common_size (mu, sigma);
     if (retval > 0)
-      error ("normrnd: MU and SIGMA must be of common size or scalars");
+      error ("normrnd: MU and SIGMA must be of common size or scalars.");
     endif
   endif
 
+  ## Check for MU and SIGMA being reals
   if (iscomplex (mu) || iscomplex (sigma))
-    error ("normrnd: MU and SIGMA must not be complex");
+    error ("normrnd: MU and SIGMA must not be complex.");
   endif
 
+  ## Check for SIZE vector or DIMENSION input arguments
   if (nargin == 2)
     sz = size (mu);
   elseif (nargin == 3)
@@ -61,35 +71,39 @@ function rnd = normrnd (mu, sigma, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error ("normrnd: dimension vector must be row vector of non-negative integers");
+      error (strcat (["normrnd: dimension vector must be row vector"], ...
+                     [" of non-negative integers."]));
     endif
   elseif (nargin > 3)
     if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
-      error ("normrnd: dimensions must be non-negative integers");
+      error ("normrnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
+  ## Check that parameters match requested dimensions in size
   if (! isscalar (mu) && ! isequal (size (mu), sz))
-    error ("normrnd: MU and SIGMA must be scalar or of size SZ");
+    error ("normrnd: MU and SIGMA must be scalar or of size SZ.");
   endif
 
+  ## Check for appropriate class
   if (isa (mu, "single") || isa (sigma, "single"))
     cls = "single";
   else
     cls = "double";
   endif
 
+  ## Generate random sample from Laplace distribution
   if (isscalar (mu) && isscalar (sigma))
     if (isfinite (mu) && (sigma >= 0) && (sigma < Inf))
-      rnd = mu + sigma * randn (sz, cls);
+      r = mu + sigma * randn (sz, cls);
     else
-      rnd = NaN (sz, cls);
+      r = NaN (sz, cls);
     endif
   else
-    rnd = mu + sigma .* randn (sz, cls);
+    r = mu + sigma .* randn (sz, cls);
     k = ! isfinite (mu) | !(sigma >= 0) | !(sigma < Inf);
-    rnd(k) = NaN;
+    r(k) = NaN;
   endif
 
 endfunction

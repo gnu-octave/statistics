@@ -16,8 +16,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{Y} =} inconsistent (@var{Z})
-## @deftypefnx {Function File} {@var{Y} =} inconsistent (@var{Z}, @var{d})
+## @deftypefn  {statistics} @var{Y} = inconsistent (@var{Z})
+## @deftypefnx {statistics} @var{Y} = inconsistent (@var{Z}, @var{d})
 ##
 ## Compute the inconsistency coefficient for each link of a hierarchical cluster
 ## tree.

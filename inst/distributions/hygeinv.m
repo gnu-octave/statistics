@@ -1,6 +1,9 @@
-## Copyright (C) 2022 Nicholas R. Jankowski
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1997-2016 Kurt Hornik
+## Copyright (C) 2022 Nicholas R. Jankowski
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -17,44 +20,47 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} hygeinv (@var{x}, @var{t}, @var{m}, @var{n})
+## @deftypefn  {statistics} @var{p} = hygeinv (@var{x}, @var{t}, @var{m}, @var{n})
+##
+## Inverse of the hypergeometric cumulative distribution function (iCDF).
+##
 ## For each element of @var{x}, compute the quantile (the inverse of the CDF)
-## at @var{x} of the hypergeometric distribution with parameters
-## @var{t}, @var{m}, and @var{n}.
+## at @var{x} of the hypergeometric distribution with parameters @var{t},
+## @var{m}, and @var{n}.  The size of @var{p} is the common size of the input
+## parameters.  A scalar input functions as a constant matrix of the same size
+## as the other inputs.
 ##
 ## This is the probability of obtaining @var{x} marked items when randomly
 ## drawing a sample of size @var{n} without replacement from a population of
-## total size @var{t} containing @var{m} marked items.
+## total size @var{t} containing @var{m} marked items.  The parameters @var{t},
+## @var{m}, and @var{n} must be positive integers with @var{m} and @var{n} not
+## greater than @var{t}.
 ##
-## The parameters @var{t}, @var{m}, and @var{n} must be positive integers
-## with @var{m} and @var{n} not greater than @var{t}.
+## @seealso{hygeinv, hygepdf, hygernd, hygestat}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Random deviates from the hypergeometric distribution
-
-function inv = hygeinv (x, t, m, n)
+function p = hygeinv (x, t, m, n)
 
   if (nargin != 4)
     print_usage ();
   endif
 
-  if (! isscalar (t) || ! isscalar (m) || ! isscalar (n))
+  if (! isscalar (x) || ! isscalar (t) || ! isscalar (m) || ! isscalar (n))
     [retval, x, t, m, n] = common_size (x, t, m, n);
     if (retval > 0)
-      error ("hygeinv: X, T, M, and N must be of common size or scalars");
+      error ("hygeinv: X, T, M, and N must be of common size or scalars.");
     endif
   endif
 
   if (iscomplex (x) || iscomplex (t) || iscomplex (m) || iscomplex (n))
-    error ("hygeinv: X, T, M, and N must not be complex");
+    error ("hygeinv: X, T, M, and N must not be complex.");
   endif
 
   if (isa (x, "single") || isa (t, "single")
       || isa (m, "single") || isa (n, "single"))
-    inv = NaN (size (x), "single");
+    p = NaN (size (x), "single");
   else
-    inv = NaN (size (x));
+    p = NaN (size (x));
   endif
 
   ok = ((t >= 0) & (m >= 0) & (n > 0) & (m <= t) & (n <= t) &
@@ -62,35 +68,35 @@ function inv = hygeinv (x, t, m, n)
 
   if (isscalar (t))
     if (ok)
-      inv = discrete_inv (x, 0 : n, hygepdf (0 : n, t, m, n));
-      inv(x == 0) = 0;  # Hack to return correct value for start of distribution
+      p = discrete_inv (x, 0 : n, hygepdf (0 : n, t, m, n));
+      p(x == 0) = 0;  # Hack to return correct value for start of distribution
     endif
   else
     k = (x == 0);
-    inv (ok & k) = 0; # set any x=0 to 0 if not already set to output NaN
+    p (ok & k) = 0; # set any x=0 to 0 if not already set to output NaN
     k = (x == 1);
-    inv (ok & k) = n(ok & k);
+    p (ok & k) = n(ok & k);
     ok &= (x>0 & x<1); #remove 0's and x's outside (0,1), leave unfilled as NaN
 
-    if any(ok(:))
+    if (any (ok(:)))
       n = n(ok);
       v = 0 : max (n(:));
 
       ## manually perform discrete_inv to enable vectorizing with array input
-      p = cumsum (hygepdf (v, t(ok), m(ok), n, "vectorexpand"), 2);
-      sz_p = size (p);
+      p_tmp = cumsum (hygepdf (v, t(ok), m(ok), n, "vectorexpand"), 2);
+      sz_p = size (p_tmp);
       end_locs = sub2ind (sz_p, [1 : numel(n)]', n(:) + 1);
 
       ## manual row-wise vectorization of lookup, which returns index of element
       ## less than or equal to test value, zero if test value less than lowest
       ## number, and max index if greater than highest number. operated on
-      ## flipped p, adjusting for different vector lengths in array rows.
-      p = (p ./ p(end_locs))(:, end:-1:1) - x(ok)(:);
-      p(p>=0) = NaN;
-      [p_match, p_match_idx] = max (p, [], 2);
+      ## flipped p_tmp, adjusting for different vector lengths in array rows.
+      p_tmp = (p_tmp ./ p_tmp(end_locs))(:, end:-1:1) - x(ok)(:);
+      p_tmp(p_tmp>=0) = NaN;
+      [p_match, p_match_idx] = max (p_tmp, [], 2);
       p_match_idx(isnan(p_match)) = v(end) + 2;
 
-      inv(ok) = v(v(end) - p_match_idx + 3);
+      p(ok) = v(v(end) - p_match_idx + 3);
 
     endif
   endif

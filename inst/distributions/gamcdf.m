@@ -1,6 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -19,14 +19,14 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{p} = gamcdf (@var{x}, @var{a})
-## @deftypefnx {Function File} @var{p} = gamcdf (@var{x}, @var{a}, @var{b})
-## @deftypefnx {Function File} @var{p} = gamcdf (@dots{}, "upper")
-## @deftypefnx {Function File} [@var{p}, @var{plo}, @var{pup}] = evcdf (@var{x}, @var{a}, @var{b}, @var{pcov})
-## @deftypefnx {Function File} [@var{p}, @var{plo}, @var{pup}] = evcdf (@var{x}, @var{a}, @var{b}, @var{pcov}, @var{alpha})
-## @deftypefnx {Function File} [@var{p}, @var{plo}, @var{pup}] = evcdf (@dots{}, "upper")
+## @deftypefn  {statistics} @var{p} = gamcdf (@var{x}, @var{a})
+## @deftypefnx {statistics} @var{p} = gamcdf (@var{x}, @var{a}, @var{b})
+## @deftypefnx {statistics} @var{p} = gamcdf (@dots{}, "upper")
+## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = evcdf (@var{x}, @var{a}, @var{b}, @var{pcov})
+## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = evcdf (@var{x}, @var{a}, @var{b}, @var{pcov}, @var{alpha})
+## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = evcdf (@dots{}, "upper")
 ##
-## Gamma cumulative distribution function.
+## Gamma cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
 ## (CDF) at @var{x} of the Gamma distribution with shape parameter @var{a} and
@@ -56,12 +56,10 @@ function [varargout] = gamcdf (x, varargin)
   if (nargin < 2 || nargin > 6)
     error ("gamcdf: invalid number of input arguments.");
   endif
-  ## Check for 'upper' flag
+
+  ## Check for "upper" flag
   if (nargin > 2 && strcmpi (varargin{end}, "upper"))
     uflag = true;
-    varargin(end) = [];
-  elseif (nargin > 2 && isempty (varargin{end}))
-    uflag = false;
     varargin(end) = [];
   elseif (nargin > 2 && ischar (varargin{end}) && ...
           ! strcmpi (varargin{end}, "upper"))
@@ -69,6 +67,7 @@ function [varargout] = gamcdf (x, varargin)
   else
     uflag = false;
   endif
+
   ## Get extra arguments (if they exist) or add defaults
   a = varargin{1};
   if (numel (varargin) > 1)
@@ -98,6 +97,7 @@ function [varargout] = gamcdf (x, varargin)
   else
     alpha = 0.05;
   endif
+
   ## Check for common size of X, A, and B
   if (! isscalar (x) || ! isscalar (a) || ! isscalar (b))
     [err, x, a, b] = common_size (x, a, b);
@@ -105,15 +105,19 @@ function [varargout] = gamcdf (x, varargin)
       error ("gamcdf: X, A, and B must be of common size or scalars.");
     endif
   endif
+
   ## Check for X, A, and B being reals
   if (iscomplex (x) || iscomplex (a) || iscomplex (b))
     error ("gamcdf: X, A, and B must not be complex.");
   endif
+
   ## Prepare parameters so that gammainc returns NaN for out of range parameters
   a(a < 0) = NaN;
   b(b < 0) = NaN;
+
   ## Prepare data so that gammainc returns 0 for negative X
   x(x < 0) = 0;
+
   ## Compute gammainc
   z = x ./ b;
   if (uflag)
@@ -125,18 +129,21 @@ function [varargout] = gamcdf (x, varargin)
     ## Fix NaNs to gammainc output when a == NaN
     p(isnan (a)) = NaN;
   endif
+
   ## Check for appropriate class
   if (isa (x, "single") || isa (a, "single") || isa (b, "single"));
     is_class = "single";
   else
     is_class = "double";
   endif
+
   ## Prepare output
   varargout{1} = cast (p, is_class);
   if (nargout > 1)
     plo = NaN (size (z), is_class);
     pup = NaN (size (z), is_class);
   endif
+
   ## Compute confidence bounds (if requested)
   if (nargout >= 2)
     ## Approximate the variance of p on the logit scale

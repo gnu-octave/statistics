@@ -18,7 +18,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {[@var{intercept}, @var{slope}, @var{dev}, @var{dl}, @var{d2l}, @var{P}, @var{stats}] =} logistic_regression (@var{y}, @var{x}, @var{print}, @var{intercept}, @var{slope})
+## @deftypefn  {statistics} [@var{intercept}, @var{slope}, @var{dev}, @var{dl}, @var{d2l}, @var{P}, @var{stats}] = logistic_regression (@var{y}, @var{x}, @var{print}, @var{intercept}, @var{slope})
 ##
 ## Perform ordinal logistic regression.
 ##

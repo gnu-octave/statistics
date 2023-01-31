@@ -1,5 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,12 +17,16 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} geornd (@var{p})
-## @deftypefnx {} {} geornd (@var{p}, @var{r})
-## @deftypefnx {} {} geornd (@var{p}, @var{r}, @var{c}, @dots{})
-## @deftypefnx {} {} geornd (@var{p}, [@var{sz}])
-## Return a matrix of random samples from the geometric distribution with
-## parameter @var{p}.
+## @deftypefn  {statistics} @var{r} = geornd (@var{ps})
+## @deftypefnx {statistics} @var{r} = geornd (@var{ps}, @var{rows})
+## @deftypefnx {statistics} @var{r} = geornd (@var{ps}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} @var{r} = geornd (@var{ps}, [@var{sz}])
+##
+## Random arrays from the geometric distribution.
+##
+## @code{@var{r} = geornd (@var{ps})} returns an array of random numbers chosen
+## from the Birnbaum-Saunders distribution with parameter @var{ps}.  The size of
+## @var{r} is the size of @var{ps}.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -29,24 +34,20 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## If no size arguments are given then the result matrix is the size of
-## @var{p}.
-##
 ## The geometric distribution models the number of failures (@var{x}) of a
-## Bernoulli trial with probability @var{p} before the first success.
+## Bernoulli trial with probability @var{ps} before the first success.
+##
+## @seealso{geocdf, geoinv, geopdf, geostat}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Random deviates from the geometric distribution
-
-function rnd = geornd (p, varargin)
+function r = geornd (ps, varargin)
 
   if (nargin < 1)
     print_usage ();
   endif
 
   if (nargin == 1)
-    sz = size (p);
+    sz = size (ps);
   elseif (nargin == 2)
     if (isscalar (varargin{1}) && varargin{1} >= 0)
       sz = [varargin{1}, varargin{1}];
@@ -62,38 +63,38 @@ function rnd = geornd (p, varargin)
     sz = [varargin{:}];
   endif
 
-  if (! isscalar (p) && ! isequal (size (p), sz))
+  if (! isscalar (ps) && ! isequal (size (ps), sz))
     error ("geornd: P must be scalar or of size SZ");
   endif
 
-  if (iscomplex (p))
+  if (iscomplex (ps))
     error ("geornd: P must not be complex");
   endif
 
-  if (isa (p, "single"))
+  if (isa (ps, "single"))
     cls = "single";
   else
     cls = "double";
   endif
 
-  if (isscalar (p))
-    if (p > 0 && p < 1);
-      rnd = floor (- rande (sz, cls) ./ log (1 - p));
-    elseif (p == 0)
-      rnd = Inf (sz, cls);
-    elseif (p == 1)
-      rnd = zeros (sz, cls);
-    elseif (p < 0 || p > 1)
-      rnd = NaN (sz, cls);
+  if (isscalar (ps))
+    if (ps > 0 && ps < 1);
+      r = floor (- rande (sz, cls) ./ log (1 - ps));
+    elseif (ps == 0)
+      r = Inf (sz, cls);
+    elseif (ps == 1)
+      r = zeros (sz, cls);
+    elseif (ps < 0 || ps > 1)
+      r = NaN (sz, cls);
     endif
   else
-    rnd = floor (- rande (sz, cls) ./ log (1 - p));
+    r = floor (- rande (sz, cls) ./ log (1 - ps));
 
-    k = !(p >= 0) | !(p <= 1);
-    rnd(k) = NaN;
+    k = !(ps >= 0) | !(ps <= 1);
+    r(k) = NaN;
 
-    k = (p == 0);
-    rnd(k) = Inf;
+    k = (ps == 0);
+    r(k) = Inf;
   endif
 
 endfunction

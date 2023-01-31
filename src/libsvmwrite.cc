@@ -49,6 +49,9 @@ void write(string filename, ColumnVector label_vec, SparseMatrix instance_mat)
     int lv_rows = (int)label_vec.rows();
     if(im_rows != lv_rows)
     {
+      // close file
+      fclose (fp);
+      remove (filename.c_str());
       error ("libsvmwrite: length of label vector does not match instances.");
     }
     // transpose instance sparse matrix in column format
@@ -81,7 +84,7 @@ void write(string filename, ColumnVector label_vec, SparseMatrix instance_mat)
 
 DEFUN_DLD (libsvmwrite, args, nargout,
            "-*- texinfo -*-\n\
-@deftypefn{Function} libsvmwrite (@var{filename}, @var{labels}, @var{data})\n\
+@deftypefn  {statistics} libsvmwrite (@var{filename}, @var{labels}, @var{data})\n\
 \n\
 \n\
 This function saves the labels and the corresponding instance_matrix in a file \
@@ -132,10 +135,15 @@ specified by @var{filename}.  @var{data} must be a sparse matrix.  Both \
 %!shared L, D
 %! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
 %!error <libsvmwrite: error opening file for write.> libsvmwrite ("", L, D);
-%!error <libsvmwrite: length of label vector does not match instances.> libsvmwrite ("filename", [L;L], D);
-%!error <libsvmwrite: wrong number of output arguments.> OUT = libsvmwrite ("filename", L, D);
-%!error <libsvmwrite: label vector and instance matrix must be double.> libsvmwrite ("filename", single (L), D);
+%!error <libsvmwrite: length of label vector does not match instances.> ...
+%! libsvmwrite (tempname (), [L;L], D);
+%!error <libsvmwrite: wrong number of output arguments.> ...
+%! OUT = libsvmwrite (tempname (), L, D);
+%!error <libsvmwrite: label vector and instance matrix must be double.> ...
+%! libsvmwrite (tempname (), single (L), D);
 %!error <libsvmwrite: filename must be a string.> libsvmwrite (13412, L, D);
-%!error <libsvmwrite: instance_matrix must be sparse.> libsvmwrite ("filename", L, full (D));
-%!error <libsvmwrite: wrong number of input arguments.> libsvmwrite ("filename", L, D, D);
+%!error <libsvmwrite: instance_matrix must be sparse.> ...
+%! libsvmwrite (tempname (), L, full (D));
+%!error <libsvmwrite: wrong number of input arguments.> ...
+%! libsvmwrite (tempname (), L, D, D);
 */

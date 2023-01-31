@@ -14,8 +14,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{p} =} copulapdf (@var{family}, @var{x}, @var{theta})
-## Compute the probability density function of a copula family.
+## @deftypefn  {statistics} @var{y} = copulapdf (@var{family}, @var{x}, @var{theta})
+##
+## Copula family probability density functions (PDF).
 ##
 ## @subheading Arguments
 ##
@@ -44,7 +45,7 @@
 ##
 ## @itemize @bullet
 ## @item
-## @var{p} is the probability density of the copula at each row of
+## @var{y} is the probability density of the copula at each row of
 ## @var{x} and corresponding parameter @var{theta}.
 ## @end itemize
 ##
@@ -54,11 +55,11 @@
 ## @group
 ## x = [0.2:0.2:0.6; 0.2:0.2:0.6];
 ## theta = [1; 2];
-## p = copulapdf ("Clayton", x, theta)
+## y = copulapdf ("Clayton", x, theta)
 ## @end group
 ##
 ## @group
-## p = copulapdf ("Gumbel", x, 2)
+## y = copulapdf ("Gumbel", x, 2)
 ## @end group
 ## @end example
 ##
@@ -69,97 +70,105 @@
 ## Roger B. Nelsen. @cite{An Introduction to Copulas}. Springer,
 ## New York, second edition, 2006.
 ## @end enumerate
+##
+## @seealso{copulacdf, copularnd}
 ## @end deftypefn
 
-## Author: Arno Onken <asnelt@asnelt.org>
-## Description: PDF of a copula family
+function y = copulapdf (family, x, theta)
 
-function p = copulapdf (family, x, theta)
-
-  # Check arguments
+  ## Check arguments
   if (nargin != 3)
     print_usage ();
   endif
 
   if (! ischar (family))
-    error ("copulapdf: family must be one of 'Clayton', 'Gumbel', 'Frank', and 'AMH'");
+    error (strcat (["copulapdf: family must be one of 'Clayton',"], ...
+                   [" 'Gumbel', 'Frank', and 'AMH'."]));
   endif
 
   if (! isempty (x) && ! ismatrix (x))
-    error ("copulapdf: x must be a numeric matrix");
+    error ("copulapdf: X must be a numeric matrix.");
   endif
 
   [n, d] = size (x);
 
   if (! isvector (theta) || (! isscalar (theta) && size (theta, 1) != n))
-    error ("copulapdf: theta must be a column vector with the same number of rows as x or be scalar");
+    error (strcat (["copulapdf: THETA must be a column vector with the"], ...
+                   [" same number of rows as X or be scalar."]));
   endif
 
   if (n == 0)
-    # Input is empty
-    p = zeros (0, 1);
+    ## Input is empty
+    y = zeros (0, 1);
   else
     if (n > 1 && isscalar (theta))
       theta = repmat (theta, n, 1);
     endif
 
-    # Truncate input to unit hypercube
+    ## Truncate input to unit hypercube
     x(x < 0) = 0;
     x(x > 1) = 1;
 
-    # Compute the cumulative distribution function according to family
+    ## Compute the cumulative distribution function according to family
     lowerarg = lower (family);
 
     if (strcmp (lowerarg, "clayton"))
-      # The Clayton family
-      log_cdf = -log (max (sum (x .^ (repmat (-theta, 1, d)), 2) - d + 1, 0)) ./ theta;
-      p = prod (repmat (theta, 1, d) .* repmat (0:(d - 1), n, 1) + 1, 2) .* exp ((1 + theta .* d) .* log_cdf - (theta + 1) .* sum (log (x), 2));
-      # Product copula at columns where theta == 0
+      ## The Clayton family
+      log_cdf = -log (max (sum (x .^ (repmat (-theta, 1, d)), 2) ...
+                - d + 1, 0)) ./ theta;
+      y = prod (repmat (theta, 1, d) .* repmat (0:(d - 1), n, 1) + 1, 2) ...
+                                     .* exp ((1 + theta .* d) .* log_cdf - ...
+                                            (theta + 1) .* sum (log (x), 2));
+      ## Product copula at columns where theta == 0
       k = find (theta == 0);
       if (any (k))
-        p(k) = 1;
+        y(k) = 1;
       endif
-      # Check theta
+      ## Check theta
       if (d > 2)
         k = find (! (theta >= 0) | ! (theta < inf));
       else
         k = find (! (theta >= -1) | ! (theta < inf));
       endif
     elseif (strcmp (lowerarg, "gumbel"))
-      # The Gumbel-Hougaard family
+      ## The Gumbel-Hougaard family
       g = sum ((-log (x)) .^ repmat (theta, 1, d), 2);
       c = exp (-g .^ (1 ./ theta));
-      p = ((prod (-log (x), 2)) .^ (theta - 1)) ./ prod (x, 2) .* c .* (g .^ (2 ./ theta - 2) + (theta - 1) .* g .^ (1 ./ theta - 2));
-      # Check theta
+      y = ((prod (-log (x), 2)) .^ (theta - 1)) ./ prod (x, 2) .* c .* ...
+          (g .^ (2 ./ theta - 2) + (theta - 1) .* g .^ (1 ./ theta - 2));
+      ## Check theta
       k = find (! (theta >= 1) | ! (theta < inf));
     elseif (strcmp (lowerarg, "frank"))
-      # The Frank family
+      ## The Frank family
       if (d != 2)
-        error ("copulapdf: Frank copula PDF implemented as bivariate only");
+        error ("copulapdf: Frank copula PDF implemented as bivariate only.");
       endif
-      p = (theta .* exp (theta .* (1 + sum (x, 2))) .* (exp (theta) - 1))./ (exp (theta) - exp (theta + theta .* x(:, 1)) + exp (theta .* sum (x, 2)) - exp (theta + theta .* x(:, 2))) .^ 2;
-      # Product copula at columns where theta == 0
+      y = (theta .* exp (theta .* (1 + sum (x, 2))) .* (exp (theta) - 1)) ./ ...
+          (exp (theta) - exp (theta + theta .* x(:, 1)) + ...
+           exp (theta .* sum (x, 2)) - exp (theta + theta .* x(:, 2))) .^ 2;
+      ## Product copula at columns where theta == 0
       k = find (theta == 0);
       if (any (k))
-        p(k) = 1;
+        y(k) = 1;
       endif
-      # Check theta
+      ## Check theta
       k = find (! (theta > -inf) | ! (theta < inf));
     elseif (strcmp (lowerarg, "amh"))
-      # The Ali-Mikhail-Haq family
+      ## The Ali-Mikhail-Haq family
       if (d != 2)
-        error ("copulapdf: Ali-Mikhail-Haq copula PDF implemented as bivariate only");
+        error (strcat (["copulapdf: Ali-Mikhail-Haq copula PDF"], ...
+                       [" implemented as bivariate only."]));
       endif
       z = theta .* prod (x - 1, 2) - 1;
-      p = (theta .* (1 - sum (x, 2) - prod (x, 2) - z) - 1) ./ (z .^ 3);
-      # Check theta
+      y = (theta .* (1 - sum (x, 2) - prod (x, 2) - z) - 1) ./ (z .^ 3);
+      ## Check theta
       k = find (! (theta >= -1) | ! (theta < 1));
     else
-      error ("copulapdf: unknown copula family '%s'", family);
+      error ("copulapdf: unknown copula family '%s'.", family);
     endif
 
     if (any (k))
-      p(k) = NaN;
+      y(k) = NaN;
     endif
 
   endif
@@ -169,26 +178,26 @@ endfunction
 %!test
 %! x = [0.2:0.2:0.6; 0.2:0.2:0.6];
 %! theta = [1; 2];
-%! p = copulapdf ("Clayton", x, theta);
+%! y = copulapdf ("Clayton", x, theta);
 %! expected_p = [0.9872; 0.7295];
-%! assert (p, expected_p, 0.001);
+%! assert (y, expected_p, 0.001);
 
 %!test
 %! x = [0.2:0.2:0.6; 0.2:0.2:0.6];
-%! p = copulapdf ("Gumbel", x, 2);
+%! y = copulapdf ("Gumbel", x, 2);
 %! expected_p = [0.9468; 0.9468];
-%! assert (p, expected_p, 0.001);
+%! assert (y, expected_p, 0.001);
 
 %!test
 %! x = [0.2, 0.6; 0.2, 0.6];
 %! theta = [1; 2];
-%! p = copulapdf ("Frank", x, theta);
+%! y = copulapdf ("Frank", x, theta);
 %! expected_p = [0.9378; 0.8678];
-%! assert (p, expected_p, 0.001);
+%! assert (y, expected_p, 0.001);
 
 %!test
 %! x = [0.2, 0.6; 0.2, 0.6];
 %! theta = [0.3; 0.7];
-%! p = copulapdf ("AMH", x, theta);
+%! y = copulapdf ("AMH", x, theta);
 %! expected_p = [0.9540; 0.8577];
-%! assert (p, expected_p, 0.001);
+%! assert (y, expected_p, 0.001);

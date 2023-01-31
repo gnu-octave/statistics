@@ -1,5 +1,8 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,52 +19,63 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} lognpdf (@var{x})
-## @deftypefnx {} {} lognpdf (@var{x}, @var{mu}, @var{sigma})
+## @deftypefn  {statistics} @var{y} = laplace_pdf (@var{x})
+## @deftypefnx {statistics} @var{y} = laplace_pdf (@var{x}, @var{mu})
+## @deftypefnx {statistics} @var{y} = laplace_pdf (@var{x}, @var{mu}, @var{sigma})
+##
+## Lognormal probability density function (PDF).
+##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the lognormal distribution with parameters
-## @var{mu} and @var{sigma}.
+## at @var{x} of the lognormal distribution with parameters @var{mu} and
+## @var{sigma}.  The size of @var{p} is the common size of @var{p}, @var{mu},
+## and @var{sigma}.  A scalar input functions as a constant matrix of the same
+## size as the other inputs.
 ##
 ## If a random variable follows this distribution, its logarithm is normally
 ## distributed with mean @var{mu} and standard deviation @var{sigma}.
 ##
-## Default values are @var{mu} = 0, @var{sigma} = 1.
+## Default values are @var{mu} = 0, @var{sigma} = 1. Both parameters must be
+## reals and @var{sigma} > 0.  For @var{sigma} <= 0, NaN is returned.
+##
+## @seealso{logncdf, logninv, lognrnd, lognstat}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: PDF of the log normal distribution
+function y = lognpdf (x, mu = 0, sigma = 1)
 
-function pdf = lognpdf (x, mu = 0, sigma = 1)
-
-  if (nargin != 1 && nargin != 3)
+  ## Check for valid number of input arguments
+  if (nargin < 1 || nargin > 3)
     print_usage ();
   endif
 
-  if (! isscalar (mu) || ! isscalar (sigma))
+  ## Check for common size of P, MU, and SIGMA
+  if (! isscalar (x) || ! isscalar (mu) || ! isscalar (sigma))
     [retval, x, mu, sigma] = common_size (x, mu, sigma);
     if (retval > 0)
       error ("lognpdf: X, MU, and SIGMA must be of common size or scalars");
     endif
   endif
 
+  ## Check for X, MU, and SIGMA being reals
   if (iscomplex (x) || iscomplex (mu) || iscomplex (sigma))
     error ("lognpdf: X, MU, and SIGMA must not be complex");
   endif
 
+  ## Check for appropriate class
   if (isa (x, "single") || isa (mu, "single") || isa (sigma, "single"))
-    pdf = zeros (size (x), "single");
+    y = zeros (size (x), "single");
   else
-    pdf = zeros (size (x));
+    y = zeros (size (x));
   endif
 
+  ## Compute lognormal PDF
   k = isnan (x) | !(sigma > 0) | !(sigma < Inf);
-  pdf(k) = NaN;
+  y(k) = NaN;
 
   k = (x > 0) & (x < Inf) & (sigma > 0) & (sigma < Inf);
   if (isscalar (mu) && isscalar (sigma))
-    pdf(k) = normpdf (log (x(k)), mu, sigma) ./ x(k);
+    y(k) = normpdf (log (x(k)), mu, sigma) ./ x(k);
   else
-    pdf(k) = normpdf (log (x(k)), mu(k), sigma(k)) ./ x(k);
+    y(k) = normpdf (log (x(k)), mu(k), sigma(k)) ./ x(k);
   endif
 
 endfunction
@@ -84,7 +98,6 @@ endfunction
 
 ## Test input validation
 %!error lognpdf ()
-%!error lognpdf (1,2)
 %!error lognpdf (1,2,3,4)
 %!error lognpdf (ones (3), ones (2), ones (2))
 %!error lognpdf (ones (2), ones (3), ones (2))

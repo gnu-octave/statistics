@@ -17,10 +17,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @
-##  {[@var{si}, @var{h}] =} silhouette (@var{X}, @var{clust})
-## @deftypefnx {Function File} @
-##  {[@var{si}, @var{h}] =} silhouette (@dots{}, @var{Metric}, @var{MetricArg})
+## @deftypefn  {statistics} {} silhouette (@var{X}, @var{clust})
+## @deftypefnx {statistics} [@var{si}, @var{h}] = silhouette (@var{X}, @var{clust})
+## @deftypefnx {statistics} [@var{si}, @var{h}] = silhouette (@dots{}, @var{Metric}, @var{MetricArg})
 ##
 ## Compute the silhouette values of clustered data and show them on a plot.
 ##

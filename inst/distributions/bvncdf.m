@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,44 +16,48 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{p} = bvncdf (@var{x}, @var{mu}, @var{sigma})
-## @deftypefnx {Function File} @var{p} = bvncdf (@var{x}, [], @var{sigma})
+## @deftypefn  {statistics} @var{p} = bvncdf (@var{x}, @var{mu}, @var{sigma})
+## @deftypefnx {statistics} @var{p} = bvncdf (@var{x}, [], @var{sigma})
 ##
-## Bivariate normal cumulative distribution function.
+## Bivariate normal cumulative distribution function (CDF).
 ##
 ## @code{@var{p} = bvncdf (@var{x}, @var{mu}, @var{sigma})} will compute the
 ## bivariate normal cumulative distribution function of @var{x} given a mean
 ## @var{mu}, which must be a scalar, and a 2x2 @var{sigma} covariance matrix,
 ## which must be positive definite.
 ##
+## @seealso{mvncdf}
 ## @end deftypefn
 
 ## Code adapted from Thomas H. Jørgensen's work in BVNcdf.m function retrieved
 ## from https://www.tjeconomics.com/code/
 
-function p = bvncdf (X, mu, rho)
+function p = bvncdf (x, mu, sigma)
   ## Check input arguments and add defaults
-  if (size (X, 2) != 2)
-    error ("bvncdf: X must be an Nx2 matrix with each variable a column vector.");
+  if (size (x, 2) != 2)
+    error (strcat (["bvncdf: X must be an Nx2 matrix with each variable"], ...
+                   [" a column vector."]));
   endif
   if (isempty (mu))
     mu = [0,0];
   endif
-  if (numel (rho) == 1)
-    rho = rho * ones (2,2);
-    rho(1,1) = 1;
-    rho(2,2) = 1;
-  elseif (numel (rho) != 4)
-    error ("bvncdf: the covariance matrix must be either a scalar or a 2x2 matrix.");
+  if (numel (sigma) == 1)
+    sigma = sigma * ones (2,2);
+    sigma(1,1) = 1;
+    sigma(2,2) = 1;
+  elseif (numel (sigma) != 4)
+    error (strcat (["bvncdf: the covariance matrix must be either a"], ...
+                   [" scalar or a 2x2 matrix."]));
   endif
   ## Test for symmetric positive definite covariance matrix
-  [~, err] = chol (rho);
+  [~, err] = chol (sigma);
   if (err != 0)
-    error("bvncdf: the covariance matrix is not positive definite and/or symmetric.");
+    error (strcat (["bvncdf: the covariance matrix is not positive"], ...
+                   [" definite and/or symmetric."]));
   endif
-  dh = (X(:,1) - mu(:,1)) / sqrt (rho(1,1));
-  dk = (X(:,2) - mu(:,2)) / sqrt (rho(2,2));
-  r = rho(1,2) / sqrt (rho(1,1) * rho(2,2));
+  dh = (x(:,1) - mu(:,1)) / sqrt (sigma(1,1));
+  dk = (x(:,2) - mu(:,2)) / sqrt (sigma(2,2));
+  r = sigma(1,2) / sqrt (sigma(1,1) * sigma(2,2));
   p = NaN (size (dh));
   p(dh == Inf & dk == Inf)   = 1;
   p(dk == Inf) = 0.5 * erfc (- dh(dk == Inf) / sqrt (2));
@@ -160,10 +164,10 @@ endfunction
 
 %!demo
 %! mu = [1, -1];
-%! Sigma = [0.9, 0.4; 0.4, 0.3];
+%! sigma = [0.9, 0.4; 0.4, 0.3];
 %! [X1, X2] = meshgrid (linspace (-1, 3, 25)', linspace (-3, 1, 25)');
-%! X = [X1(:), X2(:)];
-%! p = bvncdf (X, mu, Sigma);
+%! x = [X1(:), X2(:)];
+%! p = bvncdf (x, mu, sigma);
 %! Z = reshape (p, 25, 25);
 %! surf (X1, X2, Z);
 %! title ("Bivariate Normal Distribution");
@@ -172,10 +176,10 @@ endfunction
 
 %!test
 %! mu = [1, -1];
-%! Sigma = [0.9, 0.4; 0.4, 0.3];
+%! sigma = [0.9, 0.4; 0.4, 0.3];
 %! [X1,X2] = meshgrid (linspace (-1, 3, 25)', linspace (-3, 1, 25)');
-%! X = [X1(:), X2(:)];
-%! p = bvncdf (X, mu, Sigma);
+%! x = [X1(:), X2(:)];
+%! p = bvncdf (x, mu, sigma);
 %! p_out = [0.00011878988774500, 0.00034404112322371, ...
 %!          0.00087682502191813, 0.00195221905058185, ...
 %!          0.00378235566873474, 0.00638175749734415, ...
@@ -184,10 +188,10 @@ endfunction
 %! assert (p([1:10]), p_out, 1e-16);
 %!test
 %! mu = [1, -1];
-%! Sigma = [0.9, 0.4; 0.4, 0.3];
+%! sigma = [0.9, 0.4; 0.4, 0.3];
 %! [X1,X2] = meshgrid (linspace (-1, 3, 25)', linspace (-3, 1, 25)');
-%! X = [X1(:), X2(:)];
-%! p = bvncdf (X, mu, Sigma);
+%! x = [X1(:), X2(:)];
+%! p = bvncdf (x, mu, sigma);
 %! p_out = [0.8180695783608276, 0.8854485749482751, ...
 %!          0.9308108777385832, 0.9579855743025508, ...
 %!          0.9722897881414742, 0.9788150170059926, ...

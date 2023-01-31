@@ -1,5 +1,7 @@
 ## Copyright (C) 2021 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -14,11 +16,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{p} =} kruskalwallis (@var{x})
-## @deftypefnx {Function File} {@var{p} =} kruskalwallis (@var{x}, @var{group})
-## @deftypefnx {Function File} {@var{p} =} kruskalwallis (@var{x}, @var{group}, @var{displayopt})
-## @deftypefnx {Function File} {[@var{p}, @var{tbl}] =} kruskalwallis (@var{x}, @dots{})
-## @deftypefnx {Function File} {[@var{p}, @var{tbl}, @var{stats}] =} kruskalwallis (@var{x}, @dots{})
+## @deftypefn  {statistics} @var{p} = kruskalwallis (@var{x})
+## @deftypefnx {statistics} @var{p} = kruskalwallis (@var{x}, @var{group})
+## @deftypefnx {statistics} @var{p} = kruskalwallis (@var{x}, @var{group}, @var{displayopt})
+## @deftypefnx {statistics} [@var{p}, @var{tbl}] = kruskalwallis (@var{x}, @dots{})
+## @deftypefnx {statistics} [@var{p}, @var{tbl}, @var{stats}] = kruskalwallis (@var{x}, @dots{})
 ##
 ## Perform a Kruskal-Wallis test, the non-parametric alternative of a one-way
 ## analysis of variance (ANOVA), for comparing the means of two or more groups
@@ -82,7 +84,7 @@
 ## @end deftypefn
 
 function [p, tbl, stats] = kruskalwallis (x, group, displayopt)
-  
+
   ## check for valid number of input arguments
   narginchk (1, 3);
   ## add defaults
@@ -122,7 +124,7 @@ function [p, tbl, stats] = kruskalwallis (x, group, displayopt)
   nonan = ~isnan (x);
   x = x(nonan);
   group = group(nonan, :);
-  
+
   ## Convert group to indices and separate names
   [group_id, group_names] = grp2idx (group);
   group_id = group_id(:);
@@ -130,7 +132,7 @@ function [p, tbl, stats] = kruskalwallis (x, group, displayopt)
 
   ## Rank data for non-parametric analysis
   [xr, tieadj] = tieranks (x);
-  
+
   ## Get group size and mean for each group
   groups = size (group_names, 1);
   xs = zeros (1, groups);
@@ -140,7 +142,7 @@ function [p, tbl, stats] = kruskalwallis (x, group, displayopt)
     xs(j) = length (group_size);
     xm(j) = mean (xr(group_size));
   endfor
-  
+
   ## Calculate statistics
   lx = length (xr);                       ## Number of samples in groups
   gm = mean (xr);                         ## Grand mean of groups

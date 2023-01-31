@@ -18,8 +18,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} normplot (@var{x})
-## @deftypefnx {Function File} normplot (@var{ax}, @var{x})
+## @deftypefn  {Function File} {} normplot (@var{x})
+## @deftypefnx {Function File} {} normplot (@var{ax}, @var{x})
 ## @deftypefnx {Function File} @var{h} = normplot (@dots{})
 ##
 ## Produce normal probability plot of the data in @var{x}.  If @var{x} is a

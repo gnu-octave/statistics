@@ -16,9 +16,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{x} = ncfinv (@var{p}, @var{df1}, @var{df2}, @var{delta})
+## @deftypefn  {statistics} @var{x} = ncfinv (@var{p}, @var{df1}, @var{df2}, @var{delta})
 ##
-## Inverse of the non-central F cumulative distribution function (cdf).
+## Inverse of the non-central F cumulative distribution function (iCDF).
 ##
 ## @code{@var{x} = ncfinv (@var{p}, @var{df1}, @var{df2}, @var{delta})}
 ## the inverse of the noncentral F distribution with @var{df1} numerator degrees

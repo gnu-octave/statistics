@@ -1,5 +1,7 @@
 ## Copyright (C) 2001 Paul Kienzle <pkienzle@users.sf.net>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -14,11 +16,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {Built-in Function} {} nansum (@var{x})
-## @deftypefnx {Built-in Function} {} nansum (@var{x}, @var{dim})
-## @deftypefnx {Built-in Function} {} nansum (@dots{}, @qcode{"native"})
-## @deftypefnx {Built-in Function} {} nansum (@dots{}, @qcode{"double"})
-## @deftypefnx {Built-in Function} {} nansum (@dots{}, @qcode{"extra"})
+## @deftypefn  {statistics} s = nansum (@var{x})
+## @deftypefnx {statistics} s = nansum (@var{x}, @var{dim})
+## @deftypefnx {statistics} s = nansum (@dots{}, @qcode{"native"})
+## @deftypefnx {statistics} s = nansum (@dots{}, @qcode{"double"})
+## @deftypefnx {statistics} s = nansum (@dots{}, @qcode{"extra"})
 ## Compute the sum while ignoring NaN values.
 ##
 ## @code{nansum} is identical to the @code{sum} function except that NaN

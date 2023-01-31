@@ -1,5 +1,7 @@
 ## Copyright (C) 2013 Nir Krakauer <nkrakauer@ccny.cuny.edu>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
 ## published by the Free Software Foundation, either version 3 of the
@@ -15,7 +17,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {Function File} {} @var{y} = wishpdf (@var{W}, @var{Sigma}, @var{df}, @var{log_y}=false)
+## @deftypefn  {statistics} @var{y} = wishpdf (@var{W}, @var{Sigma}, @var{df}, @var{log_y}=false)
+##
 ## Compute the probability density function of the Wishart distribution
 ##
 ## Inputs: A @var{p} x @var{p} matrix @var{W} where to find the PDF. The @var{p}
@@ -28,14 +31,11 @@
 ##
 ## Output: @var{y} is the probability density of Wishart(@var{Sigma}, @var{df})
 ## at @var{W}.
-## 
-## @seealso{wishrnd, iwishpdf}
+##
+## @seealso{wishrnd, iwishpdf, iwishrnd}
 ## @end deftypefn
 
-## Author: Nir Krakauer <nkrakauer@ccny.cuny.edu>
-## Description: Compute the probability density function of the Wishart distribution
-
-function [y] = wishpdf(W, Sigma, df, log_y=false)
+function y = wishpdf (W, Sigma, df, log_y=false)
 
   if (nargin < 3)
     print_usage ();
@@ -44,8 +44,8 @@ function [y] = wishpdf(W, Sigma, df, log_y=false)
   p = size(Sigma, 1);
 
   if (df <= (p - 1))
-    error('df too small, no finite densities exist')
-  endif 
+    error ("wishpdf: DF too small, no finite densities exist.");
+  endif
 
   ## calculate the logarithm of G_d(df/2), the multivariate gamma function
   g = (p * (p-1) / 4) * log(pi);
@@ -68,7 +68,7 @@ function [y] = wishpdf(W, Sigma, df, log_y=false)
   endif
 endfunction
 
-##test results cross-checked against dwish function in R MCMCpack library 
+##test results cross-checked against dwish function in R MCMCpack library
 %!assert(wishpdf(4, 3, 3.1), 0.07702496, 1E-7);
 %!assert(wishpdf([2 -0.3;-0.3 4], [1 0.3;0.3 1], 4), 0.004529741, 1E-7);
 %!assert(wishpdf([6 2 5; 2 10 -5; 5 -5 25], [9 5 5; 5 10 -8; 5 -8 22], 5.1), 4.474865e-10, 1E-15);

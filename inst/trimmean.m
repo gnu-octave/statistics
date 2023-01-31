@@ -1,5 +1,7 @@
 ## Copyright (C) 2001 Paul Kienzle <pkienzle@users.sf.net>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -14,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{a} =} trimmean (@var{x}, @var{p})
+## @deftypefn  {statistics} @var{a} = trimmean (@var{x}, @var{p})
 ##
 ## Compute the trimmed mean.
 ##
@@ -46,13 +48,17 @@ function a = trimmean(x, p, varargin)
   sz = size(x);
   if nargin < 3
     dim = min(find(sz>1));
-    if isempty(dim), dim=1; endif;
+    if isempty(dim)
+      dim=1;
+    endif
   else
     dim = varargin{1};
   endif
   idx = cell (0);
-  for i=1:length(sz), idx{i} = 1:sz(i); end;
-  trim = round(sz(dim)*p*0.01);
-  idx{dim} = 1+trim : sz(dim)-trim;
+  for i=1:length (sz)
+    idx{i} = 1:sz(i);
+  endfor
+  trim = round (sz(dim) * p * 0.01);
+  idx{dim} = 1+trim:sz(dim)-trim;
   a = mean (y (idx{:}), varargin{:});
 endfunction

@@ -1,5 +1,8 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,12 +19,20 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} trnd (@var{n})
-## @deftypefnx {} {} trnd (@var{n}, @var{r})
-## @deftypefnx {} {} trnd (@var{n}, @var{r}, @var{c}, @dots{})
-## @deftypefnx {} {} trnd (@var{n}, [@var{sz}])
+## @deftypefn  {statistics} @var{r} = trnd (@var{df})
+## @deftypefnx {statistics} @var{r} = trnd (@var{df}, @var{rows})
+## @deftypefnx {statistics} @var{r} = trnd (@var{df}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} @var{r} = trnd (@var{df}, [@var{sz}])
+##
+## Random arrays from the Student's T distribution.
+##
 ## Return a matrix of random samples from the t (Student) distribution with
-## @var{n} degrees of freedom.
+## @var{df} degrees of freedom.
+##
+## @code{@var{r} = trnd (@var{df})} returns an array of random numbers chosen
+## from the Student's T distribution with @var{df} degrees of freedom.  The size
+## of @var{r} is the size of @var{df}.  @var{df} must be a finite real number
+## greater than 0, otherwise NaN is returned.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -29,62 +40,59 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## If no size arguments are given then the result matrix is the size of
-## @var{n}.
+## @seealso{tcdf, tpdf, tpdf, tstat}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Random deviates from the t distribution
-
-function rnd = trnd (n, varargin)
+function r = trnd (df, varargin)
 
   if (nargin < 1)
     print_usage ();
   endif
 
   if (nargin == 1)
-    sz = size (n);
+    sz = size (df);
   elseif (nargin == 2)
     if (isscalar (varargin{1}) && varargin{1} >= 0)
       sz = [varargin{1}, varargin{1}];
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error ("trnd: dimension vector must be row vector of non-negative integers");
+      error (strcat (["trnd: dimension vector must be row vector of"], ...
+                     [" non-negative integers."]));
     endif
   elseif (nargin > 2)
     if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
-      error ("trnd: dimensions must be non-negative integers");
+      error ("trnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
-  if (! isscalar (n) && ! isequal (size (n), sz))
-    error ("trnd: N must be scalar or of size SZ");
+  if (! isscalar (df) && ! isequal (size (df), sz))
+    error ("trnd: DF must be scalar or of size SZ.");
   endif
 
-  if (iscomplex (n))
-    error ("trnd: N must not be complex");
+  if (iscomplex (df))
+    error ("trnd: DF must not be complex.");
   endif
 
-  if (isa (n, "single"))
+  if (isa (df, "single"))
     cls = "single";
   else
     cls = "double";
   endif
 
-  if (isscalar (n))
-    if ((n > 0) && (n < Inf))
-      rnd = randn (sz, cls) ./ sqrt (2*randg (n/2, sz, cls) / n);
+  if (isscalar (df))
+    if ((df > 0) && (df < Inf))
+      r = randn (sz, cls) ./ sqrt (2*randg (df/2, sz, cls) / df);
     else
-      rnd = NaN (sz, cls);
+      r = NaN (sz, cls);
     endif
   else
-    rnd = NaN (sz, cls);
+    r = NaN (sz, cls);
 
-    k = (n > 0) & (n < Inf);
-    rnd(k) = randn (sum (k(:)), 1, cls) ...
-             ./ sqrt (2*randg (n(k)/2, cls) ./ n(k))(:);
+    k = (df > 0) & (df < Inf);
+    r(k) = randn (sum (k(:)), 1, cls) ...
+             ./ sqrt (2*randg (df(k)/2, cls) ./ df(k))(:);
   endif
 
 endfunction

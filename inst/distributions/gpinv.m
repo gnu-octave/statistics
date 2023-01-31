@@ -1,8 +1,9 @@
-## Copyright (C) 2018 John Donoghue
-## Copyright (C) 2016 Dag Lyberg
 ## Copyright (C) 1997-2015 Kurt Hornik
+## Copyright (C) 2016 Dag Lyberg
+## Copyright (C) 2018 John Donoghue
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
-## This file is part of Octave.
+## This file is part of the statistics package for GNU Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -19,131 +20,136 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} gpinv (@var{x}, @var{shape}, @var{scale}, @var{location})
-## For each element of @var{x}, compute the quantile (the inverse of the CDF)
-## at @var{x} of the generalized Pareto distribution with parameters
-## @var{location}, @var{scale}, and @var{shape}.
+## @deftypefn  {statistics} @var{x} = gpinv (@var{p}, @var{shape}, @var{scale}, @var{location})
+##
+## Inverse of the generalized Pareto cumulative distribution function (iCDF).
+##
+## For each element of @var{p}, compute the quantile (the inverse of the CDF)
+## at @var{p} of the generalized Pareto distribution with parameters
+## @var{location}, @var{scale}, and @var{shape}.  The size of @var{x} is the
+## common size of the input arguments.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
+##
+## @seealso{gpcdf, gppdf, gprnd, gpfit, gplike, gpstat}
 ## @end deftypefn
 
-## Author: Dag Lyberg <daglyberg80@gmail.com>
-## Description: Quantile function of the generalized Pareto distribution
-
-function inv = gpinv (x, shape, scale, location)
+function x = gpinv (p, shape, scale, location)
   if (nargin != 4)
     print_usage ();
   endif
 
   if (! isscalar (location) || ! isscalar (scale) || ! isscalar (shape))
-    [retval, x, location, scale, shape] = ...
-        common_size (x, location, scale, shape);
+    [retval, p, location, scale, shape] = ...
+        common_size (p, location, scale, shape);
     if (retval > 0)
-      error ("gpinv: X, LOCATION, SCALE and SHAPE must be of common size or scalars");
+      error (strcat (["gpinv: X, SHAPE, SCALE, and LOCATION must be of"], ...
+                     [" common size or scalars."]));
     endif
   endif
 
-  if (iscomplex (x) || iscomplex (location) ...
+  if (iscomplex (p) || iscomplex (location) ...
       || iscomplex (scale) || iscomplex (shape))
-    error ("gpinv: X, LOCATION, SCALE and SHAPE must not be complex");
+    error ("gpinv: X, SHAPE, SCALE, and LOCATION must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (location, "single") ...
+  if (isa (p, "single") || isa (location, "single") ...
       || isa (scale, "single") || isa (shape, "single"))
-    inv = zeros (size (x), "single");
+    x = zeros (size (p), "single");
   else
-    inv = zeros (size (x));
+    x = zeros (size (p));
   endif
 
-  k = isnan (x) | ! (0 <= x) | ! (x <= 1) ...
+  k = isnan (p) | ! (0 <= p) | ! (p <= 1) ...
       | ! (-Inf < location) | ! (location < Inf) ...
       | ! (scale > 0) | ! (scale < Inf) ...
       | ! (-Inf < shape) | ! (shape < Inf);
-  inv(k) = NaN;
+  x(k) = NaN;
 
-  k = (0 <= x) & (x <= 1) & (-Inf < location) & (location < Inf) ...
+  k = (0 <= p) & (p <= 1) & (-Inf < location) & (location < Inf) ...
       & (scale > 0) & (scale < Inf) & (-Inf < shape) & (shape < Inf);
   if (isscalar (location) && isscalar (scale) && isscalar (shape))
     if (shape == 0)
-      inv(k) = -log(1 - x(k));
-      inv(k) = scale * inv(k) + location;
+      x(k) = -log(1 - p(k));
+      x(k) = scale * x(k) + location;
     elseif (shape > 0)
-      inv(k) = (1 - x(k)).^(-shape) - 1;
-      inv(k) = (scale / shape) * inv(k) + location;
+      x(k) = (1 - p(k)).^(-shape) - 1;
+      x(k) = (scale / shape) * x(k) + location;
     elseif (shape < 0)
-      inv(k) = (1 - x(k)).^(-shape) - 1;
-      inv(k) = (scale / shape) * inv(k)  + location;
+      x(k) = (1 - p(k)).^(-shape) - 1;
+      x(k) = (scale / shape) * x(k)  + location;
     end
   else
     j = k & (shape == 0);
     if (any (j))
-      inv(j) = -log (1 - x(j));
-      inv(j) = scale(j) .* inv(j) + location(j);
+      x(j) = -log (1 - p(j));
+      x(j) = scale(j) .* x(j) + location(j);
     endif
-    
+
     j = k & (shape > 0);
     if (any (j))
-      inv(j) = (1 - x(j)).^(-shape(j)) - 1;
-      inv(j) = (scale(j) ./ shape(j)) .* inv(j) + location(j);
+      x(j) = (1 - p(j)).^(-shape(j)) - 1;
+      x(j) = (scale(j) ./ shape(j)) .* x(j) + location(j);
     endif
-    
+
     j = k & (shape < 0);
     if (any (j))
-      inv(j) = (1 - x(j)).^(-shape(j)) - 1;
-      inv(j) = (scale(j) ./ shape(j)) .* inv(j) + location(j);
+      x(j) = (1 - p(j)).^(-shape(j)) - 1;
+      x(j) = (scale(j) ./ shape(j)) .* x(j) + location(j);
     endif
   endif
 endfunction
 
 
-%!shared x,y1,y2,y3
-%! x = [-1, 0, 1/2, 1, 2];
+%!shared p,y1,y2,y3
+%! p = [-1, 0, 1/2, 1, 2];
 %! y1 = [NaN, 0, 0.6931471805599453, Inf, NaN];
 %! y2 = [NaN, 0, 1, Inf, NaN];
 %! y3 = [NaN, 0, 1/2, 1, NaN];
-%!assert (gpinv (x, zeros (1,5), ones (1,5), zeros (1,5)), y1)
-%!assert (gpinv (x, 0, 1, zeros (1,5)), y1)
-%!assert (gpinv (x, 0, ones (1,5), 0), y1)
-%!assert (gpinv (x, zeros (1,5), 1, 0), y1)
-%!assert (gpinv (x, 0, 1, 0), y1)
-%!assert (gpinv (x, 0, 1, [0, 0, NaN, 0, 0]), [y1(1:2), NaN, y1(4:5)])
-%!assert (gpinv (x, 0, [1, 1, NaN, 1, 1], 0), [y1(1:2), NaN, y1(4:5)])
-%!assert (gpinv (x, [0, 0, NaN, 0, 0], 1, 0), [y1(1:2), NaN, y1(4:5)])
-%!assert (gpinv ([x(1:2), NaN, x(4:5)], 0, 1, 0), [y1(1:2), NaN, y1(4:5)])
+%!assert (gpinv (p, zeros (1,5), ones (1,5), zeros (1,5)), y1)
+%!assert (gpinv (p, 0, 1, zeros (1,5)), y1)
+%!assert (gpinv (p, 0, ones (1,5), 0), y1)
+%!assert (gpinv (p, zeros (1,5), 1, 0), y1)
+%!assert (gpinv (p, 0, 1, 0), y1)
+%!assert (gpinv (p, 0, 1, [0, 0, NaN, 0, 0]), [y1(1:2), NaN, y1(4:5)])
+%!assert (gpinv (p, 0, [1, 1, NaN, 1, 1], 0), [y1(1:2), NaN, y1(4:5)])
+%!assert (gpinv (p, [0, 0, NaN, 0, 0], 1, 0), [y1(1:2), NaN, y1(4:5)])
+%!assert (gpinv ([p(1:2), NaN, p(4:5)], 0, 1, 0), [y1(1:2), NaN, y1(4:5)])
 
-%!assert (gpinv (x, ones (1,5), ones (1,5), zeros (1,5)), y2)
-%!assert (gpinv (x, 1, 1, zeros (1,5)), y2)
-%!assert (gpinv (x, 1, ones (1,5), 0), y2)
-%!assert (gpinv (x, ones (1,5), 1, 0), y2)
-%!assert (gpinv (x, 1, 1, 0), y2)
-%!assert (gpinv (x, 1, 1, [0, 0, NaN, 0, 0]), [y2(1:2), NaN, y2(4:5)])
-%!assert (gpinv (x, 1, [1, 1, NaN, 1, 1], 0), [y2(1:2), NaN, y2(4:5)])
-%!assert (gpinv (x, [1, 1, NaN, 1, 1], 1, 0), [y2(1:2), NaN, y2(4:5)])
-%!assert (gpinv ([x(1:2), NaN, x(4:5)], 1, 1, 0), [y2(1:2), NaN, y2(4:5)])
+%!assert (gpinv (p, ones (1,5), ones (1,5), zeros (1,5)), y2)
+%!assert (gpinv (p, 1, 1, zeros (1,5)), y2)
+%!assert (gpinv (p, 1, ones (1,5), 0), y2)
+%!assert (gpinv (p, ones (1,5), 1, 0), y2)
+%!assert (gpinv (p, 1, 1, 0), y2)
+%!assert (gpinv (p, 1, 1, [0, 0, NaN, 0, 0]), [y2(1:2), NaN, y2(4:5)])
+%!assert (gpinv (p, 1, [1, 1, NaN, 1, 1], 0), [y2(1:2), NaN, y2(4:5)])
+%!assert (gpinv (p, [1, 1, NaN, 1, 1], 1, 0), [y2(1:2), NaN, y2(4:5)])
+%!assert (gpinv ([p(1:2), NaN, p(4:5)], 1, 1, 0), [y2(1:2), NaN, y2(4:5)])
 
-%!assert (gpinv (x, -ones (1,5), ones (1,5), zeros (1,5)), y3)
-%!assert (gpinv (x, -1, 1, zeros (1,5)), y3)
-%!assert (gpinv (x, -1, ones (1,5), 0), y3)
-%!assert (gpinv (x, -ones (1,5), 1, 0), y3)
-%!assert (gpinv (x, -1, 1, 0), y3)
-%!assert (gpinv (x, -1, 1, [0, 0, NaN, 0, 0]), [y3(1:2), NaN, y3(4:5)])
-%!assert (gpinv (x, -1, [1, 1, NaN, 1, 1], 0), [y3(1:2), NaN, y3(4:5)])
-%!assert (gpinv (x, -[1, 1, NaN, 1, 1], 1, 0), [y3(1:2), NaN, y3(4:5)])
-%!assert (gpinv ([x(1:2), NaN, x(4:5)], -1, 1, 0), [y3(1:2), NaN, y3(4:5)])
+%!assert (gpinv (p, -ones (1,5), ones (1,5), zeros (1,5)), y3)
+%!assert (gpinv (p, -1, 1, zeros (1,5)), y3)
+%!assert (gpinv (p, -1, ones (1,5), 0), y3)
+%!assert (gpinv (p, -ones (1,5), 1, 0), y3)
+%!assert (gpinv (p, -1, 1, 0), y3)
+%!assert (gpinv (p, -1, 1, [0, 0, NaN, 0, 0]), [y3(1:2), NaN, y3(4:5)])
+%!assert (gpinv (p, -1, [1, 1, NaN, 1, 1], 0), [y3(1:2), NaN, y3(4:5)])
+%!assert (gpinv (p, -[1, 1, NaN, 1, 1], 1, 0), [y3(1:2), NaN, y3(4:5)])
+%!assert (gpinv ([p(1:2), NaN, p(4:5)], -1, 1, 0), [y3(1:2), NaN, y3(4:5)])
 
 ## Test class of input preserved
-%!assert (gpinv (single ([x, NaN]), 0, 1, 0), single ([y1, NaN]))
-%!assert (gpinv ([x, NaN], 0, 1, single (0)), single ([y1, NaN]))
-%!assert (gpinv ([x, NaN], 0, single (1), 0), single ([y1, NaN]))
-%!assert (gpinv ([x, NaN], single (0), 1, 0), single ([y1, NaN]))
+%!assert (gpinv (single ([p, NaN]), 0, 1, 0), single ([y1, NaN]))
+%!assert (gpinv ([p, NaN], 0, 1, single (0)), single ([y1, NaN]))
+%!assert (gpinv ([p, NaN], 0, single (1), 0), single ([y1, NaN]))
+%!assert (gpinv ([p, NaN], single (0), 1, 0), single ([y1, NaN]))
 
-%!assert (gpinv (single ([x, NaN]), 1, 1, 0), single ([y2, NaN]))
-%!assert (gpinv ([x, NaN], 1, 1, single (0)), single ([y2, NaN]))
-%!assert (gpinv ([x, NaN], 1, single (1), 0), single ([y2, NaN]))
-%!assert (gpinv ([x, NaN], single (1), 1, 0), single ([y2, NaN]))
+%!assert (gpinv (single ([p, NaN]), 1, 1, 0), single ([y2, NaN]))
+%!assert (gpinv ([p, NaN], 1, 1, single (0)), single ([y2, NaN]))
+%!assert (gpinv ([p, NaN], 1, single (1), 0), single ([y2, NaN]))
+%!assert (gpinv ([p, NaN], single (1), 1, 0), single ([y2, NaN]))
 
-%!assert (gpinv (single ([x, NaN]), -1, 1, 0), single ([y3, NaN]))
-%!assert (gpinv ([x, NaN], -1, 1, single (0)), single ([y3, NaN]))
-%!assert (gpinv ([x, NaN], -1, single (1), 0), single ([y3, NaN]))
-%!assert (gpinv ([x, NaN], single (-1), 1, 0), single ([y3, NaN]))
+%!assert (gpinv (single ([p, NaN]), -1, 1, 0), single ([y3, NaN]))
+%!assert (gpinv ([p, NaN], -1, 1, single (0)), single ([y3, NaN]))
+%!assert (gpinv ([p, NaN], -1, single (1), 0), single ([y3, NaN]))
+%!assert (gpinv ([p, NaN], single (-1), 1, 0), single ([y3, NaN]))
 
 ## Test input validation
 %!error gpinv ()

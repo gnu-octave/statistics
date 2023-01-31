@@ -16,9 +16,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{y} =} pdist (@var{x})
-## @deftypefnx {Function File} {@var{y} =} pdist (@var{x}, @var{metric})
-## @deftypefnx {Function File} {@var{y} =} pdist (@var{x}, @var{metric}, @var{metricarg}, @dots{})
+## @deftypefn  {statistics} @var{y} = pdist (@var{x})
+## @deftypefnx {statistics} @var{y} = pdist (@var{x}, @var{metric})
+## @deftypefnx {statistics} @var{y} = pdist (@var{x}, @var{metric}, @var{metricarg}, @dots{})
 ##
 ## Return the distance between any two rows in @var{x}.
 ##

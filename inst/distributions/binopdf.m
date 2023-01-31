@@ -1,6 +1,7 @@
-## Copyright (C) 2021 Nicholas R. Jankowski
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2021 Nicholas R. Jankowski
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -17,109 +18,93 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {@var{z} =} binopdf (@var{x}, @var{n}, @var{p})
-## For each element of @var{x}, compute the probability density function
-## (PDF) at @var{x} of the binomial distribution with parameters @var{n}
-## and @var{p}, where @var{n} is the number of trials and @var{p} is the
-## probability of success.
+## @deftypefn  {statistics} @var{z} = binopdf (@var{x}, @var{n}, @var{ps})
 ##
-## The inputs @var{x}, @var{n}, and @var{p} can be scalars or arrays.  If
-## more than one is an array, they must be of equal size.  The output
-## @var{z} will have the same size as the array inputs.
+## Binomial probability density function (PDF).
+##
+## For each element of @var{x}, compute the probability density function (PDF)
+## at @var{x} of the binomial distribution with parameters @var{n} and @var{ps},
+## where @var{n} is the number of trials and @var{ps} is the probability of
+## success.  The size of @var{y} is the common size of @var{x}, @var{n}, and
+## @var{ps}.  A scalar input functions as a constant matrix of the same size as
+## the other inputs.
 ##
 ## Matlab incompatibility: Octave's @code{binopdf} returns NaN for complex
-## input values.
+## input values.  Matlab 2021b returns values for complex inputs despite the
+## documentation indicates integer and real value inputs are required.
+##
+## @seealso{binocdf, binoinv, binornd, binostat, binotest}
 ## @end deftypefn
 
-## Author: Nicholas R. Jankowski <jankowski.nicholas@gmail.com> (Loader version)
-## Author: KH <Kurt.Hornik@wu-wien.ac.at> (original)
-## Description: PDF of the binomial distribution
-
-## Adapted from Loader algorithm for increased calcualtion accuracy. See:
-## https://www.r-project.org/doc/reports/CLoader-dbinom-2002.pdf
-## and
-## http://svn.r-project.org/R/trunk/src/nmath/dbinom.c
-##
-## p(x,n,p) = p(x,n,x/n)*exp(-D(x,n,p))
-## D(x,n,p) being a deviance term.
-##              = x ln (x/(np)) + (n-x) ln((n-x)/(n(1-p)))
-##
-## p(x,n,x/n) rarranges to ->
-##             sqrt(n/(2pi*x*(n-x))) * exp (d(n)-d(x)-d(n-x))
-##                where d(n) = ln(n!*exp(n)/ (sqrt(2pi*n)*n^n)) (overflows)
-##                  = n+gammaln(n+1)-(n+1/2)*log(n)-log(2*pi)/2 (exact)
-##                  = 1./(12 * n) - 1./(360 * n.^3) + 1./(1260 * n.^5) -
-##                     1./(1680 * n.^7) + 1./(1188 * n.^9);# + O(n^-11); (approx.)
-
-function retval = binopdf (x, n, p)
+function y = binopdf (x, n, ps)
 
   if (nargin != 3)
     print_usage ();
   endif
 
   ## ensure all equal size arrays or scalars, expand scalars to common size.
-  [size_mismatch, x, n, p] = common_size (x, n, p);
+  [size_mismatch, x, n, ps] = common_size (x, n, ps);
   if (size_mismatch > 0)
-    error ("binopdf: X, N, and P must be of common size or scalars");
+    error ("binopdf: X, N, and PS must be of common size or scalars.");
   endif
 
   sz_x = size (x); ## save original size for reshape later
-  x = x(:); n = n(:); p = p(:); ## columns for easier vectorization
+  x = x(:); n = n(:); ps = ps(:); ## columns for easier vectorization
 
   ## initialize output, preserve class of output if any are singles
-  if (isa (x, "single") || isa (n, "single") || isa (p, "single"));
-    retval = zeros (numel (x), 1, "single");
+  if (isa (x, "single") || isa (n, "single") || isa (ps, "single"));
+    y = zeros (numel (x), 1, "single");
   else
-    retval = zeros (numel (x), 1);
+    y = zeros (numel (x), 1);
   endif
 
   ## k - index of array locations needing calculation
-  k = (x == fix (x)) & (n == fix (n)) & (n >= 0) & (p >= 0) & (p <= 1) ...
+  k = (x == fix (x)) & (n == fix (n)) & (n >= 0) & (ps >= 0) & (ps <= 1) ...
        & (x >= 0) & (x <= n);
 
   nx = n - x;
-  q = 1 - p;
+  q = 1 - ps;
 
 
   ## Catch special cases ahead of calculations:
 
-  ## Matlab incompatibility: Matalb 2021b returns values for complex inputs
+  ## Matlab incompatibility: Matlab 2021b returns values for complex inputs
   ## despite documentation indicating integer and real value inputs required.
   ## Octave chooses to return an NaN instead.
-  catch_special = (iscomplex (x) | iscomplex (n) | iscomplex (p));
+  catch_special = (iscomplex (x) | iscomplex (n) | iscomplex (ps));
   k(catch_special) = false;
-  retval(catch_special) = NaN;
+  y(catch_special) = NaN;
 
-  ## x = 0 and x = n cases where p != 0 or 1, respectivly
+  ## x = 0 and x = n cases where ps != 0 or 1, respectivly
   ## remove them from k, use alternate calculation to avoid /0
   catch_special = (x == 0)& (! catch_special);
   k(catch_special) = false;
-  retval(catch_special) = exp (n(catch_special) .* log (q(catch_special)));
+  y(catch_special) = exp (n(catch_special) .* log (q(catch_special)));
 
   catch_special = (nx == 0) & (! catch_special);
   k(catch_special) = false;
-  retval(catch_special) = exp (n(catch_special) .* log (p(catch_special)));
+  y(catch_special) = exp (n(catch_special) .* log (ps(catch_special)));
 
 
   ## perform Loader pdf calculation on non-trivial elements
   if (any (k))
-    retval(k) = loader_expansion (x(k), n(k), p(k), nx(k), q(k));
+    y(k) = loader_expansion (x(k), n(k), ps(k), nx(k), q(k));
   endif
 
   ## Trivial case special outputs:
-  ksp = ((p == 0) & (x == 0)) | (p == 1) & (x == n);
-  retval(ksp) = 1;
+  ksp = ((ps == 0) & (x == 0)) | (ps == 1) & (x == n);
+  y(ksp) = 1;
 
-  ## input NaN, n not pos int, or p outside [0,1],
+  ## input NaN, n not pos int, or ps outside [0,1],
   ## set output to NaN (overrides 0 or 1)
-  ksp = (n ~= fix (n)) | (n < 0) | (p < 0) | (p > 1) | isnan (x) ...
-           | isnan (n) | isnan (p);
-  retval(ksp) = NaN;
+  ksp = (n ~= fix (n)) | (n < 0) | (ps < 0) | (ps > 1) | isnan (x) ...
+           | isnan (n) | isnan (ps);
+  y(ksp) = NaN;
 
-  retval = reshape (retval, sz_x); ## restore output to input shape
+  y = reshape (y, sz_x); ## restore output to input shape
 endfunction
 
-function retval = loader_expansion (x, n, p, nx, q)
+function y = loader_expansion (x, n, ps, nx, q)
     ## precalculated constants, d_n from n = 0 to 30
     ## extended from Loader using octave symbolic vpa
     ## out to n = 30
@@ -174,13 +159,13 @@ function retval = loader_expansion (x, n, p, nx, q)
     delta_nx(!nx_precalc) = delta_fn (nx(!nx_precalc));
 
     ## calculate exp(log(pdf));
-    retval = exp ((delta_n - delta_x - delta_nx - ...
-                       deviance (x, n .* p) - ...
+    y = exp ((delta_n - delta_x - delta_nx - ...
+                       deviance (x, n .* ps) - ...
                         deviance (nx, n .* q)) - ...
                          0.5 * (log(2*pi) + log (x) + log (1-x./n)));
 endfunction
 
-function retval = delta_fn (n)
+function y = delta_fn (n)
   ## Stirling formula error term approximations based on Loader paper.
   ## exact expression, n^n overflows to Inf for n > ~145:
   ## = log (n!*exp(n)/(sqrt(2pi*n)*n^n));
@@ -197,11 +182,11 @@ function retval = delta_fn (n)
   ##   =(1/12-(1/360-(1/1260-(1/1680-(1/1188)/n^2)/n^2)/n^2)/n^2)/n;
 
    nn = n.^2;
-   retval = (0.08333333333333333333333333333333333333333 - ...
-      (0.00277777777777777777777777777777777777778 - ...
-      (0.00079365079365079365079365079365079365079 - ...
-      (0.00059523809523809523809523809523809523810 - ...
-      (0.00084175084175084175084175084175084175084)./nn)./nn)./nn)./nn)./n;
+   y = (0.08333333333333333333333333333333333333333 - ...
+       (0.00277777777777777777777777777777777777778 - ...
+       (0.00079365079365079365079365079365079365079 - ...
+       (0.00059523809523809523809523809523809523810 - ...
+       (0.00084175084175084175084175084175084175084)./nn)./nn)./nn)./nn)./n;
 endfunction
 
 function D = deviance (x, np)
@@ -279,10 +264,10 @@ endfunction
 %!error binopdf (1)
 %!error binopdf (1,2)
 %!error binopdf (1,2,3,4)
-%!error <X, N, and P must be> binopdf (1, ones (2), ones (3))
-%!error <X, N, and P must be> binopdf (ones (3), 1, ones (2))
-%!error <X, N, and P must be> binopdf (ones (3), ones (2), 1)
-%!error <X, N, and P must be> binopdf (ones (3), ones (2), ones (2))
-%!error <X, N, and P must be> binopdf (ones (2), ones (3), ones (2))
-%!error <X, N, and P must be> binopdf (ones (2), ones (2), ones (3))
+%!error <X, N, and PS must be> binopdf (1, ones (2), ones (3))
+%!error <X, N, and PS must be> binopdf (ones (3), 1, ones (2))
+%!error <X, N, and PS must be> binopdf (ones (3), ones (2), 1)
+%!error <X, N, and PS must be> binopdf (ones (3), ones (2), ones (2))
+%!error <X, N, and PS must be> binopdf (ones (2), ones (3), ones (2))
+%!error <X, N, and PS must be> binopdf (ones (2), ones (2), ones (3))
 

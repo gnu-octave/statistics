@@ -1,5 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,19 +17,23 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} cauchy_pdf (@var{x})
-## @deftypefnx {} {} cauchy_pdf (@var{x}, @var{location}, @var{scale})
+## @deftypefn  {statistics} @var{y} = cauchy_pdf (@var{x})
+## @deftypefnx {statistics} @var{y} = cauchy_pdf (@var{x}, @var{location}, @var{scale})
+##
+## Cauchy probability density function (PDF).
+##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the Cauchy distribution with location parameter
-## @var{location} and scale parameter @var{scale} > 0.
+## at @var{x} of the Cauchy distribution with location parameter @var{location}
+## and scale parameter @var{scale}.  The size of @var{y} is the common size of
+## @var{x}, @var{location}, and @var{scale}.  A scalar input functions as a
+## constant matrix of the same size as the other inputs.
 ##
 ## Default values are @var{location} = 0, @var{scale} = 1.
+##
+## @seealso{cauchy_cdf, cauchy_inv, cauchy_rnd}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: PDF of the Cauchy distribution
-
-function pdf = cauchy_pdf (x, location = 0, scale = 1)
+function y = cauchy_pdf (x, location = 0, scale = 1)
 
   if (nargin != 1 && nargin != 3)
     print_usage ();
@@ -37,26 +42,27 @@ function pdf = cauchy_pdf (x, location = 0, scale = 1)
   if (! isscalar (location) || ! isscalar (scale))
     [retval, x, location, scale] = common_size (x, location, scale);
     if (retval > 0)
-      error ("cauchy_pdf: X, LOCATION, and SCALE must be of common size or scalars");
+      error (strcat (["cauchy_pdf: X, LOCATION, and SCALE must be of"], ...
+                     [" common size or scalars."]));
     endif
   endif
 
   if (iscomplex (x) || iscomplex (location) || iscomplex (scale))
-    error ("cauchy_pdf: X, LOCATION, and SCALE must not be complex");
+    error ("cauchy_pdf: X, LOCATION, and SCALE must not be complex.");
   endif
 
   if (isa (x, "single") || isa (location, "single") || isa (scale, "single"))
-    pdf = NaN (size (x), "single");
+    y = NaN (size (x), "single");
   else
-    pdf = NaN (size (x));
+    y = NaN (size (x));
   endif
 
   k = ! isinf (location) & (scale > 0) & (scale < Inf);
   if (isscalar (location) && isscalar (scale))
-    pdf = ((1 ./ (1 + ((x - location) / scale) .^ 2))
+    y = ((1 ./ (1 + ((x - location) / scale) .^ 2))
               / pi / scale);
   else
-    pdf(k) = ((1 ./ (1 + ((x(k) - location(k)) ./ scale(k)) .^ 2))
+    y(k) = ((1 ./ (1 + ((x(k) - location(k)) ./ scale(k)) .^ 2))
               / pi ./ scale(k));
   endif
 

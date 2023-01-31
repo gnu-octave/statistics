@@ -1,5 +1,5 @@
 ## Copyright (C) 2003 Alberto Terruzzi <t-albert@libero.it>
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,14 +17,18 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} histfit (@var{x}, @var{nbins})
+## @deftypefn  {statistics} {} histfit (@var{x}, @var{nbins})
+## @deftypefnx {statistics} @var{h} = histfit (@var{x}, @var{nbins})
 ##
 ## Plot histogram with superimposed fitted normal density.
 ##
 ## @code{histfit (@var{x}, @var{nbins})} plots a histogram of the values in
-## the vector @var{x} using @var{nbins} bars in the histogram. With one input
+## the vector @var{x} using @var{nbins} bars in the histogram.  With one input
 ## argument, @var{nbins} is set to the square root of the number of elements in
 ## @var{x}.
+##
+## @code{@var{h} = histfit (@var{x}, @var{nbins})} returns the bins and fitted
+## line handles of the plot in @var{h}.
 ##
 ## Example
 ##
@@ -35,7 +39,7 @@
 ## @seealso{bar, hist, pareto}
 ## @end deftypefn
 
-function histfit (x, nbins)
+function [varargout] = histfit (x, nbins)
 
   if (nargin < 1 || nargin > 2)
     print_usage;
@@ -67,8 +71,12 @@ function histfit (x, nbins)
   ## Necessary normalization to overplot the histogram
   y = row * y * binwidth;
   ## Plot density line over histogram.
-  plot (xb, yb, ";;b", x, y, ";;r-");
+  h = plot (xb, yb, ";;b", x, y, ";;r-");
 
+  ## Return the plot's handle if requested
+  if (nargout == 1)
+    varargout{1} = h;
+  endif
 endfunction
 
 %!demo

@@ -17,13 +17,13 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{C} = multcompare (@var{STATS})
-## @deftypefnx {Function File} @var{C} = multcompare (@var{STATS}, "name", @var{value})
-## @deftypefnx {Function File} [@var{C}, @var{M}] = multcompare (...)
-## @deftypefnx {Function File} [@var{C}, @var{M}, @var{H}] = multcompare (...)
-## @deftypefnx {Function File} [@var{C}, @var{M}, @var{H}, @var{GNAMES}] = multcompare (...)
-## @deftypefnx {Function File} @var{padj} = multcompare (@var{p})
-## @deftypefnx {Function File} @var{padj} = multcompare (@var{p}, "ctype", @var{CTYPE})
+## @deftypefn  {statistics} @var{C} = multcompare (@var{STATS})
+## @deftypefnx {statistics} @var{C} = multcompare (@var{STATS}, "name", @var{value})
+## @deftypefnx {statistics} [@var{C}, @var{M}] = multcompare (...)
+## @deftypefnx {statistics} [@var{C}, @var{M}, @var{H}] = multcompare (...)
+## @deftypefnx {statistics} [@var{C}, @var{M}, @var{H}, @var{GNAMES}] = multcompare (...)
+## @deftypefnx {statistics} @var{padj} = multcompare (@var{p})
+## @deftypefnx {statistics} @var{padj} = multcompare (@var{p}, "ctype", @var{CTYPE})
 ##
 ## Perform posthoc multiple comparison tests or p-value adjustments to control
 ## the family-wise error rate (FWER) or false discovery rate (FDR).
@@ -70,7 +70,7 @@
 ## "hochberg", "fdr", or "lsd". The first five methods control the family-wise
 ## error rate.  The "fdr" method controls false discovery rate (by the original
 ## Benjamini-Hochberg step-up procedure). The final method, "lsd" (or "none"),
-## makes no attempt to control the Type 1 error rate of multiple comparisons. 
+## makes no attempt to control the Type 1 error rate of multiple comparisons.
 ## The coverage of confidence intervals are only corrected for multiple
 ## comparisons in the cases where @var{CTYPE} is "bonferroni", "scheffe" or
 ## "mvt", which control the Type 1 error rate for simultaneous inference.
@@ -133,11 +133,12 @@
 ##
 ## @itemize
 ## @item
-## @var{DISPLAY} is either "on" (the default) to display a graph of the
-## comparisons (e.g. difference between means) and their 100*(1-@var{ALPHA})%
-## intervals, or "off" to omit the graph.  Markers and error bars colored red
-## have multiplicity adjusted p-values < ALPHA, otherwise the markers and error
-## bars are blue.
+## @var{DISPLAY} is either "on" (the default): to display a table and graph of
+## the comparisons (e.g. difference between means), their 100*(1-@var{ALPHA})%
+## intervals and multiplicity adjusted p-values in APA style; or "off": to omit
+## the table and graph. On the graph, markers and error bars colored red have
+## multiplicity adjusted p-values < ALPHA, otherwise the markers and error bars
+## are blue.
 ## @end itemize
 ##
 ## @code{[@dots{}] = multcompare (@var{STATS}, "seed", @var{SEED})}
@@ -168,7 +169,7 @@
 ## and returns adjusted p-values (@var{padj}) computed using the method
 ## @var{CTYPE}. In order of increasing power, @var{CTYPE} for p-value adjustment
 ## can be either "bonferroni", "holm" (default), "hochberg", or "fdr". See
-## above for further information about the @var{CTYPE} methods. 
+## above for further information about the @var{CTYPE} methods.
 ##
 ## @seealso{anova1, anova2, anovan, kruskalwallis, friedman, fitlm}
 ## @end deftypefn
@@ -226,7 +227,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     if ((ALPHA <= 0) || (ALPHA >= 1))
       error("anovan: alpha must be a value between 0 and 1");
     endif
-    
+
     ## Evaluate CTYPE input argument
     if (ismember (CTYPE, {"tukey-kramer", "hsd"}))
       CTYPE = "mvt";
@@ -277,7 +278,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
       padj = feval (CTYPE, p);
       if (size (p, 1) > 1)
         C = padj;
-      else 
+      else
         C = padj';
       endif
       return
@@ -627,19 +628,27 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     else
       H = [];
     endif
-    
+
     ## Print multcompare table on screen if no output argument was requested
     if (nargout == 0 || strcmp (DISPLAY, "on"))
-      printf ("\n          Multiple Comparison (Post Hoc) Test for %s\n\n", ...
-             upper (STATS.source));
-      header = strcat (["Group ID  Group ID    LBoundDiff    EstimatedDiff"],...
-                       ["    UBoundDiff      p-value\n"], ...
+      printf ("\n        %s Multiple Comparison (Post Hoc) Test for %s\n\n", ...
+             upper (CTYPE), upper (STATS.source));
+      header = strcat (["Group ID  Group ID   LBoundDiff   EstimatedDiff"],...
+                       ["   UBoundDiff   p-value\n"], ...
                        ["-------------------------------------------------"],...
-                       ["---------------------------\n"]);
+                       ["---------------------\n"]);
       printf ("%s", header);
       for j = 1:Np
-        printf ("%5i     %5i      %10.3f     %10.3f      %10.3f     %9.6f\n",...
-                C(j,1), C(j,2), C(j,3), C(j,4), C(j,5), C(j,6));
+        if (C(j,6) < 0.001)
+          printf ("%5i     %5i     %10.3f    %10.3f     %10.3f      <.001\n",...
+                  C(j,1), C(j,2), C(j,3), C(j,4), C(j,5));
+        elseif (C(j,6) < 0.9995)
+          printf ("%5i     %5i     %10.3f    %10.3f     %10.3f       .%03u\n",...
+                  C(j,1), C(j,2), C(j,3), C(j,4), C(j,5), round (C(j,6) * 1e+03));
+        else
+          printf ("%5i     %5i     %10.3f    %10.3f     %10.3f      1.000\n",...
+                  C(j,1), C(j,2), C(j,3), C(j,4), C(j,5));
+        endif
       endfor
       printf ("\n");
     endif
@@ -1000,7 +1009,7 @@ endfunction
 %! v = polyval (b, fitted);  # Variance as a function of the fitted values
 %! [P,ATAB,STATS] = anovan (y, g, "weights", v.^-1, "display", "off");
 %! [C, M] =  multcompare (STATS, "display", "on", "ctype", "mvt")
- 
+
 %!demo
 %!
 %! ## Demonstration of p-value adjustments to control the false discovery rate
@@ -1218,7 +1227,7 @@ endfunction
 %!         4,2,3; 4,3,5; 4,2,4; 5,2,4; 5,3,3];
 %! group = [1:3] .* ones (10,3);
 %! [P, ATAB, STATS] = kruskalwallis (data(:), group(:), "off");
-%! C = multcompare (STATS, "ctype", "lsd");
+%! C = multcompare (STATS, "ctype", "lsd", "display", "off");
 %! assert (C(1,6), 0.000163089828959986, 1e-09);
 %! assert (C(2,6), 0.630298044801257, 1e-09);
 %! assert (C(3,6), 0.00100567660695682, 1e-09);
@@ -1226,7 +1235,7 @@ endfunction
 %! assert (C(1,6), 0.000489269486879958, 1e-09);
 %! assert (C(2,6), 1, 1e-09);
 %! assert (C(3,6), 0.00301702982087047, 1e-09);
-%! C = multcompare(STATS, "ctype", "scheffe");
+%! C = multcompare(STATS, "ctype", "scheffe", "display", "off");
 %! assert (C(1,6), 0.000819054880289573, 1e-09);
 %! assert (C(2,6), 0.890628039849261, 1e-09);
 %! assert (C(3,6), 0.00447816059021654, 1e-09);
@@ -1238,11 +1247,11 @@ endfunction
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! [P, ATAB, STATS] = friedman (popcorn, 3, "off");
-%! C = multcompare(STATS, "ctype", "lsd");
+%! C = multcompare(STATS, "ctype", "lsd", "display", "off");
 %! assert (C(1,6), 0.227424558028569, 1e-09);
 %! assert (C(2,6), 0.0327204848315735, 1e-09);
 %! assert (C(3,6), 0.353160353315988, 1e-09);
-%! C = multcompare(STATS, "ctype", "bonferroni");
+%! C = multcompare(STATS, "ctype", "bonferroni", "display", "off");
 %! assert (C(1,6), 0.682273674085708, 1e-09);
 %! assert (C(2,6), 0.0981614544947206, 1e-09);
 %! assert (C(3,6), 1, 1e-09);
@@ -1262,7 +1271,7 @@ endfunction
 %!        25.694 ]';
 %! X = [1 1 1 1 1 1 1 1 2 2 2 2 2 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 5 5 5 5 5 5 5 5 5]';
 %! [TAB,STATS] = fitlm (X,y,"linear","categorical",1,"display","off");
-%! [C, M] = multcompare(STATS, "ctype", "lsd");
+%! [C, M] = multcompare(STATS, "ctype", "lsd", "display", "off");
 %! assert (C(1,6), 2.85812420217898e-05, 1e-09);
 %! assert (C(2,6), 5.22936741204085e-07, 1e-09);
 %! assert (C(3,6), 2.12794763209146e-08, 1e-09);

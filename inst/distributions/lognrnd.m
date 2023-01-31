@@ -16,12 +16,19 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} lognrnd (@var{mu}, @var{sigma})
-## @deftypefnx {} {} lognrnd (@var{mu}, @var{sigma}, @var{r})
-## @deftypefnx {} {} lognrnd (@var{mu}, @var{sigma}, @var{r}, @var{c}, @dots{})
-## @deftypefnx {} {} lognrnd (@var{mu}, @var{sigma}, [@var{sz}])
-## Return a matrix of random samples from the lognormal distribution with
-## parameters @var{mu} and @var{sigma}.
+## @deftypefn  {statistics} @var{r} = lognrnd (@var{mu}, @var{sigma})
+## @deftypefnx {statistics} @var{r} = lognrnd (@var{mu}, @var{sigma}, @var{rows})
+## @deftypefnx {statistics} @var{r} = lognrnd (@var{mu}, @var{sigma}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} @var{r} = lognrnd (@var{mu}, @var{sigma}, [@var{sz}])
+##
+## Random arrays from the lognormal distribution.
+##
+## @code{@var{r} = laplace_rnd (@var{mu}, @var{sigma})} returns an array of
+## random numbers chosen from the lognormal distribution with parameters @var{mu}
+## and @var{sigma}.  The size of @var{r} is the common size of @var{mu} and
+## @var{sigma}.  A scalar input functions as a constant matrix of the same size
+## as the other inputs.  Both parameters must be reals and @var{sigma} > 0.  For
+## @var{sigma} <= 0, NaN is returned.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -29,30 +36,30 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## If no size arguments are given then the result matrix is the common size of
-## @var{mu} and @var{sigma}.
+## @seealso{logncdf, logninv, lognpdf, lognstat}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Random deviates from the log normal distribution
+function r = lognrnd (mu, sigma, varargin)
 
-function rnd = lognrnd (mu, sigma, varargin)
-
+  ## Check for valid number of input arguments
   if (nargin < 2)
     print_usage ();
   endif
 
+  ## Check for common size of P, MU, and SIGMA
   if (! isscalar (mu) || ! isscalar (sigma))
     [retval, mu, sigma] = common_size (mu, sigma);
     if (retval > 0)
-      error ("lognrnd: MU and SIGMA must be of common size or scalars");
+      error ("lognrnd: MU and SIGMA must be of common size or scalars.");
     endif
   endif
 
+  ## Check for X, MU, and SIGMA being reals
   if (iscomplex (mu) || iscomplex (sigma))
-    error ("lognrnd: MU and SIGMA must not be complex");
+    error ("lognrnd: MU and SIGMA must not be complex.");
   endif
 
+  ## Check for SIZE vector or DIMENSION input arguments
   if (nargin == 2)
     sz = size (mu);
   elseif (nargin == 3)
@@ -61,36 +68,40 @@ function rnd = lognrnd (mu, sigma, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error ("lognrnd: dimension vector must be row vector of non-negative integers");
+      error (strcat (["lognrnd: dimension vector must be row vector of"], ...
+                     [" non-negative integers."]));
     endif
   elseif (nargin > 3)
     if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
-      error ("lognrnd: dimensions must be non-negative integers");
+      error ("lognrnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
+  ## Check that parameters match requested dimensions in size
   if (! isscalar (mu) && ! isequal (size (mu), sz))
-    error ("lognrnd: MU and SIGMA must be scalar or of size SZ");
+    error ("lognrnd: MU and SIGMA must be scalar or of size SZ.");
   endif
 
+  ## Check for appropriate class
   if (isa (mu, "single") || isa (sigma, "single"))
     cls = "single";
   else
     cls = "double";
   endif
 
+  ## Generate random sample from lognormal distribution
   if (isscalar (mu) && isscalar (sigma))
     if ((sigma > 0) && (sigma < Inf))
-      rnd = exp (mu + sigma * randn (sz, cls));
+      r = exp (mu + sigma * randn (sz, cls));
     else
-      rnd = NaN (sz, cls);
+      r = NaN (sz, cls);
     endif
   else
-    rnd = exp (mu + sigma .* randn (sz, cls));
+    r = exp (mu + sigma .* randn (sz, cls));
 
     k = (sigma < 0) | (sigma == Inf);
-    rnd(k) = NaN;
+    r(k) = NaN;
   endif
 
 endfunction

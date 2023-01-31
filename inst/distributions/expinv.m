@@ -1,5 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,71 +17,75 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} expinv (@var{x}, @var{lambda})
-## For each element of @var{x}, compute the quantile (the inverse of the CDF)
-## at @var{x} of the exponential distribution with mean @var{lambda}.
+## @deftypefn  {statistics} @var{x} = expinv (@var{p}, @var{mu})
+##
+## Inverse of the exponential cumulative distribution function (iCDF).
+##
+## For each element of @var{p}, compute the quantile (the inverse of the CDF)
+## at @var{p} of the exponential distribution with mean @var{mu}.  The size of
+## @var{x} is the common size of @var{p} and @var{mu}.  A scalar input functions
+## as a constant matrix of the same size as the other inputs.
+##
+## @seealso{expcdf, exppdf, exprnd, expfit, explike, expstat}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Quantile function of the exponential distribution
-
-function inv = expinv (x, lambda)
+function x = expinv (p, mu)
 
   if (nargin != 2)
     print_usage ();
   endif
 
-  if (! isscalar (lambda))
-    [retval, x, lambda] = common_size (x, lambda);
+  if (! isscalar (p) || ! isscalar (mu))
+    [retval, p, mu] = common_size (p, mu);
     if (retval > 0)
-      error ("expinv: X and LAMBDA must be of common size or scalars");
+      error ("expinv: P and MU must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (x) || iscomplex (lambda))
-    error ("expinv: X and LAMBDA must not be complex");
+  if (iscomplex (p) || iscomplex (mu))
+    error ("expinv: P and MU must not be complex.");
   endif
 
-  if (! isscalar (x))
-    sz = size (x);
+  if (! isscalar (p))
+    sz = size (p);
   else
-    sz = size (lambda);
+    sz = size (mu);
   endif
 
-  if (iscomplex (x) || iscomplex (lambda))
-    error ("expinv: X and LAMBDA must not be complex");
+  if (iscomplex (p) || iscomplex (mu))
+    error ("expinv: P and MU must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (lambda, "single"))
-    inv = NaN (size (x), "single");
+  if (isa (p, "single") || isa (mu, "single"))
+    x = NaN (size (p), "single");
   else
-    inv = NaN (size (x));
+    x = NaN (size (p));
   endif
 
-  k = (x == 1) & (lambda > 0);
-  inv(k) = Inf;
+  k = (p == 1) & (mu > 0);
+  x(k) = Inf;
 
-  k = (x >= 0) & (x < 1) & (lambda > 0);
-  if (isscalar (lambda))
-    inv(k) = - lambda * log (1 - x(k));
+  k = (p >= 0) & (p < 1) & (mu > 0);
+  if (isscalar (mu))
+    x(k) = - mu * log (1 - p(k));
   else
-    inv(k) = - lambda(k) .* log (1 - x(k));
+    x(k) = - mu(k) .* log (1 - p(k));
   endif
 
 endfunction
 
 
-%!shared x
-%! x = [-1 0 0.3934693402873666 1 2];
-%!assert (expinv (x, 2*ones (1,5)), [NaN 0 1 Inf NaN], eps)
-%!assert (expinv (x, 2), [NaN 0 1 Inf NaN], eps)
-%!assert (expinv (x, 2*[1 0 NaN 1 1]), [NaN NaN NaN Inf NaN], eps)
-%!assert (expinv ([x(1:2) NaN x(4:5)], 2), [NaN 0 NaN Inf NaN], eps)
+%!shared p
+%! p = [-1 0 0.3934693402873666 1 2];
+%!assert (expinv (p, 2*ones (1,5)), [NaN 0 1 Inf NaN], eps)
+%!assert (expinv (p, 2), [NaN 0 1 Inf NaN], eps)
+%!assert (expinv (p, 2*[1 0 NaN 1 1]), [NaN NaN NaN Inf NaN], eps)
+%!assert (expinv ([p(1:2) NaN p(4:5)], 2), [NaN 0 NaN Inf NaN], eps)
 
 ## Test class of input preserved
-%!assert (expinv ([x, NaN], 2), [NaN 0 1 Inf NaN NaN], eps)
-%!assert (expinv (single ([x, NaN]), 2), single ([NaN 0 1 Inf NaN NaN]), eps)
-%!assert (expinv ([x, NaN], single (2)), single ([NaN 0 1 Inf NaN NaN]), eps)
+%!assert (expinv ([p, NaN], 2), [NaN 0 1 Inf NaN NaN], eps)
+%!assert (expinv (single ([p, NaN]), 2), single ([NaN 0 1 Inf NaN NaN]), eps)
+%!assert (expinv ([p, NaN], single (2)), single ([NaN 0 1 Inf NaN NaN]), eps)
 
 ## Test input validation
 %!error expinv ()

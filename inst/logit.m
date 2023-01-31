@@ -17,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{y} = logit (@var{p})
+## @deftypefn  {statistics} @var{y} = logit (@var{p})
 ##
 ## Compute the logit for each value of @var{p}
 ##

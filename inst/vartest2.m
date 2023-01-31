@@ -18,11 +18,11 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{h} = vartest2 (@var{x}, @var{y})
-## @deftypefnx {Function File} @var{h} = vartest2 (@var{x}, @var{y}, @var{name}, @var{value})
-## @deftypefnx {Function File} [@var{h}, @var{pval}] = vartest2 (@dots{})
-## @deftypefnx {Function File} [@var{h}, @var{pval}, @var{ci}] = vartest2 (@dots{})
-## @deftypefnx {Function File} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = vartest2 (@dots{})
+## @deftypefn  {statistics} @var{h} = vartest2 (@var{x}, @var{y})
+## @deftypefnx {statistics} @var{h} = vartest2 (@var{x}, @var{y}, @var{name}, @var{value})
+## @deftypefnx {statistics} [@var{h}, @var{pval}] = vartest2 (@dots{})
+## @deftypefnx {statistics} [@var{h}, @var{pval}, @var{ci}] = vartest2 (@dots{})
+## @deftypefnx {statistics} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = vartest2 (@dots{})
 ##
 ## Two-sample F test for equal variances.
 ##

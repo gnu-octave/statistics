@@ -1,7 +1,8 @@
-## Copyright (C) 2016 Dag Lyberg
 ## Copyright (C) 1997-2015 Kurt Hornik
+## Copyright (C) 2016 Dag Lyberg
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
-## This file is part of Octave.
+## This file is part of the statistics package for GNU Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -18,14 +19,18 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} tripdf (@var{x}, @var{a}, @var{b}, @var{c})
-## Compute the probability density function (PDF) at @var{x} of the triangular
-## distribution with parameters @var{a}, @var{b}, and @var{c} on the interval
-## [@var{a}, @var{b}].
+## @deftypefn  {statistics} @var{y} = tripdf (@var{x}, @var{a}, @var{b}, @var{c})
+##
+## Triangular probability density function (PDF).
+##
+## For each element of @var{x}, compute the probability density function (PDF)
+## at @var{x} of the triangular distribution with parameters @var{a}, @var{b},
+## and @var{c} on the interval [@var{a}, @var{b}].  The size of @var{y} is the
+## common size of the input arguments.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
+##
+## @seealso{tricdf, triinv, trirnd}
 ## @end deftypefn
-
-## Author: Dag Lyberg <daglyberg80@gmail.com>
-## Description: PDF of the triangular distribution
 
 function pdf = tripdf (x, a, b, c)
 
@@ -33,15 +38,15 @@ function pdf = tripdf (x, a, b, c)
     print_usage ();
   endif
 
-  if (! isscalar (a) || ! isscalar (b) || ! isscalar (c))
+  if (! isscalar (x) || ! isscalar (a) || ! isscalar (b) || ! isscalar (c))
     [retval, x, a, b, c] = common_size (x, a, b, c);
     if (retval > 0)
-      error ("tripdf: X, A, B, and C must be of common size or scalars");
+      error ("tripdf: X, A, B, and C must be of common size or scalars.");
     endif
   endif
 
   if (iscomplex (x) || iscomplex (a) || iscomplex (b) || iscomplex (c))
-    error ("tripdf: X, A, B, and C must not be complex");
+    error ("tripdf: X, A, B, and C must not be complex.");
   endif
 
   if (isa (x, "single") || isa (a, "single") ...
@@ -56,21 +61,13 @@ function pdf = tripdf (x, a, b, c)
 
   k = (x >= a) & (x <= b) & (a < b) & (a <= c) & (c <= b);
   h = 2 ./ (b-a);
-  if (isscalar (a) && isscalar (b) && isscalar (c))
-    j = k & (a <= x) & (x < c);
-    pdf(j) = h * (x(j)-a) / (c-a);
-    j = k & (x == c);
-    pdf(j) = h;
-    j = k & (c < x) & (x <= b);
-    pdf(j) = h * (b-x(j)) / (b-c);
-  else
-    j = k & (a <= x) & (x < c);
-    pdf(j) = h(j) .* (x(j)-a(j)) ./ (c(j)-a(j));
-    j = k & (x == c);
-    pdf(j) = h(j);
-    j = k & (c < x) & (x <= b);
-    pdf(j) = h(j) .* (b(j)-x(j)) ./ (b(j)-c(j));
-  endif
+
+  j = k & (a <= x) & (x < c);
+  pdf(j) = h(j) .* (x(j)-a(j)) ./ (c(j)-a(j));
+  j = k & (x == c);
+  pdf(j) = h(j);
+  j = k & (c < x) & (x <= b);
+  pdf(j) = h(j) .* (b(j)-x(j)) ./ (b(j)-c(j));
 
 endfunction
 

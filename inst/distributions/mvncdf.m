@@ -1,5 +1,5 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2008 Arno Onken <asnelt@asnelt.org>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,13 +17,13 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{y} = mvncdf (@var{x})
-## @deftypefnx {Function File} @var{y} = mvncdf (@var{x}, @var{mu}, @var{sigma})
-## @deftypefnx {Function File} @var{y} = mvncdf (@var{x_lo}, @var{x_up}, @var{mu}, @var{sigma})
-## @deftypefnx {Function File} @var{y} = mvncdf (@dots{}, @var{options})
-## @deftypefnx {Function File} [@var{y}, @var{err}] = mvncdf (@dots{})
+## @deftypefn  {statistics} @var{y} = mvncdf (@var{x})
+## @deftypefnx {statistics} @var{y} = mvncdf (@var{x}, @var{mu}, @var{sigma})
+## @deftypefnx {statistics} @var{y} = mvncdf (@var{x_lo}, @var{x_up}, @var{mu}, @var{sigma})
+## @deftypefnx {statistics} @var{y} = mvncdf (@dots{}, @var{options})
+## @deftypefnx {statistics} [@var{y}, @var{err}] = mvncdf (@dots{})
 ##
-## Multivariate normal cumulative distribution function.
+## Multivariate normal cumulative distribution function (CDF).
 ##
 ## @code{@var{y} = mvncdf (@var{x})} returns cumulative probability of the
 ## multivariate normal distribution evaluated at each row of @var{x} with zero
@@ -73,6 +73,7 @@
 ## integrand has converged successfully.
 ## @end multitable
 ##
+## @seealso{mvncdf, mvnpdf, mvnrnd, bvncdf}
 ## @end deftypefn
 
 function [y, err] = mvncdf (varargin)

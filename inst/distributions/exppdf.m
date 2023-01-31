@@ -1,5 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,45 +17,49 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} exppdf (@var{x}, @var{lambda})
+## @deftypefn  {statistics} @var{y} = exppdf (@var{x}, @var{mu})
+##
+## Exponential probability density function (PDF).
+##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the exponential distribution with mean @var{lambda}.
+## at @var{x} of the exponential distribution with mean @var{mu}.  The size of
+## @var{y} is the common size of @var{x} and @var{mu}.  A scalar input functions
+## as a constant matrix of the same size as the other inputs.
+##
+## @seealso{expcdf, expinv, exprnd, expfit, explike, expstat}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: PDF of the exponential distribution
-
-function pdf = exppdf (x, lambda)
+function y = exppdf (x, mu)
 
   if (nargin != 2)
     print_usage ();
   endif
 
-  if (! isscalar (lambda))
-    [retval, x, lambda] = common_size (x, lambda);
+  if (! isscalar (mu) || ! isscalar (mu))
+    [retval, x, mu] = common_size (x, mu);
     if (retval > 0)
-      error ("exppdf: X and LAMBDA must be of common size or scalars");
+      error ("exppdf: X and MU must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (x) || iscomplex (lambda))
-    error ("exppdf: X and LAMBDA must not be complex");
+  if (iscomplex (x) || iscomplex (mu))
+    error ("exppdf: X and MU must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (lambda, "single"))
-    pdf = zeros (size (x), "single");
+  if (isa (x, "single") || isa (mu, "single"))
+    y = zeros (size (x), "single");
   else
-    pdf = zeros (size (x));
+    y = zeros (size (x));
   endif
 
-  k = isnan (x) | !(lambda > 0);
-  pdf(k) = NaN;
+  k = isnan (x) | !(mu > 0);
+  y(k) = NaN;
 
-  k = (x >= 0) & (x < Inf) & (lambda > 0);
-  if (isscalar (lambda))
-    pdf(k) = exp (-x(k) / lambda) / lambda;
+  k = (x >= 0) & (x < Inf) & (mu > 0);
+  if (isscalar (mu))
+    y(k) = exp (-x(k) / mu) / mu;
   else
-    pdf(k) = exp (-x(k) ./ lambda(k)) ./ lambda(k);
+    y(k) = exp (-x(k) ./ mu(k)) ./ mu(k);
   endif
 
 endfunction

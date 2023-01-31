@@ -1,5 +1,7 @@
 ## Copyright (C) 2003 Alberto Terruzzi <t-albert@libero.it>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -14,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{table} =} tabulate (@var{data}, @var{edges})
+## @deftypefn  {statistics} @var{table} = tabulate (@var{data}, @var{edges})
 ##
 ## Compute a frequency table.
 ##
@@ -30,14 +32,14 @@
 ## If @var{edges} is missed the width of each class is unitary, if @var{edges}
 ## is a scalar then represent the number of classes, or you can define the
 ## width of each bin.
-## @var{table}(@var{k}, 2) will count the value @var{data} (@var{i}) if 
+## @var{table}(@var{k}, 2) will count the value @var{data} (@var{i}) if
 ## @var{edges} (@var{k}) <= @var{data} (@var{i}) < @var{edges} (@var{k}+1).
 ## The  last bin will count the value of @var{data} (@var{i}) if
-## @var{edges}(@var{k}) <= @var{data} (@var{i}) <=  @var{edges} (@var{k}+1).  
+## @var{edges}(@var{k}) <= @var{data} (@var{i}) <=  @var{edges} (@var{k}+1).
 ## Values outside the values in @var{edges} are not counted.  Use -inf and inf
-## in @var{edges} to include all values. 
+## in @var{edges} to include all values.
 ## Tabulate with no output arguments returns a formatted table in the
-## command window. 
+## command window.
 ##
 ## Example
 ##
@@ -63,7 +65,7 @@
 ## Tabulate returns three bins, the first contains the sphere with radius
 ## between 1 and 1.5 mm excluded, the second one contains the sphere with
 ## radius between 1.5 and 2 mm excluded, and the third contains the sphere with
-## radius between 2 and 2.5 mm. 
+## radius between 2 and 2.5 mm.
 ##
 ## @example
 ## bar (table (:, 1), table (:, 2))
@@ -73,10 +75,6 @@
 ##
 ## @seealso{bar, pareto}
 ## @end deftypefn
-
-## Author: Alberto Terruzzi <t-albert@libero.it>
-## Version: 1.0
-## Created: 13 February 2003
 
 function table = tabulate (varargin)
 
@@ -94,7 +92,7 @@ function table = tabulate (varargin)
 
   if nargin == 1 edges = 1:1:max(data)+1;
   else edges = varargin{2};
-  end 
+  end
 
   if isscalar(edges)
     h=(M-m)/edges;
@@ -113,7 +111,7 @@ function table = tabulate (varargin)
       freqtable(k,2)=length(find (data >= edges(k) & data <= edges(k+1)));
     end
     if k == 1 freqtable (k,4) = freqtable(k,2);
-    else freqtable(k,4) = freqtable(k-1,4) + freqtable(k,2); 
+    else freqtable(k,4) = freqtable(k-1,4) + freqtable(k,2);
     end
   end
 

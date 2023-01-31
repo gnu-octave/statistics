@@ -1,5 +1,8 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,21 +19,23 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} stdnormal_rnd (@var{r})
-## @deftypefnx {} {} stdnormal_rnd (@var{r}, @var{c}, @dots{})
-## @deftypefnx {} {} stdnormal_rnd ([@var{sz}])
-## Return a matrix of random samples from the standard normal distribution
-## (mean = 0, standard deviation = 1).
+## @deftypefn  {statistics} @var{r} = stdnormal_rnd (@var{rows})
+## @deftypefnx {statistics} @var{r} = stdnormal_rnd (@var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} @var{r} = stdnormal_rnd ([@var{sz}])
+##
+## Random arrays from the standard normal distribution.
+##
+## @code{@var{r} = raylrnd (@dots{}} returns an array of random numbers chosen
+## from the standard normal distribution (mean = 0, standard deviation = 1).
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
 ## first two arguments are taken as the number of rows and columns and any
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
+##
+## @seealso{normrnd, stdnormal_cdf, stdnormal_inv, stdnormal_pdf}
 ## @end deftypefn
-
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Random deviates from the standard normal distribution
 
 function rnd = stdnormal_rnd (varargin)
 
@@ -44,11 +49,12 @@ function rnd = stdnormal_rnd (varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error ("stdnormal_rnd: dimension vector must be row vector of non-negative integers");
+      error (strcat (["stdnormal_rnd: dimension vector must be row"], ...
+                     [" vector of non-negative integers."]));
     endif
   elseif (nargin > 1)
     if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
-      error ("stdnormal_rnd: dimensions must be non-negative integers");
+      error ("stdnormal_rnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif

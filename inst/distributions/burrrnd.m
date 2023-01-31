@@ -1,5 +1,6 @@
-## Copyright (C) 2016 Dag Lyberg
 ## Copyright (C) 1995-2015 Kurt Hornik
+## Copyright (C) 2016 Dag Lyberg
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of Octave.
 ##
@@ -18,12 +19,18 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} burrrnd (@var{alpha}, @var{c}, @var{k})
-## @deftypefnx {} {} burrrnd (@var{alpha}, @var{c}, @var{k}, @var{r})
-## @deftypefnx {} {} burrrnd (@var{alpha}, @var{c}, @var{k}, @var{r}, @var{c}, @dots{})
-## @deftypefnx {} {} burrrnd (@var{alpha}, @var{c}, @var{k}, [@var{sz}])
-## Return a matrix of random samples from the generalized Pareto distribution
-## with scale parameter @var{alpha} and shape parameters @var{c} and @var{k}.
+## @deftypefn  {statistics} @var{r} = burrrnd (@var{a}, @var{c}, @var{k})
+## @deftypefnx {statistics} @var{r} = burrrnd (@var{a}, @var{c}, @var{k}, @var{rows})
+## @deftypefnx {statistics} @var{r} = burrrnd (@var{a}, @var{c}, @var{k}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} @var{r} = burrrnd (@var{a}, @var{c}, @var{k}, [@var{sz}])
+##
+## Random arrays from the Burr type XII distribution.
+##
+## @code{@var{r} = burrrnd (@var{a}, @var{c}, @var{k})} returns an array of
+## random numbers chosen from the Burr type XII distribution with parameters
+## @var{a}, @var{c}, and @var{k}.  The size of @var{r} is the common size of
+## @var{a}, @var{c}, and @var{k}.  A scalar input functions as a constant matrix
+## of the same size as the other inputs.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -31,72 +38,69 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## If no size arguments are given then the result matrix is the common size of
-## @var{alpha}, @var{c} and @var{k}.
+## @seealso{burrcdf, burrinv, burrpdf}
 ## @end deftypefn
 
-## Author: Dag Lyberg <daglyberg80@gmail.com>
-## Description: Random deviates from the generalized extreme value (GEV) distribution
-
-function rnd = burrrnd (alpha, c, k, varargin)
+function r = burrrnd (a, c, k, varargin)
 
   if (nargin < 3)
     print_usage ();
   endif
 
-  if (! isscalar (alpha) || ! isscalar (c) || ! isscalar (k))
-    [retval, alpha, c, k] = common_size (alpha, c, k);
+  if (! isscalar (a) || ! isscalar (c) || ! isscalar (k))
+    [retval, a, c, k] = common_size (a, c, k);
     if (retval > 0)
-      error ("burrrnd: ALPHA, C and K must be of common size or scalars");
+      error ("burrrnd: A, C, and K must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (alpha) || iscomplex (c) || iscomplex (k))
-    error ("burrrnd: ALPHA, C and K must not be complex");
+  if (iscomplex (a) || iscomplex (c) || iscomplex (k))
+    error ("burrrnd: A, C, and K must not be complex.");
   endif
 
   if (nargin == 3)
-    sz = size (alpha);
+    sz = size (a);
   elseif (nargin == 4)
     if (isscalar (varargin{1}) && varargin{1} >= 0)
       sz = [varargin{1}, varargin{1}];
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error ("burrrnd: dimension vector must be row vector of non-negative integers");
+      error (strcat (["burrrnd: dimension vector must be row vector of"], ...
+                     [" non-negative integers."]));
     endif
   elseif (nargin > 4)
     if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
-      error ("burrrnd: dimensions must be non-negative integers");
+      error ("burrrnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
-  if (! isscalar (alpha) && ! isequal (size (c), sz) && ! isequal (size (k), sz))
-    error ("burrrnd: ALPHA, C and K must be scalar or of size SZ");
+  if (! isscalar (a) && ! isequal (size (c), sz) && ! isequal (size (k), sz))
+    error ("burrrnd: A, C, and K must be scalar or of size SZ.");
   endif
 
-  if (isa (alpha, "single") || isa (c, "single") || isa (k, "single"))
+  if (isa (a, "single") || isa (c, "single") || isa (k, "single"))
     cls = "single";
   else
     cls = "double";
   endif
 
-  if (isscalar (alpha) && isscalar (c) && isscalar(k))
-    if ((0 < alpha) && (alpha < Inf) && (0 < c) && (c < Inf) ...
+  if (isscalar (a) && isscalar (c) && isscalar(k))
+    if ((0 < a) && (a < Inf) && (0 < c) && (c < Inf) ...
         && (0 < k) && (k < Inf))
-      rnd = rand (sz, cls);
-      rnd(:) = ((1 - rnd(:) / alpha).^(-1 / k) - 1).^(1 / c);
+      r = rand (sz, cls);
+      r(:) = ((1 - r(:) / a).^(-1 / k) - 1).^(1 / c);
     else
-      rnd = NaN (sz, cls);
+      r = NaN (sz, cls);
     endif
   else
-    rnd = NaN (sz, cls);
+    r = NaN (sz, cls);
 
-    j = (0 < alpha) && (alpha < Inf) && (0 < c) && (c < Inf) ...
+    j = (0 < a) && (a < Inf) && (0 < c) && (c < Inf) ...
         && (0 < k) && (k < Inf);
-    rnd(k) = rand(sum(j(:)),1);
-    rnd(k) = ((1 - rnd(j) / alpha(j)).^(-1 ./ k(j)) - 1).^(1 ./ c(j));
+    r(k) = rand(sum(j(:)),1);
+    r(k) = ((1 - r(j) / a(j)).^(-1 ./ k(j)) - 1).^(1 ./ c(j));
   endif
 
 endfunction

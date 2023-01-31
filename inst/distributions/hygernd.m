@@ -1,6 +1,9 @@
-## Copyright (C) 2022 Nicholas R. Jankowski
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1997-2016 Kurt Hornik
+## Copyright (C) 2022 Nicholas R. Jankowski
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -17,12 +20,18 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} hygernd (@var{t}, @var{m}, @var{n})
-## @deftypefnx {} {} hygernd (@var{t}, @var{m}, @var{n}, @var{r})
-## @deftypefnx {} {} hygernd (@var{t}, @var{m}, @var{n}, @var{r}, @var{c}, @dots{})
-## @deftypefnx {} {} hygernd (@var{t}, @var{m}, @var{n}, [@var{sz}])
-## Return a matrix of random samples from the hypergeometric distribution
-## with parameters @var{t}, @var{m}, and @var{n}.
+## @deftypefn  {statistics} {} hygernd (@var{t}, @var{m}, @var{n})
+## @deftypefnx {statistics} {} hygernd (@var{t}, @var{m}, @var{n}, @var{rows})
+## @deftypefnx {statistics} {} hygernd (@var{t}, @var{m}, @var{n}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {} hygernd (@var{t}, @var{m}, @var{n}, [@var{sz}])
+##
+## Random arrays from the hypergeometric distribution.
+##
+## @code{@var{r} = hygernd ((@var{t}, @var{m}, @var{n}} returns an array of
+## random numbers chosen from the hypergeometric distribution with parameters
+## @var{t}, @var{m}, and @var{n}.  The size of @var{r} is the common size of the
+## input parameters.  A scalar input functions as a constant matrix of the same
+## size as the other inputs.
 ##
 ## The parameters @var{t}, @var{m}, and @var{n} must be positive integers
 ## with @var{m} and @var{n} not greater than @var{t}.
@@ -33,11 +42,10 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## If no size arguments are given then the result matrix is the common size of
-## @var{t}, @var{m}, and @var{n}.
+## @seealso{hygecdf, hygeinv, hygepdf, hygestat}
 ## @end deftypefn
 
-function rnd = hygernd (t, m, n, varargin)
+function r = hygernd (t, m, n, varargin)
 
   if (nargin < 3)
     print_usage ();
@@ -88,16 +96,16 @@ function rnd = hygernd (t, m, n, varargin)
     if (ok)
       v = 0:n;
       p = hygepdf (v, t, m, n);
-      rnd = v(lookup (cumsum (p(1:end-1)) / sum (p), rand (sz)) + 1);
-      rnd = reshape (rnd, sz);
+      r = v(lookup (cumsum (p(1:end-1)) / sum (p), rand (sz)) + 1);
+      r = reshape (r, sz);
       if (strcmp (cls, "single"))
-        rnd = single (rnd);
+        r = single (r);
       endif
     else
-      rnd = NaN (sz, cls);
+      r = NaN (sz, cls);
     endif
   else
-    rnd = NaN (sz, cls);
+    r = NaN (sz, cls);
     n = n(ok);
     num_n = numel (n);
     v = 0 : max (n(:));
@@ -112,7 +120,7 @@ function rnd = hygernd (t, m, n, varargin)
     p(p>=0) = NaN;  #NaN values ignored by max
     [p_match, p_match_idx] = max (p, [], 2);
     p_match_idx(isnan(p_match)) = 0; #rand < min(p) gives NaN, reset to 0
-    rnd(ok) = v(p_match_idx + 1);
+    r(ok) = v(p_match_idx + 1);
   endif
 
 endfunction

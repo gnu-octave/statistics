@@ -198,7 +198,7 @@ void read(string filename, ColumnVector &label_vec, SparseMatrix &instance_mat)
 
 DEFUN_DLD (libsvmread, args, nargout,
            "-*- texinfo -*-\n\
-@deftypefn{Function} [@var{labels}, @var{data}] = libsvmread (@var{filename})\n\
+@deftypefn  {statistics} [@var{labels}, @var{data}] = libsvmread (@var{filename})\n\
 \n\
 \n\
 This function reads the labels and the corresponding instance_matrix from a \
@@ -229,7 +229,8 @@ function. \
 
 /*
 %!error <libsvmread: filename must be a string.> [L, D] = libsvmread (24);
-%!error <libsvmread: wrong number of input or output arguments.> D = libsvmread ("filename");
+%!error <libsvmread: wrong number of input or output arguments.> ...
+%! D = libsvmread ("filename");
 %!test
 %! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
 %! assert (size (L), [270, 1]);

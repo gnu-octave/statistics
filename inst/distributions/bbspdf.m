@@ -1,8 +1,9 @@
 ## Copyright (C) 2018 John Donoghue
 ## Copyright (C) 2016 Dag Lyberg
 ## Copyright (C) 1995-2015 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
-## This file is part of Octave.
+## This file is part of the statistics package for GNU Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -19,46 +20,52 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} bbspdf (@var{x}, @var{shape}, @var{scale}, @var{location})
+## @deftypefn  {statistics} @var{y} = bbspdf (@var{x}, @var{shape}, @var{scale}, @var{location})
+##
+## Birnbaum-Saunders probability density function (PDF).
+##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the Birnbaum-Saunders distribution with parameters
-## @var{location}, @var{scale} and @var{shape}.
+## at @var{x} of the Birnbaum-Saunders distribution with parameters @var{shape},
+## @var{scale}, and @var{location}.  The size of @var{y} is the common size of
+## @var{x}, @var{shape}, @var{scale}, and @var{location}.  A scalar input
+## functions as a constant matrix of the same size as the other inputs.
+##
+## @seealso{bbscdf, bbsinv, bbsrnd}
 ## @end deftypefn
 
-## Author: Dag Lyberg <daglyberg80@gmail.com>
-## Description: PDF of the Birnbaum-Saunders distribution
-
-function pdf = bbspdf (x, shape, scale, location)
+function y = bbspdf (x, shape, scale, location)
 
   if (nargin != 4)
     print_usage ();
   endif
 
-  if (! isscalar (location) || ! isscalar (scale) || ! isscalar(shape))
-    [retval, x, location, scale, shape] = ...
-        common_size (x, location, scale, shape);
+  if (! isscalar (x) || ! isscalar (shape) || ! isscalar (scale) ...
+                     || ! isscalar(location))
+    [retval, x, shape, scale, location] = ...
+        common_size (x, shape, scale, location);
     if (retval > 0)
-      error ("bbspdf: X, LOCATION, SCALE and SHAPE must be of common size or scalars");
+      error (strcat (["bbspdf: X, SHAPE, SCALE, and LOCATION must be of"], ...
+                     [" common size or scalars."]));
     endif
   endif
 
-  if (iscomplex (x) || iscomplex (location) ...
-      || iscomplex (scale) || iscomplex(shape))
-    error ("bbspdf: X, LOCATION, SCALE and SHAPE must not be complex");
+  if (iscomplex (x) || iscomplex (shape) || iscomplex (scale) ...
+                    || iscomplex(location))
+    error ("bbspdf: X, SHAPE, SCALE, and LOCATION must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (location, "single") || isa (scale, "single") ...
-      || isa (shape, "single"))
-    pdf = zeros (size (x), "single");
+  if (isa (x, "single") || isa (shape, "single") || isa (scale, "single") ...
+                        || isa (location, "single"))
+    y = zeros (size (x), "single");
   else
-    pdf = zeros (size (x));
+    y = zeros (size (x));
   endif
 
   k = isnan (x) | ! (-Inf < location) | ! (location < Inf) ...
       | ! (scale > 0) | ! (scale < Inf) ...
       | ! (shape > 0) | ! (shape < Inf);
 
-  pdf(k) = NaN;
+  y(k) = NaN;
 
   k = (x > location) & (x < Inf) & (-Inf < location) ...
       & (location < Inf) & (0 < scale) & (scale < Inf) ...
@@ -67,17 +74,17 @@ function pdf = bbspdf (x, shape, scale, location)
   if (isscalar (location) && isscalar(scale) && isscalar(shape))
     a = x(k) - location;
     b = sqrt(a ./ scale);
-    pdf(k) = ((b + b.^-1) ./ (2 * shape * a)) ...
+    y(k) = ((b + b.^-1) ./ (2 * shape * a)) ...
         .* normpdf ((b - b.^-1) / shape);
   else
     a = x(k) - location(k);
     b = sqrt(a ./ scale(k));
-    pdf(k) = ((b + b.^-1) ./ (2 * shape(k).* a)) ...
+    y(k) = ((b + b.^-1) ./ (2 * shape(k).* a)) ...
         .* normpdf ((b - b.^-1) ./ shape(k));
   endif
 endfunction
 
-
+## Test results
 %!shared x,y
 %! x = [-1, 0, 1, 2, Inf];
 %! y = [0, 0, 0.3989422804014327, 0.1647717335503959, 0];

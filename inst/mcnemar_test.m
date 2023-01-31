@@ -1,5 +1,7 @@
 ## Copyright (C) 1996-2017 Kurt Hornik
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
 ## published by the Free Software Foundation, either version 3 of the
@@ -15,7 +17,10 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {[@var{pval}, @var{chisq}, @var{df}] =} mcnemar_test (@var{x})
+## @deftypefn  {statistics} [@var{pval}, @var{chisq}, @var{df}] = mcnemar_test (@var{x})
+##
+## Perform a McNemar's test.
+##
 ## For a square contingency table @var{x} of data cross-classified on the row
 ## and column variables, @nospell{McNemar's} test can be used for testing the
 ## null hypothesis of symmetry of the classification probabilities.
@@ -28,9 +33,6 @@
 ##
 ## If no output argument is given, the p-value of the test is displayed.
 ## @end deftypefn
-
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: McNemar's test for symmetry
 
 function [pval, chisq, df] = mcnemar_test (x)
 

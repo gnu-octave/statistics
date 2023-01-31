@@ -1,6 +1,7 @@
 ## Copyright (C) 2016-2017 Lachlan Andrew
 ## Copyright (C) 2012-2016 Rik Wehbring
 ## Copyright (C) 1995-2012 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -17,77 +18,84 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} binoinv (@var{x}, @var{n}, @var{p})
-## For each element of @var{x}, compute the quantile (the inverse of the CDF)
-## at @var{x} of the binomial distribution with parameters
-## @var{n} and @var{p}, where @var{n} is the number of trials and
-## @var{p} is the probability of success.
+## @deftypefn  {statistics} @var{x} = binoinv (@var{p}, @var{n}, @var{ps})
+##
+## Inverse of the Binomial cumulative distribution function (iCDF).
+##
+## For each element of @var{p}, compute the quantile (the inverse of the CDF)
+## at @var{p} of the binomial distribution with parameters @var{n} and @var{ps},
+## where @var{n} is the number of trials and @var{ps} is the probability of
+## success.  The size of @var{x} is the common size of @var{p}, @var{n}, and
+## @var{ps}.  A scalar input functions as a constant matrix of the same size as
+## the other inputs.
+##
+## @seealso{binocdf, binopdf, binornd, binostat, binotest}
 ## @end deftypefn
 
-function inv = binoinv (x, n, p)
+function x = binoinv (p, n, ps)
 
   if (nargin != 3)
     print_usage ();
   endif
 
-  if (! isscalar (n) || ! isscalar (p))
-    [retval, x, n, p] = common_size (x, n, p);
+  if (! isscalar (n) || ! isscalar (ps))
+    [retval, p, n, ps] = common_size (p, n, ps);
     if (retval > 0)
-      error ("binoinv: X, N, and P must be of common size or scalars");
+      error ("binoinv: X, N, and PS must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (x) || iscomplex (n) || iscomplex (p))
-    error ("binoinv: X, N, and P must not be complex");
+  if (iscomplex (p) || iscomplex (n) || iscomplex (ps))
+    error ("binoinv: X, N, and PS must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (n, "single") || isa (p, "single"));
-    inv = zeros (size (x), "single");
+  if (isa (p, "single") || isa (n, "single") || isa (ps, "single"));
+    x = zeros (size (p), "single");
   else
-    inv = zeros (size (x));
+    x = zeros (size (p));
   endif
 
-  k = (!(x >= 0) | !(x <= 1) | !(n >= 0) | (n != fix (n)) |
-       !(p >= 0) | !(p <= 1));
-  inv(k) = NaN;
+  k = (!(p >= 0) | !(p <= 1) | !(n >= 0) | (n != fix (n)) | ...
+       !(ps >= 0) | !(ps <= 1));
+  x(k) = NaN;
 
-  k = find ((x >= 0) & (x <= 1) & (n >= 0) & (n == fix (n)
-             & (p >= 0) & (p <= 1)));
+  k = find ((p >= 0) & (p <= 1) & (n >= 0) & (n == fix (n)
+             & (ps >= 0) & (ps <= 1)));
   if (! isempty (k))
-    x = x(k);
-    if (isscalar (n) && isscalar (p))
-      [inv(k), unfinished] = scalar_binoinv (x(:), n, p);
+    p = p(k);
+    if (isscalar (n) && isscalar (ps))
+      [x(k), unfinished] = scalar_binoinv (p(:), n, ps);
       k = k(unfinished);
       if (! isempty (k))
-        inv(k) = bin_search_binoinv (x(k), n, p);
+        x(k) = bin_search_binoinv (p(k), n, ps);
       endif
     else
-      [inv(k), unfinished] = vector_binoinv (x(:), n(:), p(:));
+      [x(k), unfinished] = vector_binoinv (p(:), n(:), ps(:));
       k = k(unfinished);
       if (! isempty (k))
-        inv(k) = bin_search_binoinv (x(k), n(k), p(k));
+        x(k) = bin_search_binoinv (p(k), n(k), ps(k));
       endif
     endif
   endif
 
 endfunction
 
-## Core algorithm to calculate the inverse binomial, for n and p real scalars
-## and y a column vector, and for which the output is not NaN or Inf.
-## Compute CDF in batches of doubling size until CDF > x, or answer > 500
+## Core algorithm to calculate the inverse binomial, for n and ps real scalars
+## and x a column vector, and for which the output is not NaN or Inf.
+## Compute CDF in batches of doubling size until CDF > p, or answer > 500
 ## Return the locations of unfinished cases in k.
-function [m, k] = scalar_binoinv (x, n, p)
+function [m, k] = scalar_binoinv (p, n, ps)
 
-  k = 1:length (x);
-  m = zeros (size (x));
+  k = 1:length (p);
+  m = zeros (size (p));
   prev_limit = 0;
   limit = 10;
   cdf = 0;
   v = 0;
   do
-    cdf = binocdf (prev_limit:limit-1, n, p);
-    r = bsxfun (@le, x(k), cdf);
-    [v, m(k)] = max (r, [], 2);     # find first instance of x <= cdf
+    cdf = binocdf (prev_limit:limit-1, n, ps);
+    r = bsxfun (@le, p(k), cdf);
+    [v, m(k)] = max (r, [], 2);     # find first instance of p <= cdf
     m(k) += prev_limit - 1;
     k = k(v == 0);
 
@@ -97,15 +105,15 @@ function [m, k] = scalar_binoinv (x, n, p)
 
 endfunction
 
-## Core algorithm to calculate the inverse binomial, for n, p, and y column
+## Core algorithm to calculate the inverse binomial, for n, ps, and x column
 ## vectors, and for which the output is not NaN or Inf.
-## Compute CDF in batches of doubling size until CDF > x, or answer > 500
+## Compute CDF in batches of doubling size until CDF > p, or answer > 500
 ## Return the locations of unfinished cases in k.
 ## Calculates CDF by summing PDF, which is faster than calls to binocdf.
-function [m, k] = vector_binoinv (x, n, p)
+function [m, k] = vector_binoinv (p, n, ps)
 
-  k = 1:length(x);
-  m = zeros (size (x));
+  k = 1:length(p);
+  m = zeros (size (p));
   prev_limit = 0;
   limit = 10;
   cdf = 0;
@@ -113,12 +121,12 @@ function [m, k] = vector_binoinv (x, n, p)
   do
     xx = repmat (prev_limit:limit-1, [length(k), 1]);
     nn = kron (ones (1, limit-prev_limit), n(k));
-    pp = kron (ones (1, limit-prev_limit), p(k));
+    pp = kron (ones (1, limit-prev_limit), ps(k));
     pdf = binopdf (xx, nn, pp);
     pdf(:,1) += cdf(v==0, end);
     cdf = cumsum (pdf, 2);
-    r = bsxfun (@le, x(k), cdf);
-    [v, m(k)] = max (r, [], 2);     # find first instance of x <= cdf
+    r = bsxfun (@le, p(k), cdf);
+    [v, m(k)] = max (r, [], 2);     # find first instance of p <= cdf
     m(k) += prev_limit - 1;
     k = k(v == 0);
 
@@ -129,19 +137,19 @@ function [m, k] = vector_binoinv (x, n, p)
 endfunction
 
 ## Vectorized binary search.
-## Can handle vectors n and p, and is faster than the scalar case when the
+## Can handle vectors n and ps, and is faster than the scalar case when the
 ## answer is large.
-## Could be optimized to call binocdf only for a subset of the x at each stage,
-## but care must be taken to handle both scalar and vector n, p.  Bookkeeping
+## Could be optimized to call binocdf only for a subset of the p at each stage,
+## but care must be taken to handle both scalar and vector n, ps.  Bookkeeping
 ## may cost more than the extra computations.
-function m = bin_search_binoinv (x, n, p)
+function m = bin_search_binoinv (p, n, ps)
 
-  k = 1:length (x);
-  lower = zeros (size (x));
+  k = 1:length (p);
+  lower = zeros (size (p));
   limit = 500;              # lower bound on point at which prev phase finished
   while (any (k) && limit < 1e100)
-    cdf = binocdf (limit, n, p);
-    k = (x > cdf);
+    cdf = binocdf (limit, n, ps);
+    k = (p > cdf);
     lower(k) = limit;
     limit += limit;
   endwhile
@@ -149,39 +157,39 @@ function m = bin_search_binoinv (x, n, p)
   k = find (lower != limit/2);       # elements for which above loop finished
   for i = 1:ceil (log2 (max (lower)))
     mid = (upper + lower)/2;
-    cdf = binocdf (floor(mid(:)), n, p);
-    r = (x <= cdf);
+    cdf = binocdf (floor(mid(:)), n, ps);
+    r = (p <= cdf);
     upper(r)  = mid(r);
     lower(! r) = mid(! r);
   endfor
   m = ceil (lower);
-  m(x > binocdf (m(:), n, p)) += 1;  # fix off-by-one errors from binary search
+  m(p > binocdf (m(:), n, ps)) += 1;  # fix off-by-one errors from binary search
 
 endfunction
 
 
-%!shared x
-%! x = [-1 0 0.5 1 2];
-%!assert (binoinv (x, 2*ones (1,5), 0.5*ones (1,5)), [NaN 0 1 2 NaN])
-%!assert (binoinv (x, 2, 0.5*ones (1,5)), [NaN 0 1 2 NaN])
-%!assert (binoinv (x, 2*ones (1,5), 0.5), [NaN 0 1 2 NaN])
-%!assert (binoinv (x, 2*[0 -1 NaN 1.1 1], 0.5), [NaN NaN NaN NaN NaN])
-%!assert (binoinv (x, 2, 0.5*[0 -1 NaN 3 1]), [NaN NaN NaN NaN NaN])
-%!assert (binoinv ([x(1:2) NaN x(4:5)], 2, 0.5), [NaN 0 NaN 2 NaN])
+%!shared p
+%! p = [-1 0 0.5 1 2];
+%!assert (binoinv (p, 2*ones (1,5), 0.5*ones (1,5)), [NaN 0 1 2 NaN])
+%!assert (binoinv (p, 2, 0.5*ones (1,5)), [NaN 0 1 2 NaN])
+%!assert (binoinv (p, 2*ones (1,5), 0.5), [NaN 0 1 2 NaN])
+%!assert (binoinv (p, 2*[0 -1 NaN 1.1 1], 0.5), [NaN NaN NaN NaN NaN])
+%!assert (binoinv (p, 2, 0.5*[0 -1 NaN 3 1]), [NaN NaN NaN NaN NaN])
+%!assert (binoinv ([p(1:2) NaN p(4:5)], 2, 0.5), [NaN 0 NaN 2 NaN])
 
 ## Test class of input preserved
-%!assert (binoinv ([x, NaN], 2, 0.5), [NaN 0 1 2 NaN NaN])
-%!assert (binoinv (single ([x, NaN]), 2, 0.5), single ([NaN 0 1 2 NaN NaN]))
-%!assert (binoinv ([x, NaN], single (2), 0.5), single ([NaN 0 1 2 NaN NaN]))
-%!assert (binoinv ([x, NaN], 2, single (0.5)), single ([NaN 0 1 2 NaN NaN]))
+%!assert (binoinv ([p, NaN], 2, 0.5), [NaN 0 1 2 NaN NaN])
+%!assert (binoinv (single ([p, NaN]), 2, 0.5), single ([NaN 0 1 2 NaN NaN]))
+%!assert (binoinv ([p, NaN], single (2), 0.5), single ([NaN 0 1 2 NaN NaN]))
+%!assert (binoinv ([p, NaN], 2, single (0.5)), single ([NaN 0 1 2 NaN NaN]))
 
 ## Test accuracy, to within +/- 1 since it is a discrete distribution
-%!shared y, tol
-%! y = magic (3) + 1;
+%!shared x, tol
+%! x = magic (3) + 1;
 %! tol = 1;
 %!assert (binoinv (binocdf (1:10, 11, 0.1), 11, 0.1), 1:10, tol)
 %!assert (binoinv (binocdf (1:10, 2*(1:10), 0.1), 2*(1:10), 0.1), 1:10, tol)
-%!assert (binoinv (binocdf (y, 2*y, 1./y), 2*y, 1./y), y, tol)
+%!assert (binoinv (binocdf (x, 2*x, 1./x), 2*x, 1./x), x, tol)
 
 ## Test input validation
 %!error binoinv ()

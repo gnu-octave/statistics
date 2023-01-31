@@ -1,5 +1,6 @@
-## Copyright (C) 2016 Dag Lyberg
 ## Copyright (C) 1995-2015 Kurt Hornik
+## Copyright (C) 2016 Dag Lyberg
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of Octave.
 ##
@@ -18,72 +19,76 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} burrinv (@var{x}, @var{alpha}, @var{c}, @var{k})
-## For each element of @var{x}, compute the quantile (the inverse of the CDF)
-## at @var{x} of the Burr distribution with scale parameter @var{alpha} and
-## shape parameters @var{c} and @var{k}.
+## @deftypefn  {statistics} @var{x} = burrinv (@var{p}, @var{a}, @var{c}, @var{k})
+##
+## Inverse of the Burr type XII cumulative distribution function (iCDF).
+##
+## For each element of @var{p}, compute the quantile (the inverse of the CDF)
+## at @var{p} of the Burr type XII distribution with parameters @var{a},
+## @var{c}, and @var{k}.  The size of @var{x} is the common size of
+## @var{p}, @var{a}, @var{c}, and @var{k}.  A scalar input functions as a
+## constant matrix of the same size as the other inputs.
+##
+## @seealso{burrcdf, burrpdf, burrrnd}
 ## @end deftypefn
 
-## Author: Dag Lyberg <daglyberg80@gmail.com>
-## Description: Quantile function of the Burr distribution
-
-function inv = burrinv (x, alpha, c, k)
+function x = burrinv (p, a, c, k)
 
   if (nargin != 4)
     print_usage ();
   endif
 
-  if (! isscalar (alpha) || ! isscalar (c) || ! isscalar (k) )
-    [retval, x, alpha, c, k] = common_size (x, alpha, c, k);
+  if (! isscalar (p) ||! isscalar (a) || ! isscalar (c) || ! isscalar (k))
+    [retval, p, a, c, k] = common_size (p, a, c, k);
     if (retval > 0)
-      error ("burrinv: X, ALPHA, C AND K must be of common size or scalars");
+      error ("burrinv: P, A, C, AND K must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (x) || iscomplex(alpha) || iscomplex (c) || iscomplex (k))
-    error ("burrinv: X, ALPHA, C AND K must not be complex");
+  if (iscomplex (p) || iscomplex(a) || iscomplex (c) || iscomplex (k))
+    error ("burrinv: P, A, C, AND K must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (alpha, "single") || isa (c, "single") ...
+  if (isa (p, "single") || isa (a, "single") || isa (c, "single") ...
       || isa (k, "single"))
-    inv = zeros (size (x), "single");
+    x = zeros (size (p), "single");
   else
-    inv = zeros (size (x));
+    x = zeros (size (p));
   endif
 
-  j = isnan (x) | (x < 0) | (x > 1) | ! (alpha > 0) | ! (c > 0) | ! (k > 0);
-  inv(j) = NaN;
+  j = isnan (p) | (p < 0) | (p > 1) | ! (a > 0) | ! (c > 0) | ! (k > 0);
+  x(j) = NaN;
 
-  j = (x == 1) & (0 < alpha) & (alpha < Inf) & (0 < c) & (c < Inf) ...
+  j = (p == 1) & (0 < a) & (a < Inf) & (0 < c) & (c < Inf) ...
       & (0 < k) & (k < Inf);
-  inv(j) = Inf;
+  x(j) = Inf;
 
-  j = (0 < x) & (x < 1) & (0 < alpha) & (alpha < Inf) & (0 < c) & (c < Inf) ...
+  j = (0 < p) & (p < 1) & (0 < a) & (a < Inf) & (0 < c) & (c < Inf) ...
       & (0 < k) & (k < Inf);
-  if (isscalar (alpha) && isscalar(c) && isscalar(k))
-    inv(j) = ((1 - x(j) / alpha).^(-1 / k) - 1).^(1 / c) ;
+  if (isscalar (a) && isscalar(c) && isscalar(k))
+    x(j) = ((1 - p(j) / a).^(-1 / k) - 1).^(1 / c) ;
   else
-    inv(j) = ((1 - x(j) ./ alpha(j)).^(-1 ./ k(j)) - 1).^(1 ./ c(j)) ;
+    x(j) = ((1 - p(j) ./ a(j)).^(-1 ./ k(j)) - 1).^(1 ./ c(j)) ;
   endif
 
 endfunction
 
 
-%!shared x,y
-%! x = [-Inf, -1, 0, 1/2, 1, 2, Inf];
+%!shared p,y
+%! p = [-Inf, -1, 0, 1/2, 1, 2, Inf];
 %! y = [NaN, NaN, 0, 1 , Inf, NaN, NaN];
-%!assert (burrinv (x, ones (1,7), ones (1,7), ones(1,7)), y, eps)
-%!assert (burrinv (x, 1, 1, 1), y, eps)
-%!assert (burrinv (x, [1, 1, 1, NaN, 1, 1, 1], 1, 1), [y(1:3), NaN, y(5:7)], eps)
-%!assert (burrinv (x, 1, [1, 1, 1, NaN, 1, 1, 1], 1), [y(1:3), NaN, y(5:7)], eps)
-%!assert (burrinv (x, 1, 1, [1, 1, 1, NaN, 1, 1, 1]), [y(1:3), NaN, y(5:7)], eps)
-%!assert (burrinv ([x, NaN], 1, 1, 1), [y, NaN], eps)
+%!assert (burrinv (p, ones (1,7), ones (1,7), ones(1,7)), y, eps)
+%!assert (burrinv (p, 1, 1, 1), y, eps)
+%!assert (burrinv (p, [1, 1, 1, NaN, 1, 1, 1], 1, 1), [y(1:3), NaN, y(5:7)], eps)
+%!assert (burrinv (p, 1, [1, 1, 1, NaN, 1, 1, 1], 1), [y(1:3), NaN, y(5:7)], eps)
+%!assert (burrinv (p, 1, 1, [1, 1, 1, NaN, 1, 1, 1]), [y(1:3), NaN, y(5:7)], eps)
+%!assert (burrinv ([p, NaN], 1, 1, 1), [y, NaN], eps)
 
 ## Test class of input preserved
-%!assert (burrinv (single ([x, NaN]), 1, 1, 1), single ([y, NaN]), eps('single'))
-%!assert (burrinv ([x, NaN], single (1), 1, 1), single ([y, NaN]), eps('single'))
-%!assert (burrinv ([x, NaN], 1, single (1), 1), single ([y, NaN]), eps('single'))
-%!assert (burrinv ([x, NaN], 1, 1, single (1)), single ([y, NaN]), eps('single'))
+%!assert (burrinv (single ([p, NaN]), 1, 1, 1), single ([y, NaN]), eps('single'))
+%!assert (burrinv ([p, NaN], single (1), 1, 1), single ([y, NaN]), eps('single'))
+%!assert (burrinv ([p, NaN], 1, single (1), 1), single ([y, NaN]), eps('single'))
+%!assert (burrinv ([p, NaN], 1, 1, single (1)), single ([y, NaN]), eps('single'))
 
 ## Test input validation
 %!error burrinv ()

@@ -1,5 +1,7 @@
 ## Copyright (C) 2013 Nir Krakauer <nkrakauer@ccny.cuny.edu>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
 ## published by the Free Software Foundation, either version 3 of the
@@ -15,7 +17,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {Function File} {} [@var{W}[, @var{DI}]] = iwishrnd (@var{Psi}, @var{df}[, @var{DI}][, @var{n}=1])
+## @deftypefn  {statistics} [@var{W}, @var{DI}] = iwishrnd (@var{Psi}, @var{df}, @var{DI}, @var{n}=1)
+##
 ## Return a random matrix sampled from the inverse Wishart distribution with
 ## given parameters.
 ##
@@ -35,40 +38,46 @@
 ## Averaged across many samples, the mean of @var{W} should approach
 ## @var{Tau} / (@var{df} - @var{p} - 1).
 ##
-## Reference: Yu-Cheng Ku and Peter Bloomfield (2010), Generating Random Wishart
-## Matrices with Fractional Degrees of Freedom in OX,
+## @subheading References
+##
+## @enumerate
+## @item
+## Yu-Cheng Ku and Peter Bloomfield (2010), Generating Random Wishart Matrices
+## with Fractional Degrees of Freedom in OX,
 ## http://www.gwu.edu/~forcpgm/YuChengKu-030510final-WishartYu-ChengKu.pdf
-## 
-## @seealso{wishrnd, iwishpdf}
+## @end enumerate
+##
+## @seealso{iwishpdf, wishpdf, wishrnd}
 ## @end deftypefn
 
-function [W, DI] = iwishrnd(Tau, df, DI, n = 1)
+function [W, DI] = iwishrnd (Tau, df, DI, n = 1)
 
-if (nargin < 2)
-  print_usage ();
-endif
+  if (nargin < 2)
+    print_usage ();
+  endif
 
-if nargin < 3 || isempty(DI)
-  try
-    D = chol(inv(Tau));
-  catch
-    error('Cholesky decomposition failed; Tau probably not positive definite')
-  end_try_catch
-  DI = D';
-else  
-  D = DI';  
-endif
+  if (nargin < 3 || isempty (DI))
+    try
+      D = chol (inv (Tau));
+    catch
+      error (strcat (["iwishrnd: Cholesky decomposition failed;"], ...
+                     [" TAU probably not positive definite."]));
+    end_try_catch
+    DI = D';
+  else
+    D = DI';
+  endif
 
-w = wishrnd([], df, D, n);
+  w = wishrnd ([], df, D, n);
 
-if n > 1
-  p = size(D, 1);
-  W = nan(p, p, n);
-endif
+  if (n > 1)
+    p = size (D, 1);
+    W = nan (p, p, n);
+  endif
 
-for i = 1:n
-  W(:, :, i) = inv(w(:, :, i));
-endfor
+  for i = 1:n
+    W(:, :, i) = inv (w(:, :, i));
+  endfor
 
 endfunction
 

@@ -17,7 +17,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} fullfact (@var{N})
+## @deftypefn  {statistics} fullfact (@var{N})
 ##
 ## Full factorial design.
 ##

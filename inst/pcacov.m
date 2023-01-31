@@ -1,5 +1,7 @@
 ## Copyright (C) 2013-2019 Fernando Damian Nieuwveldt <fdnieuwveldt@gmail.com>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
 ## as published by the Free Software Foundation; either version 3
@@ -13,9 +15,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{COEFF}]} = pcacov(@var{X})
-## @deftypefnx {Function File} {[@var{COEFF},@var{latent}]} = pcacov(@var{X})
-## @deftypefnx {Function File} {[@var{COEFF},@var{latent},@var{explained}]} = pcacov(@var{X})
+## @deftypefn  {statistics} @var{COEFF} = pcacov(@var{X})
+## @deftypefnx {statistics} [@var{COEFF},@var{latent}] = pcacov(@var{X})
+## @deftypefnx {statistics} [@var{COEFF},@var{latent},@var{explained}] = pcacov(@var{X})
+##
 ## Perform principal component analysis on the nxn covariance matrix X
 ##
 ## @itemize @bullet
@@ -33,12 +36,10 @@
 ## @enumerate
 ## @item
 ## Jolliffe, I. T., Principal Component Analysis, 2nd Edition, Springer, 2002
-## 
+##
 ## @end enumerate
 ## @end deftypefn
 
-## Author: Fernando Damian Nieuwveldt <fdnieuwveldt@gmail.com>
-## Description:  Principal Components Analysis using a covariance matrix
 function [COEFF, latent, explained] = pcacov(X)
 
   [U,S,V] = svd(X);
@@ -54,6 +55,7 @@ function [COEFF, latent, explained] = pcacov(X)
     explained = 100*latent./sum(latent);
   end
 endfunction
+
 %!demo
 %! X = [ 7    26     6    60;
 %!       1    29    15    52;
@@ -67,7 +69,7 @@ endfunction
 %!      21    47     4    26;
 %!       1    40    23    34;
 %!      11    66     9    12;
-%!      10    68     8    12 
+%!      10    68     8    12
 %!     ];
 %! covx = cov(X);
 %! [COEFF,latent,explained] = pcacov(covx)

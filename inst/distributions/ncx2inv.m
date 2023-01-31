@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,9 +16,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{x} = ncx2inv (@var{p}, @var{df}, @var{delta})
+## @deftypefn  {statistics} @var{x} = ncx2inv (@var{p}, @var{df}, @var{delta})
 ##
-## Inverse of the non-central chi-square cumulative distribution function (cdf).
+## Inverse of the non-central chi-square cumulative distribution function (iCDF).
 ##
 ## @code{@var{x} = ncx2inv (@var{p}, @var{df}, @var{delta})} returns the inverse
 ## of the noncentral chi-square distribution with @var{df} degrees of freedom

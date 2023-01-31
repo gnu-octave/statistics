@@ -1,5 +1,8 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,48 +19,92 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} poisscdf (@var{x}, @var{lambda})
+## @deftypefn  {statistics} @var{p} = poisscdf (@var{x}, @var{lambda})
+## @deftypefnx {statistics} @var{p} = poisscdf (@var{x}, @var{lambda}, "upper")
+##
+## Poisson cumulative distribution function (CDF).
+##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the Poisson distribution with parameter @var{lambda}.
+## (CDF) at @var{x} of the Poisson distribution with parameter @var{lambda}. The
+## size of @var{p} is the common size of @var{x} and @var{lambda}.  A scalar
+## input functions as a constant matrix of the same size as the other inputs.
+##
+## @code{@var{p} = poisscdf (@var{x}, @var{x}, @var{lambda}, "upper")} computes
+## the upper tail probability of the lognormal distribution.
+##
+## @seealso{poissinv, poisspdf, poissrnd, poisstat}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: CDF of the Poisson distribution
+function p = poisscdf (x, lambda, uflag)
 
-function cdf = poisscdf (x, lambda)
-
-  if (nargin != 2)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 2 || nargin > 3)
+    error ("poisscdf: invalid number of input arguments.");
   endif
 
-  if (! isscalar (lambda))
+  ## Check for "upper" flag
+  if (nargin == 3 && strcmpi (uflag, "upper"))
+    uflag = true;
+  elseif (nargin == 3  && ! strcmpi (uflag, "upper"))
+    error ("poisscdf: invalid argument for upper tail.");
+  else
+    uflag = false;
+  endif
+
+  ## Check for common size of X and LAMBDA
+  if (! isscalar (x) || ! isscalar (lambda))
     [retval, x, lambda] = common_size (x, lambda);
     if (retval > 0)
-      error ("poisscdf: X and LAMBDA must be of common size or scalars");
+      error ("poisscdf: X and LAMBDA must be of common size or scalars.");
     endif
   endif
 
+  ## Check for X and LAMBDA being reals
   if (iscomplex (x) || iscomplex (lambda))
-    error ("poisscdf: X and LAMBDA must not be complex");
+    error ("poisscdf: X and LAMBDA must not be complex.");
   endif
 
+  ## Check for appropriate class
   if (isa (x, "single") || isa (lambda, "single"))
-    cdf = zeros (size (x), "single");
+    p = zeros (size (x), "single");
   else
-    cdf = zeros (size (x));
+    p = zeros (size (x));
   endif
 
-  k = isnan (x) | !(lambda > 0);
-  cdf(k) = NaN;
+  ## Force NaN for out of range or missing parameters and missing data NaN
+  is_nan = isnan (x) | isnan (lambda) | (lambda < 0) ...
+                     | (isinf (x) & isinf (lambda));
+  p(is_nan) = NaN;
 
-  k = (x == Inf) & (lambda > 0);
-  cdf(k) = 1;
+  ## Compute P for X >= 0
+  x = floor (x);
+  k = x >= 0 & ! is_nan & isfinite (lambda);
 
-  k = (x >= 0) & (x < Inf) & (lambda > 0);
-  if (isscalar (lambda))
-    cdf(k) = 1 - gammainc (lambda, floor (x(k)) + 1);
+  ## Return 1 for positive infinite values of X, unless "upper" is given: p = 0
+  k1 = isinf (x) & lambda > 0 & isfinite (lambda);
+  if (any (k1))
+    if (uflag)
+      p(k1) = 0;
+    else
+      p(k1) = 1;
+    endif
+  endif
+
+  ## Return 1 when X < 0 and "upper" is given
+  k1 = x < 0 & lambda > 0 & isfinite (lambda);
+  if (any (k1))
+    if (uflag)
+      p(k1) = 1;
+    endif
+  endif
+
+  ## Compute Poisson CDF for remaining cases
+  x = x(k);
+  lambda = lambda(k);
+  if (uflag)
+    p(k) = gammainc (lambda, x + 1);
   else
-    cdf(k) = 1 - gammainc (lambda(k), floor (x(k)) + 1);
+    p(k) = gammainc (lambda, x + 1, "upper");
   endif
 
 endfunction
@@ -68,7 +115,7 @@ endfunction
 %! y = [0, gammainc(1, (x(2:4) +1), "upper"), 1];
 %!assert (poisscdf (x, ones (1,5)), y)
 %!assert (poisscdf (x, 1), y)
-%!assert (poisscdf (x, [1 0 NaN 1 1]), [y(1) NaN NaN y(4:5)])
+%!assert (poisscdf (x, [1 0 NaN 1 1]), [y(1) 1 NaN y(4:5)])
 %!assert (poisscdf ([x(1:2) NaN Inf x(5)], 1), [y(1:2) NaN 1 y(5)])
 
 ## Test class of input preserved

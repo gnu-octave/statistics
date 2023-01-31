@@ -1,8 +1,9 @@
 ## Copyright (C) 2018 John Donoghue
 ## Copyright (C) 2016 Dag Lyberg
 ## Copyright (C) 1995-2015 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
-## This file is part of Octave.
+## This file is part of the statistics package for GNU Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -19,12 +20,18 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} bbsrnd (@var{shape}, @var{scale}, @var{location})
-## @deftypefnx {} {} bbsrnd (@var{shape}, @var{scale}, @var{location}, @var{r})
-## @deftypefnx {} {} bbsrnd (@var{shape}, @var{scale}, @var{location}, @var{r}, @var{c}, @dots{})
-## @deftypefnx {} {} bbsrnd (@var{shape}, @var{scale}, @var{location}, [@var{sz}])
-## Return a matrix of random samples from the Birnbaum-Saunders
-##  distribution with parameters @var{location}, @var{scale} and @var{shape}.
+## @deftypefn  {statistics} @var{r} = bbsrnd (@var{shape}, @var{scale}, @var{location})
+## @deftypefnx {statistics} @var{r} = bbsrnd (@var{shape}, @var{scale}, @var{location}, @var{rows})
+## @deftypefnx {statistics} @var{r} = bbsrnd (@var{shape}, @var{scale}, @var{location}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} @var{r} = bbsrnd (@var{shape}, @var{scale}, @var{location}, [@var{sz}])
+##
+## Random arrays from the Birnbaum-Saunders distribution.
+##
+## @code{@var{r} = bbsrnd (@var{shape}, @var{scale}, @var{location})} returns an
+## array of random numbers chosen from the Birnbaum-Saunders distribution with
+## parameters @var{shape}, @var{scale}, and @var{location}.  The size of @var{r}
+## is the common size of @var{shape}, @var{scale}, and @var{location}.  A scalar
+## input functions as a constant matrix of the same size as the other inputs.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -32,28 +39,25 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## If no size arguments are given then the result matrix is the common size of
-## @var{location}, @var{scale} and @var{shape}.
+## @seealso{bbscdf, bbsinv, bbspdf}
 ## @end deftypefn
 
-## Author: Dag Lyberg <daglyberg80@gmail.com>
-## Description: Random deviates from the Birnbaum-Saunders distribution
-
-function rnd = bbsrnd (shape, scale, location, varargin)
+function r = bbsrnd (shape, scale, location, varargin)
 
   if (nargin < 3)
     print_usage ();
   endif
 
-  if (! isscalar (location) || ! isscalar (scale) || ! isscalar (shape))
-    [retval, location, scale, shape] = common_size (location, scale, shape);
+  if (! isscalar (shape) || ! isscalar (scale) || ! isscalar (location))
+    [retval, shape, scale, location] = common_size (location, scale, location);
     if (retval > 0)
-      error ("bbsrnd: LOCATION, SCALE and SHAPE must be of common size or scalars");
+      error (strcat (["bbsrnd: SHAPE, SCALE, and LOCATION must be of"], ...
+                     [" common size or scalars."]));
     endif
   endif
 
-  if (iscomplex (location) || iscomplex (scale) || iscomplex (shape))
-    error ("bbsrnd: LOCATION, SCALE and SHAPE must not be complex");
+  if (iscomplex (shape) || iscomplex (scale) || iscomplex (location))
+    error ("bbsrnd: SHAPE, SCALE, and LOCATION must not be complex.");
   endif
 
   if (nargin == 3)
@@ -64,48 +68,50 @@ function rnd = bbsrnd (shape, scale, location, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error ("bbsrnd: dimension vector must be row vector of non-negative integers");
+      error (strcat (["bbsrnd: dimension vector must be row vector of"], ...
+                     [" non-negative integers."]));
     endif
   elseif (nargin > 3)
     if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
-      error ("bbsrnd: dimensions must be non-negative integers");
+      error ("bbsrnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
   if (! isscalar (location) && ! isequal (size (location), sz))
-    error ("bbsrnd: LOCATION, SCALE and SHAPE must be scalar or of size SZ");
+    error ("bbsrnd: SHAPE, SCALE, and LOCATION must be scalar or of size SZ.");
   endif
 
-  if (isa (location, "single") || isa (scale, "single") || isa (shape, "single"))
+  if (isa (location, "single") || isa (scale, "single") ...
+                               || isa (shape, "single"))
     cls = "single";
   else
     cls = "double";
   endif
 
-  if (isscalar (location) && isscalar (scale) && isscalar (shape))
+  if (isscalar (scale) && isscalar (scale) && isscalar (location))
     if ((-Inf < location) && (location < Inf) ...
         && (0 < scale) && (scale < Inf) ...
         && (0 < shape) && (shape < Inf))
-      rnd = rand(sz,cls);
-      y = shape * norminv (rnd);
-      rnd = location + scale * (y + sqrt (4 + y.^2)).^2 / 4;
+      r = rand (sz, cls);
+      y = shape * norminv (r);
+      r = location + scale * (y + sqrt (4 + y.^2)).^2 / 4;
     else
-      rnd = NaN (sz, cls);
+      r = NaN (sz, cls);
     endif
   else
-    rnd = NaN (sz, cls);
+    r = NaN (sz, cls);
 
     k = (-Inf < location) & (location < Inf) ...
         & (0 < scale) & (scale < Inf) ...
         & (0 < shape) & (shape < Inf);
-    rnd(k) = rand(sum(k(:)),1);
-    y = shape(k) .* norminv (rnd(k));
-    rnd(k) = location(k) + scale(k) .* (y + sqrt (4 + y.^2)).^2 / 4;
+    r(k) = rand (sum (k(:)),1);
+    y = shape(k) .* norminv (r(k));
+    r(k) = location(k) + scale(k) .* (y + sqrt (4 + y.^2)).^2 / 4;
   endif
 endfunction
 
-
+## Test results
 %!assert (size (bbsrnd (1, 1, 0)), [1 1])
 %!assert (size (bbsrnd (1, 1, zeros (2,1))), [2, 1])
 %!assert (size (bbsrnd (1, 1, zeros (2,2))), [2, 2])

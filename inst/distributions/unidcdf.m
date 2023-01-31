@@ -1,5 +1,8 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 2007-2016 David Bateman
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,48 +19,81 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} unidcdf (@var{x}, @var{n})
+## @deftypefn  {statistics} @var{p} = unidcdf (@var{x}, @var{df})
+## @deftypefnx {statistics} @var{p} = unidcdf (@var{x}, @var{df}, "upper")
+##
+## Discrete uniform cumulative distribution function (CDF).
+##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of a discrete uniform distribution which assumes
-## the integer values 1--@var{n} with equal probability.
+## (CDF) at @var{x} of a discrete uniform distribution which assumes the integer
+## values 1--@var{df} with equal probability.  The size of @var{p} is the common
+## size of @var{x} and @var{df}.  A scalar input functions as a constant matrix
+## of the same size as the other inputs.
+##
+## @code{[@dots{}] = logncdf (@dots{}, "upper")} computes the upper tail
+## probability of the lognormal distribution.
+##
+## @seealso{unidinv, unidpdf, unidrnd, unidstat}
 ## @end deftypefn
 
-function cdf = unidcdf (x, n)
+function p = unidcdf (x, df, uflag)
 
-  if (nargin != 2)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 2 || nargin > 3)
+    error ("unidcdf: invalid number of input arguments.");
   endif
 
-  if (! isscalar (n))
-    [retval, x, n] = common_size (x, n);
+  ## Check for "upper" flag
+  if (nargin > 2 && strcmpi (uflag, "upper"))
+    uflag = true;
+  elseif (nargin > 2  && ! strcmpi (uflag, "upper"))
+    error ("unidcdf: invalid argument for upper tail.");
+  else
+    uflag = false;
+  endif
+
+  ## Check for common size of X and DF
+  if (! isscalar (x) || ! isscalar (df))
+    [retval, x, df] = common_size (x, df);
     if (retval > 0)
-      error ("unidcdf: X and N must be of common size or scalars");
+      error ("unidcdf: X and DF must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (x) || iscomplex (n))
-    error ("unidcdf: X and N must not be complex");
+  ## Check for X and DF being reals
+  if (iscomplex (x) || iscomplex (df))
+    error ("unidcdf: X and DF must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (n, "single"))
-    cdf = zeros (size (x), "single");
+  ## Check for class type
+  if (isa (x, "single") || isa (df, "single"))
+    p = zeros (size (x), "single");
   else
-    cdf = zeros (size (x));
+    p = zeros (size (x));
   endif
 
-  knan = isnan (x) | ! (n > 0 & n == fix (n));
-  if (any (knan(:)))
-    cdf(knan) = NaN;
+  ## Return 1 for X >= DF
+  p(x >= df) = 1;
+
+  ## Floor X
+  xf = floor (x);
+
+  ## Compute uniform discrete CDF
+  k = find (xf >= 1 & xf <= df);
+  if any(k)
+    p(k) = xf(k) ./ df(k);
   endif
 
-  k = (x >= n) & ! knan;
-  cdf(k) = 1;
+  ## Check for NaNs or floored DF <= 0
+  is_nan = isnan (x) | ! (df > 0 & df == fix (df));
+  if (any (is_nan(:)))
+    p(is_nan) = NaN;
+  endif
 
-  k = (x >= 1) & (x < n) & ! knan;
-  if (isscalar (n))
-    cdf(k) = floor (x(k)) / n;
-  else
-    cdf(k) = floor (x(k)) ./ n(k);
+  p(df < 1 | round(df) != df) = NaN;
+
+  if (uflag)  # Compute upper tail
+    p = 1 - unidcdf (x, df);
   endif
 
 endfunction
@@ -67,7 +103,9 @@ endfunction
 %! x = [0 1 2.5 10 11];
 %! y = [0, 0.1 0.2 1.0 1.0];
 %!assert (unidcdf (x, 10*ones (1,5)), y)
+%!assert (unidcdf (x, 10*ones (1,5), "upper"), 1 - y)
 %!assert (unidcdf (x, 10), y)
+%!assert (unidcdf (x, 10, "upper"), 1 - y)
 %!assert (unidcdf (x, 10*[0 1 NaN 1 1]), [NaN 0.1 NaN y(4:5)])
 %!assert (unidcdf ([x(1:2) NaN Inf x(5)], 10), [y(1:2) NaN 1 y(5)])
 
@@ -79,7 +117,8 @@ endfunction
 ## Test input validation
 %!error unidcdf ()
 %!error unidcdf (1)
-%!error unidcdf (1,2,3)
+%!error unidcdf (1, 2, 3)
+%!error unidcdf (1, 2, "upper", 4)
 %!error unidcdf (ones (3), ones (2))
 %!error unidcdf (ones (2), ones (3))
 %!error unidcdf (i, 2)

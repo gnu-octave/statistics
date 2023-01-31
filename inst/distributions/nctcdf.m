@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,10 +16,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{p} = nctcdf (@var{x}, @var{df}, @var{delta})
-## @deftypefnx {Function File} @var{p} = nctcdf (@var{x}, @var{df}, @var{delta}, @var{uflag})
+## @deftypefn  {statistics} @var{p} = nctcdf (@var{x}, @var{df}, @var{delta})
+## @deftypefnx {statistics} @var{p} = nctcdf (@var{x}, @var{df}, @var{delta}, @var{uflag})
 ##
-## Noncentral T cumulative distribution function (cdf).
+## Noncentral T cumulative distribution function (CDF).
 ##
 ## @code{@var{p} = nctcdf (@var{x}, @var{df}, @var{delta})} returns the
 ## noncentral T cdf with @var{df} degrees of freedom and noncentrality parameter

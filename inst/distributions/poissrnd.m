@@ -1,5 +1,8 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,12 +19,18 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} poissrnd (@var{lambda})
-## @deftypefnx {} {} poissrnd (@var{lambda}, @var{r})
-## @deftypefnx {} {} poissrnd (@var{lambda}, @var{r}, @var{c}, @dots{})
-## @deftypefnx {} {} poissrnd (@var{lambda}, [@var{sz}])
-## Return a matrix of random samples from the Poisson distribution with
-## parameter @var{lambda}.
+## @deftypefn  {statistics} @var{r} = poissrnd (@var{lambda})
+## @deftypefnx {statistics} @var{r} = poissrnd (@var{lambda}, @var{rows})
+## @deftypefnx {statistics} @var{r} = poissrnd (@var{lambda}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} @var{r} = poissrnd (@var{lambda}, [@var{sz}])
+##
+## Random arrays from the Poisson distribution.
+##
+## @code{@var{r} = normrnd (@var{lambda})} returns an array of random numbers
+## chosen from the Poisson distribution with parameter @var{lambda}.  The size
+## of @var{r} is the common size of @var{lambda}.  A scalar input functions as a
+## constant matrix of the same size as the other inputs.  @var{lambda} must be a
+## finite real number and greater or equal to 0, otherwise NaN is returned.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -29,17 +38,18 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## If no size arguments are given then the result matrix is the size of
-## @var{lambda}.
+## @seealso{poisscdf, poissinv, poisspdf, poisstat}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Random deviates from the Poisson distribution
-
-function rnd = poissrnd (lambda, varargin)
+function r = poissrnd (lambda, varargin)
 
   if (nargin < 1)
     print_usage ();
+  endif
+
+  ## Check for LAMBDA being real
+  if (iscomplex (lambda))
+    error ("poissrnd: LAMBDA must not be complex.");
   endif
 
   if (nargin == 1)
@@ -50,21 +60,18 @@ function rnd = poissrnd (lambda, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error ("poissrnd: dimension vector must be row vector of non-negative integers");
+      error (strcat (["poissrnd: dimension vector must be row vector"], ...
+                     [" of non-negative integers."]));
     endif
   elseif (nargin > 2)
     if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
-      error ("poissrnd: dimensions must be non-negative integers");
+      error ("poissrnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
   if (! isscalar (lambda) && ! isequal (size (lambda), sz))
-    error ("poissrnd: LAMBDA must be scalar or of size SZ");
-  endif
-
-  if (iscomplex (lambda))
-    error ("poissrnd: LAMBDA must not be complex");
+    error ("poissrnd: LAMBDA must be scalar or of size SZ.");
   endif
 
   if (isa (lambda, "single"))
@@ -75,15 +82,15 @@ function rnd = poissrnd (lambda, varargin)
 
   if (isscalar (lambda))
     if (lambda >= 0 && lambda < Inf)
-      rnd = randp (lambda, sz, cls);
+      r = randp (lambda, sz, cls);
     else
-      rnd = NaN (sz, cls);
+      r = NaN (sz, cls);
     endif
   else
-    rnd = NaN (sz, cls);
+    r = NaN (sz, cls);
 
     k = (lambda >= 0) & (lambda < Inf);
-    rnd(k) = randp (lambda(k), cls);
+    r(k) = randp (lambda(k), cls);
   endif
 
 endfunction

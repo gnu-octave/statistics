@@ -1,8 +1,9 @@
-## Copyright (C) 2018 John Donoghue
-## Copyright (C) 2016 Dag Lyberg
 ## Copyright (C) 1995-2015 Kurt Hornik
+## Copyright (C) 2016 Dag Lyberg
+## Copyright (C) 2018 John Donoghue
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
-## This file is part of Octave.
+## This file is part of the statistics package for GNU Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -19,85 +20,91 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} bbsinv (@var{x}, @var{shape}, @var{scale}, @var{location})
-## For each element of @var{x}, compute the quantile (the inverse of the CDF)
-## at @var{x} of the Birnbaum-Saunders distribution with parameters
-## @var{location}, @var{scale}, and @var{shape}.
+## @deftypefn  {statistics} @var{x} = bbsinv (@var{p}, @var{shape}, @var{scale}, @var{location})
+##
+## Inverse of the Birnbaum-Saunders cumulative distribution function (iCDF).
+##
+## For each element of @var{p}, compute the quantile (the inverse of the CDF)
+## at @var{p} of the Birnbaum-Saunders distribution with parameters @var{shape},
+## @var{scale}, and @var{location}.  The size of @var{x} is the common size of
+## @var{p}, @var{shape}, @var{scale}, and @var{location}.  A scalar input
+## functions as a constant matrix of the same size as the other inputs.
+##
+## @seealso{bbscdf, bbspdf, bbsrnd}
 ## @end deftypefn
 
-## Author: Dag Lyberg <daglyberg80@gmail.com>
-## Description: Quantile function of the Birnbaum-Saunders distribution
-
-function inv = bbsinv (x, shape, scale, location)
+function x = bbsinv (p, shape, scale, location)
 
   if (nargin != 4)
     print_usage ();
   endif
 
-  if (! isscalar (location) || ! isscalar (scale) || ! isscalar(shape))
-    [retval, x, location, scale, shape] = ...
-        common_size (x, location, scale, shape);
+  if (! isscalar (p) || ! isscalar (shape) || ! isscalar (scale) ...
+                     || ! isscalar(location))
+    [retval, p, shape, scale, location] = ...
+        common_size (p, shape, scale, location);
     if (retval > 0)
-      error ("bbsinv: X, LOCATION, SCALE and SHAPE must be of common size or scalars");
+      error (strcat (["bbsinv: P, SHAPE, SCALE, and LOCATION must be of"], ...
+                     [" common size or scalars."]));
     endif
   endif
 
-  if (iscomplex (x) || iscomplex (location) ...
-      || iscomplex (scale) || iscomplex(shape))
-    error ("bbsinv: X, LOCATION, SCALE and SHAPE must not be complex");
+  if (iscomplex (p) || iscomplex (shape) || iscomplex (scale) ...
+                    || iscomplex(location))
+    error ("bbsinv: P, SHAPE, SCALE, and LOCATION must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (location, "single") ...
-      || isa (scale, "single") || isa (shape, "single"))
-    inv = zeros (size (x), "single");
+  if (isa (p, "single") || isa (shape, "single") || isa (scale, "single") ...
+                        || isa (location, "single"))
+    x = zeros (size (p), "single");
   else
-    inv = zeros (size (x));
+    x = zeros (size (p));
   endif
 
-  k = isnan (x) | (x < 0) | (x > 1) | ! (-Inf < location) | ! (location < Inf) ...
+  k = isnan (p) | (p < 0) | (p > 1) | ! (-Inf < location) | ! (location < Inf) ...
       | ! (scale > 0) | ! (scale < Inf) | ! (shape > 0) | ! (shape < Inf);
-  inv(k) = NaN;
+  x(k) = NaN;
 
-  k = (x <= 0) & (-Inf < location) & (location < Inf) ...
+  k = (p <= 0) & (-Inf < location) & (location < Inf) ...
       & (scale > 0) & (scale < Inf) & (shape > 0) & (shape < Inf);
-  inv(k) = 0;
+  x(k) = 0;
 
-  k = (x == 1) & (-Inf < location) & (location < Inf) ...
+  k = (p == 1) & (-Inf < location) & (location < Inf) ...
       & (scale > 0) & (scale < Inf) & (shape > 0) & (shape < Inf);
-  inv(k) = Inf;
+  x(k) = Inf;
 
-  k = (0 < x) & (x < 1) & (location < Inf) & (0 < scale) & (scale < Inf) ...
+  k = (0 < p) & (p < 1) & (location < Inf) & (0 < scale) & (scale < Inf) ...
     & (0 < shape) & (shape < Inf);
   if (isscalar (location) && isscalar(scale) && isscalar(shape))
-    y = shape * norminv (x(k));
-    inv(k) = location + scale * (y + sqrt (4 + y.^2)).^2 / 4;
+    y = shape * norminv (p(k));
+    x(k) = location + scale * (y + sqrt (4 + y.^2)).^2 / 4;
   else
-    y = shape(k) .* norminv (x(k));
-    inv(k) = location(k) + scale(k) .* (y + sqrt (4 + y.^2)).^2 ./ 4;
+    y = shape(k) .* norminv (p(k));
+    x(k) = location(k) + scale(k) .* (y + sqrt (4 + y.^2)).^2 ./ 4;
   endif
 
 endfunction
 
-
-%!shared x,y,f
-%! f = @(x,a,b,c) (a + b * (c * norminv (x) + sqrt (4 + (c * norminv(x))^2))^2) / 4;
-%! x = [-1, 0, 1/4, 1/2, 1, 2];
+## Test results
+%!shared p,y,f
+%! f = @(p,a,b,c) (a + b * (c * norminv (p) + sqrt (4 + (c * norminv(p))^2))^2) / 4;
+%! p = [-1, 0, 1/4, 1/2, 1, 2];
 %! y = [0, 0, f(1/4, 0, 1, 1), 1, Inf, NaN];
-%!assert (bbsinv (x, ones (1,6), ones (1,6), zeros (1,6)), y)
-%!assert (bbsinv (x, 1, 1, zeros (1,6)), y)
-%!assert (bbsinv (x, 1, ones (1,6), 0), y)
-%!assert (bbsinv (x, ones (1,6), 1, 0), y)
-%!assert (bbsinv (x, 1, 1, 0), y)
-%!assert (bbsinv (x, 1, 1, [0, 0, 0, NaN, 0, 0]), [y(1:3), NaN, y(5:6)])
-%!assert (bbsinv (x, 1, [1, 1, 1, NaN, 1, 1], 0), [y(1:3), NaN, y(5:6)])
-%!assert (bbsinv (x, [1, 1, 1, NaN, 1, 1], 1, 0), [y(1:3), NaN, y(5:6)])
-%!assert (bbsinv ([x, NaN], 1, 1, 0), [y, NaN])
+%!assert (bbsinv (p, ones (1,6), ones (1,6), zeros (1,6)), y)
+%!assert (bbsinv (p, 1, 1, zeros (1,6)), y)
+%!assert (bbsinv (p, 1, ones (1,6), 0), y)
+%!assert (bbsinv (p, ones (1,6), 1, 0), y)
+%!assert (bbsinv (p, 1, 1, 0), y)
+%!assert (bbsinv (p, 1, 1, [0, 0, 0, NaN, 0, 0]), [y(1:3), NaN, y(5:6)])
+%!assert (bbsinv (p, 1, [1, 1, 1, NaN, 1, 1], 0), [y(1:3), NaN, y(5:6)])
+%!assert (bbsinv (p, [1, 1, 1, NaN, 1, 1], 1, 0), [y(1:3), NaN, y(5:6)])
+%!assert (bbsinv ([p, NaN], 1, 1, 0), [y, NaN])
 
 ## Test class of input preserved
-%!assert (bbsinv (single ([x, NaN]), 1, 1, 0), single ([y, NaN]))
-%!assert (bbsinv ([x, NaN], 1, 1, single (0)), single ([y, NaN]))
-%!assert (bbsinv ([x, NaN], 1, single (1), 0), single ([y, NaN]))
-%!assert (bbsinv ([x, NaN], single (1), 1, 0), single ([y, NaN]))
+%!assert (bbsinv (single ([p, NaN]), 1, 1, 0), single ([y, NaN]))
+%!assert (bbsinv ([p, NaN], 1, 1, single (0)), single ([y, NaN]))
+%!assert (bbsinv ([p, NaN], 1, single (1), 0), single ([y, NaN]))
+%!assert (bbsinv ([p, NaN], single (1), 1, 0), single ([y, NaN]))
 
 ## Test input validation
 %!error bbsinv ()

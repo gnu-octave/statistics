@@ -16,11 +16,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{coeff}]} = pca(@var{X})
-## @deftypefnx {Function File} {[@var{coeff}]} = pca(@var{X}, Name, Value)
-## @deftypefnx {Function File} {[@var{coeff},@var{score},@var{latent}]} = pca(@dots{})
-## @deftypefnx {Function File} {[@var{coeff},@var{score},@var{latent},@var{tsquared}]} = pca(@dots{})
-## @deftypefnx {Function File} {[@var{coeff},@var{score},@var{latent},@var{tsquared},@var{explained},@var{mu}]} = pca(@dots{})
+## @deftypefn  {statistics} @var{coeff} = pca(@var{X})
+## @deftypefnx {statistics} @var{coeff} = pca(@var{X}, Name, Value)
+## @deftypefnx {statistics} [@var{coeff}, @var{score}, @var{latent}] = pca(@dots{})
+## @deftypefnx {statistics} [@var{coeff}, @var{score}, @var{latent}, @var{tsquared}] = pca(@dots{})
+## @deftypefnx {statistics} [@var{coeff}, @var{score}, @var{latent}, @var{tsquared}, @var{explained}, @var{mu}] = pca(@dots{})
 ##
 ## Performs a principal component analysis on a data matrix X
 ##

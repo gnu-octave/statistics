@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,15 +17,15 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{p} = evcdf (@var{x})
-## @deftypefnx {Function File} @var{p} = evcdf (@var{x}, @var{mu})
-## @deftypefnx {Function File} @var{p} = evcdf (@var{x}, @var{mu}, @var{sigma})
-## @deftypefnx {Function File} @var{p} = evcdf (@dots{}, "upper")
-## @deftypefnx {Function File} [@var{p}, @var{plo}, @var{pup}] = evcdf (@var{x}, @var{mu}, @var{sigma}, @var{pcov})
-## @deftypefnx {Function File} [@var{p}, @var{plo}, @var{pup}] = evcdf (@var{x}, @var{mu}, @var{sigma}, @var{pcov}, @var{alpha})
-## @deftypefnx {Function File} [@var{p}, @var{plo}, @var{pup}] = evcdf (@dots{}, "upper")
+## @deftypefn  {statistics} @var{p} = evcdf (@var{x})
+## @deftypefnx {statistics} @var{p} = evcdf (@var{x}, @var{mu})
+## @deftypefnx {statistics} @var{p} = evcdf (@var{x}, @var{mu}, @var{sigma})
+## @deftypefnx {statistics} @var{p} = evcdf (@dots{}, "upper")
+## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = evcdf (@var{x}, @var{mu}, @var{sigma}, @var{pcov})
+## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = evcdf (@var{x}, @var{mu}, @var{sigma}, @var{pcov}, @var{alpha})
+## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = evcdf (@dots{}, "upper")
 ##
-## Extreme value cumulative distribution function (cdf).
+## Extreme value cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
 ## (CDF) of the type 1 extreme values CDF at @var{x} of the normal distribution
@@ -39,10 +39,9 @@
 ## @var{pup}]} it computes the confidence bounds for @var{p} when the input
 ## parameters @var{mu} and @var{sigma} are estimates.  In such case, @var{pcov},
 ## a 2-by-2 matrix containing the covariance matrix of the estimated parameters,
-## is necessary.  Optionally, @var{alpha} has a default value of 0.05, and
-## specifies 100 * (1 - @var{alpha})% confidence bounds. @var{plo} and @var{pup}
-## are arrays of the same size as @var{p} containing the lower and upper
-## confidence bounds.
+## is necessary.  @var{alpha} has a default value of 0.05, and specifies 100 *
+## (1 - @var{alpha})% confidence bounds.  @var{plo} and @var{pup} are arrays of
+## the same size as @var{p} containing the lower and upper confidence bounds.
 ##
 ## The type 1 extreme value distribution is also known as the Gumbel
 ## distribution.  The version used here is suitable for modeling minima; the
@@ -62,6 +61,7 @@ function [varargout] = evcdf (x, varargin)
   if (nargin < 1 || nargin > 6)
     error ("evcdf: invalid number of input arguments.");
   endif
+
   ## Check for 'upper' flag
   if (nargin > 1 && strcmpi (varargin{end}, "upper"))
     uflag = true;
@@ -72,6 +72,7 @@ function [varargout] = evcdf (x, varargin)
   else
     uflag = false;
   endif
+
   ## Get extra arguments (if they exist) or add defaults
   if (numel (varargin) > 0)
     mu = varargin{1};
@@ -105,6 +106,7 @@ function [varargout] = evcdf (x, varargin)
   else
     alpha = 0.05;
   endif
+
   ## Check for common size of X, MU, and SIGMA
   if (! isscalar (x) || ! isscalar (mu) || ! isscalar (sigma))
     [err, x, mu, sigma] = common_size (x, mu, sigma);
@@ -112,10 +114,12 @@ function [varargout] = evcdf (x, varargin)
       error ("evcdf: X, MU, and SIGMA must be of common size or scalars.");
     endif
   endif
+
   ## Check for X, MU, and SIGMA being reals
   if (iscomplex (x) || iscomplex (mu) || iscomplex (sigma))
     error ("evcdf: X, MU, and SIGMA must not be complex.");
   endif
+
   ## Return NaNs for out of range parameters.
   sigma(sigma <= 0) = NaN;
   ## Compute extreme value cdf
@@ -125,18 +129,21 @@ function [varargout] = evcdf (x, varargin)
   else
     p = -expm1 (-exp (z));
   endif
+
   ## Check for appropriate class
   if (isa (x, "single") || isa (mu, "single") || isa (sigma, "single"));
     is_class = "single";
   else
     is_class = "double";
   endif
+
   ## Prepare output
   varargout{1} = cast (p, is_class);
   if (nargout > 1)
     plo = NaN (size (z), is_class);
     pup = NaN (size (z), is_class);
   endif
+
   ## Check sigma
   if (isscalar (sigma))
     if (sigma > 0)
@@ -151,6 +158,7 @@ function [varargout] = evcdf (x, varargin)
   else
     sigma_p = sigma > 0;
   endif
+
   ## Compute confidence bounds (if requested)
   if (nargout >= 2)
    zvar = (pcov(1,1) + 2 * pcov(1,2) * z(sigma_p) + ...
@@ -166,7 +174,7 @@ function [varargout] = evcdf (x, varargin)
      plo(sigma_p) = exp (-exp (zup));
      pup(sigma_p) = exp (-exp (zlo));
    else
-     plo(sigma_p) = -expk1 (-exp (zlo));
+     plo(sigma_p) = -expm1 (-exp (zlo));
      pup(sigma_p) = -expm1 (-exp (zup));
    endif
    varargout{2} = plo;

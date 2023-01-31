@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,9 +16,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} @var{y} = mvnpdf (@var{x}, @var{mu}, @var{sigma})
+## @deftypefn  {statistics} @var{y} = mvnpdf (@var{x}, @var{mu}, @var{sigma})
 ##
-## Multivariate normal probability density function (pdf).
+## Multivariate normal probability density function (PDF).
 ##
 ## @code{@var{y} = mvnpdf (@var{x})} returns the probability density of the
 ## multivariate normal distribution with zero mean and identity covariance
@@ -48,7 +48,7 @@
 ## If @var{x} is a 1-by-D vector, @code{mcvpdf} replicates it to match the
 ## leading dimension of @var{mu} or the trailing dimension of @var{sigma}.
 ##
-## @seealso{mvncdf, mvnrnd, normpdf, pdf}
+## @seealso{mvncdf, mvnrnd}
 ## @end deftypefn
 
 function y = mvnpdf (x, mu, sigma)

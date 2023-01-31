@@ -20,17 +20,17 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} @var{p} = tcdf (@var{x}, @var{df})
+## @deftypefn  {statistics} @var{p} = tcdf (@var{x}, @var{df})
 ## @deftypefnx {statistics} @var{p} = tcdf (@var{x}, @var{df}, "upper")
 ##
-## Student's T cumulative distribution function (cdf).
+## Student's T cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the t (Student) distribution with @var{df} degrees of
+## (CDF) at @var{x} of the Student's T distribution with @var{df} degrees of
 ## freedom.
 ##
-## The size of @var{p} is the common size of @var{x} and @var{df}. A scalar input
-## functions as a constant matrix of the same size as the other input.
+## The size of @var{p} is the common size of @var{x} and @var{df}. A scalar
+## input functions as a constant matrix of the same size as the other input.
 ##
 ## @code{@var{p} = tcdf (@var{x}, @var{df}, "upper")} computes the upper tail
 ## probability of the Student's T distribution with @var{df} degrees of freedom,

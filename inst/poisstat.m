@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{m}, @var{v}] =} poisstat (@var{lambda})
+## @deftypefn  {statistics} [@var{m}, @var{v}] = poisstat (@var{lambda})
 ##
 ## Compute mean and variance of the Poisson distribution.
 ##
@@ -59,6 +59,8 @@
 ## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
 ## Processes}. McGraw-Hill, New York, second edition, 1984.
 ## @end enumerate
+##
+## @seealso{poisscdf, poissinv, poisspdf, poissrnd}
 ## @end deftypefn
 
 function [m, v] = poisstat (lambda)

@@ -1,6 +1,9 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
 ## Copyright (C) 2019 Anthony Morast
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -17,12 +20,18 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} unifrnd (@var{a}, @var{b})
-## @deftypefnx {} {} unifrnd (@var{a}, @var{b}, @var{r})
-## @deftypefnx {} {} unifrnd (@var{a}, @var{b}, @var{r}, @var{c}, @dots{})
-## @deftypefnx {} {} unifrnd (@var{a}, @var{b}, [@var{sz}])
-## Return a matrix of random samples from the uniform distribution on
-## [@var{a}, @var{b}].
+## @deftypefn  {statistics} @var{r} = unifrnd (@var{a}, @var{b})
+## @deftypefnx {statistics} @var{r} = unifrnd (@var{a}, @var{b}, @var{rows})
+## @deftypefnx {statistics} @var{r} = unifrnd (@var{a}, @var{b}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} @var{r} = unifrnd (@var{a}, @var{b}, [@var{sz}])
+##
+## Random arrays from the uniform distribution.
+##
+## @code{@var{r} = unifrnd (@var{a}, @var{b})} returns an array of random
+## numbers chosen from a uniform distribution on the interval [@var{a},
+## @var{b}].  The size of @var{y} is the common size of the input arguments.
+## A scalar input functions as a constant matrix of the same size as the other
+## inputs.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -30,14 +39,10 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## If no size arguments are given then the result matrix is the common size of
-## @var{a} and @var{b}.
+## @seealso{unifcdf, unifinv, unifpdf, unifstat}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Random deviates from the uniform distribution
-
-function rnd = unifrnd (a, b, varargin)
+function r = unifrnd (a, b, varargin)
 
   if (nargin < 2)
     print_usage ();
@@ -46,12 +51,12 @@ function rnd = unifrnd (a, b, varargin)
   if (! isscalar (a) || ! isscalar (b))
     [retval, a, b] = common_size (a, b);
     if (retval > 0)
-      error ("unifrnd: A and B must be of common size or scalars");
+      error ("unifrnd: A and B must be of common size or scalars.");
     endif
   endif
 
   if (iscomplex (a) || iscomplex (b))
-    error ("unifrnd: A and B must not be complex");
+    error ("unifrnd: A and B must not be complex.");
   endif
 
   if (nargin == 2)
@@ -62,17 +67,18 @@ function rnd = unifrnd (a, b, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error ("unifrnd: dimension vector must be row vector of non-negative integers");
+      error (strcat (["unifrnd: dimension vector must be row vector"], ...
+                     [" of non-negative integers."]));
     endif
   elseif (nargin > 3)
     if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
-      error ("unifrnd: dimensions must be non-negative integers");
+      error ("unifrnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
   if (! isscalar (a) && ! isequal (size (a), sz))
-    error ("unifrnd: A and B must be scalar or of size SZ");
+    error ("unifrnd: A and B must be scalar or of size SZ.");
   endif
 
   if (isa (a, "single") || isa (b, "single"))
@@ -83,15 +89,15 @@ function rnd = unifrnd (a, b, varargin)
 
   if (isscalar (a) && isscalar (b))
     if ((-Inf < a) && (a <= b) && (b < Inf))
-      rnd = a + (b - a) * rand (sz, cls);
+      r = a + (b - a) * rand (sz, cls);
     else
-      rnd = NaN (sz, cls);
+      r = NaN (sz, cls);
     endif
   else
-    rnd = a + (b - a) .* rand (sz, cls);
+    r = a + (b - a) .* rand (sz, cls);
 
     k = !(-Inf < a) | !(a <= b) | !(b < Inf);
-    rnd(k) = NaN;
+    r(k) = NaN;
   endif
 
 endfunction

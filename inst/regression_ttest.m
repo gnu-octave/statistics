@@ -1,4 +1,7 @@
 ## Copyright (C) 1995-2017 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -15,8 +18,9 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {[@var{pval}, @var{t}, @var{df}] =} t_test_regression (@var{y}, @var{x}, @var{rr}, @var{r}, @var{alt})
-## Perform a t test for the null hypothesis
+## @deftypefn  {statistics} [@var{pval}, @var{t}, @var{df}] = regression_ttest (@var{y}, @var{x}, @var{rr}, @var{r}, @var{alt})
+##
+## Perform a linear regression t-test for the null hypothesis
 ## @nospell{@code{@var{rr} * @var{b} = @var{r}}} in a classical normal
 ## regression model @code{@var{y} = @var{x} * @var{b} + @var{e}}.
 ##
@@ -38,10 +42,7 @@
 ## If no output argument is given, the p-value of the test is displayed.
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Test one linear hypothesis in linear regression model
-
-function [pval, t, df] = t_test_regression (y, x, rr, r, alt)
+function [pval, t, df] = regression_ttest (y, x, rr, r, alt)
 
   if (nargin == 3)
     r   = 0;
@@ -58,18 +59,18 @@ function [pval, t, df] = t_test_regression (y, x, rr, r, alt)
   endif
 
   if (! isscalar (r))
-    error ("t_test_regression: R must be a scalar");
+    error ("regression_ttest: R must be a scalar");
   elseif (! ischar (alt))
-    error ("t_test_regression: ALT must be a string");
+    error ("regression_ttest: ALT must be a string");
   endif
 
   [T, k] = size (x);
   if (! (isvector (y) && (length (y) == T)))
-    error ("t_test_regression: Y must be a vector of length rows (X)");
+    error ("regression_ttest: Y must be a vector of length rows (X)");
   endif
   s = size (rr);
   if (! ((max (s) == k) && (min (s) == 1)))
-    error ("t_test_regression: RR must be a vector of length columns (X)");
+    error ("regression_ttest: RR must be a vector of length columns (X)");
   endif
 
   rr     = reshape (rr, 1, k);
@@ -86,7 +87,7 @@ function [pval, t, df] = t_test_regression (y, x, rr, r, alt)
   elseif (strcmp (alt, "<"))
     pval = cdf;
   else
-    error ("t_test_regression: the value '%s' for ALT is not possible", alt);
+    error ("regression_ttest: the value '%s' for ALT is not possible", alt);
   endif
 
   if (nargout == 0)

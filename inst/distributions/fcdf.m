@@ -1,6 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -19,66 +19,66 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{p} = tcdf (@var{x}, @var{v1}, @var{v2})
-## @deftypefnx {Function File} @var{p} = tcdf (@var{x}, @var{v1}, @var{v2}, "upper")
+## @deftypefn  {statistics} @var{p} = tcdf (@var{x}, @var{df1}, @var{df2})
+## @deftypefnx {statistics} @var{p} = tcdf (@var{x}, @var{df1}, @var{df2}, "upper")
 ##
-## F cumulative distribution function.
+## F cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the F distribution with @var{v1} and @var{v2} degrees of
-## freedom.
+## (CDF) at @var{x} of the F distribution with @var{df1} and @var{df2} degrees
+## of freedom.
 ##
-## The size of @var{p} is the common size of @var{x}, @var{v1}, and @var{v2}. A
-## scalar input functions as a constant matrix of the same size as the other
+## The size of @var{p} is the common size of @var{x}, @var{df1}, and @var{df2}.
+## A scalar input functions as a constant matrix of the same size as the other
 ## inputs.
 ##
-## @code{@var{p} = fcdf (@var{x}, @var{v1}, @var{v2}, "upper")} computes the
-## upper tail probability of the F distribution with @var{v1} and @var{v2}
+## @code{@var{p} = fcdf (@var{x}, @var{df1}, @var{df2}, "upper")} computes the
+## upper tail probability of the F distribution with @var{df1} and @var{df2}
 ## degrees of freedom at the values in @var{x}.
 ##
 ## @seealso{finv, fpdf, frnd, fstat}
 ## @end deftypefn
 
-function p = fcdf (x, v1, v2, uflag)
+function p = fcdf (x, df1, df2, uflag)
 
   ## Check for valid number of input arguments
   if (nargin < 3)
     error ("fcdf: too few input arguments.");
   endif
 
-  ## Check for 'upper' flag
+  ## Check for "upper" flag
   if (nargin > 3 && strcmpi (uflag, "upper"))
     notnan = ! isnan (x);
     x(notnan) = 1 ./ max (0, x(notnan));
-    tmp=v1;
-    v1=v2;
-    v2=tmp;
+    tmp=df1;
+    df1=df2;
+    df2=tmp;
   elseif (nargin > 3  && ! strcmpi (uflag, "upper"))
     error ("fcdf: invalid argument for upper tail.");
   endif
 
-  ## Check for common size of X, V1 and V2
-  if (! isscalar (x) || ! isscalar (v1) || ! isscalar (v2))
-    [err, x, v1, v2] = common_size (x, v1, v2);
+  ## Check for common size of X, DF1, and DF2
+  if (! isscalar (x) || ! isscalar (df1) || ! isscalar (df2))
+    [err, x, df1, df2] = common_size (x, df1, df2);
     if (err > 0)
-      error ("fcdf: X, V1, and V2 must be of common size or scalars.");
+      error ("fcdf: X, DF1, and DF2 must be of common size or scalars.");
     endif
   endif
 
-  ## Check for X, V1 and V2 being reals
-  if (iscomplex (x) || iscomplex (v1) || iscomplex (v2))
-    error ("tcdf: X, V1, and V2 must not be complex.");
+  ## Check for X, DF1, and DF2 being reals
+  if (iscomplex (x) || iscomplex (df1) || iscomplex (df2))
+    error ("tcdf: X, DF1, and DF2 must not be complex.");
   endif
 
   ## Initialize P according to appropriate class type
-  if (isa (x, "single") || isa (v1, "single") || isa (v2, "single"))
+  if (isa (x, "single") || isa (df1, "single") || isa (df2, "single"))
     p = zeros (size (x), "single");
   else
     p = zeros (size (x));
   endif
 
   ## Check X for NaNs while DFs <= 0 and make P = NaNs
-  make_nan = (v1 <= 0 | v2 <= 0 | isnan(x) | isnan(v1) | isnan(v2));
+  make_nan = (df1 <= 0 | df2 <= 0 | isnan(x) | isnan(df1) | isnan(df2));
   p(make_nan) = NaN;
   ## Check remaining valid X for Inf values and make P = 1
   is_inf = (x == Inf) & ! make_nan;
@@ -88,33 +88,33 @@ function p = fcdf (x, v1, v2, uflag)
   endif
 
   ## Compute P when X > 0.
-  k = find(x > 0 & ! make_nan & isfinite(v1) & isfinite(v2));
+  k = find(x > 0 & ! make_nan & isfinite(df1) & isfinite(df2));
   if (any (k))
-    k1 = (v2(k) <= x(k) .* v1(k));
+    k1 = (df2(k) <= x(k) .* df1(k));
     if (any (k1))
       kk = k(k1);
-      xx = v2(kk) ./ (v2(kk) + x(kk) .* v1(kk));
-      p(kk) = betainc (xx, v2(kk)/2, v1(kk)/2, "upper");
+      xx = df2(kk) ./ (df2(kk) + x(kk) .* df1(kk));
+      p(kk) = betainc (xx, df2(kk)/2, df1(kk)/2, "upper");
     end
     if (any (! k1))
       kk = k(! k1);
-      num = v1(kk) .* x(kk);
-      xx = num ./ (num + v2(kk));
-      p(kk) = betainc (xx, v1(kk)/2, v2(kk)/2, "lower");
+      num = df1(kk) .* x(kk);
+      xx = num ./ (num + df2(kk));
+      p(kk) = betainc (xx, df1(kk)/2, df2(kk)/2, "lower");
     endif
   endif
 
-  if any(~isfinite(v1(:)) | ~isfinite(v2(:)))
-    k = find (x > 0 & ! make_nan & isfinite (v1) & ! isfinite (v2) & v2 > 0);
+  if any(~isfinite(df1(:)) | ~isfinite(df2(:)))
+    k = find (x > 0 & ! make_nan & isfinite (df1) & ! isfinite (df2) & df2 > 0);
     if (any (k))
-      p(k) = gammainc (v1(k) .* x(k) ./ 2, v1(k) ./ 2, 'lower');
+      p(k) = gammainc (df1(k) .* x(k) ./ 2, df1(k) ./ 2, "lower");
     end
-    k = find (x > 0 & ! make_nan & ! isfinite (v1) & v1 > 0 & isfinite (v2));
+    k = find (x > 0 & ! make_nan & ! isfinite (df1) & df1 > 0 & isfinite (df2));
     if (any (k))
-      p(k) = gammainc (v2(k) ./ x(k) ./ 2, v2(k) ./ 2, 'upper');
+      p(k) = gammainc (df2(k) ./ x(k) ./ 2, df2(k) ./ 2, "upper");
     end
-    k = find (x > 0 & ! make_nan & ! isfinite (v1) & v1 > 0 & ...
-                                   ! isfinite (v2) & v2 > 0);
+    k = find (x > 0 & ! make_nan & ! isfinite (df1) & df1 > 0 & ...
+                                   ! isfinite (df2) & df2 > 0);
     if (any (k))
       if (nargin >= 4 && x(k) == 1)
         p(k) = 0;

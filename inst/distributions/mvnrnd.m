@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} @var{r} = mvnrnd (@var{mu}, @var{sigma})
+## @deftypefn  {statistics} @var{r} = mvnrnd (@var{mu}, @var{sigma})
 ## @deftypefnx {statistics} @var{r} = mvnrnd (@var{mu}, @var{sigma}, @var{n})
 ## @deftypefnx {statistics} @var{r} = mvnrnd (@var{mu}, @var{sigma}, @var{n}, @var{T})
 ## @deftypefnx {statistics} [@var{r}, @var{T}] = mvnrnd (@dots{})
@@ -53,7 +53,7 @@
 ## there are greater efficiency gains when SIGMA can be specified as a diagonal
 ## instead.
 ##
-## @seealso{mvncdf, mvnpdf, normrnd, random}
+## @seealso{mvncdf, mvnpdf}
 ## @end deftypefn
 
 function [r, T] = mvnrnd (mu, sigma, N, T)
@@ -119,7 +119,7 @@ function [r, T] = mvnrnd (mu, sigma, N, T)
     elseif (is_diag)
       ## Check sigma for invalid values
       if (any (sigma <= 0))
-        error ("mvnpdf: sigma diagonal contains negative or zero values.");
+        error ("mvnpdf: SIGMA diagonal contains negative or zero values.");
       endif
       t = sqrt (sigma);
       if (nargout > 1)
@@ -160,7 +160,7 @@ function [r, T] = mvnrnd (mu, sigma, N, T)
         sigma = reshape(sigma,sd(2),sd(3))';
         ## Check sigma for invalid values
         if (any (sigma(:) <= 0))
-          error ("mvnpdf: sigma diagonals contain negative or zero values.");
+          error ("mvnpdf: SIGMA diagonals contain negative or zero values.");
         endif
         R = sqrt(sigma);
         r = bsxfun (@times, randn (rm, cm, is_class), R) + mu;

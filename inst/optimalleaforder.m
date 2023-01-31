@@ -17,9 +17,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {@var{leafOrder} =} optimalleaforder (@var{tree}, @var{D})
-## @deftypefnx {Function File} @
-##   {@var{leafOrder} =} optimalleaforder (..., @var{Name}, @var{Value})
+## @deftypefn  {statistics} @var{leafOrder} = optimalleaforder (@var{tree}, @var{D})
+## @deftypefnx {statistics} @var{leafOrder} = optimalleaforder (@dots{}, @var{Name}, @var{Value})
 ##
 ## Compute the optimal leaf ordering of a hierarchical binary cluster tree.
 ##

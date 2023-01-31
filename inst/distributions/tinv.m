@@ -1,5 +1,8 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,86 +19,87 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} tinv (@var{x}, @var{n})
-## For each element of @var{x}, compute the quantile (the inverse of the CDF)
-## at @var{x} of the t (Student) distribution with @var{n}
-## degrees of freedom.
+## @deftypefn {statistics} @var{x} = tinv (@var{p}, @var{df})
+##
+## Inverse of the Student's T cumulative distribution function (iCDF).
+##
+## For each element of @var{p}, compute the quantile (the inverse of the CDF)
+## at @var{p} of the Student's T distribution with @var{df} degrees of freedom.
+##
+## The size of @var{p} is the common size of @var{x} and @var{df}. A scalar
+## input functions as a constant matrix of the same size as the other input.
 ##
 ## This function is analogous to looking in a table for the t-value of a
-## single-tailed distribution.
+## single-tailed distribution.  For very large @var{df} (>10000), the inverse of
+## the standard normal distribution is used.
+##
+## @seealso{tcdf, tpdf, trnd, tstat}
 ## @end deftypefn
 
-## For very large n, the "correct" formula does not really work well,
-## and the quantiles of the standard normal distribution are used
-## directly.
-
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Quantile function of the t distribution
-
-function inv = tinv (x, n)
+function x = tinv (p, df)
 
   if (nargin != 2)
     print_usage ();
   endif
 
-  if (! isscalar (n))
-    [retval, x, n] = common_size (x, n);
+  if (! isscalar (p) || ! isscalar (df))
+    [retval, p, df] = common_size (p, df);
     if (retval > 0)
-      error ("tinv: X and N must be of common size or scalars");
+      error ("tinv: P and DF must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (x) || iscomplex (n))
-    error ("tinv: X and N must not be complex");
+  if (iscomplex (p) || iscomplex (df))
+    error ("tinv: P and DF must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (n, "single"))
-    inv = NaN (size (x), "single");
+  if (isa (p, "single") || isa (df, "single"))
+    x = NaN (size (p), "single");
   else
-    inv = NaN (size (x));
+    x = NaN (size (p));
   endif
 
-  k = (x == 0) & (n > 0);
-  inv(k) = -Inf;
+  k = (p == 0) & (df > 0);
+  x(k) = -Inf;
 
-  k = (x == 1) & (n > 0);
-  inv(k) = Inf;
+  k = (p == 1) & (df > 0);
+  x(k) = Inf;
 
-  if (isscalar (n))
-    k = (x > 0) & (x < 1);
-    if ((n > 0) && (n < 10000))
-      inv(k) = (sign (x(k) - 1/2)
-                .* sqrt (n * (1 ./ betainv (2*min (x(k), 1 - x(k)),
-                                            n/2, 1/2) - 1)));
-    elseif (n >= 10000)
-      ## For large n, use the quantiles of the standard normal
-      inv(k) = stdnormal_inv (x(k));
+  if (isscalar (df))
+    k = (p > 0) & (p < 1);
+    if ((df > 0) && (df < 10000))
+      x(k) = (sign (p(k) - 1/2)
+                .* sqrt (df * (1 ./ betainv (2*min (p(k), 1 - p(k)),
+                                            df/2, 1/2) - 1)));
+    elseif (df >= 10000)
+      ## For large df, use the quantiles of the standard normal
+      x(k) = stdnormal_inv (p(k));
     endif
   else
-    k = (x > 0) & (x < 1) & (n > 0) & (n < 10000);
-    inv(k) = (sign (x(k) - 1/2)
-              .* sqrt (n(k) .* (1 ./ betainv (2*min (x(k), 1 - x(k)),
-                                              n(k)/2, 1/2) - 1)));
+    k = (p > 0) & (p < 1) & (df > 0) & (df < 10000);
+    x(k) = (sign (p(k) - 1/2)
+              .* sqrt (df(k) .* (1 ./ betainv (2*min (p(k), 1 - p(k)),
+                                              df(k)/2, 1/2) - 1)));
 
-    ## For large n, use the quantiles of the standard normal
-    k = (x > 0) & (x < 1) & (n >= 10000);
-    inv(k) = stdnormal_inv (x(k));
+    ## For large df, use the quantiles of the standard normal
+    k = (p > 0) & (p < 1) & (df >= 10000);
+    x(k) = stdnormal_inv (p(k));
   endif
 
 endfunction
 
 
-%!shared x
-%! x = [-1 0 0.5 1 2];
-%!assert (tinv (x, ones (1,5)), [NaN -Inf 0 Inf NaN])
-%!assert (tinv (x, 1), [NaN -Inf 0 Inf NaN], eps)
-%!assert (tinv (x, [1 0 NaN 1 1]), [NaN NaN NaN Inf NaN], eps)
-%!assert (tinv ([x(1:2) NaN x(4:5)], 1), [NaN -Inf NaN Inf NaN])
+%!shared p
+%! p = [-1 0 0.5 1 2];
+%!assert (tinv (p, ones (1,5)), [NaN -Inf 0 Inf NaN])
+%!assert (tinv (p, 1), [NaN -Inf 0 Inf NaN], eps)
+%!assert (tinv (p, [1 0 NaN 1 1]), [NaN NaN NaN Inf NaN], eps)
+%!assert (tinv ([p(1:2) NaN p(4:5)], 1), [NaN -Inf NaN Inf NaN])
 
 ## Test class of input preserved
-%!assert (tinv ([x, NaN], 1), [NaN -Inf 0 Inf NaN NaN], eps)
-%!assert (tinv (single ([x, NaN]), 1), single ([NaN -Inf 0 Inf NaN NaN]), eps ("single"))
-%!assert (tinv ([x, NaN], single (1)), single ([NaN -Inf 0 Inf NaN NaN]), eps ("single"))
+%!assert (tinv ([p, NaN], 1), [NaN -Inf 0 Inf NaN NaN], eps)
+%!assert (tinv (single ([p, NaN]), 1), single ([NaN -Inf 0 Inf NaN NaN]), eps ("single"))
+%!assert (tinv ([p, NaN], single (1)), single ([NaN -Inf 0 Inf NaN NaN]), eps ("single"))
 
 ## Test input validation
 %!error tinv ()

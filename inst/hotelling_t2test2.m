@@ -1,6 +1,8 @@
 ## Copyright (C) 1996-2017 Kurt Hornik
 ## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
 ## published by the Free Software Foundation, either version 3 of the
@@ -77,14 +79,14 @@ function [h, pval, stats] = hotelling_t2test2 (x, y, varargin)
   if (isscalar (y) || ndims (y) > 2)
     error ("hotelling_t2test2: Y must be a vector or a 2D matrix.");
   endif
-  
+
   ## Set default arguments
   alpha = 0.05;
-  
+
   ## Remove rows containing any NaNs
   x = rmmissing (x);
   y = rmmissing (y);
-  
+
   ## Check additional options
   i = 1;
   while (i <= length (varargin))
@@ -102,7 +104,7 @@ function [h, pval, stats] = hotelling_t2test2 (x, y, varargin)
     endswitch
     i = i + 1;
   endwhile
-  
+
   ## Conditional error checking for X being a vector or matrix
   if (isvector (x))
     n_x = length (x);

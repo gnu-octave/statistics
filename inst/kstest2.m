@@ -1,5 +1,7 @@
 ## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -27,7 +29,7 @@
 ## The alternative hypothesis is that @var{x1} and @var{x2} are from different
 ## continuous distributions.  The result @var{h} is 1 if the test rejects the
 ## null hypothesis at the 5% significance level, and 0 otherwise.
-## 
+##
 ## @code{@var{h} = kstest2 (@var{x1}, @var{x2}, @var{name}, @var{value})}
 ## returns a test decision for a two-sample Kolmogorov-Smirnov test with
 ## additional options specified by one or more name-value pair arguments as
@@ -55,7 +57,7 @@
 ## than or equal to x.  The one-sided test uses the actual value of the
 ## difference between the cdfs of the distributions of the two data vectors
 ## rather than the absolute value. The test statistic is
-## @code{D* = max(F1(x) - F2(x))} or @code{D* = max(F2(x) - F1(x))} for 
+## @code{D* = max(F1(x) - F2(x))} or @code{D* = max(F2(x) - F1(x))} for
 ## @code{tail} = "larger" or "smaller", respectively.
 ##
 ## @code{[@var{h}, @var{p}] = kstest2 (@dots{})} also returns the
@@ -80,7 +82,7 @@ function [H, pValue, ks2stat] = kstest2 (x1, x2, varargin)
   alpha = 0.05;
   tail = "unequal";
   ## Parse extra parameters
-  if nargin > 2 && mod (numel (varargin), 2) == 0 
+  if nargin > 2 && mod (numel (varargin), 2) == 0
     [~, prop] = parseparams (varargin);
     while (!isempty (prop))
       switch (lower (prop{1}))

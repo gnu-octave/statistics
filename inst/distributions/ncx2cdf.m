@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,10 +16,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{p} = ncx2cdf (@var{x}, @var{df}, @var{delta})
-## @deftypefnx {Function File} @var{p} = ncx2cdf (@var{x}, @var{df}, @var{delta}, @var{uflag})
+## @deftypefn  {statistics} @var{p} = ncx2cdf (@var{x}, @var{df}, @var{delta})
+## @deftypefnx {statistics} @var{p} = ncx2cdf (@var{x}, @var{df}, @var{delta}, @var{uflag})
 ##
-## Noncentral Chi-Square cumulative distribution function (cdf).
+## Noncentral Chi-Square cumulative distribution function (CDF).
 ##
 ## @code{@var{p} = ncx2cdf (@var{x}, @var{df}, @var{delta})} returns the
 ## noncentral chi-square cdf with @var{df} degrees of freedom and noncentrality

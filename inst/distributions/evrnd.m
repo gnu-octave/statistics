@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,9 +17,9 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{r} = evrnd (@var{mu}, @var{sigma})
-## @deftypefnx {Function File} @var{r} = evrnd (@var{mu}, @var{sigma}, @var{m}, @var{n}, @dots{})
-## @deftypefnx {Function File} @var{r} = evrnd (@var{mu}, @var{sigma}, [@var{m}, @var{n}, @dots{}])
+## @deftypefn  {statistics} @var{r} = evrnd (@var{mu}, @var{sigma})
+## @deftypefnx {statistics} @var{r} = evrnd (@var{mu}, @var{sigma}, @var{m}, @var{n}, @dots{})
+## @deftypefnx {statistics} @var{r} = evrnd (@var{mu}, @var{sigma}, [@var{m}, @var{n}, @dots{}])
 ##
 ## Random arrays from the extreme value distribution.
 ##
@@ -48,18 +48,21 @@ function r = evrnd (mu, sigma, varargin)
   if (nargin < 2)
     error ("evrnd: too few input arguments.");
   endif
+
   ## Check for appropriate class
   if (isa (mu, "single") || isa (sigma, "single"));
     is_class = "single";
   else
     is_class = "double";
   endif
+
   ## Check for additional dimensions in varargin and get their size
   dim_vec = 1;
   if (nargin > 2)
     extra_varargin = numel (varargin(:));
     if (extra_varargin == 1)
       size_dim = varargin{1};
+
       ## Check for empty input argument
       if (isempty (size_dim))
         error (strcat (["evrnd: extra argument for size of output"], ...
@@ -73,6 +76,7 @@ function r = evrnd (mu, sigma, varargin)
       dim_vec = zeros (size_dim, is_class);
     endif
   endif
+
   ## Check for common size of MU, SIGMA, and output based on given dimensions
   if (! isscalar (mu) || ! isscalar (sigma) || ! isscalar (dim_vec))
     [err, mu, sigma, dim_vec] = common_size (mu, sigma, dim_vec);
@@ -81,10 +85,13 @@ function r = evrnd (mu, sigma, varargin)
                      [" common size or scalars."]));
     endif
   endif
+
   ## Get final dimensions of returning random array
   size_out = size (mu);
+
   ## Return NaNs for out of range values of SIGMA
   sigma(sigma < 0) = NaN;
+
   ## Generate uniform random values, and apply the extreme value inverse CDF.
   r = log (-log (rand (size_out, is_class))) .* sigma + mu;
 

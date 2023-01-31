@@ -1,4 +1,7 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -14,43 +17,16 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{y} =} raylpdf (@var{x}, @var{sigma})
-## Compute the probability density function of the Rayleigh distribution.
+## @deftypefn  {statistics} @var{y} = raylpdf (@var{x}, @var{sigma})
 ##
-## @subheading Arguments
+## Rayleigh probability density function (PDF).
 ##
-## @itemize @bullet
-## @item
-## @var{x} is the support. The elements of @var{x} must be non-negative.
+## For each element of @var{x}, compute the probability density function (PDF)
+## at @var{x} of the Rayleigh distribution with parameter @var{sigma}.  The size
+## of @var{p} is the common size of @var{x} and @var{sigma}.  A scalar input
+## functions as a constant matrix of the same size as the other inputs.
 ##
-## @item
-## @var{sigma} is the parameter of the Rayleigh distribution. The elements
-## of @var{sigma} must be positive.
-## @end itemize
-## @var{x} and @var{sigma} must be of common size or one of them must be
-## scalar.
-##
-## @subheading Return values
-##
-## @itemize @bullet
-## @item
-## @var{y} is the probability density of the Rayleigh distribution at each
-## element of @var{x} and corresponding parameter @var{sigma}.
-## @end itemize
-##
-## @subheading Examples
-##
-## @example
-## @group
-## x = 0:0.5:2.5;
-## sigma = 1:6;
-## y = raylpdf (x, sigma)
-## @end group
-##
-## @group
-## y = raylpdf (x, 0.5)
-## @end group
-## @end example
+## Default value is @var{sigma} = 1.
 ##
 ## @subheading References
 ##
@@ -65,33 +41,35 @@
 ## Processes}. pages 104 and 148, McGraw-Hill, New York, second edition,
 ## 1984.
 ## @end enumerate
+##
+## @seealso{raylcdf, raylinv, raylrnd, raylstat}
 ## @end deftypefn
-
-## Author: Arno Onken <asnelt@asnelt.org>
-## Description: PDF of the Rayleigh distribution
 
 function y = raylpdf (x, sigma)
 
   # Check arguments
-  if (nargin != 2)
+  if (nargin < 1 || nargin > 2)
     print_usage ();
   endif
 
-  if (! isempty (x) && ! ismatrix (x))
-    error ("raylpdf: x must be a numeric matrix");
-  endif
-  if (! isempty (sigma) && ! ismatrix (sigma))
-    error ("raylpdf: sigma must be a numeric matrix");
+  if (nargin < 1)
+    sigma = 1;
   endif
 
+  ## Check for common size of X and SIGMA
   if (! isscalar (x) || ! isscalar (sigma))
     [retval, x, sigma] = common_size (x, sigma);
     if (retval > 0)
-      error ("raylpdf: x and sigma must be of common size or scalar");
+      error ("raylpdf: X and SIGMA must be of common size or scalars.");
     endif
   endif
 
-  # Calculate pdf
+  ## Check for X and SIGMA being reals
+  if (iscomplex (x) || iscomplex (sigma))
+    error ("raylpdf: X and SIGMA must not be complex.");
+  endif
+
+  # Calculate Rayleigh PDF
   y = x .* exp ((-x .^ 2) ./ (2 .* sigma .^ 2)) ./ (sigma .^ 2);
 
   # Continue argument check
@@ -114,3 +92,12 @@ endfunction
 %! y = raylpdf (x, 0.5);
 %! expected_y = [0.0000, 1.2131, 0.5413, 0.0667, 0.0027, 0.0000];
 %! assert (y, expected_y, 0.001);
+
+
+## Test input validation
+%!error poissinv ()
+%!error poissinv (1,2,3)
+%!error poissinv (ones (3), ones (2))
+%!error poissinv (ones (2), ones (3))
+%!error poissinv (i, 2)
+%!error poissinv (2, i)

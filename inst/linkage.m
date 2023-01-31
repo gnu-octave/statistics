@@ -16,14 +16,12 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{y} =} linkage (@var{d})
-## @deftypefnx {Function File} {@var{y} =} linkage (@var{d}, @var{method})
-## @deftypefnx {Function File} {@var{y} =} linkage (@var{x})
-## @deftypefnx {Function File} {@var{y} =} linkage (@var{x}, @var{method})
-## @deftypefnx {Function File} @
-##   {@var{y} =} linkage (@var{x}, @var{method}, @var{metric})
-## @deftypefnx {Function File} @
-##   {@var{y} =} linkage (@var{x}, @var{method}, @var{arglist})
+## @deftypefn  {statistics} @var{y} = linkage (@var{d})
+## @deftypefnx {statistics} @var{y} = linkage (@var{d}, @var{method})
+## @deftypefnx {statistics} @var{y} = linkage (@var{x})
+## @deftypefnx {statistics} @var{y} = linkage (@var{x}, @var{method})
+## @deftypefnx {statistics} @var{y} = linkage (@var{x}, @var{method}, @var{metric})
+## @deftypefnx {Function File} @var{y} = linkage (@var{x}, @var{method}, @var{arglist})
 ##
 ## Produce a hierarchical clustering dendrogram
 ##

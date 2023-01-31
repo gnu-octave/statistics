@@ -1,5 +1,7 @@
 ## Copyright (C) 1995-2017 Friedrich Leisch
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
 ## published by the Free Software Foundation, either version 3 of the
@@ -15,7 +17,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {[@var{pval}, @var{chisq}] =} run_test (@var{x})
+## @deftypefn  {statistics} [@var{pval}, @var{chisq}] = run_test (@var{x})
+##
 ## Perform a chi-square test with 6 degrees of freedom based on the upward
 ## runs in the columns of @var{x}.
 ##
@@ -26,9 +29,6 @@
 ##
 ## If no output argument is given, the p-value is displayed.
 ## @end deftypefn
-
-## Author: FL <Friedrich.Leisch@ci.tuwien.ac.at>
-## Description: Run test for independence
 
 function [pval, chisq] = run_test (x)
 

@@ -19,17 +19,15 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} @var{p} = betacdf (@var{x}, @var{a}, @var{b})
+## @deftypefn  {statistics} @var{p} = betacdf (@var{x}, @var{a}, @var{b})
 ## @deftypefnx {statistics} @var{p} = betacdf (@var{x}, @var{a}, @var{b}, "upper")
 ##
-## Beta cumulative distribution function (cdf).
+## Beta cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## at @var{x} of the Beta distribution with parameters @var{a} and @var{b}.
-##
-## The size of @var{p} is the common size of @var{x}, @var{a} and @var{b}.
-## A scalar input functions as a constant matrix of the same size as the other
-## inputs.
+## at @var{x} of the Beta distribution with parameters @var{a} and @var{b}.  The
+## size of @var{p} is the common size of @var{x}, @var{a} and @var{b}.  A scalar
+## input functions as a constant matrix of the same size as the other inputs.
 ##
 ## @code{@var{p} = betacdf (@var{x}, @var{a}, @var{b}, "upper")} computes the
 ## upper tail probability of the Beta distribution with parameters @var{a} and
@@ -69,7 +67,7 @@ function p = betacdf (x, a, b, varargin)
   else
     is_type = "double";
   endif
-  
+
   ## Find valid values in parameters and data
   okPARAM = (0 < a & a < Inf) & (0 < b & b < Inf);
   okDATA = (okPARAM & (0 <= x & x <= 1));
@@ -101,7 +99,7 @@ function p = betacdf (x, a, b, varargin)
       return;
     endif
   endif
-  
+
   ## Call betainc for the actual work
   pk = betainc (x, a, b, varargin{:});
 
@@ -111,7 +109,7 @@ function p = betacdf (x, a, b, varargin)
   else
     p(okDATA) = pk;
   endif
-  
+
 endfunction
 
 ## Test output

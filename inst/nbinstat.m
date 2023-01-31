@@ -16,7 +16,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} [@var{m}, @var{v}] = nbinstat (@var{n}, @var{p})
+## @deftypefn  {statistics} [@var{m}, @var{v}] = nbinstat (@var{n}, @var{p})
+##
 ## Compute mean and variance of the negative binomial distribution.
 ##
 ## @subheading Arguments

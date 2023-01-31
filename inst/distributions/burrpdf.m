@@ -1,5 +1,6 @@
-## Copyright (C) 2016 Dag Lyberg
 ## Copyright (C) 1995-2015 Kurt Hornik
+## Copyright (C) 2016 Dag Lyberg
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of Octave.
 ##
@@ -18,50 +19,54 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} burrpdf (@var{x}, @var{alpha}, @var{c}, @var{k})
+## @deftypefn  {statistics} @var{y} = burrpdf (@var{x}, @var{a}, @var{c}, @var{k})
+##
+## Burr type XII probability density function (PDF).
+##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the Burr distribution with scale parameter @var{alpha} and 
-## shape parameters @var{c} and @var{k}.
+## at @var{x} of the Burr type XII distribution with parameters @var{a},
+## @var{c}, and @var{k}.  The size of @var{y} is the common size of @var{x},
+## @var{a}, @var{c}, and @var{k}.  A scalar input functions as a constant matrix
+## of the same size as the other inputs.
+##
+## @seealso{burrcdf, burrinv, burrrnd}
 ## @end deftypefn
 
-## Author: Dag Lyberg <daglyberg80@gmail.com>
-## Description: PDF of the Burr distribution
-
-function pdf = burrpdf (x, alpha, c, k)
+function y = burrpdf (x, a, c, k)
 
   if (nargin != 4)
     print_usage ();
   endif
 
-  if (! isscalar (alpha) || ! isscalar (c) || ! isscalar (k) )
-    [retval, x, alpha, c, k] = common_size (x, alpha, c, k);
+  if (! isscalar (x) || ! isscalar (a) || ! isscalar (c) || ! isscalar (k))
+    [retval, x, a, c, k] = common_size (x, a, c, k);
     if (retval > 0)
-      error ("burrpdf: X, ALPHA, C AND K must be of common size or scalars");
+      error ("burrpdf: X, ALPHA, C, AND K must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (x) || iscomplex(alpha) || iscomplex (c) || iscomplex (k))
-    error ("burrpdf: X, ALPHA, C AND K must not be complex");
+  if (iscomplex (x) || iscomplex(a) || iscomplex (c) || iscomplex (k))
+    error ("burrpdf: X, ALPHA, C, AND K must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (alpha, "single") ...
+  if (isa (x, "single") || isa (a, "single") ...
       || isa (c, "single") || isa (k, "single"))
-    pdf = zeros (size (x), "single");
+    y = zeros (size (x), "single");
   else
-    pdf = zeros (size (x));
+    y = zeros (size (x));
   endif
 
-  j = isnan (x) | ! (alpha > 0) | ! (c > 0) | ! (k > 0);
-  pdf(j) = NaN;
+  j = isnan (x) | ! (a > 0) | ! (c > 0) | ! (k > 0);
+  y(j) = NaN;
 
-  j = (x > 0) & (0 < alpha) & (alpha < Inf) & (0 < c) & (c < Inf) ...
-      & (0 < k) & (k < Inf);
-  if (isscalar (alpha) && isscalar (c) && isscalar(k))
-    pdf(j) = (c * k / alpha) .* (x(j) / alpha).^(c-1) ./ ...
-        (1 + (x(j) / alpha).^c).^(k + 1);
+  j = (x > 0) & (0 < a) & (a < Inf) & (0 < c) & (c < Inf) ...
+       & (0 < k) & (k < Inf);
+  if (isscalar (a) && isscalar (c) && isscalar(k))
+    y(j) = (c * k / a) .* (x(j) / a).^(c-1) ./ ...
+           (1 + (x(j) / a).^c).^(k + 1);
   else
-    pdf(j) = (c(j) .* k(j) ./ alpha(j) ).* x(j).^(c(j)-1) ./ ...
-        (1 + (x(j) ./ alpha(j) ).^c(j) ).^(k(j) + 1);
+    y(j) = (c(j) .* k(j) ./ a(j) ).* x(j).^(c(j)-1) ./ ...
+           (1 + (x(j) ./ a(j) ).^c(j) ).^(k(j) + 1);
   endif
 
 endfunction

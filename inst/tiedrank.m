@@ -1,5 +1,7 @@
 ## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -14,9 +16,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} [@var{r}, @var{tieadj}] = tiedrank (@var{x})
-## @deftypefnx {Function File} [@var{r}, @var{tieadj}] = tiedrank (@var{x}, @var{tieflag})
-## @deftypefnx {Function File} [@var{r}, @var{tieadj}] = tiedrank (@var{x}, @var{tieflag}, @var{bidir})
+## @deftypefn  {statistics} [@var{r}, @var{tieadj}] = tiedrank (@var{x})
+## @deftypefnx {statistics} [@var{r}, @var{tieadj}] = tiedrank (@var{x}, @var{tieflag})
+## @deftypefnx {statistics} [@var{r}, @var{tieadj}] = tiedrank (@var{x}, @var{tieflag}, @var{bidir})
 ##
 ## @code{[@var{r}, @var{tieadj}] = tiedrank (@var{x})} computes the ranks of the
 ## values in vector @var{x}.  If any values in @var{x} are tied, @code{tiedrank}
@@ -72,7 +74,7 @@ function [r, tieadj] = tiedrank (x, tieflag, bidir)
     else
       tieadj = [0; 0; 0];
     endif
-    ## Check precision of X 
+    ## Check precision of X
     if isa (x, "single")
       ranks = single (ranks);
       tieadj = single (tieadj);

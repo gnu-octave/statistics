@@ -1,7 +1,7 @@
 ## Copyright (C) 1997-2015 Kurt Hornik
 ## Copyright (C) 2016 Dag Lyberg
 ## Copyright (C) 2018 John Donoghue
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -20,11 +20,11 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{p} = gpcdf (@var{x})
-## @deftypefnx {Function File} @var{p} = gpcdf (@var{x}, @var{shape})
-## @deftypefnx {Function File} @var{p} = gpcdf (@var{x}, @var{shape}, @var{scale})
-## @deftypefnx {Function File} @var{p} = gpcdf (@var{x}, @var{shape}, @var{scale}, @var{location})
-## @deftypefnx {Function File} @var{p} = gpcdf (@dots{}, "upper")
+## @deftypefn  {statistics} @var{p} = gpcdf (@var{x})
+## @deftypefnx {statistics} @var{p} = gpcdf (@var{x}, @var{shape})
+## @deftypefnx {statistics} @var{p} = gpcdf (@var{x}, @var{shape}, @var{scale})
+## @deftypefnx {statistics} @var{p} = gpcdf (@var{x}, @var{shape}, @var{scale}, @var{location})
+## @deftypefnx {statistics} @var{p} = gpcdf (@dots{}, "upper")
 ##
 ## Generalized Pareto cumulative distribution function (cdf).
 ##
@@ -52,7 +52,6 @@
 ##
 ## @seealso{gpinv, gppdf, gprnd, gpfit, gplike, gpstat}
 ## @end deftypefn
-
 
 function p = gpcdf (x, varargin)
 

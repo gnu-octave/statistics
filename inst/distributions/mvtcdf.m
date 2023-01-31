@@ -1,5 +1,7 @@
 ## Copyright (C) 2008 Arno Onken <asnelt@asnelt.org>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
 ## Foundation; either version 3 of the License, or (at your option) any later
@@ -14,11 +16,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{p} =} mvtcdf (@var{x}, @var{sigma}, @var{nu})
-## @deftypefnx {Function File} {} mvtcdf (@var{a}, @var{x}, @var{sigma}, @var{nu})
-## @deftypefnx {Function File} {[@var{p}, @var{err}] =} mvtcdf (@dots{})
-## Compute the cumulative distribution function of the multivariate
-## Student's t distribution.
+## @deftypefn  {statistics} @var{p} = mvtcdf (@var{x}, @var{sigma}, @var{df})
+## @deftypefnx {statistics} @var{p} = mvtcdf (@var{a}, @var{x}, @var{sigma}, @var{df})
+## @deftypefnx {statistics} [@var{p}, @var{err}] = mvtcdf (@dots{})
+##
+## Multivariate Student's t cumulative distribution function (CDF).
 ##
 ## @subheading Arguments
 ##
@@ -31,7 +33,7 @@
 ## @var{sigma} is the correlation matrix.
 ##
 ## @item
-## @var{nu} is the degrees of freedom.
+## @var{df} is the degrees of freedom.
 ##
 ## @item
 ## @var{a} is the lower limit for integration where each row corresponds
@@ -55,13 +57,13 @@
 ## @group
 ## x = [1 2];
 ## sigma = [1.0 0.5; 0.5 1.0];
-## nu = 4;
-## p = mvtcdf (x, sigma, nu)
+## df = 4;
+## p = mvtcdf (x, sigma, df)
 ## @end group
 ##
 ## @group
 ## a = [-inf 0];
-## p = mvtcdf (a, x, sigma, nu)
+## p = mvtcdf (a, x, sigma, df)
 ## @end group
 ## @end example
 ##
@@ -74,10 +76,9 @@
 ## Constrasts. @cite{Journal of Statistical Computation and Simulation},
 ## 63, pages 361-378, 1999.
 ## @end enumerate
+##
+## @seealso{mvtcdfqmc, mvtpdf, mvtrnd}
 ## @end deftypefn
-
-## Author: Arno Onken <asnelt@asnelt.org>
-## Description: CDF of the multivariate Student's t distribution
 
 function [p, err] = mvtcdf (varargin)
 
@@ -89,13 +90,13 @@ function [p, err] = mvtcdf (varargin)
   if (length (varargin) == 3)
     x = varargin{1};
     sigma = varargin{2};
-    nu = varargin{3};
+    df = varargin{3};
     a = -Inf .* ones (size (x));
   elseif (length (varargin) == 4)
     a = varargin{1};
     x = varargin{2};
     sigma = varargin{3};
-    nu = varargin{4};
+    df = varargin{4};
   else
     print_usage ();
   endif
@@ -106,15 +107,16 @@ function [p, err] = mvtcdf (varargin)
 
   # Check parameters
   if (size (x, 2) != q)
-    error ("mvtcdf: x must have the same number of columns as sigma");
+    error ("mvtcdf: X must have the same number of columns as sigma.");
   endif
 
   if (any (size (x) != size (a)))
-    error ("mvtcdf: a must have the same size as x");
+    error ("mvtcdf: A must have the same size as X.");
   endif
 
-  if (! isscalar (nu) && (! isvector (nu) || length (nu) != cases))
-    error ("mvtcdf: nu must be a scalar or a vector with the same number of rows as x");
+  if (! isscalar (df) && (! isvector (df) || length (df) != cases))
+    error (strcat (["mvtcdf: DF must be a scalar or a vector with the"], ...
+                   [" same number of rows as X."]));
   endif
 
   # Convert to correlation matrix if necessary
@@ -122,11 +124,12 @@ function [p, err] = mvtcdf (varargin)
     svar = repmat (diag (sigma), 1, q);
     sigma = sigma ./ sqrt (svar .* svar');
   endif
-  if (q < 1 || size (sigma, 2) != q || any (any (sigma != sigma')) || min (eig (sigma)) <= 0)
-    error ("mvtcdf: sigma must be nonempty symmetric positive definite");
+  if (q < 1 || size (sigma, 2) != q || any (any (sigma != sigma')) ...
+                                    || min (eig (sigma)) <= 0)
+    error ("mvtcdf: SIGMA must be nonempty symmetric positive definite.");
   endif
 
-  nu = nu(:);
+  df = df(:);
   c = chol (sigma)';
 
   # Number of integral transformations
@@ -142,15 +145,18 @@ function [p, err] = mvtcdf (varargin)
     w = rand (cases, q - 1);
 
     # Transformation of the multivariate t-integral
-    dvev = tcdf ([a(:, 1) / c(1, 1), x(:, 1) / c(1, 1)], nu);
+    dvev = tcdf ([a(:, 1) / c(1, 1), x(:, 1) / c(1, 1)], df);
     dv = dvev(:, 1);
     ev = dvev(:, 2);
     fv = ev - dv;
     y = zeros (cases, q - 1);
     for i = 1:(q - 1)
-      y(:, i) = tinv (dv + w(:, i) .* (ev - dv), nu + i - 1) .* sqrt ((nu + sum (y(:, 1:(i-1)) .^ 2, 2)) ./ (nu + i - 1));
-      tf = (sqrt ((nu + i) ./ (nu + sum (y(:, 1:i) .^ 2, 2)))) ./ c(i + 1, i + 1);
-      dvev = tcdf ([(a(:, i + 1) - c(i + 1, 1:i) .* y(:, 1:i)) .* tf, (x(:, i + 1) - c(i + 1, 1:i) .* y(:, 1:i)) .* tf], nu + i);
+      y(:, i) = tinv (dv + w(:, i) .* (ev - dv), df + i - 1) .* ...
+                sqrt ((df + sum (y(:, 1:(i-1)) .^ 2, 2)) ./ (df + i - 1));
+      tf = (sqrt ((df + i) ./ (df + sum (y(:, 1:i) .^ 2, 2)))) ./ ...
+                               c(i + 1, i + 1);
+      dvev = tcdf ([(a(:, i + 1) - c(i + 1, 1:i) .* y(:, 1:i)) .* tf, ...
+                    (x(:, i + 1) - c(i + 1, 1:i) .* y(:, 1:i)) .* tf], df + i);
       dv = dvev(:, 1);
       ev = dvev(:, 2);
       fv = (ev - dv) .* fv;
@@ -164,3 +170,17 @@ function [p, err] = mvtcdf (varargin)
   endwhile
 
 endfunction
+
+%!error mvtcdf (1)
+%!error mvtcdf (1, 2)
+%!error<mvtcdf: X must have the same number of columns as sigma.> ...
+%! mvtcdf (1, [2, 3; 3, 2], 1)
+%!error<mvtcdf: X must have the same number of columns as sigma.> ...
+%! mvtcdf ([2, 3, 4], ones (2), 1)
+%!error<mvtcdf: A must have the same size as X.> ...
+%! mvtcdf ([1, 2, 3], [2, 3], ones (2), 1)
+%!error<mvtcdf: DF must be a scalar or a vector with the same number of> ...
+%! mvtcdf ([2, 3], ones (2), [1, 2, 3])
+%!error<mvtcdf: SIGMA must be nonempty symmetric positive definite.> ...
+%! mvtcdf ([2, 3], [2, 3; 0, 0], 1)
+

@@ -1,5 +1,7 @@
 ## Copyright (c) 2012 Juan Pablo Carbajal <carbajal@ifi.uzh.ch>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 3 of the License, or
@@ -14,8 +16,9 @@
 ## along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{m}, @var{K}] =} regress_gp (@var{x}, @var{y}, @var{Sp})
-## @deftypefnx {Function File} {[@dots{} @var{yi} @var{dy}] =} regress_gp (@dots{}, @var{xi})
+## @deftypefn  {statistics} [@var{m}, @var{K}] = regress_gp (@var{x}, @var{y}, @var{Sp})
+## @deftypefnx {statistics} [@dots{} @var{yi} @var{dy}] = regress_gp (@dots{}, @var{xi})
+##
 ## Linear scalar regression using gaussian processes.
 ##
 ## It estimates the model @var{y} = @var{x}'*m for @var{x} R^D and @var{y} in R.
@@ -38,7 +41,7 @@
 ## @seealso{regress}
 ## @end deftypefn
 
-function [wm K yi dy] = regress_gp (x,y,Sp=[],xi=[])
+function [wm, K, yi, dy] = regress_gp (x, y, Sp=[], xi=[])
 
   if isempty(Sp)
     Sp = 100*eye(size(x,2)+1);

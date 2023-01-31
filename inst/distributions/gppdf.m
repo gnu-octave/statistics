@@ -1,8 +1,9 @@
 ## Copyright (C) 2018 John Donoghue
 ## Copyright (C) 2016 Dag Lyberg
 ## Copyright (C) 1997-2015 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
-## This file is part of Octave.
+## This file is part of the statistics package for GNU Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -19,16 +20,21 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} gppdf (@var{x}, @var{shape}, @var{scale}, @var{location})
-## Compute the probability density function (PDF) at @var{x} of the
-## generalized Pareto distribution with parameters @var{location}, @var{scale},
-## and @var{shape}.
+## @deftypefn  {statistics} @var{y} = gppdf (@var{x}, @var{shape}, @var{scale}, @var{location})
+##
+## Generalized Pareto probability density function (PDF).
+##
+## For each element of @var{x}, compute the probability density function (PDF)
+## at @var{x} of the generalized Pareto distribution with parameters
+## @var{shape}, @var{scale}, and @var{location}.  The size of @var{y} is the
+## common size of @var{x}, @var{shape}, @var{scale}, and @var{location}.  A
+## scalar input functions as a constant matrix of the same size as the other
+## inputs.
+##
+## @seealso{gpcdf, gpinv, gprnd, gpfit, gplike, gpstat}
 ## @end deftypefn
 
-## Author: Dag Lyberg <daglyberg80@gmail.com>
-## Description: PDF of the generalized Pareto distribution
-
-function pdf = gppdf (x, shape, scale, location)
+function y = gppdf (x, shape, scale, location)
 
   if (nargin != 4)
     print_usage ();
@@ -38,25 +44,26 @@ function pdf = gppdf (x, shape, scale, location)
     [retval, x, location, scale, shape] = ...
       common_size (x, location, scale, shape);
     if (retval > 0)
-      error ("gppdf: X, LOCATION, SCALE and SHAPE must be of common size or scalars");
+      error (strcat (["gppdf: X, SHAPE, SCALE, and LOCATION must be of"], ...
+                     [" common size or scalars."]));
     endif
   endif
 
   if (iscomplex (x) || iscomplex (location) || iscomplex (scale) ...
       || iscomplex (shape))
-    error ("gppdf: X, LOCATION, SCALE and SHAPE must not be complex");
+    error ("gppdf: X, SHAPE, SCALE, and LOCATION must not be complex.");
   endif
 
   if (isa (x, "single") || isa (location, "single") || isa (scale, "single") ...
       || isa (shape, "single"))
-    pdf = zeros (size (x), "single");
+    y = zeros (size (x), "single");
   else
-    pdf = zeros (size (x));
+    y = zeros (size (x));
   endif
 
   k = isnan (x) | ! (-Inf < location) | ! (location < Inf) | ...
       ! (scale > 0) | ! (scale < Inf) | ! (-Inf < shape) | ! (shape < Inf);
-  pdf(k) = NaN;
+  y(k) = NaN;
 
   k = (-Inf < x) & (x < Inf) & (-Inf < location) & (location < Inf) & ...
         (scale > 0) & (scale < Inf) & (-Inf < shape) & (shape < Inf);
@@ -65,18 +72,18 @@ function pdf = gppdf (x, shape, scale, location)
 
     j = k & (shape == 0) & (z >= 0);
     if (any (j))
-      pdf(j) = exp (-z(j));
+      y(j) = exp (-z(j));
     endif
 
     j = k & (shape > 0) & (z >= 0);
     if (any (j))
-      pdf(j) = (shape * z(j) + 1).^(-(shape + 1) / shape) ./ scale;
+      y(j) = (shape * z(j) + 1) .^ (-(shape + 1) / shape) ./ scale;
     endif
 
     if (shape < 0)
       j = k & (shape < 0) & (0 <= z) & (z <= -1. / shape);
       if (any (j))
-        pdf(j) = (shape * z(j) + 1).^(-(shape + 1) / shape) ./ scale;
+        y(j) = (shape * z(j) + 1) .^ (-(shape + 1) / shape) ./ scale;
       endif
     endif
   else
@@ -84,18 +91,20 @@ function pdf = gppdf (x, shape, scale, location)
 
     j = k & (shape == 0) & (z >= 0);
     if (any (j))
-      pdf(j) = exp( -z(j));
+      y(j) = exp( -z(j));
     endif
 
     j = k & (shape > 0) & (z >= 0);
     if (any (j))
-      pdf(j) = (shape(j) .* z(j) + 1).^(-(shape(j) + 1) ./ shape(j)) ./ scale(j);
+      y(j) = (shape(j) .* z(j) + 1) .^ (-(shape(j) + 1) ./ shape(j)) ...
+                                      ./ scale(j);
     endif
 
     if (any (shape < 0))
       j = k & (shape < 0) & (0 <= z) & (z <= -1 ./ shape);
       if (any (j))
-        pdf(j) = (shape(j) .* z(j) + 1).^(-(shape(j) + 1) ./ shape(j)) ./ scale(j);
+        y(j) = (shape(j) .* z(j) + 1) .^ (-(shape(j) + 1) ./ shape(j)) ...
+                                        ./ scale(j);
       endif
     endif
   endif

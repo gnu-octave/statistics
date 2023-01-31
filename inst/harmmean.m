@@ -1,4 +1,6 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -144,7 +146,7 @@ function m = harmmean (x, varargin)
     misdim = [1:ndims];
     ## keep remaining dimensions
     for i = 1:length (vecdim)
-      misdim(misdim == vecdim(i)) = []; 
+      misdim(misdim == vecdim(i)) = [];
     endfor
     ## if all dimensions are given, compute x(:)
     if length (misdim) == 0

@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{m}, @var{v}] =} raylstat (@var{sigma})
+## @deftypefn  {statistics} [@var{m}, @var{v}] = raylstat (@var{sigma})
 ##
 ## Compute mean and variance of the Rayleigh distribution.
 ##

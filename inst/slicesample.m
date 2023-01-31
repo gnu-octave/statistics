@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {[@var{smpl}, @var{neval}] =} slicesample (@var{start}, @var{nsamples}, @var{property}, @var{value}, @dots{})
+## @deftypefn  {statistics} [@var{smpl}, @var{neval}] = slicesample (@var{start}, @var{nsamples}, @var{property}, @var{value}, @dots{})
 ##
 ## Draws @var{nsamples} samples from a target stationary distribution @var{pdf}
 ## using slice sampling of Radford M. Neal.
