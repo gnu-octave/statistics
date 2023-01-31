@@ -17,14 +17,14 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{m} = mean (@var{x})
-## @deftypefnx {statistics} @var{m} = mean (@var{x}, "all")
-## @deftypefnx {statistics} @var{m} = mean (@var{x}, @var{dim})
-## @deftypefnx {statistics} @var{m} = mean (@var{x}, @var{vecdim})
-## @deftypefnx {statistics} @var{m} = mean (@dots{}, @var{outtype})
-## @deftypefnx {statistics} @var{m} = mean (@dots{}, @var{nanflag})
+## @deftypefn  {statistics} @var{y} = mean (@var{x})
+## @deftypefnx {statistics} @var{y} = mean (@var{x}, "all")
+## @deftypefnx {statistics} @var{y} = mean (@var{x}, @var{dim})
+## @deftypefnx {statistics} @var{y} = mean (@var{x}, @var{vecdim})
+## @deftypefnx {statistics} @var{y} = mean (@dots{}, @var{outtype})
+## @deftypefnx {statistics} @var{y} = mean (@dots{}, @var{nanflag})
 ##
-## Compute the mean value of the elements of @var{x}.
+## Compute the mean of the elements of @var{x}.
 ##
 ## @itemize
 ## @item
@@ -47,17 +47,17 @@
 ## @end ifnottex
 ##
 ## @item
-## If @var{x} is a matrix, then @code{mean (@var{x})} returns a row vector
-## with the mean of each column in @var{x}.
+## If @var{x} is a matrix, then @code{mean(@var{x})} returns a row vector
+## with the mean of each columns in @var{x}.
 ##
 ## @item
-## If @var{x} is a multidimensional array, then @code{mean (@var{x})}
-## operates along the first non-singleton dimension of @var{x}.
+## If @var{x} is a multidimensional array, then @code{mean(@var{x})}
+## operates along the first nonsingleton dimension of @var{x}.
 ## @end itemize
 ##
 ## @code{mean (@var{x}, @var{dim})} returns the mean along the operating
 ## dimension @var{dim} of @var{x}.  For @var{dim} greater than
-## @code{ndims (@var{x})}, then @var{m} = @var{x}.
+## @code{ndims (@var{x})}, then @var{y} = @var{x}.
 ##
 ## @code{mean (@var{x}, @var{vecdim})} returns the mean over the
 ## dimensions specified in the vector @var{vecdim}.  For example, if @var{x}
@@ -73,19 +73,7 @@
 ##
 ## @code{mean (@dots{}, @var{outtype})} returns the mean with a specified data
 ## type, using any of the input arguments in the previous syntaxes.
-## @var{outtype} can take the following values:
-## @table
-## @item "default"
-## Output is of type double, unless the input is single in which case the output
-## is of type single.
-##
-## @item "double"
-## Output is of type double.
-##
-## @item "native".
-## Output is of the same type as the input (@code{class (@var{x})}), unless the
-## input is logical in which case the output is of type double.
-## @end table
+## @var{outtype} can be "default", "double", or "native".
 ##
 ## @code{mean (@dots{}, @var{nanflag})} specifies whether to exclude NaN values
 ## from the calculation, using any of the input argument combinations in
@@ -96,9 +84,9 @@
 ## @seealso{median, mode}
 ## @end deftypefn
 
-function m = mean (x, varargin)
+function y = mean (x, varargin)
 
-  if (nargin < 1 || nargin > 4)
+  if (nargin < 1 || nargin > 4 || any (cellfun (@isnumeric, varargin(2:end))))
     print_usage ();
   endif
 
@@ -106,13 +94,8 @@ function m = mean (x, varargin)
   all_flag = false;
   omitnan = false;
   outtype = "default";
-  nvarg = numel (varargin);
 
-  if (nvarg == 2 && isnumeric (varargin{2}))
-    print_usage ();
-  endif
-
-  for i = 1:nvarg
+  for i = 1:length (varargin)
     if (ischar (varargin{i}))
       switch (varargin{i})
         case "all"
@@ -129,9 +112,9 @@ function m = mean (x, varargin)
     endif
   endfor
   varargin(cellfun (@ischar, varargin)) = [];
-  nvarg = numel (varargin);
 
-  if (((nvarg == 1) && ! (isnumeric (varargin{1}))) || (nvarg > 1))
+  if (((length (varargin) == 1) && ! (isnumeric (varargin{1}))) ...
+      || (length (varargin) > 1))
     print_usage ();
   endif
 
@@ -139,7 +122,7 @@ function m = mean (x, varargin)
     error ("mean: X must be either a numeric or boolean vector or matrix");
   endif
 
-  if (nvarg == 0)
+  if (length (varargin) == 0)
 
     ## Single numeric input argument, no dimensions given.
     if (all_flag)
@@ -148,7 +131,7 @@ function m = mean (x, varargin)
         n = length (x(! isnan (x)));
         x(isnan (x)) = 0;
       endif
-      m = sum (x(:), 1) ./ n;
+      y = sum (x(:), 1) ./ n;
     else
       sz = size (x);
       dim = find (sz > 1, 1);
@@ -160,7 +143,7 @@ function m = mean (x, varargin)
         n = sum (! isnan (x), dim);
         x(isnan (x)) = 0;
       endif
-      m = sum (x, dim) ./ n;
+      y = sum (x, dim) ./ n;
     endif
 
   else
@@ -178,7 +161,7 @@ function m = mean (x, varargin)
         n = sum (! isnan (x), vecdim);
         x(isnan (x)) = 0;
       endif
-      m = sum (x, vecdim) ./ n;
+      y = sum (x, vecdim) ./ n;
 
     else
 
@@ -196,29 +179,29 @@ function m = mean (x, varargin)
           n = length (x(! isnan (x)));
           x(isnan (x)) = 0;
         endif
-        m = sum (x(:), 1) ./ n;
+        y = sum (x(:), 1) ./ n;
 
       else
         ## Permute to bring remaining dims forward
         perm = [remdims, vecdim];
-        m = permute (x, perm);
+        y = permute (x, perm);
 
         ## Reshape to put all vecdims in final dimension
-        szm = size (m);
-        sznew = [szm(1:nremd), prod(szm(nremd+1:end))];
-        m = reshape (m, sznew);
+        szy = size (y);
+        sznew = [szy(1:nremd), prod(szy(nremd+1:end))];
+        y = reshape (y, sznew);
 
         ## Calculate mean on single, squashed dimension
         dim = nremd + 1;
-        n = size (m, dim);
+        n = size (y, dim);
         if (omitnan)
-          n = sum (! isnan (m), dim);
-          m(isnan (m)) = 0;
+          n = sum (! isnan (y), dim);
+          y(isnan (y)) = 0;
         endif
-        m = sum (m, dim) ./ n;
+        y = sum (y, dim) ./ n;
 
         ## Inverse permute back to correct dimensions
-        m = ipermute (m, perm);
+        y = ipermute (y, perm);
       endif
     endif
   endif
@@ -228,10 +211,10 @@ function m = mean (x, varargin)
     case "default"
       ## do nothing, the operators already do the right thing
     case "double"
-      m = double (m);
+      y = double (y);
     case "native"
       if (! islogical (x))
-        m = cast (m, class (x));
+        y = cast (y, class (x));
       endif
     otherwise
       error ("mean: OUTTYPE '%s' not recognized", outtype);
@@ -253,6 +236,19 @@ endfunction
 %!assert (mean (logical ([1 0 1 1])), 0.75)
 %!assert (mean (single ([1 0 1 1])), single (0.75))
 %!assert (mean ([1 2], 3), [1 2])
+
+## Test input validation
+%!error <Invalid call to mean.  Correct usage is> mean ()
+%!error <Invalid call to mean.  Correct usage is> mean (1, 2, 3)
+%!error <Invalid call to mean.  Correct usage is> mean (1, 2, 3, 4)
+%!error <Invalid call to mean.  Correct usage is> mean (1, "all", 3)
+%!error <Invalid call to mean.  Correct usage is> mean (1, "b")
+%!error <Invalid call to mean.  Correct usage is> mean (1, 1, "foo")
+%!error <mean: X must be either a numeric or boolean> mean ({1:5})
+%!error <mean: X must be either a numeric or boolean> mean ("char")
+%!error <mean: DIM must be a positive integer> mean (1, ones (2,2))
+%!error <mean: DIM must be a positive integer> mean (1, 1.5)
+%!error <mean: DIM must be a positive integer> mean (1, 0)
 
 ## Test outtype option
 %!test
@@ -338,16 +334,3 @@ endfunction
 %! assert (mean (x, [3 2]), m, 4e-14);
 %! m(2,1,1,3) = 15.52301255230125;
 %! assert (mean (x, [3 2], "omitnan"), m, 4e-14);
-
-## Test input validation
-%!error <Invalid call to mean.  Correct usage is> mean ()
-%!error <Invalid call to mean.  Correct usage is> mean (1, 2, 3)
-%!error <Invalid call to mean.  Correct usage is> mean (1, 2, 3, 4)
-%!error <Invalid call to mean.  Correct usage is> mean (1, "all", 3)
-%!error <Invalid call to mean.  Correct usage is> mean (1, "b")
-%!error <Invalid call to mean.  Correct usage is> mean (1, 1, "foo")
-%!error <mean: X must be either a numeric or boolean> mean ({1:5})
-%!error <mean: X must be either a numeric or boolean> mean ("char")
-%!error <mean: DIM must be a positive integer> mean (1, ones (2,2))
-%!error <mean: DIM must be a positive integer> mean (1, 1.5)
-%!error <mean: DIM must be a positive integer> mean (1, 0)
