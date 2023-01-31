@@ -95,7 +95,7 @@ function y = mean (x, varargin)
   omitnan = false;
   outtype = "default";
 
-  for i = 1:length (varargin)
+  for i = 1:numel (varargin)
     if (ischar (varargin{i}))
       switch (varargin{i})
         case "all"
@@ -113,35 +113,35 @@ function y = mean (x, varargin)
   endfor
   varargin(cellfun (@ischar, varargin)) = [];
 
-  if (((length (varargin) == 1) && ! (isnumeric (varargin{1}))) ...
-      || (length (varargin) > 1))
+  if (((numel (varargin) == 1) && ! (isnumeric (varargin{1}))) ...
+      || (numel (varargin) > 1))
     print_usage ();
   endif
 
   if (! (isnumeric (x) || islogical (x)))
-    error ("mean: X must be either a numeric or boolean vector or matrix");
+    error ("mean: X must be either a numeric or boolean vector or matrix.");
   endif
 
-  if (length (varargin) == 0)
+  if (numel (varargin) == 0)
 
     ## Single numeric input argument, no dimensions given.
     if (all_flag)
-      n = length (x(:));
+      n = numel (x(:));
       if (omitnan)
-        n = length (x(! isnan (x)));
-        x(isnan (x)) = 0;
+        idx = isnan (x);
+        n -= sum (idx(:));
+        x(idx) = 0;
       endif
       y = sum (x(:), 1) ./ n;
     else
       sz = size (x);
-      dim = find (sz > 1, 1);
-      if length (dim) == 0
-        dim = 1;
-      endif
+      ## Find the first non-singleton dimension.
+      (dim = find (sz != 1, 1)) || (dim = 1);
       n = size (x, dim);
       if (omitnan)
-        n = sum (! isnan (x), dim);
-        x(isnan (x)) = 0;
+        idx = isnan (x);
+        n = sum (! idx, dim);
+        x(idx) = 0;
       endif
       y = sum (x, dim) ./ n;
     endif
@@ -174,10 +174,11 @@ function y = mean (x, varargin)
 
       ## If all dimensions are given, it is similar to all flag
       if (nremd == 0)
-        n = length (x(:));
+        n = numel (x(:));
         if (omitnan)
-          n = length (x(! isnan (x)));
-          x(isnan (x)) = 0;
+          idx = isnan (x);
+          n -= sum (idx(:));
+          x(idx) = 0;
         endif
         y = sum (x(:), 1) ./ n;
 

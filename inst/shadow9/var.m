@@ -1,4 +1,5 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2023 Nick Jankowski
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -145,7 +146,7 @@ function [v, m] = var (x, varargin)
 
   ## Check numeric arguments
   if (! (isnumeric (x)))
-    error ("var: X must be a numeric vector or matrix");
+    error ("var: X must be a numeric vector or matrix.");
   endif
   if (isa (x, "single"))
     outtype = "single";
@@ -159,12 +160,12 @@ function [v, m] = var (x, varargin)
     endif
     ## Process weight input
     if (any (varargin{1} < 0))
-      error ("var: weights must not contain any negative values");
+      error ("var: weights must not contain any negative values.");
     endif
     if (isscalar (varargin{1}))
       w = varargin{1};
       if (! (w == 0 || w == 1) && ! isscalar (x))
-        error ("var: normalization scalar must be either 0 or 1");
+        error ("var: normalization scalar must be either 0 or 1.");
       endif
     elseif (numel (varargin{1}) > 1)
       weights = varargin{1};
@@ -179,7 +180,7 @@ function [v, m] = var (x, varargin)
       endif
       if (! (vecdim_scalar_vector(2) && all (vecdim > 0)) ...
              || any (rem (vecdim, 1)))
-        error ("var: DIM must be a positive integer scalar or vector");
+        error ("var: DIM must be a positive integer scalar or vector.");
       endif
       if (vecdim_scalar_vector(1) && vecdim > ndx && ! isempty (x))
         ## Scalar dimension larger than ndims(x), variance of any single number
@@ -191,23 +192,23 @@ function [v, m] = var (x, varargin)
         return;
       endif
       if (vecdim_scalar_vector == [0 1] && (! all (diff (sort (vecdim)))))
-        error ("var: VECDIM must contain non-repeating positive integers");
+        error ("var: VECDIM must contain non-repeating positive integers.");
       endif
     endif
   endif
 
   ## Check for conflicting input arguments
   if (all_flag && ! vecempty)
-    error ("var: 'all' flag cannot be used with DIM or VECDIM options");
+    error ("var: 'all' flag cannot be used with DIM or VECDIM options.");
   endif
   if (weighted)
     if (all_flag)
       if (isvector (weights))
         if (numel (weights) != numel (x))
-          error ("var: elements in weight vector do not match elements in X");
+          error ("var: elements in weight vector do not match elements in X.");
         endif
       elseif (! (isequal (size (weights), szx)))
-        error ("var: weight matrix or array does not match X in size");
+        error ("var: weight matrix or array does not match X in size.");
       endif
 
     elseif (vecempty)
@@ -217,17 +218,17 @@ function [v, m] = var (x, varargin)
       endif
       if (numel (weights) != szx(dim))
         if (isvector (weights))
-          error ("var: weight vector does not match first operating dimension");
+          error ("var: weight vector does not match first operating dimension.");
         elseif (! isequal (size (weights), szx))
-          error ("var: weight matrix or array does not match X in size");
+          error ("var: weight matrix or array does not match X in size.");
         endif
       endif
     elseif (vecdim_scalar_vector(1))
       if (isvector (weights) && numel (weights) != szx(vecdim))
-        error ("var: weight vector does not match given operating dimension");
+        error ("var: weight vector does not match given operating dimension.");
       endif
     elseif (vecdim_scalar_vector(2) && ! (isequal (size (weights), szx)))
-      error ("var: weight matrix or array does not match X in size");
+      error ("var: weight matrix or array does not match X in size.");
     endif
   endif
 

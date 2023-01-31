@@ -1,4 +1,5 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2023 Nick Jankowski
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -106,7 +107,7 @@ function m = median (x, varargin)
   endif
 
   if (! (isnumeric (x) || islogical (x)))
-    error ("median: X must be either numeric or logical");
+    error ("median: X must be either numeric or logical.");
   endif
 
   ## Set initial conditions
@@ -143,7 +144,7 @@ function m = median (x, varargin)
 
         case "native"
           if (out_flag)
-            error ("median: only one OUTTYPE can be specified")
+            error ("median: only one OUTTYPE can be specified.")
           endif
           if (strcmp (outtype, "logical"))
             outtype = "double";
@@ -152,7 +153,7 @@ function m = median (x, varargin)
 
         case "default"
           if (out_flag)
-            error ("median: only one OUTTYPE can be specified")
+            error ("median: only one OUTTYPE can be specified.")
           endif
           if (! strcmp (outtype, "single"))
             outtype = "double";
@@ -161,7 +162,7 @@ function m = median (x, varargin)
 
         case "double"
           if (out_flag)
-            error ("median: only one OUTTYPE can be specified")
+            error ("median: only one OUTTYPE can be specified.")
           endif
           outtype = "double";
           out_flag = 1;
@@ -184,14 +185,14 @@ function m = median (x, varargin)
   if (nvarg > 0)
     ## dim or vecdim provided
     if (all_flag)
-      error ("median: 'all' cannot be used with DIM or VECDIM options");
+      error ("median: 'all' cannot be used with DIM or VECDIM options.");
     endif
 
     dim = varargin{1};
     vecdim_flag = ! isscalar (dim);
 
     if (! (isvector (dim) && (dim > 0)) || any (rem (dim, 1)))
-      error ("median: DIM must be a positive integer scalar or vector");
+      error ("median: DIM must be a positive integer scalar or vector.");
     endif
 
     ## Adjust sz_out, account for possible dim > ndx by appending singletons
@@ -203,7 +204,7 @@ function m = median (x, varargin)
       ## vecdim - try to simplify first
       dim = sort (dim);
       if (! all (diff (dim)))
-         error ("median: VECDIM must contain non-repeating positive integers");
+         error ("median: VECDIM must contain non-repeating positive integers.");
       endif
 
       ## dims > ndims(x) and dims only one element long don't affect median
