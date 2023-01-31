@@ -1,7 +1,4 @@
-if (compare_versions (version (), "8", "<"))
-  a1_e324kporit985_itogj3_dirlist = {"datasets", "distributions", "shadow8", ...
-                                     "shadow9"};
-elseif (compare_versions (version (), "9", "<"))
+if (compare_versions (version (), "9", "<"))
   a1_e324kporit985_itogj3_dirlist = {"datasets", "distributions", "shadow9"};
 else
   a1_e324kporit985_itogj3_dirlist = {"datasets", "distributions"};
