@@ -177,7 +177,8 @@ function [v, m] = var (x, varargin)
         ## Check for empty vecdim, won't change vsv if nonzero size empty
         vecdim_scalar_vector = [isscalar(vecdim), isvector(vecdim)];
       endif
-      if (! (vecdim_scalar_vector(2) && all (vecdim)) || any (rem (vecdim, 1)))
+      if (! (vecdim_scalar_vector(2) && all (vecdim > 0)) ...
+             || any (rem (vecdim, 1)))
         error ("var: DIM must be a positive integer scalar or vector");
       endif
       if (vecdim_scalar_vector(1) && vecdim > ndx && ! isempty (x))
@@ -189,8 +190,7 @@ function [v, m] = var (x, varargin)
         m = x;
         return;
       endif
-      if (vecdim_scalar_vector == [0 1] && ...
-           (numel (vecdim) != numel (unique (vecdim))))
+      if (vecdim_scalar_vector == [0 1] && (! all (diff (sort (vecdim)))))
         error ("var: VECDIM must contain non-repeating positive integers");
       endif
     endif
@@ -922,6 +922,7 @@ endfunction
 %!error <var: DIM must be a positive integer> var (1, [], ones (2,2))
 %!error <var: DIM must be a positive integer> var (1, 0, 1.5)
 %!error <var: DIM must be a positive integer> var (1, [], 0)
+%!error <DIM must be a positive integer> var ([1 2 3], [], [-1 1])
 %!error <var: VECDIM must contain non-repeating positive integers> ...
 %! var (repmat ([1:20;6:25], [5 2 6 3]), 0, [1 2 2 2])
 %!error <var: weight vector does not match first operating dimension> ...
