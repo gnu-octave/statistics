@@ -343,7 +343,9 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** regression_ftest (new functionality, replacing old f_test_regression)
 
- ** regression_ttest (new functionality, replacing old t_test_regression)
+ ** regression_ttest (replacing old t_test_regression)
+
+ ** vmcdf (von Mises cummulative distribution function)
 
  Improvements:
  =============
@@ -356,13 +358,25 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** geocdf: added "upper" option
 
- ** geomean: fixed MATLAB compatibility
-
  ** gevcdf: added "upper" option
 
- ** harmmean: fixed MATLAB compatibility
-
  ** hygecdf: added "upper" option
+
+ ** laplace_cdf: updated functionality
+
+ ** laplace_inv: updated functionality
+
+ ** laplace_pdf: updated functionality
+
+ ** laplace_rnd: updated functionality
+
+ ** logistic_cdf: updated functionality
+
+ ** logistic_inv: updated functionality
+
+ ** logistic_pdf: updated functionality
+
+ ** logistic_rnd: updated functionality
 
  ** logncdf: added "upper" option and confidence bounds
 
@@ -385,6 +399,10 @@ Summary of important user-visible changes for statistics 1.5.1:
  ** unifcdf: added "upper" option
 
  ** var: fixed MATLAB compatibility
+
+ ** vmpdf: updated functionality
+
+ ** vmrnd: updated functionality
 
  ** wblcdf: added "upper" option and confidence bounds
 
