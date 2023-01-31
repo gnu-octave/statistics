@@ -47,7 +47,7 @@
 
 function x = raylinv (p, sigma)
 
-  # Check arguments
+  ## Check arguments
   if (nargin < 1 || nargin > 2)
     print_usage ();
   endif
@@ -69,7 +69,7 @@ function x = raylinv (p, sigma)
     error ("raylcdf: P and SIGMA must not be complex.");
   endif
 
-  # Calculate Rayleigh iCDF
+  ## Calculate Rayleigh iCDF
   x = sqrt (-2 .* log (1 - p) .* sigma .^ 2);
 
   ## Check for valid parameter and support

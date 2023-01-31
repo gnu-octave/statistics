@@ -47,7 +47,7 @@
 
 function y = raylpdf (x, sigma)
 
-  # Check arguments
+  ## Check arguments
   if (nargin < 1 || nargin > 2)
     print_usage ();
   endif
@@ -69,10 +69,10 @@ function y = raylpdf (x, sigma)
     error ("raylpdf: X and SIGMA must not be complex.");
   endif
 
-  # Calculate Rayleigh PDF
+  ## Calculate Rayleigh PDF
   y = x .* exp ((-x .^ 2) ./ (2 .* sigma .^ 2)) ./ (sigma .^ 2);
 
-  # Continue argument check
+  ## Continue argument check
   k = find (! (x >= 0) | ! (x < Inf) | ! (sigma > 0));
   if (any (k))
     y(k) = NaN;
