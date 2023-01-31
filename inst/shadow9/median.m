@@ -78,7 +78,7 @@
 ## @code{median (@dots{}, @var{outtype})} returns the median with a specified
 ## data type, using any of the input arguments in the previous syntaxes.
 ## @var{outtype} can take the following values:
-## @table
+## @itemize
 ## @item "default"
 ## Output is of type double, unless the input is single in which case the output
 ## is of type single.
@@ -89,7 +89,7 @@
 ## @item "native".
 ## Output is of the same type as the input (@code{class (@var{x})}), unless the
 ## input is logical in which case the output is of type double.
-## @end table
+## @end itemize
 ##
 ## @code{median (@dots{}, @var{nanflag})} specifies whether to exclude NaN
 ## values from the calculation, using any of the input argument combinations in
