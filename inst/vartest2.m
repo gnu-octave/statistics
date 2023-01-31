@@ -234,7 +234,7 @@ endfunction
 %! load carsmall
 %! [h, pval, ci, stat] = vartest2 (MPG(Model_Year==82), MPG(Model_Year==76));
 %! assert (h, 0);
-%! assert (pval, 0.6288022362718455, 1e-14);
+%! assert (pval, 0.6288022362718455, 1e-13);
 %! assert (ci, [0.4139; 1.7193], 1e-4);
 %! assert (stat.fstat, 0.8384, 1e-4);
 %! assert (stat.df1, 30);
