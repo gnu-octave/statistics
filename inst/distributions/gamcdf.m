@@ -64,6 +64,9 @@ function [varargout] = gamcdf (x, varargin)
   elseif (nargin > 2 && ischar (varargin{end}) && ...
           ! strcmpi (varargin{end}, "upper"))
     error ("gamcdf: invalid argument for upper tail.");
+  elseif (nargin > 2 && isempty (varargin{end}))
+    uflag = false;
+    varargin(end) = [];
   else
     uflag = false;
   endif
