@@ -1,4 +1,7 @@
 ## Copyright (C) 2009 Soren Hauberg <soren@hauberg.org>
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -14,8 +17,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} @var{theta} = vmrnd (@var{mu}, @var{k})
-## @deftypefnx{Function File} @var{theta} = vmrnd (@var{mu}, @var{k}, @var{sz})
+## @deftypefn  {statistics} @var{theta} = vmrnd (@var{mu}, @var{k})
+## @deftypefnx {statistics} @var{theta} = vmrnd (@var{mu}, @var{k}, @var{sz})
+##
 ## Draw random angles from a Von Mises distribution with mean @var{mu} and
 ## concentration @var{k}.
 ##
@@ -28,30 +32,31 @@
 ## The output, @var{theta}, is a matrix of size @var{sz} containing random angles
 ## drawn from the given Von Mises distribution. By default, @var{mu} is 0
 ## and @var{k} is 1.
-## @seealso{vmpdf}
+##
+## @seealso{vmcdf, vmpdf}
 ## @end deftypefn
 
 function theta = vmrnd (mu = 0, k = 1, sz = 1)
   ## Check input
   if (!isreal (mu))
-    error ("vmrnd: first input must be a scalar");
+    error ("vmrnd: first input must be a scalar.");
   endif
-  
+
   if (!isreal (k) || k <= 0)
-    error ("vmrnd: second input must be a real positive scalar");
+    error ("vmrnd: second input must be a real positive scalar.");
   endif
-  
+
   if (isscalar (sz))
     sz = [sz, sz];
   elseif (!isvector (sz))
-    error ("vmrnd: third input must be a scalar or a vector");
+    error ("vmrnd: third input must be a scalar or a vector.");
   endif
-  
+
   ## Simulate!
   if (k < 1e-6)
     ## k is small: sample uniformly on circle
     theta = 2 * pi * rand (sz) - pi;
-  
+
   else
     a = 1 + sqrt (1 + 4 * k.^2);
     b = (a - sqrt (2 * a)) / (2 * k);
@@ -61,15 +66,15 @@ function theta = vmrnd (mu = 0, k = 1, sz = 1)
     notdone = true (N, 1);
     while (any (notdone))
       u (:, notdone) = rand (3, N);
-      
+
       z (notdone) = cos (pi * u (1, notdone));
       f (notdone) = (1 + r * z (notdone)) ./ (r + z (notdone));
       c (notdone) = k * (r - f (notdone));
-      
+
       notdone = (u (2, :) >= c .* (2 - c)) & (log (c) - log (u (2, :)) + 1 - c < 0);
       N = sum (notdone);
     endwhile
-    
+
     theta = mu + sign (u (3, :) - 0.5) .* acos (f);
     theta = reshape (theta, sz);
   endif
