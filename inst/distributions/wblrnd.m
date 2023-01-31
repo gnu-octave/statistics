@@ -1,5 +1,8 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,12 +19,18 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} wblrnd (@var{scale}, @var{shape})
-## @deftypefnx {} {} wblrnd (@var{scale}, @var{shape}, @var{r})
-## @deftypefnx {} {} wblrnd (@var{scale}, @var{shape}, @var{r}, @var{c}, @dots{})
-## @deftypefnx {} {} wblrnd (@var{scale}, @var{shape}, [@var{sz}])
-## Return a matrix of random samples from the Weibull distribution with
-## parameters @var{scale} and @var{shape}.
+## @deftypefn  {statistics} @var{r} = wblrnd (@var{lambda}, @var{k})
+## @deftypefnx {statistics} @var{r} = wblrnd (@var{lambda}, @var{k}, @var{rows})
+## @deftypefnx {statistics} @var{r} = wblrnd (@var{lambda}, @var{k}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} @var{r} = wblrnd (@var{lambda}, @var{k}, [@var{sz}])
+##
+## Random arrays from the Weibull distribution.
+##
+## @code{@var{r} = wblrnd (@var{lambda}, @var{k})} returns an array of random
+## numbers chosen from the Weibull distribution with parameters @var{lambda} and
+## @var{k}.  The size of @var{r} is the common size of @var{lambda} and @var{k}.
+##  A scalar input functions as a constant matrix of the same size as the other
+## inputs.  Both parameters must be positive reals.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -29,32 +38,28 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## If no size arguments are given then the result matrix is the common size of
-## @var{scale} and @var{shape}.
+## @seealso{wblcdf, wblinv, wblpdf, wblstat, wblplot}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Random deviates from the Weibull distribution
-
-function rnd = wblrnd (scale, shape, varargin)
+function r = wblrnd (lambda, k, varargin)
 
   if (nargin < 2)
     print_usage ();
   endif
 
-  if (! isscalar (scale) || ! isscalar (shape))
-    [retval, scale, shape] = common_size (scale, shape);
+  if (! isscalar (lambda) || ! isscalar (k))
+    [retval, lambda, k] = common_size (lambda, k);
     if (retval > 0)
       error ("wblrnd: SCALE and SHAPE must be of common size or scalars");
     endif
   endif
 
-  if (iscomplex (scale) || iscomplex (shape))
+  if (iscomplex (lambda) || iscomplex (k))
     error ("wblrnd: SCALE and SHAPE must not be complex");
   endif
 
   if (nargin == 2)
-    sz = size (scale);
+    sz = size (lambda);
   elseif (nargin == 3)
     if (isscalar (varargin{1}) && varargin{1} >= 0)
       sz = [varargin{1}, varargin{1}];
@@ -70,27 +75,27 @@ function rnd = wblrnd (scale, shape, varargin)
     sz = [varargin{:}];
   endif
 
-  if (! isscalar (scale) && ! isequal (size (scale), sz))
+  if (! isscalar (lambda) && ! isequal (size (lambda), sz))
     error ("wblrnd: SCALE and SHAPE must be scalar or of size SZ");
   endif
 
-  if (isa (scale, "single") || isa (shape, "single"))
+  if (isa (lambda, "single") || isa (k, "single"))
     cls = "single";
   else
     cls = "double";
   endif
 
-  if (isscalar (scale) && isscalar (shape))
-    if ((scale > 0) && (scale < Inf) && (shape > 0) && (shape < Inf))
-      rnd = scale * rande (sz, cls) .^ (1/shape);
+  if (isscalar (lambda) && isscalar (k))
+    if ((lambda > 0) && (lambda < Inf) && (k > 0) && (k < Inf))
+      r = lambda * rande (sz, cls) .^ (1/k);
     else
-      rnd = NaN (sz, cls);
+      r = NaN (sz, cls);
     endif
   else
-    rnd = scale .* rande (sz, cls) .^ (1./shape);
+    r = lambda .* rande (sz, cls) .^ (1./k);
 
-    k = (scale <= 0) | (scale == Inf) | (shape <= 0) | (shape == Inf);
-    rnd(k) = NaN;
+    is_nan = (lambda <= 0) | (lambda == Inf) | (k <= 0) | (k == Inf);
+    r(is_nan) = NaN;
   endif
 
 endfunction

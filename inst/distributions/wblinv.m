@@ -1,5 +1,8 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,74 +19,78 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} wblinv (@var{x})
-## @deftypefnx {} {} wblinv (@var{x}, @var{scale})
-## @deftypefnx {} {} wblinv (@var{x}, @var{scale}, @var{shape})
-## Compute the quantile (the inverse of the CDF) at @var{x} of the
-## Weibull distribution with scale parameter @var{scale} and
-## shape parameter @var{shape}.
+## @deftypefn  {statistics} @var{x} = wblinv (@var{p})
+## @deftypefnx {statistics} @var{x} = wblinv (@var{p}, @var{lambda})
+## @deftypefnx {statistics} @var{x} = wblinv (@var{p}, @var{lambda}, @var{k})
 ##
-## Default values are @var{scale} = 1, @var{shape} = 1.
+## Inverse of the Weibull cumulative distribution function (iCDF).
+##
+## For each element of @var{p}, compute the quantile (the inverse of the CDF)
+## at @var{p} of the Weibull distribution with parameters @var{lambda} and
+## @var{k}.  The size of @var{x} is the common size of @var{p}, @var{lambda},
+## and @var{k}.  A scalar input functions as a constant matrix of the same
+## size as the other inputs.
+##
+## Default values are @var{lambda} = 1, @var{k} = 1.
+##
+## @seealso{wblcdf, wblpdf, wblrnd, wblstat, wblplot}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: Quantile function of the Weibull distribution
-
-function inv = wblinv (x, scale = 1, shape = 1)
+function x = wblinv (p, lambda = 1, k = 1)
 
   if (nargin < 1 || nargin > 3)
     print_usage ();
   endif
 
-  if (! isscalar (scale) || ! isscalar (shape))
-    [retval, x, scale, shape] = common_size (x, scale, shape);
+  if (! isscalar (p) || ! isscalar (lambda) || ! isscalar (k))
+    [retval, p, lambda, k] = common_size (p, lambda, k);
     if (retval > 0)
-      error ("wblinv: X, SCALE, and SHAPE must be of common size or scalars");
+      error ("wblinv: X, LAMBDA, and K must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (x) || iscomplex (scale) || iscomplex (shape))
-    error ("wblinv: X, SCALE, and SHAPE must not be complex");
+  if (iscomplex (p) || iscomplex (lambda) || iscomplex (k))
+    error ("wblinv: X, LAMBDA, and K must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (scale, "single") || isa (shape, "single"))
-    inv = NaN (size (x), "single");
+  if (isa (p, "single") || isa (lambda, "single") || isa (k, "single"))
+    x = NaN (size (p), "single");
   else
-    inv = NaN (size (x));
+    x = NaN (size (p));
   endif
 
-  ok = (scale > 0) & (scale < Inf) & (shape > 0) & (shape < Inf);
+  ok = (lambda > 0) & (lambda < Inf) & (k > 0) & (k < Inf);
 
-  k = (x == 0) & ok;
-  inv(k) = 0;
+  pk = (p == 0) & ok;
+  x(pk) = 0;
 
-  k = (x == 1) & ok;
-  inv(k) = Inf;
+  pk = (p == 1) & ok;
+  x(pk) = Inf;
 
-  k = (x > 0) & (x < 1) & ok;
-  if (isscalar (scale) && isscalar (shape))
-    inv(k) = scale * (- log (1 - x(k))) .^ (1 / shape);
+  pk = (p > 0) & (p < 1) & ok;
+  if (isscalar (lambda) && isscalar (k))
+    x(pk) = lambda * (- log (1 - p(pk))) .^ (1 / k);
   else
-    inv(k) = scale(k) .* (- log (1 - x(k))) .^ (1 ./ shape(k));
+    x(pk) = lambda(pk) .* (- log (1 - p(pk))) .^ (1 ./ k(pk));
   endif
 
 endfunction
 
 
-%!shared x
-%! x = [-1 0 0.63212055882855778 1 2];
-%!assert (wblinv (x, ones (1,5), ones (1,5)), [NaN 0 1 Inf NaN], eps)
-%!assert (wblinv (x, 1, ones (1,5)), [NaN 0 1 Inf NaN], eps)
-%!assert (wblinv (x, ones (1,5), 1), [NaN 0 1 Inf NaN], eps)
-%!assert (wblinv (x, [1 -1 NaN Inf 1], 1), [NaN NaN NaN NaN NaN])
-%!assert (wblinv (x, 1, [1 -1 NaN Inf 1]), [NaN NaN NaN NaN NaN])
-%!assert (wblinv ([x(1:2) NaN x(4:5)], 1, 1), [NaN 0 NaN Inf NaN])
+%!shared p
+%! p = [-1 0 0.63212055882855778 1 2];
+%!assert (wblinv (p, ones (1,5), ones (1,5)), [NaN 0 1 Inf NaN], eps)
+%!assert (wblinv (p, 1, ones (1,5)), [NaN 0 1 Inf NaN], eps)
+%!assert (wblinv (p, ones (1,5), 1), [NaN 0 1 Inf NaN], eps)
+%!assert (wblinv (p, [1 -1 NaN Inf 1], 1), [NaN NaN NaN NaN NaN])
+%!assert (wblinv (p, 1, [1 -1 NaN Inf 1]), [NaN NaN NaN NaN NaN])
+%!assert (wblinv ([p(1:2) NaN p(4:5)], 1, 1), [NaN 0 NaN Inf NaN])
 
 ## Test class of input preserved
-%!assert (wblinv ([x, NaN], 1, 1), [NaN 0 1 Inf NaN NaN], eps)
-%!assert (wblinv (single ([x, NaN]), 1, 1), single ([NaN 0 1 Inf NaN NaN]), eps ("single"))
-%!assert (wblinv ([x, NaN], single (1), 1), single ([NaN 0 1 Inf NaN NaN]), eps ("single"))
-%!assert (wblinv ([x, NaN], 1, single (1)), single ([NaN 0 1 Inf NaN NaN]), eps ("single"))
+%!assert (wblinv ([p, NaN], 1, 1), [NaN 0 1 Inf NaN NaN], eps)
+%!assert (wblinv (single ([p, NaN]), 1, 1), single ([NaN 0 1 Inf NaN NaN]), eps ("single"))
+%!assert (wblinv ([p, NaN], single (1), 1), single ([NaN 0 1 Inf NaN NaN]), eps ("single"))
+%!assert (wblinv ([p, NaN], 1, single (1)), single ([NaN 0 1 Inf NaN NaN]), eps ("single"))
 
 ## Test input validation
 %!error wblinv ()

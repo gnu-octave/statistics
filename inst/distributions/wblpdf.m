@@ -1,5 +1,8 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+##
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -16,70 +19,60 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {} {} wblpdf (@var{x})
-## @deftypefnx {} {} wblpdf (@var{x}, @var{scale})
-## @deftypefnx {} {} wblpdf (@var{x}, @var{scale}, @var{shape})
-## Compute the probability density function (PDF) at @var{x} of the
-## Weibull distribution with scale parameter @var{scale} and
-## shape parameter @var{shape}.
+## @deftypefn  {statistics} @var{y} = wblinv (@var{x})
+## @deftypefnx {statistics} @var{y} = wblinv (@var{x}, @var{lambda})
+## @deftypefnx {statistics} @var{y} = wblinv (@var{x}, @var{lambda}, @var{xk})
 ##
-## This is given by
-## @tex
-## $$  {shape \over scale^{shape}} \cdot x^{shape-1} \cdot e^{-({x \over scale})^{shape}} $$
-## @end tex
-## @ifnottex
+## Weibull probability density function (PDF).
 ##
-## @example
-## shape * scale^(-shape) * x^(shape-1) * exp (-(x/scale)^shape)
-## @end example
+## For each element of @var{x}, compute the probability density function (PDF)
+## at @var{x} of the Weibull distribution with parameters @var{lambda} and
+## @var{xk}.  The size of @var{y} is the common size of @var{x}, @var{lambda},
+## and @var{xk}.  A scalar input functions as a constant matrix of the same size
+## as the other inputs.
 ##
-## @end ifnottex
-## @noindent
-## for @var{x} @geq{} 0.
+## Default values are @var{lambda} = 1, @var{xk} = 1.
 ##
-## Default values are @var{scale} = 1, @var{shape} = 1.
+## @seealso{wblcdf, wblinv, wblrnd, wblstat, wblplot}
 ## @end deftypefn
 
-## Author: KH <Kurt.Hornik@wu-wien.ac.at>
-## Description: PDF of the Weibull distribution
-
-function pdf = wblpdf (x, scale = 1, shape = 1)
+function y = wblpdf (x, lambda = 1, k = 1)
 
   if (nargin < 1 || nargin > 3)
     print_usage ();
   endif
 
-  if (! isscalar (scale) || ! isscalar (shape))
-    [retval, x, scale, shape] = common_size (x, scale, shape);
+  if (! isscalar (lambda) || ! isscalar (k))
+    [retval, x, lambda, k] = common_size (x, lambda, k);
     if (retval > 0)
-      error ("wblpdf: X, SCALE, and SHAPE must be of common size or scalars");
+      error ("wblpdf: X, LAMBDA, and K must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (x) || iscomplex (scale) || iscomplex (shape))
-    error ("wblpdf: X, SCALE, and SHAPE must not be complex");
+  if (iscomplex (x) || iscomplex (lambda) || iscomplex (k))
+    error ("wblpdf: X, LAMBDA, and K must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (scale, "single") || isa (shape, "single"))
-    pdf = NaN (size (x), "single");
+  if (isa (x, "single") || isa (lambda, "single") || isa (k, "single"))
+    y = NaN (size (x), "single");
   else
-    pdf = NaN (size (x));
+    y = NaN (size (x));
   endif
 
-  ok = ((scale > 0) & (scale < Inf) & (shape > 0) & (shape < Inf));
+  ok = ((lambda > 0) & (lambda < Inf) & (k > 0) & (k < Inf));
 
-  k = (x < 0) & ok;
-  pdf(k) = 0;
+  xk = (x < 0) & ok;
+  y(xk) = 0;
 
-  k = (x >= 0) & (x < Inf) & ok;
-  if (isscalar (scale) && isscalar (shape))
-    pdf(k) = (shape * (scale .^ -shape)
-              .* (x(k) .^ (shape - 1))
-              .* exp (- (x(k) / scale) .^ shape));
+  xk = (x >= 0) & (x < Inf) & ok;
+  if (isscalar (lambda) && isscalar (k))
+    y(xk) = (k * (lambda .^ -k) ...
+              .* (x(xk) .^ (k - 1)) ...
+              .* exp (- (x(xk) / lambda) .^ k));
   else
-    pdf(k) = (shape(k) .* (scale(k) .^ -shape(k))
-              .* (x(k) .^ (shape(k) - 1))
-              .* exp (- (x(k) ./ scale(k)) .^ shape(k)));
+    y(xk) = (k(xk) .* (lambda(xk) .^ -k(xk)) ...
+              .* (x(xk) .^ (k(xk) - 1)) ...
+              .* exp (- (x(xk) ./ lambda(xk)) .^ k(xk)));
   endif
 
 endfunction
