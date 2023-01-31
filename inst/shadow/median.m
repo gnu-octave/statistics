@@ -176,10 +176,11 @@ function m = median (x, varargin)
   endif
 
   if (((nvarg == 1) && ! (isnumeric (varargin{1}))) || (nvarg > 1))
+    ## After trimming char inputs can only be one varargin left, must be numeric
     print_usage ();
   endif
 
-  ## process special cases for in/out size
+  ## Process special cases for in/out size
   if (nvarg > 0)
     ## dim or vecdim provided
     if (all_flag)
@@ -193,24 +194,24 @@ function m = median (x, varargin)
       error ("median: DIM must be a positive integer scalar or vector");
     endif
 
-    ## adjust sz_out, account for possible dim > ndx by appending singletons
+    ## Adjust sz_out, account for possible dim > ndx by appending singletons
     sz_out(ndx + 1 : max (dim)) = 1;
     sz_out(dim(dim <= ndx)) = 1;
     szx(ndx + 1 : max (dim)) = 1;
 
     if (vecdim_flag)
-      ## VECDIM - try to simplify first
+      ## vecdim - try to simplify first
       dim = sort (dim);
       if (! all (diff (dim)))
          error ("median: VECDIM must contain non-repeating positive integers");
       endif
 
-      ## dims > ndims(x) don't affect median, nor do dims only one element long
+      ## dims > ndims(x) and dims only one element long don't affect median
       sing_dim_x = find (szx != 1);
       dim(dim > ndx | szx(dim) == 1) = [];
 
       if (isempty (dim))
-        ## no dims left to process, return input as output.
+        ## No dims left to process, return input as output
         if (! strcmp (class (x), outtype))
           m = outtype_convert (x, outtype);
         else
@@ -219,7 +220,7 @@ function m = median (x, varargin)
         return;
       elseif  ((length(dim) == length(sing_dim_x)) ...
                    && unique ([dim, sing_dim_x]) == dim)
-        ## if DIMs cover all nonsingleton ndims(x), equivalent to "all"
+        ## If DIMs cover all nonsingleton ndims(x), equivalent to "all"
         all_flag = true;
       endif
 
@@ -240,7 +241,7 @@ function m = median (x, varargin)
       sz_out = [1, 1];
 
     elseif (isempty (x) && isequal (szx, [0, 0]))
-      ## Special case []: Do not apply normal sz_out(dim)=1 change
+      ## Special case []: Do not apply sz_out(dim)=1 change
       dim = 1;
       sz_out = [1, 1];
 
@@ -252,6 +253,7 @@ function m = median (x, varargin)
   endif
 
   if (isempty (x))
+    ## Empty input - output NaN or class equivalent in pre-determined size
     switch (outtype)
       case {"double", "single"}
         m = NaN(sz_out, outtype);
@@ -273,24 +275,24 @@ function m = median (x, varargin)
     return;
   endif
 
-  ## permute dim to simplify all operations along dim1. ipermute at end of func.
+  ## Permute dim to simplify all operations along dim1.  At func. end ipermute.
   if ((length (dim) > 1) || (dim != 1 && ! isvector (x)))
     perm_vect = 1 : ndx;
 
     if (! vecdim_flag)
-      ## move dim to dim 1
+      ## Move dim to dim 1
       perm_vect([1, dim]) = [dim, 1];
       x = permute (x, perm_vect);
       szx([1, dim]) = szx([dim, 1]);
       dim = 1;
 
     else
-      ## move vecdims to front
+      ## Move vecdims to front
       perm_vect(dim) = [];
       perm_vect = [dim, perm_vect];
       x = permute (x, perm_vect);
 
-      ## reshape all vecdims into dim1
+      ## Reshape all vecdims into dim1
       num_dim = prod (szx(dim));
       szx(dim) = [];
       szx = [ones(1, length(dim)), szx];
@@ -302,80 +304,81 @@ function m = median (x, varargin)
     perm_flag = true;
   endif
 
-  ## find column locations of NaNs
+  ## Find column locations of NaNs
   hasnan = any (isnan(x), dim);
   if (! hasnan(:) && omitnan)
-    ## use simpler path if no NaNs present
+    ## Don't use omitnan path if no NaNs are present
     omitnan = 0;
   endif
 
-  x = sort (x, dim); #pushes any NaN's to end
+  x = sort (x, dim); # Pushes any NaN's to end
 
   if (omitnan)
     ## Ignore any NaN's in data. Each operating vector might have a
     ## different number of non-NaN data points.
 
     if isvector (x)
-      ## checks above verify either dim1 or dim2 vector
+      ## Checks above ensure either dim1 or dim2 vector
       x = x(! isnan (x));
       n = length (x);
       k = floor ((n + 1) / 2);
       if (mod (n,2))
-        # odd
+        ## odd
         m = x(k);
       else
-        #even
+        ## even
         m = (x(k) + x(k+1)) /2;
       endif
 
     else
       n = sum (! isnan (x), 1);
       k = floor ((n + 1) ./ 2);
-      k(! n) = 1; # any all nan columns will pull NaN from first row
-      m_odd = mod (n, 2) & n;
-      m_even = ! m_odd & n;
+      m_idx_odd = mod (n, 2) & n;
+      m_idx_even = ! m_idx_odd & n;
+
       m = NaN ([1, szx(2:end)]);
 
       if (ndims (x) > 2)
         szx = [szx(1), prod(szx(2:end))];
       endif
 
-      ## Grab k value from each column according to number of non-nan elements
-      m_idx_odd = sub2ind (szx, (k(m_odd))(:)', (1 : szx(2))(m_odd)(:)');
-      m_idx_even = sub2ind (szx, [(k(m_even))(:)'; (k(m_even) + 1)(:)'], ...
-                               (1 : szx(2))(m_even)([1 1], :));
+      ## Grab kth value, k possibly different for each column
+      x_idx_odd = sub2ind (szx, (k(m_idx_odd))(:)', ...
+                             (1 : szx(2))(m_idx_odd)(:)');
+      x_idx_even = sub2ind (szx, ...
+                             [(k(m_idx_even))(:)'; (k(m_idx_even) + 1)(:)'], ...
+                               (1 : szx(2))(m_idx_even)([1 1], :));
 
-      m(m_odd) = x(m_idx_odd);
-      m(m_even) = sum (x(m_idx_even), 1) / 2;
+      m(m_idx_odd) = x(x_idx_odd);
+      m(m_idx_even) = sum (x(x_idx_even), 1) / 2;
 
     endif
 
   else
-    ## no special NaN handling, all 'vectors' uniform length.
+    ## No 'omitnan'. All 'vectors' uniform length.
     if (! all (hasnan))
 
       if isvector (x)
-        ## checks above verify either dim1 or dim2 vector
         n = length (x);
         k = floor ((n + 1) / 2);
         if (mod (n,2))
-          # odd
+          ## Odd
           m = x(k);
         else
-          #even
+          ## Even
           m = (x(k) + x(k+1)) /2;
         endif
 
       else
-        ## nonvector, all operations permuted to be along dim 1
+        ## Nonvector, all operations permuted to be along dim 1
         n = szx(1);
         k = floor ((n + 1) / 2);
         m = NaN ([1, szx(2:end)]);
         if (mod (n,2))
-          # odd
+          ## Odd
           m(1, :) = x(k, :);
         else
-          #even
+          ## Even
           m(1, :) = (x(k, :) + x(k+1, :)) / 2;
         endif
       endif
@@ -392,7 +395,7 @@ function m = median (x, varargin)
     m = ipermute (m, perm_vect);
   endif
 
-  ## Convert output as requested
+  ## Convert output type as requested
   if (! strcmp (class (m), outtype))
     m = outtype_convert (m, outtype);
   endif
