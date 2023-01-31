@@ -191,8 +191,7 @@ function [s, m] = std (x, varargin)
         m = x;
         return;
       endif
-      if (vecdim_scalar_vector == [0 1] && ...
-           numel (vecdim) != numel (unique (vecdim)))
+      if (vecdim_scalar_vector == [0 1] && (! all (diff (sort (vecdim)))))
         error ("std: VECDIM must contain non-repeating positive integers");
       endif
     endif
