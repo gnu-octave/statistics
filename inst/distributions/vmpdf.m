@@ -38,7 +38,7 @@
 
 function y = vmpdf (theta, mu = 0, k = 1)
 
-  if (nargin < 1 && nargin > 3)
+  if (nargin < 1 || nargin > 3)
     print_usage ();
   endif
 

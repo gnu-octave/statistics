@@ -37,7 +37,7 @@
 
 function x = unifinv (p, a = 0, b = 1)
 
-  if (nargin < 1 && nargin > 3)
+  if (nargin < 1 || nargin > 3)
     print_usage ();
   endif
 
