@@ -218,12 +218,12 @@ function m = median (x, varargin)
           m = x;
         endif
         return;
-      elseif  ((length(dim) == length(sing_dim_x)) ...
-                   && unique ([dim, sing_dim_x]) == dim)
-        ## If DIMs cover all nonsingleton ndims(x), equivalent to "all"
+      elseif ((length(dim) == length(sing_dim_x)) ...
+                 && unique ([dim, sing_dim_x]) == dim)
+        ## If DIMs cover all nonsingleton ndims(x) it's equivalent to "all"
+        ##   (check lengths first to reduce unique overhead if not covered)
         all_flag = true;
       endif
-
     endif
 
   else
@@ -242,6 +242,7 @@ function m = median (x, varargin)
 
     elseif (isempty (x) && isequal (szx, [0, 0]))
       ## Special case []: Do not apply sz_out(dim)=1 change
+      ##   (check isempty first to reduce overhead on non-emptys)
       dim = 1;
       sz_out = [1, 1];
 
@@ -256,11 +257,11 @@ function m = median (x, varargin)
     ## Empty input - output NaN or class equivalent in pre-determined size
     switch (outtype)
       case {"double", "single"}
-        m = NaN(sz_out, outtype);
+        m = NaN (sz_out, outtype);
       case ("logical")
         m = false (sz_out);
       otherwise
-        m = cast (NaN(sz_out), outtype);
+        m = cast (NaN (sz_out), outtype);
     endswitch
     return;
   endif
@@ -305,29 +306,29 @@ function m = median (x, varargin)
   endif
 
   ## Find column locations of NaNs
-  hasnan = any (isnan(x), dim);
+  hasnan = any (isnan (x), dim);
   if (! hasnan(:) && omitnan)
     ## Don't use omitnan path if no NaNs are present
     omitnan = 0;
   endif
 
-  x = sort (x, dim); # Pushes any NaN's to end
+  x = sort (x, dim); # Note- pushes any NaN's to end
 
   if (omitnan)
     ## Ignore any NaN's in data. Each operating vector might have a
     ## different number of non-NaN data points.
 
-    if isvector (x)
+    if (isvector (x))
       ## Checks above ensure either dim1 or dim2 vector
       x = x(! isnan (x));
       n = length (x);
       k = floor ((n + 1) / 2);
-      if (mod (n,2))
+      if (mod (n, 2))
         ## odd
         m = x(k);
       else
         ## even
-        m = (x(k) + x(k+1)) /2;
+        m = (x(k) + x(k + 1)) / 2;
       endif
 
     else
@@ -336,10 +337,10 @@ function m = median (x, varargin)
       m_idx_odd = mod (n, 2) & n;
       m_idx_even = ! m_idx_odd & n;
 
-      m = NaN ([1, szx(2:end)]);
+      m = NaN ([1, szx(2 : end)]);
 
       if (ndims (x) > 2)
-        szx = [szx(1), prod(szx(2:end))];
+        szx = [szx(1), prod(szx(2 : end))];
       endif
 
       ## Grab kth value, k possibly different for each column
@@ -351,35 +352,34 @@ function m = median (x, varargin)
 
       m(m_idx_odd) = x(x_idx_odd);
       m(m_idx_even) = sum (x(x_idx_even), 1) / 2;
-
     endif
 
   else
-    ## No 'omitnan'. All 'vectors' uniform length.
+    ## No "omitnan". All 'vectors' uniform length.
     if (! all (hasnan))
 
-      if isvector (x)
+      if (isvector (x))
         n = length (x);
         k = floor ((n + 1) / 2);
-        if (mod (n,2))
+        if (mod (n, 2))
           ## Odd
           m = x(k);
         else
           ## Even
-          m = (x(k) + x(k+1)) /2;
+          m = (x(k) + x(k + 1)) / 2;
         endif
 
       else
         ## Nonvector, all operations permuted to be along dim 1
         n = szx(1);
         k = floor ((n + 1) / 2);
-        m = NaN ([1, szx(2:end)]);
-        if (mod (n,2))
+        m = NaN ([1, szx(2 : end)]);
+        if (mod (n, 2))
           ## Odd
           m(1, :) = x(k, :);
         else
           ## Even
-          m(1, :) = (x(k, :) + x(k+1, :)) / 2;
+          m(1, :) = (x(k, :) + x(k + 1, :)) / 2;
         endif
       endif
       if (any (hasnan(:)))
@@ -431,8 +431,8 @@ endfunction
 %!
 %! assert (median (x) == median (x2) && median (x) == 3.5);
 %! assert (median (y) == median (y2) && median (y) == 4);
-%! assert (median ([x2, 2*x2]), [3.5, 7]);
-%! assert (median ([y2, 3*y2]), [4, 12]);
+%! assert (median ([x2, 2 * x2]), [3.5, 7]);
+%! assert (median ([y2, 3 * y2]), [4, 12]);
 
 ## Test outtype option
 %!test
@@ -477,8 +477,8 @@ endfunction
 %! assert (median (x, 2), y);
 %! assert (median (x, "all"), NaN);
 %! assert (median (x, "all", "omitnan"), 2);
-%!assert (median (cat (3, 3, 1, NaN, 2), 'omitnan'), 2)
-%!assert (median (cat (3, 3, 1, NaN, 2), 3, 'omitnan'), 2)
+%!assert (median (cat (3, 3, 1, NaN, 2), "omitnan"), 2)
+%!assert (median (cat (3, 3, 1, NaN, 2), 3, "omitnan"), 2)
 
 # Test boolean input
 %!test
@@ -518,43 +518,43 @@ endfunction
 
 ## Test empty, NaN, Inf inputs
 %!assert (median (NaN), NaN)
-%!assert (median (NaN, 'omitnan'), NaN)
+%!assert (median (NaN, "omitnan"), NaN)
 %!assert (median (NaN (2)), [NaN NaN])
-%!assert (median (NaN (2), 'omitnan'), [NaN NaN])
+%!assert (median (NaN (2), "omitnan"), [NaN NaN])
 %!assert (median ([1 NaN 3]), NaN)
 %!assert (median ([1 NaN 3], 1), [1 NaN 3])
 %!assert (median ([1 NaN 3], 2), NaN)
 %!assert (median ([1 NaN 3]'), NaN)
 %!assert (median ([1 NaN 3]', 1), NaN)
 %!assert (median ([1 NaN 3]', 2), [1; NaN; 3])
-%!assert (median ([1 NaN 3], 'omitnan'), 2)
-%!assert (median ([1 NaN 3]', 'omitnan'), 2)
-%!assert (median ([1 NaN 3], 1, 'omitnan'), [1 NaN 3])
-%!assert (median ([1 NaN 3], 2, 'omitnan'), 2)
-%!assert (median ([1 NaN 3]', 1, 'omitnan'), 2)
-%!assert (median ([1 NaN 3]', 2, 'omitnan'), [1; NaN; 3])
+%!assert (median ([1 NaN 3], "omitnan"), 2)
+%!assert (median ([1 NaN 3]', "omitnan"), 2)
+%!assert (median ([1 NaN 3], 1, "omitnan"), [1 NaN 3])
+%!assert (median ([1 NaN 3], 2, "omitnan"), 2)
+%!assert (median ([1 NaN 3]', 1, "omitnan"), 2)
+%!assert (median ([1 NaN 3]', 2, "omitnan"), [1; NaN; 3])
 %!assert (median ([1 2 NaN 3]), NaN)
-%!assert (median ([1 2 NaN 3], 'omitnan'), 2)
+%!assert (median ([1 2 NaN 3], "omitnan"), 2)
 %!assert (median ([1,2,NaN;4,5,6;NaN,8,9]), [NaN, 5, NaN])
 %!assert (median ([1 2 ; NaN 4]), [NaN 3])
-%!assert (median ([1 2 ; NaN 4], 'omitnan'), [1 3])
-%!assert (median ([1 2 ; NaN 4], 1, 'omitnan'), [1 3])
-%!assert (median ([1 2 ; NaN 4], 2, 'omitnan'), [1.5; 4], eps)
-%!assert (median ([1 2 ; NaN 4], 3, 'omitnan'), [1 2 ; NaN 4])
+%!assert (median ([1 2 ; NaN 4], "omitnan"), [1 3])
+%!assert (median ([1 2 ; NaN 4], 1, "omitnan"), [1 3])
+%!assert (median ([1 2 ; NaN 4], 2, "omitnan"), [1.5; 4], eps)
+%!assert (median ([1 2 ; NaN 4], 3, "omitnan"), [1 2 ; NaN 4])
 %!assert (median ([NaN 2 ; NaN 4]), [NaN 3])
-%!assert (median ([NaN 2 ; NaN 4], 'omitnan'), [NaN 3])
+%!assert (median ([NaN 2 ; NaN 4], "omitnan"), [NaN 3])
 %!assert (median (ones (1, 0, 3)), NaN (1, 1, 3))
 
-%!assert (median (NaN('single')), NaN('single'));
-%!assert (median (NaN('single'), 'omitnan'), NaN('single'));
-%!assert (median (NaN('single'), 'double'), NaN('double'));
+%!assert (median (NaN("single")), NaN("single"));
+%!assert (median (NaN("single"), "omitnan"), NaN("single"));
+%!assert (median (NaN("single"), "double"), NaN("double"));
 %!assert (median (single([1 2 ; NaN 4])), single([NaN 3]));
-%!assert (median (single([1 2 ; NaN 4]), 'double'), double([NaN 3]));
-%!assert (median (single([1 2 ; NaN 4]), 'omitnan'), single([1 3]));
-%!assert (median (single([1 2 ; NaN 4]), 'omitnan', 'double'), double([1 3]));
-%!assert (median (single([NaN 2 ; NaN 4]), 'double'), double([NaN 3]));
-%!assert (median (single([NaN 2 ; NaN 4]), 'omitnan'), single([NaN 3]));
-%!assert (median (single([NaN 2 ; NaN 4]), 'omitnan', 'double'), double([NaN 3]));
+%!assert (median (single([1 2 ; NaN 4]), "double"), double([NaN 3]));
+%!assert (median (single([1 2 ; NaN 4]), "omitnan"), single([1 3]));
+%!assert (median (single([1 2 ; NaN 4]), "omitnan", "double"), double([1 3]));
+%!assert (median (single([NaN 2 ; NaN 4]), "double"), double([NaN 3]));
+%!assert (median (single([NaN 2 ; NaN 4]), "omitnan"), single([NaN 3]));
+%!assert (median (single([NaN 2 ; NaN 4]), "omitnan", "double"), double([NaN 3]));
 
 %!assert (median (Inf), Inf);
 %!assert (median (-Inf), -Inf);
