@@ -1,5 +1,8 @@
 ## Copyright (C) 1995-2017 Friedrich Leisch
 ##
+## This file is part of the statistics package for GNU Octave.
+##
+##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
 ## published by the Free Software Foundation, either version 3 of the
@@ -15,7 +18,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {} wienrnd (@var{t}, @var{d}, @var{n})
+## @deftypefn  {statistics} @var{r} = wienrnd (@var{t}, @var{d}, @var{n})
+##
 ## Return a simulated realization of the @var{d}-dimensional Wiener Process
 ## on the interval [0, @var{t}].
 ##
@@ -28,10 +32,7 @@
 ## omitted, @var{n} = 1000 is used.
 ## @end deftypefn
 
-## Author: FL <Friedrich.Leisch@ci.tuwien.ac.at>
-## Description: Simulate a Wiener process
-
-function retval = wienrnd (t, d, n)
+function r = wienrnd (t, d, n)
 
   if (nargin == 1)
     d = 1;
@@ -43,12 +44,12 @@ function retval = wienrnd (t, d, n)
   endif
 
   if (! isscalar (t) || ! isscalar (d) || ! isscalar (n))
-    error ("wienrnd: T, D and N must all be positive integers");
+    error ("wienrnd: T, D, and N must all be positive integers.");
   endif
 
-  retval = randn (n * t, d);
-  retval = cumsum (retval) / sqrt (n);
+  r = randn (n * t, d);
+  r = cumsum (r) / sqrt (n);
 
-  retval = [((1: n*t)' / n), retval];
+  r = [((1: n*t)' / n), r];
 
 endfunction
