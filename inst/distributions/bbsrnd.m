@@ -49,7 +49,7 @@ function r = bbsrnd (shape, scale, location, varargin)
   endif
 
   if (! isscalar (shape) || ! isscalar (scale) || ! isscalar (location))
-    [retval, shape, scale, location] = common_size (location, scale, location);
+    [retval, shape, scale, location] = common_size (shape, scale, location);
     if (retval > 0)
       error (strcat (["bbsrnd: SHAPE, SCALE, and LOCATION must be of"], ...
                      [" common size or scalars."]));
@@ -89,7 +89,7 @@ function r = bbsrnd (shape, scale, location, varargin)
     cls = "double";
   endif
 
-  if (isscalar (scale) && isscalar (scale) && isscalar (location))
+  if (isscalar (shape) && isscalar (scale) && isscalar (location))
     if ((-Inf < location) && (location < Inf) ...
         && (0 < scale) && (scale < Inf) ...
         && (0 < shape) && (shape < Inf))
