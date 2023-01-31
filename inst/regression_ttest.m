@@ -59,18 +59,18 @@ function [pval, t, df] = regression_ttest (y, x, rr, r, alt)
   endif
 
   if (! isscalar (r))
-    error ("regression_ttest: R must be a scalar");
+    error ("regression_ttest: R must be a scalar.");
   elseif (! ischar (alt))
-    error ("regression_ttest: ALT must be a string");
+    error ("regression_ttest: ALT must be a string.");
   endif
 
   [T, k] = size (x);
   if (! (isvector (y) && (length (y) == T)))
-    error ("regression_ttest: Y must be a vector of length rows (X)");
+    error ("regression_ttest: Y must be a vector of length rows (X).");
   endif
   s = size (rr);
   if (! ((max (s) == k) && (min (s) == 1)))
-    error ("regression_ttest: RR must be a vector of length columns (X)");
+    error ("regression_ttest: RR must be a vector of length columns (X).");
   endif
 
   rr     = reshape (rr, 1, k);
@@ -87,7 +87,7 @@ function [pval, t, df] = regression_ttest (y, x, rr, r, alt)
   elseif (strcmp (alt, "<"))
     pval = cdf;
   else
-    error ("regression_ttest: the value '%s' for ALT is not possible", alt);
+    error ("regression_ttest: the value '%s' for ALT is not possible.", alt);
   endif
 
   if (nargout == 0)
