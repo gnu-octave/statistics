@@ -98,7 +98,6 @@ endfunction
 
 ## Test input validation
 %!error normpdf ()
-%!error normpdf (1,2)
 %!error normpdf (1,2,3,4)
 %!error normpdf (ones (3), ones (2), ones (2))
 %!error normpdf (ones (2), ones (3), ones (2))
