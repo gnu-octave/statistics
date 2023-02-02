@@ -17,13 +17,12 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = mean (@var{x})
-## @deftypefnx {statistics} @var{y} = mean (@var{x}, "all")
-## @deftypefnx {statistics} @var{y} = mean (@var{x}, @var{dim})
-## @deftypefnx {statistics} @var{y} = mean (@var{x}, @var{vecdim})
-## @deftypefnx {statistics} @var{y} = mean (@dots{}, @var{outtype})
-## @deftypefnx {statistics} @var{y} = mean (@dots{}, @var{nanflag})
-##
+## @deftypefn  {statistics} @var{m} = mean (@var{x})
+## @deftypefnx {statistics} @var{m} = mean (@var{x}, "all")
+## @deftypefnx {statistics} @var{m} = mean (@var{x}, @var{dim})
+## @deftypefnx {statistics} @var{m} = mean (@var{x}, @var{vecdim})
+## @deftypefnx {statistics} @var{m} = mean (@dots{}, @var{outtype})
+## @deftypefnx {statistics} @var{m} = mean (@dots{}, @var{nanflag})
 ## Compute the mean of the elements of @var{x}.
 ##
 ## @itemize
@@ -57,7 +56,7 @@
 ##
 ## @code{mean (@var{x}, @var{dim})} returns the mean along the operating
 ## dimension @var{dim} of @var{x}.  For @var{dim} greater than
-## @code{ndims (@var{x})}, then @var{y} = @var{x}.
+## @code{ndims (@var{x})}, then @var{m} = @var{x}.
 ##
 ## @code{mean (@var{x}, @var{vecdim})} returns the mean over the
 ## dimensions specified in the vector @var{vecdim}.  For example, if @var{x}
@@ -73,7 +72,20 @@
 ##
 ## @code{mean (@dots{}, @var{outtype})} returns the mean with a specified data
 ## type, using any of the input arguments in the previous syntaxes.
-## @var{outtype} can be "default", "double", or "native".
+## @var{outtype} can take the following values:
+## @itemize
+## @item "default"
+## Output is of type double, unless the input is single in which case the output
+## is of type single.
+##
+## @item "double"
+## Output is of type double.
+##
+## @item "native".
+## Output is of the same type as the input (@code{class (@var{x})}), unless the
+## input is logical in which case the output is of type double or a character
+## array in which case an error is produced.
+## @end itemize
 ##
 ## @code{mean (@dots{}, @var{nanflag})} specifies whether to exclude NaN values
 ## from the calculation, using any of the input argument combinations in
@@ -84,42 +96,92 @@
 ## @seealso{median, mode}
 ## @end deftypefn
 
-function y = mean (x, varargin)
+function m = mean (x, varargin)
 
   if (nargin < 1 || nargin > 4 || any (cellfun (@isnumeric, varargin(2:end))))
     print_usage ();
   endif
 
   ## Check all char arguments.
-  all_flag = false;
-  omitnan = false;
+  all_flag = 0;
+  omitnan = 0;
+  out_flag = 0;
+
+  nvarg = numel (varargin);
+  varg_chars = cellfun ('ischar', varargin);
   outtype = "default";
 
-  for i = 1:numel (varargin)
-    if (ischar (varargin{i}))
-      switch (varargin{i})
+
+  if (any (varg_chars))
+    for i = varargin(varg_chars)
+      switch (lower (i{:}))
         case "all"
           all_flag = true;
+
         case "omitnan"
           omitnan = true;
+
         case "includenan"
           omitnan = false;
-        case {"default", "double", "native"}
-          outtype = varargin{i};
+
+        case "default"
+          outtype = class (x);
+          if (out_flag)
+            error ("mean: only one OUTTYPE can be specified.")
+          endif
+          if (strcmp (outtype, "single"))
+            outtype = "single";
+          else
+            outtype = "double";
+          endif
+          out_flag = 1;
+
+        case "native"
+          outtype = class (x);
+          if (out_flag)
+            error ("mean: only one OUTTYPE can be specified.")
+          elseif (strcmp (outtype, "logical"))
+            outtype = "double";
+          elseif (strcmp (outtype, "char"))
+            error ("mean: OUTTYPE 'native' cannot be used with char type inputs");
+          endif
+          out_flag = 1;
+
+        case "double"
+          if (out_flag)
+            error ("mean: only one OUTTYPE can be specified.")
+          endif
+          outtype = "double";
+          out_flag = 1;
+
         otherwise
           print_usage ();
       endswitch
+    endfor
+    varargin(varg_chars) = [];
+    nvarg = numel (varargin);
+  endif
+
+  if strcmp (outtype, "default")
+    outtype = class (x);
+    if (out_flag)
+      error ("mean: only one OUTTYPE can be specified.")
     endif
-  endfor
-  varargin(cellfun (@ischar, varargin)) = [];
+    if (strcmp (outtype, "single"))
+      outtype = "single";
+    else
+      outtype = "double";
+    endif
+    out_flag = 1;
+  endif
 
   if (((numel (varargin) == 1) && ! (isnumeric (varargin{1}))) ...
       || (numel (varargin) > 1))
     print_usage ();
   endif
 
-  if (! (isnumeric (x) || islogical (x)))
-    error ("mean: X must be either a numeric or boolean vector or matrix.");
+  if (! (isnumeric (x) || islogical (x) || ischar (x)))
+    error ("mean: X must be either a numeric, boolean, or character array");
   endif
 
   if (numel (varargin) == 0)
@@ -132,7 +194,7 @@ function y = mean (x, varargin)
         n -= sum (idx(:));
         x(idx) = 0;
       endif
-      y = sum (x(:), 1) ./ n;
+      m = sum (x(:), 1) ./ n;
     else
       sz = size (x);
       ## Find the first non-singleton dimension.
@@ -143,7 +205,7 @@ function y = mean (x, varargin)
         n = sum (! idx, dim);
         x(idx) = 0;
       endif
-      y = sum (x, dim) ./ n;
+      m = sum (x, dim) ./ n;
     endif
 
   else
@@ -161,7 +223,7 @@ function y = mean (x, varargin)
         n = sum (! isnan (x), vecdim);
         x(isnan (x)) = 0;
       endif
-      y = sum (x, vecdim) ./ n;
+      m = sum (x, vecdim) ./ n;
 
     else
 
@@ -180,49 +242,48 @@ function y = mean (x, varargin)
           n -= sum (idx(:));
           x(idx) = 0;
         endif
-        y = sum (x(:), 1) ./ n;
+        m = sum (x(:), 1) ./ n;
 
       else
         ## Permute to bring remaining dims forward
         perm = [remdims, vecdim];
-        y = permute (x, perm);
+        m = permute (x, perm);
 
         ## Reshape to put all vecdims in final dimension
-        szy = size (y);
-        sznew = [szy(1:nremd), prod(szy(nremd+1:end))];
-        y = reshape (y, sznew);
+        szm = size (m);
+        sznew = [szm(1:nremd), prod(szm(nremd+1:end))];
+        m = reshape (m, sznew);
 
         ## Calculate mean on single, squashed dimension
         dim = nremd + 1;
-        n = size (y, dim);
+        n = size (m, dim);
         if (omitnan)
-          n = sum (! isnan (y), dim);
-          y(isnan (y)) = 0;
+          n = sum (! isnan (m), dim);
+          m(isnan (m)) = 0;
         endif
-        y = sum (y, dim) ./ n;
+        m = sum (m, dim) ./ n;
 
         ## Inverse permute back to correct dimensions
-        y = ipermute (y, perm);
+        m = ipermute (m, perm);
       endif
     endif
   endif
 
   ## Convert output as requested
-  switch (outtype)
-    case "default"
-      ## do nothing, the operators already do the right thing
-    case "double"
-      y = double (y);
-    case "native"
-      if (! islogical (x))
-        y = cast (y, class (x));
-      endif
-    otherwise
-      error ("mean: OUTTYPE '%s' not recognized", outtype);
-  endswitch
+  if (! strcmp (class (m), outtype))
+    switch (outtype)
+      case "double"
+        m = double (m);
+      case "single"
+        m = single (m);
+      otherwise
+        if (! islogical (x))
+          m = cast (m, outtype);
+        endif
+    endswitch
+  endif
 
 endfunction
-
 
 %!test
 %! x = -10:10;
@@ -238,40 +299,27 @@ endfunction
 %!assert (mean (single ([1 0 1 1])), single (0.75))
 %!assert (mean ([1 2], 3), [1 2])
 
-## Test input validation
-%!error <Invalid call to mean.  Correct usage is> mean ()
-%!error <Invalid call to mean.  Correct usage is> mean (1, 2, 3)
-%!error <Invalid call to mean.  Correct usage is> mean (1, 2, 3, 4)
-%!error <Invalid call to mean.  Correct usage is> mean (1, "all", 3)
-%!error <Invalid call to mean.  Correct usage is> mean (1, "b")
-%!error <Invalid call to mean.  Correct usage is> mean (1, 1, "foo")
-%!error <mean: X must be either a numeric or boolean> mean ({1:5})
-%!error <mean: X must be either a numeric or boolean> mean ("char")
-%!error <mean: DIM must be a positive integer> mean (1, ones (2,2))
-%!error <mean: DIM must be a positive integer> mean (1, 1.5)
-%!error <mean: DIM must be a positive integer> mean (1, 0)
-
-## Test outtype option
+#### Test outtype option
 %!test
 %! in = [1 2 3];
 %! out = 2;
 %! assert (mean (in, "default"), mean (in));
 %! assert (mean (in, "default"), out);
-%!
+%!test
 %! in = single ([1 2 3]);
 %! out = 2;
 %! assert (mean (in, "default"), mean (in));
 %! assert (mean (in, "default"), single (out));
 %! assert (mean (in, "double"), out);
 %! assert (mean (in, "native"), single (out));
-%!
+%!test
 %! in = uint8 ([1 2 3]);
 %! out = 2;
 %! assert (mean (in, "default"), mean (in));
 %! assert (mean (in, "default"), out);
 %! assert (mean (in, "double"), out);
 %! assert (mean (in, "native"), uint8 (out));
-%!
+%!test
 %! in = logical ([1 0 1]);
 %! out = 2/3;
 %! assert (mean (in, "default"), mean (in));
@@ -309,6 +357,12 @@ endfunction
 %! assert (mean ([true false NaN], 2, "omitnan"), 0.5);
 %! assert (mean ([true false NaN], 2, "omitnan", "native"), 0.5);
 
+## Test char inputs
+%!assert (mean ("abc"), double (98))
+%!assert (mean ("ab"), double (97.5), eps)
+%!assert (mean ("abc", "double"), double (98))
+%!assert (mean ("abc", "default"), double (98))
+
 ## Test dimension indexing with vecdim in n-dimensional arrays
 %!test
 %! x = repmat ([1:20;6:25], [5 2 6 3]);
@@ -335,3 +389,116 @@ endfunction
 %! assert (mean (x, [3 2]), m, 4e-14);
 %! m(2,1,1,3) = 15.52301255230125;
 %! assert (mean (x, [3 2], "omitnan"), m, 4e-14);
+
+## Matlab verified outtype checks
+##double
+%!assert (mean (double ([0 1 2])), 1)
+%!assert (class (mean (double ([0 1 2]))), "double")
+%!assert (mean (double ([0 1 2]), 'double'), 1)
+%!assert (class (mean (double ([0 1 2]), 'double')), "double")
+%!assert (mean (double ([0 1 2]), 'default'), 1)
+%!assert (class (mean (double ([0 1 2]), 'default')), "double")
+%!assert (mean (double ([0 1 2]), 'native'), 1)
+%!assert (class (mean (double ([0 1 2]), 'native')), "double")
+
+##single
+%!assert (double (mean (single ([0 1 2]))), 1)
+%!assert (class (mean (single ([0 1 2]))), "single")
+%!assert (double (mean (single ([0 1 2]), 'double')), 1)
+%!assert (class (mean (single ([0 1 2]), 'double')), "double")
+%!assert (double (mean (single ([0 1 2]), 'default')), 1)
+%!assert (class (mean (single ([0 1 2]), 'default')), "single")
+%!assert (double (mean (single ([0 1 2]), 'native')), 1)
+%!assert (class (mean (single ([0 1 2]), 'native')), "single")
+
+##int8 - no out fraction
+%!assert (double (mean (int8 ([0 1 2]))), 1)
+%!assert (class (mean (int8 ([0 1 2]))), "double")
+%!assert (double (mean (int8 ([0 1 2]), 'double')), 1)
+%!assert (class (mean (int8 ([0 1 2]), 'double')), "double")
+%!assert (double (mean (int8 ([0 1 2]), 'default')), 1)
+%!assert (class (mean (int8 ([0 1 2]), 'default')), "double")
+%!assert (double (mean (int8 ([0 1 2]), 'native')), 1)
+%!assert (class (mean (int8 ([0 1 2]), 'native')), "int8")
+
+##int8 - out fraction
+%!assert (double (mean (int8 ([0 1 2 3]))), 1.5, eps)
+%!assert (class (mean (int8 ([0 1 2 3]))), "double")
+%!assert (double (mean (int8 ([0 1 2 3]), 'double')), 1.5, eps)
+%!assert (class (mean (int8 ([0 1 2 3]), 'double')), "double")
+%!assert (double (mean (int8 ([0 1 2 3]), 'default')), 1.5, eps)
+%!assert (class (mean (int8 ([0 1 2 3]), 'default')), "double")
+%!assert (double (mean (int8 ([0 1 2 3]), 'native')), 2)
+%!assert (class (mean (int8 ([0 1 2 3]), 'native')), "int8")
+
+##uint8 - no out fraction - internal sum exceeding intmax bug 54567
+%!assert (double (mean (uint8 ([3 141 141 255]))), 135)
+%!assert (class (mean (uint8 ([3 141 141 255]))), "double")
+%!assert (double (mean (uint8 ([3 141 141 255]), 'double')), 135)
+%!assert (class (mean (uint8 ([3 141 141 255]), 'double')), "double")
+%!assert (double (mean (uint8 ([3 141 141 255]), 'default')), 135)
+%!assert (class (mean (uint8 ([3 141 141 255]), 'default')), "double")
+%!assert (double (mean (uint8 ([3 141 141 255]), 'native')), 135)
+%!assert (class (mean (uint8 ([3 141 141 255]), 'native')), "uint8")
+
+##uint8 - out fraction - internal sum exceeding intmax bug 54567
+%!assert (double (mean (uint8 ([1 141 141 255]))), 134.5, eps)
+%!assert (class (mean (uint8 ([1 141 141 255]))), "double")
+%!assert (double (mean (uint8 ([1 141 141 255]), 'double')), 134.5, eps)
+%!assert (class (mean (uint8 ([1 141 141 255]), 'double')), "double")
+%!assert (double (mean (uint8 ([1 141 141 255]), 'default')), 134.5, eps)
+%!assert (class (mean (uint8 ([1 141 141 255]), 'default')), "double")
+%!assert (double (mean (uint8 ([1 141 141 255]), 'native')), 135)
+%!assert (class (mean (uint8 ([1 141 141 255]), 'native')), "uint8")
+
+##logical - no out fraction if handled internally as double
+%!assert (double (mean (logical ([0 0]))), 0)
+%!assert (class (mean (logical ([0 0]))), "double")
+%!assert (double (mean (logical ([0 0]), 'double')), 0)
+%!assert (class (mean (logical ([0 0]), 'double')), "double")
+%!assert (double (mean (logical ([0 0]), 'default')), 0)
+%!assert (class (mean (logical ([0 0]), 'default')), "double")
+%!assert (double (mean (logical ([0 0]), 'native')), 0)
+%!assert (class (mean (logical ([0 0]), 'native')), "double")
+
+##logical - out fraction if handled internally as double
+%!assert (double (mean (logical ([0 1]))), 0.5, eps)
+%!assert (class (mean (logical ([0 1]))), "double")
+%!assert (double (mean (logical ([0 1]), 'double')), 0.5, eps)
+%!assert (class (mean (logical ([0 1]), 'double')), "double")
+%!assert (double (mean (logical ([0 1]), 'default')), 0.5, eps)
+%!assert (class (mean (logical ([0 1]), 'default')), "double")
+%!assert (double (mean (logical ([0 1]), 'native')), 0.5, eps)
+%!assert (class (mean (logical ([0 1]), 'native')), "double")
+
+##char - no out fraction if handled as double
+%!assert (double (mean (char (['abc']))), 98)
+%!assert (class (mean (char (['abc']))), "double")
+%!assert (double (mean (char (['abc']), 'double')), 98)
+%!assert (class (mean (char (['abc']), 'double')), "double")
+%!assert (double (mean (char (['abc']), 'default')), 98)
+%!assert (class (mean (char (['abc']), 'default')), "double")
+%!error <mean: OUTTYPE 'native' cannot be used with char> (mean (char (['abc']), 'native'))
+
+##char - out fraction if handled as double
+%!assert (double (mean (char (['ab']))), 97.5, eps)
+%!assert (class (mean (char (['ab']))), "double")
+%!assert (double (mean (char (['ab']), 'double')), 97.5, eps)
+%!assert (class (mean (char (['ab']), 'double')), "double")
+%!assert (double (mean (char (['ab']), 'default')), 97.5, eps)
+%!assert (class (mean (char (['ab']), 'default')), "double")
+%!error <mean: OUTTYPE 'native' cannot be used with char> (mean (char (['ab']), 'native'))
+
+
+## Test input validation
+%!error <Invalid call to mean.  Correct usage is> mean ()
+%!error <Invalid call to mean.  Correct usage is> mean (1, 2, 3)
+%!error <Invalid call to mean.  Correct usage is> mean (1, 2, 3, 4)
+%!error <Invalid call to mean.  Correct usage is> mean (1, "all", 3)
+%!error <Invalid call to mean.  Correct usage is> mean (1, "b")
+%!error <Invalid call to mean.  Correct usage is> mean (1, 1, "foo")
+%!error <mean: OUTTYPE 'native' cannot be used with char> mean ("abc", "native")
+%!error <mean: X must be either a numeric, boolean, or character> mean ({1:5})
+%!error <mean: DIM must be a positive integer> mean (1, ones (2,2))
+%!error <mean: DIM must be a positive integer> mean (1, 1.5)
+%!error <mean: DIM must be a positive integer> mean (1, 0)
