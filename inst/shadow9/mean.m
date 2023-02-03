@@ -98,11 +98,11 @@
 
 function m = mean (x, varargin)
 
-  if (nargin < 1 || nargin > 4 || any (cellfun (@isnumeric, varargin(2:end))))
+  if (nargin < 1 || nargin > 4)
     print_usage ();
   endif
 
-  ## Check all char arguments.
+  ## Set initial conditions
   all_flag = 0;
   omitnan = 0;
   out_flag = 0;
@@ -110,8 +110,15 @@ function m = mean (x, varargin)
   nvarg = numel (varargin);
   varg_chars = cellfun ('ischar', varargin);
   outtype = "default";
+  szx = size (x);
+  ndx = ndims (x);
 
+  if (nvarg > 1 && ! varg_chars(2:end))
+    ## Only first varargin can be numeric
+    print_usage ();
+  endif
 
+  ## Process any other char arguments.
   if (any (varg_chars))
     for i = varargin(varg_chars)
       switch (lower (i{:}))
@@ -172,11 +179,10 @@ function m = mean (x, varargin)
     else
       outtype = "double";
     endif
-    out_flag = 1;
   endif
 
-  if (((numel (varargin) == 1) && ! (isnumeric (varargin{1}))) ...
-      || (numel (varargin) > 1))
+  if ((nvarg > 1) || ((nvarg == 1) && ! (isnumeric (varargin{1}))))
+    ## After trimming char inputs can only be one varargin left, must be numeric
     print_usage ();
   endif
 
@@ -184,22 +190,20 @@ function m = mean (x, varargin)
     error ("mean: X must be either a numeric, boolean, or character array");
   endif
 
-  if (numel (varargin) == 0)
+  ## Process special cases for in/out size
+  if (nvarg == 0)
 
     ## Single numeric input argument, no dimensions given.
     if (all_flag)
-      n = numel (x(:));
+      x = x(:);
       if (omitnan)
-        idx = isnan (x);
-        n -= sum (idx(:));
-        x(idx) = 0;
+        x = x(isnan (x));
       endif
-      m = sum (x(:), 1) ./ n;
+      m = sum (x, 1) ./ numel (x);
     else
-      sz = size (x);
       ## Find the first non-singleton dimension.
-      (dim = find (sz != 1, 1)) || (dim = 1);
-      n = size (x, dim);
+      (dim = find (szx != 1, 1)) || (dim = 1);
+      n = szx(dim);
       if (omitnan)
         idx = isnan (x);
         n = sum (! idx, dim);
@@ -218,10 +222,11 @@ function m = mean (x, varargin)
 
     if (isscalar (vecdim))
 
-      n = size (x, vecdim);
+      n = size (x, vecdim);  ## n = szx(vecdim); ##FIXME for dim >ndx
       if (omitnan)
-        n = sum (! isnan (x), vecdim);
-        x(isnan (x)) = 0;
+        nanx = isnan (x);
+        n = sum (! nanx, vecdim);
+        x(nanx) = 0;
       endif
       m = sum (x, vecdim) ./ n;
 
@@ -230,19 +235,17 @@ function m = mean (x, varargin)
       ## Ignore exceeding dimensions in VECDIM
       vecdim(find (vecdim > ndims (x))) = [];
       ## Calculate permutation vector
-      remdims = 1:ndims (x);    # all dimensions
+      remdims = 1 : ndx;    # all dimensions
       remdims(vecdim) = [];     # delete dimensions specified by vecdim
       nremd = numel (remdims);
 
       ## If all dimensions are given, it is similar to all flag
       if (nremd == 0)
-        n = numel (x(:));
+        x = x(:);
         if (omitnan)
-          idx = isnan (x);
-          n -= sum (idx(:));
-          x(idx) = 0;
+          x = x(isnan (x));
         endif
-        m = sum (x(:), 1) ./ n;
+        m = sum (x) ./ numel (x);
 
       else
         ## Permute to bring remaining dims forward
