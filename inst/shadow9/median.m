@@ -298,7 +298,7 @@ function m = median (x, varargin)
       num_dim = prod (szx(dim));
       szx(dim) = [];
       szx = [ones(1, length(dim)), szx];
-      szx(1) = prod (num_dim);
+      szx(1) = num_dim;
       x = reshape (x, szx);
       dim = 1;
     endif
