@@ -135,6 +135,9 @@ Model Fitting
  fitlm
 Hypothesis testing
  adtest
+ anova1
+ anova2
+ anovan
  bartlett_test
  barttest
  binotest
@@ -148,6 +151,7 @@ Hypothesis testing
  kstest
  kstest2
  levene_test
+ manova1
  ranksum
  regression_ftest
  regression_ttest
@@ -189,13 +193,9 @@ Plots
  violin
  wblplot
 Regression
- anova1
- anova2
- anovan
  canoncorr
  crossval
  logistic_regression
- manova1
  monotone_smooth
  pca
  pcacov

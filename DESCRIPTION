@@ -7,5 +7,5 @@ Title: Statistics
 Description: The Statistics package for GNU Octave.
 Categories: Statistics
 Depends: octave (>= 6.1.0)
-License: GPLv3+, public domain
+License: GPLv3+
 Url: https://github.com/gnu-octave/statistics
