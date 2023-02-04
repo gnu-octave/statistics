@@ -132,11 +132,10 @@ function m = mean (x, varargin)
           omitnan = false;
 
         case "default"
-          outtype = class (x);
           if (out_flag)
             error ("mean: only one OUTTYPE can be specified.")
           endif
-          if (strcmp (outtype, "single"))
+          if (isa (x, "single"))
             outtype = "single";
           else
             outtype = "double";
@@ -170,11 +169,7 @@ function m = mean (x, varargin)
   endif
 
   if strcmp (outtype, "default")
-    outtype = class (x);
-    if (out_flag)
-      error ("mean: only one OUTTYPE can be specified.")
-    endif
-    if (strcmp (outtype, "single"))
+    if (isa (x, "single"))
       outtype = "single";
     else
       outtype = "double";
@@ -192,14 +187,15 @@ function m = mean (x, varargin)
 
   ## Process special cases for in/out size
   if (nvarg == 0)
-
     ## Single numeric input argument, no dimensions given.
+
     if (all_flag)
       x = x(:);
       if (omitnan)
         x = x(isnan (x));
       endif
-      m = sum (x, 1) ./ numel (x);
+      m = sum (x) ./ numel (x);
+
     else
       ## Find the first non-singleton dimension.
       (dim = find (szx != 1, 1)) || (dim = 1);
@@ -216,58 +212,84 @@ function m = mean (x, varargin)
 
     ## Two numeric input arguments, dimensions given.  Note scalar is vector!
     vecdim = varargin{1};
-    if (! (isvector (vecdim) && all (vecdim)) || any (rem (vecdim, 1)))
+    if (isempty(vecdim) || ! (isvector (vecdim) && all (vecdim)) ...
+          || any (rem (vecdim, 1)))
       error ("mean: DIM must be a positive integer scalar or vector");
     endif
 
-    if (isscalar (vecdim))
-
-      n = size (x, vecdim);  ## n = szx(vecdim); ##FIXME for dim >ndx
-      if (omitnan)
-        nanx = isnan (x);
-        n = sum (! nanx, vecdim);
-        x(nanx) = 0;
-      endif
-      m = sum (x, vecdim) ./ n;
-
+    if (ndx == 2 && isempty (x) && szx == [0,0])
+      ## FIXME: this special case handling could be removed once sum
+      ##        compatably handles all sizes of empty inputs
+      sz_out = szx;
+      sz_out (vecdim(vecdim <= ndx)) = 1;
+      m = NaN (sz_out);
     else
 
-      ## Ignore exceeding dimensions in VECDIM
-      vecdim(find (vecdim > ndims (x))) = [];
-      ## Calculate permutation vector
-      remdims = 1 : ndx;    # all dimensions
-      remdims(vecdim) = [];     # delete dimensions specified by vecdim
-      nremd = numel (remdims);
-
-      ## If all dimensions are given, it is similar to all flag
-      if (nremd == 0)
-        x = x(:);
-        if (omitnan)
-          x = x(isnan (x));
+      if (isscalar (vecdim))
+        if (vecdim > ndx)
+          m = x;
+        else
+          n = szx(vecdim);
+          if (omitnan)
+            nanx = isnan (x);
+            n = sum (! nanx, vecdim);
+            x(nanx) = 0;
+          endif
+          m = sum (x, vecdim) ./ n;
         endif
-        m = sum (x) ./ numel (x);
 
       else
-        ## Permute to bring remaining dims forward
-        perm = [remdims, vecdim];
-        m = permute (x, perm);
-
-        ## Reshape to put all vecdims in final dimension
-        szm = size (m);
-        sznew = [szm(1:nremd), prod(szm(nremd+1:end))];
-        m = reshape (m, sznew);
-
-        ## Calculate mean on single, squashed dimension
-        dim = nremd + 1;
-        n = size (m, dim);
-        if (omitnan)
-          n = sum (! isnan (m), dim);
-          m(isnan (m)) = 0;
+        vecdim = sort (vecdim);
+        if (! all (diff (vecdim)))
+           error ("mean: VECDIM must contain non-repeating positive integers.");
         endif
-        m = sum (m, dim) ./ n;
+        ## Ignore exceeding dimensions in VECDIM
+        vecdim(find (vecdim > ndims (x))) = [];
 
-        ## Inverse permute back to correct dimensions
-        m = ipermute (m, perm);
+        if (isempty (vecdim))
+          m = x;
+        else
+          ## move vecdims to dim 1.
+
+          ## Calculate permutation vector
+          remdims = 1 : ndx;    # all dimensions
+          remdims(vecdim) = [];     # delete dimensions specified by vecdim
+          nremd = numel (remdims);
+
+          ## If all dimensions are given, it is similar to all flag
+          if (nremd == 0)
+            x = x(:);
+            if (omitnan)
+              x = x(isnan (x));
+            endif
+            m = sum (x) ./ numel (x);
+
+          else
+            ## Permute to bring vecdims to front
+            perm = [vecdim, remdims];
+            x = permute (x, perm);
+
+            ## Reshape to squash all vecdims in dim1
+            num_dim = prod (szx(vecdim));
+            szx(vecdim) = [];
+            szx = [ones(1, length(vecdim)), szx];
+            szx(1) = num_dim;
+            x = reshape (x, szx);
+
+            ## Calculate mean on dim1
+            if (omitnan)
+              nanx = isnan (x);
+              x(nanx) = 0;
+              n = sum (! nanx, 1);
+            else
+              n = szx(1);
+            endif
+            m = sum (x, 1) ./ n;
+
+            ## Inverse permute back to correct dimensions
+            m = ipermute (m, perm);
+          endif
+        endif
       endif
     endif
   endif
@@ -365,6 +387,29 @@ endfunction
 %!assert (mean ("ab"), double (97.5), eps)
 %!assert (mean ("abc", "double"), double (98))
 %!assert (mean ("abc", "default"), double (98))
+
+## Test empty inputs
+%!assert (mean ([]), NaN(1,1))
+%!assert (mean (single([])), NaN(1,1,"single"))
+%!assert (mean ([], 1), NaN(1,0))
+%!assert (mean ([], 2), NaN(0,1))
+%!assert (mean ([], 3), NaN(0,0))
+%!assert (mean (ones(1,0)), NaN(1,1))
+%!assert (mean (ones(1,0), 1), NaN(1,0))
+%!assert (mean (ones(1,0), 2), NaN(1,1))
+%!assert (mean (ones(1,0), 3), NaN(1,0))
+%!assert (mean (ones(0,1)), NaN(1,1))
+%!assert (mean (ones(0,1), 1), NaN(1,1))
+%!assert (mean (ones(0,1), 2), NaN(0,1))
+%!assert (mean (ones(0,1), 3), NaN(0,1))
+%!assert (mean (ones(0,1,0)), NaN(1,1,0))
+%!assert (mean (ones(0,1,0), 1), NaN(1,1,0))
+%!assert (mean (ones(0,1,0), 2), NaN(0,1,0))
+%!assert (mean (ones(0,1,0), 3), NaN(0,1,1))
+%!assert (mean (ones(0,0,1,0)), NaN(1,0,1,0))
+%!assert (mean (ones(0,0,1,0), 1), NaN(1,0,1,0))
+%!assert (mean (ones(0,0,1,0), 2), NaN(0,1,1,0))
+%!assert (mean (ones(0,0,1,0), 3), NaN(0,0,1,0))
 
 ## Test dimension indexing with vecdim in n-dimensional arrays
 %!test
@@ -500,8 +545,26 @@ endfunction
 %!error <Invalid call to mean.  Correct usage is> mean (1, "all", 3)
 %!error <Invalid call to mean.  Correct usage is> mean (1, "b")
 %!error <Invalid call to mean.  Correct usage is> mean (1, 1, "foo")
-%!error <mean: OUTTYPE 'native' cannot be used with char> mean ("abc", "native")
-%!error <mean: X must be either a numeric, boolean, or character> mean ({1:5})
-%!error <mean: DIM must be a positive integer> mean (1, ones (2,2))
-%!error <mean: DIM must be a positive integer> mean (1, 1.5)
-%!error <mean: DIM must be a positive integer> mean (1, 0)
+%!error <OUTTYPE 'native' cannot be used with char> mean ("abc", "native")
+%!error <X must be either a numeric, boolean, or character> mean ({1:5})
+%!error <DIM must be a positive integer> mean (1, ones (2,2))
+%!error <DIM must be a positive integer> mean (1, 1.5)
+%!error <DIM must be a positive integer> mean (1, 0)
+%!error <DIM must be a positive integer> mean (1, [])
+%!error <DIM must be a positive integer> mean (1, ones(1,0))
+%!error <VECDIM must contain non-repeating> mean (1, [2 2])
+
+
+%test
+%! x = magic (4);
+%! x([2, 9:12]) = NaN;
+%! assert (mean (a), [NaN 8.5, NaN, 8.5], eps);
+%! assert (mean (a,1), [NaN 8.5, NaN, 8.5], eps);
+%! assert (mean (a,2), NaN(4,1), eps);
+%! assert (mean (a,3), a, eps);
+%! assert (mean (a, 'omitnan'), [29/3, 8.5, NaN, 8.5], eps);
+%! assert (mean (a, 1, 'omitnan'), [29/3, 8.5, NaN, 8.5], eps);
+%! assert (mean (a, 2, 'omitnan'), [31/3; 9.5; 28/3; 25/3], eps);
+%! assert (mean (a, 3, 'omitnan'), a, eps);
+
+
