@@ -369,7 +369,7 @@ endfunction
 %! assert (mean (in, "native"), uint8 (out_u8));
 %! assert (class (mean (in, "native")), "uint8");
 
-%!test <54567> ## internal sum exceeding intmax
+%!test ## internal sum exceeding intmax
 %! in = uint8 ([3 141 141 255]);
 %! out = 135;
 %! assert (mean (in, "default"), mean (in));
@@ -378,7 +378,7 @@ endfunction
 %! assert (mean (in, "native"), uint8 (out));
 %! assert (class (mean (in, "native")), "uint8");
 
-%!test <54567>
+%!test ## fractional answer with interal sum exceeding intmax
 %! in = uint8 ([1 141 141 255]);
 %! out = 134.5;
 %! out_u8 = 135;
@@ -402,6 +402,18 @@ endfunction
 %! assert (mean (in, "default"), mean (in), eps);
 %! assert (mean (in, "default"), out, eps);
 %! assert (mean (in, "double"), out, eps);
+
+## int64 loss of precision with double conversion
+%!test <54567>
+%! in = [(intmin('int64')+5)  (intmax('int64'))-5];
+%! out_double_noerror = double (in(1)+in(2)) / 2;
+%! out_int = (in(1)+in(2)) / 2;
+%! assert (mean (in, "native"), out_int);
+%! assert (class(mean (in, "native")), "int64");
+%! assert (mean (double(in)), out_double_noerror );
+%! assert (mean (in), out_double_noerror );
+%! assert (mean (in, "default"), out_double_noerror );
+%! assert (mean (in, "double"), out_double_noerror );
 
 ## Test input and optional arguments "all", DIM, "omitnan")
 %!test
