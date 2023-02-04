@@ -241,9 +241,8 @@ function m = median (x, varargin)
       dim = 2;
       sz_out = [1, 1];
 
-    elseif (isempty (x) && isequal (szx, [0, 0]))
+    elseif (ndx == 2 && szx == [0, 0])
       ## Special case []: Do not apply sz_out(dim)=1 change
-      ##   (check isempty first to reduce overhead on non-emptys)
       dim = 1;
       sz_out = [1, 1];
 
