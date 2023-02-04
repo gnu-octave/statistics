@@ -330,6 +330,9 @@ endfunction
 %! out = 2;
 %! assert (mean (in, "default"), mean (in));
 %! assert (mean (in, "default"), out);
+%! assert (mean (in, "double"), out);
+%! assert (mean (in, "native"), out);
+
 %!test
 %! in = single ([1 2 3]);
 %! out = 2;
@@ -337,6 +340,7 @@ endfunction
 %! assert (mean (in, "default"), single (out));
 %! assert (mean (in, "double"), out);
 %! assert (mean (in, "native"), single (out));
+
 %!test
 %! in = uint8 ([1 2 3]);
 %! out = 2;
@@ -344,14 +348,62 @@ endfunction
 %! assert (mean (in, "default"), out);
 %! assert (mean (in, "double"), out);
 %! assert (mean (in, "native"), uint8 (out));
+
+%!test
+%! in = uint8 ([0 1 2 3]);
+%! out = 1.5;
+%! out_u8 = 2;
+%! assert (mean (in, "default"), mean (in), eps);
+%! assert (mean (in, "default"), out, eps);
+%! assert (mean (in, "double"), out, eps);
+%! assert (mean (in, "native"), uint8 (out_u8));
+%! assert (class (mean (in, "native")), "uint8");
+
+%!test
+%! in = uint8 ([0 1 2 3]);
+%! out = 1.5;
+%! out_u8 = 2;
+%! assert (mean (in, "default"), mean (in), eps);
+%! assert (mean (in, "default"), out, eps);
+%! assert (mean (in, "double"), out, eps);
+%! assert (mean (in, "native"), uint8 (out_u8));
+%! assert (class (mean (in, "native")), "uint8");
+
+%!test <54567> ## internal sum exceeding intmax
+%! in = uint8 ([3 141 141 255]);
+%! out = 135;
+%! assert (mean (in, "default"), mean (in));
+%! assert (mean (in, "default"), out);
+%! assert (mean (in, "double"), out);
+%! assert (mean (in, "native"), uint8 (out));
+%! assert (class (mean (in, "native")), "uint8");
+
+%!test <54567>
+%! in = uint8 ([1 141 141 255]);
+%! out = 134.5;
+%! out_u8 = 135;
+%! assert (mean (in, "default"), mean (in));
+%! assert (mean (in, "default"), out);
+%! assert (mean (in, "double"), out);
+%! assert (mean (in, "native"), uint8 (out_u8));
+%! assert (class (mean (in, "native")), "uint8");
+
 %!test
 %! in = logical ([1 0 1]);
 %! out = 2/3;
-%! assert (mean (in, "default"), mean (in));
-%! assert (mean (in, "default"), out);
-%! assert (mean (in, "native"), out);  # logical ignores native option
+%! assert (mean (in, "default"), mean (in), eps);
+%! assert (mean (in, "default"), out, eps);
+%! assert (mean (in, "double"), out, eps);
+%! assert (mean (in, "native"), out, eps);
 
-## Test single input and optional arguments "all", DIM, "omitnan")
+%!test
+%! in = char ("ab");
+%! out = 97.5;
+%! assert (mean (in, "default"), mean (in), eps);
+%! assert (mean (in, "default"), out, eps);
+%! assert (mean (in, "double"), out, eps);
+
+## Test input and optional arguments "all", DIM, "omitnan")
 %!test
 %! x = [-10:10];
 %! y = [x;x+5;x-5];
@@ -387,6 +439,19 @@ endfunction
 %!assert (mean ("ab"), double (97.5), eps)
 %!assert (mean ("abc", "double"), double (98))
 %!assert (mean ("abc", "default"), double (98))
+
+## Test NaN inputs
+%!test
+%! x = magic (4);
+%! x([2, 9:12]) = NaN;
+%! assert (mean (x), [NaN 8.5, NaN, 8.5], eps);
+%! assert (mean (x,1), [NaN 8.5, NaN, 8.5], eps);
+%! assert (mean (x,2), NaN(4,1), eps);
+%! assert (mean (x,3), x, eps);
+%! assert (mean (x, 'omitnan'), [29/3, 8.5, NaN, 8.5], eps);
+%! assert (mean (x, 1, 'omitnan'), [29/3, 8.5, NaN, 8.5], eps);
+%! assert (mean (x, 2, 'omitnan'), [31/3; 9.5; 28/3; 19/3], eps);
+%! assert (mean (x, 3, 'omitnan'), x, eps);
 
 ## Test empty inputs
 %!assert (mean ([]), NaN(1,1))
@@ -438,106 +503,6 @@ endfunction
 %! m(2,1,1,3) = 15.52301255230125;
 %! assert (mean (x, [3 2], "omitnan"), m, 4e-14);
 
-## Matlab verified outtype checks
-##double
-%!assert (mean (double ([0 1 2])), 1)
-%!assert (class (mean (double ([0 1 2]))), "double")
-%!assert (mean (double ([0 1 2]), 'double'), 1)
-%!assert (class (mean (double ([0 1 2]), 'double')), "double")
-%!assert (mean (double ([0 1 2]), 'default'), 1)
-%!assert (class (mean (double ([0 1 2]), 'default')), "double")
-%!assert (mean (double ([0 1 2]), 'native'), 1)
-%!assert (class (mean (double ([0 1 2]), 'native')), "double")
-
-##single
-%!assert (double (mean (single ([0 1 2]))), 1)
-%!assert (class (mean (single ([0 1 2]))), "single")
-%!assert (double (mean (single ([0 1 2]), 'double')), 1)
-%!assert (class (mean (single ([0 1 2]), 'double')), "double")
-%!assert (double (mean (single ([0 1 2]), 'default')), 1)
-%!assert (class (mean (single ([0 1 2]), 'default')), "single")
-%!assert (double (mean (single ([0 1 2]), 'native')), 1)
-%!assert (class (mean (single ([0 1 2]), 'native')), "single")
-
-##int8 - no out fraction
-%!assert (double (mean (int8 ([0 1 2]))), 1)
-%!assert (class (mean (int8 ([0 1 2]))), "double")
-%!assert (double (mean (int8 ([0 1 2]), 'double')), 1)
-%!assert (class (mean (int8 ([0 1 2]), 'double')), "double")
-%!assert (double (mean (int8 ([0 1 2]), 'default')), 1)
-%!assert (class (mean (int8 ([0 1 2]), 'default')), "double")
-%!assert (double (mean (int8 ([0 1 2]), 'native')), 1)
-%!assert (class (mean (int8 ([0 1 2]), 'native')), "int8")
-
-##int8 - out fraction
-%!assert (double (mean (int8 ([0 1 2 3]))), 1.5, eps)
-%!assert (class (mean (int8 ([0 1 2 3]))), "double")
-%!assert (double (mean (int8 ([0 1 2 3]), 'double')), 1.5, eps)
-%!assert (class (mean (int8 ([0 1 2 3]), 'double')), "double")
-%!assert (double (mean (int8 ([0 1 2 3]), 'default')), 1.5, eps)
-%!assert (class (mean (int8 ([0 1 2 3]), 'default')), "double")
-%!assert (double (mean (int8 ([0 1 2 3]), 'native')), 2)
-%!assert (class (mean (int8 ([0 1 2 3]), 'native')), "int8")
-
-##uint8 - no out fraction - internal sum exceeding intmax bug 54567
-%!assert (double (mean (uint8 ([3 141 141 255]))), 135)
-%!assert (class (mean (uint8 ([3 141 141 255]))), "double")
-%!assert (double (mean (uint8 ([3 141 141 255]), 'double')), 135)
-%!assert (class (mean (uint8 ([3 141 141 255]), 'double')), "double")
-%!assert (double (mean (uint8 ([3 141 141 255]), 'default')), 135)
-%!assert (class (mean (uint8 ([3 141 141 255]), 'default')), "double")
-%!assert (double (mean (uint8 ([3 141 141 255]), 'native')), 135)
-%!assert (class (mean (uint8 ([3 141 141 255]), 'native')), "uint8")
-
-##uint8 - out fraction - internal sum exceeding intmax bug 54567
-%!assert (double (mean (uint8 ([1 141 141 255]))), 134.5, eps)
-%!assert (class (mean (uint8 ([1 141 141 255]))), "double")
-%!assert (double (mean (uint8 ([1 141 141 255]), 'double')), 134.5, eps)
-%!assert (class (mean (uint8 ([1 141 141 255]), 'double')), "double")
-%!assert (double (mean (uint8 ([1 141 141 255]), 'default')), 134.5, eps)
-%!assert (class (mean (uint8 ([1 141 141 255]), 'default')), "double")
-%!assert (double (mean (uint8 ([1 141 141 255]), 'native')), 135)
-%!assert (class (mean (uint8 ([1 141 141 255]), 'native')), "uint8")
-
-##logical - no out fraction if handled internally as double
-%!assert (double (mean (logical ([0 0]))), 0)
-%!assert (class (mean (logical ([0 0]))), "double")
-%!assert (double (mean (logical ([0 0]), 'double')), 0)
-%!assert (class (mean (logical ([0 0]), 'double')), "double")
-%!assert (double (mean (logical ([0 0]), 'default')), 0)
-%!assert (class (mean (logical ([0 0]), 'default')), "double")
-%!assert (double (mean (logical ([0 0]), 'native')), 0)
-%!assert (class (mean (logical ([0 0]), 'native')), "double")
-
-##logical - out fraction if handled internally as double
-%!assert (double (mean (logical ([0 1]))), 0.5, eps)
-%!assert (class (mean (logical ([0 1]))), "double")
-%!assert (double (mean (logical ([0 1]), 'double')), 0.5, eps)
-%!assert (class (mean (logical ([0 1]), 'double')), "double")
-%!assert (double (mean (logical ([0 1]), 'default')), 0.5, eps)
-%!assert (class (mean (logical ([0 1]), 'default')), "double")
-%!assert (double (mean (logical ([0 1]), 'native')), 0.5, eps)
-%!assert (class (mean (logical ([0 1]), 'native')), "double")
-
-##char - no out fraction if handled as double
-%!assert (double (mean (char (['abc']))), 98)
-%!assert (class (mean (char (['abc']))), "double")
-%!assert (double (mean (char (['abc']), 'double')), 98)
-%!assert (class (mean (char (['abc']), 'double')), "double")
-%!assert (double (mean (char (['abc']), 'default')), 98)
-%!assert (class (mean (char (['abc']), 'default')), "double")
-%!error <mean: OUTTYPE 'native' cannot be used with char> (mean (char (['abc']), 'native'))
-
-##char - out fraction if handled as double
-%!assert (double (mean (char (['ab']))), 97.5, eps)
-%!assert (class (mean (char (['ab']))), "double")
-%!assert (double (mean (char (['ab']), 'double')), 97.5, eps)
-%!assert (class (mean (char (['ab']), 'double')), "double")
-%!assert (double (mean (char (['ab']), 'default')), 97.5, eps)
-%!assert (class (mean (char (['ab']), 'default')), "double")
-%!error <mean: OUTTYPE 'native' cannot be used with char> (mean (char (['ab']), 'native'))
-
-
 ## Test input validation
 %!error <Invalid call to mean.  Correct usage is> mean ()
 %!error <Invalid call to mean.  Correct usage is> mean (1, 2, 3)
@@ -553,18 +518,3 @@ endfunction
 %!error <DIM must be a positive integer> mean (1, [])
 %!error <DIM must be a positive integer> mean (1, ones(1,0))
 %!error <VECDIM must contain non-repeating> mean (1, [2 2])
-
-
-%test
-%! x = magic (4);
-%! x([2, 9:12]) = NaN;
-%! assert (mean (a), [NaN 8.5, NaN, 8.5], eps);
-%! assert (mean (a,1), [NaN 8.5, NaN, 8.5], eps);
-%! assert (mean (a,2), NaN(4,1), eps);
-%! assert (mean (a,3), a, eps);
-%! assert (mean (a, 'omitnan'), [29/3, 8.5, NaN, 8.5], eps);
-%! assert (mean (a, 1, 'omitnan'), [29/3, 8.5, NaN, 8.5], eps);
-%! assert (mean (a, 2, 'omitnan'), [31/3; 9.5; 28/3; 25/3], eps);
-%! assert (mean (a, 3, 'omitnan'), a, eps);
-
-
