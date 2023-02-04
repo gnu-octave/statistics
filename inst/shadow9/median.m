@@ -23,7 +23,6 @@
 ## @deftypefnx {statistics} @var{m} = median (@var{x}, @var{vecdim})
 ## @deftypefnx {statistics} @var{m} = median (@dots{}, @var{outtype})
 ## @deftypefnx {statistics} @var{m} = median (@dots{}, @var{nanflag})
-##
 ## Compute the median value of the elements of @var{x}.
 ##
 ## When the elements of @var{x} are sorted, say
@@ -101,6 +100,8 @@
 ## @end deftypefn
 
 function m = median (x, varargin)
+
+### TODO: check relative speed of using nth_element
 
   if (nargin < 1 || nargin > 4)
     print_usage ();
@@ -604,8 +605,12 @@ endfunction
 %!assert (median (uint8 ([1, 3])), uint8 (2))
 %!assert (median (uint8 ([])), uint8 (NaN))
 %!assert (median (uint8 ([NaN 10])), uint8 (5))
+%!assert <54567> (median (uint8 ([253, 255])), uint8 (254))
+%!assert <54567> (median (uint8 ([253, 254])), uint8 (254))
 %!assert (median (int8 ([1, 3, 4])), int8 (3))
 %!assert (median (int8 ([])), int8 (NaN))
+%!assert <54567> (median (int8 ([127, 126, 125, 124; 1 3 5 9])), int8 ([64 65 65 67]))
+%!assert <54567> (median (int8 ([127, 126, 125, 124; 1 3 5 9]), 2), int8 ([126; 4]))
 %!assert (median (single ([1, 3, 4])), single (3))
 %!assert (median (single ([1, 3, NaN])), single (NaN))
 
