@@ -23,7 +23,7 @@
 ## @deftypefnx {statistics} @var{y} = linkage (@var{x}, @var{method}, @var{metric})
 ## @deftypefnx {Function File} @var{y} = linkage (@var{x}, @var{method}, @var{arglist})
 ##
-## Produce a hierarchical clustering dendrogram
+## Produce a hierarchical clustering dendrogram.
 ##
 ## @var{d} is the dissimilarity matrix relative to n observations,
 ## formatted as a @math{(n-1)*n/2}x1 vector as produced by @code{pdist}.

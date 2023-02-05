@@ -19,7 +19,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} @var{dFF2} = ff2n (@var{n})
 ##
-## Two-level full factorial design
+## Two-level full factorial design.
 ##
 ## @code{@var{dFF2} = ff2n (@var{n})} gives factor settings dFF2 for a two-level
 ## full factorial design with n factors.  @var{dFF2} is m-by-n, where m is the

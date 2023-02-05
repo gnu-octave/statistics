@@ -18,7 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} [@var{A}, @var{B}, @var{r}, @var{U}, @var{V}] = canoncorr (@var{X}, @var{Y})
 ##
-## Canonical correlation analysis
+## Canonical correlation analysis.
 ##
 ## Given @var{X} (size @var{k}*@var{m}) and @var{Y} (@var{k}*@var{n}), returns
 ## projection matrices of canonical coefficients @var{A} (size @var{m}*@var{d},

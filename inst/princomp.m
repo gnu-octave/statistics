@@ -21,7 +21,7 @@
 ## @deftypefnx {statistics} [@var{COEFF}, @var{SCORE}, @var{latent}, @var{tsquare}] = princomp (@var{X})
 ## @deftypefnx {statistics} [@dots{}] = princomp (@var{X}, "econ")
 ##
-## Performs a principal component analysis on a NxP data matrix X
+## Performs a principal component analysis on a NxP data matrix X.
 ##
 ## @itemize @bullet
 ## @item
@@ -33,7 +33,8 @@
 ## @var{LATENT} : returns the principal component variances, i.e., the
 ## eigenvalues of the covariance matrix X.
 ## @item
-## @var{TSQUARE} : returns Hotelling's T-squared Statistic for each observation in X
+## @var{TSQUARE} : returns Hotelling's T-squared Statistic for each observation
+## in X
 ## @item
 ## [...] = princomp(X,'econ') returns only the elements of latent that are not
 ## necessarily zero, and the corresponding columns of COEFF and SCORE, that is,
@@ -59,7 +60,8 @@ function [COEFF, SCORE, latent, tsquare] = princomp (X, varargin)
    endif
 
    if (nargin == 2 && ! strcmpi (varargin{:}, "econ"))
-      error ("princomp: if a second input argument is present, it must be the string  'econ'");
+      error (strcat (["princomp: if a second input argument is present,"], ...
+                     [" it must be the string  'econ'."]));
    endif
 
    [nobs nvars] = size(X);
@@ -137,7 +139,8 @@ endfunction
 %! [V, lambda] = eig (R);
 %! [~, i] = sort(diag(lambda), "descend"); #arrange largest PC first
 %! S = V(:, i) * diag(sqrt(diag(lambda)(i)));
-%!assert(diag(S(:, 1:2)*S(:, 1:2)'), [0.8662; 0.8420; 0.9876], 1E-4); #contribution of first 2 PCs to each original variable
+%! ## contribution of first 2 PCs to each original variable
+%!assert(diag(S(:, 1:2)*S(:, 1:2)'), [0.8662; 0.8420; 0.9876], 1E-4);
 %! B = V(:, i) * diag( 1./ sqrt(diag(lambda)(i)));
 %! F = zscore(x)*B;
 %! [COEFF,SCORE,latent,tsquare] = princomp(zscore(x, 1));

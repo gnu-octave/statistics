@@ -22,7 +22,7 @@
 ## @deftypefnx {statistics} [@var{coeff}, @var{score}, @var{latent}, @var{tsquared}] = pca(@dots{})
 ## @deftypefnx {statistics} [@var{coeff}, @var{score}, @var{latent}, @var{tsquared}, @var{explained}, @var{mu}] = pca(@dots{})
 ##
-## Performs a principal component analysis on a data matrix X
+## Performs a principal component analysis on a data matrix X.
 ##
 ## A principal component analysis of a data matrix of @code{n} observations in a
 ## @code{p}-dimensional space returns a @code{p}-by-@code{p} transformation
