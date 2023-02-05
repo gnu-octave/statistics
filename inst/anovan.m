@@ -361,7 +361,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     endif
     if (nvarnames != N)
       error (strcat (["anovan: number of variable names is not equal"], ...
-                     ["  to number of grouping variables"]));
+                     [" to the number of grouping variables"]));
     endif
 
     ## Evaluate random argument (if applicable)
