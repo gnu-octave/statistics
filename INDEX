@@ -1,7 +1,4 @@
 statistics >> Statistics
-Categorical data
- grp2idx
- grpstats
 Clustering
  cluster
  clusterdata
@@ -30,11 +27,13 @@ Classification Performance Evaluation
 Data
  combnk
  datasample
+ grp2idx
  tabulate
 Descriptive statistics
  combnk
  dcov
  geomean
+ grpstats
  harmmean
  jackknife
  mean
