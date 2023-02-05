@@ -1,9 +1,7 @@
 statistics >> Statistics
 Clustering
  cluster
- clusterdata
  cmdscale
- confusionchart
  confusionmat
  cophenet
  evalclusters
@@ -11,10 +9,12 @@ Clustering
  kmeans
  linkage
  mahal
+ mhsample
  optimalleaforder
  pdist
  pdist2
  squareform
+ slicesample
 CVpartition (class of set partitions for cross-validation, used in crossval)
  @cvpartition/cvpartition
  @cvpartition/display
@@ -126,6 +126,7 @@ Distribution Statistics
 Experimental Design
  fullfact
  ff2n
+ sigma_pts
  x2fx
 Model Fitting
  crossval
@@ -149,6 +150,7 @@ Hypothesis Testing
  kstest2
  levene_test
  manova1
+ multcompare
  ranksum
  regression_ftest
  regression_ttest
@@ -168,9 +170,6 @@ Machine Learning
  hmmestimate
  hmmgenerate
  hmmviterbi
- mhsample
- sigma_pts
- slicesample
  svmpredict
  svmtrain
 Plotting
@@ -183,7 +182,6 @@ Plotting
  histfit
  hist3
  manovacluster
- multcompare
  normplot
  ppplot
  qqplot
@@ -192,6 +190,7 @@ Plotting
  wblplot
 Regression
  canoncorr
+ cholcov
  dcov
  logistic_regression
  monotone_smooth
@@ -205,6 +204,6 @@ Regression
  stepwisefit
 Wrappers
  cdf
- cholcov
+ clusterdata
  pdf
  random
