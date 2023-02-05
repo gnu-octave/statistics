@@ -406,11 +406,11 @@ endfunction
 ## int64 loss of precision with double conversion
 %!test <54567>
 %! in = [(intmin('int64')+5)  (intmax('int64'))-5];
-%! out_double_noerror = double (in(1)+in(2)) / 2;
-%! out_int = (in(1)+in(2)) / 2;
+%! out_double_noerror = -0.5;
+%! out_int = -1;
 %! assert (mean (in, "native"), out_int);
 %! assert (class(mean (in, "native")), "int64");
-%! assert (mean (double(in)), out_double_noerror );
+%! assert (mean (double(in)), 0 );
 %! assert (mean (in), out_double_noerror );
 %! assert (mean (in, "default"), out_double_noerror );
 %! assert (mean (in, "double"), out_double_noerror );
