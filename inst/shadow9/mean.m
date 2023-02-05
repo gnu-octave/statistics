@@ -515,6 +515,11 @@ endfunction
 %! m(2,1,1,3) = 15.52301255230125;
 %! assert (mean (x, [3 2], "omitnan"), m, 4e-14);
 
+## Test input case insensitivity
+%!assert (mean ([1 2 3], "aLL"), 2);
+%!assert (mean ([1 2 3], "OmitNan"), 2);
+%!assert (mean ([1 2 3], "DOUBle"), 2);
+
 ## Test input validation
 %!error <Invalid call to mean.  Correct usage is> mean ()
 %!error <Invalid call to mean.  Correct usage is> mean (1, 2, 3)
