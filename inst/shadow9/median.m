@@ -101,8 +101,6 @@
 
 function m = median (x, varargin)
 
-### TODO: check relative speed of using nth_element
-
   if (nargin < 1 || nargin > 4)
     print_usage ();
   endif
@@ -307,13 +305,14 @@ function m = median (x, varargin)
   endif
 
   ## Find column locations of NaNs
-  hasnan = any (isnan (x), dim);
-  if (! hasnan(:) && omitnan)
-    ## Don't use omitnan path if no NaNs are present
+  nanfree = ! any (isnan (x), dim);
+  if (omitnan && nanfree(:))
+    ## Don't use omitnan path if no NaNs are present. Prevents any data types
+    ## without a defined NaN from following the omitnan codepath.
     omitnan = 0;
   endif
 
-  x = sort (x, dim); # Note- pushes any NaN's to end
+  x = sort (x, dim); # Note: pushes any NaN's to end for omitnan compatability
 
   if (omitnan)
     ## Ignore any NaN's in data. Each operating vector might have a
@@ -357,17 +356,24 @@ function m = median (x, varargin)
 
   else
     ## No "omitnan". All 'vectors' uniform length.
-    if (! all (hasnan))
-
+    ## All types without a NaN value will use this path.
+    if (all (!nanfree))
+      m = NaN (sz_out);
+    else
       if (isvector (x))
         n = length (x);
         k = floor ((n + 1) / 2);
-        if (mod (n, 2))
-          ## Odd
-          m = x(k);
-        else
+
+        m = x(k);
+        if (! mod (n, 2))
           ## Even
-          m = (x(k) + x(k + 1)) / 2;
+          if (any (isa (x, {"int64", "uint64"})))
+            ## Avoid loss of accuracy doing int64 addition as doubles
+            m = sum (x([k : k+1]), "native") / 2;
+          else
+            ## Avoid simple addition and integer overflow not handled by sum
+            m += (x(k+1) - m) / 2;
+          endif
         endif
 
       else
@@ -375,19 +381,21 @@ function m = median (x, varargin)
         n = szx(1);
         k = floor ((n + 1) / 2);
         m = NaN ([1, szx(2 : end)]);
-        if (mod (n, 2))
-          ## Odd
-          m(1, :) = x(k, :);
-        else
+
+        ## Use flattened index to simplify n-D operations
+        m(1, nanfree) = x(k, nanfree);
+
+        if (! mod (n, 2))
           ## Even
-          m(1, :) = (x(k, :) + x(k + 1, :)) / 2;
+          if (any (isa (x, {"int64", "uint64"})))
+            ## Avoid loss of accuracy doing int64 addition as doubles
+            m(1, nanfree) = sum (x([k : k+1], nanfree), "native") / 2;
+          else
+            ## Avoid simple addition and integer overflow not handled by sum
+            m(1, nanfree) += (x(k + 1, nanfree) - m(1,nanfree)) / 2;
+          endif
         endif
       endif
-      if (any (hasnan(:)))
-        m(hasnan) = NaN;
-      endif
-    else
-      m = NaN (sz_out);
     endif
   endif
 
@@ -605,14 +613,44 @@ endfunction
 %!assert (median (uint8 ([1, 3])), uint8 (2))
 %!assert (median (uint8 ([])), uint8 (NaN))
 %!assert (median (uint8 ([NaN 10])), uint8 (5))
-%!assert <54567> (median (uint8 ([253, 255])), uint8 (254))
-%!assert <54567> (median (uint8 ([253, 254])), uint8 (254))
 %!assert (median (int8 ([1, 3, 4])), int8 (3))
 %!assert (median (int8 ([])), int8 (NaN))
-%!assert <54567> (median (int8 ([127, 126, 125, 124; 1 3 5 9])), int8 ([64 65 65 67]))
-%!assert <54567> (median (int8 ([127, 126, 125, 124; 1 3 5 9]), 2), int8 ([126; 4]))
 %!assert (median (single ([1, 3, 4])), single (3))
 %!assert (median (single ([1, 3, NaN])), single (NaN))
+
+## Test int overflow when getting mean of middle values
+%!assert <54567> (median (uint8 ([253, 255])), uint8 (254))
+%!assert <54567> (median (uint8 ([253, 254])), uint8 (254))
+%!assert <54567> (median (int8 ([127, 126, 125, 124; 1 3 5 9])), ...
+%!                  int8 ([64 65 65 67]))
+%!assert <54567> (median (int8 ([127, 126, 125, 124; 1 3 5 9]), 2), ...
+%!                  int8 ([126; 4]))
+%!assert <54567> (median (int64 ([intmax("int64"), intmax("int64")-2])), ...
+%!                  intmax ("int64") - 1)
+%!assert <54567> (median ( ...
+%!                 int64 ([intmax("int64"), intmax("int64")-2; 1 2]), 2), ...
+%!                 int64([intmax("int64") - 1; 2]))
+%!assert <54567> (median (uint64 ([intmax("uint64"), intmax("uint64")-2])), ...
+%!                  intmax ("uint64") - 1)
+%!assert <54567> (median ( ...
+%!                 uint64 ([intmax("uint64"), intmax("uint64")-2; 1 2]), 2), ...
+%!                 uint64([intmax("uint64") - 1; 2]))
+
+##for copy/past to matlab
+##isequaln (median (int64 ([intmax("int64"), intmax("int64")-2])), intmax ("int64") - 1)
+##isequaln (median ( int64 ([intmax("int64"), intmax("int64")-2; 1 2]), 2), int64([intmax("int64") - 1; 2]))
+##isequaln (median (uint64 ([intmax("uint64"), intmax("uint64")-2])), intmax ("uint64") - 1)
+##isequaln (median (uint64 ([intmax("uint64"), intmax("uint64")-2; 1 2]), 2), uint64([intmax("uint64") - 1; 2]))
+##isequaln (median ([intmin('int64') intmin('int64')+5 intmax('int64')-5 intmax('int64')]), int64(-1))
+##isequaln (median ([int64([1 2 3 4]); intmin('int64') intmin('int64')+5 intmax('int64')-5 intmax('int64')], 2), int64([3;-1]))
+
+## Test int accuracy loss doing mean of int64/uint64 values
+%!assert <54567> (median (...
+%!  [intmin('int64') intmin('int64')+5 intmax('int64')-5 intmax('int64')]), ...
+%!  int64(-1))
+%!assert <54567> (median ([int64([1 2 3 4]); ...
+%! intmin('int64') intmin('int64')+5 intmax('int64')-5 intmax('int64')], 2), ...
+%! int64([3;-1]))
 
 ## Test input case insensitivity
 %!assert (median ([1 2 3], "aLL"), 2);
