@@ -348,14 +348,16 @@ function m = median (x, varargin)
       endif
 
       ## Grab kth value, k possibly different for each column
-      x_idx_odd = sub2ind (szx, (k(m_idx_odd))(:).', ...
-                             (1 : szx(2))(m_idx_odd)(:).');
-      x_idx_even = sub2ind (szx, ...
-                           [(k(m_idx_even))(:).'; (k(m_idx_even) + 1)(:).'], ...
-                             (1 : szx(2))(m_idx_even)([1 1], :));
-
-      m(m_idx_odd) = x(x_idx_odd);
-      m(m_idx_even) = sum (x(x_idx_even), 1) / 2;
+      if (any (m_idx_odd(:)))
+        x_idx_odd = sub2ind (szx, k(m_idx_odd), find (m_idx_odd));
+        m(m_idx_odd) = x(x_idx_odd);
+      endif
+      if (any (m_idx_even(:)))
+        k_even = k(m_idx_even)(:);
+        x_idx_even = sub2ind (szx, [k_even, k_even+1], ...
+                                (find (m_idx_even))(:,[1 1]));
+        m(m_idx_even) = sum (x(x_idx_even), 2) / 2;
+      endif
     endif
 
   else
