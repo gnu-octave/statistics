@@ -14,11 +14,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{mu} = expfit (@var{s})
-## @deftypefnx {statistics} [@var{mu}, @var{ci}] = expfit (@var{s})
-## @deftypefnx {statistics} [@var{mu}, @var{ci}] = expfit (@var{s}, @var{alpha})
-## @deftypefnx {statistics} @dots{} = expfit (@var{s}, @var{alpha}, @var{c})
-## @deftypefnx {statistics} @dots{} = expfit (@var{s}, @var{alpha}, @var{c}, @var{f})
+## @deftypefn  {statistics} {@var{mu} =} expfit (@var{s})
+## @deftypefnx {statistics} {[@var{mu}, @var{ci}] =} expfit (@var{s})
+## @deftypefnx {statistics} {[@var{mu}, @var{ci}] =} expfit (@var{s}, @var{alpha})
+## @deftypefnx {statistics} {@dots{} =} expfit (@var{s}, @var{alpha}, @var{c})
+## @deftypefnx {statistics} {@dots{} =} expfit (@var{s}, @var{alpha}, @var{c}, @var{f})
 ##
 ## Estimate the mean of the exponential probability distribution function from
 ## which sample data @var{s} has been taken.  @var{s} is expected to be a
@@ -55,10 +55,8 @@
 ## can be used with arrays of any size, whereas Matlab only allows their use
 ## when @var{s} is a vector.
 ##
+## @seealso{expcdf, expinv, explpdf, exprnd, explike, expstat}
 ## @end deftypefn
-##
-## @seealso{expcdf, expinv, explike, exppdf, exprnd, expstat}
-## @seealso{expstat, exprnd, expcdf, expinv}
 
 function [m, v] = expfit (s, alpha = 0.05, c = [], f = [])
 

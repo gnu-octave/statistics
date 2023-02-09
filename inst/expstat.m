@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{m}, @var{v}] = expstat (@var{l})
+## @deftypefn  {statistics} {[@var{m}, @var{v}] =} expstat (@var{l})
 ##
 ## Compute mean and variance of the exponential distribution.
 ##
@@ -59,11 +59,9 @@
 ## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
 ## Processes}. McGraw-Hill, New York, second edition, 1984.
 ## @end enumerate
-## @seealso{expcdf, expfit, expinv, explike, exppdf, exprnd}
+##
+## @seealso{expcdf, expfit, expinv, exprnd, expfit, explike}
 ## @end deftypefn
-
-## Author: Arno Onken <asnelt@asnelt.org>
-## Description: Moments of the exponential distribution
 
 function [m, v] = expstat (l)
 
