@@ -1,6 +1,7 @@
 statistics >> Statistics
 Clustering
  cluster
+ clusterdata
  cmdscale
  confusionmat
  cophenet
@@ -204,6 +205,5 @@ Regression
  stepwisefit
 Wrappers
  cdf
- clusterdata
  pdf
  random
