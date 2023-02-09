@@ -276,6 +276,10 @@ function m = median (x, varargin)
   endif
 
   ## Permute dim to simplify all operations along dim1.  At func. end ipermute.
+
+  ## FIXME: for very large data sets, flattening all vecdim dimensions into dim1
+  ##        could hit index type limits
+
   if ((length (dim) > 1) || (dim != 1 && ! isvector (x)))
     perm_vect = 1 : ndx;
 
@@ -344,11 +348,11 @@ function m = median (x, varargin)
       endif
 
       ## Grab kth value, k possibly different for each column
-      x_idx_odd = sub2ind (szx, (k(m_idx_odd))(:)', ...
-                             (1 : szx(2))(m_idx_odd)(:)');
+      x_idx_odd = sub2ind (szx, (k(m_idx_odd))(:).', ...
+                             (1 : szx(2))(m_idx_odd)(:).');
       x_idx_even = sub2ind (szx, ...
-                             [(k(m_idx_even))(:)'; (k(m_idx_even) + 1)(:)'], ...
-                               (1 : szx(2))(m_idx_even)([1 1], :));
+                           [(k(m_idx_even))(:).'; (k(m_idx_even) + 1)(:).'], ...
+                             (1 : szx(2))(m_idx_even)([1 1], :));
 
       m(m_idx_odd) = x(x_idx_odd);
       m(m_idx_even) = sum (x(x_idx_even), 1) / 2;
@@ -359,6 +363,7 @@ function m = median (x, varargin)
     ## All types without a NaN value will use this path.
     if (all (!nanfree))
       m = NaN (sz_out);
+
     else
       if (isvector (x))
         n = length (x);
@@ -367,11 +372,16 @@ function m = median (x, varargin)
         m = x(k);
         if (! mod (n, 2))
           ## Even
-          if (any (isa (x, {"int64", "uint64"})))
-            ## Avoid loss of accuracy doing int64 addition as doubles
-            m = sum (x([k : k+1]), "native") / 2;
+          if (any (isa (x, "integer")))
+            ## avoid int overflow issues
+            m2 = x(k+1);
+            if (sign(m) != sign(m2))
+              m += m2;
+              m /= 2;
+            else
+              m += (m2 - m) / 2;
+            endif
           else
-            ## Avoid simple addition and integer overflow not handled by sum
             m += (x(k+1) - m) / 2;
           endif
         endif
@@ -380,20 +390,32 @@ function m = median (x, varargin)
         ## Nonvector, all operations permuted to be along dim 1
         n = szx(1);
         k = floor ((n + 1) / 2);
-        m = NaN ([1, szx(2 : end)]);
 
-        ## Use flattened index to simplify n-D operations
-        m(1, nanfree) = x(k, nanfree);
+        if (isfloat (x))
+          m = NaN ([1, szx(2 : end)]);
+        else
+          m = zeros ([1, szx(2 : end)], outtype);
+        endif
 
         if (! mod (n, 2))
           ## Even
-          if (any (isa (x, {"int64", "uint64"})))
-            ## Avoid loss of accuracy doing int64 addition as doubles
-            m(1, nanfree) = sum (x([k : k+1], nanfree), "native") / 2;
+          if (any (isa(x, "integer")))
+            ## avoid int overflow issues
+
+            ## Use flattened index to simplify n-D operations
+            m(1,:) = x(k, :);
+            m2 = x(k+1, :);
+
+            samesign = prod (sign ([m(1,:); m2]), 1) == 1;
+            m(1,:) = samesign .* m(1,:) + ...
+                       (m2 + !samesign .* m(1,:) - samesign .* m(1,:)) / 2;
+
           else
-            ## Avoid simple addition and integer overflow not handled by sum
-            m(1, nanfree) += (x(k + 1, nanfree) - m(1,nanfree)) / 2;
+            m(nanfree) = (x(k, nanfree) + x(k+1, nanfree)) / 2;
           endif
+        else
+          ## Use flattened index to simplify n-D operations
+          m(nanfree) = x(k, nanfree);
         endif
       endif
     endif
@@ -619,6 +641,9 @@ endfunction
 %!assert (median (single ([1, 3, NaN])), single (NaN))
 
 ## Test int overflow when getting mean of middle values
+##    all fixed by min+(max-min)/2 assuming proper rounding.  All but int64s
+##    could be fixed by processing as doubles, but int64s lose precision for
+##    very close large values.
 %!assert <54567> (median (uint8 ([253, 255])), uint8 (254))
 %!assert <54567> (median (uint8 ([253, 254])), uint8 (254))
 %!assert <54567> (median (int8 ([127, 126, 125, 124; 1 3 5 9])), ...
@@ -636,21 +661,26 @@ endfunction
 %!                 uint64 ([intmax("uint64"), intmax("uint64")-2; 1 2]), 2), ...
 %!                 uint64([intmax("uint64") - 1; 2]))
 
-##for copy/past to matlab
-##isequaln (median (int64 ([intmax("int64"), intmax("int64")-2])), intmax ("int64") - 1)
-##isequaln (median ( int64 ([intmax("int64"), intmax("int64")-2; 1 2]), 2), int64([intmax("int64") - 1; 2]))
-##isequaln (median (uint64 ([intmax("uint64"), intmax("uint64")-2])), intmax ("uint64") - 1)
-##isequaln (median (uint64 ([intmax("uint64"), intmax("uint64")-2; 1 2]), 2), uint64([intmax("uint64") - 1; 2]))
-##isequaln (median ([intmin('int64') intmin('int64')+5 intmax('int64')-5 intmax('int64')]), int64(-1))
-##isequaln (median ([int64([1 2 3 4]); intmin('int64') intmin('int64')+5 intmax('int64')-5 intmax('int64')], 2), int64([3;-1]))
-
-## Test int accuracy loss doing mean of int64/uint64 values
+##    Neg sign breaks min+(max-min)/2. wolud work fine if just (min+max)/2
+##    again, applies to all ints, but int64s only ones can't be fixed by doubles
 %!assert <54567> (median (...
-%!  [intmin('int64') intmin('int64')+5 intmax('int64')-5 intmax('int64')]), ...
-%!  int64(-1))
+%! [intmin('int8') intmin('int8')+5 intmax('int8')-5 intmax('int8')]), ...
+%! int8(-1))
+%!assert <54567> (median ([int8([1 2 3 4]); ...
+%! intmin('int8') intmin('int8')+5 intmax('int8')-5 intmax('int8')], 2), ...
+%! int8([3;-1]))
+%!assert <54567> (median (...
+%! [intmin('int64') intmin('int64')+5 intmax('int64')-5 intmax('int64')]), ...
+%! int64(-1))
 %!assert <54567> (median ([int64([1 2 3 4]); ...
 %! intmin('int64') intmin('int64')+5 intmax('int64')-5 intmax('int64')], 2), ...
 %! int64([3;-1]))
+
+## Test int accuracy loss doing mean of int64/uint64 values as double
+##    as doubles, using standard (min+max)/2 with proper rounding. rounding
+##    becomes problematic if using (min/2 + max/2) to try to solve both, and
+##    runs into double precision issues if handling that way.
+
 
 ## Test input case insensitivity
 %!assert (median ([1 2 3], "aLL"), 2);
