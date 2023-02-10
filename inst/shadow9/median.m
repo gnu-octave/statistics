@@ -642,10 +642,7 @@ endfunction
 %!assert (median (single ([1, 3, 4])), single (3))
 %!assert (median (single ([1, 3, NaN])), single (NaN))
 
-## Test int overflow when getting mean of middle values
-##    all fixed by min+(max-min)/2 assuming proper rounding.  All but int64s
-##    could be fixed by processing as doubles, but int64s lose precision for
-##    very close large values.
+## Test same sign int overflow when getting mean of even number of values
 %!assert <54567> (median (uint8 ([253, 255])), uint8 (254))
 %!assert <54567> (median (uint8 ([253, 254])), uint8 (254))
 %!assert <54567> (median (int8 ([127, 126, 125, 124; 1 3 5 9])), ...
@@ -663,8 +660,7 @@ endfunction
 %!                 uint64 ([intmax("uint64"), intmax("uint64")-2; 1 2]), 2), ...
 %!                 uint64([intmax("uint64") - 1; 2]))
 
-##    Neg sign breaks min+(max-min)/2. wolud work fine if just (min+max)/2
-##    again, applies to all ints, but int64s only ones can't be fixed by doubles
+## Test opposite sign int overflow when getting mean of even number of values
 %!assert <54567> (median (...
 %! [intmin('int8') intmin('int8')+5 intmax('int8')-5 intmax('int8')]), ...
 %! int8(-1))
@@ -678,11 +674,15 @@ endfunction
 %! intmin('int64') intmin('int64')+5 intmax('int64')-5 intmax('int64')], 2), ...
 %! int64([3;-1]))
 
-## Test int accuracy loss doing mean of int64/uint64 values as double
-##    as doubles, using standard (min+max)/2 with proper rounding. rounding
-##    becomes problematic if using (min/2 + max/2) to try to solve both, and
-##    runs into double precision issues if handling that way.
-
+## Test int accuracy loss doing mean of close int64/uint64 values as double
+%!assert <54567> (median ([intmax("uint64"), intmax("uint64")-2]), ...
+%!  intmax("uint64")-1)
+%!assert <54567> (median ([intmax("uint64"), intmax("uint64")-2], "default"), ...
+%!  double(intmax("uint64")-1))
+%!assert <54567> (median ([intmax("uint64"), intmax("uint64")-2], "double"), ...
+%!  double(intmax("uint64")-1))
+%!assert <54567> (median ([intmax("uint64"), intmax("uint64")-2], "native"), ...
+%!  intmax("uint64")-1)
 
 ## Test input case insensitivity
 %!assert (median ([1 2 3], "aLL"), 2);
