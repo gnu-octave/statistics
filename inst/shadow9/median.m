@@ -389,7 +389,7 @@ function m = median (x, varargin)
         endif
 
       else
-        ## Nonvector, all operations permuted to be along dim 1
+        ## Nonvector, all operations were permuted to be along dim 1
         n = szx(1);
         k = floor ((n + 1) / 2);
 
@@ -416,7 +416,7 @@ function m = median (x, varargin)
             m(nanfree) = (x(k, nanfree) + x(k+1, nanfree)) / 2;
           endif
         else
-          ## Use flattened index to simplify n-D operations
+          ## Odd. Use flattened index to simplify n-D operations
           m(nanfree) = x(k, nanfree);
         endif
       endif

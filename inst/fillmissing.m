@@ -1396,10 +1396,10 @@ function med = columnwise_median (x)
   ## of what's left.  returns NaN if no values.
   ## uses only built-in fns to avoid 3x 'median' slowdown
 
-  sz_x = size (x);
+  szx = size (x);
 
   if (isempty (x))
-    med = NaN ([1, sz_x(2:end)]);
+    med = NaN ([1, szx(2:end)]);
 
   elseif (isvector (x))
     x = x(! isnan (x));
@@ -1419,27 +1419,27 @@ function med = columnwise_median (x)
   else
     x = sort (x, 1); # NaNs sent to bottom
     n = sum (! isnan (x), 1);
-    odd = logical (mod (n, 2)); # 0 even or zero, 1 odd
-    even = !odd & (n != 0);
+    m_idx_odd = logical (mod (n, 2)); # 0 even or zero, 1 odd
+    m_idx_even = !m_idx_odd & (n != 0);
+    k = floor ((n + 1) ./ 2);
 
-    if (ismatrix (x))
-      med = NaN ([1, sz_x(2)]);
-      med_idx_odd = sub2ind (sz_x, (n(odd)+1)/2, (1 : sz_x(2))(odd));
-      med_idx_even = sub2ind (sz_x, [n(even)/2; n(even)/2 + 1], ...
-                                  (1 : sz_x(2))(even)([1 1], :));
+    med = NaN ([1, szx(2:end)]);
 
-    else #nD arrays
-      sz_x_flat = [sz_x(1), prod(sz_x(2:end))];
-      med = NaN ([1, sz_x(2:end)]);
-      med_idx_odd = sub2ind (sz_x_flat, ...
-                      ((n(odd)+1)/2)(:)', (1 : sz_x_flat(2))(odd)(:)');
-      med_idx_even = sub2ind (sz_x_flat, ...
-                                [(n(even)/2)(:)'; (n(even)/2 + 1)(:)'], ...
-                                   (1 : sz_x_flat(2))(even)([1 1], :));
+    if (! ismatrix (x))
+      szx = [szx(1), prod(szx(2:end))];
     endif
 
-    med(odd) = x(med_idx_odd);
-    med(even) = sum (x(med_idx_even), 1) / 2;
+    if any (m_idx_odd(:))
+      x_idx_odd = sub2ind (szx, k(m_idx_odd)(:), find(m_idx_odd)(:));;
+      med(m_idx_odd) = x(x_idx_odd);
+    endif
+
+    if any (m_idx_even(:))
+      k_even = k(m_idx_even)(:);
+      x_idx_even = sub2ind (szx, [k_even, k_even+1], ...
+                                (find (m_idx_even))(:,[1 1]));;
+      med(m_idx_even) = sum (x(x_idx_even), 2) / 2;
+    endif
   endif
 
 endfunction
