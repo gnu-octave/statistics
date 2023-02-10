@@ -402,16 +402,18 @@ endfunction
 %! assert (mean (in, "double"), out, eps);
 
 ## int64 loss of precision with double conversion
-%!test <54567>
-%! in = [(intmin('int64')+5)  (intmax('int64'))-5];
-%! out_double_noerror = -0.5;
-%! out_int = -1;
-%! assert (mean (in, "native"), out_int);
-%! assert (class(mean (in, "native")), "int64");
-%! assert (mean (double(in)), 0 );
-%! assert (mean (in), out_double_noerror );
-%! assert (mean (in, "default"), out_double_noerror );
-%! assert (mean (in, "double"), out_double_noerror );
+%!assert <54567> (mean (
+%!           [(intmin('int64')+5), (intmax('int64'))-5], "native"), int64(-1));
+%!assert (class(mean (...
+%!            [(intmin('int64')+5), (intmax('int64'))-5], "native")), "int64");
+%!assert (mean (...
+%!            double([(intmin('int64')+5), (intmax('int64'))-5])), double(0) );
+%!assert <54567> (mean (...
+%!            [(intmin('int64')+5), (intmax('int64'))-5]), double(-0.5) );
+%!assert <54567> (mean (...
+%!      [(intmin('int64')+5), (intmax('int64'))-5], "default"), double(-0.5) );
+%!assert <54567> (mean (...
+%!       [(intmin('int64')+5), (intmax('int64'))-5], "double"), double(-0.5) );
 
 ## Test input and optional arguments "all", DIM, "omitnan")
 %!test
