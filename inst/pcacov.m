@@ -19,11 +19,11 @@
 ## @deftypefnx {statistics} [@var{COEFF},@var{latent}] = pcacov(@var{X})
 ## @deftypefnx {statistics} [@var{COEFF},@var{latent},@var{explained}] = pcacov(@var{X})
 ##
-## Perform principal component analysis on the nxn covariance matrix X
+## Perform principal component analysis on the NxN covariance matrix X.
 ##
 ## @itemize @bullet
 ## @item
-## @var{COEFF} : a nxn matrix with columns containing the principal component coefficients
+## @var{COEFF} : a NxN matrix with columns containing the principal component coefficients
 ## @item
 ## @var{latent} : a vector containing the principal component variances
 ## @item

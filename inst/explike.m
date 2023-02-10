@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{nlogL}, @var{avar}] = explike (@var{param}, @var{data})
+## @deftypefn  {statistics} {[@var{nlogL}, @var{avar}] =} explike (@var{param}, @var{data})
 ##
 ## Compute the negative log-likelihood of data under the exponential
 ## distribution with given parameter value.
@@ -44,7 +44,7 @@
 ##
 ## @end itemize
 ##
-## @seealso{expcdf, expfit, expinv, explike, exppdf, exprnd}
+## @seealso{expcdf, expinv, exppdf, exprnd, expfit, expstat}
 ## @end deftypefn
 
 function [nlogL, avar] = explike (param, data)

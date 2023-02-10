@@ -28,7 +28,7 @@
 ## @deftypefnx {statistics} [@dots{}] = kmeans (@var{data}, @var{k}, @var{param1}, @var{value1}, @dots{})
 ## @deftypefnx {statistics} [@dots{}] = kmeans (@var{data}, [], @qcode{"start"}, @var{start}, @dots{})
 ##
-## Perform a @var{k}-means clustering of the @var{N}x@var{D} table @var{data}.
+## Perform a @var{k}-means clustering of the @var{N}x@var{D} matrix @var{data}.
 ##
 ## If parameter @qcode{"start"} is specified, then @var{k} may be empty
 ## in which case @var{k} is set to the number of rows of @var{start}.

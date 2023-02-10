@@ -3,16 +3,19 @@ Clustering
  cluster
  clusterdata
  cmdscale
+ confusionmat
  cophenet
  evalclusters
  inconsistent
  kmeans
  linkage
  mahal
+ mhsample
  optimalleaforder
  pdist
  pdist2
  squareform
+ slicesample
 CVpartition (class of set partitions for cross-validation, used in crossval)
  @cvpartition/cvpartition
  @cvpartition/display
@@ -21,17 +24,13 @@ CVpartition (class of set partitions for cross-validation, used in crossval)
  @cvpartition/set
  @cvpartition/test
  @cvpartition/training
-Classification Performance Evaluation
- confusionchart
- confusionmat
-Data
+Data Manipulation
  combnk
+ crosstab
  datasample
  grp2idx
  tabulate
-Descriptive statistics
- combnk
- dcov
+Descriptive Statistics
  geomean
  grpstats
  harmmean
@@ -87,7 +86,7 @@ Distributions
  wblcdf wblinv wblpdf wblrnd
  wienrnd
  wishpdf wishrnd
-Distribution fitting
+Distribution Fitting
  cdfcalc
  evfit
  evlike
@@ -101,7 +100,7 @@ Distribution fitting
  gpfit
  gplike
  normlike
-Distribution statistics
+Distribution Statistics
  betastat
  binostat
  chi2stat
@@ -125,14 +124,16 @@ Distribution statistics
  unidstat
  unifstat
  wblstat
-Experimental design
+Experimental Design
  fullfact
  ff2n
+ sigma_pts
  x2fx
 Model Fitting
+ crossval
  fitgmdist
  fitlm
-Hypothesis testing
+Hypothesis Testing
  adtest
  anova1
  anova2
@@ -142,7 +143,6 @@ Hypothesis testing
  binotest
  chi2gof
  chi2test
- fishertest
  friedman
  hotelling_t2test
  hotelling_t2test2
@@ -151,10 +151,12 @@ Hypothesis testing
  kstest2
  levene_test
  manova1
+ multcompare
  ranksum
  regression_ftest
  regression_ttest
  runstest
+ sampsizepwr
  signtest
  ttest
  ttest2
@@ -165,16 +167,13 @@ Hypothesis testing
 I/O
  libsvmread
  libsvmwrite
-Models
+Machine Learning
  hmmestimate
  hmmgenerate
  hmmviterbi
- mhsample
- sigma_pts
- slicesample
  svmpredict
  svmtrain
-Plots
+Plotting
  boxplot
  cdfplot
  confusionchart
@@ -184,7 +183,6 @@ Plots
  histfit
  hist3
  manovacluster
- multcompare
  normplot
  ppplot
  qqplot
@@ -193,7 +191,8 @@ Plots
  wblplot
 Regression
  canoncorr
- crossval
+ cholcov
+ dcov
  logistic_regression
  monotone_smooth
  pca
@@ -206,6 +205,5 @@ Regression
  stepwisefit
 Wrappers
  cdf
- cholcov
  pdf
  random

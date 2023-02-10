@@ -17,7 +17,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} [@var{residuals}, @var{reconstructed}] = pcares (@var{X}, @var{NDIM})
 ##
-## Calulate residuals from principal component analysis
+## Calculate residuals from principal component analysis.
 ##
 ## @itemize @bullet
 ## @item
