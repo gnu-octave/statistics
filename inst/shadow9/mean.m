@@ -1,5 +1,6 @@
 ## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2022 Kai Torben Ohlhus <k.ohlhus@gmail.com>
+## Copyright (C) 2023 Nick Jankowski
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,12 +18,13 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{m} = mean (@var{x})
-## @deftypefnx {statistics} @var{m} = mean (@var{x}, "all")
-## @deftypefnx {statistics} @var{m} = mean (@var{x}, @var{dim})
-## @deftypefnx {statistics} @var{m} = mean (@var{x}, @var{vecdim})
-## @deftypefnx {statistics} @var{m} = mean (@dots{}, @var{outtype})
-## @deftypefnx {statistics} @var{m} = mean (@dots{}, @var{nanflag})
+## @deftypefn  {statistics} {@var{m} =} mean (@var{x})
+## @deftypefnx {statistics} {@var{m} =} mean (@var{x}, "all")
+## @deftypefnx {statistics} {@var{m} =} mean (@var{x}, @var{dim})
+## @deftypefnx {statistics} {@var{m} =} mean (@var{x}, @var{vecdim})
+## @deftypefnx {statistics} {@var{m} =} mean (@dots{}, @var{outtype})
+## @deftypefnx {statistics} {@var{m} =} mean (@dots{}, @var{nanflag})
+##
 ## Compute the mean of the elements of @var{x}.
 ##
 ## @itemize
