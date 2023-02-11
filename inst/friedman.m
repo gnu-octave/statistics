@@ -14,11 +14,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = friedman (@var{x})
-## @deftypefnx {statistics} @var{p} = friedman (@var{x}, @var{reps})
-## @deftypefnx {statistics} @var{p} = friedman (@var{x}, @var{reps}, @var{displayopt})
-## @deftypefnx {statistics} [@var{p}, @var{atab}] = friedman (@dots{})
-## @deftypefnx {statistics} [@var{p}, @var{atab}, @var{stats}] = friedman (@dots{})
+## @deftypefn  {statistics} {@var{p} =} friedman (@var{x})
+## @deftypefnx {statistics} {@var{p} =} friedman (@var{x}, @var{reps})
+## @deftypefnx {statistics} {@var{p} =} friedman (@var{x}, @var{reps}, @var{displayopt})
+## @deftypefnx {statistics} {[@var{p}, @var{atab}] =} friedman (@dots{})
+## @deftypefnx {statistics} {[@var{p}, @var{atab}, @var{stats}] =} friedman (@dots{})
 ##
 ## Performs the nonparametric Friedman's test to compare column effects in a
 ## two-way layout.  @qcode{friedman} tests the null hypothesis that the column
@@ -72,7 +72,7 @@
 ## @end deftypefn
 
 function [p, table, stats] = friedman (x, reps, displayopt)
-  
+
   ## Check for valid number of input arguments
   narginchk (1, 3);
   ## Check for NaN values in X
@@ -148,7 +148,7 @@ function [p, table, stats] = friedman (x, reps, displayopt)
     stats.meanranks = mean (m);
     stats.sigma = sqrt (sigmasq);
   endif
-  
+
   ## Print results table on screen if no output argument was requested
   if (nargout == 0 || plotdata)
     printf("              Friedman's ANOVA Table\n");

@@ -17,7 +17,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{dFF2} = ff2n (@var{n})
+## @deftypefn  {statistics} {@var{dFF2} =} ff2n (@var{n})
 ##
 ## Two-level full factorial design.
 ##

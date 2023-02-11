@@ -16,11 +16,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{pval} = chi2test (@var{x})
-## @deftypefnx {statistics} [@var{pval}, @var{chisq}] = chi2test (@var{x})
-## @deftypefnx {statistics} [@var{pval}, @var{chisq}, @var{dF}] = chi2test (@var{x})
-## @deftypefnx {statistics} [@var{pval}, @var{chisq}, @var{dF}, @var{E}] = chi2test (@var{x})
-## @deftypefnx {statistics} [@dots{}] = chi2test (@var{x}, @var{name}, @var{value})
+## @deftypefn  {statistics} {@var{pval} =} chi2test (@var{x})
+## @deftypefnx {statistics} {[@var{pval}, @var{chisq}] =} chi2test (@var{x})
+## @deftypefnx {statistics} {[@var{pval}, @var{chisq}, @var{dF}] =} chi2test (@var{x})
+## @deftypefnx {statistics} {[@var{pval}, @var{chisq}, @var{dF}, @var{E}] =} chi2test (@var{x})
+## @deftypefnx {statistics} {[@dots{}] =} chi2test (@var{x}, @var{name}, @var{value})
 ##
 ## Perform a chi-squared test (for independence or homogeneity).
 ##

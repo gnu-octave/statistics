@@ -21,7 +21,7 @@
 ## @deftypefnx {statistics} {} confusionchart (@var{m}, @var{classLabels})
 ## @deftypefnx {statistics} {} confusionchart (@var{parent}, @dots{})
 ## @deftypefnx {statistics} {} confusionchart (@dots{}, @var{prop}, @var{val}, @dots{})
-## @deftypefnx {statistics} @var{cm} = confusionchart (@dots{})
+## @deftypefnx {statistics} {@var{cm} =} confusionchart (@dots{})
 ##
 ## Display a chart of a confusion matrix.
 ##

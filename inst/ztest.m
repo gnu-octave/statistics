@@ -18,11 +18,11 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{h} = ztest (@var{x}, @var{v}, @var{sigma})
-## @deftypefnx {statistics} @var{h} = ztest (@var{x}, @var{v}, @var{sigma}, @var{name}, @var{value})
-## @deftypefnx {statistics} [@var{h}, @var{pval}] = ztest (@dots{})
-## @deftypefnx {statistics} [@var{h}, @var{pval}, @var{ci}] = ztest (@dots{})
-## @deftypefnx {statistics} [@var{h}, @var{pval}, @var{ci}, @var{zvalue}] = ztest (@dots{})
+## @deftypefn  {statistics} {@var{h} =} ztest (@var{x}, @var{v}, @var{sigma})
+## @deftypefnx {statistics} {@var{h} =} ztest (@var{x}, @var{v}, @var{sigma}, @var{name}, @var{value})
+## @deftypefnx {statistics} {[@var{h}, @var{pval}] =} ztest (@dots{})
+## @deftypefnx {statistics} {[@var{h}, @var{pval}, @var{ci}] =} ztest (@dots{})
+## @deftypefnx {statistics} {[@var{h}, @var{pval}, @var{ci}, @var{zvalue}] =} ztest (@dots{})
 ##
 ## One-sample Z-test.
 ##

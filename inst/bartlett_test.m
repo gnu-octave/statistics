@@ -18,13 +18,13 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{h} = bartlett_test (@var{x})
-## @deftypefnx {statistics} @var{h} = bartlett_test (@var{x}, @var{group})
-## @deftypefnx {statistics} @var{h} = bartlett_test (@var{x}, @var{alpha})
-## @deftypefnx {statistics} @var{h} = bartlett_test (@var{x}, @var{group}, @var{alpha})
-## @deftypefnx {statistics} [@var{h}, @var{pval}] = bartlett_test (@dots{})
-## @deftypefnx {statistics} [@var{h}, @var{pval}, @var{chisq}] = bartlett_test (@dots{})
-## @deftypefnx {statistics} [@var{h}, @var{pval}, @var{chisq}, @var{df}] = bartlett_test (@dots{})
+## @deftypefn  {statistics} {@var{h} =} bartlett_test (@var{x})
+## @deftypefnx {statistics} {@var{h} =} bartlett_test (@var{x}, @var{group})
+## @deftypefnx {statistics} {@var{h} =} bartlett_test (@var{x}, @var{alpha})
+## @deftypefnx {statistics} {@var{h} =} bartlett_test (@var{x}, @var{group}, @var{alpha})
+## @deftypefnx {statistics} {[@var{h}, @var{pval}] =} bartlett_test (@dots{})
+## @deftypefnx {statistics} {[@var{h}, @var{pval}, @var{chisq}] =} bartlett_test (@dots{})
+## @deftypefnx {statistics} {[@var{h}, @var{pval}, @var{chisq}, @var{df}] =} bartlett_test (@dots{})
 ##
 ## Perform a Bartlett test for the homogeneity of variances.
 ##

@@ -17,7 +17,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{X_use}, @var{b}, @var{bint}, @var{r}, @var{rint}, @var{stats}] = stepwisefit (@var{y}, @var{X}, @var{penter} = 0.05, @var{premove} = 0.1, @var{method} = "corr")
+## @deftypefn  {statistics} {[@var{X_use}, @var{b}, @var{bint}, @var{r}, @var{rint}, @var{stats}] =} stepwisefit (@var{y}, @var{X}, @var{penter} = 0.05, @var{premove} = 0.1, @var{method} = "corr")
 ##
 ## Linear regression with stepwise variable selection.
 ##

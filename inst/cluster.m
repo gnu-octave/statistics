@@ -16,10 +16,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{T} = cluster (@var{Z}, "Cutoff", @var{C})
-## @deftypefnx {statistics} @var{T} = cluster (@var{Z}, "Cutoff", @var{C}, "Depth", @var{D})
-## @deftypefnx {statistics} @var{T} = cluster (@var{Z}, "Cutoff", @var{C}, "Criterion", @var{criterion})
-## @deftypefnx {statistics} @var{T} = cluster (@var{Z}, "MaxClust", @var{N})
+## @deftypefn  {statistics} {@var{T} =} cluster (@var{Z}, "Cutoff", @var{C})
+## @deftypefnx {statistics} {@var{T} =} cluster (@var{Z}, "Cutoff", @var{C}, "Depth", @var{D})
+## @deftypefnx {statistics} {@var{T} =} cluster (@var{Z}, "Cutoff", @var{C}, "Criterion", @var{criterion})
+## @deftypefnx {statistics} {@var{T} =} cluster (@var{Z}, "MaxClust", @var{N})
 ##
 ## Define clusters from an agglomerative hierarchical cluster tree.
 ##

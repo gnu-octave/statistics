@@ -17,12 +17,12 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = anova1 (@var{x})
-## @deftypefnx {statistics} @var{p} = anova1 (@var{x}, @var{group})
-## @deftypefnx {statistics} @var{p} = anova1 (@var{x}, @var{group}, @var{displayopt})
-## @deftypefnx {statistics} @var{p} = anova1 (@var{x}, @var{group}, @var{displayopt}, @var{vartype})
-## @deftypefnx {statistics} [@var{p}, @var{atab}] = anova1 (@var{x}, @dots{})
-## @deftypefnx {statistics} [@var{p}, @var{atab}, @var{stats}] = anova1 (@var{x}, @dots{})
+## @deftypefn  {statistics} {@var{p} =} anova1 (@var{x})
+## @deftypefnx {statistics} {@var{p} =} anova1 (@var{x}, @var{group})
+## @deftypefnx {statistics} {@var{p} =} anova1 (@var{x}, @var{group}, @var{displayopt})
+## @deftypefnx {statistics} {@var{p} =} anova1 (@var{x}, @var{group}, @var{displayopt}, @var{vartype})
+## @deftypefnx {statistics} {[@var{p}, @var{atab}] =} anova1 (@var{x}, @dots{})
+## @deftypefnx {statistics} {[@var{p}, @var{atab}, @var{stats}] =} anova1 (@var{x}, @dots{})
 ##
 ## Perform a one-way analysis of variance (ANOVA) for comparing the means of two
 ## or more groups of data under the null hypothesis that the groups are drawn

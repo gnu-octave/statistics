@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{m}, @var{v}] = unifstat (@var{a}, @var{b})
+## @deftypefn  {statistics} {[@var{m}, @var{v}] =} unifstat (@var{a}, @var{b})
 ##
 ## Compute mean and variance of the continuous uniform distribution.
 ##

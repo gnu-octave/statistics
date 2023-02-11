@@ -16,8 +16,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{eva} = evalclusters (@var{x}, @var{clust}, @var{criterion})
-## @deftypefnx {statistics} @var{eva} = evalclusters (@dots{}, @qcode{Name}, @qcode{Value})
+## @deftypefn  {statistics} {@var{eva} =} evalclusters (@var{x}, @var{clust}, @var{criterion})
+## @deftypefnx {statistics} {@var{eva} =} evalclusters (@dots{}, @qcode{Name}, @qcode{Value})
 ##
 ## Create a clustering evaluation object to find the optimal number of clusters.
 ##

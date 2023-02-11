@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{mn}, @var{v}] = normstat (@var{m}, @var{s})
+## @deftypefn  {statistics} {[@var{mn}, @var{v}] =} normstat (@var{m}, @var{s})
 ##
 ## Compute mean and variance of the normal distribution.
 ##

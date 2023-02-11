@@ -16,9 +16,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{r}, @var{tieadj}] = tiedrank (@var{x})
-## @deftypefnx {statistics} [@var{r}, @var{tieadj}] = tiedrank (@var{x}, @var{tieflag})
-## @deftypefnx {statistics} [@var{r}, @var{tieadj}] = tiedrank (@var{x}, @var{tieflag}, @var{bidir})
+## @deftypefn  {statistics} {[@var{r}, @var{tieadj}]} = tiedrank (@var{x})
+## @deftypefnx {statistics} {[@var{r}, @var{tieadj}]} = tiedrank (@var{x}, @var{tieflag})
+## @deftypefnx {statistics} {[@var{r}, @var{tieadj}]} = tiedrank (@var{x}, @var{tieflag}, @var{bidir})
 ##
 ## @code{[@var{r}, @var{tieadj}] = tiedrank (@var{x})} computes the ranks of the
 ## values in vector @var{x}.  If any values in @var{x} are tied, @code{tiedrank}

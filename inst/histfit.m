@@ -18,7 +18,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {} histfit (@var{x}, @var{nbins})
-## @deftypefnx {statistics} @var{h} = histfit (@var{x}, @var{nbins})
+## @deftypefnx {statistics} {@var{h} =} histfit (@var{x}, @var{nbins})
 ##
 ## Plot histogram with superimposed fitted normal density.
 ##

@@ -16,10 +16,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{h} = adtest (@var{x})
-## @deftypefnx {statistics} @var{h} = adtest (@var{x}, @var{Name}, @var{Value})
-## @deftypefnx {statistics} [@var{h}, @var{pval}] = adtest (@dots{})
-## @deftypefnx {statistics} [@var{h}, @var{pval}, @var{adstat}, @var{cv}] = adtest (@dots{})
+## @deftypefn  {statistics} {@var{h} =} adtest (@var{x})
+## @deftypefnx {statistics} {@var{h} =} adtest (@var{x}, @var{Name}, @var{Value})
+## @deftypefnx {statistics} {[@var{h}, @var{pval}] =} adtest (@dots{})
+## @deftypefnx {statistics} {[@var{h}, @var{pval}, @var{adstat}, @var{cv}] =} adtest (@dots{})
 ##
 ## Anderson-Darling goodness-of-fit hypothesis test.
 ##
@@ -110,7 +110,7 @@
 ## @end deftypefn
 
 function [H, pVal, ADStat, CV] = adtest (x, varargin)
- 
+
   ## Check for valid input data
   if (nargin < 1)
     print_usage;
@@ -119,14 +119,14 @@ function [H, pVal, ADStat, CV] = adtest (x, varargin)
   if (! isvector (x) || ! isreal(x))
     error ("adtest: X must be a vector of real numbers.");
   endif
-  
+
   ## Add defaults
   distribution = "norm";
   isCompositeTest = true;
   alpha = 0.05;
   MCTol = [];
   asymptotic = false;
-  
+
   ## Parse arguments and check if parameter/value pairs are valid
   i = 1;
   while (i <= length (varargin))
@@ -209,7 +209,7 @@ function [H, pVal, ADStat, CV] = adtest (x, varargin)
     endswitch
     i = i + 1;
   endwhile
-  
+
   ## Check conflicts with asymptotic option
   if (asymptotic && isCompositeTest)
     error (strcat (["adtest: asymptotic option is not valid"], ...
@@ -230,7 +230,7 @@ function [H, pVal, ADStat, CV] = adtest (x, varargin)
     if (n < 4)
       error ("adtest: not enough data for composite testing.");
     endif
-    
+
     ## If data follow a lognormal distribution, log(x) is normally distributed
     if (strcmpi (distribution, "logn"))
       x = log (x);
@@ -241,7 +241,7 @@ function [H, pVal, ADStat, CV] = adtest (x, varargin)
       x = log (x);
       distribution = "ev";
     endif
-    
+
     ## Compute ADStat
     switch distribution
       case "norm"
@@ -269,7 +269,7 @@ function [H, pVal, ADStat, CV] = adtest (x, varargin)
           ADStat = ComputeADStat (z, n);
         endif
     endswitch
-    
+
     ## Compute p-value and critical values without Monte Carlo simulation
     if (isempty (MCTol))
       alphas = [0.0005, 0.0010, 0.0015, 0.0020, 0.0050, 0.0100, 0.0250, ...
@@ -284,11 +284,11 @@ function [H, pVal, ADStat, CV] = adtest (x, varargin)
         case "ev"
           CVs = computeCriticalValues_ev (n);
       endswitch
-              
+
       ## 1-D interpolation into the tabulated results
       pp = pchip (log (alphas), CVs);
       CV = ppval (pp, log (alpha));
-      
+
       ## If alpha is not within the lookup table, throw a warning
       ## Hypothesis result is computed by comparing the p-value with
       ## alpha, rather than CV with ADStat
@@ -299,7 +299,7 @@ function [H, pVal, ADStat, CV] = adtest (x, varargin)
         CV = CVs(end);
         warning ("adtest: alpha not within the lookup table.");
       endif
-      
+
       if (ADStat > CVs(1))
         ## P value is smaller than smallest tabulated value
         warning (strcat (["adtest: out of range min p-value:"], ...
@@ -319,12 +319,12 @@ function [H, pVal, ADStat, CV] = adtest (x, varargin)
         logPVal = fzero (@(x)ppval(pp,x) - ADStat, log(alphas([i-1,i])));
         pVal = exp (logPVal);
       endif
-    
+
     ## Compute p-value and critical values without Monte Carlo simulation
     else
         [CV, pVal] = adtestMC (ADStat, n, alpha, distribution, mctol);
     endif
-    
+
     ## Calculate H
     if (isnan (ADStat))
       H = true;
@@ -339,12 +339,12 @@ function [H, pVal, ADStat, CV] = adtest (x, varargin)
           H = (ADStat > CV);
       endif
     endif
-    
+
   ## For simple tests
   else
     ## Compute the Anderson-Darling statistic
     ADStat = ComputeADStat (z, n);
-    
+
     ## Compute p-value and critical values without Monte Carlo simulation
     if (isempty (MCTol))
       alphas = [0.0005, 0.0010, 0.0015, 0.0020, 0.0050, 0.0100, 0.0250, ...
@@ -386,17 +386,17 @@ function [H, pVal, ADStat, CV] = adtest (x, varargin)
           CV = interp2 (OneOverSampleSizes, LogAlphas, CVs', 1./n, log (alpha));
         endif
       endif
-      
+
     ## Compute p-value and critical values with Monte Carlo simulation
     else
       [CV, pVal] = adtestMC (ADStat, n, alpha, "unif", mctol);
     endif
-    
+
     ## Calculate H
     H  =  (pVal < alpha);
-    
+
   endif
-  
+
 endfunction
 
 ## Compute Anderson-Darling Statistic
@@ -508,7 +508,7 @@ function CVs = computeCriticalValues_norm (n)
          0.0377,  0.0817,  0.1150,  0.1583,  0.1801,  0.1887,  0.1695, ...
          0.1513,  0.1533,  0.1724,  0.2027,  0.3158,  0.6431] ./ n ^ 2;
 endfunction
-  
+
 ## An improved version of the Petitt method for the composite exponential case.
 function CVs = computeCriticalValues_exp (n)
   CVs = [3.2371,  2.9303,  2.7541,  2.6307,  2.2454,  1.9621,  1.5928, ...
@@ -691,14 +691,14 @@ function [crit, p] = adtestMC (ADStat, n, alpha, distribution, MCTol)
                                  log (1 - z(end:-1:1))) / n - n;
         endfor
     endswitch
-    
+
     critMC = prctile (ADstatMC, 100 * (1 - alpha));
     pMC = sum (ADstatMC > ADStat) ./ mcReps;
-    
+
     mcRepsTot = mcRepsOld + mcReps;
     crit = (mcRepsOld * crit + mcReps * critMC) / mcRepsTot;
     p = (mcRepsOld * p + mcReps * pMC) / mcRepsTot;
-    
+
     ## Compute a std err for p, with lower bound (1/N)*(1-1/N)/N when p==0.
     sepsq = max (p * (1 - p) / mcRepsTot, 1 / mcRepsTot ^ 2);
     if (sepsq < MCTol ^ 2)

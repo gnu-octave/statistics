@@ -16,8 +16,8 @@
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{results} = crossval (@var{f}, @var{X}, @var{y})
-## @deftypefnx {statistics} @var{results} = crossval (@var{f}, @var{X}, @var{y}, @var{name}, @var{value})
+## @deftypefn  {statistics} {@var{results} =} crossval (@var{f}, @var{X}, @var{y})
+## @deftypefnx {statistics} {@var{results} =} crossval (@var{f}, @var{X}, @var{y}, @var{name}, @var{value})
 ##
 ## Perform cross validation on given data.
 ##

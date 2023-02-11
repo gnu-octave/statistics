@@ -17,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{m}, @var{v}] = gpstat (@var{shape}, @var{scale}, @var{location})
+## @deftypefn  {statistics} {[@var{m}, @var{v}] =} gpstat (@var{shape}, @var{scale}, @var{location})
 ##
 ## Mean and variance of the generalized Pareto distribution.
 ##

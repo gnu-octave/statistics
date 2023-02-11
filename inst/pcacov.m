@@ -15,9 +15,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{COEFF} = pcacov(@var{X})
-## @deftypefnx {statistics} [@var{COEFF},@var{latent}] = pcacov(@var{X})
-## @deftypefnx {statistics} [@var{COEFF},@var{latent},@var{explained}] = pcacov(@var{X})
+## @deftypefn  {statistics} {@var{COEFF} =} pcacov(@var{X})
+## @deftypefnx {statistics} {[@var{COEFF}, @var{latent}] =} pcacov(@var{X})
+## @deftypefnx {statistics} {[@var{COEFF}, @var{latent}, @var{explained}] =} pcacov(@var{X})
 ##
 ## Perform principal component analysis on the NxN covariance matrix X.
 ##

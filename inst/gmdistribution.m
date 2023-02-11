@@ -19,9 +19,9 @@
 
 classdef gmdistribution
    ## -*- texinfo -*-
-   ## @deftypefn  {statistics} @var{GMdist} = gmdistribution (@var{mu}, @var{Sigma})
-   ## @deftypefnx {statistics} @var{GMdist} = gmdistribution (@var{mu}, @var{Sigma}, @var{p})
-   ## @deftypefnx {statistics} @var{GMdist} = gmdistribution (@var{mu}, @var{Sigma}, @var{p}, @var{extra})
+   ## @deftypefn  {statistics} {@var{GMdist} =} gmdistribution (@var{mu}, @var{Sigma})
+   ## @deftypefnx {statistics} {@var{GMdist} =} gmdistribution (@var{mu}, @var{Sigma}, @var{p})
+   ## @deftypefnx {statistics} {@var{GMdist} =} gmdistribution (@var{mu}, @var{Sigma}, @var{p}, @var{extra})
    ##
    ## Create an object of the gmdistribution class which represents a Gaussian
    ## mixture model with k components of n-dimensional Gaussians.

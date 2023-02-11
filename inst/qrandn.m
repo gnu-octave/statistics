@@ -16,8 +16,8 @@
 ## along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{z} = qrandn (@var{q}, @var{r},@var{c})
-## @deftypefnx {statistics} @var{z} = qrandn (@var{q}, [@var{r},@var{c}])
+## @deftypefn  {statistics} {@var{z} =} qrandn (@var{q}, @var{r},@var{c})
+## @deftypefnx {statistics} {@var{z} =} qrandn (@var{q}, [@var{r},@var{c}])
 ##
 ## Returns random deviates drawn from a q-Gaussian distribution.
 ##

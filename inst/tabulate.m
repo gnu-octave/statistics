@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{table} = tabulate (@var{data}, @var{edges})
+## @deftypefn  {statistics} {@var{table} =} tabulate (@var{data}, @var{edges})
 ##
 ## Compute a frequency table.
 ##

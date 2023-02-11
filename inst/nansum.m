@@ -16,11 +16,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} s = nansum (@var{x})
-## @deftypefnx {statistics} s = nansum (@var{x}, @var{dim})
-## @deftypefnx {statistics} s = nansum (@dots{}, @qcode{"native"})
-## @deftypefnx {statistics} s = nansum (@dots{}, @qcode{"double"})
-## @deftypefnx {statistics} s = nansum (@dots{}, @qcode{"extra"})
+## @deftypefn  {statistics} {s =} nansum (@var{x})
+## @deftypefnx {statistics} {s =} nansum (@var{x}, @var{dim})
+## @deftypefnx {statistics} {s =} nansum (@dots{}, @qcode{"native"})
+## @deftypefnx {statistics} {s =} nansum (@dots{}, @qcode{"double"})
+## @deftypefnx {statistics} {s =} nansum (@dots{}, @qcode{"extra"})
 ## Compute the sum while ignoring NaN values.
 ##
 ## @code{nansum} is identical to the @code{sum} function except that NaN
@@ -29,7 +29,7 @@
 ##
 ## See help text of @code{sum} for details on the options.
 ##
-## @seealso{sum, nanmin, nanmax, nanmean, nanmedian}
+## @seealso{sum, nanmin, nanmax}
 ## @end deftypefn
 
 function v = nansum (X, varargin)

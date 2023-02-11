@@ -21,12 +21,12 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{idx} = kmeans (@var{data}, @var{k})
-## @deftypefnx {statistics} [@var{idx}, @var{centers}] = kmeans (@var{data}, @var{k})
-## @deftypefnx {statistics} [@var{idx}, @var{centers}, @var{sumd}] = kmeans (@var{data}, @var{k})
-## @deftypefnx {statistics} [@var{idx}, @var{centers}, @var{sumd}, @var{dist}] = kmeans (@var{data}, @var{k})
-## @deftypefnx {statistics} [@dots{}] = kmeans (@var{data}, @var{k}, @var{param1}, @var{value1}, @dots{})
-## @deftypefnx {statistics} [@dots{}] = kmeans (@var{data}, [], @qcode{"start"}, @var{start}, @dots{})
+## @deftypefn  {statistics} {@var{idx} =} kmeans (@var{data}, @var{k})
+## @deftypefnx {statistics} {[@var{idx}, @var{centers}] =} kmeans (@var{data}, @var{k})
+## @deftypefnx {statistics} {[@var{idx}, @var{centers}, @var{sumd}] =} kmeans (@var{data}, @var{k})
+## @deftypefnx {statistics} {[@var{idx}, @var{centers}, @var{sumd}, @var{dist}] =} kmeans (@var{data}, @var{k})
+## @deftypefnx {statistics} {[@dots{}] =} kmeans (@var{data}, @var{k}, @var{param1}, @var{value1}, @dots{})
+## @deftypefnx {statistics} {[@dots{}] =} kmeans (@var{data}, [], @code{"start"}, @var{start}, @dots{})
 ##
 ## Perform a @var{k}-means clustering of the @var{N}x@var{D} matrix @var{data}.
 ##

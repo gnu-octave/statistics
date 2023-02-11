@@ -16,8 +16,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{T} = clusterdata (@var{X}, @var{cutoff})
-## @deftypefnx {statistics} @var{T} = clusterdata (@var{X}, @var{Name}, @var{Value})
+## @deftypefn  {statistics} {@var{T} =} clusterdata (@var{X}, @var{cutoff})
+## @deftypefnx {statistics} {@var{T} =} clusterdata (@var{X}, @var{Name}, @var{Value})
 ##
 ## Wrapper function for @code{linkage} and @code{cluster}.
 ##

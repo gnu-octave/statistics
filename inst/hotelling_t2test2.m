@@ -18,8 +18,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{h}, @var{pval}, @var{stats}] = hotelling_t2test2 (@var{x}, @var{y})
-## @deftypefnx {statistics} [@dots{}] = hotelling_t2test2 (@var{x}, @var{y}, @var{Name}, @var{Value})
+## @deftypefn  {statistics} {[@var{h}, @var{pval}, @var{stats}] =} hotelling_t2test2 (@var{x}, @var{y})
+## @deftypefnx {statistics} {[@dots{}] =} hotelling_t2test2 (@var{x}, @var{y}, @var{Name}, @var{Value})
 ##
 ## Compute Hotelling's T^2 ("T-squared") test for two independent samples.
 ##

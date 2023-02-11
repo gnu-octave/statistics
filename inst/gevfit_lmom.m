@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{paramhat}, @var{paramci}] = gevfit_lmom (@var{data})
+## @deftypefn  {statistics} {[@var{paramhat}, @var{paramci}] =} gevfit_lmom (@var{data})
 ##
 ## Find an estimator (@var{paramhat}) of the generalized extreme value (GEV)
 ## distribution fitting @var{data} using the method of L-moments.

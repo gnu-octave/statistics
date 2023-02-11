@@ -17,10 +17,10 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{paramhat} = gpfit (@var{x})
-## @deftypefnx {statistics} [@var{paramhat}, @var{paramci}] = gpfit (@var{x})
-## @deftypefnx {statistics} [@dots{}] = gpfit (@var{x}, @var{alpha})
-## @deftypefnx {statistics} [@dots{}] = gpfit (@var{x}, @var{alpha}, @var{options})
+## @deftypefn  {statistics} {@var{paramhat} =} gpfit (@var{x})
+## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} gpfit (@var{x})
+## @deftypefnx {statistics} {[@dots{}] =} gpfit (@var{x}, @var{alpha})
+## @deftypefnx {statistics} {[@dots{}] =} gpfit (@var{x}, @var{alpha}, @var{options})
 ##
 ## Parameter estimates and confidence intervals for generalized Pareto data.
 ##

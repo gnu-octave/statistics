@@ -16,10 +16,10 @@
 ## along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{z} = squareform (@var{y})
-## @deftypefnx {statistics} @var{y} = squareform (@var{z})
-## @deftypefnx {statistics} @var{z} = squareform (@var{y}, @qcode{"tovector"})
-## @deftypefnx {statistics} @var{y} = squareform (@var{z}, @qcode{"tomatrix"})
+## @deftypefn  {statistics} {@var{z} =} squareform (@var{y})
+## @deftypefnx {statistics} {@var{y} =} squareform (@var{z})
+## @deftypefnx {statistics} {@var{z} =} squareform (@var{y}, @qcode{"tovector"})
+## @deftypefnx {statistics} {@var{y} =} squareform (@var{z}, @qcode{"tomatrix"})
 ##
 ## Interchange between distance matrix and distance vector formats.
 ##

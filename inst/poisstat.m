@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{m}, @var{v}] = poisstat (@var{lambda})
+## @deftypefn  {statistics} {[@var{m}, @var{v}] =} poisstat (@var{lambda})
 ##
 ## Compute mean and variance of the Poisson distribution.
 ##

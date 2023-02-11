@@ -14,10 +14,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{d} = manova1 (@var{x}, @var{group})
-## @deftypefnx {statistics} @var{d} = manova1 (@var{x}, @var{group}, @var{alpha})
-## @deftypefnx {statistics} [@var{d}, @var{p}] = manova1 (@dots{})
-## @deftypefnx {statistics} [@var{d}, @var{p}, @var{stats}] = manova1 (@dots{})
+## @deftypefn  {statistics} {@var{d} =} manova1 (@var{x}, @var{group})
+## @deftypefnx {statistics} {@var{d} =} manova1 (@var{x}, @var{group}, @var{alpha})
+## @deftypefnx {statistics} {[@var{d}, @var{p}] =} manova1 (@dots{})
+## @deftypefnx {statistics} {[@var{d}, @var{p}, @var{stats}] =} manova1 (@dots{})
 ##
 ## One-way multivariate analysis of variance (MANOVA).
 ##

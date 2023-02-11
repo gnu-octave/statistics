@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{m}, @var{v}] = ncfstat (@var{df1}, @var{df1}, @var{delta})
+## @deftypefn  {statistics} {[@var{m}, @var{v}] =} ncfstat (@var{df1}, @var{df1}, @var{delta})
 ##
 ## Mean and variance for the noncentral F distribution.
 ##

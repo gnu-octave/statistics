@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{c} = combnk (@var{data}, @var{k})
+## @deftypefn  {statistics} {@var{c} =} combnk (@var{data}, @var{k})
 ##
 ## Return all combinations of @var{k} elements in @var{data}.
 ##

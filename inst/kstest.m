@@ -16,10 +16,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{h} = kstest (@var{x})
-## @deftypefnx {statistics} @var{h} = kstest (@var{x}, @var{name}, @var{value})
-## @deftypefnx {statistics} [@var{h}, @var{p}] = kstest (@dots{})
-## @deftypefnx {statistics} [@var{h}, @var{p}, @var{ksstat}, @var{cv}] = kstest (@dots{})
+## @deftypefn  {statistics} {@var{h} =} kstest (@var{x})
+## @deftypefnx {statistics} {@var{h} =} kstest (@var{x}, @var{name}, @var{value})
+## @deftypefnx {statistics} {[@var{h}, @var{p}] =} kstest (@dots{})
+## @deftypefnx {statistics} {[@var{h}, @var{p}, @var{ksstat}, @var{cv}] =} kstest (@dots{})
 ##
 ## Single sample Kolmogorov-Smirnov (K-S) goodness-of-fit hypothesis test.
 ##

@@ -16,8 +16,8 @@
 ## along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{m}, @var{K}] = regress_gp (@var{x}, @var{y}, @var{Sp})
-## @deftypefnx {statistics} [@dots{} @var{yi} @var{dy}] = regress_gp (@dots{}, @var{xi})
+## @deftypefn  {statistics} {[@var{m}, @var{K}] =} regress_gp (@var{x}, @var{y}, @var{Sp})
+## @deftypefnx {statistics} {[@dots{} @var{yi} @var{dy}] =} regress_gp (@dots{}, @var{xi})
 ##
 ## Linear scalar regression using gaussian processes.
 ##

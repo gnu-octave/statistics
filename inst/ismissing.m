@@ -16,8 +16,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{TF} = ismissing (@var{A})
-## @deftypefnx {statistics} @var{TF} = ismissing (@var{A}, @var{indicator})
+## @deftypefn  {statistics} {@var{TF} =} ismissing (@var{A})
+## @deftypefnx {statistics} {@var{TF} =} ismissing (@var{A}, @var{indicator})
 ##
 ## Find missing data in a numeric or string array.
 ##

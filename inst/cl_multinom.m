@@ -14,7 +14,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{CL} = cl_multinom (@var{x}, @var{N}, @var{b}, @var{calculation_type})
+## @deftypefn  {statistics} {@var{CL} =} cl_multinom (@var{x}, @var{N}, @var{b}, @var{calculation_type})
 ##
 ## Confidence level of multinomial portions.  Returns confidence level of
 ## multinomial parameters estimated @math{ p = x / sum(x) } with predefined

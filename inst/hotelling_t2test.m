@@ -18,11 +18,11 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{h}, @var{pval}, @var{stats}] = hotelling_t2test (@var{x})
-## @deftypefnx {statistics} [@dots{}] = hotelling_t2test (@var{x}, @var{m})
-## @deftypefnx {statistics} [@dots{}] = hotelling_t2test (@var{x}, @var{y})
-## @deftypefnx {statistics} [@dots{}] = hotelling_t2test (@var{x}, @var{m}, @var{Name}, @var{Value})
-## @deftypefnx {statistics} [@dots{}] = hotelling_t2test (@var{x}, @var{y}, @var{Name}, @var{Value})
+## @deftypefn  {statistics} {[@var{h}, @var{pval}, @var{stats}] =} hotelling_t2test (@var{x})
+## @deftypefnx {statistics} {[@dots{}] =} hotelling_t2test (@var{x}, @var{m})
+## @deftypefnx {statistics} {[@dots{}] =} hotelling_t2test (@var{x}, @var{y})
+## @deftypefnx {statistics} {[@dots{}] =} hotelling_t2test (@var{x}, @var{m}, @var{Name}, @var{Value})
+## @deftypefnx {statistics} {[@dots{}] =} hotelling_t2test (@var{x}, @var{y}, @var{Name}, @var{Value})
 ##
 ## Compute Hotelling's T^2 ("T-squared") test for a single sample or two
 ## dependent samples (paired-samples).

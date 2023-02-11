@@ -18,8 +18,8 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {} silhouette (@var{X}, @var{clust})
-## @deftypefnx {statistics} [@var{si}, @var{h}] = silhouette (@var{X}, @var{clust})
-## @deftypefnx {statistics} [@var{si}, @var{h}] = silhouette (@dots{}, @var{Metric}, @var{MetricArg})
+## @deftypefnx {statistics} {[@var{si}, @var{h}] =} silhouette (@var{X}, @var{clust})
+## @deftypefnx {statistics} {[@var{si}, @var{h}] =} silhouette (@dots{}, @var{Metric}, @var{MetricArg})
 ##
 ## Compute the silhouette values of clustered data and show them on a plot.
 ##

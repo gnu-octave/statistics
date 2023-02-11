@@ -15,7 +15,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{residuals}, @var{reconstructed}] = pcares (@var{X}, @var{NDIM})
+## @deftypefn  {statistics} {[@var{residuals}, @var{reconstructed}] =} pcares (@var{X}, @var{NDIM})
 ##
 ## Calculate residuals from principal component analysis.
 ##

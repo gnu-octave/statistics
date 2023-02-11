@@ -19,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{MLE} = gamfit (@var{data})
+## @deftypefn  {statistics} {@var{MLE} =} gamfit (@var{data})
 ##
 ## Calculate gamma distribution parameters.
 ##

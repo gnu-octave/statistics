@@ -20,7 +20,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {} ppplot (@var{x}, @var{dist})
 ## @deftypefnx {statistics} {} ppplot (@var{x}, @var{dist}, @var{params})
-## @deftypefnx {statistics} [@var{p}, @var{y}] = ppplot (@var{x}, @var{dist}, @var{params})
+## @deftypefnx {statistics} {[@var{p}, @var{y}] =} ppplot (@var{x}, @var{dist}, @var{params})
 ##
 ## Perform a PP-plot (probability plot).
 ##

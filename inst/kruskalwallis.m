@@ -16,11 +16,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = kruskalwallis (@var{x})
-## @deftypefnx {statistics} @var{p} = kruskalwallis (@var{x}, @var{group})
-## @deftypefnx {statistics} @var{p} = kruskalwallis (@var{x}, @var{group}, @var{displayopt})
-## @deftypefnx {statistics} [@var{p}, @var{tbl}] = kruskalwallis (@var{x}, @dots{})
-## @deftypefnx {statistics} [@var{p}, @var{tbl}, @var{stats}] = kruskalwallis (@var{x}, @dots{})
+## @deftypefn  {statistics} {@var{p} =} kruskalwallis (@var{x})
+## @deftypefnx {statistics} {@var{p} =} kruskalwallis (@var{x}, @var{group})
+## @deftypefnx {statistics} {@var{p} =} kruskalwallis (@var{x}, @var{group}, @var{displayopt})
+## @deftypefnx {statistics} {[@var{p}, @var{tbl}] =} kruskalwallis (@var{x}, @dots{})
+## @deftypefnx {statistics} {[@var{p}, @var{tbl}, @var{stats}] =} kruskalwallis (@var{x}, @dots{})
 ##
 ## Perform a Kruskal-Wallis test, the non-parametric alternative of a one-way
 ## analysis of variance (ANOVA), for comparing the means of two or more groups

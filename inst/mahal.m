@@ -17,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{d} = mahal (@var{y}, @var{x})
+## @deftypefn  {statistics} {@var{d} =} mahal (@var{y}, @var{x})
 ##
 ## Mahalanobis' D-square distance.
 ##

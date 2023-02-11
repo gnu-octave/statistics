@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{h}, @var{p}, @var{stats}] = runstest (@var{x}, @var{v})
+## @deftypefn  {statistics} {[@var{h}, @var{p}, @var{stats}] =} runstest (@var{x}, @var{v})
 ##
 ## Runs test for detecting serial correlation in the vector @var{x}.
 ##

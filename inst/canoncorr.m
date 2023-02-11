@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{A}, @var{B}, @var{r}, @var{U}, @var{V}] = canoncorr (@var{X}, @var{Y})
+## @deftypefn  {statistics} {[@var{A}, @var{B}, @var{r}, @var{U}, @var{V}] =} canoncorr (@var{X}, @var{Y})
 ##
 ## Canonical correlation analysis.
 ##

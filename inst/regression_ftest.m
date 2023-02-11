@@ -18,10 +18,10 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{h}, @var{pval}, @var{stats}] = regression_ftest (@var{y}, @var{x}, @var{fm})
-## @deftypefnx {statistics} [@dots{}] = regression_ftest (@var{y}, @var{x}, @var{fm}, @var{rm})
-## @deftypefnx {statistics} [@dots{}] = regression_ftest (@var{y}, @var{x}, @var{fm}, @var{rm}, @var{Name}, @var{Value})
-## @deftypefnx {statistics} [@dots{}] = regression_ftest (@var{y}, @var{x}, @var{fm}, [], @var{Name}, @var{Value})
+## @deftypefn  {statistics} {[@var{h}, @var{pval}, @var{stats}] =} regression_ftest (@var{y}, @var{x}, @var{fm})
+## @deftypefnx {statistics} {[@dots{}] =} regression_ftest (@var{y}, @var{x}, @var{fm}, @var{rm})
+## @deftypefnx {statistics} {[@dots{}] =} regression_ftest (@var{y}, @var{x}, @var{fm}, @var{rm}, @var{Name}, @var{Value})
+## @deftypefnx {statistics} {[@dots{}] =} regression_ftest (@var{y}, @var{x}, @var{fm}, [], @var{Name}, @var{Value})
 ##
 ## F-test for General Linear Regression Analysis
 ##

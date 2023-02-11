@@ -18,8 +18,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest2 (@var{x}, @var{y})
-## @deftypefnx {statistics} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest2 (@var{x}, @var{y}, @var{Name}, @var{Value})
+## @deftypefn  {statistics} {[@var{h}, @var{pval}, @var{ci}, @var{stats}]} = ttest2 (@var{x}, @var{y})
+## @deftypefnx {statistics} {[@var{h}, @var{pval}, @var{ci}, @var{stats}]} = ttest2 (@var{x}, @var{y}, @var{Name}, @var{Value})
 ##
 ## Perform a t-test to compare the means of two groups of data under the null
 ## hypothesis that the groups are drawn from distributions with the same mean.

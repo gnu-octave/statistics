@@ -17,13 +17,13 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {} wblplot (@var{data}, @dots{})
-## @deftypefnx {statistics} @var{handle} = wblplot (@var{data}, @dots{})
-## @deftypefnx {statistics} [@var{handle}, @var{param}] = wblplot (@var{data})
-## @deftypefnx {statistics} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor})
-## @deftypefnx {statistics} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor}, @var{freq})
-## @deftypefnx {statistics} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor}, @var{freq}, @var{confint})
-## @deftypefnx {statistics} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor}, @var{freq}, @var{confint}, @var{fancygrid})
-## @deftypefnx {statistics} [@var{handle}, @var{param}] = wblplot (@var{data}, @var{censor}, @var{freq}, @var{confint}, @var{fancygrid}, @var{showlegend})
+## @deftypefnx {statistics} {@var{handle} =} wblplot (@var{data}, @dots{})
+## @deftypefnx {statistics} {[@var{handle}, @var{param}] =} wblplot (@var{data})
+## @deftypefnx {statistics} {[@var{handle}, @var{param}] =} wblplot (@var{data}, @var{censor})
+## @deftypefnx {statistics} {[@var{handle}, @var{param}] =} wblplot (@var{data}, @var{censor}, @var{freq})
+## @deftypefnx {statistics} {[@var{handle}, @var{param}] =} wblplot (@var{data}, @var{censor}, @var{freq}, @var{confint})
+## @deftypefnx {statistics} {[@var{handle}, @var{param}] =} wblplot (@var{data}, @var{censor}, @var{freq}, @var{confint}, @var{fancygrid})
+## @deftypefnx {statistics} {[@var{handle}, @var{param}] =} wblplot (@var{data}, @var{censor}, @var{freq}, @var{confint}, @var{fancygrid}, @var{showlegend})
 ##
 ## Plot a column vector @var{data} on a Weibull probability plot using rank
 ## regression.
