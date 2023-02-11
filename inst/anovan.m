@@ -207,16 +207,16 @@
 ## (OLS) is used (default is empty for OLS).
 ## @end itemize
 ##
-## @qcode{anovan} can return up to four output arguments:
+## @code{anovan} can return up to four output arguments:
 ##
 ## @var{p} = anovan (@dots{}) returns a vector of p-values, one for each term.
 ##
 ## [@var{p}, @var{atab}] = anovan (@dots{}) returns a cell array containing the
 ## ANOVA table.
 ##
-## [@var{p}, @var{atab}, @var{stats}] = anovan (@dots{}) returns a structure
-## containing additional statistics, including degrees of freedom and effect
-## sizes for each term in the linear model, the design matrix, the
+## @code{[@var{p}, @var{atab}, @var{stats}] = anovan (@dots{})} returns a
+## structure containing additional statistics, including degrees of freedom and
+## effect sizes for each term in the linear model, the design matrix, the
 ## variance-covariance matrix, (weighted) model residuals, and the mean squared
 ## error. The columns of @var{stats}.coeffs (from left-to-right) report the
 ## model coefficients, standard errors, lower and upper 100*(1-alpha)%
