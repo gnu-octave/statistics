@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: cmdscale</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Clustering">
+                    <i class="fas fa-list-alt"></i>
+                    Clustering
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>cmdscale</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>Y</var> = <b>cmdscale</b><i> (<var>D</var>)</i></dt>
+<dt><u>statistics:</u> [<var>Y</var>, <var>e</var>] = <b>cmdscale</b><i> (<var>D</var>)</i></dt>
+</dl>
+
+<p> Classical multidimensional scaling of a matrix.
+</p>
+<div class="ms-5">
+<p> Takes an <var>n</var> by <var>n</var> distance (or difference, similarity, or
+ dissimilarity) matrix <var>D</var>. Returns <var>Y</var>, a matrix of <var>n</var> points
+ with coordinates in <var>p</var> dimensional space which approximate those
+ distances (or differences, similarities, or dissimilarities). Also returns
+ the eigenvalues <var>e</var> of
+ <code><var>B</var> = -1/2 * <var>J</var> * (<var>D</var>.^2) * <var>J</var></code>, where
+ <code>J = eye(<var>n</var>) - ones(<var>n</var>,<var>n</var>)/<var>n</var></code>. <var>p</var>, the number
+ of columns of <var>Y</var>, is equal to the number of positive real eigenvalues of
+ <var>B</var>.
+</p>
+<p> <var>D</var> can be a full or sparse matrix or a vector of length
+ <code><var>n</var>*(<var>n</var>-1)/2</code> containing the upper triangular elements (like
+ the output of the <code>pdist</code> function). It must be symmetric with
+ non-negative entries whose values are further restricted by the type of
+ matrix being represented:
+</p>
+<p> * If <var>D</var> is either a distance, dissimilarity, or difference matrix, then
+ it must have zero entries along the main diagonal. In this case the points
+ <var>Y</var> equal or approximate the distances given by <var>D</var>.
+</p>
+<p> * If <var>D</var> is a similarity matrix, the elements must all be less than or
+ equal to one, with ones along the the main diagonal. In this case the points
+ <var>Y</var> equal or approximate the distances given by
+ <code><var>D</var> = sqrt(ones(<var>n</var>,<var>n</var>)-<var>D</var>)</code>.
+</p>
+<p> <var>D</var> is a Euclidean matrix if and only if <var>B</var> is positive
+ semi-definite. When this is the case, then <var>Y</var> is an exact representation
+ of the distances given in <var>D</var>. If <var>D</var> is non-Euclidean, <var>Y</var> only
+ approximates the distance given in <var>D</var>. The approximation used by
+ <code>cmdscale</code> minimizes the statistical loss function known as
+ <var>strain</var>.
+</p>
+<p> The returned <var>Y</var> is an <var>n</var> by <var>p</var> matrix showing possible
+ coordinates of the points in <var>p</var> dimensional space
+ (<code><var>p</var> &lt; <var>n</var></code>). The columns are correspond to the positive
+ eigenvalues of <var>B</var> in descending order. A translation, rotation, or
+ reflection of the coordinates given by <var>Y</var> will satisfy the same distance
+ matrix up to the limits of machine precision.
+</p>
+<p> For any <code><var>k</var> &lt;= <var>p</var></code>, if the largest <var>k</var> positive
+ eigenvalues of <var>B</var> are significantly greater in absolute magnitude than
+ its other eigenvalues, the first <var>k</var> columns of <var>Y</var> provide a
+ <var>k</var>-dimensional reduction of <var>Y</var> which approximates the distances
+ given by <var>D</var>. The optional return <var>e</var> can be used to consider various
+ values of <var>k</var>, or to evaluate the accuracy of specific dimension
+ reductions (e.g., <code><var>k</var> = 2</code>).
+</p>
+<p> Reference: Ingwer Borg and Patrick J.F. Groenen (2005), Modern
+ Multidimensional Scaling, Second Edition, Springer, ISBN: 978-0-387-25150-9
+ (Print) 978-0-387-28981-6 (Online)
+</p>
+<p> <strong>See also: </strong>
+  <a href="pdist.html">pdist</a>
+</p></div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

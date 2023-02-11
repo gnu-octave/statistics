@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: anovan</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Hypothesis Testing">
+                    <i class="fas fa-list-alt"></i>
+                    Hypothesis Testing
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>anovan</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>p</var> = <b>anovan</b><i> (<var>Y</var>, <var>GROUP</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>anovan</b><i> (<var>Y</var>, <var>GROUP</var>, <var>name</var>, <var>value</var>)</i></dt>
+<dt><u>statistics:</u> [<var>p</var>, <var>atab</var>] = <b>anovan</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>p</var>, <var>atab</var>, <var>stats</var>] = <b>anovan</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>p</var>, <var>atab</var>, <var>stats</var>, <var>terms</var>] = <b>anovan</b><i> (&hellip;)</i></dt>
+</dl>
+
+<p> Perform a multi (N)-way analysis of (co)variance (ANOVA or ANCOVA) to
+ evaluate the effect of one or more categorical or continuous predictors (i.e.
+ independent variables) on a continuous outcome (i.e. dependent variable). The
+ algorithms used make @qcode{anovan} suitable for balanced or unbalanced
+ factorial (crossed) designs. By default, @qcode{anovan} treats all factors
+ as fixed. Examples of function usage can be found by entering the command
+ <code>demo anovan</code>.
+</p>
+<div class="ms-5">
+<p> Data is a single vector <var>Y</var> with groups specified by a corresponding
+ matrix or cell array of group labels <var>GROUP</var>, where each column of
+ <var>GROUP</var> has the same number of rows as <var>Y</var>. For example, if <var>Y</var>
+ = [1.1;1.2]; <var>GROUP</var> = [1,2,1; 1,5,2]; then observation 1.1 was measured
+ under conditions 1,2,1 and observation 1.2 was measured under conditions
+ 1,5,2. If the <var>GROUP</var> provided is empty, then the linear model is fit
+ with just the intercept (no predictors).
+</p>
+<p> @qcode{anovan} can take a number of optional parameters as name-value pairs.
+</p>
+<p> <code>[&hellip;] = anovan (<var>Y</var>, <var>GROUP</var>, &quot;continuous&quot;, <var>continuous</var>)</code>
+</p>
+ <ul>
+<li>
+ <var>continuous</var> is a vector of indices indicating which of the columns (i.e.
+ factors) in <var>GROUP</var> should be treated as continuous predictors rather
+ than as categorical predictors. The relationship between continuous
+ predictors and the outcome should be linear.
+ </li></ul>
+
+<p> <code>[&hellip;] = anovan (<var>Y</var>, <var>GROUP</var>, &quot;random&quot;, <var>random</var>)</code>
+</p>
+ <ul>
+<li>
+ <var>random</var> is a vector of indices indicating which of the columns (i.e.
+ factors) in <var>GROUP</var> should be treated as random effects rather than
+ fixed effects. Octave @qcode{anovan} provides only basic support for random
+ effects. Specifically, since all F-statistics in @qcode{anovan} are
+ calculated using the mean-squared error (MSE), any interaction terms
+ containing a random effect are dropped from the model term definitions and
+ their associated variance is pooled with the residual, unexplained variance
+ making up the MSE. In effect, the model then fitted equates to a linear mixed
+ model with random intercept(s). Variable names for random factors are
+ appended with a &rsquo; symbol.
+ </li></ul>
+
+<p> <code>[&hellip;] = anovan (<var>Y</var>, <var>GROUP</var>, &quot;model&quot;, <var>modeltype</var>)</code>
+</p>
+ <ul>
+<li>
+ <var>modeltype</var> can specified as one of the following:
+
+ <ul>
+<li>
+ &quot;linear&quot; (default) : compute N main effects with no interactions.
+
+ </li><li>
+ &quot;interaction&quot; : compute N effects and N*(N-1) two-factor interactions
+
+ </li><li>
+ &quot;full&quot; : compute the N main effects and interactions at all levels
+
+ </li><li>
+ a scalar integer : representing the maximum interaction order
+
+ </li><li>
+ a matrix of term definitions : each row is a term and each column is a factor
+ </li></ul>
+
+ <table><tr><td>&nbsp;</td><td><pre class="example"> -- Example:
+ A two-way ANOVA with interaction would be: [1 0; 0 1; 1 1]
+ </pre></td></tr></table>
+
+</li></ul>
+
+<p> <code>[&hellip;] = anovan (<var>Y</var>, <var>GROUP</var>, &quot;sstype&quot;, <var>sstype</var>)</code>
+</p>
+ <ul>
+<li>
+ <var>sstype</var> can specified as one of the following:
+
+ <ul>
+<li>
+ 1 : Type I sequential sums-of-squares.
+
+ </li><li>
+ 2 or &quot;h&quot; : Type II partially sequential (or hierarchical) sums-of-squares
+
+ </li><li>
+ 3 (default) : Type III partial, constrained or marginal sums-of-squares
+
+</li></ul>
+</li></ul>
+
+<p> <code>[&hellip;] = anovan (<var>Y</var>, <var>GROUP</var>, &quot;varnames&quot;, <var>varnames</var>)</code>
+</p>
+ <ul>
+<li>
+ <var>varnames</var> must be a cell array of strings with each element containing a
+ factor name for each column of GROUP.  By default (if not parsed as optional
+ argument), <var>varnames</var> are &quot;X1&quot;,&quot;X2&quot;,&quot;X3&quot;, etc.
+ </li></ul>
+
+<p> <code>[&hellip;] = anovan (<var>Y</var>, <var>GROUP</var>, &quot;alpha&quot;, <var>alpha</var>)</code>
+</p>
+ <ul>
+<li>
+ <var>alpha</var> must be a scalar value between 0 and 1 requesting 100*(1-alpha)%
+ confidence bounds for the regression coefficients returned in STATS.coeffs
+ (default 0.05 for 95% confidence)
+ </li></ul>
+
+<p> <code>[&hellip;] = anovan (<var>Y</var>, <var>GROUP</var>, &quot;display&quot;, <var>dispopt</var>)</code>
+</p>
+ <ul>
+<li>
+ <var>dispopt</var> can be either &quot;on&quot; (default) or &quot;off&quot; and controls the display
+ of the model formula, table of model parameters and the ANOVA table. The
+ F-statistic and p-values are formatted in APA-style. To avoid p-hacking, the
+ table of model parameters is only displayed if we set planned contrasts (see
+ below).
+ </li></ul>
+
+<p> <code>[&hellip;] = anovan (<var>Y</var>, <var>GROUP</var>, &quot;contrasts&quot;, <var>contrasts</var>)</code>
+</p>
+ <ul>
+<li>
+ <var>contrasts</var> can be specified as one of the following:
+
+ <ul>
+<li>
+ A string corresponding to one of the built-in contrasts listed below:
+
+ <ul>
+<li>
+ &quot;simple&quot; or &quot;anova&quot; (default): Simple (ANOVA) contrasts. (The first level
+ appearing in the <var>GROUP</var> column is the reference level)
+
+ </li><li>
+ &quot;poly&quot;: Polynomial contrasts for trend analysis.
+
+ </li><li>
+ &quot;helmert&quot;: Helmert contrasts.
+
+ </li><li>
+ &quot;effect&quot;: Deviation effect coding. (The first level appearing in the <var>GROUP</var>
+ column is omitted).
+
+ </li><li>
+ &quot;treatment&quot;: Treatment contrast (or dummy) coding. (The first level appearing
+ in the <var>GROUP</var> column is the reference level). These contrasts are not
+ compatible with SSTYPE 3.
+
+</li></ul>
+
+ </li><li>
+ A matrix containing a custom contrast coding scheme (i.e. the generalized
+ inverse of contrast weights). Rows in the contrast matrices correspond to
+ factor levels in the order that they first appear in the <var>GROUP</var> column.
+ The matrix must contain the same number of columns as there are the number of
+ factor levels minus one.
+ </li></ul>
+
+<p> If the anovan model contains more than one factor and a built-in contrast
+ coding scheme was specified, then those contrasts are applied to all factors.
+ To specify different contrasts for different factors in the model,
+ <var>contrasts</var> should be a cell array with the same number of cells as there
+ are columns in <var>GROUP</var>. Each cell should define contrasts for the
+ respective column in <var>GROUP</var> by one of the methods described above. If
+ cells are left empty, then the default contrasts are applied. Contrasts for
+ cells corresponding to continuous factors are ignored.
+ </p></li></ul>
+
+<p> <code>[&hellip;] = anovan (<var>Y</var>, <var>GROUP</var>, &quot;weights&quot;, <var>weights</var>)</code>
+</p>
+ <ul>
+<li>
+ <var>weights</var> is an optional vector of weights to be used when fitting the
+ linear model. Weighted least squares (WLS) is used with weights (that is,
+ minimizing sum (weights * residuals.^2)); otherwise ordinary least squares
+ (OLS) is used (default is empty for OLS).
+ </li></ul>
+
+<p> @qcode{anovan} can return up to four output arguments:
+</p>
+<p> <var>p</var> = anovan (&hellip;) returns a vector of p-values, one for each term.
+</p>
+<p> [<var>p</var>, <var>atab</var>] = anovan (&hellip;) returns a cell array containing the
+ ANOVA table.
+</p>
+<p> [<var>p</var>, <var>atab</var>, <var>stats</var>] = anovan (&hellip;) returns a structure
+ containing additional statistics, including degrees of freedom and effect
+ sizes for each term in the linear model, the design matrix, the
+ variance-covariance matrix, (weighted) model residuals, and the mean squared
+ error. The columns of <var>stats</var>.coeffs (from left-to-right) report the
+ model coefficients, standard errors, lower and upper 100*(1-alpha)%
+ confidence interval bounds, t-statistics, and p-values relating to the
+ contrasts. The number appended to each term name in <var>stats</var>.coeffnames
+ corresponds to the column number in the relevant contrast matrix for that
+ factor. The <var>stats</var> structure can be used as input for @qcode{multcompare}.
+ The <var>stats</var> structure is also recognised by the functions @qcode{bootcoeff}
+ and @qcode{bootemm} from the statistics-bootstrap package.
+</p>
+<p> [<var>p</var>, <var>atab</var>, <var>stats</var>, <var>terms</var>] = anovan (&hellip;) returns
+ the model term definitions.
+</p>
+<p> <strong>See also: </strong>
+  <a href="anova1.html">anova1</a>, 
+  <a href="anova2.html">anova2</a>, 
+  <a href="multcompare.html">multcompare</a>, 
+  <a href="fitlm.html">fitlm</a>
+</p></div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

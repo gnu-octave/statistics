@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: svmtrain</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Machine Learning">
+                    <i class="fas fa-list-alt"></i>
+                    Machine Learning
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>svmtrain</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+dl>
+<dt><u>statistics:</u> <var>model</var> = <b>svmtrain</b><i> (<var>labels</var>, <var>data</var>, 'libsvm_options')</i></dt>
+</dl>
+
+
+<p>This function trains an SVM <var>model</var> based on known <var>labels</var> and their corresponding <var>data</var> which comprise an instance matrtix. 
+</p>
+<div class="ms-5">
+<p>&mdash;  <var>labels</var> : An m by 1 vector of prediction labels. (type must be double) 
+</p>
+<p>&mdash;  <var>data</var> : An m by n matrix of m testing instances with n features. It can be dense or sparse. (type must be double) 
+</p>
+<p>&mdash;  &rsquo;libsvm_options&rsquo; : A string of testing options in the same format as that of LIBSVM. 
+</p>
+<p>* libsvm_options:
+</p>
+<p>&ndash;s svm_type : set type of SVM (default 0)
+</p>
+<p>    	0 &ndash; C-SVC		(multi-class classification)
+</p>
+<p>    	1 &ndash; nu-SVC		(multi-class classification)
+</p>
+<p>    	2 &ndash; one-class SVM
+</p>
+<p>    	3 &ndash; epsilon-SVR	(regression)
+</p>
+<p>    	4 &ndash; nu-SVR		(regression)
+</p>
+<p>&ndash;t kernel_type : set type of kernel function (default 2)
+</p>
+<p>    	0 &ndash; linear: u&rsquo;*v
+</p>
+<p>    	1 &ndash; polynomial: (gamma*u&rsquo;*v + coef0)^degree
+</p>
+<p>    	2 &ndash; radial basis function: exp(-gamma*|u-v|^2)
+</p>
+<p>    	3 &ndash; sigmoid: tanh(gamma*u&rsquo;*v + coef0)
+</p>
+<p>    	4 &ndash; precomputed kernel (kernel values in training_instance_matrix)
+</p>
+<p>&ndash;d degree : set degree in kernel function (default 3)
+</p>
+<p>&ndash;g gamma : set gamma in kernel function (default 1/num_features)
+</p>
+<p>&ndash;r coef0 : set coef0 in kernel function (default 0)
+</p>
+<p>&ndash;c cost : set the parameter C of C-SVC, epsilon-SVR, and nu-SVR (default 1)
+</p>
+<p>&ndash;n nu : set the parameter nu of nu-SVC, one-class SVM, and nu-SVR (default 0.5)
+</p>
+<p>&ndash;p epsilon : set the epsilon in loss function of epsilon-SVR (default 0.1)
+</p>
+<p>&ndash;m cachesize : set cache memory size in MB (default 100)
+</p>
+<p>&ndash;e epsilon : set tolerance of termination criterion (default 0.001)
+</p>
+<p>&ndash;h shrinking : whether to use the shrinking heuristics, 0 or 1 (default 1)
+</p>
+<p>&ndash;b probability_estimates : whether to train a SVC or SVR model for probability estimates, 0 or 1 (default 0)
+</p>
+<p>&ndash;wi weight : set the parameter C of class i to weight*C, for C-SVC (default 1)
+</p>
+<p>&ndash;v n : n-fold cross validation mode
+</p>
+<p>&ndash;q : quiet mode (no outputs)
+</p>
+
+<p>The function &rsquo;svmtrain&rsquo; function returns a <var>model</var> which can be used for future prediction.  It is a structure and is organized as [Parameters, nr_class, totalSV, rho, Label, ProbA, ProbB, nSV, sv_coef, SVs]: 
+</p>
+<p>&mdash;  Parameters: parameters 
+</p>
+<p>&mdash;  nr_class: number of classes; = 2 for regression/one-class svm 
+</p>
+<p>&mdash;  totalSV: total #SV 
+</p>
+<p>&mdash;  rho: -b of the decision function(s) wx+b 
+</p>
+<p>&mdash;  Label: label of each class; empty for regression/one-class SVM 
+</p>
+<p>&mdash;  sv_indices: values in [1,...,num_traning_data] to indicate SVs in the training set 
+</p>
+<p>&mdash;  ProbA: pairwise probability information; empty if -b 0 or in one-class SVM 
+</p>
+<p>&mdash;  ProbB: pairwise probability information; empty if -b 0 or in one-class SVM 
+</p>
+<p>&mdash;  nSV: number of SVs for each class; empty for regression/one-class SVM 
+</p>
+<p>&mdash;  sv_coef: coefficients for SVs in decision functions 
+</p>
+<p>&mdash;  SVs: support vectors 
+</p>
+<p>If you do not use the option &rsquo;-b 1&rsquo;, ProbA and ProbB are empty matrices. If the &rsquo;-v&rsquo; option is specified, cross validation is conducted and the returned model is just a scalar: cross-validation accuracy for classification and mean-squared error for regression. 
+</p>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

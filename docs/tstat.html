@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: tstat</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Distribution Statistics">
+                    <i class="fas fa-list-alt"></i>
+                    Distribution Statistics
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>tstat</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] <b>=</b><i> tstat (<var>n</var>)</i></dt>
+</dl>
+
+<p> Compute mean and variance of the t (Student) distribution.
+</p>
+<div class="ms-5">
+ <a name="Arguments"></a>
+<h3 class="subheading">Arguments</h3>
+
+ <ul>
+<li>
+ <var>n</var> is the parameter of the t (Student) distribution. The elements
+ of <var>n</var> must be positive
+ </li></ul>
+
+ <a name="Return-values"></a>
+<h3 class="subheading">Return values</h3>
+
+ <ul>
+<li>
+ <var>m</var> is the mean of the t (Student) distribution
+
+ </li><li>
+ <var>v</var> is the variance of the t (Student) distribution
+ </li></ul>
+
+ <a name="Example"></a>
+<h3 class="subheading">Example</h3>
+
+ <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> n = 3:8;
+ [m, v] = tstat (n)
+ </pre><pre class="example"> </pre></td></tr></table>
+
+ <a name="References"></a>
+<h3 class="subheading">References</h3>
+
+ <ol>
+<li>
+ Wendy L. Martinez and Angel R. Martinez. <cite>Computational Statistics
+ Handbook with MATLAB</cite>. Appendix E, pages 547-557, Chapman &amp; Hall/CRC,
+ 2001.
+
+ </li><li>
+ Athanasios Papoulis. <cite>Probability, Random Variables, and Stochastic
+ Processes</cite>. McGraw-Hill, New York, second edition, 1984.
+ </li></ol>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

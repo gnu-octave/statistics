@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: ttest</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Hypothesis Testing">
+                    <i class="fas fa-list-alt"></i>
+                    Hypothesis Testing
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>ttest</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>ci</var>, <var>stats</var>] = <b>ttest</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>ci</var>, <var>stats</var>] = <b>ttest</b><i> (<var>x</var>, <var>m</var>)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>ci</var>, <var>stats</var>] = <b>ttest</b><i> (<var>x</var>, <var>y</var>)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>ci</var>, <var>stats</var>] = <b>ttest</b><i> (<var>x</var>, <var>m</var>, <var>Name</var>, <var>Value</var>)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>ci</var>, <var>stats</var>] = <b>ttest</b><i> (<var>x</var>, <var>y</var>, <var>Name</var>, <var>Value</var>)</i></dt>
+</dl>
+
+<p> Test for mean of a normal sample with unknown variance.
+</p>
+<div class="ms-5">
+<p> Perform a t-test of the null hypothesis <code>mean (<var>x</var>) ==
+ <var>m</var></code> for a sample <var>x</var> from a normal distribution with unknown
+ mean and unknown standard deviation.  Under the null, the test statistic
+ <var>t</var> has a Student&rsquo;s t distribution.  The default value of
+ <var>m</var> is 0.
+</p>
+<p> If the second argument <var>y</var> is a vector, a paired-t test of the
+ hypothesis <code>mean (<var>x</var>) = mean (<var>y</var>)</code> is performed. If <var>x</var>
+ and <var>y</var> are vectors, they must have the same size and dimensions.
+</p>
+<p> <var>x</var> (and <var>y</var>) can also be matrices. For matrices, @qcode{ttest}
+ performs separate t-tests along each column, and returns a vector of results.
+ <var>x</var> and <var>y</var> must have the same number of columns. The Type I error
+ rate of the resulting vector of <var>pval</var> can be controlled by entering
+ <var>pval</var> as input to the function @qcode{multcompare}.
+</p>
+<p> @qcode{ttest} treats NaNs as missing values, and ignores them.
+</p>
+<p> Name-Value pair arguments can be used to set various options.
+ @qcode{&quot;alpha&quot;} can be used to specify the significance level
+ of the test (the default value is 0.05).  @qcode{&quot;tail&quot;}, can be used
+ to select the desired alternative hypotheses.  If the value is
+ @qcode{&quot;both&quot;} (default) the null is tested against the two-sided
+ alternative <code>mean (<var>x</var>) != <var>m</var></code>.
+ If it is @qcode{&quot;right&quot;} the one-sided alternative <code>mean (<var>x</var>)
+ &gt; <var>m</var></code> is considered.  Similarly for @qcode{&quot;left&quot;}, the one-sided
+ alternative <code>mean (<var>x</var>) &lt; <var>m</var></code> is considered.
+ When argument <var>x</var> is a matrix, @qcode{&quot;dim&quot;} can be used to select
+ the dimension over which to perform the test.  (The default is the
+ first non-singleton dimension).
+</p>
+<p> If <var>h</var> is 1 the null hypothesis is rejected, meaning that the tested
+ sample does not come from a Student&rsquo;s t distribution.  If <var>h</var> is 0, then
+ the null hypothesis cannot be rejected and it can be assumed that <var>x</var>
+ follows a Student&rsquo;s t distribution.  The p-value of the test is returned in
+ <var>pval</var>.  A 100(1-alpha)% confidence interval is returned in <var>ci</var>.
+</p>
+<p> <var>stats</var> is a structure containing the value of the test statistic
+ (<var>tstat</var>), the degrees of freedom (<var>df</var>) and the sample&rsquo;s standard
+ deviation (<var>sd</var>).
+</p>
+<p> <strong>See also: </strong>
+hotelling_ttest, 
+  <a href="ttest2.html">ttest2</a>, 
+hotelling_ttest2
+</p></div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

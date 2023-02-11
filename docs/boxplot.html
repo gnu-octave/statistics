@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: boxplot</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Plotting">
+                    <i class="fas fa-list-alt"></i>
+                    Plotting
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>boxplot</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>s</var> = <b>boxplot</b><i> (<var>data</var>)</i></dt>
+<dt><u>statistics:</u> <var>s</var> = <b>boxplot</b><i> (<var>data</var>, <var>group</var>)</i></dt>
+<dt><u>statistics:</u> <var>s</var> = <b>boxplot</b><i> (<var>data</var>, <var>notched</var>, <var>symbol</var>, <var>orientation</var>, <var>whisker</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> <var>s</var> = <b>boxplot</b><i> (<var>data</var>, <var>group</var>, <var>notched</var>, <var>symbol</var>, <var>orientation</var>, <var>whisker</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> <var>s</var> = <b>boxplot</b><i> (<var>data</var>, <var>options</var>)</i></dt>
+<dt><u>statistics:</u> <var>s</var> = <b>boxplot</b><i> (<var>data</var>, <var>group</var>, <var>options</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> [&hellip;, <var>h</var>] = <b>boxplot</b><i> (<var>data</var>, &hellip;)</i></dt>
+</dl>
+
+<p> Produce a box plot.
+</p>
+<div class="ms-5">
+<p> A box plot is a graphical display that simultaneously describes several
+ important features of a data set, such as center, spread, departure from
+ symmetry, and identification of observations that lie unusually far from
+ the bulk of the data.
+</p>
+<p> Input arguments (case-insensitive) recognized by boxplot are:
+</p>
+ <ul>
+<li>
+ <var>data</var> is a matrix with one column for each data set, or a cell vector
+ with one cell for each data set.  Each cell must contain a numerical row or
+ column vector (NaN and NA are ignored) and not a nested vector of cells.
+
+ </li><li>
+ <var>notched</var> = 1 produces a notched-box plot.  Notches represent a robust
+ estimate of the uncertainty about the median.
+
+<p> <var>notched</var> = 0 (default) produces a rectangular box plot.
+</p>
+<p> <var>notched</var> within the interval (0,1) produces a notch of the specified
+ depth.  Notched values outside (0,1) are amusing if not exactly impractical.
+</p>
+ </li><li>
+ <var>symbol</var> sets the symbol for the outlier values.  The default symbol
+ for points that lie outside 3 times the interquartile range is &rsquo;o&rsquo;;
+ the default symbol for points between 1.5 and 3 times the interquartile
+ range is &rsquo;+&rsquo;. <br>
+ Alternative <var>symbol</var> settings:
+
+<p> <var>symbol</var> = &rsquo;.&rsquo;: points between 1.5 and 3 times the IQR are marked with
+ &rsquo;.&rsquo; and points outside 3 times IQR with &rsquo;o&rsquo;.
+</p>
+<p> <var>symbol</var> = [&rsquo;x&rsquo;,&rsquo;*&rsquo;]: points between 1.5 and 3 times the IQR are marked
+ with &rsquo;x&rsquo; and points outside 3 times IQR with &rsquo;*&rsquo;.
+</p>
+ </li><li>
+ <var>orientation</var> = 0 makes the boxes horizontally. <br>
+ <var>orientation</var> = 1 plots the boxes vertically (default).  Alternatively,
+ orientation can be passed as a string, e.g., &rsquo;vertical&rsquo; or &rsquo;horizontal&rsquo;.
+
+ </li><li>
+ <var>whisker</var> defines the length of the whiskers as a function of the IQR
+ (default = 1.5).  If <var>whisker</var> = 0 then <code>boxplot</code> displays all data
+ values outside the box using the plotting symbol for points that lie
+ outside 3 times the IQR.
+
+ </li><li>
+ <var>group</var> may be passed as an optional argument only in the second
+ position after <var>data</var>.  <var>group</var> contains a numerical vector defining
+ separate categories, each plotted in a different box, for each set of
+ <var>DATA</var> values that share the same <var>group</var> value or values.  With
+ the formalism (<var>data</var>, <var>group</var>), both must be vectors of the same
+ length.
+
+ </li><li>
+ <var>options</var> are additional paired arguments passed with the formalism
+ (Name, Value) that provide extra functionality as listed below.
+ <var>options</var> can be passed at any order after the initial arguments and
+ are case-insensitive.
+
+ <table>
+<tr><td>&rsquo;Notch&rsquo;</td><td>&rsquo;on&rsquo;</td><td>Notched by 0.25 of the boxes width.</td></tr>
+<tr><td></td><td>&rsquo;off&rsquo;</td><td>Produces a straight box.</td></tr>
+<tr><td></td><td>scalar</td><td>Proportional width of the notch.</td></tr>
+<tr><td>&rsquo;Symbol&rsquo;</td><td>&rsquo;.&rsquo;</td><td>Defines only outliers between 1.5 and 3 IQR.</td></tr>
+<tr><td></td><td>[&rsquo;x&rsquo;,&rsquo;*&rsquo;]</td><td>2nd character defines outliers &gt; 3 IQR</td></tr>
+<tr><td>&rsquo;Orientation&rsquo;</td><td>&rsquo;vertical&rsquo;</td><td>Default value, can also be defined
+ with numerical 1.</td></tr>
+<tr><td></td><td>&rsquo;horizontal&rsquo;</td><td>Can also be defined with numerical 0.</td></tr>
+<tr><td>&rsquo;Whisker&rsquo;</td><td>scalar</td><td>Multiplier of IQR (default is 1.5).</td></tr>
+<tr><td>&rsquo;OutlierTags&rsquo;</td><td>&rsquo;on&rsquo; or 1</td><td>Plot the vector index of the outlier
+ value next to its point.</td></tr>
+<tr><td></td><td>&rsquo;off&rsquo; or 0</td><td>No tags are plotted (default value).</td></tr>
+<tr><td>&rsquo;Sample_IDs&rsquo;</td><td>&rsquo;cell&rsquo;</td><td>A cell vector with one cell for each
+ data set containing a nested cell vector with each sample&rsquo;s ID (should be
+ a string).  If this option is passed, then all outliers are tagged with
+ their respective sample&rsquo;s ID string instead of their vector&rsquo;s index.</td></tr>
+<tr><td>&rsquo;BoxWidth&rsquo;</td><td>&rsquo;proportional&rsquo;</td><td>Create boxes with their width
+ proportional to the number of samples in their respective dataset (default
+ value).</td></tr>
+<tr><td></td><td>&rsquo;fixed&rsquo;</td><td>Make all boxes with equal width.</td></tr>
+<tr><td>&rsquo;Widths&rsquo;</td><td>scalar</td><td>Scaling factor for box widths (default
+ value is 0.4).</td></tr>
+<tr><td>&rsquo;CapWidths&rsquo;</td><td>scalar</td><td>Scaling factor for whisker cap widths
+ (default value is 1, which results to &rsquo;Widths&rsquo;/8 halflength)</td></tr>
+<tr><td>&rsquo;BoxStyle&rsquo;</td><td>&rsquo;outline&rsquo;</td><td>Draw boxes as outlines (default value).</td></tr>
+<tr><td></td><td>&rsquo;filled&rsquo;</td><td>Fill boxes with a color (outlines are still
+ plotted).</td></tr>
+<tr><td>&rsquo;Positions&rsquo;</td><td>vector</td><td>Numerical vector that defines the
+ position of each data set.  It must have the same length as the number of
+ groups in a desired manner.  This vector merely defines the points along
+ the group axis, which by default is [1:number of groups].</td></tr>
+<tr><td>&rsquo;Labels&rsquo;</td><td>cell</td><td>A cell vector of strings containing the names
+ of each group.  By default each group is labeled numerically according to
+ its order in the data set</td></tr>
+<tr><td>&rsquo;Colors&rsquo;</td><td>character string or Nx3 numerical matrix</td><td>If just
+ one character or 1x3 vector of RGB values, specify the fill color of all
+ boxes when BoxStyle = &rsquo;filled&rsquo;.  If a character string or Nx3 matrix is
+ entered, box #1&rsquo;s fill color corrresponds to the first character or first
+ matrix row, and the next boxes&rsquo; fill colors corresponds to the next
+ characters or rows.  If the char string or Nx3 array is exhausted the color
+ selection wraps around.</td></tr>
+</table>
+</li></ul>
+
+<p> Supplemental arguments not described above (&hellip;) are concatenated and
+ passed to the plot() function.
+</p>
+<p> The returned matrix <var>s</var> has one column for each data set as follows:
+</p>
+ <table>
+<tr><td width="10%">1</td><td width="80%">Minimum</td></tr>
+<tr><td width="10%">2</td><td width="80%">1st quartile</td></tr>
+<tr><td width="10%">3</td><td width="80%">2nd quartile (median)</td></tr>
+<tr><td width="10%">4</td><td width="80%">3rd quartile</td></tr>
+<tr><td width="10%">5</td><td width="80%">Maximum</td></tr>
+<tr><td width="10%">6</td><td width="80%">Lower confidence limit for median</td></tr>
+<tr><td width="10%">7</td><td width="80%">Upper confidence limit for median</td></tr>
+</table>
+
+<p> The returned structure <var>h</var> contains handles to the plot elements,
+ allowing customization of the visualization using set/get functions.
+</p>
+<p> Example
+</p>
+ <table><tr><td>&nbsp;</td><td><pre class="example"> title (&quot;Grade 3 heights&quot;);
+ axis ([0,3]);
+ set(gca (), &quot;xtick&quot;, [1 2], &quot;xticklabel&quot;, {&quot;girls&quot;, &quot;boys&quot;});
+ boxplot ({randn(10,1)*5+140, randn(13,1)*8+135});
+ </pre></td></tr></table>
+
+</div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

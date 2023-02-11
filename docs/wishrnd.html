@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: wishrnd</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Distributions">
+                    <i class="fas fa-list-alt"></i>
+                    Distributions
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>wishrnd</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> [ <b><var>W</var></b><i>, <var>D</var>] = wishrnd (<var>Sigma</var>, <var>df</var>, <var>D</var>, <var>n</var>=1)</i></dt>
+</dl>
+
+<p> Return a random matrix sampled from the Wishart distribution with given
+ parameters
+</p>
+<div class="ms-5">
+<p> Inputs: the <var>p</var> x <var>p</var> positive definite matrix <var>Sigma</var> (or the
+ lower-triangular Cholesky factor <var>D</var> of <var>Sigma</var>) and scalar degrees
+ of freedom parameter <var>df</var>.
+</p>
+<p> <var>df</var> can be non-integer as long as <var>df</var> &gt; <var>p</var>
+</p>
+<p> Output: a random <var>p</var> x <var>p</var>  matrix <var>W</var> from the
+ Wishart(<var>Sigma</var>, <var>df</var>) distribution. If <var>n</var> &gt; 1, then <var>W</var> is
+ <var>p</var> x <var>p</var> x <var>n</var> and holds <var>n</var> such random matrices.
+ (Optionally, the lower-triangular Cholesky factor <var>D</var> of <var>Sigma</var> is
+ also returned.)
+</p>
+<p> Averaged across many samples, the mean of <var>W</var> should approach
+ <var>df</var>*<var>Sigma</var>, and the variance of each element <var>W</var>_ij should
+ approach <var>df</var>*(<var>Sigma</var>_ij^2 + <var>Sigma</var>_ii*<var>Sigma</var>_jj)
+</p>
+ <a name="References"></a>
+<h3 class="subheading">References</h3>
+
+ <ol>
+<li>
+ Yu-Cheng Ku and Peter Bloomfield (2010), Generating Random Wishart Matrices
+ with Fractional Degrees of Freedom in OX,
+ http://www.gwu.edu/~forcpgm/YuChengKu-030510final-WishartYu-ChengKu.pdf
+ </li></ol>
+
+<p> <strong>See also: </strong>
+  <a href="wishpdf.html">wishpdf</a>, 
+  <a href="iwishpdf.html">iwishpdf</a>, 
+  <a href="iwishrnd.html">iwishrnd</a>
+</p></div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

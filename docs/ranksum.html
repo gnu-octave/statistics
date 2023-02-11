@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: ranksum</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Hypothesis Testing">
+                    <i class="fas fa-list-alt"></i>
+                    Hypothesis Testing
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>ranksum</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>p</var> = <b>ranksum</b><i> (<var>x</var>, <var>y</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>ranksum</b><i> (<var>x</var>, <var>y</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>ranksum</b><i> (<var>x</var>, <var>y</var>, <var>alpha</var>, <var>Name</var>, <var>Value</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>ranksum</b><i> (<var>x</var>, <var>y</var>, <var>Name</var>, <var>Value</var>)</i></dt>
+<dt><u>statistics:</u> [<var>p</var>, <var>h</var>] = <b>ranksum</b><i> (<var>x</var>, <var>y</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>p</var>, <var>h</var>, <var>stats</var>] = <b>ranksum</b><i> (<var>x</var>, <var>y</var>, &hellip;)</i></dt>
+</dl>
+
+<p> Wilcoxon rank sum test for equal medians.  This test is equivalent to a
+ Mann-Whitney U-test.
+</p>
+<div class="ms-5">
+<p> <code><var>p</var> = ranksum (<var>x</var>, <var>y</var>)</code> returns the p-value of a
+ two-sided Wilcoxon rank sum test.  It tests the null hypothesis that two
+ independent samples, in the vectors X and Y, come from continuous
+ distributions with equal medians, against the alternative hypothesis that
+ they are not.  <var>x</var> and <var>y</var> can have different lengths and the test
+ assumes that they are independent.
+</p>
+<p> <code>ranksum</code> treats NaN in <var>x</var>, <var>y</var> as missing values.
+ The two-sided p-value is computed by doubling the most significant one-sided
+ value.
+</p>
+<p> <code>[<var>p</var>, <var>h</var>] = ranksum (<var>x</var>, <var>y</var>)</code> also returns the
+ result of the hypothesis test with <code><var>h</var> = 1</code> indicating a rejection
+ of the null hypothesis at the default alpha = 0.05 significance level, and
+ <code><var>h</var> = 0</code> indicating a failure to reject the null hypothesis at the
+ same significance level.
+</p>
+<p> <code>[<var>p</var>, <var>h</var>, <var>stats</var>] = ranksum (<var>x</var>, <var>y</var>)</code> also
+ returns the structure <var>stats</var> with information about the test statistic.
+ It contains the field <code>ranksum</code> with the value of the rank sum test
+ statistic and if computed with the &quot;approximate&quot; method it also contains the
+ value of the z-statistic in the field <code>zval</code>.
+</p>
+<p> <code>[&hellip;] = ranksum (<var>x</var>, <var>y</var>, <var>alpha</var>)</code> or alternatively
+ <code>[&hellip;] = ranksum (<var>x</var>, <var>y</var>, &quot;alpha&quot;, <var>alpha</var>)</code> returns
+ the result of the hypothesis test performed at the significance level ALPHA.
+</p>
+<p> <code>[&hellip;] = ranksum (<var>x</var>, <var>y</var>, &quot;method&quot;, <var>M</var>)</code> defines the
+ computation method of the p-value specified in <var>M</var>, which can be &quot;exact&quot;,
+ &quot;approximate&quot;, or &quot;oldexact&quot;. <var>M</var> must be a single string.  When &quot;method&quot;
+ is unspecified, the default is: &quot;exact&quot; when
+ <code>min (length (<var>x</var>), length (<var>y</var>)) &lt; 10</code> and
+ <code>length (<var>x</var>) + length (<var>y</var>) &lt; 10</code>, otherwise the &quot;approximate&quot;
+ method is used.
+</p>
+ <ul>
+<li>
+ &quot;exact&quot; method uses full enumeration for small total sample size (&lt; 10),
+ otherwise the network algorithm is used for larger samples.
+ </li><li>
+ &quot;approximate&quot; uses normal approximation method for computing the p-value.
+ </li><li>
+ &quot;oldexact&quot; uses full enumeration for any sample size.  Note, that this option
+ can lead to out of memory error for large samples.  Use with caution!
+ </li></ul>
+
+<p> <code>[&hellip;] = ranksum (<var>x</var>, <var>y</var>, &quot;tail&quot;, <var>tail</var>)</code> defines the
+ type of test, which can be &quot;both&quot;, &quot;right&quot;, or &quot;left&quot;.  <var>tail</var> must be a
+ single string.
+</p>
+ <ul>
+<li>
+ &quot;both&quot; &ndash; &quot;medians are not equal&quot; (two-tailed test, default)
+ </li><li>
+ &quot;right&quot; &ndash; &quot;median of X is greater than median of Y&quot; (right-tailed test)
+ </li><li>
+ &quot;left&quot; &ndash; &quot;median of X is less than median of Y&quot; (left-tailed test)
+ </li></ul>
+
+<p> Note: the rank sum statistic is based on the smaller sample of vectors
+ <var>x</var> and <var>y</var>.
+</p>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: mhsample</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Clustering">
+                    <i class="fas fa-list-alt"></i>
+                    Clustering
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>mhsample</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> [<var>smpl</var>, <var>accept</var>] = <b>mhsample</b><i> (<var>start</var>, <var>nsamples</var>, <var>property</var>, <var>value</var>, &hellip;)</i></dt>
+</dl>
+
+<p> Draws <var>nsamples</var> samples from a target stationary distribution <var>pdf</var>
+ using Metropolis-Hastings algorithm.
+</p>
+<div class="ms-5">
+<p> Inputs:
+</p>
+ <ul>
+<li>
+ <var>start</var> is a <var>nchain</var> by <var>dim</var> matrix of starting points for each
+ Markov chain.  Each row is the starting point of a different chain and each
+ column corresponds to a different dimension.
+
+ </li><li>
+ <var>nsamples</var> is the number of samples, the length of each Markov chain.
+ </li></ul>
+
+<p> Some property-value pairs can or must be specified, they are:
+</p>
+<p> (Required) One of:
+</p>
+ <ul>
+<li>
+ &quot;pdf&quot; <var>pdf</var>: a function handle of the target stationary distribution to
+ be sampled.  The function should accept different locations in each row and
+ each column corresponds to a different dimension.
+
+<p> or
+</p>
+ </li><li>
+ &quot;logpdf&quot; <var>logpdf</var>: a function handle of the log of the target stationary
+ distribution to be sampled.  The function should accept different locations
+ in each row and each column corresponds to a different dimension.
+ </li></ul>
+
+<p> In case optional argument <var>symmetric</var> is set to false (the default), one
+ of:
+</p>
+ <ul>
+<li>
+ &quot;proppdf&quot; <var>proppdf</var>: a function handle of the proposal distribution that
+ is sampled from with <var>proprnd</var> to give the next point in the chain.  The
+ function should accept two inputs, the random variable and the current
+ location each input should accept different locations in each row and each
+ column corresponds to a different dimension.
+
+<p> or
+</p>
+ </li><li>
+ &quot;logproppdf&quot; <var>logproppdf</var>: the log of &quot;proppdf&quot;.
+ </li></ul>
+
+<p> The following input property/pair values may be needed depending on the
+ desired outut:
+</p>
+ <ul>
+<li>
+ &quot;proprnd&quot; <var>proprnd</var>: (Required) a function handle which generates random
+ numbers from <var>proppdf</var>.  The function should accept different locations
+ in each row and each column corresponds to a different dimension
+ corresponding with the current location.
+
+ </li><li>
+ &quot;symmetric&quot; <var>symmetric</var>: true or false based on whether <var>proppdf</var> is
+ a symmetric distribution.  If true, <var>proppdf</var> (or <var>logproppdf</var>) need
+ not be specified. The default is false.
+
+ </li><li>
+ &quot;burnin&quot; <var>burnin</var> the number of points to discard at the beginning, the
+ default is 0.
+
+ </li><li>
+ &quot;thin&quot; <var>thin</var>: omits <var>thin</var>-1 of every <var>thin</var> points in the
+ generated Markov chain.  The default is 1.
+
+ </li><li>
+ &quot;nchain&quot; <var>nchain</var>: the number of Markov chains to generate.  The default
+ is 1.
+ </li></ul>
+
+<p> Outputs:
+</p>
+ <ul>
+<li>
+ <var>smpl</var>: a <var>nsamples</var> x <var>dim</var> x <var>nchain</var> tensor of random
+ values drawn from <var>pdf</var>, where the rows are different random values, the
+ columns correspond to the dimensions of <var>pdf</var>, and the third dimension
+ corresponds to different Markov chains.
+
+ </li><li>
+ <var>accept</var> is a vector of the acceptance rate for each chain.
+ </li></ul>
+
+<p> Example : Sampling from a normal distribution
+</p>
+ <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> start = 1;
+ nsamples = 1e3;
+ pdf = @(x) exp (-.5 * x .^ 2) / (pi ^ .5 * 2 ^ .5);
+ proppdf = @(x,y) 1 / 6;
+ proprnd = @(x) 6 * (rand (size (x)) - .5) + x;
+ [smpl, accept] = mhsample (start, nsamples, &quot;pdf&quot;, pdf, &quot;proppdf&quot;, ...
+ proppdf, &quot;proprnd&quot;, proprnd, &quot;thin&quot;, 4);
+ histfit (smpl);
+ </pre><pre class="example"> </pre></td></tr></table>
+
+<p> <strong>See also: </strong>
+rand, 
+  <a href="slicesample.html">slicesample</a>
+</p></div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: @cvpartition/cvpartition</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#CVpartition (class of set partitions for cross-validation, used in crossval)">
+                    <i class="fas fa-list-alt"></i>
+                    CVpartition (class of set partitions for cross-validation, used in crossval)
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>@cvpartition/cvpartition</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>Function File:</u> <var>C</var> = <b>cvpartition</b><i> (<var>X</var>, [<var>partition_type</var>, [<var>k</var>]])</i></dt>
+</dl>
+<p> Create a partition object for cross validation.
+</p>
+<div class="ms-5">
+<p> <var>X</var> may be a positive integer, interpreted as the number of values <var>n</var> to partition, or a vector of length <var>n</var> containing class designations for the elements, in which case the partitioning types <var>KFold</var> and <var>HoldOut</var> attempt to ensure each partition represents the classes proportionately.
+</p>
+<p> <var>partition_type</var> must be one of the following:
+</p>
+ <dl compact="compact">
+<dt> &lsquo;<samp>KFold</samp>&rsquo;</dt>
+</dl>
+<p> Divide set into <var>k</var> equal-size subsets (this is the default, with <var>k</var>=10).
+ </p></dd>
+<dt> &lsquo;<samp>HoldOut</samp>&rsquo;</dt>
+</dl>
+<p> Divide set into two subsets, &quot;training&quot; and &quot;validation&quot;. If <var>k</var> is a fraction, that is the fraction of values put in the validation subset; if it is a positive integer, that is the number of values in the validation subset (by default <var>k</var>=0.1).
+ </p></dd>
+<dt> &lsquo;<samp>LeaveOut</samp>&rsquo;</dt>
+</dl>
+<p> Leave-one-out partition (each element is placed in its own subset).
+ </p></dd>
+<dt> &lsquo;<samp>resubstitution</samp>&rsquo;</dt>
+</dl>
+<p> Training and validation subsets that both contain all the original elements.
+ </p></dd>
+<dt> &lsquo;<samp>Given</samp>&rsquo;</dt>
+</dl>
+<p> Subset indices are as given in <var>X</var>.
+ </p></dd>
+</dl>
+
+<p> The following fields are defined for the &lsquo;<samp>cvpartition</samp>&rsquo; class:
+</p>
+ <dl compact="compact">
+<dt> &lsquo;<samp>classes</samp>&rsquo;</dt>
+</dl>
+<p> Class designations for the elements.
+ </p></dd>
+<dt> &lsquo;<samp>inds</samp>&rsquo;</dt>
+</dl>
+<p> Subset indices for the elements.
+ </p></dd>
+<dt> &lsquo;<samp>n_classes</samp>&rsquo;</dt>
+</dl>
+<p> Number of different classes.
+ </p></dd>
+<dt> &lsquo;<samp>NumObservations</samp>&rsquo;</dt>
+</dl>
+<p> <var>n</var>, number of elements in data set.
+ </p></dd>
+<dt> &lsquo;<samp>NumTestSets</samp>&rsquo;</dt>
+</dl>
+<p> Number of testing subsets.
+ </p></dd>
+<dt> &lsquo;<samp>TestSize</samp>&rsquo;</dt>
+</dl>
+<p> Number of elements in (each) testing subset.
+ </p></dd>
+<dt> &lsquo;<samp>TrainSize</samp>&rsquo;</dt>
+</dl>
+<p> Number of elements in (each) training subset.
+ </p></dd>
+<dt> &lsquo;<samp>Type</samp>&rsquo;</dt>
+</dl>
+<p> Partition type.
+ </p></dd>
+</dl>
+
+<p> <strong>See also: </strong>
+  <a href="crossval.html">crossval</a>
+</p></div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

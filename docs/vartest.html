@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: vartest</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Hypothesis Testing">
+                    <i class="fas fa-list-alt"></i>
+                    Hypothesis Testing
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>vartest</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>h</var> = <b>vartest</b><i> (<var>x</var>, <var>v</var>)</i></dt>
+<dt><u>statistics:</u> <var>h</var> = <b>vartest</b><i> (<var>x</var>, <var>v</var>, <var>name</var>, <var>value</var>)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>] = <b>vartest</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>ci</var>] = <b>vartest</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>ci</var>, <var>stats</var>] = <b>vartest</b><i> (&hellip;)</i></dt>
+</dl>
+
+<p> One-sample test of variance.
+</p>
+<div class="ms-5">
+<p> <code><var>h</var> = vartest (<var>x</var>, <var>v</var>)</code> performs a chi-square test of the
+ hypothesis that the data in the vector <var>x</var> come from a normal
+ distribution with variance <var>v</var>, against the alternative that <var>x</var>
+ comes from a normal distribution with a different variance.  The result is
+ <var>h</var> = 0 if the null hypothesis (&quot;variance is V&quot;) cannot be rejected at
+ the 5% significance level, or <var>h</var> = 1 if the null hypothesis can be
+ rejected at the 5% level.
+</p>
+<p> <var>x</var> may also be a matrix or an N-D array.  For matrices, <code>vartest</code>
+ performs separate tests along each column of <var>x</var>, and returns a vector of
+ results.  For N-D arrays, <code>vartest</code> works along the first non-singleton
+ dimension of <var>x</var>.  <var>v</var> must be a scalar.
+</p>
+<p> <code>vartest</code> treats NaNs as missing values, and ignores them.
+</p>
+<p> <code>[<var>h</var>, <var>pval</var>] = vartest (&hellip;)</code> returns the p-value.  That
+ is the probability of observing the given result, or one more extreme, by
+ chance if the null hypothesisis true.
+</p>
+<p> <code>[<var>h</var>, <var>pval</var>, <var>ci</var>] = vartest (&hellip;)</code> returns a
+ 100 * (1 - <var>alpha</var>)% confidence interval for the true variance.
+</p>
+<p> <code>[<var>h</var>, <var>pval</var>, <var>ci</var>, <var>stats</var>] = vartest (&hellip;)</code>
+ returns a structure with the following fields:
+</p>
+ <table>
+<tr><td width="5%"></td><td width="20%">&quot;chisqstat&quot;</td><td width="75%">the value of the test statistic</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;df&quot;</td><td width="75%">the degrees of freedom of the test</td></tr>
+</table>
+
+<p> <code>[&hellip;] = vartest (&hellip;, <var>name</var>, <var>value</var>), &hellip;</code>
+ specifies one or more of the following name/value pairs:
+</p>
+ <table>
+<thead><tr><th width="5%"></th><th width="20%">Name</th><th width="75%">Value</th></tr></thead>
+<tr><td width="5%"></td><td width="20%">&quot;alpha&quot;</td><td width="75%">the significance level. Default is 0.05.</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;dim&quot;</td><td width="75%">dimension to work along a matrix or an N-D array.</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;tail&quot;</td><td width="75%">a string specifying the alternative hypothesis:</td></tr>
+</table>
+ <table>
+<tr><td width="10%"></td><td width="15%">&quot;both&quot;</td><td width="75%">&quot;variance is not <var>v</var>&quot; (two-tailed, default)</td></tr>
+<tr><td width="10%"></td><td width="15%">&quot;left&quot;</td><td width="75%">&quot;variance is less than <var>v</var>&quot; (left-tailed)</td></tr>
+<tr><td width="10%"></td><td width="15%">&quot;right&quot;</td><td width="75%">&quot;variance is greater than <var>v</var>&quot; (right-tailed)</td></tr>
+</table>
+
+<p> <strong>See also: </strong>
+  <a href="ttest.html">ttest</a>, 
+  <a href="ztest.html">ztest</a>, 
+  <a href="kstest.html">kstest</a>
+</p></div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

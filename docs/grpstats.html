@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: grpstats</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Descriptive Statistics">
+                    <i class="fas fa-list-alt"></i>
+                    Descriptive Statistics
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>grpstats</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>mean</var> = <b>grpstats</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>mean</var> = <b>grpstats</b><i> (<var>x</var>, <var>group</var>)</i></dt>
+<dt><u>statistics:</u> [<var>a</var>, <var>b</var>, &hellip;] = <b>grpstats</b><i> (<var>x</var>, <var>group</var>, <var>whichstats</var>)</i></dt>
+<dt><u>statistics:</u> [<var>a</var>, <var>b</var>, &hellip;] = <b>grpstats</b><i> (<var>x</var>, <var>group</var>, <var>whichstats</var>, <var>alpha</var>)</i></dt>
+</dl>
+
+<p> Summary statistics by group.  <code>grpstats</code> computes groupwise summary
+ statistics, for data in a matrix <var>x</var>.  <code>grpstats</code> treats NaNs as
+ missing values, and removes them.
+</p><div class="ms-5">
+
+<p> <code><var>means</var> = grpstats (<var>x</var>, <var>group</var>)</code>, when X is a matrix of
+ observations, returns the means of each column of <var>x</var> by <var>group</var>.
+ <var>group</var> is a grouping variable defined as a categorical variable,
+ numeric, string array, or cell array of strings.  <var>group</var> can be [] or
+ omitted to compute the mean of the entire sample without grouping.
+</p>
+<p> <code>[<var>a</var>, <var>b</var>, &hellip;] = grpstats (<var>x</var>, <var>group</var>,
+ <var>whichstats</var>)</code>, for a numeric matrix X, returns the statistics specified
+ by <var>whichstats</var>, as separate arrays <var>a</var>, <var>b</var>, &hellip;.
+ <var>whichstats</var> can be a single function name, or a cell array containing
+ multiple function names.  The number of output arguments must match the
+ number of function names in <var>whichstats</var>.
+ Names in <var>whichstats</var> can be chosen from among the following:
+</p>
+ <table>
+<tr><td width="5%"></td><td width="20%">&quot;mean&quot;</td><td width="75%">mean</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;median&quot;</td><td width="75%">median</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;sem&quot;</td><td width="75%">standard error of the mean</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;std&quot;</td><td width="75%">standard deviation</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;var&quot;</td><td width="75%">variance</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;min&quot;</td><td width="75%">minimum value</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;max&quot;</td><td width="75%">maximum value</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;range&quot;</td><td width="75%">maximum - minimum</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;numel&quot;</td><td width="75%">count, or number of elements</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;meanci&quot;</td><td width="75%">95% confidence interval for the mean</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;predci&quot;</td><td width="75%">95% prediction interval for a new observation</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;gname&quot;</td><td width="75%">group name</td></tr>
+</table>
+
+
+<p> <code>[&hellip;] = grpstats (<var>x</var>, <var>group</var>, <var>whichstats</var>,
+ <var>alpha</var>)</code> specifies the confidence level as 100(1-ALPHA)% for the &quot;meanci&quot;
+ and &quot;predci&quot; options.  Default value for <var>alpha</var> is 0.05.
+</p>
+<p> Examples:
+</p>
+ <table><tr><td>&nbsp;</td><td><pre class="example"> load carsmall;
+ [m,p,g] = grpstats (Weight, Model_Year, {&quot;mean&quot;, &quot;predci&quot;, &quot;gname&quot;})
+ n = length(m);
+ errorbar((1:n)',m,p(:,2)-m)
+ set (gca, &quot;xtick&quot;, 1:n, &quot;xticklabel&quot;, g);
+ title (&quot;95% prediction intervals for mean weight by year&quot;)
+ </pre></td></tr></table>
+
+
+<p> <strong>See also: </strong>
+  <a href="grp2idx.html">grp2idx</a>
+</p></div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

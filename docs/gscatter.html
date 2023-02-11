@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: gscatter</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Plotting">
+                    <i class="fas fa-list-alt"></i>
+                    Plotting
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>gscatter</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <b>gscatter</b><i> (<var>x</var>, <var>y</var>, <var>g</var>)</i></dt>
+<dt><u>statistics:</u> <b>gscatter</b><i> (<var>x</var>, <var>y</var>, <var>g</var>, <var>clr</var>, <var>sym</var>, <var>siz</var>)</i></dt>
+<dt><u>statistics:</u> <b>gscatter</b><i> (&hellip;, <var>doleg</var>, <var>xnam</var>, <var>ynam</var>)</i></dt>
+<dt><u>statistics:</u> <var>h</var> = <b>gscatter</b><i> (&hellip;)</i></dt>
+</dl>
+
+<p> Draw a scatter plot with grouped data.
+</p>
+<div class="ms-5">
+<p> <code>gscatter</code> is a utility function to draw a scatter plot of <var>x</var> and
+ <var>y</var>, according to the groups defined by <var>g</var>.  Input <var>x</var> and
+ <var>y</var> are numeric vectors of the same size, while <var>g</var> is either a
+ vector of the same size as <var>x</var> or a character matrix with the same number
+ of rows as the size of <var>x</var>.  As a vector <var>g</var> can be numeric, logical,
+ a character array, a string array (not implemented), a cell string or cell
+ array.
+</p>
+<p> A number of optional inputs change the appearance of the plot:
+ </p><ul>
+<li> <var>&quot;clr&quot;</var>
+ defines the color for each group; if not enough colors are defined by
+ <var>&quot;clr&quot;</var>, <code>gscatter</code> cycles through the specified colors.  Colors can
+ be defined as named colors, as rgb triplets or as indices for the current
+ <code>colormap</code>.  The default value is a different color for each group,
+ according to the current <code>colormap</code>.
+
+ </li><li> <var>&quot;sym&quot;</var>
+ is a char array of symbols for each group; if not enough symbols are defined
+ by <var>&quot;sym&quot;</var>, <code>gscatter</code> cycles through the specified symbols.
+
+ </li><li> <var>&quot;siz&quot;</var>
+ is a numeric array of sizes for each group; if not enough sizes are defined
+ by <var>&quot;siz&quot;</var>, <code>gscatter</code> cycles through the specified sizes.
+
+ </li><li> <var>&quot;doleg&quot;</var>
+ is a boolean value to show the legend; it can be either @qcode{on} (default)
+ or @qcode{off}.
+
+ </li><li> <var>&quot;xnam&quot;</var>
+ is a character array, the name for the x axis.
+
+ </li><li> <var>&quot;ynam&quot;</var>
+ is a character array, the name for the y axis.
+ </li></ul>
+
+<p> Output <var>h</var> is an array of graphics handles to the <code>line</code> object of
+ each group.
+</p>
+</dd></dl>
+
+<p> <strong>See also: </strong>
+scatter
+</p></div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

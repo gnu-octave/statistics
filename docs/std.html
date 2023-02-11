@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: std</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Descriptive Statistics">
+                    <i class="fas fa-list-alt"></i>
+                    Descriptive Statistics
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>std</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>s</var> = <b>std</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>s</var> = <b>std</b><i> (<var>x</var>, <var>w</var>)</i></dt>
+<dt><u>statistics:</u> <var>s</var> = <b>std</b><i> (<var>x</var>, <var>w</var>, &quot;all&quot;)</i></dt>
+<dt><u>statistics:</u> <var>s</var> = <b>std</b><i> (<var>x</var>, <var>w</var>, <var>dim</var>)</i></dt>
+<dt><u>statistics:</u> <var>s</var> = <b>std</b><i> (<var>x</var>, <var>w</var>, <var>vecdim</var>)</i></dt>
+<dt><u>statistics:</u> <var>s</var> = <b>std</b><i> (&hellip;, <var>nanflag</var>)</i></dt>
+<dt><u>statistics:</u> [<var>s</var>, <var>m</var>] = <b>std</b><i> (&hellip;)</i></dt>
+</dl>
+
+<p> Compute the standard deviation of the elements of <var>x</var>.
+</p>
+<div class="ms-5">
+ <ul>
+<li>
+ If <var>x</var> is a vector, then <code>std (<var>x</var>)</code> returns the standard
+ deviation of the elements in <var>x</var> defined as
+ 
+<p>$$ {\rm std}(x) = \sqrt{{1\over N-1} \sum_{i=1}^N |x_i - \bar x |^2} $$
+
+</p> 
+
+ </li><li>
+ If <var>x</var> is a matrix, then <code>std (<var>x</var>)</code> returns a row vector with
+ the standard deviation of each column in <var>x</var>.
+
+ </li><li>
+ If <var>x</var> is a multi-dimensional array, then <code>std (<var>x</var>)</code> operates
+ along the first non-singleton dimension of <var>x</var>.
+ </li></ul>
+
+<p> <code>std (<var>x</var>, <var>w</var>)</code> specifies a weighting scheme.  When <var>w</var> = 0
+ (default), the standard deviation is normalized by N-1 (population standard
+ deviation), where N is the number of observations.  When <var>w</var> = 1, the
+ standard deviation is normalized by the number of observations (sample
+ standard deviation).  To use the default value you may pass an empty input
+ argument [] before entering other options.
+</p>
+<p> <var>w</var> can also be an array of non-negative numbers.  When <var>w</var> is a
+ vector, it must have the same length as the number of elements in the
+ operating dimension of <var>x</var>.  If <var>w</var> is a matrix or n-D array, or the
+ operating dimension is supplied as a <var>vecdim</var> or &quot;all&quot;, <var>w</var> must be
+ the same size as <var>x</var>.  NaN values are permitted in <var>w</var>, will be
+ multiplied with the associated values in <var>x</var>, and can be excluded by the
+ <var>nanflag</var> option.
+</p>
+<p> <code>std (<var>x</var>, [], <var>dim</var>)</code> returns the standard deviation along the
+ operating dimension <var>dim</var> of <var>x</var>.  For <var>dim</var> greater than
+ <code>ndims (<var>x</var>)</code>, then <var>s</var> is returned as zeros of the same size as
+ <var>x</var> and <var>m</var> = <var>x</var>.
+</p>
+<p> <code>std (<var>x</var>, [], <var>vecdim</var>)</code> returns the standard deviation over
+ the dimensions specified in the vector <var>vecdim</var>.  For example, if <var>x</var>
+ is a 2-by-3-by-4 array, then <code>var (<var>x</var>, [1 2])</code> returns a
+ 1-by-1-by-4 array.  Each element of the output array is the standard
+ deviation of the elements on the corresponding page of <var>x</var>.
+ If <var>vecdim</var> indexes all dimensions of <var>x</var>, then it is equivalent to
+ <code>std (<var>x</var>, &quot;all&quot;)</code>.  Any dimension in <var>vecdim</var> greater than
+ <code>ndims (<var>x</var>)</code> is ignored.
+</p>
+<p> <code>std (<var>x</var>, &quot;all&quot;)</code> returns the standard deviation of all the
+ elements in <var>x</var>.  The optional flag &quot;all&quot; cannot be used together with
+ <var>dim</var> or <var>vecdim</var> input arguments.
+</p>
+<p> <code>std (&hellip;, <var>nanflag</var>)</code> specifies whether to exclude NaN values
+ from the calculation using any of the input argument combinations in previous
+ syntaxes.  The default value for <var>nanflag</var> is &quot;includenan&quot;, and keeps NaN
+ values in the calculation. To exclude NaN values, set the value of
+ <var>nanflag</var> to &quot;omitnan&quot;.
+</p>
+<p> <code>[<var>s</var>, <var>m</var>] = std (&hellip;)</code> also returns the mean of the
+ elements of <var>x</var> used to calculate the standard deviation.  If <var>s</var> is
+ the weighted standard deviation, then <var>m</var> is the weighted mean.
+</p>
+<p> <strong>See also: </strong>
+  <a href="var.html">var</a>, 
+  <a href="mean.html">mean</a>
+</p></div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

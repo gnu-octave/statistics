@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: pca</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Regression">
+                    <i class="fas fa-list-alt"></i>
+                    Regression
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>pca</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>coeff</var> = <b>pca</b><i>(<var>X</var>)</i></dt>
+<dt><u>statistics:</u> <var>coeff</var> = <b>pca</b><i>(<var>X</var>, Name, Value)</i></dt>
+<dt><u>statistics:</u> [<var>coeff</var>, <var>score</var>, <var>latent</var>] = <b>pca</b><i>(&hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>coeff</var>, <var>score</var>, <var>latent</var>, <var>tsquared</var>] = <b>pca</b><i>(&hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>coeff</var>, <var>score</var>, <var>latent</var>, <var>tsquared</var>, <var>explained</var>, <var>mu</var>] = <b>pca</b><i>(&hellip;)</i></dt>
+</dl>
+
+<p> Performs a principal component analysis on a data matrix X.
+</p>
+<div class="ms-5">
+<p> A principal component analysis of a data matrix of <code>n</code> observations in a
+ <code>p</code>-dimensional space returns a <code>p</code>-by-<code>p</code> transformation
+ matrix, to perform a change of basis on the data. The first component of the
+ new basis is the direction that maximizes the variance of the projected data.
+</p>
+<p> Input argument:
+ </p><ul>
+<li>
+ <var>x</var> : a <code>n</code>-by-<code>p</code> data matrix
+ </li></ul>
+
+<p> Pair arguments:
+ </p><ul>
+<li>
+ <code>Algorithm</code> : the algorithm to use, it can be either <code>eig</code>,
+ for eigenvalue decomposition, or <code>svd</code> (default), for singular value
+ decomposition
+ </li><li>
+ <code>Centered</code> : boolean indicator for centering the observation data, it is
+ <code>true</code> by default
+ </li><li>
+ <code>Economy</code> : boolean indicator for the economy size output, it is
+ <code>true</code> by default; <code>pca</code> returns only the elements of <var>latent</var>
+ that are not necessarily zero, and the corresponding columns of <var>coeff</var>
+ and <var>score</var>, that is, when <code>n &lt;= p</code>, only the first <code>n - 1</code>
+ </li><li>
+ <code>NumComponents</code> : the number of components <code>k</code> to return, if
+ <code>k &lt; p</code>, then only the first <code>k</code> columns of <var>coeff</var>
+ and <var>score</var> are returned
+ </li><li>
+ <code>Rows</code> : action to take with missing values, it can be either
+ <code>complete</code> (default), missing values are removed before computation,
+ <code>pairwise</code> (only with algorithm <code>eig</code>), the covariance of rows with
+ missing data is computed using the available data, but the covariance matrix
+ could be not positive definite, which triggers the termination of <code>pca</code>,
+ <code>complete</code>, missing values are not allowed, <code>pca</code> terminates with
+ an error if there are any
+ </li><li>
+ <code>Weights</code> : observation weights, it is a vector of positive values of
+ length <code>n</code>
+ </li><li>
+ <code>VariableWeights</code> : variable weights, it can be either a vector of
+ positive values of length <code>p</code> or the string <code>variance</code> to use the
+ sample variance as weights
+ </li></ul>
+
+<p> Return values:
+ </p><ul>
+<li>
+ <var>coeff</var> : the principal component coefficients, a <code>p</code>-by-<code>p</code>
+ transformation matrix
+ </li><li>
+ <var>score</var> : the principal component scores, the representation of <var>x</var>
+ in the principal component space
+ </li><li>
+ <var>latent</var> : the principal component variances, i.e., the eigenvalues of
+ the covariance matrix of <var>x</var>
+ </li><li>
+ <var>tsquared</var> : Hotelling&rsquo;s T-squared Statistic for each observation in
+ <var>x</var>
+ </li><li>
+ <var>explained</var> : the percentage of the variance explained by each principal
+ component
+ </li><li>
+ <var>mu</var> : the estimated mean of each variable of <var>x</var>, it is zero if the
+ data are not centered
+ </li></ul>
+
+<p> Matlab compatibility note:  the alternating least square method &rsquo;als&rsquo; and
+ associated options &rsquo;Coeff0&rsquo;, &rsquo;Score0&rsquo;, and &rsquo;Options&rsquo; are not yet implemented
+</p>
+ <a name="References"></a>
+<h3 class="subheading">References</h3>
+
+ <ol>
+<li>
+ Jolliffe, I. T., Principal Component Analysis, 2nd Edition, Springer, 2002
+
+</li></ol>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

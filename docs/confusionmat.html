@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: confusionmat</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Clustering">
+                    <i class="fas fa-list-alt"></i>
+                    Clustering
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>confusionmat</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>C</var> = <b>confusionmat</b><i> (<var>group</var>, <var>grouphat</var>)</i></dt>
+<dt><u>statistics:</u> <var>C</var> = <b>confusionmat</b><i> (<var>group</var>, <var>grouphat</var>, &quot;Order&quot;, <var>grouporder</var>)</i></dt>
+<dt><u>statistics:</u> [<var>C</var>, <var>order</var>] = <b>confusionmat</b><i> (<var>group</var>, <var>grouphat</var>)</i></dt>
+</dl>
+
+<p> Compute a confusion matrix for classification problems
+</p>
+<div class="ms-5">
+<p> <code>confusionmat</code> returns the confusion matrix <var>C</var> for the group of
+ actual values <var>group</var> and the group of predicted values <var>grouphat</var>.
+ The row indices of the confusion matrix represent actual values, while the
+ column indices represent predicted values. The indices are the same for both
+ actual and predicted values, so the confusion matrix is a square matrix.
+ Each element of the matrix represents the number of matches between a given
+ actual value (row index) and a given predicted value (column index), hence
+ correct matches lie on the main diagonal of the matrix.
+ The order of the rows and columns is returned in <var>order</var>.
+</p>
+<p> <var>group</var> and <var>grouphat</var> must have the same number of observations
+ and the same data type.
+ Valid data types are numeric vectors, logical vectors, character arrays,
+ string arrays (not implemented yet), cell arrays of strings.
+</p>
+<p> The order of the rows and columns can be specified by setting the
+ <var>grouporder</var> variable. The data type of <var>grouporder</var> must be the
+ same of <var>group</var> and <var>grouphat</var>.
+</p>
+<p> MATLAB compatibility: Octave misses string arrays and categorical vectors.
+</p>
+<p> <strong>See also: </strong>
+  <a href="crosstab.html">crosstab</a>
+</p></div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

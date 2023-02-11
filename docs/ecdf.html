@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: ecdf</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Plotting">
+                    <i class="fas fa-list-alt"></i>
+                    Plotting
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>ecdf</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> [<var>f</var>, <var>x</var>] = <b>ecdf</b><i> (<var>y</var>)</i></dt>
+<dt><u>statistics:</u> [<var>f</var>, <var>x</var>, <var>flo</var>, <var>fup</var>] = <b>ecdf</b><i> (<var>y</var>)</i></dt>
+<dt><u>statistics:</u> <b>ecdf</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> <b>ecdf</b><i> (<var>ax</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>ecdf</b><i> (<var>y</var>, <var>name</var>, <var>value</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>ecdf</b><i> (<var>ax</var>, <var>y</var>, <var>name</var>, <var>value</var>, &hellip;)</i></dt>
+</dl>
+
+<p> Empirical (Kaplan-Meier) cumulative distribution function.
+</p>
+<div class="ms-5">
+<p> <code>[<var>f</var>, <var>x</var>] = ecdf (<var>y</var>)</code> calculates the Kaplan-Meier
+ estimate of the cumulative distribution function (cdf), also known as the
+ empirical cdf.  <var>y</var> is a vector of data values.  <var>f</var> is a vector of
+ values of the empirical cdf evaluated at <var>x</var>.
+</p>
+<p> <code>[<var>f</var>, <var>x</var>, <var>flo</var>, <var>fup</var>] = ecdf (<var>y</var>)</code> also returns
+ lower and upper confidence bounds for the cdf.  These bounds are calculated
+ using Greenwood&rsquo;s formula, and are not simultaneous confidence bounds.
+</p>
+<p> <code>ecdf (&hellip;)</code> without output arguments produces a plot of the
+ empirical cdf.
+</p>
+<p> <code>ecdf (<var>ax</var>, &hellip;)</code> plots into existing axes <var>ax</var>.
+</p>
+<p> <code>[&hellip;] = ecdf (<var>y</var>, <var>name</var>, <var>value</var>, &hellip;)</code> specifies
+ additional parameter name/value pairs chosen from the following:
+</p>
+ <table>
+<thead><tr><th width="20%"><var>name</var></th><th width="80%"><var>value</var></th></tr></thead>
+<tr><td width="20%">&quot;censoring&quot;</td><td width="80%">A boolean vector of the same size as Y that is 1 for
+ observations that are right-censored and 0 for observations that are observed
+ exactly.  Default is all observations observed exactly.</td></tr>
+<tr><td width="20%">&quot;frequency&quot;</td><td width="80%">A vector of the same size as Y containing non-negative
+ integer counts.  The jth element of this vector gives the number of times the
+ jth element of Y was observed.  Default is 1 observation per Y element.</td></tr>
+<tr><td width="20%">&quot;alpha&quot;</td><td width="80%">A value <var>alpha</var> between 0 and 1 specifying the
+ significance level.  Default is 0.05 for 5% significance.</td></tr>
+<tr><td width="20%">&quot;function&quot;</td><td width="80%">The type of function returned as the F output argument,
+ chosen from &quot;cdf&quot; (the default), &quot;survivor&quot;, or &quot;cumulative hazard&quot;.</td></tr>
+<tr><td width="20%">&quot;bounds&quot;</td><td width="80%">Either &quot;on&quot; to include bounds or &quot;off&quot; (the default) to
+ omit them.  Used only for plotting.</td></tr>
+</table>
+
+<p> Type <code>demo ecdf</code> to see examples of usage.
+</p>
+<p> <strong>See also: </strong>
+  <a href="cdfplot.html">cdfplot</a>, 
+ecdfhist
+</p></div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

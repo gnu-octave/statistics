@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: evinv</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Distributions">
+                    <i class="fas fa-list-alt"></i>
+                    Distributions
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>evinv</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>x</var> <b>=</b><i> evinv (<var>p</var>)</i></dt>
+<dt><u>statistics:</u> <var>x</var> <b>=</b><i> evcdf (<var>p</var>, <var>mu</var>)</i></dt>
+<dt><u>statistics:</u> <var>x</var> <b>=</b><i> evinv (<var>p</var>, <var>mu</var>, <var>sigma</var>)</i></dt>
+<dt><u>statistics:</u> [ <b><var>x</var></b><i>, <var>xlo</var>, <var>xup</var>] = evinv (<var>x</var>, <var>mu</var>, <var>sigma</var>, <var>pcov</var>)</i></dt>
+<dt><u>statistics:</u> [ <b><var>x</var></b><i>, <var>xlo</var>, <var>xup</var>] = evinv (<var>x</var>, <var>mu</var>, <var>sigma</var>, <var>pcov</var>, <var>alpha</var>)</i></dt>
+</dl>
+
+<p> Inverse of the extreme value cumulative distribution function (iCDF).
+</p>
+<div class="ms-5">
+<p> For each element of <var>p</var>, compute the inverse cdf for a type 1 extreme
+ value distribution with location parameter <var>mu</var> and scale parameter
+ <var>sigma</var>.  The size of <var>x</var> is the common size of <var>p</var>, <var>mu</var> and
+ <var>sigma</var>.  A scalar input functions as a constant matrix of the same size
+ as the other inputs.
+</p>
+<p> Default values are <var>mu</var> = 0, <var>sigma</var> = 1.
+</p>
+<p> When called with three output arguments, <code>[<var>x</var>, <var>xlo</var>,
+ <var>xup</var>]</code> it computes the confidence bounds for <var>x</var> when the input
+ parameters <var>mu</var> and <var>sigma</var> are estimates.  In such case, <var>pcov</var>,
+ a 2-by-2 matrix containing the covariance matrix of the estimated parameters,
+ is necessary.  Optionally, <var>alpha</var> has a default value of 0.05, and
+ specifies 100 * (1 - <var>alpha</var>)% confidence bounds. <var>xlo</var> and <var>xup</var>
+ are arrays of the same size as <var>x</var> containing the lower and upper
+ confidence bounds.
+</p>
+<p> The type 1 extreme value distribution is also known as the Gumbel
+ distribution.  The version used here is suitable for modeling minima; the
+ mirror image of this distribution can be used to model maxima by negating
+ <var>x</var>.  If <var>y</var> has a Weibull distribution, then
+ <code><var>x</var> = log (<var>y</var>)</code> has the type 1 extreme value distribution.
+</p>
+<p> <strong>See also: </strong>
+  <a href="evcdf.html">evcdf</a>, 
+  <a href="evpdf.html">evpdf</a>, 
+  <a href="evrnd.html">evrnd</a>, 
+  <a href="evfit.html">evfit</a>, 
+  <a href="evlike.html">evlike</a>, 
+  <a href="evstat.html">evstat</a>
+</p></div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

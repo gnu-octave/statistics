@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: chi2gof</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Hypothesis Testing">
+                    <i class="fas fa-list-alt"></i>
+                    Hypothesis Testing
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>chi2gof</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>h</var> = <b>chi2gof</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>p</var>] = <b>chi2gof</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>p</var>, <var>h</var>, <var>stats</var>] = <b>chi2gof</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>chi2gof</b><i> (<var>x</var>, <var>name1</var>, <var>value1</var>, &hellip;)</i></dt>
+</dl>
+
+<p> Chi-square goodness-of-fit test.
+</p>
+<div class="ms-5">
+<p> <code>chi2gof</code> performs a chi-square goodness-of-fit test for discrete or
+ continuous distributions.  The test is performed by grouping the data into
+ bins, calculating the observed and expected counts for those bins, and
+ computing the chi-square test statistic
+</p> 
+<p>$$ \chi ^ 2 = \sum_{i=1}^N \left (O_i - E_i \right) ^ 2 / E_i $$
+
+</p> 
+<p> where O is the observed counts and E is the expected counts.  This test
+ statistic has an approximate chi-square distribution when the counts are
+ sufficiently large.
+</p>
+<p> Bins in either tail with an expected count less than 5 are pooled with
+ neighboring bins until the count in each extreme bin is at least 5.  If
+ bins remain in the interior with counts less than 5, CHI2GOF displays a
+ warning.  In that case, you should use fewer bins, or provide bin centers
+ or binedges, to increase the expected counts in all bins.
+</p>
+<p> <code><var>h</var> = chi2gof (<var>x</var>)</code> performs a chi-square goodness-of-fit test
+ that the data in the vector X are a random sample from a normal distribution
+ with mean and variance estimated from <var>x</var>.  The result is <var>h</var> = 0 if
+ the null hypothesis (that <var>x</var> is a random sample from a normal
+ distribution) cannot be rejected at the 5% significance level, or <var>h</var> = 1
+ if the nullhypothesis can be rejected at the 5% level.  <code>chi2gof</code> uses
+ by default 10 bins (&rsquo;nbins&rsquo;), and compares the test statistic to a chi-square
+ distribution with &rsquo;nbins&rsquo; - 3 degrees of freedom, to take into account that
+ two parameters were estimated.
+</p>
+<p> <code>[<var>h</var>, <var>p</var>] = chi2gof (<var>x</var>)</code> also returns the p-value <var>p</var>,
+ which is the probability of observing the given result, or one more extreme,
+ by chance if the null hypothesis is true.  If there are not enough degrees of
+ freedom to carry out the test, <var>p</var> is NaN.
+</p>
+<p> <code>[<var>h</var>, <var>p</var>, <var>stats</var>] = chi2gof (<var>x</var>)</code> also returns a
+ <var>stats</var> structure with the following fields:
+</p>
+ <table>
+<tr><td width="5%"></td><td width="30%">&quot;chi2stat&quot;</td><td width="65%">Chi-square statistic</td></tr>
+<tr><td width="5%"></td><td width="30%">&quot;df&quot;</td><td width="65%">Degrees of freedom</td></tr>
+<tr><td width="5%"></td><td width="30%">&quot;binedges&quot;</td><td width="65%">Vector of bin binedges after pooling</td></tr>
+<tr><td width="5%"></td><td width="30%">&quot;O&quot;</td><td width="65%">Observed count in each bin</td></tr>
+<tr><td width="5%"></td><td width="30%">&quot;E&quot;</td><td width="65%">Expected count in each bin</td></tr>
+</table>
+
+<p> <code>[&hellip;] = chi2gof (<var>x</var>, <var>name1</var>, <var>value1</var>, &hellip;)</code>
+ specifies optional argument name/value pairs chosen from the following list.
+</p>
+ <table>
+<thead><tr><th width="5%"></th><th width="20%">Name</th><th width="75%">Value</th></tr></thead>
+<tr><td width="5%"></td><td width="20%">&quot;nbins&quot;</td><td width="75%">The number of bins to use.  Default is 10.</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;binctrs&quot;</td><td width="75%">A vector of bin centers.</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;binedges&quot;</td><td width="75%">A vector of bin binedges.</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;cdf&quot;</td><td width="75%">A fully specified cumulative distribution function or a
+ a function handle. Alternatively, a cell array whose first element is a
+ function handle and all later elements are parameter values, one per cell.
+ provided in a cell array whose first element is a function handle, and whose
+ later elements are parameter values, one per cell.  The function must take X
+ values as its first argument, and other parameters as later arguments.</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;expected&quot;</td><td width="75%">A vector with one element per bin specifying the
+ expected counts for each bin.</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;nparams&quot;</td><td width="75%">The number of estimated parameters; used to adjust
+ the degrees of freedom to be &rsquo;nbins&rsquo; - 1 - &rsquo;nparams&rsquo;, where &rsquo;nbins&rsquo; is the
+ number of bins.</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;emin&quot;</td><td width="75%">The minimum allowed expected value for a bin; any bin
+ in either tail having an expected value less than this amount is pooled with
+ a neighboring bin.  Use the value 0 to prevent pooling.  Default is 5.</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;frequency&quot;</td><td width="75%">A vector of the same length as <var>x</var> containing
+ the frequency of the corresponding <var>x</var> values.</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;alpha&quot;</td><td width="75%">An ALPHA value such that the hypothesis is rejected
+ if <var>p</var> &lt; ALPHA.  Default is ALPHA = 0.05.</td></tr>
+</table>
+
+<p> You should specify either &quot;cdf&quot; or &quot;expected&quot; parameters, but not both.  If
+ your &quot;cdf&quot; input contains extra parameters, these are accounted for
+ automatically and there is no need to specify &quot;nparams&quot;.  If your &quot;expected&quot;
+ input depends on estimated parameters, you should use the &quot;nparams&quot; parameter
+ to ensure that the degrees of freedom for the test is correct.
+</p>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

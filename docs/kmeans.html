@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: kmeans</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Clustering">
+                    <i class="fas fa-list-alt"></i>
+                    Clustering
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>kmeans</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>idx</var> = <b>kmeans</b><i> (<var>data</var>, <var>k</var>)</i></dt>
+<dt><u>statistics:</u> [<var>idx</var>, <var>centers</var>] = <b>kmeans</b><i> (<var>data</var>, <var>k</var>)</i></dt>
+<dt><u>statistics:</u> [<var>idx</var>, <var>centers</var>, <var>sumd</var>] = <b>kmeans</b><i> (<var>data</var>, <var>k</var>)</i></dt>
+<dt><u>statistics:</u> [<var>idx</var>, <var>centers</var>, <var>sumd</var>, <var>dist</var>] = <b>kmeans</b><i> (<var>data</var>, <var>k</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>kmeans</b><i> (<var>data</var>, <var>k</var>, <var>param1</var>, <var>value1</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>kmeans</b><i> (<var>data</var>, [], <code>&quot;start&quot;</code>, <var>start</var>, &hellip;)</i></dt>
+</dl>
+
+<p> Perform a <var>k</var>-means clustering of the <var>N</var>x<var>D</var> matrix <var>data</var>.
+</p>
+<div class="ms-5">
+<p> If parameter @qcode{&quot;start&quot;} is specified, then <var>k</var> may be empty
+ in which case <var>k</var> is set to the number of rows of <var>start</var>.
+</p>
+<p> The outputs are:
+</p>
+ <dl compact="compact">
+<dt> <code><var>idx</var></code></dt>
+</dl>
+<p> An <var>N</var>x1 vector whose <var>i</var>th element is the class to which row <var>i</var>
+ of <var>data</var> is assigned.
+</p>
+ </dd>
+<dt> <code><var>centers</var></code></dt>
+</dl>
+<p> A <var>K</var>x<var>D</var> array whose <var>i</var>th row is the centroid of cluster
+ <var>i</var>.
+</p>
+ </dd>
+<dt> <code><var>sumd</var></code></dt>
+</dl>
+<p> A <var>k</var>x1 vector whose <var>i</var>th entry is the sum of the distances
+ from samples in cluster <var>i</var> to centroid <var>i</var>.
+</p>
+ </dd>
+<dt> <code><var>dist</var></code></dt>
+</dl>
+<p> An <var>N</var>x<var>k</var> matrix whose <var>i</var><var>j</var>th element is
+ the distance from sample <var>i</var> to centroid <var>j</var>.
+ </p></dd>
+</dl>
+
+<p> The following parameters may be placed in any order.  Each parameter
+ must be followed by its value.
+</p>
+ <dl compact="compact">
+<dt> <code><var>Start</var></code></dt>
+</dl>
+<p> The initialization method for the centroids.
+ </p><dl compact="compact">
+<dt> <code><code>plus</code></code></dt>
+</dl>
+<p>       (Default) The k-means++ algorithm.
+ </p></dd>
+<dt> <code><code>sample</code></code></dt>
+</dl>
+<p>       A subset of <var>k</var> rows from <var>data</var>,
+       sampled uniformly without replacement.
+ </p></dd>
+<dt> <code><code>cluster</code></code></dt>
+</dl>
+<p>       Perform a pilot clustering on 10% of the rows of <var>data</var>.
+ </p></dd>
+<dt> <code><code>uniform</code></code></dt>
+</dl>
+<p>       Each component of each centroid is drawn uniformly
+       from the interval between the maximum and minimum values of that
+       component within <var>data</var>.
+       This performs poorly and is implemented only for Matlab compatibility.
+ </p></dd>
+<dt> <code>A</code></dt>
+</dl>
+<p>       A <var>k</var>x<var>D</var>x<var>r</var> matrix, where <var>r</var> is the number of
+       replicates.
+ </p></dd>
+</dl>
+
+ </dd>
+<dt> <code><var>Replicates</var></code></dt>
+</dl>
+<p> An positive integer specifying the number of independent clusterings to
+ perform.
+ The output values are the values for the best clustering, i.e.,
+ the one with the smallest value of <var>sumd</var>.
+ If <var>Start</var> is numeric, then <var>Replicates</var> defaults to
+ (and must equal) the size of the third dimension of <var>Start</var>.
+ Otherwise it defaults to 1.
+</p>
+ </dd>
+<dt> <code><var>MaxIter</var></code></dt>
+</dl>
+<p> The maximum number of iterations to perform for each replicate.
+ If the maximum change of any centroid is less than 0.001, then
+ the replicate terminates even if <var>MaxIter</var> iterations have no occurred.
+ The default is 100.
+</p>
+ </dd>
+<dt> <code><var>Distance</var></code></dt>
+</dl>
+<p> The distance measure used for partitioning and calculating centroids.
+</p>
+ <dl compact="compact">
+<dt> <code>@qcode{sqeuclidean}</code></dt>
+</dl>
+<p> The squared Euclidean distance. i.e. the sum of the squares of the
+ differences between corresponding components.  In this case, the centroid is
+ the arithmetic mean of all samples in its cluster.
+ This is the only distance for which this algorithm is truly &quot;k-means&quot;.
+</p>
+ </dd>
+<dt> <code>@qcode{cityblock}</code></dt>
+</dl>
+<p> The sum metric, or L1 distance, i.e.,
+ the sum of the absolute differences between corresponding components.
+ In this case, the centroid is the median of all samples in its cluster.
+ This gives the k-medians algorithm.
+</p>
+ </dd>
+<dt> <code>@qcode{cosine}</code></dt>
+</dl>
+<p> One minus the cosine of the included angle between points (treated as
+ vectors). Each centroid is the mean of the points in that cluster, after
+ normalizing those points to unit Euclidean length.
+</p>
+ </dd>
+<dt> <code>@qcode{correlation}</code></dt>
+</dl>
+<p> One minus the sample correlation between points (treated as sequences of
+ values). Each centroid is the component-wise mean of the points in that
+ cluster, after centering and normalizing those points to zero mean and unit
+ standard deviation.
+</p>
+ </dd>
+<dt> <code>@qcode{hamming}</code></dt>
+</dl>
+<p> The number of components in which the sample and the centroid differ.
+ In this case, the centroid is the median of all samples in its cluster.
+ Unlike Matlab, Octave allows non-logical <var>data</var>.
+</p>
+</dd>
+</dl>
+
+ </dd>
+<dt> <code><var>EmptyAction</var></code></dt>
+</dl>
+<p> What to do when a centroid is not the closest to any data sample.
+</p>
+ <dl compact="compact">
+<dt> <code>@qcode{error}</code></dt>
+</dl>
+<p>       Throw an error.
+ </p></dd>
+<dt> <code>@qcode{singleton}</code></dt>
+</dl>
+<p>       (Default) Select the row of <var>data</var> that has the highest error and
+       use that as the new centroid.
+ </p></dd>
+<dt> <code>@qcode{drop}</code></dt>
+</dl>
+<p>       Remove the centroid, and continue computation with one fewer centroid.
+       The dimensions of the outputs <var>centroids</var> and <var>d</var>
+       are unchanged, with values for omitted centroids replaced by NA.
+</p>
+</dd>
+</dl>
+
+ </dd>
+<dt> <code><var>Display</var></code></dt>
+</dl>
+<p> Display a text summary.
+ </p><dl compact="compact">
+<dt> <code>@qcode{off}</code></dt>
+</dl>
+<p>       (Default) Display no summary.
+ </p></dd>
+<dt> <code>@qcode{final}</code></dt>
+</dl>
+<p>       Display a summary for each clustering operation.
+ </p></dd>
+<dt> <code>@qcode{iter}</code></dt>
+</dl>
+<p>       Display a summary for each iteration of a clustering operation.
+</p>
+</dd>
+</dl>
+</dd>
+</dl>
+
+<p> Example:
+</p>
+<p> [~,c] = kmeans (rand(10, 3), 2, &quot;emptyaction&quot;, &quot;singleton&quot;);
+</p>
+<p> <strong>See also: </strong>
+  <a href="linkage.html">linkage</a>
+</p></div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>
