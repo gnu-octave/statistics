@@ -25,8 +25,8 @@
 ## distances @var{d} and the euclidean distances @var{y}.
 ## @tex
 ## \def\frac#1#2{{\begingroup#1\endgroup\over#2}}
-## $$ c = \frac {\sum _{i<j}(y(i,j)-{\bar {y}})(d(i,j)-{\bar {d}})}{\sqrt
-## {[\sum _{i<j}(y(i,j)-{\bar {y}})^{2}][\sum _{i<j}(d(i,j)-{\bar {d}})^{2}]}}$$
+## $$ c = \frac {\sum_{i < j}(Y_{ij}-{\bar {y}})(Z_{ij}-{\bar{z}})}
+## {\sqrt{\sum_{i < j}(Y_{ij}-{\bar {y}})^2(Z_{ij}-{\bar{z}})^2}}
 ## @end tex
 ##
 ## It is a measure of the similarity between the distance of the leaves, as seen
