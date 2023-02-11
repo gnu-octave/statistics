@@ -23,7 +23,6 @@
 ## @deftypefnx {statistics} @var{m} = median (@var{x}, @var{vecdim})
 ## @deftypefnx {statistics} @var{m} = median (@dots{}, @var{outtype})
 ## @deftypefnx {statistics} @var{m} = median (@dots{}, @var{nanflag})
-##
 ## Compute the median value of the elements of @var{x}.
 ##
 ## When the elements of @var{x} are sorted, say
@@ -241,9 +240,8 @@ function m = median (x, varargin)
       dim = 2;
       sz_out = [1, 1];
 
-    elseif (isempty (x) && isequal (szx, [0, 0]))
+    elseif (ndx == 2 && szx == [0, 0])
       ## Special case []: Do not apply sz_out(dim)=1 change
-      ##   (check isempty first to reduce overhead on non-emptys)
       dim = 1;
       sz_out = [1, 1];
 
@@ -278,6 +276,10 @@ function m = median (x, varargin)
   endif
 
   ## Permute dim to simplify all operations along dim1.  At func. end ipermute.
+
+  ## FIXME: for very large data sets, flattening all vecdim dimensions into dim1
+  ##        could hit index type limits
+
   if ((length (dim) > 1) || (dim != 1 && ! isvector (x)))
     perm_vect = 1 : ndx;
 
@@ -298,7 +300,7 @@ function m = median (x, varargin)
       num_dim = prod (szx(dim));
       szx(dim) = [];
       szx = [ones(1, length(dim)), szx];
-      szx(1) = prod (num_dim);
+      szx(1) = num_dim;
       x = reshape (x, szx);
       dim = 1;
     endif
@@ -307,13 +309,14 @@ function m = median (x, varargin)
   endif
 
   ## Find column locations of NaNs
-  hasnan = any (isnan (x), dim);
-  if (! hasnan(:) && omitnan)
-    ## Don't use omitnan path if no NaNs are present
+  nanfree = ! any (isnan (x), dim);
+  if (omitnan && nanfree(:))
+    ## Don't use omitnan path if no NaNs are present. Prevents any data types
+    ## without a defined NaN from following the omitnan codepath.
     omitnan = 0;
   endif
 
-  x = sort (x, dim); # Note- pushes any NaN's to end
+  x = sort (x, dim); # Note: pushes any NaN's to end for omitnan compatability
 
   if (omitnan)
     ## Ignore any NaN's in data. Each operating vector might have a
@@ -345,49 +348,78 @@ function m = median (x, varargin)
       endif
 
       ## Grab kth value, k possibly different for each column
-      x_idx_odd = sub2ind (szx, (k(m_idx_odd))(:)', ...
-                             (1 : szx(2))(m_idx_odd)(:)');
-      x_idx_even = sub2ind (szx, ...
-                             [(k(m_idx_even))(:)'; (k(m_idx_even) + 1)(:)'], ...
-                               (1 : szx(2))(m_idx_even)([1 1], :));
-
-      m(m_idx_odd) = x(x_idx_odd);
-      m(m_idx_even) = sum (x(x_idx_even), 1) / 2;
+      if (any (m_idx_odd(:)))
+        x_idx_odd = sub2ind (szx, k(m_idx_odd), find (m_idx_odd));
+        m(m_idx_odd) = x(x_idx_odd);
+      endif
+      if (any (m_idx_even(:)))
+        k_even = k(m_idx_even)(:);
+        x_idx_even = sub2ind (szx, [k_even, k_even+1], ...
+                                (find (m_idx_even))(:,[1 1]));
+        m(m_idx_even) = sum (x(x_idx_even), 2) / 2;
+      endif
     endif
 
   else
     ## No "omitnan". All 'vectors' uniform length.
-    if (! all (hasnan))
+    ## All types without a NaN value will use this path.
+    if (all (!nanfree))
+      m = NaN (sz_out);
 
+    else
       if (isvector (x))
         n = length (x);
         k = floor ((n + 1) / 2);
-        if (mod (n, 2))
-          ## Odd
-          m = x(k);
-        else
+
+        m = x(k);
+        if (! mod (n, 2))
           ## Even
-          m = (x(k) + x(k + 1)) / 2;
+          if (any (isa (x, "integer")))
+            ## avoid int overflow issues
+            m2 = x(k+1);
+            if (sign(m) != sign(m2))
+              m += m2;
+              m /= 2;
+            else
+              m += (m2 - m) / 2;
+            endif
+          else
+            m += (x(k+1) - m) / 2;
+          endif
         endif
 
       else
-        ## Nonvector, all operations permuted to be along dim 1
+        ## Nonvector, all operations were permuted to be along dim 1
         n = szx(1);
         k = floor ((n + 1) / 2);
-        m = NaN ([1, szx(2 : end)]);
-        if (mod (n, 2))
-          ## Odd
-          m(1, :) = x(k, :);
+
+        if (isfloat (x))
+          m = NaN ([1, szx(2 : end)]);
         else
+          m = zeros ([1, szx(2 : end)], outtype);
+        endif
+
+        if (! mod (n, 2))
           ## Even
-          m(1, :) = (x(k, :) + x(k + 1, :)) / 2;
+          if (any (isa(x, "integer")))
+            ## avoid int overflow issues
+
+            ## Use flattened index to simplify n-D operations
+            m(1,:) = x(k, :);
+            m2 = x(k+1, :);
+
+            samesign = prod (sign ([m(1,:); m2]), 1) == 1;
+            m(1,:) = samesign .* m(1,:) + ...
+                       (m2 + !samesign .* m(1,:) - samesign .* m(1,:)) / 2;
+
+          else
+            m(nanfree) = (x(k, nanfree) + x(k+1, nanfree)) / 2;
+          endif
+        else
+          ## Odd. Use flattened index to simplify n-D operations
+          m(nanfree) = x(k, nanfree);
         endif
       endif
-      if (any (hasnan(:)))
-        m(hasnan) = NaN;
-      endif
-    else
-      m = NaN (sz_out);
     endif
   endif
 
@@ -609,6 +641,48 @@ endfunction
 %!assert (median (int8 ([])), int8 (NaN))
 %!assert (median (single ([1, 3, 4])), single (3))
 %!assert (median (single ([1, 3, NaN])), single (NaN))
+
+## Test same sign int overflow when getting mean of even number of values
+%!assert <54567> (median (uint8 ([253, 255])), uint8 (254))
+%!assert <54567> (median (uint8 ([253, 254])), uint8 (254))
+%!assert <54567> (median (int8 ([127, 126, 125, 124; 1 3 5 9])), ...
+%!                  int8 ([64 65 65 67]))
+%!assert <54567> (median (int8 ([127, 126, 125, 124; 1 3 5 9]), 2), ...
+%!                  int8 ([126; 4]))
+%!assert <54567> (median (int64 ([intmax("int64"), intmax("int64")-2])), ...
+%!                  intmax ("int64") - 1)
+%!assert <54567> (median ( ...
+%!                 int64 ([intmax("int64"), intmax("int64")-2; 1 2]), 2), ...
+%!                 int64([intmax("int64") - 1; 2]))
+%!assert <54567> (median (uint64 ([intmax("uint64"), intmax("uint64")-2])), ...
+%!                  intmax ("uint64") - 1)
+%!assert <54567> (median ( ...
+%!                 uint64 ([intmax("uint64"), intmax("uint64")-2; 1 2]), 2), ...
+%!                 uint64([intmax("uint64") - 1; 2]))
+
+## Test opposite sign int overflow when getting mean of even number of values
+%!assert <54567> (median (...
+%! [intmin('int8') intmin('int8')+5 intmax('int8')-5 intmax('int8')]), ...
+%! int8(-1))
+%!assert <54567> (median ([int8([1 2 3 4]); ...
+%! intmin('int8') intmin('int8')+5 intmax('int8')-5 intmax('int8')], 2), ...
+%! int8([3;-1]))
+%!assert <54567> (median (...
+%! [intmin('int64') intmin('int64')+5 intmax('int64')-5 intmax('int64')]), ...
+%! int64(-1))
+%!assert <54567> (median ([int64([1 2 3 4]); ...
+%! intmin('int64') intmin('int64')+5 intmax('int64')-5 intmax('int64')], 2), ...
+%! int64([3;-1]))
+
+## Test int accuracy loss doing mean of close int64/uint64 values as double
+%!assert <54567> (median ([intmax("uint64"), intmax("uint64")-2]), ...
+%!  intmax("uint64")-1)
+%!assert <54567> (median ([intmax("uint64"), intmax("uint64")-2], "default"), ...
+%!  double(intmax("uint64")-1))
+%!assert <54567> (median ([intmax("uint64"), intmax("uint64")-2], "double"), ...
+%!  double(intmax("uint64")-1))
+%!assert <54567> (median ([intmax("uint64"), intmax("uint64")-2], "native"), ...
+%!  intmax("uint64")-1)
 
 ## Test input case insensitivity
 %!assert (median ([1 2 3], "aLL"), 2);
