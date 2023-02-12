@@ -221,7 +221,7 @@
 ## effect sizes for each term in the linear model, the design matrix, the
 ## variance-covariance matrix, (weighted) model residuals, and the mean squared
 ## error. The columns of @var{stats}.coeffs (from left-to-right) report the
-## model coefficients, standard errors, lower and upper 100*(1-alpha)%
+## model coefficients, standard errors, lower and upper @math{100*(1-alpha)%}
 ## confidence interval bounds, t-statistics, and p-values relating to the
 ## contrasts. The number appended to each term name in @var{stats}.coeffnames
 ## corresponds to the column number in the relevant contrast matrix for that
