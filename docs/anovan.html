@@ -80,11 +80,11 @@
 <div class="ms-5">
 <p> Data is a single vector <var>Y</var> with groups specified by a corresponding
  matrix or cell array of group labels <var>GROUP</var>, where each column of
- <var>GROUP</var> has the same number of rows as <var>Y</var>. For example, if <var>Y</var>
- = [1.1;1.2]; <var>GROUP</var> = [1,2,1; 1,5,2]; then observation 1.1 was measured
- under conditions 1,2,1 and observation 1.2 was measured under conditions
- 1,5,2. If the <var>GROUP</var> provided is empty, then the linear model is fit
- with just the intercept (no predictors).
+ <var>GROUP</var> has the same number of rows as <var>Y</var>. For example, if
+ <code><var>Y</var> = [1.1;1.2]; <var>GROUP</var> = [1,2,1; 1,5,2];</code> then observation
+ 1.1 was measured under conditions 1,2,1 and observation 1.2 was measured
+ under conditions 1,5,2. If the <var>GROUP</var> provided is empty, then the linear
+ model is fit with just the intercept (no predictors).
 </p>
 <p> <code>anovan</code> can take a number of optional parameters as name-value pairs.
 </p>
@@ -248,8 +248,8 @@
 <li>
  <var>weights</var> is an optional vector of weights to be used when fitting the
  linear model. Weighted least squares (WLS) is used with weights (that is,
- minimizing <code>sum (weights * residuals.^2))</code>; otherwise ordinary least
- squares (OLS) is used (default is empty for OLS).
+ minimizing <code>sum (<var>weights</var> * <var>residuals</var> .^ 2))</code>; otherwise
+ ordinary least squares (OLS) is used (default is empty for OLS).
  </li></ul>
 
 <p> <code>anovan</code> can return up to four output arguments:
@@ -265,7 +265,7 @@
  effect sizes for each term in the linear model, the design matrix, the
  variance-covariance matrix, (weighted) model residuals, and the mean squared
  error. The columns of <var>stats</var>.coeffs (from left-to-right) report the
- model coefficients, standard errors, lower and upper 100*(1-alpha)%
+ model coefficients, standard errors, lower and upper <em>100*(1-alpha)%</em>
  confidence interval bounds, t-statistics, and p-values relating to the
  contrasts. The number appended to each term name in <var>stats</var>.coeffnames
  corresponds to the column number in the relevant contrast matrix for that
