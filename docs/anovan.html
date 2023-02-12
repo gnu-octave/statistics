@@ -72,8 +72,8 @@
 <p> Perform a multi (N)-way analysis of (co)variance (ANOVA or ANCOVA) to
  evaluate the effect of one or more categorical or continuous predictors (i.e.
  independent variables) on a continuous outcome (i.e. dependent variable). The
- algorithms used make @qcode{anovan} suitable for balanced or unbalanced
- factorial (crossed) designs. By default, @qcode{anovan} treats all factors
+ algorithms used make <code>anovan</code> suitable for balanced or unbalanced
+ factorial (crossed) designs. By default, <code>anovan</code> treats all factors
  as fixed. Examples of function usage can be found by entering the command
  <code>demo anovan</code>.
 </p>
@@ -86,7 +86,7 @@
  1,5,2. If the <var>GROUP</var> provided is empty, then the linear model is fit
  with just the intercept (no predictors).
 </p>
-<p> @qcode{anovan} can take a number of optional parameters as name-value pairs.
+<p> <code>anovan</code> can take a number of optional parameters as name-value pairs.
 </p>
 <p> <code>[&hellip;] = anovan (<var>Y</var>, <var>GROUP</var>, &quot;continuous&quot;, <var>continuous</var>)</code>
 </p>
@@ -104,8 +104,8 @@
 <li>
  <var>random</var> is a vector of indices indicating which of the columns (i.e.
  factors) in <var>GROUP</var> should be treated as random effects rather than
- fixed effects. Octave @qcode{anovan} provides only basic support for random
- effects. Specifically, since all F-statistics in @qcode{anovan} are
+ fixed effects. Octave <code>anovan</code> provides only basic support for random
+ effects. Specifically, since all F-statistics in <code>anovan</code> are
  calculated using the mean-squared error (MSE), any interaction terms
  containing a random effect are dropped from the model term definitions and
  their associated variance is pooled with the residual, unexplained variance
@@ -122,13 +122,14 @@
 
  <ul>
 <li>
- &quot;linear&quot; (default) : compute N main effects with no interactions.
+ &quot;linear&quot; (default) : compute <em>N</em> main effects with no interactions.
 
  </li><li>
- &quot;interaction&quot; : compute N effects and N*(N-1) two-factor interactions
+ &quot;interaction&quot; : compute <em>N</em> effects and <em>N*(N-1)</em> two-factor
+ interactions
 
  </li><li>
- &quot;full&quot; : compute the N main effects and interactions at all levels
+ &quot;full&quot; : compute the <em>N</em> main effects and interactions at all levels
 
  </li><li>
  a scalar integer : representing the maximum interaction order
@@ -167,17 +168,17 @@
  <ul>
 <li>
  <var>varnames</var> must be a cell array of strings with each element containing a
- factor name for each column of GROUP.  By default (if not parsed as optional
- argument), <var>varnames</var> are &quot;X1&quot;,&quot;X2&quot;,&quot;X3&quot;, etc.
+ factor name for each column of <var>GROUP</var>.  By default (if not parsed as
+ optional argument), <var>varnames</var> are &quot;X1&quot;,&quot;X2&quot;,&quot;X3&quot;, etc.
  </li></ul>
 
 <p> <code>[&hellip;] = anovan (<var>Y</var>, <var>GROUP</var>, &quot;alpha&quot;, <var>alpha</var>)</code>
 </p>
  <ul>
 <li>
- <var>alpha</var> must be a scalar value between 0 and 1 requesting 100*(1-alpha)%
- confidence bounds for the regression coefficients returned in STATS.coeffs
- (default 0.05 for 95% confidence)
+ <var>alpha</var> must be a scalar value between 0 and 1 requesting
+ <em>100*(1-<var>alpha</var>)%</em> confidence bounds for the regression coefficients
+ returned in <var>stats</var>.coeffs (default 0.05 for 95% confidence).
  </li></ul>
 
 <p> <code>[&hellip;] = anovan (<var>Y</var>, <var>GROUP</var>, &quot;display&quot;, <var>dispopt</var>)</code>
@@ -213,13 +214,13 @@
  &quot;helmert&quot;: Helmert contrasts.
 
  </li><li>
- &quot;effect&quot;: Deviation effect coding. (The first level appearing in the <var>GROUP</var>
- column is omitted).
+ &quot;effect&quot;: Deviation effect coding. (The first level appearing in the
+ <var>GROUP</var> column is omitted).
 
  </li><li>
  &quot;treatment&quot;: Treatment contrast (or dummy) coding. (The first level appearing
  in the <var>GROUP</var> column is the reference level). These contrasts are not
- compatible with SSTYPE 3.
+ compatible with <var>sstype</var> = 3.
 
 </li></ul>
 
@@ -247,32 +248,33 @@
 <li>
  <var>weights</var> is an optional vector of weights to be used when fitting the
  linear model. Weighted least squares (WLS) is used with weights (that is,
- minimizing sum (weights * residuals.^2)); otherwise ordinary least squares
- (OLS) is used (default is empty for OLS).
+ minimizing <code>sum (weights * residuals.^2))</code>; otherwise ordinary least
+ squares (OLS) is used (default is empty for OLS).
  </li></ul>
 
-<p> @qcode{anovan} can return up to four output arguments:
+<p> <code>anovan</code> can return up to four output arguments:
 </p>
-<p> <var>p</var> = anovan (&hellip;) returns a vector of p-values, one for each term.
+<p> <code><var>p</var> = anovan (&hellip;)</code> returns a vector of p-values, one for each
+ term.
 </p>
-<p> [<var>p</var>, <var>atab</var>] = anovan (&hellip;) returns a cell array containing the
- ANOVA table.
+<p> <code>[<var>p</var>, <var>atab</var>] = anovan (&hellip;)</code> returns a cell array
+ containing the ANOVA table.
 </p>
-<p> [<var>p</var>, <var>atab</var>, <var>stats</var>] = anovan (&hellip;) returns a structure
- containing additional statistics, including degrees of freedom and effect
- sizes for each term in the linear model, the design matrix, the
+<p> <code>[<var>p</var>, <var>atab</var>, <var>stats</var>] = anovan (&hellip;)</code> returns a
+ structure containing additional statistics, including degrees of freedom and
+ effect sizes for each term in the linear model, the design matrix, the
  variance-covariance matrix, (weighted) model residuals, and the mean squared
  error. The columns of <var>stats</var>.coeffs (from left-to-right) report the
  model coefficients, standard errors, lower and upper 100*(1-alpha)%
  confidence interval bounds, t-statistics, and p-values relating to the
  contrasts. The number appended to each term name in <var>stats</var>.coeffnames
  corresponds to the column number in the relevant contrast matrix for that
- factor. The <var>stats</var> structure can be used as input for @qcode{multcompare}.
- The <var>stats</var> structure is also recognised by the functions @qcode{bootcoeff}
- and @qcode{bootemm} from the statistics-bootstrap package.
+ factor. The <var>stats</var> structure can be used as input for <code>multcompare</code>.
+ The <var>stats</var> structure is also recognised by the functions <code>bootcoeff</code>
+ and <code>bootemm</code> from the statistics-bootstrap package.
 </p>
-<p> [<var>p</var>, <var>atab</var>, <var>stats</var>, <var>terms</var>] = anovan (&hellip;) returns
- the model term definitions.
+<p> <code>[<var>p</var>, <var>atab</var>, <var>stats</var>, <var>terms</var>] = anovan (&hellip;)</code>
+ returns the model term definitions.
 </p>
 <p> <strong>See also: </strong>
   <a href="anova1.html">anova1</a>, 
