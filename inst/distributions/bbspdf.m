@@ -20,7 +20,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = bbspdf (@var{x}, @var{shape}, @var{scale}, @var{location})
+## @deftypefn  {statistics} {@var{y} =} bbspdf (@var{x}, @var{shape}, @var{scale}, @var{location})
 ##
 ## Birnbaum-Saunders probability density function (PDF).
 ##

@@ -18,10 +18,10 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {} binornd (@var{n}, @var{ps})
-## @deftypefnx {statistics} {} binornd (@var{n}, @var{ps}, @var{rows})
-## @deftypefnx {statistics} {} binornd (@var{n}, @var{ps}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} {} binornd (@var{n}, @var{ps}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} binornd (@var{n}, @var{ps})
+## @deftypefnx {statistics} {@var{r} =} binornd (@var{n}, @var{ps}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} binornd (@var{n}, @var{ps}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} binornd (@var{n}, @var{ps}, [@var{sz}])
 ##
 ## Random arrays from the Binomial distribution
 ##

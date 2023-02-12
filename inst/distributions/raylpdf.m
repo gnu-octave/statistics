@@ -17,7 +17,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = raylpdf (@var{x}, @var{sigma})
+## @deftypefn  {statistics} {@var{y} =} raylpdf (@var{x}, @var{sigma})
 ##
 ## Rayleigh probability density function (PDF).
 ##

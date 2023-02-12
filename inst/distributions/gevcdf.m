@@ -15,11 +15,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = gevcdf (@var{x})
-## @deftypefnx {statistics} @var{p} = gevcdf (@var{x}, @var{k})
-## @deftypefnx {statistics} @var{p} = gevcdf (@var{x}, @var{k}, @var{sigma})
-## @deftypefnx {statistics} @var{p} = gevcdf (@var{x}, @var{k}, @var{sigma}, @var{mu})
-## @deftypefnx {statistics} @var{p} = gevcdf (@dots{}, "upper")
+## @deftypefn  {statistics} {@var{p} =} gevcdf (@var{x})
+## @deftypefnx {statistics} {@var{p} =} gevcdf (@var{x}, @var{k})
+## @deftypefnx {statistics} {@var{p} =} gevcdf (@var{x}, @var{k}, @var{sigma})
+## @deftypefnx {statistics} {@var{p} =} gevcdf (@var{x}, @var{k}, @var{sigma}, @var{mu})
+## @deftypefnx {statistics} {@var{p} =} gevcdf (@dots{}, "upper")
 ##
 ## Generalized extreme value (GEV) cumulative distribution function (CDF).
 ##

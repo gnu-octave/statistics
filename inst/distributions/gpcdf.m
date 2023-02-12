@@ -20,11 +20,11 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = gpcdf (@var{x})
-## @deftypefnx {statistics} @var{p} = gpcdf (@var{x}, @var{shape})
-## @deftypefnx {statistics} @var{p} = gpcdf (@var{x}, @var{shape}, @var{scale})
-## @deftypefnx {statistics} @var{p} = gpcdf (@var{x}, @var{shape}, @var{scale}, @var{location})
-## @deftypefnx {statistics} @var{p} = gpcdf (@dots{}, "upper")
+## @deftypefn  {statistics} {@var{p} =} gpcdf (@var{x})
+## @deftypefnx {statistics} {@var{p} =} gpcdf (@var{x}, @var{shape})
+## @deftypefnx {statistics} {@var{p} =} gpcdf (@var{x}, @var{shape}, @var{scale})
+## @deftypefnx {statistics} {@var{p} =} gpcdf (@var{x}, @var{shape}, @var{scale}, @var{location})
+## @deftypefnx {statistics} {@var{p} =} gpcdf (@dots{}, "upper")
 ##
 ## Generalized Pareto cumulative distribution function (cdf).
 ##

@@ -16,8 +16,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = bvncdf (@var{x}, @var{mu}, @var{sigma})
-## @deftypefnx {statistics} @var{p} = bvncdf (@var{x}, [], @var{sigma})
+## @deftypefn  {statistics} {@var{p} =} bvncdf (@var{x}, @var{mu}, @var{sigma})
+## @deftypefnx {statistics} {@var{p} =} bvncdf (@var{x}, [], @var{sigma})
 ##
 ## Bivariate normal cumulative distribution function (CDF).
 ##

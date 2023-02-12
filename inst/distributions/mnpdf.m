@@ -14,7 +14,7 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = mnpdf (@var{x}, @var{pk})
+## @deftypefn  {statistics} {@var{y} =} mnpdf (@var{x}, @var{pk})
 ##
 ## Multinomial probability density function (PDF).
 ##

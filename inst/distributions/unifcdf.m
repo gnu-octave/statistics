@@ -19,10 +19,10 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = unifcdf (@var{x})
-## @deftypefnx {statistics} @var{p} = unifcdf (@var{x}, @var{a})
-## @deftypefnx {statistics} @var{p} = unifcdf (@var{x}, @var{a}, @var{b})
-## @deftypefnx {statistics} @var{p} = unifcdf (@dots{}, "upper")
+## @deftypefn  {statistics} {@var{p} =} unifcdf (@var{x})
+## @deftypefnx {statistics} {@var{p} =} unifcdf (@var{x}, @var{a})
+## @deftypefnx {statistics} {@var{p} =} unifcdf (@var{x}, @var{a}, @var{b})
+## @deftypefnx {statistics} {@var{p} =} unifcdf (@dots{}, "upper")
 ##
 ## Uniform cumulative distribution function (CDF).
 ##

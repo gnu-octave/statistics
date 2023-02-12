@@ -19,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{x} = triinv (@var{p}, @var{a}, @var{b}, @var{c})
+## @deftypefn  {statistics} {@var{x} =} triinv (@var{p}, @var{a}, @var{b}, @var{c})
 ##
 ## Inverse of the triangular cumulative distribution function (iCDF).
 ##

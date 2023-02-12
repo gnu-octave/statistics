@@ -19,9 +19,9 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = unifpdf (@var{x})
-## @deftypefnx {statistics} @var{y} = unifpdf (@var{x}, @var{a})
-## @deftypefnx {statistics} @var{y} = unifpdf (@var{x}, @var{a}, @var{b})
+## @deftypefn  {statistics} {@var{y} =} unifpdf (@var{x})
+## @deftypefnx {statistics} {@var{y} =} unifpdf (@var{x}, @var{a})
+## @deftypefnx {statistics} {@var{y} =} unifpdf (@var{x}, @var{a}, @var{b})
 ##
 ## Uniform probability density function (PDF).
 ##

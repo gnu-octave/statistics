@@ -16,9 +16,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{r} = nctrnd (@var{df}, @var{delta})
-## @deftypefnx {statistics} @var{r} = nctrnd (@var{df}, @var{delta}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} @var{r} = nctrnd (@var{df}, @var{delta}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} nctrnd (@var{df}, @var{delta})
+## @deftypefnx {statistics} {@var{r} =} nctrnd (@var{df}, @var{delta}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} nctrnd (@var{df}, @var{delta}, [@var{sz}])
 ##
 ## Random arrays from the noncentral T distribution.
 ##

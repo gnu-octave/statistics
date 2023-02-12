@@ -19,13 +19,13 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = logncdf (@var{x})
-## @deftypefnx {statistics} @var{p} = logncdf (@var{x}, @var{mu})
-## @deftypefnx {statistics} @var{p} = logncdf (@var{x}, @var{mu}, @var{sigma})
-## @deftypefnx {statistics} @var{p} = logncdf (@dots{}, "upper")
-## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = logncdf (@var{x}, @var{mu}, @var{sigma}, @var{pcov})
-## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = logncdf (@var{x}, @var{mu}, @var{sigma}, @var{pcov}, @var{alpha})
-## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = logncdf (@dots{}, "upper")
+## @deftypefn  {statistics} {@var{p} =} logncdf (@var{x})
+## @deftypefnx {statistics} {@var{p} =} logncdf (@var{x}, @var{mu})
+## @deftypefnx {statistics} {@var{p} =} logncdf (@var{x}, @var{mu}, @var{sigma})
+## @deftypefnx {statistics} {@var{p} =} logncdf (@dots{}, "upper")
+## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} logncdf (@var{x}, @var{mu}, @var{sigma}, @var{pcov})
+## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} logncdf (@var{x}, @var{mu}, @var{sigma}, @var{pcov}, @var{alpha})
+## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} logncdf (@dots{}, "upper")
 ##
 ## Lognormal cumulative distribution function (CDF).
 ##

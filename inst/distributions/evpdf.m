@@ -17,9 +17,9 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = evpdf (@var{x})
-## @deftypefnx {statistics} @var{y} = evpdf (@var{x}, @var{mu})
-## @deftypefnx {statistics} @var{y} = evpdf (@var{x}, @var{mu}, @var{sigma})
+## @deftypefn  {statistics} {@var{y} =} evpdf (@var{x})
+## @deftypefnx {statistics} {@var{y} =} evpdf (@var{x}, @var{mu})
+## @deftypefnx {statistics} {@var{y} =} evpdf (@var{x}, @var{mu}, @var{sigma})
 ##
 ## Extreme value probability density function (PDF).
 ##

@@ -16,10 +16,10 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {} gevrnd (@var{k}, @var{sigma}, @var{mu})
-## @deftypefnx {statistics} {} gevrnd (@var{k}, @var{sigma}, @var{mu}, @var{rows})
-## @deftypefnx {statistics} {} gevrnd (@var{k}, @var{sigma}, @var{mu}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} {} gevrnd (@var{k}, @var{sigma}, @var{mu}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} gevrnd (@var{k}, @var{sigma}, @var{mu})
+## @deftypefnx {statistics} {@var{r} =} gevrnd (@var{k}, @var{sigma}, @var{mu}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} gevrnd (@var{k}, @var{sigma}, @var{mu}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} gevrnd (@var{k}, @var{sigma}, @var{mu}, [@var{sz}])
 ##
 ## Random arrays from the generalized extreme value (GEV) distribution.
 ##

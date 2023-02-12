@@ -17,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{x} = geoinv (@var{p}, @var{ps})
+## @deftypefn  {statistics} {@var{x} =} geoinv (@var{p}, @var{ps})
 ##
 ## Inverse of the geometric cumulative distribution function (iCDF).
 ##

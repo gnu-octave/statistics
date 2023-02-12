@@ -17,8 +17,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = geocdf (@var{x}, @var{ps})
-## @deftypefnx {statistics} @var{p} = geocdf (@var{x}, @var{ps}, "upper")
+## @deftypefn  {statistics} {@var{p} =} geocdf (@var{x}, @var{ps})
+## @deftypefnx {statistics} {@var{p} =} geocdf (@var{x}, @var{ps}, "upper")
 ##
 ## Geometric cumulative distribution function (CDF).
 ##

@@ -17,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{x} = chi2inv (@var{p}, @var{df})
+## @deftypefn  {statistics} {@var{x} =} chi2inv (@var{p}, @var{df})
 ##
 ## Inverse of the Chi-square cumulative distribution function (iCDF).
 ##

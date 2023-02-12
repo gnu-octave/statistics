@@ -16,9 +16,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = mvtcdf (@var{x}, @var{sigma}, @var{df})
-## @deftypefnx {statistics} @var{p} = mvtcdf (@var{a}, @var{x}, @var{sigma}, @var{df})
-## @deftypefnx {statistics} [@var{p}, @var{err}] = mvtcdf (@dots{})
+## @deftypefn  {statistics} {@var{p} =} mvtcdf (@var{x}, @var{sigma}, @var{df})
+## @deftypefnx {statistics} {@var{p} =} mvtcdf (@var{a}, @var{x}, @var{sigma}, @var{df})
+## @deftypefnx {statistics} {[@var{p}, @var{err}] =} mvtcdf (@dots{})
 ##
 ## Multivariate Student's t cumulative distribution function (CDF).
 ##

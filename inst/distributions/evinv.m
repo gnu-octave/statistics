@@ -17,11 +17,11 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{x} = evinv (@var{p})
-## @deftypefnx {statistics} @var{x} = evcdf (@var{p}, @var{mu})
-## @deftypefnx {statistics} @var{x} = evinv (@var{p}, @var{mu}, @var{sigma})
-## @deftypefnx {statistics} [@var{x}, @var{xlo}, @var{xup}] = evinv (@var{x}, @var{mu}, @var{sigma}, @var{pcov})
-## @deftypefnx {statistics} [@var{x}, @var{xlo}, @var{xup}] = evinv (@var{x}, @var{mu}, @var{sigma}, @var{pcov}, @var{alpha})
+## @deftypefn  {statistics} {@var{x} =} evinv (@var{p})
+## @deftypefnx {statistics} {@var{x} =} evcdf (@var{p}, @var{mu})
+## @deftypefnx {statistics} {@var{x} =} evinv (@var{p}, @var{mu}, @var{sigma})
+## @deftypefnx {statistics} {[@var{x}, @var{xlo}, @var{xup}] =} evinv (@var{x}, @var{mu}, @var{sigma}, @var{pcov})
+## @deftypefnx {statistics} {[@var{x}, @var{xlo}, @var{xup}] =} evinv (@var{x}, @var{mu}, @var{sigma}, @var{pcov}, @var{alpha})
 ##
 ## Inverse of the extreme value cumulative distribution function (iCDF).
 ##

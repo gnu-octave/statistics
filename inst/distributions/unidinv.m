@@ -19,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{x} = unidinv (@var{p}, @var{df})
+## @deftypefn  {statistics} {@var{x} =} unidinv (@var{p}, @var{df})
 ##
 ## Inverse of the discrete uniform cumulative distribution function (iCDF).
 ##

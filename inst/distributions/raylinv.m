@@ -17,7 +17,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{x} = raylinv (@var{p}, @var{sigma})
+## @deftypefn  {statistics} {@var{x} =} raylinv (@var{p}, @var{sigma})
 ##
 ## Inverse of the Rayleigh cumulative distribution function (iCDF).
 ##

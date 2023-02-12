@@ -19,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{x} = nakacdf (@var{x}, @var{m}, @var{w})
+## @deftypefn  {statistics} {@var{x} =} nakacdf (@var{x}, @var{m}, @var{w})
 ##
 ## Inverse of the Nakagami cumulative distribution function (iCDF).
 ##

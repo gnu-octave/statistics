@@ -19,9 +19,9 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = laplace_cdf (@var{x})
-## @deftypefnx {statistics} @var{p} = laplace_cdf (@var{x}, @var{mu})
-## @deftypefnx {statistics} @var{p} = laplace_cdf (@var{x}, @var{mu}, @var{beta})
+## @deftypefn  {statistics} {@var{p} =} laplace_cdf (@var{x})
+## @deftypefnx {statistics} {@var{p} =} laplace_cdf (@var{x}, @var{mu})
+## @deftypefnx {statistics} {@var{p} =} laplace_cdf (@var{x}, @var{mu}, @var{beta})
 ##
 ## Laplace cumulative distribution function (CDF).
 ##

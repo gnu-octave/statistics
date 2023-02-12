@@ -19,9 +19,9 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = laplace_pdf (@var{x})
-## @deftypefnx {statistics} @var{y} = laplace_pdf (@var{x}, @var{mu})
-## @deftypefnx {statistics} @var{y} = laplace_pdf (@var{x}, @var{mu}, @var{sigma})
+## @deftypefn  {statistics} {@var{y} =} laplace_pdf (@var{x})
+## @deftypefnx {statistics} {@var{y} =} laplace_pdf (@var{x}, @var{mu})
+## @deftypefnx {statistics} {@var{y} =} laplace_pdf (@var{x}, @var{mu}, @var{sigma})
 ##
 ## Lognormal probability density function (PDF).
 ##

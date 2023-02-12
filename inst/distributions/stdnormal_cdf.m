@@ -19,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = stdnormal_cdf (@var{x})
+## @deftypefn  {statistics} {@var{p} =} stdnormal_cdf (@var{x})
 ##
 ## Standard normal cumulative distribution function (CDF).
 ##

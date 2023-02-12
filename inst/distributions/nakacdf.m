@@ -19,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = nakacdf (@var{x}, @var{m}, @var{w})
+## @deftypefn  {statistics} {@var{p} =} nakacdf (@var{x}, @var{m}, @var{w})
 ##
 ## Nakagami cumulative distribution function (CDF).
 ##

@@ -19,8 +19,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = unidcdf (@var{x}, @var{df})
-## @deftypefnx {statistics} @var{p} = unidcdf (@var{x}, @var{df}, "upper")
+## @deftypefn  {statistics} {@var{p} =} unidcdf (@var{x}, @var{df})
+## @deftypefnx {statistics} {@var{p} =} unidcdf (@var{x}, @var{df}, "upper")
 ##
 ## Discrete uniform cumulative distribution function (CDF).
 ##

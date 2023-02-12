@@ -17,10 +17,10 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{r} = chi2rnd (@var{df})
-## @deftypefnx {statistics} @var{r} = chi2rnd (@var{df}, @var{rows})
-## @deftypefnx {statistics} @var{r} = chi2rnd (@var{df}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} @var{r} = chi2rnd (@var{df}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} chi2rnd (@var{df})
+## @deftypefnx {statistics} {@var{r} =} chi2rnd (@var{df}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} chi2rnd (@var{df}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} chi2rnd (@var{df}, [@var{sz}])
 ##
 ## Random arrays from the Chi-square distribution.
 ##

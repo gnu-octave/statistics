@@ -19,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} @var{y} = poisspdf (@var{x}, @var{lambda})
+## @deftypefn {statistics} {@var{y} =} poisspdf (@var{x}, @var{lambda})
 ##
 ## Poisson probability density function (PDF).
 ##

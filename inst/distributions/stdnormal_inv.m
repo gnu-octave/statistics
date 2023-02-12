@@ -19,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{x} = stdnormal_inv (@var{p})
+## @deftypefn  {statistics} {@var{x} =} stdnormal_inv (@var{p})
 ##
 ## Inverse of the standard normal cumulative distribution function (iCDF).
 ##

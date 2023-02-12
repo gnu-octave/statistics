@@ -20,8 +20,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = hygecdf (@var{x}, @var{t}, @var{m}, @var{n})
-## @deftypefnx {statistics} @var{p} = hygecdf (@var{x}, @var{t}, @var{m}, @var{n}, "upper")
+## @deftypefn  {statistics} {@var{p} =} hygecdf (@var{x}, @var{t}, @var{m}, @var{n})
+## @deftypefnx {statistics} {@var{p} =} hygecdf (@var{x}, @var{t}, @var{m}, @var{n}, "upper")
 ##
 ## Hypergeometric cumulative distribution function (CDF).
 ##

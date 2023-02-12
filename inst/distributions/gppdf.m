@@ -20,7 +20,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = gppdf (@var{x}, @var{shape}, @var{scale}, @var{location})
+## @deftypefn  {statistics} {@var{y} =} gppdf (@var{x}, @var{shape}, @var{scale}, @var{location})
 ##
 ## Generalized Pareto probability density function (PDF).
 ##

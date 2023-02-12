@@ -19,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = unidpdf (@var{x}, @var{df})
+## @deftypefn  {statistics} {@var{y} =} unidpdf (@var{x}, @var{df})
 ##
 ## Discrete uniform probability density function (PDF).
 ##

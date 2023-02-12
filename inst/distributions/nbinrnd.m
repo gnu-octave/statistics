@@ -19,10 +19,10 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{r} = nbinrnd (@var{n}, @var{ps})
-## @deftypefnx {statistics} @var{r} = nbinrnd (@var{n}, @var{ps}, @var{rows})
-## @deftypefnx {statistics} @var{r} = nbinrnd (@var{n}, @var{ps}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} @var{r} = nbinrnd (@var{n}, @var{ps}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} nbinrnd (@var{n}, @var{ps})
+## @deftypefnx {statistics} {@var{r} =} nbinrnd (@var{n}, @var{ps}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} nbinrnd (@var{n}, @var{ps}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} nbinrnd (@var{n}, @var{ps}, [@var{sz}])
 ##
 ## Random arrays from the negative binomial distribution.
 ##

@@ -19,10 +19,10 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{r} = nakarnd (@var{m}, @var{w})
-## @deftypefnx {statistics} @var{r} = nakarnd (@var{m}, @var{w}, @var{rows})
-## @deftypefnx {statistics} @var{r} = nakarnd (@var{m}, @var{w}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} @var{r} = nakarnd (@var{m}, @var{w}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} nakarnd (@var{m}, @var{w})
+## @deftypefnx {statistics} {@var{r} =} nakarnd (@var{m}, @var{w}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} nakarnd (@var{m}, @var{w}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} nakarnd (@var{m}, @var{w}, [@var{sz}])
 ##
 ## Random arrays from the Nakagami distribution.
 ##

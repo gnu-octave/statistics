@@ -20,10 +20,10 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{r} = unifrnd (@var{a}, @var{b})
-## @deftypefnx {statistics} @var{r} = unifrnd (@var{a}, @var{b}, @var{rows})
-## @deftypefnx {statistics} @var{r} = unifrnd (@var{a}, @var{b}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} @var{r} = unifrnd (@var{a}, @var{b}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} unifrnd (@var{a}, @var{b})
+## @deftypefnx {statistics} {@var{r} =} unifrnd (@var{a}, @var{b}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} unifrnd (@var{a}, @var{b}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} unifrnd (@var{a}, @var{b}, [@var{sz}])
 ##
 ## Random arrays from the uniform distribution.
 ##

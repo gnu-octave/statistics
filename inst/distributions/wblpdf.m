@@ -19,9 +19,9 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = wblinv (@var{x})
-## @deftypefnx {statistics} @var{y} = wblinv (@var{x}, @var{lambda})
-## @deftypefnx {statistics} @var{y} = wblinv (@var{x}, @var{lambda}, @var{xk})
+## @deftypefn  {statistics} {@var{y} =} wblinv (@var{x})
+## @deftypefnx {statistics} {@var{y} =} wblinv (@var{x}, @var{lambda})
+## @deftypefnx {statistics} {@var{y} =} wblinv (@var{x}, @var{lambda}, @var{xk})
 ##
 ## Weibull probability density function (PDF).
 ##

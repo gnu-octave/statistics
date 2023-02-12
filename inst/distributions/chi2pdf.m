@@ -17,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = chi2pdf (@var{x}, @var{df})
+## @deftypefn  {statistics} {@var{y} =} chi2pdf (@var{x}, @var{df})
 ##
 ## Chi-square probability density function (PDF).
 ##

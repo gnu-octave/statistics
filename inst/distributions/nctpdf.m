@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = nctpdf (@var{x}, @var{df}, @var{delta})
+## @deftypefn  {statistics} {@var{y} =} nctpdf (@var{x}, @var{df}, @var{delta})
 ##
 ## Noncentral Τ probability density function (pdf).
 ##

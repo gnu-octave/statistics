@@ -19,8 +19,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = betacdf (@var{x}, @var{a}, @var{b})
-## @deftypefnx {statistics} @var{p} = betacdf (@var{x}, @var{a}, @var{b}, "upper")
+## @deftypefn  {statistics} {@var{p} =} betacdf (@var{x}, @var{a}, @var{b})
+## @deftypefnx {statistics} {@var{p} =} betacdf (@var{x}, @var{a}, @var{b}, "upper")
 ##
 ## Beta cumulative distribution function (CDF).
 ##

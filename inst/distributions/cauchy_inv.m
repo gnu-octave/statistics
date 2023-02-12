@@ -17,8 +17,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{x} = cauchy_inv (@var{p})
-## @deftypefnx {statistics} @var{x} = cauchy_inv (@var{p}, @var{location}, @var{scale})
+## @deftypefn  {statistics} {@var{x} =} cauchy_inv (@var{p})
+## @deftypefnx {statistics} {@var{x} =} cauchy_inv (@var{p}, @var{location}, @var{scale})
 ##
 ## Inverse of the Cauchy cumulative distribution function (iCDF).
 ##

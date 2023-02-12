@@ -14,7 +14,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = copulapdf (@var{family}, @var{x}, @var{theta})
+## @deftypefn  {statistics} {@var{y} =} copulapdf (@var{family}, @var{x}, @var{theta})
 ##
 ## Copula family probability density functions (PDF).
 ##

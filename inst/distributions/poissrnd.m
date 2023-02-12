@@ -19,10 +19,10 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{r} = poissrnd (@var{lambda})
-## @deftypefnx {statistics} @var{r} = poissrnd (@var{lambda}, @var{rows})
-## @deftypefnx {statistics} @var{r} = poissrnd (@var{lambda}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} @var{r} = poissrnd (@var{lambda}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} poissrnd (@var{lambda})
+## @deftypefnx {statistics} {@var{r} =} poissrnd (@var{lambda}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} poissrnd (@var{lambda}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} poissrnd (@var{lambda}, [@var{sz}])
 ##
 ## Random arrays from the Poisson distribution.
 ##

@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = ncfpdf (@var{x}, @var{df1}, @var{df2}, @var{delta})
+## @deftypefn  {statistics} {@var{y} =} ncfpdf (@var{x}, @var{df1}, @var{df2}, @var{delta})
 ##
 ## Noncentral F probability density function (PDF).
 ##

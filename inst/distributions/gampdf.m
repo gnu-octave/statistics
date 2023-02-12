@@ -17,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = gampdf (@var{x}, @var{a}, @var{b})
+## @deftypefn  {statistics} {@var{y} =} gampdf (@var{x}, @var{a}, @var{b})
 ##
 ## Gamma probability density function (PDF).
 ##

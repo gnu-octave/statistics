@@ -19,10 +19,10 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{r} = wblrnd (@var{lambda}, @var{k})
-## @deftypefnx {statistics} @var{r} = wblrnd (@var{lambda}, @var{k}, @var{rows})
-## @deftypefnx {statistics} @var{r} = wblrnd (@var{lambda}, @var{k}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} @var{r} = wblrnd (@var{lambda}, @var{k}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} wblrnd (@var{lambda}, @var{k})
+## @deftypefnx {statistics} {@var{r} =} wblrnd (@var{lambda}, @var{k}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} wblrnd (@var{lambda}, @var{k}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} wblrnd (@var{lambda}, @var{k}, [@var{sz}])
 ##
 ## Random arrays from the Weibull distribution.
 ##

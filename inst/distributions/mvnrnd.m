@@ -17,10 +17,10 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{r} = mvnrnd (@var{mu}, @var{sigma})
-## @deftypefnx {statistics} @var{r} = mvnrnd (@var{mu}, @var{sigma}, @var{n})
-## @deftypefnx {statistics} @var{r} = mvnrnd (@var{mu}, @var{sigma}, @var{n}, @var{T})
-## @deftypefnx {statistics} [@var{r}, @var{T}] = mvnrnd (@dots{})
+## @deftypefn  {statistics} {@var{r} =} mvnrnd (@var{mu}, @var{sigma})
+## @deftypefnx {statistics} {@var{r} =} mvnrnd (@var{mu}, @var{sigma}, @var{n})
+## @deftypefnx {statistics} {@var{r} =} mvnrnd (@var{mu}, @var{sigma}, @var{n}, @var{T})
+## @deftypefnx {statistics} {[@var{r}, @var{T}] =} mvnrnd (@dots{})
 ##
 ## Random vectors from the multivariate normal distribution.
 ##
