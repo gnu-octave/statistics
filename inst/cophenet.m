@@ -26,7 +26,7 @@
 ## @tex
 ## \def\frac#1#2{{\begingroup#1\endgroup\over#2}}
 ## $$ c = \frac {\sum_{i < j}(Y_{ij}-{\bar {y}})(Z_{ij}-{\bar{z}})}
-## {\sqrt{\sum_{i < j}(Y_{ij}-{\bar {y}})^2(Z_{ij}-{\bar{z}})^2}}
+## {\sqrt{\sum_{i < j}(Y_{ij}-{\bar {y}})^2(Z_{ij}-{\bar{z}})^2}} $$
 ## @end tex
 ##
 ## It is a measure of the similarity between the distance of the leaves, as seen
