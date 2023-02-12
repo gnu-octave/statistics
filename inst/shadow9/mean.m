@@ -189,10 +189,16 @@ function m = mean (x, varargin)
 
     if (all_flag)
       x = x(:);
+
       if (omitnan)
         x = x(isnan (x));
       endif
-      m = sum (x) ./ numel (x);
+
+      if (any (isa (x, {"int64", "uint64"})))
+        m = int64_mean (x, 1, numel (x), outtype);
+      else
+        m = sum (x) ./ numel (x);
+      endif
 
     else
       ## Find the first non-singleton dimension.
@@ -203,7 +209,13 @@ function m = mean (x, varargin)
         n = sum (! idx, dim);
         x(idx) = 0;
       endif
-      m = sum (x, dim) ./ n;
+
+      if (any (isa (x, {"int64", "uint64"})))
+        m = int64_mean (x, dim, n, outtype);
+      else
+        m = sum (x, dim) ./ n;
+      endif
+
     endif
 
   else
@@ -233,7 +245,13 @@ function m = mean (x, varargin)
             n = sum (! nanx, vecdim);
             x(nanx) = 0;
           endif
-          m = sum (x, vecdim) ./ n;
+
+          if (any (isa (x, {"int64", "uint64"})))
+            m = int64_mean (x, vecdim, n, outtype);
+          else
+            m = sum (x, vecdim) ./ n;
+          endif
+
         endif
 
       else
@@ -260,7 +278,12 @@ function m = mean (x, varargin)
             if (omitnan)
               x = x(isnan (x));
             endif
-            m = sum (x) ./ numel (x);
+
+            if (any (isa (x, {"int64", "uint64"})))
+              m = int64_mean (x, 1, numel (x), outtype);
+            else
+              m = sum (x) ./ numel (x);
+            endif
 
           else
             ## Permute to bring vecdims to front
@@ -282,7 +305,12 @@ function m = mean (x, varargin)
             else
               n = szx(1);
             endif
-            m = sum (x, 1) ./ n;
+
+            if (any (isa (x, {"int64", "uint64"})))
+              m = int64_mean (x, 1, n, outtype);
+            else
+              m = sum (x, 1) ./ n;
+            endif
 
             ## Inverse permute back to correct dimensions
             m = ipermute (m, perm);
@@ -305,7 +333,52 @@ function m = mean (x, varargin)
         endif
     endswitch
   endif
+endfunction
 
+function m = int64_mean (x, dim, n, outtype)
+    ## avoid int overflow in large ints.  smaller int values can be processed
+    ## as doubles to avoid overflow. large int64 values will have rounding error
+    ## if processed as double. integer math avoids problem up to intmin/max.
+    if (any (abs (x(:)) >= flintmax))
+      ## Overflow and double precision errors only occur for large values
+
+      rmd = double (rem (x, n)) / n;
+      rmd_hilo = logical (int8 (rmd)); # Integer rounding direction indicator
+
+      ## Native int summation to prevent double precision error
+      ## then add lost round-up/down remainders back in.
+
+      m = sum (x/n, dim, "native");
+
+      ## rmd.*!rmd_hilo = remainders that were rounded down in abs val
+      ## signs retained, can be summed and added back.
+
+      ## rmd.*rmd_hilo = remainders that were rounded up in abs val.
+      ## need to add back difference between 1 and rmd, retaining sign.
+
+      rmd = sum (rmd .* !rmd_hilo, dim) - ...
+                sum ((1- abs (rmd)) .* rmd_hilo .* sign(rmd), dim);
+
+      if (any (abs (m(:)) >= flintmax))
+
+        if (any (strcmp (outtype, {"int64", "uint64"})))
+          m = m + rmd;
+        else
+          m = double (m) + rmd;
+        endif
+
+      else
+        m = double(m) + rmd;
+        switch (outtype)
+          case "int64"
+            m = int64 (m);
+          case "uint64"
+            m = uint64 (m);
+        endswitch
+      endif
+    else
+      m = double (sum (x, dim, "native")) ./ n;
+    endif
 endfunction
 
 %!test
@@ -386,6 +459,44 @@ endfunction
 %! assert (mean (in, "native"), uint8 (out_u8));
 %! assert (class (mean (in, "native")), "uint8");
 
+## bug <54567> ## big int64/uint64 sum exceeding intmax and double error limit
+##test <54567>
+##%! in_same = uint64 ([intmax("uint64") intmax("uint64")-2]);
+##%! out_same = intmax("uint64")-1;
+##%! in_opp = int64 ([intmin("int64"), intmax("int64")-1]);
+##%! out_opp = -1;
+##%! in_neg = int64 ([intmin("uint64") intmin("int64")+2]);
+##%! out_neg = intmin("int64")+1;
+##%! assert (mean (in_same, "default"), mean (in_same));
+##%! assert (mean (in_same, "default"), double(out_same));
+##%! assert (mean (in_same, "double"), double(out_same));
+##%! assert (mean (in_same, "native"), uint64(out_same));
+##%! assert (class (mean (in_same, "native")), "uint64");
+##%! assert (mean (in_opp, "default"), mean (in_opp));
+##%! assert (mean (in_opp, "default"), double(out_opp));
+##%! assert (mean (in_opp, "double"), double(out_opp));
+##%! assert (mean (in_opp, "native"), int64 (out_opp));
+##%! assert (class (mean (in_opp, "native")), "int64");
+
+## Large int64 both positive
+%!assert <54567> (mean (uint64 ([intmax("uint64") intmax("uint64")-2]), "default"), mean (uint64 ([intmax("uint64") intmax("uint64")-2])));
+%!assert <54567> (mean (uint64 ([intmax("uint64") intmax("uint64")-2]), "default"), double(intmax("uint64")-1));
+%!assert <54567> (mean (uint64 ([intmax("uint64") intmax("uint64")-2]), "double"), double(intmax("uint64")-1));
+%!assert <54567> (mean (uint64 ([intmax("uint64") intmax("uint64")-2]), "native"), uint64(intmax("uint64")-1));
+%!assert <54567> (class (mean (uint64 ([intmax("uint64") intmax("uint64")-2]), "native")), "uint64");
+##Large int64 opposite sign
+%!assert <54567> (mean (int64 ([intmin("int64"), intmax("int64")-1]), "default"), mean (int64 ([intmin("int64"), intmax("int64")-1])));
+%!assert <54567> (mean (int64 ([intmin("int64"), intmax("int64")-1]), "default"), double(-1));
+%!assert <54567> (mean (int64 ([intmin("int64"), intmax("int64")-1]), "double"), double(-1));
+%!assert <54567> (mean (int64 ([intmin("int64"), intmax("int64")-1]), "native"), int64 (-1));
+%!assert <54567> (class (mean (int64 ([intmin("int64"), intmax("int64")-1]), "native")), "int64");
+## Large int64 both negative
+%!assert <54567> (mean (int64 ([intmin("int64") intmin("int64")+2]), "default"), mean (int64 ([intmin("int64") intmin("int64")+2])));
+%!assert <54567> (mean (int64 ([intmin("int64") intmin("int64")+2]), "default"), double(intmin("int64")+1));
+%!assert <54567> (mean (int64 ([intmin("int64") intmin("int64")+2]), "double"), double(intmin("int64")+1));
+%!assert <54567> (mean (int64 ([intmin("int64") intmin("int64")+2]), "native"), int64(intmin("int64")+1));
+%!assert <54567> (class (mean (int64 ([intmin("int64"), intmin("int64")+2]), "native")), "int64");
+
 %!test
 %! in = logical ([1 0 1]);
 %! out = 2/3;
@@ -402,11 +513,11 @@ endfunction
 %! assert (mean (in, "double"), out, eps);
 
 ## int64 loss of precision with double conversion
-%!assert <54567> (mean (
+%!assert <54567> (mean ( ...
 %!           [(intmin('int64')+5), (intmax('int64'))-5], "native"), int64(-1));
-%!assert (class(mean (...
+%!assert <54567> (class(mean (...
 %!            [(intmin('int64')+5), (intmax('int64'))-5], "native")), "int64");
-%!assert (mean (...
+%!assert <54567> (mean (...
 %!            double([(intmin('int64')+5), (intmax('int64'))-5])), double(0) );
 %!assert <54567> (mean (...
 %!            [(intmin('int64')+5), (intmax('int64'))-5]), double(-0.5) );
@@ -414,6 +525,21 @@ endfunction
 %!      [(intmin('int64')+5), (intmax('int64'))-5], "default"), double(-0.5) );
 %!assert <54567> (mean (...
 %!       [(intmin('int64')+5), (intmax('int64'))-5], "double"), double(-0.5) );
+%!assert <54567> (mean ( ...
+%!           [(intmin('int64')+5), (intmax('int64'))-5], "all", "native"),
+%!            int64(-1));
+%!assert <54567> (mean ( ...
+%!           [(intmin('int64')+5), (intmax('int64'))-5], 2, "native"),
+%!            int64(-1));
+%!assert <54567> (mean ( ...
+%!           [(intmin('int64')+5), (intmax('int64'))-5], [1 2], "native"),
+%!            int64(-1));
+%!assert <54567> (mean ( ...
+%!           [(intmin('int64')+5), (intmax('int64'))-5], [2 3], "native"),
+%!            int64(-1));
+%!assert <54567> (mean ( ...
+%!           [(intmin('int64')+5), (intmax('int64'))-5; int64([1 3])], 2, "native"),
+%!            [int64(-1); 2]);
 
 ## Test input and optional arguments "all", DIM, "omitnan")
 %!test
