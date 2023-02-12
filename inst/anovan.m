@@ -35,11 +35,11 @@
 ##
 ## Data is a single vector @var{Y} with groups specified by a corresponding
 ## matrix or cell array of group labels @var{GROUP}, where each column of
-## @var{GROUP} has the same number of rows as @var{Y}. For example, if @var{Y}
-## = [1.1;1.2]; @var{GROUP} = [1,2,1; 1,5,2]; then observation 1.1 was measured
-## under conditions 1,2,1 and observation 1.2 was measured under conditions
-## 1,5,2. If the @var{GROUP} provided is empty, then the linear model is fit
-## with just the intercept (no predictors).
+## @var{GROUP} has the same number of rows as @var{Y}. For example, if
+## @code{@var{Y} = [1.1;1.2]; @var{GROUP} = [1,2,1; 1,5,2];} then observation
+## 1.1 was measured under conditions 1,2,1 and observation 1.2 was measured
+## under conditions 1,5,2. If the @var{GROUP} provided is empty, then the linear
+## model is fit with just the intercept (no predictors).
 ##
 ## @code{anovan} can take a number of optional parameters as name-value pairs.
 ##
@@ -204,8 +204,8 @@
 ## @item
 ## @var{weights} is an optional vector of weights to be used when fitting the
 ## linear model. Weighted least squares (WLS) is used with weights (that is,
-## minimizing @code{sum (weights * residuals.^2))}; otherwise ordinary least
-## squares (OLS) is used (default is empty for OLS).
+## minimizing @code{sum (@var{weights} * @var{residuals} .^ 2))}; otherwise
+## ordinary least squares (OLS) is used (default is empty for OLS).
 ## @end itemize
 ##
 ## @code{anovan} can return up to four output arguments:
