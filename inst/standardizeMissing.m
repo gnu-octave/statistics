@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{B} = standardizeMissing (@var{A}, @var{indicator})
+## @deftypefn  {statistics} {@var{B} =} standardizeMissing (@var{A}, @var{indicator})
 ##
 ## Replace data values specified by @var{indicator} in @var{A} by the
 ## standard 'missing' data value for that data type.

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: linkage</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Clustering">
+                    <i class="fas fa-list-alt"></i>
+                    Clustering
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>linkage</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>y</var> = <b>linkage</b><i> (<var>d</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>linkage</b><i> (<var>d</var>, <var>method</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>linkage</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>linkage</b><i> (<var>x</var>, <var>method</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>linkage</b><i> (<var>x</var>, <var>method</var>, <var>metric</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>linkage</b><i> (<var>x</var>, <var>method</var>, <var>arglist</var>)</i></dt>
+</dl>
+
+<p> Produce a hierarchical clustering dendrogram.
+</p>
+<div class="ms-5">
+<p> <var>d</var> is the dissimilarity matrix relative to n observations,
+ formatted as a <em>(n-1)*n/2</em>x1 vector as produced by <code>pdist</code>.
+ Alternatively, <var>x</var> contains data formatted for input to
+ <code>pdist</code>, <var>metric</var> is a metric for <code>pdist</code> and
+ <var>arglist</var> is a cell array containing arguments that are passed to
+ <code>pdist</code>.
+</p>
+<p> <code>linkage</code> starts by putting each observation into a singleton
+ cluster and numbering those from 1 to n.  Then it merges two
+ clusters, chosen according to <var>method</var>, to create a new cluster
+ numbered n+1, and so on until all observations are grouped into
+ a single cluster numbered 2(n-1).  Row k of the
+ (m-1)x3 output matrix relates to cluster n+k: the first
+ two columns are the numbers of the two component clusters and column
+ 3 contains their distance.
+</p>
+<p> <var>method</var> defines the way the distance between two clusters is
+ computed and how they are recomputed when two clusters are merged:
+</p>
+ <dl compact="compact">
+<dt> &lsquo;<samp>&quot;single&quot; (default)</samp>&rsquo;</dt>
+</dl>
+<p> Distance between two clusters is the minimum distance between two
+ elements belonging each to one cluster.  Produces a cluster tree
+ known as minimum spanning tree.
+</p>
+ </dd>
+<dt> &lsquo;<samp>&quot;complete&quot;</samp>&rsquo;</dt>
+</dl>
+<p> Furthest distance between two elements belonging each to one cluster.
+</p>
+ </dd>
+<dt> &lsquo;<samp>&quot;average&quot;</samp>&rsquo;</dt>
+</dl>
+<p> Unweighted pair group method with averaging (UPGMA).
+ The mean distance between all pair of elements each belonging to one
+ cluster.
+</p>
+ </dd>
+<dt> &lsquo;<samp>&quot;weighted&quot;</samp>&rsquo;</dt>
+</dl>
+<p> Weighted pair group method with averaging (WPGMA).
+ When two clusters A and B are joined together, the new distance to a
+ cluster C is the mean between distances A-C and B-C.
+</p>
+ </dd>
+<dt> &lsquo;<samp>&quot;centroid&quot;</samp>&rsquo;</dt>
+</dl>
+<p> Unweighted Pair-Group Method using Centroids (UPGMC).
+ Assumes Euclidean metric.  The distance between cluster centroids,
+ each centroid being the center of mass of a cluster.
+</p>
+ </dd>
+<dt> &lsquo;<samp>&quot;median&quot;</samp>&rsquo;</dt>
+</dl>
+<p> Weighted pair-group method using centroids (WPGMC).
+ Assumes Euclidean metric.  Distance between cluster centroids.  When
+ two clusters are joined together, the new centroid is the midpoint
+ between the joined centroids.
+</p>
+ </dd>
+<dt> &lsquo;<samp>&quot;ward&quot;</samp>&rsquo;</dt>
+</dl>
+<p> Ward&rsquo;s sum of squared deviations about the group mean (ESS).
+ Also known as minimum variance or inner squared distance.
+ Assumes Euclidean metric.  How much the moment of inertia of the
+ merged cluster exceeds the sum of those of the individual clusters.
+ </p></dd>
+</dl>
+
+<p> <strong>Reference</strong>
+ Ward, J. H. Hierarchical Grouping to Optimize an Objective Function
+ J. Am. Statist. Assoc. 1963, 58, 236-244,
+ <a href="http://iv.slis.indiana.edu/sw/data/ward.pdf">http://iv.slis.indiana.edu/sw/data/ward.pdf</a>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="pdist.html">pdist</a>, 
+  <a href="squareform.html">squareform</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/linkage.m">linkage</a>
+</div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

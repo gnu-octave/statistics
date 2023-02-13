@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: harmmean</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Descriptive Statistics">
+                    <i class="fas fa-list-alt"></i>
+                    Descriptive Statistics
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>harmmean</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>m</var> = <b>harmmean</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>m</var> = <b>harmmean</b><i> (<var>x</var>, &quot;all&quot;)</i></dt>
+<dt><u>statistics:</u> <var>m</var> = <b>harmmean</b><i> (<var>x</var>, <var>dim</var>)</i></dt>
+<dt><u>statistics:</u> <var>m</var> = <b>harmmean</b><i> (<var>x</var>, <var>vecdim</var>)</i></dt>
+<dt><u>statistics:</u> <var>m</var> = <b>harmmean</b><i> (&hellip;, <var>nanflag</var>)</i></dt>
+</dl>
+
+<p> Compute the harmonic mean of <var>x</var>.
+</p>
+<div class="ms-5">
+ <ul>
+<li> If <var>x</var> is a vector, then <code>harmmean(<var>x</var>)</code> returns the
+ harmonic mean of the elements in <var>x</var> defined as
+ 
+<p>$$ {\rm harmmean}(x) = \frac{N}{\sum_{i=1}^N \frac{1}{x_i}} $$
+
+</p>
+ 
+
+ </li><li> If <var>x</var> is a matrix, then <code>harmmean(<var>x</var>)</code> returns a row
+ vector with the harmonic mean of each columns in <var>x</var>.
+
+ </li><li> If <var>x</var> is a multidimensional array, then <code>harmmean(<var>x</var>)</code>
+ operates along the first nonsingleton dimension of <var>x</var>.
+
+ </li><li> If <var>x</var> contains any negative values, then <code>harmmean(<var>x</var>)</code>
+ returns an error.
+ </li></ul>
+
+<p> <code>harmmean(<var>x</var>, &quot;all&quot;)</code> returns the harmonic mean of all the elements
+ in <var>x</var>.  If <var>x</var> contains any 0, then the returned value is 0.
+</p>
+<p> <code>harmmean(<var>x</var>, <var>dim</var>)</code> returns the harmonic mean along the
+ operating dimension <var>dim</var> of <var>x</var>.  Calculating the harmonic mean of
+ any subarray containing any 0 will return 0.
+</p>
+<p> <code>harmmean(<var>x</var>, <var>vecdim</var>)</code> returns the harmonic mean over the
+ dimensions specified in the vector <var>vecdim</var>.  For example, if <var>x</var> is
+ a 2-by-3-by-4 array, then <code>harmmean(<var>x</var>, [1 2])</code> returns a 1-by-4
+ array. Each element of the output array is the harmonic mean of the elements
+ on the corresponding page of <var>x</var>.  NOTE! <var>vecdim</var> MUST index at least
+ N-2 dimensions of <var>x</var>, where <code>N = length (size (<var>x</var>))</code> and N &lt; 8.
+ If <var>vecdim</var> indexes all dimensions of <var>x</var>, then it is equivalent to
+ <code>geomean(<var>x</var>, &quot;all&quot;)</code>.
+</p>
+<p> <code>harmmean(&hellip;, <var>nanflag</var>)</code> specifies whether to exclude NaN
+ values from the calculation, using any of the input argument combinations in
+ previous syntaxes. By default, harmmean includes NaN values in the calculation
+ (<var>nanflag</var> has the value &quot;includenan&quot;).  To exclude NaN values, set the
+ value of <var>nanflag</var> to &quot;omitnan&quot;.
+</p>
+<p> <strong>See also: </strong>
+  <a href="geomean.html">geomean</a>, 
+  <a href="mean.html">mean</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/harmmean.m">harmmean</a>
+</div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

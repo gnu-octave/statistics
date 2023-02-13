@@ -17,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = geopdf (@var{x}, @var{ps})
+## @deftypefn  {statistics} {@var{y} =} geopdf (@var{x}, @var{ps})
 ##
 ## Geometric probability density function (PDF).
 ##

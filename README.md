@@ -17,6 +17,8 @@ As of 10.6.2022, the developemnt of the **statistics** package has move from [So
 - Keep a single dependency to the last two major point releases of GNU Octave.
 - Deprecate old functions once their fully Matlab compatible equivalents are implemented.
 
+You can find its documentation at [https://gnu-octave.github.io/statistics/](https://gnu-octave.github.io/statistics/).
+
 ## 2. Install statistics
 
 To install the latest version (1.5.3) you need Octave (>=6.1.0) installed on your system. If you have Octave (>=7.2.0) you can install it by typing:

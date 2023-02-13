@@ -18,7 +18,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{pval}, @var{t}, @var{df}] = regression_ttest (@var{y}, @var{x}, @var{rr}, @var{r}, @var{alt})
+## @deftypefn  {statistics} {[@var{pval}, @var{t}, @var{df}] =} regression_ttest (@var{y}, @var{x}, @var{rr}, @var{r}, @var{alt})
 ##
 ## Perform a linear regression t-test for the null hypothesis
 ## @nospell{@code{@var{rr} * @var{b} = @var{r}}} in a classical normal

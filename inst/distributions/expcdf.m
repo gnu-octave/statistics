@@ -17,12 +17,12 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = expcdf (@var{x})
-## @deftypefnx {statistics} @var{p} = expcdf (@var{x}, @var{mu})
-## @deftypefnx {statistics} @var{p} = expcdf (@dots{}, "upper")
-## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = expcdf (@var{x}, @var{mu}, @var{pcov})
-## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = expcdf (@var{x}, @var{mu}, @var{pcov}, @var{alpha})
-## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = expcdf (@dots{}, "upper")
+## @deftypefn  {statistics} {@var{p} =} expcdf (@var{x})
+## @deftypefnx {statistics} {@var{p} =} expcdf (@var{x}, @var{mu})
+## @deftypefnx {statistics} {@var{p} =} expcdf (@dots{}, "upper")
+## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} expcdf (@var{x}, @var{mu}, @var{pcov})
+## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} expcdf (@var{x}, @var{mu}, @var{pcov}, @var{alpha})
+## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} expcdf (@dots{}, "upper")
 ##
 ## Exponential cumulative distribution function (CDF).
 ##

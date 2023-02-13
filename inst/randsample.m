@@ -17,9 +17,9 @@
 ## along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = randsample (@var{v}, @var{k})
-## @deftypefnx {statistics} @var{y} = randsample (@var{v}, @var{k}, @var{replacement}=false)
-## @deftypefnx {statistics} @var{y} = randsample (@var{v}, @var{k}, @var{replacement}=false, [@var{w}=[]])
+## @deftypefn  {statistics} {@var{y} =} randsample (@var{v}, @var{k})
+## @deftypefnx {statistics} {@var{y} =} randsample (@var{v}, @var{k}, @var{replacement}=false)
+## @deftypefnx {statistics} {@var{y} =} randsample (@var{v}, @var{k}, @var{replacement}=false, [@var{w}=[]])
 ##
 ## Sample elements from a vector.
 ##

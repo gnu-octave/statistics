@@ -17,12 +17,13 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = probit (@var{p})
+## @deftypefn  {statistics} {@var{y} =} probit (@var{p})
 ##
 ## Probit transformation
 ##
 ## Return the probit (the quantile of the standard normal distribution) for
 ## each element of @var{p}.
+##
 ## @seealso{logit}
 ## @end deftypefn
 

@@ -17,10 +17,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{r} = vmrnd (@var{mu}, @var{k})
-## @deftypefnx {statistics} @var{r} = vmrnd (@var{mu}, @var{k}, @var{rows})
-## @deftypefnx {statistics} @var{r} = vmrnd (@var{mu}, @var{k}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} @var{r} = vmrnd (@var{mu}, @var{k}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} vmrnd (@var{mu}, @var{k})
+## @deftypefnx {statistics} {@var{r} =} vmrnd (@var{mu}, @var{k}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} vmrnd (@var{mu}, @var{k}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} vmrnd (@var{mu}, @var{k}, [@var{sz}])
 ##
 ## Random arrays from the von Mises distribution.
 ##

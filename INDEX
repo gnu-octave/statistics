@@ -129,6 +129,12 @@ Experimental Design
  ff2n
  sigma_pts
  x2fx
+Machine Learning
+ hmmestimate
+ hmmgenerate
+ hmmviterbi
+ svmpredict
+ svmtrain
 Model Fitting
  crossval
  fitgmdist
@@ -167,12 +173,6 @@ Hypothesis Testing
 I/O
  libsvmread
  libsvmwrite
-Machine Learning
- hmmestimate
- hmmgenerate
- hmmviterbi
- svmpredict
- svmtrain
 Plotting
  boxplot
  cdfplot

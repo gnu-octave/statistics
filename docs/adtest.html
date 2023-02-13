@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: adtest</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Hypothesis Testing">
+                    <i class="fas fa-list-alt"></i>
+                    Hypothesis Testing
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>adtest</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>h</var> = <b>adtest</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>h</var> = <b>adtest</b><i> (<var>x</var>, <var>Name</var>, <var>Value</var>)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>] = <b>adtest</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>adstat</var>, <var>cv</var>] = <b>adtest</b><i> (&hellip;)</i></dt>
+</dl>
+
+<p> Anderson-Darling goodness-of-fit hypothesis test.
+</p>
+<div class="ms-5">
+<p> <code><var>h</var> = adtest (<var>x</var>)</code> returns a test decision for the null
+ hypothesis that the data in vector <var>x</var> is from a population with a normal
+ distribution, using the Anderson-Darling test.  The alternative hypothesis is
+ that x is not from a population with a normal distribution. The result
+ <var>h</var> is 1 if the test rejects the null hypothesis at the 5% significance
+ level, or 0 otherwise.
+</p>
+<p> <code><var>h</var> = adtest (<var>x</var>, <var>Name</var>, <var>Value</var>)</code> returns a test
+ decision for the Anderson-Darling test with additional options specified by
+ one or more Name-Value pair arguments.  For example, you can specify a null
+ distribution other than normal, or select an alternative method for
+ calculating the p-value, such as a Monte Carlo simulation.
+</p>
+<p> The following parameters can be parsed as Name-Value pair arguments.
+</p>
+ <table>
+<thead><tr><th width="25%">Name</th><th width="75%">Description</th></tr></thead>
+<tr><td width="25%">&quot;Distribution&quot;</td><td width="75%">The distribution being tested for.  It tests
+ whether <var>x</var> could have come from the specified distribution.  There are
+ two choise available for parsing distribution parameters:</td></tr>
+</table>
+
+ <ul>
+<li>
+ One of the following char strings: &quot;norm&quot;, &quot;exp&quot;, &quot;ev&quot;, &quot;logn&quot;, &quot;weibull&quot;,
+ for defining either the &rsquo;normal&rsquo;, &rsquo;exponential&rsquo;, &rsquo;extreme value&rsquo;, lognormal,
+ or &rsquo;Weibull&rsquo; distribution family, accordingly.  In this case, <var>x</var> is
+ tested against a composite hypothesis for the specified distribution family
+ and the required distribution parameters are estimated from the data in
+ <var>x</var>.  The default is &quot;norm&quot;.
+
+ </li><li>
+ A cell array defining a distribution in which the first cell contains a char
+ string with the distribution name, as mentioned above, and the consecutive
+ cells containing all specified parameters of the null distribution.  In this
+ case, <var>x</var> is tested against a simple hypothesis.
+ </li></ul>
+
+ <table>
+<tr><td width="25%">&quot;Alpha&quot;</td><td width="75%">Significance level alpha for the test.  Any scalar
+ numeric value between 0 and 1.  The default is 0.05 corresponding to the 5%
+ significance level.</td></tr>
+<tr><td width="25%">&quot;MCTol&quot;</td><td width="75%">Monte-Carlo standard error for the p-value,
+ <var>pval</var>, value. which must be a positive scalar value.  In this case, an
+ approximation for the p-value is computed directly, using Monte-Carlo
+ simulations.</td></tr>
+<tr><td width="25%">&quot;Asymptotic&quot;</td><td width="75%">Method for calculating the p-value of the
+ Anderson-Darling test, which can be either true or false logical value.  If
+ you specify &rsquo;true&rsquo;, adtest estimates the p-value using the limiting
+ distribution of the Anderson-Darling test statistic.  If you specify &rsquo;false&rsquo;,
+ adtest calculates the p-value based on an analytical formula.  For sample
+ sizes greater than 120, the limiting distribution estimate is likely to be
+ more accurate than the small sample size approximation method.</td></tr>
+</table>
+
+ <ul>
+<li>
+ If you specify a distribution family with unknown parameters for the
+ distribution Name-Value pair (i.e. composite distribution hypothesis test),
+ the &quot;Asymptotic&quot; option must be false.
+ </li><li>
+
+ If you use MCTol to calculate the p-value using a Monte Carlo simulation,
+ the &quot;Asymptotic&quot; option must be false.
+ </li></ul>
+
+<p> <code>[<var>h</var>, <var>pval</var>] = adtest (&hellip;)</code> also returns the p-value,
+ <var>pval</var>, of the Anderson-Darling test, using any of the input arguments
+ from the previous syntaxes.
+</p>
+<p> <code>[<var>h</var>, <var>pval</var>, <var>adstat</var>, <var>cv</var>] = adtest (&hellip;)</code> also
+ returns the test statistic, <var>adstat</var>, and thhe critical value, <var>cv</var>,
+ for the Anderson-Darling test.
+</p>
+<p> The Anderson-Darling test statistic belongs to the family of Quadratic
+ Empirical Distribution Function statistics, which are based on the weighted
+ sum of the difference <em>[Fn(x)-F(x)]^2</em> over the ordered sample values
+ <em>X1 &lt; X2 &lt; ... &lt; Xn</em>, where <em>F</em> is the hypothesized continuous
+ distribution and <em>Fn</em> is the empirical CDF based on the data sample with
+ <em>n</em> sample points.
+</p>
+<p> <strong>See also: </strong>
+  <a href="kstest.html">kstest</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/adtest.m">adtest</a>
+</div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

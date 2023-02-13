@@ -19,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = nakapdf (@var{x}, @var{m}, @var{w})
+## @deftypefn  {statistics} {@var{y} =} nakapdf (@var{x}, @var{m}, @var{w})
 ##
 ## Nakagami probability density function (PDF).
 ##

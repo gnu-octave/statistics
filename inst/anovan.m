@@ -19,29 +19,29 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = anovan (@var{Y}, @var{GROUP})
-## @deftypefnx {statistics} @var{p} = anovan (@var{Y}, @var{GROUP}, @var{name}, @var{value})
-## @deftypefnx {statistics} [@var{p}, @var{atab}] = anovan (...)
-## @deftypefnx {statistics} [@var{p}, @var{atab}, @var{stats}] = anovan (...)
-## @deftypefnx {statistics} [@var{p}, @var{atab}, @var{stats}, @var{terms}] = anovan (...)
+## @deftypefn  {statistics} {@var{p} =} anovan (@var{Y}, @var{GROUP})
+## @deftypefnx {statistics} {@var{p} =} anovan (@var{Y}, @var{GROUP}, @var{name}, @var{value})
+## @deftypefnx {statistics} {[@var{p}, @var{atab}] =} anovan (@dots{})
+## @deftypefnx {statistics} {[@var{p}, @var{atab}, @var{stats}] =} anovan (@dots{})
+## @deftypefnx {statistics} {[@var{p}, @var{atab}, @var{stats}, @var{terms}] =} anovan (@dots{})
 ##
 ## Perform a multi (N)-way analysis of (co)variance (ANOVA or ANCOVA) to
 ## evaluate the effect of one or more categorical or continuous predictors (i.e.
 ## independent variables) on a continuous outcome (i.e. dependent variable). The
-## algorithms used make @qcode{anovan} suitable for balanced or unbalanced
-## factorial (crossed) designs. By default, @qcode{anovan} treats all factors
+## algorithms used make @code{anovan} suitable for balanced or unbalanced
+## factorial (crossed) designs. By default, @code{anovan} treats all factors
 ## as fixed. Examples of function usage can be found by entering the command
 ## @code{demo anovan}.
 ##
 ## Data is a single vector @var{Y} with groups specified by a corresponding
 ## matrix or cell array of group labels @var{GROUP}, where each column of
-## @var{GROUP} has the same number of rows as @var{Y}. For example, if @var{Y}
-## = [1.1;1.2]; @var{GROUP} = [1,2,1; 1,5,2]; then observation 1.1 was measured
-## under conditions 1,2,1 and observation 1.2 was measured under conditions
-## 1,5,2. If the @var{GROUP} provided is empty, then the linear model is fit
-## with just the intercept (no predictors).
+## @var{GROUP} has the same number of rows as @var{Y}. For example, if
+## @code{@var{Y} = [1.1;1.2]; @var{GROUP} = [1,2,1; 1,5,2];} then observation
+## 1.1 was measured under conditions 1,2,1 and observation 1.2 was measured
+## under conditions 1,5,2. If the @var{GROUP} provided is empty, then the linear
+## model is fit with just the intercept (no predictors).
 ##
-## @qcode{anovan} can take a number of optional parameters as name-value pairs.
+## @code{anovan} can take a number of optional parameters as name-value pairs.
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "continuous", @var{continuous})}
 ##
@@ -59,8 +59,8 @@
 ## @item
 ## @var{random} is a vector of indices indicating which of the columns (i.e.
 ## factors) in @var{GROUP} should be treated as random effects rather than
-## fixed effects. Octave @qcode{anovan} provides only basic support for random
-## effects. Specifically, since all F-statistics in @qcode{anovan} are
+## fixed effects. Octave @code{anovan} provides only basic support for random
+## effects. Specifically, since all F-statistics in @code{anovan} are
 ## calculated using the mean-squared error (MSE), any interaction terms
 ## containing a random effect are dropped from the model term definitions and
 ## their associated variance is pooled with the residual, unexplained variance
@@ -77,13 +77,14 @@
 ##
 ## @itemize
 ## @item
-## "linear" (default) : compute N main effects with no interactions.
+## "linear" (default) : compute @math{N} main effects with no interactions.
 ##
 ## @item
-## "interaction" : compute N effects and N*(N-1) two-factor interactions
+## "interaction" : compute @math{N} effects and @math{N*(N-1)} two-factor
+## interactions
 ##
 ## @item
-## "full" : compute the N main effects and interactions at all levels
+## "full" : compute the @math{N} main effects and interactions at all levels
 ##
 ## @item
 ## a scalar integer : representing the maximum interaction order
@@ -123,17 +124,17 @@
 ## @itemize
 ## @item
 ## @var{varnames} must be a cell array of strings with each element containing a
-## factor name for each column of GROUP.  By default (if not parsed as optional
-## argument), @var{varnames} are "X1","X2","X3", etc.
+## factor name for each column of @var{GROUP}.  By default (if not parsed as
+## optional argument), @var{varnames} are "X1","X2","X3", etc.
 ## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "alpha", @var{alpha})}
 ##
 ## @itemize
 ## @item
-## @var{alpha} must be a scalar value between 0 and 1 requesting 100*(1-alpha)%
-## confidence bounds for the regression coefficients returned in STATS.coeffs
-## (default 0.05 for 95% confidence)
+## @var{alpha} must be a scalar value between 0 and 1 requesting
+## @math{100*(1-@var{alpha})%} confidence bounds for the regression coefficients
+## returned in @var{stats}.coeffs (default 0.05 for 95% confidence).
 ## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "display", @var{dispopt})}
@@ -169,13 +170,13 @@
 ## "helmert": Helmert contrasts.
 ##
 ## @item
-## "effect": Deviation effect coding. (The first level appearing in the @var{GROUP}
-## column is omitted).
+## "effect": Deviation effect coding. (The first level appearing in the
+## @var{GROUP} column is omitted).
 ##
 ## @item
 ## "treatment": Treatment contrast (or dummy) coding. (The first level appearing
 ## in the @var{GROUP} column is the reference level). These contrasts are not
-## compatible with SSTYPE 3.
+## compatible with @var{sstype} = 3.
 ##
 ## @end itemize
 ##
@@ -203,32 +204,33 @@
 ## @item
 ## @var{weights} is an optional vector of weights to be used when fitting the
 ## linear model. Weighted least squares (WLS) is used with weights (that is,
-## minimizing sum (weights * residuals.^2)); otherwise ordinary least squares
-## (OLS) is used (default is empty for OLS).
+## minimizing @code{sum (@var{weights} * @var{residuals} .^ 2))}; otherwise
+## ordinary least squares (OLS) is used (default is empty for OLS).
 ## @end itemize
 ##
-## @qcode{anovan} can return up to four output arguments:
+## @code{anovan} can return up to four output arguments:
 ##
-## @var{p} = anovan (@dots{}) returns a vector of p-values, one for each term.
+## @code{@var{p} = anovan (@dots{})} returns a vector of p-values, one for each
+## term.
 ##
-## [@var{p}, @var{atab}] = anovan (@dots{}) returns a cell array containing the
-## ANOVA table.
+## @code{[@var{p}, @var{atab}] = anovan (@dots{})} returns a cell array
+## containing the ANOVA table.
 ##
-## [@var{p}, @var{atab}, @var{stats}] = anovan (@dots{}) returns a structure
-## containing additional statistics, including degrees of freedom and effect
-## sizes for each term in the linear model, the design matrix, the
+## @code{[@var{p}, @var{atab}, @var{stats}] = anovan (@dots{})} returns a
+## structure containing additional statistics, including degrees of freedom and
+## effect sizes for each term in the linear model, the design matrix, the
 ## variance-covariance matrix, (weighted) model residuals, and the mean squared
 ## error. The columns of @var{stats}.coeffs (from left-to-right) report the
-## model coefficients, standard errors, lower and upper 100*(1-alpha)%
+## model coefficients, standard errors, lower and upper @math{100*(1-alpha)%}
 ## confidence interval bounds, t-statistics, and p-values relating to the
 ## contrasts. The number appended to each term name in @var{stats}.coeffnames
 ## corresponds to the column number in the relevant contrast matrix for that
-## factor. The @var{stats} structure can be used as input for @qcode{multcompare}.
-## The @var{stats} structure is also recognised by the functions @qcode{bootcoeff}
-## and @qcode{bootemm} from the statistics-bootstrap package.
+## factor. The @var{stats} structure can be used as input for @code{multcompare}.
+## The @var{stats} structure is also recognised by the functions @code{bootcoeff}
+## and @code{bootemm} from the statistics-bootstrap package.
 ##
-## [@var{p}, @var{atab}, @var{stats}, @var{terms}] = anovan (@dots{}) returns
-## the model term definitions.
+## @code{[@var{p}, @var{atab}, @var{stats}, @var{terms}] = anovan (@dots{})}
+## returns the model term definitions.
 ##
 ## @seealso{anova1, anova2, multcompare, fitlm}
 ## @end deftypefn

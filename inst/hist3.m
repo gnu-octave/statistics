@@ -19,11 +19,11 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {} hist3 (@var{X})
 ## @deftypefnx {statistics} {} hist3 (@var{X}, @var{nbins})
-## @deftypefnx {statistics} {} hist3 (@var{X}, @qcode{"Nbins"}, @var{nbins})
+## @deftypefnx {statistics} {} hist3 (@var{X}, @code{"Nbins"}, @var{nbins})
 ## @deftypefnx {statistics} {} hist3 (@var{X}, @var{centers})
-## @deftypefnx {statistics} {} hist3 (@var{X}, @qcode{"Ctrs"}, @var{centers})
-## @deftypefnx {statistics} {} hist3 (@var{X}, @qcode{"Edges"}, @var{edges})
-## @deftypefnx {statistics} [@var{N}, @var{C}] = hist3 (@dots{})
+## @deftypefnx {statistics} {} hist3 (@var{X}, @code{"Ctrs"}, @var{centers})
+## @deftypefnx {statistics} {} hist3 (@var{X}, @code{"Edges"}, @var{edges})
+## @deftypefnx {statistics} {[@var{N}, @var{C}] =} hist3 (@dots{})
 ## @deftypefnx {statistics} {} hist3 (@dots{}, @var{prop}, @var{val}, @dots{})
 ## @deftypefnx {statistics} {} hist3 (@var{hax}, @dots{})
 ##

@@ -19,9 +19,9 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = normpdf (@var{x})
-## @deftypefnx {statistics} @var{y} = normpdf (@var{x}, @var{mu})
-## @deftypefnx {statistics} @var{y} = (@var{x}, @var{mu}, @var{sigma})
+## @deftypefn  {statistics} {@var{y} =} normpdf (@var{x})
+## @deftypefnx {statistics} {@var{y} =} normpdf (@var{x}, @var{mu})
+## @deftypefnx {statistics} {@var{y} =} (@var{x}, @var{mu}, @var{sigma})
 ##
 ## Normal probability density function (PDF).
 ##

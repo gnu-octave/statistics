@@ -17,9 +17,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{sequence}, @var{states}] = hmmgenerate (@var{len}, @var{transprob}, @var{outprob})
-## @deftypefnx {statistics} [@dots{}] = hmmgenerate (@dots{}, "symbols", @var{symbols})
-## @deftypefnx {statistics} [@dots{}] = hmmgenerate (@dots{}, "statenames", @var{statenames})
+## @deftypefn  {statistics} {[@var{sequence}, @var{states}] =} hmmgenerate (@var{len}, @var{transprob}, @var{outprob})
+## @deftypefnx {statistics} {[@dots{}] =} hmmgenerate (@dots{}, @code{"symbols"}, @var{symbols})
+## @deftypefnx {statistics} {[@dots{}] =} hmmgenerate (@dots{}, @code{"statenames"}, @var{statenames})
 ##
 ## Output sequence and hidden states of a hidden Markov model.
 ##

@@ -17,13 +17,13 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{v} = var (@var{x})
-## @deftypefnx {statistics} @var{v} = var (@var{x}, @var{w})
-## @deftypefnx {statistics} @var{v} = var (@var{x}, @var{w}, "all")
-## @deftypefnx {statistics} @var{v} = var (@var{x}, @var{w}, @var{dim})
-## @deftypefnx {statistics} @var{v} = var (@var{x}, @var{w}, @var{vecdim})
-## @deftypefnx {statistics} @var{v} = var (@dots{}, @var{nanflag})
-## @deftypefnx {statistics} [@var{v}, @var{m}] = var (@dots{})
+## @deftypefn  {statistics} {@var{v} =} var (@var{x})
+## @deftypefnx {statistics} {@var{v} =} var (@var{x}, @var{w})
+## @deftypefnx {statistics} {@var{v} =} var (@var{x}, @var{w}, "all")
+## @deftypefnx {statistics} {@var{v} =} var (@var{x}, @var{w}, @var{dim})
+## @deftypefnx {statistics} {@var{v} =} var (@var{x}, @var{w}, @var{vecdim})
+## @deftypefnx {statistics} {@var{v} =} var (@dots{}, @var{nanflag})
+## @deftypefnx {statistics} {[@var{v}, @var{m}] =} var (@dots{})
 ##
 ## Compute the variance of the elements of @var{x}.
 ##

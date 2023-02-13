@@ -18,7 +18,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{GMdist} = fitgmdist (@var{data}, @var{k}, @var{param1}, @var{value1}, @dots{})
+## @deftypefn  {statistics} {@var{GMdist} =} fitgmdist (@var{data}, @var{k}, @var{param1}, @var{value1}, @dots{})
 ##
 ## Fit a Gaussian mixture model with @var{k} components to @var{data}.
 ## Each row of @var{data} is a data sample.  Each column is a variable.

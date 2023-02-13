@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: pdf</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Wrappers">
+                    <i class="fas fa-list-alt"></i>
+                    Wrappers
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>pdf</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>retval</var> = <b>pdf</b><i> (<var>name</var>, <var>X</var>, &hellip;)</i></dt>
+</dl>
+
+<p> Return probability density function of <var>name</var> function for value <var>x</var>.
+</p>
+<div class="ms-5">
+<p> This is a wrapper around various <var>name</var>pdf and <var>name</var>_pdf
+ functions. See the individual functions help to learn the signification of
+ the arguments after <var>x</var>. Supported functions and corresponding number of
+ additional arguments are:
+</p>
+ <table>
+<thead><tr><th width="2%"></th><th width="30%">function</th><th width="45%">alternative</th><th width="20%">args</th></tr></thead>
+<tr><td width="2%"></td><td width="30%">&quot;bbs&quot;</td><td width="45%">&quot;Birnbaum-Saunders&quot;</td><td width="20%">3</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;beta&quot;</td><td width="45%"></td><td width="20%">2</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;bino&quot;</td><td width="45%">&quot;binomial&quot;</td><td width="20%">2</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;burr&quot;</td><td width="45%">&quot;Burr&quot;</td><td width="20%">3</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;cauchy&quot;</td><td width="45%">&quot;Cauchy&quot;</td><td width="20%">0  defaults: loc=0,scale=1</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;cauchy&quot;</td><td width="45%">&quot;Cauchy&quot;</td><td width="20%">2</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;chi2&quot;</td><td width="45%">&quot;chi-square&quot;</td><td width="20%">1</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;copula&quot;</td><td width="45%">&quot;Copula family&quot;</td><td width="20%">2</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;discrete&quot;</td><td width="45%">&quot;univariate discrete&quot;</td><td width="20%">2</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;empirical&quot;</td><td width="45%">&quot;univariate empirical&quot;</td><td width="20%">2</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;exp&quot;</td><td width="45%">&quot;exponential&quot;</td><td width="20%">1</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;f&quot;</td><td width="45%"></td><td width="20%">2</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;gam&quot;</td><td width="45%">&quot;gamma&quot;</td><td width="20%">2</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;geo&quot;</td><td width="45%">&quot;geometric&quot;</td><td width="20%">1</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;gev&quot;</td><td width="45%">&quot;generalized extreme value&quot;</td><td width="20%">3</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;gp&quot;</td><td width="45%">&quot;generalized Pareto&quot;</td><td width="20%">3</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;hyge&quot;</td><td width="45%">&quot;hypergeometric&quot;</td><td width="20%">3</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;iwish&quot;</td><td width="45%">&quot;inverse Wishart&quot;</td><td width="20%">2</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;iwish&quot;</td><td width="45%">&quot;inverse Wishart&quot;</td><td width="20%">3 set log_y=true</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;jsu&quot;</td><td width="45%">&quot;Johnson SU&quot;</td><td width="20%">2</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;laplace&quot;</td><td width="45%">&quot;Laplace&quot;</td><td width="20%">0</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;logistic&quot;</td><td width="45%"></td><td width="20%">0</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;logn&quot;</td><td width="45%">&quot;lognormal&quot;</td><td width="20%">0  defaults: mu=0,sigma=1</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;logn&quot;</td><td width="45%">&quot;lognormal&quot;</td><td width="20%">2</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;mn&quot;</td><td width="45%">&quot;multinomial&quot;</td><td width="20%">1</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;mvn&quot;</td><td width="45%">&quot;multivariate normal&quot;</td><td width="20%">0  defaults: mu=0,sigma=1</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;mvn&quot;</td><td width="45%">&quot;multivariate normal&quot;</td><td width="20%">1  defaults: sigma=1</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;mvn&quot;</td><td width="45%">&quot;multivariate normal&quot;</td><td width="20%">2</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;mvt&quot;</td><td width="45%">&quot;multivariate Student&quot;</td><td width="20%">2</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;naka&quot;</td><td width="45%">&quot;Nakagami&quot;</td><td width="20%">2</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;nbin&quot;</td><td width="45%">&quot;negative binomial&quot;</td><td width="20%">2</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;norm&quot;</td><td width="45%">&quot;normal&quot;</td><td width="20%">2</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;poiss&quot;</td><td width="45%">&quot;Poisson&quot;</td><td width="20%">1</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;rayl&quot;</td><td width="45%">&quot;Rayleigh&quot;</td><td width="20%">1</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;stdnormal&quot;</td><td width="45%">&quot;standard normal&quot;</td><td width="20%">0</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;t&quot;</td><td width="45%"></td><td width="20%">1</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;tri&quot;</td><td width="45%">&quot;triangular&quot;</td><td width="20%">3</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;unid&quot;</td><td width="45%">&quot;uniform discrete&quot;</td><td width="20%">1</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;unif&quot;</td><td width="45%">&quot;uniform&quot;</td><td width="20%">0  defaults: a=0,b=1</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;unif&quot;</td><td width="45%">&quot;uniform&quot;</td><td width="20%">2</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;vm&quot;</td><td width="45%">&quot;Von Mises&quot;</td><td width="20%">2</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;wbl&quot;</td><td width="45%">&quot;Weibull&quot;</td><td width="20%">0  defaults: scale=0,shape=1</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;wbl&quot;</td><td width="45%">&quot;Weibull&quot;</td><td width="20%">1  defaults: shape=1</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;wbl&quot;</td><td width="45%">&quot;Weibull&quot;</td><td width="20%">2</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;wish&quot;</td><td width="45%">&quot;Wishart&quot;</td><td width="20%">2</td></tr>
+<tr><td width="2%"></td><td width="30%">&quot;wish&quot;</td><td width="45%">&quot;Wishart&quot;</td><td width="20%">3 set log_y=true</td></tr>
+</table>
+
+<p> <strong>See also: </strong>
+  <a href="cdf.html">cdf</a>, 
+rnd
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/pdf.m">pdf</a>
+</div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

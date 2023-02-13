@@ -19,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = nbinpdf (@var{x}, @var{n}, @var{ps})
+## @deftypefn  {statistics} {@var{y} =} nbinpdf (@var{x}, @var{n}, @var{ps})
 ##
 ## Negative binomial probability density function (PDF).
 ##

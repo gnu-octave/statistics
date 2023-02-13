@@ -17,7 +17,7 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{retval} = pdf (@var{name}, @var{X}, @dots{})
+## @deftypefn  {statistics} {@var{retval} =} pdf (@var{name}, @var{X}, @dots{})
 ##
 ## Return probability density function of @var{name} function for value @var{x}.
 ##

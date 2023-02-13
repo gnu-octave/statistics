@@ -19,12 +19,12 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = gamcdf (@var{x}, @var{a})
-## @deftypefnx {statistics} @var{p} = gamcdf (@var{x}, @var{a}, @var{b})
-## @deftypefnx {statistics} @var{p} = gamcdf (@dots{}, "upper")
-## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = evcdf (@var{x}, @var{a}, @var{b}, @var{pcov})
-## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = evcdf (@var{x}, @var{a}, @var{b}, @var{pcov}, @var{alpha})
-## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = evcdf (@dots{}, "upper")
+## @deftypefn  {statistics} {@var{p} =} gamcdf (@var{x}, @var{a})
+## @deftypefnx {statistics} {@var{p} =} gamcdf (@var{x}, @var{a}, @var{b})
+## @deftypefnx {statistics} {@var{p} =} gamcdf (@dots{}, "upper")
+## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} evcdf (@var{x}, @var{a}, @var{b}, @var{pcov})
+## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} evcdf (@var{x}, @var{a}, @var{b}, @var{pcov}, @var{alpha})
+## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} evcdf (@dots{}, "upper")
 ##
 ## Gamma cumulative distribution function (CDF).
 ##

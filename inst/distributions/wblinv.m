@@ -19,9 +19,9 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{x} = wblinv (@var{p})
-## @deftypefnx {statistics} @var{x} = wblinv (@var{p}, @var{lambda})
-## @deftypefnx {statistics} @var{x} = wblinv (@var{p}, @var{lambda}, @var{k})
+## @deftypefn  {statistics} {@var{x} =} wblinv (@var{p})
+## @deftypefnx {statistics} {@var{x} =} wblinv (@var{p}, @var{lambda})
+## @deftypefnx {statistics} {@var{x} =} wblinv (@var{p}, @var{lambda}, @var{k})
 ##
 ## Inverse of the Weibull cumulative distribution function (iCDF).
 ##

@@ -19,9 +19,9 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{r} = stdnormal_rnd (@var{rows})
-## @deftypefnx {statistics} @var{r} = stdnormal_rnd (@var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} @var{r} = stdnormal_rnd ([@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} stdnormal_rnd (@var{rows})
+## @deftypefnx {statistics} {@var{r} =} stdnormal_rnd (@var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} stdnormal_rnd ([@var{sz}])
 ##
 ## Random arrays from the standard normal distribution.
 ##

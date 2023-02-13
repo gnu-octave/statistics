@@ -17,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{x} = finv (@var{p}, @var{df1}, @var{df2})
+## @deftypefn  {statistics} {@var{x} =} finv (@var{p}, @var{df1}, @var{df2})
 ##
 ## Inverse of the F cumulative distribution function (iCDF).
 ##

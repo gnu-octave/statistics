@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: hist3</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Plotting">
+                    <i class="fas fa-list-alt"></i>
+                    Plotting
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>hist3</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <b>hist3</b><i> (<var>X</var>)</i></dt>
+<dt><u>statistics:</u> <b>hist3</b><i> (<var>X</var>, <var>nbins</var>)</i></dt>
+<dt><u>statistics:</u> <b>hist3</b><i> (<var>X</var>, <code>&quot;Nbins&quot;</code>, <var>nbins</var>)</i></dt>
+<dt><u>statistics:</u> <b>hist3</b><i> (<var>X</var>, <var>centers</var>)</i></dt>
+<dt><u>statistics:</u> <b>hist3</b><i> (<var>X</var>, <code>&quot;Ctrs&quot;</code>, <var>centers</var>)</i></dt>
+<dt><u>statistics:</u> <b>hist3</b><i> (<var>X</var>, <code>&quot;Edges&quot;</code>, <var>edges</var>)</i></dt>
+<dt><u>statistics:</u> [<var>N</var>, <var>C</var>] = <b>hist3</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> <b>hist3</b><i> (&hellip;, <var>prop</var>, <var>val</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> <b>hist3</b><i> (<var>hax</var>, &hellip;)</i></dt>
+</dl>
+
+<p> Produce bivariate (2D) histogram counts or plots.
+</p>
+<div class="ms-5">
+<p> The elements to produce the histogram are taken from the Nx2 matrix
+ <var>X</var>.  Any row with NaN values are ignored.  The actual bins can
+ be configured in 3 different: number, centers, or edges of the bins:
+</p>
+ <dl compact="compact">
+<dt> Number of bins (default)</dt>
+</dl>
+<p> Produces equally spaced bins between the minimum and maximum values
+ of <var>X</var>.  Defined as a 2 element vector, <var>nbins</var>, one for each
+ dimension.  Defaults to <code>[10 10]</code>.
+</p>
+ </dd>
+<dt> Center of bins</dt>
+</dl>
+<p> Defined as a cell array of 2 monotonically increasing vectors,
+ <var>centers</var>.  The width of each bin is determined from the adjacent
+ values in the vector with the initial and final bin, extending to Infinity.
+</p>
+ </dd>
+<dt> Edge of bins</dt>
+</dl>
+<p> Defined as a cell array of 2 monotonically increasing vectors,
+ <var>edges</var>.  <code><var>N</var>(i,j)</code> contains the number of elements
+ in <var>X</var> for which:
+</p>
+ <ul class="toc">
+<li>
+ <var>edges</var>{1}(i) &lt;= <var>X</var>(:,1) &lt; <var>edges</var>{1}(i+1)
+ 
+</li><li>
+ <var>edges</var>{2}(j) &lt;= <var>X</var>(:,2) &lt; <var>edges</var>{2}(j+1)
+ 
+</li></ul>
+
+<p> The consequence of this definition is that values outside the initial
+ and final edge values are ignored, and that the final bin only contains
+ the number of elements exactly equal to the final edge.
+</p>
+</dd>
+</dl>
+
+<p> The return values, <var>N</var> and <var>C</var>, are the bin counts and centers
+ respectively.  These are specially useful to produce intensity maps:
+</p>
+ <table><tr><td>&nbsp;</td><td><pre class="example"> [counts, centers] = hist3 (data);
+ imagesc (centers{1}, centers{2}, counts)
+ </pre></td></tr></table>
+
+<p> If there is no output argument, or if the axes graphics handle
+ <var>hax</var> is defined, the function will plot a 3 dimensional bar
+ graph.  Any extra property/value pairs are passed directly to the
+ underlying surface object.
+</p>
+<p> <strong>See also: </strong>
+hist, 
+histc, 
+lookup, 
+mesh
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/hist3.m">hist3</a>
+</div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

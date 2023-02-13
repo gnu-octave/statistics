@@ -17,13 +17,13 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{s} = std (@var{x})
-## @deftypefnx {statistics} @var{s} = std (@var{x}, @var{w})
-## @deftypefnx {statistics} @var{s} = std (@var{x}, @var{w}, "all")
-## @deftypefnx {statistics} @var{s} = std (@var{x}, @var{w}, @var{dim})
-## @deftypefnx {statistics} @var{s} = std (@var{x}, @var{w}, @var{vecdim})
-## @deftypefnx {statistics} @var{s} = std (@dots{}, @var{nanflag})
-## @deftypefnx {statistics} [@var{s}, @var{m}] = std (@dots{})
+## @deftypefn  {statistics} {@var{s} =} std (@var{x})
+## @deftypefnx {statistics} {@var{s} =} std (@var{x}, @var{w})
+## @deftypefnx {statistics} {@var{s} =} std (@var{x}, @var{w}, "all")
+## @deftypefnx {statistics} {@var{s} =} std (@var{x}, @var{w}, @var{dim})
+## @deftypefnx {statistics} {@var{s} =} std (@var{x}, @var{w}, @var{vecdim})
+## @deftypefnx {statistics} {@var{s} =} std (@dots{}, @var{nanflag})
+## @deftypefnx {statistics} {[@var{s}, @var{m}] =} std (@dots{})
 ##
 ## Compute the standard deviation of the elements of @var{x}.
 ##

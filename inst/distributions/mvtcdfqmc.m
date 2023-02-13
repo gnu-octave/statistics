@@ -16,12 +16,12 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = mvtcdfqmc (@var{A}, @var{B}, @var{Rho}, @var{df})
-## @deftypefnx {statisticse} @var{p} = mvtcdfqmc (@dots{}, @var{TolFun})
-## @deftypefnx {statisticse} @var{p} = mvtcdfqmc (@dots{}, @var{TolFun}, @var{MaxFunEvals})
-## @deftypefnx {statistics} @var{p} = mvtcdfqmc (@dots{}, @var{TolFun}, @var{MaxFunEvals}, @var{Display})
-## @deftypefnx {statistics} [@var{p}, @var{err}] = mvncdf (@dots{})
-## @deftypefnx {statistics} [@var{p}, @var{err}, @var{FunEvals}] = mvncdf (@dots{})
+## @deftypefn  {statistics} {@var{p} =} mvtcdfqmc (@var{A}, @var{B}, @var{Rho}, @var{df})
+## @deftypefnx {statistics} {@var{p} =} mvtcdfqmc (@dots{}, @var{TolFun})
+## @deftypefnx {statistics} {@var{p} =} mvtcdfqmc (@dots{}, @var{TolFun}, @var{MaxFunEvals})
+## @deftypefnx {statistics} {@var{p} =} mvtcdfqmc (@dots{}, @var{TolFun}, @var{MaxFunEvals}, @var{Display})
+## @deftypefnx {statistics} {[@var{p}, @var{err}] =} mvncdf (@dots{})
+## @deftypefnx {statistics} {[@var{p}, @var{err}, @var{FunEvals}] =} mvncdf (@dots{})
 ##
 ## Quasi-Monte-Carlo computation of the multivariate Student's t cdf.
 ##

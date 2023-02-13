@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{mn}, @var{v}] = hygestat (@var{t}, @var{m}, @var{n})
+## @deftypefn  {statistics} {[@var{mn}, @var{v}] =} hygestat (@var{t}, @var{m}, @var{n})
 ##
 ## Compute mean and variance of the hypergeometric distribution.
 ##

@@ -14,8 +14,8 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{r} = mnrnd (@var{n}, @var{pk})
-## @deftypefnx {statistics} @var{r} = mnrnd (@var{n}, @var{pk}, @var{s})
+## @deftypefn  {statistics} {@var{r} =} mnrnd (@var{n}, @var{pk})
+## @deftypefnx {statistics} {@var{r} =} mnrnd (@var{n}, @var{pk}, @var{s})
 ##
 ## Random arrays from the multinomial distribution.
 ##

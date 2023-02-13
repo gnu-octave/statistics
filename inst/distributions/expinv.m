@@ -17,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{x} = expinv (@var{p}, @var{mu})
+## @deftypefn  {statistics} {@var{x} =} expinv (@var{p}, @var{mu})
 ##
 ## Inverse of the exponential cumulative distribution function (iCDF).
 ##

@@ -17,8 +17,8 @@
 ## <http:##www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{d} = pdist2 (@var{x}, @var{y})
-## @deftypefnx {statistics} @var{d} = pdist2 (@var{x}, @var{y}, @var{metric})
+## @deftypefn  {statistics} {@var{d} =} pdist2 (@var{x}, @var{y})
+## @deftypefnx {statistics} {@var{d} =} pdist2 (@var{x}, @var{y}, @var{metric})
 ##
 ## Compute pairwise distance between two sets of vectors.
 ##

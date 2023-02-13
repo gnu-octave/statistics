@@ -17,13 +17,13 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{C} = multcompare (@var{STATS})
-## @deftypefnx {statistics} @var{C} = multcompare (@var{STATS}, "name", @var{value})
-## @deftypefnx {statistics} [@var{C}, @var{M}] = multcompare (...)
-## @deftypefnx {statistics} [@var{C}, @var{M}, @var{H}] = multcompare (...)
-## @deftypefnx {statistics} [@var{C}, @var{M}, @var{H}, @var{GNAMES}] = multcompare (...)
-## @deftypefnx {statistics} @var{padj} = multcompare (@var{p})
-## @deftypefnx {statistics} @var{padj} = multcompare (@var{p}, "ctype", @var{CTYPE})
+## @deftypefn  {statistics} {@var{C} =} multcompare (@var{STATS})
+## @deftypefnx {statistics} {@var{C} =} multcompare (@var{STATS}, "name", @var{value})
+## @deftypefnx {statistics} {[@var{C}, @var{M}] =} multcompare (...)
+## @deftypefnx {statistics} {[@var{C}, @var{M}, @var{H}] =} multcompare (...)
+## @deftypefnx {statistics} {[@var{C}, @var{M}, @var{H}, @var{GNAMES}] =} multcompare (...)
+## @deftypefnx {statistics} {@var{padj} =} multcompare (@var{p})
+## @deftypefnx {statistics} {@var{padj} =} multcompare (@var{p}, "ctype", @var{CTYPE})
 ##
 ## Perform posthoc multiple comparison tests or p-value adjustments to control
 ## the family-wise error rate (FWER) or false discovery rate (FDR).

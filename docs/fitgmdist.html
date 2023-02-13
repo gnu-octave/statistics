@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: fitgmdist</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Model Fitting">
+                    <i class="fas fa-list-alt"></i>
+                    Model Fitting
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>fitgmdist</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>GMdist</var> = <b>fitgmdist</b><i> (<var>data</var>, <var>k</var>, <var>param1</var>, <var>value1</var>, &hellip;)</i></dt>
+</dl>
+
+<p> Fit a Gaussian mixture model with <var>k</var> components to <var>data</var>.
+ Each row of <var>data</var> is a data sample.  Each column is a variable.
+</p>
+<div class="ms-5">
+<p> Optional parameters are:
+    </p><ul>
+<li> &rsquo;start&rsquo;:  initialization conditions.  Possible values are:
+       <ul>
+<li> &rsquo;randSample&rsquo; (default) takes means uniformly from rows of data
+       </li><li> &rsquo;plus&rsquo;       use k-means++ to initialize means
+       </li><li> &rsquo;cluster&rsquo;    Performs an initial clustering with 10% of the data
+       </li><li> vector       A vector whose length is the number of rows in data,
+                    and whose values are 1 to k specify the components
+                    each row is initially allocated to.  The mean, variance
+                    and weight of each component is calculated from that
+       </li><li> structure    with elements  mu,  Sigma  ComponentProportion
+       </li></ul>
+<p>       For &rsquo;randSample&rsquo;, &rsquo;plus&rsquo; and &rsquo;cluster&rsquo;, the initial variance of each
+       component is the variance of the entire data sample.
+</p>
+    </li><li> &rsquo;Replicates&rsquo;    Number of random restarts to perform
+
+    </li><li> &rsquo;RegularizationValue&rsquo;
+    </li><li> &rsquo;Regularize&rsquo;  A small number added to the diagonal entries
+                    of the covariance to prevent singular covariances
+
+    </li><li> &rsquo;SharedCovariance&rsquo;
+    </li><li> &rsquo;SharedCov&rsquo; (logical) True if all components must share the
+                    same variance, to reduce the number of free parameters
+
+    </li><li> &rsquo;CovarianceType&rsquo;
+    </li><li> &rsquo;CovType&rsquo;       (string). Possible values are:
+       <ul>
+<li> &rsquo;full&rsquo;       (default)  Allow arbitrary covariance matrices
+       </li><li> &rsquo;diagonal&rsquo;   Force covariances to be diagonal, to reduce the
+                    number of free parameters.
+       </li></ul>
+
+    </li><li> &rsquo;Options&rsquo;        A structure with all of the following fields:
+       <ul>
+<li> &rsquo;MaxIter&rsquo;    Maximum number of EM iterations (default 100)
+       </li><li> &rsquo;TolFun&rsquo;     Threshold increase in likelihood to terminate EM
+                          (default 1e-6)
+       </li><li> &rsquo;Display&rsquo;
+          <ul>
+<li> &rsquo;off&rsquo; (default): display nothing
+          </li><li> &rsquo;final&rsquo;: display the number of iterations and likelihood
+                         once execution completes
+          </li><li> &rsquo;iter&rsquo;:  display the above after each iteration
+          </li></ul>
+</li></ul>
+    </li><li> &rsquo;Weight&rsquo;  A column vector or n-by-2 matrix. The first column
+                    consists of non-negative weights given to the
+                    samples.
+                    If these are all integers, this is equivalent
+                    to specifying <var>weight</var>(i) copies of row i of
+                    <var>data</var>, but potentially faster.
+
+<p>                    If a row of <var>data</var> is used to represent samples
+                    that are similar but not identical, then the second
+                    column of <var>weight</var> indicates the variance of
+                    those original samples.  Specifically, in the EM
+                    algorithm, the contribution of row i towards the
+                    variance is set to at least <var>weight</var>(i,2), to
+                    prevent spurious components with zero variance.
+    </p></li></ul>
+
+<p> <strong>See also: </strong>
+gmdistribution, 
+  <a href="kmeans.html">kmeans</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/fitgmdist.m">fitgmdist</a>
+</div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

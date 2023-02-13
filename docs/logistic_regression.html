@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: logistic_regression</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Regression">
+                    <i class="fas fa-list-alt"></i>
+                    Regression
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>logistic_regression</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> [<var>intercept</var>, <var>slope</var>, <var>dev</var>, <var>dl</var>, <var>d2l</var>, <var>P</var>, <var>stats</var>] = <b>logistic_regression</b><i> (<var>y</var>, <var>x</var>, <var>print</var>, <var>intercept</var>, <var>slope</var>)</i></dt>
+</dl>
+
+<p> Perform ordinal logistic regression.
+</p>
+<div class="ms-5">
+<p> Suppose <var>y</var> takes values in k ordered categories, and let
+ <code>P_i (<var>x</var>)</code> be the cumulative probability that <var>y</var>
+ falls in one of the first i categories given the covariate
+ <var>x</var>.  Then
+</p>
+ <table><tr><td>&nbsp;</td><td><pre class="example"> [<var>intercept</var>, <var>slope</var>] = logistic_regression (<var>y</var>, <var>x</var>)
+ </pre></td></tr></table>
+
+ <p> fits the model
+</p>
+ <table><tr><td>&nbsp;</td><td><pre class="example"> logit (P_i (<var>x</var>)) = <var>x</var> * <var>slope</var> + <var>intercept</var>_i,   i = 1 &hellip; k-1
+ </pre></td></tr></table>
+
+<p> The number of ordinal categories, k, is taken to be the number
+ of distinct values of <code>round (<var>y</var>)</code>.  If k equals 2,
+ <var>y</var> is binary and the model is ordinary logistic regression.  The
+ matrix <var>x</var> is assumed to have full column rank.
+</p>
+<p> Given <var>y</var> only, <code><var>intercept</var> = logistic_regression (<var>y</var>)</code>
+ fits the model with baseline logit odds only.
+</p>
+<p> The full form is
+</p>
+ <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> [<var>intercept</var>, <var>slope</var>, <var>dev</var>, <var>dl</var>, <var>d2l</var>, <var>P</var>, <var>stats</var>]
+    = logistic_regression (<var>y</var>, <var>x</var>, <var>print</var>, <var>intercept</var>, <var>slope</var>)
+ </pre><pre class="example"> </pre></td></tr></table>
+
+ <p> in which all output arguments and all input arguments except <var>y</var>
+ are optional.
+</p>
+<p> Setting <var>print</var> to 1 requests summary information about the fitted
+ model to be displayed.  Setting <var>print</var> to 2 requests information
+ about convergence at each iteration.  Other values request no
+ information to be displayed.  The input arguments <var>intercept</var> and
+ <var>slope</var> give initial estimates for <var>intercept</var> and <var>slope</var>.
+</p>
+<p> The returned value <var>dev</var> holds minus twice the log-likelihood.
+</p>
+<p> The returned values <var>dl</var> and <var>d2l</var> are the vector of first
+ and the matrix of second derivatives of the log-likelihood with
+ respect to <var>intercept</var> and <var>slope</var>.
+</p>
+<p> <var>P</var> holds estimates for the conditional distribution of <var>y</var>
+ given <var>x</var>.
+</p>
+<p> <var>stats</var> returns a structure that contains the following fields:
+ </p><ul>
+<li>
+   &quot;intercept&quot;: intercept coefficients
+ </li><li>
+    &quot;slope&quot;: slope coefficients
+ </li><li>
+    &quot;dfe&quot;: degrees of freedom for error
+ </li><li>
+    &quot;coeff&quot;: regression coefficients (intercepts and slops)
+ </li><li>
+    &quot;covb&quot;: estimated covariance matrix for coefficients (coeff)
+ </li><li>
+    &quot;coeffcorr&quot;: correlation matrix for coeff
+ </li><li>
+    &quot;se&quot;: standard errors of the coeff
+ </li><li>
+    &quot;s&quot;: theoretical dispersion parameter
+ </li><li>
+    &quot;z&quot;: z statistics for coeff
+ </li><li>
+    &quot;pval&quot;: p-values for coeff
+ </li><li>
+    &quot;resid&quot;: raw residuals
+ </li></ul>
+
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/logistic_regression.m">logistic_regression</a>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

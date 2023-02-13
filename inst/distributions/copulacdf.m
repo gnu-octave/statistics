@@ -14,8 +14,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = copulacdf (@var{family}, @var{x}, @var{theta})
-## @deftypefnx {statistics} @var{p} = copulacdf ('t', @var{x}, @var{theta}, @var{df})
+## @deftypefn  {statistics} {@var{p} =} copulacdf (@var{family}, @var{x}, @var{theta})
+## @deftypefnx {statistics} {@var{p} =} copulacdf ('t', @var{x}, @var{theta}, @var{df})
 ##
 ## Copula family cumulative distribution functions (CDF).
 ##

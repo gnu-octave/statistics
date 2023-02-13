@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: cophenet</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Clustering">
+                    <i class="fas fa-list-alt"></i>
+                    Clustering
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>cophenet</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> [<var>c</var>, <var>d</var>] = <b>cophenet</b><i> (<var>Z</var>, <var>y</var>)</i></dt>
+</dl>
+
+<p> Compute the cophenetic correlation coefficient.
+</p>
+<div class="ms-5">
+<p> The cophenetic correlation coefficient <var>C</var> of a hierarchical cluster tree
+ <var>Z</var> is the linear correlation coefficient between the cophenetic
+ distances <var>d</var> and the euclidean distances <var>y</var>.
+</p> 
+<p>$$ c = \frac {\sum_{i < j}(Y_{ij}-{\bar {y}})(Z_{ij}-{\bar{z}})}
+ {\sqrt{\sum_{i < j}(Y_{ij}-{\bar {y}})^2(Z_{ij}-{\bar{z}})^2}} $$
+
+</p>
+<p> It is a measure of the similarity between the distance of the leaves, as seen
+ in the tree, and the distance of the original data points, which were used to
+ build the tree.  When this similarity is greater, that is the coefficient is
+ closer to 1, the tree renders an accurate representation of the distances
+ between the original data points.
+</p>
+<p> <var>Z</var> is a hierarchical cluster tree, as the output of <code>linkage</code>.
+ <var>y</var> is a vector of euclidean distances, as the output of <code>pdist</code>.
+</p>
+<p> The optional output <var>d</var> is a vector of cophenetic distances, in the same
+ lower triangular format as <var>y</var>.  The cophenetic distance between two data
+ points is the height of the lowest common node of the tree.
+</p>
+<p> <strong>See also: </strong>
+  <a href="cluster.html">cluster</a>, 
+  <a href="dendrogram.html">dendrogram</a>, 
+  <a href="inconsistent.html">inconsistent</a>, 
+  <a href="linkage.html">linkage</a>, 
+  <a href="pdist.html">pdist</a>, 
+  <a href="squareform.html">squareform</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/cophenet.m">cophenet</a>
+</div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

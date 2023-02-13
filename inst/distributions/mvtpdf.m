@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = mvtpdf (@var{x}, @var{sigma}, @var{df})
+## @deftypefn  {statistics} {@var{y} =} mvtpdf (@var{x}, @var{sigma}, @var{df})
 ##
 ## Multivariate Student's t probability density function (PDF).
 ##

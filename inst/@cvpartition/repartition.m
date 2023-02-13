@@ -16,14 +16,15 @@
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn{Function File}{@var{Cnew} =} repartition (@var{C})
+## @deftypefn  {statistics} {@var{Cnew} =} repartition (@var{C})
+##
 ## Return a new cvpartition object.
 ##
-## @var{C} should be a cvpartition object. @var{Cnew} will use the same
+## @var{C} should be a @samp{cvpartition} object. @var{Cnew} will use the same
 ## partition_type as @var{C} but redo any randomization performed (currently,
 ## only the HoldOut type uses randomization).
 ##
-## @seealso{cvpartition}
+## @seealso{@@cvpartition/cvpartition}
 ## @end deftypefn
 
 function Cnew = repartition (C)

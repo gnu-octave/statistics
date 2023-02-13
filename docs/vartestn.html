@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: vartestn</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Hypothesis Testing">
+                    <i class="fas fa-list-alt"></i>
+                    Hypothesis Testing
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>vartestn</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <b>vartestn</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <b>vartestn</b><i> (<var>x</var>, <var>group</var>)</i></dt>
+<dt><u>statistics:</u> <b>vartestn</b><i> (&hellip;, <var>name</var>, <var>value</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>vartestn</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>p</var>, <var>stats</var>] = <b>vartestn</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>p</var>, <var>stats</var>] = <b>vartestn</b><i> (&hellip;, <var>name</var>, <var>value</var>)</i></dt>
+</dl>
+
+<p> Test for equal variances across multiple groups.
+</p>
+<div class="ms-5">
+<p> <code><var>h</var> = vartestn (<var>x</var>)</code> performs Bartlett&rsquo;s test for equal
+ variances for the columns of the matrix <var>x</var>.  This is a test of the null
+ hypothesis that the columns of <var>x</var> come from normal distributions with
+ the same variance, against the alternative that they come from normal
+ distributions with different variances.  The result is displayed in a summary
+ table of statistics as well as a box plot of the groups.
+</p>
+<p> <code>vartestn (<var>x</var>, <var>group</var>)</code> requires a vector <var>x</var>, and a
+ <var>group</var> argument that is a categorical variable, vector, string array, or
+ cell array of strings with one row for each element of <var>x</var>.  Values of
+ <var>x</var> corresponding to the same value of <var>group</var> are placed in the same
+ group.
+</p>
+<p> <code>vartestn</code> treats NaNs as missing values, and ignores them.
+</p>
+<p> <code><var>p</var> = vartestn (&hellip;)</code> returns the probability of observing the
+ given result, or one more extreme, by chance under the null hypothesis that
+ all groups have equal variances.  Small values of <var>p</var> cast doubt on the
+ validity of the null hypothesis.
+</p>
+<p> <code>[<var>p</var>, <var>stats</var>] = vartestn (&hellip;)</code> returns a structure with
+ the following fields:
+</p>
+ <table>
+<tr><td width="5%"></td><td width="20%">&quot;chistat&quot;</td><td width="75%">&ndash; the value of the test statistic</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;df&quot;</td><td width="75%">&ndash; the degrees of freedom of the test</td></tr>
+</table>
+
+
+<p> <code>[<var>p</var>, <var>stats</var>] = vartestn (&hellip;, <var>name</var>, <var>value</var>)</code>
+ specifies one or more of the following <var>name</var>/<var>value</var> pairs:
+</p>
+ <table>
+<tr><td width="20%">&quot;display&quot;</td><td width="80%">&quot;on&quot; to display a boxplot and table, or &quot;off&quot; to omit
+ omit these displays. Default &quot;on&quot;.</td></tr>
+<tr><td width="20%">&quot;testtype&quot;</td><td width="80%">One of the following strings to control the type of
+ test to perform:</td></tr>
+</table>
+
+ <table>
+<tr><td width="3%"></td><td width="25%">&quot;Bartlett&quot;</td><td width="72%">Bartlett&rsquo;s test (default).</td></tr>
+<tr><td width="3%"></td><td width="25%">&quot;LeveneQuadratic&quot;</td><td width="72%">Levene&rsquo;s test computed by performing anova
+ on the squared deviations of the data values from their group means.</td></tr>
+<tr><td width="3%"></td><td width="25%">&quot;LeveneAbsolute&quot;</td><td width="72%">Levene&rsquo;s test computed by performing anova
+ on the absolute deviations of the data values from their group means.</td></tr>
+<tr><td width="3%"></td><td width="25%">&quot;BrownForsythe&quot;</td><td width="72%">Brown-Forsythe test computed by performing
+ anova on the absolute deviations of the data values from the group medians.</td></tr>
+<tr><td width="3%"></td><td width="25%">&quot;OBrien&quot;</td><td width="72%">O&rsquo;Brien&rsquo;s modification of Levene&rsquo;s test with W=0.5.</td></tr>
+</table>
+
+<p> The classical &rsquo;Bartlett&rsquo; test is sensitive to the assumption that the
+ distribution in each group is normal.  The other test types are more robust
+ to non-normal distributions, especially ones prone to outliers.  For these
+ tests, the STATS output structure has a field named &quot;fstat&quot; containing the
+ test statistic, and &quot;df1&quot; and &quot;df2&quot; containing its numerator and denominator
+ degrees of freedom.
+</p>
+<p> <strong>See also: </strong>
+  <a href="vartest.html">vartest</a>, 
+  <a href="vartest2.html">vartest2</a>, 
+  <a href="anova1.html">anova1</a>, 
+  <a href="bartlett_test.html">bartlett_test</a>, 
+  <a href="levene_test.html">levene_test</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/vartestn.m">vartestn</a>
+</div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

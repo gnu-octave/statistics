@@ -16,8 +16,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = ncfcdf (@var{x}, @var{df1}, @var{df2}, @var{delta})
-## @deftypefnx {statistics} @var{p} = ncfcdf (@var{x}, @var{df1}, @var{df2}, @var{delta}, @var{uflag})
+## @deftypefn  {statistics} {@var{p} =} ncfcdf (@var{x}, @var{df1}, @var{df2}, @var{delta})
+## @deftypefnx {statistics} {@var{p} =} ncfcdf (@var{x}, @var{df1}, @var{df2}, @var{delta}, @var{uflag})
 ##
 ## Noncentral F cumulative distribution function (CDF).
 ##

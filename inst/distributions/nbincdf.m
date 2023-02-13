@@ -19,8 +19,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = nbincdf (@var{x}, @var{n}, @var{ps})
-## @deftypefnx {statistics} @var{p} = nbincdf (@var{x}, @var{n}, @var{ps}, "upper")
+## @deftypefn  {statistics} {@var{p} =} nbincdf (@var{x}, @var{n}, @var{ps})
+## @deftypefnx {statistics} {@var{p} =} nbincdf (@var{x}, @var{n}, @var{ps}, "upper")
 ##
 ## Negative binomial cumulative distribution function (CDF).
 ##

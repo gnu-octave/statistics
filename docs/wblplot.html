@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: wblplot</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Plotting">
+                    <i class="fas fa-list-alt"></i>
+                    Plotting
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>wblplot</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <b>wblplot</b><i> (<var>data</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> <var>handle</var> = <b>wblplot</b><i> (<var>data</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>handle</var>, <var>param</var>] = <b>wblplot</b><i> (<var>data</var>)</i></dt>
+<dt><u>statistics:</u> [<var>handle</var>, <var>param</var>] = <b>wblplot</b><i> (<var>data</var>, <var>censor</var>)</i></dt>
+<dt><u>statistics:</u> [<var>handle</var>, <var>param</var>] = <b>wblplot</b><i> (<var>data</var>, <var>censor</var>, <var>freq</var>)</i></dt>
+<dt><u>statistics:</u> [<var>handle</var>, <var>param</var>] = <b>wblplot</b><i> (<var>data</var>, <var>censor</var>, <var>freq</var>, <var>confint</var>)</i></dt>
+<dt><u>statistics:</u> [<var>handle</var>, <var>param</var>] = <b>wblplot</b><i> (<var>data</var>, <var>censor</var>, <var>freq</var>, <var>confint</var>, <var>fancygrid</var>)</i></dt>
+<dt><u>statistics:</u> [<var>handle</var>, <var>param</var>] = <b>wblplot</b><i> (<var>data</var>, <var>censor</var>, <var>freq</var>, <var>confint</var>, <var>fancygrid</var>, <var>showlegend</var>)</i></dt>
+</dl>
+
+<p> Plot a column vector <var>data</var> on a Weibull probability plot using rank
+ regression.
+</p>
+<div class="ms-5">
+<p> <var>censor</var>: optional parameter is a column vector of same size as
+ <var>data</var> with 1 for right censored data and 0 for exact observation.
+ Pass [] when no censor data are available.
+</p>
+<p> <var>freq</var>: optional vector same size as <var>data</var> with the number of
+ occurences for corresponding data.
+ Pass [] when no frequency data are available.
+</p>
+<p> <var>confint</var>: optional confidence limits for ploting upper and lower
+ confidence bands using beta binomial confidence bounds.  If a single
+ value is given this will be used such as LOW = a and HIGH = 1 - a.
+ Pass [] if confidence bounds is not requested.
+</p>
+<p> <var>fancygrid</var>: optional parameter which if set to anything but 1 will turn
+ off the fancy gridlines.
+</p>
+<p> <var>showlegend</var>: optional parameter that when set to zero(0) turns off the
+ legend.
+</p>
+<p> If one output argument is given, a <var>handle</var> for the data marker and
+ plotlines is returned, which can be used for further modification of line and
+ marker style.
+</p>
+<p> If a second output argument is specified, a <var>param</var> vector with scale,
+ shape and correlation factor is returned.
+</p>
+<p> <strong>See also: </strong>
+  <a href="normplot.html">normplot</a>, 
+  <a href="wblpdf.html">wblpdf</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/wblplot.m">wblplot</a>
+</div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

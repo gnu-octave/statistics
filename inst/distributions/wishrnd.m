@@ -15,7 +15,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{W}, @var{D}] = wishrnd (@var{Sigma}, @var{df}, @var{D}, @var{n}=1)
+## @deftypefn  {statistics} {[@var{W}, @var{D}] =} wishrnd (@var{Sigma}, @var{df}, @var{D}, @var{n}=1)
 ##
 ## Return a random matrix sampled from the Wishart distribution with given
 ## parameters

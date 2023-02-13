@@ -17,10 +17,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{paramhat}, @var{paramci}] = gevfit (@var{data})
-## @deftypefnx {statistics} [@var{paramhat}, @var{paramci}] = gevfit (@var{data}, @var{paramguess})
-## @deftypefnx {statistics} [@var{paramhat}, @var{paramci}] = gevfit (@var{data}, @var{alpha})
-## @deftypefnx {statistics} [@var{paramhat}, @var{paramci}] = gevfit (@dots{}, @var{options})
+## @deftypefn  {statistics} {[@var{paramhat}, @var{paramci}] =} gevfit (@var{data})
+## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} gevfit (@var{data}, @var{paramguess})
+## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} gevfit (@var{data}, @var{alpha})
+## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} gevfit (@dots{}, @var{options})
 ##
 ## Find the maximum likelihood estimator @var{paramhat} of the generalized
 ## extreme value (GEV) distribution to fit @var{data}.

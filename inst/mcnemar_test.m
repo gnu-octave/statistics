@@ -17,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{pval}, @var{chisq}, @var{df}] = mcnemar_test (@var{x})
+## @deftypefn  {statistics} {[@var{pval}, @var{chisq}, @var{df}] =} mcnemar_test (@var{x})
 ##
 ## Perform a McNemar's test.
 ##

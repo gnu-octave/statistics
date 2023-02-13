@@ -15,7 +15,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{x} = gevinv (@var{p}, @var{k}, @var{sigma}, @var{mu})
+## @deftypefn  {statistics} {@var{x} =} gevinv (@var{p}, @var{k}, @var{sigma}, @var{mu})
 ##
 ## Inverse of the generalized extreme value (GEV) cumulative distribution
 ## function (iCDF).

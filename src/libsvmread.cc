@@ -197,8 +197,8 @@ void read(string filename, ColumnVector &label_vec, SparseMatrix &instance_mat)
 
 
 DEFUN_DLD (libsvmread, args, nargout,
-           "-*- texinfo -*-\n\
-@deftypefn  {statistics} [@var{labels}, @var{data}] = libsvmread (@var{filename})\n\
+           "-*- texinfo -*- \n\n\
+ @deftypefn  {statistics} {[@var{labels}, @var{data}] =} libsvmread (@var{filename})\n\
 \n\
 \n\
 This function reads the labels and the corresponding instance_matrix from a \

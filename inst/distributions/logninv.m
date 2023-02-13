@@ -19,9 +19,9 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{x} = logninv (@var{p})
-## @deftypefnx {statistics} @var{x} = logninv (@var{p}, @var{mu})
-## @deftypefnx {statistics} @var{x} = logninv (@var{p}, @var{mu}, @var{sigma})
+## @deftypefn  {statistics} {@var{x} =} logninv (@var{p})
+## @deftypefnx {statistics} {@var{x} =} logninv (@var{p}, @var{mu})
+## @deftypefnx {statistics} {@var{x} =} logninv (@var{p}, @var{mu}, @var{sigma})
 ##
 ## Inverse of the lognormal cumulative distribution function (iCDF).
 ##

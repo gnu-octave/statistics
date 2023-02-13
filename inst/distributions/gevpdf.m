@@ -15,7 +15,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = gevpdf (@var{x}, @var{k}, @var{sigma}, @var{mu})
+## @deftypefn  {statistics} {@var{y} =} gevpdf (@var{x}, @var{k}, @var{sigma}, @var{mu})
 ##
 ## Generalized extreme value (GEV) probability density function (PDF).
 ##

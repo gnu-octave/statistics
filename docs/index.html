@@ -1,0 +1,2572 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=https://gnu-octave.github.io/packages/statistics>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-2 mb-2 mb-sm-0">
+              <img src="assets/statistics.png" class="d-block m-auto" alt="statistics">
+            </div>
+            <div class="col-sm-9 col-md-10">
+              <h3 class="d-inline-block mr-2">statistics</h3>
+              <b>1.5.3&nbsp;2023-1-31</b>
+              <p class="indent">
+                The Statistics package for GNU Octave.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+           <p>Select Category:
+             <select name="cat" onchange="location = this.options[this.selectedIndex].value;">
+             <option value="#Clustering">Clustering</option>
+             <option value="#CVpartition (class of set partitions for cross-validation, used in crossval)">CVpartition (class of set partitions for cross-validation, used in crossval)</option>
+             <option value="#Data Manipulation">Data Manipulation</option>
+             <option value="#Descriptive Statistics">Descriptive Statistics</option>
+             <option value="#Distributions">Distributions</option>
+             <option value="#Distribution Fitting">Distribution Fitting</option>
+             <option value="#Distribution Statistics">Distribution Statistics</option>
+             <option value="#Experimental Design">Experimental Design</option>
+             <option value="#Machine Learning">Machine Learning</option>
+             <option value="#Model Fitting">Model Fitting</option>
+             <option value="#Hypothesis Testing">Hypothesis Testing</option>
+             <option value="#I/O">I/O</option>
+             <option value="#Plotting">Plotting</option>
+             <option value="#Regression">Regression</option>
+             <option value="#Wrappers">Wrappers</option>
+             </select>
+           <p>
+
+           <h3 class="category">
+             <a name="Clustering">Clustering</a>
+           </h3>
+           <div class="lead">
+             <b>
+             <a href="cluster.html">cluster</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Define clusters from an agglomerative hierarchical cluster tree.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="clusterdata.html">clusterdata</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Wrapper function for 'linkage' and 'cluster'.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="cmdscale.html">cmdscale</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Classical multidimensional scaling of a matrix.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="confusionmat.html">confusionmat</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute a confusion matrix for classification problems
+           </div>
+           <div class="lead">
+             <b>
+             <a href="cophenet.html">cophenet</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute the cophenetic correlation coefficient.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="evalclusters.html">evalclusters</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Create a clustering evaluation object to find the optimal number of
+clusters.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="inconsistent.html">inconsistent</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute the inconsistency coefficient for each link of a hierarchical
+cluster tree.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="kmeans.html">kmeans</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Perform a K-means clustering of the NxD matrix DATA.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="linkage.html">linkage</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Produce a hierarchical clustering dendrogram.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="mahal.html">mahal</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Mahalanobis' D-square distance.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="mhsample.html">mhsample</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Draws NSAMPLES samples from a target stationary distribution PDF using
+Metropolis-Hastings algorithm.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="optimalleaforder.html">optimalleaforder</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute the optimal leaf ordering of a hierarchical binary cluster tree.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="pdist.html">pdist</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Return the distance between any two rows in X.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="pdist2.html">pdist2</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute pairwise distance between two sets of vectors.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="squareform.html">squareform</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Interchange between distance matrix and distance vector formats.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="slicesample.html">slicesample</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Draws NSAMPLES samples from a target stationary distribution PDF using
+slice sampling of Radford M.
+           </div>
+           <h3 class="category">
+             <a name="CVpartition (class of set partitions for cross-validation, used in crossval)">CVpartition (class of set partitions for cross-validation, used in crossval)</a>
+           </h3>
+           <div class="lead">
+             <b>
+             <a href="@cvpartition_cvpartition.html">@cvpartition/cvpartition</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Create a partition object for cross validation.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="@cvpartition_display.html">@cvpartition/display</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Display a 'cvpartition' object, C.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="@cvpartition_get.html">@cvpartition/get</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Get a field, F, from a 'cvpartition' object, C.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="@cvpartition_repartition.html">@cvpartition/repartition</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Return a new cvpartition object.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="@cvpartition_set.html">@cvpartition/set</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Set FIELD, in a 'cvpartition' object, C.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="@cvpartition_test.html">@cvpartition/test</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Return logical vector for testing-subset indices from a 'cvpartition'
+object, C.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="@cvpartition_training.html">@cvpartition/training</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Return logical vector for training-subset indices from a 'cvpartition'
+object, C.
+           </div>
+           <h3 class="category">
+             <a name="Data Manipulation">Data Manipulation</a>
+           </h3>
+           <div class="lead">
+             <b>
+             <a href="combnk.html">combnk</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Return all combinations of K elements in DATA.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="crosstab.html">crosstab</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Create a cross-tabulation (contingency table) T from data vectors.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="datasample.html">datasample</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Randomly sample data.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="grp2idx.html">grp2idx</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Get index for group variables.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="tabulate.html">tabulate</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute a frequency table.
+           </div>
+           <h3 class="category">
+             <a name="Descriptive Statistics">Descriptive Statistics</a>
+           </h3>
+           <div class="lead">
+             <b>
+             <a href="geomean.html">geomean</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute the geometric mean of X.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="grpstats.html">grpstats</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Summary statistics by group.  'grpstats' computes groupwise summary
+statistics, for data in a matrix X.  'grpstats' treats NaNs as missing
+values, and removes them.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="harmmean.html">harmmean</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute the harmonic mean of X.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="jackknife.html">jackknife</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute jackknife estimates of a parameter taking one or more given
+samples as parameters.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="mean.html">mean</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute the mean of the elements of X.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="median.html">median</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute the median value of the elements of X.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="nanmax.html">nanmax</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Find the maximal element while ignoring NaN values.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="nanmin.html">nanmin</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Find the minimal element while ignoring NaN values.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="nansum.html">nansum</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute the sum while ignoring NaN values.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="std.html">std</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute the standard deviation of the elements of X.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="trimmean.html">trimmean</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute the trimmed mean.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="var.html">var</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute the variance of the elements of X.
+           </div>
+           <h3 class="category">
+             <a name="Distributions">Distributions</a>
+           </h3>
+           <div class="lead">
+             <b>
+             <a href="bbscdf.html">bbscdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Birnbaum-Saunders cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="bbsinv.html">bbsinv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the Birnbaum-Saunders cumulative distribution function
+(iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="bbspdf.html">bbspdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Birnbaum-Saunders probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="bbsrnd.html">bbsrnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the Birnbaum-Saunders distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="betacdf.html">betacdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Beta cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="betainv.html">betainv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the Beta distribution (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="betapdf.html">betapdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Beta probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="betarnd.html">betarnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the Beta distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="binocdf.html">binocdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Binomial cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="binoinv.html">binoinv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the Binomial cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="binopdf.html">binopdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Binomial probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="binornd.html">binornd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the Binomial distribution
+           </div>
+           <div class="lead">
+             <b>
+             <a href="burrcdf.html">burrcdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Burr type XII cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="burrinv.html">burrinv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the Burr type XII cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="burrpdf.html">burrpdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Burr type XII probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="burrrnd.html">burrrnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the Burr type XII distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="bvncdf.html">bvncdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Bivariate normal cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="cauchy_cdf.html">cauchy_cdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Cauchy cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="cauchy_inv.html">cauchy_inv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the Cauchy cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="cauchy_pdf.html">cauchy_pdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Cauchy probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="cauchy_rnd.html">cauchy_rnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the Cauchy distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="chi2cdf.html">chi2cdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Chi-square cumulative distribution function.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="chi2inv.html">chi2inv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the Chi-square cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="chi2pdf.html">chi2pdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Chi-square probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="chi2rnd.html">chi2rnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the Chi-square distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="copulacdf.html">copulacdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Copula family cumulative distribution functions (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="copulapdf.html">copulapdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Copula family probability density functions (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="copularnd.html">copularnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the copula family distributions.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="evcdf.html">evcdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Extreme value cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="evinv.html">evinv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the extreme value cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="evpdf.html">evpdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Extreme value probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="evrnd.html">evrnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the extreme value distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="expcdf.html">expcdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Exponential cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="expinv.html">expinv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the exponential cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="exppdf.html">exppdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Exponential probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="exprnd.html">exprnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the exponential distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="fcdf.html">fcdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             F cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="finv.html">finv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the F cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="fpdf.html">fpdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             F probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="frnd.html">frnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the F distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="gamcdf.html">gamcdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Gamma cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="gaminv.html">gaminv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the Gamma cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="gampdf.html">gampdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Gamma probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="gamrnd.html">gamrnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the Gamma distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="geocdf.html">geocdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Geometric cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="geoinv.html">geoinv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the geometric cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="geopdf.html">geopdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Geometric probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="geornd.html">geornd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the geometric distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="gevcdf.html">gevcdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Generalized extreme value (GEV) cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="gevinv.html">gevinv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the generalized extreme value (GEV) cumulative distribution
+function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="gevpdf.html">gevpdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Generalized extreme value (GEV) probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="gevrnd.html">gevrnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the generalized extreme value (GEV) distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="gpcdf.html">gpcdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Generalized Pareto cumulative distribution function (cdf).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="gpinv.html">gpinv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the generalized Pareto cumulative distribution function
+(iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="gppdf.html">gppdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Generalized Pareto probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="gprnd.html">gprnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the generalized Pareto distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="hygecdf.html">hygecdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Hypergeometric cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="hygeinv.html">hygeinv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the hypergeometric cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="hygepdf.html">hygepdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Hypergeometric probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="hygernd.html">hygernd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the hypergeometric distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="iwishpdf.html">iwishpdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute the probability density function of the inverse Wishart
+distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="iwishrnd.html">iwishrnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Return a random matrix sampled from the inverse Wishart distribution
+with given parameters.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="jsucdf.html">jsucdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Johnson SU cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="jsupdf.html">jsupdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Johnson SU probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="laplace_cdf.html">laplace_cdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Laplace cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="laplace_inv.html">laplace_inv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the Laplace cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="laplace_pdf.html">laplace_pdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Laplace probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="laplace_rnd.html">laplace_rnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the Laplace distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="logistic_cdf.html">logistic_cdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Logistic cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="logistic_inv.html">logistic_inv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the logistic cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="logistic_pdf.html">logistic_pdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Logistic probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="logistic_rnd.html">logistic_rnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the logistic distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="logncdf.html">logncdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Lognormal cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="logninv.html">logninv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the lognormal cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="lognpdf.html">lognpdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Lognormal probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="lognrnd.html">lognrnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the lognormal distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="mnpdf.html">mnpdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Multinomial probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="mnrnd.html">mnrnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the multinomial distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="mvncdf.html">mvncdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Multivariate normal cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="mvnpdf.html">mvnpdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Multivariate normal probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="mvnrnd.html">mvnrnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random vectors from the multivariate normal distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="mvtcdf.html">mvtcdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Multivariate Student's t cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="mvtpdf.html">mvtpdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Multivariate Student's t probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="mvtrnd.html">mvtrnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random vectors from the multivariate Student's t distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="mvtcdfqmc.html">mvtcdfqmc</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Quasi-Monte-Carlo computation of the multivariate Student's t cdf.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="nakacdf.html">nakacdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Nakagami cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="nakainv.html">nakainv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the Nakagami cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="nakapdf.html">nakapdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Nakagami probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="nakarnd.html">nakarnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the Nakagami distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="nbincdf.html">nbincdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Negative binomial cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="nbininv.html">nbininv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the negative binomial cumulative distribution function
+(iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="nbinpdf.html">nbinpdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Negative binomial probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="nbinrnd.html">nbinrnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the negative binomial distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="ncfcdf.html">ncfcdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Noncentral F cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="ncfinv.html">ncfinv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the non-central F cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="ncfpdf.html">ncfpdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Noncentral F probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="ncfrnd.html">ncfrnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the noncentral F distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="nctcdf.html">nctcdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Noncentral T cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="nctinv.html">nctinv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the non-central T cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="nctpdf.html">nctpdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Noncentral Τ probability density function (pdf).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="nctrnd.html">nctrnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the noncentral T distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="ncx2cdf.html">ncx2cdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Noncentral Chi-Square cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="ncx2inv.html">ncx2inv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the non-central chi-square cumulative distribution function
+(iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="ncx2pdf.html">ncx2pdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Noncentral Chi-Square probability distribution function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="ncx2rnd.html">ncx2rnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the non-central chi-square distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="normcdf.html">normcdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Normal cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="norminv.html">norminv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the normal cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="normpdf.html">normpdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Normal probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="normrnd.html">normrnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the normal distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="poisscdf.html">poisscdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Poisson cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="poissinv.html">poissinv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the Poisson cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="poisspdf.html">poisspdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Poisson probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="poissrnd.html">poissrnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the Poisson distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="raylcdf.html">raylcdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Rayleigh cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="raylinv.html">raylinv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the Rayleigh cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="raylpdf.html">raylpdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Rayleigh probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="raylrnd.html">raylrnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the Rayleigh distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="stdnormal_cdf.html">stdnormal_cdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Standard normal cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="stdnormal_inv.html">stdnormal_inv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the standard normal cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="stdnormal_pdf.html">stdnormal_pdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Standard normal probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="stdnormal_rnd.html">stdnormal_rnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the standard normal distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="tcdf.html">tcdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Student's T cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="tinv.html">tinv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the Student's T cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="tpdf.html">tpdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Student's T probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="trnd.html">trnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the Student's T distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="tricdf.html">tricdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Triangular cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="triinv.html">triinv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the triangular cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="tripdf.html">tripdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Triangular probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="trirnd.html">trirnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the triangular distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="unidcdf.html">unidcdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Discrete uniform cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="unidinv.html">unidinv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the discrete uniform cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="unidpdf.html">unidpdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Discrete uniform probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="unidrnd.html">unidrnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the discrete uniform distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="unifcdf.html">unifcdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Uniform cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="unifinv.html">unifinv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the uniform cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="unifpdf.html">unifpdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Uniform probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="unifrnd.html">unifrnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the uniform distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="vmcdf.html">vmcdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Von Mises probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="vmpdf.html">vmpdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Von Mises probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="vmrnd.html">vmrnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the von Mises distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="wblcdf.html">wblcdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Weibull cumulative distribution function (CDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="wblinv.html">wblinv</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Inverse of the Weibull cumulative distribution function (iCDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="wblpdf.html">wblpdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Weibull probability density function (PDF).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="wblrnd.html">wblrnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Random arrays from the Weibull distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="wienrnd.html">wienrnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Return a simulated realization of the D-dimensional Wiener Process on
+the interval [0, T].
+           </div>
+           <div class="lead">
+             <b>
+             <a href="wishpdf.html">wishpdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute the probability density function of the Wishart distribution
+           </div>
+           <div class="lead">
+             <b>
+             <a href="wishrnd.html">wishrnd</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Return a random matrix sampled from the Wishart distribution with given
+parameters
+           </div>
+           <h3 class="category">
+             <a name="Distribution Fitting">Distribution Fitting</a>
+           </h3>
+           <div class="lead">
+             <b>
+             <a href="cdfcalc.html">cdfcalc</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Calculate an empirical cumulative distribution function.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="evfit.html">evfit</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Estimate parameters and confidence intervals for extreme value data.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="evlike.html">evlike</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Negative log-likelihood for the extreme value distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="expfit.html">expfit</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Estimate the mean of the exponential probability distribution function
+from which sample data S has been taken.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="explike.html">explike</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute the negative log-likelihood of data under the exponential
+distribution with given parameter value.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="gamfit.html">gamfit</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Calculate gamma distribution parameters.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="gamlike.html">gamlike</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Calculates the negative log-likelihood function for the Gamma
+distribution over vector R, with the given parameters A and B in a
+2-element vector PARAMS.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="gevfit_lmom.html">gevfit_lmom</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Find an estimator (PARAMHAT) of the generalized extreme value (GEV)
+distribution fitting DATA using the method of L-moments.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="gevfit.html">gevfit</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Find the maximum likelihood estimator PARAMHAT of the generalized
+extreme value (GEV) distribution to fit DATA.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="gevlike.html">gevlike</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute the negative log-likelihood of data under the generalized
+extreme value (GEV) distribution with given parameter values.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="gpfit.html">gpfit</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Parameter estimates and confidence intervals for generalized Pareto
+data.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="gplike.html">gplike</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Negative log-likelihood for the generalized Pareto distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="normlike.html">normlike</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Negative log-likelihood for the normal distribution.
+           </div>
+           <h3 class="category">
+             <a name="Distribution Statistics">Distribution Statistics</a>
+           </h3>
+           <div class="lead">
+             <b>
+             <a href="betastat.html">betastat</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute mean and variance of the beta distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="binostat.html">binostat</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute mean and variance of the binomial distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="chi2stat.html">chi2stat</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute mean and variance of the chi-square distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="evstat.html">evstat</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Mean and variance of the extreme value distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="expstat.html">expstat</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute mean and variance of the exponential distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="fstat.html">fstat</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute mean and variance of the F distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="gamstat.html">gamstat</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute mean and variance of the gamma distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="geostat.html">geostat</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute mean and variance of the geometric distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="gevstat.html">gevstat</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute the mean and variance of the generalized extreme value
+distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="gpstat.html">gpstat</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Mean and variance of the generalized Pareto distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="hygestat.html">hygestat</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute mean and variance of the hypergeometric distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="lognstat.html">lognstat</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute mean and variance of the lognormal distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="nbinstat.html">nbinstat</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute mean and variance of the negative binomial distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="ncfstat.html">ncfstat</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Mean and variance for the noncentral F distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="nctstat.html">nctstat</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Mean and variance for the noncentral T distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="ncx2stat.html">ncx2stat</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Mean and variance for the noncentral chi-square distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="normstat.html">normstat</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute mean and variance of the normal distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="poisstat.html">poisstat</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute mean and variance of the Poisson distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="raylstat.html">raylstat</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute mean and variance of the Rayleigh distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="tstat.html">tstat</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute mean and variance of the t (Student) distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="unidstat.html">unidstat</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute mean and variance of the discrete uniform distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="unifstat.html">unifstat</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute mean and variance of the continuous uniform distribution.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="wblstat.html">wblstat</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute mean and variance of the Weibull distribution.
+           </div>
+           <h3 class="category">
+             <a name="Experimental Design">Experimental Design</a>
+           </h3>
+           <div class="lead">
+             <b>
+             <a href="fullfact.html">fullfact</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Full factorial design.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="ff2n.html">ff2n</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Two-level full factorial design.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="sigma_pts.html">sigma_pts</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Calculates 2*N+1 sigma points in N dimensions.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="x2fx.html">x2fx</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Convert predictors to design matrix.
+           </div>
+           <h3 class="category">
+             <a name="Machine Learning">Machine Learning</a>
+           </h3>
+           <div class="lead">
+             <b>
+             <a href="hmmestimate.html">hmmestimate</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Estimation of a hidden Markov model for a given sequence.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="hmmgenerate.html">hmmgenerate</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Output sequence and hidden states of a hidden Markov model.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="hmmviterbi.html">hmmviterbi</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Viterbi path of a hidden Markov model.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="svmpredict.html">svmpredict</a>
+             </b>
+           </div>
+           <div class="ftext">
+             This function predicts new labels from a testing instance matrtix based
+on an SVM MODEL created with 'svmtrain'.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="svmtrain.html">svmtrain</a>
+             </b>
+           </div>
+           <div class="ftext">
+             This function trains an SVM MODEL based on known LABELS and their
+corresponding DATA which comprise an instance matrtix.
+           </div>
+           <h3 class="category">
+             <a name="Model Fitting">Model Fitting</a>
+           </h3>
+           <div class="lead">
+             <b>
+             <a href="crossval.html">crossval</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Perform cross validation on given data.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="fitgmdist.html">fitgmdist</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Fit a Gaussian mixture model with K components to DATA.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="fitlm.html">fitlm</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Regress the continuous outcome (i.e.  dependent variable) Y on
+continuous or categorical predictors (i.e.  independent variables) X by
+minimizing the sum-of-squared residuals.
+           </div>
+           <h3 class="category">
+             <a name="Hypothesis Testing">Hypothesis Testing</a>
+           </h3>
+           <div class="lead">
+             <b>
+             <a href="adtest.html">adtest</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Anderson-Darling goodness-of-fit hypothesis test.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="anova1.html">anova1</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Perform a one-way analysis of variance (ANOVA) for comparing the means
+of two or more groups of data under the null hypothesis that the groups
+are drawn from distributions with the same mean.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="anova2.html">anova2</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Performs two-way factorial (crossed) or a nested analysis of variance
+(ANOVA) for balanced designs.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="anovan.html">anovan</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Perform a multi (N)-way analysis of (co)variance (ANOVA or ANCOVA) to
+evaluate the effect of one or more categorical or continuous predictors
+(i.e.  independent variables) on a continuous outcome (i.e.  dependent
+variable).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="bartlett_test.html">bartlett_test</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Perform a Bartlett test for the homogeneity of variances.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="barttest.html">barttest</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Bartlett's test of sphericity for correlation.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="binotest.html">binotest</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Test for probability P of a binomial sample
+           </div>
+           <div class="lead">
+             <b>
+             <a href="chi2gof.html">chi2gof</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Chi-square goodness-of-fit test.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="chi2test.html">chi2test</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Perform a chi-squared test (for independence or homogeneity).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="friedman.html">friedman</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Performs the nonparametric Friedman's test to compare column effects in
+a two-way layout.  friedman tests the null hypothesis that the column
+effects are all the same against the alternative that they are not all
+the same.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="hotelling_t2test.html">hotelling_t2test</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute Hotelling's T^2 ("T-squared") test for a single sample or two
+dependent samples (paired-samples).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="hotelling_t2test2.html">hotelling_t2test2</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute Hotelling's T^2 ("T-squared") test for two independent samples.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="kruskalwallis.html">kruskalwallis</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Perform a Kruskal-Wallis test, the non-parametric alternative of a
+one-way analysis of variance (ANOVA), for comparing the means of two or
+more groups of data under the null hypothesis that the groups are drawn
+from the same population, ...
+           </div>
+           <div class="lead">
+             <b>
+             <a href="kstest.html">kstest</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Single sample Kolmogorov-Smirnov (K-S) goodness-of-fit hypothesis test.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="kstest2.html">kstest2</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Two-sample Kolmogorov-Smirnov goodness-of-fit hypothesis test.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="levene_test.html">levene_test</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Perform a Levene's test for the homogeneity of variances.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="manova1.html">manova1</a>
+             </b>
+           </div>
+           <div class="ftext">
+             One-way multivariate analysis of variance (MANOVA).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="multcompare.html">multcompare</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Perform posthoc multiple comparison tests or p-value adjustments to
+control the family-wise error rate (FWER) or false discovery rate (FDR).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="ranksum.html">ranksum</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Wilcoxon rank sum test for equal medians.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="regression_ftest.html">regression_ftest</a>
+             </b>
+           </div>
+           <div class="ftext">
+             F-test for General Linear Regression Analysis
+           </div>
+           <div class="lead">
+             <b>
+             <a href="regression_ttest.html">regression_ttest</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Perform a linear regression t-test for the null hypothesis 'RR * B = R'
+in a classical normal regression model 'Y = X * B + E'.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="runstest.html">runstest</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Runs test for detecting serial correlation in the vector X.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="sampsizepwr.html">sampsizepwr</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Sample size and power calculation for hypothesis test.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="signtest.html">signtest</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Test for median.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="ttest.html">ttest</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Test for mean of a normal sample with unknown variance.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="ttest2.html">ttest2</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Perform a t-test to compare the means of two groups of data under the
+null hypothesis that the groups are drawn from distributions with the
+same mean.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="vartest.html">vartest</a>
+             </b>
+           </div>
+           <div class="ftext">
+             One-sample test of variance.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="vartest2.html">vartest2</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Two-sample F test for equal variances.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="vartestn.html">vartestn</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Test for equal variances across multiple groups.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="ztest.html">ztest</a>
+             </b>
+           </div>
+           <div class="ftext">
+             One-sample Z-test.
+           </div>
+           <h3 class="category">
+             <a name="I/O">I/O</a>
+           </h3>
+           <div class="lead">
+             <b>
+             <a href="libsvmread.html">libsvmread</a>
+             </b>
+           </div>
+           <div class="ftext">
+             This function reads the labels and the corresponding instance_matrix
+from a LIBSVM data file and stores them in LABELS and DATA respectively.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="libsvmwrite.html">libsvmwrite</a>
+             </b>
+           </div>
+           <div class="ftext">
+             This function saves the labels and the corresponding instance_matrix in
+a file specified by FILENAME.
+           </div>
+           <h3 class="category">
+             <a name="Plotting">Plotting</a>
+           </h3>
+           <div class="lead">
+             <b>
+             <a href="boxplot.html">boxplot</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Produce a box plot.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="cdfplot.html">cdfplot</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Display an empirical cumulative distribution function.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="confusionchart.html">confusionchart</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Display a chart of a confusion matrix.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="dendrogram.html">dendrogram</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Plot a dendrogram of a hierarchical binary cluster tree.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="ecdf.html">ecdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Empirical (Kaplan-Meier) cumulative distribution function.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="gscatter.html">gscatter</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Draw a scatter plot with grouped data.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="histfit.html">histfit</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Plot histogram with superimposed fitted normal density.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="hist3.html">hist3</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Produce bivariate (2D) histogram counts or plots.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="manovacluster.html">manovacluster</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Cluster group means using manova1 output.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="normplot.html">normplot</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Produce normal probability plot of the data in X.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="ppplot.html">ppplot</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Perform a PP-plot (probability plot).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="qqplot.html">qqplot</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Perform a QQ-plot (quantile plot).
+           </div>
+           <div class="lead">
+             <b>
+             <a href="silhouette.html">silhouette</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Compute the silhouette values of clustered data and show them on a plot.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="violin.html">violin</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Produce a Violin plot of the data X.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="wblplot.html">wblplot</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Plot a column vector DATA on a Weibull probability plot using rank
+regression.
+           </div>
+           <h3 class="category">
+             <a name="Regression">Regression</a>
+           </h3>
+           <div class="lead">
+             <b>
+             <a href="canoncorr.html">canoncorr</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Canonical correlation analysis.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="cholcov.html">cholcov</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Cholesky-like decomposition for covariance matrix.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="dcov.html">dcov</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Distance correlation, covariance and correlation statistics.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="logistic_regression.html">logistic_regression</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Perform ordinal logistic regression.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="monotone_smooth.html">monotone_smooth</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Produce a smooth monotone increasing approximation to a sampled
+functional dependence.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="pca.html">pca</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Performs a principal component analysis on a data matrix X.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="pcacov.html">pcacov</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Perform principal component analysis on the NxN covariance matrix X.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="pcares.html">pcares</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Calculate residuals from principal component analysis.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="plsregress.html">plsregress</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Calculate partial least squares regression using SIMPLS algorithm.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="princomp.html">princomp</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Performs a principal component analysis on a NxP data matrix X.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="regress.html">regress</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Multiple Linear Regression using Least Squares Fit of Y on X with the
+model 'y = X * beta + e'.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="regress_gp.html">regress_gp</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Linear scalar regression using gaussian processes.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="stepwisefit.html">stepwisefit</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Linear regression with stepwise variable selection.
+           </div>
+           <h3 class="category">
+             <a name="Wrappers">Wrappers</a>
+           </h3>
+           <div class="lead">
+             <b>
+             <a href="cdf.html">cdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Return cumulative density function of NAME function for value X.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="pdf.html">pdf</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Return probability density function of NAME function for value X.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="random.html">random</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Generates pseudo-random numbers from a given one-, two-, or
+three-parameter distribution.
+           </div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

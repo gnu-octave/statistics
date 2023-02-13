@@ -17,12 +17,12 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} vartestn (@var{x})
-## @deftypefnx {statistics} vartestn (@var{x}, @var{group})
-## @deftypefnx {statistics} vartestn (@dots{}, @var{name}, @var{value})
-## @deftypefnx {statistics} @var{p} = vartestn (@dots{})
-## @deftypefnx {statistics} [@var{p}, @var{stats}] = vartestn (@dots{})
-## @deftypefnx {statistics} [@var{p}, @var{stats}] = vartestn (@dots{}, @var{name}, @var{value})
+## @deftypefn  {statistics} {} vartestn (@var{x})
+## @deftypefnx {statistics} {} vartestn (@var{x}, @var{group})
+## @deftypefnx {statistics} {} vartestn (@dots{}, @var{name}, @var{value})
+## @deftypefnx {statistics} {@var{p} =} vartestn (@dots{})
+## @deftypefnx {statistics} {[@var{p}, @var{stats}] =} vartestn (@dots{})
+## @deftypefnx {statistics} {[@var{p}, @var{stats}] =} vartestn (@dots{}, @var{name}, @var{value})
 ##
 ## Test for equal variances across multiple groups.
 ##

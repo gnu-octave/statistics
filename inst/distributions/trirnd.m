@@ -19,10 +19,10 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{r} = trirnd (@var{a}, @var{b}, @var{c})
-## @deftypefnx {statistics} @var{r} = trirnd (@var{a}, @var{b}, @var{c}, @var{rows})
-## @deftypefnx {statistics} @var{r} = trirnd (@var{a}, @var{b}, @var{c}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} @var{r} = trirnd (@var{a}, @var{b}, @var{c}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} trirnd (@var{a}, @var{b}, @var{c})
+## @deftypefnx {statistics} {@var{r} =} trirnd (@var{a}, @var{b}, @var{c}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} trirnd (@var{a}, @var{b}, @var{c}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} trirnd (@var{a}, @var{b}, @var{c}, [@var{sz}])
 ##
 ## Random arrays from the triangular distribution.
 ##

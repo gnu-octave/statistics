@@ -19,10 +19,10 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{r} = normrnd (@var{mu}, @var{sigma})
-## @deftypefnx {statistics} @var{r} = normrnd (@var{mu}, @var{sigma}, @var{rows})
-## @deftypefnx {statistics} @var{r} = normrnd (@var{mu}, @var{sigma}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} @var{r} = normrnd (@var{mu}, @var{sigma}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} normrnd (@var{mu}, @var{sigma})
+## @deftypefnx {statistics} {@var{r} =} normrnd (@var{mu}, @var{sigma}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} normrnd (@var{mu}, @var{sigma}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} normrnd (@var{mu}, @var{sigma}, [@var{sz}])
 ##
 ## Random arrays from the normal distribution.
 ##

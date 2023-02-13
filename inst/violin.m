@@ -18,10 +18,10 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {} violin (@var{x})
-## @deftypefnx {statistics} @var{h} = violin (@var{x})
-## @deftypefnx {statistics} @var{h} = violin (@dots{}, @var{property}, @var{value}, @dots{})
-## @deftypefnx {statistics} @var{h} = violin (@var{hax}, @dots{})
-## @deftypefnx {statistics} @var{h} = violin (@dots{}, @asis{"horizontal"})
+## @deftypefnx {statistics} {@var{h} =} violin (@var{x})
+## @deftypefnx {statistics} {@var{h} =} violin (@dots{}, @var{property}, @var{value}, @dots{})
+## @deftypefnx {statistics} {@var{h} =} violin (@var{hax}, @dots{})
+## @deftypefnx {statistics} {@var{h} =} violin (@dots{}, @code{"horizontal"})
 ##
 ## Produce a Violin plot of the data @var{x}.
 ##

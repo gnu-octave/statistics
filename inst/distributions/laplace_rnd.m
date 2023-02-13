@@ -19,10 +19,10 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{r} = laplace_rnd (@var{mu}, @var{beta})
-## @deftypefnx {statistics} @var{r} = laplace_rnd (@var{mu}, @var{beta}, @var{rows})
-## @deftypefnx {statistics} @var{r} = laplace_rnd (@var{mu}, @var{beta}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} @var{r} = laplace_rnd (@var{mu}, @var{beta}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} laplace_rnd (@var{mu}, @var{beta})
+## @deftypefnx {statistics} {@var{r} =} laplace_rnd (@var{mu}, @var{beta}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} laplace_rnd (@var{mu}, @var{beta}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} laplace_rnd (@var{mu}, @var{beta}, [@var{sz}])
 ##
 ## Random arrays from the Laplace distribution.
 ##

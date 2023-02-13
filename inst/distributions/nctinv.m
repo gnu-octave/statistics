@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{x} = ncx2inv (@var{p}, @var{df}, @var{delta})
+## @deftypefn  {statistics} {@var{x} =} ncx2inv (@var{p}, @var{df}, @var{delta})
 ##
 ## Inverse of the non-central T cumulative distribution function (iCDF).
 ##

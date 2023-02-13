@@ -16,10 +16,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{R} = rmmissing (@var{A})
-## @deftypefnx {statistics} @var{R} = rmmissing (@var{A}, @var{dim})
-## @deftypefnx {statistics} @var{R} = rmmissing (@dots{}, @var{Name}, @var{Value})
-## @deftypefnx {statistics} [@var{R} @var{TF}] = rmmissing (@dots{})
+## @deftypefn  {statistics} {@var{R} =} rmmissing (@var{A})
+## @deftypefnx {statistics} {@var{R} =} rmmissing (@var{A}, @var{dim})
+## @deftypefnx {statistics} {@var{R} =} rmmissing (@dots{}, @var{Name}, @var{Value})
+## @deftypefnx {statistics} {[@var{R} @var{TF}] =} rmmissing (@dots{})
 ##
 ## Remove missing or incomplete data from an array.
 ##

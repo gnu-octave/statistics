@@ -20,7 +20,7 @@
 ## @deftypefn  {statistics} {} gscatter (@var{x}, @var{y}, @var{g})
 ## @deftypefnx {statistics} {} gscatter (@var{x}, @var{y}, @var{g}, @var{clr}, @var{sym}, @var{siz})
 ## @deftypefnx {statistics} {} gscatter (@dots{}, @var{doleg}, @var{xnam}, @var{ynam})
-## @deftypefnx {statistics} @var{h} = gscatter (@dots{})
+## @deftypefnx {statistics} {@var{h} =} gscatter (@dots{})
 ##
 ## Draw a scatter plot with grouped data.
 ##

@@ -19,10 +19,10 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{r} = gprnd (@var{shape}, @var{scale}, @var{location})
-## @deftypefnx {statistics} @var{r} = gprnd (@var{shape}, @var{scale}, @var{location}, @var{rows})
-## @deftypefnx {statistics} @var{r} = gprnd (@var{shape}, @var{scale}, @var{location}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} @var{r} = gprnd (@var{shape}, @var{scale}, @var{location}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} gprnd (@var{shape}, @var{scale}, @var{location})
+## @deftypefnx {statistics} {@var{r} =} gprnd (@var{shape}, @var{scale}, @var{location}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} gprnd (@var{shape}, @var{scale}, @var{location}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} gprnd (@var{shape}, @var{scale}, @var{location}, [@var{sz}])
 ##
 ## Random arrays from the generalized Pareto distribution.
 ##

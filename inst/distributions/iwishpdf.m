@@ -17,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = iwishpdf (@var{W}, @var{Tau}, @var{df}, @var{log_y}=false)
+## @deftypefn  {statistics} {@var{y} =} iwishpdf (@var{W}, @var{Tau}, @var{df}, @var{log_y}=false)
 ##
 ## Compute the probability density function of the inverse Wishart distribution.
 ##

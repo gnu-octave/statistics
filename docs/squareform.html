@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: squareform</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Clustering">
+                    <i class="fas fa-list-alt"></i>
+                    Clustering
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>squareform</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>z</var> = <b>squareform</b><i> (<var>y</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>squareform</b><i> (<var>z</var>)</i></dt>
+<dt><u>statistics:</u> <var>z</var> = <b>squareform</b><i> (<var>y</var>, @qcode{&quot;tovector&quot;})</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>squareform</b><i> (<var>z</var>, @qcode{&quot;tomatrix&quot;})</i></dt>
+</dl>
+
+<p> Interchange between distance matrix and distance vector formats.
+</p>
+<div class="ms-5">
+<p> Converts between an hollow (diagonal filled with zeros), square, and
+ symmetric matrix and a vector with of the lower triangular part.
+</p>
+<p> Its target application is the conversion of the vector returned by
+ <code>pdist</code> into a distance matrix.  It performs the opposite operation
+ if input is a matrix.
+</p>
+<p> If <var>x</var> is a vector, its number of elements must fit into the
+ triangular part of a matrix (main diagonal excluded).  In other words,
+ <code>numel (<var>x</var>) = <var>n</var> * (<var>n</var> - 1) / 2</code> for some integer
+ <var>n</var>.  The resulting matrix will be <var>n</var> by <var>n</var>.
+</p>
+<p> If <var>x</var> is a distance matrix, it must be square and the diagonal entries
+ of <var>x</var> must all be zeros.  <code>squareform</code> will generate a warning if
+ <var>x</var> is not symmetric.
+</p>
+<p> The second argument is used to specify the output type in case there
+ is a single element.  It will defaults to @qcode{&quot;tomatrix&quot;} otherwise.
+</p>
+<p> <strong>See also: </strong>
+  <a href="pdist.html">pdist</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/squareform.m">squareform</a>
+</div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

@@ -18,7 +18,7 @@
 ## along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{dCor}, @var{dCov}, @var{dVarX}, @var{dVarY}] = dcov (@var{x}, @var{y}, @var{index}=1)
+## @deftypefn  {statistics} {[@var{dCor}, @var{dCov}, @var{dVarX}, @var{dVarY}] =} dcov (@var{x}, @var{y}, @var{index}=1)
 ##
 ## Distance correlation, covariance and correlation statistics.
 ##

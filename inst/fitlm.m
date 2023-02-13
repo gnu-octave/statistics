@@ -16,20 +16,20 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{tab} = fitlm (@var{X}, @var{y})
-## @deftypefnx {statistics} @var{tab} = fitlm (@var{X}, @var{y}, @var{name}, @var{value})
-## @deftypefnx {statistics} @var{tab} = fitlm (@var{X}, @var{y}, @var{modelspec})
-## @deftypefnx {statistics} @var{tab} = fitlm (@var{X}, @var{y}, @var{modelspec}, @var{name}, @var{value})
-## @deftypefnx {statistics} [@var{tab}] = fitlm (@dots{})
-## @deftypefnx {statistics} [@var{tab}, @var{stats}] = fitlm (@dots{})
-## @deftypefnx {statistics} [@var{tab}, @var{stats}] = fitlm (@dots{})
+## @deftypefn  {statistics} {@var{tab} =} fitlm (@var{X}, @var{y})
+## @deftypefnx {statistics} {@var{tab} =} fitlm (@var{X}, @var{y}, @var{name}, @var{value})
+## @deftypefnx {statistics} {@var{tab} =} fitlm (@var{X}, @var{y}, @var{modelspec})
+## @deftypefnx {statistics} {@var{tab} =} fitlm (@var{X}, @var{y}, @var{modelspec}, @var{name}, @var{value})
+## @deftypefnx {statistics} {[@var{tab}] =} fitlm (@dots{})
+## @deftypefnx {statistics} {[@var{tab}, @var{stats}] =} fitlm (@dots{})
+## @deftypefnx {statistics} {[@var{tab}, @var{stats}] =} fitlm (@dots{})
 ##
 ## Regress the continuous outcome (i.e. dependent variable) @var{y} on
 ## continuous or categorical predictors (i.e. independent variables) @var{X}
 ## by minimizing the sum-of-squared residuals. Unless requested otherwise,
-## @qcode{fitlm} prints the model formula, the regression coefficients (i.e. 
-## parameters/contrasts) and an ANOVA table. Note that unlike @qcode{anovan}, 
-## @qcode{fitlm} treats all factors as continuous by default. 
+## @qcode{fitlm} prints the model formula, the regression coefficients (i.e.
+## parameters/contrasts) and an ANOVA table. Note that unlike @qcode{anovan},
+## @qcode{fitlm} treats all factors as continuous by default.
 ##
 ## @var{X} must be a column major matrix or cell array consisting of the
 ## predictors. By default, there is a constant term in the model, unless you,
@@ -55,7 +55,7 @@
 ##
 ## @item
 ## a matrix of term definitions : an t-by-(N+1) matrix specifying terms in
-## a model, where t is the number of terms, N is the number of predictor 
+## a model, where t is the number of terms, N is the number of predictor
 ## variables, and +1 accounts for the outcome variable. The outcome variable
 ## is the last column in the terms matrix and must be a column of zeros.
 ## An intercept must be specified in the first row of the terms matrix and
@@ -68,9 +68,9 @@
 ##
 ## @itemize
 ## @item
-## @var{categorical} is a vector of indices indicating which of the columns 
+## @var{categorical} is a vector of indices indicating which of the columns
 ## (i.e. variables) in @var{X} should be treated as categorical predictors
-## rather than as continuous predictors. 
+## rather than as continuous predictors.
 ## @end itemize
 ##
 ## @qcode{fitlm} also accepts optional @qcode{anovan} parameters as name-value
@@ -123,9 +123,9 @@
 ## The @var{stats} structure is recognised by the functions @qcode{bootcoeff}
 ## and @qcode{bootemm} from the statistics-bootstrap package. Note that if the
 ## model contains a continuous variable and you wish to use the @var{STATS}
-## output as input to @qcode{multcompare}, then the model needs to be refit 
+## output as input to @qcode{multcompare}, then the model needs to be refit
 ## with the "contrast" parameter set to a sum-to-zero contrast coding scheme,
-## e.g."simple". 
+## e.g."simple".
 ##
 ## @seealso{anovan, multcompare}
 ## @end deftypefn
@@ -141,7 +141,7 @@ function [T, STATS] = fitlm (X, y, varargin)
       error ("fitlm: invalid number of output arguments requested");
     endif
 
-    ## Evaluate input data 
+    ## Evaluate input data
     [n, N] = size (X);
 
     ## Fetch anovan options
@@ -159,7 +159,7 @@ function [T, STATS] = fitlm (X, y, varargin)
         options(1) = [];
         CONTINUOUS = [];
       else
-        ## If MODELSPEC is not provided, set it for an additive linear model  
+        ## If MODELSPEC is not provided, set it for an additive linear model
         MODELSPEC = zeros (N + 1);
         MODELSPEC(2:N+1, 1:N) = eye (N);
       end
@@ -178,7 +178,7 @@ function [T, STATS] = fitlm (X, y, varargin)
                                   "interactions", "full"}))
         error ("fitlm: character vector for model specification not recognised")
       endif
-      if strcmp (MODELSPEC, "constant") 
+      if strcmp (MODELSPEC, "constant")
         X = [];
         MODELSPEC = "linear";
         N = 0;
@@ -375,7 +375,7 @@ endfunction
 %! [TAB, STATS] = fitlm ({brands(:),popper(:)},popcorn(:),"interactions",...
 %!                          "categoricalvars",[1,2],"display","off");
 
-%!test 
+%!test
 %! load carsmall
 %! X = [Weight,Horsepower,Acceleration];
 %! [TAB, STATS] = fitlm (X, MPG,"constant","display","off");

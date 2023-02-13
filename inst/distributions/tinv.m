@@ -19,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} @var{x} = tinv (@var{p}, @var{df})
+## @deftypefn {statistics} {@var{x} =} tinv (@var{p}, @var{df})
 ##
 ## Inverse of the Student's T cumulative distribution function (iCDF).
 ##

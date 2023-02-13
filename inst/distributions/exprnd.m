@@ -17,10 +17,10 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{r} = exprnd (@var{mu})
-## @deftypefnx {statistics} @var{r} = exprnd (@var{mu}, @var{rows})
-## @deftypefnx {statistics} @var{r} = exprnd (@var{mu}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} @var{r} = exprnd (@var{mu}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} exprnd (@var{mu})
+## @deftypefnx {statistics} {@var{r} =} exprnd (@var{mu}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} exprnd (@var{mu}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} exprnd (@var{mu}, [@var{sz}])
 ##
 ## Random arrays from the exponential distribution.
 ##

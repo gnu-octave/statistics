@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{a} = trimmean (@var{x}, @var{p})
+## @deftypefn  {statistics} {@var{a} =} trimmean (@var{x}, @var{p})
 ##
 ## Compute the trimmed mean.
 ##

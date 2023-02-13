@@ -17,12 +17,13 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{m} = median (@var{x})
-## @deftypefnx {statistics} @var{m} = median (@var{x}, "all")
-## @deftypefnx {statistics} @var{m} = median (@var{x}, @var{dim})
-## @deftypefnx {statistics} @var{m} = median (@var{x}, @var{vecdim})
-## @deftypefnx {statistics} @var{m} = median (@dots{}, @var{outtype})
-## @deftypefnx {statistics} @var{m} = median (@dots{}, @var{nanflag})
+## @deftypefn  {statistics} {@var{m} =} median (@var{x})
+## @deftypefnx {statistics} {@var{m} =} median (@var{x}, "all")
+## @deftypefnx {statistics} {@var{m} =} median (@var{x}, @var{dim})
+## @deftypefnx {statistics} {@var{m} =} median (@var{x}, @var{vecdim})
+## @deftypefnx {statistics} {@var{m} =} median (@dots{}, @var{outtype})
+## @deftypefnx {statistics} {@var{m} =} median (@dots{}, @var{nanflag})
+##
 ## Compute the median value of the elements of @var{x}.
 ##
 ## When the elements of @var{x} are sorted, say

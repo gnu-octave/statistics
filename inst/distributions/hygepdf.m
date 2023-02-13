@@ -20,8 +20,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = hygepdf (@var{x}, @var{t}, @var{m}, @var{n})
-## @deftypefnx {statistics} @var{y} = hygepdf (@dots{}, "vectorexpand")
+## @deftypefn  {statistics} {@var{y} =} hygepdf (@var{x}, @var{t}, @var{m}, @var{n})
+## @deftypefnx {statistics} {@var{y} =} hygepdf (@dots{}, "vectorexpand")
 ##
 ## Hypergeometric probability density function (PDF).
 ##

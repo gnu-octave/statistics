@@ -19,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = tricdf (@var{x}, @var{a}, @var{b}, @var{c})
+## @deftypefn  {statistics} {@var{p} =} tricdf (@var{x}, @var{a}, @var{b}, @var{c})
 ##
 ## Triangular cumulative distribution function (CDF).
 ##

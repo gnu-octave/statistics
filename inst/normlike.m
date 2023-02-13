@@ -17,10 +17,10 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{nlogL} = normlike (@var{params}, @var{data})
-## @deftypefnx {statistics} [@var{nlogL}, @var{avar}] = normlike (@var{params}, @var{data})
-## @deftypefnx {statistics} [@dots{}] = normlike (@var{params}, @var{data}, @var{censor})
-## @deftypefnx {statistics} [@dots{}] = normlike (@var{params}, @var{data}, @var{censor}, @var{freq})
+## @deftypefn  {statistics} {@var{nlogL} =} normlike (@var{params}, @var{data})
+## @deftypefnx {statistics} {[@var{nlogL}, @var{avar}] =} normlike (@var{params}, @var{data})
+## @deftypefnx {statistics} {[@dots{}] =} normlike (@var{params}, @var{data}, @var{censor})
+## @deftypefnx {statistics} {[@dots{}] =} normlike (@var{params}, @var{data}, @var{censor}, @var{freq})
 ##
 ## Negative log-likelihood for the normal distribution.
 ##

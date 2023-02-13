@@ -19,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = burrpdf (@var{x}, @var{a}, @var{c}, @var{k})
+## @deftypefn  {statistics} {@var{y} =} burrpdf (@var{x}, @var{a}, @var{c}, @var{k})
 ##
 ## Burr type XII probability density function (PDF).
 ##

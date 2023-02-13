@@ -19,10 +19,10 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{r} = logistic_rnd (@var{mu}, @var{scale})
-## @deftypefnx {statistics} @var{r} = logistic_rnd (@var{mu}, @var{scale}, @var{rows})
-## @deftypefnx {statistics} @var{r} = logistic_rnd (@var{mu}, @var{scale}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} @var{r} = logistic_rnd (@var{mu}, @var{scale}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} logistic_rnd (@var{mu}, @var{scale})
+## @deftypefnx {statistics} {@var{r} =} logistic_rnd (@var{mu}, @var{scale}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} logistic_rnd (@var{mu}, @var{scale}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} logistic_rnd (@var{mu}, @var{scale}, [@var{sz}])
 ##
 ## Random arrays from the logistic distribution.
 ##

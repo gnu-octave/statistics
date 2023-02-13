@@ -17,10 +17,10 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{r} = frnd (@var{df1}, @var{df2})
-## @deftypefnx {statistics} @var{r} = frnd (@var{df1}, @var{df2}, @var{rows})
-## @deftypefnx {statistics} @var{r} = frnd (@var{df1}, @var{df2}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} @var{r} = frnd (@var{df1}, @var{df2}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} frnd (@var{df1}, @var{df2})
+## @deftypefnx {statistics} {@var{r} =} frnd (@var{df1}, @var{df2}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} frnd (@var{df1}, @var{df2}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} frnd (@var{df1}, @var{df2}, [@var{sz}])
 ##
 ## Random arrays from the F distribution.
 ##

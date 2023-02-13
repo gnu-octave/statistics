@@ -16,8 +16,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{r} = mvtrnd (@var{sigma}, @var{df})
-## @deftypefnx {statistics} @var{r} = mvtrnd (@var{sigma}, @var{df}, @var{n})
+## @deftypefn  {statistics} {@var{r} =} mvtrnd (@var{sigma}, @var{df})
+## @deftypefnx {statistics} {@var{r} =} mvtrnd (@var{sigma}, @var{df}, @var{n})
 ##
 ## Random vectors from the multivariate Student's t distribution.
 ##

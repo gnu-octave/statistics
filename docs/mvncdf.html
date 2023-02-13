@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: mvncdf</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Distributions">
+                    <i class="fas fa-list-alt"></i>
+                    Distributions
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>mvncdf</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>y</var> = <b>mvncdf</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>mvncdf</b><i> (<var>x</var>, <var>mu</var>, <var>sigma</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>mvncdf</b><i> (<var>x_lo</var>, <var>x_up</var>, <var>mu</var>, <var>sigma</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>mvncdf</b><i> (&hellip;, <var>options</var>)</i></dt>
+<dt><u>statistics:</u> [<var>y</var>, <var>err</var>] = <b>mvncdf</b><i> (&hellip;)</i></dt>
+</dl>
+
+<p> Multivariate normal cumulative distribution function (CDF).
+</p>
+<div class="ms-5">
+<p> <code><var>y</var> = mvncdf (<var>x</var>)</code> returns cumulative probability of the
+ multivariate normal distribution evaluated at each row of <var>x</var> with zero
+ mean and an identity covariance matrix. The row of matrix <var>x</var> correspond
+ to observations and its columns to variables. The return argument <var>y</var> is
+ a column vector with the same number of rows as in <var>x</var>.
+</p>
+<p> <code><var>y</var> = mvncdf (<var>x</var>, <var>mu</var>, <var>sigma</var>)</code> returns cumulative
+ probability of the multivariate normal distribution evaluated at each row of
+ <var>x</var> with mean <var>mu</var> and a covariance matrix <var>sigma</var>.  <var>mu</var> can
+ be either a scalar (the same of every variable) or a row vector with the same
+ number of elements as the number of variables in <var>x</var>.  <var>sigma</var>
+ covariance matrix may be specified a row vector if it only contains variances
+ along its diagonal and zero covariances of the diagonal.  In such a case, the
+ diagonal vector <var>sigma</var> must have the same number of elements as the
+ number of variables (columns) in <var>x</var>.  If you only want to specify sigma,
+ you can pass an empty matrix for <var>mu</var>.
+</p>
+<p> The multivariate normal cumulative probability at <var>x</var> is defined as the
+ probability that a random vector V, distributed as multivariate normal, will
+ fall within the semi-infinite rectangle with upper limits defined by <var>x</var>.
+ </p><ul>
+<li> Pr{V(1)&lt;=X(1), V(2)&lt;=X(2), ... V(D)&lt;=X(D)}.
+ </li></ul>
+
+<p> <code><var>y</var> = mvncdf (<var>x_lo</var>, <var>x_hi</var>, <var>mu</var>, <var>sigma</var>)</code>
+ returns the multivariate normal cumulative probability evaluated over the
+ rectangle (hyper-rectangle for multivariate data in <var>x</var>) with lower and
+ upper limits defined by <var>x_lo</var> and <var>x_hi</var> respectively.
+</p>
+<p> <code>[<var>y</var>, <var>err</var>] = mvncdf (&hellip;)</code> also returns an error estimate
+ <var>err</var> in <var>y</var>.
+</p>
+<p> <code><var>y</var> = mvncdf (&hellip;, <var>options</var>)</code> specifies the structure,
+ which controls specific parameters for the numerical integration for
+ numltivariate cases. The required fieds are:
+</p>
+ <table>
+<tr><td width="20%">&quot;TolFun&quot;</td><td width="80%">&mdash; Maximum absolute error tolerance.  Default is
+ 1e-8 for D == 1 | 3, 1e-4 for D &gt; 4. Note that for bivariate normal cdf, the
+ Octave implementation has a presicion of more than 1e-10.</td></tr>
+<tr><td width="20%">&quot;MaxFunEvals&quot;</td><td width="80%">&mdash; Maximum number of integrand evaluations.
+ Default is 1e7 for D &gt; 4.</td></tr>
+<tr><td width="20%">&quot;Display&quot;</td><td width="80%">&mdash; Display options.  Choices are &quot;off&quot; (default),
+ &quot;iter&quot;, which shows the probability and estimated error at each repetition,
+ and &quot;final&quot;, which shows the final probability and related error after the
+ integrand has converged successfully.</td></tr>
+</table>
+
+<p> <strong>See also: </strong>
+  <a href="mvncdf.html">mvncdf</a>, 
+  <a href="mvnpdf.html">mvnpdf</a>, 
+  <a href="mvnrnd.html">mvnrnd</a>, 
+  <a href="bvncdf.html">bvncdf</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/mvncdf.m">mvncdf</a>
+</div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

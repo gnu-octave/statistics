@@ -17,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{W}, @var{DI}] = iwishrnd (@var{Psi}, @var{df}, @var{DI}, @var{n}=1)
+## @deftypefn  {statistics} {[@var{W}, @var{DI}] =} iwishrnd (@var{Psi}, @var{df}, @var{DI}, @var{n}=1)
 ##
 ## Return a random matrix sampled from the inverse Wishart distribution with
 ## given parameters.

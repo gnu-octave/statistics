@@ -16,10 +16,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{r} = random(@var{name}, @var{arg1})
-## @deftypefnx {statistics} @var{r} = random(@var{name}, @var{arg1}, @var{arg2})
-## @deftypefnx {statistics} @var{r} = random(@var{name}, @var{arg1}, @var{arg2}, @var{arg3})
-## @deftypefnx {statistics} @var{r} = random(@var{name}, @dots{}, @var{s1}, @dots{})
+## @deftypefn  {statistics} {@var{r} =} random(@var{name}, @var{arg1})
+## @deftypefnx {statistics} {@var{r} =} random(@var{name}, @var{arg1}, @var{arg2})
+## @deftypefnx {statistics} {@var{r} =} random(@var{name}, @var{arg1}, @var{arg2}, @var{arg3})
+## @deftypefnx {statistics} {@var{r} =} random(@var{name}, @dots{}, @var{s1}, @dots{})
 ##
 ## Generates pseudo-random numbers from a given one-, two-, or three-parameter
 ## distribution.

@@ -17,8 +17,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{jackstat} = jackknife (@var{E}, @var{x})
-## @deftypefnx {statistics} @var{jackstat} = jackknife (@var{E}, @var{x}, @dots{})
+## @deftypefn  {statistics} {@var{jackstat} =} jackknife (@var{E}, @var{x})
+## @deftypefnx {statistics} {@var{jackstat} =} jackknife (@var{E}, @var{x}, @dots{})
 ##
 ## Compute jackknife estimates of a parameter taking one or more given samples
 ## as parameters.

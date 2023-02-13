@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: mvnpdf</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Distributions">
+                    <i class="fas fa-list-alt"></i>
+                    Distributions
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>mvnpdf</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>y</var> = <b>mvnpdf</b><i> (<var>x</var>, <var>mu</var>, <var>sigma</var>)</i></dt>
+</dl>
+
+<p> Multivariate normal probability density function (PDF).
+</p>
+<div class="ms-5">
+<p> <code><var>y</var> = mvnpdf (<var>x</var>)</code> returns the probability density of the
+ multivariate normal distribution with zero mean and identity covariance
+ matrix, evaluated at each row of <var>x</var>.  Rows of the N-by-D matrix <var>x</var>
+ correspond to observations orpoints, and columns correspond to variables or
+ coordinates.  <var>y</var> is an N-by-1 vector.
+</p>
+<p> <code><var>y</var> = mvnpdf (<var>x</var>, <var>mu</var>)</code> returns the density of the
+ multivariate normal distribution with mean MU and identity covariance matrix,
+ evaluated at each row of <var>x</var>.  <var>mu</var> is a 1-by-D vector, or an N-by-D
+ matrix, in which case the density is evaluated for each row of <var>x</var> with
+ the corresponding row of <var>mu</var>.  <var>mu</var> can also be a scalar value,
+ which MVNPDF replicates to match the size of <var>x</var>.
+</p>
+<p> <code><var>y</var> = mvnpdf (<var>x</var>, <var>mu</var>, <var>sigma</var>)</code> returns the density
+ of the multivariate normal distribution with mean <var>mu</var> and covariance
+ <var>sigma</var>, evaluated at each row of <var>x</var>.  <var>sigma</var> is a D-by-D
+ matrix, or an D-by-D-by-N array, in which case the density is evaluated for
+ each row of <var>x</var> with the corresponding page of <var>sigma</var>, i.e.,
+ <code>mcvpdf</code> computes <var>y(i)</var> using <var>x(i,:)</var> and <var>sigma(:,:,i)</var>.
+ If the covariance matrix is diagonal, containing variances along the diagonal
+ and zero covariances off the diagonal, <var>sigma</var> may also be specified as a
+ 1-by-D matrix or a 1-by-D-by-N array, containing just the diagonal. Pass in
+ the empty matrix for <var>mu</var> to use its default value when you want to only
+ specify <var>sigma</var>.
+</p>
+<p> If <var>x</var> is a 1-by-D vector, <code>mcvpdf</code> replicates it to match the
+ leading dimension of <var>mu</var> or the trailing dimension of <var>sigma</var>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="mvncdf.html">mvncdf</a>, 
+  <a href="mvnrnd.html">mvnrnd</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/mvnpdf.m">mvnpdf</a>
+</div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

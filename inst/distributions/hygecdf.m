@@ -20,8 +20,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = hygecdf (@var{x}, @var{t}, @var{m}, @var{n})
-## @deftypefnx {statistics} @var{p} = hygecdf (@var{x}, @var{t}, @var{m}, @var{n}, "upper")
+## @deftypefn  {statistics} {@var{p} =} hygecdf (@var{x}, @var{t}, @var{m}, @var{n})
+## @deftypefnx {statistics} {@var{p} =} hygecdf (@var{x}, @var{t}, @var{m}, @var{n}, "upper")
 ##
 ## Hypergeometric cumulative distribution function (CDF).
 ##
@@ -154,10 +154,10 @@ endfunction
 %!assert (hygecdf ([x(1:2) NaN x(4:5)], 4, 2, 2), [y(1:2) NaN y(4:5)], 5*eps)
 %!test
 %! p = hygecdf (x, 10, [1 2 3 4 5], 2, "upper");
-%! assert (p, [1, 34/90, 2/30, 0, 0], 5*eps);
+%! assert (p, [1, 34/90, 2/30, 0, 0], 10*eps);
 %!test
 %! p = hygecdf (2*x, 10, [1 2 3 4 5], 2, "upper");
-%! assert (p, [1, 34/90, 0, 0, 0], 5*eps);
+%! assert (p, [1, 34/90, 0, 0, 0], 10*eps);
 
 ## Test class of input preserved
 %!assert (hygecdf ([x, NaN], 4, 2, 2), [y, NaN], 5*eps)

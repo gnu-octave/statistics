@@ -20,7 +20,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = hygeinv (@var{x}, @var{t}, @var{m}, @var{n})
+## @deftypefn  {statistics} {@var{p} =} hygeinv (@var{x}, @var{t}, @var{m}, @var{n})
 ##
 ## Inverse of the hypergeometric cumulative distribution function (iCDF).
 ##

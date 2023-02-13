@@ -19,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = burrcdf (@var{x}, @var{c}, @var{k})
+## @deftypefn  {statistics} {@var{p} =} burrcdf (@var{x}, @var{c}, @var{k})
 ##
 ## Burr type XII cumulative distribution function (CDF).
 ##

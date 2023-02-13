@@ -19,13 +19,13 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = wblcdf (@var{x})
-## @deftypefnx {statistics} @var{p} = wblcdf (@var{x}, @var{lambda})
-## @deftypefnx {statistics} @var{p} = wblcdf (@var{x}, @var{lambda}, @var{k})
-## @deftypefnx {statistics} @var{p} = wblcdf (@dots{}, "upper")
-## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = wblcdf (@var{x}, @var{lambda}, @var{k}, @var{pcov})
-## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = wblcdf (@var{x}, @var{lambda}, @var{k}, @var{pcov}, @var{alpha})
-## @deftypefnx {statistics} [@var{p}, @var{plo}, @var{pup}] = wblcdf (@dots{}, "upper")
+## @deftypefn  {statistics} {@var{p} =} wblcdf (@var{x})
+## @deftypefnx {statistics} {@var{p} =} wblcdf (@var{x}, @var{lambda})
+## @deftypefnx {statistics} {@var{p} =} wblcdf (@var{x}, @var{lambda}, @var{k})
+## @deftypefnx {statistics} {@var{p} =} wblcdf (@dots{}, "upper")
+## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} wblcdf (@var{x}, @var{lambda}, @var{k}, @var{pcov})
+## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} wblcdf (@var{x}, @var{lambda}, @var{k}, @var{pcov}, @var{alpha})
+## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} wblcdf (@dots{}, "upper")
 ##
 ## Weibull cumulative distribution function (CDF).
 ##

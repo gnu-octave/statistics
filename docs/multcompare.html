@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: multcompare</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Hypothesis Testing">
+                    <i class="fas fa-list-alt"></i>
+                    Hypothesis Testing
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>multcompare</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>C</var> = <b>multcompare</b><i> (<var>STATS</var>)</i></dt>
+<dt><u>statistics:</u> <var>C</var> = <b>multcompare</b><i> (<var>STATS</var>, &quot;name&quot;, <var>value</var>)</i></dt>
+<dt><u>statistics:</u> [<var>C</var>, <var>M</var>] = <b>multcompare</b><i> (...)</i></dt>
+<dt><u>statistics:</u> [<var>C</var>, <var>M</var>, <var>H</var>] = <b>multcompare</b><i> (...)</i></dt>
+<dt><u>statistics:</u> [<var>C</var>, <var>M</var>, <var>H</var>, <var>GNAMES</var>] = <b>multcompare</b><i> (...)</i></dt>
+<dt><u>statistics:</u> <var>padj</var> = <b>multcompare</b><i> (<var>p</var>)</i></dt>
+<dt><u>statistics:</u> <var>padj</var> = <b>multcompare</b><i> (<var>p</var>, &quot;ctype&quot;, <var>CTYPE</var>)</i></dt>
+</dl>
+
+<p> Perform posthoc multiple comparison tests or p-value adjustments to control
+ the family-wise error rate (FWER) or false discovery rate (FDR).
+</p>
+<div class="ms-5">
+<p> <code><var>C</var> = multcompare (<var>STATS</var>)</code> performs a multiple comparison
+ using a <var>STATS</var> structure that is obtained as output from any of
+ the following functions: anova1, anova2, anovan, kruskalwallis, and friedman.
+ The return value <var>C</var> is a matrix with one row per comparison and six
+ columns. Columns 1-2 are the indices of the two samples being compared.
+ Columns 3-5 are a lower bound, estimate, and upper bound for their
+ difference, where the bounds are for 95% confidence intervals. Column 6-8 are
+ the multiplicity adjusted p-values for each individual comparison, the test
+ statistic and the degrees of freedom.
+ All tests by multcompare are two-tailed.
+</p>
+<p> @qcode{multcompare} can take a number of optional parameters as name-value
+ pairs.
+</p>
+<p> <code>[&hellip;] = multcompare (<var>STATS</var>, &quot;alpha&quot;, <var>ALPHA</var>)</code>
+</p>
+ <ul>
+<li>
+ <var>ALPHA</var> sets the significance level of null hypothesis significance
+ tests to ALPHA, and the central coverage of two-sided confidence intervals to
+ 100*(1-<var>ALPHA</var>)%. (Default ALPHA is 0.05).
+ </li></ul>
+
+<p> <code>[&hellip;] = multcompare (<var>STATS</var>, &quot;ControlGroup&quot;, <var>REF</var>)</code>
+</p>
+ <ul>
+<li>
+ <var>REF</var> is the index of the control group to limit comparisons to. The
+ index must be a positive integer scalar value. For each dimension (d) listed
+ in <var>DIM</var>, multcompare uses STATS.grpnames{d}(idx) as the control group.
+ (Default is empty, i.e. [], for full pairwise comparisons)
+ </li></ul>
+
+<p> <code>[&hellip;] = multcompare (<var>STATS</var>, &quot;ctype&quot;, <var>CTYPE</var>)</code>
+</p>
+ <ul>
+<li>
+ <var>CTYPE</var> is the type of comparison test to use. In order of increasing
+ power, the choices are: &quot;bonferroni&quot;, &quot;scheffe&quot;, &quot;mvt&quot;, &quot;holm&quot; (default),
+ &quot;hochberg&quot;, &quot;fdr&quot;, or &quot;lsd&quot;. The first five methods control the family-wise
+ error rate.  The &quot;fdr&quot; method controls false discovery rate (by the original
+ Benjamini-Hochberg step-up procedure). The final method, &quot;lsd&quot; (or &quot;none&quot;),
+ makes no attempt to control the Type 1 error rate of multiple comparisons.
+ The coverage of confidence intervals are only corrected for multiple
+ comparisons in the cases where <var>CTYPE</var> is &quot;bonferroni&quot;, &quot;scheffe&quot; or
+ &quot;mvt&quot;, which control the Type 1 error rate for simultaneous inference.
+
+<p> The &quot;mvt&quot; method uses the multivariate t distribution to assess the
+ probability or critical value of the maximum statistic across the tests,
+ thereby accounting for correlations among comparisons in the control of the
+ family-wise error rate with simultaneous inference.  In the case of pairwise
+ comparisons, it simulates Tukey&rsquo;s (or the Games-Howell) test, in the case of
+ comparisons with a single control group, it simulates Dunnett&rsquo;s test.
+ <var>CTYPE</var> values &quot;tukey-kramer&quot; and &quot;hsd&quot; are recognised but set the value
+ of <var>CTYPE</var> and <var>REF</var> to &quot;mvt&quot; and empty respectively.  A <var>CTYPE</var>
+ value &quot;dunnett&quot; is recognised but sets the value of <var>CTYPE</var> to &quot;mvt&quot;, and
+ if <var>REF</var> is empty, sets <var>REF</var> to 1.  Since the algorithm uses a Monte
+ Carlo method (of 1e+06 random samples), you can expect the results to
+ fluctuate slightly with each call to multcompare and the calculations may be
+ slow to complete for a large number of comparisons.  If the parallel package
+ is installed and loaded, @qcode{multcompare} will automatically accelerate
+ computations by parallel processing.  Note that p-values calculated by the
+ &quot;mvt&quot; are truncated at 1e-06.
+ </p></li></ul>
+
+<p> <code>[&hellip;] = multcompare (<var>STATS</var>, &quot;df&quot;, <var>DF</var>)</code>
+</p>
+ <ul>
+<li>
+ <var>DF</var> is an optional scalar value to set the number of degrees of freedom
+ in the calculation of p-values for the multiple comparison tests. By default,
+ this value is extracted from the <var>STATS</var> structure of the ANOVA test, but
+ setting <var>DF</var> maybe necessary to approximate Satterthwaite correction if
+ @qcode{anovan} was performed using weights.
+ </li></ul>
+
+<p> <code>[&hellip;] = multcompare (<var>STATS</var>, &quot;dim&quot;, <var>DIM</var>)</code>
+</p>
+ <ul>
+<li>
+ <var>DIM</var> is a vector specifying the dimension or dimensions over which the
+ estimated marginal means are to be calculated. Used only if STATS comes from
+ anovan. The value [1 3], for example, computes the estimated marginal mean
+ for each combination of the first and third predictor values. The default is
+ to compute over the first dimension (i.e. 1). If the specified dimension is,
+ or includes, a continuous factor then @qcode{multcompare} will return an
+ error.
+ </li></ul>
+
+<p> <code>[&hellip;] = multcompare (<var>STATS</var>, &quot;estimate&quot;, <var>ESTIMATE</var>)</code>
+</p>
+ <ul>
+<li>
+ <var>ESTIMATE</var> is a string specifying the estimates to be compared when
+ computing multiple comparisons after anova2; this argument is ignored by
+ anovan and anova1. Accepted values for <var>ESTIMATE</var> are either &quot;column&quot;
+ (default) to compare column means, or &quot;row&quot; to compare row means. If the
+ model type in anova2 was &quot;linear&quot; or &quot;nested&quot; then only &quot;column&quot; is accepted
+ for <var>ESTIMATE</var> since the row factor is assumed to be a random effect.
+ </li></ul>
+
+<p> <code>[&hellip;] = multcompare (<var>STATS</var>, &quot;display&quot;, <var>DISPLAY</var>)</code>
+</p>
+ <ul>
+<li>
+ <var>DISPLAY</var> is either &quot;on&quot; (the default): to display a table and graph of
+ the comparisons (e.g. difference between means), their 100*(1-<var>ALPHA</var>)%
+ intervals and multiplicity adjusted p-values in APA style; or &quot;off&quot;: to omit
+ the table and graph. On the graph, markers and error bars colored red have
+ multiplicity adjusted p-values &lt; ALPHA, otherwise the markers and error bars
+ are blue.
+ </li></ul>
+
+<p> <code>[&hellip;] = multcompare (<var>STATS</var>, &quot;seed&quot;, <var>SEED</var>)</code>
+</p>
+ <ul>
+<li>
+ <var>SEED</var> is a scalar value used to initialize the random number generator
+ so that <var>CTYPE</var> &quot;mvt&quot; produces reproducible results.
+ </li></ul>
+
+<p> <code>[<var>C</var>, <var>M</var>, <var>H</var>, <var>GNAMES</var>] = multcompare (&hellip;)</code>
+ returns additional outputs. <var>M</var> is a matrix where columns 1-2 are the
+ estimated marginal means and their standard errors, and columns 3-4 are lower
+ and upper bounds of the confidence intervals for the means; the critical
+ value of the test statistic is scaled by a factor of 2^(-0.5) before
+ multiplying by the standard errors of the group means so that the intervals
+ overlap when the difference in means becomes significant at approximately
+ the level <var>ALPHA</var>. When <var>ALPHA</var> is 0.05, this corresponds to
+ confidence intervals with 83.4% central coverage.  <var>H</var> is a handle to the
+ figure containing the graph.  <var>GNAMES</var> is a cell array with one row for
+ each group, containing the names of the groups.
+</p>
+<p> <code><var>padj</var> = multcompare (<var>p</var>)</code> calculates and returns adjusted
+ p-values (<var>padj</var>) using the Holm-step down Bonferroni procedure to
+ control the family-wise error rate.
+</p>
+<p> <code><var>padj</var> = multcompare (<var>p</var>, &quot;ctype&quot;, <var>CTYPE</var>)</code> calculates
+ and returns adjusted p-values (<var>padj</var>) computed using the method
+ <var>CTYPE</var>. In order of increasing power, <var>CTYPE</var> for p-value adjustment
+ can be either &quot;bonferroni&quot;, &quot;holm&quot; (default), &quot;hochberg&quot;, or &quot;fdr&quot;. See
+ above for further information about the <var>CTYPE</var> methods.
+</p>
+<p> <strong>See also: </strong>
+  <a href="anova1.html">anova1</a>, 
+  <a href="anova2.html">anova2</a>, 
+  <a href="anovan.html">anovan</a>, 
+  <a href="kruskalwallis.html">kruskalwallis</a>, 
+  <a href="friedman.html">friedman</a>, 
+  <a href="fitlm.html">fitlm</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/multcompare.m">multcompare</a>
+</div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

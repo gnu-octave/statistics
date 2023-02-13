@@ -18,7 +18,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = betapdf (@var{x}, @var{a}, @var{b})
+## @deftypefn  {statistics} {@var{y} =} betapdf (@var{x}, @var{a}, @var{b})
 ##
 ## Beta probability density function (PDF).
 ##

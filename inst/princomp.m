@@ -15,11 +15,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{COEFF} = princomp (@var{X})
-## @deftypefnx {statistics} [@var{COEFF}, @var{SCORE}] = princomp (@var{X})
-## @deftypefnx {statistics} [@var{COEFF}, @var{SCORE}, @var{latent}] = princomp (@var{X})
-## @deftypefnx {statistics} [@var{COEFF}, @var{SCORE}, @var{latent}, @var{tsquare}] = princomp (@var{X})
-## @deftypefnx {statistics} [@dots{}] = princomp (@var{X}, "econ")
+## @deftypefn  {statistics} {@var{COEFF} =} princomp (@var{X})
+## @deftypefnx {statistics} {[@var{COEFF}, @var{SCORE}] =} princomp (@var{X})
+## @deftypefnx {statistics} {[@var{COEFF}, @var{SCORE}, @var{latent}] =} princomp (@var{X})
+## @deftypefnx {statistics} {[@var{COEFF}, @var{SCORE}, @var{latent}, @var{tsquare}] =} princomp (@var{X})
+## @deftypefnx {statistics} {[@dots{}] =} princomp (@var{X}, "econ")
 ##
 ## Performs a principal component analysis on a NxP data matrix X.
 ##

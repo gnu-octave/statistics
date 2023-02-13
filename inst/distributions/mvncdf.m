@@ -17,11 +17,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = mvncdf (@var{x})
-## @deftypefnx {statistics} @var{y} = mvncdf (@var{x}, @var{mu}, @var{sigma})
-## @deftypefnx {statistics} @var{y} = mvncdf (@var{x_lo}, @var{x_up}, @var{mu}, @var{sigma})
-## @deftypefnx {statistics} @var{y} = mvncdf (@dots{}, @var{options})
-## @deftypefnx {statistics} [@var{y}, @var{err}] = mvncdf (@dots{})
+## @deftypefn  {statistics} {@var{y} =} mvncdf (@var{x})
+## @deftypefnx {statistics} {@var{y} =} mvncdf (@var{x}, @var{mu}, @var{sigma})
+## @deftypefnx {statistics} {@var{y} =} mvncdf (@var{x_lo}, @var{x_up}, @var{mu}, @var{sigma})
+## @deftypefnx {statistics} {@var{y} =} mvncdf (@dots{}, @var{options})
+## @deftypefnx {statistics} {[@var{y}, @var{err}] =} mvncdf (@dots{})
 ##
 ## Multivariate normal cumulative distribution function (CDF).
 ##

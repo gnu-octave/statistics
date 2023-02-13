@@ -17,16 +17,16 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{h} = levene_test (@var{x})
-## @deftypefnx {statistics} @var{h} = levene_test (@var{x}, @var{group})
-## @deftypefnx {statistics} @var{h} = levene_test (@var{x}, @var{alpha})
-## @deftypefnx {statistics} @var{h} = levene_test (@var{x}, @var{testtype})
-## @deftypefnx {statistics} @var{h} = levene_test (@var{x}, @var{group}, @var{alpha})
-## @deftypefnx {statistics} @var{h} = levene_test (@var{x}, @var{group}, @var{testtype})
-## @deftypefnx {statistics} @var{h} = levene_test (@var{x}, @var{group}, @var{alpha}, @var{testtype})
-## @deftypefnx {statistics} [@var{h}, @var{pval}] = levene_test (@dots{})
-## @deftypefnx {statistics} [@var{h}, @var{pval}, @var{W}] = levene_test (@dots{})
-## @deftypefnx {statistics} [@var{h}, @var{pval}, @var{W}, @var{df}] = levene_test (@dots{})
+## @deftypefn  {statistics} {@var{h} =} levene_test (@var{x})
+## @deftypefnx {statistics} {@var{h} =} levene_test (@var{x}, @var{group})
+## @deftypefnx {statistics} {@var{h} =} levene_test (@var{x}, @var{alpha})
+## @deftypefnx {statistics} {@var{h} =} levene_test (@var{x}, @var{testtype})
+## @deftypefnx {statistics} {@var{h} =} levene_test (@var{x}, @var{group}, @var{alpha})
+## @deftypefnx {statistics} {@var{h} =} levene_test (@var{x}, @var{group}, @var{testtype})
+## @deftypefnx {statistics} {@var{h} =} levene_test (@var{x}, @var{group}, @var{alpha}, @var{testtype})
+## @deftypefnx {statistics} {[@var{h}, @var{pval}] =} levene_test (@dots{})
+## @deftypefnx {statistics} {[@var{h}, @var{pval}, @var{W}] =} levene_test (@dots{})
+## @deftypefnx {statistics} {[@var{h}, @var{pval}, @var{W}, @var{df}] =} levene_test (@dots{})
 ##
 ## Perform a Levene's test for the homogeneity of variances.
 ##

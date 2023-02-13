@@ -16,8 +16,8 @@
 ## along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{Y} = cmdscale (@var{D})
-## @deftypefnx {statistics} [@var{Y}, @var{e}] = cmdscale (@var{D})
+## @deftypefn  {statistics} {@var{Y} =} cmdscale (@var{D})
+## @deftypefnx {statistics} {[@var{Y}, @var{e}] =} cmdscale (@var{D})
 ##
 ## Classical multidimensional scaling of a matrix.
 ##

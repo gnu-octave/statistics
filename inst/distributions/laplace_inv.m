@@ -19,9 +19,9 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{x} = laplace_inv (@var{p})
-## @deftypefnx {statistics} @var{x} = laplace_inv (@var{p}, @var{mu})
-## @deftypefnx {statistics} @var{x} = laplace_inv (@var{p}, @var{mu}, @var{beta})
+## @deftypefn  {statistics} {@var{x} =} laplace_inv (@var{p})
+## @deftypefnx {statistics} {@var{x} =} laplace_inv (@var{p}, @var{mu})
+## @deftypefnx {statistics} {@var{x} =} laplace_inv (@var{p}, @var{mu}, @var{beta})
 ##
 ## Inverse of the Laplace cumulative distribution function (iCDF).
 ##

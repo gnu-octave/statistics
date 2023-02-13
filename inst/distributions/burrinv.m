@@ -19,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{x} = burrinv (@var{p}, @var{a}, @var{c}, @var{k})
+## @deftypefn  {statistics} {@var{x} =} burrinv (@var{p}, @var{a}, @var{c}, @var{k})
 ##
 ## Inverse of the Burr type XII cumulative distribution function (iCDF).
 ##

@@ -19,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = stdnormal_pdf (@var{x})
+## @deftypefn  {statistics} {@var{y} =} stdnormal_pdf (@var{x})
 ##
 ## Standard normal probability density function (PDF).
 ##

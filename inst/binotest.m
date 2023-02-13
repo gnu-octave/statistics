@@ -16,8 +16,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{h}, @var{pval}, @var{ci}] = binotest (@var{pos}, @var{N}, @var{p0})
-## @deftypefnx {statistics} [@var{h}, @var{pval}, @var{ci}] = binotest (@var{pos}, @var{N}, @var{p0}, @var{Name}, @var{Value})
+## @deftypefn  {statistics} {[@var{h}, @var{pval}, @var{ci}] =} binotest (@var{pos}, @var{N}, @var{p0})
+## @deftypefnx {statistics} {[@var{h}, @var{pval}, @var{ci}] =} binotest (@var{pos}, @var{N}, @var{p0}, @var{Name}, @var{Value})
 ##
 ## Test for probability @var{p} of a binomial sample
 ##

@@ -18,7 +18,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{x} = binoinv (@var{p}, @var{n}, @var{ps})
+## @deftypefn  {statistics} {@var{x} =} binoinv (@var{p}, @var{n}, @var{ps})
 ##
 ## Inverse of the Binomial cumulative distribution function (iCDF).
 ##

@@ -17,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{m}, @var{v}] = evstat (@var{mu}, @var{sigma})
+## @deftypefn  {statistics} {[@var{m}, @var{v}] =} evstat (@var{mu}, @var{sigma})
 ##
 ## Mean and variance of the extreme value distribution.
 ##

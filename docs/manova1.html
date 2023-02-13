@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: manova1</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Hypothesis Testing">
+                    <i class="fas fa-list-alt"></i>
+                    Hypothesis Testing
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>manova1</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>d</var> = <b>manova1</b><i> (<var>x</var>, <var>group</var>)</i></dt>
+<dt><u>statistics:</u> <var>d</var> = <b>manova1</b><i> (<var>x</var>, <var>group</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> [<var>d</var>, <var>p</var>] = <b>manova1</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>d</var>, <var>p</var>, <var>stats</var>] = <b>manova1</b><i> (&hellip;)</i></dt>
+</dl>
+
+<p> One-way multivariate analysis of variance (MANOVA).
+</p>
+<div class="ms-5">
+<p> <code><var>d</var> = manova1 (<var>x</var>, <var>group</var>, <var>alpha</var>)</code> performs a
+ one-way MANOVA for comparing the mean vectors of two or more groups of
+ multivariate data.
+</p>
+<p> <var>x</var> is a matrix with each row representing a multivariate observation,
+ and each column representing a variable.
+</p>
+<p> <var>group</var> is a numeric vector, string array, or cell array of strings with
+ the same number of rows as <var>x</var>.  <var>x</var> values are in the same group if
+ they correspond to the same value of GROUP.
+</p>
+<p> <var>alpha</var> is the scalar significance level and is 0.05 by default.
+</p>
+<p> <var>d</var> is an estimate of the dimension of the group means.  It is the
+ smallest dimension such that a test of the hypothesis that the means lie on
+ a space of that dimension is not rejected.  If <var>d</var> = 0 for example, we
+ cannot reject the hypothesis that the means are the same.  If <var>d</var> = 1, we
+ reject the hypothesis that the means are the same but we cannot reject the
+ hypothesis that they lie on a line.
+</p>
+<p> <code>[<var>d</var>, <var>p</var>] = manova1 (&hellip;)</code> returns P, a vector of p-values
+ for testing the null hypothesis that the mean vectors of the groups lie on
+ various dimensions.  P(1) is the p-value for a test of dimension 0, P(2) for
+ dimension 1, etc.
+</p>
+<p> <code>[<var>d</var>, <var>p</var>, <var>stats</var>] = manova1 (&hellip;)</code> returns a STATS
+ structure with the following fields:
+</p>
+ <table>
+<tr><td width="5%"></td><td width="20%">&quot;W&quot;</td><td width="75%">within-group sum of squares and products matrix</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;B&quot;</td><td width="75%">between-group sum of squares and products matrix</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;T&quot;</td><td width="75%">total sum of squares and products matrix</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;dfW&quot;</td><td width="75%">degrees of freedom for WSSP matrix</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;dfB&quot;</td><td width="75%">degrees of freedom for BSSP matrix</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;dfT&quot;</td><td width="75%">degrees of freedom for TSSP matrix</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;lambda&quot;</td><td width="75%">value of Wilk&rsquo;s lambda (the test statistic)</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;chisq&quot;</td><td width="75%">transformation of lambda to a chi-square distribution</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;chisqdf&quot;</td><td width="75%">degrees of freedom for chisq</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;eigenval&quot;</td><td width="75%">eigenvalues of (WSSP^-1) * BSSP</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;eigenvec&quot;</td><td width="75%">eigenvectors of (WSSP^-1) * BSSP; these are the
+ coefficients for canonical variables, and they are scaled so the within-group
+ variance of C is 1</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;canon&quot;</td><td width="75%">canonical variables, equal to XC*eigenvec, where XC
+ is X with columns centered by subtracting their means</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;mdist&quot;</td><td width="75%">Mahalanobis distance from each point to its group mean</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;gmdist&quot;</td><td width="75%">Mahalanobis distances between each pair of group means</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;gnames&quot;</td><td width="75%">Group names</td></tr>
+</table>
+
+<p> The canonical variables C have the property that C(:,1) is the linear
+ combination of the <var>x</var> columns that has the maximum separation between
+ groups, C(:,2) has the maximum separation subject to it being orthogonal to
+ C(:,1), and so on.
+</p>
+
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/manova1.m">manova1</a>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

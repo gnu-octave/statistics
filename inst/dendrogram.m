@@ -22,8 +22,8 @@
 ## @deftypefnx {statistics} {} dendrogram (@var{tree}, @var{p})
 ## @deftypefnx {statistics} {} dendrogram (@var{tree}, @var{prop}, @var{val})
 ## @deftypefnx {statistics} {} dendrogram (@var{tree}, @var{p}, @var{prop}, @var{val} )
-## @deftypefnx {statistics} @var{h} = dendrogram (@dots{})
-## @deftypefnx {statistics} [@var{h}, @var{t}, @var{perm}] = dendrogram (@dots{})
+## @deftypefnx {statistics} {@var{h} =} dendrogram (@dots{})
+## @deftypefnx {statistics} {[@var{h}, @var{t}, @var{perm}] =} dendrogram (@dots{})
 ##
 ## Plot a dendrogram of a hierarchical binary cluster tree.
 ##

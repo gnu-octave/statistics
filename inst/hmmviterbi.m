@@ -17,9 +17,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{vpath} = hmmviterbi (@var{sequence}, @var{transprob}, @var{outprob})
-## @deftypefnx {statistics} @var{vpath} = hmmviterbi (@dots{}, "symbols", @var{symbols})
-## @deftypefnx {statistics} @var{vpath} = hmmviterbi (@dots{}, "statenames", @var{statenames})
+## @deftypefn  {statistics} {@var{vpath} =} hmmviterbi (@var{sequence}, @var{transprob}, @var{outprob})
+## @deftypefnx {statistics} {@var{vpath} =} hmmviterbi (@dots{}, @code{"symbols"}, @var{symbols})
+## @deftypefnx {statistics} {@var{vpath} =} hmmviterbi (@dots{}, @code{"statenames"}, @var{statenames})
 ##
 ## Viterbi path of a hidden Markov model.
 ##

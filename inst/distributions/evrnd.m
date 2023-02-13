@@ -17,9 +17,9 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{r} = evrnd (@var{mu}, @var{sigma})
-## @deftypefnx {statistics} @var{r} = evrnd (@var{mu}, @var{sigma}, @var{m}, @var{n}, @dots{})
-## @deftypefnx {statistics} @var{r} = evrnd (@var{mu}, @var{sigma}, [@var{m}, @var{n}, @dots{}])
+## @deftypefn  {statistics} {@var{r} =} evrnd (@var{mu}, @var{sigma})
+## @deftypefnx {statistics} {@var{r} =} evrnd (@var{mu}, @var{sigma}, @var{m}, @var{n}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} evrnd (@var{mu}, @var{sigma}, [@var{m}, @var{n}, @dots{}])
 ##
 ## Random arrays from the extreme value distribution.
 ##

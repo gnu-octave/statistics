@@ -20,7 +20,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{x} = gpinv (@var{p}, @var{shape}, @var{scale}, @var{location})
+## @deftypefn  {statistics} {@var{x} =} gpinv (@var{p}, @var{shape}, @var{scale}, @var{location})
 ##
 ## Inverse of the generalized Pareto cumulative distribution function (iCDF).
 ##

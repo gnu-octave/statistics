@@ -19,9 +19,9 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = logistic_cdf (@var{x})
-## @deftypefnx {statistics} @var{p} = logistic_cdf (@var{x}, @var{mu})
-## @deftypefnx {statistics} @var{p} = logistic_cdf (@var{x}, @var{mu}, @var{scale})
+## @deftypefn  {statistics} {@var{p} =} logistic_cdf (@var{x})
+## @deftypefnx {statistics} {@var{p} =} logistic_cdf (@var{x}, @var{mu})
+## @deftypefnx {statistics} {@var{p} =} logistic_cdf (@var{x}, @var{mu}, @var{scale})
 ##
 ## Logistic cumulative distribution function (CDF).
 ##

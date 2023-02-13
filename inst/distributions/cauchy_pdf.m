@@ -17,8 +17,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = cauchy_pdf (@var{x})
-## @deftypefnx {statistics} @var{y} = cauchy_pdf (@var{x}, @var{location}, @var{scale})
+## @deftypefn  {statistics} {@var{y} =} cauchy_pdf (@var{x})
+## @deftypefnx {statistics} {@var{y} =} cauchy_pdf (@var{x}, @var{location}, @var{scale})
 ##
 ## Cauchy probability density function (PDF).
 ##

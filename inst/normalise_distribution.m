@@ -17,9 +17,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{NORMALISED} = normalise_distribution (@var{DATA})
-## @deftypefnx {statistics} @var{NORMALISED} = normalise_distribution (@var{DATA}, @var{DISTRIBUTION})
-## @deftypefnx {statistics} @var{NORMALISED} = normalise_distribution (@var{DATA}, @var{DISTRIBUTION}, @var{DIMENSION})
+## @deftypefn  {statistics} {@var{NORMALISED} =} normalise_distribution (@var{DATA})
+## @deftypefnx {statistics} {@var{NORMALISED} =} normalise_distribution (@var{DATA}, @var{DISTRIBUTION})
+## @deftypefnx {statistics} {@var{NORMALISED} =} normalise_distribution (@var{DATA}, @var{DISTRIBUTION}, @var{DIMENSION})
 ##
 ## Transform a set of data so as to be N(0,1) distributed according to an idea
 ## by van Albada and Robinson.

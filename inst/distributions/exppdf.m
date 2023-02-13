@@ -17,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = exppdf (@var{x}, @var{mu})
+## @deftypefn  {statistics} {@var{y} =} exppdf (@var{x}, @var{mu})
 ##
 ## Exponential probability density function (PDF).
 ##

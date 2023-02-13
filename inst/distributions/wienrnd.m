@@ -18,7 +18,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{r} = wienrnd (@var{t}, @var{d}, @var{n})
+## @deftypefn  {statistics} {@var{r} =} wienrnd (@var{t}, @var{d}, @var{n})
 ##
 ## Return a simulated realization of the @var{d}-dimensional Wiener Process
 ## on the interval [0, @var{t}].

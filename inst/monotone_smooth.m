@@ -17,7 +17,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{yy} = monotone_smooth (@var{x}, @var{y}, @var{h})
+## @deftypefn  {statistics} {@var{yy} =} monotone_smooth (@var{x}, @var{y}, @var{h})
 ##
 ## Produce a smooth monotone increasing approximation to a sampled functional
 ## dependence.

@@ -19,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = tripdf (@var{x}, @var{a}, @var{b}, @var{c})
+## @deftypefn  {statistics} {@var{y} =} tripdf (@var{x}, @var{a}, @var{b}, @var{c})
 ##
 ## Triangular probability density function (PDF).
 ##

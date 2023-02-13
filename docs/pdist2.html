@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: pdist2</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Clustering">
+                    <i class="fas fa-list-alt"></i>
+                    Clustering
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>pdist2</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>d</var> = <b>pdist2</b><i> (<var>x</var>, <var>y</var>)</i></dt>
+<dt><u>statistics:</u> <var>d</var> = <b>pdist2</b><i> (<var>x</var>, <var>y</var>, <var>metric</var>)</i></dt>
+</dl>
+
+<p> Compute pairwise distance between two sets of vectors.
+</p>
+<div class="ms-5">
+<p> Let <var>X</var> be an MxP matrix representing m points in P-dimensional space
+ and <var>Y</var> be an NxP matrix representing another set of points in the same
+ space.  This function computes the M-by-N distance matrix <var>D</var> where
+ <code><var>D</var>(i,j)</code> is the distance between <code><var>X</var>(i,:)</code> and
+ <code><var>Y</var>(j,:)</code>.
+</p>
+<p> The optional argument <var>metric</var> can be used to select different
+ distances:
+</p>
+ <dl compact="compact">
+<dt> @qcode{&quot;euclidean&quot;} (default)</dt>
+<dt> @qcode{&quot;sqeuclidean&quot;}</dt>
+</dl>
+<p> Compute the squared euclidean distance, i.e., the euclidean distance
+ before computing square root.  This is ideal when the interest is on the
+ order of the euclidean distances rather than the actual distance value
+ because it performs significantly faster while preserving the order.
+</p>
+ </dd>
+<dt> @qcode{&quot;chisq&rsquo;&quot;}</dt>
+</dl>
+<p> The chi-squared distance between two vectors is defined as:
+ <code>d(x, y) = sum ((xi-yi)^2 / (xi+yi)) / 2</code>.
+ The chi-squared distance is useful when comparing histograms.
+</p>
+ </dd>
+<dt> @qcode{&quot;cosine&quot;}</dt>
+</dl>
+<p> Distance is defined as the cosine of the angle between two vectors.
+</p>
+ </dd>
+<dt> @qcode{&quot;emd&quot;}</dt>
+</dl>
+<p> Earth Mover&rsquo;s Distance (EMD) between positive vectors (histograms).
+ Note for 1D, with all histograms having equal weight, there is a simple
+ closed form for the calculation of the EMD.  The EMD between histograms
+ <var>x</var> and <var>y</var> is given by <code>sum (abs (cdf (x) - cdf (y)))</code>,
+ where <code>cdf</code> is the cumulative distribution function (computed
+ simply by <code>cumsum</code>).
+</p>
+ </dd>
+<dt> @qcode{&quot;L1&quot;}</dt>
+</dl>
+<p> The L1 distance between two vectors is defined as:  <code>sum (abs (x-y))</code>
+</p>
+</dd>
+</dl>
+
+<p> <strong>See also: </strong>
+  <a href="pdist.html">pdist</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/pdist2.m">pdist2</a>
+</div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

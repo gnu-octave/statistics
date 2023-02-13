@@ -19,8 +19,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = tcdf (@var{x}, @var{df})
-## @deftypefnx {statistics} @var{p} = tcdf (@var{x}, @var{df}, "upper")
+## @deftypefn  {statistics} {@var{p} =} tcdf (@var{x}, @var{df})
+## @deftypefnx {statistics} {@var{p} =} tcdf (@var{x}, @var{df}, "upper")
 ##
 ## Chi-square cumulative distribution function.
 ##

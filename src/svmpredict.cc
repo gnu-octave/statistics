@@ -294,57 +294,71 @@ void predict(int nlhs, octave_value_list &plhs, const octave_value_list &args,
 
 
 DEFUN_DLD (svmpredict, args, nargout,
-           "-*- texinfo -*-\n\
-@deftypefn  {statistics} @var{predicted_label} = svmpredict (@var{labels}, @var{data}, @var{model})\n\
-@deftypefnx {statistics} @var{predicted_label} = svmpredict (@var{labels}, @var{data}, @var{model}, 'libsvm_options')\n\
-@deftypefnx {statistics} [@var{predicted_label}, @var{accuracy}, @var{decision_values}] = svmpredict (@var{labels}, @var{data}, @var{model}, 'libsvm_options')\n\
-@deftypefnx {statistics} [@var{predicted_label}, @var{accuracy}, @var{prob_estimates}] = svmpredict (@var{labels}, @var{data}, @var{model}, 'libsvm_options')\n\
+           "-*- texinfo -*- \n\n\
+ @deftypefn  {statistics} {@var{predicted_label} =} svmpredict (@var{labels}, @var{data}, @var{model})\n\
+ @deftypefnx {statistics} {@var{predicted_label} =} svmpredict (@var{labels}, @var{data}, @var{model}, ""libsvm_options"")\n\
+ @deftypefnx {statistics} {[@var{predicted_label}, @var{accuracy}, @var{decision_values}] =} svmpredict (@var{labels}, @var{data}, @var{model}, ""libsvm_options"")\n\
+ @deftypefnx {statistics} {[@var{predicted_label}, @var{accuracy}, @var{prob_estimates}] =} svmpredict (@var{labels}, @var{data}, @var{model}, ""libsvm_options"")\n\
 \n\
 \n\
 This function predicts new labels from a testing instance matrtix based on an \
 SVM @var{model} created with @code{svmtrain}. \
 \n\
 \n\
----  @var{labels} : An m by 1 vector of prediction labels. If labels of test \
-data are unknown, simply use any random values. (type must be double) \
+@itemize \n\
+@item @var{labels} : An m by 1 vector of prediction labels. If labels \
+of test data are unknown, simply use any random values. (type must be double) \
 \n\
 \n\
----  @var{data} : An m by n matrix of m testing instances with n features. \
+@item @var{data} : An m by n matrix of m testing instances with n features. \
 It can be dense or sparse. (type must be double) \
 \n\
 \n\
----  @var{model} : The output of @code{svmtrain} function. \
+@item @var{model} : The output of @code{svmtrain} function. \
 \n\
 \n\
----  @code{libsvm_options} : A string of testing options in the same format as that \
-of LIBSVM. \
+@item @code{libsvm_options} : A string of testing options in the same format \
+as that of LIBSVM. \
 \n\
 \n\
-* libsvm_options:\n\
-\n\
---b probability_estimates : whether to predict probability estimates.  For \
-one-class SVM onlu 0 is supported.\n\
-\n\
-    	0 (default)	--	return decision values.\n\
-\n\
-    	1 -- return probability estimates\n\
+@end itemize \
 \n\
 \n\
---q : quiet mode (no outputs)\n\
+@code{libsvm_options} :\n\
+\n\
+@itemize \n\
+@item @code{-b} : probability_estimates; whether to predict probability \
+estimates.  For one-class SVM only 0 is supported.\n\
+\n\
+@end itemize \
+\n\
+@multitable @columnfractions 0.1 0.1 0.8 \n\
+@item @tab 0 @tab return decision values. (default) \n\
+\n\
+@item @tab 1 @tab return probability estimates. \
+\n\
+@end multitable \
 \n\
 \n\
-The 'svmpredict' function has three outputs.  The first one, \
+@itemize \n\
+@item @code{-q} : quiet mode. (no outputs) \
+\n\
+@end itemize \
+\n\
+\n\
+The @code{svmpredict} function has three outputs.  The first one, \
 @var{predicted_label}, is a vector of predicted labels.  The second output, \
 @var{accuracy}, is a vector including accuracy (for classification), mean \
 squared error, and squared correlation coefficient (for regression).  The \
 third is a matrix containing decision values or probability estimates \
-(if '-b 1' is specified).  If k is the number of classes in training data, for \
-decision values, each row includes results of predicting k(k-1)/2 binary-class \
-SVMs.  For classification, k = 1 is a special case.  Decision value +1 is \
-returned for each testing instance, instead of an empty vector.  For \
-probabilities, each row contains k values indicating the probability that the \
-testing instance is in each class.  Note that the order of classes here is the \
-same as 'Label' field in the @var{model} structure. \
+(if @code{-b 1}' is specified).  If @math{k} is the number of classes in \
+training data, for decision values, each row includes results of predicting \
+@math{k(k-1)/2} binary-class SVMs.  For classification, @math{k = 1} is a \
+special case.  Decision value +1 is returned for each testing instance, \
+instead of an empty vector.  For probabilities, each row contains @math{k} \
+values indicating the probability that the testing instance is in each class.  \
+Note that the order of classes here is the same as @code{Label} field in the \
+@var{model} structure. \
 \n\
 @end deftypefn")
 {

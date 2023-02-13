@@ -20,7 +20,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{x} = nbininv (@var{p}, @var{n}, @var{ps})
+## @deftypefn  {statistics} {@var{x} =} nbininv (@var{p}, @var{n}, @var{ps})
 ##
 ## Inverse of the negative binomial cumulative distribution function (iCDF).
 ##

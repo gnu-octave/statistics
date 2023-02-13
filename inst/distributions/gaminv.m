@@ -19,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{x} = gaminv (@var{p}, @var{a}, @var{b})
+## @deftypefn  {statistics} {@var{x} =} gaminv (@var{p}, @var{a}, @var{b})
 ##
 ## Inverse of the Gamma cumulative distribution function (iCDF).
 ##

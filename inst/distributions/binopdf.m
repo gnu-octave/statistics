@@ -18,7 +18,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{z} = binopdf (@var{x}, @var{n}, @var{ps})
+## @deftypefn  {statistics} {@var{y} =} binopdf (@var{x}, @var{n}, @var{ps})
 ##
 ## Binomial probability density function (PDF).
 ##

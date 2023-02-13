@@ -16,12 +16,12 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{f}, @var{x}] = ecdf (@var{y})
-## @deftypefnx {statistics} [@var{f}, @var{x}, @var{flo}, @var{fup}] = ecdf (@var{y})
+## @deftypefn  {statistics} {[@var{f}, @var{x}] =} ecdf (@var{y})
+## @deftypefnx {statistics} {[@var{f}, @var{x}, @var{flo}, @var{fup}] =} ecdf (@var{y})
 ## @deftypefnx {statistics} {} ecdf (@dots{})
 ## @deftypefnx {statistics} {} ecdf (@var{ax}, @dots{})
-## @deftypefnx {statistics} [@dots{}] = ecdf (@var{y}, @var{name}, @var{value}, @dots{})
-## @deftypefnx {statistics} [@dots{}] = ecdf (@var{ax}, @var{y}, @var{name}, @var{value}, @dots{})
+## @deftypefnx {statistics} {[@dots{}] =} ecdf (@var{y}, @var{name}, @var{value}, @dots{})
+## @deftypefnx {statistics} {[@dots{}] =} ecdf (@var{ax}, @var{y}, @var{name}, @var{value}, @dots{})
 ##
 ## Empirical (Kaplan-Meier) cumulative distribution function.
 ##

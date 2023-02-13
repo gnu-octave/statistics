@@ -16,10 +16,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = datasample (@var{data}, @var{k})
-## @deftypefnx {statistics} @var{y} = datasample (@var{data}, @var{k}, @var{dim})
-## @deftypefnx {statistics} @var{y} = datasample (@dots{}, @var{Name}, @var{Value})
-## @deftypefnx {statistics} [@var{y} @var{idcs}] = datasample (@dots{})
+## @deftypefn  {statistics} {@var{y} =} datasample (@var{data}, @var{k})
+## @deftypefnx {statistics} {@var{y} =} datasample (@var{data}, @var{k}, @var{dim})
+## @deftypefnx {statistics} {@var{y} =} datasample (@dots{}, @var{Name}, @var{Value})
+## @deftypefnx {statistics} {[@var{y} @var{idcs}] =} datasample (@dots{})
 ##
 ## Randomly sample data.
 ##

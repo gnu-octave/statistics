@@ -16,8 +16,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = ncx2cdf (@var{x}, @var{df}, @var{delta})
-## @deftypefnx {statistics} @var{p} = ncx2cdf (@var{x}, @var{df}, @var{delta}, @var{uflag})
+## @deftypefn  {statistics} {@var{p} =} ncx2cdf (@var{x}, @var{df}, @var{delta})
+## @deftypefnx {statistics} {@var{p} =} ncx2cdf (@var{x}, @var{df}, @var{delta}, @var{uflag})
 ##
 ## Noncentral Chi-Square cumulative distribution function (CDF).
 ##

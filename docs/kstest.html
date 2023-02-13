@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: kstest</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Hypothesis Testing">
+                    <i class="fas fa-list-alt"></i>
+                    Hypothesis Testing
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>kstest</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>h</var> = <b>kstest</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>h</var> = <b>kstest</b><i> (<var>x</var>, <var>name</var>, <var>value</var>)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>p</var>] = <b>kstest</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>p</var>, <var>ksstat</var>, <var>cv</var>] = <b>kstest</b><i> (&hellip;)</i></dt>
+</dl>
+
+<p> Single sample Kolmogorov-Smirnov (K-S) goodness-of-fit hypothesis test.
+</p>
+<div class="ms-5">
+<p> <code><var>h</var> = kstest (<var>x</var>)</code> performs a Kolmogorov-Smirnov (K-S) test to
+ determine if a random sample <var>x</var> could have come from a standard normal
+ distribution.  <var>h</var> indicates the results of the null hypothesis test.
+</p>
+ <ul>
+<li> <var>h</var> = 0 =&gt; Do not reject the null hypothesis at the 5% significance
+ </li><li> <var>h</var> = 1 =&gt; Reject the null hypothesis at the 5% significance
+ </li></ul>
+
+<p> <var>x</var> is a vector representing a random sample from some unknown
+ distribution with a cumulative distribution function F(X).  Missing values
+ declared as NaNs in <var>x</var> are ignored.
+</p>
+<p> <code><var>h</var> = kstest (<var>x</var>, <var>name</var>, <var>value</var>)</code> returns
+ a test decision for a single-sample K-S test with additional options
+ specified by one or more name-value pair arguments as shown below.
+</p>
+ <table>
+<tr><td width="20%">&quot;alpha&quot;</td><td width="80%">A value <var>alpha</var> between 0 and 1 specifying the
+ significance level.  Default is 0.05 for 5% significance.</td></tr>
+<tr><td width="20%">&quot;CDF&quot;</td><td width="80%">CDF is the c.d.f. under the null hypothesis.  It can be
+ specified either as a function handle or a a function name of an existing
+ cdf function or as a two-column matrix.  If not provided, the default is
+ the standard normal, N(0,1).</td></tr>
+<tr><td width="20%">&quot;tail&quot;</td><td width="80%">A string indicating the type of test:</td></tr>
+</table>
+
+ <table>
+<tr><td width="3%"></td><td width="20%">&quot;unequal&quot;</td><td width="77%">&quot;F(X) not equal to CDF(X)&quot; (two-sided) (Default)</td></tr>
+<tr><td width="3%"></td><td width="20%">&quot;larger&quot;</td><td width="77%">&quot;F(X) &gt; CDF(X)&quot; (one-sided)</td></tr>
+<tr><td width="3%"></td><td width="20%">&quot;smaller&quot;</td><td width="77%">&quot;CDF(X) &lt; F(X)&quot; (one-sided)</td></tr>
+</table>
+
+<p> Let S(X) be the empirical c.d.f. estimated from the sample vector <var>x</var>,
+ F(X) be the corresponding true (but unknown) population c.d.f., and CDF be
+ the known input c.d.f. specified under the null hypothesis.
+ For <code>tail</code> = &quot;unequal&quot;, &quot;larger&quot;, and &quot;smaller&quot;, the test statistics are
+ max|S(X) - CDF(X)|, max[S(X) - CDF(X)], and max[CDF(X) - S(X)], respectively.
+</p>
+<p> <code>[<var>h</var>, <var>p</var>] = kstest (&hellip;)</code> also returns the asymptotic
+ p-value <var>p</var>.
+</p>
+<p> <code>[<var>h</var>, <var>p</var>, <var>ksstat</var>] = kstest (&hellip;)</code> returns the K-S
+ test statistic <var>ksstat</var> defined above for the test type indicated by the
+ &quot;tail&quot; option
+</p>
+<p> In the matrix version of CDF, column 1 contains the x-axis data and column 2
+ the corresponding y-axis c.d.f data.  Since the K-S test statistic will
+ occur at one of the observations in <var>x</var>, the calculation is most
+ efficient when CDF is only specified at the observations in <var>x</var>.  When
+ column 1 of CDF represents x-axis points independent of <var>x</var>, CDF is
+ linearly interpolated at the observations found in the vector <var>x</var>.  In
+ this case, the interval along the x-axis (the column 1 spread of CDF) must
+ span the observations in <var>x</var> for successful interpolation.
+</p>
+<p> The decision to reject the null hypothesis is based on comparing the p-value
+ <var>p</var> with the &quot;alpha&quot; value, not by comparing the statistic <var>ksstat</var>
+ with the critical value <var>cv</var>.  <var>cv</var> is computed separately using an
+ approximate formula or by interpolation using Miller&rsquo;s approximation table.
+ The formula and table cover the range 0.01 &lt;= &quot;alpha&quot; &lt;= 0.2 for two-sided
+ tests and 0.005 &lt;= &quot;alpha&quot; &lt;= 0.1 for one-sided tests.  CV is returned as NaN
+ if &quot;alpha&quot; is outside this range.  Since CV is approximate, a comparison of
+ <var>ksstat</var> with <var>cv</var> may occasionally lead to a different conclusion
+ than a comparison of <var>p</var> with &quot;alpha&quot;.
+</p>
+<p> <strong>See also: </strong>
+  <a href="kstest2.html">kstest2</a>, 
+  <a href="cdfplot.html">cdfplot</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/kstest.m">kstest</a>
+</div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

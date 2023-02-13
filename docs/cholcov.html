@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: cholcov</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Regression">
+                    <i class="fas fa-list-alt"></i>
+                    Regression
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>cholcov</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>T</var> = <b>cholcov</b><i> (<var>sigma</var>)</i></dt>
+<dt><u>statistics:</u> [<var>T</var>, <var>p</var> = <b>cholcov</b><i> (<var>sigma</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>cholcov</b><i> (<var>sigma</var>, <var>flag</var>)</i></dt>
+</dl>
+
+<p> Cholesky-like decomposition for covariance matrix.
+</p>
+<div class="ms-5">
+<p> <code><var>T</var> = cholcov (<var>sigma</var>)</code> computes matrix <var>T</var> such that
+ <var>sigma</var> = <var>T</var>&rsquo;  <var>T</var>.  <var>sigma</var> must be square, symmetric, and
+ positive semi-definite.
+</p>
+<p> If <var>sigma</var> is positive definite, then <var>T</var> is the square, upper
+ triangular Cholesky factor.  If <var>sigma</var> is not positive definite, <var>T</var>
+ is computed with an eigenvalue decomposition of <var>sigma</var>, but in this case
+ <var>T</var> is not necessarily triangular or square.  Any eigenvectors whose
+ corresponding eigenvalue is close to zero (within a tolerance) are omitted.
+ If any remaining eigenvalues are negative, <var>T</var> is empty.
+</p>
+<p> The tolerance is calculated as <code>10 * eps (max (abs (diag (sigma))))</code>.
+</p>
+<p> <code>[<var>T</var>, <var>p</var> = cholcov (<var>sigma</var>)</code> returns in <var>p</var> the
+ number of negative eigenvalues of <var>sigma</var>.  If <var>p</var> &gt; 0, then <var>T</var>
+ is empty, whereas if <var>p</var> = 0, <var>sigma</var>) is positive semi-definite.
+</p>
+<p> If <var>sigma</var> is not square and symmetric, P is NaN and T is empty.
+</p>
+<p> <code>[<var>T</var>, <var>p</var> = cholcov (<var>sigma</var>, 0)</code> returns <var>p</var> = 0 if
+ <var>sigma</var> is positive definite, in which case <var>T</var> is the Cholesky
+ factor.  If <var>sigma</var> is not positive definite, <var>p</var> is a positive
+ integer and <var>T</var> is empty.
+</p>
+<p> <code>[&hellip;] = cholcov (<var>sigma</var>, 1)</code> is equivalent to
+ <code> [&hellip;] = cholcov (<var>sigma</var>)</code>.
+</p>
+<p> <strong>See also: </strong>
+chov
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/cholcov.m">cholcov</a>
+</div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

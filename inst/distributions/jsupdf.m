@@ -17,9 +17,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = jsupdf (@var{x})
-## @deftypefnx {statistics} @var{y} = jsupdf (@var{x}, @var{alpha1})
-## @deftypefnx {statistics} @var{y} = jsupdf (@var{x}, @var{alpha1}, @var{alpha2})
+## @deftypefn  {statistics} {@var{y} =} jsupdf (@var{x})
+## @deftypefnx {statistics} {@var{y} =} jsupdf (@var{x}, @var{alpha1})
+## @deftypefnx {statistics} {@var{y} =} jsupdf (@var{x}, @var{alpha1}, @var{alpha2})
 ##
 ## Johnson SU probability density function (PDF).
 ##

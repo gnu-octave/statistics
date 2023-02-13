@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: regression_ftest</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Hypothesis Testing">
+                    <i class="fas fa-list-alt"></i>
+                    Hypothesis Testing
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>regression_ftest</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>stats</var>] = <b>regression_ftest</b><i> (<var>y</var>, <var>x</var>, <var>fm</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>regression_ftest</b><i> (<var>y</var>, <var>x</var>, <var>fm</var>, <var>rm</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>regression_ftest</b><i> (<var>y</var>, <var>x</var>, <var>fm</var>, <var>rm</var>, <var>Name</var>, <var>Value</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>regression_ftest</b><i> (<var>y</var>, <var>x</var>, <var>fm</var>, [], <var>Name</var>, <var>Value</var>)</i></dt>
+</dl>
+
+<p> F-test for General Linear Regression Analysis
+</p>
+<div class="ms-5">
+<p> Perform a general linear regression F test for the null hypothesis that the
+ full model of the form @nospell{y = b_0 + b_1 * x_1 + b_2 * x_2 + &hellip; +
+ b_n * x_n + e}, where n is the number of variables in <var>x</var>, does not
+ perform better than a reduced model, such as @nospell{y = b&rsquo;_0 + b&rsquo;_1 * x_1 +
+ b&rsquo;_2 * x_2 + &hellip; + b&rsquo;_k * x_k + e}, where k &lt; n and it corresponds to the
+ first k variables in <var>x</var>.  Explanatory (dependent) variable <var>y</var> and
+ response (independent) variables <var>x</var> must not contain any missing values
+ (NaNs).
+</p>
+<p> The full model, <var>fm</var>, must be a vector of length equal to the columns of
+ <var>x</var>, in which case the constant term b_0 is assumed 0, or equal to
+ the columns of <var>x</var> plus one, in which case the first element is the
+ constant b_0.
+</p>
+<p> The reduced model, <var>rm</var>, must include the constant term and a subset of
+ the variables (columns) in <var>x</var>. If <var>rm</var> is not given, then a constant
+ term b&rsquo;_0 is assumed equal to the constant term, b_0, of the full model or 0,
+ if the full model, <var>fm</var>, does not have a constant term.  <var>rm</var> must be
+ a vector or a scalar if only a constant term is passed into the function.
+</p>
+<p> Name-Value pair arguments can be used to set statistical significance.
+ @qcode{&quot;alpha&quot;} can be used to specify the significance level of the test
+ (the default value is 0.05).  If you want pass optional Name-Value pair
+ without a reduced model, make sure that the latter is passed as an empty
+ variable.
+</p>
+<p> If <var>h</var> is 1 the null hypothesis is rejected, meaning that the full model
+ explains the variance better than the restricted model.  If <var>h</var> is 0, it
+ can be assumed that the full model does NOT explain the variance any better
+ than the restricted model.
+</p>
+<p> The p-value (1 minus the CDF of this distribution at <var>f</var>) is returned
+ in <var>pval</var>.
+</p>
+<p> Under the null, the test statistic <var>f</var> follows an F distribution with
+ &rsquo;df1&rsquo; and &rsquo;df2&rsquo; degrees of freedom, which are returned as fields in the
+ <var>stats</var> structure along with the test&rsquo;s F-statistic, &rsquo;fstat&rsquo;
+</p>
+<p> <strong>See also: </strong>
+  <a href="regress.html">regress</a>, 
+  <a href="regression_ttest.html">regression_ttest</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/regression_ftest.m">regression_ftest</a>
+</div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

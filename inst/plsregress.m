@@ -15,7 +15,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{xload}, @var{yload}, @var{xscore}, @var{yscore}, @var{coef}, @var{fitted}] = plsregress(@var{X}, @var{Y}, @var{NCOMP})
+## @deftypefn  {statistics} {[@var{xload}, @var{yload}, @var{xscore}, @var{yscore}, @var{coef}, @var{fitted}] =} plsregress(@var{X}, @var{Y}, @var{NCOMP})
 ##
 ## Calculate partial least squares regression using SIMPLS algorithm.
 ##

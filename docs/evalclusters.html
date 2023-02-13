@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: evalclusters</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Clustering">
+                    <i class="fas fa-list-alt"></i>
+                    Clustering
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>evalclusters</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>eva</var> = <b>evalclusters</b><i> (<var>x</var>, <var>clust</var>, <var>criterion</var>)</i></dt>
+<dt><u>statistics:</u> <var>eva</var> = <b>evalclusters</b><i> (&hellip;, @qcode{Name}, @qcode{Value})</i></dt>
+</dl>
+
+<p> Create a clustering evaluation object to find the optimal number of clusters.
+</p>
+<div class="ms-5">
+<p> <code>evalclusters</code> creates a clustering evaluation object to evaluate the
+ optimal number of clusters for data <var>x</var>, using criterion <var>criterion</var>.
+ The input data <var>x</var> is a matrix with <code>n</code> observations of <code>p</code>
+ variables.
+ The evaluation criterion <var>criterion</var> is one of the following:
+ </p><dl compact="compact">
+<dt> <code>@qcode{CalinskiHarabasz}</code></dt>
+</dl>
+<p> to create a <code>CalinskiHarabaszEvaluation</code> object.
+</p>
+ </dd>
+<dt> <code>@qcode{DaviesBouldin}</code></dt>
+</dl>
+<p> to create a <code>DaviesBouldinEvaluation</code> object.
+</p>
+ </dd>
+<dt> <code>@qcode{gap}</code></dt>
+</dl>
+<p> to create a <code>GapEvaluation</code> object.
+</p>
+ </dd>
+<dt> <code>@qcode{silhouette}</code></dt>
+</dl>
+<p> to create a <code>SilhouetteEvaluation</code> object.
+</p>
+</dd>
+</dl>
+<p> The clustering algorithm <var>clust</var> is one of the following:
+ </p><dl compact="compact">
+<dt> <code>@qcode{kmeans}</code></dt>
+</dl>
+<p> to cluster the data using <code>kmeans</code> with <code>EmptyAction</code> set to
+ <code>singleton</code> and <code>Replicates</code> set to 5.
+</p>
+ </dd>
+<dt> <code>@qcode{linkage}</code></dt>
+</dl>
+<p> to cluster the data using <code>clusterdata</code> with <code>linkage</code> set to
+ <code>Ward</code>.
+</p>
+ </dd>
+<dt> <code>@qcode{gmdistribution}</code></dt>
+</dl>
+<p> to cluster the data using <code>fitgmdist</code> with <code>SharedCov</code> set to
+ <code>true</code> and <code>Replicates</code> set to 5.
+</p>
+</dd>
+</dl>
+<p> If the <var>criterion</var> is <code>CalinskiHarabasz</code>, <code>DaviesBouldin</code>, or
+ <code>silhouette</code>, <var>clust</var> can also be a function handle to a function
+ of the form <code>c = clust(x, k)</code>, where <var>x</var> is the input data,
+ <var>k</var> the number of clusters to evaluate and <var>c</var> the clustering result.
+ The clustering result can be either an array of size <code>n</code> with <code>k</code>
+ different integer values, or a matrix of size <code>n</code> by <code>k</code> with a
+ likelihood value assigned to each one of the <code>n</code> observations for each
+ one of the <var>k</var> clusters.  In the latter case, each observation is assigned
+ to the cluster with the higher value.
+ If the <var>criterion</var> is <code>CalinskiHarabasz</code>, <code>DaviesBouldin</code>, or
+ <code>silhouette</code>, <var>clust</var> can also be a matrix of size <code>n</code> by
+ <code>k</code>, where <code>k</code> is the number of proposed clustering solutions, so
+ that each column of <var>clust</var> is a clustering solution.
+</p>
+<p> In addition to the obligatory <var>x</var>, <var>clust</var> and <var>criterion</var> inputs
+ there is a number of optional arguments, specified as pairs of <code>Name</code>
+ and <code>Value</code> options.  The known <code>Name</code> arguments are:
+ </p><dl compact="compact">
+<dt> <code>@qcode{KList}</code></dt>
+</dl>
+<p> a vector of positive integer numbers, that is the cluster sizes to evaluate.
+ This option is necessary, unless <var>clust</var> is a matrix of proposed
+ clustering solutions.
+</p>
+ </dd>
+<dt> <code>@qcode{Distance}</code></dt>
+</dl>
+<p> a distance metric as accepted by the chosen <var>clust</var>.  It can be the
+ name of the distance metric as a string or a function handle.  When
+ <var>criterion</var> is <code>silhouette</code>, it can be a vector as created by
+ function <code>pdist</code>.  Valid distance metric strings are: <code>sqEuclidean</code>
+ (default), <code>Euclidean</code>, <code>cityblock</code>, <code>cosine</code>,
+ <code>correlation</code>, <code>Hamming</code>, <code>Jaccard</code>.
+ Only used by <code>silhouette</code> and <code>gap</code> evaluation.
+</p>
+ </dd>
+<dt> <code>@qcode{ClusterPriors}</code></dt>
+</dl>
+<p> the prior probabilities of each cluster, which can be either <code>empirical</code>
+ (default), or <code>equal</code>.  When <code>empirical</code> the silhouette value is
+ the average of the silhouette values of all points; when <code>equal</code> the
+ silhouette value is the average of the average silhouette value of each
+ cluster.  Only used by <code>silhouette</code> evaluation.
+</p>
+ </dd>
+<dt> <code>@qcode{B}</code></dt>
+</dl>
+<p> the number of reference datasets generated from the reference distribution.
+ Only used by <code>gap</code> evaluation.
+</p>
+ </dd>
+<dt> <code>@qcode{ReferenceDistribution}</code></dt>
+</dl>
+<p> the reference distribution used to create the reference data.  It can be
+ <code>PCA</code> (default) for a distribution based on the principal components of
+ <var>X</var>, or <code>uniform</code> for a uniform distribution based on the range of
+ the observed data.  <code>PCA</code> is currently not implemented.
+ Only used by <code>gap</code> evaluation.
+</p>
+ </dd>
+<dt> <code>@qcode{SearchMethod}</code></dt>
+</dl>
+<p> the method for selecting the optimal value with a <code>gap</code> evaluation.  It
+ can be either <code>globalMaxSE</code> (default) for selecting the smallest number
+ of clusters which is inside the standard error of the maximum gap value, or
+ <code>firstMaxSE</code> for selecting the first number of clusters which is inside
+ the standard error of the following cluster number.
+ Only used by <code>gap</code> evaluation.
+</p>
+</dd>
+</dl>
+
+<p> Output <var>eva</var> is a clustering evaluation object.
+</p>
+</dd></dl>
+
+<p> <strong>See also: </strong>
+CalinskiHarabaszEvaluation, 
+DaviesBouldinEvaluation, 
+GapEvaluation, 
+SilhouetteEvaluation
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/evalclusters.m">evalclusters</a>
+</div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

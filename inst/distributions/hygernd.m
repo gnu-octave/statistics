@@ -20,10 +20,10 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {} hygernd (@var{t}, @var{m}, @var{n})
-## @deftypefnx {statistics} {} hygernd (@var{t}, @var{m}, @var{n}, @var{rows})
-## @deftypefnx {statistics} {} hygernd (@var{t}, @var{m}, @var{n}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} {} hygernd (@var{t}, @var{m}, @var{n}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} hygernd (@var{t}, @var{m}, @var{n})
+## @deftypefnx {statistics} {@var{r} =} hygernd (@var{t}, @var{m}, @var{n}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} hygernd (@var{t}, @var{m}, @var{n}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} hygernd (@var{t}, @var{m}, @var{n}, [@var{sz}])
 ##
 ## Random arrays from the hypergeometric distribution.
 ##

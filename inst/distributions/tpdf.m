@@ -19,7 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} @var{p} = tpdf (@var{x}, @var{df})
+## @deftypefn {statistics} {@var{p} =} tpdf (@var{x}, @var{df})
 ##
 ## Student's T probability density function (PDF).
 ##

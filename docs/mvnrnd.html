@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: mvnrnd</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Distributions">
+                    <i class="fas fa-list-alt"></i>
+                    Distributions
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>mvnrnd</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>r</var> = <b>mvnrnd</b><i> (<var>mu</var>, <var>sigma</var>)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>mvnrnd</b><i> (<var>mu</var>, <var>sigma</var>, <var>n</var>)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>mvnrnd</b><i> (<var>mu</var>, <var>sigma</var>, <var>n</var>, <var>T</var>)</i></dt>
+<dt><u>statistics:</u> [<var>r</var>, <var>T</var>] = <b>mvnrnd</b><i> (&hellip;)</i></dt>
+</dl>
+
+<p> Random vectors from the multivariate normal distribution.
+</p>
+<div class="ms-5">
+<p> <code><var>r</var> = mvnrnd (<var>mu</var>, <var>sigma</var>)</code> returns an N-by-D matrix
+ <var>r</var> of random vectors chosen from the multivariate normal distribution
+ with mean vector <var>mu</var> and covariance matrix <var>sigma</var>.  <var>mu</var> is an
+ N-by-D matrix, and <code>mvnrnd</code> generates each N of <var>r</var> using the
+ corresponding N of <var>mu</var>.  <var>sigma</var> is a D-by-D symmetric positive
+ semi-definite matrix, or a D-by-D-by-N array.  If <var>sigma</var> is an array,
+ <code>mvnrnd</code> generates each N of <var>r</var> using the corresponding page of
+ <var>sigma</var>, i.e., <code>mvnrnd</code> computes <var>r(i,:)</var> using <var>mu(i,:)</var>
+ and <var>sigma(:,:,i)</var>.  If the covariance matrix is diagonal, containing
+ variances along the diagonal and zero covariances off the diagonal,
+ <var>sigma</var> may also be specified as a 1-by-D matrix or a 1-by-D-by-N array,
+ containing just the diagonal.  If <var>mu</var> is a 1-by-D vector, <code>mvnrnd</code>
+ replicates it to match the trailing dimension of SIGMA.
+</p>
+<p> <code><var>r</var> = mvnrnd (<var>mu</var>, <var>sigma</var>, <var>n</var>)</code> returns a N-by-D
+ matrix R of random vectors chosen from the multivariate normal distribution
+ with 1-by-D mean vector <var>mu</var>, and D-by-D covariance matrix <var>sigma</var>.
+</p>
+<p> <code><var>r</var> = mvnrnd (<var>mu</var>, <var>sigma</var>, <var>n</var>, <var>T</var>)</code> supplies
+ the Cholesky factor <var>T</var> of <var>sigma</var>, so that <var>sigma(:,:,J)</var> ==
+ <var>T(:,:,J)</var>&rsquo;*<var>T(:,:,J)</var> if <var>sigma</var> is a 3D array or <var>sigma</var> ==
+ <var>T</var>&rsquo;*<var>T</var> if <var>sigma</var> is a matrix.  No error checking is done on
+ <var>T</var>.
+</p>
+<p> <code>[<var>r</var>, <var>T</var>] = mvnrnd (&hellip;)</code> returns the Cholesky factor
+ <var>T</var>, so it can be re-used to make later calls more efficient, although
+ there are greater efficiency gains when SIGMA can be specified as a diagonal
+ instead.
+</p>
+<p> <strong>See also: </strong>
+  <a href="mvncdf.html">mvncdf</a>, 
+  <a href="mvnpdf.html">mvnpdf</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/mvnrnd.m">mvnrnd</a>
+</div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

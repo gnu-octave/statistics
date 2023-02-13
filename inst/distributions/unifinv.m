@@ -19,9 +19,9 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{x} = unifinv (@var{p})
-## @deftypefnx {statistics} @var{x} = unifcdf (@var{p}, @var{a})
-## @deftypefnx {statistics} @var{x} = unifcdf (@var{p}, @var{a}, @var{b})
+## @deftypefn  {statistics} {@var{x} =} unifinv (@var{p})
+## @deftypefnx {statistics} {@var{x} =} unifcdf (@var{p}, @var{a})
+## @deftypefnx {statistics} {@var{x} =} unifcdf (@var{p}, @var{a}, @var{b})
 ##
 ## Inverse of the uniform cumulative distribution function (iCDF).
 ##

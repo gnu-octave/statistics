@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: sampsizepwr</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Hypothesis Testing">
+                    <i class="fas fa-list-alt"></i>
+                    Hypothesis Testing
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>sampsizepwr</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>n</var> = <b>sampsizepwr</b><i> (<var>testtype</var>, <var>params</var>, <var>p1</var>)</i></dt>
+<dt><u>statistics:</u> <var>n</var> = <b>sampsizepwr</b><i> (<var>testtype</var>, <var>params</var>, <var>p1</var>, <var>power</var>)</i></dt>
+<dt><u>statistics:</u> <var>power</var> = <b>sampsizepwr</b><i> (<var>testtype</var>, <var>params</var>, <var>p1</var>, [], <var>n</var>)</i></dt>
+<dt><u>statistics:</u> <var>p1</var> = <b>sampsizepwr</b><i> (<var>testtype</var>, <var>params</var>, [], <var>power</var>, <var>n</var>)</i></dt>
+<dt><u>statistics:</u> [<var>n1</var>, <var>n2</var>] = <b>sampsizepwr</b><i> (&quot;t2&quot;, <var>params</var>, <var>p1</var>, <var>power</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>sampsizepwr</b><i> (<var>testtype</var>, <var>params</var>, <var>p1</var>, <var>power</var>, <var>n</var>, <var>name</var>, <var>value</var>)</i></dt>
+</dl>
+
+<p> Sample size and power calculation for hypothesis test.
+</p>
+<div class="ms-5">
+<p> <code>sampsizepwr</code> computes the sample size, power, or alternative parameter
+ value for a hypothesis test, given the other two values. For example, you can
+ compute the sample size required to obtain a particular power for a
+ hypothesis test, given the parameter value of the alternative hypothesis.
+</p>
+<p> <code><var>n</var> = sampsizepwr (<var>testtype</var>, <var>params</var>, <var>p1</var>)</code> returns
+ the sample size N required for a two-sided test of the specified type to have
+ a power (probability of rejecting the null hypothesis when the alternative is
+ true) of 0.90 when the significance level (probability of rejecting the null
+ hypothesis when the null hypothesis is true) is 0.05.  <var>params</var> specifies
+ the parameter values under the null hypothesis.   P1 specifies the value of
+ the single parameter being tested under the alternative hypothesis.  For the
+ two-sample t-test, N is the value of the equal sample size for both samples,
+ <var>params</var> specifies the parameter values of the first sample under the
+ null and alternative hypotheses, and P1 specifies the value of the single
+ parameter from the other sample under the alternative hypothesis.
+</p>
+<p> The following TESTTYPE values are available:
+</p>
+ <table>
+<tr><td width="5%"></td><td width="10%">&quot;z&quot;</td><td width="85%">one-sample z-test for normally distributed data with
+ known standard deviation.  <var>params</var> is a two-element vector [MU0 SIGMA0]
+ of the mean and standard deviation, respectively, under the null hypothesis.
+ P1 is the value of the mean under the alternative hypothesis.</td></tr>
+<tr><td width="5%"></td><td width="10%">&quot;t&quot;</td><td width="85%">one-sample t-test or paired t-test for normally
+ distributed data with unknown standard deviation.  <var>params</var> is a
+ two-element vector [MU0 SIGMA0] of the mean and standard deviation,
+ respectively, under the null hypothesis.  P1 is the value of the mean under
+ the alternative hypothesis.</td></tr>
+<tr><td width="5%"></td><td width="10%">&quot;t2&quot;</td><td width="85%">two-sample pooled t-test (test for equal means) for
+ normally distributed data with equal unknown standard deviations.
+ <var>params</var> is a two-element vector [MU0 SIGMA0] of the mean and standard
+ deviation of the first sample under the null and alternative hypotheses.  P1
+ is the the mean of the second sample under the alternative hypothesis.</td></tr>
+<tr><td width="5%"></td><td width="10%">&quot;var&quot;</td><td width="85%">chi-square test of variance for normally distributed
+ data.  <var>params</var> is the variance under the null hypothesis.  P1 is the
+ variance under the alternative hypothesis.</td></tr>
+<tr><td width="5%"></td><td width="10%">&quot;p&quot;</td><td width="85%">test of the P parameter (success probability) for a
+ binomial distribution.  <var>params</var> is the value of P under the null
+ hypothesis.  P1 is the value of P under the alternative hypothesis.</td></tr>
+<tr><td width="5%"></td><td width="10%">&quot;r&quot;</td><td width="85%">test of the correlation coefficient parameter for
+ significance.  <var>params</var> is the value of r under the null hypothesis.
+ P1 is the value of r under the alternative hypothesis.</td></tr>
+</table>
+
+<p> The &quot;p&quot; test for the binomial distribution is a discrete test for which
+ increasing the sample size does not always increase the power.  For N values
+ larger than 200, there may be values smaller than the returned N value that
+ also produce the desired power.
+</p>
+<p> <code><var>n</var> = sampsizepwr (<var>testtype</var>, <var>params</var>, <var>p1</var>,
+ <var>power</var>)</code> returns the sample size N such that the power is <var>power</var>
+ for the parameter value P1.  For the two-sample t-test, N is the equal sample
+ size of both samples.
+</p>
+<p> <code>[<var>n1</var>, <var>n2</var>] = sampsizepwr (&quot;t2&quot;, <var>params</var>, <var>p1</var>,
+ <var>power</var>)</code> returns the sample sizes <var>n1</var> and <var>n2</var> for the two
+ samples.  These values are the same unless the &quot;ratio&quot; parameter,
+ <code><var>ratio</var> = <var>n2</var> / <var>n2</var></code>, is set to a value other than
+ the default (See the name/value pair definition of ratio below).
+</p>
+<p> <code><var>power</var> = sampsizepwr (<var>testtype</var>, <var>params</var>, <var>p1</var>, [],
+ <var>n</var>)</code> returns the power achieved for a sample size of <var>n</var> when the
+ true parameter value is <var>p1</var>.  For the two-sample t-test, <var>n</var> is the
+ smaller one of the two sample sizes.
+</p>
+<p> <code><var>p1</var> = sampsizepwr (<var>testtype</var>, <var>params</var>, [], <var>power</var>,
+ <var>n</var>)</code> returns the parameter value detectable with the specified sample
+ size <var>n</var> and power <var>power</var>.  For the two-sample t-test, <var>n</var> is
+ the smaller one of the two sample sizes.  When computing <var>p1</var> for the &quot;p&quot;
+ test, if no alternative can be rejected for a given <var>params</var>, <var>n</var> and
+ <var>power</var> value, the function displays a warning message and returns NaN.
+</p>
+<p> <code>[&hellip;] = sampsizepwr (&hellip;, <var>n</var>, <var>name</var>, <var>value</var>)</code>
+ specifies one or more of the following <var>name</var> / <var>value</var> pairs:
+</p>
+ <table>
+<tr><td width="5%"></td><td width="10%">&quot;alpha&quot;</td><td width="85%">significance level of the test (default is 0.05)</td></tr>
+<tr><td width="5%"></td><td width="10%">&quot;tail&quot;</td><td width="85%">the type of test which can be:</td></tr>
+</table>
+ <table>
+<tr><td width="10%"></td><td width="15%">&quot;both&quot;</td><td width="75%">two-sided test for an alternative <var>p1</var> not equal
+ to <var>params</var></td></tr>
+<tr><td width="10%"></td><td width="15%">&quot;right&quot;</td><td width="75%">one-sided test for an alternative <var>p1</var> larger
+ than <var>params</var></td></tr>
+<tr><td width="10%"></td><td width="15%">&quot;left&quot;</td><td width="75%">one-sided test for an alternative <var>p1</var> smaller
+ than <var>params</var></td></tr>
+</table>
+ <table>
+<tr><td width="5%"></td><td width="10%">&quot;ratio&quot;</td><td width="85%">desired ratio <var>n2</var> / <var>n2</var> of the larger
+ sample size <var>n2</var> to the smaller sample size <var>n1</var>.  Used only for the
+ two-sample t-test.  The value of <code><var>ratio</var></code> is greater than or equal
+ to 1 (default is 1).</td></tr>
+</table>
+
+<p> <code>sampsizepwr</code> computes the sample size, power, or alternative hypothesis
+ value given values for the other two.  Specify one of these as [] to compute
+ it.  The remaining parameters (and ALPHA, RATIO) can be scalars or arrays of
+ the same size.
+</p>
+<p> <strong>See also: </strong>
+  <a href="vartest.html">vartest</a>, 
+  <a href="ttest.html">ttest</a>, 
+  <a href="ttest2.html">ttest2</a>, 
+  <a href="ztest.html">ztest</a>, 
+  <a href="binocdf.html">binocdf</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/sampsizepwr.m">sampsizepwr</a>
+</div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

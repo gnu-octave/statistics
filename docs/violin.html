@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: violin</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Plotting">
+                    <i class="fas fa-list-alt"></i>
+                    Plotting
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>violin</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <b>violin</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>h</var> = <b>violin</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>h</var> = <b>violin</b><i> (&hellip;, <var>property</var>, <var>value</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> <var>h</var> = <b>violin</b><i> (<var>hax</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> <var>h</var> = <b>violin</b><i> (&hellip;, <code>&quot;horizontal&quot;</code>)</i></dt>
+</dl>
+
+<p> Produce a Violin plot of the data <var>x</var>.
+</p>
+<div class="ms-5">
+<p> The input data <var>x</var> can be a N-by-m array containg N observations of m
+ variables.  It can also be a cell with m elements, for the case in which the
+ variables are not uniformly sampled.
+</p>
+<p> The following <var>property</var> can be set using <var>property</var>/<var>value</var> pairs
+ (default values in parenthesis).
+ The value of the property can be a scalar indicating that it applies
+ to all the variables in the data.
+ It can also be a cell/array, indicating the property for each variable.
+ In this case it should have m columns (as many as variables).
+</p>
+ <dl compact="compact">
+<dt> Color</dt>
+</dl>
+<p> (&quot;y&quot;) Indicates the filling color of the violins.
+</p>
+ </dd>
+<dt> Nbins</dt>
+</dl>
+<p> (50) Internally, the function calls <code>hist</code> to compute the histogram
+ of the data.  This property indicates how many bins to use.
+ See <code>help hist</code> for more details.
+</p>
+ </dd>
+<dt> SmoothFactor</dt>
+</dl>
+<p> (4) The fuction performs simple kernel density estimation and automatically
+ finds the bandwith of the kernel function that best approximates the
+ histogram using optimization (<code>sqp</code>).
+ The result is in general very noisy. To smooth the result the bandwidth is
+ multiplied by the value of this property. The higher the value the smoother
+ the violings, but values too high might remove features from the data
+ distribution.
+</p>
+ </dd>
+<dt> Bandwidth</dt>
+</dl>
+<p> (NA) If this property is given a value other than NA, it sets the bandwith of
+ the kernel function. No optimization is peformed and the property
+ SmoothFactor is ignored.
+</p>
+ </dd>
+<dt> Width</dt>
+</dl>
+<p> (0.5) Sets the maximum width of the violins. Violins are centered at integer
+ axis values.  The distance between two violin middle axis is 1.  Setting a
+ value higher thna 1 in this property will cause the violins to overlap.
+ </p></dd>
+</dl>
+
+<p> If the string &quot;Horizontal&quot; is among the input arguments, the violin
+ plot is rendered along the x axis with the variables in the y axis.
+</p>
+<p> The returned structure <var>h</var> has handles to the plot elements, allowing
+ customization of the visualization using set/get functions.
+</p>
+<p> Example:
+</p>
+ <table><tr><td>&nbsp;</td><td><pre class="example"> title (&quot;Grade 3 heights&quot;);
+ axis ([0,3]);
+ set (gca, &quot;xtick&quot;, 1:2, &quot;xticklabel&quot;, {&quot;girls&quot;; &quot;boys&quot;});
+ h = violin ({randn(100,1)*5+140, randn(130,1)*8+135}, &quot;Nbins&quot;, 10);
+ set (h.violin, &quot;linewidth&quot;, 2)
+ </pre></td></tr></table>
+
+<p> <strong>See also: </strong>
+  <a href="boxplot.html">boxplot</a>, 
+hist
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/violin.m">violin</a>
+</div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

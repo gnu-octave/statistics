@@ -18,11 +18,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest (@var{x})
-## @deftypefnx {statistics} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest (@var{x}, @var{m})
-## @deftypefnx {statistics} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest (@var{x}, @var{y})
-## @deftypefnx {statistics} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest (@var{x}, @var{m}, @var{Name}, @var{Value})
-## @deftypefnx {statistics} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = ttest (@var{x}, @var{y}, @var{Name}, @var{Value})
+## @deftypefn  {statistics} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} ttest (@var{x})
+## @deftypefnx {statistics} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} ttest (@var{x}, @var{m})
+## @deftypefnx {statistics} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} ttest (@var{x}, @var{y})
+## @deftypefnx {statistics} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} ttest (@var{x}, @var{m}, @var{Name}, @var{Value})
+## @deftypefnx {statistics} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} ttest (@var{x}, @var{y}, @var{Name}, @var{Value})
 ##
 ## Test for mean of a normal sample with unknown variance.
 ##

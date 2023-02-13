@@ -17,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = fpdf (@var{x}, @var{df1}, @var{df2})
+## @deftypefn  {statistics} {@var{y} =} fpdf (@var{x}, @var{df1}, @var{df2})
 ##
 ## F probability density function (PDF).
 ##

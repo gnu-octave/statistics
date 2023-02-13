@@ -17,11 +17,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} [@var{transprobest}, @var{outprobest}] = hmmestimate (@var{sequence}, @var{states})
-## @deftypefnx {statistics} [@dots{}] = hmmestimate (@dots{}, "statenames", @var{statenames})
-## @deftypefnx {statistics} [@dots{}] = hmmestimate (@dots{}, "symbols", @var{symbols})
-## @deftypefnx {statistics} [@dots{}] = hmmestimate (@dots{}, "pseudotransitions", @var{pseudotransitions})
-## @deftypefnx {statistics} [@dots{}] = hmmestimate (@dots{}, "pseudoemissions", @var{pseudoemissions})
+## @deftypefn  {statistics} {[@var{transprobest}, @var{outprobest}] =} hmmestimate (@var{sequence}, @var{states})
+## @deftypefnx {statistics} {[@dots{}] =} hmmestimate (@dots{}, @code{"statenames"}, @var{statenames})
+## @deftypefnx {statistics} {[@dots{}] =} hmmestimate (@dots{}, @code{"symbols"}, @var{symbols})
+## @deftypefnx {statistics} {[@dots{}] =} hmmestimate (@dots{}, @code{"pseudotransitions"}, @var{pseudotransitions})
+## @deftypefnx {statistics} {[@dots{}] =} hmmestimate (@dots{}, @code{"pseudoemissions"}, @var{pseudoemissions})
 ##
 ## Estimation of a hidden Markov model for a given sequence.
 ##

@@ -18,11 +18,11 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{h} = vartest (@var{x}, @var{v})
-## @deftypefnx {statistics} @var{h} = vartest (@var{x}, @var{v}, @var{name}, @var{value})
-## @deftypefnx {statistics} [@var{h}, @var{pval}] = vartest (@dots{})
-## @deftypefnx {statistics} [@var{h}, @var{pval}, @var{ci}] = vartest (@dots{})
-## @deftypefnx {statistics} [@var{h}, @var{pval}, @var{ci}, @var{stats}] = vartest (@dots{})
+## @deftypefn  {statistics} {@var{h} =} vartest (@var{x}, @var{v})
+## @deftypefnx {statistics} {@var{h} =} vartest (@var{x}, @var{v}, @var{name}, @var{value})
+## @deftypefnx {statistics} {[@var{h}, @var{pval}] =} vartest (@dots{})
+## @deftypefnx {statistics} {[@var{h}, @var{pval}, @var{ci}] =} vartest (@dots{})
+## @deftypefnx {statistics} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} vartest (@dots{})
 ##
 ## One-sample test of variance.
 ##

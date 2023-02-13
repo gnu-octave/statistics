@@ -17,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{y} = wishpdf (@var{W}, @var{Sigma}, @var{df}, @var{log_y}=false)
+## @deftypefn  {statistics} {@var{y} =} wishpdf (@var{W}, @var{Sigma}, @var{df}, @var{log_y}=false)
 ##
 ## Compute the probability density function of the Wishart distribution
 ##

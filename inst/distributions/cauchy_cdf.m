@@ -17,9 +17,9 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} @var{p} = cauchy_cdf (@var{x})
-## @deftypefnx {statistics} @var{p} = cauchy_cdf (@var{x}, @var{location})
-## @deftypefnx {statistics} @var{p} = cauchy_cdf (@var{x}, @var{location}, @var{scale})
+## @deftypefn  {statistics} {@var{p} =} cauchy_cdf (@var{x})
+## @deftypefnx {statistics} {@var{p} =} cauchy_cdf (@var{x}, @var{location})
+## @deftypefnx {statistics} {@var{p} =} cauchy_cdf (@var{x}, @var{location}, @var{scale})
 ##
 ## Cauchy cumulative distribution function (CDF).
 ##
