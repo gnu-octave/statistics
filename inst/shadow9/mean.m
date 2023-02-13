@@ -222,7 +222,7 @@ function m = mean (x, varargin)
 
     ## Two numeric input arguments, dimensions given.  Note scalar is vector!
     vecdim = varargin{1};
-    if (isempty(vecdim) || ! (isvector (vecdim) && all (vecdim)) ...
+    if (isempty (vecdim) || ! (isvector (vecdim) && all (vecdim)) ...
           || any (rem (vecdim, 1)))
       error ("mean: DIM must be a positive integer scalar or vector");
     endif
@@ -265,11 +265,11 @@ function m = mean (x, varargin)
         if (isempty (vecdim))
           m = x;
         else
-          ## move vecdims to dim 1.
+          ## Move vecdims to dim 1.
 
           ## Calculate permutation vector
-          remdims = 1 : ndx;    # all dimensions
-          remdims(vecdim) = [];     # delete dimensions specified by vecdim
+          remdims = 1 : ndx;    # All dimensions
+          remdims(vecdim) = [];     # Delete dimensions specified by vecdim
           nremd = numel (remdims);
 
           ## If all dimensions are given, it is similar to all flag
@@ -336,39 +336,37 @@ function m = mean (x, varargin)
 endfunction
 
 function m = int64_mean (x, dim, n, outtype)
-    ## avoid int overflow in large ints.  smaller int values can be processed
-    ## as doubles to avoid overflow. large int64 values will have rounding error
-    ## if processed as double. integer math avoids problem up to intmin/max.
-    if (any (abs (x(:)) >= flintmax))
-      ## Overflow and double precision errors only occur for large values
+    ## Avoid int overflow in large ints.  Smaller ints processed as double
+    ## avoids overflow. Large int64 values as double can have floating pt error.
+    ## Use integer math and remainder correction to avoid this.
+    if (any (abs (x(:)) >= flintmax / n))
+      rmdr = double (rem (x, n)) / n;
+      rmdr_hilo = logical (int8 (rmdr)); # Integer rounding direction indicator
 
-      rmd = double (rem (x, n)) / n;
-      rmd_hilo = logical (int8 (rmd)); # Integer rounding direction indicator
-
-      ## Native int summation to prevent double precision error
-      ## then add lost round-up/down remainders back in.
+      ## Native int summation to prevent double precision error,
+      ## then add back in lost round-up/down remainders.
 
       m = sum (x/n, dim, "native");
 
-      ## rmd.*!rmd_hilo = remainders that were rounded down in abs val
+      ## rmdr.*!rmdr_hilo = remainders that were rounded down in abs val
       ## signs retained, can be summed and added back.
 
-      ## rmd.*rmd_hilo = remainders that were rounded up in abs val.
-      ## need to add back difference between 1 and rmd, retaining sign.
+      ## rmdr.*rmdr_hilo = remainders that were rounded up in abs val.
+      ## need to add back difference between 1 and rmdr, retaining sign.
 
-      rmd = sum (rmd .* !rmd_hilo, dim) - ...
-                sum ((1- abs (rmd)) .* rmd_hilo .* sign(rmd), dim);
+      rmdr = sum (rmdr .* !rmdr_hilo, dim) - ...
+                sum ((1 - abs (rmdr)) .* rmdr_hilo .* sign(rmdr), dim);
 
       if (any (abs (m(:)) >= flintmax))
 
         if (any (strcmp (outtype, {"int64", "uint64"})))
-          m = m + rmd;
+          m = m + rmdr;
         else
-          m = double (m) + rmd;
+          m = double (m) + rmdr;
         endif
 
       else
-        m = double(m) + rmd;
+        m = double(m) + rmdr;
         switch (outtype)
           case "int64"
             m = int64 (m);
@@ -464,26 +462,25 @@ endfunction
 %! assert (mean (in, "native"), uint8 (out_u8));
 %! assert (class (mean (in, "native")), "uint8");
 
-## large int64/uint64 sum exceeding intmax and double precision limit
-%!test <54567>
+%!test <54567> ## large int64 sum exceeding intmax and double precision limit
 %! in_same = uint64 ([intmax("uint64") intmax("uint64")-2]);
-%! out_same = intmax("uint64")-1;
+%! out_same = intmax ("uint64")-1;
 %! in_opp = int64 ([intmin("int64"), intmax("int64")-1]);
 %! out_opp = -1;
 %! in_neg = int64 ([intmin("int64") intmin("int64")+2]);
-%! out_neg = intmin("int64")+1;
+%! out_neg = intmin ("int64")+1;
 %!
 %! ## both positive
 %! assert (mean (in_same, "default"), mean (in_same));
-%! assert (mean (in_same, "default"), double(out_same));
-%! assert (mean (in_same, "double"), double(out_same));
-%! assert (mean (in_same, "native"), uint64(out_same));
+%! assert (mean (in_same, "default"), double (out_same));
+%! assert (mean (in_same, "double"), double (out_same));
+%! assert (mean (in_same, "native"), uint64 (out_same));
 %! assert (class (mean (in_same, "native")), "uint64");
 %!
 %! ## opposite signs
 %! assert (mean (in_opp, "default"), mean (in_opp));
-%! assert (mean (in_opp, "default"), double(out_opp));
-%! assert (mean (in_opp, "double"), double(out_opp));
+%! assert (mean (in_opp, "default"), double (out_opp));
+%! assert (mean (in_opp, "double"), double (out_opp));
 %! assert (mean (in_opp, "native"), int64 (out_opp));
 %! assert (class (mean (in_opp, "native")), "int64");
 %!
@@ -507,7 +504,8 @@ endfunction
 %! assert (mean (in, 2, "native"), int64(-1));
 %! assert (mean (in, [1 2], "native"), int64(-1));
 %! assert (mean (in, [2 3], "native"), int64(-1));
-%! assert (mean ([in; int64([1 3])], 2, "native"), [int64(-1); 2]);
+%! assert (mean ([intmin("int64"), in, intmax("int64")]), double(-0.5))
+%! assert (mean ([in; int64([1 3])], 2, "native"), int64([-1; 2]));
 
 ## Test input and optional arguments "all", DIM, "omitnan")
 %!test
