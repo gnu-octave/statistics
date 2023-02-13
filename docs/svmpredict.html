@@ -61,38 +61,48 @@
           </div>
         </div>
         <div class="card-body">
-dl>
+<dl>
 <dt><u>statistics:</u> <var>predicted_label</var> = <b>svmpredict</b><i> (<var>labels</var>, <var>data</var>, <var>model</var>)</i></dt>
-<dt><u>statistics:</u> <var>predicted_label</var> = <b>svmpredict</b><i> (<var>labels</var>, <var>data</var>, <var>model</var>, 'libsvm_options')</i></dt>
-<dt><u>statistics:</u> [<var>predicted_label</var>, <var>accuracy</var>, <var>decision_values</var>] = <b>svmpredict</b><i> (<var>labels</var>, <var>data</var>, <var>model</var>, 'libsvm_options')</i></dt>
-<dt><u>statistics:</u> [<var>predicted_label</var>, <var>accuracy</var>, <var>prob_estimates</var>] = <b>svmpredict</b><i> (<var>labels</var>, <var>data</var>, <var>model</var>, 'libsvm_options')</i></dt>
+<dt><u>statistics:</u> <var>predicted_label</var> = <b>svmpredict</b><i> (<var>labels</var>, <var>data</var>, <var>model</var>, libsvm_options)</i></dt>
+<dt><u>statistics:</u> [<var>predicted_label</var>, <var>accuracy</var>, <var>decision_values</var>] = <b>svmpredict</b><i> (<var>labels</var>, <var>data</var>, <var>model</var>, libsvm_options)</i></dt>
+<dt><u>statistics:</u> [<var>predicted_label</var>, <var>accuracy</var>, <var>prob_estimates</var>] = <b>svmpredict</b><i> (<var>labels</var>, <var>data</var>, <var>model</var>, libsvm_options)</i></dt>
 </dl>
 
 
 <p>This function predicts new labels from a testing instance matrtix based on an SVM <var>model</var> created with <code>svmtrain</code>. 
 </p>
 <div class="ms-5">
-<p>&mdash;  <var>labels</var> : An m by 1 vector of prediction labels. If labels of test data are unknown, simply use any random values. (type must be double) 
-</p>
-<p>&mdash;  <var>data</var> : An m by n matrix of m testing instances with n features. It can be dense or sparse. (type must be double) 
-</p>
-<p>&mdash;  <var>model</var> : The output of <code>svmtrain</code> function. 
-</p>
-<p>&mdash;  <code>libsvm_options</code> : A string of testing options in the same format as that of LIBSVM. 
-</p>
-<p>* libsvm_options:
-</p>
-<p>&ndash;b probability_estimates : whether to predict probability estimates.  For one-class SVM onlu 0 is supported.
-</p>
-<p>    	0 (default)	&ndash;	return decision values.
-</p>
-<p>    	1 &ndash; return probability estimates
-</p>
+<ul>
+<li> <var>labels</var> : An m by 1 vector of prediction labels. If labels of test data are unknown, simply use any random values. (type must be double) 
 
-<p>&ndash;q : quiet mode (no outputs)
-</p>
+</li><li> <var>data</var> : An m by n matrix of m testing instances with n features. It can be dense or sparse. (type must be double) 
 
-<p>The &rsquo;svmpredict&rsquo; function has three outputs.  The first one, <var>predicted_label</var>, is a vector of predicted labels.  The second output, <var>accuracy</var>, is a vector including accuracy (for classification), mean squared error, and squared correlation coefficient (for regression).  The third is a matrix containing decision values or probability estimates (if &rsquo;-b 1&rsquo; is specified).  If k is the number of classes in training data, for decision values, each row includes results of predicting k(k-1)/2 binary-class SVMs.  For classification, k = 1 is a special case.  Decision value +1 is returned for each testing instance, instead of an empty vector.  For probabilities, each row contains k values indicating the probability that the testing instance is in each class.  Note that the order of classes here is the same as &rsquo;Label&rsquo; field in the <var>model</var> structure. 
+</li><li> <var>model</var> : The output of <code>svmtrain</code> function. 
+
+</li><li> <code>libsvm_options</code> : A string of testing options in the same format as that of LIBSVM. 
+
+</li></ul>
+
+
+<p><code>libsvm_options</code> :
+</p>
+<ul>
+<li> <code>-b</code> : probability_estimates; whether to predict probability estimates.  For one-class SVM only 0 is supported.
+
+</li></ul>
+
+<table>
+<tr><td width="10%"></td><td width="10%">0</td><td width="80%">return decision values. (default)</td></tr>
+<tr><td width="10%"></td><td width="10%">1</td><td width="80%">return probability estimates.</td></tr>
+</table>
+
+
+<ul>
+<li> <code>-q</code> : quiet mode. (no outputs) 
+</li></ul>
+
+
+<p>The <code>svmpredict</code> function has three outputs.  The first one, <var>predicted_label</var>, is a vector of predicted labels.  The second output, <var>accuracy</var>, is a vector including accuracy (for classification), mean squared error, and squared correlation coefficient (for regression).  The third is a matrix containing decision values or probability estimates (if <code>-b 1</code>&rsquo; is specified).  If <em>k</em> is the number of classes in training data, for decision values, each row includes results of predicting <em>k(k-1)/2</em> binary-class SVMs.  For classification, <em>k = 1</em> is a special case.  Decision value +1 is returned for each testing instance, instead of an empty vector.  For probabilities, each row contains <em>k</em> values indicating the probability that the testing instance is in each class.  Note that the order of classes here is the same as <code>Label</code> field in the <var>model</var> structure. 
 </p></div>
 
         </div>

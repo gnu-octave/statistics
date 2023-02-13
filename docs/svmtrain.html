@@ -61,98 +61,110 @@
           </div>
         </div>
         <div class="card-body">
-dl>
-<dt><u>statistics:</u> <var>model</var> = <b>svmtrain</b><i> (<var>labels</var>, <var>data</var>, 'libsvm_options')</i></dt>
+<dl>
+<dt><u>statistics:</u> <var>model</var> = <b>svmtrain</b><i> (<var>labels</var>, <var>data</var>, libsvm_options)</i></dt>
 </dl>
 
 
 <p>This function trains an SVM <var>model</var> based on known <var>labels</var> and their corresponding <var>data</var> which comprise an instance matrtix. 
 </p>
 <div class="ms-5">
-<p>&mdash;  <var>labels</var> : An m by 1 vector of prediction labels. (type must be double) 
-</p>
-<p>&mdash;  <var>data</var> : An m by n matrix of m testing instances with n features. It can be dense or sparse. (type must be double) 
-</p>
-<p>&mdash;  &rsquo;libsvm_options&rsquo; : A string of testing options in the same format as that of LIBSVM. 
-</p>
-<p>* libsvm_options:
-</p>
-<p>&ndash;s svm_type : set type of SVM (default 0)
-</p>
-<p>    	0 &ndash; C-SVC		(multi-class classification)
-</p>
-<p>    	1 &ndash; nu-SVC		(multi-class classification)
-</p>
-<p>    	2 &ndash; one-class SVM
-</p>
-<p>    	3 &ndash; epsilon-SVR	(regression)
-</p>
-<p>    	4 &ndash; nu-SVR		(regression)
-</p>
-<p>&ndash;t kernel_type : set type of kernel function (default 2)
-</p>
-<p>    	0 &ndash; linear: u&rsquo;*v
-</p>
-<p>    	1 &ndash; polynomial: (gamma*u&rsquo;*v + coef0)^degree
-</p>
-<p>    	2 &ndash; radial basis function: exp(-gamma*|u-v|^2)
-</p>
-<p>    	3 &ndash; sigmoid: tanh(gamma*u&rsquo;*v + coef0)
-</p>
-<p>    	4 &ndash; precomputed kernel (kernel values in training_instance_matrix)
-</p>
-<p>&ndash;d degree : set degree in kernel function (default 3)
-</p>
-<p>&ndash;g gamma : set gamma in kernel function (default 1/num_features)
-</p>
-<p>&ndash;r coef0 : set coef0 in kernel function (default 0)
-</p>
-<p>&ndash;c cost : set the parameter C of C-SVC, epsilon-SVR, and nu-SVR (default 1)
-</p>
-<p>&ndash;n nu : set the parameter nu of nu-SVC, one-class SVM, and nu-SVR (default 0.5)
-</p>
-<p>&ndash;p epsilon : set the epsilon in loss function of epsilon-SVR (default 0.1)
-</p>
-<p>&ndash;m cachesize : set cache memory size in MB (default 100)
-</p>
-<p>&ndash;e epsilon : set tolerance of termination criterion (default 0.001)
-</p>
-<p>&ndash;h shrinking : whether to use the shrinking heuristics, 0 or 1 (default 1)
-</p>
-<p>&ndash;b probability_estimates : whether to train a SVC or SVR model for probability estimates, 0 or 1 (default 0)
-</p>
-<p>&ndash;wi weight : set the parameter C of class i to weight*C, for C-SVC (default 1)
-</p>
-<p>&ndash;v n : n-fold cross validation mode
-</p>
-<p>&ndash;q : quiet mode (no outputs)
-</p>
+<ul>
+<li> <var>labels</var> : An m by 1 vector of prediction labels. (type must be double) 
 
-<p>The function &rsquo;svmtrain&rsquo; function returns a <var>model</var> which can be used for future prediction.  It is a structure and is organized as [Parameters, nr_class, totalSV, rho, Label, ProbA, ProbB, nSV, sv_coef, SVs]: 
+</li><li> <var>data</var> : An m by n matrix of m testing instances with n features. It can be dense or sparse. (type must be double) 
+
+</li><li> <code>libsvm_options</code> : A string of testing options in the same format as that of LIBSVM. 
+
+</li></ul>
+
+
+<p><code>libsvm_options</code> :
 </p>
-<p>&mdash;  Parameters: parameters 
+<ul>
+<li> <code>-s</code> : svm_type; set type of SVM (default 0) 
+
+</li></ul>
+
+<table>
+<tr><td width="10%"></td><td width="10%">0</td><td width="80%">C-SVC	(multi-class classification)</td></tr>
+<tr><td width="10%"></td><td width="10%">1</td><td width="80%">nu-SVC (multi-class classification)</td></tr>
+<tr><td width="10%"></td><td width="10%">2</td><td width="80%">one-class SVM</td></tr>
+<tr><td width="10%"></td><td width="10%">3</td><td width="80%">epsilon-SVR (regression)</td></tr>
+<tr><td width="10%"></td><td width="10%">4</td><td width="80%">nu-SVR (regression)</td></tr>
+</table>
+
+<ul>
+<li> <code>-t</code> : kernel_type; set type of kernel function (default 2)
+
+</li></ul>
+
+<table>
+<tr><td width="10%"></td><td width="10%">0</td><td width="80%">linear: u&rsquo;*v</td></tr>
+<tr><td width="10%"></td><td width="10%">1</td><td width="80%">polynomial: <em>(gamma * u&rsquo; * v + coef0) ^ degree</em></td></tr>
+<tr><td width="10%"></td><td width="10%">2</td><td width="80%">radial basis function: <em>exp(-gamma * |u-v| ^ 2)</em></td></tr>
+<tr><td width="10%"></td><td width="10%">3</td><td width="80%">sigmoid: <em>tanh(gamma * u&rsquo; * v + coef0)</em></td></tr>
+<tr><td width="10%"></td><td width="10%">4</td><td width="80%">precomputed kernel (kernel values in training_instance_matrix)</td></tr>
+</table>
+
+<ul>
+<li> <code>-d</code> : degree; set degree in kernel function (default 3) 
+
+</li><li> <code>-g</code> : gamma; set gamma in kernel function (default 1/num_features) 
+
+</li><li> <code>-r</code> : coef0; set coef0 in kernel function (default 0) 
+
+</li><li> <code>-c</code> : cost; set the parameter C of C-SVC, epsilon-SVR, and nu-SVR (default 1) 
+
+</li><li> <code>-n</code> : nu; set the parameter nu of nu-SVC, one-class SVM, and nu-SVR (default 0.5) 
+
+</li><li> <code>-p</code> : epsilon; set the epsilon in loss function of epsilon-SVR (default 0.1) 
+
+</li><li> <code>-m</code> : cachesize; set cache memory size in MB (default 100) 
+
+</li><li> <code>-e</code> : epsilon; set tolerance of termination criterion (default 0.001) 
+
+</li><li> <code>-h</code> : shrinking; whether to use the shrinking heuristics, 0 or 1 (default 1) 
+
+</li><li> <code>-b</code> : probability_estimates; whether to train a SVC or SVR model for probability estimates, 0 or 1 (default 0) 
+
+</li><li> <code>-w</code> : weight; set the parameter C of class i to weight*C, for C-SVC (default 1) 
+
+</li><li> <code>-v</code> : n; n-fold cross validation mode 
+
+</li><li> <code>-q</code> : quiet mode (no outputs) 
+
+</li></ul>
+
+
+<p>The function <code>svmtrain</code> function returns a <var>model</var> structure which can be used for future prediction and it contains the following fields: 
 </p>
-<p>&mdash;  nr_class: number of classes; = 2 for regression/one-class svm 
-</p>
-<p>&mdash;  totalSV: total #SV 
-</p>
-<p>&mdash;  rho: -b of the decision function(s) wx+b 
-</p>
-<p>&mdash;  Label: label of each class; empty for regression/one-class SVM 
-</p>
-<p>&mdash;  sv_indices: values in [1,...,num_traning_data] to indicate SVs in the training set 
-</p>
-<p>&mdash;  ProbA: pairwise probability information; empty if -b 0 or in one-class SVM 
-</p>
-<p>&mdash;  ProbB: pairwise probability information; empty if -b 0 or in one-class SVM 
-</p>
-<p>&mdash;  nSV: number of SVs for each class; empty for regression/one-class SVM 
-</p>
-<p>&mdash;  sv_coef: coefficients for SVs in decision functions 
-</p>
-<p>&mdash;  SVs: support vectors 
-</p>
-<p>If you do not use the option &rsquo;-b 1&rsquo;, ProbA and ProbB are empty matrices. If the &rsquo;-v&rsquo; option is specified, cross validation is conducted and the returned model is just a scalar: cross-validation accuracy for classification and mean-squared error for regression. 
+<ul>
+<li> <code>Parameters</code> : parameters 
+
+</li><li> <code>nr_class</code> : number of classes; = 2 for regression/one-class svm 
+
+</li><li> <code>totalSV</code> : total #SV 
+
+</li><li> <code>rho</code> : <em>-b</em> of the decision function(s) <em>wx+b</em> 
+
+</li><li> <code>Label</code> : label of each class; empty for regression/one-class SVM 
+
+</li><li> <code>sv_indices</code> : values in [1,...,num_traning_data] to indicate SVs in the training set 
+
+</li><li> <code>ProbA</code> : pairwise probability information; empty if -b 0 or in one-class SVM 
+
+</li><li> <code>ProbB</code> : pairwise probability information; empty if -b 0 or in one-class SVM 
+
+</li><li> <code>nSV</code> : number of SVs for each class; empty for regression/one-class SVM 
+
+</li><li> <code>sv_coef</code> : coefficients for SVs in decision functions 
+
+</li><li> <code>SVs</code> : support vectors 
+</li></ul>
+
+
+<p>If you do not use the option <code>-b 1</code>, ProbA and ProbB are empty matrices. If the &rsquo;-v&rsquo; option is specified, cross validation is conducted and the returned model is just a scalar: cross-validation accuracy for classification and mean-squared error for regression. 
 </p>
 </div>
 

@@ -70,10 +70,10 @@
              <option value="#Distribution Fitting">Distribution Fitting</option>
              <option value="#Distribution Statistics">Distribution Statistics</option>
              <option value="#Experimental Design">Experimental Design</option>
+             <option value="#Machine Learning">Machine Learning</option>
              <option value="#Model Fitting">Model Fitting</option>
              <option value="#Hypothesis Testing">Hypothesis Testing</option>
              <option value="#I/O">I/O</option>
-             <option value="#Machine Learning">Machine Learning</option>
              <option value="#Plotting">Plotting</option>
              <option value="#Regression">Regression</option>
              <option value="#Wrappers">Wrappers</option>
@@ -232,7 +232,7 @@ slice sampling of Radford M.
              </b>
            </div>
            <div class="ftext">
-             Display a cvpartition object.
+             Display a 'cvpartition' object, C.
            </div>
            <div class="lead">
              <b>
@@ -240,7 +240,7 @@ slice sampling of Radford M.
              </b>
            </div>
            <div class="ftext">
-             Get a field from a 'cvpartition' object.
+             Get a field, F, from a 'cvpartition' object, C.
            </div>
            <div class="lead">
              <b>
@@ -256,7 +256,7 @@ slice sampling of Radford M.
              </b>
            </div>
            <div class="ftext">
-             Set field(s) in a 'cvpartition' object.
+             Set FIELD, in a 'cvpartition' object, C.
            </div>
            <div class="lead">
              <b>
@@ -264,8 +264,8 @@ slice sampling of Radford M.
              </b>
            </div>
            <div class="ftext">
-             Return logical vector for testing-subset indices from a cvpartition
-object.
+             Return logical vector for testing-subset indices from a 'cvpartition'
+object, C.
            </div>
            <div class="lead">
              <b>
@@ -273,8 +273,8 @@ object.
              </b>
            </div>
            <div class="ftext">
-             Return logical vector for training-subset indices from a cvpartition
-object.
+             Return logical vector for training-subset indices from a 'cvpartition'
+object, C.
            </div>
            <h3 class="category">
              <a name="Data Manipulation">Data Manipulation</a>
@@ -1948,6 +1948,51 @@ distribution.
              Convert predictors to design matrix.
            </div>
            <h3 class="category">
+             <a name="Machine Learning">Machine Learning</a>
+           </h3>
+           <div class="lead">
+             <b>
+             <a href="hmmestimate.html">hmmestimate</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Estimation of a hidden Markov model for a given sequence.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="hmmgenerate.html">hmmgenerate</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Output sequence and hidden states of a hidden Markov model.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="hmmviterbi.html">hmmviterbi</a>
+             </b>
+           </div>
+           <div class="ftext">
+             Viterbi path of a hidden Markov model.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="svmpredict.html">svmpredict</a>
+             </b>
+           </div>
+           <div class="ftext">
+             This function predicts new labels from a testing instance matrtix based
+on an SVM MODEL created with 'svmtrain'.
+           </div>
+           <div class="lead">
+             <b>
+             <a href="svmtrain.html">svmtrain</a>
+             </b>
+           </div>
+           <div class="ftext">
+             This function trains an SVM MODEL based on known LABELS and their
+corresponding DATA which comprise an instance matrtix.
+           </div>
+           <h3 class="category">
              <a name="Model Fitting">Model Fitting</a>
            </h3>
            <div class="lead">
@@ -2256,51 +2301,6 @@ from a LIBSVM data file and stores them in LABELS and DATA respectively.
            <div class="ftext">
              This function saves the labels and the corresponding instance_matrix in
 a file specified by FILENAME.
-           </div>
-           <h3 class="category">
-             <a name="Machine Learning">Machine Learning</a>
-           </h3>
-           <div class="lead">
-             <b>
-             <a href="hmmestimate.html">hmmestimate</a>
-             </b>
-           </div>
-           <div class="ftext">
-             Estimation of a hidden Markov model for a given sequence.
-           </div>
-           <div class="lead">
-             <b>
-             <a href="hmmgenerate.html">hmmgenerate</a>
-             </b>
-           </div>
-           <div class="ftext">
-             Output sequence and hidden states of a hidden Markov model.
-           </div>
-           <div class="lead">
-             <b>
-             <a href="hmmviterbi.html">hmmviterbi</a>
-             </b>
-           </div>
-           <div class="ftext">
-             Viterbi path of a hidden Markov model.
-           </div>
-           <div class="lead">
-             <b>
-             <a href="svmpredict.html">svmpredict</a>
-             </b>
-           </div>
-           <div class="ftext">
-             This function predicts new labels from a testing instance matrtix based
-on an SVM MODEL created with 'svmtrain'.
-           </div>
-           <div class="lead">
-             <b>
-             <a href="svmtrain.html">svmtrain</a>
-             </b>
-           </div>
-           <div class="ftext">
-             This function trains an SVM MODEL based on known LABELS and their
-corresponding DATA which comprise an instance matrtix.
            </div>
            <h3 class="category">
              <a name="Plotting">Plotting</a>
