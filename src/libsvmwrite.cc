@@ -83,7 +83,7 @@ void write(string filename, ColumnVector label_vec, SparseMatrix instance_mat)
 
 
 DEFUN_DLD (libsvmwrite, args, nargout,
-           "-*- texinfo -*-\n\n\
+           "-*- texinfo -*- \n\n\
 @deftypefn  {statistics} {} libsvmwrite (@var{filename}, @var{labels}, @var{data})\n\
 \n\
 \n\
