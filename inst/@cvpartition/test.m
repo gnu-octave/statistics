@@ -16,13 +16,12 @@
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {Function File} {@var{inds} =} test (@var{C}, [@var{i}])
+## @deftypefn  {statistics} {@var{inds} =} test (@var{C}, [@var{i}])
 ##
-## Return logical vector for testing-subset indices from a cvpartition object.
+## Return logical vector for testing-subset indices from a @samp{cvpartition}
+## object, @var{C}.  @var{i} is the fold index (default is 1).
 ##
-## @var{C} should be a cvpartition object. @var{i} is the fold index (default is 1).
-##
-## @seealso{cvpartition, @@cvpartition/training}
+## @seealso{@@cvpartition/cvpartition, @@cvpartition/training}
 ## @end deftypefn
 
 function inds = test (C, i = [])

@@ -16,7 +16,7 @@
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {Function File} {@var{C} =} cvpartition (@var{X}, [@var{partition_type}, [@var{k}]])
+## @deftypefn  {statistics} {@var{C} =} cvpartition (@var{X}, [@var{partition_type}, [@var{k}]])
 ##
 ## Create a partition object for cross validation.
 ##
@@ -58,7 +58,7 @@
 ## Partition type.
 ## @end table
 ##
-## @seealso{crossval}
+## @seealso{crossval, @@cvpartition/display}
 ## @end deftypefn
 
 function C = cvpartition (X, partition_type = "KFold", k = [])
