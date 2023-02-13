@@ -347,118 +347,139 @@ static void fake_answer(int nlhs, octave_value_list &plhs)
 
 
 DEFUN_DLD (svmtrain, args, nargout,
-           "-*- texinfo -*-\n\
-@deftypefn  {statistics} {@var{model} =} svmtrain (@var{labels}, @var{data}, 'libsvm_options')\n\
+           "-*- texinfo -*-\n\n\
+@deftypefn  {statistics} {@var{model} =} svmtrain (@var{labels}, @var{data}, ""libsvm_options"")\n\
 \n\
 \n\
 This function trains an SVM @var{model} based on known @var{labels} and their \
 corresponding @var{data} which comprise an instance matrtix. \
 \n\
 \n\
----  @var{labels} : An m by 1 vector of prediction labels. (type must be double) \
+@itemize \n\
+@item @var{labels} : An m by 1 vector of prediction labels. (type must be double) \
 \n\
 \n\
----  @var{data} : An m by n matrix of m testing instances with n features. \
+@item @var{data} : An m by n matrix of m testing instances with n features. \
 It can be dense or sparse. (type must be double) \
 \n\
 \n\
----  'libsvm_options' : A string of testing options in the same format as that \
-of LIBSVM. \
+@item @code{libsvm_options} : A string of testing options in the same format \
+as that of LIBSVM. \
 \n\
 \n\
-* libsvm_options:\n\
-\n\
---s svm_type : set type of SVM (default 0)\n\
-\n\
-    	0 -- C-SVC		(multi-class classification)\n\
-\n\
-    	1 -- nu-SVC		(multi-class classification)\n\
-\n\
-    	2 -- one-class SVM\n\
-\n\
-    	3 -- epsilon-SVR	(regression)\n\
-\n\
-    	4 -- nu-SVR		(regression)\n\
-\n\
---t kernel_type : set type of kernel function (default 2)\n\
-\n\
-    	0 -- linear: u'*v\n\
-\n\
-    	1 -- polynomial: (gamma*u'*v + coef0)^degree\n\
-\n\
-    	2 -- radial basis function: exp(-gamma*|u-v|^2)\n\
-\n\
-    	3 -- sigmoid: tanh(gamma*u'*v + coef0)\n\
-\n\
-    	4 -- precomputed kernel (kernel values in training_instance_matrix)\n\
-\n\
---d degree : set degree in kernel function (default 3)\n\
-\n\
---g gamma : set gamma in kernel function (default 1/num_features)\n\
-\n\
---r coef0 : set coef0 in kernel function (default 0)\n\
-\n\
---c cost : set the parameter C of C-SVC, epsilon-SVR, and nu-SVR (default 1)\n\
-\n\
---n nu : set the parameter nu of nu-SVC, one-class SVM, and nu-SVR (default 0.5)\n\
-\n\
---p epsilon : set the epsilon in loss function of epsilon-SVR (default 0.1)\n\
-\n\
---m cachesize : set cache memory size in MB (default 100)\n\
-\n\
---e epsilon : set tolerance of termination criterion (default 0.001)\n\
-\n\
---h shrinking : whether to use the shrinking heuristics, 0 or 1 (default 1)\n\
-\n\
---b probability_estimates : whether to train a SVC or SVR model for probability estimates, 0 or 1 (default 0)\n\
-\n\
---wi weight : set the parameter C of class i to weight*C, for C-SVC (default 1)\n\
-\n\
---v n : n-fold cross validation mode\n\
-\n\
---q : quiet mode (no outputs)\n\
+@end itemize \
 \n\
 \n\
-The function 'svmtrain' function returns a @var{model} which can be used for \
-future prediction.  It is a structure and is organized as [Parameters, \
-nr_class, totalSV, rho, Label, ProbA, ProbB, nSV, sv_coef, SVs]: \
+@code{libsvm_options} :\n\
+\n\
+@itemize \n\
+@item @code{-s} : svm_type ; set type of SVM (default 0) \n\
+\n\
+@end itemize \
+\n\
+@multitable @columnfractions 0.1 0.1 0.8 \n\
+@item @tab 0 @tab C-SVC	(multi-class classification) \n\
+\n\
+@item @tab 1 @tab nu-SVC (multi-class classification) \n\
+\n\
+@item @tab 2 @tab one-class SVM \n\
+\n\
+@item @tab 3 @tab epsilon-SVR (regression) \n\
+\n\
+@item @tab 4 @tab nu-SVR (regression) \n\
+\n\
+@end multitable \
+\n\
+@itemize \n\
+@item @code{-t} : kernel_type : set type of kernel function (default 2)\n\
+\n\
+@end itemize \
+\n\
+@multitable @columnfractions 0.1 0.1 0.8 \n\
+@item @tab 0 @tab linear: u'*v\n\
+\n\
+@item @tab 1 @tab polynomial: @math{(gamma*u'*v + coef0)^degree} \n\
+\n\
+@item @tab 2 @tab radial basis function: @math{exp(-gamma*|u-v|^2)} \n\
+\n\
+@item @tab 3 @tab sigmoid: @math{tanh(gamma*u'*v + coef0)} \n\
+\n\
+@item @tab 4 @tab precomputed kernel (kernel values in training_instance_matrix) \n\
+\n\
+@end multitable \
+\n\
+@itemize \n\
+@item @code{-d} degree : set degree in kernel function (default 3) \n\
+\n\
+@item @code{-g} gamma : set gamma in kernel function (default 1/num_features) \n\
+\n\
+@item @code{-r} coef0 : set coef0 in kernel function (default 0) \n\
+\n\
+@item @code{-c} cost : set the parameter C of C-SVC, epsilon-SVR, and nu-SVR (default 1) \n\
+\n\
+@item @code{-n} nu : set the parameter nu of nu-SVC, one-class SVM, and nu-SVR (default 0.5) \n\
+\n\
+@item @code{-p} epsilon : set the epsilon in loss function of epsilon-SVR (default 0.1) \n\
+\n\
+@item @code{-m} cachesize : set cache memory size in MB (default 100) \n\
+\n\
+@item @code{-e} epsilon : set tolerance of termination criterion (default 0.001) \n\
+\n\
+@item @code{-h} shrinking : whether to use the shrinking heuristics, 0 or 1 (default 1) \n\
+\n\
+@item @code{-b} probability_estimates : whether to train a SVC or SVR model for probability estimates, 0 or 1 (default 0) \n\
+\n\
+@item @code{-w} weight : set the parameter C of class i to weight*C, for C-SVC (default 1) \n\
+\n\
+@item @code{-v} n : n-fold cross validation mode \n\
+\n\
+@item @code{-q} : quiet mode (no outputs) \n\
+\n\
+@end itemize \
 \n\
 \n\
----  Parameters: parameters \
+The function @code{svmtrain} function returns a @var{model} structure which \
+can be used for future prediction and it contains the following fields: \
 \n\
 \n\
----  nr_class: number of classes; = 2 for regression/one-class svm \
+@itemize \n\
+@item @code{Parameters} : parameters \
 \n\
 \n\
----  totalSV: total #SV \
+@item @code{nr_class} : number of classes; = 2 for regression/one-class svm \
 \n\
 \n\
----  rho: -b of the decision function(s) wx+b \
+@item @code{totalSV} : total #SV \
 \n\
 \n\
----  Label: label of each class; empty for regression/one-class SVM \
+@item @code{rho} : @math{-b} of the decision function(s) @math{wx+b} \
 \n\
 \n\
----  sv_indices: values in [1,...,num_traning_data] to indicate SVs in the \
-training set \
+@item @code{Label} : label of each class; empty for regression/one-class SVM \
 \n\
 \n\
----  ProbA: pairwise probability information; empty if -b 0 or in one-class SVM \
+@item @code{sv_indices} : values in [1,...,num_traning_data] to indicate SVs \
+in the training set \
 \n\
 \n\
----  ProbB: pairwise probability information; empty if -b 0 or in one-class SVM \
+@item @code{ProbA} : pairwise probability information; empty if -b 0 or in one-class SVM \
 \n\
 \n\
----  nSV: number of SVs for each class; empty for regression/one-class SVM \
+@item @code{ProbB} : pairwise probability information; empty if -b 0 or in one-class SVM \
 \n\
 \n\
----  sv_coef: coefficients for SVs in decision functions \
+@item @code{nSV} : number of SVs for each class; empty for regression/one-class SVM \
 \n\
 \n\
----  SVs: support vectors \
+@item @code{sv_coef} : coefficients for SVs in decision functions \
 \n\
 \n\
-If you do not use the option '-b 1', ProbA and ProbB are empty \
+@item @code{SVs} : support vectors \
+\n\
+@end itemize \
+\n\
+\n\
+If you do not use the option @code{-b 1}, ProbA and ProbB are empty \
 matrices. If the '-v' option is specified, cross validation is \
 conducted and the returned model is just a scalar: cross-validation \
 accuracy for classification and mean-squared error for regression. \

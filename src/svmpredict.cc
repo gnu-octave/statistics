@@ -294,11 +294,12 @@ void predict(int nlhs, octave_value_list &plhs, const octave_value_list &args,
 
 
 DEFUN_DLD (svmpredict, args, nargout,
-           "-*- texinfo -*-\n\
+           "-*- texinfo -*-\n\n\
 @deftypefn  {statistics} {@var{predicted_label} =} svmpredict (@var{labels}, @var{data}, @var{model})\n\
 @deftypefnx {statistics} {@var{predicted_label} =} svmpredict (@var{labels}, @var{data}, @var{model}, ""libsvm_options"")\n\
 @deftypefnx {statistics} {[@var{predicted_label}, @var{accuracy}, @var{decision_values}] =} svmpredict (@var{labels}, @var{data}, @var{model}, ""libsvm_options"")\n\
 @deftypefnx {statistics} {[@var{predicted_label}, @var{accuracy}, @var{prob_estimates}] =} svmpredict (@var{labels}, @var{data}, @var{model}, ""libsvm_options"")\n\
+\n\
 \n\
 This function predicts new labels from a testing instance matrtix based on an \
 SVM @var{model} created with @code{svmtrain}. \
@@ -329,11 +330,17 @@ as that of LIBSVM. \
 @item @code{-b} : probability_estimates ; whether to predict probability \
 estimates.  For one-class SVM only 0 is supported.\n\
 \n\
-0 :	return decision values. (default) \n\
+@end itemize \
 \n\
-1 : return probability estimates. \
+@multitable @columnfractions 0.1 0.1 0.8 \n\
+@item @tab 0 @tab return decision values. (default) \n\
+\n\
+@item @tab 1 @tab return probability estimates. \
+\n\
+@end multitable \
 \n\
 \n\
+@itemize \n\
 @item @code{-q} : quiet mode. (no outputs) \
 \n\
 @end itemize \
