@@ -16,7 +16,8 @@
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn{Function File}@var{s} = get (@var{c}, [@var{f}])
+## @deftypefn  {Function File} {@var{s} = get} (@var{c}, [@var{f}])
+##
 ## Get a field from a @samp{cvpartition} object.
 ##
 ## @seealso{cvpartition}

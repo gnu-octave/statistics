@@ -16,7 +16,8 @@
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn{Function File} display (@var{C})
+## @deftypefn  {Function File} {} display (@var{C})
+##
 ## Display a cvpartition object.
 ##
 ## @seealso{cvpartition}

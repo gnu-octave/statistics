@@ -16,15 +16,14 @@
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn{Function File}{@var{inds} =} training (@var{C}, [@var{i}])
+## @deftypefn  {Function File} {@var{inds} =} training (@var{C}, [@var{i}])
+##
 ## Return logical vector for training-subset indices from a cvpartition object.
 ##
 ## @var{C} should be a cvpartition object. @var{i} is the fold index (default is 1).
 ##
 ## @seealso{cvpartition, @@cvpartition/test}
 ## @end deftypefn
-
-## Author: Nir Krakauer
 
 function inds = training (C, i = [])
 

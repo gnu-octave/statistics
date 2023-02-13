@@ -16,7 +16,8 @@
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn{Function File}{@var{C} =} cvpartition (@var{X}, [@var{partition_type}, [@var{k}]])
+## @deftypefn  {Function File} {@var{C} =} cvpartition (@var{X}, [@var{partition_type}, [@var{k}]])
+##
 ## Create a partition object for cross validation.
 ##
 ## @var{X} may be a positive integer, interpreted as the number of values @var{n} to partition, or a vector of length @var{n} containing class designations for the elements, in which case the partitioning types @var{KFold} and @var{HoldOut} attempt to ensure each partition represents the classes proportionately.

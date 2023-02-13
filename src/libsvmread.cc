@@ -200,7 +200,6 @@ DEFUN_DLD (libsvmread, args, nargout,
            "-*- texinfo -*-\n\
 @deftypefn  {statistics} {[@var{labels}, @var{data}] =} libsvmread (@var{filename})\n\
 \n\
-\n\
 This function reads the labels and the corresponding instance_matrix from a \
 LIBSVM data file and stores them in @var{labels} and @var{data} respectively. \
 These can then be used as inputs to @code{svmtrain} or @code{svmpredict} \

@@ -16,7 +16,8 @@
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn{Function File}@var{s} = set (@var{c}, @var{varargin})
+## @deftypefn  {Function File} {@var{s} =} set (@var{c}, @var{varargin})
+##
 ## Set field(s) in a @samp{cvpartition} object.
 ##
 ## @seealso{cvpartition}

@@ -86,7 +86,6 @@ DEFUN_DLD (libsvmwrite, args, nargout,
            "-*- texinfo -*-\n\
 @deftypefn  {statistics} {} libsvmwrite (@var{filename}, @var{labels}, @var{data})\n\
 \n\
-\n\
 This function saves the labels and the corresponding instance_matrix in a file \
 specified by @var{filename}.  @var{data} must be a sparse matrix.  Both \
 @var{labels}, @var{data} must be of double type. \

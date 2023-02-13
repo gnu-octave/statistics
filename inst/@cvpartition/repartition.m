@@ -16,7 +16,8 @@
 ## along with this program; If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn{Function File}{@var{Cnew} =} repartition (@var{C})
+## @deftypefn  {Function File} {@var{Cnew} =} repartition (@var{C})
+##
 ## Return a new cvpartition object.
 ##
 ## @var{C} should be a cvpartition object. @var{Cnew} will use the same
