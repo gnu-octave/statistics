@@ -295,10 +295,10 @@ void predict(int nlhs, octave_value_list &plhs, const octave_value_list &args,
 
 DEFUN_DLD (svmpredict, args, nargout,
            "-*- texinfo -*- \n\n\
-@deftypefn  {statistics} {@var{predicted_label} =} svmpredict (@var{labels}, @var{data}, @var{model})\n\
-@deftypefnx {statistics} {@var{predicted_label} =} svmpredict (@var{labels}, @var{data}, @var{model}, ""libsvm_options"")\n\
-@deftypefnx {statistics} {[@var{predicted_label}, @var{accuracy}, @var{decision_values}] =} svmpredict (@var{labels}, @var{data}, @var{model}, ""libsvm_options"")\n\
-@deftypefnx {statistics} {[@var{predicted_label}, @var{accuracy}, @var{prob_estimates}] =} svmpredict (@var{labels}, @var{data}, @var{model}, ""libsvm_options"")\n\
+ @deftypefn  {statistics} {@var{predicted_label} =} svmpredict (@var{labels}, @var{data}, @var{model})\n\
+ @deftypefnx {statistics} {@var{predicted_label} =} svmpredict (@var{labels}, @var{data}, @var{model}, ""libsvm_options"")\n\
+ @deftypefnx {statistics} {[@var{predicted_label}, @var{accuracy}, @var{decision_values}] =} svmpredict (@var{labels}, @var{data}, @var{model}, ""libsvm_options"")\n\
+ @deftypefnx {statistics} {[@var{predicted_label}, @var{accuracy}, @var{prob_estimates}] =} svmpredict (@var{labels}, @var{data}, @var{model}, ""libsvm_options"")\n\
 \n\
 \n\
 This function predicts new labels from a testing instance matrtix based on an \
@@ -327,7 +327,7 @@ as that of LIBSVM. \
 @code{libsvm_options} :\n\
 \n\
 @itemize \n\
-@item @code{-b} : probability_estimates ; whether to predict probability \
+@item @code{-b} : probability_estimates; whether to predict probability \
 estimates.  For one-class SVM only 0 is supported.\n\
 \n\
 @end itemize \

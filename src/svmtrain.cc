@@ -348,7 +348,7 @@ static void fake_answer(int nlhs, octave_value_list &plhs)
 
 DEFUN_DLD (svmtrain, args, nargout,
            "-*- texinfo -*- \n\n\
-@deftypefn  {statistics} {@var{model} =} svmtrain (@var{labels}, @var{data}, ""libsvm_options"")\n\
+ @deftypefn  {statistics} {@var{model} =} svmtrain (@var{labels}, @var{data}, ""libsvm_options"")\n\
 \n\
 \n\
 This function trains an SVM @var{model} based on known @var{labels} and their \
@@ -373,7 +373,7 @@ as that of LIBSVM. \
 @code{libsvm_options} :\n\
 \n\
 @itemize \n\
-@item @code{-s} : svm_type ; set type of SVM (default 0) \n\
+@item @code{-s} : svm_type; set type of SVM (default 0) \n\
 \n\
 @end itemize \
 \n\
@@ -391,47 +391,47 @@ as that of LIBSVM. \
 @end multitable \
 \n\
 @itemize \n\
-@item @code{-t} : kernel_type : set type of kernel function (default 2)\n\
+@item @code{-t} : kernel_type; set type of kernel function (default 2)\n\
 \n\
 @end itemize \
 \n\
 @multitable @columnfractions 0.1 0.1 0.8 \n\
 @item @tab 0 @tab linear: u'*v\n\
 \n\
-@item @tab 1 @tab polynomial: @math{(gamma*u'*v + coef0)^degree} \n\
+@item @tab 1 @tab polynomial: @math{(gamma * u' * v + coef0) ^ degree} \n\
 \n\
-@item @tab 2 @tab radial basis function: @math{exp(-gamma*|u-v|^2)} \n\
+@item @tab 2 @tab radial basis function: @math{exp(-gamma * |u-v| ^ 2)} \n\
 \n\
-@item @tab 3 @tab sigmoid: @math{tanh(gamma*u'*v + coef0)} \n\
+@item @tab 3 @tab sigmoid: @math{tanh(gamma * u' * v + coef0)} \n\
 \n\
 @item @tab 4 @tab precomputed kernel (kernel values in training_instance_matrix) \n\
 \n\
 @end multitable \
 \n\
 @itemize \n\
-@item @code{-d} degree : set degree in kernel function (default 3) \n\
+@item @code{-d} : degree; set degree in kernel function (default 3) \n\
 \n\
-@item @code{-g} gamma : set gamma in kernel function (default 1/num_features) \n\
+@item @code{-g} : gamma; set gamma in kernel function (default 1/num_features) \n\
 \n\
-@item @code{-r} coef0 : set coef0 in kernel function (default 0) \n\
+@item @code{-r} : coef0; set coef0 in kernel function (default 0) \n\
 \n\
-@item @code{-c} cost : set the parameter C of C-SVC, epsilon-SVR, and nu-SVR (default 1) \n\
+@item @code{-c} : cost; set the parameter C of C-SVC, epsilon-SVR, and nu-SVR (default 1) \n\
 \n\
-@item @code{-n} nu : set the parameter nu of nu-SVC, one-class SVM, and nu-SVR (default 0.5) \n\
+@item @code{-n} : nu; set the parameter nu of nu-SVC, one-class SVM, and nu-SVR (default 0.5) \n\
 \n\
-@item @code{-p} epsilon : set the epsilon in loss function of epsilon-SVR (default 0.1) \n\
+@item @code{-p} : epsilon; set the epsilon in loss function of epsilon-SVR (default 0.1) \n\
 \n\
-@item @code{-m} cachesize : set cache memory size in MB (default 100) \n\
+@item @code{-m} : cachesize; set cache memory size in MB (default 100) \n\
 \n\
-@item @code{-e} epsilon : set tolerance of termination criterion (default 0.001) \n\
+@item @code{-e} : epsilon; set tolerance of termination criterion (default 0.001) \n\
 \n\
-@item @code{-h} shrinking : whether to use the shrinking heuristics, 0 or 1 (default 1) \n\
+@item @code{-h} : shrinking; whether to use the shrinking heuristics, 0 or 1 (default 1) \n\
 \n\
-@item @code{-b} probability_estimates : whether to train a SVC or SVR model for probability estimates, 0 or 1 (default 0) \n\
+@item @code{-b} : probability_estimates; whether to train a SVC or SVR model for probability estimates, 0 or 1 (default 0) \n\
 \n\
-@item @code{-w} weight : set the parameter C of class i to weight*C, for C-SVC (default 1) \n\
+@item @code{-w} : weight; set the parameter C of class i to weight*C, for C-SVC (default 1) \n\
 \n\
-@item @code{-v} n : n-fold cross validation mode \n\
+@item @code{-v} : n; n-fold cross validation mode \n\
 \n\
 @item @code{-q} : quiet mode (no outputs) \n\
 \n\
