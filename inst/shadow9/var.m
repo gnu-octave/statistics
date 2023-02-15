@@ -39,7 +39,7 @@
 ## @ifnottex
 ##
 ## @example
-## var (@var{v}) = (1 / (N-1)) * SUM_i (|@var{x}(i) - mean (@var{x})|^2)
+## var (@var{x}) = (1 / (N-1)) * SUM_i (|@var{x}(i) - mean (@var{x})|^2)
 ## @end example
 ##
 ## @noindent
@@ -205,7 +205,7 @@ function [v, m] = var (x, varargin)
     if (all_flag)
       if (isvector (weights))
         if (numel (weights) != numel (x))
-          error ("var: elements in weight vector do not match elements in X.");
+          error ("var: weight vector element count does not match X.");
         endif
       elseif (! (isequal (size (weights), szx)))
         error ("var: weight matrix or array does not match X in size.");
@@ -216,17 +216,24 @@ function [v, m] = var (x, varargin)
       if length (dim) == 0
         dim = 1;
       endif
-      if (numel (weights) != szx(dim))
-        if (isvector (weights))
-          error ("var: weight vector does not match first operating dimension.");
-        elseif (! isequal (size (weights), szx))
-          error ("var: weight matrix or array does not match X in size.");
+      if (isvector (weights))
+        if (numel (weights) != szx(dim))
+          error (["var: weight vector length does not match operating ", ...
+                  "dimension."]);
         endif
+      elseif (! isequal (size (weights), szx))
+          error ("var: weight matrix or array does not match X in size.");
       endif
     elseif (vecdim_scalar_vector(1))
-      if (isvector (weights) && numel (weights) != szx(vecdim))
-        error ("var: weight vector does not match given operating dimension.");
+      if (isvector (weights))
+        if (numel (weights) != szx(vecdim))
+          error (["var: weight vector length does not match operating ", ...
+                  "dimension."]);
+        endif
+      elseif (! isequal (size (weights), szx))
+          error ("var: weight matrix or array does not match X in size.");
       endif
+
     elseif (vecdim_scalar_vector(2) && ! (isequal (size (weights), szx)))
       error ("var: weight matrix or array does not match X in size.");
     endif
@@ -900,27 +907,29 @@ endfunction
 %!error <DIM must be a positive integer> var ([1 2 3], [], [-1 1])
 %!error <VECDIM must contain non-repeating positive integers> ...
 %! var (repmat ([1:20;6:25], [5 2 6 3]), 0, [1 2 2 2])
-%!error <weight vector does not match first operating dimension> ...
-%! var ([1 2 3; 2 3 4], [1 3 4])
-%!error <weight vector does not match first operating dimension> ...
-%! var ([1 2], [1 2 3])
-%!error <weight vector does not match first operating dimension> ...
-%! var (1, [1 2])
 %!error <weight matrix or array does not match X in size> ...
 %! var ([1 2], eye (2))
 %!error <weight matrix or array does not match X in size> ...
+%! var ([1 2 3 4], [1 2; 3 4])
+%!error <weight matrix or array does not match X in size> ...
+%! var ([1 2 3 4], [1 2; 3 4], 1)
+%!error <weight matrix or array does not match X in size> ...
+%! var ([1 2 3 4], [1 2; 3 4], [2 3])
+%!error <weight matrix or array does not match X in size> ...
 %! var (ones (2, 2), [1 2], [1 2])
 %!error <weight matrix or array does not match X in size> ...
+%! var ([1 2 3 4; 5 6 7 8], [1 2 1 2 1; 1 2 1 2 1], 1)
+%!error <weight matrix or array does not match X in size> ...
 %! var (repmat ([1:20;6:25], [5 2 6 3]), repmat ([1:20;6:25], [5 2 3]), [2 3])
-%!error <weight vector does not match given operating dimension> ...
-%! var ([1 2 3; 2 3 4], [1 3 4], 1)
-%!error <weight vector does not match given operating dimension> ...
-%! var ([1 2 3; 2 3 4], [1 3], 2)
-%!error <weight vector does not match given operating dimension> ...
-%! var ([1 2], [1 2], 1)
+%!error <weight vector length does not match> var ([1 2 3; 2 3 4], [1 3 4])
+%!error <weight vector length does not match> var ([1 2], [1 2 3])
+%!error <weight vector length does not match> var (1, [1 2])
+%!error <weight vector length does not match> var ([1 2 3; 2 3 4], [1 3 4], 1)
+%!error <weight vector length does not match> var ([1 2 3; 2 3 4], [1 3], 2)
+%!error <weight vector length does not match> var ([1 2], [1 2], 1)
 %!error <'all' flag cannot be used with DIM or VECDIM options> ...
 %! var (1, [], 1, "all")
-%!error <elements in weight vector do not match elements in X> ...
+%!error <weight vector element count does not match X> ...
 %! var ([1 2 3; 2 3 4], [1 3], "all")
 %!error <weight matrix or array does not match X in size> ...
 %! var (repmat ([1:20;6:25], [5 2 6 3]), repmat ([1:20;6:25], [5 2 3]), "all")
