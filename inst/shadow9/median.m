@@ -140,7 +140,7 @@ function m = median (x, varargin)
           omitnan = 1;
 
         case "includenan"
-          omitnan = 1;
+          omitnan = 0;
 
         case "native"
           if (out_flag)
