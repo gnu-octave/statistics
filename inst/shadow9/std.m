@@ -1,5 +1,5 @@
 ## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
-## Copyright (C) 2023 Nick Jankowski
+## Copyright (C) 2023 Nicholas Jankowski <jankowski.nicholas@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -532,6 +532,23 @@ function [s, m] = std (x, varargin)
 endfunction
 
 
+%!assert (std (13), 0)
+%!assert (std (single (13)), single (0))
+%!assert (std ([1,2,3]), 1)
+%!assert (std ([1,2,3], 1), sqrt (2/3), eps)
+%!assert (std ([1,2,3], [], 1), [0,0,0])
+%!assert (std ([1,2,3], [], 3), [0,0,0])
+%!assert (std (5, 99), 0)
+%!assert (std (5, 99, 1), 0)
+%!assert (std (5, 99, 2), 0)
+%!assert (std ([5 3], [99 99], 2), 1)
+%!assert (std ([1:7], [1:7]), sqrt (3))
+%!assert (std ([eye(3)], [1:3]), sqrt ([5/36, 2/9, 1/4]), eps)
+%!assert (std (ones (2,2,2), [1:2], 3), [(zeros (2,2))])
+%!assert (std ([1 2; 3 4], 0, 'all'), std ([1:4]))
+%!assert (std (reshape ([1:8], 2, 2, 2), 0, [1 3]), sqrt ([17/3 17/3]), eps)
+%!assert (std ([1 2 3;1 2 3], [], [1 2]), sqrt (0.8), eps)
+
 ## Test single input and optional arguments "all", DIM, "omitnan")
 %!test
 %! x = [-10:10];
@@ -564,11 +581,16 @@ endfunction
 %!assert (std (4*[4 5; 6 7; 8 9], [1 3], 2, 'omitnan'), sqrt(3)*[1;1;1], eps)
 %!assert (std ([4 NaN; 6 7; 8 9], [1 1 3], 1, 'omitnan'), [1.6 sqrt(3)/2], eps)
 %!assert (std (4*[4 NaN; 6 7; 8 9], [1 3], 2, 'omitnan'), sqrt(3)*[0;1;1], eps)
-%!assert (std (3*reshape(1:18, [3 3 2]), [1 2 3], 1, 'omitnan'), sqrt(5)*ones(1,3,2), eps)
-%!assert (std (reshape(1:18, [3 3 2]), [1 2 3], 2, 'omitnan'), sqrt(5)*ones(3,1,2), eps)
-%!assert (std (3*reshape(1:18, [3 3 2]), ones (3,3,2), [1 2], 'omitnan'), sqrt(60)*ones(1,1,2),eps)
-%!assert (std (3*reshape(1:18, [3 3 2]), ones (3,3,2), [1 4], 'omitnan'), sqrt(6)*ones(1,3,2),eps)
-%!assert (std (6*reshape(1:18, [3 3 2]), ones (3,3,2), [1:3], 'omitnan'), sqrt(969),eps)
+%!assert (std (3*reshape(1:18, [3 3 2]), [1 2 3], 1, 'omitnan'), ...
+%!          sqrt(5)*ones(1,3,2), eps)
+%!assert (std (reshape(1:18, [3 3 2]), [1 2 3], 2, 'omitnan'), ...
+%!          sqrt(5)*ones(3,1,2), eps)
+%!assert (std (3*reshape(1:18, [3 3 2]), ones (3,3,2), [1 2], 'omitnan'), ...
+%!          sqrt(60)*ones(1,1,2),eps)
+%!assert (std (3*reshape(1:18, [3 3 2]), ones (3,3,2), [1 4], 'omitnan'), ...
+%!          sqrt(6)*ones(1,3,2),eps)
+%!assert (std (6*reshape(1:18, [3 3 2]), ones (3,3,2), [1:3], 'omitnan'), ...
+%!          sqrt(969),eps)
 %!test
 %! x = reshape(1:18, [3 3 2]);
 %! x([2, 14]) = NaN;
@@ -604,13 +626,16 @@ endfunction
 %!assert (std (2*magic(3), [1 1 NaN], 1, 'omitnan'), [5 4 1], eps)
 %!assert (std (3*magic(3), ones(3,3)), sqrt([42 96 42]), eps)
 %!assert (std (3*magic(3), ones(3,3), 'omitnan'), sqrt([42 96 42]), eps)
-%!assert (std (3*magic(3), [1 1 1; 1 1 1; 1 NaN 1], 'omitnan'), sqrt([42 36 42]), eps)
+%!assert (std (3*magic(3), [1 1 1; 1 1 1; 1 NaN 1], 'omitnan'), ...
+%!         sqrt([42 36 42]), eps)
 %!assert (std (3*magic(3), ones(3,3), 1), sqrt([42 96 42]), eps)
 %!assert (std (3*magic(3), ones(3,3), 1, 'omitnan'), sqrt([42 96 42]), eps)
-%!assert (std (3*magic(3), [1 1 1; 1 1 1; 1 NaN 1], 1, 'omitnan'), sqrt([42 36 42]), eps)
+%!assert (std (3*magic(3), [1 1 1; 1 1 1; 1 NaN 1], 1, 'omitnan'), ...
+%!         sqrt([42 36 42]), eps)
 %!assert (std (3*magic(3), ones(3,3), [1 4]), sqrt([42 96 42]), eps)
 %!assert (std (3*magic(3), ones(3,3), [1 4], 'omitnan'), sqrt([42 96 42]), eps)
-%!assert (std (3*magic(3), [1 1 1; 1 1 1; 1 NaN 1],[1 4],'omitnan'), sqrt([42 36 42]), eps)
+%!assert (std (3*magic(3), [1 1 1; 1 1 1; 1 NaN 1],[1 4],'omitnan'), ...
+%!         sqrt([42 36 42]), eps)
 
 ## Test results with vecdim in n-dimensional arrays and "omitnan"
 %!test
@@ -628,28 +653,7 @@ endfunction
 %! v(2,1,1,3) = sqrt (33.40177912169048);
 %! assert (std (x, [], [3, 2], "omitnan"), v, 1e-14);
 
-## Test mean output
-%!test
-%! x = repmat ([1:20;6:25], [5, 2, 6, 3]);
-%! [v, m] = std (x, 0, [3 2]);
-%! assert (m, mean (x, [3 2]));
-%! [v, m] = std (x, 0, [1 2]);
-%! assert (m, mean (x, [1 2]));
-%! [v, m] = std (x, 0, [1 3 4]);
-%! assert (m, mean (x, [1 3 4]));
-%!test
-%! x = repmat ([1:20;6:25], [5, 2, 6, 3]);
-%! x(2,5,6,3) = NaN;
-%! [v, m] = std (x, 0, [3 2], "omitnan");
-%! assert (m, mean (x, [3 2], "omitnan"));
-
-## Test weighted mean and variance output
-%!test
-%! [v, m] = std (4 * eye (2), [1, 3]);
-%! assert (v, sqrt ([3, 3]), 1e-14);
-%! assert (m, [1, 3]);
-
-## Testing weights vector
+## Testing weights vectors & arrays
 %!assert (std (ones (2,2,2), [1:2], 3), [(zeros (2, 2))]);
 %!assert (std (magic (3), [1:9], "all"), 2.581988897471611, 1e-14);
 
@@ -660,36 +664,6 @@ endfunction
 %!assert (std (magic (3), [], 1), sqrt ([7, 16, 7]));
 %!assert (std (magic (3), [], [1 3]), sqrt ([7, 16, 7]));
 %!assert (std (magic (3), [], [1 99]), sqrt ([7, 16, 7]));
-
-## Test empty and scalar X
-%!test
-%! [v, m] = std ([]);
-%! assert (v, NaN);
-%! assert (m, NaN);
-%! [v, m] = std (3);
-%! assert (v, 0);
-%! assert (m, 3);
-
-####
-#### BISTs from core Octave
-####
-
-%!assert (std (13), 0)
-%!assert (std (single (13)), single (0))
-%!assert (std ([1,2,3]), 1)
-%!assert (std ([1,2,3], 1), sqrt (2/3), eps)
-%!assert (std ([1,2,3], [], 1), [0,0,0])
-%!assert (std ([1,2,3], [], 3), [0,0,0])
-%!assert (std (5, 99), 0)
-%!assert (std (5, 99, 1), 0)
-%!assert (std (5, 99, 2), 0)
-%!assert (std ([5 3], [99 99], 2), 1)
-%!assert (std ([1:7], [1:7]), sqrt (3))
-%!assert (std ([eye(3)], [1:3]), sqrt ([5/36, 2/9, 1/4]), eps)
-%!assert (std (ones (2,2,2), [1:2], 3), [(zeros (2,2))])
-%!assert (std ([1 2; 3 4], 0, 'all'), std ([1:4]))
-%!assert (std (reshape ([1:8], 2, 2, 2), 0, [1 3]), sqrt ([17/3 17/3]), eps)
-%!assert (std ([1 2 3;1 2 3], [], [1 2]), sqrt (0.8), eps)
 
 ## Test empty inputs
 %!assert (std ([]), NaN)
@@ -709,8 +683,11 @@ endfunction
 %!assert (std (ones (1,3,0,2), [], 2), NaN(1,1,0,2))
 %!assert (std (ones (1,3,0,2), [], 3), NaN(1,3,1,2))
 %!assert (std (ones (1,3,0,2), [], 4), NaN(1,3,0))
+%!test
+%! [~, m] = std ([]);
+%! assert (m, NaN);
 
-## Test second output
+## Test optional mean output
 %!test <*62395>
 %! [~, m] = std (13);
 %! assert (m, 13);
@@ -725,7 +702,7 @@ endfunction
 %! [~, m] = std ([1, 2, 3; 3 2 1], [], 3);
 %! assert (m, [1 2 3; 3 2 1]);
 
-## 2nd output, weighted inputs, vector dims
+## Test mean output, weighted inputs, vector dims
 %!test <*62395>
 %! [~, m] = std (5,99);
 %! assert (m, 5);
@@ -739,8 +716,12 @@ endfunction
 %! assert (m, 2.5, eps);
 %! [~, m] = std (reshape ([1:8], 2, 2, 2), 0, [1 3]);
 %! assert (m, [3.5, 5.5], eps);
+%!test
+%! [v, m] = std (4 * eye (2), [1, 3]);
+%! assert (v, sqrt ([3, 3]), 1e-14);
+%! assert (m, [1, 3]);
 
-## 2nd output, empty inputs
+## Test mean output, empty inputs, omitnan
 %!test <*62395>
 %! [~, m] = std ([]);
 %! assert (m, NaN);
@@ -752,6 +733,21 @@ endfunction
 #%! assert (m, []);
 #%! [~, m] = std (ones (1,3,0,2));
 #%! assert (m, NaN(1,1,0,2));
+
+## Test mean output, nD array
+%!test
+%! x = repmat ([1:20;6:25], [5, 2, 6, 3]);
+%! [~, m] = std (x, 0, [3 2]);
+%! assert (m, mean (x, [3 2]));
+%! [~, m] = std (x, 0, [1 2]);
+%! assert (m, mean (x, [1 2]));
+%! [~, m] = std (x, 0, [1 3 4]);
+%! assert (m, mean (x, [1 3 4]));
+%!test
+%! x = repmat ([1:20;6:25], [5, 2, 6, 3]);
+%! x(2,5,6,3) = NaN;
+%! [~, m] = std (x, 0, [3 2], "omitnan");
+%! assert (m, mean (x, [3 2], "omitnan"));
 
 ## Test Inf and NaN inputs
 %!test <*63203>
@@ -876,69 +872,61 @@ endfunction
 %! [v, m] = std (sparse (4 * eye (2)), [1, 3]);
 %! assert (full (v), sqrt ([3, 3]));
 %! assert (full (m), [1, 3]);
-
-%!test <63291>
+%!test <*63291>
 %! [v, m] = std (sparse (eye (2)));
 %! assert (issparse (v));
 %! assert (issparse (m));
-%!test <63291>
+%!test <*63291>
 %! [v, m] = std (sparse (eye (2)), [1, 3]);
 %! assert (issparse (v));
 %! assert (issparse (m));
 
+
 ## Test input validation
 %!error <Invalid call> std ()
-%!error <std: X must be a numeric vector or matrix> std (['A'; 'B'])
-%!error <std: normalization scalar must be either 0 or 1> std ([1 2 3], 2)
-%!error <std: weights must not contain any negative values> std ([1 2], [-1 0])
-%!error <std: weight matrix or array does not match X in size> ...
-%! std ([1 2], eye (2))
-%!error <std: weight matrix or array does not match X in size> ...
-%! std (ones (2, 2), [1 2], [1 2])
-%!error <std: weight vector does not match first operating dimension> ...
-%! std ([1 2], [1 2 3])
-%!error <std: weight vector does not match first operating dimension> ...
-%! std (1, [1 2])
-%!error <std: weight vector does not match given operating dimension> ...
-%! std ([1 2], [1 2], 1)
-%!error <std: DIM must be a positive integer scalar or vector> ...
-%! std (1, [], ones (2,2))
-%!error <std: DIM must be a positive integer scalar or vector> std (1, [], 1.5)
-%!error <std: DIM must be a positive integer scalar or vector> std (1, [], 0)
-
-%!error <Invalid call to std.  Correct usage is> std ()
-%!error <Invalid call to std.  Correct usage is> std (1, 2, "omitnan", 3)
-%!error <Invalid call to std.  Correct usage is> std (1, 2, 3, 4)
-%!error <Invalid call to std.  Correct usage is> std (1, 2, 3, 4, 5)
-%!error <Invalid call to std.  Correct usage is> std (1, "foo")
-%!error <Invalid call to std.  Correct usage is> std (1, [], "foo")
-%!error <std: normalization scalar must be either 0 or 1> std ([1 2], 2, "all")
-%!error <std: normalization scalar must be either 0 or 1> std ([1 2],0.5, "all")
-%!error <std: weights must not contain any negative values> std (1, -1)
-%!error <std: weights must not contain any negative values> std (1, [1 -1])
-%!error <std: weights must not contain any negative values> ...
+%!error <Invalid call> std (1, 2, "omitnan", 3)
+%!error <Invalid call> std (1, 2, 3, 4)
+%!error <Invalid call> std (1, 2, 3, 4, 5)
+%!error <Invalid call> std (1, "foo")
+%!error <Invalid call> std (1, [], "foo")
+%!error <normalization scalar must be either 0 or 1> std ([1 2 3], 2)
+%!error <normalization scalar must be either 0 or 1> std ([1 2], 2, "all")
+%!error <normalization scalar must be either 0 or 1> std ([1 2],0.5, "all")
+%!error <weights must not contain any negative values> std (1, -1)
+%!error <weights must not contain any negative values> std (1, [1 -1])
+%!error <weights must not contain any negative values> ...
 %! std ([1 2 3], [1 -1 0])
-%!error <std: X must be a numeric vector or matrix> std ({1:5})
-%!error <std: X must be a numeric vector or matrix> std ("char")
-%!error <std: DIM must be a positive integer> std (1, [], ones (2,2))
-%!error <std: DIM must be a positive integer> std (1, 0, 1.5)
-%!error <std: DIM must be a positive integer> std (1, [], 0)
+%!error <X must be a numeric vector or matrix> std ({1:5})
+%!error <X must be a numeric vector or matrix> std ("char")
+%!error <X must be a numeric vector or matrix> std (['A'; 'B'])
+%!error <DIM must be a positive integer> std (1, [], ones (2,2))
+%!error <DIM must be a positive integer> std (1, 0, 1.5)
+%!error <DIM must be a positive integer> std (1, [], 0)
+%!error <DIM must be a positive integer> std (1, [], 1.5)
 %!error <DIM must be a positive integer> var ([1 2 3], [], [-1 1])
-%!error <std: VECDIM must contain non-repeating positive integers> ...
+%!error <VECDIM must contain non-repeating positive integers> ...
 %! std (repmat ([1:20;6:25], [5 2 6 3]), 0, [1 2 2 2])
-%!error <std: weight vector does not match first operating dimension> ...
+%!error <weight vector does not match first operating dimension> ...
 %! std ([1 2 3; 2 3 4], [1 3 4])
-%!error <std: weight matrix or array does not match X in size> ...
+%!error <weight vector does not match first operating dimension> ...
+%! std ([1 2], [1 2 3])
+%!error <weight vector does not match first operating dimension> ...
+%! std (1, [1 2])
+%!error <weight matrix or array does not match X in size> ...
 %! std ([1 2], eye (2))
-%!error <std: weight vector does not match given operating dimension> ...
-%! std ([1 2 3; 2 3 4], [1 3 4], 1)
-%!error <std: weight vector does not match given operating dimension> ...
-%! std ([1 2 3; 2 3 4], [1 3], 2)
-%!error <std: weight matrix or array does not match X in size> ...
+%!error <weight matrix or array does not match X in size> ...
+%! std (ones (2, 2), [1 2], [1 2])
+%!error <weight matrix or array does not match X in size> ...
 %! std (repmat ([1:20;6:25], [5 2 6 3]), repmat ([1:20;6:25], [5 2 3]), [2 3])
-%!error <std: 'all' flag cannot be used with DIM or VECDIM options> ...
+%!error <weight vector does not match given operating dimension> ...
+%! std ([1 2 3; 2 3 4], [1 3 4], 1)
+%!error <weight vector does not match given operating dimension> ...
+%! std ([1 2 3; 2 3 4], [1 3], 2)
+%!error <weight vector does not match given operating dimension> ...
+%! std ([1 2], [1 2], 1)
+%!error <'all' flag cannot be used with DIM or VECDIM options> ...
 %! std (1, [], 1, "all")
-%!error <std: elements in weight vector do not match elements in X> ...
+%!error <elements in weight vector do not match elements in X> ...
 %! std ([1 2 3; 2 3 4], [1 3], "all")
-%!error <std: weight matrix or array does not match X in size> ...
+%!error <weight matrix or array does not match X in size> ...
 %! std (repmat ([1:20;6:25], [5 2 6 3]), repmat ([1:20;6:25], [5 2 3]), "all")
