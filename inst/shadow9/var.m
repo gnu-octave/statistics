@@ -1,5 +1,5 @@
 ## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
-## Copyright (C) 2023 Nick Jankowski
+## Copyright (C) 2023 Nicholas Jankowski <jankowski.nicholas@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
