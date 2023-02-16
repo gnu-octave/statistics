@@ -420,3 +420,49 @@ Summary of important user-visible changes for statistics 1.5.1:
  ** f_test_regression (replaced by regression_ftest)
 
  ** t_test_regression (replaced by regression_ttest)
+
+
+ Summary of important user-visible changes for statistics 1.5.4:
+-------------------------------------------------------------------
+
+ Important Notice: 1) `mean`, `median`, `std`, and `var` functions
+                       shadow core Octave's respective functions
+                   2) incompatibility with the `nan` package
+ New functions:
+ ==============
+
+ ** icdf (wrapper for all available *inv distribution functions)
+
+ ** fishertest (fully Matlab compatible with extra functionality)
+
+ ** procrustes (fully Matlab compatible)
+
+ ** ztest2 (new functionality, replacing old prop_test_2)
+
+ Improvements:
+ =============
+
+ ** cdf: updated wrapper for all available *cdf distribution functions
+
+ ** geomean: fixed MATLAB compatibility
+
+ ** harmmean: fixed MATLAB compatibility
+
+ ** mean: fixed MATLAB compatibility
+
+ ** median: fixed MATLAB compatibility
+
+ ** pdf: updated wrapper for all available *pdf distribution functions
+
+ ** random: updated wrapper for all available *rnd distribution functions
+
+ ** regression_ttest: new functionality
+
+ ** std: fixed MATLAB compatibility
+
+ ** var: fixed MATLAB compatibility
+
+ Removed Functions:
+ ==================
+
+ ** prop_test_2 (replaced by ztest2)

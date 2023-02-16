@@ -30,17 +30,17 @@
 ## @tex
 ## $$ {\rm geomean}(x) = \left( \prod_{i=1}^N x_i \right)^\frac{1}{N}
 ## = exp \left({1\over N} \sum_{i=1}^N log x_i \right) $$
-## where $N$ is the number of elements of @var{x}.
-## @end tex
 ##
+## @end tex
 ## @ifnottex
+##
 ## @example
 ## geomean (@var{x}) = PROD_i @var{x}(i) ^ (1/N)
 ## @end example
 ##
+## @end ifnottex
 ## @noindent
 ## where @math{N} is the length of the @var{x} vector.
-## @end ifnottex
 ##
 ## @item If @var{x} is a matrix, then @code{geomean(@var{x})} returns a row
 ## vector with the geometric mean of each columns in @var{x}.
@@ -48,24 +48,24 @@
 ## @item If @var{x} is a multidimensional array, then @code{geomean(@var{x})}
 ## operates along the first nonsingleton dimension of @var{x}.
 ##
-## @item If @var{x} contains any negative values, then @code{geomean(@var{x})}
-## returns complex values.
+## @item @var{x} must not contain any negative or complex values.
 ## @end itemize
 ##
 ## @code{geomean(@var{x}, "all")} returns the geometric mean of all the elements
-## in @var{x}.
+## in @var{x}.  If @var{x} contains any 0, then the returned value is 0.
 ##
 ## @code{geomean(@var{x}, @var{dim})} returns the geometric mean along the
-## operating dimension @var{dim} of @var{x}.
+## operating dimension @var{dim} of @var{x}.  Calculating the harmonic mean of
+## any subarray containing any 0 will return 0.
 ##
 ## @code{geomean(@var{x}, @var{vecdim})} returns the geometric mean over the
 ## dimensions specified in the vector @var{vecdim}.  For example, if @var{x} is
-## a 2-by-3-by-4 array, then @code{geomean(@var{x}, [1 2])} returns a 1-by-4
-## array. Each element of the output array is the geometric mean of the elements
-## on the corresponding page of @var{x}.  NOTE! @var{vecdim} MUST index at least
-## N-2 dimensions of @var{x}, where @code{N = length (size (@var{x}))} and N < 8.
-## If @var{vecdim} indexes all dimensions of @var{x}, then it is equivalent to
-## @code{geomean(@var{x}, "all")}.
+## a 2-by-3-by-4 array, then @code{geomean(@var{x}, [1 2])} returns a
+## 1-by-1-by-4 array.  Each element of the output array is the geometric mean of
+## the elements on the corresponding page of @var{x}.  If @var{vecdim} indexes
+## all dimensions of @var{x}, then it is equivalent to @code{geomean (@var{x},
+## "all")}.  Any dimension in @var{vecdim} greater than @code{ndims (@var{x})}
+## is ignored.
 ##
 ## @code{geomean(@dots{}, @var{nanflag})} specifies whether to exclude NaN
 ## values from the calculation, using any of the input argument combinations in
@@ -77,154 +77,231 @@
 ## @end deftypefn
 
 function m = geomean (x, varargin)
+
   if (nargin < 1 || nargin > 3)
     print_usage ();
   endif
-  if (! isnumeric (x) && ! isbool (x))
-    error ("X must be either numeric or boolean vector or matrix");
+
+  if (! isnumeric (x) || ! isreal (x) || ! all (x(! isnan (x))(:) >= 0))
+    error ("geomean: X must contain real nonnegative values.");
   endif
-  ## check for omitnan option
+
+  ## Set initial conditions
+  all_flag = false;
   omitnan = false;
-  nanflag_option = false;
-  if nargin > 1
-    for i = 1:nargin - 1
-      if (ischar (varargin{i}) && strcmpi (varargin{i}, "omitnan"))
-        omitnan = true;
-        nanflag_option = true;
-      elseif (ischar (varargin{i}) && strcmpi (varargin{i}, "includenan"))
-        nanflag_option = true;
-      endif
+
+  nvarg = numel (varargin);
+  varg_chars = cellfun ("ischar", varargin);
+  szx = size (x);
+  ndx = ndims (x);
+
+  if (nvarg > 1 && ! varg_chars(2:end))
+    ## Only first varargin can be numeric
+    print_usage ();
+  endif
+
+  ## Process any other char arguments.
+  if (any (varg_chars))
+    for i = varargin(varg_chars)
+      switch (lower (i{:}))
+        case "all"
+          all_flag = true;
+
+        case "omitnan"
+          omitnan = true;
+
+        case "includenan"
+          omitnan = false;
+
+        otherwise
+          print_usage ();
+      endswitch
     endfor
+    varargin(varg_chars) = [];
+    nvarg = numel (varargin);
   endif
-  ## for single input argument or with option omitnan
-  if (nargin == 1 || (nargin == 2 && nanflag_option))
-    sz = size (x);
-    dim = find (sz > 1, 1);
-    if length (dim) == 0
-      dim = 1;
-    endif
-    if omitnan
-      m = exp (nansum (log (x), dim) ./ sum (! isnan (x), dim));
-    else
-      m = exp (sum (log (x), dim) ./ size (x, dim));
-    endif
-  endif
-  ## for option "all"
-  if ((nargin == 2 || nargin == 3) && ischar (varargin{1}) && ...
-       strcmpi (varargin{1}, "all"))
-    if omitnan
-      m = exp (nansum (log (x(:)), 1) ./ length (x(! isnan (x))));
-    else
+
+  ## Single numeric input argument, no dimensions given.
+  if (nvarg == 0)
+
+    if (all_flag)
+      x = x(:);
+
+      if (omitnan)
+        x = x(! isnan (x));
+      endif
+
+      if (any (x == 0))
+        m = 0;
+        return;
+      endif
+
       m = exp (sum (log (x(:)), 1) ./ length (x(:)));
-    endif
-  endif
-  ## for option DIM
-  if ((nargin == 2 || nargin == 3) && isnumeric (varargin{1}) && ...
-       isscalar (varargin{1}))
-    dim = varargin{1};
-    if omitnan
-      m = exp (nansum (log (x), dim) ./ sum (! isnan (x), dim));
+
     else
-      m = exp (sum (log (x), dim) ./ size (x, dim));
-    endif
-  endif
-  ## resolve the pages of X when vecdim argument is provided
-  if (nargin == 2 || nargin == 3 ) && isnumeric (varargin{1}) && ...
-      ! isscalar (varargin{1}) && isvector (varargin{1})
-    vecdim = varargin{1};
-    sz = size (x);
-    ndims = length (sz);
-    misdim = [1:ndims];
-    ## keep remaining dimensions
-    for i = 1:length (vecdim)
-      misdim(misdim == vecdim(i)) = [];
-    endfor
-    ## if all dimensions are given, compute x(:)
-    if length (misdim) == 0
-      if omitnan
-        m = exp (nansum (log (x(:)), 1) ./ length (x(! isnan (x))));
-      else
-        m = exp (sum (log (x(:)), 1) ./ length (x(:)));
+      ## Find the first non-singleton dimension.
+      (dim = find (szx != 1, 1)) || (dim = 1);
+      n = szx(dim);
+      if (omitnan)
+        idx = isnan (x);
+        n = sum (! idx, dim);
+        x(idx) = 1;     # log (1) = 0
       endif
-    ## for 1 dimension left, return column vector
-    elseif length (misdim) == 1
-      x = permute (x, [misdim, vecdim]);
-      for i = 1:size (x, 1)
-        x_vec = x(i,:,:,:,:,:,:)(:);
-        if omitnan
-          x_vec = x_vec(! isnan (x_vec));
-        endif
-        m(i) = exp (sum (log (x_vec), 1) ./ length (x_vec));
-      endfor
-    ## for 2 dimensions left, return matrix
-    elseif length (misdim) == 2
-      x = permute (x, [misdim, vecdim]);
-      for i = 1:size (x, 1)
-        for j = 1:size (x, 2)
-          x_vec = x(i,j,:,:,:,:,:)(:);
-          if omitnan
-            x_vec = x_vec(! isnan (x_vec));
-          endif
-          m(i,j) = exp (sum (log (x_vec), 1) ./ length (x_vec));
-        endfor
-      endfor
-    ## for more that 2 dimensions left, print usage
+
+      m = exp (sum (log (x), dim) ./ n);
+      m(m == -Inf) = 0; # handle zeros in X
+
+    endif
+
+  else
+
+    ## Two numeric input arguments, dimensions given.  Note scalar is vector!
+    vecdim = varargin{1};
+    if (isempty (vecdim) || ! (isvector (vecdim) && all (vecdim > 0)) ...
+          || any (rem (vecdim, 1)))
+      error ("geomean: DIM must be a positive integer scalar or vector.");
+    endif
+
+    if (ndx == 2 && isempty (x) && szx == [0,0])
+      ## FIXME: this special case handling could be removed once sum
+      ##        compatibly handles all sizes of empty inputs
+      sz_out = szx;
+      sz_out (vecdim(vecdim <= ndx)) = 1;
+      m = NaN (sz_out);
     else
-      error ("vecdim must index at least N-2 dimensions of X");
+
+      if (isscalar (vecdim))
+        if (vecdim > ndx)
+          m = x;
+        else
+          n = szx(vecdim);
+          if (omitnan)
+            nanx = isnan (x);
+            n = sum (! nanx, vecdim);
+            x(nanx) = 1;    # log (1) = 0
+          endif
+
+          m = exp (sum (log (x), vecdim) ./ n);
+          m(m == -Inf) = 0; # handle zeros in X
+
+        endif
+
+      else
+        vecdim = sort (vecdim);
+        if (! all (diff (vecdim)))
+           error (strcat (["geomean: VECDIM must contain non-repeating"], ...
+                          [" positive integers."]));
+        endif
+        ## Ignore exceeding dimensions in VECDIM
+        vecdim(find (vecdim > ndims (x))) = [];
+
+        if (isempty (vecdim))
+          m = x;
+        else
+          ## Move vecdims to dim 1.
+
+          ## Calculate permutation vector
+          remdims = 1 : ndx;    # All dimensions
+          remdims(vecdim) = [];     # Delete dimensions specified by vecdim
+          nremd = numel (remdims);
+
+          ## If all dimensions are given, it is similar to all flag
+          if (nremd == 0)
+            x = x(:);
+
+            if (omitnan)
+              x = x(! isnan (x));
+            endif
+
+            if (any (x == 0))
+              m = 0;
+              return;
+            endif
+
+            m = exp (sum (log (x(:)), 1) ./ length (x(:)));
+
+          else
+            ## Permute to bring vecdims to front
+            perm = [vecdim, remdims];
+            x = permute (x, perm);
+
+            ## Reshape to squash all vecdims in dim1
+            num_dim = prod (szx(vecdim));
+            szx(vecdim) = [];
+            szx = [ones(1, length(vecdim)), szx];
+            szx(1) = num_dim;
+            x = reshape (x, szx);
+
+            ## Calculate mean on dim1
+            if (omitnan)
+              nanx = isnan (x);
+              n = sum (! nanx, 1);
+              x(nanx) = 1;    # log (1) = 0
+            else
+              n = szx(1);
+            endif
+
+            m = exp (sum (log (x), 1) ./ n);
+            m(m == -Inf) = 0; # handle zeros in X
+
+            ## Inverse permute back to correct dimensions
+            m = ipermute (m, perm);
+          endif
+        endif
+      endif
     endif
   endif
+
 endfunction
 
 
 ## Test single input and optional arguments "all", DIM, "omitnan")
 %!test
-%! x = [-10:10];
-%! y = [x;x+5;x-5];
+%! x = [0:10];
+%! y = [x;x+5;x+10];
 %! assert (geomean (x), 0);
-%! assert (geomean (y, 2), [0, 0, 0]');
+%! assert (geomean (y, 2), [0, 9.462942809849169, 14.65658770861967]', 4e-14);
 %! assert (geomean (y, "all"), 0);
 %! y(2,4) = NaN;
-%! assert (geomean (y', "omitnan"), [0 0 0]);
+%! assert (geomean (y, 2), [0 NaN 14.65658770861967]', 4e-14);
+%! assert (geomean (y', "omitnan"), [0 9.623207231679554 14.65658770861967], 4e-14);
 %! z = y + 20;
 %! assert (geomean (z, "all"), NaN);
-%! m = [19.02099329497543 NaN 13.60912525683438];
+%! assert (geomean (z, "all", "includenan"), NaN);
+%! assert (geomean (z, "all", "omitnan"), 29.59298474535024, 4e-14);
+%! m = [24.79790781765634 NaN 34.85638839503932];
 %! assert (geomean (z'), m, 4e-14);
 %! assert (geomean (z', "includenan"), m, 4e-14);
-%! m = [19.02099329497543 24.59957418295707 13.60912525683438];
+%! m(2) = 30.02181156156319;
 %! assert (geomean (z', "omitnan"), m, 4e-14);
 %! assert (geomean (z, 2, "omitnan"), m', 4e-14);
-
-## Test boolean input
-%!test
-%! assert (geomean (true, "all"), 1);
-%! assert (geomean (false), 0);
-%! assert (geomean ([true false true]), 0);
-%! assert (geomean ([true false true], 1), [1 0 1]);
-%! assert (geomean ([true false NaN], 1), [1 0 NaN]);
-%! assert (geomean ([true false NaN], 2), NaN);
-%! assert (geomean ([true false NaN], 2, "omitnan"), 0);
 
 ## Test dimension indexing with vecdim in n-dimensional arrays
 %!test
 %! x = repmat ([1:20;6:25], [5 2 6 3]);
-%! assert (size (geomean (x, [3 2])), [10 3]);
-%! assert (size (geomean (x, [1 2])), [6 3]);
-%! assert (size (geomean (x, [1 2 4])), [1 6]);
+%! assert (size (geomean (x, [3 2])), [10 1 1 3]);
+%! assert (size (geomean (x, [1 2])), [1 1 6 3]);
+%! assert (size (geomean (x, [1 2 4])), [1 1 6]);
 %! assert (size (geomean (x, [1 4 3])), [1 40]);
 %! assert (size (geomean (x, [1 2 3 4])), [1 1]);
 
 ## Test results with vecdim in n-dimensional arrays and "omitnan"
 %!test
 %! x = repmat ([1:20;6:25], [5 2 6 3]);
-%! m = repmat ([8.304361203739333;14.3078118884256], [5,3]);
-%! assert (geomean (x, [3 2]), m, 4e-14);
+%! m = repmat ([8.304361203739333;14.3078118884256], [5,1,1,3]);
+%! assert (geomean (x, [3 2]), m, 4e-13);
 %! x(2,5,6,3) = NaN;
 %! m(2,3) = NaN;
-%! assert (geomean (x, [3 2]), m, 4e-14);
+%! assert (geomean (x, [3 2]), m, 4e-13);
 %! m(2,3) = 14.3292729579901;
-%! assert (geomean (x, [3 2], "omitnan"), m, 4e-14);
+%! assert (geomean (x, [3 2], "omitnan"), m, 4e-13);
 
 ## Test errors
-%!error <X must be either numeric or boolean vector or matrix> geomean ("char")
-%!error <vecdim must index at least N-2 dimensions of X> geomean ...
-%!       (repmat ([1:20;6:25], [5 2 6 3 5]), [1 2])
+%!error <geomean: X must contain real nonnegative values.> geomean ("char")
+%!error <geomean: X must contain real nonnegative values.> geomean ([1 -1 3])
+%!error <geomean: DIM must be a positive integer scalar or vector.> ...
+%! geomean (repmat ([1:20;6:25], [5 2 6 3 5]), -1)
+%!error <geomean: DIM must be a positive integer scalar or vector.> ...
+%! geomean (repmat ([1:20;6:25], [5 2 6 3 5]), 0)
+%!error <geomean: VECDIM must contain non-repeating positive integers.> ...
+%! geomean (repmat ([1:20;6:25], [5 2 6 3 5]), [1 1])

@@ -108,7 +108,7 @@ function m = mean (x, varargin)
   out_flag = 0;
 
   nvarg = numel (varargin);
-  varg_chars = cellfun ('ischar', varargin);
+  varg_chars = cellfun ("ischar", varargin);
   outtype = "default";
   szx = size (x);
   ndx = ndims (x);
@@ -149,7 +149,7 @@ function m = mean (x, varargin)
           elseif (strcmp (outtype, "logical"))
             outtype = "double";
           elseif (strcmp (outtype, "char"))
-            error ("mean: OUTTYPE 'native' cannot be used with char type inputs");
+            error ("mean: OUTTYPE 'native' cannot be used with char type inputs.");
           endif
           out_flag = 1;
 
@@ -182,7 +182,7 @@ function m = mean (x, varargin)
   endif
 
   if (! (isnumeric (x) || islogical (x) || ischar (x)))
-    error ("mean: X must be either a numeric, boolean, or character array");
+    error ("mean: X must be either a numeric, boolean, or character array.");
   endif
 
   ## Process special cases for in/out size
@@ -193,7 +193,7 @@ function m = mean (x, varargin)
       x = x(:);
 
       if (omitnan)
-        x = x(isnan (x));
+        x = x(! isnan (x));
       endif
 
       if (any (isa (x, {"int64", "uint64"})))
@@ -224,9 +224,9 @@ function m = mean (x, varargin)
 
     ## Two numeric input arguments, dimensions given.  Note scalar is vector!
     vecdim = varargin{1};
-    if (isempty (vecdim) || ! (isvector (vecdim) && all (vecdim)) ...
+    if (isempty (vecdim) || ! (isvector (vecdim) && all (vecdim > 0)) ...
           || any (rem (vecdim, 1)))
-      error ("mean: DIM must be a positive integer scalar or vector");
+      error ("mean: DIM must be a positive integer scalar or vector.");
     endif
 
     if (ndx == 2 && isempty (x) && szx == [0,0])
@@ -278,7 +278,7 @@ function m = mean (x, varargin)
           if (nremd == 0)
             x = x(:);
             if (omitnan)
-              x = x(isnan (x));
+              x = x(! isnan (x));
             endif
 
             if (any (isa (x, {"int64", "uint64"})))
@@ -520,6 +520,8 @@ endfunction
 %! assert (mean (y', "omitnan"), [0 5.35 -5]);
 %! z = y + 20;
 %! assert (mean (z, "all"), NaN);
+%! assert (mean (z, "all", "includenan"), NaN);
+%! assert (mean (z, "all", "omitnan"), 20.03225806451613, 4e-14);
 %! m = [20 NaN 15];
 %! assert (mean (z'), m);
 %! assert (mean (z', "includenan"), m);
@@ -627,5 +629,7 @@ endfunction
 %!error <DIM must be a positive integer> mean (1, 1.5)
 %!error <DIM must be a positive integer> mean (1, 0)
 %!error <DIM must be a positive integer> mean (1, [])
+%!error <DIM must be a positive integer> mean (repmat ([1:20;6:25], [5 2]), -1)
+%!error <DIM must be a positive integer> mean (repmat ([1:5;5:9], [5 2]), [1 -1])
 %!error <DIM must be a positive integer> mean (1, ones(1,0))
 %!error <VECDIM must contain non-repeating> mean (1, [2 2])
