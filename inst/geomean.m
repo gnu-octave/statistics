@@ -52,10 +52,11 @@
 ## @end itemize
 ##
 ## @code{geomean(@var{x}, "all")} returns the geometric mean of all the elements
-## in @var{x}.
+## in @var{x}.  If @var{x} contains any 0, then the returned value is 0.
 ##
 ## @code{geomean(@var{x}, @var{dim})} returns the geometric mean along the
-## operating dimension @var{dim} of @var{x}.
+## operating dimension @var{dim} of @var{x}.  Calculating the harmonic mean of
+## any subarray containing any 0 will return 0.
 ##
 ## @code{geomean(@var{x}, @var{vecdim})} returns the geometric mean over the
 ## dimensions specified in the vector @var{vecdim}.  For example, if @var{x} is
