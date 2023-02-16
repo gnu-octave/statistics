@@ -242,24 +242,31 @@ function [v, m] = var (x, varargin)
   ## Force output for X being empty or scalar
   if (isempty (x))
     if (vecempty && (ndx == 2 || all ((szx) == 0)))
-      v = NaN;
-      m = NaN;
+      v = NaN (outtype);
+      if (nargout > 1)
+        m = NaN (outtype);
+      endif
       return;
     endif
     if (vecdim_scalar_vector(1))
       szx(vecdim) = 1;
-      v = NaN (szx);
-      m = NaN (szx);
+      v = NaN (szx, outtype);
+      if (nargout > 1)
+        m = NaN (szx, outtype);
+      endif
       return;
     endif
   endif
+
   if (isscalar (x))
     if (isfinite (x))
       v = zeros (outtype);
     else
       v = NaN (outtype);
     endif
-    m = x;
+    if (nargout > 1)
+      m = x;
+    endif
     return;
   endif
 
@@ -416,7 +423,8 @@ function [v, m] = var (x, varargin)
         x(xn) = m_exp(xn);
       endif
       if (weighted)
-        v = sum (weights .* ((x - m_exp) .^ 2), vecdim) ./ sum (weights, vecdim);
+        v = sum (weights .* ((x - m_exp) .^ 2), vecdim) ...
+              ./ sum (weights, vecdim);
       else
         v = sumsq (x - m_exp, vecdim);
         vn = isnan (v);
@@ -434,7 +442,7 @@ function [v, m] = var (x, varargin)
       ## Weights and nonscalar vecdim specified
 
       ## Ignore exceeding dimensions in VECDIM
-      remdims = 1:ndx;    # all dimensions
+      remdims = 1 : ndx;    # all dimensions
       vecdim(find (vecdim > ndx)) = [];
       ## Calculate permutation vector
       remdims(vecdim) = [];     # delete dimensions specified by vecdim
@@ -522,21 +530,29 @@ function [v, m] = var (x, varargin)
 
         ## Inverse permute back to correct dimensions
         v = ipermute (v, perm);
-        m = ipermute (m, perm);
+        if (nargout > 1)
+          m = ipermute (m, perm);
+        endif
       endif
     endif
   endif
 
   ## Preserve class type
-  switch outtype
-    case 'single'
+  if (nargout < 2)
+    if strcmp (outtype, "single")
       v = single (v);
-      m = single (m);
-    case 'double'
+    else
       v = double (v);
-      m = double (m);
-  endswitch
-
+    endif
+  else
+    if strcmp (outtype, "single")
+       v = single (v);
+       m = single (m);
+    else
+       v = double (v);
+       m = double (m);
+    endif
+  endif
 endfunction
 
 
@@ -668,13 +684,16 @@ endfunction
 
 ## Test empty inputs
 %!assert (var ([]), NaN)
+%!assert (class (var (single ([]))), "single")
 %!assert (var ([],[],1), NaN(1,0))
 %!assert (var ([],[],2), NaN(0,1))
 %!assert (var ([],[],3), [])
+%!assert (class (var (single ([]), [], 1)), "single")
 %!assert (var (ones (1,0)), NaN)
 %!assert (var (ones (1,0), [], 1), NaN(1,0))
 %!assert (var (ones (1,0), [], 2), NaN)
 %!assert (var (ones (1,0), [], 3), NaN(1,0))
+%!assert (class (var (ones (1, 0, "single"), [], 1)), "single")
 %!assert (var (ones (0,1)), NaN)
 %!assert (var (ones (0,1), [], 1), NaN)
 %!assert (var (ones (0,1), [], 2), NaN(0,1))
