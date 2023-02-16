@@ -30,17 +30,17 @@
 ## @tex
 ## $$ {\rm geomean}(x) = \left( \prod_{i=1}^N x_i \right)^\frac{1}{N}
 ## = exp \left({1\over N} \sum_{i=1}^N log x_i \right) $$
-## where $N$ is the number of elements of @var{x}.
-## @end tex
 ##
+## @end tex
 ## @ifnottex
+##
 ## @example
 ## geomean (@var{x}) = PROD_i @var{x}(i) ^ (1/N)
 ## @end example
 ##
+## @end ifnottex
 ## @noindent
 ## where @math{N} is the length of the @var{x} vector.
-## @end ifnottex
 ##
 ## @item If @var{x} is a matrix, then @code{geomean(@var{x})} returns a row
 ## vector with the geometric mean of each columns in @var{x}.
@@ -48,8 +48,7 @@
 ## @item If @var{x} is a multidimensional array, then @code{geomean(@var{x})}
 ## operates along the first nonsingleton dimension of @var{x}.
 ##
-## @item If @var{x} contains any negative values, then @code{geomean(@var{x})}
-## returns complex values.
+## @item @var{x} must not contain any negative or complex values.
 ## @end itemize
 ##
 ## @code{geomean(@var{x}, "all")} returns the geometric mean of all the elements
@@ -60,12 +59,12 @@
 ##
 ## @code{geomean(@var{x}, @var{vecdim})} returns the geometric mean over the
 ## dimensions specified in the vector @var{vecdim}.  For example, if @var{x} is
-## a 2-by-3-by-4 array, then @code{geomean(@var{x}, [1 2])} returns a 1-by-4
-## array. Each element of the output array is the geometric mean of the elements
-## on the corresponding page of @var{x}.  NOTE! @var{vecdim} MUST index at least
-## N-2 dimensions of @var{x}, where @code{N = length (size (@var{x}))} and N < 8.
-## If @var{vecdim} indexes all dimensions of @var{x}, then it is equivalent to
-## @code{geomean(@var{x}, "all")}.
+## a 2-by-3-by-4 array, then @code{geomean(@var{x}, [1 2])} returns a
+## 1-by-1-by-4 array.  Each element of the output array is the geometric mean of
+## the elements on the corresponding page of @var{x}.  If @var{vecdim} indexes
+## all dimensions of @var{x}, then it is equivalent to @code{geomean (@var{x},
+## "all")}.  Any dimension in @var{vecdim} greater than @code{ndims (@var{x})}
+## is ignored.
 ##
 ## @code{geomean(@dots{}, @var{nanflag})} specifies whether to exclude NaN
 ## values from the calculation, using any of the input argument combinations in
