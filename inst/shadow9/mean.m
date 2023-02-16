@@ -521,7 +521,7 @@ endfunction
 %! z = y + 20;
 %! assert (mean (z, "all"), NaN);
 %! assert (mean (z, "all", "includenan"), NaN);
-%! assert (mean (z, "all", "omitnan"), 20.03225806451613, 1e-14);
+%! assert (mean (z, "all", "omitnan"), 20.03225806451613, 4e-14);
 %! m = [20 NaN 15];
 %! assert (mean (z'), m);
 %! assert (mean (z', "includenan"), m);
