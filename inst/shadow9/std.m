@@ -243,14 +243,18 @@ function [s, m] = std (x, varargin)
   ## Force output for X being empty or scalar
   if (isempty (x))
     if (vecempty && (ndx == 2 || all ((szx) == 0)))
-      s = NaN;
-      m = NaN;
+      s = NaN (outtype);
+      if (nargout > 1)
+        m = NaN (outtype);
+      endif
       return;
     endif
     if (vecdim_scalar_vector(1))
       szx(vecdim) = 1;
-      s = NaN (szx);
-      m = NaN (szx);
+      s = NaN (szx, outtype);
+      if (nargout > 1)
+        m = NaN (szx, outtype);
+      endif
       return;
     endif
   endif
@@ -260,7 +264,9 @@ function [s, m] = std (x, varargin)
     else
       s = NaN (outtype);
     endif
-    m = x;
+    if (nargout > 1)
+      m = x;
+    endif
     return;
   endif
 
@@ -437,7 +443,7 @@ function [s, m] = std (x, varargin)
     ## Weights and nonscalar vecdim specified
 
     ## Ignore exceeding dimensions in VECDIM
-      remdims = 1:ndx;    # all dimensions
+      remdims = 1 : ndx;    # all dimensions
       vecdim(find (vecdim > ndx)) = [];
       ## Calculate permutation vector
       remdims(vecdim) = [];     # delete dimensions specified by vecdim
@@ -521,21 +527,29 @@ function [s, m] = std (x, varargin)
 
         ## Inverse permute back to correct dimensions
         s = ipermute (s, perm);
-        m = ipermute (m, perm);
+        if (nargout > 1)
+          m = ipermute (m, perm);
+        endif
       endif
     endif
   endif
 
   ## Preserve class type
-  switch outtype
-    case 'single'
+  if (nargout < 2)
+    if strcmp (outtype, "single")
+      s = single (s);
+    else
+      s = double (s);
+    endif
+  else
+    if strcmp (outtype, "single")
       s = single (s);
       m = single (m);
-    case 'double'
+    else
       s = double (s);
       m = double (m);
-  endswitch
-
+    endif
+  endif
 endfunction
 
 
@@ -674,13 +688,16 @@ endfunction
 
 ## Test empty inputs
 %!assert (std ([]), NaN)
+%!assert (class (var (single ([]))), "single")
 %!assert (std ([],[],1), NaN(1,0))
 %!assert (std ([],[],2), NaN(0,1))
 %!assert (std ([],[],3), [])
+%!assert (class (var (single ([]), [], 1)), "single")
 %!assert (std (ones (1,0)), NaN)
 %!assert (std (ones (1,0), [], 1), NaN(1,0))
 %!assert (std (ones (1,0), [], 2), NaN)
 %!assert (std (ones (1,0), [], 3), NaN(1,0))
+%!assert (class (var (ones (1, 0, "single"), [], 1)), "single")
 %!assert (std (ones (0,1)), NaN)
 %!assert (std (ones (0,1), [], 1), NaN)
 %!assert (std (ones (0,1), [], 2), NaN(0,1))
