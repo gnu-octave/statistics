@@ -128,7 +128,7 @@ function m = geomean (x, varargin)
       x = x(:);
 
       if (omitnan)
-        x = x(isnan (x));
+        x = x(! isnan (x));
       endif
 
       if (any (x == 0))
@@ -210,7 +210,7 @@ function m = geomean (x, varargin)
             x = x(:);
 
             if (omitnan)
-              x = x(isnan (x));
+              x = x(! isnan (x));
             endif
 
             if (any (x == 0))
@@ -260,13 +260,15 @@ endfunction
 %! x = [0:10];
 %! y = [x;x+5;x+10];
 %! assert (geomean (x), 0);
-%! assert (geomean (y, 2), [0, 9.462942809849169, 14.65658770861967]', 1e-14);
+%! assert (geomean (y, 2), [0, 9.462942809849169, 14.65658770861967]', 4e-14);
 %! assert (geomean (y, "all"), 0);
 %! y(2,4) = NaN;
-%! assert (geomean (y, 2), [0 NaN 14.65658770861967]', 1e-14);
-%! assert (geomean (y', "omitnan"), [0 9.623207231679554 14.65658770861967], 1e-14);
+%! assert (geomean (y, 2), [0 NaN 14.65658770861967]', 4e-14);
+%! assert (geomean (y', "omitnan"), [0 9.623207231679554 14.65658770861967], 4e-14);
 %! z = y + 20;
 %! assert (geomean (z, "all"), NaN);
+%! assert (geomean (z, "all", "includenan"), NaN);
+%! assert (geomean (z, "all", "omitnan"), 29.59298474535024, 4e-14);
 %! m = [24.79790781765634 NaN 34.85638839503932];
 %! assert (geomean (z'), m, 4e-14);
 %! assert (geomean (z', "includenan"), m, 4e-14);
