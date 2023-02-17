@@ -50,7 +50,7 @@
 ## @code{[@var{h}, @var{pval}, @var{ci}, @var{zvalue}] = ztest (@dots{})}
 ## returns the value of the test statistic.
 ##
-## @code{[@dots{}] = ztest (@dots{}, @var{name}, @var{value}), @dots{}}
+## @code{[@dots{}] = ztest (@dots{}, @var{name}, @var{value}, @dots{})}
 ## specifies one or more of the following name/value pairs:
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
