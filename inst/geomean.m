@@ -136,7 +136,7 @@ function m = geomean (x, varargin)
         return;
       endif
 
-      m = exp (sum (log (x(:)), 1) ./ length (x(:)));
+      m = exp (sum (log (x), 1) ./ length (x));
 
     else
       ## Find the first non-singleton dimension.
@@ -201,7 +201,7 @@ function m = geomean (x, varargin)
           ## Move vecdims to dim 1.
 
           ## Calculate permutation vector
-          remdims = 1 : ndx;    # All dimensions
+          remdims = 1 : ndx;        # All dimensions
           remdims(vecdim) = [];     # Delete dimensions specified by vecdim
           nremd = numel (remdims);
 
@@ -218,7 +218,8 @@ function m = geomean (x, varargin)
               return;
             endif
 
-            m = exp (sum (log (x(:)), 1) ./ length (x(:)));
+            m = exp (sum (log (x), 1) ./ length (x));
+            m(m == -Inf) = 0; # handle zeros in X
 
           else
             ## Permute to bring vecdims to front
@@ -260,11 +261,13 @@ endfunction
 %! x = [0:10];
 %! y = [x;x+5;x+10];
 %! assert (geomean (x), 0);
-%! assert (geomean (y, 2), [0, 9.462942809849169, 14.65658770861967]', 4e-14);
+%! m = [0 9.462942809849169 14.65658770861967];
+%! assert (geomean (y, 2), m', 4e-14);
 %! assert (geomean (y, "all"), 0);
 %! y(2,4) = NaN;
-%! assert (geomean (y, 2), [0 NaN 14.65658770861967]', 4e-14);
-%! assert (geomean (y', "omitnan"), [0 9.623207231679554 14.65658770861967], 4e-14);
+%! m(2) = 9.623207231679554;
+%! assert (geomean (y, 2), [0 NaN m(3)]', 4e-14);
+%! assert (geomean (y', "omitnan"), m, 4e-14);
 %! z = y + 20;
 %! assert (geomean (z, "all"), NaN);
 %! assert (geomean (z, "all", "includenan"), NaN);
@@ -288,7 +291,7 @@ endfunction
 ## Test results with vecdim in n-dimensional arrays and "omitnan"
 %!test
 %! x = repmat ([1:20;6:25], [5 2 6 3]);
-%! m = repmat ([8.304361203739333;14.3078118884256], [5,1,1,3]);
+%! m = repmat ([8.304361203739333;14.3078118884256], [5 1 1 3]);
 %! assert (geomean (x, [3 2]), m, 4e-13);
 %! x(2,5,6,3) = NaN;
 %! m(2,3) = NaN;
