@@ -170,6 +170,7 @@ Hypothesis Testing
  vartest2
  vartestn
  ztest
+ ztest2
 I/O
  libsvmread
  libsvmwrite
