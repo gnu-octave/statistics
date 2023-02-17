@@ -62,9 +62,9 @@
 ## @item @tab "tail" @tab a string specifying the alternative hypothesis:
 ## @end multitable
 ## @multitable @columnfractions 0.1 0.15 0.75
-## @item @tab "both" @tab "variance is not @var{v}" (two-tailed, default)
-## @item @tab "left" @tab "variance is less than @var{v}" (left-tailed)
-## @item @tab "right" @tab "variance is greater than @var{v}" (right-tailed)
+## @item @tab "both" @tab "mean is not @var{m}" (two-tailed, default)
+## @item @tab "left" @tab "mean is less than @var{m}" (left-tailed)
+## @item @tab "right" @tab "mean is greater than @var{m}" (right-tailed)
 ## @end multitable
 ##
 ## @seealso{ttest, vartest, signtest, kstest}
