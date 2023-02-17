@@ -79,33 +79,33 @@
 <p>$$ {\rm geomean}(x) = \left( \prod_{i=1}^N x_i \right)^\frac{1}{N}
  = exp \left({1\over N} \sum_{i=1}^N log x_i \right) $$
 
+</p> 
+ <p> where <em>N</em> is the length of the <var>x</var> vector.
 </p>
- 
-
  </li><li> If <var>x</var> is a matrix, then <code>geomean(<var>x</var>)</code> returns a row
  vector with the geometric mean of each columns in <var>x</var>.
 
  </li><li> If <var>x</var> is a multidimensional array, then <code>geomean(<var>x</var>)</code>
  operates along the first nonsingleton dimension of <var>x</var>.
 
- </li><li> If <var>x</var> contains any negative values, then <code>geomean(<var>x</var>)</code>
- returns complex values.
+ </li><li> <var>x</var> must not contain any negative or complex values.
  </li></ul>
 
 <p> <code>geomean(<var>x</var>, &quot;all&quot;)</code> returns the geometric mean of all the elements
- in <var>x</var>.
+ in <var>x</var>.  If <var>x</var> contains any 0, then the returned value is 0.
 </p>
 <p> <code>geomean(<var>x</var>, <var>dim</var>)</code> returns the geometric mean along the
- operating dimension <var>dim</var> of <var>x</var>.
+ operating dimension <var>dim</var> of <var>x</var>.  Calculating the harmonic mean of
+ any subarray containing any 0 will return 0.
 </p>
 <p> <code>geomean(<var>x</var>, <var>vecdim</var>)</code> returns the geometric mean over the
  dimensions specified in the vector <var>vecdim</var>.  For example, if <var>x</var> is
- a 2-by-3-by-4 array, then <code>geomean(<var>x</var>, [1 2])</code> returns a 1-by-4
- array. Each element of the output array is the geometric mean of the elements
- on the corresponding page of <var>x</var>.  NOTE! <var>vecdim</var> MUST index at least
- N-2 dimensions of <var>x</var>, where <code>N = length (size (<var>x</var>))</code> and N &lt; 8.
- If <var>vecdim</var> indexes all dimensions of <var>x</var>, then it is equivalent to
- <code>geomean(<var>x</var>, &quot;all&quot;)</code>.
+ a 2-by-3-by-4 array, then <code>geomean(<var>x</var>, [1 2])</code> returns a
+ 1-by-1-by-4 array.  Each element of the output array is the geometric mean of
+ the elements on the corresponding page of <var>x</var>.  If <var>vecdim</var> indexes
+ all dimensions of <var>x</var>, then it is equivalent to <code>geomean (<var>x</var>,
+ &quot;all&quot;)</code>.  Any dimension in <var>vecdim</var> greater than <code>ndims (<var>x</var>)</code>
+ is ignored.
 </p>
 <p> <code>geomean(&hellip;, <var>nanflag</var>)</code> specifies whether to exclude NaN
  values from the calculation, using any of the input argument combinations in

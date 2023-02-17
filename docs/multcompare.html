@@ -86,7 +86,7 @@
  statistic and the degrees of freedom.
  All tests by multcompare are two-tailed.
 </p>
-<p> @qcode{multcompare} can take a number of optional parameters as name-value
+<p> <code>multcompare</code> can take a number of optional parameters as name-value
  pairs.
 </p>
 <p> <code>[&hellip;] = multcompare (<var>STATS</var>, &quot;alpha&quot;, <var>ALPHA</var>)</code>
@@ -135,7 +135,7 @@
  Carlo method (of 1e+06 random samples), you can expect the results to
  fluctuate slightly with each call to multcompare and the calculations may be
  slow to complete for a large number of comparisons.  If the parallel package
- is installed and loaded, @qcode{multcompare} will automatically accelerate
+ is installed and loaded, <code>multcompare</code> will automatically accelerate
  computations by parallel processing.  Note that p-values calculated by the
  &quot;mvt&quot; are truncated at 1e-06.
  </p></li></ul>
@@ -148,7 +148,7 @@
  in the calculation of p-values for the multiple comparison tests. By default,
  this value is extracted from the <var>STATS</var> structure of the ANOVA test, but
  setting <var>DF</var> maybe necessary to approximate Satterthwaite correction if
- @qcode{anovan} was performed using weights.
+ <code>anovan</code> was performed using weights.
  </li></ul>
 
 <p> <code>[&hellip;] = multcompare (<var>STATS</var>, &quot;dim&quot;, <var>DIM</var>)</code>
@@ -160,7 +160,7 @@
  anovan. The value [1 3], for example, computes the estimated marginal mean
  for each combination of the first and third predictor values. The default is
  to compute over the first dimension (i.e. 1). If the specified dimension is,
- or includes, a continuous factor then @qcode{multcompare} will return an
+ or includes, a continuous factor then <code>multcompare</code> will return an
  error.
  </li></ul>
 

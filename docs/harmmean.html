@@ -78,17 +78,16 @@
  
 <p>$$ {\rm harmmean}(x) = \frac{N}{\sum_{i=1}^N \frac{1}{x_i}} $$
 
+</p> 
+ <p> where <em>N</em> is the length of the <var>x</var> vector.
 </p>
- 
-
  </li><li> If <var>x</var> is a matrix, then <code>harmmean(<var>x</var>)</code> returns a row
  vector with the harmonic mean of each columns in <var>x</var>.
 
  </li><li> If <var>x</var> is a multidimensional array, then <code>harmmean(<var>x</var>)</code>
  operates along the first nonsingleton dimension of <var>x</var>.
 
- </li><li> If <var>x</var> contains any negative values, then <code>harmmean(<var>x</var>)</code>
- returns an error.
+ </li><li> <var>x</var> must not contain any negative or complex values.
  </li></ul>
 
 <p> <code>harmmean(<var>x</var>, &quot;all&quot;)</code> returns the harmonic mean of all the elements
@@ -100,18 +99,18 @@
 </p>
 <p> <code>harmmean(<var>x</var>, <var>vecdim</var>)</code> returns the harmonic mean over the
  dimensions specified in the vector <var>vecdim</var>.  For example, if <var>x</var> is
- a 2-by-3-by-4 array, then <code>harmmean(<var>x</var>, [1 2])</code> returns a 1-by-4
- array. Each element of the output array is the harmonic mean of the elements
- on the corresponding page of <var>x</var>.  NOTE! <var>vecdim</var> MUST index at least
- N-2 dimensions of <var>x</var>, where <code>N = length (size (<var>x</var>))</code> and N &lt; 8.
- If <var>vecdim</var> indexes all dimensions of <var>x</var>, then it is equivalent to
- <code>geomean(<var>x</var>, &quot;all&quot;)</code>.
+ a 2-by-3-by-4 array, then <code>harmmean(<var>x</var>, [1 2])</code> returns a
+ 1-by-1-by-4 array.  Each element of the output array is the harmonic mean of
+ the elements on the corresponding page of <var>x</var>.  If <var>vecdim</var> indexes
+ all dimensions of <var>x</var>, then it is equivalent to <code>harmmean (<var>x</var>,
+ &quot;all&quot;)</code>.  Any dimension in <var>vecdim</var> greater than <code>ndims (<var>x</var>)</code>
+ is ignored.
 </p>
 <p> <code>harmmean(&hellip;, <var>nanflag</var>)</code> specifies whether to exclude NaN
  values from the calculation, using any of the input argument combinations in
- previous syntaxes. By default, harmmean includes NaN values in the calculation
- (<var>nanflag</var> has the value &quot;includenan&quot;).  To exclude NaN values, set the
- value of <var>nanflag</var> to &quot;omitnan&quot;.
+ previous syntaxes. By default, harmmean includes NaN values in the
+ calculation (<var>nanflag</var> has the value &quot;includenan&quot;).  To exclude NaN
+ values, set the value of <var>nanflag</var> to &quot;omitnan&quot;.
 </p>
 <p> <strong>See also: </strong>
   <a href="geomean.html">geomean</a>, 

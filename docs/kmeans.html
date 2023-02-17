@@ -73,7 +73,7 @@
 <p> Perform a <var>k</var>-means clustering of the <var>N</var>x<var>D</var> matrix <var>data</var>.
 </p>
 <div class="ms-5">
-<p> If parameter @qcode{&quot;start&quot;} is specified, then <var>k</var> may be empty
+<p> If parameter <code>&quot;start&quot;</code> is specified, then <var>k</var> may be empty
  in which case <var>k</var> is set to the number of rows of <var>start</var>.
 </p>
 <p> The outputs are:
@@ -164,7 +164,7 @@
 <p> The distance measure used for partitioning and calculating centroids.
 </p>
  <dl compact="compact">
-<dt> <code>@qcode{sqeuclidean}</code></dt>
+<dt> <code><code>sqeuclidean</code></code></dt>
 </dl>
 <p> The squared Euclidean distance. i.e. the sum of the squares of the
  differences between corresponding components.  In this case, the centroid is
@@ -172,7 +172,7 @@
  This is the only distance for which this algorithm is truly &quot;k-means&quot;.
 </p>
  </dd>
-<dt> <code>@qcode{cityblock}</code></dt>
+<dt> <code><code>cityblock</code></code></dt>
 </dl>
 <p> The sum metric, or L1 distance, i.e.,
  the sum of the absolute differences between corresponding components.
@@ -180,14 +180,14 @@
  This gives the k-medians algorithm.
 </p>
  </dd>
-<dt> <code>@qcode{cosine}</code></dt>
+<dt> <code><code>cosine</code></code></dt>
 </dl>
 <p> One minus the cosine of the included angle between points (treated as
  vectors). Each centroid is the mean of the points in that cluster, after
  normalizing those points to unit Euclidean length.
 </p>
  </dd>
-<dt> <code>@qcode{correlation}</code></dt>
+<dt> <code><code>correlation</code></code></dt>
 </dl>
 <p> One minus the sample correlation between points (treated as sequences of
  values). Each centroid is the component-wise mean of the points in that
@@ -195,7 +195,7 @@
  standard deviation.
 </p>
  </dd>
-<dt> <code>@qcode{hamming}</code></dt>
+<dt> <code><code>hamming</code></code></dt>
 </dl>
 <p> The number of components in which the sample and the centroid differ.
  In this case, the centroid is the median of all samples in its cluster.
@@ -210,16 +210,16 @@
 <p> What to do when a centroid is not the closest to any data sample.
 </p>
  <dl compact="compact">
-<dt> <code>@qcode{error}</code></dt>
+<dt> <code><code>error</code></code></dt>
 </dl>
 <p>       Throw an error.
  </p></dd>
-<dt> <code>@qcode{singleton}</code></dt>
+<dt> <code><code>singleton</code></code></dt>
 </dl>
 <p>       (Default) Select the row of <var>data</var> that has the highest error and
        use that as the new centroid.
  </p></dd>
-<dt> <code>@qcode{drop}</code></dt>
+<dt> <code><code>drop</code></code></dt>
 </dl>
 <p>       Remove the centroid, and continue computation with one fewer centroid.
        The dimensions of the outputs <var>centroids</var> and <var>d</var>
@@ -233,15 +233,15 @@
 </dl>
 <p> Display a text summary.
  </p><dl compact="compact">
-<dt> <code>@qcode{off}</code></dt>
+<dt> <code><code>off</code></code></dt>
 </dl>
 <p>       (Default) Display no summary.
  </p></dd>
-<dt> <code>@qcode{final}</code></dt>
+<dt> <code><code>final</code></code></dt>
 </dl>
 <p>       Display a summary for each clustering operation.
  </p></dd>
-<dt> <code>@qcode{iter}</code></dt>
+<dt> <code><code>iter</code></code></dt>
 </dl>
 <p>       Display a summary for each iteration of a clustering operation.
 </p>

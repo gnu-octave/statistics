@@ -83,13 +83,13 @@
 <p> Optional arguments may include name-value pairs as follows:
 </p>
  <dl compact="compact">
-<dt> @qcode{&quot;KFold&quot;}</dt>
+<dt> <code>&quot;KFold&quot;</code></dt>
 </dl>
 <p> Divide set into <var>k</var> equal-size subsets, using each one successively
  for validation.
 </p>
  </dd>
-<dt> @qcode{&quot;HoldOut&quot;}</dt>
+<dt> <code>&quot;HoldOut&quot;</code></dt>
 </dl>
 <p> Divide set into two subsets, training and validation. If the value
  <var>k</var> is a fraction, that is the fraction of values put in the
@@ -97,43 +97,43 @@
  that is the number of values in the validation subset.
 </p>
  </dd>
-<dt> @qcode{&quot;LeaveOut&quot;}</dt>
+<dt> <code>&quot;LeaveOut&quot;</code></dt>
 </dl>
 <p> Leave-one-out partition (each element is placed in its own subset).
  The value is ignored.
 </p>
  </dd>
-<dt> @qcode{&quot;Partition&quot;}</dt>
+<dt> <code>&quot;Partition&quot;</code></dt>
 </dl>
 <p> The value should be a <var>cvpartition</var> object.
 </p>
  </dd>
-<dt> @qcode{&quot;Given&quot;}</dt>
+<dt> <code>&quot;Given&quot;</code></dt>
 </dl>
 <p> The value should be an <var>n</var> by <var>1</var> vector specifying in which
  partition to put each element.
 </p>
  </dd>
-<dt> @qcode{&quot;stratify&quot;}</dt>
+<dt> <code>&quot;stratify&quot;</code></dt>
 </dl>
 <p> The value should be an <var>n</var> by <var>1</var> vector containing class
- designations for the elements, in which case the @qcode{&quot;KFold&quot;} and
- @qcode{&quot;HoldOut&quot;} partitionings attempt to ensure each partition
+ designations for the elements, in which case the <code>&quot;KFold&quot;</code> and
+ <code>&quot;HoldOut&quot;</code> partitionings attempt to ensure each partition
  represents the classes proportionately.
 </p>
  </dd>
-<dt> @qcode{&quot;mcreps&quot;}</dt>
+<dt> <code>&quot;mcreps&quot;</code></dt>
 </dl>
 <p> The value should be a positive integer specifying the number of times
  to resample based on different partitionings. Currently only works with
- the partition type @qcode{&quot;HoldOut&quot;}.
+ the partition type <code>&quot;HoldOut&quot;</code>.
 </p>
 </dd>
 </dl>
 
-<p> Only one of @qcode{&quot;KFold&quot;}, @qcode{&quot;HoldOut&quot;}, @qcode{&quot;LeaveOut&quot;},
- @qcode{&quot;Given&quot;}, @qcode{&quot;Partition&quot;} should be specified. If none is
- specified, the default is @qcode{&quot;KFold&quot;} with <var>k</var> = 10.
+<p> Only one of <code>&quot;KFold&quot;</code>, <code>&quot;HoldOut&quot;</code>, <code>&quot;LeaveOut&quot;</code>,
+ <code>&quot;Given&quot;</code>, <code>&quot;Partition&quot;</code> should be specified. If none is
+ specified, the default is <code>&quot;KFold&quot;</code> with <var>k</var> = 10.
 </p>
 <p> <strong>See also: </strong>
 cvpartition

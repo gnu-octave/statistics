@@ -74,9 +74,9 @@
 <p> Regress the continuous outcome (i.e. dependent variable) <var>y</var> on
  continuous or categorical predictors (i.e. independent variables) <var>X</var>
  by minimizing the sum-of-squared residuals. Unless requested otherwise,
- @qcode{fitlm} prints the model formula, the regression coefficients (i.e.
- parameters/contrasts) and an ANOVA table. Note that unlike @qcode{anovan},
- @qcode{fitlm} treats all factors as continuous by default.
+ <code>fitlm</code> prints the model formula, the regression coefficients (i.e.
+ parameters/contrasts) and an ANOVA table. Note that unlike <code>anovan</code>,
+ <code>fitlm</code> treats all factors as continuous by default.
 </p>
 <div class="ms-5">
 <p> <var>X</var> must be a column major matrix or cell array consisting of the
@@ -110,7 +110,7 @@
  must be a row of zeros.
  </li></ul>
 
-<p> @qcode{fitlm} can take a number of optional parameters as name-value pairs.
+<p> <code>fitlm</code> can take a number of optional parameters as name-value pairs.
 </p>
 <p> <code>[&hellip;] = fitlm (..., &quot;CategoricalVars&quot;, <var>categorical</var>)</code>
 </p>
@@ -121,9 +121,9 @@
  rather than as continuous predictors.
  </li></ul>
 
-<p> @qcode{fitlm} also accepts optional @qcode{anovan} parameters as name-value
+<p> <code>fitlm</code> also accepts optional <code>anovan</code> parameters as name-value
  pairs (except for the &quot;model&quot; parameter). The accepted parameter names from
- @qcode{anovan} and their default values in @qcode{fitlm} are:
+ <code>anovan</code> and their default values in <code>fitlm</code> are:
 </p>
  <ul>
 <li>
@@ -151,9 +151,9 @@
  <var>VARNAMES</var>: [] (empty)
  </li></ul>
 
-<p> Type &rsquo;@qcode{help anovan}&rsquo; to find out more about what these options do.
+<p> Type &rsquo;<code>help anovan</code>&rsquo; to find out more about what these options do.
 </p>
-<p> @qcode{fitlm} can return up to two output arguments:
+<p> <code>fitlm</code> can return up to two output arguments:
 </p>
 <p> [<var>tab</var>] = fitlm (&hellip;) returns a cell array containing a
  table of model parameters
@@ -167,11 +167,11 @@
  confidence interval bounds, t-statistics, and p-values relating to the
  contrasts. The number appended to each term name in <var>stats</var>.coeffnames
  corresponds to the column number in the relevant contrast matrix for that
- factor. The <var>stats</var> structure can be used as input for @qcode{multcompare}.
- The <var>stats</var> structure is recognised by the functions @qcode{bootcoeff}
- and @qcode{bootemm} from the statistics-bootstrap package. Note that if the
+ factor. The <var>stats</var> structure can be used as input for <code>multcompare</code>.
+ The <var>stats</var> structure is recognised by the functions <code>bootcoeff</code>
+ and <code>bootemm</code> from the statistics-bootstrap package. Note that if the
  model contains a continuous variable and you wish to use the <var>STATS</var>
- output as input to @qcode{multcompare}, then the model needs to be refit
+ output as input to <code>multcompare</code>, then the model needs to be refit
  with the &quot;contrast&quot; parameter set to a sum-to-zero contrast coding scheme,
  e.g.&quot;simple&quot;.
 </p>

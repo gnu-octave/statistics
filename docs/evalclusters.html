@@ -63,7 +63,7 @@
         <div class="card-body">
 <dl>
 <dt><u>statistics:</u> <var>eva</var> = <b>evalclusters</b><i> (<var>x</var>, <var>clust</var>, <var>criterion</var>)</i></dt>
-<dt><u>statistics:</u> <var>eva</var> = <b>evalclusters</b><i> (&hellip;, @qcode{Name}, @qcode{Value})</i></dt>
+<dt><u>statistics:</u> <var>eva</var> = <b>evalclusters</b><i> (&hellip;, <code>Name</code>, <code>Value</code>)</i></dt>
 </dl>
 
 <p> Create a clustering evaluation object to find the optimal number of clusters.
@@ -75,22 +75,22 @@
  variables.
  The evaluation criterion <var>criterion</var> is one of the following:
  </p><dl compact="compact">
-<dt> <code>@qcode{CalinskiHarabasz}</code></dt>
+<dt> <code><code>CalinskiHarabasz</code></code></dt>
 </dl>
 <p> to create a <code>CalinskiHarabaszEvaluation</code> object.
 </p>
  </dd>
-<dt> <code>@qcode{DaviesBouldin}</code></dt>
+<dt> <code><code>DaviesBouldin</code></code></dt>
 </dl>
 <p> to create a <code>DaviesBouldinEvaluation</code> object.
 </p>
  </dd>
-<dt> <code>@qcode{gap}</code></dt>
+<dt> <code><code>gap</code></code></dt>
 </dl>
 <p> to create a <code>GapEvaluation</code> object.
 </p>
  </dd>
-<dt> <code>@qcode{silhouette}</code></dt>
+<dt> <code><code>silhouette</code></code></dt>
 </dl>
 <p> to create a <code>SilhouetteEvaluation</code> object.
 </p>
@@ -98,19 +98,19 @@
 </dl>
 <p> The clustering algorithm <var>clust</var> is one of the following:
  </p><dl compact="compact">
-<dt> <code>@qcode{kmeans}</code></dt>
+<dt> <code><code>kmeans</code></code></dt>
 </dl>
 <p> to cluster the data using <code>kmeans</code> with <code>EmptyAction</code> set to
  <code>singleton</code> and <code>Replicates</code> set to 5.
 </p>
  </dd>
-<dt> <code>@qcode{linkage}</code></dt>
+<dt> <code><code>linkage</code></code></dt>
 </dl>
 <p> to cluster the data using <code>clusterdata</code> with <code>linkage</code> set to
  <code>Ward</code>.
 </p>
  </dd>
-<dt> <code>@qcode{gmdistribution}</code></dt>
+<dt> <code><code>gmdistribution</code></code></dt>
 </dl>
 <p> to cluster the data using <code>fitgmdist</code> with <code>SharedCov</code> set to
  <code>true</code> and <code>Replicates</code> set to 5.
@@ -135,14 +135,14 @@
  there is a number of optional arguments, specified as pairs of <code>Name</code>
  and <code>Value</code> options.  The known <code>Name</code> arguments are:
  </p><dl compact="compact">
-<dt> <code>@qcode{KList}</code></dt>
+<dt> <code><code>KList</code></code></dt>
 </dl>
 <p> a vector of positive integer numbers, that is the cluster sizes to evaluate.
  This option is necessary, unless <var>clust</var> is a matrix of proposed
  clustering solutions.
 </p>
  </dd>
-<dt> <code>@qcode{Distance}</code></dt>
+<dt> <code><code>Distance</code></code></dt>
 </dl>
 <p> a distance metric as accepted by the chosen <var>clust</var>.  It can be the
  name of the distance metric as a string or a function handle.  When
@@ -153,7 +153,7 @@
  Only used by <code>silhouette</code> and <code>gap</code> evaluation.
 </p>
  </dd>
-<dt> <code>@qcode{ClusterPriors}</code></dt>
+<dt> <code><code>ClusterPriors</code></code></dt>
 </dl>
 <p> the prior probabilities of each cluster, which can be either <code>empirical</code>
  (default), or <code>equal</code>.  When <code>empirical</code> the silhouette value is
@@ -162,13 +162,13 @@
  cluster.  Only used by <code>silhouette</code> evaluation.
 </p>
  </dd>
-<dt> <code>@qcode{B}</code></dt>
+<dt> <code><code>B</code></code></dt>
 </dl>
 <p> the number of reference datasets generated from the reference distribution.
  Only used by <code>gap</code> evaluation.
 </p>
  </dd>
-<dt> <code>@qcode{ReferenceDistribution}</code></dt>
+<dt> <code><code>ReferenceDistribution</code></code></dt>
 </dl>
 <p> the reference distribution used to create the reference data.  It can be
  <code>PCA</code> (default) for a distribution based on the principal components of
@@ -177,7 +177,7 @@
  Only used by <code>gap</code> evaluation.
 </p>
  </dd>
-<dt> <code>@qcode{SearchMethod}</code></dt>
+<dt> <code><code>SearchMethod</code></code></dt>
 </dl>
 <p> the method for selecting the optimal value with a <code>gap</code> evaluation.  It
  can be either <code>globalMaxSE</code> (default) for selecting the smallest number

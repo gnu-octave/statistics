@@ -70,30 +70,30 @@
  hypothesis that the groups are drawn from distributions with the same mean.
 </p>
 <div class="ms-5">
-<p> <var>x</var> and <var>y</var> can be vectors or matrices. For matrices, @qcode{ttest2}
+<p> <var>x</var> and <var>y</var> can be vectors or matrices. For matrices, <code>ttest2</code>
  performs separate t-tests along each column, and returns a vector of results.
  <var>x</var> and <var>y</var> must have the same number of columns. The Type I error
  rate of the resulting vector of <var>pval</var> can be controlled by entering
- <var>pval</var> as input to the function @qcode{multcompare}.
+ <var>pval</var> as input to the function <code>multcompare</code>.
 </p>
-<p> @qcode{ttest2} treats NaNs as missing values, and ignores them.
+<p> <code>ttest2</code> treats NaNs as missing values, and ignores them.
 </p>
-<p> For a nested t-test, use @qcode{anova2}.
+<p> For a nested t-test, use <code>anova2</code>.
 </p>
-<p> The argument @qcode{&quot;alpha&quot;} can be used to specify the significance level
- of the test (the default value is 0.05).  The string argument @qcode{&quot;tail&quot;},
- can be used to select the desired alternative hypotheses.  If @qcode{&quot;tail&quot;}
- is @qcode{&quot;both&quot;} (default) the null is tested against the two-sided
- alternative <code>mean (<var>x</var>) != <var>m</var></code>.  If @qcode{&quot;tail&quot;} is
- @qcode{&quot;right&quot;} the one-sided alternative <code>mean (<var>x</var>) &gt; <var>m</var></code> is
- considered.  Similarly for @qcode{&quot;left&quot;}, the one-sided alternative
+<p> The argument <code>&quot;alpha&quot;</code> can be used to specify the significance level
+ of the test (the default value is 0.05).  The string argument <code>&quot;tail&quot;</code>,
+ can be used to select the desired alternative hypotheses.  If <code>&quot;tail&quot;</code>
+ is <code>&quot;both&quot;</code> (default) the null is tested against the two-sided
+ alternative <code>mean (<var>x</var>) != <var>m</var></code>.  If <code>&quot;tail&quot;</code> is
+ <code>&quot;right&quot;</code> the one-sided alternative <code>mean (<var>x</var>) &gt; <var>m</var></code> is
+ considered.  Similarly for <code>&quot;left&quot;</code>, the one-sided alternative
  <code>mean (<var>x</var>) &lt; <var>m</var></code> is considered.
 </p>
-<p> When @qcode{&quot;vartype&quot;} is @qcode{&quot;equal&quot;} the variances are assumed to be
- equal (this is the default).  When @qcode{&quot;vartype&quot;} is @qcode{&quot;unequal&quot;} the
+<p> When <code>&quot;vartype&quot;</code> is <code>&quot;equal&quot;</code> the variances are assumed to be
+ equal (this is the default).  When <code>&quot;vartype&quot;</code> is <code>&quot;unequal&quot;</code> the
  variances are not assumed equal.
 </p>
-<p> When argument <var>x</var> and <var>y</var> are matrices the @qcode{&quot;dim&quot;} argument can
+<p> When argument <var>x</var> and <var>y</var> are matrices the <code>&quot;dim&quot;</code> argument can
  be used to select the dimension over which to perform the test.
  (The default is the first non-singleton dimension.)
 </p>

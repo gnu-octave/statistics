@@ -82,24 +82,24 @@
  hypothesis <code>mean (<var>x</var>) = mean (<var>y</var>)</code> is performed. If <var>x</var>
  and <var>y</var> are vectors, they must have the same size and dimensions.
 </p>
-<p> <var>x</var> (and <var>y</var>) can also be matrices. For matrices, @qcode{ttest}
+<p> <var>x</var> (and <var>y</var>) can also be matrices. For matrices, <code>ttest</code>
  performs separate t-tests along each column, and returns a vector of results.
  <var>x</var> and <var>y</var> must have the same number of columns. The Type I error
  rate of the resulting vector of <var>pval</var> can be controlled by entering
- <var>pval</var> as input to the function @qcode{multcompare}.
+ <var>pval</var> as input to the function <code>multcompare</code>.
 </p>
-<p> @qcode{ttest} treats NaNs as missing values, and ignores them.
+<p> <code>ttest</code> treats NaNs as missing values, and ignores them.
 </p>
 <p> Name-Value pair arguments can be used to set various options.
- @qcode{&quot;alpha&quot;} can be used to specify the significance level
- of the test (the default value is 0.05).  @qcode{&quot;tail&quot;}, can be used
+ <code>&quot;alpha&quot;</code> can be used to specify the significance level
+ of the test (the default value is 0.05).  <code>&quot;tail&quot;</code>, can be used
  to select the desired alternative hypotheses.  If the value is
- @qcode{&quot;both&quot;} (default) the null is tested against the two-sided
+ <code>&quot;both&quot;</code> (default) the null is tested against the two-sided
  alternative <code>mean (<var>x</var>) != <var>m</var></code>.
- If it is @qcode{&quot;right&quot;} the one-sided alternative <code>mean (<var>x</var>)
- &gt; <var>m</var></code> is considered.  Similarly for @qcode{&quot;left&quot;}, the one-sided
+ If it is <code>&quot;right&quot;</code> the one-sided alternative <code>mean (<var>x</var>)
+ &gt; <var>m</var></code> is considered.  Similarly for <code>&quot;left&quot;</code>, the one-sided
  alternative <code>mean (<var>x</var>) &lt; <var>m</var></code> is considered.
- When argument <var>x</var> is a matrix, @qcode{&quot;dim&quot;} can be used to select
+ When argument <var>x</var> is a matrix, <code>&quot;dim&quot;</code> can be used to select
  the dimension over which to perform the test.  (The default is the
  first non-singleton dimension).
 </p>
