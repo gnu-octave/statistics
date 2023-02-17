@@ -29,17 +29,17 @@
 ## harmonic mean of the elements in @var{x} defined as
 ## @tex
 ## $$ {\rm harmmean}(x) = \frac{N}{\sum_{i=1}^N \frac{1}{x_i}} $$
-## where $N$ is the number of elements of @var{x}.
-## @end tex
 ##
+## @end tex
 ## @ifnottex
+##
 ## @example
 ## harmmean (@var{x}) = N / SUM_i @var{x}(i)^-1
 ## @end example
 ##
+## @end ifnottex
 ## @noindent
 ## where @math{N} is the length of the @var{x} vector.
-## @end ifnottex
 ##
 ## @item If @var{x} is a matrix, then @code{harmmean(@var{x})} returns a row
 ## vector with the harmonic mean of each columns in @var{x}.
@@ -47,8 +47,7 @@
 ## @item If @var{x} is a multidimensional array, then @code{harmmean(@var{x})}
 ## operates along the first nonsingleton dimension of @var{x}.
 ##
-## @item If @var{x} contains any negative values, then @code{harmmean(@var{x})}
-## returns an error.
+## @item @var{x} must not contain any negative or complex values.
 ## @end itemize
 ##
 ## @code{harmmean(@var{x}, "all")} returns the harmonic mean of all the elements
@@ -60,132 +59,206 @@
 ##
 ## @code{harmmean(@var{x}, @var{vecdim})} returns the harmonic mean over the
 ## dimensions specified in the vector @var{vecdim}.  For example, if @var{x} is
-## a 2-by-3-by-4 array, then @code{harmmean(@var{x}, [1 2])} returns a 1-by-4
-## array. Each element of the output array is the harmonic mean of the elements
-## on the corresponding page of @var{x}.  NOTE! @var{vecdim} MUST index at least
-## N-2 dimensions of @var{x}, where @code{N = length (size (@var{x}))} and N < 8.
-## If @var{vecdim} indexes all dimensions of @var{x}, then it is equivalent to
-## @code{geomean(@var{x}, "all")}.
+## a 2-by-3-by-4 array, then @code{harmmean(@var{x}, [1 2])} returns a
+## 1-by-1-by-4 array.  Each element of the output array is the harmonic mean of
+## the elements on the corresponding page of @var{x}.  If @var{vecdim} indexes
+## all dimensions of @var{x}, then it is equivalent to @code{harmmean (@var{x},
+## "all")}.  Any dimension in @var{vecdim} greater than @code{ndims (@var{x})}
+## is ignored.
 ##
 ## @code{harmmean(@dots{}, @var{nanflag})} specifies whether to exclude NaN
 ## values from the calculation, using any of the input argument combinations in
-## previous syntaxes. By default, harmmean includes NaN values in the calculation
-## (@var{nanflag} has the value "includenan").  To exclude NaN values, set the
-## value of @var{nanflag} to "omitnan".
+## previous syntaxes. By default, harmmean includes NaN values in the
+## calculation (@var{nanflag} has the value "includenan").  To exclude NaN
+## values, set the value of @var{nanflag} to "omitnan".
 ##
 ## @seealso{geomean, mean}
 ## @end deftypefn
 
 function m = harmmean (x, varargin)
+
   if (nargin < 1 || nargin > 3)
     print_usage ();
   endif
-  if (! isnumeric (x) && ! isbool (x))
-    error ("X must be either numeric or boolean vector or matrix");
+
+  if (! isnumeric (x) || ! isreal (x) || ! all (x(! isnan (x))(:) >= 0))
+    error ("harmmean: X must contain real nonnegative values.");
   endif
-  if (any (x(:) < 0))
-    error ("X must not contain any negative values");
-  endif
-  ## check for omitnan option
+
+  ## Set initial conditions
+  all_flag = false;
   omitnan = false;
-  nanflag_option = false;
-  if nargin > 1
-    for i = 1:nargin - 1
-      if (ischar (varargin{i}) && strcmpi (varargin{i}, "omitnan"))
-        omitnan = true;
-        nanflag_option = true;
-      elseif (ischar (varargin{i}) && strcmpi (varargin{i}, "includenan"))
-        nanflag_option = true;
-      endif
+
+  nvarg = numel (varargin);
+  varg_chars = cellfun ("ischar", varargin);
+  szx = size (x);
+  ndx = ndims (x);
+
+  if (nvarg > 1 && ! varg_chars(2:end))
+    ## Only first varargin can be numeric
+    print_usage ();
+  endif
+
+  ## Process any other char arguments.
+  if (any (varg_chars))
+    for i = varargin(varg_chars)
+      switch (lower (i{:}))
+        case "all"
+          all_flag = true;
+
+        case "omitnan"
+          omitnan = true;
+
+        case "includenan"
+          omitnan = false;
+
+        otherwise
+          print_usage ();
+      endswitch
     endfor
+    varargin(varg_chars) = [];
+    nvarg = numel (varargin);
   endif
-  ## for single input argument or with option omitnan
-  if (nargin == 1 || (nargin == 2 && nanflag_option))
-    sz = size (x);
-    dim = find (sz > 1, 1);
-    if length (dim) == 0
-      dim = 1;
-    endif
-    if omitnan
-      m = sum (! isnan (x), dim) ./ nansum (1 ./ x, dim);
-      m(m == Inf) = 0;
+
+  ## Single numeric input argument, no dimensions given.
+  if (nvarg == 0)
+
+    if (all_flag)
+      x = x(:);
+
+      if (omitnan)
+        x = x(! isnan (x));
+      endif
+
+      if (any (x == 0))
+        m = 0;
+        return;
+      endif
+
+      m = length (x) ./ sum (1 ./ x);
+      m(m == Inf) = 0;  # handle zeros in X
+
     else
-      m = size (x, dim) ./ sum (1 ./ x, dim);
-      m(m == Inf) = 0;
+      ## Find the first non-singleton dimension.
+      (dim = find (szx != 1, 1)) || (dim = 1);
+      n = szx(dim);
+      is_nan = 0;
+      if (omitnan)
+        idx = isnan (x);
+        n = sum (! idx, dim);
+        is_nan = sum (idx, dim);
+        x(idx) = 1;     # remove NaNs by subtracting is_nan below
+      endif
+
+      m = n ./ (sum (1 ./ x, dim) - is_nan);
+      m(m == Inf) = 0;  # handle zeros in X
+
     endif
-  endif
-  ## for option "all"
-  if ((nargin == 2 || nargin == 3) && ischar (varargin{1}) && ...
-       strcmpi (varargin{1}, "all"))
-    if omitnan
-      m = length (x(! isnan (x))) ./ nansum (1 ./ x(:), 1);
-      m(m == Inf) = 0;
-    else
-      m = length (x(:)) ./ sum (1 ./ x(:), 1);
-      m(m == Inf) = 0;
-    endif
-  endif
-  ## for option DIM
-  if ((nargin == 2 || nargin == 3) && isnumeric (varargin{1}) && ...
-       isscalar (varargin{1}))
-    dim = varargin{1};
-    if omitnan
-      m = sum (! isnan (x), dim) ./ nansum (1 ./ x, dim);
-      m(m == Inf) = 0;
-    else
-      m = size (x, dim) ./ sum (1 ./ x, dim);
-      m(m == Inf) = 0;
-    endif
-  endif
-  ## resolve the pages of X when vecdim argument is provided
-  if (nargin == 2 || nargin == 3 ) && isnumeric (varargin{1}) && ...
-      ! isscalar (varargin{1}) && isvector (varargin{1})
+
+  else
+
+    ## Two numeric input arguments, dimensions given.  Note scalar is vector!
     vecdim = varargin{1};
-    sz = size (x);
-    ndims = length (sz);
-    misdim = [1:ndims];
-    ## keep remaining dimensions
-    for i = 1:length (vecdim)
-      misdim(misdim == vecdim(i)) = [];
-    endfor
-    ## if all dimensions are given, compute x(:)
-    if length (misdim) == 0
-      if omitnan
-        m = length (x(! isnan (x))) ./ nansum (1 ./ x(:), 1);
-        m(m == Inf) = 0;
-      else
-        m = length (x(:)) ./ sum (1 ./ x(:), 1);
-        m(m == Inf) = 0;
-      endif
-    ## for 1 dimension left, return column vector
-    elseif length (misdim) == 1
-      x = permute (x, [misdim, vecdim]);
-      for i = 1:size (x, 1)
-        x_vec = x(i,:,:,:,:,:,:)(:);
-        if omitnan
-          x_vec = x_vec(! isnan (x_vec));
-        endif
-        m(i) = length (x_vec) ./ sum (1 ./ x_vec, 1);
-      endfor
-      m(m == Inf) = 0;
-    ## for 2 dimensions left, return matrix
-    elseif length (misdim) == 2
-      x = permute (x, [misdim, vecdim]);
-      for i = 1:size (x, 1)
-        for j = 1:size (x, 2)
-          x_vec = x(i,j,:,:,:,:,:)(:);
-          if omitnan
-            x_vec = x_vec(! isnan (x_vec));
-          endif
-          m(i,j) = length (x_vec) ./ sum (1 ./ x_vec, 1);
-        endfor
-      endfor
-      m(m == Inf) = 0;
-    ## for more that 2 dimensions left, print usage
+    if (isempty (vecdim) || ! (isvector (vecdim) && all (vecdim > 0)) ...
+          || any (rem (vecdim, 1)))
+      error ("harmmean: DIM must be a positive integer scalar or vector.");
+    endif
+
+    if (ndx == 2 && isempty (x) && szx == [0,0])
+      ## FIXME: this special case handling could be removed once sum
+      ##        compatibly handles all sizes of empty inputs
+      sz_out = szx;
+      sz_out (vecdim(vecdim <= ndx)) = 1;
+      m = NaN (sz_out);
     else
-      error ("vecdim must index at least N-2 dimensions of X");
+
+      if (isscalar (vecdim))
+        if (vecdim > ndx)
+          m = x;
+        else
+          n = szx(vecdim);
+          is_nan = 0;
+          if (omitnan)
+            nanx = isnan (x);
+            n = sum (! nanx, vecdim);
+            is_nan = sum (nanx, vecdim);
+            x(nanx) = 1;    # remove NaNs by subtracting is_nan below
+          endif
+
+          m = n ./ (sum (1 ./ x, vecdim) - is_nan);
+          m(m == Inf) = 0;  # handle zeros in X
+
+        endif
+
+      else
+        vecdim = sort (vecdim);
+        if (! all (diff (vecdim)))
+           error (strcat (["harmmean: VECDIM must contain non-repeating"], ...
+                          [" positive integers."]));
+        endif
+        ## Ignore exceeding dimensions in VECDIM
+        vecdim(find (vecdim > ndims (x))) = [];
+
+        if (isempty (vecdim))
+          m = x;
+        else
+          ## Move vecdims to dim 1.
+
+          ## Calculate permutation vector
+          remdims = 1 : ndx;        # All dimensions
+          remdims(vecdim) = [];     # Delete dimensions specified by vecdim
+          nremd = numel (remdims);
+
+          ## If all dimensions are given, it is similar to all flag
+          if (nremd == 0)
+            x = x(:);
+
+            if (omitnan)
+              x = x(! isnan (x));
+            endif
+
+            if (any (x == 0))
+              m = 0;
+              return;
+            endif
+
+            m = length (x) ./ sum (1 ./ x);
+            m(m == Inf) = 0;  # handle zeros in X
+
+          else
+            ## Permute to bring vecdims to front
+            perm = [vecdim, remdims];
+            x = permute (x, perm);
+
+            ## Reshape to squash all vecdims in dim1
+            num_dim = prod (szx(vecdim));
+            szx(vecdim) = [];
+            szx = [ones(1, length(vecdim)), szx];
+            szx(1) = num_dim;
+            x = reshape (x, szx);
+
+            ## Calculate mean on dim1
+            if (omitnan)
+              nanx = isnan (x);
+              n = sum (! nanx, 1);
+              is_nan = sum (nanx, 1);
+              x(nanx) = 1;    # remove NaNs by subtracting is_nan below
+            else
+              n = szx(1);
+              is_nan = 0;
+            endif
+
+            m = n ./ (sum (1 ./ x, 1) - is_nan);
+            m(m == Inf) = 0;  # handle zeros in X
+
+            ## Inverse permute back to correct dimensions
+            m = ipermute (m, perm);
+          endif
+        endif
+      endif
     endif
   endif
+
 endfunction
 
 
@@ -199,39 +272,32 @@ endfunction
 %! assert (harmmean (y, "all"), 0);
 %! y(2,4) = NaN;
 %! m(2) = 9.009855936313949;
+%! assert (harmmean (y, 2), [0 NaN m(3)]', 4e-14);
 %! assert (harmmean (y', "omitnan"), m, 4e-14);
 %! z = y + 20;
 %! assert (harmmean (z, "all"), NaN);
+%! assert (harmmean (z, "all", "includenan"), NaN);
+%! assert (harmmean (z, "all", "omitnan"), 29.1108719858295, 4e-14);
 %! m = [24.59488458841874 NaN 34.71244385944397];
 %! assert (harmmean (z'), m, 4e-14);
 %! assert (harmmean (z', "includenan"), m, 4e-14);
-%! m = [24.59488458841874 29.84104075528276 34.71244385944397];
+%! m(2) = 29.84104075528277;
 %! assert (harmmean (z', "omitnan"), m, 4e-14);
 %! assert (harmmean (z, 2, "omitnan"), m', 4e-14);
-
-## Test boolean input
-%!test
-%! assert (harmmean (true, "all"), 1);
-%! assert (harmmean (false), 0);
-%! assert (harmmean ([true false true]), 0);
-%! assert (harmmean ([true false true], 1), [1 0 1]);
-%! assert (harmmean ([true false NaN], 1), [1 0 NaN]);
-%! assert (harmmean ([true false NaN], 2), NaN);
-%! assert (harmmean ([true false NaN], 2, "omitnan"), 0);
 
 ## Test dimension indexing with vecdim in n-dimensional arrays
 %!test
 %! x = repmat ([1:20;6:25], [5 2 6 3]);
-%! assert (size (harmmean (x, [3 2])), [10 3]);
-%! assert (size (harmmean (x, [1 2])), [6 3]);
-%! assert (size (harmmean (x, [1 2 4])), [1 6]);
+%! assert (size (harmmean (x, [3 2])), [10 1 1 3]);
+%! assert (size (harmmean (x, [1 2])), [1 1 6 3]);
+%! assert (size (harmmean (x, [1 2 4])), [1 1 6]);
 %! assert (size (harmmean (x, [1 4 3])), [1 40]);
 %! assert (size (harmmean (x, [1 2 3 4])), [1 1]);
 
 ## Test results with vecdim in n-dimensional arrays and "omitnan"
 %!test
 %! x = repmat ([1:20;6:25], [5 2 6 3]);
-%! m = repmat ([5.559045930488016;13.04950789021461], [5,3]);
+%! m = repmat ([5.559045930488016;13.04950789021461], [5 1 1 3]);
 %! assert (harmmean (x, [3 2]), m, 4e-14);
 %! x(2,5,6,3) = NaN;
 %! m(2,3) = NaN;
@@ -240,6 +306,11 @@ endfunction
 %! assert (harmmean (x, [3 2], "omitnan"), m, 4e-14);
 
 ## Test errors
-%!error <X must be either numeric or boolean vector or matrix> harmmean ("char")
-%!error <vecdim must index at least N-2 dimensions of X> harmmean ...
-%!       (repmat ([1:20;6:25], [5 2 6 3 5]), [1 2])
+%!error <harmmean: X must contain real nonnegative values.> harmmean ("char")
+%!error <harmmean: X must contain real nonnegative values.> harmmean ([1 -1 3])
+%!error <harmmean: DIM must be a positive integer scalar or vector.> ...
+%! harmmean (repmat ([1:20;6:25], [5 2 6 3 5]), -1)
+%!error <harmmean: DIM must be a positive integer scalar or vector.> ...
+%! harmmean (repmat ([1:20;6:25], [5 2 6 3 5]), 0)
+%!error <harmmean: VECDIM must contain non-repeating positive integers.> ...
+%! harmmean (repmat ([1:20;6:25], [5 2 6 3 5]), [1 1])
