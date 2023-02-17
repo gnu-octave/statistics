@@ -82,7 +82,7 @@ function [h, pval, ci, zvalue] = ztest (x, m, sigma, varargin)
   if (! isscalar (sigma) || ! isnumeric(sigma) || ! isreal(sigma) || sigma < 0)
     error ("ztest: invalid value for standard deviation.");
   endif
-## Add defaults
+  ## Add defaults
   alpha = 0.05;
   tail = "both";
   dim = [];
