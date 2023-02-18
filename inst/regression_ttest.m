@@ -52,8 +52,8 @@
 ## @end multitable
 ## @multitable @columnfractions 0.1 0.15 0.75
 ## @item @tab "both" @tab "@math{beta1} is not 0" (two-tailed, default)
-## @item @tab "left" @tab "@math{beta1} is less than 0}" (left-tailed)
-## @item @tab "right" @tab "@math{beta1} is greater than 0}" (right-tailed)
+## @item @tab "left" @tab "@math{beta1} is less than 0" (left-tailed)
+## @item @tab "right" @tab "@math{beta1} is greater than 0" (right-tailed)
 ## @end multitable
 ##
 ## @seealso{regress, regression_ftest}
