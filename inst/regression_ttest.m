@@ -18,80 +18,164 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {[@var{pval}, @var{t}, @var{df}] =} regression_ttest (@var{y}, @var{x}, @var{rr}, @var{r}, @var{alt})
+## @deftypefn  {statistics} {@var{h} =} regression_ttest (@var{y}, @var{x})
+## @deftypefnx {statistics} {[@var{h}, @var{pval}] =} regression_ttest (@var{y}, @var{x})
+## @deftypefnx {statistics} {[@var{h}, @var{pval}, @var{ci}] =} regression_ttest (@var{y}, @var{x})
+## @deftypefnx {statistics} {[@var{h}, @var{pval}, @var{ci}, @var{stats}] =} regression_ttest (@var{y}, @var{x})
+## @deftypefnx {statistics} {[@dots{}] =} regression_ttest (@var{y}, @var{x}, @var{Name}, @var{Value})
 ##
-## Perform a linear regression t-test for the null hypothesis
-## @nospell{@code{@var{rr} * @var{b} = @var{r}}} in a classical normal
-## regression model @code{@var{y} = @var{x} * @var{b} + @var{e}}.
+## Perform a linear regression t-test.
 ##
-## Under the null, the test statistic @var{t} follows a @var{t} distribution
-## with @var{df} degrees of freedom.
+## @code{@var{h} = regression_ttest (@var{y}, @var{x})} tests the null
+## hypothesis that the slope @math{beta1} of a simple linear regression equals
+## 0.  The result is @var{h} = 0 if the null hypothesis cannot be rejected at
+## the 5% significance level, or @var{h} = 1 if the null hypothesis can be
+## rejected at the 5% level.  @var{y} and @var{x} must be vectors of equal
+## length with finite real numbers.
 ##
-## If @var{r} is omitted, a value of 0 is assumed.
+## The p-value of the test is returned in @var{pval}.  A @math{100(1-alpha)%}
+## confidence interval for @math{beta1} is returned in @var{ci}.  @var{stats} is
+## a structure containing the value of the test statistic (@qcode{tstat}),
+## the degrees of freedom (@qcode{df}), the slope coefficient (@qcode{beta1}),
+## and the intercept (@qcode{beta0}).  Under the null, the test statistic
+## @var{stats}.@qcode{tstat} follows a @math{T}-distribution with
+## @var{stats}.@qcode{df} degrees of freedom.
 ##
-## With the optional argument string @var{alt}, the alternative of interest
-## can be selected.  If @var{alt} is @qcode{"!="} or @qcode{"<>"}, the null
-## is tested against the two-sided alternative @nospell{@code{@var{rr} *
-## @var{b} != @var{r}}}.  If @var{alt} is @qcode{">"}, the one-sided
-## alternative @nospell{@code{@var{rr} * @var{b} > @var{r}}} is used.
-## Similarly for @var{"<"}, the one-sided alternative @nospell{@code{@var{rr}
-## * @var{b} < @var{r}}} is used.  The default is the two-sided case.
+## @code{[@dots{}] = regression_ttest (@dots{}, @var{name}, @var{value})}
+## specifies one or more of the following name/value pairs:
 ##
-## The p-value of the test is returned in @var{pval}.
+## @multitable @columnfractions 0.05 0.2 0.75
+## @headitem @tab Name @tab Value
+## @item @tab "alpha" @tab the significance level. Default is 0.05.
 ##
-## If no output argument is given, the p-value of the test is displayed.
+## @item @tab "tail" @tab a string specifying the alternative hypothesis:
+## @end multitable
+## @multitable @columnfractions 0.1 0.15 0.75
+## @item @tab "both" @tab "@math{beta1} is not 0" (two-tailed, default)
+## @item @tab "left" @tab "@math{beta1} is less than 0}" (left-tailed)
+## @item @tab "right" @tab "@math{beta1} is greater than 0}" (right-tailed)
+## @end multitable
+##
+## @seealso{regress, regression_ftest}
 ## @end deftypefn
 
-function [pval, t, df] = regression_ttest (y, x, rr, r, alt)
+function [h, pval, ci, stats] = regression_ttest (y, x, varargin)
 
-  if (nargin == 3)
-    r   = 0;
-    alt = "!=";
-  elseif (nargin == 4)
-    if (ischar (r))
-      alt = r;
-      r   = 0;
-    else
-      alt = "!=";
-    endif
-  elseif (! (nargin == 5))
+  ## Check for valid input
+  if (nargin < 2)
     print_usage ();
   endif
 
-  if (! isscalar (r))
-    error ("regression_ttest: R must be a scalar.");
-  elseif (! ischar (alt))
-    error ("regression_ttest: ALT must be a string.");
+  ## Check for finite real numbers in Y, X
+  if (! all (isfinite (y)) || ! isreal (y))
+    error ("regression_ttest: Y must contain finite real numbers.");
+  endif
+  if (! all (isfinite (x(:))) || ! isreal (x))
+    error ("regression_ttest: X must contain finite real numbers.");
   endif
 
-  [T, k] = size (x);
-  if (! (isvector (y) && (length (y) == T)))
-    error ("regression_ttest: Y must be a vector of length rows (X).");
-  endif
-  s = size (rr);
-  if (! ((max (s) == k) && (min (s) == 1)))
-    error ("regression_ttest: RR must be a vector of length columns (X).");
+  # Get number of observations
+  n = length (y);
+
+  ## Check Y and X have the same number of observations
+  if (! isvector (y) || ! isvector (x) || length (x) != n)
+    error ("regression_ttest: Y and X must be vectors of equal length.");
   endif
 
-  rr     = reshape (rr, 1, k);
-  y      = reshape (y, T, 1);
-  [b, v] = ols (y, x);
-  df     = T - k;
-  t      = (rr * b - r) / sqrt (v * rr * inv (x' * x) * rr');
-  cdf    = tcdf (t, df);
 
-  if (strcmp (alt, "!=") || strcmp (alt, "<>"))
-    pval = 2 * min (cdf, 1 - cdf);
-  elseif (strcmp (alt, ">"))
-    pval = 1 - cdf;
-  elseif (strcmp (alt, "<"))
-    pval = cdf;
-  else
-    error ("regression_ttest: the value '%s' for ALT is not possible.", alt);
-  endif
+  ## Set default arguments
+  alpha = 0.05;
+  tail = "both";
 
-  if (nargout == 0)
-    printf ("pval: %g\n", pval);
-  endif
+  ## Check additional options
+  i = 1;
+  while (i <= length (varargin))
+    switch lower (varargin{i})
+      case "alpha"
+        i = i + 1;
+        alpha = varargin{i};
+        ## Check for valid alpha
+        if (! isscalar (alpha) || ! isnumeric (alpha) || ...
+                    alpha <= 0 || alpha >= 1)
+          error ("regression_ttest: invalid value for alpha.");
+        endif
+      case "tail"
+        i = i + 1;
+        tail = varargin{i};
+        if (! any (strcmpi (tail, {"both", "left", "right"})))
+          error ("regression_ttest: invalid value for tail.");
+        endif
+      otherwise
+        error ("regression_ttest: invalid Name argument.");
+    endswitch
+    i = i + 1;
+  endwhile
+
+  y_bar = mean (y);
+  x_bar = mean (x);
+
+  stats.beta1 = cov (x, y) / var (x);
+  stats.beta0 = y_bar - stats.beta1 * x_bar;
+
+  y_hat = stats.beta0 + stats.beta1 * x_bar;
+  SSE = sum ((y - y_hat) .^ 2);
+  stats.df = n - 2;
+  SE = sqrt (SSE / stats.df);
+
+  term = SE / sqrt (sum ((x - x_bar) .^ 2));
+  stats.tstat = stats.beta1 / term;
+
+  ## Based on the "tail" argument determine the P-value, the critical values,
+  ## and the confidence interval.
+  switch lower(tail)
+    case "both"
+      pval = 2 * (1 - tcdf (abs (stats.tstat), stats.df));
+      tcrit = - tinv (alpha / 2, stats.df);
+      ci = [stats.beta1 - tcrit * term; stats.beta1 + tcrit * term];
+    case "left"
+      pval = tcdf (stats.tstat, stats.df);
+      tcrit = - tinv (alpha, stats.df);
+      ci = [-inf; stats.beta1 + tcrit * term];
+    case "right"
+      pval = 1 - tcdf (stats.tstat, stats.df);
+      tcrit = - tinv (alpha, stats.df);
+      ci = [stats.beta1 - tcrit * term; inf];
+  endswitch
+
+  ## Determine the test outcome
+  h = double (pval < alpha);
+  h(isnan (pval)) = NaN;
 
 endfunction
+
+## Test input validation
+%!error<Invalid call to regression_ttest.  Correct usage> regression_ttest ();
+%!error<Invalid call to regression_ttest.  Correct usage> regression_ttest (1);
+%!error<regression_ttest: Y must contain finite real numbers.> ...
+%! regression_ttest ([1 2 NaN]', [2 3 4]');
+%!error<regression_ttest: Y must contain finite real numbers.> ...
+%! regression_ttest ([1 2 Inf]', [2 3 4]');
+%!error<regression_ttest: Y must contain finite real numbers.> ...
+%! regression_ttest ([1 2 3+i]', [2 3 4]');
+%!error<regression_ttest: X must contain finite real numbers.> ...
+%! regression_ttest ([1 2 3]', [2 3 NaN]');
+%!error<regression_ttest: X must contain finite real numbers.> ...
+%! regression_ttest ([1 2 3]', [2 3 Inf]');
+%!error<regression_ttest: X must contain finite real numbers.> ...
+%! regression_ttest ([1 2 3]', [3 4 3+i]');
+%!error<regression_ttest: Y and X must be vectors of equal length.> ...
+%! regression_ttest ([1 2 3]', [3 4 4 5]');
+%!error<regression_ttest: invalid value for alpha.> ...
+%! regression_ttest ([1 2 3]', [2 3 4]', "alpha", 0);
+%!error<regression_ttest: invalid value for alpha.> ...
+%! regression_ttest ([1 2 3]', [2 3 4]', "alpha", 1.2);
+%!error<regression_ttest: invalid value for alpha.> ...
+%! regression_ttest ([1 2 3]', [2 3 4]', "alpha", [.02 .1]);
+%!error<regression_ttest: invalid value for alpha.> ...
+%! regression_ttest ([1 2 3]', [2 3 4]', "alpha", "a");
+%!error<regression_ttest: invalid Name argument.> ...
+%! regression_ttest ([1 2 3]', [2 3 4]', "some", 0.05);
+%!error<regression_ttest: invalid value for tail.>  ...
+%! regression_ttest ([1 2 3]', [2 3 4]', "tail", "val");
+%!error<regression_ttest: invalid value for tail.>  ...
+%! regression_ttest ([1 2 3]', [2 3 4]', "alpha", 0.01, "tail", "val");
