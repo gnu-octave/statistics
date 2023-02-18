@@ -56,10 +56,10 @@
 ##
 ## @item @tab "tail" @tab a string specifying the alternative hypothesis:
 ## @end multitable
-## @multitable @columnfractions 0.1 0.15 0.75
-## @item @tab "both" @tab "@math{p1} is not @math{p2}" (two-tailed, default)
-## @item @tab "left" @tab "@math{p1} is less than @math{p2}" (left-tailed)
-## @item @tab "right" @tab "@math{p1} is greater than @math{p2}" (right-tailed)
+## @multitable @columnfractions 0.1 0.25 0.65
+## @item @tab "both" @tab @math{p1} is not @math{p2} (two-tailed, default)
+## @item @tab "left" @tab @math{p1} is less than @math{p2} (left-tailed)
+## @item @tab "right" @tab @math{p1} is greater than @math{p2} (right-tailed)
 ## @end multitable
 ##
 ## @seealso{chi2test, fishertest}

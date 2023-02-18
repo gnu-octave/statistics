@@ -50,10 +50,10 @@
 ##
 ## @item @tab "tail" @tab a string specifying the alternative hypothesis:
 ## @end multitable
-## @multitable @columnfractions 0.1 0.15 0.75
-## @item @tab "both" @tab "@math{beta1} is not 0" (two-tailed, default)
-## @item @tab "left" @tab "@math{beta1} is less than 0" (left-tailed)
-## @item @tab "right" @tab "@math{beta1} is greater than 0" (right-tailed)
+## @multitable @columnfractions 0.1 0.25 0.65
+## @item @tab "both" @tab @math{beta1} is not 0 (two-tailed, default)
+## @item @tab "left" @tab @math{beta1} is less than 0 (left-tailed)
+## @item @tab "right" @tab @math{beta1} is greater than 0 (right-tailed)
 ## @end multitable
 ##
 ## @seealso{regress, regression_ftest}
