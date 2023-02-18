@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: ztest</title>
+    <title>Statistics: ztest2</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -55,70 +55,64 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>ztest</code></b>
+              Function&nbsp;Reference: <b><code>ztest2</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>h</var> = <b>ztest</b><i> (<var>x</var>, <var>m</var>, <var>sigma</var>)</i></dt>
-<dt><u>statistics:</u> <var>h</var> = <b>ztest</b><i> (<var>x</var>, <var>m</var>, <var>sigma</var>, <var>name</var>, <var>value</var>)</i></dt>
-<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>] = <b>ztest</b><i> (&hellip;)</i></dt>
-<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>ci</var>] = <b>ztest</b><i> (&hellip;)</i></dt>
-<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>ci</var>, <var>zvalue</var>] = <b>ztest</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> <var>h</var> = <b>ztest2</b><i> (<var>x1</var>, <var>n1</var>, <var>x2</var>, <var>n2</var>)</i></dt>
+<dt><u>statistics:</u> <var>h</var> = <b>ztest2</b><i> (<var>x1</var>, <var>n1</var>, <var>x2</var>, <var>n2</var>, <var>name</var>, <var>value</var>)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>] = <b>ztest2</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>zvalue</var>] = <b>ztest2</b><i> (&hellip;)</i></dt>
 </dl>
 
-<p> One-sample Z-test.
+<p> Two proportion Z-test.
 </p>
 <div class="ms-5">
-<p> <code><var>h</var> = ztest (<var>x</var>, <var>v</var>)</code> performs a Z-test of the hypothesis
- that the data in the vector <var>x</var> come from a normal distribution with mean
- <var>m</var>, against the alternative that <var>x</var> comes from a normal
- distribution with a different mean <var>m</var>.  The result is <var>h</var> = 0 if the
- null hypothesis (&quot;mean is M&quot;) cannot be rejected at the 5% significance
- level, or <var>h</var> = 1 if the null hypothesis can be rejected at the 5% level.
+<p> If <var>x1</var> and <var>n1</var> are the counts of successes and trials in one
+ sample, and <var>x2</var> and <var>n2</var> those in a second one, test the null
+ hypothesis that the success probabilities <em>p1</em> and <em>p2</em> are the
+ same.  The result is <var>h</var> = 0 if the null hypothesis cannot be rejected at
+ the 5% significance level, or <var>h</var> = 1 if the null hypothesis can be
+ rejected at the 5% level.
 </p>
-<p> <var>x</var> may also be a matrix or an N-D array.  For matrices, <code>ztest</code>
- performs separate tests along each column of <var>x</var>, and returns a vector of
- results.  For N-D arrays, <code>ztest</code> works along the first non-singleton
- dimension of <var>x</var>.  <var>m</var> and <var>sigma</var> must be a scalars.
+<p> Under the null, the test statistic <var>zvalue</var> approximately follows a
+ standard normal distribution.
 </p>
-<p> <code>ztest</code> treats NaNs as missing values, and ignores them.
+<p> The size of <var>h</var>, <var>pval</var>, and <var>zvalue</var> is the common size of
+ <var>x</var>, <var>n1</var>, <var>x2</var>, and <var>n2</var>, which must be scalars or of common
+ size.  A scalar input functions as a constant matrix of the same size as the
+ other inputs.
 </p>
-<p> <code>[<var>h</var>, <var>pval</var>] = ztest (&hellip;)</code> returns the p-value.  That
+<p> <code>[<var>h</var>, <var>pval</var>] = ztest2 (&hellip;)</code> returns the p-value.  That
  is the probability of observing the given result, or one more extreme, by
  chance if the null hypothesisis true.
 </p>
-<p> <code>[<var>h</var>, <var>pval</var>, <var>ci</var>] = ztest (&hellip;)</code> returns a
- 100 * (1 - <var>alpha</var>)% confidence interval for the true mean.
+<p> <code>[<var>h</var>, <var>pval</var>, <var>zvalue</var>] = ztest2 (&hellip;)</code> returns the
+ value of the test statistic.
 </p>
-<p> <code>[<var>h</var>, <var>pval</var>, <var>ci</var>, <var>zvalue</var>] = ztest (&hellip;)</code>
- returns the value of the test statistic.
-</p>
-<p> <code>[&hellip;] = ztest (&hellip;, <var>name</var>, <var>value</var>, &hellip;)</code>
+<p> <code>[&hellip;] = ztest2 (&hellip;, <var>name</var>, <var>value</var>, &hellip;)</code>
  specifies one or more of the following name/value pairs:
 </p>
  <table>
 <thead><tr><th width="5%"></th><th width="20%">Name</th><th width="75%">Value</th></tr></thead>
 <tr><td width="5%"></td><td width="20%">&quot;alpha&quot;</td><td width="75%">the significance level. Default is 0.05.</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;dim&quot;</td><td width="75%">dimension to work along a matrix or an N-D array.</td></tr>
 <tr><td width="5%"></td><td width="20%">&quot;tail&quot;</td><td width="75%">a string specifying the alternative hypothesis:</td></tr>
 </table>
  <table>
-<tr><td width="10%"></td><td width="15%">&quot;both&quot;</td><td width="75%">&quot;mean is not <var>m</var>&quot; (two-tailed, default)</td></tr>
-<tr><td width="10%"></td><td width="15%">&quot;left&quot;</td><td width="75%">&quot;mean is less than <var>m</var>&quot; (left-tailed)</td></tr>
-<tr><td width="10%"></td><td width="15%">&quot;right&quot;</td><td width="75%">&quot;mean is greater than <var>m</var>&quot; (right-tailed)</td></tr>
+<tr><td width="10%"></td><td width="15%">&quot;both&quot;</td><td width="75%">&quot;<em>p1</em> is not <em>p2</em>&quot; (two-tailed, default)</td></tr>
+<tr><td width="10%"></td><td width="15%">&quot;left&quot;</td><td width="75%">&quot;<em>p1</em> is less than <em>p2</em>&quot; (left-tailed)</td></tr>
+<tr><td width="10%"></td><td width="15%">&quot;right&quot;</td><td width="75%">&quot;<em>p1</em> is greater than <em>p2</em>&quot; (right-tailed)</td></tr>
 </table>
 
 <p> <strong>See also: </strong>
-  <a href="ttest.html">ttest</a>, 
-  <a href="vartest.html">vartest</a>, 
-  <a href="signtest.html">signtest</a>, 
-  <a href="kstest.html">kstest</a>
+  <a href="chi2test.html">chi2test</a>, 
+fishertest
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/ztest.m">ztest</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/ztest2.m">ztest2</a>
 </div>
         </div>
       </div>
