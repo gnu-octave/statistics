@@ -62,35 +62,52 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>pval</var>, <var>t</var>, <var>df</var>] = <b>regression_ttest</b><i> (<var>y</var>, <var>x</var>, <var>rr</var>, <var>r</var>, <var>alt</var>)</i></dt>
+<dt><u>statistics:</u> <var>h</var> = <b>regression_ttest</b><i> (<var>y</var>, <var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>] = <b>regression_ttest</b><i> (<var>y</var>, <var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>ci</var>] = <b>regression_ttest</b><i> (<var>y</var>, <var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>ci</var>, <var>stats</var>] = <b>regression_ttest</b><i> (<var>y</var>, <var>x</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>regression_ttest</b><i> (<var>y</var>, <var>x</var>, <var>Name</var>, <var>Value</var>)</i></dt>
 </dl>
 
-<p> Perform a linear regression t-test for the null hypothesis
- @nospell{<code><var>rr</var> * <var>b</var> = <var>r</var></code>} in a classical normal
- regression model <code><var>y</var> = <var>x</var> * <var>b</var> + <var>e</var></code>.
+<p> Perform a linear regression t-test.
 </p>
 <div class="ms-5">
-<p> Under the null, the test statistic <var>t</var> follows a <var>t</var> distribution
- with <var>df</var> degrees of freedom.
+<p> <code><var>h</var> = regression_ttest (<var>y</var>, <var>x</var>)</code> tests the null
+ hypothesis that the slope <em>beta1</em> of a simple linear regression equals
+ 0.  The result is <var>h</var> = 0 if the null hypothesis cannot be rejected at
+ the 5% significance level, or <var>h</var> = 1 if the null hypothesis can be
+ rejected at the 5% level.  <var>y</var> and <var>x</var> must be vectors of equal
+ length with finite real numbers.
 </p>
-<p> If <var>r</var> is omitted, a value of 0 is assumed.
+<p> The p-value of the test is returned in <var>pval</var>.  A <em>100(1-alpha)%</em>
+ confidence interval for <em>beta1</em> is returned in <var>ci</var>.  <var>stats</var> is
+ a structure containing the value of the test statistic (<code>tstat</code>),
+ the degrees of freedom (<code>df</code>), the slope coefficient (<code>beta1</code>),
+ and the intercept (<code>beta0</code>).  Under the null, the test statistic
+ <var>stats</var>.<code>tstat</code> follows a <em>T</em>-distribution with
+ <var>stats</var>.<code>df</code> degrees of freedom.
 </p>
-<p> With the optional argument string <var>alt</var>, the alternative of interest
- can be selected.  If <var>alt</var> is <code>&quot;!=&quot;</code> or <code>&quot;&lt;&gt;&quot;</code>, the null
- is tested against the two-sided alternative @nospell{<code><var>rr</var> *
- <var>b</var> != <var>r</var></code>}.  If <var>alt</var> is <code>&quot;&gt;&quot;</code>, the one-sided
- alternative @nospell{<code><var>rr</var> * <var>b</var> &gt; <var>r</var></code>} is used.
- Similarly for <var>&quot;&lt;&quot;</var>, the one-sided alternative @nospell{<code><var>rr</var>
- * <var>b</var> &lt; <var>r</var></code>} is used.  The default is the two-sided case.
+<p> <code>[&hellip;] = regression_ttest (&hellip;, <var>name</var>, <var>value</var>)</code>
+ specifies one or more of the following name/value pairs:
 </p>
-<p> The p-value of the test is returned in <var>pval</var>.
+ <table>
+<thead><tr><th width="5%"></th><th width="20%">Name</th><th width="75%">Value</th></tr></thead>
+<tr><td width="5%"></td><td width="20%">&quot;alpha&quot;</td><td width="75%">the significance level. Default is 0.05.</td></tr>
+<tr><td width="5%"></td><td width="20%">&quot;tail&quot;</td><td width="75%">a string specifying the alternative hypothesis:</td></tr>
+</table>
+ <table>
+<tr><td width="10%"></td><td width="15%">&quot;both&quot;</td><td width="75%">&quot;<em>beta1</em> is not 0&quot; (two-tailed, default)</td></tr>
+<tr><td width="10%"></td><td width="15%">&quot;left&quot;</td><td width="75%">&quot;<em>beta1</em> is less than 0&quot; (left-tailed)</td></tr>
+<tr><td width="10%"></td><td width="15%">&quot;right&quot;</td><td width="75%">&quot;<em>beta1</em> is greater than 0&quot; (right-tailed)</td></tr>
+</table>
+
+<p> <strong>See also: </strong>
+  <a href="regress.html">regress</a>, 
+  <a href="regression_ftest.html">regression_ftest</a>
 </p>
-<p> If no output argument is given, the p-value of the test is displayed.
- </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/regression_ttest.m">regression_ttest</a>
 </div>
-
         </div>
       </div>
     </div>
