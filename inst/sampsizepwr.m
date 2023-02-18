@@ -102,19 +102,23 @@
 ## @code{[@dots{}] = sampsizepwr (@dots{}, @var{n}, @var{name}, @var{value})}
 ## specifies one or more of the following @var{name} / @var{value} pairs:
 ##
-## @multitable @columnfractions 0.05 0.1 0.85
+## @multitable @columnfractions 0.05 0.15 0.8
 ## @item @tab "alpha" @tab significance level of the test (default is 0.05)
 ## @item @tab "tail" @tab the type of test which can be:
 ## @end multitable
-## @multitable @columnfractions 0.1 0.15 0.75
+##
+## @multitable @columnfractions 0.1 0.20 0.7
 ## @item @tab "both" @tab two-sided test for an alternative @var{p1} not equal
 ## to @var{params}
+##
 ## @item @tab "right" @tab one-sided test for an alternative @var{p1} larger
 ## than @var{params}
+##
 ## @item @tab "left" @tab one-sided test for an alternative @var{p1} smaller
 ## than @var{params}
 ## @end multitable
-## @multitable @columnfractions 0.05 0.1 0.85
+##
+## @multitable @columnfractions 0.05 0.15 0.8
 ## @item @tab "ratio" @tab desired ratio @var{n2} / @var{n2} of the larger
 ## sample size @var{n2} to the smaller sample size @var{n1}.  Used only for the
 ## two-sample t-test.  The value of @code{@var{ratio}} is greater than or equal
