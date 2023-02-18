@@ -26,9 +26,9 @@
 ## F-test for General Linear Regression Analysis
 ##
 ## Perform a general linear regression F test for the null hypothesis that the
-## full model of the form @nospell{y = b_0 + b_1 * x_1 + b_2 * x_2 + @dots{} +
+## full model of the form @qcode{y = b_0 + b_1 * x_1 + b_2 * x_2 + @dots{} +
 ## b_n * x_n + e}, where n is the number of variables in @var{x}, does not
-## perform better than a reduced model, such as @nospell{y = b'_0 + b'_1 * x_1 +
+## perform better than a reduced model, such as @qcode{y = b'_0 + b'_1 * x_1 +
 ## b'_2 * x_2 + @dots{} + b'_k * x_k + e}, where k < n and it corresponds to the
 ## first k variables in @var{x}.  Explanatory (dependent) variable @var{y} and
 ## response (independent) variables @var{x} must not contain any missing values
