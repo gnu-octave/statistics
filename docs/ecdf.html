@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: regress_gp</title>
+    <title>Statistics: ecdf</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -26,9 +26,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Regression">
+                  <a class="nav-link" href="index.html#Plotting">
                     <i class="fas fa-list-alt"></i>
-                    Regression
+                    Plotting
                   </a>
                 </li>
                 <li class="nav-item">
@@ -55,41 +55,65 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>regress_gp</code></b>
+              Function&nbsp;Reference: <b><code>ecdf</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>m</var>, <var>K</var>] = <b>regress_gp</b><i> (<var>x</var>, <var>y</var>, <var>Sp</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip; <var>yi</var> <var>dy</var>] = <b>regress_gp</b><i> (&hellip;, <var>xi</var>)</i></dt>
+<dt><u>statistics:</u> [<var>f</var>, <var>x</var>] = <b>ecdf</b><i> (<var>y</var>)</i></dt>
+<dt><u>statistics:</u> [<var>f</var>, <var>x</var>, <var>flo</var>, <var>fup</var>] = <b>ecdf</b><i> (<var>y</var>)</i></dt>
+<dt><u>statistics:</u> <b>ecdf</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> <b>ecdf</b><i> (<var>ax</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>ecdf</b><i> (<var>y</var>, <var>name</var>, <var>value</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>ecdf</b><i> (<var>ax</var>, <var>y</var>, <var>name</var>, <var>value</var>, &hellip;)</i></dt>
 </dl>
 
-<p> Linear scalar regression using gaussian processes.
+<p> Empirical (Kaplan-Meier) cumulative distribution function.
 </p>
 <div class="ms-5">
-<p> It estimates the model <var>y</var> = <var>x</var>&rsquo;*m for <var>x</var> R^D and <var>y</var> in R.
- The information about errors of the predictions (interpolation/extrapolation) is given
- by the covarianve matrix <var>K</var>. If D==1 the inputs must be column vectors,
- if D&gt;1 then <var>x</var> is n-by-D, with n the number of data points. <var>Sp</var> defines
- the prior covariance of <var>m</var>, it should be a (D+1)-by-(D+1) positive definite matrix,
- if it is empty, the default is <code>Sp = 100*eye(size(x,2)+1)</code>.
+<p> <code>[<var>f</var>, <var>x</var>] = ecdf (<var>y</var>)</code> calculates the Kaplan-Meier
+ estimate of the cumulative distribution function (cdf), also known as the
+ empirical cdf.  <var>y</var> is a vector of data values.  <var>f</var> is a vector of
+ values of the empirical cdf evaluated at <var>x</var>.
 </p>
-<p> If <var>xi</var> inputs are provided, the model is evaluated and returned in <var>yi</var>.
- The estimation of the variation of <var>yi</var> are given in <var>dy</var>.
+<p> <code>[<var>f</var>, <var>x</var>, <var>flo</var>, <var>fup</var>] = ecdf (<var>y</var>)</code> also returns
+ lower and upper confidence bounds for the cdf.  These bounds are calculated
+ using Greenwood&rsquo;s formula, and are not simultaneous confidence bounds.
 </p>
-<p> Run <code>demo regress_gp</code> to see an examples.
+<p> <code>ecdf (&hellip;)</code> without output arguments produces a plot of the
+ empirical cdf.
 </p>
-<p> The function is a direc implementation of the formulae in pages 11-12 of
- Gaussian Processes for Machine Learning. Carl Edward Rasmussen and &nbsp; Christopher K. I. Williams. The MIT Press, 2006. ISBN 0-262-18253-X.
- available online at <a href="http://gaussianprocess.org/gpml/">http://gaussianprocess.org/gpml/</a>.
+<p> <code>ecdf (<var>ax</var>, &hellip;)</code> plots into existing axes <var>ax</var>.
+</p>
+<p> <code>[&hellip;] = ecdf (<var>y</var>, <var>name</var>, <var>value</var>, &hellip;)</code> specifies
+ additional parameter name/value pairs chosen from the following:
+</p>
+ <table>
+<thead><tr><th width="20%"><var>name</var></th><th width="80%"><var>value</var></th></tr></thead>
+<tr><td width="20%">&quot;censoring&quot;</td><td width="80%">A boolean vector of the same size as Y that is 1 for
+ observations that are right-censored and 0 for observations that are observed
+ exactly.  Default is all observations observed exactly.</td></tr>
+<tr><td width="20%">&quot;frequency&quot;</td><td width="80%">A vector of the same size as Y containing non-negative
+ integer counts.  The jth element of this vector gives the number of times the
+ jth element of Y was observed.  Default is 1 observation per Y element.</td></tr>
+<tr><td width="20%">&quot;alpha&quot;</td><td width="80%">A value <var>alpha</var> between 0 and 1 specifying the
+ significance level.  Default is 0.05 for 5% significance.</td></tr>
+<tr><td width="20%">&quot;function&quot;</td><td width="80%">The type of function returned as the F output argument,
+ chosen from &quot;cdf&quot; (the default), &quot;survivor&quot;, or &quot;cumulative hazard&quot;.</td></tr>
+<tr><td width="20%">&quot;bounds&quot;</td><td width="80%">Either &quot;on&quot; to include bounds or &quot;off&quot; (the default) to
+ omit them.  Used only for plotting.</td></tr>
+</table>
+
+<p> Type <code>demo ecdf</code> to see examples of usage.
 </p>
 <p> <strong>See also: </strong>
-  <a href="regress.html">regress</a>
+  <a href="cdfplot.html">cdfplot</a>, 
+ecdfhist
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/regress_gp.m">regress_gp</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/ecdf.m">ecdf</a>
 </div>
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -109,20 +133,24 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- % 1D Data
- x = 2*rand (5,1)-1;
- y = 2*x -1 + 0.3*randn (5,1);
+ y = exprnd (10, 50, 1);    ## random failure times are exponential(10)
+ d = exprnd (20, 50, 1);    ## drop-out times are exponential(20)
+ t = min (y, d);            ## we observe the minimum of these times
+ censored = (y > d);        ## we also observe whether the subject failed
 
- % Points for interpolation/extrapolation
- xi = linspace (-2,2,10)';
+ ## Calculate and plot the empirical cdf and confidence bounds
+ [f, x, flo, fup] = ecdf (t, "censoring", censored);
+ stairs (x, f);
+ hold on;
+ stairs (x, flo, "r:"); stairs (x, fup, "r:");
 
- [m K yi dy] = regress_gp (x,y,[],xi);
-
- plot (x,y,'xk',xi,yi,'r-',xi,bsxfun(@plus, yi, [-dy +dy]),'b-');
+ ## Superimpose a plot of the known true cdf
+ xx = 0:.1:max (t); yy = 1 - exp (-xx / 10); plot (xx, yy, "g-");
+ hold off;
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
-                    <img src="assets/regress_gp_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                    <img src="assets/ecdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>
@@ -149,90 +177,20 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- % 2D Data
- x = 2*rand (4,2)-1;
- y = 2*x(:,1)-3*x(:,2) -1 + 1*randn (4,1);
-
- % Mesh for interpolation/extrapolation
- [xi yi] = meshgrid (linspace (-1,1,10));
-
- [m K zi dz] = regress_gp (x,y,[],[xi(:) yi(:)]);
- zi = reshape (zi, 10,10);
- dz = reshape (dz,10,10);
-
- plot3 (x(:,1),x(:,2),y,'.g','markersize',8);
- hold on;
- h = mesh (xi,yi,zi,zeros(10,10));
- set(h,'facecolor','none');
- h = mesh (xi,yi,zi+dz,ones(10,10));
- set(h,'facecolor','none');
- h = mesh (xi,yi,zi-dz,ones(10,10));
- set(h,'facecolor','none');
+ R = wblrnd (100, 2, 100, 1);
+ ecdf (R, "Function", "survivor", "Alpha", 0.01, "Bounds", "on");
+ hold on
+ x = 1:1:250;
+ wblsurv = 1 - cdf ("weibull", x, 100, 2);
+ plot (x, wblsurv, "g-", "LineWidth", 2)
+ legend ("Empirical survivor function", "Lower confidence bound", ...
+         "Upper confidence bound", "Weibull survivor function", ...
+         "Location", "northeast");
  hold off
- axis tight
- view(80,25)
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
-                    <img src="assets/regress_gp_201.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 3
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- % Projection over basis function
- pp = [2 2 0.3 1];
- n = 10;
- x = 2*rand (n,1)-1;
- y = polyval(pp,x) + 0.3*randn (n,1);
-
- % Powers
- px = [sqrt(abs(x)) x x.^2 x.^3];
-
- % Points for interpolation/extrapolation
- xi = linspace (-1,1,100)';
- pxi = [sqrt(abs(xi)) xi xi.^2 xi.^3];
-
- Sp      = 100*eye(size(px,2)+1);
- Sp(2,2) = 1; # We don't believe the sqrt is present
- [m K yi dy] = regress_gp (px,y,Sp,pxi);
- disp(m)
-
- plot (x,y,'xk;Data;',xi,yi,'r-;Estimation;',xi,polyval(pp,xi),'g-;True;');
- axis tight
- axis manual
- hold on
- plot (xi,bsxfun(@plus, yi, [-dy +dy]),'b-');
- hold off
-
-   0.113306
-   0.087569
-   1.737325
-   2.295564                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/regress_gp_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                    <img src="assets/ecdf_201.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>

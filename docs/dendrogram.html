@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: wblplot</title>
+    <title>Statistics: dendrogram</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -55,59 +55,81 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>wblplot</code></b>
+              Function&nbsp;Reference: <b><code>dendrogram</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <b>wblplot</b><i> (<var>data</var>, &hellip;)</i></dt>
-<dt><u>statistics:</u> <var>handle</var> = <b>wblplot</b><i> (<var>data</var>, &hellip;)</i></dt>
-<dt><u>statistics:</u> [<var>handle</var>, <var>param</var>] = <b>wblplot</b><i> (<var>data</var>)</i></dt>
-<dt><u>statistics:</u> [<var>handle</var>, <var>param</var>] = <b>wblplot</b><i> (<var>data</var>, <var>censor</var>)</i></dt>
-<dt><u>statistics:</u> [<var>handle</var>, <var>param</var>] = <b>wblplot</b><i> (<var>data</var>, <var>censor</var>, <var>freq</var>)</i></dt>
-<dt><u>statistics:</u> [<var>handle</var>, <var>param</var>] = <b>wblplot</b><i> (<var>data</var>, <var>censor</var>, <var>freq</var>, <var>confint</var>)</i></dt>
-<dt><u>statistics:</u> [<var>handle</var>, <var>param</var>] = <b>wblplot</b><i> (<var>data</var>, <var>censor</var>, <var>freq</var>, <var>confint</var>, <var>fancygrid</var>)</i></dt>
-<dt><u>statistics:</u> [<var>handle</var>, <var>param</var>] = <b>wblplot</b><i> (<var>data</var>, <var>censor</var>, <var>freq</var>, <var>confint</var>, <var>fancygrid</var>, <var>showlegend</var>)</i></dt>
+<dt><u>statistics:</u> <b>dendrogram</b><i> (<var>tree</var>)</i></dt>
+<dt><u>statistics:</u> <b>dendrogram</b><i> (<var>tree</var>, <var>p</var>)</i></dt>
+<dt><u>statistics:</u> <b>dendrogram</b><i> (<var>tree</var>, <var>prop</var>, <var>val</var>)</i></dt>
+<dt><u>statistics:</u> <b>dendrogram</b><i> (<var>tree</var>, <var>p</var>, <var>prop</var>, <var>val</var> )</i></dt>
+<dt><u>statistics:</u> <var>h</var> = <b>dendrogram</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>t</var>, <var>perm</var>] = <b>dendrogram</b><i> (&hellip;)</i></dt>
 </dl>
 
-<p> Plot a column vector <var>data</var> on a Weibull probability plot using rank
- regression.
+<p> Plot a dendrogram of a hierarchical binary cluster tree.
 </p>
 <div class="ms-5">
-<p> <var>censor</var>: optional parameter is a column vector of same size as
- <var>data</var> with 1 for right censored data and 0 for exact observation.
- Pass [] when no censor data are available.
+<p> Given <var>tree</var>, a hierarchical binary cluster tree as the output of
+ <code>linkage</code>, plot a dendrogram of the tree. The number of leaves shown by
+ the dendrogram plot is limited to <var>p</var>. The default value for <var>p</var> is
+ 30. Set <var>p</var> to 0 to plot all leaves.
 </p>
-<p> <var>freq</var>: optional vector same size as <var>data</var> with the number of
- occurences for corresponding data.
- Pass [] when no frequency data are available.
-</p>
-<p> <var>confint</var>: optional confidence limits for ploting upper and lower
- confidence bands using beta binomial confidence bounds.  If a single
- value is given this will be used such as LOW = a and HIGH = 1 - a.
- Pass [] if confidence bounds is not requested.
-</p>
-<p> <var>fancygrid</var>: optional parameter which if set to anything but 1 will turn
- off the fancy gridlines.
-</p>
-<p> <var>showlegend</var>: optional parameter that when set to zero(0) turns off the
- legend.
-</p>
-<p> If one output argument is given, a <var>handle</var> for the data marker and
- plotlines is returned, which can be used for further modification of line and
- marker style.
-</p>
-<p> If a second output argument is specified, a <var>param</var> vector with scale,
- shape and correlation factor is returned.
-</p>
+<p> The optional outputs are <var>h</var>, <var>t</var> and <var>perm</var>:
+ </p><ul>
+<li> <var>h</var> is a handle to the lines of the plot.
+
+ </li><li> <var>t</var> is the vector with the numbers assigned to each leaf.
+ Each element of <var>t</var> is a leaf of <var>tree</var> and its value is the number
+ shown in the plot.
+ When the dendrogram plot is collapsed, that is when the number of shown
+ leaves <var>p</var> is inferior to the total number of leaves, a single leaf of
+ the plot can represent more than one leaf of <var>tree</var>: in that case
+ multiple elements of <var>t</var> share the same value, that is the same leaf of
+ the plot.
+ When the dendrogram plot is not collapsed, each leaf of the plot is the leaf
+ of <var>tree</var> with the same number.
+
+ </li><li> <var>perm</var> is the vector list of the leaves as ordered as in the plot.
+ </li></ul>
+
+<p> Additional input properties can be specified by pairs of properties and
+ values. Known properties are:
+ </p><ul>
+<li> <code>&quot;Reorder&quot;</code>
+ Reorder the leaves of the dendrogram plot using a numerical vector of size n,
+ the number of leaves. When <var>p</var> is smaller than <var>n</var>, the reordering
+ cannot break the <var>p</var> groups of leaves.
+
+ </li><li> <code>&quot;Orientation&quot;</code>
+ Change the orientation of the plot. Available values: <code>top</code> (default),
+ <code>bottom</code>, <code>left</code>, <code>right</code>.
+
+ </li><li> <code>&quot;CheckCrossing&quot;</code>
+ Check if the lines of a reordered dendrogram cross each other. Available
+ values: <code>true</code> (default), <code>false</code>.
+
+ </li><li> <code>&quot;ColorThreshold&quot;</code>
+ Not implemented.
+
+ </li><li> <code>&quot;Labels&quot;</code>
+ Use a char, string or cellstr array of size <var>n</var> to set the label for each
+ leaf; the label is dispayed only for nodes with just one leaf.
+ </li></ul>
+
 <p> <strong>See also: </strong>
-  <a href="normplot.html">normplot</a>, 
-  <a href="wblpdf.html">wblpdf</a>
+  <a href="cluster.html">cluster</a>, 
+  <a href="clusterdata.html">clusterdata</a>, 
+  <a href="cophenet.html">cophenet</a>, 
+  <a href="inconsistent.html">inconsistent</a>, 
+  <a href="linkage.html">linkage</a>, 
+  <a href="pdist.html">pdist</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/wblplot.m">wblplot</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dendrogram.m">dendrogram</a>
 </div>
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -126,13 +148,14 @@
                   <table><tbody><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
-
- x = [16 34 53 75 93 120];
- wblplot (x);
+ "simple 1"
+ y = [4, 5; 2, 6; 3, 7; 8, 9; 1, 10];
+ y(:,3) = 1:5;
+ dendrogram (y);
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
-                    <img src="assets/wblplot_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                    <img src="assets/dendrogram_101.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>
@@ -158,22 +181,15 @@
                   <table><tbody><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
-
- x = [2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67]';
- c = [0 1 0 1 0 1 1 1 0 0 1 0 1 0 1 1 0 1 1]';
- [h, p] = wblplot (x, c)
-
-
-  -180.64
-  -179.51
-
-p =
-
-   82.0192    0.8951    0.9896
+ "simple 2"
+ v = 2 * rand (30, 1) - 1;
+ d = abs (bsxfun (@minus, v(:, 1), v(:, 1)'));
+ y = linkage (squareform (d, "tovector"));
+ dendrogram (y);
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
-                    <img src="assets/wblplot_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                    <img src="assets/dendrogram_201.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>
@@ -199,24 +215,25 @@ p =
                   <table><tbody><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
+ "collapsed tree, find all the leaves of node 5"
+ X = randn (60, 2);
+ D = pdist (X);
+ y = linkage (D, "average");
+ subplot (2, 1, 1);
+ title ("original tree");
+ dendrogram (y, 0);
+ subplot (2, 1, 2);
+ title ("collapsed tree");
+ [~, t] = dendrogram (y, 20);
+ find(t == 5)
 
- x = [16, 34, 53, 75, 93, 120, 150, 191, 240 ,339];
- [h, p] = wblplot (x, [], [], 0.05)
- ## Benchmark Reliasoft eta = 146.2545 beta 1.1973 rho = 0.9999
+ans =
 
-
-  -180.10
-  -179.40
-  -178.24
-  -177.43
-
-p =
-
-   146.2545     1.1973     0.9999
+    5   37
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
-                    <img src="assets/wblplot_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                    <img src="assets/dendrogram_301.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>
@@ -242,15 +259,21 @@ p =
                   <table><tbody><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
-
- x = [46 64 83 105 123 150 150];
- c = [0 0 0 0 0 0 1];
- f = [1 1 1 1 1 1 4];
- wblplot (x, c, f, 0.05);
+ "optimal leaf order"
+ X = randn (30, 2);
+ D = pdist (X);
+ y = linkage (D, "average");
+ order = optimalleaforder (y, D);
+ subplot (2, 1, 1);
+ title ("original leaf order");
+ dendrogram (y);
+ subplot (2, 1, 2);
+ title ("optimal leaf order");
+ dendrogram (y, "Reorder", order);
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
-                    <img src="assets/wblplot_401.png" class="rounded img-thumbnail" alt="plotted figure">
+                    <img src="assets/dendrogram_401.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>
@@ -276,16 +299,17 @@ p =
                   <table><tbody><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
-
- x = [46 64 83 105 123 150 150];
- c = [0 0 0 0 0 0 1];
- f = [1 1 1 1 1 1 4];
- ## Subtract 30.92 from x to simulate a 3 parameter wbl with gamma = 30.92
- wblplot (x - 30.92, c, f, 0.05);
+ "horizontal orientation and labels"
+ X = randn (8, 2);
+ D = pdist (X);
+ L = ["Snow White"; "Doc"; "Grumpy"; "Happy"; "Sleepy"; "Bashful"; ...
+      "Sneezy"; "Dopey"];
+ y = linkage (D, "average");
+ dendrogram (y, "Orientation", "left", "Labels", L);
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
-                    <img src="assets/wblplot_501.png" class="rounded img-thumbnail" alt="plotted figure">
+                    <img src="assets/dendrogram_501.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>
