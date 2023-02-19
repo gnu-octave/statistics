@@ -210,6 +210,152 @@
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/boxplot.m">boxplot</a>
 </div>
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ axis ([0, 3]);
+ boxplot ({(randn(10, 1) * 5 + 140), (randn (13, 1) * 8 + 135)});
+ set (gca (), "xtick", [1 2], "xticklabel", {"girls", "boys"})
+ title ("Grade 3 heights");
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/boxplot_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ data = [(randn (10, 1) * 5 + 140); (randn (25, 1) * 8 + 135); ...
+         (randn (20, 1) * 6 + 165)];
+ groups = [(ones (10, 1)); (ones (25, 1) * 2); (ones (20, 1) * 3)];
+ labels = {"Team A", "Team B", "Team C"};
+ pos = [2, 1, 3];
+ boxplot (data, groups, "Notch", "on", "Labels", labels, "Positions", pos, ...
+          "OutlierTags", "on", "BoxStyle", "filled");
+ title ("Example of Group splitting with paired vectors");
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/boxplot_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 3
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ boxplot (randn (100, 9), "notch", "on", "boxstyle", "filled", ...
+          "colors", "ygcwkmb", "whisker", 1.2);
+ title ("Example of different colors specified with characters");
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/boxplot_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 4
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ colors = [0.7 0.7 0.7; ...
+           0.0 0.4 0.9; ...
+           0.7 0.4 0.3; ...
+           0.7 0.1 0.7; ...
+           0.8 0.7 0.4; ...
+           0.1 0.8 0.5; ...
+           0.9 0.9 0.2];
+ boxplot (randn (100, 13), "notch", "on", "boxstyle", "filled", ...
+          "colors", colors, "whisker", 1.3, "boxwidth", "proportional");
+ title ("Example of different colors specified as RGB values");
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/boxplot_401.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
         </div>
       </div>
     </div>

@@ -260,6 +260,52 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/kmeans.m">kmeans</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate a two-cluster problem
+ C1 = randn (100, 2) + 1;
+ C2 = randn (100, 2) - 1;
+ data = [C1; C2];
+
+ ## Perform clustering
+ [idx, centers] = kmeans (data, 2);
+
+ ## Plot the result
+ figure;
+ plot (data (idx==1, 1), data (idx==1, 2), 'ro');
+ hold on;
+ plot (data (idx==2, 1), data (idx==2, 2), 'bs');
+ plot (centers (:, 1), centers (:, 2), 'kv', 'markersize', 10);
+ hold off;
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/kmeans_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
         </div>
       </div>
     </div>

@@ -154,6 +154,212 @@
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/chi2gof.m">chi2gof</a>
 </div>
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ x = normrnd (50, 5, 100, 1);
+ [h, p, stats] = chi2gof (x)
+ [h, p, stats] = chi2gof (x, "cdf", @(x)normcdf (x, mean(x), std(x)))
+ [h, p, stats] = chi2gof (x, "cdf", {@normcdf, mean(x), std(x)})
+
+p = 0.8887
+stats =
+
+  scalar structure containing the fields:
+
+    chi2stat = 2.3134
+    df = 6
+    edges =
+
+       38.026   42.750   45.112   47.474   49.836   52.198   54.560   56.922   59.284   61.646
+
+    O =
+
+        5    7   12   20   19   16    8    8    5
+
+    E =
+
+        6.0212    7.5912   12.4052   16.5377   17.9862   15.9586   11.5516    6.8213    5.1268
+
+
+h = 0
+p = 0.8887
+stats =
+
+  scalar structure containing the fields:
+
+    chi2stat = 2.3134
+    df = 6
+    edges =
+
+       38.026   42.750   45.112   47.474   49.836   52.198   54.560   56.922   59.284   61.646
+
+    O =
+
+        5    7   12   20   19   16    8    8    5
+
+    E =
+
+        6.0212    7.5912   12.4052   16.5377   17.9862   15.9586   11.5516    6.8213    5.1268
+
+
+h = 0
+p = 0.8887
+stats =
+
+  scalar structure containing the fields:
+
+    chi2stat = 2.3134
+    df = 6
+    edges =
+
+       38.026   42.750   45.112   47.474   49.836   52.198   54.560   56.922   59.284   61.646
+
+    O =
+
+        5    7   12   20   19   16    8    8    5
+
+    E =
+
+        6.0212    7.5912   12.4052   16.5377   17.9862   15.9586   11.5516    6.8213    5.1268
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ x = rand (100,1 );
+ n = length (x);
+ binedges = linspace (0, 1, 11);
+ expectedCounts = n * diff (binedges);
+ [h, p, stats] = chi2gof (x, "binedges", binedges, "expected", expectedCounts)
+
+p = 0.4559
+stats =
+
+  scalar structure containing the fields:
+
+    chi2stat = 8.8000
+    df = 9
+    edges =
+
+     Columns 1 through 8:
+
+       8.2358e-03   1.0599e-01   2.0374e-01   3.0150e-01   3.9925e-01   4.9701e-01   5.9476e-01   6.9252e-01
+
+     Columns 9 through 11:
+
+       7.9027e-01   8.8802e-01   9.8578e-01
+
+    O =
+
+        7   10   16    8    9   15   10    8    7   10
+
+    E =
+
+       10   10   10   10   10   10   10   10   10   10
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 3
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ bins = 0:5;
+ obsCounts = [6 16 10 12 4 2];
+ n = sum(obsCounts);
+ lambdaHat = sum(bins.*obsCounts) / n;
+ expCounts = n * poisspdf(bins,lambdaHat);
+ [h, p, stats] = chi2gof (bins, "binctrs", bins, "frequency", obsCounts, ...
+                          "expected", expCounts, "nparams",1)
+
+p = 0.4654
+stats =
+
+  scalar structure containing the fields:
+
+    chi2stat = 2.5550
+    df = 3
+    edges =
+
+       4.9407e-324    8.3333e-01    1.6667e+00    2.5000e+00    3.3333e+00    5.0000e+00
+
+    O =
+
+        6   16   10   12    6
+
+    E =
+
+        7.0429   13.8041   13.5280    8.8383    6.0284
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
         </div>
       </div>
     </div>

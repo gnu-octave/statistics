@@ -91,6 +91,157 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/regress_gp.m">regress_gp</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ % 1D Data
+ x = 2*rand (5,1)-1;
+ y = 2*x -1 + 0.3*randn (5,1);
+
+ % Points for interpolation/extrapolation
+ xi = linspace (-2,2,10)';
+
+ [m K yi dy] = regress_gp (x,y,[],xi);
+
+ plot (x,y,'xk',xi,yi,'r-',xi,bsxfun(@plus, yi, [-dy +dy]),'b-');
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/regress_gp_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ % 2D Data
+ x = 2*rand (4,2)-1;
+ y = 2*x(:,1)-3*x(:,2) -1 + 1*randn (4,1);
+
+ % Mesh for interpolation/extrapolation
+ [xi yi] = meshgrid (linspace (-1,1,10));
+
+ [m K zi dz] = regress_gp (x,y,[],[xi(:) yi(:)]);
+ zi = reshape (zi, 10,10);
+ dz = reshape (dz,10,10);
+
+ plot3 (x(:,1),x(:,2),y,'.g','markersize',8);
+ hold on;
+ h = mesh (xi,yi,zi,zeros(10,10));
+ set(h,'facecolor','none');
+ h = mesh (xi,yi,zi+dz,ones(10,10));
+ set(h,'facecolor','none');
+ h = mesh (xi,yi,zi-dz,ones(10,10));
+ set(h,'facecolor','none');
+ hold off
+ axis tight
+ view(80,25)
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/regress_gp_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 3
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ % Projection over basis function
+ pp = [2 2 0.3 1];
+ n = 10;
+ x = 2*rand (n,1)-1;
+ y = polyval(pp,x) + 0.3*randn (n,1);
+
+ % Powers
+ px = [sqrt(abs(x)) x x.^2 x.^3];
+
+ % Points for interpolation/extrapolation
+ xi = linspace (-1,1,100)';
+ pxi = [sqrt(abs(xi)) xi xi.^2 xi.^3];
+
+ Sp      = 100*eye(size(px,2)+1);
+ Sp(2,2) = 1; # We don't believe the sqrt is present
+ [m K yi dy] = regress_gp (px,y,Sp,pxi);
+ disp(m)
+
+ plot (x,y,'xk;Data;',xi,yi,'r-;Estimation;',xi,polyval(pp,xi),'g-;True;');
+ axis tight
+ axis manual
+ hold on
+ plot (xi,bsxfun(@plus, yi, [-dy +dy]),'b-');
+ hold off
+
+  -5.2063e-03
+   6.7108e-01
+   2.8200e+00
+   1.1216e+00                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/regress_gp_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
         </div>
       </div>
     </div>

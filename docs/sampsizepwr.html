@@ -185,6 +185,159 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/sampsizepwr.m">sampsizepwr</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the mean closest to 100 that can be determined to be
+ ## significantly different from 100 using a t-test with a sample size
+ ## of 60 and a power of 0.8.
+ mu1 = sampsizepwr ("t", [100, 10], [], 0.8, 60);
+ disp (mu1);
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the sample sizes required to distinguish mu0 = 100 from
+ ## mu1 = 110 by a two-sample t-test with a ratio of the larger and the
+ ## smaller sample sizes of 1.5 and a power of 0.6.
+ [N1,N2] = sampsizepwr ("t2", [100, 10], 110, 0.6, [], "ratio", 1.5)
+
+N2 = 14                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 3
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the sample size N required to distinguish p=.26 from p=.2
+ ## with a binomial test.  The result is approximate, so make a plot to
+ ## see if any smaller N values also have the required power of 0.6.
+ Napprox = sampsizepwr ("p", 0.2, 0.26, 0.6);
+ nn = 1:250;
+ pwr = sampsizepwr ("p", 0.2, 0.26, [], nn);
+ Nexact = min (nn(pwr >= 0.6));
+ plot(nn,pwr,'b-', [Napprox Nexact],pwr([Napprox Nexact]),'ro');
+ grid on
+
+warning: called from
+    sampsizepwr at line 358 column 11
+    build_DEMOS at line 74 column 9
+    function_texi2html at line 239 column 14
+    package_texi2html at line 268 column 7
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/sampsizepwr_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 4
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## The company must test 52 bottles to detect the difference between a mean
+ ## volume of 100 mL and 102 mL with a power of 0.80.  Generate a power curve
+ ## to visualize how the sample size affects the power of the test.
+
+ nout = sampsizepwr('t',[100 5],102,0.80);
+ nn = 1:100;
+ pwrout = sampsizepwr('t',[100 5],102,[],nn);
+
+ figure;
+ plot (nn, pwrout, "b-", nout, 0.8, "ro")
+ title ("Power versus Sample Size")
+ xlabel ("Sample Size")
+ ylabel ("Power")
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/sampsizepwr_401.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
         </div>
       </div>
     </div>

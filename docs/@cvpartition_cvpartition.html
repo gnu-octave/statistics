@@ -139,6 +139,60 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/@cvpartition/cvpartition.m">@cvpartition/cvpartition</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ # Partition with Fisher iris dataset (n = 150)
+ # Stratified by species
+ load fisheriris
+ y = species;
+ # 10-fold cross-validation partition
+ c = cvpartition (species, 'KFold', 10)
+ # leave-10-out partition
+ c1 = cvpartition (species, 'HoldOut', 10)
+ idx1 = test (c, 2);
+ idx2 = training (c, 2);
+ # another leave-10-out partition
+ c2 = repartition (c1)
+
+          N: 150
+NumTestSets: 10
+  TrainSize: 135  135  135  135  135  135  135  135  135  135
+   TestSize: 15  15  15  15  15  15  15  15  15  15
+HoldOut cross validation partition
+          N: 150
+NumTestSets: 1
+  TrainSize: 140
+   TestSize: 10
+HoldOut cross validation partition
+          N: 150
+NumTestSets: 1
+  TrainSize: 140
+   TestSize: 10                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
         </div>
       </div>
     </div>

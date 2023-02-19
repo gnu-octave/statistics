@@ -147,6 +147,148 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/anova2.m">anova2</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+
+ # Factorial (Crossed) Two-way ANOVA with Interaction
+
+ popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
+
+ [p, atab, stats] = anova2(popcorn, 3, "on");
+
+                      ANOVA Table
+
+Source             SS      df        MS       F      Prob>F
+-----------------------------------------------------------
+Columns         15.7500     2     7.8750    56.70    0.0000
+Rows             4.5000     1     4.5000    32.40    0.0001
+Interaction      0.0833     2     0.0417     0.30    0.7462
+Error            1.6667    12     0.1389
+Total           22.0000    17
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+
+ # One-way Repeated Measures ANOVA (Rows are a crossed random factor)
+
+ data = [54, 43, 78, 111;
+         23, 34, 37, 41;
+         45, 65, 99, 78;
+         31, 33, 36, 35;
+         15, 25, 30, 26];
+
+ [p, atab, stats] = anova2 (data, 1, "on", "linear");
+
+                      ANOVA Table
+
+Source             SS      df        MS       F      Prob>F
+-----------------------------------------------------------
+Columns       2174.9500     3   724.9833     3.62    0.0873
+Rows          8371.7000     4  2092.9250    10.45    0.0007
+Error         2404.3000    12   200.3583
+Total        12950.9500    19
+
+Note: Greenhouse-Geisser's correction was applied to the
+degrees of freedom for the Column factor: F(1.74,6.95)
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 3
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+
+ # Balanced Nested One-way ANOVA (Rows are a nested random factor)
+
+ data = [4.5924 7.3809 21.322; -0.5488 9.2085 25.0426; ...
+         6.1605 13.1147 22.66; 2.3374 15.2654 24.1283; ...
+         5.1873 12.4188 16.5927; 3.3579 14.3951 10.2129; ...
+         6.3092 8.5986 9.8934; 3.2831 3.4945 10.0203];
+
+ [p, atab, stats] = anova2 (data, 4, "on", "nested");
+
+                      ANOVA Table
+
+Source             SS      df        MS       F      Prob>F
+-----------------------------------------------------------
+Columns        745.3603     2   372.6802     4.02    0.1416
+Rows           278.0185     3    92.6728     9.26    0.0006
+Error          180.1804    18    10.0100
+Total         1203.5592    23
+
+Note: Rows are a random factor nested within the columns.
+The Column F statistic uses the Row MS instead of the MSE.
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
         </div>
       </div>
     </div>

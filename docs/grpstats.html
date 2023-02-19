@@ -124,6 +124,116 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/grpstats.m">grpstats</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ load carsmall;
+ [m,p,g] = grpstats (Weight, Model_Year, {"mean", "predci", "gname"})
+ n = length(m);
+ errorbar((1:n)',m,p(:,2)-m);
+ set (gca, "xtick", 1:n, "xticklabel", g);
+ title ("95% prediction intervals for mean weight by year");
+
+
+   3441.3
+   3078.7
+   2453.5
+
+p =
+
+   1847.1   5035.6
+   1457.0   4700.4
+   1754.1   3153.0
+
+g =
+{
+  [1,1] = 70
+  [2,1] = 76
+  [3,1] = 82
+}
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/grpstats_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ load carsmall;
+ [m,p,g] = grpstats ([Acceleration,Weight/1000],Cylinders, ...
+                     {"mean", "meanci", "gname"}, 0.05)
+ [c,r] = size (m);
+ errorbar((1:c)'.*ones(c,r),m,p(:,[(1:r)])-m);
+ set (gca, "xtick", 1:c, "xticklabel", g);
+ title ("95% prediction intervals for mean weight by year");
+
+
+   11.6406    3.9703
+   16.6706    2.3726
+   16.4765    3.1255
+
+p =
+
+   11.1762    3.8899   12.1050    4.0506
+   16.1385    2.2998   17.2027    2.4454
+   16.1622    3.0518   16.7907    3.1992
+
+g =
+{
+  [1,1] = 8
+  [2,1] = 4
+  [3,1] = 6
+}
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/grpstats_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
         </div>
       </div>
     </div>

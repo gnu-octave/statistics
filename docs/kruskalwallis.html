@@ -132,6 +132,119 @@
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/kruskalwallis.m">kruskalwallis</a>
 </div>
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ x = meshgrid (1:6);
+ x = x + normrnd (0, 1, 6, 6);
+ kruskalwallis (x, [], 'off');
+
+Source        SS      df      MS      Chi-sq  Prob>Chi-sq
+---------------------------------------------------------
+Columns    2987.00     5     597.40    26.91  5.93935e-05
+Error       898.00    30      29.93
+Total      3885.00    35                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ x = meshgrid (1:6);
+ x = x + normrnd (0, 1, 6, 6);
+ [p, atab] = kruskalwallis(x);
+
+Source        SS      df      MS      Chi-sq  Prob>Chi-sq
+---------------------------------------------------------
+Columns    2939.00     5     587.80    26.48  7.20851e-05
+Error       946.00    30      31.53
+Total      3885.00    35                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/kruskalwallis_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 3
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ x = ones (30, 4) .* [-2, 0, 1, 5];
+ x = x + normrnd (0, 2, 30, 4);
+ group = {"A", "B", "C", "D"};
+ kruskalwallis (x, group);
+
+Source        SS      df      MS      Chi-sq  Prob>Chi-sq
+---------------------------------------------------------
+Columns   87704.27     3   29234.76    72.48  1.22125e-15
+Error     56285.73   116     485.22
+Total    143990.00   119                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/kruskalwallis_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
         </div>
       </div>
     </div>
