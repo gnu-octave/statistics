@@ -102,26 +102,40 @@
             <div class="card-body">
               <div class="container bg-light">
                 <div class="row">
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-{{DEMO}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ X = [ 7    26     6    60;
+       1    29    15    52;
+      11    56     8    20;
+      11    31     8    47;
+       7    52     6    33;
+      11    55     9    22;
+       3    71    17     6;
+       1    31    22    44;
+       2    54    18    22;
+      21    47     4    26;
+       1    40    23    34;
+      11    66     9    12;
+      10    68     8    12
+     ];
+ # As we increase the number of principal components, the norm
+ # of the residuals matrix will decrease
+ r1 = pcares(X,1);
+ n1 = norm(r1)
+ r2 = pcares(X,2);
+ n2 = norm(r2)
+ r3 = pcares(X,3);
+ n3 = norm(r3)
+ r4 = pcares(X,4);
+ n4 = norm(r4)
+n1 = 28.460
+n2 = 12.201
+n3 = 1.6870
+n4 = 4.2168e-14
+                    </pre></td></tr></tbody>
+                  </table>
 
                 </div>
               </div>

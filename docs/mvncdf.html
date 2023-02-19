@@ -143,26 +143,25 @@
             <div class="card-body">
               <div class="container bg-light">
                 <div class="row">
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-{{DEMO}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ mu = [1, -1];
+ Sigma = [0.9, 0.4; 0.4, 0.3];
+ [X1, X2] = meshgrid (linspace (-1, 3, 25)', linspace (-3, 1, 25)');
+ X = [X1(:), X2(:)];
+ p = mvncdf (X, mu, Sigma);
+ Z = reshape (p, 25, 25);
+ surf (X1, X2, Z);
+ title ("Bivariate Normal Distribution");
+ ylabel "X1"
+ xlabel "X2"
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/mvncdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
 
                 </div>
               </div>
@@ -184,26 +183,29 @@
             <div class="card-body">
               <div class="container bg-light">
                 <div class="row">
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-{{DEMO}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ mu = [0, 0];
+ Sigma = [0.25, 0.3; 0.3, 1];
+ p = mvncdf ([0 0], [1 1], mu, Sigma);
+ x1 = -3:.2:3;
+ x2 = -3:.2:3;
+ [X1, X2] = meshgrid (x1, x2);
+ X = [X1(:), X2(:)];
+ y = mvnpdf (X, mu, Sigma);
+ y = reshape (y, length (x2), length (x1));
+ contour (x1, x2, y, [0.0001, 0.001, 0.01, 0.05, 0.15, 0.25, 0.35]);
+ xlabel ("x");
+ ylabel ("y");
+ title ("Probability over Rectangular Region");
+ line ([0, 0, 1, 1, 0], [1, 0, 0, 1, 1], "Linestyle", "--", "Color", "k");
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/mvncdf_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
 
                 </div>
               </div>

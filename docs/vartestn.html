@@ -154,26 +154,38 @@
             <div class="card-body">
               <div class="container bg-light">
                 <div class="row">
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-{{DEMO}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Test the null hypothesis that the variances are equal across the five
+ ## columns of data in the students’ exam grades matrix, grades.
+
+ load examgrades
+ vartestn (grades)
+
+                    Group Summary Table
+
+Group                        Count        Mean       Std Dev
+------------------------------------------------------------
+1                            120        75.0083     8.720203
+2                            120        74.9917     6.542037
+3                            120        74.9917     7.430910
+4                            120        75.0333     8.601283
+5                            120        74.9917     5.258839
+Pooled Groups                600        75.0033     7.310655
+Pooled valid Groups          600        75.0083     8.720203
+
+Bartlett's statistic             38.73324
+Degrees of Freedom               4
+p-value                          0.000000
+
+ans = 7.9086e-08
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/vartestn_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
 
                 </div>
               </div>
@@ -195,26 +207,36 @@
             <div class="card-body">
               <div class="container bg-light">
                 <div class="row">
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-{{DEMO}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Test the null hypothesis that the variances in miles per gallon (MPG) are
+ ## equal across different model years.
+
+ load carsmall
+ vartestn (MPG, Model_Year)
+
+                    Group Summary Table
+
+Group                        Count        Mean       Std Dev
+------------------------------------------------------------
+70                            29        17.6897     5.339231
+76                            34        21.5735     5.889297
+82                            31        31.7097     5.392548
+Pooled Groups                 94        23.6576     5.540359
+Pooled valid Groups           87        17.6897     5.339231
+
+Bartlett's statistic             0.36619
+Degrees of Freedom               2
+p-value                          0.832687
+
+ans = 0.8327
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/vartestn_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
 
                 </div>
               </div>
@@ -236,26 +258,36 @@
             <div class="card-body">
               <div class="container bg-light">
                 <div class="row">
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 3
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-{{DEMO}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Use Levene’s test to test the null hypothesis that the variances in miles
+ ## per gallon (MPG) are equal across different model years.
+
+ load carsmall
+ p = vartestn (MPG, Model_Year, "TestType", "LeveneAbsolute")
+
+                    Group Summary Table
+
+Group                        Count        Mean       Std Dev
+------------------------------------------------------------
+70                            29        17.6897     5.339231
+76                            34        21.5735     5.889297
+82                            31        31.7097     5.392548
+Pooled Groups                 94        23.6576     5.540359
+Pooled valid Groups         2958        23.7181     5.555774
+
+Levene's statistic (absolute)    0.46126
+Degrees of Freedom               2,  91
+p-value                          0.631954
+
+p = 0.6320
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/vartestn_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
 
                 </div>
               </div>
@@ -277,26 +309,30 @@
             <div class="card-body">
               <div class="container bg-light">
                 <div class="row">
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 4
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-{{DEMO}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Test the null hypothesis that the variances are equal across the five
+ ## columns of data in the students’ exam grades matrix, grades, using the
+ ## Brown-Forsythe test.  Suppress the display of the summary table of
+ ## statistics and the box plot.
+
+ load examgrades
+ [p, stats] = vartestn (grades, "TestType", "BrownForsythe", "Display", "off")
+p = 1.3121e-06
+stats =
+
+  scalar structure containing the fields:
+
+    fstat = 8.4160
+    df =
+
+         4   595
+
+
+                    </pre></td></tr></tbody>
+                  </table>
 
                 </div>
               </div>

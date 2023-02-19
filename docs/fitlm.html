@@ -196,26 +196,46 @@
             <div class="card-body">
               <div class="container bg-light">
                 <div class="row">
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-{{DEMO}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ y =  [ 8.706 10.362 11.552  6.941 10.983 10.092  6.421 14.943 15.931 ...
+        22.968 18.590 16.567 15.944 21.637 14.492 17.965 18.851 22.891 ...
+        22.028 16.884 17.252 18.325 25.435 19.141 21.238 22.196 18.038 ...
+        22.628 31.163 26.053 24.419 32.145 28.966 30.207 29.142 33.212 ...
+        25.694 ]';
+ X = [1 1 1 1 1 1 1 1 2 2 2 2 2 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 5 5 5 5 5 5 5 5 5]';
+
+ [TAB,STATS] = fitlm (X,y,"linear","CategoricalVars",1,"display","on");
+
+MODEL FORMULA (based on Wilkinson's notation):
+
+Y ~ 1 + X1
+
+MODEL PARAMETERS (contrasts for the fixed effects)
+
+Parameter               Estimate        SE  Lower.CI  Upper.CI        t Prob>|t|
+--------------------------------------------------------------------------------
+(Intercept)                   10      1.02      7.93      12.1     9.83    <.001 
+X1_1                           8      1.64      4.66      11.3     4.87    <.001 
+X1_2                           9      1.44      6.07      11.9     6.25    <.001 
+X1_3                          11      1.49      7.97        14     7.38    <.001 
+X1_4                          19       1.4      16.2      21.8    13.58    <.001 
+
+ANOVA TABLE (Type II sums-of-squares):
+
+Source                   Sum Sq.    d.f.    Mean Sq.  R Sq.            F  Prob>F
+--------------------------------------------------------------------------------
+X1                        1561.3       4      390.33  0.855        47.10   <.001 
+Error                     265.17      32      8.2866
+Total                     1826.5      36 
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/fitlm_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
 
                 </div>
               </div>
@@ -237,26 +257,54 @@
             <div class="card-body">
               <div class="container bg-light">
                 <div class="row">
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-{{DEMO}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
+ brands = {'Gourmet', 'National', 'Generic'; ...
+           'Gourmet', 'National', 'Generic'; ...
+           'Gourmet', 'National', 'Generic'; ...
+           'Gourmet', 'National', 'Generic'; ...
+           'Gourmet', 'National', 'Generic'; ...
+           'Gourmet', 'National', 'Generic'};
+ popper = {'oil', 'oil', 'oil'; 'oil', 'oil', 'oil'; 'oil', 'oil', 'oil'; ...
+           'air', 'air', 'air'; 'air', 'air', 'air'; 'air', 'air', 'air'};
+
+ [TAB, STATS] = fitlm ({brands(:),popper(:)},popcorn(:),"interactions",...
+                          "CategoricalVars",[1,2],"display","on");
+
+MODEL FORMULA (based on Wilkinson's notation):
+
+Y ~ 1 + X1 + X2 + X1:X2
+
+MODEL PARAMETERS (contrasts for the fixed effects)
+
+Parameter               Estimate        SE  Lower.CI  Upper.CI        t Prob>|t|
+--------------------------------------------------------------------------------
+(Intercept)                 5.67     0.215       5.2      6.14    26.34    <.001 
+X1_1                       -1.33     0.304        -2     -0.67    -4.38    <.001 
+X1_2                       -2.17     0.304     -2.83      -1.5    -7.12    <.001 
+X2_1                        1.17     0.304     0.504      1.83     3.83     .002 
+X1:X2_1                   -0.333      0.43     -1.27     0.604    -0.77     .454 
+X1:X2_2                   -0.167      0.43      -1.1     0.771    -0.39     .705 
+
+ANOVA TABLE (Type II sums-of-squares):
+
+Source                   Sum Sq.    d.f.    Mean Sq.  R Sq.            F  Prob>F
+--------------------------------------------------------------------------------
+X1                         15.75       2       7.875  0.904        56.70   <.001 
+X2                           4.5       1         4.5  0.730        32.40   <.001 
+X1*X2                   0.083333       2    0.041667  0.048         0.30    .746 
+Error                     1.6667      12     0.13889
+Total                         22      17 
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/fitlm_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
 
                 </div>
               </div>

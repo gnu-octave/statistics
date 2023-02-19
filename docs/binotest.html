@@ -110,26 +110,24 @@
             <div class="card-body">
               <div class="container bg-light">
                 <div class="row">
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-{{DEMO}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ % flip a coin 1000 times, showing 475 heads
+ % Hypothesis: coin is fair, i.e. p=1/2
+ [h,p_val,ci] = binotest(475,1000,0.5)
+ % Result: h = 0 : null hypothesis not rejected, coin could be fair
+ %         P value 0.12, i.e. hypothesis not rejected for alpha up to 12%
+ %         0.444 <= p <= 0.506 with 95% confidence
+h = 0
+p_val = 0.1212
+ci =
+
+   0.4437   0.5065
+
+                    </pre></td></tr></tbody>
+                  </table>
 
                 </div>
               </div>
@@ -151,26 +149,24 @@
             <div class="card-body">
               <div class="container bg-light">
                 <div class="row">
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-{{DEMO}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ % flip a coin 100 times, showing 65 heads
+ % Hypothesis: coin shows less than 50% heads, i.e. p<=1/2
+ [h,p_val,ci] = binotest(65,100,0.5,'tail','left','alpha',0.01)
+ % Result: h = 1 : null hypothesis is rejected, i.e. coin shows more heads than tails
+ %         P value 0.0018, i.e. hypothesis not rejected for alpha up to 0.18%
+ %         0 <= p <= 0.76 with 99% confidence
+h = 1
+p_val = 1.7588e-03
+ci =
+
+        0   0.7580
+
+                    </pre></td></tr></tbody>
+                  </table>
 
                 </div>
               </div>

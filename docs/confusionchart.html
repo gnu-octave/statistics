@@ -136,26 +136,30 @@ sortClasses
             <div class="card-body">
               <div class="container bg-light">
                 <div class="row">
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-{{DEMO}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+ "Setting the chart properties"
+ Yt = [8 5 6 8 5 3 1 6 4 2 5 3 1 4]';
+ Yp = [8 5 6 8 5 2 3 4 4 5 5 7 2 6]';
+ confusionchart (Yt, Yp, "Title", ...
+   "Demonstration with summaries","Normalization",...
+   "absolute","ColumnSummary", "column-normalized","RowSummary",...
+   "row-normalized")
+ans = Setting the chart properties
+ans =
+
+ConfusionMatrixChart with properties:
+
+	NormalizedValues: [ 8x8 double ]
+	ClassLabels: { 8x1 cell }
+
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/confusionchart_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
 
                 </div>
               </div>
@@ -177,26 +181,20 @@ sortClasses
             <div class="card-body">
               <div class="container bg-light">
                 <div class="row">
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-{{DEMO}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+ "Cellstr as inputs"
+ Yt = {'Positive', 'Positive', 'Positive', 'Negative', 'Negative' };
+ Yp = {'Positive', 'Positive', 'Negative', 'Negative', 'Negative' };
+ m = confusionmat ( Yt, Yp );
+ confusionchart ( m, { 'Positive', 'Negative' } );
+ans = Cellstr as inputs
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/confusionchart_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
 
                 </div>
               </div>
@@ -218,26 +216,21 @@ sortClasses
             <div class="card-body">
               <div class="container bg-light">
                 <div class="row">
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 3
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-{{DEMO}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+ "Editing the object properties"
+ Yt = {'Positive', 'Positive', 'Positive', 'Negative', 'Negative' };
+ Yp = {'Positive', 'Positive', 'Negative', 'Negative', 'Negative' };
+ cm = confusionchart ( Yt, Yp );
+ cm.Title = "This is an example with a green diagonal";
+ cm.DiagonalColor = [0.4660, 0.6740, 0.1880];
+ans = Editing the object properties
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/confusionchart_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
 
                 </div>
               </div>
@@ -259,26 +252,21 @@ sortClasses
             <div class="card-body">
               <div class="container bg-light">
                 <div class="row">
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 5
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-{{DEMO}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+ "Sorting classes"
+ Yt = [8 5 6 8 5 3 1 6 4 2 5 3 1 4]';
+ Yp = [8 5 6 8 5 2 3 4 4 5 5 7 2 6]';
+ cm = confusionchart (Yt, Yp, "Title", ...
+   "Classes are sorted according to clusters");
+ sortClasses (cm, "cluster");
+ans = Sorting classes
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/confusionchart_501.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
 
                 </div>
               </div>

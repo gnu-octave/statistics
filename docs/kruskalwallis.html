@@ -146,26 +146,21 @@
             <div class="card-body">
               <div class="container bg-light">
                 <div class="row">
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-{{DEMO}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ x = meshgrid (1:6);
+ x = x + normrnd (0, 1, 6, 6);
+ kruskalwallis (x, [], 'off');
+              Kruskal-Wallis ANOVA Table
+Source        SS      df      MS      Chi-sq  Prob>Chi-sq
+---------------------------------------------------------
+Columns    3235.67     5     647.13    29.15  2.16667e-05
+Error       649.33    30      21.64
+Total      3885.00    35
+                    </pre></td></tr></tbody>
+                  </table>
 
                 </div>
               </div>
@@ -187,26 +182,24 @@
             <div class="card-body">
               <div class="container bg-light">
                 <div class="row">
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-{{DEMO}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ x = meshgrid (1:6);
+ x = x + normrnd (0, 1, 6, 6);
+ [p, atab] = kruskalwallis(x);
+              Kruskal-Wallis ANOVA Table
+Source        SS      df      MS      Chi-sq  Prob>Chi-sq
+---------------------------------------------------------
+Columns    3045.33     5     609.07    27.44  4.69171e-05
+Error       839.67    30      27.99
+Total      3885.00    35
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/kruskalwallis_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
 
                 </div>
               </div>
@@ -228,26 +221,25 @@
             <div class="card-body">
               <div class="container bg-light">
                 <div class="row">
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 3
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-{{DEMO}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ x = ones (30, 4) .* [-2, 0, 1, 5];
+ x = x + normrnd (0, 2, 30, 4);
+ group = {"A", "B", "C", "D"};
+ kruskalwallis (x, group);
+              Kruskal-Wallis ANOVA Table
+Source        SS      df      MS      Chi-sq  Prob>Chi-sq
+---------------------------------------------------------
+Columns   92849.87     3   30949.96    76.74  1.11022e-16
+Error     51140.13   116     440.86
+Total    143990.00   119
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/kruskalwallis_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
 
                 </div>
               </div>
