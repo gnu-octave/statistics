@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: grpstats</title>
+    <title>Statistics: confusionchart</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -26,9 +26,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Descriptive Statistics">
+                  <a class="nav-link" href="index.html#Plotting">
                     <i class="fas fa-list-alt"></i>
-                    Descriptive Statistics
+                    Plotting
                   </a>
                 </li>
                 <li class="nav-item">
@@ -55,74 +55,72 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>grpstats</code></b>
+              Function&nbsp;Reference: <b><code>confusionchart</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>mean</var> = <b>grpstats</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> <var>mean</var> = <b>grpstats</b><i> (<var>x</var>, <var>group</var>)</i></dt>
-<dt><u>statistics:</u> [<var>a</var>, <var>b</var>, &hellip;] = <b>grpstats</b><i> (<var>x</var>, <var>group</var>, <var>whichstats</var>)</i></dt>
-<dt><u>statistics:</u> [<var>a</var>, <var>b</var>, &hellip;] = <b>grpstats</b><i> (<var>x</var>, <var>group</var>, <var>whichstats</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> <b>confusionchart</b><i> (<var>trueLabels</var>, <var>predictedLabels</var>)</i></dt>
+<dt><u>statistics:</u> <b>confusionchart</b><i> (<var>m</var>)</i></dt>
+<dt><u>statistics:</u> <b>confusionchart</b><i> (<var>m</var>, <var>classLabels</var>)</i></dt>
+<dt><u>statistics:</u> <b>confusionchart</b><i> (<var>parent</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> <b>confusionchart</b><i> (&hellip;, <var>prop</var>, <var>val</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> <var>cm</var> = <b>confusionchart</b><i> (&hellip;)</i></dt>
 </dl>
 
-<p> Summary statistics by group.  <code>grpstats</code> computes groupwise summary
- statistics, for data in a matrix <var>x</var>.  <code>grpstats</code> treats NaNs as
- missing values, and removes them.
-</p><div class="ms-5">
-
-<p> <code><var>means</var> = grpstats (<var>x</var>, <var>group</var>)</code>, when X is a matrix of
- observations, returns the means of each column of <var>x</var> by <var>group</var>.
- <var>group</var> is a grouping variable defined as a categorical variable,
- numeric, string array, or cell array of strings.  <var>group</var> can be [] or
- omitted to compute the mean of the entire sample without grouping.
+<p> Display a chart of a confusion matrix.
 </p>
-<p> <code>[<var>a</var>, <var>b</var>, &hellip;] = grpstats (<var>x</var>, <var>group</var>,
- <var>whichstats</var>)</code>, for a numeric matrix X, returns the statistics specified
- by <var>whichstats</var>, as separate arrays <var>a</var>, <var>b</var>, &hellip;.
- <var>whichstats</var> can be a single function name, or a cell array containing
- multiple function names.  The number of output arguments must match the
- number of function names in <var>whichstats</var>.
- Names in <var>whichstats</var> can be chosen from among the following:
+<div class="ms-5">
+<p> The two vectors of values <var>trueLabels</var> and <var>predictedLabels</var>, which
+ are used to compute the confusion matrix, must be defined with the same
+ format as the inputs of <code>confusionmat</code>.
+ Otherwise a confusion matrix <var>m</var> as computed by <code>confusionmat</code> can
+ be given.
 </p>
- <table>
-<tr><td width="5%"></td><td width="20%">&quot;mean&quot;</td><td width="75%">mean</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;median&quot;</td><td width="75%">median</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;sem&quot;</td><td width="75%">standard error of the mean</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;std&quot;</td><td width="75%">standard deviation</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;var&quot;</td><td width="75%">variance</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;min&quot;</td><td width="75%">minimum value</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;max&quot;</td><td width="75%">maximum value</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;range&quot;</td><td width="75%">maximum - minimum</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;numel&quot;</td><td width="75%">count, or number of elements</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;meanci&quot;</td><td width="75%">95% confidence interval for the mean</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;predci&quot;</td><td width="75%">95% prediction interval for a new observation</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;gname&quot;</td><td width="75%">group name</td></tr>
-</table>
-
-
-<p> <code>[&hellip;] = grpstats (<var>x</var>, <var>group</var>, <var>whichstats</var>,
- <var>alpha</var>)</code> specifies the confidence level as 100(1-ALPHA)% for the &quot;meanci&quot;
- and &quot;predci&quot; options.  Default value for <var>alpha</var> is 0.05.
+<p> <var>classLabels</var> is an array of labels, i.e. the list of the class names.
 </p>
-<p> Examples:
+<p> If the first argument is a handle to a <code>figure</code> or to a <code>uipanel</code>,
+ then the confusion matrix chart is displayed inside that object.
 </p>
- <table><tr><td>&nbsp;</td><td><pre class="example"> load carsmall;
- [m,p,g] = grpstats (Weight, Model_Year, {&quot;mean&quot;, &quot;predci&quot;, &quot;gname&quot;})
- n = length(m);
- errorbar((1:n)',m,p(:,2)-m)
- set (gca, &quot;xtick&quot;, 1:n, &quot;xticklabel&quot;, g);
- title (&quot;95% prediction intervals for mean weight by year&quot;)
- </pre></td></tr></table>
+<p> Optional property/value pairs are passed directly to the underlying objects,
+ e.g. <code>&quot;xlabel&quot;</code>, <code>&quot;ylabel&quot;</code>, <code>&quot;title&quot;</code>, <code>&quot;fontname&quot;</code>,
+ <code>&quot;fontsize&quot;</code> etc.
+</p>
+<p> The optional return value <var>cm</var> is a <code>ConfusionMatrixChart</code> object.
+ Specific properties of a <code>ConfusionMatrixChart</code> object are:
+ </p><ul>
+<li> <code>&quot;DiagonalColor&quot;</code>
+ The color of the patches on the diagonal, default is [0.0, 0.4471, 0.7412].
 
+ </li><li> <code>&quot;OffDiagonalColor&quot;</code>
+ The color of the patches off the diagonal, default is [0.851, 0.3255, 0.098].
 
+ </li><li> <code>&quot;GridVisible&quot;</code>
+ Available values: <code>on</code> (default), <code>off</code>.
+
+ </li><li> <code>&quot;Normalization&quot;</code>
+ Available values: <code>absolute</code> (default), <code>column-normalized</code>,
+ <code>row-normalized</code>, <code>total-normalized</code>.
+
+ </li><li> <code>&quot;ColumnSummary&quot;</code>
+ Available values: <code>off</code> (default), <code>absolute</code>,
+ <code>column-normalized</code>,<code>total-normalized</code>.
+
+ </li><li> <code>&quot;RowSummary&quot;</code>
+ Available values: <code>off</code> (default), <code>absolute</code>,
+ <code>row-normalized</code>, <code>total-normalized</code>.
+ </li></ul>
+
+<p> Run <code>demo confusionchart</code> to see some examples.
+</p>
 <p> <strong>See also: </strong>
-  <a href="grp2idx.html">grp2idx</a>
+  <a href="confusionmat.html">confusionmat</a>, 
+sortClasses
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/grpstats.m">grpstats</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/confusionchart.m">confusionchart</a>
 </div>
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -186,6 +184,88 @@
                 <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
                   <h3 class="d-inline-block mr-2">
                   Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+{{DEMO}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 3
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 3
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+{{DEMO}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 5
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 5
                   </h3>
                 </div>
               </div>

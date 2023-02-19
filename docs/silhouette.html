@@ -135,22 +135,26 @@ evalcluster,
             <div class="card-body">
               <div class="container bg-light">
                 <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- load fisheriris;
- X = meas(:,3:4);
- cidcs = kmeans (X, 3, "Replicates", 5);
- silhouette (X, cidcs);
- y_labels(cidcs([1 51 101])) = unique (species);
- set (gca, "yticklabel", y_labels);
- title ("Fisher's iris data");
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/silhouette_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+{{DEMO}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
                 </div>
               </div>

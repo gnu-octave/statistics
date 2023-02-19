@@ -153,29 +153,26 @@ gmdistribution,
             <div class="card-body">
               <div class="container bg-light">
                 <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Generate a two-cluster problem
- C1 = randn (100, 2) + 2;
- C2 = randn (100, 2) - 2;
- data = [C1; C2];
-
- ## Perform clustering
- GMModel = fitgmdist (data, 2);
-
- ## Plot the result
- figure
- [heights, bins] = hist3([C1; C2]);
- [xx, yy] = meshgrid(bins{1}, bins{2});
- bbins = [xx(:), yy(:)];
- contour (reshape (GMModel.pdf (bbins), size (heights)));
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/fitgmdist_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+{{DEMO}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
                 </div>
               </div>
@@ -197,28 +194,26 @@ gmdistribution,
             <div class="card-body">
               <div class="container bg-light">
                 <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- Angle_Theta = [ 30 + 10 * randn(1, 10),  60 + 10 * randn(1, 10) ]';
- nbOrientations = 2;
- initial_orientations = [38.0; 18.0];
- initial_weights = ones (1, nbOrientations) / nbOrientations;
- initial_Sigma = 10 * ones (1, 1, nbOrientations);
- start = struct ("mu", initial_orientations, "Sigma", initial_Sigma, ...
-                 "ComponentProportion", initial_weights);
- GMModel_Theta = fitgmdist (Angle_Theta, nbOrientations, "Start", start , ...
-                            "RegularizationValue", 0.0001)
-
-Clust 1: weight 0.777875
-	Mean: 44.8324
-	Variance:167.35
-Clust 2: weight 0.222125
-	Mean: 13.4346
-	Variance:15.083
-AIC=176.481 BIC=181.459 NLogL=83.2403 Iter=9 Cged=1 Reg=0.0001                    </pre></td></tr></tbody>
-                  </table>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+{{DEMO}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
                 </div>
               </div>

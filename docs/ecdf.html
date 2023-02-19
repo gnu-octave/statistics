@@ -129,29 +129,26 @@ ecdfhist
             <div class="card-body">
               <div class="container bg-light">
                 <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- y = exprnd (10, 50, 1);    ## random failure times are exponential(10)
- d = exprnd (20, 50, 1);    ## drop-out times are exponential(20)
- t = min (y, d);            ## we observe the minimum of these times
- censored = (y > d);        ## we also observe whether the subject failed
-
- ## Calculate and plot the empirical cdf and confidence bounds
- [f, x, flo, fup] = ecdf (t, "censoring", censored);
- stairs (x, f);
- hold on;
- stairs (x, flo, "r:"); stairs (x, fup, "r:");
-
- ## Superimpose a plot of the known true cdf
- xx = 0:.1:max (t); yy = 1 - exp (-xx / 10); plot (xx, yy, "g-");
- hold off;
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/ecdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+{{DEMO}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
                 </div>
               </div>
@@ -173,25 +170,26 @@ ecdfhist
             <div class="card-body">
               <div class="container bg-light">
                 <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- R = wblrnd (100, 2, 100, 1);
- ecdf (R, "Function", "survivor", "Alpha", 0.01, "Bounds", "on");
- hold on
- x = 1:1:250;
- wblsurv = 1 - cdf ("weibull", x, 100, 2);
- plot (x, wblsurv, "g-", "LineWidth", 2)
- legend ("Empirical survivor function", "Lower confidence bound", ...
-         "Upper confidence bound", "Weibull survivor function", ...
-         "Location", "northeast");
- hold off
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/ecdf_201.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+{{DEMO}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
                 </div>
               </div>

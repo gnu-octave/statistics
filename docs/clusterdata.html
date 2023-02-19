@@ -105,19 +105,26 @@
             <div class="card-body">
               <div class="container bg-light">
                 <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- X = [(randn (10, 2) * 0.25) + 1; (randn (20, 2) * 0.5) - 1];
- wnl = warning ("off", "Octave:linkage_savemem", "local");
- T = clusterdata (X, "linkage", "ward", "MaxClust", 2);
- scatter (X(:,1), X(:,2), 36, T, "filled");
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/clusterdata_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+{{DEMO}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
                 </div>
               </div>
