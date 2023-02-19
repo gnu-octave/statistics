@@ -359,6 +359,6 @@ endfunction
 %!error <'clust' must be a clustering*> evalclusters ([1 1;0 1], [1; 2], "gap")
 
 ## demonstration
-%!demo
-%! load fisheriris;
-%! eva = evalclusters(meas, "kmeans", "calinskiharabasz", "KList", [1:6])
+#%!demo
+#%! load fisheriris;
+#%! eva = evalclusters(meas, "kmeans", "calinskiharabasz", "KList", [1:6])
