@@ -19,8 +19,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{p} =} tcdf (@var{x}, @var{df1}, @var{df2})
-## @deftypefnx {statistics} {@var{p} =} tcdf (@var{x}, @var{df1}, @var{df2}, "upper")
+## @deftypefn  {statistics} {@var{p} =} fcdf (@var{x}, @var{df1}, @var{df2})
+## @deftypefnx {statistics} {@var{p} =} fcdf (@var{x}, @var{df1}, @var{df2}, "upper")
 ##
 ## F cumulative distribution function (CDF).
 ##

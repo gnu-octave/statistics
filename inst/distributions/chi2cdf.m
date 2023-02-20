@@ -19,8 +19,8 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{p} =} tcdf (@var{x}, @var{df})
-## @deftypefnx {statistics} {@var{p} =} tcdf (@var{x}, @var{df}, "upper")
+## @deftypefn  {statistics} {@var{p} =} chi2cdf (@var{x}, @var{df})
+## @deftypefnx {statistics} {@var{p} =} chi2cdf (@var{x}, @var{df}, "upper")
 ##
 ## Chi-square cumulative distribution function.
 ##
@@ -32,7 +32,7 @@
 ## The size of @var{p} is the common size of @var{x} and @var{df}. A scalar
 ## input functions as a constant matrix of the same size as the other input.
 ##
-## @code{@var{p} = fcdf (@var{x}, @var{df}, "upper")} computes the upper tail
+## @code{@var{p} = chi2cdf (@var{x}, @var{df}, "upper")} computes the upper tail
 ## probability of the Chi-Squared distribution with @var{df} degrees of freedom
 ## at the values in @var{x}.
 ##

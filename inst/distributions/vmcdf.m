@@ -16,17 +16,17 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{x} =} vmcdf (@var{theta})
-## @deftypefnx {statistics} {@var{x} =} vmcdf (@var{theta}, @var{mu})
-## @deftypefnx {statistics} {@var{x} =} vmcdf (@var{theta}, @var{mu}, @var{k})
+## @deftypefn  {statistics} {@var{p} =} vmcdf (@var{theta})
+## @deftypefnx {statistics} {@var{p} =} vmcdf (@var{theta}, @var{mu})
+## @deftypefnx {statistics} {@var{p} =} vmcdf (@var{theta}, @var{mu}, @var{k})
 ##
 ## Von Mises probability density function (PDF).
 ##
 ## For each element of @var{theta}, compute the probability density function
 ## (PDF) at @var{theta} of the von Mises distribution with mean direction
 ## parameter @var{mu} and concentration parameter @var{k} on the interval
-## [-pi, pi].  The size of @var{x} is the common size of the input arguments.
-##  A scalar input functions as a constant matrix of the same same size as the
+## [-pi, pi].  The size of @var{p} is the common size of the input arguments.
+## A scalar input functions as a constant matrix of the same same size as the
 ## other inputs.
 ##
 ## Default values are @var{mu} = 0, @var{k} = 1.  The function returns NaN for

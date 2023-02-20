@@ -31,7 +31,7 @@
 ##
 ## Default value is @var{sigma} = 1.
 ##
-## @code{[@dots{}] = logncdf (@dots{}, "upper")} computes the upper tail
+## @code{[@dots{}] = raylcdf (@dots{}, "upper")} computes the upper tail
 ## probability of the lognormal distribution.
 ##
 ## @subheading References

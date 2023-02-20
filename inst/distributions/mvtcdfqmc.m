@@ -20,8 +20,8 @@
 ## @deftypefnx {statistics} {@var{p} =} mvtcdfqmc (@dots{}, @var{TolFun})
 ## @deftypefnx {statistics} {@var{p} =} mvtcdfqmc (@dots{}, @var{TolFun}, @var{MaxFunEvals})
 ## @deftypefnx {statistics} {@var{p} =} mvtcdfqmc (@dots{}, @var{TolFun}, @var{MaxFunEvals}, @var{Display})
-## @deftypefnx {statistics} {[@var{p}, @var{err}] =} mvncdf (@dots{})
-## @deftypefnx {statistics} {[@var{p}, @var{err}, @var{FunEvals}] =} mvncdf (@dots{})
+## @deftypefnx {statistics} {[@var{p}, @var{err}] =} mvtcdfqmc (@dots{})
+## @deftypefnx {statistics} {[@var{p}, @var{err}, @var{FunEvals}] =} mvtcdfqmc (@dots{})
 ##
 ## Quasi-Monte-Carlo computation of the multivariate Student's t cdf.
 ##
@@ -39,7 +39,7 @@
 ## integrand has converged successfully.
 ## @end multitable
 ##
-## @code{[@var{p}, @var{err}, @var{FunEvals}] = mvncdf (@dots{})} returns the
+## @code{[@var{p}, @var{err}, @var{FunEvals}] = mvtcdfqmc (@dots{})} returns the
 ## estimated probability, @var{p}, an estimate of the error, @var{err}, and the
 ## number of iterations until a successful convergence is met, unless the value
 ## in @var{MaxFunEvals} was reached.
