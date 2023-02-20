@@ -266,7 +266,7 @@ endfunction
 %!demo
 %! ## Cellstr as inputs
 %! Yt = {"Positive", "Positive", "Positive", "Negative", "Negative"};
-%! Yp = {"Positive", "Positive", "Negative", "Negative", 'Negative"};
+%! Yp = {"Positive", "Positive", "Negative", "Negative", "Negative"};
 %! m = confusionmat (Yt, Yp);
 %! confusionchart (m, {"Positive", "Negative"});
 
@@ -292,6 +292,8 @@ endfunction
 %! ## Sorting classes
 %! Yt = [8 5 6 8 5 3 1 6 4 2 5 3 1 4]';
 %! Yp = [8 5 6 8 5 2 3 4 4 5 5 7 2 6]';
+%! cm = confusionchart (Yt, Yp, "Title", ...
+%!   "Classes are sorted in ascending order");
 %! cm = confusionchart (Yt, Yp, "Title", ...
 %!   "Classes are sorted according to clusters");
 %! sortClasses (cm, "cluster");
