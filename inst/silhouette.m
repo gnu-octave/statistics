@@ -71,7 +71,7 @@
 ## Validation of Cluster Analysis. 1987. doi:10.1016/0377-0427(87)90125-7
 ## @end deftypefn
 ##
-## @seealso{dendrogram, evalcluster, kmeans, linkage, pdist}
+## @seealso{dendrogram, evalclusters, kmeans, linkage, pdist}
 
 function [si, h] = silhouette (X, clust, metric = "sqeuclidean", varargin)
   ## check the input parameters
