@@ -173,6 +173,7 @@ hist
  set (gca, "xgrid", "on");
  xlabel ("Variables")
  ylabel ("Values")
+
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
@@ -216,6 +217,7 @@ hist
  set (gca, "ytick", 1:2, "yticklabel", {"girls"; "boys"});
  violin (data, "horizontal", "Nbins", 10);
  axis tight
+
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
@@ -250,6 +252,7 @@ hist
  data = exprnd (0.1, 500,4);
  violin (data, "nbins", {5,10,50,100});
  axis ([0 5 0 max(data(:))])
+
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
@@ -284,6 +287,7 @@ hist
  data = exprnd (0.1, 500,4);
  violin (data, "color", jet(4));
  axis ([0 5 0 max(data(:))])
+
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
@@ -318,6 +322,7 @@ hist
  data = repmat(exprnd (0.1, 500,1), 1, 4);
  violin (data, "width", linspace (0.1,0.5,4));
  axis ([0 5 0 max(data(:))])
+
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
@@ -352,6 +357,7 @@ hist
  data = repmat(exprnd (0.1, 500,1), 1, 4);
  violin (data, "nbins", [5,10,50,100], "smoothfactor", [4 4 8 10]);
  axis ([0 5 0 max(data(:))])
+
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">

@@ -152,6 +152,7 @@
  y = [4, 5; 2, 6; 3, 7; 8, 9; 1, 10];
  y(:,3) = 1:5;
  dendrogram (y);
+
 ans = simple 1
                     </pre></td></tr></tbody>
                   </table>
@@ -187,6 +188,7 @@ ans = simple 1
  d = abs (bsxfun (@minus, v(:, 1), v(:, 1)'));
  y = linkage (squareform (d, "tovector"));
  dendrogram (y);
+
 ans = simple 2
                     </pre></td></tr></tbody>
                   </table>
@@ -228,10 +230,11 @@ ans = simple 2
  title ("collapsed tree");
  [~, t] = dendrogram (y, 20);
  find(t == 5)
+
 ans = collapsed tree, find all the leaves of node 5
 ans =
 
-    6    9   28   58
+    7   10   23
 
                     </pre></td></tr></tbody>
                   </table>
@@ -273,6 +276,7 @@ ans =
  subplot (2, 1, 2);
  title ("optimal leaf order");
  dendrogram (y, "Reorder", order);
+
 ans = optimal leaf order
                     </pre></td></tr></tbody>
                   </table>
@@ -310,6 +314,7 @@ ans = optimal leaf order
       "Sneezy"; "Dopey"];
  y = linkage (D, "average");
  dendrogram (y, "Orientation", "left", "Labels", L);
+
 ans = horizontal orientation and labels
                     </pre></td></tr></tbody>
                   </table>

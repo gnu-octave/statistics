@@ -171,6 +171,7 @@ gmdistribution,
  [xx, yy] = meshgrid(bins{1}, bins{2});
  bbins = [xx(:), yy(:)];
  contour (reshape (GMModel.pdf (bbins), size (heights)));
+
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
@@ -210,14 +211,15 @@ gmdistribution,
                  "ComponentProportion", initial_weights);
  GMModel_Theta = fitgmdist (Angle_Theta, nbOrientations, "Start", start , ...
                             "RegularizationValue", 0.0001)
+
 Gaussian mixture distribution with 2 components in 1 dimension(s)
-Clust 1: weight 0.886122
-	Mean: 50.5673 
-	Variance:366.56
-Clust 2: weight 0.113878
-	Mean: 21.2612 
-	Variance:2.1034
-AIC=184.019 BIC=188.997 NLogL=87.0094 Iter=8 Cged=1 Reg=0.0001
+Clust 1: weight 0.829012
+	Mean: 48.5147 
+	Variance:186.33
+Clust 2: weight 0.170988
+	Mean: 16.5053 
+	Variance:23.570
+AIC=178.767 BIC=183.746 NLogL=84.3836 Iter=11 Cged=1 Reg=0.0001
                     </pre></td></tr></tbody>
                   </table>
 

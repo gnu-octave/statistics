@@ -164,6 +164,7 @@
  load examgrades
  vartestn (grades)
 
+
                     Group Summary Table
 
 Group                        Count        Mean       Std Dev
@@ -217,6 +218,7 @@ ans = 7.9086e-08
  load carsmall
  vartestn (MPG, Model_Year)
 
+
                     Group Summary Table
 
 Group                        Count        Mean       Std Dev
@@ -267,6 +269,7 @@ ans = 0.8327
 
  load carsmall
  p = vartestn (MPG, Model_Year, "TestType", "LeveneAbsolute")
+
 
                     Group Summary Table
 
@@ -320,6 +323,7 @@ p = 0.6320
 
  load examgrades
  [p, stats] = vartestn (grades, "TestType", "BrownForsythe", "Display", "off")
+
 p = 1.3121e-06
 stats =
 

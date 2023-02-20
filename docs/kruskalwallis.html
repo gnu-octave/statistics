@@ -153,11 +153,12 @@
  x = meshgrid (1:6);
  x = x + normrnd (0, 1, 6, 6);
  kruskalwallis (x, [], 'off');
+
               Kruskal-Wallis ANOVA Table
 Source        SS      df      MS      Chi-sq  Prob>Chi-sq
 ---------------------------------------------------------
-Columns    3083.67     5     616.73    27.78  4.01719e-05
-Error       801.33    30      26.71
+Columns    3222.67     5     644.53    29.03  2.28441e-05
+Error       662.33    30      22.08
 Total      3885.00    35
                     </pre></td></tr></tbody>
                   </table>
@@ -189,11 +190,12 @@ Total      3885.00    35
  x = meshgrid (1:6);
  x = x + normrnd (0, 1, 6, 6);
  [p, atab] = kruskalwallis(x);
+
               Kruskal-Wallis ANOVA Table
 Source        SS      df      MS      Chi-sq  Prob>Chi-sq
 ---------------------------------------------------------
-Columns    3324.00     5     664.80    29.95  1.51143e-05
-Error       561.00    30      18.70
+Columns    3167.67     5     633.53    28.54  2.85698e-05
+Error       717.33    30      23.91
 Total      3885.00    35
                     </pre></td></tr></tbody>
                   </table>
@@ -229,11 +231,12 @@ Total      3885.00    35
  x = x + normrnd (0, 2, 30, 4);
  group = {"A", "B", "C", "D"};
  kruskalwallis (x, group);
+
               Kruskal-Wallis ANOVA Table
 Source        SS      df      MS      Chi-sq  Prob>Chi-sq
 ---------------------------------------------------------
-Columns   85198.33     3   28399.44    70.41  3.44169e-15
-Error     58791.67   116     506.82
+Columns   79143.00     3   26381.00    65.41  4.10783e-14
+Error     64847.00   116     559.03
 Total    143990.00   119
                     </pre></td></tr></tbody>
                   </table>

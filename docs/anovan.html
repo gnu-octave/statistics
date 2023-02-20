@@ -315,6 +315,7 @@
 
  [P, ATAB, STATS] = anovan (score, gender, "display", "on", "varnames", "gender");
 
+
 MODEL FORMULA (based on Wilkinson's notation):
 
 Y ~ 1 + gender
@@ -374,6 +375,7 @@ Total                     2310.9      10
                             "varnames", {"treatment", "subject"}, ...
                             "display", "on");
 
+
 MODEL FORMULA (based on Wilkinson's notation):
 
 Y ~ 1 + treatment + (1|subject)
@@ -429,6 +431,7 @@ Total                      8.329       9
 
  [P, ATAB, STATS] = anovan (strength, alloy, "display", "on", ...
                             "varnames", "alloy");
+
 
 MODEL FORMULA (based on Wilkinson's notation):
 
@@ -489,6 +492,7 @@ Total                      286.8      19
  [P, ATAB, STATS] = anovan (words(:), {seconds(:), subject(:)}, ...
                             "model", "full", "random", 2, "sstype", 2, ...
                             "display", "on", "varnames", {"seconds", "subject"});
+
 
 MODEL FORMULA (based on Wilkinson's notation):
 
@@ -553,6 +557,7 @@ Total                     1005.9      29
                             "display", "on", "model", "full", ...
                             "varnames", {"brands", "popper"});
 
+
 MODEL FORMULA (based on Wilkinson's notation):
 
 Y ~ 1 + brands + popper + brands:popper
@@ -611,6 +616,7 @@ Total                         22      17
  [P, ATAB, STATS] = anovan (salary, {gender, degree}, "model", "full", ...
                             "sstype", 3, "display", "on", "varnames", ...
                             {"gender", "degree"});
+
 
 MODEL FORMULA (based on Wilkinson's notation):
 
@@ -671,6 +677,7 @@ Total                     323.86      21
  [P, ATAB, STATS] = anovan (babble, {sugar, milk}, "model", "full",  ...
                             "sstype", 3, "display", "on", ...
                             "varnames", {"sugar", "milk"});
+
 
 MODEL FORMULA (based on Wilkinson's notation):
 
@@ -747,6 +754,7 @@ Total                      13.62      17
                                     "display", "on", ...
                                     "varnames", {"drug", "feedback", "diet"});
 
+
 MODEL FORMULA (based on Wilkinson's notation):
 
 Y ~ 1 + drug + feedback + diet + drug:feedback + drug:diet + feedback:diet + drug:feedback:diet
@@ -815,6 +823,7 @@ Total                      22190      68
                             "display", "on", ...
                             "varnames", {"strain", "treatment", "block"});
 
+
 MODEL FORMULA (based on Wilkinson's notation):
 
 Y ~ 1 + strain + treatment + (1|block) + strain:treatment
@@ -878,6 +887,7 @@ Total                     4506.9      15
  [P, ATAB, STATS] = anovan (pulse, {species, temp}, "model", "linear", ...
                            "continuous", 2, "sstype", "h", "display", "on", ...
                            "varnames", {"species", "temp"});
+
 
 MODEL FORMULA (based on Wilkinson's notation):
 
@@ -954,6 +964,7 @@ Total                     8582.2      30
                             "continuous", 3, "sstype", "h", "display", "on", ...
                             "varnames", {"treatment", "exercise", "age"});
 
+
 MODEL FORMULA (based on Wilkinson's notation):
 
 Y ~ 1 + treatment + exercise + age + treatment:exercise
@@ -1019,6 +1030,7 @@ Total                     3888.3      59
 
  [P,ATAB, STATS] = anovan (dv, g, "contrasts", C, "varnames", "score", ...
                           "alpha", 0.05, "display", "on");
+
 
 MODEL FORMULA (based on Wilkinson's notation):
 
@@ -1097,6 +1109,7 @@ Total                     1826.5      36
  xlabel("Fitted values"); ylabel("Absolute residuals");
 
  [P,ATAB,STATS] = anovan (y, g, "weights", v.^-1);
+
 
 MODEL FORMULA (based on Wilkinson's notation):
 

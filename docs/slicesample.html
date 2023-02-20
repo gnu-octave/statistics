@@ -166,7 +166,8 @@ randsample
  Sigma = (Sigma + Sigma');
  Sigma += eye (d)*abs (eigs (Sigma, 1, "sa")) * 1.1;
  pdf = @(x)(2*pi)^(-d/2)*det(Sigma)^-.5*exp(-.5*sum((x.'-mu).*(Sigma\(x.'-mu)),1));
- ##Inputs
+
+ ## Inputs
  start = ones (1,2);
  nsamples = 500;
  K = 500;
@@ -178,6 +179,7 @@ randsample
  [x, y] = meshgrid (linspace (-6,4), linspace(-3,7));
  z = reshape (pdf ([x(:), y(:)]), size(x));
  mesh (x, y, z, "facecolor", "None");
+
  ## Using sample points to find the volume of half a sphere with radius of .5
  f = @(x) ((.25-(x(:,1)+1).^2-(x(:,2)-2).^2).^.5.*(((x(:,1)+1).^2+(x(:,2)-2).^2)<.25)).';
  int = mean (f (smpl) ./ pdf (smpl));
@@ -187,9 +189,10 @@ randsample
  fprintf("Monte Carlo integral error estimate %f\n", errest);
  fprintf("The actual error %f\n", trueerr);
  mesh (x,y,reshape (f([x(:), y(:)]), size(x)), "facecolor", "None");
-Monte Carlo integral estimate int f(x) dx = 0.136401
-Monte Carlo integral error estimate 0.025129
-The actual error 0.125398
+
+Monte Carlo integral estimate int f(x) dx = 0.261511
+Monte Carlo integral error estimate 0.030759
+The actual error 0.000288
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
@@ -220,7 +223,7 @@ The actual error 0.125398
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ##Integrate truncated normal distribution to find normilization constant
+ ## Integrate truncated normal distribution to find normilization constant
  pdf = @(x) exp (-.5*x.^2)/(pi^.5*2^.5);
  nsamples = 1e3;
  [smpl,accept] = slicesample (1, nsamples, "pdf", pdf, "thin", 4);
@@ -235,9 +238,10 @@ The actual error 0.125398
  fprintf("Monte Carlo integral estimate int f(x) dx = %f\n", int);
  fprintf("Monte Carlo integral error estimate %f\n", errest);
  fprintf("The actual error %f\n", trueerr);
-Monte Carlo integral estimate int f(x) dx = 2.383803
-Monte Carlo integral error estimate 0.017120
-The actual error 0.008773
+
+Monte Carlo integral estimate int f(x) dx = 2.401350
+Monte Carlo integral error estimate 0.015908
+The actual error 0.008774
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">

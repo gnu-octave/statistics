@@ -176,67 +176,68 @@
  [h, p, stats] = chi2gof (x)
  [h, p, stats] = chi2gof (x, "cdf", @(x)normcdf (x, mean(x), std(x)))
  [h, p, stats] = chi2gof (x, "cdf", {@normcdf, mean(x), std(x)})
-h = 0
-p = 0.2871
+
+h = 1
+p = 0.029952
 stats =
 
   scalar structure containing the fields:
 
-    chi2stat = 5.0014
-    df = 4
+    chi2stat = 12.379
+    df = 5
     edges =
 
-       38.569   43.797   46.411   49.026   51.640   54.254   56.868   64.711
+       35.806   40.944   43.513   46.083   48.652   51.221   53.790   56.359   61.497
 
     O =
 
-        8   18   14   19   19   10   12
+        6    4   19   20   19   14    4   14
 
     E =
 
-       10.134   11.769   17.187   19.676   17.659   12.424   11.151
+        5.7004    8.1945   13.8756   18.4733   19.3383   15.9176   10.3018    8.1985
 
 
-h = 0
-p = 0.2871
+h = 1
+p = 0.029952
 stats =
 
   scalar structure containing the fields:
 
-    chi2stat = 5.0014
-    df = 4
+    chi2stat = 12.379
+    df = 5
     edges =
 
-       38.569   43.797   46.411   49.026   51.640   54.254   56.868   64.711
+       35.806   40.944   43.513   46.083   48.652   51.221   53.790   56.359   61.497
 
     O =
 
-        8   18   14   19   19   10   12
+        6    4   19   20   19   14    4   14
 
     E =
 
-       10.134   11.769   17.187   19.676   17.659   12.424   11.151
+        5.7004    8.1945   13.8756   18.4733   19.3383   15.9176   10.3018    8.1985
 
 
-h = 0
-p = 0.2871
+h = 1
+p = 0.029952
 stats =
 
   scalar structure containing the fields:
 
-    chi2stat = 5.0014
-    df = 4
+    chi2stat = 12.379
+    df = 5
     edges =
 
-       38.569   43.797   46.411   49.026   51.640   54.254   56.868   64.711
+       35.806   40.944   43.513   46.083   48.652   51.221   53.790   56.359   61.497
 
     O =
 
-        8   18   14   19   19   10   12
+        6    4   19   20   19   14    4   14
 
     E =
 
-       10.134   11.769   17.187   19.676   17.659   12.424   11.151
+        5.7004    8.1945   13.8756   18.4733   19.3383   15.9176   10.3018    8.1985
 
 
                     </pre></td></tr></tbody>
@@ -271,27 +272,28 @@ stats =
  binedges = linspace (0, 1, 11);
  expectedCounts = n * diff (binedges);
  [h, p, stats] = chi2gof (x, "binedges", binedges, "expected", expectedCounts)
+
 h = 0
-p = 0.4012
+p = 0.3191
 stats =
 
   scalar structure containing the fields:
 
-    chi2stat = 9.4000
+    chi2stat = 10.400
     df = 9
     edges =
 
-     Columns 1 through 8:
+     Columns 1 through 10:
 
-       4.5307e-03   1.0305e-01   2.0158e-01   3.0010e-01   3.9862e-01   4.9715e-01   5.9567e-01   6.9419e-01
+       0.029185   0.126137   0.223089   0.320041   0.416993   0.513945   0.610897   0.707849   0.804802   0.901754
 
-     Columns 9 through 11:
+     Column 11:
 
-       7.9272e-01   8.9124e-01   9.8976e-01
+       0.998706
 
     O =
 
-       14    5    9    5   12   13    8   13   10   11
+       15   11   14    6   10   14    8    9    6    7
 
     E =
 
@@ -332,6 +334,7 @@ stats =
  expCounts = n * poisspdf(bins,lambdaHat);
  [h, p, stats] = chi2gof (bins, "binctrs", bins, "frequency", obsCounts, ...
                           "expected", expCounts, "nparams",1)
+
 h = 0
 p = 0.4654
 stats =

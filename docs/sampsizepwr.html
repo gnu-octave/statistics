@@ -208,6 +208,7 @@
  ## of 60 and a power of 0.8.
  mu1 = sampsizepwr ("t", [100, 10], [], 0.8, 60);
  disp (mu1);
+
 103.68
                     </pre></td></tr></tbody>
                   </table>
@@ -240,6 +241,7 @@
  ## mu1 = 110 by a two-sample t-test with a ratio of the larger and the
  ## smaller sample sizes of 1.5 and a power of 0.6.
  [N1,N2] = sampsizepwr ("t2", [100, 10], 110, 0.6, [], "ratio", 1.5)
+
 N1 = 9
 N2 = 14
                     </pre></td></tr></tbody>
@@ -278,6 +280,7 @@ N2 = 14
  Nexact = min (nn(pwr >= 0.6));
  plot(nn,pwr,'b-', [Napprox Nexact],pwr([Napprox Nexact]),'ro');
  grid on
+
 warning: sampsizepwr: approximate N.
 warning: called from
     sampsizepwr at line 358 column 11
@@ -328,6 +331,7 @@ warning: called from
  title ("Power versus Sample Size")
  xlabel ("Sample Size")
  ylabel ("Power")
+
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
