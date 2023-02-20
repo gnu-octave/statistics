@@ -66,8 +66,8 @@
 <dt><u>statistics:</u> <var>p</var> = <b>mvtcdfqmc</b><i> (&hellip;, <var>TolFun</var>)</i></dt>
 <dt><u>statistics:</u> <var>p</var> = <b>mvtcdfqmc</b><i> (&hellip;, <var>TolFun</var>, <var>MaxFunEvals</var>)</i></dt>
 <dt><u>statistics:</u> <var>p</var> = <b>mvtcdfqmc</b><i> (&hellip;, <var>TolFun</var>, <var>MaxFunEvals</var>, <var>Display</var>)</i></dt>
-<dt><u>statistics:</u> [<var>p</var>, <var>err</var>] = <b>mvncdf</b><i> (&hellip;)</i></dt>
-<dt><u>statistics:</u> [<var>p</var>, <var>err</var>, <var>FunEvals</var>] = <b>mvncdf</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>p</var>, <var>err</var>] = <b>mvtcdfqmc</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>p</var>, <var>err</var>, <var>FunEvals</var>] = <b>mvtcdfqmc</b><i> (&hellip;)</i></dt>
 </dl>
 
 <p> Quasi-Monte-Carlo computation of the multivariate Student&rsquo;s t cdf.
@@ -87,7 +87,7 @@
  integrand has converged successfully.</td></tr>
 </table>
 
-<p> <code>[<var>p</var>, <var>err</var>, <var>FunEvals</var>] = mvncdf (&hellip;)</code> returns the
+<p> <code>[<var>p</var>, <var>err</var>, <var>FunEvals</var>] = mvtcdfqmc (&hellip;)</code> returns the
  estimated probability, <var>p</var>, an estimate of the error, <var>err</var>, and the
  number of iterations until a successful convergence is met, unless the value
  in <var>MaxFunEvals</var> was reached.

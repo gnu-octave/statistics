@@ -62,9 +62,9 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>x</var> = <b>vmcdf</b><i> (<var>theta</var>)</i></dt>
-<dt><u>statistics:</u> <var>x</var> = <b>vmcdf</b><i> (<var>theta</var>, <var>mu</var>)</i></dt>
-<dt><u>statistics:</u> <var>x</var> = <b>vmcdf</b><i> (<var>theta</var>, <var>mu</var>, <var>k</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>vmcdf</b><i> (<var>theta</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>vmcdf</b><i> (<var>theta</var>, <var>mu</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>vmcdf</b><i> (<var>theta</var>, <var>mu</var>, <var>k</var>)</i></dt>
 </dl>
 
 <p> Von Mises probability density function (PDF).
@@ -73,8 +73,8 @@
 <p> For each element of <var>theta</var>, compute the probability density function
  (PDF) at <var>theta</var> of the von Mises distribution with mean direction
  parameter <var>mu</var> and concentration parameter <var>k</var> on the interval
- [-pi, pi].  The size of <var>x</var> is the common size of the input arguments.
-  A scalar input functions as a constant matrix of the same same size as the
+ [-pi, pi].  The size of <var>p</var> is the common size of the input arguments.
+ A scalar input functions as a constant matrix of the same same size as the
  other inputs.
 </p>
 <p> Default values are <var>mu</var> = 0, <var>k</var> = 1.  The function returns NaN for

@@ -62,8 +62,8 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>tcdf</b><i> (<var>x</var>, <var>df</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>tcdf</b><i> (<var>x</var>, <var>df</var>, &quot;upper&quot;)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>chi2cdf</b><i> (<var>x</var>, <var>df</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>chi2cdf</b><i> (<var>x</var>, <var>df</var>, &quot;upper&quot;)</i></dt>
 </dl>
 
 <p> Chi-square cumulative distribution function.
@@ -77,7 +77,7 @@
 <p> The size of <var>p</var> is the common size of <var>x</var> and <var>df</var>. A scalar
  input functions as a constant matrix of the same size as the other input.
 </p>
-<p> <code><var>p</var> = fcdf (<var>x</var>, <var>df</var>, &quot;upper&quot;)</code> computes the upper tail
+<p> <code><var>p</var> = chi2cdf (<var>x</var>, <var>df</var>, &quot;upper&quot;)</code> computes the upper tail
  probability of the Chi-Squared distribution with <var>df</var> degrees of freedom
  at the values in <var>x</var>.
 </p>
