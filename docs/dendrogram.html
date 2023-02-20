@@ -148,12 +148,13 @@
                   <table><tbody><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
- "simple 1"
+
+ ## simple dendrogram
  y = [4, 5; 2, 6; 3, 7; 8, 9; 1, 10];
  y(:,3) = 1:5;
  dendrogram (y);
+ title ("simple dendrogram");
 
-ans = simple 1
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
@@ -183,13 +184,14 @@ ans = simple 1
                   <table><tbody><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
- "simple 2"
+
+ ## another simple dendrogram
  v = 2 * rand (30, 1) - 1;
  d = abs (bsxfun (@minus, v(:, 1), v(:, 1)'));
  y = linkage (squareform (d, "tovector"));
  dendrogram (y);
+ title ("another simple dendrogram");
 
-ans = simple 2
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
@@ -219,7 +221,8 @@ ans = simple 2
                   <table><tbody><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
- "collapsed tree, find all the leaves of node 5"
+
+ ## collapsed tree, find all the leaves of node 5
  X = randn (60, 2);
  D = pdist (X);
  y = linkage (D, "average");
@@ -231,10 +234,9 @@ ans = simple 2
  [~, t] = dendrogram (y, 20);
  find(t == 5)
 
-ans = collapsed tree, find all the leaves of node 5
 ans =
 
-    7   10   23
+    5   25   56
 
                     </pre></td></tr></tbody>
                   </table>
@@ -265,7 +267,8 @@ ans =
                   <table><tbody><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
- "optimal leaf order"
+
+ ## optimal leaf order
  X = randn (30, 2);
  D = pdist (X);
  y = linkage (D, "average");
@@ -277,7 +280,6 @@ ans =
  title ("optimal leaf order");
  dendrogram (y, "Reorder", order);
 
-ans = optimal leaf order
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
@@ -307,15 +309,16 @@ ans = optimal leaf order
                   <table><tbody><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
- "horizontal orientation and labels"
+
+ ## horizontal orientation and labels
  X = randn (8, 2);
  D = pdist (X);
  L = ["Snow White"; "Doc"; "Grumpy"; "Happy"; "Sleepy"; "Bashful"; ...
       "Sneezy"; "Dopey"];
  y = linkage (D, "average");
  dendrogram (y, "Orientation", "left", "Labels", L);
+ title ("horizontal orientation and labels");
 
-ans = horizontal orientation and labels
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
