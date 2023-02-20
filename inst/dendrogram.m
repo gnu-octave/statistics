@@ -340,18 +340,23 @@ function [H, T, perm] = dendrogram (tree, varargin)
 endfunction
 
 
-%!demo "simple 1"
+%!demo
+%! ## simple dendrogram
 %! y = [4, 5; 2, 6; 3, 7; 8, 9; 1, 10];
 %! y(:,3) = 1:5;
 %! dendrogram (y);
+%! title ("simple dendrogram");
 
-%!demo "simple 2"
+%!demo
+%! ## another simple dendrogram
 %! v = 2 * rand (30, 1) - 1;
 %! d = abs (bsxfun (@minus, v(:, 1), v(:, 1)'));
 %! y = linkage (squareform (d, "tovector"));
 %! dendrogram (y);
+%! title ("another simple dendrogram");
 
-%!demo "collapsed tree, find all the leaves of node 5"
+%!demo
+%! ## collapsed tree, find all the leaves of node 5
 %! X = randn (60, 2);
 %! D = pdist (X);
 %! y = linkage (D, "average");
@@ -363,7 +368,8 @@ endfunction
 %! [~, t] = dendrogram (y, 20);
 %! find(t == 5)
 
-%!demo "optimal leaf order"
+%!demo
+%! ## optimal leaf order
 %! X = randn (30, 2);
 %! D = pdist (X);
 %! y = linkage (D, "average");
@@ -375,13 +381,15 @@ endfunction
 %! title ("optimal leaf order");
 %! dendrogram (y, "Reorder", order);
 
-%!demo "horizontal orientation and labels"
+%!demo
+%! ## horizontal orientation and labels
 %! X = randn (8, 2);
 %! D = pdist (X);
 %! L = ["Snow White"; "Doc"; "Grumpy"; "Happy"; "Sleepy"; "Bashful"; ...
 %!      "Sneezy"; "Dopey"];
 %! y = linkage (D, "average");
 %! dendrogram (y, "Orientation", "left", "Labels", L);
+%! title ("horizontal orientation and labels");
 
 ## Get current figure visibility so it can be restored after tests
 %!shared visibility_setting
