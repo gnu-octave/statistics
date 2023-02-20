@@ -23,7 +23,7 @@
 ## @deftypefnx {statistics} {[@var{h}, @var{pval}] =} ztest2 (@dots{})
 ## @deftypefnx {statistics} {[@var{h}, @var{pval}, @var{zvalue}] =} ztest2 (@dots{})
 ##
-## Two proportion Z-test.
+## Two proportions Z-test.
 ##
 ## If @var{x1} and @var{n1} are the counts of successes and trials in one
 ## sample, and @var{x2} and @var{n2} those in a second one, test the null
