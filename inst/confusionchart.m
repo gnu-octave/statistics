@@ -253,7 +253,8 @@ endfunction
 
 ## Demonstration using the confusion matrix example from
 ## R.Bonnin, "Machine Learning for Developers", pp. 55-56
-%!demo "Setting the chart properties"
+%!demo
+%! ## Setting the chart properties
 %! Yt = [8 5 6 8 5 3 1 6 4 2 5 3 1 4]';
 %! Yp = [8 5 6 8 5 2 3 4 4 5 5 7 2 6]';
 %! confusionchart (Yt, Yp, "Title", ...
@@ -262,29 +263,33 @@ endfunction
 %!   "row-normalized")
 
 ## example: confusion matrix and class labels
-%!demo "Cellstr as inputs"
-%! Yt = {'Positive', 'Positive', 'Positive', 'Negative', 'Negative' };
-%! Yp = {'Positive', 'Positive', 'Negative', 'Negative', 'Negative' };
-%! m = confusionmat ( Yt, Yp );
-%! confusionchart ( m, { 'Positive', 'Negative' } );
+%!demo
+%! ## Cellstr as inputs
+%! Yt = {"Positive", "Positive", "Positive", "Negative", "Negative"};
+%! Yp = {"Positive", "Positive", "Negative", "Negative", 'Negative"};
+%! m = confusionmat (Yt, Yp);
+%! confusionchart (m, {"Positive", "Negative"});
 
 ## example: editing the properties of an existing ConfusionMatrixChart object
-%!demo "Editing the object properties"
-%! Yt = {'Positive', 'Positive', 'Positive', 'Negative', 'Negative' };
-%! Yp = {'Positive', 'Positive', 'Negative', 'Negative', 'Negative' };
-%! cm = confusionchart ( Yt, Yp );
+%!demo
+%! ## Editing the object properties
+%! Yt = {"Positive", "Positive", "Positive", "Negative", "Negative"};
+%! Yp = {"Positive", "Positive", "Negative", "Negative", "Negative"};
+%! cm = confusionchart (Yt, Yp);
 %! cm.Title = "This is an example with a green diagonal";
 %! cm.DiagonalColor = [0.4660, 0.6740, 0.1880];
 
 ## example: drawing the chart inside a uipanel
-%!demo "Confusion chart in a uipanel"
+%!demo
+%! ## Confusion chart in a uipanel
 %! h = uipanel ();
-%! Yt = {'Positive', 'Positive', 'Positive', 'Negative', 'Negative' };
-%! Yp = {'Positive', 'Positive', 'Negative', 'Negative', 'Negative' };
-%! cm = confusionchart ( h, Yt, Yp );
+%! Yt = {"Positive", "Positive", "Positive", "Negative", "Negative"};
+%! Yp = {"Positive", "Positive", "Negative", "Negative", "Negative"};
+%! cm = confusionchart (h, Yt, Yp);
 
 ## example: sortClasses
-%!demo "Sorting classes"
+%!demo
+%! ## Sorting classes
 %! Yt = [8 5 6 8 5 3 1 6 4 2 5 3 1 4]';
 %! Yp = [8 5 6 8 5 2 3 4 4 5 5 7 2 6]';
 %! cm = confusionchart (Yt, Yp, "Title", ...

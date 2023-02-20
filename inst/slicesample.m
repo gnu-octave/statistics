@@ -244,7 +244,8 @@ endfunction
 %! Sigma = (Sigma + Sigma');
 %! Sigma += eye (d)*abs (eigs (Sigma, 1, "sa")) * 1.1;
 %! pdf = @(x)(2*pi)^(-d/2)*det(Sigma)^-.5*exp(-.5*sum((x.'-mu).*(Sigma\(x.'-mu)),1));
-%! ##Inputs
+%!
+%! ## Inputs
 %! start = ones (1,2);
 %! nsamples = 500;
 %! K = 500;
@@ -256,6 +257,7 @@ endfunction
 %! [x, y] = meshgrid (linspace (-6,4), linspace(-3,7));
 %! z = reshape (pdf ([x(:), y(:)]), size(x));
 %! mesh (x, y, z, "facecolor", "None");
+%!
 %! ## Using sample points to find the volume of half a sphere with radius of .5
 %! f = @(x) ((.25-(x(:,1)+1).^2-(x(:,2)-2).^2).^.5.*(((x(:,1)+1).^2+(x(:,2)-2).^2)<.25)).';
 %! int = mean (f (smpl) ./ pdf (smpl));
@@ -267,7 +269,7 @@ endfunction
 %! mesh (x,y,reshape (f([x(:), y(:)]), size(x)), "facecolor", "None");
 
 %!demo
-%! ##Integrate truncated normal distribution to find normilization constant
+%! ## Integrate truncated normal distribution to find normilization constant
 %! pdf = @(x) exp (-.5*x.^2)/(pi^.5*2^.5);
 %! nsamples = 1e3;
 %! [smpl,accept] = slicesample (1, nsamples, "pdf", pdf, "thin", 4);
