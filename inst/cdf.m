@@ -96,7 +96,7 @@
 ## (including @qcode{"upper"})
 ## @end multitable
 ##
-## @seealso{pdf, rnd}
+## @seealso{icdf, pdf, random}
 ## @end deftypefn
 
 function [retval] = cdf (name, varargin)
