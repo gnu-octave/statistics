@@ -1,4 +1,5 @@
 ## Copyright (C) 1995-2017 Friedrich Leisch
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
