@@ -28,7 +28,12 @@ Data Manipulation
  combnk
  crosstab
  datasample
+ fillmissing
  grp2idx
+ ismissing
+ normalise_distribution
+ rmmissing
+ standardizeMissing
  tabulate
 Descriptive Statistics
  geomean
