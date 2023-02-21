@@ -71,7 +71,7 @@
 ## unifinv, wblinv}
 ## @end deftypefn
 
-function [retval] = pdf (name, varargin)
+function [retval] = icdf (name, varargin)
   ## implemented functions
   persistent allpdf = { ...
     {"bbs"      , "Birnbaum-Saunders"},         @bbsinv,       3, ...
