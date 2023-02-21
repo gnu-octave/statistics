@@ -38,14 +38,14 @@
 ## @var{sigma}, evaluated at each row of @var{x}.  @var{sigma} is a D-by-D
 ## matrix, or an D-by-D-by-N array, in which case the density is evaluated for
 ## each row of @var{x} with the corresponding page of @var{sigma}, i.e.,
-## @code{mcvpdf} computes @var{y(i)} using @var{x(i,:)} and @var{sigma(:,:,i)}.
+## @code{mvnpdf} computes @var{y(i)} using @var{x(i,:)} and @var{sigma(:,:,i)}.
 ## If the covariance matrix is diagonal, containing variances along the diagonal
 ## and zero covariances off the diagonal, @var{sigma} may also be specified as a
 ## 1-by-D matrix or a 1-by-D-by-N array, containing just the diagonal. Pass in
 ## the empty matrix for @var{mu} to use its default value when you want to only
 ## specify @var{sigma}.
 ##
-## If @var{x} is a 1-by-D vector, @code{mcvpdf} replicates it to match the
+## If @var{x} is a 1-by-D vector, @code{mvnpdf} replicates it to match the
 ## leading dimension of @var{mu} or the trailing dimension of @var{sigma}.
 ##
 ## @seealso{mvncdf, mvnrnd}

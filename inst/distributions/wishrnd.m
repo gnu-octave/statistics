@@ -20,13 +20,13 @@
 ## Return a random matrix sampled from the Wishart distribution with given
 ## parameters
 ##
-## Inputs: the @var{p} x @var{p} positive definite matrix @var{Sigma} (or the
+## Inputs: the @math{p x p} positive definite matrix @var{Sigma} (or the
 ## lower-triangular Cholesky factor @var{D} of @var{Sigma}) and scalar degrees
 ## of freedom parameter @var{df}.
 ##
-## @var{df} can be non-integer as long as @var{df} > @var{p}
+## @var{df} can be non-integer as long as @math{@var{df} > p}
 ##
-## Output: a random @var{p} x @var{p}  matrix @var{W} from the
+## Output: a random @math{p x p}  matrix @var{W} from the
 ## Wishart(@var{Sigma}, @var{df}) distribution. If @var{n} > 1, then @var{W} is
 ## @var{p} x @var{p} x @var{n} and holds @var{n} such random matrices.
 ## (Optionally, the lower-triangular Cholesky factor @var{D} of @var{Sigma} is

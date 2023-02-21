@@ -18,8 +18,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{r} =} evrnd (@var{mu}, @var{sigma})
-## @deftypefnx {statistics} {@var{r} =} evrnd (@var{mu}, @var{sigma}, @var{m}, @var{n}, @dots{})
-## @deftypefnx {statistics} {@var{r} =} evrnd (@var{mu}, @var{sigma}, [@var{m}, @var{n}, @dots{}])
+## @deftypefnx {statistics} {@var{r} =} evrnd (@var{mu}, @var{sigma}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} evrnd (@var{mu}, @var{sigma}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} evrnd (@var{mu}, @var{sigma}, [@var{sz}])
 ##
 ## Random arrays from the extreme value distribution.
 ##
@@ -29,9 +30,11 @@
 ## the common size of @var{mu} and @var{sigma}.  A scalar input functions as a
 ## constant matrix of the same size as the other inputs.
 ##
-## @code{@var{r} = evrnd (@var{mu}, @var{sigma}, @var{m}, @var{n}, @dots{})} or
-## @code{@var{r} = evrnd (@var{mu}, @var{sigma}, [@var{m}, @var{n}, @dots{}])}
-## returns an M-by-N-by-... array.
+## When called with a single size argument, return a square matrix with
+## the dimension specified.  When called with more than one scalar argument the
+## first two arguments are taken as the number of rows and columns and any
+## further arguments specify additional matrix dimensions.  The size may also
+## be specified with a vector of dimensions @var{sz}.
 ##
 ## The type 1 extreme value distribution is also known as the Gumbel
 ## distribution.  The version used here is suitable for modeling minima; the

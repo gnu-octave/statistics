@@ -17,18 +17,18 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {[@var{W}, @var{DI}] =} iwishrnd (@var{Psi}, @var{df}, @var{DI}, @var{n}=1)
+## @deftypefn  {statistics} {[@var{W}, @var{DI}] =} iwishrnd (@var{Tau}, @var{df}, @var{DI}, @var{n}=1)
 ##
 ## Return a random matrix sampled from the inverse Wishart distribution with
 ## given parameters.
 ##
-## Inputs: the @var{p} x @var{p} positive definite matrix @var{Tau} and scalar
+## Inputs: the @math{p x p} positive definite matrix @var{Tau} and scalar
 ## degrees of freedom parameter @var{df} (and optionally the transposed Cholesky
 ## factor @var{DI} of @var{Sigma} = @code{inv(Tau)}).
 ##
-## @var{df} can be non-integer as long as @var{df} > @var{d}
+## @var{df} can be non-integer as long as @math{@var{df} > d}
 ##
-## Output: a random @var{p} x @var{p}  matrix @var{W} from the inverse
+## Output: a random @math{p x p}  matrix @var{W} from the inverse
 ## Wishart(@var{Tau}, @var{df}) distribution. (@code{inv(W)} is from the
 ## Wishart(@code{inv(Tau)}, @var{df}) distribution.) If @var{n} > 1,
 ## then @var{W} is @var{p} x @var{p} x @var{n} and holds @var{n} such random
