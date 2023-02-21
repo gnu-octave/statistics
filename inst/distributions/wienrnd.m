@@ -44,6 +44,11 @@ function r = wienrnd (t, d, n)
   endif
 
   if (! isscalar (t) || ! isscalar (d) || ! isscalar (n))
+    error ("wienrnd: T, D, and N must all be scalars.");
+  endif
+
+  if (! (fix (t) == t) || ! (fix (d) == d) || ! (fix (n) == n)
+                       || t <= 0 || d <= 0 || n <= 0)
     error ("wienrnd: T, D, and N must all be positive integers.");
   endif
 
@@ -53,3 +58,9 @@ function r = wienrnd (t, d, n)
   r = [((1: n*t)' / n), r];
 
 endfunction
+
+%!error wienrnd (0)
+%!error wienrnd (1, 3, -50)
+%!error wienrnd (5, 0)
+%!error wienrnd (0.4, 3, 5)
+%!error wienrnd ([1 4], 3, 5)
