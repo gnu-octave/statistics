@@ -28,7 +28,7 @@
 ##
 ## The variable @var{name} must be a string that names the distribution from
 ## which to sample.  If this distribution is a one-parameter distribution
-## @var{arg1} should be supplied, if it is a two-paramter distribution
+## @var{arg1} should be supplied, if it is a two-parameter distribution
 ## @var{arg2} must also be supplied, and if it is a three-parameter distribution
 ## @var{arg3} must also be present.  Any arguments following the distribution
 ## parameters will determine the size of the result.
