@@ -21,9 +21,9 @@
 ##
 ## Return the PDF of @var{name} distribution function for value @var{x}.
 ##
-## This is a wrapper around various @qcode{name}pdf and @qcode{name}_pdf
-## functions. See the corresponding functions' help to learn the signification
-## of the arguments after @var{x}.
+## This is a wrapper for the @qcode{name}pdf and @qcode{name}_pdf functions
+## available in the statistics package. See the corresponding functions' help to
+## learn the signification of the arguments after @var{x}.
 ##
 ## @var{name} must be a char string of the name or the abbreviation of the
 ## desired probability distribution function as listed in the followng table.

@@ -20,9 +20,9 @@
 ##
 ## Return the inverse CDF of @var{name} distribution function for value @var{p}.
 ##
-## This is a wrapper around various @qcode{name}inv and @qcode{name}_inv
-## functions. See the corresponding functions' help to learn the signification
-## of the arguments after @var{p}.
+## This is a wrapper for the @qcode{name}inv and @qcode{name}_inv functions
+## available in the statistics package. See the corresponding functions' help to
+## learn the signification of the arguments after @var{p}.
 ##
 ## @var{name} must be a char string of the name or the abbreviation of the
 ## desired quantile distribution function as listed in the followng table.
