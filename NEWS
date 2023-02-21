@@ -444,6 +444,8 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** cdf: updated wrapper for all available *cdf distribution functions
 
+ ** dcov: handles missing values and multivariate samples
+
  ** geomean: fixed MATLAB compatibility
 
  ** harmmean: fixed MATLAB compatibility
