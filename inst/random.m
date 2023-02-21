@@ -31,7 +31,7 @@
 ## @var{arg1} should be supplied, if it is a two-paramter distribution
 ## @var{arg2} must also be supplied, and if it is a three-parameter distribution
 ## @var{arg3} must also be present.  Any arguments following the distribution
-## paramters will determine the size of the result.
+## parameters will determine the size of the result.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
