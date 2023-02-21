@@ -51,47 +51,53 @@
 ## The last column shows the required number of parameters that must be passed
 ## passed to the desired @qcode{*rnd} distribution function.
 ##
-## @multitable @columnfractions 0.45 0.2 0.35
-## @headitem Distribution Name @tab Abbreviation @tab Required Parameters
-## @item @qcode{"Birnbaum-Saunders"} @tab @qcode{"bbs"} @tab 3
-## @item @qcode{"Beta"} @tab @qcode{"beta"} @tab 2
-## @item @qcode{"Binomial"} @tab @qcode{"bino"} @tab 2
-## @item @qcode{"Burr"} @tab @qcode{"burr"} @tab 3
-## @item @qcode{"Cauchy"} @tab @qcode{"cauchy"} @tab 2
-## @item @qcode{"Chi-square"} @tab @qcode{"chi2"} @tab 1
-## @item @qcode{"Copula Family"} @tab @qcode{"copula"} @tab 2-4 no size args
-## @item @qcode{"Extreme Value"} @tab @qcode{"ev"} @tab 2
-## @item @qcode{"Exponential"} @tab @qcode{"exp"} @tab 1
-## @item @qcode{"F-Distribution"} @tab @qcode{"f"} @tab 2
-## @item @qcode{"Gamma"} @tab @qcode{"gam"} @tab 2
-## @item @qcode{"Geometric"} @tab @qcode{"geo"} @tab 1
-## @item @qcode{"Generalized Extreme Value"} @tab @qcode{"gev"} @tab 3
-## @item @qcode{"Generalized Pareto"} @tab @qcode{"gp"} @tab 3
-## @item @qcode{"Hypergeometric"} @tab @qcode{"hyge"} @tab 3
-## @item @qcode{"Inverse Wishart"} @tab @qcode{"iwish"} @tab 3-4 no size args
-## @item @qcode{"Laplace"} @tab @qcode{"laplace"} @tab 2
-## @item @qcode{"Logistic"} @tab @qcode{"logistic"} @tab 2
-## @item @qcode{"Lognormal"} @tab @qcode{"logn"} @tab 2
-## @item @qcode{"Multinomial"} @tab @qcode{"mn"} @tab 2
-## @item @qcode{"Multivariate Normal"} @tab @qcode{"mvn"} @tab 2-4 no size args
-## @item @qcode{"Multivariate Student T"} @tab @qcode{"mvt"} @tab 2
-## @item @qcode{"Nakagami"} @tab @qcode{"naka"} @tab 2
-## @item @qcode{"Negative Binomial"} @tab @qcode{"nbin"} @tab 2
-## @item @qcode{"Noncentral F-Distribution"} @tab @qcode{"ncf"} @tab 3
-## @item @qcode{"Noncentral Student T"} @tab @qcode{"nct"} @tab 2
-## @item @qcode{"Noncentral Chi-Square"} @tab @qcode{"ncx2"} @tab 2
-## @item @qcode{"Normal"} @tab @qcode{"norm"} @tab 2
-## @item @qcode{"Poisson"} @tab @qcode{"poiss"} @tab 1
-## @item @qcode{"Rayleigh"} @tab @qcode{"rayl"} @tab 1
-## @item @qcode{"Standard Normal"} @tab @qcode{"stdnormal"} @tab 0
-## @item @qcode{"Student T"} @tab @qcode{"t"} @tab 1
-## @item @qcode{"Triangular"} @tab @qcode{"tri"} @tab 3
-## @item @qcode{"Discrete Uniform"} @tab @qcode{"unid"} @tab 1
-## @item @qcode{"Uniform"} @tab @qcode{"unif"} @tab 2
-## @item @qcode{"Von Mises"} @tab @qcode{"vm"} @tab 2
-## @item @qcode{"Weibull"} @tab @qcode{"wbl"} @tab 2
-## @item @qcode{"Wiener Process"} @tab @qcode{"wien"} @tab 1-3 no size args
-## @item @qcode{"Wishart"} @tab @qcode{"wish"} @tab 3-4 no size args
+## @multitable @columnfractions 0.4 0.05 0.2 0.05 0.3
+## @headitem Distribution Name @tab @tab Abbreviation @tab @tab
+## Required Parameters
+## @item @qcode{"Birnbaum-Saunders"} @tab @tab @qcode{"bbs"} @tab @tab 3
+## @item @qcode{"Beta"} @tab @tab @qcode{"beta"} @tab @tab 2
+## @item @qcode{"Binomial"} @tab @tab @qcode{"bino"} @tab @tab 2
+## @item @qcode{"Burr"} @tab @tab @qcode{"burr"} @tab @tab 3
+## @item @qcode{"Cauchy"} @tab @tab @qcode{"cauchy"} @tab @tab 2
+## @item @qcode{"Chi-square"} @tab @tab @qcode{"chi2"} @tab @tab 1
+## @item @qcode{"Copula Family"} @tab @tab @qcode{"copula"} @tab @tab
+## 2-4 no size args
+## @item @qcode{"Extreme Value"} @tab @tab @qcode{"ev"} @tab @tab 2
+## @item @qcode{"Exponential"} @tab @tab @qcode{"exp"} @tab @tab 1
+## @item @qcode{"F-Distribution"} @tab @tab @qcode{"f"} @tab @tab 2
+## @item @qcode{"Gamma"} @tab @tab @qcode{"gam"} @tab @tab 2
+## @item @qcode{"Geometric"} @tab @tab @qcode{"geo"} @tab @tab 1
+## @item @qcode{"Generalized Extreme Value"} @tab @tab @qcode{"gev"} @tab @tab 3
+## @item @qcode{"Generalized Pareto"} @tab @tab @qcode{"gp"} @tab @tab 3
+## @item @qcode{"Hypergeometric"} @tab @tab @qcode{"hyge"} @tab @tab 3
+## @item @qcode{"Inverse Wishart"} @tab @tab @qcode{"iwish"} @tab @tab
+## 3-4 no size args
+## @item @qcode{"Laplace"} @tab @tab @qcode{"laplace"} @tab @tab 2
+## @item @qcode{"Logistic"} @tab @tab @qcode{"logistic"} @tab @tab 2
+## @item @qcode{"Lognormal"} @tab @tab @qcode{"logn"} @tab @tab 2
+## @item @qcode{"Multinomial"} @tab @tab @qcode{"mn"} @tab @tab 2
+## @item @qcode{"Multivariate Normal"} @tab @tab @qcode{"mvn"} @tab @tab
+## 2-4 no size args
+## @item @qcode{"Multivariate Student T"} @tab @tab @qcode{"mvt"} @tab @tab 2
+## @item @qcode{"Nakagami"} @tab @tab @qcode{"naka"} @tab @tab 2
+## @item @qcode{"Negative Binomial"} @tab @tab @qcode{"nbin"} @tab @tab 2
+## @item @qcode{"Noncentral F-Distribution"} @tab @tab @qcode{"ncf"} @tab @tab 3
+## @item @qcode{"Noncentral Student T"} @tab @tab @qcode{"nct"} @tab @tab 2
+## @item @qcode{"Noncentral Chi-Square"} @tab @tab @qcode{"ncx2"} @tab @tab 2
+## @item @qcode{"Normal"} @tab @tab @qcode{"norm"} @tab @tab 2
+## @item @qcode{"Poisson"} @tab @tab @qcode{"poiss"} @tab @tab 1
+## @item @qcode{"Rayleigh"} @tab @tab @qcode{"rayl"} @tab @tab 1
+## @item @qcode{"Standard Normal"} @tab @tab @qcode{"stdnormal"} @tab @tab 0
+## @item @qcode{"Student T"} @tab @tab @qcode{"t"} @tab @tab 1
+## @item @qcode{"Triangular"} @tab @tab @qcode{"tri"} @tab @tab 3
+## @item @qcode{"Discrete Uniform"} @tab @tab @qcode{"unid"} @tab @tab 1
+## @item @qcode{"Uniform"} @tab @tab @qcode{"unif"} @tab @tab 2
+## @item @qcode{"Von Mises"} @tab @tab @qcode{"vm"} @tab @tab 2
+## @item @qcode{"Weibull"} @tab @tab @qcode{"wbl"} @tab @tab 2
+## @item @qcode{"Wiener Process"} @tab @tab @qcode{"wien"} @tab @tab
+## 1-3 no size args
+## @item @qcode{"Wishart"} @tab @tab @qcode{"wish"} @tab @tab
+## 3-4 no size args
 ## @end multitable
 ##
 ## @seealso{cdf, icdf, pdf, bbsrnd, betarnd, binornd, burrrnd, cauchy_rnd,

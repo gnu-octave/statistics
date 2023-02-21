@@ -30,70 +30,70 @@
 ## The last column shows the maximum number of extra arguments that can be
 ## passed to the desired CDF.
 ##
-## @multitable @columnfractions 0.45 0.2 0.35
-## @headitem Distribution Name @tab Abbreviation @tab Max. Extra Arguments
-## @item @qcode{"Birnbaum-Saunders"} @tab @qcode{"bbs"} @tab 3
-## @item @qcode{"Beta"} @tab @qcode{"beta"} @tab 3
-## (including @qcode{"upper"})
-## @item @qcode{"Binomial"} @tab @qcode{"bino"} @tab 3
-## (including @qcode{"upper"})
-## @item @qcode{"Burr"} @tab @qcode{"burr"} @tab 3
-## @item @qcode{"Bivariate Normal"} @tab @qcode{"bvn"} @tab 2
-## @item @qcode{"Cauchy"} @tab @qcode{"cauchy"} @tab 2
-## @item @qcode{"Chi-square"} @tab @qcode{"chi2"} @tab 2
-## (including @qcode{"upper"})
-## @item @qcode{"Copula Family"} @tab @qcode{"copula"} @tab 3
-## @item @qcode{"Extreme Value"} @tab @qcode{"ev"} @tab 5
-## (including @qcode{"upper"})
-## @item @qcode{"Exponential"} @tab @qcode{"exp"} @tab 4
-## (including @qcode{"upper"})
-## @item @qcode{"F-Distribution"} @tab @qcode{"f"} @tab 3
-## (including @qcode{"upper"})
-## @item @qcode{"Gamma"} @tab @qcode{"gam"} @tab 5
-## (including @qcode{"upper"})
-## @item @qcode{"Geometric"} @tab @qcode{"geo"} @tab 2
-## (including @qcode{"upper"})
-## @item @qcode{"Generalized Extreme Value"} @tab @qcode{"gev"} @tab 4
-## (including @qcode{"upper"})
-## @item @qcode{"Generalized Pareto"} @tab @qcode{"gp"} @tab 4
-## (including @qcode{"upper"})
-## @item @qcode{"Hypergeometric"} @tab @qcode{"hyge"} @tab 4
-## (including @qcode{"upper"})
-## @item @qcode{"Johnson SU"} @tab @qcode{"jsu"} @tab 2
-## @item @qcode{"Laplace"} @tab @qcode{"laplace"} @tab 2
-## @item @qcode{"Logistic"} @tab @qcode{"logistic"} @tab 2
-## @item @qcode{"Lognormal"} @tab @qcode{"logn"} @tab 5
-## (including @qcode{"upper"})
-## @item @qcode{"Multivariate Normal"} @tab @qcode{"mvn"} @tab 4
-## @item @qcode{"Multivariate Student T"} @tab @qcode{"mvt"} @tab 3
+## @multitable @columnfractions 0.4 0.05 0.2 0.05 0.3
+## @headitem Distribution Name @tab @tab Abbreviation @tab @tab Max Arguments
+## @item @qcode{"Birnbaum-Saunders"} @tab @tab @qcode{"bbs"} @tab @tab 3
+## @item @qcode{"Beta"} @tab @tab @qcode{"beta"} @tab @tab 3
+## (@qcode{"upper"})
+## @item @qcode{"Binomial"} @tab @tab @qcode{"bino"} @tab @tab 3
+## (@qcode{"upper"})
+## @item @qcode{"Burr"}@tab  @tab @qcode{"burr"}@tab  @tab 3
+## @item @qcode{"Bivariate Normal"}@tab  @tab @qcode{"bvn"} @tab @tab 2
+## @item @qcode{"Cauchy"} @tab @tab @qcode{"cauchy"} @tab @tab 2
+## @item @qcode{"Chi-square"} @tab @tab @qcode{"chi2"} @tab @tab 2
+## (@qcode{"upper"})
+## @item @qcode{"Copula Family"} @tab @tab @qcode{"copula"} @tab @tab 3
+## @item @qcode{"Extreme Value"} @tab @tab @qcode{"ev"} @tab @tab 5
+## (@qcode{"upper"})
+## @item @qcode{"Exponential"} @tab @tab @qcode{"exp"} @tab @tab 4
+## (@qcode{"upper"})
+## @item @qcode{"F-Distribution"} @tab @tab @qcode{"f"} @tab @tab 3
+## (@qcode{"upper"})
+## @item @qcode{"Gamma"} @tab @tab @qcode{"gam"} @tab @tab 5
+## (@qcode{"upper"})
+## @item @qcode{"Geometric"} @tab @tab @qcode{"geo"} @tab @tab 2
+## (@qcode{"upper"})
+## @item @qcode{"Generalized Extreme Value"} @tab @tab @qcode{"gev"} @tab @tab 4
+## (@qcode{"upper"})
+## @item @qcode{"Generalized Pareto"} @tab @tab @qcode{"gp"} @tab @tab 4
+## (@qcode{"upper"})
+## @item @qcode{"Hypergeometric"} @tab @tab @qcode{"hyge"} @tab @tab 4
+## (@qcode{"upper"})
+## @item @qcode{"Johnson SU"} @tab @tab @qcode{"jsu"} @tab @tab 2
+## @item @qcode{"Laplace"} @tab @tab @qcode{"laplace"} @tab @tab 2
+## @item @qcode{"Logistic"} @tab @tab @qcode{"logistic"} @tab @tab 2
+## @item @qcode{"Lognormal"} @tab @tab @qcode{"logn"} @tab @tab 5
+## (@qcode{"upper"})
+## @item @qcode{"Multivariate Normal"} @tab @tab @qcode{"mvn"} @tab @tab 4
+## @item @qcode{"Multivariate Student T"} @tab @tab @qcode{"mvt"} @tab @tab 3
 ## @item @qcode{"Quasi-Monte-Carlo Multivariate Student T"}
-## @tab @qcode{"mvtqmc"} @tab 6
-## @item @qcode{"Nakagami"} @tab @qcode{"naka"} @tab 2
-## @item @qcode{"Negative Binomial"} @tab @qcode{"nbin"} @tab 3
-## (including @qcode{"upper"})
-## @item @qcode{"Noncentral F-Distribution"} @tab @qcode{"ncf"} @tab 4
-## (including @qcode{"upper"})
-## @item  @qcode{"Noncentral Student T"} @tab @qcode{"nct"} @tab 3
-## (including @qcode{"upper"})
-## @item @qcode{"Noncentral Chi-Square"} @tab @qcode{"ncx2"} @tab 3
-## (including @qcode{"upper"})
-## @item @qcode{"Normal"} @tab @qcode{"norm"} @tab 5
-## (including @qcode{"upper"})
-## @item @qcode{"Poisson"} @tab @qcode{"poiss"} @tab 2
-## (including @qcode{"upper"})
-## @item @qcode{"Rayleigh"} @tab @qcode{"rayl"} @tab 2
-## (including @qcode{"upper"})
-## @item @qcode{"Standard Normal"} @tab @qcode{"stdnormal"} @tab 0
-## @item @qcode{"Student T"} @tab @qcode{"t"} @tab 2
-## (including @qcode{"upper"})
-## @item @qcode{"Triangular"} @tab @qcode{"tri"} @tab 3
-## @item @qcode{"Discrete Uniform"} @tab @qcode{"unid"} @tab 2
-## (including @qcode{"upper"})
-## @item @qcode{"Uniform"} @tab @qcode{"unif"} @tab 3
-## (including @qcode{"upper"})
-## @item @qcode{"Von Mises"} @tab @qcode{"vm"} @tab 2
-## @item @qcode{"Weibull"} @tab @qcode{"wbl"} @tab 5
-## (including @qcode{"upper"})
+## @tab @tab @qcode{"mvtqmc"} @tab @tab 6
+## @item @qcode{"Nakagami"} @tab @tab @qcode{"naka"} @tab @tab 2
+## @item @qcode{"Negative Binomial"} @tab @tab @qcode{"nbin"} @tab @tab 3
+## (@qcode{"upper"})
+## @item @qcode{"Noncentral F-Distribution"} @tab @tab @qcode{"ncf"} @tab @tab 4
+## (@qcode{"upper"})
+## @item  @qcode{"Noncentral Student T"} @tab @tab @qcode{"nct"} @tab @tab 3
+## (@qcode{"upper"})
+## @item @qcode{"Noncentral Chi-Square"} @tab @tab @qcode{"ncx2"} @tab @tab 3
+## (@qcode{"upper"})
+## @item @qcode{"Normal"} @tab @tab @qcode{"norm"} @tab @tab 5
+## (@qcode{"upper"})
+## @item @qcode{"Poisson"} @tab @tab @qcode{"poiss"} @tab @tab 2
+## (@qcode{"upper"})
+## @item @qcode{"Rayleigh"} @tab @tab @qcode{"rayl"} @tab @tab 2
+## (@qcode{"upper"})
+## @item @qcode{"Standard Normal"} @tab @tab @qcode{"stdnormal"} @tab @tab 0
+## @item @qcode{"Student T"} @tab @tab @qcode{"t"} @tab @tab 2
+## (@qcode{"upper"})
+## @item @qcode{"Triangular"} @tab @tab @qcode{"tri"} @tab @tab 3
+## @item @qcode{"Discrete Uniform"} @tab @tab @qcode{"unid"} @tab @tab 2
+## (@qcode{"upper"})
+## @item @qcode{"Uniform"} @tab @tab @qcode{"unif"} @tab @tab 3
+## (@qcode{"upper"})
+## @item @qcode{"Von Mises"} @tab @tab @qcode{"vm"} @tab @tab 2
+## @item @qcode{"Weibull"} @tab @tab @qcode{"wbl"} @tab @tab 5
+## (@qcode{"upper"})
 ## @end multitable
 ##
 ## @seealso{icdf, pdf, random, bbscdf, betacdf, binocdf, burrcdf, bvncdf,
