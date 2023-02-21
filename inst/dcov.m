@@ -18,7 +18,7 @@
 ## along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {[@var{dCor}, @var{dCov}, @var{dVarX}, @var{dVarY}] =} dcov (@var{x}, @var{y}, @var{index}=1)
+## @deftypefn  {statistics} {[@var{dCor}, @var{dCov}, @var{dVarX}, @var{dVarY}] =} dcov (@var{x}, @var{y})
 ##
 ## Distance correlation, covariance and correlation statistics.
 ##
@@ -26,35 +26,61 @@
 ## (@var{dCov}) between @var{x} and @var{y}, the distance variance of @var{x}
 ## in (@var{dVarX}) and the distance variance of @var{y} in (@var{dVarY}).
 ##
+## @var{x} and @var{y} must have the same number of observations (rows) but they
+## can have different number of dimensions (columns).  Rows with missing values
+## (@qcode{NaN}) in either @var{x} or @var{y} are omitted.
+##
+## The Brownian covariance is the same as the distance covariance:
+##
+## @tex
+## $$ cov_W (X, Y) = dCov(X, Y) $$
+##
+## @end tex
+## @ifnottex
+## @math{cov_W (@var{x}, @var{y}) = dCov (@var{x}, @var{y})}
+## @end ifnottex
+##
+## and thus Brownian correlation is the same as distance correlation.
+##
 ## @seealso{corr, cov}
 ## @end deftypefn
 
-function [dCor, dCov, dVarX, dVarY] = dcov (x, y, index=1.0)
-  x = abs (bsxfun (@minus, x, x.'));
-  y = abs (bsxfun (@minus, y, y.'));
+function [dCor, dCov, dVarX, dVarY] = dcov (x, y)
 
-  [n nc] = size (x);
-  [m mc] = size (y);
-  if (n != m)
-    error ("dcov: Sample sizes must agree.");
+  ## Validate input size
+  if (size (x, 1) != size (y, 1))
+    error ("dcov: Sample sizes (rows) in X and Y must agree.");
   endif
 
-  if (any (isnan (x) | isnan (y)))
-    error ("dcov: Data contains missing or infinite values.");
-  endif
+  ## Exclude missing values
+  is_nan = any ([isnan(x) isnan(y)], 2);
+  x(is_nan,:) = [];
+  y(is_nan,:) = [];
 
-  if (index < 0 || index > 2)
-    warning ("dcov: index must be in [0,2), using default index=1");
-    index = 1.0;
-  endif
+  ## Calculate double centered distance
+  A = pdist2 (x, x);
+  A_col = mean (A, 1);
+  A_row = mean (A, 2);
+  Acbar = ones (size (A_row)) * A_col;
+  Arbar = A_row * ones (size (A_col));
+  A_bar = mean (A(:)) * ones (size (A));
+  A = A - Acbar - Arbar + A_bar;
 
-  A = Akl (x, index);
-  B = Akl (y, index);
+  B = pdist2 (y, y);
+  B_col = mean (B, 1);
+  B_row = mean (B, 2);
+  Bcbar = ones (size (B_row)) * B_col;
+  Brbar = B_row * ones (size (B_col));
+  B_bar = mean (B(:)) * ones (size (B));
+  B = B - Bcbar - Brbar + B_bar;
 
+  ## Calculate distance covariance and variances
   dCov  = sqrt (mean (A(:) .* B(:)));
-  dVarX = sqrt (mean (A(:).^2));
-  dVarY = sqrt (mean (B(:).^2));
-  V     = sqrt (dVarX .* dVarY);
+  dVarX = sqrt (mean (A(:) .^ 2));
+  dVarY = sqrt (mean (B(:) .^ 2));
+
+  ## Calculate distance correlation
+  V = sqrt (dVarX .* dVarY);
 
   if V > 0
     dCor = dCov / V;
@@ -62,14 +88,6 @@ function [dCor, dCov, dVarX, dVarY] = dcov (x, y, index=1.0)
     dCor = 0;
   end
 
-endfunction
-
-function c = Akl (x, index)
-# Double centered distance
-  d = x .^ index;
-  rm = mean (d, 2); # row mean
-  gm = mean (d(:)); # grand mean
-  c  = d - bsxfun (@plus, rm, rm.') + gm;
 endfunction
 
 %!demo
@@ -136,3 +154,5 @@ endfunction
 %!   axis off
 %!   text (xm,ym,sprintf (ff, dcov (sx(:,i),ssy(:,i))),fmt{:})
 %! endfor
+
+%!error dcov (randn (30, 5), randn (25,5))
