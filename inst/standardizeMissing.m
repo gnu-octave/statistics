@@ -1,4 +1,4 @@
-## Copyright (C) 1995-2022 The Octave Project Developers
+## Copyright (C) 1995-2023 The Octave Project Developers
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -32,20 +32,20 @@
 ##
 ## @itemize
 ## @item
-## @code{NaN}: @code{single}, @code{double}
+## @qcode{NaN}: @code{single}, @code{double}
 ##
 ## @item
-## @code{' '} (white space): @code{char}
+## @qcode{" "} (white space): @code{char}
 ##
 ## @item
-## @code{@{''@}} (empty string in cell): string cells.
+## @qcode{@{""@}} (empty string in cell): string cells.
 ## @end itemize
 ##
 ## Compatibility Notes:
 ## @itemize
 ## @item
 ## Octave's implementation of @code{standardizeMissing}
-## does not restrict @var{indicator} of type 'char' to row vectors.
+## does not restrict @var{indicator} of type @qcode{char} to row vectors.
 ##
 ## @item
 ## All numerical and logical inputs for @var{A} and @var{indicator} may
@@ -58,7 +58,7 @@
 ##
 ## @end deftypefn
 ##
-## @seealso{ismissing, rmmissing}
+## @seealso{fillmissing, ismissing, rmmissing}
 
 function A = standardizeMissing (A, indicator)
 
@@ -85,22 +85,22 @@ function A = standardizeMissing (A, indicator)
 
   if (isnumeric(A) || islogical(A))
     switch (input_class)
-      case 'double'
+      case "double"
         missing_val = NaN ("double");
-      case 'single'
+      case "single"
         missing_val = NaN ("single");
       otherwise
         do_nothing_flag = true;
     endswitch
   else
     switch (input_class)
-      case 'char'
-        missing_val = ' ';
-      case 'cell'
+      case "char"
+        missing_val = " ";
+      case "cell"
         if iscellstr(A)
-          missing_val = {''};
+          missing_val = {""};
         else
-          error("stardardizeMissing: only cells of strings are supported.")
+          error ("stardardizeMissing: only cells of strings are supported.");
         endif
     otherwise
       error ("standardizeMissing: unsupported data type %s.", input_class);
@@ -115,7 +115,7 @@ function A = standardizeMissing (A, indicator)
       indicator = {indicator};
     endif
 
-    if ((isnumeric (A) && ! (isnumeric (indicator)|| islogical (indicator))) ||
+    if ((isnumeric (A) && ! (isnumeric (indicator) || islogical (indicator))) ||
         (ischar (A) && ! ischar (indicator)) ||
         (iscellstr (A) && ! (iscellstr (indicator))))
       error (strcat (["standardizeMissing: 'indicator' and 'A' must"], ...

@@ -1,5 +1,5 @@
 ## Copyright (C) 2011 Alexander Klein <alexander.klein@math.uni-giessen.de>
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -71,7 +71,8 @@ function normalised = normalise_distribution (data, distribution, dimension)
   if (nargin < 1 || nargin > 3)
     print_usage;
   elseif (! ismatrix (data) || length (size (data)) > 2)
-    error ("First argument must be a vector or matrix");
+    error (strcat (["normalise_distribution: first argument"], ...
+                   [" must be a vector or matrix."]));
   endif
 
   if (nargin >= 2)
@@ -89,8 +90,9 @@ function normalised = normalise_distribution (data, distribution, dimension)
           temp = str2func ([distribution]);
           distribution = {temp};
         else
-          error (["Second argument cannot contain more than one string" ...
-                  " unless in a cell array"]);
+          error (strcat (["normalise_distribution: second argument cannot"], ...
+                         [" contain more than one string unless in a cell"], ...
+                         [" array."]));
         endif
 
       ## Do we have a cell array of distributions instead?
@@ -106,9 +108,10 @@ function normalised = normalise_distribution (data, distribution, dimension)
         if (! all (cellfun (@(h) (strcmp (typeinfo (h), typeinfo ...
                            (@(x)(x)))), distribution)))
 
-          error (["Second argument must contain either" ...
-                  " a single function name or handle or" ...
-                  " a cell array of either all function names or handles!"]);
+          error (strcat (["normalise_distribution: second argument must"], ...
+                         [" contain either a single function name or"], ...
+                         [" handle or a cell array of either all function"], ...
+                         [" names or handles!"]));
         endif
       else
         error ( "Illegal second argument: ", typeinfo ( distribution ) );
@@ -120,7 +123,7 @@ function normalised = normalise_distribution (data, distribution, dimension)
 
   if (nargin == 3)
     if (! isscalar (dimension) || (dimension != 1 && dimension != 2))
-      error ("Third argument must be either 1 or 2");
+      error ("normalise_distribution: third argument must be either 1 or 2.");
     endif
   else
     if (isvector (data) && rows (data) == 1)
@@ -183,7 +186,8 @@ function normalised = normalise_distribution (data, distribution, dimension)
         normalised (:, k) = norminv (distribution{k}(data)(:, k));
       endfor
     else
-      error ("Number of distributions does not match data size!");
+      error (strcat (["normalise_distribution: number of distributions"], ...
+                     [" does not match data size!"]));
     endif
   endif
 
@@ -252,4 +256,5 @@ endfunction
 %! assert (var (N), [1 1 1 2.59 2.59 2.59 1 1 1], 0.1);
 
 %!test
-%!error normalise_distribution (zeros (3, 4), {@unifcdf; @normcdf; @(x)(expcdf (x,1))});
+%!error normalise_distribution (zeros (3, 4), ...
+%! {@unifcdf; @normcdf; @(x)(expcdf (x,1))});

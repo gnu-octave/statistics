@@ -1,4 +1,4 @@
-## Copyright (C) 1995-2022 The Octave Project Developers
+## Copyright (C) 1995-2023 The Octave Project Developers
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -32,13 +32,13 @@
 ##
 ## @itemize
 ## @item
-## @code{NaN}: @code{single}, @code{double}.
+## @qcode{NaN}: @code{single}, @code{double}.
 ##
 ## @item
-## @code{' '} (white space): @code{char}.
+## @qcode{' '} (white space): @code{char}.
 ##
 ## @item
-## @code{@{''@}}: string cells.
+## @qcode{@{''@}}: string cells.
 ## @end itemize
 ##
 ## Choose to remove rows (default) or columns by setting optional input
@@ -46,10 +46,10 @@
 ##
 ## @itemize
 ## @item
-## @code{1}: rows.
+## @qcode{1}: rows.
 ##
 ## @item
-## @code{2}: columns.
+## @qcode{2}: columns.
 ## @end itemize
 ##
 ## Note: data types with no default 'missing' value will always result in
@@ -60,9 +60,9 @@
 ##
 ## @itemize
 ## @item
-## @code{MinNumMissing}: minimum number of missing values to remove an entry,
+## @qcode{MinNumMissing}: minimum number of missing values to remove an entry,
 ## row or column, defined as a positive integer number.  E.g.: if
-## @code{MinNumMissing} is set to @code{2}, remove the row of a numeric matrix
+## @qcode{MinNumMissing} is set to @code{2}, remove the row of a numeric matrix
 ## only if it includes 2 or more NaN.
 ## @end itemize
 ##
@@ -71,7 +71,7 @@
 ##
 ## @end deftypefn
 ##
-## @seealso{ismissing, standardizeMissing}
+## @seealso{fillmissing, ismissing, standardizeMissing}
 
 function [R, TF] = rmmissing (A, varargin)
 

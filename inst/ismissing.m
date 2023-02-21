@@ -1,4 +1,4 @@
-## Copyright (C) 1995-2022 The Octave Project Developers
+## Copyright (C) 1995-2023 The Octave Project Developers
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -32,13 +32,13 @@
 ##
 ## @itemize
 ## @item
-## @code{NaN}: @code{single}, @code{double}.
+## @qcode{NaN}: @code{single}, @code{double}.
 ##
 ## @item
-## @code{' '} (white space): @code{char}.
+## @qcode{' '} (white space): @code{char}.
 ##
 ## @item
-## @code{@{''@}}: string cells.
+## @qcode{@{''@}}: string cells.
 ## @end itemize
 ##
 ## Note: logical and numeric data types may be used in any combination
@@ -50,7 +50,7 @@
 ## can be specified for logical and numeric inputs to designate values that
 ## will register as 'missing'.
 ##
-## @seealso{rmmissing, standardizeMissing}
+## @seealso{fillmissing, rmmissing, standardizeMissing}
 ## @end deftypefn
 
 function TF = ismissing (A, indicator)

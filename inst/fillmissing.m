@@ -1,4 +1,4 @@
-## Copyright (C) 1995-2022 The Octave Project Developers
+## Copyright (C) 1995-2023 The Octave Project Developers
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -31,13 +31,13 @@
 ##
 ## @itemize
 ## @item
-## @code{NaN}: @code{single}, @code{double}
+## @qcode{NaN}: @code{single}, @code{double}
 ##
 ## @item
-## @code{' '} (white space): @code{char}
+## @qcode{" "} (white space): @code{char}
 ##
 ## @item
-## @code{@{''@}} (white space in cell): string cells.
+## @qcode{@{""@}} (white space in cell): string cells.
 ## @end itemize
 ##
 ## @var{A} can be a numeric scalar or array, a character vector or array, or
@@ -202,7 +202,7 @@ function [A, idx_out] = fillmissing (A, varargin)
   if (ischar (method))
     method = lower (method);
   elseif (! is_function_handle (method))
-    error ("fillmissing: second input must be a string or function handle");
+    error ("fillmissing: second input must be a string or function handle.");
   endif
 
   sz_A = size (A);
@@ -232,7 +232,7 @@ function [A, idx_out] = fillmissing (A, varargin)
     if ((nargin < 3) || ! isnumeric (varargin{2}) || ...
           ! any( numel (varargin{2})==[1 2]))
       error (["fillmissing: fill function handle must be followed by ", ...
-              "a numeric scalar or two-element vector window size"]);
+              "a numeric scalar or two-element vector window size."]);
     elseif (nargin (method) < 3)
       error ("fillmissing: fill function must accept at least three inputs.");
     endif
@@ -250,13 +250,13 @@ function [A, idx_out] = fillmissing (A, varargin)
         next_varg = 2;
         if (! (isnumeric (A) || islogical (A)))
           error (["fillmissing: interpolation methods only valid for ", ...
-                       "numeric input types"]);
+                       "numeric input types."]);
         endif
 
       case "constant"
         if ((nargin < 3))
           error (["fillmissing: 'constant' method must be followed by a ", ...
-                      "numeric scalar or array"]);
+                      "numeric scalar or array."]);
         endif
 
         v = varargin{2};
@@ -265,7 +265,7 @@ function [A, idx_out] = fillmissing (A, varargin)
         endif
 
         if ((! ischar(v)) && isempty (v))
-          error ("fillmissing: a numeric fill value cannot be emtpy");
+          error ("fillmissing: a numeric fill value cannot be emtpy.");
         endif
 
         ## type check v against A
@@ -277,7 +277,7 @@ function [A, idx_out] = fillmissing (A, varargin)
              ((isnumeric (A) && ! (isnumeric (v) || islogical (v))) || ...
                  (ischar (A) && ! ischar (v)) || ...
                    (iscellstr (A) && ! (iscellstr (v)))))
-          error ("fillmissing: fill value must be the same data type as 'A'");
+          error ("fillmissing: fill value must be the same data type as 'A'.");
         endif
 
         ## v can't be size checked until after processing rest of inputs
@@ -286,19 +286,19 @@ function [A, idx_out] = fillmissing (A, varargin)
       case {"movmean", "movmedian"}
         if (! (isnumeric (A) || islogical (A)))
           error (["fillmissing: 'movmean' and 'movmedian' methods only ", ...
-                             "valid for numeric input types"]);
+                             "valid for numeric input types."]);
         endif
 
         if ((nargin < 3) || ! isnumeric (varargin{2}) || ...
               ! any( numel (varargin{2})==[1 2]))
           error (["fillmissing: moving window method must be followed by ", ...
-                   "a numeric scalar or two-element vector"]);
+                   "a numeric scalar or two-element vector."]);
         endif
         window_size = varargin{2};
         next_varg = 3;
 
       otherwise
-        error ("fillmissing: unknown fill method '%s'", method);
+        error ("fillmissing: unknown fill method '%s'.", method);
     endswitch
   endif
 
@@ -309,7 +309,7 @@ function [A, idx_out] = fillmissing (A, varargin)
     if isnumeric (varargin{next_varg})
       dim = varargin{next_varg};
       if (! (isscalar (dim) && (dim > 0)))
-        error ("fillmissing: DIM must be a positive scalar");
+        error ("fillmissing: DIM must be a positive scalar.");
       endif
       next_varg++;
     else
@@ -328,14 +328,14 @@ function [A, idx_out] = fillmissing (A, varargin)
       propname = varargin{next_varg};
       if (next_varg + 1 == nargin)
         ## must be at least one more input with 1st containing value
-        error ("fillmissing: properties must be given as name,value pairs");
+        error ("fillmissing: properties must be given as name-value pairs.");
 
       else
         propval = varargin{next_varg + 1};
         next_varg = next_varg + 2;
 
         if (! ischar (propname))
-          error ("invalid parameter name specified");
+          error ("fillmissing: invalid parameter name specified.");
         else
           propname = lower (propname);
         endif
@@ -349,7 +349,7 @@ function [A, idx_out] = fillmissing (A, varargin)
                  && (numel (propval) == sz_A_dim) && issorted (propval)
                  && (numel (propval) == numel (unique (propval)))))
               error (["fillmissing: SamplePoints must be a sorted ", ...
-                       "non-repeating, numeric vector with %d elements"], ...
+                       "non-repeating, numeric vector with %d elements."], ...
                          sz_A_dim);
             endif
             samplepoints = propval(:);
@@ -367,7 +367,7 @@ function [A, idx_out] = fillmissing (A, varargin)
                   endgap_method = propval;
 
                 otherwise
-                  error ("fillmissing: invalid EndValues method '%s'", propval);
+                  error ("fillmissing: invalid EndValues method '%s'.", propval);
               endswitch
             elseif (isnumeric (propval))
               if (! (isnumeric (A) || islogical (A)))
@@ -379,7 +379,7 @@ function [A, idx_out] = fillmissing (A, varargin)
 
             else
               error (["fillmissing: EndValues must be numeric or a ", ...
-                        "valid method name"]);
+                        "valid method name."]);
             endif
 
           case "missinglocations"
@@ -387,18 +387,18 @@ function [A, idx_out] = fillmissing (A, varargin)
             if !(isnumeric (A) || islogical (A) || isinteger (A) || ...
                    ischar (A) || iscellstr (A))
               error (["fillmissing: MissingLocations option is not ", ...
-                        "compatible with data type '%s'"], class (A));
+                        "compatible with data type '%s'."], class (A));
             endif
 
             if (! isempty (maxgap))
               error (["fillmissing: MissingLocations and MaxGap options ", ...
-                        "cannot be used simultaneously"]);
+                        "cannot be used simultaneously."]);
             endif
 
             ## val must be logical array same size as A
             if (! (islogical (propval) && isequal (sz_A, size (propval))))
               error (["fillmissing: MissingLocations must be a logical ", ...
-                       "array the same size as A"]);
+                       "array the same size as A."]);
             endif
 
             missinglocations = true;
@@ -407,21 +407,21 @@ function [A, idx_out] = fillmissing (A, varargin)
           case "maxgap"
             ## val must be positive numeric scalar
             if (! (isnumeric (propval) && isscalar (propval) && (propval > 0)))
-              error ("fillmissing: MaxGap must be a positive numeric scalar");
+              error ("fillmissing: MaxGap must be a positive numeric scalar.");
             endif
 
             if (! isempty (missing_locs))
               error (["fillmissing: MissingLocations and MaxGap options ", ...
-                       "cannot be used simultaneously"]);
+                       "cannot be used simultaneously."]);
             endif
 
             maxgap = propval;
           case {"replacevalues", "datavariables"}
-            error ("fillmissing: the '%s' option has not been implemented", ...
+            error ("fillmissing: the '%s' option has not been implemented.", ...
                                                                       propname);
 
         otherwise
-          error ("invalid parameter name '%s'", propname);
+          error ("invalid parameter name '%s'.", propname);
         endswitch
       endif
     endwhile
@@ -465,12 +465,12 @@ function [A, idx_out] = fillmissing (A, varargin)
     if (any (ismember (method, ...
              {"linear", "spline", "pchip", "makima", "movmean", "movmedian"})))
       error (["fillmissing: MissingLocations cannot be used ", ...
-                "with method '%s' and inputs of type '%s'"], method, class (A));
+              "with method '%s' and inputs of type '%s'."], method, class (A));
 
     elseif (any (ismember (endgap_method, ...
                       {"linear", "spline", "pchip", "makima"})))
       error (["fillmissing: MissingLocations cannot be used with EndValues", ...
-              " method '%s' and inputs of type '%s'"], method, class (A));
+              " method '%s' and inputs of type '%s'."], method, class (A));
     endif
   endif
 
@@ -481,7 +481,7 @@ function [A, idx_out] = fillmissing (A, varargin)
   if (strcmp (method, "constant") && (! isscalar (v)))
     if (numel (v) != numel_orthogonal)
       error (["fillmissing: fill value 'V' must be a scalar or a %d ", ...
-              " element array"], numel_orthogonal);
+              " element array."], numel_orthogonal);
     else
       v = reshape (v, orthogonal_size);
     endif
@@ -490,7 +490,7 @@ function [A, idx_out] = fillmissing (A, varargin)
   if (strcmp (endgap_method, "constant") && (! isscalar (endgap_val)))
     if (numel (endgap_val) != numel_orthogonal)
       error (["fillmissing: EndValues must be a scalar or a %d element ", ...
-              "array"], numel_orthogonal);
+              "array."], numel_orthogonal);
     else
       endgap_val = reshape (endgap_val, orthogonal_size);
     endif
@@ -1036,7 +1036,7 @@ function [A, idx_out] = fillmissing (A, varargin)
             ## check for output of move_fcn having different size than gaps
             if (! all (cellfun ('numel', fill_vals_C) == gapsizes))
               error (["fillmissing: fill function return values must be ", ...
-                              "the same size as the gaps"]);
+                              "the same size as the gaps."]);
             endif
 
             [~, gap_trim_sort_idx] = sort (vertcat (gap_locations{:}));
