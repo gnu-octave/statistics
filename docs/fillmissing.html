@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: fillmissing</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Data Manipulation">
+                    <i class="fas fa-list-alt"></i>
+                    Data Manipulation
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>fillmissing</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>B</var> = <b>fillmissing</b><i> (<var>A</var>, 'constant', <var>v</var>)</i></dt>
+<dt><u>statistics:</u> <var>B</var> = <b>fillmissing</b><i> (<var>A</var>, <var>method</var>)</i></dt>
+<dt><u>statistics:</u> <var>B</var> = <b>fillmissing</b><i> (<var>A</var>, <var>move_method</var>, <var>window_size</var>)</i></dt>
+<dt><u>statistics:</u> <var>B</var> = <b>fillmissing</b><i> (<var>A</var>, <var>fill_function</var>, <var>window_size</var>)</i></dt>
+<dt><u>statistics:</u> <var>B</var> = <b>fillmissing</b><i> (&hellip;, <var>dim</var>)</i></dt>
+<dt><u>statistics:</u> <var>B</var> = <b>fillmissing</b><i> (&hellip;, <var>PropertyName</var>, <var>PropertyValue</var>)</i></dt>
+<dt><u>statistics:</u> [<var>B</var>, <var>idx</var>] = <b>fillmissing</b><i> (&hellip;)</i></dt>
+</dl>
+
+<p> Replace missing entries of array <var>A</var> either with values in <var>v</var> or
+ as determined by other specified methods.  &rsquo;missing&rsquo; values are determined
+ by the data type of <var>A</var> as identified by the function @ref{ismissing},
+ curently defined as:
+</p>
+<div class="ms-5">
+ <ul>
+<li>
+ <code>NaN</code>: <code>single</code>, <code>double</code>
+
+ </li><li>
+ <code>&quot; &quot;</code> (white space): <code>char</code>
+
+ </li><li>
+ <code>{&quot;&quot;}</code> (white space in cell): string cells.
+ </li></ul>
+
+<p> <var>A</var> can be a numeric scalar or array, a character vector or array, or
+ a cell array of character vectors (a.k.a. string cells).
+</p>
+<p> <var>v</var> can be a scalar or an array containing values for replacing the
+ missing values in <var>A</var> with a compatible data type for isertion into
+ <var>A</var>. The shape of <var>v</var> must be a scalar or an array with number
+ of elements in <var>v</var> equal to the number of elements orthoganal to the
+ operating dimension. E.g., if <code>size(<var>A</var>)</code> = [3 5 4], operating
+ along <code>dim</code> = 2 requires <var>v</var> to contain either 1 or 3x4=12
+ elements.
+</p>
+<p> If requested, the optional output <var>idx</var> will contain a logical array
+ the same shape as <var>A</var> indicating with 1&rsquo;s which locations in <var>A</var>
+ were filled.
+</p>
+<p> Alternate Input Arguments and Values:
+ </p><ul>
+<li> <var>method</var> - replace missing values with:
+ <dl compact="compact">
+<dt> <code>next</code></dt>
+<dt> <code>previous</code></dt>
+<dt> <code>nearest</code></dt>
+</dl>
+<p> next, previous, or nearest non-missing value (nearest defaults to next
+ when equidistant as determined by <code>SamplePoints</code>.)
+</p>
+ </dd>
+<dt> <code>linear</code></dt>
+</dl>
+<p> linear interpolation of neigboring, non-missing values
+</p>
+ </dd>
+<dt> <code>spline</code></dt>
+</dl>
+<p> piecewise cubic spline interpolation of neigboring, non-missing values
+</p>
+ </dd>
+<dt> <code>pchip</code></dt>
+</dl>
+<p> &rsquo;shape preserving&rsquo; piecewise cubic spline interposaliton of neighboring,
+ non-missing values
+ </p></dd>
+</dl>
+
+ </li><li> <var>move_method</var> - moving window calculated replacement values:
+ <dl compact="compact">
+<dt> <code>movmean</code></dt>
+<dt> <code>movmedian</code></dt>
+</dl>
+<p> moving average or median using a window determined by <var>window_size</var>.
+ <var>window_size</var> must be either a positive scalar value or a two element
+ positive vector of sizes <code>[<var>nb</var>, <var>na</var>]</code> measured in the
+ same units as <code>SamplePoints</code>.  For scalar values, the window is
+ centered on the missing element and includes all data points within a
+ distance of half of <var>window_size</var> on either side of the window center
+ point.  Note that for compatability, when using a scalar value, the backward
+ window limit is inclusive and the forward limit is exclusive.  If a
+ two-element <var>window_size</var> vector is specified, the window includes all
+ points within a distance of <var>nb</var> backward and <var>na</var> forward from the
+ current element at the window center (both limits inclusive).
+ </p></dd>
+</dl>
+
+ </li><li> <var>fill_function</var> - custom method specified as a function handle.
+ The supplied fill function must accept three inputs in the following order
+ for each missing gap in the data:
+ <dl compact="compact">
+<dt> <var>A_values -</var></dt>
+</dl>
+<p> elements of <var>A</var> within the window on either side of the gap as
+ determined by <var>window_size</var>.  (Note these elements can include missing
+ values from other nearby gaps.)
+ </p></dd>
+<dt> <var>A_locs -</var></dt>
+</dl>
+<p> locations of the reference data, <var>A_values</var>, in terms of the default
+ or specified <code>SamplePoints</code>.
+ </p></dd>
+<dt> <var>gap_locs -</var></dt>
+</dl>
+<p> location of the gap data points that need to be filled in terms of the
+ default or specified <code>SamplePoints</code>.
+ </p></dd>
+</dl>
+
+<p> The supplied function must return a scalar or vector with the same number of
+ elements in <var>gap_locs</var>.  The required <var>window_size</var> parameter
+ follows similar rules as for the moving average and median methods
+ described above, with the two exceptions that (1) each gap is processed as a
+ single element, rather than gap elements being processed individually, and
+ (2) the window extended on either side of the gap has inclusive endpoints
+ regardless of how <var>window_size</var> is specified.
+</p>
+ </li><li> <var>dim</var> - specify a dimension for vector operation (default =
+ first non-singeton dimension)
+
+ </li><li> <var>PropertyName</var>-<var>PropertyValue</var> pairs
+ <dl compact="compact">
+<dt> <code>SamplePoints</code></dt>
+</dl>
+<p> <var>PropertyValue</var> is a vector of sample point values representing the
+ sorted and unique x-axis values of the data in <var>A</var>.  If unspecified,
+ the default is assumed to be the vector <var>[1 : size (A, dim)]</var>.  The
+ values in <code>SamplePoints</code> will affect methods and properties that rely
+ on the effective distance between data points in <var>A</var>, such as
+ interpolants and moving window functions where the <var>window_size</var>
+ specified for moving window functions is measured relative to the
+ <code>SamplePoints</code>.
+</p>
+ </dd>
+<dt> <code>EndValues</code></dt>
+</dl>
+<p> Apply a separate handling method for missing values at the front or back of
+ the array. <var>PropertyValue</var> can be:
+ </p><ul>
+<li> A constant scalar or array with the same shape requirments as <var>v</var>.
+ </li><li> <code>none</code> - Do not fill end gap values.
+ </li><li> <code>extrap</code> - Use the same procedure as <var>method</var> to fill the
+ end gap values.
+ </li><li> Any valid <var>method</var> listed above except for <code>movmean</code>,
+ <code>movmedian</code>, and <code>fill_function</code>. Those methods can only be
+ applied to end gap values with <code>extrap</code>.
+ </li></ul>
+
+ </dd>
+<dt> <code>MissingLocations</code></dt>
+</dl>
+<p> <var>PropertyValue</var> must be a logical array the same size as <var>A</var>
+ indicating locations of known missing data with a value of <code>true</code>.
+ (cannot be combined with MaxGap)
+</p>
+ </dd>
+<dt> <code>MaxGap</code></dt>
+</dl>
+<p> <var>PropertyValue</var> is a numeric scalar indicating the maximum gap length
+ to fill, and assumes the same distance scale as the sample points. Gap
+ length is calculated by the difference in locations of the sample points
+ on either side of the gap, and gaps larger than MaxGap are ignored by
+ <var>fillmissing</var>. (cannot be combined with MissingLocations)
+ </p></dd>
+</dl>
+</li></ul>
+
+<p> Compatibility Notes:
+ </p><ul>
+<li>
+ Numerical and logical inputs for <var>A</var> and <var>v</var> may be specified
+ in any combination. The output will be the same class as <var>A</var>, with the
+ <var>v</var> converted to that data type for filling.  Only <code>single</code> and
+ <code>double</code> have defined &rsquo;missing&rsquo; values, so except for when the
+ <code>missinglocations</code> option specifies the missing value identification of
+ logical and other numeric data types, the output will always be
+ <code><var>B</var> = <var>A</var></code> with <code><var>idx</var> = false(size(<var>A</var>))</code>.
+ </li><li>
+ All interpolation methods can be individually applied to <code>EndValues</code>.
+ </li><li>
+ <small>MATLAB</small>&rsquo;s <var>fill_function</var> method currently has several
+ inconsistencies with the other methods (tested against version 2022a), and
+ Octave&rsquo;s implementation has chosen the following consistent behavior over
+ compatibility:  (1) a column full of missing data is considered part of
+ <code>EndValues</code>, (2) such columns are then excluded from
+ <var>fill_function</var> processing because the moving window is always empty.
+ (3) operation in dimensions higher than 2 perform identically to operations
+ in dims 1 and 2, most notable on vectors.
+ </li><li>
+ Method &quot;makima&quot; is not yet implemented in <code>interp1</code>, which is
+ used by <code>fillmissing</code>. Attempting to call this method will produce
+ an error until the method is implemented in <code>interp1</code>.
+ </li></ul>
+
+<p> <strong>See also: </strong>
+  <a href="ismissing.html">ismissing</a>, 
+  <a href="rmmissing.html">rmmissing</a>, 
+  <a href="standardizeMissing.html">standardizeMissing</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/fillmissing.m">fillmissing</a>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

@@ -62,20 +62,20 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>W</var>, <var>DI</var>] = <b>iwishrnd</b><i> (<var>Psi</var>, <var>df</var>, <var>DI</var>, <var>n</var>=1)</i></dt>
+<dt><u>statistics:</u> [<var>W</var>, <var>DI</var>] = <b>iwishrnd</b><i> (<var>Tau</var>, <var>df</var>, <var>DI</var>, <var>n</var>=1)</i></dt>
 </dl>
 
 <p> Return a random matrix sampled from the inverse Wishart distribution with
  given parameters.
 </p>
 <div class="ms-5">
-<p> Inputs: the <var>p</var> x <var>p</var> positive definite matrix <var>Tau</var> and scalar
+<p> Inputs: the <em>p x p</em> positive definite matrix <var>Tau</var> and scalar
  degrees of freedom parameter <var>df</var> (and optionally the transposed Cholesky
  factor <var>DI</var> of <var>Sigma</var> = <code>inv(Tau)</code>).
 </p>
-<p> <var>df</var> can be non-integer as long as <var>df</var> &gt; <var>d</var>
+<p> <var>df</var> can be non-integer as long as <em><var>df</var> &gt; d</em>
 </p>
-<p> Output: a random <var>p</var> x <var>p</var>  matrix <var>W</var> from the inverse
+<p> Output: a random <em>p x p</em>  matrix <var>W</var> from the inverse
  Wishart(<var>Tau</var>, <var>df</var>) distribution. (<code>inv(W)</code> is from the
  Wishart(<code>inv(Tau)</code>, <var>df</var>) distribution.) If <var>n</var> &gt; 1,
  then <var>W</var> is <var>p</var> x <var>p</var> x <var>n</var> and holds <var>n</var> such random

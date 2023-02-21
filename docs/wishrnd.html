@@ -69,13 +69,13 @@
  parameters
 </p>
 <div class="ms-5">
-<p> Inputs: the <var>p</var> x <var>p</var> positive definite matrix <var>Sigma</var> (or the
+<p> Inputs: the <em>p x p</em> positive definite matrix <var>Sigma</var> (or the
  lower-triangular Cholesky factor <var>D</var> of <var>Sigma</var>) and scalar degrees
  of freedom parameter <var>df</var>.
 </p>
-<p> <var>df</var> can be non-integer as long as <var>df</var> &gt; <var>p</var>
+<p> <var>df</var> can be non-integer as long as <em><var>df</var> &gt; p</em>
 </p>
-<p> Output: a random <var>p</var> x <var>p</var>  matrix <var>W</var> from the
+<p> Output: a random <em>p x p</em>  matrix <var>W</var> from the
  Wishart(<var>Sigma</var>, <var>df</var>) distribution. If <var>n</var> &gt; 1, then <var>W</var> is
  <var>p</var> x <var>p</var> x <var>n</var> and holds <var>n</var> such random matrices.
  (Optionally, the lower-triangular Cholesky factor <var>D</var> of <var>Sigma</var> is

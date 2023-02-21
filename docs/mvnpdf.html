@@ -86,14 +86,14 @@
  <var>sigma</var>, evaluated at each row of <var>x</var>.  <var>sigma</var> is a D-by-D
  matrix, or an D-by-D-by-N array, in which case the density is evaluated for
  each row of <var>x</var> with the corresponding page of <var>sigma</var>, i.e.,
- <code>mcvpdf</code> computes <var>y(i)</var> using <var>x(i,:)</var> and <var>sigma(:,:,i)</var>.
+ <code>mvnpdf</code> computes <var>y(i)</var> using <var>x(i,:)</var> and <var>sigma(:,:,i)</var>.
  If the covariance matrix is diagonal, containing variances along the diagonal
  and zero covariances off the diagonal, <var>sigma</var> may also be specified as a
  1-by-D matrix or a 1-by-D-by-N array, containing just the diagonal. Pass in
  the empty matrix for <var>mu</var> to use its default value when you want to only
  specify <var>sigma</var>.
 </p>
-<p> If <var>x</var> is a 1-by-D vector, <code>mcvpdf</code> replicates it to match the
+<p> If <var>x</var> is a 1-by-D vector, <code>mvnpdf</code> replicates it to match the
  leading dimension of <var>mu</var> or the trailing dimension of <var>sigma</var>.
 </p>
 <p> <strong>See also: </strong>

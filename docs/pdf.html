@@ -62,70 +62,108 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>retval</var> = <b>pdf</b><i> (<var>name</var>, <var>X</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> <var>retval</var> = <b>pdf</b><i> (<var>name</var>, <var>x</var>, &hellip;)</i></dt>
 </dl>
 
-<p> Return probability density function of <var>name</var> function for value <var>x</var>.
+<p> Return the PDF of <var>name</var> distribution function for value <var>x</var>.
 </p>
 <div class="ms-5">
-<p> This is a wrapper around various <var>name</var>pdf and <var>name</var>_pdf
- functions. See the individual functions help to learn the signification of
- the arguments after <var>x</var>. Supported functions and corresponding number of
- additional arguments are:
+<p> This is a wrapper around various <code>name</code>pdf and <code>name</code>_pdf
+ functions. See the corresponding functions&rsquo; help to learn the signification
+ of the arguments after <var>x</var>.
+</p>
+<p> <var>name</var> must be a char string of the name or the abbreviation of the
+ desired probability distribution function as listed in the followng table.
+ The last column shows the maximum number of extra arguments that can be
+ passed to the desired PDF.
 </p>
  <table>
-<thead><tr><th width="2%"></th><th width="30%">function</th><th width="45%">alternative</th><th width="20%">args</th></tr></thead>
-<tr><td width="2%"></td><td width="30%">&quot;bbs&quot;</td><td width="45%">&quot;Birnbaum-Saunders&quot;</td><td width="20%">3</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;beta&quot;</td><td width="45%"></td><td width="20%">2</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;bino&quot;</td><td width="45%">&quot;binomial&quot;</td><td width="20%">2</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;burr&quot;</td><td width="45%">&quot;Burr&quot;</td><td width="20%">3</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;cauchy&quot;</td><td width="45%">&quot;Cauchy&quot;</td><td width="20%">0  defaults: loc=0,scale=1</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;cauchy&quot;</td><td width="45%">&quot;Cauchy&quot;</td><td width="20%">2</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;chi2&quot;</td><td width="45%">&quot;chi-square&quot;</td><td width="20%">1</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;copula&quot;</td><td width="45%">&quot;Copula family&quot;</td><td width="20%">2</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;discrete&quot;</td><td width="45%">&quot;univariate discrete&quot;</td><td width="20%">2</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;empirical&quot;</td><td width="45%">&quot;univariate empirical&quot;</td><td width="20%">2</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;exp&quot;</td><td width="45%">&quot;exponential&quot;</td><td width="20%">1</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;f&quot;</td><td width="45%"></td><td width="20%">2</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;gam&quot;</td><td width="45%">&quot;gamma&quot;</td><td width="20%">2</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;geo&quot;</td><td width="45%">&quot;geometric&quot;</td><td width="20%">1</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;gev&quot;</td><td width="45%">&quot;generalized extreme value&quot;</td><td width="20%">3</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;gp&quot;</td><td width="45%">&quot;generalized Pareto&quot;</td><td width="20%">3</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;hyge&quot;</td><td width="45%">&quot;hypergeometric&quot;</td><td width="20%">3</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;iwish&quot;</td><td width="45%">&quot;inverse Wishart&quot;</td><td width="20%">2</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;iwish&quot;</td><td width="45%">&quot;inverse Wishart&quot;</td><td width="20%">3 set log_y=true</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;jsu&quot;</td><td width="45%">&quot;Johnson SU&quot;</td><td width="20%">2</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;laplace&quot;</td><td width="45%">&quot;Laplace&quot;</td><td width="20%">0</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;logistic&quot;</td><td width="45%"></td><td width="20%">0</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;logn&quot;</td><td width="45%">&quot;lognormal&quot;</td><td width="20%">0  defaults: mu=0,sigma=1</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;logn&quot;</td><td width="45%">&quot;lognormal&quot;</td><td width="20%">2</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;mn&quot;</td><td width="45%">&quot;multinomial&quot;</td><td width="20%">1</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;mvn&quot;</td><td width="45%">&quot;multivariate normal&quot;</td><td width="20%">0  defaults: mu=0,sigma=1</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;mvn&quot;</td><td width="45%">&quot;multivariate normal&quot;</td><td width="20%">1  defaults: sigma=1</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;mvn&quot;</td><td width="45%">&quot;multivariate normal&quot;</td><td width="20%">2</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;mvt&quot;</td><td width="45%">&quot;multivariate Student&quot;</td><td width="20%">2</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;naka&quot;</td><td width="45%">&quot;Nakagami&quot;</td><td width="20%">2</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;nbin&quot;</td><td width="45%">&quot;negative binomial&quot;</td><td width="20%">2</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;norm&quot;</td><td width="45%">&quot;normal&quot;</td><td width="20%">2</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;poiss&quot;</td><td width="45%">&quot;Poisson&quot;</td><td width="20%">1</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;rayl&quot;</td><td width="45%">&quot;Rayleigh&quot;</td><td width="20%">1</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;stdnormal&quot;</td><td width="45%">&quot;standard normal&quot;</td><td width="20%">0</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;t&quot;</td><td width="45%"></td><td width="20%">1</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;tri&quot;</td><td width="45%">&quot;triangular&quot;</td><td width="20%">3</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;unid&quot;</td><td width="45%">&quot;uniform discrete&quot;</td><td width="20%">1</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;unif&quot;</td><td width="45%">&quot;uniform&quot;</td><td width="20%">0  defaults: a=0,b=1</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;unif&quot;</td><td width="45%">&quot;uniform&quot;</td><td width="20%">2</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;vm&quot;</td><td width="45%">&quot;Von Mises&quot;</td><td width="20%">2</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;wbl&quot;</td><td width="45%">&quot;Weibull&quot;</td><td width="20%">0  defaults: scale=0,shape=1</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;wbl&quot;</td><td width="45%">&quot;Weibull&quot;</td><td width="20%">1  defaults: shape=1</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;wbl&quot;</td><td width="45%">&quot;Weibull&quot;</td><td width="20%">2</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;wish&quot;</td><td width="45%">&quot;Wishart&quot;</td><td width="20%">2</td></tr>
-<tr><td width="2%"></td><td width="30%">&quot;wish&quot;</td><td width="45%">&quot;Wishart&quot;</td><td width="20%">3 set log_y=true</td></tr>
+<thead><tr><th width="45%">Distribution Name</th><th width="20%">Abbreviation</th><th width="35%">Max. Extra Arguments</th></tr></thead>
+<tr><td width="45%"><code>&quot;Birnbaum-Saunders&quot;</code></td><td width="20%"><code>&quot;bbs&quot;</code></td><td width="35%">3</td></tr>
+<tr><td width="45%"><code>&quot;Beta&quot;</code></td><td width="20%"><code>&quot;beta&quot;</code></td><td width="35%">2</td></tr>
+<tr><td width="45%"><code>&quot;Binomial&quot;</code></td><td width="20%"><code>&quot;bino&quot;</code></td><td width="35%">2</td></tr>
+<tr><td width="45%"><code>&quot;Burr&quot;</code></td><td width="20%"><code>&quot;burr&quot;</code></td><td width="35%">3</td></tr>
+<tr><td width="45%"><code>&quot;Bivariate Normal&quot;</code></td><td width="20%"><code>&quot;bvn&quot;</code></td><td width="35%">2</td></tr>
+<tr><td width="45%"><code>&quot;Cauchy&quot;</code></td><td width="20%"><code>&quot;cauchy&quot;</code></td><td width="35%">2</td></tr>
+<tr><td width="45%"><code>&quot;Chi-square&quot;</code></td><td width="20%"><code>&quot;chi2&quot;</code></td><td width="35%">1</td></tr>
+<tr><td width="45%"><code>&quot;Copula Family&quot;</code></td><td width="20%"><code>&quot;copula&quot;</code></td><td width="35%">2</td></tr>
+<tr><td width="45%"><code>&quot;Extreme Value&quot;</code></td><td width="20%"><code>&quot;ev&quot;</code></td><td width="35%">2</td></tr>
+<tr><td width="45%"><code>&quot;Exponential&quot;</code></td><td width="20%"><code>&quot;exp&quot;</code></td><td width="35%">1</td></tr>
+<tr><td width="45%"><code>&quot;F-Distribution&quot;</code></td><td width="20%"><code>&quot;f&quot;</code></td><td width="35%">2</td></tr>
+<tr><td width="45%"><code>&quot;Gamma&quot;</code></td><td width="20%"><code>&quot;gam&quot;</code></td><td width="35%">2</td></tr>
+<tr><td width="45%"><code>&quot;Geometric&quot;</code></td><td width="20%"><code>&quot;geo&quot;</code></td><td width="35%">1</td></tr>
+<tr><td width="45%"><code>&quot;Generalized Extreme Value&quot;</code></td><td width="20%"><code>&quot;gev&quot;</code></td><td width="35%">3</td></tr>
+<tr><td width="45%"><code>&quot;Generalized Pareto&quot;</code></td><td width="20%"><code>&quot;gp&quot;</code></td><td width="35%">3</td></tr>
+<tr><td width="45%"><code>&quot;Hypergeometric&quot;</code></td><td width="20%"><code>&quot;hyge&quot;</code></td><td width="35%">4</td></tr>
+<tr><td width="45%"><code>&quot;Inverse Wishart&quot;</code></td><td width="20%"><code>&quot;iwish&quot;</code></td><td width="35%">3</td></tr>
+<tr><td width="45%"><code>&quot;Johnson SU&quot;</code></td><td width="20%"><code>&quot;jsu&quot;</code></td><td width="35%">2</td></tr>
+<tr><td width="45%"><code>&quot;Laplace&quot;</code></td><td width="20%"><code>&quot;laplace&quot;</code></td><td width="35%">2</td></tr>
+<tr><td width="45%"><code>&quot;Logistic&quot;</code></td><td width="20%"><code>&quot;logistic&quot;</code></td><td width="35%">2</td></tr>
+<tr><td width="45%"><code>&quot;Lognormal&quot;</code></td><td width="20%"><code>&quot;logn&quot;</code></td><td width="35%">2</td></tr>
+<tr><td width="45%"><code>&quot;Multinomial&quot;</code></td><td width="20%"><code>&quot;mn&quot;</code></td><td width="35%">1</td></tr>
+<tr><td width="45%"><code>&quot;Multivariate Normal&quot;</code></td><td width="20%"><code>&quot;mvn&quot;</code></td><td width="35%">2</td></tr>
+<tr><td width="45%"><code>&quot;Multivariate Student T&quot;</code></td><td width="20%"><code>&quot;mvt&quot;</code></td><td width="35%">2</td></tr>
+<tr><td width="45%"><code>&quot;Nakagami&quot;</code></td><td width="20%"><code>&quot;naka&quot;</code></td><td width="35%">2</td></tr>
+<tr><td width="45%"><code>&quot;Negative Binomial&quot;</code></td><td width="20%"><code>&quot;nbin&quot;</code></td><td width="35%">2</td></tr>
+<tr><td width="45%"><code>&quot;Noncentral F-Distribution&quot;</code></td><td width="20%"><code>&quot;ncf&quot;</code></td><td width="35%">3</td></tr>
+<tr><td width="45%"><code>&quot;Noncentral Student T&quot;</code></td><td width="20%"><code>&quot;nct&quot;</code></td><td width="35%">2</td></tr>
+<tr><td width="45%"><code>&quot;Noncentral Chi-Square&quot;</code></td><td width="20%"><code>&quot;ncx2&quot;</code></td><td width="35%">2</td></tr>
+<tr><td width="45%"><code>&quot;Normal&quot;</code></td><td width="20%"><code>&quot;norm&quot;</code></td><td width="35%">2</td></tr>
+<tr><td width="45%"><code>&quot;Poisson&quot;</code></td><td width="20%"><code>&quot;poiss&quot;</code></td><td width="35%">1</td></tr>
+<tr><td width="45%"><code>&quot;Rayleigh&quot;</code></td><td width="20%"><code>&quot;rayl&quot;</code></td><td width="35%">1</td></tr>
+<tr><td width="45%"><code>&quot;Standard Normal&quot;</code></td><td width="20%"><code>&quot;stdnormal&quot;</code></td><td width="35%">0</td></tr>
+<tr><td width="45%"><code>&quot;Student T&quot;</code></td><td width="20%"><code>&quot;t&quot;</code></td><td width="35%">1</td></tr>
+<tr><td width="45%"><code>&quot;Triangular&quot;</code></td><td width="20%"><code>&quot;tri&quot;</code></td><td width="35%">3</td></tr>
+<tr><td width="45%"><code>&quot;Discrete Uniform&quot;</code></td><td width="20%"><code>&quot;unid&quot;</code></td><td width="35%">1</td></tr>
+<tr><td width="45%"><code>&quot;Uniform&quot;</code></td><td width="20%"><code>&quot;unif&quot;</code></td><td width="35%">2</td></tr>
+<tr><td width="45%"><code>&quot;Von Mises&quot;</code></td><td width="20%"><code>&quot;vm&quot;</code></td><td width="35%">2</td></tr>
+<tr><td width="45%"><code>&quot;Weibull&quot;</code></td><td width="20%"><code>&quot;wbl&quot;</code></td><td width="35%">2</td></tr>
+<tr><td width="45%"><code>&quot;Wishart&quot;</code></td><td width="20%"><code>&quot;wish&quot;</code></td><td width="35%">3</td></tr>
 </table>
 
 <p> <strong>See also: </strong>
   <a href="cdf.html">cdf</a>, 
-rnd
+  <a href="icdf.html">icdf</a>, 
+  <a href="random.html">random</a>, 
+  <a href="bbspdf.html">bbspdf</a>, 
+  <a href="betapdf.html">betapdf</a>, 
+  <a href="binopdf.html">binopdf</a>, 
+  <a href="burrpdf.html">burrpdf</a>, 
+bvnpdf, 
+  <a href="cauchy_pdf.html">cauchy_pdf</a>, 
+  <a href="chi2pdf.html">chi2pdf</a>, 
+  <a href="copulapdf.html">copulapdf</a>, 
+  <a href="evpdf.html">evpdf</a>, 
+  <a href="exppdf.html">exppdf</a>, 
+  <a href="fpdf.html">fpdf</a>, 
+  <a href="gampdf.html">gampdf</a>, 
+  <a href="geopdf.html">geopdf</a>, 
+  <a href="gevpdf.html">gevpdf</a>, 
+  <a href="gppdf.html">gppdf</a>, 
+  <a href="hygepdf.html">hygepdf</a>, 
+  <a href="iwishpdf.html">iwishpdf</a>, 
+  <a href="jsupdf.html">jsupdf</a>, 
+  <a href="laplace_pdf.html">laplace_pdf</a>, 
+  <a href="logistic_pdf.html">logistic_pdf</a>, 
+  <a href="lognpdf.html">lognpdf</a>, 
+  <a href="mvnpdf.html">mvnpdf</a>, 
+  <a href="mvtpdf.html">mvtpdf</a>, 
+  <a href="nakapdf.html">nakapdf</a>, 
+  <a href="nbinpdf.html">nbinpdf</a>, 
+  <a href="ncfpdf.html">ncfpdf</a>, 
+  <a href="nctpdf.html">nctpdf</a>, 
+  <a href="ncx2pdf.html">ncx2pdf</a>, 
+  <a href="normpdf.html">normpdf</a>, 
+  <a href="poisspdf.html">poisspdf</a>, 
+  <a href="raylpdf.html">raylpdf</a>, 
+  <a href="stdnormal_pdf.html">stdnormal_pdf</a>, 
+  <a href="tpdf.html">tpdf</a>, 
+  <a href="tripdf.html">tripdf</a>, 
+  <a href="unidpdf.html">unidpdf</a>, 
+  <a href="unifpdf.html">unifpdf</a>, 
+  <a href="vmpdf.html">vmpdf</a>, 
+  <a href="wblpdf.html">wblpdf</a>, 
+  <a href="wishpdf.html">wishpdf</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/pdf.m">pdf</a>
