@@ -206,5 +206,6 @@ Regression
  stepwisefit
 Wrappers
  cdf
+ icdf
  pdf
  random
