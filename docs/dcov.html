@@ -62,7 +62,7 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>dCor</var>, <var>dCov</var>, <var>dVarX</var>, <var>dVarY</var>] = <b>dcov</b><i> (<var>x</var>, <var>y</var>, <var>index</var>=1)</i></dt>
+<dt><u>statistics:</u> [<var>dCor</var>, <var>dCov</var>, <var>dVarX</var>, <var>dVarY</var>] = <b>dcov</b><i> (<var>x</var>, <var>y</var>)</i></dt>
 </dl>
 
 <p> Distance correlation, covariance and correlation statistics.
@@ -71,6 +71,19 @@
 <p> It returns the distance correlation (<var>dCor</var>) and the distance covariance
  (<var>dCov</var>) between <var>x</var> and <var>y</var>, the distance variance of <var>x</var>
  in (<var>dVarX</var>) and the distance variance of <var>y</var> in (<var>dVarY</var>).
+</p>
+<p> <var>x</var> and <var>y</var> must have the same number of observations (rows) but they
+ can have different number of dimensions (columns).  Rows with missing values
+ (<code>NaN</code>) in either <var>x</var> or <var>y</var> are omitted.
+</p>
+<p> The Brownian covariance is the same as the distance covariance:
+</p>
+ 
+<p>$$ cov_W (X, Y) = dCov(X, Y) $$
+
+</p> 
+
+<p> and thus Brownian correlation is the same as distance correlation.
 </p>
 <p> <strong>See also: </strong>
 corr, 
