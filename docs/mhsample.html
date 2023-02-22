@@ -10,6 +10,12 @@
     <script type="text/javascript" async
       src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
     </script>
+    <style>
+    var {
+      font-style: italics;
+      font-weight: bold;
+    }
+    </style>
   </head>
   <body>
     <div class="bg-dark">
@@ -226,9 +232,9 @@ rand,
  printf ("The actual error %f\n", trueerr);
  mesh (x, y, reshape (f([x(:), y(:)]), size(x)), "facecolor", "None");
 
-Monte Carlo integral estimate int f(x) dx = 0.177026
-Monte Carlo integral error estimate 0.043080
-The actual error 0.084774
+Monte Carlo integral estimate int f(x) dx = 0.248744
+Monte Carlo integral error estimate 0.025454
+The actual error 0.013056
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
@@ -277,9 +283,9 @@ The actual error 0.084774
  printf ("Monte Carlo integral error estimate %f\n", errest);
  printf ("The actual error %f\n", trueerr);
 
-Monte Carlo integral estimate int f(x) dx = 2.413883
-Monte Carlo integral error estimate 0.014970
-The actual error 0.021307
+Monte Carlo integral estimate int f(x) dx = 2.411376
+Monte Carlo integral error estimate 0.015163
+The actual error 0.018800
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
