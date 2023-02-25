@@ -17,21 +17,21 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{y} =} mvncdf (@var{x})
-## @deftypefnx {statistics} {@var{y} =} mvncdf (@var{x}, @var{mu}, @var{sigma})
-## @deftypefnx {statistics} {@var{y} =} mvncdf (@var{x_lo}, @var{x_up}, @var{mu}, @var{sigma})
-## @deftypefnx {statistics} {@var{y} =} mvncdf (@dots{}, @var{options})
-## @deftypefnx {statistics} {[@var{y}, @var{err}] =} mvncdf (@dots{})
+## @deftypefn  {statistics} {@var{p} =} mvncdf (@var{x})
+## @deftypefnx {statistics} {@var{p} =} mvncdf (@var{x}, @var{mu}, @var{sigma})
+## @deftypefnx {statistics} {@var{p} =} mvncdf (@var{x_lo}, @var{x_up}, @var{mu}, @var{sigma})
+## @deftypefnx {statistics} {@var{p} =} mvncdf (@dots{}, @var{options})
+## @deftypefnx {statistics} {[@var{p}, @var{err}] =} mvncdf (@dots{})
 ##
 ## Multivariate normal cumulative distribution function (CDF).
 ##
-## @code{@var{y} = mvncdf (@var{x})} returns cumulative probability of the
+## @code{@var{p} = mvncdf (@var{x})} returns the cumulative probability of the
 ## multivariate normal distribution evaluated at each row of @var{x} with zero
-## mean and an identity covariance matrix. The row of matrix @var{x} correspond
-## to observations and its columns to variables. The return argument @var{y} is
-## a column vector with the same number of rows as in @var{x}.
+## mean and an identity covariance matrix.  The rows of matrix @var{x}
+## correspond to observations and its columns to variables.  The return argument
+## @var{p} is a column vector with the same number of rows as in @var{x}.
 ##
-## @code{@var{y} = mvncdf (@var{x}, @var{mu}, @var{sigma})} returns cumulative
+## @code{@var{p} = mvncdf (@var{x}, @var{mu}, @var{sigma})} returns cumulative
 ## probability of the multivariate normal distribution evaluated at each row of
 ## @var{x} with mean @var{mu} and a covariance matrix @var{sigma}.  @var{mu} can
 ## be either a scalar (the same of every variable) or a row vector with the same
@@ -43,43 +43,47 @@
 ## you can pass an empty matrix for @var{mu}.
 ##
 ## The multivariate normal cumulative probability at @var{x} is defined as the
-## probability that a random vector V, distributed as multivariate normal, will
-## fall within the semi-infinite rectangle with upper limits defined by @var{x}.
+## probability that a random vector @math{V}, distributed as multivariate
+## normal, will fall within the semi-infinite rectangle with upper limits
+## defined by @var{x}.
 ## @itemize
-## @item Pr@{V(1)<=X(1), V(2)<=X(2), ... V(D)<=X(D)@}.
+## @item @math{Pr@{V(1)<=X(1), V(2)<=X(2), ... V(D)<=X(D)@}}.
 ## @end itemize
 ##
-## @code{@var{y} = mvncdf (@var{x_lo}, @var{x_hi}, @var{mu}, @var{sigma})}
+## @code{@var{p} = mvncdf (@var{x_lo}, @var{x_hi}, @var{mu}, @var{sigma})}
 ## returns the multivariate normal cumulative probability evaluated over the
 ## rectangle (hyper-rectangle for multivariate data in @var{x}) with lower and
-## upper limits defined by @var{x_lo} and @var{x_hi} respectively.
+## upper limits defined by @var{x_lo} and @var{x_hi}, respectively.
 ##
-## @code{[@var{y}, @var{err}] = mvncdf (@dots{})} also returns an error estimate
-## @var{err} in @var{y}.
+## @code{[@var{p}, @var{err}] = mvncdf (@dots{})} also returns an error estimate
+## @var{err} in @var{p}.
 ##
-## @code{@var{y} = mvncdf (@dots{}, @var{options})} specifies the structure,
-## which controls specific parameters for the numerical integration for
-## numltivariate cases. The required fieds are:
+## @code{@var{p} = mvncdf (@dots{}, @var{options})} specifies the structure,
+## which controls specific parameters for the numerical integration used to
+## compute @var{p}. The required fieds are:
 ##
-## @multitable @columnfractions 0.2 0.8
-## @item "TolFun" @tab --- Maximum absolute error tolerance.  Default is
-## 1e-8 for D == 1 | 3, 1e-4 for D > 4. Note that for bivariate normal cdf, the
-## Octave implementation has a presicion of more than 1e-10.
-## @item "MaxFunEvals" @tab --- Maximum number of integrand evaluations.
-## Default is 1e7 for D > 4.
-## @item "Display" @tab --- Display options.  Choices are "off" (default),
-## "iter", which shows the probability and estimated error at each repetition,
-## and "final", which shows the final probability and related error after the
-## integrand has converged successfully.
+## @multitable @columnfractions 0.2 0.05 0.75
+## @item @qcode{"TolFun"} @tab @tab Maximum absolute error tolerance.  Default
+## is 1e-8 for D < 4, or 1e-4 for D >= 4.  Note that for bivariate normal cdf,
+## the Octave implementation has a presicion of more than 1e-10.
+##
+## @item @qcode{"MaxFunEvals"} @tab @tab Maximum number of integrand
+## evaluations.  Default is 1e7 for D > 4.
+##
+## @item @qcode{"Display"} @tab @tab Display options.  Choices are @qcode{"off"}
+## (default), @qcode{"iter"}, which shows the probability and estimated error at
+## each repetition, and @qcode{"final"}, which shows the final probability and
+## related error after the integrand has converged successfully.
 ## @end multitable
 ##
-## @seealso{mvncdf, mvnpdf, mvnrnd, bvncdf}
+## @seealso{bvncdf, mvnpdf, mvnrnd}
 ## @end deftypefn
 
-function [y, err] = mvncdf (varargin)
+function [p, err] = mvncdf (varargin)
+
   ## Check for valid number on input and output arguments
   narginchk (1,5);
-  nargoutchk (1,2);
+
   ## Check for 'options' structure and parse parameters or add defaults
   if (isstruct (varargin{end}))
     if (isfield (varargin{end}, "TolFun"))
@@ -120,19 +124,23 @@ function [y, err] = mvncdf (varargin)
     Display = "off";
     rem_nargin = nargin;
   endif
+
   ## Check for X of X_lo and X_up
-  if (rem_nargin < 4)   # MVNCDF(XU,MU,SIGMA)
+  if (rem_nargin < 4)   # MVNCDF(X_UP,MU,SIGMA)
     x_up_Only = true;
     x_up = varargin{1};
+
     ## Check for x being a matrix
     if (! ismatrix (x_up))
       error ("mvncdf: X must be a matrix.");
     endif
+
     ## Create x_lo according to data type of x_lo
     x_lo = - Inf (size (x_up));
     if isa (x_up, "single")
       x_lo = single (x_lo);
     endif
+
     ## Check for mu and sigma arguments
     if (rem_nargin > 1)
       mu = varargin{2};
@@ -144,31 +152,36 @@ function [y, err] = mvncdf (varargin)
     else
       sigma = [];
     endif
-  else                  ## MVNCDF(XL,XU,MU,SIGMA)
+
+  else                  # MVNCDF(X_LO,X_UP,MU,SIGMA)
     x_up_Only = false;
     x_lo = varargin{1};
     x_up = varargin{2};
     mu = varargin{3};
     sigma = varargin{4};
+
     ## Check for x_lo and x_up being matrices of the same size
     ## and that they define increasing limits
     if (! ismatrix (x_lo) || ! ismatrix (x_up))
-      error ("mvncdf: X_lo and x_up must be matrices.");
+      error ("mvncdf: X_LO and X_UP must be matrices.");
     endif
     if (size (x_lo) != size (x_up))
-      error ("mvncdf: X_lo and x_up must have the same size.");
+      error ("mvncdf: X_LO and X_UP must have the same size.");
     endif
     if (any (any (x_lo > x_up)))
-      error ("mvncdf: X_lo and x_up must define increasing limits.");
+      error ("mvncdf: X_LO and X_UP must define increasing limits.");
     endif
   endif
+
   ## Check if data is single or double class
   is_type = "double";
   if (isa (x_lo, "single"))
     is_type = "single";
   endif
+
   ## Get size of data
   [n_x, d_x] = size (x_lo);
+
   ## Center data according to mu
   if (isempty (mu))         # already centered
     XLo0 = x_lo;
@@ -180,19 +193,20 @@ function [y, err] = mvncdf (varargin)
     ## Get size of mu vector
     [n_mu, d_mu] = size (mu);
     if (d_mu != d_x)
-      error ("mvncdf: wrong size of 'mu' vector.");
+      error ("mvncdf: wrong size of MU vector.");
     endif
     if (n_mu == 1 || n_mu == n_x)
       XLo0 = x_lo - mu;
       XUp0 = x_up - mu;
     else
-      error ("mvncdf: wrong size of 'mu' vector.");
+      error ("mvncdf: wrong size of MU vector.");
     endif
   else
-    error ("mvncdf: 'mu' must be either empty, a scalar, or a vector.");
+    error ("mvncdf: MU must be either empty, a scalar, or a vector.");
   endif
+
   ## Check how sigma was parsed
-  if (isempty (sigma))        # already standardized
+  if (isempty (sigma))      # already standardized
     ## If x_lo and x_up are column vectors, transpose them to row vectors
     if (d_x == 1)
       XLo0 = XLo0';
@@ -201,6 +215,7 @@ function [y, err] = mvncdf (varargin)
     endif
     sigmaIsDiag = true;
     sigma = ones (1, d_x);
+
   else
     ## Check if sigma parsed as diagonal vector
     if (size (sigma, 1) == 1 && size (sigma, 2) > 1)
@@ -208,6 +223,7 @@ function [y, err] = mvncdf (varargin)
     else
       sigmaIsDiag = false;
     endif
+
     ## If x_lo and x_up are column vectors, transpose them to row vectors
     if (d_x == 1)
       if (isequal (size (sigma), [1, n_x]))
@@ -215,28 +231,32 @@ function [y, err] = mvncdf (varargin)
         XUp0 = XUp0';
         [n_x, d_x] = size (XUp0);
       elseif (! isscalar (mu))
-        error ("mvncdf: 'mu' must a scalar if sigma is a vector.");
+        error ("mvncdf: MU must be a scalar if SIGMA is a vector.");
       endif
     endif
+
     ## Check for sigma being a valid covariance matrix
     if (! sigmaIsDiag && (size (sigma, 1) != size (sigma, 2)))
-      error ("mvncdf: covariance matrix is not symmetric.");
+      error ("mvncdf: covariance matrix SIGMA is not square.");
     elseif (! sigmaIsDiag && (! all (size (sigma) == [d_x, d_x])))
-      error ("mvncdf: covariance matrix does not match x_up.");
+      error (strcat (["mvncdf: covariance matrix SIGMA does"], ...
+                     [" not match dimensions in data."]));
     else
       ## If sigma is a covariance matrix check that it is positive semi-definite
       if (! sigmaIsDiag)
         [~, err] = chol (sigma);
         if (err != 0)
-          error ("mvncdf: covariance matrix must be positive semi-definite.");
+          error (strcat (["mvncdf: covariance matrix SIGMA must be"], ...
+                         [" positive semi-definite."]));
         endif
       else
         if (any (sigma) <= 0)
-          error ("mvncdf: invalid sigma diagonal vector.");
+          error ("mvncdf: invalid SIGMA diagonal vector.");
         endif
       endif
     endif
   endif
+
   ## Standardize sigma and x data
   if (sigmaIsDiag)
     XLo0 = XLo0 ./ sqrt (sigma);
@@ -247,23 +267,26 @@ function [y, err] = mvncdf (varargin)
     XUp0 = XUp0 ./ s;
     Rho = sigma ./ (s * s');
   endif
+
   ## Compute the cdf from standardized values.
   if (d_x == 1)
-    y = normcdf (XUp0, 0, 1) - normcdf (XLo0, 0, 1);
+    p = normcdf (XUp0, 0, 1) - normcdf (XLo0, 0, 1);
     if (nargout > 1)
-      err = NaN (size(y), is_type);
+      err = NaN (size (p), is_type);
     endif
+
   elseif (sigmaIsDiag)
-    y = prod (normcdf (XUp0, 0, 1) - normcdf (XLo0, 0, 1), 2);
+    p = prod (normcdf (XUp0, 0, 1) - normcdf (XLo0, 0, 1), 2);
     if (nargout > 1)
-      err = NaN (size(y), is_type);
+      err = NaN (size (p), is_type);
     endif
+
   elseif (d_x < 4)
     if (x_up_Only)          # upper limit only
       if (d_x == 2)
-        y = bvncdf (x_up, mu, sigma);
+        p = bvncdf (x_up, mu, sigma);
       else
-        y = tvncdf (XUp0, Rho([2 3 6]), TolFun);
+        p = tvncdf (XUp0, Rho([2 3 6]), TolFun);
       endif
     else                    # lower and upper limits present
       ## Compute the probability over the rectangle as sums and differences
@@ -275,7 +298,7 @@ function [y, err] = mvncdf (varargin)
       ## For bvncdf
       x_up(equalLimits) = -Inf;
       x_lo(equalLimits) = -Inf;
-      y = zeros(n_x, 1, is_type);
+      p = zeros(n_x, 1, is_type);
       for i = 0:d_x
         k = nchoosek (1:d_x, i);
         for j = 1:size (k, 1)
@@ -284,36 +307,42 @@ function [y, err] = mvncdf (varargin)
           if d_x == 2
             x = x_up;
             x(:,k(j,:)) = x_lo(:,k(j,:));
-            y = y + (-1) ^ i * bvncdf (x, mu, sigma);
+            p = p + (-1) ^ i * bvncdf (x, mu, sigma);
           else
-            y = y + (-1) ^ i * tvncdf (X, Rho([2 3 6]), TolFun / 8);
+            p = p + (-1) ^ i * tvncdf (X, Rho([2 3 6]), TolFun / 8);
           endif
         endfor
       endfor
     endif
     if (nargout > 1)
-      err = repmat (cast (TolFun, is_type), size (y));
+      err = repmat (cast (TolFun, is_type), size (p));
     endif
+
   elseif (d_x < 26)
-    y = zeros (n_x, 1, is_type);
+    p = zeros (n_x, 1, is_type);
     err = zeros (n_x, 1, is_type);
     for i = 1:n_x
-      [y(i), err(i)] = mvtcdfqmc (XUp0(i,:), XUp0(i,:), Rho, Inf, ...
+      [p(i), err(i)] = mvtcdfqmc (XLo0(i,:), XUp0(i,:), Rho, Inf, ...
                                   TolFun, MaxFunEvals, Display);
     endfor
+
   else
     error ("mvncdf: too many dimensions in data (limit = 25 columns).");
   endif
-  ## Bound y in range [0, 1]
-  y(y < 0) = 0;
-  y(y > 1) = 1;
+
+  ## Bound p in range [0, 1]
+  p(p < 0) = 0;
+  p(p > 1) = 1;
+
 endfunction
 
 
 ## function for computing a trivariate normal cdf
 function p = tvncdf (x, rho, tol)
+
   ## Get size of data
   n = size(x,1);
+
   ## Check if data is single or double class
   is_type = "double";
   if (isa (x, "single") || isa (rho, "single"))
@@ -405,11 +434,11 @@ endfunction
 %! x2 = -3:.2:3;
 %! [X1, X2] = meshgrid (x1, x2);
 %! X = [X1(:), X2(:)];
-%! y = mvnpdf (X, mu, Sigma);
-%! y = reshape (y, length (x2), length (x1));
-%! contour (x1, x2, y, [0.0001, 0.001, 0.01, 0.05, 0.15, 0.25, 0.35]);
+%! p = mvnpdf (X, mu, Sigma);
+%! p = reshape (p, length (x2), length (x1));
+%! contour (x1, x2, p, [0.0001, 0.001, 0.01, 0.05, 0.15, 0.25, 0.35]);
 %! xlabel ("x");
-%! ylabel ("y");
+%! ylabel ("p");
 %! title ("Probability over Rectangular Region");
 %! line ([0, 0, 1, 1, 0], [1, 0, 0, 1, 1], "Linestyle", "--", "Color", "k");
 
