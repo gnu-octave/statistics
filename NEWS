@@ -431,6 +431,8 @@ Summary of important user-visible changes for statistics 1.5.1:
  New functions:
  ==============
 
+ ** bvtcdf
+
  ** icdf (wrapper for all available *inv distribution functions)
 
  ** fishertest (fully Matlab compatible with extra functionality)
@@ -453,6 +455,8 @@ Summary of important user-visible changes for statistics 1.5.1:
  ** mean: fixed MATLAB compatibility
 
  ** median: fixed MATLAB compatibility
+
+ ** mvtcdf: improved speed, fixed Matlab compatibility
 
  ** pdf: updated wrapper for all available *pdf distribution functions
 
