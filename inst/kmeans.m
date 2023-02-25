@@ -604,7 +604,7 @@ endfunction
 %! ## Cluster the data. Specify k = 3 clusters.
 %! [idx, C] = kmeans (X, 3);
 %! x1 = min (X(:,1)):0.01:max (X(:,1));
-%! x2 = min X(:,2)):0.01:max (X(:,2));
+%! x2 = min (X(:,2)):0.01:max (X(:,2));
 %! [x1G, x2G] = meshgrid (x1, x2);
 %! XGrid = [x1G(:), x2G(:)];
 %!
@@ -618,7 +618,7 @@ endfunction
 %! xlabel ("Petal Lengths (cm)");
 %! ylabel ("Petal Widths (cm)");
 %! legend ("Region 1", "Region 2", "Region 3", "Data", "Location", "SouthEast");
-%! hold off;
+%! hold off
 
 %!demo
 %! ## Partition Data into Two Clusters
