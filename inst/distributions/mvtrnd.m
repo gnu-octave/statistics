@@ -1,4 +1,5 @@
-## Copyright (C) 2012  Arno Onken <asnelt@asnelt.org>, Iñigo Urteaga
+## Copyright (C) 2012  Arno Onken <asnelt@asnelt.org>
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,8 +17,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{r} =} mvtrnd (@var{sigma}, @var{df})
-## @deftypefnx {statistics} {@var{r} =} mvtrnd (@var{sigma}, @var{df}, @var{n})
+## @deftypefn  {statistics} {@var{r} =} mvtrnd (@var{rho}, @var{df})
+## @deftypefnx {statistics} {@var{r} =} mvtrnd (@var{rho}, @var{df}, @var{n})
 ##
 ## Random vectors from the multivariate Student's t distribution.
 ##
@@ -25,15 +26,15 @@
 ##
 ## @itemize @bullet
 ## @item
-## @var{sigma} is the matrix of correlation coefficients. If there are any
-## non-unit diagonal elements then @var{sigma} will be normalized, so that the
+## @var{rho} is the matrix of correlation coefficients.  If there are any
+## non-unit diagonal elements then @var{rho} will be normalized, so that the
 ## resulting covariance of the obtained samples @var{r} follows:
-## @code{cov (r) = df/(df-2) * sigma ./ (sqrt (diag (sigma) * diag (sigma)))}.
+## @code{cov (r) = df/(df-2) * rho ./ (sqrt (diag (rho) * diag (rho)))}.
 ## In order to obtain samples distributed according to a standard multivariate
-## t-distribution, @var{sigma} must be equal to the identity matrix. To generate
-## multivariate t-distribution samples @var{r} with arbitrary covariance matrix
-## @var{sigma}, the following scaling might be used:
-## @code{r = mvtrnd (sigma, df, n) * diag (sqrt (diag (sigma)))}.
+## student's t-distribution, @var{rho} must be equal to the identity matrix. To
+## generate multivariate student's t-distribution samples @var{r} with arbitrary
+## covariance matrix @var{rho}, the following scaling might be used:
+## @code{r = mvtrnd (rho, df, n) * diag (sqrt (diag (rho)))}.
 ##
 ## @item
 ## @var{df} is the degrees of freedom for the multivariate t-distribution.
@@ -58,17 +59,17 @@
 ##
 ## @example
 ## @group
-## sigma = [1, 0.5; 0.5, 1];
+## rho = [1, 0.5; 0.5, 1];
 ## df = 3;
 ## n = 10;
-## r = mvtrnd (sigma, df, n);
+## r = mvtrnd (rho, df, n);
 ## @end group
 ##
 ## @group
-## sigma = [1, 0.5; 0.5, 1];
+## rho = [1, 0.5; 0.5, 1];
 ## df = [2; 3];
 ## n = 2;
-## r = mvtrnd (sigma, df, 2);
+## r = mvtrnd (rho, df, 2);
 ## @end group
 ## @end example
 ##
@@ -87,14 +88,14 @@
 ## @seealso{mvtcdf, mvtcdfqmc, mvtpdf}
 ## @end deftypefn
 
-function r = mvtrnd (sigma, df, n)
+function r = mvtrnd (rho, df, n)
 
   # Check arguments
   if (nargin < 2)
     print_usage ();
   endif
-  [jnk, p] = cholcov (sigma); # This is a more robust check for positive definite
-  if (! ismatrix (sigma) || any (any (sigma != sigma')) || (p != 0))
+  [jnk, p] = cholcov (rho); # This is a more robust check for positive definite
+  if (! ismatrix (rho) || any (any (rho != rho')) || (p != 0))
     error ("mvtrnd: SIGMA must be a positive definite matrix.");
   endif
 
@@ -118,29 +119,29 @@ function r = mvtrnd (sigma, df, n)
     n = length (df);
   endif
 
-  # Normalize sigma
-  if (any (diag (sigma) != 1))
-    sigma = sigma ./ sqrt (diag (sigma) * diag (sigma)');
+  # Normalize rho
+  if (any (diag (rho) != 1))
+    rho = rho ./ sqrt (diag (rho) * diag (rho)');
   endif
 
   # Dimension
-  d = size (sigma, 1);
+  d = size (rho, 1);
   # Draw samples
-  y = mvnrnd (zeros (1, d), sigma, n);
+  y = mvnrnd (zeros (1, d), rho, n);
   u = repmat (chi2rnd (df), 1, d);
   r = y .* sqrt (repmat (df, 1, d) ./ u);
 endfunction
 
 %!test
-%! sigma = [1, 0.5; 0.5, 1];
+%! rho = [1, 0.5; 0.5, 1];
 %! df = 3;
 %! n = 10;
-%! r = mvtrnd (sigma, df, n);
+%! r = mvtrnd (rho, df, n);
 %! assert (size (r), [10, 2]);
 
 %!test
-%! sigma = [1, 0.5; 0.5, 1];
+%! rho = [1, 0.5; 0.5, 1];
 %! df = [2; 3];
 %! n = 2;
-%! r = mvtrnd (sigma, df, 2);
+%! r = mvtrnd (rho, df, 2);
 %! assert (size (r), [2, 2]);

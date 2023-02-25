@@ -23,7 +23,7 @@
 ## @deftypefnx {statistics} {[@var{p}, @var{err}] =} mvtcdfqmc (@dots{})
 ## @deftypefnx {statistics} {[@var{p}, @var{err}, @var{FunEvals}] =} mvtcdfqmc (@dots{})
 ##
-## Quasi-Monte-Carlo computation of the multivariate Student's t cdf.
+## Quasi-Monte-Carlo computation of the multivariate Student's T CDF.
 ##
 ## The QMC multivariate Student's t distribution is evaluated between the lower
 ## limit @var{A} and upper limit @var{B} of the hyper-rectangle with a
@@ -141,8 +141,10 @@ function [p, err, FunEvals] = mvtcdfqmc (A, B, Rho, df, varargin)
   P = [31, 47, 73, 113, 173, 263, 397, 593, 907, 1361, 2053, 3079, 4621, ...
        6947, 10427, 15641, 23473, 35221, 52837, 79259, 118891, 178349, ...
        267523, 401287, 601942, 902933, 1354471, 2031713];
-  it = 5;
-  while ((FunEvals + 2*MCreps*P(i)) > MaxFunEvals)
+  for i = 5:length (P);
+    if ((FunEvals + 2*MCreps*P(i)) > MaxFunEvals)
+      break;
+    endif
     ## Compute the Niederreiter point set generator
     NRgen = 2 .^ ((1:MCdims) / (MCdims + 1));
     ## Compute randomized quasi-Monte Carlo estimate with P points
@@ -167,8 +169,7 @@ function [p, err, FunEvals] = mvtcdfqmc (A, B, Rho, df, varargin)
       endif
       return
     endif
-    it++;
-  endwhile
+  endfor
   warning ("mvtcdfqmc: Error tolerance did NOT converge!");
   printf ("Error tolerance: %0.4f Total Iterations: %d\n", TolFun, MaxFunEvals);
 endfunction
