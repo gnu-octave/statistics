@@ -26,14 +26,14 @@
 ## @itemize @bullet
 ## @item
 ## @var{x} are the points at which to find the probability, where each row
-## corresponds to an observation. (@var{n} by @var{d} matrix)
+## corresponds to an observation. (@math{NxD} matrix)
 ##
 ## @item
-## @var{rho} is the correlation matrix. (@var{d} by @var{d} symmetric positive
+## @var{rho} is the correlation matrix. (@math{DxD} symmetric positive
 ## definite matrix)
 ##
 ## @item
-## @var{df} is the degrees of freedom. (scalar or @var{n} vector)
+## @var{df} is the degrees of freedom. (scalar or vector of length @math{N})
 ##
 ## @end itemize
 ##
@@ -44,7 +44,7 @@
 ## @itemize @bullet
 ## @item
 ## @var{y} is the probability density for each row of @var{x}.
-## (@var{n} by 1 vector)
+## (@math{Nx1} vector)
 ## @end itemize
 ##
 ## @subheading Examples
