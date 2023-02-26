@@ -597,7 +597,7 @@ endfunction
 %!
 %! figure;
 %! plot (X(:,1), X(:,2), "k*", "MarkerSize", 5);
-%! title ("Fisher''s Iris Data");
+%! title ("Fisher's Iris Data");
 %! xlabel ("Petal Lengths (cm)");
 %! ylabel ("Petal Widths (cm)");
 %!
@@ -614,7 +614,7 @@ endfunction
 %!           [0, 0.75, 0.75; 0.75, 0, 0.75; 0.75, 0.75, 0], "..");
 %! hold on;
 %! plot (X(:,1), X(:,2), "k*", "MarkerSize", 5);
-%! title ("Fisher''s Iris Data");
+%! title ("Fisher's Iris Data");
 %! xlabel ("Petal Lengths (cm)");
 %! ylabel ("Petal Widths (cm)");
 %! legend ("Region 1", "Region 2", "Region 3", "Data", "Location", "SouthEast");
