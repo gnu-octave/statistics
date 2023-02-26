@@ -15,6 +15,9 @@
       font-style: italics;
       font-weight: bold;
     }
+    td {
+      vertical-align: top;
+    }
     </style>
   </head>
   <body>
@@ -68,23 +71,23 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>y</var> = <b>mvncdf</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> <var>y</var> = <b>mvncdf</b><i> (<var>x</var>, <var>mu</var>, <var>sigma</var>)</i></dt>
-<dt><u>statistics:</u> <var>y</var> = <b>mvncdf</b><i> (<var>x_lo</var>, <var>x_up</var>, <var>mu</var>, <var>sigma</var>)</i></dt>
-<dt><u>statistics:</u> <var>y</var> = <b>mvncdf</b><i> (&hellip;, <var>options</var>)</i></dt>
-<dt><u>statistics:</u> [<var>y</var>, <var>err</var>] = <b>mvncdf</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>mvncdf</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>mvncdf</b><i> (<var>x</var>, <var>mu</var>, <var>sigma</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>mvncdf</b><i> (<var>x_lo</var>, <var>x_up</var>, <var>mu</var>, <var>sigma</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>mvncdf</b><i> (&hellip;, <var>options</var>)</i></dt>
+<dt><u>statistics:</u> [<var>p</var>, <var>err</var>] = <b>mvncdf</b><i> (&hellip;)</i></dt>
 </dl>
 
 <p> Multivariate normal cumulative distribution function (CDF).
 </p>
 <div class="ms-5">
-<p> <code><var>y</var> = mvncdf (<var>x</var>)</code> returns cumulative probability of the
+<p> <code><var>p</var> = mvncdf (<var>x</var>)</code> returns the cumulative probability of the
  multivariate normal distribution evaluated at each row of <var>x</var> with zero
- mean and an identity covariance matrix. The row of matrix <var>x</var> correspond
- to observations and its columns to variables. The return argument <var>y</var> is
- a column vector with the same number of rows as in <var>x</var>.
+ mean and an identity covariance matrix.  The rows of matrix <var>x</var>
+ correspond to observations and its columns to variables.  The return argument
+ <var>p</var> is a column vector with the same number of rows as in <var>x</var>.
 </p>
-<p> <code><var>y</var> = mvncdf (<var>x</var>, <var>mu</var>, <var>sigma</var>)</code> returns cumulative
+<p> <code><var>p</var> = mvncdf (<var>x</var>, <var>mu</var>, <var>sigma</var>)</code> returns cumulative
  probability of the multivariate normal distribution evaluated at each row of
  <var>x</var> with mean <var>mu</var> and a covariance matrix <var>sigma</var>.  <var>mu</var> can
  be either a scalar (the same of every variable) or a row vector with the same
@@ -96,41 +99,41 @@
  you can pass an empty matrix for <var>mu</var>.
 </p>
 <p> The multivariate normal cumulative probability at <var>x</var> is defined as the
- probability that a random vector V, distributed as multivariate normal, will
- fall within the semi-infinite rectangle with upper limits defined by <var>x</var>.
+ probability that a random vector <math>V</math>, distributed as multivariate
+ normal, will fall within the semi-infinite rectangle with upper limits
+ defined by <var>x</var>.
  </p><ul>
-<li> Pr{V(1)&lt;=X(1), V(2)&lt;=X(2), ... V(D)&lt;=X(D)}.
+<li> <math>PrV(1)&lt;=X(1), V(2)&lt;=X(2), ... V(D)&lt;=X(D)</math>.
  </li></ul>
 
-<p> <code><var>y</var> = mvncdf (<var>x_lo</var>, <var>x_hi</var>, <var>mu</var>, <var>sigma</var>)</code>
+<p> <code><var>p</var> = mvncdf (<var>x_lo</var>, <var>x_hi</var>, <var>mu</var>, <var>sigma</var>)</code>
  returns the multivariate normal cumulative probability evaluated over the
  rectangle (hyper-rectangle for multivariate data in <var>x</var>) with lower and
- upper limits defined by <var>x_lo</var> and <var>x_hi</var> respectively.
+ upper limits defined by <var>x_lo</var> and <var>x_hi</var>, respectively.
 </p>
-<p> <code>[<var>y</var>, <var>err</var>] = mvncdf (&hellip;)</code> also returns an error estimate
- <var>err</var> in <var>y</var>.
+<p> <code>[<var>p</var>, <var>err</var>] = mvncdf (&hellip;)</code> also returns an error estimate
+ <var>err</var> in <var>p</var>.
 </p>
-<p> <code><var>y</var> = mvncdf (&hellip;, <var>options</var>)</code> specifies the structure,
- which controls specific parameters for the numerical integration for
- numltivariate cases. The required fieds are:
+<p> <code><var>p</var> = mvncdf (&hellip;, <var>options</var>)</code> specifies the structure,
+ which controls specific parameters for the numerical integration used to
+ compute <var>p</var>. The required fieds are:
 </p>
  <table>
-<tr><td width="20%">&quot;TolFun&quot;</td><td width="80%">&mdash; Maximum absolute error tolerance.  Default is
- 1e-8 for D == 1 | 3, 1e-4 for D &gt; 4. Note that for bivariate normal cdf, the
- Octave implementation has a presicion of more than 1e-10.</td></tr>
-<tr><td width="20%">&quot;MaxFunEvals&quot;</td><td width="80%">&mdash; Maximum number of integrand evaluations.
- Default is 1e7 for D &gt; 4.</td></tr>
-<tr><td width="20%">&quot;Display&quot;</td><td width="80%">&mdash; Display options.  Choices are &quot;off&quot; (default),
- &quot;iter&quot;, which shows the probability and estimated error at each repetition,
- and &quot;final&quot;, which shows the final probability and related error after the
- integrand has converged successfully.</td></tr>
+<tr><td width="20%"><code>&quot;TolFun&quot;</code></td><td width="5%"></td><td width="75%">Maximum absolute error tolerance.  Default
+ is 1e-8 for D &lt; 4, or 1e-4 for D &gt;= 4.  Note that for bivariate normal cdf,
+ the Octave implementation has a presicion of more than 1e-10.</td></tr>
+<tr><td width="20%"><code>&quot;MaxFunEvals&quot;</code></td><td width="5%"></td><td width="75%">Maximum number of integrand
+ evaluations.  Default is 1e7 for D &gt; 4.</td></tr>
+<tr><td width="20%"><code>&quot;Display&quot;</code></td><td width="5%"></td><td width="75%">Display options.  Choices are <code>&quot;off&quot;</code>
+ (default), <code>&quot;iter&quot;</code>, which shows the probability and estimated error at
+ each repetition, and <code>&quot;final&quot;</code>, which shows the final probability and
+ related error after the integrand has converged successfully.</td></tr>
 </table>
 
 <p> <strong>See also: </strong>
-  <a href="mvncdf.html">mvncdf</a>, 
+  <a href="bvncdf.html">bvncdf</a>, 
   <a href="mvnpdf.html">mvnpdf</a>, 
-  <a href="mvnrnd.html">mvnrnd</a>, 
-  <a href="bvncdf.html">bvncdf</a>
+  <a href="mvnrnd.html">mvnrnd</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/mvncdf.m">mvncdf</a>
@@ -201,11 +204,11 @@
  x2 = -3:.2:3;
  [X1, X2] = meshgrid (x1, x2);
  X = [X1(:), X2(:)];
- y = mvnpdf (X, mu, Sigma);
- y = reshape (y, length (x2), length (x1));
- contour (x1, x2, y, [0.0001, 0.001, 0.01, 0.05, 0.15, 0.25, 0.35]);
+ p = mvnpdf (X, mu, Sigma);
+ p = reshape (p, length (x2), length (x1));
+ contour (x1, x2, p, [0.0001, 0.001, 0.01, 0.05, 0.15, 0.25, 0.35]);
  xlabel ("x");
- ylabel ("y");
+ ylabel ("p");
  title ("Probability over Rectangular Region");
  line ([0, 0, 1, 1, 0], [1, 0, 0, 1, 1], "Linestyle", "--", "Color", "k");
 

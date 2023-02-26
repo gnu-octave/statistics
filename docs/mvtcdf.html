@@ -15,6 +15,9 @@
       font-style: italics;
       font-weight: bold;
     }
+    td {
+      vertical-align: top;
+    }
     </style>
   </head>
   <body>
@@ -68,76 +71,114 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>mvtcdf</b><i> (<var>x</var>, <var>sigma</var>, <var>df</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>mvtcdf</b><i> (<var>a</var>, <var>x</var>, <var>sigma</var>, <var>df</var>)</i></dt>
-<dt><u>statistics:</u> [<var>p</var>, <var>err</var>] = <b>mvtcdf</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>mvtcdf</b><i> (<var>x</var>, <var>rho</var>, <var>df</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>mvncdf</b><i> (<var>x_lo</var>, <var>x_up</var>, <var>rho</var>, <var>df</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>mvncdf</b><i> (&hellip;, <var>options</var>)</i></dt>
+<dt><u>statistics:</u> [<var>p</var>, <var>err</var>] = <b>mvncdf</b><i> (&hellip;)</i></dt>
 </dl>
 
 <p> Multivariate Student&rsquo;s t cumulative distribution function (CDF).
 </p>
 <div class="ms-5">
- <a name="Arguments"></a>
-<h3 class="subheading">Arguments</h3>
-
- <ul>
-<li>
- <var>x</var> is the upper limit for integration where each row corresponds
- to an observation.
-
- </li><li>
- <var>sigma</var> is the correlation matrix.
-
- </li><li>
- <var>df</var> is the degrees of freedom.
-
- </li><li>
- <var>a</var> is the lower limit for integration where each row corresponds
- to an observation. <var>a</var> must have the same size as <var>x</var>.
+<p> <code><var>p</var> = mvtcdf (<var>x</var>, <var>rho</var>, <var>df</var>)</code> returns the cumulative
+ probability of the multivariate student&rsquo;s t distribution with correlation
+ parameters <var>rho</var> and degrees of freedom <var>df</var>, evaluated at each row
+ of <var>x</var>.  The rows of the <math>N&times;D</math> matrix <var>x</var> correspond to sample
+ observations and its columns correspond to variables or coordinates.  The
+ return argument <var>p</var> is a column vector with the same number of rows as in
+ <var>x</var>.
+</p>
+<p> <var>rho</var> is a symmetric, positive definite, <math>D&times;D</math> correlation matrix.
+ <var>dF</var> is a scalar or a vector with <math>N</math> elements.
+</p>
+<p> Note: <code>mvtcdf</code> computes the CDF for the standard multivariate Student&rsquo;s
+ t distribution, centered at the origin, with no scale parameters.  If
+ <var>rho</var> is a covariance matrix, i.e. <code>diag(<var>rho</var>)</code> is not all
+ ones, <code>mvtcdf</code> rescales <var>rho</var> to transform it to a correlation
+ matrix.  <code>mvtcdf</code> does not rescale <var>x</var>, though.
+</p>
+<p> The multivariate Student&rsquo;s t cumulative probability at <var>x</var> is defined as
+ the probability that a random vector T, distributed as multivariate normal,
+ will fall within the semi-infinite rectangle with upper limits defined by
+ <var>x</var>.
+ </p><ul>
+<li> <math>PrT(1)&lt;=X(1), T(2)&lt;=X(2), ... T(D)&lt;=X(D)</math>.
  </li></ul>
 
- <a name="Return-values"></a>
-<h3 class="subheading">Return values</h3>
-
- <ul>
-<li>
- <var>p</var> is the cumulative distribution at each row of <var>x</var> and
- <var>a</var>.
-
- </li><li>
- <var>err</var> is the estimated error.
- </li></ul>
-
- <a name="Examples"></a>
-<h3 class="subheading">Examples</h3>
-
- <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> x = [1 2];
- sigma = [1.0 0.5; 0.5 1.0];
- df = 4;
- p = mvtcdf (x, sigma, df)
- </pre><pre class="example">
- </pre><pre class="example"> a = [-inf 0];
- p = mvtcdf (a, x, sigma, df)
- </pre><pre class="example"> </pre></td></tr></table>
-
- <a name="References"></a>
-<h3 class="subheading">References</h3>
-
- <ol>
-<li>
- Alan Genz and Frank Bretz. Numerical Computation of Multivariate
- t-Probabilities with Application to Power Calculation of Multiple
- Constrasts. <cite>Journal of Statistical Computation and Simulation</cite>,
- 63, pages 361-378, 1999.
- </li></ol>
+<p> <code><var>p</var> = mvtcdf (<var>x_lo</var>, <var>x_hi</var>, <var>rho</var>, <var>df</var>)</code> returns
+ the multivariate Student&rsquo;s t cumulative probability evaluated over the
+ rectangle (hyper-rectangle for multivariate data in <var>x</var>) with lower and
+ upper limits defined by <var>x_lo</var> and <var>x_hi</var>, respectively.
+</p>
+<p> <code>[<var>p</var>, <var>err</var>] = mvtcdf (&hellip;)</code> also returns an error estimate
+ <var>err</var> in <var>p</var>.
+</p>
+<p> <code><var>p</var> = mvtcdf (&hellip;, <var>options</var>)</code> specifies the structure,
+ which controls specific parameters for the numerical integration used to
+ compute <var>p</var>. The required fieds are:
+</p>
+ <table>
+<tr><td width="20%"><code>&quot;TolFun&quot;</code></td><td width="5%"></td><td width="75%">Maximum absolute error tolerance.  Default
+ is 1e-8 for D &lt; 4, or 1e-4 for D &gt;= 4.</td></tr>
+<tr><td width="20%"><code>&quot;MaxFunEvals&quot;</code></td><td width="5%"></td><td width="75%">Maximum number of integrand evaluations
+ when <math>D &gt;= 4</math>.  Default is 1e7.  Ignored when <math>D &lt; 4</math>.</td></tr>
+<tr><td width="20%"><code>&quot;Display&quot;</code></td><td width="5%"></td><td width="75%">Display options.  Choices are <code>&quot;off&quot;</code>
+ (default), <code>&quot;iter&quot;</code>, which shows the probability and estimated error at
+ each repetition, and <code>&quot;final&quot;</code>, which shows the final probability and
+ related error after the integrand has converged successfully.  Ignored when
+ <math>D &lt; 4</math>.</td></tr>
+</table>
 
 <p> <strong>See also: </strong>
-  <a href="mvtcdfqmc.html">mvtcdfqmc</a>, 
+  <a href="bvtcdf.html">bvtcdf</a>, 
   <a href="mvtpdf.html">mvtpdf</a>, 
-  <a href="mvtrnd.html">mvtrnd</a>
+  <a href="mvtrnd.html">mvtrnd</a>, 
+  <a href="mvtcdfqmc.html">mvtcdfqmc</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/mvtcdf.m">mvtcdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the cdf of a multivariate Student's t distribution with
+ ## correlation parameters rho = [1, 0.4; 0.4, 1] and 2 degrees of freedom.
+
+ rho = [1, 0.4; 0.4, 1];
+ df = 2;
+ [X1, X2] = meshgrid (linspace (-2, 2, 25)', linspace (-2, 2, 25)');
+ X = [X1(:), X2(:)];
+ p = mvtcdf (X, rho, df);
+ surf (X1, X2, reshape (p, 25, 25));
+ title ("Bivariate Student's t cummulative distribution function");
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/mvtcdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

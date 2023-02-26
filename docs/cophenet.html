@@ -15,6 +15,9 @@
       font-style: italics;
       font-weight: bold;
     }
+    td {
+      vertical-align: top;
+    }
     </style>
   </head>
   <body>
@@ -123,13 +126,13 @@
                   <table><tbody><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
- "usage";
+
  X = randn (10,2);
  y = pdist (X);
  Z = linkage (y, "average");
  cophenet (Z, y)
 
-ans = 0.8817
+ans = 0.8616
                     </pre></td></tr></tbody>
                   </table>
 

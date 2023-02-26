@@ -15,6 +15,9 @@
       font-style: italics;
       font-weight: bold;
     }
+    td {
+      vertical-align: top;
+    }
     </style>
   </head>
   <body>
@@ -80,7 +83,7 @@
  vectors of size <var>d</var>.
 </p>
 <p> The output is a dissimilarity matrix formatted as a row vector
- <var>y</var>, <em>(n-1)*n/2</em> long, where the distances are in
+ <var>y</var>, <math>(n-1)&times;n/2</math> long, where the distances are in
  the order [(1, 2) (1, 3) &hellip; (2, 3) &hellip; (n-1, n)].  You can
  use the <code>squareform</code> function to display the distances between
  the vectors arranged into an <var>n</var>x<var>n</var> matrix.

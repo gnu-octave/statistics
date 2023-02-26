@@ -15,6 +15,9 @@
       font-style: italics;
       font-weight: bold;
     }
+    td {
+      vertical-align: top;
+    }
     </style>
   </head>
   <body>
@@ -79,18 +82,18 @@
 </p>
 <div class="ms-5">
 <p> <code><var>h</var> = regression_ttest (<var>y</var>, <var>x</var>)</code> tests the null
- hypothesis that the slope <em>beta1</em> of a simple linear regression equals
+ hypothesis that the slope <math>beta1</math> of a simple linear regression equals
  0.  The result is <var>h</var> = 0 if the null hypothesis cannot be rejected at
  the 5% significance level, or <var>h</var> = 1 if the null hypothesis can be
  rejected at the 5% level.  <var>y</var> and <var>x</var> must be vectors of equal
  length with finite real numbers.
 </p>
-<p> The p-value of the test is returned in <var>pval</var>.  A <em>100(1-alpha)%</em>
- confidence interval for <em>beta1</em> is returned in <var>ci</var>.  <var>stats</var> is
+<p> The p-value of the test is returned in <var>pval</var>.  A <math>100(1-alpha)%</math>
+ confidence interval for <math>beta1</math> is returned in <var>ci</var>.  <var>stats</var> is
  a structure containing the value of the test statistic (<code>tstat</code>),
  the degrees of freedom (<code>df</code>), the slope coefficient (<code>beta1</code>),
  and the intercept (<code>beta0</code>).  Under the null, the test statistic
- <var>stats</var>.<code>tstat</code> follows a <em>T</em>-distribution with
+ <var>stats</var>.<code>tstat</code> follows a <math>T</math>-distribution with
  <var>stats</var>.<code>df</code> degrees of freedom.
 </p>
 <p> <code>[&hellip;] = regression_ttest (&hellip;, <var>name</var>, <var>value</var>)</code>
@@ -102,9 +105,9 @@
 <tr><td width="5%"></td><td width="20%">&quot;tail&quot;</td><td width="75%">a string specifying the alternative hypothesis:</td></tr>
 </table>
  <table>
-<tr><td width="10%"></td><td width="25%">&quot;both&quot;</td><td width="65%"><em>beta1</em> is not 0 (two-tailed, default)</td></tr>
-<tr><td width="10%"></td><td width="25%">&quot;left&quot;</td><td width="65%"><em>beta1</em> is less than 0 (left-tailed)</td></tr>
-<tr><td width="10%"></td><td width="25%">&quot;right&quot;</td><td width="65%"><em>beta1</em> is greater than 0 (right-tailed)</td></tr>
+<tr><td width="10%"></td><td width="25%">&quot;both&quot;</td><td width="65%"><math>beta1</math> is not 0 (two-tailed, default)</td></tr>
+<tr><td width="10%"></td><td width="25%">&quot;left&quot;</td><td width="65%"><math>beta1</math> is less than 0 (left-tailed)</td></tr>
+<tr><td width="10%"></td><td width="25%">&quot;right&quot;</td><td width="65%"><math>beta1</math> is greater than 0 (right-tailed)</td></tr>
 </table>
 
 <p> <strong>See also: </strong>

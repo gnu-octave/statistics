@@ -15,6 +15,9 @@
       font-style: italics;
       font-weight: bold;
     }
+    td {
+      vertical-align: top;
+    }
     </style>
   </head>
   <body>
@@ -79,7 +82,7 @@
 <div class="ms-5">
 <p> If <var>x1</var> and <var>n1</var> are the counts of successes and trials in one
  sample, and <var>x2</var> and <var>n2</var> those in a second one, test the null
- hypothesis that the success probabilities <em>p1</em> and <em>p2</em> are the
+ hypothesis that the success probabilities <math>p1</math> and <math>p2</math> are the
  same.  The result is <var>h</var> = 0 if the null hypothesis cannot be rejected at
  the 5% significance level, or <var>h</var> = 1 if the null hypothesis can be
  rejected at the 5% level.
@@ -108,9 +111,9 @@
 <tr><td width="5%"></td><td width="20%">&quot;tail&quot;</td><td width="75%">a string specifying the alternative hypothesis:</td></tr>
 </table>
  <table>
-<tr><td width="10%"></td><td width="25%">&quot;both&quot;</td><td width="65%"><em>p1</em> is not <em>p2</em> (two-tailed, default)</td></tr>
-<tr><td width="10%"></td><td width="25%">&quot;left&quot;</td><td width="65%"><em>p1</em> is less than <em>p2</em> (left-tailed)</td></tr>
-<tr><td width="10%"></td><td width="25%">&quot;right&quot;</td><td width="65%"><em>p1</em> is greater than <em>p2</em> (right-tailed)</td></tr>
+<tr><td width="10%"></td><td width="25%">&quot;both&quot;</td><td width="65%"><math>p1</math> is not <math>p2</math> (two-tailed, default)</td></tr>
+<tr><td width="10%"></td><td width="25%">&quot;left&quot;</td><td width="65%"><math>p1</math> is less than <math>p2</math> (left-tailed)</td></tr>
+<tr><td width="10%"></td><td width="25%">&quot;right&quot;</td><td width="65%"><math>p1</math> is greater than <math>p2</math> (right-tailed)</td></tr>
 </table>
 
 <p> <strong>See also: </strong>

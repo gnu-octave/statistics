@@ -15,6 +15,9 @@
       font-style: italics;
       font-weight: bold;
     }
+    td {
+      vertical-align: top;
+    }
     </style>
   </head>
   <body>
@@ -75,13 +78,13 @@
  given parameters.
 </p>
 <div class="ms-5">
-<p> Inputs: the <em>p x p</em> positive definite matrix <var>Tau</var> and scalar
+<p> Inputs: the <math>p&times; p</math> positive definite matrix <var>Tau</var> and scalar
  degrees of freedom parameter <var>df</var> (and optionally the transposed Cholesky
  factor <var>DI</var> of <var>Sigma</var> = <code>inv(Tau)</code>).
 </p>
-<p> <var>df</var> can be non-integer as long as <em><var>df</var> &gt; d</em>
+<p> <var>df</var> can be non-integer as long as <math><var>df</var> &gt; d</math>
 </p>
-<p> Output: a random <em>p x p</em>  matrix <var>W</var> from the inverse
+<p> Output: a random <math>p&times; p</math>  matrix <var>W</var> from the inverse
  Wishart(<var>Tau</var>, <var>df</var>) distribution. (<code>inv(W)</code> is from the
  Wishart(<code>inv(Tau)</code>, <var>df</var>) distribution.) If <var>n</var> &gt; 1,
  then <var>W</var> is <var>p</var> x <var>p</var> x <var>n</var> and holds <var>n</var> such random

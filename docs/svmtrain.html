@@ -15,6 +15,9 @@
       font-style: italics;
       font-weight: bold;
     }
+    td {
+      vertical-align: top;
+    }
     </style>
   </head>
   <body>
@@ -107,9 +110,9 @@
 
 <table>
 <tr><td width="10%"></td><td width="10%">0</td><td width="80%">linear: u&rsquo;*v</td></tr>
-<tr><td width="10%"></td><td width="10%">1</td><td width="80%">polynomial: <em>(gamma * u&rsquo; * v + coef0) ^ degree</em></td></tr>
-<tr><td width="10%"></td><td width="10%">2</td><td width="80%">radial basis function: <em>exp(-gamma * |u-v| ^ 2)</em></td></tr>
-<tr><td width="10%"></td><td width="10%">3</td><td width="80%">sigmoid: <em>tanh(gamma * u&rsquo; * v + coef0)</em></td></tr>
+<tr><td width="10%"></td><td width="10%">1</td><td width="80%">polynomial: <math>(gamma&times; u&rsquo;&times; v + coef0) ^ degree</math></td></tr>
+<tr><td width="10%"></td><td width="10%">2</td><td width="80%">radial basis function: <math>e&times;p(-gamma&times; |u-v| ^ 2)</math></td></tr>
+<tr><td width="10%"></td><td width="10%">3</td><td width="80%">sigmoid: <math>tanh(gamma&times; u&rsquo;&times; v + coef0)</math></td></tr>
 <tr><td width="10%"></td><td width="10%">4</td><td width="80%">precomputed kernel (kernel values in training_instance_matrix)</td></tr>
 </table>
 
@@ -152,7 +155,7 @@
 
 </li><li> <code>totalSV</code> : total #SV 
 
-</li><li> <code>rho</code> : <em>-b</em> of the decision function(s) <em>wx+b</em> 
+</li><li> <code>rho</code> : <math>-b</math> of the decision function(s) <math>w&times;+b</math> 
 
 </li><li> <code>Label</code> : label of each class; empty for regression/one-class SVM 
 

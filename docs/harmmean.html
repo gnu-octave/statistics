@@ -15,6 +15,9 @@
       font-style: italics;
       font-weight: bold;
     }
+    td {
+      vertical-align: top;
+    }
     </style>
   </head>
   <body>
@@ -85,7 +88,7 @@
 <p>$$ {\rm harmmean}(x) = \frac{N}{\sum_{i=1}^N \frac{1}{x_i}} $$
 
 </p> 
- <p> where <em>N</em> is the length of the <var>x</var> vector.
+ <p> where <math>N</math> is the length of the <var>x</var> vector.
 </p>
  </li><li> If <var>x</var> is a matrix, then <code>harmmean(<var>x</var>)</code> returns a row
  vector with the harmonic mean of each columns in <var>x</var>.

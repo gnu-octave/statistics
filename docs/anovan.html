@@ -15,6 +15,9 @@
       font-style: italics;
       font-weight: bold;
     }
+    td {
+      vertical-align: top;
+    }
     </style>
   </head>
   <body>
@@ -128,14 +131,14 @@
 
  <ul>
 <li>
- &quot;linear&quot; (default) : compute <em>N</em> main effects with no interactions.
+ &quot;linear&quot; (default) : compute <math>N</math> main effects with no interactions.
 
  </li><li>
- &quot;interaction&quot; : compute <em>N</em> effects and <em>N*(N-1)</em> two-factor
+ &quot;interaction&quot; : compute <math>N</math> effects and <math>N&times;(N-1)</math> two-factor
  interactions
 
  </li><li>
- &quot;full&quot; : compute the <em>N</em> main effects and interactions at all levels
+ &quot;full&quot; : compute the <math>N</math> main effects and interactions at all levels
 
  </li><li>
  a scalar integer : representing the maximum interaction order
@@ -183,7 +186,7 @@
  <ul>
 <li>
  <var>alpha</var> must be a scalar value between 0 and 1 requesting
- <em>100*(1-<var>alpha</var>)%</em> confidence bounds for the regression coefficients
+ <math>100&times;(1-<var>alpha</var>)%</math> confidence bounds for the regression coefficients
  returned in <var>stats</var>.coeffs (default 0.05 for 95% confidence).
  </li></ul>
 
@@ -271,7 +274,7 @@
  effect sizes for each term in the linear model, the design matrix, the
  variance-covariance matrix, (weighted) model residuals, and the mean squared
  error. The columns of <var>stats</var>.coeffs (from left-to-right) report the
- model coefficients, standard errors, lower and upper <em>100*(1-alpha)%</em>
+ model coefficients, standard errors, lower and upper <math>100&times;(1-alpha)%</math>
  confidence interval bounds, t-statistics, and p-values relating to the
  contrasts. The number appended to each term name in <var>stats</var>.coeffnames
  corresponds to the column number in the relevant contrast matrix for that

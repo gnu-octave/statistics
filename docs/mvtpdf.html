@@ -15,6 +15,9 @@
       font-style: italics;
       font-weight: bold;
     }
+    td {
+      vertical-align: top;
+    }
     </style>
   </head>
   <body>
@@ -68,7 +71,7 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>y</var> = <b>mvtpdf</b><i> (<var>x</var>, <var>sigma</var>, <var>df</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>mvtpdf</b><i> (<var>x</var>, <var>rho</var>, <var>df</var>)</i></dt>
 </dl>
 
 <p> Multivariate Student&rsquo;s t probability density function (PDF).
@@ -79,14 +82,15 @@
 
  <ul>
 <li>
- <var>x</var> are the points at which to find the probability, where each row corresponds
- to an observation. (<var>n</var> by <var>d</var> matrix)
+ <var>x</var> are the points at which to find the probability, where each row
+ corresponds to an observation. (<math>N&times;D</math> matrix)
 
  </li><li>
- <var>sigma</var> is the scale matrix. (<var>d</var> by <var>d</var> symmetric positive definite matrix)
+ <var>rho</var> is the correlation matrix. (<math>D&times;D</math> symmetric positive
+ definite matrix)
 
  </li><li>
- <var>df</var> is the degrees of freedom. (scalar or <var>n</var> vector)
+ <var>df</var> is the degrees of freedom. (scalar or vector of length <math>N</math>)
 
 </li></ul>
 
@@ -97,16 +101,17 @@
 
  <ul>
 <li>
- <var>y</var> is the probability density for each row of <var>x</var>. (<var>n</var> by 1 vector)
+ <var>y</var> is the probability density for each row of <var>x</var>.
+ (<math>N&times;1</math> vector)
  </li></ul>
 
  <a name="Examples"></a>
 <h3 class="subheading">Examples</h3>
 
  <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> x = [1 2];
- sigma = [1.0 0.5; 0.5 1.0];
+ rho = [1.0 0.5; 0.5 1.0];
  df = 4;
- y = mvtpdf (x, sigma, df)
+ y = mvtpdf (x, rho, df)
  </pre><pre class="example"> </pre></td></tr></table>
 
  <a name="References"></a>
@@ -127,6 +132,47 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/mvtpdf.m">mvtpdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the pdf of a multivariate t distribution with correlation
+ ## parameters rho = [1 .4; .4 1] and 2 degrees of freedom.
+
+ rho = [1, 0.4; 0.4, 1];
+ df = 2;
+ [X1, X2] = meshgrid (linspace (-2, 2, 25)', linspace (-2, 2, 25)');
+ X = [X1(:), X2(:)];
+ y = mvtpdf (X, rho, df);
+ surf (X1, X2, reshape (y, 25, 25));
+ title ("Bivariate Student's t probability density function");
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/mvtpdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

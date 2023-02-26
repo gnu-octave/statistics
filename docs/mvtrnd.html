@@ -15,6 +15,9 @@
       font-style: italics;
       font-weight: bold;
     }
+    td {
+      vertical-align: top;
+    }
     </style>
   </head>
   <body>
@@ -68,8 +71,8 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>r</var> = <b>mvtrnd</b><i> (<var>sigma</var>, <var>df</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>mvtrnd</b><i> (<var>sigma</var>, <var>df</var>, <var>n</var>)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>mvtrnd</b><i> (<var>rho</var>, <var>df</var>)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>mvtrnd</b><i> (<var>rho</var>, <var>df</var>, <var>n</var>)</i></dt>
 </dl>
 
 <p> Random vectors from the multivariate Student&rsquo;s t distribution.
@@ -80,15 +83,15 @@
 
  <ul>
 <li>
- <var>sigma</var> is the matrix of correlation coefficients. If there are any
- non-unit diagonal elements then <var>sigma</var> will be normalized, so that the
+ <var>rho</var> is the matrix of correlation coefficients.  If there are any
+ non-unit diagonal elements then <var>rho</var> will be normalized, so that the
  resulting covariance of the obtained samples <var>r</var> follows:
- <code>cov (r) = df/(df-2) * sigma ./ (sqrt (diag (sigma) * diag (sigma)))</code>.
+ <code>cov (r) = df/(df-2) * rho ./ (sqrt (diag (rho) * diag (rho)))</code>.
  In order to obtain samples distributed according to a standard multivariate
- t-distribution, <var>sigma</var> must be equal to the identity matrix. To generate
- multivariate t-distribution samples <var>r</var> with arbitrary covariance matrix
- <var>sigma</var>, the following scaling might be used:
- <code>r = mvtrnd (sigma, df, n) * diag (sqrt (diag (sigma)))</code>.
+ student&rsquo;s t-distribution, <var>rho</var> must be equal to the identity matrix. To
+ generate multivariate student&rsquo;s t-distribution samples <var>r</var> with arbitrary
+ covariance matrix <var>rho</var>, the following scaling might be used:
+ <code>r = mvtrnd (rho, df, n) * diag (sqrt (diag (rho)))</code>.
 
  </li><li>
  <var>df</var> is the degrees of freedom for the multivariate t-distribution.
@@ -113,15 +116,15 @@
  <a name="Examples"></a>
 <h3 class="subheading">Examples</h3>
 
- <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> sigma = [1, 0.5; 0.5, 1];
+ <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> rho = [1, 0.5; 0.5, 1];
  df = 3;
  n = 10;
- r = mvtrnd (sigma, df, n);
+ r = mvtrnd (rho, df, n);
  </pre><pre class="example">
- </pre><pre class="example"> sigma = [1, 0.5; 0.5, 1];
+ </pre><pre class="example"> rho = [1, 0.5; 0.5, 1];
  df = [2; 3];
  n = 2;
- r = mvtrnd (sigma, df, 2);
+ r = mvtrnd (rho, df, 2);
  </pre><pre class="example"> </pre></td></tr></table>
 
  <a name="References"></a>

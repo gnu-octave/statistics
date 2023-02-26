@@ -15,6 +15,9 @@
       font-style: italics;
       font-weight: bold;
     }
+    td {
+      vertical-align: top;
+    }
     </style>
   </head>
   <body>
@@ -80,7 +83,7 @@
 </p>
 <div class="ms-5">
 <p> <var>d</var> is the dissimilarity matrix relative to n observations,
- formatted as a <em>(n-1)*n/2</em>x1 vector as produced by <code>pdist</code>.
+ formatted as a <math>(n-1)&times;n/2</math>x1 vector as produced by <code>pdist</code>.
  Alternatively, <var>x</var> contains data formatted for input to
  <code>pdist</code>, <var>metric</var> is a metric for <code>pdist</code> and
  <var>arglist</var> is a cell array containing arguments that are passed to

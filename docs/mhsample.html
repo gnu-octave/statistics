@@ -15,6 +15,9 @@
       font-style: italics;
       font-weight: bold;
     }
+    td {
+      vertical-align: top;
+    }
     </style>
   </head>
   <body>
@@ -232,9 +235,9 @@ rand,
  printf ("The actual error %f\n", trueerr);
  mesh (x, y, reshape (f([x(:), y(:)]), size(x)), "facecolor", "None");
 
-Monte Carlo integral estimate int f(x) dx = 0.248744
-Monte Carlo integral error estimate 0.025454
-The actual error 0.013056
+Monte Carlo integral estimate int f(x) dx = 0.305505
+Monte Carlo integral error estimate 0.036895
+The actual error 0.043706
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
@@ -283,9 +286,9 @@ The actual error 0.013056
  printf ("Monte Carlo integral error estimate %f\n", errest);
  printf ("The actual error %f\n", trueerr);
 
-Monte Carlo integral estimate int f(x) dx = 2.411376
-Monte Carlo integral error estimate 0.015163
-The actual error 0.018800
+Monte Carlo integral estimate int f(x) dx = 2.366257
+Monte Carlo integral error estimate 0.018234
+The actual error 0.026319
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
