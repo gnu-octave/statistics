@@ -129,9 +129,9 @@ endfunction
 %!error <y must be .*> cophenet ([1 2 1], [1 2])
 
 ## Demonstration
-%!demo;
+%!demo
 %! X = randn (10,2);
 %! y = pdist (X);
 %! Z = linkage (y, "average");
-%! c = cophenet (Z, y)
+%! cophenet (Z, y)
 
