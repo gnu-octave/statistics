@@ -155,6 +155,7 @@ Hypothesis Testing
  binotest
  chi2gof
  chi2test
+ fishertest
  friedman
  hotelling_t2test
  hotelling_t2test2
