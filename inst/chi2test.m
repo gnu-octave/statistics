@@ -88,7 +88,7 @@
 ## have expected frequencies less than 5 or any cell with expected frequency
 ## less than 1.  In such cases, use @code{fishertest}.
 ##
-## @seealso{fishertest}
+## @seealso{crosstab, fishertest}
 ## @end deftypefn
 
 function [pval, chisq, df, E] = chi2test (x, varargin)
