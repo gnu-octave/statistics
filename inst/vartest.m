@@ -52,8 +52,8 @@
 ## returns a structure with the following fields:
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
-## @item @tab "chisqstat" @tab the value of the test statistic
-## @item @tab "df" @tab the degrees of freedom of the test
+## @item @tab @qcode{chisqstat} @tab the value of the test statistic
+## @item @tab @qcode{df} @tab the degrees of freedom of the test
 ## @end multitable
 ##
 ## @code{[@dots{}] = vartest (@dots{}, @var{name}, @var{value}), @dots{}}
@@ -61,16 +61,18 @@
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab Name @tab Value
-## @item @tab "alpha" @tab the significance level. Default is 0.05.
+## @item @tab @qcode{"alpha"} @tab the significance level. Default is 0.05.
 ##
-## @item @tab "dim" @tab dimension to work along a matrix or an N-D array.
+## @item @tab @qcode{"dim"} @tab dimension to work along a matrix or an N-D
+## array.
 ##
-## @item @tab "tail" @tab a string specifying the alternative hypothesis:
+## @item @tab @qcode{"tail"} @tab a string specifying the alternative hypothesis
 ## @end multitable
 ## @multitable @columnfractions 0.1 0.15 0.75
-## @item @tab "both" @tab "variance is not @var{v}" (two-tailed, default)
-## @item @tab "left" @tab "variance is less than @var{v}" (left-tailed)
-## @item @tab "right" @tab "variance is greater than @var{v}" (right-tailed)
+## @item @tab @qcode{"both"} @tab variance is not @var{v} (two-tailed, default)
+## @item @tab @qcode{"left"} @tab variance is less than @var{v} (left-tailed)
+## @item @tab @qcode{"right"} @tab variance is greater than @var{v}
+## (right-tailed)
 ## @end multitable
 ##
 ## @seealso{ttest, ztest, kstest}

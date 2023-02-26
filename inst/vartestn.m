@@ -50,8 +50,8 @@
 ## the following fields:
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
-## @item @tab "chistat" @tab -- the value of the test statistic
-## @item @tab "df" @tab -- the degrees of freedom of the test
+## @item @tab @qcode{chistat} @tab -- the value of the test statistic
+## @item @tab @qcode{df} @tab -- the degrees of freedom of the test
 ## @end multitable
 ##
 ##
@@ -59,34 +59,37 @@
 ## specifies one or more of the following @var{name}/@var{value} pairs:
 ##
 ## @multitable @columnfractions 0.20 0.8
-## @item "display" @tab "on" to display a boxplot and table, or "off" to omit
-## omit these displays. Default "on".
+## @item @qcode{"display"} @tab @qcode{"on"} to display a boxplot and table, or
+## @qcode{"off"} to omit these displays. Default @qcode{"on"}.
 ##
-## @item "testtype" @tab One of the following strings to control the type of
-## test to perform:
+## @item @qcode{"testtype"} @tab One of the following strings to control the
+## type of test to perform
 ## @end multitable
 ##
 ## @multitable @columnfractions 0.03 0.25 0.72
-## @item @tab "Bartlett" @tab Bartlett's test (default).
+## @item @tab @qcode{"Bartlett"} @tab Bartlett's test (default).
 ##
-## @item @tab "LeveneQuadratic" @tab Levene's test computed by performing anova
-## on the squared deviations of the data values from their group means.
+## @item @tab @qcode{"LeveneQuadratic"} @tab Levene's test computed by
+## performing anova on the squared deviations of the data values from their
+## group means.
 ##
-## @item @tab "LeveneAbsolute" @tab Levene's test computed by performing anova
-## on the absolute deviations of the data values from their group means.
+## @item @tab @qcode{"LeveneAbsolute"} @tab Levene's test computed by performing
+## anova on the absolute deviations of the data values from their group means.
 ##
-## @item @tab "BrownForsythe" @tab Brown-Forsythe test computed by performing
-## anova on the absolute deviations of the data values from the group medians.
+## @item @tab @qcode{"BrownForsythe"} @tab Brown-Forsythe test computed by
+## performing anova on the absolute deviations of the data values from the group
+## medians.
 ##
-## @item @tab "OBrien" @tab O'Brien's modification of Levene's test with W=0.5.
+## @item @tab @qcode{"OBrien"} @tab O'Brien's modification of Levene's test with
+## @math{W=0.5}.
 ## @end multitable
 ##
-## The classical 'Bartlett' test is sensitive to the assumption that the
+## The classical Bartlett's test is sensitive to the assumption that the
 ## distribution in each group is normal.  The other test types are more robust
 ## to non-normal distributions, especially ones prone to outliers.  For these
-## tests, the STATS output structure has a field named "fstat" containing the
-## test statistic, and "df1" and "df2" containing its numerator and denominator
-## degrees of freedom.
+## tests, the STATS output structure has a field named @qcode{fstat} containing
+## the test statistic, and @qcode{df1} and @qcode{df2} containing its numerator
+## and denominator degrees of freedom.
 ##
 ## @seealso{vartest, vartest2, anova1, bartlett_test, levene_test}
 ## @end deftypefn

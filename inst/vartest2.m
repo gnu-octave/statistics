@@ -46,16 +46,17 @@
 ## is the probability of observing the given result, or one more extreme, by
 ## chance if the null hypothesisis true.
 ##
-## @code{[@var{h}, @var{pval}, @var{ci}] = vartest (@dots{})} returns a 100 *
-## (1 - @var{alpha})% confidence interval for the true ratio var(X)/var(Y).
+## @code{[@var{h}, @var{pval}, @var{ci}] = vartest (@dots{})} returns a
+## @math{100 * (1 - @var{alpha})%} confidence interval for the true ratio
+## var(X)/var(Y).
 ##
 ## @code{[@var{h}, @var{pval}, @var{ci}, @var{stats}] = vartest (@dots{})}
 ## returns a structure with the following fields:
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
-## @item @tab "fstat" @tab the value of the test statistic
-## @item @tab "df1" @tab the numerator degrees of freedom of the test
-## @item @tab "df2" @tab the denominator degrees of freedom of the test
+## @item @tab @qcode{fstat} @tab the value of the test statistic
+## @item @tab @qcode{df1} @tab the numerator degrees of freedom of the test
+## @item @tab @qcode{df2} @tab the denominator degrees of freedom of the test
 ## @end multitable
 ##
 ## @code{[@dots{}] = vartest (@dots{}, @var{name}, @var{value}), @dots{}}
@@ -63,16 +64,18 @@
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab Name @tab Value
-## @item @tab "alpha" @tab the significance level. Default is 0.05.
+## @item @tab @qcode{"alpha"} @tab the significance level. Default is 0.05.
 ##
-## @item @tab "dim" @tab dimension to work along a matrix or an N-D array.
+## @item @tab @qcode{"dim"} @tab dimension to work along a matrix or an N-D
+## array.
 ##
-## @item @tab "tail" @tab a string specifying the alternative hypothesis:
+## @item @tab @qcode{"tail"} @tab a string specifying the alternative hypothesis
 ## @end multitable
 ## @multitable @columnfractions 0.1 0.15 0.75
-## @item @tab "both" @tab "variance is not @var{v}" (two-tailed, default)
-## @item @tab "left" @tab "variance is less than @var{v}" (left-tailed)
-## @item @tab "right" @tab "variance is greater than @var{v}" (right-tailed)
+## @item @tab @qcode{"both"} @tab variance is not @var{v} (two-tailed, default)
+## @item @tab @qcode{"left"} @tab variance is less than @var{v} (left-tailed)
+## @item @tab @qcode{"right"} @tab variance is greater than @var{v}
+## (right-tailed)
 ## @end multitable
 ##
 ## @seealso{ttest2, kstest2, bartlett_test, levene_test}
