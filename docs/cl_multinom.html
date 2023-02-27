@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: cl_multinom</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+    <style>
+    var {
+      font-style: italics;
+      font-weight: bold;
+    }
+    td {
+      vertical-align: top;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Descriptive Statistics">
+                    <i class="fas fa-list-alt"></i>
+                    Descriptive Statistics
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>cl_multinom</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>CL</var> = <b>cl_multinom</b><i> (<var>X</var>, <var>N</var>, <var>b</var>)</i></dt>
+<dt><u>statistics:</u> <var>CL</var> = <b>cl_multinom</b><i> (<var>X</var>, <var>N</var>, <var>b</var>, <var>method</var>)</i></dt>
+</dl>
+
+<p> Confidence level of multinomial portions.
+</p>
+<div class="ms-5">
+<p> <code>cl_multinom</code> returns confidence level of multinomial parameters
+ estimated as <math>p = X / sum(X)</math> with predefined confidence interval
+ <var>b</var>.  Finite population is also considered.
+</p>
+<p> This function calculates the level of confidence at which the samples
+ represent the true distribution given that there is a predefined tolerance
+ (confidence interval). This is the upside down case of the typical excercises
+ at which we want to get the confidence interval given the confidence level
+ (and the estimated parameters of the underlying distribution).
+ But once we accept (lets say at elections) that we have a standard predefined
+ maximal acceptable error rate (e.g. <var>b</var>=0.02 ) in the estimation and we
+ just want to know that how sure we can be that the measured proportions are
+ the same as in the entire population (ie. the expected value and mean of the
+ samples are roughly the same) we need to use this function.
+</p>
+ <a name="Arguments"></a>
+<h3 class="subheading">Arguments</h3>
+ <table>
+<thead><tr><th width="10%">Variable</th><th width="1%"></th><th width="10%">Type</th><th width="1%"></th><th width="78%">Description</th></tr></thead>
+<tr><td width="10%"><var>X</var></td><td width="1%"></td><td width="10%">int vector</td><td width="1%"></td><td width="78%">sample frequencies bins.</td></tr>
+<tr><td width="10%"><var>N</var></td><td width="1%"></td><td width="10%">int scalar</td><td width="1%"></td><td width="78%">Population size that was sampled
+ by <var>X</var>.  If <code>N &lt; sum (<var>X</var>)</code>, infinite number assumed.</td></tr>
+<tr><td width="10%"><var>b</var></td><td width="1%"></td><td width="10%">real vector</td><td width="1%"></td><td width="78%">confidence interval. If vector,
+ it should be the size of <var>X</var> containing confence interval for each cells.
+ If scalar, each cell will have the same value of b unless it is zero or -1.
+ If value is 0, <var>b</var> = 0.02 is assumed which is standard choice at
+ elections otherwise it is calculated in a way that one sample in a cell
+ alteration defines the confidence interval.</td></tr>
+<tr><td width="10%"><var>method</var></td><td width="1%"></td><td width="10%">string</td><td width="1%"></td><td width="78%">An optional argument
+ for defining the calculation method.  Available choices are
+ <code>&quot;bromaghin&quot;</code> (default), <code>&quot;cochran&quot;</code>, and <code>agresti_cull</code>.</td></tr>
+</table>
+
+<p> Note!  The <code>agresti_cull</code> method is not exactly the solution at
+ reference given below but an adjustment of the solutions above.
+</p>
+ <a name="Returns"></a>
+<h3 class="subheading">Returns</h3>
+<p> Confidence level.
+</p>
+ <a name="Example"></a>
+<h3 class="subheading">Example</h3>
+<p> CL = cl_multinom ([27; 43; 19; 11], 10000, 0.05)
+ returns 0.69 confidence level.
+</p>
+ <a name="References"></a>
+<h3 class="subheading">References</h3>
+ <ol>
+<li>
+ &quot;bromaghin&quot; calculation type (default) is based on the article:
+
+<p> Jeffrey F. Bromaghin, &quot;Sample Size Determination for Interval Estimation
+ of Multinomial Probabilities&quot;, The American Statistician  vol 47, 1993,
+ pp 203-206.
+</p>
+ </li><li>
+ &quot;cochran&quot; calculation type is based on article:
+
+<p> Robert T. Tortora, &quot;A Note on Sample Size Estimation for Multinomial
+ Populations&quot;, The American Statistician, , Vol 32. 1978,  pp 100-102.
+</p>
+ </li><li>
+ &quot;agresti_cull&quot; calculation type is based on article:
+
+<p> A. Agresti and B.A. Coull, &quot;Approximate is better than &rsquo;exact&rsquo; for
+ interval estimation of binomial portions&quot;, The American Statistician,
+ Vol. 52, 1998, pp 119-126
+ </p></li></ol>
+
+
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/cl_multinom.m">cl_multinom</a>
+</div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ CL = cl_multinom ([27; 43; 19; 11], 10000, 0.05)
+
+CL = 0.6923
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

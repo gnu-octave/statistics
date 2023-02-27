@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: regression_ttest</title>
+    <title>Statistics: correlation_test</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -64,39 +64,45 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>regression_ttest</code></b>
+              Function&nbsp;Reference: <b><code>correlation_test</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>h</var> = <b>regression_ttest</b><i> (<var>y</var>, <var>x</var>)</i></dt>
-<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>] = <b>regression_ttest</b><i> (<var>y</var>, <var>x</var>)</i></dt>
-<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>ci</var>] = <b>regression_ttest</b><i> (<var>y</var>, <var>x</var>)</i></dt>
-<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>ci</var>, <var>stats</var>] = <b>regression_ttest</b><i> (<var>y</var>, <var>x</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>regression_ttest</b><i> (<var>y</var>, <var>x</var>, <var>Name</var>, <var>Value</var>)</i></dt>
+<dt><u>statistics:</u> <var>h</var> = <b>correlation_test</b><i> (<var>x</var>, <var>y</var>)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>] = <b>correlation_test</b><i> (<var>y</var>, <var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>stats</var>] = <b>correlation_test</b><i> (<var>y</var>, <var>x</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>correlation_test</b><i> (<var>y</var>, <var>x</var>, <var>Name</var>, <var>Value</var>)</i></dt>
 </dl>
 
-<p> Perform a linear regression t-test.
+<p> Perform a correlation coefficient test whether two samples <var>x</var> and
+ <var>y</var> come from uncorrelated populations.
 </p>
 <div class="ms-5">
-<p> <code><var>h</var> = regression_ttest (<var>y</var>, <var>x</var>)</code> tests the null
- hypothesis that the slope <math>beta1</math> of a simple linear regression equals
- 0.  The result is <var>h</var> = 0 if the null hypothesis cannot be rejected at
- the 5% significance level, or <var>h</var> = 1 if the null hypothesis can be
- rejected at the 5% level.  <var>y</var> and <var>x</var> must be vectors of equal
- length with finite real numbers.
+<p> <code><var>h</var> = correlation_test (<var>y</var>, <var>x</var>)</code> tests the null
+ hypothesis that the two samples <var>x</var> and <var>y</var> come from uncorrelated
+ populations.  The result is <var>h</var> = 0 if the null hypothesis cannot be
+ rejected at the 5% significance level, or <var>h</var> = 1 if the null hypothesis
+ can be rejected at the 5% level.  <var>y</var> and <var>x</var> must be vectors of
+ equal length with finite real numbers.
 </p>
-<p> The p-value of the test is returned in <var>pval</var>.  A <math>100(1-alpha)%</math>
- confidence interval for <math>beta1</math> is returned in <var>ci</var>.  <var>stats</var> is
- a structure containing the value of the test statistic (<code>tstat</code>),
- the degrees of freedom (<code>df</code>), the slope coefficient (<code>beta1</code>),
- and the intercept (<code>beta0</code>).  Under the null, the test statistic
- <var>stats</var>.<code>tstat</code> follows a <math>T</math>-distribution with
- <var>stats</var>.<code>df</code> degrees of freedom.
-</p>
-<p> <code>[&hellip;] = regression_ttest (&hellip;, <var>name</var>, <var>value</var>)</code>
+<p> The p-value of the test is returned in <var>pval</var>.  <var>stats</var> is a
+ structure with the following fields:
+ </p><table>
+<thead><tr><th width="5%"></th><th width="20%">Field</th><th width="5%"></th><th width="70%">Value</th></tr></thead>
+<tr><td width="5%"></td><td width="20%"><code>method</code></td><td width="5%"></td><td width="70%">the type of correlation coefficient used
+ for the test</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>df</code></td><td width="5%"></td><td width="70%">the degrees of freedom (where applicable)</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>corrcoef</code></td><td width="5%"></td><td width="70%">the correlation coefficient</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>stat</code></td><td width="5%"></td><td width="70%">the test&rsquo;s statistic</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>dist</code></td><td width="5%"></td><td width="70%">the respective distribution for the test</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>alt</code></td><td width="5%"></td><td width="70%">the alternative hypothesis for the test</td></tr>
+</table>
+
+
+<p> <code>[&hellip;] = correlation_test (&hellip;, <var>name</var>, <var>value</var>)</code>
  specifies one or more of the following name/value pairs:
 </p>
  <table>
@@ -105,17 +111,29 @@
 <tr><td width="5%"></td><td width="20%"><code>&quot;tail&quot;</code></td><td width="75%">a string specifying the alternative hypothesis</td></tr>
 </table>
  <table>
-<tr><td width="10%"></td><td width="25%"><code>&quot;both&quot;</code></td><td width="65%"><math>beta1</math> is not 0 (two-tailed, default)</td></tr>
-<tr><td width="10%"></td><td width="25%"><code>&quot;left&quot;</code></td><td width="65%"><math>beta1</math> is less than 0 (left-tailed)</td></tr>
-<tr><td width="10%"></td><td width="25%"><code>&quot;right&quot;</code></td><td width="65%"><math>beta1</math> is greater than 0 (right-tailed)</td></tr>
+<tr><td width="10%"></td><td width="25%"><code>&quot;both&quot;</code></td><td width="65%"><math>corrcoef</math> is not 0 (two-tailed, default)</td></tr>
+<tr><td width="10%"></td><td width="25%"><code>&quot;left&quot;</code></td><td width="65%"><math>corrcoef</math> is less than 0 (left-tailed)</td></tr>
+<tr><td width="10%"></td><td width="25%"><code>&quot;right&quot;</code></td><td width="65%"><math>corrcoef</math> is greater than 0
+ (right-tailed)</td></tr>
+</table>
+
+ <table>
+<tr><td width="5%"></td><td width="20%"><code>&quot;method&quot;</code></td><td width="75%">a string specifying the correlation
+ coefficient used for the test</td></tr>
+</table>
+ <table>
+<tr><td width="10%"></td><td width="25%"><code>&quot;pearson&quot;</code></td><td width="65%">Pearson&rsquo;s product moment correlation
+ (Default)</td></tr>
+<tr><td width="10%"></td><td width="25%"><code>&quot;kendall&quot;</code></td><td width="65%">Kendall&rsquo;s rank correlation tau</td></tr>
+<tr><td width="10%"></td><td width="25%"><code>&quot;spearman&quot;</code></td><td width="65%">Spearman&rsquo;s rank correlation rho</td></tr>
 </table>
 
 <p> <strong>See also: </strong>
-  <a href="regress.html">regress</a>, 
-  <a href="regression_ftest.html">regression_ftest</a>
+  <a href="regression_ftest.html">regression_ftest</a>, 
+  <a href="regression_ttest.html">regression_ttest</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/regression_ttest.m">regression_ttest</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/correlation_test.m">correlation_test</a>
 </div>
 
         </div>
