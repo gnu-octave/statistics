@@ -898,3 +898,17 @@ classdef ConfusionMatrixChart < handle
 
 endclassdef
 
+%!demo
+%! ## Create a simple ConfusionMatrixChart Object
+%!
+%! cm = ConfusionMatrixChart (gca, [1 2; 1 2], {"A","B"},{"XLabel","LABEL A"})
+%! NormalizedValues = cm.NormalizedValues
+%! ClassLabels = cm.ClassLabels
+
+%!shared visibility_setting
+%! visibility_setting = get (0, "DefaultFigureVisible");
+%!test
+%! set (0, "DefaultFigureVisible", "off");
+%! cm = ConfusionMatrixChart (gca, [1 2; 1 2], {"A","B"},{"XLabel","LABEL A"});
+%! assert (isa (cm, "ConfusionMatrixChart"), true);
+%! set (0, "DefaultFigureVisible", visibility_setting);
