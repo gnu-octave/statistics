@@ -46,14 +46,14 @@
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab Name @tab Value
-## @item @tab "alpha" @tab the significance level. Default is 0.05.
+## @item @tab @qcode{"alpha"} @tab the significance level. Default is 0.05.
 ##
-## @item @tab "tail" @tab a string specifying the alternative hypothesis:
+## @item @tab @qcode{"tail"} @tab a string specifying the alternative hypothesis
 ## @end multitable
 ## @multitable @columnfractions 0.1 0.25 0.65
-## @item @tab "both" @tab @math{beta1} is not 0 (two-tailed, default)
-## @item @tab "left" @tab @math{beta1} is less than 0 (left-tailed)
-## @item @tab "right" @tab @math{beta1} is greater than 0 (right-tailed)
+## @item @tab @qcode{"both"} @tab @math{beta1} is not 0 (two-tailed, default)
+## @item @tab @qcode{"left"} @tab @math{beta1} is less than 0 (left-tailed)
+## @item @tab @qcode{"right"} @tab @math{beta1} is greater than 0 (right-tailed)
 ## @end multitable
 ##
 ## @seealso{regress, regression_ftest}
@@ -127,7 +127,7 @@ function [h, pval, ci, stats] = regression_ttest (y, x, varargin)
 
   ## Based on the "tail" argument determine the P-value, the critical values,
   ## and the confidence interval.
-  switch lower(tail)
+  switch lower (tail)
     case "both"
       pval = 2 * (1 - tcdf (abs (stats.tstat), stats.df));
       tcrit = - tinv (alpha / 2, stats.df);
