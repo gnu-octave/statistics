@@ -158,6 +158,7 @@ Hypothesis Testing
  binotest
  chi2gof
  chi2test
+ correlation_test
  fishertest
  friedman
  hotelling_t2test

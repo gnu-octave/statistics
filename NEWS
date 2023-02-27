@@ -433,6 +433,8 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** bvtcdf
 
+ ** correlation_test (new functionality, replacing old cor_test)
+
  ** icdf (wrapper for all available *inv distribution functions)
 
  ** fishertest (fully Matlab compatible)
@@ -470,5 +472,7 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  Removed Functions:
  ==================
+
+ ** cor_test (replaced by correlation_test)
 
  ** prop_test_2 (replaced by ztest2)
