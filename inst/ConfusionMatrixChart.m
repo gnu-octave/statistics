@@ -606,15 +606,15 @@ classdef ConfusionMatrixChart < handle
         if (t_pos(2) > cm_size)
           ## row summary
           idx = (t_pos(2) - cm_size - 1) * cm_size + t_pos(1) + 1;
-          color_idx = r_colors(idx) + 1;
+          color_idx = r_colors{idx} + 1;
         elseif (t_pos(1) > cm_size)
           ## column summary
           idx = (t_pos(1) - cm_size - 1) * cm_size + t_pos(2) + 1;
-          color_idx = c_colors(idx) + 1;
+          color_idx = c_colors{idx} + 1;
         else
           ## main chart
           idx = t_pos(2) * cm_size + t_pos(1) + 1;
-          color_idx = m_colors(idx) + 1;
+          color_idx = m_colors{idx} + 1;
         endif
 
         if (sum (cm_colormap(color_idx, :)) < 1.8)
