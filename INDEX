@@ -4,6 +4,7 @@ Clustering
  clusterdata
  cmdscale
  confusionmat
+ ConfusionMatrixChart
  cophenet
  evalclusters
  inconsistent
