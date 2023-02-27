@@ -14,6 +14,7 @@ Clustering
  optimalleaforder
  pdist
  pdist2
+ procrustes
  slicesample
  squareform
 CVpartition (class of set partitions for cross-validation, used in crossval)
