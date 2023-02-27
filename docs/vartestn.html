@@ -106,8 +106,8 @@
  the following fields:
 </p>
  <table>
-<tr><td width="5%"></td><td width="20%">&quot;chistat&quot;</td><td width="75%">&ndash; the value of the test statistic</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;df&quot;</td><td width="75%">&ndash; the degrees of freedom of the test</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>chistat</code></td><td width="75%">&ndash; the value of the test statistic</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>df</code></td><td width="75%">&ndash; the degrees of freedom of the test</td></tr>
 </table>
 
 
@@ -115,29 +115,32 @@
  specifies one or more of the following <var>name</var>/<var>value</var> pairs:
 </p>
  <table>
-<tr><td width="20%">&quot;display&quot;</td><td width="80%">&quot;on&quot; to display a boxplot and table, or &quot;off&quot; to omit
- omit these displays. Default &quot;on&quot;.</td></tr>
-<tr><td width="20%">&quot;testtype&quot;</td><td width="80%">One of the following strings to control the type of
- test to perform:</td></tr>
+<tr><td width="20%"><code>&quot;display&quot;</code></td><td width="80%"><code>&quot;on&quot;</code> to display a boxplot and table, or
+ <code>&quot;off&quot;</code> to omit these displays. Default <code>&quot;on&quot;</code>.</td></tr>
+<tr><td width="20%"><code>&quot;testtype&quot;</code></td><td width="80%">One of the following strings to control the
+ type of test to perform</td></tr>
 </table>
 
  <table>
-<tr><td width="3%"></td><td width="25%">&quot;Bartlett&quot;</td><td width="72%">Bartlett&rsquo;s test (default).</td></tr>
-<tr><td width="3%"></td><td width="25%">&quot;LeveneQuadratic&quot;</td><td width="72%">Levene&rsquo;s test computed by performing anova
- on the squared deviations of the data values from their group means.</td></tr>
-<tr><td width="3%"></td><td width="25%">&quot;LeveneAbsolute&quot;</td><td width="72%">Levene&rsquo;s test computed by performing anova
- on the absolute deviations of the data values from their group means.</td></tr>
-<tr><td width="3%"></td><td width="25%">&quot;BrownForsythe&quot;</td><td width="72%">Brown-Forsythe test computed by performing
- anova on the absolute deviations of the data values from the group medians.</td></tr>
-<tr><td width="3%"></td><td width="25%">&quot;OBrien&quot;</td><td width="72%">O&rsquo;Brien&rsquo;s modification of Levene&rsquo;s test with W=0.5.</td></tr>
+<tr><td width="3%"></td><td width="25%"><code>&quot;Bartlett&quot;</code></td><td width="72%">Bartlett&rsquo;s test (default).</td></tr>
+<tr><td width="3%"></td><td width="25%"><code>&quot;LeveneQuadratic&quot;</code></td><td width="72%">Levene&rsquo;s test computed by
+ performing anova on the squared deviations of the data values from their
+ group means.</td></tr>
+<tr><td width="3%"></td><td width="25%"><code>&quot;LeveneAbsolute&quot;</code></td><td width="72%">Levene&rsquo;s test computed by performing
+ anova on the absolute deviations of the data values from their group means.</td></tr>
+<tr><td width="3%"></td><td width="25%"><code>&quot;BrownForsythe&quot;</code></td><td width="72%">Brown-Forsythe test computed by
+ performing anova on the absolute deviations of the data values from the group
+ medians.</td></tr>
+<tr><td width="3%"></td><td width="25%"><code>&quot;OBrien&quot;</code></td><td width="72%">O&rsquo;Brien&rsquo;s modification of Levene&rsquo;s test with
+ <math>W=0.5</math>.</td></tr>
 </table>
 
-<p> The classical &rsquo;Bartlett&rsquo; test is sensitive to the assumption that the
+<p> The classical Bartlett&rsquo;s test is sensitive to the assumption that the
  distribution in each group is normal.  The other test types are more robust
  to non-normal distributions, especially ones prone to outliers.  For these
- tests, the STATS output structure has a field named &quot;fstat&quot; containing the
- test statistic, and &quot;df1&quot; and &quot;df2&quot; containing its numerator and denominator
- degrees of freedom.
+ tests, the STATS output structure has a field named <code>fstat</code> containing
+ the test statistic, and <code>df1</code> and <code>df2</code> containing its numerator
+ and denominator degrees of freedom.
 </p>
 <p> <strong>See also: </strong>
   <a href="vartest.html">vartest</a>, 

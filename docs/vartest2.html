@@ -101,16 +101,17 @@
  is the probability of observing the given result, or one more extreme, by
  chance if the null hypothesisis true.
 </p>
-<p> <code>[<var>h</var>, <var>pval</var>, <var>ci</var>] = vartest (&hellip;)</code> returns a 100 *
- (1 - <var>alpha</var>)% confidence interval for the true ratio var(X)/var(Y).
+<p> <code>[<var>h</var>, <var>pval</var>, <var>ci</var>] = vartest (&hellip;)</code> returns a
+ <math>100&times; (1 - <var>alpha</var>)%</math> confidence interval for the true ratio
+ var(X)/var(Y).
 </p>
 <p> <code>[<var>h</var>, <var>pval</var>, <var>ci</var>, <var>stats</var>] = vartest (&hellip;)</code>
  returns a structure with the following fields:
 </p>
  <table>
-<tr><td width="5%"></td><td width="20%">&quot;fstat&quot;</td><td width="75%">the value of the test statistic</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;df1&quot;</td><td width="75%">the numerator degrees of freedom of the test</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;df2&quot;</td><td width="75%">the denominator degrees of freedom of the test</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>fstat</code></td><td width="75%">the value of the test statistic</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>df1</code></td><td width="75%">the numerator degrees of freedom of the test</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>df2</code></td><td width="75%">the denominator degrees of freedom of the test</td></tr>
 </table>
 
 <p> <code>[&hellip;] = vartest (&hellip;, <var>name</var>, <var>value</var>), &hellip;</code>
@@ -118,14 +119,16 @@
 </p>
  <table>
 <thead><tr><th width="5%"></th><th width="20%">Name</th><th width="75%">Value</th></tr></thead>
-<tr><td width="5%"></td><td width="20%">&quot;alpha&quot;</td><td width="75%">the significance level. Default is 0.05.</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;dim&quot;</td><td width="75%">dimension to work along a matrix or an N-D array.</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;tail&quot;</td><td width="75%">a string specifying the alternative hypothesis:</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;alpha&quot;</code></td><td width="75%">the significance level. Default is 0.05.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;dim&quot;</code></td><td width="75%">dimension to work along a matrix or an N-D
+ array.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;tail&quot;</code></td><td width="75%">a string specifying the alternative hypothesis</td></tr>
 </table>
  <table>
-<tr><td width="10%"></td><td width="15%">&quot;both&quot;</td><td width="75%">&quot;variance is not <var>v</var>&quot; (two-tailed, default)</td></tr>
-<tr><td width="10%"></td><td width="15%">&quot;left&quot;</td><td width="75%">&quot;variance is less than <var>v</var>&quot; (left-tailed)</td></tr>
-<tr><td width="10%"></td><td width="15%">&quot;right&quot;</td><td width="75%">&quot;variance is greater than <var>v</var>&quot; (right-tailed)</td></tr>
+<tr><td width="10%"></td><td width="15%"><code>&quot;both&quot;</code></td><td width="75%">variance is not <var>v</var> (two-tailed, default)</td></tr>
+<tr><td width="10%"></td><td width="15%"><code>&quot;left&quot;</code></td><td width="75%">variance is less than <var>v</var> (left-tailed)</td></tr>
+<tr><td width="10%"></td><td width="15%"><code>&quot;right&quot;</code></td><td width="75%">variance is greater than <var>v</var>
+ (right-tailed)</td></tr>
 </table>
 
 <p> <strong>See also: </strong>

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: procrustes</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+    <style>
+    var {
+      font-style: italics;
+      font-weight: bold;
+    }
+    td {
+      vertical-align: top;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Clustering">
+                    <i class="fas fa-list-alt"></i>
+                    Clustering
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>procrustes</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>d</var> = <b>procrustes</b><i> (<var>X</var>, <var>Y</var>)</i></dt>
+<dt><u>statistics:</u> <var>d</var> = <b>procrustes</b><i> (<var>X</var>, <var>Y</var>, <var>param1</var>, <var>value1</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>d</var>, <var>Z</var>] = <b>procrustes</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>d</var>, <var>Z</var>, <var>transform</var>] = <b>procrustes</b><i> (&hellip;)</i></dt>
+</dl>
+
+<p> Procrustes Analysis.
+</p>
+<div class="ms-5">
+<p> <code><var>d</var> = procrustes (<var>X</var>, <var>Y</var>)</code> computes a linear
+ transformation of the points in the matrix <var>Y</var> to best conform them to
+ the points in the matrix <var>X</var> by minimizing the sum of squared errors, as
+ the goodness of fit criterion, which is returned in <var>d</var> as a
+ dissimilarity measure.  <var>d</var> is standardized by a measure of the scale of
+ <var>X</var>, given by
+ </p><ul>
+<li> <code>sum (sum ((X - repmat (mean (X, 1), size (X, 1), 1)) .^ 2, 1))</code>
+ </li></ul>
+<p> i.e., the sum of squared elements of a centered version of <var>X</var>.  However,
+ if <var>X</var> comprises repetitions of the same point, the sum of squared errors
+ is not standardized.
+</p>
+<p> <var>X</var> and <var>Y</var> must have the same number of points (rows) and
+ <code>procrustes</code> matches the <math>i</math>-th point in <var>Y</var> to the
+ <math>i</math>-th point in <var>X</var>.  Points in <var>Y</var> can have smaller dimensions
+ (columns) than those in <var>X</var>, but not the opposite.  Missing dimensions in
+ <var>Y</var> are added with padding columns of zeros as necessary to match the
+ the dimensions in <var>X</var>.
+</p>
+<p> <code>[<var>d</var>, <var>Z</var>] = procrustes (<var>X</var>, <var>Y</var>)</code> also returns the
+ transformed values in <var>Y</var>.
+</p>
+<p> <code>[<var>d</var>, <var>Z</var>, <var>transform</var>] = procrustes (<var>X</var>, <var>Y</var>)</code>
+ also returns the transformation that maps <var>Y</var> to <var>Z</var>.
+</p>
+<p> <var>transform</var> is a structure with fields:
+</p>
+ <table>
+<tr><td width="5%"></td><td width="10%"><code>c</code></td><td width="5%"></td><td width="80%">the translation component</td></tr>
+<tr><td width="5%"></td><td width="10%"><code>T</code></td><td width="5%"></td><td width="80%">the orthogonal rotation and reflection
+ component</td></tr>
+<tr><td width="5%"></td><td width="10%"><code>b</code></td><td width="5%"></td><td width="80%">the scale component</td></tr>
+</table>
+
+<p> So that <code><var>Z</var> = <var>transform</var>.<code>b</code> * <var>Y</var> *
+ <var>transform</var>.<code>T</code> + <var>transform</var>.<code>c</code></code>
+</p>
+<p> <code>procrustes</code> can take two optional parameters as Name-Value pairs.
+</p>
+<p> <code>[&hellip;] = procrustes (&hellip;, <code>&quot;Scaling&quot;</code>, <code>false</code>)</code>
+ computes a transformation that does not include scaling, that is
+ <var>transform</var>.<code>b</code> = 1.  Setting <code>&quot;Scaling&quot;</code> to <code>true</code>
+ includes a scaling component, which is the default.
+</p>
+<p> <code>[&hellip;] = procrustes (&hellip;, <code>&quot;Reflection&quot;</code>, <code>false</code>)</code>
+ computes a transformation that does not include a reflection component, that
+ is <var>transform</var>.<code>T</code> = 1.  Setting <code>&quot;Reflection&quot;</code> to
+ <code>true</code> forces the solution to include a reflection component in the
+ computed transformation, that is <var>transform</var>.<code>T</code> = -1.
+</p>
+<p> <code>[&hellip;] = procrustes (&hellip;, <code>&quot;Reflection&quot;</code>, <code>&quot;best&quot;</code>)</code>
+ computes the best fit procrustes solution, which may or may not include a
+ reflection component, which is the default.
+</p>
+<p> <strong>See also: </strong>
+  <a href="cmdscale.html">cmdscale</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/procrustes.m">procrustes</a>
+</div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create some random points in two dimensions
+ n = 10;
+ X = normrnd (0, 1, [n, 2]);
+
+ ## Those same points, rotated, scaled, translated, plus some noise
+ S = [0.5, -sqrt(3)/2; sqrt(3)/2, 0.5]; # rotate 60 degrees
+ Y = normrnd (0.5*X*S + 2, 0.05, n, 2);
+
+ ## Conform Y to X, plot original X and Y, and transformed Y
+ [d, Z] = procrustes (X, Y);
+ plot(X(:,1), X(:,2), "rx", Y(:,1), Y(:,2), "b.", Z(:,1), Z(:,2), "bx");
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/procrustes_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Find Procrustes distance and plot superimposed shape
+
+ X = [40 88; 51 88; 35 78; 36 75; 39 72; 44 71; 48 71; 52 74; 55 77];
+ Y = [36 43; 48 42; 31 26; 33 28; 37 30; 40 31; 45 30; 48 28; 51 24];
+ plot(X(:,1),X(:,2),"x");
+ hold on
+ plot(Y(:,1),Y(:,2),"o");
+ xlim([0 100]);
+ ylim([0 100]);
+ legend("Target shape (X)","Source shape (Y)");
+ [d,Z] = procrustes(X,Y)
+ plot(Z(:,1),Z(:,2),"s");
+ legend("Target shape (X)","Source shape (Y)", "Transformed shape (Z)");
+ hold off
+
+d = 0.2026
+Z =
+
+   39.769   87.509
+   50.562   86.801
+   35.549   72.163
+   37.313   73.991
+   40.873   75.850
+   43.552   76.796
+   48.058   75.977
+   50.783   74.229
+   53.541   70.684
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/procrustes_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 3
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Apply Procrustes transformation to larger set of points
+
+ ## Create matrices with landmark points for two triangles
+ X = [5, 0; 5, 5; 8, 5];   # target
+ Y = [0, 0; 1, 0; 1, 1];   # source
+
+ ## Create a matrix with more points on the source triangle
+ Y_mp = [linspace(Y(1,1),Y(2,1),10)', linspace(Y(1,2),Y(2,2),10)'; ...
+             linspace(Y(2,1),Y(3,1),10)', linspace(Y(2,2),Y(3,2),10)'; ...
+             linspace(Y(3,1),Y(1,1),10)', linspace(Y(3,2),Y(1,2),10)'];
+
+ ## Plot both shapes, including the larger set of points for the source shape.
+ plot ([X(:,1); X(1,1)], [X(:,2); X(1,2)], "bx-");
+ hold on
+ plot ([Y(:,1); Y(1,1)], [Y(:,2); Y(1,2)], "ro-", "MarkerFaceColor", "r");
+ plot (Y_mp(:,1), Y_mp(:,2), "ro");
+ xlim ([-1 10]);
+ ylim ([-1 6]);
+ legend ("Target shape (X)", "Source shape (Y)", ...
+         "More points on Y", "Location", "northwest");
+ hold off
+
+ ## Obtain the Procrustes transformation
+ [d, Z, transform] = procrustes (X, Y)
+
+ ## Use the Procrustes transformation to superimpose the more points (Y_mp)
+ ## on the source shape onto the target shape, and then visualize the results.
+ Z_mp = transform.b * Y_mp * transform.T + transform.c(1,:);
+ figure
+ plot ([X(:,1); X(1,1)], [X(:,2); X(1,2)], "bx-");
+ hold on
+ plot ([Y(:,1); Y(1,1)], [Y(:,2); Y(1,2)], "ro-", "MarkerFaceColor", "r");
+ plot (Y_mp(:,1), Y_mp(:,2), "ro");
+ xlim ([-1 10]);
+ ylim ([-1 6]);
+ plot ([Z(:,1); Z(1,1)],[Z(:,2); Z(1,2)],"ks-","MarkerFaceColor","k");
+ plot (Z_mp(:,1),Z_mp(:,2),"ks");
+ legend ("Target shape (X)", "Source shape (Y)", ...
+         "More points on Y", "Transformed source shape (Z)", ...
+         "Transformed additional points", "Location", "northwest");
+ hold off
+
+d = 0.044118
+Z =
+
+   5.0000   0.5000
+   4.5000   4.5000
+   8.5000   5.0000
+
+transform =
+
+  scalar structure containing the fields:
+
+    T =
+
+      -0.1240   0.9923
+       0.9923   0.1240
+
+    b = 4.0311
+    c =
+
+       5.0000   0.5000
+       5.0000   0.5000
+       5.0000   0.5000
+
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/procrustes_302.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+                  <div class="text-center">
+                    <img src="assets/procrustes_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 4
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compare shapes without reflection
+
+ T = [33, 93; 33, 87; 33, 80; 31, 72; 32, 65; 32, 58; 30, 72; ...
+      28, 72; 25, 69; 22, 64; 23, 59; 26, 57; 30, 57];
+ S = [48, 83; 48, 77; 48, 70; 48, 65; 49, 59; 49, 56; 50, 66; ...
+      52, 66; 56, 65; 58, 61; 57, 57; 54, 56; 51, 55];
+ plot (T(:,1), T(:,2), "x-");
+ hold on
+ plot (S(:,1), S(:,2), "o-");
+ legend ("Target shape (d)", "Source shape (b)");
+ hold off
+ d_false = procrustes (T, S, "reflection", false);
+ printf ("Procrustes distance without reflection: %f\n", d_false);
+ d_true = procrustes (T, S, "reflection", true);
+ printf ("Procrustes distance with reflection: %f\n", d_true);
+ d_best = procrustes (T, S, "reflection", "best");
+ printf ("Procrustes distance with best fit: %f\n", d_true);
+
+Procrustes distance without reflection: 0.342463
+Procrustes distance with reflection: 0.020428
+Procrustes distance with best fit: 0.020428
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/procrustes_401.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

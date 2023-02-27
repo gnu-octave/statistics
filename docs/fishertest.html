@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: cophenet</title>
+    <title>Statistics: fishertest</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -35,9 +35,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Clustering">
+                  <a class="nav-link" href="index.html#Hypothesis Testing">
                     <i class="fas fa-list-alt"></i>
-                    Clustering
+                    Hypothesis Testing
                   </a>
                 </li>
                 <li class="nav-item">
@@ -64,50 +64,72 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>cophenet</code></b>
+              Function&nbsp;Reference: <b><code>fishertest</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>c</var>, <var>d</var>] = <b>cophenet</b><i> (<var>Z</var>, <var>y</var>)</i></dt>
+<dt><u>statistics:</u> <var>h</var> = <b>fishertest</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>h</var> = <b>fishertest</b><i> (<var>x</var>, <var>param1</var>, <var>value1</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>] = <b>fishertest</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>stats</var>] = <b>fishertest</b><i> (&hellip;)</i></dt>
 </dl>
 
-<p> Compute the cophenetic correlation coefficient.
+<p> Fisher&rsquo;s exact test.
 </p>
 <div class="ms-5">
-<p> The cophenetic correlation coefficient <var>C</var> of a hierarchical cluster tree
- <var>Z</var> is the linear correlation coefficient between the cophenetic
- distances <var>d</var> and the euclidean distances <var>y</var>.
-</p> 
-<p>$$ c = \frac {\sum_{i < j}(Y_{ij}-{\bar {y}})(Z_{ij}-{\bar{z}})}
- {\sqrt{\sum_{i < j}(Y_{ij}-{\bar {y}})^2(Z_{ij}-{\bar{z}})^2}} $$
+<p> <code><var>h</var> = fishertest (<var>x</var>)</code> performs Fisher&rsquo;s exact test on a
+ <math>2&times;2</math> contingency table given in matrix <var>x</var>. This is a test of the
+ hypothesis that there are no non-random associations between the two 2-level
+ categorical variables in <var>x</var>.  <code>fishertest</code> returns the result of
+ the tested hypothsis in <var>h</var>.  <var>h</var> = 0 indicates that the null
+ hypothesis (of no association) cannot be rejected at the 5% significance
+ level.  <var>h</var> = 1 indicates that the null hypothesis can be rejected at the
+ 5% level.  <var>x</var> must contain only non-negative integers.  Use the
+ <code>crostab</code> function to generate the contingency table from samples of two
+ categorical variables.  Fisher&rsquo;s exact test is not suitable when all integers
+ in <var>x</var> are very large.  Use can use the Chi-square test in this case.
+</p>
+<p> <code>[<var>h</var>, <var>pval</var>] = fishertest (<var>x</var>)</code> returns the p-value in
+ <var>pval</var>.  That is the probability of observing the given result, or one
+ more extreme, by chance if the null hypothesis is true.  Small values of
+ <var>pval</var> cast doubt on the validity of the null hypothesis.
+</p>
+<p> <code>[<var>p</var>, <var>pval</var>, <var>stats</var>] = fishertest (&hellip;)</code> returns the
+ structure <var>stats</var> with the following fields:
+</p>
+ <table>
+<tr><td width="5%"></td><td width="30%"><code>OddsRatio</code></td><td width="65%">&ndash; the odds ratio</td></tr>
+<tr><td width="5%"></td><td width="30%"><code>ConfidenceInterval</code></td><td width="65%">&ndash; the asymptotic confidence
+ interval for the odds ratio.  If any of the four entries in the contingency
+ table <var>x</var> is zero, the confidence interval will not be computed, and
+ <code>[-Inf Inf]</code> will be displayed.</td></tr>
+</table>
 
+<p> <code>[&hellip;] = fishertest (&hellip;, <var>name</var>, <var>value</var>, &hellip;)</code>
+ specifies one or more of the following name/value pairs:
 </p>
-<p> It is a measure of the similarity between the distance of the leaves, as seen
- in the tree, and the distance of the original data points, which were used to
- build the tree.  When this similarity is greater, that is the coefficient is
- closer to 1, the tree renders an accurate representation of the distances
- between the original data points.
-</p>
-<p> <var>Z</var> is a hierarchical cluster tree, as the output of <code>linkage</code>.
- <var>y</var> is a vector of euclidean distances, as the output of <code>pdist</code>.
-</p>
-<p> The optional output <var>d</var> is a vector of cophenetic distances, in the same
- lower triangular format as <var>y</var>.  The cophenetic distance between two data
- points is the height of the lowest common node of the tree.
-</p>
+ <table>
+<thead><tr><th width="5%"></th><th width="20%">Name</th><th width="75%">Value</th></tr></thead>
+<tr><td width="5%"></td><td width="20%"><code>&quot;alpha&quot;</code></td><td width="75%">the significance level. Default is 0.05.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;tail&quot;</code></td><td width="75%">a string specifying the alternative hypothesis</td></tr>
+</table>
+ <table>
+<tr><td width="10%"></td><td width="25%"><code>&quot;both&quot;</code></td><td width="65%">odds ratio not equal to 1, indicating
+ association between two variables (two-tailed test, default)</td></tr>
+<tr><td width="10%"></td><td width="25%"><code>&quot;left&quot;</code></td><td width="65%">odds ratio greater than 1 (right-tailed test)</td></tr>
+<tr><td width="10%"></td><td width="25%"><code>&quot;right&quot;</code></td><td width="65%">odds ratio is less than 1 (left-tailed test)</td></tr>
+</table>
+
 <p> <strong>See also: </strong>
-  <a href="cluster.html">cluster</a>, 
-  <a href="dendrogram.html">dendrogram</a>, 
-  <a href="inconsistent.html">inconsistent</a>, 
-  <a href="linkage.html">linkage</a>, 
-  <a href="pdist.html">pdist</a>, 
-  <a href="squareform.html">squareform</a>
+  <a href="crosstab.html">crosstab</a>, 
+  <a href="chi2test.html">chi2test</a>, 
+  <a href="ztest2.html">ztest2</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/cophenet.m">cophenet</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/fishertest.m">fishertest</a>
 </div>
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -127,12 +149,28 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- X = randn (10,2);
- y = pdist (X);
- Z = linkage (y, "average");
- cophenet (Z, y)
+ ## A Fisher's exact test example
 
-ans = 0.7905
+ x = [3, 1; 1, 3]
+ [h, p, stats] = fishertest(x)
+
+x =
+
+   3   1
+   1   3
+
+h = 0
+p = 0.4857
+stats =
+
+  scalar structure containing the fields:
+
+    OddsRatio = 9
+    ConfidenceInterval =
+
+         0.3666   220.9270
+
+
                     </pre></td></tr></tbody>
                   </table>
 
