@@ -37,6 +37,7 @@ Data Manipulation
  standardizeMissing
  tabulate
 Descriptive Statistics
+ cl_multinom
  geomean
  grpstats
  harmmean
