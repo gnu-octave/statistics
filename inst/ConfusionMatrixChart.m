@@ -1,4 +1,5 @@
 ## Copyright (C) 2020-2021 Stefano Guidoni <ilguido@users.sf.net>
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
