@@ -21,7 +21,7 @@ You can find its documentation at [https://gnu-octave.github.io/statistics/](htt
 
 ## 2. Install statistics
 
-To install the latest version (1.5.3) you need Octave (>=6.1.0) installed on your system. If you have Octave (>=7.2.0) you can install it by typing:
+To install the latest version (1.5.4) you need Octave (>=6.1.0) installed on your system. If you have Octave (>=7.2.0) you can install it by typing:
 
   `pkg install -forge statistics`
 
@@ -52,7 +52,7 @@ You are encouraged to provide feedback regarding possible bugs, missing features
 
 Please, make sure that when reporting a bug you provide as much information as possible for other users to be able to replicate it. Use [markdown tips](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax) to make your post clear and easy to read and understand your issue.
 
-[^2]: Don't open an issues just for requesting a missing function! Immplement it yourself and make an invaluable contribution :innocent:
+[^2]: Don't open an issues just for requesting a missing function! Implement it yourself and make an invaluable contribution :innocent:
 
 ## 4. Contribute
 
@@ -62,5 +62,5 @@ If you find a bug and fix it, just [clone](https://github.com/gnu-octave/statist
 
 Make sure you follow the coding style already used in the **statistics** package (similar to GNU Octave). For a summary of the coding style rules used in the package see [Contribute](https://github.com/gnu-octave/statistics/blob/main/CONTRIBUTE.md).
 
-Contributing is not only about fixing bugs. Improving the texinfo of the fucntions help files or adding BISTs and demos at the end of the function files is also important. Out of a total of 311 functions, there are still 25 functions missing BISTs and it would be invaluable to add tests to these. Fixing a typo in the help file is still of value though. So don't hesitate to contribute! :+1:
+Contributing is not only about fixing bugs. Improving the texinfo of the functions help files or adding BISTs and demos at the end of the function files is also important. Out of a total of 315 functions, there are still 18 functions missing BISTs and it would be invaluable to add tests to these. Fixing a typo in the help file is still of value though. So don't hesitate to contribute! :+1:
 
