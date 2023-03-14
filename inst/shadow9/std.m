@@ -33,7 +33,6 @@
 ## deviation of the elements in @var{x} defined as
 ## @tex
 ## $$ {\rm std}(x) = \sqrt{{1\over N-1} \sum_{i=1}^N |x_i - \bar x |^2} $$
-## where $N$ is the number of elements of @var{x}.
 ##
 ## @end tex
 ## @ifnottex
@@ -42,10 +41,9 @@
 ## std (@var{x}) = sqrt ((1 / (N-1)) * SUM_i (|@var{x}(i) - mean (@var{x})|^2))
 ## @end example
 ##
+## @end ifnottex
 ## @noindent
 ## where @math{N} is the length of the @var{x} vector.
-##
-## @end ifnottex
 ##
 ## @item
 ## If @var{x} is a matrix, then @code{std (@var{x})} returns a row vector with
@@ -675,16 +673,16 @@ endfunction
 %! assert (std (x, [], [3, 2], "omitnan"), v, 1e-14);
 
 ## Testing weights vectors & arrays
-%!assert (std (ones (2,2,2), [1:2], 3), [(zeros (2, 2))]);
-%!assert (std (magic (3), [1:9], "all"), 2.581988897471611, 1e-14);
+%!assert (std (ones (2,2,2), [1:2], 3), [(zeros (2, 2))])
+%!assert (std (magic (3), [1:9], "all"), 2.581988897471611, 1e-14)
 
 ## Test exceeding dimensions
-%!assert (std (ones (2,2), [], 3), zeros (2,2));
-%!assert (std (ones (2,2,2), [], 99), zeros (2,2,2));
-%!assert (std (magic (3), [], 3), zeros (3,3));
-%!assert (std (magic (3), [], 1), sqrt ([7, 16, 7]));
-%!assert (std (magic (3), [], [1 3]), sqrt ([7, 16, 7]));
-%!assert (std (magic (3), [], [1 99]), sqrt ([7, 16, 7]));
+%!assert (std (ones (2,2), [], 3), zeros (2,2))
+%!assert (std (ones (2,2,2), [], 99), zeros (2,2,2))
+%!assert (std (magic (3), [], 3), zeros (3,3))
+%!assert (std (magic (3), [], 1), sqrt ([7, 16, 7]))
+%!assert (std (magic (3), [], [1 3]), sqrt ([7, 16, 7]))
+%!assert (std (magic (3), [], [1 99]), sqrt ([7, 16, 7]))
 
 ## Test empty inputs
 %!assert (std ([]), NaN)

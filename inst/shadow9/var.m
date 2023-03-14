@@ -33,7 +33,6 @@
 ## elements in @var{x} defined as
 ## @tex
 ## $$ {\rm var}(x) = {1\over N-1} \sum_{i=1}^N |x_i - \bar x |^2 $$
-## where $N$ is the number of elements of @var{x}.
 ##
 ## @end tex
 ## @ifnottex
@@ -42,10 +41,9 @@
 ## var (@var{x}) = (1 / (N-1)) * SUM_i (|@var{x}(i) - mean (@var{x})|^2)
 ## @end example
 ##
+## @end ifnottex
 ## @noindent
 ## where @math{N} is the length of the @var{x} vector.
-##
-## @end ifnottex
 ##
 ## @item
 ## If @var{x} is a matrix, then @code{var (@var{x})} returns a row vector with
@@ -671,16 +669,16 @@ endfunction
 %! assert (var (x, [], [3, 2], "omitnan"), v, 4e-14);
 
 ## Testing weights vector & arrays
-%!assert (var (ones (2,2,2), [1:2], 3), [(zeros (2, 2))]);
-%!assert (var (magic (3), [1:9], "all"), 6.666666666666667, 1e-14);
+%!assert (var (ones (2,2,2), [1:2], 3), [(zeros (2, 2))])
+%!assert (var (magic (3), [1:9], "all"), 6.666666666666667, 1e-14)
 
 ## Test exceeding dimensions
-%!assert (var (ones (2,2), [], 3), zeros (2,2));
-%!assert (var (ones (2,2,2), [], 99), zeros (2,2,2));
-%!assert (var (magic (3), [], 3), zeros (3,3));
-%!assert (var (magic (3), [], 1), [7, 16, 7]);
-%!assert (var (magic (3), [], [1 3]), [7, 16, 7]);
-%!assert (var (magic (3), [], [1 99]), [7, 16, 7]);
+%!assert (var (ones (2,2), [], 3), zeros (2,2))
+%!assert (var (ones (2,2,2), [], 99), zeros (2,2,2))
+%!assert (var (magic (3), [], 3), zeros (3,3))
+%!assert (var (magic (3), [], 1), [7, 16, 7])
+%!assert (var (magic (3), [], [1 3]), [7, 16, 7])
+%!assert (var (magic (3), [], [1 99]), [7, 16, 7])
 
 ## Test empty inputs
 %!assert (var ([]), NaN)

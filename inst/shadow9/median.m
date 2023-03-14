@@ -29,12 +29,8 @@
 ## When the elements of @var{x} are sorted, say
 ## @code{@var{s} = sort (@var{x})}, the median is defined as
 ## @tex
-## $$
-## {\rm median} (x) =
-##   \cases{s(\lceil N/2\rceil), & $N$ odd;\cr
-##           (s(N/2)+s(N/2+1))/2, & $N$ even.}
-## $$
-## where $N$ is the number of elements of @var{x}.
+## $$ {\rm median} (x) = \cases{s(\lceil N/2\rceil), & $N$ odd;
+##                       \cr (s(N/2)+s(N/2+1))/2, & $N$ even.} $$
 ##
 ## @end tex
 ## @ifnottex
@@ -48,19 +44,16 @@
 ## @end example
 ##
 ## @end ifnottex
-## @itemize
-## @item
-## If @var{x} is a matrix, then @code{median (@var{x})} returns a row vector
-## with the mean of each column in @var{x}.
+## @noindent
+## where @math{N} is the number of elements of @var{x}.
 ##
-## @item
-## If @var{x} is a multidimensional array, then @code{median (@var{x})}
-## operates along the first non-singleton dimension of @var{x}.
-## @end itemize
+## If @var{x} is an array, then @code{median (@var{x})} operates along the first
+## non-singleton dimension of @var{x}.
 ##
-## @code{median (@var{x}, @var{dim})} returns the median along the operating
-## dimension @var{dim} of @var{x}.  For @var{dim} greater than
-## @code{ndims (@var{x})}, then @var{m} = @var{x}.
+## The optional variable @var{dim} forces @code{median} to operate over the
+## specified dimension, which must be a positive integer-valued number.
+## Specifying any singleton dimension in @var{x}, including any dimension
+## exceeding @code{ndims (@var{x})}, will result in a median equal to @var{x}.
 ##
 ## @code{median (@var{x}, @var{vecdim})} returns the median over the
 ## dimensions specified in the vector @var{vecdim}.  For example, if @var{x}
@@ -79,23 +72,25 @@
 ## data type, using any of the input arguments in the previous syntaxes.
 ## @var{outtype} can take the following values:
 ## @itemize
-## @item "default"
-## Output is of type double, unless the input is single in which case the output
-## is of type single.
+## @item @qcode{"default"}
+## Output is of type double, unless the input is single in which case the
+## output is of type single.
 ##
-## @item "double"
+## @item @qcode{"double"}
 ## Output is of type double.
 ##
-## @item "native".
+## @item @qcode{"native"}
 ## Output is of the same type as the input (@code{class (@var{x})}), unless the
 ## input is logical in which case the output is of type double.
 ## @end itemize
 ##
-## @code{median (@dots{}, @var{nanflag})} specifies whether to exclude NaN
-## values from the calculation, using any of the input argument combinations in
-## previous syntaxes.  By default, NaN values are included in the calculation
-## (@var{nanflag} has the value "includenan").  To exclude NaN values, set the
-## value of @var{nanflag} to "omitnan".
+## The optional variable @var{nanflag} specifies whether to include or exclude
+## NaN values from the calculation using any of the previously specified input
+## argument combinations.  The default value for @var{nanflag} is
+## @qcode{"includenan"} which keeps NaN values in the calculation.  To
+## exclude NaN values set the value of @var{nanflag} to @qcode{"omitnan"}.
+## The output will still contain NaN values if @var{x} consists of all NaN
+## values in the operating dimension.
 ##
 ## @seealso{mean, mode}
 ## @end deftypefn
@@ -111,12 +106,12 @@ function m = median (x, varargin)
   endif
 
   ## Set initial conditions
-  all_flag = 0;
-  omitnan = 0;
-  perm_flag = 0;
-  out_flag = 0;
-  vecdim_flag = 0;
-  dim = [];
+  all_flag    = false;
+  omitnan     = false;
+  perm_flag   = false;
+  out_flag    = false;
+  vecdim_flag = false;
+  dim         = [];
 
   nvarg = numel (varargin);
   varg_chars = cellfun ("ischar", varargin);
@@ -131,16 +126,16 @@ function m = median (x, varargin)
 
   ## Process any other char arguments.
   if (any (varg_chars))
-    for idx = varargin(varg_chars)
-      switch (tolower (idx{:}))
+    for argin = varargin(varg_chars)
+      switch (tolower (argin{:}))
         case "all"
-          all_flag = 1;
+          all_flag = true;
 
         case "omitnan"
-          omitnan = 1;
+          omitnan = true;
 
         case "includenan"
-          omitnan = 0;
+          omitnan = false;
 
         case "native"
           if (out_flag)
@@ -149,7 +144,7 @@ function m = median (x, varargin)
           if (strcmp (outtype, "logical"))
             outtype = "double";
           endif
-          out_flag = 1;
+          out_flag = true;
 
         case "default"
           if (out_flag)
@@ -158,14 +153,14 @@ function m = median (x, varargin)
           if (! strcmp (outtype, "single"))
             outtype = "double";
           endif
-          out_flag = 1;
+          out_flag = true;
 
         case "double"
           if (out_flag)
             error ("median: only one OUTTYPE can be specified.")
           endif
           outtype = "double";
-          out_flag = 1;
+          out_flag = true;
 
         otherwise
           print_usage ();
@@ -176,8 +171,8 @@ function m = median (x, varargin)
     nvarg = numel (varargin);
   endif
 
-  if (((nvarg == 1) && ! (isnumeric (varargin{1}))) || (nvarg > 1))
-    ## After trimming char inputs can only be one varargin left, must be numeric
+  if ((nvarg == 1 && ! isnumeric (varargin{1})) || nvarg > 1)
+    ## After trimming char inputs should only be one numeric varargin left
     print_usage ();
   endif
 
@@ -191,7 +186,7 @@ function m = median (x, varargin)
     dim = varargin{1};
     vecdim_flag = ! isscalar (dim);
 
-    if (! (isvector (dim) && (dim > 0)) || any (rem (dim, 1)))
+    if (! (isvector (dim) && dim > 0) || any (rem (dim, 1)))
       error ("median: DIM must be a positive integer scalar or vector.");
     endif
 
@@ -214,13 +209,13 @@ function m = median (x, varargin)
       if (isempty (dim))
         ## No dims left to process, return input as output
         if (! strcmp (class (x), outtype))
-          m = outtype_convert (x, outtype);
+          m = feval (outtype, x);  # convert to outtype
         else
           m = x;
         endif
         return;
-      elseif ((length(dim) == length(sing_dim_x)) ...
-                 && unique ([dim, sing_dim_x]) == dim)
+      elseif (numel (dim) == numel (sing_dim_x)
+              && unique ([dim, sing_dim_x]) == dim)
         ## If DIMs cover all nonsingleton ndims(x) it's equivalent to "all"
         ##   (check lengths first to reduce unique overhead if not covered)
         all_flag = true;
@@ -228,9 +223,9 @@ function m = median (x, varargin)
     endif
 
   else
-    ## Dim not provided.  Determine scalar dimension
+    ## Dim not provided.  Determine scalar dimension.
     if (all_flag)
-      ## Special case 'all': Recast input as dim1 vector, process as normal
+      ## Special case 'all': Recast input as dim1 vector, process as normal.
       x = x(:);
       szx = [length(x), 1];
       dim = 1;
@@ -242,7 +237,7 @@ function m = median (x, varargin)
       sz_out = [1, 1];
 
     elseif (ndx == 2 && szx == [0, 0])
-      ## Special case []: Do not apply sz_out(dim)=1 change
+      ## Special case []: Do not apply sz_out(dim)=1 change.
       dim = 1;
       sz_out = [1, 1];
 
@@ -269,7 +264,7 @@ function m = median (x, varargin)
   if (szx(dim) == 1)
     ## Operation along singleton dimension - nothing to do
     if (! strcmp (class (x), outtype))
-      m = outtype_convert (x, outtype);
+      m = feval (outtype, x);  # convert to outtype
     else
       m = x;
     endif
@@ -277,31 +272,26 @@ function m = median (x, varargin)
   endif
 
   ## Permute dim to simplify all operations along dim1.  At func. end ipermute.
-
-  ## FIXME: for very large data sets, flattening all vecdim dimensions into dim1
-  ##        could hit index type limits
-
-  if ((length (dim) > 1) || (dim != 1 && ! isvector (x)))
-    perm_vect = 1 : ndx;
+  if (numel (dim) > 1 || (dim != 1 && ! isvector (x)))
+    perm = 1 : ndx;
 
     if (! vecdim_flag)
       ## Move dim to dim 1
-      perm_vect([1, dim]) = [dim, 1];
-      x = permute (x, perm_vect);
+      perm([1, dim]) = [dim, 1];
+      x = permute (x, perm);
       szx([1, dim]) = szx([dim, 1]);
       dim = 1;
 
     else
       ## Move vecdims to front
-      perm_vect(dim) = [];
-      perm_vect = [dim, perm_vect];
-      x = permute (x, perm_vect);
+      perm(dim) = [];
+      perm = [dim, perm];
+      x = permute (x, perm);
 
       ## Reshape all vecdims into dim1
       num_dim = prod (szx(dim));
       szx(dim) = [];
-      szx = [ones(1, length(dim)), szx];
-      szx(1) = num_dim;
+      szx = [num_dim, ones(1, numel(dim)-1), szx];
       x = reshape (x, szx);
       dim = 1;
     endif
@@ -312,15 +302,15 @@ function m = median (x, varargin)
   ## Find column locations of NaNs
   nanfree = ! any (isnan (x), dim);
   if (omitnan && nanfree(:))
-    ## Don't use omitnan path if no NaNs are present. Prevents any data types
+    ## Don't use omitnan path if no NaNs are present.  Prevents any data types
     ## without a defined NaN from following the omitnan codepath.
-    omitnan = 0;
+    omitnan = false;
   endif
 
-  x = sort (x, dim); # Note: pushes any NaN's to end for omitnan compatability
+  x = sort (x, dim); # Note: pushes any NaN's to end for omitnan compatibility
 
   if (omitnan)
-    ## Ignore any NaN's in data. Each operating vector might have a
+    ## Ignore any NaN's in data.  Each operating vector might have a
     ## different number of non-NaN data points.
 
     if (isvector (x))
@@ -338,9 +328,9 @@ function m = median (x, varargin)
 
     else
       n = sum (! isnan (x), 1);
-      k = floor ((n + 1) ./ 2);
+      k = floor ((n + 1) / 2);
       m_idx_odd = mod (n, 2) & n;
-      m_idx_even = ! m_idx_odd & n;
+      m_idx_even = (! m_idx_odd) & n;
 
       m = NaN ([1, szx(2 : end)]);
 
@@ -362,7 +352,7 @@ function m = median (x, varargin)
     endif
 
   else
-    ## No "omitnan". All 'vectors' uniform length.
+    ## No "omitnan".  All 'vectors' uniform length.
     ## All types without a NaN value will use this path.
     if (all (!nanfree))
       m = NaN (sz_out);
@@ -405,7 +395,7 @@ function m = median (x, varargin)
           if (any (isa(x, "integer")))
             ## avoid int overflow issues
 
-            ## Use flattened index to simplify n-D operations
+            ## Use flattened index to simplify N-D operations
             m(1,:) = x(k, :);
             m2 = x(k+1, :);
 
@@ -426,25 +416,14 @@ function m = median (x, varargin)
 
   if (perm_flag)
     ## Inverse permute back to correct dimensions
-    m = ipermute (m, perm_vect);
+    m = ipermute (m, perm);
   endif
 
   ## Convert output type as requested
   if (! strcmp (class (m), outtype))
-    m = outtype_convert (m, outtype);
+    m = feval (outtype, m);
   endif
 
-endfunction
-
-function m = outtype_convert (m, outtype)
-  switch (outtype)
-    case "single"
-      m = single (m);
-    case "double"
-      m = double (m);
-    otherwise
-      m = cast (m, outtype);
-  endswitch
 endfunction
 
 %!assert (median (1), 1)
@@ -514,7 +493,7 @@ endfunction
 %!assert (median (cat (3, 3, 1, NaN, 2), "omitnan"), 2)
 %!assert (median (cat (3, 3, 1, NaN, 2), 3, "omitnan"), 2)
 
-# Test boolean input
+## Test boolean input
 %!test
 %! assert (median (true, "all"), logical (1));
 %! assert (median (false), logical (0));
@@ -536,11 +515,11 @@ endfunction
 %! assert (size (median (x, [1 2 3 4])), [1 1]);
 
 ## Test exceeding dimensions
-%!assert (median (ones (2,2), 3), ones (2,2));
-%!assert (median (ones (2,2,2), 99), ones (2,2,2));
-%!assert (median (magic (3), 3), magic (3));
-%!assert (median (magic (3), [1 3]), [4, 5, 6]);
-%!assert (median (magic (3), [1 99]), [4, 5, 6]);
+%!assert (median (ones (2,2), 3), ones (2,2))
+%!assert (median (ones (2,2,2), 99), ones (2,2,2))
+%!assert (median (magic (3), 3), magic (3))
+%!assert (median (magic (3), [1 3]), [4, 5, 6])
+%!assert (median (magic (3), [1 99]), [4, 5, 6])
 
 ## Test results with vecdim in n-dimensional arrays and "omitnan"
 %!test
@@ -579,41 +558,41 @@ endfunction
 %!assert (median ([NaN 2 ; NaN 4], "omitnan"), [NaN 3])
 %!assert (median (ones (1, 0, 3)), NaN (1, 1, 3))
 
-%!assert (median (NaN("single")), NaN("single"));
-%!assert (median (NaN("single"), "omitnan"), NaN("single"));
-%!assert (median (NaN("single"), "double"), NaN("double"));
-%!assert (median (single([1 2 ; NaN 4])), single([NaN 3]));
-%!assert (median (single([1 2 ; NaN 4]), "double"), double([NaN 3]));
-%!assert (median (single([1 2 ; NaN 4]), "omitnan"), single([1 3]));
-%!assert (median (single([1 2 ; NaN 4]), "omitnan", "double"), double([1 3]));
-%!assert (median (single([NaN 2 ; NaN 4]), "double"), double([NaN 3]));
-%!assert (median (single([NaN 2 ; NaN 4]), "omitnan"), single([NaN 3]));
-%!assert (median (single([NaN 2 ; NaN 4]), "omitnan", "double"), double([NaN 3]));
+%!assert (median (NaN("single")), NaN("single"))
+%!assert (median (NaN("single"), "omitnan"), NaN("single"))
+%!assert (median (NaN("single"), "double"), NaN("double"))
+%!assert (median (single([1 2 ; NaN 4])), single([NaN 3]))
+%!assert (median (single([1 2 ; NaN 4]), "double"), double([NaN 3]))
+%!assert (median (single([1 2 ; NaN 4]), "omitnan"), single([1 3]))
+%!assert (median (single([1 2 ; NaN 4]), "omitnan", "double"), double([1 3]))
+%!assert (median (single([NaN 2 ; NaN 4]), "double"), double([NaN 3]))
+%!assert (median (single([NaN 2 ; NaN 4]), "omitnan"), single([NaN 3]))
+%!assert (median (single([NaN 2 ; NaN 4]), "omitnan", "double"), double([NaN 3]))
 
-%!assert (median (Inf), Inf);
-%!assert (median (-Inf), -Inf);
-%!assert (median ([-Inf Inf]), NaN);
-%!assert (median ([3 Inf]), Inf);
-%!assert (median ([3 4 Inf]), 4);
-%!assert (median ([Inf 3 4]), 4);
-%!assert (median ([Inf 3 Inf]), Inf);
+%!assert (median (Inf), Inf)
+%!assert (median (-Inf), -Inf)
+%!assert (median ([-Inf Inf]), NaN)
+%!assert (median ([3 Inf]), Inf)
+%!assert (median ([3 4 Inf]), 4)
+%!assert (median ([Inf 3 4]), 4)
+%!assert (median ([Inf 3 Inf]), Inf)
 
-%!assert (median ([]), NaN);
-%!assert (median (ones(1,0)), NaN);
-%!assert (median (ones(0,1)), NaN);
-%!assert (median ([], 1), NaN(1,0));
-%!assert (median ([], 2), NaN(0,1));
-%!assert (median ([], 3), NaN(0,0));
-%!assert (median (ones(1,0), 1), NaN(1,0));
-%!assert (median (ones(1,0), 2), NaN(1,1));
-%!assert (median (ones(1,0), 3), NaN(1,0));
-%!assert (median (ones(0,1), 1), NaN(1,1));
-%!assert (median (ones(0,1), 2), NaN(0,1));
-%!assert (median (ones(0,1), 3), NaN(0,1));
-%!assert (median (ones(0,1,0,1), 1), NaN(1,1,0));
-%!assert (median (ones(0,1,0,1), 2), NaN(0,1,0));
-%!assert (median (ones(0,1,0,1), 3), NaN(0,1,1));
-%!assert (median (ones(0,1,0,1), 4), NaN(0,1,0));
+%!assert (median ([]), NaN)
+%!assert (median (ones(1,0)), NaN)
+%!assert (median (ones(0,1)), NaN)
+%!assert (median ([], 1), NaN(1,0))
+%!assert (median ([], 2), NaN(0,1))
+%!assert (median ([], 3), NaN(0,0))
+%!assert (median (ones(1,0), 1), NaN(1,0))
+%!assert (median (ones(1,0), 2), NaN(1,1))
+%!assert (median (ones(1,0), 3), NaN(1,0))
+%!assert (median (ones(0,1), 1), NaN(1,1))
+%!assert (median (ones(0,1), 2), NaN(0,1))
+%!assert (median (ones(0,1), 3), NaN(0,1))
+%!assert (median (ones(0,1,0,1), 1), NaN(1,1,0))
+%!assert (median (ones(0,1,0,1), 2), NaN(0,1,0))
+%!assert (median (ones(0,1,0,1), 3), NaN(0,1,1))
+%!assert (median (ones(0,1,0,1), 4), NaN(0,1,0))
 
 ## Test complex inputs (should sort by abs(a))
 %!assert (median([1 3 3i 2 1i]), 2)
@@ -686,9 +665,9 @@ endfunction
 %!  intmax("uint64")-1)
 
 ## Test input case insensitivity
-%!assert (median ([1 2 3], "aLL"), 2);
-%!assert (median ([1 2 3], "OmitNan"), 2);
-%!assert (median ([1 2 3], "DOUBle"), 2);
+%!assert (median ([1 2 3], "aLL"), 2)
+%!assert (median ([1 2 3], "OmitNan"), 2)
+%!assert (median ([1 2 3], "DOUBle"), 2)
 
 ## Test input validation
 %!error <Invalid call> median ()
