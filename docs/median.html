@@ -85,26 +85,19 @@
 <p> When the elements of <var>x</var> are sorted, say
  <code><var>s</var> = sort (<var>x</var>)</code>, the median is defined as
 </p> 
-<p>$$
- {\rm median} (x) =
-   \cases{s(\lceil N/2\rceil), & $N$ odd;\cr
-           (s(N/2)+s(N/2+1))/2, & $N$ even.}
- $$
+<p>$$ {\rm median} (x) = \cases{s(\lceil N/2\rceil), & $N$ odd;
+                       \cr (s(N/2)+s(N/2+1))/2, & $N$ even.} $$
 
 </p> 
- <ul>
-<li>
- If <var>x</var> is a matrix, then <code>median (<var>x</var>)</code> returns a row vector
- with the mean of each column in <var>x</var>.
-
- </li><li>
- If <var>x</var> is a multidimensional array, then <code>median (<var>x</var>)</code>
- operates along the first non-singleton dimension of <var>x</var>.
- </li></ul>
-
-<p> <code>median (<var>x</var>, <var>dim</var>)</code> returns the median along the operating
- dimension <var>dim</var> of <var>x</var>.  For <var>dim</var> greater than
- <code>ndims (<var>x</var>)</code>, then <var>m</var> = <var>x</var>.
+ <p> where <math>N</math> is the number of elements of <var>x</var>.
+</p>
+<p> If <var>x</var> is an array, then <code>median (<var>x</var>)</code> operates along the first
+ non-singleton dimension of <var>x</var>.
+</p>
+<p> The optional variable <var>dim</var> forces <code>median</code> to operate over the
+ specified dimension, which must be a positive integer-valued number.
+ Specifying any singleton dimension in <var>x</var>, including any dimension
+ exceeding <code>ndims (<var>x</var>)</code>, will result in a median equal to <var>x</var>.
 </p>
 <p> <code>median (<var>x</var>, <var>vecdim</var>)</code> returns the median over the
  dimensions specified in the vector <var>vecdim</var>.  For example, if <var>x</var>
@@ -123,23 +116,25 @@
  data type, using any of the input arguments in the previous syntaxes.
  <var>outtype</var> can take the following values:
  </p><ul>
-<li> &quot;default&quot;
- Output is of type double, unless the input is single in which case the output
- is of type single.
+<li> <code>&quot;default&quot;</code>
+ Output is of type double, unless the input is single in which case the
+ output is of type single.
 
- </li><li> &quot;double&quot;
+ </li><li> <code>&quot;double&quot;</code>
  Output is of type double.
 
- </li><li> &quot;native&quot;.
+ </li><li> <code>&quot;native&quot;</code>
  Output is of the same type as the input (<code>class (<var>x</var>)</code>), unless the
  input is logical in which case the output is of type double.
  </li></ul>
 
-<p> <code>median (&hellip;, <var>nanflag</var>)</code> specifies whether to exclude NaN
- values from the calculation, using any of the input argument combinations in
- previous syntaxes.  By default, NaN values are included in the calculation
- (<var>nanflag</var> has the value &quot;includenan&quot;).  To exclude NaN values, set the
- value of <var>nanflag</var> to &quot;omitnan&quot;.
+<p> The optional variable <var>nanflag</var> specifies whether to include or exclude
+ NaN values from the calculation using any of the previously specified input
+ argument combinations.  The default value for <var>nanflag</var> is
+ <code>&quot;includenan&quot;</code> which keeps NaN values in the calculation.  To
+ exclude NaN values set the value of <var>nanflag</var> to <code>&quot;omitnan&quot;</code>.
+ The output will still contain NaN values if <var>x</var> consists of all NaN
+ values in the operating dimension.
 </p>
 <p> <strong>See also: </strong>
   <a href="mean.html">mean</a>, 
