@@ -44,7 +44,7 @@ After installation, type:
 - `news statistics` to review all the user visible changes since last version.
 - `pkg test statistics` to run a test suite for all[^1] functions in the package and ensure that they work properly on your system.
 
-[^1]: Some functions are missing BISTs, these are not included in the test suite. But you are welcome to [contribute](https://github.com/pr0m1th3as/statistics#4-contribute)!
+[^1]: Some functions are missing BISTs, these are not included in the test suite. But you are welcome to [contribute](https://github.com/gnu-octave/statistics#4-contribute)!
 
 ## 3. Provide feedback
 
