@@ -93,7 +93,7 @@
 ## (@var{nanflag} has the value "includenan").  To exclude NaN values, set the
 ## value of @var{nanflag} to "omitnan".
 ##
-## @seealso{median, mode}
+## @seealso{median, mad, mode}
 ## @end deftypefn
 
 function m = mean (x, varargin)

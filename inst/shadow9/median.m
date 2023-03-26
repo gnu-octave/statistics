@@ -92,7 +92,7 @@
 ## The output will still contain NaN values if @var{x} consists of all NaN
 ## values in the operating dimension.
 ##
-## @seealso{mean, mode}
+## @seealso{mean, mad, mode}
 ## @end deftypefn
 
 function m = median (x, varargin)
