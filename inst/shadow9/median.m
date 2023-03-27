@@ -340,8 +340,7 @@ function m = median (x, varargin)
 
       ## Grab kth value, k possibly different for each column
       if (any (m_idx_odd(:)))
-        k_odd = k(m_idx_odd)(:);
-        x_idx_odd = sub2ind (szx, k_odd, find (m_idx_odd));
+        x_idx_odd = sub2ind (szx, k(m_idx_odd)(:), find (m_idx_odd));
         m(m_idx_odd) = x(x_idx_odd);
       endif
       if (any (m_idx_even(:)))
