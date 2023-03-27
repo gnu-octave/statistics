@@ -476,3 +476,20 @@ Summary of important user-visible changes for statistics 1.5.1:
  ** cor_test (replaced by correlation_test)
 
  ** prop_test_2 (replaced by ztest2)
+
+
+
+
+ Summary of important user-visible changes for statistics 1.5.5:
+-------------------------------------------------------------------
+
+ Important Notice: 1) `mad`, `mean`, `median`, `std`, `var` functions
+                       shadow core Octave's respective functions
+                   2) incompatibility with the `nan` package
+ New functions:
+ ==============
+
+ ** isoutlier (fully Matlab compatible)
+
+ ** mad (fully Matlab compatible)
+
