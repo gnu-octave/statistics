@@ -18,7 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{m} =} mad (@var{x})
 ## @deftypefnx {statistics} {@var{m} =} mad (@var{x}, @var{flag})
-## @deftypefnx {statistics} {@var{m} =} mad (@var{x}, @var{flag}, qcode{"all"})
+## @deftypefnx {statistics} {@var{m} =} mad (@var{x}, @var{flag}, @qcode{"all"})
 ## @deftypefnx {statistics} {@var{m} =} mad (@var{x}, @var{flag}, @var{dim})
 ## @deftypefnx {statistics} {@var{m} =} mad (@var{x}, @var{flag}, @var{vecdim})
 ##
