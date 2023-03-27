@@ -33,6 +33,7 @@ Data Manipulation
  fillmissing
  grp2idx
  ismissing
+ isoutlier
  normalise_distribution
  rmmissing
  standardizeMissing
@@ -43,6 +44,7 @@ Descriptive Statistics
  grpstats
  harmmean
  jackknife
+ mad
  mean
  median
  nanmax
