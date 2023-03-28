@@ -35,8 +35,8 @@
 ## If @var{x} is a matrix, then @code{mad} returns the mean or median absolute
 ## deviation of each column of @var{X}.
 ## @item
-## If @var{x} is an array, then @code{mad (@var{x})} operates along the first
-## non-singleton dimension of @var{x}.
+## If @var{x} is an multidimensional array, then @code{mad (@var{x})} operates
+## along the first non-singleton dimension of @var{x}.
 ## @end itemize
 ##
 ## @code{mad (@var{x}, @var{flag})} specifies whether to compute the mean
