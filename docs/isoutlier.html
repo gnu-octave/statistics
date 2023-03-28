@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: isoutlier</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+    <style>
+    var {
+      font-style: italics;
+      font-weight: bold;
+    }
+    td {
+      vertical-align: top;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Data Manipulation">
+                    <i class="fas fa-list-alt"></i>
+                    Data Manipulation
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>isoutlier</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>TF</var> = <b>isoutlier</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>TF</var> = <b>isoutlier</b><i> (<var>x</var>, <var>method</var>)</i></dt>
+<dt><u>statistics:</u> <var>TF</var> = <b>isoutlier</b><i> (<var>x</var>, <code>&quot;percentiles&quot;</code>, <var>threshold</var>)</i></dt>
+<dt><u>statistics:</u> <var>TF</var> = <b>isoutlier</b><i> (<var>x</var>, <var>movmethod</var>, <var>window</var>)</i></dt>
+<dt><u>statistics:</u> <var>TF</var> = <b>isoutlier</b><i> (&hellip;, <var>dim</var>)</i></dt>
+<dt><u>statistics:</u> <var>TF</var> = <b>isoutlier</b><i> (&hellip;, <var>Name</var>, <var>Value</var>)</i></dt>
+<dt><u>statistics:</u> [<var>TF</var>, <var>L</var>, <var>U</var>, <var>C</var>] = <b>isoutlier</b><i> (&hellip;)</i></dt>
+</dl>
+
+<p> Find outliers in data
+</p>
+<div class="ms-5">
+<p> <code>isoutlier (<var>x</var>)</code> returns a logical array whose elements are true
+ when an outlier is detected in the corresponding element of <var>x</var>.
+ <code>isoutlier</code> treats NaNs as missing values and removes them.
+</p>
+ <ul>
+<li>
+ If <var>x</var> is a matrix, then <code>isoutlier</code> operates on each column of
+ <var>x</var> separately.
+ </li><li>
+ If <var>x</var> is a multidimensional array, then <code>isoutlier</code> operates along
+ the first dimension of <var>x</var> whose size does not equal 1.
+ </li></ul>
+
+<p> By default, an outlier is a value that is more than three scaled median
+ absolute deviations (MAD) from the median.  The scaled median is defined as
+ <code>c*median(abs(A-median(A)))</code>, where <code>c=-1/(sqrt(2)*erfcinv(3/2))</code>.
+</p>
+<p> <code>isoutlier (<var>x</var>, <var>method</var>)</code> specifies a method for detecting
+ outliers.  The following methods are available:
+</p>
+ <table>
+<thead><tr><th width="13%">Method</th><th width="2%"></th><th width="80%">Description</th></tr></thead>
+<tr><td width="13%"><code>&quot;median&quot;</code></td><td width="2%"></td><td width="80%">Outliers are defined as elements more than
+ three scaled MAD from the median.</td></tr>
+<tr><td width="13%"><code>&quot;mean&quot;</code></td><td width="2%"></td><td width="80%">Outliers are defined as elements more than
+ three standard deviations from the mean.</td></tr>
+<tr><td width="13%"><code>&quot;quartiles&quot;</code></td><td width="2%"></td><td width="80%">Outliers are defined as elements more
+ than 1.5 interquartile ranges above the upper quartile (75 percent) or below
+ the lower quartile (25 percent).  This method is useful when the data in
+ <var>x</var> is not normally distributed.</td></tr>
+<tr><td width="13%"><code>&quot;grubbs&quot;</code></td><td width="2%"></td><td width="80%">Outliers are detected using Grubbs’ test for
+ outliers, which removes one outlier per iteration based on hypothesis
+ testing.  This method assumes that the data in <var>x</var> is normally
+ distributed.</td></tr>
+<tr><td width="13%"><code>&quot;gesd&quot;</code></td><td width="2%"></td><td width="80%">Outliers are detected using the generalized
+ extreme Studentized deviate test for outliers.  This iterative method is
+ similar to <code>&quot;grubbs&quot;</code>, but can perform better when there are multiple
+ outliers masking each other.</td></tr>
+</table>
+
+<p> <code>isoutlier (<var>x</var>, <code>&quot;percentiles&quot;</code>, <var>threshold</var>)</code> detects
+ outliers based on a percentile thresholds,  specified as a two-element row
+ vector whose elements are in the interval <math>[0, 100]</math>.  The first element
+ indicates the lower percentile threshold, and the second element indicates
+ the upper percentile threshold. The first element of threshold must be less
+ than the second element.
+</p>
+<p> <code>isoutlier (<var>x</var>, <var>movmethod</var>, <var>window</var>)</code> specifies a moving
+ method for detecting outliers.  The following methods are available:
+</p>
+ <table>
+<thead><tr><th width="13%">Method</th><th width="2%"></th><th width="80%">Description</th></tr></thead>
+<tr><td width="13%"><code>&quot;movmedian&quot;</code></td><td width="2%"></td><td width="80%">Outliers are defined as elements more
+ than three local scaled MAD from the local median over a window length
+ specified by <var>window</var>.</td></tr>
+<tr><td width="13%"><code>&quot;movmean&quot;</code></td><td width="2%"></td><td width="80%">Outliers are defined as elements more than
+ three local standard deviations from the from the local mean over a window
+ length specified by <var>window</var>.</td></tr>
+</table>
+
+<p> <var>window</var> must be a positive integer scalar or a two-element vector of
+ positive integers.  When <var>window</var> is a scalar,  if it is an odd number,
+ the window is centered about the current element and contains
+ <code><var>window</var> - 1</code> neighboring elements.  If even, then the window is
+ centered about the current and previous elements.  When <var>window</var> is a
+ two-element vector of positive integers <math>[nb, na]</math>, the window contains
+ the current element, <math>nb</math> elements before the current element, and
+ <math>na</math> elements after the current element.  When <code>&quot;SamplePoints&quot;</code>
+ are also specified, <var>window</var> can take any real positive values (either as
+ a scalar or a two-element vector) and in this case, the windows are computed
+ relative to the sample points.
+</p>
+<p> <var>dim</var> specifies the operating dimension and it must be a positive integer
+ scalar.  If not specified, then, by default, <code>isoutlier</code> operates along
+ the first non-singleton dimension of <var>x</var>.
+</p>
+<p> The following optional parameters can be specified as <var>Name</var>/<var>Value</var>
+ paired arguments.
+</p>
+ <ul>
+<li> <code>&quot;SamplePoints&quot;</code> can be specified as a vector of sample points
+ with equal length as the operating dimension.  The sample points represent
+ the x-axis location of the data and must be sorted and contain unique
+ elements.  Sample points do not need to be uniformly sampled.  By default,
+ the vector is <code>[1, 2, 3, &hellip;, <var>n</var>]</code>, where
+ <code><var>n</var> = size (<var>x</var>, <var>dim</var>)</code>.  You can use unequally spaced
+ <code>&quot;SamplePoints&quot;</code> to define a variable-length window for one of the
+ moving methods available.
+
+ </li><li> <code>&quot;ThresholdFactor&quot;</code> can be specified as a nonnegative scalar.
+ For methods <code>&quot;median&quot;</code> and <code>&quot;movmedian&quot;</code>, the detection threshold
+ factor replaces the number of scaled MAD, which is 3 by default.  For methods
+ <code>&quot;mean&quot;</code> and <code>&quot;movmean&quot;</code>, the detection threshold factor replaces
+ the number of standard deviations, which is 3 by default.  For methods
+ <code>&quot;grubbs&quot;</code> and <code>&quot;gesd&quot;</code>, the detection threshold factor ranges
+ from 0 to 1, specifying the critical <math>alpha</math>-value of the respective
+ test, and it is 0.05 by default.  For the <code>&quot;quartiles&quot;</code> method, the
+ detection threshold factor replaces the number of interquartile ranges, which
+ is 1.5 by default.  <code>&quot;ThresholdFactor&quot;</code> is not supported for the
+ <code>&quot;quartiles&quot;</code> method.
+
+ </li><li> <code>&quot;MaxNumOutliers&quot;</code> is only relevant to the <code>&quot;gesd&quot;</code> method
+ and it must be a positive integer scalar specifying the maximum number of
+ outliers returned by the <code>&quot;gesd&quot;</code> method.  By default, it is the
+ integer nearest to the 10% of the number of elements along the operating
+ dimension in <var>x</var>.  The <code>&quot;gesd&quot;</code> method assumes the nonoutlier input
+ data is sampled from an approximate normal distribution.  When the data is
+ not sampled in this way, the number of returned outliers might exceed the
+ <code>MaxNumOutliers</code> value.
+ </li></ul>
+
+<p> <code>[<var>TF</var>, <var>L</var>, <var>U</var>, <var>C</var>] = isoutlier (&hellip;)</code> returns
+ up to 4 output arguments as described below.
+</p>
+ <ul>
+<li> <var>TF</var> is the outlier indicator with the same size a <var>x</var>.
+
+ </li><li> <var>L</var> is the lower threshold used by the outlier detection method.
+ If <var>method</var> is used for outlier detection, then <var>L</var> has the same size
+ as <var>x</var> in all dimensions except for the operating dimension where the
+ length is 1.  If <var>movmethod</var> is used, then <var>L</var> has the same size as
+ <var>x</var>.
+
+ </li><li> <var>U</var> is the upper threshold used by the outlier detection method.
+ If <var>method</var> is used for outlier detection, then <var>U</var> has the same size
+ as <var>x</var> in all dimensions except for the operating dimension where the
+ length is 1.  If <var>movmethod</var> is used, then <var>U</var> has the same size as
+ <var>x</var>.
+
+ </li><li> <var>C</var> is the center value used by the outlier detection method.
+ If <var>method</var> is used for outlier detection, then <var>C</var> has the same size
+ as <var>x</var> in all dimensions except for the operating dimension where the
+ length is 1.  If <var>movmethod</var> is used, then <var>C</var> has the same size as
+ <var>x</var>.  For <code>&quot;median&quot;</code>, <code>&quot;movmedian&quot;</code>, <code>&quot;mean&quot;</code>, and
+ <code>&quot;movmean&quot;</code> methods, <var>C</var> is computed by taking into acount the
+ outlier values.  For <code>&quot;grubbs&quot;</code> and <code>&quot;gesd&quot;</code> methods, <var>C</var> is
+ computed by excluding the outliers.  For the <code>&quot;percentiles&quot;</code> method,
+ <var>C</var> is the average between <var>U</var> and <var>L</var> thresholds.
+ </li></ul>
+
+<p> <strong>See also: </strong>
+filloutliers, 
+rmoutliers, 
+  <a href="ismissing.html">ismissing</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/isoutlier.m">isoutlier</a>
+</div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
+ TF = isoutlier (A, "mean")
+
+TF =
+
+  0  0  0  0  0  0  0  0  1  0  0  0  0  0  0
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Use a moving detection method to detect local outliers in a sine wave
+
+ x = -2*pi:0.1:2*pi;
+ A = sin(x);
+ A(47) = 0;
+ time = datenum (2023,1,1,0,0,0) + (1/24)*[0:length(x)-1] - 730485;
+ TF = isoutlier (A, "movmedian", 5*(1/24), "SamplePoints", time);
+ plot (time, A)
+ hold on
+ plot (time(TF), A(TF), "x")
+ datetick ('x', 20, 'keepticks')
+ legend ("Original Data", "Outlier Data")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/isoutlier_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 3
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Locate an outlier in a vector of data and visualize the outlier
+
+ x = 1:10;
+ A = [60 59 49 49 58 100 61 57 48 58];
+ [TF, L, U, C] = isoutlier (A);
+ plot (x, A);
+ hold on
+ plot (x(TF), A(TF), "x");
+ xlim ([1,10]);
+ line ([1,10], [L, L], "Linestyle", ":");
+ text (1.1, L-2, "Lower Threshold");
+ line ([1,10], [U, U], "Linestyle", ":");
+ text (1.1, U-2, "Upper Threshold");
+ line ([1,10], [C, C], "Linestyle", ":");
+ text (1.1, C-3, "Center Value");
+ legend ("Original Data", "Outlier Data");
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/isoutlier_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

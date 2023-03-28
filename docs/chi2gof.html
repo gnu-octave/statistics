@@ -84,11 +84,8 @@
  continuous distributions.  The test is performed by grouping the data into
  bins, calculating the observed and expected counts for those bins, and
  computing the chi-square test statistic
-</p> 
-<p>$$ \chi ^ 2 = \sum_{i=1}^N \left (O_i - E_i \right) ^ 2 / E_i $$
-
-</p> 
-<p> where O is the observed counts and E is the expected counts.  This test
+ $$ \chi ^ 2 = \sum_{i=1}^N \left (O_i - E_i \right) ^ 2 / E_i $$
+  where O is the observed counts and E is the expected counts.  This test
  statistic has an approximate chi-square distribution when the counts are
  sufficiently large.
 </p>
@@ -187,66 +184,66 @@
  [h, p, stats] = chi2gof (x, "cdf", {@normcdf, mean(x), std(x)})
 
 h = 0
-p = 0.7537
+p = 0.9440
 stats =
 
   scalar structure containing the fields:
 
-    chi2stat = 2.6502
+    chi2stat = 1.2094
     df = 5
     edges =
 
-       36.417   41.312   43.759   46.207   48.654   51.102   53.549   55.997   60.891
+       36.315   41.659   44.332   47.004   49.677   52.349   55.022   57.694   63.039
 
     O =
 
-        5    9   16   14   17   18    9   12
+        5    7   17   17   21   16    9    8
 
     E =
 
-        6.0642    7.9125   13.0062   17.2411   18.4316   15.8909   11.0488   10.4048
+        5.3558    8.1400   14.0890   18.9415   19.7806   16.0458   10.1104    7.5369
 
 
 h = 0
-p = 0.7537
+p = 0.9440
 stats =
 
   scalar structure containing the fields:
 
-    chi2stat = 2.6502
+    chi2stat = 1.2094
     df = 5
     edges =
 
-       36.417   41.312   43.759   46.207   48.654   51.102   53.549   55.997   60.891
+       36.315   41.659   44.332   47.004   49.677   52.349   55.022   57.694   63.039
 
     O =
 
-        5    9   16   14   17   18    9   12
+        5    7   17   17   21   16    9    8
 
     E =
 
-        6.0642    7.9125   13.0062   17.2411   18.4316   15.8909   11.0488   10.4048
+        5.3558    8.1400   14.0890   18.9415   19.7806   16.0458   10.1104    7.5369
 
 
 h = 0
-p = 0.7537
+p = 0.9440
 stats =
 
   scalar structure containing the fields:
 
-    chi2stat = 2.6502
+    chi2stat = 1.2094
     df = 5
     edges =
 
-       36.417   41.312   43.759   46.207   48.654   51.102   53.549   55.997   60.891
+       36.315   41.659   44.332   47.004   49.677   52.349   55.022   57.694   63.039
 
     O =
 
-        5    9   16   14   17   18    9   12
+        5    7   17   17   21   16    9    8
 
     E =
 
-        6.0642    7.9125   13.0062   17.2411   18.4316   15.8909   11.0488   10.4048
+        5.3558    8.1400   14.0890   18.9415   19.7806   16.0458   10.1104    7.5369
 
 
                     </pre></td></tr></tbody>
@@ -283,26 +280,26 @@ stats =
  [h, p, stats] = chi2gof (x, "binedges", binedges, "expected", expectedCounts)
 
 h = 0
-p = 0.3838
+p = 0.7399
 stats =
 
   scalar structure containing the fields:
 
-    chi2stat = 9.6000
+    chi2stat = 6.0000
     df = 9
     edges =
 
-     Columns 1 through 10:
+     Columns 1 through 8:
 
-       0.013343   0.111423   0.209502   0.307582   0.405662   0.503742   0.601822   0.699902   0.797982   0.896062
+       7.7545e-03   1.0450e-01   2.0124e-01   2.9798e-01   3.9472e-01   4.9146e-01   5.8820e-01   6.8495e-01
 
-     Column 11:
+     Columns 9 through 11:
 
-       0.994142
+       7.8169e-01   8.7843e-01   9.7517e-01
 
     O =
 
-       14    8   12   13    8    9    4   13    7   12
+        8    9    8   10   11   12   10    7   16    9
 
     E =
 

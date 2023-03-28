@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: geomean</title>
+    <title>Statistics: mad</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -64,67 +64,66 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>geomean</code></b>
+              Function&nbsp;Reference: <b><code>mad</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>m</var> = <b>geomean</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> <var>m</var> = <b>geomean</b><i> (<var>x</var>, &quot;all&quot;)</i></dt>
-<dt><u>statistics:</u> <var>m</var> = <b>geomean</b><i> (<var>x</var>, <var>dim</var>)</i></dt>
-<dt><u>statistics:</u> <var>m</var> = <b>geomean</b><i> (<var>x</var>, <var>vecdim</var>)</i></dt>
-<dt><u>statistics:</u> <var>m</var> = <b>geomean</b><i> (&hellip;, <var>nanflag</var>)</i></dt>
+<dt><u>statistics:</u> <var>m</var> = <b>mad</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>m</var> = <b>mad</b><i> (<var>x</var>, <var>flag</var>)</i></dt>
+<dt><u>statistics:</u> <var>m</var> = <b>mad</b><i> (<var>x</var>, <var>flag</var>, <code>&quot;all&quot;</code>)</i></dt>
+<dt><u>statistics:</u> <var>m</var> = <b>mad</b><i> (<var>x</var>, <var>flag</var>, <var>dim</var>)</i></dt>
+<dt><u>statistics:</u> <var>m</var> = <b>mad</b><i> (<var>x</var>, <var>flag</var>, <var>vecdim</var>)</i></dt>
 </dl>
 
-<p> Compute the geometric mean of <var>x</var>.
+<p> Compute the mean or median absolute deviation (MAD).
 </p>
 <div class="ms-5">
+<p> <code>mad (<var>x</var>)</code> returns the mean absolute deviation of the values in
+ <var>x</var>.  <code>mad</code> treats NaNs as missing values and removes them.
+</p>
  <ul>
-<li> If <var>x</var> is a vector, then <code>geomean(<var>x</var>)</code> returns the
- geometric mean of the elements in <var>x</var> defined as
- $$ {\rm geomean}(x) = \left( \prod_{i=1}^N x_i \right)^\frac{1}{N}
- = exp \left({1\over N} \sum_{i=1}^N log x_i \right) $$
-   where <math>N</math> is the length of the <var>x</var> vector.
-
- </li><li> If <var>x</var> is a matrix, then <code>geomean(<var>x</var>)</code> returns a row
- vector with the geometric mean of each columns in <var>x</var>.
-
- </li><li> If <var>x</var> is a multidimensional array, then <code>geomean(<var>x</var>)</code>
- operates along the first nonsingleton dimension of <var>x</var>.
-
- </li><li> <var>x</var> must not contain any negative or complex values.
+<li>
+ If <var>x</var> is a vector, then <code>mad</code> returns the mean or median absolute
+ deviation of the values in <var>X</var>.
+ </li><li>
+ If <var>x</var> is a matrix, then <code>mad</code> returns the mean or median absolute
+ deviation of each column of <var>X</var>.
+ </li><li>
+ If <var>x</var> is an multidimensional array, then <code>mad (<var>x</var>)</code> operates
+ along the first non-singleton dimension of <var>x</var>.
  </li></ul>
 
-<p> <code>geomean(<var>x</var>, &quot;all&quot;)</code> returns the geometric mean of all the elements
- in <var>x</var>.  If <var>x</var> contains any 0, then the returned value is 0.
+<p> <code>mad (<var>x</var>, <var>flag</var>)</code> specifies whether to compute the mean
+ absolute deviation (<code>flag = 0</code>, the default) or the median absolute
+ deviation (<code>flag = 1</code>). Passing an empty variable, defaults to 0.
 </p>
-<p> <code>geomean(<var>x</var>, <var>dim</var>)</code> returns the geometric mean along the
- operating dimension <var>dim</var> of <var>x</var>.  Calculating the harmonic mean of
- any subarray containing any 0 will return 0.
+<p> <code>mad (<var>x</var>, <var>flag</var>, <code>&quot;all&quot;</code>)</code> returns the MAD of all the
+ elements in <var>x</var>.
 </p>
-<p> <code>geomean(<var>x</var>, <var>vecdim</var>)</code> returns the geometric mean over the
- dimensions specified in the vector <var>vecdim</var>.  For example, if <var>x</var> is
- a 2-by-3-by-4 array, then <code>geomean(<var>x</var>, [1 2])</code> returns a
- 1-by-1-by-4 array.  Each element of the output array is the geometric mean of
- the elements on the corresponding page of <var>x</var>.  If <var>vecdim</var> indexes
- all dimensions of <var>x</var>, then it is equivalent to <code>geomean (<var>x</var>,
- &quot;all&quot;)</code>.  Any dimension in <var>vecdim</var> greater than <code>ndims (<var>x</var>)</code>
- is ignored.
+<p> The optional variable <var>dim</var> forces <code>mad</code> to operate over the
+ specified dimension, which must be a positive integer-valued number.
+ Specifying any singleton dimension in <var>x</var>, including any dimension
+ exceeding <code>ndims (<var>x</var>)</code>, will result in a MAD equal to
+ <code>zeros (size (<var>x</var>))</code>, while non-finite elements are returned as NaNs.
 </p>
-<p> <code>geomean(&hellip;, <var>nanflag</var>)</code> specifies whether to exclude NaN
- values from the calculation, using any of the input argument combinations in
- previous syntaxes. By default, geomean includes NaN values in the calculation
- (<var>nanflag</var> has the value &quot;includenan&quot;).  To exclude NaN values, set the
- value of <var>nanflag</var> to &quot;omitnan&quot;.
+<p> <code>mad (<var>x</var>, <var>flag</var>, <var>vecdim</var>)</code> returns the MAD over the
+ dimensions specified in the vector <var>vecdim</var>.  For example, if <var>x</var>
+ is a 2-by-3-by-4 array, then <code>mad (<var>x</var>, [1 2])</code> returns a
+ 1-by-1-by-4 array.  Each element of the output array is the median of the
+ elements on the corresponding page of <var>x</var>.  If <var>vecdim</var> indexes all
+ dimensions of <var>x</var>, then it is equivalent to <code>mad (<var>x</var>, &quot;all&quot;)</code>.
+ Any dimension in <var>vecdim</var> greater than <code>ndims (<var>x</var>)</code> is ignored.
 </p>
 <p> <strong>See also: </strong>
-  <a href="harmmean.html">harmmean</a>, 
-  <a href="mean.html">mean</a>
+  <a href="median.html">median</a>, 
+  <a href="mean.html">mean</a>, 
+mode
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/geomean.m">geomean</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/shadow9/mad.m">mad</a>
 </div>
 
         </div>

@@ -80,10 +80,8 @@
 <p> The cophenetic correlation coefficient <var>C</var> of a hierarchical cluster tree
  <var>Z</var> is the linear correlation coefficient between the cophenetic
  distances <var>d</var> and the euclidean distances <var>y</var>.
-</p> 
-<p>$$ c = \frac {\sum_{i < j}(Y_{ij}-{\bar {y}})(Z_{ij}-{\bar{z}})}
+ $$ c = \frac {\sum_{i < j}(Y_{ij}-{\bar {y}})(Z_{ij}-{\bar{z}})}
  {\sqrt{\sum_{i < j}(Y_{ij}-{\bar {y}})^2(Z_{ij}-{\bar{z}})^2}} $$
-
 </p>
 <p> It is a measure of the similarity between the distance of the leaves, as seen
  in the tree, and the distance of the original data points, which were used to
@@ -132,7 +130,7 @@
  Z = linkage (y, "average");
  cophenet (Z, y)
 
-ans = 0.8326
+ans = 0.8024
                     </pre></td></tr></tbody>
                   </table>
 

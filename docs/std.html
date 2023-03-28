@@ -87,12 +87,9 @@
 <li>
  If <var>x</var> is a vector, then <code>std (<var>x</var>)</code> returns the standard
  deviation of the elements in <var>x</var> defined as
- 
-<p>$$ {\rm std}(x) = \sqrt{{1\over N-1} \sum_{i=1}^N |x_i - \bar x |^2} $$
+ $$ {\rm std}(x) = \sqrt{{1\over N-1} \sum_{i=1}^N |x_i - \bar x |^2} $$
+   where <math>N</math> is the length of the <var>x</var> vector.
 
-</p> 
- <p> where <math>N</math> is the length of the <var>x</var> vector.
-</p>
  </li><li>
  If <var>x</var> is a matrix, then <code>std (<var>x</var>)</code> returns a row vector with
  the standard deviation of each column in <var>x</var>.

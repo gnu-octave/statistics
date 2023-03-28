@@ -84,12 +84,9 @@
 <div class="ms-5">
 <p> When the elements of <var>x</var> are sorted, say
  <code><var>s</var> = sort (<var>x</var>)</code>, the median is defined as
-</p> 
-<p>$$ {\rm median} (x) = \cases{s(\lceil N/2\rceil), & $N$ odd;
+ $$ {\rm median} (x) = \cases{s(\lceil N/2\rceil), & $N$ odd;
                        \cr (s(N/2)+s(N/2+1))/2, & $N$ even.} $$
-
-</p> 
- <p> where <math>N</math> is the number of elements of <var>x</var>.
+   where <math>N</math> is the number of elements of <var>x</var>.
 </p>
 <p> If <var>x</var> is an array, then <code>median (<var>x</var>)</code> operates along the first
  non-singleton dimension of <var>x</var>.
@@ -138,6 +135,7 @@
 </p>
 <p> <strong>See also: </strong>
   <a href="mean.html">mean</a>, 
+  <a href="mad.html">mad</a>, 
 mode
 </p>
 <p><strong>Source Code: </strong>
