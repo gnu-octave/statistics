@@ -71,7 +71,7 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
   ## Parse extra input arguments or add defaults
   if (nargin > 1)
     if (! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1)
-      error ("evfit: Wrong value of alpha.");
+      error ("evfit: Wrong value for ALPHA.");
     endif
   else
     alpha = 0.05;
