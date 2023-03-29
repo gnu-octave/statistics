@@ -130,14 +130,3 @@ endfunction
 %! m = mean (z);
 %! v = var (z);
 %! assert (abs (m) < 0.05 && abs (v - 1) < 0.05, false);
-
-
-
-
-
-
-
-
-
-
-
