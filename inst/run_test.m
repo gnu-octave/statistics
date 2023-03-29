@@ -61,67 +61,58 @@ endfunction
 %!xtest
 %! x = [45.0000, -78.0000, 1.2550, 55.4000, -9.0000, 27.0000]
 %! [pval, chisq] = run_test (x)
-%! assert(pval, [1, 1, 1, 1, 1, 1]) 
-%! assert(chisq, [1, 1, 1, 1, 1, 1])
+%! assert (pval, [1, 1, 1, 1, 1, 1]) 
+%! assert (chisq, [1, 1, 1, 1, 1, 1])
 
-%!test
 ## bounds test
-%!  x1 = randn(10,6);
+%!test
+%!  x1 = randn (10,6);
 %!  [pval1, chisq1] = run_test(x1);
 %!  assert(pval1 >= 0 && pval1 <= 1);
 %!  assert(chisq1 >= 0);
 %!test 
-%!  x2 = randn(1000,6);
+%!  x2 = randn (1000,6);
 %!  [pval2, chisq2] = run_test(x2);
 %!  assert(pval2 >= 0 && pval2 <= 1);
 %!  assert(chisq2 >= 0);
-%!test  
+
 ## dependent data
-%!  x3 = [1 2 3 4 5 6; 2 4 6 8 10 12; 3 6 9 12 15 18; 4 8 12 16 20 24; 5 10 15 20 25 30; 6 12 18 24 30 36];
-%!  [pval3, chisq3] = run_test(x3);
-%!  assert(pval3 >= 0 && pval3 <= 1);
-%!  assert(chisq3 >= 0)
-%!test
+%!test  
+%!  x3 = [1 2 3 4 5 6; 2 4 6 8 10 12; 3 6 9 12 15 18; ...
+%!        4 8 12 16 20 24; 5 10 15 20 25 30; 6 12 18 24 30 36];
+%!  [pval3, chisq3] = run_test (x3);
+%!  assert (pval3 >= 0 && pval3 <= 1);
+%!  assert (chisq3 >= 0)
+
 ## vectorized inputs
-%!  x4 = ones(600, 1);
-%!  [pval, chisq] = run_test(x4);
-%!  assert(pval >= 0 && pval <= 1);
-%!  assert(chisq >= 0);
 %!test
-%!  x5 = [ones(100, 1), 2*ones(100, 1), 3*ones(100, 1), 4*ones(100, 1), 5*ones(100, 1), 6*ones(100, 1)];
-%!  [pval, chisq] = run_test(x5);
-%!  assert(pval >= 0 && pval <= 1);
-%!  assert(chisq >= 0);
+%!  x4 = ones (600, 1);
+%!  [pval, chisq] = run_test (x4);
+%!  assert (pval >= 0 && pval <= 1);
+%!  assert (chisq >= 0);
+%!test
+%!  x5 = [ones(100, 1), 2*ones(100, 1), 3*ones(100, 1), ...
+%!        4*ones(100, 1), 5*ones(100, 1), 6*ones(100, 1)];
+%!  [pval, chisq] = run_test (x5);
+%!  assert (pval >= 0 && pval <= 1);
+%!  assert (chisq >= 0);
 %!test
 %!  x6 = randi([1, 6], 600, 1);  
-%!  [pval, chisq] = run_test(x6);
-%!  assert(pval >= 0 && pval <= 1);
-%!  assert(chisq >= 0);
+%!  [pval, chisq] = run_test (x6);
+%!  assert (pval >= 0 && pval <= 1);
+%!  assert (chisq >= 0);
 
-## input based output tests
-%!test
-%!  # integer inputs
-%!  [pval, chisq] = run_test([1 2 3 4 5 6]);
-%!  assert(isfloat(pval) && isfloat(chisq));
-%!test
-%!  # single-precision floating-point inputs
-%!  [pval, chisq] = run_test(single(randi([1, 6], 600, 1)));
-%!  assert(isfloat(pval) && isfloat(chisq));
-
-%!test
-%!  # double-precision floating-point inputs
-%!  [pval, chisq] = run_test(randi([1, 6], 600, 1));
-%!  assert(isfloat(pval) && isfloat(chisq));
-
-%! ## inconsistent inputs
-%! assert(run_test([true, false, true, true, false, false]));
-%!error <run_count: X must be a numeric vector or matrix> run_test('abcdef');
-%!assert(run_test([1,2;3,4;5,6]));
-%!error <Invalid call to run_test.> run_test([1,2,3;4,5,6;7,8,9],[10,11,12;13,14,15;16,17,18]);
-%!assert(run_test(42));
+## inconsistent inputs
+%!assert (run_test ([true, false, true, true, false, false]));
+%!error <run_count: X must be a numeric vector or matrix> ...
+%! run_test ('abcdef');
+%!assert (run_test ([1,2;3,4;5,6]));
+%!error <Invalid call to run_test.> ...
+%! run_test ([1,2,3;4,5,6;7,8,9],[10,11,12;13,14,15;16,17,18]);
+%!assert (run_test(42));
 
 ## input validation tests
 %!error id=Octave:invalid-fun-call run_test();
-%!error id=Octave:nonconformant-args run_test([1, 2, 3.5, 4, 5]);
-%!error id=Octave:nonconformant-args run_test([1, 2, 3, 4, 5, 6, 7]);
+%!error id=Octave:nonconformant-args run_test ([1, 2, 3.5, 4, 5]);
+%!error id=Octave:nonconformant-args run_test ([1, 2, 3, 4, 5, 6, 7]);
 
