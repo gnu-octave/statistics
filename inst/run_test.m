@@ -66,41 +66,41 @@ endfunction
 
 ## bounds test
 %!test
-%!  x1 = randn (10,6);
-%!  [pval1, chisq1] = run_test(x1);
-%!  assert(pval1 >= 0 && pval1 <= 1);
-%!  assert(chisq1 >= 0);
+%! x1 = randn (10,6);
+%! [pval1, chisq1] = run_test (x1);
+%! assert (pval1 >= 0 && pval1 <= 1);
+%! assert (chisq1 >= 0);
 %!test 
-%!  x2 = randn (1000,6);
-%!  [pval2, chisq2] = run_test(x2);
-%!  assert(pval2 >= 0 && pval2 <= 1);
-%!  assert(chisq2 >= 0);
+%! x2 = randn (1000,6);
+%! [pval2, chisq2] = run_test (x2);
+%! assert (pval2 >= 0 && pval2 <= 1);
+%! assert (chisq2 >= 0);
 
 ## dependent data
 %!test  
-%!  x3 = [1 2 3 4 5 6; 2 4 6 8 10 12; 3 6 9 12 15 18; ...
-%!        4 8 12 16 20 24; 5 10 15 20 25 30; 6 12 18 24 30 36];
-%!  [pval3, chisq3] = run_test (x3);
-%!  assert (pval3 >= 0 && pval3 <= 1);
-%!  assert (chisq3 >= 0)
+%! x3 = [1 2 3 4 5 6; 2 4 6 8 10 12; 3 6 9 12 15 18; ...
+%!       4 8 12 16 20 24; 5 10 15 20 25 30; 6 12 18 24 30 36];
+%! [pval3, chisq3] = run_test (x3);
+%! assert (pval3 >= 0 && pval3 <= 1);
+%! assert (chisq3 >= 0)
 
 ## vectorized inputs
 %!test
-%!  x4 = ones (600, 1);
-%!  [pval, chisq] = run_test (x4);
-%!  assert (pval >= 0 && pval <= 1);
-%!  assert (chisq >= 0);
+%! x4 = ones (600, 1);
+%! [pval, chisq] = run_test (x4);
+%! assert (pval >= 0 && pval <= 1);
+%! assert (chisq >= 0);
 %!test
-%!  x5 = [ones(100, 1), 2*ones(100, 1), 3*ones(100, 1), ...
-%!        4*ones(100, 1), 5*ones(100, 1), 6*ones(100, 1)];
-%!  [pval, chisq] = run_test (x5);
-%!  assert (pval >= 0 && pval <= 1);
-%!  assert (chisq >= 0);
+%! x5 = [ones(100, 1), 2*ones(100, 1), 3*ones(100, 1), ...
+%!       4*ones(100, 1), 5*ones(100, 1), 6*ones(100, 1)];
+%! [pval, chisq] = run_test (x5);
+%! assert (pval >= 0 && pval <= 1);
+%! assert (chisq >= 0);
 %!test
-%!  x6 = randi([1, 6], 600, 1);  
-%!  [pval, chisq] = run_test (x6);
-%!  assert (pval >= 0 && pval <= 1);
-%!  assert (chisq >= 0);
+%! x6 = randi ([1, 6], 600, 1);  
+%! [pval, chisq] = run_test (x6);
+%! assert (pval >= 0 && pval <= 1);
+%! assert (chisq >= 0);
 
 ## inconsistent inputs
 %!assert (run_test ([true, false, true, true, false, false]));
