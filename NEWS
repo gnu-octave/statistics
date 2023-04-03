@@ -493,3 +493,15 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** mad (fully Matlab compatible)
 
+ ** normfit (fully Matlab compatible)
+
+ Improvements:
+ =============
+
+ ** runstest: fixed MATLAB compatibility
+
+ Removed Functions:
+ ==================
+
+ ** run_test (replaced by runstest)
+
