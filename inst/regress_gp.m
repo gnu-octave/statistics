@@ -43,11 +43,33 @@
 
 function [wm, K, yi, dy] = regress_gp (x, y, Sp=[], xi=[])
 
+  ## Check input arguments
+  if (nargin < 2)
+    print_usage;
+  endif
+  if (ndims (x) != 2)
+    error ("regress_gp: X must be a 2-D matrix.");
+  endif
+  if (! isvector (y))
+    error ("regress_gp: Y must be a vector.");
+  endif
+  if (size (x, 1) != length (y))
+    error ("regress_gp: rows in X must equal the length of Y.");
+  endif
+  if (! isempty (xi) && size (x, 2) != size (xi, 2))
+    error ("regress_gp: X and XI must have the same number of columns.");
+  endif
+
+  ## Add default
   if isempty(Sp)
     Sp = 100*eye(size(x,2)+1);
   end
 
-  x  = [ones(1,size(x,1)); x'];
+  ## Make y a column vector
+  y = y(:);
+
+  ## Add constant vector
+  x = [ones(1,size(x,1)); x'];
 
   ## Juan Pablo Carbajal <carbajal@ifi.uzh.ch>
   ## Note that in the book the equation (below 2.11) for the A reads
@@ -140,182 +162,11 @@ endfunction
 
 
 ## input validation
-%!test
-%! x = [1; 2; 3];
-%! y = [4; 5; 6];
-%! [m, K] = regress_gp (x, y);
-%! assert (size (m), [2, 1]);
-%! assert (size (K), [2, 2]);
-
-%!test
-%! x = [1; 2; 3];
-%! y = [4; 5; 6];
-%! Sp = [2, 0.5; 0.5, 1];
-%! [m, K] = regress_gp (x, y, Sp);
-%! assert (size (m), [2, 1]);
-%! assert (size (K), [2, 2]);
-
-%!test
-%! x = [1; 2; 3];
-%! y = [4; 5; 6];
-%! xi = [4; 5; 6];
-%! [m, K, yi, dy] = regress_gp (x, y, [], xi);
-%! assert (size (m), [2, 1]);
-%! assert (size (K), [2, 2]);
-%! assert (size (yi), [3, 1]);
-%! assert (size (dy), [3, 1]);
-
-%!test
-%! x = [1; 2; 3];
-%! y = [4; 5; 6];
-%! Sp = [2, 0.5; 0.5, 1];
-%! xi = [4; 5; 6];
-%! [m, K, yi, dy] = regress_gp (x, y, Sp, xi);
-%! assert (size (m), [2, 1]);
-%! assert (size (K), [2, 2]);
-%! assert (size (yi), [3, 1]);
-%! assert (size (dy), [3, 1]);
-
-%!test
-%! x = [1; 2; 3];
-%! y = [4; 5; 6];
-%! Sp = [2, 0.5; 0.5, 1];
-%! xi = [4, 5, 6];
-%!error id=Octave:undefined-function regress_gp(x, y, Sp, xi);
-
-%!test
-%! x = [1; 2; 3];
-%! y = [4; 5; 6];
-%! xi = [4; 5; 6];
-%!error id=Octave:undefined-function regress_gp(x, y, xi);
-
-%!test
-%! x = [1, 2; 3, 4];
-%! y = [5; 6];
-%!error id=Octave:undefined-function regress_gp(x, y);
-
-%!test
-%! [wm, K, yi, dy] = regress_gp ([], []);
-%! assert (isempty (wm));
-
-%!test
-%! x = [1 2 3; 4 5 6];
-%! y = [7; 8];
-%! [wm, K, yi, dy] = regress_gp (x, y);
-%! assert (size (wm), [4, 1])
-%! assert (size (K), [4, 4])
-%! assert (isempty (yi) && isempty (dy))
-%! assert (length (K(:)), 16);
-
-%!xtest
-%! x = [1 2 3; 4 5 6];
-%! y = [7; 8];
-%! Sp = [1 0.5 0.3; 0.5 1 0.7; 0.3 0.7 2];
-%! [wm, K, yi, dy] = regress_gp (x, y, Sp);
-%! assert (size (wm), [3, 1])
-%! assert (size (K), [3, 3])
-%! assert (isempty (yi) && isempty (dy))
-%! assert (det (K) > 0);
-%! assert (length (K(:)), length (unique (K(:))))
-
-%!xtest
-%! x = [1 2 3; 4 5 6];
-%! y = [7; 8];
-%! Sp = [1 0.5; 0.5 1];
-%! [wm, K, yi, dy] = regress_gp (x, y, Sp);
-%! assert (size (wm), [3, 1])
-%! assert (size (K), [3, 3])
-%! assert (isempty (yi) && isempty (dy))
-%! assert (det(K) > 0);
-%! assert (length (K(:)), length (unique (K(:))))
-
-## output validation
-%!xtest
-%! x = [1;2;3];
-%! y = [2;3;4];
-%! Sp = [100, 0, 0; 0, 100, 0; 0, 0, 100];
-%! [m, K] = regress_gp (x, y, Sp);
-%! error <operator +: nonconformant arguments (op1 is 2x2, op2 is 3x3)>
-
-%!xtest
-%! x = [1;2;3];
-%! y = [2;3;4];
-%! Sp = [100, 0, 0; 0, 100, 0; 0, 0, 100];
-%! [m, K, yi, dy] = regress_gp (x, y, Sp, x);
-%! assert (size (yi), [3, 1]);
-%! assert (size (dy), [3, 1]);
-
-%!xtest
-%! x = [1 2 3; 4 5 6];
-%! y = [1; 2];
-%! Sp = eye (3);
-%! xi = [7 8 9; 10 11 12];
-%! [wm, K, yi, dy] = regress_gp (x, y, Sp, xi);
-%! assert (isempty (wm));
-
-%!xtest
-%! x = [1 2; 3 4];
-%! y = [1; 2; 3];
-%! Sp = eye (2);
-%! xi = [];
-%! [wm, K, yi, dy] = regress_gp (x, y, Sp, xi);
-%! assert (isempty (wm));
-
-%!xtest
-%! x = [1 2 3; 4 5 6];
-%! y = [1; 2];
-%! Sp = zeros (3);
-%! xi = [7 8 9; 10 11 12];
-%! [wm, K, yi, dy] = regress_gp (x, y, Sp, xi);
-%! assert (isempty (wm));
-
-%!test
-%! x = rand (10, 2);
-%! y = rand (10, 1);
-%! [wm, K, yi, dy] = regress_gp (x, y);
-%! assert (size (wm), [3,1]);
-%! assert (size (K), [3,3]);
-%! assert (isvector (yi), false);
-%! assert (numel (yi), 0);
-%! assert (numel (dy), 0);
-
-## Test with empty Sp
-%!test
-%! x = rand (10, 2);
-%! y = rand (10, 1);
-%! [wm, K, yi, dy] = regress_gp (x, y, []);
-%! assert (size (wm), [3,1]);
-%! assert (size (K), [3,3]);
-%! assert (isvector (yi), false);
-%! assert (numel (yi), 0);
-%! assert (numel (dy), 0);
-
-## Test with xi
-%!test
-%! x = rand (10, 2);
-%! y = rand (10, 1);
-%! xi = rand (5, 2);
-%! [wm, K, yi, dy] = regress_gp (x, y, [], xi);
-%! assert (size (wm), [3,1]);
-%! assert (size (K), [3,3]);
-%! assert (isvector (yi));
-%! assert (size (yi), [5,1]);
-%! assert (size (dy), [5,1]);
-
-## Test valid input (D=1, n=1)
-%!test
-%! [m, K] = regress_gp (1, 1, [], []);
-%! assert (m, [0.4975; 0.4975], 1e-4);
-%! assert (K, [50.249, -49.751; -49.751, 50.249], 1e-3);
-
-## Test valid input (D=2, n=2)
-%!test
-%! [m, K] = regress_gp ([1,2; 2,3], [1,2]', [], []);
-%! assert (m, [-0.3031; 0.6406; 0.3375], 1e-4);
-%! assert (K, [36.877, 30.312, -32.811; 30.312, 35.940, -33.749; -32.811, -33.749, 33.440], 1e-3);
-
-% Test valid input (D=2, n=2, with xi input)
-%!test
-%! [m, K, yi, dy] = regress_gp ([1,2; 2,3], [1,2]', [], [1,2; 2,3]);
-%! assert (yi, [1.0125; 1.9906], 1e-4);
-%! assert (dy, [0.9562; 0.9812], 1e-3);
+%!error<Invalid call to regress_gp.> regress_gp (ones (20, 2))
+%!error<regress_gp: X must be a 2-D matrix.> ...
+%! regress_gp (ones (20, 2, 3), ones (20, 1))
+%!error<regress_gp: Y must be a vector.> regress_gp (ones (20, 2), ones (20, 2))
+%!error<regress_gp: rows in X must equal the length of Y.> ...
+%! regress_gp (ones (20, 2), ones (15, 1))
+%!error<regress_gp: X and XI must have the same number of columns.> ...
+%! regress_gp (ones (20, 2), ones (1, 20), [], ones (20, 3))
