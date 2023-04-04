@@ -254,7 +254,7 @@ endfunction
 %!error<evfit: X must be a double-precision vector.> evfit (ones (2,5));
 %!error<evfit: X must be a double-precision vector.> evfit (single (ones (1,5)));
 %!error<evfit: X must NOT contain missing values> evfit ([1, 2, 3, 4, NaN]);
-%!error<evfit: Wrong value of alpha.> evfit ([1, 2, 3, 4, 5], 1.2);
+%!error<evfit: Wrong value for ALPHA.> evfit ([1, 2, 3, 4, 5], 1.2);
 %!error<evfit: Censoring vector must> evfit ([1, 2, 3, 4, 5], 0.05, [1 1 0]);
 %!error<evfit: Frequency vector must> evfit ([1, 2, 3, 4, 5], 0.05, [], [1 1 0]);
 %!error<evfit: 'options' 5th argument> evfit ([1, 2, 3, 4, 5], 0.05, [], [], 2);
