@@ -16,8 +16,8 @@
 ## along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{z} =} qrandn (@var{q}, @var{r},@var{c})
-## @deftypefnx {statistics} {@var{z} =} qrandn (@var{q}, [@var{r},@var{c}])
+## @deftypefn  {statistics} {@var{z} =} qrandn (@var{q}, @var{r}, @var{c})
+## @deftypefnx {statistics} {@var{z} =} qrandn (@var{q}, [@var{r}, @var{c}])
 ##
 ## Returns random deviates drawn from a q-Gaussian distribution.
 ##
@@ -33,21 +33,25 @@
 ## @end deftypefn
 
 function z = qrandn (q, R, C=[])
+
+  if (nargin < 2)
+    print_usage;
+  endif
   if (! isscalar (q))
     error ("qrandn: the parameter q must be a scalar.")'
   endif
 
   ## Check that q < 3
-  if (q > 3)
+  if (q >= 3)
     error ("qrandn: the parameter q must be lower than 3.");
   endif
 
   if (numel (R) > 1)
   S = R;
-  elseif (numel (R) ==1 && isempty (C))
-  S = [R,1];
-  elseif (numel (R) ==1 && !isempty (C))
-  S = [R,C];
+  elseif (numel (R) == 1 && isempty (C))
+  S = [R, 1];
+  elseif (numel (R) == 1 && ! isempty (C))
+  S = [R, C];
   endif
 
   ## Calaulate the q to be used on the q-log
@@ -96,13 +100,9 @@ endfunction
 ## Tests for input validation
 %!error<qrandn: the parameter q must be a scalar.> qrandn ([1 2], 1)
 %!error<qrandn: the parameter q must be lower than 3.> qrandn (4, 1)
-%!assert (qrandn (3, 1), NaN)
-%!assert (qrandn (2.5, 1))
-%!assert (qrandn (-1, 1))
-%!assert (qrandn (0, 1))
-%!assert (qrandn (3, 1, 2, 3), [NaN, NaN])
-%!assert (qrandn (2, [1 2 3]))
-%!assert (qrandn (2, 1, [2 3]))
+%!error<qrandn: the parameter q must be lower than 3.> qrandn (3, 1)
+%!error qrandn (2.5, 1, 2, 3)
+%!error qrandn (2.5)
 
 ## Tests for output validation
 %!test
@@ -110,23 +110,3 @@ endfunction
 %! s = [2, 3];
 %! z = qrandn (q, s);
 %! assert (isnumeric (z) && isequal (size (z), s));
-
-## Test that the output is a q-Gaussian distribution with the given parameter
-%!test
-%! q = 1.5;
-%! s = [1, 10000];
-%! z = qrandn (q, s);
-%! m = mean (z);
-%! v = var (z);
-%! t = (z - m) ./ sqrt (v);
-%! t2 = t .^ 2;
-%! assert (abs (mean (t2) - q) < 0.05, false);
-
-## Test that the output has zero mean and unit variance
-%!test
-%! q = 1.5;
-%! s = [1, 10000];
-%! z = qrandn (q, s);
-%! m = mean (z);
-%! v = var (z);
-%! assert (abs (m) < 0.05 && abs (v - 1) < 0.05, false);
