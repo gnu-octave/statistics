@@ -113,6 +113,7 @@ Distribution Fitting
  normfit
  normlike
  poissfit
+ poisslike
 Distribution Statistics
  betastat
  binostat

@@ -495,7 +495,9 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** normfit (fully Matlab compatible)
 
- ** poissfit (fully Matlab compatible)
+ ** poissfit (fully Matlab compatible, extra functionality)
+
+ ** poisslike
 
  Improvements:
  =============
