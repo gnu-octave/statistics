@@ -17,46 +17,54 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{paramhat} =} poissfit (@var{data})
-## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} poissfit (@var{data})
-## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} poissfit (@var{data}, @var{alpha})
+## @deftypefn  {statistics} {@var{lambdahat} =} poissfit (@var{data})
+## @deftypefnx {statistics} {[@var{lambdahat}, @var{lambdaci}] =} poissfit (@var{data})
+## @deftypefnx {statistics} {[@var{lambdahat}, @var{lambdaci}] =} poissfit (@var{data}, @var{alpha})
+## @deftypefnx {statistics} {[@var{lambdahat}, @var{lambdaci}] =} poissfit (@var{data}, @var{alpha}, @var{freq})
 ##
 ## Estimate parameter and confidence intervals for Poisson data.
 ##
-## @code{var{paramhat} = poissfit (@var{data})} returns the maximum likelihood
+## @code{@var{lambdahat} = poissfit (@var{data})} returns the maximum likelihood
 ## estimate (MLE) of the parameter lambda given the @var{data} follow a Poisson
 ## distribution.
 ##
-## @code{[@var{paramhat}, @var{paramci}] = poissfit (@var{data}, @var{alpha})}
+## @code{[@var{lambdahat}, @var{lambdaci}] = poissfit (@var{data}, @var{alpha})}
 ## also returns the @qcode{100*(1-@var{alpha})} percent confidence intervals of
-## the estimated parameter.  By default, the optional parameter @vare{alpha} is
+## the estimated parameter.  By default, the optional parameter @var{alpha} is
 ## 0.05 corresponding to 95% confidence intervals.
 ##
 ## @seealso{poisscdf, poissinv, poisspdf, poissrnd, poisslike, poisstat}
 ## @end deftypefn
 
-function [lambdahat, lambdaci] = poissfit (x, alpha)
+function [lambdahat, lambdaci] = poissfit (x, alpha, freq=[])
 
   ## Check input arguments
   if (any (x < 0))
     error ("poissfit: X cannot have negative values.");
   endif
 
-  if (isvector (x))
-    x = x(:);
-  endif
-
-  if (nargin < 2)
+  if (nargin < 2 || isempty (alpha))
     alpha = 0.05;
   elseif (! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1)
     error ("poissfit: Wrong value for ALPHA.");
   endif
 
+  if (isempty (freq))
+    freq = ones (size (x));
+  elseif (! isequal (size (x), size (freq)))
+    error ("poissfit: FREQ vector must match X in size.");
+  endif
+
+  if (isvector (x))
+    x = x(:);
+    freq = freq(:);
+  endif
+
   ## Compute lambdahat
-  lambdahat = double (mean (x));
+  n = sum (freq, 1);
+  lambdahat = double (sum (x .* freq) / n);
 
   ## Compute confidence intervals
-  n = size (x, 1);
   lambdasum = n * lambdahat;
   ## Select elements for exact method or normal approximation
   k = (lambdasum < 100);
@@ -121,9 +129,23 @@ endfunction
 %! [lhat, lci] = poissfit (x, 0.01);
 %! assert (lhat, 3.25)
 %! assert (lci, [1.842572740234582; 5.281369033298528], 1e-14)
+%!test
+%! x = [1 2 3 4 5];
+%! f = [1 1 2 3 1];
+%! [lhat, lci] = poissfit (x, [], f);
+%! assert (lhat, 3.25)
+%! assert (lci, [2.123007901949543; 4.762003010390628], 1e-14)
+%!test
+%! x = [1 2 3 4 5];
+%! f = [1 1 2 3 1];
+%! [lhat, lci] = poissfit (x, 0.01, f);
+%! assert (lhat, 3.25)
+%! assert (lci, [1.842572740234582; 5.281369033298528], 1e-14)
 
 ## test input validation
 %!error<poissfit: X cannot have negative values.> poissfit ([1 2 -1 3])
 %!error<poissfit: Wrong value for ALPHA.> poissfit ([1 2 3], 0)
 %!error<poissfit: Wrong value for ALPHA.> poissfit ([1 2 3], 1.2)
 %!error<poissfit: Wrong value for ALPHA.> poissfit ([1 2 3], [0.02 0.05])
+%!error<poissfit: FREQ vector must match X in size.>
+%! poissfit ([1 2 3], [], [1 5])
