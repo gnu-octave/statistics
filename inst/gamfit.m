@@ -19,18 +19,18 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{MLE} =} gamfit (@var{data})
+## @deftypefn  {statistics} {@var{MLE} =} gamfit (@var{x})
 ##
-## Calculate gamma distribution parameters.
+## Estimate parameters for Gamma distribution.
 ##
 ## Find the maximum likelihood estimate parameters of the Gamma distribution
-## of @var{data}.  @var{MLE} is a two element vector with shape parameter
+## of @var{x}.  @var{MLE} is a two element vector with shape parameter
 ## @var{A} and scale @var{B}.
 ##
 ## This function works by minimizing the value of gamlike for the vector R.
 ## Just about any minimization function will work, all it has to do is
 ## minimize for one variable.  Although the gamma distribution has two
-## parameters, their product is the mean of the data.  So a helper function
+## parameters, their product is the mean of the @var{x}.  So a helper function
 ## for the search takes one parameter, calculates the other and then returns
 ## the value of gamlike.
 ##
@@ -63,7 +63,7 @@ function res = gamfit_search (x, avg, R)
 endfunction
 
 
-## example data from https://www.real-statistics.com/distribution-fitting/distribution-fitting-via-maximum-likelihood/fitting-gamma-parameters-mle/
+## example x from https://www.real-statistics.com/distribution-fitting/distribution-fitting-via-maximum-likelihood/fitting-gamma-parameters-mle/
 %!shared v, res
 %! v = [1.2 1.6 1.7 1.8 1.9 2.0 2.2 2.6 3.0 3.5 4.0 4.8 5.6 6.6 7.6];
 %! res = gamfit (v);

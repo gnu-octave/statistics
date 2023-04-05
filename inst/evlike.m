@@ -16,10 +16,10 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{nlogL} =} evlike (@var{params}, @var{data})
-## @deftypefnx {statistics} {[@var{nlogL}, @var{avar}] =} evlike (@var{params}, @var{data})
-## @deftypefnx {statistics} {[@dots{}] =} evlike (@var{params}, @var{data}, @var{censor})
-## @deftypefnx {statistics} {[@dots{}] =} evlike (@var{params}, @var{data}, @var{censor}, @var{freq})
+## @deftypefn  {statistics} {@var{nlogL} =} evlike (@var{params}, @var{x})
+## @deftypefnx {statistics} {[@var{nlogL}, @var{avar}] =} evlike (@var{params}, @var{x})
+## @deftypefnx {statistics} {[@dots{}] =} evlike (@var{params}, @var{x}, @var{censor})
+## @deftypefnx {statistics} {[@dots{}] =} evlike (@var{params}, @var{x}, @var{censor}, @var{freq})
 ##
 ## Negative log-likelihood for the extreme value distribution.
 ##
@@ -31,14 +31,14 @@
 ## of the type 1 extreme value distribution (also known as the Gumbel
 ## distribution) at which the negative of the log-likelihood is evaluated.
 ## @item
-## @var{data} is the vector of given values.
+## @var{x} is the vector of given values.
 ## @item
-## @var{censor} is a boolean vector of the same size as @var{data} with 1 for
+## @var{censor} is a boolean vector of the same size as @var{x} with 1 for
 ## observations that are right-censored and 0 for observations that are observed
 ## exactly.
 ## @item
-## @var{freq} is a vector of the same size as @var{data} that contains integer
-## frequencies for the corresponding elements in @var{data}, but may contain any
+## @var{freq} is a vector of the same size as @var{x} that contains integer
+## frequencies for the corresponding elements in @var{x}, but may contain any
 ## non-integer non-negative values.  Pass in [] for @var{censor} to use its
 ## default value.
 ## @end itemize
@@ -57,32 +57,32 @@
 ## @seealso{evcdf, evinv, evpdf, evrnd, evfit, evstat}
 ## @end deftypefn
 
-function [nlogL, avar] = evlike (params, data, censor, freq)
+function [nlogL, avar] = evlike (params, x, censor, freq)
   ## Check input arguments and add defaults
   if (nargin < 2)
-    error ("evlike: too few input arguments");
+    error ("evlike: too few input arguments.");
   elseif (nargin > 4)
-    error ("evlike: too many input arguments");
+    error ("evlike: too many input arguments.");
   endif
   if (numel (params) != 2)
-    error ("evlike: wrong parameters length");
+    error ("evlike: wrong parameters length.");
   endif
   if (nargin < 3 || isempty (censor))
-    censor = zeros (size (data));
-  elseif (! isequal (size (data), size (censor)))
-    error ("evlike: DATA and CENSOR vectors mismatch");
+    censor = zeros (size (x));
+  elseif (! isequal (size (x), size (censor)))
+    error ("evlike: X and CENSOR vectors mismatch.");
   endif
   if nargin < 4 || isempty(freq)
-    freq = ones (size (data));
-  elseif (isequal (size (data), size (freq)))
+    freq = ones (size (x));
+  elseif (isequal (size (x), size (freq)))
     nulls = find (freq == 0);
     if (numel (nulls) > 0)
-      data(nulls) = [];
+      x(nulls) = [];
       censor(nulls) = [];
       freq(nulls) = [];
     endif
   else
-    error ("evlike: DATA and FREQ vectors mismatch");
+    error ("evlike: X and FREQ vectors mismatch.");
   endif
   ## Get mu and sigma values
   mu = params(1);
@@ -92,8 +92,8 @@ function [nlogL, avar] = evlike (params, data, censor, freq)
     sigma = NaN;
   endif
   ## Compute the individual log-likelihood terms.  Force a log(0)==-Inf for
-  ## data from extreme right tail, instead of getting exp(Inf-Inf)==NaN.
-  z = (data - mu) ./ sigma;
+  ## x from extreme right tail, instead of getting exp(Inf-Inf)==NaN.
+  z = (x - mu) ./ sigma;
   expz = exp (z);
   L = (z - log (sigma)) .* (1 - censor) - expz;
   L(z == Inf) = -Inf;
@@ -114,27 +114,27 @@ endfunction
 
 ## Results compared with Matlab
 %!test
-%! data = 1:50;
-%! [nlogL, avar] = evlike ([2.3, 1.2], data);
+%! x = 1:50;
+%! [nlogL, avar] = evlike ([2.3, 1.2], x);
 %! avar_out = [-1.2778e-13, 3.1859e-15; 3.1859e-15, -7.9430e-17];
 %! assert (nlogL, 3.242264755689906e+17, 1e-14);
 %! assert (avar, avar_out, 1e-3);
 %!test
-%! data = 1:50;
-%! [nlogL, avar] = evlike ([2.3, 1.2], data * 0.5);
+%! x = 1:50;
+%! [nlogL, avar] = evlike ([2.3, 1.2], x * 0.5);
 %! avar_out = [-7.6094e-05, 3.9819e-06; 3.9819e-06, -2.0836e-07];
 %! assert (nlogL, 481898704.0472211, 1e-6);
 %! assert (avar, avar_out, 1e-3);
 %!test
-%! data = 1:50;
-%! [nlogL, avar] = evlike ([21, 15], data);
+%! x = 1:50;
+%! [nlogL, avar] = evlike ([21, 15], x);
 %! avar_out = [11.73913876598908, -5.9546128523121216; ...
 %!             -5.954612852312121, 3.708060045170236];
 %! assert (nlogL, 223.7612479380652, 1e-13);
 %! assert (avar, avar_out, 1e-14);
 ## Test input validation
-%!error<evlike: too few input arguments> evlike ([12, 15]);
+%!error<evlike: too few input arguments.> evlike ([12, 15]);
 %!error evlike ([12, 15], 3, 5, 6, 8);
-%!error<evlike: wrong parameters length> evlike ([12, 15, 3], [1:50]);
-%!error<evlike: DATA and CENSOR> evlike ([12, 15], [1:50], [1, 2, 3]);
-%!error<evlike: DATA and FREQ> evlike ([12, 15], [1:50], [], [1, 2, 3]);
+%!error<evlike: wrong parameters length.> evlike ([12, 15, 3], [1:50]);
+%!error<evlike: X and CENSOR> evlike ([12, 15], [1:50], [1, 2, 3]);
+%!error<evlike: X and FREQ> evlike ([12, 15], [1:50], [], [1, 2, 3]);

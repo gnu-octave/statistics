@@ -1,4 +1,5 @@
 ## Copyright (C) 2021 Nicholas R. Jankowski <jankowskin@asme.org>
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -14,21 +15,21 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{mu} =} expfit (@var{s})
-## @deftypefnx {statistics} {[@var{mu}, @var{ci}] =} expfit (@var{s})
-## @deftypefnx {statistics} {[@var{mu}, @var{ci}] =} expfit (@var{s}, @var{alpha})
-## @deftypefnx {statistics} {@dots{} =} expfit (@var{s}, @var{alpha}, @var{c})
-## @deftypefnx {statistics} {@dots{} =} expfit (@var{s}, @var{alpha}, @var{c}, @var{f})
+## @deftypefn  {statistics} {@var{muhat} =} expfit (@var{x})
+## @deftypefnx {statistics} {[@var{muhat}, @var{muci}] =} expfit (@var{x})
+## @deftypefnx {statistics} {[@var{muhat}, @var{muci}] =} expfit (@var{x}, @var{alpha})
+## @deftypefnx {statistics} {@dots{} =} expfit (@var{x}, @var{alpha}, @var{censor})
+## @deftypefnx {statistics} {@dots{} =} expfit (@var{x}, @var{alpha}, @var{censor}, @var{freq})
 ##
-## Estimate the mean of the exponential probability distribution function from
-## which sample data @var{s} has been taken.  @var{s} is expected to be a
-## non-negative vector.  If @var{s} is an array, the mean will be computed for
-## each column of @var{s}.  If any elements of @var{s} are NaN, that vector's
-## mean will be returned as NaN.
+## Estimate mean and confidence intervals for the exponential distribution.
 ##
-## If the optional output variable @var{ci} is requested, @code{expfit} will
+## @var{x} is expected to be a non-negative vector.  If @var{x} is an array, the
+## mean will be computed for each column of @var{x}.  If any elements of @var{x}
+## are NaN, that vector'x mean will be returned as NaN.
+##
+## If the optional output variable @var{muci} is requested, @code{expfit} will
 ## also return the confidence interval bounds for the estimate as a two element
-## column vector.  If @var{s} is an array, each column of data will have a
+## column vector.  If @var{x} is an array, each column of data will have a
 ## confidence interval returned as a two row array.
 ##
 ## The optional scalar input @var{alpha} can be used to define the
@@ -36,161 +37,161 @@
 ## value between 0 and 1.  The default is 0.05, resulting in a 0.95 or 95% CI.
 ## Any invalid values for alpha will return NaN for both CI bounds.
 ##
-## The optional input @var{c} is a logical or numeric array of zeros and ones
-## the same size as @var{s}, used to right-censor individual elements of
-## @var{s}.  A value of 1 indicates the data should be censored from
-## the mean estimation.  Any nonzero values in @var{c} are treated as a 1.
+## The optional input @var{censor} is a logical or numeric array of zeros and
+## ones the same size as @var{x}, used to right-censor individual elements of
+## @var{x}.  A value of 1 indicates the data should be censored from
+## the mean estimation.  Any nonzero values in @var{censor} are treated as a 1.
 ##
-## The optional input @var{f} is a numeric array the same size as @var{s}, used
-## to specify occurrence frequencies for the elements in @var{s}.  Values of
-## @var{f} need not be integers.  Any NaN elements in the frequency array will
-## produce a NaN output for @var{mu}.
+## The optional input @var{freq} is a numeric array the same size as @var{x},
+## used to specify occurrence frequencies for the elements in @var{x}.  Values
+## of @var{freq} need not be integers.  Any NaN elements in the frequency array
+## will produce a NaN output for @var{muhat}.
 ##
 ## Options can be skipped by using [] to revert to the default.
 ##
-## Matlab incompatibility: Matlab's @code{expfit} produces unpredictable results
+## Matlab incompatibility: Matlab'x @code{expfit} produces unpredictable results
 ## for some cases with higher dimensions (specifically 1 x m x n x ... arrays).
-## Octave's implementation allows for n-D arrays, consistently performing
-## calculations on individual column vectors.  Additionally, @var{c} and @var{f}
-## can be used with arrays of any size, whereas Matlab only allows their use
-## when @var{s} is a vector.
+## Octave's implementation allows for @math{nxD} arrays, consistently performing
+## calculations on individual column vectors.  Additionally, @var{censor} and
+## @var{freq} can be used with arrays of any size, whereas Matlab only allows
+## their use when @var{x} is a vector.
 ##
 ## @seealso{expcdf, expinv, explpdf, exprnd, explike, expstat}
 ## @end deftypefn
 
-function [m, v] = expfit (s, alpha = 0.05, c = [], f = [])
+function [muhat, muci] = expfit (x, alpha = 0.05, censor = [], freq = [])
 
   ## Check arguments
   if (nargin ==0 || nargin > 4 || nargout > 2)
     print_usage ();
   endif
 
-  if ! (isnumeric (s) || islogical (s))
-    s = double(s);
+  if (! (isnumeric (x) || islogical (x)))
+    x = double (x);
   endif
 
-  ## guarantee working with column vectors
-  if isvector (s)
-
-    s = s(:);
+  ## Guarantee working with column vectors
+  if (isvector (x))
+    x = x(:);
   endif
 
-  if any (s(:) < 0)
-    error("expfit: input data S cannot be negative");
+  if (any (x(:) < 0))
+    error ("expfit: X cannot be negative.");
   endif
 
-  sz_s = size (s);
+  sz_s = size (x);
 
   if (isempty (alpha))
     alpha = 0.05;
-  elseif !(isscalar (alpha))
-    error ("expfit: ALPHA must be a scalar quantity");
+  elseif (! (isscalar (alpha)))
+    error ("expfit: ALPHA must be a scalar quantity.");
   endif
 
-  if (isempty (c) && isempty (f))
-    ##simple case without f or c, shortcut other validations
-    m = mean (s, 1);
+  if (isempty (censor) && isempty (freq))
+    ## Simple case without freq or censor, shortcut other validations
+    muhat = mean (x, 1);
 
     if (nargout == 2)
-      S = sum (s, 1);
-      v = [2*S ./ chi2inv(1 - alpha/2, 2*sz_s(1));...
-           2*S ./ chi2inv(alpha/2, 2*sz_s(1))];
+      X = sum (x, 1);
+      muci = [2*X ./ chi2inv(1 - alpha/2, 2*sz_s(1));...
+              2*X ./ chi2inv(alpha/2, 2*sz_s(1))];
     endif
   else
 
-    ## input validation for c and f
+    ## Input validation for censor and freq
 
-    if (isempty (c))
-      ##expand to full c with values that don't affect results
-      c = zeros (sz_s);
-    elseif (! (isnumeric(c) || islogical (c)))
-      #check for incorrect f type
-      error ("expfit: C must be a numeric or logical array")
-    elseif (isvector (c))
-      ## guarantee working with a column vector
-      c = c(:);
+    if (isempty (censor))
+      ## Expand to full censor with values that don't affect results
+      censor = zeros (sz_s);
+    elseif (! (isnumeric(censor) || islogical (censor)))
+      ## Check for incorrect freq type
+      error ("expfit: CENSOR must be a numeric or logical array.")
+    elseif (isvector (censor))
+      ## Guarantee working with a column vector
+      censor = censor(:);
     endif
 
-    if (isempty (f))
-      ##expand to full c with values that don't affect results
-      f = ones (sz_s);
-    elseif (! (isnumeric(f) || islogical (f)))
-      #check for incorrect f type
-      error ("expfit: F must be a numeric or logical array")
-    elseif (isvector (f))
-      ## guarantee working with a column vector
-      f = f(:);
+    if (isempty (freq))
+      ## Expand to full censor with values that don't affect results
+      freq = ones (sz_s);
+    elseif (! (isnumeric(freq) || islogical (freq)))
+      ## Check for incorrect freq type
+      error ("expfit: FREQ must be a numeric or logical array.")
+    elseif (isvector (freq))
+      ## Guarantee working with a column vector
+      freq = freq(:);
     endif
 
-    #check that size of c and f match s
-    if !(isequal(size (c), sz_s))
-      error("expfit: C must be the same size as S");
-    elseif (! isequal(size (f), sz_s))
-      error("expfit: F must be the same size as S");
+    ## Check that size of censor and freq match x
+    if !(isequal(size (censor), sz_s))
+      error("expfit: CENSOR must be the same size as X.");
+    elseif (! isequal(size (freq), sz_s))
+      error("expfit: FREQ must be the same size as X.");
     endif
 
-    ## trivial case where c and f have no effect
-    if (all (c(:) == 0 & f(:) == 1))
+    ## Trivial case where censor and freq have no effect
+    if (all (censor(:) == 0 & freq(:) == 1))
 
-      m = mean (s, 1);
-
-      if (nargout == 2)
-        S = sum (s, 1);
-        v = [2*S ./ chi2inv(1 - alpha/2, 2*sz_s(1));...
-             2*S ./ chi2inv(alpha/2, 2*sz_s(1))];
-      endif
-
-    ## no censoring, just adjust sample counts for f
-    elseif (all (c(:) == 0))
-
-      S = sum (s.*f, 1);
-      n = sum (f, 1);
-      m = S ./ n;
+      muhat = mean (x, 1);
 
       if (nargout == 2)
-        v = [2*S ./ chi2inv(1 - alpha/2, 2*n);...
-             2*S ./ chi2inv(alpha/2, 2*n)];
+        X = sum (x, 1);
+        muci = [2*X ./ chi2inv(1 - alpha/2, 2*sz_s(1));...
+                2*X ./ chi2inv(alpha/2, 2*sz_s(1))];
       endif
 
-    ## censoring, but no sample counts adjustment
-    elseif (all (f(:) == 1))
+    ## No censoring, just adjust sample counts for freq
+    elseif (all (censor(:) == 0))
 
-      c = logical(c); ##convert any numeric c's to 0s and 1s
-      S = sum (s, 1);
-      r = sz_s(1) - sum (c, 1);
-      m = S ./ r;
+      X = sum (x.*freq, 1);
+      n = sum (freq, 1);
+      muhat = X ./ n;
 
       if (nargout == 2)
-        v = [2*S ./ chi2inv(1 - alpha/2, 2*r);...
-             2*S ./ chi2inv(alpha/2, 2*r)];
+        muci = [2*X ./ chi2inv(1 - alpha/2, 2*n);...
+                2*X ./ chi2inv(alpha/2, 2*n)];
       endif
 
-    ## both censoring and sample count adjustment
+    ## Censoring, but no sample counts adjustment
+    elseif (all (freq(:) == 1))
+
+      censor = logical(censor); # convert any numeric censor'x to 0s and 1s
+      X = sum (x, 1);
+      r = sz_s(1) - sum (censor, 1);
+      muhat = X ./ r;
+
+      if (nargout == 2)
+        muci = [2*X ./ chi2inv(1 - alpha/2, 2*r);...
+                2*X ./ chi2inv(alpha/2, 2*r)];
+      endif
+
+    ## Both censoring and sample count adjustment
     else
 
-      c = logical(c); ##convert any numeric c's to 0s and 1s
-      S = sum (s.*f , 1);
-      r = sum (f.*(!c), 1);
-      m = S ./ r;
+      censor = logical(censor); # convert any numeric censor'x to 0s and 1s
+      X = sum (x.*freq , 1);
+      r = sum (freq.*(!censor), 1);
+      muhat = X ./ r;
 
       if (nargout == 2)
-        v = [2*S ./ chi2inv(1 - alpha/2, 2*r);...
-             2*S ./ chi2inv(alpha/2, 2*r)];
+        muci = [2*X ./ chi2inv(1 - alpha/2, 2*r);...
+                2*X ./ chi2inv(alpha/2, 2*r)];
       endif
     endif
 
-    ## compatibility check, NaN for columns where all c's or f's remove all samples
-    null_columns = all (c) | ! all (f);
-    m(null_columns) = NaN;
+    ## compatibility check, NaN for columns where all censor's or freq's remove
+    ## all samples
+    null_columns = all (censor) | ! all (freq);
+    muhat(null_columns) = NaN;
 
     if (nargout == 2)
-      v(:,null_columns) = NaN;
+      muci(:,null_columns) = NaN;
     endif
   endif
 
 endfunction
 
-##tests for mean
+## tests for mean
 %!assert (expfit (1), 1)
 %!assert (expfit (1:3), 2)
 %!assert (expfit ([1:3]'), 2)
@@ -212,54 +213,65 @@ endfunction
 %!assert (expfit (reshape (1:9, [3 3])), [2 5 8])
 %!assert (expfit (reshape (1:9, [3 3]), [], eye(3)), [3 7.5 12])
 %!assert (expfit (reshape (1:9, [3 3]), [], 2*eye(3)), [3 7.5 12])
-%!assert (expfit (reshape (1:9, [3 3]), [], [], [2 2 2; 1 1 1; 1 1 1]), [1.75 4.75 7.75])
-%!assert (expfit (reshape (1:9, [3 3]), [], [], [2 2 2; 1 1 1; 1 1 1]), [1.75 4.75 7.75])
-%!assert (expfit (reshape (1:9, [3 3]), [], eye(3), [2 2 2; 1 1 1; 1 1 1]), [3.5 19/3 31/3])
+%!assert (expfit (reshape (1:9, [3 3]), [], [], [2 2 2; 1 1 1; 1 1 1]), ...
+%! [1.75 4.75 7.75])
+%!assert (expfit (reshape (1:9, [3 3]), [], [], [2 2 2; 1 1 1; 1 1 1]), ...
+%! [1.75 4.75 7.75])
+%!assert (expfit (reshape (1:9, [3 3]), [], eye(3), [2 2 2; 1 1 1; 1 1 1]), ...
+%! [3.5 19/3 31/3])
 
-##tests for confidence intervals
-%!assert ([~,v] = expfit (1:3, 0), [0; Inf])
-%!assert ([~,v] = expfit (1:3, 2), [Inf; 0])
-%!assert ([~,v] = expfit (1:3, 0.1, [1 1 1]), [NaN; NaN])
-%!assert ([~,v] = expfit (1:3, 0.1, [], [0 0 0]), [NaN; NaN])
-%!assert ([~,v] = expfit (1:3, -1), [NaN; NaN])
-%!assert ([~,v] = expfit (1:3, 5), [NaN; NaN])
-#!assert ([~,v] = expfit ([1:3;1:3], -1), NaN(2, 3)]
-#!assert ([~,v] = expfit ([1:3;1:3], 5), NaN(2, 3)]
-%!assert ([~,v] = expfit (1:3), [0.830485728373393; 9.698190330474096], 1000*eps)
-%!assert ([~,v] = expfit (1:3, 0.1), [0.953017262058213; 7.337731146400207], 1000*eps)
-%!assert ([~,v] = expfit ([1:3;2:4]), ...
+## tests for confidence intervals
+%!assert ([~,muci] = expfit (1:3, 0), [0; Inf])
+%!assert ([~,muci] = expfit (1:3, 2), [Inf; 0])
+%!assert ([~,muci] = expfit (1:3, 0.1, [1 1 1]), [NaN; NaN])
+%!assert ([~,muci] = expfit (1:3, 0.1, [], [0 0 0]), [NaN; NaN])
+%!assert ([~,muci] = expfit (1:3, -1), [NaN; NaN])
+%!assert ([~,muci] = expfit (1:3, 5), [NaN; NaN])
+#!assert ([~,muci] = expfit ([1:3;1:3], -1), NaN(2, 3)]
+#!assert ([~,muci] = expfit ([1:3;1:3], 5), NaN(2, 3)]
+%!assert ([~,muci] = expfit (1:3), [0.830485728373393; 9.698190330474096], ...
+%!             1000*eps)
+%!assert ([~,muci] = expfit (1:3, 0.1), ...
+%!                          [0.953017262058213; 7.337731146400207], 1000*eps)
+%!assert ([~,muci] = expfit ([1:3;2:4]), ...
 %!             [0.538440777613095, 0.897401296021825, 1.256361814430554; ...
-%!             12.385982973214016, 20.643304955356694, 28.900626937499371], 1000*eps)
-%!assert ([~,v] = expfit ([1:3;2:4], [], [1 1 1; 0 0 0]), ...
+%!             12.385982973214016, 20.643304955356694, 28.900626937499371], ...
+%!             1000*eps)
+%!assert ([~,muci] = expfit ([1:3;2:4], [], [1 1 1; 0 0 0]), ...
 %!             100*[0.008132550920455, 0.013554251534091, 0.018975952147727; ...
-%!             1.184936706156216, 1.974894510260360, 2.764852314364504], 1000*eps)
-%!assert ([~,v] = expfit ([1:3;2:4], [], [], [3 3 3; 1 1 1]), ...
+%!             1.184936706156216, 1.974894510260360, 2.764852314364504], ...
+%!             1000*eps)
+%!assert ([~,muci] = expfit ([1:3;2:4], [], [], [3 3 3; 1 1 1]), ...
 %!             [0.570302756652583, 1.026544961974649, 1.482787167296715; ...
-%!             4.587722594914109, 8.257900670845396, 11.928078746776684], 1000*eps)
-%!assert ([~,v] = expfit ([1:3;2:4], [], [0 0 0; 1 1 1], [3 3 3; 1 1 1]), ...
+%!             4.587722594914109, 8.257900670845396, 11.928078746776684], ...
+%!             1000*eps)
+%!assert ([~,muci] = expfit ([1:3;2:4], [], [0 0 0; 1 1 1], [3 3 3; 1 1 1]), ...
 %!             [0.692071440311161, 1.245728592560089, 1.799385744809018; ...
-%!             8.081825275395081, 14.547285495711145, 21.012745716027212], 1000*eps)
+%!             8.081825275395081, 14.547285495711145, 21.012745716027212], ...
+%!             1000*eps)
 
 %!test
-%! s = reshape (1:8, [4 2]);
-%! s(4) = NaN;
-%! [m,v] = expfit (s);
-%! assert ({m, v}, {[NaN, 6.5], [NaN, 2.965574334593430;NaN, 23.856157493553368]}, 1000*eps);
+%! x = reshape (1:8, [4 2]);
+%! x(4) = NaN;
+%! [muhat,muci] = expfit (x);
+%! assert ({muhat, muci}, {[NaN, 6.5], ...
+%!         [NaN, 2.965574334593430;NaN, 23.856157493553368]}, 1000*eps);
 
 %!test
-%! s = magic (3);
-%! c = [0 1 0; 0 1 0; 0 1 0];
-%! f = [1 1 0; 1 1 0; 1 1 0];
-%! [m,v] = expfit (s, [], c, f);
-%! assert ({m, v}, {[5 NaN NaN], [[2.076214320933482; 24.245475826185242],NaN(2)]}, 1000*eps);
+%! x = magic (3);
+%! censor = [0 1 0; 0 1 0; 0 1 0];
+%! freq = [1 1 0; 1 1 0; 1 1 0];
+%! [muhat,muci] = expfit (x, [], censor, freq);
+%! assert ({muhat, muci}, {[5 NaN NaN], ...
+%!                 [[2.076214320933482; 24.245475826185242],NaN(2)]}, 1000*eps);
 
 ## input validation
 %!error expfit ()
 %!error expfit (1,2,3,4,5)
-%!error [a b c] = expfit (1)
+%!error [a b censor] = expfit (1)
 %!error <ALPHA must be a scalar quantity> expfit (1, [1 2])
-%!error <input data S cannot be negative> expfit ([-1 2 3 4 5])
-%!error <C must be a numeric or logical array> expfit ([1:5], [], "test")
-%!error <F must be a numeric or logical array> expfit ([1:5], [], [], "test")
-%!error <C must be the same size as S> expfit ([1:5], [], [0 0 0 0])
-%!error <F must be the same size as S> expfit ([1:5], [], [], [1 1 1 1])
+%!error <X cannot be negative> expfit ([-1 2 3 4 5])
+%!error <CENSOR must be a numeric or logical array> expfit ([1:5], [], "test")
+%!error <FREQ must be a numeric or logical array> expfit ([1:5], [], [], "test")
+%!error <CENSOR must be the same size as X> expfit ([1:5], [], [0 0 0 0])
+%!error <FREQ must be the same size as X> expfit ([1:5], [], [], [1 1 1 1])

@@ -16,19 +16,18 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {[@var{nlogL}, @var{avar}] =} explike (@var{param}, @var{data})
+## @deftypefn  {statistics} {[@var{nlogL}, @var{avar}] =} explike (@var{mu}, @var{x})
 ##
-## Compute the negative log-likelihood of data under the exponential
-## distribution with given parameter value.
+## Negative log-likelihood for the exponential distribution.
 ##
 ## @subheading Arguments
 ##
 ## @itemize @bullet
 ## @item
-## @var{param} is a scalar containing the scale parameter of the exponential
-## distribution (equal to its mean).
+## @var{mu} is a scalar containing the mean of the exponential distribution
+## (@math{@var{mu} = 1 / λ}, where λ is the rate, or inverse scale parameter).
 ## @item
-## @var{data} is the vector of given values.
+## @var{x} is the vector of given values.
 ##
 ## @end itemize
 ##
@@ -47,16 +46,16 @@
 ## @seealso{expcdf, expinv, exppdf, exprnd, expfit, expstat}
 ## @end deftypefn
 
-function [nlogL, avar] = explike (param, data)
+function [nlogL, avar] = explike (mu, x)
 
   ## Check arguments
   if (nargin != 2)
     print_usage;
   endif
 
-  beta = param(1);
-  n = numel (data);
-  sx = sum (data(:));
+  beta = mu(1);
+  n = numel (x);
+  sx = sum (x(:));
   sxb = sx/beta;
 
   ## Calculate negative log likelihood

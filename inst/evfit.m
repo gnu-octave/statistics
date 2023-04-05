@@ -17,35 +17,35 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{paramhat} =} evfit (@var{data})
-## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} evfit (@var{data})
-## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} evfit (@var{data}, @var{alpha})
-## @deftypefnx {statistics} {[@dots{}] =} evfit (@var{data}, @var{alpha}, @var{censor})
-## @deftypefnx {statistics} {[@dots{}] =} evfit (@var{data}, @var{alpha}, @var{censor}, @var{freq})
-## @deftypefnx {statistics} {[@dots{}] =} evfit (@var{data}, @var{alpha}, @var{censor}, @var{freq}, @var{options})
+## @deftypefn  {statistics} {@var{paramhat} =} evfit (@var{x})
+## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} evfit (@var{x})
+## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} evfit (@var{x}, @var{alpha})
+## @deftypefnx {statistics} {[@dots{}] =} evfit (@var{x}, @var{alpha}, @var{censor})
+## @deftypefnx {statistics} {[@dots{}] =} evfit (@var{x}, @var{alpha}, @var{censor}, @var{freq})
+## @deftypefnx {statistics} {[@dots{}] =} evfit (@var{x}, @var{alpha}, @var{censor}, @var{freq}, @var{options})
 ##
-## Estimate parameters and confidence intervals for extreme value data.
+## Estimate parameters and confidence intervals for extreme value distribution.
 ##
-## @code{@var{paramhat} = evfit (@var{data})} returns maximum likelihood
+## @code{@var{paramhat} = evfit (@var{x})} returns maximum likelihood
 ## estimates of the parameters of the type 1 extreme value distribution (also
-## known as the Gumbel distribution) given in @var{data}.  @var{paramhat(1)} is
+## known as the Gumbel distribution) given in @var{x}.  @var{paramhat(1)} is
 ## the location parameter, mu, and @var{paramhat(2)} is the scale parameter,
 ## sigma.
 ##
-## @code{[@var{paramhat}, @var{paramci}] = evfit (@var{data})} returns the 95%
+## @code{[@var{paramhat}, @var{paramci}] = evfit (@var{x})} returns the 95%
 ## confidence intervals for the parameter estimates.
 ##
-## @code{[@dots{}] = evfit (@var{data}, @var{alpha})} returns 100(1-@var{alpha})
+## @code{[@dots{}] = evfit (@var{x}, @var{alpha})} returns 100(1-@var{alpha})
 ## percent confidence intervals for the parameter estimates.
 ##
-## @code{[@dots{}] = evfit (@var{data}, @var{alpha}, @var{censor})} accepts a
-## boolean vector of the same size as @var{data} with 1 for observations that
+## @code{[@dots{}] = evfit (@var{x}, @var{alpha}, @var{censor})} accepts a
+## boolean vector of the same size as @var{x} with 1 for observations that
 ## are right-censored and 0 for observations that are observed exactly.
 ##
-## @code{[@dots{}] = evfit (@var{data}, @var{alpha}, @var{censor}, @var{freq})}
-## accepts a frequency vector of the same size as @var{data}.
+## @code{[@dots{}] = evfit (@var{x}, @var{alpha}, @var{censor}, @var{freq})}
+## accepts a frequency vector of the same size as @var{x}.
 ## @var{freq} typically contains integer frequencies for the corresponding
-## elements in @var{data}, but may contain any non-integer non-negative values.
+## elements in @var{x}, but may contain any non-integer non-negative values.
 ##
 ## @code{[@dots{}] = evfit (@dots{}, @var{options})}
 ##
@@ -108,7 +108,7 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
     options.Display = "off";
     options.TolX = 1e-6;
   endif
-  ## Censor data and get number of samples
+  ## Censor x and get number of samples
   sample_size = sum (freq);
   censored_sample_size = sum (freq .* censor);
   uncensored_sample_size = sample_size - censored_sample_size;
@@ -121,7 +121,7 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
     paramci = NaN (2, 2);
     return
   endif
-  ## 2. Constant data in X
+  ## 2. Constant x in X
   if (censored_sample_size == 0 && x_range == 0)
     paramhat = [x(1), 0];
     if (sample_size == 1)
@@ -259,14 +259,14 @@ endfunction
 %!error<evfit: Frequency vector must> evfit ([1, 2, 3, 4, 5], 0.05, [], [1 1 0]);
 %!error<evfit: 'options' 5th argument> evfit ([1, 2, 3, 4, 5], 0.05, [], [], 2);
 %!test
-%! data = 1:50;
-%! [paramhat, paramci] = evfit (data);
+%! x = 1:50;
+%! [paramhat, paramci] = evfit (x);
 %! paramhat_out = [32.6811, 13.0509];
 %! paramci_out = [28.8504, 10.5294; 36.5118, 16.1763];
 %! assert (paramhat, paramhat_out, 1e-4);
 %! assert (paramci, paramci_out, 1e-4);
 %!test
-%! data = 1:50;
-%! [paramhat, paramci] = evfit (data, 0.01);
+%! x = 1:50;
+%! [paramhat, paramci] = evfit (x, 0.01);
 %! paramci_out = [27.6468, 9.8426; 37.7155, 17.3051];
 %! assert (paramci, paramci_out, 1e-4);
