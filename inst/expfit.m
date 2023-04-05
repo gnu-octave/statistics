@@ -191,6 +191,42 @@ function [muhat, muci] = expfit (x, alpha = 0.05, censor = [], freq = [])
 
 endfunction
 
+%!demo
+%! ## Sample 3 populations from 3 different exponential distibutions
+%! r = [exprnd(2, 200, 1), exprnd(5, 200, 1), exprnd(14, 200, 1)];
+%!
+%! ## Plot them normalized and fix their colors
+%! hist (r, 12, 1);
+%! h = findobj(gca,'Type','patch');
+%! set(h(1),'facecolor',"c");
+%! set(h(2),'facecolor',"g");
+%! set(h(3),'facecolor',"r");
+%! hold on
+%!
+%! ## Estimate their lambda parameter
+%! muhat = expfit (r);
+%!
+%! ## Plot their estimated PDFs
+%! x = [0:max(r(:))];
+%! y = exppdf (x, muhat(1));
+%! plot (x, y, "-pr");
+%! y = exppdf (x, muhat(2));
+%! plot (x, y, "-sg");
+%! y = exppdf (x, muhat(3));
+%! plot (x, y, "-^c");
+%! hold off
+%! legend ({"Normalized HIST of sample 1 with μ=2", ...
+%!          "Normalized HIST of sample 2 with μ=5", ...
+%!          "Normalized HIST of sample 3 with μ=9", ...
+%!          sprintf("PDF for sample 1 with estimated μ=%0.2f", ...
+%!                  muhat(1)), ...
+%!          sprintf("PDF for sample 2 with estimated μ=%0.2f", ...
+%!                  muhat(2)), ...
+%!          sprintf("PDF for sample 3 with estimated μ=%0.2f", ...
+%!                  muhat(3))})
+%! title ("Three population samples from different exponential distibutions")
+%! hold off
+
 ## tests for mean
 %!assert (expfit (1), 1)
 %!assert (expfit (1:3), 2)

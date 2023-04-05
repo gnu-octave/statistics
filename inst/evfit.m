@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2022 Andrew Penn <A.C.Penn@sussex.ac.uk>
 ##
 ## This file is part of the statistics package for GNU Octave.
@@ -251,13 +251,45 @@ function v = evscale_lkeq (sigma, x, freq, x_weighted_uncensored)
   v = sigma + x_weighted_uncensored - sum (x .* freq) / sum (freq);
 endfunction
 
-%!error<evfit: X must be a double-precision vector.> evfit (ones (2,5));
-%!error<evfit: X must be a double-precision vector.> evfit (single (ones (1,5)));
-%!error<evfit: X must NOT contain missing values> evfit ([1, 2, 3, 4, NaN]);
-%!error<evfit: Wrong value for ALPHA.> evfit ([1, 2, 3, 4, 5], 1.2);
-%!error<evfit: Censoring vector must> evfit ([1, 2, 3, 4, 5], 0.05, [1 1 0]);
-%!error<evfit: Frequency vector must> evfit ([1, 2, 3, 4, 5], 0.05, [], [1 1 0]);
-%!error<evfit: 'options' 5th argument> evfit ([1, 2, 3, 4, 5], 0.05, [], [], 2);
+%!demo
+%! ## Sample 3 populations from 3 different Extreme Value distibutions
+%! r = [evrnd(2, 5, 200, 1), evrnd(-5, 3, 200, 1), evrnd(14, 8, 200, 1)];
+%!
+%! ## Plot them normalized and fix their colors
+%! hist (r, 12, 1);
+%! h = findobj(gca,'Type','patch');
+%! set(h(1),'facecolor',"c");
+%! set(h(2),'facecolor',"g");
+%! set(h(3),'facecolor',"r");
+%! hold on
+%!
+%! ## Estimate their lambda parameter
+%! mu_sigmaA = evfit (r(:,1));
+%! mu_sigmaB = evfit (r(:,2));
+%! mu_sigmaC = evfit (r(:,3));
+%!
+%! ## Plot their estimated PDFs
+%! x = [min(r(:)):max(r(:))];
+%! y = evpdf (x, mu_sigmaA(1), mu_sigmaA(2));
+%! plot (x, y, "-pr");
+%! y = evpdf (x, mu_sigmaB(1), mu_sigmaB(2));
+%! plot (x, y, "-sg");
+%! y = evpdf (x, mu_sigmaC(1), mu_sigmaC(2));
+%! plot (x, y, "-^c");
+%! hold off
+%! legend ({"Normalized HIST of sample 1 with μ=2 and σ=5", ...
+%!          "Normalized HIST of sample 2 with μ=-5 and σ=3", ...
+%!          "Normalized HIST of sample 3 with μ=14 and σ=8", ...
+%!          sprintf("PDF for sample 1 with estimated μ=%0.2f and σ=%0.2f", ...
+%!                  mu_sigmaA(1), mu_sigmaA(2)), ...
+%!          sprintf("PDF for sample 2 with estimated μ=%0.2f and σ=%0.2f", ...
+%!                  mu_sigmaB(1), mu_sigmaB(2)), ...
+%!          sprintf("PDF for sample 3 with estimated μ=%0.2f and σ=%0.2f", ...
+%!                  mu_sigmaC(1), mu_sigmaC(2))})
+%! title ("Three population samples from different Extreme Value distibutions")
+%! hold off
+
+## test results
 %!test
 %! x = 1:50;
 %! [paramhat, paramci] = evfit (x);
@@ -270,3 +302,12 @@ endfunction
 %! [paramhat, paramci] = evfit (x, 0.01);
 %! paramci_out = [27.6468, 9.8426; 37.7155, 17.3051];
 %! assert (paramci, paramci_out, 1e-4);
+
+## test input validation
+%!error<evfit: X must be a double-precision vector.> evfit (ones (2,5));
+%!error<evfit: X must be a double-precision vector.> evfit (single (ones (1,5)));
+%!error<evfit: X must NOT contain missing values> evfit ([1, 2, 3, 4, NaN]);
+%!error<evfit: Wrong value for ALPHA.> evfit ([1, 2, 3, 4, 5], 1.2);
+%!error<evfit: Censoring vector must> evfit ([1, 2, 3, 4, 5], 0.05, [1 1 0]);
+%!error<evfit: Frequency vector must> evfit ([1, 2, 3, 4, 5], 0.05, [], [1 1 0]);
+%!error<evfit: 'options' 5th argument> evfit ([1, 2, 3, 4, 5], 0.05, [], [], 2);
