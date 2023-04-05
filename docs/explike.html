@@ -71,11 +71,10 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>nlogL</var>, <var>avar</var>] = <b>explike</b><i> (<var>param</var>, <var>data</var>)</i></dt>
+<dt><u>statistics:</u> [<var>nlogL</var>, <var>avar</var>] = <b>explike</b><i> (<var>mu</var>, <var>x</var>)</i></dt>
 </dl>
 
-<p> Compute the negative log-likelihood of data under the exponential
- distribution with given parameter value.
+<p> Negative log-likelihood for the exponential distribution.
 </p>
 <div class="ms-5">
  <a name="Arguments"></a>
@@ -83,10 +82,10 @@
 
  <ul>
 <li>
- <var>param</var> is a scalar containing the scale parameter of the exponential
- distribution (equal to its mean).
+ <var>mu</var> is a scalar containing the mean of the exponential distribution
+ (<math><var>mu</var> = 1 / λ</math>, where λ is the rate, or inverse scale parameter).
  </li><li>
- <var>data</var> is the vector of given values.
+ <var>x</var> is the vector of given values.
 
 </li></ul>
 

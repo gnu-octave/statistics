@@ -71,20 +71,20 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>MLE</var> = <b>gamfit</b><i> (<var>data</var>)</i></dt>
+<dt><u>statistics:</u> <var>MLE</var> = <b>gamfit</b><i> (<var>x</var>)</i></dt>
 </dl>
 
-<p> Calculate gamma distribution parameters.
+<p> Estimate parameters for Gamma distribution.
 </p>
 <div class="ms-5">
 <p> Find the maximum likelihood estimate parameters of the Gamma distribution
- of <var>data</var>.  <var>MLE</var> is a two element vector with shape parameter
+ of <var>x</var>.  <var>MLE</var> is a two element vector with shape parameter
  <var>A</var> and scale <var>B</var>.
 </p>
 <p> This function works by minimizing the value of gamlike for the vector R.
  Just about any minimization function will work, all it has to do is
  minimize for one variable.  Although the gamma distribution has two
- parameters, their product is the mean of the data.  So a helper function
+ parameters, their product is the mean of the <var>x</var>.  So a helper function
  for the search takes one parameter, calculates the other and then returns
  the value of gamlike.
 </p>

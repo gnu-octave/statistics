@@ -71,10 +71,10 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>nlogL</var> = <b>evlike</b><i> (<var>params</var>, <var>data</var>)</i></dt>
-<dt><u>statistics:</u> [<var>nlogL</var>, <var>avar</var>] = <b>evlike</b><i> (<var>params</var>, <var>data</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>evlike</b><i> (<var>params</var>, <var>data</var>, <var>censor</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>evlike</b><i> (<var>params</var>, <var>data</var>, <var>censor</var>, <var>freq</var>)</i></dt>
+<dt><u>statistics:</u> <var>nlogL</var> = <b>evlike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>nlogL</var>, <var>avar</var>] = <b>evlike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>evlike</b><i> (<var>params</var>, <var>x</var>, <var>censor</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>evlike</b><i> (<var>params</var>, <var>x</var>, <var>censor</var>, <var>freq</var>)</i></dt>
 </dl>
 
 <p> Negative log-likelihood for the extreme value distribution.
@@ -89,14 +89,14 @@
  of the type 1 extreme value distribution (also known as the Gumbel
  distribution) at which the negative of the log-likelihood is evaluated.
  </li><li>
- <var>data</var> is the vector of given values.
+ <var>x</var> is the vector of given values.
  </li><li>
- <var>censor</var> is a boolean vector of the same size as <var>data</var> with 1 for
+ <var>censor</var> is a boolean vector of the same size as <var>x</var> with 1 for
  observations that are right-censored and 0 for observations that are observed
  exactly.
  </li><li>
- <var>freq</var> is a vector of the same size as <var>data</var> that contains integer
- frequencies for the corresponding elements in <var>data</var>, but may contain any
+ <var>freq</var> is a vector of the same size as <var>x</var> that contains integer
+ frequencies for the corresponding elements in <var>x</var>, but may contain any
  non-integer non-negative values.  Pass in [] for <var>censor</var> to use its
  default value.
  </li></ul>
