@@ -69,10 +69,10 @@ function [lambdahat, lambdaci] = poissfit (x, alpha, freq=[])
 
   ## Compute lambdahat
   n = sum (freq, 1);
-  lambdahat = double (sum (x .* freq) / n);
+  lambdahat = double (sum (x .* freq) ./ n);
 
   ## Compute confidence intervals
-  lambdasum = n * lambdahat;
+  lambdasum = n .* lambdahat;
   ## Select elements for exact method or normal approximation
   k = (lambdasum < 100);
   if (any (k))    # exact method
