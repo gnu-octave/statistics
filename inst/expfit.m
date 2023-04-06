@@ -62,7 +62,7 @@
 function [muhat, muci] = expfit (x, alpha = 0.05, censor = [], freq = [])
 
   ## Check arguments
-  if (nargin ==0 || nargin > 4 || nargout > 2)
+  if (nargin == 0 || nargin > 4 || nargout > 2)
     print_usage ();
   endif
 
