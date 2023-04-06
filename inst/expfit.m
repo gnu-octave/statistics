@@ -18,8 +18,8 @@
 ## @deftypefn  {statistics} {@var{muhat} =} expfit (@var{x})
 ## @deftypefnx {statistics} {[@var{muhat}, @var{muci}] =} expfit (@var{x})
 ## @deftypefnx {statistics} {[@var{muhat}, @var{muci}] =} expfit (@var{x}, @var{alpha})
-## @deftypefnx {statistics} {@dots{} =} expfit (@var{x}, @var{alpha}, @var{censor})
-## @deftypefnx {statistics} {@dots{} =} expfit (@var{x}, @var{alpha}, @var{censor}, @var{freq})
+## @deftypefnx {statistics} {[@dots{} =]} expfit (@var{x}, @var{alpha}, @var{censor})
+## @deftypefnx {statistics} [[@dots{} =]} expfit (@var{x}, @var{alpha}, @var{censor}, @var{freq})
 ##
 ## Estimate mean and confidence intervals for the exponential distribution.
 ##
