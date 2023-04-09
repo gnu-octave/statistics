@@ -74,8 +74,8 @@
 <dt><u>statistics:</u> <var>muhat</var> = <b>expfit</b><i> (<var>x</var>)</i></dt>
 <dt><u>statistics:</u> [<var>muhat</var>, <var>muci</var>] = <b>expfit</b><i> (<var>x</var>)</i></dt>
 <dt><u>statistics:</u> [<var>muhat</var>, <var>muci</var>] = <b>expfit</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
-<dt><u>statistics:</u> &hellip; = <b>expfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>)</i></dt>
-<dt><u>statistics:</u> &hellip; = <b>expfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>expfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>expfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</i></dt>
 </dl>
 
 <p> Estimate mean and confidence intervals for the exponential distribution.
@@ -83,7 +83,7 @@
 <div class="ms-5">
 <p> <var>x</var> is expected to be a non-negative vector.  If <var>x</var> is an array, the
  mean will be computed for each column of <var>x</var>.  If any elements of <var>x</var>
- are NaN, that vector&rsquo;x mean will be returned as NaN.
+ are NaN, that vector&rsquo;s mean will be returned as NaN.
 </p>
 <p> If the optional output variable <var>muci</var> is requested, <code>expfit</code> will
  also return the confidence interval bounds for the estimate as a two element
@@ -93,7 +93,7 @@
 <p> The optional scalar input <var>alpha</var> can be used to define the
  (1-<var>alpha</var>) confidence interval to be applied to all estimates as a
  value between 0 and 1.  The default is 0.05, resulting in a 0.95 or 95% CI.
- Any invalid values for alpha will return NaN for both CI bounds.
+ Any invalid values for <var>alpha</var> will return NaN for both CI bounds.
 </p>
 <p> The optional input <var>censor</var> is a logical or numeric array of zeros and
  ones the same size as <var>x</var>, used to right-censor individual elements of
@@ -107,7 +107,7 @@
 </p>
 <p> Options can be skipped by using [] to revert to the default.
 </p>
-<p> Matlab incompatibility: Matlab&rsquo;x <code>expfit</code> produces unpredictable results
+<p> Matlab incompatibility: Matlab&rsquo;s <code>expfit</code> produces unpredictable results
  for some cases with higher dimensions (specifically 1 x m x n x ... arrays).
  Octave&rsquo;s implementation allows for <math>n&times;D</math> arrays, consistently performing
  calculations on individual column vectors.  Additionally, <var>censor</var> and

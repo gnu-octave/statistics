@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: explike</title>
+    <title>Statistics: betalike</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -64,64 +64,49 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>explike</code></b>
+              Function&nbsp;Reference: <b><code>betalike</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>nlogL</var> = <b>explike</b><i> (<var>mu</var>, <var>x</var>)</i></dt>
-<dt><u>statistics:</u> [<var>nlogL</var>, <var>avar</var>] = <b>explike</b><i> (<var>mu</var>, <var>x</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>explike</b><i> (<var>mu</var>, <var>x</var>, <var>censor</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>explike</b><i> (<var>mu</var>, <var>x</var>, <var>censor</var>, <var>freq</var>)</i></dt>
+<dt><u>statistics:</u> <var>nlogL</var> = <b>betalike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>nlogL</var>, <var>avar</var>] = <b>betalike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
 </dl>
 
-<p> Negative log-likelihood for the exponential distribution.
+<p> Negative log-likelihood for the Beta distribution.
 </p>
 <div class="ms-5">
- <a name="Arguments"></a>
-<h3 class="subheading">Arguments</h3>
 
- <ul>
-<li>
- <var>mu</var> is a scalar containing the mean of the exponential distribution
- (<math><var>mu</var> = 1 / λ</math>, where λ is the rate, or inverse scale parameter).
- </li><li>
- <var>x</var> is the vector of given values.
- </li><li>
- <var>censor</var> is a boolean vector of the same size as <var>x</var> with 1 for
- observations that are right-censored and 0 for observations that are observed
- exactly.
- </li><li>
- <var>freq</var> is a vector of the same size as <var>x</var> that contains integer
- frequencies for the corresponding elements in <var>x</var>, but may contain any
- non-integer non-negative values.  Pass in [] for <var>censor</var> to use its
- default value.
- </li></ul>
-
- <a name="Return-values"></a>
-<h3 class="subheading">Return values</h3>
-
- <ul>
-<li>
- <var>nlogL</var> is the negative log-likelihood.
- </li><li>
- <var>avar</var> is the inverse of the Fisher information matrix.
- (The Fisher information matrix is the second derivative of the negative log
- likelihood with respect to the parameter value.)
- </li></ul>
-
+<p> <code><var>nlogL</var> = betalike (<var>params</var>, <var>x</var>)</code> returns the negative
+ log likelihood of the Beta distribution for the shape parameters <math>α</math> and
+ <math>β</math> in <code><var>paramhat</var>([1, 2])</code>, respectively, given the data in
+ vector <var>x</var>.  <math>α</math> and <math>β</math> must be positive real numbers and data
+ in <var>x</var> in the range <math>[0,1]</math>.  Out of range parameters or data return
+ <code>NaN</code>.
+</p>
+<p> <code>[<var>nlogL</var>, <var>avar</var>] = betalike (<var>params</var>, <var>x</var>)</code> returns
+ the inverse of Fisher&rsquo;s information matrix, <var>avar</var>.  If the input
+ parameter values in <var>params</var> are the maximum likelihood estimates, the
+ diagonal elements of <var>params</var> are their asymptotic variances.
+</p>
+<p> The Beta distribution is defined on the open interval <math>(0,1)</math>.  However,
+ <code>betafit</code> can also compute the unbounded beta likelihood function for
+ data that include exact zeros or ones.  In such cases, zeros and ones are
+ treated as if they were values that have been left-censored at
+ <code>sqrt (realmin)</code> or right-censored at <code>1 - eps/2</code>, respectively.
+</p>
 <p> <strong>See also: </strong>
-  <a href="expcdf.html">expcdf</a>, 
-  <a href="expinv.html">expinv</a>, 
-  <a href="exppdf.html">exppdf</a>, 
-  <a href="exprnd.html">exprnd</a>, 
-  <a href="expfit.html">expfit</a>, 
-  <a href="expstat.html">expstat</a>
+  <a href="betacdf.html">betacdf</a>, 
+  <a href="betainv.html">betainv</a>, 
+  <a href="betapdf.html">betapdf</a>, 
+  <a href="betarnd.html">betarnd</a>, 
+  <a href="betafit.html">betafit</a>, 
+  <a href="betastat.html">betastat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/explike.m">explike</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/betalike.m">betalike</a>
 </div>
 
         </div>
