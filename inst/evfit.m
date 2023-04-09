@@ -47,7 +47,13 @@
 ## @var{freq} typically contains integer frequencies for the corresponding
 ## elements in @var{x}, but may contain any non-integer non-negative values.
 ##
-## @code{[@dots{}] = evfit (@dots{}, @var{options})}
+## @code{[@dots{}] = evfit (@dots{}, @var{options})} is a structure with the
+## control parameters for @code{fminsearch} which is used internally to compute
+## MLEs.  By default, it uses the following options:
+## @itemize
+## @item options.Display = "off";
+## @item options.TolX = 1e-6;
+## @end itemize
 ##
 ## @seealso{evcdf, evinv, evpdf, evrnd, evlike, evstat}
 ## @end deftypefn
@@ -57,7 +63,7 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
   ## Check for valid number of input arguments
   narginchk (1, 5);
   ## Check X for being a double precision vector
-  if (! isvector (x) || length (x) < 2 || ! isa (x, "double"))
+  if (! isvector (x) || ! isa (x, "double"))
     error ("evfit: X must be a double-precision vector.");
   endif
   ## If X is a column vector, make it a row vector
@@ -261,6 +267,7 @@ endfunction
 %! set(h(1),'facecolor',"c");
 %! set(h(2),'facecolor',"g");
 %! set(h(3),'facecolor',"r");
+%! ylim ([0 1]);
 %! hold on
 %!
 %! ## Estimate their lambda parameter

@@ -18,14 +18,14 @@
 ## @deftypefn  {statistics} {@var{muhat} =} expfit (@var{x})
 ## @deftypefnx {statistics} {[@var{muhat}, @var{muci}] =} expfit (@var{x})
 ## @deftypefnx {statistics} {[@var{muhat}, @var{muci}] =} expfit (@var{x}, @var{alpha})
-## @deftypefnx {statistics} {[@dots{} =]} expfit (@var{x}, @var{alpha}, @var{censor})
-## @deftypefnx {statistics} [[@dots{} =]} expfit (@var{x}, @var{alpha}, @var{censor}, @var{freq})
+## @deftypefnx {statistics} {[@dots{}] =} expfit (@var{x}, @var{alpha}, @var{censor})
+## @deftypefnx {statistics} {[@dots{}] =} expfit (@var{x}, @var{alpha}, @var{censor}, @var{freq})
 ##
 ## Estimate mean and confidence intervals for the exponential distribution.
 ##
 ## @var{x} is expected to be a non-negative vector.  If @var{x} is an array, the
 ## mean will be computed for each column of @var{x}.  If any elements of @var{x}
-## are NaN, that vector'x mean will be returned as NaN.
+## are NaN, that vector's mean will be returned as NaN.
 ##
 ## If the optional output variable @var{muci} is requested, @code{expfit} will
 ## also return the confidence interval bounds for the estimate as a two element
@@ -35,7 +35,7 @@
 ## The optional scalar input @var{alpha} can be used to define the
 ## (1-@var{alpha}) confidence interval to be applied to all estimates as a
 ## value between 0 and 1.  The default is 0.05, resulting in a 0.95 or 95% CI.
-## Any invalid values for alpha will return NaN for both CI bounds.
+## Any invalid values for @var{alpha} will return NaN for both CI bounds.
 ##
 ## The optional input @var{censor} is a logical or numeric array of zeros and
 ## ones the same size as @var{x}, used to right-censor individual elements of
@@ -49,7 +49,7 @@
 ##
 ## Options can be skipped by using [] to revert to the default.
 ##
-## Matlab incompatibility: Matlab'x @code{expfit} produces unpredictable results
+## Matlab incompatibility: Matlab's @code{expfit} produces unpredictable results
 ## for some cases with higher dimensions (specifically 1 x m x n x ... arrays).
 ## Octave's implementation allows for @math{nxD} arrays, consistently performing
 ## calculations on individual column vectors.  Additionally, @var{censor} and

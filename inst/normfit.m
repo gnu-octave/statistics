@@ -74,7 +74,7 @@
 ## the unbiased variance estimator in that case.
 ##
 ## @item
-## @var{options} is a structure with the with the control parameters for
+## @var{options} is a structure with the control parameters for
 ## @code{fminsearch} which is used internally to compute MLEs for censored data.
 ## By default, it uses the following options:
 ## @itemize

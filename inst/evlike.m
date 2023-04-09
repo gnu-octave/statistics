@@ -58,6 +58,7 @@
 ## @end deftypefn
 
 function [nlogL, avar] = evlike (params, x, censor, freq)
+
   ## Check input arguments and add defaults
   if (nargin < 2)
     error ("evlike: too few input arguments.");
@@ -72,7 +73,7 @@ function [nlogL, avar] = evlike (params, x, censor, freq)
   elseif (! isequal (size (x), size (censor)))
     error ("evlike: X and CENSOR vectors mismatch.");
   endif
-  if nargin < 4 || isempty(freq)
+  if (nargin < 4 || isempty (freq))
     freq = ones (size (x));
   elseif (isequal (size (x), size (freq)))
     nulls = find (freq == 0);
@@ -84,19 +85,23 @@ function [nlogL, avar] = evlike (params, x, censor, freq)
   else
     error ("evlike: X and FREQ vectors mismatch.");
   endif
+
   ## Get mu and sigma values
   mu = params(1);
   sigma = params(2);
+
   ## sigma must be positive, otherwise make it NaN
   if (sigma <= 0)
     sigma = NaN;
   endif
+
   ## Compute the individual log-likelihood terms.  Force a log(0)==-Inf for
   ## x from extreme right tail, instead of getting exp(Inf-Inf)==NaN.
   z = (x - mu) ./ sigma;
   expz = exp (z);
   L = (z - log (sigma)) .* (1 - censor) - expz;
   L(z == Inf) = -Inf;
+
   ## Neg-log-like is the sum of the individual contributions
   nlogL = -sum (freq .* L);
 
@@ -132,6 +137,7 @@ endfunction
 %!             -5.954612852312121, 3.708060045170236];
 %! assert (nlogL, 223.7612479380652, 1e-13);
 %! assert (avar, avar_out, 1e-14);
+
 ## Test input validation
 %!error<evlike: too few input arguments.> evlike ([12, 15]);
 %!error evlike ([12, 15], 3, 5, 6, 8);
