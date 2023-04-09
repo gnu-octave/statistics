@@ -489,6 +489,10 @@ Summary of important user-visible changes for statistics 1.5.1:
  New functions:
  ==============
 
+ ** betafit (fully Matlab compatible)
+
+ ** betalike (fully Matlab compatible)
+
  ** isoutlier (fully Matlab compatible)
 
  ** mad (fully Matlab compatible)

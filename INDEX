@@ -99,6 +99,8 @@ Distributions
  wishpdf wishrnd
 Distribution Fitting
  cdfcalc
+ betafit
+ betalike
  evfit
  evlike
  expfit
