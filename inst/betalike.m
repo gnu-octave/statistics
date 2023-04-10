@@ -21,7 +21,6 @@
 ##
 ## Negative log-likelihood for the Beta distribution.
 ##
-##
 ## @code{@var{nlogL} = betalike (@var{params}, @var{x})} returns the negative
 ## log likelihood of the Beta distribution for the shape parameters @math{α} and
 ## @math{β} in @qcode{@var{paramhat}([1, 2])}, respectively, given the data in
