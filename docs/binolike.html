@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: cophenet</title>
+    <title>Statistics: binolike</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -35,9 +35,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Clustering">
+                  <a class="nav-link" href="index.html#Distribution Fitting">
                     <i class="fas fa-list-alt"></i>
-                    Clustering
+                    Distribution Fitting
                   </a>
                 </li>
                 <li class="nav-item">
@@ -64,82 +64,46 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>cophenet</code></b>
+              Function&nbsp;Reference: <b><code>binolike</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>c</var>, <var>d</var>] = <b>cophenet</b><i> (<var>Z</var>, <var>y</var>)</i></dt>
+<dt><u>statistics:</u> <var>nlogL</var> = <b>binolike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>nlogL</var>, <var>acov</var>] = <b>binolike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
 </dl>
 
-<p> Compute the cophenetic correlation coefficient.
+<p> Negative log-likelihood for the binomial distribution.
 </p>
 <div class="ms-5">
-<p> The cophenetic correlation coefficient <var>C</var> of a hierarchical cluster tree
- <var>Z</var> is the linear correlation coefficient between the cophenetic
- distances <var>d</var> and the euclidean distances <var>y</var>.
- $$ c = \frac {\sum_{i < j}(Y_{ij}-{\bar {y}})(Z_{ij}-{\bar{z}})}
- {\sqrt{\sum_{i < j}(Y_{ij}-{\bar {y}})^2(Z_{ij}-{\bar{z}})^2}} $$
+<p> <code><var>nlogL</var> = binolike (<var>params</var>, <var>x</var>)</code> returns the negative
+ log likelihood of the binomial distribution with the parameters <var>n</var> and
+ <var>ps</var>, parsed as a two-element vector <code><var>paramhat</var>([1, 2])</code>,
+ where <var>n</var> is the number of trials and <var>ps</var> is the probability of
+ success, given the number of successes in <var>x</var>.  Unlike <code>binofit</code>,
+ which handles each element in <var>x</var> independently, <code>binolike</code> returns
+ the negative log likelihood of the entire vector <var>x</var>.  This functionality
+ is similar to MATLAB&rsquo;s <code>likefunc</code> method available to probability
+ distribution objects created with <code>fitdist</code>.
 </p>
-<p> It is a measure of the similarity between the distance of the leaves, as seen
- in the tree, and the distance of the original data points, which were used to
- build the tree.  When this similarity is greater, that is the coefficient is
- closer to 1, the tree renders an accurate representation of the distances
- between the original data points.
-</p>
-<p> <var>Z</var> is a hierarchical cluster tree, as the output of <code>linkage</code>.
- <var>y</var> is a vector of euclidean distances, as the output of <code>pdist</code>.
-</p>
-<p> The optional output <var>d</var> is a vector of cophenetic distances, in the same
- lower triangular format as <var>y</var>.  The cophenetic distance between two data
- points is the height of the lowest common node of the tree.
+<p> <code>[<var>nlogL</var>, <var>acov</var>] = betalike (<var>params</var>, <var>x</var>)</code> also
+ returns the inverse of Fisher&rsquo;s information matrix, <var>avar</var>.  If the input
+ parameter values in <var>params</var> are the maximum likelihood estimates, the
+ diagonal elements of <var>params</var> are their asymptotic variances.
 </p>
 <p> <strong>See also: </strong>
-  <a href="cluster.html">cluster</a>, 
-  <a href="dendrogram.html">dendrogram</a>, 
-  <a href="inconsistent.html">inconsistent</a>, 
-  <a href="linkage.html">linkage</a>, 
-  <a href="pdist.html">pdist</a>, 
-  <a href="squareform.html">squareform</a>
+  <a href="binocdf.html">binocdf</a>, 
+  <a href="binoinv.html">binoinv</a>, 
+  <a href="binopdf.html">binopdf</a>, 
+  <a href="binornd.html">binornd</a>, 
+  <a href="binofit.html">binofit</a>, 
+  <a href="binostat.html">binostat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/cophenet.m">cophenet</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/binolike.m">binolike</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- X = randn (10,2);
- y = pdist (X);
- Z = linkage (y, "average");
- cophenet (Z, y)
-
-ans = 0.8258
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
 
         </div>
       </div>

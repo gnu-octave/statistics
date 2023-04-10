@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: cophenet</title>
+    <title>Statistics: binofit</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -35,9 +35,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Clustering">
+                  <a class="nav-link" href="index.html#Distribution Fitting">
                     <i class="fas fa-list-alt"></i>
-                    Clustering
+                    Distribution Fitting
                   </a>
                 </li>
                 <li class="nav-item">
@@ -64,48 +64,52 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>cophenet</code></b>
+              Function&nbsp;Reference: <b><code>binofit</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>c</var>, <var>d</var>] = <b>cophenet</b><i> (<var>Z</var>, <var>y</var>)</i></dt>
+<dt><u>statistics:</u> <var>pshat</var> = <b>binofit</b><i> (<var>x</var>, <var>n</var>)</i></dt>
+<dt><u>statistics:</u> [<var>pshat</var>, <var>psci</var>] = <b>binofit</b><i> (<var>x</var>, <var>n</var>)</i></dt>
+<dt><u>statistics:</u> [<var>pshat</var>, <var>psci</var>] = <b>binofit</b><i> (<var>x</var>, <var>n</var>, <var>alpha</var>)</i></dt>
 </dl>
 
-<p> Compute the cophenetic correlation coefficient.
+<p> Estimate parameter and confidence intervals for the binomial distribution.
 </p>
 <div class="ms-5">
-<p> The cophenetic correlation coefficient <var>C</var> of a hierarchical cluster tree
- <var>Z</var> is the linear correlation coefficient between the cophenetic
- distances <var>d</var> and the euclidean distances <var>y</var>.
- $$ c = \frac {\sum_{i < j}(Y_{ij}-{\bar {y}})(Z_{ij}-{\bar{z}})}
- {\sqrt{\sum_{i < j}(Y_{ij}-{\bar {y}})^2(Z_{ij}-{\bar{z}})^2}} $$
+<p> <code><var>pshat</var> = binofit (<var>x</var>, <var>n</var>)</code> returns the maximum
+ likelihood estimate (MLE) of the probability of success for the binomial
+ distribution.  <var>x</var> and <var>n</var> are scalars containing the number of
+ successes and the number of trials, respectively.  If <var>x</var> and <var>n</var> are
+ vectors, <code>binofit</code> returns a vector of estimates whose <math>i</math>-th
+ element is the parameter estimate for <var>x</var>(i) and <var>n</var>(i).  A scalar
+ value for <var>x</var> or <var>n</var> is expanded to the same size as the other input.
 </p>
-<p> It is a measure of the similarity between the distance of the leaves, as seen
- in the tree, and the distance of the original data points, which were used to
- build the tree.  When this similarity is greater, that is the coefficient is
- closer to 1, the tree renders an accurate representation of the distances
- between the original data points.
+<p> <code>[<var>pshat</var>, <var>psci</var>] = binofit (<var>x</var>, <var>n</var>, <var>alpha</var>)</code>
+ also returns the <code>100*(1-<var>alpha</var>)</code> percent confidence intervals of
+ the estimated parameter.  By default, the optional parameter <var>alpha</var> is
+ 0.05 corresponding to 95% confidence intervals.
 </p>
-<p> <var>Z</var> is a hierarchical cluster tree, as the output of <code>linkage</code>.
- <var>y</var> is a vector of euclidean distances, as the output of <code>pdist</code>.
-</p>
-<p> The optional output <var>d</var> is a vector of cophenetic distances, in the same
- lower triangular format as <var>y</var>.  The cophenetic distance between two data
- points is the height of the lowest common node of the tree.
+<p> <code>binofit</code> treats a vector <var>x</var> as a collection of measurements from
+ separate samples, and returns a vector of estimates.  If you want to treat
+ <var>x</var> as a single sample and compute a single parameter estimate and
+ confidence interval, use <code>binofit (sum (<var>x</var>), sum (<var>n</var>))</code> when
+ <var>n</var> is a vector, and
+ <code>binofit (sum (<var>x</var>), <var>n</var> * length (<var>x</var>))</code> when <var>n</var> is a
+ scalar.
 </p>
 <p> <strong>See also: </strong>
-  <a href="cluster.html">cluster</a>, 
-  <a href="dendrogram.html">dendrogram</a>, 
-  <a href="inconsistent.html">inconsistent</a>, 
-  <a href="linkage.html">linkage</a>, 
-  <a href="pdist.html">pdist</a>, 
-  <a href="squareform.html">squareform</a>
+  <a href="binocdf.html">binocdf</a>, 
+  <a href="binoinv.html">binoinv</a>, 
+  <a href="binopdf.html">binopdf</a>, 
+  <a href="binornd.html">binornd</a>, 
+  <a href="binolike.html">binolike</a>, 
+  <a href="binostat.html">binostat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/cophenet.m">cophenet</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/binofit.m">binofit</a>
 </div>
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -125,14 +129,42 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- X = randn (10,2);
- y = pdist (X);
- Z = linkage (y, "average");
- cophenet (Z, y)
+ ## Sample 2 populations from 2 different binomial distibutions
+ r = [binornd(50, 0.15, 200, 1), binornd(100, 0.5, 200, 1)];
 
-ans = 0.8258
+ ## Plot them normalized and fix their colors
+ hist (r, 20, 1);
+ h = findobj(gca,'Type','patch');
+ set(h(1),'facecolor',"c");
+ set(h(2),'facecolor',"g");
+ hold on
+
+ ## Estimate their probability of success
+ pshatA = binofit (r(:,1), 50);
+ pshatB = binofit (r(:,2), 100);
+
+ ## Plot their estimated PDFs
+ x = [min(r(:,1)):max(r(:,1))];
+ y = binopdf (x, 50, mean (pshatA));
+ plot (x, y, "-pg");
+ x = [min(r(:,2)):max(r(:,2))];
+ y = binopdf (x, 100, mean (pshatB));
+ plot (x, y, "-sc");
+ hold off
+ legend ({"Normalized HIST of sample 1 with ps=0.15", ...
+          "Normalized HIST of sample 2 with ps=0.50", ...
+          sprintf("PDF for sample 1 with estimated ps=%0.2f", ...
+                  mean (pshatA)), ...
+          sprintf("PDF for sample 2 with estimated ps=%0.2f", ...
+                  mean (pshatB))})
+ title ("Two population samples from different binomial distibutions")
+ hold off
+
                     </pre></td></tr></tbody>
                   </table>
+                  <div class="text-center">
+                    <img src="assets/binofit_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
 
                 </div>
               </div>
