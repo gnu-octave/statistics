@@ -101,6 +101,8 @@ Distribution Fitting
  cdfcalc
  betafit
  betalike
+ binofit
+ binolike
  evfit
  evlike
  expfit

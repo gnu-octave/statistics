@@ -493,6 +493,10 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** betalike (fully Matlab compatible)
 
+ ** binofit (fully Matlab compatible)
+
+ ** binolike (similar functionality to MATLAB's likefunc)
+
  ** isoutlier (fully Matlab compatible)
 
  ** mad (fully Matlab compatible)
@@ -501,7 +505,7 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** poissfit (fully Matlab compatible, extra functionality)
 
- ** poisslike
+ ** poisslike (similar functionality to MATLAB's likefunc)
 
  Improvements:
  =============
