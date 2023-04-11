@@ -78,10 +78,10 @@
 ## @code{fminsearch} which is used internally to compute MLEs for censored data.
 ## By default, it uses the following options:
 ## @itemize
-## @item options.Display = "off";
-## @item options.MaxFunEvals = 400;
-## @item options.MaxIter = 200;
-## @item options.TolX = 1e-6;
+## @item @qcode{@var{options}.Display = "off"}
+## @item @qcode{@var{options}.MaxFunEvals = 400}
+## @item @qcode{@var{options}.MaxIter = 200}
+## @item @qcode{@var{options}.TolX = 1e-6}
 ## @end itemize
 ## @end itemize
 ##

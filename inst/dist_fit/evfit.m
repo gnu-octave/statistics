@@ -56,8 +56,8 @@
 ## @code{fminsearch} function.  @var{options} is a structure with the following
 ## fields and their default values:
 ## @itemize
-## @item @var{options}@qcode{.Display = "off"};
-## @item @var{options}@qcode{.TolX = 1e-6};
+## @item @qcode{@var{options}.Display = "off"}
+## @item @qcode{@var{options}.TolX = 1e-6}
 ## @end itemize
 ##
 ## @seealso{evcdf, evinv, evpdf, evrnd, evlike, evstat}

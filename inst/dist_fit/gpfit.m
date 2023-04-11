@@ -45,12 +45,12 @@
 ## with the @code{fminsearch} function.  @var{options} is a structure with the
 ## following fields and their default values:
 ## @itemize
-## @item @var{options}@qcode{.Display = "off"}
-## @item @var{options}@qcode{.MaxFunEvals = 400}
-## @item @var{options}@qcode{.MaxIter = 200}
-## @item @var{options}@qcode{.TolBnd = 1e-6}
-## @item @var{options}@qcode{.TolFun = 1e-6}
-## @item @var{options}@qcode{.TolX = 1e-6}
+## @item @qcode{@var{options}.Display = "off"}
+## @item @qcode{@var{options}.MaxFunEvals = 400}
+## @item @qcode{@var{options}.MaxIter = 200}
+## @item @qcode{@var{options}.TolBnd = 1e-6}
+## @item @qcode{@var{options}.TolFun = 1e-6}
+## @item @qcode{@var{options}.TolX = 1e-6}
 ## @end itemize
 ##
 ## Other functions for the generalized Pareto, such as @code{gpcdf}, allow a
