@@ -62,8 +62,6 @@ function [nlogL, avar] = evlike (params, x, censor, freq)
   ## Check input arguments and add defaults
   if (nargin < 2)
     error ("evlike: too few input arguments.");
-  elseif (nargin > 4)
-    error ("evlike: too many input arguments.");
   endif
   if (numel (params) != 2)
     error ("evlike: wrong parameters length.");
