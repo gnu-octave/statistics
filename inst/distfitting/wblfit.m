@@ -127,7 +127,7 @@ endfunction
 %! set(h(2),'facecolor',"g");
 %! set(h(3),'facecolor',"r");
 %! ylim ([0, 2]);
-%! xlim ([0, 15])
+%! xlim ([0, 15]);
 %! hold on
 %!
 %! ## Estimate their lambda parameter
