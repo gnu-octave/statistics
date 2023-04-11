@@ -38,7 +38,7 @@
 ## parameter estimates.  By default, @math{@var{alpha} = 0.05} corresponding
 ## fidence intervals.
 ##
-## Pass in [] for @var{alpha} to use the default values.
+## Pass in @qcode{[]} for @var{alpha} to use the default values.
 ##
 ## @code{[@dots{}] = gpfit (@var{x}, @var{alpha}, @var{options})} specifies
 ## control parameters for the iterative algorithm used to compute ML estimates
@@ -50,7 +50,7 @@
 ## @item @var{options}@qcode{.MaxIter = 200}
 ## @item @var{options}@qcode{.TolBnd = 1e-6}
 ## @item @var{options}@qcode{.TolFun = 1e-6}
-## @item @var{options}@qcode{.TolX} = 1e-6}
+## @item @var{options}@qcode{.TolX = 1e-6}
 ## @end itemize
 ##
 ## Other functions for the generalized Pareto, such as @code{gpcdf}, allow a
