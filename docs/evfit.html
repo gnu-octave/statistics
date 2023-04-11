@@ -91,24 +91,29 @@
 <p> <code>[<var>paramhat</var>, <var>paramci</var>] = evfit (<var>x</var>)</code> returns the 95%
  confidence intervals for the parameter estimates.
 </p>
-<p> <code>[&hellip;] = evfit (<var>x</var>, <var>alpha</var>)</code> returns 100(1-<var>alpha</var>)
- percent confidence intervals for the parameter estimates.
+<p> <code>[&hellip;] = evfit (<var>x</var>, <var>alpha</var>)</code> returns
+ <code>100 * (1 - <var>alpha</var>)</code> percent confidence intervals for the
+ parameter estimates.  By default, <math><var>alpha</var> = 0.05</math> corresponding
+ fidence intervals.
 </p>
 <p> <code>[&hellip;] = evfit (<var>x</var>, <var>alpha</var>, <var>censor</var>)</code> accepts a
  boolean vector of the same size as <var>x</var> with 1 for observations that
- are right-censored and 0 for observations that are observed exactly.
+ are right-censored and 0 for observations that are observed exactly.  By
+ default, or if left empty, <code><var>censor</var> = zeros (size (<var>x</var>))</code>.
 </p>
 <p> <code>[&hellip;] = evfit (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</code>
- accepts a frequency vector of the same size as <var>x</var>.
- <var>freq</var> typically contains integer frequencies for the corresponding
- elements in <var>x</var>, but may contain any non-integer non-negative values.
+ accepts a frequency vector of the same size as <var>x</var>. <var>freq</var> typically
+ contains integer frequencies for the corresponding elements in <var>x</var>, but
+ may contain any non-integer non-negative values.  By default, or if left
+ empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
 </p>
-<p> <code>[&hellip;] = evfit (&hellip;, <var>options</var>)</code> is a structure with the
- control parameters for <code>fminsearch</code> which is used internally to compute
- MLEs.  By default, it uses the following options:
+<p> <code>[&hellip;] = evfit (&hellip;, <var>options</var>)</code> specifies control
+ parameters for the iterative algorithm used to compute ML estimates with the
+ <code>fminsearch</code> function.  <var>options</var> is a structure with the following
+ fields and their default values:
  </p><ul>
-<li> options.Display = &quot;off&quot;;
- </li><li> options.TolX = 1e-6;
+<li> <var>options</var><code>.Display = &quot;off&quot;</code>;
+ </li><li> <var>options</var><code>.TolX = 1e-6</code>;
  </li></ul>
 
 <p> <strong>See also: </strong>
@@ -120,7 +125,7 @@
   <a href="evstat.html">evstat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/evfit.m">evfit</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distfitting/evfit.m">evfit</a>
 </div>
         <div class="container-xl my-4">
           <div class="card rounded">

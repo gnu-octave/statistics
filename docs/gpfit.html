@@ -82,35 +82,31 @@
 <div class="ms-5">
 <p> <code><var>paramhat</var> = gpfit (<var>x</var>)</code> returns maximum likelihood estimates
  of the parameters of the two-parameter generalized Pareto distribution given
- the data in <var>x</var>.  <var>params(1)</var> is the SHAPE parameter and
- <var>params(2)</var> is the SCALE parameter.  <code>gpfit</code> does not fit a LOCATION
- parameter.
+ the data in <var>x</var>.  <code><var>params</var>(1)</code> is the SHAPE parameter and
+ <code><var>params</var>(2)</code> is the SCALE parameter.  <code>gpfit</code> does not fit a
+ LOCATION parameter.
 </p>
 <p> <code>[<var>paramhat</var>, <var>paramci</var>] = gpfit (<var>x</var>)</code> returns 95%
  confidence intervals for the parameter estimates.
 </p>
-<p> <code>[&hellip;] = gpfit (<var>x</var>, <var>alpha</var>)</code> returns 100*(1 - <var>alpha</var>)
- percent confidence intervals for the parameter estimates.
+<p> <code>[&hellip;] = gpfit (<var>x</var>, <var>alpha</var>)</code> returns
+ <code>100 * (1 - <var>alpha</var>)</code> percent confidence intervals for the
+ parameter estimates.  By default, <math><var>alpha</var> = 0.05</math> corresponding
+ fidence intervals.
 </p>
-<p> Pass in [] for <var>alpha</var> to use the default values.
+<p> Pass in <code>[]</code> for <var>alpha</var> to use the default values.
 </p>
 <p> <code>[&hellip;] = gpfit (<var>x</var>, <var>alpha</var>, <var>options</var>)</code> specifies
  control parameters for the iterative algorithm used to compute ML estimates
  with the <code>fminsearch</code> function.  <var>options</var> is a structure with the
- following fields {default values}:
+ following fields and their default values:
  </p><ul>
-<li>
- &rsquo;Display&rsquo;     {&quot;off&quot;}
- </li><li>
- &rsquo;MaxFunEvals&rsquo; {400}
- </li><li>
- &rsquo;MaxIter&rsquo;     {200}
- </li><li>
- &rsquo;TolBnd&rsquo;      {1.0e-6}
- </li><li>
- &rsquo;TolFun&rsquo;      {1.0e-6}
- </li><li>
- &rsquo;TolX&rsquo;        {1.0e-6}
+<li> <var>options</var><code>.Display = &quot;off&quot;</code>
+ </li><li> <var>options</var><code>.MaxFunEvals = 400</code>
+ </li><li> <var>options</var><code>.MaxIter = 200</code>
+ </li><li> <var>options</var><code>.TolBnd = 1e-6</code>
+ </li><li> <var>options</var><code>.TolFun = 1e-6</code>
+ </li><li> <var>options</var><code>.TolX = 1e-6</code>
  </li></ul>
 
 <p> Other functions for the generalized Pareto, such as <code>gpcdf</code>, allow a
@@ -138,7 +134,7 @@
   <a href="gpstat.html">gpstat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/gpfit.m">gpfit</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distfitting/gpfit.m">gpfit</a>
 </div>
 
         </div>
