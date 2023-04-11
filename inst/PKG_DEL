@@ -1,9 +1,9 @@
 clear -f libsvmread libsvmwrite svmpredict svmtrain
 
 if (compare_versions (version (), "9", "<"))
-  a1_e324kporit985_itogj3_dirlist = {"datasets", "distributions", "shadow9"};
+  a1_e324kporit985_itogj3_dirlist = {"datasets", "distfitting", "distributions", "shadow9"};
 else
-  a1_e324kporit985_itogj3_dirlist = {"datasets", "distributions"};
+  a1_e324kporit985_itogj3_dirlist = {"datasets", "distfitting", "distributions"};
 endif
 
 d_2seRTE546_oyi_795jg09_dirname = fileparts (canonicalize_file_name ...
