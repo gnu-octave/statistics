@@ -66,6 +66,9 @@ function [nlogL, avar] = evlike (params, x, censor, freq)
   if (numel (params) != 2)
     error ("evlike: wrong parameters length.");
   endif
+  if (! isvector (x))
+    error ("evlike: X must be a vector.");
+  endif
   if (nargin < 3 || isempty (censor))
     censor = zeros (size (x));
   elseif (! isequal (size (x), size (censor)))
@@ -138,7 +141,7 @@ endfunction
 
 ## Test input validation
 %!error<evlike: too few input arguments.> evlike ([12, 15]);
-%!error evlike ([12, 15], 3, 5, 6, 8);
 %!error<evlike: wrong parameters length.> evlike ([12, 15, 3], [1:50]);
+%!error<evlike: X must be a vector.> evlike ([12, 3], ones (10, 2));
 %!error<evlike: X and CENSOR> evlike ([12, 15], [1:50], [1, 2, 3]);
 %!error<evlike: X and FREQ> evlike ([12, 15], [1:50], [], [1, 2, 3]);
