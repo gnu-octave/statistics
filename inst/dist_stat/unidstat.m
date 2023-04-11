@@ -18,7 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{m}, @var{v}] =} unidstat (@var{n})
 ##
-## Compute mean and variance of the discrete uniform distribution.
+## Compute statistics of the discrete uniform distribution.
 ##
 ## @subheading Arguments
 ##

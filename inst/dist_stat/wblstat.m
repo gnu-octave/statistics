@@ -18,7 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{m}, @var{v}] =} wblstat (@var{scale}, @var{shape})
 ##
-## Compute mean and variance of the Weibull distribution.
+## Compute statistics of the Weibull distribution.
 ##
 ## @subheading Arguments
 ##

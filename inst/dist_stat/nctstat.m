@@ -18,10 +18,10 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{m}, @var{v}] =} nctstat (@var{df}, @var{delta})
 ##
-## Mean and variance for the noncentral T distribution.
+## Compute statistics for the noncentral @math(t) distribution.
 ##
 ## @code{[@var{m}, @var{v}] = nctstat (@var{df}, @var{delta})} returns the mean
-## and variance of the noncentral T distribution with @var{df} degrees
+## and variance of the noncentral @math(t) distribution with @var{df} degrees
 ## of freedom and noncentrality parameter @var{delta}.
 ##
 ## The size of @var{m} and @var{v} is the common size of the input arguments.

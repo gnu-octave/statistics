@@ -19,7 +19,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{m}, @var{v}] =} evstat (@var{mu}, @var{sigma})
 ##
-## Mean and variance of the extreme value distribution.
+## Compute statistics of the extreme value distribution.
 ##
 ## @code{[@var{m}, @var{v}] = evstat (@var{mu}, @var{sigma})} returns the mean
 ## and variance of the type 1 extreme value distribution with location parameter

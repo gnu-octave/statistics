@@ -18,7 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{m}, @var{v}] =} ncfstat (@var{df1}, @var{df1}, @var{delta})
 ##
-## Mean and variance for the noncentral F distribution.
+## Compute statistics for the noncentral @math{F} distribution.
 ##
 ## @code{[@var{m}, @var{v}] = ncfstat (@var{df1}, @var{df1}, @var{delta})}
 ## returns the mean and variance of the noncentral F distribution with @var{df1}

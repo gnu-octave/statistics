@@ -19,7 +19,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{m}, @var{v}] =} gevstat (@var{k}, @var{sigma}, @var{mu})
 ##
-## Compute the mean and variance of the generalized extreme value distribution.
+## Compute statistics of the generalized extreme value distribution.
 ##
 ## @subheading Arguments
 ##

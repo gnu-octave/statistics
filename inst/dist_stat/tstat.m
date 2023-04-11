@@ -18,7 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{m}, @var{v}]} = tstat (@var{n})
 ##
-## Compute mean and variance of the t (Student) distribution.
+## Compute statistics of the @math{t} distribution.
 ##
 ## @subheading Arguments
 ##

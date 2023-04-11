@@ -19,7 +19,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{m}, @var{v}] =} gpstat (@var{shape}, @var{scale}, @var{location})
 ##
-## Mean and variance of the generalized Pareto distribution.
+## Compute statistics of the generalized Pareto distribution.
 ##
 ## @code{[@var{m}, @var{v}] = gpstat (@var{shape}, @var{scale}, @var{location})}
 ## returns the mean and variance of the generalized Pareto distribution with

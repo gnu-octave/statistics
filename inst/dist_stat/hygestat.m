@@ -18,7 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{mn}, @var{v}] =} hygestat (@var{t}, @var{m}, @var{n})
 ##
-## Compute mean and variance of the hypergeometric distribution.
+## Compute statistics of the hypergeometric distribution.
 ##
 ## @subheading Arguments
 ##

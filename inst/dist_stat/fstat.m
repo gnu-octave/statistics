@@ -18,7 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{mn}, @var{v}] =} fstat (@var{m}, @var{n})
 ##
-## Compute mean and variance of the F distribution.
+## Compute statistics of the @math{F} distribution.
 ##
 ## @subheading Arguments
 ##

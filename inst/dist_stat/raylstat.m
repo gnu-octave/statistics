@@ -18,7 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{m}, @var{v}] =} raylstat (@var{sigma})
 ##
-## Compute mean and variance of the Rayleigh distribution.
+## Compute statistics of the Rayleigh distribution.
 ##
 ## @subheading Arguments
 ##

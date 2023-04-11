@@ -18,7 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{m}, @var{v}] =} geostat (@var{p})
 ##
-## Compute mean and variance of the geometric distribution.
+## Compute statistics of the geometric distribution.
 ##
 ## @subheading Arguments
 ##

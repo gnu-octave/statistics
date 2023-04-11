@@ -18,7 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{m}, @var{v}] =} nbinstat (@var{n}, @var{p})
 ##
-## Compute mean and variance of the negative binomial distribution.
+## Compute statistics of the negative binomial distribution.
 ##
 ## @subheading Arguments
 ##

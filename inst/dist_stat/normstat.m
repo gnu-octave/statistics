@@ -18,7 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{mn}, @var{v}] =} normstat (@var{m}, @var{s})
 ##
-## Compute mean and variance of the normal distribution.
+## Compute statistics of the normal distribution.
 ##
 ## @subheading Arguments
 ##

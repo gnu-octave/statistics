@@ -18,7 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{m}, @var{v}] =} expstat (@var{l})
 ##
-## Compute mean and variance of the exponential distribution.
+## Compute statistics of the exponential distribution.
 ##
 ## @subheading Arguments
 ##

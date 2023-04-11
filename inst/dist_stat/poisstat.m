@@ -18,7 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{m}, @var{v}] =} poisstat (@var{lambda})
 ##
-## Compute mean and variance of the Poisson distribution.
+## Compute statistics of the Poisson distribution.
 ##
 ## @subheading Arguments
 ##

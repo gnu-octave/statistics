@@ -18,7 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{m}, @var{v}] =} ncx2stat (@var{df}, @var{delta})
 ##
-## Mean and variance for the noncentral chi-square distribution.
+## Compute statistics for the noncentral @math{χ^2} distribution.
 ##
 ## @code{[@var{m}, @var{v}] = ncx2stat (@var{df}, @var{delta})} returns the mean
 ## and variance of the noncentral chi-square distribution with @var{df} degrees

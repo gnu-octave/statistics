@@ -18,7 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{m}, @var{v}] =} betastat (@var{a}, @var{b})
 ##
-## Compute mean and variance of the beta distribution.
+## Compute statistics of the Beta distribution.
 ##
 ## @subheading Arguments
 ##

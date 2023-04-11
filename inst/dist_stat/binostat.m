@@ -19,7 +19,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{m}, @var{v}] =} binostat (@var{n}, @var{p})
 ##
-## Compute mean and variance of the binomial distribution.
+## Compute statistics of the binomial distribution.
 ##
 ## @subheading Arguments
 ##
