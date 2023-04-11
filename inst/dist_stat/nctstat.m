@@ -18,7 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{m}, @var{v}] =} nctstat (@var{df}, @var{delta})
 ##
-## Compute statistics for the noncentral @math(t) distribution.
+## Compute statistics for the noncentral @math{t} distribution.
 ##
 ## @code{[@var{m}, @var{v}] = nctstat (@var{df}, @var{delta})} returns the mean
 ## and variance of the noncentral @math(t) distribution with @var{df} degrees
