@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -26,35 +26,31 @@
 ##
 ## @code{@var{paramhat} = gpfit (@var{x})} returns maximum likelihood estimates
 ## of the parameters of the two-parameter generalized Pareto distribution given
-## the data in @var{x}.  @var{params(1)} is the SHAPE parameter and
-## @var{params(2)} is the SCALE parameter.  @code{gpfit} does not fit a LOCATION
-## parameter.
+## the data in @var{x}.  @qcode{@var{params}(1)} is the SHAPE parameter and
+## @qcode{@var{params}(2)} is the SCALE parameter.  @code{gpfit} does not fit a
+## LOCATION parameter.
 ##
 ## @code{[@var{paramhat}, @var{paramci}] = gpfit (@var{x})} returns 95%
 ## confidence intervals for the parameter estimates.
 ##
-## @code{[@dots{}] = gpfit (@var{x}, @var{alpha})} returns 100*(1 - @var{alpha})
-## percent confidence intervals for the parameter estimates.
+## @code{[@dots{}] = gpfit (@var{x}, @var{alpha})} returns
+## @qcode{100 * (1 - @var{alpha})} percent confidence intervals for the
+## parameter estimates.  By default, @math{@var{alpha} = 0.05} corresponding
+## fidence intervals.
 ##
 ## Pass in [] for @var{alpha} to use the default values.
 ##
 ## @code{[@dots{}] = gpfit (@var{x}, @var{alpha}, @var{options})} specifies
 ## control parameters for the iterative algorithm used to compute ML estimates
 ## with the @code{fminsearch} function.  @var{options} is a structure with the
-## following fields @{default values@}:
+## following fields and their default values:
 ## @itemize
-## @item
-## 'Display'     @{"off"@}
-## @item
-## 'MaxFunEvals' @{400@}
-## @item
-## 'MaxIter'     @{200@}
-## @item
-## 'TolBnd'      @{1.0e-6@}
-## @item
-## 'TolFun'      @{1.0e-6@}
-## @item
-## 'TolX'        @{1.0e-6@}
+## @item @var{options}@qcode{.Display = "off"}
+## @item @var{options}@qcode{.MaxFunEvals = 400}
+## @item @var{options}@qcode{.MaxIter = 200}
+## @item @var{options}@qcode{.TolBnd = 1e-6}
+## @item @var{options}@qcode{.TolFun = 1e-6}
+## @item @var{options}@qcode{.TolX} = 1e-6}
 ## @end itemize
 ##
 ## Other functions for the generalized Pareto, such as @code{gpcdf}, allow a

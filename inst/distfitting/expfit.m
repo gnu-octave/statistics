@@ -41,13 +41,16 @@
 ## ones the same size as @var{x}, used to right-censor individual elements of
 ## @var{x}.  A value of 1 indicates the data should be censored from
 ## the mean estimation.  Any nonzero values in @var{censor} are treated as a 1.
+## By default, or if left empty, @qcode{@var{censor} = zeros (size (@var{x}))}.
 ##
 ## The optional input @var{freq} is a numeric array the same size as @var{x},
 ## used to specify occurrence frequencies for the elements in @var{x}.  Values
 ## of @var{freq} need not be integers.  Any NaN elements in the frequency array
-## will produce a NaN output for @var{muhat}.
+## will produce a NaN output for @var{muhat}.  By default, or if left empty,
+## @qcode{@var{freq} = ones (size (@var{x}))}.
 ##
-## Options can be skipped by using [] to revert to the default.
+## Optional arguments can be skipped by using @qcode{[]} to revert to their
+## default values.
 ##
 ## Matlab incompatibility: Matlab's @code{expfit} produces unpredictable results
 ## for some cases with higher dimensions (specifically 1 x m x n x ... arrays).

@@ -32,9 +32,9 @@
 ## value for @var{x} or @var{n} is expanded to the same size as the other input.
 ##
 ## @code{[@var{pshat}, @var{psci}] = binofit (@var{x}, @var{n}, @var{alpha})}
-## also returns the @qcode{100*(1-@var{alpha})} percent confidence intervals of
-## the estimated parameter.  By default, the optional parameter @var{alpha} is
-## 0.05 corresponding to 95% confidence intervals.
+## also returns the @qcode{100 * (1 - @var{alpha})} percent confidence intervals
+## of the estimated parameter.  By default, the optional parameter @var{alpha}
+## is 0.05 corresponding to 95% confidence intervals.
 ##
 ## @code{binofit} treats a vector @var{x} as a collection of measurements from
 ## separate samples, and returns a vector of estimates.  If you want to treat

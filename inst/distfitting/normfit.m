@@ -132,7 +132,7 @@ function [muhat, sigmahat, muci, sigmaci] = normfit (x, alpha, censor, freq, opt
     is_zero = find (freq == 0);
     if (numel (is_zero) > 0)
       x(is_zero) = [];
-      if (numel(censor)==numel(freq))
+      if (numel (censor) == numel (freq))
         censor(is_zero) = [];
       endif
       freq(is_zero) = [];

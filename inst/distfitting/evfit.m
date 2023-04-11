@@ -35,24 +35,29 @@
 ## @code{[@var{paramhat}, @var{paramci}] = evfit (@var{x})} returns the 95%
 ## confidence intervals for the parameter estimates.
 ##
-## @code{[@dots{}] = evfit (@var{x}, @var{alpha})} returns 100(1-@var{alpha})
-## percent confidence intervals for the parameter estimates.
+## @code{[@dots{}] = evfit (@var{x}, @var{alpha})} returns
+## @qcode{100 * (1 - @var{alpha})} percent confidence intervals for the
+## parameter estimates.  By default, @math{@var{alpha} = 0.05} corresponding
+## fidence intervals.
 ##
 ## @code{[@dots{}] = evfit (@var{x}, @var{alpha}, @var{censor})} accepts a
 ## boolean vector of the same size as @var{x} with 1 for observations that
-## are right-censored and 0 for observations that are observed exactly.
+## are right-censored and 0 for observations that are observed exactly.  By
+## default, or if left empty, @qcode{@var{censor} = zeros (size (@var{x}))}.
 ##
 ## @code{[@dots{}] = evfit (@var{x}, @var{alpha}, @var{censor}, @var{freq})}
-## accepts a frequency vector of the same size as @var{x}.
-## @var{freq} typically contains integer frequencies for the corresponding
-## elements in @var{x}, but may contain any non-integer non-negative values.
+## accepts a frequency vector of the same size as @var{x}. @var{freq} typically
+## contains integer frequencies for the corresponding elements in @var{x}, but
+## may contain any non-integer non-negative values.  By default, or if left
+## empty, @qcode{@var{freq} = ones (size (@var{x}))}.
 ##
-## @code{[@dots{}] = evfit (@dots{}, @var{options})} is a structure with the
-## control parameters for @code{fminsearch} which is used internally to compute
-## MLEs.  By default, it uses the following options:
+## @code{[@dots{}] = evfit (@dots{}, @var{options})} specifies control
+## parameters for the iterative algorithm used to compute ML estimates with the
+## @code{fminsearch} function.  @var{options} is a structure with the following
+## fields and their default values:
 ## @itemize
-## @item options.Display = "off";
-## @item options.TolX = 1e-6;
+## @item @var{options}@qcode{.Display = "off"};
+## @item @var{options}@qcode{.TolX = 1e-6};
 ## @end itemize
 ##
 ## @seealso{evcdf, evinv, evpdf, evrnd, evlike, evstat}
@@ -62,19 +67,18 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
 
   ## Check for valid number of input arguments
   narginchk (1, 5);
+
   ## Check X for being a double precision vector
   if (! isvector (x) || ! isa (x, "double"))
     error ("evfit: X must be a double-precision vector.");
   endif
-  ## If X is a column vector, make it a row vector
-  if (size (x, 1) > 1)
-    x = x.';
-  endif
+
   ## Check that X does not contain missing values (NaNs)
   if (any (isnan (x)))
     error ("evfit: X must NOT contain missing values (NaNs).");
   endif
-  ## Parse extra input arguments or add defaults
+
+  ## Check alpha
   if (nargin > 1)
     if (! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1)
       error ("evfit: Wrong value for ALPHA.");
@@ -82,6 +86,8 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
   else
     alpha = 0.05;
   endif
+
+  ## Check censor vector
   if (nargin > 2)
     if (! isempty (censor) && ! all (size (censor) == size (x)))
       error ("evfit: Censoring vector must match X in size.");
@@ -89,6 +95,8 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
   else
     censor = zeros (size (x));
   endif
+
+  ## Check frequency vector
   if (nargin > 3)
     if (! isempty (freq) && ! all (size (freq) == size (x)))
       error ("evfit: Frequency vector must match X in size.");
@@ -103,6 +111,7 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
   else
     freq = ones (size (x));
   endif
+
   ## Get options structure or add defaults
   if (nargin > 4)
     if (! isstruct (options) || ! isfield (options, "Display") || ...
@@ -114,12 +123,21 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
     options.Display = "off";
     options.TolX = 1e-6;
   endif
+
+  ## If X is a column vector, make X, CEONSOR, and FREQ row vectors
+  if (size (x, 1) > 1)
+    x = x(:)';
+    censor = censor(:)';
+    freq = freq(:)';
+  endif
+
   ## Censor x and get number of samples
   sample_size = sum (freq);
   censored_sample_size = sum (freq .* censor);
   uncensored_sample_size = sample_size - censored_sample_size;
   x_range = range (x);
   x_max = max (x);
+
   ## Check cases that cannot make a fit.
   ## 1. All observations are censored
   if (sample_size == 0 || uncensored_sample_size == 0 || ! isfinite (x_range))
@@ -127,6 +145,7 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
     paramci = NaN (2, 2);
     return
   endif
+
   ## 2. Constant x in X
   if (censored_sample_size == 0 && x_range == 0)
     paramhat = [x(1), 0];
@@ -144,6 +163,7 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
     initial_sigma_parm = (sqrt (6) * std (x_0)) / pi;
     uncensored_weights = sum (freq .* x_0) ./ sample_size;
   endif
+
   ## 3. All uncensored observations are equal and greater than all censored ones
   uncensored_x_range = range (x(censor == 0));
   uncensored_x = x(censor == 0);
@@ -172,6 +192,7 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
     uncensored_weights = sum (freq .* x_0 .* (1 - censor)) ./ ...
                               uncensored_sample_size;
   endif
+
   ## Find lower and upper boundaries for bracketing the likelihood equation for
   ## the extreme value scale parameter assessed in fzero function later on
   if (evscale_lkeq (initial_sigma_parm, x_0, freq, uncensored_weights) > 0)
@@ -197,6 +218,7 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
     endwhile
     boundaries = [lower, upper];
   endif
+
   ## Compute maximum likelihood for scale parameter as the root of the equation
   ## Custom code for finding the value within the boundaries [lower, upper] that
   ## evscale_lkeq function returns zero
@@ -229,16 +251,20 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
       new_fzero = evscale_lkeq (new_sigma, x_0, freq, uncensored_weights);
     endif
   endwhile
+
   ## Check for maximum number of iterations
   if (cur_iter == max_iter)
     warning (strcat (["evfit: maximum number of function "], ...
                      [" evaluations (1e+4) has been reached."]));
   endif
+
   ## Compute mu
   muhat = new_sigma .* log (sum (freq .* exp (x_0 ./ new_sigma)) ./ ...
                                              uncensored_sample_size);
+
   ## Transform mu and sigma back to original location and scale
   paramhat = [(x_range*muhat)+x_max, x_range*new_sigma];
+
   ## Compute the CI for mu and sigma
   if (nargout == 2)
     probs = [alpha/2; 1-alpha/2];
