@@ -39,6 +39,7 @@ Data Manipulation
  standardizeMissing
  tabulate
 Descriptive Statistics
+ cdfcalc
  cl_multinom
  geomean
  grpstats
@@ -98,7 +99,6 @@ Distributions
  wienrnd
  wishpdf wishrnd
 Distribution Fitting
- cdfcalc
  betafit
  betalike
  binofit
