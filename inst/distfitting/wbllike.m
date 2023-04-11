@@ -16,40 +16,40 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{nlogL} =} wblfit (@var{params}, @var{x})
-## @deftypefnx {statistics} {[@var{nlogL}, @var{avar}] =} wblfit (@var{params}, @var{x})
-## @deftypefnx {statistics} {[@var{nlogL}, @var{avar}] =} wblfit (@var{params}, @var{x}, @var{alpha})
-## @deftypefnx {statistics} {[@dots{}] =} wblfit (@var{params}, @var{x}, @var{alpha}, @var{censor})
-## @deftypefnx {statistics} {[@dots{}] =} wblfit (@var{params}, @var{x}, @var{alpha}, @var{censor}, @var{freq})
+## @deftypefn  {statistics} {@var{nlogL} =} wbllike (@var{params}, @var{x})
+## @deftypefnx {statistics} {[@var{nlogL}, @var{avar}] =} wbllike (@var{params}, @var{x})
+## @deftypefnx {statistics} {[@var{nlogL}, @var{avar}] =} wbllike (@var{params}, @var{x}, @var{alpha})
+## @deftypefnx {statistics} {[@dots{}] =} wbllike (@var{params}, @var{x}, @var{alpha}, @var{censor})
+## @deftypefnx {statistics} {[@dots{}] =} wbllike (@var{params}, @var{x}, @var{alpha}, @var{censor}, @var{freq})
 ##
 ## Negative log-likelihood for the Weibull distribution.
 ##
+## @code{@var{nlogL} = wbllike (@var{params}, @var{data})} returns the
+## negative of the log-likelihood for the Weibull distribution given the data in
+## @var{x}, evaluated at parameters @math{λ} and @math{k} given as a two-element
+## vector @qcode{@var{paramhat}([1, 2])}, respectively.
 ##
+## @code{[@var{nlogL}, @var{avar}] = wbllike (@var{params}, @var{data})} also
+## returns the inverse of Fisher's information matrix, @var{avar}.  If the input
+## parameter values in @var{params} are the maximum likelihood estimates, the
+## diagonal elements of @var{avar} are their asymptotic variances.  @var{avar}
+## is based on the observed Fisher's information, not the expected information.
 ##
+## @code{[@dots{}] = wbllike (@var{params}, @var{data}, @var{censor})} accepts a
+## boolean vector, @var{censor}, of the same size as @var{x} with @qcode{1}s for
+## observations that are right-censored and @qcode{0}s for observations that are
+## observed exactly.  By default, or if left empty,
+## @qcode{@var{censor} = zeros (size (@var{x}))}.
 ##
-## @seealso{wblcdf, wblinv, wblpdf, wblrnd, wbllike, wblstat}
+## @code{[@dots{}] = wbllike (@var{params}, @var{data}, @var{censor},
+## @var{freq})} accepts a frequency vector, @var{freq}, of the same size as
+## @var{x}.  @var{freq} typically contains integer frequencies for the
+## corresponding elements in @var{x}, but may contain any non-integer
+## non-negative values.  By default, or if left empty,
+## @qcode{@var{freq} = ones (size (@var{x}))}.
+##
+## @seealso{wblcdf, wblinv, wblpdf, wblrnd, wblfit, wblstat}
 ## @end deftypefn
-
-
-%   NLOGL = WBLLIKE(PARAMS,DATA) returns the negative of the log-likelihood
-%   for the Weibull distribution, evaluated at parameters PARAMS(1) = l
-%   and PARAMS(2) = k, given DATA.  NLOGL is a scalar.
-%
-%   [NLOGL, AVAR] = WBLLIKE(PARAMS,DATA) returns the inverse of Fisher's
-%   information matrix, AVAR.  If the input parameter values in PARAMS are
-%   the maximum likelihood estimates, the diagonal elements of AVAR are
-%   their asymptotic variances.  AVAR is based on the observed Fisher's
-%   information, not the expected information.
-%
-%   [...] = WBLLIKE(PARAMS,DATA,CENSORING) accepts a boolean vector of the
-%   same size as DATA that is 1 for observations that are right-censored
-%   and 0 for observations that are observed exactly.
-%
-%   [...] = WBLLIKE(PARAMS,DATA,CENSORING,FREQ) accepts a frequency vector
-%   of the same size as DATA.  FREQ typically contains integer frequencies
-%   for the corresponding elements in DATA, but may contain any non-integer
-%   non-negative values.  Pass in [] for CENSORING to use its default
-%   value.
 
 function [nlogL, avar] = wbllike (params, x, censor, freq)
 

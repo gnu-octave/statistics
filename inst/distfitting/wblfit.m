@@ -39,16 +39,17 @@
 ## fidence intervals.  Pass in @qcode{[]} for @var{alpha} to use the default
 ## values.
 ##
-## @code{[@dots{}] = wblfit (@var{x}, @var{alpha}, @var{censor})}  accepts a
-## boolean vector of the same size as @var{x} with 1 for observations that
-## are right-censored and 0 for observations that are observed exactly.  By
-## default, or if left empty, @qcode{@var{censor} = zeros (size (@var{x}))}.
+## @code{[@dots{}] = wblfit (@var{x}, @var{alpha}, @var{censor})} accepts a
+## boolean vector, @var{censor}, of the same size as @var{x} with @qcode{1}s for
+## observations that are right-censored and @qcode{0}s for observations that are
+## observed exactly.  By default, or if left empty,
+## @qcode{@var{censor} = zeros (size (@var{x}))}.
 ##
 ## @code{[@dots{}] = wblfit (@var{x}, @var{alpha}, @var{censor}, @var{freq})}
-## accepts a frequency vector of the same size as @var{x}.  @var{freq} typically
-## contains integer frequencies for the corresponding elements in @var{x}, but
-## may contain any non-integer non-negative values.  By default, or if left
-## empty, @qcode{@var{freq} = ones (size (@var{x}))}.
+## accepts a frequency vector, @var{freq}, of the same size as @var{x}.
+## @var{freq} typically contains integer frequencies for the corresponding
+## elements in @var{x}, but may contain any non-integer non-negative values.
+## By default, or if left empty, @qcode{@var{freq} = ones (size (@var{x}))}.
 ##
 ## @code{[@dots{}] = evfit (@dots{}, @var{options})} specifies control
 ## parameters for the iterative algorithm used to compute ML estimates with the
