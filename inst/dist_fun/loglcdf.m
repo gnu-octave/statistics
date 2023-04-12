@@ -120,6 +120,23 @@ function p = loglcdf (x, varargin)
 
 endfunction
 
+%!demo
+%! ## Plot the CDF of the log-logistic distribution
+%! x = 0:0.001:2;
+%! p05 = loglcdf(x,1, 0.5);
+%! p1 = loglcdf(x,1, 1);
+%! p2 = loglcdf(x,1, 2);
+%! p4 = loglcdf(x,1, 4);
+%! p8 = loglcdf(x,1, 8);
+%! plot (x, p05, "-b", x, p1,"-g", x, p2, "-r", x, p4, "-c", x, p8, "-m")
+%! legend ({"β = 0.5", "β = 1", "β = 2", "β = 4", "β = 8"}, ...
+%!         "location", "northwest")
+%! title ("Log-logistic CDF")
+%! xlabel ("values in x")
+%! ylabel ("probability")
+%! text (0.05, 0.7, "α = 1, values of β as shown in legend")
+%!
+
 ## Test output
 %!shared out1, out2
 %! out1 = [0, 0.5, 0.66666667, 0.75, 0.8, 0.83333333];

@@ -88,6 +88,23 @@ function y = loglpdf (x, alpha = 1, beta = 1)
 
 endfunction
 
+%!demo
+%! ## Plot the PDF of the log-logistic distribution
+%! x = 0:0.001:2;
+%! y05 = loglpdf(x, 1, 0.5);
+%! y1 = loglpdf(x, 1, 1);
+%! y2 = loglpdf(x, 1, 2);
+%! y4 = loglpdf(x, 1, 4);
+%! y8 = loglpdf(x, 1, 8);
+%! plot (x, y05, "-b", x, y1,"-g", x, y2, "-r", x, y4, "-c", x, y8, "-m")
+%! ylim ([0,3])
+%! legend ({"β = 0.5", "β = 1", "β = 2", "β = 4", "β = 8"}, ...
+%!         "location", "northeast")
+%! title ("Log-logistic PDF")
+%! xlabel ("values in x")
+%! ylabel ("density")
+%! text (0.8, 2.8, "α = 1, values of β as shown in legend")
+
 ## Test output
 %!shared out1, out2
 %! out1 = [0, 0, 0.2500, 0.1111, 0.0625, 0.0400, 0.0278, 0];
