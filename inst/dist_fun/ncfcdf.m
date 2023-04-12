@@ -29,7 +29,7 @@
 ## arguments @var{x}, @var{df1}, @var{df2}, @var{delta} are regarded as constant
 ## matrices of the same size as the other inputs.
 ##
-## @code{@var{p} = ncfcdf (@var{x}, @var{df1}, @var{df2}, @var{delta}, "upper"}
+## @code{@var{p} = ncfcdf (@var{x}, @var{df1}, @var{df2}, @var{delta}, "upper")}
 ## returns the upper tail probability of the noncentral T distribution with
 ## @var{df1} and @var{df2} degrees of freedom and noncentrality parameter
 ## @var{delta} at the values in @var{x}.
