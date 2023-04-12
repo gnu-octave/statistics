@@ -499,6 +499,22 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** isoutlier (fully Matlab compatible)
 
+ ** logicdf (replacing logistic_cdf)
+
+ ** logiinv (replacing logistic_inv)
+
+ ** logipdf (replacing logistic_pdf)
+
+ ** logirnd (replacing logistic_rnd)
+
+ ** loglcdf
+
+ ** loglinv
+
+ ** loglpdf
+
+ ** loglrnd
+
  ** mad (fully Matlab compatible)
 
  ** normfit (fully Matlab compatible)
@@ -518,6 +534,14 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  Removed Functions:
  ==================
+
+ ** logistic_cdf (replacing logicdf)
+
+ ** logistic_inv (replacing logiinv)
+
+ ** logistic_pdf (replacing logipdf)
+
+ ** logistic_rnd (replacing logirnd)
 
  ** run_test (replaced by runstest)
 

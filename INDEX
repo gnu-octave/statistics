@@ -75,7 +75,8 @@ Distributions
  iwishpdf iwishrnd
  jsucdf jsupdf
  laplace_cdf laplace_inv laplace_pdf laplace_rnd
- logistic_cdf logistic_inv logistic_pdf logistic_rnd
+ logicdf logiinv logipdf logirnd
+ loglcdf loglinv loglpdf loglrnd
  logncdf logninv lognpdf lognrnd
  mnpdf mnrnd
  mvncdf mvnpdf mvnrnd
