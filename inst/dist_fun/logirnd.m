@@ -30,8 +30,9 @@
 ## random numbers chosen from the logistic distribution with parameters @var{mu}
 ## and @var{scale}.  The size of @var{r} is the common size of @var{mu} and
 ## @var{scale}.  A scalar input functions as a constant matrix of the same size
-## as the other inputs.  Both parameters must be reals and @var{scale} > 0.  For
-## @var{scale} <= 0, NaN is returned.
+## as the other inputs.  Both parameters must be reals and
+## @qcode{@var{scale} > 0}.  For @qcode{@var{scale} <= 0}, @qcode{NaN} is
+## returned.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -39,7 +40,10 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## @seealso{logistic_cdf, logistic_inv, logistic_pdf}
+## Further information about the log-logistic distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Logistic_distribution}
+##
+## @seealso{logcdf, logiinv, logipdf, logifit, logilike, logistat}
 ## @end deftypefn
 
 function r = logirnd (mu, scale, varargin)
@@ -83,7 +87,7 @@ function r = logirnd (mu, scale, varargin)
 
   ## Check that parameters match requested dimensions in size
   if (! isscalar (mu) && ! isequal (size (mu), sz))
-    error ("logirnd: MU and SCALE must be scalar or of size SZ.");
+    error ("logirnd: MU and SCALE must be scalars or of size SZ.");
   endif
 
   ## Check for appropriate class
@@ -143,9 +147,9 @@ endfunction
 %! logirnd (0, 1, -1)
 %!error<logirnd: dimensions must be non-negative integers.> ...
 %! logirnd (0, 1, 3, -1)
-%!error<logirnd: MU and SCALE must be scalar or of size SZ.> ...
+%!error<logirnd: MU and SCALE must be scalars or of size SZ.> ...
 %! logirnd (2, ones (2), 3)
-%!error<logirnd: MU and SCALE must be scalar or of size SZ.> ...
+%!error<logirnd: MU and SCALE must be scalars or of size SZ.> ...
 %! logirnd (2, ones (2), [3, 2])
-%!error<logirnd: MU and SCALE must be scalar or of size SZ.> ...
+%!error<logirnd: MU and SCALE must be scalars or of size SZ.> ...
 %! logirnd (2, ones (2), 3, 2)

@@ -25,14 +25,19 @@
 ## Logistic probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the PDF at @var{x} of the logistic
-## distribution with mean @var{mu} and scale parameter @var{scale}.  The size of
-## @var{y} is the common size of @var{x}, @var{mu}, and @var{scale}.  A scalar
-## input functions as a constant matrix of the same size as the other inputs.
+## distribution with mean parameter @var{mu} and scale parameter @var{scale}.
+## The size of @var{y} is the common size of @var{x}, @var{mu}, and @var{scale}.
+## A scalar input functions as a constant matrix of the same size as the other
+## inputs.
 ##
-## Default values are @var{mu} = 0, @var{scale} = 1.  Both parameters must be
-## reals and @var{beta} > 0.  For @var{beta} <= 0, NaN is returned.
+## Default values are @qcode{@var{mu} = 0} and @qcode{@var{scale} = 1}.
+## Both parameters must be reals and @qcode{@var{beta} > 0}.
+## For @qcode{@var{beta} <= 0}, @qcode{NaN} is returned.
 ##
-## @seealso{logistic_cdf, logistic_inv, logistic_rnd}
+## Further information about the log-logistic distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Logistic_distribution}
+##
+## @seealso{logicdf, logiinv, logirnd, logifit, logilike, logistat}
 ## @end deftypefn
 
 function y = logipdf (x, mu = 0, scale = 1)
