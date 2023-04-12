@@ -19,9 +19,9 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{p} =} logistic_cdf (@var{x})
-## @deftypefnx {statistics} {@var{p} =} logistic_cdf (@var{x}, @var{mu})
-## @deftypefnx {statistics} {@var{p} =} logistic_cdf (@var{x}, @var{mu}, @var{scale})
+## @deftypefn  {statistics} {@var{p} =} logicdf (@var{x})
+## @deftypefnx {statistics} {@var{p} =} logicdf (@var{x}, @var{mu})
+## @deftypefnx {statistics} {@var{p} =} logicdf (@var{x}, @var{mu}, @var{scale})
 ##
 ## Logistic cumulative distribution function (CDF).
 ##
@@ -37,7 +37,7 @@
 ## @seealso{logistic_inv, logistic_pdf, logistic_rnd}
 ## @end deftypefn
 
-function p = logistic_cdf (x, mu = 0, scale = 1)
+function p = logicdf (x, mu = 0, scale = 1)
 
   ## Check for valid number of input arguments
   if (nargin < 1 || nargin > 3)
@@ -49,14 +49,14 @@ function p = logistic_cdf (x, mu = 0, scale = 1)
     [retval, x, mu, scale] = ...
         common_size (x, mu, scale);
     if (retval > 0)
-      error (strcat (["logistic_cdf: X, MU, and SCALE must be of"], ...
+      error (strcat (["logicdf: X, MU, and SCALE must be of"], ...
                      [" common size or scalars."]));
     endif
   endif
 
   ## Check for X, MU, and SCALE being reals
   if (iscomplex (x) || iscomplex (mu) || iscomplex (scale))
-    error ("logistic_cdf: X, MU, and SCALE must not be complex.");
+    error ("logicdf: X, MU, and SCALE must not be complex.");
   endif
 
   ## Check for appropriate class
@@ -82,24 +82,24 @@ endfunction
 %!shared x,y
 %! x = [-Inf -log(3) 0 log(3) Inf];
 %! y = [0, 1/4, 1/2, 3/4, 1];
-%!assert (logistic_cdf ([x, NaN]), [y, NaN], eps)
-%!assert (logistic_cdf (x, 0, [-2, -1, 0, 1, 2]), [nan(1, 3), 0.75, 1])
+%!assert (logicdf ([x, NaN]), [y, NaN], eps)
+%!assert (logicdf (x, 0, [-2, -1, 0, 1, 2]), [nan(1, 3), 0.75, 1])
 
 ## Test class of input preserved
-%!assert (logistic_cdf (single ([x, NaN])), single ([y, NaN]), eps ("single"))
+%!assert (logicdf (single ([x, NaN])), single ([y, NaN]), eps ("single"))
 
 ## Test input validation
-%!error logistic_cdf ()
-%!error logistic_cdf (1, 2, 3, 4)
-%!error<logistic_cdf: X, MU, and SCALE must be of common size or scalars.> ...
-%! logistic_cdf (1, ones (2), ones (3))
-%!error<logistic_cdf: X, MU, and SCALE must be of common size or scalars.> ...
-%! logistic_cdf (ones (2), 1, ones (3))
-%!error<logistic_cdf: X, MU, and SCALE must be of common size or scalars.> ...
-%! logistic_cdf (ones (2), ones (3), 1)
-%!error<logistic_cdf: X, MU, and SCALE must not be complex.> ...
-%! logistic_cdf (i, 2, 3)
-%!error<logistic_cdf: X, MU, and SCALE must not be complex.> ...
-%! logistic_cdf (1, i, 3)
-%!error<logistic_cdf: X, MU, and SCALE must not be complex.> ...
-%! logistic_cdf (1, 2, i)
+%!error logicdf ()
+%!error logicdf (1, 2, 3, 4)
+%!error<logicdf: X, MU, and SCALE must be of common size or scalars.> ...
+%! logicdf (1, ones (2), ones (3))
+%!error<logicdf: X, MU, and SCALE must be of common size or scalars.> ...
+%! logicdf (ones (2), 1, ones (3))
+%!error<logicdf: X, MU, and SCALE must be of common size or scalars.> ...
+%! logicdf (ones (2), ones (3), 1)
+%!error<logicdf: X, MU, and SCALE must not be complex.> ...
+%! logicdf (i, 2, 3)
+%!error<logicdf: X, MU, and SCALE must not be complex.> ...
+%! logicdf (1, i, 3)
+%!error<logicdf: X, MU, and SCALE must not be complex.> ...
+%! logicdf (1, 2, i)

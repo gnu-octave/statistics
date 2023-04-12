@@ -19,14 +19,14 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{r} =} logistic_rnd (@var{mu}, @var{scale})
-## @deftypefnx {statistics} {@var{r} =} logistic_rnd (@var{mu}, @var{scale}, @var{rows})
-## @deftypefnx {statistics} {@var{r} =} logistic_rnd (@var{mu}, @var{scale}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} {@var{r} =} logistic_rnd (@var{mu}, @var{scale}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} logirnd (@var{mu}, @var{scale})
+## @deftypefnx {statistics} {@var{r} =} logirnd (@var{mu}, @var{scale}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} logirnd (@var{mu}, @var{scale}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} logirnd (@var{mu}, @var{scale}, [@var{sz}])
 ##
 ## Random arrays from the logistic distribution.
 ##
-## @code{@var{r} = logistic_rnd (@var{mu}, @var{scale})} returns an array of
+## @code{@var{r} = logirnd (@var{mu}, @var{scale})} returns an array of
 ## random numbers chosen from the logistic distribution with parameters @var{mu}
 ## and @var{scale}.  The size of @var{r} is the common size of @var{mu} and
 ## @var{scale}.  A scalar input functions as a constant matrix of the same size
@@ -42,7 +42,7 @@
 ## @seealso{logistic_cdf, logistic_inv, logistic_pdf}
 ## @end deftypefn
 
-function r = logistic_rnd (mu, scale, varargin)
+function r = logirnd (mu, scale, varargin)
 
   ## Check for valid number of input arguments
   if (nargin < 2)
@@ -53,13 +53,13 @@ function r = logistic_rnd (mu, scale, varargin)
   if (! isscalar (mu) || ! isscalar (scale))
     [retval, mu, scale] = common_size (mu, scale);
     if (retval > 0)
-      error ("logistic_rnd: MU and SCALE must be of common size or scalars.");
+      error ("logirnd: MU and SCALE must be of common size or scalars.");
     endif
   endif
 
   ## Check for X, MU, and SCALE being reals
   if (iscomplex (mu) || iscomplex (scale))
-    error ("logistic_rnd: MU and SCALE must not be complex.");
+    error ("logirnd: MU and SCALE must not be complex.");
   endif
 
   ## Check for SIZE vector or DIMENSION input arguments
@@ -71,19 +71,19 @@ function r = logistic_rnd (mu, scale, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error (strcat (["logistic_rnd: dimension vector must be row vector"], ...
+      error (strcat (["logirnd: dimension vector must be row vector"], ...
                      [" of non-negative integers."]));
     endif
   elseif (nargin > 3)
     if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
-      error ("logistic_rnd: dimensions must be non-negative integers.");
+      error ("logirnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
   ## Check that parameters match requested dimensions in size
   if (! isscalar (mu) && ! isequal (size (mu), sz))
-    error ("logistic_rnd: MU and SCALE must be scalar or of size SZ.");
+    error ("logirnd: MU and SCALE must be scalar or of size SZ.");
   endif
 
   ## Check for appropriate class
@@ -104,48 +104,48 @@ function r = logistic_rnd (mu, scale, varargin)
 endfunction
 
 ## Test results
-%!assert (size (logistic_rnd (1, 1, 1)), [1, 1])
-%!assert (size (logistic_rnd (1, 1, 2)), [2, 2])
-%!assert (size (logistic_rnd (1, 1, [2, 1])), [2, 1])
-%!assert (size (logistic_rnd (1, zeros (2, 2))), [2, 2])
-%!assert (size (logistic_rnd (1, ones (2, 1))), [2, 1])
-%!assert (size (logistic_rnd (1, ones (2, 2))), [2, 2])
-%!assert (size (logistic_rnd (ones (2, 1), 1)), [2, 1])
-%!assert (size (logistic_rnd (ones (2, 2), 1)), [2, 2])
-%!assert (size (logistic_rnd (1, 1, 3)), [3, 3])
-%!assert (size (logistic_rnd (1, 1, [4 1])), [4, 1])
-%!assert (size (logistic_rnd (1, 1, 4, 1)), [4, 1])
+%!assert (size (logirnd (1, 1, 1)), [1, 1])
+%!assert (size (logirnd (1, 1, 2)), [2, 2])
+%!assert (size (logirnd (1, 1, [2, 1])), [2, 1])
+%!assert (size (logirnd (1, zeros (2, 2))), [2, 2])
+%!assert (size (logirnd (1, ones (2, 1))), [2, 1])
+%!assert (size (logirnd (1, ones (2, 2))), [2, 2])
+%!assert (size (logirnd (ones (2, 1), 1)), [2, 1])
+%!assert (size (logirnd (ones (2, 2), 1)), [2, 2])
+%!assert (size (logirnd (1, 1, 3)), [3, 3])
+%!assert (size (logirnd (1, 1, [4 1])), [4, 1])
+%!assert (size (logirnd (1, 1, 4, 1)), [4, 1])
 %!test
-%! r =  logistic_rnd (1, [1, 0, -1]);
+%! r =  logirnd (1, [1, 0, -1]);
 %! assert (r([2:3]), [NaN, NaN])
 
 ## Test class of input preserved
-%!assert (class (logistic_rnd (1, 0)), "double")
-%!assert (class (logistic_rnd (1, single (0))), "single")
-%!assert (class (logistic_rnd (1, single ([0 0]))), "single")
-%!assert (class (logistic_rnd (1, single (1))), "single")
-%!assert (class (logistic_rnd (1, single ([1 1]))), "single")
-%!assert (class (logistic_rnd (single (1), 1)), "single")
-%!assert (class (logistic_rnd (single ([1 1]), 1)), "single")
+%!assert (class (logirnd (1, 0)), "double")
+%!assert (class (logirnd (1, single (0))), "single")
+%!assert (class (logirnd (1, single ([0 0]))), "single")
+%!assert (class (logirnd (1, single (1))), "single")
+%!assert (class (logirnd (1, single ([1 1]))), "single")
+%!assert (class (logirnd (single (1), 1)), "single")
+%!assert (class (logirnd (single ([1 1]), 1)), "single")
 
 ## Test input validation
-%!error logistic_rnd ()
-%!error logistic_rnd (1)
-%!error<logistic_rnd: MU and SCALE must be of common size or scalars.> ...
-%! logistic_rnd (ones (3), ones (2))
-%!error<logistic_rnd: MU and SCALE must be of common size or scalars.> ...
-%! logistic_rnd (ones (2), ones (3))
-%!error<logistic_rnd: MU and SCALE must not be complex.> logistic_rnd (i, 2)
-%!error<logistic_rnd: MU and SCALE must not be complex.> logistic_rnd (1, i)
-%!error<logistic_rnd: dimension vector must be row vector of non-negative> ...
-%! logistic_rnd (0, 1, [3, -1])
-%!error<logistic_rnd: dimension vector must be row vector of non-negative> ...
-%! logistic_rnd (0, 1, -1)
-%!error<logistic_rnd: dimensions must be non-negative integers.> ...
-%! logistic_rnd (0, 1, 3, -1)
-%!error<logistic_rnd: MU and SCALE must be scalar or of size SZ.> ...
-%! logistic_rnd (2, ones (2), 3)
-%!error<logistic_rnd: MU and SCALE must be scalar or of size SZ.> ...
-%! logistic_rnd (2, ones (2), [3, 2])
-%!error<logistic_rnd: MU and SCALE must be scalar or of size SZ.> ...
-%! logistic_rnd (2, ones (2), 3, 2)
+%!error logirnd ()
+%!error logirnd (1)
+%!error<logirnd: MU and SCALE must be of common size or scalars.> ...
+%! logirnd (ones (3), ones (2))
+%!error<logirnd: MU and SCALE must be of common size or scalars.> ...
+%! logirnd (ones (2), ones (3))
+%!error<logirnd: MU and SCALE must not be complex.> logirnd (i, 2)
+%!error<logirnd: MU and SCALE must not be complex.> logirnd (1, i)
+%!error<logirnd: dimension vector must be row vector of non-negative> ...
+%! logirnd (0, 1, [3, -1])
+%!error<logirnd: dimension vector must be row vector of non-negative> ...
+%! logirnd (0, 1, -1)
+%!error<logirnd: dimensions must be non-negative integers.> ...
+%! logirnd (0, 1, 3, -1)
+%!error<logirnd: MU and SCALE must be scalar or of size SZ.> ...
+%! logirnd (2, ones (2), 3)
+%!error<logirnd: MU and SCALE must be scalar or of size SZ.> ...
+%! logirnd (2, ones (2), [3, 2])
+%!error<logirnd: MU and SCALE must be scalar or of size SZ.> ...
+%! logirnd (2, ones (2), 3, 2)

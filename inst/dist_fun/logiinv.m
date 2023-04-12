@@ -19,9 +19,9 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{x} =} logistic_inv (@var{p})
-## @deftypefnx {statistics} {@var{x} =} logistic_inv (@var{p}, @var{mu})
-## @deftypefnx {statistics} {@var{x} =} logistic_inv (@var{p}, @var{mu}, @var{scale})
+## @deftypefn  {statistics} {@var{x} =} logiinv (@var{p})
+## @deftypefnx {statistics} {@var{x} =} logiinv (@var{p}, @var{mu})
+## @deftypefnx {statistics} {@var{x} =} logiinv (@var{p}, @var{mu}, @var{scale})
 ##
 ## Inverse of the logistic cumulative distribution function (iCDF).
 ##
@@ -37,7 +37,7 @@
 ## @seealso{logistic_cdf, logistic_pdf, logistic_rnd}
 ## @end deftypefn
 
-function x = logistic_inv (p, mu = 0, scale = 1)
+function x = logiinv (p, mu = 0, scale = 1)
 
   ## Check for valid number of input arguments
   if (nargin < 1 || nargin > 3)
@@ -48,14 +48,14 @@ function x = logistic_inv (p, mu = 0, scale = 1)
   if (! isscalar (p) || ! isscalar (mu) || ! isscalar(scale))
     [retval, p, mu, scale] = common_size (p, mu, scale);
     if (retval > 0)
-      error (strcat (["logistic_inv: P, MU, and SCALE must be of"], ...
+      error (strcat (["logiinv: P, MU, and SCALE must be of"], ...
                      [" common size or scalars."]));
     endif
   endif
 
   ## Check for X, MU, and SCALE being reals
   if (iscomplex (p) || iscomplex (mu) || iscomplex (scale))
-    error ("logistic_inv: P, MU, and SCALE must not be complex.");
+    error ("logiinv: P, MU, and SCALE must not be complex.");
   endif
 
   ## Check for appropriate class
@@ -79,28 +79,28 @@ endfunction
 
 %!test
 %! p = [0.01:0.01:0.99];
-%! assert (logistic_inv (p), log (p ./ (1-p)), 25*eps);
+%! assert (logiinv (p), log (p ./ (1-p)), 25*eps);
 %!shared p
 %! p = [-1 0 0.5 1 2];
-%!assert (logistic_inv (p), [NaN -Inf 0 Inf NaN])
-%!assert (logistic_inv (p, 0, [-1, 0, 1, 2, 3]), [NaN NaN 0 Inf NaN])
+%!assert (logiinv (p), [NaN -Inf 0 Inf NaN])
+%!assert (logiinv (p, 0, [-1, 0, 1, 2, 3]), [NaN NaN 0 Inf NaN])
 
 ## Test class of input preserved
-%!assert (logistic_inv ([p, NaN]), [NaN -Inf 0 Inf NaN NaN])
-%!assert (logistic_inv (single ([p, NaN])), single ([NaN -Inf 0 Inf NaN NaN]))
+%!assert (logiinv ([p, NaN]), [NaN -Inf 0 Inf NaN NaN])
+%!assert (logiinv (single ([p, NaN])), single ([NaN -Inf 0 Inf NaN NaN]))
 
 ## Test input validation
-%!error logistic_inv ()
-%!error logistic_inv (1, 2, 3, 4)
-%!error<logistic_inv: P, MU, and SCALE must be of common size or scalars.> ...
-%! logistic_inv (1, ones (2), ones (3))
-%!error<logistic_inv: P, MU, and SCALE must be of common size or scalars.> ...
-%! logistic_inv (ones (2), 1, ones (3))
-%!error<logistic_inv: P, MU, and SCALE must be of common size or scalars.> ...
-%! logistic_inv (ones (2), ones (3), 1)
-%!error<logistic_inv: P, MU, and SCALE must not be complex.> ...
-%! logistic_inv (i, 2, 3)
-%!error<logistic_inv: P, MU, and SCALE must not be complex.> ...
-%! logistic_inv (1, i, 3)
-%!error<logistic_inv: P, MU, and SCALE must not be complex.> ...
-%! logistic_inv (1, 2, i)
+%!error logiinv ()
+%!error logiinv (1, 2, 3, 4)
+%!error<logiinv: P, MU, and SCALE must be of common size or scalars.> ...
+%! logiinv (1, ones (2), ones (3))
+%!error<logiinv: P, MU, and SCALE must be of common size or scalars.> ...
+%! logiinv (ones (2), 1, ones (3))
+%!error<logiinv: P, MU, and SCALE must be of common size or scalars.> ...
+%! logiinv (ones (2), ones (3), 1)
+%!error<logiinv: P, MU, and SCALE must not be complex.> ...
+%! logiinv (i, 2, 3)
+%!error<logiinv: P, MU, and SCALE must not be complex.> ...
+%! logiinv (1, i, 3)
+%!error<logiinv: P, MU, and SCALE must not be complex.> ...
+%! logiinv (1, 2, i)

@@ -18,9 +18,9 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{y} =} logistic_pdf (@var{x})
-## @deftypefnx {statistics} {@var{y} =} logistic_pdf (@var{x}, @var{mu})
-## @deftypefnx {statistics} {@var{y} =} logistic_pdf (@var{x}, @var{mu}, @var{scale})
+## @deftypefn  {statistics} {@var{y} =} logipdf (@var{x})
+## @deftypefnx {statistics} {@var{y} =} logipdf (@var{x}, @var{mu})
+## @deftypefnx {statistics} {@var{y} =} logipdf (@var{x}, @var{mu}, @var{scale})
 ##
 ## Logistic probability density function (PDF).
 ##
@@ -35,7 +35,7 @@
 ## @seealso{logistic_cdf, logistic_inv, logistic_rnd}
 ## @end deftypefn
 
-function y = logistic_pdf (x, mu = 0, scale = 1)
+function y = logipdf (x, mu = 0, scale = 1)
 
   ## Check for valid number of input arguments
   if (nargin < 1 || nargin > 3)
@@ -46,14 +46,14 @@ function y = logistic_pdf (x, mu = 0, scale = 1)
   if (! isscalar (x) || ! isscalar (mu) || ! isscalar(scale))
     [retval, x, mu, scale] = common_size (x, mu, scale);
     if (retval > 0)
-      error (strcat (["logistic_pdf: X, MU, and SCALE must be of"], ...
+      error (strcat (["logipdf: X, MU, and SCALE must be of"], ...
                      [" common size or scalars."]));
     endif
   endif
 
   ## Check for X, MU, and SCALE being reals
   if (iscomplex (x) || iscomplex (mu) || iscomplex (scale))
-    error ("logistic_pdf: X, MU, and SCALE must not be complex.");
+    error ("logipdf: X, MU, and SCALE must not be complex.");
   endif
 
   ## Check for appropriate class
@@ -77,24 +77,24 @@ endfunction
 %!shared x, y
 %! x = [-Inf -log(4) 0 log(4) Inf];
 %! y = [0, 0.16, 1/4, 0.16, 0];
-%!assert (logistic_pdf ([x, NaN]), [y, NaN], eps)
-%!assert (logistic_pdf (x, 0, [-2, -1, 0, 1, 2]), [nan(1, 3), y([4:5])], eps)
+%!assert (logipdf ([x, NaN]), [y, NaN], eps)
+%!assert (logipdf (x, 0, [-2, -1, 0, 1, 2]), [nan(1, 3), y([4:5])], eps)
 
 ## Test class of input preserved
-%!assert (logistic_pdf (single ([x, NaN])), single ([y, NaN]), eps ("single"))
+%!assert (logipdf (single ([x, NaN])), single ([y, NaN]), eps ("single"))
 
 ## Test input validation
-%!error logistic_pdf ()
-%!error logistic_pdf (1, 2, 3, 4)
-%!error<logistic_pdf: X, MU, and SCALE must be of common size or scalars.> ...
-%! logistic_pdf (1, ones (2), ones (3))
-%!error<logistic_pdf: X, MU, and SCALE must be of common size or scalars.> ...
-%! logistic_pdf (ones (2), 1, ones (3))
-%!error<logistic_pdf: X, MU, and SCALE must be of common size or scalars.> ...
-%! logistic_pdf (ones (2), ones (3), 1)
-%!error<logistic_pdf: X, MU, and SCALE must not be complex.> ...
-%! logistic_pdf (i, 2, 3)
-%!error<logistic_pdf: X, MU, and SCALE must not be complex.> ...
-%! logistic_pdf (1, i, 3)
-%!error<logistic_pdf: X, MU, and SCALE must not be complex.> ...
-%! logistic_pdf (1, 2, i)
+%!error logipdf ()
+%!error logipdf (1, 2, 3, 4)
+%!error<logipdf: X, MU, and SCALE must be of common size or scalars.> ...
+%! logipdf (1, ones (2), ones (3))
+%!error<logipdf: X, MU, and SCALE must be of common size or scalars.> ...
+%! logipdf (ones (2), 1, ones (3))
+%!error<logipdf: X, MU, and SCALE must be of common size or scalars.> ...
+%! logipdf (ones (2), ones (3), 1)
+%!error<logipdf: X, MU, and SCALE must not be complex.> ...
+%! logipdf (i, 2, 3)
+%!error<logipdf: X, MU, and SCALE must not be complex.> ...
+%! logipdf (1, i, 3)
+%!error<logipdf: X, MU, and SCALE must not be complex.> ...
+%! logipdf (1, 2, i)
