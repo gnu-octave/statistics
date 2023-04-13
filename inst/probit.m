@@ -17,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{y} =} probit (@var{p})
+## @deftypefn  {statistics} {@var{x} =} probit (@var{p})
 ##
 ## Probit transformation
 ##
@@ -27,14 +27,13 @@
 ## @seealso{logit}
 ## @end deftypefn
 
-function y = probit (p)
-
+function x = probit (p)
 
   if (nargin != 1)
     print_usage ();
   endif
 
-  y = stdnormal_inv (p);
+  x = norminv (p);
 
 endfunction
 
