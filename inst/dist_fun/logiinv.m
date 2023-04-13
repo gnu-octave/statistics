@@ -80,7 +80,23 @@ function x = logiinv (p, mu = 0, s = 1)
 
 endfunction
 
+%!demo
+%! ## Plot various iCDFs from the logistic distribution
+%! p = 0.001:0.001:0.999;
+%! x1 = logiinv (p, 5, 2);
+%! x2 = logiinv (p, 9, 3);
+%! x3 = logiinv (p, 9, 4);
+%! x4 = logiinv (p, 6, 2);
+%! x5 = logiinv (p, 2, 1);
+%! plot (p, x1, "-b", p, x2,"-g", p, x3, "-r", p, x4, "-c", p, x5, "-m")
+%! grid on
+%! legend ({"μ = 5, s = 2", "μ = 9, s = 3", "μ = 2, s = 4", ...
+%!          "μ = 6, s = 2", "μ = 2, s = 1"}, "location", "southeast")
+%! title ("Logistic iCDF")
+%! xlabel ("probability")
+%! ylabel ("x")
 
+## Test output
 %!test
 %! p = [0.01:0.01:0.99];
 %! assert (logiinv (p), log (p ./ (1-p)), 25*eps);

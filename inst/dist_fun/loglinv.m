@@ -85,6 +85,24 @@ function x = loglinv (p, alpha = 1, beta = 1)
 
 endfunction
 
+%!demo
+%! ## Plot various iCDFs from the log-logistic distribution
+%! p = 0.001:0.001:0.999;
+%! x1 = loglinv (p, 1, 0.5);
+%! x2 = loglinv (p, 1, 1);
+%! x3 = loglinv (p, 1, 2);
+%! x4 = loglinv (p, 1, 4);
+%! x5 = loglinv (p, 1, 8);
+%! plot (p, x1, "-b", p, x2,"-g", p, x3, "-r", p, x4, "-c", p, x5, "-m")
+%! ylim ([0, 20])
+%! grid on
+%! legend ({"β = 0.5", "β = 1", "β = 2", "β = 4", "β = 8"}, ...
+%!         "location", "northwest")
+%! title ("Log-logistic iCDF")
+%! xlabel ("probability")
+%! ylabel ("x")
+%! text (0.03, 14, "α = 1, values of β as shown in legend")
+
 ## Test output
 %!shared p, out1, out2
 %! p = [-1, 0, 0.2, 0.5, 0.8, 0.95, 1, 2];
