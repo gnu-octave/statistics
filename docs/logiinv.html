@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: logistic_cdf</title>
+    <title>Statistics: logiinv</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -64,37 +64,44 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>logistic_cdf</code></b>
+              Function&nbsp;Reference: <b><code>logiinv</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>logistic_cdf</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>logistic_cdf</b><i> (<var>x</var>, <var>mu</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>logistic_cdf</b><i> (<var>x</var>, <var>mu</var>, <var>scale</var>)</i></dt>
+<dt><u>statistics:</u> <var>x</var> = <b>logiinv</b><i> (<var>p</var>)</i></dt>
+<dt><u>statistics:</u> <var>x</var> = <b>logiinv</b><i> (<var>p</var>, <var>mu</var>)</i></dt>
+<dt><u>statistics:</u> <var>x</var> = <b>logiinv</b><i> (<var>p</var>, <var>mu</var>, <var>s</var>)</i></dt>
 </dl>
 
-<p> Logistic cumulative distribution function (CDF).
+<p> Inverse of the logistic cumulative distribution function (iCDF).
 </p>
 <div class="ms-5">
-<p> For each element of <var>x</var>, compute the cumulative distribution function
- (CDF) at <var>x</var> of the logistic distribution with mean <var>mu</var> and scale
- parameter <var>scale</var>.  The size of <var>p</var> is the common size of <var>x</var>,
- <var>mu</var>, and <var>scale</var>.  A scalar input functions as a constant matrix of
- the same size as the other inputs.
+<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF)
+ at <var>p</var> of the logistic distribution with location parameter <var>mu</var> and
+ scale parameter <var>s</var>.  The size of <var>x</var> is the common size of
+ <var>p</var>, <var>mu</var>, and <var>s</var>.  A scalar input functions as a constant
+ matrix of the same size as the other inputs.
 </p>
-<p> Default values are <var>mu</var> = 0, <var>beta</var> = 1.  Both parameters must be
- reals and <var>beta</var> &gt; 0.  For <var>beta</var> &lt;= 0, NaN is returned.
+<p> Default values are <code><var>mu</var> = 0</code> and <code><var>s</var> = 1</code>.
+ Both parameters must be reals and <code><var>beta</var> &gt; 0</code>.
+ For <code><var>beta</var> &lt;= 0</code>, <code>NaN</code> is returned.
+</p>
+<p> Further information about the log-logistic distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Logistic_distribution">https://en.wikipedia.org/wiki/Logistic_distribution</a>
 </p>
 <p> <strong>See also: </strong>
-  <a href="logistic_inv.html">logistic_inv</a>, 
-  <a href="logistic_pdf.html">logistic_pdf</a>, 
-  <a href="logistic_rnd.html">logistic_rnd</a>
+  <a href="logicdf.html">logicdf</a>, 
+  <a href="logipdf.html">logipdf</a>, 
+  <a href="logirnd.html">logirnd</a>, 
+logifit, 
+logilike, 
+logistat
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/logistic_cdf.m">logistic_cdf</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/logiinv.m">logiinv</a>
 </div>
 
         </div>

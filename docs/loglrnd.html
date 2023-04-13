@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: logistic_pdf</title>
+    <title>Statistics: loglrnd</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -64,36 +64,58 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>logistic_pdf</code></b>
+              Function&nbsp;Reference: <b><code>loglrnd</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>y</var> = <b>logistic_pdf</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> <var>y</var> = <b>logistic_pdf</b><i> (<var>x</var>, <var>mu</var>)</i></dt>
-<dt><u>statistics:</u> <var>y</var> = <b>logistic_pdf</b><i> (<var>x</var>, <var>mu</var>, <var>scale</var>)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>loglrnd</b><i> (<var>alpha</var>, <var>beta</var>)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>loglrnd</b><i> (<var>alpha</var>, <var>beta</var>, <var>rows</var>)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>loglrnd</b><i> (<var>alpha</var>, <var>beta</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>loglrnd</b><i> (<var>alpha</var>, <var>beta</var>, [<var>sz</var>])</i></dt>
 </dl>
 
-<p> Logistic probability density function (PDF).
+<p> Random arrays from the log-logistic distribution.
 </p>
 <div class="ms-5">
-<p> For each element of <var>x</var>, compute the PDF at <var>x</var> of the logistic
- distribution with mean <var>mu</var> and scale parameter <var>scale</var>.  The size of
- <var>y</var> is the common size of <var>x</var>, <var>mu</var>, and <var>scale</var>.  A scalar
- input functions as a constant matrix of the same size as the other inputs.
+<p> <code><var>r</var> = loglrnd (<var>alpha</var>, <var>beta</var>)</code> returns an array of random
+ numbers chosen from the log-logistic distribution with scale parameter
+ <var>alpha</var> and shape parameter <var>beta</var>.  The size of <var>r</var> is the
+ common size of <var>alpha</var> and <var>beta</var>.  A scalar input functions as a
+ constant matrix of the same size as the other inputs.  Both parameters must
+ be positive reals, otherwise <code>NaN</code> is returned.
 </p>
-<p> Default values are <var>mu</var> = 0, <var>scale</var> = 1.  Both parameters must be
- reals and <var>beta</var> &gt; 0.  For <var>beta</var> &lt;= 0, NaN is returned.
+<p> When called with a single size argument, return a square matrix with
+ the dimension specified.  When called with more than one scalar argument the
+ first two arguments are taken as the number of rows and columns and any
+ further arguments specify additional matrix dimensions.  The size may also
+ be specified with a vector of dimensions <var>sz</var>.
 </p>
+<p> Further information about the log-logistic distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Log-logistic_distribution">https://en.wikipedia.org/wiki/Log-logistic_distribution</a>
+</p>
+<p> MATLAB compatibility: MATLAB uses an alternative parameterization given by
+ the pair <math>μ, s</math>, i.e. <var>mu</var> and <var>scale</var>, in analogy with the
+ logistic distribution.  Their relation to the <var>alpha</var> and <var>beta</var>
+ parameters is given below:
+</p>
+ <ul>
+<li> <code><var>alpha</var> = exp (<var>mu</var>)</code>
+ </li><li> <code><var>beta</var> = 1 / <var>scale</var></code>
+ </li></ul>
+
 <p> <strong>See also: </strong>
-  <a href="logistic_cdf.html">logistic_cdf</a>, 
-  <a href="logistic_inv.html">logistic_inv</a>, 
-  <a href="logistic_rnd.html">logistic_rnd</a>
+  <a href="loglcdf.html">loglcdf</a>, 
+  <a href="loglinv.html">loglinv</a>, 
+  <a href="loglpdf.html">loglpdf</a>, 
+loglfit, 
+logllike, 
+loglstat
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/logistic_pdf.m">logistic_pdf</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/loglrnd.m">loglrnd</a>
 </div>
 
         </div>

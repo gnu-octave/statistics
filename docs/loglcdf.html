@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: ncfcdf</title>
+    <title>Statistics: loglcdf</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -64,41 +64,59 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>ncfcdf</code></b>
+              Function&nbsp;Reference: <b><code>loglcdf</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>ncfcdf</b><i> (<var>x</var>, <var>df1</var>, <var>df2</var>, <var>delta</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>ncfcdf</b><i> (<var>x</var>, <var>df1</var>, <var>df2</var>, <var>delta</var>, <var>uflag</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>loglcdf</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>loglcdf</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>loglcdf</b><i> (<var>x</var>, <var>alpha</var>, <var>beta</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>loglcdf</b><i> (&hellip;, <var>uflag</var>)</i></dt>
 </dl>
 
-<p> Noncentral F cumulative distribution function (CDF).
+<p> Log-logistic cumulative distribution function (CDF).
 </p>
 <div class="ms-5">
-<p> <code><var>p</var> = ncfcdf (<var>x</var>, <var>df1</var>, <var>df2</var>, <var>delta</var>)</code> returns
- the noncentral F cdf with <var>df</var> degrees of freedom and noncentrality
- parameter <var>delta</var> at the values of <var>X</var>.
+<p> For each element of <var>x</var>, compute the cumulative distribution function
+ (CDF) at <var>x</var> of the log-logistic distribution with scale parameter
+ <var>alpha</var> and shape parameter <var>beta</var>.  The size of <var>p</var> is the
+ common size of <var>x</var>, <var>alpha</var>, and <var>beta</var>.  A scalar input
+ functions as a constant matrix of the same size as the other inputs.
 </p>
-<p> The size of <var>p</var> is the common size of the input arguments. Scalar input
- arguments <var>x</var>, <var>df1</var>, <var>df2</var>, <var>delta</var> are regarded as constant
- matrices of the same size as the other inputs.
+<p> Both parameters, <math>α</math> and <math>β</math>, must be positive reals and <var>x</var> is
+ supported in the range <math>[0,inf)</math>, otherwise <code>NaN</code> is returned.  By
+ default, <code><var>alpha</var> = 1</code> and <code><var>beta</var> = 1</code>.
 </p>
-<p> <code><var>p</var> = ncfcdf (<var>x</var>, <var>df1</var>, <var>df2</var>, <var>delta</var>, &quot;upper&quot;)</code>
- returns the upper tail probability of the noncentral T distribution with
- <var>df1</var> and <var>df2</var> degrees of freedom and noncentrality parameter
- <var>delta</var> at the values in <var>x</var>.
+<p> <code><var>p</var> = loglcdf (<var>x</var>, <var>alpha</var>, <var>beta</var>, &quot;upper&quot;)</code> returns
+ the upper tail probability of the log-logistic distribution with parameters
+ <var>alpha</var>, and <var>beta</var> at the values in <var>x</var>.
 </p>
+<p> Further information about the log-logistic distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Log-logistic_distribution">https://en.wikipedia.org/wiki/Log-logistic_distribution</a>
+</p>
+<p> MATLAB compatibility: MATLAB uses an alternative parameterization given by
+ the pair <math>μ, s</math>, i.e. <var>mu</var> and <var>scale</var>, in analogy with the
+ logistic distribution.  Their relation to the <var>alpha</var> and <var>beta</var>
+ parameters is given below:
+</p>
+ <ul>
+<li> <code><var>alpha</var> = exp (<var>mu</var>)</code>
+ </li><li> <code><var>beta</var> = 1 / <var>scale</var></code>
+ </li></ul>
+
 <p> <strong>See also: </strong>
-  <a href="ncfinv.html">ncfinv</a>, 
-  <a href="ncfpdf.html">ncfpdf</a>, 
-  <a href="ncfrnd.html">ncfrnd</a>, 
-  <a href="ncfstat.html">ncfstat</a>
+  <a href="loglinv.html">loglinv</a>, 
+  <a href="loglpdf.html">loglpdf</a>, 
+  <a href="loglrnd.html">loglrnd</a>, 
+loglfit, 
+logllike, 
+loglstat
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/ncfcdf.m">ncfcdf</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/loglcdf.m">loglcdf</a>
 </div>
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -118,18 +136,27 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Compare the noncentral F cdf with DELTA = 10 to the F cdf with the
- ## same number of numerator and denominator degrees of freedom (5, 20)
+ ## Plot various CDFs from the log-logistic distribution
+ x = 0:0.001:2;
+ p1 = loglcdf (x, 1, 0.5);
+ p2 = loglcdf (x, 1, 1);
+ p3 = loglcdf (x, 1, 2);
+ p4 = loglcdf (x, 1, 4);
+ p5 = loglcdf (x, 1, 8);
+ plot (x, p1, "-b", x, p2,"-g", x, p3, "-r", x, p4, "-c", x, p5, "-m")
+ legend ({"β = 0.5", "β = 1", "β = 2", "β = 4", "β = 8"}, ...
+         "location", "northwest")
+ grid on
+ title ("Log-logistic CDF")
+ xlabel ("values in x")
+ ylabel ("probability")
+ text (0.05, 0.7, "α = 1, values of β as shown in legend")
 
- x = (0.01:0.1:10.01)';
- p1 = ncfcdf (x, 5, 20, 10);
- p = fcdf (x, 5, 20);
- plot (x, p, "-", x, p1, "-");
 
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
-                    <img src="assets/ncfcdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                    <img src="assets/loglcdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: logistic_rnd</title>
+    <title>Statistics: probit</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -35,9 +35,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Distributions">
+                  <a class="nav-link" href="index.html#Transforms">
                     <i class="fas fa-list-alt"></i>
-                    Distributions
+                    Transforms
                   </a>
                 </li>
                 <li class="nav-item">
@@ -64,42 +64,27 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>logistic_rnd</code></b>
+              Function&nbsp;Reference: <b><code>probit</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>r</var> = <b>logistic_rnd</b><i> (<var>mu</var>, <var>scale</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>logistic_rnd</b><i> (<var>mu</var>, <var>scale</var>, <var>rows</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>logistic_rnd</b><i> (<var>mu</var>, <var>scale</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>logistic_rnd</b><i> (<var>mu</var>, <var>scale</var>, [<var>sz</var>])</i></dt>
+<dt><u>statistics:</u> <var>x</var> = <b>probit</b><i> (<var>p</var>)</i></dt>
 </dl>
 
-<p> Random arrays from the logistic distribution.
+<p> Probit transformation
 </p>
 <div class="ms-5">
-<p> <code><var>r</var> = logistic_rnd (<var>mu</var>, <var>scale</var>)</code> returns an array of
- random numbers chosen from the logistic distribution with parameters <var>mu</var>
- and <var>scale</var>.  The size of <var>r</var> is the common size of <var>mu</var> and
- <var>scale</var>.  A scalar input functions as a constant matrix of the same size
- as the other inputs.  Both parameters must be reals and <var>scale</var> &gt; 0.  For
- <var>scale</var> &lt;= 0, NaN is returned.
-</p>
-<p> When called with a single size argument, return a square matrix with
- the dimension specified.  When called with more than one scalar argument the
- first two arguments are taken as the number of rows and columns and any
- further arguments specify additional matrix dimensions.  The size may also
- be specified with a vector of dimensions <var>sz</var>.
+<p> Return the probit (the quantile of the standard normal distribution) for
+ each element of <var>p</var>.
 </p>
 <p> <strong>See also: </strong>
-  <a href="logistic_cdf.html">logistic_cdf</a>, 
-  <a href="logistic_inv.html">logistic_inv</a>, 
-  <a href="logistic_pdf.html">logistic_pdf</a>
+  <a href="logit.html">logit</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/logistic_rnd.m">logistic_rnd</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/probit.m">probit</a>
 </div>
 
         </div>

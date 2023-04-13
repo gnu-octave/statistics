@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: ncfcdf</title>
+    <title>Statistics: logipdf</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -64,41 +64,44 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>ncfcdf</code></b>
+              Function&nbsp;Reference: <b><code>logipdf</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>ncfcdf</b><i> (<var>x</var>, <var>df1</var>, <var>df2</var>, <var>delta</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>ncfcdf</b><i> (<var>x</var>, <var>df1</var>, <var>df2</var>, <var>delta</var>, <var>uflag</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>logipdf</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>logipdf</b><i> (<var>x</var>, <var>mu</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>logipdf</b><i> (<var>x</var>, <var>mu</var>, <var>s</var>)</i></dt>
 </dl>
 
-<p> Noncentral F cumulative distribution function (CDF).
+<p> Logistic probability density function (PDF).
 </p>
 <div class="ms-5">
-<p> <code><var>p</var> = ncfcdf (<var>x</var>, <var>df1</var>, <var>df2</var>, <var>delta</var>)</code> returns
- the noncentral F cdf with <var>df</var> degrees of freedom and noncentrality
- parameter <var>delta</var> at the values of <var>X</var>.
+<p> For each element of <var>x</var>, compute the PDF at <var>x</var> of the logistic
+ distribution with location parameter <var>mu</var> and scale parameter <var>s</var>.
+ The size of <var>y</var> is the common size of <var>x</var>, <var>mu</var>, and <var>s</var>.
+ A scalar input functions as a constant matrix of the same size as the other
+ inputs.
 </p>
-<p> The size of <var>p</var> is the common size of the input arguments. Scalar input
- arguments <var>x</var>, <var>df1</var>, <var>df2</var>, <var>delta</var> are regarded as constant
- matrices of the same size as the other inputs.
+<p> Default values are <code><var>mu</var> = 0</code> and <code><var>s</var> = 1</code>.
+ Both parameters must be reals and <code><var>beta</var> &gt; 0</code>.
+ For <code><var>beta</var> &lt;= 0</code>, <code>NaN</code> is returned.
 </p>
-<p> <code><var>p</var> = ncfcdf (<var>x</var>, <var>df1</var>, <var>df2</var>, <var>delta</var>, &quot;upper&quot;)</code>
- returns the upper tail probability of the noncentral T distribution with
- <var>df1</var> and <var>df2</var> degrees of freedom and noncentrality parameter
- <var>delta</var> at the values in <var>x</var>.
+<p> Further information about the log-logistic distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Logistic_distribution">https://en.wikipedia.org/wiki/Logistic_distribution</a>
 </p>
 <p> <strong>See also: </strong>
-  <a href="ncfinv.html">ncfinv</a>, 
-  <a href="ncfpdf.html">ncfpdf</a>, 
-  <a href="ncfrnd.html">ncfrnd</a>, 
-  <a href="ncfstat.html">ncfstat</a>
+  <a href="logicdf.html">logicdf</a>, 
+  <a href="logiinv.html">logiinv</a>, 
+  <a href="logirnd.html">logirnd</a>, 
+logifit, 
+logilike, 
+logistat
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/ncfcdf.m">ncfcdf</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/logipdf.m">logipdf</a>
 </div>
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -118,18 +121,26 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Compare the noncentral F cdf with DELTA = 10 to the F cdf with the
- ## same number of numerator and denominator degrees of freedom (5, 20)
-
- x = (0.01:0.1:10.01)';
- p1 = ncfcdf (x, 5, 20, 10);
- p = fcdf (x, 5, 20);
- plot (x, p, "-", x, p1, "-");
+ ## Plot various PDFs from the logistic distribution
+ x = -5:0.01:20;
+ y1 = logipdf (x, 5, 2);
+ y2 = logipdf (x, 9, 3);
+ y3 = logipdf (x, 9, 4);
+ y4 = logipdf (x, 6, 2);
+ y5 = logipdf (x, 2, 1);
+ plot (x, y1, "-b", x, y2,"-g", x, y3, "-r", x, y4, "-c", x, y5, "-m")
+ grid on
+ ylim ([0,0.3])
+ legend ({"μ = 5, s = 2", "μ = 9, s = 3", "μ = 2, s = 4", ...
+          "μ = 6, s = 2", "μ = 2, s = 1"}, "location", "northeast")
+ title ("Logistic PDF")
+ xlabel ("values in x")
+ ylabel ("density")
 
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
-                    <img src="assets/ncfcdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                    <img src="assets/logipdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>

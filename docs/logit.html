@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: ncfcdf</title>
+    <title>Statistics: logit</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -35,9 +35,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Distributions">
+                  <a class="nav-link" href="index.html#Transforms">
                     <i class="fas fa-list-alt"></i>
-                    Distributions
+                    Transforms
                   </a>
                 </li>
                 <li class="nav-item">
@@ -64,80 +64,28 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>ncfcdf</code></b>
+              Function&nbsp;Reference: <b><code>logit</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>ncfcdf</b><i> (<var>x</var>, <var>df1</var>, <var>df2</var>, <var>delta</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>ncfcdf</b><i> (<var>x</var>, <var>df1</var>, <var>df2</var>, <var>delta</var>, <var>uflag</var>)</i></dt>
+<dt><u>statistics:</u> <var>x</var> = <b>logit</b><i> (<var>p</var>)</i></dt>
 </dl>
 
-<p> Noncentral F cumulative distribution function (CDF).
+<p> Compute the logit for each value of <var>p</var>
 </p>
 <div class="ms-5">
-<p> <code><var>p</var> = ncfcdf (<var>x</var>, <var>df1</var>, <var>df2</var>, <var>delta</var>)</code> returns
- the noncentral F cdf with <var>df</var> degrees of freedom and noncentrality
- parameter <var>delta</var> at the values of <var>X</var>.
-</p>
-<p> The size of <var>p</var> is the common size of the input arguments. Scalar input
- arguments <var>x</var>, <var>df1</var>, <var>df2</var>, <var>delta</var> are regarded as constant
- matrices of the same size as the other inputs.
-</p>
-<p> <code><var>p</var> = ncfcdf (<var>x</var>, <var>df1</var>, <var>df2</var>, <var>delta</var>, &quot;upper&quot;)</code>
- returns the upper tail probability of the noncentral T distribution with
- <var>df1</var> and <var>df2</var> degrees of freedom and noncentrality parameter
- <var>delta</var> at the values in <var>x</var>.
-</p>
-<p> <strong>See also: </strong>
-  <a href="ncfinv.html">ncfinv</a>, 
-  <a href="ncfpdf.html">ncfpdf</a>, 
-  <a href="ncfrnd.html">ncfrnd</a>, 
-  <a href="ncfstat.html">ncfstat</a>
+<p> The logit is defined as
+ $$ {\rm logit}(p) = \log\Big({p \over 1-p}\Big) $$
+  <strong>See also: </strong>
+  <a href="probit.html">probit</a>, 
+  <a href="logicdf.html">logicdf</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/ncfcdf.m">ncfcdf</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/logit.m">logit</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Compare the noncentral F cdf with DELTA = 10 to the F cdf with the
- ## same number of numerator and denominator degrees of freedom (5, 20)
-
- x = (0.01:0.1:10.01)';
- p1 = ncfcdf (x, 5, 20, 10);
- p = fcdf (x, 5, 20);
- plot (x, p, "-", x, p1, "-");
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/ncfcdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
 
         </div>
       </div>
