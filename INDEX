@@ -227,6 +227,9 @@ Regression
  regress
  regress_gp
  stepwisefit
+Transforms
+ logit
+ probit
 Wrappers
  cdf
  icdf
