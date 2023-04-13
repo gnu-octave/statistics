@@ -18,8 +18,8 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} loglcdf (@var{x})
-## @deftypefn  {statistics} {@var{p} =} loglcdf (@var{x}, @var{alpha})
-## @deftypefn  {statistics} {@var{p} =} loglcdf (@var{x}, @var{alpha}, @var{beta})
+## @deftypefnx {statistics} {@var{p} =} loglcdf (@var{x}, @var{alpha})
+## @deftypefnx {statistics} {@var{p} =} loglcdf (@var{x}, @var{alpha}, @var{beta})
 ## @deftypefnx {statistics} {@var{p} =} loglcdf (@dots{}, @var{uflag})
 ##
 ## Log-logistic cumulative distribution function (CDF).
