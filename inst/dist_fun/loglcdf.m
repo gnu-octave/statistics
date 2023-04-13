@@ -121,16 +121,17 @@ function p = loglcdf (x, varargin)
 endfunction
 
 %!demo
-%! ## Plot the CDF of the log-logistic distribution
+%! ## Plot various CDFs from the log-logistic distribution
 %! x = 0:0.001:2;
-%! p05 = loglcdf(x,1, 0.5);
-%! p1 = loglcdf(x,1, 1);
-%! p2 = loglcdf(x,1, 2);
-%! p4 = loglcdf(x,1, 4);
-%! p8 = loglcdf(x,1, 8);
-%! plot (x, p05, "-b", x, p1,"-g", x, p2, "-r", x, p4, "-c", x, p8, "-m")
+%! p1 = loglcdf (x, 1, 0.5);
+%! p2 = loglcdf (x, 1, 1);
+%! p3 = loglcdf (x, 1, 2);
+%! p4 = loglcdf (x, 1, 4);
+%! p5 = loglcdf (x, 1, 8);
+%! plot (x, p1, "-b", x, p2,"-g", x, p3, "-r", x, p4, "-c", x, p5, "-m")
 %! legend ({"β = 0.5", "β = 1", "β = 2", "β = 4", "β = 8"}, ...
 %!         "location", "northwest")
+%! grid on
 %! title ("Log-logistic CDF")
 %! xlabel ("values in x")
 %! ylabel ("probability")

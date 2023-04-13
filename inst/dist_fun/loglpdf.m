@@ -89,14 +89,15 @@ function y = loglpdf (x, alpha = 1, beta = 1)
 endfunction
 
 %!demo
-%! ## Plot the PDF of the log-logistic distribution
+%! ## Plot various PDFs from the log-logistic distribution
 %! x = 0:0.001:2;
-%! y05 = loglpdf(x, 1, 0.5);
-%! y1 = loglpdf(x, 1, 1);
-%! y2 = loglpdf(x, 1, 2);
-%! y4 = loglpdf(x, 1, 4);
-%! y8 = loglpdf(x, 1, 8);
-%! plot (x, y05, "-b", x, y1,"-g", x, y2, "-r", x, y4, "-c", x, y8, "-m")
+%! y1 = loglpdf (x, 1, 0.5);
+%! y2 = loglpdf (x, 1, 1);
+%! y3 = loglpdf (x, 1, 2);
+%! y4 = loglpdf (x, 1, 4);
+%! y5 = loglpdf (x, 1, 8);
+%! plot (x, y1, "-b", x, y2,"-g", x, y3, "-r", x, y4, "-c", x, y5, "-m")
+%! grid on
 %! ylim ([0,3])
 %! legend ({"β = 0.5", "β = 1", "β = 2", "β = 4", "β = 8"}, ...
 %!         "location", "northeast")

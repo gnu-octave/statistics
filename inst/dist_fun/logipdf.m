@@ -20,17 +20,17 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{y} =} logipdf (@var{x})
 ## @deftypefnx {statistics} {@var{y} =} logipdf (@var{x}, @var{mu})
-## @deftypefnx {statistics} {@var{y} =} logipdf (@var{x}, @var{mu}, @var{scale})
+## @deftypefnx {statistics} {@var{y} =} logipdf (@var{x}, @var{mu}, @var{s})
 ##
 ## Logistic probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the PDF at @var{x} of the logistic
-## distribution with mean parameter @var{mu} and scale parameter @var{scale}.
-## The size of @var{y} is the common size of @var{x}, @var{mu}, and @var{scale}.
+## distribution with location parameter @var{mu} and scale parameter @var{s}.
+## The size of @var{y} is the common size of @var{x}, @var{mu}, and @var{s}.
 ## A scalar input functions as a constant matrix of the same size as the other
 ## inputs.
 ##
-## Default values are @qcode{@var{mu} = 0} and @qcode{@var{scale} = 1}.
+## Default values are @qcode{@var{mu} = 0} and @qcode{@var{s} = 1}.
 ## Both parameters must be reals and @qcode{@var{beta} > 0}.
 ## For @qcode{@var{beta} <= 0}, @qcode{NaN} is returned.
 ##
@@ -40,45 +40,62 @@
 ## @seealso{logicdf, logiinv, logirnd, logifit, logilike, logistat}
 ## @end deftypefn
 
-function y = logipdf (x, mu = 0, scale = 1)
+function y = logipdf (x, mu = 0, s = 1)
 
   ## Check for valid number of input arguments
   if (nargin < 1 || nargin > 3)
     print_usage ();
   endif
 
-  ## Check for common size of P, MU, and SCALE
-  if (! isscalar (x) || ! isscalar (mu) || ! isscalar(scale))
-    [retval, x, mu, scale] = common_size (x, mu, scale);
+  ## Check for common size of P, MU, and S
+  if (! isscalar (x) || ! isscalar (mu) || ! isscalar(s))
+    [retval, x, mu, s] = common_size (x, mu, s);
     if (retval > 0)
-      error (strcat (["logipdf: X, MU, and SCALE must be of"], ...
+      error (strcat (["logipdf: X, MU, and S must be of"], ...
                      [" common size or scalars."]));
     endif
   endif
 
-  ## Check for X, MU, and SCALE being reals
-  if (iscomplex (x) || iscomplex (mu) || iscomplex (scale))
-    error ("logipdf: X, MU, and SCALE must not be complex.");
+  ## Check for X, MU, and S being reals
+  if (iscomplex (x) || iscomplex (mu) || iscomplex (s))
+    error ("logipdf: X, MU, and S must not be complex.");
   endif
 
   ## Check for appropriate class
-  if (isa (x, "single") || isa (mu, "single") || isa (scale, "single"));
+  if (isa (x, "single") || isa (mu, "single") || isa (s, "single"));
     y = NaN (size (x), "single");
   else
     y = NaN (size (x));
   endif
 
   ## Compute logistic PDF
-  k1 = ((x == -Inf) & (scale > 0)) | ((x == Inf) & (scale > 0));
+  k1 = ((x == -Inf) & (s > 0)) | ((x == Inf) & (s > 0));
   y(k1) = 0;
 
-  k = ! k1 & (scale > 0);
-  y(k) = (1 ./ (4 .* scale(k))) .* ...
-         (sech ((x(k) - mu(k)) ./ (2 .* scale(k))) .^ 2);
+  k = ! k1 & (s > 0);
+  y(k) = (1 ./ (4 .* s(k))) .* ...
+         (sech ((x(k) - mu(k)) ./ (2 .* s(k))) .^ 2);
 
 endfunction
 
+%!demo
+%! ## Plot various PDFs from the logistic distribution
+%! x = -5:0.01:20;
+%! y1 = logipdf (x, 5, 2);
+%! y2 = logipdf (x, 9, 3);
+%! y3 = logipdf (x, 9, 4);
+%! y4 = logipdf (x, 6, 2);
+%! y5 = logipdf (x, 2, 1);
+%! plot (x, y1, "-b", x, y2,"-g", x, y3, "-r", x, y4, "-c", x, y5, "-m")
+%! grid on
+%! ylim ([0,0.3])
+%! legend ({"μ = 5, s = 2", "μ = 9, s = 3", "μ = 2, s = 4", ...
+%!          "μ = 6, s = 2", "μ = 2, s = 1"}, "location", "northeast")
+%! title ("Logistic PDF")
+%! xlabel ("values in x")
+%! ylabel ("density")
 
+## Test output
 %!shared x, y
 %! x = [-Inf -log(4) 0 log(4) Inf];
 %! y = [0, 0.16, 1/4, 0.16, 0];
@@ -91,15 +108,15 @@ endfunction
 ## Test input validation
 %!error logipdf ()
 %!error logipdf (1, 2, 3, 4)
-%!error<logipdf: X, MU, and SCALE must be of common size or scalars.> ...
+%!error<logipdf: X, MU, and S must be of common size or scalars.> ...
 %! logipdf (1, ones (2), ones (3))
-%!error<logipdf: X, MU, and SCALE must be of common size or scalars.> ...
+%!error<logipdf: X, MU, and S must be of common size or scalars.> ...
 %! logipdf (ones (2), 1, ones (3))
-%!error<logipdf: X, MU, and SCALE must be of common size or scalars.> ...
+%!error<logipdf: X, MU, and S must be of common size or scalars.> ...
 %! logipdf (ones (2), ones (3), 1)
-%!error<logipdf: X, MU, and SCALE must not be complex.> ...
+%!error<logipdf: X, MU, and S must not be complex.> ...
 %! logipdf (i, 2, 3)
-%!error<logipdf: X, MU, and SCALE must not be complex.> ...
+%!error<logipdf: X, MU, and S must not be complex.> ...
 %! logipdf (1, i, 3)
-%!error<logipdf: X, MU, and SCALE must not be complex.> ...
+%!error<logipdf: X, MU, and S must not be complex.> ...
 %! logipdf (1, 2, i)

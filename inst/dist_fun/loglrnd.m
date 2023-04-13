@@ -25,11 +25,11 @@
 ## Random arrays from the log-logistic distribution.
 ##
 ## @code{@var{r} = loglrnd (@var{alpha}, @var{beta})} returns an array of random
-## numbers chosen from the log-logistic distribution with parameters @var{alpha}
-## and @var{beta}.  The size of @var{r} is the common size of @var{alpha} and
-## @var{beta}.  A scalar input functions as a constant matrix of the same size
-## as the other inputs.  Both parameters must be positive reals, otherwise
-## @qcode{NaN} is returned.
+## numbers chosen from the log-logistic distribution with scale parameter
+## @var{alpha} and shape parameter @var{beta}.  The size of @var{r} is the
+## common size of @var{alpha} and @var{beta}.  A scalar input functions as a
+## constant matrix of the same size as the other inputs.  Both parameters must
+## be positive reals, otherwise @qcode{NaN} is returned.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the

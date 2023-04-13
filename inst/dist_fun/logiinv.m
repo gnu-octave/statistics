@@ -21,17 +21,17 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{x} =} logiinv (@var{p})
 ## @deftypefnx {statistics} {@var{x} =} logiinv (@var{p}, @var{mu})
-## @deftypefnx {statistics} {@var{x} =} logiinv (@var{p}, @var{mu}, @var{scale})
+## @deftypefnx {statistics} {@var{x} =} logiinv (@var{p}, @var{mu}, @var{s})
 ##
 ## Inverse of the logistic cumulative distribution function (iCDF).
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## at @var{p} of the logistic distribution with mean parameter @var{mu} and
-## scale parameter @var{scale}.  The size of @var{x} is the common size of
-## @var{p}, @var{mu}, and @var{scale}.  A scalar input functions as a constant
+## at @var{p} of the logistic distribution with location parameter @var{mu} and
+## scale parameter @var{s}.  The size of @var{x} is the common size of
+## @var{p}, @var{mu}, and @var{s}.  A scalar input functions as a constant
 ## matrix of the same size as the other inputs.
 ##
-## Default values are @qcode{@var{mu} = 0} and @qcode{@var{scale} = 1}.
+## Default values are @qcode{@var{mu} = 0} and @qcode{@var{s} = 1}.
 ## Both parameters must be reals and @qcode{@var{beta} > 0}.
 ## For @qcode{@var{beta} <= 0}, @qcode{NaN} is returned.
 ##
@@ -41,42 +41,42 @@
 ## @seealso{logicdf, logipdf, logirnd, logifit, logilike, logistat}
 ## @end deftypefn
 
-function x = logiinv (p, mu = 0, scale = 1)
+function x = logiinv (p, mu = 0, s = 1)
 
   ## Check for valid number of input arguments
   if (nargin < 1 || nargin > 3)
     print_usage ();
   endif
 
-  ## Check for common size of P, MU, and SCALE
-  if (! isscalar (p) || ! isscalar (mu) || ! isscalar(scale))
-    [retval, p, mu, scale] = common_size (p, mu, scale);
+  ## Check for common size of P, MU, and S
+  if (! isscalar (p) || ! isscalar (mu) || ! isscalar(s))
+    [retval, p, mu, s] = common_size (p, mu, s);
     if (retval > 0)
-      error (strcat (["logiinv: P, MU, and SCALE must be of"], ...
+      error (strcat (["logiinv: P, MU, and S must be of"], ...
                      [" common size or scalars."]));
     endif
   endif
 
-  ## Check for X, MU, and SCALE being reals
-  if (iscomplex (p) || iscomplex (mu) || iscomplex (scale))
-    error ("logiinv: P, MU, and SCALE must not be complex.");
+  ## Check for X, MU, and S being reals
+  if (iscomplex (p) || iscomplex (mu) || iscomplex (s))
+    error ("logiinv: P, MU, and S must not be complex.");
   endif
 
   ## Check for appropriate class
-  if (isa (p, "single") || isa (mu, "single") || isa (scale, "single"));
+  if (isa (p, "single") || isa (mu, "single") || isa (s, "single"));
     x = NaN (size (p), "single");
   else
     x = NaN (size (p));
   endif
 
-  k = (p == 0) & (scale > 0);
+  k = (p == 0) & (s > 0);
   x(k) = -Inf;
 
-  k = (p == 1) & (scale > 0);
+  k = (p == 1) & (s > 0);
   x(k) = Inf;
 
-  k = (p > 0) & (p < 1) & (scale > 0);
-  x(k) = mu(k) + scale(k) .* log (p(k) ./ (1 - p(k)));
+  k = (p > 0) & (p < 1) & (s > 0);
+  x(k) = mu(k) + s(k) .* log (p(k) ./ (1 - p(k)));
 
 endfunction
 
@@ -96,15 +96,15 @@ endfunction
 ## Test input validation
 %!error logiinv ()
 %!error logiinv (1, 2, 3, 4)
-%!error<logiinv: P, MU, and SCALE must be of common size or scalars.> ...
+%!error<logiinv: P, MU, and S must be of common size or scalars.> ...
 %! logiinv (1, ones (2), ones (3))
-%!error<logiinv: P, MU, and SCALE must be of common size or scalars.> ...
+%!error<logiinv: P, MU, and S must be of common size or scalars.> ...
 %! logiinv (ones (2), 1, ones (3))
-%!error<logiinv: P, MU, and SCALE must be of common size or scalars.> ...
+%!error<logiinv: P, MU, and S must be of common size or scalars.> ...
 %! logiinv (ones (2), ones (3), 1)
-%!error<logiinv: P, MU, and SCALE must not be complex.> ...
+%!error<logiinv: P, MU, and S must not be complex.> ...
 %! logiinv (i, 2, 3)
-%!error<logiinv: P, MU, and SCALE must not be complex.> ...
+%!error<logiinv: P, MU, and S must not be complex.> ...
 %! logiinv (1, i, 3)
-%!error<logiinv: P, MU, and SCALE must not be complex.> ...
+%!error<logiinv: P, MU, and S must not be complex.> ...
 %! logiinv (1, 2, i)

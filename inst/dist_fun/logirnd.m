@@ -19,20 +19,19 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{r} =} logirnd (@var{mu}, @var{scale})
-## @deftypefnx {statistics} {@var{r} =} logirnd (@var{mu}, @var{scale}, @var{rows})
-## @deftypefnx {statistics} {@var{r} =} logirnd (@var{mu}, @var{scale}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} {@var{r} =} logirnd (@var{mu}, @var{scale}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} logirnd (@var{mu}, @var{s})
+## @deftypefnx {statistics} {@var{r} =} logirnd (@var{mu}, @var{s}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} logirnd (@var{mu}, @var{s}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} logirnd (@var{mu}, @var{s}, [@var{sz}])
 ##
 ## Random arrays from the logistic distribution.
 ##
-## @code{@var{r} = logirnd (@var{mu}, @var{scale})} returns an array of
-## random numbers chosen from the logistic distribution with parameters @var{mu}
-## and @var{scale}.  The size of @var{r} is the common size of @var{mu} and
-## @var{scale}.  A scalar input functions as a constant matrix of the same size
-## as the other inputs.  Both parameters must be reals and
-## @qcode{@var{scale} > 0}.  For @qcode{@var{scale} <= 0}, @qcode{NaN} is
-## returned.
+## @code{@var{r} = logirnd (@var{mu}, @var{s})} returns an array of
+## random numbers chosen from the logistic distribution with location parameter
+## @var{mu} and scale @var{s}.  The size of @var{r} is the common size of
+## @var{mu} and @var{s}.  A scalar input functions as a constant matrix of the
+## same size as the other inputs.  Both parameters must be reals and
+## @qcode{@var{s} > 0}.  For @qcode{@var{s} <= 0}, @qcode{NaN} is returned.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -46,24 +45,24 @@
 ## @seealso{logcdf, logiinv, logipdf, logifit, logilike, logistat}
 ## @end deftypefn
 
-function r = logirnd (mu, scale, varargin)
+function r = logirnd (mu, s, varargin)
 
   ## Check for valid number of input arguments
   if (nargin < 2)
     print_usage ();
   endif
 
-  ## Check for common size of MU, and SCALE
-  if (! isscalar (mu) || ! isscalar (scale))
-    [retval, mu, scale] = common_size (mu, scale);
+  ## Check for common size of MU, and S
+  if (! isscalar (mu) || ! isscalar (s))
+    [retval, mu, s] = common_size (mu, s);
     if (retval > 0)
-      error ("logirnd: MU and SCALE must be of common size or scalars.");
+      error ("logirnd: MU and S must be of common size or scalars.");
     endif
   endif
 
-  ## Check for X, MU, and SCALE being reals
-  if (iscomplex (mu) || iscomplex (scale))
-    error ("logirnd: MU and SCALE must not be complex.");
+  ## Check for X, MU, and S being reals
+  if (iscomplex (mu) || iscomplex (s))
+    error ("logirnd: MU and S must not be complex.");
   endif
 
   ## Check for SIZE vector or DIMENSION input arguments
@@ -87,11 +86,11 @@ function r = logirnd (mu, scale, varargin)
 
   ## Check that parameters match requested dimensions in size
   if (! isscalar (mu) && ! isequal (size (mu), sz))
-    error ("logirnd: MU and SCALE must be scalars or of size SZ.");
+    error ("logirnd: MU and S must be scalars or of size SZ.");
   endif
 
   ## Check for appropriate class
-  if (isa (mu, "single") || isa (scale, "single"))
+  if (isa (mu, "single") || isa (s, "single"))
     is_type = "single";
   else
     is_type = "double";
@@ -99,10 +98,10 @@ function r = logirnd (mu, scale, varargin)
 
   ## Generate random sample from Laplace distribution
 
-  r = - log (1 ./ rand (sz, is_type) - 1) .* scale + mu;
+  r = - log (1 ./ rand (sz, is_type) - 1) .* s + mu;
 
-  ## Force output to NaN for invalid parameter SCALE <= 0
-  k = (scale <= 0);
+  ## Force output to NaN for invalid parameter S <= 0
+  k = (s <= 0);
   r(k) = NaN;
 
 endfunction
@@ -135,21 +134,21 @@ endfunction
 ## Test input validation
 %!error logirnd ()
 %!error logirnd (1)
-%!error<logirnd: MU and SCALE must be of common size or scalars.> ...
+%!error<logirnd: MU and S must be of common size or scalars.> ...
 %! logirnd (ones (3), ones (2))
-%!error<logirnd: MU and SCALE must be of common size or scalars.> ...
+%!error<logirnd: MU and S must be of common size or scalars.> ...
 %! logirnd (ones (2), ones (3))
-%!error<logirnd: MU and SCALE must not be complex.> logirnd (i, 2)
-%!error<logirnd: MU and SCALE must not be complex.> logirnd (1, i)
+%!error<logirnd: MU and S must not be complex.> logirnd (i, 2)
+%!error<logirnd: MU and S must not be complex.> logirnd (1, i)
 %!error<logirnd: dimension vector must be row vector of non-negative> ...
 %! logirnd (0, 1, [3, -1])
 %!error<logirnd: dimension vector must be row vector of non-negative> ...
 %! logirnd (0, 1, -1)
 %!error<logirnd: dimensions must be non-negative integers.> ...
 %! logirnd (0, 1, 3, -1)
-%!error<logirnd: MU and SCALE must be scalars or of size SZ.> ...
+%!error<logirnd: MU and S must be scalars or of size SZ.> ...
 %! logirnd (2, ones (2), 3)
-%!error<logirnd: MU and SCALE must be scalars or of size SZ.> ...
+%!error<logirnd: MU and S must be scalars or of size SZ.> ...
 %! logirnd (2, ones (2), [3, 2])
-%!error<logirnd: MU and SCALE must be scalars or of size SZ.> ...
+%!error<logirnd: MU and S must be scalars or of size SZ.> ...
 %! logirnd (2, ones (2), 3, 2)
