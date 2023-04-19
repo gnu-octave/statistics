@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: logiinv</title>
+    <title>Statistics: mcnemar_test</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -35,9 +35,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Distributions">
+                  <a class="nav-link" href="index.html#Hypothesis Testing">
                     <i class="fas fa-list-alt"></i>
-                    Distributions
+                    Hypothesis Testing
                   </a>
                 </li>
                 <li class="nav-item">
@@ -64,90 +64,59 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>logiinv</code></b>
+              Function&nbsp;Reference: <b><code>mcnemar_test</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>x</var> = <b>logiinv</b><i> (<var>p</var>)</i></dt>
-<dt><u>statistics:</u> <var>x</var> = <b>logiinv</b><i> (<var>p</var>, <var>mu</var>)</i></dt>
-<dt><u>statistics:</u> <var>x</var> = <b>logiinv</b><i> (<var>p</var>, <var>mu</var>, <var>s</var>)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>chisq</var>] = <b>mcnemar_test</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>chisq</var>] = <b>mcnemar_test</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>chisq</var>] = <b>mcnemar_test</b><i> (<var>x</var>, <var>testtype</var>)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>chisq</var>] = <b>mcnemar_test</b><i> (<var>x</var>, <var>alpha</var>, <var>testtype</var>)</i></dt>
 </dl>
 
-<p> Inverse of the logistic cumulative distribution function (iCDF).
+<p> Perform a McNemar&rsquo;s test on paired nominal data.
 </p>
 <div class="ms-5">
-<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF)
- at <var>p</var> of the logistic distribution with location parameter <var>mu</var> and
- scale parameter <var>s</var>.  The size of <var>x</var> is the common size of
- <var>p</var>, <var>mu</var>, and <var>s</var>.  A scalar input functions as a constant
- matrix of the same size as the other inputs.
+<p> @nospell{McNemar&rsquo;s} test is applied to a <math>2&times;2</math> contingency table <var>x</var>
+ with a dichotomous trait, with matched pairs of subjects, of data
+ cross-classified on the row and column variables to testing the null
+ hypothesis of symmetry of the classification probabilities.  More formally,
+ the null hypothesis of marginal homogeneity states that the two marginal
+ probabilities for each outcome are the same.
 </p>
-<p> Default values are <code><var>mu</var> = 0</code> and <code><var>s</var> = 1</code>.
- Both parameters must be reals and <code><var>beta</var> &gt; 0</code>.
- For <code><var>beta</var> &lt;= 0</code>, <code>NaN</code> is returned.
+<p> Under the null, with a sufficiently large number of discordants
+ (<code><var>x</var>(1,2) + <var>x</var>(2,1) &gt;= 25</code>), the test statistic, <var>chisq</var>,
+ follows a chi-squared distribution with 1 degree of freedom.  When the number
+ of discordants is less than 25, then the mid-P exact McNemar test is used.
 </p>
-<p> Further information about the log-logistic distribution can be found at
- <a href="https://en.wikipedia.org/wiki/Logistic_distribution">https://en.wikipedia.org/wiki/Logistic_distribution</a>
+<p> <var>testtype</var> will force <code>mcnemar_test</code> to apply a particular method
+ for testing the null hypothesis independently of the number of discordants.
+ Valid options for <var>testtype</var>:
+ </p><ul>
+<li> <code>&quot;asymptotic&quot;</code> Original McNemar test statistic
+ </li><li> <code>&quot;corrected&quot;</code> Edwards&rsquo; version with continuity correction
+ </li><li> <code>&quot;exact&quot;</code> An exact binomial test
+ </li><li> <code>&quot;mid-p&quot;</code> The mid-P McNemar test (mid-p binomial test)
+ </li></ul>
+
+<p> The test decision is returned in <var>h</var>, which is 1 when the null hypothesis
+ is rejected (<code><var>pval</var> &lt; <var>alpha</var></code>) or 0 otherwise.  <var>alpha</var>
+ defines the critical value of statistical significance for the test.
+</p>
+<p> Further information about the McNemar&rsquo;s test can be found at
+ <a href="https://en.wikipedia.org/wiki/McNemar%27s_test">https://en.wikipedia.org/wiki/McNemar%27s_test</a>
 </p>
 <p> <strong>See also: </strong>
-  <a href="logicdf.html">logicdf</a>, 
-  <a href="logipdf.html">logipdf</a>, 
-  <a href="logirnd.html">logirnd</a>, 
-logifit, 
-logilike, 
-logistat
+  <a href="crosstab.html">crosstab</a>, 
+  <a href="chi2test.html">chi2test</a>, 
+  <a href="fishertest.html">fishertest</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/logiinv.m">logiinv</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/mcnemar_test.m">mcnemar_test</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Plot various iCDFs from the logistic distribution
- p = 0.001:0.001:0.999;
- x1 = logiinv (p, 5, 2);
- x2 = logiinv (p, 9, 3);
- x3 = logiinv (p, 9, 4);
- x4 = logiinv (p, 6, 2);
- x5 = logiinv (p, 2, 1);
- plot (p, x1, "-b", p, x2,"-g", p, x3, "-r", p, x4, "-c", p, x5, "-m")
- grid on
- legend ({"μ = 5, s = 2", "μ = 9, s = 3", "μ = 2, s = 4", ...
-          "μ = 6, s = 2", "μ = 2, s = 1"}, "location", "southeast")
- title ("Logistic iCDF")
- xlabel ("probability")
- ylabel ("x")
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/logiinv_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
 
         </div>
       </div>
