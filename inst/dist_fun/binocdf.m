@@ -76,7 +76,7 @@ function p = binocdf (x, n, ps, uflag)
 
   k = (x >= 0) & (x < n) & (n == fix (n)) & (ps >= 0) & (ps <= 1);
   tmp = floor (x(k));
-  if !uflag
+  if (! uflag)
     if (isscalar (n) && isscalar (ps))
       p(k) = betainc (1 - ps, n - tmp, tmp + 1);
     else
