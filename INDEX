@@ -180,6 +180,7 @@ Hypothesis Testing
  kstest2
  levene_test
  manova1
+ mcnemar_test
  multcompare
  ranksum
  regression_ftest

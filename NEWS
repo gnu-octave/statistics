@@ -532,6 +532,8 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** runstest: fixed MATLAB compatibility
 
+ ** mcnemar_test: updated functionality
+
  Removed Functions:
  ==================
 
