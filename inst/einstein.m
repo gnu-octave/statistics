@@ -52,6 +52,10 @@
 
 function [varargout] = einstein (a, b, varargin)
 
+  ## Check for valid number of input arguments
+  if (nargin < 2)
+    print_usage;
+  endif
   ## Check A and B for valid range
   if (a <=0 || a >= 1 || b <= 0 || b >= 1)
     error ("einstein: A and B must be within the open interval (0,1).");
@@ -225,6 +229,8 @@ endfunction
 %! assert (isstruct (tiles), true);
 %! set (0, "DefaultFigureVisible", visibility_setting);
 
+%!error<Invalid call to einstein.  Correct usage is> einstein
+%!error<Invalid call to einstein.  Correct usage is> einstein (0.5)
 %!error<einstein: A and B must be within the open interval> einstein (0, 0.9)
 %!error<einstein: A and B must be within the open interval> einstein (0.4, 1)
 %!error<einstein: A and B must be within the open interval> einstein (-0.4, 1)
