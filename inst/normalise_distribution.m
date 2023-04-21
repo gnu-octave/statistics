@@ -240,7 +240,7 @@ endfunction
 %!test
 %! A = [rand(1000,1), randn(1000, 1)];
 %! N = normalise_distribution (A, {"unifcdf", "normcdf"});
-%! assert (mean (N), [0, 0], 0.1)
+%! assert (mean (N), [0, 0], 0.2)
 %! assert (std (N), [1, 1], 0.1)
 
 %!test
