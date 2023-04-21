@@ -25,9 +25,10 @@
 ## @deftypefnx {statistics} {[@var{tiles}, @var{rhat}, @var{that}, @var{shat}, @var{phat}] =} einstein (@var{a}, @var{b})
 ## @deftypefnx {statistics} {[@var{tiles}, @var{rhat}, @var{that}, @var{shat}, @var{phat}, @var{fhat}] =} einstein (@var{a}, @var{b})
 ##
-## Plots the tilling ot the basic clusters of einstein tiles.
+## Plots the tiling of the basic clusters of einstein tiles.
 ##
-## @var{a} and @var{b} define the shape of the einstein tile.
+## Scalars @var{a} and @var{b} define the shape of the einstein tile.
+## See Smith et al (2023) for details: @url{https://arxiv.org/abs/2303.10798}
 ##
 ## @itemize
 ## @item @var{tiles} is a structure containing the coordinates of the einstein
@@ -57,8 +58,12 @@ function [varargout] = einstein (a, b, varargin)
     print_usage;
   endif
 
-  ## Check A and B for valid range
-  if (a <=0 || a >= 1 || b <= 0 || b >= 1)
+  ## Check A and B for valid type and range
+  if (! (isscalar (a) && isscalar (b) && isnumeric (a) && isnumeric (b)...
+      && isreal (a) && isreal (b)))
+    error ("einstein: A and B must real scalars.");
+  end
+  if (a <= 0 || a >= 1 || b <= 0 || b >= 1)
     error ("einstein: A and B must be within the open interval (0,1).");
   endif
 
@@ -179,14 +184,14 @@ endfunction
 function newhat = rotatehat (hat, degrees)
   rotM = rotz (degrees)([1,2],[1,2]);
   newhat = zeros (size (hat));
-  for i=1:2:size (hat, 2)
+  for i=1:2:columns (hat)
     newhat(:,[i,i+1]) = hat(:,[i,i+1]) * rotM;
   endfor
 endfunction
 
 ## Translates a cluster of hats.
 function newhat = translatehat (hat, dist)
-  nhats = size (hat, 2) / 2;
+  nhats = columns (hat) / 2;
   newhat = hat + repmat (dist, 1, nhats);
 endfunction
 
