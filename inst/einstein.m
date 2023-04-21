@@ -56,6 +56,7 @@ function [varargout] = einstein (a, b, varargin)
   if (nargin < 2)
     print_usage;
   endif
+
   ## Check A and B for valid range
   if (a <=0 || a >= 1 || b <= 0 || b >= 1)
     error ("einstein: A and B must be within the open interval (0,1).");
