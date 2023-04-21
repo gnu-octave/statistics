@@ -497,6 +497,8 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** binolike (similar functionality to MATLAB's likefunc)
 
+ ** einstein (plotting function for the einstein tile)
+
  ** isoutlier (fully Matlab compatible)
 
  ** logicdf (replacing logistic_cdf)
