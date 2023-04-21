@@ -104,7 +104,7 @@ endfunction
 %! title ("Log-logistic PDF")
 %! xlabel ("values in x")
 %! ylabel ("density")
-%! text (0.8, 2.8, "α = 1, values of β as shown in legend")
+%! text (0.5, 2.8, "α = 1, values of β as shown in legend")
 
 ## Test output
 %!shared out1, out2

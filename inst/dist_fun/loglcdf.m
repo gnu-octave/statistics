@@ -135,7 +135,7 @@ endfunction
 %! title ("Log-logistic CDF")
 %! xlabel ("values in x")
 %! ylabel ("probability")
-%! text (0.05, 0.7, "α = 1, values of β as shown in legend")
+%! text (0.05, 0.64, "α = 1, values of β as shown in legend")
 
 ## Test output
 %!shared out1, out2

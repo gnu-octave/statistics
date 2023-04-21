@@ -101,7 +101,7 @@ endfunction
 %! title ("Log-logistic iCDF")
 %! xlabel ("probability")
 %! ylabel ("x")
-%! text (0.03, 14, "α = 1, values of β as shown in legend")
+%! text (0.03, 12.5, "α = 1, values of β as shown in legend")
 
 ## Test output
 %!shared p, out1, out2
