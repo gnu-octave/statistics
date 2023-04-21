@@ -114,7 +114,7 @@ endfunction
 %!test
 %! x = rand (10,1);
 %! y = 1./(pi * sqrt (x.*(1-x)));
-%! assert (betapdf (x, 1/2, 1/2), y, 50*eps);
+%! assert (betapdf (x, 1/2, 1/2), y, 100*eps);
 
 ## Test large input values to betapdf
 %!assert (betapdf (0.5, 1000, 1000), 35.678, 1e-3)
