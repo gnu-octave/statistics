@@ -101,7 +101,11 @@ endfunction
 
 %!demo
 %! ## Sample 2 populations from 2 different binomial distibutions
-%! r = [binornd(50, 0.15, 200, 1), binornd(100, 0.5, 200, 1)];
+%! rand ("seed", 1);    # for reproducibility
+%! r1 = binornd (50, 0.15, 200, 1);
+%! rand ("seed", 2);    # for reproducibility
+%! r2 = binornd (100, 0.5, 200, 1);
+%! r = [r1, r2];
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, 20, 1);

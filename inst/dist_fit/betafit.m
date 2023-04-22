@@ -149,7 +149,11 @@ endfunction
 
 %!demo
 %! ## Sample 2 populations from 2 different Extreme Value distibutions
-%! r = [betarnd(2, 5, 500, 1), betarnd(2, 2, 500, 1)];
+%! randg ("seed", 1);   # for reproducibility
+%! r1 = betarnd (2, 5, 500, 1);
+%! randg ("seed", 2);   # for reproducibility
+%! r2 = betarnd (2, 2, 500, 1);
+%! r = [r1, r2];
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, 12, 15);

@@ -196,7 +196,13 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from 3 different exponential distibutions
-%! r = [exprnd(2, 200, 1), exprnd(5, 200, 1), exprnd(14, 200, 1)];
+%! rande ("seed", 1);   # for reproducibility
+%! r1 = exprnd (2, 200, 1);
+%! rande ("seed", 2);   # for reproducibility
+%! r2 = exprnd (5, 200, 1);
+%! rande ("seed", 3);   # for reproducibility
+%! r3 = exprnd (14, 200, 1);
+%! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, 12, 1);
