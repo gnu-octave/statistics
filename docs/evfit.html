@@ -146,7 +146,13 @@
                     <td><pre class="example">
 
  ## Sample 3 populations from 3 different Extreme Value distibutions
- r = [evrnd(2, 5, 200, 1), evrnd(-5, 3, 200, 1), evrnd(14, 8, 200, 1)];
+ rand ("seed", 1);    # for reproducibility
+ r1 = evrnd (2, 5, 200, 1);
+ rand ("seed", 2);    # for reproducibility
+ r2 = evrnd (-5, 3, 200, 1);
+ rand ("seed", 13);    # for reproducibility
+ r3 = evrnd (14, 8, 200, 1);
+ r = [r1, r2, r3];
 
  ## Plot them normalized and fix their colors
  hist (r, 12, 1);
