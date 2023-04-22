@@ -31,7 +31,7 @@
 ## constant matrix of the same size as the other inputs.  Both parameters must
 ## be positive reals, otherwise @qcode{NaN} is returned.
 ##
-## When called with a single size argument, return a square matrix with
+## When called with a single size argument, it returns a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
 ## first two arguments are taken as the number of rows and columns and any
 ## further arguments specify additional matrix dimensions.  The size may also

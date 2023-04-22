@@ -96,7 +96,7 @@ endfunction
 %! y3 = loglpdf (x, 1, 2);
 %! y4 = loglpdf (x, 1, 4);
 %! y5 = loglpdf (x, 1, 8);
-%! plot (x, y1, "-b", x, y2,"-g", x, y3, "-r", x, y4, "-c", x, y5, "-m")
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-c", x, y5, "-m")
 %! grid on
 %! ylim ([0,3])
 %! legend ({"β = 0.5", "β = 1", "β = 2", "β = 4", "β = 8"}, ...
