@@ -175,12 +175,16 @@ endfunction
 
 ## Test results
 %!test
-%! [h, pval, stats] = hotelling_t2test (randn(50000,5));
+%! randn ("seed", 1);
+%! x = randn (50000, 5);
+%! [h, pval, stats] = hotelling_t2test (x);
 %! assert (h, 0);
 %! assert (stats.df1, 5);
 %! assert (stats.df2, 49995);
 %!test
-%! [h, pval, stats] = hotelling_t2test (randn(50000,5), ones (1, 5) * 10);
+%! randn ("seed", 1);
+%! x = randn (50000, 5);
+%! [h, pval, stats] = hotelling_t2test (x, ones (1, 5) * 10);
 %! assert (h, 1);
 %! assert (stats.df1, 5);
 %! assert (stats.df2, 49995);
