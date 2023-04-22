@@ -71,17 +71,28 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>x</var> = <b>gaminv</b><i> (<var>p</var>, <var>a</var>, <var>b</var>)</i></dt>
+<dt><u>statistics:</u> <var>x</var> = <b>gaminv</b><i> (<var>p</var>, <var>k</var>, <var>theta</var>)</i></dt>
 </dl>
 
 <p> Inverse of the Gamma cumulative distribution function (iCDF).
 </p>
 <div class="ms-5">
 <p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF)
- at <var>p</var> of the Gamma distribution with shape parameter <var>a</var> and
- scale <var>b</var>.  The size of <var>x</var> is the common size of <var>p</var>, <var>a</var>,
- and <var>b</var>.  A scalar input functions as a constant matrix of the same size
- as the other inputs.
+ at <var>p</var> of the Gamma distribution with shape parameter <var>k</var> and
+ scale parameter <var>theta</var>.  The size of <var>x</var> is the common size of
+ <var>p</var>, <var>k</var>, and <var>theta</var>.  A scalar input functions as a constant
+ matrix of the same size as the other inputs.
+</p>
+<p> There are two equivalent parameterizations in common use:
+ </p><ol>
+<li> With a shape parameter <math>k</math> and a scale parameter <math>θ</math>, which
+ is used by <code>gaminv</code>.
+ </li><li> With a shape parameter <math>α = k</math> and an inverse scale parameter
+ <math>β = 1 / θ</math>, called a rate parameter.
+ </li></ol>
+
+<p> Further information about the Gamma distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Gamma_distribution">https://en.wikipedia.org/wiki/Gamma_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="gamcdf.html">gamcdf</a>, 
@@ -94,6 +105,56 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/gaminv.m">gaminv</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various iCDFs from the Gamma distribution
+ p = 0.001:0.001:0.999;
+ x1 = gaminv (p, 1, 2);
+ x2 = gaminv (p, 2, 2);
+ x3 = gaminv (p, 3, 2);
+ x4 = gaminv (p, 5, 1);
+ x5 = gaminv (p, 9, 0.5);
+ x6 = gaminv (p, 7.5, 1);
+ x7 = gaminv (p, 0.5, 1);
+ plot (p, x1, "-r", p, x2, "-g", p, x3, "-y", p, x4, "-m", ...
+       p, x5, "-k", p, x6, "-b", p, x7, "-c")
+ ylim ([0, 20])
+ grid on
+ legend ({"α = 1, θ = 2", "α = 2, θ = 2", "α = 3, θ = 2", ...
+          "α = 5, θ = 1", "α = 9, θ = 0.5", "α = 7.5, θ = 1", ...
+          "α = 0.5, θ = 1"}, "location", "northwest")
+ title ("Gamma iCDF")
+ xlabel ("probability")
+ ylabel ("x")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/gaminv_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

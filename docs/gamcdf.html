@@ -71,11 +71,11 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>gamcdf</b><i> (<var>x</var>, <var>a</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>gamcdf</b><i> (<var>x</var>, <var>a</var>, <var>b</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>gamcdf</b><i> (<var>x</var>, <var>k</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>gamcdf</b><i> (<var>x</var>, <var>k</var>, <var>theta</var>)</i></dt>
 <dt><u>statistics:</u> <var>p</var> = <b>gamcdf</b><i> (&hellip;, &quot;upper&quot;)</i></dt>
-<dt><u>statistics:</u> [<var>p</var>, <var>plo</var>, <var>pup</var>] = <b>evcdf</b><i> (<var>x</var>, <var>a</var>, <var>b</var>, <var>pcov</var>)</i></dt>
-<dt><u>statistics:</u> [<var>p</var>, <var>plo</var>, <var>pup</var>] = <b>evcdf</b><i> (<var>x</var>, <var>a</var>, <var>b</var>, <var>pcov</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> [<var>p</var>, <var>plo</var>, <var>pup</var>] = <b>evcdf</b><i> (<var>x</var>, <var>k</var>, <var>theta</var>, <var>pcov</var>)</i></dt>
+<dt><u>statistics:</u> [<var>p</var>, <var>plo</var>, <var>pup</var>] = <b>evcdf</b><i> (<var>x</var>, <var>k</var>, <var>theta</var>, <var>pcov</var>, <var>alpha</var>)</i></dt>
 <dt><u>statistics:</u> [<var>p</var>, <var>plo</var>, <var>pup</var>] = <b>evcdf</b><i> (&hellip;, &quot;upper&quot;)</i></dt>
 </dl>
 
@@ -83,23 +83,34 @@
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the cumulative distribution function
- (CDF) at <var>x</var> of the Gamma distribution with shape parameter <var>a</var> and
- scale <var>b</var>.  When called with only one parameter, then <var>b</var> defaults to
- 1.  The size of <var>p</var> is the common size of <var>x</var>, <var>a</var>, and <var>b</var>.
- A scalar input functions as a constant matrix of the same size as the other
- inputs.
+ (CDF) at <var>x</var> of the Gamma distribution with shape parameter <var>k</var> and
+ scale parameter <var>theta</var>.  When called with only one parameter, then
+ <var>theta</var> defaults to 1.  The size of <var>p</var> is the common size of
+ <var>x</var>, <var>k</var>, and <var>theta</var>.  A scalar input functions as a constant
+ matrix of the same size as the other inputs.
 </p>
 <p> When called with three output arguments, <code>[<var>p</var>, <var>plo</var>,
  <var>pup</var>]</code> it computes the confidence bounds for <var>p</var> when the input
- parameters <var>a</var> and <var>b</var> are estimates.  In such case, <var>pcov</var>,
- a 2-by-2 matrix containing the covariance matrix of the estimated parameters,
- is necessary.  Optionally, <var>alpha</var> has a default value of 0.05, and
- specifies 100 * (1 - <var>alpha</var>)% confidence bounds. <var>plo</var> and <var>pup</var>
- are arrays of the same size as <var>p</var> containing the lower and upper
- confidence bounds.
+ parameters <var>k</var> and <var>theta</var> are estimates.  In such case, <var>pcov</var>,
+ a <math>2&times;2</math> matrix containing the covariance matrix of the estimated
+ parameters, is necessary.  Optionally, <var>alpha</var> has a default value of
+ 0.05, and specifies <code>100 * (1 - <var>alpha</var>)%</code> confidence bounds.
+ <var>plo</var> and <var>pup</var> are arrays of the same size as <var>p</var> containing the
+ lower and upper confidence bounds.
 </p>
 <p> <code>[&hellip;] = gamcdf (&hellip;, &quot;upper&quot;)</code> computes the upper tail
  probability of the gamma distribution.
+</p>
+<p> There are two equivalent parameterizations in common use:
+ </p><ol>
+<li> With a shape parameter <math>k</math> and a scale parameter <math>θ</math>, which
+ is used by <code>gamcdf</code>.
+ </li><li> With a shape parameter <math>α = k</math> and an inverse scale parameter
+ <math>β = 1 / θ</math>, called a rate parameter.
+ </li></ol>
+
+<p> Further information about the Gamma distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Gamma_distribution">https://en.wikipedia.org/wiki/Gamma_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="gaminv.html">gaminv</a>, 
@@ -112,6 +123,55 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/gamcdf.m">gamcdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various CDFs from the Gamma distribution
+ x = 0:0.01:20;
+ p1 = gamcdf (x, 1, 2);
+ p2 = gamcdf (x, 2, 2);
+ p3 = gamcdf (x, 3, 2);
+ p4 = gamcdf (x, 5, 1);
+ p5 = gamcdf (x, 9, 0.5);
+ p6 = gamcdf (x, 7.5, 1);
+ p7 = gamcdf (x, 0.5, 1);
+ plot (x, p1, "-r", x, p2, "-g", x, p3, "-y", x, p4, "-m", ...
+       x, p5, "-k", x, p6, "-b", x, p7, "-c")
+ grid on
+ legend ({"α = 1, θ = 2", "α = 2, θ = 2", "α = 3, θ = 2", ...
+          "α = 5, θ = 1", "α = 9, θ = 0.5", "α = 7.5, θ = 1", ...
+          "α = 0.5, θ = 1"}, "location", "southeast")
+ title ("Gamma CDF")
+ xlabel ("values in x")
+ ylabel ("probability")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/gamcdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>
