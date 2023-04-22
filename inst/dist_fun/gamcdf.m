@@ -19,33 +19,44 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{p} =} gamcdf (@var{x}, @var{a})
-## @deftypefnx {statistics} {@var{p} =} gamcdf (@var{x}, @var{a}, @var{b})
+## @deftypefn  {statistics} {@var{p} =} gamcdf (@var{x}, @var{k})
+## @deftypefnx {statistics} {@var{p} =} gamcdf (@var{x}, @var{k}, @var{theta})
 ## @deftypefnx {statistics} {@var{p} =} gamcdf (@dots{}, "upper")
-## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} evcdf (@var{x}, @var{a}, @var{b}, @var{pcov})
-## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} evcdf (@var{x}, @var{a}, @var{b}, @var{pcov}, @var{alpha})
+## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} evcdf (@var{x}, @var{k}, @var{theta}, @var{pcov})
+## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} evcdf (@var{x}, @var{k}, @var{theta}, @var{pcov}, @var{alpha})
 ## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} evcdf (@dots{}, "upper")
 ##
 ## Gamma cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the Gamma distribution with shape parameter @var{a} and
-## scale @var{b}.  When called with only one parameter, then @var{b} defaults to
-## 1.  The size of @var{p} is the common size of @var{x}, @var{a}, and @var{b}.
-## A scalar input functions as a constant matrix of the same size as the other
-## inputs.
+## (CDF) at @var{x} of the Gamma distribution with shape parameter @var{k} and
+## scale parameter @var{theta}.  When called with only one parameter, then
+## @var{theta} defaults to 1.  The size of @var{p} is the common size of
+## @var{x}, @var{k}, and @var{theta}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
 ##
 ## When called with three output arguments, @code{[@var{p}, @var{plo},
 ## @var{pup}]} it computes the confidence bounds for @var{p} when the input
-## parameters @var{a} and @var{b} are estimates.  In such case, @var{pcov},
-## a 2-by-2 matrix containing the covariance matrix of the estimated parameters,
-## is necessary.  Optionally, @var{alpha} has a default value of 0.05, and
-## specifies 100 * (1 - @var{alpha})% confidence bounds. @var{plo} and @var{pup}
-## are arrays of the same size as @var{p} containing the lower and upper
-## confidence bounds.
+## parameters @var{k} and @var{theta} are estimates.  In such case, @var{pcov},
+## a @math{2x2} matrix containing the covariance matrix of the estimated
+## parameters, is necessary.  Optionally, @var{alpha} has a default value of
+## 0.05, and specifies @qcode{100 * (1 - @var{alpha})%} confidence bounds.
+## @var{plo} and @var{pup} are arrays of the same size as @var{p} containing the
+## lower and upper confidence bounds.
 ##
 ## @code{[@dots{}] = gamcdf (@dots{}, "upper")} computes the upper tail
 ## probability of the gamma distribution.
+##
+## There are two equivalent parameterizations in common use:
+## @enumerate
+## @item With a shape parameter @math{k} and a scale parameter @math{θ}, which
+## is used by @code{gamcdf}.
+## @item With a shape parameter @math{α = k} and an inverse scale parameter
+## @math{β = 1 / θ}, called a rate parameter.
+## @end enumerate
+##
+## Further information about the Gamma distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Gamma_distribution}
 ##
 ## @seealso{gaminv, gampdf, gamrnd, gamfit, gamlike, gamstat}
 ## @end deftypefn
@@ -72,11 +83,11 @@ function [varargout] = gamcdf (x, varargin)
   endif
 
   ## Get extra arguments (if they exist) or add defaults
-  a = varargin{1};
+  k = varargin{1};
   if (numel (varargin) > 1)
-    b = varargin{2};
+    theta = varargin{2};
   else
-    b = 1;
+    theta = 1;
   endif
   if (numel (varargin) > 2)
     pcov = varargin{3};
@@ -101,40 +112,40 @@ function [varargout] = gamcdf (x, varargin)
     alpha = 0.05;
   endif
 
-  ## Check for common size of X, A, and B
-  if (! isscalar (x) || ! isscalar (a) || ! isscalar (b))
-    [err, x, a, b] = common_size (x, a, b);
+  ## Check for common size of X, K, and THETA
+  if (! isscalar (x) || ! isscalar (k) || ! isscalar (theta))
+    [err, x, k, theta] = common_size (x, k, theta);
     if (err > 0)
-      error ("gamcdf: X, A, and B must be of common size or scalars.");
+      error ("gamcdf: X, K, and THETA must be of common size or scalars.");
     endif
   endif
 
-  ## Check for X, A, and B being reals
-  if (iscomplex (x) || iscomplex (a) || iscomplex (b))
-    error ("gamcdf: X, A, and B must not be complex.");
+  ## Check for X, K, and THETA being reals
+  if (iscomplex (x) || iscomplex (k) || iscomplex (theta))
+    error ("gamcdf: X, K, and THETA must not be complex.");
   endif
 
   ## Prepare parameters so that gammainc returns NaN for out of range parameters
-  a(a < 0) = NaN;
-  b(b < 0) = NaN;
+  k(k < 0) = NaN;
+  theta(theta < 0) = NaN;
 
   ## Prepare data so that gammainc returns 0 for negative X
   x(x < 0) = 0;
 
   ## Compute gammainc
-  z = x ./ b;
+  z = x ./ theta;
   if (uflag)
-    p = gammainc (z, a, "upper");
-    ## Fix NaNs to gammainc output when a == NaN
-    p(isnan (a)) = NaN;
+    p = gammainc (z, k, "upper");
+    ## Fix NaNs to gammainc output when k == NaN
+    p(isnan (k)) = NaN;
   else
-    p = gammainc (z, a);
-    ## Fix NaNs to gammainc output when a == NaN
-    p(isnan (a)) = NaN;
+    p = gammainc (z, k);
+    ## Fix NaNs to gammainc output when k == NaN
+    p(isnan (k)) = NaN;
   endif
 
   ## Check for appropriate class
-  if (isa (x, "single") || isa (a, "single") || isa (b, "single"));
+  if (isa (x, "single") || isa (k, "single") || isa (theta, "single"));
     is_class = "single";
   else
     is_class = "double";
@@ -152,14 +163,14 @@ function [varargout] = gamcdf (x, varargin)
     ## Approximate the variance of p on the logit scale
     logitp = log (p ./ (1 - p));
     dp = 1 ./ (p .* (1 - p));
-    da = dgammainc (z, a) .* dp;
-    db = -exp (a .* log (z) - z - gammaln (a) - log (b)) .* dp;
+    da = dgammainc (z, k) .* dp;
+    db = -exp (k .* log (z) - z - gammaln (k) - log (theta)) .* dp;
     varLogitp = pcov(1,1) .* da .^ 2 + 2 .* pcov(1,2) .* da .* db + ...
                                             pcov(2,2) .* db .^ 2;
     if (any (varLogitp(:) < 0))
         error ("gamcdf: bad covariance matrix.");
     endif
-    ## Use a normal approximation on the logit scale, then transform back to
+    ## Use k normal approximation on the logit scale, then transform back to
     ## the original CDF scale
     halfwidth = -norminv (alpha / 2) * sqrt (varLogitp);
     explogitplo = exp (logitp - halfwidth);
@@ -173,19 +184,19 @@ function [varargout] = gamcdf (x, varargin)
 endfunction
 
 ## Incomplete gamma function for first derivative
-function dy = dgammainc(x, a)
+function dy = dgammainc(x, k)
   dy = NaN (size (x));
-  amax = 2 ^ 20;
-  k = find (a > amax);
-  if (! isempty (k))
-    x(k) = max(amax-1/3 + sqrt(amax./a(k)).*(x(k)-(a(k)-1/3)),0);
-    a(k) = amax;
+  kmax = 2 ^ 20;
+  mk = find (k > kmax);
+  if (! isempty (mk))
+    x(mk) = max(kmax-1/3 + sqrt(kmax./k(mk)).*(x(mk)-(k(mk)-1/3)),0);
+    k(mk) = kmax;
   endif
-  ## Series expansion for lower incomplete gamma when x < a+1
-  k = find (x < a + 1 & x != 0);
-  if (! isempty (k))
-    xk = x(k);
-    ak = a(k);
+  ## Series expansion for lower incomplete gamma when x < k+1
+  mk = find (x < k + 1 & x != 0);
+  if (! isempty (mk))
+    xk = x(mk);
+    ak = k(mk);
     aplusn = ak;
     del = 1;
     ddel = 0;
@@ -208,13 +219,13 @@ function dy = dgammainc(x, a)
     dlogfac = (log (xk) - psi (ak + 1));
     dfac = fac .* dlogfac;
     dyk = dfac .* sum + fac .* dsum;
-    dy(k) = dyk;
+    dy(mk) = dyk;
   endif
-  ## Continued fraction for upper incomplete gamma when x >= a+1
-  k = find (x >= a + 1);
-  if (! isempty (k))
-    xk = x(k);
-    ak = a(k);
+  ## Continued fraction for upper incomplete gamma when x >= k+1
+  mk = find (x >= k + 1);
+  if (! isempty (mk))
+    xk = x(mk);
+    ak = k(mk);
     n = 0;
     a0 = 0;
     a1 = ak;
@@ -253,18 +264,38 @@ function dy = dgammainc(x, a)
     dlogfac = (log(xk) - psi(ak+1));
     dfac = fac .* dlogfac;
     dyk = dfac.*g + fac.*dg;
-    dy(k) = -dyk;
+    dy(mk) = -dyk;
   endif
   kx0 = find(x == 0);
   if (! isempty (kx0))
     dy(kx0) = 0;
   endif
-  ka0 = find (a == 0);
+  ka0 = find (k == 0);
   if (! isempty (ka0))
-    ka0x0 = find(a == 0 & x == 0);
+    ka0x0 = find(k == 0 & x == 0);
     dy(ka0x0) = -Inf;
   endif
 endfunction
+
+%!demo
+%! ## Plot various CDFs from the Gamma distribution
+%! x = 0:0.01:20;
+%! p1 = gamcdf (x, 1, 2);
+%! p2 = gamcdf (x, 2, 2);
+%! p3 = gamcdf (x, 3, 2);
+%! p4 = gamcdf (x, 5, 1);
+%! p5 = gamcdf (x, 9, 0.5);
+%! p6 = gamcdf (x, 7.5, 1);
+%! p7 = gamcdf (x, 0.5, 1);
+%! plot (x, p1, "-r", x, p2, "-g", x, p3, "-y", x, p4, "-m", ...
+%!       x, p5, "-k", x, p6, "-b", x, p7, "-c")
+%! grid on
+%! legend ({"α = 1, θ = 2", "α = 2, θ = 2", "α = 3, θ = 2", ...
+%!          "α = 5, θ = 1", "α = 9, θ = 0.5", "α = 7.5, θ = 1", ...
+%!          "α = 0.5, θ = 1"}, "location", "southeast")
+%! title ("Gamma CDF")
+%! xlabel ("values in x")
+%! ylabel ("probability")
 
 %!shared x, y, u
 %! x = [-1, 0, 0.5, 1, 2, Inf];
@@ -302,14 +333,14 @@ endfunction
 %! gamcdf (1, 2, 3, [1, 0; 0, 1], 1.22)
 %!error<gamcdf: invalid value for alpha.> [p, plo, pup] = ...
 %! gamcdf (1, 2, 3, [1, 0; 0, 1], "alpha", "upper")
-%!error<gamcdf: X, A, and B must be of common size or scalars.> ...
+%!error<gamcdf: X, K, and THETA must be of common size or scalars.> ...
 %! gamcdf (ones (3), ones (2), ones (2))
-%!error<gamcdf: X, A, and B must be of common size or scalars.> ...
+%!error<gamcdf: X, K, and THETA must be of common size or scalars.> ...
 %! gamcdf (ones (2), ones (3), ones (2))
-%!error<gamcdf: X, A, and B must be of common size or scalars.> ...
+%!error<gamcdf: X, K, and THETA must be of common size or scalars.> ...
 %! gamcdf (ones (2), ones (2), ones (3))
-%!error<gamcdf: X, A, and B must not be complex.> gamcdf (i, 2, 2)
-%!error<gamcdf: X, A, and B must not be complex.> gamcdf (2, i, 2)
-%!error<gamcdf: X, A, and B must not be complex.> gamcdf (2, 2, i)
+%!error<gamcdf: X, K, and THETA must not be complex.> gamcdf (i, 2, 2)
+%!error<gamcdf: X, K, and THETA must not be complex.> gamcdf (2, i, 2)
+%!error<gamcdf: X, K, and THETA must not be complex.> gamcdf (2, 2, i)
 %!error<gamcdf: bad covariance matrix.> ...
 %! [p, plo, pup] = gamcdf (1, 2, 3, [1, 0; 0, -inf], 0.04)

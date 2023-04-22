@@ -17,47 +17,58 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{r} =} gamrnd (@var{a}, @var{b})
-## @deftypefnx {statistics} {@var{r} =} gamrnd (@var{a}, @var{b}, @var{rows})
-## @deftypefnx {statistics} {@var{r} =} gamrnd (@var{a}, @var{b}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} {@var{r} =} gamrnd (@var{a}, @var{b}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} gamrnd (@var{k}, @var{theta})
+## @deftypefnx {statistics} {@var{r} =} gamrnd (@var{k}, @var{theta}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} gamrnd (@var{k}, @var{theta}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} gamrnd (@var{k}, @var{theta}, [@var{sz}])
 ##
 ## Random arrays from the Gamma distribution.
 ##
-## @code{@var{r} = gamrnd (@var{a}, @var{b})} returns an array of random numbers
-## chosen from the Gamma distribution with shape parameter @var{a} and scale
-## parameter @var{b}.  The size of @var{r} is the common size of @var{a} and
-## @var{b}.  A scalar input functions as a constant matrix of the same size as
-## the other inputs.
+## @code{@var{r} = gamrnd (@var{k}, @var{theta})} returns an array of random
+## numbers chosen from the Gamma distribution with shape parameter @var{k} and
+## scale parameter @var{theta}.  The size of @var{r} is the common size of
+## @var{k} and @var{theta}.  A scalar input functions as a constant matrix of
+## the same size as the other inputs.
 ##
-## When called with a single size argument, return a square matrix with
+## When called with a single size argument, it returns a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
 ## first two arguments are taken as the number of rows and columns and any
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
+## There are two equivalent parameterizations in common use:
+## @enumerate
+## @item With a shape parameter @math{k} and a scale parameter @math{θ}, which
+## is used by @code{gamrnd}.
+## @item With a shape parameter @math{α = k} and an inverse scale parameter
+## @math{β = 1 / θ}, called a rate parameter.
+## @end enumerate
+##
+## Further information about the Gamma distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Gamma_distribution}
+##
 ## @seealso{gamcdf, gaminv, gampdf, gamfit, gamlike, gamstat}
 ## @end deftypefn
 
-function r = gamrnd (a, b, varargin)
+function r = gamrnd (k, theta, varargin)
 
   if (nargin < 2)
     print_usage ();
   endif
 
-  if (! isscalar (a) || ! isscalar (b))
-    [retval, a, b] = common_size (a, b);
+  if (! isscalar (k) || ! isscalar (theta))
+    [retval, k, theta] = common_size (k, theta);
     if (retval > 0)
-      error ("gamrnd: A and B must be of common size or scalars.");
+      error ("gamrnd: K and THETA must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (a) || iscomplex (b))
-    error ("gamrnd: A and B must not be complex.");
+  if (iscomplex (k) || iscomplex (theta))
+    error ("gamrnd: K and THETA must not be complex.");
   endif
 
   if (nargin == 2)
-    sz = size (a);
+    sz = size (k);
   elseif (nargin == 3)
     if (isscalar (varargin{1}) && varargin{1} >= 0)
       sz = [varargin{1}, varargin{1}];
@@ -74,27 +85,27 @@ function r = gamrnd (a, b, varargin)
     sz = [varargin{:}];
   endif
 
-  if (! isscalar (a) && ! isequal (size (a), sz))
-    error ("gamrnd: A and B must be scalar or of size SZ.");
+  if (! isscalar (k) && ! isequal (size (k), sz))
+    error ("gamrnd: K and THETA must be scalar or of size SZ.");
   endif
 
-  if (isa (a, "single") || isa (b, "single"))
+  if (isa (k, "single") || isa (theta, "single"))
     cls = "single";
   else
     cls = "double";
   endif
 
-  if (isscalar (a) && isscalar (b))
-    if ((a > 0) && (a < Inf) && (b > 0) && (b < Inf))
-      r = b * randg (a, sz, cls);
+  if (isscalar (k) && isscalar (theta))
+    if ((k > 0) && (k < Inf) && (theta > 0) && (theta < Inf))
+      r = theta * randg (k, sz, cls);
     else
       r = NaN (sz, cls);
     endif
   else
     r = NaN (sz, cls);
 
-    k = (a > 0) & (a < Inf) & (b > 0) & (b < Inf);
-    r(k) = b(k) .* randg (a(k), cls);
+    valid = (k > 0) & (k < Inf) & (theta > 0) & (theta < Inf);
+    r(valid) = theta(valid) .* randg (k(valid), cls);
   endif
 
 endfunction

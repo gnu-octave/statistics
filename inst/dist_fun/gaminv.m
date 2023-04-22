@@ -19,71 +19,104 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{x} =} gaminv (@var{p}, @var{a}, @var{b})
+## @deftypefn  {statistics} {@var{x} =} gaminv (@var{p}, @var{k}, @var{theta})
 ##
 ## Inverse of the Gamma cumulative distribution function (iCDF).
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## at @var{p} of the Gamma distribution with shape parameter @var{a} and
-## scale @var{b}.  The size of @var{x} is the common size of @var{p}, @var{a},
-## and @var{b}.  A scalar input functions as a constant matrix of the same size
-## as the other inputs.
+## at @var{p} of the Gamma distribution with shape parameter @var{k} and
+## scale parameter @var{theta}.  The size of @var{x} is the common size of
+## @var{p}, @var{k}, and @var{theta}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
+##
+## There are two equivalent parameterizations in common use:
+## @enumerate
+## @item With a shape parameter @math{k} and a scale parameter @math{θ}, which
+## is used by @code{gaminv}.
+## @item With a shape parameter @math{α = k} and an inverse scale parameter
+## @math{β = 1 / θ}, called a rate parameter.
+## @end enumerate
+##
+## Further information about the Gamma distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Gamma_distribution}
 ##
 ## @seealso{gamcdf, gampdf, gamrnd, gamfit, gamlike, gamstat}
 ## @end deftypefn
 
-function x = gaminv (p, a, b)
+function x = gaminv (p, k, theta)
 
   if (nargin != 3)
     print_usage ();
   endif
 
-  if (! isscalar (a) || ! isscalar (b))
-    [retval, p, a, b] = common_size (p, a, b);
+  if (! isscalar (k) || ! isscalar (theta))
+    [retval, p, k, theta] = common_size (p, k, theta);
     if (retval > 0)
-      error ("gaminv: P, A, and B must be of common size or scalars.");
+      error ("gaminv: P, K, and THETA must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (p) || iscomplex (a) || iscomplex (b))
-    error ("gaminv: P, A, and B must not be complex.");
+  if (iscomplex (p) || iscomplex (k) || iscomplex (theta))
+    error ("gaminv: P, K, and THETA must not be complex.");
   endif
 
-  if (isa (p, "single") || isa (a, "single") || isa (b, "single"))
+  if (isa (p, "single") || isa (k, "single") || isa (theta, "single"))
     x = zeros (size (p), "single");
   else
     x = zeros (size (p));
   endif
 
-  k = ((p < 0) | (p > 1) | isnan (p) ...
-       | !(a > 0) | !(a < Inf) | !(b > 0) | !(b < Inf));
-  x(k) = NaN;
+  is_nan = ((p < 0) | (p > 1) | isnan (p) ...
+       | !(k > 0) | !(k < Inf) | !(theta > 0) | !(theta < Inf));
+  x(is_nan) = NaN;
 
-  k = (p == 1) & (a > 0) & (a < Inf) & (b > 0) & (b < Inf);
-  x(k) = Inf;
+  is_inf = (p == 1) & (k > 0) & (k < Inf) & (theta > 0) & (theta < Inf);
+  x(is_inf) = Inf;
 
-  k = find ((p > 0) & (p < 1) & (a > 0) & (a < Inf) & (b > 0) & (b < Inf));
-  if (! isempty (k))
-    if (! isscalar (a) || ! isscalar (b))
-      a = a(k);
-      b = b(k);
-      y = a .* b;
+  is_valid = find ((p > 0) & (p < 1) & (k > 0) & ...
+                   (k < Inf) & (theta > 0) & (theta < Inf));
+  if (! isempty (is_valid))
+    if (! isscalar (k) || ! isscalar (theta))
+      k = k(is_valid);
+      theta = theta(is_valid);
+      y = k .* theta;
     else
-      y = a * b * ones (size (k));
+      y = k * theta * ones (size (is_valid));
     endif
-    p = p(k);
+    p = p(is_valid);
 
-    ## Call GAMMAINCINV to find a root of GAMMAINC
-    q = gammaincinv (p, a);
+    ## Call GAMMAINCINV to find k root of GAMMAINC
+    q = gammaincinv (p, k);
     tol = sqrt (eps (ones (1, 1, class(q))));
-    check_cdf = ((abs (gammainc (q, a) - p) ./ p) > tol);
+    check_cdf = ((abs (gammainc (q, k) - p) ./ p) > tol);
     ## Check for any cdf being far off from tolerance
     if (any (check_cdf(:)))
       warning ("gaminv: calculation failed to converge for some values.");
     endif
-    x(k) = q .* b;
+    x(is_valid) = q .* theta;
   endif
 endfunction
+
+%!demo
+%! ## Plot various iCDFs from the Gamma distribution
+%! p = 0.001:0.001:0.999;
+%! x1 = gaminv (p, 1, 2);
+%! x2 = gaminv (p, 2, 2);
+%! x3 = gaminv (p, 3, 2);
+%! x4 = gaminv (p, 5, 1);
+%! x5 = gaminv (p, 9, 0.5);
+%! x6 = gaminv (p, 7.5, 1);
+%! x7 = gaminv (p, 0.5, 1);
+%! plot (p, x1, "-r", p, x2, "-g", p, x3, "-y", p, x4, "-m", ...
+%!       p, x5, "-k", p, x6, "-b", p, x7, "-c")
+%! ylim ([0, 20])
+%! grid on
+%! legend ({"α = 1, θ = 2", "α = 2, θ = 2", "α = 3, θ = 2", ...
+%!          "α = 5, θ = 1", "α = 9, θ = 0.5", "α = 7.5, θ = 1", ...
+%!          "α = 0.5, θ = 1"}, "location", "northwest")
+%! title ("Gamma iCDF")
+%! xlabel ("probability")
+%! ylabel ("x")
 
 %!shared p
 %! p = [-1 0 0.63212055882855778 1 2];
