@@ -125,28 +125,35 @@ function jackstat = jackknife (anEstimator, varargin)
 endfunction
 
 
+%!demo
+%! for k = 1:1000
+%!   rand ("seed", k);  # for reproducibility
+%!   x = rand (10, 1);
+%!   s(k) = std (x);
+%!   jackstat = jackknife (@std, x);
+%!   j(k) = 10 * std (x) - 9 * mean (jackstat);
+%! endfor
+%! figure();
+%! hist ([s', j'], 0:sqrt(1/12)/10:2*sqrt(1/12))
+
+%!demo
+%! for k = 1:1000
+%!   randn ("seed", k); # for reproducibility
+%!   x = randn (1, 50);
+%!   rand ("seed", k);  # for reproducibility
+%!   y = rand (1, 50);
+%!   jackstat = jackknife (@(x) std(x{1})/std(x{2}), y, x);
+%!   j(k) = 50 * std (y) / std (x) - 49 * mean (jackstat);
+%!   v(k) = sumsq ((50 * std (y) / std (x) - 49 * jackstat) - j(k)) / (50 * 49);
+%! endfor
+%! t = (j - sqrt (1 / 12)) ./ sqrt (v);
+%! figure();
+%! plot (sort (tcdf (t, 49)), ...
+%!       "-;Almost linear mapping indicates good fit with t-distribution.;")
+
+## Test output
 %!test
 %! ##Example from Quenouille, Table 1
 %! d=[0.18 4.00 1.04 0.85 2.14 1.01 3.01 2.33 1.57 2.19];
 %! jackstat = jackknife ( @(x) 1/mean(x), d );
 %! assert ( 10 / mean(d) - 9 * mean(jackstat), 0.5240, 1e-5 );
-
-%!demo
-%! for k = 1:1000
-%!  x=rand(10,1);
-%!  s(k)=std(x);
-%!  jackstat=jackknife(@std,x);
-%!  j(k)=10*std(x) - 9*mean(jackstat);
-%! end
-%! figure();hist([s',j'], 0:sqrt(1/12)/10:2*sqrt(1/12))
-
-%!demo
-%! for k = 1:1000
-%!  x=randn(1,50);
-%!  y=rand(1,50);
-%!  jackstat=jackknife(@(x) std(x{1})/std(x{2}),y,x);
-%!  j(k)=50*std(y)/std(x) - 49*mean(jackstat);
-%!  v(k)=sumsq((50*std(y)/std(x) - 49*jackstat) - j(k)) / (50 * 49);
-%! end
-%! t=(j-sqrt(1/12))./sqrt(v);
-%! figure();plot(sort(tcdf(t,49)),"-;Almost linear mapping indicates good fit with t-distribution.;")

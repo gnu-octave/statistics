@@ -1,4 +1,5 @@
 ## Copyright (c) 2012 Juan Pablo Carbajal <carbajal@ifi.uzh.ch>
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -84,6 +85,12 @@ function [wm, K, yi, dy] = regress_gp (x, y, Sp=[], xi=[])
   ## inv(x*x' + sy^2 * inv(Vp))*x*y
   ## Looking at the formula bloew we see that Sp = (1/sy^2)*Vp
   ## making the regression depend on only one parameter, Sp, and not two.
+
+  ## Xsq = sum (X' .^ 2);
+  ## [n, d] = size (X);
+  ## ￼sigma = 1/sqrt(2);
+  ## Ks = exp (-(Xsq' * ones (1, n) -ones (n, 1) * Xsq + 2 * X * X') / (2 * sigma ^ 2));
+
   A  = x*x' + inv (Sp);
   K  = inv (A);
   wm = K*x*y;
@@ -100,68 +107,75 @@ endfunction
 
 %!demo
 %! ## 1D Data
-%! x = 2*rand (5,1)-1;
-%! y = 2*x -1 + 0.3*randn (5,1);
+%! rand ("seed", 125);
+%! x = 2 * rand (5, 1) - 1;
+%! randn ("seed", 25);
+%! y = 2 * x - 1 + 0.3 * randn (5, 1);
 %!
 %! ## Points for interpolation/extrapolation
-%! xi = linspace (-2,2,10)';
+%! xi = linspace (-2, 2, 10)';
 %!
-%! [m K yi dy] = regress_gp (x,y,[],xi);
+%! [m, K, yi, dy] = regress_gp (x, y, [], xi);
 %!
-%! plot (x,y,'xk',xi,yi,'r-',xi,bsxfun(@plus, yi, [-dy +dy]),'b-');
+%! plot (x, y, "xk", xi, yi, "r-", xi, bsxfun (@plus, yi, [-dy +dy]), "b-");
 
 %!demo
-%! ## 2D Data
-%! x = 2*rand (4,2)-1;
-%! y = 2*x(:,1)-3*x(:,2) -1 + 1*randn (4,1);
+%! ## 2D DataData
+%! rand ("seed", 135);
+%! x = 2 * rand (4, 2) - 1;;
+%! randn ("seed", 35);
+%! y = 2 * x(:,1) - 3 * x(:,2) - 1 + 1 * randn (4, 1);
 %!
 %! ## Mesh for interpolation/extrapolation
-%! [xi yi] = meshgrid (linspace (-1,1,10));
+%! [xi, yi] = meshgrid (linspace (-1, 1, 10));
 %!
-%! [m K zi dz] = regress_gp (x,y,[],[xi(:) yi(:)]);
-%! zi = reshape (zi, 10,10);
-%! dz = reshape (dz,10,10);
+%! [m, K, zi, dz] = regress_gp (x, y, [], [xi(:), yi(:)]);
+%! zi = reshape (zi, 10, 10);
+%! dz = reshape (dz, 10, 10);
 %!
-%! plot3 (x(:,1),x(:,2),y,'.g','markersize',8);
+%! plot3 (x(:,1), x(:,2), y, ".g", "markersize", 8);
 %! hold on;
-%! h = mesh (xi,yi,zi,zeros(10,10));
-%! set(h,'facecolor','none');
-%! h = mesh (xi,yi,zi+dz,ones(10,10));
-%! set(h,'facecolor','none');
-%! h = mesh (xi,yi,zi-dz,ones(10,10));
-%! set(h,'facecolor','none');
+%! h = mesh (xi, yi, zi, zeros (10, 10));
+%! set (h, "facecolor", "none");
+%! h = mesh (xi, yi, zi + dz, ones (10, 10));
+%! set (h, "facecolor", "none");
+%! h = mesh (xi, yi, zi - dz, ones (10, 10));
+%! set (h, "facecolor", "none");
 %! hold off
 %! axis tight
-%! view(80,25)
+%! view (80, 25)
 
 %!demo
 %! ## Projection over basis function
-%! pp = [2 2 0.3 1];
+%! pp = [2, 2, 0.3, 1];
 %! n = 10;
-%! x = 2*rand (n,1)-1;
-%! y = polyval(pp,x) + 0.3*randn (n,1);
+%! rand ("seed", 145);
+%! x = 2 * rand (n, 1) - 1;
+%! randn ("seed", 45);
+%! y = polyval (pp, x) + 0.3 * randn (n, 1);
 %!
 %! ## Powers
-%! px = [sqrt(abs(x)) x x.^2 x.^3];
+%! px = [sqrt(abs(x)), x, x.^2, x.^3];
 %!
 %! ## Points for interpolation/extrapolation
-%! xi = linspace (-1,1,100)';
-%! pxi = [sqrt(abs(xi)) xi xi.^2 xi.^3];
+%! xi = linspace (-1, 1, 100)';
+%! pxi = [sqrt(abs(xi)), xi, xi.^2, xi.^3];
 %!
-%! Sp = 100*eye(size(px,2)+1);
+%! Sp = 100 * eye (size (px, 2) + 1);
 %! Sp(2,2) = 1; # We don't believe the sqrt is present
-%! [m K yi dy] = regress_gp (px,y,Sp,pxi);
-%! disp(m)
+%! [m, K, yi, dy] = regress_gp (px, y, Sp, pxi);
+%! disp (m)
 %!
-%! plot (x,y,'xk;Data;',xi,yi,'r-;Estimation;',xi,polyval(pp,xi),'g-;True;');
+%! plot (x, y, "xk;Data;", xi, yi, "r-;Estimation;", ...
+%!                         xi, polyval (pp, xi), "g-;True;");
 %! axis tight
 %! axis manual
 %! hold on
-%! plot (xi,bsxfun(@plus, yi, [-dy +dy]),'b-');
+%! plot (xi, bsxfun (@plus, yi, [-dy, +dy]), "b-");
 %! hold off
 
 
-## input validation
+## Test input validation
 %!error<Invalid call to regress_gp.> regress_gp (ones (20, 2))
 %!error<regress_gp: X must be a 2-D matrix.> ...
 %! regress_gp (ones (20, 2, 3), ones (20, 1))
