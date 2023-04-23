@@ -197,22 +197,22 @@ endfunction
 %!demo
 %! ## Sample 3 populations from 3 different exponential distibutions
 %! rande ("seed", 1);   # for reproducibility
-%! r1 = exprnd (2, 200, 1);
+%! r1 = exprnd (2, 4000, 1);
 %! rande ("seed", 2);   # for reproducibility
-%! r2 = exprnd (5, 200, 1);
+%! r2 = exprnd (5, 4000, 1);
 %! rande ("seed", 3);   # for reproducibility
-%! r3 = exprnd (14, 200, 1);
+%! r3 = exprnd (12, 4000, 1);
 %! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
-%! hist (r, 12, 1);
+%! hist (r, 48, 0.52);
 %! h = findobj(gca,'Type','patch');
 %! set(h(1),'facecolor',"c");
 %! set(h(2),'facecolor',"g");
 %! set(h(3),'facecolor',"r");
 %! hold on
 %!
-%! ## Estimate their lambda parameter
+%! ## Estimate their mu parameter
 %! muhat = expfit (r);
 %!
 %! ## Plot their estimated PDFs
@@ -223,10 +223,11 @@ endfunction
 %! plot (x, y, "-sg");
 %! y = exppdf (x, muhat(3));
 %! plot (x, y, "-^c");
-%! hold off
+%! ylim ([0, 0.6])
+%! xlim ([0, 40])
 %! legend ({"Normalized HIST of sample 1 with μ=2", ...
 %!          "Normalized HIST of sample 2 with μ=5", ...
-%!          "Normalized HIST of sample 3 with μ=9", ...
+%!          "Normalized HIST of sample 3 with μ=12", ...
 %!          sprintf("PDF for sample 1 with estimated μ=%0.2f", ...
 %!                  muhat(1)), ...
 %!          sprintf("PDF for sample 2 with estimated μ=%0.2f", ...
@@ -236,7 +237,7 @@ endfunction
 %! title ("Three population samples from different exponential distibutions")
 %! hold off
 
-## tests for mean
+## Tests for mean
 %!assert (expfit (1), 1)
 %!assert (expfit (1:3), 2)
 %!assert (expfit ([1:3]'), 2)
@@ -265,7 +266,7 @@ endfunction
 %!assert (expfit (reshape (1:9, [3 3]), [], eye(3), [2 2 2; 1 1 1; 1 1 1]), ...
 %! [3.5 19/3 31/3])
 
-## tests for confidence intervals
+## Tests for confidence intervals
 %!assert ([~,muci] = expfit (1:3, 0), [0; Inf])
 %!assert ([~,muci] = expfit (1:3, 2), [Inf; 0])
 %!assert ([~,muci] = expfit (1:3, 0.1, [1 1 1]), [NaN; NaN])
@@ -310,7 +311,7 @@ endfunction
 %! assert ({muhat, muci}, {[5 NaN NaN], ...
 %!                 [[2.076214320933482; 24.245475826185242],NaN(2)]}, 1000*eps);
 
-## input validation
+## Test input validation
 %!error expfit ()
 %!error expfit (1,2,3,4,5)
 %!error [a b censor] = expfit (1)

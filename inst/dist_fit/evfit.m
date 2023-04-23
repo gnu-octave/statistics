@@ -287,14 +287,14 @@ endfunction
 %! ## Sample 3 populations from 3 different Extreme Value distibutions
 %! rand ("seed", 1);    # for reproducibility
 %! r1 = evrnd (2, 5, 200, 1);
-%! rand ("seed", 2);    # for reproducibility
+%! rand ("seed", 12);    # for reproducibility
 %! r2 = evrnd (-5, 3, 200, 1);
 %! rand ("seed", 13);    # for reproducibility
 %! r3 = evrnd (14, 8, 200, 1);
 %! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
-%! hist (r, 12, 1);
+%! hist (r, 25, 0.45);
 %! h = findobj(gca,'Type','patch');
 %! set(h(1),'facecolor',"c");
 %! set(h(2),'facecolor',"g");
@@ -302,7 +302,7 @@ endfunction
 %! ylim ([0 1]);
 %! hold on
 %!
-%! ## Estimate their lambda parameter
+%! ## Estimate their mu and sigma parameters
 %! mu_sigmaA = evfit (r(:,1));
 %! mu_sigmaB = evfit (r(:,2));
 %! mu_sigmaC = evfit (r(:,3));
@@ -315,7 +315,7 @@ endfunction
 %! plot (x, y, "-sg");
 %! y = evpdf (x, mu_sigmaC(1), mu_sigmaC(2));
 %! plot (x, y, "-^c");
-%! hold off
+%! ylim ([0, 0.3])
 %! legend ({"Normalized HIST of sample 1 with μ=2 and σ=5", ...
 %!          "Normalized HIST of sample 2 with μ=-5 and σ=3", ...
 %!          "Normalized HIST of sample 3 with μ=14 and σ=8", ...
@@ -328,7 +328,7 @@ endfunction
 %! title ("Three population samples from different Extreme Value distibutions")
 %! hold off
 
-## test results
+## Test results
 %!test
 %! x = 1:50;
 %! [paramhat, paramci] = evfit (x);
@@ -342,7 +342,7 @@ endfunction
 %! paramci_out = [27.6468, 9.8426; 37.7155, 17.3051];
 %! assert (paramci, paramci_out, 1e-4);
 
-## test input validation
+## Test input validation
 %!error<evfit: X must be a double-precision vector.> evfit (ones (2,5));
 %!error<evfit: X must be a double-precision vector.> evfit (single (ones (1,5)));
 %!error<evfit: X must NOT contain missing values> evfit ([1, 2, 3, 4, NaN]);

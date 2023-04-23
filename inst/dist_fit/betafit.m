@@ -162,7 +162,7 @@ endfunction
 %! set(h(2), "facecolor", "g");
 %! hold on
 %!
-%! ## Estimate their lambda parameter
+%! ## Estimate their shape parameters
 %! a_b_A = betafit (r(:,1));
 %! a_b_B = betafit (r(:,2));
 %!
