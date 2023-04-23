@@ -71,7 +71,7 @@ function r = normrnd (mu, sigma, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error (strcat (["normrnd: dimension vector must be row vector"], ...
+      error (strcat (["normrnd: dimension vector must be a row vector"], ...
                      [" of non-negative integers."]));
     endif
   elseif (nargin > 3)

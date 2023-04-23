@@ -54,21 +54,22 @@ function r = geornd (ps, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error ("geornd: dimension vector must be row vector of non-negative integers");
+      error (strcat (["geornd: dimension vector must be a row vector"], ...
+                     [" of non-negative integers."]));
     endif
   elseif (nargin > 2)
     if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
-      error ("geornd: dimensions must be non-negative integers");
+      error ("geornd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
   if (! isscalar (ps) && ! isequal (size (ps), sz))
-    error ("geornd: P must be scalar or of size SZ");
+    error ("geornd: P must be scalar or of size SZ.");
   endif
 
   if (iscomplex (ps))
-    error ("geornd: P must not be complex");
+    error ("geornd: P must not be complex.");
   endif
 
   if (isa (ps, "single"))
@@ -90,7 +91,7 @@ function r = geornd (ps, varargin)
   else
     r = floor (- rande (sz, cls) ./ log (1 - ps));
 
-    k = !(ps >= 0) | !(ps <= 1);
+    k = ! (ps >= 0) | ! (ps <= 1);
     r(k) = NaN;
 
     k = (ps == 0);

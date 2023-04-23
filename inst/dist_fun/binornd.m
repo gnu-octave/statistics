@@ -65,7 +65,7 @@ function r = binornd (n, ps, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error (strcat (["binornd: dimension vector must be row vector of"], ...
+      error (strcat (["binornd: dimension vector must be a row vector of"], ...
                      [" non-negative integers."]));
     endif
   elseif (nargin > 3)

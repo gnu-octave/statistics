@@ -51,12 +51,12 @@ function r = exprnd (mu, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error (strcat (["exprnd: dimension vector must be row vector of"], ...
+      error (strcat (["exprnd: dimension vector must be a row vector of"], ...
                      [" non-negative integers."]));
     endif
   elseif (nargin > 2)
     if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
-      error ("exprnd: dimensions must be non-negative integers");
+      error ("exprnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif

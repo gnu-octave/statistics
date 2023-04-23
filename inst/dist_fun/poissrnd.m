@@ -38,6 +38,9 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
+## Further information about the Poisson distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Poisson_distribution}
+##
 ## @seealso{poisscdf, poissinv, poisspdf, poisstat}
 ## @end deftypefn
 
@@ -60,7 +63,7 @@ function r = poissrnd (lambda, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error (strcat (["poissrnd: dimension vector must be row vector"], ...
+      error (strcat (["poissrnd: dimension vector must be a row vector"], ...
                      [" of non-negative integers."]));
     endif
   elseif (nargin > 2)

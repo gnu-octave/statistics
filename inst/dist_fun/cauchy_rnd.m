@@ -65,7 +65,7 @@ function r = cauchy_rnd (location, scale, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error (strcat (["cauchy_rnd: dimension vector must be row vector"], ...
+      error (strcat (["cauchy_rnd: dimension vector must be a row vector"], ...
                      [" of non-negative integers."]));
     endif
   elseif (nargin > 3)

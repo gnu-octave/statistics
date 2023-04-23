@@ -51,7 +51,7 @@ function r = chi2rnd (df, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error (strcat (["chi2rnd: dimension vector must be row vector of"], ...
+      error (strcat (["chi2rnd: dimension vector must be a row vector of"], ...
                      [" non-negative integers."]));
     endif
   elseif (nargin > 2)

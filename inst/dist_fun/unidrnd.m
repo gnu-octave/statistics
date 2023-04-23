@@ -56,7 +56,7 @@ function r = unidrnd (df, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error (strcat (["unidrnd: dimension vector must be row vector"], ...
+      error (strcat (["unidrnd: dimension vector must be a row vector"], ...
                      [" of non-negative integers."]));
     endif
   elseif (nargin > 2)

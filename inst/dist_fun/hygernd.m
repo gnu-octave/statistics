@@ -54,12 +54,12 @@ function r = hygernd (t, m, n, varargin)
   if (! isscalar (t) || ! isscalar (m) || ! isscalar (n))
     [retval, t, m, n] = common_size (t, m, n);
     if (retval > 0)
-      error ("hygernd: T, M, and N must be of common size or scalars");
+      error ("hygernd: T, M, and N must be of common size or scalars.");
     endif
   endif
 
   if (iscomplex (t) || iscomplex (m) || iscomplex (n))
-    error ("hygernd: T, M, and N must not be complex");
+    error ("hygernd: T, M, and N must not be complex.");
   endif
 
   if (nargin == 3)
@@ -70,17 +70,18 @@ function r = hygernd (t, m, n, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error ("hygernd: dimension vector must be row vector of non-negative integers");
+      error (strcat (["hygernd: dimension vector must be a row vector"], ...
+                     [" of non-negative integers."]));
     endif
   elseif (nargin > 4)
     if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
-      error ("hygernd: dimensions must be non-negative integers");
+      error ("hygernd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
   if (! isscalar (t) && ! isequal (size (t), sz))
-    error ("hygernd: T, M, and N must be scalar or of size SZ");
+    error ("hygernd: T, M, and N must be scalar or of size SZ.");
   endif
 
   if (isa (t, "single") || isa (m, "single") || isa (n, "single"))

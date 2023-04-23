@@ -64,7 +64,7 @@ function r = vmrnd (mu, k, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error (strcat (["vmrnd: dimension vector must be row vector"], ...
+      error (strcat (["vmrnd: dimension vector must be a row vector"], ...
                      [" of non-negative integers."]));
     endif
   elseif (nargin > 3)

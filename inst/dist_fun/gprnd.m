@@ -67,7 +67,7 @@ function r = gprnd (shape, scale, location, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error (strcat (["gprnd: dimension vector must be row vector of"], ...
+      error (strcat (["gprnd: dimension vector must be a row vector of"], ...
                      [" non-negative integers."]));
     endif
   elseif (nargin > 4)

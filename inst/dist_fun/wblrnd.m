@@ -27,10 +27,11 @@
 ## Random arrays from the Weibull distribution.
 ##
 ## @code{@var{r} = wblrnd (@var{lambda}, @var{k})} returns an array of random
-## numbers chosen from the Weibull distribution with parameters @var{lambda} and
-## @var{k}.  The size of @var{r} is the common size of @var{lambda} and @var{k}.
-##  A scalar input functions as a constant matrix of the same size as the other
-## inputs.  Both parameters must be positive reals.
+## numbers chosen from the Weibull distribution with scale parameter
+## @var{lambda} and shape parameter @var{k}.  The size of @var{r} is the common
+## size of @var{lambda} and @var{k}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.  Both parameters must be
+## positive reals.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -38,7 +39,10 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## @seealso{wblcdf, wblinv, wblpdf, wblstat, wblplot}
+## Further information about the Weibull distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Weibull_distribution}
+##
+## @seealso{wblcdf, wblinv, wblpdf, wblfit, wbllike, wblstat, wblplot}
 ## @end deftypefn
 
 function r = wblrnd (lambda, k, varargin)
@@ -50,12 +54,12 @@ function r = wblrnd (lambda, k, varargin)
   if (! isscalar (lambda) || ! isscalar (k))
     [retval, lambda, k] = common_size (lambda, k);
     if (retval > 0)
-      error ("wblrnd: SCALE and SHAPE must be of common size or scalars");
+      error ("wblrnd: LAMBDA and K must be of common size or scalars.");
     endif
   endif
 
   if (iscomplex (lambda) || iscomplex (k))
-    error ("wblrnd: SCALE and SHAPE must not be complex");
+    error ("wblrnd: LAMBDA and K must not be complex.");
   endif
 
   if (nargin == 2)
@@ -66,17 +70,18 @@ function r = wblrnd (lambda, k, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error ("wblrnd: dimension vector must be row vector of non-negative integers");
+      error (strcat (["wblrnd: dimension vector must be a row vector"], ...
+                     [" of non-negative integers."]));
     endif
   elseif (nargin > 3)
     if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
-      error ("wblrnd: dimensions must be non-negative integers");
+      error ("wblrnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
   if (! isscalar (lambda) && ! isequal (size (lambda), sz))
-    error ("wblrnd: SCALE and SHAPE must be scalar or of size SZ");
+    error ("wblrnd: LAMBDA and K must be scalar or of size SZ.");
   endif
 
   if (isa (lambda, "single") || isa (k, "single"))

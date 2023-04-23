@@ -68,8 +68,8 @@ function r = bbsrnd (shape, scale, location, varargin)
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
       sz = varargin{1};
     else
-      error (strcat (["bbsrnd: dimension vector must be row vector of"], ...
-                     [" non-negative integers."]));
+      error (strcat (["bbsrnd: dimension vector must be a row vector"], ...
+                     [" of non-negative integers."]));
     endif
   elseif (nargin > 3)
     if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
