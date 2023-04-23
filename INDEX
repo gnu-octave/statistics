@@ -115,6 +115,7 @@ Distribution Fitting
  gevlike
  gpfit
  gplike
+ lognfit
  normfit
  normlike
  poissfit
