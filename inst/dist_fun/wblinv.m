@@ -33,6 +33,9 @@
 ##
 ## Default values are @var{lambda} = 1, @var{k} = 1.
 ##
+## Further information about the Weibull distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Weibull_distribution}
+##
 ## @seealso{wblcdf, wblpdf, wblrnd, wblstat, wblplot}
 ## @end deftypefn
 
@@ -76,7 +79,23 @@ function x = wblinv (p, lambda = 1, k = 1)
 
 endfunction
 
+%!demo
+%! ## Plot various iCDFs from the Weibull distribution
+%! p = 0.001:0.001:0.999;
+%! x1 = wblinv (p, 1, 0.5);
+%! x2 = wblinv (p, 1, 1);
+%! x3 = wblinv (p, 1, 1.5);
+%! x4 = wblinv (p, 1, 5);
+%! plot (p, x1, "-b", p, x2, "-r", p, x3, "-m", p, x4, "-g")
+%! ylim ([0, 2.5])
+%! grid on
+%! legend ({"λ = 1, k = 0.5", "λ = 1, k = 1",  ...
+%!          "λ = 1, k = 1.5", "λ = 1, k = 5"}, "location", "northwest")
+%! title ("Weibull iCDF")
+%! xlabel ("probability")
+%! ylabel ("x")
 
+## Test output
 %!shared p
 %! p = [-1 0 0.63212055882855778 1 2];
 %!assert (wblinv (p, ones (1,5), ones (1,5)), [NaN 0 1 Inf NaN], eps)

@@ -49,6 +49,9 @@
 ## @code{[@dots{}] = wblcdf (@dots{}, "upper")} computes the upper tail
 ## probability of the lognormal distribution.
 ##
+## Further information about the Weibull distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Weibull_distribution}
+##
 ## @seealso{wblinv, wblpdf, wblrnd, wblstat, wblplot}
 ## @end deftypefn
 
@@ -177,7 +180,22 @@ function [varargout] = wblcdf (x, varargin)
 
 endfunction
 
+%!demo
+%! ## Plot various CDFs from the Weibull distribution
+%! x = 0:0.001:2.5;
+%! p1 = wblcdf (x, 1, 0.5);
+%! p2 = wblcdf (x, 1, 1);
+%! p3 = wblcdf (x, 1, 1.5);
+%! p4 = wblcdf (x, 1, 5);
+%! plot (x, p1, "-b", x, p2, "-r", x, p3, "-m", x, p4, "-g")
+%! grid on
+%! legend ({"λ = 1, k = 0.5", "λ = 1, k = 1", ...
+%!          "λ = 1, k = 1.5", "λ = 1, k = 5"}, "location", "southeast")
+%! title ("Weibull CDF")
+%! xlabel ("values in x")
+%! ylabel ("probability")
 
+## Test output
 %!shared x, y
 %! x = [-1 0 0.5 1 Inf];
 %! y = [0, 1-exp(-x(2:4)), 1];
