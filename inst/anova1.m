@@ -281,16 +281,19 @@ endfunction
 
 %!demo
 %! x = meshgrid (1:6);
+%! randn ("seed", 15);    # for reproducibility
 %! x = x + normrnd (0, 1, 6, 6);
 %! anova1 (x, [], 'off');
 
 %!demo
 %! x = meshgrid (1:6);
+%! randn ("seed", 15);    # for reproducibility
 %! x = x + normrnd (0, 1, 6, 6);
 %! [p, atab] = anova1(x);
 
 %!demo
 %! x = ones (50, 4) .* [-2, 0, 1, 5];
+%! randn ("seed", 13);    # for reproducibility
 %! x = x + normrnd (0, 2, 50, 4);
 %! groups = {"A", "B", "C", "D"};
 %! anova1 (x, groups);
