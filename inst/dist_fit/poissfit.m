@@ -29,9 +29,10 @@
 ## distribution.
 ##
 ## @code{[@var{lambdahat}, @var{lambdaci}] = poissfit (@var{x}, @var{alpha})}
-## also returns the @qcode{100*(1-@var{alpha})} percent confidence intervals of
-## the estimated parameter.  By default, the optional parameter @var{alpha} is
-## 0.05 corresponding to 95% confidence intervals.
+## also returns the @qcode{100 * (1 - @var{alpha})} percent confidence intervals
+## of the estimated parameter.  By default, the optional argument @var{alpha} is
+## 0.05 corresponding to 95% confidence intervals.  Pass in @qcode{[]} for
+## @var{alpha} to use the default values.
 ##
 ## @code{[@dots{}] = poissfit (@var{x}, @var{alpha}, @var{freq})} accepts a
 ## frequency vector or matrix, @var{freq}, of the same size as @var{x}.
@@ -91,7 +92,13 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from 3 different Poisson distibutions
-%! r = [poissrnd(2, 100, 1), poissrnd(5, 100, 1), poissrnd(9, 100, 1)];
+%! randp ("seed", 1);    # for reproducibility
+%! r1 = poissrnd(2, 100, 1);
+%! randp ("seed", 2);    # for reproducibility
+%! r2 = poissrnd(5, 100, 1);
+%! randp ("seed", 3);    # for reproducibility
+%! r3 = poissrnd(9, 100, 1);
+%! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, 8, 1);
@@ -125,7 +132,7 @@ endfunction
 %! title ("Three population samples from different Poisson distibutions")
 %! hold off
 
-## test output
+## Test output
 %!test
 %! x = [1 3 2 4 5 4 3 4];
 %! [lhat, lci] = poissfit (x);
@@ -149,7 +156,7 @@ endfunction
 %! assert (lhat, 3.25)
 %! assert (lci, [1.842572740234582; 5.281369033298528], 1e-14)
 
-## test input validation
+## Test input validation
 %!error<poissfit: X cannot have negative values.> poissfit ([1 2 -1 3])
 %!error<poissfit: Wrong value for ALPHA.> poissfit ([1 2 3], 0)
 %!error<poissfit: Wrong value for ALPHA.> poissfit ([1 2 3], 1.2)

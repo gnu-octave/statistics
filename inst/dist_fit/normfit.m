@@ -26,7 +26,7 @@
 ## @deftypefnx {statistics} {[@dots{}] =} normfit (@var{x}, @var{alpha}, @var{censor}, @var{freq})
 ## @deftypefnx {statistics} {[@dots{}] =} normfit (@var{x}, @var{alpha}, @var{censor}, @var{freq}, @var{options})
 ##
-## Parameter estimates and confidence intervals for normal data.
+## Estimate parameters and confidence intervals for the normal distribution.
 ##
 ## @code{[@var{muhat}, @var{sigmahat}] = normfit (@var{x})} estimates the
 ## parameters of the normal distribution given the data in @var{x}.  @var{muhat}
@@ -48,25 +48,27 @@
 ## @item
 ## @var{alpha} is a scalar value in the range @math{(0,1)} specifying the
 ## confidence level for the confidence intervals calculated as
-## @math{100x(1 – alpha)%}.
+## @math{100x(1 – alpha)%}.  By default, the optional argument @var{alpha} is
+## 0.05 corresponding to 95% confidence intervals.  Pass in @qcode{[]} for
+## @var{alpha} to use the default values.
 ##
 ## @item
 ## @var{censor} is a logical vector of the same length as @var{x} specifying
 ## whether each value in @var{x} is right-censored or not.  1 indicates
 ## observations that are right-censored and 0 indicates observations that are
 ## fully observed.  With censoring, @var{muhat} and @var{sigmahat} are the
-## maximum likelihood estimates (MLEs).  The default is an array of 0s, meaning
-## that all observations are fully observed.
+## maximum likelihood estimates (MLEs).  If empty, the default is an array of
+## 0s, meaning that all observations are fully observed.
 ##
 ## @item
 ## @var{freq} is a vector of the same length as @var{x} and it typically
 ## contains non-negative integer counts of the corresponding elements in
-## @var{x}.  The default is an array of 1s, meaning one observation per element
-## of @var{x}.  To obtain the weighted MLEs for a data set with censoring,
-## specify weights of observations, normalized to the number of observations in
-## @var{x}.  However, when there is no censored data (default), the returned
-## estimate for standard deviation is not exactly the WMLE.  To compute the
-## weighted MLE, multiply the value returned in @var{sigmahat} by
+## @var{x}.  If empty, the default is an array of 1s, meaning one observation
+## per element of @var{x}.  To obtain the weighted MLEs for a data set with
+## censoring, specify weights of observations, normalized to the number of
+## observations in @var{x}.  However, when there is no censored data (default),
+## the returned estimate for standard deviation is not exactly the WMLE.  To
+## compute the weighted MLE, multiply the value returned in @var{sigmahat} by
 ## @code{(SUM (@var{freq}) - 1) / SUM (@var{freq})}.  This correction is needed
 ## because @code{normfit} normally computes @var{sigmahat} using an unbiased
 ## variance estimator when there is no censored data.  When there is censoring
@@ -141,16 +143,14 @@ function [muhat, sigmahat, muci, sigmaci] = normfit (x, alpha, censor, freq, opt
     error ("normfit: X and FREQ vector mismatch.");
   endif
 
-  ## Check options
-  if (nargin < 5 || isempty (options))
-    options = [];
-  end
-  ## Get options structure or add defaults
-  if (nargin > 4)
-    if (! isstruct (options) || ! isfield (options, "Display") || ...
-                                ! isfield (options, "TolX"))
-      error (strcat (["normfit: 'options' 5th argument must be a "], ...
-                     [" structure with 'Display' and 'TolX' fields present."]));
+  ## Check options structure or add defaults
+  if (nargin > 4 && ! isempty (options))
+    if (! isstruct (options) || ! isfield (options, "Display") ||
+        ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
+                                           || ! isfield (options, "TolX"))
+      error (strcat (["normfit: 'options' 5th argument must be a"], ...
+                     [" structure with 'Display', 'MaxFunEvals',"], ...
+                     [" 'MaxIter', and 'TolX' fields present."]));
     endif
   else
     options.Display = "off";
@@ -255,16 +255,14 @@ function [muhat, sigmahat, muci, sigmaci] = normfit (x, alpha, censor, freq, opt
 
   ## Handle errors
   if (err == 0)
-    % statsfminbx may print its own output text; in any case give something
-    % more statistical here, controllable via warning IDs.
     if (output.funcCount >= options.MaxFunEvals)
       warning ("normfit: maximum number of function evaluations are exceeded.");
     elseif (output.iterations >= options.MaxIter)
       warning ("normfit: maximum number of iterations are exceeded.");
-    end
+    endif
   elseif (err < 0)
     error ("normfit: NoSolution.");
-  end
+  endif
 
   ## Make sure the outputs match the input data type
   muhat = cast (paramhat(1), "like", x);
@@ -382,6 +380,51 @@ function ci = norm_ci (paramhat, cv, alpha, x, censor, freq)
   ci = cat (3, muci, sigmaci);
 endfunction
 
+%!demo
+%! ## Sample 3 populations from 3 different normal distibutions
+%! randn ("seed", 1);    # for reproducibility
+%! r1 = normrnd(2, 5, 1000, 1);
+%! randn ("seed", 2);    # for reproducibility
+%! r2 = normrnd(5, 2, 1000, 1);
+%! randn ("seed", 3);    # for reproducibility
+%! r3 = normrnd(9, 4, 1000, 1);
+%! r = [r1, r2, r3];
+%!
+%! ## Plot them normalized and fix their colors
+%! hist (r, 8, 1);
+%! h = findobj(gca,'Type','patch');
+%! set(h(1),'facecolor',"c");
+%! set(h(2),'facecolor',"g");
+%! set(h(3),'facecolor',"r");
+%! hold on
+%!
+%! ## Estimate their mu and sigma parameters
+%! [muhat, sigmahat] = normfit (r);
+%!
+%! ## Plot their estimated PDFs
+%! x = [min(r(:)):max(r(:))];
+%! y = normpdf (x, muhat(1), sigmahat(1));
+%! plot (x, y, "-pr");
+%! y = normpdf (x, muhat(2), sigmahat(2));
+%! plot (x, y, "-sg");
+%! y = normpdf (x, muhat(3), sigmahat(3));
+%! plot (x, y, "-^c");
+%! ylim ([0, 1])
+%! xlim ([-20, 20])
+%! hold off
+%! legend ({"Normalized HIST of sample 1 with mu=2, σ=5", ...
+%!          "Normalized HIST of sample 2 with mu=5, σ=2", ...
+%!          "Normalized HIST of sample 3 with mu=9, σ=4", ...
+%!          sprintf("PDF for sample 1 with estimated mu=%0.2f and σ=%0.2f", ...
+%!                  muhat(1), sigmahat(1)), ...
+%!          sprintf("PDF for sample 2 with estimated mu=%0.2f and σ=%0.2f", ...
+%!                  muhat(2), sigmahat(2)), ...
+%!          sprintf("PDF for sample 3 with estimated mu=%0.2f and σ=%0.2f", ...
+%!                  muhat(3), sigmahat(3))}, "location", "northwest")
+%! title ("Three population samples from different normal distibutions")
+%! hold off
+
+## Test output
 %!test
 %! load lightbulb
 %! idx = find (lightbulb(:,2) == 0);
@@ -389,7 +432,6 @@ endfunction
 %! [muHat, sigmaHat] = normfit (lightbulb(idx,1), [], censoring);
 %! assert (muHat, 9496.595867378575, 1e-12);
 %! assert (sigmaHat, 3064.021012796456, 1e-12);
-
 %!test
 %! x = normrnd (3, 5, [1000, 1]);
 %! [muHat, sigmaHat, muCI, sigmaCI] = normfit (x, 0.01);
@@ -398,6 +440,7 @@ endfunction
 %! assert (sigmaCI(1) < 5);
 %! assert (sigmaCI(2) > 5);
 
+## Test input validation
 %!error<normfit: X must not be a multi-dimensional array.> ...
 %! normfit (ones (3,3,3))
 %!error<normfit: matrix data acceptable only under 2-arg syntax.> ...

@@ -33,11 +33,11 @@
 ## @code{[@var{paramhat}, @var{paramci}] = wblfit (@var{x})} returns the 95%
 ## confidence intervals for the parameter estimates.
 ##
-## @code{[@dots{}] = wblfit (@var{x}, @var{alpha})} returns
+## @code{[@dots{}] = wblfit (@var{x}, @var{alpha})} also returns the
 ## @qcode{100 * (1 - @var{alpha})} percent confidence intervals for the
-## parameter estimates.  By default, @math{@var{alpha} = 0.05} corresponding
-## fidence intervals.  Pass in @qcode{[]} for @var{alpha} to use the default
-## values.
+## parameter estimates.  By default, the optional argument @var{alpha} is
+## 0.05 corresponding to 95% confidence intervals.  Pass in @qcode{[]} for
+## @var{alpha} to use the default values.
 ##
 ## @code{[@dots{}] = wblfit (@var{x}, @var{alpha}, @var{censor})} accepts a
 ## boolean vector, @var{censor}, of the same size as @var{x} with @qcode{1}s for
@@ -48,7 +48,7 @@
 ## @code{[@dots{}] = wblfit (@var{x}, @var{alpha}, @var{censor}, @var{freq})}
 ## accepts a frequency vector, @var{freq}, of the same size as @var{x}.
 ## @var{freq} typically contains integer frequencies for the corresponding
-## elements in @var{x}, but may contain any non-integer non-negative values.
+## elements in @var{x}, but it can contain any non-integer non-negative values.
 ## By default, or if left empty, @qcode{@var{freq} = ones (size (@var{x}))}.
 ##
 ## @code{[@dots{}] = evfit (@dots{}, @var{options})} specifies control
@@ -119,7 +119,13 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from 3 different Weibull distibutions
-%! r = [wblrnd(2, 4, 2000, 1), wblrnd(5, 2, 2000, 1), wblrnd(1, 5, 2000, 1)];
+%! rande ("seed", 1);    # for reproducibility
+%! r1 = wblrnd(2, 4, 2000, 1);
+%! rande ("seed", 2);    # for reproducibility
+%! r2 = wblrnd(5, 2, 2000, 1);
+%! rande ("seed", 3);    # for reproducibility
+%! r3 = wblrnd(1, 5, 2000, 1);
+%! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, 30, 2);
@@ -157,7 +163,7 @@ endfunction
 %! title ("Three population samples from different Weibull distibutions")
 %! hold off
 
-## test results
+## Test results
 %!test
 %! x = 1:50;
 %! [paramhat, paramci] = wblfit (x);
@@ -171,7 +177,7 @@ endfunction
 %! paramci_out = [22.7143, 1.2589; 35.4179, 2.3310];
 %! assert (paramci, paramci_out, 1e-4);
 
-## test input validation
+## Test input validation
 %!error<wblfit: X must be a vector.> wblfit (ones (2,5));
 %!error<wblfit: X must contain only positive values.> wblfit ([-1 2 3 4]);
 %!error<wblfit: Wrong value for ALPHA.> wblfit ([1, 2, 3, 4, 5], 1.2);

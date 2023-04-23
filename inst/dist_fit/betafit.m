@@ -31,10 +31,10 @@
 ## @code{[@var{paramhat}, @var{paramci}] = betafit (@var{x})} returns the 95%
 ## confidence intervals for the parameter estimates.
 ##
-## @code{[@dots{}] = betafit (@var{x}, @var{alpha})} returns
-## @qcode{100 * (1 - @var{alpha})} percent confidence intervals for the
-## parameter estimates.  By default, @math{@var{alpha} = 0.05} corresponding
-## fidence intervals.
+## @code{[@dots{}] = betafit (@var{x}, @var{alpha})} also returns the
+## @qcode{100 * (1 - @var{alpha})} percent confidence intervals of the estimated
+## parameter.  By default, the optional argument @var{alpha} is 0.05
+## corresponding to 95% confidence intervals.
 ##
 ## The Beta distribution is defined on the open interval @math{(0,1)}.  However,
 ## @code{betafit} can also compute the unbounded beta likelihood function for
