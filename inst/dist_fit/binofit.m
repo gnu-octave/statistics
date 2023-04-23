@@ -102,13 +102,13 @@ endfunction
 %!demo
 %! ## Sample 2 populations from 2 different binomial distibutions
 %! rand ("seed", 1);    # for reproducibility
-%! r1 = binornd (50, 0.15, 200, 1);
+%! r1 = binornd (50, 0.15, 1000, 1);
 %! rand ("seed", 2);    # for reproducibility
-%! r2 = binornd (100, 0.5, 200, 1);
+%! r2 = binornd (100, 0.5, 1000, 1);
 %! r = [r1, r2];
 %!
 %! ## Plot them normalized and fix their colors
-%! hist (r, 20, 1);
+%! hist (r, 23, 0.35);
 %! h = findobj(gca,'Type','patch');
 %! set(h(1),'facecolor',"c");
 %! set(h(2),'facecolor',"g");
