@@ -383,15 +383,15 @@ endfunction
 %!demo
 %! ## Sample 3 populations from 3 different normal distibutions
 %! randn ("seed", 1);    # for reproducibility
-%! r1 = normrnd(2, 5, 1000, 1);
+%! r1 = normrnd(2, 5, 5000, 1);
 %! randn ("seed", 2);    # for reproducibility
-%! r2 = normrnd(5, 2, 1000, 1);
+%! r2 = normrnd(5, 2, 5000, 1);
 %! randn ("seed", 3);    # for reproducibility
-%! r3 = normrnd(9, 4, 1000, 1);
+%! r3 = normrnd(9, 4, 5000, 1);
 %! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
-%! hist (r, 8, 1);
+%! hist (r, 15, 0.4);
 %! h = findobj(gca,'Type','patch');
 %! set(h(1),'facecolor',"c");
 %! set(h(2),'facecolor',"g");
@@ -409,7 +409,7 @@ endfunction
 %! plot (x, y, "-sg");
 %! y = normpdf (x, muhat(3), sigmahat(3));
 %! plot (x, y, "-^c");
-%! ylim ([0, 1])
+%! ylim ([0, 0.5])
 %! xlim ([-20, 20])
 %! hold off
 %! legend ({"Normalized HIST of sample 1 with mu=2, σ=5", ...
