@@ -103,6 +103,9 @@
 <p> <code>[&hellip;] = wblcdf (&hellip;, &quot;upper&quot;)</code> computes the upper tail
  probability of the lognormal distribution.
 </p>
+<p> Further information about the Weibull distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Weibull_distribution">https://en.wikipedia.org/wiki/Weibull_distribution</a>
+</p>
 <p> <strong>See also: </strong>
   <a href="wblinv.html">wblinv</a>, 
   <a href="wblpdf.html">wblpdf</a>, 
@@ -113,6 +116,50 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/wblcdf.m">wblcdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various CDFs from the Weibull distribution
+ x = 0:0.001:2.5;
+ p1 = wblcdf (x, 1, 0.5);
+ p2 = wblcdf (x, 1, 1);
+ p3 = wblcdf (x, 1, 1.5);
+ p4 = wblcdf (x, 1, 5);
+ plot (x, p1, "-b", x, p2, "-r", x, p3, "-m", x, p4, "-g")
+ grid on
+ legend ({"λ = 1, k = 0.5", "λ = 1, k = 1", ...
+          "λ = 1, k = 1.5", "λ = 1, k = 5"}, "location", "southeast")
+ title ("Weibull CDF")
+ xlabel ("values in x")
+ ylabel ("probability")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/wblcdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

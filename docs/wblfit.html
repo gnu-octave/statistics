@@ -90,11 +90,11 @@
 <p> <code>[<var>paramhat</var>, <var>paramci</var>] = wblfit (<var>x</var>)</code> returns the 95%
  confidence intervals for the parameter estimates.
 </p>
-<p> <code>[&hellip;] = wblfit (<var>x</var>, <var>alpha</var>)</code> returns
+<p> <code>[&hellip;] = wblfit (<var>x</var>, <var>alpha</var>)</code> also returns the
  <code>100 * (1 - <var>alpha</var>)</code> percent confidence intervals for the
- parameter estimates.  By default, <math><var>alpha</var> = 0.05</math> corresponding
- fidence intervals.  Pass in <code>[]</code> for <var>alpha</var> to use the default
- values.
+ parameter estimates.  By default, the optional argument <var>alpha</var> is
+ 0.05 corresponding to 95% confidence intervals.  Pass in <code>[]</code> for
+ <var>alpha</var> to use the default values.
 </p>
 <p> <code>[&hellip;] = wblfit (<var>x</var>, <var>alpha</var>, <var>censor</var>)</code> accepts a
  boolean vector, <var>censor</var>, of the same size as <var>x</var> with <code>1</code>s for
@@ -105,7 +105,7 @@
 <p> <code>[&hellip;] = wblfit (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</code>
  accepts a frequency vector, <var>freq</var>, of the same size as <var>x</var>.
  <var>freq</var> typically contains integer frequencies for the corresponding
- elements in <var>x</var>, but may contain any non-integer non-negative values.
+ elements in <var>x</var>, but it can contain any non-integer non-negative values.
  By default, or if left empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
 </p>
 <p> <code>[&hellip;] = evfit (&hellip;, <var>options</var>)</code> specifies control
@@ -147,7 +147,13 @@
                     <td><pre class="example">
 
  ## Sample 3 populations from 3 different Weibull distibutions
- r = [wblrnd(2, 4, 2000, 1), wblrnd(5, 2, 2000, 1), wblrnd(1, 5, 2000, 1)];
+ rande ("seed", 1);    # for reproducibility
+ r1 = wblrnd(2, 4, 2000, 1);
+ rande ("seed", 2);    # for reproducibility
+ r2 = wblrnd(5, 2, 2000, 1);
+ rande ("seed", 3);    # for reproducibility
+ r3 = wblrnd(1, 5, 2000, 1);
+ r = [r1, r2, r3];
 
  ## Plot them normalized and fix their colors
  hist (r, 30, 2);

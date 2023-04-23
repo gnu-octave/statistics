@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: normfit</title>
+    <title>Statistics: lognfit</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -64,49 +64,39 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>normfit</code></b>
+              Function&nbsp;Reference: <b><code>lognfit</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>muhat</var> = <b>normfit</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> [<var>muhat</var>, <var>sigmahat</var>] = <b>normfit</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> [<var>muhat</var>, <var>sigmahat</var>, <var>muci</var>] = <b>normfit</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> [<var>muhat</var>, <var>sigmahat</var>, <var>muci</var>, <var>sigmaci</var>] = <b>normfit</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>normfit</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>normfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>normfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>normfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</i></dt>
+<dt><u>statistics:</u> <var>paramhat</var> = <b>lognfit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>lognfit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>lognfit</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>lognfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>lognfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>lognfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</i></dt>
 </dl>
 
-<p> Estimate parameters and confidence intervals for the normal distribution.
+<p> Estimate parameters and confidence intervals for the log-normal distribution.
 </p>
 <div class="ms-5">
-<p> <code>[<var>muhat</var>, <var>sigmahat</var>] = normfit (<var>x</var>)</code> estimates the
- parameters of the normal distribution given the data in <var>x</var>.  <var>muhat</var>
- is an estimate of the mean, and <var>sigmahat</var> is an estimate of the standard
- deviation.
+<p> <code><var>paramhat</var> = lognfit (<var>x</var>)</code> returns the maximum likelihood
+ estimates of the parameters of the log-normal distribution given the data in
+ vector <var>x</var>.  <code><var>paramhat</var>([1, 2])</code> corresponds to the mean and
+ standard deviation, respectively, of the associated normal distribution.
 </p>
-<p> <code>[<var>muhat</var>, <var>sigmahat</var>, <var>muci</var>, <var>sigmaci</var>] = normfit
- (<var>x</var>)</code> returns the 95% confidence intervals for the mean and standard
- deviation estimates in the arrays <var>muci</var> and <var>sigmaci</var>, respectively.
+<p> <code>[<var>paramhat</var>, <var>paramci</var>] = lognfit (<var>x</var>)</code> returns the 95%
+ confidence intervals for the parameter estimates.
 </p>
  <ul>
 <li>
- <var>x</var> can be a vector or a matrix.  When <var>x</var> is a matrix, the parameter
- estimates and their confidence intervals are computed for each column.  In
- this case, <code>normfit</code> supports only 2 input arguments, <var>x</var> and
- <var>alpha</var>.  Optional arguments <var>censor</var>, <var>freq</var>, and <var>options</var>
- can be used only when <var>x</var> is a vector.
-
- </li><li>
  <var>alpha</var> is a scalar value in the range <math>(0,1)</math> specifying the
  confidence level for the confidence intervals calculated as
- <math>100&times;(1 – alpha)%</math>.  By default, the optional argument <var>alpha</var> is
- 0.05 corresponding to 95% confidence intervals.  Pass in <code>[]</code> for
- <var>alpha</var> to use the default values.
+ <code>100 * (1 - <var>alpha</var>)</code> percent.  By default, the optional argument
+ <var>alpha</var> is 0.05 corresponding to 95% confidence intervals.  Pass in
+ <code>[]</code> for <var>alpha</var> to use the default values.
 
  </li><li>
  <var>censor</var> is a logical vector of the same length as <var>x</var> specifying
@@ -119,17 +109,8 @@
  </li><li>
  <var>freq</var> is a vector of the same length as <var>x</var> and it typically
  contains non-negative integer counts of the corresponding elements in
- <var>x</var>.  If empty, the default is an array of 1s, meaning one observation
- per element of <var>x</var>.  To obtain the weighted MLEs for a data set with
- censoring, specify weights of observations, normalized to the number of
- observations in <var>x</var>.  However, when there is no censored data (default),
- the returned estimate for standard deviation is not exactly the WMLE.  To
- compute the weighted MLE, multiply the value returned in <var>sigmahat</var> by
- <code>(SUM (<var>freq</var>) - 1) / SUM (<var>freq</var>)</code>.  This correction is needed
- because <code>normfit</code> normally computes <var>sigmahat</var> using an unbiased
- variance estimator when there is no censored data.  When there is censoring
- in the data, the correction is not needed, since <code>normfit</code> does not use
- the unbiased variance estimator in that case.
+ <var>x</var>, but it may contain any non-integer non-negative values.  By default,
+ or if left empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
 
  </li><li>
  <var>options</var> is a structure with the control parameters for
@@ -143,16 +124,21 @@
  </li></ul>
 </li></ul>
 
+<p> With no censor, the estimate of the standard deviation,
+ <code><var>paramhat</var>(2)</code>, is the square root of the unbiased estimate of the
+ variance of <code>log (<var>x</var>)</code>.  With censored data, the maximum
+ likelihood estimate is returned.
+</p>
 <p> <strong>See also: </strong>
-  <a href="normcdf.html">normcdf</a>, 
-  <a href="norminv.html">norminv</a>, 
-  <a href="normpdf.html">normpdf</a>, 
-  <a href="normrnd.html">normrnd</a>, 
-  <a href="normlike.html">normlike</a>, 
-  <a href="normstat.html">normstat</a>
+  <a href="logncdf.html">logncdf</a>, 
+  <a href="logninv.html">logninv</a>, 
+  <a href="lognpdf.html">lognpdf</a>, 
+  <a href="lognrnd.html">lognrnd</a>, 
+lognlike, 
+  <a href="lognstat.html">lognstat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/normfit.m">normfit</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/lognfit.m">lognfit</a>
 </div>
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -172,17 +158,17 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Sample 3 populations from 3 different normal distibutions
+ ## Sample 3 populations from 3 different log-normal distibutions
  randn ("seed", 1);    # for reproducibility
- r1 = normrnd(2, 5, 1000, 1);
+ r1 = lognrnd(0, 0.25, 1000, 1);
  randn ("seed", 2);    # for reproducibility
- r2 = normrnd(5, 2, 1000, 1);
+ r2 = lognrnd(0, 0.5, 1000, 1);
  randn ("seed", 3);    # for reproducibility
- r3 = normrnd(9, 4, 1000, 1);
+ r3 = lognrnd(0, 1, 1000, 1);
  r = [r1, r2, r3];
 
  ## Plot them normalized and fix their colors
- hist (r, 8, 1);
+ hist (r, 30, 2);
  h = findobj(gca,'Type','patch');
  set(h(1),'facecolor',"c");
  set(h(2),'facecolor',"g");
@@ -190,35 +176,37 @@
  hold on
 
  ## Estimate their mu and sigma parameters
- [muhat, sigmahat] = normfit (r);
+ mu_sigmaA = lognfit (r(:,1));
+ mu_sigmaB = lognfit (r(:,2));
+ mu_sigmaC = lognfit (r(:,3));
 
  ## Plot their estimated PDFs
- x = [min(r(:)):max(r(:))];
- y = normpdf (x, muhat(1), sigmahat(1));
+ x = [0:0.1:6];
+ y = lognpdf (x, mu_sigmaA(1), mu_sigmaA(2));
  plot (x, y, "-pr");
- y = normpdf (x, muhat(2), sigmahat(2));
+ y = lognpdf (x, mu_sigmaB(1), mu_sigmaB(2));
  plot (x, y, "-sg");
- y = normpdf (x, muhat(3), sigmahat(3));
+ y = lognpdf (x, mu_sigmaC(1), mu_sigmaC(2));
  plot (x, y, "-^c");
- ylim ([0, 1])
- xlim ([-20, 20])
+ ylim ([0, 2])
+ xlim ([0, 6])
  hold off
  legend ({"Normalized HIST of sample 1 with mu=2, σ=5", ...
           "Normalized HIST of sample 2 with mu=5, σ=2", ...
           "Normalized HIST of sample 3 with mu=9, σ=4", ...
           sprintf("PDF for sample 1 with estimated mu=%0.2f and σ=%0.2f", ...
-                  muhat(1), sigmahat(1)), ...
+                  mu_sigmaA(1), mu_sigmaA(2)), ...
           sprintf("PDF for sample 2 with estimated mu=%0.2f and σ=%0.2f", ...
-                  muhat(2), sigmahat(2)), ...
+                  mu_sigmaB(1), mu_sigmaB(2)), ...
           sprintf("PDF for sample 3 with estimated mu=%0.2f and σ=%0.2f", ...
-                  muhat(3), sigmahat(3))}, "location", "northwest")
- title ("Three population samples from different normal distibutions")
+                  mu_sigmaC(1), mu_sigmaC(2))}, "location", "northeast")
+ title ("Three population samples from different log-normal distibutions")
  hold off
 
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
-                    <img src="assets/normfit_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                    <img src="assets/lognfit_101.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>

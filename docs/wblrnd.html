@@ -81,10 +81,11 @@
 </p>
 <div class="ms-5">
 <p> <code><var>r</var> = wblrnd (<var>lambda</var>, <var>k</var>)</code> returns an array of random
- numbers chosen from the Weibull distribution with parameters <var>lambda</var> and
- <var>k</var>.  The size of <var>r</var> is the common size of <var>lambda</var> and <var>k</var>.
-  A scalar input functions as a constant matrix of the same size as the other
- inputs.  Both parameters must be positive reals.
+ numbers chosen from the Weibull distribution with scale parameter
+ <var>lambda</var> and shape parameter <var>k</var>.  The size of <var>r</var> is the common
+ size of <var>lambda</var> and <var>k</var>.  A scalar input functions as a constant
+ matrix of the same size as the other inputs.  Both parameters must be
+ positive reals.
 </p>
 <p> When called with a single size argument, return a square matrix with
  the dimension specified.  When called with more than one scalar argument the
@@ -92,10 +93,15 @@
  further arguments specify additional matrix dimensions.  The size may also
  be specified with a vector of dimensions <var>sz</var>.
 </p>
+<p> Further information about the Weibull distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Weibull_distribution">https://en.wikipedia.org/wiki/Weibull_distribution</a>
+</p>
 <p> <strong>See also: </strong>
   <a href="wblcdf.html">wblcdf</a>, 
   <a href="wblinv.html">wblinv</a>, 
   <a href="wblpdf.html">wblpdf</a>, 
+  <a href="wblfit.html">wblfit</a>, 
+  <a href="wbllike.html">wbllike</a>, 
   <a href="wblstat.html">wblstat</a>, 
   <a href="wblplot.html">wblplot</a>
 </p>

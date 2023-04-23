@@ -88,10 +88,10 @@
 <p> <code>[<var>paramhat</var>, <var>paramci</var>] = betafit (<var>x</var>)</code> returns the 95%
  confidence intervals for the parameter estimates.
 </p>
-<p> <code>[&hellip;] = betafit (<var>x</var>, <var>alpha</var>)</code> returns
- <code>100 * (1 - <var>alpha</var>)</code> percent confidence intervals for the
- parameter estimates.  By default, <math><var>alpha</var> = 0.05</math> corresponding
- fidence intervals.
+<p> <code>[&hellip;] = betafit (<var>x</var>, <var>alpha</var>)</code> also returns the
+ <code>100 * (1 - <var>alpha</var>)</code> percent confidence intervals of the estimated
+ parameter.  By default, the optional argument <var>alpha</var> is 0.05
+ corresponding to 95% confidence intervals.
 </p>
 <p> The Beta distribution is defined on the open interval <math>(0,1)</math>.  However,
  <code>betafit</code> can also compute the unbounded beta likelihood function for

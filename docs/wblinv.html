@@ -87,6 +87,9 @@
 </p>
 <p> Default values are <var>lambda</var> = 1, <var>k</var> = 1.
 </p>
+<p> Further information about the Weibull distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Weibull_distribution">https://en.wikipedia.org/wiki/Weibull_distribution</a>
+</p>
 <p> <strong>See also: </strong>
   <a href="wblcdf.html">wblcdf</a>, 
   <a href="wblpdf.html">wblpdf</a>, 
@@ -97,6 +100,51 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/wblinv.m">wblinv</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various iCDFs from the Weibull distribution
+ p = 0.001:0.001:0.999;
+ x1 = wblinv (p, 1, 0.5);
+ x2 = wblinv (p, 1, 1);
+ x3 = wblinv (p, 1, 1.5);
+ x4 = wblinv (p, 1, 5);
+ plot (p, x1, "-b", p, x2, "-r", p, x3, "-m", p, x4, "-g")
+ ylim ([0, 2.5])
+ grid on
+ legend ({"λ = 1, k = 0.5", "λ = 1, k = 1",  ...
+          "λ = 1, k = 1.5", "λ = 1, k = 5"}, "location", "northwest")
+ title ("Weibull iCDF")
+ xlabel ("probability")
+ ylabel ("x")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/wblinv_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>
