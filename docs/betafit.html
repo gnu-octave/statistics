@@ -142,7 +142,7 @@
  set(h(2), "facecolor", "g");
  hold on
 
- ## Estimate their lambda parameter
+ ## Estimate their shape parameters
  a_b_A = betafit (r(:,1));
  a_b_B = betafit (r(:,2));
 
@@ -152,7 +152,7 @@
  plot (x, y, "-pr");
  y = betapdf (x, a_b_B(1), a_b_B(2));
  plot (x, y, "-sg");
- hold off
+ ylim ([0, 4])
  legend ({"Normalized HIST of sample 1 with α=2 and β=5", ...
           "Normalized HIST of sample 2 with α=2 and β=2", ...
           sprintf("PDF for sample 1 with estimated α=%0.2f and β=%0.2f", ...

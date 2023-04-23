@@ -171,10 +171,40 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- data = 1:50;
- [pfit, pci] = gevfit (data);
- p1 = gevcdf (data, pfit(1), pfit(2), pfit(3));
- plot (data, p1);
+ ## Sample 2 populations from 2 different exponential distibutions
+ rand ("seed", 1);   # for reproducibility
+ r1 = gevrnd (-0.5, 1, 2, 5000, 1);
+ rand ("seed", 2);   # for reproducibility
+ r2 = gevrnd (0, 1, -4, 5000, 1);
+ r = [r1, r2];
+
+ ## Plot them normalized and fix their colors
+ hist (r, 50, 5);
+ h = findobj(gca,'Type','patch');
+ set(h(1),'facecolor',"c");
+ set(h(2),'facecolor',"g");
+ hold on
+
+ ## Estimate their k, sigma, and mu parameters
+ k_sigma_muA = gevfit (r(:,1));
+ k_sigma_muB = gevfit (r(:,2));
+
+ ## Plot their estimated PDFs
+ x = [-10:0.5:20];
+ y = gevpdf (x, k_sigma_muA(1), k_sigma_muA(2), k_sigma_muA(3));
+ plot (x, y, "-pr");
+ y = gevpdf (x, k_sigma_muB(1), k_sigma_muB(2), k_sigma_muB(3));
+ plot (x, y, "-sg");
+ ylim ([0, 0.7])
+ xlim ([-7, 5])
+ legend ({"Normalized HIST of sample 1 with ξ=-0.5, σ=1, μ=2", ...
+          "Normalized HIST of sample 2 with ξ=0, σ=1, μ=-4",
+      sprintf("PDF for sample 1 with estimated ξ=%0.2f, σ=%0.2f, μ=%0.2f", ...
+                  k_sigma_muA(1), k_sigma_muA(2), k_sigma_muA(3)), ...
+      sprintf("PDF for sample 3 with estimated ξ=%0.2f, σ=%0.2f, μ=%0.2f", ...
+                  k_sigma_muB(1), k_sigma_muB(2), k_sigma_muB(3))})
+ title ("Two population samples from different exponential distibutions")
+ hold off
 
                     </pre></td></tr></tbody>
                   </table>

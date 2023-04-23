@@ -178,6 +178,7 @@
                     <td><pre class="example">
 
  x = meshgrid (1:6);
+ randn ("seed", 15);    # for reproducibility
  x = x + normrnd (0, 1, 6, 6);
  anova1 (x, [], 'off');
 
@@ -186,9 +187,9 @@
 
 Source        SS      df        MS       F      Prob>F
 ------------------------------------------------------
-Groups    100.9941     5    20.1988    25.02    0.0000
-Error      24.2188    30     0.8073
-Total     125.2128    35
+Groups     96.8124     5    19.3625    31.76    0.0000
+Error      18.2881    30     0.6096
+Total     115.1004    35
 
                     </pre></td></tr></tbody>
                   </table>
@@ -218,6 +219,7 @@ Total     125.2128    35
                     <td><pre class="example">
 
  x = meshgrid (1:6);
+ randn ("seed", 15);    # for reproducibility
  x = x + normrnd (0, 1, 6, 6);
  [p, atab] = anova1(x);
 
@@ -226,9 +228,9 @@ Total     125.2128    35
 
 Source        SS      df        MS       F      Prob>F
 ------------------------------------------------------
-Groups    128.1754     5    25.6351    30.59    0.0000
-Error      25.1400    30     0.8380
-Total     153.3154    35
+Groups     96.8124     5    19.3625    31.76    0.0000
+Error      18.2881    30     0.6096
+Total     115.1004    35
 
                     </pre></td></tr></tbody>
                   </table>
@@ -261,6 +263,7 @@ Total     153.3154    35
                     <td><pre class="example">
 
  x = ones (50, 4) .* [-2, 0, 1, 5];
+ randn ("seed", 13);    # for reproducibility
  x = x + normrnd (0, 2, 50, 4);
  groups = {"A", "B", "C", "D"};
  anova1 (x, groups);
@@ -270,9 +273,9 @@ Total     153.3154    35
 
 Source        SS      df        MS       F      Prob>F
 ------------------------------------------------------
-Groups   1517.8427     3   505.9476   115.22    0.0000
-Error     860.6441   196     4.3910
-Total    2378.4868   199
+Groups   1392.4448     3   464.1483   105.41    0.0000
+Error     863.0487   196     4.4033
+Total    2255.4935   199
 
                     </pre></td></tr></tbody>
                   </table>
