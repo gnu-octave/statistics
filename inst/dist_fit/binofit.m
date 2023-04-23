@@ -135,7 +135,7 @@ endfunction
 %! title ("Two population samples from different binomial distibutions")
 %! hold off
 
-## test output
+## Test output
 %!test
 %! x = 0:3;
 %! [pshat, psci] = binofit (x, 3);
@@ -145,7 +145,7 @@ endfunction
 %! assert (psci(3,:), [0.0943, 0.9916], 1e-4);
 %! assert (psci(4,:), [0.2924, 1.0000], 1e-4);
 
-## test input validation
+## Test input validation
 %!error<binofit: too few input arguments.> binofit ([1 2 3 4])
 %!error<binofit: X cannot have negative values.> binofit (-1, [1 2 3 3])
 %!error<binofit: N must be a non-negative integer.> binofit (1, [1 2 -1 3])

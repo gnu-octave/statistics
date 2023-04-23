@@ -182,7 +182,7 @@ endfunction
 %! title ("Two population samples from different Beta distibutions")
 %! hold off
 
-## test results
+## Test results
 %!test
 %! x = 0.01:0.02:0.99;
 %! [paramhat, paramci] = betafit (x);
@@ -203,7 +203,7 @@ endfunction
 %! assert (paramhat, paramhat_out, 1e-4);
 %! assert (paramci, paramci_out, 1e-4);
 
-## test input validation
+## Test input validation
 %!error<betafit: X must be a vector of real values.> betafit ([0.2, 0.5+i]);
 %!error<betafit: X must be a vector of real values.> betafit (ones (2,2) * 0.5);
 %!error<betafit: X must be in the range> betafit ([0.5, 1.2]);
