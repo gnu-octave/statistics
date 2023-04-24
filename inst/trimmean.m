@@ -61,18 +61,18 @@
 ## full weight for the values between them.
 ## @end multitable
 ##
-## @code{@var{m} = trimmean (@dots}, @qcode{"all"})} returns the trimmed mean of
-## all the values in @var{x} using any of the input argument combinations in the
-## previous syntaxes.
+## @code{@var{m} = trimmean (@dots{}, @qcode{"all"})} returns the trimmed mean
+## of all the values in @var{x} using any of the input argument combinations in
+## the previous syntaxes.
 ##
-## @code{@var{m} = trimmean (@dots}, @var{dim})} returns the trimmed mean along
+## @code{@var{m} = trimmean (@dots{}, @var{dim})} returns the trimmed mean along
 ## the operating dimension @var{dim} specified as a positive integer scalar.  If
 ## not specified, then the default value is the first nonsingleton dimension of
 ## @var{x}, i.e. whose size does not equal 1.  If @var{dim} is greater than
 ## @qcode{ndims (@var{X})} or if @qcode{size (@var{x}, @var{dim})} is 1, then
 ## @code{trimmean} returns @var{x}.
 ##
-## @code{@var{m} = trimmean (@dots}, @var{vecdim})} returns the trimmed mean
+## @code{@var{m} = trimmean (@dots{}, @var{vecdim})} returns the trimmed mean
 ## over the dimensions specified in the vector @var{vecdim}.  For example, if
 ## @var{x} is a 2-by-3-by-4 array, then @code{mean (@var{x}, [1 2])} returns a
 ## 1-by-1-by-4 array.  Each element of the output array is the mean of the
