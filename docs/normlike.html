@@ -71,34 +71,34 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>nlogL</var> = <b>normlike</b><i> (<var>params</var>, <var>data</var>)</i></dt>
-<dt><u>statistics:</u> [<var>nlogL</var>, <var>avar</var>] = <b>normlike</b><i> (<var>params</var>, <var>data</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>normlike</b><i> (<var>params</var>, <var>data</var>, <var>censor</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>normlike</b><i> (<var>params</var>, <var>data</var>, <var>censor</var>, <var>freq</var>)</i></dt>
+<dt><u>statistics:</u> <var>nlogL</var> = <b>normlike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>nlogL</var>, <var>avar</var>] = <b>normlike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>normlike</b><i> (<var>params</var>, <var>x</var>, <var>censor</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>normlike</b><i> (<var>params</var>, <var>x</var>, <var>censor</var>, <var>freq</var>)</i></dt>
 </dl>
 
 <p> Negative log-likelihood for the normal distribution.
 </p>
 <div class="ms-5">
-<p> <code><var>nlogL</var> = normlike (<var>params</var>, <var>data</var>)</code> returns the
- negative of the log-likelihood for the normal distribution, evaluated at
- parameters <var>params(1)</var> = mean and <var>params(2)</var> = standard deviation,
- given <var>data</var>.  <var>nlogL</var> is a scalar.
+<p> <code><var>nlogL</var> = normlike (<var>params</var>, <var>x</var>)</code> returns the negative
+ log-likelihood for the normal distribution, evaluated at parameters
+ <var>params(1)</var> = mean and <var>params(2)</var> = standard deviation, given
+ <var>x</var>.  <var>nlogL</var> is a scalar.
 </p>
-<p> <code>[<var>nlogL</var>, <var>avar</var>] = normlike (<var>params</var>, <var>data</var>)</code>
+<p> <code>[<var>nlogL</var>, <var>avar</var>] = normlike (<var>params</var>, <var>x</var>)</code>
  returns the inverse of Fisher&rsquo;s information matrix, <var>avar</var>.  If the input
  parameter values in <var>params</var> are the maximum likelihood estimates, the
  diagonal elements of <var>avar</var> are their asymptotic variances.  <var>avar</var>
  is based on the observed Fisher&rsquo;s information, not the expected information.
 </p>
-<p> <code>[&hellip;] = normlike (<var>params</var>, <var>data</var>, <var>censor</var>)</code> accepts
- a boolean vector of the same size as <var>data</var> that is 1 for observations
+<p> <code>[&hellip;] = normlike (<var>params</var>, <var>x</var>, <var>censor</var>)</code> accepts
+ a boolean vector of the same size as <var>x</var> that is 1 for observations
  that are right-censored and 0 for observations that are observed exactly.
 </p>
-<p> <code>[&hellip;] = normlike (<var>params</var>, <var>data</var>, <var>censor</var>,
- <var>freq</var>)</code> accepts a frequency vector of the same size as <var>data</var>.
+<p> <code>[&hellip;] = normlike (<var>params</var>, <var>x</var>, <var>censor</var>,
+ <var>freq</var>)</code> accepts a frequency vector of the same size as <var>x</var>.
  <var>freq</var> typically contains integer frequencies for the corresponding
- elements in <var>data</var>, but it may contain any non-integer non-negative
+ elements in <var>x</var>, but it may contain any non-integer non-negative
  values.  Pass in [] for <var>censor</var> to use its default value.
 </p>
 <p> <strong>See also: </strong>
