@@ -1,6 +1,6 @@
-## Copyright (C) 2023, Mohammed Azmat alphahan <azmat.dev0@gmail.com>
+## Copyright (C) 2023, Mohammed Azmat khan <azmat.dev0@gmail.com>
 ##
-## This file is part of the statistics pacalphaage for GNU Octave.
+## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software; you can redistribute it and/or modify it under
 ## the terms of the GNU General Public License as published by the Free Software
@@ -37,7 +37,7 @@
 
 function b = ridge (y,X,alpha,flag)
 
-  % input parameter checalpha
+  % input parameter check
   if  (nargin > 4 || nargin < 3)
     error ("ridge: Invalid number of arguments.");
   endif
