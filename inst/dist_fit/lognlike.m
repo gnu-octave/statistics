@@ -17,94 +17,135 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{nlogL} =} lognlike (@var{params}, @var{data})
-## @deftypefnx {statistics} {[@var{nlogL}, @var{avar}] =} lognlike (@var{params}, @var{data})
-## @deftypefnx {statistics} {[@dots{}] =} lognlike (@var{params}, @var{data}, @var{censor})
-## @deftypefnx {statistics} {[@dots{}] =} lognlike (@var{params}, @var{data}, @var{censor}, @var{freq})
+## @deftypefn  {statistics} {@var{nlogL} =} lognlike (@var{params}, @var{x})
+## @deftypefnx {statistics} {[@var{nlogL}, @var{avar}] =} lognlike (@var{params}, @var{x})
+## @deftypefnx {statistics} {[@dots{}] =} lognlike (@var{params}, @var{x}, @var{censor})
+## @deftypefnx {statistics} {[@dots{}] =} lognlike (@var{params}, @var{x}, @var{censor}, @var{freq})
 ##
 ## Negative log-likelihood for the normal distribution.
 ##
-## @code{@var{paramhat} = lognfit (@var{x})} returns the maximum likelihood
-## estimates of the parameters of the log-normal distribution given the data in
-## vector @var{x}.  @qcode{@var{paramhat}([1, 2])} corresponds to the @math{α} and
-## @math{β} shape parameters, respectively.  Missing values, @qcode{NaNs}, are
-## ignored.
+## @code{@var{nlogL} = lognlike (@var{params}, @var{x})} returns the negative
+## log-likelihood of the data in @var{x} for the log-normal distribution given
+## parameters @qcode{@var{paramhat}([1, 2])}, which correspond to the mean and
+## standard deviation of the associated normal distribution.  Missing values,
+## @qcode{NaNs}, are ignored.  Negative values of @var{x} are treated as missing
+## values.  @var{nlogL} is a scalar.
+##
+## @code{[@var{nlogL}, @var{avar}] = lognlike (@var{params}, @var{x})}
+## returns the inverse of Fisher's information matrix, @var{avar}.  If the input
+## parameter values in @var{params} are the maximum likelihood estimates, the
+## diagonal elements of @var{avar} are their asymptotic variances.  @var{avar}
+## is based on the observed Fisher's information, not the expected information.
+##
+## @code{[@dots{}] = lognlike (@var{params}, @var{x}, @var{censor})} accepts
+## a boolean vector of the same size as @var{x} that is 1 for observations
+## that are right-censored and 0 for observations that are observed exactly.
+##
+## @code{[@dots{}] = lognlike (@var{params}, @var{x}, @var{censor},
+## @var{freq})} accepts a frequency vector of the same size as @var{x}.
+## @var{freq} typically contains integer frequencies for the corresponding
+## elements in @var{x}, but it may contain any non-integer non-negative
+## values.  Pass in [] for @var{censor} to use its default value.
 ##
 ## @seealso{logncdf, logninv, lognpdf, lognrnd, lognfit, lognstat}
 ## @end deftypefn
 
-function [nlogL,avar] = lognlike (params, data, censoring, freq)
-%LOGNLIKE Negative log-likelihood for the lognormal distribution.
-%   NLOGL = LOGNLIKE(PARAMS,DATA) returns the negative log-likelihood of
-%   DATA for the lognormal distribution with parameters PARAMS(1) = MU and
-%   PARAMS(2) = SIGMA.  MU and SIGMA are the mean and standard deviation,
-%   respectively, of the associated normal distribution.  NLOGL is a scalar.
-%
-%   [NLOGL, AVAR] = LOGNLIKE(PARAMS,DATA) returns the inverse of Fisher's
-%   information matrix.  If the input parameter values in PARAMS are
-%   the maximum likelihood estimates, the diagonal elements of AVAR are
-%   their asymptotic variances.  AVAR is based on the observed Fisher's
-%   information, not the expected information.
-%
-%   [...] = LOGNLIKE(PARAMS,DATA,CENSORING) accepts a boolean vector of the
-%   same size as DATA that is 1 for observations that are right-censored
-%   and 0 for observations that are observed exactly.
-%
-%   [...] = LOGNLIKE(PARAMS,DATA,CENSORING,FREQ) accepts a frequency vector
-%   of the same size as DATA.  FREQ typically contains integer frequencies
-%   for the corresponding elements in DATA, but may contain any non-integer
-%   non-negative values.  Pass in [] for CENSORING to use its default
-%   value.
-%
-%   See also LOGNCDF, LOGNFIT, LOGNINV, LOGNPDF, LOGNRND, LOGNSTAT.
+function [nlogL, avar] = lognlike (params, x, censor, freq)
 
-%   References:
-%      [1] Evans, M., Hastings, N., and Peacock, B. (1993) Statistical
-%          Distributions, 2nd ed., Wiley, 170pp.
-%      [2] Lawless, J.F. (1982) Statistical Models and Methods for Lifetime
-%          Data, Wiley, New York, 580pp.
-%      [3} Meeker, W.Q. and L.A. Escobar (1998) Statistical Methods for
-%          Reliability Data, Wiley, New York, 680pp.
-
-%   Copyright 1993-2011 The MathWorks, Inc.
-
-
-if nargin < 2
-    error(message('stats:lognlike:TooFewInputs'));
-elseif numel(data) > length(data)
-    error(message('stats:lognlike:VectorRequired'));
-end
-if numel(params)~=2
-    error(message('stats:probdists:WrongParameterLength',2));
-end
-if nargin < 3 || isempty(censoring)
-    censoring = [];
-elseif ~isequal(size(data), size(censoring))
-    error(message('stats:lognlike:InputSizeMismatchCensoring'));
-end
-if nargin < 4 || isempty(freq)
+  ## Check input arguments
+  if (nargin < 2)
+    error ("lognlike: too few input arguments.");
+  endif
+  if (! isvector (x))
+    error ("lognlike: X must be a vector.");
+  endif
+  if (numel (params) != 2)
+    error ("lognlike: PARAMS must be a two-element vector.");
+  endif
+  if (nargin < 3 || isempty (censor))
+    censor = [];
+  elseif (! isequal (size (x), size (censor)))
+    error ("lognlike: X and CENSOR vectors mismatch.");
+  endif
+  if nargin < 4 || isempty (freq)
     freq = [];
-elseif isequal(size(data), size(freq))
-    zerowgts = find(freq == 0);
-    if numel(zerowgts) > 0
-        data(zerowgts) = [];
-        if numel(censoring)==numel(freq), censoring(zerowgts) = []; end
-        freq(zerowgts) = [];
-    end
-else
-    error(message('stats:lognlike:InputSizeMismatchFreq'));
-end
+  elseif (isequal (size (x), size (freq)))
+    nulls = find (freq == 0);
+    if (numel (nulls) > 0)
+      x(nulls) = [];
+      if (numel (censor) == numel (freq))
+        censor(nulls) = [];
+      endif
+      freq(nulls) = [];
+    endif
+  else
+    error ("lognlike: X and FREQ vectors mismatch.");
+  endif
 
-% Return NaN for out of range data.
-data(data < 0) = NaN;
+  ## Treat negative data in X as missing values
+  x(x < 0) = NaN;
 
-logdata = log(data);
+  ## Calculate on log data
+  logx = log(x);
+  if (nargout <= 1)
+    nlogL = normlike (params, logx, censor, freq);
+  else
+    [nlogL, avar] = normlike (params, logx, censor, freq);
+  endif
 
-if nargout <= 1
-    nlogL = normlike(params,logdata,censoring,freq);
-else
-    [nlogL,avar] = normlike(params,logdata,censoring,freq);
-end
-if isempty(freq), freq = 1; end
-if isempty(censoring), censoring = 0; end
-nlogL = nlogL + sum(freq .* logdata .* (1-censoring));
+  ## Compute censored and frequency
+  if (isempty (freq))
+    freq = 1;
+  endif
+  if (isempty (censor))
+    censor = 0;
+  endif
+  nlogL = nlogL + sum (freq .* logx .* (1 - censor));
+
+endfunction
+
+## Test input validation
+%!error<lognlike: too few input arguments.> lognlike ([12, 15]);
+%!error<lognlike: X must be a vector.> lognlike ([12, 15], ones (2));
+%!error<lognlike: PARAMS must be a two-element vector.> ...
+%! lognlike ([12, 15, 3], [1:50]);
+%!error<lognlike: X and CENSOR vectors mismatch.> ...
+%! lognlike ([12, 15], [1:50], [1, 2, 3]);
+%!error<lognlike: X and FREQ vectors mismatch.> ...
+%! lognlike ([12, 15], [1:50], [], [1, 2, 3]);
+
+## Results compared with Matlab
+%!test
+%! x = 1:50;
+%! [nlogL, avar] = lognlike ([0, 0.25], x);
+%! avar_out = [-5.4749e-03, 2.8308e-04; 2.8308e-04, -1.1916e-05];
+%! assert (nlogL, 3962.330333301793, 1e-10);
+%! assert (avar, avar_out, 1e-7);
+%!test
+%! x = 1:50;
+%! [nlogL, avar] = lognlike ([0, 0.25], x * 0.5);
+%! avar_out = [-7.6229e-03, 4.8722e-04; 4.8722e-04, -2.6754e-05];
+%! assert (nlogL, 2473.183051225747, 1e-10);
+%! assert (avar, avar_out, 1e-7);
+%!test
+%! x = 1:50;
+%! [nlogL, avar] = lognlike ([0, 0.5], x);
+%! avar_out = [-2.1152e-02, 2.2017e-03; 2.2017e-03, -1.8535e-04];
+%! assert (nlogL, 1119.072424020455, 1e-12);
+%! assert (avar, avar_out, 1e-6);
+%!test
+%! x = 1:50;
+%! censor = ones (1, 50);
+%! censor([2, 4, 6, 8, 12, 14]) = 0;
+%! [nlogL, avar] = lognlike ([0, 0.5], x, censor);
+%! avar_out = [-1.9823e-02, 2.0370e-03; 2.0370e-03, -1.6618e-04];
+%! assert (nlogL, 1091.746371145497, 1e-12);
+%! assert (avar, avar_out, 1e-6);
+%!test
+%! x = 1:50;
+%! censor = ones (1, 50);
+%! censor([2, 4, 6, 8, 12, 14]) = 0;
+%! [nlogL, avar] = lognlike ([0, 1], x, censor);
+%! avar_out = [-6.8634e-02, 1.3968e-02; 1.3968e-02, -2.1664e-03];
+%! assert (nlogL, 349.3969104144271, 1e-12);
+%! assert (avar, avar_out, 1e-6);

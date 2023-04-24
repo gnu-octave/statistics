@@ -519,6 +519,8 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** lognfit (fully Matlab compatible)
 
+ ** lognlike (fully Matlab compatible)
+
  ** mad (fully Matlab compatible)
 
  ** normfit (fully Matlab compatible)

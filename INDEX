@@ -116,6 +116,7 @@ Distribution Fitting
  gpfit
  gplike
  lognfit
+ lognlike
  normfit
  normlike
  poissfit
