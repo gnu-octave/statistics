@@ -48,7 +48,7 @@
 ## @seealso{normcdf, norminv, normpdf, normrnd, normfit, normstat}
 ## @end deftypefn
 
-function [nlogL, avar] = normlike (params ,x, censor, freq)
+function [nlogL, avar] = normlike (params, x, censor, freq)
 
   ## Check input arguments
   if (nargin < 2)
@@ -65,7 +65,7 @@ function [nlogL, avar] = normlike (params ,x, censor, freq)
   elseif (! isequal (size (x), size (censor)))
     error ("normlike: X and CENSOR vectors mismatch.");
   endif
-  if nargin < 4 || isempty(freq)
+  if nargin < 4 || isempty (freq)
     freq = ones (size (x));
   elseif (isequal (size (x), size (freq)))
     nulls = find (freq == 0);
