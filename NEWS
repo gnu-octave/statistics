@@ -540,6 +540,8 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** tabulate: fixed MATLAB compatibility
 
+ ** trimmean: fixed MATLAB compatibility
+
  Removed Functions:
  ==================
 
