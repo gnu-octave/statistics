@@ -17,9 +17,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {[@var{nlogL}, @var{Grad}, @var{ACOV}] =} gevlike (@var{params}, @var{data})
+## @deftypefn  {statistics} {[@var{nlogL}, @var{Grad}, @var{ACOV}] =} gevlike (@var{params}, @var{x})
 ##
-## Compute the negative log-likelihood of data under the generalized extreme
+## Compute the negative log-likelihood of x under the generalized extreme
 ## value (GEV) distribution with given parameter values.
 ##
 ## @subheading Arguments
@@ -31,7 +31,7 @@
 ## the scale parameter of the GEV distribution, and @var{mu} is the location
 ## parameter of the GEV distribution.
 ## @item
-## @var{data} is the vector of given values.
+## @var{x} is the vector of given values.
 ##
 ## @end itemize
 ##
@@ -74,7 +74,7 @@
 ## @seealso{gevcdf, gevfit, gevinv, gevpdf, gevrnd, gevstat}
 ## @end deftypefn
 
-function [nlogL, Grad, ACOV] = gevlike (params, data)
+function [nlogL, Grad, ACOV] = gevlike (params, x)
 
   ## Check arguments
   if (nargin != 2)
@@ -86,15 +86,15 @@ function [nlogL, Grad, ACOV] = gevlike (params, data)
   mu = params(3);
 
   ## Calculate negative log likelihood
-  [nll, k_terms] = gevnll (data, k, sigma, mu);
+  [nll, k_terms] = gevnll (x, k, sigma, mu);
   nlogL = sum (nll(:));
 
   ## Optionally calculate the first and second derivatives of the negative log
   ## likelihood with respect to parameters
   if (nargout > 1)
-  	 [Grad, kk_terms] = gevgrad (data, k, sigma, mu, k_terms);
+  	 [Grad, kk_terms] = gevgrad (x, k, sigma, mu, k_terms);
     if (nargout > 2)
-    	FIM = gevfim (data, k, sigma, mu, k_terms, kk_terms);
+    	FIM = gevfim (x, k, sigma, mu, k_terms, kk_terms);
       ACOV = inv (FIM);
     endif
   endif
@@ -136,7 +136,7 @@ function [nlogL, k_terms] = gevnll (x, k, sigma, mu)
 
 endfunction
 
-## Calculate the gradient of the negative log likelihood of data x with respect
+## Calculate the gradient of the negative log likelihood of x x with respect
 ## to the parameters of the generalized extreme value distribution for gevlike
 function [G, kk_terms] = gevgrad (x, k, sigma, mu, k_terms)
 

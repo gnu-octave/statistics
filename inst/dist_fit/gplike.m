@@ -17,18 +17,18 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{nlogL} =} gplike (@var{params}, @var{data})
-## @deftypefnx {statistics} {[@var{nlogL}, @var{avar}] =} gplike (@var{params}, @var{data})
+## @deftypefn  {statistics} {@var{nlogL} =} gplike (@var{params}, @var{x})
+## @deftypefnx {statistics} {[@var{nlogL}, @var{avar}] =} gplike (@var{params}, @var{x})
 ##
 ## Negative log-likelihood for the generalized Pareto distribution.
 ##
-## @code{@var{nlogL} = gplike (@var{params}, @var{data})} returns the negative
+## @code{@var{nlogL} = gplike (@var{params}, @var{x})} returns the negative
 ## of the log-likelihood for the two-parameter generalized Pareto distribution,
 ## evaluated at @code{@var{params(1)} = SHAPE} and
-## @code{@var{params(2)} = SCALE} given @var{data}.  @code{gplike} does not
+## @code{@var{params(2)} = SCALE} given @var{x}.  @code{gplike} does not
 ## allow a LOCATION parameter.  @var{nlogL} is a scalar.
 ##
-## @code{[@var{nlogL}, @var{avar}] = gplike (@var{params}, @var{data})} returns
+## @code{[@var{nlogL}, @var{avar}] = gplike (@var{params}, @var{x})} returns
 ## the inverse of Fisher's information matrix, @var{acov}.  If the input
 ## parameter values in @var{params} are the maximum likelihood estimates, the
 ## diagonal elements of @var{acov} are their asymptotic variances.   @var{acov}
@@ -48,14 +48,14 @@
 ## @seealso{gpcdf, gpinv, gppdf, gprnd, gpfit, gpstat}
 ## @end deftypefn
 
-function [nlogL, acov] = gplike (params, data)
+function [nlogL, acov] = gplike (params, x)
 
   ## Check input arguments
   if (nargin < 2)
     error ("gplike: too few input arguments.");
   endif
-  if (! isvector (data))
-    error ("gplike: DATA must be a vector.");
+  if (! isvector (x))
+    error ("gplike: X must be a vector.");
   endif
   if (numel (params) != 2)
     error ("gplike: PARAMS must be a two-element vector.");
@@ -63,9 +63,9 @@ function [nlogL, acov] = gplike (params, data)
   ## Get SHAPE and SCALE parameters
   shape = params(1);
   scale = params(2);
-  ## Get sample size and scale data
-  sz = numel (data);
-  z = data ./ scale;
+  ## Get sample size and scale x
+  sz = numel (x);
+  z = x ./ scale;
 
   ## For SHAPE > 0
   if (abs (shape) > eps)
@@ -108,8 +108,8 @@ endfunction
 ## Test input validation
 %!error<gplike: too few input arguments.> gplike ()
 %!error<gplike: too few input arguments.> gplike (1)
-%!error<gplike: DATA must be a vector.> gplike ([1, 2], [])
-%!error<gplike: DATA must be a vector.> gplike ([1, 2], ones (2))
+%!error<gplike: X must be a vector.> gplike ([1, 2], [])
+%!error<gplike: X must be a vector.> gplike ([1, 2], ones (2))
 %!error<gplike: PARAMS must be a two-element vector.> gplike (2, [1:10])
 
 ## Test results against MATLAB output
