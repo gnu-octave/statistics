@@ -71,66 +71,81 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>coeff</var> = <b>pca</b><i>(<var>X</var>)</i></dt>
-<dt><u>statistics:</u> <var>coeff</var> = <b>pca</b><i>(<var>X</var>, Name, Value)</i></dt>
-<dt><u>statistics:</u> [<var>coeff</var>, <var>score</var>, <var>latent</var>] = <b>pca</b><i>(&hellip;)</i></dt>
-<dt><u>statistics:</u> [<var>coeff</var>, <var>score</var>, <var>latent</var>, <var>tsquared</var>] = <b>pca</b><i>(&hellip;)</i></dt>
-<dt><u>statistics:</u> [<var>coeff</var>, <var>score</var>, <var>latent</var>, <var>tsquared</var>, <var>explained</var>, <var>mu</var>] = <b>pca</b><i>(&hellip;)</i></dt>
+<dt><u>statistics:</u> <var>coeff</var> = <b>pca</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>coeff</var> = <b>pca</b><i> (<var>x</var>, <var>Name</var>, <var>Value</var>)</i></dt>
+<dt><u>statistics:</u> [<var>coeff</var>, <var>score</var>, <var>latent</var>] = <b>pca</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>coeff</var>, <var>score</var>, <var>latent</var>, <var>tsquared</var>] = <b>pca</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>coeff</var>, <var>score</var>, <var>latent</var>, <var>tsquared</var>, <var>explained</var>, <var>mu</var>] = <b>pca</b><i> (&hellip;)</i></dt>
 </dl>
 
-<p> Performs a principal component analysis on a data matrix X.
+<p> Performs a principal component analysis on a data matrix.
 </p>
 <div class="ms-5">
-<p> A principal component analysis of a data matrix of <code>n</code> observations in a
- <code>p</code>-dimensional space returns a <code>p</code>-by-<code>p</code> transformation
- matrix, to perform a change of basis on the data. The first component of the
- new basis is the direction that maximizes the variance of the projected data.
+<p> A principal component analysis of a data matrix of <math>N</math> observations in a
+ <math>D</math> dimensional space returns a <math>D&times;D</math> transformation matrix, to
+ perform a change of basis on the data.  The first component of the new basis
+ is the direction that maximizes the variance of the projected data.
 </p>
 <p> Input argument:
  </p><ul>
 <li>
- <var>x</var> : a <code>n</code>-by-<code>p</code> data matrix
+ <var>x</var> : a <math>N&times;D</math> data matrix
  </li></ul>
 
-<p> Pair arguments:
+<p> The following <var>Name</var>, <var>Value</var> pair arguments can be used:
  </p><ul>
 <li>
- <code>Algorithm</code> : the algorithm to use, it can be either <code>eig</code>,
- for eigenvalue decomposition, or <code>svd</code> (default), for singular value
- decomposition
- </li><li>
- <code>Centered</code> : boolean indicator for centering the observation data, it is
- <code>true</code> by default
- </li><li>
- <code>Economy</code> : boolean indicator for the economy size output, it is
- <code>true</code> by default; <code>pca</code> returns only the elements of <var>latent</var>
- that are not necessarily zero, and the corresponding columns of <var>coeff</var>
- and <var>score</var>, that is, when <code>n &lt;= p</code>, only the first <code>n - 1</code>
- </li><li>
- <code>NumComponents</code> : the number of components <code>k</code> to return, if
- <code>k &lt; p</code>, then only the first <code>k</code> columns of <var>coeff</var>
- and <var>score</var> are returned
- </li><li>
- <code>Rows</code> : action to take with missing values, it can be either
- <code>complete</code> (default), missing values are removed before computation,
- <code>pairwise</code> (only with algorithm <code>eig</code>), the covariance of rows with
- missing data is computed using the available data, but the covariance matrix
- could be not positive definite, which triggers the termination of <code>pca</code>,
- <code>complete</code>, missing values are not allowed, <code>pca</code> terminates with
- an error if there are any
- </li><li>
- <code>Weights</code> : observation weights, it is a vector of positive values of
- length <code>n</code>
- </li><li>
- <code>VariableWeights</code> : variable weights, it can be either a vector of
- positive values of length <code>p</code> or the string <code>variance</code> to use the
- sample variance as weights
+ <code>&quot;Algorithm&quot;</code> defines the algorithm to use:
+ <ul>
+<li> <code>&quot;svd&quot;</code> (default), for singular value decomposition
+ </li><li> <code>&quot;eig&quot;</code> for eigenvalue decomposition
  </li></ul>
+
+ </li><li>
+ <code>&quot;Centered&quot;</code> is a boolean indicator for centering the observation data.
+ It is <code>true</code> by default.
+ </li><li>
+
+ <code>&quot;Economy&quot;</code> is a boolean indicator for the economy size output.  It is
+ <code>true</code> by default.  Hence, <code>pca</code> returns only the elements of
+ <var>latent</var> that are not necessarily zero, and the corresponding columns of
+ <var>coeff</var> and <var>score</var>, that is, when <math>N &lt;= D</math>, only the first
+ <math>N - 1</math>.
+
+ </li><li>
+ <code>&quot;NumComponents&quot;</code> defines the number of components <math>k</math> to return.
+ If <math>k &lt; p</math>, then only the first <math>k</math> columns of <var>coeff</var> and
+ <var>score</var> are returned.
+
+ </li><li>
+ <code>&quot;Rows&quot;</code> defines how to handle missing values:
+ <ul>
+<li> <code>&quot;complete&quot;</code> (default), missing values are removed before
+ computation.
+ </li><li> <code>&quot;pairwise&quot;</code> (only valid when <code>&quot;Algorithm&quot;</code> is
+ <code>&quot;eig&quot;</code>), the covariance of rows with missing data is computed using
+ the available data, but the covariance matrix could be not positive definite,
+ which triggers the termination of <code>pca</code>.
+ </li><li> <code>&quot;complete&quot;</code>, missing values are not allowed, <code>pca</code>
+ terminates with an error if there are any.
+ </li></ul>
+
+ </li><li>
+ <code>&quot;Weights&quot;</code> defines observation weights as a vector of positive values
+ of length <math>N</math>.
+
+ </li><li>
+ <code>&quot;VariableWeights&quot;</code> defines variable weights:
+ <ul>
+<li> a <var>vector</var> of positive values of length <math>D</math>.
+ </li><li> the string <code>&quot;variance&quot;</code> to use the sample variance as weights.
+ </li></ul>
+</li></ul>
 
 <p> Return values:
  </p><ul>
 <li>
- <var>coeff</var> : the principal component coefficients, a <code>p</code>-by-<code>p</code>
+ <var>coeff</var> : the principal component coefficients, a <math>D&times;D</math>
  transformation matrix
  </li><li>
  <var>score</var> : the principal component scores, the representation of <var>x</var>
@@ -154,17 +169,20 @@
 </p>
  <a name="References"></a>
 <h3 class="subheading">References</h3>
-
  <ol>
 <li>
  Jolliffe, I. T., Principal Component Analysis, 2nd Edition, Springer, 2002
+ </li></ol>
 
-</li></ol>
-
+<p> <strong>See also: </strong>
+  <a href="barttest.html">barttest</a>, 
+factoran, 
+  <a href="pcacov.html">pcacov</a>, 
+  <a href="pcares.html">pcares</a>
+</p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/pca.m">pca</a>
 </div>
-
 
         </div>
       </div>
