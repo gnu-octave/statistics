@@ -43,6 +43,12 @@
 ## @qcode{@var{SD} = sqrt (diag (@var{K}))}, in place of @var{K}.  To perform
 ## principal component analysis directly on the data matrix, use @code{pca}.
 ##
+## @subheading References
+## @enumerate
+## @item
+## Jolliffe, I. T., Principal Component Analysis, 2nd Edition, Springer, 2002
+## @end enumerate
+##
 ## @seealso{bartlett, factoran, pcares, pca}
 ## @end deftypefn
 

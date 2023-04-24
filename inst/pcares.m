@@ -39,6 +39,12 @@
 ## analysis directly on a covariance or correlation matrix without constructing
 ## residuals.
 ##
+## @subheading References
+## @enumerate
+## @item
+## Jolliffe, I. T., Principal Component Analysis, 2nd Edition, Springer, 2002
+## @end enumerate
+##
 ## @seealso{factoran, pcacov, pca}
 ## @end deftypefn
 
