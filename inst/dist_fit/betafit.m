@@ -42,6 +42,9 @@
 ## treated as if they were values that have been left-censored at
 ## @qcode{sqrt (realmin)} or right-censored at @qcode{1 - eps/2}, respectively.
 ##
+## Further information about the Beta distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Beta_distribution}
+##
 ## @seealso{betacdf, betainv, betapdf, betarnd, betalike, betastat}
 ## @end deftypefn
 
@@ -148,7 +151,7 @@ function [paramhat, paramci] = betafit (x, alpha)
 endfunction
 
 %!demo
-%! ## Sample 2 populations from 2 different Extreme Value distibutions
+%! ## Sample 2 populations from 2 different Beta distibutions
 %! randg ("seed", 1);   # for reproducibility
 %! r1 = betarnd (2, 5, 500, 1);
 %! randg ("seed", 2);   # for reproducibility

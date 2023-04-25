@@ -102,7 +102,7 @@ function [nlogL, avar] = betalike (params, x)
     nlogL = nlogL - num1 * log (betainc (x_hi, a, b, "upper"));
   endif
 
-  ## Compute confidence intervals
+  ## Compute the asymptotic covariance
   if (nargout > 1)
     if (numel (x) < 2)
       error ("betalike: not enough data in X.");

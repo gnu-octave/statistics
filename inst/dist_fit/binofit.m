@@ -44,6 +44,9 @@
 ## @qcode{binofit (sum (@var{x}), @var{n} * length (@var{x}))} when @var{n} is a
 ## scalar.
 ##
+## Further information about the binomial distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Binomial_distribution}
+##
 ## @seealso{binocdf, binoinv, binopdf, binornd, binolike, binostat}
 ## @end deftypefn
 
