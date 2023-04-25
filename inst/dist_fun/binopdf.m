@@ -33,7 +33,10 @@
 ## input values.  Matlab 2021b returns values for complex inputs despite the
 ## documentation indicates integer and real value inputs are required.
 ##
-## @seealso{binocdf, binoinv, binornd, binostat, binotest}
+## Further information about the binomial distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Binomial_distribution}
+##
+## @seealso{binocdf, binoinv, binornd, binofit, binolike, binostat, binotest}
 ## @end deftypefn
 
 function y = binopdf (x, n, ps)
@@ -216,17 +219,32 @@ function D = deviance (x, np)
   endif
 endfunction
 
-%!shared x,y
+%!demo
+%! ## Plot various PDFs from the binomial distribution
+%! x = 0:40;
+%! y1 = binopdf (x, 20, 0.5);
+%! y2 = binopdf (x, 20, 0.7);
+%! y3 = binopdf (x, 40, 0.5);
+%! plot (x, y1, "*b", x, y2, "*g", x, y3, "*r")
+%! grid on
+%! ylim ([0, 0.25])
+%! legend ({"n = 20, ps = 0.5", "n = 20, ps = 0.7", ...
+%!          "n = 40, ps = 0.5"}, "location", "northeast")
+%! title ("Binomial PDF")
+%! xlabel ("values in x (number of successes)")
+%! ylabel ("density")
+
+## Test output
+%!shared x, y
 %! x = [-1 0 1 2 3];
 %! y = [0 1/4 1/2 1/4 0];
-
-%!assert (binopdf (x, 2*ones (1,5), 0.5*ones (1,5)), y, eps)
-%!assert (binopdf (x, 2, 0.5*ones (1,5)), y, eps)
-%!assert (binopdf (x, 2*ones (1,5), 0.5), y, eps)
-%!assert (binopdf (x, 2*[0 -1 NaN 1.1 1], 0.5), [0 NaN NaN NaN 0])
-%!assert (binopdf (x, 2, 0.5*[0 -1 NaN 3 1]), [0 NaN NaN NaN 0])
+%!assert (binopdf (x, 2 * ones (1, 5), 0.5 * ones (1, 5)), y, eps)
+%!assert (binopdf (x, 2, 0.5 * ones (1, 5)), y, eps)
+%!assert (binopdf (x, 2 * ones (1, 5), 0.5), y, eps)
+%!assert (binopdf (x, 2 * [0 -1 NaN 1.1 1], 0.5), [0 NaN NaN NaN 0])
+%!assert (binopdf (x, 2, 0.5 * [0 -1 NaN 3 1]), [0 NaN NaN NaN 0])
 %!assert (binopdf ([x, NaN], 2, 0.5), [y, NaN], eps)
-%!assert (binopdf (cat(3,x,x), 2, 0.5), cat(3,y,y), eps)
+%!assert (binopdf (cat (3, x, x), 2, 0.5), cat (3, y, y), eps)
 
 ## Test Special input values
 %!assert (binopdf (1, 1, 1), 1)

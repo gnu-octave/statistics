@@ -135,11 +135,11 @@ endfunction
 %!shared x, y, x1, x2
 %! x = [-1 0 0.5 1 2];
 %! y = [0 0 0.75 1 1];
-%!assert (betacdf (x, ones (1,5), 2*ones (1,5)), y)
-%!assert (betacdf (x, 1, 2*ones (1,5)), y)
-%!assert (betacdf (x, ones (1,5), 2), y)
+%!assert (betacdf (x, ones (1, 5), 2 * ones (1, 5)), y)
+%!assert (betacdf (x, 1, 2 * ones (1, 5)), y)
+%!assert (betacdf (x, ones (1, 5), 2), y)
 %!assert (betacdf (x, [0 1 NaN 1 1], 2), [NaN 0 NaN 1 1])
-%!assert (betacdf (x, 1, 2*[0 1 NaN 1 1]), [NaN 0 NaN 1 1])
+%!assert (betacdf (x, 1, 2 * [0 1 NaN 1 1]), [NaN 0 NaN 1 1])
 %!assert (betacdf ([x(1:2) NaN x(4:5)], 1, 2), [y(1:2) NaN y(4:5)])
 %! x1 = [0.1:0.2:0.9];
 %!assert (betacdf (x1, 2, 2), [0.028, 0.216, 0.5, 0.784, 0.972], 1e-14);
@@ -157,9 +157,9 @@ endfunction
 ## Test input validation
 %!error<betacdf: invalid number of input arguments.> betacdf ()
 %!error<betacdf: invalid number of input arguments.> betacdf (1)
-%!error<betacdf: invalid number of input arguments.> betacdf (1,2)
-%!error<betacdf: invalid number of input arguments.> betacdf (1,2,3,4,5)
-%!error<betacdf: invalid argument for upper tail.> betacdf (1,2,3,"tail")
+%!error<betacdf: invalid number of input arguments.> betacdf (1, 2)
+%!error<betacdf: invalid number of input arguments.> betacdf (1, 2, 3, 4, 5)
+%!error<betacdf: invalid argument for upper tail.> betacdf (1, 2, 3, "tail")
 %!error<betacdf: X, A, and B must be of common size or scalars.> ...
 %! betacdf (ones (3), ones (2), ones (2))
 %!error<betacdf: X, A, and B must be of common size or scalars.> ...

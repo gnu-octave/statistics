@@ -37,7 +37,10 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## @seealso{binocdf, binoinv, binopdf, binostat, binotest}
+## Further information about the binomial distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Binomial_distribution}
+##
+## @seealso{binocdf, binoinv, binopdf, binofit, binolike, binostat, binotest}
 ## @end deftypefn
 
 function r = binornd (n, ps, varargin)
@@ -121,10 +124,10 @@ endfunction
 %!assert (binornd ([0, 0], [0, 0], 1, 2), [0, 0])
 
 %!assert (size (binornd (2, 1/2)), [1, 1])
-%!assert (size (binornd (2*ones (2,1), 1/2)), [2, 1])
-%!assert (size (binornd (2*ones (2,2), 1/2)), [2, 2])
-%!assert (size (binornd (2, 1/2*ones (2,1))), [2, 1])
-%!assert (size (binornd (2, 1/2*ones (2,2))), [2, 2])
+%!assert (size (binornd (2 * ones (2, 1), 1/2)), [2, 1])
+%!assert (size (binornd (2 * ones (2, 2), 1/2)), [2, 2])
+%!assert (size (binornd (2, 1/2 * ones (2, 1))), [2, 1])
+%!assert (size (binornd (2, 1/2 * ones (2, 2))), [2, 2])
 %!assert (size (binornd (2, 1/2, 3)), [3, 3])
 %!assert (size (binornd (2, 1/2, [4 1])), [4, 1])
 %!assert (size (binornd (2, 1/2, 4, 1)), [4, 1])
@@ -143,11 +146,11 @@ endfunction
 %!error binornd (ones (2), ones (3))
 %!error binornd (i, 2)
 %!error binornd (2, i)
-%!error binornd (1,2, -1)
-%!error binornd (1,2, ones (2))
-%!error binornd (1,2, [2 -1 2])
-%!error binornd (1,2, 1, ones (2))
-%!error binornd (1,2, 1, -1)
-%!error binornd (ones (2,2), 2, 3)
-%!error binornd (ones (2,2), 2, [3, 2])
-%!error binornd (ones (2,2), 2, 2, 3)
+%!error binornd (1, 2, -1)
+%!error binornd (1, 2, ones (2))
+%!error binornd (1, 2, [2 -1 2])
+%!error binornd (1, 2, 1, ones (2))
+%!error binornd (1, 2, 1, -1)
+%!error binornd (ones (2, 2), 2, 3)
+%!error binornd (ones (2, 2), 2, [3, 2])
+%!error binornd (ones (2, 2), 2, 2, 3)

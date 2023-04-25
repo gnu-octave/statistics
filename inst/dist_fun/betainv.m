@@ -129,7 +129,7 @@ endfunction
 %! xlabel ("probability")
 %! ylabel ("x")
 
-
+## Test output
 %!shared p
 %! p = [-1 0 0.75 1 2];
 %!assert (betainv (p, ones (1,5), 2*ones (1,5)), [NaN 0 0.5 1 NaN], eps)

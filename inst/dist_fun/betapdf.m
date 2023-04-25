@@ -115,14 +115,14 @@ endfunction
 %! ylabel ("density")
 
 ## Test output
-%!shared x,y
+%!shared x, y
 %! x = [-1 0 0.5 1 2];
 %! y = [0 2 1 0 0];
-%!assert (betapdf (x, ones (1,5), 2*ones (1,5)), y)
-%!assert (betapdf (x, 1, 2*ones (1,5)), y)
-%!assert (betapdf (x, ones (1,5), 2), y)
+%!assert (betapdf (x, ones (1, 5), 2 * ones (1, 5)), y)
+%!assert (betapdf (x, 1, 2 * ones (1, 5)), y)
+%!assert (betapdf (x, ones (1, 5), 2), y)
 %!assert (betapdf (x, [0 NaN 1 1 1], 2), [NaN NaN y(3:5)])
-%!assert (betapdf (x, 1, 2*[0 NaN 1 1 1]), [NaN NaN y(3:5)])
+%!assert (betapdf (x, 1, 2 * [0 NaN 1 1 1]), [NaN NaN y(3:5)])
 %!assert (betapdf ([x, NaN], 1, 2), [y, NaN])
 
 ## Test class of input preserved
@@ -133,8 +133,8 @@ endfunction
 ## Beta (1/2,1/2) == arcsine distribution
 %!test
 %! x = rand (10,1);
-%! y = 1./(pi * sqrt (x.*(1-x)));
-%! assert (betapdf (x, 1/2, 1/2), y, 100*eps);
+%! y = 1 ./ (pi * sqrt (x .* (1 - x)));
+%! assert (betapdf (x, 1/2, 1/2), y, 100 * eps);
 
 ## Test large input values to betapdf
 %!assert (betapdf (0.5, 1000, 1000), 35.678, 1e-3)
@@ -142,8 +142,8 @@ endfunction
 ## Test input validation
 %!error betapdf ()
 %!error betapdf (1)
-%!error betapdf (1,2)
-%!error betapdf (1,2,3,4)
+%!error betapdf (1, 2)
+%!error betapdf (1, 2, 3, 4)
 %!error betapdf (ones (3), ones (2), ones (2))
 %!error betapdf (ones (2), ones (3), ones (2))
 %!error betapdf (ones (2), ones (2), ones (3))

@@ -32,7 +32,10 @@
 ## binocdf (@var{x}, @var{n}, @var{ps}, "upper") computes the complement
 ## of the cumulative distribution function.
 ##
-## @seealso{binoinv, binopdf, binornd, binostat, binotest}
+## Further information about the binomial distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Binomial_distribution}
+##
+## @seealso{binoinv, binopdf, binornd, binofit, binolike, binostat, binotest}
 ## @end deftypefn
 
 function p = binocdf (x, n, ps, uflag)
@@ -92,23 +95,37 @@ function p = binocdf (x, n, ps, uflag)
 
 endfunction
 
+%!demo
+%! ## Plot various CDFs from the binomial distribution
+%! x = 0:40;
+%! p1 = binocdf (x, 20, 0.5);
+%! p2 = binocdf (x, 20, 0.7);
+%! p3 = binocdf (x, 40, 0.5);
+%! plot (x, p1, "*b", x, p2, "*g", x, p3, "*r")
+%! grid on
+%! legend ({"n = 20, ps = 0.5", "n = 20, ps = 0.7", ...
+%!          "n = 40, ps = 0.5"}, "location", "southeast")
+%! title ("Binomial CDF")
+%! xlabel ("values in x (number of successes)")
+%! ylabel ("probability")
 
-%!shared x,p,p1
+## Test output
+%!shared x, p, p1
 %! x = [-1 0 1 2 3];
 %! p = [0 1/4 3/4 1 1];
 %! p1 = 1 - p;
-%!assert (binocdf (x, 2*ones (1,5), 0.5*ones (1,5)), p, eps)
-%!assert (binocdf (x, 2, 0.5*ones (1,5)), p, eps)
-%!assert (binocdf (x, 2*ones (1,5), 0.5), p, eps)
-%!assert (binocdf (x, 2*[0 -1 NaN 1.1 1], 0.5), [0 NaN NaN NaN 1])
-%!assert (binocdf (x, 2, 0.5*[0 -1 NaN 3 1]), [0 NaN NaN NaN 1])
+%!assert (binocdf (x, 2 * ones (1, 5), 0.5 * ones (1, 5)), p, eps)
+%!assert (binocdf (x, 2, 0.5 * ones (1, 5)), p, eps)
+%!assert (binocdf (x, 2 * ones (1, 5), 0.5), p, eps)
+%!assert (binocdf (x, 2 * [0 -1 NaN 1.1 1], 0.5), [0 NaN NaN NaN 1])
+%!assert (binocdf (x, 2, 0.5 * [0 -1 NaN 3 1]), [0 NaN NaN NaN 1])
 %!assert (binocdf ([x(1:2) NaN x(4:5)], 2, 0.5), [p(1:2) NaN p(4:5)], eps)
 %!assert (binocdf (99, 100, 0.1, "upper"), 1e-100, 1e-112);
-%!assert (binocdf (x, 2*ones (1,5), 0.5*ones (1,5), "upper"), p1, eps)
-%!assert (binocdf (x, 2, 0.5*ones (1,5), "upper"), p1, eps)
-%!assert (binocdf (x, 2*ones (1,5), 0.5, "upper"), p1, eps)
-%!assert (binocdf (x, 2*[0 -1 NaN 1.1 1], 0.5, "upper"), [1 NaN NaN NaN 0])
-%!assert (binocdf (x, 2, 0.5*[0 -1 NaN 3 1], "upper"), [1 NaN NaN NaN 0])
+%!assert (binocdf (x, 2 * ones (1, 5), 0.5*ones (1,5), "upper"), p1, eps)
+%!assert (binocdf (x, 2, 0.5 * ones (1, 5), "upper"), p1, eps)
+%!assert (binocdf (x, 2 * ones (1, 5), 0.5, "upper"), p1, eps)
+%!assert (binocdf (x, 2 * [0 -1 NaN 1.1 1], 0.5, "upper"), [1 NaN NaN NaN 0])
+%!assert (binocdf (x, 2, 0.5 * [0 -1 NaN 3 1], "upper"), [1 NaN NaN NaN 0])
 %!assert (binocdf ([x(1:2) NaN x(4:5)], 2, 0.5, "upper"), [p1(1:2) NaN p1(4:5)])
 
 ## Test class of input preserved
@@ -120,8 +137,8 @@ endfunction
 ## Test input validation
 %!error<Invalid call to binocdf.  Correct usage is:> binocdf ()
 %!error<Invalid call to binocdf.  Correct usage is:> binocdf (1)
-%!error<Invalid call to binocdf.  Correct usage is:> binocdf (1,2)
-%!error<binocdf: 4th parameter can only be 'upper'.> binocdf (1,2,3,4)
+%!error<Invalid call to binocdf.  Correct usage is:> binocdf (1, 2)
+%!error<binocdf: 4th parameter can only be 'upper'.> binocdf (1, 2, 3, 4)
 %!error<binocdf: X, N, and PS must be of common size or scalars.> ...
 %! binocdf (ones (3), ones (2), ones (2))
 %!error<binocdf: X, N, and PS must be of common size or scalars.> ...

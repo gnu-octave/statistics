@@ -29,7 +29,10 @@
 ## @var{ps}.  A scalar input functions as a constant matrix of the same size as
 ## the other inputs.
 ##
-## @seealso{binocdf, binopdf, binornd, binostat, binotest}
+## Further information about the binomial distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Binomial_distribution}
+##
+## @seealso{binocdf, binopdf, binornd, binofit, binolike, binostat, binotest}
 ## @end deftypefn
 
 function x = binoinv (p, n, ps)
@@ -167,7 +170,21 @@ function m = bin_search_binoinv (p, n, ps)
 
 endfunction
 
+%!demo
+%! ## Plot various iCDFs from the binomial distribution
+%! p = 0.001:0.001:0.999;
+%! x1 = binoinv (p, 20, 0.5);
+%! x2 = binoinv (p, 20, 0.7);
+%! x3 = binoinv (p, 40, 0.5);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! grid on
+%! legend ({"n = 20, ps = 0.5", "n = 20, ps = 0.7", ...
+%!          "n = 40, ps = 0.5"}, "location", "southeast")
+%! title ("Binomial iCDF")
+%! xlabel ("probability")
+%! ylabel ("x (number of successes)")
 
+## Test output
 %!shared p
 %! p = [-1 0 0.5 1 2];
 %!assert (binoinv (p, 2*ones (1,5), 0.5*ones (1,5)), [NaN 0 1 2 NaN])
