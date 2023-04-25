@@ -45,3 +45,18 @@ function inds = test (C, i = [])
     case "resubstitution"
       inds = ones(C.NumObservations, 1, "logical");
   endswitch
+
+endfunction
+
+%!shared C
+%! C = cvpartition (ones (10, 1), "KFold", 5);
+%!assert (test (C, 1), logical ([1 1 0 0 0 0 0 0 0 0]'))
+%!assert (test (C, 2), logical ([0 0 1 1 0 0 0 0 0 0]'))
+%!assert (test (C, 3), logical ([0 0 0 0 1 1 0 0 0 0]'))
+%!assert (test (C, 4), logical ([0 0 0 0 0 0 1 1 0 0]'))
+%!assert (test (C, 5), logical ([0 0 0 0 0 0 0 0 1 1]'))
+%!test
+%! C = set (C, "inds", [1 2 2 2 3 4 3 4 5 5]');
+%!assert (test (C), logical ([1 0 0 0 0 0 0 0 0 0]'))
+%!assert (test (C, 2), logical ([0 1 1 1 0 0 0 0 0 0]'))
+%!assert (test (C, 3), logical ([0 0 0 0 1 0 1 0 0 0]'))

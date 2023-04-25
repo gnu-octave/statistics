@@ -44,8 +44,38 @@ function display (C)
       str = "Unknown-type";
   endswitch
 
-disp([str " cross validation partition"])
-disp(["          N: " num2str(C.NumObservations)])
-disp(["NumTestSets: " num2str(C.NumTestSets)])
-disp(["  TrainSize: " num2str(C.TrainSize')])
-disp(["   TestSize: " num2str(C.TestSize')])
+  disp([str " cross validation partition"])
+  disp(["          N: " num2str(C.NumObservations)])
+  disp(["NumTestSets: " num2str(C.NumTestSets)])
+  disp(["  TrainSize: " num2str(C.TrainSize')])
+  disp(["   TestSize: " num2str(C.TestSize')])
+
+endfunction
+
+%!test
+%! C = cvpartition (ones (10, 1), "KFold", 5);
+%! s = evalc ("display (C)");
+%! sout = "K-fold cross validation partition";
+%! assert (strcmpi (s(1:length (sout)), sout), true);
+%!test
+%! C = cvpartition (ones (10, 1), "HoldOut", 5);
+%! s = evalc ("display (C)");
+%! sout = "HoldOut cross validation partition";
+%! assert (strcmpi (s(1:length (sout)), sout), true);
+%!test
+%! C = cvpartition (ones (10, 1), "LeaveOut", 5);
+%! s = evalc ("display (C)");
+%! sout = "Leave-One-Out cross validation partition";
+%! assert (strcmpi (s(1:length (sout)), sout), true);
+%!test
+%! C = cvpartition (ones (10, 1), "resubstitution", 5);
+%! s = evalc ("display (C)");
+%! sout = "Resubstitution cross validation partition";
+%! assert (strcmpi (s(1:length (sout)), sout), true);
+%!test
+%! C = cvpartition (ones (10, 1), "Given", 5);
+%! s = evalc ("display (C)");
+%! sout = "Given cross validation partition";
+%! assert (strcmpi (s(1:length (sout)), sout), true);
+
+%!error<Invalid call to display.  Correct usage is> display ()

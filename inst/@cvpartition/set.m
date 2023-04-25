@@ -26,7 +26,7 @@
 function s = set (c, varargin)
   s = struct(c);
   if (length (varargin) < 2 || rem (length (varargin), 2) != 0)
-    error ("set: expecting property/value pairs");
+    error ("set: expecting field/value pairs.");
   endif
   while (length (varargin) > 1)
     prop = varargin{1};
@@ -38,12 +38,21 @@ function s = set (c, varargin)
               "NumTestSets", "TestSize", "TrainSize", "Type"}
           s = setfield (s, prop, val);
         otherwise
-          error ("set: invalid property %s", f);
+          error ("set: invalid field %s.", prop);
       endswitch
     else
-      error ("set: expecting the property to be a string");
+      error ("set: expecting the field to be a string.");
     endif
   endwhile
   s = class (s, "cvpartition");
 endfunction
 
+%!shared C
+%! C = cvpartition (ones (10, 1), "KFold", 5);
+%!test
+%! Cnew = set (C, "inds", [1 2 2 2 3 4 3 4 5 5]');
+%! assert (get (Cnew, "inds"), [1 2 2 2 3 4 3 4 5 5]');
+%!error<set: expecting field/value pairs.> set (C)
+%!error<set: expecting field/value pairs.> set (C, "NumObservations")
+%!error<set: invalid field some.> set (C, "some", 15)
+%!error<set: expecting the field to be a string.> set (C, 15, 15)
