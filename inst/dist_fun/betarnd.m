@@ -36,7 +36,10 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## @seealso{betacdf, betainv, betapdf, betastat}
+## Further information about the Beta distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Beta_distribution}
+##
+## @seealso{betacdf, betainv, betapdf, betafit, betalike, betastat}
 ## @end deftypefn
 
 function r = betarnd (a, b, varargin)

@@ -33,7 +33,10 @@
 ## upper tail probability of the Beta distribution with parameters @var{a} and
 ## @var{b} at the values in @var{x}.
 ##
-## @seealso{betainv, betapdf, betarnd, betastat}
+## Further information about the Beta distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Beta_distribution}
+##
+## @seealso{betainv, betapdf, betarnd, betafit, betalike, betastat}
 ## @end deftypefn
 
 function p = betacdf (x, a, b, varargin)
@@ -111,6 +114,22 @@ function p = betacdf (x, a, b, varargin)
   endif
 
 endfunction
+
+%!demo
+%! ## Plot various CDFs from the Beta distribution
+%! x = 0:0.005:1;
+%! p1 = betacdf (x, 0.5, 0.5);
+%! p2 = betacdf (x, 5, 1);
+%! p3 = betacdf (x, 1, 3);
+%! p4 = betacdf (x, 2, 2);
+%! p5 = betacdf (x, 2, 5);
+%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c", x, p5, "-m")
+%! grid on
+%! legend ({"α = β = 0.5", "α = 5, β = 1", "α = 1, β = 3", ...
+%!          "α = 2, β = 2", "α = 2, β = 5"}, "location", "northwest")
+%! title ("Beta CDF")
+%! xlabel ("values in x")
+%! ylabel ("probability")
 
 ## Test output
 %!shared x, y, x1, x2

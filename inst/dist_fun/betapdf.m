@@ -27,7 +27,10 @@
 ## size of @var{y} is the common size of @var{x}, @var{a} and @var{b}.  A scalar
 ## input functions as a constant matrix of the same size as the other inputs.
 ##
-## @seealso{betacdf, betainv, betarnd, betastat}
+## Further information about the Beta distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Beta_distribution}
+##
+## @seealso{betacdf, betainv, betarnd, betafit, betalike, betastat}
 ## @end deftypefn
 
 function y = betapdf (x, a, b)
@@ -94,7 +97,24 @@ function y = betapdf (x, a, b)
 
 endfunction
 
+%!demo
+%! ## Plot various PDFs from the Beta distribution
+%! x = 0.001:0.001:0.999;
+%! y1 = betapdf (x, 0.5, 0.5);
+%! y2 = betapdf (x, 5, 1);
+%! y3 = betapdf (x, 1, 3);
+%! y4 = betapdf (x, 2, 2);
+%! y5 = betapdf (x, 2, 5);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-c", x, y5, "-m")
+%! grid on
+%! ylim ([0, 2.5])
+%! legend ({"α = β = 0.5", "α = 5, β = 1", "α = 1, β = 3", ...
+%!          "α = 2, β = 2", "α = 2, β = 5"}, "location", "north")
+%! title ("Beta PDF")
+%! xlabel ("values in x")
+%! ylabel ("density")
 
+## Test output
 %!shared x,y
 %! x = [-1 0 0.5 1 2];
 %! y = [0 2 1 0 0];

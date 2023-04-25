@@ -26,7 +26,10 @@
 ## size of @var{x} is the common size of @var{x}, @var{a} and @var{b}.  A scalar
 ## input functions as a constant matrix of the same size as the other inputs.
 ##
-## @seealso{betacdf, betapdf, betarnd, betastat}
+## Further information about the Beta distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Beta_distribution}
+##
+## @seealso{betacdf, betapdf, betarnd, betafit, betalike, betastat}
 ## @end deftypefn
 
 function x = betainv (p, a, b)
@@ -109,6 +112,22 @@ function x = betainv (p, a, b)
   endif
 
 endfunction
+
+%!demo
+%! ## Plot various iCDFs from the Beta distribution
+%! p = 0.001:0.001:0.999;
+%! x1 = betainv (p, 0.5, 0.5);
+%! x2 = betainv (p, 5, 1);
+%! x3 = betainv (p, 1, 3);
+%! x4 = betainv (p, 2, 2);
+%! x5 = betainv (p, 2, 5);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c", p, x5, "-m")
+%! grid on
+%! legend ({"α = β = 0.5", "α = 5, β = 1", "α = 1, β = 3", ...
+%!          "α = 2, β = 2", "α = 2, β = 5"}, "location", "southeast")
+%! title ("Beta iCDF")
+%! xlabel ("probability")
+%! ylabel ("x")
 
 
 %!shared p
