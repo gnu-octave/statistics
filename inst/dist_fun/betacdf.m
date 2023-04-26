@@ -20,7 +20,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} betacdf (@var{x}, @var{a}, @var{b})
-## @deftypefnx {statistics} {@var{p} =} betacdf (@var{x}, @var{a}, @var{b}, "upper")
+## @deftypefnx {statistics} {@var{p} =} betacdf (@var{x}, @var{a}, @var{b}, @qcode{"upper"})
 ##
 ## Beta cumulative distribution function (CDF).
 ##
@@ -39,16 +39,22 @@
 ## @seealso{betainv, betapdf, betarnd, betafit, betalike, betastat}
 ## @end deftypefn
 
-function p = betacdf (x, a, b, varargin)
+function p = betacdf (x, a, b, uflag)
 
   ## Check for valid number of input arguments
-  if (nargin < 3 || nargin > 4)
-    error ("betacdf: invalid number of input arguments.");
+  if (nargin < 3)
+    error ("betacdf: function called with too few input arguments.");
   endif
 
   ## Check for valid "upper" flag
-  if (nargin > 3 && ! strcmpi (varargin{1}, "upper"))
-    error ("betacdf: invalid argument for upper tail.");
+  if (nargin > 3)
+    if (! strcmpi (uflag, "upper"))
+      error ("betacdf: invalid argument for upper tail.");
+    else
+      uflag = true;
+    endif
+  else
+    uflag = false;
   endif
 
   ## Check for common size of X, A and B
@@ -59,7 +65,7 @@ function p = betacdf (x, a, b, varargin)
     endif
   endif
 
-  ## Check for X,A and B being reals
+  ## Check for X, A and B being reals
   if (iscomplex (x) || iscomplex (a) || iscomplex (b))
     error ("betacdf: X, A, and B must not be complex.");
   endif
@@ -80,7 +86,7 @@ function p = betacdf (x, a, b, varargin)
   ## Fill in edges cases when X is outside 0 or 1.
   if (! all_OK)
     p = NaN (size (okDATA), is_type);
-    if (nargin > 3 && strcmpi (varargin{1}, "upper"))
+    if (uflag)
       p(okPARAM & x <= 0) = 1;
       p(okPARAM & x >= 1) = 0;
     else
@@ -104,7 +110,11 @@ function p = betacdf (x, a, b, varargin)
   endif
 
   ## Call betainc for the actual work
-  pk = betainc (x, a, b, varargin{:});
+  if (uflag)
+    pk = betainc (x, a, b, "upper");
+  else
+    pk = betainc (x, a, b);
+  endif
 
   ## Relocate the values to the correct places if necessary.
   if all_OK
@@ -155,10 +165,10 @@ endfunction
 %!assert (betacdf ([x, NaN], 1, single (2)), single ([y, NaN]))
 
 ## Test input validation
-%!error<betacdf: invalid number of input arguments.> betacdf ()
-%!error<betacdf: invalid number of input arguments.> betacdf (1)
-%!error<betacdf: invalid number of input arguments.> betacdf (1, 2)
-%!error<betacdf: invalid number of input arguments.> betacdf (1, 2, 3, 4, 5)
+%!error<betacdf: function called with too few input arguments.> betacdf ()
+%!error<betacdf: function called with too few input arguments.> betacdf (1)
+%!error<betacdf: function called with too few input arguments.> betacdf (1, 2)
+%!error<betacdf: function called with too many inputs> betacdf (1, 2, 3, 4, 5)
 %!error<betacdf: invalid argument for upper tail.> betacdf (1, 2, 3, "tail")
 %!error<betacdf: X, A, and B must be of common size or scalars.> ...
 %! betacdf (ones (3), ones (2), ones (2))
