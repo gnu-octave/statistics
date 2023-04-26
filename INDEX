@@ -55,9 +55,9 @@ Descriptive Statistics
  trimmean
  var
 Distributions
- bbscdf bbsinv bbspdf bbsrnd
  betacdf betainv betapdf betarnd
  binocdf binoinv binopdf binornd
+ bisacdf bisainv bisapdf bisarnd
  burrcdf burrinv burrpdf burrrnd
  bvncdf
  bvtcdf
@@ -104,6 +104,8 @@ Distribution Fitting
  betalike
  binofit
  binolike
+ bisafit
+ bisalike
  evfit
  evlike
  expfit

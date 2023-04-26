@@ -497,6 +497,18 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** binolike (similar functionality to MATLAB's likefunc)
 
+ ** bisacdf (replacing bbscdf)
+
+ ** bisafit (similar functionality to MATLAB's mle)
+
+ ** bisainv (replacing bbsinv)
+
+ ** bisalike (similar functionality to MATLAB's likefunc and mlecov)
+
+ ** bisapdf (replacing bbspdf)
+
+ ** bisarnd (replacing bbsrnd)
+
  ** einstein (plotting function for the einstein tile)
 
  ** isoutlier (fully Matlab compatible)
@@ -549,13 +561,21 @@ Summary of important user-visible changes for statistics 1.5.1:
  Removed Functions:
  ==================
 
- ** logistic_cdf (replacing logicdf)
+ ** bbscdf (replaced by bisacdf)
 
- ** logistic_inv (replacing logiinv)
+ ** bbsinv (replaced by bisainv)
 
- ** logistic_pdf (replacing logipdf)
+ ** bbspdf (replaced by bisapdf)
 
- ** logistic_rnd (replacing logirnd)
+ ** bbsrnd (replaced by bisarnd)
+
+ ** logistic_cdf (replaced by logicdf)
+
+ ** logistic_inv (replaced by logiinv)
+
+ ** logistic_pdf (replaced by logipdf)
+
+ ** logistic_rnd (replaced by logirnd)
 
  ** run_test (replaced by runstest)
 
