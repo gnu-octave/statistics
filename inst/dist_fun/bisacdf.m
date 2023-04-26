@@ -85,15 +85,15 @@ function p = bisacdf (x, a, b, mu, uflag)
   endif
 
   ## Force NaNs for out of range parameters.
-  k = isnan (x) | ! (-Inf < mu) | ! (mu < Inf) ...
+  k = isnan (x) | ! (mu > -Inf) | ! (mu < Inf) ...
                 | ! (b > 0) | ! (b < Inf) | ! (a > 0) | ! (a < Inf);
   p(k) = NaN;
 
   ## Find valid values in parameters and data
-  k = (x > mu) & (x <= Inf) & (-Inf < mu) & (mu < Inf) ...
-               & (0 < b) & (b < Inf) & (0 < a) & (a < Inf);
+  k = (x > mu) & (x <= Inf) & (mu > -Inf) & (mu < Inf) ...
+               & (b > 0) & (b < Inf) & (a > 0) & (a < Inf);
 
-  if (isscalar (mu) && isscalar(b) && isscalar(a))
+  if (isscalar (a) && isscalar (b) && isscalar (mu))
     x_m = x(k) - mu;
     if (uflag)
       z = (-sqrt (x_m ./ b) + sqrt (b ./ x_m)) ./ a;
@@ -148,7 +148,7 @@ endfunction
 %! ylabel ("probability")
 
 ## Test results
-%!shared x,y
+%!shared x, y
 %! x = [-1, 0, 1, 2, Inf];
 %! y = [0, 0, 1/2, 0.76024993890652337, 1];
 %!assert (bisacdf (x, ones (1,5), ones (1,5), zeros (1,5)), y, eps)
@@ -176,12 +176,16 @@ endfunction
 %!error<bisacdf: function called with too many inputs> ...
 %! bisacdf (1, 2, 3, 4, 5, 6)
 %!error<bisacdf: invalid argument for upper tail.> bisacdf (1, 2, 3, 4, "tail")
-%!error bisacdf (ones (3), ones (2), ones(2), ones(2))
-%!error bisacdf (ones (2), ones (3), ones(2), ones(2))
-%!error bisacdf (ones (2), ones (2), ones(3), ones(2))
-%!error bisacdf (ones (2), ones (2), ones(2), ones(3))
-%!error bisacdf (i, 4, 3, 2)
-%!error bisacdf (1, i, 3, 2)
-%!error bisacdf (1, 4, i, 2)
-%!error bisacdf (1, 4, 3, i)
+%!error<bisacdf: X, A, B, and MU must be of common size or scalars.> ...
+%! bisacdf (ones (3), ones (2), ones(2), ones(2))
+%!error<bisacdf: X, A, B, and MU must be of common size or scalars.> ...
+%! bisacdf (ones (2), ones (3), ones(2), ones(2))
+%!error<bisacdf: X, A, B, and MU must be of common size or scalars.> ...
+%! bisacdf (ones (2), ones (2), ones(3), ones(2))
+%!error<bisacdf: X, A, B, and MU must be of common size or scalars.> ...
+%! bisacdf (ones (2), ones (2), ones(2), ones(3))
+%!error<bisacdf: X, A, B, and MU must not be complex.> bisacdf (i, 4, 3, 2)
+%!error<bisacdf: X, A, B, and MU must not be complex.> bisacdf (1, i, 3, 2)
+%!error<bisacdf: X, A, B, and MU must not be complex.> bisacdf (1, 4, i, 2)
+%!error<bisacdf: X, A, B, and MU must not be complex.> bisacdf (1, 4, 3, i)
 

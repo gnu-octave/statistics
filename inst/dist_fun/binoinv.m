@@ -182,7 +182,7 @@ endfunction
 %!          "n = 40, ps = 0.5"}, "location", "southeast")
 %! title ("Binomial iCDF")
 %! xlabel ("probability")
-%! ylabel ("x (number of successes)")
+%! ylabel ("values in x (number of successes)")
 
 ## Test output
 %!shared p

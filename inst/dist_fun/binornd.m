@@ -45,10 +45,12 @@
 
 function r = binornd (n, ps, varargin)
 
+  ## Check for valid number of input arguments
   if (nargin < 2)
-    print_usage ();
+    error ("binornd: function called with too few input arguments.");
   endif
 
+  ## Check for common size of N and PS
   if (! isscalar (n) || ! isscalar (ps))
     [retval, n, ps] = common_size (n, ps);
     if (retval > 0)
@@ -56,38 +58,46 @@ function r = binornd (n, ps, varargin)
     endif
   endif
 
+  ## Check for N and PS being reals
   if (iscomplex (n) || iscomplex (ps))
     error ("binornd: N and PS must not be complex.");
   endif
 
+  ## Parse and check SIZE arguments
   if (nargin == 2)
     sz = size (n);
   elseif (nargin == 3)
-    if (isscalar (varargin{1}) && varargin{1} >= 0)
+    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+                               && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
+    elseif (isrow (varargin{1}) && all (varargin{1} >= 0) ...
+                                && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
-    else
-      error (strcat (["binornd: dimension vector must be a row vector of"], ...
-                     [" non-negative integers."]));
+    elseif
+      error (strcat (["binornd: SZ must be a scalar or a row vector"], ...
+                     [" of non-negative integers."]));
     endif
   elseif (nargin > 3)
-    if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
+    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
+    if (any (posint))
       error ("binornd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
+  ## Check that parameters match requested dimensions in size
   if (! isscalar (n) && ! isequal (size (n), sz))
     error ("binornd: N and PS must be scalar or of size SZ.");
   endif
 
+  ## Check for class type
   if (isa (n, "single") || isa (ps, "single"))
     cls = "single";
   else
     cls = "double";
   endif
 
+  ## Generate random sample from binomial distribution
   if (isscalar (n) && isscalar (ps))
     if ((n > 0) && (n < Inf) && (n == fix (n)) && (ps >= 0) && (ps <= 1))
       nel = prod (sz);
@@ -119,38 +129,63 @@ function r = binornd (n, ps, varargin)
 
 endfunction
 
-
-%!assert (binornd (0, 0, 1), 0)
-%!assert (binornd ([0, 0], [0, 0], 1, 2), [0, 0])
-
-%!assert (size (binornd (2, 1/2)), [1, 1])
+## Test results
+%!assert (size (binornd (2, 1/2)), [1 1])
 %!assert (size (binornd (2 * ones (2, 1), 1/2)), [2, 1])
 %!assert (size (binornd (2 * ones (2, 2), 1/2)), [2, 2])
 %!assert (size (binornd (2, 1/2 * ones (2, 1))), [2, 1])
-%!assert (size (binornd (2, 1/2 * ones (2, 2))), [2, 2])
+%!assert (size (binornd (1, 1/2 * ones (2, 2))), [2, 2])
+%!assert (size (binornd (ones (2, 1), 1)), [2, 1])
+%!assert (size (binornd (ones (2, 2), 1)), [2, 2])
 %!assert (size (binornd (2, 1/2, 3)), [3, 3])
-%!assert (size (binornd (2, 1/2, [4 1])), [4, 1])
-%!assert (size (binornd (2, 1/2, 4, 1)), [4, 1])
+%!assert (size (binornd (1, 1, [4, 1])), [4, 1])
+%!assert (size (binornd (1, 1, 4, 1)), [4, 1])
+%!assert (size (binornd (1, 1, 4, 1, 5)), [4, 1, 5])
+%!assert (size (binornd (1, 1, 0, 1)), [0, 1])
+%!assert (size (binornd (1, 1, 1, 0)), [1, 0])
+%!assert (size (binornd (1, 1, 1, 2, 0, 5)), [1, 2, 0, 5])
 
 ## Test class of input preserved
-%!assert (class (binornd (2, 0.5)), "double")
-%!assert (class (binornd (single (2), 0.5)), "single")
-%!assert (class (binornd (single ([2 2]), 0.5)), "single")
-%!assert (class (binornd (2, single (0.5))), "single")
-%!assert (class (binornd (2, single ([0.5 0.5]))), "single")
+%!assert (class (binornd (1, 1)), "double")
+%!assert (class (binornd (1, single (0))), "single")
+%!assert (class (binornd (1, single ([0, 0]))), "single")
+%!assert (class (binornd (1, single (1), 2)), "single")
+%!assert (class (binornd (1, single ([1, 1]), 1, 2)), "single")
+%!assert (class (binornd (single (1), 1, 2)), "single")
+%!assert (class (binornd (single ([1, 1]), 1, 1, 2)), "single")
 
 ## Test input validation
-%!error binornd ()
-%!error binornd (1)
-%!error binornd (ones (3), ones (2))
-%!error binornd (ones (2), ones (3))
-%!error binornd (i, 2)
-%!error binornd (2, i)
-%!error binornd (1, 2, -1)
-%!error binornd (1, 2, ones (2))
-%!error binornd (1, 2, [2 -1 2])
-%!error binornd (1, 2, 1, ones (2))
-%!error binornd (1, 2, 1, -1)
-%!error binornd (ones (2, 2), 2, 3)
-%!error binornd (ones (2, 2), 2, [3, 2])
-%!error binornd (ones (2, 2), 2, 2, 3)
+%!error<binornd: function called with too few input arguments.> binornd ()
+%!error<binornd: function called with too few input arguments.> binornd (1)
+%!error<binornd: N and PS must be of common size or scalars.> ...
+%! binornd (ones (3), ones (2))
+%!error<binornd: N and PS must be of common size or scalars.> ...
+%! binornd (ones (2), ones (3))
+%!error<binornd: N and PS must not be complex.> binornd (i, 2)
+%!error<binornd: N and PS must not be complex.> binornd (1, i)
+%!error<binornd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! binornd (1, 1/2, -1)
+%!error<binornd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! binornd (1, 1/2, 1.2)
+%!error<binornd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! binornd (1, 1/2, ones (2))
+%!error<binornd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! binornd (1, 1/2, [2 -1 2])
+%!error<binornd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! binornd (1, 1/2, [2 0 2.5])
+%!error<binornd: dimensions must be non-negative integers.> ...
+%! binornd (1, 1/2, 2, -1, 5)
+%!error<binornd: dimensions must be non-negative integers.> ...
+%! binornd (1, 1/2, 2, 1.5, 5)
+%!error<binornd: N and PS must be scalar or of size SZ.> ...
+%! binornd (2, 1/2 * ones (2), 3)
+%!error<binornd: N and PS must be scalar or of size SZ.> ...
+%! binornd (2, 1/2 * ones (2), [3, 2])
+%!error<binornd: N and PS must be scalar or of size SZ.> ...
+%! binornd (2, 1/2 * ones (2), 3, 2)
+%!error<binornd: N and PS must be scalar or of size SZ.> ...
+%! binornd (2 * ones (2), 1/2, 3)
+%!error<binornd: N and PS must be scalar or of size SZ.> ...
+%! binornd (2 * ones (2), 1/2, [3, 2])
+%!error<binornd: N and PS must be scalar or of size SZ.> ...
+%! binornd (2 * ones (2), 1/2, 3, 2)

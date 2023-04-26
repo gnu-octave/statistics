@@ -127,7 +127,7 @@ endfunction
 %!          "α = 2, β = 2", "α = 2, β = 5"}, "location", "southeast")
 %! title ("Beta iCDF")
 %! xlabel ("probability")
-%! ylabel ("x")
+%! ylabel ("values in x")
 
 ## Test output
 %!shared p
