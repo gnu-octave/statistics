@@ -88,16 +88,64 @@
 <p> binocdf (<var>x</var>, <var>n</var>, <var>ps</var>, &quot;upper&quot;) computes the complement
  of the cumulative distribution function.
 </p>
+<p> Further information about the binomial distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Binomial_distribution">https://en.wikipedia.org/wiki/Binomial_distribution</a>
+</p>
 <p> <strong>See also: </strong>
   <a href="binoinv.html">binoinv</a>, 
   <a href="binopdf.html">binopdf</a>, 
   <a href="binornd.html">binornd</a>, 
+  <a href="binofit.html">binofit</a>, 
+  <a href="binolike.html">binolike</a>, 
   <a href="binostat.html">binostat</a>, 
   <a href="binotest.html">binotest</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/binocdf.m">binocdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various CDFs from the binomial distribution
+ x = 0:40;
+ p1 = binocdf (x, 20, 0.5);
+ p2 = binocdf (x, 20, 0.7);
+ p3 = binocdf (x, 40, 0.5);
+ plot (x, p1, "*b", x, p2, "*g", x, p3, "*r")
+ grid on
+ legend ({"n = 20, ps = 0.5", "n = 20, ps = 0.7", ...
+          "n = 40, ps = 0.5"}, "location", "southeast")
+ title ("Binomial CDF")
+ xlabel ("values in x (number of successes)")
+ ylabel ("probability")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/binocdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

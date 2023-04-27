@@ -99,6 +99,9 @@
  treated as if they were values that have been left-censored at
  <code>sqrt (realmin)</code> or right-censored at <code>1 - eps/2</code>, respectively.
 </p>
+<p> Further information about the Beta distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Beta_distribution">https://en.wikipedia.org/wiki/Beta_distribution</a>
+</p>
 <p> <strong>See also: </strong>
   <a href="betacdf.html">betacdf</a>, 
   <a href="betainv.html">betainv</a>, 
@@ -128,7 +131,7 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Sample 2 populations from 2 different Extreme Value distibutions
+ ## Sample 2 populations from 2 different Beta distibutions
  randg ("seed", 1);   # for reproducibility
  r1 = betarnd (2, 5, 500, 1);
  randg ("seed", 2);   # for reproducibility
@@ -138,8 +141,8 @@
  ## Plot them normalized and fix their colors
  hist (r, 12, 15);
  h = findobj (gca, "Type", "patch");
- set(h(1), "facecolor", "c");
- set(h(2), "facecolor", "g");
+ set (h(1), "facecolor", "c");
+ set (h(2), "facecolor", "g");
  hold on
 
  ## Estimate their shape parameters

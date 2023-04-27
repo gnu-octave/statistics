@@ -73,7 +73,7 @@
 ## (@qcode{"upper"})
 ## @item @qcode{"Noncentral F-Distribution"} @tab @tab @qcode{"ncf"} @tab @tab 4
 ## (@qcode{"upper"})
-## @item  @qcode{"Noncentral Student T"} @tab @tab @qcode{"nct"} @tab @tab 3
+## @item @qcode{"Noncentral Student T"} @tab @tab @qcode{"nct"} @tab @tab 3
 ## (@qcode{"upper"})
 ## @item @qcode{"Noncentral Chi-Square"} @tab @tab @qcode{"ncx2"} @tab @tab 3
 ## (@qcode{"upper"})
@@ -96,19 +96,19 @@
 ## (@qcode{"upper"})
 ## @end multitable
 ##
-## @seealso{icdf, pdf, random, bbscdf, betacdf, binocdf, burrcdf, bvncdf,
+## @seealso{icdf, pdf, random, betacdf, binocdf, bisacdf, burrcdf, bvncdf,
 ## cauchy_cdf, chi2cdf, copulacdf, evcdf, expcdf, fcdf, gamcdf, geocdf, gevcdf,
-## gpcdf, hygecdf, jsucdf, laplace_cdf, logistic_cdf, logncdf, mvncdf, mvtcdf,
-## mvtcdfqmc, nakacdf, nbincdf, ncfcdf, nctcdf, ncx2cdf, normcdf, poisscdf,
-## raylcdf, stdnormal_cdf, tcdf, tricdf, unidcdf, unifcdf, vmcdf, wblcdf}
+## gpcdf, hygecdf, jsucdf, laplace_cdf, logicdf, loglcdf, logncdf, mvncdf,
+## mvtcdf, mvtcdfqmc, nakacdf, nbincdf, ncfcdf, nctcdf, ncx2cdf, normcdf,
+## poisscdf, raylcdf, tcdf, tricdf, unidcdf, unifcdf, vmcdf, wblcdf}
 ## @end deftypefn
 
 function [retval] = cdf (name, varargin)
   ## implemented functions
   persistent allcdf = { ...
-    {"bbs"      , "Birnbaum-Saunders"},         @bbscdf,       3, ...
     {"beta"     , "Beta"},                      @betacdf,      3, ... # "upper"
     {"bino"     , "Binomial"},                  @binocdf,      3, ... # "upper"
+    {"bisa"     , "Birnbaum-Saunders"},         @bisacdf,      3, ...
     {"burr"     , "Burr"},                      @burrcdf,      3, ...
     {"bvn"      , "Bivariate Normal"},          @bvncdf,       2, ...
     {"cauchy"   , "Cauchy"},                    @cauchy_cdf,   2, ...
@@ -124,7 +124,8 @@ function [retval] = cdf (name, varargin)
     {"hyge"     , "Hypergeometric"},            @hygecdf,      4, ... # "upper"
     {"jsu"      , "Johnson SU"},                @jsucdf,       2, ...
     {"laplace"  , "Laplace"},                   @laplace_cdf,  2, ...
-    {"logistic" , "Logistic"},                  @logistic_cdf, 2, ...
+    {"logi"     , "Logistic"},                  @logicdf,      2, ...
+    {"logl"     , "Log-Logistic"},              @logicdf,      2, ...
     {"logn"     , "Lognormal"},                 @logncdf,      5, ... # "upper"
     {"mvn"      , "Multivariate Normal"},       @mvncdf,       4, ...
     {"mvt"      , "Multivariate Student T"},    @mvtcdf,       3, ...
@@ -137,7 +138,6 @@ function [retval] = cdf (name, varargin)
     {"norm"     , "Normal"},                    @normcdf,      5, ... # "upper"
     {"poiss"    , "Poisson"},                   @poisscdf,     2, ... # "upper"
     {"rayl"     , "Rayleigh"},                  @raylcdf,      2, ... # "upper"
-    {"stdnormal", "Standard Normal"},           @stdnormal_cdf,0, ...
     {"t"        , "Student T"},                 @tcdf,         2, ... # "upper"
     {"tri"      , "Triangular"},                @tricdf,       3, ...
     {"unid"     , "Discrete Uniform"},          @unidcdf,      2, ... # "upper"
@@ -201,8 +201,8 @@ endfunction
 %! assert (cdf ("copula", x, "Clayton", theta), copulacdf ("Clayton", x, theta))
 %!test
 %! x = [-1, 0, 1, 2, Inf];
-%! assert (cdf ("bbs", x, ones (1,5), ones (1,5), zeros (1,5)), ...
-%!         bbscdf (x, ones (1,5), ones (1,5), zeros (1,5)))
+%! assert (cdf ("bisa", x, ones (1,5), ones (1,5)), ...
+%!         bisacdf (x, ones (1,5), ones (1,5)))
 %!test
 %! x = [1 2];
 %! mu = [0.5 1.5];
@@ -214,6 +214,3 @@ endfunction
 %! mu = [1.0 0.5; 0.5 1.0];
 %! sigma = [3];
 %! assert (cdf ("norm", x, mu, sigma), normcdf (x, mu, sigma), 0.01)
-
-%!error pdf ("Birnbaum-Saunders", 1, 1, 2, 3, 4)
-%!error pdf ("some", 1, 2)
