@@ -12,7 +12,7 @@
 ##
 ## Octave is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+## MERCHANTABILITY or FITNESS FOR BETA PARTICULAR PURPOSE.  See the GNU
 ## General Public License for more details.
 ##
 ## You should have received a copy of the GNU General Public License
@@ -20,21 +20,20 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{p} =} bisacdf (@var{x}, @var{a}, @var{b}, @var{mu})
-## @deftypefnx {statistics} {@var{p} =} bisacdf (@var{x}, @var{a}, @var{b}, @var{mu}, @qcode{"upper"})
+## @deftypefn  {statistics} {@var{p} =} bisacdf (@var{x}, @var{beta}, @var{gamma})
+## @deftypefnx {statistics} {@var{p} =} bisacdf (@var{x}, @var{beta}, @var{gamma}, @qcode{"upper"})
 ##
 ## Birnbaum-Saunders cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the Birnbaum-Saunders distribution with shape parameter
-## @var{a}, scale parameter @var{b}, and location parameter @var{mu}.  The size
-## of @var{p} is the common size of @var{x}, @var{a}, @var{b}, and @var{mu}.  A
-## scalar input functions as a constant matrix of the same size as the other
-## inputs.
+## (CDF) at @var{x} of the Birnbaum-Saunders distribution with scale parameter
+## @var{beta} and shape parameter @var{gamma}.  The size of @var{p} is the
+## common size of @var{x}, @var{beta} and @var{gamma}.  BETA scalar input functions
+## as a constant matrix of the same size as the other inputs.
 ##
-## @code{@var{p} = bisacdf (@var{x}, @var{a}, @var{b}, @var{mu}, "upper")}
+## @code{@var{p} = bisacdf (@var{x}, @var{beta}, @var{gamma}, "upper")}
 ## computes the upper tail probability of the Birnbaum-Saunders distribution
-## with parameters @var{a}, @var{b}, and @var{mu} at the values in @var{x}.
+## with parameters @var{beta} and @var{gamma} at the values in @var{x}.
 ##
 ## Further information about the Birnbaum-Saunders distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Birnbaum%E2%80%93Saunders_distribution}
@@ -42,15 +41,15 @@
 ## @seealso{bisainv, bisapdf, bisarnd, bisafit, bisalike, bisastat}
 ## @end deftypefn
 
-function p = bisacdf (x, a, b, mu, uflag)
+function p = bisacdf (x, beta, gamma, uflag)
 
   ## Check for valid number of input arguments
-  if (nargin < 4)
+  if (nargin < 3)
     error ("bisacdf: function called with too few input arguments.");
   endif
 
   ## Check for valid "upper" flag
-  if (nargin > 4)
+  if (nargin > 3)
     if (! strcmpi (uflag, "upper"))
       error ("bisacdf: invalid argument for upper tail.");
     else
@@ -60,53 +59,49 @@ function p = bisacdf (x, a, b, mu, uflag)
     uflag = false;
   endif
 
-  ## Check for common size of X, A, B, and MU
-  if (! isscalar (x) || ! isscalar (a) || ! isscalar (b) ...
-                     || ! isscalar (mu))
-    [retval, x, a, b, mu] = common_size (x, a, b, mu);
+  ## Check for common size of X, BETA, and GAMMA
+  if (! isscalar (x) || ! isscalar (beta) || ! isscalar (gamma))
+    [retval, x, beta, gamma] = common_size (x, beta, gamma);
     if (retval > 0)
-      error (strcat (["bisacdf: X, A, B, and MU must be of"], ...
+      error (strcat (["bisacdf: X, BETA, and GAMMA must be of"], ...
                      [" common size or scalars."]));
     endif
   endif
 
-  ## Check for X, A, B, and MU being reals
-  if (iscomplex (x) || iscomplex (a) || iscomplex (b) ...
-                    || iscomplex(mu))
-    error ("bisacdf: X, A, B, and MU must not be complex.");
+  ## Check for X, BETA, and GAMMA being reals
+  if (iscomplex (x) || iscomplex (beta) || iscomplex (gamma))
+    error ("bisacdf: X, BETA, and GAMMA must not be complex.");
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (a, "single") || isa (b, "single") ...
-                        || isa (mu, "single"))
+  if (isa (x, "single") || isa (beta, "single") || isa (gamma, "single"))
     p = zeros (size (x), "single");
   else
     p = zeros (size (x));
   endif
 
   ## Force NaNs for out of range parameters.
-  k = isnan (x) | ! (mu > -Inf) | ! (mu < Inf) ...
-                | ! (b > 0) | ! (b < Inf) | ! (a > 0) | ! (a < Inf);
+  k = isnan (x) | ! (beta > 0) | ! (beta < Inf) ...
+                | ! (gamma > 0) | ! (gamma < Inf);
   p(k) = NaN;
 
   ## Find valid values in parameters and data
-  k = (x > mu) & (x <= Inf) & (mu > -Inf) & (mu < Inf) ...
-               & (b > 0) & (b < Inf) & (a > 0) & (a < Inf);
+  k = (x > 0) & (x <= Inf) & (beta > 0) & (beta < Inf) ...
+                           & (gamma > 0) & (gamma < Inf);
+  xk = x(k);
 
-  if (isscalar (a) && isscalar (b) && isscalar (mu))
-    x_m = x(k) - mu;
+  if (isscalar (beta) && isscalar (gamma))
     if (uflag)
-      z = (-sqrt (x_m ./ b) + sqrt (b ./ x_m)) ./ a;
+      z = (-sqrt (xk ./ beta) + sqrt (beta ./ xk)) ./ gamma;
     else
-      z = (sqrt (x_m ./ b) - sqrt (b ./ x_m)) ./ a;
+      z = (sqrt (xk ./ beta) - sqrt (beta ./ xk)) ./ gamma;
     endif
     p(k) = 0.5 * erfc (-z ./ sqrt (2));
   else
-    x_m = x(k) - mu(k);
     if (uflag)
-      z = (-sqrt (x_m ./ b(k)) + sqrt (b(k) ./ x_m)) ./ a(k);
+      z = (-sqrt (xk ./ beta(k)) + sqrt (beta(k) ./ xk)) ./ gamma(k);
     else
-      z = (sqrt (x_m ./ b(k)) - sqrt (b(k) ./ x_m)) ./ a(k);
+      z = (sqrt (xk ./ beta(k)) - sqrt (beta(k) ./ xk)) ./ gamma(k);
     endif
     p(k) = 0.5 * erfc (-z ./ sqrt (2));
   endif
@@ -116,16 +111,16 @@ endfunction
 %!demo
 %! ## Plot various CDFs from the Birnbaum-Saunders distribution
 %! x = 0.01:0.01:10;
-%! p1 = bisacdf (x, 0.5, 1, 0);
-%! p2 = bisacdf (x, 1, 1, 0);
-%! p3 = bisacdf (x, 2, 1, 0);
-%! p4 = bisacdf (x, 5, 1, 0);
-%! p5 = bisacdf (x, 10, 1, 0);
+%! p1 = bisacdf (x, 0.5, 1);
+%! p2 = bisacdf (x, 1, 1);
+%! p3 = bisacdf (x, 2, 1);
+%! p4 = bisacdf (x, 5, 1);
+%! p5 = bisacdf (x, 10, 1);
 %! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c", x, p5, "-m")
 %! grid on
-%! legend ({"α = 0.5, β = 1, μ = 0", "α = 1,    β = 1, μ = 0", ...
-%!          "α = 2,    β = 1, μ = 0", "α = 5,    β = 1, μ = 0", ...
-%!          "α = 10,  β = 1, μ = 0"}, "location", "southeast")
+%! legend ({"α = 0.5, β = 1", "α = 1,    β = 1", ...
+%!          "α = 2,    β = 1", "α = 5,    β = 1", ...
+%!          "α = 10,  β = 1"}, "location", "southeast")
 %! title ("Birnbaum-Saunders CDF")
 %! xlabel ("values in x")
 %! ylabel ("probability")
@@ -133,16 +128,15 @@ endfunction
 %!demo
 %! ## Plot various CDFs from the Birnbaum-Saunders distribution
 %! x = 0.01:0.01:10;
-%! p1 = bisacdf (x, 0.3, 1, 0);
-%! p2 = bisacdf (x, 0.3, 2, 0);
-%! p3 = bisacdf (x, 0.5, 1, 0);
-%! p4 = bisacdf (x, 0.5, 3, 0);
-%! p5 = bisacdf (x, 0.5, 5, 0);
-%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c", x, p5, "-m")
+%! p1 = bisacdf (x, 0.3, 1);
+%! p2 = bisacdf (x, 0.3, 2);
+%! p3 = bisacdf (x, 0.5, 1);
+%! p4 = bisacdf (x, 0.5, 3);
+%! p5 = bisacdf (x, 0.5, 5);
+%! plot (x, p1, "-beta", x, p2, "-g", x, p3, "-r", x, p4, "-c", x, p5, "-m")
 %! grid on
-%! legend ({"α = 0.3, β = 1, μ = 0", "α = 0.3, β = 2, μ = 0", ...
-%!          "α = 0.5, β = 1, μ = 0", "α = 0.5, β = 3, μ = 0", ...
-%!          "α = 0.5, β = 5, μ = 0"}, "location", "southeast")
+%! legend ({"α = 0.3, β = 1", "α = 0.3, β = 2", "α = 0.5, β = 1", ...
+%!          "α = 0.5, β = 3", "α = 0.5, β = 5"}, "location", "southeast")
 %! title ("Birnbaum-Saunders CDF")
 %! xlabel ("values in x")
 %! ylabel ("probability")
@@ -151,41 +145,34 @@ endfunction
 %!shared x, y
 %! x = [-1, 0, 1, 2, Inf];
 %! y = [0, 0, 1/2, 0.76024993890652337, 1];
-%!assert (bisacdf (x, ones (1,5), ones (1,5), zeros (1,5)), y, eps)
-%!assert (bisacdf (x, 1, 1, zeros (1,5)), y, eps)
-%!assert (bisacdf (x, 1, ones (1,5), 0), y, eps)
-%!assert (bisacdf (x, ones (1,5), 1, 0), y, eps)
-%!assert (bisacdf (x, 1, 1, 0), y, eps)
-%!assert (bisacdf (x, 1, 1, [0, 0, NaN, 0, 0]), [y(1:2), NaN, y(4:5)], eps)
-%!assert (bisacdf (x, 1, [1, 1, NaN, 1, 1], 0), [y(1:2), NaN, y(4:5)], eps)
-%!assert (bisacdf (x, [1, 1, NaN, 1, 1], 1, 0), [y(1:2), NaN, y(4:5)], eps)
-%!assert (bisacdf ([x, NaN], 1, 1, 0), [y, NaN], eps)
+%!assert (bisacdf (x, ones (1,5), ones (1,5)), y, eps)
+%!assert (bisacdf (x, 1, 1), y, eps)
+%!assert (bisacdf (x, 1, ones (1,5)), y, eps)
+%!assert (bisacdf (x, ones (1,5), 1), y, eps)
+%!assert (bisacdf (x, 1, 1), y, eps)
+%!assert (bisacdf (x, 1, [1, 1, NaN, 1, 1]), [y(1:2), NaN, y(4:5)], eps)
+%!assert (bisacdf (x, [1, 1, NaN, 1, 1], 1), [y(1:2), NaN, y(4:5)], eps)
+%!assert (bisacdf ([x, NaN], 1, 1), [y, NaN], eps)
 
 ## Test class of input preserved
-%!assert (bisacdf (single ([x, NaN]), 1, 1, 0), single ([y, NaN]), eps('single'))
-%!assert (bisacdf ([x, NaN], 1, 1, single (0)), single ([y, NaN]), eps('single'))
-%!assert (bisacdf ([x, NaN], 1, single (1), 0), single ([y, NaN]), eps('single'))
-%!assert (bisacdf ([x, NaN], single (1), 1, 0), single ([y, NaN]), eps('single'))
+%!assert (bisacdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps ("single"))
+%!assert (bisacdf ([x, NaN], 1, single (1)), single ([y, NaN]), eps ("single"))
+%!assert (bisacdf ([x, NaN], single (1), 1), single ([y, NaN]), eps ("single"))
 
 ## Test input validation
 %!error<bisacdf: function called with too few input arguments.> bisacdf ()
 %!error<bisacdf: function called with too few input arguments.> bisacdf (1)
 %!error<bisacdf: function called with too few input arguments.> bisacdf (1, 2)
-%!error<bisacdf: function called with too few input arguments.> ...
-%! bisacdf (1, 2, 3)
 %!error<bisacdf: function called with too many inputs> ...
-%! bisacdf (1, 2, 3, 4, 5, 6)
-%!error<bisacdf: invalid argument for upper tail.> bisacdf (1, 2, 3, 4, "tail")
-%!error<bisacdf: X, A, B, and MU must be of common size or scalars.> ...
-%! bisacdf (ones (3), ones (2), ones(2), ones(2))
-%!error<bisacdf: X, A, B, and MU must be of common size or scalars.> ...
-%! bisacdf (ones (2), ones (3), ones(2), ones(2))
-%!error<bisacdf: X, A, B, and MU must be of common size or scalars.> ...
-%! bisacdf (ones (2), ones (2), ones(3), ones(2))
-%!error<bisacdf: X, A, B, and MU must be of common size or scalars.> ...
-%! bisacdf (ones (2), ones (2), ones(2), ones(3))
-%!error<bisacdf: X, A, B, and MU must not be complex.> bisacdf (i, 4, 3, 2)
-%!error<bisacdf: X, A, B, and MU must not be complex.> bisacdf (1, i, 3, 2)
-%!error<bisacdf: X, A, B, and MU must not be complex.> bisacdf (1, 4, i, 2)
-%!error<bisacdf: X, A, B, and MU must not be complex.> bisacdf (1, 4, 3, i)
+%! bisacdf (1, 2, 3, 4, 5)
+%!error<bisacdf: invalid argument for upper tail.> bisacdf (1, 2, 3, "tail")
+%!error<bisacdf: X, BETA, and GAMMA must be of common size or scalars.> ...
+%! bisacdf (ones (3), ones (2), ones(2))
+%!error<bisacdf: X, BETA, and GAMMA must be of common size or scalars.> ...
+%! bisacdf (ones (2), ones (3), ones(2))
+%!error<bisacdf: X, BETA, and GAMMA must be of common size or scalars.> ...
+%! bisacdf (ones (2), ones (2), ones(3))
+%!error<bisacdf: X, BETA, and GAMMA must not be complex.> bisacdf (i, 4, 3)
+%!error<bisacdf: X, BETA, and GAMMA must not be complex.> bisacdf (1, i, 3)
+%!error<bisacdf: X, BETA, and GAMMA must not be complex.> bisacdf (1, 4, i)
 
