@@ -19,8 +19,8 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{nlogL} =} bisalike (@var{params}, @var{x})
 ## @deftypefnx {statistics} {[@var{nlogL}, @var{acov}] =} bisalike (@var{params}, @var{x})
-## @deftypefnx {statistics} {[@ots{}] =} bisalike (@var{params}, @var{x}, @var{censor})
-## @deftypefnx {statistics} {[@ots{}] =} bisalike (@var{params}, @var{x}, @var{censor}, @var{freq})
+## @deftypefnx {statistics} {[@dots{}] =} bisalike (@var{params}, @var{x}, @var{censor})
+## @deftypefnx {statistics} {[@dots{}] =} bisalike (@var{params}, @var{x}, @var{censor}, @var{freq})
 ##
 ## Negative log-likelihood for the Birnbaum-Saunders distribution.
 ##
