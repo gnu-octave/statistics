@@ -110,33 +110,32 @@ endfunction
 
 %!demo
 %! ## Plot various CDFs from the Birnbaum-Saunders distribution
-%! x = 0.01:0.01:10;
-%! p1 = bisacdf (x, 0.5, 1);
+%! x = 0.01:0.01:4;
+%! p1 = bisacdf (x, 1, 0.5);
 %! p2 = bisacdf (x, 1, 1);
-%! p3 = bisacdf (x, 2, 1);
-%! p4 = bisacdf (x, 5, 1);
-%! p5 = bisacdf (x, 10, 1);
+%! p3 = bisacdf (x, 1, 2);
+%! p4 = bisacdf (x, 1, 5);
+%! p5 = bisacdf (x, 1, 10);
 %! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c", x, p5, "-m")
 %! grid on
-%! legend ({"α = 0.5, β = 1", "α = 1,    β = 1", ...
-%!          "α = 2,    β = 1", "α = 5,    β = 1", ...
-%!          "α = 10,  β = 1"}, "location", "southeast")
+%! legend ({"β = 1, γ = 0.5", "β = 1, γ = 1", "β = 1, γ = 2", ...
+%!          "β = 1, γ = 5", "β = 1, γ = 10"}, "location", "southeast")
 %! title ("Birnbaum-Saunders CDF")
 %! xlabel ("values in x")
 %! ylabel ("probability")
 
 %!demo
 %! ## Plot various CDFs from the Birnbaum-Saunders distribution
-%! x = 0.01:0.01:10;
-%! p1 = bisacdf (x, 0.3, 1);
-%! p2 = bisacdf (x, 0.3, 2);
-%! p3 = bisacdf (x, 0.5, 1);
-%! p4 = bisacdf (x, 0.5, 3);
-%! p5 = bisacdf (x, 0.5, 5);
-%! plot (x, p1, "-beta", x, p2, "-g", x, p3, "-r", x, p4, "-c", x, p5, "-m")
+%! x = 0.01:0.01:6;
+%! p1 = bisacdf (x, 1, 0.3);
+%! p2 = bisacdf (x, 2, 0.3);
+%! p3 = bisacdf (x, 1, 0.5);
+%! p4 = bisacdf (x, 3, 0.5);
+%! p5 = bisacdf (x, 5, 0.5);
+%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c", x, p5, "-m")
 %! grid on
-%! legend ({"α = 0.3, β = 1", "α = 0.3, β = 2", "α = 0.5, β = 1", ...
-%!          "α = 0.5, β = 3", "α = 0.5, β = 5"}, "location", "southeast")
+%! legend ({"β = 1, γ = 0.3", "β = 2, γ = 0.3", "β = 1, γ = 0.5", ...
+%!          "β = 3, γ = 0.5", "β = 5, γ = 0.5"}, "location", "southeast")
 %! title ("Birnbaum-Saunders CDF")
 %! xlabel ("values in x")
 %! ylabel ("probability")

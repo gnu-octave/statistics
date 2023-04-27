@@ -94,17 +94,16 @@ endfunction
 %!demo
 %! ## Plot various iCDFs from the Birnbaum-Saunders distribution
 %! p = 0.001:0.001:0.999;
-%! x1 = bisainv (p, 0.5, 1);
+%! x1 = bisainv (p, 1, 0.5);
 %! x2 = bisainv (p, 1, 1);
-%! x3 = bisainv (p, 2, 1);
-%! x4 = bisainv (p, 5, 1);
-%! x5 = bisainv (p, 10, 1);
-%! plot (p, x1, "-beta", p, x2, "-g", p, x3, "-r", p, x4, "-c", p, x5, "-m")
+%! x3 = bisainv (p, 1, 2);
+%! x4 = bisainv (p, 1, 5);
+%! x5 = bisainv (p, 1, 10);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c", p, x5, "-m")
 %! grid on
 %! ylim ([0, 10])
-%! legend ({"α = 0.5, β = 1", "α = 1,    β = 1", ...
-%!          "α = 2,    β = 1", "α = 5,    β = 1", ...
-%!          "α = 10,  β = 1"}, "location", "northwest")
+%! legend ({"β = 1, γ = 0.5", "β = 1, γ = 1", "β = 1, γ = 2", ...
+%!          "β = 1, γ = 5", "β = 1, γ = 10"}, "location", "northwest")
 %! title ("Birnbaum-Saunders iCDF")
 %! xlabel ("probability")
 %! ylabel ("values in x")
@@ -112,16 +111,16 @@ endfunction
 %!demo
 %! ## Plot various iCDFs from the Birnbaum-Saunders distribution
 %! p = 0.001:0.001:0.999;
-%! x1 = bisainv (p, 0.3, 1);
-%! x2 = bisainv (p, 0.3, 2);
-%! x3 = bisainv (p, 0.5, 1);
-%! x4 = bisainv (p, 0.5, 3);
-%! x5 = bisainv (p, 0.5, 5);
-%! plot (p, x1, "-beta", p, x2, "-g", p, x3, "-r", p, x4, "-c", p, x5, "-m")
+%! x1 = bisainv (p, 1, 0.3);
+%! x2 = bisainv (p, 2, 0.3);
+%! x3 = bisainv (p, 1, 0.5);
+%! x4 = bisainv (p, 3, 0.5);
+%! x5 = bisainv (p, 5, 0.5);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c", p, x5, "-m")
 %! grid on
 %! ylim ([0, 10])
-%! legend ({"α = 0.3, β = 1", "α = 0.3, β = 2", "α = 0.5, β = 1", ...
-%!          "α = 0.5, β = 3", "α = 0.5, β = 5"}, "location", "northwest")
+%! legend ({"β = 1, γ = 0.3", "β = 2, γ = 0.3", "β = 1, γ = 0.5", ...
+%!          "β = 3, γ = 0.5", "β = 5, γ = 0.5"}, "location", "northwest")
 %! title ("Birnbaum-Saunders iCDF")
 %! xlabel ("probability")
 %! ylabel ("values in x")

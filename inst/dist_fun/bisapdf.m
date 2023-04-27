@@ -89,17 +89,16 @@ endfunction
 %!demo
 %! ## Plot various PDFs from the Birnbaum-Saunders distribution
 %! x = 0.01:0.01:4;
-%! y1 = bisapdf (x, 0.5, 1);
+%! y1 = bisapdf (x, 1, 0.5);
 %! y2 = bisapdf (x, 1, 1);
-%! y3 = bisapdf (x, 2, 1);
-%! y4 = bisapdf (x, 5, 1);
-%! y5 = bisapdf (x, 10, 1);
-%! plot (x, y1, "-beta", x, y2, "-g", x, y3, "-r", x, y4, "-c", x, y5, "-m")
+%! y3 = bisapdf (x, 1, 2);
+%! y4 = bisapdf (x, 1, 5);
+%! y5 = bisapdf (x, 1, 10);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-c", x, y5, "-m")
 %! grid on
 %! ylim ([0, 1.5])
-%! legend ({"α = 0.5, β = 1", "α = 1,    β = 1", ...
-%!          "α = 2,    β = 1", "α = 5,    β = 1", ...
-%!          "α = 10,  β = 1"}, "location", "northeast")
+%! legend ({"β = 1 ,γ = 0.5", "β = 1, γ = 1", "β = 1, γ = 2", ...
+%!          "β = 1, γ = 5", "β = 1, γ = 10"}, "location", "northeast")
 %! title ("Birnbaum-Saunders CDF")
 %! xlabel ("values in x")
 %! ylabel ("density")
@@ -107,16 +106,16 @@ endfunction
 %!demo
 %! ## Plot various PDFs from the Birnbaum-Saunders distribution
 %! x = 0.01:0.01:6;
-%! y1 = bisapdf (x, 0.3, 1);
-%! y2 = bisapdf (x, 0.3, 2);
-%! y3 = bisapdf (x, 0.5, 1);
-%! y4 = bisapdf (x, 0.5, 3);
-%! y5 = bisapdf (x, 0.5, 5);
-%! plot (x, y1, "-beta", x, y2, "-g", x, y3, "-r", x, y4, "-c", x, y5, "-m")
+%! y1 = bisapdf (x, 1, 0.3);
+%! y2 = bisapdf (x, 2, 0.3);
+%! y3 = bisapdf (x, 1, 0.5);
+%! y4 = bisapdf (x, 3, 0.5);
+%! y5 = bisapdf (x, 5, 0.5);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-c", x, y5, "-m")
 %! grid on
 %! ylim ([0, 1.5])
-%! legend ({"α = 0.3, β = 1", "α = 0.3, β = 2", "α = 0.5, β = 1", ...
-%!          "α = 0.5, β = 3", "α = 0.5, β = 5"}, "location", "northeast")
+%! legend ({"β = 1, γ = 0.3", "β = 2, γ = 0.3", "β = 1, γ = 0.5", ...
+%!          "β = 3, γ = 0.5", "β = 5, γ = 0.5"}, "location", "northeast")
 %! title ("Birnbaum-Saunders CDF")
 %! xlabel ("values in x")
 %! ylabel ("density")
