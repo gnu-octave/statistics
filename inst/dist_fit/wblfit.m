@@ -129,10 +129,10 @@ endfunction
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, 30, 2);
-%! h = findobj(gca,'Type','patch');
-%! set(h(1),'facecolor',"c");
-%! set(h(2),'facecolor',"g");
-%! set(h(3),'facecolor',"r");
+%! h = findobj (gca, "Type", "patch");
+%! set (h(1), "facecolor", "c");
+%! set (h(2), "facecolor", "g");
+%! set (h(3), "facecolor", "r");
 %! ylim ([0, 2]);
 %! xlim ([0, 15]);
 %! hold on
