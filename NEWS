@@ -495,7 +495,7 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** binofit (fully Matlab compatible)
 
- ** binolike (similar functionality to MATLAB's likefunc)
+ ** binolike (similar functionality to MATLAB's negloglik)
 
  ** bisacdf (replacing bbscdf)
 
@@ -503,7 +503,7 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** bisainv (replacing bbsinv)
 
- ** bisalike (similar functionality to MATLAB's likefunc and mlecov)
+ ** bisalike (similar functionality to MATLAB's negloglik and mlecov)
 
  ** bisapdf (replacing bbspdf)
 
@@ -539,7 +539,7 @@ Summary of important user-visible changes for statistics 1.5.1:
 
  ** poissfit (fully Matlab compatible, extra functionality)
 
- ** poisslike (similar functionality to MATLAB's likefunc)
+ ** poisslike (similar functionality to MATLAB's negloglik)
 
  ** wblfit (fully Matlab compatible)
 
