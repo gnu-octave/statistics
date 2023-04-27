@@ -29,8 +29,8 @@
 ## success, given the number of successes in @var{x}.  Unlike @code{binofit},
 ## which handles each element in @var{x} independently, @code{binolike} returns
 ## the negative log likelihood of the entire vector @var{x}.  This functionality
-## is similar to MATLAB's @code{likefunc} method available to probability
-## distribution objects created with @code{fitdist}.
+## is similar to MATLAB's @code{negloglik} function for probability distribution
+## objects.
 ##
 ## @code{[@var{nlogL}, @var{acov}] = betalike (@var{params}, @var{x})} also
 ## returns the inverse of Fisher's information matrix, @var{avar}.  If the input

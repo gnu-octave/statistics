@@ -12,7 +12,7 @@
 ##
 ## Octave is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR BETA PARTICULAR PURPOSE.  See the GNU
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ## General Public License for more details.
 ##
 ## You should have received a copy of the GNU General Public License
@@ -28,7 +28,7 @@
 ## For each element of @var{x}, compute the cumulative distribution function
 ## (CDF) at @var{x} of the Birnbaum-Saunders distribution with scale parameter
 ## @var{beta} and shape parameter @var{gamma}.  The size of @var{p} is the
-## common size of @var{x}, @var{beta} and @var{gamma}.  BETA scalar input functions
+## common size of @var{x}, @var{beta} and @var{gamma}.  A scalar input functions
 ## as a constant matrix of the same size as the other inputs.
 ##
 ## @code{@var{p} = bisacdf (@var{x}, @var{beta}, @var{gamma}, "upper")}
