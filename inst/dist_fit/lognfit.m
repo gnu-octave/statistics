@@ -136,19 +136,19 @@ endfunction
 %!demo
 %! ## Sample 3 populations from 3 different log-normal distibutions
 %! randn ("seed", 1);    # for reproducibility
-%! r1 = lognrnd(0, 0.25, 1000, 1);
+%! r1 = lognrnd (0, 0.25, 1000, 1);
 %! randn ("seed", 2);    # for reproducibility
-%! r2 = lognrnd(0, 0.5, 1000, 1);
+%! r2 = lognrnd (0, 0.5, 1000, 1);
 %! randn ("seed", 3);    # for reproducibility
-%! r3 = lognrnd(0, 1, 1000, 1);
+%! r3 = lognrnd (0, 1, 1000, 1);
 %! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, 30, 2);
-%! h = findobj(gca,'Type','patch');
-%! set(h(1),'facecolor',"c");
-%! set(h(2),'facecolor',"g");
-%! set(h(3),'facecolor',"r");
+%! h = findobj (gca, "Type", "patch");
+%! set(h(1), "facecolor", "c");
+%! set(h(2), "facecolor", "g");
+%! set(h(3), "facecolor", "r");
 %! hold on
 %!
 %! ## Estimate their mu and sigma parameters
@@ -170,12 +170,12 @@ endfunction
 %! legend ({"Normalized HIST of sample 1 with mu=0, σ=0.25", ...
 %!          "Normalized HIST of sample 2 with mu=0, σ=0.5", ...
 %!          "Normalized HIST of sample 3 with mu=0, σ=1", ...
-%!          sprintf("PDF for sample 1 with estimated mu=%0.2f and σ=%0.2f", ...
-%!                  mu_sigmaA(1), mu_sigmaA(2)), ...
-%!          sprintf("PDF for sample 2 with estimated mu=%0.2f and σ=%0.2f", ...
-%!                  mu_sigmaB(1), mu_sigmaB(2)), ...
-%!          sprintf("PDF for sample 3 with estimated mu=%0.2f and σ=%0.2f", ...
-%!                  mu_sigmaC(1), mu_sigmaC(2))}, "location", "northeast")
+%!          sprintf ("PDF for sample 1 with estimated mu=%0.2f and σ=%0.2f", ...
+%!                   mu_sigmaA(1), mu_sigmaA(2)), ...
+%!          sprintf ("PDF for sample 2 with estimated mu=%0.2f and σ=%0.2f", ...
+%!                   mu_sigmaB(1), mu_sigmaB(2)), ...
+%!          sprintf ("PDF for sample 3 with estimated mu=%0.2f and σ=%0.2f", ...
+%!                   mu_sigmaC(1), mu_sigmaC(2))}, "location", "northeast")
 %! title ("Three population samples from different log-normal distibutions")
 %! hold off
 

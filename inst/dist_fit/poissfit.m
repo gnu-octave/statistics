@@ -93,19 +93,19 @@ endfunction
 %!demo
 %! ## Sample 3 populations from 3 different Poisson distibutions
 %! randp ("seed", 1);    # for reproducibility
-%! r1 = poissrnd(2, 100, 1);
+%! r1 = poissrnd (2, 100, 1);
 %! randp ("seed", 2);    # for reproducibility
-%! r2 = poissrnd(5, 100, 1);
+%! r2 = poissrnd (5, 100, 1);
 %! randp ("seed", 3);    # for reproducibility
-%! r3 = poissrnd(9, 100, 1);
+%! r3 = poissrnd (9, 100, 1);
 %! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, 8, 1);
-%! h = findobj(gca,'Type','patch');
-%! set(h(1),'facecolor',"c");
-%! set(h(2),'facecolor',"g");
-%! set(h(3),'facecolor',"r");
+%! h = findobj (gca, "Type", "patch");
+%! set(h(1), "facecolor", "c");
+%! set(h(2), "facecolor", "g");
+%! set(h(3), "facecolor", "r");
 %! hold on
 %!
 %! ## Estimate their lambda parameter
@@ -123,12 +123,12 @@ endfunction
 %! legend ({"Normalized HIST of sample 1 with λ=2", ...
 %!          "Normalized HIST of sample 2 with λ=5", ...
 %!          "Normalized HIST of sample 3 with λ=9", ...
-%!          sprintf("PDF for sample 1 with estimated λ=%0.2f", ...
-%!                  lambdahat(1)), ...
-%!          sprintf("PDF for sample 2 with estimated λ=%0.2f", ...
-%!                  lambdahat(2)), ...
-%!          sprintf("PDF for sample 3 with estimated λ=%0.2f", ...
-%!                  lambdahat(3))})
+%!          sprintf ("PDF for sample 1 with estimated λ=%0.2f", ...
+%!                   lambdahat(1)), ...
+%!          sprintf ("PDF for sample 2 with estimated λ=%0.2f", ...
+%!                   lambdahat(2)), ...
+%!          sprintf ("PDF for sample 3 with estimated λ=%0.2f", ...
+%!                   lambdahat(3))})
 %! title ("Three population samples from different Poisson distibutions")
 %! hold off
 

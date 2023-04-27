@@ -112,9 +112,9 @@ endfunction
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, 23, 0.35);
-%! h = findobj(gca,'Type','patch');
-%! set(h(1),'facecolor',"c");
-%! set(h(2),'facecolor',"g");
+%! h = findobj (gca, "Type", "patch");
+%! set (h(1), "facecolor", "c");
+%! set (h(2), "facecolor", "g");
 %! hold on
 %!
 %! ## Estimate their probability of success
@@ -131,10 +131,10 @@ endfunction
 %! ylim ([0, 0.2])
 %! legend ({"Normalized HIST of sample 1 with ps=0.15", ...
 %!          "Normalized HIST of sample 2 with ps=0.50", ...
-%!          sprintf("PDF for sample 1 with estimated ps=%0.2f", ...
-%!                  mean (pshatA)), ...
-%!          sprintf("PDF for sample 2 with estimated ps=%0.2f", ...
-%!                  mean (pshatB))})
+%!          sprintf ("PDF for sample 1 with estimated ps=%0.2f", ...
+%!                   mean (pshatA)), ...
+%!          sprintf ("PDF for sample 2 with estimated ps=%0.2f", ...
+%!                   mean (pshatB))})
 %! title ("Two population samples from different binomial distibutions")
 %! hold off
 
