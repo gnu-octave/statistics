@@ -17,89 +17,117 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{x} =} cauchy_inv (@var{p})
-## @deftypefnx {statistics} {@var{x} =} cauchy_inv (@var{p}, @var{location}, @var{scale})
+## @deftypefn  {statistics} {@var{x} =} cauchyinv (@var{p}, @var{x0}, @var{gamma})
 ##
 ## Inverse of the Cauchy cumulative distribution function (iCDF).
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## at @var{p} of the Cauchy distribution with location parameter @var{location}
-## and scale parameter @var{scale}.  The size of @var{x} is the common size of
-## @var{p}, @var{location}, and @var{scale}.  A scalar input functions as a
+## at @var{p} of the Cauchy distribution with location parameter @var{x0} and
+## scale parameter @var{gamma}.  The size of @var{x} is the common size of
+## @var{p}, @var{x0}, and @var{gamma}.  A scalar input functions as a
 ## constant matrix of the same size as the other inputs.
 ##
-## Default values are @var{location} = 0, @var{scale} = 1.
+## Further information about the Cauchy distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Cauchy_distribution}
 ##
-## @seealso{cauchy_cdf, cauchy_pdf, cauchy_rnd}
+## @seealso{cauchycdf, cauchypdf, cauchyrnd}
 ## @end deftypefn
 
-function x = cauchy_inv (p, location = 0, scale = 1)
+function x = cauchyinv (p, x0, gamma)
 
-  if (nargin != 1 && nargin != 3)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 3)
+    error ("cauchyinv: function called with too few input arguments.");
   endif
 
-  if (! isscalar (p) || ! isscalar (location) || ! isscalar (scale))
-    [retval, p, location, scale] = common_size (p, location, scale);
+  ## Check for common size of P, X0, and GAMMA
+  if (! isscalar (p) || ! isscalar (x0) || ! isscalar (gamma))
+    [retval, p, x0, gamma] = common_size (p, x0, gamma);
     if (retval > 0)
-      error (strcat (["cauchy_inv: P, LOCATION, and SCALE must be of"], ...
+      error (strcat (["cauchyinv: P, X0, and GAMMA must be of"], ...
                      [" common size or scalars."]));
     endif
   endif
 
-  if (iscomplex (p) || iscomplex (location) || iscomplex (scale))
-    error ("cauchy_inv: P, LOCATION, and SCALE must not be complex.");
+  ## Check for P, X0, and GAMMA being reals
+  if (iscomplex (p) || iscomplex (x0) || iscomplex (gamma))
+    error ("cauchyinv: P, X0, and GAMMA must not be complex.");
   endif
 
-  if (isa (p, "single") || isa (location, "single") || isa (scale, "single"))
+  ## Check for class type
+  if (isa (p, "single") || isa (x0, "single") || isa (gamma, "single"))
     x = NaN (size (p), "single");
   else
     x = NaN (size (p));
   endif
 
-  ok = ! isinf (location) & (scale > 0) & (scale < Inf);
+  ## Find valid values in parameters
+  ok = ! isinf (x0) & (gamma > 0) & (gamma < Inf);
 
-  k = (p == 0) & ok;
-  x(k) = -Inf;
+  ## Handle edge cases
+  k0 = (p == 0) & ok;
+  x(k0) = -Inf;
+  k1 = (p == 1) & ok;
+  x(k1) = Inf;
 
-  k = (p == 1) & ok;
-  x(k) = Inf;
-
+  ## Handle all other valid cases
   k = (p > 0) & (p < 1) & ok;
-  if (isscalar (location) && isscalar (scale))
-    x(k) = location - scale * cot (pi * p(k));
+
+  if (isscalar (x0) && isscalar (gamma))
+    x(k) = x0 - gamma * cot (pi * p(k));
   else
-    x(k) = location(k) - scale(k) .* cot (pi * p(k));
+    x(k) = x0(k) - gamma(k) .* cot (pi * p(k));
   endif
 
 endfunction
 
+%!demo
+%! ## Plot various iCDFs from the Cauchy distribution
+%! p = 0.001:0.001:0.999;
+%! x1 = cauchyinv (p, 0, 0.5);
+%! x2 = cauchyinv (p, 0, 1);
+%! x3 = cauchyinv (p, 0, 2);
+%! x4 = cauchyinv (p, -2, 1);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c")
+%! grid on
+%! ylim ([-5, 5])
+%! legend ({"x0 = 0, γ = 0.5", "x0 = 0, γ = 1", ...
+%!          "x0 = 0, γ = 2", "x0 = -2, γ = 1"}, "location", "northwest")
+%! title ("Cauchy iCDF")
+%! xlabel ("probability")
+%! ylabel ("values in x")
 
+## Test results
 %!shared p
 %! p = [-1 0 0.5 1 2];
-%!assert (cauchy_inv (p, ones (1,5), 2*ones (1,5)), [NaN -Inf 1 Inf NaN], eps)
-%!assert (cauchy_inv (p, 1, 2*ones (1,5)), [NaN -Inf 1 Inf NaN], eps)
-%!assert (cauchy_inv (p, ones (1,5), 2), [NaN -Inf 1 Inf NaN], eps)
-%!assert (cauchy_inv (p, [1 -Inf NaN Inf 1], 2), [NaN NaN NaN NaN NaN])
-%!assert (cauchy_inv (p, 1, 2*[1 0 NaN Inf 1]), [NaN NaN NaN NaN NaN])
-%!assert (cauchy_inv ([p(1:2) NaN p(4:5)], 1, 2), [NaN -Inf NaN Inf NaN])
+%!assert (cauchyinv (p, ones (1,5), 2 * ones (1,5)), [NaN -Inf 1 Inf NaN], eps)
+%!assert (cauchyinv (p, 1, 2 * ones (1,5)), [NaN -Inf 1 Inf NaN], eps)
+%!assert (cauchyinv (p, ones (1,5), 2), [NaN -Inf 1 Inf NaN], eps)
+%!assert (cauchyinv (p, [1 -Inf NaN Inf 1], 2), [NaN NaN NaN NaN NaN])
+%!assert (cauchyinv (p, 1, 2 * [1 0 NaN Inf 1]), [NaN NaN NaN NaN NaN])
+%!assert (cauchyinv ([p(1:2) NaN p(4:5)], 1, 2), [NaN -Inf NaN Inf NaN])
 
 ## Test class of input preserved
-%!assert (cauchy_inv ([p, NaN], 1, 2), [NaN -Inf 1 Inf NaN NaN], eps)
-%!assert (cauchy_inv (single ([p, NaN]), 1, 2), ...
+%!assert (cauchyinv ([p, NaN], 1, 2), [NaN -Inf 1 Inf NaN NaN], eps)
+%!assert (cauchyinv (single ([p, NaN]), 1, 2), ...
 %! single ([NaN -Inf 1 Inf NaN NaN]), eps ("single"))
-%!assert (cauchy_inv ([p, NaN], single (1), 2), ...
+%!assert (cauchyinv ([p, NaN], single (1), 2), ...
 %! single ([NaN -Inf 1 Inf NaN NaN]), eps ("single"))
-%!assert (cauchy_inv ([p, NaN], 1, single (2)), ...
+%!assert (cauchyinv ([p, NaN], 1, single (2)), ...
 %! single ([NaN -Inf 1 Inf NaN NaN]), eps ("single"))
 
 ## Test input validation
-%!error cauchy_inv ()
-%!error cauchy_inv (1,2)
-%!error cauchy_inv (1,2,3,4)
-%!error cauchy_inv (ones (3), ones (2), ones (2))
-%!error cauchy_inv (ones (2), ones (3), ones (2))
-%!error cauchy_inv (ones (2), ones (2), ones (3))
-%!error cauchy_inv (i, 2, 2)
-%!error cauchy_inv (2, i, 2)
-%!error cauchy_inv (2, 2, i)
+%!error<cauchyinv: function called with too few input arguments.> cauchyinv ()
+%!error<cauchyinv: function called with too few input arguments.> cauchyinv (1)
+%!error<cauchyinv: function called with too few input arguments.> ...
+%! cauchyinv (1, 2)
+%!error<cauchyinv: function called with too many inputs> cauchyinv (1, 2, 3, 4)
+%!error<cauchyinv: P, X0, and GAMMA must be of common size or scalars.> ...
+%! cauchyinv (ones (3), ones (2), ones(2))
+%!error<cauchyinv: P, X0, and GAMMA must be of common size or scalars.> ...
+%! cauchyinv (ones (2), ones (3), ones(2))
+%!error<cauchyinv: P, X0, and GAMMA must be of common size or scalars.> ...
+%! cauchyinv (ones (2), ones (2), ones(3))
+%!error<cauchyinv: P, X0, and GAMMA must not be complex.> cauchyinv (i, 4, 3)
+%!error<cauchyinv: P, X0, and GAMMA must not be complex.> cauchyinv (1, i, 3)
+%!error<cauchyinv: P, X0, and GAMMA must not be complex.> cauchyinv (1, 4, i)

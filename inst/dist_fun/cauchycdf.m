@@ -112,7 +112,7 @@ endfunction
 %! ylabel ("probability")
 
 ## Test results
-%!shared x,y
+%!shared x, y
 %! x = [-1 0 0.5 1 2];
 %! y = 1/pi * atan ((x-1) / 2) + 1/2;
 %!assert (cauchycdf (x, ones (1,5), 2*ones (1,5)), y)

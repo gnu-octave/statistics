@@ -17,85 +17,111 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{y} =} cauchy_pdf (@var{x})
-## @deftypefnx {statistics} {@var{y} =} cauchy_pdf (@var{x}, @var{location}, @var{scale})
+## @deftypefn  {statistics} {@var{y} =} cauchypdf (@var{x}, @var{x0}, @var{gamma})
 ##
 ## Cauchy probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the Cauchy distribution with location parameter @var{location}
-## and scale parameter @var{scale}.  The size of @var{y} is the common size of
-## @var{x}, @var{location}, and @var{scale}.  A scalar input functions as a
-## constant matrix of the same size as the other inputs.
+## at @var{x} of the Cauchy distribution with location parameter @var{x0} and
+## scale parameter @var{gamma}.  The size of @var{y} is the common size of
+## @var{x}, @var{x0}, and @var{gamma}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
 ##
-## Default values are @var{location} = 0, @var{scale} = 1.
+## Further information about the Cauchy distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Cauchy_distribution}
 ##
-## @seealso{cauchy_cdf, cauchy_inv, cauchy_rnd}
+## @seealso{cauchycdf, cauchypdf, cauchyrnd}
 ## @end deftypefn
 
-function y = cauchy_pdf (x, location = 0, scale = 1)
+function y = cauchypdf (x, x0, gamma)
 
-  if (nargin != 1 && nargin != 3)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 3)
+    error ("cauchypdf: function called with too few input arguments.");
   endif
 
-  if (! isscalar (location) || ! isscalar (scale))
-    [retval, x, location, scale] = common_size (x, location, scale);
+  ## Check for common size of X, X0, and GAMMA
+  if (! isscalar (x) || ! isscalar (x0) || ! isscalar (gamma))
+    [retval, x, x0, gamma] = common_size (x, x0, gamma);
     if (retval > 0)
-      error (strcat (["cauchy_pdf: X, LOCATION, and SCALE must be of"], ...
+      error (strcat (["cauchypdf: X, X0, and GAMMA must be of"], ...
                      [" common size or scalars."]));
     endif
   endif
 
-  if (iscomplex (x) || iscomplex (location) || iscomplex (scale))
-    error ("cauchy_pdf: X, LOCATION, and SCALE must not be complex.");
+  ## Check for X, X0, and GAMMA being reals
+  if (iscomplex (x) || iscomplex (x0) || iscomplex (gamma))
+    error ("cauchypdf: X, X0, and GAMMA must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (location, "single") || isa (scale, "single"))
+  ## Check for class type
+  if (isa (x, "single") || isa (x0, "single") || isa (gamma, "single"))
     y = NaN (size (x), "single");
   else
     y = NaN (size (x));
   endif
 
-  k = ! isinf (location) & (scale > 0) & (scale < Inf);
-  if (isscalar (location) && isscalar (scale))
-    y = ((1 ./ (1 + ((x - location) / scale) .^ 2))
-              / pi / scale);
+  ## Find valid values in parameters
+  k = ! isinf (x0) & (gamma > 0) & (gamma < Inf);
+
+  if (isscalar (x0) && isscalar (gamma))
+    y(k) = ((1 ./ (1 + ((x(k) - x0) / gamma) .^ 2)) / pi / gamma);
   else
-    y(k) = ((1 ./ (1 + ((x(k) - location(k)) ./ scale(k)) .^ 2))
-              / pi ./ scale(k));
+    y(k) = ((1 ./ (1 + ((x(k) - x0(k)) ./ gamma(k)) .^ 2)) / pi ./ gamma(k));
   endif
 
 endfunction
 
+%!demo
+%! ## Plot various PDFs from the Cauchy distribution
+%! x = -5:0.01:5;
+%! y1 = cauchypdf (x, 0, 0.5);
+%! y2 = cauchypdf (x, 0, 1);
+%! y3 = cauchypdf (x, 0, 2);
+%! y4 = cauchypdf (x, -2, 1);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-c")
+%! grid on
+%! xlim ([-5, 5])
+%! ylim ([0, 0.7])
+%! legend ({"x0 = 0, γ = 0.5", "x0 = 0, γ = 1", ...
+%!          "x0 = 0, γ = 2", "x0 = -2, γ = 1"}, "location", "northeast")
+%! title ("Cauchy PDF")
+%! xlabel ("values in x")
+%! ylabel ("density")
 
-%!shared x,y
+## Test results
+%!shared x, y
 %! x = [-1 0 0.5 1 2];
 %! y = 1/pi * ( 2 ./ ((x-1).^2 + 2^2) );
-%!assert (cauchy_pdf (x, ones (1,5), 2*ones (1,5)), y)
-%!assert (cauchy_pdf (x, 1, 2*ones (1,5)), y)
-%!assert (cauchy_pdf (x, ones (1,5), 2), y)
-%!assert (cauchy_pdf (x, [-Inf 1 NaN 1 Inf], 2), [NaN y(2) NaN y(4) NaN])
-%!assert (cauchy_pdf (x, 1, 2*[0 1 NaN 1 Inf]), [NaN y(2) NaN y(4) NaN])
-%!assert (cauchy_pdf ([x, NaN], 1, 2), [y, NaN])
+%!assert (cauchypdf (x, ones (1,5), 2*ones (1,5)), y)
+%!assert (cauchypdf (x, 1, 2*ones (1,5)), y)
+%!assert (cauchypdf (x, ones (1,5), 2), y)
+%!assert (cauchypdf (x, [-Inf 1 NaN 1 Inf], 2), [NaN y(2) NaN y(4) NaN])
+%!assert (cauchypdf (x, 1, 2*[0 1 NaN 1 Inf]), [NaN y(2) NaN y(4) NaN])
+%!assert (cauchypdf ([x, NaN], 1, 2), [y, NaN])
 
 ## Test class of input preserved
-%!assert (cauchy_pdf (single ([x, NaN]), 1, 2), single ([y, NaN]), eps ("single"))
-%!assert (cauchy_pdf ([x, NaN], single (1), 2), single ([y, NaN]), eps ("single"))
-%!assert (cauchy_pdf ([x, NaN], 1, single (2)), single ([y, NaN]), eps ("single"))
+%!assert (cauchypdf (single ([x, NaN]), 1, 2), single ([y, NaN]), eps ("single"))
+%!assert (cauchypdf ([x, NaN], single (1), 2), single ([y, NaN]), eps ("single"))
+%!assert (cauchypdf ([x, NaN], 1, single (2)), single ([y, NaN]), eps ("single"))
 
 ## Cauchy (0,1) == Student's T distribution with 1 DOF
 %!test
 %! x = rand (10, 1);
-%! assert (cauchy_pdf (x, 0, 1), tpdf (x, 1), eps);
+%! assert (cauchypdf (x, 0, 1), tpdf (x, 1), eps);
 
 ## Test input validation
-%!error cauchy_pdf ()
-%!error cauchy_pdf (1,2)
-%!error cauchy_pdf (1,2,3,4)
-%!error cauchy_pdf (ones (3), ones (2), ones (2))
-%!error cauchy_pdf (ones (2), ones (3), ones (2))
-%!error cauchy_pdf (ones (2), ones (2), ones (3))
-%!error cauchy_pdf (i, 2, 2)
-%!error cauchy_pdf (2, i, 2)
-%!error cauchy_pdf (2, 2, i)
+%!error<cauchypdf: function called with too few input arguments.> cauchypdf ()
+%!error<cauchypdf: function called with too few input arguments.> cauchypdf (1)
+%!error<cauchypdf: function called with too few input arguments.> ...
+%! cauchypdf (1, 2)
+%!error<cauchypdf: function called with too many inputs> cauchypdf (1, 2, 3, 4)
+%!error<cauchypdf: X, X0, and GAMMA must be of common size or scalars.> ...
+%! cauchypdf (ones (3), ones (2), ones(2))
+%!error<cauchypdf: X, X0, and GAMMA must be of common size or scalars.> ...
+%! cauchypdf (ones (2), ones (3), ones(2))
+%!error<cauchypdf: X, X0, and GAMMA must be of common size or scalars.> ...
+%! cauchypdf (ones (2), ones (2), ones(3))
+%!error<cauchypdf: X, X0, and GAMMA must not be complex.> cauchypdf (i, 4, 3)
+%!error<cauchypdf: X, X0, and GAMMA must not be complex.> cauchypdf (1, i, 3)
+%!error<cauchypdf: X, X0, and GAMMA must not be complex.> cauchypdf (1, 4, i)

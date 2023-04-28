@@ -17,17 +17,17 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{r} =} cauchy_rnd (@var{location}, @var{scale})
-## @deftypefnx {statistics} {@var{r} =} cauchy_rnd (@var{location}, @var{scale}, @var{rows})
-## @deftypefnx {statistics} {@var{r} =} cauchy_rnd (@var{location}, @var{scale}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} {@var{r} =} cauchy_rnd (@var{location}, @var{scale}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} cauchyrnd (@var{x0}, @var{gamma})
+## @deftypefnx {statistics} {@var{r} =} cauchyrnd (@var{x0}, @var{gamma}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} cauchyrnd (@var{x0}, @var{gamma}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} cauchyrnd (@var{x0}, @var{gamma}, [@var{sz}])
 ##
 ## Random arrays from the Cauchy distribution.
 ##
-## @code{@var{r} = cauchy_rnd (@var{location}, @var{scale})} returns an array of
-## random numbers chosen from the Cauchy distribution with parameters
-## @var{location} and @var{scale}.  The size of @var{r} is the common size of
-## @var{location} and @var{scale}.  A scalar input functions as a constant
+## @code{@var{r} = cauchyrnd (@var{x0}, @var{gamma})} returns an array of
+## random numbers chosen from the Cauchy distribution with location parameter
+## @var{x0} and scale parameter @var{gamma}.  The size of @var{r} is the common
+## size of @var{x0} and @var{gamma}.  A scalar input functions as a constant
 ## matrix of the same size as the other inputs.
 ##
 ## When called with a single size argument, return a square matrix with
@@ -36,100 +36,130 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## @seealso{cauchy_cdf, cauchy_inv, cauchy_pdf}
+## Further information about the Cauchy distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Cauchy_distribution}
+##
+## @seealso{cauchycdf, cauchyinv, cauchypdf}
 ## @end deftypefn
 
-function r = cauchy_rnd (location, scale, varargin)
+function r = cauchyrnd (x0, gamma, varargin)
 
+  ## Check for valid number of input arguments
   if (nargin < 2)
-    print_usage ();
+    error ("cauchyrnd: function called with too few input arguments.");
   endif
 
-  if (! isscalar (location) || ! isscalar (scale))
-    [retval, location, scale] = common_size (location, scale);
+  ## Check for common size of X0 and GAMMA
+  if (! isscalar (x0) || ! isscalar (gamma))
+    [retval, x0, gamma] = common_size (x0, gamma);
     if (retval > 0)
-      error (strcat (["cauchy_rnd: LOCATION and SCALE must be of common"], ...
+      error (strcat (["cauchyrnd: X0 and GAMMA must be of common"], ...
                      [" size or scalars."]));
     endif
   endif
 
-  if (iscomplex (location) || iscomplex (scale))
-    error ("cauchy_rnd: LOCATION and SCALE must not be complex.");
+  ## Check for X0 and GAMMA being reals
+  if (iscomplex (x0) || iscomplex (gamma))
+    error ("cauchyrnd: X0 and GAMMA must not be complex.");
   endif
 
+  ## Parse and check SIZE arguments
   if (nargin == 2)
-    sz = size (location);
+    sz = size (x0);
   elseif (nargin == 3)
-    if (isscalar (varargin{1}) && varargin{1} >= 0)
+    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+                               && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
+    elseif (isrow (varargin{1}) && all (varargin{1} >= 0) ...
+                                && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
-    else
-      error (strcat (["cauchy_rnd: dimension vector must be a row vector"], ...
+    elseif
+      error (strcat (["cauchyrnd: SZ must be a scalar or a row vector"], ...
                      [" of non-negative integers."]));
     endif
   elseif (nargin > 3)
-    if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
-      error ("cauchy_rnd: dimensions must be non-negative integers.");
+    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
+    if (any (posint))
+      error ("cauchyrnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
-  if (! isscalar (location) && ! isequal (size (location), sz))
-    error ("cauchy_rnd: LOCATION and SCALE must be scalar or of size SZ.");
+  ## Check that parameters match requested dimensions in size
+  if (! isscalar (x0) && ! isequal (size (x0), sz))
+    error ("cauchyrnd: X0 and GAMMA must be scalar or of size SZ.");
   endif
 
-  if (isa (location, "single") || isa (scale, "single"))
+  ## Check for class type
+  if (isa (x0, "single") || isa (gamma, "single"))
     cls = "single";
   else
     cls = "double";
   endif
 
-  if (isscalar (location) && isscalar (scale))
-    if (! isinf (location) && (scale > 0) && (scale < Inf))
-      r = location - cot (pi * rand (sz, cls)) * scale;
+  ## Generate random sample from Cauchy distribution
+  if (isscalar (x0) && isscalar (gamma))
+    if (! isinf (x0) && (gamma > 0) && (gamma < Inf))
+      r = x0 - cot (pi * rand (sz, cls)) * gamma;
     else
       r = NaN (sz, cls);
     endif
   else
     r = NaN (sz, cls);
 
-    k = ! isinf (location) & (scale > 0) & (scale < Inf);
-    r(k) = location(k)(:) ...
-             - cot (pi * rand (sum (k(:)), 1, cls)) .* scale(k)(:);
+    k = ! isinf (x0) & (gamma > 0) & (gamma < Inf);
+    r(k) = x0(k)(:) - cot (pi * rand (sum (k(:)), 1, cls)) .* gamma(k)(:);
   endif
 
 endfunction
 
-
-%!assert (size (cauchy_rnd (1,2)), [1, 1])
-%!assert (size (cauchy_rnd (ones (2,1), 2)), [2, 1])
-%!assert (size (cauchy_rnd (ones (2,2), 2)), [2, 2])
-%!assert (size (cauchy_rnd (1, 2*ones (2,1))), [2, 1])
-%!assert (size (cauchy_rnd (1, 2*ones (2,2))), [2, 2])
-%!assert (size (cauchy_rnd (1, 2, 3)), [3, 3])
-%!assert (size (cauchy_rnd (1, 2, [4 1])), [4, 1])
-%!assert (size (cauchy_rnd (1, 2, 4, 1)), [4, 1])
+## Test results
+%!assert (size (cauchyrnd (1, 1)), [1 1])
+%!assert (size (cauchyrnd (1, ones (2,1))), [2, 1])
+%!assert (size (cauchyrnd (1, ones (2,2))), [2, 2])
+%!assert (size (cauchyrnd (ones (2,1), 1)), [2, 1])
+%!assert (size (cauchyrnd (ones (2,2), 1)), [2, 2])
+%!assert (size (cauchyrnd (1, 1, 3)), [3, 3])
+%!assert (size (cauchyrnd (1, 1, [4, 1])), [4, 1])
+%!assert (size (cauchyrnd (1, 1, 4, 1)), [4, 1])
+%!assert (size (cauchyrnd (1, 1, 4, 1, 5)), [4, 1, 5])
+%!assert (size (cauchyrnd (1, 1, 0, 1)), [0, 1])
+%!assert (size (cauchyrnd (1, 1, 1, 0)), [1, 0])
+%!assert (size (cauchyrnd (1, 1, 1, 2, 0, 5)), [1, 2, 0, 5])
 
 ## Test class of input preserved
-%!assert (class (cauchy_rnd (1, 2)), "double")
-%!assert (class (cauchy_rnd (single (1), 2)), "single")
-%!assert (class (cauchy_rnd (single ([1 1]), 2)), "single")
-%!assert (class (cauchy_rnd (1, single (2))), "single")
-%!assert (class (cauchy_rnd (1, single ([2 2]))), "single")
+%!assert (class (cauchyrnd (1, 1)), "double")
+%!assert (class (cauchyrnd (1, single (1))), "single")
+%!assert (class (cauchyrnd (1, single ([1, 1]))), "single")
+%!assert (class (cauchyrnd (single (1), 1)), "single")
+%!assert (class (cauchyrnd (single ([1, 1]), 1)), "single")
 
 ## Test input validation
-%!error cauchy_rnd ()
-%!error cauchy_rnd (1)
-%!error cauchy_rnd (ones (3), ones (2))
-%!error cauchy_rnd (ones (2), ones (3))
-%!error cauchy_rnd (i, 2)
-%!error cauchy_rnd (2, i)
-%!error cauchy_rnd (1,2, -1)
-%!error cauchy_rnd (1,2, ones (2))
-%!error cauchy_rnd (1,2, [2 -1 2])
-%!error cauchy_rnd (1,2, 1, ones (2))
-%!error cauchy_rnd (1,2, 1, -1)
-%!error cauchy_rnd (ones (2,2), 2, 3)
-%!error cauchy_rnd (ones (2,2), 2, [3, 2])
-%!error cauchy_rnd (ones (2,2), 2, 2, 3)
+%!error<cauchyrnd: function called with too few input arguments.> cauchyrnd ()
+%!error<cauchyrnd: function called with too few input arguments.> cauchyrnd (1)
+%!error<cauchyrnd: X0 and GAMMA must be of common size or scalars.> ...
+%! cauchyrnd (ones (3), ones (2))
+%!error<cauchyrnd: X0 and GAMMA must be of common size or scalars.> ...
+%! cauchyrnd (ones (2), ones (3))
+%!error<cauchyrnd: X0 and GAMMA must not be complex.> cauchyrnd (i, 2, 3)
+%!error<cauchyrnd: X0 and GAMMA must not be complex.> cauchyrnd (1, i, 3)
+%!error<cauchyrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! cauchyrnd (1, 2, -1)
+%!error<cauchyrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! cauchyrnd (1, 2, 1.2)
+%!error<cauchyrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! cauchyrnd (1, 2, ones (2))
+%!error<cauchyrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! cauchyrnd (1, 2, [2 -1 2])
+%!error<cauchyrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! cauchyrnd (1, 2, [2 0 2.5])
+%!error<cauchyrnd: dimensions must be non-negative integers.> ...
+%! cauchyrnd (1, 2, 2, -1, 5)
+%!error<cauchyrnd: dimensions must be non-negative integers.> ...
+%! cauchyrnd (1, 2, 2, 1.5, 5)
+%!error<cauchyrnd: X0 and GAMMA must be scalar or of size SZ.> ...
+%! cauchyrnd (2, ones (2), 3)
+%!error<cauchyrnd: X0 and GAMMA must be scalar or of size SZ.> ...
+%! cauchyrnd (2, ones (2), [3, 2])
+%!error<cauchyrnd: X0 and GAMMA must be scalar or of size SZ.> ...
+%! cauchyrnd (2, ones (2), 3, 2)
