@@ -48,7 +48,7 @@ function p = binocdf (x, n, ps, uflag)
     if (strcmp (uflag, "upper"))
        uflag = true;
     else
-       error ("binocdf: 4th parameter can only be 'upper'.");
+       error ("binocdf: invalid argument for upper tail.");
     endif
   else
      uflag = false;
@@ -127,9 +127,9 @@ endfunction
 %!assert (binocdf (x, 2 * [0 -1 NaN 1.1 1], 0.5, "upper"), [1 NaN NaN NaN 0])
 %!assert (binocdf (x, 2, 0.5 * [0 -1 NaN 3 1], "upper"), [1 NaN NaN NaN 0])
 %!assert (binocdf ([x(1:2) NaN x(4:5)], 2, 0.5, "upper"), [p1(1:2) NaN p1(4:5)])
+%!assert (binocdf ([x, NaN], 2, 0.5), [p, NaN], eps)
 
 ## Test class of input preserved
-%!assert (binocdf ([x, NaN], 2, 0.5), [p, NaN], eps)
 %!assert (binocdf (single ([x, NaN]), 2, 0.5), single ([p, NaN]))
 %!assert (binocdf ([x, NaN], single (2), 0.5), single ([p, NaN]))
 %!assert (binocdf ([x, NaN], 2, single (0.5)), single ([p, NaN]))
@@ -138,7 +138,8 @@ endfunction
 %!error<Invalid call to binocdf.  Correct usage is:> binocdf ()
 %!error<Invalid call to binocdf.  Correct usage is:> binocdf (1)
 %!error<Invalid call to binocdf.  Correct usage is:> binocdf (1, 2)
-%!error<binocdf: 4th parameter can only be 'upper'.> binocdf (1, 2, 3, 4)
+%!error<binocdf: invalid argument for upper tail.> binocdf (1, 2, 3, "tail")
+%!error<binocdf: invalid argument for upper tail.> binocdf (1, 2, 3, 4)
 %!error<binocdf: X, N, and PS must be of common size or scalars.> ...
 %! binocdf (ones (3), ones (2), ones (2))
 %!error<binocdf: X, N, and PS must be of common size or scalars.> ...

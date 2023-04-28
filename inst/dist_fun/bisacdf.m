@@ -90,6 +90,7 @@ function p = bisacdf (x, beta, gamma, uflag)
                            & (gamma > 0) & (gamma < Inf);
   xk = x(k);
 
+  ## Compute Birnbaum-Saunders CDF
   if (isscalar (beta) && isscalar (gamma))
     if (uflag)
       z = (-sqrt (xk ./ beta) + sqrt (beta ./ xk)) ./ gamma;
@@ -165,6 +166,7 @@ endfunction
 %!error<bisacdf: function called with too many inputs> ...
 %! bisacdf (1, 2, 3, 4, 5)
 %!error<bisacdf: invalid argument for upper tail.> bisacdf (1, 2, 3, "tail")
+%!error<bisacdf: invalid argument for upper tail.> bisacdf (1, 2, 3, 4)
 %!error<bisacdf: X, BETA, and GAMMA must be of common size or scalars.> ...
 %! bisacdf (ones (3), ones (2), ones(2))
 %!error<bisacdf: X, BETA, and GAMMA must be of common size or scalars.> ...

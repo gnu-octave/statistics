@@ -157,9 +157,9 @@ endfunction
 %!        1e-14);
 %! x2 = [1, 2, 3];
 %!assert (betacdf (0.5, x2, x2), [0.5, 0.5, 0.5], 1e-14);
+%!assert (betacdf ([x, NaN], 1, 2), [y, NaN])
 
 ## Test class of input preserved
-%!assert (betacdf ([x, NaN], 1, 2), [y, NaN])
 %!assert (betacdf (single ([x, NaN]), 1, 2), single ([y, NaN]))
 %!assert (betacdf ([x, NaN], single (1), 2), single ([y, NaN]))
 %!assert (betacdf ([x, NaN], 1, single (2)), single ([y, NaN]))
@@ -170,6 +170,7 @@ endfunction
 %!error<betacdf: function called with too few input arguments.> betacdf (1, 2)
 %!error<betacdf: function called with too many inputs> betacdf (1, 2, 3, 4, 5)
 %!error<betacdf: invalid argument for upper tail.> betacdf (1, 2, 3, "tail")
+%!error<betacdf: invalid argument for upper tail.> betacdf (1, 2, 3, 4)
 %!error<betacdf: X, A, and B must be of common size or scalars.> ...
 %! betacdf (ones (3), ones (2), ones (2))
 %!error<betacdf: X, A, and B must be of common size or scalars.> ...

@@ -297,6 +297,7 @@ endfunction
 %! xlabel ("values in x")
 %! ylabel ("probability")
 
+## Test output
 %!shared x, y, u
 %! x = [-1, 0, 0.5, 1, 2, Inf];
 %! y = [0, gammainc(x(2:end), 1)];

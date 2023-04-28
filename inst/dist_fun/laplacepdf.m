@@ -19,46 +19,49 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{y} =} laplace_pdf (@var{x})
-## @deftypefnx {statistics} {@var{y} =} laplace_pdf (@var{x}, @var{mu})
-## @deftypefnx {statistics} {@var{y} =} laplace_pdf (@var{x}, @var{mu}, @var{beta})
+## @deftypefn  {statistics} {@var{y} =} laplacepdf (@var{x})
+## @deftypefnx {statistics} {@var{y} =} laplacepdf (@var{x}, @var{mu})
+## @deftypefnx {statistics} {@var{y} =} laplacepdf (@var{x}, @var{mu}, @var{beta})
 ##
 ## Laplace probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the Laplace distribution with a location parameter @var{mu} and
-## a scale parameter (i.e. "diversity") @var{beta}.  The size of @var{y} is the
+## at @var{x} of the Laplace distribution with location parameter @var{mu} and
+## scale parameter (i.e. "diversity") @var{beta}.  The size of @var{y} is the
 ## common size of @var{x}, @var{mu}, and @var{beta}.  A scalar input functions
 ## as a constant matrix of the same size as the other inputs.
 ##
-## Default values are @var{mu} = 0, @var{beta} = 1.  Both parameters must be
-## reals and @var{beta} > 0.  For @var{beta} <= 0, NaN is returned.
+## Both parameters must be reals and @qcode{@var{beta} > 0}.
+## For @qcode{@var{beta} <= 0}, @qcode{NaN} is returned.
 ##
-## @seealso{laplace_cdf, laplace_inv, laplace_rnd}
+## Further information about the Laplace distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Laplace_distribution}
+##
+## @seealso{laplacecdf, laplacepdf, laplacernd}
 ## @end deftypefn
 
-function y = laplace_pdf (x, mu = 0, beta = 1)
+function y = laplacepdf (x, mu, beta)
 
   ## Check for valid number of input arguments
-  if (nargin < 1 || nargin > 3)
-    print_usage ();
+  if (nargin < 3)
+    error ("laplacepdf: function called with too few input arguments.");
   endif
 
   ## Check for common size of X, MU, and BETA
   if (! isscalar (x) || ! isscalar (mu) || ! isscalar(beta))
     [retval, x, mu, beta] = common_size (x, mu, beta);
     if (retval > 0)
-      error (strcat (["laplace_pdf: X, MU, and BETA must be of"], ...
+      error (strcat (["laplacepdf: X, MU, and BETA must be of"], ...
                      [" common size or scalars."]));
     endif
   endif
 
   ## Check for X, MU, and BETA being reals
   if (iscomplex (x) || iscomplex (mu) || iscomplex (beta))
-    error ("laplace_pdf: X, MU, and BETA must not be complex.");
+    error ("laplacepdf: X, MU, and BETA must not be complex.");
   endif
 
-  ## Check for appropriate class
+  ## Check for class type
   if (isa (x, "single") || isa (mu, "single") || isa (beta, "single"));
     y = NaN (size (x), "single");
   else
@@ -74,25 +77,47 @@ function y = laplace_pdf (x, mu = 0, beta = 1)
 
 endfunction
 
+%!demo
+%! ## Plot various PDFs from the Laplace distribution
+%! x = -10:0.01:10;
+%! y1 = laplacepdf (x, 0, 1);
+%! y2 = laplacepdf (x, 0, 2);
+%! y3 = laplacepdf (x, 0, 4);
+%! y4 = laplacepdf (x, -5, 4);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-c")
+%! grid on
+%! xlim ([-10, 10])
+%! ylim ([0, 0.6])
+%! legend ({"μ = 0, β = 1", "μ = 0, β = 2", ...
+%!          "μ = 0, β = 4", "μ = -5, β = 4"}, "location", "northeast")
+%! title ("Laplace PDF")
+%! xlabel ("values in x")
+%! ylabel ("density")
 
+## Test results
 %!shared x, y
 %! x = [-Inf -log(2) 0 log(2) Inf];
 %! y = [0, 1/4, 1/2, 1/4, 0];
-%!assert (laplace_pdf ([x, NaN]), [y, NaN])
-%!assert (laplace_pdf (x, 0, [-2, -1, 0, 1, 2]), [nan(1, 3), 0.25, 0])
+%!assert (laplacepdf ([x, NaN], 0, 1), [y, NaN])
+%!assert (laplacepdf (x, 0, [-2, -1, 0, 1, 2]), [nan(1, 3), 0.25, 0])
 
 ## Test class of input preserved
-%!assert (laplace_pdf (single ([x, NaN])), single ([y, NaN]))
+%!assert (laplacepdf (single ([x, NaN]), 0, 1), single ([y, NaN]))
+%!assert (laplacepdf ([x, NaN], single (0), 1), single ([y, NaN]))
+%!assert (laplacepdf ([x, NaN], 0, single (1)), single ([y, NaN]))
 
 ## Test input validation
-%!error laplace_pdf ()
-%!error laplace_pdf (1, 2, 3, 4)
-%!error<laplace_pdf: X, MU, and BETA must be of common size or scalars.> ...
-%! laplace_pdf (1, ones (2), ones (3))
-%!error<laplace_pdf: X, MU, and BETA must be of common size or scalars.> ...
-%! laplace_pdf (ones (2), 1, ones (3))
-%!error<laplace_pdf: X, MU, and BETA must be of common size or scalars.> ...
-%! laplace_pdf (ones (2), ones (3), 1)
-%!error<laplace_pdf: X, MU, and BETA must not be complex.> laplace_pdf (i, 2, 3)
-%!error<laplace_pdf: X, MU, and BETA must not be complex.> laplace_pdf (1, i, 3)
-%!error<laplace_pdf: X, MU, and BETA must not be complex.> laplace_pdf (1, 2, i)
+%!error<laplacepdf: function called with too few input arguments.> laplacepdf ()
+%!error<laplacepdf: function called with too few input arguments.> laplacepdf (1)
+%!error<laplacepdf: function called with too few input arguments.> ...
+%! laplacepdf (1, 2)
+%!error<laplacepdf: function called with too many inputs> laplacepdf (1, 2, 3, 4)
+%!error<laplacepdf: X, MU, and BETA must be of common size or scalars.> ...
+%! laplacepdf (1, ones (2), ones (3))
+%!error<laplacepdf: X, MU, and BETA must be of common size or scalars.> ...
+%! laplacepdf (ones (2), 1, ones (3))
+%!error<laplacepdf: X, MU, and BETA must be of common size or scalars.> ...
+%! laplacepdf (ones (2), ones (3), 1)
+%!error<laplacepdf: X, MU, and BETA must not be complex.> laplacepdf (i, 2, 3)
+%!error<laplacepdf: X, MU, and BETA must not be complex.> laplacepdf (1, i, 3)
+%!error<laplacepdf: X, MU, and BETA must not be complex.> laplacepdf (1, 2, i)

@@ -59,6 +59,7 @@ function p = gpcdf (x, varargin)
   if (nargin < 1 || nargin > 5)
     error ("gpcdf: invalid number of input arguments.");
   endif
+
   ## Check for 'upper' flag
   if (nargin > 1 && strcmpi (varargin{end}, "upper"))
     uflag = true;
@@ -69,6 +70,7 @@ function p = gpcdf (x, varargin)
   else
     uflag = false;
   endif
+
   ## Get extra arguments (if they exist) or add defaults
   if (numel (varargin) > 0)
     shape = varargin{1};
@@ -85,6 +87,7 @@ function p = gpcdf (x, varargin)
   else
     location = 0;
   endif
+
   ## Check for common size of X, SHAPE, SCALE, and LOCATION
   if (! isscalar (x) || ! isscalar (shape) || ! isscalar (scale) || ...
       ! isscalar (location))
@@ -94,11 +97,13 @@ function p = gpcdf (x, varargin)
                      [" must be of common size or scalars."]));
     endif
   endif
+
   ## Check for X, SHAPE, SCALE, and LOCATION being reals
   if (iscomplex (x) || iscomplex (shape) || iscomplex (scale) || ...
       iscomplex (location))
     error ("gpcdf: X, SHAPE, SCALE, and LOCATION must not be complex.");
   endif
+
   ## Check for appropriate class
   if (isa (x, "single") || isa (shape, "single") || ...
       isa (scale, "single") || isa (location, "single"));
@@ -106,13 +111,17 @@ function p = gpcdf (x, varargin)
   else
     is_class = "double";
   endif
+
   ## Prepare output
   p = zeros (size (x), is_class);
+
   ## Return NaNs for out of range values of scale parameter
   scale(scale <= 0) = NaN;
+
   ## Calculate (x-location)/scale => 0 and force zero below that
   z = (x - location) ./ scale;
   z(z < 0) = 0;
+
   ## Compute cases for SHAPE == 0
   kz = (abs (shape) < eps (is_class));
   if (uflag)
@@ -120,10 +129,12 @@ function p = gpcdf (x, varargin)
   else
     p(kz) = -expm1 (-z(kz));
   endif
+
   ## For SHAPE < 0, calculate 0 <= x/sigma <= -1/k and force zero below that
   t = z .* shape;
   kt = (t <= -1 & shape < -eps (is_class));
   t(kt) = 0;
+
   ## Compute cases for SHAPE != 0
   kz = ! kz;
   if (uflag)
@@ -136,7 +147,8 @@ function p = gpcdf (x, varargin)
   else
     p(kt) = 1;
   endif
-  ## For SHAPE = NaN force p = NaN
+
+  ## For SHAPE == NaN force p = NaN
   p(isnan (shape)) = NaN;
 
 endfunction
@@ -187,7 +199,6 @@ endfunction
 %!                        [y2u(1:3), NaN, y2u(5:6)], eps)
 %!assert (gpcdf ([x(1:3), NaN, x(5:6)], 1, 1, 0, "upper"), ...
 %!                        [y2u(1:3), NaN, y2u(5:6)], eps)
-
 %!assert (gpcdf (x, -ones (1,6), ones (1,6), zeros (1,6)), y3, eps)
 %!assert (gpcdf (x, -1, 1, zeros (1,6)), y3, eps)
 %!assert (gpcdf (x, -1, ones (1,6), 0), y3, eps)

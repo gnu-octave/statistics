@@ -81,6 +81,8 @@ function p = cauchycdf (x, x0, gamma, uflag)
 
   ## Find valid values in parameters and data
   k = ! isinf (x0) & (gamma > 0) & (gamma < Inf);
+
+  ## Compute Cauchy CDF
   if (isscalar (x0) && isscalar (gamma))
     if (uflag)
       p = 0.5 + atan ((-x(k) + x0) / gamma) / pi;
@@ -123,9 +125,9 @@ endfunction
 %!assert (cauchycdf (x, [-Inf 1 NaN 1 Inf], 2), [NaN y(2) NaN y(4) NaN])
 %!assert (cauchycdf (x, 1, 2*[0 1 NaN 1 Inf]), [NaN y(2) NaN y(4) NaN])
 %!assert (cauchycdf ([x(1:2) NaN x(4:5)], 1, 2), [y(1:2) NaN y(4:5)])
+%!assert (cauchycdf ([x, NaN], 1, 2), [y, NaN])
 
 ## Test class of input preserved
-%!assert (cauchycdf ([x, NaN], 1, 2), [y, NaN])
 %!assert (cauchycdf (single ([x, NaN]), 1, 2), single ([y, NaN]), eps ("single"))
 %!assert (cauchycdf ([x, NaN], single (1), 2), single ([y, NaN]), eps ("single"))
 %!assert (cauchycdf ([x, NaN], 1, single (2)), single ([y, NaN]), eps ("single"))
@@ -138,6 +140,7 @@ endfunction
 %!error<cauchycdf: function called with too many inputs> ...
 %! cauchycdf (1, 2, 3, 4, 5)
 %!error<cauchycdf: invalid argument for upper tail.> cauchycdf (1, 2, 3, "tail")
+%!error<cauchycdf: invalid argument for upper tail.> cauchycdf (1, 2, 3, 4)
 %!error<cauchycdf: X, X0, and GAMMA must be of common size or scalars.> ...
 %! cauchycdf (ones (3), ones (2), ones (2))
 %!error<cauchycdf: X, X0, and GAMMA must be of common size or scalars.> ...

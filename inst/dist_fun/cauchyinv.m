@@ -108,9 +108,9 @@ endfunction
 %!assert (cauchyinv (p, [1 -Inf NaN Inf 1], 2), [NaN NaN NaN NaN NaN])
 %!assert (cauchyinv (p, 1, 2 * [1 0 NaN Inf 1]), [NaN NaN NaN NaN NaN])
 %!assert (cauchyinv ([p(1:2) NaN p(4:5)], 1, 2), [NaN -Inf NaN Inf NaN])
+%!assert (cauchyinv ([p, NaN], 1, 2), [NaN -Inf 1 Inf NaN NaN], eps)
 
 ## Test class of input preserved
-%!assert (cauchyinv ([p, NaN], 1, 2), [NaN -Inf 1 Inf NaN NaN], eps)
 %!assert (cauchyinv (single ([p, NaN]), 1, 2), ...
 %! single ([NaN -Inf 1 Inf NaN NaN]), eps ("single"))
 %!assert (cauchyinv ([p, NaN], single (1), 2), ...

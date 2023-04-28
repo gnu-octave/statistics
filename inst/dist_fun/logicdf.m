@@ -50,8 +50,7 @@ function p = logicdf (x, mu = 0, s = 1)
 
   ## Check for common size of X, MU, and S
   if (! isscalar (x) || ! isscalar (mu) || ! isscalar(s))
-    [retval, x, mu, s] = ...
-        common_size (x, mu, s);
+    [retval, x, mu, s] = common_size (x, mu, s);
     if (retval > 0)
       error (strcat (["logicdf: X, MU, and S must be of"], ...
                      [" common size or scalars."]));

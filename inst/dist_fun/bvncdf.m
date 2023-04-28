@@ -23,8 +23,17 @@
 ##
 ## @code{@var{p} = bvncdf (@var{x}, @var{mu}, @var{sigma})} will compute the
 ## bivariate normal cumulative distribution function of @var{x} given a mean
-## @var{mu}, which must be a scalar, and a 2x2 @var{sigma} covariance matrix,
-## which must be positive definite.
+## parameter @var{mu} and a scale parameter @var{sigma}.
+##
+## @itemize
+## @item @var{x} must be an @math{Nx2} matrix with each variable as a column
+## vector.
+## @item @var{mu} can be either a scalar (common mean) or a two-element row
+## vector (each element corresponds to a variable).  If empty, a zero mean is
+## assumed.
+## @item @var{sigma} can be a scalar (common variance) or a @math{2x2}
+## covariance matrix, which must be positive definite.
+## @end itemize
 ##
 ## @seealso{mvncdf}
 ## @end deftypefn
@@ -36,10 +45,16 @@ function p = bvncdf (x, mu, sigma)
   ## Check input arguments and add defaults
   if (size (x, 2) != 2)
     error (strcat (["bvncdf: X must be an Nx2 matrix with each variable"], ...
-                   [" a column vector."]));
+                   [" as a column vector."]));
   endif
   if (isempty (mu))
-    mu = [0,0];
+    mu = [0, 0];
+  elseif (isscalar (mu))
+    mu = [mu, mu];
+  elseif (numel (mu) == 2);
+    mu = mu(:)';
+  else
+    error ("bvncdf: MU must be a scalar or a two-element vector.");
   endif
   if (numel (sigma) == 1)
     sigma = sigma * ones (2,2);

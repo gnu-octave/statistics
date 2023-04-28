@@ -53,7 +53,7 @@ function p = chi2cdf (x, df, uflag)
     uflag = [];
   endif
 
-  ## Check for common size of X and V
+  ## Check for common size of X and DF
   if (! isscalar (x) || ! isscalar (df))
     [err, x, df] = common_size (x, df);
     if (err > 0)
@@ -61,6 +61,7 @@ function p = chi2cdf (x, df, uflag)
     endif
   endif
 
+  ## Check for X and DF being reals
   if (iscomplex (x) || iscomplex (df))
     error ("chi2cdf: X and DF must not be complex.");
   endif

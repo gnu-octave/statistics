@@ -19,19 +19,21 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{r} =} laplace_rnd (@var{mu}, @var{beta})
-## @deftypefnx {statistics} {@var{r} =} laplace_rnd (@var{mu}, @var{beta}, @var{rows})
-## @deftypefnx {statistics} {@var{r} =} laplace_rnd (@var{mu}, @var{beta}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} {@var{r} =} laplace_rnd (@var{mu}, @var{beta}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} laplacernd (@var{mu}, @var{beta})
+## @deftypefnx {statistics} {@var{r} =} laplacernd (@var{mu}, @var{beta}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} laplacernd (@var{mu}, @var{beta}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} laplacernd (@var{mu}, @var{beta}, [@var{sz}])
 ##
 ## Random arrays from the Laplace distribution.
 ##
-## @code{@var{r} = laplace_rnd (@var{mu}, @var{beta})} returns an array of
-## random numbers chosen from the Laplace distribution with parameters @var{mu}
-## and @var{beta}.  The size of @var{r} is the common size of @var{mu} and
-## @var{beta}.  A scalar input functions as a constant matrix of the same size
-## as the other inputs.  Both parameters must be reals and @var{beta} > 0.  For
-## @var{beta} <= 0, NaN is returned.
+## @code{@var{r} = laplacernd (@var{mu}, @var{beta})} returns an array of
+## random numbers chosen from the Laplace distribution with location parameter
+## @var{mu} and scale parameter @var{beta}.  The size of @var{r} is the common
+## size of @var{mu} and @var{beta}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
+##
+## Both parameters must be reals and @qcode{@var{beta} > 0}.
+## For @qcode{@var{beta} <= 0}, @qcode{NaN} is returned.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -39,54 +41,60 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## @seealso{laplace_cdf, laplace_inv, laplace_rnd}
+## Further information about the Laplace distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Laplace_distribution}
+##
+## @seealso{laplacecdf, laplaceinv, laplacernd}
 ## @end deftypefn
 
-function r = laplace_rnd (mu, beta, varargin)
+function r = laplacernd (mu, beta, varargin)
 
   ## Check for valid number of input arguments
   if (nargin < 2)
-    print_usage ();
+    error ("laplacernd: function called with too few input arguments.");
   endif
 
   ## Check for common size of MU, and BETA
   if (! isscalar (mu) || ! isscalar (beta))
     [retval, mu, beta] = common_size (mu, beta);
     if (retval > 0)
-      error ("laplace_rnd: MU and BETA must be of common size or scalars.");
+      error ("laplacernd: MU and BETA must be of common size or scalars.");
     endif
   endif
 
   ## Check for X, MU, and BETA being reals
   if (iscomplex (mu) || iscomplex (beta))
-    error ("laplace_rnd: MU and BETA must not be complex.");
+    error ("laplacernd: MU and BETA must not be complex.");
   endif
 
-  ## Check for SIZE vector or DIMENSION input arguments
+  ## Parse and check SIZE arguments
   if (nargin == 2)
     sz = size (mu);
   elseif (nargin == 3)
-    if (isscalar (varargin{1}) && varargin{1} >= 0)
+    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+                               && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
+    elseif (isrow (varargin{1}) && all (varargin{1} >= 0) ...
+                                && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
-    else
-      error (strcat (["laplace_rnd: dimension vector must be a row vector"], ...
+    elseif
+      error (strcat (["laplacernd: SZ must be a scalar or a row vector"], ...
                      [" of non-negative integers."]));
     endif
   elseif (nargin > 3)
-    if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
-      error ("laplace_rnd: dimensions must be non-negative integers.");
+    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
+    if (any (posint))
+      error ("laplacernd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
   ## Check that parameters match requested dimensions in size
   if (! isscalar (mu) && ! isequal (size (mu), sz))
-    error ("laplace_rnd: MU and BETA must be scalar or of size SZ.");
+    error ("laplacernd: MU and BETA must be scalar or of size SZ.");
   endif
 
-  ## Check for appropriate class
+  ## Check for class type
   if (isa (mu, "single") || isa (beta, "single"))
     is_type = "single";
   else
@@ -105,48 +113,52 @@ function r = laplace_rnd (mu, beta, varargin)
 endfunction
 
 ## Test results
-%!assert (size (laplace_rnd (1, 1, 1)), [1, 1])
-%!assert (size (laplace_rnd (1, 1, 2)), [2, 2])
-%!assert (size (laplace_rnd (1, 1, [2, 1])), [2, 1])
-%!assert (size (laplace_rnd (1, zeros (2, 2))), [2, 2])
-%!assert (size (laplace_rnd (1, ones (2, 1))), [2, 1])
-%!assert (size (laplace_rnd (1, ones (2, 2))), [2, 2])
-%!assert (size (laplace_rnd (ones (2, 1), 1)), [2, 1])
-%!assert (size (laplace_rnd (ones (2, 2), 1)), [2, 2])
-%!assert (size (laplace_rnd (1, 1, 3)), [3, 3])
-%!assert (size (laplace_rnd (1, 1, [4 1])), [4, 1])
-%!assert (size (laplace_rnd (1, 1, 4, 1)), [4, 1])
-%!test
-%! r =  laplace_rnd (1, [1, 0, -1]);
-%! assert (r([2:3]), [NaN, NaN])
+%!assert (size (laplacernd (1, 1)), [1 1])
+%!assert (size (laplacernd (1, ones (2,1))), [2, 1])
+%!assert (size (laplacernd (1, ones (2,2))), [2, 2])
+%!assert (size (laplacernd (ones (2,1), 1)), [2, 1])
+%!assert (size (laplacernd (ones (2,2), 1)), [2, 2])
+%!assert (size (laplacernd (1, 1, 3)), [3, 3])
+%!assert (size (laplacernd (1, 1, [4, 1])), [4, 1])
+%!assert (size (laplacernd (1, 1, 4, 1)), [4, 1])
+%!assert (size (laplacernd (1, 1, 4, 1, 5)), [4, 1, 5])
+%!assert (size (laplacernd (1, 1, 0, 1)), [0, 1])
+%!assert (size (laplacernd (1, 1, 1, 0)), [1, 0])
+%!assert (size (laplacernd (1, 1, 1, 2, 0, 5)), [1, 2, 0, 5])
 
 ## Test class of input preserved
-%!assert (class (laplace_rnd (1, 0)), "double")
-%!assert (class (laplace_rnd (1, single (0))), "single")
-%!assert (class (laplace_rnd (1, single ([0 0]))), "single")
-%!assert (class (laplace_rnd (1, single (1))), "single")
-%!assert (class (laplace_rnd (1, single ([1 1]))), "single")
-%!assert (class (laplace_rnd (single (1), 1)), "single")
-%!assert (class (laplace_rnd (single ([1 1]), 1)), "single")
+%!assert (class (laplacernd (1, 1)), "double")
+%!assert (class (laplacernd (1, single (1))), "single")
+%!assert (class (laplacernd (1, single ([1, 1]))), "single")
+%!assert (class (laplacernd (single (1), 1)), "single")
+%!assert (class (laplacernd (single ([1, 1]), 1)), "single")
 
 ## Test input validation
-%!error laplace_rnd ()
-%!error laplace_rnd (1)
-%!error<laplace_rnd: MU and BETA must be of common size or scalars.> ...
-%! laplace_rnd (ones (3), ones (2))
-%!error<laplace_rnd: MU and BETA must be of common size or scalars.> ...
-%! laplace_rnd (ones (2), ones (3))
-%!error<laplace_rnd: MU and BETA must not be complex.> laplace_rnd (i, 2)
-%!error<laplace_rnd: MU and BETA must not be complex.> laplace_rnd (1, i)
-%!error<laplace_rnd: dimension vector must be a row vector of non-negative> ...
-%! laplace_rnd (0, 1, [3, -1])
-%!error<laplace_rnd: dimension vector must be a row vector of non-negative> ...
-%! laplace_rnd (0, 1, -1)
-%!error<laplace_rnd: dimensions must be non-negative integers.> ...
-%! laplace_rnd (0, 1, 3, -1)
-%!error<laplace_rnd: MU and BETA must be scalar or of size SZ.> ...
-%! laplace_rnd (2, ones (2), 3)
-%!error<laplace_rnd: MU and BETA must be scalar or of size SZ.> ...
-%! laplace_rnd (2, ones (2), [3, 2])
-%!error<laplace_rnd: MU and BETA must be scalar or of size SZ.> ...
-%! laplace_rnd (2, ones (2), 3, 2)
+%!error<laplacernd: function called with too few input arguments.> laplacernd ()
+%!error<laplacernd: function called with too few input arguments.> laplacernd (1)
+%!error<laplacernd: MU and BETA must be of common size or scalars.> ...
+%! laplacernd (ones (3), ones (2))
+%!error<laplacernd: MU and BETA must be of common size or scalars.> ...
+%! laplacernd (ones (2), ones (3))
+%!error<laplacernd: MU and BETA must not be complex.> laplacernd (i, 2, 3)
+%!error<laplacernd: MU and BETA must not be complex.> laplacernd (1, i, 3)
+%!error<laplacernd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! laplacernd (1, 2, -1)
+%!error<laplacernd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! laplacernd (1, 2, 1.2)
+%!error<laplacernd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! laplacernd (1, 2, ones (2))
+%!error<laplacernd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! laplacernd (1, 2, [2 -1 2])
+%!error<laplacernd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! laplacernd (1, 2, [2 0 2.5])
+%!error<laplacernd: dimensions must be non-negative integers.> ...
+%! laplacernd (1, 2, 2, -1, 5)
+%!error<laplacernd: dimensions must be non-negative integers.> ...
+%! laplacernd (1, 2, 2, 1.5, 5)
+%!error<laplacernd: MU and BETA must be scalar or of size SZ.> ...
+%! laplacernd (2, ones (2), 3)
+%!error<laplacernd: MU and BETA must be scalar or of size SZ.> ...
+%! laplacernd (2, ones (2), [3, 2])
+%!error<laplacernd: MU and BETA must be scalar or of size SZ.> ...
+%! laplacernd (2, ones (2), 3, 2)

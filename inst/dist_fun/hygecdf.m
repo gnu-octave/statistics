@@ -92,7 +92,7 @@ function p = hygecdf (x, t, m, n, uflag)
 
   ok = ! (k1 | k2 | k3);
 
-  ## Compute P
+  ## Compute hypergeometric CDF
   if any(ok(:))
     ## For improved accuracy, compute the upper tail 1-p instead
     ## of the lower tail pfor x values that are larger than the mean

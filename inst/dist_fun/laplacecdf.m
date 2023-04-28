@@ -19,84 +19,128 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{p} =} laplace_cdf (@var{x})
-## @deftypefnx {statistics} {@var{p} =} laplace_cdf (@var{x}, @var{mu})
-## @deftypefnx {statistics} {@var{p} =} laplace_cdf (@var{x}, @var{mu}, @var{beta})
+## @deftypefn  {statistics} {@var{p} =} laplacecdf (@var{x}, @var{mu}, @var{beta})
+## @deftypefnx {statistics} {@var{p} =} laplacecdf (@var{x}, @var{mu}, @var{beta}, @qcode{"upper"})
 ##
 ## Laplace cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the Laplace distribution with a location parameter
-## @var{mu} and a scale parameter (i.e. "diversity") @var{beta}.  The size of
+## (CDF) at @var{x} of the Laplace distribution with location parameter
+## @var{mu} and scale parameter (i.e. "diversity") @var{beta}.  The size of
 ## @var{p} is the common size of @var{x}, @var{mu}, and @var{beta}.  A scalar
 ## input functions as a constant matrix of the same size as the other inputs.
 ##
-## Default values are @var{mu} = 0, @var{beta} = 1.  Both parameters must be
-## reals and @var{beta} > 0.  For @var{beta} <= 0, NaN is returned.
+## Both parameters must be reals and @qcode{@var{beta} > 0}.
+## For @qcode{@var{beta} <= 0}, @qcode{NaN} is returned.
 ##
-## @seealso{laplace_inv, laplace_pdf, laplace_rnd}
+## Further information about the Laplace distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Laplace_distribution}
+##
+## @seealso{laplaceinv, laplacepdf, laplacernd}
 ## @end deftypefn
 
-function p = laplace_cdf (x, mu = 0, beta = 1)
+function p = laplacecdf (x, mu, beta, uflag)
 
   ## Check for valid number of input arguments
-  if (nargin < 1 || nargin > 3)
-    print_usage ();
+  if (nargin < 3)
+    error ("laplacecdf: function called with too few input arguments.");
+  endif
+
+  ## Check for valid "upper" flag
+  if (nargin > 3)
+    if (! strcmpi (uflag, "upper"))
+      error ("laplacecdf: invalid argument for upper tail.");
+    else
+      uflag = true;
+    endif
+  else
+    uflag = false;
   endif
 
   ## Check for common size of X, MU, and BETA
   if (! isscalar (x) || ! isscalar (mu) || ! isscalar(beta))
     [retval, x, mu, beta] = common_size (x, mu, beta);
     if (retval > 0)
-      error (strcat (["laplace_cdf: X, MU, and BETA must be of"], ...
+      error (strcat (["laplacecdf: X, MU, and BETA must be of"], ...
                      [" common size or scalars."]));
     endif
   endif
 
   ## Check for X, MU, and BETA being reals
   if (iscomplex (x) || iscomplex (mu) || iscomplex (beta))
-    error ("laplace_cdf: X, MU, and BETA must not be complex.");
+    error ("laplacecdf: X, MU, and BETA must not be complex.");
   endif
 
-  ## Check for appropriate class
+  ## Check for class type
   if (isa (x, "single") || isa (mu, "single") || isa (beta, "single"));
     p = NaN (size (x), "single");
   else
     p = NaN (size (x));
   endif
 
-  ## Compute Laplace CDF
+  ## Find normal and edge cases
   k1 = (x == -Inf) & (beta > 0);
-  p(k1) = 0;
-
   k2 = (x == Inf) & (beta > 0);
-  p(k2) = 1;
-
   k = ! k1 & ! k2 & (beta > 0);
-  p(k) = (1 + sign (x(k) - mu(k)) .* ...
+
+  ## Compute Laplace CDF
+  if (uflag)
+    p(k1) = 1;
+    p(k2) = 0;
+    p(k) = (1 + sign (-x(k) + mu(k)) .* ...
+          (1 - exp (- abs (-x(k) + mu(k)) ./ beta(k)))) ./ 2;
+  else
+    p(k1) = 0;
+    p(k2) = 1;
+    p(k) = (1 + sign (x(k) - mu(k)) .* ...
           (1 - exp (- abs (x(k) - mu(k)) ./ beta(k)))) ./ 2;
+  endif
 
 endfunction
 
+%!demo
+%! ## Plot various CDFs from the Laplace distribution
+%! x = -10:0.01:10;
+%! p1 = laplacecdf (x, 0, 1);
+%! p2 = laplacecdf (x, 0, 2);
+%! p3 = laplacecdf (x, 0, 4);
+%! p4 = laplacecdf (x, -5, 4);
+%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c")
+%! grid on
+%! xlim ([-10, 10])
+%! legend ({"μ = 0, β = 1", "μ = 0, β = 2", ...
+%!          "μ = 0, β = 4", "μ = -5, β = 4"}, "location", "southeast")
+%! title ("Laplace CDF")
+%! xlabel ("values in x")
+%! ylabel ("probability")
 
-%!shared x,y
-%! x = [-Inf -log(2) 0 log(2) Inf];
+## Test results
+%!shared x, y
+%! x = [-Inf, -log(2), 0, log(2), Inf];
 %! y = [0, 1/4, 1/2, 3/4, 1];
-%!assert (laplace_cdf ([x, NaN]), [y, NaN])
-%!assert (laplace_cdf (x, 0, [-2, -1, 0, 1, 2]), [nan(1, 3), 0.75, 1])
+%!assert (laplacecdf ([x, NaN], 0, 1), [y, NaN])
+%!assert (laplacecdf (x, 0, [-2, -1, 0, 1, 2]), [nan(1, 3), 0.75, 1])
 
 ## Test class of input preserved
-%!assert (laplace_cdf (single ([x, NaN])), single ([y, NaN]))
+%!assert (laplacecdf (single ([x, NaN]), 0, 1), single ([y, NaN]), eps ("single"))
+%!assert (laplacecdf ([x, NaN], single (0), 1), single ([y, NaN]), eps ("single"))
+%!assert (laplacecdf ([x, NaN], 0, single (1)), single ([y, NaN]), eps ("single"))
 
 ## Test input validation
-%!error laplace_cdf ()
-%!error laplace_cdf (1, 2, 3, 4)
-%!error<laplace_cdf: X, MU, and BETA must be of common size or scalars.> ...
-%! laplace_cdf (1, ones (2), ones (3))
-%!error<laplace_cdf: X, MU, and BETA must be of common size or scalars.> ...
-%! laplace_cdf (ones (2), 1, ones (3))
-%!error<laplace_cdf: X, MU, and BETA must be of common size or scalars.> ...
-%! laplace_cdf (ones (2), ones (3), 1)
-%!error<laplace_cdf: X, MU, and BETA must not be complex.> laplace_cdf (i, 2, 3)
-%!error<laplace_cdf: X, MU, and BETA must not be complex.> laplace_cdf (1, i, 3)
-%!error<laplace_cdf: X, MU, and BETA must not be complex.> laplace_cdf (1, 2, i)
+%!error<laplacecdf: function called with too few input arguments.> laplacecdf ()
+%!error<laplacecdf: function called with too few input arguments.> laplacecdf (1)
+%!error<laplacecdf: function called with too few input arguments.> ...
+%! laplacecdf (1, 2)
+%!error<laplacecdf: function called with too many inputs> ...
+%! laplacecdf (1, 2, 3, 4, 5)
+%!error<laplacecdf: invalid argument for upper tail.> laplacecdf (1, 2, 3, "tail")
+%!error<laplacecdf: invalid argument for upper tail.> laplacecdf (1, 2, 3, 4)
+%!error<laplacecdf: X, MU, and BETA must be of common size or scalars.> ...
+%! laplacecdf (ones (3), ones (2), ones (2))
+%!error<laplacecdf: X, MU, and BETA must be of common size or scalars.> ...
+%! laplacecdf (ones (2), ones (3), ones (2))
+%!error<laplacecdf: X, MU, and BETA must be of common size or scalars.> ...
+%! laplacecdf (ones (2), ones (2), ones (3))
+%!error<laplacecdf: X, MU, and BETA must not be complex.> laplacecdf (i, 2, 2)
+%!error<laplacecdf: X, MU, and BETA must not be complex.> laplacecdf (2, i, 2)
+%!error<laplacecdf: X, MU, and BETA must not be complex.> laplacecdf (2, 2, i)
