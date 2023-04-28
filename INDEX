@@ -61,7 +61,7 @@ Distributions
  burrcdf burrinv burrpdf burrrnd
  bvncdf
  bvtcdf
- cauchy_cdf cauchy_inv cauchy_pdf cauchy_rnd
+ cauchycdf cauchyinv cauchypdf cauchyrnd
  chi2cdf chi2inv chi2pdf chi2rnd
  copulacdf copulapdf copularnd
  evcdf evinv evpdf evrnd
@@ -74,7 +74,7 @@ Distributions
  hygecdf hygeinv hygepdf hygernd
  iwishpdf iwishrnd
  jsucdf jsupdf
- laplace_cdf laplace_inv laplace_pdf laplace_rnd
+ laplacecdf laplaceinv laplacepdf laplacernd
  logicdf logiinv logipdf logirnd
  loglcdf loglinv loglpdf loglrnd
  logncdf logninv lognpdf lognrnd
@@ -90,7 +90,6 @@ Distributions
  normcdf norminv normpdf normrnd
  poisscdf poissinv poisspdf poissrnd
  raylcdf raylinv raylpdf raylrnd
- stdnormal_cdf stdnormal_inv stdnormal_pdf stdnormal_rnd
  tcdf tinv tpdf trnd
  tricdf triinv tripdf trirnd
  unidcdf unidinv unidpdf unidrnd
