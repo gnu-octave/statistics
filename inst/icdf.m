@@ -16,28 +16,44 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{retval} =} icdf (@var{name}, @var{p}, @dots{})
+## @deftypefn  {statistics} {@var{x} =} icdf (@var{name}, @var{p}, @var{A})
+## @deftypefnx {statistics} {@var{x} =} icdf (@var{name}, @var{p}, @var{A}, @var{B})
+## @deftypefnx {statistics} {@var{x} =} icdf (@var{name}, @var{p}, @var{A}, @var{B}, @var{C})
 ##
-## Return the inverse CDF of @var{name} distribution function for value @var{p}.
+## Return the inverse CDF of a univariate distribution evaluated at @var{p}.
 ##
-## This is a wrapper for the @qcode{name}inv and @qcode{name}_inv functions
-## available in the statistics package. See the corresponding functions' help to
-## learn the signification of the arguments after @var{p}.
+## @code{icdf} is a wrapper for the univariate quantile distribution functions
+## (iCDF) available in the statistics package.  See the corresponding functions'
+## help to learn the signification of the parameters after @var{p}.
+##
+## @code{@var{x} = icdf (@var{name}, @var{p}, @var{A})} returns the iCDF for the
+## one-parameter distribution family specified by @var{name} and the
+## distribution parameter @var{A}, evaluated at the values in @var{p}.
+##
+## @code{@var{x} = icdf (@var{name}, @var{p}, @var{A}, @var{B})} returns the
+## iCDF for the two-parameter distribution family specified by @var{name} and
+## the distribution parameters @var{A} and @var{B}, evaluated at the values in
+## @var{p}.
+##
+## @code{@var{x} = icdf (@var{name}, @var{p}, @var{A}, @var{B}, @var{C})}
+## returns the iCDF for the three-parameter distribution family specified by
+## @var{name} and the distribution parameters @var{A}, @var{B}, and @var{C},
+## evaluated at the values in @var{p}.
 ##
 ## @var{name} must be a char string of the name or the abbreviation of the
 ## desired quantile distribution function as listed in the followng table.
-## The last column shows the maximum number of extra arguments that must be
-## passed to the desired inverse CDF.
+## The last column shows the number of required parameters that should be parsed
+## after @var{x} to the desired iCDF.
 ##
 ## @multitable @columnfractions 0.4 0.05 0.2 0.05 0.3
-## @headitem Distribution Name @tab @tab Abbreviation @tab @tab Max Arguments
-## @item @qcode{"Birnbaum-Saunders"} @tab @tab @qcode{"bbs"} @tab @tab 3
+## @headitem Distribution Name @tab @tab Abbreviation @tab @tab Input Parameters
 ## @item @qcode{"Beta"} @tab @tab @qcode{"beta"} @tab @tab 2
 ## @item @qcode{"Binomial"} @tab @tab @qcode{"bino"} @tab @tab 2
-## @item @qcode{"Burr"} @tab @tab @qcode{"burr"} @tab @tab 3
+## @item @qcode{"Birnbaum-Saunders"} @tab @tab @qcode{"bisa"} @tab @tab 2
+## @item @qcode{"Burr"} @tab  @tab @qcode{"burr"} @tab  @tab 3
 ## @item @qcode{"Cauchy"} @tab @tab @qcode{"cauchy"} @tab @tab 2
 ## @item @qcode{"Chi-square"} @tab @tab @qcode{"chi2"} @tab @tab 1
-## @item @qcode{"Extreme Value"} @tab @tab @qcode{"ev"} @tab @tab 4
+## @item @qcode{"Extreme Value"} @tab @tab @qcode{"ev"} @tab @tab 2
 ## @item @qcode{"Exponential"} @tab @tab @qcode{"exp"} @tab @tab 1
 ## @item @qcode{"F-Distribution"} @tab @tab @qcode{"f"} @tab @tab 2
 ## @item @qcode{"Gamma"} @tab @tab @qcode{"gam"} @tab @tab 2
@@ -46,7 +62,8 @@
 ## @item @qcode{"Generalized Pareto"} @tab @tab @qcode{"gp"} @tab @tab 3
 ## @item @qcode{"Hypergeometric"} @tab @tab @qcode{"hyge"} @tab @tab 3
 ## @item @qcode{"Laplace"} @tab @tab @qcode{"laplace"} @tab @tab 2
-## @item @qcode{"Logistic"} @tab @tab @qcode{"logistic"} @tab @tab 2
+## @item @qcode{"Logistic"} @tab @tab @qcode{"logi"} @tab @tab 2
+## @item @qcode{"Log-Logistic"} @tab @tab @qcode{"logl"} @tab @tab 2
 ## @item @qcode{"Lognormal"} @tab @tab @qcode{"logn"} @tab @tab 2
 ## @item @qcode{"Nakagami"} @tab @tab @qcode{"naka"} @tab @tab 2
 ## @item @qcode{"Negative Binomial"} @tab @tab @qcode{"nbin"} @tab @tab 2
@@ -56,7 +73,6 @@
 ## @item @qcode{"Normal"} @tab @tab @qcode{"norm"} @tab @tab 2
 ## @item @qcode{"Poisson"} @tab @tab @qcode{"poiss"} @tab @tab 1
 ## @item @qcode{"Rayleigh"} @tab @tab @qcode{"rayl"} @tab @tab 1
-## @item @qcode{"Standard Normal"} @tab @tab @qcode{"stdnormal"} @tab @tab 0
 ## @item @qcode{"Student T"} @tab @tab @qcode{"t"} @tab @tab 1
 ## @item @qcode{"Triangular"} @tab @tab @qcode{"tri"} @tab @tab 3
 ## @item @qcode{"Discrete Uniform"} @tab @tab @qcode{"unid"} @tab @tab 1
@@ -64,23 +80,23 @@
 ## @item @qcode{"Weibull"} @tab @tab @qcode{"wbl"} @tab @tab 2
 ## @end multitable
 ##
-## @seealso{cdf, pdf, random, bbsinv, betainv, binoinv, burrinv, cauchy_inv,
+## @seealso{cdf, pdf, random, betainv, binoinv, bisainv, burrinv, cauchyinv,
 ## chi2inv, evinv, expinv, finv, gaminv, geoinv, gevinv, gpinv, hygeinv,
-## laplace_inv, logistic_inv, logninv, nakainv, nbininv, ncfinv, nctinv,
-## ncx2inv, norminv, poissinv, raylinv, stdnormal_inv, tinv, triinv, unidinv,
-## unifinv, wblinv}
+## laplaceinv, logiinv, loglinv, logninv, nakainv, nbininv, ncfinv, nctinv,
+## ncx2inv, norminv, poissinv, raylinv, tinv, triinv, unidinv, unifinv, wblinv}
 ## @end deftypefn
 
-function [retval] = icdf (name, varargin)
+function x = icdf (name, varargin)
+
   ## implemented functions
-  persistent allpdf = { ...
-    {"bbs"      , "Birnbaum-Saunders"},         @bbsinv,       3, ...
+  persistent allDF = { ...
     {"beta"     , "Beta"},                      @betainv,      2, ...
     {"bino"     , "Binomial"},                  @binoinv,      2, ...
+    {"bisa"     , "Birnbaum-Saunders"},         @bisainv,      2, ...
     {"burr"     , "Burr"},                      @burrinv,      3, ...
-    {"cauchy"   , "Cauchy"},                    @cauchy_inv,   2, ...
-    {"chi2"     , "Chi-square"},                @chi2inv,      1, ...
-    {"ev"       , "Extreme Value"},             @evinv,        4, ...
+    {"cauchy"   , "Cauchy"},                    @cauchyinv,    2, ...
+    {"chi2"     , "Chi-squared"},               @chi2inv,      1, ...
+    {"ev"       , "Extreme Value"},             @evinv,        2, ...
     {"exp"      , "Exponential"},               @expinv,       1, ...
     {"f"        , "F-Distribution"},            @finv,         2, ...
     {"gam"      , "Gamma"},                     @gaminv,       2, ...
@@ -88,18 +104,18 @@ function [retval] = icdf (name, varargin)
     {"gev"      , "Generalized Extreme Value"}, @gevinv,       3, ...
     {"gp"       , "Generalized Pareto"},        @gpinv,        3, ...
     {"hyge"     , "Hypergeometric"},            @hygeinv,      3, ...
-    {"laplace"  , "Laplace"},                   @laplace_inv,  2, ...
-    {"logistic" , "Logistic"},                  @logistic_inv, 2, ...
+    {"laplace"  , "Laplace"},                   @laplaceinv,   2, ...
+    {"logi"     , "Logistic"},                  @logiinv,      2, ...
+    {"logl"     , "Log-Logistic"},              @logiinv,      2, ...
     {"logn"     , "Lognormal"},                 @logninv,      2, ...
     {"naka"     , "Nakagami"},                  @nakainv,      2, ...
     {"nbin"     , "Negative Binomial"},         @nbininv,      2, ...
     {"ncf"      , "Noncentral F-Distribution"}, @ncfinv,       3, ...
     {"nct"      , "Noncentral Student T"},      @nctinv,       2, ...
-    {"ncx2"     , "Noncentral Chi-Square"},     @ncx2inv,      2, ...
+    {"ncx2"     , "Noncentral Chi-squared"},    @ncx2inv,      2, ...
     {"norm"     , "Normal"},                    @norminv,      2, ...
     {"poiss"    , "Poisson"},                   @poissinv,     1, ...
     {"rayl"     , "Rayleigh"},                  @raylinv,      1, ...
-    {"stdnormal", "Standard Normal"},           @stdnormal_inv,0, ...
     {"t"        , "Student T"},                 @tinv,         1, ...
     {"tri"      , "Triangular"},                @triinv,       3, ...
     {"unid"     , "Discrete Uniform"},          @unidinv,      1, ...
@@ -110,47 +126,46 @@ function [retval] = icdf (name, varargin)
     print_usage ();
   endif
 
+  ## Get p-values
   p = varargin{1};
   varargin(1) = [];
+
+  ## Get number of arguments
   nargs = numel (varargin);
 
-  icdfnames = allpdf(1:3:end);
-  icdfhandl = allpdf(2:3:end);
-  icdf_args = allpdf(3:3:end);
+  ## Get available functions
+  icdfnames = allDF(1:3:end);
+  icdfhandl = allDF(2:3:end);
+  icdf_args = allDF(3:3:end);
 
+  ## Search for iCDF function
   idx = cellfun (@(x)any(strcmpi (name, x)), icdfnames);
-  ## Add special list
-  special = {"copula", "Copula family"};
 
   if (any (idx))
 
-    if (nargs > icdf_args{idx})
-      if (icdf_args{idx} == 1)
-        error ("icdf: %s takes only 1 extra argument.", name);
-      else
-        error ("icdf: %s takes up to %d extra arguments.", ...
-               name, icdf_args{idx});
+    if (nargs == icdf_args{idx})
+      ## Check that all distribution parameters are numeric
+      if (! all (cellfun (@(x)isnumeric(x), (varargin))))
+        error ("cdf: distribution parameters must be numeric.");
       endif
+      ## Call appropriate iCDF
+      x = feval (icdfhandl{idx}, p, varargin{:});
+
+    else
+      if (icdf_args{idx} == 1)
+        error ("icdf: %s requires 1 parameter.", name);
+      else
+        error ("icdf: %s requires %d parameters.", name, icdf_args{idx});
+      endif
+
     endif
 
-    retval = feval (icdfhandl{idx}, p, varargin{:});
-
   else
-    error ("pdf: %s distribution is not implemented in Statistics.", name);
+    error ("icdf: %s distribution is not implemented in Statistics.", name);
   endif
 
 endfunction
 
+## Test results
 %!test
 %! assert(icdf ("norm", 0.05, 0, 1), norminv (0.05, 0, 1))
-%!test
-%! p = [0.05, 0.1, 0.2];
-%! assert (icdf ("bbs", p, ones (1,3), ones (1,3), zeros (1,3)), ...
-%!         bbsinv (p, 1, 1, 0))
-%!test
-%! p = [0.001 0.05];
-%! df = 3;
-%! assert (icdf ("Chi-square", p, df), chi2inv (p, df), 1e-10)
-
-%!error icdf ("Birnbaum-Saunders", 1, 1, 2, 3, 4)
-%!error icdf ("some", 1, 2)
