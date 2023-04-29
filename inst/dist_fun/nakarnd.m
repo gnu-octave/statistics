@@ -19,18 +19,18 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{r} =} nakarnd (@var{m}, @var{w})
-## @deftypefnx {statistics} {@var{r} =} nakarnd (@var{m}, @var{w}, @var{rows})
-## @deftypefnx {statistics} {@var{r} =} nakarnd (@var{m}, @var{w}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} {@var{r} =} nakarnd (@var{m}, @var{w}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} nakarnd (@var{mu}, @var{omega})
+## @deftypefnx {statistics} {@var{r} =} nakarnd (@var{mu}, @var{omega}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} nakarnd (@var{mu}, @var{omega}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} nakarnd (@var{mu}, @var{omega}, [@var{sz}])
 ##
 ## Random arrays from the Nakagami distribution.
 ##
-## @code{@var{r} = nakarnd (@var{m}, @var{w})} returns an array of random
-## numbers chosen from the Nakagami distribution with parameters @var{m} and
-## @var{w}.  The size of @var{r} is the common size of @var{m} and @var{w}.  A
-## scalar input functions as a constant matrix of the same size as the other
-## inputs.
+## @code{@var{r} = nakarnd (@var{mu}, @var{omega})} returns an array of random
+## numbers chosen from the Nakagami distribution with shape parameter @var{mu}
+## and spread parameter @var{omega}.  The size of @var{r} is the common size of
+## @var{mu} and @var{omega}.  A scalar input functions as a constant matrix of
+## the same size as the other inputs.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -38,65 +38,71 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
+## Further information about the Nakagami distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Nakagami_distribution}
+##
 ## @seealso{nakacdf, nakainv, nakapdf}
 ## @end deftypefn
 
-function r = nakarnd (m, w, varargin)
+function r = nakarnd (mu, omega, varargin)
 
   ## Check for valid number of input arguments
   if (nargin < 2)
-    print_usage ();
+    error ("nakarnd: function called with too few input arguments.");
   endif
 
-  ## Check for common size of M and W
-  if (! isscalar (m) || ! isscalar (w))
-    [retval, m, w] = common_size (m, w);
+  ## Check for common size of MU and OMEGA
+  if (! isscalar (mu) || ! isscalar (omega))
+    [retval, mu, omega] = common_size (mu, omega);
     if (retval > 0)
-      error ("nakarnd: M and W must be of common size or scalars.");
+      error ("nakarnd: MU and OMEGA must be of common size or scalars.");
     endif
   endif
 
-  ## Check for M and W being reals
-  if (iscomplex (m) || iscomplex (w))
-    error ("nakarnd: M and W must not be complex.");
+  ## Check for MU and OMEGA being reals
+  if (iscomplex (mu) || iscomplex (omega))
+    error ("nakarnd: MU and OMEGA must not be complex.");
   endif
 
-  ## Check for SIZE vector or DIMENSION input arguments
+  ## Parse and check SIZE arguments
   if (nargin == 2)
-    sz = size (m);
+    sz = size (mu);
   elseif (nargin == 3)
-    if (isscalar (varargin{1}) && varargin{1} >= 0)
+    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+                               && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
+    elseif (isrow (varargin{1}) && all (varargin{1} >= 0) ...
+                                && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
-    else
-      error (strcat (["nakarnd: dimension vector must be a row vector"], ...
+    elseif
+      error (strcat (["nakarnd: SZ must be a scalar or a row vector"], ...
                      [" of non-negative integers."]));
     endif
   elseif (nargin > 3)
-    if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
+    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
+    if (any (posint))
       error ("nakarnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
   ## Check that parameters match requested dimensions in size
-  if (! isscalar (m) && ! isequal (size (w), sz))
-    error ("nakagrnd: M and W must be scalar or of size SZ.");
+  if (! isscalar (mu) && ! isequal (size (mu), sz))
+    error ("nakarnd: MU and OMEGA must be scalar or of size SZ.");
   endif
 
   ## Check for appropriate class
-  if (isa (m, "single") || isa (w, "single"))
+  if (isa (mu, "single") || isa (omega, "single"))
     cls = "single";
   else
     cls = "double";
   endif
 
   ## Generate random sample from Nakagami distribution
-  if (isscalar (m) && isscalar (w))
-    if ((0 < m) && (m < Inf) && (0 < w) && (w < Inf))
-      m_gamma = m;
-      w_gamma = w / m;
+  if (isscalar (mu) && isscalar (omega))
+    if ((0 < mu) && (mu < Inf) && (0 < omega) && (omega < Inf))
+      m_gamma = mu;
+      w_gamma = omega / mu;
       r = gamrnd (m_gamma, w_gamma, sz);
       r = sqrt (r);
     else
@@ -104,45 +110,62 @@ function r = nakarnd (m, w, varargin)
     endif
   else
     r = NaN (sz, cls);
-    k = (0 < m) & (m < Inf) & (0 < w) & (w < Inf);
-    m_gamma = m;
-    w_gamma = w ./ m;
+    k = (0 < mu) & (mu < Inf) & (0 < omega) & (omega < Inf);
+    m_gamma = mu;
+    w_gamma = omega ./ mu;
     r(k) = gamrnd (m_gamma(k), w_gamma(k));
     r(k) = sqrt (r(k));
   endif
 
 endfunction
 
-
-%!assert (size (nakarnd (1,1)), [1, 1])
-%!assert (size (nakarnd (ones (2,1), 1)), [2, 1])
-%!assert (size (nakarnd (ones (2,2), 1)), [2, 2])
+## Test results
+%!assert (size (nakarnd (1, 1)), [1 1])
 %!assert (size (nakarnd (1, ones (2,1))), [2, 1])
 %!assert (size (nakarnd (1, ones (2,2))), [2, 2])
-%!assert (size (nakarnd (1,1, 3)), [3, 3])
-%!assert (size (nakarnd (1,1, [4 1])), [4, 1])
-%!assert (size (nakarnd (1,1, 4, 1)), [4, 1])
+%!assert (size (nakarnd (ones (2,1), 1)), [2, 1])
+%!assert (size (nakarnd (ones (2,2), 1)), [2, 2])
+%!assert (size (nakarnd (1, 1, 3)), [3, 3])
+%!assert (size (nakarnd (1, 1, [4, 1])), [4, 1])
+%!assert (size (nakarnd (1, 1, 4, 1)), [4, 1])
+%!assert (size (nakarnd (1, 1, 4, 1, 5)), [4, 1, 5])
+%!assert (size (nakarnd (1, 1, 0, 1)), [0, 1])
+%!assert (size (nakarnd (1, 1, 1, 0)), [1, 0])
+%!assert (size (nakarnd (1, 1, 1, 2, 0, 5)), [1, 2, 0, 5])
 
 ## Test class of input preserved
-%!assert (class (nakarnd (1,1)), "double")
-%!assert (class (nakarnd (single (1),1)), "single")
-%!assert (class (nakarnd (single ([1 1]),1)), "single")
-%!assert (class (nakarnd (1,single (1))), "single")
-%!assert (class (nakarnd (1,single ([1 1]))), "single")
+%!assert (class (nakarnd (1, 1)), "double")
+%!assert (class (nakarnd (1, single (1))), "single")
+%!assert (class (nakarnd (1, single ([1, 1]))), "single")
+%!assert (class (nakarnd (single (1), 1)), "single")
+%!assert (class (nakarnd (single ([1, 1]), 1)), "single")
 
 ## Test input validation
-%!error nakarnd ()
-%!error nakarnd (1)
-%!error nakarnd (zeros (3), ones (2))
-%!error nakarnd (zeros (2), ones (3))
-%!error nakarnd (i, 2)
-%!error nakarnd (1, i)
-%!error nakarnd (1,2, -1)
-%!error nakarnd (1,2, ones (2))
-%!error nakarnd (1, 2, [2 -1 2])
-%!error nakarnd (1,2, 1, ones (2))
-%!error nakarnd (1,2, 1, -1)
-%!error nakarnd (ones (2,2), 2, 3)
-%!error nakarnd (ones (2,2), 2, [3, 2])
-%!error nakarnd (ones (2,2), 2, 2, 3)
-
+%!error<nakarnd: function called with too few input arguments.> nakarnd ()
+%!error<nakarnd: function called with too few input arguments.> nakarnd (1)
+%!error<nakarnd: MU and OMEGA must be of common size or scalars.> ...
+%! nakarnd (ones (3), ones (2))
+%!error<nakarnd: MU and OMEGA must be of common size or scalars.> ...
+%! nakarnd (ones (2), ones (3))
+%!error<nakarnd: MU and OMEGA must not be complex.> nakarnd (i, 2, 3)
+%!error<nakarnd: MU and OMEGA must not be complex.> nakarnd (1, i, 3)
+%!error<nakarnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! nakarnd (1, 2, -1)
+%!error<nakarnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! nakarnd (1, 2, 1.2)
+%!error<nakarnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! nakarnd (1, 2, ones (2))
+%!error<nakarnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! nakarnd (1, 2, [2 -1 2])
+%!error<nakarnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! nakarnd (1, 2, [2 0 2.5])
+%!error<nakarnd: dimensions must be non-negative integers.> ...
+%! nakarnd (1, 2, 2, -1, 5)
+%!error<nakarnd: dimensions must be non-negative integers.> ...
+%! nakarnd (1, 2, 2, 1.5, 5)
+%!error<nakarnd: MU and OMEGA must be scalar or of size SZ.> ...
+%! nakarnd (2, ones (2), 3)
+%!error<nakarnd: MU and OMEGA must be scalar or of size SZ.> ...
+%! nakarnd (2, ones (2), [3, 2])
+%!error<nakarnd: MU and OMEGA must be scalar or of size SZ.> ...
+%! nakarnd (2, ones (2), 3, 2)

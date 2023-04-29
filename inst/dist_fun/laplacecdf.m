@@ -33,6 +33,10 @@
 ## Both parameters must be reals and @qcode{@var{beta} > 0}.
 ## For @qcode{@var{beta} <= 0}, @qcode{NaN} is returned.
 ##
+## @code{@var{p} = laplacecdf (@var{x}, @var{mu}, @var{beta}, "upper")} computes
+## the upper tail probability of the Laplace distribution with parameters
+## @var{mu} and @var{beta} at the values in @var{x}.
+##
 ## Further information about the Laplace distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Laplace_distribution}
 ##

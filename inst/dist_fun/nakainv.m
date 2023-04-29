@@ -19,71 +19,99 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{x} =} nakacdf (@var{x}, @var{m}, @var{w})
+## @deftypefn  {statistics} {@var{x} =} nakacdf (@var{x}, @var{mu}, @var{omega})
 ##
 ## Inverse of the Nakagami cumulative distribution function (iCDF).
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## at @var{p} of the Nakagami distribution with shape parameter @var{m} and
-## scale parameter @var{w}.  The size of @var{p} is the common size of @var{x},
-## @var{m}, and @var{w}.  A scalar input functions as a constant matrix of the
-## same size as the other inputs.
+## at @var{p} of the Nakagami distribution with shape parameter @var{mu} and
+## spread parameter @var{omega}.  The size of @var{p} is the common size of
+## @var{x}, @var{mu}, and @var{omega}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
+##
+## Further information about the Nakagami distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Nakagami_distribution}
 ##
 ## @seealso{nakacdf, nakapdf, nakarnd}
 ## @end deftypefn
 
-function x = nakainv (p, m, w)
+function x = nakainv (p, mu, omega)
 
   ## Check for valid number of input arguments
-  if (nargin != 3)
-    print_usage ();
+  if (nargin < 3)
+    error ("nakainv: function called with too few input arguments.");
   endif
 
-  ## Check for common size of P, M, and W
-  if (! isscalar (p) || ! isscalar (m) || ! isscalar (w))
-    [retval, p, m, w] = common_size (p, m, w);
+  ## Check for common size of P, MU, and OMEGA
+  if (! isscalar (p) || ! isscalar (mu) || ! isscalar (omega))
+    [retval, p, mu, omega] = common_size (p, mu, omega);
     if (retval > 0)
-      error ("nakainv: P, M and W must be of common size or scalars.");
+      error ("nakainv: P, MU, and OMEGA must be of common size or scalars.");
     endif
   endif
 
-  ## Check for P, M, and W being reals
-  if (iscomplex (p) || iscomplex (m) || iscomplex (w))
-    error ("nakainv: P, M, and W must not be complex.");
+  ## Check for P, MU, and OMEGA being reals
+  if (iscomplex (p) || iscomplex (mu) || iscomplex (omega))
+    error ("nakainv: P, MU, and OMEGA must not be complex.");
   endif
 
-  ## Check for appropriate class
-  if (isa (p, "single") || isa (m, "single") || isa (w, "single"))
+  ## Check for class type
+  if (isa (p, "single") || isa (mu, "single") || isa (omega, "single"))
     x = zeros (size (p), "single");
   else
     x = zeros (size (p));
   endif
 
-  ## Compute Nakagami iCDF
-  k = isnan (p) | ! (0 <= p) | ! (p <= 1) | ! (-Inf < m) | ! (m < Inf) ...
-    | ! (0 < w) | ! (w < Inf);
+  ## Force invalid parameters and missing data to NaN
+  k = isnan (p) | ! (p >= 0) | ! (p <= 1) | ! (-Inf < mu) | ! (mu < Inf) ...
+                | ! (omega > 0) | ! (omega < Inf);
   x(k) = NaN;
 
-  k = (p == 1) & (-Inf < m) & (m < Inf) & (0 < w) & (w < Inf);
+  ## Handle edge cases
+  k = (p == 1) & (mu > -Inf) & (mu < Inf) & (omega > 0) & (omega < Inf);
   x(k) = Inf;
 
-  k = (0 < p) & (p < 1) & (0 < m) & (m < Inf) & (0 < w) & (w < Inf);
-  if (isscalar (m) && isscalar(w))
-    m_gamma = m;
-    w_gamma = w/m;
-    x(k) = gaminv(p(k), m_gamma, w_gamma);
-    x(k) = sqrt(x(k));
+  ## Find normal cases
+  k = (0 < p) & (p < 1) & (0 < mu) & (mu < Inf) & (0 < omega) & (omega < Inf);
+
+  ## Compute Nakagami iCDF
+  if (isscalar (mu) && isscalar(omega))
+    m_gamma = mu;
+    w_gamma = omega / mu;
+    x(k) = gaminv (p(k), m_gamma, w_gamma);
+    x(k) = sqrt (x(k));
   else
-    m_gamma = m;
-    w_gamma = w./m;
-    x(k) = gaminv(p(k), m_gamma(k), w_gamma(k));
-    x(k) = sqrt(x(k));
+    m_gamma = mu;
+    w_gamma = omega ./ mu;
+    x(k) = gaminv (p(k), m_gamma(k), w_gamma(k));
+    x(k) = sqrt (x(k));
   endif
 
 endfunction
 
+%!demo
+%! ## Plot various iCDFs from the Nakagami distribution
+%! p = 0.001:0.001:0.999;
+%! x1 = nakainv (p, 0.5, 1);
+%! x2 = nakainv (p, 1, 1);
+%! x3 = nakainv (p, 1, 2);
+%! x4 = nakainv (p, 1, 3);
+%! x5 = nakainv (p, 2, 1);
+%! x6 = nakainv (p, 2, 2);
+%! x7 = nakainv (p, 5, 1);
+%! plot (p, x1, "-r", p, x2, "-g", p, x3, "-y", p, x4, "-m", ...
+%!       p, x5, "-k", p, x6, "-b", p, x7, "-c")
+%! grid on
+%! ylim ([0, 3])
+%! legend ({"μ = 0.5, ω = 1", "μ = 1, ω = 1", "μ = 1, ω = 2", ...
+%!          "μ = 1, ω = 3", "μ = 2, ω = 1", "μ = 2, ω = 2", ...
+%!          "μ = 5, ω = 1"}, "location", "northwest")
+%! title ("Nakagami iCDF")
+%! xlabel ("probability")
+%! ylabel ("values in x")
 
-%!shared p,y
+## Test results
+%!shared p, y
 %! p = [-Inf, -1, 0, 1/2, 1, 2, Inf];
 %! y = [NaN, NaN, 0, 0.83255461115769769, Inf, NaN, NaN];
 %!assert (nakainv (p, ones (1,7), ones (1,7)), y, eps)
@@ -98,14 +126,17 @@ endfunction
 %!assert (nakainv ([p, NaN], 1, single (1)), single ([y, NaN]))
 
 ## Test input validation
-%!error nakainv ()
-%!error nakainv (1)
-%!error nakainv (1,2)
-%!error nakainv (1,2,3,4)
-%!error nakainv (ones (3), ones (2), ones(2))
-%!error nakainv (ones (2), ones (3), ones(2))
-%!error nakainv (ones (2), ones (2), ones(3))
-%!error nakainv (i, 2, 2)
-%!error nakainv (2, i, 2)
-%!error nakainv (2, 2, i)
-
+%!error<nakainv: function called with too few input arguments.> nakainv ()
+%!error<nakainv: function called with too few input arguments.> nakainv (1)
+%!error<nakainv: function called with too few input arguments.> ...
+%! nakainv (1, 2)
+%!error<nakainv: function called with too many inputs> nakainv (1, 2, 3, 4)
+%!error<nakainv: P, MU, and OMEGA must be of common size or scalars.> ...
+%! nakainv (ones (3), ones (2), ones(2))
+%!error<nakainv: P, MU, and OMEGA must be of common size or scalars.> ...
+%! nakainv (ones (2), ones (3), ones(2))
+%!error<nakainv: P, MU, and OMEGA must be of common size or scalars.> ...
+%! nakainv (ones (2), ones (2), ones(3))
+%!error<nakainv: P, MU, and OMEGA must not be complex.> nakainv (i, 4, 3)
+%!error<nakainv: P, MU, and OMEGA must not be complex.> nakainv (1, i, 3)
+%!error<nakainv: P, MU, and OMEGA must not be complex.> nakainv (1, 4, i)

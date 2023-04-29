@@ -19,72 +19,111 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{p} =} nakacdf (@var{x}, @var{m}, @var{w})
+## @deftypefn  {statistics} {@var{p} =} nakacdf (@var{x}, @var{mu}, @var{omega})
+## @deftypefnx {statistics} {@var{p} =} nakacdf (@var{x}, @var{mu}, @var{omega}, @qcode{"upper"})
 ##
 ## Nakagami cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the Nakagami distribution with shape parameter @var{m}
-## and scale parameter @var{w}.  The size of @var{p} is the common size of
-## @var{x}, @var{m}, and @var{w}.  A scalar input functions as a constant matrix
-## of the same size as the other inputs.
+## (CDF) at @var{x} of the Nakagami distribution with shape parameter @var{mu}
+## and spread parameter @var{omega}.  The size of @var{p} is the common size of
+## @var{x}, @var{mu}, and @var{omega}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
+##
+## @code{@var{p} = nakacdf (@var{x}, @var{mu}, @var{omega}, "upper")} computes
+## the upper tail probability of the Laplace distribution with parameters
+## @var{mu} and @var{beta} at the values in @var{x}.
+##
+## Further information about the Nakagami distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Nakagami_distribution}
 ##
 ## @seealso{nakainv, nakapdf, nakarnd}
 ## @end deftypefn
 
-function p = nakacdf (x, m, w)
+function p = nakacdf (x, mu, omega, uflag)
 
   ## Check for valid number of input arguments
-  if (nargin != 3)
-    print_usage ();
+  if (nargin < 3)
+    error ("nakacdf: function called with too few input arguments.");
   endif
 
-  ## Check for common size of X, M, and W
-  if (! isscalar (x) || ! isscalar (m) || ! isscalar (w))
-    [retval, x, m, w] = common_size (x, m, w);
+  ## Check for valid "upper" flag
+  if (nargin > 3)
+    if (! strcmpi (uflag, "upper"))
+      error ("nakacdf: invalid argument for upper tail.");
+    else
+      uflag = true;
+    endif
+  else
+    uflag = false;
+  endif
+
+  ## Check for common size of X, MU, and OMEGA
+  if (! isscalar (x) || ! isscalar (mu) || ! isscalar (omega))
+    [retval, x, mu, omega] = common_size (x, mu, omega);
     if (retval > 0)
-      error ("nakacdf: X, M and W must be of common size or scalars.");
+      error ("nakacdf: X, MU, and OMEGA must be of common size or scalars.");
     endif
   endif
 
-  ## Check for X, M, and W being reals
-  if (iscomplex (x) || iscomplex (m) || iscomplex (w))
-    error ("nakacdf: X, M and W must not be complex.");
+  ## Check for X, MU, and OMEGA being reals
+  if (iscomplex (x) || iscomplex (mu) || iscomplex (omega))
+    error ("nakacdf: X, MU, and OMEGA must not be complex.");
   endif
 
-  ## Check for appropriate class
-  if (isa (x, "single") || isa (m, "single") || isa (w, "single"))
-    inv = zeros (size (x), "single");
+  ## Check for class type
+  if (isa (x, "single") || isa (mu, "single") || isa (omega, "single"))
+    p = zeros (size (x), "single");
   else
-    inv = zeros (size (x));
+    p = zeros (size (x));
   endif
+
+  ## Force invalid parameters and missing data to NaN
+  k1 = isnan (x) | ! (mu > 0) | ! (omega > 0);
+  p(k1) = NaN;
+
+  ## Find normal and edge cases
+  k2 = (x == Inf) & (mu > 0) & (mu < Inf) & (omega > 0) & (omega < Inf);
+  k = (x > 0) & (x < Inf) & (mu > 0) & (mu < Inf) & (omega > 0) & (omega < Inf);
 
   ## Compute Nakagami CDF
-  k = isnan (x) | ! (m > 0) | ! (w > 0);
-  p(k) = NaN;
-
-  k = (x == Inf) & (0 < m) & (m < Inf) & (0 < w) & (w < Inf);
-  p(k) = 1;
-
-  k = (0 < x) & (x < Inf) & (0 < m) & (m < Inf) & (0 < w) & (w < Inf);
-  if (isscalar(x) && isscalar (m) && isscalar(w))
-    left = m;
-    right = (m/w) * x^2;
-    p(k) = gammainc(right, left);
-  elseif (isscalar (m) && isscalar(w))
-    left = m * ones(size(x));
-    right = (m/w) * x.^2;
-    p(k) = gammainc(right(k), left(k));
+  if (uflag)
+    p(k2) = 0;
+    left = mu .* ones (size (x));
+    right = (mu ./ omega) .* x .^ 2;
+    p(k) = gammainc (right(k), left(k), "upper");
   else
-    left = m .* ones(size(x));
-    right = (m./w) .* x.^2;
-    p(k) = gammainc(right(k), left(k));
+    p(k2) = 1;
+    left = mu .* ones (size (x));
+    right = (mu ./ omega) .* x .^ 2;
+    p(k) = gammainc (right(k), left(k));
   endif
 
 endfunction
 
+%!demo
+%! ## Plot various CDFs from the Nakagami distribution
+%! x = 0:0.01:3;
+%! p1 = nakacdf (x, 0.5, 1);
+%! p2 = nakacdf (x, 1, 1);
+%! p3 = nakacdf (x, 1, 2);
+%! p4 = nakacdf (x, 1, 3);
+%! p5 = nakacdf (x, 2, 1);
+%! p6 = nakacdf (x, 2, 2);
+%! p7 = nakacdf (x, 5, 1);
+%! plot (x, p1, "-r", x, p2, "-g", x, p3, "-y", x, p4, "-m", ...
+%!       x, p5, "-k", x, p6, "-b", x, p7, "-c")
+%! grid on
+%! xlim ([0, 3])
+%! legend ({"μ = 0.5, ω = 1", "μ = 1, ω = 1", "μ = 1, ω = 2", ...
+%!          "μ = 1, ω = 3", "μ = 2, ω = 1", "μ = 2, ω = 2", ...
+%!          "μ = 5, ω = 1"}, "location", "southeast")
+%! title ("Nakagami CDF")
+%! xlabel ("values in x")
+%! ylabel ("probability")
 
-%!shared x,y
+## Test results
+%!shared x, y
 %! x = [-1, 0, 1, 2, Inf];
 %! y = [0, 0, 0.63212055882855778, 0.98168436111126578, 1];
 %!assert (nakacdf (x, ones (1,5), ones (1,5)), y, eps)
@@ -94,19 +133,25 @@ endfunction
 %!assert (nakacdf ([x, NaN], 1, 1), [y, NaN], eps)
 
 ## Test class of input preserved
-%!assert (nakacdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps('single'))
-%!assert (nakacdf ([x, NaN], single (1), 1), single ([y, NaN]), eps('single'))
-%!assert (nakacdf ([x, NaN], 1, single (1)), single ([y, NaN]), eps('single'))
+%!assert (nakacdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps("single"))
+%!assert (nakacdf ([x, NaN], single (1), 1), single ([y, NaN]), eps("single"))
+%!assert (nakacdf ([x, NaN], 1, single (1)), single ([y, NaN]), eps("single"))
 
 ## Test input validation
-%!error nakacdf ()
-%!error nakacdf (1)
-%!error nakacdf (1,2)
-%!error nakacdf (1,2,3,4)
-%!error nakacdf (ones (3), ones (2), ones(2))
-%!error nakacdf (ones (2), ones (3), ones(2))
-%!error nakacdf (ones (2), ones (2), ones(3))
-%!error nakacdf (i, 2, 2)
-%!error nakacdf (2, i, 2)
-%!error nakacdf (2, 2, i)
-
+%!error<nakacdf: function called with too few input arguments.> nakacdf ()
+%!error<nakacdf: function called with too few input arguments.> nakacdf (1)
+%!error<nakacdf: function called with too few input arguments.> ...
+%! nakacdf (1, 2)
+%!error<nakacdf: function called with too many inputs> ...
+%! nakacdf (1, 2, 3, 4, 5)
+%!error<nakacdf: invalid argument for upper tail.> nakacdf (1, 2, 3, "tail")
+%!error<nakacdf: invalid argument for upper tail.> nakacdf (1, 2, 3, 4)
+%!error<nakacdf: X, MU, and OMEGA must be of common size or scalars.> ...
+%! nakacdf (ones (3), ones (2), ones (2))
+%!error<nakacdf: X, MU, and OMEGA must be of common size or scalars.> ...
+%! nakacdf (ones (2), ones (3), ones (2))
+%!error<nakacdf: X, MU, and OMEGA must be of common size or scalars.> ...
+%! nakacdf (ones (2), ones (2), ones (3))
+%!error<nakacdf: X, MU, and OMEGA must not be complex.> nakacdf (i, 2, 2)
+%!error<nakacdf: X, MU, and OMEGA must not be complex.> nakacdf (2, i, 2)
+%!error<nakacdf: X, MU, and OMEGA must not be complex.> nakacdf (2, 2, i)
