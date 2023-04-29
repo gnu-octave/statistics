@@ -226,6 +226,12 @@ endfunction
 %!demo
 %! einstein (0.4, 0.6)
 
+%!demo
+%! einstein (0.2, 0.5)
+
+%!demo
+%! einstein (0.6, 0.1)
+
 
 %!shared visibility_setting
 %! visibility_setting = get (0, "DefaultFigureVisible");
