@@ -76,9 +76,9 @@ function x = logninv (p, mu = 0, sigma = 1)
 
   k = (p >= 0) & (p < 1) & (sigma > 0) & (sigma < Inf);
   if (isscalar (mu) && isscalar (sigma))
-    x(k) = exp (mu) .* exp (sigma .* stdnormal_inv (p(k)));
+    x(k) = exp (mu) .* exp (sigma .* (-sqrt (2) * erfcinv (2 * p(k))));
   else
-    x(k) = exp (mu(k)) .* exp (sigma(k) .* stdnormal_inv (p(k)));
+    x(k) = exp (mu(k)) .* exp (sigma(k) .* (-sqrt (2) * erfcinv (2 * p(k))));
   endif
 
 endfunction
