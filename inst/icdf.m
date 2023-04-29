@@ -80,13 +80,13 @@
 ## @item @qcode{"Weibull"} @tab @tab @qcode{"wbl"} @tab @tab 2
 ## @end multitable
 ##
-## @seealso{cdf, pdf, random, betainv, binoinv, bisainv, burrinv, cauchyinv,
+## @seealso{icdf, pdf, random, betainv, binoinv, bisainv, burrinv, cauchyinv,
 ## chi2inv, evinv, expinv, finv, gaminv, geoinv, gevinv, gpinv, hygeinv,
 ## laplaceinv, logiinv, loglinv, logninv, nakainv, nbininv, ncfinv, nctinv,
 ## ncx2inv, norminv, poissinv, raylinv, tinv, triinv, unidinv, unifinv, wblinv}
 ## @end deftypefn
 
-function x = icdf (name, varargin)
+function x = icdf (name, p, varargin)
 
   ## implemented functions
   persistent allDF = { ...
@@ -106,7 +106,7 @@ function x = icdf (name, varargin)
     {"hyge"     , "Hypergeometric"},            @hygeinv,      3, ...
     {"laplace"  , "Laplace"},                   @laplaceinv,   2, ...
     {"logi"     , "Logistic"},                  @logiinv,      2, ...
-    {"logl"     , "Log-Logistic"},              @logiinv,      2, ...
+    {"logl"     , "Log-Logistic"},              @loglinv,      2, ...
     {"logn"     , "Lognormal"},                 @logninv,      2, ...
     {"naka"     , "Nakagami"},                  @nakainv,      2, ...
     {"nbin"     , "Negative Binomial"},         @nbininv,      2, ...
@@ -122,13 +122,16 @@ function x = icdf (name, varargin)
     {"unif"     , "Uniform"},                   @unifinv,      2, ...
     {"wbl"      , "Weibull"},                   @wblinv,       2};
 
-  if (numel (varargin) < 1 || ! ischar (name))
-    print_usage ();
+  if (! ischar (name))
+    error ("icdf: distribution NAME must a char string.");
   endif
 
-  ## Get p-values
-  p = varargin{1};
-  varargin(1) = [];
+  ## Check P being numeric and real
+  if (! isnumeric (p))
+    error ("icdf: P must be numeric.");
+  elseif (! isreal (p))
+    error ("icdf: values in P must be real.");
+  endif
 
   ## Get number of arguments
   nargs = numel (varargin);
@@ -146,16 +149,17 @@ function x = icdf (name, varargin)
     if (nargs == icdf_args{idx})
       ## Check that all distribution parameters are numeric
       if (! all (cellfun (@(x)isnumeric(x), (varargin))))
-        error ("cdf: distribution parameters must be numeric.");
+        error ("icdf: distribution parameters must be numeric.");
       endif
       ## Call appropriate iCDF
       x = feval (icdfhandl{idx}, p, varargin{:});
 
     else
       if (icdf_args{idx} == 1)
-        error ("icdf: %s requires 1 parameter.", name);
+        error ("icdf: %s distribution requires 1 parameter.", name);
       else
-        error ("icdf: %s requires %d parameters.", name, icdf_args{idx});
+        error ("icdf: %s distribution requires %d parameters.", ...
+               name, icdf_args{idx});
       endif
 
     endif
@@ -167,5 +171,84 @@ function x = icdf (name, varargin)
 endfunction
 
 ## Test results
-%!test
-%! assert(icdf ("norm", 0.05, 0, 1), norminv (0.05, 0, 1))
+%!shared p
+%! p = [0.05:0.05:0.5];
+%!assert (icdf ("Beta", p, 5, 2), betainv (p, 5, 2))
+%!assert (icdf ("beta", p, 5, 2), betainv (p, 5, 2))
+%!assert (icdf ("Binomial", p, 5, 2), binoinv (p, 5, 2))
+%!assert (icdf ("bino", p, 5, 2), binoinv (p, 5, 2))
+%!assert (icdf ("Birnbaum-Saunders", p, 5, 2), bisainv (p, 5, 2))
+%!assert (icdf ("bisa", p, 5, 2), bisainv (p, 5, 2))
+%!assert (icdf ("Burr", p, 5, 2, 2), burrinv (p, 5, 2, 2))
+%!assert (icdf ("burr", p, 5, 2, 2), burrinv (p, 5, 2, 2))
+%!assert (icdf ("Cauchy", p, 5, 2), cauchyinv (p, 5, 2))
+%!assert (icdf ("cauchy", p, 5, 2), cauchyinv (p, 5, 2))
+%!assert (icdf ("Chi-squared", p, 5), chi2inv (p, 5))
+%!assert (icdf ("chi2", p, 5), chi2inv (p, 5))
+%!assert (icdf ("Extreme Value", p, 5, 2), evinv (p, 5, 2))
+%!assert (icdf ("ev", p, 5, 2), evinv (p, 5, 2))
+%!assert (icdf ("Exponential", p, 5), expinv (p, 5))
+%!assert (icdf ("exp", p, 5), expinv (p, 5))
+%!assert (icdf ("F-Distribution", p, 5, 2), finv (p, 5, 2))
+%!assert (icdf ("f", p, 5, 2), finv (p, 5, 2))
+%!assert (icdf ("Gamma", p, 5, 2), gaminv (p, 5, 2))
+%!assert (icdf ("gam", p, 5, 2), gaminv (p, 5, 2))
+%!assert (icdf ("Geometric", p, 5), geoinv (p, 5))
+%!assert (icdf ("geo", p, 5), geoinv (p, 5))
+%!assert (icdf ("Generalized Extreme Value", p, 5, 2, 2), gevinv (p, 5, 2, 2))
+%!assert (icdf ("gev", p, 5, 2, 2), gevinv (p, 5, 2, 2))
+%!assert (icdf ("Generalized Pareto", p, 5, 2, 2), gpinv (p, 5, 2, 2))
+%!assert (icdf ("gp", p, 5, 2, 2), gpinv (p, 5, 2, 2))
+%!assert (icdf ("Hypergeometric", p, 5, 2, 2), hygeinv (p, 5, 2, 2))
+%!assert (icdf ("hyge", p, 5, 2, 2), hygeinv (p, 5, 2, 2))
+%!assert (icdf ("Laplace", p, 5, 2), laplaceinv (p, 5, 2))
+%!assert (icdf ("laplace", p, 5, 2), laplaceinv (p, 5, 2))
+%!assert (icdf ("Logistic", p, 5, 2), logiinv (p, 5, 2))
+%!assert (icdf ("logi", p, 5, 2), logiinv (p, 5, 2))
+%!assert (icdf ("Log-Logistic", p, 5, 2), loglinv (p, 5, 2))
+%!assert (icdf ("logl", p, 5, 2), loglinv (p, 5, 2))
+%!assert (icdf ("Lognormal", p, 5, 2), logninv (p, 5, 2))
+%!assert (icdf ("logn", p, 5, 2), logninv (p, 5, 2))
+%!assert (icdf ("Nakagami", p, 5, 2), nakainv (p, 5, 2))
+%!assert (icdf ("naka", p, 5, 2), nakainv (p, 5, 2))
+%!assert (icdf ("Negative Binomial", p, 5, 2), nbininv (p, 5, 2))
+%!assert (icdf ("nbin", p, 5, 2), nbininv (p, 5, 2))
+%!assert (icdf ("Noncentral F-Distribution", p, 5, 2, 2), ncfinv (p, 5, 2, 2))
+%!assert (icdf ("ncf", p, 5, 2, 2), ncfinv (p, 5, 2, 2))
+%!assert (icdf ("Noncentral Student T", p, 5, 2), nctinv (p, 5, 2))
+%!assert (icdf ("nct", p, 5, 2), nctinv (p, 5, 2))
+%!assert (icdf ("Noncentral Chi-Squared", p, 5, 2), ncx2inv (p, 5, 2))
+%!assert (icdf ("ncx2", p, 5, 2), ncx2inv (p, 5, 2))
+%!assert (icdf ("Normal", p, 5, 2), norminv (p, 5, 2))
+%!assert (icdf ("norm", p, 5, 2), norminv (p, 5, 2))
+%!assert (icdf ("Poisson", p, 5), poissinv (p, 5))
+%!assert (icdf ("poiss", p, 5), poissinv (p, 5))
+%!assert (icdf ("Rayleigh", p, 5), raylinv (p, 5))
+%!assert (icdf ("rayl", p, 5), raylinv (p, 5))
+%!assert (icdf ("Student T", p, 5), tinv (p, 5))
+%!assert (icdf ("t", p, 5), tinv (p, 5))
+%!assert (icdf ("Triangular", p, 5, 2, 2), triinv (p, 5, 2, 2))
+%!assert (icdf ("tri", p, 5, 2, 2), triinv (p, 5, 2, 2))
+%!assert (icdf ("Discrete Uniform", p, 5), unidinv (p, 5))
+%!assert (icdf ("unid", p, 5), unidinv (p, 5))
+%!assert (icdf ("Uniform", p, 5, 2), unifinv (p, 5, 2))
+%!assert (icdf ("unif", p, 5, 2), unifinv (p, 5, 2))
+%!assert (icdf ("Weibull", p, 5, 2), wblinv (p, 5, 2))
+%!assert (icdf ("wbl", p, 5, 2), wblinv (p, 5, 2))
+
+## Test input validation
+%!error<icdf: distribution NAME must a char string.> icdf (1)
+%!error<icdf: distribution NAME must a char string.> icdf ({"beta"})
+%!error<icdf: P must be numeric.> icdf ("beta", {[1 2 3 4 5]})
+%!error<icdf: P must be numeric.> icdf ("beta", "text")
+%!error<icdf: values in P must be real.> icdf ("beta", 1+i)
+%!error<icdf: distribution parameters must be numeric.> ...
+%! icdf ("Beta", p, "a", 2)
+%!error<icdf: distribution parameters must be numeric.> ...
+%! icdf ("Beta", p, 5, "")
+%!error<icdf: distribution parameters must be numeric.> ...
+%! icdf ("Beta", p, 5, {2})
+%!error<icdf: chi2 distribution requires 1 parameter.> icdf ("chi2", p)
+%!error<icdf: Beta distribution requires 2 parameters.> icdf ("Beta", p, 5)
+%!error<icdf: Burr distribution requires 3 parameters.> icdf ("Burr", p, 5)
+%!error<icdf: Burr distribution requires 3 parameters.> icdf ("Burr", p, 5, 2)

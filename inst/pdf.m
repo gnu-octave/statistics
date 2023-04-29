@@ -87,7 +87,7 @@
 ## ncx2pdf, normpdf, poisspdf, raylpdf, tpdf, tripdf, unidpdf, unifpdf, wblpdf}
 ## @end deftypefn
 
-function y = pdf (name, varargin)
+function y = pdf (name, x, varargin)
 
   ## implemented functions
   persistent allDF = { ...
@@ -107,7 +107,7 @@ function y = pdf (name, varargin)
     {"hyge"     , "Hypergeometric"},            @hygepdf,      3, ...
     {"laplace"  , "Laplace"},                   @laplacepdf,   2, ...
     {"logi"     , "Logistic"},                  @logipdf,      2, ...
-    {"logl"     , "Log-Logistic"},              @logipdf,      2, ...
+    {"logl"     , "Log-Logistic"},              @loglpdf,      2, ...
     {"logn"     , "Lognormal"},                 @lognpdf,      2, ...
     {"naka"     , "Nakagami"},                  @nakapdf,      2, ...
     {"nbin"     , "Negative Binomial"},         @nbinpdf,      2, ...
@@ -123,13 +123,16 @@ function y = pdf (name, varargin)
     {"unif"     , "Uniform"},                   @unifpdf,      2, ...
     {"wbl"      , "Weibull"},                   @wblpdf,       2};
 
-  if (numel (varargin) < 1 || ! ischar (name))
-    print_usage ();
+  if (! ischar (name))
+    error ("pdf: distribution NAME must a char string.");
   endif
 
-  ## Get data
-  x = varargin{1};
-  varargin(1) = [];
+  ## Check X being numeric and real
+  if (! isnumeric (x))
+    error ("pdf: X must be numeric.");
+  elseif (! isreal (x))
+    error ("pdf: values in X must be real.");
+  endif
 
   ## Get number of arguments
   nargs = numel (varargin);
@@ -153,10 +156,11 @@ function y = pdf (name, varargin)
       y = feval (pdfhandl{idx}, x, varargin{:});
 
     else
-      if (cdf_args{idx} == 1)
-        error ("pdf: %s requires 1 parameter.", name);
+      if (pdf_args{idx} == 1)
+        error ("pdf: %s distribution requires 1 parameter.", name);
       else
-        error ("pdf: %s requires %d parameters.", name, pdf_args{idx});
+        error ("pdf: %s distribution requires %d parameters.", ...
+               name, pdf_args{idx});
       endif
 
     endif
@@ -168,5 +172,84 @@ function y = pdf (name, varargin)
 endfunction
 
 ## Test results
-%!test
-%! assert(pdf ("norm", 1, 0, 1), normpdf (1, 0, 1))
+%!shared x
+%! x = [1:5];
+%!assert (pdf ("Beta", x, 5, 2), betapdf (x, 5, 2))
+%!assert (pdf ("beta", x, 5, 2), betapdf (x, 5, 2))
+%!assert (pdf ("Binomial", x, 5, 2), binopdf (x, 5, 2))
+%!assert (pdf ("bino", x, 5, 2), binopdf (x, 5, 2))
+%!assert (pdf ("Birnbaum-Saunders", x, 5, 2), bisapdf (x, 5, 2))
+%!assert (pdf ("bisa", x, 5, 2), bisapdf (x, 5, 2))
+%!assert (pdf ("Burr", x, 5, 2, 2), burrpdf (x, 5, 2, 2))
+%!assert (pdf ("burr", x, 5, 2, 2), burrpdf (x, 5, 2, 2))
+%!assert (pdf ("Cauchy", x, 5, 2), cauchypdf (x, 5, 2))
+%!assert (pdf ("cauchy", x, 5, 2), cauchypdf (x, 5, 2))
+%!assert (pdf ("Chi-squared", x, 5), chi2pdf (x, 5))
+%!assert (pdf ("chi2", x, 5), chi2pdf (x, 5))
+%!assert (pdf ("Extreme Value", x, 5, 2), evpdf (x, 5, 2))
+%!assert (pdf ("ev", x, 5, 2), evpdf (x, 5, 2))
+%!assert (pdf ("Exponential", x, 5), exppdf (x, 5))
+%!assert (pdf ("exp", x, 5), exppdf (x, 5))
+%!assert (pdf ("F-Distribution", x, 5, 2), fpdf (x, 5, 2))
+%!assert (pdf ("f", x, 5, 2), fpdf (x, 5, 2))
+%!assert (pdf ("Gamma", x, 5, 2), gampdf (x, 5, 2))
+%!assert (pdf ("gam", x, 5, 2), gampdf (x, 5, 2))
+%!assert (pdf ("Geometric", x, 5), geopdf (x, 5))
+%!assert (pdf ("geo", x, 5), geopdf (x, 5))
+%!assert (pdf ("Generalized Extreme Value", x, 5, 2, 2), gevpdf (x, 5, 2, 2))
+%!assert (pdf ("gev", x, 5, 2, 2), gevpdf (x, 5, 2, 2))
+%!assert (pdf ("Generalized Pareto", x, 5, 2, 2), gppdf (x, 5, 2, 2))
+%!assert (pdf ("gp", x, 5, 2, 2), gppdf (x, 5, 2, 2))
+%!assert (pdf ("Hypergeometric", x, 5, 2, 2), hygepdf (x, 5, 2, 2))
+%!assert (pdf ("hyge", x, 5, 2, 2), hygepdf (x, 5, 2, 2))
+%!assert (pdf ("Laplace", x, 5, 2), laplacepdf (x, 5, 2))
+%!assert (pdf ("laplace", x, 5, 2), laplacepdf (x, 5, 2))
+%!assert (pdf ("Logistic", x, 5, 2), logipdf (x, 5, 2))
+%!assert (pdf ("logi", x, 5, 2), logipdf (x, 5, 2))
+%!assert (pdf ("Log-Logistic", x, 5, 2), loglpdf (x, 5, 2))
+%!assert (pdf ("logl", x, 5, 2), loglpdf (x, 5, 2))
+%!assert (pdf ("Lognormal", x, 5, 2), lognpdf (x, 5, 2))
+%!assert (pdf ("logn", x, 5, 2), lognpdf (x, 5, 2))
+%!assert (pdf ("Nakagami", x, 5, 2), nakapdf (x, 5, 2))
+%!assert (pdf ("naka", x, 5, 2), nakapdf (x, 5, 2))
+%!assert (pdf ("Negative Binomial", x, 5, 2), nbinpdf (x, 5, 2))
+%!assert (pdf ("nbin", x, 5, 2), nbinpdf (x, 5, 2))
+%!assert (pdf ("Noncentral F-Distribution", x, 5, 2, 2), ncfpdf (x, 5, 2, 2))
+%!assert (pdf ("ncf", x, 5, 2, 2), ncfpdf (x, 5, 2, 2))
+%!assert (pdf ("Noncentral Student T", x, 5, 2), nctpdf (x, 5, 2))
+%!assert (pdf ("nct", x, 5, 2), nctpdf (x, 5, 2))
+%!assert (pdf ("Noncentral Chi-Squared", x, 5, 2), ncx2pdf (x, 5, 2))
+%!assert (pdf ("ncx2", x, 5, 2), ncx2pdf (x, 5, 2))
+%!assert (pdf ("Normal", x, 5, 2), normpdf (x, 5, 2))
+%!assert (pdf ("norm", x, 5, 2), normpdf (x, 5, 2))
+%!assert (pdf ("Poisson", x, 5), poisspdf (x, 5))
+%!assert (pdf ("poiss", x, 5), poisspdf (x, 5))
+%!assert (pdf ("Rayleigh", x, 5), raylpdf (x, 5))
+%!assert (pdf ("rayl", x, 5), raylpdf (x, 5))
+%!assert (pdf ("Student T", x, 5), tpdf (x, 5))
+%!assert (pdf ("t", x, 5), tpdf (x, 5))
+%!assert (pdf ("Triangular", x, 5, 2, 2), tripdf (x, 5, 2, 2))
+%!assert (pdf ("tri", x, 5, 2, 2), tripdf (x, 5, 2, 2))
+%!assert (pdf ("Discrete Uniform", x, 5), unidpdf (x, 5))
+%!assert (pdf ("unid", x, 5), unidpdf (x, 5))
+%!assert (pdf ("Uniform", x, 5, 2), unifpdf (x, 5, 2))
+%!assert (pdf ("unif", x, 5, 2), unifpdf (x, 5, 2))
+%!assert (pdf ("Weibull", x, 5, 2), wblpdf (x, 5, 2))
+%!assert (pdf ("wbl", x, 5, 2), wblpdf (x, 5, 2))
+
+## Test input validation
+%!error<pdf: distribution NAME must a char string.> pdf (1)
+%!error<pdf: distribution NAME must a char string.> pdf ({"beta"})
+%!error<pdf: X must be numeric.> pdf ("beta", {[1 2 3 4 5]})
+%!error<pdf: X must be numeric.> pdf ("beta", "text")
+%!error<pdf: values in X must be real.> pdf ("beta", 1+i)
+%!error<pdf: distribution parameters must be numeric.> ...
+%! pdf ("Beta", x, "a", 2)
+%!error<pdf: distribution parameters must be numeric.> ...
+%! pdf ("Beta", x, 5, "")
+%!error<pdf: distribution parameters must be numeric.> ...
+%! pdf ("Beta", x, 5, {2})
+%!error<pdf: chi2 distribution requires 1 parameter.> pdf ("chi2", x)
+%!error<pdf: Beta distribution requires 2 parameters.> pdf ("Beta", x, 5)
+%!error<pdf: Burr distribution requires 3 parameters.> pdf ("Burr", x, 5)
+%!error<pdf: Burr distribution requires 3 parameters.> pdf ("Burr", x, 5, 2)

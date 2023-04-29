@@ -17,12 +17,12 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{r} =} random(@var{name}, @var{A})
-## @deftypefnx {statistics} {@var{r} =} random(@var{name}, @var{A}, @var{B})
-## @deftypefnx {statistics} {@var{r} =} random(@var{name}, @var{A}, @var{B}, @var{C})
-## @deftypefnx {statistics} {@var{r} =} random(@var{name}, @dots{}, @var{rows}, @var{cols})
-## @deftypefnx {statistics} {@var{r} =} random(@var{name}, @dots{}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} {@var{r} =} random(@var{name}, @dots{}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} random (@var{name}, @var{A})
+## @deftypefnx {statistics} {@var{r} =} random (@var{name}, @var{A}, @var{B})
+## @deftypefnx {statistics} {@var{r} =} random (@var{name}, @var{A}, @var{B}, @var{C})
+## @deftypefnx {statistics} {@var{r} =} random (@var{name}, @dots{}, @var{rows}, @var{cols})
+## @deftypefnx {statistics} {@var{r} =} random (@var{name}, @dots{}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} random (@var{name}, @dots{}, [@var{sz}])
 ##
 ## Random arrays from a given one-, two-, or three-parameter distribution.
 ##
@@ -105,7 +105,7 @@ function r = random (name, varargin)
     {"hyge"     , "Hypergeometric"},            @hygernd,      3, ...
     {"laplace"  , "Laplace"},                   @laplacernd,   2, ...
     {"logi"     , "Logistic"},                  @logirnd,      2, ...
-    {"logl"     , "Log-Logistic"},              @logirnd,      2, ...
+    {"logl"     , "Log-Logistic"},              @loglrnd,      2, ...
     {"logn"     , "Lognormal"},                 @lognrnd,      2, ...
     {"naka"     , "Nakagami"},                  @nakarnd,      2, ...
     {"nbin"     , "Negative Binomial"},         @nbinrnd,      2, ...
@@ -121,8 +121,8 @@ function r = random (name, varargin)
     {"unif"     , "Uniform"},                   @unifrnd,      2, ...
     {"wbl"      , "Weibull"},                   @wblrnd,       2};
 
-  if (numel (varargin) < 1 || ! ischar (name))
-    print_usage ();
+  if (! ischar (name))
+    error ("random: distribution NAME must a char string.");
   endif
 
   ## Get number of arguments
@@ -156,9 +156,10 @@ function r = random (name, varargin)
 
     else
       if (rnd_args{idx} == 1)
-        error ("pdf: %s requires 1 parameter.", name);
+        error ("random: %s distribution requires 1 parameter.", name);
       else
-        error ("pdf: %s requires %d parameters.", name, rnd_args{idx});
+        error ("random: %s distribution requires %d parameters.", ...
+               name, rnd_args{idx});
       endif
 
     endif
@@ -180,7 +181,7 @@ endfunction
 %!assert (size (random ("burr", 5, 2, 2, [10, 20])), size (burrrnd (5, 2, 2, 10, 20)))
 %!assert (size (random ("Cauchy", 5, 2, [10, 20])), size (cauchyrnd (5, 2, 10, 20)))
 %!assert (size (random ("cauchy", 5, 2, [10, 20])), size (cauchyrnd (5, 2, 10, 20)))
-%!assert (size (random ("Chi-square", 5, [10, 20])), size (chi2rnd (5, 10, 20)))
+%!assert (size (random ("Chi-squared", 5, [10, 20])), size (chi2rnd (5, 10, 20)))
 %!assert (size (random ("chi2", 5, [10, 20])), size (chi2rnd (5, 10, 20)))
 %!assert (size (random ("Extreme Value", 5, 2, [10, 20])), size (evrnd (5, 2, 10, 20)))
 %!assert (size (random ("ev", 5, 2, [10, 20])), size (evrnd (5, 2, 10, 20)))
@@ -214,7 +215,7 @@ endfunction
 %!assert (size (random ("ncf", 5, 2, 2, [10, 20])), size (ncfrnd (5, 2, 2, 10, 20)))
 %!assert (size (random ("Noncentral Student T", 5, 2, [10, 20])), size (nctrnd (5, 2, 10, 20)))
 %!assert (size (random ("nct", 5, 2, [10, 20])), size (nctrnd (5, 2, 10, 20)))
-%!assert (size (random ("Noncentral Chi-Square", 5, 2, [10, 20])), size (ncx2rnd (5, 2, 10, 20)))
+%!assert (size (random ("Noncentral Chi-Squared", 5, 2, [10, 20])), size (ncx2rnd (5, 2, 10, 20)))
 %!assert (size (random ("ncx2", 5, 2, [10, 20])), size (ncx2rnd (5, 2, 10, 20)))
 %!assert (size (random ("Normal", 5, 2, [10, 20])), size (normrnd (5, 2, 10, 20)))
 %!assert (size (random ("norm", 5, 2, [10, 20])), size (normrnd (5, 2, 10, 20)))
@@ -233,3 +234,24 @@ endfunction
 %!assert (size (random ("Weibull", 5, 2, [10, 20])), size (wblrnd (5, 2, 10, 20)))
 %!assert (size (random ("wbl", 5, 2, [10, 20])), size (wblrnd (5, 2, 10, 20)))
 
+## Test input validation
+%!error<random: distribution NAME must a char string.> random (1)
+%!error<random: distribution NAME must a char string.> random ({"beta"})
+%!error<random: distribution parameters must be numeric.> ...
+%! random ("Beta", "a", 2)
+%!error<random: distribution parameters must be numeric.> ...
+%! random ("Beta", 5, "")
+%!error<random: distribution parameters must be numeric.> ...
+%! random ("Beta", 5, {2})
+%!error<random: distribution parameters must be numeric.> ...
+%! random ("Beta", "a", 2, 2, 10)
+%!error<random: distribution parameters must be numeric.> ...
+%! random ("Beta", 5, "", 2, 10)
+%!error<random: distribution parameters must be numeric.> ...
+%! random ("Beta", 5, {2}, 2, 10)
+%!error<random: distribution parameters must be numeric.> ...
+%! random ("Beta", 5, "", 2, 10)
+%!error<random: chi2 distribution requires 1 parameter.> random ("chi2")
+%!error<random: Beta distribution requires 2 parameters.> random ("Beta", 5)
+%!error<random: Burr distribution requires 3 parameters.> random ("Burr", 5)
+%!error<random: Burr distribution requires 3 parameters.> random ("Burr", 5, 2)
