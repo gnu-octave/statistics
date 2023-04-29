@@ -66,11 +66,11 @@ function x = norminv (p, mu = 0, sigma = 1)
   ## Compute normal iCDF
   if (isscalar (mu) && isscalar (sigma))
     if (isfinite (mu) && (sigma > 0) && (sigma < Inf))
-      x = mu + sigma * stdnormal_inv (p);
+      x = mu + sigma * (-sqrt (2) * erfcinv (2 * p));
     endif
   else
     k = isfinite (mu) & (sigma > 0) & (sigma < Inf);
-    x(k) = mu(k) + sigma(k) .* stdnormal_inv (p(k));
+    x(k) = mu(k) + sigma(k) .* (-sqrt (2) * erfcinv (2 * p(k)));
   endif
 
 endfunction

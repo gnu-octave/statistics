@@ -80,6 +80,10 @@ function y = normpdf (x, mu = 0, sigma = 1)
 
 endfunction
 
+function y = stdnormal_pdf (x)
+  y = (2 * pi)^(- 1/2) * exp (- x .^ 2 / 2);
+endfunction
+
 
 %!shared x,y
 %! x = [-Inf 1 2 Inf];
