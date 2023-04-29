@@ -1,4 +1,5 @@
 ## Copyright (C) 1995-2017 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -33,12 +34,13 @@ function x = probit (p)
     print_usage ();
   endif
 
-  x = norminv (p);
+  x = -sqrt (2) * erfcinv (2 * p);
 
 endfunction
 
-
+## Test output
 %!assert (probit ([-1, 0, 0.5, 1, 2]), [NaN, -Inf, 0, Inf, NaN])
+%!assert (probit ([0.2, 0.99]), norminv ([0.2, 0.99]))
 
 ## Test input validation
 %!error probit ()
