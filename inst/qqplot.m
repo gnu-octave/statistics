@@ -1,5 +1,5 @@
 ## Copyright (C) 1995-2017 Kurt Hornik
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -67,7 +67,7 @@ function [qout, sout] = qqplot (x, dist, varargin)
   endif
 
   if (nargin == 1)
-    f = @stdnormal_inv;
+    f = @probit;
   else
     if (isnumeric (dist))
       f = @(y) empirical_inv (y, dist);
@@ -110,6 +110,7 @@ function [qout, sout] = qqplot (x, dist, varargin)
   endif
 
 endfunction
+
 
 ## Test input validation
 %!error qqplot ()
