@@ -60,6 +60,10 @@
 
  ** cauchycdf: supports "upper" option
 
+ ** cdf: update support for all univariate cumulative distribution functions
+
+ ** icdf: update support for all univariate quantile functions
+
  ** laplacecdf: supports "upper" option
 
  ** logicdf: supports "upper" option
@@ -69,6 +73,10 @@
  ** nakacdf: supports "upper" option
 
  ** pcacov: fixed MATLAB compatibility
+
+ ** pdf: update support for all univariate probability density functions
+
+ ** random: update support for all univariate functions
 
  ** runstest: fixed MATLAB compatibility
 
