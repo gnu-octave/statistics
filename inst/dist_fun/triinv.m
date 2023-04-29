@@ -1,6 +1,6 @@
-## Copyright (C) 1995-2015 Kurt Hornik
-## Copyright (C) 2016 Dag Lyberg
-## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (B) 1995-2015 Kurt Hornik
+## Copyright (B) 2016 Dag Lyberg
+## Copyright (B) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -25,39 +25,49 @@
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF)
 ## at @var{p} of the triangular distribution with parameters @var{a}, @var{b},
-## and @var{c} on the interval [@var{a}, @var{b}].  The size of @var{p} is the
-## common size of the input arguments.  A scalar input functions as a constant
-## matrix of the same size as the other inputs.
+## and @var{c} on the interval @qcode{[@var{a}, @var{b}]}.  The size of @var{x}
+## is the common size of the input arguments.  A scalar input functions as a
+## constant matrix of the same size as the other inputs.
+##
+## Further information about the triangular distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Triangular_distribution}
 ##
 ## @seealso{tricdf, tripdf, trirnd}
 ## @end deftypefn
 
 function x = triinv (p, a, b, c)
 
-  if (nargin != 4)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 4)
+    error ("triinv: function called with too few input arguments.");
   endif
 
+  ## Check for common size of P, A, B, and C
   if (! isscalar (p) || ! isscalar (a) || ! isscalar (b) || ! isscalar (c))
     [retval, p, a, b, c] = common_size (p, a, b, c);
     if (retval > 0)
-      error ("triinv: X, A, B, and C must be of common size or scalars.");
+      error ("triinv: P, A, B, and C must be of common size or scalars.");
     endif
   endif
 
+  ## Check for P, A, B, and C being reals
   if (iscomplex (p) || iscomplex (a) || iscomplex (b) || iscomplex (c))
-    error ("triinv: X, A, B, and C must not be complex.");
+    error ("triinv: P, A, B, and C must not be complex.");
   endif
 
-  if (isa (p, "single") || isa (a, "single") || isa (b, "single"))
+  ## Check for class type
+  if (isa (p, "single") || isa (a, "single") || isa (b, "single") ...
+                        || isa (c, "single"))
     x = NaN (size (p), "single");
   else
     x = NaN (size (p));
   endif
 
+  ## Force zeros for within range parameters.
   k = (p >= 0) & (p <= 1) & (a < b) & (a <= c) & (c <= b);
   x(k) = 0;
 
+  ## Compute triangular iCDF
   h = 2 ./ (b-a);
   w = c-a;
   area1 = h .* w / 2;
@@ -73,8 +83,25 @@ function x = triinv (p, a, b, c)
 
 endfunction
 
+%!demo
+%! ## Plot various iCDFs from the triangular distribution
+%! p = 0.001:0.001:0.999;
+%! x1 = triinv (p, 3, 6, 4);
+%! x2 = triinv (p, 1, 5, 2);
+%! x3 = triinv (p, 2, 9, 3);
+%! x4 = triinv (p, 2, 9, 5);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c")
+%! grid on
+%! ylim ([0, 10])
+%! legend ({"a = 3, b = 6, c = 4", "a = 1, b = 5, c = 2", ...
+%!          "a = 2, b = 9, c = 3", "a = 2, b = 9, c = 5"}, ...
+%!         "location", "northwest")
+%! title ("Triangular CDF")
+%! xlabel ("probability")
+%! ylabel ("values in x")
 
-%!shared p,y
+## Test results
+%!shared p, y
 %! p = [-1, 0, 0.02, 0.5, 0.98, 1, 2];
 %! y = [NaN, 0, 0.1, 0.5, 0.9, 1, NaN] + 1;
 %!assert (triinv (p, ones (1,7), 2*ones (1,7), 1.5*ones (1,7)), y, eps)
@@ -94,16 +121,21 @@ endfunction
 %!assert (triinv ([p, NaN], 1, 2, single (1.5)), single ([y, NaN]), eps('single'))
 
 ## Test input validation
-%!error triinv ()
-%!error triinv (1)
-%!error triinv (1,2)
-%!error triinv (1,2,3)
-%!error triinv (1,2,3,4,5)
-%!error triinv (1, ones (3), ones (2), ones (2))
-%!error triinv (1, ones (2), ones (3), ones (2))
-%!error triinv (1, ones (2), ones (2), ones (3))
-%!error triinv (i, 2, 2, 2)
-%!error triinv (2, i, 2, 2)
-%!error triinv (2, 2, i, 2)
-%!error triinv (2, 2, 2, i)
-
+%!error<triinv: function called with too few input arguments.> triinv ()
+%!error<triinv: function called with too few input arguments.> triinv (1)
+%!error<triinv: function called with too few input arguments.> triinv (1, 2)
+%!error<triinv: function called with too few input arguments.> triinv (1, 2, 3)
+%!error<triinv: function called with too many inputs> ...
+%! triinv (1, 2, 3, 4, 5)
+%!error<triinv: P, A, B, and C must be of common size or scalars.> ...
+%! triinv (ones (3), ones (2), ones(2), ones(2))
+%!error<triinv: P, A, B, and C must be of common size or scalars.> ...
+%! triinv (ones (2), ones (3), ones(2), ones(2))
+%!error<triinv: P, A, B, and C must be of common size or scalars.> ...
+%! triinv (ones (2), ones (2), ones(3), ones(2))
+%!error<triinv: P, A, B, and C must be of common size or scalars.> ...
+%! triinv (ones (2), ones (2), ones(2), ones(3))
+%!error<triinv: P, A, B, and C must not be complex.> triinv (i, 2, 3, 4)
+%!error<triinv: P, A, B, and C must not be complex.> triinv (1, i, 3, 4)
+%!error<triinv: P, A, B, and C must not be complex.> triinv (1, 2, i, 4)
+%!error<triinv: P, A, B, and C must not be complex.> triinv (1, 2, 3, i)

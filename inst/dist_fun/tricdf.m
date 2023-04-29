@@ -20,24 +20,45 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} tricdf (@var{x}, @var{a}, @var{b}, @var{c})
+## @deftypefnx {statistics} {@var{p} =} tricdf (@var{x}, @var{a}, @var{b}, @var{c}, @qcode{"upper"})
 ##
 ## Triangular cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
 ## (CDF) at @var{x} of the triangular distribution with parameters @var{a},
-## @var{b}, and @var{c} on the interval [@var{a}, @var{b}].  The size of @var{p}
-## is the common size of the input arguments.  A scalar input functions as a
-## constant matrix of the same size as the other inputs.
+## @var{b}, and @var{c} on the interval @qcode{[@var{a}, @var{b}]}.  The size of
+## @var{p} is the common size of the input arguments.  A scalar input functions
+## as a constant matrix of the same size as the other inputs.
+##
+## @code{@var{p} = tricdf (@var{x}, @var{a}, @var{b}, @var{c}, "upper")}
+## computes the upper tail probability of the triangular distribution with
+## parameters @var{a}, @var{b}, and @var{c} at the values in @var{x}.
+##
+## Further information about the triangular distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Triangular_distribution}
 ##
 ## @seealso{triinv, tripdf, trirnd}
 ## @end deftypefn
 
-function p = tricdf (x, a, b, c)
+function p = tricdf (x, a, b, c, uflag)
 
-  if (nargin != 4)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 4)
+    error ("tricdf: function called with too few input arguments.");
   endif
 
+  ## Check for valid "upper" flag
+  if (nargin > 4)
+    if (! strcmpi (uflag, "upper"))
+      error ("tricdf: invalid argument for upper tail.");
+    else
+      uflag = true;
+    endif
+  else
+    uflag = false;
+  endif
+
+  ## Check for common size of A, B, and C
   if (! isscalar (x) || ! isscalar (a) || ! isscalar (b) || ! isscalar (c))
     [retval, x, a, b, c] = common_size (x, a, b, c);
     if (retval > 0)
@@ -45,69 +66,67 @@ function p = tricdf (x, a, b, c)
     endif
   endif
 
+  ## Check for X, BETA, and GAMMA being reals
   if (iscomplex (x) || iscomplex (a) || iscomplex (b) || iscomplex (c))
-    error ("tricdf: X, A, B, and C must not be complex ");
+    error ("tricdf: X, A, B, and C must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (a, "single")
-      || isa (b, "single") || isa (c, "single"))
+  ## Check for class type
+  if (isa (x, "single") || isa (a, "single") || isa (b, "single") ...
+                        || isa (c, "single"))
     p = zeros (size (x), "single");
   else
     p = zeros (size (x));
   endif
 
-  k = isnan (x) | !(a < b) | !(c >= a) | !(c <= b) ;
+  ## Force NaNs for out of range parameters.
+  k = isnan (x) | ! (a < b) | ! (c >= a) | ! (c <= b);
   p(k) = NaN;
 
-  k = (x > a) & (a < b) & (a <= c) & (c <= b);
-  if (isscalar (a) && isscalar (b) && isscalar (c))
-    h = 2 / (b-a);
+  ## Find valid values in parameters and data
+  k = (a < b) & (a <= c) & (c <= b);
+  k1 = (x <= a) & k;
+  k2 = (x > a) & (x <= c) & k;
+  k3 = (x > c) & (x < b) & k;
+  k4 = (x >= b) & k;
 
-    k_temp = k & (c <= x);
-    full_area = (c-a) * h / 2;
-    p(k_temp) += full_area;
-
-    k_temp = k & (a < x) & (x < c);
-    area = (x(k_temp) - a).^2 * h / (2 * ( c - a));
-    p(k_temp) += area;
-
-    k_temp = k & (b <= x);
-    full_area = (b-c) * h / 2;
-    p(k_temp) += full_area;
-
-    k_temp = k & (c < x) & (x < b);
-    area = (b-x(k_temp)).^2 * h / (2 * (b - c));
-    p(k_temp) += full_area - area;
+  ## Compute triangular CDF
+  if (uflag)
+    p(k1) = 1;
+    p(k2) = 1 - ((x(k2) - a(k2)) .^ 2) ./ ((b(k2) - a(k2)) .* (c(k2) - a(k2)));
+    p(k3) = ((b(k3) - x(k3)) .^ 2) ./ ((b(k3) - a(k3)) .* (b(k3) - c(k3)));
   else
-    h = 2 ./ (b-a);
-
-    k_temp = k & (c <= x);
-    full_area = (c(k_temp)-a(k_temp)) .* h(k_temp) / 2;
-    p(k_temp) += full_area;
-
-    k_temp = k & (a <= x) & (x < c);
-    area = (x(k_temp) - a(k_temp)).^2 .* h(k_temp) ./ ...
-           (2 * (c(k_temp) - a(k_temp)));
-    p(k_temp) += area;
-
-    k_temp = k & (b <= x);
-    full_area = (b(k_temp)-c(k_temp)) .* h(k_temp) / 2;
-    p(k_temp) += full_area;
-
-    k_temp = k & (c <= x) & (x < b);
-    area = (b(k_temp)-x(k_temp)).^2 .* h(k_temp) ./ ...
-           (2 * (b(k_temp) - c(k_temp)));
-    p(k_temp) += full_area - area;
+    p(k2) = ((x(k2) - a(k2)) .^ 2) ./ ((b(k2) - a(k2)) .* (c(k2) - a(k2)));
+    p(k3) = 1 - ((b(k3) - x(k3)) .^ 2) ./ ((b(k3) - a(k3)) .* (b(k3) - c(k3)));
+    p(k4) = 1;
   endif
 
 endfunction
 
+%!demo
+%! ## Plot various CDFs from the triangular distribution
+%! x = 0.001:0.001:10;
+%! p1 = tricdf (x, 3, 6, 4);
+%! p2 = tricdf (x, 1, 5, 2);
+%! p3 = tricdf (x, 2, 9, 3);
+%! p4 = tricdf (x, 2, 9, 5);
+%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c")
+%! grid on
+%! xlim ([0, 10])
+%! legend ({"a = 3, b = 6, c = 4", "a = 1, b = 5, c = 2", ...
+%!          "a = 2, b = 9, c = 3", "a = 2, b = 9, c = 5"}, ...
+%!         "location", "southeast")
+%! title ("Triangular CDF")
+%! xlabel ("values in x")
+%! ylabel ("probability")
 
-%!shared x,y
+## Test results
+%!shared x, y
 %! x = [-1, 0, 0.1, 0.5, 0.9, 1, 2] + 1;
 %! y = [0, 0, 0.02, 0.5, 0.98, 1 1];
 %!assert (tricdf (x, ones (1,7), 2*ones (1,7), 1.5*ones (1,7)), y, eps)
 %!assert (tricdf (x, 1*ones (1,7), 2, 1.5), y, eps)
+%!assert (tricdf (x, 1*ones (1,7), 2, 1.5, "upper"), 1 - y, eps)
 %!assert (tricdf (x, 1, 2*ones (1,7), 1.5), y, eps)
 %!assert (tricdf (x, 1, 2, 1.5*ones (1,7)), y, eps)
 %!assert (tricdf (x, 1, 2, 1.5), y, eps)
@@ -130,16 +149,23 @@ endfunction
 %! single ([y, NaN]), eps("single"))
 
 ## Test input validation
-%!error tricdf ()
-%!error tricdf (1)
-%!error tricdf (1,2)
-%!error tricdf (1,2,3)
-%!error tricdf (1,2,3,4,5)
-%!error tricdf (1, ones (3), ones (2), ones (2))
-%!error tricdf (1, ones (2), ones (3), ones (2))
-%!error tricdf (1, ones (2), ones (2), ones (3))
-%!error tricdf (i, 2, 2, 2)
-%!error tricdf (2, i, 2, 2)
-%!error tricdf (2, 2, i, 2)
-%!error tricdf (2, 2, 2, i)
-
+%!error<tricdf: function called with too few input arguments.> tricdf ()
+%!error<tricdf: function called with too few input arguments.> tricdf (1)
+%!error<tricdf: function called with too few input arguments.> tricdf (1, 2)
+%!error<tricdf: function called with too few input arguments.> tricdf (1, 2, 3)
+%!error<tricdf: function called with too many inputs> ...
+%! tricdf (1, 2, 3, 4, 5, 6)
+%!error<tricdf: invalid argument for upper tail.> tricdf (1, 2, 3, 4, "tail")
+%!error<tricdf: invalid argument for upper tail.> tricdf (1, 2, 3, 4, 5)
+%!error<tricdf: X, A, B, and C must be of common size or scalars.> ...
+%! tricdf (ones (3), ones (2), ones(2), ones(2))
+%!error<tricdf: X, A, B, and C must be of common size or scalars.> ...
+%! tricdf (ones (2), ones (3), ones(2), ones(2))
+%!error<tricdf: X, A, B, and C must be of common size or scalars.> ...
+%! tricdf (ones (2), ones (2), ones(3), ones(2))
+%!error<tricdf: X, A, B, and C must be of common size or scalars.> ...
+%! tricdf (ones (2), ones (2), ones(2), ones(3))
+%!error<tricdf: X, A, B, and C must not be complex.> tricdf (i, 2, 3, 4)
+%!error<tricdf: X, A, B, and C must not be complex.> tricdf (1, i, 3, 4)
+%!error<tricdf: X, A, B, and C must not be complex.> tricdf (1, 2, i, 4)
+%!error<tricdf: X, A, B, and C must not be complex.> tricdf (1, 2, 3, i)
