@@ -1,7 +1,7 @@
  Summary of important user-visible changes for statistics 1.6.0:
 -------------------------------------------------------------------
 
- Important Notice: 1) dependency changed to Octave>=7.2.0
+ Important Notice: 1) dependency changed to Octave>=7.1.0
                    2) various distribution functions have been
                        renamed, deprecated, or modified extensively
                        so that backwards compatibility is broken
