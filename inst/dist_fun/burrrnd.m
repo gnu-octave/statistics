@@ -2,7 +2,7 @@
 ## Copyright (C) 2016 Dag Lyberg
 ## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
-## This file is part of Octave.
+## This file is part of the statistics package for GNU Octave.
 ##
 ## Octave is free software; you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -11,7 +11,7 @@
 ##
 ## Octave is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+## MERCHANTABILITY or FITNESS FOR LAMBDA PARTICULAR PURPOSE.  See the GNU
 ## General Public License for more details.
 ##
 ## You should have received a copy of the GNU General Public License
@@ -19,18 +19,19 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{r} =} burrrnd (@var{a}, @var{c}, @var{k})
-## @deftypefnx {statistics} {@var{r} =} burrrnd (@var{a}, @var{c}, @var{k}, @var{rows})
-## @deftypefnx {statistics} {@var{r} =} burrrnd (@var{a}, @var{c}, @var{k}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} {@var{r} =} burrrnd (@var{a}, @var{c}, @var{k}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} burrrnd (@var{lambda}, @var{c}, @var{k})
+## @deftypefnx {statistics} {@var{r} =} burrrnd (@var{lambda}, @var{c}, @var{k}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} burrrnd (@var{lambda}, @var{c}, @var{k}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} burrrnd (@var{lambda}, @var{c}, @var{k}, [@var{sz}])
 ##
 ## Random arrays from the Burr type XII distribution.
 ##
-## @code{@var{r} = burrrnd (@var{a}, @var{c}, @var{k})} returns an array of
-## random numbers chosen from the Burr type XII distribution with parameters
-## @var{a}, @var{c}, and @var{k}.  The size of @var{r} is the common size of
-## @var{a}, @var{c}, and @var{k}.  A scalar input functions as a constant matrix
-## of the same size as the other inputs.
+## @code{@var{r} = burrrnd (@var{lambda}, @var{c}, @var{k})} returns an array of
+## random numbers chosen from the Burr type XII distribution with scale
+## parameter @var{lambda}, first shape parameter @var{c}, and second shape
+## parameter@var{c}, and @var{k}.  The size of @var{r} is the common size of
+## @var{lambda}, @var{c}, and @var{k}.  LAMBDA scalar input functions as a constant
+## matrix of the same size as the other inputs.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -38,74 +39,87 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
+## Further information about the Burr distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Burr_distribution}
+##
 ## @seealso{burrcdf, burrinv, burrpdf}
 ## @end deftypefn
 
-function r = burrrnd (a, c, k, varargin)
+function r = burrrnd (lambda, c, k, varargin)
 
+  ## Check for valid number of input arguments
   if (nargin < 3)
-    print_usage ();
+    error ("burrrnd: function called with too few input arguments.");
   endif
 
-  if (! isscalar (a) || ! isscalar (c) || ! isscalar (k))
-    [retval, a, c, k] = common_size (a, c, k);
+  ## Check for common size of LAMBDA, C, and K
+  if (! isscalar (lambda) || ! isscalar (c) || ! isscalar (k))
+    [retval, lambda, c, k] = common_size (lambda, c, k);
     if (retval > 0)
-      error ("burrrnd: A, C, and K must be of common size or scalars.");
+      error ("burrrnd: LAMBDA, C, and K must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (a) || iscomplex (c) || iscomplex (k))
-    error ("burrrnd: A, C, and K must not be complex.");
+  ## Check for LAMBDA, C, and K being reals
+  if (iscomplex (lambda) || iscomplex (c) || iscomplex (k))
+    error ("burrrnd: LAMBDA, C, and K must not be complex.");
   endif
 
+  ## Parse and check SIZE arguments
   if (nargin == 3)
-    sz = size (a);
+    sz = size (lambda);
   elseif (nargin == 4)
-    if (isscalar (varargin{1}) && varargin{1} >= 0)
+    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+                               && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
+    elseif (isrow (varargin{1}) && all (varargin{1} >= 0) ...
+                                && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
-    else
-      error (strcat (["burrrnd: dimension vector must be a row vector of"], ...
-                     [" non-negative integers."]));
+    elseif
+      error (strcat (["burrrnd: SZ must be a scalar or a row vector"], ...
+                     [" of non-negative integers."]));
     endif
   elseif (nargin > 4)
-    if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
+    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
+    if (any (posint))
       error ("burrrnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
-  if (! isscalar (a) && ! isequal (size (c), sz) && ! isequal (size (k), sz))
-    error ("burrrnd: A, C, and K must be scalar or of size SZ.");
+  ## Check that parameters match requested dimensions in size
+  if (! isscalar (lambda) && ! isequal (size (lambda), sz))
+    error ("burrrnd: LAMBDA, C, and K must be scalar or of size SZ.");
   endif
 
-  if (isa (a, "single") || isa (c, "single") || isa (k, "single"))
+  ## Check for class type
+  if (isa (lambda, "single") || isa (c, "single") || isa (k, "single"))
     cls = "single";
   else
     cls = "double";
   endif
 
-  if (isscalar (a) && isscalar (c) && isscalar(k))
-    if ((0 < a) && (a < Inf) && (0 < c) && (c < Inf) ...
+  ## Generate random sample from Burr type XII distribution
+  if (isscalar (lambda) && isscalar (c) && isscalar(k))
+    if ((0 < lambda) && (lambda < Inf) && (0 < c) && (c < Inf) ...
         && (0 < k) && (k < Inf))
       r = rand (sz, cls);
-      r(:) = ((1 - r(:) / a).^(-1 / k) - 1).^(1 / c);
+      r(:) = ((1 - r(:) / lambda).^(-1 / k) - 1).^(1 / c);
     else
       r = NaN (sz, cls);
     endif
   else
     r = NaN (sz, cls);
 
-    j = (0 < a) && (a < Inf) && (0 < c) && (c < Inf) ...
+    j = (0 < lambda) && (lambda < Inf) && (0 < c) && (c < Inf) ...
         && (0 < k) && (k < Inf);
     r(k) = rand(sum(j(:)),1);
-    r(k) = ((1 - r(j) / a(j)).^(-1 ./ k(j)) - 1).^(1 ./ c(j));
+    r(k) = ((1 - r(j) / lambda(j)).^(-1 ./ k(j)) - 1).^(1 ./ c(j));
   endif
 
 endfunction
 
-
+## Test results
 %!assert (size (burrrnd (1, 1, 1)), [1 1])
 %!assert (size (burrrnd (ones (2,1), 1, 1)), [2, 1])
 %!assert (size (burrrnd (ones (2,2), 1, 1)), [2, 2])
@@ -127,19 +141,35 @@ endfunction
 %!assert (class (burrrnd (1,1,single ([1 1]))), "single")
 
 ## Test input validation
-%!error burrrnd ()
-%!error burrrnd (1)
-%!error burrrnd (1,2)
-%!error burrrnd (ones (3), ones (2), ones (2), 2)
-%!error burrrnd (ones (2), ones (3), ones (2), 2)
-%!error burrrnd (ones (2), ones (2), ones (3), 2)
-%!error burrrnd (i, 2, 2)
-%!error burrrnd (2, i, 2)
-%!error burrrnd (2, 2, i)
-%!error burrrnd (4,2,2, -1)
-%!error burrrnd (4,2,2, ones (2))
-%!error burrrnd (4,2,2, [2 -1 2])
-%!error burrrnd (4*ones (2),2,2, 3)
-%!error burrrnd (4*ones (2),2,2, [3, 2])
-%!error burrrnd (4*ones (2),2,2, 3, 2)
-
+%!error<burrrnd: function called with too few input arguments.> burrrnd ()
+%!error<burrrnd: function called with too few input arguments.> burrrnd (1)
+%!error<burrrnd: function called with too few input arguments.> burrrnd (1, 2)
+%!error<burrrnd: LAMBDA, C, and K must be of common size or scalars.> ...
+%! burrrnd (ones (3), ones (2), ones (2))
+%!error<burrrnd: LAMBDA, C, and K must be of common size or scalars.> ...
+%! burrrnd (ones (2), ones (3), ones (2))
+%!error<burrrnd: LAMBDA, C, and K must be of common size or scalars.> ...
+%! burrrnd (ones (2), ones (2), ones (3))
+%!error<burrrnd: LAMBDA, C, and K must not be complex.> burrrnd (i, 2, 3)
+%!error<burrrnd: LAMBDA, C, and K must not be complex.> burrrnd (1, i, 3)
+%!error<burrrnd: LAMBDA, C, and K must not be complex.> burrrnd (1, 2, i)
+%!error<burrrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! burrrnd (1, 2, 3, -1)
+%!error<burrrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! burrrnd (1, 2, 3, 1.2)
+%!error<burrrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! burrrnd (1, 2, 3, ones (2))
+%!error<burrrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! burrrnd (1, 2, 3, [2 -1 2])
+%!error<burrrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! burrrnd (1, 2, 3, [2 0 2.5])
+%!error<burrrnd: dimensions must be non-negative integers.> ...
+%! burrrnd (1, 2, 3, 2, -1, 5)
+%!error<burrrnd: dimensions must be non-negative integers.> ...
+%! burrrnd (1, 2, 3, 2, 1.5, 5)
+%!error<burrrnd: LAMBDA, C, and K must be scalar or of size SZ.> ...
+%! burrrnd (2, ones (2), 2, 3)
+%!error<burrrnd: LAMBDA, C, and K must be scalar or of size SZ.> ...
+%! burrrnd (2, ones (2), 2, [3, 2])
+%!error<burrrnd: LAMBDA, C, and K must be scalar or of size SZ.> ...
+%! burrrnd (2, ones (2), 2, 3, 2)
