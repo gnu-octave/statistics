@@ -73,7 +73,7 @@ function x = tinv (p, df)
                                             df/2, 1/2) - 1)));
     elseif (df >= 10000)
       ## For large df, use the quantiles of the standard normal
-      x(k) = stdnormal_inv (p(k));
+      x(k) = -sqrt (2) * erfcinv (2 * p(k));
     endif
   else
     k = (p > 0) & (p < 1) & (df > 0) & (df < 10000);
@@ -83,7 +83,7 @@ function x = tinv (p, df)
 
     ## For large df, use the quantiles of the standard normal
     k = (p > 0) & (p < 1) & (df >= 10000);
-    x(k) = stdnormal_inv (p(k));
+    x(k) = -sqrt (2) * erfcinv (2 * p(k));
   endif
 
 endfunction
