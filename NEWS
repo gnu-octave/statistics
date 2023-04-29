@@ -54,13 +54,27 @@
  Improvements:
  =============
 
- ** runstest: fixed MATLAB compatibility
+ ** bisacdf: supports "upper" option
+
+ ** burrcdf: supports "upper" option
+
+ ** cauchycdf: supports "upper" option
+
+ ** laplacecdf: supports "upper" option
+
+ ** logicdf: supports "upper" option
 
  ** mcnemar_test: updated functionality
 
+ ** nakacdf: supports "upper" option
+
  ** pcacov: fixed MATLAB compatibility
 
+ ** runstest: fixed MATLAB compatibility
+
  ** tabulate: fixed MATLAB compatibility
+
+ ** tricdf: supports "upper" option
 
  ** trimmean: fixed MATLAB compatibility
 
