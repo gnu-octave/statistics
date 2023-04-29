@@ -79,9 +79,12 @@
 <div class="ms-5">
 <p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF)
  at <var>p</var> of the triangular distribution with parameters <var>a</var>, <var>b</var>,
- and <var>c</var> on the interval [<var>a</var>, <var>b</var>].  The size of <var>p</var> is the
- common size of the input arguments.  A scalar input functions as a constant
- matrix of the same size as the other inputs.
+ and <var>c</var> on the interval <code>[<var>a</var>, <var>b</var>]</code>.  The size of <var>x</var>
+ is the common size of the input arguments.  A scalar input functions as a
+ constant matrix of the same size as the other inputs.
+</p>
+<p> Further information about the triangular distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Triangular_distribution">https://en.wikipedia.org/wiki/Triangular_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="tricdf.html">tricdf</a>, 
@@ -91,6 +94,52 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/triinv.m">triinv</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various iCDFs from the triangular distribution
+ p = 0.001:0.001:0.999;
+ x1 = triinv (p, 3, 6, 4);
+ x2 = triinv (p, 1, 5, 2);
+ x3 = triinv (p, 2, 9, 3);
+ x4 = triinv (p, 2, 9, 5);
+ plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c")
+ grid on
+ ylim ([0, 10])
+ legend ({"a = 3, b = 6, c = 4", "a = 1, b = 5, c = 2", ...
+          "a = 2, b = 9, c = 3", "a = 2, b = 9, c = 5"}, ...
+         "location", "northwest")
+ title ("Triangular CDF")
+ xlabel ("probability")
+ ylabel ("values in x")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/triinv_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

@@ -61,7 +61,7 @@
             </div>
             <div class="col-sm-9 col-md-10">
               <h3 class="d-inline-block mr-2">statistics</h3>
-              <b>1.5.4&nbsp;2023-2-28</b>
+              <b>1.6.0&nbsp;2023-6-1</b>
               <p class="indent">
                 The Statistics package for GNU Octave.
               </p>
@@ -693,7 +693,7 @@ samples as parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="cauchy_cdf.html">cauchy_cdf</a>
+                   <a href="cauchycdf.html">cauchycdf</a>
                    </code></b>
                  </td>
                  <td>Cauchy cumulative distribution function (CDF).</td>
@@ -701,7 +701,7 @@ samples as parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="cauchy_inv.html">cauchy_inv</a>
+                   <a href="cauchyinv.html">cauchyinv</a>
                    </code></b>
                  </td>
                  <td>Inverse of the Cauchy cumulative distribution function (iCDF).</td>
@@ -709,7 +709,7 @@ samples as parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="cauchy_pdf.html">cauchy_pdf</a>
+                   <a href="cauchypdf.html">cauchypdf</a>
                    </code></b>
                  </td>
                  <td>Cauchy probability density function (PDF).</td>
@@ -717,7 +717,7 @@ samples as parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="cauchy_rnd.html">cauchy_rnd</a>
+                   <a href="cauchyrnd.html">cauchyrnd</a>
                    </code></b>
                  </td>
                  <td>Random arrays from the Cauchy distribution.</td>
@@ -1073,7 +1073,7 @@ with given parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="laplace_cdf.html">laplace_cdf</a>
+                   <a href="laplacecdf.html">laplacecdf</a>
                    </code></b>
                  </td>
                  <td>Laplace cumulative distribution function (CDF).</td>
@@ -1081,7 +1081,7 @@ with given parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="laplace_inv.html">laplace_inv</a>
+                   <a href="laplaceinv.html">laplaceinv</a>
                    </code></b>
                  </td>
                  <td>Inverse of the Laplace cumulative distribution function (iCDF).</td>
@@ -1089,7 +1089,7 @@ with given parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="laplace_pdf.html">laplace_pdf</a>
+                   <a href="laplacepdf.html">laplacepdf</a>
                    </code></b>
                  </td>
                  <td>Laplace probability density function (PDF).</td>
@@ -1097,7 +1097,7 @@ with given parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="laplace_rnd.html">laplace_rnd</a>
+                   <a href="laplacernd.html">laplacernd</a>
                    </code></b>
                  </td>
                  <td>Random arrays from the Laplace distribution.</td>
@@ -1527,38 +1527,6 @@ with given parameters.</td>
                    </code></b>
                  </td>
                  <td>Random arrays from the Rayleigh distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="stdnormal_cdf.html">stdnormal_cdf</a>
-                   </code></b>
-                 </td>
-                 <td>Standard normal cumulative distribution function (CDF).</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="stdnormal_inv.html">stdnormal_inv</a>
-                   </code></b>
-                 </td>
-                 <td>Inverse of the standard normal cumulative distribution function (iCDF).</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="stdnormal_pdf.html">stdnormal_pdf</a>
-                   </code></b>
-                 </td>
-                 <td>Standard normal probability density function (PDF).</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="stdnormal_rnd.html">stdnormal_rnd</a>
-                   </code></b>
-                 </td>
-                 <td>Random arrays from the standard normal distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -2907,7 +2875,7 @@ model 'y = X * beta + e'.</td>
                    <a href="cdf.html">cdf</a>
                    </code></b>
                  </td>
-                 <td>Return the CDF of NAME distribution function for value X.</td>
+                 <td>Return the CDF of a univariate distribution evaluated at X.</td>
                </tr>
                <tr>
                  <td>
@@ -2915,7 +2883,7 @@ model 'y = X * beta + e'.</td>
                    <a href="icdf.html">icdf</a>
                    </code></b>
                  </td>
-                 <td>Return the inverse CDF of NAME distribution function for value P.</td>
+                 <td>Return the inverse CDF of a univariate distribution evaluated at P.</td>
                </tr>
                <tr>
                  <td>
@@ -2923,7 +2891,7 @@ model 'y = X * beta + e'.</td>
                    <a href="pdf.html">pdf</a>
                    </code></b>
                  </td>
-                 <td>Return the PDF of NAME distribution function for value X.</td>
+                 <td>Return the PDF of a univariate distribution evaluated at X.</td>
                </tr>
                <tr>
                  <td>
@@ -2931,8 +2899,7 @@ model 'y = X * beta + e'.</td>
                    <a href="random.html">random</a>
                    </code></b>
                  </td>
-                 <td>Random arrays from from a given one-, two-, or three-parameter
-distribution.</td>
+                 <td>Random arrays from a given one-, two-, or three-parameter distribution.</td>
                </tr>
              </tbody>
            </table>

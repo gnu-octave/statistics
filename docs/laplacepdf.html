@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: burrpdf</title>
+    <title>Statistics: laplacepdf</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -64,36 +64,40 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>burrpdf</code></b>
+              Function&nbsp;Reference: <b><code>laplacepdf</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>y</var> = <b>burrpdf</b><i> (<var>x</var>, <var>lambda</var>, <var>c</var>, <var>k</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>laplacepdf</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>laplacepdf</b><i> (<var>x</var>, <var>mu</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>laplacepdf</b><i> (<var>x</var>, <var>mu</var>, <var>beta</var>)</i></dt>
 </dl>
 
-<p> Burr type XII probability density function (PDF).
+<p> Laplace probability density function (PDF).
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the probability density function (PDF)
- at <var>x</var> of the Burr type XII distribution with with scale parameter
- <var>lambda</var>, first shape parameter <var>c</var>, and second shape parameter
- <var>k</var>.  The size of <var>y</var> is the common size of <var>x</var>, <var>lambda</var>,
- <var>c</var>, and <var>k</var>.  A scalar input functions as a constant matrix of the
- same size as the other inputs.
+ at <var>x</var> of the Laplace distribution with location parameter <var>mu</var> and
+ scale parameter (i.e. &quot;diversity&quot;) <var>beta</var>.  The size of <var>y</var> is the
+ common size of <var>x</var>, <var>mu</var>, and <var>beta</var>.  A scalar input functions
+ as a constant matrix of the same size as the other inputs.
 </p>
-<p> Further information about the Burr distribution can be found at
- <a href="https://en.wikipedia.org/wiki/Burr_distribution">https://en.wikipedia.org/wiki/Burr_distribution</a>
+<p> Both parameters must be reals and <code><var>beta</var> &gt; 0</code>.
+ For <code><var>beta</var> &lt;= 0</code>, <code>NaN</code> is returned.
+</p>
+<p> Further information about the Laplace distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Laplace_distribution">https://en.wikipedia.org/wiki/Laplace_distribution</a>
 </p>
 <p> <strong>See also: </strong>
-  <a href="burrcdf.html">burrcdf</a>, 
-  <a href="burrinv.html">burrinv</a>, 
-  <a href="burrrnd.html">burrrnd</a>
+  <a href="laplacecdf.html">laplacecdf</a>, 
+  <a href="laplacepdf.html">laplacepdf</a>, 
+  <a href="laplacernd.html">laplacernd</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/burrpdf.m">burrpdf</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/laplacepdf.m">laplacepdf</a>
 </div>
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -113,30 +117,26 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Plot various PDFs from the Burr type XII distribution
- x = 0.001:0.001:3;
- y1 = burrpdf (x, 1, 1, 1);
- y2 = burrpdf (x, 1, 1, 2);
- y3 = burrpdf (x, 1, 1, 3);
- y4 = burrpdf (x, 1, 2, 1);
- y5 = burrpdf (x, 1, 3, 1);
- y6 = burrpdf (x, 1, 0.5, 2);
- plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", ...
-       x, y4, "-c", x, y5, "-m", x, y6, "-k")
+ ## Plot various PDFs from the Laplace distribution
+ x = -10:0.01:10;
+ y1 = laplacepdf (x, 0, 1);
+ y2 = laplacepdf (x, 0, 2);
+ y3 = laplacepdf (x, 0, 4);
+ y4 = laplacepdf (x, -5, 4);
+ plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-c")
  grid on
- ylim ([0, 2])
- legend ({"λ = 1, c = 1, k = 1", "λ = 1, c = 1, k = 2", ...
-          "λ = 1, c = 1, k = 3", "λ = 1, c = 2, k = 1", ...
-          "λ = 1, c = 3, k = 1", "λ = 1, c = 0.5, k = 2"}, ...
-         "location", "northeast")
- title ("Burr type XII PDF")
+ xlim ([-10, 10])
+ ylim ([0, 0.6])
+ legend ({"μ = 0, β = 1", "μ = 0, β = 2", ...
+          "μ = 0, β = 4", "μ = -5, β = 4"}, "location", "northeast")
+ title ("Laplace PDF")
  xlabel ("values in x")
  ylabel ("density")
 
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
-                    <img src="assets/burrpdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                    <img src="assets/laplacepdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>

@@ -71,30 +71,46 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>retval</var> = <b>icdf</b><i> (<var>name</var>, <var>p</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> <var>x</var> = <b>icdf</b><i> (<var>name</var>, <var>p</var>, <var>A</var>)</i></dt>
+<dt><u>statistics:</u> <var>x</var> = <b>icdf</b><i> (<var>name</var>, <var>p</var>, <var>A</var>, <var>B</var>)</i></dt>
+<dt><u>statistics:</u> <var>x</var> = <b>icdf</b><i> (<var>name</var>, <var>p</var>, <var>A</var>, <var>B</var>, <var>C</var>)</i></dt>
 </dl>
 
-<p> Return the inverse CDF of <var>name</var> distribution function for value <var>p</var>.
+<p> Return the inverse CDF of a univariate distribution evaluated at <var>p</var>.
 </p>
 <div class="ms-5">
-<p> This is a wrapper for the <code>name</code>inv and <code>name</code>_inv functions
- available in the statistics package. See the corresponding functions&rsquo; help to
- learn the signification of the arguments after <var>p</var>.
+<p> <code>icdf</code> is a wrapper for the univariate quantile distribution functions
+ (iCDF) available in the statistics package.  See the corresponding functions&rsquo;
+ help to learn the signification of the parameters after <var>p</var>.
+</p>
+<p> <code><var>x</var> = icdf (<var>name</var>, <var>p</var>, <var>A</var>)</code> returns the iCDF for the
+ one-parameter distribution family specified by <var>name</var> and the
+ distribution parameter <var>A</var>, evaluated at the values in <var>p</var>.
+</p>
+<p> <code><var>x</var> = icdf (<var>name</var>, <var>p</var>, <var>A</var>, <var>B</var>)</code> returns the
+ iCDF for the two-parameter distribution family specified by <var>name</var> and
+ the distribution parameters <var>A</var> and <var>B</var>, evaluated at the values in
+ <var>p</var>.
+</p>
+<p> <code><var>x</var> = icdf (<var>name</var>, <var>p</var>, <var>A</var>, <var>B</var>, <var>C</var>)</code>
+ returns the iCDF for the three-parameter distribution family specified by
+ <var>name</var> and the distribution parameters <var>A</var>, <var>B</var>, and <var>C</var>,
+ evaluated at the values in <var>p</var>.
 </p>
 <p> <var>name</var> must be a char string of the name or the abbreviation of the
  desired quantile distribution function as listed in the followng table.
- The last column shows the maximum number of extra arguments that must be
- passed to the desired inverse CDF.
+ The last column shows the number of required parameters that should be parsed
+ after <var>x</var> to the desired iCDF.
 </p>
  <table>
-<thead><tr><th width="40%">Distribution Name</th><th width="5%"></th><th width="20%">Abbreviation</th><th width="5%"></th><th width="30%">Max Arguments</th></tr></thead>
-<tr><td width="40%"><code>&quot;Birnbaum-Saunders&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;bbs&quot;</code></td><td width="5%"></td><td width="30%">3</td></tr>
+<thead><tr><th width="40%">Distribution Name</th><th width="5%"></th><th width="20%">Abbreviation</th><th width="5%"></th><th width="30%">Input Parameters</th></tr></thead>
 <tr><td width="40%"><code>&quot;Beta&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;beta&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
 <tr><td width="40%"><code>&quot;Binomial&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;bino&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Birnbaum-Saunders&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;bisa&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
 <tr><td width="40%"><code>&quot;Burr&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;burr&quot;</code></td><td width="5%"></td><td width="30%">3</td></tr>
 <tr><td width="40%"><code>&quot;Cauchy&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;cauchy&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
 <tr><td width="40%"><code>&quot;Chi-square&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;chi2&quot;</code></td><td width="5%"></td><td width="30%">1</td></tr>
-<tr><td width="40%"><code>&quot;Extreme Value&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;ev&quot;</code></td><td width="5%"></td><td width="30%">4</td></tr>
+<tr><td width="40%"><code>&quot;Extreme Value&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;ev&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
 <tr><td width="40%"><code>&quot;Exponential&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;exp&quot;</code></td><td width="5%"></td><td width="30%">1</td></tr>
 <tr><td width="40%"><code>&quot;F-Distribution&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;f&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
 <tr><td width="40%"><code>&quot;Gamma&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;gam&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
@@ -103,7 +119,8 @@
 <tr><td width="40%"><code>&quot;Generalized Pareto&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;gp&quot;</code></td><td width="5%"></td><td width="30%">3</td></tr>
 <tr><td width="40%"><code>&quot;Hypergeometric&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;hyge&quot;</code></td><td width="5%"></td><td width="30%">3</td></tr>
 <tr><td width="40%"><code>&quot;Laplace&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;laplace&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
-<tr><td width="40%"><code>&quot;Logistic&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;logistic&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Logistic&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;logi&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Log-Logistic&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;logl&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
 <tr><td width="40%"><code>&quot;Lognormal&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;logn&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
 <tr><td width="40%"><code>&quot;Nakagami&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;naka&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
 <tr><td width="40%"><code>&quot;Negative Binomial&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;nbin&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
@@ -113,7 +130,6 @@
 <tr><td width="40%"><code>&quot;Normal&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;norm&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
 <tr><td width="40%"><code>&quot;Poisson&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;poiss&quot;</code></td><td width="5%"></td><td width="30%">1</td></tr>
 <tr><td width="40%"><code>&quot;Rayleigh&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;rayl&quot;</code></td><td width="5%"></td><td width="30%">1</td></tr>
-<tr><td width="40%"><code>&quot;Standard Normal&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;stdnormal&quot;</code></td><td width="5%"></td><td width="30%">0</td></tr>
 <tr><td width="40%"><code>&quot;Student T&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;t&quot;</code></td><td width="5%"></td><td width="30%">1</td></tr>
 <tr><td width="40%"><code>&quot;Triangular&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;tri&quot;</code></td><td width="5%"></td><td width="30%">3</td></tr>
 <tr><td width="40%"><code>&quot;Discrete Uniform&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;unid&quot;</code></td><td width="5%"></td><td width="30%">1</td></tr>
@@ -122,14 +138,14 @@
 </table>
 
 <p> <strong>See also: </strong>
-  <a href="cdf.html">cdf</a>, 
+  <a href="icdf.html">icdf</a>, 
   <a href="pdf.html">pdf</a>, 
   <a href="random.html">random</a>, 
-bbsinv, 
   <a href="betainv.html">betainv</a>, 
   <a href="binoinv.html">binoinv</a>, 
+  <a href="bisainv.html">bisainv</a>, 
   <a href="burrinv.html">burrinv</a>, 
-  <a href="cauchy_inv.html">cauchy_inv</a>, 
+  <a href="cauchyinv.html">cauchyinv</a>, 
   <a href="chi2inv.html">chi2inv</a>, 
   <a href="evinv.html">evinv</a>, 
   <a href="expinv.html">expinv</a>, 
@@ -139,8 +155,9 @@ bbsinv,
   <a href="gevinv.html">gevinv</a>, 
   <a href="gpinv.html">gpinv</a>, 
   <a href="hygeinv.html">hygeinv</a>, 
-  <a href="laplace_inv.html">laplace_inv</a>, 
-logistic_inv, 
+  <a href="laplaceinv.html">laplaceinv</a>, 
+  <a href="logiinv.html">logiinv</a>, 
+  <a href="loglinv.html">loglinv</a>, 
   <a href="logninv.html">logninv</a>, 
   <a href="nakainv.html">nakainv</a>, 
   <a href="nbininv.html">nbininv</a>, 
@@ -150,7 +167,6 @@ logistic_inv,
   <a href="norminv.html">norminv</a>, 
   <a href="poissinv.html">poissinv</a>, 
   <a href="raylinv.html">raylinv</a>, 
-  <a href="stdnormal_inv.html">stdnormal_inv</a>, 
   <a href="tinv.html">tinv</a>, 
   <a href="triinv.html">triinv</a>, 
   <a href="unidinv.html">unidinv</a>, 

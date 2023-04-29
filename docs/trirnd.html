@@ -82,7 +82,7 @@
 <div class="ms-5">
 <p> <code><var>r</var> = raylrnd (<var>sigma</var>)</code> returns an array of random numbers
  chosen from the triangular distribution with parameters <var>a</var>, <var>b</var>, and
- <var>c</var> on the interval [<var>a</var>, <var>b</var>].  The size of <var>y</var> is the
+ <var>c</var> on the interval [<var>a</var>, <var>b</var>].  The size of <var>r</var> is the
  common size of the input arguments.  A scalar input functions as a constant
  matrix of the same size as the other inputs.
 </p>
@@ -90,7 +90,10 @@
  the dimension specified.  When called with more than one scalar argument the
  first two arguments are taken as the number of rows and columns and any
  further arguments specify additional matrix dimensions.  The size may also
- be specified with a vector of dimensions <var>sz</var>..
+ be specified with a vector of dimensions <var>sz</var>.
+</p>
+<p> Further information about the triangular distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Triangular_distribution">https://en.wikipedia.org/wiki/Triangular_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="tricdf.html">tricdf</a>, 
