@@ -29,7 +29,7 @@
 ## @var{beta} and shape parameter @var{gamma}.  This functionality is similar to
 ## MATLAB's @code{negloglik} function for probability distribution objects.
 ##
-## @code{[@var{nlogL}, @var{acov}] = betalike (@var{params}, @var{x})} also
+## @code{[@var{nlogL}, @var{acov}] = bisalike (@var{params}, @var{x})} also
 ## returns the inverse of Fisher's information matrix, @var{avar}.  If the input
 ## parameter values in @var{params} are the maximum likelihood estimates, the
 ## diagonal elements of @var{params} are their asymptotic variances.
