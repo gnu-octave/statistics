@@ -141,7 +141,7 @@ function [paramhat, paramci] = bisafit (x, alpha, censor, freq, options)
     error ("bisafit: NoSolution.");
   endif
 
-  ## Compute CIs using a log normal approximation for phat.
+  ## Compute CIs using a log normal approximation for parameters.
   if (nargout > 1)
     ## Compute asymptotic covariance
     [~, acov] = bisalike (paramhat, x, censor, freq);

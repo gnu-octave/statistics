@@ -18,7 +18,6 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{nlogL} =} wbllike (@var{params}, @var{x})
 ## @deftypefnx {statistics} {[@var{nlogL}, @var{avar}] =} wbllike (@var{params}, @var{x})
-## @deftypefnx {statistics} {[@var{nlogL}, @var{avar}] =} wbllike (@var{params}, @var{x}, @var{alpha})
 ## @deftypefnx {statistics} {[@dots{}] =} wbllike (@var{params}, @var{x}, @var{alpha}, @var{censor})
 ## @deftypefnx {statistics} {[@dots{}] =} wbllike (@var{params}, @var{x}, @var{alpha}, @var{censor}, @var{freq})
 ##
