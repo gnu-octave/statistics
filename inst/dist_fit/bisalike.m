@@ -30,9 +30,21 @@
 ## MATLAB's @code{negloglik} function for probability distribution objects.
 ##
 ## @code{[@var{nlogL}, @var{acov}] = bisalike (@var{params}, @var{x})} also
-## returns the inverse of Fisher's information matrix, @var{avar}.  If the input
+## returns the inverse of Fisher's information matrix, @var{acov}.  If the input
 ## parameter values in @var{params} are the maximum likelihood estimates, the
 ## diagonal elements of @var{params} are their asymptotic variances.
+##
+## @code{[@dots{}] = bisalike (@var{params}, @var{x}, @var{censor})} accepts a
+## boolean vector, @var{censor}, of the same size as @var{x} with @qcode{1}s for
+## observations that are right-censored and @qcode{0}s for observations that are
+## observed exactly.  By default, or if left empty,
+## @qcode{@var{censor} = zeros (size (@var{x}))}.
+##
+## @code{[@dots{}] = bisalike (@var{params}, @var{x}, @var{censor}, @var{freq})}
+## accepts a frequency vector, @var{freq}, of the same size as @var{x}.
+## @var{freq} typically contains integer frequencies for the corresponding
+## elements in @var{x}, but it can contain any non-integer non-negative values.
+## By default, or if left empty, @qcode{@var{freq} = ones (size (@var{x}))}.
 ##
 ## Further information about the Birnbaum-Saunders distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Birnbaum%E2%80%93Saunders_distribution}
