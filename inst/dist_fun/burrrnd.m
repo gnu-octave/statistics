@@ -100,22 +100,10 @@ function r = burrrnd (lambda, c, k, varargin)
   endif
 
   ## Generate random sample from Burr type XII distribution
-  if (isscalar (lambda) && isscalar (c) && isscalar(k))
-    if ((0 < lambda) && (lambda < Inf) && (0 < c) && (c < Inf) ...
-        && (0 < k) && (k < Inf))
-      r = rand (sz, cls);
-      r(:) = ((1 - r(:) / lambda).^(-1 / k) - 1).^(1 / c);
-    else
-      r = NaN (sz, cls);
-    endif
-  else
-    r = NaN (sz, cls);
-
-    j = (0 < lambda) && (lambda < Inf) && (0 < c) && (c < Inf) ...
-        && (0 < k) && (k < Inf);
-    r(k) = rand(sum(j(:)),1);
-    r(k) = ((1 - r(j) / lambda(j)).^(-1 ./ k(j)) - 1).^(1 ./ c(j));
-  endif
+  lambda(lambda <= 0) = NaN;
+  c(c <= 0) = NaN;
+  k(k <= 0) = NaN;
+  r = lambda .* (((1 - rand (sz, cls)) .^ (-(1./k))) - 1) .^ (1./c);
 
 endfunction
 
