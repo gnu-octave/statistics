@@ -23,6 +23,8 @@
 
  ** bisalike (similar functionality to MATLAB's negloglik and mlecov)
 
+ ** burrfit (similar functionality to MATLAB's mle)
+
  ** burrlike (similar functionality to MATLAB's negloglik and mlecov)
 
  ** einstein (plotting function for the einstein tile)
