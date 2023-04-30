@@ -85,10 +85,22 @@
  <var>beta</var> and shape parameter <var>gamma</var>.  This functionality is similar to
  MATLAB&rsquo;s <code>negloglik</code> function for probability distribution objects.
 </p>
-<p> <code>[<var>nlogL</var>, <var>acov</var>] = betalike (<var>params</var>, <var>x</var>)</code> also
- returns the inverse of Fisher&rsquo;s information matrix, <var>avar</var>.  If the input
+<p> <code>[<var>nlogL</var>, <var>acov</var>] = bisalike (<var>params</var>, <var>x</var>)</code> also
+ returns the inverse of Fisher&rsquo;s information matrix, <var>acov</var>.  If the input
  parameter values in <var>params</var> are the maximum likelihood estimates, the
  diagonal elements of <var>params</var> are their asymptotic variances.
+</p>
+<p> <code>[&hellip;] = bisalike (<var>params</var>, <var>x</var>, <var>censor</var>)</code> accepts a
+ boolean vector, <var>censor</var>, of the same size as <var>x</var> with <code>1</code>s for
+ observations that are right-censored and <code>0</code>s for observations that are
+ observed exactly.  By default, or if left empty,
+ <code><var>censor</var> = zeros (size (<var>x</var>))</code>.
+</p>
+<p> <code>[&hellip;] = bisalike (<var>params</var>, <var>x</var>, <var>censor</var>, <var>freq</var>)</code>
+ accepts a frequency vector, <var>freq</var>, of the same size as <var>x</var>.
+ <var>freq</var> typically contains integer frequencies for the corresponding
+ elements in <var>x</var>, but it can contain any non-integer non-negative values.
+ By default, or if left empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
 </p>
 <p> Further information about the Birnbaum-Saunders distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Birnbaum%E2%80%93Saunders_distribution">https://en.wikipedia.org/wiki/Birnbaum%E2%80%93Saunders_distribution</a>
