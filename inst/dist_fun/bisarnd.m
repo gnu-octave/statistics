@@ -56,8 +56,7 @@ function r = bisarnd (beta, gamma, varargin)
   if (! isscalar (beta) || ! isscalar (gamma))
     [retval, beta, gamma] = common_size (beta, gamma);
     if (retval > 0)
-      error (strcat (["bisarnd: BETA and GAMMA must be of"], ...
-                     [" common size or scalars."]));
+      error ("bisarnd: BETA and GAMMA must be of common size or scalars.");
     endif
   endif
 
