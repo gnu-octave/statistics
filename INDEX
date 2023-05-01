@@ -71,6 +71,7 @@ Distributions
  geocdf geoinv geopdf geornd
  gevcdf gevinv gevpdf gevrnd
  gpcdf gpinv gppdf gprnd
+ gumbelcdf gumbelinv gumbelpdf gumbelrnd
  hygecdf hygeinv hygepdf hygernd
  iwishpdf iwishrnd
  jsucdf jsupdf
@@ -118,6 +119,8 @@ Distribution Fitting
  gevlike
  gpfit
  gplike
+ gumbelfit
+ gumbellike
  lognfit
  lognlike
  normfit

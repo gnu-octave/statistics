@@ -29,6 +29,18 @@
 
  ** einstein (plotting function for the einstein tile)
 
+ ** gumbelcdf
+
+ ** gumbelfit (similar functionality to MATLAB's mle)
+
+ ** gumbelinv
+
+ ** gumbellike (similar functionality to MATLAB's negloglik and mlecov)
+
+ ** gumbelpdf
+
+ ** gumbelrnd
+
  ** isoutlier (fully Matlab compatible)
 
  ** loglcdf
