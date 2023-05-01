@@ -161,7 +161,7 @@ function [paramhat, paramci] = bisafit (x, alpha, censor, freq, options)
 endfunction
 
 %!demo
-%! ## Sample 3 populations from 3 different Birnbaum-Saunders distibutions
+%! ## Sample 3 populations from different Birnbaum-Saunders distibutions
 %! rand ("seed", 5);    # for reproducibility
 %! r1 = bisarnd (1, 0.5, 2000, 1);
 %! rand ("seed", 2);    # for reproducibility
@@ -206,7 +206,7 @@ endfunction
 %! title ("Three population samples from different Birnbaum-Saunders distibutions")
 %! hold off
 
-## Test results
+## Test output
 %!test
 %! paramhat = bisafit ([1:50]);
 %! paramhat_out = [16.2649, 1.0156];

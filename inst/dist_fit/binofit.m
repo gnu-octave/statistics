@@ -103,7 +103,7 @@ function [pshat, psci] = binofit (x, n, alpha)
 endfunction
 
 %!demo
-%! ## Sample 2 populations from 2 different binomial distibutions
+%! ## Sample 2 populations from different binomial distibutions
 %! rand ("seed", 1);    # for reproducibility
 %! r1 = binornd (50, 0.15, 1000, 1);
 %! rand ("seed", 2);    # for reproducibility

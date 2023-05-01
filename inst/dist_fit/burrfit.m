@@ -301,7 +301,7 @@ endfunction
 
 
 %!demo
-%! ## Sample 3 populations from 3 different Burr type XII distibutions
+%! ## Sample 3 populations from different Burr type XII distibutions
 %! rand ("seed", 4);    # for reproducibility
 %! r1 = burrrnd (3.5, 2, 2.5, 10000, 1);
 %! rand ("seed", 2);    # for reproducibility
@@ -346,7 +346,7 @@ endfunction
 %! title ("Three population samples from different Burr type XII distibutions")
 %! hold off
 
-## Test results
+## Test output
 %!test
 %! l = 1; c = 2; k = 3;
 %! r = burrrnd (l, c, k, 100000, 1);

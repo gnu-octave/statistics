@@ -27,46 +27,52 @@
 ## Estimate parameters and confidence intervals for extreme value distribution.
 ##
 ## @code{@var{paramhat} = evfit (@var{x})} returns maximum likelihood
-## estimates of the parameters of the type 1 extreme value distribution (also
-## known as the Gumbel distribution) given in @var{x}.  @var{paramhat(1)} is
-## the location parameter, mu, and @var{paramhat(2)} is the scale parameter,
-## sigma.
+## estimates of the parameters of the extreme value distribution (also known as
+## the Gumbel or the type I generalized extreme value distribution) given in
+## @var{x}.  @qcode{@var{paramhat}(1)} is the location parameter, @var{mu}, and
+## @qcode{@var{paramhat}(2)} is the scale parameter, @var{sigma}.
 ##
 ## @code{[@var{paramhat}, @var{paramci}] = evfit (@var{x})} returns the 95%
 ## confidence intervals for the parameter estimates.
 ##
-## @code{[@dots{}] = evfit (@var{x}, @var{alpha})} returns
+## @code{[@dots{}] = evfit (@var{x}, @var{alpha})} also returns the
 ## @qcode{100 * (1 - @var{alpha})} percent confidence intervals for the
-## parameter estimates.  By default, @math{@var{alpha} = 0.05} corresponding
-## fidence intervals.
+## parameter estimates.  By default, the optional argument @var{alpha} is
+## 0.05 corresponding to 95% confidence intervals.  Pass in @qcode{[]} for
+## @var{alpha} to use the default values.
 ##
 ## @code{[@dots{}] = evfit (@var{x}, @var{alpha}, @var{censor})} accepts a
-## boolean vector of the same size as @var{x} with 1 for observations that
-## are right-censored and 0 for observations that are observed exactly.  By
-## default, or if left empty, @qcode{@var{censor} = zeros (size (@var{x}))}.
+## boolean vector, @var{censor}, of the same size as @var{x} with @qcode{1}s for
+## observations that are right-censored and @qcode{0}s for observations that are
+## observed exactly.  By default, or if left empty,
+## @qcode{@var{censor} = zeros (size (@var{x}))}.
 ##
 ## @code{[@dots{}] = evfit (@var{x}, @var{alpha}, @var{censor}, @var{freq})}
-## accepts a frequency vector of the same size as @var{x}. @var{freq} typically
-## contains integer frequencies for the corresponding elements in @var{x}, but
-## may contain any non-integer non-negative values.  By default, or if left
-## empty, @qcode{@var{freq} = ones (size (@var{x}))}.
+## accepts a frequency vector, @var{freq}, of the same size as @var{x}.
+## @var{freq} typically contains integer frequencies for the corresponding
+## elements in @var{x}, but it can contain any non-integer non-negative values.
+## By default, or if left empty, @qcode{@var{freq} = ones (size (@var{x}))}.
 ##
 ## @code{[@dots{}] = evfit (@dots{}, @var{options})} specifies control
-## parameters for the iterative algorithm used to compute ML estimates with the
-## @code{fminsearch} function.  @var{options} is a structure with the following
-## fields and their default values:
+## parameters for the iterative algorithm used to compute the maximum likelihood
+## estimates.  @var{options} is a structure with the following field and its
+## default value:
 ## @itemize
-## @item @qcode{@var{options}.Display = "off"}
 ## @item @qcode{@var{options}.TolX = 1e-6}
 ## @end itemize
 ##
-## @seealso{evcdf, evinv, evpdf, evrnd, evlike, evstat}
+## The Gumbel distribution is used to model the distribution of the maximum (or
+## the minimum) of a number of samples of various distributions.  This version
+## is suitable for modeling minima.  For modeling maxima, use the alternative
+## Gumbel fitting function, @code{gumbelfit}.
+##
+## Further information about the extreme value distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Gumbel_distribution}
+##
+## @seealso{evcdf, evinv, evpdf, evrnd, evlike, evstat, gumbelfit}
 ## @end deftypefn
 
 function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
-
-  ## Check for valid number of input arguments
-  narginchk (1, 5);
 
   ## Check X for being a double precision vector
   if (! isvector (x) || ! isa (x, "double"))
@@ -117,10 +123,9 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
     if (! isstruct (options) || ! isfield (options, "Display") || ...
                                 ! isfield (options, "TolX"))
       error (strcat (["evfit: 'options' 5th argument must be a structure"], ...
-                     [" with 'Display' and 'TolX' fields present."]));
+                     [" with 'TolX' field present."]));
     endif
   else
-    options.Display = "off";
     options.TolX = 1e-6;
   endif
 
@@ -194,7 +199,7 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
   endif
 
   ## Find lower and upper boundaries for bracketing the likelihood equation for
-  ## the extreme value scale parameter assessed in fzero function later on
+  ## the extreme value scale parameter
   if (evscale_lkeq (initial_sigma_parm, x_0, freq, uncensored_weights) > 0)
     upper = initial_sigma_parm;
     lower = 0.5 * upper;
@@ -258,14 +263,14 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
                      [" evaluations (1e+4) has been reached."]));
   endif
 
-  ## Compute mu
+  ## Compute MU
   muhat = new_sigma .* log (sum (freq .* exp (x_0 ./ new_sigma)) ./ ...
                                              uncensored_sample_size);
 
-  ## Transform mu and sigma back to original location and scale
+  ## Transform MU and SIGMA back to original location and scale
   paramhat = [(x_range*muhat)+x_max, x_range*new_sigma];
 
-  ## Compute the CI for mu and sigma
+  ## Compute the CI for MU and SIGMA
   if (nargout == 2)
     probs = [alpha/2; 1-alpha/2];
     [~, acov] = evlike (paramhat, x, censor, freq);
@@ -284,7 +289,7 @@ function v = evscale_lkeq (sigma, x, freq, x_weighted_uncensored)
 endfunction
 
 %!demo
-%! ## Sample 3 populations from 3 different Extreme Value distibutions
+%! ## Sample 3 populations from different extreme value distibutions
 %! rand ("seed", 1);    # for reproducibility
 %! r1 = evrnd (2, 5, 200, 1);
 %! rand ("seed", 12);    # for reproducibility
@@ -302,7 +307,7 @@ endfunction
 %! ylim ([0, 1]);
 %! hold on
 %!
-%! ## Estimate their mu and sigma parameters
+%! ## Estimate their MU and sigma parameters
 %! mu_sigmaA = evfit (r(:,1));
 %! mu_sigmaB = evfit (r(:,2));
 %! mu_sigmaC = evfit (r(:,3));
@@ -325,10 +330,10 @@ endfunction
 %!                  mu_sigmaB(1), mu_sigmaB(2)), ...
 %!          sprintf("PDF for sample 3 with estimated μ=%0.2f and σ=%0.2f", ...
 %!                  mu_sigmaC(1), mu_sigmaC(2))})
-%! title ("Three population samples from different Extreme Value distibutions")
+%! title ("Three population samples from different extreme value distibutions")
 %! hold off
 
-## Test results
+## Test output
 %!test
 %! x = 1:50;
 %! [paramhat, paramci] = evfit (x);

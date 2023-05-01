@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -23,38 +23,38 @@
 ##
 ## Negative log-likelihood for the extreme value distribution.
 ##
-## @subheading Input Arguments
+## @code{@var{nlogL} = evlike (@var{params}, @var{x})} returns the negative
+## log likelihood of the data in @var{x} corresponding to the extreme value
+## distribution (also known as the Gumbel or the type I generalized extreme
+## value distribution) with (1) location parameter @var{mu} and (2) scale
+## parameter @var{sigma} given in the two-element vector @var{paramhat}.
 ##
-## @itemize @bullet
-## @item
-## @var{params} is a two-element vector containing the mu and sigma parameters
-## of the type 1 extreme value distribution (also known as the Gumbel
-## distribution) at which the negative of the log-likelihood is evaluated.
-## @item
-## @var{x} is the vector of given values.
-## @item
-## @var{censor} is a boolean vector of the same size as @var{x} with 1 for
-## observations that are right-censored and 0 for observations that are observed
-## exactly.
-## @item
-## @var{freq} is a vector of the same size as @var{x} that contains integer
-## frequencies for the corresponding elements in @var{x}, but may contain any
-## non-integer non-negative values.  Pass in [] for @var{censor} to use its
-## default value.
-## @end itemize
+## @code{[@var{nlogL}, @var{acov}] = evlike (@var{params}, @var{x})} also
+## returns the inverse of Fisher's information matrix, @var{acov}.  If the input
+## parameter values in @var{params} are the maximum likelihood estimates, the
+## diagonal elements of @var{acov} are their asymptotic variances.
 ##
-## @subheading Return Values
+## @code{[@dots{}] = evlike (@var{params}, @var{x}, @var{censor})} accepts a
+## boolean vector, @var{censor}, of the same size as @var{x} with @qcode{1}s for
+## observations that are right-censored and @qcode{0}s for observations that are
+## observed exactly.  By default, or if left empty,
+## @qcode{@var{censor} = zeros (size (@var{x}))}.
 ##
-## @itemize @bullet
-## @item
-## @var{nlogL} is the negative log-likelihood.
-## @item
-## @var{avar} is the inverse of the Fisher information matrix.
-## The Fisher information matrix is the second derivative of the negative
-## log likelihood with respect to the parameter value.
-## @end itemize
+## @code{[@dots{}] = evlike (@var{params}, @var{x}, @var{censor}, @var{freq})}
+## accepts a frequency vector, @var{freq}, of the same size as @var{x}.
+## @var{freq} typically contains integer frequencies for the corresponding
+## elements in @var{x}, but it can contain any non-integer non-negative values.
+## By default, or if left empty, @qcode{@var{freq} = ones (size (@var{x}))}.
 ##
-## @seealso{evcdf, evinv, evpdf, evrnd, evfit, evstat}
+## The Gumbel distribution is used to model the distribution of the maximum (or
+## the minimum) of a number of samples of various distributions.  This version
+## is suitable for modeling minima.  For modeling maxima, use the alternative
+## Gumbel fitting function, @code{gumbelfit}.
+##
+## Further information about the extreme value distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Gumbel_distribution}
+##
+## @seealso{evcdf, evinv, evpdf, evrnd, evfit, evstat, gumbellike}
 ## @end deftypefn
 
 function [nlogL, avar] = evlike (params, x, censor, freq)
@@ -118,7 +118,7 @@ function [nlogL, avar] = evlike (params, x, censor, freq)
   endif
 endfunction
 
-## Results compared with Matlab
+## Test output
 %!test
 %! x = 1:50;
 %! [nlogL, avar] = evlike ([2.3, 1.2], x);

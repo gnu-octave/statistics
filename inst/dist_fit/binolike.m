@@ -23,19 +23,20 @@
 ## Negative log-likelihood for the binomial distribution.
 ##
 ## @code{@var{nlogL} = binolike (@var{params}, @var{x})} returns the negative
-## log likelihood of the binomial distribution with the parameters @var{n} and
-## @var{ps}, parsed as a two-element vector @qcode{@var{paramhat}([1, 2])},
-## where @var{n} is the number of trials and @var{ps} is the probability of
-## success, given the number of successes in @var{x}.  Unlike @code{binofit},
-## which handles each element in @var{x} independently, @code{binolike} returns
-## the negative log likelihood of the entire vector @var{x}.  This functionality
-## is similar to MATLAB's @code{negloglik} function for probability distribution
-## objects.
+## log likelihood of the binomial distribution with the (1) parameter @var{n}
+## (2) parameter @var{ps}, given in the two-element vector @var{paramhat}, where
+## @var{n} is the number of trials and @var{ps} is the probability of success,
+## given the number of successes in @var{x}.  Unlike @code{binofit}, which
+## handles each element in @var{x} independently, @code{binolike} returns the
+## negative log likelihood of the entire vector @var{x}.
 ##
 ## @code{[@var{nlogL}, @var{acov}] = betalike (@var{params}, @var{x})} also
 ## returns the inverse of Fisher's information matrix, @var{avar}.  If the input
 ## parameter values in @var{params} are the maximum likelihood estimates, the
 ## diagonal elements of @var{params} are their asymptotic variances.
+##
+## Further information about the binomial distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Binomial_distribution}
 ##
 ## @seealso{binocdf, binoinv, binopdf, binornd, binofit, binostat}
 ## @end deftypefn
@@ -84,7 +85,7 @@ function [nlogL, acov] = binolike (params, x)
 
 endfunction
 
-## test output
+## Test output
 %!assert (binolike ([3, 0.333], [0:3]), 6.8302, 1e-4)
 %!assert (binolike ([3, 0.333], 0), 1.2149, 1e-4)
 %!assert (binolike ([3, 0.333], 1), 0.8109, 1e-4)
@@ -94,7 +95,7 @@ endfunction
 %! [nlogL, acov] = binolike ([3, 0.333], 3);
 %! assert (acov(4), 0.0740, 1e-4)
 
-## test input validation
+## Test input validation
 %!error<binolike: too few input arguments.> binolike (3.25)
 %!error<binolike: X must be a vector.> binolike ([5, 0.2], ones (2))
 %!error<binofit: X cannot have negative values.> binolike ([5, 0.2], [-1, 3])

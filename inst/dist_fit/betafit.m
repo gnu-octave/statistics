@@ -151,7 +151,7 @@ function [paramhat, paramci] = betafit (x, alpha)
 endfunction
 
 %!demo
-%! ## Sample 2 populations from 2 different Beta distibutions
+%! ## Sample 2 populations from different Beta distibutions
 %! randg ("seed", 1);   # for reproducibility
 %! r1 = betarnd (2, 5, 500, 1);
 %! randg ("seed", 2);   # for reproducibility
@@ -185,7 +185,7 @@ endfunction
 %! title ("Two population samples from different Beta distibutions")
 %! hold off
 
-## Test results
+## Test output
 %!test
 %! x = 0.01:0.02:0.99;
 %! [paramhat, paramci] = betafit (x);

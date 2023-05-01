@@ -25,9 +25,10 @@
 ## Negative log-likelihood for the Burr type XII distribution.
 ##
 ## @code{@var{nlogL} = burrlike (@var{params}, @var{x})} returns the negative
-## log likelihood of the data in @var{x} of the Burr type XII distribution with
-## the scale parameter @var{lambda}, first shape parameter @var{c}, and second
-## shape parameter @var{k}.
+## log likelihood of the data in @var{x} corresponding to the Burr type XII
+## distribution with (1) scale parameter @var{lambda}, (2) first shape parameter
+## @var{c}, and (3) second shape parameter @var{k} given in the three-element
+## vector @var{paramhat}.
 ##
 ## @code{[@var{nlogL}, @var{acov}] = burrlike (@var{params}, @var{x})} also
 ## returns the inverse of Fisher's information matrix, @var{acov}.  If the input

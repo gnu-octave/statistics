@@ -18,7 +18,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{nlogL} =} gplike (@var{params}, @var{x})
-## @deftypefnx {statistics} {[@var{nlogL}, @var{avar}] =} gplike (@var{params}, @var{x})
+## @deftypefnx {statistics} {[@var{nlogL}, @var{acov}] =} gplike (@var{params}, @var{x})
 ##
 ## Negative log-likelihood for the generalized Pareto distribution.
 ##
@@ -28,7 +28,7 @@
 ## @code{@var{params(2)} = SCALE} given @var{x}.  @code{gplike} does not
 ## allow a LOCATION parameter.  @var{nlogL} is a scalar.
 ##
-## @code{[@var{nlogL}, @var{avar}] = gplike (@var{params}, @var{x})} returns
+## @code{[@var{nlogL}, @var{acov}] = gplike (@var{params}, @var{x})} returns
 ## the inverse of Fisher's information matrix, @var{acov}.  If the input
 ## parameter values in @var{params} are the maximum likelihood estimates, the
 ## diagonal elements of @var{acov} are their asymptotic variances.   @var{acov}

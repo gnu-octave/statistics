@@ -22,11 +22,11 @@
 ## Negative log-likelihood for the Beta distribution.
 ##
 ## @code{@var{nlogL} = betalike (@var{params}, @var{x})} returns the negative
-## log likelihood of the Beta distribution for the shape parameters @math{α} and
-## @math{β} in @qcode{@var{paramhat}([1, 2])}, respectively, given the data in
-## vector @var{x}.  @math{α} and @math{β} must be positive real numbers and data
-## in @var{x} in the range @math{[0,1]}.  Out of range parameters or data return
-## @qcode{NaN}.
+## log likelihood of the data in @var{x} corresponding to the Beta distribution
+## with (1) shape parameter @math{α} and (2) shape parameter @math{β} given in
+## the two-element vector @var{paramhat}.  Both parameters must be positive real
+## numbers and the data in the range @math{[0,1]}.  Out of range parameters or
+## data return @qcode{NaN}.
 ##
 ## @code{[@var{nlogL}, @var{avar}] = betalike (@var{params}, @var{x})} returns
 ## the inverse of Fisher's information matrix, @var{avar}.  If the input
@@ -145,7 +145,7 @@ function [nlogL, avar] = betalike (params, x)
 
 endfunction
 
-## Results compared with Matlab
+## Test output
 %!test
 %! x = 0.01:0.02:0.99;
 %! [nlogL, avar] = betalike ([2.3, 1.2], x);
