@@ -199,14 +199,14 @@ endfunction
 %!test
 %! x = 1:50;
 %! [paramhat, paramci] = gumbelfit (x);
-%! paramhat_out = [32.6811, 13.0509];
-%! paramci_out = [28.8504, 10.5294; 36.5118, 16.1763];
+%! paramhat_out = [18.3188, 13.0509];
+%! paramci_out = [14.4882, 10.5294; 22.1495, 16.1763];
 %! assert (paramhat, paramhat_out, 1e-4);
 %! assert (paramci, paramci_out, 1e-4);
 %!test
 %! x = 1:50;
 %! [paramhat, paramci] = gumbelfit (x, 0.01);
-%! paramci_out = [27.6468, 9.8426; 37.7155, 17.3051];
+%! paramci_out = [13.2845, 9.8426; 23.3532, 17.3051];
 %! assert (paramci, paramci_out, 1e-4);
 
 ## Test input validation
