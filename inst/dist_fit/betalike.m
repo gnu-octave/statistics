@@ -39,6 +39,9 @@
 ## treated as if they were values that have been left-censored at
 ## @qcode{sqrt (realmin)} or right-censored at @qcode{1 - eps/2}, respectively.
 ##
+## Further information about the Beta distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Beta_distribution}
+##
 ## @seealso{betacdf, betainv, betapdf, betarnd, betafit, betastat}
 ## @end deftypefn
 
