@@ -54,7 +54,8 @@
 ## Further information about the Gumbel distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Gumbel_distribution}
 ##
-## @seealso{evcdf, evinv, evpdf, evrnd, evfit, evstat, gumbellike}
+## @seealso{gumbelcdf, gumbelinv, gumbelpdf, gumbelrnd, gumbelfit, gumbelstat,
+## evlike}
 ## @end deftypefn
 
 function [nlogL, avar] = gumbellike (params, x, censor, freq)
