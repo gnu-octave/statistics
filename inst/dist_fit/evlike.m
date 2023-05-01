@@ -49,9 +49,9 @@
 ## The Gumbel distribution is used to model the distribution of the maximum (or
 ## the minimum) of a number of samples of various distributions.  This version
 ## is suitable for modeling minima.  For modeling maxima, use the alternative
-## Gumbel fitting function, @code{gumbelfit}.
+## Gumbel likelihood function, @code{gumbellike}.
 ##
-## Further information about the extreme value distribution can be found at
+## Further information about the Gumbel distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Gumbel_distribution}
 ##
 ## @seealso{evcdf, evinv, evpdf, evrnd, evfit, evstat, gumbellike}

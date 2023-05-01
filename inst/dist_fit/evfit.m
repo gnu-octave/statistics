@@ -66,7 +66,7 @@
 ## is suitable for modeling minima.  For modeling maxima, use the alternative
 ## Gumbel fitting function, @code{gumbelfit}.
 ##
-## Further information about the extreme value distribution can be found at
+## Further information about the Gumbel distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Gumbel_distribution}
 ##
 ## @seealso{evcdf, evinv, evpdf, evrnd, evlike, evstat, gumbelfit}
@@ -120,8 +120,7 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
 
   ## Get options structure or add defaults
   if (nargin > 4)
-    if (! isstruct (options) || ! isfield (options, "Display") || ...
-                                ! isfield (options, "TolX"))
+    if (! isstruct (options) || ! isfield (options, "TolX"))
       error (strcat (["evfit: 'options' 5th argument must be a structure"], ...
                      [" with 'TolX' field present."]));
     endif
@@ -307,7 +306,7 @@ endfunction
 %! ylim ([0, 1]);
 %! hold on
 %!
-%! ## Estimate their MU and sigma parameters
+%! ## Estimate their MU and SIGMA parameters
 %! mu_sigmaA = evfit (r(:,1));
 %! mu_sigmaB = evfit (r(:,2));
 %! mu_sigmaC = evfit (r(:,3));
