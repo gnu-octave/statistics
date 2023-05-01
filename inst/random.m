@@ -59,6 +59,7 @@
 ## @item @qcode{"Geometric"} @tab @tab @qcode{"geo"} @tab @tab 1
 ## @item @qcode{"Generalized Extreme Value"} @tab @tab @qcode{"gev"} @tab @tab 3
 ## @item @qcode{"Generalized Pareto"} @tab @tab @qcode{"gp"} @tab @tab 3
+## @item @qcode{"Gumbel"} @tab @tab @qcode{"gumbel"} @tab @tab 2
 ## @item @qcode{"Hypergeometric"} @tab @tab @qcode{"hyge"} @tab @tab 3
 ## @item @qcode{"Laplace"} @tab @tab @qcode{"laplace"} @tab @tab 2
 ## @item @qcode{"Logistic"} @tab @tab @qcode{"logi"} @tab @tab 2
@@ -102,6 +103,7 @@ function r = random (name, varargin)
     {"geo"      , "Geometric"},                 @geornd,       1, ...
     {"gev"      , "Generalized Extreme Value"}, @gevrnd,       3, ...
     {"gp"       , "Generalized Pareto"},        @gprnd,        3, ...
+    {"gumbel"   , "Gumbel"},                    @gpcdf,        2, ...
     {"hyge"     , "Hypergeometric"},            @hygernd,      3, ...
     {"laplace"  , "Laplace"},                   @laplacernd,   2, ...
     {"logi"     , "Logistic"},                  @logirnd,      2, ...
@@ -197,6 +199,8 @@ endfunction
 %!assert (size (random ("gev", 5, 2, 2, [10, 20])), size (gevrnd (5, 2, 2, 10, 20)))
 %!assert (size (random ("Generalized Pareto", 5, 2, 2, [10, 20])), size (gprnd (5, 2, 2, 10, 20)))
 %!assert (size (random ("gp", 5, 2, 2, [10, 20])), size (gprnd (5, 2, 2, 10, 20)))
+%!assert (size (random ("Gumbel", 5, 2, [10, 20])), size (gumbelrnd (5, 2, 10, 20)))
+%!assert (size (random ("gumbel", 5, 2, [10, 20])), size (gumbelrnd (5, 2, 10, 20)))
 %!assert (size (random ("Hypergeometric", 5, 2, 2, [10, 20])), size (hygernd (5, 2, 2, 10, 20)))
 %!assert (size (random ("hyge", 5, 2, 2, [10, 20])), size (hygernd (5, 2, 2, 10, 20)))
 %!assert (size (random ("Laplace", 5, 2, [10, 20])), size (laplacernd (5, 2, 10, 20)))

@@ -60,6 +60,7 @@
 ## @item @qcode{"Geometric"} @tab @tab @qcode{"geo"} @tab @tab 1
 ## @item @qcode{"Generalized Extreme Value"} @tab @tab @qcode{"gev"} @tab @tab 3
 ## @item @qcode{"Generalized Pareto"} @tab @tab @qcode{"gp"} @tab @tab 3
+## @item @qcode{"Gumbel"} @tab @tab @qcode{"gumbel"} @tab @tab 2
 ## @item @qcode{"Hypergeometric"} @tab @tab @qcode{"hyge"} @tab @tab 3
 ## @item @qcode{"Laplace"} @tab @tab @qcode{"laplace"} @tab @tab 2
 ## @item @qcode{"Logistic"} @tab @tab @qcode{"logi"} @tab @tab 2
@@ -103,6 +104,7 @@ function x = icdf (name, p, varargin)
     {"geo"      , "Geometric"},                 @geoinv,       1, ...
     {"gev"      , "Generalized Extreme Value"}, @gevinv,       3, ...
     {"gp"       , "Generalized Pareto"},        @gpinv,        3, ...
+    {"gumbel"   , "Gumbel"},                    @gpcdf,        2, ...
     {"hyge"     , "Hypergeometric"},            @hygeinv,      3, ...
     {"laplace"  , "Laplace"},                   @laplaceinv,   2, ...
     {"logi"     , "Logistic"},                  @logiinv,      2, ...
@@ -199,6 +201,8 @@ endfunction
 %!assert (icdf ("gev", p, 5, 2, 2), gevinv (p, 5, 2, 2))
 %!assert (icdf ("Generalized Pareto", p, 5, 2, 2), gpinv (p, 5, 2, 2))
 %!assert (icdf ("gp", p, 5, 2, 2), gpinv (p, 5, 2, 2))
+%!assert (icdf ("Gumbel", p, 5, 2), gumbelinv (p, 5, 2))
+%!assert (icdf ("gumbel", p, 5, 2), gumbelinv (p, 5, 2))
 %!assert (icdf ("Hypergeometric", p, 5, 2, 2), hygeinv (p, 5, 2, 2))
 %!assert (icdf ("hyge", p, 5, 2, 2), hygeinv (p, 5, 2, 2))
 %!assert (icdf ("Laplace", p, 5, 2), laplaceinv (p, 5, 2))

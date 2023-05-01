@@ -68,6 +68,7 @@
 ## @item @qcode{"Geometric"} @tab @tab @qcode{"geo"} @tab @tab 1
 ## @item @qcode{"Generalized Extreme Value"} @tab @tab @qcode{"gev"} @tab @tab 3
 ## @item @qcode{"Generalized Pareto"} @tab @tab @qcode{"gp"} @tab @tab 3
+## @item @qcode{"Gumbel"} @tab @tab @qcode{"gumbel"} @tab @tab 2
 ## @item @qcode{"Hypergeometric"} @tab @tab @qcode{"hyge"} @tab @tab 3
 ## @item @qcode{"Laplace"} @tab @tab @qcode{"laplace"} @tab @tab 2
 ## @item @qcode{"Logistic"} @tab @tab @qcode{"logi"} @tab @tab 2
@@ -111,6 +112,7 @@ function p = cdf (name, x, varargin)
     {"geo"      , "Geometric"},                 @geocdf,       1, ...
     {"gev"      , "Generalized Extreme Value"}, @gevcdf,       3, ...
     {"gp"       , "Generalized Pareto"},        @gpcdf,        3, ...
+    {"gumbel"   , "Gumbel"},                    @gpcdf,        2, ...
     {"hyge"     , "Hypergeometric"},            @hygecdf,      3, ...
     {"laplace"  , "Laplace"},                   @laplacecdf,   2, ...
     {"logi"     , "Logistic"},                  @logicdf,      2, ...
@@ -221,6 +223,8 @@ endfunction
 %!assert (cdf ("gev", x, 5, 2, 2, "upper"), gevcdf (x, 5, 2, 2, "upper"))
 %!assert (cdf ("Generalized Pareto", x, 5, 2, 2), gpcdf (x, 5, 2, 2))
 %!assert (cdf ("gp", x, 5, 2, 2, "upper"), gpcdf (x, 5, 2, 2, "upper"))
+%!assert (cdf ("Gumbel", x, 5, 2), gumbelcdf (x, 5, 2))
+%!assert (cdf ("gumbel", x, 5, 2, "upper"), gumbelcdf (x, 5, 2, "upper"))
 %!assert (cdf ("Hypergeometric", x, 5, 2, 2), hygecdf (x, 5, 2, 2))
 %!assert (cdf ("hyge", x, 5, 2, 2, "upper"), hygecdf (x, 5, 2, 2, "upper"))
 %!assert (cdf ("Laplace", x, 5, 2), laplacecdf (x, 5, 2))

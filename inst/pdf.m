@@ -61,6 +61,7 @@
 ## @item @qcode{"Geometric"} @tab @tab @qcode{"geo"} @tab @tab 1
 ## @item @qcode{"Generalized Extreme Value"} @tab @tab @qcode{"gev"} @tab @tab 3
 ## @item @qcode{"Generalized Pareto"} @tab @tab @qcode{"gp"} @tab @tab 3
+## @item @qcode{"Gumbel"} @tab @tab @qcode{"gumbel"} @tab @tab 2
 ## @item @qcode{"Hypergeometric"} @tab @tab @qcode{"hyge"} @tab @tab 3
 ## @item @qcode{"Laplace"} @tab @tab @qcode{"laplace"} @tab @tab 2
 ## @item @qcode{"Logistic"} @tab @tab @qcode{"logi"} @tab @tab 2
@@ -104,6 +105,7 @@ function y = pdf (name, x, varargin)
     {"geo"      , "Geometric"},                 @geopdf,       1, ...
     {"gev"      , "Generalized Extreme Value"}, @gevpdf,       3, ...
     {"gp"       , "Generalized Pareto"},        @gppdf,        3, ...
+    {"gumbel"   , "Gumbel"},                    @gpcdf,        2, ...
     {"hyge"     , "Hypergeometric"},            @hygepdf,      3, ...
     {"laplace"  , "Laplace"},                   @laplacepdf,   2, ...
     {"logi"     , "Logistic"},                  @logipdf,      2, ...
@@ -200,6 +202,8 @@ endfunction
 %!assert (pdf ("gev", x, 5, 2, 2), gevpdf (x, 5, 2, 2))
 %!assert (pdf ("Generalized Pareto", x, 5, 2, 2), gppdf (x, 5, 2, 2))
 %!assert (pdf ("gp", x, 5, 2, 2), gppdf (x, 5, 2, 2))
+%!assert (pdf ("Gumbel", x, 5, 2), gumbelpdf (x, 5, 2))
+%!assert (pdf ("gumbel", x, 5, 2), gumbelpdf (x, 5, 2))
 %!assert (pdf ("Hypergeometric", x, 5, 2, 2), hygepdf (x, 5, 2, 2))
 %!assert (pdf ("hyge", x, 5, 2, 2), hygepdf (x, 5, 2, 2))
 %!assert (pdf ("Laplace", x, 5, 2), laplacepdf (x, 5, 2))
