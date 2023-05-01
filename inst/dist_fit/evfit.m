@@ -129,7 +129,7 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
     options.TolX = 1e-6;
   endif
 
-  ## If X is a column vector, make X, CEONSOR, and FREQ row vectors
+  ## If X is a column vector, make X, CENSOR, and FREQ row vectors
   if (size (x, 1) > 1)
     x = x(:)';
     censor = censor(:)';
