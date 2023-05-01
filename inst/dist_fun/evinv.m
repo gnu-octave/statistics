@@ -18,37 +18,40 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{x} =} evinv (@var{p})
-## @deftypefnx {statistics} {@var{x} =} evcdf (@var{p}, @var{mu})
+## @deftypefnx {statistics} {@var{x} =} evinv (@var{p}, @var{mu})
 ## @deftypefnx {statistics} {@var{x} =} evinv (@var{p}, @var{mu}, @var{sigma})
 ## @deftypefnx {statistics} {[@var{x}, @var{xlo}, @var{xup}] =} evinv (@var{p}, @var{mu}, @var{sigma}, @var{pcov})
 ## @deftypefnx {statistics} {[@var{x}, @var{xlo}, @var{xup}] =} evinv (@var{p}, @var{mu}, @var{sigma}, @var{pcov}, @var{alpha})
 ##
 ## Inverse of the extreme value cumulative distribution function (iCDF).
 ##
-## For each element of @var{p}, compute the inverse cdf for a type 1 extreme
-## value distribution with location parameter @var{mu} and scale parameter
-## @var{sigma}.  The size of @var{x} is the common size of @var{p}, @var{mu} and
-## @var{sigma}.  A scalar input functions as a constant matrix of the same size
-## as the other inputs.
+## For each element of @var{p}, compute the quantile (the inverse of the CDF)
+## at @var{p} of the extreme value distribution (also known as the Gumbel or the
+## type I generalized extreme value distribution) with location parameter
+## @var{mu} and scale parameter @var{sigma}.  The size of @var{x} is the common
+## size of @var{p}, @var{mu} and @var{sigma}.  A scalar input functions as a
+## constant matrix of the same size as the other inputs.
 ##
 ## Default values are @var{mu} = 0, @var{sigma} = 1.
 ##
-## When called with three output arguments, @code{[@var{x}, @var{xlo},
-## @var{xup}]} it computes the confidence bounds for @var{x} when the input
+## When called with three output arguments, i.e. @code{[@var{x}, @var{xlo},
+## @var{xup}]}, it computes the confidence bounds for @var{x} when the input
 ## parameters @var{mu} and @var{sigma} are estimates.  In such case, @var{pcov},
 ## a 2-by-2 matrix containing the covariance matrix of the estimated parameters,
-## is necessary.  Optionally, @var{alpha} has a default value of 0.05, and
-## specifies 100 * (1 - @var{alpha})% confidence bounds. @var{xlo} and @var{xup}
-## are arrays of the same size as @var{x} containing the lower and upper
-## confidence bounds.
+## is necessary.  Optionally, @var{alpha}, which has a default value of 0.05,
+## specifies the @qcode{100 * (1 - @var{alpha})} percent confidence bounds.
+## @var{xlo} and @var{xup} are arrays of the same size as @var{x} containing the
+## lower and upper confidence bounds.
 ##
-## The type 1 extreme value distribution is also known as the Gumbel
-## distribution.  The version used here is suitable for modeling minima; the
-## mirror image of this distribution can be used to model maxima by negating
-## @var{x}.  If @var{y} has a Weibull distribution, then
-## @code{@var{x} = log (@var{y})} has the type 1 extreme value distribution.
+## The Gumbel distribution is used to model the distribution of the maximum (or
+## the minimum) of a number of samples of various distributions.  This version
+## is suitable for modeling minima.  For modeling maxima, use the alternative
+## Gumbel iCDF, @code{gumbelinv}.
 ##
-## @seealso{evcdf, evpdf, evrnd, evfit, evlike, evstat}
+## Further information about the Gumbel distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Gumbel_distribution}
+##
+## @seealso{evcdf, evpdf, evrnd, evfit, evlike, evstat, gumbelinv}
 ## @end deftypefn
 
 function [x, xlo, xup] = evinv (p, mu, sigma, pcov, alpha)
@@ -110,13 +113,13 @@ function [x, xlo, xup] = evinv (p, mu, sigma, pcov, alpha)
   if (all (k(:)))
     q = log (-log (1 - p));
   else
-      q = zeros (size (p), is_class);
-      q(k) = log (-log (1 - p(k)));
-      ## Return -Inf for p = 0 and Inf for p = 1
-      q(p < eps) = -Inf;
-      q(p == 1) = Inf;
-      ## Return NaN for out of range values of P
-      q(p < 0 | 1 < p | isnan (p)) = NaN;
+    q = zeros (size (p), is_class);
+    q(k) = log (-log (1 - p(k)));
+    ## Return -Inf for p = 0 and Inf for p = 1
+    q(p < eps) = -Inf;
+    q(p == 1) = Inf;
+    ## Return NaN for out of range values of P
+    q(p < 0 | 1 < p | isnan (p)) = NaN;
   endif
 
   ## Return NaN for out of range values of SIGMA
@@ -137,24 +140,21 @@ function [x, xlo, xup] = evinv (p, mu, sigma, pcov, alpha)
 
 endfunction
 
-## Test input validation
-%!error<evinv: invalid number of input arguments.> evinv ()
-%!error evinv (1,2,3,4,5,6)
-%!error<evinv: P, MU, and SIGMA must be of common size or scalars.> ...
-%! evinv (ones (3), ones (2), ones (2))
-%!error<evinv: invalid size of covariance matrix.> ...
-%! [p, plo, pup] = evinv (2, 3, 4, [1, 2])
-%!error<evinv: covariance matrix is required for confidence bounds.> ...
-%! [p, plo, pup] = evinv (1, 2, 3)
-%!error<evinv: invalid value for alpha.> [p, plo, pup] = ...
-%! evinv (1, 2, 3, [1, 0; 0, 1], 0)
-%!error<evinv: invalid value for alpha.> [p, plo, pup] = ...
-%! evinv (1, 2, 3, [1, 0; 0, 1], 1.22)
-%!error<evinv: P, MU, and SIGMA must not be complex.> evinv (i, 2, 2)
-%!error<evinv: P, MU, and SIGMA must not be complex.> evinv (2, i, 2)
-%!error<evinv: P, MU, and SIGMA must not be complex.> evinv (2, 2, i)
-%!error<evinv: bad covariance matrix.> ...
-%! [p, plo, pup] = evinv (1, 2, 3, [-1, -10; -Inf, -Inf], 0.04)
+%!demo
+%! ## Plot various iCDFs from the extreme value distribution
+%! p = 0.001:0.001:0.999;
+%! x1 = evinv (p, 0.5, 2);
+%! x2 = evinv (p, 1.0, 2);
+%! x3 = evinv (p, 1.5, 3);
+%! x4 = evinv (p, 3.0, 4);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c")
+%! grid on
+%! ylim ([-10, 10])
+%! legend ({"μ = 0.5, σ = 2", "μ = 1.0, σ = 2", ...
+%!          "μ = 1.5, σ = 3", "μ = 3.0, σ = 4"}, "location", "northwest")
+%! title ("Extreme value iCDF")
+%! xlabel ("probability")
+%! ylabel ("values in x")
 
 ## Test results
 %!shared p, x
@@ -173,3 +173,22 @@ endfunction
 %!assert (evinv (single ([p, NaN]), 0, 1), single ([x, NaN]), 1e-4)
 %!assert (evinv ([p, NaN], single (0), 1), single ([x, NaN]), 1e-4)
 %!assert (evinv ([p, NaN], 0, single (1)), single ([x, NaN]), 1e-4)
+
+## Test input validation
+%!error<evinv: invalid number of input arguments.> evinv ()
+%!error evinv (1,2,3,4,5,6)
+%!error<evinv: P, MU, and SIGMA must be of common size or scalars.> ...
+%! evinv (ones (3), ones (2), ones (2))
+%!error<evinv: invalid size of covariance matrix.> ...
+%! [p, plo, pup] = evinv (2, 3, 4, [1, 2])
+%!error<evinv: covariance matrix is required for confidence bounds.> ...
+%! [p, plo, pup] = evinv (1, 2, 3)
+%!error<evinv: invalid value for alpha.> [p, plo, pup] = ...
+%! evinv (1, 2, 3, [1, 0; 0, 1], 0)
+%!error<evinv: invalid value for alpha.> [p, plo, pup] = ...
+%! evinv (1, 2, 3, [1, 0; 0, 1], 1.22)
+%!error<evinv: P, MU, and SIGMA must not be complex.> evinv (i, 2, 2)
+%!error<evinv: P, MU, and SIGMA must not be complex.> evinv (2, i, 2)
+%!error<evinv: P, MU, and SIGMA must not be complex.> evinv (2, 2, i)
+%!error<evinv: bad covariance matrix.> ...
+%! [p, plo, pup] = evinv (1, 2, 3, [-1, -10; -Inf, -Inf], 0.04)

@@ -23,21 +23,24 @@
 ##
 ## Extreme value probability density function (PDF).
 ##
-## @code{@var{y} = evpdf (@var{x}, @var{mu}, @var{sigma})} returns the pdf of
-## the type 1 extreme value distribution with location parameter @var{mu} and
-## scale parameter @var{sigma}.  The size of @var{x} is the common size of
-## @var{p}, @var{mu} and @var{sigma}.  A scalar input functions as a constant
-## matrix of the same size as the other inputs.
+## For each element of @var{x}, compute the probability density function (PDF)
+## at @var{x} of the extreme value distribution (also known as the Gumbel or the
+## type I generalized extreme value distribution) with location parameter
+## @var{mu} and scale parameter @var{sigma}.  The size of @var{y} is the common
+## size of @var{x}, @var{mu} and @var{sigma}.  A scalar input functions as a
+## constant matrix of the same size as the other inputs.
 ##
 ## Default values are @var{mu} = 0, @var{sigma} = 1.
 ##
-## The type 1 extreme value distribution is also known as the Gumbel
-## distribution.  The version used here is suitable for modeling minima; the
-## mirror image of this distribution can be used to model maxima by negating
-## @var{x}.  If @var{y} has a Weibull distribution, then
-## @code{@var{x} = log (@var{y})} has the type 1 extreme value distribution.
+## The Gumbel distribution is used to model the distribution of the maximum (or
+## the minimum) of a number of samples of various distributions.  This version
+## is suitable for modeling minima.  For modeling maxima, use the alternative
+## Gumbel iCDF, @code{gumbelinv}.
 ##
-## @seealso{evcdf, evinv, evrnd, evfit, evlike, evstat}
+## Further information about the Gumbel distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Gumbel_distribution}
+##
+## @seealso{evcdf, evinv, evrnd, evfit, evlike, evstat, gumbelpdf}
 ## @end deftypefn
 
 function y = evpdf (x, mu, sigma)
@@ -80,13 +83,21 @@ function y = evpdf (x, mu, sigma)
 
 endfunction
 
-## Test input validation
-%!error<evpdf: too few input arguments.> evpdf ()
-%!error<evpdf: X, MU, and SIGMA must be of common size or scalars.> ...
-%! evpdf (ones (3), ones (2), ones (2))
-%!error<evpdf: X, MU, and SIGMA must not be complex.> evpdf (i, 2, 2)
-%!error<evpdf: X, MU, and SIGMA must not be complex.> evpdf (2, i, 2)
-%!error<evpdf: X, MU, and SIGMA must not be complex.> evpdf (2, 2, i)
+%!demo
+%! ## Plot various PDFs from the Extreme value distribution
+%! x = -10:0.001:10;
+%! y1 = evpdf (x, 0.5, 2);
+%! y2 = evpdf (x, 1.0, 2);
+%! y3 = evpdf (x, 1.5, 3);
+%! y4 = evpdf (x, 3.0, 4);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-c")
+%! grid on
+%! ylim ([0, 0.2])
+%! legend ({"μ = 0.5, σ = 2", "μ = 1.0, σ = 2", ...
+%!          "μ = 1.5, σ = 3", "μ = 3.0, σ = 4"}, "location", "northeast")
+%! title ("Extreme value PDF")
+%! xlabel ("values in x")
+%! ylabel ("density")
 
 ## Test results
 %!shared x, y0, y1
@@ -96,4 +107,12 @@ endfunction
 %!assert (evpdf (x), y0, 1e-4)
 %!assert (evpdf (x, zeros (1,5), ones (1,5)), y0, 1e-4)
 %!assert (evpdf (x, ones (1,5), ones (1,5)), y1, 1e-4)
+
+## Test input validation
+%!error<evpdf: too few input arguments.> evpdf ()
+%!error<evpdf: X, MU, and SIGMA must be of common size or scalars.> ...
+%! evpdf (ones (3), ones (2), ones (2))
+%!error<evpdf: X, MU, and SIGMA must not be complex.> evpdf (i, 2, 2)
+%!error<evpdf: X, MU, and SIGMA must not be complex.> evpdf (2, i, 2)
+%!error<evpdf: X, MU, and SIGMA must not be complex.> evpdf (2, 2, i)
 

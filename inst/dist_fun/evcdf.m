@@ -28,31 +28,35 @@
 ## Extreme value cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) of the type 1 extreme values CDF at @var{x} of the normal distribution
-## with location parameter @var{mu} and scale parameter @var{sigma}.  The size
-## of @var{p} is the common size of @var{x}, @var{mu} and @var{sigma}.  A scalar
+## (CDF) of the extreme value distribution (also known as the Gumbel or the type
+## I generalized extreme value distribution) at the values in @var{x} with
+## location parameter @var{mu} and scale parameter @var{sigma}.  The size of
+## @var{p} is the common size of @var{x}, @var{mu} and @var{sigma}.  A scalar
 ## input functions as a constant matrix of the same size as the other inputs.
 ##
 ## Default values are @var{mu} = 0, @var{sigma} = 1.
 ##
-## When called with three output arguments, @code{[@var{p}, @var{plo},
-## @var{pup}]} it computes the confidence bounds for @var{p} when the input
+## When called with three output arguments, i.e. @code{[@var{p}, @var{plo},
+## @var{pup}]}, it computes the confidence bounds for @var{p} when the input
 ## parameters @var{mu} and @var{sigma} are estimates.  In such case, @var{pcov},
 ## a 2-by-2 matrix containing the covariance matrix of the estimated parameters,
-## is necessary.  @var{alpha} has a default value of 0.05, and specifies 100 *
-## (1 - @var{alpha})% confidence bounds.  @var{plo} and @var{pup} are arrays of
-## the same size as @var{p} containing the lower and upper confidence bounds.
-##
-## The type 1 extreme value distribution is also known as the Gumbel
-## distribution.  The version used here is suitable for modeling minima; the
-## mirror image of this distribution can be used to model maxima by negating
-## @var{x}.  If @var{y} has a Weibull distribution, then
-## @code{@var{x} = log (@var{y})} has the type 1 extreme value distribution.
+## is necessary.  Optionally, @var{alpha}, which has a default value of 0.05,
+## specifies the @qcode{100 * (1 - @var{alpha})} percent confidence bounds.
+## @var{plo} and @var{pup} are arrays of the same size as @var{p} containing the
+## lower and upper confidence bounds.
 ##
 ## @code{[@dots{}] = evcdf (@dots{}, "upper")} computes the upper tail
 ## probability of the extreme value distribution.
 ##
-## @seealso{evinv, evpdf, evrnd, evfit, evlike, evstat}
+## The Gumbel distribution is used to model the distribution of the maximum (or
+## the minimum) of a number of samples of various distributions.  This version
+## is suitable for modeling minima.  For modeling maxima, use the alternative
+## Gumbel CDF, @code{gumbelcdf}.
+##
+## Further information about the Gumbel distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Gumbel_distribution}
+##
+## @seealso{evinv, evpdf, evrnd, evfit, evlike, evstat, gumbelcdf}
 ## @end deftypefn
 
 function [varargout] = evcdf (x, varargin)
@@ -183,6 +187,39 @@ function [varargout] = evcdf (x, varargin)
 
 endfunction
 
+%!demo
+%! ## Plot various CDFs from the extreme value distribution
+%! x = -10:0.01:10;
+%! p1 = evcdf (x, 0.5, 2);
+%! p2 = evcdf (x, 1.0, 2);
+%! p3 = evcdf (x, 1.5, 3);
+%! p4 = evcdf (x, 3.0, 4);
+%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c")
+%! grid on
+%! legend ({"μ = 0.5, σ = 2", "μ = 1.0, σ = 2", ...
+%!          "μ = 1.5, σ = 3", "μ = 3.0, σ = 4"}, "location", "southeast")
+%! title ("Extreme value CDF")
+%! xlabel ("values in x")
+%! ylabel ("probability")
+
+## Test results
+%!shared x, y
+%! x = [-Inf, 1, 2, Inf];
+%! y = [0, 0.6321, 0.9340, 1];
+%!assert (evcdf (x, ones (1,4), ones (1,4)), y, 1e-4)
+%!assert (evcdf (x, 1, ones (1,4)), y, 1e-4)
+%!assert (evcdf (x, ones (1,4), 1), y, 1e-4)
+%!assert (evcdf (x, [0, -Inf, NaN, Inf], 1), [0, 1, NaN, NaN], 1e-4)
+%!assert (evcdf (x, 1, [Inf, NaN, -1, 0]), [NaN, NaN, NaN, NaN], 1e-4)
+%!assert (evcdf ([x(1:2), NaN, x(4)], 1, 1), [y(1:2), NaN, y(4)], 1e-4)
+%!assert (evcdf (x, "upper"), [1, 0.0660, 0.0006, 0], 1e-4)
+
+## Test class of input preserved
+%!assert (evcdf ([x, NaN], 1, 1), [y, NaN], 1e-4)
+%!assert (evcdf (single ([x, NaN]), 1, 1), single ([y, NaN]), 1e-4)
+%!assert (evcdf ([x, NaN], single (1), 1), single ([y, NaN]), 1e-4)
+%!assert (evcdf ([x, NaN], 1, single (1)), single ([y, NaN]), 1e-4)
+
 ## Test input validation
 %!error<evcdf: invalid number of input arguments.> evcdf ()
 %!error<evcdf: invalid number of input arguments.> evcdf (1,2,3,4,5,6,7)
@@ -203,21 +240,3 @@ endfunction
 %!error<evcdf: X, MU, and SIGMA must not be complex.> evcdf (2, 2, i)
 %!error<evcdf: bad covariance matrix.> ...
 %! [p, plo, pup] = evcdf (1, 2, 3, [1, 0; 0, -inf], 0.04)
-
-## Test results
-%!shared x, y
-%! x = [-Inf, 1, 2, Inf];
-%! y = [0, 0.6321, 0.9340, 1];
-%!assert (evcdf (x, ones (1,4), ones (1,4)), y, 1e-4)
-%!assert (evcdf (x, 1, ones (1,4)), y, 1e-4)
-%!assert (evcdf (x, ones (1,4), 1), y, 1e-4)
-%!assert (evcdf (x, [0, -Inf, NaN, Inf], 1), [0, 1, NaN, NaN], 1e-4)
-%!assert (evcdf (x, 1, [Inf, NaN, -1, 0]), [NaN, NaN, NaN, NaN], 1e-4)
-%!assert (evcdf ([x(1:2), NaN, x(4)], 1, 1), [y(1:2), NaN, y(4)], 1e-4)
-%!assert (evcdf (x, "upper"), [1, 0.0660, 0.0006, 0], 1e-4)
-
-## Test class of input preserved
-%!assert (evcdf ([x, NaN], 1, 1), [y, NaN], 1e-4)
-%!assert (evcdf (single ([x, NaN]), 1, 1), single ([y, NaN]), 1e-4)
-%!assert (evcdf ([x, NaN], single (1), 1), single ([y, NaN]), 1e-4)
-%!assert (evcdf ([x, NaN], 1, single (1)), single ([y, NaN]), 1e-4)

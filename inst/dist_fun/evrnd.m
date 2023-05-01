@@ -25,7 +25,8 @@
 ## Random arrays from the extreme value distribution.
 ##
 ## @code{@var{r} = evrnd (@var{mu}, @var{sigma})} returns an array of random
-## numbers chosen from the type 1 extreme value distribution with location
+## numbers chosen from the extreme value distribution (also known as the Gumbel
+## or the type I generalized extreme value distribution) with location
 ## parameter @var{mu} and scale parameter @var{sigma}.  The size of @var{r} is
 ## the common size of @var{mu} and @var{sigma}.  A scalar input functions as a
 ## constant matrix of the same size as the other inputs.
@@ -36,11 +37,13 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
-## The type 1 extreme value distribution is also known as the Gumbel
-## distribution.  The version used here is suitable for modeling minima; the
-## mirror image of this distribution can be used to model maxima by negating
-## @var{x}.  If @var{y} has a Weibull distribution, then
-## @code{@var{x} = log (@var{y})} has the type 1 extreme value distribution.
+## The Gumbel distribution is used to model the distribution of the maximum (or
+## the minimum) of a number of samples of various distributions.  This version
+## is suitable for modeling minima.  For modeling maxima, use the alternative
+## Gumbel iCDF, @code{gumbelinv}.
+##
+## Further information about the Gumbel distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Gumbel_distribution}
 ##
 ## @seealso{evcdf, evinv, evpdf, evfit, evlike, evstat}
 ## @end deftypefn
@@ -49,70 +52,111 @@ function r = evrnd (mu, sigma, varargin)
 
   ## Check for valid number of input arguments
   if (nargin < 2)
-    error ("evrnd: too few input arguments.");
+    error ("evrnd: function called with too few input arguments.");
   endif
 
-  ## Check for appropriate class
-  if (isa (mu, "single") || isa (sigma, "single"));
-    is_class = "single";
+  ## Check for common size of MU and SIGMA
+  if (! isscalar (mu) || ! isscalar (sigma))
+    [retval, mu, sigma] = common_size (mu, sigma);
+    if (retval > 0)
+      error ("evrnd: MU and SIGMA must be of common size or scalars.");
+    endif
+  endif
+
+  ## Check for MU and SIGMA being reals
+  if (iscomplex (mu) || iscomplex (sigma))
+    error ("evrnd: MU and SIGMA must not be complex.");
+  endif
+
+  ## Parse and check SIZE arguments
+  if (nargin == 2)
+    sz = size (mu);
+  elseif (nargin == 3)
+    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+                               && varargin{1} == fix (varargin{1}))
+      sz = [varargin{1}, varargin{1}];
+    elseif (isrow (varargin{1}) && all (varargin{1} >= 0) ...
+                                && all (varargin{1} == fix (varargin{1})))
+      sz = varargin{1};
+    elseif
+      error (strcat (["evrnd: SZ must be a scalar or a row vector"], ...
+                     [" of non-negative integers."]));
+    endif
+  elseif (nargin > 3)
+    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
+    if (any (posint))
+      error ("evrnd: dimensions must be non-negative integers.");
+    endif
+    sz = [varargin{:}];
+  endif
+
+  ## Check that parameters match requested dimensions in size
+  if (! isscalar (mu) && ! isequal (size (mu), sz))
+    error ("evrnd: MU and SIGMA must be scalar or of size SZ.");
+  endif
+
+  ## Check for class type
+  if (isa (mu, "single") || isa (sigma, "single"))
+    cls = "single";
   else
-    is_class = "double";
+    cls = "double";
   endif
-
-  ## Check for additional dimensions in varargin and get their size
-  dim_vec = 1;
-  if (nargin > 2)
-    extra_varargin = numel (varargin(:));
-    if (extra_varargin == 1)
-      size_dim = varargin{1};
-
-      ## Check for empty input argument
-      if (isempty (size_dim))
-        error (strcat (["evrnd: extra argument for size of output"], ...
-                       [" array cannot be empty."]));
-      endif
-      dim_vec = zeros (size_dim, is_class);
-    elseif (extra_varargin > 1)
-      for i = 1:extra_varargin
-        size_dim(i) = varargin{i};
-      endfor
-      dim_vec = zeros (size_dim, is_class);
-    endif
-  endif
-
-  ## Check for common size of MU, SIGMA, and output based on given dimensions
-  if (! isscalar (mu) || ! isscalar (sigma) || ! isscalar (dim_vec))
-    [err, mu, sigma, dim_vec] = common_size (mu, sigma, dim_vec);
-    if (err > 0)
-      error (strcat (["evrnd: MU, SIGMA, and DIM vector must be of"], ...
-                     [" common size or scalars."]));
-    endif
-  endif
-
-  ## Get final dimensions of returning random array
-  size_out = size (mu);
 
   ## Return NaNs for out of range values of SIGMA
   sigma(sigma < 0) = NaN;
 
   ## Generate uniform random values, and apply the extreme value inverse CDF.
-  r = log (-log (rand (size_out, is_class))) .* sigma + mu;
+  r = log (-log (rand (sz, cls))) .* sigma + mu;
 
 endfunction
 
-## Test input validation
-%!error<evrnd: too few input arguments.> evrnd ()
-%!error<evrnd: extra argument for size of output array cannot be empty.> ...
-%! evrnd (ones (3), ones (2), [])
-%!error<evrnd: MU, SIGMA, and DIM vector must be of common size or scalars.> ...
-%! evrnd (ones (3), ones (2))
-%!error<evrnd: MU, SIGMA, and DIM vector must be of common size or scalars.> ...
-%! evrnd (ones (2), ones (2), 3, 2)
-%!error<evrnd: MU, SIGMA, and DIM vector must be of common size or scalars.> ...
-%! evrnd (ones (2), ones (2), 1, 2)
+## Test results
+%!assert (size (evrnd (1, 1)), [1 1])
+%!assert (size (evrnd (1, ones (2,1))), [2, 1])
+%!assert (size (evrnd (1, ones (2,2))), [2, 2])
+%!assert (size (evrnd (ones (2,1), 1)), [2, 1])
+%!assert (size (evrnd (ones (2,2), 1)), [2, 2])
+%!assert (size (evrnd (1, 1, 3)), [3, 3])
+%!assert (size (evrnd (1, 1, [4, 1])), [4, 1])
+%!assert (size (evrnd (1, 1, 4, 1)), [4, 1])
+%!assert (size (evrnd (1, 1, 4, 1, 5)), [4, 1, 5])
+%!assert (size (evrnd (1, 1, 0, 1)), [0, 1])
+%!assert (size (evrnd (1, 1, 1, 0)), [1, 0])
+%!assert (size (evrnd (1, 1, 1, 2, 0, 5)), [1, 2, 0, 5])
 
-## Output validation tests
-%!assert (size (evrnd (2, 3, 3, 5, 7)), [3, 5, 7])
-%!assert (size (evrnd (2, 3, [3, 5, 7])), [3, 5, 7])
-%!assert (size (evrnd (ones (3, 5), 2 * ones (3, 5), [3, 5])), [3, 5])
-%!assert (size (evrnd (2, 3)), [1, 1])
+## Test class of input preserved
+%!assert (class (evrnd (1, 1)), "double")
+%!assert (class (evrnd (1, single (1))), "single")
+%!assert (class (evrnd (1, single ([1, 1]))), "single")
+%!assert (class (evrnd (single (1), 1)), "single")
+%!assert (class (evrnd (single ([1, 1]), 1)), "single")
+
+## Test input validation
+%!error<evrnd: function called with too few input arguments.> evrnd ()
+%!error<evrnd: function called with too few input arguments.> evrnd (1)
+%!error<evrnd: MU and SIGMA must be of common size or scalars.> ...
+%! evrnd (ones (3), ones (2))
+%!error<evrnd: MU and SIGMA must be of common size or scalars.> ...
+%! evrnd (ones (2), ones (3))
+%!error<evrnd: MU and SIGMA must not be complex.> evrnd (i, 2, 3)
+%!error<evrnd: MU and SIGMA must not be complex.> evrnd (1, i, 3)
+%!error<evrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! evrnd (1, 2, -1)
+%!error<evrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! evrnd (1, 2, 1.2)
+%!error<evrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! evrnd (1, 2, ones (2))
+%!error<evrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! evrnd (1, 2, [2 -1 2])
+%!error<evrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! evrnd (1, 2, [2 0 2.5])
+%!error<evrnd: dimensions must be non-negative integers.> ...
+%! evrnd (1, 2, 2, -1, 5)
+%!error<evrnd: dimensions must be non-negative integers.> ...
+%! evrnd (1, 2, 2, 1.5, 5)
+%!error<evrnd: MU and SIGMA must be scalar or of size SZ.> ...
+%! evrnd (2, ones (2), 3)
+%!error<evrnd: MU and SIGMA must be scalar or of size SZ.> ...
+%! evrnd (2, ones (2), [3, 2])
+%!error<evrnd: MU and SIGMA must be scalar or of size SZ.> ...
+%! evrnd (2, ones (2), 3, 2)
