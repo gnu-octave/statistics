@@ -153,20 +153,21 @@ endfunction
 %!demo
 %! ## Sample 3 populations from different Gumbel distibutions
 %! rand ("seed", 1);    # for reproducibility
-%! r1 = gumbelrnd (2, 5, 200, 1);
-%! rand ("seed", 12);    # for reproducibility
-%! r2 = gumbelrnd (-5, 3, 200, 1);
-%! rand ("seed", 13);    # for reproducibility
-%! r3 = gumbelrnd (14, 8, 200, 1);
+%! r1 = gumbelrnd (2, 5, 400, 1);
+%! rand ("seed", 11);    # for reproducibility
+%! r2 = gumbelrnd (-5, 3, 400, 1);
+%! rand ("seed", 16);    # for reproducibility
+%! r3 = gumbelrnd (14, 8, 400, 1);
 %! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
-%! hist (r, 25, 0.45);
+%! hist (r, 25, 0.32);
 %! h = findobj (gca, "Type", "patch");
 %! set (h(1), "facecolor", "c");
 %! set (h(2), "facecolor", "g");
 %! set (h(3), "facecolor", "r");
-%! ylim ([0, 1]);
+%! ylim ([0, 0.28])
+%! xlim ([-11, 50]);
 %! hold on
 %!
 %! ## Estimate their MU and BETA parameters
@@ -176,13 +177,12 @@ endfunction
 %!
 %! ## Plot their estimated PDFs
 %! x = [min(r(:)):max(r(:))];
-%! y = evpdf (x, mu_betaA(1), mu_betaA(2));
+%! y = gumbelpdf (x, mu_betaA(1), mu_betaA(2));
 %! plot (x, y, "-pr");
-%! y = evpdf (x, mu_betaB(1), mu_betaB(2));
+%! y = gumbelpdf (x, mu_betaB(1), mu_betaB(2));
 %! plot (x, y, "-sg");
-%! y = evpdf (x, mu_betaC(1), mu_betaC(2));
+%! y = gumbelpdf (x, mu_betaC(1), mu_betaC(2));
 %! plot (x, y, "-^c");
-%! ylim ([0, 0.3])
 %! legend ({"Normalized HIST of sample 1 with μ=2 and β=5", ...
 %!          "Normalized HIST of sample 2 with μ=-5 and β=3", ...
 %!          "Normalized HIST of sample 3 with μ=14 and β=8", ...

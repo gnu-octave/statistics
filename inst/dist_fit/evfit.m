@@ -290,20 +290,21 @@ endfunction
 %!demo
 %! ## Sample 3 populations from different extreme value distibutions
 %! rand ("seed", 1);    # for reproducibility
-%! r1 = evrnd (2, 5, 200, 1);
+%! r1 = evrnd (2, 5, 400, 1);
 %! rand ("seed", 12);    # for reproducibility
-%! r2 = evrnd (-5, 3, 200, 1);
+%! r2 = evrnd (-5, 3, 400, 1);
 %! rand ("seed", 13);    # for reproducibility
-%! r3 = evrnd (14, 8, 200, 1);
+%! r3 = evrnd (14, 8, 400, 1);
 %! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
-%! hist (r, 25, 0.45);
+%! hist (r, 25, 0.4);
 %! h = findobj (gca, "Type", "patch");
 %! set (h(1), "facecolor", "c");
 %! set (h(2), "facecolor", "g");
 %! set (h(3), "facecolor", "r");
-%! ylim ([0, 1]);
+%! ylim ([0, 0.28])
+%! xlim ([-30, 30]);
 %! hold on
 %!
 %! ## Estimate their MU and SIGMA parameters
@@ -319,7 +320,6 @@ endfunction
 %! plot (x, y, "-sg");
 %! y = evpdf (x, mu_sigmaC(1), mu_sigmaC(2));
 %! plot (x, y, "-^c");
-%! ylim ([0, 0.3])
 %! legend ({"Normalized HIST of sample 1 with μ=2 and σ=5", ...
 %!          "Normalized HIST of sample 2 with μ=-5 and σ=3", ...
 %!          "Normalized HIST of sample 3 with μ=14 and σ=8", ...
