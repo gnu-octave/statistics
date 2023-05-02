@@ -575,7 +575,7 @@ function [s_o, hs_o] = boxplot (data, varargin)
     ## Skip missing data (NaN, NA) and remove respective sample IDs.
     ## Do this only on nonempty data
     if (length (col) > 0)
-      remove_samples = find (col(isnan (col) | isna (col)));
+      remove_samples = find (isnan (col) | isna (col));
       if (length (remove_samples) > 0)
         col(remove_samples) = [];
         sIDs(remove_samples) = [];
