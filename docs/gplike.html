@@ -72,7 +72,7 @@
         <div class="card-body">
 <dl>
 <dt><u>statistics:</u> <var>nlogL</var> = <b>gplike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
-<dt><u>statistics:</u> [<var>nlogL</var>, <var>avar</var>] = <b>gplike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>nlogL</var>, <var>acov</var>] = <b>gplike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
 </dl>
 
 <p> Negative log-likelihood for the generalized Pareto distribution.
@@ -84,7 +84,7 @@
  <code><var>params(2)</var> = SCALE</code> given <var>x</var>.  <code>gplike</code> does not
  allow a LOCATION parameter.  <var>nlogL</var> is a scalar.
 </p>
-<p> <code>[<var>nlogL</var>, <var>avar</var>] = gplike (<var>params</var>, <var>x</var>)</code> returns
+<p> <code>[<var>nlogL</var>, <var>acov</var>] = gplike (<var>params</var>, <var>x</var>)</code> returns
  the inverse of Fisher&rsquo;s information matrix, <var>acov</var>.  If the input
  parameter values in <var>params</var> are the maximum likelihood estimates, the
  diagonal elements of <var>acov</var> are their asymptotic variances.   <var>acov</var>

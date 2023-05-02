@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: evinv</title>
+    <title>Statistics: gumbelcdf</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -64,60 +64,68 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>evinv</code></b>
+              Function&nbsp;Reference: <b><code>gumbelcdf</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>x</var> = <b>evinv</b><i> (<var>p</var>)</i></dt>
-<dt><u>statistics:</u> <var>x</var> = <b>evinv</b><i> (<var>p</var>, <var>mu</var>)</i></dt>
-<dt><u>statistics:</u> <var>x</var> = <b>evinv</b><i> (<var>p</var>, <var>mu</var>, <var>sigma</var>)</i></dt>
-<dt><u>statistics:</u> [<var>x</var>, <var>xlo</var>, <var>xup</var>] = <b>evinv</b><i> (<var>p</var>, <var>mu</var>, <var>sigma</var>, <var>pcov</var>)</i></dt>
-<dt><u>statistics:</u> [<var>x</var>, <var>xlo</var>, <var>xup</var>] = <b>evinv</b><i> (<var>p</var>, <var>mu</var>, <var>sigma</var>, <var>pcov</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>gumbelcdf</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>gumbelcdf</b><i> (<var>x</var>, <var>mu</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>gumbelcdf</b><i> (<var>x</var>, <var>mu</var>, <var>beta</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>gumbelcdf</b><i> (&hellip;, &quot;upper&quot;)</i></dt>
+<dt><u>statistics:</u> [<var>p</var>, <var>plo</var>, <var>pup</var>] = <b>gumbelcdf</b><i> (<var>x</var>, <var>mu</var>, <var>beta</var>, <var>pcov</var>)</i></dt>
+<dt><u>statistics:</u> [<var>p</var>, <var>plo</var>, <var>pup</var>] = <b>gumbelcdf</b><i> (<var>x</var>, <var>mu</var>, <var>beta</var>, <var>pcov</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> [<var>p</var>, <var>plo</var>, <var>pup</var>] = <b>gumbelcdf</b><i> (&hellip;, &quot;upper&quot;)</i></dt>
 </dl>
 
-<p> Inverse of the extreme value cumulative distribution function (iCDF).
+<p> Gumbel cumulative distribution function (CDF).
 </p>
 <div class="ms-5">
-<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF)
- at <var>p</var> of the extreme value distribution (also known as the Gumbel or the
- type I generalized extreme value distribution) with location parameter
- <var>mu</var> and scale parameter <var>sigma</var>.  The size of <var>x</var> is the common
- size of <var>p</var>, <var>mu</var> and <var>sigma</var>.  A scalar input functions as a
- constant matrix of the same size as the other inputs.
+<p> For each element of <var>x</var>, compute the cumulative distribution function
+ (CDF) of the Gumbel distribution (also known as the extreme value or the type
+ I generalized extreme value distribution) at the values in <var>x</var> with
+ location parameter <var>mu</var> and scale parameter <var>beta</var>.  The size of
+ <var>p</var> is the common size of <var>x</var>, <var>mu</var> and <var>beta</var>.  A scalar
+ input functions as a constant matrix of the same size as the other inputs.
 </p>
-<p> Default values are <var>mu</var> = 0, <var>sigma</var> = 1.
+<p> Default values are <var>mu</var> = 0, <var>beta</var> = 1.
 </p>
-<p> When called with three output arguments, i.e. <code>[<var>x</var>, <var>xlo</var>,
- <var>xup</var>]</code>, it computes the confidence bounds for <var>x</var> when the input
+<p> When called with three output arguments, i.e. <code>[<var>p</var>, <var>plo</var>,
+ <var>pup</var>]</code>, it computes the confidence bounds for <var>p</var> when the input
  parameters <var>mu</var> and <var>sigma</var> are estimates.  In such case, <var>pcov</var>,
  a 2-by-2 matrix containing the covariance matrix of the estimated parameters,
  is necessary.  Optionally, <var>alpha</var>, which has a default value of 0.05,
  specifies the <code>100 * (1 - <var>alpha</var>)</code> percent confidence bounds.
- <var>xlo</var> and <var>xup</var> are arrays of the same size as <var>x</var> containing the
+ <var>plo</var> and <var>pup</var> are arrays of the same size as <var>p</var> containing the
  lower and upper confidence bounds.
+</p>
+<p> <code>[&hellip;] = gumbelcdf (&hellip;, &quot;upper&quot;)</code> computes the upper tail
+ probability of the Gumbel distribution.
 </p>
 <p> The Gumbel distribution is used to model the distribution of the maximum (or
  the minimum) of a number of samples of various distributions.  This version
- is suitable for modeling minima.  For modeling maxima, use the alternative
- Gumbel iCDF, <code>gumbelinv</code>.
+ is suitable for modeling maxima.  For modeling minima, use the alternative
+ extreme value CDF, <code>evcdf</code>.
+</p>
+<p> <code>[&hellip;] = gumbelcdf (&hellip;, &quot;upper&quot;)</code> computes the upper tail
+ probability of the extreme value (Gumbel) distribution.
 </p>
 <p> Further information about the Gumbel distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Gumbel_distribution">https://en.wikipedia.org/wiki/Gumbel_distribution</a>
 </p>
 <p> <strong>See also: </strong>
-  <a href="evcdf.html">evcdf</a>, 
-  <a href="evpdf.html">evpdf</a>, 
-  <a href="evrnd.html">evrnd</a>, 
-  <a href="evfit.html">evfit</a>, 
-  <a href="evlike.html">evlike</a>, 
-  <a href="evstat.html">evstat</a>, 
-  <a href="gumbelinv.html">gumbelinv</a>
+  <a href="gumbelinv.html">gumbelinv</a>, 
+  <a href="gumbelpdf.html">gumbelpdf</a>, 
+  <a href="gumbelrnd.html">gumbelrnd</a>, 
+  <a href="gumbelfit.html">gumbelfit</a>, 
+  <a href="gumbellike.html">gumbellike</a>, 
+gumbelstat, 
+  <a href="evcdf.html">evcdf</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/evinv.m">evinv</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/gumbelcdf.m">gumbelcdf</a>
 </div>
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -137,25 +145,24 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Plot various iCDFs from the extreme value distribution
- p = 0.001:0.001:0.999;
- x1 = evinv (p, 0.5, 2);
- x2 = evinv (p, 1.0, 2);
- x3 = evinv (p, 1.5, 3);
- x4 = evinv (p, 3.0, 4);
- plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c")
+ ## Plot various CDFs from the Gumbel distribution
+ x = -5:0.01:20;
+ p1 = gumbelcdf (x, 0.5, 2);
+ p2 = gumbelcdf (x, 1.0, 2);
+ p3 = gumbelcdf (x, 1.5, 3);
+ p4 = gumbelcdf (x, 3.0, 4);
+ plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c")
  grid on
- ylim ([-10, 10])
- legend ({"μ = 0.5, σ = 2", "μ = 1.0, σ = 2", ...
-          "μ = 1.5, σ = 3", "μ = 3.0, σ = 4"}, "location", "northwest")
- title ("Extreme value iCDF")
- xlabel ("probability")
- ylabel ("values in x")
+ legend ({"μ = 0.5, β = 2", "μ = 1.0, β = 2", ...
+          "μ = 1.5, β = 3", "μ = 3.0, β = 4"}, "location", "southeast")
+ title ("Gumbel CDF")
+ xlabel ("values in x")
+ ylabel ("probability")
 
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
-                    <img src="assets/evinv_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                    <img src="assets/gumbelcdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>

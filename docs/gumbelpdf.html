@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: evinv</title>
+    <title>Statistics: gumbelpdf</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -64,60 +64,49 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>evinv</code></b>
+              Function&nbsp;Reference: <b><code>gumbelpdf</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>x</var> = <b>evinv</b><i> (<var>p</var>)</i></dt>
-<dt><u>statistics:</u> <var>x</var> = <b>evinv</b><i> (<var>p</var>, <var>mu</var>)</i></dt>
-<dt><u>statistics:</u> <var>x</var> = <b>evinv</b><i> (<var>p</var>, <var>mu</var>, <var>sigma</var>)</i></dt>
-<dt><u>statistics:</u> [<var>x</var>, <var>xlo</var>, <var>xup</var>] = <b>evinv</b><i> (<var>p</var>, <var>mu</var>, <var>sigma</var>, <var>pcov</var>)</i></dt>
-<dt><u>statistics:</u> [<var>x</var>, <var>xlo</var>, <var>xup</var>] = <b>evinv</b><i> (<var>p</var>, <var>mu</var>, <var>sigma</var>, <var>pcov</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>gumbelpdf</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>gumbelpdf</b><i> (<var>x</var>, <var>mu</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>gumbelpdf</b><i> (<var>x</var>, <var>mu</var>, <var>beta</var>)</i></dt>
 </dl>
 
-<p> Inverse of the extreme value cumulative distribution function (iCDF).
+<p> Gumbel probability density function (PDF).
 </p>
 <div class="ms-5">
-<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF)
- at <var>p</var> of the extreme value distribution (also known as the Gumbel or the
+<p> For each element of <var>x</var>, compute the probability density function (PDF)
+ at <var>x</var> of the Gumbel distribution (also known as the extreme value or the
  type I generalized extreme value distribution) with location parameter
- <var>mu</var> and scale parameter <var>sigma</var>.  The size of <var>x</var> is the common
- size of <var>p</var>, <var>mu</var> and <var>sigma</var>.  A scalar input functions as a
+ <var>mu</var> and scale parameter <var>beta</var>.  The size of <var>y</var> is the common
+ size of <var>x</var>, <var>mu</var> and <var>beta</var>.  A scalar input functions as a
  constant matrix of the same size as the other inputs.
 </p>
-<p> Default values are <var>mu</var> = 0, <var>sigma</var> = 1.
-</p>
-<p> When called with three output arguments, i.e. <code>[<var>x</var>, <var>xlo</var>,
- <var>xup</var>]</code>, it computes the confidence bounds for <var>x</var> when the input
- parameters <var>mu</var> and <var>sigma</var> are estimates.  In such case, <var>pcov</var>,
- a 2-by-2 matrix containing the covariance matrix of the estimated parameters,
- is necessary.  Optionally, <var>alpha</var>, which has a default value of 0.05,
- specifies the <code>100 * (1 - <var>alpha</var>)</code> percent confidence bounds.
- <var>xlo</var> and <var>xup</var> are arrays of the same size as <var>x</var> containing the
- lower and upper confidence bounds.
+<p> Default values are <var>mu</var> = 0, <var>beta</var> = 1.
 </p>
 <p> The Gumbel distribution is used to model the distribution of the maximum (or
  the minimum) of a number of samples of various distributions.  This version
- is suitable for modeling minima.  For modeling maxima, use the alternative
- Gumbel iCDF, <code>gumbelinv</code>.
+ is suitable for modeling maxima.  For modeling minima, use the alternative
+ extreme value iCDF, <code>evpdf</code>.
 </p>
 <p> Further information about the Gumbel distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Gumbel_distribution">https://en.wikipedia.org/wiki/Gumbel_distribution</a>
 </p>
 <p> <strong>See also: </strong>
-  <a href="evcdf.html">evcdf</a>, 
-  <a href="evpdf.html">evpdf</a>, 
-  <a href="evrnd.html">evrnd</a>, 
-  <a href="evfit.html">evfit</a>, 
-  <a href="evlike.html">evlike</a>, 
-  <a href="evstat.html">evstat</a>, 
-  <a href="gumbelinv.html">gumbelinv</a>
+  <a href="gumbelcdf.html">gumbelcdf</a>, 
+  <a href="gumbelinv.html">gumbelinv</a>, 
+  <a href="gumbelrnd.html">gumbelrnd</a>, 
+  <a href="gumbelfit.html">gumbelfit</a>, 
+  <a href="gumbellike.html">gumbellike</a>, 
+gumbelstat, 
+  <a href="evpdf.html">evpdf</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/evinv.m">evinv</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/gumbelpdf.m">gumbelpdf</a>
 </div>
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -137,25 +126,25 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Plot various iCDFs from the extreme value distribution
- p = 0.001:0.001:0.999;
- x1 = evinv (p, 0.5, 2);
- x2 = evinv (p, 1.0, 2);
- x3 = evinv (p, 1.5, 3);
- x4 = evinv (p, 3.0, 4);
- plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c")
+ ## Plot various PDFs from the Extreme value distribution
+ x = -5:0.001:20;
+ y1 = gumbelpdf (x, 0.5, 2);
+ y2 = gumbelpdf (x, 1.0, 2);
+ y3 = gumbelpdf (x, 1.5, 3);
+ y4 = gumbelpdf (x, 3.0, 4);
+ plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-c")
  grid on
- ylim ([-10, 10])
- legend ({"μ = 0.5, σ = 2", "μ = 1.0, σ = 2", ...
-          "μ = 1.5, σ = 3", "μ = 3.0, σ = 4"}, "location", "northwest")
- title ("Extreme value iCDF")
- xlabel ("probability")
- ylabel ("values in x")
+ ylim ([0, 0.2])
+ legend ({"μ = 0.5, β = 2", "μ = 1.0, β = 2", ...
+          "μ = 1.5, β = 3", "μ = 3.0, β = 4"}, "location", "northeast")
+ title ("Extreme value PDF")
+ xlabel ("values in x")
+ ylabel ("density")
 
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
-                    <img src="assets/evinv_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                    <img src="assets/gumbelpdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>

@@ -79,19 +79,20 @@
 </p>
 <div class="ms-5">
 <p> <code><var>nlogL</var> = binolike (<var>params</var>, <var>x</var>)</code> returns the negative
- log likelihood of the binomial distribution with the parameters <var>n</var> and
- <var>ps</var>, parsed as a two-element vector <code><var>paramhat</var>([1, 2])</code>,
- where <var>n</var> is the number of trials and <var>ps</var> is the probability of
- success, given the number of successes in <var>x</var>.  Unlike <code>binofit</code>,
- which handles each element in <var>x</var> independently, <code>binolike</code> returns
- the negative log likelihood of the entire vector <var>x</var>.  This functionality
- is similar to MATLAB&rsquo;s <code>negloglik</code> function for probability distribution
- objects.
+ log likelihood of the binomial distribution with the (1) parameter <var>n</var>
+ (2) parameter <var>ps</var>, given in the two-element vector <var>paramhat</var>, where
+ <var>n</var> is the number of trials and <var>ps</var> is the probability of success,
+ given the number of successes in <var>x</var>.  Unlike <code>binofit</code>, which
+ handles each element in <var>x</var> independently, <code>binolike</code> returns the
+ negative log likelihood of the entire vector <var>x</var>.
 </p>
 <p> <code>[<var>nlogL</var>, <var>acov</var>] = betalike (<var>params</var>, <var>x</var>)</code> also
  returns the inverse of Fisher&rsquo;s information matrix, <var>avar</var>.  If the input
  parameter values in <var>params</var> are the maximum likelihood estimates, the
  diagonal elements of <var>params</var> are their asymptotic variances.
+</p>
+<p> Further information about the binomial distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Binomial_distribution">https://en.wikipedia.org/wiki/Binomial_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="binocdf.html">binocdf</a>, 

@@ -79,11 +79,11 @@
 </p>
 <div class="ms-5">
 <p> <code><var>nlogL</var> = betalike (<var>params</var>, <var>x</var>)</code> returns the negative
- log likelihood of the Beta distribution for the shape parameters <math>α</math> and
- <math>β</math> in <code><var>paramhat</var>([1, 2])</code>, respectively, given the data in
- vector <var>x</var>.  <math>α</math> and <math>β</math> must be positive real numbers and data
- in <var>x</var> in the range <math>[0,1]</math>.  Out of range parameters or data return
- <code>NaN</code>.
+ log likelihood of the data in <var>x</var> corresponding to the Beta distribution
+ with (1) shape parameter <math>α</math> and (2) shape parameter <math>β</math> given in
+ the two-element vector <var>paramhat</var>.  Both parameters must be positive real
+ numbers and the data in the range <math>[0,1]</math>.  Out of range parameters or
+ data return <code>NaN</code>.
 </p>
 <p> <code>[<var>nlogL</var>, <var>avar</var>] = betalike (<var>params</var>, <var>x</var>)</code> returns
  the inverse of Fisher&rsquo;s information matrix, <var>avar</var>.  If the input
@@ -95,6 +95,9 @@
  data that include exact zeros or ones.  In such cases, zeros and ones are
  treated as if they were values that have been left-censored at
  <code>sqrt (realmin)</code> or right-censored at <code>1 - eps/2</code>, respectively.
+</p>
+<p> Further information about the Beta distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Beta_distribution">https://en.wikipedia.org/wiki/Beta_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="betacdf.html">betacdf</a>, 
