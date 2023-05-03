@@ -115,7 +115,7 @@ endfunction
 %! xlabel ("values in x")
 %! ylabel ("probability")
 
-## Test results
+## Test output
 %!shared x, y
 %! x = [-1 0 0.5 1 2];
 %! y = 1/pi * atan ((x-1) / 2) + 1/2;

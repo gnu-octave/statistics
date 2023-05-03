@@ -22,19 +22,22 @@
 ## @deftypefn  {statistics} {@var{p} =} chi2cdf (@var{x}, @var{df})
 ## @deftypefnx {statistics} {@var{p} =} chi2cdf (@var{x}, @var{df}, "upper")
 ##
-## Chi-square cumulative distribution function.
+## Chi-squared cumulative distribution function.
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the Chi-Squared distribution with @var{df} degrees of
-## freedom.  The chi-square density function with @var{df} degrees of freedom is
-## the same as a gamma density function with parameters @var{df}/2 and 2.
+## (CDF) at @var{x} of the chi-squared distribution with @var{df} degrees of
+## freedom.  The chi-squared density function with @var{df} degrees of freedom
+## is the same as a gamma density function with parameters @var{df}/2 and 2.
 ##
 ## The size of @var{p} is the common size of @var{x} and @var{df}. A scalar
 ## input functions as a constant matrix of the same size as the other input.
 ##
 ## @code{@var{p} = chi2cdf (@var{x}, @var{df}, "upper")} computes the upper tail
-## probability of the Chi-Squared distribution with @var{df} degrees of freedom
+## probability of the chi-squared distribution with @var{df} degrees of freedom
 ## at the values in @var{x}.
+##
+## Further information about the chi-squared distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Chi-squared_distribution}
 ##
 ## @seealso{chi2inv, chi2pdf, chi2rnd, chi2stat}
 ## @end deftypefn
@@ -43,10 +46,10 @@ function p = chi2cdf (x, df, uflag)
 
   ## Check for valid number of input arguments
   if (nargin < 2)
-    error ("chi2cdf: too few input arguments.");
+    error ("chi2cdf: function called with too few input arguments.");
   endif
 
-  ## Check for valid 'upper' flag
+  ## Check for valid "upper" flag
   if (nargin > 2 && ! strcmpi (uflag, "upper"))
     error ("chi2cdf: invalid argument for upper tail.");
   else
@@ -66,9 +69,29 @@ function p = chi2cdf (x, df, uflag)
     error ("chi2cdf: X and DF must not be complex.");
   endif
 
-  p = gamcdf (x, df / 2, 2, uflag);
+  ## Compute chi-squared CDF
+  p = gamcdf (x, df/2, 2, uflag);
 
 endfunction
+
+%!demo
+%! ## Plot various CDFs from the chi-squared distribution
+%! x = 0:0.01:8;
+%! p1 = chi2cdf (x, 1);
+%! p2 = chi2cdf (x, 2);
+%! p3 = chi2cdf (x, 3);
+%! p4 = chi2cdf (x, 4);
+%! p5 = chi2cdf (x, 6);
+%! p6 = chi2cdf (x, 9);
+%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", ...
+%!       x, p4, "-c", x, p5, "-m", x, p6, "-y")
+%! grid on
+%! xlim ([0, 8])
+%! legend ({"df = 1", "df = 2", "df = 3", ...
+%!          "df = 4", "df = 6", "df = 9"}, "location", "southeast")
+%! title ("Chi-squared CDF")
+%! xlabel ("values in x")
+%! ylabel ("probability")
 
 ## Test results
 %!shared x, p, u
@@ -88,8 +111,9 @@ endfunction
 %!assert (chi2cdf ([x, NaN], single (2)), single ([p, NaN]), eps ("single"))
 
 ## Test input validation
-%!error<chi2cdf: too few input arguments.> chi2cdf ()
-%!error<chi2cdf: too few input arguments.> chi2cdf (1)
+%!error<chi2cdf: function called with too few input arguments.> chi2cdf ()
+%!error<chi2cdf: function called with too few input arguments.> chi2cdf (1)
+%!error<chi2cdf: function called with too many inputs> chi2cdf (1, 2, 3, 4)
 %!error<chi2cdf: invalid argument for upper tail.> chi2cdf (1, 2, 3)
 %!error<chi2cdf: invalid argument for upper tail.> chi2cdf (1, 2, "uper")
 %!error<chi2cdf: X and DF must be of common size or scalars.> ...

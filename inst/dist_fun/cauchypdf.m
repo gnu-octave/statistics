@@ -91,7 +91,7 @@ endfunction
 %! xlabel ("values in x")
 %! ylabel ("density")
 
-## Test results
+## Test output
 %!shared x, y
 %! x = [-1 0 0.5 1 2];
 %! y = 1/pi * ( 2 ./ ((x-1).^2 + 2^2) );

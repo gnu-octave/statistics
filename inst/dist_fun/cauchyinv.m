@@ -99,7 +99,7 @@ endfunction
 %! xlabel ("probability")
 %! ylabel ("values in x")
 
-## Test results
+## Test output
 %!shared p
 %! p = [-1 0 0.5 1 2];
 %!assert (cauchyinv (p, ones (1,5), 2 * ones (1,5)), [NaN -Inf 1 Inf NaN], eps)

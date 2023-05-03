@@ -19,22 +19,27 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{y} =} chi2pdf (@var{x}, @var{df})
 ##
-## Chi-square probability density function (PDF).
+## Chi-squared probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the chi-square distribution with @var{df} degrees of freedom.
+## at @var{x} of the chi-squared distribution with @var{df} degrees of freedom.
 ## The size of @var{y} is the common size of @var{x} and @var{df}.  A scalar
 ## input functions as a constant matrix of the same size as the other inputs.
 ##
-## @seealso{chi2cdf, chi2inv, chi2rnd, chi2stat}
+## Further information about the chi-squared distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Chi-squared_distribution}
+##
+## @seealso{chi2cdf, chi2pdf, chi2rnd, chi2stat}
 ## @end deftypefn
 
 function y = chi2pdf (x, df)
 
-  if (nargin != 2)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 2)
+    error ("chi2pdf: function called with too few input arguments.");
   endif
 
+  ## Check for common size of X and DF
   if (! isscalar (x) || ! isscalar (df))
     [retval, x, df] = common_size (x, df);
     if (retval > 0)
@@ -42,16 +47,38 @@ function y = chi2pdf (x, df)
     endif
   endif
 
+  ## Check for X and DF being reals
   if (iscomplex (x) || iscomplex (df))
     error ("chi2pdf: X and DF must not be complex.");
   endif
 
+  ## Compute chi-squared PDF
   y = gampdf (x, df/2, 2);
 
 endfunction
 
+%!demo
+%! ## Plot various PDFs from the chi-squared distribution
+%! x = 0:0.01:8;
+%! y1 = chi2pdf (x, 1);
+%! y2 = chi2pdf (x, 2);
+%! y3 = chi2pdf (x, 3);
+%! y4 = chi2pdf (x, 4);
+%! y5 = chi2pdf (x, 6);
+%! y6 = chi2pdf (x, 9);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", ...
+%!       x, y4, "-c", x, y5, "-m", x, y6, "-y")
+%! grid on
+%! xlim ([0, 8])
+%! ylim ([0, 0.5])
+%! legend ({"df = 1", "df = 2", "df = 3", ...
+%!          "df = 4", "df = 6", "df = 9"}, "location", "northeast")
+%! title ("Chi-squared PDF")
+%! xlabel ("values in x")
+%! ylabel ("density")
 
-%!shared x,y
+## Test output
+%!shared x, y
 %! x = [-1 0 0.5 1 Inf];
 %! y = [0, 1/2 * exp(-x(2:5)/2)];
 %!assert (chi2pdf (x, 2*ones (1,5)), y)
@@ -64,10 +91,12 @@ endfunction
 %!assert (chi2pdf ([x, NaN], single (2)), single ([y, NaN]))
 
 ## Test input validation
-%!error chi2pdf ()
-%!error chi2pdf (1)
-%!error chi2pdf (1,2,3)
-%!error chi2pdf (ones (3), ones (2))
-%!error chi2pdf (ones (2), ones (3))
-%!error chi2pdf (i, 2)
-%!error chi2pdf (2, i)
+%!error<chi2pdf: function called with too few input arguments.> chi2pdf ()
+%!error<chi2pdf: function called with too few input arguments.> chi2pdf (1)
+%!error<chi2pdf: function called with too many inputs> chi2pdf (1,2,3)
+%!error<chi2pdf: X and DF must be of common size or scalars.> ...
+%! chi2pdf (ones (3), ones (2))
+%!error<chi2pdf: X and DF must be of common size or scalars.> ...
+%! chi2pdf (ones (2), ones (3))
+%!error<chi2pdf: X and DF must not be complex.> chi2pdf (i, 2)
+%!error<chi2pdf: X and DF must not be complex.> chi2pdf (2, i)
