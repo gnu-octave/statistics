@@ -91,25 +91,25 @@ function [h, pval, zvalue] = ztest2 (x1, n1, x2, n2, varargin)
   if (nargin > 4)
     params = numel (varargin);
     if ((params / 2) != fix (params / 2))
-      error ("ztest2: optional arguments must be in Name-Value pairs.")
+      error ("ztest2: optional arguments must be in NAME-VALUE pairs.")
     endif
     for idx = 1:2:params
-      Name = varargin{idx};
+      name = varargin{idx};
       value = varargin{idx+1};
-      switch (lower (Name))
+      switch (lower (name))
         case "alpha"
           alpha = value;
           if (! isscalar (alpha) || ! isnumeric (alpha) || ...
                 alpha <= 0 || alpha >= 1)
-            error ("ztest2: invalid value for alpha.");
+            error ("ztest2: invalid VALUE for alpha.");
           endif
         case "tail"
           tail = value;
           if (! any (strcmpi (tail, {"both", "left", "right"})))
-            error ("ztest2: invalid value for tail.");
+            error ("ztest2: invalid VALUE for tail.");
           endif
         otherwise
-          error ("ztest2: invalid Name for optional arguments.");
+          error ("ztest2: invalid NAME for optional arguments.");
       endswitch
     endfor
   endif
@@ -141,15 +141,17 @@ endfunction
 %!error ztest2 (1);
 %!error ztest2 (1, 2);
 %!error ztest2 (1, 2, 3);
-%!error<ztest2: invalid value for alpha.> ...
+%!error<ztest2: optional arguments must be in NAME-VALUE pairs.> ...
+%! ztest2 (1, 2, 3, 4, "alpha")
+%!error<ztest2: invalid VALUE for alpha.> ...
 %! ztest2 (1, 2, 3, 4, "alpha", 0);
-%!error<ztest2: invalid value for alpha.> ...
+%!error<ztest2: invalid VALUE for alpha.> ...
 %! ztest2 (1, 2, 3, 4, "alpha", 1.2);
-%!error<ztest2: invalid value for alpha.> ...
+%!error<ztest2: invalid VALUE for alpha.> ...
 %! ztest2 (1, 2, 3, 4, "alpha", "val");
-%!error<ztest2: invalid value for tail.>  ...
+%!error<ztest2: invalid VALUE for tail.>  ...
 %! ztest2 (1, 2, 3, 4, "tail", "val");
-%!error<ztest2: invalid value for tail.>  ...
+%!error<ztest2: invalid VALUE for tail.>  ...
 %! ztest2 (1, 2, 3, 4, "alpha", 0.01, "tail", "val");
-%!error<ztest: invalid Name for optional arguments.> ...
-%! ztest (1, 2, 3, 4, "alpha", 0.01, "tail", "both", "badoption", 3);
+%!error<ztest2: invalid NAME for optional arguments.> ...
+%! ztest2 (1, 2, 3, 4, "alpha", 0.01, "tail", "both", "badoption", 3);
