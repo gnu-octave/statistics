@@ -92,6 +92,8 @@
 
  ** pdf: update support for all univariate probability density functions
 
+ ** plsregress: fixed MATLAB compatibility
+
  ** random: update support for all univariate functions
 
  ** runstest: fixed MATLAB compatibility
