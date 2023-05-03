@@ -53,7 +53,7 @@
 ## @item @qcode{"Birnbaum-Saunders"} @tab @tab @qcode{"bisa"} @tab @tab 2
 ## @item @qcode{"Burr"} @tab  @tab @qcode{"burr"} @tab  @tab 3
 ## @item @qcode{"Cauchy"} @tab @tab @qcode{"cauchy"} @tab @tab 2
-## @item @qcode{"Chi-square"} @tab @tab @qcode{"chi2"} @tab @tab 1
+## @item @qcode{"Chi-squared"} @tab @tab @qcode{"chi2"} @tab @tab 1
 ## @item @qcode{"Extreme Value"} @tab @tab @qcode{"ev"} @tab @tab 2
 ## @item @qcode{"Exponential"} @tab @tab @qcode{"exp"} @tab @tab 1
 ## @item @qcode{"F-Distribution"} @tab @tab @qcode{"f"} @tab @tab 2
@@ -71,7 +71,7 @@
 ## @item @qcode{"Negative Binomial"} @tab @tab @qcode{"nbin"} @tab @tab 2
 ## @item @qcode{"Noncentral F-Distribution"} @tab @tab @qcode{"ncf"} @tab @tab 3
 ## @item @qcode{"Noncentral Student T"} @tab @tab @qcode{"nct"} @tab @tab 2
-## @item @qcode{"Noncentral Chi-Square"} @tab @tab @qcode{"ncx2"} @tab @tab 2
+## @item @qcode{"Noncentral Chi-Squared"} @tab @tab @qcode{"ncx2"} @tab @tab 2
 ## @item @qcode{"Normal"} @tab @tab @qcode{"norm"} @tab @tab 2
 ## @item @qcode{"Poisson"} @tab @tab @qcode{"poiss"} @tab @tab 1
 ## @item @qcode{"Rayleigh"} @tab @tab @qcode{"rayl"} @tab @tab 1
