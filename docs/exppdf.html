@@ -71,6 +71,7 @@
         </div>
         <div class="card-body">
 <dl>
+<dt><u>statistics:</u> <var>y</var> = <b>exppdf</b><i> (<var>x</var>)</i></dt>
 <dt><u>statistics:</u> <var>y</var> = <b>exppdf</b><i> (<var>x</var>, <var>mu</var>)</i></dt>
 </dl>
 
@@ -78,9 +79,20 @@
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the probability density function (PDF)
- at <var>x</var> of the exponential distribution with mean <var>mu</var>.  The size of
+  of the exponential distribution with mean parameter <var>mu</var>.  The size of
  <var>y</var> is the common size of <var>x</var> and <var>mu</var>.  A scalar input functions
  as a constant matrix of the same size as the other inputs.
+</p>
+<p> Default value for <var>mu</var> = 1.
+</p>
+<p> A common alternative parameterization of the exponential distribution is to
+ use the parameter <math>λ</math> defined as the mean number of events in an
+ interval as opposed to the parameter <math>μ</math>, which is the mean wait time
+ for an event to occur. <math>λ</math> and <math>μ</math> are reciprocals,
+ i.e. <math>μ = 1 / λ</math>.
+</p>
+<p> Further information about the exponential distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Exponential_distribution">https://en.wikipedia.org/wiki/Exponential_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="expcdf.html">expcdf</a>, 
@@ -93,6 +105,49 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/exppdf.m">exppdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various PDFs from the exponential distribution
+ x = 0:0.01:5;
+ y1 = exppdf (x, 2/3);
+ y2 = exppdf (x, 1.0);
+ y3 = exppdf (x, 2.0);
+ plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+ grid on
+ ylim ([0, 1.5])
+ legend ({"μ = 2/3", "μ = 1", "μ = 2"}, "location", "northeast")
+ title ("Exponential PDF")
+ xlabel ("values in x")
+ ylabel ("density")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/exppdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

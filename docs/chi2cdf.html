@@ -75,20 +75,23 @@
 <dt><u>statistics:</u> <var>p</var> = <b>chi2cdf</b><i> (<var>x</var>, <var>df</var>, &quot;upper&quot;)</i></dt>
 </dl>
 
-<p> Chi-square cumulative distribution function.
+<p> Chi-squared cumulative distribution function.
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the cumulative distribution function
- (CDF) at <var>x</var> of the Chi-Squared distribution with <var>df</var> degrees of
- freedom.  The chi-square density function with <var>df</var> degrees of freedom is
- the same as a gamma density function with parameters <var>df</var>/2 and 2.
+ (CDF) of the chi-squared distribution with <var>df</var> degrees of freedom.  The
+ chi-squared density function with <var>df</var> degrees of freedom is the same as
+ a gamma density function with parameters <code><var>df</var>/2</code> and <code>2</code>.
 </p>
 <p> The size of <var>p</var> is the common size of <var>x</var> and <var>df</var>. A scalar
  input functions as a constant matrix of the same size as the other input.
 </p>
 <p> <code><var>p</var> = chi2cdf (<var>x</var>, <var>df</var>, &quot;upper&quot;)</code> computes the upper tail
- probability of the Chi-Squared distribution with <var>df</var> degrees of freedom
+ probability of the chi-squared distribution with <var>df</var> degrees of freedom
  at the values in <var>x</var>.
+</p>
+<p> Further information about the chi-squared distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Chi-squared_distribution">https://en.wikipedia.org/wiki/Chi-squared_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="chi2inv.html">chi2inv</a>, 
@@ -99,6 +102,54 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/chi2cdf.m">chi2cdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various CDFs from the chi-squared distribution
+ x = 0:0.01:8;
+ p1 = chi2cdf (x, 1);
+ p2 = chi2cdf (x, 2);
+ p3 = chi2cdf (x, 3);
+ p4 = chi2cdf (x, 4);
+ p5 = chi2cdf (x, 6);
+ p6 = chi2cdf (x, 9);
+ plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", ...
+       x, p4, "-c", x, p5, "-m", x, p6, "-y")
+ grid on
+ xlim ([0, 8])
+ legend ({"df = 1", "df = 2", "df = 3", ...
+          "df = 4", "df = 6", "df = 9"}, "location", "southeast")
+ title ("Chi-squared CDF")
+ xlabel ("values in x")
+ ylabel ("probability")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/chi2cdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

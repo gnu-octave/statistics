@@ -74,23 +74,75 @@
 <dt><u>statistics:</u> <var>y</var> = <b>chi2pdf</b><i> (<var>x</var>, <var>df</var>)</i></dt>
 </dl>
 
-<p> Chi-square probability density function (PDF).
+<p> Chi-squared probability density function (PDF).
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the probability density function (PDF)
- at <var>x</var> of the chi-square distribution with <var>df</var> degrees of freedom.
- The size of <var>y</var> is the common size of <var>x</var> and <var>df</var>.  A scalar
- input functions as a constant matrix of the same size as the other inputs.
+ of the chi-squared distribution with <var>df</var> degrees of freedom.  The size
+ of <var>y</var> is the common size of <var>x</var> and <var>df</var>.  A scalar input
+ functions as a constant matrix of the same size as the other inputs.
+</p>
+<p> Further information about the chi-squared distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Chi-squared_distribution">https://en.wikipedia.org/wiki/Chi-squared_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="chi2cdf.html">chi2cdf</a>, 
-  <a href="chi2inv.html">chi2inv</a>, 
+  <a href="chi2pdf.html">chi2pdf</a>, 
   <a href="chi2rnd.html">chi2rnd</a>, 
   <a href="chi2stat.html">chi2stat</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/chi2pdf.m">chi2pdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various PDFs from the chi-squared distribution
+ x = 0:0.01:8;
+ y1 = chi2pdf (x, 1);
+ y2 = chi2pdf (x, 2);
+ y3 = chi2pdf (x, 3);
+ y4 = chi2pdf (x, 4);
+ y5 = chi2pdf (x, 6);
+ y6 = chi2pdf (x, 9);
+ plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", ...
+       x, y4, "-c", x, y5, "-m", x, y6, "-y")
+ grid on
+ xlim ([0, 8])
+ ylim ([0, 0.5])
+ legend ({"df = 1", "df = 2", "df = 3", ...
+          "df = 4", "df = 6", "df = 9"}, "location", "northeast")
+ title ("Chi-squared PDF")
+ xlabel ("values in x")
+ ylabel ("density")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/chi2pdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>
