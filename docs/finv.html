@@ -77,11 +77,13 @@
 <p> Inverse of the F cumulative distribution function (iCDF).
 </p>
 <div class="ms-5">
-<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF)
- at <var>p</var> of the F distribution with <var>df1</var> and <var>df2</var> degrees of
- freedom.  The size of <var>x</var> is the common size of <var>p</var>, <var>df1</var>, and
- <var>df2</var>.  A scalar input functions as a constant matrix of the same size as
- the other inputs.
+<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF) of
+ the F distribution with <var>df1</var> and <var>df2</var> degrees of freedom.  The size
+ of <var>x</var> is the common size of <var>p</var>, <var>df1</var>, and <var>df2</var>.  A scalar
+ input functions as a constant matrix of the same size as the other inputs.
+</p>
+<p> Further information about the F distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/F-distribution">https://en.wikipedia.org/wiki/F-distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="fcdf.html">fcdf</a>, 
@@ -92,6 +94,53 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/finv.m">finv</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various iCDFs from the F distribution
+ p = 0.001:0.001:0.999;
+ x1 = finv (p, 1, 1);
+ x2 = finv (p, 2, 1);
+ x3 = finv (p, 5, 2);
+ x4 = finv (p, 10, 1);
+ x5 = finv (p, 100, 100);
+ plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c", p, x5, "-m")
+ grid on
+ ylim ([0, 4])
+ legend ({"df1 = 1, df2 = 2", "df1 = 2, df2 = 1", ...
+          "df1 = 5, df2 = 2", "df1 = 10, df2 = 1", ...
+          "df1 = 100, df2 = 100"}, "location", "northwest")
+ title ("F iCDF")
+ xlabel ("probability")
+ ylabel ("values in x")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/finv_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>
