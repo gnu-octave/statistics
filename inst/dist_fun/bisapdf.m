@@ -25,10 +25,10 @@
 ## Birnbaum-Saunders probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the Birnbaum-Saunders distribution with scale parameter
-## @var{beta} and shape parameter @var{gamma}.  The size of @var{y} is the
-## common size of @var{x}, @var{beta}, and @var{gamma}.  A scalar input
-## functions as a constant matrix of the same size as the other inputs.
+## of the Birnbaum-Saunders distribution with scale parameter @var{beta} and
+## shape parameter @var{gamma}.  The size of @var{y} is the common size of
+## @var{x}, @var{beta}, and @var{gamma}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
 ##
 ## Further information about the Birnbaum-Saunders distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Birnbaum%E2%80%93Saunders_distribution}

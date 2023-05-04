@@ -30,8 +30,8 @@
 ## random numbers chosen from the Burr type XII distribution with scale
 ## parameter @var{lambda}, first shape parameter @var{c}, and second shape
 ## parameter@var{c}, and @var{k}.  The size of @var{r} is the common size of
-## @var{lambda}, @var{c}, and @var{k}.  LAMBDA scalar input functions as a constant
-## matrix of the same size as the other inputs.
+## @var{lambda}, @var{c}, and @var{k}.  LAMBDA scalar input functions as a
+## constant matrix of the same size as the other inputs.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the

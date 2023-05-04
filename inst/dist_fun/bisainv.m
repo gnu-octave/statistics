@@ -24,11 +24,11 @@
 ##
 ## Inverse of the Birnbaum-Saunders cumulative distribution function (iCDF).
 ##
-## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## at @var{p} of the Birnbaum-Saunders distribution with scale parameter
-## @var{beta} and shape parameter @var{gamma}.  The size of @var{x} is the
-## common size of @var{p}, @var{beta}, and @var{gamma}.  A scalar input
-## functions as a constant matrix of the same size as the other inputs.
+## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
+## the Birnbaum-Saunders distribution with scale parameter @var{beta} and shape
+## parameter @var{gamma}.  The size of @var{x} is the common size of @var{p},
+## @var{beta}, and @var{gamma}.  A scalar input functions as a constant matrix
+## of the same size as the other inputs.
 ##
 ## Further information about the Birnbaum-Saunders distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Birnbaum%E2%80%93Saunders_distribution}

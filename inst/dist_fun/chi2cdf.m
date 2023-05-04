@@ -25,9 +25,9 @@
 ## Chi-squared cumulative distribution function.
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the chi-squared distribution with @var{df} degrees of
-## freedom.  The chi-squared density function with @var{df} degrees of freedom
-## is the same as a gamma density function with parameters @var{df}/2 and 2.
+## (CDF) of the chi-squared distribution with @var{df} degrees of freedom.  The
+## chi-squared density function with @var{df} degrees of freedom is the same as
+## a gamma density function with parameters @qcode{@var{df}/2} and @qcode{2}.
 ##
 ## The size of @var{p} is the common size of @var{x} and @var{df}. A scalar
 ## input functions as a constant matrix of the same size as the other input.

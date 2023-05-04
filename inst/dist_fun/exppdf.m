@@ -17,35 +17,56 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{y} =} exppdf (@var{x}, @var{mu})
+## @deftypefn  {statistics} {@var{y} =} exppdf (@var{x})
+## @deftypefnx {statistics} {@var{y} =} exppdf (@var{x}, @var{mu})
 ##
 ## Exponential probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the exponential distribution with mean @var{mu}.  The size of
+##  of the exponential distribution with mean parameter @var{mu}.  The size of
 ## @var{y} is the common size of @var{x} and @var{mu}.  A scalar input functions
 ## as a constant matrix of the same size as the other inputs.
+##
+## Default value for @var{mu} = 1.
+##
+## A common alternative parameterization of the exponential distribution is to
+## use the parameter @math{λ} defined as the mean number of events in an
+## interval as opposed to the parameter @math{μ}, which is the mean wait time
+## for an event to occur. @math{λ} and @math{μ} are reciprocals,
+## i.e. @math{μ = 1 / λ}.
+##
+## Further information about the exponential distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Exponential_distribution}
 ##
 ## @seealso{expcdf, expinv, exprnd, expfit, explike, expstat}
 ## @end deftypefn
 
 function y = exppdf (x, mu)
 
-  if (nargin != 2)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 1)
+    error ("exppdf: function called with too few input arguments.");
   endif
 
-  if (! isscalar (mu) || ! isscalar (mu))
+  ## Add defaults (if missing input arguments)
+  if (nargin < 2)
+    mu = 0;
+  endif
+
+  ## Check for common size of X and MU
+  if (! isscalar (x) || ! isscalar (mu))
     [retval, x, mu] = common_size (x, mu);
     if (retval > 0)
       error ("exppdf: X and MU must be of common size or scalars.");
     endif
   endif
 
+  ## Check for X and MU being reals
   if (iscomplex (x) || iscomplex (mu))
     error ("exppdf: X and MU must not be complex.");
   endif
 
+  ## Check for appropriate class
   if (isa (x, "single") || isa (mu, "single"))
     y = zeros (size (x), "single");
   else
@@ -64,7 +85,21 @@ function y = exppdf (x, mu)
 
 endfunction
 
+%!demo
+%! ## Plot various PDFs from the exponential distribution
+%! x = 0:0.01:5;
+%! y1 = exppdf (x, 2/3);
+%! y2 = exppdf (x, 1.0);
+%! y3 = exppdf (x, 2.0);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+%! grid on
+%! ylim ([0, 1.5])
+%! legend ({"μ = 2/3", "μ = 1", "μ = 2"}, "location", "northeast")
+%! title ("Exponential PDF")
+%! xlabel ("values in x")
+%! ylabel ("density")
 
+## Test output
 %!shared x,y
 %! x = [-1 0 0.5 1 Inf];
 %! y = gampdf (x, 1, 2);
@@ -77,10 +112,11 @@ endfunction
 %!assert (exppdf ([x, NaN], single (2)), single ([y, NaN]))
 
 ## Test input validation
-%!error exppdf ()
-%!error exppdf (1)
-%!error exppdf (1,2,3)
-%!error exppdf (ones (3), ones (2))
-%!error exppdf (ones (2), ones (3))
-%!error exppdf (i, 2)
-%!error exppdf (2, i)
+%!error<exppdf: function called with too few input arguments.> exppdf ()
+%!error<exppdf: function called with too many inputs> exppdf (1,2,3)
+%!error<exppdf: X and MU must be of common size or scalars.> ...
+%! exppdf (ones (3), ones (2))
+%!error<exppdf: X and MU must be of common size or scalars.> ...
+%! exppdf (ones (2), ones (3))
+%!error<exppdf: X and MU must not be complex.> exppdf (i, 2)
+%!error<exppdf: X and MU must not be complex.> exppdf (2, i)

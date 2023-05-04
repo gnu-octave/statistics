@@ -23,14 +23,15 @@
 ## Binomial cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the binomial distribution with parameters @var{n} and
-## @var{ps}, where @var{n} is the number of trials and @var{ps} is the
-## probability of success.  The size of @var{p} is the common size of @var{x},
-## @var{n}, and @var{ps}.  A scalar input functions as a constant matrix of the
-## same size as the other inputs.
+## (CDF) of the binomial distribution with parameters @var{n} and @var{ps},
+## where @var{n} is the number of trials and @var{ps} is the probability of
+## success.  The size of @var{p} is the common size of @var{x}, @var{n}, and
+## @var{ps}.  A scalar input functions as a constant matrix of the same size as
+## the other inputs.
 ##
-## binocdf (@var{x}, @var{n}, @var{ps}, "upper") computes the complement
-## of the cumulative distribution function.
+## @code{@var{p} = binocdf (@var{x}, @var{n}, @var{ps}, "upper")} computes the
+## upper tail probability of the binomial distribution with parameters
+## @var{n} and @var{ps} at the values in @var{x}.
 ##
 ## Further information about the binomial distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Binomial_distribution}

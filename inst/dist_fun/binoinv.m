@@ -22,12 +22,11 @@
 ##
 ## Inverse of the Binomial cumulative distribution function (iCDF).
 ##
-## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## at @var{p} of the binomial distribution with parameters @var{n} and @var{ps},
-## where @var{n} is the number of trials and @var{ps} is the probability of
-## success.  The size of @var{x} is the common size of @var{p}, @var{n}, and
-## @var{ps}.  A scalar input functions as a constant matrix of the same size as
-## the other inputs.
+## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
+## the binomial distribution with parameters @var{n} and @var{ps}, where @var{n}
+## is the number of trials and @var{ps} is the probability of success.  The size
+## of @var{x} is the common size of @var{p}, @var{n}, and @var{ps}.  A scalar
+## input functions as a constant matrix of the same size as the other inputs.
 ##
 ## Further information about the binomial distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Binomial_distribution}
@@ -58,12 +57,12 @@ function x = binoinv (p, n, ps)
     x = zeros (size (p));
   endif
 
-  k = (!(p >= 0) | !(p <= 1) | !(n >= 0) | (n != fix (n)) | ...
-       !(ps >= 0) | !(ps <= 1));
+  k = (! (p >= 0) | ! (p <= 1) | ! (n >= 0) | (n != fix (n)) | ! (ps >= 0) | ...
+       ! (ps <= 1));
   x(k) = NaN;
 
-  k = find ((p >= 0) & (p <= 1) & (n >= 0) & (n == fix (n)
-             & (ps >= 0) & (ps <= 1)));
+  k = find ((p >= 0) & (p <= 1) & (n >= 0) & (n == fix (n) ...
+                     & (ps >= 0) & (ps <= 1)));
   if (! isempty (k))
     p = p(k);
     if (isscalar (n) && isscalar (ps))

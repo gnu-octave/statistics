@@ -101,7 +101,6 @@ function r = chi2rnd (df, varargin)
 
 endfunction
 
-
 ## Test results
 %!assert (size (chi2rnd (2)), [1, 1])
 %!assert (size (chi2rnd (ones (2,1))), [2, 1])
@@ -123,8 +122,6 @@ endfunction
 ## Test input validation
 %!error<chi2rnd: function called with too few input arguments.> chi2rnd ()
 %!error<chi2rnd: DF must not be complex.> chi2rnd (i)
-%!error chi2rnd (ones (3), ones (2))
-%!error chi2rnd (ones (2), ones (3))
 %!error<chi2rnd: SZ must be a scalar or a row vector of non-negative integers.> ...
 %! chi2rnd (1, -1)
 %!error<chi2rnd: SZ must be a scalar or a row vector of non-negative integers.> ...
@@ -135,6 +132,8 @@ endfunction
 %! chi2rnd (1, [2 -1 2])
 %!error<chi2rnd: SZ must be a scalar or a row vector of non-negative integers.> ...
 %! chi2rnd (1, [2 0 2.5])
+%!error<chi2rnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! chi2rnd (ones (2), ones (2))
 %!error<chi2rnd: dimensions must be non-negative integers.> ...
 %! chi2rnd (1, 2, -1, 5)
 %!error<chi2rnd: dimensions must be non-negative integers.> ...

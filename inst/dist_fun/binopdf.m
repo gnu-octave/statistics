@@ -23,11 +23,11 @@
 ## Binomial probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the binomial distribution with parameters @var{n} and @var{ps},
-## where @var{n} is the number of trials and @var{ps} is the probability of
-## success.  The size of @var{y} is the common size of @var{x}, @var{n}, and
-## @var{ps}.  A scalar input functions as a constant matrix of the same size as
-## the other inputs.
+## of the binomial distribution with parameters @var{n} and @var{ps}, where
+## @var{n} is the number of trials and @var{ps} is the probability of success.
+## The size of @var{y} is the common size of @var{x}, @var{n}, and @var{ps}.  A
+## scalar input functions as a constant matrix of the same size as the other
+## inputs.
 ##
 ## Matlab incompatibility: Octave's @code{binopdf} returns NaN for complex
 ## input values.  Matlab 2021b returns values for complex inputs despite the

@@ -24,11 +24,11 @@
 ## Extreme value probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the extreme value distribution (also known as the Gumbel or the
-## type I generalized extreme value distribution) with location parameter
-## @var{mu} and scale parameter @var{sigma}.  The size of @var{y} is the common
-## size of @var{x}, @var{mu} and @var{sigma}.  A scalar input functions as a
-## constant matrix of the same size as the other inputs.
+## of the extreme value distribution (also known as the Gumbel or the type I
+## generalized extreme value distribution) with location parameter @var{mu} and
+## scale parameter @var{sigma}.  The size of @var{y} is the common size of
+## @var{x}, @var{mu} and @var{sigma}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
 ##
 ## Default values are @var{mu} = 0, @var{sigma} = 1.
 ##
@@ -47,7 +47,7 @@ function y = evpdf (x, mu, sigma)
 
   ## Check for valid number of input arguments
   if (nargin < 1)
-    error ("evpdf: too few input arguments.");
+    error ("evpdf: function called with too few input arguments.");
   endif
 
   ## Add defaults (if missing input arguments)
@@ -99,7 +99,7 @@ endfunction
 %! xlabel ("values in x")
 %! ylabel ("density")
 
-## Test results
+## Test output
 %!shared x, y0, y1
 %! x = [-5, 0, 1, 2, 3];
 %! y0 = [0.0067, 0.3679, 0.1794, 0.0046, 0];
@@ -109,7 +109,7 @@ endfunction
 %!assert (evpdf (x, ones (1,5), ones (1,5)), y1, 1e-4)
 
 ## Test input validation
-%!error<evpdf: too few input arguments.> evpdf ()
+%!error<evpdf: function called with too few input arguments.> evpdf ()
 %!error<evpdf: X, MU, and SIGMA must be of common size or scalars.> ...
 %! evpdf (ones (3), ones (2), ones (2))
 %!error<evpdf: X, MU, and SIGMA must not be complex.> evpdf (i, 2, 2)

@@ -24,10 +24,10 @@
 ## Cauchy probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the Cauchy distribution with location parameter @var{x0} and
-## scale parameter @var{gamma}.  The size of @var{y} is the common size of
-## @var{x}, @var{x0}, and @var{gamma}.  A scalar input functions as a constant
-## matrix of the same size as the other inputs.
+## of the Cauchy distribution with location parameter @var{x0} and scale
+## parameter @var{gamma}.  The size of @var{y} is the common size of @var{x},
+## @var{x0}, and @var{gamma}.  A scalar input functions as a constant matrix of
+## the same size as the other inputs.
 ##
 ## Further information about the Cauchy distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Cauchy_distribution}

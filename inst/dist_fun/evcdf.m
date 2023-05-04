@@ -170,7 +170,7 @@ function [varargout] = evcdf (x, varargin)
    if (any (zvar < 0))
       error ("evcdf: bad covariance matrix.");
    endif
-   normz = -norminv (alpha / 2);
+   normz = -probit (alpha / 2);
    halfwidth = normz * sqrt (zvar);
    zlo = z(sigma_p) - halfwidth;
    zup = z(sigma_p) + halfwidth;
@@ -202,7 +202,7 @@ endfunction
 %! xlabel ("values in x")
 %! ylabel ("probability")
 
-## Test results
+## Test output
 %!shared x, y
 %! x = [-Inf, 1, 2, Inf];
 %! y = [0, 0.6321, 0.9340, 1];

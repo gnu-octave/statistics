@@ -25,10 +25,10 @@
 ## Cauchy cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the Cauchy distribution with location parameter @var{x0}
-## and scale parameter @var{gamma}.  The size of @var{p} is the common size of
-## @var{x}, @var{x0}, and @var{gamma}.  A scalar input functions as a constant
-## matrix of the same size as the other inputs.
+## (CDF) of the Cauchy distribution with location parameter @var{x0} and scale
+## parameter @var{gamma}.  The size of @var{p} is the common size of @var{x},
+## @var{x0}, and @var{gamma}.  A scalar input functions as a constant matrix of
+## the same size as the other inputs.
 ##
 ## @code{@var{p} = cauchycdf (@var{x}, @var{x0}, @var{gamma}, "upper")} computes
 ## the upper tail probability of the Cauchy distribution with parameters

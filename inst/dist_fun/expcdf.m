@@ -27,25 +27,32 @@
 ## Exponential cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the exponential distribution with mean @var{mu}.  The
-## size of @var{p} is the common size of @var{x}, @var{mu} and @var{sigma}.
-## A scalar input functions as a constant matrix of the same size as the other
-## inputs.
+## (CDF) of the exponential distribution with mean parameter @var{mu}.  The size
+## of @var{p} is the common size of @var{x} and @var{mu}.  A scalar input
+## functions as a constant matrix of the same size as the other inputs.
 ##
 ## Default value for @var{mu} = 1.
 ##
-## The arguments can be of common size or scalars.
+## A common alternative parameterization of the exponential distribution is to
+## use the parameter @math{λ} defined as the mean number of events in an
+## interval as opposed to the parameter @math{μ}, which is the mean wait time
+## for an event to occur. @math{λ} and @math{μ} are reciprocals,
+## i.e. @math{μ = 1 / λ}.
 ##
-## When called with three output arguments, @code{[@var{p}, @var{plo},
-## @var{pup}]} it computes the confidence bounds for @var{p} when the input
-## parameter @var{mu} is an estimate.  In such case, @var{pcov} is the variance
-## of the estimated @var{mu}.  @var{alpha} has a default value of 0.05, and
-## specifies 100 * (1 - @var{alpha})% confidence bounds. @var{plo} and @var{pup}
-## are arrays of the same size as @var{p} containing the lower and upper
-## confidence bounds.
+## When called with three output arguments, i.e. @code{[@var{p}, @var{plo},
+## @var{pup}]}, it computes the confidence bounds for @var{p} when the input
+## parameter @var{mu} is an estimate.  In such case, @var{pcov}, a scalar value
+## with the variance of the estimated parameter @var{mu}, is necessary.
+## Optionally, @var{alpha}, which has a default value of 0.05, specifies the
+## @qcode{100 * (1 - @var{alpha})} percent confidence bounds.  @var{plo} and
+## @var{pup} are arrays of the same size as @var{p} containing the lower and
+## upper confidence bounds.
 ##
 ## @code{[@dots{}] = expcdf (@dots{}, "upper")} computes the upper tail
 ## probability of the exponential distribution.
+##
+## Further information about the exponential distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Exponential_distribution}
 ##
 ## @seealso{expinv, exppdf, exprnd, expfit, explike, expstat}
 ## @end deftypefn
@@ -77,8 +84,11 @@ function [varargout] = expcdf (x, varargin)
   if (numel (varargin) > 1)
     pcov = varargin{2};
     ## Check for variance being a scalar
-    if (numel (pcov) != 1)
+    if (! isscalar (pcov))
       error ("expcdf: invalid size of variance, PCOV must be a scalar.");
+    endif
+    if (pcov < 0)
+      error ("expcdf: variance, PCOV, cannot be negative.");
     endif
   else
     ## Check that cov matrix is provided if 3 output arguments are requested
@@ -90,14 +100,14 @@ function [varargout] = expcdf (x, varargin)
   if (numel (varargin) > 2)
     alpha = varargin{3};
     ## Check for valid alpha value
-    if (! isnumeric (alpha) || numel (alpha) !=1 || alpha <= 0 || alpha >= 1)
+    if (! isnumeric (alpha) || numel (alpha) != 1 || alpha <= 0 || alpha >= 1)
       error ("expcdf: invalid value for alpha.");
     endif
   else
     alpha = 0.05;
   endif
 
-  ## Check for common size of X, MU, and SIGMA
+  ## Check for common size of X and MU
   if (! isscalar (x) || ! isscalar (mu))
     [err, x, mu] = common_size (x, mu);
     if (err > 0)
@@ -105,7 +115,7 @@ function [varargout] = expcdf (x, varargin)
     endif
   endif
 
-  ## Check for X, MU, and SIGMA being reals
+  ## Check for X and MU being reals
   if (iscomplex (x) || iscomplex (mu))
     error ("expcdf: X and MU must not be complex.");
   endif
@@ -145,10 +155,7 @@ function [varargout] = expcdf (x, varargin)
 
     ## Convert to log scale
     log_z = log (z);
-    if (pcov < 0)
-      error ("evcdf: variance, PCOV, cannot be negative.");
-    endif
-    norm_z = -norminv (alpha / 2);
+    norm_z = -probit (alpha / 2);
     halfwidth = norm_z * sqrt (pcov ./ (mu .^ 2));
     zlo = log_z - halfwidth;
     zup = log_z + halfwidth;
@@ -161,34 +168,28 @@ function [varargout] = expcdf (x, varargin)
        plo = - expm1 (-exp (zlo));
        pup = - expm1 (-exp (zup));
     endif
+
+    ## Prepare output
     varargout{2} = plo;
     varargout{3} = pup;
   endif
 
 endfunction
 
-## Test input validation
-%!error<expcdf: invalid number of input arguments.> expcdf ()
-%!error<expcdf: invalid number of input arguments.> expcdf (1, 2 ,3 ,4 ,5, 6)
-%!error<expcdf: invalid argument for upper tail.> expcdf (1, 2, 3, 4, "uper")
-%!error<expcdf: X and MU must be of common size or scalars.> ...
-%! expcdf (ones (3), ones (2))
-%!error<expcdf: invalid size of variance, PCOV must be a scalar.> ...
-%! expcdf (2, 3, [1, 2])
-%!error<expcdf: variance, PCOV, is required for confidence bounds.> ...
-%! [p, plo, pup] = expcdf (1, 2)
-%!error<expcdf: invalid value for alpha.> [p, plo, pup] = ...
-%! expcdf (1, 2, 3, 0)
-%!error<expcdf: invalid value for alpha.> [p, plo, pup] = ...
-%! expcdf (1, 2, 3, 1.22)
-%!error<expcdf: invalid value for alpha.> [p, plo, pup] = ...
-%! expcdf (1, 2, 3, "alpha", "upper")
-%!error<expcdf: X and MU must not be complex.> expcdf (i, 2)
-%!error<expcdf: X and MU must not be complex.> expcdf (2, i)
-%!error<evcdf: variance, PCOV, cannot be negative.> ...
-%! [p, plo, pup] = expcdf (1, 2, -1, 0.04)
+%!demo
+%! ## Plot various CDFs from the exponential distribution
+%! x = 0:0.01:5;
+%! p1 = expcdf (x, 2/3);
+%! p2 = expcdf (x, 1.0);
+%! p3 = expcdf (x, 2.0);
+%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r")
+%! grid on
+%! legend ({"μ = 2/3", "μ = 1", "μ = 2"}, "location", "southeast")
+%! title ("Exponential CDF")
+%! xlabel ("values in x")
+%! ylabel ("probability")
 
-## Test results
+## Test output
 %!shared x, p
 %! x = [-1 0 0.5 1 Inf];
 %! p = [0, 1 - exp(-x(2:end)/2)];
@@ -217,4 +218,23 @@ endfunction
 %! assert (plo, 0.20191708150860, 1e-14);
 %! assert (pup, 0.85533681958325, 1e-14);
 
-
+## Test input validation
+%!error<expcdf: invalid number of input arguments.> expcdf ()
+%!error<expcdf: invalid number of input arguments.> expcdf (1, 2 ,3 ,4 ,5, 6)
+%!error<expcdf: invalid argument for upper tail.> expcdf (1, 2, 3, 4, "uper")
+%!error<expcdf: X and MU must be of common size or scalars.> ...
+%! expcdf (ones (3), ones (2))
+%!error<expcdf: invalid size of variance, PCOV must be a scalar.> ...
+%! expcdf (2, 3, [1, 2])
+%!error<expcdf: variance, PCOV, is required for confidence bounds.> ...
+%! [p, plo, pup] = expcdf (1, 2)
+%!error<expcdf: invalid value for alpha.> [p, plo, pup] = ...
+%! expcdf (1, 2, 3, 0)
+%!error<expcdf: invalid value for alpha.> [p, plo, pup] = ...
+%! expcdf (1, 2, 3, 1.22)
+%!error<expcdf: invalid value for alpha.> [p, plo, pup] = ...
+%! expcdf (1, 2, 3, "alpha", "upper")
+%!error<expcdf: X and MU must not be complex.> expcdf (i, 2)
+%!error<expcdf: X and MU must not be complex.> expcdf (2, i)
+%!error<expcdf: variance, PCOV, cannot be negative.> ...
+%! [p, plo, pup] = expcdf (1, 2, -1, 0.04)

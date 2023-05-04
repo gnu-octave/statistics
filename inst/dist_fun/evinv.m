@@ -25,12 +25,12 @@
 ##
 ## Inverse of the extreme value cumulative distribution function (iCDF).
 ##
-## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## at @var{p} of the extreme value distribution (also known as the Gumbel or the
-## type I generalized extreme value distribution) with location parameter
-## @var{mu} and scale parameter @var{sigma}.  The size of @var{x} is the common
-## size of @var{p}, @var{mu} and @var{sigma}.  A scalar input functions as a
-## constant matrix of the same size as the other inputs.
+## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
+## the extreme value distribution (also known as the Gumbel or the type I
+## generalized extreme value distribution) with location parameter @var{mu} and
+## scale parameter @var{sigma}.  The size of @var{x} is the common size of
+## @var{p}, @var{mu} and @var{sigma}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
 ##
 ## Default values are @var{mu} = 0, @var{sigma} = 1.
 ##

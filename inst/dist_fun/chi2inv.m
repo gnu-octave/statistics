@@ -21,10 +21,10 @@
 ##
 ## Inverse of the chi-squared cumulative distribution function (iCDF).
 ##
-## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## at @var{p} of the chi-squared distribution with @var{df} degrees of freedom.
-## The size of @var{x} is the common size of @var{p} and @var{df}.  A scalar
-## input functions as a constant matrix of the same size as the other inputs.
+## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
+## the chi-squared distribution with @var{df} degrees of freedom.  The size of
+## @var{x} is the common size of @var{p} and @var{df}.  A scalar input functions
+## as a constant matrix of the same size as the other inputs.
 ##
 ## Further information about the chi-squared distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Chi-squared_distribution}

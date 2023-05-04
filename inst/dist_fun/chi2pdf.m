@@ -22,9 +22,9 @@
 ## Chi-squared probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the chi-squared distribution with @var{df} degrees of freedom.
-## The size of @var{y} is the common size of @var{x} and @var{df}.  A scalar
-## input functions as a constant matrix of the same size as the other inputs.
+## of the chi-squared distribution with @var{df} degrees of freedom.  The size
+## of @var{y} is the common size of @var{x} and @var{df}.  A scalar input
+## functions as a constant matrix of the same size as the other inputs.
 ##
 ## Further information about the chi-squared distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Chi-squared_distribution}

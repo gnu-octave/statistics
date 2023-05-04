@@ -23,12 +23,11 @@
 ##
 ## Inverse of the Burr type XII cumulative distribution function (iCDF).
 ##
-## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## at @var{p} of the Burr type XII distribution with scale parameter
-## @var{lambda}, first shape parameter @var{c}, and second shape parameter
-## @var{k}.  The size of @var{x} is the common size of @var{p}, @var{lambda},
-## @var{c}, and @var{k}.  A scalar input functions as a constant matrix of the
-## same size as the other inputs.
+## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
+## the Burr type XII distribution with scale parameter @var{lambda}, first shape
+## parameter @var{c}, and second shape parameter @var{k}.  The size of @var{x}
+## is the common size of @var{p}, @var{lambda}, @var{c}, and @var{k}.  A scalar
+## input functions as a constant matrix of the same size as the other inputs.
 ##
 ## Further information about the Burr distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Burr_distribution}

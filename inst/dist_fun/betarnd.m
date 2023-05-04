@@ -25,7 +25,7 @@
 ## Random arrays from the Beta distribution.
 ##
 ## @code{@var{r} = betarnd (@var{a}, @var{b})} returns an array of random
-## numbers chosen from the Beta distribution with parameters @var{a} and
+## numbers chosen from the Beta distribution with shape parameters @var{a} and
 ## @var{b}.  The size of @var{r} is the common size of @var{a} and @var{b}.
 ## A scalar input functions as a constant matrix of the same size as the other
 ## inputs.

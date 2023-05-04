@@ -22,8 +22,8 @@
 ## Inverse of the Beta distribution (iCDF).
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## at @var{p} of the Beta distribution with parameters @var{a} and @var{b}.  The
-## size of @var{x} is the common size of @var{x}, @var{a} and @var{b}.  A scalar
+## of the Beta distribution with shape parameters @var{a} and @var{b}.  The size
+## of @var{x} is the common size of @var{x}, @var{a}, and @var{b}.  A scalar
 ## input functions as a constant matrix of the same size as the other inputs.
 ##
 ## Further information about the Beta distribution can be found at

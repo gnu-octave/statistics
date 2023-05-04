@@ -24,10 +24,10 @@
 ##
 ## Beta cumulative distribution function (CDF).
 ##
-## For each element of @var{x}, compute the cumulative distribution function
-## at @var{x} of the Beta distribution with parameters @var{a} and @var{b}.  The
-## size of @var{p} is the common size of @var{x}, @var{a} and @var{b}.  A scalar
-## input functions as a constant matrix of the same size as the other inputs.
+## For each element of @var{x}, compute the cumulative distribution function of
+## the Beta distribution with shape parameters @var{a} and @var{b}.  The size of
+## @var{p} is the common size of @var{x}, @var{a}, and @var{b}.  A scalar input
+## functions as a constant matrix of the same size as the other inputs.
 ##
 ## @code{@var{p} = betacdf (@var{x}, @var{a}, @var{b}, "upper")} computes the
 ## upper tail probability of the Beta distribution with parameters @var{a} and

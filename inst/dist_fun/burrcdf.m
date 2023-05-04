@@ -25,11 +25,11 @@
 ## Burr type XII cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the Burr type XII distribution with scale parameter
-## @var{lambda}, first shape parameter @var{c}, and second shape parameter
-## @var{k}.  The size of @var{p} is the common size of @var{x}, @var{lambda},
-## @var{c}, and @var{k}.  A scalar input functions as a constant matrix of the
-## same size as the other inputs.
+## (CDF) of the Burr type XII distribution with scale parameter @var{lambda},
+## first shape parameter @var{c}, and second shape parameter @var{k}.  The size
+## of @var{p} is the common size of @var{x}, @var{lambda}, @var{c}, and @var{k}.
+## A scalar input functions as a constant matrix of the same size as the other
+## inputs.
 ##
 ## @code{@var{p} = burrcdf (@var{x}, @var{beta}, @var{gamma}, "upper")}
 ## computes the upper tail probability of the Birnbaum-Saunders distribution
