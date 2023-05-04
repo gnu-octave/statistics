@@ -36,15 +36,20 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
+## Further information about the F distribution can be found at
+## @url{https://en.wikipedia.org/wiki/F-distribution}
+##
 ## @seealso{fcdf, finv, fpdf, fstat}
 ## @end deftypefn
 
 function r = frnd (df1, df2, varargin)
 
+  ## Check for valid number of input arguments
   if (nargin < 2)
-    print_usage ();
+    error ("frnd: function called with too few input arguments.");
   endif
 
+  ## Check for common size of DF1 and DF2
   if (! isscalar (df1) || ! isscalar (df2))
     [retval, df1, df2] = common_size (df1, df2);
     if (retval > 0)
@@ -52,38 +57,46 @@ function r = frnd (df1, df2, varargin)
     endif
   endif
 
+  ## Check for DF1 and DF2 being reals
   if (iscomplex (df1) || iscomplex (df2))
     error ("frnd: DF1 and DF2 must not be complex.");
   endif
 
+  ## Parse and check SIZE arguments
   if (nargin == 2)
     sz = size (df1);
   elseif (nargin == 3)
-    if (isscalar (varargin{1}) && varargin{1} >= 0)
+    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+                               && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
+    elseif (isrow (varargin{1}) && all (varargin{1} >= 0) ...
+                                && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
-    else
-      error (strcat (["frnd: dimension vector must be a row vector of"], ...
-                     [" non-negative integers."]));
+    elseif
+      error (strcat (["frnd: SZ must be a scalar or a row vector"], ...
+                     [" of non-negative integers."]));
     endif
   elseif (nargin > 3)
-    if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
+    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
+    if (any (posint))
       error ("frnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
+  ## Check that parameters match requested dimensions in size
   if (! isscalar (df1) && ! isequal (size (df1), sz))
     error ("frnd: DF1 and DF2 must be scalar or of size SZ.");
   endif
 
+  ## Check for class type
   if (isa (df1, "single") || isa (df2, "single"))
     cls = "single";
   else
     cls = "double";
   endif
 
+  ## Generate random sample from F distribution
   if (isscalar (df1) && isscalar (df2))
     if ((df1 > 0) && (df1 < Inf) && (df2 > 0) && (df2 < Inf))
       r = df2/df1 * randg (df1/2, sz, cls) ./ randg (df2/2, sz, cls);
@@ -99,35 +112,53 @@ function r = frnd (df1, df2, varargin)
 
 endfunction
 
-
-%!assert (size (frnd (1,2)), [1, 1])
-%!assert (size (frnd (ones (2,1), 2)), [2, 1])
-%!assert (size (frnd (ones (2,2), 2)), [2, 2])
-%!assert (size (frnd (1, 2*ones (2,1))), [2, 1])
-%!assert (size (frnd (1, 2*ones (2,2))), [2, 2])
-%!assert (size (frnd (1, 2, 3)), [3, 3])
-%!assert (size (frnd (1, 2, [4 1])), [4, 1])
-%!assert (size (frnd (1, 2, 4, 1)), [4, 1])
+## Test output
+%!assert (size (frnd (1, 1)), [1 1])
+%!assert (size (frnd (1, ones (2,1))), [2, 1])
+%!assert (size (frnd (1, ones (2,2))), [2, 2])
+%!assert (size (frnd (ones (2,1), 1)), [2, 1])
+%!assert (size (frnd (ones (2,2), 1)), [2, 2])
+%!assert (size (frnd (1, 1, 3)), [3, 3])
+%!assert (size (frnd (1, 1, [4, 1])), [4, 1])
+%!assert (size (frnd (1, 1, 4, 1)), [4, 1])
+%!assert (size (frnd (1, 1, 4, 1, 5)), [4, 1, 5])
+%!assert (size (frnd (1, 1, 0, 1)), [0, 1])
+%!assert (size (frnd (1, 1, 1, 0)), [1, 0])
+%!assert (size (frnd (1, 1, 1, 2, 0, 5)), [1, 2, 0, 5])
 
 ## Test class of input preserved
-%!assert (class (frnd (1, 2)), "double")
-%!assert (class (frnd (single (1), 2)), "single")
-%!assert (class (frnd (single ([1 1]), 2)), "single")
-%!assert (class (frnd (1, single (2))), "single")
-%!assert (class (frnd (1, single ([2 2]))), "single")
+%!assert (class (frnd (1, 1)), "double")
+%!assert (class (frnd (1, single (1))), "single")
+%!assert (class (frnd (1, single ([1, 1]))), "single")
+%!assert (class (frnd (single (1), 1)), "single")
+%!assert (class (frnd (single ([1, 1]), 1)), "single")
 
 ## Test input validation
-%!error frnd ()
-%!error frnd (1)
-%!error frnd (ones (3), ones (2))
-%!error frnd (ones (2), ones (3))
-%!error frnd (i, 2)
-%!error frnd (2, i)
-%!error frnd (1,2, -1)
-%!error frnd (1,2, ones (2))
-%!error frnd (1, 2, [2 -1 2])
-%!error frnd (1,2, 1, ones (2))
-%!error frnd (1,2, 1, -1)
-%!error frnd (ones (2,2), 2, 3)
-%!error frnd (ones (2,2), 2, [3, 2])
-%!error frnd (ones (2,2), 2, 2, 3)
+%!error<frnd: function called with too few input arguments.> frnd ()
+%!error<frnd: function called with too few input arguments.> frnd (1)
+%!error<frnd: DF1 and DF2 must be of common size or scalars.> ...
+%! frnd (ones (3), ones (2))
+%!error<frnd: DF1 and DF2 must be of common size or scalars.> ...
+%! frnd (ones (2), ones (3))
+%!error<frnd: DF1 and DF2 must not be complex.> frnd (i, 2, 3)
+%!error<frnd: DF1 and DF2 must not be complex.> frnd (1, i, 3)
+%!error<frnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! frnd (1, 2, -1)
+%!error<frnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! frnd (1, 2, 1.2)
+%!error<frnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! frnd (1, 2, ones (2))
+%!error<frnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! frnd (1, 2, [2 -1 2])
+%!error<frnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! frnd (1, 2, [2 0 2.5])
+%!error<frnd: dimensions must be non-negative integers.> ...
+%! frnd (1, 2, 2, -1, 5)
+%!error<frnd: dimensions must be non-negative integers.> ...
+%! frnd (1, 2, 2, 1.5, 5)
+%!error<frnd: DF1 and DF2 must be scalar or of size SZ.> ...
+%! frnd (2, ones (2), 3)
+%!error<frnd: DF1 and DF2 must be scalar or of size SZ.> ...
+%! frnd (2, ones (2), [3, 2])
+%!error<frnd: DF1 and DF2 must be scalar or of size SZ.> ...
+%! frnd (2, ones (2), 3, 2)

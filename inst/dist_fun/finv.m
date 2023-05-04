@@ -21,21 +21,25 @@
 ##
 ## Inverse of the F cumulative distribution function (iCDF).
 ##
-## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## at @var{p} of the F distribution with @var{df1} and @var{df2} degrees of
-## freedom.  The size of @var{x} is the common size of @var{p}, @var{df1}, and
-## @var{df2}.  A scalar input functions as a constant matrix of the same size as
-## the other inputs.
+## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
+## the F distribution with @var{df1} and @var{df2} degrees of freedom.  The size
+## of @var{x} is the common size of @var{p}, @var{df1}, and @var{df2}.  A scalar
+## input functions as a constant matrix of the same size as the other inputs.
+##
+## Further information about the F distribution can be found at
+## @url{https://en.wikipedia.org/wiki/F-distribution}
 ##
 ## @seealso{fcdf, fpdf, frnd, fstat}
 ## @end deftypefn
 
 function x = finv (p, df1, df2)
 
-  if (nargin != 3)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 3)
+    error ("finv: function called with too few input arguments.");
   endif
 
+  ## Check for common size of P, DF1, and DF2
   if (! isscalar (p) || ! isscalar (df1) || ! isscalar (df2))
     [retval, p, df1, df2] = common_size (p, df1, df2);
     if (retval > 0)
@@ -43,10 +47,12 @@ function x = finv (p, df1, df2)
     endif
   endif
 
+  ## Check for P, DF1, and DF2 being reals
   if (iscomplex (p) || iscomplex (df1) || iscomplex (df2))
     error ("finv: P, DF1, and DF2 must not be complex.");
   endif
 
+  ## Check for class type
   if (isa (p, "single") || isa (df1, "single") || isa (df2, "single"))
     x = NaN (size (p), "single");
   else
@@ -66,7 +72,25 @@ function x = finv (p, df1, df2)
 
 endfunction
 
+%!demo
+%! ## Plot various iCDFs from the F distribution
+%! p = 0.001:0.001:0.999;
+%! x1 = finv (p, 1, 1);
+%! x2 = finv (p, 2, 1);
+%! x3 = finv (p, 5, 2);
+%! x4 = finv (p, 10, 1);
+%! x5 = finv (p, 100, 100);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c", p, x5, "-m")
+%! grid on
+%! ylim ([0, 4])
+%! legend ({"df1 = 1, df2 = 2", "df1 = 2, df2 = 1", ...
+%!          "df1 = 5, df2 = 2", "df1 = 10, df2 = 1", ...
+%!          "df1 = 100, df2 = 100"}, "location", "northwest")
+%! title ("F iCDF")
+%! xlabel ("probability")
+%! ylabel ("values in x")
 
+## Test output
 %!shared p
 %! p = [-1 0 0.5 1 2];
 %!assert (finv (p, 2*ones (1,5), 2*ones (1,5)), [NaN 0 1 Inf NaN])
@@ -83,13 +107,15 @@ endfunction
 %!assert (finv ([p, NaN], 2, single (2)), single ([NaN 0 1 Inf NaN NaN]))
 
 ## Test input validation
-%!error finv ()
-%!error finv (1)
-%!error finv (1,2)
-%!error finv (1,2,3,4)
-%!error finv (ones (3), ones (2), ones (2))
-%!error finv (ones (2), ones (3), ones (2))
-%!error finv (ones (2), ones (2), ones (3))
-%!error finv (i, 2, 2)
-%!error finv (2, i, 2)
-%!error finv (2, 2, i)
+%!error<finv: function called with too few input arguments.> finv ()
+%!error<finv: function called with too few input arguments.> finv (1)
+%!error<finv: function called with too few input arguments.> finv (1,2)
+%!error<finv: P, DF1, and DF2 must be of common size or scalars.> ...
+%! finv (ones (3), ones (2), ones (2))
+%!error<finv: P, DF1, and DF2 must be of common size or scalars.> ...
+%! finv (ones (2), ones (3), ones (2))
+%!error<finv: P, DF1, and DF2 must be of common size or scalars.> ...
+%! finv (ones (2), ones (2), ones (3))
+%!error<finv: P, DF1, and DF2 must not be complex.> finv (i, 2, 2)
+%!error<finv: P, DF1, and DF2 must not be complex.> finv (2, i, 2)
+%!error<finv: P, DF1, and DF2 must not be complex.> finv (2, 2, i)

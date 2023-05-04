@@ -71,7 +71,7 @@ function p = fcdf (x, df1, df2, uflag)
     error ("fcdf: X, DF1, and DF2 must not be complex.");
   endif
 
-  ## Initialize P according to appropriate class type
+  ## Check for class type
   if (isa (x, "single") || isa (df1, "single") || isa (df2, "single"))
     p = zeros (size (x), "single");
   else
@@ -128,23 +128,24 @@ function p = fcdf (x, df1, df2, uflag)
 endfunction
 
 %!demo
-%! ## Plot various CDFs from the Birnbaum-Saunders distribution
+%! ## Plot various CDFs from the F distribution
 %! x = 0.01:0.01:4;
-%! p1 = bisacdf (x, 1, 0.5);
-%! p2 = bisacdf (x, 1, 1);
-%! p3 = bisacdf (x, 1, 2);
-%! p4 = bisacdf (x, 1, 5);
-%! p5 = bisacdf (x, 1, 10);
+%! p1 = fcdf (x, 1, 2);
+%! p2 = fcdf (x, 2, 1);
+%! p3 = fcdf (x, 5, 2);
+%! p4 = fcdf (x, 10, 1);
+%! p5 = fcdf (x, 100, 100);
 %! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c", x, p5, "-m")
 %! grid on
-%! legend ({"β = 1, γ = 0.5", "β = 1, γ = 1", "β = 1, γ = 2", ...
-%!          "β = 1, γ = 5", "β = 1, γ = 10"}, "location", "southeast")
-%! title ("Birnbaum-Saunders CDF")
+%! legend ({"df1 = 1, df2 = 2", "df1 = 2, df2 = 1", ...
+%!          "df1 = 5, df2 = 2", "df1 = 10, df2 = 1", ...
+%!          "df1 = 100, df2 = 100"}, "location", "southeast")
+%! title ("F CDF")
 %! xlabel ("values in x")
 %! ylabel ("probability")
 
 ## Test output
-%!shared x,y
+%!shared x, y
 %! x = [-1, 0, 0.5, 1, 2, Inf];
 %! y = [0, 0, 1/3, 1/2, 2/3, 1];
 %!assert (fcdf (x, 2*ones (1,6), 2*ones (1,6)), y, eps)
