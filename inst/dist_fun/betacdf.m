@@ -57,7 +57,7 @@ function p = betacdf (x, a, b, uflag)
     uflag = false;
   endif
 
-  ## Check for common size of X, A and B
+  ## Check for common size of X, A, and B
   if (! isscalar (x) || ! isscalar (a) || ! isscalar (b))
     [err, x, a, b] = common_size (x, a, b);
     if (err > 0)
@@ -65,7 +65,7 @@ function p = betacdf (x, a, b, uflag)
     endif
   endif
 
-  ## Check for X, A and B being reals
+  ## Check for X, A, and B being reals
   if (iscomplex (x) || iscomplex (a) || iscomplex (b))
     error ("betacdf: X, A, and B must not be complex.");
   endif

@@ -34,21 +34,25 @@
 
 function x = betainv (p, a, b)
 
-  if (nargin != 3)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 3)
+    error ("betainv: function called with too few input arguments.");
   endif
 
-  if (! isscalar (a) || ! isscalar (b))
+  ## Check for common size of P, A, and B
+  if (! isscalar (p) || ! isscalar (a) || ! isscalar (b))
     [retval, p, a, b] = common_size (p, a, b);
     if (retval > 0)
       error ("betainv: P, A, and B must be of common size or scalars.");
     endif
   endif
 
+  ## Check for P, A, and B being reals
   if (iscomplex (p) || iscomplex (a) || iscomplex (b))
     error ("betainv: P, A, and B must not be complex.");
   endif
 
+  ## Check for class type
   if (isa (p, "single") || isa (a, "single") || isa (b, "single"))
     x = zeros (size (p), "single");
   else
@@ -146,13 +150,16 @@ endfunction
 %!assert (betainv ([p, NaN], 1, single (2)), single ([NaN 0 0.5 1 NaN NaN]), eps("single"))
 
 ## Test input validation
-%!error betainv ()
-%!error betainv (1)
-%!error betainv (1,2)
-%!error betainv (1,2,3,4)
-%!error betainv (ones (3), ones (2), ones (2))
-%!error betainv (ones (2), ones (3), ones (2))
-%!error betainv (ones (2), ones (2), ones (3))
-%!error betainv (i, 2, 2)
-%!error betainv (2, i, 2)
-%!error betainv (2, 2, i)
+%!error<betainv: function called with too few input arguments.> betainv ()
+%!error<betainv: function called with too few input arguments.> betainv (1)
+%!error<betainv: function called with too few input arguments.> betainv (1,2)
+%!error<betainv: function called with too many inputs> betainv (1,2,3,4)
+%!error<betainv: P, A, and B must be of common size or scalars.> ...
+%! betainv (ones (3), ones (2), ones (2))
+%!error<betainv: P, A, and B must be of common size or scalars.> ...
+%! betainv (ones (2), ones (3), ones (2))
+%!error<betainv: P, A, and B must be of common size or scalars.> ...
+%! betainv (ones (2), ones (2), ones (3))
+%!error<betainv: P, A, and B must not be complex.> betainv (i, 2, 2)
+%!error<betainv: P, A, and B must not be complex.> betainv (2, i, 2)
+%!error<betainv: P, A, and B must not be complex.> betainv (2, 2, i)

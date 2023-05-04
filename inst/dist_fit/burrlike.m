@@ -57,7 +57,7 @@ function [nlogL, acov] = burrlike (params, x, censor, freq)
 
   ## Check input arguments
   if (nargin < 2)
-    error ("burrlike: too few input arguments.");
+    error ("burrlike: function called with too few input arguments.");
   endif
 
   if (! isvector (x))
@@ -176,7 +176,7 @@ endfunction
 ## Test output
 
 ## Test input validation
-%!error<burrlike: too few input arguments.> burrlike (3.25)
+%!error<burrlike: function called with too few input arguments.> burrlike (3.25)
 %!error<burrlike: X must be a vector.> burrlike ([1, 2, 3], ones (2))
 %!error<burrlike: X cannot have negative values.> burrlike ([1, 2, 3], [-1, 3])
 %!error<burrlike: PARAMS must be a three-element vector.> ...

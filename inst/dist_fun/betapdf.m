@@ -35,21 +35,25 @@
 
 function y = betapdf (x, a, b)
 
-  if (nargin != 3)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 3)
+    error ("betapdf: function called with too few input arguments.");
   endif
 
-  if (! isscalar (a) || ! isscalar (b))
+  ## Check for common size of X, A, and B
+  if (! isscalar (x) || ! isscalar (a) || ! isscalar (b))
     [retval, x, a, b] = common_size (x, a, b);
     if (retval > 0)
       error ("betapdf: X, A, and B must be of common size or scalars.");
     endif
   endif
 
+  ## Check for X, A, and B being reals
   if (iscomplex (x) || iscomplex (a) || iscomplex (b))
     error ("betapdf: X, A, and B must not be complex.");
   endif
 
+  ## Check for class type
   if (isa (x, "single") || isa (a, "single") || isa (b, "single"));
     y = zeros (size (x), "single");
   else
@@ -140,13 +144,16 @@ endfunction
 %!assert (betapdf (0.5, 1000, 1000), 35.678, 1e-3)
 
 ## Test input validation
-%!error betapdf ()
-%!error betapdf (1)
-%!error betapdf (1, 2)
-%!error betapdf (1, 2, 3, 4)
-%!error betapdf (ones (3), ones (2), ones (2))
-%!error betapdf (ones (2), ones (3), ones (2))
-%!error betapdf (ones (2), ones (2), ones (3))
-%!error betapdf (i, 2, 2)
-%!error betapdf (2, i, 2)
-%!error betapdf (2, 2, i)
+%!error<betapdf: function called with too few input arguments.> betapdf ()
+%!error<betapdf: function called with too few input arguments.> betapdf (1)
+%!error<betapdf: function called with too few input arguments.> betapdf (1,2)
+%!error<betapdf: function called with too many inputs> betapdf (1,2,3,4)
+%!error<betapdf: X, A, and B must be of common size or scalars.> ...
+%! betapdf (ones (3), ones (2), ones (2))
+%!error<betapdf: X, A, and B must be of common size or scalars.> ...
+%! betapdf (ones (2), ones (3), ones (2))
+%!error<betapdf: X, A, and B must be of common size or scalars.> ...
+%! betapdf (ones (2), ones (2), ones (3))
+%!error<betapdf: X, A, and B must not be complex.> betapdf (i, 2, 2)
+%!error<betapdf: X, A, and B must not be complex.> betapdf (2, i, 2)
+%!error<betapdf: X, A, and B must not be complex.> betapdf (2, 2, i)

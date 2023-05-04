@@ -29,7 +29,7 @@
 ## scalar input functions as a constant matrix of the same size as the other
 ## inputs.
 ##
-## Matlab incompatibility: Octave's @code{binopdf} returns NaN for complex
+## Matlab incompatibility: Octave's @code{binopdf} does not allow complex
 ## input values.  Matlab 2021b returns values for complex inputs despite the
 ## documentation indicates integer and real value inputs are required.
 ##
@@ -41,20 +41,28 @@
 
 function y = binopdf (x, n, ps)
 
-  if (nargin != 3)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 3)
+    error ("binopdf: function called with too few input arguments.");
   endif
 
-  ## ensure all equal size arrays or scalars, expand scalars to common size.
-  [size_mismatch, x, n, ps] = common_size (x, n, ps);
-  if (size_mismatch > 0)
-    error ("binopdf: X, N, and PS must be of common size or scalars.");
+  ## Check for common size of X, N, and PS
+  if (! isscalar (x) || ! isscalar (n) || ! isscalar (ps))
+    [retval, x, n, ps] = common_size (x, n, ps);
+    if (retval > 0)
+      error ("binopdf: X, N, and PS must be of common size or scalars.");
+    endif
   endif
 
-  sz_x = size (x); ## save original size for reshape later
-  x = x(:); n = n(:); ps = ps(:); ## columns for easier vectorization
+  ## Check for X, N, and PS being reals
+  if (iscomplex (x) || iscomplex (n) || iscomplex (ps))
+    error ("binopdf: X, N, and PS must not be complex.");
+  endif
 
-  ## initialize output, preserve class of output if any are singles
+  sz_x = size (x); # save original size for reshape later
+  x = x(:); n = n(:); ps = ps(:); # columns for easier vectorization
+
+  ## Initialize output, preserve class of output if any are singles
   if (isa (x, "single") || isa (n, "single") || isa (ps, "single"));
     y = zeros (numel (x), 1, "single");
   else
@@ -89,7 +97,7 @@ function y = binopdf (x, n, ps)
   y(catch_special) = exp (n(catch_special) .* log (ps(catch_special)));
 
 
-  ## perform Loader pdf calculation on non-trivial elements
+  ## Perform Loader pdf calculation on non-trivial elements
   if (any (k))
     y(k) = loader_expansion (x(k), n(k), ps(k), nx(k), q(k));
   endif
@@ -98,7 +106,7 @@ function y = binopdf (x, n, ps)
   ksp = ((ps == 0) & (x == 0)) | (ps == 1) & (x == n);
   y(ksp) = 1;
 
-  ## input NaN, n not pos int, or ps outside [0,1],
+  ## Input NaN, n not pos int, or ps outside [0,1],
   ## set output to NaN (overrides 0 or 1)
   ksp = (n ~= fix (n)) | (n < 0) | (ps < 0) | (ps > 1) | isnan (x) ...
            | isnan (n) | isnan (ps);
@@ -108,7 +116,7 @@ function y = binopdf (x, n, ps)
 endfunction
 
 function y = loader_expansion (x, n, ps, nx, q)
-    ## precalculated constants, d_n from n = 0 to 30
+    ## Precalculated constants, d_n from n = 0 to 30
     ## extended from Loader using octave symbolic vpa
     ## out to n = 30
     d_n = [
@@ -145,23 +153,23 @@ function y = loader_expansion (x, n, ps, nx, q)
       ];
     stored_dn = numel(d_n);
 
-    ## indices for precalculated vs to-be-calculated values
+    ## Indices for precalculated vs to-be-calculated values
     n_precalc = (n > 0) & (n < stored_dn);
     x_precalc =  (x > 0) & (x < stored_dn);
     nx_precalc = (nx > 0) & (nx < stored_dn);
 
     [delta_n, delta_x, delta_nx] = deal (zeros (size (x)));
-    ## fetch precalculated values
+    ## Fetch precalculated values
     delta_n(n_precalc) = d_n(n(n_precalc));
     delta_x(x_precalc) = d_n(x(x_precalc));
     delta_nx(nx_precalc) = d_n(nx(nx_precalc));
 
-    ## calculate any other d(n) values
+    ## Calculate any other d(n) values
     delta_n(!n_precalc) = delta_fn (n(!n_precalc));
     delta_x(!x_precalc) = delta_fn (x(!x_precalc));
     delta_nx(!nx_precalc) = delta_fn (nx(!nx_precalc));
 
-    ## calculate exp(log(pdf));
+    ## Calculate exp(log(pdf));
     y = exp ((delta_n - delta_x - delta_nx - ...
                        deviance (x, n .* ps) - ...
                         deviance (nx, n .* q)) - ...
@@ -199,17 +207,17 @@ function D = deviance (x, np)
   vtest = abs (v) < 0.1;
 
   if (any (vtest))
-    ## for abs(v) < 0.1, do taylor expansion for higher precision.  Expansion
+    ## For abs(v) < 0.1, do taylor expansion for higher precision.  Expansion
     ## term: v^(2j+1)/(2j+1).  For abs(v)< 0.1, term drops slowest for max
     ## abs(v) = 0.1. (n+1)th term is <<eps (1st_term) by n=10 for doubles.
     ## jmax should be >= 10.
     jmax = 12;
 
-    two_jpone = 2 * [1:jmax] + 1; ##sum term 2*j+1 (row vector expansion)
+    two_jpone = 2 * [1:jmax] + 1; # sum term 2*j+1 (row vector expansion)
 
     D = zeros (numel (epsilon), 1);
 
-    # D = (x-np)*v + 2*x*sum_over_j(v^2j+1 / 2j+1)
+    ## D = (x-np)*v + 2*x*sum_over_j(v^2j+1 / 2j+1)
     D(vtest) = (x(vtest) - np(vtest)) .* v(vtest) + 2 .* x(vtest) .* ...
              sum (v(vtest).^(two_jpone) ./ two_jpone, 2);
 
@@ -254,9 +262,6 @@ endfunction
 %!assert (binopdf (0, 1.1, 0), NaN)
 %!assert (binopdf (1, 2, -1), NaN)
 %!assert (binopdf (1, 2, 1.5), NaN)
-%!assert (binopdf (i, 2, 0.5), NaN) ##matlab incompatibility
-%!assert (binopdf (1, i, 0.5), NaN) ##matlab incompatibility
-%!assert (binopdf (1, 2, i), NaN)   ##matlab incompatibility
 
 ## Test empty inputs
 %!assert (binopdf ([], 1, 1), [])
@@ -278,14 +283,16 @@ endfunction
 %!assert (binopdf ([x, NaN], 2, single (0.5)), single ([y, NaN]))
 
 ## Test input validation
-%!error binopdf ()
-%!error binopdf (1)
-%!error binopdf (1,2)
-%!error binopdf (1,2,3,4)
-%!error <X, N, and PS must be> binopdf (1, ones (2), ones (3))
-%!error <X, N, and PS must be> binopdf (ones (3), 1, ones (2))
-%!error <X, N, and PS must be> binopdf (ones (3), ones (2), 1)
-%!error <X, N, and PS must be> binopdf (ones (3), ones (2), ones (2))
-%!error <X, N, and PS must be> binopdf (ones (2), ones (3), ones (2))
-%!error <X, N, and PS must be> binopdf (ones (2), ones (2), ones (3))
-
+%!error<binopdf: function called with too few input arguments.> binopdf ()
+%!error<binopdf: function called with too few input arguments.> binopdf (1)
+%!error<binopdf: function called with too few input arguments.> binopdf (1, 2)
+%!error<binopdf: function called with too many inputs> binopdf (1, 2, 3, 4)
+%!error<binopdf: X, N, and PS must be of common size or scalars.> ...
+%! binopdf (ones (3), ones (2), ones (2))
+%!error<binopdf: X, N, and PS must be of common size or scalars.> ...
+%! binopdf (ones (2), ones (3), ones (2))
+%!error<binopdf: X, N, and PS must be of common size or scalars.> ...
+%! binopdf (ones (2), ones (2), ones (3))
+%!error<binopdf: X, N, and PS must not be complex.> binopdf (i, 2, 2)
+%!error<binopdf: X, N, and PS must not be complex.> binopdf (2, i, 2)
+%!error<binopdf: X, N, and PS must not be complex.> binopdf (2, 2, i)

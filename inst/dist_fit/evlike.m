@@ -61,7 +61,7 @@ function [nlogL, avar] = evlike (params, x, censor, freq)
 
   ## Check input arguments and add defaults
   if (nargin < 2)
-    error ("evlike: too few input arguments.");
+    error ("evlike: function called with too few input arguments.");
   endif
   if (numel (params) != 2)
     error ("evlike: wrong parameters length.");
@@ -140,8 +140,10 @@ endfunction
 %! assert (avar, avar_out, 1e-14);
 
 ## Test input validation
-%!error<evlike: too few input arguments.> evlike ([12, 15]);
-%!error<evlike: wrong parameters length.> evlike ([12, 15, 3], [1:50]);
-%!error<evlike: X must be a vector.> evlike ([12, 3], ones (10, 2));
-%!error<evlike: X and CENSOR> evlike ([12, 15], [1:50], [1, 2, 3]);
-%!error<evlike: X and FREQ> evlike ([12, 15], [1:50], [], [1, 2, 3]);
+%!error<evlike: function called with too few input arguments.> evlike ([12, 15])
+%!error<evlike: wrong parameters length.> evlike ([12, 15, 3], [1:50])
+%!error<evlike: X must be a vector.> evlike ([12, 3], ones (10, 2))
+%!error<evlike: X and CENSOR vectors mismatch.> ...
+%! evlike ([12, 15], [1:50], [1, 2, 3])
+%!error<evlike: X and FREQ vectors mismatch.> ...
+%! evlike ([12, 15], [1:50], [], [1, 2, 3])

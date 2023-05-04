@@ -45,7 +45,7 @@ function [nlogL, acov] = binolike (params, x)
 
   ## Check input arguments
   if (nargin < 2)
-    error ("binolike: too few input arguments.");
+    error ("binolike: function called with too few input arguments.");
   endif
 
   if (! isvector (x))
@@ -53,7 +53,7 @@ function [nlogL, acov] = binolike (params, x)
   endif
 
   if (any (x < 0))
-    error ("binofit: X cannot have negative values.");
+    error ("binolike: X cannot have negative values.");
   endif
 
   if (length (params) != 2)
@@ -71,7 +71,7 @@ function [nlogL, acov] = binolike (params, x)
   endif
 
   if (any (x > params(1)))
-    error (strcat (["binofit: number of successes, X, must be at least"], ...
+    error (strcat (["binolike: number of successes, X, must be at least"], ...
                    [" as large as the number of trials, N."]));
   endif
 
@@ -96,9 +96,9 @@ endfunction
 %! assert (acov(4), 0.0740, 1e-4)
 
 ## Test input validation
-%!error<binolike: too few input arguments.> binolike (3.25)
+%!error<binolike: function called with too few input arguments.> binolike (3.25)
 %!error<binolike: X must be a vector.> binolike ([5, 0.2], ones (2))
-%!error<binofit: X cannot have negative values.> binolike ([5, 0.2], [-1, 3])
+%!error<binolike: X cannot have negative values.> binolike ([5, 0.2], [-1, 3])
 %!error<binolike: PARAMS must be a two-element vector.> ...
 %! binolike ([1, 0.2, 3], [1, 3, 5, 7])
 %!error<binolike: number of trials,> binolike ([1.5, 0.2], 1)
@@ -106,4 +106,4 @@ endfunction
 %!error<binolike: number of trials,> binolike ([Inf, 0.2], 1)
 %!error<binolike: probability of success,> binolike ([5, 1.2], [3, 5])
 %!error<binolike: probability of success,> binolike ([5, -0.2], [3, 5])
-%!error<binofit: number of successes,> binolike ([5, 0.2], [3, 5, 7])
+%!error<binolike: number of successes,> binolike ([5, 0.2], [3, 5, 7])

@@ -49,7 +49,7 @@ function [nlogL, avar] = betalike (params, x)
 
   ## Check input arguments and add defaults
   if (nargin < 2)
-    error ("betalike: too few input arguments.");
+    error ("betalike: function called with too few input arguments.");
   endif
   if (numel (params) != 2)
     error ("betalike: wrong parameters length.");
@@ -170,6 +170,6 @@ endfunction
 %! assert (avar, avar_out, 1e-14);
 
 ## Test input validation
-%!error<betalike: too few input arguments.> betalike ([12, 15]);
-%!error betalike ([12, 15], 3, 5, 6, 8);
+%!error<betalike: function called with too few input arguments.> ...
+%! betalike ([12, 15]);
 %!error<betalike: wrong parameters length.> betalike ([12, 15, 3], [1:50]);

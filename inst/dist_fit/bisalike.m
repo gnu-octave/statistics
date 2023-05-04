@@ -56,7 +56,7 @@ function [nlogL, acov] = bisalike (params, x, censor, freq)
 
   ## Check input arguments
   if (nargin < 2)
-    error ("bisalike: too few input arguments.");
+    error ("bisalike: function called with too few input arguments.");
   endif
 
   if (! isvector (x))
@@ -167,7 +167,7 @@ endfunction
 %! assert (nlogL, 8.9950, 1e-4);
 
 ## Test input validation
-%!error<bisalike: too few input arguments.> bisalike (3.25)
+%!error<bisalike: function called with too few input arguments.> bisalike (3.25)
 %!error<bisalike: X must be a vector.> bisalike ([5, 0.2], ones (2))
 %!error<bisalike: X cannot have negative values.> bisalike ([5, 0.2], [-1, 3])
 %!error<bisalike: PARAMS must be a two-element vector.> ...

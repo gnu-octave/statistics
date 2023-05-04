@@ -24,35 +24,36 @@
 ##
 ## Negative log-likelihood for the exponential distribution.
 ##
-## @subheading Arguments
+## @code{@var{nlogL} = explike (@var{params}, @var{x})} returns the negative
+## log likelihood of the data in @var{x} corresponding to the exponential
+## distribution with mean parameter @var{mu}.  @var{x} must be a vector of
+## non-negative values, otherwise @qcode{NaN} is returned.
 ##
-## @itemize @bullet
-## @item
-## @var{mu} is a scalar containing the mean of the exponential distribution
-## (@math{@var{mu} = 1 / λ}, where λ is the rate, or inverse scale parameter).
-## @item
-## @var{x} is the vector of given values.
-## @item
-## @var{censor} is a boolean vector of the same size as @var{x} with 1 for
-## observations that are right-censored and 0 for observations that are observed
-## exactly.
-## @item
-## @var{freq} is a vector of the same size as @var{x} that contains integer
-## frequencies for the corresponding elements in @var{x}, but may contain any
-## non-integer non-negative values.  Pass in [] for @var{censor} to use its
-## default value.
-## @end itemize
+## @code{[@var{nlogL}, @var{avar}] = explike (@var{params}, @var{x})} also
+## returns the inverse of Fisher's information matrix, @var{avar}.  If the input
+## mean parameter, @var{mu}, is the maximum likelihood estimate, @var{avar} is
+## its asymptotic variance.
 ##
-## @subheading Return values
+## @code{[@dots{}] = explike (@var{params}, @var{x}, @var{censor})} accepts a
+## boolean vector, @var{censor}, of the same size as @var{x} with @qcode{1}s for
+## observations that are right-censored and @qcode{0}s for observations that are
+## observed exactly.  By default, or if left empty,
+## @qcode{@var{censor} = zeros (size (@var{x}))}.
 ##
-## @itemize @bullet
-## @item
-## @var{nlogL} is the negative log-likelihood.
-## @item
-## @var{avar} is the inverse of the Fisher information matrix.
-## (The Fisher information matrix is the second derivative of the negative log
-## likelihood with respect to the parameter value.)
-## @end itemize
+## @code{[@dots{}] = explike (@var{params}, @var{x}, @var{censor}, @var{freq})}
+## accepts a frequency vector, @var{freq}, of the same size as @var{x}.
+## @var{freq} typically contains integer frequencies for the corresponding
+## elements in @var{x}, but it can contain any non-integer non-negative values.
+## By default, or if left empty, @qcode{@var{freq} = ones (size (@var{x}))}.
+##
+## A common alternative parameterization of the exponential distribution is to
+## use the parameter @math{λ} defined as the mean number of events in an
+## interval as opposed to the parameter @math{μ}, which is the mean wait time
+## for an event to occur. @math{λ} and @math{μ} are reciprocals,
+## i.e. @math{μ = 1 / λ}.
+##
+## Further information about the exponential distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Exponential_distribution}
 ##
 ## @seealso{expcdf, expinv, exppdf, exprnd, expfit, expstat}
 ## @end deftypefn
@@ -61,7 +62,7 @@ function [nlogL, avar] = explike (mu, x, censor, freq)
 
   ## Check input arguments
   if (nargin < 2)
-    error ("explike: too few input arguments.");
+    error ("explike: function called with too few input arguments.");
   endif
 
   if (! isvector (x))
@@ -133,4 +134,13 @@ endfunction
 %! expected_V = 0.4;
 %! assert (L, expected_L, 0.001);
 %! assert (V, expected_V, 0.001);
-%!error explike ();
+
+## Test input validation
+%!error<explike: function called with too few input arguments.> explike ()
+%!error<explike: function called with too few input arguments.> explike (2)
+%!error<explike: MU must be a scalar.> explike ([12, 3], [1:50])
+%!error<explike: X must be a vector.> explike (3, ones (10, 2))
+%!error<explike: X and CENSOR vectors mismatch.> ...
+%! explike (3, [1:50], [1, 2, 3])
+%!error<explike: X and FREQ vectors mismatch.> ...
+%! explike (3, [1:50], [], [1, 2, 3])

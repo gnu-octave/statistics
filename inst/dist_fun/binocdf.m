@@ -41,10 +41,12 @@
 
 function p = binocdf (x, n, ps, uflag)
 
-  if (nargin < 3 || nargin > 4)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 3)
+    error ("binocdf: function called with too few input arguments.");
   endif
 
+  ## Check for valid "upper" flag
   if (nargin == 4)
     if (strcmp (uflag, "upper"))
        uflag = true;
@@ -55,17 +57,20 @@ function p = binocdf (x, n, ps, uflag)
      uflag = false;
   endif
 
-  if (! isscalar (n) || ! isscalar (ps))
+  ## Check for common size of X, N, and PS
+  if (! isscalar (x) || ! isscalar (n) || ! isscalar (ps))
     [retval, x, n, ps] = common_size (x, n, ps);
     if (retval > 0)
       error ("binocdf: X, N, and PS must be of common size or scalars.");
     endif
   endif
 
+  ## Check for X, N, and PS being reals
   if (iscomplex (x) || iscomplex (n) || iscomplex (ps))
     error ("binocdf: X, N, and PS must not be complex.");
   endif
 
+  ## Check for class type
   if (isa (x, "single") || isa (n, "single") || isa (ps, "single"));
     p = nan (size (x), "single");
   else
@@ -136,9 +141,10 @@ endfunction
 %!assert (binocdf ([x, NaN], 2, single (0.5)), single ([p, NaN]))
 
 ## Test input validation
-%!error<Invalid call to binocdf.  Correct usage is:> binocdf ()
-%!error<Invalid call to binocdf.  Correct usage is:> binocdf (1)
-%!error<Invalid call to binocdf.  Correct usage is:> binocdf (1, 2)
+%!error<binocdf: function called with too few input arguments.> binocdf ()
+%!error<binocdf: function called with too few input arguments.> binocdf (1)
+%!error<binocdf: function called with too few input arguments.> binocdf (1, 2)
+%!error<binocdf: function called with too many inputs> binocdf (1, 2, 3, 4, 5)
 %!error<binocdf: invalid argument for upper tail.> binocdf (1, 2, 3, "tail")
 %!error<binocdf: invalid argument for upper tail.> binocdf (1, 2, 3, 4)
 %!error<binocdf: X, N, and PS must be of common size or scalars.> ...

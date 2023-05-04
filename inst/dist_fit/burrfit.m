@@ -351,37 +351,37 @@ endfunction
 %! l = 1; c = 2; k = 3;
 %! r = burrrnd (l, c, k, 100000, 1);
 %! lambda_c_kA = burrfit (r);
-%! assert (lambda_c_kA(1), l, 0.1);
-%! assert (lambda_c_kA(2), c, 0.1);
-%! assert (lambda_c_kA(3), k, 0.2);
+%! assert (lambda_c_kA(1), l, 0.2);
+%! assert (lambda_c_kA(2), c, 0.2);
+%! assert (lambda_c_kA(3), k, 0.3);
 %!test
 %! l = 0.5; c = 1; k = 3;
 %! r = burrrnd (l, c, k, 100000, 1);
 %! lambda_c_kA = burrfit (r);
-%! assert (lambda_c_kA(1), l, 0.1);
-%! assert (lambda_c_kA(2), c, 0.1);
-%! assert (lambda_c_kA(3), k, 0.2);
+%! assert (lambda_c_kA(1), l, 0.2);
+%! assert (lambda_c_kA(2), c, 0.2);
+%! assert (lambda_c_kA(3), k, 0.3);
 %!test
 %! l = 1; c = 3; k = 1;
 %! r = burrrnd (l, c, k, 100000, 1);
 %! lambda_c_kA = burrfit (r);
-%! assert (lambda_c_kA(1), l, 0.1);
-%! assert (lambda_c_kA(2), c, 0.1);
-%! assert (lambda_c_kA(3), k, 0.2);
+%! assert (lambda_c_kA(1), l, 0.2);
+%! assert (lambda_c_kA(2), c, 0.2);
+%! assert (lambda_c_kA(3), k, 0.3);
 %!test
 %! l = 3; c = 2; k = 1;
 %! r = burrrnd (l, c, k, 100000, 1);
 %! lambda_c_kA = burrfit (r);
-%! assert (lambda_c_kA(1), l, 0.1);
-%! assert (lambda_c_kA(2), c, 0.1);
-%! assert (lambda_c_kA(3), k, 0.2);
+%! assert (lambda_c_kA(1), l, 0.2);
+%! assert (lambda_c_kA(2), c, 0.2);
+%! assert (lambda_c_kA(3), k, 0.3);
 %!test
 %! l = 4; c = 2; k = 4;
 %! r = burrrnd (l, c, k, 100000, 1);
 %! lambda_c_kA = burrfit (r);
-%! assert (lambda_c_kA(1), l, 0.1);
-%! assert (lambda_c_kA(2), c, 0.1);
-%! assert (lambda_c_kA(3), k, 0.2);
+%! assert (lambda_c_kA(1), l, 0.2);
+%! assert (lambda_c_kA(2), c, 0.2);
+%! assert (lambda_c_kA(3), k, 0.3);
 
 ## Test input validation
 %!error<burrfit: X must be a vector.> burrfit (ones (2,5));

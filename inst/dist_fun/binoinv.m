@@ -36,21 +36,25 @@
 
 function x = binoinv (p, n, ps)
 
-  if (nargin != 3)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 3)
+    error ("binoinv: function called with too few input arguments.");
   endif
 
+  ## Check for common size of P, N, and PS
   if (! isscalar (n) || ! isscalar (ps))
     [retval, p, n, ps] = common_size (p, n, ps);
     if (retval > 0)
-      error ("binoinv: X, N, and PS must be of common size or scalars.");
+      error ("binoinv: P, N, and PS must be of common size or scalars.");
     endif
   endif
 
+  ## Check for P, N, and PS being reals
   if (iscomplex (p) || iscomplex (n) || iscomplex (ps))
-    error ("binoinv: X, N, and PS must not be complex.");
+    error ("binoinv: P, N, and PS must not be complex.");
   endif
 
+  ## Check for class type
   if (isa (p, "single") || isa (n, "single") || isa (ps, "single"));
     x = zeros (size (p), "single");
   else
@@ -208,13 +212,16 @@ endfunction
 %!assert (binoinv (binocdf (x, 2*x, 1./x), 2*x, 1./x), x, tol)
 
 ## Test input validation
-%!error binoinv ()
-%!error binoinv (1)
-%!error binoinv (1,2)
-%!error binoinv (1,2,3,4)
-%!error binoinv (ones (3), ones (2), ones (2))
-%!error binoinv (ones (2), ones (3), ones (2))
-%!error binoinv (ones (2), ones (2), ones (3))
-%!error binoinv (i, 2, 2)
-%!error binoinv (2, i, 2)
-%!error binoinv (2, 2, i)
+%!error<binoinv: function called with too few input arguments.> binoinv ()
+%!error<binoinv: function called with too few input arguments.> binoinv (1)
+%!error<binoinv: function called with too few input arguments.> binoinv (1,2)
+%!error<binoinv: function called with too many inputs> binoinv (1,2,3,4)
+%!error<binoinv: P, N, and PS must be of common size or scalars.> ...
+%! binoinv (ones (3), ones (2), ones (2))
+%!error<binoinv: P, N, and PS must be of common size or scalars.> ...
+%! binoinv (ones (2), ones (3), ones (2))
+%!error<binoinv: P, N, and PS must be of common size or scalars.> ...
+%! binoinv (ones (2), ones (2), ones (3))
+%!error<binoinv: P, N, and PS must not be complex.> binoinv (i, 2, 2)
+%!error<binoinv: P, N, and PS must not be complex.> binoinv (2, i, 2)
+%!error<binoinv: P, N, and PS must not be complex.> binoinv (2, 2, i)

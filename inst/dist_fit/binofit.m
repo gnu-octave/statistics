@@ -54,7 +54,7 @@ function [pshat, psci] = binofit (x, n, alpha)
 
   ## Check input arguments
   if (nargin < 2)
-    error ("binofit: too few input arguments.");
+    error ("binofit: function called with too few input arguments.");
   endif
   if (any (x < 0))
     error ("binofit: X cannot have negative values.");
@@ -149,7 +149,8 @@ endfunction
 %! assert (psci(4,:), [0.2924, 1.0000], 1e-4);
 
 ## Test input validation
-%!error<binofit: too few input arguments.> binofit ([1 2 3 4])
+%!error<binofit: function called with too few input arguments.> ...
+%! binofit ([1 2 3 4])
 %!error<binofit: X cannot have negative values.> binofit (-1, [1 2 3 3])
 %!error<binofit: N must be a non-negative integer.> binofit (1, [1 2 -1 3])
 %!error<binofit: Wrong value for ALPHA.> binofit (1, [1 2 3], 0)
