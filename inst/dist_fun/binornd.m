@@ -129,7 +129,7 @@ function r = binornd (n, ps, varargin)
 
 endfunction
 
-## Test results
+## Test output
 %!assert (size (binornd (2, 1/2)), [1 1])
 %!assert (size (binornd (2 * ones (2, 1), 1/2)), [2, 1])
 %!assert (size (binornd (2 * ones (2, 2), 1/2)), [2, 2])

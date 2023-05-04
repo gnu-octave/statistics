@@ -108,7 +108,7 @@ function r = exprnd (mu, varargin)
 
 endfunction
 
-## Test results
+## Test output
 %!assert (size (exprnd (2)), [1, 1])
 %!assert (size (exprnd (ones (2,1))), [2, 1])
 %!assert (size (exprnd (ones (2,2))), [2, 2])

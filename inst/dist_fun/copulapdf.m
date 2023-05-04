@@ -175,26 +175,24 @@ function y = copulapdf (family, x, theta)
 
 endfunction
 
+## Test output
 %!test
 %! x = [0.2:0.2:0.6; 0.2:0.2:0.6];
 %! theta = [1; 2];
 %! y = copulapdf ("Clayton", x, theta);
 %! expected_p = [0.9872; 0.7295];
 %! assert (y, expected_p, 0.001);
-
 %!test
 %! x = [0.2:0.2:0.6; 0.2:0.2:0.6];
 %! y = copulapdf ("Gumbel", x, 2);
 %! expected_p = [0.9468; 0.9468];
 %! assert (y, expected_p, 0.001);
-
 %!test
 %! x = [0.2, 0.6; 0.2, 0.6];
 %! theta = [1; 2];
 %! y = copulapdf ("Frank", x, theta);
 %! expected_p = [0.9378; 0.8678];
 %! assert (y, expected_p, 0.001);
-
 %!test
 %! x = [0.2, 0.6; 0.2, 0.6];
 %! theta = [0.3; 0.7];

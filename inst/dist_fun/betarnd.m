@@ -114,7 +114,7 @@ function r = betarnd (a, b, varargin)
 
 endfunction
 
-## Test results
+## Test output
 %!assert (size (betarnd (2, 1/2)), [1 1])
 %!assert (size (betarnd (2 * ones (2, 1), 1/2)), [2, 1])
 %!assert (size (betarnd (2 * ones (2, 2), 1/2)), [2, 2])

@@ -196,6 +196,7 @@ function p = generalDF (x, rho, df, TolFun)
 
 endfunction
 
+## Test output
 %!test
 %! x = [1, 2];
 %! rho = [1, 0.5; 0.5, 1];

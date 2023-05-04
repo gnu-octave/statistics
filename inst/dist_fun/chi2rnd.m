@@ -101,7 +101,7 @@ function r = chi2rnd (df, varargin)
 
 endfunction
 
-## Test results
+## Test output
 %!assert (size (chi2rnd (2)), [1, 1])
 %!assert (size (chi2rnd (ones (2,1))), [2, 1])
 %!assert (size (chi2rnd (ones (2,2))), [2, 2])

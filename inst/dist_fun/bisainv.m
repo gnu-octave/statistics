@@ -125,7 +125,7 @@ endfunction
 %! xlabel ("probability")
 %! ylabel ("values in x")
 
-## Test results
+## Test output
 %!shared p, y, f
 %! f = @(p,b,c) (b * (c * norminv (p) + sqrt (4 + (c * norminv(p))^2))^2) / 4;
 %! p = [-1, 0, 1/4, 1/2, 1, 2];

@@ -107,7 +107,7 @@ function r = burrrnd (lambda, c, k, varargin)
 
 endfunction
 
-## Test results
+## Test output
 %!assert (size (burrrnd (1, 1, 1)), [1 1])
 %!assert (size (burrrnd (ones (2,1), 1, 1)), [2, 1])
 %!assert (size (burrrnd (ones (2,2), 1, 1)), [2, 2])

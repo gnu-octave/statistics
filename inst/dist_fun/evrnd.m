@@ -110,7 +110,7 @@ function r = evrnd (mu, sigma, varargin)
 
 endfunction
 
-## Test results
+## Test output
 %!assert (size (evrnd (1, 1)), [1 1])
 %!assert (size (evrnd (1, ones (2,1))), [2, 1])
 %!assert (size (evrnd (1, ones (2,2))), [2, 2])

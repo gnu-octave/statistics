@@ -189,6 +189,7 @@ endfunction
 %! ylabel "X1"
 %! xlabel "X2"
 
+## Test output
 %!test
 %! mu = [1, -1];
 %! sigma = [0.9, 0.4; 0.4, 0.3];

@@ -104,7 +104,7 @@ endfunction
 %! xlabel ("values in x")
 %! ylabel ("density")
 
-## Test results
+## Test output
 %!shared x, y
 %! x = [-1, 0, 1, 2, Inf];
 %! y = [0, 0, 1/4, 1/9, 0];

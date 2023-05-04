@@ -249,32 +249,29 @@ function r = copularnd (family, theta, df, n)
 
 endfunction
 
+## Test output
 %!test
 %! theta = 0.5;
 %! r = copularnd ("Gaussian", theta);
 %! assert (size (r), [1, 2]);
 %! assert (all ((r >= 0) & (r <= 1)));
-
 %!test
 %! theta = 0.5;
 %! df = 2;
 %! r = copularnd ("t", theta, df);
 %! assert (size (r), [1, 2]);
 %! assert (all ((r >= 0) & (r <= 1)));
-
 %!test
 %! theta = 0.5;
 %! r = copularnd ("Clayton", theta);
 %! assert (size (r), [1, 2]);
 %! assert (all ((r >= 0) & (r <= 1)));
-
 %!test
 %! theta = 0.5;
 %! n = 2;
 %! r = copularnd ("Clayton", theta, n);
 %! assert (size (r), [n, 2]);
 %! assert (all ((r >= 0) & (r <= 1)));
-
 %!test
 %! theta = [1; 2];
 %! n = 2;

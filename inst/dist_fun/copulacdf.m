@@ -264,33 +264,30 @@ function p = copulacdf (family, x, theta, df)
 
 endfunction
 
+## Test output
 %!test
 %! x = [0.2:0.2:0.6; 0.2:0.2:0.6];
 %! theta = [1; 2];
 %! p = copulacdf ("Clayton", x, theta);
 %! expected_p = [0.1395; 0.1767];
 %! assert (p, expected_p, 0.001);
-
 %!test
 %! x = [0.2:0.2:0.6; 0.2:0.2:0.6];
 %! p = copulacdf ("Gumbel", x, 2);
 %! expected_p = [0.1464; 0.1464];
 %! assert (p, expected_p, 0.001);
-
 %!test
 %! x = [0.2:0.2:0.6; 0.2:0.2:0.6];
 %! theta = [1; 2];
 %! p = copulacdf ("Frank", x, theta);
 %! expected_p = [0.0699; 0.0930];
 %! assert (p, expected_p, 0.001);
-
 %!test
 %! x = [0.2:0.2:0.6; 0.2:0.2:0.6];
 %! theta = [0.3; 0.7];
 %! p = copulacdf ("AMH", x, theta);
 %! expected_p = [0.0629; 0.0959];
 %! assert (p, expected_p, 0.001);
-
 %!test
 %! x = [0.2:0.2:0.6; 0.2:0.1:0.4];
 %! theta = [0.2, 0.1, 0.1, 0.05];

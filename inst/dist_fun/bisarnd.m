@@ -118,7 +118,7 @@ function r = bisarnd (beta, gamma, varargin)
 
 endfunction
 
-## Test results
+## Test output
 %!assert (size (bisarnd (1, 1)), [1 1])
 %!assert (size (bisarnd (1, ones (2,1))), [2, 1])
 %!assert (size (bisarnd (1, ones (2,2))), [2, 2])

@@ -25,9 +25,7 @@
 ## F cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the F distribution with @var{df1} and @var{df2} degrees
-## of freedom.
-##
+## (CDF) of the F distribution with @var{df1} and @var{df2} degrees of freedom.
 ## The size of @var{p} is the common size of @var{x}, @var{df1}, and @var{df2}.
 ## A scalar input functions as a constant matrix of the same size as the other
 ## inputs.
@@ -36,6 +34,9 @@
 ## upper tail probability of the F distribution with @var{df1} and @var{df2}
 ## degrees of freedom at the values in @var{x}.
 ##
+## Further information about the F distribution can be found at
+## @url{https://en.wikipedia.org/wiki/F-distribution}
+##
 ## @seealso{finv, fpdf, frnd, fstat}
 ## @end deftypefn
 
@@ -43,7 +44,7 @@ function p = fcdf (x, df1, df2, uflag)
 
   ## Check for valid number of input arguments
   if (nargin < 3)
-    error ("fcdf: too few input arguments.");
+    error ("fcdf: function called with too few input arguments.");
   endif
 
   ## Check for "upper" flag
@@ -67,7 +68,7 @@ function p = fcdf (x, df1, df2, uflag)
 
   ## Check for X, DF1, and DF2 being reals
   if (iscomplex (x) || iscomplex (df1) || iscomplex (df2))
-    error ("tcdf: X, DF1, and DF2 must not be complex.");
+    error ("fcdf: X, DF1, and DF2 must not be complex.");
   endif
 
   ## Initialize P according to appropriate class type
@@ -126,6 +127,23 @@ function p = fcdf (x, df1, df2, uflag)
 
 endfunction
 
+%!demo
+%! ## Plot various CDFs from the Birnbaum-Saunders distribution
+%! x = 0.01:0.01:4;
+%! p1 = bisacdf (x, 1, 0.5);
+%! p2 = bisacdf (x, 1, 1);
+%! p3 = bisacdf (x, 1, 2);
+%! p4 = bisacdf (x, 1, 5);
+%! p5 = bisacdf (x, 1, 10);
+%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c", x, p5, "-m")
+%! grid on
+%! legend ({"β = 1, γ = 0.5", "β = 1, γ = 1", "β = 1, γ = 2", ...
+%!          "β = 1, γ = 5", "β = 1, γ = 10"}, "location", "southeast")
+%! title ("Birnbaum-Saunders CDF")
+%! xlabel ("values in x")
+%! ylabel ("probability")
+
+## Test output
 %!shared x,y
 %! x = [-1, 0, 0.5, 1, 2, Inf];
 %! y = [0, 0, 1/3, 1/2, 2/3, 1];
@@ -143,14 +161,17 @@ endfunction
 %!assert (fcdf ([x, NaN], 2, single (2)), single ([y, NaN]), eps ("single"))
 
 ## Test input validation
-%!error<fcdf: too few input arguments.> fcdf ()
-%!error<fcdf: too few input arguments.> fcdf (1)
-%!error<fcdf: too few input arguments.> fcdf (1, 2)
+%!error<fcdf: function called with too few input arguments.> fcdf ()
+%!error<fcdf: function called with too few input arguments.> fcdf (1)
+%!error<fcdf: function called with too few input arguments.> fcdf (1, 2)
 %!error<fcdf: invalid argument for upper tail.> fcdf (1, 2, 3, 4)
 %!error<fcdf: invalid argument for upper tail.> fcdf (1, 2, 3, "tail")
-%!error fcdf (ones (3), ones (2), ones (2))
-%!error fcdf (ones (2), ones (3), ones (2))
-%!error fcdf (ones (2), ones (2), ones (3))
-%!error fcdf (i, 2, 2)
-%!error fcdf (2, i, 2)
-%!error fcdf (2, 2, i)
+%!error<fcdf: X, DF1, and DF2 must be of common size or scalars.> ...
+%! fcdf (ones (3), ones (2), ones (2))
+%!error<fcdf: X, DF1, and DF2 must be of common size or scalars.> ...
+%! fcdf (ones (2), ones (3), ones (2))
+%!error<fcdf: X, DF1, and DF2 must be of common size or scalars.> ...
+%! fcdf (ones (2), ones (2), ones (3))
+%!error<fcdf: X, DF1, and DF2 must not be complex.> fcdf (i, 2, 2)
+%!error<fcdf: X, DF1, and DF2 must not be complex.> fcdf (2, i, 2)
+%!error<fcdf: X, DF1, and DF2 must not be complex.> fcdf (2, 2, i)

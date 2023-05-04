@@ -141,7 +141,7 @@ endfunction
 %! xlabel ("values in x")
 %! ylabel ("probability")
 
-## Test results
+## Test output
 %!shared x, y
 %! x = [-1, 0, 1, 2, Inf];
 %! y = [0, 0, 1/2, 0.76024993890652337, 1];

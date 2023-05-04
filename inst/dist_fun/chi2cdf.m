@@ -93,7 +93,7 @@ endfunction
 %! xlabel ("values in x")
 %! ylabel ("probability")
 
-## Test results
+## Test output
 %!shared x, p, u
 %! x = [-1, 0, 0.5, 1, 2];
 %! p = [0, (1 - exp (-x(2:end) / 2))];

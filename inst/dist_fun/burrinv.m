@@ -104,7 +104,7 @@ endfunction
 %! xlabel ("probability")
 %! ylabel ("values in x")
 
-## Test results
+## Test output
 %!shared p, y
 %! p = [-Inf, -1, 0, 1/2, 1, 2, Inf];
 %! y = [NaN, NaN, 0, 1 , Inf, NaN, NaN];
