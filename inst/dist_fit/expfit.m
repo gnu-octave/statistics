@@ -23,34 +23,36 @@
 ##
 ## Estimate mean and confidence intervals for the exponential distribution.
 ##
-## @var{x} is expected to be a non-negative vector.  If @var{x} is an array, the
-## mean will be computed for each column of @var{x}.  If any elements of @var{x}
-## are NaN, that vector's mean will be returned as NaN.
+## @code{@var{muhat} = expfit (@var{x})} returns maximum likelihood estimate of
+## the mean parameter, @var{muhat}, of the exponential distribution given the
+## data in @var{x}. @var{x} is expected to be a non-negative vector.  If @var{x}
+## is an array, the mean will be computed for each column of @var{x}.  If any
+## elements of @var{x} are NaN, that vector's mean will be returned as NaN.
 ##
-## If the optional output variable @var{muci} is requested, @code{expfit} will
-## also return the confidence interval bounds for the estimate as a two element
-## column vector.  If @var{x} is an array, each column of data will have a
-## confidence interval returned as a two row array.
+## @code{[@var{muhat}, @var{muci}] = expfit (@var{x})} returns the 95%
+## confidence intervals for the parameter estimate.  If @var{x} is a vector,
+## @var{muci} is a two element column vector.  If @var{x} is an array, each
+## column of data will have a confidence interval returned as a two-row array.
 ##
-## The optional scalar input @var{alpha} can be used to define the
-## (1-@var{alpha}) confidence interval to be applied to all estimates as a
-## value between 0 and 1.  The default is 0.05, resulting in a 0.95 or 95% CI.
-## Any invalid values for @var{alpha} will return NaN for both CI bounds.
+## @code{[@dots{}] = evfit (@var{x}, @var{alpha})} also returns the
+## @qcode{100 * (1 - @var{alpha})} percent confidence intervals for the
+## parameter estimates.  By default, the optional argument @var{alpha} is
+## 0.05 corresponding to 95% confidence intervals.  Pass in @qcode{[]} for
+## @var{alpha} to use the default values.  Any invalid values for @var{alpha}
+## will return NaN for both CI bounds.
 ##
-## The optional input @var{censor} is a logical or numeric array of zeros and
-## ones the same size as @var{x}, used to right-censor individual elements of
-## @var{x}.  A value of 1 indicates the data should be censored from
-## the mean estimation.  Any nonzero values in @var{censor} are treated as a 1.
-## By default, or if left empty, @qcode{@var{censor} = zeros (size (@var{x}))}.
+## @code{[@dots{}] = expfit (@var{x}, @var{alpha}, @var{censor})} accepts a
+## logical or numeric array, @var{censor}, of the same size as @var{x} with
+## @qcode{1}s for observations that are right-censored and @qcode{0}s for
+## observations that are observed exactly.  Any non-zero elements are regarded
+## as @qcode{1}s.  By default, or if left empty,
+## @qcode{@var{censor} = zeros (size (@var{x}))}.
 ##
-## The optional input @var{freq} is a numeric array the same size as @var{x},
-## used to specify occurrence frequencies for the elements in @var{x}.  Values
-## of @var{freq} need not be integers.  Any NaN elements in the frequency array
-## will produce a NaN output for @var{muhat}.  By default, or if left empty,
-## @qcode{@var{freq} = ones (size (@var{x}))}.
-##
-## Optional arguments can be skipped by using @qcode{[]} to revert to their
-## default values.
+## @code{[@dots{}] = expfit (@var{x}, @var{alpha}, @var{censor}, @var{freq})}
+## accepts a frequency array, @var{freq}, of the same size as @var{x}.
+## @var{freq} typically contains integer frequencies for the corresponding
+## elements in @var{x}, but it can contain any non-integer non-negative values.
+## By default, or if left empty, @qcode{@var{freq} = ones (size (@var{x}))}.
 ##
 ## Matlab incompatibility: Matlab's @code{expfit} produces unpredictable results
 ## for some cases with higher dimensions (specifically 1 x m x n x ... arrays).
@@ -58,6 +60,9 @@
 ## calculations on individual column vectors.  Additionally, @var{censor} and
 ## @var{freq} can be used with arrays of any size, whereas Matlab only allows
 ## their use when @var{x} is a vector.
+##
+## Further information about the exponential distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Exponential_distribution}
 ##
 ## @seealso{expcdf, expinv, explpdf, exprnd, explike, expstat}
 ## @end deftypefn
@@ -96,8 +101,8 @@ function [muhat, muci] = expfit (x, alpha = 0.05, censor = [], freq = [])
 
     if (nargout == 2)
       X = sum (x, 1);
-      muci = [2*X ./ chi2inv(1 - alpha/2, 2*sz_s(1));...
-              2*X ./ chi2inv(alpha/2, 2*sz_s(1))];
+      muci = [2*X./chi2inv(1 - alpha / 2, 2 * sz_s(1));...
+              2*X./chi2inv(alpha / 2, 2 * sz_s(1))];
     endif
   else
 
@@ -106,7 +111,7 @@ function [muhat, muci] = expfit (x, alpha = 0.05, censor = [], freq = [])
     if (isempty (censor))
       ## Expand to full censor with values that don't affect results
       censor = zeros (sz_s);
-    elseif (! (isnumeric(censor) || islogical (censor)))
+    elseif (! (isnumeric (censor) || islogical (censor)))
       ## Check for incorrect freq type
       error ("expfit: CENSOR must be a numeric or logical array.")
     elseif (isvector (censor))
@@ -117,7 +122,7 @@ function [muhat, muci] = expfit (x, alpha = 0.05, censor = [], freq = [])
     if (isempty (freq))
       ## Expand to full censor with values that don't affect results
       freq = ones (sz_s);
-    elseif (! (isnumeric(freq) || islogical (freq)))
+    elseif (! (isnumeric (freq) || islogical (freq)))
       ## Check for incorrect freq type
       error ("expfit: FREQ must be a numeric or logical array.")
     elseif (isvector (freq))
@@ -126,9 +131,9 @@ function [muhat, muci] = expfit (x, alpha = 0.05, censor = [], freq = [])
     endif
 
     ## Check that size of censor and freq match x
-    if !(isequal(size (censor), sz_s))
+    if (! (isequal (size (censor), sz_s)))
       error("expfit: CENSOR must be the same size as X.");
-    elseif (! isequal(size (freq), sz_s))
+    elseif (! isequal (size (freq), sz_s))
       error("expfit: FREQ must be the same size as X.");
     endif
 
@@ -139,8 +144,8 @@ function [muhat, muci] = expfit (x, alpha = 0.05, censor = [], freq = [])
 
       if (nargout == 2)
         X = sum (x, 1);
-        muci = [2*X ./ chi2inv(1 - alpha/2, 2*sz_s(1));...
-                2*X ./ chi2inv(alpha/2, 2*sz_s(1))];
+        muci = [2*X./chi2inv(1 - alpha / 2, 2 * sz_s(1));...
+                2*X./chi2inv(alpha / 2, 2 * sz_s(1))];
       endif
 
     ## No censoring, just adjust sample counts for freq
@@ -151,8 +156,8 @@ function [muhat, muci] = expfit (x, alpha = 0.05, censor = [], freq = [])
       muhat = X ./ n;
 
       if (nargout == 2)
-        muci = [2*X ./ chi2inv(1 - alpha/2, 2*n);...
-                2*X ./ chi2inv(alpha/2, 2*n)];
+        muci = [2*X./chi2inv(1 - alpha / 2, 2 * n);...
+                2*X./chi2inv(alpha / 2, 2 * n)];
       endif
 
     ## Censoring, but no sample counts adjustment
@@ -164,21 +169,21 @@ function [muhat, muci] = expfit (x, alpha = 0.05, censor = [], freq = [])
       muhat = X ./ r;
 
       if (nargout == 2)
-        muci = [2*X ./ chi2inv(1 - alpha/2, 2*r);...
-                2*X ./ chi2inv(alpha/2, 2*r)];
+        muci = [2*X./chi2inv(1 - alpha / 2, 2 * r);...
+                2*X./chi2inv(alpha / 2, 2 * r)];
       endif
 
     ## Both censoring and sample count adjustment
     else
 
-      censor = logical(censor); # convert any numeric censor'x to 0s and 1s
-      X = sum (x.*freq , 1);
-      r = sum (freq.*(!censor), 1);
+      censor = logical (censor); # convert any numeric censor'x to 0s and 1s
+      X = sum (x .* freq , 1);
+      r = sum (freq .* (! censor), 1);
       muhat = X ./ r;
 
       if (nargout == 2)
-        muci = [2*X ./ chi2inv(1 - alpha/2, 2*r);...
-                2*X ./ chi2inv(alpha/2, 2*r)];
+        muci = [2*X./chi2inv(1 - alpha / 2, 2 * r);...
+                2*X./chi2inv(alpha / 2, 2 * r)];
       endif
     endif
 

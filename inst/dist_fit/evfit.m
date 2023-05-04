@@ -28,9 +28,9 @@
 ##
 ## @code{@var{paramhat} = evfit (@var{x})} returns maximum likelihood
 ## estimates of the parameters of the extreme value distribution (also known as
-## the Gumbel or the type I generalized extreme value distribution) given in
-## @var{x}.  @qcode{@var{paramhat}(1)} is the location parameter, @var{mu}, and
-## @qcode{@var{paramhat}(2)} is the scale parameter, @var{sigma}.
+## the Gumbel or the type I generalized extreme value distribution) given the
+## data in @var{x}.  @qcode{@var{paramhat}(1)} is the location parameter,
+## @var{mu}, and @qcode{@var{paramhat}(2)} is the scale parameter, @var{sigma}.
 ##
 ## @code{[@var{paramhat}, @var{paramci}] = evfit (@var{x})} returns the 95%
 ## confidence intervals for the parameter estimates.
