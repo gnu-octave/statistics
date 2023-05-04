@@ -61,6 +61,12 @@
 ## @var{freq} can be used with arrays of any size, whereas Matlab only allows
 ## their use when @var{x} is a vector.
 ##
+## A common alternative parameterization of the exponential distribution is to
+## use the parameter @math{λ} defined as the mean number of events in an
+## interval as opposed to the parameter @math{μ}, which is the mean wait time
+## for an event to occur. @math{λ} and @math{μ} are reciprocals,
+## i.e. @math{μ = 1 / λ}.
+##
 ## Further information about the exponential distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Exponential_distribution}
 ##
