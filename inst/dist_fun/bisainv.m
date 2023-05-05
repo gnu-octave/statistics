@@ -52,7 +52,7 @@ function x = bisainv (p, beta, gamma)
     endif
   endif
 
-  ## Check for X, BETA, B, and GAMMA being reals
+  ## Check for X, BETA, and GAMMA being reals
   if (iscomplex (p) || iscomplex (beta) || iscomplex (gamma))
     error ("bisainv: P, BETA, and GAMMA must not be complex.");
   endif
@@ -64,7 +64,7 @@ function x = bisainv (p, beta, gamma)
     x = zeros (size (p));
   endif
 
-  ## Force NaNs for out of range parameters.
+  ## Force NaNs for out of range parameters
   kn = isnan (p) | (p < 0) | (p > 1) | ! (beta > 0) | ! (beta < Inf) ...
                                      | ! (gamma > 0) | ! (gamma < Inf);
   x(kn) = NaN;

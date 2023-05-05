@@ -96,20 +96,21 @@ function [nlogL, acov] = evlike (params, x, censor, freq)
     sigma = NaN;
   endif
 
-  ## Compute the individual log-likelihood terms.  Force a log(0)==-Inf for
-  ## x from extreme right tail, instead of getting exp(Inf-Inf)==NaN.
+  ## Compute the individual log-likelihood terms
   z = (x - mu) ./ sigma;
   expz = exp (z);
   L = (z - log (sigma)) .* (1 - censor) - expz;
+
+  ## Force a log(0)==-Inf for X from extreme right tail
   L(z == Inf) = -Inf;
 
-  ## Neg-log-like is the sum of the individual contributions
+  ## Neg-log-likelihood is the sum of the individual contributions
   nlogL = -sum (freq .* L);
 
   ## Compute the negative hessian at the parameter values.
   ## Invert to get the observed information matrix.
   if (nargout == 2)
-    unc = (1-censor);
+    unc = (1 - censor);
     nH11 = sum(freq .* expz);
     nH12 = sum(freq .* ((z + 1) .* expz - unc));
     nH22 = sum(freq .* (z .* (z+2) .* expz - ((2 .* z + 1) .* unc)));
