@@ -24,7 +24,7 @@
 ## @deftypefnx {statistics} {[@dots{}] =} evfit (@var{x}, @var{alpha}, @var{censor}, @var{freq})
 ## @deftypefnx {statistics} {[@dots{}] =} evfit (@var{x}, @var{alpha}, @var{censor}, @var{freq}, @var{options})
 ##
-## Estimate parameters and confidence intervals for extreme value distribution.
+## Estimate parameters and confidence intervals for the extreme value distribution.
 ##
 ## @code{@var{paramhat} = evfit (@var{x})} returns maximum likelihood
 ## estimates of the parameters of the extreme value distribution (also known as
