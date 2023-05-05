@@ -163,8 +163,7 @@ function [varargout] = gamcdf (x, varargin)
     ## Approximate the variance of p on the logit scale
     logitp = log (p ./ (1 - p));
     dp = 1 ./ (p .* (1 - p));
-    [~, dy] = dgammainc (z, k);
-    dk = dy .* dp;
+    dk = dgammainc (z, k) .* dp;
     dt = -exp (k .* log (z) - z - gammaln (k) - log (theta)) .* dp;
     varLogitp = pcov(1,1) .* dk .^ 2 + 2 .* pcov(1,2) .* dk .* dt + ...
                                             pcov(2,2) .* dt .^ 2;
@@ -182,6 +181,103 @@ function [varargout] = gamcdf (x, varargin)
     varargout{3} = pup;
   endif
 
+endfunction
+
+## Compute 1st derivative of the incomplete Gamma function
+function dy = dgammainc (x, k)
+
+  ## Initialize return variables
+  dy = nan (size (x));
+
+  ## Use approximation for K > 2^20
+  ulim = 2^20;
+  is_lim = find (k > ulim);
+  if (! isempty (is_lim))
+    x(is_lim) = max (ulim - 1/3 + sqrt (ulim ./ k(is_lim)) .* ...
+                     (x(is_lim) - (k(is_lim) - 1/3)), 0);
+    k(is_lim) = ulim;
+  endif
+
+  ## For x < k+1
+  is_lo = find (x < k + 1 & x != 0);
+  if (! isempty (is_lo))
+    x_lo = x(is_lo);
+    k_lo = k(is_lo);
+    k_1 = k_lo;
+    step = 1;
+    d1st = 0;
+    stsum = step;
+    d1sum = d1st;
+    while norm (step, "inf") >= 100 * eps (norm (stsum, "inf"))
+      k_1 += 1;
+      step = step .* x_lo ./ k_1;
+      d1st = (d1st .* x_lo - step) ./ k_1;
+      stsum = stsum + step;
+      d1sum = d1sum + d1st;
+    endwhile
+    fklo = exp (-x_lo + k_lo .* log (x_lo) - gammaln (k_lo + 1));
+    ## Compute 1st derivative
+    dlogfklo = (log (x_lo) - psi (k_lo + 1));
+    d1fklo = fklo .* dlogfklo;
+    d1y_lo = d1fklo .* stsum + fklo .* d1sum;
+    dy(is_lo) = d1y_lo;
+  endif
+
+  ## For x >= k+1
+  is_hi = find (x >= k+1);
+  if (! isempty (is_hi))
+    x_hi = x(is_hi);
+    k_hi = k(is_hi);
+    zc = 0;
+    k0 = 0;
+    k1 = k_hi;
+    x0 = 1;
+    x1 = x_hi;
+    d1k0 = 0;
+    d1k1 = 1;
+    d1x0 = 0;
+    d1x1 = 0;
+    kx = k_hi ./ x_hi;
+    d1kx = 1 ./ x_hi;
+    d2kx = 0;
+    start = 1;
+    while norm (d2kx - start, "Inf") > 100 * eps (norm (d2kx, "Inf"))
+      rescale = 1 ./ x1;
+      zc += 1;
+      n_k = zc - k_hi;
+      d1k0 = (d1k1 + d1k0 .* n_k - k0) .* rescale;
+      d1x0 = (d1x1 + d1x0 .* n_k - x0) .* rescale;
+      k0 = (k1 + k0 .* n_k) .* rescale;
+      x0 = 1 + (x0 .* n_k) .* rescale;
+      nrescale = zc .* rescale;
+      d1k1 = d1k0 .* x_hi + d1k1 .* nrescale;
+      d1x1 = d1x0 .* x_hi + d1x1 .* nrescale;
+      k1 = k0 .* x_hi + k1 .* nrescale;
+      x1 = x0 .* x_hi + zc;
+      start = d2kx;
+      kx = k1 ./ x1;
+      d1kx = (d1k1 - kx .* d1x1) ./ x1;
+    endwhile
+    fkhi = exp (-x_hi + k_hi .* log (x_hi) - gammaln (k_hi+1));
+    ## Compute 1st derivative
+    dlogfkhi = (log (x_hi) - psi (k_hi + 1));
+    d1fkhi = fkhi .* dlogfkhi;
+    d1y_hi = d1fkhi .* kx + fkhi .* d1kx;
+    dy(is_hi) = -d1y_hi;
+  endif
+
+  ## Handle x == 0
+  is_x0 = find (x == 0);
+  if (! isempty (is_x0))
+    dy(is_x0) = 0;
+  endif
+
+  ## Handle k == 0
+  is_k0 = find (k == 0);
+  if (! isempty (is_k0))
+    is_k0x0 = find (k == 0 & x == 0);
+    dy(is_k0x0) = -Inf;
+  endif
 endfunction
 
 %!demo
