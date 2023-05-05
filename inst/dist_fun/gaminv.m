@@ -23,11 +23,11 @@
 ##
 ## Inverse of the Gamma cumulative distribution function (iCDF).
 ##
-## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## at @var{p} of the Gamma distribution with shape parameter @var{k} and
-## scale parameter @var{theta}.  The size of @var{x} is the common size of
-## @var{p}, @var{k}, and @var{theta}.  A scalar input functions as a constant
-## matrix of the same size as the other inputs.
+## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
+## the Gamma distribution with shape parameter @var{k} and scale parameter
+## @var{theta}.  The size of @var{x} is the common size of @var{p}, @var{k},
+## and @var{theta}.  A scalar input functions as a constant matrix of the same
+## size as the other inputs.
 ##
 ## There are two equivalent parameterizations in common use:
 ## @enumerate
@@ -45,34 +45,41 @@
 
 function x = gaminv (p, k, theta)
 
-  if (nargin != 3)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 3)
+    error ("gaminv: function called with too few input arguments.");
   endif
 
-  if (! isscalar (k) || ! isscalar (theta))
+  ## Check for common size of P, K, and THETA
+  if (! isscalar (p) || ! isscalar (k) || ! isscalar (theta))
     [retval, p, k, theta] = common_size (p, k, theta);
     if (retval > 0)
       error ("gaminv: P, K, and THETA must be of common size or scalars.");
     endif
   endif
 
+  ## Check for P, K, and THETA being reals
   if (iscomplex (p) || iscomplex (k) || iscomplex (theta))
     error ("gaminv: P, K, and THETA must not be complex.");
   endif
 
+  ## Check for class type
   if (isa (p, "single") || isa (k, "single") || isa (theta, "single"))
     x = zeros (size (p), "single");
   else
     x = zeros (size (p));
   endif
 
+  ## Force NaNs for out of range parameters
   is_nan = ((p < 0) | (p > 1) | isnan (p) ...
-       | !(k > 0) | !(k < Inf) | !(theta > 0) | !(theta < Inf));
+        | ! (k > 0) | ! (k < Inf) | ! (theta > 0) | ! (theta < Inf));
   x(is_nan) = NaN;
 
+  ## Handle edge cases
   is_inf = (p == 1) & (k > 0) & (k < Inf) & (theta > 0) & (theta < Inf);
   x(is_inf) = Inf;
 
+  ## Handle all other valid cases
   is_valid = find ((p > 0) & (p < 1) & (k > 0) & ...
                    (k < Inf) & (theta > 0) & (theta < Inf));
   if (! isempty (is_valid))
@@ -95,6 +102,7 @@ function x = gaminv (p, k, theta)
     endif
     x(is_valid) = q .* theta;
   endif
+
 endfunction
 
 %!demo
@@ -118,6 +126,7 @@ endfunction
 %! xlabel ("probability")
 %! ylabel ("x")
 
+## Test output
 %!shared p
 %! p = [-1 0 0.63212055882855778 1 2];
 %!assert (gaminv (p, ones (1,5), ones (1,5)), [NaN 0 1 Inf NaN], eps)
@@ -145,13 +154,15 @@ endfunction
 %! eps ("single"))
 
 ## Test input validation
-%!error gaminv ()
-%!error gaminv (1)
-%!error gaminv (1,2)
-%!error gaminv (1,2,3,4)
-%!error gaminv (ones (3), ones (2), ones (2))
-%!error gaminv (ones (2), ones (3), ones (2))
-%!error gaminv (ones (2), ones (2), ones (3))
-%!error gaminv (i, 2, 2)
-%!error gaminv (2, i, 2)
-%!error gaminv (2, 2, i)
+%!error<gaminv: function called with too few input arguments.> gaminv ()
+%!error<gaminv: function called with too few input arguments.> gaminv (1)
+%!error<gaminv: function called with too few input arguments.> gaminv (1,2)
+%!error<gaminv: P, K, and THETA must be of common size or scalars.> ...
+%! gaminv (ones (3), ones (2), ones (2))
+%!error<gaminv: P, K, and THETA must be of common size or scalars.> ...
+%! gaminv (ones (2), ones (3), ones (2))
+%!error<gaminv: P, K, and THETA must be of common size or scalars.> ...
+%! gaminv (ones (2), ones (2), ones (3))
+%!error<gaminv: P, K, and THETA must not be complex.> gaminv (i, 2, 2)
+%!error<gaminv: P, K, and THETA must not be complex.> gaminv (2, i, 2)
+%!error<gaminv: P, K, and THETA must not be complex.> gaminv (2, 2, i)

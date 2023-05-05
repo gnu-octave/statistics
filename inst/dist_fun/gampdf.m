@@ -22,10 +22,10 @@
 ## Gamma probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the Gamma distribution with shape parameter @var{k} and scale
-## parameter @var{theta}.  The size of @var{y} is the common size of @var{x},
-## @var{k} and @var{theta}.  A scalar input functions as a constant matrix of
-## the same size as the other inputs.
+## of the Gamma distribution with shape parameter @var{k} and scale parameter
+## @var{theta}.  The size of @var{y} is the common size of @var{x}, @var{k} and
+## @var{theta}.  A scalar input functions as a constant matrix of the same size
+## as the other inputs.
 ##
 ## There are two equivalent parameterizations in common use:
 ## @enumerate
@@ -43,10 +43,12 @@
 
 function y = gampdf (x, k, theta)
 
-  if (nargin != 3)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 3)
+    error ("gampdf: function called with too few input arguments.");
   endif
 
+  ## Check for common size of X, K, and THETA
   if (! isscalar (k) || ! isscalar (theta))
     [retval, x, k, theta] = common_size (x, k, theta);
     if (retval > 0)
@@ -54,19 +56,23 @@ function y = gampdf (x, k, theta)
     endif
   endif
 
+  ## Check for X, K, and THETA being reals
   if (iscomplex (x) || iscomplex (k) || iscomplex (theta))
     error ("gampdf: X, K, and THETA must not be complex.");
   endif
 
+  ## Check for class type
   if (isa (x, "single") || isa (k, "single") || isa (theta, "single"))
     y = zeros (size (x), "single");
   else
     y = zeros (size (x));
   endif
 
-  is_nan = !(k > 0) | !(theta > 0) | isnan (x);
+  ## Force NaNs for out of range parameters
+  is_nan = ! (k > 0) | ! (theta > 0) | isnan (x);
   y(is_nan) = NaN;
 
+  ## Handle all other valid cases
   v = (x >= 0) & (k > 0) & (k <= 1) & (theta > 0);
   if (isscalar (k) && isscalar (theta))
     y(v) = (x(v) .^ (k - 1)) ...
@@ -108,7 +114,8 @@ endfunction
 %! xlabel ("values in x")
 %! ylabel ("density")
 
-%!shared x,y
+## Test output
+%!shared x, y
 %! x = [-1 0 0.5 1 Inf];
 %! y = [0 exp(-x(2:end))];
 %!assert (gampdf (x, ones (1,5), ones (1,5)), y)
@@ -124,13 +131,15 @@ endfunction
 %!assert (gampdf ([x, NaN], 1, single (1)), single ([y, NaN]))
 
 ## Test input validation
-%!error gampdf ()
-%!error gampdf (1)
-%!error gampdf (1,2)
-%!error gampdf (1,2,3,4)
-%!error gampdf (ones (3), ones (2), ones (2))
-%!error gampdf (ones (2), ones (3), ones (2))
-%!error gampdf (ones (2), ones (2), ones (3))
-%!error gampdf (i, 2, 2)
-%!error gampdf (2, i, 2)
-%!error gampdf (2, 2, i)
+%!error<gampdf: function called with too few input arguments.> gampdf ()
+%!error<gampdf: function called with too few input arguments.> gampdf (1)
+%!error<gampdf: function called with too few input arguments.> gampdf (1,2)
+%!error<gampdf: P, K, and THETA must be of common size or scalars.> ...
+%! gampdf (ones (3), ones (2), ones (2))
+%!error<gampdf: P, K, and THETA must be of common size or scalars.> ...
+%! gampdf (ones (2), ones (3), ones (2))
+%!error<gampdf: P, K, and THETA must be of common size or scalars.> ...
+%! gampdf (ones (2), ones (2), ones (3))
+%!error<gampdf: P, K, and THETA must not be complex.> gampdf (i, 2, 2)
+%!error<gampdf: P, K, and THETA must not be complex.> gampdf (2, i, 2)
+%!error<gampdf: P, K, and THETA must not be complex.> gampdf (2, 2, i)

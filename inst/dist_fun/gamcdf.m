@@ -29,11 +29,11 @@
 ## Gamma cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the Gamma distribution with shape parameter @var{k} and
-## scale parameter @var{theta}.  When called with only one parameter, then
-## @var{theta} defaults to 1.  The size of @var{p} is the common size of
-## @var{x}, @var{k}, and @var{theta}.  A scalar input functions as a constant
-## matrix of the same size as the other inputs.
+## (CDF) of the Gamma distribution with shape parameter @var{k} and scale
+## parameter @var{theta}.  When called with only one parameter, then @var{theta}
+## defaults to 1.  The size of @var{p} is the common size of @var{x}, @var{k},
+## and @var{theta}.  A scalar input functions as a constant matrix of the same
+## size as the other inputs.
 ##
 ## When called with three output arguments, @code{[@var{p}, @var{plo},
 ## @var{pup}]} it computes the confidence bounds for @var{p} when the input
@@ -163,10 +163,11 @@ function [varargout] = gamcdf (x, varargin)
     ## Approximate the variance of p on the logit scale
     logitp = log (p ./ (1 - p));
     dp = 1 ./ (p .* (1 - p));
-    da = dgammainc (z, k) .* dp;
-    db = -exp (k .* log (z) - z - gammaln (k) - log (theta)) .* dp;
-    varLogitp = pcov(1,1) .* da .^ 2 + 2 .* pcov(1,2) .* da .* db + ...
-                                            pcov(2,2) .* db .^ 2;
+    [~, dy] = dgammainc (z, k);
+    dk = dy .* dp;
+    dt = -exp (k .* log (z) - z - gammaln (k) - log (theta)) .* dp;
+    varLogitp = pcov(1,1) .* dk .^ 2 + 2 .* pcov(1,2) .* dk .* dt + ...
+                                            pcov(2,2) .* dt .^ 2;
     if (any (varLogitp(:) < 0))
         error ("gamcdf: bad covariance matrix.");
     endif
@@ -181,100 +182,6 @@ function [varargout] = gamcdf (x, varargin)
     varargout{3} = pup;
   endif
 
-endfunction
-
-## Incomplete gamma function for first derivative
-function dy = dgammainc(x, k)
-  dy = NaN (size (x));
-  kmax = 2 ^ 20;
-  mk = find (k > kmax);
-  if (! isempty (mk))
-    x(mk) = max(kmax-1/3 + sqrt(kmax./k(mk)).*(x(mk)-(k(mk)-1/3)),0);
-    k(mk) = kmax;
-  endif
-  ## Series expansion for lower incomplete gamma when x < k+1
-  mk = find (x < k + 1 & x != 0);
-  if (! isempty (mk))
-    xk = x(mk);
-    ak = k(mk);
-    aplusn = ak;
-    del = 1;
-    ddel = 0;
-    d2del = 0;
-    sum = del;
-    dsum = ddel;
-    d2sum = d2del;
-    while (norm (del, "inf") >= 100 * eps (norm (sum, "inf")))
-      aplusn = aplusn + 1;
-      del = del .* xk ./ aplusn;
-      ddel = (ddel .* xk - del) ./ aplusn;
-      d2del = (d2del .* xk - 2 .* ddel) ./ aplusn;
-      sum = sum + del;
-      dsum = dsum + ddel;
-      d2sum = d2sum + d2del;
-    endwhile
-    fac = exp (-xk + ak .* log (xk) - gammaln (ak + 1));
-    yk = fac .* sum;
-    yk(xk > 0 & yk > 1) = 1;
-    dlogfac = (log (xk) - psi (ak + 1));
-    dfac = fac .* dlogfac;
-    dyk = dfac .* sum + fac .* dsum;
-    dy(mk) = dyk;
-  endif
-  ## Continued fraction for upper incomplete gamma when x >= k+1
-  mk = find (x >= k + 1);
-  if (! isempty (mk))
-    xk = x(mk);
-    ak = k(mk);
-    n = 0;
-    a0 = 0;
-    a1 = ak;
-    b0 = 1;
-    b1 = xk;
-    da0 = 0; db0 = 0; da1 = 1; db1 = 0;
-    d2a0 = 0; d2b0 = 0; d2a1 = 0; d2b1 = 0;
-    g = ak ./ xk;
-    dg = 1 ./ xk;
-    d2g = 0;
-    d2gold = 1;
-    while (norm (d2g - d2gold, "inf") > 100 * eps (norm (d2g, "inf")))
-      rescale = 1 ./ b1;
-      n = n + 1;
-      nminusa = n - ak;
-      d2a0 = (d2a1 + d2a0 .* nminusa - 2 .* da0) .* rescale;
-      d2b0 = (d2b1 + d2b0 .* nminusa - 2 .* db0) .* rescale;
-      da0 = (da1 + da0 .* nminusa - a0) .* rescale;
-      db0 = (db1 + db0 .* nminusa - b0) .* rescale;
-      a0 = (a1 + a0 .* nminusa) .* rescale;
-      b0 = 1 + (b0 .* nminusa) .* rescale;
-      nrescale = n .* rescale;
-      d2a1 = d2a0 .* xk + d2a1 .* nrescale;
-      d2b1 = d2b0 .* xk + d2b1 .* nrescale;
-      da1 = da0 .* xk + da1 .* nrescale;
-      db1 = db0 .* xk + db1 .* nrescale;
-      a1 = a0 .* xk + a1 .* nrescale;
-      b1 = b0 .* xk + n;
-      d2gold = d2g;
-      g = a1 ./ b1;
-      dg = (da1 - g.*db1) ./ b1;
-      d2g = (d2a1 - dg.*db1 - g.*d2b1 - dg.*db1) ./ b1;
-    endwhile
-    fac = exp(-xk + ak.*log(xk) - gammaln(ak+1));
-    yk = fac.*g;
-    dlogfac = (log(xk) - psi(ak+1));
-    dfac = fac .* dlogfac;
-    dyk = dfac.*g + fac.*dg;
-    dy(mk) = -dyk;
-  endif
-  kx0 = find(x == 0);
-  if (! isempty (kx0))
-    dy(kx0) = 0;
-  endif
-  ka0 = find (k == 0);
-  if (! isempty (ka0))
-    ka0x0 = find(k == 0 & x == 0);
-    dy(ka0x0) = -Inf;
-  endif
 endfunction
 
 %!demo
