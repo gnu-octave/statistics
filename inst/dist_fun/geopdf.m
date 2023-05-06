@@ -22,43 +22,54 @@
 ## Geometric probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the geometric distribution with parameter @var{ps}.  The size
-## of @var{y} is the common size of @var{x} and @var{ps}.  A scalar input
-## functions as a constant matrix of the same size as the other inputs.
+## of the geometric distribution with probability of success parameter @var{ps}.
+## The size of @var{y} is the common size of @var{x} and @var{ps}.  A scalar
+## input functions as a constant matrix of the same size as the other inputs.
 ##
 ## The geometric distribution models the number of failures (@var{x}) of a
 ## Bernoulli trial with probability @var{ps} before the first success.
+##
+## Further information about the geometric distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Geometric_distribution}
 ##
 ## @seealso{geocdf, geoinv, geornd, geostat}
 ## @end deftypefn
 
 function y = geopdf (x, ps)
 
-  if (nargin != 2)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 2)
+    error ("geopdf: function called with too few input arguments.");
   endif
 
-  if (! isscalar (ps))
+  ## Check for common size of X and PS
+  if (! isscalar (x) || ! isscalar (ps))
     [retval, x, ps] = common_size (x, ps);
     if (retval > 0)
       error ("geopdf: X and PS must be of common size or scalars.");
     endif
   endif
 
+  ## Check for X and PS being reals
   if (iscomplex (x) || iscomplex (ps))
     error ("geopdf: X and PS must not be complex.");
   endif
 
+  ## Check for class type
   if (isa (x, "single") || isa (ps, "single"))
     y = zeros (size (x), "single");
   else
     y = zeros (size (x));
   endif
 
+  ## Return NaN for out of range parameters
   k = isnan (x) | (x == Inf) | !(ps >= 0) | !(ps <= 1);
   y(k) = NaN;
 
+  ## Get valid instances
   k = (x >= 0) & (x < Inf) & (x == fix (x)) & (ps > 0) & (ps <= 1);
+
+  ## Compute CDF
   if (isscalar (ps))
     y(k) = ps * ((1 - ps) .^ x(k));
   else
@@ -67,8 +78,22 @@ function y = geopdf (x, ps)
 
 endfunction
 
+%!demo
+%! ## Plot various PDFs from the geometric distribution
+%! x = 0:10;
+%! y1 = geopdf (x, 0.2);
+%! y2 = geopdf (x, 0.5);
+%! y3 = geopdf (x, 0.7);
+%! plot (x, y1, "*b", x, y2, "*g", x, y3, "*r")
+%! grid on
+%! ylim ([0, 0.8])
+%! legend ({"ps = 0.2", "ps = 0.5", "ps = 0.7"}, "location", "northeast")
+%! title ("Geometric PDF")
+%! xlabel ("values in x (number of failures)")
+%! ylabel ("density")
 
-%!shared x,y
+## Test output
+%!shared x, y
 %! x = [-1 0 1 Inf];
 %! y = [0, 1/2, 1/4, NaN];
 %!assert (geopdf (x, 0.5*ones (1,4)), y)

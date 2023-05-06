@@ -25,8 +25,8 @@
 ## Random arrays from the geometric distribution.
 ##
 ## @code{@var{r} = geornd (@var{ps})} returns an array of random numbers chosen
-## from the Birnbaum-Saunders distribution with parameter @var{ps}.  The size of
-## @var{r} is the size of @var{ps}.
+## from the Birnbaum-Saunders distribution with probability of success parameter
+## @var{ps}.  The size of @var{r} is the size of @var{ps}.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -37,47 +37,59 @@
 ## The geometric distribution models the number of failures (@var{x}) of a
 ## Bernoulli trial with probability @var{ps} before the first success.
 ##
+## Further information about the geometric distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Geometric_distribution}
+##
 ## @seealso{geocdf, geoinv, geopdf, geostat}
 ## @end deftypefn
 
 function r = geornd (ps, varargin)
 
+  ## Check for valid number of input arguments
   if (nargin < 1)
-    print_usage ();
+    error ("geornd: function called with too few input arguments.");
   endif
 
+  ## Check for PS being reals
+  if (iscomplex (ps))
+    error ("geornd: PS must not be complex.");
+  endif
+
+  ## Parse and check SIZE arguments
   if (nargin == 1)
     sz = size (ps);
   elseif (nargin == 2)
-    if (isscalar (varargin{1}) && varargin{1} >= 0)
+    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+                               && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
+    elseif (isrow (varargin{1}) && all (varargin{1} >= 0) ...
+                                && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
-    else
-      error (strcat (["geornd: dimension vector must be a row vector"], ...
+    elseif
+      error (strcat (["geornd: SZ must be a scalar or a row vector"], ...
                      [" of non-negative integers."]));
     endif
   elseif (nargin > 2)
-    if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
+    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
+    if (any (posint))
       error ("geornd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
+  ## Check that parameter match requested dimensions in size
   if (! isscalar (ps) && ! isequal (size (ps), sz))
-    error ("geornd: P must be scalar or of size SZ.");
+    error ("geornd: PS must be scalar or of size SZ.");
   endif
 
-  if (iscomplex (ps))
-    error ("geornd: P must not be complex.");
-  endif
-
+  ## Check for class type
   if (isa (ps, "single"))
     cls = "single";
   else
     cls = "double";
   endif
 
+  ## Generate random sample from geometric distribution
   if (isscalar (ps))
     if (ps > 0 && ps < 1);
       r = floor (- rande (sz, cls) ./ log (1 - ps));
@@ -100,7 +112,7 @@ function r = geornd (ps, varargin)
 
 endfunction
 
-
+## Test output
 %!assert (size (geornd (0.5)), [1, 1])
 %!assert (size (geornd (0.5*ones (2,1))), [2, 1])
 %!assert (size (geornd (0.5*ones (2,2))), [2, 2])
@@ -116,12 +128,24 @@ endfunction
 %!assert (class (geornd (single (1))), "single")
 
 ## Test input validation
-%!error geornd ()
-%!error geornd (ones (3), ones (2))
-%!error geornd (ones (2), ones (3))
-%!error geornd (i)
-%!error geornd (1, -1)
-%!error geornd (1, ones (2))
-%!error geornd (1, [2 -1 2])
-%!error geornd (ones (2,2), 2, 3)
-%!error geornd (ones (2,2), 3, 2)
+%!error<geornd: function called with too few input arguments.> geornd ()
+%!error<geornd: DF must not be complex.> geornd (i)
+%!error<geornd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! geornd (1, -1)
+%!error<geornd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! geornd (1, 1.2)
+%!error<geornd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! geornd (1, ones (2))
+%!error<geornd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! geornd (1, [2 -1 2])
+%!error<geornd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! geornd (1, [2 0 2.5])
+%!error<geornd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! geornd (ones (2), ones (2))
+%!error<geornd: dimensions must be non-negative integers.> ...
+%! geornd (1, 2, -1, 5)
+%!error<geornd: dimensions must be non-negative integers.> ...
+%! geornd (1, 2, 1.5, 5)
+%!error<geornd: DF must be scalar or of size SZ.> geornd (ones (2,2), 3)
+%!error<geornd: DF must be scalar or of size SZ.> geornd (ones (2,2), [3, 2])
+%!error<geornd: DF must be scalar or of size SZ.> geornd (ones (2,2), 2, 3)

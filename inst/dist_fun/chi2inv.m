@@ -47,7 +47,7 @@ function x = chi2inv (p, df)
     endif
   endif
 
-  ## Check for X and DF being reals
+  ## Check for P and DF being reals
   if (iscomplex (p) || iscomplex (df))
     error ("chi2inv: P and DF must not be complex.");
   endif

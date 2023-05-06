@@ -47,7 +47,7 @@ function r = chi2rnd (df, varargin)
     error ("chi2rnd: function called with too few input arguments.");
   endif
 
-  ## Check for X0 and GAMMA being reals
+  ## Check for DF being reals
   if (iscomplex (df))
     error ("chi2rnd: DF must not be complex.");
   endif

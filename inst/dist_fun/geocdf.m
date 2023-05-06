@@ -22,17 +22,21 @@
 ##
 ## Geometric cumulative distribution function (CDF).
 ##
-## The geometric distribution models the number of failures (@var{x}) of a
-## Bernoulli trial with probability @var{ps} before the first success.
-##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the geometric distribution with parameter @var{ps}.  The
-## size of @var{p} is the common size of @var{x} and @var{ps}.  A scalar input
-## functions as a constant matrix of the same size as the other inputs.
+## (CDF) of the geometric distribution with probability of success parameter
+## @var{ps}.  The size of @var{p} is the common size of @var{x} and @var{ps}.
+## A scalar input functions as a constant matrix of the same size as the other
+## inputs.
 ##
 ## @code{@var{p} = geocdf (@var{x}, @var{ps}, "upper")} computes the upper tail
 ## probability of the geometric distribution with probability parameter
 ## @var{ps}.
+##
+## The geometric distribution models the number of failures (@var{x}) of a
+## Bernoulli trial with probability @var{ps} before the first success.
+##
+## Further information about the geometric distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Geometric_distribution}
 ##
 ## @seealso{geoinv, geopdf, geornd, geostat}
 ## @end deftypefn
@@ -40,8 +44,8 @@
 function p = geocdf (x, ps, uflag)
 
   ## Check for valid number of input arguments
-  if (nargin < 2 || nargin > 3)
-    print_usage ();
+  if (nargin < 2)
+    error ("geocdf: function called with too few input arguments.");
   endif
 
   ## Check for common size of X and PS
@@ -57,7 +61,7 @@ function p = geocdf (x, ps, uflag)
     error ("geocdf: X and PS must not be complex.");
   endif
 
-  ## Initialize P according to appropriate class type
+  ## Check for class type
   if (isa (x, "single") || isa (ps, "single"))
     p = zeros (size (x), "single");
   else
@@ -102,7 +106,21 @@ function p = geocdf (x, ps, uflag)
 
 endfunction
 
-## Test results
+%!demo
+%! ## Plot various CDFs from the geometric distribution
+%! x = 0:10;
+%! p1 = geocdf (x, 0.2);
+%! p2 = geocdf (x, 0.5);
+%! p3 = geocdf (x, 0.7);
+%! plot (x, p1, "*b", x, p2, "*g", x, p3, "*r")
+%! grid on
+%! xlim ([0, 10])
+%! legend ({"ps = 0.2", "ps = 0.5", "ps = 0.7"}, "location", "southeast")
+%! title ("Geometric CDF")
+%! xlabel ("values in x (number of failures)")
+%! ylabel ("probability")
+
+## Test output
 %!test
 %! p = geocdf ([1, 2, 3, 4], 0.25);
 %! assert (p(1), 0.4375000000, 1e-14);
@@ -115,7 +133,6 @@ endfunction
 %! assert (p(2), 0.4218750000, 1e-14);
 %! assert (p(3), 0.3164062500, 1e-14);
 %! assert (p(4), 0.2373046875, 1e-14);
-
 %!shared x, p
 %! x = [-1 0 1 Inf];
 %! p = [0 0.5 0.75 1];
@@ -130,8 +147,8 @@ endfunction
 %!assert (geocdf ([x, NaN], single (0.5)), single ([p, NaN]))
 
 ## Test input validation
-%!error<Invalid call to geocdf.  Correct usage> geocdf ()
-%!error<Invalid call to geocdf.  Correct usage> geocdf (1)
+%!error<geocdf: function called with too few input arguments.> geocdf ()
+%!error<geocdf: function called with too few input arguments.> geocdf (1)
 %!error<geocdf: X and PS must be of common size or scalars.> ...
 %! geocdf (ones (3), ones (2))
 %!error<geocdf: X and PS must be of common size or scalars.> ...
