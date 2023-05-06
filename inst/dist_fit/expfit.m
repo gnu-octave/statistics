@@ -138,9 +138,9 @@ function [muhat, muci] = expfit (x, alpha = 0.05, censor = [], freq = [])
 
     ## Check that size of censor and freq match x
     if (! (isequal (size (censor), sz_s)))
-      error("expfit: CENSOR must be the same size as X.");
+      error("expfit: X and CENSOR vectors mismatch.");
     elseif (! isequal (size (freq), sz_s))
-      error("expfit: FREQ must be the same size as X.");
+      error("expfit: X and FREQ vectors mismatch.");
     endif
 
     ## Trivial case where censor and freq have no effect
@@ -327,5 +327,5 @@ endfunction
 %!error <X cannot be negative> expfit ([-1 2 3 4 5])
 %!error <CENSOR must be a numeric or logical array> expfit ([1:5], [], "test")
 %!error <FREQ must be a numeric or logical array> expfit ([1:5], [], [], "test")
-%!error <CENSOR must be the same size as X> expfit ([1:5], [], [0 0 0 0])
-%!error <FREQ must be the same size as X> expfit ([1:5], [], [], [1 1 1 1])
+%!error <X and CENSOR vectors mismatch.> expfit ([1:5], [], [0 0 0 0])
+%!error <X and FREQ vectors mismatch.> expfit ([1:5], [], [], [1 1 1 1])

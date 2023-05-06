@@ -63,7 +63,7 @@
 ## @seealso{wblcdf, wblinv, wblpdf, wblrnd, wbllike, wblstat}
 ## @end deftypefn
 
-function [parmhat, parmci] = wblfit (x, alpha, censor, freq, options)
+function [paramhat, paramci] = wblfit (x, alpha, censor, freq, options)
 
   ## Check input arguments
   if (! isvector (x))
@@ -77,7 +77,7 @@ function [parmhat, parmci] = wblfit (x, alpha, censor, freq, options)
     alpha = 0.05;
   else
     if (! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1)
-      error ("wblfit: Wrong value for ALPHA.");
+      error ("wblfit: wrong value for ALPHA.");
     endif
   endif
 
@@ -85,14 +85,14 @@ function [parmhat, parmci] = wblfit (x, alpha, censor, freq, options)
   if (nargin < 3 || isempty (censor))
     censor = zeros (size (x));
   elseif (! isequal (size (x), size (censor)))
-    error ("wblfit: X and CENSOR vector mismatch.");
+    error ("wblfit: X and CENSOR vectors mismatch.");
   endif
 
   ## Check frequency vector
   if (nargin < 4 || isempty (freq))
     freq = ones (size (x));
   elseif (! isequal (size (x), size (freq)))
-    error ("wblfit: X and FREQ vector mismatch.");
+    error ("wblfit: X and FREQ vectors mismatch.");
   endif
 
   ## Get options structure or add defaults
@@ -109,10 +109,10 @@ function [parmhat, parmci] = wblfit (x, alpha, censor, freq, options)
 
   ## Fit an extreme value distribution to the logged data, then transform to
   ## the Weibull parameter scales.
-  [parmhatEV, parmciEV] = evfit (log (x), alpha, censor, freq, options);
-  parmhat = [exp(parmhatEV(1)), 1./parmhatEV(2)];
+  [paramhatEV, paramciEV] = evfit (log (x), alpha, censor, freq, options);
+  paramhat = [exp(paramhatEV(1)), 1./paramhatEV(2)];
   if (nargout > 1)
-    parmci = [exp(parmciEV(:,1)) 1./parmciEV([2 1],2)];
+    paramci = [exp(paramciEV(:,1)) 1./paramciEV([2 1],2)];
   endif
 
 endfunction
@@ -180,16 +180,16 @@ endfunction
 ## Test input validation
 %!error<wblfit: X must be a vector.> wblfit (ones (2,5));
 %!error<wblfit: X must contain only positive values.> wblfit ([-1 2 3 4]);
-%!error<wblfit: Wrong value for ALPHA.> wblfit ([1, 2, 3, 4, 5], 1.2);
-%!error<wblfit: Wrong value for ALPHA.> wblfit ([1, 2, 3, 4, 5], 0);
-%!error<wblfit: Wrong value for ALPHA.> wblfit ([1, 2, 3, 4, 5], "alpha");
-%!error<wblfit: X and CENSOR vector mismatch.> ...
+%!error<wblfit: wrong value for ALPHA.> wblfit ([1, 2, 3, 4, 5], 1.2);
+%!error<wblfit: wrong value for ALPHA.> wblfit ([1, 2, 3, 4, 5], 0);
+%!error<wblfit: wrong value for ALPHA.> wblfit ([1, 2, 3, 4, 5], "alpha");
+%!error<wblfit: X and CENSOR vectors mismatch.> ...
 %! wblfit ([1, 2, 3, 4, 5], 0.05, [1 1 0]);
-%!error<wblfit: X and CENSOR vector mismatch.> ...
+%!error<wblfit: X and CENSOR vectors mismatch.> ...
 %! wblfit ([1, 2, 3, 4, 5], [], [1 1 0 1 1]');
-%!error<wblfit: X and FREQ vector mismatch.> ...
+%!error<wblfit: X and FREQ vectors mismatch.> ...
 %! wblfit ([1, 2, 3, 4, 5], 0.05, zeros (1,5), [1 1 0]);
-%!error<wblfit: X and FREQ vector mismatch.> ...
+%!error<wblfit: X and FREQ vectors mismatch.> ...
 %! wblfit ([1, 2, 3, 4, 5], [], [], [1 1 0 1 1]');
 %!error<wblfit: 'options' 5th argument must be a structure> ...
 %! wblfit ([1, 2, 3, 4, 5], 0.05, [], [], 2);

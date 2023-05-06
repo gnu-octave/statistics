@@ -87,7 +87,7 @@ function [paramhat, paramci] = gumbelfit (x, alpha, censor, freq, options)
   ## Check alpha
   if (nargin > 1)
     if (! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1)
-      error ("gumbelfit: Wrong value for ALPHA.");
+      error ("gumbelfit: wrong value for ALPHA.");
     endif
   else
     alpha = 0.05;
@@ -96,7 +96,7 @@ function [paramhat, paramci] = gumbelfit (x, alpha, censor, freq, options)
   ## Check censor vector
   if (nargin > 2)
     if (! isempty (censor) && ! all (size (censor) == size (x)))
-      error ("gumbelfit: Censoring vector must match X in size.");
+      error ("gumbelfit: X and CENSOR vectors mismatch.");
     endif
   else
     censor = zeros (size (x));
@@ -105,7 +105,7 @@ function [paramhat, paramci] = gumbelfit (x, alpha, censor, freq, options)
   ## Check frequency vector
   if (nargin > 3)
     if (! isempty (freq) && ! all (size (freq) == size (x)))
-      error ("gumbelfit: Frequency vector must match X in size.");
+      error ("gumbelfit: X and FREQ vectors mismatch.");
     endif
     ## Remove elements with zero frequency (if applicable)
     rm = find (freq == 0);
@@ -211,9 +211,14 @@ endfunction
 
 ## Test input validation
 %!error<gumbelfit: X must be a double-precision vector.> gumbelfit (ones (2,5));
-%!error<gumbelfit: X must be a double-precision vector.> gumbelfit (single (ones (1,5)));
-%!error<gumbelfit: X must NOT contain missing values> gumbelfit ([1, 2, 3, 4, NaN]);
-%!error<gumbelfit: Wrong value for ALPHA.> gumbelfit ([1, 2, 3, 4, 5], 1.2);
-%!error<gumbelfit: Censoring vector must> gumbelfit ([1, 2, 3, 4, 5], 0.05, [1 1 0]);
-%!error<gumbelfit: Frequency vector must> gumbelfit ([1, 2, 3, 4, 5], 0.05, [], [1 1 0]);
-%!error<gumbelfit: 'options' 5th argument> gumbelfit ([1, 2, 3, 4, 5], 0.05, [], [], 2);
+%!error<gumbelfit: X must be a double-precision vector.> ...
+%! gumbelfit (single (ones (1,5)));
+%!error<gumbelfit: X must NOT contain missing values> ...
+%! gumbelfit ([1, 2, 3, 4, NaN]);
+%!error<gumbelfit: wrong value for ALPHA.> gumbelfit ([1, 2, 3, 4, 5], 1.2);
+%!error<gumbelfit: X and CENSOR vectors mismatch.> ...
+%! gumbelfit ([1, 2, 3, 4, 5], 0.05, [1 1 0]);
+%!error<gumbelfit: X and FREQ vectors mismatch.> ...
+%! gumbelfit ([1, 2, 3, 4, 5], 0.05, [], [1 1 0]);
+%!error<gumbelfit: 'options' 5th argument> ...
+%! gumbelfit ([1, 2, 3, 4, 5], 0.05, [], [], 2);

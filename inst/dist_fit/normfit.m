@@ -115,7 +115,7 @@ function [muhat, sigmahat, muci, sigmaci] = normfit (x, alpha, censor, freq, opt
     alpha = 0.05;
   else
     if (! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1)
-      error ("normfit: Wrong value for ALPHA.");
+      error ("normfit: wrong value for ALPHA.");
     endif
   endif
 
@@ -123,7 +123,7 @@ function [muhat, sigmahat, muci, sigmaci] = normfit (x, alpha, censor, freq, opt
   if (nargin < 3 || isempty (censor))
     censor = 0;
   elseif (! isequal (size (x), size (censor)))
-    error ("normfit: X and CENSOR vector mismatch.");
+    error ("normfit: X and CENSOR vectors mismatch.");
   endif
 
   ## Check frequency vector
@@ -140,7 +140,7 @@ function [muhat, sigmahat, muci, sigmaci] = normfit (x, alpha, censor, freq, opt
       freq(is_zero) = [];
     end
   else
-    error ("normfit: X and FREQ vector mismatch.");
+    error ("normfit: X and FREQ vectors mismatch.");
   endif
 
   ## Check options structure or add defaults
@@ -445,18 +445,13 @@ endfunction
 %! normfit (ones (3,3,3))
 %!error<normfit: matrix data acceptable only under 2-arg syntax.> ...
 %! normfit (ones (20,3), [], zeros (20,1))
-%!error<normfit: Wrong value for ALPHA.> ...
-%! normfit (ones (20,1), 0)
-%!error<normfit: Wrong value for ALPHA.> ...
-%! normfit (ones (20,1), -0.3)
-%!error<normfit: Wrong value for ALPHA.> ...
-%! normfit (ones (20,1), 1.2)
-%!error<normfit: Wrong value for ALPHA.> ...
-%! normfit (ones (20,1), [0.05 0.1])
-%!error<normfit: Wrong value for ALPHA.> ...
-%! normfit (ones (20,1), 0.02+i)
-%!error<normfit: X and CENSOR vector mismatch.> ...
+%!error<normfit: wrong value for ALPHA.> normfit (ones (20,1), 0)
+%!error<normfit: wrong value for ALPHA.> normfit (ones (20,1), -0.3)
+%!error<normfit: wrong value for ALPHA.> normfit (ones (20,1), 1.2)
+%!error<normfit: wrong value for ALPHA.> normfit (ones (20,1), [0.05 0.1])
+%!error<normfit: wrong value for ALPHA.> normfit (ones (20,1), 0.02+i)
+%!error<normfit: X and CENSOR vectors mismatch.> ...
 %! normfit (ones (20,1), [], zeros(15,1))
-%!error<normfit: X and FREQ vector mismatch.> ...
+%!error<normfit: X and FREQ vectors mismatch.> ...
 %! normfit (ones (20,1), [], zeros(20,1), ones(25,1))
 %!error<normfit: > normfit (ones (20,1), [], zeros(20,1), ones(20,1), "options")

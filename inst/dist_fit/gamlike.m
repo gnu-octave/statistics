@@ -110,7 +110,7 @@ function [nlogL, acov] = gamlike (params, x, censor, freq)
   if (n_censored > 0)
     z_censored = z(logical (censor));
     Scen = gammainc (z_censored, k, "upper");
-    L(cens) = log (Scen);
+    L(logical (censor)) = log (Scen);
   endif
 
   ## Force a log(0)==-Inf for X from extreme right tail
@@ -129,16 +129,16 @@ function [nlogL, acov] = gamlike (params, x, censor, freq)
     ## Calculate censored data
     if (n_censored > 0)
       ## Compute derivatives
-      [y, dy, d2y] = dgammainc (z_censored, k, "upper");
+      [y, dy, d2y] = dgammainc (z_censored, k);
       dlnS = dy ./ y;
       d2lnS = d2y ./ y - dlnS.*dlnS;
 
       #[dlnS,d2lnS] = dlngamsf(z_censored,k);
       logzcen = log(z_censored);
       tmp = exp(k .* logzcen - z_censored - gammaln(k) - log(t)) ./ Scen;
-      dL11(cens) = d2lnS;
-      dL12(cens) = tmp .* (logzcen - dlnS - psi(0,k));
-      dL22(cens) = tmp .* ((z_censored-1-k)./t - tmp);
+      dL11(logical (censor)) = d2lnS;
+      dL12(logical (censor)) = tmp .* (logzcen - dlnS - psi(0,k));
+      dL22(logical (censor)) = tmp .* ((z_censored-1-k)./t - tmp);
     endif
     nH11 = -sum(freq .* dL11);
     nH12 = -sum(freq .* dL12);

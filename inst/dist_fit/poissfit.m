@@ -52,13 +52,13 @@ function [lambdahat, lambdaci] = poissfit (x, alpha, freq=[])
   if (nargin < 2 || isempty (alpha))
     alpha = 0.05;
   elseif (! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1)
-    error ("poissfit: Wrong value for ALPHA.");
+    error ("poissfit: wrong value for ALPHA.");
   endif
 
   if (isempty (freq))
     freq = ones (size (x));
   elseif (! isequal (size (x), size (freq)))
-    error ("poissfit: FREQ must match X in size.");
+    error ("poissfit: X and FREQ vectors mismatch.");
   elseif (any (freq < 0))
     error ("poissfit: FREQ must not contain negative values.");
   endif
@@ -158,10 +158,10 @@ endfunction
 
 ## Test input validation
 %!error<poissfit: X cannot have negative values.> poissfit ([1 2 -1 3])
-%!error<poissfit: Wrong value for ALPHA.> poissfit ([1 2 3], 0)
-%!error<poissfit: Wrong value for ALPHA.> poissfit ([1 2 3], 1.2)
-%!error<poissfit: Wrong value for ALPHA.> poissfit ([1 2 3], [0.02 0.05])
-%!error<poissfit: FREQ must match X in size.>
+%!error<poissfit: wrong value for ALPHA.> poissfit ([1 2 3], 0)
+%!error<poissfit: wrong value for ALPHA.> poissfit ([1 2 3], 1.2)
+%!error<poissfit: wrong value for ALPHA.> poissfit ([1 2 3], [0.02 0.05])
+%!error<poissfit: X and FREQ vectors mismatch.>
 %! poissfit ([1 2 3], [], [1 5])
 %!error<poissfit: FREQ must not contain negative values.>
 %! poissfit ([1 2 3], [], [1 5 -1])

@@ -82,7 +82,7 @@ function [paramhat, paramci] = bisafit (x, alpha, censor, freq, options)
     alpha = 0.05;
   else
     if (! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1)
-      error ("bisafit: Wrong value for ALPHA.");
+      error ("bisafit: wrong value for ALPHA.");
     endif
   endif
 
@@ -90,14 +90,14 @@ function [paramhat, paramci] = bisafit (x, alpha, censor, freq, options)
   if (nargin < 3 || isempty (censor))
     censor = zeros (size (x));
   elseif (! isequal (size (x), size (censor)))
-    error ("bisafit: X and CENSOR vector mismatch.");
+    error ("bisafit: X and CENSOR vectors mismatch.");
   endif
 
   ## Check frequency vector
   if (nargin < 4 || isempty (freq))
     freq = ones (size (x));
   elseif (! isequal (size (x), size (freq)))
-    error ("bisafit: X and FREQ vector mismatch.");
+    error ("bisafit: X and FREQ vectors mismatch.");
   endif
 
   ## Get options structure or add defaults
@@ -138,7 +138,7 @@ function [paramhat, paramci] = bisafit (x, alpha, censor, freq, options)
       warning ("bisafit: maximum number of iterations are exceeded.");
     endif
   elseif (err < 0)
-    error ("bisafit: NoSolution.");
+    error ("bisafit: no solution.");
   endif
 
   ## Compute CIs using a log normal approximation for parameters.
@@ -219,16 +219,16 @@ endfunction
 ## Test input validation
 %!error<bisafit: X must be a vector.> bisafit (ones (2,5));
 %!error<bisafit: X must contain only positive values.> bisafit ([-1 2 3 4]);
-%!error<bisafit: Wrong value for ALPHA.> bisafit ([1, 2, 3, 4, 5], 1.2);
-%!error<bisafit: Wrong value for ALPHA.> bisafit ([1, 2, 3, 4, 5], 0);
-%!error<bisafit: Wrong value for ALPHA.> bisafit ([1, 2, 3, 4, 5], "alpha");
-%!error<bisafit: X and CENSOR vector mismatch.> ...
+%!error<bisafit: wrong value for ALPHA.> bisafit ([1, 2, 3, 4, 5], 1.2);
+%!error<bisafit: wrong value for ALPHA.> bisafit ([1, 2, 3, 4, 5], 0);
+%!error<bisafit: wrong value for ALPHA.> bisafit ([1, 2, 3, 4, 5], "alpha");
+%!error<bisafit: X and CENSOR vectors mismatch.> ...
 %! bisafit ([1, 2, 3, 4, 5], 0.05, [1 1 0]);
-%!error<bisafit: X and CENSOR vector mismatch.> ...
+%!error<bisafit: X and CENSOR vectors mismatch.> ...
 %! bisafit ([1, 2, 3, 4, 5], [], [1 1 0 1 1]');
-%!error<bisafit: X and FREQ vector mismatch.> ...
+%!error<bisafit: X and FREQ vectors mismatch.> ...
 %! bisafit ([1, 2, 3, 4, 5], 0.05, zeros (1,5), [1 1 0]);
-%!error<bisafit: X and FREQ vector mismatch.> ...
+%!error<bisafit: X and FREQ vectors mismatch.> ...
 %! bisafit ([1, 2, 3, 4, 5], [], [], [1 1 0 1 1]');
 %!error<bisafit: 'options' 5th argument must be a structure> ...
 %! bisafit ([1, 2, 3, 4, 5], 0.05, [], [], 2);

@@ -78,7 +78,7 @@ function [paramhat, paramci] = betafit (x, alpha)
   ## Parse ALPHA argument or add default
   if (nargin > 1)
     if (! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1)
-      error ("betafit: Wrong value for ALPHA.");
+      error ("betafit: wrong value for ALPHA.");
     endif
   else
     alpha = 0.05;
@@ -211,4 +211,4 @@ endfunction
 %!error<betafit: X must be a vector of real values.> betafit (ones (2,2) * 0.5);
 %!error<betafit: X must be in the range> betafit ([0.5, 1.2]);
 %!error<betafit: X must contain distinct values.> betafit ([0.1, 0.1]);
-%!error<betafit: Wrong value for ALPHA.> betafit ([0.01:0.1:0.99], 1.2);
+%!error<betafit: wrong value for ALPHA.> betafit ([0.01:0.1:0.99], 1.2);

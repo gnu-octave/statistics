@@ -72,7 +72,7 @@ function [pshat, psci] = binofit (x, n, alpha)
   if (nargin < 3 || isempty (alpha))
     alpha = 0.05;
   elseif (! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1)
-    error ("binofit: Wrong value for ALPHA.");
+    error ("binofit: wrong value for ALPHA.");
   endif
 
   ## Compute pshat
@@ -153,6 +153,6 @@ endfunction
 %! binofit ([1 2 3 4])
 %!error<binofit: X cannot have negative values.> binofit (-1, [1 2 3 3])
 %!error<binofit: N must be a non-negative integer.> binofit (1, [1 2 -1 3])
-%!error<binofit: Wrong value for ALPHA.> binofit (1, [1 2 3], 0)
-%!error<binofit: Wrong value for ALPHA.> binofit (1, [1 2 3], 1.2)
-%!error<binofit: Wrong value for ALPHA.> binofit (1, [1 2 3], [0.02 0.05])
+%!error<binofit: wrong value for ALPHA.> binofit (1, [1 2 3], 0)
+%!error<binofit: wrong value for ALPHA.> binofit (1, [1 2 3], 1.2)
+%!error<binofit: wrong value for ALPHA.> binofit (1, [1 2 3], [0.02 0.05])

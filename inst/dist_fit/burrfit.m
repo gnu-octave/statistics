@@ -27,8 +27,9 @@
 ##
 ## @code{@var{muhat} = burrfit (@var{x})} returns maximum likelihood estimates
 ## of the parameters of the Burr type XII distribution given the data in
-## @var{x}.  @qcode{@var{paramhat}(1)} is the scale parameter, @var{beta}, and
-## @qcode{@var{paramhat}(2)} is the shape parameter, @var{gamma}.
+## @var{x}.  @qcode{@var{paramhat}(1)} is the scale parameter, @var{lambda},
+## @qcode{@var{paramhat}(2)} is the first shape parameter, @var{c}, and
+## @qcode{@var{paramhat}(3)} is the second shape parameter, @var{k}
 ##
 ## @code{[@var{paramhat}, @var{paramci}] = burrfit (@var{x})} returns the 95%
 ## confidence intervals for the parameter estimates.
@@ -82,7 +83,7 @@ function [paramhat, paramci] = burrfit (x, alpha, censor, freq, options)
     alpha = 0.05;
   else
     if (! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1)
-      error ("burrfit: Wrong value for ALPHA.");
+      error ("burrfit: wrong value for ALPHA.");
     endif
   endif
 
@@ -90,14 +91,14 @@ function [paramhat, paramci] = burrfit (x, alpha, censor, freq, options)
   if (nargin < 3 || isempty (censor))
     censor = zeros (size (x));
   elseif (! isequal (size (x), size (censor)))
-    error ("burrfit: X and CENSOR vector mismatch.");
+    error ("burrfit: X and CENSOR vectors mismatch.");
   endif
 
   ## Check frequency vector
   if (nargin < 4 || isempty (freq))
     freq = ones (size (x));
   elseif (! isequal (size (x), size (freq)))
-    error ("burrfit: X and FREQ vector mismatch.");
+    error ("burrfit: X and FREQ vectors mismatch.");
   endif
 
   ## Get options structure or add defaults
@@ -386,16 +387,16 @@ endfunction
 ## Test input validation
 %!error<burrfit: X must be a vector.> burrfit (ones (2,5));
 %!error<burrfit: X must contain only positive values.> burrfit ([-1 2 3 4]);
-%!error<burrfit: Wrong value for ALPHA.> burrfit ([1, 2, 3, 4, 5], 1.2);
-%!error<burrfit: Wrong value for ALPHA.> burrfit ([1, 2, 3, 4, 5], 0);
-%!error<burrfit: Wrong value for ALPHA.> burrfit ([1, 2, 3, 4, 5], "alpha");
-%!error<burrfit: X and CENSOR vector mismatch.> ...
+%!error<burrfit: wrong value for ALPHA.> burrfit ([1, 2, 3, 4, 5], 1.2);
+%!error<burrfit: wrong value for ALPHA.> burrfit ([1, 2, 3, 4, 5], 0);
+%!error<burrfit: wrong value for ALPHA.> burrfit ([1, 2, 3, 4, 5], "alpha");
+%!error<burrfit: X and CENSOR vectors mismatch.> ...
 %! burrfit ([1, 2, 3, 4, 5], 0.05, [1 1 0]);
-%!error<burrfit: X and CENSOR vector mismatch.> ...
+%!error<burrfit: X and CENSOR vectors mismatch.> ...
 %! burrfit ([1, 2, 3, 4, 5], [], [1 1 0 1 1]');
-%!error<burrfit: X and FREQ vector mismatch.> ...
+%!error<burrfit: X and FREQ vectors mismatch.> ...
 %! burrfit ([1, 2, 3, 4, 5], 0.05, zeros (1,5), [1 1 0]);
-%!error<burrfit: X and FREQ vector mismatch.> ...
+%!error<burrfit: X and FREQ vectors mismatch.> ...
 %! burrfit ([1, 2, 3, 4, 5], [], [], [1 1 0 1 1]');
 %!error<burrfit: 'options' 5th argument must be a structure> ...
 %! burrfit ([1, 2, 3, 4, 5], 0.05, [], [], 2);

@@ -88,7 +88,7 @@ function [paramhat, paramci] = lognfit (x, alpha, censor, freq, options)
     alpha = 0.05;
   else
     if (! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1)
-      error ("lognfit: Wrong value for ALPHA.");
+      error ("lognfit: wrong value for ALPHA.");
     endif
   endif
 
@@ -96,14 +96,14 @@ function [paramhat, paramci] = lognfit (x, alpha, censor, freq, options)
   if (nargin < 3 || isempty (censor))
     censor = [];
   elseif (! isequal (size (x), size (censor)))
-    error ("lognfit: X and CENSOR vector mismatch.");
+    error ("lognfit: X and CENSOR vectors mismatch.");
   endif
 
   ## Check frequency vector
   if (nargin < 4 || isempty (freq))
     freq = [];
   elseif (! isequal (size(x), size(freq)))
-    error ("lognfit: X and FREQ vector mismatch.");
+    error ("lognfit: X and FREQ vectors mismatch.");
   endif
 
   ## Check options structure or add defaults
@@ -195,18 +195,13 @@ endfunction
 %! lognfit ({1, 2, 3, 4, 5})
 %!error<lognfit: X must be a numeric vector of positive values.> ...
 %! lognfit ([-1, 2, 3, 4, 5])
-%!error<lognfit: Wrong value for ALPHA.> ...
-%! lognfit (ones (20,1), 0)
-%!error<lognfit: Wrong value for ALPHA.> ...
-%! lognfit (ones (20,1), -0.3)
-%!error<lognfit: Wrong value for ALPHA.> ...
-%! lognfit (ones (20,1), 1.2)
-%!error<lognfit: Wrong value for ALPHA.> ...
-%! lognfit (ones (20,1), [0.05,  0.1])
-%!error<lognfit: Wrong value for ALPHA.> ...
-%! lognfit (ones (20,1), 0.02+i)
-%!error<lognfit: X and CENSOR vector mismatch.> ...
+%!error<lognfit: wrong value for ALPHA.> lognfit (ones (20,1), 0)
+%!error<lognfit: wrong value for ALPHA.> lognfit (ones (20,1), -0.3)
+%!error<lognfit: wrong value for ALPHA.> lognfit (ones (20,1), 1.2)
+%!error<lognfit: wrong value for ALPHA.> lognfit (ones (20,1), [0.05,  0.1])
+%!error<lognfit: wrong value for ALPHA.> lognfit (ones (20,1), 0.02+i)
+%!error<lognfit: X and CENSOR vectors mismatch.> ...
 %! lognfit (ones (20,1), [], zeros(15,1))
-%!error<lognfit: X and FREQ vector mismatch.> ...
+%!error<lognfit: X and FREQ vectors mismatch.> ...
 %! lognfit (ones (20,1), [], zeros(20,1), ones(25,1))
 %!error<lognfit: > lognfit (ones (20,1), [], zeros(20,1), ones(20,1), "options")

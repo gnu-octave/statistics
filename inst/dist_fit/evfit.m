@@ -87,7 +87,7 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
   ## Check alpha
   if (nargin > 1)
     if (! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1)
-      error ("evfit: Wrong value for ALPHA.");
+      error ("evfit: wrong value for ALPHA.");
     endif
   else
     alpha = 0.05;
@@ -96,7 +96,7 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
   ## Check censor vector
   if (nargin > 2)
     if (! isempty (censor) && ! all (size (censor) == size (x)))
-      error ("evfit: Censoring vector must match X in size.");
+      error ("evfit: X and CENSOR vectors mismatch.");
     endif
   else
     censor = zeros (size (x));
@@ -105,7 +105,7 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
   ## Check frequency vector
   if (nargin > 3)
     if (! isempty (freq) && ! all (size (freq) == size (x)))
-      error ("evfit: Frequency vector must match X in size.");
+      error ("evfit: X and FREQ vectors mismatch.");
     endif
     ## Remove elements with zero frequency (if applicable)
     rm = find (freq == 0);
@@ -350,7 +350,9 @@ endfunction
 %!error<evfit: X must be a double-precision vector.> evfit (ones (2,5));
 %!error<evfit: X must be a double-precision vector.> evfit (single (ones (1,5)));
 %!error<evfit: X must NOT contain missing values> evfit ([1, 2, 3, 4, NaN]);
-%!error<evfit: Wrong value for ALPHA.> evfit ([1, 2, 3, 4, 5], 1.2);
-%!error<evfit: Censoring vector must> evfit ([1, 2, 3, 4, 5], 0.05, [1 1 0]);
-%!error<evfit: Frequency vector must> evfit ([1, 2, 3, 4, 5], 0.05, [], [1 1 0]);
+%!error<evfit: wrong value for ALPHA.> evfit ([1, 2, 3, 4, 5], 1.2);
+%!error<evfit: X and CENSOR vectors mismatch.> ...
+%! evfit ([1, 2, 3, 4, 5], 0.05, [1 1 0]);
+%!error<evfit: X and FREQ vectors mismatch.> ...
+%! evfit ([1, 2, 3, 4, 5], 0.05, [], [1 1 0]);
 %!error<evfit: 'options' 5th argument> evfit ([1, 2, 3, 4, 5], 0.05, [], [], 2);
