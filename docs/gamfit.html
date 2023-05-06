@@ -71,22 +71,64 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>MLE</var> = <b>gamfit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>paramhat</var> = <b>gamfit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>gamfit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>gamfit</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>gamfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>gamfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>gamfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</i></dt>
 </dl>
 
-<p> Estimate parameters for Gamma distribution.
+<p> Estimate parameters and confidence intervals for the Gamma distribution.
 </p>
 <div class="ms-5">
-<p> Find the maximum likelihood estimate parameters of the Gamma distribution
- of <var>x</var>.  <var>MLE</var> is a two element vector with shape parameter
- <var>A</var> and scale <var>B</var>.
+<p> <code><var>paramhat</var> = gamfit (<var>x</var>)</code> returns maximum likelihood
+ estimates of the parameters of the Gamma distribution given the data in
+ <var>x</var>.  <code><var>paramhat</var>(1)</code> is the shape parameter, <var>k</var>, and
+ <code><var>paramhat</var>(2)</code> is the scale parameter, <var>theta</var>.
 </p>
-<p> This function works by minimizing the value of gamlike for the vector R.
- Just about any minimization function will work, all it has to do is
- minimize for one variable.  Although the gamma distribution has two
- parameters, their product is the mean of the <var>x</var>.  So a helper function
- for the search takes one parameter, calculates the other and then returns
- the value of gamlike.
+<p> <code>[<var>paramhat</var>, <var>paramci</var>] = gamfit (<var>x</var>)</code> returns the 95%
+ confidence intervals for the parameter estimates.
+</p>
+<p> <code>[&hellip;] = gamfit (<var>x</var>, <var>alpha</var>)</code> also returns the
+ <code>100 * (1 - <var>alpha</var>)</code> percent confidence intervals for the
+ parameter estimates.  By default, the optional argument <var>alpha</var> is
+ 0.05 corresponding to 95% confidence intervals.  Pass in <code>[]</code> for
+ <var>alpha</var> to use the default values.
+</p>
+<p> <code>[&hellip;] = gamfit (<var>x</var>, <var>alpha</var>, <var>censor</var>)</code> accepts a
+ boolean vector, <var>censor</var>, of the same size as <var>x</var> with <code>1</code>s for
+ observations that are right-censored and <code>0</code>s for observations that are
+ observed exactly.  By default, or if left empty,
+ <code><var>censor</var> = zeros (size (<var>x</var>))</code>.
+</p>
+<p> <code>[&hellip;] = gamfit (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</code>
+ accepts a frequency vector, <var>freq</var>, of the same size as <var>x</var>.
+ <var>freq</var> typically contains integer frequencies for the corresponding
+ elements in <var>x</var>, but it can contain any non-integer non-negative values.
+ By default, or if left empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
+</p>
+<p> <code>[&hellip;] = gamfit (&hellip;, <var>options</var>)</code> specifies control
+ parameters for the iterative algorithm used to compute the maximum likelihood
+ estimates.  <var>options</var> is a structure with the following field and its
+ default value:
+ </p><ul>
+<li> <code><var>options</var>.Display = &quot;off&quot;</code>
+ </li><li> <code><var>options</var>.MaxFunEvals = 1000</code>
+ </li><li> <code><var>options</var>.MaxIter = 500</code>
+ </li><li> <code><var>options</var>.TolX = 1e-6</code>
+ </li></ul>
+
+<p> There are two equivalent parameterizations in common use:
+ </p><ol>
+<li> With a shape parameter <math>k</math> and a scale parameter <math>θ</math>, which
+ is used by <code>gamcdf</code>.
+ </li><li> With a shape parameter <math>α = k</math> and an inverse scale parameter
+ <math>β = 1 / θ</math>, called a rate parameter.
+ </li></ol>
+
+<p> Further information about the Gamma distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Gamma_distribution">https://en.wikipedia.org/wiki/Gamma_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="gamcdf.html">gamcdf</a>, 
@@ -98,6 +140,81 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/gamfit.m">gamfit</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Sample 3 populations from different Gamma distibutions
+ randg ("seed", 5);    # for reproducibility
+ r1 = gamrnd (1, 2, 2000, 1);
+ randg ("seed", 2);    # for reproducibility
+ r2 = gamrnd (2, 2, 2000, 1);
+ randg ("seed", 7);    # for reproducibility
+ r3 = gamrnd (7.5, 1, 2000, 1);
+ r = [r1, r2, r3];
+
+ ## Plot them normalized and fix their colors
+ hist (r, 75, 4);
+ h = findobj (gca, "Type", "patch");
+ set (h(1), "facecolor", "c");
+ set (h(2), "facecolor", "g");
+ set (h(3), "facecolor", "r");
+ ylim ([0, 0.62]);
+ xlim ([0, 12]);
+ hold on
+
+ ## Estimate their α and β parameters
+ k_thetaA = gamfit (r(:,1));
+ k_thetaB = gamfit (r(:,2));
+ k_thetaC = gamfit (r(:,3));
+
+ ## Plot their estimated PDFs
+ x = [0.01,0.1:0.2:18];
+ y = gampdf (x, k_thetaA(1), k_thetaA(2));
+ plot (x, y, "-pr");
+ y = gampdf (x, k_thetaB(1), k_thetaB(2));
+ plot (x, y, "-sg");
+ y = gampdf (x, k_thetaC(1), k_thetaC(2));
+ plot (x, y, "-^c");
+ hold off
+ legend ({"Normalized HIST of sample 1 with k=1 and θ=2", ...
+          "Normalized HIST of sample 2 with k=2 and θ=2", ...
+          "Normalized HIST of sample 3 with k=7.5 and θ=1", ...
+          sprintf("PDF for sample 1 with estimated k=%0.2f and θ=%0.2f", ...
+                  k_thetaA(1), k_thetaA(2)), ...
+          sprintf("PDF for sample 2 with estimated k=%0.2f and θ=%0.2f", ...
+                  k_thetaB(1), k_thetaB(2)), ...
+          sprintf("PDF for sample 3 with estimated k=%0.2f and θ=%0.2f", ...
+                  k_thetaC(1), k_thetaC(2))})
+ title ("Three population samples from different Gamma distibutions")
+ hold off
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/gamfit_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>
