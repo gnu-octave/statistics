@@ -78,6 +78,10 @@
 
  ** cdf: update support for all univariate cumulative distribution functions
 
+ ** gamfit: fixed MATLAB compatibility
+
+ ** gamlike: fixed MATLAB compatibility
+
  ** icdf: update support for all univariate quantile functions
 
  ** laplacecdf: supports "upper" option
