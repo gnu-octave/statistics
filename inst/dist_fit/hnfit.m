@@ -20,7 +20,7 @@
 ## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} hnfit (@var{x}, @var{mu})
 ## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} hnfit (@var{x}, @var{mu}, @var{alpha})
 ##
-## Estimate parameters and confidence intervals for the Beta distribution.
+## Estimate parameters and confidence intervals for the half-normal distribution.
 ##
 ## @code{@var{paramhat} = hnfit (@var{x})} returns the maximum likelihood
 ## estimates of the parameters of the half-normal distribution given the data in
