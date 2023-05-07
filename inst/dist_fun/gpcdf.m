@@ -45,9 +45,6 @@
 ## @qcode{@var{mu} < 0},for
 ## @qcode{0 <= (@var{x} - @var{mu}) / @var{sigma} <= -1 / @var{k}}.
 ##
-## @code{[@dots{}] = gpcdf(@dots{}, "upper")} computes the upper tail
-## probability of the generalized Pareto distribution.
-##
 ## Further information about the generalized Pareto distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Generalized_Pareto_distribution}
 ##
@@ -57,57 +54,37 @@
 function p = gpcdf (x, k, sigma, mu, uflag)
 
   ## Check for valid number of input arguments
-  if (nargin < 1 || nargin > 5)
-    error ("gpcdf: invalid number of input arguments.");
+  if (nargin < 4)
+    error ("gpcdf: function called with too few input arguments.");
   endif
 
-  ## Check for 'upper' flag
-  if (nargin > 1 && strcmpi (varargin{end}, "upper"))
-    uflag = true;
-    varargin(end) = [];
-  elseif (nargin > 1  && ischar (varargin{end}) && ...
-          ! strcmpi (varargin{end}, "upper"))
-    error ("gpcdf: invalid argument for upper tail.");
+  ## Check for valid "upper" flag
+  if (nargin > 4)
+    if (! strcmpi (uflag, "upper"))
+      error ("gpcdf: invalid argument for upper tail.");
+    else
+      uflag = true;
+    endif
   else
     uflag = false;
   endif
 
-  ## Get extra arguments (if they exist) or add defaults
-  if (numel (varargin) > 0)
-    k = varargin{1};
-  else
-    k = 0;
-  endif
-  if (numel (varargin) > 1)
-    sigma = varargin{2};
-  else
-    sigma = 1;
-  endif
-  if (numel (varargin) > 2)
-    mu = varargin{3};
-  else
-    mu = 0;
-  endif
-
-  ## Check for common size of X, SHAPE, SCALE, and LOCATION
-  if (! isscalar (x) || ! isscalar (k) || ! isscalar (sigma) || ...
-      ! isscalar (mu))
+  ## Check for common size of X, K, SIGMA, and MU
+  if (! isscalar (x) || ! isscalar (k) || ! isscalar (sigma) || ! isscalar (mu))
     [err, x, k, sigma, mu] = common_size (x, k, sigma, mu);
     if (err > 0)
-      error (strcat (["gpcdf: X, SHAPE, SCALE, and LOCATION"], ...
-                     [" must be of common size or scalars."]));
+      error ("gpcdf: X, K, SIGMA, and MU must be of common size or scalars.");
     endif
   endif
 
-  ## Check for X, SHAPE, SCALE, and LOCATION being reals
-  if (iscomplex (x) || iscomplex (k) || iscomplex (sigma) || ...
-      iscomplex (mu))
-    error ("gpcdf: X, SHAPE, SCALE, and LOCATION must not be complex.");
+  ## Check for X, K, SIGMA, and MU being reals
+  if (iscomplex (x) || iscomplex (k) || iscomplex (sigma) || iscomplex (mu))
+    error ("gpcdf: X, K, SIGMA, and MU must not be complex.");
   endif
 
-  ## Check for appropriate class
-  if (isa (x, "single") || isa (k, "single") || ...
-      isa (sigma, "single") || isa (mu, "single"));
+  ## Check for class type
+  if (isa (x, "single") || isa (k, "single") ...
+                        || isa (sigma, "single") || isa (mu, "single"));
     is_class = "single";
   else
     is_class = "double";
@@ -154,7 +131,28 @@ function p = gpcdf (x, k, sigma, mu, uflag)
 
 endfunction
 
-## Test results
+%!demo
+%! ## Plot various CDFs from the generalized Pareto distribution
+%! x = 0:0.001:5;
+%! p1 = gpcdf (x, 1, 1, 0);
+%! p2 = gpcdf (x, 5, 1, 0);
+%! p3 = gpcdf (x, 20, 1, 0);
+%! p4 = gpcdf (x, 1, 2, 0);
+%! p5 = gpcdf (x, 5, 2, 0);
+%! p6 = gpcdf (x, 20, 2, 0);
+%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", ...
+%!       x, p4, "-c", x, p5, "-m", x, p6, "-k")
+%! grid on
+%! xlim ([0, 5])
+%! legend ({"ξ = 1, σ = 1, μ = 0", "ξ = 5, σ = 1, μ = 0", ...
+%!          "ξ = 20, σ = 1, μ = 0", "ξ = 1, σ = 2, μ = 0", ...
+%!          "ξ = 5, σ = 2, μ = 0", "ξ = 20, σ = 2, μ = 0"}, ...
+%!         "location", "northwest")
+%! title ("Generalized Pareto CDF")
+%! xlabel ("values in x")
+%! ylabel ("probability")
+
+## Test output
 %!shared x, y1, y1u, y2, y2u, y3, y3u
 %! x = [-Inf, -1, 0, 1/2, 1, Inf];
 %! y1 = [0, 0, 0, 0.3934693402873666, 0.6321205588285577, 1];
@@ -177,7 +175,6 @@ endfunction
 %!assert (gpcdf (x, 0, ones (1,6), 0, "upper"), y1u, eps)
 %!assert (gpcdf (x, zeros (1,6), 1, 0, "upper"), y1u, eps)
 %!assert (gpcdf (x, 0, 1, 0, "upper"), y1u, eps)
-
 %!assert (gpcdf (x, ones (1,6), ones (1,6), zeros (1,6)), y2, eps)
 %!assert (gpcdf (x, 1, 1, zeros (1,6)), y2, eps)
 %!assert (gpcdf (x, 1, ones (1,6), 0), y2, eps)
@@ -228,26 +225,31 @@ endfunction
 %!assert (gpcdf ([x, NaN], 0, 1, single (0)), single ([y1, NaN]), eps("single"))
 %!assert (gpcdf ([x, NaN], 0, single (1), 0), single ([y1, NaN]), eps("single"))
 %!assert (gpcdf ([x, NaN], single (0), 1, 0), single ([y1, NaN]), eps("single"))
-
 %!assert (gpcdf (single ([x, NaN]), 1, 1, 0), single ([y2, NaN]), eps("single"))
 %!assert (gpcdf ([x, NaN], 1, 1, single (0)), single ([y2, NaN]), eps("single"))
 %!assert (gpcdf ([x, NaN], 1, single (1), 0), single ([y2, NaN]), eps("single"))
 %!assert (gpcdf ([x, NaN], single (1), 1, 0), single ([y2, NaN]), eps("single"))
-
 %!assert (gpcdf (single ([x, NaN]), -1, 1, 0), single ([y3, NaN]), eps("single"))
 %!assert (gpcdf ([x, NaN], -1, 1, single (0)), single ([y3, NaN]), eps("single"))
 %!assert (gpcdf ([x, NaN], -1, single (1), 0), single ([y3, NaN]), eps("single"))
 %!assert (gpcdf ([x, NaN], single (-1), 1, 0), single ([y3, NaN]), eps("single"))
 
 ## Test input validation
-%!error gpcdf ()
-%!error gpcdf (1, 2, 3, 4, 5, 6)
-%!error gpcdf (ones (3), ones (2), ones (2), ones (2))
-%!error gpcdf (ones (2), ones (2), ones (2), ones (3))
-%!error gpcdf (ones (2), ones (2), ones (3), ones (2))
-%!error gpcdf (ones (2), ones (3), ones (2), ones (2))
-%!error gpcdf (i, 2, 2, 2)
-%!error gpcdf (2, i, 2, 2)
-%!error gpcdf (2, 2, i, 2)
-%!error gpcdf (2, 2, 2, i)
-
+%!error<gpcdf: function called with too few input arguments.> gpcdf ()
+%!error<gpcdf: function called with too few input arguments.> gpcdf (1)
+%!error<gpcdf: function called with too few input arguments.> gpcdf (1, 2)
+%!error<gpcdf: function called with too few input arguments.> gpcdf (1, 2, 3)
+%!error<gpcdf: invalid argument for upper tail.> gpcdf (1, 2, 3, 4, "tail")
+%!error<gpcdf: invalid argument for upper tail.> gpcdf (1, 2, 3, 4, 5)
+%!error<gpcdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
+%! gpcdf (ones (3), ones (2), ones(2), ones(2))
+%!error<gpcdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
+%! gpcdf (ones (2), ones (3), ones(2), ones(2))
+%!error<gpcdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
+%! gpcdf (ones (2), ones (2), ones(3), ones(2))
+%!error<gpcdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
+%! gpcdf (ones (2), ones (2), ones(2), ones(3))
+%!error<gpcdf: X, K, SIGMA, and MU must not be complex.> gpcdf (i, 2, 3, 4)
+%!error<gpcdf: X, K, SIGMA, and MU must not be complex.> gpcdf (1, i, 3, 4)
+%!error<gpcdf: X, K, SIGMA, and MU must not be complex.> gpcdf (1, 2, i, 4)
+%!error<gpcdf: X, K, SIGMA, and MU must not be complex.> gpcdf (1, 2, 3, i)

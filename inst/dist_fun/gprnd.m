@@ -19,18 +19,19 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{r} =} gprnd (@var{shape}, @var{scale}, @var{location})
-## @deftypefnx {statistics} {@var{r} =} gprnd (@var{shape}, @var{scale}, @var{location}, @var{rows})
-## @deftypefnx {statistics} {@var{r} =} gprnd (@var{shape}, @var{scale}, @var{location}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} {@var{r} =} gprnd (@var{shape}, @var{scale}, @var{location}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} gprnd (@var{k}, @var{sigma}, @var{mu})
+## @deftypefnx {statistics} {@var{r} =} gprnd (@var{k}, @var{sigma}, @var{mu}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} gprnd (@var{k}, @var{sigma}, @var{mu}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} gprnd (@var{k}, @var{sigma}, @var{mu}, [@var{sz}])
 ##
 ## Random arrays from the generalized Pareto distribution.
 ##
-## @code{@var{r} = gprnd (@var{shape}, @var{scale}, @var{location})} returns an
-## array of random numbers chosen from the generalized Pareto distribution with
-## parameters @var{shape}, @var{scale}, and @var{location}.  The size of @var{r}
-## is the common size of @var{shape}, @var{scale}, and @var{location}.  A scalar
-## input functions as a constant matrix of the same size as the other inputs.
+## @code{@var{r} = gprnd (@var{k}, @var{sigma}, @var{mu})} returns an array of
+## random numbers chosen from the generalized Pareto distribution with shape
+## parameter @var{k}, scale parameter @var{sigma}, and location parameter
+## @var{mu}.  The size of @var{r} is the common size of the input arguments.
+## A scalar input functions as a constant matrix of the same size as the other
+## inputs.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
@@ -38,88 +39,92 @@
 ## further arguments specify additional matrix dimensions.  The size may also
 ## be specified with a vector of dimensions @var{sz}.
 ##
+## When @qcode{@var{k} = 0} and @qcode{@var{mu} = 0}, the Generalized Pareto CDF
+## is equivalent to the exponential distribution.  When @qcode{@var{k} > 0} and
+## @code{@var{mu} = @var{k} / @var{k}} the Generalized Pareto is equivalent to
+## the Pareto distribution.  The mean of the Generalized Pareto is not finite
+## when @qcode{@var{k} >= 1} and the variance is not finite when
+## @qcode{@var{k} >= 1/2}.  When @qcode{@var{k} >= 0}, the Generalized Pareto
+## has positive density for @qcode{@var{x} > @var{mu}}, or, when
+## @qcode{@var{mu} < 0},for
+## @qcode{0 <= (@var{x} - @var{mu}) / @var{sigma} <= -1 / @var{k}}.
+##
+## Further information about the generalized Pareto distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Generalized_Pareto_distribution}
+##
 ## @seealso{gpcdf, gpinv, gppdf, gpfit, gplike, gpstat}
 ## @end deftypefn
 
-function r = gprnd (shape, scale, location, varargin)
+function r = gprnd (k, sigma, mu, varargin)
 
+  ## Check for valid number of input arguments
   if (nargin < 3)
-    print_usage ();
+    error ("gprnd: function called with too few input arguments.");
   endif
 
-  if (! isscalar (location) || ! isscalar (scale) || ! isscalar (shape))
-    [retval, location, scale, shape] = common_size (location, scale, shape);
+  ## Check for common size of K, SIGMA, and MU
+  if (! isscalar (k) || ! isscalar (sigma) || ! isscalar (mu))
+    [retval, k, sigma, mu] = common_size (k, sigma, mu);
     if (retval > 0)
-      error (strcat (["gpgrnd: SHAPE, SCALE, and LOCATION must be of"], ...
-                     [" common size or scalars."]));
+      error ("gprnd: K, SIGMA, and MU must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (location) || iscomplex (scale) || iscomplex (shape))
-    error ("gprnd: SHAPE, SCALE, and LOCATION must not be complex.");
+  ## Check for K, SIGMA, and MU being reals
+  if (iscomplex (k) || iscomplex (sigma) || iscomplex (mu))
+    error ("gprnd: K, SIGMA, and MU must not be complex.");
   endif
 
+  ## Parse and check SIZE arguments
   if (nargin == 3)
-    sz = size (location);
+    sz = size (k);
   elseif (nargin == 4)
-    if (isscalar (varargin{1}) && varargin{1} >= 0)
+    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+                               && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
+    elseif (isrow (varargin{1}) && all (varargin{1} >= 0) ...
+                                && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
-    else
-      error (strcat (["gprnd: dimension vector must be a row vector of"], ...
-                     [" non-negative integers."]));
+    elseif
+      error (strcat (["gprnd: SZ must be a scalar or a row vector"], ...
+                     [" of non-negative integers."]));
     endif
   elseif (nargin > 4)
-    if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
+    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
+    if (any (posint))
       error ("gprnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
-  if (! isscalar (location) && ! isequal (size (location), sz))
-    error ("gprnd: SHAPE, SCALE, and LOCATION must be scalar or of size SZ.");
+  ## Check that parameters match requested dimensions in size
+  if (!isscalar (k) && ! isequal (size (k), sz))
+    error ("gprnd: K, SIGMA, and MU must be scalar or of size SZ.");
   endif
 
-  if (isa (location, "single") || isa (scale, "single") ...
-                               || isa (shape, "single"))
+  ## Check for class type
+  if (isa (k, "single") || isa (sigma, "single") || isa (mu, "single"))
     cls = "single";
   else
     cls = "double";
   endif
 
-  if (isscalar (location) && isscalar (scale) && isscalar (shape))
-    if ((-Inf < location) && (location < Inf) && (0 < scale) && (scale < Inf) ...
-          && (-Inf < shape) && (shape < Inf))
-      r = rand (sz, cls);
-      if (shape == 0)
-        r = -log (1 - r);
-        r = scale * r + location;
-      elseif ((shape < 0) || (shape > 0))
-        r = (1 - r).^(-shape) - 1;
-        r = (scale / shape) * r + location;
-      end
-    else
-      r = NaN (sz, cls);
-    endif
-  else
-    r = NaN (sz, cls);
+  ## Generate random sample from generalized Pareto distribution
+  r = NaN (sz, cls);
 
-    k = (-Inf < location) & (location < Inf) & (scale > 0) ...
-        & (-Inf < shape) & (shape < Inf);
-    r(k(:)) = rand (1, sum(k(:)), cls);
-    if (any (shape == 0))
-        r(k) = -log(1 - r(k));
-        r(k) = scale(k) .* r(k) + location(k);
-    elseif (any (shape < 0 | shape > 0))
-      r(k) = (1 - r(k)) .^ (-shape(k)) - 1;
-      r(k) = (scale(k) ./ shape(k)) .* r(k) + location(k);
-    end
+  kr = (-Inf < mu) & (mu < Inf) & (sigma > 0) & (sigma < Inf) ...
+                                & (-Inf < k) & (k < Inf);
+  r(kr(:)) = rand (1, sum(kr(:)), cls);
+  if (any (k == 0))
+      r(kr) = mu(kr) - (sigma(kr) .* log(1 - r(kr)));
+  elseif (any (k < 0 | k > 0))
+    r(kr) = mu(kr) + ((sigma(kr) .* ((r(kr) .^ -k(kr)) - 1)) ./ k(kr));
   endif
+
 endfunction
 
-
-%!assert (size (gprnd (0,1,0)), [1, 1])
+## Test output
+%!assert (size (gprnd (0, 1, 0)), [1, 1])
 %!assert (size (gprnd (0, 1, zeros (2,1))), [2, 1])
 %!assert (size (gprnd (0, 1, zeros (2,2))), [2, 2])
 %!assert (size (gprnd (0, ones (2,1), 0)), [2, 1])
@@ -129,7 +134,6 @@ endfunction
 %!assert (size (gprnd (0, 1, 0, 3)), [3, 3])
 %!assert (size (gprnd (0, 1, 0, [4 1])), [4, 1])
 %!assert (size (gprnd (0, 1, 0, 4, 1)), [4, 1])
-
 %!assert (size (gprnd (1,1,0)), [1, 1])
 %!assert (size (gprnd (1, 1, zeros (2,1))), [2, 1])
 %!assert (size (gprnd (1, 1, zeros (2,2))), [2, 2])
@@ -140,7 +144,6 @@ endfunction
 %!assert (size (gprnd (1, 1, 0, 3)), [3, 3])
 %!assert (size (gprnd (1, 1, 0, [4 1])), [4, 1])
 %!assert (size (gprnd (1, 1, 0, 4, 1)), [4, 1])
-
 %!assert (size (gprnd (-1, 1, 0)), [1, 1])
 %!assert (size (gprnd (-1, 1, zeros (2,1))), [2, 1])
 %!assert (size (gprnd (1, -1, zeros (2,2))), [2, 2])
@@ -149,32 +152,48 @@ endfunction
 %!assert (size (gprnd (-ones (2,1), 1, 0)), [2, 1])
 %!assert (size (gprnd (-ones (2,2), 1, 0)), [2, 2])
 %!assert (size (gprnd (-1, 1, 0, 3)), [3, 3])
-%!assert (size (gprnd (-1, 1, 0, [4 1])), [4, 1])
+%!assert (size (gprnd (-1, 1, 0, [4, 1])), [4, 1])
 %!assert (size (gprnd (-1, 1, 0, 4, 1)), [4, 1])
 
 ## Test class of input preserved
-%!assert (class (gprnd (0,1,0)), "double")
+%!assert (class (gprnd (0, 1, 0)), "double")
 %!assert (class (gprnd (0, 1, single (0))), "single")
-%!assert (class (gprnd (0, 1, single ([0 0]))), "single")
-%!assert (class (gprnd (0,single (1),0)), "single")
-%!assert (class (gprnd (0,single ([1 1]),0)), "single")
+%!assert (class (gprnd (0, 1, single ([0, 0]))), "single")
+%!assert (class (gprnd (0, single (1),0)), "single")
+%!assert (class (gprnd (0, single ([1, 1]),0)), "single")
 %!assert (class (gprnd (single (0), 1, 0)), "single")
-%!assert (class (gprnd (single ([0 0]), 1, 0)), "single")
+%!assert (class (gprnd (single ([0, 0]), 1, 0)), "single")
 
 ## Test input validation
-%!error gprnd ()
-%!error gprnd (1)
-%!error gprnd (1,2)
-%!error gprnd (zeros (2), ones (2), zeros (3))
-%!error gprnd (zeros (2), ones (3), zeros (2))
-%!error gprnd (zeros (3), ones (2), zeros (2))
-%!error gprnd (i, 1, 0)
-%!error gprnd (0, i, 0)
-%!error gprnd (0, 1, i)
-%!error gprnd (0,1,0, -1)
-%!error gprnd (0,1,0, ones (2))
-%!error gprnd (0,1,0, [2 -1 2])
-%!error gprnd (0,1, zeros (2), 3)
-%!error gprnd (0,1, zeros (2), [3, 2])
-%!error gprnd (0,1, zeros (2), 3, 2)
-
+%!error<gprnd: function called with too few input arguments.> gprnd ()
+%!error<gprnd: function called with too few input arguments.> gprnd (1)
+%!error<gprnd: function called with too few input arguments.> gprnd (1, 2)
+%!error<gprnd: K, SIGMA, and MU must be of common size or scalars.> ...
+%! gprnd (ones (3), ones (2), ones (2))
+%!error<gprnd: K, SIGMA, and MU must be of common size or scalars.> ...
+%! gprnd (ones (2), ones (3), ones (2))
+%!error<gprnd: K, SIGMA, and MU must be of common size or scalars.> ...
+%! gprnd (ones (2), ones (2), ones (3))
+%!error<gprnd: K, SIGMA, and MU must not be complex.> gprnd (i, 2, 3)
+%!error<gprnd: K, SIGMA, and MU must not be complex.> gprnd (1, i, 3)
+%!error<gprnd: K, SIGMA, and MU must not be complex.> gprnd (1, 2, i)
+%!error<gprnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! gprnd (1, 2, 3, -1)
+%!error<gprnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! gprnd (1, 2, 3, 1.2)
+%!error<gprnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! gprnd (1, 2, 3, ones (2))
+%!error<gprnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! gprnd (1, 2, 3, [2 -1 2])
+%!error<gprnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! gprnd (1, 2, 3, [2 0 2.5])
+%!error<gprnd: dimensions must be non-negative integers.> ...
+%! gprnd (1, 2, 3, 2, -1, 5)
+%!error<gprnd: dimensions must be non-negative integers.> ...
+%! gprnd (1, 2, 3, 2, 1.5, 5)
+%!error<gprnd: K, SIGMA, and MU must be scalar or of size SZ.> ...
+%! gprnd (2, ones (2), 2, 3)
+%!error<gprnd: K, SIGMA, and MU must be scalar or of size SZ.> ...
+%! gprnd (2, ones (2), 2, [3, 2])
+%!error<gprnd: K, SIGMA, and MU must be scalar or of size SZ.> ...
+%! gprnd (2, ones (2), 2, 3, 2)
