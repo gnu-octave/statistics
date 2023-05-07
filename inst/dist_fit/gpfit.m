@@ -247,9 +247,9 @@ endfunction
 %! ## Sample 2 populations from different generalized Pareto distibutions
 %! ## Assume location parameter is known
 %! mu = 0;
-%! randg ("seed", 5);    # for reproducibility
+%! rand ("seed", 5);    # for reproducibility
 %! r1 = gprnd (1, 2, mu, 20000, 1);
-%! randg ("seed", 2);    # for reproducibility
+%! rand ("seed", 2);    # for reproducibility
 %! r2 = gprnd (3, 1, mu, 20000, 1);
 %! r = [r1, r2];
 %!
