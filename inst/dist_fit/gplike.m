@@ -35,16 +35,18 @@
 ## diagonal elements of @var{acov} are their asymptotic variances.   @var{acov}
 ## is based on the observed Fisher's information, not the expected information.
 ##
-## When @var{shape} = 0 and @var{location} = 0, the generalized Pareto
-## distribution is equivalent to the exponential distribution.  When
-## @code{@var{shape} > 0} and @code{@var{location} = @var{scale} / @var{shape}},
-## the generalized Pareto distribution is equivalent to the Pareto distribution.
-## The mean of the generalized Pareto distribution is not finite when
-## @code{@var{shape} >= 1}, and the variance is not finite when
-## @code{@var{shape} >= 1/2}.  When @code{@var{shape} >= 0}, the generalized
-## Pareto distribution has positive density for @code{@var{x} > @var{location}},
-## or, when @code{@var{shape} < 0}, for
-## @code{0 <= (@var{x} -  @var{location}) / @var{scale} <= -1 / @var{shape}}.
+## When @qcode{@var{k} = 0} and @qcode{@var{mu} = 0}, the Generalized Pareto CDF
+## is equivalent to the exponential distribution.  When @qcode{@var{k} > 0} and
+## @code{@var{mu} = @var{k} / @var{k}} the Generalized Pareto is equivalent to
+## the Pareto distribution.  The mean of the Generalized Pareto is not finite
+## when @qcode{@var{k} >= 1} and the variance is not finite when
+## @qcode{@var{k} >= 1/2}.  When @qcode{@var{k} >= 0}, the Generalized Pareto
+## has positive density for @qcode{@var{x} > @var{mu}}, or, when
+## @qcode{@var{mu} < 0},for
+## @qcode{0 <= (@var{x} - @var{mu}) / @var{sigma} <= -1 / @var{k}}.
+##
+## Further information about the generalized Pareto distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Generalized_Pareto_distribution}
 ##
 ## @seealso{gpcdf, gpinv, gppdf, gprnd, gpfit, gpstat}
 ## @end deftypefn
