@@ -25,9 +25,9 @@
 ##
 ## Estimate mean and confidence intervals for the Burr type XII distribution.
 ##
-## @code{@var{muhat} = burrfit (@var{x})} returns maximum likelihood estimates
-## of the parameters of the Burr type XII distribution given the data in
-## @var{x}.  @qcode{@var{paramhat}(1)} is the scale parameter, @var{lambda},
+## @code{@var{muhat} = burrfit (@var{x})} returns the maximum likelihood
+## estimates of the parameters of the Burr type XII distribution given the data
+## in @var{x}.  @qcode{@var{paramhat}(1)} is the scale parameter, @var{lambda},
 ## @qcode{@var{paramhat}(2)} is the first shape parameter, @var{c}, and
 ## @qcode{@var{paramhat}(3)} is the second shape parameter, @var{k}
 ##

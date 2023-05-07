@@ -27,7 +27,7 @@
 ##
 ## @subheading Arguments
 ##
-## @code{@var{paramhat} = gevfit (@var{x})} returns maximum likelihood
+## @code{@var{paramhat} = gevfit (@var{x})} returns the maximum likelihood
 ## estimates of the parameters of the GEV distribution given the data in
 ## @var{x}.  @qcode{@var{paramhat}(1)} is the shape parameter, @var{k}, and
 ## @qcode{@var{paramhat}(2)} is the scale parameter, @var{sigma}, and

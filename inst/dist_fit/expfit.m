@@ -23,8 +23,8 @@
 ##
 ## Estimate mean and confidence intervals for the exponential distribution.
 ##
-## @code{@var{muhat} = expfit (@var{x})} returns maximum likelihood estimate of
-## the mean parameter, @var{muhat}, of the exponential distribution given the
+## @code{@var{muhat} = expfit (@var{x})} returns the maximum likelihood estimate
+## of the mean parameter, @var{muhat}, of the exponential distribution given the
 ## data in @var{x}. @var{x} is expected to be a non-negative vector.  If @var{x}
 ## is an array, the mean will be computed for each column of @var{x}.  If any
 ## elements of @var{x} are NaN, that vector's mean will be returned as NaN.

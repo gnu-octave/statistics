@@ -26,7 +26,7 @@
 ##
 ## Estimate parameters and confidence intervals for the extreme value distribution.
 ##
-## @code{@var{paramhat} = evfit (@var{x})} returns maximum likelihood
+## @code{@var{paramhat} = evfit (@var{x})} returns the maximum likelihood
 ## estimates of the parameters of the extreme value distribution (also known as
 ## the Gumbel or the type I generalized extreme value distribution) given the
 ## data in @var{x}.  @qcode{@var{paramhat}(1)} is the location parameter,

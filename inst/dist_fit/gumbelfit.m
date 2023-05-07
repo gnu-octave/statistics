@@ -25,7 +25,7 @@
 ##
 ## Estimate parameters and confidence intervals for Gumbel distribution.
 ##
-## @code{@var{paramhat} = gumbelfit (@var{x})} returns maximum likelihood
+## @code{@var{paramhat} = gumbelfit (@var{x})} returns the maximum likelihood
 ## estimates of the parameters of the Gumbel distribution (also known as
 ## the extreme value or the type I generalized extreme value distribution) given
 ## in @var{x}.  @qcode{@var{paramhat}(1)} is the location parameter, @var{mu},

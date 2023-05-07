@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -52,7 +52,7 @@ function [nlogL, acov] = gplike (params, x)
 
   ## Check input arguments
   if (nargin < 2)
-    error ("gplike: too few input arguments.");
+    error ("gplike: function called with too few input arguments.");
   endif
   if (! isvector (x))
     error ("gplike: X must be a vector.");
@@ -84,7 +84,7 @@ function [nlogL, acov] = gplike (params, x)
         acov = [nH22, -nH12; -nH12, nH11] / (nH11 * nH22 - nH12 * nH12);
       endif
     else
-      % The support of the GP when shape<0 is 0 < y < abs(scale/shape)
+      ## The support of the GP when shape<0 is 0 < y < abs(scale/shape)
       nlogL = Inf;
       if (nargout > 1)
         acov = [NaN NaN; NaN NaN];
@@ -105,16 +105,16 @@ function [nlogL, acov] = gplike (params, x)
   endif
 endfunction
 
-## Test input validation
-%!error<gplike: too few input arguments.> gplike ()
-%!error<gplike: too few input arguments.> gplike (1)
-%!error<gplike: X must be a vector.> gplike ([1, 2], [])
-%!error<gplike: X must be a vector.> gplike ([1, 2], ones (2))
-%!error<gplike: PARAMS must be a two-element vector.> gplike (2, [1:10])
-
-## Test results against MATLAB output
+## Test output
 %!assert (gplike ([2, 3], 4), 3.047536764863501, 1e-14)
 %!assert (gplike ([1, 2], 4), 2.890371757896165, 1e-14)
 %!assert (gplike ([2, 3], [1:10]), 32.57864322725392, 1e-14)
 %!assert (gplike ([1, 2], [1:10]), 31.65666282460443, 1e-14)
 %!assert (gplike ([1, NaN], [1:10]), NaN)
+
+## Test input validation
+%!error<gplike: function called with too few input arguments.> gplike ()
+%!error<gplike: function called with too few input arguments.> gplike (1)
+%!error<gplike: X must be a vector.> gplike ([1, 2], [])
+%!error<gplike: X must be a vector.> gplike ([1, 2], ones (2))
+%!error<gplike: PARAMS must be a two-element vector.> gplike (2, [1:10])

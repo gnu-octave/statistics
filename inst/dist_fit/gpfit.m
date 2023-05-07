@@ -19,10 +19,11 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{paramhat} =} gpfit (@var{x})
 ## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} gpfit (@var{x})
-## @deftypefnx {statistics} {[@dots{}] =} gpfit (@var{x}, @var{alpha})
+## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} gpfit (@var{x}, @var{alpha})
 ## @deftypefnx {statistics} {[@dots{}] =} gpfit (@var{x}, @var{alpha}, @var{options})
 ##
-## Parameter estimates and confidence intervals for generalized Pareto data.
+## Estimate parameters and confidence intervals for the generalized Pareto
+## distribution.
 ##
 ## @code{@var{paramhat} = gpfit (@var{x})} returns maximum likelihood estimates
 ## of the parameters of the two-parameter generalized Pareto distribution given
@@ -75,23 +76,23 @@
 function [paramhat, paramci] = gpfit (x, alpha, options)
 
   ## Check input arguments, X must be a vector of positive values
-  if (nargin < 1)
-    error ("gpfit: too few input arguments.");
-  endif
   if (! isvector (x))
     error ("gpfit: X must be a vector.");
   endif
   if (any (x <= 0))
     error ("gpfit: X must contain only positive values.");
   endif
+
   ## Add default value for alpha if not supplied
   if (nargin < 2 || isempty (alpha))
     alpha = 0.05;
   endif
+
   ## Check for valid value of alpha
   if (! isscalar (alpha) || ! isnumeric (alpha) || alpha <= 0 || alpha >= 1)
      error ("gpfit: wrong value for alpha.");
   endif
+
   ## Add default values to OPTIONS structure
   if (nargin < 3 || isempty (options))
     options.Display = "off";
@@ -121,21 +122,25 @@ function [paramhat, paramci] = gpfit (x, alpha, options)
   if (! isfield (options, "TolX"))
     options.TolX = 1e-6;
   endif
+
   ## Get class of X
   is_class = class (x);
   if (strcmp (is_class, "single"))
     x = double (x);
   endif
+
   ## Remove NaN from data and make a warning
   if (any (isnan (x)))
     x(isnan(x)) = [];
     warning ("gpfit: X contains NaN values, which are ignored.");
   endif
+
   ## Remove Inf from data and make a warning
   if (any (isinf (x)))
     x(isnan(x)) = [];
     warning ("gpfit: X contains Inf values, which are ignored.");
   endif
+
   ## Get sample size, max and range of X
   x_max = max (x);
   x_size = length (x);
@@ -171,6 +176,7 @@ function [paramhat, paramci] = gpfit (x, alpha, options)
   ## Maximize the log-likelihood with respect to shape and log_scale.
   [paramhat, ~, err, output] = fminsearch (@negloglike, paramhat, options, x);
   paramhat(2) = exp (paramhat(2));
+
   ## Check output of fminsearch and produce warnings or errors if applicable
   if (err == 0)
     if (output.funcCount >= options.MaxFunEvals)
@@ -238,8 +244,27 @@ function nll = negloglike (paramhat, data)
 
 endfunction
 
+## Test output
+%!test
+%! shape = 5; scale = 2;
+%! x = gprnd (shape, scale, 0, 1, 100000);
+%! [hat, ci] = gpfit (x);
+%! assert (hat, [shape, scale], 1e-1);
+%! assert (ci, [shape, scale; shape, scale], 2e-1);
+%!test
+%! shape = 1; scale = 1;
+%! x = gprnd (shape, scale, 0, 1, 100000);
+%! [hat, ci] = gpfit (x);
+%! assert (hat, [shape, scale], 1e-1);
+%! assert (ci, [shape, scale; shape, scale], 1e-1);
+%!test
+%! shape = 3; scale = 2;
+%! x = gprnd (shape, scale, 0, 1, 100000);
+%! [hat, ci] = gpfit (x);
+%! assert (hat, [shape, scale], 1e-1);
+%! assert (ci, [shape, scale; shape, scale], 1e-1);
+
 ## Test input validation
-%!error<gpfit: too few input arguments.> gpfit ()
 %!error<gpfit: X must be a vector.> gpfit (ones (2))
 %!error<gpfit: X must contain only positive values.> gpfit ([-1, 2])
 %!error<gpfit: X must contain only positive values.> gpfit ([0, 1, 2])
@@ -247,25 +272,3 @@ endfunction
 %!error<gpfit: wrong value for alpha.> gpfit ([1, 2], 1.2)
 %!error<gpfit: OPTIONS must be a structure for 'fminsearch' function.> ...
 %! gpfit ([1:10], 0.05, 5)
-
-## Test results against MATLAB output
-%!test
-%! shape = 5; scale = 2;
-%! x = gprnd (shape, scale, 0, 1, 100000);
-%! [hat, ci] = gpfit (x);
-%! assert (hat, [shape, scale], 1e-1);
-%! assert (ci, [shape, scale; shape, scale], 2e-1);
-
-%!test
-%! shape = 1; scale = 1;
-%! x = gprnd (shape, scale, 0, 1, 100000);
-%! [hat, ci] = gpfit (x);
-%! assert (hat, [shape, scale], 1e-1);
-%! assert (ci, [shape, scale; shape, scale], 1e-1);
-
-%!test
-%! shape = 3; scale = 2;
-%! x = gprnd (shape, scale, 0, 1, 100000);
-%! [hat, ci] = gpfit (x);
-%! assert (hat, [shape, scale], 1e-1);
-%! assert (ci, [shape, scale; shape, scale], 1e-1);

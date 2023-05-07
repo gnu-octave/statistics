@@ -25,9 +25,9 @@
 ##
 ## Estimate mean and confidence intervals for the Weibull distribution.
 ##
-## @code{@var{muhat} = wblfit (@var{x})} returns maximum likelihood estimates of
-## the parameters of the Weibull distribution given the data in @var{x}.
-## @qcode{@var{paramhat}(1)} is the scale parameter, @math{λ}, and
+## @code{@var{muhat} = wblfit (@var{x})} returns the maximum likelihood
+## estimates of the parameters of the Weibull distribution given the data in
+## @var{x}.  @qcode{@var{paramhat}(1)} is the scale parameter, @math{λ}, and
 ## @qcode{@var{paramhat}(2)} is the shape parameter, @math{k}.
 ##
 ## @code{[@var{paramhat}, @var{paramci}] = wblfit (@var{x})} returns the 95%

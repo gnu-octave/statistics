@@ -25,10 +25,11 @@
 ##
 ## Estimate mean and confidence intervals for the Birnbaum-Saunders distribution.
 ##
-## @code{@var{muhat} = bisafit (@var{x})} returns maximum likelihood estimates
-## of the parameters of the Birnbaum-Saunders distribution given the data in
-## @var{x}.  @qcode{@var{paramhat}(1)} is the scale parameter, @var{beta}, and
-## @qcode{@var{paramhat}(2)} is the shape parameter, @var{gamma}.
+## @code{@var{muhat} = bisafit (@var{x})} returns the maximum likelihood
+## estimates of the parameters of the Birnbaum-Saunders distribution given the
+## data in @var{x}.  @qcode{@var{paramhat}(1)} is the scale parameter,
+## @var{beta}, and @qcode{@var{paramhat}(2)} is the shape parameter,
+## @var{gamma}.
 ##
 ## @code{[@var{paramhat}, @var{paramci}] = bisafit (@var{x})} returns the 95%
 ## confidence intervals for the parameter estimates.
