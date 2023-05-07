@@ -81,8 +81,8 @@
 </p>
 <div class="ms-5">
 <p> <code><var>r</var> = geornd (<var>ps</var>)</code> returns an array of random numbers chosen
- from the Birnbaum-Saunders distribution with parameter <var>ps</var>.  The size of
- <var>r</var> is the size of <var>ps</var>.
+ from the Birnbaum-Saunders distribution with probability of success parameter
+ <var>ps</var>.  The size of <var>r</var> is the size of <var>ps</var>.
 </p>
 <p> When called with a single size argument, return a square matrix with
  the dimension specified.  When called with more than one scalar argument the
@@ -92,6 +92,9 @@
 </p>
 <p> The geometric distribution models the number of failures (<var>x</var>) of a
  Bernoulli trial with probability <var>ps</var> before the first success.
+</p>
+<p> Further information about the geometric distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Geometric_distribution">https://en.wikipedia.org/wiki/Geometric_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="geocdf.html">geocdf</a>, 

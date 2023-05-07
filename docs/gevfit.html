@@ -71,83 +71,78 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>gevfit</b><i> (<var>data</var>)</i></dt>
-<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>gevfit</b><i> (<var>data</var>, <var>paramguess</var>)</i></dt>
-<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>gevfit</b><i> (<var>data</var>, <var>alpha</var>)</i></dt>
-<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>gevfit</b><i> (&hellip;, <var>options</var>)</i></dt>
+<dt><u>statistics:</u> <var>paramhat</var> = <b>gevfit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>gevfit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>gevfit</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>gevfit</b><i> (<var>x</var>, <var>alpha</var>, <var>options</var>)</i></dt>
 </dl>
 
-<p> Find the maximum likelihood estimator <var>paramhat</var> of the generalized
- extreme value (GEV) distribution to fit <var>data</var>.
+<p> Estimate parameters and confidence intervals for the generalized extreme
+ value (GEV) distribution.
 </p>
 <div class="ms-5">
  <a name="Arguments"></a>
 <h3 class="subheading">Arguments</h3>
 
- <ul>
+<p> <code><var>paramhat</var> = gevfit (<var>x</var>)</code> returns the maximum likelihood
+ estimates of the parameters of the GEV distribution given the data in
+ <var>x</var>.  <code><var>paramhat</var>(1)</code> is the shape parameter, <var>k</var>, and
+ <code><var>paramhat</var>(2)</code> is the scale parameter, <var>sigma</var>, and
+ <code><var>paramhat</var>(3)</code> is the location parameter, <var>mu</var>.
+</p>
+<p> <code>[<var>paramhat</var>, <var>paramci</var>] = gevfit (<var>x</var>)</code> returns the 95%
+ confidence intervals for the parameter estimates.
+</p>
+<p> <code>[&hellip;] = gevfit (<var>x</var>, <var>alpha</var>)</code> also returns the
+ <code>100 * (1 - <var>alpha</var>)</code> percent confidence intervals for the
+ parameter estimates.  By default, the optional argument <var>alpha</var> is
+ 0.05 corresponding to 95% confidence intervals.  Pass in <code>[]</code> for
+ <var>alpha</var> to use the default values.
+</p>
+<p> <code>[&hellip;] = gevfit (&hellip;, <var>options</var>)</code> specifies control
+ parameters for the iterative algorithm used to compute the maximum likelihood
+ estimates.  <var>options</var> is a structure with the following field and its
+ default value:
+ </p><ul>
+<li> <code><var>options</var>.Display = &quot;off&quot;</code>
+ </li><li> <code><var>options</var>.MaxFunEvals = 1000</code>
+ </li><li> <code><var>options</var>.MaxIter = 500</code>
+ </li><li> <code><var>options</var>.TolX = 1e-6</code>
+ </li></ul>
+
+<p> When <code><var>k</var> &lt; 0</code>, the GEV is the type III extreme value distribution.
+ When <code><var>k</var> &gt; 0</code>, the GEV distribution is the type II, or Frechet,
+ extreme value distribution.  If <var>W</var> has a Weibull distribution as
+ computed by the <code>wblcdf</code> function, then <code>-<var>W</var></code> has a type III
+ extreme value distribution and <code>1/<var>W</var></code> has a type II extreme value
+ distribution.  In the limit as <var>k</var> approaches <code>0</code>, the GEV is the
+ mirror image of the type I extreme value distribution as computed by the
+ <code>evcdf</code> function.
+</p>
+<p> The mean of the GEV distribution is not finite when <code><var>k</var> &gt;= 1</code>, and
+ the variance is not finite when <code><var>k</var> &gt;= 1/2</code>.  The GEV distribution
+ has positive density only for values of <var>x</var> such that
+ <code><var>k</var> * (<var>x</var> - <var>mu</var>) / <var>sigma</var> &gt; -1</code>.
+</p>
+<p> Further information about the generalized extreme value distribution can be
+ found at
+ <a href="https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution">https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution</a>
+</p>
+ <a name="References"></a>
+<h3 class="subheading">References</h3>
+ <ol>
 <li>
- <var>data</var> is the vector of given values.
- </li><li>
- <var>paramguess</var> is an initial guess for the maximum likelihood parameter
- vector. If not given, this defaults to <var>k_0</var>=0 and <var>sigma</var>, <var>mu</var>
- determined by matching the data mean and standard deviation to their expected
- values.
- </li><li>
- <var>alpha</var> returns 100(1-ALPHA) percent confidence intervals for the
- parameter estimates.  Pass in [] for ALPHA to use the default values.
- </li><li>
- <var>options</var> a structure that specifies control parameters for the iterative
- algorithm used to compute ML estimates.  The structure must contain the
- following fields:
+ Rolf-Dieter Reiss and Michael Thomas. <cite>Statistical Analysis of Extreme
+ Values with Applications to Insurance, Finance, Hydrology and Other Fields</cite>.
+ Chapter 1, pages 16-17, Springer, 2007.
+ </li></ol>
 
-<p> &rsquo;Display&rsquo; = &quot;off&quot;; &rsquo;MaxFunEvals&rsquo; = 400; &rsquo;MaxIter&rsquo; = 200;
- &rsquo;TolFun&rsquo; = 1e-6; &rsquo;TolX&rsquo; = 1e-6.
-</p>
-<p> If not provided, the aforementioned values are used by default.
- </p></li></ul>
-
- <a name="Return-values"></a>
-<h3 class="subheading">Return values</h3>
-
- <ul>
-<li>
- <var>paramhat</var> is the 3-parameter maximum-likelihood parameter vector
- <code>[<var>k_0</var>, <var>sigma</var>, <var>mu</var>]</code>, where <var>k_0</var> is the shape
- parameter of the GEV distribution, <var>sigma</var> is the scale parameter of the
- GEV distribution, and <var>mu</var> is the location parameter of the GEV
- distribution.
- </li><li>
- <var>paramci</var> has the approximate 95% confidence intervals of the parameter
- values based on the Fisher information matrix at the maximum-likelihood
- position.
-
-</li></ul>
-
-<p> When K &lt; 0, the GEV is the type III extreme value distribution.  When K &gt; 0,
- the GEV distribution is the type II, or Frechet, extreme value distribution.
- If W has a Weibull distribution as computed by the WBLFIT function, then -W
- has a type III extreme value distribution and 1/W has a type II extreme value
- distribution.  In the limit as K approaches 0, the GEV is the mirror image of
- the type I extreme value distribution as computed by the EVFIT function.
-</p>
-<p> The mean of the GEV distribution is not finite when K &gt;= 1, and the variance
- is not finite when PSI &gt;= 1/2.  The GEV distribution is defined
- for K*(X-MU)/SIGMA &gt; -1.
-</p>
- <a name="Examples"></a>
-<h3 class="subheading">Examples</h3>
-
- <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> data = 1:50;
- [pfit, pci] = gevfit (data);
- p1 = gevcdf (data, pfit(1), pfit(2), pfit(3));
- plot (data, p1)
- </pre><pre class="example"> </pre></td></tr></table>
 <p> <strong>See also: </strong>
   <a href="gevcdf.html">gevcdf</a>, 
   <a href="gevinv.html">gevinv</a>, 
-  <a href="gevlike.html">gevlike</a>, 
   <a href="gevpdf.html">gevpdf</a>, 
   <a href="gevrnd.html">gevrnd</a>, 
+  <a href="gevlike.html">gevlike</a>, 
   <a href="gevstat.html">gevstat</a>
 </p>
 <p><strong>Source Code: </strong>

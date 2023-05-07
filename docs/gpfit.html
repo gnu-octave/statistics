@@ -73,28 +73,31 @@
 <dl>
 <dt><u>statistics:</u> <var>paramhat</var> = <b>gpfit</b><i> (<var>x</var>)</i></dt>
 <dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>gpfit</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>gpfit</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>gpfit</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
 <dt><u>statistics:</u> [&hellip;] = <b>gpfit</b><i> (<var>x</var>, <var>alpha</var>, <var>options</var>)</i></dt>
 </dl>
 
-<p> Parameter estimates and confidence intervals for generalized Pareto data.
+<p> Estimate parameters and confidence intervals for the generalized Pareto
+ distribution.
 </p>
 <div class="ms-5">
-<p> <code><var>paramhat</var> = gpfit (<var>x</var>)</code> returns maximum likelihood estimates
- of the parameters of the two-parameter generalized Pareto distribution given
- the data in <var>x</var>.  <code><var>params</var>(1)</code> is the SHAPE parameter and
- <code><var>params</var>(2)</code> is the SCALE parameter.  <code>gpfit</code> does not fit a
- LOCATION parameter.
+<p> <code><var>paramhat</var> = gpfit (<var>x</var>)</code> returns the maximum likelihood
+ estimates of the parameters of the generalized Pareto distribution given the
+ data in <var>x</var>.  <code><var>paramhat</var>(1)</code> is the shape parameter, <var>k</var>,
+ and <code><var>paramhat</var>(2)</code> is the scale parameter, <var>sigma</var>.  Other
+ functions for the generalized Pareto, such as <code>gpcdf</code>, allow a location
+ parameter, <var>mu</var>.  However, <code>gpfit</code> does not estimate a location
+ parameter, and it must be assumed known, and subtracted from <var>x</var> before
+ calling <code>gpfit</code>.
 </p>
-<p> <code>[<var>paramhat</var>, <var>paramci</var>] = gpfit (<var>x</var>)</code> returns 95%
+<p> <code>[<var>paramhat</var>, <var>paramci</var>] = gpfit (<var>x</var>)</code> returns the 95%
  confidence intervals for the parameter estimates.
 </p>
-<p> <code>[&hellip;] = gpfit (<var>x</var>, <var>alpha</var>)</code> returns
+<p> <code>[&hellip;] = gpfit (<var>x</var>, <var>alpha</var>)</code> also returns the
  <code>100 * (1 - <var>alpha</var>)</code> percent confidence intervals for the
- parameter estimates.  By default, <math><var>alpha</var> = 0.05</math> corresponding
- fidence intervals.
-</p>
-<p> Pass in <code>[]</code> for <var>alpha</var> to use the default values.
+ parameter estimates.  By default, the optional argument <var>alpha</var> is
+ 0.05 corresponding to 95% confidence intervals.  Pass in <code>[]</code> for
+ <var>alpha</var> to use the default values.
 </p>
 <p> <code>[&hellip;] = gpfit (<var>x</var>, <var>alpha</var>, <var>options</var>)</code> specifies
  control parameters for the iterative algorithm used to compute ML estimates
@@ -109,21 +112,18 @@
  </li><li> <code><var>options</var>.TolX = 1e-6</code>
  </li></ul>
 
-<p> Other functions for the generalized Pareto, such as <code>gpcdf</code>, allow a
- LOCATION parameter.  However, <code>gpfit</code> does not estimate LOCATION, and it
- must be assumed known, and subtracted from <var>x</var> before calling
- <code>gpfit</code>.
+<p> When <code><var>k</var> = 0</code> and <code><var>mu</var> = 0</code>, the Generalized Pareto CDF
+ is equivalent to the exponential distribution.  When <code><var>k</var> &gt; 0</code> and
+ <code><var>mu</var> = <var>k</var> / <var>k</var></code> the Generalized Pareto is equivalent to
+ the Pareto distribution.  The mean of the Generalized Pareto is not finite
+ when <code><var>k</var> &gt;= 1</code> and the variance is not finite when
+ <code><var>k</var> &gt;= 1/2</code>.  When <code><var>k</var> &gt;= 0</code>, the Generalized Pareto
+ has positive density for <code><var>x</var> &gt; <var>mu</var></code>, or, when
+ <code><var>mu</var> &lt; 0</code>,for
+ <code>0 &lt;= (<var>x</var> - <var>mu</var>) / <var>sigma</var> &lt;= -1 / <var>k</var></code>.
 </p>
-<p> When <var>shape</var> = 0 and <var>location</var> = 0, the generalized Pareto
- distribution is equivalent to the exponential distribution.  When
- <code><var>shape</var> &gt; 0</code> and <code><var>location</var> = <var>scale</var> / <var>shape</var></code>,
- the generalized Pareto distribution is equivalent to the Pareto distribution.
- The mean of the generalized Pareto distribution is not finite when
- <code><var>shape</var> &gt;= 1</code>, and the variance is not finite when
- <code><var>shape</var> &gt;= 1/2</code>.  When <code><var>shape</var> &gt;= 0</code>, the generalized
- Pareto distribution has positive density for <code><var>x</var> &gt; <var>location</var></code>,
- or, when <code><var>shape</var> &lt; 0</code>, for
- <code>0 &lt;= (<var>x</var> -  <var>location</var>) / <var>scale</var> &lt;= -1 / <var>shape</var></code>.
+<p> Further information about the generalized Pareto distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Generalized_Pareto_distribution">https://en.wikipedia.org/wiki/Generalized_Pareto_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="gpcdf.html">gpcdf</a>, 
@@ -136,6 +136,75 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/gpfit.m">gpfit</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Sample 2 populations from different generalized Pareto distibutions
+ ## Assume location parameter is known
+ mu = 0;
+ rand ("seed", 5);    # for reproducibility
+ r1 = gprnd (1, 2, mu, 20000, 1);
+ rand ("seed", 2);    # for reproducibility
+ r2 = gprnd (3, 1, mu, 20000, 1);
+ r = [r1, r2];
+
+ ## Plot them normalized and fix their colors
+ hist (r, [0.1:0.2:100], 5);
+ h = findobj (gca, "Type", "patch");
+ set (h(1), "facecolor", "r");
+ set (h(2), "facecolor", "c");
+ ylim ([0, 1]);
+ xlim ([0, 5]);
+ hold on
+
+ ## Estimate their α and β parameters
+ k_sigmaA = gpfit (r(:,1));
+ k_sigmaB = gpfit (r(:,2));
+
+ ## Plot their estimated PDFs
+ x = [0.01, 0.1:0.2:18];
+ y = gppdf (x, k_sigmaA(1), k_sigmaA(2), mu);
+ plot (x, y, "-pc");
+ y = gppdf (x, k_sigmaB(1), k_sigmaB(2), mu);
+ plot (x, y, "-sr");
+ hold off
+ legend ({"Normalized HIST of sample 1 with k=1 and σ=2", ...
+          "Normalized HIST of sample 2 with k=2 and σ=2", ...
+          sprintf("PDF for sample 1 with estimated k=%0.2f and σ=%0.2f", ...
+                  k_sigmaA(1), k_sigmaA(2)), ...
+          sprintf("PDF for sample 3 with estimated k=%0.2f and σ=%0.2f", ...
+                  k_sigmaB(1), k_sigmaB(2))})
+ title ("Three population samples from different generalized Pareto distibutions")
+ text (3, 0.6, "Known location parameter μ = 0")
+ hold off
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/gpfit_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

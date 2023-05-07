@@ -78,17 +78,32 @@
  function (iCDF).
 </p>
 <div class="ms-5">
-<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF)
- at <var>p</var> of the GEV distribution with shape parameter <var>k</var>, scale
- parameter <var>sigma</var>, and location parameter <var>mu</var>.  The size of <var>x</var>
- is the common size of the input arguments.  A scalar input functions as a
- constant matrix of the same size as the other inputs.
+<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF) of
+ the GEV distribution with shape parameter <var>k</var>, scale parameter
+ <var>sigma</var>, and location parameter <var>mu</var>.  The size of <var>p</var> is the
+ common size of <var>x</var>, <var>k</var>, <var>sigma</var>, and <var>mu</var>.  A scalar input
+ functions as a constant matrix of the same size as the other inputs.
 </p>
-<p> Default values for K, SIGMA, and MU are 0, 1, and 0, respectively.
+<p> When <code><var>k</var> &lt; 0</code>, the GEV is the type III extreme value distribution.
+ When <code><var>k</var> &gt; 0</code>, the GEV distribution is the type II, or Frechet,
+ extreme value distribution.  If <var>W</var> has a Weibull distribution as
+ computed by the <code>wblcdf</code> function, then <code>-<var>W</var></code> has a type III
+ extreme value distribution and <code>1/<var>W</var></code> has a type II extreme value
+ distribution.  In the limit as <var>k</var> approaches <code>0</code>, the GEV is the
+ mirror image of the type I extreme value distribution as computed by the
+ <code>evcdf</code> function.
+</p>
+<p> The mean of the GEV distribution is not finite when <code><var>k</var> &gt;= 1</code>, and
+ the variance is not finite when <code><var>k</var> &gt;= 1/2</code>.  The GEV distribution
+ has positive density only for values of <var>x</var> such that
+ <code><var>k</var> * (<var>x</var> - <var>mu</var>) / <var>sigma</var> &gt; -1</code>.
+</p>
+<p> Further information about the generalized extreme value distribution can be
+ found at
+ <a href="https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution">https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution</a>
 </p>
  <a name="References"></a>
 <h3 class="subheading">References</h3>
-
  <ol>
 <li>
  Rolf-Dieter Reiss and Michael Thomas. <cite>Statistical Analysis of Extreme
@@ -107,6 +122,56 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/gevinv.m">gevinv</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various iCDFs from the generalized extreme value distribution
+ p = 0.001:0.001:0.999;
+ x1 = gevinv (p, 1, 1, 1);
+ x2 = gevinv (p, 0.5, 1, 1);
+ x3 = gevinv (p, 1, 1, 5);
+ x4 = gevinv (p, 1, 2, 5);
+ x5 = gevinv (p, 1, 5, 5);
+ x6 = gevinv (p, 1, 0.5, 5);
+ plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", ...
+       p, x4, "-c", p, x5, "-m", p, x6, "-k")
+ grid on
+ ylim ([-1, 10])
+ legend ({"ξ = 1, σ = 1, μ = 1", "ξ = 0.5, σ = 1, μ = 1", ...
+          "ξ = 1, σ = 1, μ = 5", "ξ = 1, σ = 2, μ = 5", ...
+          "ξ = 1, σ = 5, μ = 5", "ξ = 1, σ = 0.5, μ = 5"}, ...
+         "location", "northwest")
+ title ("Generalized extreme value iCDF")
+ xlabel ("probability")
+ ylabel ("values in x")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/gevinv_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

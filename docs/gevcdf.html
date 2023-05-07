@@ -71,43 +71,42 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>gevcdf</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>gevcdf</b><i> (<var>x</var>, <var>k</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>gevcdf</b><i> (<var>x</var>, <var>k</var>, <var>sigma</var>)</i></dt>
 <dt><u>statistics:</u> <var>p</var> = <b>gevcdf</b><i> (<var>x</var>, <var>k</var>, <var>sigma</var>, <var>mu</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>gevcdf</b><i> (&hellip;, &quot;upper&quot;)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>gevcdf</b><i> (<var>x</var>, <var>k</var>, <var>sigma</var>, <var>mu</var>, <code>&quot;upper&quot;</code>)</i></dt>
 </dl>
 
 <p> Generalized extreme value (GEV) cumulative distribution function (CDF).
 </p>
 <div class="ms-5">
-<p> <code><var>p</var> = gevcdf (<var>x</var>, <var>k</var>, <var>sigma</var>, <var>mu</var>)</code> returns the
- CDF of the generalized extreme value (GEV) distribution with shape parameter
- <var>k</var>, scale parameter <var>sigma</var>, and location parameter <var>mu</var>,
- evaluated at the values in <var>x</var>.  The size of <var>p</var> is the common size
- of the input arguments.  A scalar input functions as a constant matrix of the
- same size as the other inputs.
+<p> For each element of <var>x</var>, compute the cumulative distribution function
+ (CDF) of the GEV distribution with shape parameter <var>k</var>, scale parameter
+ <var>sigma</var>, and location parameter <var>mu</var>.  The size of <var>p</var> is the
+ common size of <var>x</var>, <var>k</var>, <var>sigma</var>, and <var>mu</var>.  A scalar input
+ functions as a constant matrix of the same size as the other inputs.
 </p>
-<p> Default values for K, SIGMA, and MU are 0, 1, and 0, respectively.
+<p> <code>[&hellip;] = gevcdf (&hellip;, &quot;upper&quot;)</code> computes the upper tail
+ probability of the extreme value distribution.
 </p>
-<p> When <var>k</var> &lt; 0, the GEV is the type III extreme value distribution.  When
- <var>k</var> &gt; 0, the GEV distribution is the type II, or Frechet, extreme value
- distribution.  If W has a Weibull distribution as computed by the
- <code>wblcdf</code> function, then -W has a type III extreme value distribution and
- 1/W has a type II extreme value distribution.  In the limit as <var>k</var>
- approaches 0, the GEV is the mirror image of the type I extreme value
- distribution as computed by the <code>evcdf</code> function.
+<p> When <code><var>k</var> &lt; 0</code>, the GEV is the type III extreme value distribution.
+ When <code><var>k</var> &gt; 0</code>, the GEV distribution is the type II, or Frechet,
+ extreme value distribution.  If <var>W</var> has a Weibull distribution as
+ computed by the <code>wblcdf</code> function, then <code>-<var>W</var></code> has a type III
+ extreme value distribution and <code>1/<var>W</var></code> has a type II extreme value
+ distribution.  In the limit as <var>k</var> approaches <code>0</code>, the GEV is the
+ mirror image of the type I extreme value distribution as computed by the
+ <code>evcdf</code> function.
 </p>
-<p> The mean of the GEV distribution is not finite when <var>k</var> &gt;= 1, and the
- variance is not finite when <var>k</var> &gt;= 1/2.  The GEV distribution has
- positive density only for values of <var>x</var> such that K*(X-MU)/SIGMA &gt; -1.
+<p> The mean of the GEV distribution is not finite when <code><var>k</var> &gt;= 1</code>, and
+ the variance is not finite when <code><var>k</var> &gt;= 1/2</code>.  The GEV distribution
+ has positive density only for values of <var>x</var> such that
+ <code><var>k</var> * (<var>x</var> - <var>mu</var>) / <var>sigma</var> &gt; -1</code>.
 </p>
-<p> <code><var>p</var> = gevcdf (&hellip;, &quot;upper&quot;)</code> returns the upper tail probability
- of the generalized extreme value distribution.
+<p> Further information about the generalized extreme value distribution can be
+ found at
+ <a href="https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution">https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution</a>
 </p>
  <a name="References"></a>
 <h3 class="subheading">References</h3>
-
  <ol>
 <li>
  Rolf-Dieter Reiss and Michael Thomas. <cite>Statistical Analysis of Extreme
@@ -126,6 +125,56 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/gevcdf.m">gevcdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various CDFs from the generalized extreme value distribution
+ x = -1:0.001:10;
+ p1 = gevcdf (x, 1, 1, 1);
+ p2 = gevcdf (x, 0.5, 1, 1);
+ p3 = gevcdf (x, 1, 1, 5);
+ p4 = gevcdf (x, 1, 2, 5);
+ p5 = gevcdf (x, 1, 5, 5);
+ p6 = gevcdf (x, 1, 0.5, 5);
+ plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", ...
+       x, p4, "-c", x, p5, "-m", x, p6, "-k")
+ grid on
+ xlim ([-1, 10])
+ legend ({"ξ = 1, σ = 1, μ = 1", "ξ = 0.5, σ = 1, μ = 1", ...
+          "ξ = 1, σ = 1, μ = 5", "ξ = 1, σ = 2, μ = 5", ...
+          "ξ = 1, σ = 5, μ = 5", "ξ = 1, σ = 0.5, μ = 5"}, ...
+         "location", "southeast")
+ title ("Generalized extreme value CDF")
+ xlabel ("values in x")
+ ylabel ("probability")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/gevcdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

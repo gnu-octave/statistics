@@ -72,23 +72,27 @@
         <div class="card-body">
 <dl>
 <dt><u>statistics:</u> <var>p</var> = <b>geocdf</b><i> (<var>x</var>, <var>ps</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>geocdf</b><i> (<var>x</var>, <var>ps</var>, &quot;upper&quot;)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>geocdf</b><i> (<var>x</var>, <var>ps</var>, <code>&quot;upper&quot;</code>)</i></dt>
 </dl>
 
 <p> Geometric cumulative distribution function (CDF).
 </p>
 <div class="ms-5">
-<p> The geometric distribution models the number of failures (<var>x</var>) of a
- Bernoulli trial with probability <var>ps</var> before the first success.
-</p>
 <p> For each element of <var>x</var>, compute the cumulative distribution function
- (CDF) at <var>x</var> of the geometric distribution with parameter <var>ps</var>.  The
- size of <var>p</var> is the common size of <var>x</var> and <var>ps</var>.  A scalar input
- functions as a constant matrix of the same size as the other inputs.
+ (CDF) of the geometric distribution with probability of success parameter
+ <var>ps</var>.  The size of <var>p</var> is the common size of <var>x</var> and <var>ps</var>.
+ A scalar input functions as a constant matrix of the same size as the other
+ inputs.
 </p>
 <p> <code><var>p</var> = geocdf (<var>x</var>, <var>ps</var>, &quot;upper&quot;)</code> computes the upper tail
  probability of the geometric distribution with probability parameter
  <var>ps</var>.
+</p>
+<p> The geometric distribution models the number of failures (<var>x</var>) of a
+ Bernoulli trial with probability <var>ps</var> before the first success.
+</p>
+<p> Further information about the geometric distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Geometric_distribution">https://en.wikipedia.org/wiki/Geometric_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="geoinv.html">geoinv</a>, 
@@ -99,6 +103,49 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/geocdf.m">geocdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various CDFs from the geometric distribution
+ x = 0:10;
+ p1 = geocdf (x, 0.2);
+ p2 = geocdf (x, 0.5);
+ p3 = geocdf (x, 0.7);
+ plot (x, p1, "*b", x, p2, "*g", x, p3, "*r")
+ grid on
+ xlim ([0, 10])
+ legend ({"ps = 0.2", "ps = 0.5", "ps = 0.7"}, "location", "southeast")
+ title ("Geometric CDF")
+ xlabel ("values in x (number of failures)")
+ ylabel ("probability")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/geocdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

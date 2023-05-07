@@ -77,13 +77,16 @@
 <p> Inverse of the geometric cumulative distribution function (iCDF).
 </p>
 <div class="ms-5">
-<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF)
- at <var>p</var> of the geometric distribution with parameter <var>ps</var>.  The size
- of <var>x</var> is the common size of <var>p</var> and <var>ps</var>.  A scalar input
- functions as a constant matrix of the same size as the other inputs.
+<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF) of
+ the geometric distribution with probability of success parameter <var>ps</var>.
+ The size of <var>x</var> is the common size of <var>p</var> and <var>ps</var>.  A scalar
+ input functions as a constant matrix of the same size as the other inputs.
 </p>
 <p> The geometric distribution models the number of failures (<var>p</var>) of a
  Bernoulli trial with probability <var>ps</var> before the first success.
+</p>
+<p> Further information about the geometric distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Geometric_distribution">https://en.wikipedia.org/wiki/Geometric_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="geocdf.html">geocdf</a>, 
@@ -94,6 +97,49 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/geoinv.m">geoinv</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various iCDFs from the geometric distribution
+ p = 0.001:0.001:0.999;
+ x1 = geoinv (p, 0.2);
+ x2 = geoinv (p, 0.5);
+ x3 = geoinv (p, 0.7);
+ plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+ grid on
+ ylim ([0, 10])
+ legend ({"ps = 0.2", "ps = 0.5", "ps = 0.7"}, "location", "northwest")
+ title ("Geometric iCDF")
+ xlabel ("probability")
+ ylabel ("values in x (number of failures)")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/geoinv_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>
