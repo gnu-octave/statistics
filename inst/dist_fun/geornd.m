@@ -129,7 +129,7 @@ endfunction
 
 ## Test input validation
 %!error<geornd: function called with too few input arguments.> geornd ()
-%!error<geornd: DF must not be complex.> geornd (i)
+%!error<geornd: PS must not be complex.> geornd (i)
 %!error<geornd: SZ must be a scalar or a row vector of non-negative integers.> ...
 %! geornd (1, -1)
 %!error<geornd: SZ must be a scalar or a row vector of non-negative integers.> ...
@@ -146,6 +146,6 @@ endfunction
 %! geornd (1, 2, -1, 5)
 %!error<geornd: dimensions must be non-negative integers.> ...
 %! geornd (1, 2, 1.5, 5)
-%!error<geornd: DF must be scalar or of size SZ.> geornd (ones (2,2), 3)
-%!error<geornd: DF must be scalar or of size SZ.> geornd (ones (2,2), [3, 2])
-%!error<geornd: DF must be scalar or of size SZ.> geornd (ones (2,2), 2, 3)
+%!error<geornd: PS must be scalar or of size SZ.> geornd (ones (2,2), 3)
+%!error<geornd: PS must be scalar or of size SZ.> geornd (ones (2,2), [3, 2])
+%!error<geornd: PS must be scalar or of size SZ.> geornd (ones (2,2), 2, 3)

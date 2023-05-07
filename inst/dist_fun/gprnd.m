@@ -110,15 +110,29 @@ function r = gprnd (k, sigma, mu, varargin)
   endif
 
   ## Generate random sample from generalized Pareto distribution
-  r = NaN (sz, cls);
+  r = rand (sz, cls);
 
-  kr = (-Inf < mu) & (mu < Inf) & (sigma > 0) & (sigma < Inf) ...
-                                & (-Inf < k) & (k < Inf);
-  r(kr(:)) = rand (1, sum(kr(:)), cls);
-  if (any (k == 0))
-      r(kr) = mu(kr) - (sigma(kr) .* log(1 - r(kr)));
-  elseif (any (k < 0 | k > 0))
-    r(kr) = mu(kr) + ((sigma(kr) .* ((r(kr) .^ -k(kr)) - 1)) ./ k(kr));
+  ## Find valid parameters
+  vr = (isfinite (r)) & (mu > -Inf) & (mu < Inf) ...
+                      & (sigma > 0) & (sigma < Inf) ...
+                      & (-Inf < k) & (k < Inf);
+
+  ## Force invalid parameters to NaN
+  r(! vr) = NaN;
+
+  if (isscalar (k))
+    if (k == 0)
+      r(vr) = mu - (sigma .* log (1 - r(vr)));
+    else
+      r(vr) = mu + ((sigma .* ((r(vr) .^ -k) - 1)) ./ k);
+    endif
+  else
+    if (any (k == 0))
+      r(vr) = mu(vr) - (sigma(vr) .* log (1 - r(vr)));
+    endif
+    if (any (k < 0 | k > 0))
+      r(vr) = mu(vr) + ((sigma(vr) .* ((r(vr) .^ -k(vr)) - 1)) ./ k(vr));
+    endif
   endif
 
 endfunction
