@@ -47,7 +47,7 @@ function y = logipdf (x, mu = 0, s = 1)
     print_usage ();
   endif
 
-  ## Check for common size of P, MU, and S
+  ## Check for common size of X, MU, and S
   if (! isscalar (x) || ! isscalar (mu) || ! isscalar(s))
     [retval, x, mu, s] = common_size (x, mu, s);
     if (retval > 0)
