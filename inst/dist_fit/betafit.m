@@ -50,9 +50,6 @@
 
 function [paramhat, paramci] = betafit (x, alpha)
 
-  ## Check for valid number of input arguments
-  narginchk (1, 2);
-
   ## Check X for being a vector
   if (isempty (x))
     phat = nan (1, 2, class (x));
