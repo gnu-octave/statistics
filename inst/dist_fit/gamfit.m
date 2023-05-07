@@ -1,4 +1,5 @@
 ## Copyright (C) 2019 Nir Krakauer <mail@nirkrakauer.net>
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Based on previous work by Martijn van Oosterhout <kleptog@svana.org>
 ## originally granted to the public domain.
 ##

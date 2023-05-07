@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Based on previous work by Martijn van Oosterhout <kleptog@svana.org>
 ## originally granted to the public domain.
 ##
