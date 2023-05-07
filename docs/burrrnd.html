@@ -87,11 +87,11 @@
  <var>lambda</var>, <var>c</var>, and <var>k</var>.  LAMBDA scalar input functions as a
  constant matrix of the same size as the other inputs.
 </p>
-<p> When called with a single size argument, return a square matrix with
- the dimension specified.  When called with more than one scalar argument the
- first two arguments are taken as the number of rows and columns and any
- further arguments specify additional matrix dimensions.  The size may also
- be specified with a vector of dimensions <var>sz</var>.
+<p> When called with a single size argument, <code>burrrnd</code> returns a square
+ matrix with the dimension specified.  When called with more than one scalar
+ argument, the first two arguments are taken as the number of rows and columns
+ and any further arguments specify additional matrix dimensions.  The size may
+ also be specified with a row vector of dimensions, <var>sz</var>.
 </p>
 <p> Further information about the Burr distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Burr_distribution">https://en.wikipedia.org/wiki/Burr_distribution</a>
@@ -99,7 +99,9 @@
 <p> <strong>See also: </strong>
   <a href="burrcdf.html">burrcdf</a>, 
   <a href="burrinv.html">burrinv</a>, 
-  <a href="burrpdf.html">burrpdf</a>
+  <a href="burrpdf.html">burrpdf</a>, 
+  <a href="burrfit.html">burrfit</a>, 
+  <a href="burrlike.html">burrlike</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/burrrnd.m">burrrnd</a>

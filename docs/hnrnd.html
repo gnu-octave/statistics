@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: cauchyrnd</title>
+    <title>Statistics: hnrnd</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -64,44 +64,46 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>cauchyrnd</code></b>
+              Function&nbsp;Reference: <b><code>hnrnd</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>r</var> = <b>cauchyrnd</b><i> (<var>x0</var>, <var>gamma</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>cauchyrnd</b><i> (<var>x0</var>, <var>gamma</var>, <var>rows</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>cauchyrnd</b><i> (<var>x0</var>, <var>gamma</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>cauchyrnd</b><i> (<var>x0</var>, <var>gamma</var>, [<var>sz</var>])</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>hnrnd</b><i> (<var>mu</var>, <var>sigma</var>)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>hnrnd</b><i> (<var>mu</var>, <var>sigma</var>, <var>rows</var>)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>hnrnd</b><i> (<var>mu</var>, <var>sigma</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>hnrnd</b><i> (<var>mu</var>, <var>sigma</var>, [<var>sz</var>])</i></dt>
 </dl>
 
-<p> Random arrays from the Cauchy distribution.
+<p> Random arrays from the half-normal distribution.
 </p>
 <div class="ms-5">
-<p> <code><var>r</var> = cauchyrnd (<var>x0</var>, <var>gamma</var>)</code> returns an array of
- random numbers chosen from the Cauchy distribution with location parameter
- <var>x0</var> and scale parameter <var>gamma</var>.  The size of <var>r</var> is the common
- size of <var>x0</var> and <var>gamma</var>.  A scalar input functions as a constant
+<p> <code><var>r</var> = hnrnd (<var>mu</var>, <var>sigma</var>)</code> returns an array of random
+ numbers chosen from the half-normal distribution with location parameter
+ <var>mu</var> and scale parameter <var>sigma</var>.  The size of <var>r</var> is the common
+ size of <var>mu</var> and <var>sigma</var>.  A scalar input functions as a constant
  matrix of the same size as the other inputs.
 </p>
-<p> When called with a single size argument, <code>cauchyrnd</code> returns a square
+<p> When called with a single size argument, <code>hnrnd</code> returns a square
  matrix with the dimension specified.  When called with more than one scalar
  argument, the first two arguments are taken as the number of rows and columns
  and any further arguments specify additional matrix dimensions.  The size may
  also be specified with a row vector of dimensions, <var>sz</var>.
 </p>
-<p> Further information about the Cauchy distribution can be found at
- <a href="https://en.wikipedia.org/wiki/Cauchy_distribution">https://en.wikipedia.org/wiki/Cauchy_distribution</a>
+<p> Further information about the half-normal distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Half-normal_distribution">https://en.wikipedia.org/wiki/Half-normal_distribution</a>
 </p>
 <p> <strong>See also: </strong>
-  <a href="cauchycdf.html">cauchycdf</a>, 
-  <a href="cauchyinv.html">cauchyinv</a>, 
-  <a href="cauchypdf.html">cauchypdf</a>
+  <a href="hncdf.html">hncdf</a>, 
+  <a href="hninv.html">hninv</a>, 
+  <a href="hnpdf.html">hnpdf</a>, 
+hnfit, 
+hnlike
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/cauchyrnd.m">cauchyrnd</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/hnrnd.m">hnrnd</a>
 </div>
 
         </div>

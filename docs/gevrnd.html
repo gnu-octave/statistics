@@ -83,14 +83,14 @@
 <p> <code><var>r</var> = gevrnd (<var>k</var>, <var>sigma</var>, <var>mu</var></code> returns an array of
  random numbers chosen from the GEV distribution with shape parameter <var>k</var>,
  scale parameter <var>sigma</var>, and location parameter <var>mu</var>.  The size of
- <var>r</var> is the common size of the input arguments.  A scalar input functions
- as a constant matrix of the same size as the other inputs.
+ <var>r</var> is the common size of <var>k</var>, <var>sigma</var>, and <var>mu</var>.  A scalar
+ input functions as a constant matrix of the same size as the other inputs.
 </p>
-<p> When called with a single size argument, returns a square matrix with
- the dimension specified.  When called with more than one scalar argument the
- first two arguments are taken as the number of rows and columns and any
- further arguments specify additional matrix dimensions.  The size may also
- be specified with a vector <var>sz</var> of dimensions.
+<p> When called with a single size argument, <code>gevrnd</code> returns a square
+ matrix with the dimension specified.  When called with more than one scalar
+ argument, the first two arguments are taken as the number of rows and columns
+ and any further arguments specify additional matrix dimensions.  The size may
+ also be specified with a row vector of dimensions, <var>sz</var>.
 </p>
 <p> When <code><var>k</var> &lt; 0</code>, the GEV is the type III extreme value distribution.
  When <code><var>k</var> &gt; 0</code>, the GEV distribution is the type II, or Frechet,

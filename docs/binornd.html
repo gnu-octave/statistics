@@ -77,20 +77,21 @@
 <dt><u>statistics:</u> <var>r</var> = <b>binornd</b><i> (<var>n</var>, <var>ps</var>, [<var>sz</var>])</i></dt>
 </dl>
 
-<p> Random arrays from the Binomial distribution
+<p> Random arrays from the Binomial distribution.
 </p>
 <div class="ms-5">
-<p> Return a matrix of random samples from the binomial distribution with
- parameters <var>n</var> and <var>ps</var>, where <var>n</var> is the number of trials
- and <var>ps</var> is the probability of success.  The size of <var>r</var> is the
- common size of <var>n</var> and <var>ps</var>.  A scalar input functions as a constant
- matrix of the same size as the other inputs.
+<p> <code><var>r</var> = binornd (<var>n</var>, <var>ps</var>)</code> returns a matrix of random
+ samples from the binomial distribution with parameters <var>n</var> and <var>ps</var>,
+ where <var>n</var> is the number of trials and <var>ps</var> is the probability of
+ success.  The size of <var>r</var> is the common size of <var>n</var> and <var>ps</var>.
+ A scalar input functions as a constant matrix of the same size as the other
+ inputs.
 </p>
-<p> When called with a single size argument, return a square matrix with
- the dimension specified.  When called with more than one scalar argument the
- first two arguments are taken as the number of rows and columns and any
- further arguments specify additional matrix dimensions.  The size may also
- be specified with a vector of dimensions <var>sz</var>.
+<p> When called with a single size argument, <code>binornd</code> returns a square
+ matrix with the dimension specified.  When called with more than one scalar
+ argument, the first two arguments are taken as the number of rows and columns
+ and any further arguments specify additional matrix dimensions.  The size may
+ also be specified with a row vector of dimensions, <var>sz</var>.
 </p>
 <p> Further information about the binomial distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Binomial_distribution">https://en.wikipedia.org/wiki/Binomial_distribution</a>
