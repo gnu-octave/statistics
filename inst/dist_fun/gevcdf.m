@@ -15,40 +15,39 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{p} =} gevcdf (@var{x})
-## @deftypefnx {statistics} {@var{p} =} gevcdf (@var{x}, @var{k})
-## @deftypefnx {statistics} {@var{p} =} gevcdf (@var{x}, @var{k}, @var{sigma})
-## @deftypefnx {statistics} {@var{p} =} gevcdf (@var{x}, @var{k}, @var{sigma}, @var{mu})
-## @deftypefnx {statistics} {@var{p} =} gevcdf (@dots{}, "upper")
+## @deftypefn  {statistics} {@var{p} =} gevcdf (@var{x}, @var{k}, @var{sigma}, @var{mu})
+## @deftypefnx {statistics} {@var{p} =} gevcdf (@var{x}, @var{k}, @var{sigma}, @var{mu}, "upper")
 ##
 ## Generalized extreme value (GEV) cumulative distribution function (CDF).
 ##
-## @code{@var{p} = gevcdf (@var{x}, @var{k}, @var{sigma}, @var{mu})} returns the
-## CDF of the generalized extreme value (GEV) distribution with shape parameter
-## @var{k}, scale parameter @var{sigma}, and location parameter @var{mu},
-## evaluated at the values in @var{x}.  The size of @var{p} is the common size
-## of the input arguments.  A scalar input functions as a constant matrix of the
-## same size as the other inputs.
+## For each element of @var{x}, compute the cumulative distribution function
+## (CDF) of the GEV distribution with shape parameter @var{k}, scale parameter
+## @var{sigma}, and location parameter @var{mu}.  The size of @var{p} is the
+## common size of @var{x}, @var{k}, @var{sigma}, and @var{mu}.  A scalar input
+## functions as a constant matrix of the same size as the other inputs.
 ##
-## Default values for K, SIGMA, and MU are 0, 1, and 0, respectively.
+## @code{[@dots{}] = gevcdf (@dots{}, "upper")} computes the upper tail
+## probability of the extreme value distribution.
 ##
-## When @var{k} < 0, the GEV is the type III extreme value distribution.  When
-## @var{k} > 0, the GEV distribution is the type II, or Frechet, extreme value
-## distribution.  If W has a Weibull distribution as computed by the
-## @code{wblcdf} function, then -W has a type III extreme value distribution and
-## 1/W has a type II extreme value distribution.  In the limit as @var{k}
-## approaches 0, the GEV is the mirror image of the type I extreme value
-## distribution as computed by the @code{evcdf} function.
+## When @qcode{@var{k} < 0}, the GEV is the type III extreme value distribution.
+## When @qcode{@var{k} > 0}, the GEV distribution is the type II, or Frechet,
+## extreme value distribution.  If @var{W} has a Weibull distribution as
+## computed by the @code{wblcdf} function, then @qcode{-@var{W}} has a type III
+## extreme value distribution and @qcode{1/@var{W}} has a type II extreme value
+## distribution.  In the limit as @var{k} approaches @qcode{0}, the GEV is the
+## mirror image of the type I extreme value distribution as computed by the
+## @code{evcdf} function.
 ##
-## The mean of the GEV distribution is not finite when @var{k} >= 1, and the
-## variance is not finite when @var{k} >= 1/2.  The GEV distribution has
-## positive density only for values of @var{x} such that K*(X-MU)/SIGMA > -1.
+## The mean of the GEV distribution is not finite when @qcode{@var{k} >= 1}, and
+## the variance is not finite when @qcode{@var{k} >= 1/2}.  The GEV distribution
+## has positive density only for values of @var{x} such that
+## @qcode{@var{k} * (@var{x} - @var{mu}) / @var{sigma} > -1}.
 ##
-## @code{@var{p} = gevcdf (@dots{}, "upper")} returns the upper tail probability
-## of the generalized extreme value distribution.
+## Further information about the generalized extreme value distribution can be
+## found at
+## @url{https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution}
 ##
 ## @subheading References
-##
 ## @enumerate
 ## @item
 ## Rolf-Dieter Reiss and Michael Thomas. @cite{Statistical Analysis of Extreme
@@ -59,39 +58,22 @@
 ## @seealso{gevinv, gevpdf, gevrnd, gevfit, gevlike, gevstat}
 ## @end deftypefn
 
-function p = gevcdf (x, varargin)
+function p = gevcdf (x, k, sigma, mu, uflag)
 
   ## Check for valid number of input arguments
-  if (nargin < 2 || nargin > 5)
-    error ("gevcdf: invalid number of input arguments.");
+  if (nargin < 4)
+    error ("gevcdf: function called with too few input arguments.");
   endif
 
-  ## Check for "upper" flag
-  if (nargin > 1 && strcmpi (varargin{end}, "upper"))
-    uflag = true;
-    varargin(end) = [];
-  elseif (nargin > 1 && ischar (varargin{end}) && ...
-          ! strcmpi (varargin{end}, "upper"))
-    error ("gevcdf: invalid argument for upper tail.");
+  ## Check for valid "upper" flag
+  if (nargin > 4)
+    if (! strcmpi (uflag, "upper"))
+      error ("gevcdf: invalid argument for upper tail.");
+    else
+      uflag = true;
+    endif
   else
     uflag = false;
-  endif
-
-  ## Get extra arguments (if they exist) or add defaults
-  if (numel (varargin) > 0)
-    k = varargin{1};
-  else
-    k = 0;
-  endif
-  if (numel (varargin) > 1)
-    sigma = varargin{2};
-  else
-    sigma = 1;
-  endif
-  if (numel (varargin) > 2)
-    mu = varargin{3};
-  else
-    mu = 0;
   endif
 
   ## Check for common size of X, K, SIGMA, and MU
@@ -107,7 +89,7 @@ function p = gevcdf (x, varargin)
     error ("gevcdf: X, K, SIGMA, and MU must not be complex.");
   endif
 
-  ## Check for appropriate class
+  ## Check for class type
   if (isa (x, "single") || isa (k, "single") ...
                         || isa (sigma, "single") || isa (mu, "single"));
     is_class = "single";
@@ -152,6 +134,28 @@ function p = gevcdf (x, varargin)
 
 endfunction
 
+%!demo
+%! ## Plot various CDFs from the generalized extreme value distribution
+%! x = -1:0.001:10;
+%! p1 = gevcdf (x, 1, 1, 1);
+%! p2 = gevcdf (x, 0.5, 1, 1);
+%! p3 = gevcdf (x, 1, 1, 5);
+%! p4 = gevcdf (x, 1, 2, 5);
+%! p5 = gevcdf (x, 1, 5, 5);
+%! p6 = gevcdf (x, 1, 0.5, 5);
+%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", ...
+%!       x, p4, "-c", x, p5, "-m", x, p6, "-k")
+%! grid on
+%! xlim ([-1, 10])
+%! legend ({"ξ = 1, σ = 1, μ = 1", "ξ = 0.5, σ = 1, μ = 1", ...
+%!          "ξ = 1, σ = 1, μ = 5", "ξ = 1, σ = 2, μ = 5", ...
+%!          "ξ = 1, σ = 5, μ = 5", "ξ = 1, σ = 0.5, μ = 5"}, ...
+%!         "location", "southeast")
+%! title ("Generalized extreme value CDF")
+%! xlabel ("values in x")
+%! ylabel ("probability")
+
+## Test output
 %!test
 %! x = 0:0.5:2.5;
 %! sigma = 1:6;
@@ -160,7 +164,6 @@ endfunction
 %! p = gevcdf (x, k, sigma, mu);
 %! expected_p = [0.36788, 0.44933, 0.47237, 0.48323, 0.48954, 0.49367];
 %! assert (p, expected_p, 0.001);
-
 %!test
 %! x = -0.5:0.5:2.5;
 %! sigma = 0.5;
@@ -169,8 +172,7 @@ endfunction
 %! p = gevcdf (x, k, sigma, mu);
 %! expected_p = [0, 0.36788, 0.60653, 0.71653, 0.77880, 0.81873, 0.84648];
 %! assert (p, expected_p, 0.001);
-
-%!test #check for continuity for k near 0
+%!test # check for continuity for k near 0
 %! x = 1;
 %! sigma = 0.5;
 %! k = -0.03:0.01:0.03;
@@ -180,12 +182,23 @@ endfunction
 %! assert (p, expected_p, 0.001);
 
 ## Test input validation
-%!error<gevcdf: invalid number of input arguments.> gevcdf ()
-%!error<gevcdf: invalid number of input arguments.> gevcdf (1, 2 ,3 ,4 ,5, 6)
-%!error<gevcdf: invalid argument for upper tail.> gevcdf (1, 2, 3, 4, "uper")
+%!error<gevcdf: function called with too few input arguments.> gevcdf ()
+%!error<gevcdf: function called with too few input arguments.> gevcdf (1)
+%!error<gevcdf: function called with too few input arguments.> gevcdf (1, 2)
+%!error<gevcdf: function called with too few input arguments.> gevcdf (1, 2, 3)
+%!error<gevcdf: function called with too many inputs> ...
+%! gevcdf (1, 2, 3, 4, 5, 6)
+%!error<gevcdf: invalid argument for upper tail.> gevcdf (1, 2, 3, 4, "tail")
+%!error<gevcdf: invalid argument for upper tail.> gevcdf (1, 2, 3, 4, 5)
 %!error<gevcdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
-%! gevcdf (ones (3), ones (2))
+%! gevcdf (ones (3), ones (2), ones(2), ones(2))
 %!error<gevcdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
-%! gevcdf (ones (3), ones (2), 3)
+%! gevcdf (ones (2), ones (3), ones(2), ones(2))
 %!error<gevcdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
-%! gevcdf (1 , ones (2), 3, ones (3))
+%! gevcdf (ones (2), ones (2), ones(3), ones(2))
+%!error<gevcdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
+%! gevcdf (ones (2), ones (2), ones(2), ones(3))
+%!error<gevcdf: X, K, SIGMA, and MU must not be complex.> gevcdf (i, 2, 3, 4)
+%!error<gevcdf: X, K, SIGMA, and MU must not be complex.> gevcdf (1, i, 3, 4)
+%!error<gevcdf: X, K, SIGMA, and MU must not be complex.> gevcdf (1, 2, i, 4)
+%!error<gevcdf: X, K, SIGMA, and MU must not be complex.> gevcdf (1, 2, 3, i)
