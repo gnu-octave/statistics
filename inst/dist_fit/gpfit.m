@@ -25,21 +25,23 @@
 ## Estimate parameters and confidence intervals for the generalized Pareto
 ## distribution.
 ##
-## @code{@var{paramhat} = gpfit (@var{x})} returns maximum likelihood estimates
-## of the parameters of the two-parameter generalized Pareto distribution given
-## the data in @var{x}.  @qcode{@var{params}(1)} is the SHAPE parameter and
-## @qcode{@var{params}(2)} is the SCALE parameter.  @code{gpfit} does not fit a
-## LOCATION parameter.
+## @code{@var{paramhat} = gpfit (@var{x})} returns the maximum likelihood
+## estimates of the parameters of the generalized Pareto distribution given the
+## data in @var{x}.  @qcode{@var{paramhat}(1)} is the shape parameter, @var{k},
+## and @qcode{@var{paramhat}(2)} is the scale parameter, @var{sigma}.  Other
+## functions for the generalized Pareto, such as @code{gpcdf}, allow a location
+## parameter, @var{mu}.  However, @code{gpfit} does not estimate a location
+## parameter, and it must be assumed known, and subtracted from @var{x} before
+## calling @code{gpfit}.
 ##
-## @code{[@var{paramhat}, @var{paramci}] = gpfit (@var{x})} returns 95%
+## @code{[@var{paramhat}, @var{paramci}] = gpfit (@var{x})} returns the 95%
 ## confidence intervals for the parameter estimates.
 ##
-## @code{[@dots{}] = gpfit (@var{x}, @var{alpha})} returns
+## @code{[@dots{}] = gpfit (@var{x}, @var{alpha})} also returns the
 ## @qcode{100 * (1 - @var{alpha})} percent confidence intervals for the
-## parameter estimates.  By default, @math{@var{alpha} = 0.05} corresponding
-## fidence intervals.
-##
-## Pass in @qcode{[]} for @var{alpha} to use the default values.
+## parameter estimates.  By default, the optional argument @var{alpha} is
+## 0.05 corresponding to 95% confidence intervals.  Pass in @qcode{[]} for
+## @var{alpha} to use the default values.
 ##
 ## @code{[@dots{}] = gpfit (@var{x}, @var{alpha}, @var{options})} specifies
 ## control parameters for the iterative algorithm used to compute ML estimates
@@ -53,11 +55,6 @@
 ## @item @qcode{@var{options}.TolFun = 1e-6}
 ## @item @qcode{@var{options}.TolX = 1e-6}
 ## @end itemize
-##
-## Other functions for the generalized Pareto, such as @code{gpcdf}, allow a
-## LOCATION parameter.  However, @code{gpfit} does not estimate LOCATION, and it
-## must be assumed known, and subtracted from @var{x} before calling
-## @code{gpfit}.
 ##
 ## When @var{shape} = 0 and @var{location} = 0, the generalized Pareto
 ## distribution is equivalent to the exponential distribution.  When
@@ -243,6 +240,46 @@ function nll = negloglike (paramhat, data)
   endif
 
 endfunction
+
+%!demo
+%! ## Sample 2 populations from different generalized Pareto distibutions
+%! ## Assume location parameter is known
+%! mu = 0;
+%! randg ("seed", 5);    # for reproducibility
+%! r1 = gprnd (1, 2, mu, 20000, 1);
+%! randg ("seed", 2);    # for reproducibility
+%! r2 = gprnd (3, 1, mu, 20000, 1);
+%! r = [r1, r2];
+%!
+%! ## Plot them normalized and fix their colors
+%! hist (r, [0.1:0.2:100], 5);
+%! h = findobj (gca, "Type", "patch");
+%! set (h(1), "facecolor", "r");
+%! set (h(2), "facecolor", "c");
+%! ylim ([0, 1]);
+%! xlim ([0, 5]);
+%! hold on
+%!
+%! ## Estimate their α and β parameters
+%! k_sigmaA = gpfit (r(:,1));
+%! k_sigmaB = gpfit (r(:,2));
+%!
+%! ## Plot their estimated PDFs
+%! x = [0.01, 0.1:0.2:18];
+%! y = gppdf (x, k_sigmaA(1), k_sigmaA(2), mu);
+%! plot (x, y, "-pc");
+%! y = gppdf (x, k_sigmaB(1), k_sigmaB(2), mu);
+%! plot (x, y, "-sr");
+%! hold off
+%! legend ({"Normalized HIST of sample 1 with k=1 and σ=2", ...
+%!          "Normalized HIST of sample 2 with k=2 and σ=2", ...
+%!          sprintf("PDF for sample 1 with estimated k=%0.2f and σ=%0.2f", ...
+%!                  k_sigmaA(1), k_sigmaA(2)), ...
+%!          sprintf("PDF for sample 3 with estimated k=%0.2f and σ=%0.2f", ...
+%!                  k_sigmaB(1), k_sigmaB(2))})
+%! title ("Three population samples from different generalized Pareto distibutions")
+%! text (3, 0.6, "Known location parameter μ = 0")
+%! hold off
 
 ## Test output
 %!test

@@ -27,7 +27,7 @@
 ## log likelihood of the data in @var{x} corresponding to the Gumbel
 ## distribution (also known as the extreme value or the type I generalized
 ## extreme value distribution) with (1) location parameter @var{mu} and (2)
-## scale parameter @var{beta} given in the two-element vector @var{paramhat}.
+## scale parameter @var{beta} given in the two-element vector @var{params}.
 ##
 ## @code{[@var{nlogL}, @var{acov}] = gumbellike (@var{params}, @var{x})} also
 ## returns the inverse of Fisher's information matrix, @var{acov}.  If the input

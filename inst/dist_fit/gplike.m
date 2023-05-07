@@ -23,10 +23,11 @@
 ## Negative log-likelihood for the generalized Pareto distribution.
 ##
 ## @code{@var{nlogL} = gplike (@var{params}, @var{x})} returns the negative
-## of the log-likelihood for the two-parameter generalized Pareto distribution,
-## evaluated at @code{@var{params(1)} = SHAPE} and
-## @code{@var{params(2)} = SCALE} given @var{x}.  @code{gplike} does not
-## allow a LOCATION parameter.  @var{nlogL} is a scalar.
+## log-likelihood of the data in @var{x} corresponding to the generalized Pareto
+## distribution with (1) shape parameter @var{k} and (2) scale parameter
+## @var{sigma} given in the two-element vector @var{params}.  @code{gplike}
+## does not allow a location parameter and it must be assumed known, and
+## subtracted from @var{x} before calling @code{gplike}.
 ##
 ## @code{[@var{nlogL}, @var{acov}] = gplike (@var{params}, @var{x})} returns
 ## the inverse of Fisher's information matrix, @var{acov}.  If the input

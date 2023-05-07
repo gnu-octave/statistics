@@ -29,7 +29,7 @@
 ## @code{@var{nlogL} = gamlike (@var{params}, @var{x})} returns the negative
 ## log likelihood of the data in @var{x} corresponding to the Gamma distribution
 ## with (1) shape parameter @var{k} and (2) scale parameter @var{theta} given in
-## the two-element vector @var{paramhat}.
+## the two-element vector @var{params}.
 ##
 ## @code{[@var{nlogL}, @var{acov}] = gamlike (@var{params}, @var{x})} also
 ## returns the inverse of Fisher's information matrix, @var{acov}.  If the input

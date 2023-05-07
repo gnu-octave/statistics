@@ -24,7 +24,7 @@
 ## @code{@var{nlogL} = betalike (@var{params}, @var{x})} returns the negative
 ## log likelihood of the data in @var{x} corresponding to the Beta distribution
 ## with (1) shape parameter @math{α} and (2) shape parameter @math{β} given in
-## the two-element vector @var{paramhat}.  Both parameters must be positive real
+## the two-element vector @var{params}.  Both parameters must be positive real
 ## numbers and the data in the range @math{[0,1]}.  Out of range parameters or
 ## data return @qcode{NaN}.
 ##

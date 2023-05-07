@@ -24,7 +24,7 @@
 ##
 ## @code{@var{nlogL} = binolike (@var{params}, @var{x})} returns the negative
 ## log likelihood of the binomial distribution with the (1) parameter @var{n}
-## (2) parameter @var{ps}, given in the two-element vector @var{paramhat}, where
+## (2) parameter @var{ps}, given in the two-element vector @var{params}, where
 ## @var{n} is the number of trials and @var{ps} is the probability of success,
 ## given the number of successes in @var{x}.  Unlike @code{binofit}, which
 ## handles each element in @var{x} independently, @code{binolike} returns the

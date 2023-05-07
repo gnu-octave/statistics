@@ -28,7 +28,7 @@
 ## log likelihood of the data in @var{x} corresponding to the Burr type XII
 ## distribution with (1) scale parameter @var{lambda}, (2) first shape parameter
 ## @var{c}, and (3) second shape parameter @var{k} given in the three-element
-## vector @var{paramhat}.
+## vector @var{params}.
 ##
 ## @code{[@var{nlogL}, @var{acov}] = burrlike (@var{params}, @var{x})} also
 ## returns the inverse of Fisher's information matrix, @var{acov}.  If the input

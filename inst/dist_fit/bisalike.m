@@ -27,7 +27,7 @@
 ## @code{@var{nlogL} = bisalike (@var{params}, @var{x})} returns the negative
 ## log likelihood of the data in @var{x} corresponding to the Birnbaum-Saunders
 ## distribution with (1) scale parameter @var{beta} and (2) shape parameter
-## @var{gamma} given in the two-element vector @var{paramhat}.
+## @var{gamma} given in the two-element vector @var{params}.
 ##
 ## @code{[@var{nlogL}, @var{acov}] = bisalike (@var{params}, @var{x})} also
 ## returns the inverse of Fisher's information matrix, @var{acov}.  If the input
