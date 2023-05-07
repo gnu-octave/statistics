@@ -21,7 +21,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} tcdf (@var{x}, @var{df})
-## @deftypefnx {statistics} {@var{p} =} tcdf (@var{x}, @var{df}, "upper")
+## @deftypefnx {statistics} {@var{p} =} tcdf (@var{x}, @var{df}, @qcode{"upper"})
 ##
 ## Student's T cumulative distribution function (CDF).
 ##

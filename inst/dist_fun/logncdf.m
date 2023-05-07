@@ -22,10 +22,10 @@
 ## @deftypefn  {statistics} {@var{p} =} logncdf (@var{x})
 ## @deftypefnx {statistics} {@var{p} =} logncdf (@var{x}, @var{mu})
 ## @deftypefnx {statistics} {@var{p} =} logncdf (@var{x}, @var{mu}, @var{sigma})
-## @deftypefnx {statistics} {@var{p} =} logncdf (@dots{}, "upper")
+## @deftypefnx {statistics} {@var{p} =} logncdf (@dots{}, @qcode{"upper"})
 ## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} logncdf (@var{x}, @var{mu}, @var{sigma}, @var{pcov})
 ## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} logncdf (@var{x}, @var{mu}, @var{sigma}, @var{pcov}, @var{alpha})
-## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} logncdf (@dots{}, "upper")
+## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} logncdf (@dots{}, @qcode{"upper"})
 ##
 ## Lognormal cumulative distribution function (CDF).
 ##

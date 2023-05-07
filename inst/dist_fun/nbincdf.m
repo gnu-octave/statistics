@@ -20,7 +20,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} nbincdf (@var{x}, @var{n}, @var{ps})
-## @deftypefnx {statistics} {@var{p} =} nbincdf (@var{x}, @var{n}, @var{ps}, "upper")
+## @deftypefnx {statistics} {@var{p} =} nbincdf (@var{x}, @var{n}, @var{ps}, @qcode{"upper"})
 ##
 ## Negative binomial cumulative distribution function (CDF).
 ##

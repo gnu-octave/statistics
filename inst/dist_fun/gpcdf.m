@@ -20,40 +20,41 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{p} =} gpcdf (@var{x})
-## @deftypefnx {statistics} {@var{p} =} gpcdf (@var{x}, @var{shape})
-## @deftypefnx {statistics} {@var{p} =} gpcdf (@var{x}, @var{shape}, @var{scale})
-## @deftypefnx {statistics} {@var{p} =} gpcdf (@var{x}, @var{shape}, @var{scale}, @var{location})
-## @deftypefnx {statistics} {@var{p} =} gpcdf (@dots{}, "upper")
+## @deftypefn  {statistics} {@var{p} =} gpcdf (@var{x}, @var{k}, @var{sigma}, @var{mu})
+## @deftypefnx {statistics} {@var{p} =} gpcdf (@var{x}, @var{k}, @var{sigma}, @var{mu}, @qcode{"upper"})
 ##
-## Generalized Pareto cumulative distribution function (cdf).
+## Generalized Pareto cumulative distribution function (CDF).
 ##
-## Compute the cumulative distribution function (CDF) at @var{x} of the
-## generalized Pareto distribution with parameters @var{location}, @var{scale},
-## and @var{shape}.  The size of P is the common size of the input arguments.
+## For each element of @var{x}, compute the cumulative distribution function
+## (CDF) of the generalized Pareto distribution with shape parameter @var{k},
+## scale parameter @var{sigma}, and location parameter @var{mu}.  The size of
+## @var{p} is the common size of @var{x}, @var{k}, @var{sigma}, and @var{mu}.
 ## A scalar input functions as a constant matrix of the same size as the other
 ## inputs.
 ##
-## Default values for @var{shape}, @var{scale}, and @var{location} are 0, 1,
-## and 0, respectively.
+## @code{[@dots{}] = gpcdf(@dots{}, "upper")} computes the upper tail
+## probability of the generalized Pareto distribution.
 ##
-## When @code{@var{shape} = 0} and @code{@var{location} = 0}, the Generalized
-## Pareto CDF is equivalent to the exponential distribution.
-## When @code{@var{shape} > 0} and @code{@var{location} = @var{shape} /
-## @var{shape}} the Generalized Pareto is equivalent to the Pareto distribution.
-## The mean of the Generalized Pareto is not finite when @code{@var{shape} >= 1}
-## and the variance is not finite when @code{@var{shape} >= 1/2}.  When
-## @code{@var{shape} >= 0}, the Generalized Pareto has positive density for
-## @code{@var{x} > @var{location}}, or, when @code{@var{location} < 0},for
-## @code{0 <= (@var{x} - @var{location}) / @var{scale} <= -1 / @var{shape}}.
+## When @qcode{@var{k} = 0} and @qcode{@var{mu} = 0}, the Generalized Pareto CDF
+## is equivalent to the exponential distribution.  When @qcode{@var{k} > 0} and
+## @code{@var{mu} = @var{k} / @var{k}} the Generalized Pareto is equivalent to
+## the Pareto distribution.  The mean of the Generalized Pareto is not finite
+## when @qcode{@var{k} >= 1} and the variance is not finite when
+## @qcode{@var{k} >= 1/2}.  When @qcode{@var{k} >= 0}, the Generalized Pareto
+## has positive density for @qcode{@var{x} > @var{mu}}, or, when
+## @qcode{@var{mu} < 0},for
+## @qcode{0 <= (@var{x} - @var{mu}) / @var{sigma} <= -1 / @var{k}}.
 ##
-## @code{[@dots{}] = gpcdf(@dots{}, "upper")} returns the upper tail probability
-## of the generalized Pareto distribution.
+## @code{[@dots{}] = gpcdf(@dots{}, "upper")} computes the upper tail
+## probability of the generalized Pareto distribution.
+##
+## Further information about the generalized Pareto distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Generalized_Pareto_distribution}
 ##
 ## @seealso{gpinv, gppdf, gprnd, gpfit, gplike, gpstat}
 ## @end deftypefn
 
-function p = gpcdf (x, varargin)
+function p = gpcdf (x, k, sigma, mu, uflag)
 
   ## Check for valid number of input arguments
   if (nargin < 1 || nargin > 5)
@@ -73,25 +74,25 @@ function p = gpcdf (x, varargin)
 
   ## Get extra arguments (if they exist) or add defaults
   if (numel (varargin) > 0)
-    shape = varargin{1};
+    k = varargin{1};
   else
-    shape = 0;
+    k = 0;
   endif
   if (numel (varargin) > 1)
-    scale = varargin{2};
+    sigma = varargin{2};
   else
-    scale = 1;
+    sigma = 1;
   endif
   if (numel (varargin) > 2)
-    location = varargin{3};
+    mu = varargin{3};
   else
-    location = 0;
+    mu = 0;
   endif
 
   ## Check for common size of X, SHAPE, SCALE, and LOCATION
-  if (! isscalar (x) || ! isscalar (shape) || ! isscalar (scale) || ...
-      ! isscalar (location))
-    [err, x, shape, scale, location] = common_size (x, shape, scale, location);
+  if (! isscalar (x) || ! isscalar (k) || ! isscalar (sigma) || ...
+      ! isscalar (mu))
+    [err, x, k, sigma, mu] = common_size (x, k, sigma, mu);
     if (err > 0)
       error (strcat (["gpcdf: X, SHAPE, SCALE, and LOCATION"], ...
                      [" must be of common size or scalars."]));
@@ -99,14 +100,14 @@ function p = gpcdf (x, varargin)
   endif
 
   ## Check for X, SHAPE, SCALE, and LOCATION being reals
-  if (iscomplex (x) || iscomplex (shape) || iscomplex (scale) || ...
-      iscomplex (location))
+  if (iscomplex (x) || iscomplex (k) || iscomplex (sigma) || ...
+      iscomplex (mu))
     error ("gpcdf: X, SHAPE, SCALE, and LOCATION must not be complex.");
   endif
 
   ## Check for appropriate class
-  if (isa (x, "single") || isa (shape, "single") || ...
-      isa (scale, "single") || isa (location, "single"));
+  if (isa (x, "single") || isa (k, "single") || ...
+      isa (sigma, "single") || isa (mu, "single"));
     is_class = "single";
   else
     is_class = "double";
@@ -115,15 +116,15 @@ function p = gpcdf (x, varargin)
   ## Prepare output
   p = zeros (size (x), is_class);
 
-  ## Return NaNs for out of range values of scale parameter
-  scale(scale <= 0) = NaN;
+  ## Return NaNs for out of range values of sigma parameter
+  sigma(sigma <= 0) = NaN;
 
-  ## Calculate (x-location)/scale => 0 and force zero below that
-  z = (x - location) ./ scale;
+  ## Calculate (x-mu)/sigma => 0 and force zero below that
+  z = (x - mu) ./ sigma;
   z(z < 0) = 0;
 
   ## Compute cases for SHAPE == 0
-  kz = (abs (shape) < eps (is_class));
+  kz = (abs (k) < eps (is_class));
   if (uflag)
     p(kz) = exp (-z(kz));
   else
@@ -131,16 +132,16 @@ function p = gpcdf (x, varargin)
   endif
 
   ## For SHAPE < 0, calculate 0 <= x/sigma <= -1/k and force zero below that
-  t = z .* shape;
-  kt = (t <= -1 & shape < -eps (is_class));
+  t = z .* k;
+  kt = (t <= -1 & k < -eps (is_class));
   t(kt) = 0;
 
   ## Compute cases for SHAPE != 0
   kz = ! kz;
   if (uflag)
-    p(kz) = exp ((-1 ./ shape(kz)) .* log1p (t(kz)));
+    p(kz) = exp ((-1 ./ k(kz)) .* log1p (t(kz)));
   else
-    p(kz) = -expm1 ((-1 ./ shape(kz)) .* log1p (t(kz)));
+    p(kz) = -expm1 ((-1 ./ k(kz)) .* log1p (t(kz)));
   endif
   if (uflag)
     p(kt) = 0;
@@ -149,7 +150,7 @@ function p = gpcdf (x, varargin)
   endif
 
   ## For SHAPE == NaN force p = NaN
-  p(isnan (shape)) = NaN;
+  p(isnan (k)) = NaN;
 
 endfunction
 

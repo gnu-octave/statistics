@@ -18,7 +18,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} geocdf (@var{x}, @var{ps})
-## @deftypefnx {statistics} {@var{p} =} geocdf (@var{x}, @var{ps}, "upper")
+## @deftypefnx {statistics} {@var{p} =} geocdf (@var{x}, @var{ps}, @qcode{"upper"})
 ##
 ## Geometric cumulative distribution function (CDF).
 ##

@@ -17,7 +17,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} ncx2cdf (@var{x}, @var{df}, @var{delta})
-## @deftypefnx {statistics} {@var{p} =} ncx2cdf (@var{x}, @var{df}, @var{delta}, @var{uflag})
+## @deftypefnx {statistics} {@var{p} =} ncx2cdf (@var{x}, @var{df}, @var{delta}, @qcode{"upper"})
 ##
 ## Noncentral Chi-Square cumulative distribution function (CDF).
 ##

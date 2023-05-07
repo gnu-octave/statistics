@@ -17,7 +17,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} nctcdf (@var{x}, @var{df}, @var{delta})
-## @deftypefnx {statistics} {@var{p} =} nctcdf (@var{x}, @var{df}, @var{delta}, @var{uflag})
+## @deftypefnx {statistics} {@var{p} =} nctcdf (@var{x}, @var{df}, @var{delta}, @qcode{"upper"})
 ##
 ## Noncentral T cumulative distribution function (CDF).
 ##

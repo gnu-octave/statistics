@@ -21,10 +21,10 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} gamcdf (@var{x}, @var{k})
 ## @deftypefnx {statistics} {@var{p} =} gamcdf (@var{x}, @var{k}, @var{theta})
-## @deftypefnx {statistics} {@var{p} =} gamcdf (@dots{}, "upper")
+## @deftypefnx {statistics} {@var{p} =} gamcdf (@dots{}, @qcode{"upper"})
 ## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} evcdf (@var{x}, @var{k}, @var{theta}, @var{pcov})
 ## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} evcdf (@var{x}, @var{k}, @var{theta}, @var{pcov}, @var{alpha})
-## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} evcdf (@dots{}, "upper")
+## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} evcdf (@dots{}, @qcode{"upper"})
 ##
 ## Gamma cumulative distribution function (CDF).
 ##

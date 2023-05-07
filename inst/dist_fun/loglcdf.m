@@ -20,7 +20,7 @@
 ## @deftypefn  {statistics} {@var{p} =} loglcdf (@var{x})
 ## @deftypefnx {statistics} {@var{p} =} loglcdf (@var{x}, @var{alpha})
 ## @deftypefnx {statistics} {@var{p} =} loglcdf (@var{x}, @var{alpha}, @var{beta})
-## @deftypefnx {statistics} {@var{p} =} loglcdf (@dots{}, @var{uflag})
+## @deftypefnx {statistics} {@var{p} =} loglcdf (@dots{}, @qcode{"upper"})
 ##
 ## Log-logistic cumulative distribution function (CDF).
 ##

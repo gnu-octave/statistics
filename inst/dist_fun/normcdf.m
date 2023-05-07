@@ -22,10 +22,10 @@
 ## @deftypefn  {statistics} {@var{p} =} normcdf (@var{x})
 ## @deftypefnx {statistics} {@var{p} =} normcdf (@var{x}, @var{mu})
 ## @deftypefnx {statistics} {@var{p} =} normcdf (@var{x}, @var{mu}, @var{sigma})
-## @deftypefnx {statistics} {@var{p} =} normcdf (@dots{}, "upper")
+## @deftypefnx {statistics} {@var{p} =} normcdf (@dots{}, @qcode{"upper"})
 ## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} normcdf (@var{x}, @var{mu}, @var{sigma}, @var{pcov})
 ## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} normcdf (@var{x}, @var{mu}, @var{sigma}, @var{pcov}, @var{alpha})
-## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} normcdf (@dots{}, "upper")
+## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} normcdf (@dots{}, @qcode{"upper"})
 ##
 ## Normal cumulative distribution function (CDF).
 ##

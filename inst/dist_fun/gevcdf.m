@@ -16,7 +16,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} gevcdf (@var{x}, @var{k}, @var{sigma}, @var{mu})
-## @deftypefnx {statistics} {@var{p} =} gevcdf (@var{x}, @var{k}, @var{sigma}, @var{mu}, "upper")
+## @deftypefnx {statistics} {@var{p} =} gevcdf (@var{x}, @var{k}, @var{sigma}, @var{mu}, @qcode{"upper"})
 ##
 ## Generalized extreme value (GEV) cumulative distribution function (CDF).
 ##

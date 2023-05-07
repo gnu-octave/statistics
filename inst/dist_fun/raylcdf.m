@@ -19,7 +19,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} raylcdf (@var{x})
 ## @deftypefnx {statistics} {@var{p} =} raylcdf (@var{x}, @var{sigma})
-## @deftypefnx {statistics} {@var{p} =} raylcdf (@dots{}, "upper")
+## @deftypefnx {statistics} {@var{p} =} raylcdf (@dots{}, @qcode{"upper"})
 ##
 ## Rayleigh cumulative distribution function (CDF).
 ##

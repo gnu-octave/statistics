@@ -20,7 +20,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} fcdf (@var{x}, @var{df1}, @var{df2})
-## @deftypefnx {statistics} {@var{p} =} fcdf (@var{x}, @var{df1}, @var{df2}, "upper")
+## @deftypefnx {statistics} {@var{p} =} fcdf (@var{x}, @var{df1}, @var{df2}, @qcode{"upper"})
 ##
 ## F cumulative distribution function (CDF).
 ##

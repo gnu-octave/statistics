@@ -20,7 +20,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} chi2cdf (@var{x}, @var{df})
-## @deftypefnx {statistics} {@var{p} =} chi2cdf (@var{x}, @var{df}, "upper")
+## @deftypefnx {statistics} {@var{p} =} chi2cdf (@var{x}, @var{df}, @qcode{"upper"})
 ##
 ## Chi-squared cumulative distribution function.
 ##

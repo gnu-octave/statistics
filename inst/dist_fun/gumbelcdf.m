@@ -20,10 +20,10 @@
 ## @deftypefn  {statistics} {@var{p} =} gumbelcdf (@var{x})
 ## @deftypefnx {statistics} {@var{p} =} gumbelcdf (@var{x}, @var{mu})
 ## @deftypefnx {statistics} {@var{p} =} gumbelcdf (@var{x}, @var{mu}, @var{beta})
-## @deftypefnx {statistics} {@var{p} =} gumbelcdf (@dots{}, "upper")
+## @deftypefnx {statistics} {@var{p} =} gumbelcdf (@dots{}, @qcode{"upper"})
 ## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} gumbelcdf (@var{x}, @var{mu}, @var{beta}, @var{pcov})
 ## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} gumbelcdf (@var{x}, @var{mu}, @var{beta}, @var{pcov}, @var{alpha})
-## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} gumbelcdf (@dots{}, "upper")
+## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} gumbelcdf (@dots{}, @qcode{"upper"})
 ##
 ## Gumbel cumulative distribution function (CDF).
 ##
