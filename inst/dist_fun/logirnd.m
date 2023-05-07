@@ -96,8 +96,7 @@ function r = logirnd (mu, s, varargin)
     is_type = "double";
   endif
 
-  ## Generate random sample from Laplace distribution
-
+  ## Generate random sample from logistic distribution
   r = - log (1 ./ rand (sz, is_type) - 1) .* s + mu;
 
   ## Force output to NaN for invalid parameter S <= 0

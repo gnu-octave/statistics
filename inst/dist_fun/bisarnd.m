@@ -33,11 +33,11 @@
 ## the common size of @var{beta} and @var{gamma}.  A scalar input functions as a
 ## constant matrix of the same size as the other inputs.
 ##
-## When called with a single size argument, it returns a square matrix with
-## the dimension specified.  When called with more than one scalar argument the
-## first two arguments are taken as the number of rows and columns and any
-## further arguments specify additional matrix dimensions.  The size may also
-## be specified with a row vector of dimensions @var{sz}.
+## When called with a single size argument, @code{bisarnd} returns a square
+## matrix with the dimension specified.  When called with more than one scalar
+## argument, the first two arguments are taken as the number of rows and columns
+## and any further arguments specify additional matrix dimensions.  The size may
+## also be specified with a row vector of dimensions, @var{sz}.
 ##
 ## Further information about the Birnbaum-Saunders distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Birnbaum%E2%80%93Saunders_distribution}

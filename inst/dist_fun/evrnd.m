@@ -31,11 +31,11 @@
 ## the common size of @var{mu} and @var{sigma}.  A scalar input functions as a
 ## constant matrix of the same size as the other inputs.
 ##
-## When called with a single size argument, return a square matrix with
-## the dimension specified.  When called with more than one scalar argument the
-## first two arguments are taken as the number of rows and columns and any
-## further arguments specify additional matrix dimensions.  The size may also
-## be specified with a vector of dimensions @var{sz}.
+## When called with a single size argument, @code{evrnd} returns a square
+## matrix with the dimension specified.  When called with more than one scalar
+## argument, the first two arguments are taken as the number of rows and columns
+## and any further arguments specify additional matrix dimensions.  The size may
+## also be specified with a row vector of dimensions, @var{sz}.
 ##
 ## The Gumbel distribution is used to model the distribution of the maximum (or
 ## the minimum) of a number of samples of various distributions.  This version

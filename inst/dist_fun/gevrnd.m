@@ -26,14 +26,14 @@
 ## @code{@var{r} = gevrnd (@var{k}, @var{sigma}, @var{mu}} returns an array of
 ## random numbers chosen from the GEV distribution with shape parameter @var{k},
 ## scale parameter @var{sigma}, and location parameter @var{mu}.  The size of
-## @var{r} is the common size of the input arguments.  A scalar input functions
-## as a constant matrix of the same size as the other inputs.
+## @var{r} is the common size of @var{k}, @var{sigma}, and @var{mu}.  A scalar
+## input functions as a constant matrix of the same size as the other inputs.
 ##
-## When called with a single size argument, returns a square matrix with
-## the dimension specified.  When called with more than one scalar argument the
-## first two arguments are taken as the number of rows and columns and any
-## further arguments specify additional matrix dimensions.  The size may also
-## be specified with a vector @var{sz} of dimensions.
+## When called with a single size argument, @code{gevrnd} returns a square
+## matrix with the dimension specified.  When called with more than one scalar
+## argument, the first two arguments are taken as the number of rows and columns
+## and any further arguments specify additional matrix dimensions.  The size may
+## also be specified with a row vector of dimensions, @var{sz}.
 ##
 ## When @qcode{@var{k} < 0}, the GEV is the type III extreme value distribution.
 ## When @qcode{@var{k} > 0}, the GEV distribution is the type II, or Frechet,

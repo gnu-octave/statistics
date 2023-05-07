@@ -28,11 +28,11 @@
 ## from the chi-squared distribution with @var{df} degrees of freedom.  The size
 ## of @var{r} is the size of @var{df}.
 ##
-## When called with a single size argument, return a square matrix with
-## the dimension specified.  When called with more than one scalar argument the
-## first two arguments are taken as the number of rows and columns and any
-## further arguments specify additional matrix dimensions.  The size may also
-## be specified with a vector of dimensions @var{sz}.
+## When called with a single size argument, @code{chi2rnd} returns a square
+## matrix with the dimension specified.  When called with more than one scalar
+## argument, the first two arguments are taken as the number of rows and columns
+## and any further arguments specify additional matrix dimensions.  The size may
+## also be specified with a row vector of dimensions, @var{sz}.
 ##
 ## Further information about the chi-squared distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Chi-squared_distribution}

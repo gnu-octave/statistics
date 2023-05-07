@@ -28,11 +28,11 @@
 ## from the Birnbaum-Saunders distribution with probability of success parameter
 ## @var{ps}.  The size of @var{r} is the size of @var{ps}.
 ##
-## When called with a single size argument, return a square matrix with
-## the dimension specified.  When called with more than one scalar argument the
-## first two arguments are taken as the number of rows and columns and any
-## further arguments specify additional matrix dimensions.  The size may also
-## be specified with a vector of dimensions @var{sz}.
+## When called with a single size argument, @code{geornd} returns a square
+## matrix with the dimension specified.  When called with more than one scalar
+## argument, the first two arguments are taken as the number of rows and columns
+## and any further arguments specify additional matrix dimensions.  The size may
+## also be specified with a row vector of dimensions, @var{sz}.
 ##
 ## The geometric distribution models the number of failures (@var{x}) of a
 ## Bernoulli trial with probability @var{ps} before the first success.

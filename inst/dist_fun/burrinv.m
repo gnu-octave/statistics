@@ -32,7 +32,7 @@
 ## Further information about the Burr distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Burr_distribution}
 ##
-## @seealso{burrcdf, burrpdf, burrrnd}
+## @seealso{burrcdf, burrpdf, burrrnd, burrfit, burrlike}
 ## @end deftypefn
 
 function x = burrinv (p, lambda, c, k)

@@ -28,11 +28,11 @@
 ## from the exponential distribution with mean parameter @var{mu}.  The size of
 ## @var{r} is the size of @var{mu}.
 ##
-## When called with a single size argument, return a square matrix with
-## the dimension specified.  When called with more than one scalar argument the
-## first two arguments are taken as the number of rows and columns and any
-## further arguments specify additional matrix dimensions.  The size may also
-## be specified with a vector of dimensions @var{sz}.
+## When called with a single size argument, @code{exprnd} returns a square
+## matrix with the dimension specified.  When called with more than one scalar
+## argument, the first two arguments are taken as the number of rows and columns
+## and any further arguments specify additional matrix dimensions.  The size may
+## also be specified with a row vector of dimensions, @var{sz}.
 ##
 ## A common alternative parameterization of the exponential distribution is to
 ## use the parameter @math{λ} defined as the mean number of events in an

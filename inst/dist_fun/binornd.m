@@ -23,19 +23,20 @@
 ## @deftypefnx {statistics} {@var{r} =} binornd (@var{n}, @var{ps}, @var{rows}, @var{cols}, @dots{})
 ## @deftypefnx {statistics} {@var{r} =} binornd (@var{n}, @var{ps}, [@var{sz}])
 ##
-## Random arrays from the Binomial distribution
+## Random arrays from the Binomial distribution.
 ##
-## Return a matrix of random samples from the binomial distribution with
-## parameters @var{n} and @var{ps}, where @var{n} is the number of trials
-## and @var{ps} is the probability of success.  The size of @var{r} is the
-## common size of @var{n} and @var{ps}.  A scalar input functions as a constant
-## matrix of the same size as the other inputs.
+## @code{@var{r} = binornd (@var{n}, @var{ps})} returns a matrix of random
+## samples from the binomial distribution with parameters @var{n} and @var{ps},
+## where @var{n} is the number of trials and @var{ps} is the probability of
+## success.  The size of @var{r} is the common size of @var{n} and @var{ps}.
+## A scalar input functions as a constant matrix of the same size as the other
+## inputs.
 ##
-## When called with a single size argument, return a square matrix with
-## the dimension specified.  When called with more than one scalar argument the
-## first two arguments are taken as the number of rows and columns and any
-## further arguments specify additional matrix dimensions.  The size may also
-## be specified with a vector of dimensions @var{sz}.
+## When called with a single size argument, @code{binornd} returns a square
+## matrix with the dimension specified.  When called with more than one scalar
+## argument, the first two arguments are taken as the number of rows and columns
+## and any further arguments specify additional matrix dimensions.  The size may
+## also be specified with a row vector of dimensions, @var{sz}.
 ##
 ## Further information about the binomial distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Binomial_distribution}

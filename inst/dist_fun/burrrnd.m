@@ -33,16 +33,16 @@
 ## @var{lambda}, @var{c}, and @var{k}.  LAMBDA scalar input functions as a
 ## constant matrix of the same size as the other inputs.
 ##
-## When called with a single size argument, return a square matrix with
-## the dimension specified.  When called with more than one scalar argument the
-## first two arguments are taken as the number of rows and columns and any
-## further arguments specify additional matrix dimensions.  The size may also
-## be specified with a vector of dimensions @var{sz}.
+## When called with a single size argument, @code{burrrnd} returns a square
+## matrix with the dimension specified.  When called with more than one scalar
+## argument, the first two arguments are taken as the number of rows and columns
+## and any further arguments specify additional matrix dimensions.  The size may
+## also be specified with a row vector of dimensions, @var{sz}.
 ##
 ## Further information about the Burr distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Burr_distribution}
 ##
-## @seealso{burrcdf, burrinv, burrpdf}
+## @seealso{burrcdf, burrinv, burrpdf, burrfit, burrlike}
 ## @end deftypefn
 
 function r = burrrnd (lambda, c, k, varargin)
