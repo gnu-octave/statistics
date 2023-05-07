@@ -25,7 +25,7 @@
 ## @code{@var{nlogL} = gevlike (@var{params}, @var{x})} returns the negative
 ## log likelihood of the data in @var{x} corresponding to the GEV distribution
 ## with (1) shape parameter @var{k}, (2) scale parameter @var{sigma}, and (3)
-## location parameter @var{mu} given in the three-element vector @var{paramhat}.
+## location parameter @var{mu} given in the three-element vector @var{params}.
 ##
 ## @code{[@var{nlogL}, @var{acov}] = gevlike (@var{params}, @var{x})} also
 ## returns the inverse of Fisher's information matrix, @var{acov}.  If the input
