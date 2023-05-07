@@ -43,7 +43,11 @@
 
  ** hncdf
 
+ ** hnfit (similar functionality to MATLAB's mle)
+
  ** hninv
+
+ ** hnlike (similar functionality to MATLAB's negloglik and mlecov)
 
  ** hnpdf
 

@@ -122,6 +122,8 @@ Distribution Fitting
  gplike
  gumbelfit
  gumbellike
+ hnfit
+ hnlike
  lognfit
  lognlike
  normfit
