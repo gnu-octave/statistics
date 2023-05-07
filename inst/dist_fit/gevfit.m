@@ -1,5 +1,5 @@
 ## Copyright (C) 2012-2021 Nir Krakauer <nkrakauer@ccny.cuny.edu>
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,152 +17,145 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {[@var{paramhat}, @var{paramci}] =} gevfit (@var{data})
-## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} gevfit (@var{data}, @var{paramguess})
-## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} gevfit (@var{data}, @var{alpha})
-## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} gevfit (@dots{}, @var{options})
+## @deftypefn  {statistics} {@var{paramhat} =} gevfit (@var{x})
+## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} gevfit (@var{x})
+## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} gevfit (@var{x}, @var{alpha})
+## @deftypefnx {statistics} {[@dots{}] =} gevfit (@var{x}, @var{alpha}, @var{options})
 ##
-## Find the maximum likelihood estimator @var{paramhat} of the generalized
-## extreme value (GEV) distribution to fit @var{data}.
+## Estimate parameters and confidence intervals for the generalized extreme
+## value (GEV) distribution.
 ##
 ## @subheading Arguments
 ##
-## @itemize @bullet
-## @item
-## @var{data} is the vector of given values.
-## @item
-## @var{paramguess} is an initial guess for the maximum likelihood parameter
-## vector. If not given, this defaults to @var{k_0}=0 and @var{sigma}, @var{mu}
-## determined by matching the data mean and standard deviation to their expected
-## values.
-## @item
-## @var{alpha} returns 100(1-ALPHA) percent confidence intervals for the
-## parameter estimates.  Pass in [] for ALPHA to use the default values.
-## @item
-## @var{options} a structure that specifies control parameters for the iterative
-## algorithm used to compute ML estimates.  The structure must contain the
-## following fields:
+## @code{@var{paramhat} = gevfit (@var{x})} returns maximum likelihood
+## estimates of the parameters of the GEV distribution given the data in
+## @var{x}.  @qcode{@var{paramhat}(1)} is the shape parameter, @var{k}, and
+## @qcode{@var{paramhat}(2)} is the scale parameter, @var{sigma}, and
+## @qcode{@var{paramhat}(3)} is the location parameter, @var{mu}.
 ##
-## 'Display' = "off"; 'MaxFunEvals' = 400; 'MaxIter' = 200;
-## 'TolFun' = 1e-6; 'TolX' = 1e-6.
+## @code{[@var{paramhat}, @var{paramci}] = gevfit (@var{x})} returns the 95%
+## confidence intervals for the parameter estimates.
 ##
-## If not provided, the aforementioned values are used by default.
+## @code{[@dots{}] = gevfit (@var{x}, @var{alpha})} also returns the
+## @qcode{100 * (1 - @var{alpha})} percent confidence intervals for the
+## parameter estimates.  By default, the optional argument @var{alpha} is
+## 0.05 corresponding to 95% confidence intervals.  Pass in @qcode{[]} for
+## @var{alpha} to use the default values.
+##
+## @code{[@dots{}] = gevfit (@dots{}, @var{options})} specifies control
+## parameters for the iterative algorithm used to compute the maximum likelihood
+## estimates.  @var{options} is a structure with the following field and its
+## default value:
+## @itemize
+## @item @qcode{@var{options}.Display = "off"}
+## @item @qcode{@var{options}.MaxFunEvals = 1000}
+## @item @qcode{@var{options}.MaxIter = 500}
+## @item @qcode{@var{options}.TolX = 1e-6}
 ## @end itemize
 ##
-## @subheading Return values
+## When @qcode{@var{k} < 0}, the GEV is the type III extreme value distribution.
+## When @qcode{@var{k} > 0}, the GEV distribution is the type II, or Frechet,
+## extreme value distribution.  If @var{W} has a Weibull distribution as
+## computed by the @code{wblcdf} function, then @qcode{-@var{W}} has a type III
+## extreme value distribution and @qcode{1/@var{W}} has a type II extreme value
+## distribution.  In the limit as @var{k} approaches @qcode{0}, the GEV is the
+## mirror image of the type I extreme value distribution as computed by the
+## @code{evcdf} function.
 ##
-## @itemize @bullet
+## The mean of the GEV distribution is not finite when @qcode{@var{k} >= 1}, and
+## the variance is not finite when @qcode{@var{k} >= 1/2}.  The GEV distribution
+## has positive density only for values of @var{x} such that
+## @qcode{@var{k} * (@var{x} - @var{mu}) / @var{sigma} > -1}.
+##
+## Further information about the generalized extreme value distribution can be
+## found at
+## @url{https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution}
+##
+## @subheading References
+## @enumerate
 ## @item
-## @var{paramhat} is the 3-parameter maximum-likelihood parameter vector
-## @code{[@var{k_0}, @var{sigma}, @var{mu}]}, where @var{k_0} is the shape
-## parameter of the GEV distribution, @var{sigma} is the scale parameter of the
-## GEV distribution, and @var{mu} is the location parameter of the GEV
-## distribution.
-## @item
-## @var{paramci} has the approximate 95% confidence intervals of the parameter
-## values based on the Fisher information matrix at the maximum-likelihood
-## position.
+## Rolf-Dieter Reiss and Michael Thomas. @cite{Statistical Analysis of Extreme
+## Values with Applications to Insurance, Finance, Hydrology and Other Fields}.
+## Chapter 1, pages 16-17, Springer, 2007.
+## @end enumerate
 ##
-## @end itemize
-##
-## When K < 0, the GEV is the type III extreme value distribution.  When K > 0,
-## the GEV distribution is the type II, or Frechet, extreme value distribution.
-## If W has a Weibull distribution as computed by the WBLFIT function, then -W
-## has a type III extreme value distribution and 1/W has a type II extreme value
-## distribution.  In the limit as K approaches 0, the GEV is the mirror image of
-## the type I extreme value distribution as computed by the EVFIT function.
-##
-## The mean of the GEV distribution is not finite when K >= 1, and the variance
-## is not finite when PSI >= 1/2.  The GEV distribution is defined
-## for K*(X-MU)/SIGMA > -1.
-##
-## @subheading Examples
-##
-## @example
-## @group
-## data = 1:50;
-## [pfit, pci] = gevfit (data);
-## p1 = gevcdf (data, pfit(1), pfit(2), pfit(3));
-## plot (data, p1)
-## @end group
-## @end example
-## @seealso{gevcdf, gevinv, gevlike, gevpdf, gevrnd, gevstat}
+## @seealso{gevcdf, gevinv, gevpdf, gevrnd, gevlike, gevstat}
 ## @end deftypefn
 
-function [paramhat, paramci] = gevfit (data, varargin)
+function [paramhat, paramci] = gevfit (x, alpha, options)
 
-  ## Check arguments
-  if (nargin < 1)
-    print_usage;
+  ## Check X is vector
+  if (! isvector (x))
+    error ("gevfit: X must be a vector.");
   endif
-  ## Check data is vector
-  if (! isvector (data))
-    error ("gevfit: DATA must be a vector");
-  endif
-  ## Get data type and convert to double for computation
-  is_type = class (data);
+
+  ## Get X type and convert to double for computation
+  is_type = class (x);
   if (strcmpi (is_type, "single"))
-    data = double (data);
+    x = double (x);
   endif
-  ## Check that data is not constant and does not contain NaNs
-  sample_size = length (data);
-  if (sample_size == 0 || any (isnan (data)))
+
+  ## Check that X is not constant and does not contain NaNs
+  sample_size = length (x);
+  if (sample_size == 0 || any (isnan (x)))
     paramhat = NaN (1,3, is_type);
     paramci = NaN (2,3, is_type);
-    warning ("gevfit: data contain NaNs");
+    warning ("gevfit: X contains NaNs.");
     return
-  elseif (numel (unique (data)) == 1)
-    paramhat = cast ([0, 0, unique(data)], is_type);
-    if (length (data) == 1)
+  elseif (numel (unique (x)) == 1)
+    paramhat = cast ([0, 0, unique(x)], is_type);
+    if (length (x) == 1)
       paramci = cast ([-Inf, 0, -Inf; Inf, Inf, Inf], is_type);
     else
       paramci = [paramhat; paramhat];
     endif
-    warning ("gevfit: data is a constant vector");
+    warning ("gevfit: X is a constant vector.");
     return
   endif
-  ## Check second input argument
-  ## If it is a scalar, then it is ALPHA value,
-  ## otherwise it is an initial parameter vector
-  paramguess = [];
-  alpha = [];
-  if (nargin > 1 && isequal (size (varargin{1}), [1, 3]))
-    paramguess = varargin{1};
-  elseif (nargin > 1 && isscalar (varargin{1}) && varargin{1} > 0 ...
-                     && varargin{1} < 1)
-    alpha = varargin{1};
-  endif
-  ## Compute initial parameters if not parsed as an input argument
-  if (isempty (paramguess))
-    F = (0.5:1:(sample_size - 0.5))' ./ sample_size;
-    k_0 = fminsearch (@(k) 1 - corr (data, gevinv (F, k, 1, 0)), 0);
-    paramguess = [k_0, polyfit(gevinv(F,k_0,1,0),data',1)];
-    #paramguess = [k_0, tmp(1), tmp(2)];
-    ## Check if data support initial parameters or fall back to unbounded evfit
-    if (k_0 < 0 && (max (data) > - paramguess(2) / k_0 + paramguess(3)) || ...
-        k_0 > 0 && (min (data) < - paramguess(2) / k_0 + paramguess(3)))
-      paramguess = [evfit(data), 0];
-      paramguess = flip (paramguess);
+
+  ## Check ALPHA
+  if (nargin < 2 || isempty (alpha))
+    alpha = 0.05;
+  else
+    if (! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1)
+      error ("gevfit: wrong value for ALPHA.");
     endif
   endif
-  if (isempty (alpha))
-    alpha = 0.05;
-  endif
+
   ## Get options structure or add defaults
-  if (nargin == 3)
-    options = varargin{3};
-  else
+  if (nargin < 3)
     options.Display = "off";
     options.MaxFunEvals = 400;
     options.MaxIter = 200;
-    options.TolFun = 1e-6;
     options.TolX = 1e-6;
+  else
+    if (! isstruct (options) || ! isfield (options, "Display") ||
+        ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
+                                           || ! isfield (options, "TolX"))
+      error (strcat (["gevfit: 'options' 5th argument must be a"], ...
+                     [" structure with 'Display', 'MaxFunEvals',"], ...
+                     [" 'MaxIter', and 'TolX' fields present."]));
+    endif
   endif
+
+  ## Compute initial parameters if not parsed as an input argument
+  F = (0.5:1:(sample_size - 0.5))' ./ sample_size;
+  k_0 = fminsearch (@(k) 1 - corr (x, gevinv (F, k, 1, 0)), 0);
+  paramguess = [k_0, polyfit(gevinv(F,k_0,1,0),x',1)];
+
+  ## Check if x support initial parameters or fall back to unbounded evfit
+  if (k_0 < 0 && (max (x) > - paramguess(2) / k_0 + paramguess(3)) || ...
+      k_0 > 0 && (min (x) < - paramguess(2) / k_0 + paramguess(3)))
+    paramguess = [evfit(x), 0];
+    paramguess = flip (paramguess);
+  endif
+
   ## Minimize the negative log-likelihood according to initial parameters
   paramguess(2) = log (paramguess(2));
-  fhandle = @(paramguess) nll (paramguess, data);
+  fhandle = @(paramguess) nll (paramguess, x);
   [paramhat, ~, exitflag, output] = fminsearch (fhandle, paramguess, options);
   paramhat(2) = exp (paramhat(2));
+
   ## Display errors and warnings if any
   if (exitflag == 0)
     if (output.funcCount >= output.iterations)
@@ -173,11 +166,13 @@ function [paramhat, paramci] = gevfit (data, varargin)
   elseif (exitflag == -1)
     error ("gevfit: No solution");
   endif
+
   ## Return a row vector for Matlab compatibility
   paramhat = paramhat(:)';
+
   ## Check for second output argument
   if (nargout > 1)
-  	[~, ~, ACOV] = gevlike (paramhat, data);
+  	[~, ~, ACOV] = gevlike (paramhat, x);
   	param_se = sqrt (diag (ACOV))';
     if (any (iscomplex (param_se)))
       warning (["gevfit: Fisher information matrix not positive definite;", ...
@@ -194,13 +189,13 @@ function [paramhat, paramci] = gevfit (data, varargin)
 endfunction
 
 ## Negative log-likelihood for the GEV (log(sigma) parameterization)
-function out = nll (parms, data)
+function out = nll (parms, x)
   k_0 = parms(1);
   log_sigma = parms(2);
   sigma = exp (log_sigma);
   mu = parms(3);
-  n = numel (data);
-  z = (data - mu) ./ sigma;
+  n = numel (x);
+  z = (x - mu) ./ sigma;
   if abs(k_0) > eps
       u = 1 + k_0.*z;
       if min(u) > 0
@@ -251,19 +246,24 @@ endfunction
 %! title ("Two population samples from different exponential distibutions")
 %! hold off
 
+## Test output
 %!test
-%! data = 1:50;
-%! [pfit, pci] = gevfit (data);
+%! x = 1:50;
+%! [pfit, pci] = gevfit (x);
 %! pfit_out = [-0.4407, 15.1923, 21.5309];
 %! pci_out = [-0.7532, 11.5878, 16.5686; -0.1282, 19.9183, 26.4926];
 %! assert (pfit, pfit_out, 1e-3);
 %! assert (pci, pci_out, 1e-3);
-%!error [pfit, pci] = gevfit (ones (2,5));
-
 %!test
-%! data = 1:2:50;
-%! [pfit, pci] = gevfit (data);
+%! x = 1:2:50;
+%! [pfit, pci] = gevfit (x);
 %! pfit_out = [-0.4434, 15.2024, 21.0532];
 %! pci_out = [-0.8904, 10.3439, 14.0168; 0.0035, 22.3429, 28.0896];
 %! assert (pfit, pfit_out, 1e-3);
 %! assert (pci, pci_out, 1e-3);
+
+## Test input validation
+%!error<gevfit: X must be a vector.> gevfit (ones (2,5));
+%!error<gevfit: wrong value for ALPHA.> gevfit ([1, 2, 3, 4, 5], 1.2);
+%!error<gevfit: wrong value for ALPHA.> gevfit ([1, 2, 3, 4, 5], 0);
+%!error<gevfit: wrong value for ALPHA.> gevfit ([1, 2, 3, 4, 5], "alpha");

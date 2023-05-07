@@ -17,68 +17,63 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {[@var{nlogL}, @var{Grad}, @var{ACOV}] =} gevlike (@var{params}, @var{x})
+## @deftypefn  {statistics} {@var{nlogL} =} gevlike (@var{params}, @var{x})
+## @deftypefnx {statistics} {[@var{nlogL} @var{ACOV}] =} gevlike (@var{params}, @var{x})
 ##
-## Compute the negative log-likelihood of x under the generalized extreme
-## value (GEV) distribution with given parameter values.
+## Negative log-likelihood for the generalized extreme value (GEV) distribution.
 ##
-## @subheading Arguments
+## @code{@var{nlogL} = gevlike (@var{params}, @var{x})} returns the negative
+## log likelihood of the data in @var{x} corresponding to the GEV distribution
+## with (1) shape parameter @var{k}, (2) scale parameter @var{sigma}, and (3)
+## location parameter @var{mu} given in the three-element vector @var{paramhat}.
 ##
-## @itemize @bullet
-## @item
-## @var{params} is the 3-parameter vector [@var{k}, @var{sigma}, @var{mu}],
-## where @var{k} is the shape parameter of the GEV distribution, @var{sigma} is
-## the scale parameter of the GEV distribution, and @var{mu} is the location
-## parameter of the GEV distribution.
-## @item
-## @var{x} is the vector of given values.
+## @code{[@var{nlogL}, @var{acov}] = gevlike (@var{params}, @var{x})} also
+## returns the inverse of Fisher's information matrix, @var{acov}.  If the input
+## parameter values in @var{params} are the maximum likelihood estimates, the
+## diagonal elements of @var{acov} are their asymptotic variances.
 ##
-## @end itemize
+## When @qcode{@var{k} < 0}, the GEV is the type III extreme value distribution.
+## When @qcode{@var{k} > 0}, the GEV distribution is the type II, or Frechet,
+## extreme value distribution.  If @var{W} has a Weibull distribution as
+## computed by the @code{wblcdf} function, then @qcode{-@var{W}} has a type III
+## extreme value distribution and @qcode{1/@var{W}} has a type II extreme value
+## distribution.  In the limit as @var{k} approaches @qcode{0}, the GEV is the
+## mirror image of the type I extreme value distribution as computed by the
+## @code{evcdf} function.
 ##
-## @subheading Return values
+## The mean of the GEV distribution is not finite when @qcode{@var{k} >= 1}, and
+## the variance is not finite when @qcode{@var{k} >= 1/2}.  The GEV distribution
+## has positive density only for values of @var{x} such that
+## @qcode{@var{k} * (@var{x} - @var{mu}) / @var{sigma} > -1}.
 ##
-## @itemize @bullet
-## @item
-## @var{nlogL} is the negative log-likelihood.
-## @item
-## @var{Grad} is the 3 by 1 gradient vector, which is the first derivative of
-## the negative log likelihood with respect to the parameter values.
-## @item
-## @var{ACOV} is the 3 by 3 inverse of the Fisher information matrix, which is
-## the second derivative of the negative log likelihood with respect to the
-## parameter values.
-##
-## @end itemize
-##
-## @subheading Examples
-##
-## @example
-## @group
-## x = -5:-1;
-## k = -0.2;
-## sigma = 0.3;
-## mu = 0.5;
-## [L, ~, C] = gevlike ([k sigma mu], x);
-## @end group
-## @end example
+## Further information about the generalized extreme value distribution can be
+## found at
+## @url{https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution}
 ##
 ## @subheading References
-##
 ## @enumerate
 ## @item
 ## Rolf-Dieter Reiss and Michael Thomas. @cite{Statistical Analysis of Extreme
 ## Values with Applications to Insurance, Finance, Hydrology and Other Fields}.
 ## Chapter 1, pages 16-17, Springer, 2007.
-##
 ## @end enumerate
-## @seealso{gevcdf, gevfit, gevinv, gevpdf, gevrnd, gevstat}
+##
+## @seealso{gevcdf, gevinv, gevpdf, gevrnd, gevfit, gevstat}
 ## @end deftypefn
 
 function [nlogL, Grad, ACOV] = gevlike (params, x)
 
-  ## Check arguments
-  if (nargin != 2)
-    print_usage;
+  ## Check input arguments
+  if (nargin < 2)
+    error ("gevlike: function called with too few input arguments.");
+  endif
+
+  if (! isvector (x))
+    error ("gevlike: X must be a vector.");
+  endif
+
+  if (length (params) != 3)
+    error ("gevlike: PARAMS must be a three-element vector.");
   endif
 
   k = params(1);
@@ -92,11 +87,9 @@ function [nlogL, Grad, ACOV] = gevlike (params, x)
   ## Optionally calculate the first and second derivatives of the negative log
   ## likelihood with respect to parameters
   if (nargout > 1)
-  	 [Grad, kk_terms] = gevgrad (x, k, sigma, mu, k_terms);
-    if (nargout > 2)
-    	FIM = gevfim (x, k, sigma, mu, k_terms, kk_terms);
-      ACOV = inv (FIM);
-    endif
+  	[Grad, kk_terms] = gevgrad (x, k, sigma, mu, k_terms);
+    FIM = gevfim (x, k, sigma, mu, k_terms, kk_terms);
+    ACOV = inv (FIM);
   endif
 
 endfunction
@@ -339,6 +332,7 @@ function ACOV = gevfim (x, k, sigma, mu, k_terms, kk_terms)
 
 endfunction
 
+## Test output
 %!test
 %! x = 1;
 %! k = 0.2;
@@ -351,7 +345,6 @@ endfunction
 %! assert (L, expected_L, 0.001);
 %! assert (D, expected_D, 0.001);
 %! assert (C, inv (expected_C), 0.001);
-
 %!test
 %! x = 1;
 %! k = 0;
@@ -364,7 +357,6 @@ endfunction
 %! assert (L, expected_L, 0.001);
 %! assert (D, expected_D, 0.001);
 %! assert (C, inv (expected_C), 0.001);
-
 %!test
 %! x = -5:-1;
 %! k = -0.2;
@@ -379,3 +371,11 @@ endfunction
 %! assert (L, expected_L, -0.001);
 %! assert (D, expected_D, -0.001);
 %! assert (C, expected_C, -0.001);
+
+## Test input validation
+%!error<gevlike: function called with too few input arguments.> gevlike (3.25)
+%!error<gevlike: X must be a vector.> gevlike ([1, 2, 3], ones (2))
+%!error<gevlike: PARAMS must be a three-element vector.> ...
+%! gevlike ([1, 2], [1, 3, 5, 7])
+%!error<gevlike: PARAMS must be a three-element vector.> ...
+%! gevlike ([1, 2, 3, 4], [1, 3, 5, 7])
