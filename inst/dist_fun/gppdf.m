@@ -37,7 +37,7 @@
 ## when @qcode{@var{k} >= 1} and the variance is not finite when
 ## @qcode{@var{k} >= 1/2}.  When @qcode{@var{k} >= 0}, the Generalized Pareto
 ## has positive density for @qcode{@var{x} > @var{mu}}, or, when
-## @qcode{@var{mu} < 0},for
+## @qcode{@var{mu} < 0}, for
 ## @qcode{0 <= (@var{x} - @var{mu}) / @var{sigma} <= -1 / @var{k}}.
 ##
 ## Further information about the generalized Pareto distribution can be found at
