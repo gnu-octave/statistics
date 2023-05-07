@@ -41,6 +41,14 @@
 
  ** gumbelrnd
 
+ ** hncdf
+
+ ** hninv
+
+ ** hnpdf
+
+ ** hnrnd
+
  ** isoutlier (fully Matlab compatible)
 
  ** loglcdf

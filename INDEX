@@ -72,6 +72,7 @@ Distributions
  gevcdf gevinv gevpdf gevrnd
  gpcdf gpinv gppdf gprnd
  gumbelcdf gumbelinv gumbelpdf gumbelrnd
+ hncdf hninv hnpdf hnrnd
  hygecdf hygeinv hygepdf hygernd
  iwishpdf iwishrnd
  jsucdf jsupdf
