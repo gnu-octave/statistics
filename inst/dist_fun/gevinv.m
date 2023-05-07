@@ -103,7 +103,7 @@ endfunction
 %!          "ξ = 1, σ = 1, μ = 5", "ξ = 1, σ = 2, μ = 5", ...
 %!          "ξ = 1, σ = 5, μ = 5", "ξ = 1, σ = 0.5, μ = 5"}, ...
 %!         "location", "northwest")
-%! title ("Generalized extreme value CDF")
+%! title ("Generalized extreme value iCDF")
 %! xlabel ("probability")
 %! ylabel ("values in x")
 
