@@ -18,58 +18,52 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{nlogL} =} poisslike (@var{lambda}, @var{x})
-## @deftypefnx {statistics} {[@var{nlogL}, @var{acov}] =} poisslike (@var{lambda}, @var{x})
+## @deftypefnx {statistics} {[@var{nlogL}, @var{avar}] =} poisslike (@var{lambda}, @var{x})
 ## @deftypefnx {statistics} {[@dots{}] =} poisslike (@var{lambda}, @var{x}, @var{freq})
 ##
 ## Negative log-likelihood for the Poisson distribution.
 ##
-## @subheading Arguments
+## @code{@var{nlogL} = poisslike (@var{lambda}, @var{x})} returns the negative
+## log likelihood of the data in @var{x} corresponding to the Poisson
+## distribution with rate parameter @var{lambda}.  @var{x} must be a vector of
+## non-negative values.
 ##
-## @itemize @bullet
-## @item
-## @var{lambda} is a scalar containing the rate parameter of the exponential
-## distribution
-## @item
-## @var{x} is the vector of given values.
-## @item
-## @var{freq} is a vector of the same length as @var{x}, which typically
-## contains integer frequencies for the corresponding elements in @var{x}.
-## @var{freq} cannot contain negative values.
-## @end itemize
+## @code{[@var{nlogL}, @var{avar}] = poisslike (@var{lambda}, @var{x})} also
+## returns the inverse of Fisher's information matrix, @var{avar}.  If the input
+## rate parameter, @var{lambda}, is the maximum likelihood estimate, @var{avar}
+## is its asymptotic variance.
 ##
-## @subheading Return values
+## @code{[@dots{}] = poisslike (@var{lambda}, @var{x}, @var{freq})} accepts a
+## frequency vector, @var{freq}, of the same size as @var{x}.  @var{freq}
+## typically contains integer frequencies for the corresponding elements in
+## @var{x}, but it can contain any non-integer non-negative values.  By default,
+## or if left empty, @qcode{@var{freq} = ones (size (@var{x}))}.
 ##
-## @itemize @bullet
-## @item
-## @var{nlogL} is the negative log-likelihood.
-## @item
-## @var{avar} is the inverse of the Fisher information matrix.
-## (The Fisher information matrix is the second derivative of the negative log
-## likelihood with respect to the parameter value.)
-## @end itemize
+## Further information about the Poisson distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Poisson_distribution}
 ##
 ## @seealso{poisscdf, poissinv, poisspdf, poissrnd, poissfit, poisstat}
 ## @end deftypefn
 
-function [nlogL, acov] = poisslike (lambda, x, freq=[])
+function [nlogL, avar] = poisslike (lambda, x, freq=[])
 
   ## Check input arguments
   if (nargin < 2)
-    error ("poisslike: too few input arguments.");
+    error ("poisslike: function called with too few input arguments.");
   endif
 
   if (! isscalar (lambda) || ! isnumeric (lambda) || lambda <= 0)
     error ("poisslike: LAMBDA must be a positive scalar.");
   endif
 
-  if (! isvector (x))
-    error ("poisslike: X must be a vector.");
+  if (! isvector (x) || any (x < 0))
+    error ("poisslike: X must be a vector of non-negative values.");
   endif
 
   if (isempty (freq))
     freq = ones (size (x));
   elseif (! isequal (size (x), size (freq)))
-    error ("poisslike: FREQ must match X in size.");
+    error ("poisslike: X and FREQ vectors mismatch.");
   elseif (any (freq < 0))
     error ("poisslike: FREQ must not contain negative values.");
   endif
@@ -77,26 +71,29 @@ function [nlogL, acov] = poisslike (lambda, x, freq=[])
   ## Compute negative log-likelihood and asymptotic covariance
   n = sum (freq);
   nlogL = - sum (freq .* log (poisspdf (x, lambda)));
-  acov = lambda / n;
+  avar = lambda / n;
 
 endfunction
 
-## test output
+## Test output
 %!test
 %! x = [1 3 2 4 5 4 3 4];
-%! [nlogL, acov] = poisslike (3.25, x);
+%! [nlogL, avar] = poisslike (3.25, x);
 %! assert (nlogL, 13.9533, 1e-4)
 %!test
 %! x = [1 2 3 4 5];
 %! f = [1 1 2 3 1];
-%! [nlogL, acov] = poisslike (3.25, x, f);
+%! [nlogL, avar] = poisslike (3.25, x, f);
 %! assert (nlogL, 13.9533, 1e-4)
 
-## test input validation
-%!error<poisslike: too few input arguments.> poisslike (3.25)
+## Test input validation
+%!error<poisslike: function called with too few input arguments.> poisslike (1)
 %!error<poisslike: LAMBDA must be a positive scalar.> poisslike ([1 2 3], [1 2])
-%!error<poisslike: X must be a vector.> poisslike (3.25, ones (10, 2))
-%!error<poisslike: FREQ must match X in size.> ...
+%!error<poisslike: X must be a vector of non-negative values.> ...
+%! poisslike (3.25, ones (10, 2))
+%!error<poisslike: X must be a vector of non-negative values.> ...
+%! poisslike (3.25, [1 2 3 -4 5])
+%!error<poisslike: X and FREQ vectors mismatch.> ...
 %! poisslike (3.25, ones (10, 1), ones (8,1))
 %!error<poisslike: FREQ must not contain negative values.> ...
 %! poisslike (3.25, ones (1, 8), [1 1 1 1 1 1 1 -1])

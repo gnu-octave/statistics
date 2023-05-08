@@ -24,23 +24,23 @@
 ##
 ## Negative log-likelihood for the exponential distribution.
 ##
-## @code{@var{nlogL} = explike (@var{params}, @var{x})} returns the negative
+## @code{@var{nlogL} = explike (@var{mu}, @var{x})} returns the negative
 ## log likelihood of the data in @var{x} corresponding to the exponential
 ## distribution with mean parameter @var{mu}.  @var{x} must be a vector of
 ## non-negative values, otherwise @qcode{NaN} is returned.
 ##
-## @code{[@var{nlogL}, @var{avar}] = explike (@var{params}, @var{x})} also
+## @code{[@var{nlogL}, @var{avar}] = explike (@var{mu}, @var{x})} also
 ## returns the inverse of Fisher's information matrix, @var{avar}.  If the input
 ## mean parameter, @var{mu}, is the maximum likelihood estimate, @var{avar} is
 ## its asymptotic variance.
 ##
-## @code{[@dots{}] = explike (@var{params}, @var{x}, @var{censor})} accepts a
+## @code{[@dots{}] = explike (@var{mu}, @var{x}, @var{censor})} accepts a
 ## boolean vector, @var{censor}, of the same size as @var{x} with @qcode{1}s for
 ## observations that are right-censored and @qcode{0}s for observations that are
 ## observed exactly.  By default, or if left empty,
 ## @qcode{@var{censor} = zeros (size (@var{x}))}.
 ##
-## @code{[@dots{}] = explike (@var{params}, @var{x}, @var{censor}, @var{freq})}
+## @code{[@dots{}] = explike (@var{mu}, @var{x}, @var{censor}, @var{freq})}
 ## accepts a frequency vector, @var{freq}, of the same size as @var{x}.
 ## @var{freq} typically contains integer frequencies for the corresponding
 ## elements in @var{x}, but it can contain any non-integer non-negative values.

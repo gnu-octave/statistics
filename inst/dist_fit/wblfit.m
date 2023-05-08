@@ -27,8 +27,8 @@
 ##
 ## @code{@var{muhat} = wblfit (@var{x})} returns the maximum likelihood
 ## estimates of the parameters of the Weibull distribution given the data in
-## @var{x}.  @qcode{@var{paramhat}(1)} is the scale parameter, @math{λ}, and
-## @qcode{@var{paramhat}(2)} is the shape parameter, @math{k}.
+## @var{x}.  @qcode{@var{paramhat}(1)} is the scale parameter, @math{lambda},
+## and @qcode{@var{paramhat}(2)} is the shape parameter, @math{k}.
 ##
 ## @code{[@var{paramhat}, @var{paramci}] = wblfit (@var{x})} returns the 95%
 ## confidence intervals for the parameter estimates.
@@ -59,6 +59,9 @@
 ## @item @qcode{@var{options}.Display = "off"}
 ## @item @qcode{@var{options}.TolX = 1e-6}
 ## @end itemize
+##
+## Further information about the Weibull distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Weibull_distribution}
 ##
 ## @seealso{wblcdf, wblinv, wblpdf, wblrnd, wbllike, wblstat}
 ## @end deftypefn
@@ -123,18 +126,18 @@ endfunction
 %! r1 = wblrnd(2, 4, 2000, 1);
 %! rande ("seed", 2);    # for reproducibility
 %! r2 = wblrnd(5, 2, 2000, 1);
-%! rande ("seed", 3);    # for reproducibility
+%! rande ("seed", 5);    # for reproducibility
 %! r3 = wblrnd(1, 5, 2000, 1);
 %! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
-%! hist (r, 30, 2);
+%! hist (r, 30, [2.5 2.1 3.2]);
 %! h = findobj (gca, "Type", "patch");
 %! set (h(1), "facecolor", "c");
 %! set (h(2), "facecolor", "g");
 %! set (h(3), "facecolor", "r");
 %! ylim ([0, 2]);
-%! xlim ([0, 15]);
+%! xlim ([0, 10]);
 %! hold on
 %!
 %! ## Estimate their lambda parameter
