@@ -24,19 +24,24 @@
 ## Poisson probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the Poisson distribution with parameter @var{lambda}.  The size
-## of @var{p} is the common size of @var{x} and @var{lambda}.  A scalar input
-## functions as a constant matrix of the same size as the other inputs.
+## of the Poisson distribution with parameter @var{lambda}.  The size of @var{y}
+## is the common size of @var{x} and @var{lambda}.  A scalar input functions as
+## a constant matrix of the same size as the other inputs.
 ##
-## @seealso{poisscdf, poissinv, poissrnd, poisstat}
+## Further information about the Poisson distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Poisson_distribution}
+##
+## @seealso{poisscdf, poissinv, poissrnd, poissfit, poisslike, poisstat}
 ## @end deftypefn
 
 function y = poisspdf (x, lambda)
 
-  if (nargin != 2)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 2)
+    error ("poisspdf: function called with too few input arguments.");
   endif
 
+  ## Check for common size of X and LAMBDA
   if (! isscalar (x) || ! isscalar (lambda))
     [retval, x, lambda] = common_size (x, lambda);
     if (retval > 0)
@@ -44,17 +49,20 @@ function y = poisspdf (x, lambda)
     endif
   endif
 
+  ## Check for X and LAMBDA being reals
   if (iscomplex (x) || iscomplex (lambda))
     error ("poisspdf: X and LAMBDA must not be complex.");
   endif
 
+  ## Check for class type
   if (isa (x, "single") || isa (lambda, "single"))
     y = zeros (size (x), "single");
   else
     y = zeros (size (x));
   endif
 
-  k = isnan (x) | !(lambda > 0);
+  ## Force NaN for out of range parameters or missing data NaN
+  k = isnan (x) | ! (lambda > 0);
   y(k) = NaN;
 
   k = (x >= 0) & (x < Inf) & (x == fix (x)) & (lambda > 0);
@@ -66,8 +74,22 @@ function y = poisspdf (x, lambda)
 
 endfunction
 
+%!demo
+%! ## Plot various PDFs from the Poisson distribution
+%! x = 0:20;
+%! y1 = poisspdf (x, 1);
+%! y2 = poisspdf (x, 4);
+%! y3 = poisspdf (x, 10);
+%! plot (x, y1, "*b", x, y2, "*g", x, y3, "*r")
+%! grid on
+%! ylim ([0, 0.4])
+%! legend ({"λ = 1", "λ = 4", "λ = 10"}, "location", "northeast")
+%! title ("Poisson PDF")
+%! xlabel ("values in x (number of occurences)")
+%! ylabel ("density")
 
-%!shared x,y
+## Test output
+%!shared x, y
 %! x = [-1 0 1 2 Inf];
 %! y = [0, exp(-1)*[1 1 0.5], 0];
 %!assert (poisspdf (x, ones (1,5)), y, eps)
@@ -80,10 +102,11 @@ endfunction
 %!assert (poisspdf ([x, NaN], single (1)), single ([y, NaN]), eps ("single"))
 
 ## Test input validation
-%!error poisspdf ()
-%!error poisspdf (1)
-%!error poisspdf (1,2,3)
-%!error poisspdf (ones (3), ones (2))
-%!error poisspdf (ones (2), ones (3))
-%!error poisspdf (i, 2)
-%!error poisspdf (2, i)
+%!error<poisspdf: function called with too few input arguments.> poisspdf ()
+%!error<poisspdf: function called with too few input arguments.> poisspdf (1)
+%!error<poisspdf: X and LAMBDA must be of common size or scalars.> ...
+%! poisspdf (ones (3), ones (2))
+%!error<poisspdf: X and LAMBDA must be of common size or scalars.> ...
+%! poisspdf (ones (2), ones (3))
+%!error<poisspdf: X and LAMBDA must not be complex.> poisspdf (i, 2)
+%!error<poisspdf: X and LAMBDA must not be complex.> poisspdf (2, i)

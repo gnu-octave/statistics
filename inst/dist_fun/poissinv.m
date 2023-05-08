@@ -25,20 +25,25 @@
 ##
 ## Inverse of the Poisson cumulative distribution function (iCDF).
 ##
-## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## at @var{p} of the Poisson distribution with parameter @var{lambda}.  The size
-## of @var{p} is the common size of @var{x} and @var{lambda}.  A scalar input
+## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
+## the Poisson distribution with rate parameter @var{lambda}.  The size of
+## @var{x} is the common size of @var{p} and @var{lambda}.  A scalar input
 ## functions as a constant matrix of the same size as the other inputs.
 ##
-## @seealso{poisscdf, poisspdf, poissrnd, poisstat}
+## Further information about the Poisson distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Poisson_distribution}
+##
+## @seealso{poisscdf, poisspdf, poissrnd, poissfit, poisslike, poisstat}
 ## @end deftypefn
 
 function x = poissinv (p, lambda)
 
-  if (nargin != 2)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 2)
+    error ("poissinv: function called with too few input arguments.");
   endif
 
+  ## Check for common size of P and LAMBDA
   if (! isscalar (p) || ! isscalar (lambda))
     [retval, p, lambda] = common_size (p, lambda);
     if (retval > 0)
@@ -46,17 +51,20 @@ function x = poissinv (p, lambda)
     endif
   endif
 
+  ## Check for P and LAMBDA being reals
   if (iscomplex (p) || iscomplex (lambda))
     error ("poissinv: P and LAMBDA must not be complex.");
   endif
 
+  ## Check for class type
   if (isa (p, "single") || isa (lambda, "single"))
     x = zeros (size (p), "single");
   else
     x = zeros (size (p));
   endif
 
-  k = (p < 0) | (p > 1) | isnan (p) | !(lambda > 0);
+  ## Force NaN for out of range parameters or p-values
+  k = (p < 0) | (p > 1) | isnan (p) | ! (lambda > 0);
   x(k) = NaN;
 
   k = (p == 1) & (lambda > 0);
@@ -191,7 +199,21 @@ function x = analytic_approx (p, lambda)
 
 endfunction
 
+%!demo
+%! ## Plot various iCDFs from the Poisson distribution
+%! p = 0.001:0.001:0.999;
+%! x1 = poissinv (p, 13);
+%! x2 = poissinv (p, 4);
+%! x3 = poissinv (p, 10);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! grid on
+%! ylim ([0, 20])
+%! legend ({"λ = 1", "λ = 4", "λ = 10"}, "location", "northwest")
+%! title ("Poisson iCDF")
+%! xlabel ("probability")
+%! ylabel ("values in x (number of occurences)")
 
+## Test output
 %!shared p
 %! p = [-1 0 0.5 1 2];
 %!assert (poissinv (p, ones (1,5)), [NaN 0 1 Inf NaN])
@@ -205,10 +227,11 @@ endfunction
 %!assert (poissinv ([p, NaN], single (1)), single ([NaN 0 1 Inf NaN NaN]))
 
 ## Test input validation
-%!error poissinv ()
-%!error poissinv (1)
-%!error poissinv (1,2,3)
-%!error poissinv (ones (3), ones (2))
-%!error poissinv (ones (2), ones (3))
-%!error poissinv (i, 2)
-%!error poissinv (2, i)
+%!error<poissinv: function called with too few input arguments.> poissinv ()
+%!error<poissinv: function called with too few input arguments.> poissinv (1)
+%!error<poissinv: P and LAMBDA must be of common size or scalars.> ...
+%! poissinv (ones (3), ones (2))
+%!error<poissinv: P and LAMBDA must be of common size or scalars.> ...
+%! poissinv (ones (2), ones (3))
+%!error<poissinv: P and LAMBDA must not be complex.> poissinv (i, 2)
+%!error<poissinv: P and LAMBDA must not be complex.> poissinv (2, i)

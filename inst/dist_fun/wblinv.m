@@ -26,10 +26,10 @@
 ## Inverse of the Weibull cumulative distribution function (iCDF).
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## at @var{p} of the Weibull distribution with parameters @var{lambda} and
-## @var{k}.  The size of @var{x} is the common size of @var{p}, @var{lambda},
-## and @var{k}.  A scalar input functions as a constant matrix of the same
-## size as the other inputs.
+## of the Weibull distribution with scale parameter @var{lambda} and shape
+## parameter @var{k}.  The size of @var{x} is the common size of @var{p},
+## @var{lambda}, and @var{k}.  A scalar input functions as a constant matrix of
+## the same size as the other inputs.
 ##
 ## Default values are @var{lambda} = 1, @var{k} = 1.
 ##
@@ -39,23 +39,39 @@
 ## @seealso{wblcdf, wblpdf, wblrnd, wblstat, wblplot}
 ## @end deftypefn
 
-function x = wblinv (p, lambda = 1, k = 1)
+function x = wblinv (p, varargin)
 
+  ## Check for valid number of input arguments
   if (nargin < 1 || nargin > 3)
-    print_usage ();
+    error ("wblinv: invalid number of input arguments.");
   endif
 
+  ## Get extra arguments (if they exist) or add defaults
+  if (numel (varargin) > 0)
+    lambda = varargin{1};
+  else
+    lambda = 1;
+  endif
+  if (numel (varargin) > 1)
+    k = varargin{2};
+  else
+    k = 1;
+  endif
+
+  ## Check for common size of P, LAMBDA, and K
   if (! isscalar (p) || ! isscalar (lambda) || ! isscalar (k))
     [retval, p, lambda, k] = common_size (p, lambda, k);
     if (retval > 0)
-      error ("wblinv: X, LAMBDA, and K must be of common size or scalars.");
+      error ("wblinv: P, LAMBDA, and K must be of common size or scalars.");
     endif
   endif
 
+  ## Check for P, LAMBDA, and K being reals
   if (iscomplex (p) || iscomplex (lambda) || iscomplex (k))
-    error ("wblinv: X, LAMBDA, and K must not be complex.");
+    error ("wblinv: P, LAMBDA, and K must not be complex.");
   endif
 
+  ## Check for class type
   if (isa (p, "single") || isa (lambda, "single") || isa (k, "single"))
     x = NaN (size (p), "single");
   else
@@ -112,11 +128,14 @@ endfunction
 %!assert (wblinv ([p, NaN], 1, single (1)), single ([NaN 0 1 Inf NaN NaN]), eps ("single"))
 
 ## Test input validation
-%!error wblinv ()
-%!error wblinv (1,2,3,4)
-%!error wblinv (ones (3), ones (2), ones (2))
-%!error wblinv (ones (2), ones (3), ones (2))
-%!error wblinv (ones (2), ones (2), ones (3))
-%!error wblinv (i, 2, 2)
-%!error wblinv (2, i, 2)
-%!error wblinv (2, 2, i)
+%!error<wblinv: invalid number of input arguments.> wblinv ()
+%!error<wblinv: invalid number of input arguments.> wblinv (1,2,3,4)
+%!error<wblinv: P, LAMBDA, and K must be of common size or scalars.> ...
+%! wblinv (ones (3), ones (2), ones (2))
+%!error<wblinv: P, LAMBDA, and K must be of common size or scalars.> ...
+%! wblinv (ones (2), ones (3), ones (2))
+%!error<wblinv: P, LAMBDA, and K must be of common size or scalars.> ...
+%! wblinv (ones (2), ones (2), ones (3))
+%!error<wblinv: P, LAMBDA, and K must not be complex.> wblinv (i, 2, 2)
+%!error<wblinv: P, LAMBDA, and K must not be complex.> wblinv (2, i, 2)
+%!error<wblinv: P, LAMBDA, and K must not be complex.> wblinv (2, 2, i)

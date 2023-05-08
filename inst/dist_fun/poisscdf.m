@@ -25,21 +25,24 @@
 ## Poisson cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the Poisson distribution with parameter @var{lambda}. The
+## (CDF) of the Poisson distribution with rate parameter @var{lambda}. The
 ## size of @var{p} is the common size of @var{x} and @var{lambda}.  A scalar
 ## input functions as a constant matrix of the same size as the other inputs.
 ##
 ## @code{@var{p} = poisscdf (@var{x}, @var{x}, @var{lambda}, "upper")} computes
 ## the upper tail probability of the lognormal distribution.
 ##
-## @seealso{poissinv, poisspdf, poissrnd, poisstat}
+## Further information about the Poisson distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Poisson_distribution}
+##
+## @seealso{poissinv, poisspdf, poissrnd, poissfit, poisslike, poisstat}
 ## @end deftypefn
 
 function p = poisscdf (x, lambda, uflag)
 
   ## Check for valid number of input arguments
-  if (nargin < 2 || nargin > 3)
-    error ("poisscdf: invalid number of input arguments.");
+  if (nargin < 2)
+    error ("poisscdf: function called with too few input arguments.");
   endif
 
   ## Check for "upper" flag
@@ -64,14 +67,14 @@ function p = poisscdf (x, lambda, uflag)
     error ("poisscdf: X and LAMBDA must not be complex.");
   endif
 
-  ## Check for appropriate class
+  ## Check for class type
   if (isa (x, "single") || isa (lambda, "single"))
     p = zeros (size (x), "single");
   else
     p = zeros (size (x));
   endif
 
-  ## Force NaN for out of range or missing parameters and missing data NaN
+  ## Force NaN for out of range parameters or missing data NaN
   is_nan = isnan (x) | isnan (lambda) | (lambda < 0) ...
                      | (isinf (x) & isinf (lambda));
   p(is_nan) = NaN;
@@ -109,8 +112,22 @@ function p = poisscdf (x, lambda, uflag)
 
 endfunction
 
+%!demo
+%! ## Plot various CDFs from the Poisson distribution
+%! x = 0:20;
+%! p1 = poisscdf (x, 1);
+%! p2 = poisscdf (x, 4);
+%! p3 = poisscdf (x, 10);
+%! plot (x, p1, "*b", x, p2, "*g", x, p3, "*r")
+%! grid on
+%! ylim ([0, 1])
+%! legend ({"λ = 1", "λ = 4", "λ = 10"}, "location", "southeast")
+%! title ("Poisson CDF")
+%! xlabel ("values in x (number of occurences)")
+%! ylabel ("probability")
 
-%!shared x,y
+## Test output
+%!shared x, y
 %! x = [-1 0 1 2 Inf];
 %! y = [0, gammainc(1, (x(2:4) +1), "upper"), 1];
 %!assert (poisscdf (x, ones (1,5)), y)
@@ -124,10 +141,13 @@ endfunction
 %!assert (poisscdf ([x, NaN], single (1)), single ([y, NaN]), eps ("single"))
 
 ## Test input validation
-%!error poisscdf ()
-%!error poisscdf (1)
-%!error poisscdf (1,2,3)
-%!error poisscdf (ones (3), ones (2))
-%!error poisscdf (ones (2), ones (3))
-%!error poisscdf (i, 2)
-%!error poisscdf (2, i)
+%!error<poisscdf: function called with too few input arguments.> poisscdf ()
+%!error<poisscdf: function called with too few input arguments.> poisscdf (1)
+%!error<poisscdf: invalid argument for upper tail.> poisscdf (1, 2, 3)
+%!error<poisscdf: invalid argument for upper tail.> poisscdf (1, 2, "tail")
+%!error<poisscdf: X and LAMBDA must be of common size or scalars.> ...
+%! poisscdf (ones (3), ones (2))
+%!error<poisscdf: X and LAMBDA must be of common size or scalars.> ...
+%! poisscdf (ones (2), ones (3))
+%!error<poisscdf: X and LAMBDA must not be complex.> poisscdf (i, 2)
+%!error<poisscdf: X and LAMBDA must not be complex.> poisscdf (2, i)

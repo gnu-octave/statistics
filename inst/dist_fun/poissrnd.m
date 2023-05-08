@@ -32,22 +32,23 @@
 ## constant matrix of the same size as the other inputs.  @var{lambda} must be a
 ## finite real number and greater or equal to 0, otherwise NaN is returned.
 ##
-## When called with a single size argument, return a square matrix with
-## the dimension specified.  When called with more than one scalar argument the
-## first two arguments are taken as the number of rows and columns and any
-## further arguments specify additional matrix dimensions.  The size may also
-## be specified with a vector of dimensions @var{sz}.
+## When called with a single size argument, @code{poissrnd} returns a square
+## matrix with the dimension specified.  When called with more than one scalar
+## argument, the first two arguments are taken as the number of rows and columns
+## and any further arguments specify additional matrix dimensions.  The size may
+## also be specified with a row vector of dimensions, @var{sz}.
 ##
 ## Further information about the Poisson distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Poisson_distribution}
 ##
-## @seealso{poisscdf, poissinv, poisspdf, poisstat}
+## @seealso{poisscdf, poissinv, poisspdf, poissfit, poisslike, poisstat}
 ## @end deftypefn
 
 function r = poissrnd (lambda, varargin)
 
+  ## Check for valid number of input arguments
   if (nargin < 1)
-    print_usage ();
+    error ("poissrnd: function called with too few input arguments.");
   endif
 
   ## Check for LAMBDA being real
@@ -55,34 +56,41 @@ function r = poissrnd (lambda, varargin)
     error ("poissrnd: LAMBDA must not be complex.");
   endif
 
+  ## Parse and check SIZE arguments
   if (nargin == 1)
     sz = size (lambda);
   elseif (nargin == 2)
-    if (isscalar (varargin{1}) && varargin{1} >= 0)
+    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+                               && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
+    elseif (isrow (varargin{1}) && all (varargin{1} >= 0) ...
+                                && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
-    else
-      error (strcat (["poissrnd: dimension vector must be a row vector"], ...
+    elseif
+      error (strcat (["poissrnd: SZ must be a scalar or a row vector"], ...
                      [" of non-negative integers."]));
     endif
   elseif (nargin > 2)
-    if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
+    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
+    if (any (posint))
       error ("poissrnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
+  ## Check that parameters match requested dimensions in size
   if (! isscalar (lambda) && ! isequal (size (lambda), sz))
     error ("poissrnd: LAMBDA must be scalar or of size SZ.");
   endif
 
+  ## Check for class type
   if (isa (lambda, "single"))
     cls = "single";
   else
     cls = "double";
   endif
 
+  ## Generate random sample from Poisson distribution
   if (isscalar (lambda))
     if (lambda >= 0 && lambda < Inf)
       r = randp (lambda, sz, cls);
@@ -91,20 +99,26 @@ function r = poissrnd (lambda, varargin)
     endif
   else
     r = NaN (sz, cls);
-
     k = (lambda >= 0) & (lambda < Inf);
     r(k) = randp (lambda(k), cls);
   endif
 
 endfunction
 
-
+## Test output
 %!assert (size (poissrnd (2)), [1, 1])
 %!assert (size (poissrnd (ones (2,1))), [2, 1])
 %!assert (size (poissrnd (ones (2,2))), [2, 2])
 %!assert (size (poissrnd (1, 3)), [3, 3])
 %!assert (size (poissrnd (1, [4 1])), [4, 1])
 %!assert (size (poissrnd (1, 4, 1)), [4, 1])
+%!assert (size (poissrnd (1, 4, 1)), [4, 1])
+%!assert (size (poissrnd (1, 4, 1, 5)), [4, 1, 5])
+%!assert (size (poissrnd (1, 0, 1)), [0, 1])
+%!assert (size (poissrnd (1, 1, 0)), [1, 0])
+%!assert (size (poissrnd (1, 1, 2, 0, 5)), [1, 2, 0, 5])
+%!assert (poissrnd (0, 1, 1), 0)
+%!assert (poissrnd ([0, 0, 0], [1, 3]), [0 0 0])
 
 ## Test class of input preserved
 %!assert (class (poissrnd (2)), "double")
@@ -112,16 +126,24 @@ endfunction
 %!assert (class (poissrnd (single ([2 2]))), "single")
 
 ## Test input validation
-%!error poissrnd ()
-%!error poissrnd (1, -1)
-%!error poissrnd (1, ones (2))
-%!error poissrnd (1, 2, ones (2))
-%!error poissrnd (i)
-%!error poissrnd (1, 2, -1)
-%!error poissrnd (1, [2 -1 2])
-%!error poissrnd (ones (2,2), 3)
-%!error poissrnd (ones (2,2), [3, 2])
-%!error poissrnd (ones (2,2), 2, 3)
-
-%!assert (poissrnd (0, 1, 1), 0)
-%!assert (poissrnd ([0, 0, 0], [1, 3]), [0 0 0])
+%!error<poissrnd: function called with too few input arguments.> poissrnd ()
+%!error<poissrnd: LAMBDA must not be complex.> poissrnd (i)
+%!error<poissrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! poissrnd (1, -1)
+%!error<poissrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! poissrnd (1, 1.2)
+%!error<poissrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! poissrnd (1, ones (2))
+%!error<poissrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! poissrnd (1, [2 -1 2])
+%!error<poissrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! poissrnd (1, [2 0 2.5])
+%!error<poissrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! poissrnd (ones (2), ones (2))
+%!error<poissrnd: dimensions must be non-negative integers.> ...
+%! poissrnd (1, 2, -1, 5)
+%!error<poissrnd: dimensions must be non-negative integers.> ...
+%! poissrnd (1, 2, 1.5, 5)
+%!error<poissrnd: LAMBDA must be scalar or of size SZ.> poissrnd (ones (2,2), 3)
+%!error<poissrnd: LAMBDA must be scalar or of size SZ.> poissrnd (ones (2,2), [3, 2])
+%!error<poissrnd: LAMBDA must be scalar or of size SZ.> poissrnd (ones (2,2), 2, 3)

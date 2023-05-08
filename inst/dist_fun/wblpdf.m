@@ -26,8 +26,8 @@
 ## Weibull probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the Weibull distribution with scale parameter @var{lambda} and
-## shape parameter @var{k}.  The size of @var{y} is the common size of @var{x},
+## of the Weibull distribution with scale parameter @var{lambda} and shpe
+## parameter @var{k}.  The size of @var{y} is the common size of @var{x},
 ## @var{lambda}, and @var{k}.  A scalar input functions as a constant matrix of
 ## the same size as the other inputs.
 ##
@@ -39,12 +39,26 @@
 ## @seealso{wblcdf, wblinv, wblrnd, wblfit, wbllike, wblstat, wblplot}
 ## @end deftypefn
 
-function y = wblpdf (x, lambda = 1, k = 1)
+function y = wblpdf (x, varargin)
 
+  ## Check for valid number of input arguments
   if (nargin < 1 || nargin > 3)
-    print_usage ();
+    error ("wblpdf: invalid number of input arguments.");
   endif
 
+  ## Get extra arguments (if they exist) or add defaults
+  if (numel (varargin) > 0)
+    lambda = varargin{1};
+  else
+    lambda = 1;
+  endif
+  if (numel (varargin) > 1)
+    k = varargin{2};
+  else
+    k = 1;
+  endif
+
+  ## Check for common size of X, LAMBDA, and K
   if (! isscalar (lambda) || ! isscalar (k))
     [retval, x, lambda, k] = common_size (x, lambda, k);
     if (retval > 0)
@@ -52,10 +66,12 @@ function y = wblpdf (x, lambda = 1, k = 1)
     endif
   endif
 
+  ## Check for X, LAMBDA, and K being reals
   if (iscomplex (x) || iscomplex (lambda) || iscomplex (k))
     error ("wblpdf: X, LAMBDA, and K must not be complex.");
   endif
 
+  ## Check for class type
   if (isa (x, "single") || isa (lambda, "single") || isa (k, "single"))
     y = NaN (size (x), "single");
   else

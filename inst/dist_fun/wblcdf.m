@@ -30,12 +30,12 @@
 ## Weibull cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the Weibull distribution with scale parameter
-## @var{lambda} and shape parameter @var{k}.  The size of @var{p} is the common
-## size of @var{x}, @var{lambda} and @var{k}.  A scalar input functions as a
-## constant matrix of the same size as the other inputs.
+## (CDF) of the Weibull distribution with scale parameter @var{lambda} and shape
+## parameter @var{k}.  The size of @var{p} is the common size of @var{x},
+## @var{lambda} and @var{k}.  A scalar input functions as a constant matrix of
+## the same size as the other inputs.
 ##
-## Default values are @var{lambda} = 0, @var{k} = 1.
+## Default values are @var{lambda} = 1, @var{k} = 1.
 ##
 ## When called with three output arguments, @code{[@var{p}, @var{plo},
 ## @var{pup}]} it computes the confidence bounds for @var{p} when the input
@@ -123,6 +123,13 @@ function [varargout] = wblcdf (x, varargin)
     error ("wblcdf: X, LAMBDA, and K must not be complex.");
   endif
 
+  ## Check for class type
+  if (isa (x, "single") || isa (lambda, "single") || isa (k, "single"));
+    is_class = "single";
+  else
+    is_class = "double";
+  endif
+
   ## Return NaN for out of range parameters.
   lambda(lambda <= 0) = NaN;
   k(k <= 0) = NaN;
@@ -162,13 +169,6 @@ function [varargout] = wblcdf (x, varargin)
       plo = -expm1 (-exp (zlo));
       pup = -expm1 (-exp (zup));
     endif
-  endif
-
-  ## Check for appropriate class
-  if (isa (x, "single") || isa (lambda, "single") || isa (k, "single"));
-    is_class = "single";
-  else
-    is_class = "double";
   endif
 
   ## Prepare output
