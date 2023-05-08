@@ -21,15 +21,15 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{y} =} hygepdf (@var{x}, @var{t}, @var{m}, @var{n})
-## @deftypefnx {statistics} {@var{y} =} hygepdf (@dots{}, "vectorexpand")
+## @deftypefnx {statistics} {@var{y} =} hygepdf (@dots{}, @qcode{"vectorexpand"})
 ##
 ## Hypergeometric probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the hypergeometric distribution with parameters @var{t},
-## @var{m}, and @var{n}.  The size of @var{y} is the common size of the input
-## parameters.  A scalar input functions as a constant matrix of the same size
-## as the other inputs.
+## of the hypergeometric distribution with parameters @var{t}, @var{m}, and
+## @var{n}.  The size of @var{y} is the common size of @var{x}, @var{t},
+## @var{m}, and @var{n}.  A scalar input functions as a constant matrix of the
+## same size as the other inputs.
 ##
 ## This is the probability of obtaining @var{x} marked items when randomly
 ## drawing a sample of size @var{n} without replacement from a population of
@@ -37,25 +37,35 @@
 ## @var{m}, and @var{n} must be positive integers with @var{m} and @var{n} not
 ## greater than @var{t}.
 ##
-## If the optional parameter @code{vectorexpand} is provided, @var{x} may be an
+## If the optional parameter @qcode{vectorexpand} is provided, @var{x} may be an
 ## array with size different from parameters @var{t}, @var{m}, and @var{n}
 ## (which must still be of a common size or scalar).  Each element of @var{x}
 ## will be evaluated against each set of parameters @var{t}, @var{m}, and
 ## @var{n} in columnwise order. The output @var{y} will be an array of size
-## @code{@var{r} x @var{s}}, where @code{@var{r} = numel (@var{t})}, and
-## @code{@var{s} = numel (@var{x})}.
+## @qcode{@var{r} x @var{s}}, where @qcode{@var{r} = numel (@var{t})}, and
+## @qcode{@var{s} = numel (@var{x})}.
+##
+## Further information about the hypergeometric distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Hypergeometric_distribution}
 ##
 ## @seealso{hygecdf, hygeinv, hygernd, hygestat}
 ## @end deftypefn
 
-function y = hygepdf (x, t, m, n, vect_expand = "")
+function y = hygepdf (x, t, m, n, vect_expand)
 
-  if (!any (nargin == [4,5]))
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 4)
+    error ("hygepdf: function called with too few input arguments.");
   endif
 
+  ## Check for X, T, M, and N being reals
   if (iscomplex (x) || iscomplex (t) || iscomplex (m) || iscomplex (n))
     error ("hygepdf: X, T, M, and N must not be complex.");
+  endif
+
+  ## Check for 5th argument or add default
+  if (nargin < 5)
+    vect_expand = [];
   endif
 
   if strcmpi (vect_expand, "vectorexpand")
@@ -69,13 +79,13 @@ function y = hygepdf (x, t, m, n, vect_expand = "")
       if (retval > 0)
         error ("hygepdf: T, M, and N must be of common size or scalars.");
       endif
-      ## ensure col vectors before expansion
+      ## Ensure col vectors before expansion
       t = t(:);
       m = m(:);
       n = n(:);
     endif
 
-    ## expand x,t,m,n to arrays of size numel(t) x numel(x)
+    ## Expand x,t,m,n to arrays of size numel(t) x numel(x)
     sz = [numel(t), numel(x)];
     x = x(:)'; # ensure row vector before expansion
 
@@ -86,6 +96,7 @@ function y = hygepdf (x, t, m, n, vect_expand = "")
 
   else
 
+    ## Check for common size of X, T, M, and N
     if (! isscalar (t) || ! isscalar (m) || ! isscalar (n))
       [retval, x, t, m, n] = common_size (x, t, m, n);
       if (retval > 0)
@@ -97,17 +108,18 @@ function y = hygepdf (x, t, m, n, vect_expand = "")
 
   endif
 
+  ## Check for class type
   if (isa (x, "single") || isa (t, "single")
-      || isa (m, "single") || isa (n, "single"))
+                        || isa (m, "single") || isa (n, "single"))
     y = zeros (sz, "single");
   else
     y = zeros (sz);
   endif
 
-  ## everything in nel gives NaN
+  ## Everything in nel gives NaN
   nel = (isnan (x) | (t < 0) | (m < 0) | (n <= 0) | (m > t) | (n > t) |
         (t != fix (t)) | (m != fix (m)) | (n != fix (n)));
-  ## everything in zel gives 0 unless in nel
+  ## Everything in zel gives 0 unless in nel
   zel = ((x != fix (x)) | (x < 0) | (x > m) | (n < x) | (n-x > t-m));
 
   y(nel) = NaN;
@@ -127,11 +139,26 @@ function y = hygepdf (x, t, m, n, vect_expand = "")
     endif
   endif
 
-
 endfunction
 
+%!demo
+%! ## Plot various PDFs from the hypergeometric distribution
+%! x = 0:60;
+%! y1 = hygepdf (x, 500, 50, 100);
+%! y2 = hygepdf (x, 500, 60, 200);
+%! y3 = hygepdf (x, 500, 70, 300);
+%! plot (x, y1, "*b", x, y2, "*g", x, y3, "*r")
+%! grid on
+%! xlim ([0, 60])
+%! ylim ([0, 0.18])
+%! legend ({"t = 500, m = 50, μ = 100", "t = 500, m = 60, μ = 200", ...
+%!          "t = 500, m = 70, μ = 300"}, "location", "northeast")
+%! title ("Hypergeometric PDF")
+%! xlabel ("values in x (number of successes)")
+%! ylabel ("density")
 
-%!shared x,y
+## Test output
+%!shared x, y
 %! x = [-1 0 1 2 3];
 %! y = [0 1/6 4/6 1/6 0];
 %!assert (hygepdf (x, 4*ones (1,5), 2, 2), y, eps)
@@ -154,23 +181,25 @@ endfunction
 %!test
 %! z = zeros(3,5);
 %! z([4,5,6,8,9,12]) = [1, 0.5, 1/6, 0.5, 2/3, 1/6];
-%! assert (hygepdf (x, 4, [0 1 2], 2,"vectorexpand"), z, eps);
-%! assert (hygepdf (x, 4, [0 1 2]', 2,"vectorexpand"), z, eps);
-%! assert (hygepdf (x', 4, [0 1 2], 2,"vectorexpand"), z, eps);
-%! assert (hygepdf (2, 4, [0 1 2], 2,"vectorexpand"), z(:,4), eps);
-%! assert (hygepdf (x, 4, 1, 2,"vectorexpand"), z(2,:), eps);
-%! assert (hygepdf ([NaN,x], 4, [0 1 2]', 2,"vectorexpand"),[NaN(3,1), z], eps);
+%! assert (hygepdf (x, 4, [0, 1, 2], 2, "vectorexpand"), z, eps);
+%! assert (hygepdf (x, 4, [0, 1, 2]', 2, "vectorexpand"), z, eps);
+%! assert (hygepdf (x', 4, [0, 1, 2], 2, "vectorexpand"), z, eps);
+%! assert (hygepdf (2, 4, [0 ,1, 2], 2, "vectorexpand"), z(:,4), eps);
+%! assert (hygepdf (x, 4, 1, 2, "vectorexpand"), z(2,:), eps);
+%! assert (hygepdf ([NaN, x], 4, [0 1 2]', 2, "vectorexpand"), [NaN(3,1), z], eps);
 
 ## Test input validation
-%!error hygepdf ()
-%!error hygepdf (1)
-%!error hygepdf (1,2)
-%!error hygepdf (1,2,3)
-%!error hygepdf (1,2,3,4,5,6)
-%!error hygepdf (1, ones (3), ones (2), ones (2))
-%!error hygepdf (1, ones (2), ones (3), ones (2))
-%!error hygepdf (1, ones (2), ones (2), ones (3))
-%!error hygepdf (i, 2, 2, 2)
-%!error hygepdf (2, i, 2, 2)
-%!error hygepdf (2, 2, i, 2)
-%!error hygepdf (2, 2, 2, i)
+%!error<hygepdf: function called with too few input arguments.> hygepdf ()
+%!error<hygepdf: function called with too few input arguments.> hygepdf (1)
+%!error<hygepdf: function called with too few input arguments.> hygepdf (1,2)
+%!error<hygepdf: function called with too few input arguments.> hygepdf (1,2,3)
+%!error<hygepdf: X, T, M, and N must be of common size or scalars.> ...
+%! hygepdf (1, ones (3), ones (2), ones (2))
+%!error<hygepdf: X, T, M, and N must be of common size or scalars.> ...
+%! hygepdf (1, ones (2), ones (3), ones (2))
+%!error<hygepdf: X, T, M, and N must be of common size or scalars.> ...
+%! hygepdf (1, ones (2), ones (2), ones (3))
+%!error<hygepdf: X, T, M, and N must not be complex.> hygepdf (i, 2, 2, 2)
+%!error<hygepdf: X, T, M, and N must not be complex.> hygepdf (2, i, 2, 2)
+%!error<hygepdf: X, T, M, and N must not be complex.> hygepdf (2, 2, i, 2)
+%!error<hygepdf: X, T, M, and N must not be complex.> hygepdf (2, 2, 2, i)

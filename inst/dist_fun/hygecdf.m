@@ -26,17 +26,22 @@
 ## Hypergeometric cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the hypergeometric distribution with parameters
-## @var{t}, @var{k}, and @var{n}.  The size of @var{p} is the common size of the
-## input arguments.  A scalar input functions as a constant matrix of the same
-## size as the other inputs.
+## (CDF) of the hypergeometric distribution with parameters @var{t}, @var{k},
+## and @var{n}.  The size of @var{p} is the common size of @var{x}, @var{t},
+## @var{m}, and @var{n}.  A scalar input functions as a constant matrix of the
+## same size as the other inputs.
 ##
 ## This is the probability of obtaining not more than @var{x} marked items
 ## when randomly drawing a sample of size @var{n} without replacement from a
-## population of total size @var{t} containing @var{m} marked items.
+## population of total size @var{t} containing @var{m} marked items. The
+## parameters @var{t}, @var{m}, and @var{n} must be positive integers with
+## @var{m} and @var{n} not greater than @var{t}.
 ##
-## The parameters @var{t}, @var{m}, and @var{n} must be positive integers
-## with @var{m} and @var{n} not greater than @var{t}.
+## @code{[@dots{}] = hygecdf(@dots{}, "upper")} computes the upper tail
+## probability of the hypergeometric distribution.
+##
+## Further information about the hypergeometric distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Hypergeometric_distribution}
 ##
 ## @seealso{hygeinv, hygepdf, hygernd, hygestat}
 ## @end deftypefn
@@ -45,7 +50,7 @@ function p = hygecdf (x, t, m, n, uflag)
 
   ## Check for valid number of input arguments
   if (nargin < 4)
-    error ("hygecdf: too few input arguments.");
+    error ("hygecdf: function called with too few input arguments.");
   endif
 
   ## Check for common size of X, T, M, and N
@@ -61,9 +66,9 @@ function p = hygecdf (x, t, m, n, uflag)
     error ("hygecdf: X, T, M, and N must not be complex.");
   endif
 
-  ## Check for appropriate class
+  ## Check for class type
   if (isa (x, "single") || isa (t, "single")
-      || isa (m, "single") || isa (n, "single"))
+                        || isa (m, "single") || isa (n, "single"))
     p = zeros (size (x), "single");
   else
     p = zeros (size (x));
@@ -134,7 +139,23 @@ function p = localPDF (x, t, m, n)
   p(p > 1) = 1;
 endfunction
 
-%!shared x,y
+%!demo
+%! ## Plot various CDFs from the hypergeometric distribution
+%! x = 0:60;
+%! p1 = hygecdf (x, 500, 50, 100);
+%! p2 = hygecdf (x, 500, 60, 200);
+%! p3 = hygecdf (x, 500, 70, 300);
+%! plot (x, p1, "*b", x, p2, "*g", x, p3, "*r")
+%! grid on
+%! xlim ([0, 60])
+%! legend ({"t = 500, m = 50, μ = 100", "t = 500, m = 60, μ = 200", ...
+%!          "t = 500, m = 70, μ = 300"}, "location", "southeast")
+%! title ("Hypergeometric CDF")
+%! xlabel ("values in x (number of successes)")
+%! ylabel ("probability")
+
+## Test output
+%!shared x, y
 %! x = [-1 0 1 2 3];
 %! y = [0 1/6 5/6 1 1];
 %!assert (hygecdf (x, 4*ones (1,5), 2, 2), y, 5*eps)
@@ -171,10 +192,10 @@ endfunction
 %! eps ("single"))
 
 ## Test input validation
-%!error<hygecdf: too few input arguments.> hygecdf ()
-%!error<hygecdf: too few input arguments.> hygecdf (1)
-%!error<hygecdf: too few input arguments.> hygecdf (1,2)
-%!error<hygecdf: too few input arguments.> hygecdf (1,2,3)
+%!error<hygecdf: function called with too few input arguments.> hygecdf ()
+%!error<hygecdf: function called with too few input arguments.> hygecdf (1)
+%!error<hygecdf: function called with too few input arguments.> hygecdf (1,2)
+%!error<hygecdf: function called with too few input arguments.> hygecdf (1,2,3)
 %!error<hygecdf: invalid argument for upper tail.> hygecdf (1,2,3,4,5)
 %!error<hygecdf: invalid argument for upper tail.> hygecdf (1,2,3,4,"uper")
 %!error<hygecdf: X, T, M, and N must be of common size or scalars.> ...
