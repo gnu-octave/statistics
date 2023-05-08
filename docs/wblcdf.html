@@ -84,12 +84,12 @@
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the cumulative distribution function
- (CDF) at <var>x</var> of the Weibull distribution with scale parameter
- <var>lambda</var> and shape parameter <var>k</var>.  The size of <var>p</var> is the common
- size of <var>x</var>, <var>lambda</var> and <var>k</var>.  A scalar input functions as a
- constant matrix of the same size as the other inputs.
+ (CDF) of the Weibull distribution with scale parameter <var>lambda</var> and shape
+ parameter <var>k</var>.  The size of <var>p</var> is the common size of <var>x</var>,
+ <var>lambda</var> and <var>k</var>.  A scalar input functions as a constant matrix of
+ the same size as the other inputs.
 </p>
-<p> Default values are <var>lambda</var> = 0, <var>k</var> = 1.
+<p> Default values are <var>lambda</var> = 1, <var>k</var> = 1.
 </p>
 <p> When called with three output arguments, <code>[<var>p</var>, <var>plo</var>,
  <var>pup</var>]</code> it computes the confidence bounds for <var>p</var> when the input

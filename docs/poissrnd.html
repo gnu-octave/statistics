@@ -86,11 +86,11 @@
  constant matrix of the same size as the other inputs.  <var>lambda</var> must be a
  finite real number and greater or equal to 0, otherwise NaN is returned.
 </p>
-<p> When called with a single size argument, return a square matrix with
- the dimension specified.  When called with more than one scalar argument the
- first two arguments are taken as the number of rows and columns and any
- further arguments specify additional matrix dimensions.  The size may also
- be specified with a vector of dimensions <var>sz</var>.
+<p> When called with a single size argument, <code>poissrnd</code> returns a square
+ matrix with the dimension specified.  When called with more than one scalar
+ argument, the first two arguments are taken as the number of rows and columns
+ and any further arguments specify additional matrix dimensions.  The size may
+ also be specified with a row vector of dimensions, <var>sz</var>.
 </p>
 <p> Further information about the Poisson distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Poisson_distribution">https://en.wikipedia.org/wiki/Poisson_distribution</a>
@@ -99,6 +99,8 @@
   <a href="poisscdf.html">poisscdf</a>, 
   <a href="poissinv.html">poissinv</a>, 
   <a href="poisspdf.html">poisspdf</a>, 
+  <a href="poissfit.html">poissfit</a>, 
+  <a href="poisslike.html">poisslike</a>, 
   <a href="poisstat.html">poisstat</a>
 </p>
 <p><strong>Source Code: </strong>

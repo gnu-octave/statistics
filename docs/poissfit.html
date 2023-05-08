@@ -81,8 +81,11 @@
 </p>
 <div class="ms-5">
 <p> <code><var>lambdahat</var> = poissfit (<var>x</var>)</code> returns the maximum likelihood
- estimate (MLE) of the parameter lambda given the <var>x</var> follow a Poisson
- distribution.
+ estimate of the rate parameter, <var>lambda</var>, of the Poisson distribution
+ given the data in <var>x</var>.  <var>x</var> must be a vector of non-negative values.
+</p>
+<p> <code>[<var>lambdahat</var>, <var>lambdaci</var>] = poissfit (<var>x</var>)</code> returns the 95%
+ confidence intervals for the parameter estimate.
 </p>
 <p> <code>[<var>lambdahat</var>, <var>lambdaci</var>] = poissfit (<var>x</var>, <var>alpha</var>)</code>
  also returns the <code>100 * (1 - <var>alpha</var>)</code> percent confidence intervals
@@ -94,6 +97,9 @@
  frequency vector or matrix, <var>freq</var>, of the same size as <var>x</var>.
  <var>freq</var> typically contains integer frequencies for the corresponding
  elements in <var>x</var>.  <var>freq</var> cannot contain negative values.
+</p>
+<p> Further information about the Poisson distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Poisson_distribution">https://en.wikipedia.org/wiki/Poisson_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="poisscdf.html">poisscdf</a>, 
@@ -125,16 +131,16 @@
                     <td><pre class="example">
 
  ## Sample 3 populations from 3 different Poisson distibutions
- randp ("seed", 1);    # for reproducibility
- r1 = poissrnd (2, 100, 1);
  randp ("seed", 2);    # for reproducibility
- r2 = poissrnd (5, 100, 1);
+ r1 = poissrnd (1, 1000, 1);
+ randp ("seed", 2);    # for reproducibility
+ r2 = poissrnd (4, 1000, 1);
  randp ("seed", 3);    # for reproducibility
- r3 = poissrnd (9, 100, 1);
+ r3 = poissrnd (10, 1000, 1);
  r = [r1, r2, r3];
 
  ## Plot them normalized and fix their colors
- hist (r, 8, 1);
+ hist (r, [0:20], 1);
  h = findobj (gca, "Type", "patch");
  set (h(1), "facecolor", "c");
  set (h(2), "facecolor", "g");
@@ -145,17 +151,18 @@
  lambdahat = poissfit (r);
 
  ## Plot their estimated PDFs
- x = [0:max(r(:))];
+ x = [0:20];
  y = poisspdf (x, lambdahat(1));
  plot (x, y, "-pr");
  y = poisspdf (x, lambdahat(2));
  plot (x, y, "-sg");
  y = poisspdf (x, lambdahat(3));
  plot (x, y, "-^c");
- hold off
- legend ({"Normalized HIST of sample 1 with λ=2", ...
-          "Normalized HIST of sample 2 with λ=5", ...
-          "Normalized HIST of sample 3 with λ=9", ...
+ xlim ([0, 20])
+ ylim ([0, 0.4])
+ legend ({"Normalized HIST of sample 1 with λ=1", ...
+          "Normalized HIST of sample 2 with λ=4", ...
+          "Normalized HIST of sample 3 with λ=10", ...
           sprintf("PDF for sample 1 with estimated λ=%0.2f", ...
                   lambdahat(1)), ...
           sprintf("PDF for sample 2 with estimated λ=%0.2f", ...

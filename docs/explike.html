@@ -80,23 +80,23 @@
 <p> Negative log-likelihood for the exponential distribution.
 </p>
 <div class="ms-5">
-<p> <code><var>nlogL</var> = explike (<var>params</var>, <var>x</var>)</code> returns the negative
+<p> <code><var>nlogL</var> = explike (<var>mu</var>, <var>x</var>)</code> returns the negative
  log likelihood of the data in <var>x</var> corresponding to the exponential
  distribution with mean parameter <var>mu</var>.  <var>x</var> must be a vector of
  non-negative values, otherwise <code>NaN</code> is returned.
 </p>
-<p> <code>[<var>nlogL</var>, <var>avar</var>] = explike (<var>params</var>, <var>x</var>)</code> also
+<p> <code>[<var>nlogL</var>, <var>avar</var>] = explike (<var>mu</var>, <var>x</var>)</code> also
  returns the inverse of Fisher&rsquo;s information matrix, <var>avar</var>.  If the input
  mean parameter, <var>mu</var>, is the maximum likelihood estimate, <var>avar</var> is
  its asymptotic variance.
 </p>
-<p> <code>[&hellip;] = explike (<var>params</var>, <var>x</var>, <var>censor</var>)</code> accepts a
+<p> <code>[&hellip;] = explike (<var>mu</var>, <var>x</var>, <var>censor</var>)</code> accepts a
  boolean vector, <var>censor</var>, of the same size as <var>x</var> with <code>1</code>s for
  observations that are right-censored and <code>0</code>s for observations that are
  observed exactly.  By default, or if left empty,
  <code><var>censor</var> = zeros (size (<var>x</var>))</code>.
 </p>
-<p> <code>[&hellip;] = explike (<var>params</var>, <var>x</var>, <var>censor</var>, <var>freq</var>)</code>
+<p> <code>[&hellip;] = explike (<var>mu</var>, <var>x</var>, <var>censor</var>, <var>freq</var>)</code>
  accepts a frequency vector, <var>freq</var>, of the same size as <var>x</var>.
  <var>freq</var> typically contains integer frequencies for the corresponding
  elements in <var>x</var>, but it can contain any non-integer non-negative values.
