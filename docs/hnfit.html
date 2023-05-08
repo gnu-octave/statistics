@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: cophenet</title>
+    <title>Statistics: hnfit</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -35,9 +35,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Clustering">
+                  <a class="nav-link" href="index.html#Distribution Fitting">
                     <i class="fas fa-list-alt"></i>
-                    Clustering
+                    Distribution Fitting
                   </a>
                 </li>
                 <li class="nav-item">
@@ -64,48 +64,53 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>cophenet</code></b>
+              Function&nbsp;Reference: <b><code>hnfit</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>c</var>, <var>d</var>] = <b>cophenet</b><i> (<var>Z</var>, <var>y</var>)</i></dt>
+<dt><u>statistics:</u> <var>paramhat</var> = <b>hnfit</b><i> (<var>x</var>, <var>mu</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>hnfit</b><i> (<var>x</var>, <var>mu</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>hnfit</b><i> (<var>x</var>, <var>mu</var>, <var>alpha</var>)</i></dt>
 </dl>
 
-<p> Compute the cophenetic correlation coefficient.
+<p> Estimate parameters and confidence intervals for the half-normal distribution.
 </p>
 <div class="ms-5">
-<p> The cophenetic correlation coefficient <var>C</var> of a hierarchical cluster tree
- <var>Z</var> is the linear correlation coefficient between the cophenetic
- distances <var>d</var> and the euclidean distances <var>y</var>.
- $$ c = \frac {\sum_{i < j}(Y_{ij}-{\bar {y}})(Z_{ij}-{\bar{z}})}
- {\sqrt{\sum_{i < j}(Y_{ij}-{\bar {y}})^2(Z_{ij}-{\bar{z}})^2}} $$
+<p> <code><var>paramhat</var> = hnfit (<var>x</var>)</code> returns the maximum likelihood
+ estimates of the parameters of the half-normal distribution given the data in
+ vector <var>x</var>.  <code><var>paramhat</var>(1)</code> is the location parameter,
+ <var>mu</var>, and <code><var>paramhat</var>(2)</code> is the scale parameter, <var>sigma</var>.
+ Although <var>mu</var> is returned in the estimated <var>paramhat</var>, <code>hnfit</code>
+ does not estimate the location parameter <var>mu</var>, and it must be assumed to
+ be known.
 </p>
-<p> It is a measure of the similarity between the distance of the leaves, as seen
- in the tree, and the distance of the original data points, which were used to
- build the tree.  When this similarity is greater, that is the coefficient is
- closer to 1, the tree renders an accurate representation of the distances
- between the original data points.
+<p> <code>[<var>paramhat</var>, <var>paramci</var>] = hnfit (<var>x</var>, <var>mu</var>)</code> returns
+ the 95% confidence intervals for the estimated scale parameter <var>sigma</var>.
+ The first colummn of <var>paramci</var> includes the location parameter <var>mu</var>
+ without any confidence bounds.
 </p>
-<p> <var>Z</var> is a hierarchical cluster tree, as the output of <code>linkage</code>.
- <var>y</var> is a vector of euclidean distances, as the output of <code>pdist</code>.
+<p> <code>[&hellip;] = hnfit (<var>x</var>, <var>alpha</var>)</code> also returns the
+ <code>100 * (1 - <var>alpha</var>)</code> percent confidence intervals of the estimated
+ scale parameter.  By default, the optional argument <var>alpha</var> is 0.05
+ corresponding to 95% confidence intervals.
 </p>
-<p> The optional output <var>d</var> is a vector of cophenetic distances, in the same
- lower triangular format as <var>y</var>.  The cophenetic distance between two data
- points is the height of the lowest common node of the tree.
+<p> The half-normal CDF is only defined for <code><var>x</var> &gt;= <var>mu</var></code>.
+</p>
+<p> Further information about the half-normal distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Half-normal_distribution">https://en.wikipedia.org/wiki/Half-normal_distribution</a>
 </p>
 <p> <strong>See also: </strong>
-  <a href="cluster.html">cluster</a>, 
-  <a href="dendrogram.html">dendrogram</a>, 
-  <a href="inconsistent.html">inconsistent</a>, 
-  <a href="linkage.html">linkage</a>, 
-  <a href="pdist.html">pdist</a>, 
-  <a href="squareform.html">squareform</a>
+  <a href="hncdf.html">hncdf</a>, 
+  <a href="hninv.html">hninv</a>, 
+  <a href="hnpdf.html">hnpdf</a>, 
+  <a href="hnrnd.html">hnrnd</a>, 
+  <a href="hnlike.html">hnlike</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/cophenet.m">cophenet</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/hnfit.m">hnfit</a>
 </div>
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -125,14 +130,46 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- X = randn (10,2);
- y = pdist (X);
- Z = linkage (y, "average");
- cophenet (Z, y)
+ ## Sample 2 populations from different half-normal distibutions
+ rand ("seed", 1);   # for reproducibility
+ r1 = hnrnd (0, 5, 5000, 1);
+ rand ("seed", 2);   # for reproducibility
+ r2 = hnrnd (0, 2, 5000, 1);
+ r = [r1, r2];
 
-ans = 0.6738
+ ## Plot them normalized and fix their colors
+ hist (r, [0.5:20], 1);
+ h = findobj (gca, "Type", "patch");
+ set (h(1), "facecolor", "c");
+ set (h(2), "facecolor", "g");
+ hold on
+
+ ## Estimate their shape parameters
+ mu_sigmaA = hnfit (r(:,1), 0);
+ mu_sigmaB = hnfit (r(:,2), 0);
+
+ ## Plot their estimated PDFs
+ x = [0:0.2:10];
+ y = hnpdf (x, mu_sigmaA(1), mu_sigmaA(2));
+ plot (x, y, "-pr");
+ y = hnpdf (x, mu_sigmaB(1), mu_sigmaB(2));
+ plot (x, y, "-sg");
+ xlim ([0, 10])
+ ylim ([0, 0.5])
+ legend ({"Normalized HIST of sample 1 with μ=0 and σ=5", ...
+          "Normalized HIST of sample 2 with μ=0 and σ=2", ...
+          sprintf("PDF for sample 1 with estimated μ=%0.2f and σ=%0.2f", ...
+                  mu_sigmaA(1), mu_sigmaA(2)), ...
+          sprintf("PDF for sample 2 with estimated μ=%0.2f and σ=%0.2f", ...
+                  mu_sigmaB(1), mu_sigmaB(2))})
+ title ("Two population samples from different half-normal distibutions")
+ hold off
+
                     </pre></td></tr></tbody>
                   </table>
+                  <div class="text-center">
+                    <img src="assets/hnfit_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
 
                 </div>
               </div>

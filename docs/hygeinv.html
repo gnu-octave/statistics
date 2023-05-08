@@ -71,23 +71,26 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>hygeinv</b><i> (<var>x</var>, <var>t</var>, <var>m</var>, <var>n</var>)</i></dt>
+<dt><u>statistics:</u> <var>x</var> = <b>hygeinv</b><i> (<var>p</var>, <var>t</var>, <var>m</var>, <var>n</var>)</i></dt>
 </dl>
 
 <p> Inverse of the hypergeometric cumulative distribution function (iCDF).
 </p>
 <div class="ms-5">
-<p> For each element of <var>x</var>, compute the quantile (the inverse of the CDF)
- at <var>x</var> of the hypergeometric distribution with parameters <var>t</var>,
- <var>m</var>, and <var>n</var>.  The size of <var>p</var> is the common size of the input
- parameters.  A scalar input functions as a constant matrix of the same size
- as the other inputs.
+<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF) of
+ the hypergeometric distribution with parameters <var>t</var>, <var>m</var>, and <var>n</var>.
+ The size of <var>x</var> is the common size of <var>p</var>, <var>t</var>, <var>m</var>, and
+ <var>n</var>.  A scalar input functions as a constant matrix of the same size as
+ the other inputs.
 </p>
-<p> This is the probability of obtaining <var>x</var> marked items when randomly
+<p> This is the probability of obtaining <var>p</var> marked items when randomly
  drawing a sample of size <var>n</var> without replacement from a population of
  total size <var>t</var> containing <var>m</var> marked items.  The parameters <var>t</var>,
  <var>m</var>, and <var>n</var> must be positive integers with <var>m</var> and <var>n</var> not
  greater than <var>t</var>.
+</p>
+<p> Further information about the hypergeometric distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Hypergeometric_distribution">https://en.wikipedia.org/wiki/Hypergeometric_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="hygeinv.html">hygeinv</a>, 
@@ -98,6 +101,50 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/hygeinv.m">hygeinv</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various iCDFs from the hypergeometric distribution
+ p = 0.001:0.001:0.999;
+ x1 = hygeinv (p, 500, 50, 100);
+ x2 = hygeinv (p, 500, 60, 200);
+ x3 = hygeinv (p, 500, 70, 300);
+ plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+ grid on
+ ylim ([0, 60])
+ legend ({"t = 500, m = 50, μ = 100", "t = 500, m = 60, μ = 200", ...
+          "t = 500, m = 70, μ = 300"}, "location", "northwest")
+ title ("Hypergeometric iCDF")
+ xlabel ("probability")
+ ylabel ("values in p (number of successes)")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/hygeinv_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>
