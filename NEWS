@@ -53,6 +53,14 @@
 
  ** hnrnd
 
+ ** invgcdf
+
+ ** invginv
+
+ ** invgpdf
+
+ ** invgrnd
+
  ** isoutlier (fully Matlab compatible)
 
  ** loglcdf

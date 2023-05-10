@@ -74,6 +74,7 @@ Distributions
  gumbelcdf gumbelinv gumbelpdf gumbelrnd
  hncdf hninv hnpdf hnrnd
  hygecdf hygeinv hygepdf hygernd
+ invgcdf invginv invgpdf invgrnd
  iwishpdf iwishrnd
  jsucdf jsupdf
  laplacecdf laplaceinv laplacepdf laplacernd
