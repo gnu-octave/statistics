@@ -24,11 +24,11 @@
 ## Gumbel probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the Gumbel distribution (also known as the extreme value or the
-## type I generalized extreme value distribution) with location parameter
-## @var{mu} and scale parameter @var{beta}.  The size of @var{y} is the common
-## size of @var{x}, @var{mu} and @var{beta}.  A scalar input functions as a
-## constant matrix of the same size as the other inputs.
+## of the Gumbel distribution (also known as the extreme value or the type I
+## generalized extreme value distribution) with location parameter @var{mu} and
+## scale parameter @var{beta}.  The size of @var{y} is the common size of
+## @var{x}, @var{mu} and @var{beta}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
 ##
 ## Default values are @var{mu} = 0, @var{beta} = 1.
 ##
@@ -100,7 +100,7 @@ endfunction
 %! xlabel ("values in x")
 %! ylabel ("density")
 
-## Test results
+## Test output
 %!shared x, y0, y1
 %! x = [-5, 0, 1, 2, 3];
 %! y0 = [0, 0.3679, 0.2547, 0.1182, 0.0474];

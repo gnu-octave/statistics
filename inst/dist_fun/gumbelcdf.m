@@ -29,10 +29,10 @@
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
 ## (CDF) of the Gumbel distribution (also known as the extreme value or the type
-## I generalized extreme value distribution) at the values in @var{x} with
-## location parameter @var{mu} and scale parameter @var{beta}.  The size of
-## @var{p} is the common size of @var{x}, @var{mu} and @var{beta}.  A scalar
-## input functions as a constant matrix of the same size as the other inputs.
+## I generalized extreme value distribution) with location parameter @var{mu}
+## and scale parameter @var{beta}.  The size of @var{p} is the common size of
+## @var{x}, @var{mu} and @var{beta}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
 ##
 ## Default values are @var{mu} = 0, @var{beta} = 1.
 ##
@@ -138,7 +138,7 @@ function [varargout] = gumbelcdf (x, varargin)
     p = exp (-exp (-z));
   endif
 
-  ## Check for appropriate class
+  ## Check for class type
   if (isa (x, "single") || isa (mu, "single") || isa (beta, "single"));
     is_class = "single";
   else
@@ -206,7 +206,7 @@ endfunction
 %! xlabel ("values in x")
 %! ylabel ("probability")
 
-## Test results
+## Test output
 %!shared x, y
 %! x = [-Inf, 1, 2, Inf];
 %! y = [0, 0.3679, 0.6922, 1];

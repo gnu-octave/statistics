@@ -23,7 +23,7 @@
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
 ## the half-normal distribution with location parameter @var{mu} and scale
-## parameter @var{s}.  The size of @var{x} is the common size of @var{p},
+## parameter @var{sigma}.  The size of @var{x} is the common size of @var{p},
 ## @var{mu}, and @var{sigma}.  A scalar input functions as a constant matrix of
 ## the same size as the other inputs.
 ##
@@ -53,7 +53,7 @@ function x = hninv (p, mu, sigma)
     error ("hninv: P, MU, and SIGMA must not be complex.");
   endif
 
-  ## Check for appropriate class
+  ## Check for class type
   if (isa (p, "single") || isa (mu, "single") || isa (sigma, "single"));
     x = NaN (size (p), "single");
   else

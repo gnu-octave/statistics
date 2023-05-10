@@ -62,20 +62,23 @@ function r = hnrnd (mu, sigma, varargin)
     error ("hnrnd: MU and SIGMA must not be complex.");
   endif
 
-  ## Check for SIZE vector or DIMENSION input arguments
+  ## Parse and check SIZE arguments
   if (nargin == 2)
     sz = size (mu);
   elseif (nargin == 3)
-    if (isscalar (varargin{1}) && varargin{1} >= 0)
+    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+                               && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
+    elseif (isrow (varargin{1}) && all (varargin{1} >= 0) ...
+                                && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
-    else
-      error (strcat (["hnrnd: dimension vector must be a row vector"], ...
+    elseif
+      error (strcat (["hnrnd: SZ must be a scalar or a row vector"], ...
                      [" of non-negative integers."]));
     endif
   elseif (nargin > 3)
-    if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
+    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
+    if (any (posint))
       error ("hnrnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
@@ -86,7 +89,7 @@ function r = hnrnd (mu, sigma, varargin)
     error ("hnrnd: MU and SIGMA must be scalars or of size SZ.");
   endif
 
-  ## Check for appropriate class
+  ## Check for class type
   if (isa (mu, "single") || isa (sigma, "single"))
     cls = "single";
   else
@@ -94,7 +97,6 @@ function r = hnrnd (mu, sigma, varargin)
   endif
 
   ## Generate random sample from half-normal distribution
-
   r = abs (randn (sz, cls)) .* sigma + mu;
 
   ## Force output to NaN for invalid parameter SIGMA <= 0
@@ -103,7 +105,7 @@ function r = hnrnd (mu, sigma, varargin)
 
 endfunction
 
-## Test results
+## Test output
 %!assert (size (hnrnd (1, 1, 1)), [1, 1])
 %!assert (size (hnrnd (1, 1, 2)), [2, 2])
 %!assert (size (hnrnd (1, 1, [2, 1])), [2, 1])
@@ -135,14 +137,22 @@ endfunction
 %! hnrnd (ones (3), ones (2))
 %!error<hnrnd: MU and SIGMA must be of common size or scalars.> ...
 %! hnrnd (ones (2), ones (3))
-%!error<hnrnd: MU and SIGMA must not be complex.> hnrnd (i, 2)
-%!error<hnrnd: MU and SIGMA must not be complex.> hnrnd (1, i)
-%!error<hnrnd: dimension vector must be a row vector of non-negative> ...
-%! hnrnd (0, 1, [3, -1])
-%!error<hnrnd: dimension vector must be a row vector of non-negative> ...
-%! hnrnd (0, 1, -1)
+%!error<hnrnd: MU and SIGMA must not be complex.> hnrnd (i, 2, 3)
+%!error<hnrnd: MU and SIGMA must not be complex.> hnrnd (1, i, 3)
+%!error<hnrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! hnrnd (1, 2, -1)
+%!error<hnrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! hnrnd (1, 2, 1.2)
+%!error<hnrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! hnrnd (1, 2, ones (2))
+%!error<hnrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! hnrnd (1, 2, [2 -1 2])
+%!error<hnrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! hnrnd (1, 2, [2 0 2.5])
 %!error<hnrnd: dimensions must be non-negative integers.> ...
-%! hnrnd (0, 1, 3, -1)
+%! hnrnd (1, 2, 2, -1, 5)
+%!error<hnrnd: dimensions must be non-negative integers.> ...
+%! hnrnd (1, 2, 2, 1.5, 5)
 %!error<hnrnd: MU and SIGMA must be scalars or of size SZ.> ...
 %! hnrnd (2, ones (2), 3)
 %!error<hnrnd: MU and SIGMA must be scalars or of size SZ.> ...

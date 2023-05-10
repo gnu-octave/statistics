@@ -93,7 +93,7 @@ function r = gumbelrnd (mu, beta, varargin)
 
   ## Check that parameters match requested dimensions in size
   if (! isscalar (mu) && ! isequal (size (mu), sz))
-    error ("gumbelrnd: MU and BETA must be scalar or of size SZ.");
+    error ("gumbelrnd: MU and BETA must be scalars or of size SZ.");
   endif
 
   ## Check for class type
@@ -111,7 +111,7 @@ function r = gumbelrnd (mu, beta, varargin)
 
 endfunction
 
-## Test results
+## Test output
 %!assert (size (gumbelrnd (1, 1)), [1 1])
 %!assert (size (gumbelrnd (1, ones (2,1))), [2, 1])
 %!assert (size (gumbelrnd (1, ones (2,2))), [2, 2])
@@ -155,9 +155,9 @@ endfunction
 %! gumbelrnd (1, 2, 2, -1, 5)
 %!error<gumbelrnd: dimensions must be non-negative integers.> ...
 %! gumbelrnd (1, 2, 2, 1.5, 5)
-%!error<gumbelrnd: MU and BETA must be scalar or of size SZ.> ...
+%!error<gumbelrnd: MU and BETA must be scalars or of size SZ.> ...
 %! gumbelrnd (2, ones (2), 3)
-%!error<gumbelrnd: MU and BETA must be scalar or of size SZ.> ...
+%!error<gumbelrnd: MU and BETA must be scalars or of size SZ.> ...
 %! gumbelrnd (2, ones (2), [3, 2])
-%!error<gumbelrnd: MU and BETA must be scalar or of size SZ.> ...
+%!error<gumbelrnd: MU and BETA must be scalars or of size SZ.> ...
 %! gumbelrnd (2, ones (2), 3, 2)

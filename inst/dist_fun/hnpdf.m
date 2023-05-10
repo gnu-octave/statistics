@@ -21,11 +21,11 @@
 ##
 ## Half-normal probability density function (PDF).
 ##
-## For each element of @var{x}, compute the PDF at @var{x} of the half-normal
-## distribution with location parameter @var{mu} and scale parameter @var{sigma}.
-## The size of @var{y} is the common size of @var{x}, @var{mu}, and @var{sigma}.
-## A scalar input functions as a constant matrix of the same size as the other
-## inputs.
+## For each element of @var{x}, compute the probability density function (PDF)
+## of the half-normal distribution with location parameter @var{mu} and scale
+## parameter @var{sigma}.  The size of @var{y} is the common size of @var{x},
+## @var{mu}, and @var{sigma}.  A scalar input functions as a constant matrix of
+## the same size as the other inputs.
 ##
 ## The half-normal CDF is only defined for @qcode{@var{x} >= @var{mu}}.
 ##
@@ -55,7 +55,7 @@ function y = hnpdf (x, mu, sigma)
     error ("hnpdf: X, MU, and SIGMA must not be complex.");
   endif
 
-  ## Check for appropriate class
+  ## Check for class type
   if (isa (x, "single") || isa (mu, "single") || isa (sigma, "single"));
     y = NaN (size (x), "single");
   else
@@ -69,7 +69,7 @@ function y = hnpdf (x, mu, sigma)
   z = (x - mu) ./ sigma;
   y = sqrt (2 / pi) ./ sigma .* exp (-0.5 * z .^ 2);
 
-  ## Force zero fox unsupported X
+  ## Force zero for unsupported X
   y(z < 0) = 0;
 
 endfunction

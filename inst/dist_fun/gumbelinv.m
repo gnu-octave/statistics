@@ -25,12 +25,12 @@
 ##
 ## Inverse of the Gumbel cumulative distribution function (iCDF).
 ##
-## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## at @var{p} of the Gumbel distribution (also known as the extreme value or the
-## type I generalized extreme value distribution) with location parameter
-## @var{mu} and scale parameter @var{beta}.  The size of @var{x} is the common
-## size of @var{p}, @var{mu} and @var{beta}.  A scalar input functions as a
-## constant matrix of the same size as the other inputs.
+## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
+## the Gumbel distribution (also known as the extreme value or the type I
+## generalized extreme value distribution) with location parameter @var{mu} and
+## scale parameter @var{beta}.  The size of @var{x} is the common size of
+## @var{p}, @var{mu} and @var{beta}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
 ##
 ## Default values are @var{mu} = 0, @var{beta} = 1.
 ##
@@ -102,7 +102,7 @@ function [x, xlo, xup] = gumbelinv (p, mu, beta, pcov, alpha)
     error ("gumbelinv: P, MU, and BETA must not be complex.");
   endif
 
-  ## Check for appropriate class
+  ## Check for class type
   if (isa (p, "single") || isa (mu, "single") || isa (beta, "single"));
     is_class = "single";
   else
@@ -157,7 +157,7 @@ endfunction
 %! xlabel ("probability")
 %! ylabel ("values in x")
 
-## Test results
+## Test output
 %!shared p, x
 %! p = [0, 0.05, 0.5 0.95];
 %! x = [-Inf, -1.0972, 0.3665, 2.9702];
