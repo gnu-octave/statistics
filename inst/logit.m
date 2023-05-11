@@ -41,7 +41,7 @@ function x = logit (p)
     print_usage ();
   endif
 
-  x = logiinv (p);
+  x = logiinv (p, 0, 1);
 
 endfunction
 
