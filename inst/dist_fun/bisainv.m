@@ -157,4 +157,3 @@ endfunction
 %!error<bisainv: P, BETA, and GAMMA must not be complex.> bisainv (i, 4, 3)
 %!error<bisainv: P, BETA, and GAMMA must not be complex.> bisainv (1, i, 3)
 %!error<bisainv: P, BETA, and GAMMA must not be complex.> bisainv (1, 4, i)
-

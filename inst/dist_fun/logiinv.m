@@ -25,27 +25,26 @@
 ##
 ## Inverse of the logistic cumulative distribution function (iCDF).
 ##
-## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## at @var{p} of the logistic distribution with location parameter @var{mu} and
-## scale parameter @var{s}.  The size of @var{x} is the common size of
-## @var{p}, @var{mu}, and @var{s}.  A scalar input functions as a constant
-## matrix of the same size as the other inputs.
+## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
+## the logistic distribution with location parameter @var{mu} and scale
+## parameter @var{s}.  The size of @var{p} is the common size of @var{x},
+## @var{mu}, and @var{s}.  A scalar input functions as a constant matrix of
+## the same size as the other inputs.
 ##
-## Default values are @qcode{@var{mu} = 0} and @qcode{@var{s} = 1}.
-## Both parameters must be reals and @qcode{@var{beta} > 0}.
-## For @qcode{@var{beta} <= 0}, @qcode{NaN} is returned.
+## Both parameters must be reals and @qcode{@var{s} > 0}.
+## For @qcode{@var{s} <= 0}, @qcode{NaN} is returned.
 ##
-## Further information about the log-logistic distribution can be found at
+## Further information about the logistic distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Logistic_distribution}
 ##
 ## @seealso{logicdf, logipdf, logirnd, logifit, logilike, logistat}
 ## @end deftypefn
 
-function x = logiinv (p, mu = 0, s = 1)
+function x = logiinv (p, mu, s)
 
   ## Check for valid number of input arguments
-  if (nargin < 1 || nargin > 3)
-    print_usage ();
+  if (nargin < 3)
+    error ("logiinv: function called with too few input arguments.");
   endif
 
   ## Check for common size of P, MU, and S
@@ -99,28 +98,29 @@ endfunction
 ## Test output
 %!test
 %! p = [0.01:0.01:0.99];
-%! assert (logiinv (p), log (p ./ (1-p)), 25*eps);
+%! assert (logiinv (p, 0, 1), log (p ./ (1-p)), 25*eps);
 %!shared p
 %! p = [-1 0 0.5 1 2];
-%!assert (logiinv (p), [NaN -Inf 0 Inf NaN])
+%!assert (logiinv (p, 0, 1), [NaN -Inf 0 Inf NaN])
 %!assert (logiinv (p, 0, [-1, 0, 1, 2, 3]), [NaN NaN 0 Inf NaN])
 
 ## Test class of input preserved
-%!assert (logiinv ([p, NaN]), [NaN -Inf 0 Inf NaN NaN])
-%!assert (logiinv (single ([p, NaN])), single ([NaN -Inf 0 Inf NaN NaN]))
+%!assert (logiinv ([p, NaN], 0, 1), [NaN -Inf 0 Inf NaN NaN])
+%!assert (logiinv (single ([p, NaN]), 0, 1), single ([NaN -Inf 0 Inf NaN NaN]))
+%!assert (logiinv ([p, NaN], single (0), 1), single ([NaN -Inf 0 Inf NaN NaN]))
+%!assert (logiinv ([p, NaN], 0, single (1)), single ([NaN -Inf 0 Inf NaN NaN]))
 
 ## Test input validation
-%!error logiinv ()
-%!error logiinv (1, 2, 3, 4)
+%!error<logiinv: function called with too few input arguments.> logiinv ()
+%!error<logiinv: function called with too few input arguments.> logiinv (1)
+%!error<logiinv: function called with too few input arguments.> ...
+%! logiinv (1, 2)
 %!error<logiinv: P, MU, and S must be of common size or scalars.> ...
 %! logiinv (1, ones (2), ones (3))
 %!error<logiinv: P, MU, and S must be of common size or scalars.> ...
 %! logiinv (ones (2), 1, ones (3))
 %!error<logiinv: P, MU, and S must be of common size or scalars.> ...
 %! logiinv (ones (2), ones (3), 1)
-%!error<logiinv: P, MU, and S must not be complex.> ...
-%! logiinv (i, 2, 3)
-%!error<logiinv: P, MU, and S must not be complex.> ...
-%! logiinv (1, i, 3)
-%!error<logiinv: P, MU, and S must not be complex.> ...
-%! logiinv (1, 2, i)
+%!error<logiinv: P, MU, and S must not be complex.> logiinv (i, 2, 3)
+%!error<logiinv: P, MU, and S must not be complex.> logiinv (1, i, 3)
+%!error<logiinv: P, MU, and S must not be complex.> logiinv (1, 2, i)

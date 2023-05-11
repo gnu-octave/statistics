@@ -25,17 +25,17 @@
 ## Laplace cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the Laplace distribution with location parameter
-## @var{mu} and scale parameter (i.e. "diversity") @var{beta}.  The size of
-## @var{p} is the common size of @var{x}, @var{mu}, and @var{beta}.  A scalar
-## input functions as a constant matrix of the same size as the other inputs.
+## (CDF) of the Laplace distribution with location parameter @var{mu} and scale
+## parameter (i.e. "diversity") @var{beta}.  The size of @var{p} is the common
+## size of @var{x}, @var{mu}, and @var{beta}.  A scalar input functions as a
+## constant matrix of the same size as the other inputs.
 ##
 ## Both parameters must be reals and @qcode{@var{beta} > 0}.
 ## For @qcode{@var{beta} <= 0}, @qcode{NaN} is returned.
 ##
 ## @code{@var{p} = laplacecdf (@var{x}, @var{mu}, @var{beta}, "upper")} computes
 ## the upper tail probability of the Laplace distribution with parameters
-## @var{mu} and @var{beta} at the values in @var{x}.
+## @var{mu} and @var{beta}, at the values in @var{x}.
 ##
 ## Further information about the Laplace distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Laplace_distribution}
@@ -118,7 +118,7 @@ endfunction
 %! xlabel ("values in x")
 %! ylabel ("probability")
 
-## Test results
+## Test output
 %!shared x, y
 %! x = [-Inf, -log(2), 0, log(2), Inf];
 %! y = [0, 1/4, 1/2, 3/4, 1];

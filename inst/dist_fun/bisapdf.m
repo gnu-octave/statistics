@@ -151,4 +151,3 @@ endfunction
 %!error<bisapdf: X, BETA, and GAMMA must not be complex.> bisapdf (i, 4, 3)
 %!error<bisapdf: X, BETA, and GAMMA must not be complex.> bisapdf (1, i, 3)
 %!error<bisapdf: X, BETA, and GAMMA must not be complex.> bisapdf (1, 4, i)
-

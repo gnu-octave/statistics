@@ -29,8 +29,8 @@
 ## inputs.
 ##
 ## @code{@var{p} = geocdf (@var{x}, @var{ps}, "upper")} computes the upper tail
-## probability of the geometric distribution with probability parameter
-## @var{ps}.
+## probability of the geometric distribution with parameter @var{ps}, at the
+## values in @var{x}.
 ##
 ## The geometric distribution models the number of failures (@var{x}) of a
 ## Bernoulli trial with probability @var{ps} before the first success.
@@ -157,4 +157,3 @@ endfunction
 %!error<geocdf: X and PS must not be complex.> geocdf (2, i)
 %!error<geocdf: invalid argument for upper tail.> geocdf (2, 3, "tail")
 %!error<geocdf: invalid argument for upper tail.> geocdf (2, 3, 5)
-

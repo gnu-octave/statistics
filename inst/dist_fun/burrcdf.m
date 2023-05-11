@@ -33,7 +33,7 @@
 ##
 ## @code{@var{p} = burrcdf (@var{x}, @var{beta}, @var{gamma}, "upper")}
 ## computes the upper tail probability of the Birnbaum-Saunders distribution
-## with parameters @var{beta} and @var{gamma} at the values in @var{x}.
+## with parameters @var{beta} and @var{gamma}, at the values in @var{x}.
 ##
 ## Further information about the Burr distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Burr_distribution}
@@ -163,4 +163,3 @@ endfunction
 %!error<burrcdf: X, LAMBDA, C, and K must not be complex.> burrcdf (1, i, 3, 4)
 %!error<burrcdf: X, LAMBDA, C, and K must not be complex.> burrcdf (1, 2, i, 4)
 %!error<burrcdf: X, LAMBDA, C, and K must not be complex.> burrcdf (1, 2, 3, i)
-

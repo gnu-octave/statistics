@@ -31,7 +31,7 @@
 ##
 ## @code{@var{p} = binocdf (@var{x}, @var{n}, @var{ps}, "upper")} computes the
 ## upper tail probability of the binomial distribution with parameters
-## @var{n} and @var{ps} at the values in @var{x}.
+## @var{n} and @var{ps}, at the values in @var{x}.
 ##
 ## Further information about the binomial distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Binomial_distribution}

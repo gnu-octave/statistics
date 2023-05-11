@@ -32,7 +32,7 @@
 ##
 ## @code{@var{p} = cauchycdf (@var{x}, @var{x0}, @var{gamma}, "upper")} computes
 ## the upper tail probability of the Cauchy distribution with parameters
-## @var{x0} and @var{gamma} at the values in @var{x}.
+## @var{x0} and @var{gamma}, at the values in @var{x}.
 ##
 ## Further information about the Cauchy distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Cauchy_distribution}

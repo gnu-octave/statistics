@@ -24,27 +24,26 @@
 ##
 ## Logistic probability density function (PDF).
 ##
-## For each element of @var{x}, compute the PDF at @var{x} of the logistic
-## distribution with location parameter @var{mu} and scale parameter @var{s}.
-## The size of @var{y} is the common size of @var{x}, @var{mu}, and @var{s}.
-## A scalar input functions as a constant matrix of the same size as the other
-## inputs.
+## For each element of @var{x}, compute the probability density function (PDF)
+## of the logistic distribution with location parameter @var{mu} and scale
+## parameter @var{s}.  The size of @var{p} is the common size of @var{x},
+## @var{mu}, and @var{s}.  A scalar input functions as a constant matrix of
+## the same size as the other inputs.
 ##
-## Default values are @qcode{@var{mu} = 0} and @qcode{@var{s} = 1}.
-## Both parameters must be reals and @qcode{@var{beta} > 0}.
-## For @qcode{@var{beta} <= 0}, @qcode{NaN} is returned.
+## Both parameters must be reals and @qcode{@var{s} > 0}.
+## For @qcode{@var{s} <= 0}, @qcode{NaN} is returned.
 ##
-## Further information about the log-logistic distribution can be found at
+## Further information about the logistic distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Logistic_distribution}
 ##
 ## @seealso{logicdf, logiinv, logirnd, logifit, logilike, logistat}
 ## @end deftypefn
 
-function y = logipdf (x, mu = 0, s = 1)
+function y = logipdf (x, mu, s)
 
   ## Check for valid number of input arguments
-  if (nargin < 1 || nargin > 3)
-    print_usage ();
+  if (nargin < 3)
+    error ("logipdf: function called with too few input arguments.");
   endif
 
   ## Check for common size of X, MU, and S
@@ -99,24 +98,25 @@ endfunction
 %!shared x, y
 %! x = [-Inf -log(4) 0 log(4) Inf];
 %! y = [0, 0.16, 1/4, 0.16, 0];
-%!assert (logipdf ([x, NaN]), [y, NaN], eps)
+%!assert (logipdf ([x, NaN], 0, 1), [y, NaN], eps)
 %!assert (logipdf (x, 0, [-2, -1, 0, 1, 2]), [nan(1, 3), y([4:5])], eps)
 
 ## Test class of input preserved
-%!assert (logipdf (single ([x, NaN])), single ([y, NaN]), eps ("single"))
+%!assert (logipdf (single ([x, NaN]), 0, 1), single ([y, NaN]), eps ("single"))
+%!assert (logipdf ([x, NaN], single (0), 1), single ([y, NaN]), eps ("single"))
+%!assert (logipdf ([x, NaN], 0, single (1)), single ([y, NaN]), eps ("single"))
 
 ## Test input validation
-%!error logipdf ()
-%!error logipdf (1, 2, 3, 4)
+%!error<logipdf: function called with too few input arguments.> logipdf ()
+%!error<logipdf: function called with too few input arguments.> logipdf (1)
+%!error<logipdf: function called with too few input arguments.> ...
+%! logipdf (1, 2)
 %!error<logipdf: X, MU, and S must be of common size or scalars.> ...
 %! logipdf (1, ones (2), ones (3))
 %!error<logipdf: X, MU, and S must be of common size or scalars.> ...
 %! logipdf (ones (2), 1, ones (3))
 %!error<logipdf: X, MU, and S must be of common size or scalars.> ...
 %! logipdf (ones (2), ones (3), 1)
-%!error<logipdf: X, MU, and S must not be complex.> ...
-%! logipdf (i, 2, 3)
-%!error<logipdf: X, MU, and S must not be complex.> ...
-%! logipdf (1, i, 3)
-%!error<logipdf: X, MU, and S must not be complex.> ...
-%! logipdf (1, 2, i)
+%!error<logipdf: X, MU, and S must not be complex.> logipdf (i, 2, 3)
+%!error<logipdf: X, MU, and S must not be complex.> logipdf (1, i, 3)
+%!error<logipdf: X, MU, and S must not be complex.> logipdf (1, 2, i)

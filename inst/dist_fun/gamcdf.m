@@ -45,7 +45,8 @@
 ## lower and upper confidence bounds.
 ##
 ## @code{[@dots{}] = gamcdf (@dots{}, "upper")} computes the upper tail
-## probability of the gamma distribution.
+## probability of the Gamma distribution with parameters @var{k} and
+## @var{theta}, at the values in @var{x}.
 ##
 ## There are two equivalent parameterizations in common use:
 ## @enumerate

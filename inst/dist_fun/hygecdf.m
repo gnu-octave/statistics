@@ -26,7 +26,7 @@
 ## Hypergeometric cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) of the hypergeometric distribution with parameters @var{t}, @var{k},
+## (CDF) of the hypergeometric distribution with parameters @var{t}, @var{m},
 ## and @var{n}.  The size of @var{p} is the common size of @var{x}, @var{t},
 ## @var{m}, and @var{n}.  A scalar input functions as a constant matrix of the
 ## same size as the other inputs.
@@ -37,8 +37,9 @@
 ## parameters @var{t}, @var{m}, and @var{n} must be positive integers with
 ## @var{m} and @var{n} not greater than @var{t}.
 ##
-## @code{[@dots{}] = hygecdf(@dots{}, "upper")} computes the upper tail
-## probability of the hypergeometric distribution.
+## @code{[@dots{}] = hygecdf (@var{x}, @var{t}, @var{m}, @var{n}, "upper")}
+## computes the upper tail probability of the hypergeometric distribution with
+## parameters @var{t}, @var{m}, and @var{n}, at the values in @var{x}.
 ##
 ## Further information about the hypergeometric distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Hypergeometric_distribution}

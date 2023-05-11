@@ -46,7 +46,8 @@
 ## lower and upper confidence bounds.
 ##
 ## @code{[@dots{}] = gumbelcdf (@dots{}, "upper")} computes the upper tail
-## probability of the Gumbel distribution.
+## probability of the Gumbel distribution with parameters @var{mu} and
+## @var{beta}, at the values in @var{x}.
 ##
 ## The Gumbel distribution is used to model the distribution of the maximum (or
 ## the minimum) of a number of samples of various distributions.  This version

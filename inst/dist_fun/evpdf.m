@@ -115,4 +115,3 @@ endfunction
 %!error<evpdf: X, MU, and SIGMA must not be complex.> evpdf (i, 2, 2)
 %!error<evpdf: X, MU, and SIGMA must not be complex.> evpdf (2, i, 2)
 %!error<evpdf: X, MU, and SIGMA must not be complex.> evpdf (2, 2, i)
-

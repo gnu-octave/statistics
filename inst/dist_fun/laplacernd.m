@@ -35,11 +35,11 @@
 ## Both parameters must be reals and @qcode{@var{beta} > 0}.
 ## For @qcode{@var{beta} <= 0}, @qcode{NaN} is returned.
 ##
-## When called with a single size argument, return a square matrix with
-## the dimension specified.  When called with more than one scalar argument the
-## first two arguments are taken as the number of rows and columns and any
-## further arguments specify additional matrix dimensions.  The size may also
-## be specified with a vector of dimensions @var{sz}.
+## When called with a single size argument, @code{laplacernd} returns a square
+## matrix with the dimension specified.  When called with more than one scalar
+## argument, the first two arguments are taken as the number of rows and columns
+## and any further arguments specify additional matrix dimensions.  The size may
+## also be specified with a row vector of dimensions, @var{sz}.
 ##
 ## Further information about the Laplace distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Laplace_distribution}
@@ -91,7 +91,7 @@ function r = laplacernd (mu, beta, varargin)
 
   ## Check that parameters match requested dimensions in size
   if (! isscalar (mu) && ! isequal (size (mu), sz))
-    error ("laplacernd: MU and BETA must be scalar or of size SZ.");
+    error ("laplacernd: MU and BETA must be scalars or of size SZ.");
   endif
 
   ## Check for class type
@@ -112,7 +112,7 @@ function r = laplacernd (mu, beta, varargin)
 
 endfunction
 
-## Test results
+## Test output
 %!assert (size (laplacernd (1, 1)), [1 1])
 %!assert (size (laplacernd (1, ones (2,1))), [2, 1])
 %!assert (size (laplacernd (1, ones (2,2))), [2, 2])
@@ -156,9 +156,9 @@ endfunction
 %! laplacernd (1, 2, 2, -1, 5)
 %!error<laplacernd: dimensions must be non-negative integers.> ...
 %! laplacernd (1, 2, 2, 1.5, 5)
-%!error<laplacernd: MU and BETA must be scalar or of size SZ.> ...
+%!error<laplacernd: MU and BETA must be scalars or of size SZ.> ...
 %! laplacernd (2, ones (2), 3)
-%!error<laplacernd: MU and BETA must be scalar or of size SZ.> ...
+%!error<laplacernd: MU and BETA must be scalars or of size SZ.> ...
 %! laplacernd (2, ones (2), [3, 2])
-%!error<laplacernd: MU and BETA must be scalar or of size SZ.> ...
+%!error<laplacernd: MU and BETA must be scalars or of size SZ.> ...
 %! laplacernd (2, ones (2), 3, 2)

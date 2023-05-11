@@ -32,7 +32,7 @@
 ##
 ## @code{@var{p} = fcdf (@var{x}, @var{df1}, @var{df2}, "upper")} computes the
 ## upper tail probability of the F distribution with @var{df1} and @var{df2}
-## degrees of freedom at the values in @var{x}.
+## degrees of freedom, at the values in @var{x}.
 ##
 ## Further information about the F distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/F-distribution}

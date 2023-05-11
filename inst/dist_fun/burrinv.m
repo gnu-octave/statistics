@@ -140,4 +140,3 @@ endfunction
 %!error<burrinv: P, LAMBDA, C, and K must not be complex.> burrinv (1, i, 3, 4)
 %!error<burrinv: P, LAMBDA, C, and K must not be complex.> burrinv (1, 2, i, 4)
 %!error<burrinv: P, LAMBDA, C, and K must not be complex.> burrinv (1, 2, 3, i)
-

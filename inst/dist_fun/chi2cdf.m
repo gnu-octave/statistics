@@ -33,7 +33,7 @@
 ## input functions as a constant matrix of the same size as the other input.
 ##
 ## @code{@var{p} = chi2cdf (@var{x}, @var{df}, "upper")} computes the upper tail
-## probability of the chi-squared distribution with @var{df} degrees of freedom
+## probability of the chi-squared distribution with @var{df} degrees of freedom,
 ## at the values in @var{x}.
 ##
 ## Further information about the chi-squared distribution can be found at

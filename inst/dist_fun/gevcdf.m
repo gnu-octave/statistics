@@ -26,8 +26,9 @@
 ## common size of @var{x}, @var{k}, @var{sigma}, and @var{mu}.  A scalar input
 ## functions as a constant matrix of the same size as the other inputs.
 ##
-## @code{[@dots{}] = gevcdf (@dots{}, "upper")} computes the upper tail
-## probability of the extreme value distribution.
+## @code{[@dots{}] = gevcdf (@var{x}, @var{k}, @var{sigma}, @var{mu}, "upper")}
+## computes the upper tail probability of the GEV distribution with parameters
+## @var{k}, @var{sigma}, and @var{mu}, at the values in @var{x}.
 ##
 ## When @qcode{@var{k} < 0}, the GEV is the type III extreme value distribution.
 ## When @qcode{@var{k} > 0}, the GEV distribution is the type II, or Frechet,

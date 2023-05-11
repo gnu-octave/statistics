@@ -150,4 +150,3 @@ endfunction
 %!error<gevinv: P, K, SIGMA, and MU must not be complex.> gevinv (1, i, 3, 4)
 %!error<gevinv: P, K, SIGMA, and MU must not be complex.> gevinv (1, 2, i, 4)
 %!error<gevinv: P, K, SIGMA, and MU must not be complex.> gevinv (1, 2, 3, i)
-

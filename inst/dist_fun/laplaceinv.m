@@ -23,11 +23,11 @@
 ##
 ## Inverse of the Laplace cumulative distribution function (iCDF).
 ##
-## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## at @var{p} of the Laplace distribution with location parameter @var{mu} and
-## scale parameter (i.e. "diversity") @var{beta}.  The size of @var{x} is the
-## common size of @var{p}, @var{mu}, and @var{beta}.  A scalar input functions
-## as a constant matrix of the same size as the other inputs.
+## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
+## the Laplace distribution with location parameter @var{mu} and scale parameter
+## (i.e. "diversity") @var{beta}.  The size of @var{x} is the common size of
+## @var{p}, @var{mu}, and @var{beta}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
 ##
 ## Both parameters must be reals and @qcode{@var{beta} > 0}.
 ## For @qcode{@var{beta} <= 0}, @qcode{NaN} is returned.
@@ -89,7 +89,7 @@ endfunction
 %! xlabel ("probability")
 %! ylabel ("values in x")
 
-## Test results
+## Test output
 %!shared p, x
 %! p = [-1 0 0.5 1 2];
 %! x = [NaN, -Inf, 0, Inf, NaN];

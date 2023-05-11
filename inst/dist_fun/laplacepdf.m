@@ -26,10 +26,10 @@
 ## Laplace probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the Laplace distribution with location parameter @var{mu} and
-## scale parameter (i.e. "diversity") @var{beta}.  The size of @var{y} is the
-## common size of @var{x}, @var{mu}, and @var{beta}.  A scalar input functions
-## as a constant matrix of the same size as the other inputs.
+## of the Laplace distribution with location parameter @var{mu} and scale
+## parameter (i.e. "diversity") @var{beta}.  The size of @var{y} is the common
+## size of @var{x}, @var{mu}, and @var{beta}.  A scalar input functions as a
+## constant matrix of the same size as the other inputs.
 ##
 ## Both parameters must be reals and @qcode{@var{beta} > 0}.
 ## For @qcode{@var{beta} <= 0}, @qcode{NaN} is returned.

@@ -28,8 +28,9 @@
 ## @var{x}, @var{mu} and @var{lambda}.  A scalar input functions as a constant
 ## matrix of the same size as the other inputs.
 ##
-## @code{[@dots{}] = invgcdf(@dots{}, "upper")} computes the upper tail
-## probability of the inverse Gaussian distribution.
+## @code{@var{p} = invgcdf (@var{x}, @var{mu}, @var{lambda}, "upper")} computes
+## the upper tail probability of the inverse Gaussian distribution with
+## parameters @var{mu} and @var{lambda}, at the values in @var{x}.
 ##
 ## The inverse Gaussian CDF is only defined for @qcode{@var{mu} > 0} and
 ## @qcode{@var{lambda} > 0}.

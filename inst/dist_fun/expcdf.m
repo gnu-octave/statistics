@@ -49,7 +49,8 @@
 ## upper confidence bounds.
 ##
 ## @code{[@dots{}] = expcdf (@dots{}, "upper")} computes the upper tail
-## probability of the exponential distribution.
+## probability of the exponential distribution with parameter @var{mu}, at the
+## values in @var{x}.
 ##
 ## Further information about the exponential distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Exponential_distribution}

@@ -33,7 +33,7 @@
 ##
 ## @code{@var{p} = bisacdf (@var{x}, @var{beta}, @var{gamma}, "upper")}
 ## computes the upper tail probability of the Birnbaum-Saunders distribution
-## with parameters @var{beta} and @var{gamma} at the values in @var{x}.
+## with parameters @var{beta} and @var{gamma}, at the values in @var{x}.
 ##
 ## Further information about the Birnbaum-Saunders distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Birnbaum%E2%80%93Saunders_distribution}
@@ -176,4 +176,3 @@ endfunction
 %!error<bisacdf: X, BETA, and GAMMA must not be complex.> bisacdf (i, 4, 3)
 %!error<bisacdf: X, BETA, and GAMMA must not be complex.> bisacdf (1, i, 3)
 %!error<bisacdf: X, BETA, and GAMMA must not be complex.> bisacdf (1, 4, i)
-

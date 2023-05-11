@@ -31,7 +31,7 @@
 ##
 ## @code{@var{p} = betacdf (@var{x}, @var{a}, @var{b}, "upper")} computes the
 ## upper tail probability of the Beta distribution with parameters @var{a} and
-## @var{b} at the values in @var{x}.
+## @var{b}, at the values in @var{x}.
 ##
 ## Further information about the Beta distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Beta_distribution}

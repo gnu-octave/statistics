@@ -32,8 +32,9 @@
 ## A scalar input functions as a constant matrix of the same size as the other
 ## inputs.
 ##
-## @code{[@dots{}] = gpcdf(@dots{}, "upper")} computes the upper tail
-## probability of the generalized Pareto distribution.
+## @code{[@dots{}] = gpcdf(@var{x}, @var{k}, @var{sigma}, @var{mu}, "upper")}
+## computes the upper tail probability of the generalized Pareto distribution
+## with parameters @var{k}, @var{sigma}, and @var{mu}, at the values in @var{x}.
 ##
 ## When @qcode{@var{k} = 0} and @qcode{@var{mu} = 0}, the Generalized Pareto CDF
 ## is equivalent to the exponential distribution.  When @qcode{@var{k} > 0} and

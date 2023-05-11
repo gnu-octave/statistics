@@ -28,18 +28,20 @@
 ##
 ## @code{@var{r} = logirnd (@var{mu}, @var{s})} returns an array of
 ## random numbers chosen from the logistic distribution with location parameter
-## @var{mu} and scale @var{s}.  The size of @var{r} is the common size of
-## @var{mu} and @var{s}.  A scalar input functions as a constant matrix of the
-## same size as the other inputs.  Both parameters must be reals and
-## @qcode{@var{s} > 0}.  For @qcode{@var{s} <= 0}, @qcode{NaN} is returned.
+## @var{mu} and scale parameter @var{s}.  The size of @var{r} is the common size
+## of @var{mu} and @var{s}.  A scalar input functions as a constant matrix of
+## the same size as the other inputs.
 ##
-## When called with a single size argument, it returns a square matrix with
-## the dimension specified.  When called with more than one scalar argument the
-## first two arguments are taken as the number of rows and columns and any
-## further arguments specify additional matrix dimensions.  The size may also
-## be specified with a vector of dimensions @var{sz}.
+## Both parameters must be reals and @qcode{@var{s} > 0}.
+## For @qcode{@var{s} <= 0}, @qcode{NaN} is returned.
 ##
-## Further information about the log-logistic distribution can be found at
+## When called with a single size argument, @code{logirnd} returns a square
+## matrix with the dimension specified.  When called with more than one scalar
+## argument, the first two arguments are taken as the number of rows and columns
+## and any further arguments specify additional matrix dimensions.  The size may
+## also be specified with a row vector of dimensions, @var{sz}.
+##
+## Further information about the logistic distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Logistic_distribution}
 ##
 ## @seealso{logcdf, logiinv, logipdf, logifit, logilike, logistat}
@@ -49,7 +51,7 @@ function r = logirnd (mu, s, varargin)
 
   ## Check for valid number of input arguments
   if (nargin < 2)
-    print_usage ();
+    error ("logirnd: function called with too few input arguments.");
   endif
 
   ## Check for common size of MU, and S
@@ -65,20 +67,23 @@ function r = logirnd (mu, s, varargin)
     error ("logirnd: MU and S must not be complex.");
   endif
 
-  ## Check for SIZE vector or DIMENSION input arguments
+  ## Parse and check SIZE arguments
   if (nargin == 2)
     sz = size (mu);
   elseif (nargin == 3)
-    if (isscalar (varargin{1}) && varargin{1} >= 0)
+    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+                               && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
+    elseif (isrow (varargin{1}) && all (varargin{1} >= 0) ...
+                                && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
-    else
-      error (strcat (["logirnd: dimension vector must be a row vector"], ...
+    elseif
+      error (strcat (["logirnd: SZ must be a scalar or a row vector"], ...
                      [" of non-negative integers."]));
     endif
   elseif (nargin > 3)
-    if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
+    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
+    if (any (posint))
       error ("logirnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
@@ -105,46 +110,50 @@ function r = logirnd (mu, s, varargin)
 
 endfunction
 
-## Test results
-%!assert (size (logirnd (1, 1, 1)), [1, 1])
-%!assert (size (logirnd (1, 1, 2)), [2, 2])
-%!assert (size (logirnd (1, 1, [2, 1])), [2, 1])
-%!assert (size (logirnd (1, zeros (2, 2))), [2, 2])
-%!assert (size (logirnd (1, ones (2, 1))), [2, 1])
-%!assert (size (logirnd (1, ones (2, 2))), [2, 2])
-%!assert (size (logirnd (ones (2, 1), 1)), [2, 1])
-%!assert (size (logirnd (ones (2, 2), 1)), [2, 2])
+## Test output
+%!assert (size (logirnd (1, 1)), [1 1])
+%!assert (size (logirnd (1, ones (2,1))), [2, 1])
+%!assert (size (logirnd (1, ones (2,2))), [2, 2])
+%!assert (size (logirnd (ones (2,1), 1)), [2, 1])
+%!assert (size (logirnd (ones (2,2), 1)), [2, 2])
 %!assert (size (logirnd (1, 1, 3)), [3, 3])
-%!assert (size (logirnd (1, 1, [4 1])), [4, 1])
+%!assert (size (logirnd (1, 1, [4, 1])), [4, 1])
 %!assert (size (logirnd (1, 1, 4, 1)), [4, 1])
-%!test
-%! r =  logirnd (1, [1, 0, -1]);
-%! assert (r([2:3]), [NaN, NaN])
+%!assert (size (logirnd (1, 1, 4, 1, 5)), [4, 1, 5])
+%!assert (size (logirnd (1, 1, 0, 1)), [0, 1])
+%!assert (size (logirnd (1, 1, 1, 0)), [1, 0])
+%!assert (size (logirnd (1, 1, 1, 2, 0, 5)), [1, 2, 0, 5])
 
 ## Test class of input preserved
-%!assert (class (logirnd (1, 0)), "double")
-%!assert (class (logirnd (1, single (0))), "single")
-%!assert (class (logirnd (1, single ([0 0]))), "single")
+%!assert (class (logirnd (1, 1)), "double")
 %!assert (class (logirnd (1, single (1))), "single")
-%!assert (class (logirnd (1, single ([1 1]))), "single")
+%!assert (class (logirnd (1, single ([1, 1]))), "single")
 %!assert (class (logirnd (single (1), 1)), "single")
-%!assert (class (logirnd (single ([1 1]), 1)), "single")
+%!assert (class (logirnd (single ([1, 1]), 1)), "single")
 
 ## Test input validation
-%!error logirnd ()
-%!error logirnd (1)
+%!error<logirnd: function called with too few input arguments.> logirnd ()
+%!error<logirnd: function called with too few input arguments.> logirnd (1)
 %!error<logirnd: MU and S must be of common size or scalars.> ...
 %! logirnd (ones (3), ones (2))
 %!error<logirnd: MU and S must be of common size or scalars.> ...
 %! logirnd (ones (2), ones (3))
-%!error<logirnd: MU and S must not be complex.> logirnd (i, 2)
-%!error<logirnd: MU and S must not be complex.> logirnd (1, i)
-%!error<logirnd: dimension vector must be a row vector of non-negative> ...
-%! logirnd (0, 1, [3, -1])
-%!error<logirnd: dimension vector must be a row vector of non-negative> ...
-%! logirnd (0, 1, -1)
+%!error<logirnd: MU and S must not be complex.> logirnd (i, 2, 3)
+%!error<logirnd: MU and S must not be complex.> logirnd (1, i, 3)
+%!error<logirnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! logirnd (1, 2, -1)
+%!error<logirnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! logirnd (1, 2, 1.2)
+%!error<logirnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! logirnd (1, 2, ones (2))
+%!error<logirnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! logirnd (1, 2, [2 -1 2])
+%!error<logirnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! logirnd (1, 2, [2 0 2.5])
 %!error<logirnd: dimensions must be non-negative integers.> ...
-%! logirnd (0, 1, 3, -1)
+%! logirnd (1, 2, 2, -1, 5)
+%!error<logirnd: dimensions must be non-negative integers.> ...
+%! logirnd (1, 2, 2, 1.5, 5)
 %!error<logirnd: MU and S must be scalars or of size SZ.> ...
 %! logirnd (2, ones (2), 3)
 %!error<logirnd: MU and S must be scalars or of size SZ.> ...

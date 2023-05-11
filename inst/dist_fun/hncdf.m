@@ -28,8 +28,9 @@
 ## @var{x}, @var{mu} and @var{sigma}.  A scalar input functions as a constant
 ## matrix of the same size as the other inputs.
 ##
-## @code{[@dots{}] = hncdf(@dots{}, "upper")} computes the upper tail
-## probability of the half-normal distribution.
+## @code{[@dots{}] = hncdf (@var{x}, @var{mu}, @var{sigma}, "upper")} computes
+## the upper tail probability of the half-normal distribution with parameters
+## @var{mu} and @var{sigma}, at the values in @var{x}.
 ##
 ## The half-normal CDF is only defined for @qcode{@var{x} >= @var{mu}}.
 ##

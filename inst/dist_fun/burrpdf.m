@@ -140,4 +140,3 @@ endfunction
 %!error<burrpdf: X, LAMBDA, C, and K must not be complex.> burrpdf (1, i, 3, 4)
 %!error<burrpdf: X, LAMBDA, C, and K must not be complex.> burrpdf (1, 2, i, 4)
 %!error<burrpdf: X, LAMBDA, C, and K must not be complex.> burrpdf (1, 2, 3, i)
-

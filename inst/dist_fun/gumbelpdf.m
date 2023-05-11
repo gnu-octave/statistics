@@ -116,4 +116,3 @@ endfunction
 %!error<gumbelpdf: X, MU, and BETA must not be complex.> gumbelpdf (i, 2, 2)
 %!error<gumbelpdf: X, MU, and BETA must not be complex.> gumbelpdf (2, i, 2)
 %!error<gumbelpdf: X, MU, and BETA must not be complex.> gumbelpdf (2, 2, i)
-

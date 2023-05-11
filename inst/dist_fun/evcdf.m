@@ -46,7 +46,8 @@
 ## lower and upper confidence bounds.
 ##
 ## @code{[@dots{}] = evcdf (@dots{}, "upper")} computes the upper tail
-## probability of the extreme value distribution.
+## probability of the extreme value distribution with parameters @var{x0} and
+## @var{gamma}, at the values in @var{x}.
 ##
 ## The Gumbel distribution is used to model the distribution of the maximum (or
 ## the minimum) of a number of samples of various distributions.  This version

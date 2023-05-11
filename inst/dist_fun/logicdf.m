@@ -19,31 +19,31 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{p} =} logicdf (@var{x}, @var{mu}, @var{sigma})
-## @deftypefnx {statistics} {@var{p} =} logicdf (@var{x}, @var{mu}, @var{sigma}, @qcode{"upper"})
+## @deftypefn  {statistics} {@var{p} =} logicdf (@var{x}, @var{mu}, @var{s})
+## @deftypefnx {statistics} {@var{p} =} logicdf (@var{x}, @var{mu}, @var{s}, @qcode{"upper"})
 ##
 ## Logistic cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the logistic distribution with location parameter
-## @var{mu} and scale parameter @var{sigma}.  The size of @var{p} is the common
-## size of @var{x}, @var{mu}, and @var{sigma}.  A scalar input functions as a
-## constant matrix of the same size as the other inputs.
+## (CDF) of the logistic distribution with location parameter @var{mu} and scale
+## parameter @var{s}.  The size of @var{p} is the common size of @var{x},
+## @var{mu}, and @var{s}.  A scalar input functions as a constant matrix of
+## the same size as the other inputs.
 ##
-## Both parameters must be reals and @qcode{@var{beta} > 0}.
-## For @qcode{@var{beta} <= 0}, @qcode{NaN} is returned.
+## Both parameters must be reals and @qcode{@var{s} > 0}.
+## For @qcode{@var{s} <= 0}, @qcode{NaN} is returned.
 ##
-## @code{@var{p} = logicdf (@var{x}, @var{mu}, @var{sigma}, "upper")} computes
-## the upper tail probability of the Laplace distribution with parameters
-## @var{mu} and @var{sigma} at the values in @var{x}.
+## @code{@var{p} = logicdf (@var{x}, @var{mu}, @var{s}, "upper")} computes
+## the upper tail probability of the logistic distribution with parameters
+## @var{mu} and @var{s}, at the values in @var{x}.
 ##
-## Further information about the log-logistic distribution can be found at
+## Further information about the logistic distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Logistic_distribution}
 ##
 ## @seealso{logiinv, logipdf, logirnd, logifit, logilike, logistat}
 ## @end deftypefn
 
-function p = logicdf (x, mu, sigma, uflag)
+function p = logicdf (x, mu, s, uflag)
 
   ## Check for valid number of input arguments
   if (nargin < 3)
@@ -61,41 +61,41 @@ function p = logicdf (x, mu, sigma, uflag)
     uflag = false;
   endif
 
-  ## Check for common size of X, MU, and SIGMA
-  if (! isscalar (x) || ! isscalar (mu) || ! isscalar(sigma))
-    [retval, x, mu, sigma] = common_size (x, mu, sigma);
+  ## Check for common size of X, MU, and S
+  if (! isscalar (x) || ! isscalar (mu) || ! isscalar(s))
+    [retval, x, mu, s] = common_size (x, mu, s);
     if (retval > 0)
-      error (strcat (["logicdf: X, MU, and SIGMA must be of"], ...
+      error (strcat (["logicdf: X, MU, and S must be of"], ...
                      [" common size or scalars."]));
     endif
   endif
 
-  ## Check for X, MU, and SIGMA being reals
-  if (iscomplex (x) || iscomplex (mu) || iscomplex (sigma))
-    error ("logicdf: X, MU, and SIGMA must not be complex.");
+  ## Check for X, MU, and S being reals
+  if (iscomplex (x) || iscomplex (mu) || iscomplex (s))
+    error ("logicdf: X, MU, and S must not be complex.");
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (mu, "single") || isa (sigma, "single"));
+  if (isa (x, "single") || isa (mu, "single") || isa (s, "single"));
     p = NaN (size (x), "single");
   else
     p = NaN (size (x));
   endif
 
   ## Find normal and edge cases
-  k1 = (x == -Inf) & (sigma > 0);
-  k2 = (x == Inf) & (sigma > 0);
-  k = ! k1 & ! k2 & (sigma > 0);
+  k1 = (x == -Inf) & (s > 0);
+  k2 = (x == Inf) & (s > 0);
+  k = ! k1 & ! k2 & (s > 0);
 
   ## Compute logistic CDF
   if (uflag)
     p(k1) = 1;
     p(k2) = 0;
-    p(k) = 1 ./ (1 + exp ((x(k) - mu(k)) ./ sigma(k)));
+    p(k) = 1 ./ (1 + exp ((x(k) - mu(k)) ./ s(k)));
   else
     p(k1) = 0;
     p(k2) = 1;
-    p(k) = 1 ./ (1 + exp (- (x(k) - mu(k)) ./ sigma(k)));
+    p(k) = 1 ./ (1 + exp (- (x(k) - mu(k)) ./ s(k)));
   endif
 
 endfunction
@@ -110,14 +110,14 @@ endfunction
 %! p5 = logicdf (x, 2, 1);
 %! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c", x, p5, "-m")
 %! grid on
-%! legend ({"μ = 5, σ = 2", "μ = 9, σ = 3", "μ = 2, σ = 4", ...
-%!          "μ = 6, σ = 2", "μ = 2, σ = 1"}, "location", "southeast")
+%! legend ({"μ = 5, s = 2", "μ = 9, s = 3", "μ = 2, s = 4", ...
+%!          "μ = 6, s = 2", "μ = 2, s = 1"}, "location", "southeast")
 %! title ("Logistic CDF")
 %! xlabel ("values in x")
 %! ylabel ("probability")
 
 ## Test output
-%!shared x,y
+%!shared x, y
 %! x = [-Inf -log(3) 0 log(3) Inf];
 %! y = [0, 1/4, 1/2, 3/4, 1];
 %!assert (logicdf ([x, NaN], 0, 1), [y, NaN], eps)
@@ -133,19 +133,14 @@ endfunction
 %!error<logicdf: function called with too few input arguments.> logicdf (1)
 %!error<logicdf: function called with too few input arguments.> ...
 %! logicdf (1, 2)
-%!error<logicdf: function called with too many inputs> ...
-%! logicdf (1, 2, 3, 4, 5)
 %!error<logicdf: invalid argument for upper tail.> logicdf (1, 2, 3, "tail")
 %!error<logicdf: invalid argument for upper tail.> logicdf (1, 2, 3, 4)
-%!error<logicdf: X, MU, and SIGMA must be of common size or scalars.> ...
+%!error<logicdf: X, MU, and S must be of common size or scalars.> ...
 %! logicdf (1, ones (2), ones (3))
-%!error<logicdf: X, MU, and SIGMA must be of common size or scalars.> ...
+%!error<logicdf: X, MU, and S must be of common size or scalars.> ...
 %! logicdf (ones (2), 1, ones (3))
-%!error<logicdf: X, MU, and SIGMA must be of common size or scalars.> ...
+%!error<logicdf: X, MU, and S must be of common size or scalars.> ...
 %! logicdf (ones (2), ones (3), 1)
-%!error<logicdf: X, MU, and SIGMA must not be complex.> ...
-%! logicdf (i, 2, 3)
-%!error<logicdf: X, MU, and SIGMA must not be complex.> ...
-%! logicdf (1, i, 3)
-%!error<logicdf: X, MU, and SIGMA must not be complex.> ...
-%! logicdf (1, 2, i)
+%!error<logicdf: X, MU, and S must not be complex.> logicdf (i, 2, 3)
+%!error<logicdf: X, MU, and S must not be complex.> logicdf (1, i, 3)
+%!error<logicdf: X, MU, and S must not be complex.> logicdf (1, 2, i)
