@@ -55,7 +55,11 @@
 
  ** invgcdf
 
+ ** invgfit (similar functionality to MATLAB's mle)
+
  ** invginv
+
+ ** invglike (similar functionality to MATLAB's negloglik and mlecov)
 
  ** invgpdf
 
