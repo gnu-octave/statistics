@@ -232,12 +232,14 @@
                     <td><pre class="example">
 
  ## Generate a two-cluster problem
-
+ randn ("seed", 31)  # for reproducibility
  C1 = randn (100, 2) + 1;
+ randn ("seed", 32)  # for reproducibility
  C2 = randn (100, 2) - 1;
  data = [C1; C2];
 
  ## Perform clustering
+ rand ("seed", 1)  # for reproducibility
  [idx, centers] = kmeans (data, 2);
 
  ## Plot the result
@@ -278,9 +280,9 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Cluster data using k-means clustering, then plot the cluster regions.
+ ## Cluster data using k-means clustering, then plot the cluster regions
  ## Load Fisher's iris data set and use the petal lengths and widths as
- ## predictors.
+ ## predictors
 
  load fisheriris
  X = meas(:,3:4);
@@ -291,7 +293,8 @@
  xlabel ("Petal Lengths (cm)");
  ylabel ("Petal Widths (cm)");
 
- ## Cluster the data. Specify k = 3 clusters.
+ ## Cluster the data. Specify k = 3 clusters
+ rand ("seed", 1)  # for reproducibility
  [idx, C] = kmeans (X, 3);
  x1 = min (X(:,1)):0.01:max (X(:,1));
  x2 = min (X(:,2)):0.01:max (X(:,2));
@@ -352,11 +355,16 @@ warning: called from
 
  ## Partition Data into Two Clusters
 
- X = [randn(100,2)*0.75+ones(100,2); randn(100,2)*0.5-ones(100,2)];
+ randn ("seed", 1)  # for reproducibility
+ r1 = randn (100, 2) * 0.75 + ones (100, 2);
+ randn ("seed", 2)  # for reproducibility
+ r2 = randn (100, 2) * 0.5 - ones (100, 2);
+ X = [r1; r2];
 
  figure;
  plot (X(:,1), X(:,2), ".");
  title ("Randomly Generated Data");
+ rand ("seed", 1)  # for reproducibility
  [idx, C] = kmeans (X, 2, "Distance", "cityblock", ...
                           "Replicates", 5, "Display", "final");
  figure;
@@ -368,12 +376,12 @@ warning: called from
  title ("Cluster Assignments and Centroids");
  hold off
 
-Replicate 1, 6 iterations, total sum of distances = 200.185.
-Replicate 2, 4 iterations, total sum of distances = 200.164.
-Replicate 3, 5 iterations, total sum of distances = 200.185.
-Replicate 4, 5 iterations, total sum of distances = 200.164.
-Replicate 5, 5 iterations, total sum of distances = 200.185.
-Best total sum of distances = 200.164
+Replicate 1, 5 iterations, total sum of distances = 197.416.
+Replicate 2, 1 iterations, total sum of distances = 253.651.
+Replicate 3, 1 iterations, total sum of distances = 401.899.
+Replicate 4, 1 iterations, total sum of distances = 426.406.
+Replicate 5, 1 iterations, total sum of distances = 663.780.
+Best total sum of distances = 197.416
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
@@ -409,39 +417,49 @@ Best total sum of distances = 200.164
 
  ## Assign New Data to Existing Clusters
 
- ## Generate a training data set using three distributions.
- X = [randn(100,2)*0.75+ones(100,2); ...
-     randn(100,2)*0.5-ones(100,2); ...
-     randn(100,2)*0.75];
+ ## Generate a training data set using three distributions
+ randn ("seed", 5)  # for reproducibility
+ r1 = randn (100, 2) * 0.75 + ones (100, 2);
+ randn ("seed", 7)  # for reproducibility
+ r2 = randn (100, 2) * 0.5 - ones (100, 2);
+ randn ("seed", 9)  # for reproducibility
+ r3 = randn (100, 2) * 0.75;
+ X = [r1; r2; r3];
 
- ## Partition the training data into three clusters by using kmeans.
+ ## Partition the training data into three clusters by using kmeans
 
- [idx,C] = kmeans(X,3);
+ rand ("seed", 1)  # for reproducibility
+ [idx, C] = kmeans (X, 3);
 
- ## Plot the clusters and the cluster centroids.
+ ## Plot the clusters and the cluster centroids
 
  figure
  gscatter (X(:,1), X(:,2), idx, "bgm", "***");
  hold on
- plot(C(:,1),C(:,2),'kx');
- legend('Cluster 1','Cluster 2','Cluster 3','Cluster Centroid')
+ plot (C(:,1), C(:,2), "kx");
+ legend ("Cluster 1", "Cluster 2", "Cluster 3", "Cluster Centroid")
 
- ## Generate a test data set.
- Xtest = [randn(10,2)*0.75+ones(10,2); ...
-          randn(10,2)*0.5-ones(10,2); ...
-          randn(10,2)*0.75];
- ## Xlassify the test data set using the existing clusters.
- ## Find the nearest centroid from each test data point by using pdist2.
+ ## Generate a test data set
+ randn ("seed", 25)  # for reproducibility
+ r1 = randn (100, 2) * 0.75 + ones (100, 2);
+ randn ("seed", 27)  # for reproducibility
+ r2 = randn (100, 2) * 0.5 - ones (100, 2);
+ randn ("seed", 29)  # for reproducibility
+ r3 = randn (100, 2) * 0.75;
+ Xtest = [r1; r2; r3];
+
+ ## Classify the test data set using the existing clusters
+ ## Find the nearest centroid from each test data point by using pdist2
 
  D = pdist2 (C, Xtest, "euclidean");
  [group, ~] = find (D == min (D));
 
- ## Plot the test data and label the test data using idx_test with gscatter.
+ ## Plot the test data and label the test data using idx_test with gscatter
 
  gscatter (Xtest(:,1), Xtest(:,2), group, "bgm", "ooo");
- legend("Cluster 1", "Cluster 2", "Cluster 3", "Cluster Centroid", ...
-        "Data classified to Cluster 1", "Data classified to Cluster 2", ...
-        "Data classified to Cluster 3", "Location", "NorthWest");
+ legend ("Cluster 1", "Cluster 2", "Cluster 3", "Cluster Centroid", ...
+         "Data classified to Cluster 1", "Data classified to Cluster 2", ...
+         "Data classified to Cluster 3", "Location", "NorthWest");
  title ("Assign New Data to Existing Clusters");
 
                     </pre></td></tr></tbody>
