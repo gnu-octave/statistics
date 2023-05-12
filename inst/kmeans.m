@@ -484,9 +484,133 @@ function [D, classes, sumd] = update_dist (data, centers, D, k, dist)
     endfor
 endfunction
 
-## Test input parsing
-%!error kmeans (rand (3,2), 4);
+%!demo
+%! ## Generate a two-cluster problem
+%! randn ("seed", 31)  # for reproducibility
+%! C1 = randn (100, 2) + 1;
+%! randn ("seed", 32)  # for reproducibility
+%! C2 = randn (100, 2) - 1;
+%! data = [C1; C2];
+%!
+%! ## Perform clustering
+%! rand ("seed", 1)  # for reproducibility
+%! [idx, centers] = kmeans (data, 2);
+%!
+%! ## Plot the result
+%! figure;
+%! plot (data (idx==1, 1), data (idx==1, 2), "ro");
+%! hold on;
+%! plot (data (idx==2, 1), data (idx==2, 2), "bs");
+%! plot (centers (:, 1), centers (:, 2), "kv", "markersize", 10);
+%! hold off;
 
+%!demo
+%! ## Cluster data using k-means clustering, then plot the cluster regions
+%! ## Load Fisher's iris data set and use the petal lengths and widths as
+%! ## predictors
+%!
+%! load fisheriris
+%! X = meas(:,3:4);
+%!
+%! figure;
+%! plot (X(:,1), X(:,2), "k*", "MarkerSize", 5);
+%! title ("Fisher's Iris Data");
+%! xlabel ("Petal Lengths (cm)");
+%! ylabel ("Petal Widths (cm)");
+%!
+%! ## Cluster the data. Specify k = 3 clusters
+%! rand ("seed", 1)  # for reproducibility
+%! [idx, C] = kmeans (X, 3);
+%! x1 = min (X(:,1)):0.01:max (X(:,1));
+%! x2 = min (X(:,2)):0.01:max (X(:,2));
+%! [x1G, x2G] = meshgrid (x1, x2);
+%! XGrid = [x1G(:), x2G(:)];
+%!
+%! idx2Region = kmeans (XGrid, 3, "MaxIter", 1, "Start", C);
+%! figure;
+%! gscatter (XGrid(:,1), XGrid(:,2), idx2Region, ...
+%!           [0, 0.75, 0.75; 0.75, 0, 0.75; 0.75, 0.75, 0], "..");
+%! hold on;
+%! plot (X(:,1), X(:,2), "k*", "MarkerSize", 5);
+%! title ("Fisher's Iris Data");
+%! xlabel ("Petal Lengths (cm)");
+%! ylabel ("Petal Widths (cm)");
+%! legend ("Region 1", "Region 2", "Region 3", "Data", "Location", "SouthEast");
+%! hold off
+
+%!demo
+%! ## Partition Data into Two Clusters
+%!
+%! randn ("seed", 1)  # for reproducibility
+%! r1 = randn (100, 2) * 0.75 + ones (100, 2);
+%! randn ("seed", 2)  # for reproducibility
+%! r2 = randn (100, 2) * 0.5 - ones (100, 2);
+%! X = [r1; r2];
+%!
+%! figure;
+%! plot (X(:,1), X(:,2), ".");
+%! title ("Randomly Generated Data");
+%! rand ("seed", 1)  # for reproducibility
+%! [idx, C] = kmeans (X, 2, "Distance", "cityblock", ...
+%!                          "Replicates", 5, "Display", "final");
+%! figure;
+%! plot (X(idx==1,1), X(idx==1,2), "r.", "MarkerSize", 12);
+%! hold on
+%! plot(X(idx==2,1), X(idx==2,2), "b.", "MarkerSize", 12);
+%! plot (C(:,1), C(:,2), "kx", "MarkerSize", 15, "LineWidth", 3);
+%! legend ("Cluster 1", "Cluster 2", "Centroids", "Location", "NorthWest");
+%! title ("Cluster Assignments and Centroids");
+%! hold off
+
+%!demo
+%! ## Assign New Data to Existing Clusters
+%!
+%! ## Generate a training data set using three distributions
+%! randn ("seed", 5)  # for reproducibility
+%! r1 = randn (100, 2) * 0.75 + ones (100, 2);
+%! randn ("seed", 7)  # for reproducibility
+%! r2 = randn (100, 2) * 0.5 - ones (100, 2);
+%! randn ("seed", 9)  # for reproducibility
+%! r3 = randn (100, 2) * 0.75;
+%! X = [r1; r2; r3];
+%!
+%! ## Partition the training data into three clusters by using kmeans
+%!
+%! rand ("seed", 1)  # for reproducibility
+%! [idx, C] = kmeans (X, 3);
+%!
+%! ## Plot the clusters and the cluster centroids
+%!
+%! figure
+%! gscatter (X(:,1), X(:,2), idx, "bgm", "***");
+%! hold on
+%! plot (C(:,1), C(:,2), "kx");
+%! legend ("Cluster 1", "Cluster 2", "Cluster 3", "Cluster Centroid")
+%!
+%! ## Generate a test data set
+%! randn ("seed", 25)  # for reproducibility
+%! r1 = randn (100, 2) * 0.75 + ones (100, 2);
+%! randn ("seed", 27)  # for reproducibility
+%! r2 = randn (100, 2) * 0.5 - ones (100, 2);
+%! randn ("seed", 29)  # for reproducibility
+%! r3 = randn (100, 2) * 0.75;
+%! Xtest = [r1; r2; r3];
+%!
+%! ## Classify the test data set using the existing clusters
+%! ## Find the nearest centroid from each test data point by using pdist2
+%!
+%! D = pdist2 (C, Xtest, "euclidean");
+%! [group, ~] = find (D == min (D));
+%!
+%! ## Plot the test data and label the test data using idx_test with gscatter
+%!
+%! gscatter (Xtest(:,1), Xtest(:,2), group, "bgm", "ooo");
+%! legend ("Cluster 1", "Cluster 2", "Cluster 3", "Cluster Centroid", ...
+%!         "Data classified to Cluster 1", "Data classified to Cluster 2", ...
+%!         "Data classified to Cluster 3", "Location", "NorthWest");
+%! title ("Assign New Data to Existing Clusters");
+
+## Test output
 %!test
 %! samples = 4;
 %! dims = 3;
@@ -510,13 +634,13 @@ endfunction
 %! assert (size (z), [samples, k]);
 
 %!test
+%! [cls, c] = kmeans ([1 0; 2 0], 2, "start", [8,0;0,8], "emptyaction", "drop");
+%! assert (cls, [1; 1]);
+%! assert (c, [1.5, 0; NA, NA]);
+
+%!test
 %! kmeans (rand (4,3), 2, "start", rand (2,3, 5), "replicates", 5,
 %!         "emptyAction", "singleton");
-
-%!error kmeans (rand (4,3), 2, "start", rand (2,3, 5), "replicates", 1);
-
-%!error kmeans (rand (4,3), 2, "start", rand (2,2));
-
 %!test
 %! kmeans (rand (3,4), 2, "start", "sample", "emptyAction", "singleton");
 %!test
@@ -525,155 +649,34 @@ endfunction
 %! kmeans (rand (3,4), 2, "start", "cluster", "emptyAction", "singleton");
 %!test
 %! kmeans (rand (3,4), 2, "start", "uniform", "emptyAction", "singleton");
+%!test
+%! kmeans (rand (4,3), 2, "distance", "sqeuclidean", "emptyAction", "singleton");
+%!test
+%! kmeans (rand (4,3), 2, "distance", "cityblock", "emptyAction", "singleton");
+%!test
+%! kmeans (rand (4,3), 2, "distance", "cosine", "emptyAction", "singleton");
+%!test
+%! kmeans (rand (4,3), 2, "distance", "correlation", "emptyAction", "singleton");
+%!test
+%! kmeans (rand (4,3), 2, "distance", "hamming", "emptyAction", "singleton");
+%!test
+%! kmeans ([1 0; 1.1 0], 2, "start", eye(2), "emptyaction", "singleton");
 
+## Test input validation
+%!error kmeans (rand (3,2), 4);
+%!error kmeans ([1 0; 1.1 0], 2, "start", eye(2), "emptyaction", "panic");
+%!error kmeans (rand (4,3), 2, "start", rand (2,3, 5), "replicates", 1);
+%!error kmeans (rand (4,3), 2, "start", rand (2,2));
+%!error kmeans (rand (4,3), 2, "distance", "manhattan");
 %!error kmeans (rand (3,4), 2, "start", "normal");
-
 %!error kmeans (rand (4,3), 2, "replicates", i);
 %!error kmeans (rand (4,3), 2, "replicates", -1);
 %!error kmeans (rand (4,3), 2, "replicates", []);
 %!error kmeans (rand (4,3), 2, "replicates", [1 2]);
 %!error kmeans (rand (4,3), 2, "replicates", "one");
-
 %!error kmeans (rand (4,3), 2, "MAXITER", i);
 %!error kmeans (rand (4,3), 2, "MaxIter", -1);
 %!error kmeans (rand (4,3), 2, "maxiter", []);
 %!error kmeans (rand (4,3), 2, "maxiter", [1 2]);
 %!error kmeans (rand (4,3), 2, "maxiter", "one");
-
-%!test
-%! kmeans (rand (4,3), 2, "distance", "sqeuclidean", "emptyAction", "singleton");
-
-%!test
-%! kmeans (rand (4,3), 2, "distance", "cityblock", "emptyAction", "singleton");
-
-%!test
-%! kmeans (rand (4,3), 2, "distance", "cosine", "emptyAction", "singleton");
-
-%!test
-%! kmeans (rand (4,3), 2, "distance", "correlation", "emptyAction", "singleton");
-
-%!test
-%! kmeans (rand (4,3), 2, "distance", "hamming", "emptyAction", "singleton");
-
-%!error kmeans (rand (4,3), 2, "distance", "manhattan");
-
 %!error <empty cluster created> kmeans ([1 0; 1.1 0], 2, "start", eye(2), "emptyaction", "error");
-
-%!test
-%! kmeans ([1 0; 1.1 0], 2, "start", eye(2), "emptyaction", "singleton");
-
-%!test
-%! [cls, c] = kmeans ([1 0; 2 0], 2, "start", [8,0;0,8], "emptyaction", "drop");
-%! assert (cls, [1; 1]);
-%! assert (c, [1.5, 0; NA, NA]);
-
-%!error kmeans ([1 0; 1.1 0], 2, "start", eye(2), "emptyaction", "panic");
-
-%!demo
-%! ## Generate a two-cluster problem
-%!
-%! C1 = randn (100, 2) + 1;
-%! C2 = randn (100, 2) - 1;
-%! data = [C1; C2];
-%!
-%! ## Perform clustering
-%! [idx, centers] = kmeans (data, 2);
-%!
-%! ## Plot the result
-%! figure;
-%! plot (data (idx==1, 1), data (idx==1, 2), "ro");
-%! hold on;
-%! plot (data (idx==2, 1), data (idx==2, 2), "bs");
-%! plot (centers (:, 1), centers (:, 2), "kv", "markersize", 10);
-%! hold off;
-
-%!demo
-%! ## Cluster data using k-means clustering, then plot the cluster regions.
-%! ## Load Fisher's iris data set and use the petal lengths and widths as
-%! ## predictors.
-%!
-%! load fisheriris
-%! X = meas(:,3:4);
-%!
-%! figure;
-%! plot (X(:,1), X(:,2), "k*", "MarkerSize", 5);
-%! title ("Fisher's Iris Data");
-%! xlabel ("Petal Lengths (cm)");
-%! ylabel ("Petal Widths (cm)");
-%!
-%! ## Cluster the data. Specify k = 3 clusters.
-%! [idx, C] = kmeans (X, 3);
-%! x1 = min (X(:,1)):0.01:max (X(:,1));
-%! x2 = min (X(:,2)):0.01:max (X(:,2));
-%! [x1G, x2G] = meshgrid (x1, x2);
-%! XGrid = [x1G(:), x2G(:)];
-%!
-%! idx2Region = kmeans (XGrid, 3, "MaxIter", 1, "Start", C);
-%! figure;
-%! gscatter (XGrid(:,1), XGrid(:,2), idx2Region, ...
-%!           [0, 0.75, 0.75; 0.75, 0, 0.75; 0.75, 0.75, 0], "..");
-%! hold on;
-%! plot (X(:,1), X(:,2), "k*", "MarkerSize", 5);
-%! title ("Fisher's Iris Data");
-%! xlabel ("Petal Lengths (cm)");
-%! ylabel ("Petal Widths (cm)");
-%! legend ("Region 1", "Region 2", "Region 3", "Data", "Location", "SouthEast");
-%! hold off
-
-%!demo
-%! ## Partition Data into Two Clusters
-%!
-%! X = [randn(100,2)*0.75+ones(100,2); randn(100,2)*0.5-ones(100,2)];
-%!
-%! figure;
-%! plot (X(:,1), X(:,2), ".");
-%! title ("Randomly Generated Data");
-%! [idx, C] = kmeans (X, 2, "Distance", "cityblock", ...
-%!                          "Replicates", 5, "Display", "final");
-%! figure;
-%! plot (X(idx==1,1), X(idx==1,2), "r.", "MarkerSize", 12);
-%! hold on
-%! plot(X(idx==2,1), X(idx==2,2), "b.", "MarkerSize", 12);
-%! plot (C(:,1), C(:,2), "kx", "MarkerSize", 15, "LineWidth", 3);
-%! legend ("Cluster 1", "Cluster 2", "Centroids", "Location", "NorthWest");
-%! title ("Cluster Assignments and Centroids");
-%! hold off
-
-%!demo
-%! ## Assign New Data to Existing Clusters
-%!
-%! ## Generate a training data set using three distributions.
-%! X = [randn(100,2)*0.75+ones(100,2); ...
-%!     randn(100,2)*0.5-ones(100,2); ...
-%!     randn(100,2)*0.75];
-%!
-%! ## Partition the training data into three clusters by using kmeans.
-%!
-%! [idx,C] = kmeans(X,3);
-%!
-%! ## Plot the clusters and the cluster centroids.
-%!
-%! figure
-%! gscatter (X(:,1), X(:,2), idx, "bgm", "***");
-%! hold on
-%! plot(C(:,1),C(:,2),'kx');
-%! legend('Cluster 1','Cluster 2','Cluster 3','Cluster Centroid')
-%!
-%! ## Generate a test data set.
-%! Xtest = [randn(10,2)*0.75+ones(10,2); ...
-%!          randn(10,2)*0.5-ones(10,2); ...
-%!          randn(10,2)*0.75];
-%! ## Xlassify the test data set using the existing clusters.
-%! ## Find the nearest centroid from each test data point by using pdist2.
-%!
-%! D = pdist2 (C, Xtest, "euclidean");
-%! [group, ~] = find (D == min (D));
-%!
-%! ## Plot the test data and label the test data using idx_test with gscatter.
-%!
-%! gscatter (Xtest(:,1), Xtest(:,2), group, "bgm", "ooo");
-%! legend("Cluster 1", "Cluster 2", "Cluster 3", "Cluster Centroid", ...
-%!        "Data classified to Cluster 1", "Data classified to Cluster 2", ...
-%!        "Data classified to Cluster 3", "Location", "NorthWest");
-%! title ("Assign New Data to Existing Clusters");
-

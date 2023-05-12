@@ -336,11 +336,13 @@ endfunction
 %!demo
 %! x = [2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67]';
 %! c = [0 1 0 1 0 1 1 1 0 0 1 0 1 0 1 1 0 1 1]';
-%! [h, p] = wblplot (x, c)
+%! [h, p] = wblplot (x, c);
+%! p
 
 %!demo
 %! x = [16, 34, 53, 75, 93, 120, 150, 191, 240 ,339];
-%! [h, p] = wblplot (x, [], [], 0.05)
+%! [h, p] = wblplot (x, [], [], 0.05);
+%! p
 %! ## Benchmark Reliasoft eta = 146.2545 beta 1.1973 rho = 0.9999
 
 %!demo
