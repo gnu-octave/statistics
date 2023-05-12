@@ -22,7 +22,7 @@
 ## @deftypefn  {statistics} {@var{p} =} chi2cdf (@var{x}, @var{df})
 ## @deftypefnx {statistics} {@var{p} =} chi2cdf (@var{x}, @var{df}, @qcode{"upper"})
 ##
-## Chi-squared cumulative distribution function.
+## Chi-squared cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
 ## (CDF) of the chi-squared distribution with @var{df} degrees of freedom.  The

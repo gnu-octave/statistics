@@ -18,7 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{y} =} nctpdf (@var{x}, @var{df}, @var{delta})
 ##
-## Noncentral Τ probability density function (pdf).
+## Noncentral Τ probability density function (PDF).
 ##
 ## @code{@var{y} = nctpdf (@var{x}, @var{df}, @var{delta})} returns
 ## the noncentral T distribution with @var{df} degrees of freedom and
