@@ -37,57 +37,56 @@
 
 function T = clusterdata (X, varargin)
 
+  ## Check for valid number of input arguments
   if (nargin < 2)
-    print_usage ();
+    error ("clusterdata: function called with too few input arguments.");
+  endif
 
-  else
-    linkage_criterion = "single";
-    distance_method = "euclidean";
-    savememory = "off";
-    clustering_method = [];
-    criterion = "inconsistent";
-    D = 2;
+  linkage_criterion = "single";
+  distance_method = "euclidean";
+  savememory = "off";
+  clustering_method = [];
+  criterion = "inconsistent";
+  D = 2;
 
-    if (isnumeric (varargin{1}))              # clusterdata (X, cutoff)
-      if (isinteger (varargin{1}) && (varargin{1} >= 2))
-        clustering_method = "MaxClust";
-      else
-        clustering_method = "Cutoff";
-      endif
-      C = varargin{1};
-
-    else                                      # clusterdata (Name, Value)
-      pair_index = 1;
-      while (pair_index < (nargin - 1))
-        switch (lower (varargin{pair_index}))
-          case "criterion"
-            criterion = varargin{pair_index + 1};
-          case "cutoff"
-            clustering_method = "Cutoff";
-            C = varargin{pair_index + 1};
-          case "depth"
-            D = varargin{pair_index + 1};
-          case "distance"
-            distance_method = varargin{pair_index + 1};
-          case "linkage"
-            linkage_criterion = varargin{pair_index + 1};
-          case "maxclust"
-            clustering_method = "MaxClust";
-            C = varargin{pair_index + 1};
-          case "savememory"
-            savememory = varargin{pair_index + 1};
-          otherwise
-            error ("clusterdata: unknown property %s", varargin{pair_index});
-        endswitch
-        pair_index += 2;
-      endwhile
+  if (isnumeric (varargin{1}))              # clusterdata (X, cutoff)
+    if (isinteger (varargin{1}) && (varargin{1} >= 2))
+      clustering_method = "MaxClust";
+    else
+      clustering_method = "Cutoff";
     endif
+    C = varargin{1};
+
+  else                                      # clusterdata (Name, Value)
+    pair_index = 1;
+    while (pair_index < (nargin - 1))
+      switch (lower (varargin{pair_index}))
+        case "criterion"
+          criterion = varargin{pair_index + 1};
+        case "cutoff"
+          clustering_method = "Cutoff";
+          C = varargin{pair_index + 1};
+        case "depth"
+          D = varargin{pair_index + 1};
+        case "distance"
+          distance_method = varargin{pair_index + 1};
+        case "linkage"
+          linkage_criterion = varargin{pair_index + 1};
+        case "maxclust"
+          clustering_method = "MaxClust";
+          C = varargin{pair_index + 1};
+        case "savememory"
+          savememory = varargin{pair_index + 1};
+        otherwise
+          error ("clusterdata: unknown property %s", varargin{pair_index});
+      endswitch
+      pair_index += 2;
+    endwhile
   endif
 
   if (isempty (clustering_method))
-    error ...
-      (["clusterdata: you must specify either 'MaxClust' or 'Cutoff' when" ...
-        "using name-value arguments"]);
+    error (strcat (["clusterdata: you must specify either 'MaxClust'"], ...
+                   [" or 'Cutoff' when using name-value arguments."]));
   endif
 
   ## main body
@@ -99,17 +98,21 @@ function T = clusterdata (X, varargin)
   endif
 endfunction
 
-
-## Test input validation
-%!error clusterdata ()
-%!error clusterdata (1)
-%!error <unknown property .*> clusterdata ([1 1], "Bogus", 1)
-%!error <specify .* 'MaxClust' or 'Cutoff' .*> clusterdata ([1 1], "Depth", 1)
-
-## Demonstration
 %!demo
-%! X = [(randn (10, 2) * 0.25) + 1; (randn (20, 2) * 0.5) - 1];
+%! randn ("seed", 1)  # for reproducibility
+%! r1 = randn (10, 2) * 0.25 + 1;
+%! randn ("seed", 5)  # for reproducibility
+%! r2 = randn (20, 2) * 0.5 - 1;
+%! X = [r1; r2];
+%!
 %! wnl = warning ("off", "Octave:linkage_savemem", "local");
 %! T = clusterdata (X, "linkage", "ward", "MaxClust", 2);
 %! scatter (X(:,1), X(:,2), 36, T, "filled");
 
+## Test input validation
+%!error<clusterdata: function called with too few input arguments.> ...
+%! clusterdata ()
+%!error<clusterdata: function called with too few input arguments.> ...
+%! clusterdata (1)
+%!error <unknown property .*> clusterdata ([1 1], "Bogus", 1)
+%!error <specify .* 'MaxClust' or 'Cutoff' .*> clusterdata ([1 1], "Depth", 1)

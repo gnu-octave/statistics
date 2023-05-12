@@ -95,7 +95,7 @@
 function [smpl, neval] = slicesample (start, nsamples, varargin)
 
   if (nargin < 4)
-    print_usage ();
+    error ("slicesample: function called with too few input arguments.");
   endif
 
   sizestart = size (start);
@@ -111,31 +111,31 @@ function [smpl, neval] = slicesample (start, nsamples, varargin)
           if (isa (varargin{k+1}, "function_handle"))
             pdf = varargin{k+1};
           else
-            error ("slicesample: pdf must be a function handle");
+            error ("slicesample: pdf must be a function handle".);
           endif
         case "logpdf"
           if (isa (varargin{k+1}, "function_handle"))
             pdf = varargin{k+1};
           else
-            error ("slicesample: logpdf must be a function handle");
+            error ("slicesample: logpdf must be a function handle.");
           endif
         case "width"
           if (numel (varargin{k+1}) == 1 || numel (varargin{k+1}) == sizestart(2))
             width = varargin{k+1}(:).';
           else
-            error ("slicesample: width must be a scalar or 1 by dim vector");
+            error ("slicesample: width must be a scalar or 1 by dim vector.");
           endif
         case "burnin"
           if (varargin{k+1}>=0)
             burnin = varargin{k+1};
           else
-            error ("slicesample: burnin must be greater than or equal to 0");
+            error ("slicesample: burnin must be greater than or equal to 0.");
           endif
         case "thin"
           if (varargin{k+1}>=1)
             thin = varargin{k+1};
           else
-            error ("slicesample: thin must be greater than or equal to 1");
+            error ("slicesample: thin must be greater than or equal to 1.");
           endif
         otherwise
           warning (["slicesample: Ignoring unknown option " varargin{k}]);
@@ -228,18 +228,16 @@ function [smpl, neval] = slicesample (start, nsamples, varargin)
 endfunction
 
 function y = rloge (x)
-
   y = -inf (size (x));
   xg0 = x > 0;
   y(xg0) = log (x(xg0));
-
 endfunction
-
 
 %!demo
 %! ## Define function to sample
 %! d = 2;
 %! mu = [-1; 2];
+%! rand ("seed", 5)  # for reproducibility
 %! Sigma = rand (d);
 %! Sigma = (Sigma + Sigma');
 %! Sigma += eye (d)*abs (eigs (Sigma, 1, "sa")) * 1.1;
@@ -250,7 +248,8 @@ endfunction
 %! nsamples = 500;
 %! K = 500;
 %! m = 10;
-%! [smpl, accept]=slicesample (start, nsamples, "pdf", pdf, "burnin", K, "thin", m, "width", [20, 30]);
+%! rand3 ("seed", 4);  rand ("seed", 5)  # for reproducibility
+%! [smpl, accept] = slicesample (start, nsamples, "pdf", pdf, "burnin", K, "thin", m, "width", [20, 30]);
 %! figure;
 %! hold on;
 %! plot (smpl(:,1), smpl(:,2), 'x');
@@ -263,29 +262,30 @@ endfunction
 %! int = mean (f (smpl) ./ pdf (smpl));
 %! errest = std (f (smpl) ./ pdf (smpl)) / nsamples^.5;
 %! trueerr = abs (2/3*pi*.25^(3/2)-int);
-%! fprintf("Monte Carlo integral estimate int f(x) dx = %f\n", int);
-%! fprintf("Monte Carlo integral error estimate %f\n", errest);
-%! fprintf("The actual error %f\n", trueerr);
+%! fprintf ("Monte Carlo integral estimate int f(x) dx = %f\n", int);
+%! fprintf ("Monte Carlo integral error estimate %f\n", errest);
+%! fprintf ("The actual error %f\n", trueerr);
 %! mesh (x,y,reshape (f([x(:), y(:)]), size(x)), "facecolor", "None");
 
 %!demo
 %! ## Integrate truncated normal distribution to find normilization constant
 %! pdf = @(x) exp (-.5*x.^2)/(pi^.5*2^.5);
 %! nsamples = 1e3;
-%! [smpl,accept] = slicesample (1, nsamples, "pdf", pdf, "thin", 4);
+%! rand3 ("seed", 4);  rand ("seed", 5)  # for reproducibility
+%! [smpl, accept] = slicesample (1, nsamples, "pdf", pdf, "thin", 4);
 %! f = @(x) exp (-.5 * x .^ 2) .* (x >= -2 & x <= 2);
-%! x=linspace(-3,3,1000);
-%! area(x,f(x));
-%! xlabel ('x');
-%! ylabel ('f(x)');
-%! int = mean (f (smpl)./pdf(smpl));
-%! errest = std (f (smpl)./pdf(smpl))/nsamples^.5;
-%! trueerr = abs (erf (2^.5)*2^.5*pi^.5-int);
+%! x = linspace (-3, 3, 1000);
+%! area (x, f(x));
+%! xlabel ("x");
+%! ylabel ("f(x)");
+%! int = mean (f (smpl) ./ pdf (smpl));
+%! errest = std (f (smpl) ./ pdf (smpl)) / nsamples ^ 0.5;
+%! trueerr = abs (erf (2 ^ 0.5) * 2 ^ 0.5 * pi ^ 0.5 - int);
 %! fprintf("Monte Carlo integral estimate int f(x) dx = %f\n", int);
 %! fprintf("Monte Carlo integral error estimate %f\n", errest);
 %! fprintf("The actual error %f\n", trueerr);
 
-
+## Test output
 %!test
 %! start = 0.5;
 %! nsamples = 1e3;
@@ -294,6 +294,7 @@ endfunction
 %! assert (mean (smpl, 1), 1, .1);
 %! assert (var (smpl, 1), 1, .2);
 
+## Test input validation
 %!error slicesample ();
 %!error slicesample (1);
 %!error slicesample (1, 1);
