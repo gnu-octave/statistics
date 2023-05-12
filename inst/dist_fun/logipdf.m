@@ -88,7 +88,7 @@ endfunction
 %! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-c", x, y5, "-m")
 %! grid on
 %! ylim ([0, 0.3])
-%! legend ({"μ = 5, s = 2", "μ = 9, s = 3", "μ = 2, s = 4", ...
+%! legend ({"μ = 5, s = 2", "μ = 9, s = 3", "μ = 9, s = 4", ...
 %!          "μ = 6, s = 2", "μ = 2, s = 1"}, "location", "northeast")
 %! title ("Logistic PDF")
 %! xlabel ("values in x")

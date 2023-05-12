@@ -110,7 +110,7 @@ endfunction
 %! p5 = logicdf (x, 2, 1);
 %! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c", x, p5, "-m")
 %! grid on
-%! legend ({"μ = 5, s = 2", "μ = 9, s = 3", "μ = 2, s = 4", ...
+%! legend ({"μ = 5, s = 2", "μ = 9, s = 3", "μ = 9, s = 4", ...
 %!          "μ = 6, s = 2", "μ = 2, s = 1"}, "location", "southeast")
 %! title ("Logistic CDF")
 %! xlabel ("values in x")
