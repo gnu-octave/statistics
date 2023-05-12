@@ -67,7 +67,7 @@ function [nlogL, acov] = hnlike (params, x)
 
   ## Return NaN for out of range parameters or data.
   sigma(sigma <= 0) = NaN;
-  x(x<mu) = NaN;
+  x(x < mu) = NaN;
   z = (x - mu) ./ sigma;
 
   ## Sum up the individual log-likelihood terms
