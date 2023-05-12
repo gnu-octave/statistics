@@ -84,8 +84,9 @@
  <var>x</var>, <var>mu</var> and <var>lambda</var>.  A scalar input functions as a constant
  matrix of the same size as the other inputs.
 </p>
-<p> <code>[&hellip;] = invgcdf(&hellip;, &quot;upper&quot;)</code> computes the upper tail
- probability of the inverse Gaussian distribution.
+<p> <code><var>p</var> = invgcdf (<var>x</var>, <var>mu</var>, <var>lambda</var>, &quot;upper&quot;)</code> computes
+ the upper tail probability of the inverse Gaussian distribution with
+ parameters <var>mu</var> and <var>lambda</var>, at the values in <var>x</var>.
 </p>
 <p> The inverse Gaussian CDF is only defined for <code><var>mu</var> &gt; 0</code> and
  <code><var>lambda</var> &gt; 0</code>.

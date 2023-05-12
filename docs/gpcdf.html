@@ -85,8 +85,9 @@
  A scalar input functions as a constant matrix of the same size as the other
  inputs.
 </p>
-<p> <code>[&hellip;] = gpcdf(&hellip;, &quot;upper&quot;)</code> computes the upper tail
- probability of the generalized Pareto distribution.
+<p> <code>[&hellip;] = gpcdf(<var>x</var>, <var>k</var>, <var>sigma</var>, <var>mu</var>, &quot;upper&quot;)</code>
+ computes the upper tail probability of the generalized Pareto distribution
+ with parameters <var>k</var>, <var>sigma</var>, and <var>mu</var>, at the values in <var>x</var>.
 </p>
 <p> When <code><var>k</var> = 0</code> and <code><var>mu</var> = 0</code>, the Generalized Pareto CDF
  is equivalent to the exponential distribution.  When <code><var>k</var> &gt; 0</code> and

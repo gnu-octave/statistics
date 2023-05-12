@@ -84,8 +84,9 @@
  <var>x</var>, <var>mu</var> and <var>sigma</var>.  A scalar input functions as a constant
  matrix of the same size as the other inputs.
 </p>
-<p> <code>[&hellip;] = hncdf(&hellip;, &quot;upper&quot;)</code> computes the upper tail
- probability of the half-normal distribution.
+<p> <code>[&hellip;] = hncdf (<var>x</var>, <var>mu</var>, <var>sigma</var>, &quot;upper&quot;)</code> computes
+ the upper tail probability of the half-normal distribution with parameters
+ <var>mu</var> and <var>sigma</var>, at the values in <var>x</var>.
 </p>
 <p> The half-normal CDF is only defined for <code><var>x</var> &gt;= <var>mu</var></code>.
 </p>

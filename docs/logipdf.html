@@ -79,25 +79,24 @@
 <p> Logistic probability density function (PDF).
 </p>
 <div class="ms-5">
-<p> For each element of <var>x</var>, compute the PDF at <var>x</var> of the logistic
- distribution with location parameter <var>mu</var> and scale parameter <var>s</var>.
- The size of <var>y</var> is the common size of <var>x</var>, <var>mu</var>, and <var>s</var>.
- A scalar input functions as a constant matrix of the same size as the other
- inputs.
+<p> For each element of <var>x</var>, compute the probability density function (PDF)
+ of the logistic distribution with location parameter <var>mu</var> and scale
+ parameter <var>s</var>.  The size of <var>p</var> is the common size of <var>x</var>,
+ <var>mu</var>, and <var>s</var>.  A scalar input functions as a constant matrix of
+ the same size as the other inputs.
 </p>
-<p> Default values are <code><var>mu</var> = 0</code> and <code><var>s</var> = 1</code>.
- Both parameters must be reals and <code><var>beta</var> &gt; 0</code>.
- For <code><var>beta</var> &lt;= 0</code>, <code>NaN</code> is returned.
+<p> Both parameters must be reals and <code><var>s</var> &gt; 0</code>.
+ For <code><var>s</var> &lt;= 0</code>, <code>NaN</code> is returned.
 </p>
-<p> Further information about the log-logistic distribution can be found at
+<p> Further information about the logistic distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Logistic_distribution">https://en.wikipedia.org/wiki/Logistic_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="logicdf.html">logicdf</a>, 
   <a href="logiinv.html">logiinv</a>, 
   <a href="logirnd.html">logirnd</a>, 
-logifit, 
-logilike, 
+  <a href="logifit.html">logifit</a>, 
+  <a href="logilike.html">logilike</a>, 
 logistat
 </p>
 <p><strong>Source Code: </strong>
@@ -131,7 +130,7 @@ logistat
  plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-c", x, y5, "-m")
  grid on
  ylim ([0, 0.3])
- legend ({"μ = 5, s = 2", "μ = 9, s = 3", "μ = 2, s = 4", ...
+ legend ({"μ = 5, s = 2", "μ = 9, s = 3", "μ = 9, s = 4", ...
           "μ = 6, s = 2", "μ = 2, s = 1"}, "location", "northeast")
  title ("Logistic PDF")
  xlabel ("values in x")

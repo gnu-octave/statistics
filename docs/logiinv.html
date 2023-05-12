@@ -79,25 +79,24 @@
 <p> Inverse of the logistic cumulative distribution function (iCDF).
 </p>
 <div class="ms-5">
-<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF)
- at <var>p</var> of the logistic distribution with location parameter <var>mu</var> and
- scale parameter <var>s</var>.  The size of <var>x</var> is the common size of
- <var>p</var>, <var>mu</var>, and <var>s</var>.  A scalar input functions as a constant
- matrix of the same size as the other inputs.
+<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF) of
+ the logistic distribution with location parameter <var>mu</var> and scale
+ parameter <var>s</var>.  The size of <var>p</var> is the common size of <var>x</var>,
+ <var>mu</var>, and <var>s</var>.  A scalar input functions as a constant matrix of
+ the same size as the other inputs.
 </p>
-<p> Default values are <code><var>mu</var> = 0</code> and <code><var>s</var> = 1</code>.
- Both parameters must be reals and <code><var>beta</var> &gt; 0</code>.
- For <code><var>beta</var> &lt;= 0</code>, <code>NaN</code> is returned.
+<p> Both parameters must be reals and <code><var>s</var> &gt; 0</code>.
+ For <code><var>s</var> &lt;= 0</code>, <code>NaN</code> is returned.
 </p>
-<p> Further information about the log-logistic distribution can be found at
+<p> Further information about the logistic distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Logistic_distribution">https://en.wikipedia.org/wiki/Logistic_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="logicdf.html">logicdf</a>, 
   <a href="logipdf.html">logipdf</a>, 
   <a href="logirnd.html">logirnd</a>, 
-logifit, 
-logilike, 
+  <a href="logifit.html">logifit</a>, 
+  <a href="logilike.html">logilike</a>, 
 logistat
 </p>
 <p><strong>Source Code: </strong>
@@ -130,7 +129,7 @@ logistat
  x5 = logiinv (p, 2, 1);
  plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c", p, x5, "-m")
  grid on
- legend ({"μ = 5, s = 2", "μ = 9, s = 3", "μ = 2, s = 4", ...
+ legend ({"μ = 5, s = 2", "μ = 9, s = 3", "μ = 9, s = 4", ...
           "μ = 6, s = 2", "μ = 2, s = 1"}, "location", "southeast")
  title ("Logistic iCDF")
  xlabel ("probability")

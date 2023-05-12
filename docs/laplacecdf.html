@@ -79,17 +79,17 @@
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the cumulative distribution function
- (CDF) at <var>x</var> of the Laplace distribution with location parameter
- <var>mu</var> and scale parameter (i.e. &quot;diversity&quot;) <var>beta</var>.  The size of
- <var>p</var> is the common size of <var>x</var>, <var>mu</var>, and <var>beta</var>.  A scalar
- input functions as a constant matrix of the same size as the other inputs.
+ (CDF) of the Laplace distribution with location parameter <var>mu</var> and scale
+ parameter (i.e. &quot;diversity&quot;) <var>beta</var>.  The size of <var>p</var> is the common
+ size of <var>x</var>, <var>mu</var>, and <var>beta</var>.  A scalar input functions as a
+ constant matrix of the same size as the other inputs.
 </p>
 <p> Both parameters must be reals and <code><var>beta</var> &gt; 0</code>.
  For <code><var>beta</var> &lt;= 0</code>, <code>NaN</code> is returned.
 </p>
 <p> <code><var>p</var> = laplacecdf (<var>x</var>, <var>mu</var>, <var>beta</var>, &quot;upper&quot;)</code> computes
  the upper tail probability of the Laplace distribution with parameters
- <var>mu</var> and <var>beta</var> at the values in <var>x</var>.
+ <var>mu</var> and <var>beta</var>, at the values in <var>x</var>.
 </p>
 <p> Further information about the Laplace distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Laplace_distribution">https://en.wikipedia.org/wiki/Laplace_distribution</a>
