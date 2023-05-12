@@ -248,7 +248,7 @@ endfunction
 %! nsamples = 500;
 %! K = 500;
 %! m = 10;
-%! rand3 ("seed", 4);  rand ("seed", 5)  # for reproducibility
+%! rande ("seed", 4);  rand ("seed", 5)  # for reproducibility
 %! [smpl, accept] = slicesample (start, nsamples, "pdf", pdf, "burnin", K, "thin", m, "width", [20, 30]);
 %! figure;
 %! hold on;
@@ -271,7 +271,7 @@ endfunction
 %! ## Integrate truncated normal distribution to find normilization constant
 %! pdf = @(x) exp (-.5*x.^2)/(pi^.5*2^.5);
 %! nsamples = 1e3;
-%! rand3 ("seed", 4);  rand ("seed", 5)  # for reproducibility
+%! rande ("seed", 4);  rand ("seed", 5)  # for reproducibility
 %! [smpl, accept] = slicesample (1, nsamples, "pdf", pdf, "thin", 4);
 %! f = @(x) exp (-.5 * x .^ 2) .* (x >= -2 & x <= 2);
 %! x = linspace (-3, 3, 1000);
