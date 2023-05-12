@@ -160,8 +160,8 @@ function ngrad = invg_grad (params, x, censor, freq)
                               + 2 .* Fw .* exp_lmu .* lambda ./ mu .^ 2;
     dS2cen = 0.5 .* (fz .* z_censored - exp_lmu .* fw .* w_censored) ...
                  ./ lambda - 2 .* Fw .* exp_lmu ./ mu;
-    dL1(cen) = dS1cen ./ Scen;
-    dL2(cen) = dS2cen ./ Scen;
+    dL1(censored) = dS1cen ./ Scen;
+    dL2(censored) = dS2cen ./ Scen;
   endif
   ngrad = -[sum(freq .* dL1), sum(freq .* dL2)];
 endfunction
