@@ -69,7 +69,11 @@
 
  ** loglcdf
 
+ ** logifit (similar functionality to MATLAB's mle)
+
  ** loglinv
+
+ ** logilike (similar functionality to MATLAB's negloglik and mlecov)
 
  ** loglpdf
 

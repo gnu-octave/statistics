@@ -127,6 +127,8 @@ Distribution Fitting
  hnlike
  invgfit
  invglike
+ logifit
+ logilike
  lognfit
  lognlike
  normfit
