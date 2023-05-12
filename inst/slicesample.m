@@ -111,7 +111,7 @@ function [smpl, neval] = slicesample (start, nsamples, varargin)
           if (isa (varargin{k+1}, "function_handle"))
             pdf = varargin{k+1};
           else
-            error ("slicesample: pdf must be a function handle".);
+            error ("slicesample: pdf must be a function handle.");
           endif
         case "logpdf"
           if (isa (varargin{k+1}, "function_handle"))
