@@ -49,7 +49,7 @@ function r = lognrnd (mu, sigma, varargin)
 
   ## Check for valid number of input arguments
   if (nargin < 2)
-    print_usage ();
+    error ("lognrnd: function called with too few input arguments.");
   endif
 
   ## Check for common size of P, MU, and SIGMA
@@ -89,7 +89,7 @@ function r = lognrnd (mu, sigma, varargin)
 
   ## Check that parameters match requested dimensions in size
   if (! isscalar (mu) && ! isequal (size (mu), sz))
-    error ("lognrnd: MU and SIGMA must be scalar or of size SZ.");
+    error ("lognrnd: MU and SIGMA must be scalars or of size SZ.");
   endif
 
   ## Check for class type
@@ -139,12 +139,12 @@ endfunction
 ## Test input validation
 %!error<lognrnd: function called with too few input arguments.> lognrnd ()
 %!error<lognrnd: function called with too few input arguments.> lognrnd (1)
-%!error<lognrnd: MU and S must be of common size or scalars.> ...
+%!error<lognrnd: MU and SIGMA must be of common size or scalars.> ...
 %! lognrnd (ones (3), ones (2))
-%!error<lognrnd: MU and S must be of common size or scalars.> ...
+%!error<lognrnd: MU and SIGMA must be of common size or scalars.> ...
 %! lognrnd (ones (2), ones (3))
-%!error<lognrnd: MU and S must not be complex.> lognrnd (i, 2, 3)
-%!error<lognrnd: MU and S must not be complex.> lognrnd (1, i, 3)
+%!error<lognrnd: MU and SIGMA must not be complex.> lognrnd (i, 2, 3)
+%!error<lognrnd: MU and SIGMA must not be complex.> lognrnd (1, i, 3)
 %!error<lognrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
 %! lognrnd (1, 2, -1)
 %!error<lognrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
@@ -159,9 +159,9 @@ endfunction
 %! lognrnd (1, 2, 2, -1, 5)
 %!error<lognrnd: dimensions must be non-negative integers.> ...
 %! lognrnd (1, 2, 2, 1.5, 5)
-%!error<lognrnd: MU and S must be scalars or of size SZ.> ...
+%!error<lognrnd: MU and SIGMA must be scalars or of size SZ.> ...
 %! lognrnd (2, ones (2), 3)
-%!error<lognrnd: MU and S must be scalars or of size SZ.> ...
+%!error<lognrnd: MU and SIGMA must be scalars or of size SZ.> ...
 %! lognrnd (2, ones (2), [3, 2])
-%!error<lognrnd: MU and S must be scalars or of size SZ.> ...
+%!error<lognrnd: MU and SIGMA must be scalars or of size SZ.> ...
 %! lognrnd (2, ones (2), 3, 2)
