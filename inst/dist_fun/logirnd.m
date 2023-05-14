@@ -94,7 +94,7 @@ function r = logirnd (mu, s, varargin)
     error ("logirnd: MU and S must be scalars or of size SZ.");
   endif
 
-  ## Check for appropriate class
+  ## Check for class type
   if (isa (mu, "single") || isa (s, "single"))
     is_type = "single";
   else

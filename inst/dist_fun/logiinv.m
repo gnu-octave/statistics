@@ -61,7 +61,7 @@ function x = logiinv (p, mu, s)
     error ("logiinv: P, MU, and S must not be complex.");
   endif
 
-  ## Check for appropriate class
+  ## Check for class type
   if (isa (p, "single") || isa (mu, "single") || isa (s, "single"));
     x = NaN (size (p), "single");
   else

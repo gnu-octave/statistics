@@ -60,7 +60,7 @@ function y = logipdf (x, mu, s)
     error ("logipdf: X, MU, and S must not be complex.");
   endif
 
-  ## Check for appropriate class
+  ## Check for class type
   if (isa (x, "single") || isa (mu, "single") || isa (s, "single"));
     y = NaN (size (x), "single");
   else
