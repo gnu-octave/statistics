@@ -65,6 +65,16 @@
 ## Further information about the log-logistic distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Log-logistic_distribution}
 ##
+## MATLAB compatibility: MATLAB uses an alternative parameterization given by
+## the pair @math{μ, s}, i.e. @var{mu} and @var{s}, in analogy with the logistic
+## distribution.  Their relation to the @var{a} and @var{b} parameters is given
+## below:
+##
+## @itemize
+## @item @qcode{@var{a} = exp (@var{mu})}
+## @item @qcode{@var{b} = 1 / @var{s}}
+## @end itemize
+##
 ## @seealso{loglcdf, loglinv, loglpdf, loglrnd, logllike}
 ## @end deftypefn
 
