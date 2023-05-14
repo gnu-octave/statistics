@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: logifit</title>
+    <title>Statistics: loglfit</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -64,51 +64,51 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>logifit</code></b>
+              Function&nbsp;Reference: <b><code>loglfit</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>paramhat</var> = <b>logifit</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>logifit</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>logifit</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>logifit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>logifit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>logifit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</i></dt>
+<dt><u>statistics:</u> <var>paramhat</var> = <b>loglfit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>loglfit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>loglfit</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>loglfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>loglfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>loglfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</i></dt>
 </dl>
 
-<p> Estimate mean and confidence intervals for the logistic distribution.
+<p> Estimate mean and confidence intervals for the log-logistic distribution.
 </p>
 <div class="ms-5">
-<p> <code><var>mu0</var> = logifit (<var>x</var>)</code> returns the maximum likelihood
- estimates of the parameters of the logistic distribution given the data in
- <var>x</var>.  <code><var>paramhat</var>(1)</code> is the scale parameter, <var>mu</var>, and
+<p> <code><var>mu0</var> = loglfit (<var>x</var>)</code> returns the maximum likelihood
+ estimates of the parameters of the log-logistic distribution given the data
+ in <var>x</var>.  <code><var>paramhat</var>(1)</code> is the scale parameter, <var>mu</var>, and
  <code><var>paramhat</var>(2)</code> is the shape parameter, <var>s</var>.
 </p>
-<p> <code>[<var>paramhat</var>, <var>paramci</var>] = logifit (<var>x</var>)</code> returns the 95%
+<p> <code>[<var>paramhat</var>, <var>paramci</var>] = loglfit (<var>x</var>)</code> returns the 95%
  confidence intervals for the parameter estimates.
 </p>
-<p> <code>[&hellip;] = logifit (<var>x</var>, <var>alpha</var>)</code> also returns the
+<p> <code>[&hellip;] = loglfit (<var>x</var>, <var>alpha</var>)</code> also returns the
  <code>100 * (1 - <var>alpha</var>)</code> percent confidence intervals for the
  parameter estimates.  By default, the optional argument <var>alpha</var> is
  0.05 corresponding to 95% confidence intervals.  Pass in <code>[]</code> for
  <var>alpha</var> to use the default values.
 </p>
-<p> <code>[&hellip;] = logifit (<var>x</var>, <var>alpha</var>, <var>censor</var>)</code> accepts a
+<p> <code>[&hellip;] = loglfit (<var>x</var>, <var>alpha</var>, <var>censor</var>)</code> accepts a
  boolean vector, <var>censor</var>, of the same size as <var>x</var> with <code>1</code>s for
  observations that are right-censored and <code>0</code>s for observations that are
  observed exactly.  By default, or if left empty,
  <code><var>censor</var> = zeros (size (<var>x</var>))</code>.
 </p>
-<p> <code>[&hellip;] = logifit (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</code>
+<p> <code>[&hellip;] = loglfit (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</code>
  accepts a frequency vector, <var>freq</var>, of the same size as <var>x</var>.
  <var>freq</var> typically contains integer frequencies for the corresponding
  elements in <var>x</var>, but it can contain any non-integer non-negative values.
  By default, or if left empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
 </p>
-<p> <code>[&hellip;] = logifit (&hellip;, <var>options</var>)</code> specifies control
+<p> <code>[&hellip;] = loglfit (&hellip;, <var>options</var>)</code> specifies control
  parameters for the iterative algorithm used to compute ML estimates with the
  <code>fminsearch</code> function.  <var>options</var> is a structure with the following
  fields and their default values:
@@ -119,18 +119,18 @@
  </li><li> <code><var>options</var>.TolX = 1e-6</code>
  </li></ul>
 
-<p> Further information about the logistic distribution can be found at
- <a href="https://en.wikipedia.org/wiki/Logistic_distribution">https://en.wikipedia.org/wiki/Logistic_distribution</a>
+<p> Further information about the log-logistic distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Log-logistic_distribution">https://en.wikipedia.org/wiki/Log-logistic_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="logicdf.html">logicdf</a>, 
   <a href="logiinv.html">logiinv</a>, 
   <a href="logipdf.html">logipdf</a>, 
   <a href="logirnd.html">logirnd</a>, 
-  <a href="logilike.html">logilike</a>
+  <a href="logllike.html">logllike</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/logifit.m">logifit</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/loglfit.m">loglfit</a>
 </div>
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -150,55 +150,54 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Sample 3 populations from different logistic distibutions
+ ## Sample 3 populations from different log-logistic distibutions
  rand ("seed", 5)  # for reproducibility
- r1 = logirnd (2, 1, 2000, 1);
+ r1 = loglrnd (1, 1, 2000, 1);
  rand ("seed", 2)   # for reproducibility
- r2 = logirnd (5, 2, 2000, 1);
+ r2 = loglrnd (1, 2, 2000, 1);
  rand ("seed", 7)   # for reproducibility
- r3 = logirnd (9, 4, 2000, 1);
+ r3 = loglrnd (1, 8, 2000, 1);
  r = [r1, r2, r3];
 
  ## Plot them normalized and fix their colors
- hist (r, [-6:20], 1);
+ hist (r, [0.05:0.1:2.5], 10);
  h = findobj (gca, "Type", "patch");
  set (h(1), "facecolor", "c");
  set (h(2), "facecolor", "g");
  set (h(3), "facecolor", "r");
- ylim ([0, 0.3]);
- xlim ([-5, 20]);
+ ylim ([0, 3.2]);
+ xlim ([0, 2.0]);
  hold on
 
  ## Estimate their MU and LAMBDA parameters
- mu_sA = logifit (r(:,1));
- mu_sB = logifit (r(:,2));
- mu_sC = logifit (r(:,3));
+ a_bA = loglfit (r(:,1));
+ a_bB = loglfit (r(:,2));
+ a_bC = loglfit (r(:,3));
 
  ## Plot their estimated PDFs
- x = [-5:0.5:20];
- y = logipdf (x, mu_sA(1), mu_sA(2));
+ x = [0.01:0.1:2.01];
+ y = loglpdf (x, a_bA(1), a_bA(2));
  plot (x, y, "-pr");
- y = logipdf (x, mu_sB(1), mu_sB(2));
+ y = loglpdf (x, a_bB(1), a_bB(2));
  plot (x, y, "-sg");
- y = logipdf (x, mu_sC(1), mu_sC(2));
+ y = loglpdf (x, a_bC(1), a_bC(2));
  plot (x, y, "-^c");
- hold off
- legend ({"Normalized HIST of sample 1 with μ=1 and s=0.5", ...
-          "Normalized HIST of sample 2 with μ=2 and s=0.3", ...
-          "Normalized HIST of sample 3 with μ=4 and s=0.5", ...
-          sprintf("PDF for sample 1 with estimated μ=%0.2f and s=%0.2f", ...
-                  mu_sA(1), mu_sA(2)), ...
-          sprintf("PDF for sample 2 with estimated μ=%0.2f and s=%0.2f", ...
-                  mu_sB(1), mu_sB(2)), ...
-          sprintf("PDF for sample 3 with estimated μ=%0.2f and s=%0.2f", ...
-                  mu_sC(1), mu_sC(2))})
- title ("Three population samples from different logistic distibutions")
+ legend ({"Normalized HIST of sample 1 with α=1 and β=1", ...
+          "Normalized HIST of sample 2 with α=1 and β=2", ...
+          "Normalized HIST of sample 3 with α=1 and β=8", ...
+          sprintf("PDF for sample 1 with estimated α=%0.2f and β=%0.2f", ...
+                  a_bA(1), a_bA(2)), ...
+          sprintf("PDF for sample 2 with estimated α=%0.2f and β=%0.2f", ...
+                  a_bB(1), a_bB(2)), ...
+          sprintf("PDF for sample 3 with estimated α=%0.2f and β=%0.2f", ...
+                  a_bC(1), a_bC(2))})
+ title ("Three population samples from different log-logistic distibutions")
  hold off
 
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
-                    <img src="assets/logifit_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                    <img src="assets/loglfit_101.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>

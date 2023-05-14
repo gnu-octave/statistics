@@ -71,49 +71,45 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>loglcdf</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>loglcdf</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>loglcdf</b><i> (<var>x</var>, <var>alpha</var>, <var>beta</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>loglcdf</b><i> (&hellip;, <code>&quot;upper&quot;</code>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>loglcdf</b><i> (<var>x</var>, <var>a</var>, <var>b</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>loglcdf</b><i> (<var>x</var>, <var>a</var>, <var>b</var>, <code>&quot;upper&quot;</code>)</i></dt>
 </dl>
 
 <p> Log-logistic cumulative distribution function (CDF).
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the cumulative distribution function
- (CDF) at <var>x</var> of the log-logistic distribution with scale parameter
- <var>alpha</var> and shape parameter <var>beta</var>.  The size of <var>p</var> is the
- common size of <var>x</var>, <var>alpha</var>, and <var>beta</var>.  A scalar input
- functions as a constant matrix of the same size as the other inputs.
+ (CDF) of the log-logistic distribution with scale parameter <var>a</var> and shape
+ parameter <var>b</var>.  The size of <var>p</var> is the common size of <var>x</var>,
+ <var>a</var>, and <var>b</var>.  A scalar input functions as a constant matrix of the
+ same size as the other inputs.
 </p>
-<p> Both parameters, <math>α</math> and <math>β</math>, must be positive reals and <var>x</var> is
- supported in the range <math>[0,inf)</math>, otherwise <code>NaN</code> is returned.  By
- default, <code><var>alpha</var> = 1</code> and <code><var>beta</var> = 1</code>.
+<p> Both parameters, <var>a</var> and <var>b</var>, must be positive reals and <var>x</var> is
+ supported in the range <math>[0,inf)</math>, otherwise <code>NaN</code> is returned.
 </p>
-<p> <code><var>p</var> = loglcdf (<var>x</var>, <var>alpha</var>, <var>beta</var>, &quot;upper&quot;)</code> returns
- the upper tail probability of the log-logistic distribution with parameters
- <var>alpha</var>, and <var>beta</var> at the values in <var>x</var>.
+<p> <code><var>p</var> = loglcdf (<var>x</var>, <var>a</var>, <var>b</var>, &quot;upper&quot;)</code> computes the
+ upper tail probability of the log-logistic distribution with parameters
+ <var>a</var> and <var>b</var>, at the values in <var>x</var>.
 </p>
 <p> Further information about the log-logistic distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Log-logistic_distribution">https://en.wikipedia.org/wiki/Log-logistic_distribution</a>
 </p>
 <p> MATLAB compatibility: MATLAB uses an alternative parameterization given by
- the pair <math>μ, s</math>, i.e. <var>mu</var> and <var>scale</var>, in analogy with the
- logistic distribution.  Their relation to the <var>alpha</var> and <var>beta</var>
- parameters is given below:
+ the pair <math>μ, s</math>, i.e. <var>mu</var> and <var>s</var>, in analogy with the logistic
+ distribution.  Their relation to the <var>a</var> and <var>b</var> parameters is given
+ below:
 </p>
  <ul>
-<li> <code><var>alpha</var> = exp (<var>mu</var>)</code>
- </li><li> <code><var>beta</var> = 1 / <var>scale</var></code>
+<li> <code><var>a</var> = exp (<var>mu</var>)</code>
+ </li><li> <code><var>b</var> = 1 / <var>s</var></code>
  </li></ul>
 
 <p> <strong>See also: </strong>
   <a href="loglinv.html">loglinv</a>, 
   <a href="loglpdf.html">loglpdf</a>, 
   <a href="loglrnd.html">loglrnd</a>, 
-loglfit, 
-logllike, 
-loglstat
+  <a href="loglfit.html">loglfit</a>, 
+  <a href="logllike.html">logllike</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/loglcdf.m">loglcdf</a>
