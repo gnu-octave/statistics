@@ -25,19 +25,22 @@
 ## Nakagami cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the Nakagami distribution with shape parameter @var{mu}
-## and spread parameter @var{omega}.  The size of @var{p} is the common size of
-## @var{x}, @var{mu}, and @var{omega}.  A scalar input functions as a constant
-## matrix of the same size as the other inputs.
+## (CDF) of the Nakagami distribution with shape parameter @var{mu} and spread
+## parameter @var{omega}.  The size of @var{p} is the common size of @var{x},
+## @var{mu}, and @var{omega}.  A scalar input functions as a constant matrix of
+## the same size as the other inputs.
+##
+## Both parameters must be positive reals and @qcode{@var{mu} >= 0.5}.  For
+## @qcode{@var{mu} < 0.5} or @qcode{@var{omega} <= 0}, @qcode{NaN} is returned.
 ##
 ## @code{@var{p} = nakacdf (@var{x}, @var{mu}, @var{omega}, "upper")} computes
-## the upper tail probability of the Laplace distribution with parameters
-## @var{mu} and @var{beta} at the values in @var{x}.
+## the upper tail probability of the Nakagami distribution with parameters
+## @var{mu} and @var{beta}, at the values in @var{x}.
 ##
 ## Further information about the Nakagami distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Nakagami_distribution}
 ##
-## @seealso{nakainv, nakapdf, nakarnd}
+## @seealso{nakainv, nakapdf, nakarnd, nakafitm, nakalike}
 ## @end deftypefn
 
 function p = nakacdf (x, mu, omega, uflag)
@@ -79,12 +82,13 @@ function p = nakacdf (x, mu, omega, uflag)
   endif
 
   ## Force invalid parameters and missing data to NaN
-  k1 = isnan (x) | ! (mu > 0) | ! (omega > 0);
+  k1 = isnan (x) | ! (mu >= 0.5) | ! (omega > 0);
   p(k1) = NaN;
 
   ## Find normal and edge cases
-  k2 = (x == Inf) & (mu > 0) & (mu < Inf) & (omega > 0) & (omega < Inf);
-  k = (x > 0) & (x < Inf) & (mu > 0) & (mu < Inf) & (omega > 0) & (omega < Inf);
+  k2 = (x == Inf) & (mu >= 0.5) & (mu < Inf) & (omega > 0) & (omega < Inf);
+  k = (x > 0) & (x < Inf) & (mu >= 0.5) & (mu < Inf) ...
+                          & (omega > 0) & (omega < Inf);
 
   ## Compute Nakagami CDF
   if (uflag)
@@ -122,7 +126,7 @@ endfunction
 %! xlabel ("values in x")
 %! ylabel ("probability")
 
-## Test results
+## Test output
 %!shared x, y
 %! x = [-1, 0, 1, 2, Inf];
 %! y = [0, 0, 0.63212055882855778, 0.98168436111126578, 1];
@@ -140,10 +144,7 @@ endfunction
 ## Test input validation
 %!error<nakacdf: function called with too few input arguments.> nakacdf ()
 %!error<nakacdf: function called with too few input arguments.> nakacdf (1)
-%!error<nakacdf: function called with too few input arguments.> ...
-%! nakacdf (1, 2)
-%!error<nakacdf: function called with too many inputs> ...
-%! nakacdf (1, 2, 3, 4, 5)
+%!error<nakacdf: function called with too few input arguments.> nakacdf (1, 2)
 %!error<nakacdf: invalid argument for upper tail.> nakacdf (1, 2, 3, "tail")
 %!error<nakacdf: invalid argument for upper tail.> nakacdf (1, 2, 3, 4)
 %!error<nakacdf: X, MU, and OMEGA must be of common size or scalars.> ...

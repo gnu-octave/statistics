@@ -26,18 +26,23 @@
 ## Lognormal probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the lognormal distribution with parameters @var{mu} and
-## @var{sigma}.  The size of @var{p} is the common size of @var{p}, @var{mu},
-## and @var{sigma}.  A scalar input functions as a constant matrix of the same
-## size as the other inputs.
+## of the lognormal distribution with with mean @var{mu} and standard deviation
+## @var{sigma} corresponding to the associated normal distribution.  The size of
+## @var{y} is the common size of @var{p}, @var{mu}, and @var{sigma}.  A scalar
+## input functions as a constant matrix of the same size as the other inputs.
 ##
 ## If a random variable follows this distribution, its logarithm is normally
 ## distributed with mean @var{mu} and standard deviation @var{sigma}.
 ##
-## Default values are @var{mu} = 0, @var{sigma} = 1. Both parameters must be
-## reals and @var{sigma} > 0.  For @var{sigma} <= 0, NaN is returned.
+## Default parameter values are @qcode{@var{mu} = 0} and
+## @qcode{@var{sigma} = 1}.  Both parameters must be reals and
+## @qcode{@var{sigma} > 0}.  For @qcode{@var{sigma} <= 0}, @qcode{NaN} is
+## returned.
 ##
-## @seealso{logncdf, logninv, lognrnd, lognstat}
+## Further information about the log-normal distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Log-normal_distribution}
+##
+## @seealso{logncdf, logninv, lognrnd, lognfit, lognlike, lognstat}
 ## @end deftypefn
 
 function y = lognpdf (x, mu = 0, sigma = 1)
@@ -60,7 +65,7 @@ function y = lognpdf (x, mu = 0, sigma = 1)
     error ("lognpdf: X, MU, and SIGMA must not be complex");
   endif
 
-  ## Check for appropriate class
+  ## Check for class type
   if (isa (x, "single") || isa (mu, "single") || isa (sigma, "single"))
     y = zeros (size (x), "single");
   else
@@ -80,8 +85,23 @@ function y = lognpdf (x, mu = 0, sigma = 1)
 
 endfunction
 
+%!demo
+%! ## Plot various PDFs from the log-normal distribution
+%! x = 0:0.01:5;
+%! y1 = lognpdf (x, 0, 1);
+%! y2 = lognpdf (x, 0, 0.5);
+%! y3 = lognpdf (x, 0, 0.25);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+%! grid on
+%! ylim ([0, 2])
+%! legend ({"μ = 0, σ = 1", "μ = 0, σ = 0.5", "μ = 0, σ = 0.25"}, ...
+%!          "location", "northeast")
+%! title ("Log-normal PDF")
+%! xlabel ("values in x")
+%! ylabel ("density")
 
-%!shared x,y
+## Test output
+%!shared x, y
 %! x = [-1 0 e Inf];
 %! y = [0, 0, 1/(e*sqrt(2*pi)) * exp(-1/2), 0];
 %!assert (lognpdf (x, zeros (1,4), ones (1,4)), y, eps)

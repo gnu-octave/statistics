@@ -31,7 +31,7 @@
 ## of @var{p} is the common size of @var{x} and @var{mu}.  A scalar input
 ## functions as a constant matrix of the same size as the other inputs.
 ##
-## Default value for @var{mu} = 1.
+## Default value is @var{mu} = 1.
 ##
 ## A common alternative parameterization of the exponential distribution is to
 ## use the parameter @math{λ} defined as the mean number of events in an
@@ -39,14 +39,14 @@
 ## for an event to occur. @math{λ} and @math{μ} are reciprocals,
 ## i.e. @math{μ = 1 / λ}.
 ##
-## When called with three output arguments, i.e. @code{[@var{p}, @var{plo},
-## @var{pup}]}, it computes the confidence bounds for @var{p} when the input
-## parameter @var{mu} is an estimate.  In such case, @var{pcov}, a scalar value
-## with the variance of the estimated parameter @var{mu}, is necessary.
-## Optionally, @var{alpha}, which has a default value of 0.05, specifies the
-## @qcode{100 * (1 - @var{alpha})} percent confidence bounds.  @var{plo} and
-## @var{pup} are arrays of the same size as @var{p} containing the lower and
-## upper confidence bounds.
+## When called with three output arguments, i.e. @qcode{[@var{p}, @var{plo},
+## @var{pup}]}, @code{expcdf} computes the confidence bounds for @var{p} when
+## the input parameter @var{mu} is an estimate.  In such case, @var{pcov}, a
+## scalar value with the variance of the estimated parameter @var{mu}, is
+## necessary.  Optionally, @var{alpha}, which has a default value of 0.05,
+## specifies the @qcode{100 * (1 - @var{alpha})} percent confidence bounds.
+## @var{plo} and @var{pup} are arrays of the same size as @var{p} containing the
+## lower and upper confidence bounds.
 ##
 ## @code{[@dots{}] = expcdf (@dots{}, "upper")} computes the upper tail
 ## probability of the exponential distribution with parameter @var{mu}, at the

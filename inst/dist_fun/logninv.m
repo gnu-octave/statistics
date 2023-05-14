@@ -23,21 +23,26 @@
 ## @deftypefnx {statistics} {@var{x} =} logninv (@var{p}, @var{mu})
 ## @deftypefnx {statistics} {@var{x} =} logninv (@var{p}, @var{mu}, @var{sigma})
 ##
-## Inverse of the lognormal cumulative distribution function (iCDF).
+## Inverse of the log-normal cumulative distribution function (iCDF).
 ##
-## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## at @var{p} of the lognormal distribution with parameters @var{mu} and
-## @var{sigma}.  The size of @var{p} is the common size of @var{p}, @var{mu},
-## and @var{sigma}.  A scalar input functions as a constant matrix of the same
-## size as the other inputs.
+## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
+## the log-normal distribution with mean @var{mu} and standard deviation
+## @var{sigma} corresponding to the associated normal distribution.  The size of
+## @var{x} is the common size of @var{p}, @var{mu}, and @var{sigma}.  A scalar
+## input functions as a constant matrix of the same size as the other inputs.
 ##
 ## If a random variable follows this distribution, its logarithm is normally
 ## distributed with mean @var{mu} and standard deviation @var{sigma}.
 ##
-## Default values are @var{mu} = 0, @var{sigma} = 1.  Both parameters must be
-## reals and @var{sigma} > 0.  For @var{sigma} <= 0, NaN is returned.
+## Default parameter values are @qcode{@var{mu} = 0} and
+## @qcode{@var{sigma} = 1}.  Both parameters must be reals and
+## @qcode{@var{sigma} > 0}.  For @qcode{@var{sigma} <= 0}, @qcode{NaN} is
+## returned.
 ##
-## @seealso{logncdf, lognpdf, lognrnd, lognstat}
+## Further information about the log-normal distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Log-normal_distribution}
+##
+## @seealso{logncdf, lognpdf, lognrnd, lognfit, lognlike, lognstat}
 ## @end deftypefn
 
 function x = logninv (p, mu = 0, sigma = 1)
@@ -60,7 +65,7 @@ function x = logninv (p, mu = 0, sigma = 1)
     error ("logninv: X, MU, and SIGMA must not be complex.");
   endif
 
-  ## Check for appropriate class
+  ## Check for class type
   if (isa (p, "single") || isa (mu, "single") || isa (sigma, "single"))
     x = NaN (size (p), "single");
   else
@@ -83,7 +88,22 @@ function x = logninv (p, mu = 0, sigma = 1)
 
 endfunction
 
+%!demo
+%! ## Plot various iCDFs from the log-normal distribution
+%! p = 0.001:0.001:0.999;
+%! x1 = logninv (p, 0, 1);
+%! x2 = logninv (p, 0, 0.5);
+%! x3 = logninv (p, 0, 0.25);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! grid on
+%! ylim ([0, 3])
+%! legend ({"μ = 0, σ = 1", "μ = 0, σ = 0.5", "μ = 0, σ = 0.25"}, ...
+%!         "location", "northwest")
+%! title ("Log-normal iCDF")
+%! xlabel ("probability")
+%! ylabel ("values in x")
 
+## Test output
 %!shared p
 %! p = [-1 0 0.5 1 2];
 %!assert (logninv (p, ones (1,5), ones (1,5)), [NaN 0 e Inf NaN])

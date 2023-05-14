@@ -19,8 +19,8 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{x} =} expinv (@var{p})
 ## @deftypefnx {statistics} {@var{x} =} expinv (@var{p}, @var{mu})
-## @deftypefnx {statistics} {@var{x} =} expinv (@var{p}, @var{mu}, @var{pcov})
-## @deftypefnx {statistics} {@var{x} =} expinv (@var{p}, @var{mu}, @var{pcov}, @var{alpha})
+## @deftypefnx {statistics} {[@var{x}, @var{xlo}, @var{xup}] =} expinv (@var{p}, @var{mu}, @var{pcov})
+## @deftypefnx {statistics} {[@var{x}, @var{xlo}, @var{xup}] =} expinv (@var{p}, @var{mu}, @var{pcov}, @var{alpha})
 ##
 ## Inverse of the exponential cumulative distribution function (iCDF).
 ##
@@ -29,7 +29,7 @@
 ## common size of @var{p} and @var{mu}.  A scalar input functions as a constant
 ## matrix of the same size as the other inputs.
 ##
-## Default value for @var{mu} = 1.
+## Default value is @var{mu} = 1.
 ##
 ## A common alternative parameterization of the exponential distribution is to
 ## use the parameter @math{λ} defined as the mean number of events in an
@@ -37,14 +37,14 @@
 ## for an event to occur. @math{λ} and @math{μ} are reciprocals,
 ## i.e. @math{μ = 1 / λ}.
 ##
-## When called with three output arguments, i.e. @code{[@var{x}, @var{xlo},
-## @var{xup}]}, it computes the confidence bounds for @var{x} when the input
-## parameter @var{mu} is an estimate.  In such case, @var{pcov}, a scalar value
-## with the variance of the estimated parameter @var{mu}, is necessary.
-## Optionally, @var{alpha}, which has a default value of 0.05, specifies the
-## @qcode{100 * (1 - @var{alpha})} percent confidence bounds.  @var{xlo} and
-## @var{xup} are arrays of the same size as @var{x} containing the lower and
-## upper confidence bounds.
+## When called with three output arguments, i.e. @qcode{[@var{x}, @var{xlo},
+## @var{xup}]}, @code{expinv} computes the confidence bounds for @var{x} when
+## the input parameter @var{mu} is an estimate.  In such case, @var{pcov}, a
+## scalar value with the variance of the estimated parameter @var{mu}, is
+## necessary.  Optionally, @var{alpha}, which has a default value of 0.05,
+## specifies the @qcode{100 * (1 - @var{alpha})} percent confidence bounds.
+## @var{xlo} and @var{xup} are arrays of the same size as @var{x} containing the
+## lower and upper confidence bounds.
 ##
 ## Further information about the exponential distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Exponential_distribution}

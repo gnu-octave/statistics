@@ -30,7 +30,7 @@
 ## @var{x}, @var{mu} and @var{sigma}.  A scalar input functions as a constant
 ## matrix of the same size as the other inputs.
 ##
-## Default values are @var{mu} = 0, @var{sigma} = 1.
+## Default values are @var{mu} = 0 and @var{sigma} = 1.
 ##
 ## The Gumbel distribution is used to model the distribution of the maximum (or
 ## the minimum) of a number of samples of various distributions.  This version

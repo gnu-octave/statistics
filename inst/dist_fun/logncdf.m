@@ -27,29 +27,40 @@
 ## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} logncdf (@var{x}, @var{mu}, @var{sigma}, @var{pcov}, @var{alpha})
 ## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} logncdf (@dots{}, @qcode{"upper"})
 ##
-## Lognormal cumulative distribution function (CDF).
+## Log-normal cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the lognormal distribution with mean @var{mu} and
-## standard deviation @var{sigma}.  The size of @var{p} is the common size of
-## @var{x}, @var{mu} and @var{sigma}.  A scalar input functions as a constant
-## matrix of the same size as the other inputs.
+## (CDF) of the log-normal distribution with mean @var{mu} and standard
+## deviation @var{sigma} corresponding to the associated normal distribution.
+## The size of @var{p} is the common size of @var{x}, @var{mu} and @var{sigma}.
+## A scalar input functions as a constant matrix of the same size as the other
+## inputs.
 ##
-## Default values are @var{mu} = 0, @var{sigma} = 1.
+## If a random variable follows this distribution, its logarithm is normally
+## distributed with mean @var{mu} and standard deviation @var{sigma}.
 ##
-## When called with three output arguments, @code{[@var{p}, @var{plo},
-## @var{pup}]} it computes the confidence bounds for @var{p} when the input
-## parameters @var{mu} and @var{sigma} are estimates.  In such case, @var{pcov},
-## a 2-by-2 matrix containing the covariance matrix of the estimated parameters,
-## is necessary.  Optionally, @var{alpha} has a default value of 0.05, and
-## specifies 100 * (1 - @var{alpha})% confidence bounds. @var{plo} and @var{pup}
-## are arrays of the same size as @var{p} containing the lower and upper
-## confidence bounds.
+## Default parameter values are @qcode{@var{mu} = 0} and
+## @qcode{@var{sigma} = 1}.  Both parameters must be reals and
+## @qcode{@var{sigma} > 0}.  For @qcode{@var{sigma} <= 0}, @qcode{NaN} is
+## returned.
+##
+## When called with three output arguments, i.e. @qcode{[@var{p}, @var{plo},
+## @var{pup}]}, @code{logncdf} computes the confidence bounds for @var{p} when
+## the input parameters @var{mu} and @var{sigma} are estimates.  In such case,
+## @var{pcov}, a @math{2x2} matrix containing the covariance matrix of the
+## estimated parameters, is necessary.  Optionally, @var{alpha}, which has a
+## default value of 0.05, specifies the @qcode{100 * (1 - @var{alpha})} percent
+## confidence bounds.  @var{plo} and @var{pup} are arrays of the same size as
+## @var{p} containing the lower and upper confidence bounds.
 ##
 ## @code{[@dots{}] = logncdf (@dots{}, "upper")} computes the upper tail
-## probability of the lognormal distribution.
+## probability of the log-normal distribution with parameters @var{mu} and
+## @var{sigma}, at the values in @var{x}.
 ##
-## @seealso{logninv, lognpdf, lognrnd, lognstat}
+## Further information about the log-normal distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Log-normal_distribution}
+##
+## @seealso{logninv, lognpdf, lognrnd, lognfit, lognlike, lognstat}
 ## @end deftypefn
 
 function [varargout] = logncdf (x, varargin)
@@ -148,7 +159,7 @@ function [varargout] = logncdf (x, varargin)
     pup = 0.5 * erfc (-zup ./ sqrt (2));
   endif
 
-  ## Check for appropriate class
+  ## Check for class type
   if (isa (x, "single") || isa (mu, "single") || isa (sigma, "single"));
     is_class = "single";
   else
@@ -164,9 +175,23 @@ function [varargout] = logncdf (x, varargin)
 
 endfunction
 
+%!demo
+%! ## Plot various CDFs from the log-normal distribution
+%! x = 0:0.01:3;
+%! p1 = logncdf (x, 0, 1);
+%! p2 = logncdf (x, 0, 0.5);
+%! p3 = logncdf (x, 0, 0.25);
+%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r")
+%! grid on
+%! legend ({"μ = 0, σ = 1", "μ = 0, σ = 0.5", "μ = 0, σ = 0.25"}, ...
+%!         "location", "southeast")
+%! title ("Log-normal CDF")
+%! xlabel ("values in x")
+%! ylabel ("probability")
 
-%!shared x,y
-%! x = [-1 0 1 e Inf];
+## Test output
+%!shared x, y
+%! x = [-1, 0, 1, e, Inf];
 %! y = [0, 0, 0.5, 1/2+1/2*erf(1/2), 1];
 %!assert (logncdf (x, zeros (1,5), sqrt(2)*ones (1,5)), y, eps)
 %!assert (logncdf (x, zeros (1,5), sqrt(2)*ones (1,5), []), y, eps)

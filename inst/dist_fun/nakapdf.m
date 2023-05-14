@@ -24,15 +24,18 @@
 ## Nakagami probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the Nakagami distribution with shape parameter @var{mu} and
-## spread parameter @var{omega}.  The size of @var{p} is the common size of
-## @var{x}, @var{mu}, and @var{omega}.  A scalar input functions as a constant
-## matrix of the same size as the other inputs.
+## of the Nakagami distribution with shape parameter @var{mu} and spread
+## parameter @var{omega}.  The size of @var{p} is the common size of @var{x},
+## @var{mu}, and @var{omega}.  A scalar input functions as a constant matrix of
+## the same size as the other inputs.
+##
+## Both parameters must be positive reals and @qcode{@var{mu} >= 0.5}.  For
+## @qcode{@var{mu} < 0.5} or @qcode{@var{omega} <= 0}, @qcode{NaN} is returned.
 ##
 ## Further information about the Nakagami distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Nakagami_distribution}
 ##
-## @seealso{nakacdf, nakapdf, nakarnd}
+## @seealso{nakacdf, nakapdf, nakarnd, nakafit, nakalike}
 ## @end deftypefn
 
 function y = nakapdf (x, mu, omega)
@@ -55,7 +58,7 @@ function y = nakapdf (x, mu, omega)
     error ("nakapdf: X, MU, and OMEGA must not be complex.");
   endif
 
-  ## Check for appropriate class
+  ## Check for class type
   if (isa (x, "single") || isa (mu, "single") || isa (omega, "single"))
     y = zeros (size (x), "single");
   else
@@ -63,18 +66,19 @@ function y = nakapdf (x, mu, omega)
   endif
 
   ## Compute Nakagami PDF
-  k = isnan (x) | ! (mu > 0.5) | ! (omega > 0);
+  k = isnan (x) | ! (mu >= 0.5) | ! (omega > 0);
   y(k) = NaN;
 
-  k = (0 < x) & (x < Inf) & (0 < mu) & (mu < Inf) & (0 < omega) & (omega < Inf);
+  k = (0 < x) & (x < Inf) & (0.5 <= mu) & (mu < Inf) ...
+                          & (0 < omega) & (omega < Inf);
   if (isscalar (mu) && isscalar(omega))
-    y(k) = exp (log (2) + mu*log (mu) - log (gamma (mu)) - ...
-               mu*log (omega) + (2*mu-1) * ...
-               log (x(k)) - (mu/omega) * x(k).^2);
+    y(k) = exp (log (2) + mu * log (mu) - log (gamma (mu)) - ...
+                mu * log (omega) + (2 * mu-1) * ...
+                log (x(k)) - (mu / omega) * x(k) .^ 2);
   else
-    y(k) = exp(log(2) + mu(k).*log (mu(k)) - log (gamma (mu(k))) - ...
-               mu(k).*log (omega(k)) + (2*mu(k)-1) ...
-               .* log (x(k)) - (mu(k)./omega(k)) .* x(k).^2);
+    y(k) = exp (log(2) + mu(k) .* log (mu(k)) - log (gamma (mu(k))) - ...
+                mu(k) .* log (omega(k)) + (2 * mu(k) - 1) ...
+                .* log (x(k)) - (mu(k) ./ omega(k)) .* x(k) .^ 2);
   endif
 
 endfunction
@@ -101,7 +105,7 @@ endfunction
 %! xlabel ("values in x")
 %! ylabel ("density")
 
-## Test results
+## Test output
 %!shared x, y
 %! x = [-1, 0, 1, 2, Inf];
 %! y = [0, 0, 0.73575888234288467, 0.073262555554936715, 0];
@@ -119,9 +123,7 @@ endfunction
 ## Test input validation
 %!error<nakapdf: function called with too few input arguments.> nakapdf ()
 %!error<nakapdf: function called with too few input arguments.> nakapdf (1)
-%!error<nakapdf: function called with too few input arguments.> ...
-%! nakapdf (1, 2)
-%!error<nakapdf: function called with too many inputs> nakapdf (1, 2, 3, 4)
+%!error<nakapdf: function called with too few input arguments.> nakapdf (1, 2)
 %!error<nakapdf: X, MU, and OMEGA must be of common size or scalars.> ...
 %! nakapdf (ones (3), ones (2), ones(2))
 %!error<nakapdf: X, MU, and OMEGA must be of common size or scalars.> ...

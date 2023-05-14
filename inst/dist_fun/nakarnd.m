@@ -32,11 +32,14 @@
 ## @var{mu} and @var{omega}.  A scalar input functions as a constant matrix of
 ## the same size as the other inputs.
 ##
-## When called with a single size argument, return a square matrix with
-## the dimension specified.  When called with more than one scalar argument the
-## first two arguments are taken as the number of rows and columns and any
-## further arguments specify additional matrix dimensions.  The size may also
-## be specified with a vector of dimensions @var{sz}.
+## Both parameters must be positive reals and @qcode{@var{mu} >= 0.5}.  For
+## @qcode{@var{mu} < 0.5} or @qcode{@var{omega} <= 0}, @qcode{NaN} is returned.
+##
+## When called with a single size argument, @code{nakarnd} returns a square
+## matrix with the dimension specified.  When called with more than one scalar
+## argument, the first two arguments are taken as the number of rows and columns
+## and any further arguments specify additional matrix dimensions.  The size may
+## also be specified with a row vector of dimensions, @var{sz}.
 ##
 ## Further information about the Nakagami distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Nakagami_distribution}
@@ -91,7 +94,7 @@ function r = nakarnd (mu, omega, varargin)
     error ("nakarnd: MU and OMEGA must be scalar or of size SZ.");
   endif
 
-  ## Check for appropriate class
+  ## Check for class type
   if (isa (mu, "single") || isa (omega, "single"))
     cls = "single";
   else
@@ -100,7 +103,7 @@ function r = nakarnd (mu, omega, varargin)
 
   ## Generate random sample from Nakagami distribution
   if (isscalar (mu) && isscalar (omega))
-    if ((0 < mu) && (mu < Inf) && (0 < omega) && (omega < Inf))
+    if ((0.5 < mu) && (mu < Inf) && (0 < omega) && (omega < Inf))
       m_gamma = mu;
       w_gamma = omega / mu;
       r = gamrnd (m_gamma, w_gamma, sz);
@@ -110,7 +113,7 @@ function r = nakarnd (mu, omega, varargin)
     endif
   else
     r = NaN (sz, cls);
-    k = (0 < mu) & (mu < Inf) & (0 < omega) & (omega < Inf);
+    k = (0.5 < mu) & (mu < Inf) & (0 < omega) & (omega < Inf);
     m_gamma = mu;
     w_gamma = omega ./ mu;
     r(k) = gamrnd (m_gamma(k), w_gamma(k));
@@ -119,7 +122,7 @@ function r = nakarnd (mu, omega, varargin)
 
 endfunction
 
-## Test results
+## Test output
 %!assert (size (nakarnd (1, 1)), [1 1])
 %!assert (size (nakarnd (1, ones (2,1))), [2, 1])
 %!assert (size (nakarnd (1, ones (2,2))), [2, 2])

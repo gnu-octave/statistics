@@ -23,16 +23,19 @@
 ##
 ## Inverse of the Nakagami cumulative distribution function (iCDF).
 ##
-## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## at @var{p} of the Nakagami distribution with shape parameter @var{mu} and
-## spread parameter @var{omega}.  The size of @var{p} is the common size of
-## @var{x}, @var{mu}, and @var{omega}.  A scalar input functions as a constant
-## matrix of the same size as the other inputs.
+## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
+## the Nakagami distribution with shape parameter @var{mu} and spread parameter
+## @var{omega}.  The size of @var{p} is the common size of @var{x}, @var{mu},
+## and @var{omega}.  A scalar input functions as a constant matrix of the same
+## size as the other inputs.
+##
+## Both parameters must be positive reals and @qcode{@var{mu} >= 0.5}.  For
+## @qcode{@var{mu} < 0.5} or @qcode{@var{omega} <= 0}, @qcode{NaN} is returned.
 ##
 ## Further information about the Nakagami distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Nakagami_distribution}
 ##
-## @seealso{nakacdf, nakapdf, nakarnd}
+## @seealso{nakacdf, nakapdf, nakarnd, nakafit, nakalike}
 ## @end deftypefn
 
 function x = nakainv (p, mu, omega)
@@ -63,16 +66,16 @@ function x = nakainv (p, mu, omega)
   endif
 
   ## Force invalid parameters and missing data to NaN
-  k = isnan (p) | ! (p >= 0) | ! (p <= 1) | ! (-Inf < mu) | ! (mu < Inf) ...
-                | ! (omega > 0) | ! (omega < Inf);
+  k = isnan (p) | ! (p >= 0) | ! (p <= 1) | ! (mu >= 0.5) | ! (omega > 0);
   x(k) = NaN;
 
   ## Handle edge cases
-  k = (p == 1) & (mu > -Inf) & (mu < Inf) & (omega > 0) & (omega < Inf);
+  k = (p == 1) & (mu >= 0.5) & (mu < Inf) & (omega > 0) & (omega < Inf);
   x(k) = Inf;
 
   ## Find normal cases
-  k = (0 < p) & (p < 1) & (0 < mu) & (mu < Inf) & (0 < omega) & (omega < Inf);
+  k = (0 < p) & (p < 1) & (0.5 <= mu) & (mu < Inf) ...
+                        & (0 < omega) & (omega < Inf);
 
   ## Compute Nakagami iCDF
   if (isscalar (mu) && isscalar(omega))
@@ -110,7 +113,7 @@ endfunction
 %! xlabel ("probability")
 %! ylabel ("values in x")
 
-## Test results
+## Test output
 %!shared p, y
 %! p = [-Inf, -1, 0, 1/2, 1, 2, Inf];
 %! y = [NaN, NaN, 0, 0.83255461115769769, Inf, NaN, NaN];
@@ -128,9 +131,7 @@ endfunction
 ## Test input validation
 %!error<nakainv: function called with too few input arguments.> nakainv ()
 %!error<nakainv: function called with too few input arguments.> nakainv (1)
-%!error<nakainv: function called with too few input arguments.> ...
-%! nakainv (1, 2)
-%!error<nakainv: function called with too many inputs> nakainv (1, 2, 3, 4)
+%!error<nakainv: function called with too few input arguments.> nakainv (1, 2)
 %!error<nakainv: P, MU, and OMEGA must be of common size or scalars.> ...
 %! nakainv (ones (3), ones (2), ones(2))
 %!error<nakainv: P, MU, and OMEGA must be of common size or scalars.> ...

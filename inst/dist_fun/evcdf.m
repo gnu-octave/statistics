@@ -34,16 +34,16 @@
 ## @var{p} is the common size of @var{x}, @var{mu} and @var{sigma}.  A scalar
 ## input functions as a constant matrix of the same size as the other inputs.
 ##
-## Default values are @var{mu} = 0, @var{sigma} = 1.
+## Default values are @var{mu} = 0 and @var{sigma} = 1.
 ##
-## When called with three output arguments, i.e. @code{[@var{p}, @var{plo},
-## @var{pup}]}, it computes the confidence bounds for @var{p} when the input
-## parameters @var{mu} and @var{sigma} are estimates.  In such case, @var{pcov},
-## a 2-by-2 matrix containing the covariance matrix of the estimated parameters,
-## is necessary.  Optionally, @var{alpha}, which has a default value of 0.05,
-## specifies the @qcode{100 * (1 - @var{alpha})} percent confidence bounds.
-## @var{plo} and @var{pup} are arrays of the same size as @var{p} containing the
-## lower and upper confidence bounds.
+## When called with three output arguments, i.e. @qcode{[@var{p}, @var{plo},
+## @var{pup}]}, @code{evcdf} computes the confidence bounds for @var{p} when the
+## input parameters @var{mu} and @var{sigma} are estimates.  In such case,
+## @var{pcov}, a @math{2x2} matrix containing the covariance matrix of the
+## estimated parameters, is necessary.  Optionally, @var{alpha}, which has a
+## default value of 0.05, specifies the @qcode{100 * (1 - @var{alpha})} percent
+## confidence bounds.  @var{plo} and @var{pup} are arrays of the same size as
+## @var{p} containing the lower and upper confidence bounds.
 ##
 ## @code{[@dots{}] = evcdf (@dots{}, "upper")} computes the upper tail
 ## probability of the extreme value distribution with parameters @var{x0} and
