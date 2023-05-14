@@ -67,13 +67,17 @@
 
  ** isoutlier (fully Matlab compatible)
 
+ ** logifit (similar functionality to MATLAB's mle)
+
+ ** logilike (similar functionality to MATLAB's negloglik and mlecov)
+
  ** loglcdf
 
- ** logifit (similar functionality to MATLAB's mle)
+ ** loglfit (similar functionality to MATLAB's mle)
 
  ** loglinv
 
- ** logilike (similar functionality to MATLAB's negloglik and mlecov)
+ ** logllike (similar functionality to MATLAB's negloglik and mlecov)
 
  ** loglpdf
 

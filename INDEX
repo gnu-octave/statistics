@@ -129,6 +129,8 @@ Distribution Fitting
  invglike
  logifit
  logilike
+ loglfit
+ logllike
  lognfit
  lognlike
  normfit
