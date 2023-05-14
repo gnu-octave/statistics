@@ -183,7 +183,7 @@ endfunction
 %! set (h(1), "facecolor", "c");
 %! set (h(2), "facecolor", "g");
 %! set (h(3), "facecolor", "r");
-%! ylim ([0, 3.2]);
+%! ylim ([0, 3.5]);
 %! xlim ([0, 2.0]);
 %! hold on
 %!
