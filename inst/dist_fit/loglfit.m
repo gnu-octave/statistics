@@ -65,7 +65,7 @@
 ## Further information about the log-logistic distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Log-logistic_distribution}
 ##
-## @seealso{logicdf, logiinv, logipdf, logirnd, logllike}
+## @seealso{loglcdf, loglinv, loglpdf, loglrnd, logllike}
 ## @end deftypefn
 
 function [paramhat, paramci] = loglfit (x, alpha, censor, freq, options)
