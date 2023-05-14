@@ -87,47 +87,48 @@
  vector <var>x</var>.  <code><var>paramhat</var>([1, 2])</code> corresponds to the mean and
  standard deviation, respectively, of the associated normal distribution.
 </p>
+<p> If a random variable follows this distribution, its logarithm is normally
+ distributed with mean <var>mu</var> and standard deviation <var>sigma</var>.
+</p>
 <p> <code>[<var>paramhat</var>, <var>paramci</var>] = lognfit (<var>x</var>)</code> returns the 95%
  confidence intervals for the parameter estimates.
 </p>
- <ul>
-<li>
- <var>alpha</var> is a scalar value in the range <math>(0,1)</math> specifying the
- confidence level for the confidence intervals calculated as
- <code>100 * (1 - <var>alpha</var>)</code> percent.  By default, the optional argument
- <var>alpha</var> is 0.05 corresponding to 95% confidence intervals.  Pass in
- <code>[]</code> for <var>alpha</var> to use the default values.
-
- </li><li>
- <var>censor</var> is a logical vector of the same length as <var>x</var> specifying
- whether each value in <var>x</var> is right-censored or not.  1 indicates
- observations that are right-censored and 0 indicates observations that are
- fully observed.  With censoring, <var>muhat</var> and <var>sigmahat</var> are the
- maximum likelihood estimates (MLEs).  If empty, the default is an array of
- 0s, meaning that all observations are fully observed.
-
- </li><li>
- <var>freq</var> is a vector of the same length as <var>x</var> and it typically
- contains non-negative integer counts of the corresponding elements in
- <var>x</var>, but it may contain any non-integer non-negative values.  By default,
- or if left empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
-
- </li><li>
- <var>options</var> is a structure with the control parameters for
- <code>fminsearch</code> which is used internally to compute MLEs for censored data.
- By default, it uses the following options:
- <ul>
+<p> <code>[&hellip;] = lognfit (<var>x</var>, <var>alpha</var>)</code> also returns the
+ <code>100 * (1 - <var>alpha</var>)</code> percent confidence intervals for the
+ parameter estimates.  By default, the optional argument <var>alpha</var> is
+ 0.05 corresponding to 95% confidence intervals.  Pass in <code>[]</code> for
+ <var>alpha</var> to use the default values.
+</p>
+<p> <code>[&hellip;] = lognfit (<var>x</var>, <var>alpha</var>, <var>censor</var>)</code> accepts a
+ boolean vector, <var>censor</var>, of the same size as <var>x</var> with <code>1</code>s for
+ observations that are right-censored and <code>0</code>s for observations that are
+ observed exactly.  By default, or if left empty,
+ <code><var>censor</var> = zeros (size (<var>x</var>))</code>.
+</p>
+<p> <code>[&hellip;] = lognfit (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</code>
+ accepts a frequency vector, <var>freq</var>, of the same size as <var>x</var>.
+ <var>freq</var> typically contains integer frequencies for the corresponding
+ elements in <var>x</var>, but it can contain any non-integer non-negative values.
+ By default, or if left empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
+</p>
+<p> <code>[&hellip;] = lognfit (&hellip;, <var>options</var>)</code> specifies control
+ parameters for the iterative algorithm used to compute ML estimates with the
+ <code>fminsearch</code> function.  <var>options</var> is a structure with the following
+ fields and their default values:
+ </p><ul>
 <li> <code><var>options</var>.Display = &quot;off&quot;</code>
  </li><li> <code><var>options</var>.MaxFunEvals = 400</code>
  </li><li> <code><var>options</var>.MaxIter = 200</code>
  </li><li> <code><var>options</var>.TolX = 1e-6</code>
  </li></ul>
-</li></ul>
 
 <p> With no censor, the estimate of the standard deviation,
  <code><var>paramhat</var>(2)</code>, is the square root of the unbiased estimate of the
  variance of <code>log (<var>x</var>)</code>.  With censored data, the maximum
  likelihood estimate is returned.
+</p>
+<p> Further information about the log-normal distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Log-normal_distribution">https://en.wikipedia.org/wiki/Log-normal_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="logncdf.html">logncdf</a>, 

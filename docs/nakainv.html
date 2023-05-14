@@ -77,11 +77,14 @@
 <p> Inverse of the Nakagami cumulative distribution function (iCDF).
 </p>
 <div class="ms-5">
-<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF)
- at <var>p</var> of the Nakagami distribution with shape parameter <var>mu</var> and
- spread parameter <var>omega</var>.  The size of <var>p</var> is the common size of
- <var>x</var>, <var>mu</var>, and <var>omega</var>.  A scalar input functions as a constant
- matrix of the same size as the other inputs.
+<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF) of
+ the Nakagami distribution with shape parameter <var>mu</var> and spread parameter
+ <var>omega</var>.  The size of <var>p</var> is the common size of <var>x</var>, <var>mu</var>,
+ and <var>omega</var>.  A scalar input functions as a constant matrix of the same
+ size as the other inputs.
+</p>
+<p> Both parameters must be positive reals and <code><var>mu</var> &gt;= 0.5</code>.  For
+ <code><var>mu</var> &lt; 0.5</code> or <code><var>omega</var> &lt;= 0</code>, <code>NaN</code> is returned.
 </p>
 <p> Further information about the Nakagami distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Nakagami_distribution">https://en.wikipedia.org/wiki/Nakagami_distribution</a>
@@ -89,7 +92,9 @@
 <p> <strong>See also: </strong>
   <a href="nakacdf.html">nakacdf</a>, 
   <a href="nakapdf.html">nakapdf</a>, 
-  <a href="nakarnd.html">nakarnd</a>
+  <a href="nakarnd.html">nakarnd</a>, 
+nakafit, 
+nakalike
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/nakainv.m">nakainv</a>

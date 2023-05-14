@@ -77,15 +77,19 @@
 <dt><u>statistics:</u> [&hellip;] = <b>lognlike</b><i> (<var>params</var>, <var>x</var>, <var>censor</var>, <var>freq</var>)</i></dt>
 </dl>
 
-<p> Negative log-likelihood for the normal distribution.
+<p> Negative log-likelihood for the log-normal distribution.
 </p>
 <div class="ms-5">
 <p> <code><var>nlogL</var> = lognlike (<var>params</var>, <var>x</var>)</code> returns the negative
- log-likelihood of the data in <var>x</var> for the log-normal distribution given
- parameters <code><var>paramhat</var>([1, 2])</code>, which correspond to the mean and
- standard deviation of the associated normal distribution.  Missing values,
- <code>NaNs</code>, are ignored.  Negative values of <var>x</var> are treated as missing
- values.  <var>nlogL</var> is a scalar.
+ log-likelihood of the data in <var>x</var> corresponding to the log-normal
+ distribution with (1) location parameter <var>mu</var> and (2) scale parameter
+ <var>sigma</var> given in the two-element vector <var>params</var>, which correspond to
+ the mean and standard deviation of the associated normal distribution.
+ Missing values, <code>NaNs</code>, are ignored.  Negative values of <var>x</var> are
+ treated as missing values.
+</p>
+<p> If a random variable follows this distribution, its logarithm is normally
+ distributed with mean <var>mu</var> and standard deviation <var>sigma</var>.
 </p>
 <p> <code>[<var>nlogL</var>, <var>avar</var>] = lognlike (<var>params</var>, <var>x</var>)</code>
  returns the inverse of Fisher&rsquo;s information matrix, <var>avar</var>.  If the input
@@ -93,15 +97,20 @@
  diagonal elements of <var>avar</var> are their asymptotic variances.  <var>avar</var>
  is based on the observed Fisher&rsquo;s information, not the expected information.
 </p>
-<p> <code>[&hellip;] = lognlike (<var>params</var>, <var>x</var>, <var>censor</var>)</code> accepts
- a boolean vector of the same size as <var>x</var> that is 1 for observations
- that are right-censored and 0 for observations that are observed exactly.
+<p> <code>[&hellip;] = lognlike (<var>params</var>, <var>x</var>, <var>censor</var>)</code> accepts a
+ boolean vector, <var>censor</var>, of the same size as <var>x</var> with <code>1</code>s for
+ observations that are right-censored and <code>0</code>s for observations that are
+ observed exactly.  By default, or if left empty,
+ <code><var>censor</var> = zeros (size (<var>x</var>))</code>.
 </p>
-<p> <code>[&hellip;] = lognlike (<var>params</var>, <var>x</var>, <var>censor</var>,
- <var>freq</var>)</code> accepts a frequency vector of the same size as <var>x</var>.
+<p> <code>[&hellip;] = lognlike (<var>params</var>, <var>x</var>, <var>censor</var>, <var>freq</var>)</code>
+ accepts a frequency vector, <var>freq</var>, of the same size as <var>x</var>.
  <var>freq</var> typically contains integer frequencies for the corresponding
- elements in <var>x</var>, but it may contain any non-integer non-negative
- values.  Pass in [] for <var>censor</var> to use its default value.
+ elements in <var>x</var>, but it can contain any non-integer non-negative values.
+ By default, or if left empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
+</p>
+<p> Further information about the log-normal distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Log-normal_distribution">https://en.wikipedia.org/wiki/Log-normal_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="logncdf.html">logncdf</a>, 

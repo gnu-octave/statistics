@@ -80,38 +80,94 @@
 <dt><u>statistics:</u> [<var>p</var>, <var>plo</var>, <var>pup</var>] = <b>logncdf</b><i> (&hellip;, <code>&quot;upper&quot;</code>)</i></dt>
 </dl>
 
-<p> Lognormal cumulative distribution function (CDF).
+<p> Log-normal cumulative distribution function (CDF).
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the cumulative distribution function
- (CDF) at <var>x</var> of the lognormal distribution with mean <var>mu</var> and
- standard deviation <var>sigma</var>.  The size of <var>p</var> is the common size of
- <var>x</var>, <var>mu</var> and <var>sigma</var>.  A scalar input functions as a constant
- matrix of the same size as the other inputs.
+ (CDF) of the log-normal distribution with mean <var>mu</var> and standard
+ deviation <var>sigma</var> corresponding to the associated normal distribution.
+ The size of <var>p</var> is the common size of <var>x</var>, <var>mu</var> and <var>sigma</var>.
+ A scalar input functions as a constant matrix of the same size as the other
+ inputs.
 </p>
-<p> Default values are <var>mu</var> = 0, <var>sigma</var> = 1.
+<p> If a random variable follows this distribution, its logarithm is normally
+ distributed with mean <var>mu</var> and standard deviation <var>sigma</var>.
 </p>
-<p> When called with three output arguments, <code>[<var>p</var>, <var>plo</var>,
- <var>pup</var>]</code> it computes the confidence bounds for <var>p</var> when the input
- parameters <var>mu</var> and <var>sigma</var> are estimates.  In such case, <var>pcov</var>,
- a 2-by-2 matrix containing the covariance matrix of the estimated parameters,
- is necessary.  Optionally, <var>alpha</var> has a default value of 0.05, and
- specifies 100 * (1 - <var>alpha</var>)% confidence bounds. <var>plo</var> and <var>pup</var>
- are arrays of the same size as <var>p</var> containing the lower and upper
- confidence bounds.
+<p> Default parameter values are <code><var>mu</var> = 0</code> and
+ <code><var>sigma</var> = 1</code>.  Both parameters must be reals and
+ <code><var>sigma</var> &gt; 0</code>.  For <code><var>sigma</var> &lt;= 0</code>, <code>NaN</code> is
+ returned.
+</p>
+<p> When called with three output arguments, i.e. <code>[<var>p</var>, <var>plo</var>,
+ <var>pup</var>]</code>, <code>logncdf</code> computes the confidence bounds for <var>p</var> when
+ the input parameters <var>mu</var> and <var>sigma</var> are estimates.  In such case,
+ <var>pcov</var>, a <math>2&times;2</math> matrix containing the covariance matrix of the
+ estimated parameters, is necessary.  Optionally, <var>alpha</var>, which has a
+ default value of 0.05, specifies the <code>100 * (1 - <var>alpha</var>)</code> percent
+ confidence bounds.  <var>plo</var> and <var>pup</var> are arrays of the same size as
+ <var>p</var> containing the lower and upper confidence bounds.
 </p>
 <p> <code>[&hellip;] = logncdf (&hellip;, &quot;upper&quot;)</code> computes the upper tail
- probability of the lognormal distribution.
+ probability of the log-normal distribution with parameters <var>mu</var> and
+ <var>sigma</var>, at the values in <var>x</var>.
+</p>
+<p> Further information about the log-normal distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Log-normal_distribution">https://en.wikipedia.org/wiki/Log-normal_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="logninv.html">logninv</a>, 
   <a href="lognpdf.html">lognpdf</a>, 
   <a href="lognrnd.html">lognrnd</a>, 
+  <a href="lognfit.html">lognfit</a>, 
+  <a href="lognlike.html">lognlike</a>, 
   <a href="lognstat.html">lognstat</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/logncdf.m">logncdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various CDFs from the log-normal distribution
+ x = 0:0.01:3;
+ p1 = logncdf (x, 0, 1);
+ p2 = logncdf (x, 0, 0.5);
+ p3 = logncdf (x, 0, 0.25);
+ plot (x, p1, "-b", x, p2, "-g", x, p3, "-r")
+ grid on
+ legend ({"μ = 0, σ = 1", "μ = 0, σ = 0.5", "μ = 0, σ = 0.25"}, ...
+         "location", "southeast")
+ title ("Log-normal CDF")
+ xlabel ("values in x")
+ ylabel ("probability")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/logncdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

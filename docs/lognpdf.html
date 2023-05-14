@@ -80,26 +80,77 @@
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the probability density function (PDF)
- at <var>x</var> of the lognormal distribution with parameters <var>mu</var> and
- <var>sigma</var>.  The size of <var>p</var> is the common size of <var>p</var>, <var>mu</var>,
- and <var>sigma</var>.  A scalar input functions as a constant matrix of the same
- size as the other inputs.
+ of the lognormal distribution with with mean <var>mu</var> and standard deviation
+ <var>sigma</var> corresponding to the associated normal distribution.  The size of
+ <var>y</var> is the common size of <var>p</var>, <var>mu</var>, and <var>sigma</var>.  A scalar
+ input functions as a constant matrix of the same size as the other inputs.
 </p>
 <p> If a random variable follows this distribution, its logarithm is normally
  distributed with mean <var>mu</var> and standard deviation <var>sigma</var>.
 </p>
-<p> Default values are <var>mu</var> = 0, <var>sigma</var> = 1. Both parameters must be
- reals and <var>sigma</var> &gt; 0.  For <var>sigma</var> &lt;= 0, NaN is returned.
+<p> Default parameter values are <code><var>mu</var> = 0</code> and
+ <code><var>sigma</var> = 1</code>.  Both parameters must be reals and
+ <code><var>sigma</var> &gt; 0</code>.  For <code><var>sigma</var> &lt;= 0</code>, <code>NaN</code> is
+ returned.
+</p>
+<p> Further information about the log-normal distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Log-normal_distribution">https://en.wikipedia.org/wiki/Log-normal_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="logncdf.html">logncdf</a>, 
   <a href="logninv.html">logninv</a>, 
   <a href="lognrnd.html">lognrnd</a>, 
+  <a href="lognfit.html">lognfit</a>, 
+  <a href="lognlike.html">lognlike</a>, 
   <a href="lognstat.html">lognstat</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/lognpdf.m">lognpdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various PDFs from the log-normal distribution
+ x = 0:0.01:5;
+ y1 = lognpdf (x, 0, 1);
+ y2 = lognpdf (x, 0, 0.5);
+ y3 = lognpdf (x, 0, 0.25);
+ plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+ grid on
+ ylim ([0, 2])
+ legend ({"μ = 0, σ = 1", "μ = 0, σ = 0.5", "μ = 0, σ = 0.25"}, ...
+          "location", "northeast")
+ title ("Log-normal PDF")
+ xlabel ("values in x")
+ ylabel ("density")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/lognpdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

@@ -89,14 +89,14 @@
  and <var>theta</var>.  A scalar input functions as a constant matrix of the same
  size as the other inputs.
 </p>
-<p> When called with three output arguments, <code>[<var>p</var>, <var>plo</var>,
- <var>pup</var>]</code> it computes the confidence bounds for <var>p</var> when the input
- parameters <var>k</var> and <var>theta</var> are estimates.  In such case, <var>pcov</var>,
- a <math>2&times;2</math> matrix containing the covariance matrix of the estimated
- parameters, is necessary.  Optionally, <var>alpha</var> has a default value of
- 0.05, and specifies <code>100 * (1 - <var>alpha</var>)%</code> confidence bounds.
- <var>plo</var> and <var>pup</var> are arrays of the same size as <var>p</var> containing the
- lower and upper confidence bounds.
+<p> When called with three output arguments, i.e. <code>[<var>p</var>, <var>plo</var>,
+ <var>pup</var>]</code>, <code>gamcdf</code> computes the confidence bounds for <var>p</var> when
+ the input parameters <var>k</var> and <var>theta</var> are estimates.  In such case,
+ <var>pcov</var>, a <math>2&times;2</math> matrix containing the covariance matrix of the
+ estimated parameters, is necessary.  Optionally, <var>alpha</var>, which has a
+ default value of 0.05, specifies the <code>100 * (1 - <var>alpha</var>)</code> percent
+ confidence bounds.  <var>plo</var> and <var>pup</var> are arrays of the same size as
+ <var>p</var> containing the lower and upper confidence bounds.
 </p>
 <p> <code>[&hellip;] = gamcdf (&hellip;, &quot;upper&quot;)</code> computes the upper tail
  probability of the Gamma distribution with parameters <var>k</var> and

@@ -79,14 +79,17 @@
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the cumulative distribution function
- (CDF) at <var>x</var> of the Nakagami distribution with shape parameter <var>mu</var>
- and spread parameter <var>omega</var>.  The size of <var>p</var> is the common size of
- <var>x</var>, <var>mu</var>, and <var>omega</var>.  A scalar input functions as a constant
- matrix of the same size as the other inputs.
+ (CDF) of the Nakagami distribution with shape parameter <var>mu</var> and spread
+ parameter <var>omega</var>.  The size of <var>p</var> is the common size of <var>x</var>,
+ <var>mu</var>, and <var>omega</var>.  A scalar input functions as a constant matrix of
+ the same size as the other inputs.
+</p>
+<p> Both parameters must be positive reals and <code><var>mu</var> &gt;= 0.5</code>.  For
+ <code><var>mu</var> &lt; 0.5</code> or <code><var>omega</var> &lt;= 0</code>, <code>NaN</code> is returned.
 </p>
 <p> <code><var>p</var> = nakacdf (<var>x</var>, <var>mu</var>, <var>omega</var>, &quot;upper&quot;)</code> computes
- the upper tail probability of the Laplace distribution with parameters
- <var>mu</var> and <var>beta</var> at the values in <var>x</var>.
+ the upper tail probability of the Nakagami distribution with parameters
+ <var>mu</var> and <var>beta</var>, at the values in <var>x</var>.
 </p>
 <p> Further information about the Nakagami distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Nakagami_distribution">https://en.wikipedia.org/wiki/Nakagami_distribution</a>
@@ -94,7 +97,9 @@
 <p> <strong>See also: </strong>
   <a href="nakainv.html">nakainv</a>, 
   <a href="nakapdf.html">nakapdf</a>, 
-  <a href="nakarnd.html">nakarnd</a>
+  <a href="nakarnd.html">nakarnd</a>, 
+nakafitm, 
+nakalike
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/nakacdf.m">nakacdf</a>
