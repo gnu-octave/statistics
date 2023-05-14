@@ -175,7 +175,7 @@ function ngrad = logl_grad (params, x, censor, freq)
 endfunction
 
 
-## Test results
+## Test output
 %!test
 %! nlogL = logllike ([exp(3.09717), 1/0.468525], [1:50]);
 %! assert (nlogL, 211.2965, 1e-4);

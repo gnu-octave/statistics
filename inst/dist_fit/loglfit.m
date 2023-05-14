@@ -27,8 +27,8 @@
 ##
 ## @code{@var{mu0} = loglfit (@var{x})} returns the maximum likelihood
 ## estimates of the parameters of the log-logistic distribution given the data
-## in @var{x}.  @qcode{@var{paramhat}(1)} is the scale parameter, @var{mu}, and
-## @qcode{@var{paramhat}(2)} is the shape parameter, @var{s}.
+## in @var{x}.  @qcode{@var{paramhat}(1)} is the scale parameter, @var{a}, and
+## @qcode{@var{paramhat}(2)} is the shape parameter, @var{b}.
 ##
 ## @code{[@var{paramhat}, @var{paramci}] = loglfit (@var{x})} returns the 95%
 ## confidence intervals for the parameter estimates.
