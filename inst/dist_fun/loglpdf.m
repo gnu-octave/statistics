@@ -78,7 +78,7 @@ function y = loglpdf (x, a, b)
   endif
 
   ## Compute log-logistic PDF
-  k1 = ((x == Inf) | (x <= 0)) & (a > 0) & (b > 0);
+  k1 = ((x == Inf) | (x < 0)) & (a > 0) & (b > 0);
   y(k1) = 0;
 
   k = (! k1) & (a > 0) & (b > 0);
@@ -107,8 +107,8 @@ endfunction
 
 ## Test output
 %!shared out1, out2
-%! out1 = [0, 0, 0.2500, 0.1111, 0.0625, 0.0400, 0.0278, 0];
-%! out2 = [0, 0, 0.0811, 0.0416, 0.0278, 0.0207, 0.0165, 0];
+%! out1 = [0, 1, 0.2500, 0.1111, 0.0625, 0.0400, 0.0278, 0];
+%! out2 = [0, Inf, 0.0811, 0.0416, 0.0278, 0.0207, 0.0165, 0];
 %!assert (loglpdf ([-1:5,Inf], 1, 1), out1, 1e-4)
 %!assert (loglpdf ([-1:5,Inf], exp (0), 1), out1, 1e-4)
 %!assert (loglpdf ([-1:5,Inf], exp (1), 1 / 3), out2, 1e-4)
