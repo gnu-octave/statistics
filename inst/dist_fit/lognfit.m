@@ -31,47 +31,48 @@
 ## vector @var{x}.  @qcode{@var{paramhat}([1, 2])} corresponds to the mean and
 ## standard deviation, respectively, of the associated normal distribution.
 ##
+## If a random variable follows this distribution, its logarithm is normally
+## distributed with mean @var{mu} and standard deviation @var{sigma}.
+##
 ## @code{[@var{paramhat}, @var{paramci}] = lognfit (@var{x})} returns the 95%
 ## confidence intervals for the parameter estimates.
 ##
-## @itemize
-## @item
-## @var{alpha} is a scalar value in the range @math{(0,1)} specifying the
-## confidence level for the confidence intervals calculated as
-## @qcode{100 * (1 - @var{alpha})} percent.  By default, the optional argument
-## @var{alpha} is 0.05 corresponding to 95% confidence intervals.  Pass in
-## @qcode{[]} for @var{alpha} to use the default values.
+## @code{[@dots{}] = lognfit (@var{x}, @var{alpha})} also returns the
+## @qcode{100 * (1 - @var{alpha})} percent confidence intervals for the
+## parameter estimates.  By default, the optional argument @var{alpha} is
+## 0.05 corresponding to 95% confidence intervals.  Pass in @qcode{[]} for
+## @var{alpha} to use the default values.
 ##
-## @item
-## @var{censor} is a logical vector of the same length as @var{x} specifying
-## whether each value in @var{x} is right-censored or not.  1 indicates
-## observations that are right-censored and 0 indicates observations that are
-## fully observed.  With censoring, @var{muhat} and @var{sigmahat} are the
-## maximum likelihood estimates (MLEs).  If empty, the default is an array of
-## 0s, meaning that all observations are fully observed.
+## @code{[@dots{}] = lognfit (@var{x}, @var{alpha}, @var{censor})} accepts a
+## boolean vector, @var{censor}, of the same size as @var{x} with @qcode{1}s for
+## observations that are right-censored and @qcode{0}s for observations that are
+## observed exactly.  By default, or if left empty,
+## @qcode{@var{censor} = zeros (size (@var{x}))}.
 ##
-## @item
-## @var{freq} is a vector of the same length as @var{x} and it typically
-## contains non-negative integer counts of the corresponding elements in
-## @var{x}, but it may contain any non-integer non-negative values.  By default,
-## or if left empty, @qcode{@var{freq} = ones (size (@var{x}))}.
+## @code{[@dots{}] = lognfit (@var{x}, @var{alpha}, @var{censor}, @var{freq})}
+## accepts a frequency vector, @var{freq}, of the same size as @var{x}.
+## @var{freq} typically contains integer frequencies for the corresponding
+## elements in @var{x}, but it can contain any non-integer non-negative values.
+## By default, or if left empty, @qcode{@var{freq} = ones (size (@var{x}))}.
 ##
-## @item
-## @var{options} is a structure with the control parameters for
-## @code{fminsearch} which is used internally to compute MLEs for censored data.
-## By default, it uses the following options:
+## @code{[@dots{}] = lognfit (@dots{}, @var{options})} specifies control
+## parameters for the iterative algorithm used to compute ML estimates with the
+## @code{fminsearch} function.  @var{options} is a structure with the following
+## fields and their default values:
 ## @itemize
 ## @item @qcode{@var{options}.Display = "off"}
 ## @item @qcode{@var{options}.MaxFunEvals = 400}
 ## @item @qcode{@var{options}.MaxIter = 200}
 ## @item @qcode{@var{options}.TolX = 1e-6}
 ## @end itemize
-## @end itemize
 ##
 ## With no censor, the estimate of the standard deviation,
 ## @qcode{@var{paramhat}(2)}, is the square root of the unbiased estimate of the
 ## variance of @qcode{log (@var{x})}.  With censored data, the maximum
 ## likelihood estimate is returned.
+##
+## Further information about the log-normal distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Log-normal_distribution}
 ##
 ## @seealso{logncdf, logninv, lognpdf, lognrnd, lognlike, lognstat}
 ## @end deftypefn
@@ -131,7 +132,6 @@ function [paramhat, paramci] = lognfit (x, alpha, censor, freq, options)
   endif
 
 endfunction
-
 
 %!demo
 %! ## Sample 3 populations from 3 different log-normal distibutions

@@ -22,14 +22,18 @@
 ## @deftypefnx {statistics} {[@dots{}] =} lognlike (@var{params}, @var{x}, @var{censor})
 ## @deftypefnx {statistics} {[@dots{}] =} lognlike (@var{params}, @var{x}, @var{censor}, @var{freq})
 ##
-## Negative log-likelihood for the normal distribution.
+## Negative log-likelihood for the log-normal distribution.
 ##
 ## @code{@var{nlogL} = lognlike (@var{params}, @var{x})} returns the negative
-## log-likelihood of the data in @var{x} for the log-normal distribution given
-## parameters @qcode{@var{paramhat}([1, 2])}, which correspond to the mean and
-## standard deviation of the associated normal distribution.  Missing values,
-## @qcode{NaNs}, are ignored.  Negative values of @var{x} are treated as missing
-## values.  @var{nlogL} is a scalar.
+## log-likelihood of the data in @var{x} corresponding to the log-normal
+## distribution with (1) location parameter @var{mu} and (2) scale parameter
+## @var{sigma} given in the two-element vector @var{params}, which correspond to
+## the mean and standard deviation of the associated normal distribution.
+## Missing values, @qcode{NaNs}, are ignored.  Negative values of @var{x} are
+## treated as missing values.
+##
+## If a random variable follows this distribution, its logarithm is normally
+## distributed with mean @var{mu} and standard deviation @var{sigma}.
 ##
 ## @code{[@var{nlogL}, @var{avar}] = lognlike (@var{params}, @var{x})}
 ## returns the inverse of Fisher's information matrix, @var{avar}.  If the input
@@ -37,15 +41,20 @@
 ## diagonal elements of @var{avar} are their asymptotic variances.  @var{avar}
 ## is based on the observed Fisher's information, not the expected information.
 ##
-## @code{[@dots{}] = lognlike (@var{params}, @var{x}, @var{censor})} accepts
-## a boolean vector of the same size as @var{x} that is 1 for observations
-## that are right-censored and 0 for observations that are observed exactly.
+## @code{[@dots{}] = lognlike (@var{params}, @var{x}, @var{censor})} accepts a
+## boolean vector, @var{censor}, of the same size as @var{x} with @qcode{1}s for
+## observations that are right-censored and @qcode{0}s for observations that are
+## observed exactly.  By default, or if left empty,
+## @qcode{@var{censor} = zeros (size (@var{x}))}.
 ##
-## @code{[@dots{}] = lognlike (@var{params}, @var{x}, @var{censor},
-## @var{freq})} accepts a frequency vector of the same size as @var{x}.
+## @code{[@dots{}] = lognlike (@var{params}, @var{x}, @var{censor}, @var{freq})}
+## accepts a frequency vector, @var{freq}, of the same size as @var{x}.
 ## @var{freq} typically contains integer frequencies for the corresponding
-## elements in @var{x}, but it may contain any non-integer non-negative
-## values.  Pass in [] for @var{censor} to use its default value.
+## elements in @var{x}, but it can contain any non-integer non-negative values.
+## By default, or if left empty, @qcode{@var{freq} = ones (size (@var{x}))}.
+##
+## Further information about the log-normal distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Log-normal_distribution}
 ##
 ## @seealso{logncdf, logninv, lognpdf, lognrnd, lognfit, lognstat}
 ## @end deftypefn
@@ -54,7 +63,7 @@ function [nlogL, avar] = lognlike (params, x, censor, freq)
 
   ## Check input arguments
   if (nargin < 2)
-    error ("lognlike: too few input arguments.");
+    error ("lognlike: function called with too few input arguments.");
   endif
   if (! isvector (x))
     error ("lognlike: X must be a vector.");
@@ -104,17 +113,7 @@ function [nlogL, avar] = lognlike (params, x, censor, freq)
 
 endfunction
 
-## Test input validation
-%!error<lognlike: too few input arguments.> lognlike ([12, 15]);
-%!error<lognlike: X must be a vector.> lognlike ([12, 15], ones (2));
-%!error<lognlike: PARAMS must be a two-element vector.> ...
-%! lognlike ([12, 15, 3], [1:50]);
-%!error<lognlike: X and CENSOR vectors mismatch.> ...
-%! lognlike ([12, 15], [1:50], [1, 2, 3]);
-%!error<lognlike: X and FREQ vectors mismatch.> ...
-%! lognlike ([12, 15], [1:50], [], [1, 2, 3]);
-
-## Results compared with Matlab
+## Test output
 %!test
 %! x = 1:50;
 %! [nlogL, avar] = lognlike ([0, 0.25], x);
@@ -149,3 +148,14 @@ endfunction
 %! avar_out = [-6.8634e-02, 1.3968e-02; 1.3968e-02, -2.1664e-03];
 %! assert (nlogL, 349.3969104144271, 1e-12);
 %! assert (avar, avar_out, 1e-6);
+
+## Test input validation
+%!error<lognlike: function called with too few input arguments.> ...
+%! lognlike ([12, 15]);
+%!error<lognlike: X must be a vector.> lognlike ([12, 15], ones (2));
+%!error<lognlike: PARAMS must be a two-element vector.> ...
+%! lognlike ([12, 15, 3], [1:50]);
+%!error<lognlike: X and CENSOR vectors mismatch.> ...
+%! lognlike ([12, 15], [1:50], [1, 2, 3]);
+%!error<lognlike: X and FREQ vectors mismatch.> ...
+%! lognlike ([12, 15], [1:50], [], [1, 2, 3]);
