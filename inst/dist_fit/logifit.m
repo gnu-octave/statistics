@@ -23,12 +23,12 @@
 ## @deftypefnx {statistics} {[@dots{}] =} logifit (@var{x}, @var{alpha}, @var{censor}, @var{freq})
 ## @deftypefnx {statistics} {[@dots{}] =} logifit (@var{x}, @var{alpha}, @var{censor}, @var{freq}, @var{options})
 ##
-## Estimate mean and confidence intervals for the inverse Gaussian distribution.
+## Estimate mean and confidence intervals for the logistic distribution.
 ##
 ## @code{@var{mu0} = logifit (@var{x})} returns the maximum likelihood
-## estimates of the parameters of the inverse Gaussian distribution given the
-## data in @var{x}.  @qcode{@var{paramhat}(1)} is the scale parameter, @var{mu},
-## and @qcode{@var{paramhat}(2)} is the shape parameter, @var{s}.
+## estimates of the parameters of the logistic distribution given the data in
+## @var{x}.  @qcode{@var{paramhat}(1)} is the scale parameter, @var{mu}, and
+## @qcode{@var{paramhat}(2)} is the shape parameter, @var{s}.
 ##
 ## @code{[@var{paramhat}, @var{paramci}] = logifit (@var{x})} returns the 95%
 ## confidence intervals for the parameter estimates.
