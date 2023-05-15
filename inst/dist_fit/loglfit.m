@@ -169,9 +169,9 @@ function [paramhat, paramci] = loglfit (x, alpha, censor, freq, options)
     se = sqrt (diag (acov))';
     ## Get normal quantiles
     probs = [alpha/2; 1-alpha/2];
-    ## Compute muhat using a normal approximation
+    ## Compute muci using a normal approximation
     paramci(:,1) = norminv (probs, paramhat(1), se(1));
-    ## Compute shat using a normal approximation for log (s) and transform back
+    ## Compute sci using a normal approximation for log (s) and transform back
     paramci(:,2) = exp (norminv (probs, log (paramhat(2)), log (se(2))));
  endif
 

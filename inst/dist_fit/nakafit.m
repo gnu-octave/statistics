@@ -140,9 +140,9 @@ function [paramhat, paramci] = nakafit (x, alpha, censor, freq, options)
     se = sqrt (diag (acov))';
     ## Get normal quantiles
     probs = [alpha/2; 1-alpha/2];
-    ## Compute muhat using a normal approximation
+    ## Compute muci using a normal approximation
     paramci(:,1) = norminv (probs, paramhat(1), se(1));
-    ## Compute omegahat using a normal approximation for log (omega)
+    ## Compute omegaci using a normal approximation for log (omega)
     paramci(:,2) = exp (norminv (probs, log (paramhat(2)), log (se(2))));
  endif
 

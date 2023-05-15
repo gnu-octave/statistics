@@ -23,15 +23,15 @@
 ## Negative log-likelihood for the binomial distribution.
 ##
 ## @code{@var{nlogL} = binolike (@var{params}, @var{x})} returns the negative
-## log likelihood of the binomial distribution with the (1) parameter @var{n}
+## log likelihood of the binomial distribution with (1) parameter @var{n} and
 ## (2) parameter @var{ps}, given in the two-element vector @var{params}, where
 ## @var{n} is the number of trials and @var{ps} is the probability of success,
 ## given the number of successes in @var{x}.  Unlike @code{binofit}, which
 ## handles each element in @var{x} independently, @code{binolike} returns the
 ## negative log likelihood of the entire vector @var{x}.
 ##
-## @code{[@var{nlogL}, @var{acov}] = betalike (@var{params}, @var{x})} also
-## returns the inverse of Fisher's information matrix, @var{avar}.  If the input
+## @code{[@var{nlogL}, @var{acov}] = binolike (@var{params}, @var{x})} also
+## returns the inverse of Fisher's information matrix, @var{acov}.  If the input
 ## parameter values in @var{params} are the maximum likelihood estimates, the
 ## diagonal elements of @var{params} are their asymptotic variances.
 ##
