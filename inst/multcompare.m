@@ -932,6 +932,7 @@ endfunction
 %! ## Demonstration using balanced one-way ANOVA from anova1
 %!
 %! x = ones (50, 4) .* [-2, 0, 1, 5];
+%! randn ("seed", 1);    # for reproducibility
 %! x = x + normrnd (0, 2, 50, 4);
 %! groups = {"A", "B", "C", "D"};
 %! [p, tbl, stats] = anova1 (x, groups, "off");
