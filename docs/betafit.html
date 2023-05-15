@@ -74,6 +74,7 @@
 <dt><u>statistics:</u> <var>paramhat</var> = <b>betafit</b><i> (<var>x</var>)</i></dt>
 <dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>betafit</b><i> (<var>x</var>)</i></dt>
 <dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>betafit</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>betafit</b><i> (<var>x</var>, <var>alpha</var>, <var>options</var>)</i></dt>
 </dl>
 
 <p> Estimate parameters and confidence intervals for the Beta distribution.
@@ -93,6 +94,17 @@
  parameter.  By default, the optional argument <var>alpha</var> is 0.05
  corresponding to 95% confidence intervals.
 </p>
+<p> <code>[<var>paramhat</var>, <var>paramci</var>] = nbinfit (<var>x</var>, <var>alpha</var>,
+ <var>options</var>)</code> specifies control parameters for the iterative algorithm used
+ to compute ML estimates with the <code>fminsearch</code> function.  <var>options</var>
+ is a structure with the following fields and their default values:
+ </p><ul>
+<li> <code><var>options</var>.Display = &quot;off&quot;</code>
+ </li><li> <code><var>options</var>.MaxFunEvals = 400</code>
+ </li><li> <code><var>options</var>.MaxIter = 200</code>
+ </li><li> <code><var>options</var>.TolX = 1e-6</code>
+ </li></ul>
+
 <p> The Beta distribution is defined on the open interval <math>(0,1)</math>.  However,
  <code>betafit</code> can also compute the unbounded beta likelihood function for
  data that include exact zeros or ones.  In such cases, zeros and ones are

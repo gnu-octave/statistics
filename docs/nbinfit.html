@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: nbincdf</title>
+    <title>Statistics: nbinfit</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -35,9 +35,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Distributions">
+                  <a class="nav-link" href="index.html#Distribution Fitting">
                     <i class="fas fa-list-alt"></i>
-                    Distributions
+                    Distribution Fitting
                   </a>
                 </li>
                 <li class="nav-item">
@@ -64,34 +64,48 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>nbincdf</code></b>
+              Function&nbsp;Reference: <b><code>nbinfit</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>nbincdf</b><i> (<var>x</var>, <var>r</var>, <var>ps</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>nbincdf</b><i> (<var>x</var>, <var>r</var>, <var>ps</var>, <code>&quot;upper&quot;</code>)</i></dt>
+<dt><u>statistics:</u> <var>paramhat</var> = <b>nbinfit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>nbinfit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>nbinfit</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>nbinfit</b><i> (<var>x</var>, <var>alpha</var>, <var>options</var>)</i></dt>
 </dl>
 
-<p> Negative binomial cumulative distribution function (CDF).
+<p> Estimate parameter and confidence intervals for the negative binomial
+ distribution.
 </p>
 <div class="ms-5">
-<p> For each element of <var>x</var>, compute the cumulative distribution function
- (CDF) of the negative binomial distribution with parameters <var>r</var> and
- <var>ps</var>, where <var>r</var> is the number of successes until the experiment is
- stopped and <var>ps</var> is the probability of success in each experiment, given
- the number of failures in <var>x</var>.  The size of <var>p</var> is the common size of
- <var>x</var>, <var>r</var>, and <var>ps</var>.  A scalar input functions as a constant
- matrix of the same size as the other inputs.
+<p> <code><var>paramhat</var> = nbinfit (<var>x</var>)</code> returns the maximum likelihood
+ estimates of the parameters of the negative binomial distribution given the
+ data in vector <var>x</var>.  <code><var>paramhat</var>(1)</code> is the number of successes
+ until the experiment is stopped, <var>r</var>, and <code><var>paramhat</var>(1)</code> is
+ the probability of success in each experiment, <var>ps</var>.
 </p>
-<p> The algorithm uses the cumulative sums of the binomial masses.
+<p> <code>[<var>paramhat</var>, <var>paramci</var>] = nbinfit (<var>x</var>)</code> returns the 95%
+ confidence intervals for the parameter estimates.
 </p>
-<p> <code><var>p</var> = nbincdf (<var>x</var>, <var>r</var>, <var>ps</var>, &quot;upper&quot;)</code> computes the
- upper tail probability of the negative binomial distribution with parameters
- <var>r</var> and <var>ps</var>, at the values in <var>x</var>.
+<p> <code>[<var>paramhat</var>, <var>paramci</var>] = nbinfit (<var>x</var>, <var>alpha</var>)</code> also
+ returns the <code>100 * (1 - <var>alpha</var>)</code> percent confidence intervals of
+ the estimated parameter.  By default, the optional argument <var>alpha</var> is
+ 0.05 corresponding to 95% confidence intervals.
 </p>
+<p> <code>[<var>paramhat</var>, <var>paramci</var>] = nbinfit (<var>x</var>, <var>alpha</var>,
+ <var>options</var>)</code> specifies control parameters for the iterative algorithm used
+ to compute ML estimates with the <code>fminsearch</code> function.  <var>options</var>
+ is a structure with the following fields and their default values:
+ </p><ul>
+<li> <code><var>options</var>.Display = &quot;off&quot;</code>
+ </li><li> <code><var>options</var>.MaxFunEvals = 400</code>
+ </li><li> <code><var>options</var>.MaxIter = 200</code>
+ </li><li> <code><var>options</var>.TolX = 1e-6</code>
+ </li></ul>
+
 <p> When <var>r</var> is an integer, the negative binomial distribution is also known
  as the Pascal distribution and it models the number of failures in <var>x</var>
  before a specified number of successes is reached in a series of independent,
@@ -114,15 +128,15 @@
  <a href="https://en.wikipedia.org/wiki/Negative_binomial_distribution">https://en.wikipedia.org/wiki/Negative_binomial_distribution</a>
 </p>
 <p> <strong>See also: </strong>
+  <a href="nbincdf.html">nbincdf</a>, 
   <a href="nbininv.html">nbininv</a>, 
   <a href="nbinpdf.html">nbinpdf</a>, 
   <a href="nbinrnd.html">nbinrnd</a>, 
-  <a href="nbinfit.html">nbinfit</a>, 
   <a href="nbinlike.html">nbinlike</a>, 
   <a href="nbinstat.html">nbinstat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/nbincdf.m">nbincdf</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/nbinfit.m">nbinfit</a>
 </div>
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -142,25 +156,46 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Plot various CDFs from the negative binomial distribution
- x = 0:50;
- p1 = nbincdf (x, 2, 0.15);
- p2 = nbincdf (x, 5, 0.2);
- p3 = nbincdf (x, 4, 0.4);
- p4 = nbincdf (x, 10, 0.3);
- plot (x, p1, "*r", x, p2, "*g", x, p3, "*k", x, p4, "*m")
- grid on
- xlim ([0, 40])
- legend ({"r = 2, ps = 0.15", "r = 5, ps = 0.2", "r = 4, p = 0.4", ...
-          "r = 10, ps = 0.3"}, "location", "southeast")
- title ("Negative binomial CDF")
- xlabel ("values in x (number of failures)")
- ylabel ("probability")
+ ## Sample 2 populations from different negative binomial distibutions
+ randp ("seed", 5); randg ("seed", 5);    # for reproducibility
+ r1 = nbinrnd (2, 0.15, 5000, 1);
+ randp ("seed", 8); randg ("seed", 8);    # for reproducibility
+ r2 = nbinrnd (5, 0.2, 5000, 1);
+ r = [r1, r2];
+
+ ## Plot them normalized and fix their colors
+ hist (r, [0:51], 1);
+ h = findobj (gca, "Type", "patch");
+ set (h(1), "facecolor", "c");
+ set (h(2), "facecolor", "g");
+ hold on
+
+ ## Estimate their probability of success
+ r_psA = nbinfit (r(:,1));
+ r_psB = nbinfit (r(:,2));
+
+ ## Plot their estimated PDFs
+ x = [0:40];
+ y = nbinpdf (x, r_psA(1), r_psA(2));
+ plot (x, y, "-pg");
+ x = [min(r(:,2)):max(r(:,2))];
+ y = nbinpdf (x, r_psB(1), r_psB(2));
+ plot (x, y, "-sc");
+ ylim ([0, 0.1])
+ xlim ([0, 50])
+ legend ({"Normalized HIST of sample 1 with r=2 and ps=0.15", ...
+          "Normalized HIST of sample 2 with r=5 and ps=0.2", ...
+          sprintf("PDF for sample 1 with estimated r=%0.2f and ps=%0.2f", ...
+                  r_psA(1), r_psA(2)), ...
+          sprintf("PDF for sample 2 with estimated r=%0.2f and ps=%0.2f", ...
+                  r_psB(1), r_psB(2))})
+ title ("Two population samples from negative different binomial distibutions")
+ hold off
 
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
-                    <img src="assets/nbincdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                    <img src="assets/nbinfit_101.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>

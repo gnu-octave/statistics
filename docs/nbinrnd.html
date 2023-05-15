@@ -71,18 +71,18 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>r</var> = <b>nbinrnd</b><i> (<var>n</var>, <var>ps</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>nbinrnd</b><i> (<var>n</var>, <var>ps</var>, <var>rows</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>nbinrnd</b><i> (<var>n</var>, <var>ps</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>nbinrnd</b><i> (<var>n</var>, <var>ps</var>, [<var>sz</var>])</i></dt>
+<dt><u>statistics:</u> <var>rnd</var> = <b>nbinrnd</b><i> (<var>r</var>, <var>ps</var>)</i></dt>
+<dt><u>statistics:</u> <var>rnd</var> = <b>nbinrnd</b><i> (<var>r</var>, <var>ps</var>, <var>rows</var>)</i></dt>
+<dt><u>statistics:</u> <var>rnd</var> = <b>nbinrnd</b><i> (<var>r</var>, <var>ps</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> <var>rnd</var> = <b>nbinrnd</b><i> (<var>r</var>, <var>ps</var>, [<var>sz</var>])</i></dt>
 </dl>
 
 <p> Random arrays from the negative binomial distribution.
 </p>
 <div class="ms-5">
-<p> <code><var>r</var> = nbinrnd (<var>n</var>, <var>ps</var>)</code> returns an array of random
- numbers chosen from the Laplace distribution with parameters <var>n</var> and
- <var>ps</var>.  The size of <var>r</var> is the common size of <var>n</var> and <var>ps</var>.
+<p> <code><var>rnd</var> = nbinrnd (<var>r</var>, <var>ps</var>)</code> returns an array of random
+ numbers chosen from the Laplace distribution with parameters <var>r</var> and
+ <var>ps</var>.  The size of <var>rnd</var> is the common size of <var>r</var> and <var>ps</var>.
  A scalar input functions as a constant matrix of the same size as the other
  inputs.
 </p>
@@ -92,10 +92,33 @@
  further arguments specify additional matrix dimensions.  The size may also
  be specified with a vector of dimensions <var>sz</var>.
 </p>
+<p> When <var>r</var> is an integer, the negative binomial distribution is also known
+ as the Pascal distribution and it models the number of failures in <var>x</var>
+ before a specified number of successes is reached in a series of independent,
+ identical trials.  Its parameters are the probability of success in a single
+ trial, <var>ps</var>, and the number of successes, <var>r</var>.  A special case of the
+ negative binomial distribution, when <code><var>r</var> = 1</code>, is the geometric
+ distribution, which models the number of failures before the first success.
+</p>
+<p> <var>r</var> can also have non-integer positive values, in which form the negative
+ binomial distribution, also known as the Polya distribution, has no
+ interpretation in terms of repeated trials, but, like the Poisson
+ distribution, it is useful in modeling count data.  The negative binomial
+ distribution is more general than the Poisson distribution because it has a
+ variance that is greater than its mean, making it suitable for count data
+ that do not meet the assumptions of the Poisson distribution.  In the limit,
+ as <var>r</var> increases to infinity, the negative binomial distribution
+ approaches the Poisson distribution.
+</p>
+<p> Further information about the negative binomial distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Negative_binomial_distribution">https://en.wikipedia.org/wiki/Negative_binomial_distribution</a>
+</p>
 <p> <strong>See also: </strong>
   <a href="nbininv.html">nbininv</a>, 
   <a href="nbininv.html">nbininv</a>, 
   <a href="nbinpdf.html">nbinpdf</a>, 
+  <a href="nbinfit.html">nbinfit</a>, 
+  <a href="nbinlike.html">nbinlike</a>, 
   <a href="nbinstat.html">nbinstat</a>
 </p>
 <p><strong>Source Code: </strong>
