@@ -133,6 +133,8 @@ Distribution Fitting
  logllike
  lognfit
  lognlike
+ nakafit
+ nakalike
  normfit
  normlike
  poissfit

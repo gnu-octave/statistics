@@ -87,6 +87,10 @@
 
  ** lognlike (fully Matlab compatible)
 
+ ** nakafit (similar functionality to MATLAB's mle)
+
+ ** nakalike (similar functionality to MATLAB's negloglik and mlecov)
+
  ** mad (fully Matlab compatible)
 
  ** normfit (fully Matlab compatible)
