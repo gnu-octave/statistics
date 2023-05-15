@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: loglfit</title>
+    <title>Statistics: nakafit</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -64,51 +64,51 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>loglfit</code></b>
+              Function&nbsp;Reference: <b><code>nakafit</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>paramhat</var> = <b>loglfit</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>loglfit</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>loglfit</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>loglfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>loglfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>loglfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</i></dt>
+<dt><u>statistics:</u> <var>paramhat</var> = <b>nakafit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>nakafit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>nakafit</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>nakafit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>nakafit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>nakafit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</i></dt>
 </dl>
 
-<p> Estimate mean and confidence intervals for the log-logistic distribution.
+<p> Estimate mean and confidence intervals for the Nakagami distribution.
 </p>
 <div class="ms-5">
-<p> <code><var>mu0</var> = loglfit (<var>x</var>)</code> returns the maximum likelihood
- estimates of the parameters of the log-logistic distribution given the data
- in <var>x</var>.  <code><var>paramhat</var>(1)</code> is the scale parameter, <var>a</var>, and
- <code><var>paramhat</var>(2)</code> is the shape parameter, <var>b</var>.
+<p> <code><var>mu0</var> = nakafit (<var>x</var>)</code> returns the maximum likelihood
+ estimates of the parameters of the Nakagami distribution given the data in
+ <var>x</var>.  <code><var>paramhat</var>(1)</code> is the scale parameter, <var>mu</var>, and
+ <code><var>paramhat</var>(2)</code> is the shape parameter, <var>omega</var>.
 </p>
-<p> <code>[<var>paramhat</var>, <var>paramci</var>] = loglfit (<var>x</var>)</code> returns the 95%
+<p> <code>[<var>paramhat</var>, <var>paramci</var>] = nakafit (<var>x</var>)</code> returns the 95%
  confidence intervals for the parameter estimates.
 </p>
-<p> <code>[&hellip;] = loglfit (<var>x</var>, <var>alpha</var>)</code> also returns the
+<p> <code>[&hellip;] = nakafit (<var>x</var>, <var>alpha</var>)</code> also returns the
  <code>100 * (1 - <var>alpha</var>)</code> percent confidence intervals for the
  parameter estimates.  By default, the optional argument <var>alpha</var> is
  0.05 corresponding to 95% confidence intervals.  Pass in <code>[]</code> for
  <var>alpha</var> to use the default values.
 </p>
-<p> <code>[&hellip;] = loglfit (<var>x</var>, <var>alpha</var>, <var>censor</var>)</code> accepts a
+<p> <code>[&hellip;] = nakafit (<var>x</var>, <var>alpha</var>, <var>censor</var>)</code> accepts a
  boolean vector, <var>censor</var>, of the same size as <var>x</var> with <code>1</code>s for
  observations that are right-censored and <code>0</code>s for observations that are
  observed exactly.  By default, or if left empty,
  <code><var>censor</var> = zeros (size (<var>x</var>))</code>.
 </p>
-<p> <code>[&hellip;] = loglfit (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</code>
+<p> <code>[&hellip;] = nakafit (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</code>
  accepts a frequency vector, <var>freq</var>, of the same size as <var>x</var>.
  <var>freq</var> typically contains integer frequencies for the corresponding
  elements in <var>x</var>, but it can contain any non-integer non-negative values.
  By default, or if left empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
 </p>
-<p> <code>[&hellip;] = loglfit (&hellip;, <var>options</var>)</code> specifies control
+<p> <code>[&hellip;] = nakafit (&hellip;, <var>options</var>)</code> specifies control
  parameters for the iterative algorithm used to compute ML estimates with the
  <code>fminsearch</code> function.  <var>options</var> is a structure with the following
  fields and their default values:
@@ -119,28 +119,18 @@
  </li><li> <code><var>options</var>.TolX = 1e-6</code>
  </li></ul>
 
-<p> Further information about the log-logistic distribution can be found at
- <a href="https://en.wikipedia.org/wiki/Log-logistic_distribution">https://en.wikipedia.org/wiki/Log-logistic_distribution</a>
+<p> Further information about the Nakagami distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Nakagami_distribution">https://en.wikipedia.org/wiki/Nakagami_distribution</a>
 </p>
-<p> MATLAB compatibility: MATLAB uses an alternative parameterization given by
- the pair <math>μ, s</math>, i.e. <var>mu</var> and <var>s</var>, in analogy with the logistic
- distribution.  Their relation to the <var>a</var> and <var>b</var> parameters is given
- below:
-</p>
- <ul>
-<li> <code><var>a</var> = exp (<var>mu</var>)</code>
- </li><li> <code><var>b</var> = 1 / <var>s</var></code>
- </li></ul>
-
 <p> <strong>See also: </strong>
-  <a href="loglcdf.html">loglcdf</a>, 
-  <a href="loglinv.html">loglinv</a>, 
-  <a href="loglpdf.html">loglpdf</a>, 
-  <a href="loglrnd.html">loglrnd</a>, 
-  <a href="logllike.html">logllike</a>
+  <a href="nakacdf.html">nakacdf</a>, 
+  <a href="nakainv.html">nakainv</a>, 
+  <a href="nakapdf.html">nakapdf</a>, 
+  <a href="nakarnd.html">nakarnd</a>, 
+  <a href="nakalike.html">nakalike</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/loglfit.m">loglfit</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/nakafit.m">nakafit</a>
 </div>
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -160,54 +150,54 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Sample 3 populations from different log-logistic distibutions
- rand ("seed", 5)  # for reproducibility
- r1 = loglrnd (1, 1, 2000, 1);
- rand ("seed", 2)   # for reproducibility
- r2 = loglrnd (1, 2, 2000, 1);
- rand ("seed", 7)   # for reproducibility
- r3 = loglrnd (1, 8, 2000, 1);
+ ## Sample 3 populations from different Nakagami distibutions
+ randg ("seed", 5)  # for reproducibility
+ r1 = nakarnd (0.5, 1, 2000, 1);
+ randg ("seed", 2)   # for reproducibility
+ r2 = nakarnd (5, 1, 2000, 1);
+ randg ("seed", 7)   # for reproducibility
+ r3 = nakarnd (2, 2, 2000, 1);
  r = [r1, r2, r3];
 
  ## Plot them normalized and fix their colors
- hist (r, [0.05:0.1:2.5], 10);
+ hist (r, [0.05:0.1:3.5], 10);
  h = findobj (gca, "Type", "patch");
  set (h(1), "facecolor", "c");
  set (h(2), "facecolor", "g");
  set (h(3), "facecolor", "r");
- ylim ([0, 3.5]);
- xlim ([0, 2.0]);
+ ylim ([0, 2.5]);
+ xlim ([0, 3.0]);
  hold on
 
  ## Estimate their MU and LAMBDA parameters
- a_bA = loglfit (r(:,1));
- a_bB = loglfit (r(:,2));
- a_bC = loglfit (r(:,3));
+ mu_omegaA = nakafit (r(:,1));
+ mu_omegaB = nakafit (r(:,2));
+ mu_omegaC = nakafit (r(:,3));
 
  ## Plot their estimated PDFs
- x = [0.01:0.1:2.01];
- y = loglpdf (x, a_bA(1), a_bA(2));
+ x = [0.01:0.1:3.01];
+ y = nakapdf (x, mu_omegaA(1), mu_omegaA(2));
  plot (x, y, "-pr");
- y = loglpdf (x, a_bB(1), a_bB(2));
+ y = nakapdf (x, mu_omegaB(1), mu_omegaB(2));
  plot (x, y, "-sg");
- y = loglpdf (x, a_bC(1), a_bC(2));
+ y = nakapdf (x, mu_omegaC(1), mu_omegaC(2));
  plot (x, y, "-^c");
- legend ({"Normalized HIST of sample 1 with α=1 and β=1", ...
-          "Normalized HIST of sample 2 with α=1 and β=2", ...
-          "Normalized HIST of sample 3 with α=1 and β=8", ...
-          sprintf("PDF for sample 1 with estimated α=%0.2f and β=%0.2f", ...
-                  a_bA(1), a_bA(2)), ...
-          sprintf("PDF for sample 2 with estimated α=%0.2f and β=%0.2f", ...
-                  a_bB(1), a_bB(2)), ...
-          sprintf("PDF for sample 3 with estimated α=%0.2f and β=%0.2f", ...
-                  a_bC(1), a_bC(2))})
- title ("Three population samples from different log-logistic distibutions")
+ legend ({"Normalized HIST of sample 1 with μ=0.5 and ω=1", ...
+          "Normalized HIST of sample 2 with μ=5 and ω=1", ...
+          "Normalized HIST of sample 3 with μ=2 and ω=2", ...
+          sprintf("PDF for sample 1 with estimated μ=%0.2f and ω=%0.2f", ...
+                  mu_omegaA(1), mu_omegaA(2)), ...
+          sprintf("PDF for sample 2 with estimated μ=%0.2f and ω=%0.2f", ...
+                  mu_omegaB(1), mu_omegaB(2)), ...
+          sprintf("PDF for sample 3 with estimated μ=%0.2f and ω=%0.2f", ...
+                  mu_omegaC(1), mu_omegaC(2))})
+ title ("Three population samples from different Nakagami distibutions")
  hold off
 
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
-                    <img src="assets/loglfit_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                    <img src="assets/nakafit_101.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>
