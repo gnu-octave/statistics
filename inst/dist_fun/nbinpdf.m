@@ -19,69 +19,101 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{y} =} nbinpdf (@var{x}, @var{n}, @var{ps})
+## @deftypefn  {statistics} {@var{y} =} nbinpdf (@var{x}, @var{r}, @var{ps})
 ##
 ## Negative binomial probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the negative binomial distribution with parameters @var{n} and
-## @var{ps}.  The size of @var{p} is the common size of @var{x}, @var{n}, and
+## at @var{x} of the negative binomial distribution with parameters @var{r} and
+## @var{ps}.  The size of @var{p} is the common size of @var{x}, @var{r}, and
 ## @var{ps}.  A scalar input functions as a constant matrix of the same size as
 ## the other inputs.
 ##
-## When @var{n} is integer this is the Pascal distribution.
-## When @var{n} is extended to real numbers this is the Polya distribution.
+## When @var{r} is an integer, the negative binomial distribution is also known
+## as the Pascal distribution and it models the number of failures in @var{x}
+## before a specified number of successes is reached in a series of independent,
+## identical trials.  Its parameters are the probability of success in a single
+## trial, @var{ps}, and the number of successes, @var{r}.  A special case of the
+## negative binomial distribution, when @qcode{@var{r} = 1}, is the geometric
+## distribution, which models the number of failures before the first success.
 ##
-## The number of failures in a Bernoulli experiment with success probability
-## @var{ps} before the @var{n}-th success follows this distribution.
+## @var{r} can also have non-integer positive values, in which form the negative
+## binomial distribution, also known as the Polya distribution, has no
+## interpretation in terms of repeated trials, but, like the Poisson
+## distribution, it is useful in modeling count data.  The negative binomial
+## distribution is more general than the Poisson distribution because it has a
+## variance that is greater than its mean, making it suitable for count data
+## that do not meet the assumptions of the Poisson distribution.  In the limit,
+## as @var{r} increases to infinity, the negative binomial distribution
+## approaches the Poisson distribution.
 ##
-## @seealso{nbininv, nbininv, nbinrnd, nbinstat}
+## Further information about the negative binomial distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Negative_binomial_distribution}
+##
+## @seealso{nbininv, nbininv, nbinrnd, nbinfit, nbinlike, nbinstat}
 ## @end deftypefn
 
-function y = nbinpdf (x, n, ps)
+function y = nbinpdf (x, r, ps)
 
   ## Check for valid number of input arguments
-  if (nargin != 3)
-    print_usage ();
+  if (nargin < 3)
+    error ("nbinpdf: function called with too few input arguments.");
   endif
 
-  ## Check for common size of X, N, and PS
-  if (! isscalar (x) || ! isscalar (n) || ! isscalar (ps))
-    [retval, x, n, ps] = common_size (x, n, ps);
+  ## Check for common size of X, R, and PS
+  if (! isscalar (x) || ! isscalar (r) || ! isscalar (ps))
+    [retval, x, r, ps] = common_size (x, r, ps);
     if (retval > 0)
-      error ("nbinpdf: X, N, and PS must be of common size or scalars.");
+      error ("nbinpdf: X, R, and PS must be of common size or scalars.");
     endif
   endif
 
-  ## Check for X, N, and PS being reals
-  if (iscomplex (x) || iscomplex (n) || iscomplex (ps))
-    error ("nbinpdf: X, N, and PS must not be complex.");
+  ## Check for X, R, and PS being reals
+  if (iscomplex (x) || iscomplex (r) || iscomplex (ps))
+    error ("nbinpdf: X, R, and PS must not be complex.");
   endif
 
-  ## Check for appropriate class
-  if (isa (x, "single") || isa (n, "single") || isa (ps, "single"))
+  ## Check for class type
+  if (isa (x, "single") || isa (r, "single") || isa (ps, "single"))
     y = NaN (size (x), "single");
   else
     y = NaN (size (x));
   endif
 
-  ok = (x < Inf) & (x == fix (x)) & (n > 0) & (n < Inf) & (ps >= 0) & (ps <= 1);
+  ok = (x < Inf) & (x == fix (x)) & (r > 0) & (r < Inf) & (ps >= 0) & (ps <= 1);
 
   k = (x < 0) & ok;
   y(k) = 0;
 
   k = (x >= 0) & ok;
-  if (isscalar (n) && isscalar (ps))
-    y(k) = bincoeff (-n, x(k)) .* (ps ^ n) .* ((ps - 1) .^ x(k));
+  if (isscalar (r) && isscalar (ps))
+    y(k) = bincoeff (-r, x(k)) .* (ps ^ r) .* ((ps - 1) .^ x(k));
   else
-    y(k) = bincoeff (-n(k), x(k)) .* (ps(k) .^ n(k)) .* ((ps(k) - 1) .^ x(k));
+    y(k) = bincoeff (-r(k), x(k)) .* (ps(k) .^ r(k)) .* ((ps(k) - 1) .^ x(k));
   endif
 
 
 endfunction
 
+%!demo
+%! ## Plot various PDFs from the negative binomial distribution
+%! x = 0:40;
+%! y1 = nbinpdf (x, 2, 0.15);
+%! y2 = nbinpdf (x, 5, 0.2);
+%! y3 = nbinpdf (x, 4, 0.4);
+%! y4 = nbinpdf (x, 10, 0.3);
+%! plot (x, y1, "*r", x, y2, "*g", x, y3, "*k", x, y4, "*m")
+%! grid on
+%! xlim ([0, 40])
+%! ylim ([0, 0.12])
+%! legend ({"r = 2, ps = 0.15", "r = 5, ps = 0.2", "r = 4, p = 0.4", ...
+%!          "r = 10, ps = 0.3"}, "location", "northeast")
+%! title ("Negative binomial PDF")
+%! xlabel ("values in x (number of failures)")
+%! ylabel ("density")
 
-%!shared x,y
+## Test output
+%!shared x, y
 %! x = [-1 0 1 2 Inf];
 %! y = [0 1/2 1/4 1/8 NaN];
 %!assert (nbinpdf (x, ones (1,5), 0.5*ones (1,5)), y)
@@ -97,13 +129,15 @@ endfunction
 %!assert (nbinpdf ([x, NaN], 1, single (0.5)), single ([y, NaN]))
 
 ## Test input validation
-%!error nbinpdf ()
-%!error nbinpdf (1)
-%!error nbinpdf (1,2)
-%!error nbinpdf (1,2,3,4)
-%!error nbinpdf (ones (3), ones (2), ones (2))
-%!error nbinpdf (ones (2), ones (3), ones (2))
-%!error nbinpdf (ones (2), ones (2), ones (3))
-%!error nbinpdf (i, 2, 2)
-%!error nbinpdf (2, i, 2)
-%!error nbinpdf (2, 2, i)
+%!error<nbinpdf: function called with too few input arguments.> nbinpdf ()
+%!error<nbinpdf: function called with too few input arguments.> nbinpdf (1)
+%!error<nbinpdf: function called with too few input arguments.> nbinpdf (1, 2)
+%!error<nbinpdf: X, R, and PS must be of common size or scalars.> ...
+%! nbinpdf (ones (3), ones (2), ones (2))
+%!error<nbinpdf: X, R, and PS must be of common size or scalars.> ...
+%! nbinpdf (ones (2), ones (3), ones (2))
+%!error<nbinpdf: X, R, and PS must be of common size or scalars.> ...
+%! nbinpdf (ones (2), ones (2), ones (3))
+%!error<nbinpdf: X, R, and PS must not be complex.> nbinpdf (i, 2, 2)
+%!error<nbinpdf: X, R, and PS must not be complex.> nbinpdf (2, i, 2)
+%!error<nbinpdf: X, R, and PS must not be complex.> nbinpdf (2, 2, i)
