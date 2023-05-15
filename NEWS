@@ -91,6 +91,10 @@
 
  ** nakalike (similar functionality to MATLAB's negloglik and mlecov)
 
+ ** nbinfit (similar functionality to MATLAB's mle)
+
+ ** nbinlike (similar functionality to MATLAB's negloglik and mlecov)
+
  ** mad (fully Matlab compatible)
 
  ** normfit (fully Matlab compatible)
