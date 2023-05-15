@@ -104,7 +104,7 @@ function [paramhat, paramci] = nbinfit (x, alpha, options)
     if (! isstruct (options) || ! isfield (options, "Display") ||
         ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
                                            || ! isfield (options, "TolX"))
-      error (strcat (["nbinfit: 'options' 5th argument must be a"], ...
+      error (strcat (["nbinfit: 'options' 3rd argument must be a"], ...
                      [" structure with 'Display', 'MaxFunEvals',"], ...
                      [" 'MaxIter', and 'TolX' fields present."]));
     endif
@@ -146,13 +146,18 @@ function [paramhat, paramci] = nbinfit (x, alpha, options)
 
   ## Compute confidence interval
   if (nargout > 1)
-    [~, avar] = nbinlike (parmhat, x);
+    [~, avar] = nbinlike (paramhat, x);
     ## Get standard errors
     sigma = sqrt (diag (avar));
     ## Get normal quantiles
     probs = [alpha/2; 1-alpha/2];
     ## Compute paramci using a normal approximation
-    paramci = norminv ([p_int p_int], [parmhat; parmhat], [sigma'; sigma']);
+    paramci = norminv ([probs, probs], [paramhat; paramhat], [sigma'; sigma']);
+    ## Restrict CI to valid values: r >= 0, 0 <= ps <= 1
+    paramci(paramci < 0) = 0;
+    if (paramci(2,2) > 1)
+      paramci(2,2) = 1;
+    endif
   endif
 
 endfunction
@@ -207,19 +212,27 @@ endfunction
 
 ## Test output
 %!test
-%! x = 0:3;
-%! [paramhat, paramci] = nbinfit (x, 3);
-%! assert (paramhat, [0, 0.3333, 0.6667, 1], 1e-4);
-%! assert (paramci(1,:), [0, 0.7076], 1e-4);
-%! assert (paramci(2,:), [0.0084, 0.9057], 1e-4);
-%! assert (paramci(3,:), [0.0943, 0.9916], 1e-4);
-%! assert (paramci(4,:), [0.2924, 1.0000], 1e-4);
+%! [paramhat, paramci] = nbinfit ([1:50]);
+%! assert (paramhat, [2.420857, 0.086704], 1e-6);
+%! assert (paramci(:,1), [1.382702; 3.459012], 1e-6);
+%! assert (paramci(:,2), [0.049676; 0.123732], 1e-6);
+%!test
+%! [paramhat, paramci] = nbinfit ([1:20]);
+%! assert (paramhat, [3.588233, 0.254697], 1e-6);
+%! assert (paramci(:,1), [0.451693; 6.724774], 1e-6);
+%! assert (paramci(:,2), [0.081143; 0.428251], 1e-6);
+%!test
+%! [paramhat, paramci] = nbinfit ([1:10]);
+%! assert (paramhat, [8.8067, 0.6156], 1e-4);
+%! assert (paramci(:,1), [0; 30.7068], 1e-4);
+%! assert (paramci(:,2), [0.0217; 1], 1e-4);
 
 ## Test input validation
-%!error<nbinfit: function called with too few input arguments.> ...
-%! nbinfit ([1 2 3 4])
-%!error<nbinfit: X cannot have negative values.> nbinfit (-1, [1 2 3 3])
-%!error<nbinfit: N must be a non-negative integer.> nbinfit (1, [1 2 -1 3])
-%!error<nbinfit: wrong value for ALPHA.> nbinfit (1, [1 2 3], 0)
-%!error<nbinfit: wrong value for ALPHA.> nbinfit (1, [1 2 3], 1.2)
-%!error<nbinfit: wrong value for ALPHA.> nbinfit (1, [1 2 3], [0.02 0.05])
+%!error<nbinfit: X cannot have negative values.> nbinfit ([-1 2 3 3])
+%!error<nbinfit: X must be a vector.> nbinfit (ones (2))
+%!error<nbinfit: X must be a non-negative integer.> nbinfit ([1 2 1.2 3])
+%!error<nbinfit: wrong value for ALPHA.> nbinfit ([1 2 3], 0)
+%!error<nbinfit: wrong value for ALPHA.> nbinfit ([1 2 3], 1.2)
+%!error<nbinfit: wrong value for ALPHA.> nbinfit ([1 2 3], [0.02 0.05])
+%!error<nbinfit: 'options' 3rd argument must be a structure> ...
+%! nbinfit ([1, 2, 3, 4, 5], 0.05, 2);
