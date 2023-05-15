@@ -19,6 +19,7 @@
 ## @deftypefn  {statistics} {@var{paramhat} =} betafit (@var{x})
 ## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} betafit (@var{x})
 ## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} betafit (@var{x}, @var{alpha})
+## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} betafit (@var{x}, @var{alpha}, @var{options})
 ##
 ## Estimate parameters and confidence intervals for the Beta distribution.
 ##
@@ -36,6 +37,17 @@
 ## parameter.  By default, the optional argument @var{alpha} is 0.05
 ## corresponding to 95% confidence intervals.
 ##
+## @code{[@var{paramhat}, @var{paramci}] = nbinfit (@var{x}, @var{alpha},
+## @var{options})} specifies control parameters for the iterative algorithm used
+## to compute ML estimates with the @code{fminsearch} function.  @var{options}
+## is a structure with the following fields and their default values:
+## @itemize
+## @item @qcode{@var{options}.Display = "off"}
+## @item @qcode{@var{options}.MaxFunEvals = 400}
+## @item @qcode{@var{options}.MaxIter = 200}
+## @item @qcode{@var{options}.TolX = 1e-6}
+## @end itemize
+##
 ## The Beta distribution is defined on the open interval @math{(0,1)}.  However,
 ## @code{betafit} can also compute the unbounded beta likelihood function for
 ## data that include exact zeros or ones.  In such cases, zeros and ones are
@@ -48,7 +60,7 @@
 ## @seealso{betacdf, betainv, betapdf, betarnd, betalike, betastat}
 ## @end deftypefn
 
-function [paramhat, paramci] = betafit (x, alpha)
+function [paramhat, paramci] = betafit (x, alpha, options)
 
   ## Check X for being a vector
   if (isempty (x))
@@ -81,6 +93,22 @@ function [paramhat, paramci] = betafit (x, alpha)
     alpha = 0.05;
   endif
 
+  ## Get options structure or add defaults
+  if (nargin < 3)
+    options.Display = "off";
+    options.MaxFunEvals = 400;
+    options.MaxIter = 200;
+    options.TolX = 1e-6;
+  else
+    if (! isstruct (options) || ! isfield (options, "Display") ||
+        ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
+                                           || ! isfield (options, "TolX"))
+      error (strcat (["gamfit: 'options' 5th argument must be a"], ...
+                     [" structure with 'Display', 'MaxFunEvals',"], ...
+                     [" 'MaxIter', and 'TolX' fields present."]));
+    endif
+  endif
+
   ## Estimate initial parameters
   numx = length (x);
   tmp1 = prod ((1 - x) .^ (1 / numx));
@@ -98,7 +126,7 @@ function [paramhat, paramci] = betafit (x, alpha)
   if (all (x > x_lo) && all (x < x_hi))
     sumlogx = sum (log (x));
     sumlog1px = sum (log1p (-x));
-    paramhat = fminsearch (@cont_negloglike, init);
+    paramhat = fminsearch (@cont_negloglike, init, options);
     paramhat = exp (paramhat);
 
   ## Find boundary elements and process them separately
@@ -109,7 +137,7 @@ function [paramhat, paramci] = betafit (x, alpha)
     numx = length (x_ct);
     sumlogx = sum (log (x_ct));
     sumlog1px = sum (log1p (-x_ct));
-    paramhat = fminsearch (@mixed_negloglike, init);
+    paramhat = fminsearch (@mixed_negloglike, init, options);
     paramhat = exp (paramhat);
   endif
 
