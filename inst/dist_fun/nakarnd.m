@@ -103,7 +103,7 @@ function r = nakarnd (mu, omega, varargin)
 
   ## Generate random sample from Nakagami distribution
   if (isscalar (mu) && isscalar (omega))
-    if ((0.5 < mu) && (mu < Inf) && (0 < omega) && (omega < Inf))
+    if ((0.5 <= mu) && (mu < Inf) && (0 < omega) && (omega < Inf))
       m_gamma = mu;
       w_gamma = omega / mu;
       r = gamrnd (m_gamma, w_gamma, sz);
@@ -113,7 +113,7 @@ function r = nakarnd (mu, omega, varargin)
     endif
   else
     r = NaN (sz, cls);
-    k = (0.5 < mu) & (mu < Inf) & (0 < omega) & (omega < Inf);
+    k = (0.5 <= mu) & (mu < Inf) & (0 < omega) & (omega < Inf);
     m_gamma = mu;
     w_gamma = omega ./ mu;
     r(k) = gamrnd (m_gamma(k), w_gamma(k));
