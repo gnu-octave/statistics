@@ -78,9 +78,9 @@
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the probability density function (PDF)
- of the noncentral T distribution with <var>df1</var> degrees of freedom and
+ of the noncentral T distribution with <var>df</var> degrees of freedom and
  noncentrality parameter <var>mu</var>.  The size of <var>y</var> is the common size of
- <var>x</var>, <var>df1</var>, and <var>mu</var>.  A scalar input functions as a constant
+ <var>x</var>, <var>df</var>, and <var>mu</var>.  A scalar input functions as a constant
  matrix of the same size as the other inputs.
 </p>
 <p> Further information about the noncentral T distribution can be found at
@@ -170,7 +170,7 @@
  grid on
  xlim ([-5, 5])
  ylim ([0, 0.4])
- legend ({"Noncentral T(10,1)", "T(10)"}, "location", "northwest")
+ legend ({"Noncentral χ^2(4,2)", "χ^2(4)"}, "location", "northwest")
  title ("Noncentral T vs T PDFs")
  xlabel ("values in x")
  ylabel ("density")

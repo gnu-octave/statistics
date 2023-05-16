@@ -71,29 +71,126 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>y</var> = <b>ncx2pdf</b><i> (<var>x</var>, <var>df</var>, <var>delta</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>ncx2pdf</b><i> (<var>x</var>, <var>df</var>, <var>lambda</var>)</i></dt>
 </dl>
 
-<p> Noncentral Chi-Square probability distribution function (PDF).
+<p> Noncentral chi-squared probability distribution function (PDF).
 </p>
 <div class="ms-5">
-<p> <code><var>y</var> = ncx2pdf (<var>x</var>, <var>df</var>, <var>delta</var>)</code> returns the
- noncentral chi-square pdf with <var>df</var> degrees of freedom and noncentrality
- parameter <var>delta</var> at the values of <var>x</var>.
+<p> For each element of <var>x</var>, compute the probability density function (PDF)
+ of the noncentral chi-squared distribution with <var>df</var> degrees of freedom
+ and noncentrality parameter <var>lambda</var>.  The size of <var>y</var> is the common
+ size of <var>x</var>, <var>df</var>, and <var>lambda</var>.  A scalar input functions as a
+ constant matrix of the same size as the other inputs.
 </p>
-<p> The size of <var>y</var> is the common size of the input arguments. Scalar input
- arguments <var>x</var>, <var>df</var>, <var>delta</var> are regarded as constant matrices of
- the same size as the other inputs.
+<p> Further information about the noncentral chi-squared distribution can be
+ found at <a href="https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution">https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="ncx2cdf.html">ncx2cdf</a>, 
   <a href="ncx2inv.html">ncx2inv</a>, 
   <a href="ncx2rnd.html">ncx2rnd</a>, 
-  <a href="ncx2stat.html">ncx2stat</a>
+  <a href="ncx2stat.html">ncx2stat</a>, 
+  <a href="chi2pdf.html">chi2pdf</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/ncx2pdf.m">ncx2pdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various PDFs from the noncentral chi-squared distribution
+ x = 0:0.1:10;
+ y1 = ncx2pdf (x, 2, 1);
+ y2 = ncx2pdf (x, 2, 2);
+ y3 = ncx2pdf (x, 2, 3);
+ y4 = ncx2pdf (x, 4, 1);
+ y5 = ncx2pdf (x, 4, 2);
+ y6 = ncx2pdf (x, 4, 3);
+ plot (x, y1, "-r", x, y2, "-g", x, y3, "-k", ...
+       x, y4, "-m", x, y5, "-c", x, y6, "-y")
+ grid on
+ xlim ([0, 10])
+ ylim ([0, 0.32])
+ legend ({"df = 2, λ = 1", "df = 2, λ = 2", ...
+          "df = 2, λ = 3", "df = 4, λ = 1", ...
+          "df = 4, λ = 2", "df = 4, λ = 3"}, "location", "northeast")
+ title ("Noncentral chi-squared PDF")
+ xlabel ("values in x")
+ ylabel ("density")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/ncx2pdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compare the noncentral chi-squared PDF with LAMBDA = 2 to the
+ ## chi-squared PDF with the same number of degrees of freedom (4).
+
+ x = 0:0.1:10;
+ y1 = ncx2pdf (x, 4, 2);
+ y2 = chi2pdf (x, 4);
+ plot (x, y1, "-", x, y2, "-");
+ grid on
+ xlim ([0, 10])
+ ylim ([0, 0.32])
+ legend ({"Noncentral T(10,1)", "T(10)"}, "location", "northwest")
+ title ("Noncentral chi-squared vs chi-squared PDFs")
+ xlabel ("values in x")
+ ylabel ("density")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/ncx2pdf_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>
