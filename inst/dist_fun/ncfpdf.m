@@ -29,7 +29,7 @@
 ## Further information about the noncentral F distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Noncentral_F-distribution}
 ##
-## @seealso{ncfcdf, ncfinv, ncfrnd, ncfstat}
+## @seealso{ncfcdf, ncfinv, ncfrnd, ncfstat, fpdf}
 ## @end deftypefn
 
 function y = ncfpdf (x, df1, df2, lambda)

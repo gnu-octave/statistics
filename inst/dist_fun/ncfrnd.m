@@ -42,7 +42,7 @@
 ## Further information about the noncentral F distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Noncentral_F-distribution}
 ##
-## @seealso{ncfcdf, ncfinv, ncfpdf, ncfstat}
+## @seealso{ncfcdf, ncfinv, ncfpdf, ncfstat, frnd, ncx2rnd, chi2rnd}
 ## @end deftypefn
 
 function r = ncfrnd (df1, df2, lambda, varargin)
@@ -139,6 +139,7 @@ endfunction
 ## Test input validation
 %!error<ncfrnd: function called with too few input arguments.> ncfrnd ()
 %!error<ncfrnd: function called with too few input arguments.> ncfrnd (1)
+%!error<ncfrnd: function called with too few input arguments.> ncfrnd (1, 2)
 %!error<ncfrnd: DF1, DF2, and LAMBDA must be of common size or scalars.> ...
 %! ncfrnd (ones (3), ones (2), ones (2))
 %!error<ncfrnd: DF1, DF2, and LAMBDA must be of common size or scalars.> ...

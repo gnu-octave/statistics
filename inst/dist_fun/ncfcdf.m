@@ -34,7 +34,7 @@
 ## Further information about the noncentral F distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Noncentral_F-distribution}
 ##
-## @seealso{ncfinv, ncfpdf, ncfrnd, ncfstat}
+## @seealso{ncfinv, ncfpdf, ncfrnd, ncfstat, fcdf}
 ## @end deftypefn
 
 function p = ncfcdf (x, df1, df2, lambda, uflag)
@@ -239,7 +239,7 @@ endfunction
 
 ## Test output
 %!test
-%! x = (-2:0.1:2)';
+%! x = -2:0.1:2;
 %! p = ncfcdf (x, 10, 1, 3);
 %! assert (p([1:21]), zeros (21, 1), 1e-76);
 %! assert (p(22), 0.004530737275319753, 1e-14);
