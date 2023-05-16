@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,48 +16,54 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{y} =} ncfpdf (@var{x}, @var{df1}, @var{df2}, @var{delta})
+## @deftypefn  {statistics} {@var{y} =} ncfpdf (@var{x}, @var{df1}, @var{df2}, @var{lambda})
 ##
 ## Noncentral F probability density function (PDF).
 ##
-## @code{@var{y} = ncfpdf (@var{x}, @var{df1}, @var{df2}, @var{delta})} returns
-## the noncentral F distribution with @var{df1} and @var{df2} numerator and
-## denumerator degrees of freedom, respectively, and noncentrality parameter
-## @var{delta}, at the values of @var{x}.
+## For each element of @var{x}, compute the probability density function (PDF)
+## of the noncentral F distribution with @var{df1} and @var{df2} degrees
+## of freedom and noncentrality parameter @var{lambda}.  The size of @var{y} is
+## the common size of @var{x}, @var{df1}, @var{df2}, and @var{lambda}.  A scalar
+## input functions as a constant matrix of the same size as the other inputs.
 ##
-## The size of @var{y} is the common size of @var{df} and @var{delta}.  A scalar
-## input functions as a constant matrix of the same size as the K_all inputs.
+## Further information about the noncentral F distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Noncentral_F-distribution}
 ##
 ## @seealso{ncfcdf, ncfinv, ncfrnd, ncfstat}
 ## @end deftypefn
 
-function y = ncfpdf (x, df1, df2, delta)
+function y = ncfpdf (x, df1, df2, lambda)
 
-  ## Check for valid input arguments
+  ## Check for valid number of input arguments
   if (nargin <  4)
-    error ("ncfpdf: too few input arguments.");
+    error ("ncfpdf: function called with too few input arguments.");
   endif
 
-  ## Check and fix size of input arguments
-  [err, x, df1, df2, delta] = common_size (x, df1, df2, delta);
+  ## Check for common size of X, DF1, DF2, and LAMBDA
+  [err, x, df1, df2, lambda] = common_size (x, df1, df2, lambda);
   if (err > 0)
-    error ("ncfpdf: input size mismatch.");
+    error ("ncfpdf: X, DF1, DF2, and LAMBDA must be of common size or scalars.");
   endif
 
-  ## Initialize Y
+  ## Check for X, DF1, DF2, and LAMBDA being reals
+  if (iscomplex (x) || iscomplex (df1) || iscomplex (df2) || iscomplex (lambda))
+    error ("ncfpdf: X, DF1, DF2, and LAMBDA must not be complex.");
+  endif
+
+  ## Check for class type
   if (isa (x, "single") || isa (df1, "single") || ...
-      isa (df2, "single") || isa (delta, "single"))
+      isa (df2, "single") || isa (lambda, "single"))
     y = zeros (size (x), "single");
   else
     y = zeros (size (x));
   endif
 
   ## Find NaNs in input arguments (if any) and propagate them to p
-  is_nan = isnan (x) | isnan (df1) | isnan (df2) | isnan (delta);
+  is_nan = isnan (x) | isnan (df1) | isnan (df2) | isnan (lambda);
   y(is_nan) = NaN;
 
   ## Force invalid parameter cases to NaN
-  k1 = df1 <= 0 | df2 <= 0 | delta < 0;
+  k1 = df1 <= 0 | df2 <= 0 | lambda < 0;
   y(k1) = NaN;
 
   ## Handle edge cases where x == 0
@@ -65,11 +71,11 @@ function y = ncfpdf (x, df1, df2, delta)
   y(k2) = Inf;
   k3 = x == 0 & df1 == 2 & ! k1;
   if (any (k3(:)))
-    y(k3) = exp (-delta(k3) / 2);
+    y(k3) = exp (-lambda(k3) / 2);
   endif
 
-  ## Handle central distribution where delta == 0
-  k4 = delta == 0 & ! k1 & x > 0;
+  ## Handle central distribution where lambda == 0
+  k4 = lambda == 0 & ! k1 & x > 0;
   if any(k4(:))
     y(k4) = fpdf (x(k4), df1(k4), df2(k4));
   endif
@@ -81,16 +87,16 @@ function y = ncfpdf (x, df1, df2, delta)
     return;
   endif
 
-  ## Reset input variables to remaining cases and pre-divide df1, df2 and delta
+  ## Reset input variables to remaining cases and pre-divide df1, df2 and lambda
   x = x(td);
   df1 = df1(td) / 2;
   df2 = df2(td) / 2;
-  delta = delta(td) / 2;
+  lambda = lambda(td) / 2;
 
   ## Use z and scaled x for convenience
   z = df1 .* x ./ (df1 .* x + df2);
   z1 = df2 ./ (df1 .* x + df2);
-  xs = delta .* z;
+  xs = lambda .* z;
 
   % Find max K at which we start the recursion series
   K = zeros (size (x));
@@ -135,7 +141,7 @@ function y = ncfpdf (x, df1, df2, delta)
                    BinoPoisson (df2(K_all) - K(K_all), ...
                                (df1(K_all) + df2(K_all) - 1) .* z1(K_all));
     ## Poisson density for the leading term
-    x1 = delta .* z1;
+    x1 = lambda .* z1;
     smallk = df2int & K <= x1 * realmin;
     y(td(smallk)) = termK(smallk) - x1(smallk);
     otherk = df2int & ! smallk;
@@ -193,12 +199,12 @@ function y = ncfpdf (x, df1, df2, delta)
                                (df1(K_all) + df2(K_all) + K(K_all) - 1) .* ...
                                z1(K_all));
     ## Poisson density for the leading term
-    smallk = ! df2int & K <= delta * realmin;
-    y(td(smallk)) = termK(smallk) - delta(smallk);
+    smallk = ! df2int & K <= lambda * realmin;
+    y(td(smallk)) = termK(smallk) - lambda(smallk);
     K_all = ! df2int & ! smallk;
     y(td(K_all)) = termK(K_all) - lnsr2pi - 0.5 * log (K(K_all)) - ...
                    StirlingError (K(K_all)) - ...
-                   BinoPoisson (K(K_all), delta(K_all));
+                   BinoPoisson (K(K_all), lambda(K_all));
     ## Sum recursively downwards
     term = ones (size (x));
     k = K;
@@ -245,9 +251,9 @@ function y = ncfpdf (x, df1, df2, delta)
 endfunction
 
 ## Error of Stirling-De Moivre approximation to n factorial.
-function delta = StirlingError (n)
+function lambda = StirlingError (n)
   is_class = class (n);
-  delta = zeros (size (n), is_class);
+  lambda = zeros (size (n), is_class);
   nn = n .* n;
   ## Define S0=1/12 S1=1/360 S2=1/1260 S3=1/1680 S4=1/1188
   S0 = 8.333333333333333e-02;
@@ -255,7 +261,7 @@ function delta = StirlingError (n)
   S2 = 7.936507936507937e-04;
   S3 = 5.952380952380952e-04;
   S4 = 8.417508417508418e-04;
-  ## Define delta(n) for n<0:0.5:15
+  ## Define lambda(n) for n<0:0.5:15
   sfe=[                    0;       1.534264097200273e-01;...
        8.106146679532726e-02;       5.481412105191765e-02;...
        4.134069595540929e-02;       3.316287351993629e-02;...
@@ -277,28 +283,28 @@ function delta = StirlingError (n)
     n1 = n(k);
     n2 = 2 * n1;
     if (all (n2 == round (n2)))
-        delta(k) = sfe(n2+1);
+        lambda(k) = sfe(n2+1);
     else
         lnsr2pi = 0.9189385332046728;
-        delta(k) = gammaln(n1+1)-(n1+0.5).*log(n1)+n1-lnsr2pi;
+        lambda(k) = gammaln(n1+1)-(n1+0.5).*log(n1)+n1-lnsr2pi;
     endif
   endif
   k = find (n > 15 & n <= 35);
   if (any (k))
-    delta(k) = (S0 - (S1 - (S2 - (S3 - S4 ./ nn(k)) ./ nn(k)) ./ ...
+    lambda(k) = (S0 - (S1 - (S2 - (S3 - S4 ./ nn(k)) ./ nn(k)) ./ ...
                                              nn(k)) ./ nn(k)) ./ n(k);
   endif
   k = find (n > 35 & n <= 80);
   if (any (k))
-    delta(k) = (S0 - (S1 - (S2 - S3 ./ nn(k)) ./ nn(k)) ./ nn(k)) ./ n(k);
+    lambda(k) = (S0 - (S1 - (S2 - S3 ./ nn(k)) ./ nn(k)) ./ nn(k)) ./ n(k);
   endif
   k = find(n > 80 & n <= 500);
   if (any (k))
-    delta(k) = (S0 - (S1 - S2 ./ nn(k)) ./ nn(k)) ./ n(k);
+    lambda(k) = (S0 - (S1 - S2 ./ nn(k)) ./ nn(k)) ./ n(k);
   endif
   k = find(n > 500);
   if (any (k))
-    delta(k) = (S0 - S1 ./ nn(k)) ./ n(k);
+    lambda(k) = (S0 - S1 ./ nn(k)) ./ n(k);
   endif
 endfunction
 
@@ -333,28 +339,73 @@ function BP = BinoPoisson (x, np)
   endif
 endfunction
 
-## Input validation tests
-%!error<ncfpdf: too few input arguments.> p = ncfpdf ();
-%!error<ncfpdf: too few input arguments.> p = ncfpdf (2);
-%!error<ncfpdf: too few input arguments.> p = ncfpdf (2, 4);
-%!error<ncfpdf: too few input arguments.> p = ncfpdf (2, 4, 3);
-%!error<ncfpdf: input size mismatch.> p = ncfpdf (5, 2,  [4, 3], [3, 4, 5]);
+%!demo
+%! ## Plot various PDFs from the noncentral F distribution
+%! x = 0:0.01:5;
+%! y1 = ncfpdf (x, 2, 5, 1);
+%! y2 = ncfpdf (x, 2, 5, 2);
+%! y3 = ncfpdf (x, 5, 10, 1);
+%! y4 = ncfpdf (x, 10, 20, 10);
+%! plot (x, y1, "-r", x, y2, "-g", x, y3, "-k", x, y4, "-m")
+%! grid on
+%! xlim ([0, 5])
+%! ylim ([0, 0.8])
+%! legend ({"df1 = 2, df2 = 5, λ = 1", "df1 = 2, df2 = 5, λ = 2", ...
+%!          "df1 = 5, df2 = 10, λ = 1", "df1 = 10, df2 = 20, λ = 10"}, ...
+%!         "location", "northeast")
+%! title ("Noncentral F PDF")
+%! xlabel ("values in x")
+%! ylabel ("density")
 
-## Output validation tests
-%!shared x1, df1, df2, delta
+%!demo
+%! ## Compare the noncentral F PDF with LAMBDA = 10 to the F PDF with the
+%! ## same number of numerator and denominator degrees of freedom (5, 20)
+%!
+%! x = (0.01:0.1:10.01);
+%! y1 = ncfpdf (x, 5, 20, 10);
+%! y2 = fpdf (x, 5, 20);
+%! plot (x, y1, "-", x, y2, "-");
+%! grid on
+%! xlim ([0, 10])
+%! ylim ([0, 0.8])
+%! legend ({"Noncentral F(5,20,10)", "F(5,20)"}, "location", "northeast")
+%! title ("Noncentral F vs F PDFs")
+%! xlabel ("values in x")
+%! ylabel ("density")
+
+## Test output
+%!shared x1, df1, df2, lambda
 %! x1 = [-Inf, 2, NaN, 4, Inf];
 %! df1 = [2, 0, -1, 1, 4];
 %! df2 = [2, 4, 5, 6, 8];
-%! delta = [1, NaN, 3, -1, 2];
-%!assert (ncfpdf (x1, df1, df2, delta), [0, NaN, NaN, NaN, NaN]);
+%! lambda = [1, NaN, 3, -1, 2];
+%!assert (ncfpdf (x1, df1, df2, lambda), [0, NaN, NaN, NaN, NaN]);
 %!assert (ncfpdf (x1, df1, df2, 1), [0, NaN, NaN, ...
 %!                                   0.05607937264237208, NaN], 1e-14);
 %!assert (ncfpdf (x1, df1, df2, 3), [0, NaN, NaN, ...
 %!                                   0.080125760971946518, NaN], 1e-14);
 %!assert (ncfpdf (x1, df1, df2, 2), [0, NaN, NaN, ...
 %!                                   0.0715902008258656, NaN], 1e-14);
-%!assert (ncfpdf (x1, 3, 5, delta), [0, NaN, NaN, NaN, NaN]);
-%!assert (ncfpdf (2, df1, df2, delta), [0.1254046999837947, NaN, NaN, ...
+%!assert (ncfpdf (x1, 3, 5, lambda), [0, NaN, NaN, NaN, NaN]);
+%!assert (ncfpdf (2, df1, df2, lambda), [0.1254046999837947, NaN, NaN, ...
 %!                                      NaN, 0.2152571783045893], 1e-14);
-%!assert (ncfpdf (4, df1, df2, delta), [0.05067089541001374, NaN, NaN, ...
+%!assert (ncfpdf (4, df1, df2, lambda), [0.05067089541001374, NaN, NaN, ...
 %!                                      NaN, 0.05560846335398539], 1e-14);
+
+## Test input validation
+%!error<ncfpdf: function called with too few input arguments.> ncfpdf ()
+%!error<ncfpdf: function called with too few input arguments.> ncfpdf (1)
+%!error<ncfpdf: function called with too few input arguments.> ncfpdf (1, 2)
+%!error<ncfpdf: function called with too few input arguments.> ncfpdf (1, 2, 3)
+%!error<ncfpdf: X, DF1, DF2, and LAMBDA must be of common size or scalars.> ...
+%! ncfpdf (ones (3), ones (2), ones (2), ones (2))
+%!error<ncfpdf: X, DF1, DF2, and LAMBDA must be of common size or scalars.> ...
+%! ncfpdf (ones (2), ones (3), ones (2), ones (2))
+%!error<ncfpdf: X, DF1, DF2, and LAMBDA must be of common size or scalars.> ...
+%! ncfpdf (ones (2), ones (2), ones (3), ones (2))
+%!error<ncfpdf: X, DF1, DF2, and LAMBDA must be of common size or scalars.> ...
+%! ncfpdf (ones (2), ones (2), ones (2), ones (3))
+%!error<ncfpdf: X, DF1, DF2, and LAMBDA must not be complex.> ncfpdf (i, 2, 2, 2)
+%!error<ncfpdf: X, DF1, DF2, and LAMBDA must not be complex.> ncfpdf (2, i, 2, 2)
+%!error<ncfpdf: X, DF1, DF2, and LAMBDA must not be complex.> ncfpdf (2, 2, i, 2)
+%!error<ncfpdf: X, DF1, DF2, and LAMBDA must not be complex.> ncfpdf (2, 2, 2, i)

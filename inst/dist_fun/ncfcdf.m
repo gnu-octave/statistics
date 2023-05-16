@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,44 +16,38 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{p} =} ncfcdf (@var{x}, @var{df1}, @var{df2}, @var{delta})
-## @deftypefnx {statistics} {@var{p} =} ncfcdf (@var{x}, @var{df1}, @var{df2}, @var{delta}, @qcode{"upper"})
+## @deftypefn  {statistics} {@var{p} =} ncfcdf (@var{x}, @var{df1}, @var{df2}, @var{lambda})
+## @deftypefnx {statistics} {@var{p} =} ncfcdf (@var{x}, @var{df1}, @var{df2}, @var{lambda}, @qcode{"upper"})
 ##
 ## Noncentral F cumulative distribution function (CDF).
 ##
-## @code{@var{p} = ncfcdf (@var{x}, @var{df1}, @var{df2}, @var{delta})} returns
-## the noncentral F cdf with @var{df} degrees of freedom and noncentrality
-## parameter @var{delta} at the values of @var{X}.
+## For each element of @var{x}, compute the cumulative distribution function
+## (CDF) of the noncentral F distribution with @var{df1} and @var{df2} degrees
+## of freedom and noncentrality parameter @var{lambda}.  The size of @var{p} is
+## the common size of @var{x}, @var{df1}, @var{df2}, and @var{lambda}.  A scalar
+## input functions as a constant matrix of the same size as the other inputs.
 ##
-## The size of @var{p} is the common size of the input arguments. Scalar input
-## arguments @var{x}, @var{df1}, @var{df2}, @var{delta} are regarded as constant
-## matrices of the same size as the other inputs.
+## @code{@var{p} = ncfcdf (@var{x}, @var{df1}, @var{df2}, @var{lambda}, "upper")}
+## computes the upper tail probability of the noncentral F distribution with
+## parameters @var{df1}, @var{df2}, and @var{lambda}, at the values in @var{x}.
 ##
-## @code{@var{p} = ncfcdf (@var{x}, @var{df1}, @var{df2}, @var{delta}, @qcode{"upper"})}
-## returns the upper tail probability of the noncentral T distribution with
-## @var{df1} and @var{df2} degrees of freedom and noncentrality parameter
-## @var{delta} at the values in @var{x}.
+## Further information about the noncentral F distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Noncentral_F-distribution}
 ##
 ## @seealso{ncfinv, ncfpdf, ncfrnd, ncfstat}
 ## @end deftypefn
 
-function p = ncfcdf (x, df1, df2, delta, uflag)
+function p = ncfcdf (x, df1, df2, lambda, uflag)
 
-  ## Check for valid input arguments
+  ## Check for valid number of input arguments
   if (nargin <  4)
-    error ("ncfcdf: too few input arguments.");
+    error ("ncfcdf: function called with too few input arguments.");
   endif
 
-  ## Check and fix size of input arguments
-  [err, x, df1, df2, delta] = common_size (x, df1, df2, delta);
-  if (err > 0)
-    error ("ncfcdf: input size mismatch.");
-  endif
-
-  ## Check for upper tail option
+  ## Check for valid "upper" flag
   if (nargin > 4)
     if (! strcmpi (uflag, "upper"))
-      error ("ncfcdf: improper definition of upper tail option.");
+      error ("ncfcdf: invalid argument for upper tail.");
     else
       uflag = true;
     endif
@@ -61,9 +55,20 @@ function p = ncfcdf (x, df1, df2, delta, uflag)
     uflag = false;
   endif
 
-  ## Initialize p
+  ## Check for common size of X, DF1, DF2, and LAMBDA
+  [err, x, df1, df2, lambda] = common_size (x, df1, df2, lambda);
+  if (err > 0)
+    error ("ncfcdf: X, DF1, DF2, and LAMBDA must be of common size or scalars.");
+  endif
+
+  ## Check for X, DF1, DF2, and LAMBDA being reals
+  if (iscomplex (x) || iscomplex (df1) || iscomplex (df2) || iscomplex (lambda))
+    error ("ncfcdf: X, DF1, DF2, and LAMBDA must not be complex.");
+  endif
+
+  ## Check for class type
   if (isa (x, "single") || isa (df1, "single") || ...
-      isa (df2, "single") || isa (delta, "single"))
+      isa (df2, "single") || isa (lambda, "single"))
     p = zeros (size (x), "single");
     c_eps = eps ("single") .^ (3/4);
   else
@@ -72,10 +77,10 @@ function p = ncfcdf (x, df1, df2, delta, uflag)
   endif
 
   ## Find NaNs in input arguments (if any) and propagate them to p
-  is_nan = isnan (x) | isnan (df1) | isnan (df1) | isnan (delta);
+  is_nan = isnan (x) | isnan (df1) | isnan (df1) | isnan (lambda);
   p(is_nan) = NaN;
 
-  ## For 'upper' option, force p = 1 for x <= 0, and p = 0 for x == Inf,
+  ## For "upper" option, force p = 1 for x <= 0, and p = 0 for x == Inf,
   ## otherwise, force p = 1 for x == Inf.
   if (uflag)
     p(x == Inf & ! is_nan) = 0;
@@ -85,11 +90,11 @@ function p = ncfcdf (x, df1, df2, delta, uflag)
   endif
 
   ## Find invalid values of parameters and propagate them to p as NaN
-  k = (df1 <= 0 | df2 <= 0 | delta < 0);
+  k = (df1 <= 0 | df2 <= 0 | lambda < 0);
   p(k) = NaN;
 
-  ## Compute central distribution (delta == 0)
-  k0 = (delta==0);
+  ## Compute central distribution (lambda == 0)
+  k0 = (lambda==0);
   if (any (k0(:)))
     if (uflag)
       p(k0) = fcdf (x(k0), df1(k0), df2(k0), "upper");
@@ -106,14 +111,14 @@ function p = ncfcdf (x, df1, df2, delta, uflag)
     x = x(k1);
     df1 = df1(k1);
     df2 = df2(k1);
-    delta = delta(k1);
+    lambda = lambda(k1);
   endif
 
   ## Prepare variables
   x = x(:);
   df1 = df1(:) / 2;
   df2 = df2(:) / 2;
-  delta = delta(:) / 2;
+  lambda = lambda(:) / 2;
 
   ## Value passed to Beta distribution function.
   tmp = df1 .* x ./ (df2 + df1 .* x);
@@ -121,8 +126,8 @@ function p = ncfcdf (x, df1, df2, delta, uflag)
   nu2const = df2 .* log (1 - tmp) - localgammaln (df2);
 
   ## Sum the series.  The general idea is that we are going to sum terms
-  ## of the form 'poisspdf(j,delta) .* betacdf(tmp,j+df1,df2)'
-  j0 = floor (delta(:));
+  ## of the form 'poisspdf(j,lambda) .* betacdf(tmp,j+df1,df2)'
+  j0 = floor (lambda(:));
 
   ## Compute Poisson pdf and beta cdf at the starting point
   if (uflag)
@@ -130,19 +135,19 @@ function p = ncfcdf (x, df1, df2, delta, uflag)
   else
     bcdf0 = betacdf (tmp, j0 + df1, df2);
   endif
-  ppdf0 = exp (-delta + j0 .* log (delta) - localgammaln (j0 + 1));
+  ppdf0 = exp (-lambda + j0 .* log (lambda) - localgammaln (j0 + 1));
 
   ## Set up for loop over values less than j0
   y = ppdf0 .* bcdf0;
   ppdf = ppdf0;
   bcdf = bcdf0;
-  olddy = zeros (size (delta));
-  delty = zeros (size (delta));
+  olddy = zeros (size (lambda));
+  delty = zeros (size (lambda));
   j = j0 - 1;
   ok = j >= 0;
   while (any (ok))
-    % Use recurrence relation to compute new pdf and cdf
-    ppdf(ok) = ppdf(ok) .* (j(ok) + 1) ./ delta(ok);
+    ## Use recurrence relation to compute new pdf and cdf
+    ppdf(ok) = ppdf(ok) .* (j(ok) + 1) ./ lambda(ok);
     if (uflag)
       bcdf(ok) = betainc (tmp(ok), j(ok) + df1(ok), df2(ok), "upper");
     else
@@ -162,12 +167,12 @@ function p = ncfcdf (x, df1, df2, delta, uflag)
   ## Set up again for loop upward from j0
   ppdf = ppdf0;
   bcdf = bcdf0;
-  olddy = zeros (size (delta));
+  olddy = zeros (size (lambda));
   j = j0 + 1;
   ok = true(size(j));
   ## Set up for loop to avoid endless loop
   for jj = 1:5000
-    ppdf = ppdf .* delta ./ j;
+    ppdf = ppdf .* lambda ./ j;
     if (uflag)
       bcdf = betainc (tmp, j + df1, df2, "upper");
     else
@@ -201,22 +206,38 @@ function x = localgammaln (y)
 endfunction
 
 %!demo
-%! ## Compare the noncentral F cdf with DELTA = 10 to the F cdf with the
+%! ## Plot various CDFs from the noncentral F distribution
+%! x = 0:0.01:5;
+%! p1 = ncfcdf (x, 2, 5, 1);
+%! p2 = ncfcdf (x, 2, 5, 2);
+%! p3 = ncfcdf (x, 5, 10, 1);
+%! p4 = ncfcdf (x, 10, 20, 10);
+%! plot (x, p1, "-r", x, p2, "-g", x, p3, "-k", x, p4, "-m")
+%! grid on
+%! xlim ([0, 5])
+%! legend ({"df1 = 2, df2 = 5, λ = 1", "df1 = 2, df2 = 5, λ = 2", ...
+%!          "df1 = 5, df2 = 10, λ = 1", "df1 = 10, df2 = 20, λ = 10"}, ...
+%!         "location", "southeast")
+%! title ("Noncentral F CDF")
+%! xlabel ("values in x")
+%! ylabel ("probability")
+
+%!demo
+%! ## Compare the noncentral F CDF with LAMBDA = 10 to the F CDF with the
 %! ## same number of numerator and denominator degrees of freedom (5, 20)
 %!
-%! x = (0.01:0.1:10.01)';
+%! x = (0.01:0.1:10.01);
 %! p1 = ncfcdf (x, 5, 20, 10);
-%! p = fcdf (x, 5, 20);
-%! plot (x, p, "-", x, p1, "-");
+%! p2 = fcdf (x, 5, 20);
+%! plot (x, p1, "-", x, p2, "-");
+%! grid on
+%! xlim ([0, 10])
+%! legend ({"Noncentral F(5,20,10)", "F(5,20)"}, "location", "southeast")
+%! title ("Noncentral F vs F CDFs")
+%! xlabel ("values in x")
+%! ylabel ("probability")
 
-## Input validation tests
-%!error<ncfcdf: too few input arguments.> p = ncfcdf (2, 4);
-%!error<ncfcdf: too few input arguments.> p = ncfcdf (2, 4, 3);
-%!error<ncfcdf: input size mismatch.> p = ncfcdf (2, 2, [4, 3], [3, 4, 5]);
-%!error<ncfcdf: improper definition of upper tail option.> ...
-%! p = ncfcdf (2, 4, 2, 3, "lower");
-
-## Output validation tests
+## Test output
 %!test
 %! x = (-2:0.1:2)';
 %! p = ncfcdf (x, 10, 1, 3);
@@ -236,3 +257,23 @@ endfunction
 %!test
 %! p = ncfcdf ([3, 6], 3, 2, 5, "upper");
 %! assert (p, [0.530248523596927, 0.3350482341323044], 1e-14);
+
+## Test input validation
+%!error<ncfcdf: function called with too few input arguments.> ncfcdf ()
+%!error<ncfcdf: function called with too few input arguments.> ncfcdf (1)
+%!error<ncfcdf: function called with too few input arguments.> ncfcdf (1, 2)
+%!error<ncfcdf: function called with too few input arguments.> ncfcdf (1, 2, 3)
+%!error<ncfcdf: invalid argument for upper tail.> ncfcdf (1, 2, 3, 4, "tail")
+%!error<ncfcdf: invalid argument for upper tail.> ncfcdf (1, 2, 3, 4, 5)
+%!error<ncfcdf: X, DF1, DF2, and LAMBDA must be of common size or scalars.> ...
+%! ncfcdf (ones (3), ones (2), ones (2), ones (2))
+%!error<ncfcdf: X, DF1, DF2, and LAMBDA must be of common size or scalars.> ...
+%! ncfcdf (ones (2), ones (3), ones (2), ones (2))
+%!error<ncfcdf: X, DF1, DF2, and LAMBDA must be of common size or scalars.> ...
+%! ncfcdf (ones (2), ones (2), ones (3), ones (2))
+%!error<ncfcdf: X, DF1, DF2, and LAMBDA must be of common size or scalars.> ...
+%! ncfcdf (ones (2), ones (2), ones (2), ones (3))
+%!error<ncfcdf: X, DF1, DF2, and LAMBDA must not be complex.> ncfcdf (i, 2, 2, 2)
+%!error<ncfcdf: X, DF1, DF2, and LAMBDA must not be complex.> ncfcdf (2, i, 2, 2)
+%!error<ncfcdf: X, DF1, DF2, and LAMBDA must not be complex.> ncfcdf (2, 2, i, 2)
+%!error<ncfcdf: X, DF1, DF2, and LAMBDA must not be complex.> ncfcdf (2, 2, 2, i)

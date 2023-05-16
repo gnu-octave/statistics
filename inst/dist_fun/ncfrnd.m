@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,101 +16,155 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{r} =} ncfrnd (@var{df1}, @var{df2}, @var{delta})
-## @deftypefnx {statistics} {@var{r} =} ncfrnd (@var{df1}, @var{df2}, @var{delta}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} {@var{r} =} ncfrnd (@var{df1}, @var{df2}, @var{delta}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} ncfrnd (@var{df1}, @var{df2}, @var{lambda})
+## @deftypefnx {statistics} {@var{r} =} ncfrnd (@var{df1}, @var{df2}, @var{lambda}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} ncfrnd (@var{df1}, @var{df2}, @var{lambda}, [@var{sz}])
 ##
 ## Random arrays from the noncentral F distribution.
 ##
-## @code{@var{x} = ncfrnd (@var{p}, @var{df1}, @var{df2}, @var{delta})} returns
+## @code{@var{x} = ncfrnd (@var{p}, @var{df1}, @var{df2}, @var{lambda})} returns
 ## an array of random numbers chosen from the noncentral F distribution with
-## parameters  @var{df1}, @var{df2}, @var{delta}).  The size of @var{r} is the
-## common size of @var{df1}, @var{df2}, and @var{delta}.  A scalar input
-## functions as a constant matrix of the same size as the other input.
-##
-## When called with a single size argument, return a square matrix with
-## the dimension specified.  When called with more than one scalar argument the
-## first two arguments are taken as the number of rows and columns and any
-## further arguments specify additional matrix dimensions.  The size may also
-## be specified with a vector of dimensions @var{sz}.
+## @var{df1} and @var{df2} degrees of freedom and noncentrality parameter
+## @var{lambda}.  The size of @var{r} is the common size of @var{df1},
+## @var{df2}, and @var{lambda}.  A scalar input functions as a constant matrix
+## of the same size as the other input.
 ##
 ## @code{ncfrnd} generates values using the definition of a noncentral F random
-## variable, as the ratio of a noncentral chi-square and a (central) chi-square.
+## variable, as the ratio of a noncentral chi-squared distribution and a
+## (central) chi-squared distribution.
+##
+## When called with a single size argument, @code{ncfrnd} returns a square
+## matrix with the dimension specified.  When called with more than one scalar
+## argument, the first two arguments are taken as the number of rows and columns
+## and any further arguments specify additional matrix dimensions.  The size may
+## also be specified with a row vector of dimensions, @var{sz}.
+##
+## Further information about the noncentral F distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Noncentral_F-distribution}
 ##
 ## @seealso{ncfcdf, ncfinv, ncfpdf, ncfstat}
 ## @end deftypefn
 
-function r = ncfrnd (df1, df2, delta, varargin)
+function r = ncfrnd (df1, df2, lambda, varargin)
 
   ## Check for valid number of input arguments
   if (nargin < 3)
-    error ("ncfrnd: too few input arguments.");
+    error ("ncfrnd: function called with too few input arguments.");
   endif
 
-  ## Check for appropriate class
-  if (isa (df1, "single") || isa (df2, "single") || isa (delta, "single"));
-    is_class = "single";
+  ## Check for common size of DF1, DF2, and LAMBDA
+  if (! isscalar (df1) || ! isscalar (df2) || ! isscalar (lambda))
+    [retval, df1, df2, lambda] = common_size (df1, df2, lambda);
+    if (retval > 0)
+      error ("ncfrnd: DF1, DF2, and LAMBDA must be of common size or scalars.");
+    endif
+  endif
+
+  ## Check for DF1, DF2, and LAMBDA being reals
+  if (iscomplex (df1) || iscomplex (df2) || iscomplex (lambda))
+    error ("ncfrnd: DF1, DF2, and LAMBDA must not be complex.");
+  endif
+
+  ## Parse and check SIZE arguments
+  if (nargin == 3)
+    sz = size (df1);
+  elseif (nargin == 4)
+    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+                               && varargin{1} == fix (varargin{1}))
+      sz = [varargin{1}, varargin{1}];
+    elseif (isrow (varargin{1}) && all (varargin{1} >= 0) ...
+                                && all (varargin{1} == fix (varargin{1})))
+      sz = varargin{1};
+    elseif
+      error (strcat (["ncfrnd: SZ must be a scalar or a row vector"], ...
+                     [" of non-negative integers."]));
+    endif
+  elseif (nargin > 4)
+    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
+    if (any (posint))
+      error ("ncfrnd: dimensions must be non-negative integers.");
+    endif
+    sz = [varargin{:}];
+  endif
+
+  ## Check that parameters match requested dimensions in size
+  if (! isscalar (df1) && ! isequal (size (df1), sz))
+    error ("ncfrnd: DF1, DF2, and LAMBDA must be scalars or of size SZ.");
+  endif
+
+  ## Check for class type
+  if (isa (df1, "single") || isa (df2, "single") || isa (lambda, "single"));
+    cls = "single";
   else
-    is_class = "double";
+    cls = "double";
   endif
 
-  ## Check for additional dimensions in varargin and get their size
-  dim_vec = 1;
-  if (nargin > 2)
-    extra_varargin = numel (varargin(:));
-    if (extra_varargin == 1)
-      size_dim = varargin{1};
-      ## Check for empty input argument
-      if (isempty (size_dim))
-        error (strcat (["ncfrnd: extra argument for size of output"], ...
-                       [" array cannot be empty."]));
-      endif
-      dim_vec = zeros (size_dim, is_class);
-    elseif (extra_varargin > 1)
-      for i = 1:extra_varargin
-        size_dim(i) = varargin{i};
-      endfor
-      dim_vec = zeros (size_dim, is_class);
-    endif
-  endif
-
-  ## Check for common size of MU, SIGMA, and output based on given dimensions
-  if (! isscalar (df1) || ! isscalar (df2) || ...
-      ! isscalar (delta) || ! isscalar (dim_vec))
-    [err, df1, df2, delta, dim_vec] = common_size (df1, df2, delta, dim_vec);
-    if (err > 0)
-      error (strcat (["ncfrnd: DF1, DF2, DELTA, and DIM vector must be of"], ...
-                     [" common size or scalars."]));
-    endif
-  endif
-
-  ## Get final dimensions of returning random array
-  size_out = size (df1);
-
-  ## Return NaNs for out of range values of DF and DELTA
+  ## Return NaNs for out of range values of DF1, DF2, and LAMBDA
   df1(df1 <= 0) = NaN;
   df2(df2 <= 0) = NaN;
-  delta(delta <= 0) = NaN;
+  lambda(lambda <= 0) = NaN;
 
-  r = (ncx2rnd (df1, delta, size_out) ./ df1) ./ ...
-      (2 .* randg (df2 ./ 2, size_out) ./ df2);
+  ## Generate random sample from noncentral F distribution
+  r = (ncx2rnd (df1, lambda, sz) ./ df1) ./ ...
+      (2 .* randg (df2 ./ 2, sz) ./ df2);
+
+  ## Cast to appropriate class
+  r = cast (r, cls);
+
 endfunction
 
-## Test input validation
-%!error<ncfrnd: too few input arguments.> ncfrnd ()
-%!error<ncfrnd: too few input arguments.> ncfrnd (1)
-%!error<ncfrnd: too few input arguments.> ncfrnd (1, 2)
-%!error<ncfrnd: extra argument for size of output array cannot be empty.> ...
-%! ncfrnd (5, ones (3), ones (2), [])
-%!error<ncfrnd: DF1, DF2, DELTA, and DIM vector must be of common size or scalars.> ...
-%! ncfrnd (5, ones (3), ones (2))
-%!error<ncfrnd: DF1, DF2, DELTA, and DIM vector must be of common size or scalars.> ...
-%! ncfrnd (5, ones (2), ones (2), 3, 2)
-%!error<ncfrnd: DF1, DF2, DELTA, and DIM vector must be of common size or scalars.> ...
-%! ncfrnd (5, ones (2), ones (2), 1, 2)
+## Test output
+%!assert (size (ncfrnd (1, 1, 1)), [1 1])
+%!assert (size (ncfrnd (1, ones (2,1), 1)), [2, 1])
+%!assert (size (ncfrnd (1, ones (2,2), 1)), [2, 2])
+%!assert (size (ncfrnd (ones (2,1), 1, 1)), [2, 1])
+%!assert (size (ncfrnd (ones (2,2), 1, 1)), [2, 2])
+%!assert (size (ncfrnd (1, 1, 1, 3)), [3, 3])
+%!assert (size (ncfrnd (1, 1, 1, [4, 1])), [4, 1])
+%!assert (size (ncfrnd (1, 1, 1, 4, 1)), [4, 1])
+%!assert (size (ncfrnd (1, 1, 1, 4, 1, 5)), [4, 1, 5])
+%!assert (size (ncfrnd (1, 1, 1, 0, 1)), [0, 1])
+%!assert (size (ncfrnd (1, 1, 1, 1, 0)), [1, 0])
+%!assert (size (ncfrnd (1, 1, 1, 1, 2, 0, 5)), [1, 2, 0, 5])
 
-## Output validation tests
-%!assert (size (ncfrnd (5, 2, 3, 3, 5, 7)), [3, 5, 7])
-%!assert (size (ncfrnd (5, 2, 3, [3, 5, 7])), [3, 5, 7])
-%!assert (size (ncfrnd (5, ones (3, 5), 2 * ones (3, 5), [3, 5])), [3, 5])
-%!assert (size (ncfrnd (2, 3, 5)), [1, 1])
+## Test class of input preserved
+%!assert (class (ncfrnd (1, 1, 1)), "double")
+%!assert (class (ncfrnd (1, single (1), 1)), "single")
+%!assert (class (ncfrnd (1, 1, single (1))), "single")
+%!assert (class (ncfrnd (1, single ([1, 1]), 1)), "single")
+%!assert (class (ncfrnd (1, 1, single ([1, 1]))), "single")
+%!assert (class (ncfrnd (single (1), 1, 1)), "single")
+%!assert (class (ncfrnd (single ([1, 1]), 1, 1)), "single")
+
+## Test input validation
+%!error<ncfrnd: function called with too few input arguments.> ncfrnd ()
+%!error<ncfrnd: function called with too few input arguments.> ncfrnd (1)
+%!error<ncfrnd: DF1, DF2, and LAMBDA must be of common size or scalars.> ...
+%! ncfrnd (ones (3), ones (2), ones (2))
+%!error<ncfrnd: DF1, DF2, and LAMBDA must be of common size or scalars.> ...
+%! ncfrnd (ones (2), ones (3), ones (2))
+%!error<ncfrnd: DF1, DF2, and LAMBDA must be of common size or scalars.> ...
+%! ncfrnd (ones (2), ones (2), ones (3))
+%!error<ncfrnd: DF1, DF2, and LAMBDA must not be complex.> ncfrnd (i, 2, 3)
+%!error<ncfrnd: DF1, DF2, and LAMBDA must not be complex.> ncfrnd (1, i, 3)
+%!error<ncfrnd: DF1, DF2, and LAMBDA must not be complex.> ncfrnd (1, 2, i)
+%!error<ncfrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! ncfrnd (1, 2, 3, -1)
+%!error<ncfrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! ncfrnd (1, 2, 3, 1.2)
+%!error<ncfrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! ncfrnd (1, 2, 3, ones (2))
+%!error<ncfrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! ncfrnd (1, 2, 3, [2 -1 2])
+%!error<ncfrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! ncfrnd (1, 2, 3, [2 0 2.5])
+%!error<ncfrnd: dimensions must be non-negative integers.> ...
+%! ncfrnd (1, 2, 3, 2, -1, 5)
+%!error<ncfrnd: dimensions must be non-negative integers.> ...
+%! ncfrnd (1, 2, 3, 2, 1.5, 5)
+%!error<ncfrnd: DF1, DF2, and LAMBDA must be scalars or of size SZ.> ...
+%! ncfrnd (2, ones (2), 2, 3)
+%!error<ncfrnd: DF1, DF2, and LAMBDA must be scalars or of size SZ.> ...
+%! ncfrnd (2, ones (2), 2, [3, 2])
+%!error<ncfrnd: DF1, DF2, and LAMBDA must be scalars or of size SZ.> ...
+%! ncfrnd (2, ones (2), 2, 3, 2)
