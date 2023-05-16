@@ -22,14 +22,14 @@
 ## Noncentral T cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) of the noncentral T distribution with @var{df1} degrees of freedom and
+## (CDF) of the noncentral T distribution with @var{df} degrees of freedom and
 ## noncentrality parameter @var{mu}.  The size of @var{p} is the common size of
-## @var{x}, @var{df1}, and @var{mu}.  A scalar input functions as a constant
+## @var{x}, @var{df}, and @var{mu}.  A scalar input functions as a constant
 ## matrix of the same size as the other inputs.
 ##
-## @code{@var{p} = nctcdf (@var{x}, @var{df1}, @var{mu}, "upper")} computes the
+## @code{@var{p} = nctcdf (@var{x}, @var{df}, @var{mu}, "upper")} computes the
 ## upper tail probability of the noncentral F distribution with parameters
-## @var{df1}, and @var{mu}, at the values in @var{x}.
+## @var{df} and @var{mu}, at the values in @var{x}.
 ##
 ## Further information about the noncentral T distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Noncentral_t-distribution}
@@ -296,8 +296,8 @@ endfunction
 %!
 %! x = -5:0.1:5;
 %! p1 = nctcdf (x, 10, 1);
-%! p = tcdf (x, 10);
-%! plot (x, p, "-", x, p1, "-")
+%! p2 = tcdf (x, 10);
+%! plot (x, p1, "-", x, p2, "-")
 %! grid on
 %! xlim ([-5, 5])
 %! legend ({"Noncentral T(10,1)", "T(10)"}, "location", "southeast")

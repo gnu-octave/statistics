@@ -21,9 +21,9 @@
 ## Noncentral Τ probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## of the noncentral T distribution with @var{df1} degrees of freedom and
+## of the noncentral T distribution with @var{df} degrees of freedom and
 ## noncentrality parameter @var{mu}.  The size of @var{y} is the common size of
-## @var{x}, @var{df1}, and @var{mu}.  A scalar input functions as a constant
+## @var{x}, @var{df}, and @var{mu}.  A scalar input functions as a constant
 ## matrix of the same size as the other inputs.
 ##
 ## Further information about the noncentral T distribution can be found at
@@ -128,7 +128,7 @@ endfunction
 %! grid on
 %! xlim ([-5, 5])
 %! ylim ([0, 0.4])
-%! legend ({"Noncentral T(10,1)", "T(10)"}, "location", "northwest")
+%! legend ({"Noncentral χ^2(4,2)", "χ^2(4)"}, "location", "northwest")
 %! title ("Noncentral T vs T PDFs")
 %! xlabel ("values in x")
 %! ylabel ("density")
