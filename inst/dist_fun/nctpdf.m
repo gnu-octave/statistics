@@ -16,46 +16,53 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{y} =} nctpdf (@var{x}, @var{df}, @var{delta})
+## @deftypefn  {statistics} {@var{y} =} nctpdf (@var{x}, @var{df}, @var{mu})
 ##
 ## Noncentral Τ probability density function (PDF).
 ##
-## @code{@var{y} = nctpdf (@var{x}, @var{df}, @var{delta})} returns
-## the noncentral T distribution with @var{df} degrees of freedom and
-## noncentrality parameter @var{delta}, at the values of @var{x}.
+## For each element of @var{x}, compute the probability density function (PDF)
+## of the noncentral T distribution with @var{df1} degrees of freedom and
+## noncentrality parameter @var{mu}.  The size of @var{y} is the common size of
+## @var{x}, @var{df1}, and @var{mu}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
 ##
-## The size of @var{y} is the common size of @var{df} and @var{delta}.  A scalar
-## input functions as a constant matrix of the same size as the K_all inputs.
+## Further information about the noncentral T distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Noncentral_t-distribution}
 ##
-## @seealso{nctcdf, nctinv, nctrnd, nctstat, tpdf, pdf}
+## @seealso{nctcdf, nctinv, nctrnd, nctstat, tpdf}
 ## @end deftypefn
 
-function y = nctpdf (x, df, delta)
+function y = nctpdf (x, df, mu)
 
-  ## Check for valid input arguments
+  ## Check for valid number of input arguments
   if (nargin <  3)
-    error ("nctpdf: too few input arguments.");
+    error ("nctpdf: function called with too few input arguments.");
   endif
 
-  ## Check and fix size of input arguments
-  [err, x, df, delta] = common_size (x, df, delta);
+  ## Check for common size of X, DF, and MU
+  [err, x, df, mu] = common_size (x, df, mu);
   if (err > 0)
-    error ("nctpdf: input size mismatch.");
+    error ("nctpdf: X, DF, and MU must be of common size or scalars.");
   endif
 
-  ## Initialize Y
-  if (isa (x, "single") || isa (df, "single") || isa (delta, "single"))
+  ## Check for X, DF, and MU being reals
+  if (iscomplex (x) || iscomplex (df) || iscomplex (mu))
+    error ("nctpdf: X, DF, and MU must not be complex.");
+  endif
+
+  ## Check for class type
+  if (isa (x, "single") || isa (df, "single") || isa (mu, "single"))
     y = zeros (size (x), "single");
   else
     y = zeros (size (x));
   endif
 
   ## Find NaNs in input arguments (if any) and propagate them to p
-  is_nan = isnan (x) | isnan (df) | isnan (delta);
+  is_nan = isnan (x) | isnan (df) | isnan (mu);
   y(is_nan) = NaN;
 
   ## Force invalid parameter cases to NaN
-  invalid = df <= 0 | ! isfinite (delta);
+  invalid = df <= 0 | ! isfinite (mu);
   y(invalid) = NaN;
 
   ## Use normal approximation for df > 1e6
@@ -63,7 +70,7 @@ function y = nctpdf (x, df, delta)
   if (any (bigDF(:)))
     s = 1 - 1 ./ (4 * df);
     d = sqrt (1 + x .^ 2 ./ (2 * df));
-    y(bigDF) = normpdf (x(bigDF) .* s(bigDF), delta(bigDF), d(bigDF));
+    y(bigDF) = normpdf (x(bigDF) .* s(bigDF), mu(bigDF), d(bigDF));
   endif
 
   ## For negative x use left tail cdf
@@ -71,8 +78,8 @@ function y = nctpdf (x, df, delta)
   if (any (x_neg))
     y(x_neg) = (df(x_neg) ./ x(x_neg)) .* ...
                (nctcdf (x(x_neg) .* sqrt ((df(x_neg) + 2) ./ df(x_neg)), ...
-                        df(x_neg) + 2, delta(x_neg)) - ...
-                nctcdf (x(x_neg), df(x_neg), delta(x_neg)));
+                        df(x_neg) + 2, mu(x_neg)) - ...
+                nctcdf (x(x_neg), df(x_neg), mu(x_neg)));
   endif
 
   ## For positive x reflect about zero and use left tail cdf
@@ -80,36 +87,77 @@ function y = nctpdf (x, df, delta)
   if (any (x_pos))
     y(x_pos) = (-df(x_pos) ./ x(x_pos)) .* ...
                (nctcdf (-x(x_pos) .* sqrt ((df(x_pos) + 2) ./ df(x_pos)), ...
-                        df(x_pos) + 2, -delta(x_pos)) - ...
-                nctcdf (-x(x_pos), df(x_pos), -delta(x_pos)));
+                        df(x_pos) + 2, -mu(x_pos)) - ...
+                nctcdf (-x(x_pos), df(x_pos), -mu(x_pos)));
   endif
 
   ## For x == 0 use power series
   xzero = find ((x == 0) & df <= 1e6 & ! is_nan & ! invalid);
   if (any (xzero))
-    y(xzero) = exp (-0.5 * delta(xzero) .^ 2 - 0.5 * log (pi * df(xzero)) + ...
+    y(xzero) = exp (-0.5 * mu(xzero) .^ 2 - 0.5 * log (pi * df(xzero)) + ...
                gammaln (0.5 * (df(xzero) + 1)) - gammaln (0.5 * df(xzero)));
   endif
 
 endfunction
 
-## Input validation tests
-%!error<nctpdf: too few input arguments.> y = nctpdf ();
-%!error<nctpdf: too few input arguments.> y = nctpdf (2);
-%!error<nctpdf: too few input arguments.> y = nctpdf (2, 4);
-%!error<nctpdf: input size mismatch.> y = nctpdf (5, [4, 3], [3, 4, 5]);
+%!demo
+%! ## Plot various PDFs from the noncentral T distribution
+%! x = -5:0.01:10;
+%! y1 = nctpdf (x, 1, 0);
+%! y2 = nctpdf (x, 4, 0);
+%! y3 = nctpdf (x, 1, 2);
+%! y4 = nctpdf (x, 4, 2);
+%! plot (x, y1, "-r", x, y2, "-g", x, y3, "-k", x, y4, "-m")
+%! grid on
+%! xlim ([-5, 10])
+%! ylim ([0, 0.4])
+%! legend ({"df = 1, μ = 0", "df = 4, μ = 0", ...
+%!          "df = 1, μ = 2", "df = 4, μ = 2"}, "location", "northeast")
+%! title ("Noncentral T PDF")
+%! xlabel ("values in x")
+%! ylabel ("density")
 
-## Output validation tests
-%!shared x1, df, delta
+%!demo
+%! ## Compare the noncentral T PDF with MU = 1 to the T PDF
+%! ## with the same number of degrees of freedom (10).
+%!
+%! x = -5:0.1:5;
+%! y1 = nctpdf (x, 10, 1);
+%! y2 = tpdf (x, 10);
+%! plot (x, y1, "-", x, y2, "-");
+%! grid on
+%! xlim ([-5, 5])
+%! ylim ([0, 0.4])
+%! legend ({"Noncentral T(10,1)", "T(10)"}, "location", "northwest")
+%! title ("Noncentral T vs T PDFs")
+%! xlabel ("values in x")
+%! ylabel ("density")
+
+## Test output
+%!shared x1, df, mu
 %! x1 = [-Inf, 2, NaN, 4, Inf];
 %! df = [2, 0, -1, 1, 4];
-%! delta = [1, NaN, 3, -1, 2];
-%!assert (nctpdf (x1, df, delta), [0, NaN, NaN, 0.00401787561306999, 0], 1e-14);
+%! mu = [1, NaN, 3, -1, 2];
+%!assert (nctpdf (x1, df, mu), [0, NaN, NaN, 0.00401787561306999, 0], 1e-14);
 %!assert (nctpdf (x1, df, 1), [0, NaN, NaN, 0.0482312135423008, 0], 1e-14);
 %!assert (nctpdf (x1, df, 3), [0, NaN, NaN, 0.1048493126401585, 0], 1e-14);
 %!assert (nctpdf (x1, df, 2), [0, NaN, NaN, 0.08137377919890307, 0], 1e-14);
-%!assert (nctpdf (x1, 3, delta), [0, NaN, NaN, 0.001185305171654381, 0], 1e-14);
-%!assert (nctpdf (2, df, delta), [0.1791097459405861, NaN, NaN, ...
+%!assert (nctpdf (x1, 3, mu), [0, NaN, NaN, 0.001185305171654381, 0], 1e-14);
+%!assert (nctpdf (2, df, mu), [0.1791097459405861, NaN, NaN, ...
 %!                             0.0146500727180389, 0.3082302682110299], 1e-14);
-%!assert (nctpdf (4, df, delta), [0.04467929612254971, NaN, NaN, ...
+%!assert (nctpdf (4, df, mu), [0.04467929612254971, NaN, NaN, ...
 %!                             0.00401787561306999, 0.0972086534042828], 1e-14);
+
+## Test input validation
+%!error<nctpdf: function called with too few input arguments.> nctpdf ()
+%!error<nctpdf: function called with too few input arguments.> nctpdf (1)
+%!error<nctpdf: function called with too few input arguments.> nctpdf (1, 2)
+%!error<nctpdf: X, DF, and MU must be of common size or scalars.> ...
+%! nctpdf (ones (3), ones (2), ones (2))
+%!error<nctpdf: X, DF, and MU must be of common size or scalars.> ...
+%! nctpdf (ones (2), ones (3), ones (2))
+%!error<nctpdf: X, DF, and MU must be of common size or scalars.> ...
+%! nctpdf (ones (2), ones (2), ones (3))
+%!error<nctpdf: X, DF, and MU must not be complex.> nctpdf (i, 2, 2)
+%!error<nctpdf: X, DF, and MU must not be complex.> nctpdf (2, i, 2)
+%!error<nctpdf: X, DF, and MU must not be complex.> nctpdf (2, 2, i)

@@ -16,37 +16,44 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{x} =} ncx2inv (@var{p}, @var{df}, @var{delta})
+## @deftypefn  {statistics} {@var{x} =} ncx2inv (@var{p}, @var{df}, @var{mu})
 ##
 ## Inverse of the non-central T cumulative distribution function (iCDF).
 ##
-## @code{@var{x} = nctinv (@var{p}, @var{df}, @var{delta})} returns the inverse
-## of the noncentral T cdf with @var{df} degrees of freedom and noncentrality
-## parameter @var{delta}, at the probabilities of @var{p}.
-##
-## The size of @var{x} is the common size of @var{df} and @var{delta}.  A scalar
-## input functions as a constant matrix of the same size as the other inputs.
+## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
+## the noncentral T distribution with @var{df} degrees of freedom and
+## noncentrality parameter @var{mu}.  The size of @var{x} is the common size of
+## @var{p}, @var{df}, and @var{mu}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
 ##
 ## @code{nctinv} uses Newton's method to converge to the solution.
 ##
-## @seealso{nctcdf, nctpdf, nctrnd, nctstat}
+## Further information about the noncentral T distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Noncentral_t-distribution}
+##
+## @seealso{nctcdf, nctpdf, nctrnd, nctstat, tinv}
 ## @end deftypefn
 
-function x = nctinv (p, df, delta)
+function x = nctinv (p, df, mu)
 
-  ## Check for valid input arguments
+  ## Check for valid number of input arguments
   if (nargin <  3)
-    error ("nctinv: too few input arguments.");
+    error ("nctinv: function called with too few input arguments.");
   endif
 
-  ## Check and fix size of input arguments
-  [err, p, df, delta] = common_size (p, df, delta);
+  ## Check for common size of P, DF, and MU
+  [err, p, df, mu] = common_size (p, df, mu);
   if (err > 0)
-    error ("nctinv: input size mismatch.");
+    error ("nctinv: P, DF, and MU must be of common size or scalars.");
   endif
 
-  ## Initialize x
-  if (isa (p, "single") || isa (df, "single") || isa (delta, "single"))
+  ## Check for P, DF, and MU being reals
+  if (iscomplex (p) || iscomplex (df) || iscomplex (mu))
+    error ("nctinv: P, DF, and MU must not be complex.");
+  endif
+
+  ## Check for class type
+  if (isa (p, "single") || isa (df, "single") || isa (mu, "single"))
     x = NaN (size (p), "single");
     crit = sqrt (eps ("single"));
   else
@@ -54,18 +61,18 @@ function x = nctinv (p, df, delta)
     crit = sqrt (eps ("double"));
   endif
 
-  ## For delta == 0, call chi2inv
-  d0 = delta == 0;
-  if (any (d0(:)))
-    x(d0) = tinv (p(d0), df(d0));
-    ## If delta == 0 for all entries, then return
-    if (all (d0(:)))
+  ## For mu == 0, call chi2inv
+  m0 = mu == 0;
+  if (any (m0(:)))
+    x(m0) = tinv (p(m0), df(m0));
+    ## If mu == 0 for all entries, then return
+    if (all (m0(:)))
       return;
     endif
   endif
 
   ## For all valid entries
-  valid = df > 0 & ! isnan (delta) & ! isinf (delta);
+  valid = df > 0 & ! isnan (mu) & ! isinf (mu);
   ## Force x = -Inf for p == 0 and x = Inf for p == 1
   x(p == 0 & valid) = -Inf;
   x(p == 1 & valid) = Inf;
@@ -73,22 +80,22 @@ function x = nctinv (p, df, delta)
   k = find (p > 0 & p < 1 & valid);
   p_k = p(k);
   df_k = df(k);
-  delta_k = delta(k);
+  mu_k = mu(k);
 
   ## Initialize counter
   count_limit = 100;
   count = 0;
 
   ## Supply a starting guess for the iteration with norminv
-  x_k = norminv (p_k, delta_k, 1);
+  x_k = norminv (p_k, mu_k, 1);
   h_k = ones (size (x_k), class (x_k));
 
   ## Start iteration with a break out loop
-  F =  nctcdf (x_k, df_k, delta_k);
+  F =  nctcdf (x_k, df_k, mu_k);
   while (any (abs (h_k) > crit * abs (x_k)) && ...
          max (abs (h_k)) > crit && count < count_limit)
     count = count + 1;
-    h_k = (F - p_k) ./ nctpdf (x_k, df_k, delta_k);
+    h_k = (F - p_k) ./ nctpdf (x_k, df_k, mu_k);
     ## Prevent Infs - NaNs
     infnan = isinf(h_k) | isnan(h_k);
     if (any (infnan(:)))
@@ -97,7 +104,7 @@ function x = nctinv (p, df, delta)
     ## Prepare for next step
     xnew = max (-5 * abs (x_k), min (5 * abs (x_k), x_k - h_k));
     ## Check that next step improves, otherwise abort
-    Fnew = nctcdf (xnew, df_k, delta_k);
+    Fnew = nctcdf (xnew, df_k, mu_k);
     while (true)
        worse = (abs (Fnew - p_k) > abs (F - p_k) * (1 + crit)) & ...
                (abs (x_k - xnew) > crit * abs (x_k));
@@ -105,7 +112,7 @@ function x = nctinv (p, df, delta)
          break;
        endif
        xnew(worse) = 0.5 * (xnew(worse) + x_k(worse));
-       Fnew(worse) = nctcdf (xnew(worse), df_k(worse), delta_k(worse));
+       Fnew(worse) = nctcdf (xnew(worse), df_k(worse), mu_k(worse));
     endwhile
     x_k = xnew;
     F = Fnew;
@@ -121,12 +128,38 @@ function x = nctinv (p, df, delta)
 
 endfunction
 
-## Input validation tests
-%!error<nctinv: too few input arguments.> p = nctinv ();
-%!error<nctinv: too few input arguments.> p = nctinv (1);
-%!error<nctinv: input size mismatch.> p = nctinv (1, [4, 3], [3, 4, 5]);
+%!demo
+%! ## Plot various iCDFs from the noncentral T distribution
+%! p = 0.001:0.001:0.999;
+%! x1 = nctinv (p, 1, 0);
+%! x2 = nctinv (p, 4, 0);
+%! x3 = nctinv (p, 1, 2);
+%! x4 = nctinv (p, 4, 2);
+%! plot (p, x1, "-r", p, x2, "-g", p, x3, "-k", p, x4, "-m")
+%! grid on
+%! ylim ([-5, 5])
+%! legend ({"df = 1, μ = 0", "df = 4, μ = 0", ...
+%!          "df = 1, μ = 2", "df = 4, μ = 2"}, "location", "northwest")
+%! title ("Noncentral T iCDF")
+%! xlabel ("probability")
+%! ylabel ("values in x")
 
-## Output validation tests
+%!demo
+%! ## Compare the noncentral T iCDF with MU = 1 to the T iCDF
+%! ## with the same number of degrees of freedom (10).
+%!
+%! p = 0.001:0.001:0.999;
+%! x1 = nctinv (p, 10, 1);
+%! x2 = tinv (p, 10);
+%! plot (p, x1, "-", p, x2, "-");
+%! grid on
+%! ylim ([-5, 5])
+%! legend ({"Noncentral T(10,1)", "T(10)"}, "location", "northwest")
+%! title ("Noncentral T vs T quantile functions")
+%! xlabel ("probability")
+%! ylabel ("values in x")
+
+## Test output
 %!test
 %! x = [-Inf,-0.3347,0.1756,0.5209,0.8279,1.1424,1.5021,1.9633,2.6571,4.0845,Inf];
 %! assert (nctinv ([0:0.1:1], 2, 1), x, 1e-4);
@@ -147,3 +180,17 @@ endfunction
 %! assert (nctinv (0.05, 5, [1, 2, 3, 4, -1, 6]), x, 1e-4);
 %!test
 %! assert (nctinv (0.996, 5, 8), 30.02610554063658, 2e-11);
+
+## Test input validation
+%!error<nctinv: function called with too few input arguments.> nctinv ()
+%!error<nctinv: function called with too few input arguments.> nctinv (1)
+%!error<nctinv: function called with too few input arguments.> nctinv (1, 2)
+%!error<nctinv: P, DF, and MU must be of common size or scalars.> ...
+%! nctinv (ones (3), ones (2), ones (2))
+%!error<nctinv: P, DF, and MU must be of common size or scalars.> ...
+%! nctinv (ones (2), ones (3), ones (2))
+%!error<nctinv: P, DF, and MU must be of common size or scalars.> ...
+%! nctinv (ones (2), ones (2), ones (3))
+%!error<nctinv: P, DF, and MU must not be complex.> nctinv (i, 2, 2)
+%!error<nctinv: P, DF, and MU must not be complex.> nctinv (2, i, 2)
+%!error<nctinv: P, DF, and MU must not be complex.> nctinv (2, 2, i)

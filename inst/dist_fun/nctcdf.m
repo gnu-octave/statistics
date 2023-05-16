@@ -16,43 +16,38 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{p} =} nctcdf (@var{x}, @var{df}, @var{delta})
-## @deftypefnx {statistics} {@var{p} =} nctcdf (@var{x}, @var{df}, @var{delta}, @qcode{"upper"})
+## @deftypefn  {statistics} {@var{p} =} nctcdf (@var{x}, @var{df}, @var{mu})
+## @deftypefnx {statistics} {@var{p} =} nctcdf (@var{x}, @var{df}, @var{mu}, @qcode{"upper"})
 ##
 ## Noncentral T cumulative distribution function (CDF).
 ##
-## @code{@var{p} = nctcdf (@var{x}, @var{df}, @var{delta})} returns the
-## noncentral T cdf with @var{df} degrees of freedom and noncentrality parameter
-## @var{delta} at the values of @var{X}.
+## For each element of @var{x}, compute the cumulative distribution function
+## (CDF) of the noncentral T distribution with @var{df1} degrees of freedom and
+## noncentrality parameter @var{mu}.  The size of @var{p} is the common size of
+## @var{x}, @var{df1}, and @var{mu}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
 ##
-## The size of @var{p} is the common size of the input arguments. Scalar input
-## arguments @var{x}, @var{df}, @var{delta} are regarded as constant matrices of
-## the same size as the other inputs.
+## @code{@var{p} = nctcdf (@var{x}, @var{df1}, @var{mu}, "upper")} computes the
+## upper tail probability of the noncentral F distribution with parameters
+## @var{df1}, and @var{mu}, at the values in @var{x}.
 ##
-## @code{@var{p} = nctcdf (@var{x}, @var{df}, @var{delta}, "upper"} returns the
-## upper tail probability of the noncentral T distribution with @var{df} degrees
-## of freedom and noncentrality parameter @var{delta} at the values in @var{x}.
+## Further information about the noncentral T distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Noncentral_t-distribution}
 ##
-## @seealso{nctinv, nctpdf, nctrnd, nctstat}
+## @seealso{nctinv, nctpdf, nctrnd, nctstat, tcdf}
 ## @end deftypefn
 
-function p = nctcdf (x, df, delta, uflag)
+function p = nctcdf (x, df, mu, uflag)
 
-  ## Check for valid input arguments
+  ## Check for valid number of input arguments
   if (nargin <  3)
-    error ("nctcdf: too few imputs.");
+    error ("nctcdf: function called with too few input arguments.");
   endif
 
-  ## Check and fix size of input arguments
-  [err, x, df, delta] = common_size (x, df, delta);
-  if (err > 0)
-    error ("nctcdf: input size mismatch.");
-  endif
-
-  ## Check for upper tail option
+  ## Check for valid "upper" flag
   if (nargin > 3)
     if (! strcmpi (uflag, "upper"))
-      error ("nctcdf: improper definition of upper tail option.");
+      error ("nctcdf: invalid argument for upper tail.");
     else
       uflag = true;
     endif
@@ -60,8 +55,19 @@ function p = nctcdf (x, df, delta, uflag)
     uflag = false;
   endif
 
-  ## Initialize p
-  if (isa (x, "single") || isa (df, "single") || isa (delta, "single"))
+  ## Check for common size of X, DF, and MU
+  [err, x, df, mu] = common_size (x, df, mu);
+  if (err > 0)
+    error ("nctcdf: X, DF, and MU must be of common size or scalars.");
+  endif
+
+  ## Check for X, DF, and MU being reals
+  if (iscomplex (x) || iscomplex (df) || iscomplex (mu))
+    error ("nctcdf: X, DF, and MU must not be complex.");
+  endif
+
+  ## Check for class type
+  if (isa (x, "single") || isa (df, "single") || isa (mu, "single"))
     p = zeros (size (x), "single");
     c_eps = eps ("single");
   else
@@ -70,12 +76,12 @@ function p = nctcdf (x, df, delta, uflag)
   endif
 
   ## Find NaNs in input arguments (if any) and propagate them to p
-  is_nan = isnan (x) | isnan (df) | isnan (delta);
+  is_nan = isnan (x) | isnan (df) | isnan (mu);
   p(is_nan) = NaN;
 
-  ## Find special cases for delta==0 and x<0; and x = Inf.
-  case_Dinf = (df <= 0 | isinf(delta)) & ! is_nan;
-  case_Dzero = delta == 0 & ! case_Dinf & ! is_nan;
+  ## Find special cases for mu==0 and x<0; and x = Inf.
+  case_Dinf = (df <= 0 | isinf(mu)) & ! is_nan;
+  case_Dzero = mu == 0 & ! case_Dinf & ! is_nan;
   case_Xzero = x < 0 & ! case_Dzero & ! case_Dinf & ! is_nan;
   case_Xinf = x == Inf & ! case_Dzero & ! case_Dinf & ! is_nan;
   case_DFbig = df > 2e6 & ! case_Dzero & ! case_Dinf & ! case_Xinf & ! is_nan;
@@ -109,27 +115,27 @@ function p = nctcdf (x, df, delta, uflag)
       d = sqrt (1 + x .^ 2 ./ (2 * df));
       if (uflag)
         p(case_DFbig) = normcdf (x(case_DFbig) .* s(case_DFbig), ...
-                                 delta(case_DFbig), d(case_DFbig), "upper");
+                                 mu(case_DFbig), d(case_DFbig), "upper");
       else
         p(case_DFbig) = normcdf (x(case_DFbig) .* s(case_DFbig), ...
-                                 delta(case_DFbig), d(case_DFbig));
+                                 mu(case_DFbig), d(case_DFbig));
       endif
     endif
     fp = ! (case_Dinf | case_Dzero | case_Xzero | case_Xinf | case_DFbig);
     if (any (fp(:)))
       if (uflag)
-        p(fp) = nctcdf (x(fp), df(fp), delta(fp), "upper");
+        p(fp) = nctcdf (x(fp), df(fp), mu(fp), "upper");
       else
-        p(fp) = nctcdf (x(fp), df(fp), delta(fp));
+        p(fp) = nctcdf (x(fp), df(fp), mu(fp));
       endif
     endif
     if (flag_Xzero)
       if (uflag)
         p(case_Xzero) = nctcdf (-x(case_Xzero), df(case_Xzero), ...
-                                -delta(case_Xzero));
+                                -mu(case_Xzero));
       else
         p(case_Xzero) = nctcdf (-x(case_Xzero), df(case_Xzero), ...
-                                -delta(case_Xzero), "upper");
+                                -mu(case_Xzero), "upper");
       endif
     endif
     return
@@ -141,17 +147,17 @@ function p = nctcdf (x, df, delta, uflag)
   P = x_square ./ denom;
   Q = df ./ denom;
   ## Initialize infinite sum.
-  d_square = delta .^ 2;
+  d_square = mu .^ 2;
 
   ## Compute probability P[TD<0] (first term)
   if (uflag)
     x_zero = x == 0 & ! is_nan;
     if (any (x_zero(:)))
-      fx = normcdf (- delta, 0, 1, "upper");
+      fx = normcdf (- mu, 0, 1, "upper");
       p(x_zero)= fx(x_zero);
     endif
   else
-    p(! is_nan) = normcdf (- delta(! is_nan), 0, 1);
+    p(! is_nan) = normcdf (- mu(! is_nan), 0, 1);
   endif
 
   ## Compute probability P[0<TD<x] (second term)
@@ -161,7 +167,7 @@ function p = nctcdf (x, df, delta, uflag)
     Q = Q(x_notzero);
     df = df(x_notzero);
     d_square = d_square(x_notzero);
-    d_sign = sign (delta(x_notzero));
+    d_sign = sign (mu(x_notzero));
     subtotal = zeros (size (x_notzero));
 
     ## Start looping over term jj and higher, this should be near the
@@ -171,7 +177,7 @@ function p = nctcdf (x, df, delta, uflag)
     ## Compute an infinite sum using Johnson & Kotz eq 9, or new
     ## edition eq 31.16, each term having this form:
     ##  B  = betainc(P,(j+1)/2,df/2);
-    ##  E  = (exp(0.5*j*log(0.5*delta^2) - gammaln(j/2+1)));
+    ##  E  = (exp(0.5*j*log(0.5*mu^2) - gammaln(j/2+1)));
     ##  term = E .* B;
     ##
     ## We'll compute betainc at the beginning, and then update using
@@ -269,23 +275,39 @@ function p = nctcdf (x, df, delta, uflag)
 endfunction
 
 %!demo
-%! ## Compare the noncentral t cdf with DELTA = 1 to the t cdf
+%! ## Plot various CDFs from the noncentral Τ distribution
+%! x = -5:0.01:5;
+%! p1 = nctcdf (x, 1, 0);
+%! p2 = nctcdf (x, 4, 0);
+%! p3 = nctcdf (x, 1, 2);
+%! p4 = nctcdf (x, 4, 2);
+%! plot (x, p1, "-r", x, p2, "-g", x, p3, "-k", x, p4, "-m")
+%! grid on
+%! xlim ([-5, 5])
+%! legend ({"df = 1, μ = 0", "df = 4, μ = 0", ...
+%!          "df = 1, μ = 2", "df = 4, μ = 2"}, "location", "southeast")
+%! title ("Noncentral Τ CDF")
+%! xlabel ("values in x")
+%! ylabel ("probability")
+
+%!demo
+%! ## Compare the noncentral T CDF with MU = 1 to the T CDF
 %! ## with the same number of degrees of freedom (10).
 %!
-%! x = (-5:0.1:5)';
+%! x = -5:0.1:5;
 %! p1 = nctcdf (x, 10, 1);
 %! p = tcdf (x, 10);
-%! plot (x, p, "-", x, p1, ":")
+%! plot (x, p, "-", x, p1, "-")
+%! grid on
+%! xlim ([-5, 5])
+%! legend ({"Noncentral T(10,1)", "T(10)"}, "location", "southeast")
+%! title ("Noncentral T vs T CDFs")
+%! xlabel ("values in x")
+%! ylabel ("probability")
 
-## Input validation tests
-%!error<nctcdf: too few imputs.> p = nctcdf (2, 4);
-%!error<nctcdf: input size mismatch.> p = nctcdf (2, [4, 3], [3, 4, 5]);
-%!error<nctcdf: improper definition of upper tail option.> ...
-%! p = nctcdf (2, 4, 2, "lower");
-
-## Output validation tests
+## Test output
 %!test
-%! x = (-2:0.1:2)';
+%! x = -2:0.1:2;
 %! p = nctcdf (x, 10, 1);
 %! assert (p(1), 0.003302485766631558, 1e-14);
 %! assert (p(2), 0.004084668193532631, 1e-14);
@@ -304,4 +326,18 @@ endfunction
 %! p = nctcdf ([3, 6], 3, 2, "upper");
 %! assert (p, [0.3199728259444777, 0.07064855592441913], 1e-14);
 
-
+## Test input validation
+%!error<nctcdf: function called with too few input arguments.> nctcdf ()
+%!error<nctcdf: function called with too few input arguments.> nctcdf (1)
+%!error<nctcdf: function called with too few input arguments.> nctcdf (1, 2)
+%!error<nctcdf: invalid argument for upper tail.> nctcdf (1, 2, 3, "tail")
+%!error<nctcdf: invalid argument for upper tail.> nctcdf (1, 2, 3, 4)
+%!error<nctcdf: X, DF, and MU must be of common size or scalars.> ...
+%! nctcdf (ones (3), ones (2), ones (2))
+%!error<nctcdf: X, DF, and MU must be of common size or scalars.> ...
+%! nctcdf (ones (2), ones (3), ones (2))
+%!error<nctcdf: X, DF, and MU must be of common size or scalars.> ...
+%! nctcdf (ones (2), ones (2), ones (3))
+%!error<nctcdf: X, DF, and MU must not be complex.> nctcdf (i, 2, 2)
+%!error<nctcdf: X, DF, and MU must not be complex.> nctcdf (2, i, 2)
+%!error<nctcdf: X, DF, and MU must not be complex.> nctcdf (2, 2, i)
