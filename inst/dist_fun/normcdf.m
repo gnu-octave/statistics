@@ -30,26 +30,30 @@
 ## Normal cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the normal distribution with mean @var{mu} and standard
-## deviation @var{sigma}.  The size of @var{p} is the common size of @var{x},
-## @var{mu} and @var{sigma}.  A scalar input functions as a constant matrix of
-## the same size as the other inputs.
+## (CDF) of the normal distribution with mean @var{mu} and standard deviation
+## @var{sigma}.  The size of @var{p} is the common size of @var{x}, @var{mu} and
+## @var{sigma}.  A scalar input functions as a constant matrix of the same size
+## as the other inputs.
 ##
 ## Default values are @var{mu} = 0, @var{sigma} = 1.
 ##
-## When called with three output arguments, @code{[@var{p}, @var{plo},
-## @var{pup}]} it computes the confidence bounds for @var{p} when the input
-## parameters @var{mu} and @var{sigma} are estimates.  In such case, @var{pcov},
-## a 2-by-2 matrix containing the covariance matrix of the estimated parameters,
-## is necessary.  Optionally, @var{alpha} has a default value of 0.05, and
-## specifies 100 * (1 - @var{alpha})% confidence bounds. @var{plo} and @var{pup}
-## are arrays of the same size as @var{p} containing the lower and upper
-## confidence bounds.
+## When called with three output arguments, i.e. @qcode{[@var{p}, @var{plo},
+## @var{pup}]}, @code{normcdf} computes the confidence bounds for @var{p} when
+## the input parameters @var{mu} and @var{sigma} are estimates.  In such case,
+## @var{pcov}, a @math{2x2} matrix containing the covariance matrix of the
+## estimated parameters, is necessary.  Optionally, @var{alpha}, which has a
+## default value of 0.05, specifies the @qcode{100 * (1 - @var{alpha})} percent
+## confidence bounds.  @var{plo} and @var{pup} are arrays of the same size as
+## @var{p} containing the lower and upper confidence bounds.
 ##
 ## @code{[@dots{}] = normcdf (@dots{}, "upper")} computes the upper tail
-## probability of the normal distribution.  This can be used to compute a
+## probability of the normal distribution with parameters @var{mu} and
+## @var{sigma}, at the values in @var{x}.  This can be used to compute a
 ## right-tailed p-value.  To compute a two-tailed p-value, use
 ## @code{2 * normcdf (-abs (@var{x}), @var{mu}, @var{sigma})}.
+##
+## Further information about the normal distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Normal_distribution}
 ##
 ## @seealso{norminv, normpdf, normrnd, normfit, normlike, normstat}
 ## @end deftypefn
@@ -73,17 +77,17 @@ function [varargout] = normcdf (x, varargin)
   endif
 
   ## Get extra arguments (if they exist) or add defaults
-  if (numel (varargin) > 0)
+  if (nargin > 1)
     mu = varargin{1};
   else
     mu = 0;
   endif
-  if (numel (varargin) > 1)
+  if (nargin > 2)
     sigma = varargin{2};
   else
     sigma = 1;
   endif
-  if (numel (varargin) > 2)
+  if (nargin > 3)
     pcov = varargin{3};
     ## Check for valid covariance matrix 2x2
     if (! isequal (size (pcov), [2, 2]))
@@ -96,7 +100,7 @@ function [varargout] = normcdf (x, varargin)
     endif
     pcov = [];
   endif
-  if (numel (varargin) > 3)
+  if (nargin > 4)
     alpha = varargin{4};
     ## Check for valid alpha value
     if (! isnumeric (alpha) || numel (alpha) !=1 || alpha <= 0 || alpha >= 1)
@@ -119,13 +123,13 @@ function [varargout] = normcdf (x, varargin)
     error ("normcdf: X, MU, and SIGMA must not be complex.");
   endif
 
-  ## Compute normal cdf
+  ## Compute normal CDF
   z = (x - mu) ./ sigma;
   if (uflag)
     z = -z;
   endif
 
-  ## Check for appropriate class
+  ## Check for class type
   if (isa (x, "single") || isa (mu, "single") || isa (sigma, "single"));
     is_class = "single";
   else
@@ -206,6 +210,40 @@ function [varargout] = normcdf (x, varargin)
 
 endfunction
 
+%!demo
+%! ## Plot various CDFs from the normal distribution
+%! x = -5:0.01:5;
+%! p1 = normcdf (x, 0, 0.5);
+%! p2 = normcdf (x, 0, 1);
+%! p3 = normcdf (x, 0, 2);
+%! p4 = normcdf (x, -2, 0.8);
+%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c")
+%! grid on
+%! xlim ([-5, 5])
+%! legend ({"μ = 0, σ = 0.5", "μ = 0, σ = 1", ...
+%!          "μ = 0, σ = 2", "μ = -2, σ = 0.8"}, "location", "southeast")
+%! title ("Normal CDF")
+%! xlabel ("values in x")
+%! ylabel ("probability")
+
+## Test output
+%!shared x,y
+%! x = [-Inf 1 2 Inf];
+%! y = [0, 0.5, 1/2*(1+erf(1/sqrt(2))), 1];
+%!assert (normcdf (x, ones (1,4), ones (1,4)), y)
+%!assert (normcdf (x, 1, ones (1,4)), y)
+%!assert (normcdf (x, ones (1,4), 1), y)
+%!assert (normcdf (x, [0, -Inf, NaN, Inf], 1), [0, 1, NaN, NaN])
+%!assert (normcdf (x, 1, [Inf, NaN, -1, 0]), [NaN, NaN, NaN, 1])
+%!assert (normcdf ([x(1:2), NaN, x(4)], 1, 1), [y(1:2), NaN, y(4)])
+%!assert (normcdf (x, "upper"), [1, 0.1587, 0.0228, 0], 1e-4)
+
+## Test class of input preserved
+%!assert (normcdf ([x, NaN], 1, 1), [y, NaN])
+%!assert (normcdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps ("single"))
+%!assert (normcdf ([x, NaN], single (1), 1), single ([y, NaN]), eps ("single"))
+%!assert (normcdf ([x, NaN], 1, single (1)), single ([y, NaN]), eps ("single"))
+
 ## Test input validation
 %!error<normcdf: invalid number of input arguments.> normcdf ()
 %!error<normcdf: invalid number of input arguments.> normcdf (1,2,3,4,5,6,7)
@@ -226,23 +264,3 @@ endfunction
 %!error<normcdf: X, MU, and SIGMA must not be complex.> normcdf (2, 2, i)
 %!error<normcdf: bad covariance matrix.> ...
 %! [p, plo, pup] =normcdf (1, 2, 3, [1, 0; 0, -inf], 0.04)
-
-## Test results
-%!shared x,y
-%! x = [-Inf 1 2 Inf];
-%! y = [0, 0.5, 1/2*(1+erf(1/sqrt(2))), 1];
-%!assert (normcdf (x, ones (1,4), ones (1,4)), y)
-%!assert (normcdf (x, 1, ones (1,4)), y)
-%!assert (normcdf (x, ones (1,4), 1), y)
-%!assert (normcdf (x, [0, -Inf, NaN, Inf], 1), [0, 1, NaN, NaN])
-%!assert (normcdf (x, 1, [Inf, NaN, -1, 0]), [NaN, NaN, NaN, 1])
-%!assert (normcdf ([x(1:2), NaN, x(4)], 1, 1), [y(1:2), NaN, y(4)])
-%!assert (normcdf (x, "upper"), [1, 0.1587, 0.0228, 0], 1e-4)
-
-## Test class of input preserved
-%!assert (normcdf ([x, NaN], 1, 1), [y, NaN])
-%!assert (normcdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps ("single"))
-%!assert (normcdf ([x, NaN], single (1), 1), single ([y, NaN]), eps ("single"))
-%!assert (normcdf ([x, NaN], 1, single (1)), single ([y, NaN]), eps ("single"))
-
-
