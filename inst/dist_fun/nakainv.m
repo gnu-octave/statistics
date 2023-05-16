@@ -25,7 +25,7 @@
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
 ## the Nakagami distribution with shape parameter @var{mu} and spread parameter
-## @var{omega}.  The size of @var{p} is the common size of @var{x}, @var{mu},
+## @var{omega}.  The size of @var{x} is the common size of @var{x}, @var{mu},
 ## and @var{omega}.  A scalar input functions as a constant matrix of the same
 ## size as the other inputs.
 ##
