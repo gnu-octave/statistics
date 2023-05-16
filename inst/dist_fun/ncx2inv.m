@@ -16,37 +16,44 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{x} =} ncx2inv (@var{p}, @var{df}, @var{delta})
+## @deftypefn  {statistics} {@var{x} =} ncx2inv (@var{p}, @var{df}, @var{lambda})
 ##
-## Inverse of the non-central chi-square cumulative distribution function (iCDF).
+## Inverse of the noncentral chi-squared cumulative distribution function (iCDF).
 ##
-## @code{@var{x} = ncx2inv (@var{p}, @var{df}, @var{delta})} returns the inverse
-## of the noncentral chi-square distribution with @var{df} degrees of freedom
-## and noncentrality parameter @var{delta}, at the probabilities of @var{p}.
-##
-## The size of @var{x} is the common size of @var{df} and @var{delta}.  A scalar
-## input functions as a constant matrix of the same size as the other inputs.
+## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
+## the noncentral chi-squared distribution with @var{df} degrees of freedom and
+## noncentrality parameter @var{mu}.  The size of @var{x} is the common size of
+## @var{p}, @var{df}, and @var{mu}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
 ##
 ## @code{ncx2inv} uses Newton's method to converge to the solution.
 ##
-## @seealso{ncx2cdf, ncx2pdf, ncx2rnd, ncx2stat}
+## Further information about the noncentral chi-squared distribution can be
+## found at @url{https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution}
+##
+## @seealso{ncx2cdf, ncx2pdf, ncx2rnd, ncx2stat, chi2inv}
 ## @end deftypefn
 
-function x = ncx2inv (p, df, delta)
+function x = ncx2inv (p, df, lambda)
 
-  ## Check for valid input arguments
+  ## Check for valid number of input arguments
   if (nargin <  3)
-    error ("ncx2inv: too few input arguments.");
+    error ("ncx2inv: function called with too few input arguments.");
   endif
 
-  ## Check and fix size of input arguments
-  [err, p, df, delta] = common_size (p, df, delta);
+  ## Check for common size of P, DF, and LAMBDA
+  [err, p, df, lambda] = common_size (p, df, lambda);
   if (err > 0)
-    error ("ncx2inv: input size mismatch.");
+    error ("ncx2inv: P, DF, and LAMBDA must be of common size or scalars.");
   endif
 
-  ## Initialize x
-  if (isa (p, "single") || isa (df, "single") || isa (delta, "single"))
+  ## Check for P, DF, and LAMBDA being reals
+  if (iscomplex (p) || iscomplex (df) || iscomplex (lambda))
+    error ("ncx2inv: P, DF, and LAMBDA must not be complex.");
+  endif
+
+  ## Check for class type
+  if (isa (p, "single") || isa (df, "single") || isa (lambda, "single"))
     x = NaN (size (p), "single");
     crit = sqrt (eps ("single"));
   else
@@ -54,11 +61,11 @@ function x = ncx2inv (p, df, delta)
     crit = sqrt (eps ("double"));
   endif
 
-  ## For delta == 0, call chi2inv
-  d0 = delta == 0;
+  ## For lambda == 0, call chi2inv
+  d0 = lambda == 0;
   if (any (d0(:)))
     x(d0) = chi2inv (p(d0), df(d0));
-    ## If delta == 0 for all entries, then return
+    ## If lambda == 0 for all entries, then return
     if (all (d0(:)))
       return;
     endif
@@ -66,15 +73,15 @@ function x = ncx2inv (p, df, delta)
 
   ## CDF with 0 d.d0. has a step at x=0.
   ## Check if CDF at x=0 exceeds the requested p.
-  df0 = df==0 & delta > 0;
+  df0 = df==0 & lambda > 0;
   if (any (df0(:)))
     p0 = zeros (size (p));
-    p0(df0) = ncx2cdf (0, df(df0), delta(df0));
+    p0(df0) = ncx2cdf (0, df(df0), lambda(df0));
     df0 = df0 & p0 >= p;
     x(df0) = 0;
   endif
 
-  valid = ! df0 & df > 0 & delta > 0;
+  valid = ! df0 & df > 0 & lambda > 0;
 
   ## Force x = 0 for p == 0 and x = Inf for p == 1
   x(p == 0 & valid) = 0;
@@ -88,21 +95,21 @@ function x = ncx2inv (p, df, delta)
   count = 0;
 
   ## Supply a starting guess for the iteration.
-  mn = df(k) + delta(k);
-  variance = 2 * (df(k) + 2 * delta(k));
+  mn = df(k) + lambda(k);
+  variance = 2 * (df(k) + 2 * lambda(k));
   temp = log (variance + mn .^ 2);
   mu = 2 * log (mn) - 0.5 * temp;
   sigma = -2 * log (mn) + temp;
   xk = exp (norminv (pk, mu, sigma));
-  F = ncx2cdf (xk, df(k), delta(k));
+  F = ncx2cdf (xk, df(k), lambda(k));
   h = ones(size(xk), class (xk));
 
   ## Start iteration with a break out loop
   while (count < count_limit)
     count = count + 1;
-    h = (F - pk) ./ ncx2pdf (xk, df(k), delta(k));
+    h = (F - pk) ./ ncx2pdf (xk, df(k), lambda(k));
     xnew = max (xk / 50, min (5 * xk, xk - h));
-    newF = ncx2cdf (xnew, df(k), delta(k));
+    newF = ncx2cdf (xnew, df(k), lambda(k));
     while (true)
       worse = (abs (newF - pk) > abs (F - pk) * (1 + crit)) & ...
               (abs (xk - xnew) > crit * xk);
@@ -110,7 +117,7 @@ function x = ncx2inv (p, df, delta)
         break;
       endif
       xnew(worse) = 0.5 * (xnew(worse) + xk(worse));
-      newF(worse) = ncx2cdf (xnew(worse), df(k(worse)), delta(k(worse)));
+      newF(worse) = ncx2cdf (xnew(worse), df(k(worse)), lambda(k(worse)));
     endwhile
     h = xk - xnew;
     x(k) = xnew;
@@ -131,13 +138,42 @@ function x = ncx2inv (p, df, delta)
 
 endfunction
 
-## Input validation tests
-%!error<ncx2inv: too few input arguments.> p = ncx2inv ();
-%!error<ncx2inv: too few input arguments.> p = ncx2inv (1);
-%!error<ncx2inv: too few input arguments.> p = ncx2inv (1, 2);
-%!error<ncx2inv: input size mismatch.> p = ncx2inv (1, [4, 3], [3, 4, 5]);
+%!demo
+%! ## Plot various iCDFs from the noncentral chi-squared distribution
+%! p = 0.001:0.001:0.999;
+%! x1 = ncx2inv (p, 2, 1);
+%! x2 = ncx2inv (p, 2, 2);
+%! x3 = ncx2inv (p, 2, 3);
+%! x4 = ncx2inv (p, 4, 1);
+%! x5 = ncx2inv (p, 4, 2);
+%! x6 = ncx2inv (p, 4, 3);
+%! plot (p, x1, "-r", p, x2, "-g", p, x3, "-k", ...
+%!       p, x4, "-m", p, x5, "-c", p, x6, "-y")
+%! grid on
+%! ylim ([0, 10])
+%! legend ({"df = 2, λ = 1", "df = 2, λ = 2", ...
+%!          "df = 2, λ = 3", "df = 4, λ = 1", ...
+%!          "df = 4, λ = 2", "df = 4, λ = 3"}, "location", "northwest")
+%! title ("Noncentral chi-squared iCDF")
+%! xlabel ("probability")
+%! ylabel ("values in x")
 
-## Output validation tests
+%!demo
+%! ## Compare the noncentral chi-squared CDF with LAMBDA = 2 to the
+%! ## chi-squared CDF with the same number of degrees of freedom (4).
+%!
+%! p = 0.001:0.001:0.999;
+%! x1 = ncx2inv (p, 4, 2);
+%! x2 = chi2inv (p, 4);
+%! plot (p, x1, "-", p, x2, "-");
+%! grid on
+%! ylim ([0, 10])
+%! legend ({"Noncentral χ^2(4,2)", "χ^2(4)"}, "location", "northwest")
+%! title ("Noncentral chi-squared vs chi-squared quantile functions")
+%! xlabel ("probability")
+%! ylabel ("values in x")
+
+## Test output
 %!test
 %! x = [0,0.3443,0.7226,1.1440,1.6220,2.1770,2.8436,3.6854,4.8447,6.7701,Inf];
 %! assert (ncx2inv ([0:0.1:1], 2, 1), x, 1e-4);
@@ -158,3 +194,17 @@ endfunction
 %! assert (ncx2inv (0.05, 5, [1, 2, 3, 4, -1, 6]), x, 1e-4);
 %!test
 %! assert (ncx2inv (0.996, 5, 8), 35.51298862765576, 2e-13);
+
+## Test input validation
+%!error<ncx2inv: function called with too few input arguments.> ncx2inv ()
+%!error<ncx2inv: function called with too few input arguments.> ncx2inv (1)
+%!error<ncx2inv: function called with too few input arguments.> ncx2inv (1, 2)
+%!error<ncx2inv: P, DF, and LAMBDA must be of common size or scalars.> ...
+%! ncx2inv (ones (3), ones (2), ones (2))
+%!error<ncx2inv: P, DF, and LAMBDA must be of common size or scalars.> ...
+%! ncx2inv (ones (2), ones (3), ones (2))
+%!error<ncx2inv: P, DF, and LAMBDA must be of common size or scalars.> ...
+%! ncx2inv (ones (2), ones (2), ones (3))
+%!error<ncx2inv: P, DF, and LAMBDA must not be complex.> ncx2inv (i, 2, 2)
+%!error<ncx2inv: P, DF, and LAMBDA must not be complex.> ncx2inv (2, i, 2)
+%!error<ncx2inv: P, DF, and LAMBDA must not be complex.> ncx2inv (2, 2, i)

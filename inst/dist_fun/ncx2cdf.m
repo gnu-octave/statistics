@@ -16,44 +16,38 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{p} =} ncx2cdf (@var{x}, @var{df}, @var{delta})
-## @deftypefnx {statistics} {@var{p} =} ncx2cdf (@var{x}, @var{df}, @var{delta}, @qcode{"upper"})
+## @deftypefn  {statistics} {@var{p} =} ncx2cdf (@var{x}, @var{df}, @var{lambda})
+## @deftypefnx {statistics} {@var{p} =} ncx2cdf (@var{x}, @var{df}, @var{lambda}, @qcode{"upper"})
 ##
-## Noncentral Chi-Square cumulative distribution function (CDF).
+## Noncentral chi-squared cumulative distribution function (CDF).
 ##
-## @code{@var{p} = ncx2cdf (@var{x}, @var{df}, @var{delta})} returns the
-## noncentral chi-square cdf with @var{df} degrees of freedom and noncentrality
-## parameter @var{delta} at the values of @var{x}.
+## For each element of @var{x}, compute the cumulative distribution function
+## (CDF) of the noncentral chi-squared distribution with @var{df} degrees of
+## freedom and noncentrality parameter @var{lambda}.  The size of @var{p} is the
+## common size of @var{x}, @var{df}, and @var{lambda}.  A scalar input functions
+## as a constant matrix of the same size as the other inputs.
 ##
-## The size of @var{p} is the common size of the input arguments. Scalar input
-## arguments @var{x}, @var{df}, @var{delta} are regarded as constant matrices of
-## the same size as the other inputs.
+## @code{@var{p} = ncx2cdf (@var{x}, @var{df}, @var{lambda}, "upper")} computes
+## the upper tail probability of the noncentral chi-squared distribution with
+## parameters @var{df} and @var{lambda}, at the values in @var{x}.
 ##
-## @code{@var{p} = ncx2cdf (@var{x}, @var{df}, @var{delta}, "upper"} returns the
-## upper tail probability of the noncentral chi-square distribution with
-## @var{df} degrees of freedom and noncentrality parameter @var{delta} at the
-## values in @var{x}.
+## Further information about the noncentral chi-squared distribution can be
+## found at @url{https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution}
 ##
-## @seealso{ncx2inv, ncx2pdf, ncx2rnd, ncx2stat}
+## @seealso{ncx2inv, ncx2pdf, ncx2rnd, ncx2stat, chi2cdf}
 ## @end deftypefn
 
-function p = ncx2cdf (x, df, delta, uflag)
+function p = ncx2cdf (x, df, lambda, uflag)
 
-  ## Check for valid input arguments
+  ## Check for valid number of input arguments
   if (nargin <  3)
-    error ("ncx2cdf: too few input arguments.");
+    error ("ncx2cdf: function called with too few input arguments.");
   endif
 
-  ## Check and fix size of input arguments
-  [err, x, df, delta] = common_size (x, df, delta);
-  if (err > 0)
-    error ("ncx2cdf: input size mismatch.");
-  endif
-
-  ## Check for upper tail option
+  ## Check for valid "upper" flag
   if (nargin > 3)
     if (! strcmpi (uflag, "upper"))
-      error ("ncx2cdf: improper definition of upper tail option.");
+      error ("ncx2cdf: invalid argument for upper tail.");
     else
       uflag = true;
     endif
@@ -61,8 +55,19 @@ function p = ncx2cdf (x, df, delta, uflag)
     uflag = false;
   endif
 
-  ## Initialize p
-  if (isa (x, "single") || isa (df, "single") || isa (delta, "single"))
+  ## Check for common size of X, DF, and LAMBDA
+  [err, x, df, lambda] = common_size (x, df, lambda);
+  if (err > 0)
+    error ("ncx2cdf: X, DF, and LAMBDA must be of common size or scalars.");
+  endif
+
+  ## Check for X, DF, and LAMBDA being reals
+  if (iscomplex (x) || iscomplex (df) || iscomplex (lambda))
+    error ("ncx2cdf: X, DF, and LAMBDA must not be complex.");
+  endif
+
+  ## Check for class type
+  if (isa (x, "single") || isa (df, "single") || isa (lambda, "single"))
     p = zeros (size (x), "single");
     c_eps = eps ("single");
     c_min = realmin ("single");
@@ -73,7 +78,7 @@ function p = ncx2cdf (x, df, delta, uflag)
   endif
 
   ## Find NaNs in input arguments (if any) and propagate them to p
-  is_nan = isnan (x) | isnan (df) | isnan (delta);
+  is_nan = isnan (x) | isnan (df) | isnan (lambda);
   p(is_nan) = NaN;
   if (uflag)
     p(x == Inf & ! is_nan) = 0;
@@ -83,19 +88,19 @@ function p = ncx2cdf (x, df, delta, uflag)
   endif
 
   ## Make P = NaN for negative values of noncentrality parameter and DF
-  p(delta < 0) = NaN;
+  p(lambda < 0) = NaN;
   p(df < 0) = NaN;
 
   ## For DF == 0 at x == 0
-  k = df == 0 & x == 0 & delta >= 0 & ! is_nan;
+  k = df == 0 & x == 0 & lambda >= 0 & ! is_nan;
   if (uflag)
-    p(k) = -expm1 (-delta(k) / 2);
+    p(k) = -expm1 (-lambda(k) / 2);
   else
-    p(k) = exp (-delta(k) / 2);
+    p(k) = exp (-lambda(k) / 2);
   endif
 
   ## Central chi2cdf
-  k = df >= 0 & x > 0 & delta == 0 & isfinite (x) & ! is_nan;
+  k = df >= 0 & x > 0 & lambda == 0 & isfinite (x) & ! is_nan;
   if (uflag)
     p(k) = chi2cdf (x(k), df(k), "upper");
   else
@@ -103,18 +108,18 @@ function p = ncx2cdf (x, df, delta, uflag)
   endif
 
   ## Keep only valid samples
-  td = find (df >= 0 & x > 0 & delta > 0 & isfinite (x) & ! is_nan);
-  delta = delta(td) / 2;
+  td = find (df >= 0 & x > 0 & lambda > 0 & isfinite (x) & ! is_nan);
+  lambda = lambda(td) / 2;
   df = df(td) / 2;
   x = x(td) / 2;
 
   ## Compute Chernoff bounds
   e0 = log(c_min);
   e1 = log(c_eps/4);
-  t = 1 - (df + sqrt (df .^ 2 + 4 * delta .* x)) ./ (2 * x);
-  q = delta .* t ./ (1 - t) - df .* log(1 - t) - t .* x;
-  peq0 = x < delta + df & q < e0;
-  peq1 = x > delta + df & q < e1;
+  t = 1 - (df + sqrt (df .^ 2 + 4 * lambda .* x)) ./ (2 * x);
+  q = lambda .* t ./ (1 - t) - df .* log(1 - t) - t .* x;
+  peq0 = x < lambda + df & q < e0;
+  peq1 = x > lambda + df & q < e1;
   if (uflag)
     p(td(peq0)) = 1;
   else
@@ -123,15 +128,15 @@ function p = ncx2cdf (x, df, delta, uflag)
   td(peq0 | peq1) = [];
   x(peq0 | peq1) = [];
   df(peq0 | peq1) = [];
-  delta(peq0 | peq1) = [];
+  lambda(peq0 | peq1) = [];
 
   ## Find index K of the maximal term in the summation series.
   ## K1 and K2 are lower and upper bounds for K, respectively.
   ## Indexing of terms in the summation series starts at 0.
-  K1 = ceil ((sqrt ((df + x) .^ 2 + 4 * x .* delta) - (df + x)) / 2);
+  K1 = ceil ((sqrt ((df + x) .^ 2 + 4 * x .* lambda) - (df + x)) / 2);
   K = zeros (size (x));
   k1above1 = find (K1 > 1);
-  K2 = floor (delta(k1above1) .* gammaincratio (x(k1above1), K1(k1above1)));
+  K2 = floor (lambda(k1above1) .* gammaincratio (x(k1above1), K1(k1above1)));
   fixK2 = isnan(K2) | isinf(K2);
   K2(fixK2) = K1(k1above1(fixK2));
   K(k1above1) = K2;
@@ -142,7 +147,7 @@ function p = ncx2cdf (x, df, delta, uflag)
     k0 = (K==0 & df==0);
     K(k0) = 1;
   endif
-  pois = poisspdf (K, delta);
+  pois = poisspdf (K, lambda);
   if (uflag)
     full = pois .* gammainc (x, df + K, "upper");
   else
@@ -153,13 +158,13 @@ function p = ncx2cdf (x, df, delta, uflag)
   ## The term for K is added afterwards - it is not included in either sum.
   sumK = zeros (size (x));
 
-  ## Downward. poisspdf(k-1,delta)/poisspdf(k,delta) = k/delta
+  ## Downward. poisspdf(k-1,lambda)/poisspdf(k,lambda) = k/lambda
   poisterm = pois;
   fullterm = full;
   keep = K > 0 & fullterm > 0;
   k = K;
   while any(keep)
-    poisterm(keep) = poisterm(keep) .* k(keep) ./ delta(keep);
+    poisterm(keep) = poisterm(keep) .* k(keep) ./ lambda(keep);
     k(keep) = k(keep) - 1;
     if (uflag)
       fullterm(keep) = poisterm(keep) .* ...
@@ -172,14 +177,14 @@ function p = ncx2cdf (x, df, delta, uflag)
     keep = keep & k > 0 & fullterm > eps(sumK);
   endwhile
 
-  ## Upward. poisspdf(k+1,delta)/poisspdf(k,delta) = delta/(k+1)
+  ## Upward. poisspdf(k+1,lambda)/poisspdf(k,lambda) = lambda/(k+1)
   poisterm = pois;
   fullterm = full;
   keep = fullterm > 0;
   k = K;
   while any(keep)
     k(keep) = k(keep)+1;
-    poisterm(keep) = poisterm(keep) .* delta(keep) ./ k(keep);
+    poisterm(keep) = poisterm(keep) .* lambda(keep) ./ k(keep);
     if (uflag)
       fullterm(keep) = poisterm(keep) .* ...
                        gammainc (x(keep), df(keep) + k(keep), "upper");
@@ -219,29 +224,45 @@ function r = gammaincratio (x, s)
 endfunction
 
 %!demo
-%! ## Compare the noncentral chi-square cdf with DELTA = 2 to the
-%! ## chi-square cdf with the same number of degrees of freedom (4):
+%! ## Plot various CDFs from the noncentral chi-squared distribution
+%! x = 0:0.1:10;
+%! p1 = ncx2cdf (x, 2, 1);
+%! p2 = ncx2cdf (x, 2, 2);
+%! p3 = ncx2cdf (x, 2, 3);
+%! p4 = ncx2cdf (x, 4, 1);
+%! p5 = ncx2cdf (x, 4, 2);
+%! p6 = ncx2cdf (x, 4, 3);
+%! plot (x, p1, "-r", x, p2, "-g", x, p3, "-k", ...
+%!       x, p4, "-m", x, p5, "-c", x, p6, "-y")
+%! grid on
+%! xlim ([0, 10])
+%! legend ({"df = 2, λ = 1", "df = 2, λ = 2", ...
+%!          "df = 2, λ = 3", "df = 4, λ = 1", ...
+%!          "df = 4, λ = 2", "df = 4, λ = 3"}, "location", "southeast")
+%! title ("Noncentral chi-squared CDF")
+%! xlabel ("values in x")
+%! ylabel ("probability")
+
+%!demo
+%! ## Compare the noncentral chi-squared CDF with LAMBDA = 2 to the
+%! ## chi-squared CDF with the same number of degrees of freedom (4).
 %!
-%! x = (0:0.1:10)';
-%! ncx2 = ncx2cdf (x, 4, 2);
-%! chi2 = chi2cdf (x, 4);
-%! plot(x, ncx2, "b-", "LineWidth", 2);
-%! hold on
-%! plot (x, chi2, "g--", "LineWidth", 2);
-%! legend ("ncx2", "chi2", "Location", "NorthWest");
+%! x = 0:0.1:10;
+%! p1 = ncx2cdf (x, 4, 2);
+%! p2 = chi2cdf (x, 4);
+%! plot (x, p1, "-", x, p2, "-")
+%! grid on
+%! xlim ([0, 10])
+%! legend ({"Noncentral χ^2(4,2)", "χ^2(4)"}, "location", "northwest")
+%! title ("Noncentral chi-squared vs chi-squared CDFs")
+%! xlabel ("values in x")
+%! ylabel ("probability")
 
-## Input validation tests
-%!error<ncx2cdf: too few input arguments.> p = ncx2cdf (2);
-%!error<ncx2cdf: too few input arguments.> p = ncx2cdf (2, 4);
-%!error<ncx2cdf: input size mismatch.> p = ncx2cdf (2,  [4, 3], [3, 4, 5]);
-%!error<ncx2cdf: improper definition of upper tail option.> ...
-%! p = ncx2cdf (2, 4, 2, "lower");
-
-## Output validation tests
+## Test output
 %!test
-%! x = (-2:0.1:2)';
+%! x = -2:0.1:2;
 %! p = ncx2cdf (x, 10, 1);
-%! assert (p([1:21]), zeros (21, 1), 3e-84);
+%! assert (p([1:21]), zeros (1, 21), 3e-84);
 %! assert (p(22), 1.521400636466575e-09, 1e-14);
 %! assert (p(30), 6.665480510026046e-05, 1e-14);
 %! assert (p(41), 0.002406447308399836, 1e-14);
@@ -257,3 +278,19 @@ endfunction
 %!test
 %! p = ncx2cdf ([3, 6], 3, 2, "upper");
 %! assert (p, [0.6423318186400054, 0.3152299878943012], 1e-14);
+
+## Test input validation
+%!error<ncx2cdf: function called with too few input arguments.> ncx2cdf ()
+%!error<ncx2cdf: function called with too few input arguments.> ncx2cdf (1)
+%!error<ncx2cdf: function called with too few input arguments.> ncx2cdf (1, 2)
+%!error<ncx2cdf: invalid argument for upper tail.> ncx2cdf (1, 2, 3, "tail")
+%!error<ncx2cdf: invalid argument for upper tail.> ncx2cdf (1, 2, 3, 4)
+%!error<ncx2cdf: X, DF, and LAMBDA must be of common size or scalars.> ...
+%! ncx2cdf (ones (3), ones (2), ones (2))
+%!error<ncx2cdf: X, DF, and LAMBDA must be of common size or scalars.> ...
+%! ncx2cdf (ones (2), ones (3), ones (2))
+%!error<ncx2cdf: X, DF, and LAMBDA must be of common size or scalars.> ...
+%! ncx2cdf (ones (2), ones (2), ones (3))
+%!error<ncx2cdf: X, DF, and LAMBDA must not be complex.> ncx2cdf (i, 2, 2)
+%!error<ncx2cdf: X, DF, and LAMBDA must not be complex.> ncx2cdf (2, i, 2)
+%!error<ncx2cdf: X, DF, and LAMBDA must not be complex.> ncx2cdf (2, 2, i)

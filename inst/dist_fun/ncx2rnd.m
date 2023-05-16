@@ -16,97 +16,153 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{r} =} ncx2rnd (@var{df}, @var{delta})
-## @deftypefnx {statistics} {@var{r} =} ncx2rnd (@var{df}, @var{delta}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} {@var{r} =} ncx2rnd (@var{df}, @var{delta}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} ncx2rnd (@var{df}, @var{lambda})
+## @deftypefnx {statistics} {@var{r} =} ncx2rnd (@var{df}, @var{lambda}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} ncx2rnd (@var{df}, @var{lambda}, [@var{sz}])
 ##
-## Random arrays from the non-central chi-square distribution.
+## Random arrays from the noncentral chi-squared distribution.
 ##
-## @code{@var{r} = ncx2rnd (@var{df}, @var{delta})} returns an array of random
-## numbers chosen from the non-central chi-square distribution with @var{df}
-## degrees of freedom and noncentrality parameter @var{delta}.  The size of
-## @var{r} is the common size of @var{df} and @var{delta}.  A scalar input
+## @code{@var{r} = ncx2rnd (@var{df}, @var{lambda})} returns an array of random
+## numbers chosen from the noncentral chi-squared distribution with @var{df}
+## degrees of freedom and noncentrality parameter @var{lambda}.  The size of
+## @var{r} is the common size of @var{df} and @var{lambda}.  A scalar input
 ## functions as a constant matrix of the same size as the other input.
 ##
-## When called with a single size argument, return a square matrix with
-## the dimension specified.  When called with more than one scalar argument the
-## first two arguments are taken as the number of rows and columns and any
-## further arguments specify additional matrix dimensions.  The size may also
-## be specified with a vector of dimensions @var{sz}.
+## When called with a single size argument, @code{ncx2rnd} returns a square
+## matrix with the dimension specified.  When called with more than one scalar
+## argument, the first two arguments are taken as the number of rows and columns
+## and any further arguments specify additional matrix dimensions.  The size may
+## also be specified with a row vector of dimensions, @var{sz}.
+##
+## Further information about the noncentral chi-squared distribution can be
+## found at @url{https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution}
 ##
 ## @seealso{ncx2cdf, ncx2inv, ncx2pdf, ncx2stat}
 ## @end deftypefn
 
-function r = ncx2rnd (df, delta, varargin)
+function r = ncx2rnd (df, lambda, varargin)
 
   ## Check for valid number of input arguments
   if (nargin < 2)
-    error ("ncx2rnd: too few input arguments.");
+    error ("ncx2rnd: function called with too few input arguments.");
   endif
 
-  ## Check for appropriate class
-  if (isa (df, "single") || isa (delta, "single"));
-    is_class = "single";
+  ## Check for common size of DF and LAMBDA
+  if (! isscalar (df) || ! isscalar (lambda))
+    [retval, df, lambda] = common_size (df, lambda);
+    if (retval > 0)
+      error ("ncx2rnd: DF and LAMBDA must be of common size or scalars.");
+    endif
+  endif
+
+  ## Check for DF and LAMBDA being reals
+  if (iscomplex (df) || iscomplex (lambda))
+    error ("ncx2rnd: DF and LAMBDA must not be complex.");
+  endif
+
+  ## Parse and check SIZE arguments
+  if (nargin == 2)
+    sz = size (df);
+  elseif (nargin == 3)
+    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+                               && varargin{1} == fix (varargin{1}))
+      sz = [varargin{1}, varargin{1}];
+    elseif (isrow (varargin{1}) && all (varargin{1} >= 0) ...
+                                && all (varargin{1} == fix (varargin{1})))
+      sz = varargin{1};
+    elseif
+      error (strcat (["ncx2rnd: SZ must be a scalar or a row vector"], ...
+                     [" of non-negative integers."]));
+    endif
+  elseif (nargin > 3)
+    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
+    if (any (posint))
+      error ("ncx2rnd: dimensions must be non-negative integers.");
+    endif
+    sz = [varargin{:}];
+  endif
+
+  ## Check that parameters match requested dimensions in size
+  if (! isscalar (df) && ! isequal (size (df), sz))
+    error ("ncx2rnd: DF and LAMBDA must be scalars or of size SZ.");
+  endif
+
+  ## Check for class type
+  if (isa (df, "single") || isa (lambda, "single"));
+    cls = "single";
   else
-    is_class = "double";
+    cls = "double";
   endif
 
-  ## Check for additional dimensions in varargin and get their size
-  dim_vec = 1;
-  if (nargin > 2)
-    extra_varargin = numel (varargin(:));
-    if (extra_varargin == 1)
-      size_dim = varargin{1};
-      ## Check for empty input argument
-      if (isempty (size_dim))
-        error (strcat (["ncx2rnd: extra argument for size of output"], ...
-                       [" array cannot be empty."]));
-      endif
-      dim_vec = zeros (size_dim, is_class);
-    elseif (extra_varargin > 1)
-      for i = 1:extra_varargin
-        size_dim(i) = varargin{i};
-      endfor
-      dim_vec = zeros (size_dim, is_class);
-    endif
-  endif
-
-  ## Check for common size of MU, SIGMA, and output based on given dimensions
-  if (! isscalar (df) || ! isscalar (delta) || ! isscalar (dim_vec))
-    [err, df, delta, dim_vec] = common_size (df, delta, dim_vec);
-    if (err > 0)
-      error (strcat (["ncx2rnd: DF, DELTA, and DIM vector must be of"], ...
-                     [" common size or scalars."]));
-    endif
-  endif
-
-  ## Get final dimensions of returning random array
-  size_out = size (df);
-
-  ## Return NaNs for out of range values of DF and DELTA
+  ## Return NaNs for out of range values of DF and LAMBDA
   df(df <= 0) = NaN;
-  delta(delta <= 0) = NaN;
+  lambda(lambda <= 0) = NaN;
 
-  ## Generate noncentral chi-square random sampling
-  r = randp (delta ./ 2);
+  ## Force DF and LAMBDA into the same size as SZ (if necessary)
+  if (isscalar (df))
+    df = repmat (df, sz);
+  endif
+  if (isscalar (lambda))
+    lambda = repmat (lambda, sz);
+  endif
+
+  ## Generate random sample from noncentral chi-squared distribution
+  r = randp (lambda ./ 2);
   r(r > 0) = 2 * randg (r(r > 0));
-  r(df > 0) += 2 * randg (df(df > 0)/2);
+  r(df > 0) += 2 * randg (df(df > 0) / 2);
+
+  ## Cast to appropriate class
+  r = cast (r, cls);
 
 endfunction
 
-## Test input validation
-%!error<ncx2rnd: too few input arguments.> ncx2rnd ()
-%!error<ncx2rnd: extra argument for size of output array cannot be empty.> ...
-%! ncx2rnd (ones (3), ones (2), [])
-%!error<ncx2rnd: DF, DELTA, and DIM vector must be of common size or scalars.> ...
-%! ncx2rnd (ones (3), ones (2))
-%!error<ncx2rnd: DF, DELTA, and DIM vector must be of common size or scalars.> ...
-%! ncx2rnd (ones (2), ones (2), 3, 2)
-%!error<ncx2rnd: DF, DELTA, and DIM vector must be of common size or scalars.> ...
-%! ncx2rnd (ones (2), ones (2), 1, 2)
+## Test output
+%!assert (size (ncx2rnd (1, 1)), [1 1])
+%!assert (size (ncx2rnd (1, ones (2,1))), [2, 1])
+%!assert (size (ncx2rnd (1, ones (2,2))), [2, 2])
+%!assert (size (ncx2rnd (ones (2,1), 1)), [2, 1])
+%!assert (size (ncx2rnd (ones (2,2), 1)), [2, 2])
+%!assert (size (ncx2rnd (1, 1, 3)), [3, 3])
+%!assert (size (ncx2rnd (1, 1, [4, 1])), [4, 1])
+%!assert (size (ncx2rnd (1, 1, 4, 1)), [4, 1])
+%!assert (size (ncx2rnd (1, 1, 4, 1, 5)), [4, 1, 5])
+%!assert (size (ncx2rnd (1, 1, 0, 1)), [0, 1])
+%!assert (size (ncx2rnd (1, 1, 1, 0)), [1, 0])
+%!assert (size (ncx2rnd (1, 1, 1, 2, 0, 5)), [1, 2, 0, 5])
 
-## Output validation tests
-%!assert (size (ncx2rnd (2, 3, 3, 5, 7)), [3, 5, 7])
-%!assert (size (ncx2rnd (2, 3, [3, 5, 7])), [3, 5, 7])
-%!assert (size (ncx2rnd (ones (3, 5), 2 * ones (3, 5), [3, 5])), [3, 5])
-%!assert (size (ncx2rnd (2, 3)), [1, 1])
+## Test class of input preserved
+%!assert (class (ncx2rnd (1, 1)), "double")
+%!assert (class (ncx2rnd (1, single (1))), "single")
+%!assert (class (ncx2rnd (1, single ([1, 1]))), "single")
+%!assert (class (ncx2rnd (single (1), 1)), "single")
+%!assert (class (ncx2rnd (single ([1, 1]), 1)), "single")
+
+## Test input validation
+%!error<ncx2rnd: function called with too few input arguments.> ncx2rnd ()
+%!error<ncx2rnd: function called with too few input arguments.> ncx2rnd (1)
+%!error<ncx2rnd: DF and LAMBDA must be of common size or scalars.> ...
+%! ncx2rnd (ones (3), ones (2))
+%!error<ncx2rnd: DF and LAMBDA must be of common size or scalars.> ...
+%! ncx2rnd (ones (2), ones (3))
+%!error<ncx2rnd: DF and LAMBDA must not be complex.> ncx2rnd (i, 2)
+%!error<ncx2rnd: DF and LAMBDA must not be complex.> ncx2rnd (1, i)
+%!error<ncx2rnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! ncx2rnd (1, 2, -1)
+%!error<ncx2rnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! ncx2rnd (1, 2, 1.2)
+%!error<ncx2rnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! ncx2rnd (1, 2, ones (2))
+%!error<ncx2rnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! ncx2rnd (1, 2, [2 -1 2])
+%!error<ncx2rnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! ncx2rnd (1, 2, [2 0 2.5])
+%!error<ncx2rnd: dimensions must be non-negative integers.> ...
+%! ncx2rnd (1, 2, 2, -1, 5)
+%!error<ncx2rnd: dimensions must be non-negative integers.> ...
+%! ncx2rnd (1, 2, 2, 1.5, 5)
+%!error<ncx2rnd: DF and LAMBDA must be scalars or of size SZ.> ...
+%! ncx2rnd (2, ones (2), 3)
+%!error<ncx2rnd: DF and LAMBDA must be scalars or of size SZ.> ...
+%! ncx2rnd (2, ones (2), [3, 2])
+%!error<ncx2rnd: DF and LAMBDA must be scalars or of size SZ.> ...
+%! ncx2rnd (2, ones (2), 3, 2)

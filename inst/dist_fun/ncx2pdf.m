@@ -16,63 +16,69 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{y} =} ncx2pdf (@var{x}, @var{df}, @var{delta})
+## @deftypefn  {statistics} {@var{y} =} ncx2pdf (@var{x}, @var{df}, @var{lambda})
 ##
-## Noncentral Chi-Square probability distribution function (PDF).
+## Noncentral chi-squared probability distribution function (PDF).
 ##
-## @code{@var{y} = ncx2pdf (@var{x}, @var{df}, @var{delta})} returns the
-## noncentral chi-square pdf with @var{df} degrees of freedom and noncentrality
-## parameter @var{delta} at the values of @var{x}.
+## For each element of @var{x}, compute the probability density function (PDF)
+## of the noncentral chi-squared distribution with @var{df} degrees of freedom
+## and noncentrality parameter @var{lambda}.  The size of @var{y} is the common
+## size of @var{x}, @var{df}, and @var{lambda}.  A scalar input functions as a
+## constant matrix of the same size as the other inputs.
 ##
-## The size of @var{y} is the common size of the input arguments. Scalar input
-## arguments @var{x}, @var{df}, @var{delta} are regarded as constant matrices of
-## the same size as the other inputs.
+## Further information about the noncentral chi-squared distribution can be
+## found at @url{https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution}
 ##
-## @seealso{ncx2cdf, ncx2inv, ncx2rnd, ncx2stat}
+## @seealso{ncx2cdf, ncx2inv, ncx2rnd, ncx2stat, chi2pdf}
 ## @end deftypefn
 
-function y = ncx2pdf (x, df, delta)
+function y = ncx2pdf (x, df, lambda)
 
-  ## Check for valid input arguments
+  ## Check for valid number of input arguments
   if (nargin <  3)
-    error ("ncx2pdf: too few input arguments.");
+    error ("ncx2pdf: function called with too few input arguments.");
   endif
 
-  ## Check and fix size of input arguments
-  [err, x, df, delta] = common_size (x, df, delta);
+  ## Check for common size of X, DF, and LAMBDA
+  [err, x, df, lambda] = common_size (x, df, lambda);
   if (err > 0)
-    error ("ncx2pdf: input size mismatch.");
+    error ("ncx2pdf: X, DF, and LAMBDA must be of common size or scalars.");
   endif
 
-  ## Initialize Y
-  if (isa (x, "single") || isa (df, "single") || isa (delta, "single"))
+  ## Check for X, DF, and LAMBDA being reals
+  if (iscomplex (x) || iscomplex (df) || iscomplex (lambda))
+    error ("ncx2pdf: X, DF, and LAMBDA must not be complex.");
+  endif
+
+  ## Check for class type
+  if (isa (x, "single") || isa (df, "single") || isa (lambda, "single"))
     y = zeros (size (x), "single");
   else
     y = zeros (size (x));
   endif
 
   ## Find NaNs in input arguments (if any) and propagate them to p
-  is_nan = isnan (x) | isnan (df) | isnan (delta);
+  is_nan = isnan (x) | isnan (df) | isnan (lambda);
   y(is_nan) = NaN;
 
   ## Make input arguments column vectors and half DF
   x = x(:);
   df = df(:);
   df = df / 2;
-  delta = delta(:);
+  lambda = lambda(:);
 
   ## Handle special cases
   k1 = x == 0 & df == 1;
-  y(k1) = 0.5 * exp (-0.5 * delta(k1));
+  y(k1) = 0.5 * exp (-0.5 * lambda(k1));
   k2 = x == 0 & df < 1;
   y(k2) = Inf;
-  y(delta < 0) = NaN;
+  y(lambda < 0) = NaN;
   y(df < 0) = NaN;
-  k3 = delta == 0 & df > 0;
+  k3 = lambda == 0 & df > 0;
   y(k3) = gampdf (x(k3), df(k3), 2);
 
   ## Handle normal cases
-  td = find(x>0 & x<Inf & delta>0 & df>=0);
+  td = find(x>0 & x<Inf & lambda>0 & df>=0);
   ## Return if finished all normal cases
   if (isempty (td))
     return;
@@ -80,16 +86,16 @@ function y = ncx2pdf (x, df, delta)
 
   ## Reset input variables to remaining cases
   x = x(td);
-  delta = delta(td);
+  lambda = lambda(td);
   df = df(td) - 1;
   x_sqrt = sqrt (x);
-  d_sqrt = sqrt (delta);
+  d_sqrt = sqrt (lambda);
 
   ## Upper Limit on density
   small_DF = df <= -0.5;
   large_DF = ! small_DF;
   ul = zeros (size (x));
-  ul(small_DF) = -0.5 * (delta(small_DF) + x(small_DF)) + ...
+  ul(small_DF) = -0.5 * (lambda(small_DF) + x(small_DF)) + ...
                   0.5 * x_sqrt(small_DF) .* d_sqrt (small_DF) ./ ...
                   (df(small_DF) + 1) + df(small_DF) .* ...
                   (log (x(small_DF)) - log (2)) - log (2) - ...
@@ -107,7 +113,7 @@ function y = ncx2pdf (x, df, delta)
     return;
   endif
   x(ULunderflow) = [];
-  delta(ULunderflow) = [];
+  lambda(ULunderflow) = [];
   df(ULunderflow) = [];
   x_sqrt(ULunderflow) = [];
   d_sqrt(ULunderflow) = [];
@@ -124,7 +130,7 @@ function y = ncx2pdf (x, df, delta)
     return;
   endif
   x(use_SB) = [];
-  delta(use_SB) = [];
+  lambda(use_SB) = [];
   df(use_SB) = [];
   x_sqrt(use_SB) = [];
   d_sqrt(use_SB) = [];
@@ -132,7 +138,7 @@ function y = ncx2pdf (x, df, delta)
   ## Try the Bess function
   Bess = besseli (df, d_sqrt .* x_sqrt);
   useB = Bess > 0 & Bess < Inf;
-  y(td(useB)) = exp (-log (2) - 0.5 * (x(useB) + delta(useB)) + ...
+  y(td(useB)) = exp (-log (2) - 0.5 * (x(useB) + lambda(useB)) + ...
                 df(useB) .* log (x_sqrt(useB) ./ d_sqrt(useB))) .* Bess(useB);
   td(useB) = [];
   ## Return if finished all normal cases
@@ -140,7 +146,7 @@ function y = ncx2pdf (x, df, delta)
     return;
   endif
   x(useB) = [];
-  delta(useB) = [];
+  lambda(useB) = [];
   df(useB) = [];
 
   ## If neither Bess function works, use recursion. When non-centrality
@@ -149,16 +155,16 @@ function y = ncx2pdf (x, df, delta)
   ## cause premature convergence. To avoid that, we start from the peak of the
   ## Poisson numbers, and go in both directions.
   lnsr2pi = 0.9189385332046727; % log(sqrt(2*pi))
-  dx = delta .* x / 4;
+  dx = lambda .* x / 4;
   K = max (0, floor (0.5 * (sqrt (df .^ 2 + 4 * dx) - df)));
   lntK = zeros(size(K));
   K0 = K == 0;
-  lntK(K0) = -lnsr2pi -0.5 * (delta(K0) + log(df(K0))) - ...
+  lntK(K0) = -lnsr2pi -0.5 * (lambda(K0) + log(df(K0))) - ...
               StirlingError (df(K0)) - BinoPoisson (df(K0), x(K0) / 2);
   K0 = ! K0;
   lntK(K0) = -2 * lnsr2pi - 0.5 * (log (K(K0)) + log (df(K0) + K(K0))) - ...
               StirlingError (K(K0)) - StirlingError (df(K0) + K(K0)) - ...
-              BinoPoisson (K(K0), delta(K0) / 2) - ...
+              BinoPoisson (K(K0), lambda(K0) / 2) - ...
               BinoPoisson (df(K0) + K(K0), x(K0) / 2);
   sumK = ones (size (K));
   keep = K>0;
@@ -184,9 +190,9 @@ function y = ncx2pdf (x, df, delta)
 endfunction
 
 ## Error of Stirling-De Moivre approximation to n factorial.
-function delta = StirlingError (n)
+function lambda = StirlingError (n)
   is_class = class (n);
-  delta = zeros (size (n), is_class);
+  lambda = zeros (size (n), is_class);
   nn = n .* n;
   ## Define S0=1/12 S1=1/360 S2=1/1260 S3=1/1680 S4=1/1188
   S0 = 8.333333333333333e-02;
@@ -194,7 +200,7 @@ function delta = StirlingError (n)
   S2 = 7.936507936507937e-04;
   S3 = 5.952380952380952e-04;
   S4 = 8.417508417508418e-04;
-  ## Define delta(n) for n<0:0.5:15
+  ## Define lambda(n) for n<0:0.5:15
   sfe=[                    0;       1.534264097200273e-01;...
        8.106146679532726e-02;       5.481412105191765e-02;...
        4.134069595540929e-02;       3.316287351993629e-02;...
@@ -216,28 +222,28 @@ function delta = StirlingError (n)
     n1 = n(k);
     n2 = 2 * n1;
     if (all (n2 == round (n2)))
-        delta(k) = sfe(n2+1);
+        lambda(k) = sfe(n2+1);
     else
         lnsr2pi = 0.9189385332046728;
-        delta(k) = gammaln(n1+1)-(n1+0.5).*log(n1)+n1-lnsr2pi;
+        lambda(k) = gammaln(n1+1)-(n1+0.5).*log(n1)+n1-lnsr2pi;
     endif
   endif
   k = find (n > 15 & n <= 35);
   if (any (k))
-    delta(k) = (S0 - (S1 - (S2 - (S3 - S4 ./ nn(k)) ./ nn(k)) ./ ...
+    lambda(k) = (S0 - (S1 - (S2 - (S3 - S4 ./ nn(k)) ./ nn(k)) ./ ...
                                              nn(k)) ./ nn(k)) ./ n(k);
   endif
   k = find (n > 35 & n <= 80);
   if (any (k))
-    delta(k) = (S0 - (S1 - (S2 - S3 ./ nn(k)) ./ nn(k)) ./ nn(k)) ./ n(k);
+    lambda(k) = (S0 - (S1 - (S2 - S3 ./ nn(k)) ./ nn(k)) ./ nn(k)) ./ n(k);
   endif
   k = find(n > 80 & n <= 500);
   if (any (k))
-    delta(k) = (S0 - (S1 - S2 ./ nn(k)) ./ nn(k)) ./ n(k);
+    lambda(k) = (S0 - (S1 - S2 ./ nn(k)) ./ nn(k)) ./ n(k);
   endif
   k = find(n > 500);
   if (any (k))
-    delta(k) = (S0 - S1 ./ nn(k)) ./ n(k);
+    lambda(k) = (S0 - S1 ./ nn(k)) ./ n(k);
   endif
 endfunction
 
@@ -272,12 +278,44 @@ function BP = BinoPoisson (x, np)
   endif
 endfunction
 
-## Input validation tests
-%!error<ncx2pdf: too few input arguments.> p = ncx2pdf (2);
-%!error<ncx2pdf: too few input arguments.> p = ncx2pdf (2, 4);
-%!error<ncx2pdf: input size mismatch.> p = ncx2pdf (2,  [4, 3], [3, 4, 5]);
+%!demo
+%! ## Plot various PDFs from the noncentral chi-squared distribution
+%! x = 0:0.1:10;
+%! y1 = ncx2pdf (x, 2, 1);
+%! y2 = ncx2pdf (x, 2, 2);
+%! y3 = ncx2pdf (x, 2, 3);
+%! y4 = ncx2pdf (x, 4, 1);
+%! y5 = ncx2pdf (x, 4, 2);
+%! y6 = ncx2pdf (x, 4, 3);
+%! plot (x, y1, "-r", x, y2, "-g", x, y3, "-k", ...
+%!       x, y4, "-m", x, y5, "-c", x, y6, "-y")
+%! grid on
+%! xlim ([0, 10])
+%! ylim ([0, 0.32])
+%! legend ({"df = 2, λ = 1", "df = 2, λ = 2", ...
+%!          "df = 2, λ = 3", "df = 4, λ = 1", ...
+%!          "df = 4, λ = 2", "df = 4, λ = 3"}, "location", "northeast")
+%! title ("Noncentral chi-squared PDF")
+%! xlabel ("values in x")
+%! ylabel ("density")
 
-## Output validation tests
+%!demo
+%! ## Compare the noncentral chi-squared PDF with LAMBDA = 2 to the
+%! ## chi-squared PDF with the same number of degrees of freedom (4).
+%!
+%! x = 0:0.1:10;
+%! y1 = ncx2pdf (x, 4, 2);
+%! y2 = chi2pdf (x, 4);
+%! plot (x, y1, "-", x, y2, "-");
+%! grid on
+%! xlim ([0, 10])
+%! ylim ([0, 0.32])
+%! legend ({"Noncentral T(10,1)", "T(10)"}, "location", "northwest")
+%! title ("Noncentral chi-squared vs chi-squared PDFs")
+%! xlabel ("values in x")
+%! ylabel ("density")
+
+## Test output
 %!shared x1, df, d1
 %! x1 = [-Inf, 2, NaN, 4, Inf];
 %! df = [2, 0, -1, 1, 4];
@@ -294,3 +332,17 @@ endfunction
 %!                              NaN, 0.1076346446244688], 1e-14);
 %!assert (ncx2pdf (4, df, d1), [0.09355987820265799, NaN, NaN, ...
 %!                              NaN, 0.1192317192431485], 1e-14);
+
+## Test input validation
+%!error<ncx2pdf: function called with too few input arguments.> ncx2pdf ()
+%!error<ncx2pdf: function called with too few input arguments.> ncx2pdf (1)
+%!error<ncx2pdf: function called with too few input arguments.> ncx2pdf (1, 2)
+%!error<ncx2pdf: X, DF, and LAMBDA must be of common size or scalars.> ...
+%! ncx2pdf (ones (3), ones (2), ones (2))
+%!error<ncx2pdf: X, DF, and LAMBDA must be of common size or scalars.> ...
+%! ncx2pdf (ones (2), ones (3), ones (2))
+%!error<ncx2pdf: X, DF, and LAMBDA must be of common size or scalars.> ...
+%! ncx2pdf (ones (2), ones (2), ones (3))
+%!error<ncx2pdf: X, DF, and LAMBDA must not be complex.> ncx2pdf (i, 2, 2)
+%!error<ncx2pdf: X, DF, and LAMBDA must not be complex.> ncx2pdf (2, i, 2)
+%!error<ncx2pdf: X, DF, and LAMBDA must not be complex.> ncx2pdf (2, 2, i)
