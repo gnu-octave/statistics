@@ -226,7 +226,7 @@ endfunction
 %! ## Compare the noncentral F CDF with LAMBDA = 10 to the F CDF with the
 %! ## same number of numerator and denominator degrees of freedom (5, 20)
 %!
-%! x = (0.01:0.1:10.01);
+%! x = 0.01:0.1:10.01;
 %! p1 = ncfcdf (x, 5, 20, 10);
 %! p2 = fcdf (x, 5, 20);
 %! plot (x, p1, "-", x, p2, "-");

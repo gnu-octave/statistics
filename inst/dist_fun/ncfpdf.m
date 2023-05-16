@@ -361,7 +361,7 @@ endfunction
 %! ## Compare the noncentral F PDF with LAMBDA = 10 to the F PDF with the
 %! ## same number of numerator and denominator degrees of freedom (5, 20)
 %!
-%! x = (0.01:0.1:10.01);
+%! x = 0.01:0.1:10.01;
 %! y1 = ncfpdf (x, 5, 20, 10);
 %! y2 = fpdf (x, 5, 20);
 %! plot (x, y1, "-", x, y2, "-");
