@@ -77,17 +77,17 @@ function [varargout] = normcdf (x, varargin)
   endif
 
   ## Get extra arguments (if they exist) or add defaults
-  if (nargin > 1)
+  if (numel (varargin) > 0)
     mu = varargin{1};
   else
     mu = 0;
   endif
-  if (nargin > 2)
+  if (numel (varargin) > 1)
     sigma = varargin{2};
   else
     sigma = 1;
   endif
-  if (nargin > 3)
+  if (numel (varargin) > 2)
     pcov = varargin{3};
     ## Check for valid covariance matrix 2x2
     if (! isequal (size (pcov), [2, 2]))
@@ -100,7 +100,7 @@ function [varargout] = normcdf (x, varargin)
     endif
     pcov = [];
   endif
-  if (nargin > 4)
+  if (numel (varargin) > 3)
     alpha = varargin{4};
     ## Check for valid alpha value
     if (! isnumeric (alpha) || numel (alpha) !=1 || alpha <= 0 || alpha >= 1)
@@ -227,7 +227,7 @@ endfunction
 %! ylabel ("probability")
 
 ## Test output
-%!shared x,y
+%!shared x, y
 %! x = [-Inf 1 2 Inf];
 %! y = [0, 0.5, 1/2*(1+erf(1/sqrt(2))), 1];
 %!assert (normcdf (x, ones (1,4), ones (1,4)), y)
