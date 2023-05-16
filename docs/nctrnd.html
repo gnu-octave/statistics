@@ -71,35 +71,41 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>r</var> = <b>nctrnd</b><i> (<var>df</var>, <var>delta</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>nctrnd</b><i> (<var>df</var>, <var>delta</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>nctrnd</b><i> (<var>df</var>, <var>delta</var>, [<var>sz</var>])</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>nctrnd</b><i> (<var>df</var>, <var>mu</var>)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>nctrnd</b><i> (<var>df</var>, <var>mu</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>nctrnd</b><i> (<var>df</var>, <var>mu</var>, [<var>sz</var>])</i></dt>
 </dl>
 
 <p> Random arrays from the noncentral T distribution.
 </p>
 <div class="ms-5">
-<p> <code><var>x</var> = nctrnd (<var>p</var>, <var>df</var>, <var>delta</var>)</code> returns an array of
- random numbers chosen from the noncentral F distribution with parameters
- <var>df1</var>, <var>df2</var>, <var>delta</var>).  The size of <var>r</var> is the common size
- of <var>df1</var>, <var>df2</var>, and <var>delta</var>.  A scalar input functions as a
+<p> <code><var>x</var> = nctrnd (<var>p</var>, <var>df</var>, <var>mu</var>)</code> returns an array of
+ random numbers chosen from the noncentral T distribution with <var>df</var>
+ degrees of freedom and noncentrality parameter <var>mu</var>.  The size of <var>r</var>
+ is the common size of <var>df</var> and <var>mu</var>.  A scalar input functions as a
  constant matrix of the same size as the other input.
-</p>
-<p> When called with a single size argument, return a square matrix with
- the dimension specified.  When called with more than one scalar argument the
- first two arguments are taken as the number of rows and columns and any
- further arguments specify additional matrix dimensions.  The size may also
- be specified with a vector of dimensions <var>sz</var>.
 </p>
 <p> <code>nctrnd</code> generates values using the definition of a noncentral T random
  variable, as the ratio of a normal with non-zero mean and the sqrt of a
  chi-square.
 </p>
+<p> When called with a single size argument, <code>nctrnd</code> returns a square
+ matrix with the dimension specified.  When called with more than one scalar
+ argument, the first two arguments are taken as the number of rows and columns
+ and any further arguments specify additional matrix dimensions.  The size may
+ also be specified with a row vector of dimensions, <var>sz</var>.
+</p>
+<p> Further information about the noncentral T distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Noncentral_t-distribution">https://en.wikipedia.org/wiki/Noncentral_t-distribution</a>
+</p>
 <p> <strong>See also: </strong>
   <a href="nctcdf.html">nctcdf</a>, 
   <a href="nctinv.html">nctinv</a>, 
   <a href="nctpdf.html">nctpdf</a>, 
-  <a href="nctstat.html">nctstat</a>
+  <a href="nctstat.html">nctstat</a>, 
+  <a href="trnd.html">trnd</a>, 
+  <a href="normrnd.html">normrnd</a>, 
+  <a href="chi2rnd.html">chi2rnd</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/nctrnd.m">nctrnd</a>

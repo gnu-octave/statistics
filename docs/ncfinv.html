@@ -71,31 +71,123 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>x</var> = <b>ncfinv</b><i> (<var>p</var>, <var>df1</var>, <var>df2</var>, <var>delta</var>)</i></dt>
+<dt><u>statistics:</u> <var>x</var> = <b>ncfinv</b><i> (<var>p</var>, <var>df1</var>, <var>df2</var>, <var>lambda</var>)</i></dt>
 </dl>
 
-<p> Inverse of the non-central F cumulative distribution function (iCDF).
+<p> Inverse of the noncentral F cumulative distribution function (iCDF).
 </p>
 <div class="ms-5">
-<p> <code><var>x</var> = ncfinv (<var>p</var>, <var>df1</var>, <var>df2</var>, <var>delta</var>)</code>
- the inverse of the noncentral F distribution with <var>df1</var> numerator degrees
- of freedom, <var>df2</var> denumerator degrees of freedom, and noncentrality
- parameter <var>delta</var>, at the probabilities of <var>p</var>.
-</p>
-<p> The size of <var>x</var> is the common size of <var>df</var> and <var>delta</var>.  A scalar
- input functions as a constant matrix of the same size as the other inputs.
+<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF) of
+ the noncentral F distribution with <var>df1</var> and <var>df2</var> degrees of freedom
+ and noncentrality parameter <var>lambda</var>.  The size of <var>x</var> is the common
+ size of <var>p</var>, <var>df1</var>, <var>df2</var>, and <var>lambda</var>.  A scalar input
+ functions as a constant matrix of the same size as the other inputs.
 </p>
 <p> <code>ncfinv</code> uses Newton&rsquo;s method to converge to the solution.
+</p>
+<p> Further information about the noncentral F distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Noncentral_F-distribution">https://en.wikipedia.org/wiki/Noncentral_F-distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="ncfcdf.html">ncfcdf</a>, 
   <a href="ncfpdf.html">ncfpdf</a>, 
   <a href="ncfrnd.html">ncfrnd</a>, 
-  <a href="ncfstat.html">ncfstat</a>
+  <a href="ncfstat.html">ncfstat</a>, 
+  <a href="finv.html">finv</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/ncfinv.m">ncfinv</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various iCDFs from the noncentral F distribution
+ p = 0.001:0.001:0.999;
+ x1 = ncfinv (p, 2, 5, 1);
+ x2 = ncfinv (p, 2, 5, 2);
+ x3 = ncfinv (p, 5, 10, 1);
+ x4 = ncfinv (p, 10, 20, 10);
+ plot (p, x1, "-r", p, x2, "-g", p, x3, "-k", p, x4, "-m")
+ grid on
+ ylim ([0, 5])
+ legend ({"df1 = 2, df2 = 5, λ = 1", "df1 = 2, df2 = 5, λ = 2", ...
+          "df1 = 5, df2 = 10, λ = 1", "df1 = 10, df2 = 20, λ = 10"}, ...
+         "location", "northwest")
+ title ("Noncentral F iCDF")
+ xlabel ("probability")
+ ylabel ("values in x")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/ncfinv_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compare the noncentral F iCDF with LAMBDA = 10 to the F iCDF with the
+ ## same number of numerator and denominator degrees of freedom (5, 20)
+
+ p = 0.001:0.001:0.999;
+ x1 = ncfinv (p, 5, 20, 10);
+ x2 = finv (p, 5, 20);
+ plot (p, x1, "-", p, x2, "-");
+ grid on
+ ylim ([0, 10])
+ legend ({"Noncentral F(5,20,10)", "F(5,20)"}, "location", "northwest")
+ title ("Noncentral F vs F quantile functions")
+ xlabel ("probability")
+ ylabel ("values in x")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/ncfinv_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

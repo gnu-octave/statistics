@@ -71,29 +71,123 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>y</var> = <b>ncfpdf</b><i> (<var>x</var>, <var>df1</var>, <var>df2</var>, <var>delta</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>ncfpdf</b><i> (<var>x</var>, <var>df1</var>, <var>df2</var>, <var>lambda</var>)</i></dt>
 </dl>
 
 <p> Noncentral F probability density function (PDF).
 </p>
 <div class="ms-5">
-<p> <code><var>y</var> = ncfpdf (<var>x</var>, <var>df1</var>, <var>df2</var>, <var>delta</var>)</code> returns
- the noncentral F distribution with <var>df1</var> and <var>df2</var> numerator and
- denumerator degrees of freedom, respectively, and noncentrality parameter
- <var>delta</var>, at the values of <var>x</var>.
+<p> For each element of <var>x</var>, compute the probability density function (PDF)
+ of the noncentral F distribution with <var>df1</var> and <var>df2</var> degrees
+ of freedom and noncentrality parameter <var>lambda</var>.  The size of <var>y</var> is
+ the common size of <var>x</var>, <var>df1</var>, <var>df2</var>, and <var>lambda</var>.  A scalar
+ input functions as a constant matrix of the same size as the other inputs.
 </p>
-<p> The size of <var>y</var> is the common size of <var>df</var> and <var>delta</var>.  A scalar
- input functions as a constant matrix of the same size as the K_all inputs.
+<p> Further information about the noncentral F distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Noncentral_F-distribution">https://en.wikipedia.org/wiki/Noncentral_F-distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="ncfcdf.html">ncfcdf</a>, 
   <a href="ncfinv.html">ncfinv</a>, 
   <a href="ncfrnd.html">ncfrnd</a>, 
-  <a href="ncfstat.html">ncfstat</a>
+  <a href="ncfstat.html">ncfstat</a>, 
+  <a href="fpdf.html">fpdf</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/ncfpdf.m">ncfpdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various PDFs from the noncentral F distribution
+ x = 0:0.01:5;
+ y1 = ncfpdf (x, 2, 5, 1);
+ y2 = ncfpdf (x, 2, 5, 2);
+ y3 = ncfpdf (x, 5, 10, 1);
+ y4 = ncfpdf (x, 10, 20, 10);
+ plot (x, y1, "-r", x, y2, "-g", x, y3, "-k", x, y4, "-m")
+ grid on
+ xlim ([0, 5])
+ ylim ([0, 0.8])
+ legend ({"df1 = 2, df2 = 5, λ = 1", "df1 = 2, df2 = 5, λ = 2", ...
+          "df1 = 5, df2 = 10, λ = 1", "df1 = 10, df2 = 20, λ = 10"}, ...
+         "location", "northeast")
+ title ("Noncentral F PDF")
+ xlabel ("values in x")
+ ylabel ("density")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/ncfpdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compare the noncentral F PDF with LAMBDA = 10 to the F PDF with the
+ ## same number of numerator and denominator degrees of freedom (5, 20)
+
+ x = 0.01:0.1:10.01;
+ y1 = ncfpdf (x, 5, 20, 10);
+ y2 = fpdf (x, 5, 20);
+ plot (x, y1, "-", x, y2, "-");
+ grid on
+ xlim ([0, 10])
+ ylim ([0, 0.8])
+ legend ({"Noncentral F(5,20,10)", "F(5,20)"}, "location", "northeast")
+ title ("Noncentral F vs F PDFs")
+ xlabel ("values in x")
+ ylabel ("density")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/ncfpdf_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

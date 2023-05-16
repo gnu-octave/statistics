@@ -71,30 +71,122 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>y</var> = <b>nctpdf</b><i> (<var>x</var>, <var>df</var>, <var>delta</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>nctpdf</b><i> (<var>x</var>, <var>df</var>, <var>mu</var>)</i></dt>
 </dl>
 
 <p> Noncentral Τ probability density function (PDF).
 </p>
 <div class="ms-5">
-<p> <code><var>y</var> = nctpdf (<var>x</var>, <var>df</var>, <var>delta</var>)</code> returns
- the noncentral T distribution with <var>df</var> degrees of freedom and
- noncentrality parameter <var>delta</var>, at the values of <var>x</var>.
+<p> For each element of <var>x</var>, compute the probability density function (PDF)
+ of the noncentral T distribution with <var>df1</var> degrees of freedom and
+ noncentrality parameter <var>mu</var>.  The size of <var>y</var> is the common size of
+ <var>x</var>, <var>df1</var>, and <var>mu</var>.  A scalar input functions as a constant
+ matrix of the same size as the other inputs.
 </p>
-<p> The size of <var>y</var> is the common size of <var>df</var> and <var>delta</var>.  A scalar
- input functions as a constant matrix of the same size as the K_all inputs.
+<p> Further information about the noncentral T distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Noncentral_t-distribution">https://en.wikipedia.org/wiki/Noncentral_t-distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="nctcdf.html">nctcdf</a>, 
   <a href="nctinv.html">nctinv</a>, 
   <a href="nctrnd.html">nctrnd</a>, 
   <a href="nctstat.html">nctstat</a>, 
-  <a href="tpdf.html">tpdf</a>, 
-  <a href="pdf.html">pdf</a>
+  <a href="tpdf.html">tpdf</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/nctpdf.m">nctpdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various PDFs from the noncentral T distribution
+ x = -5:0.01:10;
+ y1 = nctpdf (x, 1, 0);
+ y2 = nctpdf (x, 4, 0);
+ y3 = nctpdf (x, 1, 2);
+ y4 = nctpdf (x, 4, 2);
+ plot (x, y1, "-r", x, y2, "-g", x, y3, "-k", x, y4, "-m")
+ grid on
+ xlim ([-5, 10])
+ ylim ([0, 0.4])
+ legend ({"df = 1, μ = 0", "df = 4, μ = 0", ...
+          "df = 1, μ = 2", "df = 4, μ = 2"}, "location", "northeast")
+ title ("Noncentral T PDF")
+ xlabel ("values in x")
+ ylabel ("density")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/nctpdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compare the noncentral T PDF with MU = 1 to the T PDF
+ ## with the same number of degrees of freedom (10).
+
+ x = -5:0.1:5;
+ y1 = nctpdf (x, 10, 1);
+ y2 = tpdf (x, 10);
+ plot (x, y1, "-", x, y2, "-");
+ grid on
+ xlim ([-5, 5])
+ ylim ([0, 0.4])
+ legend ({"Noncentral T(10,1)", "T(10)"}, "location", "northwest")
+ title ("Noncentral T vs T PDFs")
+ xlabel ("values in x")
+ ylabel ("density")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/nctpdf_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

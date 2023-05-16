@@ -71,30 +71,32 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>nctcdf</b><i> (<var>x</var>, <var>df</var>, <var>delta</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>nctcdf</b><i> (<var>x</var>, <var>df</var>, <var>delta</var>, <code>&quot;upper&quot;</code>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>nctcdf</b><i> (<var>x</var>, <var>df</var>, <var>mu</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>nctcdf</b><i> (<var>x</var>, <var>df</var>, <var>mu</var>, <code>&quot;upper&quot;</code>)</i></dt>
 </dl>
 
 <p> Noncentral T cumulative distribution function (CDF).
 </p>
 <div class="ms-5">
-<p> <code><var>p</var> = nctcdf (<var>x</var>, <var>df</var>, <var>delta</var>)</code> returns the
- noncentral T cdf with <var>df</var> degrees of freedom and noncentrality parameter
- <var>delta</var> at the values of <var>X</var>.
+<p> For each element of <var>x</var>, compute the cumulative distribution function
+ (CDF) of the noncentral T distribution with <var>df1</var> degrees of freedom and
+ noncentrality parameter <var>mu</var>.  The size of <var>p</var> is the common size of
+ <var>x</var>, <var>df1</var>, and <var>mu</var>.  A scalar input functions as a constant
+ matrix of the same size as the other inputs.
 </p>
-<p> The size of <var>p</var> is the common size of the input arguments. Scalar input
- arguments <var>x</var>, <var>df</var>, <var>delta</var> are regarded as constant matrices of
- the same size as the other inputs.
+<p> <code><var>p</var> = nctcdf (<var>x</var>, <var>df1</var>, <var>mu</var>, &quot;upper&quot;)</code> computes the
+ upper tail probability of the noncentral F distribution with parameters
+ <var>df1</var>, and <var>mu</var>, at the values in <var>x</var>.
 </p>
-<p> <code><var>p</var> = nctcdf (<var>x</var>, <var>df</var>, <var>delta</var>, &quot;upper&quot;</code> returns the
- upper tail probability of the noncentral T distribution with <var>df</var> degrees
- of freedom and noncentrality parameter <var>delta</var> at the values in <var>x</var>.
+<p> Further information about the noncentral T distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Noncentral_t-distribution">https://en.wikipedia.org/wiki/Noncentral_t-distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="nctinv.html">nctinv</a>, 
   <a href="nctpdf.html">nctpdf</a>, 
   <a href="nctrnd.html">nctrnd</a>, 
-  <a href="nctstat.html">nctstat</a>
+  <a href="nctstat.html">nctstat</a>, 
+  <a href="tcdf.html">tcdf</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/nctcdf.m">nctcdf</a>
@@ -117,18 +119,69 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Compare the noncentral t cdf with DELTA = 1 to the t cdf
- ## with the same number of degrees of freedom (10).
-
- x = (-5:0.1:5)';
- p1 = nctcdf (x, 10, 1);
- p = tcdf (x, 10);
- plot (x, p, "-", x, p1, ":")
+ ## Plot various CDFs from the noncentral Τ distribution
+ x = -5:0.01:5;
+ p1 = nctcdf (x, 1, 0);
+ p2 = nctcdf (x, 4, 0);
+ p3 = nctcdf (x, 1, 2);
+ p4 = nctcdf (x, 4, 2);
+ plot (x, p1, "-r", x, p2, "-g", x, p3, "-k", x, p4, "-m")
+ grid on
+ xlim ([-5, 5])
+ legend ({"df = 1, μ = 0", "df = 4, μ = 0", ...
+          "df = 1, μ = 2", "df = 4, μ = 2"}, "location", "southeast")
+ title ("Noncentral Τ CDF")
+ xlabel ("values in x")
+ ylabel ("probability")
 
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
                     <img src="assets/nctcdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compare the noncentral T CDF with MU = 1 to the T CDF
+ ## with the same number of degrees of freedom (10).
+
+ x = -5:0.1:5;
+ p1 = nctcdf (x, 10, 1);
+ p = tcdf (x, 10);
+ plot (x, p, "-", x, p1, "-")
+ grid on
+ xlim ([-5, 5])
+ legend ({"Noncentral T(10,1)", "T(10)"}, "location", "southeast")
+ title ("Noncentral T vs T CDFs")
+ xlabel ("values in x")
+ ylabel ("probability")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/nctcdf_201.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>
