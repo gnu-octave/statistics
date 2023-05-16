@@ -30,7 +30,8 @@
 ## input functions as a constant matrix of the same size as the other inputs.
 ##
 ## @code{@var{p} = poisscdf (@var{x}, @var{x}, @var{lambda}, "upper")} computes
-## the upper tail probability of the lognormal distribution.
+## the upper tail probability of the Poisson distribution with parameter
+## @var{lambda}, at the values in @var{x}.
 ##
 ## Further information about the Poisson distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Poisson_distribution}
