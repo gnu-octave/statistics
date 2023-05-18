@@ -143,7 +143,6 @@ function x = ncfinv (p, df1, df2, lambda)
 
   if (count == count_limit)
     warning ("ncfinv: did not converge.");
-    fprintf ("ncfinv: Last Step: %13.8f\n", next);
   endif
 
 endfunction

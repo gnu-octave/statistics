@@ -106,13 +106,13 @@ function x = nctinv (p, df, mu)
     ## Check that next step improves, otherwise abort
     Fnew = nctcdf (xnew, df_k, mu_k);
     while (true)
-       worse = (abs (Fnew - p_k) > abs (F - p_k) * (1 + crit)) & ...
-               (abs (x_k - xnew) > crit * abs (x_k));
-       if (! any (worse))
-         break;
-       endif
-       xnew(worse) = 0.5 * (xnew(worse) + x_k(worse));
-       Fnew(worse) = nctcdf (xnew(worse), df_k(worse), mu_k(worse));
+      worse = (abs (Fnew - p_k) > abs (F - p_k) * (1 + crit)) & ...
+              (abs (x_k - xnew) > crit * abs (x_k));
+      if (! any (worse))
+        break;
+      endif
+      xnew(worse) = 0.5 * (xnew(worse) + x_k(worse));
+      Fnew(worse) = nctcdf (xnew(worse), df_k(worse), mu_k(worse));
     endwhile
     x_k = xnew;
     F = Fnew;
@@ -123,7 +123,6 @@ function x = nctinv (p, df, mu)
 
   if (count == count_limit)
     warning ("nctinv: did not converge.");
-    fprintf ("nctinv: Last Step: %13.8f\n", max (abs (h_k)));
   endif
 
 endfunction
