@@ -414,10 +414,21 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         endif
 
         ## Check that all continuous variables were centered
+        msg = strcat (["multcompare: use a STATS structure from a model"], ...
+                      [" refit with a sum-to-zero contrast coding"]);
         if (any (STATS.continuous - STATS.center_continuous))
-          error (strcat (["use a STATS structure from a model refit with"], ...
-                         [" sum-to-zero contrast coding, e.g. ""simple"""]))
+          error (msg)
         endif
+
+        ## Check that the columns sum to 0
+        N = numel (STATS.contrasts);
+        for j = 1:N
+          if (isnumeric (STATS.contrasts{j}))
+            if (any (abs (sum (STATS.contrasts{j})) > eps("single")))
+              error (msg);
+            endif
+          endif
+        endfor
 
         ## Calculate estimated marginal means and their standard errors
         Nd = numel (DIM);
@@ -1271,7 +1282,8 @@ endfunction
 %!        22.628 31.163 26.053 24.419 32.145 28.966 30.207 29.142 33.212 ...
 %!        25.694 ]';
 %! X = [1 1 1 1 1 1 1 1 2 2 2 2 2 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 5 5 5 5 5 5 5 5 5]';
-%! [TAB,STATS] = fitlm (X,y,"linear","categorical",1,"display","off");
+%! [TAB,STATS] = fitlm (X,y,"linear","categorical",1,"display","off",...
+%!                      "contrasts","simple");
 %! [C, M] = multcompare(STATS, "ctype", "lsd", "display", "off");
 %! assert (C(1,6), 2.85812420217898e-05, 1e-09);
 %! assert (C(2,6), 5.22936741204085e-07, 1e-09);
