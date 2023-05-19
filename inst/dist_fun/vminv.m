@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{x} =} ncx2inv (@var{p}, @var{mu}, @var{k})
+## @deftypefn  {statistics} {@var{x} =} vminv (@var{p}, @var{mu}, @var{k})
 ##
 ## Inverse of the von Mises cumulative distribution function (iCDF).
 ##
