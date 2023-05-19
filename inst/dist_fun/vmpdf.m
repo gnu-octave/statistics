@@ -17,51 +17,51 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{y} =} vmpdf (@var{theta})
-## @deftypefnx {statistics} {@var{y} =} vmpdf (@var{theta}, @var{mu})
-## @deftypefnx {statistics} {@var{y} =} vmpdf (@var{theta}, @var{mu}, @var{k})
+## @deftypefn  {statistics} {@var{y} =} vmpdf (@var{x}, @var{mu}, @var{k)
 ##
 ## Von Mises probability density function (PDF).
 ##
-## For each element of @var{theta}, compute the probability density function
-## (PDF) at @var{theta} of the von Mises distribution with mean direction
-## parameter @var{mu} and concentration parameter @var{k} on the interval
-## [-pi, pi].  The size of @var{y} is the common size of the input arguments.
-## A scalar input functions as a constant matrix of the same size as the other
-## inputs.
+## For each element of @var{x}, compute the probability density function (PDF)
+## of the von Mises distribution with location parameter @var{mu} and
+## concentration parameter @var{k} on the interval [-pi, pi].  The size of
+## @var{y} is the common size of @var{x}, @var{mu}, and @var{k}. A scalar input
+## functions as a constant matrix of the same size as the other inputs.
 ##
-## Default values are @var{mu} = 0, @var{k} = 1.  The function returns NaN for
-## negative @var{k}.
+## Further information about the von Mises distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Von_Mises_distribution}
 ##
-## @seealso{vmcdf, vmrnd}
+## @seealso{vmcdf, vminv, vmrnd}
 ## @end deftypefn
 
-function y = vmpdf (theta, mu = 0, k = 1)
+function y = vmpdf (x, mu, k)
 
-  if (nargin < 1 || nargin > 3)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin <  3)
+    error ("vmpdf: function called with too few input arguments.");
   endif
 
-  if (! isscalar (theta) || ! isscalar (mu) || ! isscalar (k))
-    [retval, theta, mu, k] = common_size (theta, mu, k);
+  ## Check for common size of X, MU, and K
+  if (! isscalar (x) || ! isscalar (mu) || ! isscalar (k))
+    [retval, x, mu, k] = common_size (x, mu, k);
     if (retval > 0)
       error ("vmpdf: X, MU, and K must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (theta) || iscomplex (mu) || iscomplex (k))
+  ## Check for X, MU, and K being reals
+  if (iscomplex (x) || iscomplex (mu) || iscomplex (k))
     error ("vmpdf: X, MU, and K must not be complex.");
   endif
 
   ## Evaluate Von Mises PDF
   Z = 2 .* pi .* besseli (0, k);
-  y = exp (k .* cos (theta - mu)) ./ Z;
+  y = exp (k .* cos (x - mu)) ./ Z;
 
   ## Force Nan for negative K
   y(k < 0) = NaN;
 
-  ## Preserve class
-  if (isa (theta, "single") || isa (mu, "single") || isa (k, "single"))
+  ## Check for class type
+  if (isa (x, "single") || isa (mu, "single") || isa (k, "single"))
     y = cast (y, "single");
   else
     y = cast (y, "double");
@@ -69,13 +69,31 @@ function y = vmpdf (theta, mu = 0, k = 1)
 
 endfunction
 
-%!shared theta, p0, p1
-%! theta = [-pi:pi/2:pi];
-%! p0 = [0.046245, 0.125708, 0.341710, 0.125708, 0.046245];
-%! p1 = [0.046245, 0.069817, 0.654958, 0.014082, 0.000039];
-%!assert (vmpdf (theta), p0, 1e-5)
-%!assert (vmpdf (theta, zeros (1,5), ones (1,5)), p0, 1e-6)
-%!assert (vmpdf (theta, 0, [1 2 3 4 5]), p1, 1e-6)
+%!demo
+%! ## Plot various PDFs from the von Mises distribution
+%! x1 = [-pi:0.1:pi];
+%! y1 = vmpdf (x1, 0, 0.5);
+%! y2 = vmpdf (x1, 0, 1);
+%! y3 = vmpdf (x1, 0, 2);
+%! y4 = vmpdf (x1, 0, 4);
+%! plot (x1, y1, "-r", x1, y2, "-g", x1, y3, "-b", x1, y4, "-c")
+%! grid on
+%! xlim ([-pi, pi])
+%! ylim ([0, 0.8])
+%! legend ({"μ = 0, k = 0.5", "μ = 0, k = 1", ...
+%!          "μ = 0, k = 2", "μ = 0, k = 4"}, "location", "northwest")
+%! title ("Von Mises PDF")
+%! xlabel ("values in x")
+%! ylabel ("density")
+
+## Test output
+%!shared x, y0, y1
+%! x = [-pi:pi/2:pi];
+%! y0 = [0.046245, 0.125708, 0.341710, 0.125708, 0.046245];
+%! y1 = [0.046245, 0.069817, 0.654958, 0.014082, 0.000039];
+%!assert (vmpdf (x, 0, 1), y0, 1e-5)
+%!assert (vmpdf (x, zeros (1,5), ones (1,5)), y0, 1e-6)
+%!assert (vmpdf (x, 0, [1 2 3 4 5]), y1, 1e-6)
 
 ## Test class of input preserved
 %!assert (isa (vmpdf (single (pi), 0, 1), "single"), true)
@@ -83,11 +101,15 @@ endfunction
 %!assert (isa (vmpdf (pi, 0, single (1)), "single"), true)
 
 ## Test input validation
-%!error vmcdf ()
-%!error vmcdf (1, 2, 3, 4)
-%!error vmcdf (ones (3), ones (2), ones (2))
-%!error vmcdf (ones (2), ones (3), ones (2))
-%!error vmcdf (ones (2), ones (2), ones (3))
-%!error vmcdf (i, 2, 2)
-%!error vmcdf (2, i, 2)
-%!error vmcdf (2, 2, i)
+%!error<vmpdf: function called with too few input arguments.> vmpdf ()
+%!error<vmpdf: function called with too few input arguments.> vmpdf (1)
+%!error<vmpdf: function called with too few input arguments.> vmpdf (1, 2)
+%!error<vmpdf: X, MU, and K must be of common size or scalars.> ...
+%! vmpdf (ones (3), ones (2), ones (2))
+%!error<vmpdf: X, MU, and K must be of common size or scalars.> ...
+%! vmpdf (ones (2), ones (3), ones (2))
+%!error<vmpdf: X, MU, and K must be of common size or scalars.> ...
+%! vmpdf (ones (2), ones (2), ones (3))
+%!error<vmpdf: X, MU, and K must not be complex.> vmpdf (i, 2, 2)
+%!error<vmpdf: X, MU, and K must not be complex.> vmpdf (2, i, 2)
+%!error<vmpdf: X, MU, and K must not be complex.> vmpdf (2, 2, i)
