@@ -97,7 +97,7 @@ Distributions
  tricdf triinv tripdf trirnd
  unidcdf unidinv unidpdf unidrnd
  unifcdf unifinv unifpdf unifrnd
- vmcdf vmpdf vmrnd
+ vmcdf vminv vmpdf vmrnd
  wblcdf wblinv wblpdf wblrnd
  wienrnd
  wishpdf wishrnd
