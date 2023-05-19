@@ -17,7 +17,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{y} =} vmpdf (@var{x}, @var{mu}, @var{k)
+## @deftypefn  {statistics} {@var{y} =} vmpdf (@var{x}, @var{mu}, @var{k})
 ##
 ## Von Mises probability density function (PDF).
 ##

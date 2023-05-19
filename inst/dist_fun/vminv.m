@@ -28,7 +28,7 @@
 ##
 ## Note: the quantile of the von Mises distribution is not analytic.  Hence, it
 ## is approximated by a custom searching algorithm using its CDF until it
-## converges up to a tolerance of @qcode{1e-5) or 100 iterations.  As a result,
+## converges up to a tolerance of @qcode{1e-5} or 100 iterations.  As a result,
 ## balancing between performance and accuracy, the accuracy is about
 ## @qcode{5e-5} for @qcode{@var{k} = 1} and it drops to @qcode{5e-5} as @var{k}
 ## increases.
