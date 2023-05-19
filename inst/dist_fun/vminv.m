@@ -36,7 +36,7 @@
 ## Further information about the von Mises distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Von_Mises_distribution}
 ##
-## @seealso{vmcdf, vmpdf, nmrnd}
+## @seealso{vmcdf, vmpdf, vmrnd}
 ## @end deftypefn
 
 function x = vminv (p, mu, k)
