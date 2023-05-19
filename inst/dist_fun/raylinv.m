@@ -21,39 +21,22 @@
 ##
 ## Inverse of the Rayleigh cumulative distribution function (iCDF).
 ##
-## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## at @var{p} of the Rayleigh distribution with parameter @var{sigma}.  The size
-## of @var{p} is the common size of @var{x} and @var{sigma}.  A scalar input
+## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
+## the Rayleigh distribution with scale parameter @var{sigma}.  The size of
+## @var{p} is the common size of @var{x} and @var{sigma}.  A scalar input
 ## functions as a constant matrix of the same size as the other inputs.
 ##
-## Default value is @var{sigma} = 1.
-##
-## @subheading References
-##
-## @enumerate
-## @item
-## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
-## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
-## 2001.
-##
-## @item
-## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
-## Processes}. pages 104 and 148, McGraw-Hill, New York, second edition,
-## 1984.
-## @end enumerate
+## Further information about the Rayleigh distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Rayleigh_distribution}
 ##
 ## @seealso{raylcdf, raylpdf, raylrnd, raylstat}
 ## @end deftypefn
 
 function x = raylinv (p, sigma)
 
-  ## Check arguments
-  if (nargin < 1 || nargin > 2)
-    print_usage ();
-  endif
-
-  if (nargin < 1)
-    sigma = 1;
+  ## Check for valid number of input arguments
+  if (nargin < 2)
+    error ("raylinv: function called with too few input arguments.");
   endif
 
   ## Check for common size of P and SIGMA
@@ -66,7 +49,7 @@ function x = raylinv (p, sigma)
 
   ## Check for X and SIGMA being reals
   if (iscomplex (p) || iscomplex (sigma))
-    error ("raylcdf: P and SIGMA must not be complex.");
+    error ("raylinv: P and SIGMA must not be complex.");
   endif
 
   ## Calculate Rayleigh iCDF
@@ -85,13 +68,30 @@ function x = raylinv (p, sigma)
 
 endfunction
 
+%!demo
+%! ## Plot various iCDFs from the Rayleigh distribution
+%! p = 0.001:0.001:0.999;
+%! x1 = raylinv (p, 0.5);
+%! x2 = raylinv (p, 1);
+%! x3 = raylinv (p, 2);
+%! x4 = raylinv (p, 3);
+%! x5 = raylinv (p, 4);
+%! plot (p, x1, "-b", p, x2, "g", p, x3, "-r", p, x4, "-m", p, x5, "-k")
+%! grid on
+%! ylim ([0, 10])
+%! legend ({"σ = 0,5", "σ = 1", "σ = 2", ...
+%!          "σ = 3", "σ = 4"}, "location", "northwest")
+%! title ("Rayleigh iCDF")
+%! xlabel ("probability")
+%! ylabel ("values in x")
+
+## Test output
 %!test
 %! p = 0:0.1:0.5;
 %! sigma = 1:6;
 %! x = raylinv (p, sigma);
 %! expected_x = [0.0000, 0.9181, 2.0041, 3.3784, 5.0538, 7.0645];
 %! assert (x, expected_x, 0.001);
-
 %!test
 %! p = 0:0.1:0.5;
 %! x = raylinv (p, 0.5);
@@ -99,10 +99,11 @@ endfunction
 %! assert (x, expected_x, 0.001);
 
 ## Test input validation
-%!error poissinv ()
-%!error poissinv (1)
-%!error poissinv (1,2,3)
-%!error poissinv (ones (3), ones (2))
-%!error poissinv (ones (2), ones (3))
-%!error poissinv (i, 2)
-%!error poissinv (2, i)
+%!error<raylinv: function called with too few input arguments.> raylinv ()
+%!error<raylinv: function called with too few input arguments.> raylinv (1)
+%!error<raylinv: P and SIGMA must be of common size or scalars.> ...
+%! raylinv (ones (3), ones (2))
+%!error<raylinv: P and SIGMA must be of common size or scalars.> ...
+%! raylinv (ones (2), ones (3))
+%!error<raylinv: P and SIGMA must not be complex.> raylinv (i, 2)
+%!error<raylinv: P and SIGMA must not be complex.> raylinv (2, i)

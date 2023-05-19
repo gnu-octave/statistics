@@ -22,38 +22,21 @@
 ## Rayleigh probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the Rayleigh distribution with parameter @var{sigma}.  The size
-## of @var{p} is the common size of @var{x} and @var{sigma}.  A scalar input
+## of the Rayleigh distribution with scale parameter @var{sigma}.  The size of
+## @var{p} is the common size of @var{x} and @var{sigma}.  A scalar input
 ## functions as a constant matrix of the same size as the other inputs.
 ##
-## Default value is @var{sigma} = 1.
-##
-## @subheading References
-##
-## @enumerate
-## @item
-## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
-## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
-## 2001.
-##
-## @item
-## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
-## Processes}. pages 104 and 148, McGraw-Hill, New York, second edition,
-## 1984.
-## @end enumerate
+## Further information about the Rayleigh distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Rayleigh_distribution}
 ##
 ## @seealso{raylcdf, raylinv, raylrnd, raylstat}
 ## @end deftypefn
 
 function y = raylpdf (x, sigma)
 
-  ## Check arguments
-  if (nargin < 1 || nargin > 2)
-    print_usage ();
-  endif
-
-  if (nargin < 1)
-    sigma = 1;
+  ## Check for valid number of input arguments
+  if (nargin < 2)
+    error ("raylpdf: function called with too few input arguments.");
   endif
 
   ## Check for common size of X and SIGMA
@@ -80,24 +63,42 @@ function y = raylpdf (x, sigma)
 
 endfunction
 
+%!demo
+%! ## Plot various PDFs from the Rayleigh distribution
+%! x = 0:0.01:10;
+%! y1 = raylpdf (x, 0.5);
+%! y2 = raylpdf (x, 1);
+%! y3 = raylpdf (x, 2);
+%! y4 = raylpdf (x, 3);
+%! y5 = raylpdf (x, 4);
+%! plot (x, y1, "-b", x, y2, "g", x, y3, "-r", x, y4, "-m", x, y5, "-k")
+%! grid on
+%! ylim ([0, 1.25])
+%! legend ({"σ = 0,5", "σ = 1", "σ = 2", ...
+%!          "σ = 3", "σ = 4"}, "location", "northeast")
+%! title ("Rayleigh PDF")
+%! xlabel ("values in x")
+%! ylabel ("density")
+
+## Test output
 %!test
 %! x = 0:0.5:2.5;
 %! sigma = 1:6;
 %! y = raylpdf (x, sigma);
 %! expected_y = [0.0000, 0.1212, 0.1051, 0.0874, 0.0738, 0.0637];
 %! assert (y, expected_y, 0.001);
-
 %!test
 %! x = 0:0.5:2.5;
 %! y = raylpdf (x, 0.5);
 %! expected_y = [0.0000, 1.2131, 0.5413, 0.0667, 0.0027, 0.0000];
 %! assert (y, expected_y, 0.001);
 
-
 ## Test input validation
-%!error poissinv ()
-%!error poissinv (1,2,3)
-%!error poissinv (ones (3), ones (2))
-%!error poissinv (ones (2), ones (3))
-%!error poissinv (i, 2)
-%!error poissinv (2, i)
+%!error<raylpdf: function called with too few input arguments.> raylpdf ()
+%!error<raylpdf: function called with too few input arguments.> raylpdf (1)
+%!error<raylpdf: X and SIGMA must be of common size or scalars.> ...
+%! raylpdf (ones (3), ones (2))
+%!error<raylpdf: X and SIGMA must be of common size or scalars.> ...
+%! raylpdf (ones (2), ones (3))
+%!error<raylpdf: X and SIGMA must not be complex.> raylpdf (i, 2)
+%!error<raylpdf: X and SIGMA must not be complex.> raylpdf (2, i)

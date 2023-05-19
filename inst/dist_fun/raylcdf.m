@@ -17,65 +17,40 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{p} =} raylcdf (@var{x})
-## @deftypefnx {statistics} {@var{p} =} raylcdf (@var{x}, @var{sigma})
-## @deftypefnx {statistics} {@var{p} =} raylcdf (@dots{}, @qcode{"upper"})
+## @deftypefn  {statistics} {@var{p} =} raylcdf (@var{x}, @var{sigma})
+## @deftypefnx {statistics} {@var{p} =} raylcdf (@var{x}, @var{sigma}, @qcode{"upper"})
 ##
 ## Rayleigh cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the lognormal distribution with scale parameter
-## @var{sigma}.  The size of @var{p} is the common size of @var{x} and
-## @var{sigma}.  A scalar input functions as a constant matrix of the same size
-## as the other inputs.
+## (CDF) of the Rayleigh distribution with scale parameter @var{sigma}. The
+## size of @var{p} is the common size of @var{x} and @var{sigma}.  A scalar
+## input functions as a constant matrix of the same size as the other inputs.
 ##
-## Default value is @var{sigma} = 1.
+## @code{@var{p} = raylcdf (@var{x}, @var{sigma}, "upper")} computes the upper
+## tail probability of the Rayleigh distribution with parameter @var{sigma}, at
+## the values in @var{x}.
 ##
-## @code{[@dots{}] = raylcdf (@dots{}, "upper")} computes the upper tail
-## probability of the lognormal distribution.
-##
-## @subheading References
-##
-## @enumerate
-## @item
-## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
-## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
-## 2001.
-##
-## @item
-## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
-## Processes}. pages 104 and 148, McGraw-Hill, New York, second edition,
-## 1984.
-## @end enumerate
+## Further information about the Rayleigh distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Rayleigh_distribution}
 ##
 ## @seealso{raylinv, raylpdf, raylrnd, raylstat}
 ## @end deftypefn
 
-function p = raylcdf (x, varargin)
+function p = raylcdf (x, sigma, uflag)
 
   ## Check for valid number of input arguments
-  if (nargin < 1 || nargin > 3)
-    error ("raylcdf: invalid number of input arguments.");
+  if (nargin < 2)
+    error ("raylcdf: function called with too few input arguments.");
   endif
 
   ## Check for "upper" flag
-  if (nargin > 1 && strcmpi (varargin{end}, "upper"))
+  if (nargin == 3 && strcmpi (uflag, "upper"))
     uflag = true;
-    varargin(end) = [];
-  elseif (nargin > 1  && ischar (varargin{end}) && ...
-                         ! strcmpi (varargin{end}, "upper"))
-    error ("raylcdf: invalid argument for upper tail.");
-  elseif (nargin > 2  && ! strcmpi (varargin{end}, "upper"))
+  elseif (nargin == 3  && ! strcmpi (uflag, "upper"))
     error ("raylcdf: invalid argument for upper tail.");
   else
     uflag = false;
-  endif
-
-  ## Get extra arguments (if they exist) or add defaults
-  if (numel (varargin) > 0)
-    sigma = varargin{1};
-  else
-    sigma = 1;
   endif
 
   ## Check for common size of X and SIGMA
@@ -91,7 +66,7 @@ function p = raylcdf (x, varargin)
     error ("raylcdf: X and SIGMA must not be complex.");
   endif
 
-  ## Check for appropriate class
+  ## Check for class type
   if (isa (x, "single") || isa (sigma, "single"));
     p = zeros (size (x), "single");
   else
@@ -119,32 +94,49 @@ function p = raylcdf (x, varargin)
 
 endfunction
 
+%!demo
+%! ## Plot various CDFs from the Rayleigh distribution
+%! x = 0:0.01:10;
+%! p1 = raylcdf (x, 0.5);
+%! p2 = raylcdf (x, 1);
+%! p3 = raylcdf (x, 2);
+%! p4 = raylcdf (x, 3);
+%! p5 = raylcdf (x, 4);
+%! plot (x, p1, "-b", x, p2, "g", x, p3, "-r", x, p4, "-m", x, p5, "-k")
+%! grid on
+%! ylim ([0, 1])
+%! legend ({"σ = 0,5", "σ = 1", "σ = 2", ...
+%!          "σ = 3", "σ = 4"}, "location", "southeast")
+%! title ("Rayleigh CDF")
+%! xlabel ("values in x")
+%! ylabel ("probability")
+
+## Test output
 %!test
 %! x = 0:0.5:2.5;
 %! sigma = 1:6;
 %! p = raylcdf (x, sigma);
 %! expected_p = [0.0000, 0.0308, 0.0540, 0.0679, 0.0769, 0.0831];
 %! assert (p, expected_p, 0.001);
-
 %!test
 %! x = 0:0.5:2.5;
 %! p = raylcdf (x, 0.5);
 %! expected_p = [0.0000, 0.3935, 0.8647, 0.9889, 0.9997, 1.0000];
 %! assert (p, expected_p, 0.001);
-
 %!shared x, p
 %! x = [-1, 0, 1, 2, Inf];
 %! p = [0, 0, 0.39346934028737, 0.86466471676338, 1];
-%!assert (raylcdf (x), p, 1e-14)
 %!assert (raylcdf (x, 1), p, 1e-14)
-%!assert (raylcdf (x, "upper"), 1 - p, 1e-14)
+%!assert (raylcdf (x, 1, "upper"), 1 - p, 1e-14)
 
 ## Test input validation
-%!error<raylcdf: invalid number of input arguments.> raylcdf ()
-%!error<raylcdf: invalid number of input arguments.> raylcdf (1, 2, 3, 4)
+%!error<raylcdf: function called with too few input arguments.> raylcdf ()
+%!error<raylcdf: function called with too few input arguments.> raylcdf (1)
 %!error<raylcdf: invalid argument for upper tail.> raylcdf (1, 2, "uper")
 %!error<raylcdf: invalid argument for upper tail.> raylcdf (1, 2, 3)
 %!error<raylcdf: X and SIGMA must be of common size or scalars.> ...
 %! raylcdf (ones (3), ones (2))
+%!error<raylcdf: X and SIGMA must be of common size or scalars.> ...
+%! raylcdf (ones (2), ones (3))
 %!error<raylcdf: X and SIGMA must not be complex.> raylcdf (i, 2)
 %!error<raylcdf: X and SIGMA must not be complex.> raylcdf (2, i)

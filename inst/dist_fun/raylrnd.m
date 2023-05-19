@@ -29,34 +29,23 @@
 ## size of @var{r} is the size of @var{sigma}.  @var{sigma} must be a finite
 ## real number greater than 0, otherwise NaN is returned.
 ##
-## When called with a single size argument, return a square matrix with
-## the dimension specified.  When called with more than one scalar argument the
-## first two arguments are taken as the number of rows and columns and any
-## further arguments specify additional matrix dimensions.  The size may also
-## be specified with a vector of dimensions @var{sz}.
+## When called with a single size argument, @code{raylrnd} returns a square
+## matrix with the dimension specified.  When called with more than one scalar
+## argument, the first two arguments are taken as the number of rows and columns
+## and any further arguments specify additional matrix dimensions.  The size may
+## also be specified with a row vector of dimensions, @var{sz}.
 ##
-## @subheading References
+## Further information about the Rayleigh distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Rayleigh_distribution}
 ##
-## @enumerate
-## @item
-## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
-## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
-## 2001.
-##
-## @item
-## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
-## Processes}. pages 104 and 148, McGraw-Hill, New York, second edition,
-## 1984.
-## @end enumerate
-##
-## @seealso{raylcdf, raylinv, raylrnd, raylstat}
+## @seealso{raylcdf, raylinv, raylpdf, raylstat}
 ## @end deftypefn
 
 function r = raylrnd (sigma, varargin)
 
   ## Check for valid number of input arguments
   if (nargin < 1)
-    print_us
+    error ("raylrnd: function called with too few input arguments.");
   endif
 
   ## Check for SIGMA being real
@@ -64,20 +53,23 @@ function r = raylrnd (sigma, varargin)
     error ("raylrnd: SIGMA must not be complex.");
   endif
 
-  ## Check for SIZE vector or DIMENSION input arguments
+  ## Parse and check SIZE arguments
   if (nargin == 1)
     sz = size (sigma);
   elseif (nargin == 2)
-    if (isscalar (varargin{1}) && varargin{1} >= 0)
+    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+                               && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
+    elseif (isrow (varargin{1}) && all (varargin{1} >= 0) ...
+                                && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
-    else
-      error (strcat (["raylrnd: dimension vector must be a row vector"], ...
+    elseif
+      error (strcat (["raylrnd: SZ must be a scalar or a row vector"], ...
                      [" of non-negative integers."]));
     endif
   elseif (nargin > 2)
-    if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
+    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
+    if (any (posint))
       error ("raylrnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
@@ -104,36 +96,45 @@ function r = raylrnd (sigma, varargin)
 
 endfunction
 
-%!test
-%! sigma = 1:6;
-%! r = raylrnd (sigma);
-%! assert (size (r), size (sigma));
-%! assert (all (r >= 0));
+## Test output
+%!assert (size (raylrnd (2)), [1, 1])
+%!assert (size (raylrnd (ones (2,1))), [2, 1])
+%!assert (size (raylrnd (ones (2,2))), [2, 2])
+%!assert (size (raylrnd (1, 3)), [3, 3])
+%!assert (size (raylrnd (1, [4 1])), [4, 1])
+%!assert (size (raylrnd (1, 4, 1)), [4, 1])
+%!assert (size (raylrnd (1, 4, 1)), [4, 1])
+%!assert (size (raylrnd (1, 4, 1, 5)), [4, 1, 5])
+%!assert (size (raylrnd (1, 0, 1)), [0, 1])
+%!assert (size (raylrnd (1, 1, 0)), [1, 0])
+%!assert (size (raylrnd (1, 1, 2, 0, 5)), [1, 2, 0, 5])
+%!assert (raylrnd (0, 1, 1), NaN)
+%!assert (raylrnd ([0, 0, 0], [1, 3]), [NaN, NaN, NaN])
 
-%!test
-%! sigma = 0.5;
-%! sz = [2, 3];
-%! r = raylrnd (sigma, sz);
-%! assert (size (r), sz);
-%! assert (all (r >= 0));
-
-%!test
-%! sigma = 0.5;
-%! rows = 2;
-%! cols = 3;
-%! r = raylrnd (sigma, rows, cols);
-%! assert (size (r), [rows, cols]);
-%! assert (all (r >= 0));
-
+## Test class of input preserved
+%!assert (class (raylrnd (2)), "double")
+%!assert (class (raylrnd (single (2))), "single")
+%!assert (class (raylrnd (single ([2 2]))), "single")
 
 ## Test input validation
-%!error poissrnd ()
-%!error poissrnd (1, -1)
-%!error poissrnd (1, ones (2))
-%!error poissrnd (1, 2, ones (2))
-%!error poissrnd (i)
-%!error poissrnd (1, 2, -1)
-%!error poissrnd (1, [2 -1 2])
-%!error poissrnd (ones (2,2), 3)
-%!error poissrnd (ones (2,2), [3, 2])
-%!error poissrnd (ones (2,2), 2, 3)
+%!error<raylrnd: function called with too few input arguments.> raylrnd ()
+%!error<raylrnd: SIGMA must not be complex.> raylrnd (i)
+%!error<raylrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! raylrnd (1, -1)
+%!error<raylrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! raylrnd (1, 1.2)
+%!error<raylrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! raylrnd (1, ones (2))
+%!error<raylrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! raylrnd (1, [2 -1 2])
+%!error<raylrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! raylrnd (1, [2 0 2.5])
+%!error<raylrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! raylrnd (ones (2), ones (2))
+%!error<raylrnd: dimensions must be non-negative integers.> ...
+%! raylrnd (1, 2, -1, 5)
+%!error<raylrnd: dimensions must be non-negative integers.> ...
+%! raylrnd (1, 2, 1.5, 5)
+%!error<raylrnd: SIGMA must be scalar or of size SZ.> raylrnd (ones (2,2), 3)
+%!error<raylrnd: SIGMA must be scalar or of size SZ.> raylrnd (ones (2,2), [3, 2])
+%!error<raylrnd: SIGMA must be scalar or of size SZ.> raylrnd (ones (2,2), 2, 3)
