@@ -89,10 +89,10 @@
 </p>
 <div class="ms-5">
 <p> <var>X</var> must be a column major matrix or cell array consisting of the
- predictors. By default, there is a constant term in the model, unless you,
- explicitly remove it, so do not include a column of 1s in X. <var>y</var> must be
- a column vector corresponding to the outcome variable. <var>modelspec</var> can
- specified as one of the following:
+ predictors. A constant term (intercept) should not be included in X - it
+ is automatically added to the model. <var>y</var> must be a column vector
+ corresponding to the outcome variable. <var>modelspec</var> can specified as
+ one of the following:
 </p>
  <ul>
 <li>

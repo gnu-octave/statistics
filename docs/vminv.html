@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: poisscdf</title>
+    <title>Statistics: vminv</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -64,42 +64,42 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>poisscdf</code></b>
+              Function&nbsp;Reference: <b><code>vminv</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>poisscdf</b><i> (<var>x</var>, <var>lambda</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>poisscdf</b><i> (<var>x</var>, <var>lambda</var>, <code>&quot;upper&quot;</code>)</i></dt>
+<dt><u>statistics:</u> <var>x</var> = <b>ncx2inv</b><i> (<var>p</var>, <var>mu</var>, <var>k</var>)</i></dt>
 </dl>
 
-<p> Poisson cumulative distribution function (CDF).
+<p> Inverse of the von Mises cumulative distribution function (iCDF).
 </p>
 <div class="ms-5">
-<p> For each element of <var>x</var>, compute the cumulative distribution function
- (CDF) of the Poisson distribution with rate parameter <var>lambda</var>. The
- size of <var>p</var> is the common size of <var>x</var> and <var>lambda</var>.  A scalar
- input functions as a constant matrix of the same size as the other inputs.
+<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF) of
+ the von Mises distribution with location parameter <var>mu</var> and concentration
+ parameter <var>k</var> on the interval <math>[-pi,pi]</math>.  The size of <var>x</var> is
+ the common size of <var>p</var>, <var>mu</var>, and <var>k</var>.  A scalar input functions
+ as a constant matrix of the same size as the other inputs.
 </p>
-<p> <code><var>p</var> = poisscdf (<var>x</var>, <var>x</var>, <var>lambda</var>, &quot;upper&quot;)</code> computes
- the upper tail probability of the Poisson distribution with parameter
- <var>lambda</var>, at the values in <var>x</var>.
+<p> Note: the quantile of the von Mises distribution is not analytic.  Hence, it
+ is approximated by a custom searching algorithm using its CDF until it
+ converges up to a tolerance of <code>1e-5</code> or 100 iterations.  As a result,
+ balancing between performance and accuracy, the accuracy is about
+ <code>5e-5</code> for <code><var>k</var> = 1</code> and it drops to <code>5e-5</code> as <var>k</var>
+ increases.
 </p>
-<p> Further information about the Poisson distribution can be found at
- <a href="https://en.wikipedia.org/wiki/Poisson_distribution">https://en.wikipedia.org/wiki/Poisson_distribution</a>
+<p> Further information about the von Mises distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Von_Mises_distribution">https://en.wikipedia.org/wiki/Von_Mises_distribution</a>
 </p>
 <p> <strong>See also: </strong>
-  <a href="poissinv.html">poissinv</a>, 
-  <a href="poisspdf.html">poisspdf</a>, 
-  <a href="poissrnd.html">poissrnd</a>, 
-  <a href="poissfit.html">poissfit</a>, 
-  <a href="poisslike.html">poisslike</a>, 
-  <a href="poisstat.html">poisstat</a>
+  <a href="vmcdf.html">vmcdf</a>, 
+  <a href="vmpdf.html">vmpdf</a>, 
+nmrnd
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/poisscdf.m">poisscdf</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/vminv.m">vminv</a>
 </div>
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -119,23 +119,25 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Plot various CDFs from the Poisson distribution
- x = 0:20;
- p1 = poisscdf (x, 1);
- p2 = poisscdf (x, 4);
- p3 = poisscdf (x, 10);
- plot (x, p1, "*b", x, p2, "*g", x, p3, "*r")
+ ## Plot various iCDFs from the von Mises distribution
+ p1 = [0,0.005,0.01:0.01:0.1,0.15,0.2:0.1:0.8,0.85,0.9:0.01:0.99,0.995,1];
+ x1 = vminv (p1, 0, 0.5);
+ x2 = vminv (p1, 0, 1);
+ x3 = vminv (p1, 0, 2);
+ x4 = vminv (p1, 0, 4);
+ plot (p1, x1, "-r", p1, x2, "-g", p1, x3, "-b", p1, x4, "-c")
  grid on
- ylim ([0, 1])
- legend ({"λ = 1", "λ = 4", "λ = 10"}, "location", "southeast")
- title ("Poisson CDF")
- xlabel ("values in x (number of occurences)")
- ylabel ("probability")
+ ylim ([-pi, pi])
+ legend ({"μ = 0, k = 0.5", "μ = 0, k = 1", ...
+          "μ = 0, k = 2", "μ = 0, k = 4"}, "location", "northwest")
+ title ("Von Mises iCDF")
+ xlabel ("probability")
+ ylabel ("values in x")
 
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
-                    <img src="assets/poisscdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                    <img src="assets/vminv_101.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>
