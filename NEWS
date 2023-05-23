@@ -103,6 +103,10 @@
 
  ** poisslike (similar functionality to MATLAB's negloglik)
 
+ ** raylfit (fully Matlab compatible, extra functionality)
+
+ ** rayllike (similar functionality to MATLAB's negloglik)
+
  ** vminv (quantile function for the von Mises distribution)
 
  ** wblfit (fully Matlab compatible)

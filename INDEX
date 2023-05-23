@@ -141,6 +141,8 @@ Distribution Fitting
  normlike
  poissfit
  poisslike
+ raylfit
+ rayllike
  wblfit
  wbllike
 Distribution Statistics

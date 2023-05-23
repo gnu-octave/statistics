@@ -29,7 +29,7 @@
 ## Further information about the Rayleigh distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Rayleigh_distribution}
 ##
-## @seealso{raylcdf, raylinv, raylrnd, raylstat}
+## @seealso{raylcdf, raylinv, raylrnd, raylfit, rayllike, raylstat}
 ## @end deftypefn
 
 function y = raylpdf (x, sigma)
