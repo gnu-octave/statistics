@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: raylcdf</title>
+    <title>Statistics: raylfit</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -35,9 +35,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Distributions">
+                  <a class="nav-link" href="index.html#Distribution Fitting">
                     <i class="fas fa-list-alt"></i>
-                    Distributions
+                    Distribution Fitting
                   </a>
                 </li>
                 <li class="nav-item">
@@ -64,42 +64,60 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>raylcdf</code></b>
+              Function&nbsp;Reference: <b><code>raylfit</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>raylcdf</b><i> (<var>x</var>, <var>sigma</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>raylcdf</b><i> (<var>x</var>, <var>sigma</var>, <code>&quot;upper&quot;</code>)</i></dt>
+<dt><u>statistics:</u> <var>sigmaA</var> = <b>raylfit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>sigmaA</var>, <var>sigmaci</var>] = <b>raylfit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>sigmaA</var>, <var>sigmaci</var>] = <b>raylfit</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> [<var>sigmaA</var>, <var>sigmaci</var>] = <b>raylfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>)</i></dt>
+<dt><u>statistics:</u> [<var>sigmaA</var>, <var>sigmaci</var>] = <b>raylfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</i></dt>
 </dl>
 
-<p> Rayleigh cumulative distribution function (CDF).
+<p> Estimate parameter and confidence intervals for the Rayleigh distribution.
 </p>
 <div class="ms-5">
-<p> For each element of <var>x</var>, compute the cumulative distribution function
- (CDF) of the Rayleigh distribution with scale parameter <var>sigma</var>. The
- size of <var>p</var> is the common size of <var>x</var> and <var>sigma</var>.  A scalar
- input functions as a constant matrix of the same size as the other inputs.
+<p> <code><var>sigmaA</var> = raylfit (<var>x</var>)</code> returns the maximum likelihood
+ estimate of the rate parameter, <var>lambda</var>, of the Rayleigh distribution
+ given the data in <var>x</var>.  <var>x</var> must be a vector of non-negative values.
 </p>
-<p> <code><var>p</var> = raylcdf (<var>x</var>, <var>sigma</var>, &quot;upper&quot;)</code> computes the upper
- tail probability of the Rayleigh distribution with parameter <var>sigma</var>, at
- the values in <var>x</var>.
+<p> <code>[<var>sigmaA</var>, <var>sigmaci</var>] = raylfit (<var>x</var>)</code> returns the 95%
+ confidence intervals for the parameter estimate.
+</p>
+<p> <code>[<var>sigmaA</var>, <var>sigmaci</var>] = raylfit (<var>x</var>, <var>alpha</var>)</code>
+ also returns the <code>100 * (1 - <var>alpha</var>)</code> percent confidence intervals
+ of the estimated parameter.  By default, the optional argument <var>alpha</var> is
+ 0.05 corresponding to 95% confidence intervals.  Pass in <code>[]</code> for
+ <var>alpha</var> to use the default values.
+</p>
+<p> <code>[&hellip;] = raylfit (<var>x</var>, <var>alpha</var>, <var>censor</var>)</code> accepts a
+ boolean vector, <var>censor</var>, of the same size as <var>x</var> with <code>1</code>s for
+ observations that are right-censored and <code>0</code>s for observations that are
+ observed exactly.  By default, or if left empty,
+ <code><var>censor</var> = zeros (size (<var>x</var>))</code>.
+</p>
+<p> <code>[&hellip;] = raylfit (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</code>
+ accepts a frequency vector or matrix, <var>freq</var>, of the same size as <var>x</var>.
+ <var>freq</var> typically contains integer frequencies for the corresponding
+ elements in <var>x</var>.  <var>freq</var> cannot contain negative values.
 </p>
 <p> Further information about the Rayleigh distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Rayleigh_distribution">https://en.wikipedia.org/wiki/Rayleigh_distribution</a>
 </p>
 <p> <strong>See also: </strong>
+  <a href="raylcdf.html">raylcdf</a>, 
   <a href="raylinv.html">raylinv</a>, 
   <a href="raylpdf.html">raylpdf</a>, 
   <a href="raylrnd.html">raylrnd</a>, 
-  <a href="raylfit.html">raylfit</a>, 
   <a href="rayllike.html">rayllike</a>, 
   <a href="raylstat.html">raylstat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/raylcdf.m">raylcdf</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/raylfit.m">raylfit</a>
 </div>
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -119,26 +137,54 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Plot various CDFs from the Rayleigh distribution
- x = 0:0.01:10;
- p1 = raylcdf (x, 0.5);
- p2 = raylcdf (x, 1);
- p3 = raylcdf (x, 2);
- p4 = raylcdf (x, 3);
- p5 = raylcdf (x, 4);
- plot (x, p1, "-b", x, p2, "g", x, p3, "-r", x, p4, "-m", x, p5, "-k")
- grid on
- ylim ([0, 1])
- legend ({"σ = 0,5", "σ = 1", "σ = 2", ...
-          "σ = 3", "σ = 4"}, "location", "southeast")
- title ("Rayleigh CDF")
- xlabel ("values in x")
- ylabel ("probability")
+ ## Sample 3 populations from 3 different Rayleigh distibutions
+ rand ("seed", 2);    # for reproducibility
+ r1 = raylrnd (1, 1000, 1);
+ rand ("seed", 2);    # for reproducibility
+ r2 = raylrnd (2, 1000, 1);
+ rand ("seed", 3);    # for reproducibility
+ r3 = raylrnd (4, 1000, 1);
+ r = [r1, r2, r3];
+
+ ## Plot them normalized and fix their colors
+ hist (r, [0.5:0.5:10.5], 2);
+ h = findobj (gca, "Type", "patch");
+ set (h(1), "facecolor", "c");
+ set (h(2), "facecolor", "g");
+ set (h(3), "facecolor", "r");
+ hold on
+
+ ## Estimate their lambda parameter
+ sigmaA = raylfit (r(:,1));
+ sigmaB = raylfit (r(:,2));
+ sigmaC = raylfit (r(:,3));
+
+ ## Plot their estimated PDFs
+ x = [0:0.1:10];
+ y = raylpdf (x, sigmaA);
+ plot (x, y, "-pr");
+ y = raylpdf (x, sigmaB);
+ plot (x, y, "-sg");
+ y = raylpdf (x, sigmaC);
+ plot (x, y, "-^c");
+ xlim ([0, 10])
+ ylim ([0, 0.7])
+ legend ({"Normalized HIST of sample 1 with σ=1", ...
+          "Normalized HIST of sample 2 with σ=2", ...
+          "Normalized HIST of sample 3 with σ=4", ...
+          sprintf("PDF for sample 1 with estimated σ=%0.2f", ...
+                  sigmaA), ...
+          sprintf("PDF for sample 2 with estimated σ=%0.2f", ...
+                  sigmaB), ...
+          sprintf("PDF for sample 3 with estimated σ=%0.2f", ...
+                  sigmaC)})
+ title ("Three population samples from different Rayleigh distibutions")
+ hold off
 
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
-                    <img src="assets/raylcdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                    <img src="assets/raylfit_101.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>

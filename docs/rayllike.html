@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: raylrnd</title>
+    <title>Statistics: rayllike</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -35,9 +35,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Distributions">
+                  <a class="nav-link" href="index.html#Distribution Fitting">
                     <i class="fas fa-list-alt"></i>
-                    Distributions
+                    Distribution Fitting
                   </a>
                 </li>
                 <li class="nav-item">
@@ -64,32 +64,36 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>raylrnd</code></b>
+              Function&nbsp;Reference: <b><code>rayllike</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>r</var> = <b>raylrnd</b><i> (<var>sigma</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>raylrnd</b><i> (<var>sigma</var>, <var>rows</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>raylrnd</b><i> (<var>sigma</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>raylrnd</b><i> (<var>sigma</var>, [<var>sz</var>])</i></dt>
+<dt><u>statistics:</u> <var>nlogL</var> = <b>rayllike</b><i> (<var>sigma</var>, <var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>nlogL</var>, <var>acov</var>] = <b>rayllike</b><i> (<var>sigma</var>, <var>x</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>rayllike</b><i> (<var>sigma</var>, <var>x</var>, <var>freq</var>)</i></dt>
 </dl>
 
-<p> Random arrays from the Rayleigh distribution.
+<p> Negative log-likelihood for the Rayleigh distribution.
 </p>
 <div class="ms-5">
-<p> <code><var>r</var> = raylrnd (<var>sigma</var>)</code> returns an array of random numbers
- chosen from the Rayleigh distribution with scale parameter <var>sigma</var>.  The
- size of <var>r</var> is the size of <var>sigma</var>.  <var>sigma</var> must be a finite
- real number greater than 0, otherwise NaN is returned.
+<p> <code><var>nlogL</var> = rayllike (<var>sigma</var>, <var>x</var>)</code> returns the negative
+ log likelihood of the data in <var>x</var> corresponding to the Rayleigh
+ distribution with rate parameter <var>sigma</var>.  <var>x</var> must be a vector of
+ non-negative values.
 </p>
-<p> When called with a single size argument, <code>raylrnd</code> returns a square
- matrix with the dimension specified.  When called with more than one scalar
- argument, the first two arguments are taken as the number of rows and columns
- and any further arguments specify additional matrix dimensions.  The size may
- also be specified with a row vector of dimensions, <var>sz</var>.
+<p> <code>[<var>nlogL</var>, <var>acov</var>] = rayllike (<var>sigma</var>, <var>x</var>)</code> also
+ returns the inverse of Fisher&rsquo;s information matrix, <var>acov</var>.  If the input
+ rate parameter, <var>sigma</var>, is the maximum likelihood estimate, <var>acov</var>
+ is its asymptotic variance.
+</p>
+<p> <code>[&hellip;] = rayllike (<var>sigma</var>, <var>x</var>, <var>freq</var>)</code> accepts a
+ frequency vector, <var>freq</var>, of the same size as <var>x</var>.  <var>freq</var>
+ typically contains integer frequencies for the corresponding elements in
+ <var>x</var>, but it can contain any non-integer non-negative values.  By default,
+ or if left empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
 </p>
 <p> Further information about the Rayleigh distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Rayleigh_distribution">https://en.wikipedia.org/wiki/Rayleigh_distribution</a>
@@ -98,12 +102,12 @@
   <a href="raylcdf.html">raylcdf</a>, 
   <a href="raylinv.html">raylinv</a>, 
   <a href="raylpdf.html">raylpdf</a>, 
+  <a href="raylrnd.html">raylrnd</a>, 
   <a href="raylfit.html">raylfit</a>, 
-  <a href="rayllike.html">rayllike</a>, 
   <a href="raylstat.html">raylstat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/raylrnd.m">raylrnd</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/rayllike.m">rayllike</a>
 </div>
 
         </div>
