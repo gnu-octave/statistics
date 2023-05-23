@@ -86,9 +86,9 @@
 ##
 ## @seealso{icdf, pdf, random, betainv, binoinv, bisainv, burrinv, cauchyinv,
 ## chi2inv, evinv, expinv, finv, gaminv, geoinv, gevinv, gpinv, gumbelinv,
-## hygeinv, laplaceinv, logiinv, loglinv, logninv, nakainv, nbininv, ncfinv,
-## nctinv, ncx2inv, norminv, poissinv, raylinv, tinv, triinv, unidinv, unifinv,
-## wblinv}
+## hninv, hygeinv, invginv, laplaceinv, logiinv, loglinv, logninv, nakainv,
+## nbininv, ncfinv, nctinv, ncx2inv, norminv, poissinv, raylinv, tinv, triinv,
+## unidinv, unifinv, vminv, wblinv}
 ## @end deftypefn
 
 function x = icdf (name, p, varargin)

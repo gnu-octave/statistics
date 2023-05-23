@@ -94,9 +94,9 @@
 ##
 ## @seealso{icdf, pdf, cdf, betacdf, binocdf, bisacdf, burrcdf, cauchycdf,
 ## chi2cdf, evcdf, expcdf, fcdf, gamcdf, geocdf, gevcdf, gpcdf, gumbelcdf,
-## hygecdf, laplacecdf, logicdf, loglcdf, logncdf, nakacdf, nbincdf, ncfcdf,
-## nctcdf, ncx2cdf, normcdf, poisscdf, raylcdf, tcdf, tricdf, unidcdf, unifcdf,
-## wblcdf}
+## hncdf, hygecdf, invgcdf, laplacecdf, logicdf, loglcdf, logncdf, nakacdf,
+## nbincdf, ncfcdf, nctcdf, ncx2cdf, normcdf, poisscdf, raylcdf, tcdf, tricdf,
+## unidcdf, unifcdf, vmcdf, wblcdf}
 ## @end deftypefn
 
 function p = cdf (name, x, varargin)

@@ -85,9 +85,9 @@
 ##
 ## @seealso{cdf, icdf, pdf, betarnd, binornd, bisarnd, burrrnd, cauchy,
 ## chi2rnd, evrnd, exprnd, frnd, gamrnd, geornd, gevrnd, gprnd, gumbelrnd,
-## hygernd, laplacernd, logirnd, loglrnd, lognrnd, nakarnd, nbinrnd, ncfrnd,
-## nctrnd, ncx2rnd, normrnd, poissrnd, raylrnd, trnd, trirnd, unidrnd, unifrnd,
-## wblrnd}
+## hnrnd, hygernd, invgrnd, laplacernd, logirnd, loglrnd, lognrnd, nakarnd,
+## nbinrnd, ncfrnd, nctrnd, ncx2rnd, normrnd, poissrnd, raylrnd, trnd, trirnd,
+## unidrnd, unifrnd, vmrnd, wblrnd}
 ## @end deftypefn
 
 function r = random (name, varargin)

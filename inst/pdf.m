@@ -87,9 +87,9 @@
 ##
 ## @seealso{cdf, icdf, random, betapdf, binopdf, bisapdf, burrpdf, cauchypdf,
 ## chi2pdf, evpdf, exppdf, fpdf, gampdf, geopdf, gevpdf, gppdf, gumbelpdf,
-## hygepdf, laplacepdf, logipdf, loglpdf, lognpdf, nakapdf, nbinpdf, ncfpdf,
-## nctpdf, ncx2pdf, normpdf, poisspdf, raylpdf, tpdf, tripdf, unidpdf, unifpdf,
-## wblpdf}
+## hnpdf, hygepdf, invgpdf, laplacepdf, logipdf, loglpdf, lognpdf, nakapdf,
+## nbinpdf, ncfpdf, nctpdf, ncx2pdf, normpdf, poisspdf, raylpdf, tpdf, tripdf,
+## unidpdf, unifpdf, vmpdf, wblpdf}
 ## @end deftypefn
 
 function y = pdf (name, x, varargin)
