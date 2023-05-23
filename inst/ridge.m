@@ -1,59 +1,67 @@
-## Copyright (C) 2023, Mohammed Azmat khan <azmat.dev0@gmail.com>
+## Copyright (C) 2023 Mohammed Azmat Khan <azmat.dev0@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
-## This program is free software; you can redistribute it and/or modify it under
-## the terms of the GNU General Public License as published by the Free Software
-## Foundation; either version 3 of the License, or (at your option) any later
-## version.
+## Octave is free software; you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 3 of the License, or
+## (at your option) any later version.
 ##
-## This program is distributed in the hope that it will be useful, but WITHOUT
-## ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-## FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-## details.
+## Octave is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
 ##
-## You should have received a copy of the GNU General Public License along with
-## this program; if not, see <http://www.gnu.org/licenses/>.
+## You should have received a copy of the GNU General Public License
+## along with Octave; see the file COPYING.  If not,
+## see <http://www.gnu.org/licenses/>.
+##
 ##
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{b} =} ridge (@var{y}, @var{X}, [@var{alpha}])
-## @deftypefnx {statistics} {@var{b} =} ridge (@var{y}, @var{X}, [@var{alpha}], @var{flag})
-##
+## @deftypefn {statistics} {@var{b} =} ridge (@var{y}, @var{X}, @var{alpha})
+## @deftypefnx {statistics} {@var{b} =} ridge (@var{y}, @var{X}, @var{alpha}, @var{flag})
 ##
 ## Here,
 ##
+## Arguments are :
+##
 ## @itemize
 ## @item
-## @code{y} is a column vector of observed values
+## @code{y} is the predictor matrix or the observed value matrix.
 ## @item
-## @code{X} is a matrix of regressors, with the first column filled with
-## the constant value 1
+## @code{X} is the regressor matrix.
 ## @item
-## @code{alpha} is ridge parameter
+## @code{alpha} is the ridge parameter.
 ## @item
-## @code{flag} is used as indicator for scaling the data back to original data scale
+## @code{flag} is an indicator, pass 0 for restoring the ridge coefficient(s)
+## back to the original scale of the data given.
 ## @end itemize
 ##
+## There are two Types of uses of this function,
 ##
-## @code{@var{b} = ridge (@var{y}, @var{X}, @var{alpha}) returns the vector of coefficient
-## estimates by applying ridge regression from predictor matrix @var{X} and the response @var{y}.
-## Each value of @var{b} is the coefficient for the respective ridge parameter given @var{alpha}.
-## by default @var{b} is calculated after centering and scaling to mean 0 and standard deviation 1.
-## In general it can be used to produce ridge traces ( see demo example ) with coefficients as the
-## function returns a vector of regression coefficients.
+##  @code{@var{b} = ridge (@var{y}, @var{X}, @var{alpha}) returns the vector of
+##  coefficient estimates by applying ridge regression from predictor matrix @var{X}
+##  and the response @var{y}. Each value of @var{b} is the coefficient for the
+##  respective ridge parameter given @var{alpha}. by default @var{b} is calculated
+##  after centering and scaling to mean 0 and standard deviation 1.
+##  In general it can be used to produce ridge traces ( see demo example ) with
+##  coefficients as the function returns a vector of regression coefficients.
 ##
-## @code{@var{b} = ridge (@var{y}, @var{X}, @var{alpha}, @var{flag}) performs the regression returns the
-## coefficient estimates for specified scaling by @var{flag}. when @var{flag} is given 0,
-## the function restores the coefficient to the scale of the original data thus is more useful for
-## making predictions. for @var{flag} = 1 is same as the above function as no restoration is done to the scale.
+##  and,
 ##
+##  @code{@var{b} = ridge (@var{y}, @var{X}, @var{alpha}, @var{flag}) performs the regression
+##  and returns the coefficient estimates for specified scaling by @var{flag}. when @var{flag}
+##  is given 0,
+##  the function restores the coefficient to the scale of the original data thus is more useful for
+##  making predictions. for @var{flag} = 1 is same as the above function as no
+##  restoration is done to the scale.
 ##
-##
-## @seealso{ridge, lasso, stepwisefit}
-##
+## Demo,
+## @example
+## demo ridge
+## @end example
+## @seealso {lasso, stepwisefit, regress}
 ## @end deftypefn
-
-
 
 function b = ridge (y, X, alpha, flag)
 
@@ -123,7 +131,6 @@ function b = ridge (y, X, alpha, flag)
    for i=2:alphas
      Z_pseudo ( end - columns(X) + 1 : end,:)  =  sqrt( alpha(i)) .* eye( columns(X));
      b(:,i) = Z_pseudo \ Y_pseudo;
-
    endfor
   endif
 
@@ -135,8 +142,7 @@ function b = ridge (y, X, alpha, flag)
 
 endfunction
 
-
-%! demo
+%!demo
 %!
 %! load acetylene
 %!
@@ -163,19 +169,8 @@ endfunction
 %! title('Ridge Trace')
 %! legend('x1','x2','x3','x1x2','x1x3','x2x3')
 %!
-%!
-%! % carbig dataset example can be added once the reproducibility problem is fixed with cvpartition
-%!
 ## test input validation
-%!error<ridge: Invalid number of arguments.> ridge (1, 2)
-%!error<ridge: Invalid number of arguments.> ridge (1, 2, 3, 4, 5)
-%!error<ridge: y must be a column vector.> ridge ([1, 2, 3], [], 4)
-%!error<ridge: y and X must contain the same number of rows.> ridge ([1; 2; 3; 4; 5], [1, 2, 3], 3)
-%!
-
-
-
-
-
-
-
+%!error<ridge: Invalid number of arguments.> ridge(1, 2)
+%!error<ridge: function called with too many inputs> ridge(1, 2, 3, 4, 5)
+%!error<ridge: Y must be a column vector.> ridge([1, 2, 3], [], 4)
+%!error<ridge: Y and X must contain the same number of rows.> ridge ([1; 2; 3; 4; 5], [1, 2, 3], 3)
