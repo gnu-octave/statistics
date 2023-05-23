@@ -62,7 +62,9 @@
 ## @item @qcode{"Generalized Extreme Value"} @tab @tab @qcode{"gev"} @tab @tab 3
 ## @item @qcode{"Generalized Pareto"} @tab @tab @qcode{"gp"} @tab @tab 3
 ## @item @qcode{"Gumbel"} @tab @tab @qcode{"gumbel"} @tab @tab 2
+## @item @qcode{"Half-normal"} @tab @tab @qcode{"hn"} @tab @tab 2
 ## @item @qcode{"Hypergeometric"} @tab @tab @qcode{"hyge"} @tab @tab 3
+## @item @qcode{"Inverse Gaussian"} @tab @tab @qcode{"invg"} @tab @tab 2
 ## @item @qcode{"Laplace"} @tab @tab @qcode{"laplace"} @tab @tab 2
 ## @item @qcode{"Logistic"} @tab @tab @qcode{"logi"} @tab @tab 2
 ## @item @qcode{"Log-Logistic"} @tab @tab @qcode{"logl"} @tab @tab 2
@@ -79,6 +81,7 @@
 ## @item @qcode{"Triangular"} @tab @tab @qcode{"tri"} @tab @tab 3
 ## @item @qcode{"Discrete Uniform"} @tab @tab @qcode{"unid"} @tab @tab 1
 ## @item @qcode{"Uniform"} @tab @tab @qcode{"unif"} @tab @tab 2
+## @item @qcode{"Von Mises"} @tab @tab @qcode{"vm"} @tab @tab 2
 ## @item @qcode{"Weibull"} @tab @tab @qcode{"wbl"} @tab @tab 2
 ## @end multitable
 ##
@@ -107,7 +110,9 @@ function y = pdf (name, x, varargin)
     {"gev"      , "Generalized Extreme Value"}, @gevpdf,       3, ...
     {"gp"       , "Generalized Pareto"},        @gppdf,        3, ...
     {"gumbel"   , "Gumbel"},                    @gumbelpdf,    2, ...
+    {"hn"       , "Half-normal"},               @hnpdf,        2, ...
     {"hyge"     , "Hypergeometric"},            @hygepdf,      3, ...
+    {"invg"     , "Inverse Gaussian"},          @invgpdf,      2, ...
     {"laplace"  , "Laplace"},                   @laplacepdf,   2, ...
     {"logi"     , "Logistic"},                  @logipdf,      2, ...
     {"logl"     , "Log-Logistic"},              @loglpdf,      2, ...
@@ -124,6 +129,7 @@ function y = pdf (name, x, varargin)
     {"tri"      , "Triangular"},                @tripdf,       3, ...
     {"unid"     , "Discrete Uniform"},          @unidpdf,      1, ...
     {"unif"     , "Uniform"},                   @unifpdf,      2, ...
+    {"vm"       , "Von Mises"},                 @vmpdf,        2, ...
     {"wbl"      , "Weibull"},                   @wblpdf,       2};
 
   if (! ischar (name))
@@ -205,8 +211,12 @@ endfunction
 %!assert (pdf ("gp", x, 5, 2, 2), gppdf (x, 5, 2, 2))
 %!assert (pdf ("Gumbel", x, 5, 2), gumbelpdf (x, 5, 2))
 %!assert (pdf ("gumbel", x, 5, 2), gumbelpdf (x, 5, 2))
+%!assert (pdf ("Half-normal", x, 5, 2), hnpdf (x, 5, 2))
+%!assert (pdf ("hn", x, 5, 2), hnpdf (x, 5, 2))
 %!assert (pdf ("Hypergeometric", x, 5, 2, 2), hygepdf (x, 5, 2, 2))
 %!assert (pdf ("hyge", x, 5, 2, 2), hygepdf (x, 5, 2, 2))
+%!assert (pdf ("Inverse Gaussian", x, 5, 2), invgpdf (x, 5, 2))
+%!assert (pdf ("invg", x, 5, 2), invgpdf (x, 5, 2))
 %!assert (pdf ("Laplace", x, 5, 2), laplacepdf (x, 5, 2))
 %!assert (pdf ("laplace", x, 5, 2), laplacepdf (x, 5, 2))
 %!assert (pdf ("Logistic", x, 5, 2), logipdf (x, 5, 2))
@@ -239,6 +249,8 @@ endfunction
 %!assert (pdf ("unid", x, 5), unidpdf (x, 5))
 %!assert (pdf ("Uniform", x, 5, 2), unifpdf (x, 5, 2))
 %!assert (pdf ("unif", x, 5, 2), unifpdf (x, 5, 2))
+%!assert (pdf ("Von Mises", x, 5, 2), vmpdf (x, 5, 2))
+%!assert (pdf ("vm", x, 5, 2), vmpdf (x, 5, 2))
 %!assert (pdf ("Weibull", x, 5, 2), wblpdf (x, 5, 2))
 %!assert (pdf ("wbl", x, 5, 2), wblpdf (x, 5, 2))
 

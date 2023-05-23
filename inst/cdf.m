@@ -69,7 +69,9 @@
 ## @item @qcode{"Generalized Extreme Value"} @tab @tab @qcode{"gev"} @tab @tab 3
 ## @item @qcode{"Generalized Pareto"} @tab @tab @qcode{"gp"} @tab @tab 3
 ## @item @qcode{"Gumbel"} @tab @tab @qcode{"gumbel"} @tab @tab 2
+## @item @qcode{"Half-normal"} @tab @tab @qcode{"hn"} @tab @tab 2
 ## @item @qcode{"Hypergeometric"} @tab @tab @qcode{"hyge"} @tab @tab 3
+## @item @qcode{"Inverse Gaussian"} @tab @tab @qcode{"invg"} @tab @tab 2
 ## @item @qcode{"Laplace"} @tab @tab @qcode{"laplace"} @tab @tab 2
 ## @item @qcode{"Logistic"} @tab @tab @qcode{"logi"} @tab @tab 2
 ## @item @qcode{"Log-Logistic"} @tab @tab @qcode{"logl"} @tab @tab 2
@@ -86,6 +88,7 @@
 ## @item @qcode{"Triangular"} @tab @tab @qcode{"tri"} @tab @tab 3
 ## @item @qcode{"Discrete Uniform"} @tab @tab @qcode{"unid"} @tab @tab 1
 ## @item @qcode{"Uniform"} @tab @tab @qcode{"unif"} @tab @tab 2
+## @item @qcode{"Von Mises"} @tab @tab @qcode{"vm"} @tab @tab 2
 ## @item @qcode{"Weibull"} @tab @tab @qcode{"wbl"} @tab @tab 2
 ## @end multitable
 ##
@@ -114,7 +117,9 @@ function p = cdf (name, x, varargin)
     {"gev"      , "Generalized Extreme Value"}, @gevcdf,       3, ...
     {"gp"       , "Generalized Pareto"},        @gpcdf,        3, ...
     {"gumbel"   , "Gumbel"},                    @gumbelcdf,    2, ...
+    {"hn"       , "Half-normal"},               @hncdf,        2, ...
     {"hyge"     , "Hypergeometric"},            @hygecdf,      3, ...
+    {"invg"     , "Inverse Gaussian"},          @invgcdf,      2, ...
     {"laplace"  , "Laplace"},                   @laplacecdf,   2, ...
     {"logi"     , "Logistic"},                  @logicdf,      2, ...
     {"logl"     , "Log-Logistic"},              @loglcdf,      2, ...
@@ -131,6 +136,7 @@ function p = cdf (name, x, varargin)
     {"tri"      , "Triangular"},                @tricdf,       3, ...
     {"unid"     , "Discrete Uniform"},          @unidcdf,      1, ...
     {"unif"     , "Uniform"},                   @unifcdf,      2, ...
+    {"vm"       , "Von Mises"},                 @vmcdf,        2, ...
     {"wbl"      , "Weibull"},                   @wblcdf,       2};
 
   ## Check NAME being a char string
@@ -226,8 +232,12 @@ endfunction
 %!assert (cdf ("gp", x, 5, 2, 2, "upper"), gpcdf (x, 5, 2, 2, "upper"))
 %!assert (cdf ("Gumbel", x, 5, 2), gumbelcdf (x, 5, 2))
 %!assert (cdf ("gumbel", x, 5, 2, "upper"), gumbelcdf (x, 5, 2, "upper"))
+%!assert (cdf ("Half-normal", x, 5, 2), hncdf (x, 5, 2))
+%!assert (cdf ("hn", x, 5, 2, "upper"), hncdf (x, 5, 2, "upper"))
 %!assert (cdf ("Hypergeometric", x, 5, 2, 2), hygecdf (x, 5, 2, 2))
 %!assert (cdf ("hyge", x, 5, 2, 2, "upper"), hygecdf (x, 5, 2, 2, "upper"))
+%!assert (cdf ("Inverse Gaussian", x, 5, 2), invgcdf (x, 5, 2))
+%!assert (cdf ("invg", x, 5, 2, "upper"), invgcdf (x, 5, 2, "upper"))
 %!assert (cdf ("Laplace", x, 5, 2), laplacecdf (x, 5, 2))
 %!assert (cdf ("laplace", x, 5, 2, "upper"), laplacecdf (x, 5, 2, "upper"))
 %!assert (cdf ("Logistic", x, 5, 2), logicdf (x, 5, 2))
@@ -260,6 +270,8 @@ endfunction
 %!assert (cdf ("unid", x, 5, "upper"), unidcdf (x, 5, "upper"))
 %!assert (cdf ("Uniform", x, 5, 2), unifcdf (x, 5, 2))
 %!assert (cdf ("unif", x, 5, 2, "upper"), unifcdf (x, 5, 2, "upper"))
+%!assert (cdf ("Von Mises", x, 5, 2), vmcdf (x, 5, 2))
+%!assert (cdf ("vm", x, 5, 2, "upper"), vmcdf (x, 5, 2, "upper"))
 %!assert (cdf ("Weibull", x, 5, 2), wblcdf (x, 5, 2))
 %!assert (cdf ("wbl", x, 5, 2, "upper"), wblcdf (x, 5, 2, "upper"))
 

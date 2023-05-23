@@ -60,7 +60,9 @@
 ## @item @qcode{"Generalized Extreme Value"} @tab @tab @qcode{"gev"} @tab @tab 3
 ## @item @qcode{"Generalized Pareto"} @tab @tab @qcode{"gp"} @tab @tab 3
 ## @item @qcode{"Gumbel"} @tab @tab @qcode{"gumbel"} @tab @tab 2
+## @item @qcode{"Half-normal"} @tab @tab @qcode{"hn"} @tab @tab 2
 ## @item @qcode{"Hypergeometric"} @tab @tab @qcode{"hyge"} @tab @tab 3
+## @item @qcode{"Inverse Gaussian"} @tab @tab @qcode{"invg"} @tab @tab 2
 ## @item @qcode{"Laplace"} @tab @tab @qcode{"laplace"} @tab @tab 2
 ## @item @qcode{"Logistic"} @tab @tab @qcode{"logi"} @tab @tab 2
 ## @item @qcode{"Log-Logistic"} @tab @tab @qcode{"logl"} @tab @tab 2
@@ -77,6 +79,7 @@
 ## @item @qcode{"Triangular"} @tab @tab @qcode{"tri"} @tab @tab 3
 ## @item @qcode{"Discrete Uniform"} @tab @tab @qcode{"unid"} @tab @tab 1
 ## @item @qcode{"Uniform"} @tab @tab @qcode{"unif"} @tab @tab 2
+## @item @qcode{"Von Mises"} @tab @tab @qcode{"vm"} @tab @tab 2
 ## @item @qcode{"Weibull"} @tab @tab @qcode{"wbl"} @tab @tab 2
 ## @end multitable
 ##
@@ -105,7 +108,9 @@ function r = random (name, varargin)
     {"gev"      , "Generalized Extreme Value"}, @gevrnd,       3, ...
     {"gp"       , "Generalized Pareto"},        @gprnd,        3, ...
     {"gumbel"   , "Gumbel"},                    @gumbelrnd,    2, ...
+    {"hn"       , "Half-normal"},               @hnrnd,        2, ...
     {"hyge"     , "Hypergeometric"},            @hygernd,      3, ...
+    {"invg"     , "Inverse Gaussian"},          @invgrnd,      2, ...
     {"laplace"  , "Laplace"},                   @laplacernd,   2, ...
     {"logi"     , "Logistic"},                  @logirnd,      2, ...
     {"logl"     , "Log-Logistic"},              @loglrnd,      2, ...
@@ -122,6 +127,7 @@ function r = random (name, varargin)
     {"tri"      , "Triangular"},                @trirnd,       3, ...
     {"unid"     , "Discrete Uniform"},          @unidrnd,      1, ...
     {"unif"     , "Uniform"},                   @unifrnd,      2, ...
+    {"vm"       , "Von Mises"},                 @vmrnd,        2, ...
     {"wbl"      , "Weibull"},                   @wblrnd,       2};
 
   if (! ischar (name))
@@ -202,8 +208,12 @@ endfunction
 %!assert (size (random ("gp", 5, 2, 2, [10, 20])), size (gprnd (5, 2, 2, 10, 20)))
 %!assert (size (random ("Gumbel", 5, 2, [10, 20])), size (gumbelrnd (5, 2, 10, 20)))
 %!assert (size (random ("gumbel", 5, 2, [10, 20])), size (gumbelrnd (5, 2, 10, 20)))
+%!assert (size (random ("Half-normal", 5, 2, [10, 20])), size (hnrnd (5, 2, 10, 20)))
+%!assert (size (random ("hn", 5, 2, [10, 20])), size (hnrnd (5, 2, 10, 20)))
 %!assert (size (random ("Hypergeometric", 5, 2, 2, [10, 20])), size (hygernd (5, 2, 2, 10, 20)))
 %!assert (size (random ("hyge", 5, 2, 2, [10, 20])), size (hygernd (5, 2, 2, 10, 20)))
+%!assert (size (random ("Inverse Gaussian", 5, 2, [10, 20])), size (invgrnd (5, 2, 10, 20)))
+%!assert (size (random ("invg", 5, 2, [10, 20])), size (invgrnd (5, 2, 10, 20)))
 %!assert (size (random ("Laplace", 5, 2, [10, 20])), size (laplacernd (5, 2, 10, 20)))
 %!assert (size (random ("laplace", 5, 2, [10, 20])), size (laplacernd (5, 2, 10, 20)))
 %!assert (size (random ("Logistic", 5, 2, [10, 20])), size (logirnd (5, 2, 10, 20)))
@@ -236,6 +246,8 @@ endfunction
 %!assert (size (random ("unid", 5, [10, 20])), size (unidrnd (5, 10, 20)))
 %!assert (size (random ("Uniform", 5, 2, [10, 20])), size (unifrnd (5, 2, 10, 20)))
 %!assert (size (random ("unif", 5, 2, [10, 20])), size (unifrnd (5, 2, 10, 20)))
+%!assert (size (random ("Von Mises", 5, 2, [10, 20])), size (vmrnd (5, 2, 10, 20)))
+%!assert (size (random ("vm", 5, 2, [10, 20])), size (vmrnd (5, 2, 10, 20)))
 %!assert (size (random ("Weibull", 5, 2, [10, 20])), size (wblrnd (5, 2, 10, 20)))
 %!assert (size (random ("wbl", 5, 2, [10, 20])), size (wblrnd (5, 2, 10, 20)))
 

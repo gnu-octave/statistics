@@ -61,7 +61,9 @@
 ## @item @qcode{"Generalized Extreme Value"} @tab @tab @qcode{"gev"} @tab @tab 3
 ## @item @qcode{"Generalized Pareto"} @tab @tab @qcode{"gp"} @tab @tab 3
 ## @item @qcode{"Gumbel"} @tab @tab @qcode{"gumbel"} @tab @tab 2
+## @item @qcode{"Half-normal"} @tab @tab @qcode{"hn"} @tab @tab 2
 ## @item @qcode{"Hypergeometric"} @tab @tab @qcode{"hyge"} @tab @tab 3
+## @item @qcode{"Inverse Gaussian"} @tab @tab @qcode{"invg"} @tab @tab 2
 ## @item @qcode{"Laplace"} @tab @tab @qcode{"laplace"} @tab @tab 2
 ## @item @qcode{"Logistic"} @tab @tab @qcode{"logi"} @tab @tab 2
 ## @item @qcode{"Log-Logistic"} @tab @tab @qcode{"logl"} @tab @tab 2
@@ -78,6 +80,7 @@
 ## @item @qcode{"Triangular"} @tab @tab @qcode{"tri"} @tab @tab 3
 ## @item @qcode{"Discrete Uniform"} @tab @tab @qcode{"unid"} @tab @tab 1
 ## @item @qcode{"Uniform"} @tab @tab @qcode{"unif"} @tab @tab 2
+## @item @qcode{"Von Mises"} @tab @tab @qcode{"vm"} @tab @tab 2
 ## @item @qcode{"Weibull"} @tab @tab @qcode{"wbl"} @tab @tab 2
 ## @end multitable
 ##
@@ -106,7 +109,9 @@ function x = icdf (name, p, varargin)
     {"gev"      , "Generalized Extreme Value"}, @gevinv,       3, ...
     {"gp"       , "Generalized Pareto"},        @gpinv,        3, ...
     {"gumbel"   , "Gumbel"},                    @gumbelinv,    2, ...
+    {"hn"       , "Half-normal"},               @hninv,        2, ...
     {"hyge"     , "Hypergeometric"},            @hygeinv,      3, ...
+    {"invg"     , "Inverse Gaussian"},          @invginv,      2, ...
     {"laplace"  , "Laplace"},                   @laplaceinv,   2, ...
     {"logi"     , "Logistic"},                  @logiinv,      2, ...
     {"logl"     , "Log-Logistic"},              @loglinv,      2, ...
@@ -123,6 +128,7 @@ function x = icdf (name, p, varargin)
     {"tri"      , "Triangular"},                @triinv,       3, ...
     {"unid"     , "Discrete Uniform"},          @unidinv,      1, ...
     {"unif"     , "Uniform"},                   @unifinv,      2, ...
+    {"vm"       , "Von Mises"},                 @vminv,        2, ...
     {"wbl"      , "Weibull"},                   @wblinv,       2};
 
   if (! ischar (name))
@@ -204,8 +210,12 @@ endfunction
 %!assert (icdf ("gp", p, 5, 2, 2), gpinv (p, 5, 2, 2))
 %!assert (icdf ("Gumbel", p, 5, 2), gumbelinv (p, 5, 2))
 %!assert (icdf ("gumbel", p, 5, 2), gumbelinv (p, 5, 2))
+%!assert (icdf ("Half-normal", p, 5, 2), hninv (p, 5, 2))
+%!assert (icdf ("hn", p, 5, 2), hninv (p, 5, 2))
 %!assert (icdf ("Hypergeometric", p, 5, 2, 2), hygeinv (p, 5, 2, 2))
 %!assert (icdf ("hyge", p, 5, 2, 2), hygeinv (p, 5, 2, 2))
+%!assert (icdf ("Inverse Gaussian", p, 5, 2), invginv (p, 5, 2))
+%!assert (icdf ("invg", p, 5, 2), invginv (p, 5, 2))
 %!assert (icdf ("Laplace", p, 5, 2), laplaceinv (p, 5, 2))
 %!assert (icdf ("laplace", p, 5, 2), laplaceinv (p, 5, 2))
 %!assert (icdf ("Logistic", p, 5, 2), logiinv (p, 5, 2))
@@ -238,6 +248,8 @@ endfunction
 %!assert (icdf ("unid", p, 5), unidinv (p, 5))
 %!assert (icdf ("Uniform", p, 5, 2), unifinv (p, 5, 2))
 %!assert (icdf ("unif", p, 5, 2), unifinv (p, 5, 2))
+%!assert (icdf ("Von Mises", p, 5, 2), vminv (p, 5, 2))
+%!assert (icdf ("vm", p, 5, 2), vminv (p, 5, 2))
 %!assert (icdf ("Weibull", p, 5, 2), wblinv (p, 5, 2))
 %!assert (icdf ("wbl", p, 5, 2), wblinv (p, 5, 2))
 
