@@ -77,28 +77,14 @@
 <p> Inverse of the Rayleigh cumulative distribution function (iCDF).
 </p>
 <div class="ms-5">
-<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF)
- at <var>p</var> of the Rayleigh distribution with parameter <var>sigma</var>.  The size
- of <var>p</var> is the common size of <var>x</var> and <var>sigma</var>.  A scalar input
+<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF) of
+ the Rayleigh distribution with scale parameter <var>sigma</var>.  The size of
+ <var>p</var> is the common size of <var>x</var> and <var>sigma</var>.  A scalar input
  functions as a constant matrix of the same size as the other inputs.
 </p>
-<p> Default value is <var>sigma</var> = 1.
+<p> Further information about the Rayleigh distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Rayleigh_distribution">https://en.wikipedia.org/wiki/Rayleigh_distribution</a>
 </p>
- <a name="References"></a>
-<h3 class="subheading">References</h3>
-
- <ol>
-<li>
- Wendy L. Martinez and Angel R. Martinez. <cite>Computational Statistics
- Handbook with MATLAB</cite>. Appendix E, pages 547-557, Chapman &amp; Hall/CRC,
- 2001.
-
- </li><li>
- Athanasios Papoulis. <cite>Probability, Random Variables, and Stochastic
- Processes</cite>. pages 104 and 148, McGraw-Hill, New York, second edition,
- 1984.
- </li></ol>
-
 <p> <strong>See also: </strong>
   <a href="raylcdf.html">raylcdf</a>, 
   <a href="raylpdf.html">raylpdf</a>, 
@@ -108,6 +94,52 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/raylinv.m">raylinv</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various iCDFs from the Rayleigh distribution
+ p = 0.001:0.001:0.999;
+ x1 = raylinv (p, 0.5);
+ x2 = raylinv (p, 1);
+ x3 = raylinv (p, 2);
+ x4 = raylinv (p, 3);
+ x5 = raylinv (p, 4);
+ plot (p, x1, "-b", p, x2, "g", p, x3, "-r", p, x4, "-m", p, x5, "-k")
+ grid on
+ ylim ([0, 10])
+ legend ({"σ = 0,5", "σ = 1", "σ = 2", ...
+          "σ = 3", "σ = 4"}, "location", "northwest")
+ title ("Rayleigh iCDF")
+ xlabel ("probability")
+ ylabel ("values in x")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/raylinv_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>
