@@ -15,7 +15,7 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program; see the file COPYING.  If not, see
 ## <http://www.gnu.org/licenses/>.
-##
+
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{nlogL} =} binolike (@var{params}, @var{x})
 ## @deftypefnx {statistics} {[@var{nlogL}, @var{acov}] =} binolike (@var{params}, @var{x})
