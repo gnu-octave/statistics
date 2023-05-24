@@ -44,7 +44,7 @@
 ## @end example
 ##
 ## @noindent
-## @var{dist} can be any string for which a function @var{dist_cdf} that
+## @var{dist} can be any string for which a function @var{distcdf} that
 ## calculates the CDF of distribution @var{dist} exists.
 ##
 ## If no output is requested then the data are plotted immediately.
@@ -83,6 +83,10 @@ function [p, y] = ppplot (x, dist, varargin)
     axis ([0, 1, 0, 1]);
   endif
 
+endfunction
+
+function p = stdnormal_cdf (x)
+  p = 0.5 * erfc (x ./ sqrt (2));
 endfunction
 
 

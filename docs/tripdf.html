@@ -79,9 +79,12 @@
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the probability density function (PDF)
  at <var>x</var> of the triangular distribution with parameters <var>a</var>, <var>b</var>,
- and <var>c</var> on the interval [<var>a</var>, <var>b</var>].  The size of <var>y</var> is the
- common size of the input arguments.  A scalar input functions as a constant
- matrix of the same size as the other inputs.
+ and <var>c</var> on the interval <code>[<var>a</var>, <var>b</var>]</code>.  The size of <var>y</var>
+ is the common size of the input arguments.  A scalar input functions as a
+ constant matrix of the same size as the other inputs.
+</p>
+<p> Further information about the triangular distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Triangular_distribution">https://en.wikipedia.org/wiki/Triangular_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="tricdf.html">tricdf</a>, 
@@ -89,8 +92,54 @@
   <a href="trirnd.html">trirnd</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/tripdf.m">tripdf</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/tripdf.m">tripdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various CDFs from the triangular distribution
+ x = 0.001:0.001:10;
+ y1 = tripdf (x, 3, 6, 4);
+ y2 = tripdf (x, 1, 5, 2);
+ y3 = tripdf (x, 2, 9, 3);
+ y4 = tripdf (x, 2, 9, 5);
+ plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-c")
+ grid on
+ xlim ([0, 10])
+ legend ({"a = 3, b = 6, c = 4", "a = 1, b = 5, c = 2", ...
+          "a = 2, b = 9, c = 3", "a = 2, b = 9, c = 5"}, ...
+         "location", "northeast")
+ title ("Triangular CDF")
+ xlabel ("values in x")
+ ylabel ("probability")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/tripdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

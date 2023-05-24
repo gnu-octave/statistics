@@ -17,15 +17,13 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{y} =} logit (@var{p})
+## @deftypefn  {statistics} {@var{x} =} logit (@var{p})
 ##
 ## Compute the logit for each value of @var{p}
 ##
 ## The logit is defined as
 ## @tex
-## $$
-## {\rm logit}(p) = \log\Big({p \over 1-p}\Big)
-## $$
+## $$ {\rm logit}(p) = \log\Big({p \over 1-p}\Big) $$
 ## @end tex
 ## @ifnottex
 ##
@@ -34,16 +32,16 @@
 ## @end example
 ##
 ## @end ifnottex
-## @seealso{probit, logistic_cdf}
+## @seealso{probit, logicdf}
 ## @end deftypefn
 
-function y = logit (p)
+function x = logit (p)
 
   if (nargin != 1)
     print_usage ();
   endif
 
-  y = logistic_inv (p);
+  x = logiinv (p, 0, 1);
 
 endfunction
 

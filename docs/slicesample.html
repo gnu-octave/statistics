@@ -171,6 +171,7 @@ randsample
  ## Define function to sample
  d = 2;
  mu = [-1; 2];
+ rand ("seed", 5)  # for reproducibility
  Sigma = rand (d);
  Sigma = (Sigma + Sigma');
  Sigma += eye (d)*abs (eigs (Sigma, 1, "sa")) * 1.1;
@@ -181,7 +182,8 @@ randsample
  nsamples = 500;
  K = 500;
  m = 10;
- [smpl, accept]=slicesample (start, nsamples, "pdf", pdf, "burnin", K, "thin", m, "width", [20, 30]);
+ rande ("seed", 4);  rand ("seed", 5)  # for reproducibility
+ [smpl, accept] = slicesample (start, nsamples, "pdf", pdf, "burnin", K, "thin", m, "width", [20, 30]);
  figure;
  hold on;
  plot (smpl(:,1), smpl(:,2), 'x');
@@ -194,14 +196,14 @@ randsample
  int = mean (f (smpl) ./ pdf (smpl));
  errest = std (f (smpl) ./ pdf (smpl)) / nsamples^.5;
  trueerr = abs (2/3*pi*.25^(3/2)-int);
- fprintf("Monte Carlo integral estimate int f(x) dx = %f\n", int);
- fprintf("Monte Carlo integral error estimate %f\n", errest);
- fprintf("The actual error %f\n", trueerr);
+ fprintf ("Monte Carlo integral estimate int f(x) dx = %f\n", int);
+ fprintf ("Monte Carlo integral error estimate %f\n", errest);
+ fprintf ("The actual error %f\n", trueerr);
  mesh (x,y,reshape (f([x(:), y(:)]), size(x)), "facecolor", "None");
 
-Monte Carlo integral estimate int f(x) dx = 0.238226
-Monte Carlo integral error estimate 0.018308
-The actual error 0.023573
+Monte Carlo integral estimate int f(x) dx = 0.228408
+Monte Carlo integral error estimate 0.029831
+The actual error 0.033392
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
@@ -235,22 +237,23 @@ The actual error 0.023573
  ## Integrate truncated normal distribution to find normilization constant
  pdf = @(x) exp (-.5*x.^2)/(pi^.5*2^.5);
  nsamples = 1e3;
- [smpl,accept] = slicesample (1, nsamples, "pdf", pdf, "thin", 4);
+ rande ("seed", 4);  rand ("seed", 5)  # for reproducibility
+ [smpl, accept] = slicesample (1, nsamples, "pdf", pdf, "thin", 4);
  f = @(x) exp (-.5 * x .^ 2) .* (x >= -2 & x <= 2);
- x=linspace(-3,3,1000);
- area(x,f(x));
- xlabel ('x');
- ylabel ('f(x)');
- int = mean (f (smpl)./pdf(smpl));
- errest = std (f (smpl)./pdf(smpl))/nsamples^.5;
- trueerr = abs (erf (2^.5)*2^.5*pi^.5-int);
+ x = linspace (-3, 3, 1000);
+ area (x, f(x));
+ xlabel ("x");
+ ylabel ("f(x)");
+ int = mean (f (smpl) ./ pdf (smpl));
+ errest = std (f (smpl) ./ pdf (smpl)) / nsamples ^ 0.5;
+ trueerr = abs (erf (2 ^ 0.5) * 2 ^ 0.5 * pi ^ 0.5 - int);
  fprintf("Monte Carlo integral estimate int f(x) dx = %f\n", int);
  fprintf("Monte Carlo integral error estimate %f\n", errest);
  fprintf("The actual error %f\n", trueerr);
 
-Monte Carlo integral estimate int f(x) dx = 2.393830
-Monte Carlo integral error estimate 0.016441
-The actual error 0.001254
+Monte Carlo integral estimate int f(x) dx = 2.376284
+Monte Carlo integral error estimate 0.017608
+The actual error 0.016292
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">

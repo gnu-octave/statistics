@@ -71,26 +71,85 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>y</var> = <b>nakapdf</b><i> (<var>x</var>, <var>m</var>, <var>w</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>nakapdf</b><i> (<var>x</var>, <var>mu</var>, <var>omega</var>)</i></dt>
 </dl>
 
 <p> Nakagami probability density function (PDF).
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the probability density function (PDF)
- at <var>x</var> of the Nakagami distribution with shape parameter <var>m</var> and
- scale parameter <var>w</var>.  The size of <var>p</var> is the common size of <var>x</var>,
- <var>m</var>, and <var>w</var>.  A scalar input functions as a constant matrix of the
- same size as the other inputs.
+ of the Nakagami distribution with shape parameter <var>mu</var> and spread
+ parameter <var>omega</var>.  The size of <var>y</var> is the common size of <var>x</var>,
+ <var>mu</var>, and <var>omega</var>.  A scalar input functions as a constant matrix of
+ the same size as the other inputs.
+</p>
+<p> Both parameters must be positive reals and <code><var>mu</var> &gt;= 0.5</code>.  For
+ <code><var>mu</var> &lt; 0.5</code> or <code><var>omega</var> &lt;= 0</code>, <code>NaN</code> is returned.
+</p>
+<p> Further information about the Nakagami distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Nakagami_distribution">https://en.wikipedia.org/wiki/Nakagami_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="nakacdf.html">nakacdf</a>, 
-  <a href="nakainv.html">nakainv</a>, 
-  <a href="nakarnd.html">nakarnd</a>
+  <a href="nakapdf.html">nakapdf</a>, 
+  <a href="nakarnd.html">nakarnd</a>, 
+  <a href="nakafit.html">nakafit</a>, 
+  <a href="nakalike.html">nakalike</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/nakapdf.m">nakapdf</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/nakapdf.m">nakapdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various PDFs from the Nakagami distribution
+ x = 0:0.01:3;
+ y1 = nakapdf (x, 0.5, 1);
+ y2 = nakapdf (x, 1, 1);
+ y3 = nakapdf (x, 1, 2);
+ y4 = nakapdf (x, 1, 3);
+ y5 = nakapdf (x, 2, 1);
+ y6 = nakapdf (x, 2, 2);
+ y7 = nakapdf (x, 5, 1);
+ plot (x, y1, "-r", x, y2, "-g", x, y3, "-y", x, y4, "-m", ...
+       x, y5, "-k", x, y6, "-b", x, y7, "-c")
+ grid on
+ xlim ([0, 3])
+ ylim ([0, 2])
+ legend ({"μ = 0.5, ω = 1", "μ = 1, ω = 1", "μ = 1, ω = 2", ...
+          "μ = 1, ω = 3", "μ = 2, ω = 1", "μ = 2, ω = 2", ...
+          "μ = 5, ω = 1"}, "location", "northeast")
+ title ("Nakagami PDF")
+ xlabel ("values in x")
+ ylabel ("density")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/nakapdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

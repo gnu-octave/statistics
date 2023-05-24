@@ -81,25 +81,30 @@
 </p>
 <div class="ms-5">
 <p> <code><var>r</var> = betarnd (<var>a</var>, <var>b</var>)</code> returns an array of random
- numbers chosen from the Beta distribution with parameters <var>a</var> and
+ numbers chosen from the Beta distribution with shape parameters <var>a</var> and
  <var>b</var>.  The size of <var>r</var> is the common size of <var>a</var> and <var>b</var>.
  A scalar input functions as a constant matrix of the same size as the other
  inputs.
 </p>
-<p> When called with a single size argument, return a square matrix with
- the dimension specified.  When called with more than one scalar argument the
- first two arguments are taken as the number of rows and columns and any
- further arguments specify additional matrix dimensions.  The size may also
- be specified with a vector of dimensions <var>sz</var>.
+<p> When called with a single size argument, <code>betarnd</code> returns a square
+ matrix with the dimension specified.  When called with more than one scalar
+ argument, the first two arguments are taken as the number of rows and columns
+ and any further arguments specify additional matrix dimensions.  The size may
+ also be specified with a row vector of dimensions, <var>sz</var>.
+</p>
+<p> Further information about the Beta distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Beta_distribution">https://en.wikipedia.org/wiki/Beta_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="betacdf.html">betacdf</a>, 
   <a href="betainv.html">betainv</a>, 
   <a href="betapdf.html">betapdf</a>, 
+  <a href="betafit.html">betafit</a>, 
+  <a href="betalike.html">betalike</a>, 
   <a href="betastat.html">betastat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/betarnd.m">betarnd</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/betarnd.m">betarnd</a>
 </div>
 
         </div>

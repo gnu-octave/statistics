@@ -1,5 +1,5 @@
 ## Copyright (C) 2016 - Juan Pablo Carbajal
-## Copyright (C) 2022 - Andreas Bertsatos
+## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -202,6 +202,10 @@ function h = violin (ax, varargin)
   if (old_hold)
     hold on
   endif
+endfunction
+
+function y = stdnormal_pdf (x)
+  y = (2 * pi)^(- 1/2) * exp (- x .^ 2 / 2);
 endfunction
 
 function k = kde(x,r)

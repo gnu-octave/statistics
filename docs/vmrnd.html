@@ -81,23 +81,28 @@
 </p>
 <div class="ms-5">
 <p> <code><var>r</var> = vmrnd (<var>mu</var>, <var>k</var>)</code> returns an array of random angles
- chosen from a von Mises distribution with mean direction parameter <var>mu</var>
- and concentration parameter <var>k</var> on the interval [-pi, pi].  The size of
- <var>r</var> is the common size of the input arguments. A scalar input functions
- as a constant matrix of the same size as the other inputs.
+ chosen from a von Mises distribution with location parameter <var>mu</var> and
+ concentration parameter <var>k</var> on the interval [-pi, pi].  The size of
+ <var>r</var> is the common size of <var>mu</var> and <var>k</var>.  A scalar input functions
+ as a constant matrix of the same size as the other inputs.  Both parameters
+ must be finite real numbers and <var>k</var> &gt; 0, otherwise NaN is returned.
 </p>
-<p> When called with a single size argument, return a square matrix with the
- dimension specified.  When called with more than one scalar argument the
- first two arguments are taken as the number of rows and columns and any
- further arguments specify additional matrix dimensions.  The size may also
- be specified with a vector of dimensions <var>sz</var>.
+<p> When called with a single size argument, <code>vmrnd</code> returns a square
+ matrix with the dimension specified.  When called with more than one scalar
+ argument, the first two arguments are taken as the number of rows and columns
+ and any further arguments specify additional matrix dimensions.  The size may
+ also be specified with a row vector of dimensions, <var>sz</var>.
+</p>
+<p> Further information about the von Mises distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Von_Mises_distribution">https://en.wikipedia.org/wiki/Von_Mises_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="vmcdf.html">vmcdf</a>, 
+  <a href="vminv.html">vminv</a>, 
   <a href="vmpdf.html">vmpdf</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/vmrnd.m">vmrnd</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/vmrnd.m">vmrnd</a>
 </div>
 
         </div>

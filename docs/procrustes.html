@@ -161,6 +161,7 @@
 
  ## Create some random points in two dimensions
  n = 10;
+ randn ("seed", 1);
  X = normrnd (0, 1, [n, 2]);
 
  ## Those same points, rotated, scaled, translated, plus some noise
@@ -169,7 +170,7 @@
 
  ## Conform Y to X, plot original X and Y, and transformed Y
  [d, Z] = procrustes (X, Y);
- plot(X(:,1), X(:,2), "rx", Y(:,1), Y(:,2), "b.", Z(:,1), Z(:,2), "bx");
+ plot (X(:,1), X(:,2), "rx", Y(:,1), Y(:,2), "b.", Z(:,1), Z(:,2), "bx");
 
                     </pre></td></tr></tbody>
                   </table>
@@ -205,15 +206,15 @@
 
  X = [40 88; 51 88; 35 78; 36 75; 39 72; 44 71; 48 71; 52 74; 55 77];
  Y = [36 43; 48 42; 31 26; 33 28; 37 30; 40 31; 45 30; 48 28; 51 24];
- plot(X(:,1),X(:,2),"x");
+ plot (X(:,1),X(:,2),"x");
  hold on
- plot(Y(:,1),Y(:,2),"o");
- xlim([0 100]);
- ylim([0 100]);
- legend("Target shape (X)","Source shape (Y)");
- [d,Z] = procrustes(X,Y)
- plot(Z(:,1),Z(:,2),"s");
- legend("Target shape (X)","Source shape (Y)", "Transformed shape (Z)");
+ plot (Y(:,1),Y(:,2),"o");
+ xlim ([0 100]);
+ ylim ([0 100]);
+ legend ("Target shape (X)", "Source shape (Y)");
+ [d, Z] = procrustes (X, Y)
+ plot (Z(:,1), Z(:,2), "s");
+ legend ("Target shape (X)", "Source shape (Y)", "Transformed shape (Z)");
  hold off
 
 d = 0.2026
@@ -267,10 +268,10 @@ Z =
 
  ## Create a matrix with more points on the source triangle
  Y_mp = [linspace(Y(1,1),Y(2,1),10)', linspace(Y(1,2),Y(2,2),10)'; ...
-             linspace(Y(2,1),Y(3,1),10)', linspace(Y(2,2),Y(3,2),10)'; ...
-             linspace(Y(3,1),Y(1,1),10)', linspace(Y(3,2),Y(1,2),10)'];
+         linspace(Y(2,1),Y(3,1),10)', linspace(Y(2,2),Y(3,2),10)'; ...
+         linspace(Y(3,1),Y(1,1),10)', linspace(Y(3,2),Y(1,2),10)'];
 
- ## Plot both shapes, including the larger set of points for the source shape.
+ ## Plot both shapes, including the larger set of points for the source shape
  plot ([X(:,1); X(1,1)], [X(:,2); X(1,2)], "bx-");
  hold on
  plot ([Y(:,1); Y(1,1)], [Y(:,2); Y(1,2)], "ro-", "MarkerFaceColor", "r");

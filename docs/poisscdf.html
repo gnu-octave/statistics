@@ -72,29 +72,78 @@
         <div class="card-body">
 <dl>
 <dt><u>statistics:</u> <var>p</var> = <b>poisscdf</b><i> (<var>x</var>, <var>lambda</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>poisscdf</b><i> (<var>x</var>, <var>lambda</var>, &quot;upper&quot;)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>poisscdf</b><i> (<var>x</var>, <var>lambda</var>, <code>&quot;upper&quot;</code>)</i></dt>
 </dl>
 
 <p> Poisson cumulative distribution function (CDF).
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the cumulative distribution function
- (CDF) at <var>x</var> of the Poisson distribution with parameter <var>lambda</var>. The
+ (CDF) of the Poisson distribution with rate parameter <var>lambda</var>. The
  size of <var>p</var> is the common size of <var>x</var> and <var>lambda</var>.  A scalar
  input functions as a constant matrix of the same size as the other inputs.
 </p>
-<p> <code><var>p</var> = poisscdf (<var>x</var>, <var>x</var>, <var>lambda</var>, &quot;upper&quot;)</code> computes
- the upper tail probability of the lognormal distribution.
+<p> <code><var>p</var> = poisscdf (<var>x</var>, <var>lambda</var>, &quot;upper&quot;)</code> computes the
+ upper tail probability of the Poisson distribution with parameter
+ <var>lambda</var>, at the values in <var>x</var>.
+</p>
+<p> Further information about the Poisson distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Poisson_distribution">https://en.wikipedia.org/wiki/Poisson_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="poissinv.html">poissinv</a>, 
   <a href="poisspdf.html">poisspdf</a>, 
   <a href="poissrnd.html">poissrnd</a>, 
+  <a href="poissfit.html">poissfit</a>, 
+  <a href="poisslike.html">poisslike</a>, 
   <a href="poisstat.html">poisstat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/poisscdf.m">poisscdf</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/poisscdf.m">poisscdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various CDFs from the Poisson distribution
+ x = 0:20;
+ p1 = poisscdf (x, 1);
+ p2 = poisscdf (x, 4);
+ p3 = poisscdf (x, 10);
+ plot (x, p1, "*b", x, p2, "*g", x, p3, "*r")
+ grid on
+ ylim ([0, 1])
+ legend ({"λ = 1", "λ = 4", "λ = 10"}, "location", "southeast")
+ title ("Poisson CDF")
+ xlabel ("values in x (number of occurences)")
+ ylabel ("probability")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/poisscdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

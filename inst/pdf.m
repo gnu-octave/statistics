@@ -17,29 +17,43 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{retval} =} pdf (@var{name}, @var{x}, @dots{})
+## @deftypefn  {statistics} {@var{y} =} pdf (@var{name}, @var{x}, @var{A})
+## @deftypefnx {statistics} {@var{y} =} pdf (@var{name}, @var{x}, @var{A}, @var{B})
+## @deftypefnx {statistics} {@var{y} =} pdf (@var{name}, @var{x}, @var{A}, @var{B}, @var{C})
 ##
-## Return the PDF of @var{name} distribution function for value @var{x}.
+## Return the PDF of a univariate distribution evaluated at @var{x}.
 ##
-## This is a wrapper for the @qcode{name}pdf and @qcode{name}_pdf functions
-## available in the statistics package. See the corresponding functions' help to
-## learn the signification of the arguments after @var{x}.
+## @code{pdf} is a wrapper for the univariate cumulative distribution functions
+## available in the statistics package.  See the corresponding functions' help
+## to learn the signification of the parameters after @var{x}.
+##
+## @code{@var{y} = pdf (@var{name}, @var{x}, @var{A})} returns the CDF for the
+## one-parameter distribution family specified by @var{name} and the
+## distribution parameter @var{A}, evaluated at the values in @var{x}.
+##
+## @code{@var{y} = pdf (@var{name}, @var{x}, @var{A}, @var{B})} returns the CDF
+## for the two-parameter distribution family specified by @var{name} and the
+## distribution parameters @var{A} and @var{B}, evaluated at the values in
+## @var{x}.
+##
+## @code{@var{y} = pdf (@var{name}, @var{x}, @var{A}, @var{B}, @var{C})} returns
+## the CDF for the three-parameter distribution family specified by @var{name}
+## and the distribution parameters @var{A}, @var{B}, and @var{C}, evaluated at
+## the values in @var{x}.
 ##
 ## @var{name} must be a char string of the name or the abbreviation of the
-## desired probability distribution function as listed in the followng table.
-## The last column shows the maximum number of extra arguments that can be
-## passed to the desired PDF.
+## desired cumulative distribution function as listed in the followng table.
+## The last column shows the number of required parameters that should be parsed
+## after @var{x} to the desired PDF.
 ##
 ## @multitable @columnfractions 0.4 0.05 0.2 0.05 0.3
-## @headitem Distribution Name @tab @tab Abbreviation @tab @tab Max Arguments
-## @item @qcode{"Birnbaum-Saunders"} @tab @tab @qcode{"bbs"} @tab @tab 3
+## @headitem Distribution Name @tab @tab Abbreviation @tab @tab Input Parameters
 ## @item @qcode{"Beta"} @tab @tab @qcode{"beta"} @tab @tab 2
 ## @item @qcode{"Binomial"} @tab @tab @qcode{"bino"} @tab @tab 2
-## @item @qcode{"Burr"} @tab @tab @qcode{"burr"} @tab @tab 3
-## @item @qcode{"Bivariate Normal"} @tab @tab @qcode{"bvn"} @tab @tab 2
+## @item @qcode{"Birnbaum-Saunders"} @tab @tab @qcode{"bisa"} @tab @tab 2
+## @item @qcode{"Burr"} @tab  @tab @qcode{"burr"} @tab  @tab 3
 ## @item @qcode{"Cauchy"} @tab @tab @qcode{"cauchy"} @tab @tab 2
-## @item @qcode{"Chi-square"} @tab @tab @qcode{"chi2"} @tab @tab 1
-## @item @qcode{"Copula Family"} @tab @tab @qcode{"copula"} @tab @tab 2
+## @item @qcode{"Chi-squared"} @tab @tab @qcode{"chi2"} @tab @tab 1
 ## @item @qcode{"Extreme Value"} @tab @tab @qcode{"ev"} @tab @tab 2
 ## @item @qcode{"Exponential"} @tab @tab @qcode{"exp"} @tab @tab 1
 ## @item @qcode{"F-Distribution"} @tab @tab @qcode{"f"} @tab @tab 2
@@ -47,52 +61,47 @@
 ## @item @qcode{"Geometric"} @tab @tab @qcode{"geo"} @tab @tab 1
 ## @item @qcode{"Generalized Extreme Value"} @tab @tab @qcode{"gev"} @tab @tab 3
 ## @item @qcode{"Generalized Pareto"} @tab @tab @qcode{"gp"} @tab @tab 3
-## @item @qcode{"Hypergeometric"} @tab @tab @qcode{"hyge"} @tab @tab 4
-## @item @qcode{"Inverse Wishart"} @tab @tab @qcode{"iwish"} @tab @tab 3
-## @item @qcode{"Johnson SU"} @tab @tab @qcode{"jsu"} @tab @tab 2
+## @item @qcode{"Gumbel"} @tab @tab @qcode{"gumbel"} @tab @tab 2
+## @item @qcode{"Half-normal"} @tab @tab @qcode{"hn"} @tab @tab 2
+## @item @qcode{"Hypergeometric"} @tab @tab @qcode{"hyge"} @tab @tab 3
+## @item @qcode{"Inverse Gaussian"} @tab @tab @qcode{"invg"} @tab @tab 2
 ## @item @qcode{"Laplace"} @tab @tab @qcode{"laplace"} @tab @tab 2
-## @item @qcode{"Logistic"} @tab @tab @qcode{"logistic"} @tab @tab 2
+## @item @qcode{"Logistic"} @tab @tab @qcode{"logi"} @tab @tab 2
+## @item @qcode{"Log-Logistic"} @tab @tab @qcode{"logl"} @tab @tab 2
 ## @item @qcode{"Lognormal"} @tab @tab @qcode{"logn"} @tab @tab 2
-## @item @qcode{"Multinomial"} @tab @tab @qcode{"mn"} @tab @tab 1
-## @item @qcode{"Multivariate Normal"} @tab @tab @qcode{"mvn"} @tab @tab 2
-## @item @qcode{"Multivariate Student T"} @tab @tab @qcode{"mvt"} @tab @tab 2
 ## @item @qcode{"Nakagami"} @tab @tab @qcode{"naka"} @tab @tab 2
 ## @item @qcode{"Negative Binomial"} @tab @tab @qcode{"nbin"} @tab @tab 2
 ## @item @qcode{"Noncentral F-Distribution"} @tab @tab @qcode{"ncf"} @tab @tab 3
 ## @item @qcode{"Noncentral Student T"} @tab @tab @qcode{"nct"} @tab @tab 2
-## @item @qcode{"Noncentral Chi-Square"} @tab @tab @qcode{"ncx2"} @tab @tab 2
+## @item @qcode{"Noncentral Chi-Squared"} @tab @tab @qcode{"ncx2"} @tab @tab 2
 ## @item @qcode{"Normal"} @tab @tab @qcode{"norm"} @tab @tab 2
 ## @item @qcode{"Poisson"} @tab @tab @qcode{"poiss"} @tab @tab 1
 ## @item @qcode{"Rayleigh"} @tab @tab @qcode{"rayl"} @tab @tab 1
-## @item @qcode{"Standard Normal"} @tab @tab @qcode{"stdnormal"} @tab @tab 0
 ## @item @qcode{"Student T"} @tab @tab @qcode{"t"} @tab @tab 1
 ## @item @qcode{"Triangular"} @tab @tab @qcode{"tri"} @tab @tab 3
 ## @item @qcode{"Discrete Uniform"} @tab @tab @qcode{"unid"} @tab @tab 1
 ## @item @qcode{"Uniform"} @tab @tab @qcode{"unif"} @tab @tab 2
 ## @item @qcode{"Von Mises"} @tab @tab @qcode{"vm"} @tab @tab 2
 ## @item @qcode{"Weibull"} @tab @tab @qcode{"wbl"} @tab @tab 2
-## @item @qcode{"Wishart"} @tab @tab @qcode{"wish"} @tab @tab 3
 ## @end multitable
 ##
-## @seealso{cdf, icdf, random, bbspdf, betapdf, binopdf, burrpdf, bvnpdf,
-## cauchy_pdf, chi2pdf, copulapdf, evpdf, exppdf, fpdf, gampdf, geopdf, gevpdf,
-## gppdf, hygepdf, iwishpdf, jsupdf, laplace_pdf, logistic_pdf, lognpdf, mvnpdf,
-## mvtpdf, nakapdf, nbinpdf, ncfpdf, nctpdf, ncx2pdf, normpdf, poisspdf,
-## raylpdf, stdnormal_pdf, tpdf, tripdf, unidpdf, unifpdf, vmpdf, wblpdf,
-## wishpdf}
+## @seealso{cdf, icdf, random, betapdf, binopdf, bisapdf, burrpdf, cauchypdf,
+## chi2pdf, evpdf, exppdf, fpdf, gampdf, geopdf, gevpdf, gppdf, gumbelpdf,
+## hnpdf, hygepdf, invgpdf, laplacepdf, logipdf, loglpdf, lognpdf, nakapdf,
+## nbinpdf, ncfpdf, nctpdf, ncx2pdf, normpdf, poisspdf, raylpdf, tpdf, tripdf,
+## unidpdf, unifpdf, vmpdf, wblpdf}
 ## @end deftypefn
 
-function [retval] = pdf (name, varargin)
+function y = pdf (name, x, varargin)
+
   ## implemented functions
-  persistent allpdf = { ...
-    {"bbs"      , "Birnbaum-Saunders"},         @bbspdf,       3, ...
+  persistent allDF = { ...
     {"beta"     , "Beta"},                      @betapdf,      2, ...
     {"bino"     , "Binomial"},                  @binopdf,      2, ...
+    {"bisa"     , "Birnbaum-Saunders"},         @bisapdf,      2, ...
     {"burr"     , "Burr"},                      @burrpdf,      3, ...
-    {"bvn"      , "Bivariate Normal"},          @bvnpdf,       2, ...
-    {"cauchy"   , "Cauchy"},                    @cauchy_pdf,   2, ...
-    {"chi2"     , "Chi-square"},                @chi2pdf,      1, ...
-    {"copula"   , "Copula Family"},             @copulapdf,    2, ...
+    {"cauchy"   , "Cauchy"},                    @cauchypdf,    2, ...
+    {"chi2"     , "Chi-squared"},               @chi2pdf,      1, ...
     {"ev"       , "Extreme Value"},             @evpdf,        2, ...
     {"exp"      , "Exponential"},               @exppdf,       1, ...
     {"f"        , "F-Distribution"},            @fpdf,         2, ...
@@ -100,62 +109,68 @@ function [retval] = pdf (name, varargin)
     {"geo"      , "Geometric"},                 @geopdf,       1, ...
     {"gev"      , "Generalized Extreme Value"}, @gevpdf,       3, ...
     {"gp"       , "Generalized Pareto"},        @gppdf,        3, ...
-    {"hyge"     , "Hypergeometric"},            @hygepdf,      4, ...
-    {"iwish"    , "Inverse Wishart"},           @iwishpdf,     3, ...
-    {"jsu"      , "Johnson SU"},                @jsupdf,       2, ...
-    {"laplace"  , "Laplace"},                   @laplace_pdf,  2, ...
-    {"logistic" , "Logistic"},                  @logistic_pdf, 2, ...
+    {"gumbel"   , "Gumbel"},                    @gumbelpdf,    2, ...
+    {"hn"       , "Half-normal"},               @hnpdf,        2, ...
+    {"hyge"     , "Hypergeometric"},            @hygepdf,      3, ...
+    {"invg"     , "Inverse Gaussian"},          @invgpdf,      2, ...
+    {"laplace"  , "Laplace"},                   @laplacepdf,   2, ...
+    {"logi"     , "Logistic"},                  @logipdf,      2, ...
+    {"logl"     , "Log-Logistic"},              @loglpdf,      2, ...
     {"logn"     , "Lognormal"},                 @lognpdf,      2, ...
-    {"mvn"      , "Multivariate Normal"},       @mvnpdf,       2, ...
-    {"mvt"      , "Multivariate Student T"},    @mvtpdf,       2, ...
     {"naka"     , "Nakagami"},                  @nakapdf,      2, ...
     {"nbin"     , "Negative Binomial"},         @nbinpdf,      2, ...
     {"ncf"      , "Noncentral F-Distribution"}, @ncfpdf,       3, ...
     {"nct"      , "Noncentral Student T"},      @nctpdf,       2, ...
-    {"ncx2"     , "Noncentral Chi-Square"},     @ncx2pdf,      2, ...
+    {"ncx2"     , "Noncentral Chi-squared"},    @ncx2pdf,      2, ...
     {"norm"     , "Normal"},                    @normpdf,      2, ...
     {"poiss"    , "Poisson"},                   @poisspdf,     1, ...
     {"rayl"     , "Rayleigh"},                  @raylpdf,      1, ...
-    {"stdnormal", "Standard Normal"},           @stdnormal_pdf,0, ...
     {"t"        , "Student T"},                 @tpdf,         1, ...
     {"tri"      , "Triangular"},                @tripdf,       3, ...
     {"unid"     , "Discrete Uniform"},          @unidpdf,      1, ...
     {"unif"     , "Uniform"},                   @unifpdf,      2, ...
     {"vm"       , "Von Mises"},                 @vmpdf,        2, ...
-    {"wbl"      , "Weibull"},                   @wblpdf,       2, ...
-    {"wish"     , "Wishart"},                   @wishpdf,      3};
+    {"wbl"      , "Weibull"},                   @wblpdf,       2};
 
-  if (numel (varargin) < 1 || ! ischar (name))
-    print_usage ();
+  if (! ischar (name))
+    error ("pdf: distribution NAME must a char string.");
   endif
 
-  x = varargin{1};
-  varargin(1) = [];
+  ## Check X being numeric and real
+  if (! isnumeric (x))
+    error ("pdf: X must be numeric.");
+  elseif (! isreal (x))
+    error ("pdf: values in X must be real.");
+  endif
+
+  ## Get number of arguments
   nargs = numel (varargin);
 
-  pdfnames = allpdf(1:3:end);
-  pdfhandl = allpdf(2:3:end);
-  pdf_args = allpdf(3:3:end);
+  ## Get available functions
+  pdfnames = allDF(1:3:end);
+  pdfhandl = allDF(2:3:end);
+  pdf_args = allDF(3:3:end);
 
+  ## Search for PDF function
   idx = cellfun (@(x)any(strcmpi (name, x)), pdfnames);
-  ## Add special list
-  special = {"copula", "Copula family"};
 
   if (any (idx))
 
-    if (nargs > pdf_args{idx})
-      if (pdf_args{idx} == 1)
-        error ("pdf: %s takes only 1 extra argument.", name);
-      else
-        error ("pdf: %s takes up to %d extra arguments.", name, pdf_args{idx});
+    if (nargs == pdf_args{idx})
+      ## Check that all distribution parameters are numeric
+      if (! all (cellfun (@(x)isnumeric(x), (varargin))))
+        error ("pdf: distribution parameters must be numeric.");
       endif
-    endif
-
-    if (! any (strcmpi (name, special)))
-      retval = feval (pdfhandl{idx}, x, varargin{:});
+      ## Call appropriate iCDF
+      y = feval (pdfhandl{idx}, x, varargin{:});
 
     else
-      retval = feval (pdfhandl{idx}, varargin{1}, x, varargin{2:end});
+      if (pdf_args{idx} == 1)
+        error ("pdf: %s distribution requires 1 parameter.", name);
+      else
+        error ("pdf: %s distribution requires %d parameters.", ...
+               name, pdf_args{idx});
+      endif
 
     endif
 
@@ -165,22 +180,93 @@ function [retval] = pdf (name, varargin)
 
 endfunction
 
-%!test
-%! assert(pdf ("norm", 1, 0, 1), normpdf (1, 0, 1))
-%!test
-%! x = [0.2:0.2:0.6; 0.2:0.2:0.6];
-%! theta = [1; 2];
-%! assert (pdf ("copula", x, "Clayton", theta), copulapdf ("Clayton", x, theta))
-%!test
-%! x = [-1, 0, 1, 2, Inf];
-%! assert (pdf ("bbs", x, ones (1,5), ones (1,5), zeros (1,5)), ...
-%!         bbspdf (x, ones (1,5), ones (1,5), zeros (1,5)))
-%!test
-%! x = [1 2];
-%! mu = [0.5 1.5];
-%! sigma = [1.0 0.5; 0.5 1.0];
-%! assert (pdf ("multivariate normal", x, mu, sigma), ...
-%!         mvnpdf (x, mu, sigma), 0.001)
+## Test results
+%!shared x
+%! x = [1:5];
+%!assert (pdf ("Beta", x, 5, 2), betapdf (x, 5, 2))
+%!assert (pdf ("beta", x, 5, 2), betapdf (x, 5, 2))
+%!assert (pdf ("Binomial", x, 5, 2), binopdf (x, 5, 2))
+%!assert (pdf ("bino", x, 5, 2), binopdf (x, 5, 2))
+%!assert (pdf ("Birnbaum-Saunders", x, 5, 2), bisapdf (x, 5, 2))
+%!assert (pdf ("bisa", x, 5, 2), bisapdf (x, 5, 2))
+%!assert (pdf ("Burr", x, 5, 2, 2), burrpdf (x, 5, 2, 2))
+%!assert (pdf ("burr", x, 5, 2, 2), burrpdf (x, 5, 2, 2))
+%!assert (pdf ("Cauchy", x, 5, 2), cauchypdf (x, 5, 2))
+%!assert (pdf ("cauchy", x, 5, 2), cauchypdf (x, 5, 2))
+%!assert (pdf ("Chi-squared", x, 5), chi2pdf (x, 5))
+%!assert (pdf ("chi2", x, 5), chi2pdf (x, 5))
+%!assert (pdf ("Extreme Value", x, 5, 2), evpdf (x, 5, 2))
+%!assert (pdf ("ev", x, 5, 2), evpdf (x, 5, 2))
+%!assert (pdf ("Exponential", x, 5), exppdf (x, 5))
+%!assert (pdf ("exp", x, 5), exppdf (x, 5))
+%!assert (pdf ("F-Distribution", x, 5, 2), fpdf (x, 5, 2))
+%!assert (pdf ("f", x, 5, 2), fpdf (x, 5, 2))
+%!assert (pdf ("Gamma", x, 5, 2), gampdf (x, 5, 2))
+%!assert (pdf ("gam", x, 5, 2), gampdf (x, 5, 2))
+%!assert (pdf ("Geometric", x, 5), geopdf (x, 5))
+%!assert (pdf ("geo", x, 5), geopdf (x, 5))
+%!assert (pdf ("Generalized Extreme Value", x, 5, 2, 2), gevpdf (x, 5, 2, 2))
+%!assert (pdf ("gev", x, 5, 2, 2), gevpdf (x, 5, 2, 2))
+%!assert (pdf ("Generalized Pareto", x, 5, 2, 2), gppdf (x, 5, 2, 2))
+%!assert (pdf ("gp", x, 5, 2, 2), gppdf (x, 5, 2, 2))
+%!assert (pdf ("Gumbel", x, 5, 2), gumbelpdf (x, 5, 2))
+%!assert (pdf ("gumbel", x, 5, 2), gumbelpdf (x, 5, 2))
+%!assert (pdf ("Half-normal", x, 5, 2), hnpdf (x, 5, 2))
+%!assert (pdf ("hn", x, 5, 2), hnpdf (x, 5, 2))
+%!assert (pdf ("Hypergeometric", x, 5, 2, 2), hygepdf (x, 5, 2, 2))
+%!assert (pdf ("hyge", x, 5, 2, 2), hygepdf (x, 5, 2, 2))
+%!assert (pdf ("Inverse Gaussian", x, 5, 2), invgpdf (x, 5, 2))
+%!assert (pdf ("invg", x, 5, 2), invgpdf (x, 5, 2))
+%!assert (pdf ("Laplace", x, 5, 2), laplacepdf (x, 5, 2))
+%!assert (pdf ("laplace", x, 5, 2), laplacepdf (x, 5, 2))
+%!assert (pdf ("Logistic", x, 5, 2), logipdf (x, 5, 2))
+%!assert (pdf ("logi", x, 5, 2), logipdf (x, 5, 2))
+%!assert (pdf ("Log-Logistic", x, 5, 2), loglpdf (x, 5, 2))
+%!assert (pdf ("logl", x, 5, 2), loglpdf (x, 5, 2))
+%!assert (pdf ("Lognormal", x, 5, 2), lognpdf (x, 5, 2))
+%!assert (pdf ("logn", x, 5, 2), lognpdf (x, 5, 2))
+%!assert (pdf ("Nakagami", x, 5, 2), nakapdf (x, 5, 2))
+%!assert (pdf ("naka", x, 5, 2), nakapdf (x, 5, 2))
+%!assert (pdf ("Negative Binomial", x, 5, 2), nbinpdf (x, 5, 2))
+%!assert (pdf ("nbin", x, 5, 2), nbinpdf (x, 5, 2))
+%!assert (pdf ("Noncentral F-Distribution", x, 5, 2, 2), ncfpdf (x, 5, 2, 2))
+%!assert (pdf ("ncf", x, 5, 2, 2), ncfpdf (x, 5, 2, 2))
+%!assert (pdf ("Noncentral Student T", x, 5, 2), nctpdf (x, 5, 2))
+%!assert (pdf ("nct", x, 5, 2), nctpdf (x, 5, 2))
+%!assert (pdf ("Noncentral Chi-Squared", x, 5, 2), ncx2pdf (x, 5, 2))
+%!assert (pdf ("ncx2", x, 5, 2), ncx2pdf (x, 5, 2))
+%!assert (pdf ("Normal", x, 5, 2), normpdf (x, 5, 2))
+%!assert (pdf ("norm", x, 5, 2), normpdf (x, 5, 2))
+%!assert (pdf ("Poisson", x, 5), poisspdf (x, 5))
+%!assert (pdf ("poiss", x, 5), poisspdf (x, 5))
+%!assert (pdf ("Rayleigh", x, 5), raylpdf (x, 5))
+%!assert (pdf ("rayl", x, 5), raylpdf (x, 5))
+%!assert (pdf ("Student T", x, 5), tpdf (x, 5))
+%!assert (pdf ("t", x, 5), tpdf (x, 5))
+%!assert (pdf ("Triangular", x, 5, 2, 2), tripdf (x, 5, 2, 2))
+%!assert (pdf ("tri", x, 5, 2, 2), tripdf (x, 5, 2, 2))
+%!assert (pdf ("Discrete Uniform", x, 5), unidpdf (x, 5))
+%!assert (pdf ("unid", x, 5), unidpdf (x, 5))
+%!assert (pdf ("Uniform", x, 5, 2), unifpdf (x, 5, 2))
+%!assert (pdf ("unif", x, 5, 2), unifpdf (x, 5, 2))
+%!assert (pdf ("Von Mises", x, 5, 2), vmpdf (x, 5, 2))
+%!assert (pdf ("vm", x, 5, 2), vmpdf (x, 5, 2))
+%!assert (pdf ("Weibull", x, 5, 2), wblpdf (x, 5, 2))
+%!assert (pdf ("wbl", x, 5, 2), wblpdf (x, 5, 2))
 
-%!error pdf ("Birnbaum-Saunders", 1, 1, 2, 3, 4)
-%!error pdf ("some", 1, 2)
+## Test input validation
+%!error<pdf: distribution NAME must a char string.> pdf (1)
+%!error<pdf: distribution NAME must a char string.> pdf ({"beta"})
+%!error<pdf: X must be numeric.> pdf ("beta", {[1 2 3 4 5]})
+%!error<pdf: X must be numeric.> pdf ("beta", "text")
+%!error<pdf: values in X must be real.> pdf ("beta", 1+i)
+%!error<pdf: distribution parameters must be numeric.> ...
+%! pdf ("Beta", x, "a", 2)
+%!error<pdf: distribution parameters must be numeric.> ...
+%! pdf ("Beta", x, 5, "")
+%!error<pdf: distribution parameters must be numeric.> ...
+%! pdf ("Beta", x, 5, {2})
+%!error<pdf: chi2 distribution requires 1 parameter.> pdf ("chi2", x)
+%!error<pdf: Beta distribution requires 2 parameters.> pdf ("Beta", x, 5)
+%!error<pdf: Burr distribution requires 3 parameters.> pdf ("Burr", x, 5)
+%!error<pdf: Burr distribution requires 3 parameters.> pdf ("Burr", x, 5, 2)

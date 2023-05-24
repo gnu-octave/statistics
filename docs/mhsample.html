@@ -206,6 +206,7 @@ rand,
  ## Define function to sample
  d = 2;
  mu = [-1; 2];
+ rand ("seed", 5)  # for reproducibility
  Sigma = rand (d);
  Sigma = (Sigma + Sigma');
  Sigma += eye (d) * abs (eigs (Sigma, 1, "sa")) * 1.1;
@@ -216,6 +217,7 @@ rand,
  sym = true;
  K = 500;
  m = 10;
+ rand ("seed", 8)  # for reproducibility
  proprnd = @(x) (rand (size (x)) - .5) * 3 + x;
  [smpl, accept] = mhsample (start, nsamples, "pdf", pdf, "proprnd", proprnd, ...
                             "symmetric", sym, "burnin", K, "thin", m);
@@ -235,9 +237,9 @@ rand,
  printf ("The actual error %f\n", trueerr);
  mesh (x, y, reshape (f([x(:), y(:)]), size(x)), "facecolor", "None");
 
-Monte Carlo integral estimate int f(x) dx = 0.266774
-Monte Carlo integral error estimate 0.023590
-The actual error 0.004975
+Monte Carlo integral estimate int f(x) dx = 0.242643
+Monte Carlo integral error estimate 0.028039
+The actual error 0.019156
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
@@ -271,6 +273,7 @@ The actual error 0.004975
  ## Integrate truncated normal distribution to find normilization constant
  pdf = @(x) exp (-.5*x.^2)/(pi^.5*2^.5);
  nsamples = 1e3;
+ rand ("seed", 5)  # for reproducibility
  proprnd = @(x) (rand (size (x)) - .5) * 3 + x;
  [smpl, accept] = mhsample (1, nsamples, "pdf", pdf, "proprnd", proprnd, ...
                             "symmetric", true, "thin", 4);
@@ -286,9 +289,9 @@ The actual error 0.004975
  printf ("Monte Carlo integral error estimate %f\n", errest);
  printf ("The actual error %f\n", trueerr);
 
-Monte Carlo integral estimate int f(x) dx = 2.398843
-Monte Carlo integral error estimate 0.016088
-The actual error 0.006267
+Monte Carlo integral estimate int f(x) dx = 2.346204
+Monte Carlo integral error estimate 0.019410
+The actual error 0.046372
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">

@@ -71,33 +71,97 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>x</var> = <b>nbininv</b><i> (<var>p</var>, <var>n</var>, <var>ps</var>)</i></dt>
+<dt><u>statistics:</u> <var>x</var> = <b>nbininv</b><i> (<var>p</var>, <var>r</var>, <var>ps</var>)</i></dt>
 </dl>
 
 <p> Inverse of the negative binomial cumulative distribution function (iCDF).
 </p>
 <div class="ms-5">
-<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF)
- at <var>p</var> of the negative binomial distribution with parameters <var>n</var> and
- <var>ps</var>.  The size of <var>x</var> is the common size of <var>p</var>, <var>n</var>, and
- <var>ps</var>.  A scalar input functions as a constant matrix of the same size as
- the other inputs.
+<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF) of
+ the negative binomial distribution with parameters <var>r</var> and <var>ps</var>,
+ where <var>r</var> is the number of successes until the experiment is stopped and
+ <var>ps</var> is the probability of success in each experiment, given the
+ probability in <var>p</var>.  The size of <var>x</var> is the common size of <var>p</var>,
+ <var>r</var>, and <var>ps</var>.  A scalar input functions as a constant matrix of the
+ same size as the other inputs.
 </p>
-<p> When <var>n</var> is integer this is the Pascal distribution.
- When <var>n</var> is extended to real numbers this is the Polya distribution.
+<p> When <var>r</var> is an integer, the negative binomial distribution is also known
+ as the Pascal distribution and it models the number of failures in <var>x</var>
+ before a specified number of successes is reached in a series of independent,
+ identical trials.  Its parameters are the probability of success in a single
+ trial, <var>ps</var>, and the number of successes, <var>r</var>.  A special case of the
+ negative binomial distribution, when <code><var>r</var> = 1</code>, is the geometric
+ distribution, which models the number of failures before the first success.
 </p>
-<p> The number of failures in a Bernoulli experiment with success probability
- <var>ps</var> before the <var>n</var>-th success follows this distribution.
+<p> <var>r</var> can also have non-integer positive values, in which form the negative
+ binomial distribution, also known as the Polya distribution, has no
+ interpretation in terms of repeated trials, but, like the Poisson
+ distribution, it is useful in modeling count data.  The negative binomial
+ distribution is more general than the Poisson distribution because it has a
+ variance that is greater than its mean, making it suitable for count data
+ that do not meet the assumptions of the Poisson distribution.  In the limit,
+ as <var>r</var> increases to infinity, the negative binomial distribution
+ approaches the Poisson distribution.
+</p>
+<p> Further information about the negative binomial distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Negative_binomial_distribution">https://en.wikipedia.org/wiki/Negative_binomial_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="nbininv.html">nbininv</a>, 
   <a href="nbinpdf.html">nbinpdf</a>, 
   <a href="nbinrnd.html">nbinrnd</a>, 
+  <a href="nbinfit.html">nbinfit</a>, 
+  <a href="nbinlike.html">nbinlike</a>, 
   <a href="nbinstat.html">nbinstat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/nbininv.m">nbininv</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/nbininv.m">nbininv</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various iCDFs from the negative binomial distribution
+ p = 0.001:0.001:0.999;
+ x1 = nbininv (p, 2, 0.15);
+ x2 = nbininv (p, 5, 0.2);
+ x3 = nbininv (p, 4, 0.4);
+ x4 = nbininv (p, 10, 0.3);
+ plot (p, x1, "-r", p, x2, "-g", p, x3, "-k", p, x4, "-m")
+ grid on
+ ylim ([0, 40])
+ legend ({"r = 2, ps = 0.15", "r = 5, ps = 0.2", "r = 4, p = 0.4", ...
+          "r = 10, ps = 0.3"}, "location", "northwest")
+ title ("Negative binomial iCDF")
+ xlabel ("probability")
+ ylabel ("values in x (number of failures)")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/nbininv_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

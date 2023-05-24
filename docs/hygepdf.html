@@ -72,17 +72,17 @@
         <div class="card-body">
 <dl>
 <dt><u>statistics:</u> <var>y</var> = <b>hygepdf</b><i> (<var>x</var>, <var>t</var>, <var>m</var>, <var>n</var>)</i></dt>
-<dt><u>statistics:</u> <var>y</var> = <b>hygepdf</b><i> (&hellip;, &quot;vectorexpand&quot;)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>hygepdf</b><i> (&hellip;, <code>&quot;vectorexpand&quot;</code>)</i></dt>
 </dl>
 
 <p> Hypergeometric probability density function (PDF).
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the probability density function (PDF)
- at <var>x</var> of the hypergeometric distribution with parameters <var>t</var>,
- <var>m</var>, and <var>n</var>.  The size of <var>y</var> is the common size of the input
- parameters.  A scalar input functions as a constant matrix of the same size
- as the other inputs.
+ of the hypergeometric distribution with parameters <var>t</var>, <var>m</var>, and
+ <var>n</var>.  The size of <var>y</var> is the common size of <var>x</var>, <var>t</var>,
+ <var>m</var>, and <var>n</var>.  A scalar input functions as a constant matrix of the
+ same size as the other inputs.
 </p>
 <p> This is the probability of obtaining <var>x</var> marked items when randomly
  drawing a sample of size <var>n</var> without replacement from a population of
@@ -98,6 +98,9 @@
  <code><var>r</var> x <var>s</var></code>, where <code><var>r</var> = numel (<var>t</var>)</code>, and
  <code><var>s</var> = numel (<var>x</var>)</code>.
 </p>
+<p> Further information about the hypergeometric distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Hypergeometric_distribution">https://en.wikipedia.org/wiki/Hypergeometric_distribution</a>
+</p>
 <p> <strong>See also: </strong>
   <a href="hygecdf.html">hygecdf</a>, 
   <a href="hygeinv.html">hygeinv</a>, 
@@ -105,8 +108,53 @@
   <a href="hygestat.html">hygestat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/hygepdf.m">hygepdf</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/hygepdf.m">hygepdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various PDFs from the hypergeometric distribution
+ x = 0:60;
+ y1 = hygepdf (x, 500, 50, 100);
+ y2 = hygepdf (x, 500, 60, 200);
+ y3 = hygepdf (x, 500, 70, 300);
+ plot (x, y1, "*b", x, y2, "*g", x, y3, "*r")
+ grid on
+ xlim ([0, 60])
+ ylim ([0, 0.18])
+ legend ({"t = 500, m = 50, μ = 100", "t = 500, m = 60, μ = 200", ...
+          "t = 500, m = 70, μ = 300"}, "location", "northeast")
+ title ("Hypergeometric PDF")
+ xlabel ("values in x (number of successes)")
+ ylabel ("density")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/hygepdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

@@ -1,4 +1,5 @@
 ## Copyright (C) 2003 Alberto Terruzzi <t-albert@libero.it>
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,112 +17,153 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{table} =} tabulate (@var{data}, @var{edges})
+## @deftypefn  {statistics} {} tabulate (@var{x})
+## @deftypefnx {statistics} {@var{table} =} tabulate (@var{x})
 ##
-## Compute a frequency table.
+## Calculate a frequency table.
 ##
-## For vector data, the function counts the number of
-## values in data that fall between the elements in the edges vector
-## (which must contain monotonically non-decreasing values). @var{table} is a
-## matrix.
-## The first column of @var{table} is the number of bin, the second
-## is the number of instances in each class (absolute frequency). The
-## third column contains the percentage of each value (relative
-## frequency) and the fourth column contains the cumulative frequency.
+## @code{tabulate (x)} displays a frequency table of the data in the vector
+## @var{x}.  For each unique value in @var{x}, the tabulate function shows the
+## number of instances and percentage of that value in @var{x}.
 ##
-## If @var{edges} is missed the width of each class is unitary, if @var{edges}
-## is a scalar then represent the number of classes, or you can define the
-## width of each bin.
-## @var{table}(@var{k}, 2) will count the value @var{data} (@var{i}) if
-## @var{edges} (@var{k}) <= @var{data} (@var{i}) < @var{edges} (@var{k}+1).
-## The  last bin will count the value of @var{data} (@var{i}) if
-## @var{edges}(@var{k}) <= @var{data} (@var{i}) <=  @var{edges} (@var{k}+1).
-## Values outside the values in @var{edges} are not counted.  Use -inf and inf
-## in @var{edges} to include all values.
-## Tabulate with no output arguments returns a formatted table in the
-## command window.
+## @code{@var{table} = tabulate (@var{x})} returns the frequency table,
+## @var{table}, as a numeric matrix when @var{x} is numeric and as a cell array
+## otherwise.  When an output argument is requested, @code{tabulate} does not
+## print the frequency table in the command window.
 ##
-## Example
+## If @var{x} is numeric, any missing values (@qcode{NaNs}) are ignored.
 ##
-## @example
-## sphere_radius = [1:0.05:2.5];
-## tabulate (sphere_radius)
-## @end example
-##
-## Tabulate returns 2 bins, the first contains the sphere with radius
-## between 1 and 2 mm excluded, and the second one contains the sphere with
-## radius between 2 and 3 mm.
-##
-## @example
-## tabulate (sphere_radius, 10)
-## @end example
-##
-## Tabulate returns ten bins.
-##
-## @example
-## tabulate (sphere_radius, [1, 1.5, 2, 2.5])
-## @end example
-##
-## Tabulate returns three bins, the first contains the sphere with radius
-## between 1 and 1.5 mm excluded, the second one contains the sphere with
-## radius between 1.5 and 2 mm excluded, and the third contains the sphere with
-## radius between 2 and 2.5 mm.
-##
-## @example
-## bar (table (:, 1), table (:, 2))
-## @end example
-##
-## draw histogram.
+## If all the elements of @var{x} are positive integers, then the frequency
+## table includes 0 counts for the integers between 1 and @qcode{max (@var{x})}
+## that do not appear in @var{x}.
 ##
 ## @seealso{bar, pareto}
 ## @end deftypefn
 
-function table = tabulate (varargin)
+function table = tabulate (x)
 
-  if nargin < 1 || nargin > 2
-    print_usage;
+  ## Check input for being either numeric or a cell array
+  if (! (isnumeric (x) && isvector (x)) &&
+      ! (iscellstr (x) && isvector (x)) &&
+      ! ischar (x))
+    error (strcat (["tabulate: X must be either a numeric vector, a"], ...
+                   [" vector cell array of strings, or a character matrix."]));
   endif
 
-  data = varargin{1};
-  if isvector (data) != 1
-    error ("data must be a vector.");
+  ## Remove missing values (NaNs) if numeric
+  if (isnumeric (x))
+    x(isnan (x)) = [];
   endif
-  n = length(data);
-  m = min(data);
-  M = max(data);
 
-  if nargin == 1 edges = 1:1:max(data)+1;
-  else edges = varargin{2};
-  end
+  ## Handle positive integers separately
+  if (isnumeric (x) && all (x == fix (x)) && all (x > 0));
+    [count, value] = hist (x, (1:max (x)));
+    posint = true;
+  else
+    [g, gn, gl] = grp2idx (x);
+    [count, value] = hist (g, (1:length (gn)));
+    posint = false;
+  endif
 
-  if isscalar(edges)
-    h=(M-m)/edges;
-    edges = [m:h:M];
-  end
+  ## Calculate percentages
+  percent = 100 * count ./ sum (count);
 
-  # number of classes
-  bins=length(edges)-1;
-  # initialize freqency table
-  freqtable = zeros(bins,4);
-
-  for k=1:1:bins;
-    if k != bins
-      freqtable(k,2)=length(find (data >= edges(k) & data < edges(k+1)));
+  ## Display results is no output argument
+  if (nargout == 0)
+    if (posint)
+      fprintf ("   Value    Count    Percent\n");
+      fprintf ("   %5d    %5d     %6.2f%%\n", value', count', percent');
     else
-      freqtable(k,2)=length(find (data >= edges(k) & data <= edges(k+1)));
-    end
-    if k == 1 freqtable (k,4) = freqtable(k,2);
-    else freqtable(k,4) = freqtable(k-1,4) + freqtable(k,2);
-    end
-  end
-
-  freqtable(:,1) = edges(1:end-1)(:);
-  freqtable(:,3) = 100*freqtable(:,2)/n;
-
-  if nargout == 0
-    disp("     bin     Fa       Fr%        Fc");
-    printf("%8g  %5d    %6.2f%%    %5d\n",freqtable');
-  else table = freqtable;
-  end
+      valw = max (cellfun ("length", gn));
+      valw = max ([5, min([50, valw])]);
+      header = sprintf ("  %%%ds    %%5s    %%6s\n", valw);
+      result = sprintf ("  %%%ds    %%5d     %%6.2f%%%%\n", valw);
+      fprintf (header, "Value", "Count", "Percent");
+      for i = 1:length (gn)
+        fprintf (result, gn{i}, count(i), percent(i));
+      endfor
+    endif
+  ## Create output table
+  else
+    if (posint)
+      table = [value', count', percent'];
+    elseif (isnumeric (x))
+      table = [gl, count', percent'];
+    else
+      table = [gn, num2cell([count', percent'])];
+    endif
+  endif
 
 endfunction
+
+%!demo
+%! ## Generate a frequency table for a vector of data in a cell array
+%! load patients
+%!
+%! ## Display the first seven entries of the Gender variable
+%! gender = Gender(1:7)
+%!
+%! ## Compute the equency table that shows the number and
+%! ## percentage of Male and Female patients
+%! tabulate (Gender)
+
+%!demo
+%! ## Create a frequency table for a vector of positive integers
+%! load patients
+%!
+%! ## Display the first seven entries of the Gender variable
+%! height = Height(1:7)
+%!
+%! ## Create a frequency table that shows, in its second and third columns,
+%! ## the number and percentage of patients with a particular height.
+%! table = tabulate (Height);
+%!
+%! ## Display the first and last seven entries of the frequency table
+%! first = table(1:7,:)
+%!
+%! last = table(end-6:end,:)
+
+%!demo
+%! ## Create a frequency table from a character array
+%! load carsmall
+%!
+%! ## Tabulate the data in the Origin variable, which shows the
+%! ## country of origin of each car in the data set
+%! tabulate (Origin)
+
+%!demo
+%! ## Create a frequency table from a numeric vector with NaN values
+%! load carsmall
+%!
+%! ## The carsmall dataset contains measurements of 100 cars
+%! total_cars = length (MPG)
+%! ## For six cars, the MPG value is missing
+%! missingMPG = length (MPG(isnan (MPG)))
+%!
+%! ## Create a frequency table using MPG
+%! tabulate (MPG)
+%! table = tabulate (MPG);
+%!
+%! ## Only 94 cars were used
+%! valid_cars = sum (table(:,2))
+
+%!test
+%! load patients
+%! table = tabulate (Gender);
+%! assert (table{1,1}, "Male");
+%! assert (table{2,1}, "Female");
+%! assert (table{1,2}, 47);
+%! assert (table{2,2}, 53);
+%!test
+%! load patients
+%! table = tabulate (Height);
+%! assert (table(end-4,:), [68, 15, 15]);
+%! assert (table(end-3,:), [69, 8, 8]);
+%! assert (table(end-2,:), [70, 11, 11]);
+%! assert (table(end-1,:), [71, 10, 10]);
+%! assert (table(end,:), [72, 4, 4]);
+
+%!error<tabulate: X must be either a numeric vector> tabulate (ones (3))
+%!error<tabulate: X must be either a numeric vector> tabulate ({1, 2, 3, 4})
+%!error<tabulate: X must be either a numeric vector> ...
+%! tabulate ({"a", "b"; "a", "c"})

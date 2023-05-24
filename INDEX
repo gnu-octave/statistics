@@ -39,6 +39,7 @@ Data Manipulation
  standardizeMissing
  tabulate
 Descriptive Statistics
+ cdfcalc
  cl_multinom
  geomean
  grpstats
@@ -54,13 +55,13 @@ Descriptive Statistics
  trimmean
  var
 Distributions
- bbscdf bbsinv bbspdf bbsrnd
  betacdf betainv betapdf betarnd
  binocdf binoinv binopdf binornd
+ bisacdf bisainv bisapdf bisarnd
  burrcdf burrinv burrpdf burrrnd
  bvncdf
  bvtcdf
- cauchy_cdf cauchy_inv cauchy_pdf cauchy_rnd
+ cauchycdf cauchyinv cauchypdf cauchyrnd
  chi2cdf chi2inv chi2pdf chi2rnd
  copulacdf copulapdf copularnd
  evcdf evinv evpdf evrnd
@@ -70,11 +71,15 @@ Distributions
  geocdf geoinv geopdf geornd
  gevcdf gevinv gevpdf gevrnd
  gpcdf gpinv gppdf gprnd
+ gumbelcdf gumbelinv gumbelpdf gumbelrnd
+ hncdf hninv hnpdf hnrnd
  hygecdf hygeinv hygepdf hygernd
+ invgcdf invginv invgpdf invgrnd
  iwishpdf iwishrnd
  jsucdf jsupdf
- laplace_cdf laplace_inv laplace_pdf laplace_rnd
- logistic_cdf logistic_inv logistic_pdf logistic_rnd
+ laplacecdf laplaceinv laplacepdf laplacernd
+ logicdf logiinv logipdf logirnd
+ loglcdf loglinv loglpdf loglrnd
  logncdf logninv lognpdf lognrnd
  mnpdf mnrnd
  mvncdf mvnpdf mvnrnd
@@ -88,17 +93,23 @@ Distributions
  normcdf norminv normpdf normrnd
  poisscdf poissinv poisspdf poissrnd
  raylcdf raylinv raylpdf raylrnd
- stdnormal_cdf stdnormal_inv stdnormal_pdf stdnormal_rnd
  tcdf tinv tpdf trnd
  tricdf triinv tripdf trirnd
  unidcdf unidinv unidpdf unidrnd
  unifcdf unifinv unifpdf unifrnd
- vmcdf vmpdf vmrnd
+ vmcdf vminv vmpdf vmrnd
  wblcdf wblinv wblpdf wblrnd
  wienrnd
  wishpdf wishrnd
 Distribution Fitting
- cdfcalc
+ betafit
+ betalike
+ binofit
+ binolike
+ bisafit
+ bisalike
+ burrfit
+ burrlike
  evfit
  evlike
  expfit
@@ -110,8 +121,30 @@ Distribution Fitting
  gevlike
  gpfit
  gplike
+ gumbelfit
+ gumbellike
+ hnfit
+ hnlike
+ invgfit
+ invglike
+ logifit
+ logilike
+ loglfit
+ logllike
+ lognfit
+ lognlike
+ nakafit
+ nakalike
+ nbinfit
+ nbinlike
  normfit
  normlike
+ poissfit
+ poisslike
+ raylfit
+ rayllike
+ wblfit
+ wbllike
 Distribution Statistics
  betastat
  binostat
@@ -171,6 +204,7 @@ Hypothesis Testing
  kstest2
  levene_test
  manova1
+ mcnemar_test
  multcompare
  ranksum
  regression_ftest
@@ -194,6 +228,7 @@ Plotting
  confusionchart
  dendrogram
  ecdf
+ einstein
  gscatter
  histfit
  hist3
@@ -218,6 +253,9 @@ Regression
  regress
  regress_gp
  stepwisefit
+Transforms
+ logit
+ probit
 Wrappers
  cdf
  icdf

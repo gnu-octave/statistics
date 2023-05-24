@@ -71,60 +71,27 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>table</var> = <b>tabulate</b><i> (<var>data</var>, <var>edges</var>)</i></dt>
+<dt><u>statistics:</u> <b>tabulate</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>table</var> = <b>tabulate</b><i> (<var>x</var>)</i></dt>
 </dl>
 
-<p> Compute a frequency table.
+<p> Calculate a frequency table.
 </p>
 <div class="ms-5">
-<p> For vector data, the function counts the number of
- values in data that fall between the elements in the edges vector
- (which must contain monotonically non-decreasing values). <var>table</var> is a
- matrix.
- The first column of <var>table</var> is the number of bin, the second
- is the number of instances in each class (absolute frequency). The
- third column contains the percentage of each value (relative
- frequency) and the fourth column contains the cumulative frequency.
+<p> <code>tabulate (x)</code> displays a frequency table of the data in the vector
+ <var>x</var>.  For each unique value in <var>x</var>, the tabulate function shows the
+ number of instances and percentage of that value in <var>x</var>.
 </p>
-<p> If <var>edges</var> is missed the width of each class is unitary, if <var>edges</var>
- is a scalar then represent the number of classes, or you can define the
- width of each bin.
- <var>table</var>(<var>k</var>, 2) will count the value <var>data</var> (<var>i</var>) if
- <var>edges</var> (<var>k</var>) &lt;= <var>data</var> (<var>i</var>) &lt; <var>edges</var> (<var>k</var>+1).
- The  last bin will count the value of <var>data</var> (<var>i</var>) if
- <var>edges</var>(<var>k</var>) &lt;= <var>data</var> (<var>i</var>) &lt;=  <var>edges</var> (<var>k</var>+1).
- Values outside the values in <var>edges</var> are not counted.  Use -inf and inf
- in <var>edges</var> to include all values.
- Tabulate with no output arguments returns a formatted table in the
- command window.
+<p> <code><var>table</var> = tabulate (<var>x</var>)</code> returns the frequency table,
+ <var>table</var>, as a numeric matrix when <var>x</var> is numeric and as a cell array
+ otherwise.  When an output argument is requested, <code>tabulate</code> does not
+ print the frequency table in the command window.
 </p>
-<p> Example
+<p> If <var>x</var> is numeric, any missing values (<code>NaNs</code>) are ignored.
 </p>
- <table><tr><td>&nbsp;</td><td><pre class="example"> sphere_radius = [1:0.05:2.5];
- tabulate (sphere_radius)
- </pre></td></tr></table>
-
-<p> Tabulate returns 2 bins, the first contains the sphere with radius
- between 1 and 2 mm excluded, and the second one contains the sphere with
- radius between 2 and 3 mm.
-</p>
- <table><tr><td>&nbsp;</td><td><pre class="example"> tabulate (sphere_radius, 10)
- </pre></td></tr></table>
-
-<p> Tabulate returns ten bins.
-</p>
- <table><tr><td>&nbsp;</td><td><pre class="example"> tabulate (sphere_radius, [1, 1.5, 2, 2.5])
- </pre></td></tr></table>
-
-<p> Tabulate returns three bins, the first contains the sphere with radius
- between 1 and 1.5 mm excluded, the second one contains the sphere with
- radius between 1.5 and 2 mm excluded, and the third contains the sphere with
- radius between 2 and 2.5 mm.
-</p>
- <table><tr><td>&nbsp;</td><td><pre class="example"> bar (table (:, 1), table (:, 2))
- </pre></td></tr></table>
-
-<p> draw histogram.
+<p> If all the elements of <var>x</var> are positive integers, then the frequency
+ table includes 0 counts for the integers between 1 and <code>max (<var>x</var>)</code>
+ that do not appear in <var>x</var>.
 </p>
 <p> <strong>See also: </strong>
 bar, 
@@ -133,6 +100,253 @@ pareto
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/tabulate.m">tabulate</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate a frequency table for a vector of data in a cell array
+ load patients
+
+ ## Display the first seven entries of the Gender variable
+ gender = Gender(1:7)
+
+ ## Compute the equency table that shows the number and
+ ## percentage of Male and Female patients
+ tabulate (Gender)
+
+gender =
+{
+  [1,1] = Male
+  [2,1] = Male
+  [3,1] = Female
+  [4,1] = Female
+  [5,1] = Female
+  [6,1] = Female
+  [7,1] = Female
+}
+
+   Value    Count    Percent
+    Male       47      47.00%
+  Female       53      53.00%
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a frequency table for a vector of positive integers
+ load patients
+
+ ## Display the first seven entries of the Gender variable
+ height = Height(1:7)
+
+ ## Create a frequency table that shows, in its second and third columns,
+ ## the number and percentage of patients with a particular height.
+ table = tabulate (Height);
+
+ ## Display the first and last seven entries of the frequency table
+ first = table(1:7,:)
+
+ last = table(end-6:end,:)
+
+height =
+
+   71
+   69
+   64
+   67
+   64
+   68
+   64
+
+first =
+
+   1   0   0
+   2   0   0
+   3   0   0
+   4   0   0
+   5   0   0
+   6   0   0
+   7   0   0
+
+last =
+
+   66   15   15
+   67    6    6
+   68   15   15
+   69    8    8
+   70   11   11
+   71   10   10
+   72    4    4
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 3
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a frequency table from a character array
+ load carsmall
+
+ ## Tabulate the data in the Origin variable, which shows the
+ ## country of origin of each car in the data set
+ tabulate (Origin)
+
+    Value    Count    Percent
+      USA       69      69.00%
+   France        4       4.00%
+    Japan       15      15.00%
+  Germany        9       9.00%
+   Sweden        2       2.00%
+    Italy        1       1.00%
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 4
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a frequency table from a numeric vector with NaN values
+ load carsmall
+
+ ## The carsmall dataset contains measurements of 100 cars
+ total_cars = length (MPG)
+ ## For six cars, the MPG value is missing
+ missingMPG = length (MPG(isnan (MPG)))
+
+ ## Create a frequency table using MPG
+ tabulate (MPG)
+ table = tabulate (MPG);
+
+ ## Only 94 cars were used
+ valid_cars = sum (table(:,2))
+
+total_cars = 100
+missingMPG = 6
+  Value    Count    Percent
+     18        4       4.26%
+     15        5       5.32%
+     16        2       2.13%
+     17        1       1.06%
+     14        5       5.32%
+     24        4       4.26%
+     22        4       4.26%
+     21        2       2.13%
+     27        6       6.38%
+     26        4       4.26%
+     25        5       5.32%
+     10        2       2.13%
+     11        1       1.06%
+      9        1       1.06%
+     28        4       4.26%
+   17.5        2       2.13%
+   15.5        1       1.06%
+   14.5        1       1.06%
+   22.5        1       1.06%
+     29        3       3.19%
+   24.5        1       1.06%
+     33        1       1.06%
+     20        2       2.13%
+   18.5        1       1.06%
+   29.5        1       1.06%
+     32        4       4.26%
+   26.5        1       1.06%
+     13        4       4.26%
+     19        2       2.13%
+   16.5        2       2.13%
+     34        2       2.13%
+     31        3       3.19%
+     23        1       1.06%
+     36        5       5.32%
+     37        1       1.06%
+     38        4       4.26%
+     44        1       1.06%
+valid_cars = 94
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

@@ -71,34 +71,35 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>ncx2cdf</b><i> (<var>x</var>, <var>df</var>, <var>delta</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>ncx2cdf</b><i> (<var>x</var>, <var>df</var>, <var>delta</var>, <var>uflag</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>ncx2cdf</b><i> (<var>x</var>, <var>df</var>, <var>lambda</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>ncx2cdf</b><i> (<var>x</var>, <var>df</var>, <var>lambda</var>, <code>&quot;upper&quot;</code>)</i></dt>
 </dl>
 
-<p> Noncentral Chi-Square cumulative distribution function (CDF).
+<p> Noncentral chi-squared cumulative distribution function (CDF).
 </p>
 <div class="ms-5">
-<p> <code><var>p</var> = ncx2cdf (<var>x</var>, <var>df</var>, <var>delta</var>)</code> returns the
- noncentral chi-square cdf with <var>df</var> degrees of freedom and noncentrality
- parameter <var>delta</var> at the values of <var>x</var>.
+<p> For each element of <var>x</var>, compute the cumulative distribution function
+ (CDF) of the noncentral chi-squared distribution with <var>df</var> degrees of
+ freedom and noncentrality parameter <var>lambda</var>.  The size of <var>p</var> is the
+ common size of <var>x</var>, <var>df</var>, and <var>lambda</var>.  A scalar input functions
+ as a constant matrix of the same size as the other inputs.
 </p>
-<p> The size of <var>p</var> is the common size of the input arguments. Scalar input
- arguments <var>x</var>, <var>df</var>, <var>delta</var> are regarded as constant matrices of
- the same size as the other inputs.
+<p> <code><var>p</var> = ncx2cdf (<var>x</var>, <var>df</var>, <var>lambda</var>, &quot;upper&quot;)</code> computes
+ the upper tail probability of the noncentral chi-squared distribution with
+ parameters <var>df</var> and <var>lambda</var>, at the values in <var>x</var>.
 </p>
-<p> <code><var>p</var> = ncx2cdf (<var>x</var>, <var>df</var>, <var>delta</var>, &quot;upper&quot;</code> returns the
- upper tail probability of the noncentral chi-square distribution with
- <var>df</var> degrees of freedom and noncentrality parameter <var>delta</var> at the
- values in <var>x</var>.
+<p> Further information about the noncentral chi-squared distribution can be
+ found at <a href="https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution">https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="ncx2inv.html">ncx2inv</a>, 
   <a href="ncx2pdf.html">ncx2pdf</a>, 
   <a href="ncx2rnd.html">ncx2rnd</a>, 
-  <a href="ncx2stat.html">ncx2stat</a>
+  <a href="ncx2stat.html">ncx2stat</a>, 
+  <a href="chi2cdf.html">chi2cdf</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/ncx2cdf.m">ncx2cdf</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/ncx2cdf.m">ncx2cdf</a>
 </div>
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -118,21 +119,73 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Compare the noncentral chi-square cdf with DELTA = 2 to the
- ## chi-square cdf with the same number of degrees of freedom (4):
-
- x = (0:0.1:10)';
- ncx2 = ncx2cdf (x, 4, 2);
- chi2 = chi2cdf (x, 4);
- plot(x, ncx2, "b-", "LineWidth", 2);
- hold on
- plot (x, chi2, "g--", "LineWidth", 2);
- legend ("ncx2", "chi2", "Location", "NorthWest");
+ ## Plot various CDFs from the noncentral chi-squared distribution
+ x = 0:0.1:10;
+ p1 = ncx2cdf (x, 2, 1);
+ p2 = ncx2cdf (x, 2, 2);
+ p3 = ncx2cdf (x, 2, 3);
+ p4 = ncx2cdf (x, 4, 1);
+ p5 = ncx2cdf (x, 4, 2);
+ p6 = ncx2cdf (x, 4, 3);
+ plot (x, p1, "-r", x, p2, "-g", x, p3, "-k", ...
+       x, p4, "-m", x, p5, "-c", x, p6, "-y")
+ grid on
+ xlim ([0, 10])
+ legend ({"df = 2, λ = 1", "df = 2, λ = 2", ...
+          "df = 2, λ = 3", "df = 4, λ = 1", ...
+          "df = 4, λ = 2", "df = 4, λ = 3"}, "location", "southeast")
+ title ("Noncentral chi-squared CDF")
+ xlabel ("values in x")
+ ylabel ("probability")
 
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
                     <img src="assets/ncx2cdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compare the noncentral chi-squared CDF with LAMBDA = 2 to the
+ ## chi-squared CDF with the same number of degrees of freedom (4).
+
+ x = 0:0.1:10;
+ p1 = ncx2cdf (x, 4, 2);
+ p2 = chi2cdf (x, 4);
+ plot (x, p1, "-", x, p2, "-")
+ grid on
+ xlim ([0, 10])
+ legend ({"Noncentral χ^2(4,2)", "χ^2(4)"}, "location", "northwest")
+ title ("Noncentral chi-squared vs chi-squared CDFs")
+ xlabel ("values in x")
+ ylabel ("probability")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/ncx2cdf_201.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>

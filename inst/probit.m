@@ -1,4 +1,5 @@
 ## Copyright (C) 1995-2017 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,7 +18,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{y} =} probit (@var{p})
+## @deftypefn  {statistics} {@var{x} =} probit (@var{p})
 ##
 ## Probit transformation
 ##
@@ -27,19 +28,19 @@
 ## @seealso{logit}
 ## @end deftypefn
 
-function y = probit (p)
-
+function x = probit (p)
 
   if (nargin != 1)
     print_usage ();
   endif
 
-  y = stdnormal_inv (p);
+  x = -sqrt (2) * erfcinv (2 * p);
 
 endfunction
 
-
+## Test output
 %!assert (probit ([-1, 0, 0.5, 1, 2]), [NaN, -Inf, 0, Inf, NaN])
+%!assert (probit ([0.2, 0.99]), norminv ([0.2, 0.99]))
 
 ## Test input validation
 %!error probit ()

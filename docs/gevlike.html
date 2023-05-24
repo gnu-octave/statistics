@@ -71,73 +71,60 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>nlogL</var>, <var>Grad</var>, <var>ACOV</var>] = <b>gevlike</b><i> (<var>params</var>, <var>data</var>)</i></dt>
+<dt><u>statistics:</u> <var>nlogL</var> = <b>gevlike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>nlogL</var> <var>ACOV</var>] = <b>gevlike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
 </dl>
 
-<p> Compute the negative log-likelihood of data under the generalized extreme
- value (GEV) distribution with given parameter values.
+<p> Negative log-likelihood for the generalized extreme value (GEV) distribution.
 </p>
 <div class="ms-5">
- <a name="Arguments"></a>
-<h3 class="subheading">Arguments</h3>
-
- <ul>
-<li>
- <var>params</var> is the 3-parameter vector [<var>k</var>, <var>sigma</var>, <var>mu</var>],
- where <var>k</var> is the shape parameter of the GEV distribution, <var>sigma</var> is
- the scale parameter of the GEV distribution, and <var>mu</var> is the location
- parameter of the GEV distribution.
- </li><li>
- <var>data</var> is the vector of given values.
-
-</li></ul>
-
- <a name="Return-values"></a>
-<h3 class="subheading">Return values</h3>
-
- <ul>
-<li>
- <var>nlogL</var> is the negative log-likelihood.
- </li><li>
- <var>Grad</var> is the 3 by 1 gradient vector, which is the first derivative of
- the negative log likelihood with respect to the parameter values.
- </li><li>
- <var>ACOV</var> is the 3 by 3 inverse of the Fisher information matrix, which is
- the second derivative of the negative log likelihood with respect to the
- parameter values.
-
-</li></ul>
-
- <a name="Examples"></a>
-<h3 class="subheading">Examples</h3>
-
- <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> x = -5:-1;
- k = -0.2;
- sigma = 0.3;
- mu = 0.5;
- [L, ~, C] = gevlike ([k sigma mu], x);
- </pre><pre class="example"> </pre></td></tr></table>
-
+<p> <code><var>nlogL</var> = gevlike (<var>params</var>, <var>x</var>)</code> returns the negative
+ log likelihood of the data in <var>x</var> corresponding to the GEV distribution
+ with (1) shape parameter <var>k</var>, (2) scale parameter <var>sigma</var>, and (3)
+ location parameter <var>mu</var> given in the three-element vector <var>params</var>.
+</p>
+<p> <code>[<var>nlogL</var>, <var>acov</var>] = gevlike (<var>params</var>, <var>x</var>)</code> also
+ returns the inverse of Fisher&rsquo;s information matrix, <var>acov</var>.  If the input
+ parameter values in <var>params</var> are the maximum likelihood estimates, the
+ diagonal elements of <var>acov</var> are their asymptotic variances.
+</p>
+<p> When <code><var>k</var> &lt; 0</code>, the GEV is the type III extreme value distribution.
+ When <code><var>k</var> &gt; 0</code>, the GEV distribution is the type II, or Frechet,
+ extreme value distribution.  If <var>W</var> has a Weibull distribution as
+ computed by the <code>wblcdf</code> function, then <code>-<var>W</var></code> has a type III
+ extreme value distribution and <code>1/<var>W</var></code> has a type II extreme value
+ distribution.  In the limit as <var>k</var> approaches <code>0</code>, the GEV is the
+ mirror image of the type I extreme value distribution as computed by the
+ <code>evcdf</code> function.
+</p>
+<p> The mean of the GEV distribution is not finite when <code><var>k</var> &gt;= 1</code>, and
+ the variance is not finite when <code><var>k</var> &gt;= 1/2</code>.  The GEV distribution
+ has positive density only for values of <var>x</var> such that
+ <code><var>k</var> * (<var>x</var> - <var>mu</var>) / <var>sigma</var> &gt; -1</code>.
+</p>
+<p> Further information about the generalized extreme value distribution can be
+ found at
+ <a href="https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution">https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution</a>
+</p>
  <a name="References"></a>
 <h3 class="subheading">References</h3>
-
  <ol>
 <li>
  Rolf-Dieter Reiss and Michael Thomas. <cite>Statistical Analysis of Extreme
  Values with Applications to Insurance, Finance, Hydrology and Other Fields</cite>.
  Chapter 1, pages 16-17, Springer, 2007.
+ </li></ol>
 
-</li></ol>
 <p> <strong>See also: </strong>
   <a href="gevcdf.html">gevcdf</a>, 
-  <a href="gevfit.html">gevfit</a>, 
   <a href="gevinv.html">gevinv</a>, 
   <a href="gevpdf.html">gevpdf</a>, 
   <a href="gevrnd.html">gevrnd</a>, 
+  <a href="gevfit.html">gevfit</a>, 
   <a href="gevstat.html">gevstat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/gevlike.m">gevlike</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/gevlike.m">gevlike</a>
 </div>
 
         </div>

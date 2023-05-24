@@ -72,7 +72,7 @@
         <div class="card-body">
 <dl>
 <dt><u>statistics:</u> <var>x</var> = <b>evinv</b><i> (<var>p</var>)</i></dt>
-<dt><u>statistics:</u> <var>x</var> = <b>evcdf</b><i> (<var>p</var>, <var>mu</var>)</i></dt>
+<dt><u>statistics:</u> <var>x</var> = <b>evinv</b><i> (<var>p</var>, <var>mu</var>)</i></dt>
 <dt><u>statistics:</u> <var>x</var> = <b>evinv</b><i> (<var>p</var>, <var>mu</var>, <var>sigma</var>)</i></dt>
 <dt><u>statistics:</u> [<var>x</var>, <var>xlo</var>, <var>xup</var>] = <b>evinv</b><i> (<var>p</var>, <var>mu</var>, <var>sigma</var>, <var>pcov</var>)</i></dt>
 <dt><u>statistics:</u> [<var>x</var>, <var>xlo</var>, <var>xup</var>] = <b>evinv</b><i> (<var>p</var>, <var>mu</var>, <var>sigma</var>, <var>pcov</var>, <var>alpha</var>)</i></dt>
@@ -81,28 +81,31 @@
 <p> Inverse of the extreme value cumulative distribution function (iCDF).
 </p>
 <div class="ms-5">
-<p> For each element of <var>p</var>, compute the inverse cdf for a type 1 extreme
- value distribution with location parameter <var>mu</var> and scale parameter
- <var>sigma</var>.  The size of <var>x</var> is the common size of <var>p</var>, <var>mu</var> and
- <var>sigma</var>.  A scalar input functions as a constant matrix of the same size
- as the other inputs.
+<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF) of
+ the extreme value distribution (also known as the Gumbel or the type I
+ generalized extreme value distribution) with location parameter <var>mu</var> and
+ scale parameter <var>sigma</var>.  The size of <var>x</var> is the common size of
+ <var>p</var>, <var>mu</var> and <var>sigma</var>.  A scalar input functions as a constant
+ matrix of the same size as the other inputs.
 </p>
-<p> Default values are <var>mu</var> = 0, <var>sigma</var> = 1.
+<p> Default values are <var>mu</var> = 0 and <var>sigma</var> = 1.
 </p>
-<p> When called with three output arguments, <code>[<var>x</var>, <var>xlo</var>,
- <var>xup</var>]</code> it computes the confidence bounds for <var>x</var> when the input
- parameters <var>mu</var> and <var>sigma</var> are estimates.  In such case, <var>pcov</var>,
- a 2-by-2 matrix containing the covariance matrix of the estimated parameters,
- is necessary.  Optionally, <var>alpha</var> has a default value of 0.05, and
- specifies 100 * (1 - <var>alpha</var>)% confidence bounds. <var>xlo</var> and <var>xup</var>
- are arrays of the same size as <var>x</var> containing the lower and upper
- confidence bounds.
+<p> When called with three output arguments, i.e. <code>[<var>x</var>, <var>xlo</var>,
+ <var>xup</var>]</code>, <code>evinv</code> computes the confidence bounds for <var>x</var> when the
+ input parameters <var>mu</var> and <var>sigma</var> are estimates.  In such case,
+ <var>pcov</var>, a <math>2&times;2</math> matrix containing the covariance matrix of the
+ estimated parameters, is necessary.  Optionally, <var>alpha</var>, which has a
+ default value of 0.05, specifies the <code>100 * (1 - <var>alpha</var>)</code> percent
+ confidence bounds.  <var>xlo</var> and <var>xup</var> are arrays of the same size as
+ <var>x</var> containing the lower and upper confidence bounds.
 </p>
-<p> The type 1 extreme value distribution is also known as the Gumbel
- distribution.  The version used here is suitable for modeling minima; the
- mirror image of this distribution can be used to model maxima by negating
- <var>x</var>.  If <var>y</var> has a Weibull distribution, then
- <code><var>x</var> = log (<var>y</var>)</code> has the type 1 extreme value distribution.
+<p> The Gumbel distribution is used to model the distribution of the maximum (or
+ the minimum) of a number of samples of various distributions.  This version
+ is suitable for modeling minima.  For modeling maxima, use the alternative
+ Gumbel iCDF, <code>gumbelinv</code>.
+</p>
+<p> Further information about the Gumbel distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Gumbel_distribution">https://en.wikipedia.org/wiki/Gumbel_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="evcdf.html">evcdf</a>, 
@@ -110,11 +113,57 @@
   <a href="evrnd.html">evrnd</a>, 
   <a href="evfit.html">evfit</a>, 
   <a href="evlike.html">evlike</a>, 
-  <a href="evstat.html">evstat</a>
+  <a href="evstat.html">evstat</a>, 
+  <a href="gumbelinv.html">gumbelinv</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/evinv.m">evinv</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/evinv.m">evinv</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various iCDFs from the extreme value distribution
+ p = 0.001:0.001:0.999;
+ x1 = evinv (p, 0.5, 2);
+ x2 = evinv (p, 1.0, 2);
+ x3 = evinv (p, 1.5, 3);
+ x4 = evinv (p, 3.0, 4);
+ plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c")
+ grid on
+ ylim ([-10, 10])
+ legend ({"μ = 0.5, σ = 2", "μ = 1.0, σ = 2", ...
+          "μ = 1.5, σ = 3", "μ = 3.0, σ = 4"}, "location", "northwest")
+ title ("Extreme value iCDF")
+ xlabel ("probability")
+ ylabel ("values in x")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/evinv_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

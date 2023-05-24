@@ -71,37 +71,45 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>r</var> = <b>ncfrnd</b><i> (<var>df1</var>, <var>df2</var>, <var>delta</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>ncfrnd</b><i> (<var>df1</var>, <var>df2</var>, <var>delta</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>ncfrnd</b><i> (<var>df1</var>, <var>df2</var>, <var>delta</var>, [<var>sz</var>])</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>ncfrnd</b><i> (<var>df1</var>, <var>df2</var>, <var>lambda</var>)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>ncfrnd</b><i> (<var>df1</var>, <var>df2</var>, <var>lambda</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>ncfrnd</b><i> (<var>df1</var>, <var>df2</var>, <var>lambda</var>, [<var>sz</var>])</i></dt>
 </dl>
 
 <p> Random arrays from the noncentral F distribution.
 </p>
 <div class="ms-5">
-<p> <code><var>x</var> = ncfrnd (<var>p</var>, <var>df1</var>, <var>df2</var>, <var>delta</var>)</code> returns
+<p> <code><var>x</var> = ncfrnd (<var>p</var>, <var>df1</var>, <var>df2</var>, <var>lambda</var>)</code> returns
  an array of random numbers chosen from the noncentral F distribution with
- parameters  <var>df1</var>, <var>df2</var>, <var>delta</var>).  The size of <var>r</var> is the
- common size of <var>df1</var>, <var>df2</var>, and <var>delta</var>.  A scalar input
- functions as a constant matrix of the same size as the other input.
-</p>
-<p> When called with a single size argument, return a square matrix with
- the dimension specified.  When called with more than one scalar argument the
- first two arguments are taken as the number of rows and columns and any
- further arguments specify additional matrix dimensions.  The size may also
- be specified with a vector of dimensions <var>sz</var>.
+ <var>df1</var> and <var>df2</var> degrees of freedom and noncentrality parameter
+ <var>lambda</var>.  The size of <var>r</var> is the common size of <var>df1</var>,
+ <var>df2</var>, and <var>lambda</var>.  A scalar input functions as a constant matrix
+ of the same size as the other input.
 </p>
 <p> <code>ncfrnd</code> generates values using the definition of a noncentral F random
- variable, as the ratio of a noncentral chi-square and a (central) chi-square.
+ variable, as the ratio of a noncentral chi-squared distribution and a
+ (central) chi-squared distribution.
+</p>
+<p> When called with a single size argument, <code>ncfrnd</code> returns a square
+ matrix with the dimension specified.  When called with more than one scalar
+ argument, the first two arguments are taken as the number of rows and columns
+ and any further arguments specify additional matrix dimensions.  The size may
+ also be specified with a row vector of dimensions, <var>sz</var>.
+</p>
+<p> Further information about the noncentral F distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Noncentral_F-distribution">https://en.wikipedia.org/wiki/Noncentral_F-distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="ncfcdf.html">ncfcdf</a>, 
   <a href="ncfinv.html">ncfinv</a>, 
   <a href="ncfpdf.html">ncfpdf</a>, 
-  <a href="ncfstat.html">ncfstat</a>
+  <a href="ncfstat.html">ncfstat</a>, 
+  <a href="frnd.html">frnd</a>, 
+  <a href="ncx2rnd.html">ncx2rnd</a>, 
+  <a href="chi2rnd.html">chi2rnd</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/ncfrnd.m">ncfrnd</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/ncfrnd.m">ncfrnd</a>
 </div>
 
         </div>

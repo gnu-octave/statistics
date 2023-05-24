@@ -72,7 +72,7 @@
         <div class="card-body">
 <dl>
 <dt><u>statistics:</u> <var>h</var> = <b>ztest</b><i> (<var>x</var>, <var>m</var>, <var>sigma</var>)</i></dt>
-<dt><u>statistics:</u> <var>h</var> = <b>ztest</b><i> (<var>x</var>, <var>m</var>, <var>sigma</var>, <var>name</var>, <var>value</var>)</i></dt>
+<dt><u>statistics:</u> <var>h</var> = <b>ztest</b><i> (<var>x</var>, <var>m</var>, <var>sigma</var>, <var>Name</var>, <var>Value</var>)</i></dt>
 <dt><u>statistics:</u> [<var>h</var>, <var>pval</var>] = <b>ztest</b><i> (&hellip;)</i></dt>
 <dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>ci</var>] = <b>ztest</b><i> (&hellip;)</i></dt>
 <dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>ci</var>, <var>zvalue</var>] = <b>ztest</b><i> (&hellip;)</i></dt>
@@ -105,11 +105,11 @@
 <p> <code>[<var>h</var>, <var>pval</var>, <var>ci</var>, <var>zvalue</var>] = ztest (&hellip;)</code>
  returns the value of the test statistic.
 </p>
-<p> <code>[&hellip;] = ztest (&hellip;, <var>name</var>, <var>value</var>, &hellip;)</code>
- specifies one or more of the following name/value pairs:
+<p> <code>[&hellip;] = ztest (&hellip;, <var>Name</var>, <var>Value</var>, &hellip;)</code>
+ specifies one or more of the following <var>Name</var>/<var>Value</var> pairs:
 </p>
  <table>
-<thead><tr><th width="5%"></th><th width="20%">Name</th><th width="75%">Value</th></tr></thead>
+<thead><tr><th width="5%"></th><th width="20%"><var>Name</var></th><th width="75%"><var>Value</var></th></tr></thead>
 <tr><td width="5%"></td><td width="20%">&quot;alpha&quot;</td><td width="75%">the significance level. Default is 0.05.</td></tr>
 <tr><td width="5%"></td><td width="20%">&quot;dim&quot;</td><td width="75%">dimension to work along a matrix or an N-D array.</td></tr>
 <tr><td width="5%"></td><td width="20%">&quot;tail&quot;</td><td width="75%">a string specifying the alternative hypothesis:</td></tr>

@@ -71,39 +71,59 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>paramhat</var> = <b>evfit</b><i> (<var>data</var>)</i></dt>
-<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>evfit</b><i> (<var>data</var>)</i></dt>
-<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>evfit</b><i> (<var>data</var>, <var>alpha</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>evfit</b><i> (<var>data</var>, <var>alpha</var>, <var>censor</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>evfit</b><i> (<var>data</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>evfit</b><i> (<var>data</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</i></dt>
+<dt><u>statistics:</u> <var>paramhat</var> = <b>evfit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>evfit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>evfit</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>evfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>evfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>evfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</i></dt>
 </dl>
 
-<p> Estimate parameters and confidence intervals for extreme value data.
+<p> Estimate parameters and confidence intervals for the extreme value distribution.
 </p>
 <div class="ms-5">
-<p> <code><var>paramhat</var> = evfit (<var>data</var>)</code> returns maximum likelihood
- estimates of the parameters of the type 1 extreme value distribution (also
- known as the Gumbel distribution) given in <var>data</var>.  <var>paramhat(1)</var> is
- the location parameter, mu, and <var>paramhat(2)</var> is the scale parameter,
- sigma.
+<p> <code><var>paramhat</var> = evfit (<var>x</var>)</code> returns the maximum likelihood
+ estimates of the parameters of the extreme value distribution (also known as
+ the Gumbel or the type I generalized extreme value distribution) given the
+ data in <var>x</var>.  <code><var>paramhat</var>(1)</code> is the location parameter,
+ <var>mu</var>, and <code><var>paramhat</var>(2)</code> is the scale parameter, <var>sigma</var>.
 </p>
-<p> <code>[<var>paramhat</var>, <var>paramci</var>] = evfit (<var>data</var>)</code> returns the 95%
+<p> <code>[<var>paramhat</var>, <var>paramci</var>] = evfit (<var>x</var>)</code> returns the 95%
  confidence intervals for the parameter estimates.
 </p>
-<p> <code>[&hellip;] = evfit (<var>data</var>, <var>alpha</var>)</code> returns 100(1-<var>alpha</var>)
- percent confidence intervals for the parameter estimates.
+<p> <code>[&hellip;] = evfit (<var>x</var>, <var>alpha</var>)</code> also returns the
+ <code>100 * (1 - <var>alpha</var>)</code> percent confidence intervals for the
+ parameter estimates.  By default, the optional argument <var>alpha</var> is
+ 0.05 corresponding to 95% confidence intervals.  Pass in <code>[]</code> for
+ <var>alpha</var> to use the default values.
 </p>
-<p> <code>[&hellip;] = evfit (<var>data</var>, <var>alpha</var>, <var>censor</var>)</code> accepts a
- boolean vector of the same size as <var>data</var> with 1 for observations that
- are right-censored and 0 for observations that are observed exactly.
+<p> <code>[&hellip;] = evfit (<var>x</var>, <var>alpha</var>, <var>censor</var>)</code> accepts a
+ boolean vector, <var>censor</var>, of the same size as <var>x</var> with <code>1</code>s for
+ observations that are right-censored and <code>0</code>s for observations that are
+ observed exactly.  By default, or if left empty,
+ <code><var>censor</var> = zeros (size (<var>x</var>))</code>.
 </p>
-<p> <code>[&hellip;] = evfit (<var>data</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</code>
- accepts a frequency vector of the same size as <var>data</var>.
+<p> <code>[&hellip;] = evfit (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</code>
+ accepts a frequency vector, <var>freq</var>, of the same size as <var>x</var>.
  <var>freq</var> typically contains integer frequencies for the corresponding
- elements in <var>data</var>, but may contain any non-integer non-negative values.
+ elements in <var>x</var>, but it can contain any non-integer non-negative values.
+ By default, or if left empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
 </p>
-<p> <code>[&hellip;] = evfit (&hellip;, <var>options</var>)</code>
+<p> <code>[&hellip;] = evfit (&hellip;, <var>options</var>)</code> specifies control
+ parameters for the iterative algorithm used to compute the maximum likelihood
+ estimates.  <var>options</var> is a structure with the following field and its
+ default value:
+ </p><ul>
+<li> <code><var>options</var>.TolX = 1e-6</code>
+ </li></ul>
+
+<p> The Gumbel distribution is used to model the distribution of the maximum (or
+ the minimum) of a number of samples of various distributions.  This version
+ is suitable for modeling minima.  For modeling maxima, use the alternative
+ Gumbel fitting function, <code>gumbelfit</code>.
+</p>
+<p> Further information about the Gumbel distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Gumbel_distribution">https://en.wikipedia.org/wiki/Gumbel_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="evcdf.html">evcdf</a>, 
@@ -111,11 +131,86 @@
   <a href="evpdf.html">evpdf</a>, 
   <a href="evrnd.html">evrnd</a>, 
   <a href="evlike.html">evlike</a>, 
-  <a href="evstat.html">evstat</a>
+  <a href="evstat.html">evstat</a>, 
+  <a href="gumbelfit.html">gumbelfit</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/evfit.m">evfit</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/evfit.m">evfit</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Sample 3 populations from different extreme value distibutions
+ rand ("seed", 1);    # for reproducibility
+ r1 = evrnd (2, 5, 400, 1);
+ rand ("seed", 12);    # for reproducibility
+ r2 = evrnd (-5, 3, 400, 1);
+ rand ("seed", 13);    # for reproducibility
+ r3 = evrnd (14, 8, 400, 1);
+ r = [r1, r2, r3];
+
+ ## Plot them normalized and fix their colors
+ hist (r, 25, 0.4);
+ h = findobj (gca, "Type", "patch");
+ set (h(1), "facecolor", "c");
+ set (h(2), "facecolor", "g");
+ set (h(3), "facecolor", "r");
+ ylim ([0, 0.28])
+ xlim ([-30, 30]);
+ hold on
+
+ ## Estimate their MU and SIGMA parameters
+ mu_sigmaA = evfit (r(:,1));
+ mu_sigmaB = evfit (r(:,2));
+ mu_sigmaC = evfit (r(:,3));
+
+ ## Plot their estimated PDFs
+ x = [min(r(:)):max(r(:))];
+ y = evpdf (x, mu_sigmaA(1), mu_sigmaA(2));
+ plot (x, y, "-pr");
+ y = evpdf (x, mu_sigmaB(1), mu_sigmaB(2));
+ plot (x, y, "-sg");
+ y = evpdf (x, mu_sigmaC(1), mu_sigmaC(2));
+ plot (x, y, "-^c");
+ legend ({"Normalized HIST of sample 1 with μ=2 and σ=5", ...
+          "Normalized HIST of sample 2 with μ=-5 and σ=3", ...
+          "Normalized HIST of sample 3 with μ=14 and σ=8", ...
+          sprintf("PDF for sample 1 with estimated μ=%0.2f and σ=%0.2f", ...
+                  mu_sigmaA(1), mu_sigmaA(2)), ...
+          sprintf("PDF for sample 2 with estimated μ=%0.2f and σ=%0.2f", ...
+                  mu_sigmaB(1), mu_sigmaB(2)), ...
+          sprintf("PDF for sample 3 with estimated μ=%0.2f and σ=%0.2f", ...
+                  mu_sigmaC(1), mu_sigmaC(2))})
+ title ("Three population samples from different extreme value distibutions")
+ hold off
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/evfit_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

@@ -77,18 +77,21 @@
 <dt><u>statistics:</u> <var>r</var> = <b>chi2rnd</b><i> (<var>df</var>, [<var>sz</var>])</i></dt>
 </dl>
 
-<p> Random arrays from the Chi-square distribution.
+<p> Random arrays from the chi-squared distribution.
 </p>
 <div class="ms-5">
 <p> <code><var>r</var> = chi2rnd (<var>df</var>)</code> returns an array of random numbers chosen
- from the Chi-square distribution with <var>df</var> degrees of freedom.  The size
+ from the chi-squared distribution with <var>df</var> degrees of freedom.  The size
  of <var>r</var> is the size of <var>df</var>.
 </p>
-<p> When called with a single size argument, return a square matrix with
- the dimension specified.  When called with more than one scalar argument the
- first two arguments are taken as the number of rows and columns and any
- further arguments specify additional matrix dimensions.  The size may also
- be specified with a vector of dimensions <var>sz</var>.
+<p> When called with a single size argument, <code>chi2rnd</code> returns a square
+ matrix with the dimension specified.  When called with more than one scalar
+ argument, the first two arguments are taken as the number of rows and columns
+ and any further arguments specify additional matrix dimensions.  The size may
+ also be specified with a row vector of dimensions, <var>sz</var>.
+</p>
+<p> Further information about the chi-squared distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Chi-squared_distribution">https://en.wikipedia.org/wiki/Chi-squared_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="chi2cdf.html">chi2cdf</a>, 
@@ -97,7 +100,7 @@
   <a href="chi2stat.html">chi2stat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/chi2rnd.m">chi2rnd</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/chi2rnd.m">chi2rnd</a>
 </div>
 
         </div>

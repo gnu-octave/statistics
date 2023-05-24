@@ -71,37 +71,36 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>gpcdf</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>gpcdf</b><i> (<var>x</var>, <var>shape</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>gpcdf</b><i> (<var>x</var>, <var>shape</var>, <var>scale</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>gpcdf</b><i> (<var>x</var>, <var>shape</var>, <var>scale</var>, <var>location</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>gpcdf</b><i> (&hellip;, &quot;upper&quot;)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>gpcdf</b><i> (<var>x</var>, <var>k</var>, <var>sigma</var>, <var>mu</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>gpcdf</b><i> (<var>x</var>, <var>k</var>, <var>sigma</var>, <var>mu</var>, <code>&quot;upper&quot;</code>)</i></dt>
 </dl>
 
-<p> Generalized Pareto cumulative distribution function (cdf).
+<p> Generalized Pareto cumulative distribution function (CDF).
 </p>
 <div class="ms-5">
-<p> Compute the cumulative distribution function (CDF) at <var>x</var> of the
- generalized Pareto distribution with parameters <var>location</var>, <var>scale</var>,
- and <var>shape</var>.  The size of P is the common size of the input arguments.
+<p> For each element of <var>x</var>, compute the cumulative distribution function
+ (CDF) of the generalized Pareto distribution with shape parameter <var>k</var>,
+ scale parameter <var>sigma</var>, and location parameter <var>mu</var>.  The size of
+ <var>p</var> is the common size of <var>x</var>, <var>k</var>, <var>sigma</var>, and <var>mu</var>.
  A scalar input functions as a constant matrix of the same size as the other
  inputs.
 </p>
-<p> Default values for <var>shape</var>, <var>scale</var>, and <var>location</var> are 0, 1,
- and 0, respectively.
+<p> <code>[&hellip;] = gpcdf(<var>x</var>, <var>k</var>, <var>sigma</var>, <var>mu</var>, &quot;upper&quot;)</code>
+ computes the upper tail probability of the generalized Pareto distribution
+ with parameters <var>k</var>, <var>sigma</var>, and <var>mu</var>, at the values in <var>x</var>.
 </p>
-<p> When <code><var>shape</var> = 0</code> and <code><var>location</var> = 0</code>, the Generalized
- Pareto CDF is equivalent to the exponential distribution.
- When <code><var>shape</var> &gt; 0</code> and <code><var>location</var> = <var>shape</var> /
- <var>shape</var></code> the Generalized Pareto is equivalent to the Pareto distribution.
- The mean of the Generalized Pareto is not finite when <code><var>shape</var> &gt;= 1</code>
- and the variance is not finite when <code><var>shape</var> &gt;= 1/2</code>.  When
- <code><var>shape</var> &gt;= 0</code>, the Generalized Pareto has positive density for
- <code><var>x</var> &gt; <var>location</var></code>, or, when <code><var>location</var> &lt; 0</code>,for
- <code>0 &lt;= (<var>x</var> - <var>location</var>) / <var>scale</var> &lt;= -1 / <var>shape</var></code>.
+<p> When <code><var>k</var> = 0</code> and <code><var>mu</var> = 0</code>, the Generalized Pareto CDF
+ is equivalent to the exponential distribution.  When <code><var>k</var> &gt; 0</code> and
+ <code><var>mu</var> = <var>k</var> / <var>k</var></code> the Generalized Pareto is equivalent to
+ the Pareto distribution.  The mean of the Generalized Pareto is not finite
+ when <code><var>k</var> &gt;= 1</code> and the variance is not finite when
+ <code><var>k</var> &gt;= 1/2</code>.  When <code><var>k</var> &gt;= 0</code>, the Generalized Pareto
+ has positive density for <code><var>x</var> &gt; <var>mu</var></code>, or, when
+ <code><var>mu</var> &lt; 0</code>, for
+ <code>0 &lt;= (<var>x</var> - <var>mu</var>) / <var>sigma</var> &lt;= -1 / <var>k</var></code>.
 </p>
-<p> <code>[&hellip;] = gpcdf(&hellip;, &quot;upper&quot;)</code> returns the upper tail probability
- of the generalized Pareto distribution.
+<p> Further information about the generalized Pareto distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Generalized_Pareto_distribution">https://en.wikipedia.org/wiki/Generalized_Pareto_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="gpinv.html">gpinv</a>, 
@@ -112,8 +111,58 @@
   <a href="gpstat.html">gpstat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/gpcdf.m">gpcdf</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/gpcdf.m">gpcdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various CDFs from the generalized Pareto distribution
+ x = 0:0.001:5;
+ p1 = gpcdf (x, 1, 1, 0);
+ p2 = gpcdf (x, 5, 1, 0);
+ p3 = gpcdf (x, 20, 1, 0);
+ p4 = gpcdf (x, 1, 2, 0);
+ p5 = gpcdf (x, 5, 2, 0);
+ p6 = gpcdf (x, 20, 2, 0);
+ plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", ...
+       x, p4, "-c", x, p5, "-m", x, p6, "-k")
+ grid on
+ xlim ([0, 5])
+ legend ({"ξ = 1, σ = 1, μ = 0", "ξ = 5, σ = 1, μ = 0", ...
+          "ξ = 20, σ = 1, μ = 0", "ξ = 1, σ = 2, μ = 0", ...
+          "ξ = 5, σ = 2, μ = 0", "ξ = 20, σ = 2, μ = 0"}, ...
+         "location", "northwest")
+ title ("Generalized Pareto CDF")
+ xlabel ("values in x")
+ ylabel ("probability")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/gpcdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

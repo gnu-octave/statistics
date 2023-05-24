@@ -71,18 +71,30 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>y</var> = <b>gppdf</b><i> (<var>x</var>, <var>shape</var>, <var>scale</var>, <var>location</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>gppdf</b><i> (<var>x</var>, <var>k</var>, <var>sigma</var>, <var>mu</var>)</i></dt>
 </dl>
 
 <p> Generalized Pareto probability density function (PDF).
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the probability density function (PDF)
- at <var>x</var> of the generalized Pareto distribution with parameters
- <var>shape</var>, <var>scale</var>, and <var>location</var>.  The size of <var>y</var> is the
- common size of <var>x</var>, <var>shape</var>, <var>scale</var>, and <var>location</var>.  A
- scalar input functions as a constant matrix of the same size as the other
- inputs.
+ of the generalized Pareto distribution with shape parameter <var>k</var>, scale
+ parameter <var>sigma</var>, and location parameter <var>mu</var>.  The size of <var>y</var>
+ is the common size of <var>p</var>, <var>k</var>, <var>sigma</var>, and <var>mu</var>.  A scalar
+ input functions as a constant matrix of the same size as the other inputs.
+</p>
+<p> When <code><var>k</var> = 0</code> and <code><var>mu</var> = 0</code>, the Generalized Pareto CDF
+ is equivalent to the exponential distribution.  When <code><var>k</var> &gt; 0</code> and
+ <code><var>mu</var> = <var>k</var> / <var>k</var></code> the Generalized Pareto is equivalent to
+ the Pareto distribution.  The mean of the Generalized Pareto is not finite
+ when <code><var>k</var> &gt;= 1</code> and the variance is not finite when
+ <code><var>k</var> &gt;= 1/2</code>.  When <code><var>k</var> &gt;= 0</code>, the Generalized Pareto
+ has positive density for <code><var>x</var> &gt; <var>mu</var></code>, or, when
+ <code><var>mu</var> &lt; 0</code>, for
+ <code>0 &lt;= (<var>x</var> - <var>mu</var>) / <var>sigma</var> &lt;= -1 / <var>k</var></code>.
+</p>
+<p> Further information about the generalized Pareto distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Generalized_Pareto_distribution">https://en.wikipedia.org/wiki/Generalized_Pareto_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="gpcdf.html">gpcdf</a>, 
@@ -93,8 +105,59 @@
   <a href="gpstat.html">gpstat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/gppdf.m">gppdf</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/gppdf.m">gppdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various PDFs from the generalized Pareto distribution
+ x = 0:0.001:5;
+ y1 = gppdf (x, 1, 1, 0);
+ y2 = gppdf (x, 5, 1, 0);
+ y3 = gppdf (x, 20, 1, 0);
+ y4 = gppdf (x, 1, 2, 0);
+ y5 = gppdf (x, 5, 2, 0);
+ y6 = gppdf (x, 20, 2, 0);
+ plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", ...
+       x, y4, "-c", x, y5, "-m", x, y6, "-k")
+ grid on
+ xlim ([0, 5])
+ ylim ([0, 1])
+ legend ({"ξ = 1, σ = 1, μ = 0", "ξ = 5, σ = 1, μ = 0", ...
+          "ξ = 20, σ = 1, μ = 0", "ξ = 1, σ = 2, μ = 0", ...
+          "ξ = 5, σ = 2, μ = 0", "ξ = 20, σ = 2, μ = 0"}, ...
+         "location", "northeast")
+ title ("Generalized Pareto PDF")
+ xlabel ("values in x")
+ ylabel ("density")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/gppdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

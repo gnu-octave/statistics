@@ -78,19 +78,67 @@
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the probability density function (PDF)
- at <var>x</var> of the Poisson distribution with parameter <var>lambda</var>.  The size
- of <var>p</var> is the common size of <var>x</var> and <var>lambda</var>.  A scalar input
- functions as a constant matrix of the same size as the other inputs.
+ of the Poisson distribution with parameter <var>lambda</var>.  The size of <var>y</var>
+ is the common size of <var>x</var> and <var>lambda</var>.  A scalar input functions as
+ a constant matrix of the same size as the other inputs.
+</p>
+<p> Further information about the Poisson distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Poisson_distribution">https://en.wikipedia.org/wiki/Poisson_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="poisscdf.html">poisscdf</a>, 
   <a href="poissinv.html">poissinv</a>, 
   <a href="poissrnd.html">poissrnd</a>, 
+  <a href="poissfit.html">poissfit</a>, 
+  <a href="poisslike.html">poisslike</a>, 
   <a href="poisstat.html">poisstat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/poisspdf.m">poisspdf</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/poisspdf.m">poisspdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various PDFs from the Poisson distribution
+ x = 0:20;
+ y1 = poisspdf (x, 1);
+ y2 = poisspdf (x, 4);
+ y3 = poisspdf (x, 10);
+ plot (x, y1, "*b", x, y2, "*g", x, y3, "*r")
+ grid on
+ ylim ([0, 0.4])
+ legend ({"λ = 1", "λ = 4", "λ = 10"}, "location", "northeast")
+ title ("Poisson PDF")
+ xlabel ("values in x (number of occurences)")
+ ylabel ("density")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/poisspdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

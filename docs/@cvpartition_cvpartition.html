@@ -77,18 +77,26 @@
 <p> Create a partition object for cross validation.
 </p>
 <div class="ms-5">
-<p> <var>X</var> may be a positive integer, interpreted as the number of values <var>n</var> to partition, or a vector of length <var>n</var> containing class designations for the elements, in which case the partitioning types <var>KFold</var> and <var>HoldOut</var> attempt to ensure each partition represents the classes proportionately.
+<p> <var>X</var> may be a positive integer, interpreted as the number of values
+ <var>n</var> to partition, or a vector of length <var>n</var> containing class
+ designations for the elements, in which case the partitioning types
+ <var>KFold</var> and <var>HoldOut</var> attempt to ensure each partition represents the
+ classes proportionately.
 </p>
 <p> <var>partition_type</var> must be one of the following:
 </p>
  <dl compact="compact">
 <dt> &lsquo;<samp>KFold</samp>&rsquo;</dt>
 </dl>
-<p> Divide set into <var>k</var> equal-size subsets (this is the default, with <var>k</var>=10).
+<p> Divide set into <var>k</var> equal-size subsets (this is the default, with
+ <var>k</var>=10).
  </p></dd>
 <dt> &lsquo;<samp>HoldOut</samp>&rsquo;</dt>
 </dl>
-<p> Divide set into two subsets, &quot;training&quot; and &quot;validation&quot;. If <var>k</var> is a fraction, that is the fraction of values put in the validation subset; if it is a positive integer, that is the number of values in the validation subset (by default <var>k</var>=0.1).
+<p> Divide set into two subsets, &quot;training&quot; and &quot;validation&quot;.  If <var>k</var> is a
+ fraction, that is the fraction of values put in the validation subset; if it
+ is a positive integer, that is the number of values in the validation subset
+ (by default <var>k</var>=0.1).
  </p></dd>
 <dt> &lsquo;<samp>LeaveOut</samp>&rsquo;</dt>
 </dl>
@@ -166,17 +174,17 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- # Partition with Fisher iris dataset (n = 150)
- # Stratified by species
+ ## Partition with Fisher iris dataset (n = 150)
+ ## Stratified by species
  load fisheriris
  y = species;
- # 10-fold cross-validation partition
+ ## 10-fold cross-validation partition
  c = cvpartition (species, 'KFold', 10)
- # leave-10-out partition
+ ## leave-10-out partition
  c1 = cvpartition (species, 'HoldOut', 10)
  idx1 = test (c, 2);
  idx2 = training (c, 2);
- # another leave-10-out partition
+ ## another leave-10-out partition
  c2 = repartition (c1)
 
 K-fold cross validation partition

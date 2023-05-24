@@ -71,26 +71,70 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>a</var> = <b>trimmean</b><i> (<var>x</var>, <var>p</var>)</i></dt>
+<dt><u>statistics:</u> <var>m</var> = <b>trimmean</b><i> (<var>x</var>, <var>p</var>)</i></dt>
+<dt><u>statistics:</u> <var>m</var> = <b>trimmean</b><i> (<var>x</var>, <var>p</var>, <var>flag</var>)</i></dt>
+<dt><u>statistics:</u> <var>m</var> = <b>trimmean</b><i> (&hellip;, <code>&quot;all&quot;</code>)</i></dt>
+<dt><u>statistics:</u> <var>m</var> = <b>trimmean</b><i> (&hellip;, <var>dim</var>)</i></dt>
+<dt><u>statistics:</u> <var>m</var> = <b>trimmean</b><i> (&hellip;, <var>dim</var>)</i></dt>
 </dl>
 
 <p> Compute the trimmed mean.
 </p>
 <div class="ms-5">
 <p> The trimmed mean of <var>x</var> is defined as the mean of <var>x</var> excluding the
- highest and lowest <var>p</var> percent of the data.
+ highest and lowest <math>k</math> data values of <var>x</var>, calculated as
+ <code><var>k</var> = n * (<var>p</var> / 100) / 2)</code>, where <var>n</var> is the sample size.
 </p>
-<p> For example
-</p>
- <table><tr><td>&nbsp;</td><td><pre class="example"> mean ([-inf, 1:9, inf])
- </pre></td></tr></table>
+<p> <code><var>m</var> = trimmean (<var>x</var>, <var>p</var>)</code> returns the mean of <var>x</var>
+ after removing the outliers in <var>x</var> defined by <var>p</var> percent.
+ </p><ul>
+<li> If <var>x</var> is a vector, then <code>trimmean (<var>x</var>, <var>p</var>)</code> is the
+ mean of all the values of <var>x</var>, computed after removing the outliers.
+ </li><li> If <var>x</var> is a matrix, then <code>trimmean (<var>x</var>, <var>p</var>)</code> is a
+ row vector of column means, computed after removing the outliers.
+ </li><li> If <var>x</var> is a multidimensional array, then <code>trimmean</code> operates
+ along the first nonsingleton dimension of <var>x</var>.
+ </li></ul>
 
-<p> is NaN, while
+<p> To specify the operating dimension(s) when <var>x</var> is a matrix or a
+ multidimensional array, use the <var>dim</var> or <var>vecdim</var> input argument.
 </p>
- <table><tr><td>&nbsp;</td><td><pre class="example"> trimmean ([-inf, 1:9, inf], 10)
- </pre></td></tr></table>
+<p> <code>trimmean</code> treats <code>NaN</code> values in <var>x</var> as missing values and
+ removes them.
+</p>
+<p> <code><var>m</var> = trimmean (<var>x</var>, <var>p</var>, <var>flag</var>)</code> specifies how to
+ trim when <math>k</math>, i.e. half the number of outliers, is not an integer.
+ <var>flag</var> can be specified as one of the following values:
+ </p><table>
+<thead><tr><th width="20%">Value</th><th width="5%"></th><th width="75%">Description</th></tr></thead>
+<tr><td width="20%"><code>&quot;round&quot;</code></td><td width="5%"></td><td width="75%">Round <math>k</math> to the nearest integer.  This
+ is the default.</td></tr>
+<tr><td width="20%"><code>&quot;floor&quot;</code></td><td width="5%"></td><td width="75%">Round <math>k</math> down to the next smaller
+ integer.</td></tr>
+<tr><td width="20%"><code>&quot;weighted&quot;</code></td><td width="5%"></td><td width="75%">If <math>k = i + f</math>, where <math>i</math> is an
+ integer and <math>f</math> is a fraction, compute a weighted mean with weight
+ <math>(1 – f)</math> for the <math>(i + 1)</math>-th and <math>(n – i)</math>-th values, and
+ full weight for the values between them.</td></tr>
+</table>
 
-<p> excludes the infinite values, which make the result 5.
+<p> <code><var>m</var> = trimmean (&hellip;, <code>&quot;all&quot;</code>)</code> returns the trimmed mean
+ of all the values in <var>x</var> using any of the input argument combinations in
+ the previous syntaxes.
+</p>
+<p> <code><var>m</var> = trimmean (&hellip;, <var>dim</var>)</code> returns the trimmed mean along
+ the operating dimension <var>dim</var> specified as a positive integer scalar.  If
+ not specified, then the default value is the first nonsingleton dimension of
+ <var>x</var>, i.e. whose size does not equal 1.  If <var>dim</var> is greater than
+ <code>ndims (<var>X</var>)</code> or if <code>size (<var>x</var>, <var>dim</var>)</code> is 1, then
+ <code>trimmean</code> returns <var>x</var>.
+</p>
+<p> <code><var>m</var> = trimmean (&hellip;, <var>vecdim</var>)</code> returns the trimmed mean
+ over the dimensions specified in the vector <var>vecdim</var>.  For example, if
+ <var>x</var> is a 2-by-3-by-4 array, then <code>mean (<var>x</var>, [1 2])</code> returns a
+ 1-by-1-by-4 array.  Each element of the output array is the mean of the
+ elements on the corresponding page of <var>x</var>.  If <var>vecdim</var> indexes all
+ dimensions of <var>x</var>, then it is equivalent to <code>mean (<var>x</var>, &quot;all&quot;)</code>.
+ Any dimension in <var>vecdim</var> greater than <code>ndims (<var>x</var>)</code> is ignored.
 </p>
 <p> <strong>See also: </strong>
   <a href="mean.html">mean</a>

@@ -308,6 +308,12 @@ function leafOrder = optimalleaforder ( varargin )
 
 endfunction
 
+%!demo
+%! randn ("seed", 5)  # for reproducibility
+%! X = randn (10, 2);
+%! D = pdist (X);
+%! tree = linkage(D, 'average');
+%! optimalleaforder (tree, D, 'Transformation', 'linear')
 
 ## Test input validation
 %!error optimalleaforder ()
@@ -317,11 +323,3 @@ endfunction
 %!error <D must be .*> optimalleaforder ([1 2 1], [1 2 3])
 %!error <unknown property .*> optimalleaforder ([1 2 1], 1, "xxx", "xxx")
 %!error optimalleaforder ([1 2 1], 1, "Transformation", "xxx")
-
-## Demonstration
-%!demo
-%! X = randn (10, 2);
-%! D = pdist (X);
-%! tree = linkage(D, 'average');
-%! optimalleaforder (tree, D, 'Transformation', 'linear')
-

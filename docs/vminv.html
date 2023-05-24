@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: vminv</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+    <style>
+    var {
+      font-style: italics;
+      font-weight: bold;
+    }
+    td {
+      vertical-align: top;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Distributions">
+                    <i class="fas fa-list-alt"></i>
+                    Distributions
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>vminv</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>x</var> = <b>vminv</b><i> (<var>p</var>, <var>mu</var>, <var>k</var>)</i></dt>
+</dl>
+
+<p> Inverse of the von Mises cumulative distribution function (iCDF).
+</p>
+<div class="ms-5">
+<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF) of
+ the von Mises distribution with location parameter <var>mu</var> and concentration
+ parameter <var>k</var> on the interval <math>[-pi,pi]</math>.  The size of <var>x</var> is
+ the common size of <var>p</var>, <var>mu</var>, and <var>k</var>.  A scalar input functions
+ as a constant matrix of the same size as the other inputs.
+</p>
+<p> Note: the quantile of the von Mises distribution is not analytic.  Hence, it
+ is approximated by a custom searching algorithm using its CDF until it
+ converges up to a tolerance of <code>1e-5</code> or 100 iterations.  As a result,
+ balancing between performance and accuracy, the accuracy is about
+ <code>5e-5</code> for <code><var>k</var> = 1</code> and it drops to <code>5e-5</code> as <var>k</var>
+ increases.
+</p>
+<p> Further information about the von Mises distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Von_Mises_distribution">https://en.wikipedia.org/wiki/Von_Mises_distribution</a>
+</p>
+<p> <strong>See also: </strong>
+  <a href="vmcdf.html">vmcdf</a>, 
+  <a href="vmpdf.html">vmpdf</a>, 
+  <a href="vmrnd.html">vmrnd</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/vminv.m">vminv</a>
+</div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various iCDFs from the von Mises distribution
+ p1 = [0,0.005,0.01:0.01:0.1,0.15,0.2:0.1:0.8,0.85,0.9:0.01:0.99,0.995,1];
+ x1 = vminv (p1, 0, 0.5);
+ x2 = vminv (p1, 0, 1);
+ x3 = vminv (p1, 0, 2);
+ x4 = vminv (p1, 0, 4);
+ plot (p1, x1, "-r", p1, x2, "-g", p1, x3, "-b", p1, x4, "-c")
+ grid on
+ ylim ([-pi, pi])
+ legend ({"μ = 0, k = 0.5", "μ = 0, k = 1", ...
+          "μ = 0, k = 2", "μ = 0, k = 4"}, "location", "northwest")
+ title ("Von Mises iCDF")
+ xlabel ("probability")
+ ylabel ("values in x")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/vminv_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

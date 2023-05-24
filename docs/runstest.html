@@ -71,49 +71,57 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>h</var>, <var>p</var>, <var>stats</var>] = <b>runstest</b><i> (<var>x</var>, <var>v</var>)</i></dt>
+<dt><u>statistics:</u> <var>h</var> = <b>runstest</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>h</var> = <b>runstest</b><i> (<var>x</var>, <var>v</var>)</i></dt>
+<dt><u>statistics:</u> <var>h</var> = <b>runstest</b><i> (<var>x</var>, <code>&quot;ud&quot;</code>)</i></dt>
+<dt><u>statistics:</u> <var>h</var> = <b>runstest</b><i> (&hellip;, <var>Name</var>, <var>Value</var>)</i></dt>
+<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>stats</var>] = <b>runstest</b><i> (&hellip;)</i></dt>
 </dl>
 
-<p> Runs test for detecting serial correlation in the vector <var>x</var>.
+<p> Run test for randomness in the vector <var>x</var>.
 </p>
 <div class="ms-5">
- <a name="Arguments"></a>
-<h3 class="subheading">Arguments</h3>
-
- <ul>
-<li>
- <var>x</var> is the vector of given values.
- </li><li>
- <var>v</var> is the value to subtract from <var>x</var> to get runs
- (defaults to <code>median(x)</code>)
- </li></ul>
-
- <a name="Return-values"></a>
-<h3 class="subheading">Return values</h3>
-
- <ul>
-<li>
- <var>h</var> is true if serial correlation is detected at the 95% confidence level
- (two-tailed), false otherwise.
- </li><li>
- <var>p</var> is the probablity of obtaining a test statistic of the magnitude
- found under the null hypothesis of no serial correlation.
- </li><li>
- <var>stats</var> is the structure containing as fields the number of runs
- <var>nruns</var>; the numbers of positive and negative values of <code>x - v</code>,
- <var>n1</var> and <var>n0</var>; and the test statistic <var>z</var>.
-
-</li></ul>
-
-<p> Note: the large-sample normal approximation is used to find <var>h</var> and
- <var>p</var>. This is accurate if <var>n1</var>, <var>n0</var> are both greater than 10.
+<p> <code><var>h</var> = runstest (<var>x</var>)</code> calculates the number of runs of
+ consecutive values above or below the mean of <var>x</var> and tests the null
+ hypothesis that the values in the data vector <var>x</var> come in random order.
+ <var>h</var> is 1 if the test rejects the null hypothesis at the 5% significance
+ level, or 0 otherwise.
 </p>
-<p> Reference:
- NIST Engineering Statistics Handbook, 1.3.5.13. Runs Test for Detecting
- Non-randomness, http://www.itl.nist.gov/div898/handbook/eda/section3/eda35d.htm
+<p> <code><var>h</var> = runstest (<var>x</var>, <var>v</var>)</code> tests the null hypothesis based
+ on the number of runs of consecutive values above or below the specified
+ reference value <var>v</var>.  Values exactly equal to <var>v</var> are omitted.
 </p>
+<p> <code><var>h</var> = runstest (<var>x</var>, <code>&quot;ud&quot;</code>)</code> calculates the number of
+ runs up or down and tests the null hypothesis that the values in the data
+ vector <var>x</var> follow a trend.  Too few runs indicate a trend, while too
+ many runs indicate an oscillation.  Values exactly equal to the preceding
+ value are omitted.
+</p>
+<p> <code><var>h</var> = runstest (&hellip;, <var>Name</var>, <var>Value</var>)</code> specifies
+ additional options to the above tests by one or more <var>Name</var>-<var>Value</var>
+ pair arguments.
+</p>
+ <table>
+<thead><tr><th width="15%">Name</th><th width="5%"></th><th width="80%">Value</th></tr></thead>
+<tr><td width="15%"><code>&quot;alpha&quot;</code></td><td width="5%"></td><td width="80%">the significance level. Default is 0.05.</td></tr>
+<tr><td width="15%"><code>&quot;method&quot;</code></td><td width="5%"></td><td width="80%">a string specifying the method used to
+ compute the p-value of the test.  It can be either <code>&quot;exact&quot;</code> to use an
+ exact algorithm, or <code>&quot;approximate&quot;</code> to use a normal approximation.  The
+ default is <code>&quot;exact&quot;</code> for runs above/below, and for runs up/down when
+ the length of x is less than or equal to 50.  When testing for runs up/down
+ and the length of <var>x</var> is greater than 50, then the default is
+ <code>&quot;approximate&quot;</code>, and the <code>&quot;exact&quot;</code> method is not available.</td></tr>
+<tr><td width="15%"><code>&quot;tail&quot;</code></td><td width="5%"></td><td width="80%">a string specifying the alternative hypothesis</td></tr>
+</table>
+ <table>
+<tr><td width="20%"></td><td width="15%"><code>&quot;both&quot;</code></td><td width="5%"></td><td width="50%">two-tailed (default)</td></tr>
+<tr><td width="20%"></td><td width="15%"><code>&quot;left&quot;</code></td><td width="5%"></td><td width="50%">left-tailed</td></tr>
+<tr><td width="20%"></td><td width="15%"><code>&quot;right&quot;</code></td><td width="5%"></td><td width="50%">right-tailed</td></tr>
+</table>
+
 <p> <strong>See also: </strong>
-
+signrank, 
+  <a href="signtest.html">signtest</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/runstest.m">runstest</a>

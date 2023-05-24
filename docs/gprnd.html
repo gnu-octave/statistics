@@ -71,26 +71,40 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>r</var> = <b>gprnd</b><i> (<var>shape</var>, <var>scale</var>, <var>location</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>gprnd</b><i> (<var>shape</var>, <var>scale</var>, <var>location</var>, <var>rows</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>gprnd</b><i> (<var>shape</var>, <var>scale</var>, <var>location</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>gprnd</b><i> (<var>shape</var>, <var>scale</var>, <var>location</var>, [<var>sz</var>])</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>gprnd</b><i> (<var>k</var>, <var>sigma</var>, <var>mu</var>)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>gprnd</b><i> (<var>k</var>, <var>sigma</var>, <var>mu</var>, <var>rows</var>)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>gprnd</b><i> (<var>k</var>, <var>sigma</var>, <var>mu</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>gprnd</b><i> (<var>k</var>, <var>sigma</var>, <var>mu</var>, [<var>sz</var>])</i></dt>
 </dl>
 
 <p> Random arrays from the generalized Pareto distribution.
 </p>
 <div class="ms-5">
-<p> <code><var>r</var> = gprnd (<var>shape</var>, <var>scale</var>, <var>location</var>)</code> returns an
- array of random numbers chosen from the generalized Pareto distribution with
- parameters <var>shape</var>, <var>scale</var>, and <var>location</var>.  The size of <var>r</var>
- is the common size of <var>shape</var>, <var>scale</var>, and <var>location</var>.  A scalar
- input functions as a constant matrix of the same size as the other inputs.
+<p> <code><var>r</var> = gprnd (<var>k</var>, <var>sigma</var>, <var>mu</var>)</code> returns an array of
+ random numbers chosen from the generalized Pareto distribution with shape
+ parameter <var>k</var>, scale parameter <var>sigma</var>, and location parameter
+ <var>mu</var>.  The size of <var>r</var> is the common size of <var>k</var>, <var>sigma</var>,
+ and <var>mu</var>.  A scalar input functions as a constant matrix of the same size
+ as the other inputs.
 </p>
-<p> When called with a single size argument, return a square matrix with
- the dimension specified.  When called with more than one scalar argument the
- first two arguments are taken as the number of rows and columns and any
- further arguments specify additional matrix dimensions.  The size may also
- be specified with a vector of dimensions <var>sz</var>.
+<p> When called with a single size argument, <code>gprnd</code> returns a square
+ matrix with the dimension specified.  When called with more than one scalar
+ argument, the first two arguments are taken as the number of rows and columns
+ and any further arguments specify additional matrix dimensions.  The size may
+ also be specified with a row vector of dimensions, <var>sz</var>.
+</p>
+<p> When <code><var>k</var> = 0</code> and <code><var>mu</var> = 0</code>, the Generalized Pareto CDF
+ is equivalent to the exponential distribution.  When <code><var>k</var> &gt; 0</code> and
+ <code><var>mu</var> = <var>k</var> / <var>k</var></code> the Generalized Pareto is equivalent to
+ the Pareto distribution.  The mean of the Generalized Pareto is not finite
+ when <code><var>k</var> &gt;= 1</code> and the variance is not finite when
+ <code><var>k</var> &gt;= 1/2</code>.  When <code><var>k</var> &gt;= 0</code>, the Generalized Pareto
+ has positive density for <code><var>x</var> &gt; <var>mu</var></code>, or, when
+ <code><var>mu</var> &lt; 0</code>, for
+ <code>0 &lt;= (<var>x</var> - <var>mu</var>) / <var>sigma</var> &lt;= -1 / <var>k</var></code>.
+</p>
+<p> Further information about the generalized Pareto distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Generalized_Pareto_distribution">https://en.wikipedia.org/wiki/Generalized_Pareto_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="gpcdf.html">gpcdf</a>, 
@@ -101,7 +115,7 @@
   <a href="gpstat.html">gpstat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/gprnd.m">gprnd</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/gprnd.m">gprnd</a>
 </div>
 
         </div>

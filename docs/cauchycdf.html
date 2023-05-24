@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: cauchycdf</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+    <style>
+    var {
+      font-style: italics;
+      font-weight: bold;
+    }
+    td {
+      vertical-align: top;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Distributions">
+                    <i class="fas fa-list-alt"></i>
+                    Distributions
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>cauchycdf</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>p</var> = <b>cauchycdf</b><i> (<var>x</var>, <var>x0</var>, <var>gamma</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>cauchycdf</b><i> (<var>x</var>, <var>x0</var>, <var>gamma</var>, <code>&quot;upper&quot;</code>)</i></dt>
+</dl>
+
+<p> Cauchy cumulative distribution function (CDF).
+</p>
+<div class="ms-5">
+<p> For each element of <var>x</var>, compute the cumulative distribution function
+ (CDF) of the Cauchy distribution with location parameter <var>x0</var> and scale
+ parameter <var>gamma</var>.  The size of <var>p</var> is the common size of <var>x</var>,
+ <var>x0</var>, and <var>gamma</var>.  A scalar input functions as a constant matrix of
+ the same size as the other inputs.
+</p>
+<p> <code><var>p</var> = cauchycdf (<var>x</var>, <var>x0</var>, <var>gamma</var>, &quot;upper&quot;)</code> computes
+ the upper tail probability of the Cauchy distribution with parameters
+ <var>x0</var> and <var>gamma</var>, at the values in <var>x</var>.
+</p>
+<p> Further information about the Cauchy distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Cauchy_distribution">https://en.wikipedia.org/wiki/Cauchy_distribution</a>
+</p>
+<p> <strong>See also: </strong>
+  <a href="cauchyinv.html">cauchyinv</a>, 
+  <a href="cauchypdf.html">cauchypdf</a>, 
+  <a href="cauchyrnd.html">cauchyrnd</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/cauchycdf.m">cauchycdf</a>
+</div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various CDFs from the Cauchy distribution
+ x = -5:0.01:5;
+ p1 = cauchycdf (x, 0, 0.5);
+ p2 = cauchycdf (x, 0, 1);
+ p3 = cauchycdf (x, 0, 2);
+ p4 = cauchycdf (x, -2, 1);
+ plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c")
+ grid on
+ xlim ([-5, 5])
+ legend ({"x0 = 0, γ = 0.5", "x0 = 0, γ = 1", ...
+          "x0 = 0, γ = 2", "x0 = -2, γ = 1"}, "location", "southeast")
+ title ("Cauchy CDF")
+ xlabel ("values in x")
+ ylabel ("probability")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/cauchycdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

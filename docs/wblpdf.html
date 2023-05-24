@@ -73,30 +73,80 @@
 <dl>
 <dt><u>statistics:</u> <var>y</var> = <b>wblinv</b><i> (<var>x</var>)</i></dt>
 <dt><u>statistics:</u> <var>y</var> = <b>wblinv</b><i> (<var>x</var>, <var>lambda</var>)</i></dt>
-<dt><u>statistics:</u> <var>y</var> = <b>wblinv</b><i> (<var>x</var>, <var>lambda</var>, <var>xk</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>wblinv</b><i> (<var>x</var>, <var>lambda</var>, <var>k</var>)</i></dt>
 </dl>
 
 <p> Weibull probability density function (PDF).
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the probability density function (PDF)
- at <var>x</var> of the Weibull distribution with parameters <var>lambda</var> and
- <var>xk</var>.  The size of <var>y</var> is the common size of <var>x</var>, <var>lambda</var>,
- and <var>xk</var>.  A scalar input functions as a constant matrix of the same size
- as the other inputs.
+ of the Weibull distribution with scale parameter <var>lambda</var> and shpe
+ parameter <var>k</var>.  The size of <var>y</var> is the common size of <var>x</var>,
+ <var>lambda</var>, and <var>k</var>.  A scalar input functions as a constant matrix of
+ the same size as the other inputs.
 </p>
-<p> Default values are <var>lambda</var> = 1, <var>xk</var> = 1.
+<p> Default values are <var>lambda</var> = 1, <var>k</var> = 1.
+</p>
+<p> Further information about the Weibull distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Weibull_distribution">https://en.wikipedia.org/wiki/Weibull_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="wblcdf.html">wblcdf</a>, 
   <a href="wblinv.html">wblinv</a>, 
   <a href="wblrnd.html">wblrnd</a>, 
+  <a href="wblfit.html">wblfit</a>, 
+  <a href="wbllike.html">wbllike</a>, 
   <a href="wblstat.html">wblstat</a>, 
   <a href="wblplot.html">wblplot</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/wblpdf.m">wblpdf</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/wblpdf.m">wblpdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various PDFs from the Weibul distribution
+ x = 0:0.001:2.5;
+ y1 = wblpdf (x, 1, 0.5);
+ y2 = wblpdf (x, 1, 1);
+ y3 = wblpdf (x, 1, 1.5);
+ y4 = wblpdf (x, 1, 5);
+ plot (x, y1, "-b", x, y2, "-r", x, y3, "-m", x, y4, "-g")
+ grid on
+ ylim ([0, 2.5])
+ legend ({"λ = 5, k = 0.5", "λ = 9, k = 1", ...
+          "λ = 6, k = 1.5", "λ = 2, k = 5"}, "location", "northeast")
+ title ("Weibul PDF")
+ xlabel ("values in x")
+ ylabel ("density")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/wblpdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

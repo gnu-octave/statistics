@@ -1,5 +1,6 @@
 ## Copyright (C) 2011 Nir Krakauer <nkrakauer@ccny.cuny.edu>
 ## Copyright (C) 2011 Carnë Draug <carandraug+dev@gmail.com>
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -85,22 +86,22 @@ function yy = monotone_smooth (x, y, h)
 
   if (nargin < 2 || nargin > 3)
     print_usage ();
-  elseif (!isnumeric (x) || !isvector (x))
-    error ("first argument x must be a numeric vector")
-  elseif (!isnumeric (y) || !isvector (y))
-    error ("second argument y must be a numeric vector")
+  elseif (! isnumeric (x) || ! isvector (x))
+    error ("monotone_smooth: X must be a numeric vector.");
+  elseif (! isnumeric (y) || ! isvector (y))
+    error ("monotone_smooth: Y must be a numeric vector.");
   elseif (numel (x) != numel (y))
-    error ("x and y must have the same number of elements")
-  elseif (nargin == 3 && (!isscalar (h) || !isnumeric (h)))
-    error ("third argument 'h' (kernel bandwith) must a numeric scalar")
+    error ("monotone_smooth: X and Y must have the same number of elements.");
+  elseif (nargin == 3 && (! isscalar (h) || ! isnumeric (h)))
+    error ("monotone_smooth: H (kernel bandwith) must a numeric scalar.");
   endif
 
-  n = numel(x);
+  n = numel (x);
 
-  %set filter bandwidth at a reasonable default value, if not specified
+  ## Set filter bandwidth at a reasonable default value, if not specified
   if (nargin != 3)
-    s = std(x);
-    h = s / (n^0.2);
+    s = std (x);
+    h = s / (n ^ 0.2);
   end
 
   x_min = min(x);
@@ -109,23 +110,23 @@ function yy = monotone_smooth (x, y, h)
   y_min = min(y);
   y_max = max(y);
 
-  %transform range of x to [0, 1]
+  ## Transform range of X to [0, 1]
   xl = (x - x_min) / (x_max - x_min);
 
   yy = ones(size(y));
 
-  %Epanechnikov smoothing kernel (with finite support)
-  %K_epanech_kernel = @(z) (3/4) * ((1 - z).^2) .* (abs(z) < 1);
+  ## Epanechnikov smoothing kernel (with finite support)
+  ## K_epanech_kernel = @(z) (3/4) * ((1 - z).^2) .* (abs(z) < 1);
 
-  K_epanech_int = @(z) mean(((abs(z) < 1)/2) - (3/4) * (z .* (abs(z) < 1) - (1/3) * (z.^3) .* (abs(z) < 1)) + (z < -1));
+  K_epanech_int = @(z) mean(((abs(z) < 1)/2) - (3/4) * (z .* (abs(z) < 1) ...
+                            - (1/3) * (z.^3) .* (abs(z) < 1)) + (z < -1));
 
-  %integral of kernels up to t
+  ## Integral of kernels up to t
   monotone_inverse = @(t) K_epanech_int((y - t) / h);
 
-  %find the value of the monotone smooth function at each point in x
-  niter_max = 150; %maximum number of iterations for estimating each value (should not be reached in most cases)
+  ## Find the value of the monotone smooth function at each point in X
+  niter_max = 150; # maxIter for estimating each value (adequate for most cases)
   for l = 1:n
-
     tmax = y_max;
     tmin = y_min;
     wmin = monotone_inverse(tmin);
@@ -141,14 +142,15 @@ function yy = monotone_smooth (x, y, h)
         wn        = monotone_inverse(tn);
         wn_scaled = (wn - wmin) / (wmax - wmin);
 
-        %if (abs(wt-wn) < 1E-4) || (tn < (y_min-0.1)) || (tn > (y_max+0.1))
-        %% criterion for break in the R code -- replaced by the following line to
-        %% hopefully be less dependent on the scale of y
-        if (abs(wt_scaled-wn_scaled) < 1E-4) || (wt_scaled < -0.1) || (wt_scaled > 1.1)
+        ## if (abs(wt-wn) < 1E-4) || (tn < (y_min-0.1)) || (tn > (y_max+0.1))
+        ## criterion for break in the R code -- replaced by the following line
+        ## to hopefully be less dependent on the scale of y
+        if ((abs(wt_scaled-wn_scaled) < 1E-4) ||
+            (wt_scaled < -0.1) || (wt_scaled > 1.1))
           iter_max_reached = 0;
           break
         endif
-        if wn > wt
+        if (wn > wt)
           tmax = tn;
           wmax = wn;
         else
@@ -156,10 +158,33 @@ function yy = monotone_smooth (x, y, h)
           wmin = wn;
         endif
       endfor
-      if iter_max_reached
-        warning("at x = %g, maximum number of iterations %d reached without convergence; approximation may not be optimal", x(l), niter_max)
+      if (iter_max_reached)
+        msg = sprintf (strcat (["at x = %%g, maximum number of iterations"], ...
+                               [" %%d reached without convergence;"], ...
+                               [" approximation may not be optimal"]));
+        warning (msg, x(l), niter_max)
       endif
       yy(l) = tmin + (wt - wmin) * (tmax - tmin) / (wmax - wmin);
     endif
   endfor
+
 endfunction
+
+## Test input validation
+%!error<Invalid call to monotone_smooth.  Correct usage is> ...
+%! monotone_smooth (1)
+%!error<monotone_smooth: X must be a numeric vector.> ...
+%! monotone_smooth ("char", 1)
+%!error<monotone_smooth: X must be a numeric vector.> ...
+%! monotone_smooth ({1,2,3}, 1)
+%!error<monotone_smooth: X must be a numeric vector.> ...
+%! monotone_smooth (ones(20,3), 1)
+%!error<monotone_smooth: Y must be a numeric vector.> ...
+%! monotone_smooth (1, "char")
+%!error<monotone_smooth: Y must be a numeric vector.> ...
+%! monotone_smooth (1, {1,2,3})
+%!error<monotone_smooth: Y must be a numeric vector.> ...
+%! monotone_smooth (1, ones(20,3))
+%!error<monotone_smooth: H>  monotone_smooth (ones (10,1), ones(10,1), [1, 2])
+%!error<monotone_smooth: H>  monotone_smooth (ones (10,1), ones(10,1), {2})
+%!error<monotone_smooth: H>  monotone_smooth (ones (10,1), ones(10,1), "char")

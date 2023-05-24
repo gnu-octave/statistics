@@ -87,20 +87,28 @@
  as the other inputs.  Both parameters must be reals and <var>sigma</var> &gt; 0.  For
  <var>sigma</var> &lt;= 0, NaN is returned.
 </p>
-<p> When called with a single size argument, return a square matrix with
- the dimension specified.  When called with more than one scalar argument the
- first two arguments are taken as the number of rows and columns and any
- further arguments specify additional matrix dimensions.  The size may also
- be specified with a vector of dimensions <var>sz</var>.
+<p> Both parameters must be reals and <code><var>sigma</var> &gt; 0</code>.
+ For <code><var>sigma</var> &lt;= 0</code>, <code>NaN</code> is returned.
+</p>
+<p> When called with a single size argument, <code>lognrnd</code> returns a square
+ matrix with the dimension specified.  When called with more than one scalar
+ argument, the first two arguments are taken as the number of rows and columns
+ and any further arguments specify additional matrix dimensions.  The size may
+ also be specified with a row vector of dimensions, <var>sz</var>.
+</p>
+<p> Further information about the log-normal distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Log-normal_distribution">https://en.wikipedia.org/wiki/Log-normal_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="logncdf.html">logncdf</a>, 
   <a href="logninv.html">logninv</a>, 
   <a href="lognpdf.html">lognpdf</a>, 
+  <a href="lognfit.html">lognfit</a>, 
+  <a href="lognlike.html">lognlike</a>, 
   <a href="lognstat.html">lognstat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/lognrnd.m">lognrnd</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/lognrnd.m">lognrnd</a>
 </div>
 
         </div>

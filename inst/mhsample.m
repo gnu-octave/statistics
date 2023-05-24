@@ -283,11 +283,11 @@ function y = rloge (x)
 
 endfunction
 
-
 %!demo
 %! ## Define function to sample
 %! d = 2;
 %! mu = [-1; 2];
+%! rand ("seed", 5)  # for reproducibility
 %! Sigma = rand (d);
 %! Sigma = (Sigma + Sigma');
 %! Sigma += eye (d) * abs (eigs (Sigma, 1, "sa")) * 1.1;
@@ -298,6 +298,7 @@ endfunction
 %! sym = true;
 %! K = 500;
 %! m = 10;
+%! rand ("seed", 8)  # for reproducibility
 %! proprnd = @(x) (rand (size (x)) - .5) * 3 + x;
 %! [smpl, accept] = mhsample (start, nsamples, "pdf", pdf, "proprnd", proprnd, ...
 %!                            "symmetric", sym, "burnin", K, "thin", m);
@@ -321,6 +322,7 @@ endfunction
 %! ## Integrate truncated normal distribution to find normilization constant
 %! pdf = @(x) exp (-.5*x.^2)/(pi^.5*2^.5);
 %! nsamples = 1e3;
+%! rand ("seed", 5)  # for reproducibility
 %! proprnd = @(x) (rand (size (x)) - .5) * 3 + x;
 %! [smpl, accept] = mhsample (1, nsamples, "pdf", pdf, "proprnd", proprnd, ...
 %!                            "symmetric", true, "thin", 4);
@@ -336,7 +338,7 @@ endfunction
 %! printf ("Monte Carlo integral error estimate %f\n", errest);
 %! printf ("The actual error %f\n", trueerr);
 
-
+## Test output
 %!test
 %! nchain = 1e4;
 %! start = rand (nchain, 1);
@@ -350,6 +352,7 @@ endfunction
 %! assert (mean (mean (smpl, 1), 3), 1, .01);
 %! assert (mean (var (smpl, 1), 3), 1, .01)
 
+## Test input validation
 %!error mhsample ();
 %!error mhsample (1);
 %!error mhsample (1, 1);

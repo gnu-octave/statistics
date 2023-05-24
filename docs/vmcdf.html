@@ -71,31 +71,85 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>vmcdf</b><i> (<var>theta</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>vmcdf</b><i> (<var>theta</var>, <var>mu</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>vmcdf</b><i> (<var>theta</var>, <var>mu</var>, <var>k</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>vmcdf</b><i> (<var>x</var>, <var>mu</var>, <var>k</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>vmcdf</b><i> (<var>x</var>, <var>mu</var>, <var>k</var>, <code>&quot;upper&quot;</code>)</i></dt>
 </dl>
 
 <p> Von Mises probability density function (PDF).
 </p>
 <div class="ms-5">
-<p> For each element of <var>theta</var>, compute the probability density function
- (PDF) at <var>theta</var> of the von Mises distribution with mean direction
- parameter <var>mu</var> and concentration parameter <var>k</var> on the interval
- [-pi, pi].  The size of <var>p</var> is the common size of the input arguments.
- A scalar input functions as a constant matrix of the same same size as the
- other inputs.
+<p> For each element of <var>x</var>, compute the cumulative distribution function
+ (CDF) of the von Mises distribution with location parameter <var>mu</var> and
+ concentration parameter <var>k</var> on the interval <math>[-pi,pi]</math>.  The size of
+ <var>p</var> is the common size of <var>x</var>, <var>mu</var>, and <var>k</var>.  A scalar input
+ functions as a constant matrix of the same same size as the other inputs.
 </p>
-<p> Default values are <var>mu</var> = 0, <var>k</var> = 1.  The function returns NaN for
- negative <var>k</var>.
+<p> <code><var>p</var> = vmcdf (<var>x</var>, <var>mu</var>, <var>k</var>, &quot;upper&quot;)</code> computes the
+ upper tail probability of the von Mises distribution with parameters <var>mu</var>
+ and <var>k</var>, at the values in <var>x</var>.
+</p>
+<p> Note: the CDF of the von Mises distribution is not analytic.  Hence, it is
+ calculated by integrating its probability density which is expressed as a
+ series of Bessel functions.  Balancing between performance and accuracy, the
+ integration uses a step of <code>1e-5</code> on the interval <math>[-pi,pi]</math>,
+ which results to an accuracy of about 10 significant digits.
+</p>
+<p> Further information about the von Mises distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Von_Mises_distribution">https://en.wikipedia.org/wiki/Von_Mises_distribution</a>
 </p>
 <p> <strong>See also: </strong>
+  <a href="vminv.html">vminv</a>, 
   <a href="vmpdf.html">vmpdf</a>, 
   <a href="vmrnd.html">vmrnd</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/vmcdf.m">vmcdf</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/vmcdf.m">vmcdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various CDFs from the von Mises distribution
+ x1 = [-pi:0.1:pi];
+ p1 = vmcdf (x1, 0, 0.5);
+ p2 = vmcdf (x1, 0, 1);
+ p3 = vmcdf (x1, 0, 2);
+ p4 = vmcdf (x1, 0, 4);
+ plot (x1, p1, "-r", x1, p2, "-g", x1, p3, "-b", x1, p4, "-c")
+ grid on
+ xlim ([-pi, pi])
+ legend ({"μ = 0, k = 0.5", "μ = 0, k = 1", ...
+          "μ = 0, k = 2", "μ = 0, k = 4"}, "location", "northwest")
+ title ("Von Mises CDF")
+ xlabel ("values in x")
+ ylabel ("probability")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/vmcdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

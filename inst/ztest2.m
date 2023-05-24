@@ -19,7 +19,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{h} =} ztest2 (@var{x1}, @var{n1}, @var{x2}, @var{n2})
-## @deftypefnx {statistics} {@var{h} =} ztest2 (@var{x1}, @var{n1}, @var{x2}, @var{n2}, @var{name}, @var{value})
+## @deftypefnx {statistics} {@var{h} =} ztest2 (@var{x1}, @var{n1}, @var{x2}, @var{n2}, @var{Name}, @var{Value})
 ## @deftypefnx {statistics} {[@var{h}, @var{pval}] =} ztest2 (@dots{})
 ## @deftypefnx {statistics} {[@var{h}, @var{pval}, @var{zvalue}] =} ztest2 (@dots{})
 ##
@@ -47,11 +47,11 @@
 ## @code{[@var{h}, @var{pval}, @var{zvalue}] = ztest2 (@dots{})} returns the
 ## value of the test statistic.
 ##
-## @code{[@dots{}] = ztest2 (@dots{}, @var{name}, @var{value}, @dots{})}
-## specifies one or more of the following name/value pairs:
+## @code{[@dots{}] = ztest2 (@dots{}, @var{Name}, @var{Value}, @dots{})}
+## specifies one or more of the following @var{Name}/@var{Value} pairs:
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
-## @headitem @tab Name @tab Value
+## @headitem @tab @var{Name} @tab @var{Value}
 ## @item @tab @qcode{"alpha"} @tab the significance level. Default is 0.05.
 ##
 ## @item @tab @qcode{"tail"} @tab a string specifying the alternative hypothesis
@@ -91,7 +91,7 @@ function [h, pval, zvalue] = ztest2 (x1, n1, x2, n2, varargin)
   if (nargin > 4)
     params = numel (varargin);
     if ((params / 2) != fix (params / 2))
-      error ("ztest2: optional arguments must be in Name-Value pairs.")
+      error ("ztest2: optional arguments must be in NAME-VALUE pairs.")
     endif
     for idx = 1:2:params
       name = varargin{idx};
@@ -101,15 +101,15 @@ function [h, pval, zvalue] = ztest2 (x1, n1, x2, n2, varargin)
           alpha = value;
           if (! isscalar (alpha) || ! isnumeric (alpha) || ...
                 alpha <= 0 || alpha >= 1)
-            error ("ztest2: invalid value for alpha.");
+            error ("ztest2: invalid VALUE for alpha.");
           endif
         case "tail"
           tail = value;
           if (! any (strcmpi (tail, {"both", "left", "right"})))
-            error ("ztest2: invalid value for tail.");
+            error ("ztest2: invalid VALUE for tail.");
           endif
         otherwise
-          error ("ztest2: invalid name for optional arguments.");
+          error ("ztest2: invalid NAME for optional arguments.");
       endswitch
     endfor
   endif
@@ -141,15 +141,17 @@ endfunction
 %!error ztest2 (1);
 %!error ztest2 (1, 2);
 %!error ztest2 (1, 2, 3);
-%!error<ztest2: invalid value for alpha.> ...
+%!error<ztest2: optional arguments must be in NAME-VALUE pairs.> ...
+%! ztest2 (1, 2, 3, 4, "alpha")
+%!error<ztest2: invalid VALUE for alpha.> ...
 %! ztest2 (1, 2, 3, 4, "alpha", 0);
-%!error<ztest2: invalid value for alpha.> ...
+%!error<ztest2: invalid VALUE for alpha.> ...
 %! ztest2 (1, 2, 3, 4, "alpha", 1.2);
-%!error<ztest2: invalid value for alpha.> ...
+%!error<ztest2: invalid VALUE for alpha.> ...
 %! ztest2 (1, 2, 3, 4, "alpha", "val");
-%!error<ztest2: invalid value for tail.>  ...
+%!error<ztest2: invalid VALUE for tail.>  ...
 %! ztest2 (1, 2, 3, 4, "tail", "val");
-%!error<ztest2: invalid value for tail.>  ...
+%!error<ztest2: invalid VALUE for tail.>  ...
 %! ztest2 (1, 2, 3, 4, "alpha", 0.01, "tail", "val");
-%!error<ztest: invalid name for optional arguments.> ...
-%! ztest (1, 2, 3, 4, "alpha", 0.01, "tail", "both", "badoption", 3);
+%!error<ztest2: invalid NAME for optional arguments.> ...
+%! ztest2 (1, 2, 3, 4, "alpha", 0.01, "tail", "both", "badoption", 3);

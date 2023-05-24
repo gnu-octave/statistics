@@ -71,26 +71,106 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>xload</var>, <var>yload</var>, <var>xscore</var>, <var>yscore</var>, <var>coef</var>, <var>fitted</var>] = <b>plsregress</b><i>(<var>X</var>, <var>Y</var>, <var>NCOMP</var>)</i></dt>
+<dt><u>statistics:</u> [<var>xload</var>, <var>yload</var>] = <b>plsregress</b><i> (<var>X</var>, <var>Y</var>)</i></dt>
+<dt><u>statistics:</u> [<var>xload</var>, <var>yload</var>] = <b>plsregress</b><i> (<var>X</var>, <var>Y</var>, <var>NCOMP</var>)</i></dt>
+<dt><u>statistics:</u> [<var>xload</var>, <var>yload</var>, <var>xscore</var>, <var>yscore</var>, <var>coef</var>, <var>pctVar</var>, <var>mse</var>, <var>stats</var>] = <b>plsregress</b><i> (<var>X</var>, <var>Y</var>, <var>NCOMP</var>)</i></dt>
+<dt><u>statistics:</u> [<var>xload</var>, <var>yload</var>, <var>xscore</var>, <var>yscore</var>, <var>coef</var>, <var>pctVar</var>, <var>mse</var>, <var>stats</var>] = <b>plsregress</b><i> (&hellip;, <var>Name</var>, <var>Value</var>)</i></dt>
 </dl>
 
 <p> Calculate partial least squares regression using SIMPLS algorithm.
 </p>
 <div class="ms-5">
- <ul>
-<li>
- <var>X</var>: Matrix of observations
- </li><li>
- <var>Y</var>: Is a vector or matrix of responses
- </li><li>
- <var>NCOMP</var>: number of components used for modelling
- </li><li>
- <var>X</var> and <var>Y</var> will be mean centered to improve accuracy
+<p> <code>plsregress</code> uses the SIMPLS algorithm, and first centers <var>X</var> and
+ <var>Y</var> by subtracting off column means to get centered variables.  However,
+ it does not rescale the columns.  To perform partial least squares regression
+ with standardized variables, use <code>zscore</code> to normalize <var>X</var> and
+ <var>Y</var>.
+</p>
+<p> <code>[<var>xload</var>, <var>yload</var>] = plsregress (<var>X</var>, <var>Y</var>)</code> computes a
+ partial least squares regression of  <var>Y</var> on <var>X</var>, using <var>NCOMP</var>
+ PLS components, which by default are calculated as
+ <code>min (size (<var>X</var>, 1) - 1, size(<var>X</var>, 2))</code>, and returns the
+ the predictor and response loadings in <var>xload</var> and <var>yload</var>,
+ respectively.
+ </p><ul>
+<li> <var>X</var> is an <math>N&times;P</math> matrix of predictor variables, with rows
+ corresponding to observations, and columns corresponding to variables.
+ </li><li> <var>Y</var> is an <math>N&times;M</math> response matrix.
+ </li><li> <var>xload</var> is a <math>P&times;NCOMP</math> matrix of predictor loadings, where
+ each row of <var>xload</var> contains coefficients that define a linear
+ combination of PLS components that approximate the original predictor
+ variables.
+ </li><li> <var>yload</var> is an <math>M&times;NCOMP</math> matrix of response loadings, where
+ each row of <var>yload</var> contains coefficients that define a linear
+ combination of PLS components that approximate the original response
+ variables.
  </li></ul>
 
+<p> <code>[<var>xload</var>, <var>yload</var>] = plsregress (<var>X</var>, <var>Y</var>,
+ <var>NCOMP</var>)</code> defines the desired number of PLS components to use in the
+ regression.  <var>NCOMP</var>, a scalar positive integer, must not exceed the
+ default calculated value.
+</p>
+<p> <code>[<var>xload</var>, <var>yload</var>, <var>xscore</var>, <var>yscore</var>, <var>coef</var>,
+ <var>pctVar</var>, <var>mse</var>, <var>stats</var>] = plsregress (<var>X</var>, <var>Y</var>,
+ <var>NCOMP</var>)</code> also returns the following arguments:
+ </p><ul>
+<li> <var>xscore</var> is an <math>N&times;NCOMP</math> orthonormal matrix with the predictor
+ scores, i.e., the PLS components that are linear combinations of the
+ variables in <var>X</var>, with rows corresponding to observations and columns
+ corresponding to components.
+ </li><li> <var>yscore</var> is an <math>N&times;NCOMP</math> orthonormal matrix with the response
+ scores, i.e., the linear combinations of the responses with which the PLS
+ components <var>xscore</var> have maximum covariance, with rows corresponding to
+ observations and columns corresponding to components.
+ </li><li> <var>coef</var> is a <math>(P+1)&times;M</math> matrix with the PLS regression
+ coefficients, containing the intercepts in the first row.
+ </li><li> <var>pctVar</var> is a <math>2&times;NCOMP</math> matrix containing the percentage of
+ the variance explained by the model with the first row containing the
+ percentage of exlpained varianced in <var>X</var> by each PLS component and the
+ second row containing the percentage of explained variance in <var>Y</var>.
+ </li><li> <var>mse</var> is a <math>2&times;(NCOMP+1)</math> matrix containing the estimated mean
+ squared errors for PLS models with <code>0:<var>NCOMP</var></code> components with the
+ first row containing the squared errors for the predictor variables in
+ <var>X</var> and the second row containing the mean squared errors for the
+ response variable(s) in <var>Y</var>.
+ </li><li> <var>stats</var> is a structure with the following fields:
+ <ul>
+<li> <var>stats</var><code>.W</code> is a <math>P&times;NCOMP</math> matrix of PLS weights.
+ </li><li> <var>stats</var><code>.T2</code> is the <math>T^2</math> statistics for each point in
+ <var>xscore</var>.
+ </li><li> <var>stats</var><code>.Xresiduals</code> is an <math>N&times;P</math> matrix with the
+ predictor residuals.
+ </li><li> <var>stats</var><code>.Yresiduals</code> is an <math>N&times;M</math> matrix with the
+ response residuals.
+ </li></ul>
+</li></ul>
+
+<p> <code>[&hellip;] = plsregress (&hellip;, <var>Name</var>, <var>Value</var>, &hellip;)</code>
+ specifies one or more of the following <var>Name</var>/<var>Value</var> pairs:
+</p>
+ <table>
+<thead><tr><th width="5%"></th><th width="20%"><var>Name</var></th><th width="75%"><var>Value</var></th></tr></thead>
+<tr><td width="5%"></td><td width="20%"><code>&quot;CV&quot;</code></td><td width="75%">The method used to compute <var>mse</var>.  When
+ <var>Value</var> is a positive integer <math>K</math>, <code>plsregress</code> uses
+ <math>K</math>-fold cross-validation.  Set <var>Value</var> to a cross-validation
+ partition, created using <code>cvpartition</code>, to use other forms of
+ cross-validation.  Set <var>Value</var> to <code>&quot;resubstitution&quot;</code> to use both
+ <var>X</var> and <var>Y</var> to fit the model and to estimate the mean squared errors,
+ without cross-validation. By default, <code><var>Value</var> = &quot;resubstitution&quot;</code>.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;MCReps&quot;</code></td><td width="75%">A positive integer indicating the number of
+ Monte-Carlo repetitions for cross-validation.  By default,
+ <code><var>Value</var> = 1</code>.  A different <code>&quot;MCReps&quot;</code> value is only
+ meaningful when using the <code>&quot;HoldOut&quot;</code> method for cross-validation,
+ previously set by a <code>cvpartition</code> object.  If no cross-validation method
+ is used, then <code>&quot;MCReps&quot;</code> must be <code>1</code>.</td></tr>
+</table>
+
+<p> Further information about the PLS regression can be found at
+ <a href="https://en.wikipedia.org/wiki/Partial_least_squares_regression">https://en.wikipedia.org/wiki/Partial_least_squares_regression</a>
+</p>
  <a name="References"></a>
 <h3 class="subheading">References</h3>
-
  <ol>
 <li>
  SIMPLS: An alternative approach to partial least squares regression.
@@ -101,6 +181,130 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/plsregress.m">plsregress</a>
 </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Perform Partial Least-Squares Regression
+
+ ## Load the spectra data set and use the near infrared (NIR) spectral
+ ## intensities (NIR) as the predictor and the corresponding octave
+ ## ratings (octave) as the response.
+ load spectra
+
+ ## Perform PLS regression with 10 components
+ [xload, yload, xscore, yscore, coef, ptcVar] = plsregress (NIR, octane, 10);
+
+ ## Plot the percentage of explained variance in the response variable
+ ## (PCTVAR) as a function of the number of components.
+ plot (1:10, cumsum (100 * ptcVar(2,:)), "-ro");
+ xlim ([1, 10]);
+ xlabel ("Number of PLS components");
+ ylabel ("Percentage of Explained Variance in octane");
+ title ("Explained Variance per PLS components");
+
+ ## Compute the fitted response and display the residuals.
+ octane_fitted = [ones(size(NIR,1),1), NIR] * coef;
+ residuals = octane - octane_fitted;
+ figure
+ stem (residuals, "color", "r", "markersize", 4, "markeredgecolor", "r")
+ xlabel ("Observations");
+ ylabel ("Residuals");
+ title ("Residuals in octane's fitted responce");
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/plsregress_102.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+                  <div class="text-center">
+                    <img src="assets/plsregress_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Calculate Variable Importance in Projection (VIP) for PLS Regression
+
+ ## Load the spectra data set and use the near infrared (NIR) spectral
+ ## intensities (NIR) as the predictor and the corresponding octave
+ ## ratings (octave) as the response.  Variables with a VIP score greater than
+ ## 1 are considered important for the projection of the PLS regression model.
+ load spectra
+
+ ## Perform PLS regression with 10 components
+ [xload, yload, xscore, yscore, coef, pctVar, mse, stats] = ...
+                                                 plsregress (NIR, octane, 10);
+
+ ## Calculate the normalized PLS weights
+ W0 = stats.W ./ sqrt(sum(stats.W.^2,1));
+
+ ## Calculate the VIP scores for 10 components
+ nobs = size (xload, 1);
+ SS = sum (xscore .^ 2, 1) .* sum (yload .^ 2, 1);
+ VIPscore = sqrt (nobs * sum (SS .* (W0 .^ 2), 2) ./ sum (SS, 2));
+
+ ## Find variables with a VIP score greater than or equal to 1
+ VIPidx = find (VIPscore >= 1);
+
+ ## Plot the VIP scores
+ scatter (1:length (VIPscore), VIPscore, "xb");
+ hold on
+ scatter (VIPidx, VIPscore (VIPidx), "xr");
+ plot ([1, length(VIPscore)], [1, 1], "--k");
+ hold off
+ axis ("tight");
+ xlabel ("Predictor Variables");
+ ylabel ("VIP scores");
+ title ("VIP scores for each predictror variable with 10 components");
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/plsregress_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
         </div>

@@ -71,32 +71,46 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>residuals</var>, <var>reconstructed</var>] = <b>pcares</b><i> (<var>X</var>, <var>NDIM</var>)</i></dt>
+<dt><u>statistics:</u> <var>residuals</var> = <b>pcares</b><i> (<var>x</var>, <var>ndim</var>)</i></dt>
+<dt><u>statistics:</u> [<var>residuals</var>, <var>reconstructed</var>] = <b>pcares</b><i> (<var>x</var>, <var>ndim</var>)</i></dt>
 </dl>
 
 <p> Calculate residuals from principal component analysis.
 </p>
 <div class="ms-5">
- <ul>
-<li>
- <var>X</var> : N x P Matrix with N observations and P variables, the variables will be mean centered
- </li><li>
- <var>ndim</var> : Is a scalar indicating the number of principal components to use and should be &lt;= P
- </li></ul>
-
+<p> <code><var>residuals</var> = pcares (<var>x</var>, <var>ndim</var>)</code> returns the residuals
+ obtained by retaining <var>ndim</var> principal components of the <math>N&times;D</math>
+ matrix <var>x</var>. Rows of <var>x</var> correspond to observations, columns of
+ <var>x</var> correspond to variables.  <var>ndim</var> is a scalar and must be less
+ than or equal to <math>D</math>.  <var>residuals</var> is a matrix of the same size as
+ <var>x</var>.  Use the data matrix, not the covariance matrix, with this function.
+</p>
+<p> <code>[<var>residuals</var>, <var>reconstructed</var>] = pcares (<var>x</var>, <var>ndim</var>)</code>
+ returns the reconstructed observations, i.e. the approximation to <var>x</var>
+ obtained by retaining its first <var>ndim</var> principal components.
+</p>
+<p> <code>pcares</code> does not normalize the columns of <var>x</var>.  Use
+ <code>pcares (zscore (<var>x</var>), <var>ndim</var>)</code> in order to perform the
+ principal components analysis based on standardized variables, i.e. based on
+ correlations.  Use <code>pcacov</code> in order to perform principal components
+ analysis directly on a covariance or correlation matrix without constructing
+ residuals.
+</p>
  <a name="References"></a>
 <h3 class="subheading">References</h3>
-
  <ol>
 <li>
  Jolliffe, I. T., Principal Component Analysis, 2nd Edition, Springer, 2002
+ </li></ol>
 
-</li></ol>
-
+<p> <strong>See also: </strong>
+factoran, 
+  <a href="pcacov.html">pcacov</a>, 
+  <a href="pca.html">pca</a>
+</p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/pcares.m">pcares</a>
 </div>
-
         <div class="container-xl my-4">
           <div class="card rounded">
             <div class="card-header card-header-mod">
@@ -115,7 +129,7 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- X = [ 7    26     6    60;
+ x = [ 7    26     6    60;
        1    29    15    52;
       11    56     8    20;
       11    31     8    47;
@@ -127,18 +141,18 @@
       21    47     4    26;
        1    40    23    34;
       11    66     9    12;
-      10    68     8    12
-     ];
- # As we increase the number of principal components, the norm
- # of the residuals matrix will decrease
- r1 = pcares(X,1);
- n1 = norm(r1)
- r2 = pcares(X,2);
- n2 = norm(r2)
- r3 = pcares(X,3);
- n3 = norm(r3)
- r4 = pcares(X,4);
- n4 = norm(r4)
+      10    68     8    12];
+
+ ## As we increase the number of principal components, the norm
+ ## of the residuals matrix will decrease
+ r1 = pcares (x,1);
+ n1 = norm (r1)
+ r2 = pcares (x,2);
+ n2 = norm (r2)
+ r3 = pcares (x,3);
+ n3 = norm (r3)
+ r4 = pcares (x,4);
+ n4 = norm (r4)
 
 n1 = 28.460
 n2 = 12.201

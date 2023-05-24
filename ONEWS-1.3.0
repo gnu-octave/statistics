@@ -1,0 +1,31 @@
+Summary of important user-visible changes for statistics 1.3.0:
+-------------------------------------------------------------------
+
+ ** The following functions are new:
+
+      bbscdf bbsinv bbspdf bbsrnd
+      binotest
+      burrcdf burrinv burrpdf burrrnd
+      gpcdf gpinv gppdf gprnd
+      grp2idx
+      mahal
+      mvtpdf
+      nakacdf nakainv nakapdf nakarnd
+      pdf
+      tricdf triinv tripdf trirnd
+      violin
+
+ ** Other functions that have been changed for smaller bugfixes, increased
+    Matlab compatibility, or performance:
+
+      betastat
+      binostat
+      cdf
+      combnk
+      gevfit
+      hist3
+      kmeans
+      linkage
+      randsample
+      squareform
+      ttest

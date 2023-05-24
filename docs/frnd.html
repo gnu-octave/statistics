@@ -86,11 +86,14 @@
  <var>df2</var>.  A scalar input functions as a constant matrix of the same size as
  the other inputs.
 </p>
-<p> When called with a single size argument, return a square matrix with
- the dimension specified.  When called with more than one scalar argument the
- first two arguments are taken as the number of rows and columns and any
- further arguments specify additional matrix dimensions.  The size may also
- be specified with a vector of dimensions <var>sz</var>.
+<p> When called with a single size argument, <code>frnd</code> returns a square
+ matrix with the dimension specified.  When called with more than one scalar
+ argument, the first two arguments are taken as the number of rows and columns
+ and any further arguments specify additional matrix dimensions.  The size may
+ also be specified with a row vector of dimensions, <var>sz</var>.
+</p>
+<p> Further information about the F distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/F-distribution">https://en.wikipedia.org/wiki/F-distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="fcdf.html">fcdf</a>, 
@@ -99,7 +102,7 @@
   <a href="fstat.html">fstat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/frnd.m">frnd</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/frnd.m">frnd</a>
 </div>
 
         </div>

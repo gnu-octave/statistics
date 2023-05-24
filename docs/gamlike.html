@@ -71,14 +71,48 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>nLogL</var> = <b>gamlike</b><i> (<var>params</var>, <var>R</var>)</i></dt>
+<dt><u>statistics:</u> <var>nlogL</var> = <b>gamlike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>nlogL</var>, <var>acov</var>] = <b>gamlike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>gamlike</b><i> (<var>params</var>, <var>x</var>, <var>censor</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>gamlike</b><i> (<var>params</var>, <var>x</var>, <var>censor</var>, <var>freq</var>)</i></dt>
 </dl>
 
-<p> Calculates the negative log-likelihood function for the Gamma
- distribution over vector <var>R</var>, with the given parameters <var>A</var> and
- <var>B</var> in a 2-element vector <var>params</var>.
+<p> Negative log-likelihood for the Gamma distribution.
 </p>
 <div class="ms-5">
+<p> <code><var>nlogL</var> = gamlike (<var>params</var>, <var>x</var>)</code> returns the negative
+ log likelihood of the data in <var>x</var> corresponding to the Gamma distribution
+ with (1) shape parameter <var>k</var> and (2) scale parameter <var>theta</var> given in
+ the two-element vector <var>params</var>.
+</p>
+<p> <code>[<var>nlogL</var>, <var>acov</var>] = gamlike (<var>params</var>, <var>x</var>)</code> also
+ returns the inverse of Fisher&rsquo;s information matrix, <var>acov</var>.  If the input
+ parameter values in <var>params</var> are the maximum likelihood estimates, the
+ diagonal elements of <var>acov</var> are their asymptotic variances.
+</p>
+<p> <code>[&hellip;] = gamlike (<var>params</var>, <var>x</var>, <var>censor</var>)</code> accepts a
+ boolean vector, <var>censor</var>, of the same size as <var>x</var> with <code>1</code>s for
+ observations that are right-censored and <code>0</code>s for observations that are
+ observed exactly.  By default, or if left empty,
+ <code><var>censor</var> = zeros (size (<var>x</var>))</code>.
+</p>
+<p> <code>[&hellip;] = gamlike (<var>params</var>, <var>x</var>, <var>censor</var>, <var>freq</var>)</code>
+ accepts a frequency vector, <var>freq</var>, of the same size as <var>x</var>.
+ <var>freq</var> typically contains integer frequencies for the corresponding
+ elements in <var>x</var>, but it can contain any non-integer non-negative values.
+ By default, or if left empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
+</p>
+<p> There are two equivalent parameterizations in common use:
+ </p><ol>
+<li> With a shape parameter <math>k</math> and a scale parameter <math>θ</math>, which
+ is used by <code>gamcdf</code>.
+ </li><li> With a shape parameter <math>α = k</math> and an inverse scale parameter
+ <math>β = 1 / θ</math>, called a rate parameter.
+ </li></ol>
+
+<p> Further information about the Gamma distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Gamma_distribution">https://en.wikipedia.org/wiki/Gamma_distribution</a>
+</p>
 <p> <strong>See also: </strong>
   <a href="gamcdf.html">gamcdf</a>, 
   <a href="gampdf.html">gampdf</a>, 
@@ -87,7 +121,7 @@
   <a href="gamfit.html">gamfit</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/gamlike.m">gamlike</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/gamlike.m">gamlike</a>
 </div>
 
         </div>

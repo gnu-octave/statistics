@@ -71,30 +71,126 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>x</var> = <b>ncx2inv</b><i> (<var>p</var>, <var>df</var>, <var>delta</var>)</i></dt>
+<dt><u>statistics:</u> <var>x</var> = <b>ncx2inv</b><i> (<var>p</var>, <var>df</var>, <var>lambda</var>)</i></dt>
 </dl>
 
-<p> Inverse of the non-central chi-square cumulative distribution function (iCDF).
+<p> Inverse of the noncentral chi-squared cumulative distribution function (iCDF).
 </p>
 <div class="ms-5">
-<p> <code><var>x</var> = ncx2inv (<var>p</var>, <var>df</var>, <var>delta</var>)</code> returns the inverse
- of the noncentral chi-square distribution with <var>df</var> degrees of freedom
- and noncentrality parameter <var>delta</var>, at the probabilities of <var>p</var>.
-</p>
-<p> The size of <var>x</var> is the common size of <var>df</var> and <var>delta</var>.  A scalar
- input functions as a constant matrix of the same size as the other inputs.
+<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF) of
+ the noncentral chi-squared distribution with <var>df</var> degrees of freedom and
+ noncentrality parameter <var>mu</var>.  The size of <var>x</var> is the common size of
+ <var>p</var>, <var>df</var>, and <var>mu</var>.  A scalar input functions as a constant
+ matrix of the same size as the other inputs.
 </p>
 <p> <code>ncx2inv</code> uses Newton&rsquo;s method to converge to the solution.
+</p>
+<p> Further information about the noncentral chi-squared distribution can be
+ found at <a href="https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution">https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="ncx2cdf.html">ncx2cdf</a>, 
   <a href="ncx2pdf.html">ncx2pdf</a>, 
   <a href="ncx2rnd.html">ncx2rnd</a>, 
-  <a href="ncx2stat.html">ncx2stat</a>
+  <a href="ncx2stat.html">ncx2stat</a>, 
+  <a href="chi2inv.html">chi2inv</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/ncx2inv.m">ncx2inv</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/ncx2inv.m">ncx2inv</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various iCDFs from the noncentral chi-squared distribution
+ p = 0.001:0.001:0.999;
+ x1 = ncx2inv (p, 2, 1);
+ x2 = ncx2inv (p, 2, 2);
+ x3 = ncx2inv (p, 2, 3);
+ x4 = ncx2inv (p, 4, 1);
+ x5 = ncx2inv (p, 4, 2);
+ x6 = ncx2inv (p, 4, 3);
+ plot (p, x1, "-r", p, x2, "-g", p, x3, "-k", ...
+       p, x4, "-m", p, x5, "-c", p, x6, "-y")
+ grid on
+ ylim ([0, 10])
+ legend ({"df = 2, λ = 1", "df = 2, λ = 2", ...
+          "df = 2, λ = 3", "df = 4, λ = 1", ...
+          "df = 4, λ = 2", "df = 4, λ = 3"}, "location", "northwest")
+ title ("Noncentral chi-squared iCDF")
+ xlabel ("probability")
+ ylabel ("values in x")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/ncx2inv_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compare the noncentral chi-squared CDF with LAMBDA = 2 to the
+ ## chi-squared CDF with the same number of degrees of freedom (4).
+
+ p = 0.001:0.001:0.999;
+ x1 = ncx2inv (p, 4, 2);
+ x2 = chi2inv (p, 4);
+ plot (p, x1, "-", p, x2, "-");
+ grid on
+ ylim ([0, 10])
+ legend ({"Noncentral χ^2(4,2)", "χ^2(4)"}, "location", "northwest")
+ title ("Noncentral chi-squared vs chi-squared quantile functions")
+ xlabel ("probability")
+ ylabel ("values in x")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/ncx2inv_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

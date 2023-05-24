@@ -32,10 +32,10 @@
 ## @qcode{fitlm} treats all factors as continuous by default.
 ##
 ## @var{X} must be a column major matrix or cell array consisting of the
-## predictors. By default, there is a constant term in the model, unless you,
-## explicitly remove it, so do not include a column of 1s in X. @var{y} must be
-## a column vector corresponding to the outcome variable. @var{modelspec} can
-## specified as one of the following:
+## predictors. A constant term (intercept) should not be included in X - it
+## is automatically added to the model. @var{y} must be a column vector
+## corresponding to the outcome variable. @var{modelspec} can specified as
+## one of the following:
 ##
 ## @itemize
 ## @item
@@ -143,6 +143,19 @@ function [T, STATS] = fitlm (X, y, varargin)
 
     ## Evaluate input data
     [n, N] = size (X);
+    msg = strcat (["fitlm: do not include the intercept column in X"], ...
+                  [" - it will be added automatically"]);
+    if (iscell (X))
+      if (~ iscell (X{:,1}))
+        if (all (X{:,1} == 1))
+          error (msg)
+        endif
+      endif
+    else
+      if (all (X(:,1) == 1))
+        error (msg)
+      endif
+    endif
 
     ## Fetch anovan options
     options = varargin;

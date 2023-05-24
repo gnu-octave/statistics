@@ -71,48 +71,62 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>mu</var> = <b>expfit</b><i> (<var>s</var>)</i></dt>
-<dt><u>statistics:</u> [<var>mu</var>, <var>ci</var>] = <b>expfit</b><i> (<var>s</var>)</i></dt>
-<dt><u>statistics:</u> [<var>mu</var>, <var>ci</var>] = <b>expfit</b><i> (<var>s</var>, <var>alpha</var>)</i></dt>
-<dt><u>statistics:</u> &hellip; = <b>expfit</b><i> (<var>s</var>, <var>alpha</var>, <var>c</var>)</i></dt>
-<dt><u>statistics:</u> &hellip; = <b>expfit</b><i> (<var>s</var>, <var>alpha</var>, <var>c</var>, <var>f</var>)</i></dt>
+<dt><u>statistics:</u> <var>muhat</var> = <b>expfit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>muhat</var>, <var>muci</var>] = <b>expfit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>muhat</var>, <var>muci</var>] = <b>expfit</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>expfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>expfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</i></dt>
 </dl>
 
-<p> Estimate the mean of the exponential probability distribution function from
- which sample data <var>s</var> has been taken.  <var>s</var> is expected to be a
- non-negative vector.  If <var>s</var> is an array, the mean will be computed for
- each column of <var>s</var>.  If any elements of <var>s</var> are NaN, that vector&rsquo;s
- mean will be returned as NaN.
+<p> Estimate mean and confidence intervals for the exponential distribution.
 </p>
 <div class="ms-5">
-<p> If the optional output variable <var>ci</var> is requested, <code>expfit</code> will
- also return the confidence interval bounds for the estimate as a two element
- column vector.  If <var>s</var> is an array, each column of data will have a
- confidence interval returned as a two row array.
+<p> <code><var>muhat</var> = expfit (<var>x</var>)</code> returns the maximum likelihood estimate
+ of the mean parameter, <var>muhat</var>, of the exponential distribution given the
+ data in <var>x</var>. <var>x</var> is expected to be a non-negative vector.  If <var>x</var>
+ is an array, the mean will be computed for each column of <var>x</var>.  If any
+ elements of <var>x</var> are NaN, that vector&rsquo;s mean will be returned as NaN.
 </p>
-<p> The optional scalar input <var>alpha</var> can be used to define the
- (1-<var>alpha</var>) confidence interval to be applied to all estimates as a
- value between 0 and 1.  The default is 0.05, resulting in a 0.95 or 95% CI.
- Any invalid values for alpha will return NaN for both CI bounds.
+<p> <code>[<var>muhat</var>, <var>muci</var>] = expfit (<var>x</var>)</code> returns the 95%
+ confidence intervals for the parameter estimate.  If <var>x</var> is a vector,
+ <var>muci</var> is a two element column vector.  If <var>x</var> is an array, each
+ column of data will have a confidence interval returned as a two-row array.
 </p>
-<p> The optional input <var>c</var> is a logical or numeric array of zeros and ones
- the same size as <var>s</var>, used to right-censor individual elements of
- <var>s</var>.  A value of 1 indicates the data should be censored from
- the mean estimation.  Any nonzero values in <var>c</var> are treated as a 1.
+<p> <code>[&hellip;] = evfit (<var>x</var>, <var>alpha</var>)</code> also returns the
+ <code>100 * (1 - <var>alpha</var>)</code> percent confidence intervals for the
+ parameter estimates.  By default, the optional argument <var>alpha</var> is
+ 0.05 corresponding to 95% confidence intervals.  Pass in <code>[]</code> for
+ <var>alpha</var> to use the default values.  Any invalid values for <var>alpha</var>
+ will return NaN for both CI bounds.
 </p>
-<p> The optional input <var>f</var> is a numeric array the same size as <var>s</var>, used
- to specify occurrence frequencies for the elements in <var>s</var>.  Values of
- <var>f</var> need not be integers.  Any NaN elements in the frequency array will
- produce a NaN output for <var>mu</var>.
+<p> <code>[&hellip;] = expfit (<var>x</var>, <var>alpha</var>, <var>censor</var>)</code> accepts a
+ logical or numeric array, <var>censor</var>, of the same size as <var>x</var> with
+ <code>1</code>s for observations that are right-censored and <code>0</code>s for
+ observations that are observed exactly.  Any non-zero elements are regarded
+ as <code>1</code>s.  By default, or if left empty,
+ <code><var>censor</var> = zeros (size (<var>x</var>))</code>.
 </p>
-<p> Options can be skipped by using [] to revert to the default.
+<p> <code>[&hellip;] = expfit (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</code>
+ accepts a frequency array, <var>freq</var>, of the same size as <var>x</var>.
+ <var>freq</var> typically contains integer frequencies for the corresponding
+ elements in <var>x</var>, but it can contain any non-integer non-negative values.
+ By default, or if left empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
 </p>
 <p> Matlab incompatibility: Matlab&rsquo;s <code>expfit</code> produces unpredictable results
  for some cases with higher dimensions (specifically 1 x m x n x ... arrays).
- Octave&rsquo;s implementation allows for n-D arrays, consistently performing
- calculations on individual column vectors.  Additionally, <var>c</var> and <var>f</var>
- can be used with arrays of any size, whereas Matlab only allows their use
- when <var>s</var> is a vector.
+ Octave&rsquo;s implementation allows for <math>n&times;D</math> arrays, consistently performing
+ calculations on individual column vectors.  Additionally, <var>censor</var> and
+ <var>freq</var> can be used with arrays of any size, whereas Matlab only allows
+ their use when <var>x</var> is a vector.
+</p>
+<p> A common alternative parameterization of the exponential distribution is to
+ use the parameter <math>λ</math> defined as the mean number of events in an
+ interval as opposed to the parameter <math>μ</math>, which is the mean wait time
+ for an event to occur. <math>λ</math> and <math>μ</math> are reciprocals,
+ i.e. <math>μ = 1 / λ</math>.
+</p>
+<p> Further information about the exponential distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Exponential_distribution">https://en.wikipedia.org/wiki/Exponential_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="expcdf.html">expcdf</a>, 
@@ -123,8 +137,77 @@ explpdf,
   <a href="expstat.html">expstat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/expfit.m">expfit</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/expfit.m">expfit</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Sample 3 populations from 3 different exponential distibutions
+ rande ("seed", 1);   # for reproducibility
+ r1 = exprnd (2, 4000, 1);
+ rande ("seed", 2);   # for reproducibility
+ r2 = exprnd (5, 4000, 1);
+ rande ("seed", 3);   # for reproducibility
+ r3 = exprnd (12, 4000, 1);
+ r = [r1, r2, r3];
+
+ ## Plot them normalized and fix their colors
+ hist (r, 48, 0.52);
+ h = findobj (gca, "Type", "patch");
+ set (h(1), "facecolor", "c");
+ set (h(2), "facecolor", "g");
+ set (h(3), "facecolor", "r");
+ hold on
+
+ ## Estimate their mu parameter
+ muhat = expfit (r);
+
+ ## Plot their estimated PDFs
+ x = [0:max(r(:))];
+ y = exppdf (x, muhat(1));
+ plot (x, y, "-pr");
+ y = exppdf (x, muhat(2));
+ plot (x, y, "-sg");
+ y = exppdf (x, muhat(3));
+ plot (x, y, "-^c");
+ ylim ([0, 0.6])
+ xlim ([0, 40])
+ legend ({"Normalized HIST of sample 1 with μ=2", ...
+          "Normalized HIST of sample 2 with μ=5", ...
+          "Normalized HIST of sample 3 with μ=12", ...
+          sprintf("PDF for sample 1 with estimated μ=%0.2f", muhat(1)), ...
+          sprintf("PDF for sample 2 with estimated μ=%0.2f", muhat(2)), ...
+          sprintf("PDF for sample 3 with estimated μ=%0.2f", muhat(3))})
+ title ("Three population samples from different exponential distibutions")
+ hold off
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/expfit_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

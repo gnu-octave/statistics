@@ -68,7 +68,7 @@
 ## @item @tab @qcode{"right"} @tab odds ratio is less than 1 (left-tailed test)
 ## @end multitable
 ##
-## @seealso{crosstab, chi2test, ztest2}
+## @seealso{crosstab, chi2test, mcnemar_test, ztest2}
 ## @end deftypefn
 
 function [h, p, stats] = fishertest (x, varargin)

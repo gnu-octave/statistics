@@ -71,17 +71,28 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>y</var> = <b>gampdf</b><i> (<var>x</var>, <var>a</var>, <var>b</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>gampdf</b><i> (<var>x</var>, <var>k</var>, <var>theta</var>)</i></dt>
 </dl>
 
 <p> Gamma probability density function (PDF).
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the probability density function (PDF)
- at <var>x</var> of the Gamma distribution with shape parameter <var>a</var> and
- scale parameter <var>b</var>.  The size of <var>y</var> is the common size of <var>x</var>,
- <var>a</var> and <var>b</var>.  A scalar input functions as a constant matrix of the
- same size as the other inputs.
+ of the Gamma distribution with shape parameter <var>k</var> and scale parameter
+ <var>theta</var>.  The size of <var>y</var> is the common size of <var>x</var>, <var>k</var> and
+ <var>theta</var>.  A scalar input functions as a constant matrix of the same size
+ as the other inputs.
+</p>
+<p> There are two equivalent parameterizations in common use:
+ </p><ol>
+<li> With a shape parameter <math>k</math> and a scale parameter <math>θ</math>, which
+ is used by <code>gampdf</code>.
+ </li><li> With a shape parameter <math>α = k</math> and an inverse scale parameter
+ <math>β = 1 / θ</math>, called a rate parameter.
+ </li></ol>
+
+<p> Further information about the Gamma distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Gamma_distribution">https://en.wikipedia.org/wiki/Gamma_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="gamcdf.html">gamcdf</a>, 
@@ -92,8 +103,58 @@
   <a href="gamstat.html">gamstat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/gampdf.m">gampdf</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/gampdf.m">gampdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various PDFs from the Gamma distribution
+ x = 0:0.01:20;
+ y1 = gampdf (x, 1, 2);
+ y2 = gampdf (x, 2, 2);
+ y3 = gampdf (x, 3, 2);
+ y4 = gampdf (x, 5, 1);
+ y5 = gampdf (x, 9, 0.5);
+ y6 = gampdf (x, 7.5, 1);
+ y7 = gampdf (x, 0.5, 1);
+ plot (x, y1, "-r", x, y2, "-g", x, y3, "-y", x, y4, "-m", ...
+       x, y5, "-k", x, y6, "-b", x, y7, "-c")
+ grid on
+ ylim ([0,0.5])
+ legend ({"α = 1, θ = 2", "α = 2, θ = 2", "α = 3, θ = 2", ...
+          "α = 5, θ = 1", "α = 9, θ = 0.5", "α = 7.5, θ = 1", ...
+          "α = 0.5, θ = 1"}, "location", "northeast")
+ title ("Gamma PDF")
+ xlabel ("values in x")
+ ylabel ("density")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/gampdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

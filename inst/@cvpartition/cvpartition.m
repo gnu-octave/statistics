@@ -20,15 +20,23 @@
 ##
 ## Create a partition object for cross validation.
 ##
-## @var{X} may be a positive integer, interpreted as the number of values @var{n} to partition, or a vector of length @var{n} containing class designations for the elements, in which case the partitioning types @var{KFold} and @var{HoldOut} attempt to ensure each partition represents the classes proportionately.
+## @var{X} may be a positive integer, interpreted as the number of values
+## @var{n} to partition, or a vector of length @var{n} containing class
+## designations for the elements, in which case the partitioning types
+## @var{KFold} and @var{HoldOut} attempt to ensure each partition represents the
+## classes proportionately.
 ##
 ## @var{partition_type} must be one of the following:
 ##
 ## @table @asis
 ## @item @samp{KFold}
-## Divide set into @var{k} equal-size subsets (this is the default, with @var{k}=10).
+## Divide set into @var{k} equal-size subsets (this is the default, with
+## @var{k}=10).
 ## @item @samp{HoldOut}
-## Divide set into two subsets, "training" and "validation". If @var{k} is a fraction, that is the fraction of values put in the validation subset; if it is a positive integer, that is the number of values in the validation subset (by default @var{k}=0.1).
+## Divide set into two subsets, "training" and "validation".  If @var{k} is a
+## fraction, that is the fraction of values put in the validation subset; if it
+## is a positive integer, that is the number of values in the validation subset
+## (by default @var{k}=0.1).
 ## @item @samp{LeaveOut}
 ## Leave-one-out partition (each element is placed in its own subset).
 ## @item @samp{resubstitution}
@@ -77,7 +85,7 @@ function C = cvpartition (X, partition_type = "KFold", k = [])
   switch (tolower (partition_type))
     case {"kfold", "holdout", "leaveout", "resubstitution", "given"}
     otherwise
-      warning ("unrecognized type, using KFold")
+      warning ("cvpartition: unrecognized type, using KFold.")
       partition_type = "KFold";
   endswitch
 
@@ -92,7 +100,8 @@ function C = cvpartition (X, partition_type = "KFold", k = [])
 
   C = struct ("classes", [], "inds", [], "n_classes", [], "NumObservations", ...
             [], "NumTestSets", [], "TestSize", [], "TrainSize", [], "Type", []);
-  #The non-Matlab fields classes, inds, n_classes are only useful for some methods
+  ## The non-Matlab fields classes, inds, n_classes
+  ## are only useful for some methods
 
   switch (tolower (partition_type))
     case "kfold"
@@ -104,10 +113,14 @@ function C = cvpartition (X, partition_type = "KFold", k = [])
       else
         inds = nan(n, 1);
         for i = 1:n_classes
-          if (mod (i, 2)) # alternate ordering over classes so that the subsets are more nearly the same size
-            inds(j == i) = floor((0:(n_per_class(i)-1))' * (k / n_per_class(i))) + 1;
+          ## Alternate ordering over classes so that
+          ## the subsets are more nearly the same size
+          if (mod (i, 2))
+            inds(j == i) = floor((0:(n_per_class(i)-1))' * ...
+                                 (k / n_per_class(i))) + 1;
           else
-            inds(j == i) = floor(((n_per_class(i)-1):-1:0)' * (k / n_per_class(i))) + 1;
+            inds(j == i) = floor(((n_per_class(i)-1):-1:0)' * ...
+                                 (k / n_per_class(i))) + 1;
           endif
         endfor
       endif
@@ -127,15 +140,15 @@ function C = cvpartition (X, partition_type = "KFold", k = [])
         k = 0.1;
       endif
       if (k < 1)
-        f = k; #target fraction to sample
-        k = round (k * n); #number of samples
+        f = k;              # target fraction to sample
+        k = round (k * n);  # number of samples
       else
         f = k / n;
       endif
       inds = zeros (n, 1, "logical");
       if (n_classes == 1)
-        inds(randsample(n, k)) = true; #indices for test set
-      else #sample from each class
+        inds(randsample(n, k)) = true;  # indices for test set
+      else        # sample from each class
         k_check = 0;
         for i = 1:n_classes
           ki = round(f*n_per_class(i));
@@ -172,16 +185,72 @@ endfunction
 
 
 %!demo
-%! # Partition with Fisher iris dataset (n = 150)
-%! # Stratified by species
+%! ## Partition with Fisher iris dataset (n = 150)
+%! ## Stratified by species
 %! load fisheriris
 %! y = species;
-%! # 10-fold cross-validation partition
+%! ## 10-fold cross-validation partition
 %! c = cvpartition (species, 'KFold', 10)
-%! # leave-10-out partition
+%! ## leave-10-out partition
 %! c1 = cvpartition (species, 'HoldOut', 10)
 %! idx1 = test (c, 2);
 %! idx2 = training (c, 2);
-%! # another leave-10-out partition
+%! ## another leave-10-out partition
 %! c2 = repartition (c1)
+
+%!test
+%! C = cvpartition (ones (10, 1));
+%! assert (isa (C, "cvpartition"), true);
+%!test
+%! C = cvpartition (ones (10, 1), "KFold", 5);
+%! assert (get (C, "NumObservations"), 10);
+%! assert (get (C, "NumTestSets"), 5);
+%! assert (get (C, "TrainSize"), ones(5,1) * 8);
+%! assert (get (C, "TestSize"), ones (5,1) * 2);
+%! assert (get (C, "inds"), [1 1 2 2 3 3 4 4 5 5]');
+%! assert (get (C, "Type"), "kfold");
+%!test
+%! C = cvpartition (ones (10, 1), "KFold", 2);
+%! assert (get (C, "NumObservations"), 10);
+%! assert (get (C, "NumTestSets"), 2);
+%! assert (get (C, "TrainSize"), [5; 5]);
+%! assert (get (C, "TestSize"), [5; 5]);
+%! assert (get (C, "inds"), [1 1 1 1 1 2 2 2 2 2]');
+%! assert (get (C, "Type"), "kfold");
+%!test
+%! C = cvpartition (ones (10, 1), "HoldOut", 5);
+%! assert (get (C, "NumObservations"), 10);
+%! assert (get (C, "NumTestSets"), 1);
+%! assert (get (C, "TrainSize"), 5);
+%! assert (get (C, "TestSize"), 5);
+%! assert (class (get (C, "inds")), "logical");
+%! assert (length (get (C, "inds")), 10);
+%! assert (get (C, "Type"), "holdout");
+%!test
+%! C = cvpartition ([1 2 3 4 5 6 7 8 9 10], "LeaveOut", 5);
+%! assert (get (C, "NumObservations"), 10);
+%! assert (get (C, "NumTestSets"), 10);
+%! assert (get (C, "TrainSize"), ones (10, 1));
+%! assert (get (C, "TestSize"), ones (10, 1) * 9);
+%! assert (get (C, "inds"), []);
+%! assert (get (C, "Type"), "leaveout");
+%!test
+%! C = cvpartition ([1 2 3 4 5 6 7 8 9 10], "resubstitution", 5);
+%! assert (get (C, "NumObservations"), 10);
+%! assert (get (C, "NumTestSets"), 1);
+%! assert (get (C, "TrainSize"), 10);
+%! assert (get (C, "TestSize"), 10);
+%! assert (get (C, "inds"), []);
+%! assert (get (C, "Type"), "resubstitution");
+%!test
+%! C = cvpartition ([1 2 3 4 5 6 7 8 9 10], "Given", 2);
+%! assert (get (C, "NumObservations"), 10);
+%! assert (get (C, "NumTestSets"), 10);
+%! assert (get (C, "TrainSize"), ones (10, 1) * 9);
+%! assert (get (C, "TestSize"), ones (10, 1));
+%! assert (get (C, "inds"), [1:10]');
+%! assert (get (C, "Type"), "given");
+
+%!warning<cvpartition: unrecognized type, using KFold.> ...
+%! C = cvpartition ([1 2 3 4 5 6 7 8 9 10], "some", 2);
 

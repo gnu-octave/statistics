@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: wblfit</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+    <style>
+    var {
+      font-style: italics;
+      font-weight: bold;
+    }
+    td {
+      vertical-align: top;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Distribution Fitting">
+                    <i class="fas fa-list-alt"></i>
+                    Distribution Fitting
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>wblfit</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>paramhat</var> = <b>wblfit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>wblfit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>wblfit</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>wblfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>wblfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>wblfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</i></dt>
+</dl>
+
+<p> Estimate mean and confidence intervals for the Weibull distribution.
+</p>
+<div class="ms-5">
+<p> <code><var>muhat</var> = wblfit (<var>x</var>)</code> returns the maximum likelihood
+ estimates of the parameters of the Weibull distribution given the data in
+ <var>x</var>.  <code><var>paramhat</var>(1)</code> is the scale parameter, <math>lambda</math>,
+ and <code><var>paramhat</var>(2)</code> is the shape parameter, <math>k</math>.
+</p>
+<p> <code>[<var>paramhat</var>, <var>paramci</var>] = wblfit (<var>x</var>)</code> returns the 95%
+ confidence intervals for the parameter estimates.
+</p>
+<p> <code>[&hellip;] = wblfit (<var>x</var>, <var>alpha</var>)</code> also returns the
+ <code>100 * (1 - <var>alpha</var>)</code> percent confidence intervals for the
+ parameter estimates.  By default, the optional argument <var>alpha</var> is
+ 0.05 corresponding to 95% confidence intervals.  Pass in <code>[]</code> for
+ <var>alpha</var> to use the default values.
+</p>
+<p> <code>[&hellip;] = wblfit (<var>x</var>, <var>alpha</var>, <var>censor</var>)</code> accepts a
+ boolean vector, <var>censor</var>, of the same size as <var>x</var> with <code>1</code>s for
+ observations that are right-censored and <code>0</code>s for observations that are
+ observed exactly.  By default, or if left empty,
+ <code><var>censor</var> = zeros (size (<var>x</var>))</code>.
+</p>
+<p> <code>[&hellip;] = wblfit (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</code>
+ accepts a frequency vector, <var>freq</var>, of the same size as <var>x</var>.
+ <var>freq</var> typically contains integer frequencies for the corresponding
+ elements in <var>x</var>, but it can contain any non-integer non-negative values.
+ By default, or if left empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
+</p>
+<p> <code>[&hellip;] = evfit (&hellip;, <var>options</var>)</code> specifies control
+ parameters for the iterative algorithm used to compute ML estimates with the
+ <code>fminsearch</code> function.  <var>options</var> is a structure with the following
+ fields and their default values:
+ </p><ul>
+<li> <code><var>options</var>.Display = &quot;off&quot;</code>
+ </li><li> <code><var>options</var>.TolX = 1e-6</code>
+ </li></ul>
+
+<p> Further information about the Weibull distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Weibull_distribution">https://en.wikipedia.org/wiki/Weibull_distribution</a>
+</p>
+<p> <strong>See also: </strong>
+  <a href="wblcdf.html">wblcdf</a>, 
+  <a href="wblinv.html">wblinv</a>, 
+  <a href="wblpdf.html">wblpdf</a>, 
+  <a href="wblrnd.html">wblrnd</a>, 
+  <a href="wbllike.html">wbllike</a>, 
+  <a href="wblstat.html">wblstat</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/wblfit.m">wblfit</a>
+</div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Sample 3 populations from 3 different Weibull distibutions
+ rande ("seed", 1);    # for reproducibility
+ r1 = wblrnd(2, 4, 2000, 1);
+ rande ("seed", 2);    # for reproducibility
+ r2 = wblrnd(5, 2, 2000, 1);
+ rande ("seed", 5);    # for reproducibility
+ r3 = wblrnd(1, 5, 2000, 1);
+ r = [r1, r2, r3];
+
+ ## Plot them normalized and fix their colors
+ hist (r, 30, [2.5 2.1 3.2]);
+ h = findobj (gca, "Type", "patch");
+ set (h(1), "facecolor", "c");
+ set (h(2), "facecolor", "g");
+ set (h(3), "facecolor", "r");
+ ylim ([0, 2]);
+ xlim ([0, 10]);
+ hold on
+
+ ## Estimate their lambda parameter
+ lambda_kA = wblfit (r(:,1));
+ lambda_kB = wblfit (r(:,2));
+ lambda_kC = wblfit (r(:,3));
+
+ ## Plot their estimated PDFs
+ x = [0:0.1:15];
+ y = wblpdf (x, lambda_kA(1), lambda_kA(2));
+ plot (x, y, "-pr");
+ y = wblpdf (x, lambda_kB(1), lambda_kB(2));
+ plot (x, y, "-sg");
+ y = wblpdf (x, lambda_kC(1), lambda_kC(2));
+ plot (x, y, "-^c");
+ hold off
+ legend ({"Normalized HIST of sample 1 with λ=2 and k=4", ...
+          "Normalized HIST of sample 2 with λ=5 and k=2", ...
+          "Normalized HIST of sample 3 with λ=1 and k=5", ...
+          sprintf("PDF for sample 1 with estimated λ=%0.2f and k=%0.2f", ...
+                  lambda_kA(1), lambda_kA(2)), ...
+          sprintf("PDF for sample 2 with estimated λ=%0.2f and k=%0.2f", ...
+                  lambda_kB(1), lambda_kB(2)), ...
+          sprintf("PDF for sample 3 with estimated λ=%0.2f and k=%0.2f", ...
+                  lambda_kC(1), lambda_kC(2))})
+ title ("Three population samples from different Weibull distibutions")
+ hold off
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/wblfit_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

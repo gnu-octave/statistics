@@ -19,7 +19,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{h} =} ztest (@var{x}, @var{m}, @var{sigma})
-## @deftypefnx {statistics} {@var{h} =} ztest (@var{x}, @var{m}, @var{sigma}, @var{name}, @var{value})
+## @deftypefnx {statistics} {@var{h} =} ztest (@var{x}, @var{m}, @var{sigma}, @var{Name}, @var{Value})
 ## @deftypefnx {statistics} {[@var{h}, @var{pval}] =} ztest (@dots{})
 ## @deftypefnx {statistics} {[@var{h}, @var{pval}, @var{ci}] =} ztest (@dots{})
 ## @deftypefnx {statistics} {[@var{h}, @var{pval}, @var{ci}, @var{zvalue}] =} ztest (@dots{})
@@ -50,11 +50,11 @@
 ## @code{[@var{h}, @var{pval}, @var{ci}, @var{zvalue}] = ztest (@dots{})}
 ## returns the value of the test statistic.
 ##
-## @code{[@dots{}] = ztest (@dots{}, @var{name}, @var{value}, @dots{})}
-## specifies one or more of the following name/value pairs:
+## @code{[@dots{}] = ztest (@dots{}, @var{Name}, @var{Value}, @dots{})}
+## specifies one or more of the following @var{Name}/@var{Value} pairs:
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
-## @headitem @tab Name @tab Value
+## @headitem @tab @var{Name} @tab @var{Value}
 ## @item @tab "alpha" @tab the significance level. Default is 0.05.
 ##
 ## @item @tab "dim" @tab dimension to work along a matrix or an N-D array.
@@ -95,20 +95,20 @@ function [h, pval, ci, zvalue] = ztest (x, m, sigma, varargin)
           alpha = value;
           if (! isscalar (alpha) || ! isnumeric (alpha) || ...
                 alpha <= 0 || alpha >= 1)
-            error ("ztest: invalid value for alpha.");
+            error ("ztest: invalid VALUE for alpha.");
           endif
         case "tail"
           tail = value;
           if (! any (strcmpi (tail, {"both", "left", "right"})))
-            error ("ztest: invalid value for tail.");
+            error ("ztest: invalid VALUE for tail.");
           endif
         case "dim"
           dim = value;
           if (! isscalar (dim) || ! ismember (dim, 1:ndims (x)))
-            error ("ztest: invalid value for operating dimension.");
+            error ("ztest: invalid VALUE for operating dimension.");
           endif
         otherwise
-          error ("ztest: invalid name for optional arguments.");
+          error ("ztest: invalid NAME for optional arguments.");
       endswitch
     endfor
   endif
@@ -158,21 +158,21 @@ endfunction
 %!error<ztest: too few input arguments.> ztest ();
 %!error<ztest: invalid value for standard deviation.> ...
 %! ztest ([1, 2, 3, 4], 2, -0.5);
-%!error<ztest: invalid value for alpha.> ...
+%!error<ztest: invalid VALUE for alpha.> ...
 %! ztest ([1, 2, 3, 4], 1, 2, "alpha", 0);
-%!error<ztest: invalid value for alpha.> ...
+%!error<ztest: invalid VALUE for alpha.> ...
 %! ztest ([1, 2, 3, 4], 1, 2, "alpha", 1.2);
-%!error<ztest: invalid value for alpha.> ...
+%!error<ztest: invalid VALUE for alpha.> ...
 %! ztest ([1, 2, 3, 4], 1, 2, "alpha", "val");
-%!error<ztest: invalid value for tail.>  ...
+%!error<ztest: invalid VALUE for tail.>  ...
 %! ztest ([1, 2, 3, 4], 1, 2, "tail", "val");
-%!error<ztest: invalid value for tail.>  ...
+%!error<ztest: invalid VALUE for tail.>  ...
 %! ztest ([1, 2, 3, 4], 1, 2, "alpha", 0.01, "tail", "val");
-%!error<ztest: invalid value for operating dimension.> ...
+%!error<ztest: invalid VALUE for operating dimension.> ...
 %! ztest ([1, 2, 3, 4], 1, 2, "dim", 3);
-%!error<ztest: invalid value for operating dimension.> ...
+%!error<ztest: invalid VALUE for operating dimension.> ...
 %! ztest ([1, 2, 3, 4], 1, 2, "alpha", 0.01, "tail", "both", "dim", 3);
-%!error<ztest: invalid name for optional arguments.> ...
+%!error<ztest: invalid NAME for optional arguments.> ...
 %! ztest ([1, 2, 3, 4], 1, 2, "alpha", 0.01, "tail", "both", "badoption", 3);
 ## Test results
 %!test

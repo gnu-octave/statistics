@@ -79,67 +79,64 @@
 </p>
 <div class="ms-5">
 <p> Optional parameters are:
-    </p><ul>
-<li> &rsquo;start&rsquo;:  initialization conditions.  Possible values are:
-       <ul>
-<li> &rsquo;randSample&rsquo; (default) takes means uniformly from rows of data
-       </li><li> &rsquo;plus&rsquo;       use k-means++ to initialize means
-       </li><li> &rsquo;cluster&rsquo;    Performs an initial clustering with 10% of the data
-       </li><li> vector       A vector whose length is the number of rows in data,
-                    and whose values are 1 to k specify the components
-                    each row is initially allocated to.  The mean, variance
-                    and weight of each component is calculated from that
-       </li><li> structure    with elements  mu,  Sigma  ComponentProportion
-       </li></ul>
-<p>       For &rsquo;randSample&rsquo;, &rsquo;plus&rsquo; and &rsquo;cluster&rsquo;, the initial variance of each
-       component is the variance of the entire data sample.
+ </p><ul>
+<li> <code>&quot;start&quot;</code>:  Initialization conditions.  Possible values are:
+ <ul>
+<li> <code>&quot;randSample&quot;</code> (default) Takes means uniformly from rows of data.
+ </li><li> <code>&quot;plus&quot;</code> Use k-means++ to initialize means.
+ </li><li> <code>&quot;cluster&quot;</code> Performs an initial clustering with 10% of the data.
+ </li><li> <var>vector</var> A vector whose length is the number of rows in data, and
+ whose values are 1 to k specify the components each row is initially
+ allocated to.  The mean, variance, and weight of each component is calculated
+ from that.
+ </li><li> <var>structure</var> A structure with fields <code>mu</code>, <code>Sigma</code> and
+ <code>ComponentProportion</code>.
+ </li></ul>
+<p> For <code>&quot;randSample&quot;</code>, <code>&quot;plus&quot;</code>, and <code>&quot;cluster&quot;</code>, the initial
+ variance of each component is the variance of the entire data sample.
 </p>
-    </li><li> &rsquo;Replicates&rsquo;    Number of random restarts to perform
+ </li><li> <code>&quot;Replicates&quot;</code>: Number of random restarts to perform.
 
-    </li><li> &rsquo;RegularizationValue&rsquo;
-    </li><li> &rsquo;Regularize&rsquo;  A small number added to the diagonal entries
-                    of the covariance to prevent singular covariances
+ </li><li> <code>&quot;RegularizationValue&quot;</code> or <code>&quot;Regularize&quot;</code>: A small number
+ added to the diagonal entries of the covariance to prevent singular
+ covariances.
 
-    </li><li> &rsquo;SharedCovariance&rsquo;
-    </li><li> &rsquo;SharedCov&rsquo; (logical) True if all components must share the
-                    same variance, to reduce the number of free parameters
+ </li><li> <code>&quot;SharedCovariance&quot;</code> or <code>&quot;SharedCov&quot;</code> (logical). True if
+ all components must share the same variance, to reduce the number of free
+ parameters
 
-    </li><li> &rsquo;CovarianceType&rsquo;
-    </li><li> &rsquo;CovType&rsquo;       (string). Possible values are:
-       <ul>
-<li> &rsquo;full&rsquo;       (default)  Allow arbitrary covariance matrices
-       </li><li> &rsquo;diagonal&rsquo;   Force covariances to be diagonal, to reduce the
-                    number of free parameters.
-       </li></ul>
+ </li><li> <code>&quot;CovarianceType&quot;</code> or <code>&quot;CovType&quot;</code> (string). Possible values
+ are:
+ <ul>
+<li> <code>&quot;full&quot;</code> (default) Allow arbitrary covariance matrices.
+ </li><li> <code>&quot;diagonal&quot;</code> Force covariances to be diagonal, to reduce the
+ number of free parameters.
+ </li></ul>
 
-    </li><li> &rsquo;Options&rsquo;        A structure with all of the following fields:
-       <ul>
-<li> &rsquo;MaxIter&rsquo;    Maximum number of EM iterations (default 100)
-       </li><li> &rsquo;TolFun&rsquo;     Threshold increase in likelihood to terminate EM
-                          (default 1e-6)
-       </li><li> &rsquo;Display&rsquo;
-          <ul>
-<li> &rsquo;off&rsquo; (default): display nothing
-          </li><li> &rsquo;final&rsquo;: display the number of iterations and likelihood
-                         once execution completes
-          </li><li> &rsquo;iter&rsquo;:  display the above after each iteration
-          </li></ul>
+ </li><li> <code>&quot;Options&quot;</code>: A structure with all of the following fields:
+ <ul>
+<li> <code>MaxIter</code> Maximum number of EM iterations (default 100).
+ </li><li> <code>TolFun</code> Threshold increase in likelihood to terminate EM
+ (default 1e-6).
+ </li><li> <code>Display</code> Possible values are:
+ <ul>
+<li> <code>&quot;off&quot;</code> (default): Display nothing.
+ </li><li> <code>&quot;final&quot;</code>: Display the total number of iterations and likelihood
+ once the execution completes.
+ </li><li> <code>&quot;iter&quot;</code>: Display the number of iteration and likelihood after
+ each iteration.
+ </li></ul>
 </li></ul>
-    </li><li> &rsquo;Weight&rsquo;  A column vector or n-by-2 matrix. The first column
-                    consists of non-negative weights given to the
-                    samples.
-                    If these are all integers, this is equivalent
-                    to specifying <var>weight</var>(i) copies of row i of
-                    <var>data</var>, but potentially faster.
-
-<p>                    If a row of <var>data</var> is used to represent samples
-                    that are similar but not identical, then the second
-                    column of <var>weight</var> indicates the variance of
-                    those original samples.  Specifically, in the EM
-                    algorithm, the contribution of row i towards the
-                    variance is set to at least <var>weight</var>(i,2), to
-                    prevent spurious components with zero variance.
-    </p></li></ul>
+ </li><li> <code>&quot;Weight&quot;</code>:  A column vector or <math>N&times;2</math> matrix. The first
+ column consists of non-negative weights given to the samples.  If these are
+ all integers, this is equivalent to specifying <code><var>weight</var>(i)</code> copies
+ of row <code>i</code> of <var>data</var>, but potentially faster.  If a row of
+ <var>data</var> is used to represent samples that are similar but not identical,
+ then the second column of <var>weight</var> indicates the variance of those
+ original samples.  Specifically, in the EM algorithm, the contribution of row
+ <code>i</code> towards the variance is set to at least <code><var>weight</var>(i,2)</code>,
+ to prevent spurious components with zero variance.
+ </li></ul>
 
 <p> <strong>See also: </strong>
 gmdistribution, 
@@ -222,13 +219,13 @@ gmdistribution,
                             "RegularizationValue", 0.0001)
 
 Gaussian mixture distribution with 2 components in 1 dimension(s)
-Clust 1: weight 0.358328
-	Mean: 59.3772 
-	Variance:28.530
-Clust 2: weight 0.641672
-	Mean: 35.7836 
-	Variance:179.12
-AIC=173.88 BIC=178.858 NLogL=81.9398 Iter=67 Cged=1 Reg=0.0001
+Clust 1: weight 0.70508
+	Mean: 52.5568 
+	Variance:156.17
+Clust 2: weight 0.29492
+	Mean: 20.0915 
+	Variance:1.8459
+AIC=164.862 BIC=169.841 NLogL=77.431 Iter=5 Cged=1 Reg=0.0001
                     </pre></td></tr></tbody>
                   </table>
 

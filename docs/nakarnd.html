@@ -71,26 +71,32 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>r</var> = <b>nakarnd</b><i> (<var>m</var>, <var>w</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>nakarnd</b><i> (<var>m</var>, <var>w</var>, <var>rows</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>nakarnd</b><i> (<var>m</var>, <var>w</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>nakarnd</b><i> (<var>m</var>, <var>w</var>, [<var>sz</var>])</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>nakarnd</b><i> (<var>mu</var>, <var>omega</var>)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>nakarnd</b><i> (<var>mu</var>, <var>omega</var>, <var>rows</var>)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>nakarnd</b><i> (<var>mu</var>, <var>omega</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>nakarnd</b><i> (<var>mu</var>, <var>omega</var>, [<var>sz</var>])</i></dt>
 </dl>
 
 <p> Random arrays from the Nakagami distribution.
 </p>
 <div class="ms-5">
-<p> <code><var>r</var> = nakarnd (<var>m</var>, <var>w</var>)</code> returns an array of random
- numbers chosen from the Nakagami distribution with parameters <var>m</var> and
- <var>w</var>.  The size of <var>r</var> is the common size of <var>m</var> and <var>w</var>.  A
- scalar input functions as a constant matrix of the same size as the other
- inputs.
+<p> <code><var>r</var> = nakarnd (<var>mu</var>, <var>omega</var>)</code> returns an array of random
+ numbers chosen from the Nakagami distribution with shape parameter <var>mu</var>
+ and spread parameter <var>omega</var>.  The size of <var>r</var> is the common size of
+ <var>mu</var> and <var>omega</var>.  A scalar input functions as a constant matrix of
+ the same size as the other inputs.
 </p>
-<p> When called with a single size argument, return a square matrix with
- the dimension specified.  When called with more than one scalar argument the
- first two arguments are taken as the number of rows and columns and any
- further arguments specify additional matrix dimensions.  The size may also
- be specified with a vector of dimensions <var>sz</var>.
+<p> Both parameters must be positive reals and <code><var>mu</var> &gt;= 0.5</code>.  For
+ <code><var>mu</var> &lt; 0.5</code> or <code><var>omega</var> &lt;= 0</code>, <code>NaN</code> is returned.
+</p>
+<p> When called with a single size argument, <code>nakarnd</code> returns a square
+ matrix with the dimension specified.  When called with more than one scalar
+ argument, the first two arguments are taken as the number of rows and columns
+ and any further arguments specify additional matrix dimensions.  The size may
+ also be specified with a row vector of dimensions, <var>sz</var>.
+</p>
+<p> Further information about the Nakagami distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Nakagami_distribution">https://en.wikipedia.org/wiki/Nakagami_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="nakacdf.html">nakacdf</a>, 
@@ -98,7 +104,7 @@
   <a href="nakapdf.html">nakapdf</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/nakarnd.m">nakarnd</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/nakarnd.m">nakarnd</a>
 </div>
 
         </div>

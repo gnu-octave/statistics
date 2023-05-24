@@ -575,7 +575,7 @@ function [s_o, hs_o] = boxplot (data, varargin)
     ## Skip missing data (NaN, NA) and remove respective sample IDs.
     ## Do this only on nonempty data
     if (length (col) > 0)
-      remove_samples = find (col(isnan (col) | isna (col)));
+      remove_samples = find (isnan (col) | isna (col));
       if (length (remove_samples) > 0)
         col(remove_samples) = [];
         sIDs(remove_samples) = [];
@@ -833,13 +833,22 @@ endfunction
 
 %!demo
 %! axis ([0, 3]);
-%! boxplot ({(randn(10, 1) * 5 + 140), (randn (13, 1) * 8 + 135)});
+%! randn ("seed", 1);    # for reproducibility
+%! girls = randn (10, 1) * 5 + 140;
+%! randn ("seed", 2);    # for reproducibility
+%! boys = randn (13, 1) * 8 + 135;
+%! boxplot ({girls, boys});
 %! set (gca (), "xtick", [1 2], "xticklabel", {"girls", "boys"})
 %! title ("Grade 3 heights");
 
 %!demo
-%! data = [(randn (10, 1) * 5 + 140); (randn (25, 1) * 8 + 135); ...
-%!         (randn (20, 1) * 6 + 165)];
+%! randn ("seed", 7);    # for reproducibility
+%! A = randn (10, 1) * 5 + 140;
+%! randn ("seed", 8);    # for reproducibility
+%! B = randn (25, 1) * 8 + 135;
+%! randn ("seed", 9);    # for reproducibility
+%! C = randn (20, 1) * 6 + 165;
+%! data = [A; B; C];
 %! groups = [(ones (10, 1)); (ones (25, 1) * 2); (ones (20, 1) * 3)];
 %! labels = {"Team A", "Team B", "Team C"};
 %! pos = [2, 1, 3];
@@ -848,11 +857,15 @@ endfunction
 %! title ("Example of Group splitting with paired vectors");
 
 %!demo
-%! boxplot (randn (100, 9), "notch", "on", "boxstyle", "filled", ...
+%! randn ("seed", 1);    # for reproducibility
+%! data = randn (100, 9);
+%! boxplot (data, "notch", "on", "boxstyle", "filled", ...
 %!          "colors", "ygcwkmb", "whisker", 1.2);
 %! title ("Example of different colors specified with characters");
 
 %!demo
+%! randn ("seed", 5);    # for reproducibility
+%! data = randn (100, 13);
 %! colors = [0.7 0.7 0.7; ...
 %!           0.0 0.4 0.9; ...
 %!           0.7 0.4 0.3; ...
@@ -860,11 +873,11 @@ endfunction
 %!           0.8 0.7 0.4; ...
 %!           0.1 0.8 0.5; ...
 %!           0.9 0.9 0.2];
-%! boxplot (randn (100, 13), "notch", "on", "boxstyle", "filled", ...
+%! boxplot (data, "notch", "on", "boxstyle", "filled", ...
 %!          "colors", colors, "whisker", 1.3, "boxwidth", "proportional");
 %! title ("Example of different colors specified as RGB values");
 
-%% Input data validation
+## Input data validation
 %!error <numerical array or cell array containing> boxplot ("a")
 %!error <data cells must contain> boxplot ({[1 2 3], "a"})
 %!error <grouping vector may only be passed> boxplot ([1 2 3], 1, {2, 3})

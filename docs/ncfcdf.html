@@ -71,34 +71,35 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>ncfcdf</b><i> (<var>x</var>, <var>df1</var>, <var>df2</var>, <var>delta</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>ncfcdf</b><i> (<var>x</var>, <var>df1</var>, <var>df2</var>, <var>delta</var>, <var>uflag</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>ncfcdf</b><i> (<var>x</var>, <var>df1</var>, <var>df2</var>, <var>lambda</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>ncfcdf</b><i> (<var>x</var>, <var>df1</var>, <var>df2</var>, <var>lambda</var>, <code>&quot;upper&quot;</code>)</i></dt>
 </dl>
 
 <p> Noncentral F cumulative distribution function (CDF).
 </p>
 <div class="ms-5">
-<p> <code><var>p</var> = ncfcdf (<var>x</var>, <var>df1</var>, <var>df2</var>, <var>delta</var>)</code> returns
- the noncentral F cdf with <var>df</var> degrees of freedom and noncentrality
- parameter <var>delta</var> at the values of <var>X</var>.
+<p> For each element of <var>x</var>, compute the cumulative distribution function
+ (CDF) of the noncentral F distribution with <var>df1</var> and <var>df2</var> degrees
+ of freedom and noncentrality parameter <var>lambda</var>.  The size of <var>p</var> is
+ the common size of <var>x</var>, <var>df1</var>, <var>df2</var>, and <var>lambda</var>.  A scalar
+ input functions as a constant matrix of the same size as the other inputs.
 </p>
-<p> The size of <var>p</var> is the common size of the input arguments. Scalar input
- arguments <var>x</var>, <var>df1</var>, <var>df2</var>, <var>delta</var> are regarded as constant
- matrices of the same size as the other inputs.
+<p> <code><var>p</var> = ncfcdf (<var>x</var>, <var>df1</var>, <var>df2</var>, <var>lambda</var>, &quot;upper&quot;)</code>
+ computes the upper tail probability of the noncentral F distribution with
+ parameters <var>df1</var>, <var>df2</var>, and <var>lambda</var>, at the values in <var>x</var>.
 </p>
-<p> <code><var>p</var> = ncfcdf (<var>x</var>, <var>df1</var>, <var>df2</var>, <var>delta</var>, &quot;upper&quot;</code>
- returns the upper tail probability of the noncentral T distribution with
- <var>df1</var> and <var>df2</var> degrees of freedom and noncentrality parameter
- <var>delta</var> at the values in <var>x</var>.
+<p> Further information about the noncentral F distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Noncentral_F-distribution">https://en.wikipedia.org/wiki/Noncentral_F-distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="ncfinv.html">ncfinv</a>, 
   <a href="ncfpdf.html">ncfpdf</a>, 
   <a href="ncfrnd.html">ncfrnd</a>, 
-  <a href="ncfstat.html">ncfstat</a>
+  <a href="ncfstat.html">ncfstat</a>, 
+  <a href="fcdf.html">fcdf</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/ncfcdf.m">ncfcdf</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/ncfcdf.m">ncfcdf</a>
 </div>
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -118,18 +119,70 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Compare the noncentral F cdf with DELTA = 10 to the F cdf with the
- ## same number of numerator and denominator degrees of freedom (5, 20)
-
- x = (0.01:0.1:10.01)';
- p1 = ncfcdf (x, 5, 20, 10);
- p = fcdf (x, 5, 20);
- plot (x, p, "-", x, p1, "-");
+ ## Plot various CDFs from the noncentral F distribution
+ x = 0:0.01:5;
+ p1 = ncfcdf (x, 2, 5, 1);
+ p2 = ncfcdf (x, 2, 5, 2);
+ p3 = ncfcdf (x, 5, 10, 1);
+ p4 = ncfcdf (x, 10, 20, 10);
+ plot (x, p1, "-r", x, p2, "-g", x, p3, "-k", x, p4, "-m")
+ grid on
+ xlim ([0, 5])
+ legend ({"df1 = 2, df2 = 5, λ = 1", "df1 = 2, df2 = 5, λ = 2", ...
+          "df1 = 5, df2 = 10, λ = 1", "df1 = 10, df2 = 20, λ = 10"}, ...
+         "location", "southeast")
+ title ("Noncentral F CDF")
+ xlabel ("values in x")
+ ylabel ("probability")
 
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
                     <img src="assets/ncfcdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compare the noncentral F CDF with LAMBDA = 10 to the F CDF with the
+ ## same number of numerator and denominator degrees of freedom (5, 20)
+
+ x = 0.01:0.1:10.01;
+ p1 = ncfcdf (x, 5, 20, 10);
+ p2 = fcdf (x, 5, 20);
+ plot (x, p1, "-", x, p2, "-");
+ grid on
+ xlim ([0, 10])
+ legend ({"Noncentral F(5,20,10)", "F(5,20)"}, "location", "southeast")
+ title ("Noncentral F vs F CDFs")
+ xlabel ("values in x")
+ ylabel ("probability")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/ncfcdf_201.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>

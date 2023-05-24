@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: loglinv</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+    <style>
+    var {
+      font-style: italics;
+      font-weight: bold;
+    }
+    td {
+      vertical-align: top;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Distributions">
+                    <i class="fas fa-list-alt"></i>
+                    Distributions
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>loglinv</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>x</var> = <b>loglinv</b><i> (<var>p</var>, <var>a</var>, <var>b</var>)</i></dt>
+</dl>
+
+<p> Inverse of the log-logistic cumulative distribution function (iCDF).
+</p>
+<div class="ms-5">
+<p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF) of
+ the log-logistic distribution with scale parameter <var>a</var> and shape
+ parameter <var>b</var>.  The size of <var>x</var> is the common size of <var>p</var>,
+ <var>a</var>, and <var>b</var>.  A scalar input functions as a constant matrix of the
+ same size as the other inputs.
+</p>
+<p> Both parameters, <var>a</var> and <var>b</var>, must be positive reals and <var>p</var> is
+ supported in the range <math>[0,1]</math>, otherwise <code>NaN</code> is returned.
+</p>
+<p> Further information about the log-logistic distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Log-logistic_distribution">https://en.wikipedia.org/wiki/Log-logistic_distribution</a>
+</p>
+<p> MATLAB compatibility: MATLAB uses an alternative parameterization given by
+ the pair <math>μ, s</math>, i.e. <var>mu</var> and <var>s</var>, in analogy with the logistic
+ distribution.  Their relation to the <var>a</var> and <var>b</var> parameters is given
+ below:
+</p>
+ <ul>
+<li> <code><var>a</var> = exp (<var>mu</var>)</code>
+ </li><li> <code><var>b</var> = 1 / <var>s</var></code>
+ </li></ul>
+
+<p> <strong>See also: </strong>
+  <a href="loglcdf.html">loglcdf</a>, 
+  <a href="loglpdf.html">loglpdf</a>, 
+  <a href="loglrnd.html">loglrnd</a>, 
+  <a href="loglfit.html">loglfit</a>, 
+  <a href="logllike.html">logllike</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/loglinv.m">loglinv</a>
+</div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various iCDFs from the log-logistic distribution
+ p = 0.001:0.001:0.999;
+ x1 = loglinv (p, 1, 0.5);
+ x2 = loglinv (p, 1, 1);
+ x3 = loglinv (p, 1, 2);
+ x4 = loglinv (p, 1, 4);
+ x5 = loglinv (p, 1, 8);
+ plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c", p, x5, "-m")
+ ylim ([0, 20])
+ grid on
+ legend ({"β = 0.5", "β = 1", "β = 2", "β = 4", "β = 8"}, ...
+         "location", "northwest")
+ title ("Log-logistic iCDF")
+ xlabel ("probability")
+ ylabel ("x")
+ text (0.03, 12.5, "α = 1, values of β as shown in legend")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/loglinv_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

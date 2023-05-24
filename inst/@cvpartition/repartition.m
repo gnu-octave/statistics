@@ -38,12 +38,12 @@ function Cnew = repartition (C)
   switch (C.Type)
     case 'kfold'
     case 'given'
-    case 'holdout' #currently, only the HoldOut method uses randomization
+    case 'holdout' # Currently, only the HoldOut method uses randomization
       n = C.NumObservations;
       k = C.TestSize;
       n_classes = C.n_classes;
       if (k < 1)
-        f = k; #target fraction to sample
+        f = k;  # target fraction to sample
         k = round (k * n); #number of samples
       else
         f = k / n;
@@ -51,8 +51,8 @@ function Cnew = repartition (C)
       inds = zeros (n, 1, "logical");
       if (n_classes == 1)
         inds(randsample(n, k)) = true; #indices for test set
-      else #sample from each class
-        j = C.classes; #integer class labels
+      else      # sample from each class
+        j = C.classes;    #integer class labels
         n_per_class = accumarray (j, 1);
         n_classes = numel (n_per_class);
         k_check = 0;
@@ -73,3 +73,13 @@ function Cnew = repartition (C)
   endswitch
 endfunction
 
+%!test
+%! C = cvpartition (ones (10, 1), "KFold", 5);
+%! Cnew = repartition (C);
+%! assert (isa (Cnew, "cvpartition"), true);
+%!test
+%! C = cvpartition (ones (100, 1), "HoldOut", 5);
+%! Cnew = repartition (C);
+%! indC = get (C, "inds");
+%! indCnew = get (Cnew, "inds");
+%! assert (isequal (indC, indCnew), false);

@@ -78,19 +78,69 @@
 </p>
 <div class="ms-5">
 <p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF)
- at <var>p</var> of the Beta distribution with parameters <var>a</var> and <var>b</var>.  The
- size of <var>x</var> is the common size of <var>x</var>, <var>a</var> and <var>b</var>.  A scalar
+ of the Beta distribution with shape parameters <var>a</var> and <var>b</var>.  The size
+ of <var>x</var> is the common size of <var>x</var>, <var>a</var>, and <var>b</var>.  A scalar
  input functions as a constant matrix of the same size as the other inputs.
+</p>
+<p> Further information about the Beta distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Beta_distribution">https://en.wikipedia.org/wiki/Beta_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="betacdf.html">betacdf</a>, 
   <a href="betapdf.html">betapdf</a>, 
   <a href="betarnd.html">betarnd</a>, 
+  <a href="betafit.html">betafit</a>, 
+  <a href="betalike.html">betalike</a>, 
   <a href="betastat.html">betastat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/betainv.m">betainv</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/betainv.m">betainv</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various iCDFs from the Beta distribution
+ p = 0.001:0.001:0.999;
+ x1 = betainv (p, 0.5, 0.5);
+ x2 = betainv (p, 5, 1);
+ x3 = betainv (p, 1, 3);
+ x4 = betainv (p, 2, 2);
+ x5 = betainv (p, 2, 5);
+ plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c", p, x5, "-m")
+ grid on
+ legend ({"α = β = 0.5", "α = 5, β = 1", "α = 1, β = 3", ...
+          "α = 2, β = 2", "α = 2, β = 5"}, "location", "southeast")
+ title ("Beta iCDF")
+ xlabel ("probability")
+ ylabel ("values in x")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/betainv_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

@@ -71,26 +71,86 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>burrcdf</b><i> (<var>x</var>, <var>a</var>, <var>c</var>, <var>k</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>burrcdf</b><i> (<var>x</var>, <var>lambda</var>, <var>c</var>, <var>k</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>burrcdf</b><i> (<var>x</var>, <var>lambda</var>, <var>c</var>, <var>k</var>, <code>&quot;upper&quot;</code>)</i></dt>
 </dl>
 
 <p> Burr type XII cumulative distribution function (CDF).
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the cumulative distribution function
- (CDF) at <var>x</var> of the Burr type XII distribution with parameters <var>a</var>,
- <var>c</var>, and <var>k</var>.  The size of <var>x</var> is the common size of <var>p</var>,
- <var>a</var>, <var>c</var>, and <var>k</var>.  A scalar input functions as a constant matrix
- of the same size as the other inputs.
+ (CDF) of the Burr type XII distribution with scale parameter <var>lambda</var>,
+ first shape parameter <var>c</var>, and second shape parameter <var>k</var>.  The size
+ of <var>p</var> is the common size of <var>x</var>, <var>lambda</var>, <var>c</var>, and <var>k</var>.
+ A scalar input functions as a constant matrix of the same size as the other
+ inputs.
+</p>
+<p> <code><var>p</var> = burrcdf (<var>x</var>, <var>beta</var>, <var>gamma</var>, &quot;upper&quot;)</code>
+ computes the upper tail probability of the Birnbaum-Saunders distribution
+ with parameters <var>beta</var> and <var>gamma</var>, at the values in <var>x</var>.
+</p>
+<p> Further information about the Burr distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Burr_distribution">https://en.wikipedia.org/wiki/Burr_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="burrinv.html">burrinv</a>, 
   <a href="burrpdf.html">burrpdf</a>, 
-  <a href="burrrnd.html">burrrnd</a>
+  <a href="burrrnd.html">burrrnd</a>, 
+  <a href="burrfit.html">burrfit</a>, 
+  <a href="burrlike.html">burrlike</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/burrcdf.m">burrcdf</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/burrcdf.m">burrcdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various CDFs from the Burr type XII distribution
+ x = 0.001:0.001:5;
+ p1 = burrcdf (x, 1, 1, 1);
+ p2 = burrcdf (x, 1, 1, 2);
+ p3 = burrcdf (x, 1, 1, 3);
+ p4 = burrcdf (x, 1, 2, 1);
+ p5 = burrcdf (x, 1, 3, 1);
+ p6 = burrcdf (x, 1, 0.5, 2);
+ plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", ...
+       x, p4, "-c", x, p5, "-m", x, p6, "-k")
+ grid on
+ legend ({"λ = 1, c = 1, k = 1", "λ = 1, c = 1, k = 2", ...
+          "λ = 1, c = 1, k = 3", "λ = 1, c = 2, k = 1", ...
+          "λ = 1, c = 3, k = 1", "λ = 1, c = 0.5, k = 2"}, ...
+         "location", "southeast")
+ title ("Burr type XII CDF")
+ xlabel ("values in x")
+ ylabel ("probability")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/burrcdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

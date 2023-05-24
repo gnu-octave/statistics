@@ -118,7 +118,12 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- X = [(randn (10, 2) * 0.25) + 1; (randn (20, 2) * 0.5) - 1];
+ randn ("seed", 1)  # for reproducibility
+ r1 = randn (10, 2) * 0.25 + 1;
+ randn ("seed", 5)  # for reproducibility
+ r2 = randn (20, 2) * 0.5 - 1;
+ X = [r1; r2];
+
  wnl = warning ("off", "Octave:linkage_savemem", "local");
  T = clusterdata (X, "linkage", "ward", "MaxClust", 2);
  scatter (X(:,1), X(:,2), 36, T, "filled");

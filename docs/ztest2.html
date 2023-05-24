@@ -72,7 +72,7 @@
         <div class="card-body">
 <dl>
 <dt><u>statistics:</u> <var>h</var> = <b>ztest2</b><i> (<var>x1</var>, <var>n1</var>, <var>x2</var>, <var>n2</var>)</i></dt>
-<dt><u>statistics:</u> <var>h</var> = <b>ztest2</b><i> (<var>x1</var>, <var>n1</var>, <var>x2</var>, <var>n2</var>, <var>name</var>, <var>value</var>)</i></dt>
+<dt><u>statistics:</u> <var>h</var> = <b>ztest2</b><i> (<var>x1</var>, <var>n1</var>, <var>x2</var>, <var>n2</var>, <var>Name</var>, <var>Value</var>)</i></dt>
 <dt><u>statistics:</u> [<var>h</var>, <var>pval</var>] = <b>ztest2</b><i> (&hellip;)</i></dt>
 <dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>zvalue</var>] = <b>ztest2</b><i> (&hellip;)</i></dt>
 </dl>
@@ -102,11 +102,11 @@
 <p> <code>[<var>h</var>, <var>pval</var>, <var>zvalue</var>] = ztest2 (&hellip;)</code> returns the
  value of the test statistic.
 </p>
-<p> <code>[&hellip;] = ztest2 (&hellip;, <var>name</var>, <var>value</var>, &hellip;)</code>
- specifies one or more of the following name/value pairs:
+<p> <code>[&hellip;] = ztest2 (&hellip;, <var>Name</var>, <var>Value</var>, &hellip;)</code>
+ specifies one or more of the following <var>Name</var>/<var>Value</var> pairs:
 </p>
  <table>
-<thead><tr><th width="5%"></th><th width="20%">Name</th><th width="75%">Value</th></tr></thead>
+<thead><tr><th width="5%"></th><th width="20%"><var>Name</var></th><th width="75%"><var>Value</var></th></tr></thead>
 <tr><td width="5%"></td><td width="20%"><code>&quot;alpha&quot;</code></td><td width="75%">the significance level. Default is 0.05.</td></tr>
 <tr><td width="5%"></td><td width="20%"><code>&quot;tail&quot;</code></td><td width="75%">a string specifying the alternative hypothesis</td></tr>
 </table>

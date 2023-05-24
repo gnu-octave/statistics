@@ -84,11 +84,20 @@
  from the exponential distribution with mean parameter <var>mu</var>.  The size of
  <var>r</var> is the size of <var>mu</var>.
 </p>
-<p> When called with a single size argument, return a square matrix with
- the dimension specified.  When called with more than one scalar argument the
- first two arguments are taken as the number of rows and columns and any
- further arguments specify additional matrix dimensions.  The size may also
- be specified with a vector of dimensions <var>sz</var>.
+<p> When called with a single size argument, <code>exprnd</code> returns a square
+ matrix with the dimension specified.  When called with more than one scalar
+ argument, the first two arguments are taken as the number of rows and columns
+ and any further arguments specify additional matrix dimensions.  The size may
+ also be specified with a row vector of dimensions, <var>sz</var>.
+</p>
+<p> A common alternative parameterization of the exponential distribution is to
+ use the parameter <math>λ</math> defined as the mean number of events in an
+ interval as opposed to the parameter <math>μ</math>, which is the mean wait time
+ for an event to occur. <math>λ</math> and <math>μ</math> are reciprocals,
+ i.e. <math>μ = 1 / λ</math>.
+</p>
+<p> Further information about the exponential distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Exponential_distribution">https://en.wikipedia.org/wiki/Exponential_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="expcdf.html">expcdf</a>, 
@@ -99,7 +108,7 @@
   <a href="expstat.html">expstat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/distributions/exprnd.m">exprnd</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/exprnd.m">exprnd</a>
 </div>
 
         </div>

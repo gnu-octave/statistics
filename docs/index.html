@@ -61,7 +61,7 @@
             </div>
             <div class="col-sm-9 col-md-10">
               <h3 class="d-inline-block mr-2">statistics</h3>
-              <b>1.5.4&nbsp;2023-2-28</b>
+              <b>1.6.0&nbsp;2023-6-1</b>
               <p class="indent">
                 The Statistics package for GNU Octave.
               </p>
@@ -85,6 +85,7 @@
              <option value="#I/O">I/O</option>
              <option value="#Plotting">Plotting</option>
              <option value="#Regression">Regression</option>
+             <option value="#Transforms">Transforms</option>
              <option value="#Wrappers">Wrappers</option>
              </select>
            <p>
@@ -405,7 +406,7 @@ idea by van Albada and Robinson.</td>
                    <a href="tabulate.html">tabulate</a>
                    </code></b>
                  </td>
-                 <td>Compute a frequency table.</td>
+                 <td>Calculate a frequency table.</td>
                </tr>
              </tbody>
            </table>
@@ -414,6 +415,14 @@ idea by van Albada and Robinson.</td>
            </h3>
            <table class="table table-striped">
              <tbody>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="cdfcalc.html">cdfcalc</a>
+                   </code></b>
+                 </td>
+                 <td>Calculate an empirical cumulative distribution function.</td>
+               </tr>
                <tr>
                  <td>
                    <b><code>
@@ -539,39 +548,6 @@ samples as parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="bbscdf.html">bbscdf</a>
-                   </code></b>
-                 </td>
-                 <td>Birnbaum-Saunders cumulative distribution function (CDF).</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="bbsinv.html">bbsinv</a>
-                   </code></b>
-                 </td>
-                 <td>Inverse of the Birnbaum-Saunders cumulative distribution function
-(iCDF).</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="bbspdf.html">bbspdf</a>
-                   </code></b>
-                 </td>
-                 <td>Birnbaum-Saunders probability density function (PDF).</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="bbsrnd.html">bbsrnd</a>
-                   </code></b>
-                 </td>
-                 <td>Random arrays from the Birnbaum-Saunders distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
                    <a href="betacdf.html">betacdf</a>
                    </code></b>
                  </td>
@@ -631,7 +607,40 @@ samples as parameters.</td>
                    <a href="binornd.html">binornd</a>
                    </code></b>
                  </td>
-                 <td>Random arrays from the Binomial distribution</td>
+                 <td>Random arrays from the Binomial distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="bisacdf.html">bisacdf</a>
+                   </code></b>
+                 </td>
+                 <td>Birnbaum-Saunders cumulative distribution function (CDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="bisainv.html">bisainv</a>
+                   </code></b>
+                 </td>
+                 <td>Inverse of the Birnbaum-Saunders cumulative distribution function
+(iCDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="bisapdf.html">bisapdf</a>
+                   </code></b>
+                 </td>
+                 <td>Birnbaum-Saunders probability density function (PDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="bisarnd.html">bisarnd</a>
+                   </code></b>
+                 </td>
+                 <td>Random arrays from the Birnbaum-Saunders distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -684,7 +693,7 @@ samples as parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="cauchy_cdf.html">cauchy_cdf</a>
+                   <a href="cauchycdf.html">cauchycdf</a>
                    </code></b>
                  </td>
                  <td>Cauchy cumulative distribution function (CDF).</td>
@@ -692,7 +701,7 @@ samples as parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="cauchy_inv.html">cauchy_inv</a>
+                   <a href="cauchyinv.html">cauchyinv</a>
                    </code></b>
                  </td>
                  <td>Inverse of the Cauchy cumulative distribution function (iCDF).</td>
@@ -700,7 +709,7 @@ samples as parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="cauchy_pdf.html">cauchy_pdf</a>
+                   <a href="cauchypdf.html">cauchypdf</a>
                    </code></b>
                  </td>
                  <td>Cauchy probability density function (PDF).</td>
@@ -708,7 +717,7 @@ samples as parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="cauchy_rnd.html">cauchy_rnd</a>
+                   <a href="cauchyrnd.html">cauchyrnd</a>
                    </code></b>
                  </td>
                  <td>Random arrays from the Cauchy distribution.</td>
@@ -719,7 +728,7 @@ samples as parameters.</td>
                    <a href="chi2cdf.html">chi2cdf</a>
                    </code></b>
                  </td>
-                 <td>Chi-square cumulative distribution function.</td>
+                 <td>Chi-squared cumulative distribution function (CDF).</td>
                </tr>
                <tr>
                  <td>
@@ -727,7 +736,7 @@ samples as parameters.</td>
                    <a href="chi2inv.html">chi2inv</a>
                    </code></b>
                  </td>
-                 <td>Inverse of the Chi-square cumulative distribution function (iCDF).</td>
+                 <td>Inverse of the chi-squared cumulative distribution function (iCDF).</td>
                </tr>
                <tr>
                  <td>
@@ -735,7 +744,7 @@ samples as parameters.</td>
                    <a href="chi2pdf.html">chi2pdf</a>
                    </code></b>
                  </td>
-                 <td>Chi-square probability density function (PDF).</td>
+                 <td>Chi-squared probability density function (PDF).</td>
                </tr>
                <tr>
                  <td>
@@ -743,7 +752,7 @@ samples as parameters.</td>
                    <a href="chi2rnd.html">chi2rnd</a>
                    </code></b>
                  </td>
-                 <td>Random arrays from the Chi-square distribution.</td>
+                 <td>Random arrays from the chi-squared distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -968,7 +977,7 @@ function (iCDF).</td>
                    <a href="gpcdf.html">gpcdf</a>
                    </code></b>
                  </td>
-                 <td>Generalized Pareto cumulative distribution function (cdf).</td>
+                 <td>Generalized Pareto cumulative distribution function (CDF).</td>
                </tr>
                <tr>
                  <td>
@@ -994,6 +1003,70 @@ function (iCDF).</td>
                    </code></b>
                  </td>
                  <td>Random arrays from the generalized Pareto distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="gumbelcdf.html">gumbelcdf</a>
+                   </code></b>
+                 </td>
+                 <td>Gumbel cumulative distribution function (CDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="gumbelinv.html">gumbelinv</a>
+                   </code></b>
+                 </td>
+                 <td>Inverse of the Gumbel cumulative distribution function (iCDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="gumbelpdf.html">gumbelpdf</a>
+                   </code></b>
+                 </td>
+                 <td>Gumbel probability density function (PDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="gumbelrnd.html">gumbelrnd</a>
+                   </code></b>
+                 </td>
+                 <td>Random arrays from the Gumbel distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="hncdf.html">hncdf</a>
+                   </code></b>
+                 </td>
+                 <td>Half-normal cumulative distribution function (CDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="hninv.html">hninv</a>
+                   </code></b>
+                 </td>
+                 <td>Inverse of the half-normal cumulative distribution function (iCDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="hnpdf.html">hnpdf</a>
+                   </code></b>
+                 </td>
+                 <td>Half-normal probability density function (PDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="hnrnd.html">hnrnd</a>
+                   </code></b>
+                 </td>
+                 <td>Random arrays from the half-normal distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1026,6 +1099,38 @@ function (iCDF).</td>
                    </code></b>
                  </td>
                  <td>Random arrays from the hypergeometric distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="invgcdf.html">invgcdf</a>
+                   </code></b>
+                 </td>
+                 <td>Inverse Gaussian cumulative distribution function (CDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="invginv.html">invginv</a>
+                   </code></b>
+                 </td>
+                 <td>Inverse of the inverse Gaussian cumulative distribution function (iCDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="invgpdf.html">invgpdf</a>
+                   </code></b>
+                 </td>
+                 <td>Inverse Gaussian probability density function (PDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="invgrnd.html">invgrnd</a>
+                   </code></b>
+                 </td>
+                 <td>Random arrays from the inverse Gaussian distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1064,7 +1169,7 @@ with given parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="laplace_cdf.html">laplace_cdf</a>
+                   <a href="laplacecdf.html">laplacecdf</a>
                    </code></b>
                  </td>
                  <td>Laplace cumulative distribution function (CDF).</td>
@@ -1072,7 +1177,7 @@ with given parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="laplace_inv.html">laplace_inv</a>
+                   <a href="laplaceinv.html">laplaceinv</a>
                    </code></b>
                  </td>
                  <td>Inverse of the Laplace cumulative distribution function (iCDF).</td>
@@ -1080,7 +1185,7 @@ with given parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="laplace_pdf.html">laplace_pdf</a>
+                   <a href="laplacepdf.html">laplacepdf</a>
                    </code></b>
                  </td>
                  <td>Laplace probability density function (PDF).</td>
@@ -1088,7 +1193,7 @@ with given parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="laplace_rnd.html">laplace_rnd</a>
+                   <a href="laplacernd.html">laplacernd</a>
                    </code></b>
                  </td>
                  <td>Random arrays from the Laplace distribution.</td>
@@ -1096,7 +1201,7 @@ with given parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="logistic_cdf.html">logistic_cdf</a>
+                   <a href="logicdf.html">logicdf</a>
                    </code></b>
                  </td>
                  <td>Logistic cumulative distribution function (CDF).</td>
@@ -1104,7 +1209,7 @@ with given parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="logistic_inv.html">logistic_inv</a>
+                   <a href="logiinv.html">logiinv</a>
                    </code></b>
                  </td>
                  <td>Inverse of the logistic cumulative distribution function (iCDF).</td>
@@ -1112,7 +1217,7 @@ with given parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="logistic_pdf.html">logistic_pdf</a>
+                   <a href="logipdf.html">logipdf</a>
                    </code></b>
                  </td>
                  <td>Logistic probability density function (PDF).</td>
@@ -1120,7 +1225,7 @@ with given parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="logistic_rnd.html">logistic_rnd</a>
+                   <a href="logirnd.html">logirnd</a>
                    </code></b>
                  </td>
                  <td>Random arrays from the logistic distribution.</td>
@@ -1128,10 +1233,42 @@ with given parameters.</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="loglcdf.html">loglcdf</a>
+                   </code></b>
+                 </td>
+                 <td>Log-logistic cumulative distribution function (CDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="loglinv.html">loglinv</a>
+                   </code></b>
+                 </td>
+                 <td>Inverse of the log-logistic cumulative distribution function (iCDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="loglpdf.html">loglpdf</a>
+                   </code></b>
+                 </td>
+                 <td>Log-logistic probability density function (PDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="loglrnd.html">loglrnd</a>
+                   </code></b>
+                 </td>
+                 <td>Random arrays from the log-logistic distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="logncdf.html">logncdf</a>
                    </code></b>
                  </td>
-                 <td>Lognormal cumulative distribution function (CDF).</td>
+                 <td>Log-normal cumulative distribution function (CDF).</td>
                </tr>
                <tr>
                  <td>
@@ -1139,7 +1276,7 @@ with given parameters.</td>
                    <a href="logninv.html">logninv</a>
                    </code></b>
                  </td>
-                 <td>Inverse of the lognormal cumulative distribution function (iCDF).</td>
+                 <td>Inverse of the log-normal cumulative distribution function (iCDF).</td>
                </tr>
                <tr>
                  <td>
@@ -1308,7 +1445,7 @@ with given parameters.</td>
                    <a href="ncfinv.html">ncfinv</a>
                    </code></b>
                  </td>
-                 <td>Inverse of the non-central F cumulative distribution function (iCDF).</td>
+                 <td>Inverse of the noncentral F cumulative distribution function (iCDF).</td>
                </tr>
                <tr>
                  <td>
@@ -1348,7 +1485,7 @@ with given parameters.</td>
                    <a href="nctpdf.html">nctpdf</a>
                    </code></b>
                  </td>
-                 <td>Noncentral Τ probability density function (pdf).</td>
+                 <td>Noncentral Τ probability density function (PDF).</td>
                </tr>
                <tr>
                  <td>
@@ -1364,7 +1501,7 @@ with given parameters.</td>
                    <a href="ncx2cdf.html">ncx2cdf</a>
                    </code></b>
                  </td>
-                 <td>Noncentral Chi-Square cumulative distribution function (CDF).</td>
+                 <td>Noncentral chi-squared cumulative distribution function (CDF).</td>
                </tr>
                <tr>
                  <td>
@@ -1372,7 +1509,7 @@ with given parameters.</td>
                    <a href="ncx2inv.html">ncx2inv</a>
                    </code></b>
                  </td>
-                 <td>Inverse of the non-central chi-square cumulative distribution function
+                 <td>Inverse of the noncentral chi-squared cumulative distribution function
 (iCDF).</td>
                </tr>
                <tr>
@@ -1381,7 +1518,7 @@ with given parameters.</td>
                    <a href="ncx2pdf.html">ncx2pdf</a>
                    </code></b>
                  </td>
-                 <td>Noncentral Chi-Square probability distribution function (PDF).</td>
+                 <td>Noncentral chi-squared probability distribution function (PDF).</td>
                </tr>
                <tr>
                  <td>
@@ -1389,7 +1526,7 @@ with given parameters.</td>
                    <a href="ncx2rnd.html">ncx2rnd</a>
                    </code></b>
                  </td>
-                 <td>Random arrays from the non-central chi-square distribution.</td>
+                 <td>Random arrays from the noncentral chi-squared distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1486,38 +1623,6 @@ with given parameters.</td>
                    </code></b>
                  </td>
                  <td>Random arrays from the Rayleigh distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="stdnormal_cdf.html">stdnormal_cdf</a>
-                   </code></b>
-                 </td>
-                 <td>Standard normal cumulative distribution function (CDF).</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="stdnormal_inv.html">stdnormal_inv</a>
-                   </code></b>
-                 </td>
-                 <td>Inverse of the standard normal cumulative distribution function (iCDF).</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="stdnormal_pdf.html">stdnormal_pdf</a>
-                   </code></b>
-                 </td>
-                 <td>Standard normal probability density function (PDF).</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="stdnormal_rnd.html">stdnormal_rnd</a>
-                   </code></b>
-                 </td>
-                 <td>Random arrays from the standard normal distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1658,6 +1763,14 @@ with given parameters.</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="vminv.html">vminv</a>
+                   </code></b>
+                 </td>
+                 <td>Inverse of the von Mises cumulative distribution function (iCDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="vmpdf.html">vmpdf</a>
                    </code></b>
                  </td>
@@ -1739,10 +1852,69 @@ parameters</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="cdfcalc.html">cdfcalc</a>
+                   <a href="betafit.html">betafit</a>
                    </code></b>
                  </td>
-                 <td>Calculate an empirical cumulative distribution function.</td>
+                 <td>Estimate parameters and confidence intervals for the Beta distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="betalike.html">betalike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the Beta distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="binofit.html">binofit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameter and confidence intervals for the binomial
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="binolike.html">binolike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the binomial distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="bisafit.html">bisafit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate mean and confidence intervals for the Birnbaum-Saunders
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="bisalike.html">bisalike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the Birnbaum-Saunders distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="burrfit.html">burrfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate mean and confidence intervals for the Burr type XII
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="burrlike.html">burrlike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the Burr type XII distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1750,7 +1922,8 @@ parameters</td>
                    <a href="evfit.html">evfit</a>
                    </code></b>
                  </td>
-                 <td>Estimate parameters and confidence intervals for extreme value data.</td>
+                 <td>Estimate parameters and confidence intervals for the extreme value
+distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1766,8 +1939,7 @@ parameters</td>
                    <a href="expfit.html">expfit</a>
                    </code></b>
                  </td>
-                 <td>Estimate the mean of the exponential probability distribution function
-from which sample data S has been taken.</td>
+                 <td>Estimate mean and confidence intervals for the exponential distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1775,8 +1947,7 @@ from which sample data S has been taken.</td>
                    <a href="explike.html">explike</a>
                    </code></b>
                  </td>
-                 <td>Compute the negative log-likelihood of data under the exponential
-distribution with given parameter value.</td>
+                 <td>Negative log-likelihood for the exponential distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1784,7 +1955,7 @@ distribution with given parameter value.</td>
                    <a href="gamfit.html">gamfit</a>
                    </code></b>
                  </td>
-                 <td>Calculate gamma distribution parameters.</td>
+                 <td>Estimate parameters and confidence intervals for the Gamma distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1792,9 +1963,7 @@ distribution with given parameter value.</td>
                    <a href="gamlike.html">gamlike</a>
                    </code></b>
                  </td>
-                 <td>Calculates the negative log-likelihood function for the Gamma
-distribution over vector R, with the given parameters A and B in a
-2-element vector PARAMS.</td>
+                 <td>Negative log-likelihood for the Gamma distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1811,8 +1980,8 @@ distribution fitting DATA using the method of L-moments.</td>
                    <a href="gevfit.html">gevfit</a>
                    </code></b>
                  </td>
-                 <td>Find the maximum likelihood estimator PARAMHAT of the generalized
-extreme value (GEV) distribution to fit DATA.</td>
+                 <td>Estimate parameters and confidence intervals for the generalized extreme
+value (GEV) distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1820,8 +1989,8 @@ extreme value (GEV) distribution to fit DATA.</td>
                    <a href="gevlike.html">gevlike</a>
                    </code></b>
                  </td>
-                 <td>Compute the negative log-likelihood of data under the generalized
-extreme value (GEV) distribution with given parameter values.</td>
+                 <td>Negative log-likelihood for the generalized extreme value (GEV)
+distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1829,8 +1998,8 @@ extreme value (GEV) distribution with given parameter values.</td>
                    <a href="gpfit.html">gpfit</a>
                    </code></b>
                  </td>
-                 <td>Parameter estimates and confidence intervals for generalized Pareto
-data.</td>
+                 <td>Estimate parameters and confidence intervals for the generalized Pareto
+distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1843,10 +2012,202 @@ data.</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="gumbelfit.html">gumbelfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameters and confidence intervals for Gumbel distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="gumbellike.html">gumbellike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the extreme value distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="hnfit.html">hnfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameters and confidence intervals for the half-normal
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="hnlike.html">hnlike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the half-normal distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="invgfit.html">invgfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate mean and confidence intervals for the inverse Gaussian
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="invglike.html">invglike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the inverse Gaussian distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="logifit.html">logifit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate mean and confidence intervals for the logistic distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="logilike.html">logilike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the logistic distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="loglfit.html">loglfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate mean and confidence intervals for the log-logistic
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="logllike.html">logllike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the log-logistic distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="lognfit.html">lognfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameters and confidence intervals for the log-normal
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="lognlike.html">lognlike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the log-normal distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="nakafit.html">nakafit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate mean and confidence intervals for the Nakagami distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="nakalike.html">nakalike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the Nakagami distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="nbinfit.html">nbinfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameter and confidence intervals for the negative binomial
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="nbinlike.html">nbinlike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the negative binomial distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="normfit.html">normfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameters and confidence intervals for the normal
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="normlike.html">normlike</a>
                    </code></b>
                  </td>
                  <td>Negative log-likelihood for the normal distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="poissfit.html">poissfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameter and confidence intervals for the Poisson
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="poisslike.html">poisslike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the Poisson distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="raylfit.html">raylfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameter and confidence intervals for the Rayleigh
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="rayllike.html">rayllike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the Rayleigh distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="wblfit.html">wblfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate mean and confidence intervals for the Weibull distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="wbllike.html">wbllike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the Weibull distribution.</td>
                </tr>
              </tbody>
            </table>
@@ -1861,7 +2222,7 @@ data.</td>
                    <a href="betastat.html">betastat</a>
                    </code></b>
                  </td>
-                 <td>Compute mean and variance of the beta distribution.</td>
+                 <td>Compute statistics of the Beta distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1869,7 +2230,7 @@ data.</td>
                    <a href="binostat.html">binostat</a>
                    </code></b>
                  </td>
-                 <td>Compute mean and variance of the binomial distribution.</td>
+                 <td>Compute statistics of the binomial distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1877,7 +2238,7 @@ data.</td>
                    <a href="chi2stat.html">chi2stat</a>
                    </code></b>
                  </td>
-                 <td>Compute mean and variance of the chi-square distribution.</td>
+                 <td>Compute statistics of the χ^2 distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1885,7 +2246,7 @@ data.</td>
                    <a href="evstat.html">evstat</a>
                    </code></b>
                  </td>
-                 <td>Mean and variance of the extreme value distribution.</td>
+                 <td>Compute statistics of the extreme value distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1893,7 +2254,7 @@ data.</td>
                    <a href="expstat.html">expstat</a>
                    </code></b>
                  </td>
-                 <td>Compute mean and variance of the exponential distribution.</td>
+                 <td>Compute statistics of the exponential distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1901,7 +2262,7 @@ data.</td>
                    <a href="fstat.html">fstat</a>
                    </code></b>
                  </td>
-                 <td>Compute mean and variance of the F distribution.</td>
+                 <td>Compute statistics of the F distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1909,7 +2270,7 @@ data.</td>
                    <a href="gamstat.html">gamstat</a>
                    </code></b>
                  </td>
-                 <td>Compute mean and variance of the gamma distribution.</td>
+                 <td>Compute statistics of the Gamma distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1917,7 +2278,7 @@ data.</td>
                    <a href="geostat.html">geostat</a>
                    </code></b>
                  </td>
-                 <td>Compute mean and variance of the geometric distribution.</td>
+                 <td>Compute statistics of the geometric distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1925,8 +2286,7 @@ data.</td>
                    <a href="gevstat.html">gevstat</a>
                    </code></b>
                  </td>
-                 <td>Compute the mean and variance of the generalized extreme value
-distribution.</td>
+                 <td>Compute statistics of the generalized extreme value distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1934,7 +2294,7 @@ distribution.</td>
                    <a href="gpstat.html">gpstat</a>
                    </code></b>
                  </td>
-                 <td>Mean and variance of the generalized Pareto distribution.</td>
+                 <td>Compute statistics of the generalized Pareto distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1942,7 +2302,7 @@ distribution.</td>
                    <a href="hygestat.html">hygestat</a>
                    </code></b>
                  </td>
-                 <td>Compute mean and variance of the hypergeometric distribution.</td>
+                 <td>Compute statistics of the hypergeometric distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1950,7 +2310,7 @@ distribution.</td>
                    <a href="lognstat.html">lognstat</a>
                    </code></b>
                  </td>
-                 <td>Compute mean and variance of the lognormal distribution.</td>
+                 <td>Compute statistics of the lognormal distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1958,7 +2318,7 @@ distribution.</td>
                    <a href="nbinstat.html">nbinstat</a>
                    </code></b>
                  </td>
-                 <td>Compute mean and variance of the negative binomial distribution.</td>
+                 <td>Compute statistics of the negative binomial distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1966,7 +2326,7 @@ distribution.</td>
                    <a href="ncfstat.html">ncfstat</a>
                    </code></b>
                  </td>
-                 <td>Mean and variance for the noncentral F distribution.</td>
+                 <td>Compute statistics for the noncentral F distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1974,7 +2334,7 @@ distribution.</td>
                    <a href="nctstat.html">nctstat</a>
                    </code></b>
                  </td>
-                 <td>Mean and variance for the noncentral T distribution.</td>
+                 <td>Compute statistics for the noncentral t distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1982,7 +2342,7 @@ distribution.</td>
                    <a href="ncx2stat.html">ncx2stat</a>
                    </code></b>
                  </td>
-                 <td>Mean and variance for the noncentral chi-square distribution.</td>
+                 <td>Compute statistics for the noncentral χ^2 distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1990,7 +2350,7 @@ distribution.</td>
                    <a href="normstat.html">normstat</a>
                    </code></b>
                  </td>
-                 <td>Compute mean and variance of the normal distribution.</td>
+                 <td>Compute statistics of the normal distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1998,7 +2358,7 @@ distribution.</td>
                    <a href="poisstat.html">poisstat</a>
                    </code></b>
                  </td>
-                 <td>Compute mean and variance of the Poisson distribution.</td>
+                 <td>Compute statistics of the Poisson distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -2006,7 +2366,7 @@ distribution.</td>
                    <a href="raylstat.html">raylstat</a>
                    </code></b>
                  </td>
-                 <td>Compute mean and variance of the Rayleigh distribution.</td>
+                 <td>Compute statistics of the Rayleigh distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -2014,7 +2374,7 @@ distribution.</td>
                    <a href="tstat.html">tstat</a>
                    </code></b>
                  </td>
-                 <td>Compute mean and variance of the t (Student) distribution.</td>
+                 <td>Compute statistics of the t distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -2022,7 +2382,7 @@ distribution.</td>
                    <a href="unidstat.html">unidstat</a>
                    </code></b>
                  </td>
-                 <td>Compute mean and variance of the discrete uniform distribution.</td>
+                 <td>Compute statistics of the discrete uniform distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -2030,7 +2390,7 @@ distribution.</td>
                    <a href="unifstat.html">unifstat</a>
                    </code></b>
                  </td>
-                 <td>Compute mean and variance of the continuous uniform distribution.</td>
+                 <td>Compute statistics of the continuous uniform distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -2038,7 +2398,7 @@ distribution.</td>
                    <a href="wblstat.html">wblstat</a>
                    </code></b>
                  </td>
-                 <td>Compute mean and variance of the Weibull distribution.</td>
+                 <td>Compute statistics of the Weibull distribution.</td>
                </tr>
              </tbody>
            </table>
@@ -2337,6 +2697,14 @@ from the same population, ...</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="mcnemar_test.html">mcnemar_test</a>
+                   </code></b>
+                 </td>
+                 <td>Perform a McNemar's test on paired nominal data.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="multcompare.html">multcompare</a>
                    </code></b>
                  </td>
@@ -2373,7 +2741,7 @@ control the family-wise error rate (FWER) or false discovery rate (FDR).</td>
                    <a href="runstest.html">runstest</a>
                    </code></b>
                  </td>
-                 <td>Runs test for detecting serial correlation in the vector X.</td>
+                 <td>Run test for randomness in the vector X.</td>
                </tr>
                <tr>
                  <td>
@@ -2524,6 +2892,14 @@ a file specified by FILENAME.</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="einstein.html">einstein</a>
+                   </code></b>
+                 </td>
+                 <td>Plots the tiling of the basic clusters of einstein tiles.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="gscatter.html">gscatter</a>
                    </code></b>
                  </td>
@@ -2656,7 +3032,7 @@ functional dependence.</td>
                    <a href="pca.html">pca</a>
                    </code></b>
                  </td>
-                 <td>Performs a principal component analysis on a data matrix X.</td>
+                 <td>Performs a principal component analysis on a data matrix.</td>
                </tr>
                <tr>
                  <td>
@@ -2664,7 +3040,7 @@ functional dependence.</td>
                    <a href="pcacov.html">pcacov</a>
                    </code></b>
                  </td>
-                 <td>Perform principal component analysis on the NxN covariance matrix X.</td>
+                 <td>Perform principal component analysis on covariance matrix</td>
                </tr>
                <tr>
                  <td>
@@ -2718,6 +3094,29 @@ model 'y = X * beta + e'.</td>
              </tbody>
            </table>
            <h3 class="category">
+             <a name="Transforms">Transforms</a>
+           </h3>
+           <table class="table table-striped">
+             <tbody>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="logit.html">logit</a>
+                   </code></b>
+                 </td>
+                 <td>Compute the logit for each value of P</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="probit.html">probit</a>
+                   </code></b>
+                 </td>
+                 <td>Probit transformation</td>
+               </tr>
+             </tbody>
+           </table>
+           <h3 class="category">
              <a name="Wrappers">Wrappers</a>
            </h3>
            <table class="table table-striped">
@@ -2728,7 +3127,7 @@ model 'y = X * beta + e'.</td>
                    <a href="cdf.html">cdf</a>
                    </code></b>
                  </td>
-                 <td>Return the CDF of NAME distribution function for value X.</td>
+                 <td>Return the CDF of a univariate distribution evaluated at X.</td>
                </tr>
                <tr>
                  <td>
@@ -2736,7 +3135,7 @@ model 'y = X * beta + e'.</td>
                    <a href="icdf.html">icdf</a>
                    </code></b>
                  </td>
-                 <td>Return the inverse CDF of NAME distribution function for value P.</td>
+                 <td>Return the inverse CDF of a univariate distribution evaluated at P.</td>
                </tr>
                <tr>
                  <td>
@@ -2744,7 +3143,7 @@ model 'y = X * beta + e'.</td>
                    <a href="pdf.html">pdf</a>
                    </code></b>
                  </td>
-                 <td>Return the PDF of NAME distribution function for value X.</td>
+                 <td>Return the PDF of a univariate distribution evaluated at X.</td>
                </tr>
                <tr>
                  <td>
@@ -2752,8 +3151,7 @@ model 'y = X * beta + e'.</td>
                    <a href="random.html">random</a>
                    </code></b>
                  </td>
-                 <td>Random arrays from from a given one-, two-, or three-parameter
-distribution.</td>
+                 <td>Random arrays from a given one-, two-, or three-parameter distribution.</td>
                </tr>
              </tbody>
            </table>

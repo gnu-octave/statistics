@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: lognfit</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+    <style>
+    var {
+      font-style: italics;
+      font-weight: bold;
+    }
+    td {
+      vertical-align: top;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Distribution Fitting">
+                    <i class="fas fa-list-alt"></i>
+                    Distribution Fitting
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>lognfit</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>paramhat</var> = <b>lognfit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>lognfit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>lognfit</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>lognfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>lognfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>lognfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</i></dt>
+</dl>
+
+<p> Estimate parameters and confidence intervals for the log-normal distribution.
+</p>
+<div class="ms-5">
+<p> <code><var>paramhat</var> = lognfit (<var>x</var>)</code> returns the maximum likelihood
+ estimates of the parameters of the log-normal distribution given the data in
+ vector <var>x</var>.  <code><var>paramhat</var>([1, 2])</code> corresponds to the mean and
+ standard deviation, respectively, of the associated normal distribution.
+</p>
+<p> If a random variable follows this distribution, its logarithm is normally
+ distributed with mean <var>mu</var> and standard deviation <var>sigma</var>.
+</p>
+<p> <code>[<var>paramhat</var>, <var>paramci</var>] = lognfit (<var>x</var>)</code> returns the 95%
+ confidence intervals for the parameter estimates.
+</p>
+<p> <code>[&hellip;] = lognfit (<var>x</var>, <var>alpha</var>)</code> also returns the
+ <code>100 * (1 - <var>alpha</var>)</code> percent confidence intervals for the
+ parameter estimates.  By default, the optional argument <var>alpha</var> is
+ 0.05 corresponding to 95% confidence intervals.  Pass in <code>[]</code> for
+ <var>alpha</var> to use the default values.
+</p>
+<p> <code>[&hellip;] = lognfit (<var>x</var>, <var>alpha</var>, <var>censor</var>)</code> accepts a
+ boolean vector, <var>censor</var>, of the same size as <var>x</var> with <code>1</code>s for
+ observations that are right-censored and <code>0</code>s for observations that are
+ observed exactly.  By default, or if left empty,
+ <code><var>censor</var> = zeros (size (<var>x</var>))</code>.
+</p>
+<p> <code>[&hellip;] = lognfit (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</code>
+ accepts a frequency vector, <var>freq</var>, of the same size as <var>x</var>.
+ <var>freq</var> typically contains integer frequencies for the corresponding
+ elements in <var>x</var>, but it can contain any non-integer non-negative values.
+ By default, or if left empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
+</p>
+<p> <code>[&hellip;] = lognfit (&hellip;, <var>options</var>)</code> specifies control
+ parameters for the iterative algorithm used to compute ML estimates with the
+ <code>fminsearch</code> function.  <var>options</var> is a structure with the following
+ fields and their default values:
+ </p><ul>
+<li> <code><var>options</var>.Display = &quot;off&quot;</code>
+ </li><li> <code><var>options</var>.MaxFunEvals = 400</code>
+ </li><li> <code><var>options</var>.MaxIter = 200</code>
+ </li><li> <code><var>options</var>.TolX = 1e-6</code>
+ </li></ul>
+
+<p> With no censor, the estimate of the standard deviation,
+ <code><var>paramhat</var>(2)</code>, is the square root of the unbiased estimate of the
+ variance of <code>log (<var>x</var>)</code>.  With censored data, the maximum
+ likelihood estimate is returned.
+</p>
+<p> Further information about the log-normal distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Log-normal_distribution">https://en.wikipedia.org/wiki/Log-normal_distribution</a>
+</p>
+<p> <strong>See also: </strong>
+  <a href="logncdf.html">logncdf</a>, 
+  <a href="logninv.html">logninv</a>, 
+  <a href="lognpdf.html">lognpdf</a>, 
+  <a href="lognrnd.html">lognrnd</a>, 
+  <a href="lognlike.html">lognlike</a>, 
+  <a href="lognstat.html">lognstat</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/lognfit.m">lognfit</a>
+</div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Sample 3 populations from 3 different log-normal distibutions
+ randn ("seed", 1);    # for reproducibility
+ r1 = lognrnd (0, 0.25, 1000, 1);
+ randn ("seed", 2);    # for reproducibility
+ r2 = lognrnd (0, 0.5, 1000, 1);
+ randn ("seed", 3);    # for reproducibility
+ r3 = lognrnd (0, 1, 1000, 1);
+ r = [r1, r2, r3];
+
+ ## Plot them normalized and fix their colors
+ hist (r, 30, 2);
+ h = findobj (gca, "Type", "patch");
+ set (h(1), "facecolor", "c");
+ set (h(2), "facecolor", "g");
+ set (h(3), "facecolor", "r");
+ hold on
+
+ ## Estimate their mu and sigma parameters
+ mu_sigmaA = lognfit (r(:,1));
+ mu_sigmaB = lognfit (r(:,2));
+ mu_sigmaC = lognfit (r(:,3));
+
+ ## Plot their estimated PDFs
+ x = [0:0.1:6];
+ y = lognpdf (x, mu_sigmaA(1), mu_sigmaA(2));
+ plot (x, y, "-pr");
+ y = lognpdf (x, mu_sigmaB(1), mu_sigmaB(2));
+ plot (x, y, "-sg");
+ y = lognpdf (x, mu_sigmaC(1), mu_sigmaC(2));
+ plot (x, y, "-^c");
+ ylim ([0, 2])
+ xlim ([0, 6])
+ hold off
+ legend ({"Normalized HIST of sample 1 with mu=0, σ=0.25", ...
+          "Normalized HIST of sample 2 with mu=0, σ=0.5", ...
+          "Normalized HIST of sample 3 with mu=0, σ=1", ...
+          sprintf("PDF for sample 1 with estimated mu=%0.2f and σ=%0.2f", ...
+                  mu_sigmaA(1), mu_sigmaA(2)), ...
+          sprintf("PDF for sample 2 with estimated mu=%0.2f and σ=%0.2f", ...
+                  mu_sigmaB(1), mu_sigmaB(2)), ...
+          sprintf("PDF for sample 3 with estimated mu=%0.2f and σ=%0.2f", ...
+                  mu_sigmaC(1), mu_sigmaC(2))}, "location", "northeast")
+ title ("Three population samples from different log-normal distibutions")
+ hold off
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/lognfit_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

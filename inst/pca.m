@@ -16,64 +16,79 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{coeff} =} pca(@var{X})
-## @deftypefnx {statistics} {@var{coeff} =} pca(@var{X}, Name, Value)
-## @deftypefnx {statistics} {[@var{coeff}, @var{score}, @var{latent}] =} pca(@dots{})
-## @deftypefnx {statistics} {[@var{coeff}, @var{score}, @var{latent}, @var{tsquared}] =} pca(@dots{})
-## @deftypefnx {statistics} {[@var{coeff}, @var{score}, @var{latent}, @var{tsquared}, @var{explained}, @var{mu}] =} pca(@dots{})
+## @deftypefn  {statistics} {@var{coeff} =} pca (@var{x})
+## @deftypefnx {statistics} {@var{coeff} =} pca (@var{x}, @var{Name}, @var{Value})
+## @deftypefnx {statistics} {[@var{coeff}, @var{score}, @var{latent}] =} pca (@dots{})
+## @deftypefnx {statistics} {[@var{coeff}, @var{score}, @var{latent}, @var{tsquared}] =} pca (@dots{})
+## @deftypefnx {statistics} {[@var{coeff}, @var{score}, @var{latent}, @var{tsquared}, @var{explained}, @var{mu}] =} pca (@dots{})
 ##
-## Performs a principal component analysis on a data matrix X.
+## Performs a principal component analysis on a data matrix.
 ##
-## A principal component analysis of a data matrix of @code{n} observations in a
-## @code{p}-dimensional space returns a @code{p}-by-@code{p} transformation
-## matrix, to perform a change of basis on the data. The first component of the
-## new basis is the direction that maximizes the variance of the projected data.
+## A principal component analysis of a data matrix of @math{N} observations in a
+## @math{D} dimensional space returns a @math{DxD} transformation matrix, to
+## perform a change of basis on the data.  The first component of the new basis
+## is the direction that maximizes the variance of the projected data.
 ##
 ## Input argument:
 ## @itemize @bullet
 ## @item
-## @var{x} : a @code{n}-by-@code{p} data matrix
+## @var{x} : a @math{NxD} data matrix
 ## @end itemize
 ##
-## Pair arguments:
+## The following @var{Name}, @var{Value} pair arguments can be used:
 ## @itemize @bullet
 ## @item
-## @code{Algorithm} : the algorithm to use, it can be either @code{eig},
-## for eigenvalue decomposition, or @code{svd} (default), for singular value
-## decomposition
+## @qcode{"Algorithm"} defines the algorithm to use:
+## @itemize
+## @item @qcode{"svd"} (default), for singular value decomposition
+## @item @qcode{"eig"} for eigenvalue decomposition
+## @end itemize
+##
 ## @item
-## @code{Centered} : boolean indicator for centering the observation data, it is
-## @code{true} by default
+## @qcode{"Centered"} is a boolean indicator for centering the observation data.
+## It is @code{true} by default.
 ## @item
-## @code{Economy} : boolean indicator for the economy size output, it is
-## @code{true} by default; @code{pca} returns only the elements of @var{latent}
-## that are not necessarily zero, and the corresponding columns of @var{coeff}
-## and @var{score}, that is, when @code{n <= p}, only the first @code{n - 1}
+##
+## @qcode{"Economy"} is a boolean indicator for the economy size output.  It is
+## @code{true} by default.  Hence, @code{pca} returns only the elements of
+## @var{latent} that are not necessarily zero, and the corresponding columns of
+## @var{coeff} and @var{score}, that is, when @math{N <= D}, only the first
+## @math{N - 1}.
+##
 ## @item
-## @code{NumComponents} : the number of components @code{k} to return, if
-## @code{k < p}, then only the first @code{k} columns of @var{coeff}
-## and @var{score} are returned
+## @qcode{"NumComponents"} defines the number of components @math{k} to return.
+## If @math{k < p}, then only the first @math{k} columns of @var{coeff} and
+## @var{score} are returned.
+##
 ## @item
-## @code{Rows} : action to take with missing values, it can be either
-## @code{complete} (default), missing values are removed before computation,
-## @code{pairwise} (only with algorithm @code{eig}), the covariance of rows with
-## missing data is computed using the available data, but the covariance matrix
-## could be not positive definite, which triggers the termination of @code{pca},
-## @code{complete}, missing values are not allowed, @code{pca} terminates with
-## an error if there are any
+## @qcode{"Rows"} defines how to handle missing values:
+## @itemize
+## @item @qcode{"complete"} (default), missing values are removed before
+## computation.
+## @item @qcode{"pairwise"} (only valid when @qcode{"Algorithm"} is
+## @qcode{"eig"}), the covariance of rows with missing data is computed using
+## the available data, but the covariance matrix could be not positive definite,
+## which triggers the termination of @code{pca}.
+## @item @qcode{"complete"}, missing values are not allowed, @code{pca}
+## terminates with an error if there are any.
+## @end itemize
+##
 ## @item
-## @code{Weights} : observation weights, it is a vector of positive values of
-## length @code{n}
+## @qcode{"Weights"} defines observation weights as a vector of positive values
+## of length @math{N}.
+##
 ## @item
-## @code{VariableWeights} : variable weights, it can be either a vector of
-## positive values of length @code{p} or the string @code{variance} to use the
-## sample variance as weights
+## @qcode{"VariableWeights"} defines variable weights:
+## @itemize
+## @item a @var{vector} of positive values of length @math{D}.
+## @item the string @qcode{"variance"} to use the sample variance as weights.
+## @end itemize
 ## @end itemize
 ##
 ## Return values:
 ## @itemize @bullet
 ## @item
-## @var{coeff} : the principal component coefficients, a @code{p}-by-@code{p}
+## @var{coeff} : the principal component coefficients, a @math{DxD}
 ## transformation matrix
 ## @item
 ## @var{score} : the principal component scores, the representation of @var{x}
@@ -96,12 +111,12 @@
 ## associated options 'Coeff0', 'Score0', and 'Options' are not yet implemented
 ##
 ## @subheading References
-##
 ## @enumerate
 ## @item
 ## Jolliffe, I. T., Principal Component Analysis, 2nd Edition, Springer, 2002
-##
 ## @end enumerate
+##
+## @seealso{barttest, factoran, pcacov, pcares}
 ## @end deftypefn
 
 ## BUGS:
@@ -111,13 +126,13 @@
 ## -- can change isnan to ismissing once the latter is implemented in Octave
 ## -- change mystd to std and remove the helper function mystd once weighting is available in the Octave function
 
-function [coeff, score, latent, tsquared, explained, mu] = pca (X, varargin)
+function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
 
   if (nargin < 1)
      print_usage ();
   endif
 
-  [nobs, nvars] = size (X);
+  [nobs, nvars] = size (x);
 
   ## default options
   optAlgorithmS = "svd";
@@ -211,7 +226,7 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (X, varargin)
           case "pairwise"
             optRowsB = true;
           case "all"
-            if (any (isnan (X)))
+            if (any (isnan (x)))
               error (["pca: when all rows are requested the dataset cannot"...
                       " include NaN values"]);
             endif
@@ -236,12 +251,12 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (X, varargin)
                 "set to 'pairwise'"]);
     endif
 
-    TF = isnan (X);
+    TF = isnan (x);
     missingRows = zeros (nobs, 1);
     nmissing = 0;
   else
     ## "complete": remove all the rows with missing values
-    TF = isnan (X);
+    TF = isnan (x);
     missingRows = any (TF, 2);
     nmissing = sum (missingRows);
   endif
@@ -253,32 +268,32 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (X, varargin)
   if (optCenteredB)
     if (isempty (optWeights) && nmissing == 0 && ! optRowsB)
       ## no weights and no missing values
-      mu = mean (X);
+      mu = mean (x);
     elseif (nmissing == 0 && ! optRowsB)
       ## weighted observations: some observations are more valuable, i.e. they
       ## can be trusted more
-      mu = sum (optWeights .* X) ./ sum (optWeights);
+      mu = sum (optWeights .* x) ./ sum (optWeights);
     else
       ## missing values: the mean is computed column by column
       mu = zeros (1, nvars);
 
       if (isempty (optWeights))
         for iter = 1 : nvars
-          mu(iter) = mean (X(find (TF(:, iter) == 0), iter));
+          mu(iter) = mean (x(find (TF(:, iter) == 0), iter));
         endfor
       else
         ## weighted mean with missing data
         for iter = 1 : nvars
-          mu(iter) =  sum (X(find (TF(:, iter) == 0), iter) .* ...
+          mu(iter) =  sum (x(find (TF(:, iter) == 0), iter) .* ...
                           optWeights(find (TF(:, iter) == 0))) ./ ...
                       sum (optWeights(find (TF(:, iter) == 0)));
         endfor
       endif
     endif
 
-    Xc = X - mu;
+    Xc = x - mu;
   else
-    Xc = X;
+    Xc = x;
 
     ## The mean of the variables of the original dataset:
     ## return zero if the dataset is not centered
@@ -290,12 +305,12 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (X, varargin)
     if (ischar (optVariableWeights))
       if (isempty (optWeights))
         sqrtBias = 1; # see below
-        optVariableWeights = std (X);
+        optVariableWeights = std (x);
       else
         ## unbiased variance estimation: the bias when using reliability weights
         ## is 1 - var(weights) / std(weigths)^2
         sqrtBias = sqrt (1 - (sumsq (optWeights) / sum (optWeights) ^ 2));
-        optVariableWeights = mystd (X, optWeights) / sqrtBias;
+        optVariableWeights = mystd (x, optWeights) / sqrtBias;
       endif
     endif
     Xc = Xc ./ optVariableWeights;
@@ -405,7 +420,7 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (X, varargin)
       dof = size (Xc(ridcs,:), 1);
     endif
 
-    ## This is the same as the eigenvalues of the covariance matrix of X
+    ## This is the same as the eigenvalues of the covariance matrix of x
     if (strcmp (optAlgorithmS, "eig"))
       latent = diag (S, 0);
     else
