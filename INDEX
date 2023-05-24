@@ -252,6 +252,7 @@ Regression
  princomp
  regress
  regress_gp
+ ridge
  stepwisefit
 Transforms
  logit
