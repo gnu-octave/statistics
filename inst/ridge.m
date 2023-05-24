@@ -22,7 +22,6 @@
 ## @deftypefnx {statistics} {@var{b} =} ridge (@var{y}, @var{X}, @var{alpha}, @var{flag})
 ##
 ## Here,
-##
 ## Arguments are :
 ##
 ## @itemize
@@ -147,7 +146,6 @@ endfunction
 %! load acetylene
 %!
 %! X = [x1 x2 x3];
-%!
 %!
 %! x0 = ones(16,1);
 %! x1x2 = x1 .* x2;
