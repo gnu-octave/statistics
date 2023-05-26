@@ -52,7 +52,7 @@
 ## Further information about Ridge regression can be found at
 ## @url{https://en.wikipedia.org/wiki/Ridge_regression}
 ##
-## @seealso {lasso, stepwisefit, regress}
+## @seealso{lasso, stepwisefit, regress}
 ## @end deftypefn
 
 function b = ridge (y, X, k, scaled)
