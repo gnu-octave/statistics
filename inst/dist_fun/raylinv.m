@@ -23,7 +23,7 @@
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
 ## the Rayleigh distribution with scale parameter @var{sigma}.  The size of
-## @var{p} is the common size of @var{x} and @var{sigma}.  A scalar input
+## @var{x} is the common size of @var{p} and @var{sigma}.  A scalar input
 ## functions as a constant matrix of the same size as the other inputs.
 ##
 ## Further information about the Rayleigh distribution can be found at

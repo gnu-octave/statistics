@@ -23,25 +23,29 @@
 ##
 ## Inverse of the Student's T cumulative distribution function (iCDF).
 ##
-## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## at @var{p} of the Student's T distribution with @var{df} degrees of freedom.
-##
-## The size of @var{p} is the common size of @var{x} and @var{df}. A scalar
-## input functions as a constant matrix of the same size as the other input.
+## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
+## the Student's T distribution with @var{df} degrees of freedom.  The size of
+## @var{x} is the common size of @var{x} and @var{df}. A scalar input functions
+## as a constant matrix of the same size as the other input.
 ##
 ## This function is analogous to looking in a table for the t-value of a
 ## single-tailed distribution.  For very large @var{df} (>10000), the inverse of
 ## the standard normal distribution is used.
+##
+## Further information about the Student's T distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Student%27s_t-distribution}
 ##
 ## @seealso{tcdf, tpdf, trnd, tstat}
 ## @end deftypefn
 
 function x = tinv (p, df)
 
-  if (nargin != 2)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 2)
+    error ("tinv: function called with too few input arguments.");
   endif
 
+  ## Check for common size of P and DF
   if (! isscalar (p) || ! isscalar (df))
     [retval, p, df] = common_size (p, df);
     if (retval > 0)
@@ -49,10 +53,12 @@ function x = tinv (p, df)
     endif
   endif
 
+  ## Check for P and DF being reals
   if (iscomplex (p) || iscomplex (df))
     error ("tinv: P and DF must not be complex.");
   endif
 
+  ## Check for class type
   if (isa (p, "single") || isa (df, "single"))
     x = NaN (size (p), "single");
   else
@@ -88,7 +94,24 @@ function x = tinv (p, df)
 
 endfunction
 
+%!demo
+%! ## Plot various iCDFs from the Student's T distribution
+%! p = 0.001:0.001:0.999;
+%! x1 = tinv (p, 1);
+%! x2 = tinv (p, 2);
+%! x3 = tinv (p, 5);
+%! x4 = tinv (p, Inf);
+%! plot (p, x1, "-b", p, x2, "g", p, x3, "-r", p, x4, "-m")
+%! grid on
+%! xlim ([0, 1])
+%! ylim ([-5, 5])
+%! legend ({"df = 1", "df = 2", ...
+%!          "df = 5", 'df = \infty'}, "location", "northwest")
+%! title ("Student's T iCDF")
+%! xlabel ("probability")
+%! ylabel ("values in x")
 
+## Test output
 %!shared p
 %! p = [-1 0 0.5 1 2];
 %!assert (tinv (p, ones (1,5)), [NaN -Inf 0 Inf NaN])
@@ -102,10 +125,11 @@ endfunction
 %!assert (tinv ([p, NaN], single (1)), single ([NaN -Inf 0 Inf NaN NaN]), eps ("single"))
 
 ## Test input validation
-%!error tinv ()
-%!error tinv (1)
-%!error tinv (1,2,3)
-%!error tinv (ones (3), ones (2))
-%!error tinv (ones (2), ones (3))
-%!error tinv (i, 2)
-%!error tinv (2, i)
+%!error<tinv: function called with too few input arguments.> tinv ()
+%!error<tinv: function called with too few input arguments.> tinv (1)
+%!error<tinv: P and DF must be of common size or scalars.> ...
+%! tinv (ones (3), ones (2))
+%!error<tinv: P and DF must be of common size or scalars.> ...
+%! tinv (ones (2), ones (3))
+%!error<tinv: P and DF must not be complex.> tinv (i, 2)
+%!error<tinv: P and DF must not be complex.> tinv (2, i)
