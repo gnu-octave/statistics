@@ -40,7 +40,7 @@
 ## Further information about the geometric distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Geometric_distribution}
 ##
-## @seealso{geocdf, geoinv, geopdf, geostat}
+## @seealso{geocdf, geoinv, geopdf, geofit, geostat}
 ## @end deftypefn
 
 function r = geornd (ps, varargin)

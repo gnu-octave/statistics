@@ -19,57 +19,41 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{p} =} unifcdf (@var{x})
-## @deftypefnx {statistics} {@var{p} =} unifcdf (@var{x}, @var{a})
-## @deftypefnx {statistics} {@var{p} =} unifcdf (@var{x}, @var{a}, @var{b})
-## @deftypefnx {statistics} {@var{p} =} unifcdf (@dots{}, @qcode{"upper"})
+## @deftypefn  {statistics} {@var{p} =} unifcdf (@var{x}, @var{a}, @var{b})
+## @deftypefnx {statistics} {@var{p} =} unifcdf (@var{x}, @var{a}, @var{b}, @qcode{"upper"})
 ##
-## Uniform cumulative distribution function (CDF).
+## Continuous uniform cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the uniform distribution on the interval [@var{a},
-## @var{b}].  The size of @var{p} is the common size of the input arguments.
-## A scalar input functions as a constant matrix of the same size as the other
-## inputs.
+## (CDF) of the continuous uniform distribution on the interval @qcode{[@var{a},
+## @var{b}]}.  The size of @var{p} is the common size of @var{x}, @var{a}, and
+## @var{b}.  A scalar input functions as a constant matrix of the same size as
+## the other inputs.
 ##
-## Default values are @var{a} = 0, @var{b} = 1.
+## @code{[@dots{}] = unifcdf (@var{x}, @var{a}, @var{b}, "upper")} computes the
+## upper tail probability of the continuous uniform distribution with parameters
+## @var{a}, and @var{b}, at the values in @var{x}.
 ##
-## @code{[@dots{}] = unifcdf (@dots{}, "upper")} computes the upper tail
-## probability of the lognormal distribution.
+## Further information about the continuous uniform distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Continuous_uniform_distribution}
 ##
-## @seealso{unifinv, unifpdf, unifrnd, unifstat}
+## @seealso{unifinv, unifpdf, unifrnd, unifit, unifstat}
 ## @end deftypefn
 
-function p = unifcdf (x, varargin)
+function p = unifcdf (x, a, b, uflag)
 
   ## Check for valid number of input arguments
-  if (nargin < 1 || nargin > 4)
-    error ("unifcdf: invalid number of input arguments.");
+  if (nargin < 3)
+    error ("unifcdf: function called with too few input arguments.");
   endif
 
   ## Check for "upper" flag
-  if (nargin > 1 && strcmpi (varargin{end}, "upper"))
+  if (nargin > 3 && strcmpi (uflag, "upper"))
     uflag = true;
-    varargin(end) = [];
-  elseif (nargin > 1 && ischar (varargin{end}) && ...
-                      ! strcmpi (varargin{end}, "upper"))
-    error ("unifcdf: invalid argument for upper tail.");
-  elseif (nargin > 3 && ! strcmpi (varargin{end}, "upper"))
+  elseif (nargin > 3  && ! strcmpi (uflag, "upper"))
     error ("unifcdf: invalid argument for upper tail.");
   else
     uflag = false;
-  endif
-
-  ## Get extra arguments (if they exist) or add defaults
-  if (numel (varargin) > 0)
-    a = varargin{1};
-  else
-    a = 0;
-  endif
-  if (numel (varargin) > 1)
-    b = varargin{2};
-  else
-    b = 1;
   endif
 
   ## Check for common size of X, A, and B
@@ -80,19 +64,19 @@ function p = unifcdf (x, varargin)
     endif
   endif
 
-  ## Check for X and SIGMA being reals
+  ## Check for X, A, and B being reals
   if (iscomplex (x) || iscomplex (a) || iscomplex (b))
     error ("unifcdf: X, A, and B must not be complex.");
   endif
 
-  ## Check for appropriate class
+  ## Check for class type
   if (isa (x, "single") || isa (a, "single") || isa (b, "single"))
     p = zeros (size (x), "single");
   else
     p = zeros (size (x));
   endif
 
-  ## Calculate Rayleigh CDF for valid parameter and data range
+  ## Calculate continuous uniform CDF for valid parameter and data range
   k = find(x > a & x < b & a < b);
   if (uflag)
     p(x <= a & a < b) = 1;
@@ -114,8 +98,22 @@ function p = unifcdf (x, varargin)
 
 endfunction
 
+%!demo
+%! ## Plot various CDFs from the continuous uniform distribution
+%! x = 0:0.1:10;
+%! p1 = unifcdf (x, 2, 5);
+%! p2 = unifcdf (x, 3, 9);
+%! plot (x, p1, "-b", x, p2, "-g")
+%! grid on
+%! xlim ([0, 10])
+%! ylim ([0, 1])
+%! legend ({"a = 2, b = 5", "a = 3, b = 9"}, "location", "southeast")
+%! title ("Continuous uniform CDF")
+%! xlabel ("values in x")
+%! ylabel ("probability")
 
-%!shared x,y
+## Test output
+%!shared x, y
 %! x = [-1 0 0.5 1 2] + 1;
 %! y = [0 0 0.5 1 1];
 %!assert (unifcdf (x, ones (1,5), 2*ones (1,5)), y)
@@ -138,12 +136,17 @@ endfunction
 %!assert (unifcdf ([x, NaN], 1, single (2)), single ([y, NaN]))
 
 ## Test input validation
-%!error unifcdf ()
-%!error unifcdf (1, 2, 3, 4)
-%!error unifcdf (1, 2, 3,"upper", 4)
-%!error unifcdf (ones (3), ones (2), ones (2))
-%!error unifcdf (ones (2), ones (3), ones (2))
-%!error unifcdf (ones (2), ones (2), ones (3))
-%!error unifcdf (i, 2, 2)
-%!error unifcdf (2, i, 2)
-%!error unifcdf (2, 2, i)
+%!error<unifcdf: function called with too few input arguments.> unifcdf ()
+%!error<unifcdf: function called with too few input arguments.> unifcdf (1)
+%!error<unifcdf: function called with too few input arguments.> unifcdf (1, 2)
+%!error<unifcdf: invalid argument for upper tail.> unifcdf (1, 2, 3, 4)
+%!error<unifcdf: invalid argument for upper tail.> unifcdf (1, 2, 3, "tail")
+%!error<unifcdf: X, A, and B must be of common size or scalars.> ...
+%! unifcdf (ones (3), ones (2), ones (2))
+%!error<unifcdf: X, A, and B must be of common size or scalars.> ...
+%! unifcdf (ones (2), ones (3), ones (2))
+%!error<unifcdf: X, A, and B must be of common size or scalars.> ...
+%! unifcdf (ones (2), ones (2), ones (3))
+%!error<unifcdf: X, A, and B must not be complex.> unifcdf (i, 2, 2)
+%!error<unifcdf: X, A, and B must not be complex.> unifcdf (2, i, 2)
+%!error<unifcdf: X, A, and B must not be complex.> unifcdf (2, 2, i)

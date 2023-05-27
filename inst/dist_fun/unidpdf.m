@@ -40,7 +40,7 @@
 ## Further information about the discrete uniform distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Discrete_uniform_distribution}
 ##
-## @seealso{unidcdf, unidinv, unidrnd, unidstat}
+## @seealso{unidcdf, unidinv, unidrnd, unidfit, unidstat}
 ## @end deftypefn
 
 function y = unidpdf (x, N)
@@ -88,7 +88,7 @@ endfunction
 %! xlim ([0, 10])
 %! ylim ([0, 0.25])
 %! legend ({"N = 5", "N = 9"}, "location", "northeast")
-%! title ("Student's T PDF")
+%! title ("Descrete uniform PDF")
 %! xlabel ("values in x")
 %! ylabel ("density")
 

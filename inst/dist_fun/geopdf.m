@@ -32,7 +32,7 @@
 ## Further information about the geometric distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Geometric_distribution}
 ##
-## @seealso{geocdf, geoinv, geornd, geostat}
+## @seealso{geocdf, geoinv, geornd, geofit, geostat}
 ## @end deftypefn
 
 function y = geopdf (x, ps)

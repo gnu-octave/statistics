@@ -40,7 +40,7 @@
 ## Further information about the discrete uniform distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Discrete_uniform_distribution}
 ##
-## @seealso{unidcdf, unidpdf, unidrnd, unidstat}
+## @seealso{unidcdf, unidpdf, unidrnd, unidfit, unidstat}
 ## @end deftypefn
 
 function x = unidinv (p, N)

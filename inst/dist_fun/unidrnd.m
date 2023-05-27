@@ -30,7 +30,8 @@
 ## from the discrete uniform distribution with parameter @var{N}, which
 ## corresponds to the maximum observable value.  @code{unidrnd} assumes the
 ## integer values in the range @math{[1,N]} with equal probability.  The size of
-## @var{r} is the size of @var{N}.
+## @var{r} is the size of @var{N}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
 ##
 ## The maximum observable values in @var{N} must be positive integers, otherwise
 ## @qcode{NaN} is returned.
@@ -48,7 +49,7 @@
 ## Further information about the discrete uniform distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Discrete_uniform_distribution}
 ##
-## @seealso{unidcdf, unidinv, unidrnd, unidstat}
+## @seealso{unidcdf, unidinv, unidrnd, unidfit, unidstat}
 ## @end deftypefn
 
 function r = unidrnd (N, varargin)

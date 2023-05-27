@@ -31,8 +31,9 @@
 ##
 ## @code{@var{r} = trnd (@var{df})} returns an array of random numbers chosen
 ## from the Student's T distribution with @var{df} degrees of freedom.  The size
-## of @var{r} is the size of @var{df}.  @var{df} must be a finite real number
-## greater than 0, otherwise NaN is returned.
+## of @var{r} is the size of @var{df}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.  @var{df} must be a finite real
+## number greater than 0, otherwise NaN is returned.
 ##
 ## When called with a single size argument, @code{trnd} returns a square matrix
 ## with the dimension specified.  When called with more than one scalar

@@ -25,29 +25,31 @@
 ## @deftypefnx {statistics} {@var{r} =} unifrnd (@var{a}, @var{b}, @var{rows}, @var{cols}, @dots{})
 ## @deftypefnx {statistics} {@var{r} =} unifrnd (@var{a}, @var{b}, [@var{sz}])
 ##
-## Random arrays from the uniform distribution.
+## Random arrays from the continuous uniform distribution.
 ##
 ## @code{@var{r} = unifrnd (@var{a}, @var{b})} returns an array of random
-## numbers chosen from a uniform distribution on the interval [@var{a},
-## @var{b}].  The size of @var{y} is the common size of the input arguments.
-## A scalar input functions as a constant matrix of the same size as the other
-## inputs.
+## numbers chosen from the continuous uniform distribution on the interval
+## @qcode{[@var{a}, @var{b}]}.  The size of @var{r} is the common size of
+## @var{a} and @var{b}.  A scalar input functions as a constant matrix of the
+## same size as the other inputs.
 ##
-## When called with a single size argument, return a square matrix with
-## the dimension specified.  When called with more than one scalar argument the
-## first two arguments are taken as the number of rows and columns and any
-## further arguments specify additional matrix dimensions.  The size may also
-## be specified with a vector of dimensions @var{sz}.
+## When called with a single size argument, @code{unifrnd} returns a square
+## matrix with the dimension specified.  When called with more than one scalar
+## argument, the first two arguments are taken as the number of rows and columns
+## and any further arguments specify additional matrix dimensions.  The size may
+## also be specified with a row vector of dimensions, @var{sz}.
 ##
-## @seealso{unifcdf, unifinv, unifpdf, unifstat}
+## @seealso{unifcdf, unifinv, unifpdf, unifit, unifstat}
 ## @end deftypefn
 
 function r = unifrnd (a, b, varargin)
 
+  ## Check for valid number of input arguments
   if (nargin < 2)
-    print_usage ();
+    error ("unifrnd: function called with too few input arguments.");
   endif
 
+  ## Check for common size of A and B
   if (! isscalar (a) || ! isscalar (b))
     [retval, a, b] = common_size (a, b);
     if (retval > 0)
@@ -55,32 +57,39 @@ function r = unifrnd (a, b, varargin)
     endif
   endif
 
+  ## Check for A and B being reals
   if (iscomplex (a) || iscomplex (b))
     error ("unifrnd: A and B must not be complex.");
   endif
 
+  ## Parse and check SIZE arguments
   if (nargin == 2)
     sz = size (a);
   elseif (nargin == 3)
-    if (isscalar (varargin{1}) && varargin{1} >= 0)
+    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+                               && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0))
+    elseif (isrow (varargin{1}) && all (varargin{1} >= 0) ...
+                                && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
-    else
-      error (strcat (["unifrnd: dimension vector must be a row vector"], ...
+    elseif
+      error (strcat (["unifrnd: SZ must be a scalar or a row vector"], ...
                      [" of non-negative integers."]));
     endif
   elseif (nargin > 3)
-    if (any (cellfun (@(x) (! isscalar (x) || x < 0), varargin)))
+    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
+    if (any (posint))
       error ("unifrnd: dimensions must be non-negative integers.");
     endif
     sz = [varargin{:}];
   endif
 
+  ## Check that parameters match requested dimensions in size
   if (! isscalar (a) && ! isequal (size (a), sz))
-    error ("unifrnd: A and B must be scalar or of size SZ.");
+    error ("unifrnd: A and B must be scalars or of size SZ.");
   endif
 
+  ## Check for class type
   if (isa (a, "single") || isa (b, "single"))
     cls = "single";
   else
@@ -102,40 +111,53 @@ function r = unifrnd (a, b, varargin)
 
 endfunction
 
-
-%!assert (size (unifrnd (1,2)), [1, 1])
-%!assert (size (unifrnd (ones (2,1), 2)), [2, 1])
-%!assert (size (unifrnd (ones (2,2), 2)), [2, 2])
-%!assert (size (unifrnd (1, 2*ones (2,1))), [2, 1])
-%!assert (size (unifrnd (1, 2*ones (2,2))), [2, 2])
-%!assert (size (unifrnd (1, 2, 3)), [3, 3])
-%!assert (size (unifrnd (1, 2, [4 1])), [4, 1])
-%!assert (size (unifrnd (1, 2, 4, 1)), [4, 1])
+## Test output
+%!assert (size (unifrnd (1, 1)), [1 1])
+%!assert (size (unifrnd (1, ones (2,1))), [2, 1])
+%!assert (size (unifrnd (1, ones (2,2))), [2, 2])
+%!assert (size (unifrnd (ones (2,1), 1)), [2, 1])
+%!assert (size (unifrnd (ones (2,2), 1)), [2, 2])
+%!assert (size (unifrnd (1, 1, 3)), [3, 3])
+%!assert (size (unifrnd (1, 1, [4, 1])), [4, 1])
+%!assert (size (unifrnd (1, 1, 4, 1)), [4, 1])
+%!assert (size (unifrnd (1, 1, 4, 1, 5)), [4, 1, 5])
+%!assert (size (unifrnd (1, 1, 0, 1)), [0, 1])
+%!assert (size (unifrnd (1, 1, 1, 0)), [1, 0])
+%!assert (size (unifrnd (1, 1, 1, 2, 0, 5)), [1, 2, 0, 5])
 
 ## Test class of input preserved
-%!assert (class (unifrnd (1, 2)), "double")
-%!assert (class (unifrnd (single (1), 2)), "single")
-%!assert (class (unifrnd (single ([1 1]), 2)), "single")
-%!assert (class (unifrnd (1, single (2))), "single")
-%!assert (class (unifrnd (1, single ([2 2]))), "single")
+%!assert (class (unifrnd (1, 1)), "double")
+%!assert (class (unifrnd (1, single (1))), "single")
+%!assert (class (unifrnd (1, single ([1, 1]))), "single")
+%!assert (class (unifrnd (single (1), 1)), "single")
+%!assert (class (unifrnd (single ([1, 1]), 1)), "single")
 
 ## Test input validation
-%!error unifrnd ()
-%!error unifrnd (1)
-%!error unifrnd (ones (3), ones (2))
-%!error unifrnd (ones (2), ones (3))
-%!error unifrnd (i, 2)
-%!error unifrnd (2, i)
-%!error unifrnd (1,2, -1)
-%!error unifrnd (1,2, ones (2))
-%!error unifrnd (1, 2, [2 -1 2])
-%!error unifrnd (1,2, 1, ones (2))
-%!error unifrnd (1,2, 1, -1)
-%!error unifrnd (ones (2,2), 2, 3)
-%!error unifrnd (ones (2,2), 2, [3, 2])
-%!error unifrnd (ones (2,2), 2, 2, 3)
-
-%!assert (unifrnd (0,0), 0)
-%!assert (unifrnd (1,1), 1)
-%!assert (unifrnd (1,0), NaN)
-
+%!error<unifrnd: function called with too few input arguments.> unifrnd ()
+%!error<unifrnd: function called with too few input arguments.> unifrnd (1)
+%!error<unifrnd: A and B must be of common size or scalars.> ...
+%! unifrnd (ones (3), ones (2))
+%!error<unifrnd: A and B must be of common size or scalars.> ...
+%! unifrnd (ones (2), ones (3))
+%!error<unifrnd: A and B must not be complex.> unifrnd (i, 2, 3)
+%!error<unifrnd: A and B must not be complex.> unifrnd (1, i, 3)
+%!error<unifrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! unifrnd (1, 2, -1)
+%!error<unifrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! unifrnd (1, 2, 1.2)
+%!error<unifrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! unifrnd (1, 2, ones (2))
+%!error<unifrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! unifrnd (1, 2, [2 -1 2])
+%!error<unifrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%! unifrnd (1, 2, [2 0 2.5])
+%!error<unifrnd: dimensions must be non-negative integers.> ...
+%! unifrnd (1, 2, 2, -1, 5)
+%!error<unifrnd: dimensions must be non-negative integers.> ...
+%! unifrnd (1, 2, 2, 1.5, 5)
+%!error<unifrnd: A and B must be scalars or of size SZ.> ...
+%! unifrnd (2, ones (2), 3)
+%!error<unifrnd: A and B must be scalars or of size SZ.> ...
+%! unifrnd (2, ones (2), [3, 2])
+%!error<unifrnd: A and B must be scalars or of size SZ.> ...
+%! unifrnd (2, ones (2), 3, 2)
