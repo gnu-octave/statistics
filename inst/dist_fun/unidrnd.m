@@ -135,7 +135,7 @@ endfunction
 
 ## Test input validation
 %!error<unidrnd: function called with too few input arguments.> unidrnd ()
-%!error<unidrnd: DF must not be complex.> unidrnd (i)
+%!error<unidrnd: N must not be complex.> unidrnd (i)
 %!error<unidrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
 %! unidrnd (1, -1)
 %!error<unidrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
@@ -152,6 +152,6 @@ endfunction
 %! unidrnd (1, 2, -1, 5)
 %!error<unidrnd: dimensions must be non-negative integers.> ...
 %! unidrnd (1, 2, 1.5, 5)
-%!error<unidrnd: DF must be scalar or of size SZ.> unidrnd (ones (2,2), 3)
-%!error<unidrnd: DF must be scalar or of size SZ.> unidrnd (ones (2,2), [3, 2])
-%!error<unidrnd: DF must be scalar or of size SZ.> unidrnd (ones (2,2), 2, 3)
+%!error<unidrnd: N must be scalar or of size SZ.> unidrnd (ones (2,2), 3)
+%!error<unidrnd: N must be scalar or of size SZ.> unidrnd (ones (2,2), [3, 2])
+%!error<unidrnd: N must be scalar or of size SZ.> unidrnd (ones (2,2), 2, 3)
