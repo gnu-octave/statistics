@@ -233,19 +233,19 @@ endfunction
 
 %!test
 %! A = rand (1000,1);
-%! N = normalise_distribution (A, "unifcdf");
+%! N = normalise_distribution (A, {@(x)(unifcdf (x, 0, 1))});
 %! assert (mean (vec (N)), 0, 0.2)
 %! assert (std (vec (N)), 1, 0.1)
 
 %!test
 %! A = [rand(1000,1), randn(1000, 1)];
-%! N = normalise_distribution (A, {"unifcdf", "normcdf"});
+%! N = normalise_distribution (A, {@(x)(unifcdf (x, 0, 1)), @normcdf});
 %! assert (mean (N), [0, 0], 0.2)
 %! assert (std (N), [1, 1], 0.1)
 
 %!test
 %! A = [rand(1000,1), randn(1000, 1), exprnd(1, 1000, 1)]';
-%! N = normalise_distribution  (A, {@unifcdf; @normcdf; @(x)(expcdf (x, 1))}, 2);
+%! N = normalise_distribution  (A, {@(x)(unifcdf (x, 0, 1)); @normcdf; @(x)(expcdf (x, 1))}, 2);
 %! assert (mean (N, 2), [0, 0, 0]', 0.2);
 %! assert (std (N, [], 2), [1, 1, 1]', 0.1);
 
@@ -257,4 +257,4 @@ endfunction
 
 %!test
 %!error normalise_distribution (zeros (3, 4), ...
-%! {@unifcdf; @normcdf; @(x)(expcdf (x,1))});
+%! {@(x)(unifcdf (x, 0, 1)); @normcdf; @(x)(expcdf (x,1))});
