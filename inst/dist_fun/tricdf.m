@@ -25,14 +25,14 @@
 ## Triangular cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the triangular distribution with parameters @var{a},
-## @var{b}, and @var{c} on the interval @qcode{[@var{a}, @var{b}]}.  The size of
-## @var{p} is the common size of the input arguments.  A scalar input functions
-## as a constant matrix of the same size as the other inputs.
+## (CDF) of the triangular distribution with parameters @var{a}, @var{b}, and
+## @var{c} on the interval @qcode{[@var{a}, @var{b}]}.  The size of @var{p} is
+## the common size of the input arguments.  A scalar input functions as a
+## constant matrix of the same size as the other inputs.
 ##
 ## @code{@var{p} = tricdf (@var{x}, @var{a}, @var{b}, @var{c}, "upper")}
 ## computes the upper tail probability of the triangular distribution with
-## parameters @var{a}, @var{b}, and @var{c} at the values in @var{x}.
+## parameters @var{a}, @var{b}, and @var{c}, at the values in @var{x}.
 ##
 ## Further information about the triangular distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Triangular_distribution}
@@ -120,7 +120,7 @@ endfunction
 %! xlabel ("values in x")
 %! ylabel ("probability")
 
-## Test results
+## Test output
 %!shared x, y
 %! x = [-1, 0, 0.1, 0.5, 0.9, 1, 2] + 1;
 %! y = [0, 0, 0.02, 0.5, 0.98, 1 1];

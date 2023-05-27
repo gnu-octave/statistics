@@ -19,28 +19,40 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{p} =} unidcdf (@var{x}, @var{df})
-## @deftypefnx {statistics} {@var{p} =} unidcdf (@var{x}, @var{df}, @qcode{"upper"})
+## @deftypefn  {statistics} {@var{p} =} unidcdf (@var{x}, @var{N})
+## @deftypefnx {statistics} {@var{p} =} unidcdf (@var{x}, @var{N}, @qcode{"upper"})
 ##
 ## Discrete uniform cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of a discrete uniform distribution which assumes the integer
-## values 1--@var{df} with equal probability.  The size of @var{p} is the common
-## size of @var{x} and @var{df}.  A scalar input functions as a constant matrix
-## of the same size as the other inputs.
+## (CDF) of a discrete uniform distribution with parameter @var{N}, which
+## corresponds to the maximum observable value.  @code{unidcdf} assumes the
+## integer values in the range @math{[1,N]} with equal probability.  The size of
+## @var{p} is the common size of @var{x} and @var{N}.  A scalar input functions
+## as a constant matrix of the same size as the other inputs.
 ##
-## @code{[@dots{}] = logncdf (@dots{}, "upper")} computes the upper tail
-## probability of the lognormal distribution.
+## The maximum observable values in @var{N} must be positive integers, otherwise
+## @qcode{NaN} is returned.
+##
+## @code{[@dots{}] = unidcdf (@var{x}, @var{N}, "upper")} computes the upper
+## tail probability of the discrete uniform distribution with maximum observable
+## value @var{N}, at the values in @var{x}.
+##
+## Warning: The underlying implementation uses the double class and will only
+## be accurate for @var{N} < @code{flintmax} (@w{@math{2^{53}}} on
+## IEEE 754 compatible systems).
+##
+## Further information about the discrete uniform distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Discrete_uniform_distribution}
 ##
 ## @seealso{unidinv, unidpdf, unidrnd, unidstat}
 ## @end deftypefn
 
-function p = unidcdf (x, df, uflag)
+function p = unidcdf (x, N, uflag)
 
   ## Check for valid number of input arguments
-  if (nargin < 2 || nargin > 3)
-    error ("unidcdf: invalid number of input arguments.");
+  if (nargin < 2)
+    error ("unidcdf: function called with too few input arguments.");
   endif
 
   ## Check for "upper" flag
@@ -52,54 +64,68 @@ function p = unidcdf (x, df, uflag)
     uflag = false;
   endif
 
-  ## Check for common size of X and DF
-  if (! isscalar (x) || ! isscalar (df))
-    [retval, x, df] = common_size (x, df);
+  ## Check for common size of X and N
+  if (! isscalar (x) || ! isscalar (N))
+    [retval, x, N] = common_size (x, N);
     if (retval > 0)
-      error ("unidcdf: X and DF must be of common size or scalars.");
+      error ("unidcdf: X and N must be of common size or scalars.");
     endif
   endif
 
-  ## Check for X and DF being reals
-  if (iscomplex (x) || iscomplex (df))
-    error ("unidcdf: X and DF must not be complex.");
+  ## Check for X and N being reals
+  if (iscomplex (x) || iscomplex (N))
+    error ("unidcdf: X and N must not be complex.");
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (df, "single"))
+  if (isa (x, "single") || isa (N, "single"))
     p = zeros (size (x), "single");
   else
     p = zeros (size (x));
   endif
 
-  ## Return 1 for X >= DF
-  p(x >= df) = 1;
+  ## Return 1 for X >= N
+  p(x >= N) = 1;
 
   ## Floor X
   xf = floor (x);
 
   ## Compute uniform discrete CDF
-  k = find (xf >= 1 & xf <= df);
+  k = find (xf >= 1 & xf <= N);
   if any(k)
-    p(k) = xf(k) ./ df(k);
+    p(k) = xf(k) ./ N(k);
   endif
 
-  ## Check for NaNs or floored DF <= 0
-  is_nan = isnan (x) | ! (df > 0 & df == fix (df));
+  ## Check for NaNs or floored N <= 0
+  is_nan = isnan (x) | ! (N > 0 & N == fix (N));
   if (any (is_nan(:)))
     p(is_nan) = NaN;
   endif
 
-  p(df < 1 | round(df) != df) = NaN;
+  p(N < 1 | round(N) != N) = NaN;
 
   if (uflag)  # Compute upper tail
-    p = 1 - unidcdf (x, df);
+    p = 1 - unidcdf (x, N);
   endif
 
 endfunction
 
+%!demo
+%! ## Plot various CDFs from the discrete uniform distribution
+%! x = 0:10;
+%! p1 = unidcdf (x, 5);
+%! p2 = unidcdf (x, 9);
+%! plot (x, p1, "*b", x, p2, "*g")
+%! grid on
+%! xlim ([0, 10])
+%! ylim ([0, 1])
+%! legend ({"N = 5", "N = 9"}, "location", "southeast")
+%! title ("Discrete uniform CDF")
+%! xlabel ("values in x")
+%! ylabel ("probability")
 
-%!shared x,y
+## Test output
+%!shared x, y
 %! x = [0 1 2.5 10 11];
 %! y = [0, 0.1 0.2 1.0 1.0];
 %!assert (unidcdf (x, 10*ones (1,5)), y)
@@ -115,11 +141,13 @@ endfunction
 %!assert (unidcdf ([x, NaN], single (10)), single ([y, NaN]))
 
 ## Test input validation
-%!error unidcdf ()
-%!error unidcdf (1)
-%!error unidcdf (1, 2, 3)
-%!error unidcdf (1, 2, "upper", 4)
-%!error unidcdf (ones (3), ones (2))
-%!error unidcdf (ones (2), ones (3))
-%!error unidcdf (i, 2)
-%!error unidcdf (2, i)
+%!error<unidcdf: function called with too few input arguments.> unidcdf ()
+%!error<unidcdf: function called with too few input arguments.> unidcdf (1)
+%!error<unidcdf: invalid argument for upper tail.> unidcdf (1, 2, 3)
+%!error<unidcdf: invalid argument for upper tail.> unidcdf (1, 2, "tail")
+%!error<unidcdf: X and N must be of common size or scalars.> ...
+%! unidcdf (ones (3), ones (2))
+%!error<unidcdf: X and N must be of common size or scalars.> ...
+%! unidcdf (ones (2), ones (3))
+%!error<unidcdf: X and N must not be complex.> unidcdf (i, 2)
+%!error<unidcdf: X and N must not be complex.> unidcdf (2, i)

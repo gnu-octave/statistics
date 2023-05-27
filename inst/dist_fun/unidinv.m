@@ -19,53 +19,78 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{x} =} unidinv (@var{p}, @var{df})
+## @deftypefn  {statistics} {@var{x} =} unidinv (@var{p}, @var{N})
 ##
 ## Inverse of the discrete uniform cumulative distribution function (iCDF).
 ##
-## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## at @var{p} of the discrete uniform distribution which assumes the integer
-## values 1--@var{df} with equal probability.  The size of @var{p} is the common
-## size of @var{x} and @var{df}.  A scalar input functions as a constant matrix
-## of the same size as the other inputs.
+## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
+## the discrete uniform distribution with parameter @var{N}, which corresponds
+## to the maximum observable value.  @code{unidinv} assumes the integer values
+## in the range @math{[1,N]} with equal probability.  The size of @var{x} is the
+## common size of @var{p} and @var{N}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
+##
+## The maximum observable values in @var{N} must be positive integers, otherwise
+## @qcode{NaN} is returned.
+##
+## Warning: The underlying implementation uses the double class and will only
+## be accurate for @var{N} < @code{flintmax} (@w{@math{2^{53}}} on
+## IEEE 754 compatible systems).
+##
+## Further information about the discrete uniform distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Discrete_uniform_distribution}
 ##
 ## @seealso{unidcdf, unidpdf, unidrnd, unidstat}
 ## @end deftypefn
 
-function x = unidinv (p, df)
+function x = unidinv (p, N)
 
   ## Check for valid number of input arguments
-  if (nargin != 2)
-    print_usage ();
+  if (nargin < 2)
+    error ("unidinv: function called with too few input arguments.");
   endif
 
-  ## Check for common size of X and DF
-  if (! isscalar (p) || ! isscalar (df))
-    [retval, p, df] = common_size (p, df);
+  ## Check for common size of P and N
+  if (! isscalar (p) || ! isscalar (N))
+    [retval, p, N] = common_size (p, N);
     if (retval > 0)
-      error ("unidcdf: P and DF must be of common size or scalars.");
+      error ("unidinv: P and N must be of common size or scalars.");
     endif
   endif
 
-  ## Check for X and DF being reals
-  if (iscomplex (p) || iscomplex (df))
-    error ("unidinv: P and DF must not be complex.");
+  ## Check for P and N being reals
+  if (iscomplex (p) || iscomplex (N))
+    error ("unidinv: P and N must not be complex.");
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (df, "single"))
+  if (isa (p, "single") || isa (N, "single"))
     x = NaN (size (p), "single");
   else
     x = NaN (size (p));
   endif
 
   ## For Matlab compatibility, unidinv(0) = NaN
-  k = (p > 0) & (p <= 1) & (df > 0 & df == fix (df));
-  x(k) = floor (p(k) .* df(k));
+  k = (p > 0) & (p <= 1) & (N > 0 & N == fix (N));
+  x(k) = floor (p(k) .* N(k));
 
 endfunction
 
+%!demo
+%! ## Plot various iCDFs from the discrete uniform distribution
+%! p = 0.001:0.001:0.999;
+%! x1 = unidinv (p, 5);
+%! x2 = unidinv (p, 9);
+%! plot (p, x1, "-b", p, x2, "-g")
+%! grid on
+%! xlim ([0, 1])
+%! ylim ([0, 10])
+%! legend ({"N = 5", "N = 9"}, "location", "northwest")
+%! title ("Discrete uniform iCDF")
+%! xlabel ("probability")
+%! ylabel ("values in x")
 
+## Test output
 %!shared p
 %! p = [-1 0 0.5 1 2];
 %!assert (unidinv (p, 10*ones (1,5)), [NaN NaN 5 10 NaN], eps)
@@ -79,10 +104,11 @@ endfunction
 %!assert (unidinv ([p, NaN], single (10)), single ([NaN NaN 5 10 NaN NaN]), eps)
 
 ## Test input validation
-%!error unidinv ()
-%!error unidinv (1)
-%!error unidinv (1,2,3)
-%!error unidinv (ones (3), ones (2))
-%!error unidinv (ones (2), ones (3))
-%!error unidinv (i, 2)
-%!error unidinv (2, i)
+%!error<unidinv: function called with too few input arguments.> unidinv ()
+%!error<unidinv: function called with too few input arguments.> unidinv (1)
+%!error<unidinv: P and N must be of common size or scalars.> ...
+%! unidinv (ones (3), ones (2))
+%!error<unidinv: P and N must be of common size or scalars.> ...
+%! unidinv (ones (2), ones (3))
+%!error<unidinv: P and N must not be complex.> unidinv (i, 2)
+%!error<unidinv: P and N must not be complex.> unidinv (2, i)

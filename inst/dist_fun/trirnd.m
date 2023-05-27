@@ -26,17 +26,17 @@
 ##
 ## Random arrays from the triangular distribution.
 ##
-## @code{@var{r} = raylrnd (@var{sigma})} returns an array of random numbers
+## @code{@var{r} = trirnd (@var{sigma})} returns an array of random numbers
 ## chosen from the triangular distribution with parameters @var{a}, @var{b}, and
 ## @var{c} on the interval [@var{a}, @var{b}].  The size of @var{r} is the
-## common size of the input arguments.  A scalar input functions as a constant
-## matrix of the same size as the other inputs.
+## common size of @var{a}, @var{b}, and @var{c}.  A scalar input functions as a
+## constant matrix of the same size as the other inputs.
 ##
-## When called with a single size argument, return a square matrix with
-## the dimension specified.  When called with more than one scalar argument the
-## first two arguments are taken as the number of rows and columns and any
-## further arguments specify additional matrix dimensions.  The size may also
-## be specified with a vector of dimensions @var{sz}.
+## When called with a single size argument, @code{trirnd} returns a square
+## matrix with the dimension specified.  When called with more than one scalar
+## argument, the first two arguments are taken as the number of rows and columns
+## and any further arguments specify additional matrix dimensions.  The size may
+## also be specified with a row vector of dimensions, @var{sz}.
 ##
 ## Further information about the triangular distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Triangular_distribution}

@@ -83,7 +83,7 @@ endfunction
 %! y2 = tpdf (x, 2);
 %! y3 = tpdf (x, 5);
 %! y4 = tpdf (x, Inf);
-%! plot (x, y1, "-b", x, y2, "g", x, y3, "-r", x, y4, "-m")
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-m")
 %! grid on
 %! xlim ([-5, 5])
 %! ylim ([0, 0.41])

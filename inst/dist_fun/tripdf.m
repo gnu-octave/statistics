@@ -24,10 +24,10 @@
 ## Triangular probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the triangular distribution with parameters @var{a}, @var{b},
-## and @var{c} on the interval @qcode{[@var{a}, @var{b}]}.  The size of @var{y}
-## is the common size of the input arguments.  A scalar input functions as a
-## constant matrix of the same size as the other inputs.
+## of the triangular distribution with parameters @var{a}, @var{b}, and @var{c}
+## on the interval @qcode{[@var{a}, @var{b}]}.  The size of @var{y} is the
+## common size of the input arguments.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
 ##
 ## Further information about the triangular distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Triangular_distribution}
@@ -96,7 +96,7 @@ endfunction
 %! xlabel ("values in x")
 %! ylabel ("probability")
 
-## Test results
+## Test output
 %!shared x, y, deps
 %! x = [-1, 0, 0.1, 0.5, 0.9, 1, 2] + 1;
 %! y = [0, 0, 0.4, 2, 0.4, 0, 0];

@@ -101,7 +101,7 @@ endfunction
 %! x2 = tinv (p, 2);
 %! x3 = tinv (p, 5);
 %! x4 = tinv (p, Inf);
-%! plot (p, x1, "-b", p, x2, "g", p, x3, "-r", p, x4, "-m")
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-m")
 %! grid on
 %! xlim ([0, 1])
 %! ylim ([-5, 5])

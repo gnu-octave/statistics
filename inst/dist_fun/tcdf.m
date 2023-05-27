@@ -177,7 +177,7 @@ endfunction
 %! p2 = tcdf (x, 2);
 %! p3 = tcdf (x, 5);
 %! p4 = tcdf (x, Inf);
-%! plot (x, p1, "-b", x, p2, "g", x, p3, "-r", x, p4, "-m")
+%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-m")
 %! grid on
 %! xlim ([-5, 5])
 %! ylim ([0, 1])
