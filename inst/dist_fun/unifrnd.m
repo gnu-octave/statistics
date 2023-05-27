@@ -39,6 +39,9 @@
 ## and any further arguments specify additional matrix dimensions.  The size may
 ## also be specified with a row vector of dimensions, @var{sz}.
 ##
+## Further information about the continuous uniform distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Continuous_uniform_distribution}
+##
 ## @seealso{unifcdf, unifinv, unifpdf, unifit, unifstat}
 ## @end deftypefn
 
