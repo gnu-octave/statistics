@@ -155,7 +155,7 @@ endfunction
 %! title ("Ridge Trace")
 %! legend ("x1", "x2", "x3", "x1x2", "x1x3", "x2x3")
 
-## Test input
+## Test output
 %!test
 %! b = ridge ([1 2 3 4]', [1 2 3 4; 2 3 4 5]', 1);
 %! assert (b, [0.5533; 0.5533], 1e-4);
