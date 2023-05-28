@@ -128,7 +128,8 @@ function b = ridge (y, X, k, scaled)
 endfunction
 
 %!demo
-%! ## Add some description here!!
+%! ## Perform ridge regression for a range of ridge parameters and observe
+%! ## how the coefficient estimates change based on the acetylene dataset.
 %!
 %! load acetylene
 %!
@@ -155,7 +156,12 @@ endfunction
 %! legend ("x1", "x2", "x3", "x1x2", "x1x3", "x2x3")
 
 ## Test input
-
+%!test
+%! b = ridge ([1 2 3 4]', [1 2 3 4; 2 3 4 5]', 1);
+%! assert (b, [0.5533; 0.5533], 1e-4);
+%!test
+%! b = ridge ([1 2 3 4]', [1 2 3 4; 2 3 4 5]', 2);
+%! assert (b, [0.4841; 0.4841], 1e-4);
 
 ## Test input validation
 %!error<ridge: function called with too few input arguments.> ridge (1)
