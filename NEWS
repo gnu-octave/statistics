@@ -29,6 +29,8 @@
 
  ** einstein (plotting function for the einstein tile)
 
+ ** geofit (similar functionality to MATLAB's mle)
+
  ** gumbelcdf
 
  ** gumbelfit (similar functionality to MATLAB's mle)
@@ -108,6 +110,10 @@
  ** rayllike (similar functionality to MATLAB's negloglik)
 
  ** ridge (fully Matlab compatible)
+
+ ** unidfit (similar functionality to MATLAB's mle)
+
+ ** unifit (similar functionality to MATLAB's mle)
 
  ** vminv (quantile function for the von Mises distribution)
 
