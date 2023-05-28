@@ -78,10 +78,12 @@
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the probability density function (PDF)
- at <var>x</var> of the Student&rsquo;s T distribution with <var>df</var> degrees of freedom.
+ of the Student&rsquo;s T distribution with <var>df</var> degrees of freedom.  The size
+ of <var>y</var> is the common size of <var>x</var> and <var>df</var>.  A scalar input
+ functions as a constant matrix of the same size as the other input.
 </p>
-<p> The size of <var>y</var> is the common size of <var>x</var> and <var>df</var>. A scalar
- input functions as a constant matrix of the same size as the other input.
+<p> Further information about the Student&rsquo;s T distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Student%27s_t-distribution">https://en.wikipedia.org/wiki/Student%27s_t-distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="tcdf.html">tcdf</a>, 
@@ -92,6 +94,52 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/tpdf.m">tpdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various PDFs from the Student's T distribution
+ x = -5:0.01:5;
+ y1 = tpdf (x, 1);
+ y2 = tpdf (x, 2);
+ y3 = tpdf (x, 5);
+ y4 = tpdf (x, Inf);
+ plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-m")
+ grid on
+ xlim ([-5, 5])
+ ylim ([0, 0.41])
+ legend ({"df = 1", "df = 2", ...
+          "df = 5", 'df = \infty'}, "location", "northeast")
+ title ("Student's T PDF")
+ xlabel ("values in x")
+ ylabel ("density")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/tpdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

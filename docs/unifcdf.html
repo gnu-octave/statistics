@@ -71,35 +71,79 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>unifcdf</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>unifcdf</b><i> (<var>x</var>, <var>a</var>)</i></dt>
 <dt><u>statistics:</u> <var>p</var> = <b>unifcdf</b><i> (<var>x</var>, <var>a</var>, <var>b</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>unifcdf</b><i> (&hellip;, <code>&quot;upper&quot;</code>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>unifcdf</b><i> (<var>x</var>, <var>a</var>, <var>b</var>, <code>&quot;upper&quot;</code>)</i></dt>
 </dl>
 
-<p> Uniform cumulative distribution function (CDF).
+<p> Continuous uniform cumulative distribution function (CDF).
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the cumulative distribution function
- (CDF) at <var>x</var> of the uniform distribution on the interval [<var>a</var>,
- <var>b</var>].  The size of <var>p</var> is the common size of the input arguments.
- A scalar input functions as a constant matrix of the same size as the other
- inputs.
+ (CDF) of the continuous uniform distribution on the interval <code>[<var>a</var>,
+ <var>b</var>]</code>.  The size of <var>p</var> is the common size of <var>x</var>, <var>a</var>, and
+ <var>b</var>.  A scalar input functions as a constant matrix of the same size as
+ the other inputs.
 </p>
-<p> Default values are <var>a</var> = 0, <var>b</var> = 1.
+<p> <code>[&hellip;] = unifcdf (<var>x</var>, <var>a</var>, <var>b</var>, &quot;upper&quot;)</code> computes the
+ upper tail probability of the continuous uniform distribution with parameters
+ <var>a</var>, and <var>b</var>, at the values in <var>x</var>.
 </p>
-<p> <code>[&hellip;] = unifcdf (&hellip;, &quot;upper&quot;)</code> computes the upper tail
- probability of the lognormal distribution.
+<p> Further information about the continuous uniform distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Continuous_uniform_distribution">https://en.wikipedia.org/wiki/Continuous_uniform_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="unifinv.html">unifinv</a>, 
   <a href="unifpdf.html">unifpdf</a>, 
   <a href="unifrnd.html">unifrnd</a>, 
+  <a href="unifit.html">unifit</a>, 
   <a href="unifstat.html">unifstat</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/unifcdf.m">unifcdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various CDFs from the continuous uniform distribution
+ x = 0:0.1:10;
+ p1 = unifcdf (x, 2, 5);
+ p2 = unifcdf (x, 3, 9);
+ plot (x, p1, "-b", x, p2, "-g")
+ grid on
+ xlim ([0, 10])
+ ylim ([0, 1])
+ legend ({"a = 2, b = 5", "a = 3, b = 9"}, "location", "southeast")
+ title ("Continuous uniform CDF")
+ xlabel ("values in x")
+ ylabel ("probability")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/unifcdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

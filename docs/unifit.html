@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: unidpdf</title>
+    <title>Statistics: unifit</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -35,9 +35,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Distributions">
+                  <a class="nav-link" href="index.html#Distribution Fitting">
                     <i class="fas fa-list-alt"></i>
-                    Distributions
+                    Distribution Fitting
                   </a>
                 </li>
                 <li class="nav-item">
@@ -64,45 +64,50 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>unidpdf</code></b>
+              Function&nbsp;Reference: <b><code>unifit</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>y</var> = <b>unidpdf</b><i> (<var>x</var>, <var>N</var>)</i></dt>
+<dt><u>statistics:</u> <var>paramhat</var> = <b>unifit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>unifit</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>unifit</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>unifit</b><i> (<var>x</var>, <var>alpha</var>, <var>freq</var>)</i></dt>
 </dl>
 
-<p> Discrete uniform probability density function (PDF).
+<p> Estimate parameter and confidence intervals for the continuous uniform distribution.
 </p>
 <div class="ms-5">
-<p> For each element of <var>x</var>, compute the probability density function (PDF)
- of the discrete uniform distribution with parameter <var>N</var>, which
- corresponds to the maximum observable value.  <code>unidpdf</code> assumes the
- integer values in the range <math>[1,N]</math> with equal probability.  The size of
- <var>x</var> is the common size of <var>p</var> and <var>N</var>.  A scalar input functions
- as a constant matrix of the same size as the other inputs.
+<p> <code><var>paramhat</var> = unifit (<var>x</var>)</code> returns the maximum likelihood
+ estimate (MLE) of the parameters <var>a</var> and <var>b</var> of the continuous
+ uniform distribution given the data in <var>x</var>. <var>x</var> must be a vector.
 </p>
-<p> The maximum observable values in <var>N</var> must be positive integers, otherwise
- <code>NaN</code> is returned.
+<p> <code>[<var>paramhat</var>, <var>paramci</var>] = unifit (<var>x</var>, <var>alpha</var>)</code> also
+ returns the <code>100 * (1 - <var>alpha</var>)</code> percent confidence intervals of
+ the estimated parameter.  By default, the optional argument <var>alpha</var> is
+ 0.05 corresponding to 95% confidence intervals.  Pass in <code>[]</code> for
+ <var>alpha</var> to use the default values.
 </p>
-<p> Warning: The underlying implementation uses the double class and will only
- be accurate for <var>N</var> &lt; <code>flintmax</code> (<math>2^53</math> on
- IEEE 754 compatible systems).
+<p> <code>[&hellip;] = unifit (<var>x</var>, <var>alpha</var>, <var>freq</var>)</code> accepts a
+ frequency vector, <var>freq</var>, of the same size as <var>x</var>.  <var>freq</var>
+ typically contains integer frequencies for the corresponding elements in
+ <var>x</var>, but it can contain any non-integer non-negative values.  By default,
+ or if left empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
 </p>
-<p> Further information about the discrete uniform distribution can be found at
+<p> Further information about the continuous uniform distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Discrete_uniform_distribution">https://en.wikipedia.org/wiki/Discrete_uniform_distribution</a>
 </p>
 <p> <strong>See also: </strong>
-  <a href="unidcdf.html">unidcdf</a>, 
-  <a href="unidinv.html">unidinv</a>, 
-  <a href="unidrnd.html">unidrnd</a>, 
-  <a href="unidfit.html">unidfit</a>, 
-  <a href="unidstat.html">unidstat</a>
+  <a href="unifcdf.html">unifcdf</a>, 
+  <a href="unifinv.html">unifinv</a>, 
+  <a href="unifpdf.html">unifpdf</a>, 
+  <a href="unifrnd.html">unifrnd</a>, 
+  <a href="unifstat.html">unifstat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/unidpdf.m">unidpdf</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/unifit.m">unifit</a>
 </div>
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -122,23 +127,45 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Plot various PDFs from the discrete uniform distribution
- x = 0:10;
- y1 = unidpdf (x, 5);
- y2 = unidpdf (x, 9);
- plot (x, y1, "*b", x, y2, "*g")
- grid on
- xlim ([0, 10])
- ylim ([0, 0.25])
- legend ({"N = 5", "N = 9"}, "location", "northeast")
- title ("Descrete uniform PDF")
- xlabel ("values in x")
- ylabel ("density")
+ ## Sample 2 populations from different continuous uniform distibutions
+ rand ("seed", 5);    # for reproducibility
+ r1 = unifrnd (2, 5, 2000, 1);
+ rand ("seed", 6);    # for reproducibility
+ r2 = unifrnd (3, 9, 2000, 1);
+ r = [r1, r2];
+
+ ## Plot them normalized and fix their colors
+ hist (r, 0:0.5:10, 2);
+ h = findobj (gca, "Type", "patch");
+ set (h(1), "facecolor", "c");
+ set (h(2), "facecolor", "g");
+ hold on
+
+ ## Estimate their probability of success
+ a_bA = unifit (r(:,1));
+ a_bB = unifit (r(:,2));
+
+ ## Plot their estimated PDFs
+ x = [0:10];
+ y = unifpdf (x, a_bA(1), a_bA(2));
+ plot (x, y, "-pg");
+ y = unifpdf (x, a_bB(1), a_bB(2));
+ plot (x, y, "-sc");
+ xlim ([1, 10])
+ ylim ([0, 0.5])
+ legend ({"Normalized HIST of sample 1 with a=2 and b=5", ...
+          "Normalized HIST of sample 2 with a=3 and b=9", ...
+          sprintf("PDF for sample 1 with estimated a=%0.2f and b=%0.2f", ...
+                  a_bA(1), a_bA(2)), ...
+          sprintf("PDF for sample 2 with estimated a=%0.2f and b=%0.2f", ...
+                  a_bB(1), a_bB(2))})
+ title ("Two population samples from different continuous uniform distibutions")
+ hold off
 
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
-                    <img src="assets/unidpdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                    <img src="assets/unifit_101.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>

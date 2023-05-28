@@ -77,25 +77,29 @@
 <dt><u>statistics:</u> <var>r</var> = <b>unifrnd</b><i> (<var>a</var>, <var>b</var>, [<var>sz</var>])</i></dt>
 </dl>
 
-<p> Random arrays from the uniform distribution.
+<p> Random arrays from the continuous uniform distribution.
 </p>
 <div class="ms-5">
 <p> <code><var>r</var> = unifrnd (<var>a</var>, <var>b</var>)</code> returns an array of random
- numbers chosen from a uniform distribution on the interval [<var>a</var>,
- <var>b</var>].  The size of <var>y</var> is the common size of the input arguments.
- A scalar input functions as a constant matrix of the same size as the other
- inputs.
+ numbers chosen from the continuous uniform distribution on the interval
+ <code>[<var>a</var>, <var>b</var>]</code>.  The size of <var>r</var> is the common size of
+ <var>a</var> and <var>b</var>.  A scalar input functions as a constant matrix of the
+ same size as the other inputs.
 </p>
-<p> When called with a single size argument, return a square matrix with
- the dimension specified.  When called with more than one scalar argument the
- first two arguments are taken as the number of rows and columns and any
- further arguments specify additional matrix dimensions.  The size may also
- be specified with a vector of dimensions <var>sz</var>.
+<p> When called with a single size argument, <code>unifrnd</code> returns a square
+ matrix with the dimension specified.  When called with more than one scalar
+ argument, the first two arguments are taken as the number of rows and columns
+ and any further arguments specify additional matrix dimensions.  The size may
+ also be specified with a row vector of dimensions, <var>sz</var>.
+</p>
+<p> Further information about the continuous uniform distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Continuous_uniform_distribution">https://en.wikipedia.org/wiki/Continuous_uniform_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="unifcdf.html">unifcdf</a>, 
   <a href="unifinv.html">unifinv</a>, 
   <a href="unifpdf.html">unifpdf</a>, 
+  <a href="unifit.html">unifit</a>, 
   <a href="unifstat.html">unifstat</a>
 </p>
 <p><strong>Source Code: </strong>

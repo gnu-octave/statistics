@@ -79,15 +79,16 @@
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the cumulative distribution function
- (CDF) at <var>x</var> of the Student&rsquo;s T distribution with <var>df</var> degrees of
- freedom.
-</p>
-<p> The size of <var>p</var> is the common size of <var>x</var> and <var>df</var>. A scalar
- input functions as a constant matrix of the same size as the other input.
+ (CDF) of the Student&rsquo;s T distribution with <var>df</var> degrees of freedom.  The
+ size of <var>p</var> is the common size of <var>x</var> and <var>df</var>. A scalar input
+ functions as a constant matrix of the same size as the other input.
 </p>
 <p> <code><var>p</var> = tcdf (<var>x</var>, <var>df</var>, &quot;upper&quot;)</code> computes the upper tail
  probability of the Student&rsquo;s T distribution with <var>df</var> degrees of freedom,
  at the values in <var>x</var>.
+</p>
+<p> Further information about the Student&rsquo;s T distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Student%27s_t-distribution">https://en.wikipedia.org/wiki/Student%27s_t-distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="tinv.html">tinv</a>, 
@@ -98,6 +99,52 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/tcdf.m">tcdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various CDFs from the Student's T distribution
+ x = -5:0.01:5;
+ p1 = tcdf (x, 1);
+ p2 = tcdf (x, 2);
+ p3 = tcdf (x, 5);
+ p4 = tcdf (x, Inf);
+ plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-m")
+ grid on
+ xlim ([-5, 5])
+ ylim ([0, 1])
+ legend ({"df = 1", "df = 2", ...
+          "df = 5", 'df = \infty'}, "location", "southeast")
+ title ("Student's T CDF")
+ xlabel ("values in x")
+ ylabel ("probability")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/tcdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

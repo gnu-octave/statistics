@@ -71,32 +71,43 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>r</var> = <b>unidrnd</b><i> (<var>df</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>unidrnd</b><i> (<var>df</var>, <var>rows</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>unidrnd</b><i> (<var>df</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>unidrnd</b><i> (<var>df</var>, [<var>sz</var>])</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>unidrnd</b><i> (<var>N</var>)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>unidrnd</b><i> (<var>N</var>, <var>rows</var>)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>unidrnd</b><i> (<var>N</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>unidrnd</b><i> (<var>N</var>, [<var>sz</var>])</i></dt>
 </dl>
 
 <p> Random arrays from the discrete uniform distribution.
 </p>
 <div class="ms-5">
-<p> <code><var>r</var> = unidrnd (<var>df</var>)</code> returns an array of random numbers chosen
- from the discrete uniform distribution with <var>df</var> degrees of freedom.  The
- size of <var>r</var> is the size of <var>df</var>.  <var>sigma</var> must be a finite
- integer greater than 0, otherwise NaN is returned.
+<p> <code><var>r</var> = unidrnd (<var>N</var>)</code> returns an array of random numbers chosen
+ from the discrete uniform distribution with parameter <var>N</var>, which
+ corresponds to the maximum observable value.  <code>unidrnd</code> assumes the
+ integer values in the range <math>[1,N]</math> with equal probability.  The size of
+ <var>r</var> is the size of <var>N</var>.  A scalar input functions as a constant
+ matrix of the same size as the other inputs.
 </p>
-<p> <var>df</var> may be a scalar or a multi-dimensional array.
+<p> The maximum observable values in <var>N</var> must be positive integers, otherwise
+ <code>NaN</code> is returned.
 </p>
-<p> When called with a single size argument, return a square matrix with
- the dimension specified.  When called with more than one scalar argument the
- first two arguments are taken as the number of rows and columns and any
- further arguments specify additional matrix dimensions.  The size may also
- be specified with a vector of dimensions <var>sz</var>.
+<p> When called with a single size argument, <code>unidrnd</code> returns a square
+ matrix with the dimension specified.  When called with more than one scalar
+ argument, the first two arguments are taken as the number of rows and columns
+ and any further arguments specify additional matrix dimensions.  The size may
+ also be specified with a row vector of dimensions, <var>sz</var>.
+</p>
+<p> Warning: The underlying implementation uses the double class and will only
+ be accurate for <var>N</var> &lt; <code>flintmax</code> (<math>2^53</math> on
+ IEEE 754 compatible systems).
+</p>
+<p> Further information about the discrete uniform distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Discrete_uniform_distribution">https://en.wikipedia.org/wiki/Discrete_uniform_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="unidcdf.html">unidcdf</a>, 
   <a href="unidinv.html">unidinv</a>, 
   <a href="unidrnd.html">unidrnd</a>, 
+  <a href="unidfit.html">unidfit</a>, 
   <a href="unidstat.html">unidstat</a>
 </p>
 <p><strong>Source Code: </strong>
