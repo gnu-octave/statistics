@@ -89,13 +89,16 @@ function [idx, dist] = knnsearch (X, Y, varargin)
       C = cov (X(! any (isnan (X), 2),:));
     endif
     dxy = X(ix(:),:) - Y(iy(:),:);
-    D   = sqrt ( sum ((dxy  *inv (C)) .* dxy, 2));
+    D   = sqrt (sum ((dxy  * inv (C)) .* dxy, 2));
 
   elseif (strcmpi (Distance, "minkowski"))
     D = sum (abs (X(ix(:),:) - Y(iy(:),:)) .^ P, 2) .^ (1 / P);
 
   elseif (strcmpi (Distance, "cityblock") || strcmpi (Distance, "manhattan'"))
     D = sum (abs (X(ix(:),:) - Y(iy(:),:)), 2);
+
+  elseif (strcmpi (Distance, "chebychev"))
+    D = max (abs (X(ix(:),:) - Y(iy(:),:)), 2);
 
   elseif (strcmpi (Distance, "cosine"))
     sx = sum (X .^ 2, 2) .^ (-1 / 2);
@@ -111,8 +114,9 @@ function [idx, dist] = knnsearch (X, Y, varargin)
   elseif (strcmpi (Distance, "hamming"))
     D = mean (abs (X(ix(:),:) != Y(iy(:),:)), 2);
 
-  else
-    error ("knnsearch: distance metric '%s' not supported yet", Distance);
+  elseif (strcmpi (Distance, "jaccard"))
+    xy0 = (X(ix(:),:) != 0 | Y(iy(:),:) != 0);
+    D = 1 - (sum (X(ix(:),:) != Y(iy(:),:) & xy0, 2) ./ sum (xy0, 2));
   endif
 
   D = reshape (D, size (Y,1), size (X,1));
