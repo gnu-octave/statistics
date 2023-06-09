@@ -821,10 +821,11 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         xlim ([0, n]);
         ax3 = get (gca);
         hold on; 
-        plot (ax3.xlim, ones (1, 2) * 4 / n, "b--");
+        plot (ax3.xlim, ones (1, 2) * 4 / dfe, "b--");
         plot (ax3.xlim, ones (1, 2) * 0.5, "m--"); 
         plot (ax3.xlim, ones (1, 2), "r--"); 
         hold off;
+        ylim (ax3.ylim);
         set (findall ( gcf, '-property', 'FontSize'), 'FontSize', 7)
 
       case "off"
