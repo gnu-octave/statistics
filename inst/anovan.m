@@ -440,10 +440,10 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     ## Evaluate alpha input argument
     if (! isa (ALPHA,'numeric') || numel (ALPHA) != 1)
       error("anovan: alpha must be a numeric scalar value");
-    end
+    endif
     if ((ALPHA <= 0) || (ALPHA >= 1))
       error("anovan: alpha must be a value between 0 and 1");
-    end
+    endif
 
     ## Remove NaN or non-finite observations
     if (isempty (GROUP))
@@ -644,7 +644,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       else
         ## Fixed effect term
         formula = sprintf ("%s + %s", formula, str(1:end-1));
-      end
+      endif
     endfor
 
     ## Calculate a standard error, t-statistic and p-value for each
@@ -745,9 +745,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
             else
               fprintf ("%-20s  %10.3g %9.3g %9.3g %9.3g %8.2f    1.000 \n", ...
                        STATS.coeffnames{j}, STATS.coeffs(j,1:end-1));
-            end
+            endif
           endfor
-        end
+        endif
 
         ## Print ANOVA table
         [nrows, ncols] = size (T);
@@ -820,7 +820,11 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         title ("Influential values")
         xlim ([0, n]);
         ax3 = get (gca);
-        hold on; plot (ax3.xlim, ones (1, 2) * 4 / n, "r--"); hold off;
+        hold on; 
+        plot (ax3.xlim, ones (1, 2) * 4 / n, "b--");
+        plot (ax3.xlim, ones (1, 2) * 0.5, "m--"); 
+        plot (ax3.xlim, ones (1, 2), "r--"); 
+        hold off;
         set (findall ( gcf, '-property', 'FontSize'), 'FontSize', 7)
 
       case "off"
@@ -904,7 +908,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
             center_continuous(j) = true;
             vmeans(j) = mean ([X{1+j}]);
             X(1+j) = [X{1+j}] - vmeans(j);
-          end
+          endif
           ## Create names of the coefficients relating to continuous main effects
           coeffnames{1+j} = VARNAMES{j};
 
