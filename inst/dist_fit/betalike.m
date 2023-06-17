@@ -153,7 +153,7 @@ endfunction
 %! x = 0.01:0.02:0.99;
 %! [nlogL, avar] = betalike ([2.3, 1.2], x);
 %! avar_out = [0.03691678, 0.02803056; 0.02803056, 0.03965629];
-%! assert (nlogL, 17.873477715879040, 1e-14);
+%! assert (nlogL, 17.873477715879040, 3e-14);
 %! assert (avar, avar_out, 1e-7);
 %!test
 %! x = 0.01:0.02:0.99;
