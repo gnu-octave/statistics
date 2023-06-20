@@ -167,14 +167,16 @@
 ## "poly": Polynomial contrast coding for trend analysis.
 ##
 ## @item
-## "helmert": Helmert contrast coding.
+## "helmert": Helmert contrast coding: the difference between each level with
+## the mean of the subsequent levels.
 ##
 ## @item
 ## "effect": Deviation effect coding. (The first level appearing in the
 ## @var{GROUP} column is omitted).
 ##
 ## @item
-## "sdif" or "sdiff": Successive differences contrast coding.
+## "sdif" or "sdiff": Successive differences contrast coding: the difference
+## between each level with the previous level.
 ##
 ## @item
 ## "treatment": Treatment contrast (or dummy) coding. (The first level appearing
