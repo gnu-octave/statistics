@@ -167,14 +167,16 @@
 ## "poly": Polynomial contrast coding for trend analysis.
 ##
 ## @item
-## "helmert": Helmert contrast coding.
+## "helmert": Helmert contrast coding: the difference between each level with
+## the mean of the subsequent levels.
 ##
 ## @item
 ## "effect": Deviation effect coding. (The first level appearing in the
 ## @var{GROUP} column is omitted).
 ##
 ## @item
-## "sdif" or "sdiff": Successive differences contrast coding.
+## "sdif" or "sdiff": Successive differences contrast coding: the difference
+## between each level with the previous level.
 ##
 ## @item
 ## "treatment": Treatment contrast (or dummy) coding. (The first level appearing
@@ -413,11 +415,17 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           msg = strcat(["columns in CONTRASTS must sum to"], ...
                        [" 0 for SSTYPE 3. Switching to SSTYPE 2 instead."]);
           if (isnumeric(CONTRASTS{i}))
-            ## Check that the columns sum to 0
-            if (any (abs (sum (CONTRASTS{i})) > eps("single")) ...
-                          && strcmpi (num2str (SSTYPE), "3"))
-              warning (msg);
-              SSTYPE = 2;
+            ## Check whether all the columns sum to 0
+            if (any (abs (sum (CONTRASTS{i})) > eps ('single')))
+              warning (sprintf ( ...
+              'Note that the CONTRASTS for predictor %u do not sum to zero', i));
+            endif
+            ## Check whether contrasts are orthogonal
+            if (any (abs (reshape (corr (CONTRASTS{i}) - ...
+                                          eye (size (CONTRASTS{i}, 2)), [], 1))...
+                                        > eps ('single')))
+              warning (sprintf ( ...
+              'Note that the CONTRASTS for predictor %u are not orthogonal', i));
             endif
           else
             if (! ismember (lower (CONTRASTS{i}), ...
