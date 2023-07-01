@@ -46,6 +46,7 @@ function [idx, dist] = knnsearch (X, Y, varargin)
   SI = true;                # Sort returned indices according to distance
   Distance = "euclidean";   # Distance metric to be used
   NSMethod = "exhaustive";  # Nearest neighbor search method
+  incl_ties = false;        # Include ties for distance with kth neighbor
 
   ## Parse additional parameters in Name/Value pairs
   while (numel (varargin) > 0)
@@ -66,12 +67,47 @@ function [idx, dist] = knnsearch (X, Y, varargin)
         Distance = varargin{2};
       case "nsmethod"
         NSMethod = varargin{2};
+      case "includeties"
+        incl_ties = varargin{2};
       otherwise
         error ("knnsearch: invalid NAME in optional pairs of arguments.");
     endswitch
     varargin(1:2) = [];
   endwhile
 
+
+
+  if (strcmpi(NSMethod,"kdtree"))
+    ## build kdtree
+    ret = buildkdtree (X);
+    NN  = findkdtree (ret, Y, K, Distance);
+    idx = NN;
+    dist = calc_dist(X(idx,:), Y, Distance);
+  else
+    ## calculate distance and search by exhaustive
+    D = calc_dist(X, Y, distance);
+    D = reshape (D, size (Y, 1), size (X, 1));
+    if (K == 1)
+      [dist, idx] = min (D, [], 2);
+    else
+      if (incl_ties)
+        [dist, idx] = sort (D, 2);
+        kth_dist = dist(K);
+        tied_idx = (dist <= kth_dist);
+        dist = dist(:,tied_idx);
+        idx  = idx(:,tied_idx);
+      else
+        [dist, idx] = sort (D, 2);
+        dist = dist(:,1:K);
+        idx = idx(:,1:K);
+      endif
+    endif
+
+  endif
+
+endfunction
+
+function D = calc_dist (X, Y, Distance)
   [ix, iy] = meshgrid (1:size (X, 1), 1:size (Y, 1));
   if strcmpi (Distance, "euclidean")
     D = sqrt (sum ((X(ix(:),:) - Y(iy(:),:)) .^ 2, 2));
@@ -135,16 +171,105 @@ function [idx, dist] = knnsearch (X, Y, varargin)
     D = sum ((X(ix(:),:) != Y(iy(:),:)) & xy0, 2) ./ sum (xy0, 2);
   endif
 
-  D = reshape (D, size (Y, 1), size (X, 1));
-  if (K == 1)
-    [dist, idx] = min (D, [], 2);
-  else
-    [dist, idx] = sort (D, 2);
-    dist = dist(:,1:K);
-    idx = idx(:,1:K);
-  endif
-
 endfunction
+
+## buildkdtree
+function ret = buildkdtree_recur (x, r, d)
+    count = length (r);
+    dimen = size (x, 2);
+    if (count == 1)
+        ret = struct ('point', r(1), 'dimen', d);
+    else
+        mid = ceil (count / 2);
+        ret = struct ('point', r(mid), 'dimen', d);
+        d = mod (d,dimen)+1;
+        ## Build left sub tree
+        if (mid > 1)
+            left = r (1:mid-1);
+            left_points = x (left,d);
+            [val, left_idx] = sort (left_points);
+            leftr = left (left_idx);
+            ret.left = buildkdtree_recur (x, leftr, d);
+        end
+        ## Build right sub tree
+        if (count > mid)
+            right = r (mid+1:count);
+            right_points = x (right,d);
+            [val, right_idx] = sort (right_points);
+            rightr = right (right_idx);
+            ret.right = buildkdtree_recur (x, rightr, d);
+        end
+    end
+end
+
+## wrapper function for buildkdtree_recur
+function ret = buildkdtree (x)
+    [val, r] = sort (x(:,1));
+    ret = struct ('data',x,'root', buildkdtree_recur (x,r,1));
+end
+
+function farthest = kdtree_cand_farthest (x, p, cand, distance)
+    [val, index] = max(calc_dist (x, p, distance)(cand));
+    farthest = cand (index);
+end
+
+## function to insert into NN list
+function inserted = kdtree_cand_insert (x, p, cand, k, point, distance)
+    if (length (cand) < k)
+        inserted = [cand; point];
+    else
+        farthest = kdtree_cand_farthest (x, p, cand, distance);
+        cand (find (cand == farthest)) = point;
+        inserted = cand;
+    end
+end
+
+## function to search in a kd tree
+function neighbours = findkdtree_recur (x, node, p, neighbours, k, distance)
+    distance;
+    point = node.point;
+    d = node.dimen;
+    if (x(point,d) > p(d))
+        ## Search in left sub tree
+        if (isfield(node, 'left'))
+            neighbours = findkdtree_recur (x, node.left, p, neighbours, k, distance);
+        end
+        ## Add current point if neccessary
+        farthest = kdtree_cand_farthest (x, p, neighbours, distance);
+        if (length(neighbours) < k || calc_dist (x(point,:), p, distance) < calc_dist (x(farthest,:), p, distance))
+            neighbours = kdtree_cand_insert (x, p, neighbours, k, point);
+        end
+        ## Search in right sub tree if neccessary
+        farthest = kdtree_cand_farthest (x, p, neighbours, distance);
+        radius = calc_dist (x(farthest,:), p, distance);
+        if (isfield (node, 'right') && (length(neighbours) < k || p(d) + radius > x(point,d)))
+            neighbours = findkdtree_recur (x, node.right, p, neighbours, k, distance);
+        end
+    else
+        ## Search in right sub tree
+        if (isfield (node, 'right'))
+            neighbours = findkdtree_recur (x, node.right, p, neighbours, k, distance);
+        end
+        ## Add current point if neccessary
+        farthest = kdtree_cand_farthest (x, p, neighbours, distance);
+        if (length (neighbours) < k || calc_dist (x(point,:), p, distance) < calc_dist (x(farthest,:), p, distance))
+            neighbours = kdtree_cand_insert (x, p, neighbours, k, point, distance);
+        end
+        ## Search in left sub tree if neccessary
+        farthest = kdtree_cand_farthest (x, p, neighbours, distance);
+        radius = calc_dist (x(farthest,:), p, distance);
+        if (isfield (node, 'left') && (length (neighbours) < k || p(d) - radius <= x(point,d)))
+            neighbours = findkdtree_recur (x, node.left, p, neighbours, k, distance);
+        end
+    end
+end
+
+## wrapper function for findkdtree_recur
+function neighbours = findkdtree (tree, p, k, distance)
+    x = tree.data;
+    root = tree.root;
+    neighbours = findkdtree_recur (x, root, p, [], k, distance);
+end
 
 ## Test output
 %!shared x, y
