@@ -1,4 +1,5 @@
 ## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2023 Mohammed Azmat Khan <azmat.dev0@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -96,6 +97,8 @@
 ## contain the indices that have same distance as k'th neighbour. Default is
 ## @qcode{@var{includeties} = true}.
 ## @end itemize
+##
+## @demo
 ## @seealso{rangesearch}
 ## @end deftypefn
 
@@ -381,6 +384,67 @@ function neighbours = findkdtree (tree, p, k, distance, P, S, C)
     root = tree.root;
     neighbours = findkdtree_recur (x, root, p, [], k, distance, P, S, C);
 endfunction
+
+%!demo
+%! ## find 10 nearest neighbour of a point using different distance metrics
+%! ## and compare the results by plotting
+%! load fisheriris
+%! x = meas(:,3:4);
+%! y = species;
+%! point = [5, 1.45];
+%!
+%! ## calculate 10 nearest-neighbours by minkowski distance
+%! [id, d] = knnsearch (x, point, "K", 10);
+%!
+%! ## calculate 10 nearest-neighbours by minkowski distance
+%! [idm, dm] = knnsearch (x, point, "K", 10, "distance", "minkowski", "p", 5);
+%!
+%! ## calculate 10 nearest-neighbours by chebychev distance
+%! [idc, dc] = knnsearch (x, point, "K", 10, "distance", "chebychev");
+%!
+%! ## plotting the results
+%! gscatter(x(:,1), x(:,2), species,[.75 .75 0; 0 .75 .75; .75 0 .75], '.',20)
+%! title('Fisher''s Iris Data - Nearest Neighbors with different types of distance metrics');
+%! xlabel('Petal length (cm)');
+%! ylabel('Petal width (cm)');
+%!
+%! line(point(1), point(2), 'marker', 'x', 'color', 'k', 'linewidth', 2, "displayname", "query point")
+%! line (x(id,1), x(id,2), 'color', [0.5 0.5 0.5],'marker', 'o', 'linestyle', 'none', 'markersize', 10, "displayname", "eulcidean")
+%! line (x(idm,1), x(idm,2), 'color', [0.5 0.5 0.5],'marker', 'd', 'linestyle', 'none', 'markersize', 10, "displayname", "Minkowski")
+%! line (x(idc,1), x(idc,2), 'color', [0.5 0.5 0.5],'marker', 'p', 'linestyle', 'none', 'markersize', 10, "displayname", "chebychev")
+%! xlim ([4.5 5.5]);
+%! ylim ([1 2]);
+%! axis square;
+%!
+%!demo
+%! ## knnsearch on iris dataset using kdtree method
+%! load fisheriris
+%! x = meas(:,3:4);
+%! gscatter(x(:,1), x(:,2), species,[.75 .75 0; 0 .75 .75; .75 0 .75], '.',20)
+%! title ("fisher's iris dataset : nearest neighbors by kdtree search");
+%!
+%! ## new point to be predicted
+%! point = [5 1.45];
+%!
+%! line(point(1), point(2), 'marker', 'x', 'color', 'k', 'linewidth', 2, "displayname", "query point")
+%!
+%! ## knnsearch using kdtree method
+%! [idx, d] = knnsearch (x, point, "K", 10, "NSMethod", "kdtree");
+%!
+%! ## plotting predicted neighbours
+%! line (x(idx,1), x(idx,2), 'color', [0.5 0.5 0.5],'marker', 'o', 'linestyle', 'none', 'markersize', 10, "displayname", "nearest neighbour")
+%! xlim([4 6])
+%! ylim([1 3])
+%! axis square
+%! ## details of predicted labels
+%! tabulate(species(idx))
+%!
+%! ctr = point - d(end);
+%! diameter = 2*d(end);
+%! ##  Draw a circle around the 10 nearest neighbors.
+%! h = rectangle('position', [ctr, diameter, diameter], 'curvature',[1 1]);
+%! ## here only 8 neighbours are plotted instead of 10 since the dataset contains duplicate values
+
 
 ## Test output
 %!shared x, y
