@@ -160,18 +160,23 @@
 ##
 ## @itemize
 ## @item
-## "simple" or "anova" (default): Simple (ANOVA) contrasts. (The first level
-## appearing in the @var{GROUP} column is the reference level)
+## "simple" or "anova" (default): Simple (ANOVA) contrast coding. (The first
+## level appearing in the @var{GROUP} column is the reference level)
 ##
 ## @item
-## "poly": Polynomial contrasts for trend analysis.
+## "poly": Polynomial contrast coding for trend analysis.
 ##
 ## @item
-## "helmert": Helmert contrasts.
+## "helmert": Helmert contrast coding: the difference between each level with
+## the mean of the subsequent levels.
 ##
 ## @item
 ## "effect": Deviation effect coding. (The first level appearing in the
 ## @var{GROUP} column is omitted).
+##
+## @item
+## "sdif" or "sdiff": Successive differences contrast coding: the difference
+## between each level with the previous level.
 ##
 ## @item
 ## "treatment": Treatment contrast (or dummy) coding. (The first level appearing
@@ -300,7 +305,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     ## GROUP can be a matrix of numeric identifiers of a cell arrays
     ## of strings or numeric idenitiers
     N = size (GROUP, 2); # number of anova "ways"
-    n = numel (Y);      # total number of observations
+    n = numel (Y);       # total number of observations
     if (prod (size (Y)) != n)
       error ("anovan: for ""anovan (Y, GROUP)"", Y must be a vector");
     endif
@@ -410,18 +415,25 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           msg = strcat(["columns in CONTRASTS must sum to"], ...
                        [" 0 for SSTYPE 3. Switching to SSTYPE 2 instead."]);
           if (isnumeric(CONTRASTS{i}))
-            ## Check that the columns sum to 0
-            if (any (abs (sum (CONTRASTS{i})) > eps("single")) ...
-                          && strcmpi (num2str (SSTYPE), "3"))
-              warning (msg);
-              SSTYPE = 2;
+            ## Check whether all the columns sum to 0
+            if (any (abs (sum (CONTRASTS{i})) > eps ('single')))
+              warning (sprintf ( ...
+              'Note that the CONTRASTS for predictor %u do not sum to zero', i));
+            endif
+            ## Check whether contrasts are orthogonal
+            if (any (abs (reshape (corr (CONTRASTS{i}) - ...
+                                          eye (size (CONTRASTS{i}, 2)), [], 1))...
+                                        > eps ('single')))
+              warning (sprintf ( ...
+              'Note that the CONTRASTS for predictor %u are not orthogonal', i));
             endif
           else
             if (! ismember (lower (CONTRASTS{i}), ...
-                            {"simple","anova","poly","helmert","effect","treatment"}))
+                            {"simple","anova","poly","helmert","effect",...
+                              "sdif","sdiff","treatment"}))
               error (strcat(["anovan: valid built-in contrasts are:"], ...
-                            [" ""simple"" (or ""anova""), ""poly"","],...
-                            [" ""helmert"", ""effect"", or ""treatment"""]));
+                            [" ""simple"", ""poly"", ""helmert"","],...
+                            ["""effect"", ""sdif"" or ""treatment"""]));
             endif
             if (strcmpi (CONTRASTS{i}, "treatment") && (SSTYPE==3))
               warning (msg);
@@ -436,10 +448,10 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     ## Evaluate alpha input argument
     if (! isa (ALPHA,'numeric') || numel (ALPHA) != 1)
       error("anovan: alpha must be a numeric scalar value");
-    end
+    endif
     if ((ALPHA <= 0) || (ALPHA >= 1))
       error("anovan: alpha must be a value between 0 and 1");
-    end
+    endif
 
     ## Remove NaN or non-finite observations
     if (isempty (GROUP))
@@ -565,25 +577,26 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     sst = sum (Y.^2) - ct;
     dft = n - 1;
 
+    ## Create design matrix
+    mDesignMatrix ();
+
     ## Fit linear models, and calculate sums-of-squares for ANOVA
     switch (lower (SSTYPE))
       case 1
         ## Type I sequential sums-of-squares (SSTYPE = 1)
         R = sst;
         ss = zeros (Nt,1);
-        mDesignMatrix ();
         for j = 1:Nt
           XS = cell2mat (X(1:j+1));
           [b, sse] = lmfit (XS, Y, W);
           ss(j) = R - sse;
           R = sse;
         endfor
-        [b, sse, resid, ucov] = lmfit (XS, Y, W);
+        [b, sse, resid, ucov, hat] = lmfit (XS, Y, W);
         sstype_char = "I";
       case {2,'h'}
         ## Type II (partially sequential, or hierarchical) sums-of-squares
         ss = zeros (Nt,1);
-        mDesignMatrix ();
         for j = 1:Nt
           i = find (TERMS(j,:));
           k = cat (1, 1, 1 + find (any (!TERMS(:,i),2)));
@@ -594,13 +607,12 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           [jnk, R2] = lmfit (XS, Y, W);
           ss(j) = R1 - R2;
         endfor
-        [b, sse, resid, ucov] = lmfit (cell2mat (X), Y, W);
+        [b, sse, resid, ucov, hat] = lmfit (cell2mat (X), Y, W);
         sstype_char = "II";
       case 3
         ## Type III (partial, constrained or marginal) sums-of-squares
         ss = zeros (Nt, 1);
-        mDesignMatrix ();
-        [b, sse, resid, ucov] = lmfit (cell2mat (X), Y, W);
+        [b, sse, resid, ucov, hat] = lmfit (cell2mat (X), Y, W);
         for j = 1:Nt
           XS = cell2mat (X(1:Nt+1 != j+1));
           [jnk, R] = lmfit (XS, Y, W);
@@ -640,7 +652,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       else
         ## Fixed effect term
         formula = sprintf ("%s + %s", formula, str(1:end-1));
-      end
+      endif
     endfor
 
     ## Calculate a standard error, t-statistic and p-value for each
@@ -662,6 +674,11 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     for ignore = RANDOM
       p(hi(ignore)-df(ignore)+1:hi(ignore)) = NaN;
     endfor
+
+    ## Compute leverage values and Cook's distance
+    h = diag (hat);          % Leverage values
+    D = resid.^2 / ((1 + sum (df)) * mse) ...
+        .* h ./ (1 - h).^2;  % Cook's distance
 
     ## Create STATS structure for MULTCOMPARE
     STATS = struct ("source","anovan", ...
@@ -703,6 +720,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                     "W", sparse (W), ...
                     "lmfit", @lmfit, ...
                     "vcov", sparse (ucov * mse), ...
+                    "CooksD", D, ...
                     "grps", gid, ...
                     "eta_squared", eta_sq, ...
                     "partial_eta_squared", partial_eta_sq);
@@ -735,9 +753,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
             else
               fprintf ("%-20s  %10.3g %9.3g %9.3g %9.3g %8.2f    1.000 \n", ...
                        STATS.coeffnames{j}, STATS.coeffs(j,1:end-1));
-            end
+            endif
           endfor
-        end
+        endif
 
         ## Print ANOVA table
         [nrows, ncols] = size (T);
@@ -773,29 +791,49 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         fit = STATS.X * STATS.coeffs(:,1);
         ## Checks for Normality assumption of model residuals
         ## Histogram superimposed with fitted Normal distribution
-        subplot (2, 2, 1);
-        histfit (std_resid);
-        title ("Histogram")
-        xlabel ("Binned Standardized Residuals");
-        ylabel ("Count");
+        #subplot (2, 2, 1);
+        #histfit (std_resid);
+        #title ("Histogram")
+        #xlabel ("Binned Standardized Residuals");
+        #ylabel ("Count");
         ## Normal probability plot
-        subplot (2, 2, 2);
+        subplot (2, 2, 1);
         normplot (std_resid);
         xlabel ("Standardized Residuals");
         ## Checks for homoskedasticity assumption
-        subplot (2, 2, 3);
+        subplot (2, 2, 2);
         plot (fit, std_resid, "b+");
         xlabel ("Fitted values");
         ylabel ("Standardized Residuals");
         title ("Residuals vs Fitted Values")
         ax1 = get (gca);
-        hold on; plot (ax1.xlim, zeros (1, 2), "r-."); grid ("on"); hold off;
+        hold on; plot (ax1.xlim, zeros (1, 2), "r--"); grid ("on"); hold off;
         ## Checks for outliers and heteroskedasticity
-        subplot (2, 2, 4);
+        subplot (2, 2, 3);
         plot (fit, sqrt (abs (std_resid)), "b+");
         xlabel ("Fitted values");
         ylabel ("sqrt ( |Standardized Residuals| )");
         title ("Spread-Location Plot")
+        ax2 = get (gca);
+        hold on; 
+        plot (ax2.xlim, ones (1, 2) * sqrt (2), "b--");
+        plot (ax2.xlim, ones (1, 2) * sqrt (3), "m--"); 
+        plot (ax2.xlim, ones (1, 2) * sqrt (4), "r--");
+        hold off;
+        ## Check for influential outliers
+        subplot (2, 2, 4);
+        stem (D, "b", "markersize", 4);
+        xlabel ("Obs. number")
+        ylabel ("Cook's distance")
+        title ("Influential values")
+        xlim ([0, n]);
+        ax3 = get (gca);
+        hold on; 
+        plot (ax3.xlim, ones (1, 2) * 4 / dfe, "b--");
+        plot (ax3.xlim, ones (1, 2) * 0.5, "m--"); 
+        plot (ax3.xlim, ones (1, 2), "r--"); 
+        hold off;
+        ylim (ax3.ylim);
         set (findall ( gcf, '-property', 'FontSize'), 'FontSize', 7)
 
       case "off"
@@ -879,7 +917,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
             center_continuous(j) = true;
             vmeans(j) = mean ([X{1+j}]);
             X(1+j) = [X{1+j}] - vmeans(j);
-          end
+          endif
           ## Create names of the coefficients relating to continuous main effects
           coeffnames{1+j} = VARNAMES{j};
 
@@ -903,7 +941,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
               case "effect"
                 ## DEVIATION EFFECT CONTRAST CODING
                 CONTRASTS{j} = contr_sum (nlevels(j));
-                ## SIMPLE EFFECT CODING (DEFAULT)
+              case {"sdif","sdiff"}
+                ## SUCCESSIVE DEVIATIONS CONTRAST CODING
+                CONTRASTS{j} = contr_sdif (nlevels(j));
               case "treatment"
                 ## The first level is the reference level
                 CONTRASTS{j} = contr_treatment (nlevels(j));
@@ -1009,6 +1049,14 @@ function C = contr_sum (N)
 
 endfunction
 
+function C = contr_sdif (N)
+
+  ## Create contrast matrix (of doubles) using successive differences coding
+  ## These contrasts are centered (i.e. sum to 0)
+  C =  tril (ones (N, N - 1), -1) - ones (N, 1) / N * [N - 1 : -1 : 1];
+
+endfunction
+
 function C = contr_treatment (N)
 
   ## Create contrast matrix (of doubles) using treatment contrast coding
@@ -1022,7 +1070,7 @@ endfunction
 
 ## FUNCTION TO FIT THE LINEAR MODEL
 
-function [b, sse, resid, ucov] = lmfit (X, Y, W)
+function [b, sse, resid, ucov, hat] = lmfit (X, Y, W)
 
   ## Get model coefficients by solving the linear equation by QR decomposition
   ## The number of free parameters (i.e. intercept + coefficients) is equal
@@ -1051,6 +1099,15 @@ function [b, sse, resid, ucov] = lmfit (X, Y, W)
   ## Calculate the unscaled covariance matrix (i.e. inv (X'*X ))
   if (nargout > 3)
     ucov = R \ Q' / XW';
+  endif
+
+  ## Calculate the Hat matrix
+  if (nargout > 4)
+    w = diag (W);
+    rw = sqrt (w);
+    Q1 = diag (1 ./ rw) * Q;
+    Q2 = diag (rw) * Q;
+    hat = Q1 * Q2';
   endif
 
 endfunction

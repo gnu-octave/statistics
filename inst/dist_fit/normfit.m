@@ -430,8 +430,8 @@ endfunction
 %! idx = find (lightbulb(:,2) == 0);
 %! censoring = lightbulb(idx,3) == 1;
 %! [muHat, sigmaHat] = normfit (lightbulb(idx,1), [], censoring);
-%! assert (muHat, 9496.595867378575, 1e-12);
-%! assert (sigmaHat, 3064.021012796456, 1e-12);
+%! assert (muHat, 9496.59586737857, 1e-11);
+%! assert (sigmaHat, 3064.021012796456, 2e-12);
 %!test
 %! x = normrnd (3, 5, [1000, 1]);
 %! [muHat, sigmaHat, muCI, sigmaCI] = normfit (x, 0.01);

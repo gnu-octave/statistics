@@ -26,8 +26,9 @@
 ##
 ## @code{@var{r} = raylrnd (@var{sigma})} returns an array of random numbers
 ## chosen from the Rayleigh distribution with scale parameter @var{sigma}.  The
-## size of @var{r} is the size of @var{sigma}.  @var{sigma} must be a finite
-## real number greater than 0, otherwise NaN is returned.
+## size of @var{r} is the size of @var{sigma}.  A scalar input functions as a
+## constant matrix of the same size as the other inputs.  @var{sigma} must be a
+## finite real number greater than 0, otherwise @qcode{NaN} is returned.
 ##
 ## When called with a single size argument, @code{raylrnd} returns a square
 ## matrix with the dimension specified.  When called with more than one scalar

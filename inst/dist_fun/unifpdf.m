@@ -23,24 +23,28 @@
 ## @deftypefnx {statistics} {@var{y} =} unifpdf (@var{x}, @var{a})
 ## @deftypefnx {statistics} {@var{y} =} unifpdf (@var{x}, @var{a}, @var{b})
 ##
-## Uniform probability density function (PDF).
+## Continuous uniform probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of the uniform distribution on the interval [@var{a}, @var{b}].
-## The size of @var{y} is the common size of the input arguments.  A scalar
-## input functions as a constant matrix of the same size as the other inputs.
+## of the continuous uniform distribution on the interval @qcode{[@var{a},
+## @var{b}]}.  The size of @var{y} is the common size of @var{x}, @var{a}, and
+## @var{b}.  A scalar input functions as a constant matrix of the same size as
+## the other inputs.
 ##
-## Default values are @var{a} = 0, @var{b} = 1.
+## Further information about the continuous uniform distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Continuous_uniform_distribution}
 ##
-## @seealso{unifcdf, unifinv, unifrnd, unifstat}
+## @seealso{unifcdf, unifinv, unifrnd, unifit, unifstat}
 ## @end deftypefn
 
-function y = unifpdf (x, a = 0, b = 1)
+function y = unifpdf (x, a, b)
 
-  if (nargin < 1 || nargin > 3)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 3)
+    error ("unifpdf: function called with too few input arguments.");
   endif
 
+  ## Check for common size of X, A, and B
   if (! isscalar (x) || ! isscalar (a) || ! isscalar (b))
     [retval, x, a, b] = common_size (x, a, b);
     if (retval > 0)
@@ -48,17 +52,20 @@ function y = unifpdf (x, a = 0, b = 1)
     endif
   endif
 
+  ## Check for X, A, and B being reals
   if (iscomplex (x) || iscomplex (a) || iscomplex (b))
     error ("unifpdf: X, A, and B must not be complex.");
   endif
 
+  ## Check for class type
   if (isa (x, "single") || isa (a, "single") || isa (b, "single"))
     y = zeros (size (x), "single");
   else
     y = zeros (size (x));
   endif
 
-  k = isnan (x) | !(a < b);
+  ## Calculate continuous uniform PDF for valid parameter and data range
+  k = isnan (x) | ! (a < b);
   y(k) = NaN;
 
   k = (x >= a) & (x <= b) & (a < b);
@@ -66,8 +73,22 @@ function y = unifpdf (x, a = 0, b = 1)
 
 endfunction
 
+%!demo
+%! ## Plot various PDFs from the continuous uniform distribution
+%! x = 0:0.001:10;
+%! y1 = unifpdf (x, 2, 5);
+%! y2 = unifpdf (x, 3, 9);
+%! plot (x, y1, "-b", x, y2, "-g")
+%! grid on
+%! xlim ([0, 10])
+%! ylim ([0, 0.4])
+%! legend ({"a = 2, b = 5", "a = 3, b = 9"}, "location", "northeast")
+%! title ("Continuous uniform PDF")
+%! xlabel ("values in x")
+%! ylabel ("density")
 
-%!shared x,y
+## Test output
+%!shared x, y
 %! x = [-1 0 0.5 1 2] + 1;
 %! y = [0 1 1 1 0];
 %!assert (unifpdf (x, ones (1,5), 2*ones (1,5)), y)
@@ -76,8 +97,6 @@ endfunction
 %!assert (unifpdf (x, [2 NaN 1 1 1], 2), [NaN NaN y(3:5)])
 %!assert (unifpdf (x, 1, 2*[0 NaN 1 1 1]), [NaN NaN y(3:5)])
 %!assert (unifpdf ([x, NaN], 1, 2), [y, NaN])
-%!assert (unifpdf (x), [1 1 0 0 0])
-%!assert (unifpdf (x, 0), [1 1 0 0 0])
 %!assert (unifpdf (x, 0, 1), [1 1 0 0 0])
 
 ## Test class of input preserved
@@ -86,11 +105,15 @@ endfunction
 %!assert (unifpdf ([x, NaN], 1, single (2)), single ([y, NaN]))
 
 ## Test input validation
-%!error unifpdf ()
-%!error unifpdf (1,2,3,4)
-%!error unifpdf (ones (3), ones (2), ones (2))
-%!error unifpdf (ones (2), ones (3), ones (2))
-%!error unifpdf (ones (2), ones (2), ones (3))
-%!error unifpdf (i, 2, 2)
-%!error unifpdf (2, i, 2)
-%!error unifpdf (2, 2, i)
+%!error<unifpdf: function called with too few input arguments.> unifpdf ()
+%!error<unifpdf: function called with too few input arguments.> unifpdf (1)
+%!error<unifpdf: function called with too few input arguments.> unifpdf (1, 2)
+%!error<unifpdf: X, A, and B must be of common size or scalars.> ...
+%! unifpdf (ones (3), ones (2), ones (2))
+%!error<unifpdf: X, A, and B must be of common size or scalars.> ...
+%! unifpdf (ones (2), ones (3), ones (2))
+%!error<unifpdf: X, A, and B must be of common size or scalars.> ...
+%! unifpdf (ones (2), ones (2), ones (3))
+%!error<unifpdf: X, A, and B must not be complex.> unifpdf (i, 2, 2)
+%!error<unifpdf: X, A, and B must not be complex.> unifpdf (2, i, 2)
+%!error<unifpdf: X, A, and B must not be complex.> unifpdf (2, 2, i)

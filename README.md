@@ -21,7 +21,7 @@ You can find its documentation at [https://gnu-octave.github.io/statistics/](htt
 
 ## 2. Install statistics
 
-To install the latest version (1.5.4) you need Octave (>=6.1.0) installed on your system. If you have Octave (>=7.2.0) you can install it by typing:
+To install the latest version (1.6.0) you need Octave (>=7.2.0) installed on your system. Install it by typing:
 
   `pkg install -forge statistics`
 
@@ -33,7 +33,7 @@ or alternatively type:
 
   `pkg install "https://github.com/gnu-octave/statistics/archive/refs/heads/main.zip"`
 
-to download and install it.
+to automatically download and install it.
 
 If you need to install a specific release, for example `1.4.2`, type:
 
@@ -42,9 +42,9 @@ If you need to install a specific release, for example `1.4.2`, type:
 After installation, type:
 - `pkg load statistics` to load the **statistics** package.
 - `news statistics` to review all the user visible changes since last version.
-- `pkg test statistics` to run a test suite for all[^1] functions in the package and ensure that they work properly on your system.
+- `pkg test statistics` to run a test suite for all 365 [^1] functions currently available and ensure that they work properly on your system.
 
-[^1]: Some functions are missing BISTs, these are not included in the test suite. But you are welcome to [contribute](https://github.com/gnu-octave/statistics/blob/main/CONTRIBUTING.md)!
+[^1]: Several functions are still missing from the statistics package, but you are welcome to [contribute](https://github.com/gnu-octave/statistics/blob/main/CONTRIBUTING.md)!
 
 ## 3. Provide feedback
 
@@ -62,5 +62,5 @@ If you find a bug and fix it, just [clone](https://github.com/gnu-octave/statist
 
 Make sure you follow the coding style already used in the **statistics** package (similar to GNU Octave). For a summary of the coding style rules used in the package see [Contribute](https://github.com/gnu-octave/statistics/blob/main/CONTRIBUTING.md).
 
-Contributing is not only about fixing bugs. Improving the texinfo of the functions help files or adding BISTs and demos at the end of the function files is also important. Out of a total of 315 functions, there are still 18 functions missing BISTs and it would be invaluable to add tests to these. Fixing a typo in the help file is still of value though. So don't hesitate to contribute! :+1:
+Contributing is not only about fixing bugs or implementing new functions. Improving the texinfo of the functions help files or adding BISTs and demos at the end of the function files is also important. Fixing a typo in the help file is still of value though. So don't hesitate to contribute! :+1:
 

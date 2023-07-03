@@ -105,7 +105,7 @@ endfunction
 %! plot (x, p1, "-b", x, p2, "g", x, p3, "-r", x, p4, "-m", x, p5, "-k")
 %! grid on
 %! ylim ([0, 1])
-%! legend ({"σ = 0,5", "σ = 1", "σ = 2", ...
+%! legend ({"σ = 0.5", "σ = 1", "σ = 2", ...
 %!          "σ = 3", "σ = 4"}, "location", "southeast")
 %! title ("Rayleigh CDF")
 %! xlabel ("values in x")

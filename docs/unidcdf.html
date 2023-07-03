@@ -71,31 +71,87 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>unidcdf</b><i> (<var>x</var>, <var>df</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>unidcdf</b><i> (<var>x</var>, <var>df</var>, <code>&quot;upper&quot;</code>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>unidcdf</b><i> (<var>x</var>, <var>N</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>unidcdf</b><i> (<var>x</var>, <var>N</var>, <code>&quot;upper&quot;</code>)</i></dt>
 </dl>
 
 <p> Discrete uniform cumulative distribution function (CDF).
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the cumulative distribution function
- (CDF) at <var>x</var> of a discrete uniform distribution which assumes the integer
- values 1&ndash;<var>df</var> with equal probability.  The size of <var>p</var> is the common
- size of <var>x</var> and <var>df</var>.  A scalar input functions as a constant matrix
- of the same size as the other inputs.
+ (CDF) of a discrete uniform distribution with parameter <var>N</var>, which
+ corresponds to the maximum observable value.  <code>unidcdf</code> assumes the
+ integer values in the range <math>[1,N]</math> with equal probability.  The size of
+ <var>p</var> is the common size of <var>x</var> and <var>N</var>.  A scalar input functions
+ as a constant matrix of the same size as the other inputs.
 </p>
-<p> <code>[&hellip;] = logncdf (&hellip;, &quot;upper&quot;)</code> computes the upper tail
- probability of the lognormal distribution.
+<p> The maximum observable values in <var>N</var> must be positive integers, otherwise
+ <code>NaN</code> is returned.
+</p>
+<p> <code>[&hellip;] = unidcdf (<var>x</var>, <var>N</var>, &quot;upper&quot;)</code> computes the upper
+ tail probability of the discrete uniform distribution with maximum observable
+ value <var>N</var>, at the values in <var>x</var>.
+</p>
+<p> Warning: The underlying implementation uses the double class and will only
+ be accurate for <var>N</var> &lt; <code>flintmax</code> (<math>2^53</math> on
+ IEEE 754 compatible systems).
+</p>
+<p> Further information about the discrete uniform distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Discrete_uniform_distribution">https://en.wikipedia.org/wiki/Discrete_uniform_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="unidinv.html">unidinv</a>, 
   <a href="unidpdf.html">unidpdf</a>, 
   <a href="unidrnd.html">unidrnd</a>, 
+  <a href="unidfit.html">unidfit</a>, 
   <a href="unidstat.html">unidstat</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/unidcdf.m">unidcdf</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various CDFs from the discrete uniform distribution
+ x = 0:10;
+ p1 = unidcdf (x, 5);
+ p2 = unidcdf (x, 9);
+ plot (x, p1, "*b", x, p2, "*g")
+ grid on
+ xlim ([0, 10])
+ ylim ([0, 1])
+ legend ({"N = 5", "N = 9"}, "location", "southeast")
+ title ("Discrete uniform CDF")
+ xlabel ("values in x")
+ ylabel ("probability")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/unidcdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>

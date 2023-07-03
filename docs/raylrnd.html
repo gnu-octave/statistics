@@ -82,8 +82,9 @@
 <div class="ms-5">
 <p> <code><var>r</var> = raylrnd (<var>sigma</var>)</code> returns an array of random numbers
  chosen from the Rayleigh distribution with scale parameter <var>sigma</var>.  The
- size of <var>r</var> is the size of <var>sigma</var>.  <var>sigma</var> must be a finite
- real number greater than 0, otherwise NaN is returned.
+ size of <var>r</var> is the size of <var>sigma</var>.  A scalar input functions as a
+ constant matrix of the same size as the other inputs.  <var>sigma</var> must be a
+ finite real number greater than 0, otherwise <code>NaN</code> is returned.
 </p>
 <p> When called with a single size argument, <code>raylrnd</code> returns a square
  matrix with the dimension specified.  When called with more than one scalar

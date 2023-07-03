@@ -38,7 +38,7 @@
 ## Further information about the geometric distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Geometric_distribution}
 ##
-## @seealso{geoinv, geopdf, geornd, geostat}
+## @seealso{geoinv, geopdf, geornd, geofit, geostat}
 ## @end deftypefn
 
 function p = geocdf (x, ps, uflag)

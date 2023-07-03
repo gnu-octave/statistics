@@ -445,6 +445,7 @@ endfunction
 %! h = rectangle('position', [ctr, diameter, diameter], 'curvature',[1 1]);
 %! ## here only 8 neighbours are plotted instead of 10 since the dataset contains duplicate values
 
+
 ## Test output
 %!shared x, y
 %! x = [1, 2, 3, 4; 2, 3, 4, 5; 3, 4, 5, 6];

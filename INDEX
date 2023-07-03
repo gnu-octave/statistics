@@ -116,6 +116,7 @@ Distribution Fitting
  explike
  gamfit
  gamlike
+ geofit
  gevfit_lmom
  gevfit
  gevlike
@@ -143,6 +144,8 @@ Distribution Fitting
  poisslike
  raylfit
  rayllike
+ unidfit
+ unifit
  wblfit
  wbllike
 Distribution Statistics
@@ -252,6 +255,7 @@ Regression
  princomp
  regress
  regress_gp
+ ridge
  stepwisefit
 Transforms
  logit

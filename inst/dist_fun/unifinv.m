@@ -23,24 +23,28 @@
 ## @deftypefnx {statistics} {@var{x} =} unifcdf (@var{p}, @var{a})
 ## @deftypefnx {statistics} {@var{x} =} unifcdf (@var{p}, @var{a}, @var{b})
 ##
-## Inverse of the uniform cumulative distribution function (iCDF).
+## Inverse of the continuous uniform cumulative distribution function (iCDF).
 ##
-## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## at @var{p} of the uniform distribution on the interval [@var{a}, @var{b}].
-## The size of @var{x} is the common size of the input arguments.  A scalar
-## input functions as a constant matrix of the same size as the other inputs.
+## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
+## the continuous uniform distribution on the interval @qcode{[@var{a},
+## @var{b}]}.  The size of @var{x} is the common size of @var{p}, @var{a}, and
+## @var{b}.  A scalar input functions as a constant matrix of the same size as
+## the other inputs.
 ##
-## Default values are @var{a} = 0, @var{b} = 1.
+## Further information about the continuous uniform distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Continuous_uniform_distribution}
 ##
-## @seealso{unifcdf, unifpdf, unifrnd, unifstat}
+## @seealso{unifcdf, unifpdf, unifrnd, unifit, unifstat}
 ## @end deftypefn
 
-function x = unifinv (p, a = 0, b = 1)
+function x = unifinv (p, a, b)
 
-  if (nargin < 1 || nargin > 3)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 3)
+    error ("unifinv: function called with too few input arguments.");
   endif
 
+  ## Check for common size of P, A, and B
   if (! isscalar (p) || ! isscalar (a) || ! isscalar (b))
     [retval, p, a, b] = common_size (p, a, b);
     if (retval > 0)
@@ -48,27 +52,42 @@ function x = unifinv (p, a = 0, b = 1)
     endif
   endif
 
+  ## Check for P, A, and B being reals
   if (iscomplex (p) || iscomplex (a) || iscomplex (b))
     error ("unifinv: P, A, and B must not be complex.");
   endif
 
+  ## Check for class type
   if (isa (p, "single") || isa (a, "single") || isa (b, "single"))
     x = NaN (size (p), "single");
   else
     x = NaN (size (p));
   endif
 
+  ## Calculate continuous uniform iCDF for valid parameter and data range
   k = (p >= 0) & (p <= 1) & (a < b);
   x(k) = a(k) + p(k) .* (b(k) - a(k));
 
 endfunction
 
+%!demo
+%! ## Plot various iCDFs from the continuous uniform distribution
+%! p = 0.001:0.001:0.999;
+%! x1 = unifinv (p, 2, 5);
+%! x2 = unifinv (p, 3, 9);
+%! plot (p, x1, "-b", p, x2, "-g")
+%! grid on
+%! xlim ([0, 1])
+%! ylim ([0, 10])
+%! legend ({"a = 2, b = 5", "a = 3, b = 9"}, "location", "northwest")
+%! title ("Continuous uniform iCDF")
+%! xlabel ("probability")
+%! ylabel ("values in x")
 
+## Test output
 %!shared p
 %! p = [-1 0 0.5 1 2];
 %!assert (unifinv (p, ones (1,5), 2*ones (1,5)), [NaN 1 1.5 2 NaN])
-%!assert (unifinv (p), [NaN 1 1.5 2 NaN] - 1)
-%!assert (unifinv (p, 0), [NaN 1 1.5 2 NaN] - 1)
 %!assert (unifinv (p, 0, 1), [NaN 1 1.5 2 NaN] - 1)
 %!assert (unifinv (p, 1, 2*ones (1,5)), [NaN 1 1.5 2 NaN])
 %!assert (unifinv (p, ones (1,5), 2), [NaN 1 1.5 2 NaN])
@@ -83,11 +102,14 @@ endfunction
 %!assert (unifinv ([p, NaN], 1, single (2)), single ([NaN 1 1.5 2 NaN NaN]))
 
 ## Test input validation
-%!error unifinv ()
-%!error unifinv (1,2,3,4)
-%!error unifinv (ones (3), ones (2), ones (2))
-%!error unifinv (ones (2), ones (3), ones (2))
-%!error unifinv (ones (2), ones (2), ones (3))
-%!error unifinv (i, 2, 2)
-%!error unifinv (2, i, 2)
-%!error unifinv (2, 2, i)
+%!error<unifinv: function called with too few input arguments.> unifinv ()
+%!error<unifinv: function called with too few input arguments.> unifinv (1, 2)
+%!error<unifinv: P, A, and B must be of common size or scalars.> ...
+%! unifinv (ones (3), ones (2), ones (2))
+%!error<unifinv: P, A, and B must be of common size or scalars.> ...
+%! unifinv (ones (2), ones (3), ones (2))
+%!error<unifinv: P, A, and B must be of common size or scalars.> ...
+%! unifinv (ones (2), ones (2), ones (3))
+%!error<unifinv: P, A, and B must not be complex.> unifinv (i, 2, 2)
+%!error<unifinv: P, A, and B must not be complex.> unifinv (2, i, 2)
+%!error<unifinv: P, A, and B must not be complex.> unifinv (2, 2, i)

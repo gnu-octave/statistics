@@ -26,15 +26,16 @@
 ## Student's T cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) at @var{x} of the Student's T distribution with @var{df} degrees of
-## freedom.
-##
-## The size of @var{p} is the common size of @var{x} and @var{df}. A scalar
-## input functions as a constant matrix of the same size as the other input.
+## (CDF) of the Student's T distribution with @var{df} degrees of freedom.  The
+## size of @var{p} is the common size of @var{x} and @var{df}. A scalar input
+## functions as a constant matrix of the same size as the other input.
 ##
 ## @code{@var{p} = tcdf (@var{x}, @var{df}, "upper")} computes the upper tail
 ## probability of the Student's T distribution with @var{df} degrees of freedom,
 ## at the values in @var{x}.
+##
+## Further information about the Student's T distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Student%27s_t-distribution}
 ##
 ## @seealso{tinv, tpdf, trnd, tstat}
 ## @end deftypefn
@@ -42,8 +43,8 @@
 function p = tcdf (x, df, uflag)
 
   ## Check for valid number of input arguments
-  if (nargin < 2 || nargin > 3)
-    error ("tcdf: invalid number of input arguments.");
+  if (nargin < 2)
+    error ("tcdf: function called with too few input arguments.");
   endif
 
   ## Check for "upper" flag
@@ -169,6 +170,24 @@ function p = tcdf_integer_df (x, df)
   endif
 endfunction
 
+%!demo
+%! ## Plot various CDFs from the Student's T distribution
+%! x = -5:0.01:5;
+%! p1 = tcdf (x, 1);
+%! p2 = tcdf (x, 2);
+%! p3 = tcdf (x, 5);
+%! p4 = tcdf (x, Inf);
+%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-m")
+%! grid on
+%! xlim ([-5, 5])
+%! ylim ([0, 1])
+%! legend ({"df = 1", "df = 2", ...
+%!          "df = 5", 'df = \infty'}, "location", "southeast")
+%! title ("Student's T CDF")
+%! xlabel ("values in x")
+%! ylabel ("probability")
+
+## Test output
 %!shared x,y
 %! x = [-Inf 0 1 Inf];
 %! y = [0 1/2 3/4 1];
@@ -185,9 +204,8 @@ endfunction
 %!assert (tcdf ([x, NaN], single (1)), single ([y, NaN]), eps ("single"))
 
 ## Test input validation
-%!error<tcdf: invalid number of input arguments.> tcdf ()
-%!error<tcdf: invalid number of input arguments.> tcdf (1)
-%!error tcdf (1,2,3,4)
+%!error<tcdf: function called with too few input arguments.> tcdf ()
+%!error<tcdf: function called with too few input arguments.> tcdf (1)
 %!error<tcdf: invalid argument for upper tail.> tcdf (1, 2, "uper")
 %!error<tcdf: invalid argument for upper tail.> tcdf (1, 2, 3)
 %!error<tcdf: X and DF must be of common size or scalars.> ...
@@ -200,7 +218,6 @@ endfunction
 %!error<tcdf: X and DF must not be complex.> tcdf (2, i)
 
 ## Check some reference values
-
 %!shared tol_rel
 %! tol_rel = 10 * eps;
 

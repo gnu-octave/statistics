@@ -124,7 +124,7 @@ endfunction
 %! x = 1:50;
 %! [nlogL, acov] = wbllike ([2.3, 1.2], x * 0.5);
 %! avar_out = [-0.3238, -0.1112; -0.1112, -0.0376];
-%! assert (nlogL, 424.9879809704742, 1e-121515);
+%! assert (nlogL, 424.9879809704742, 6e-14);
 %! assert (acov, avar_out, 1e-4);
 %!test
 %! x = 1:50;

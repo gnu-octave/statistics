@@ -19,56 +19,81 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{y} =} unidpdf (@var{x}, @var{df})
+## @deftypefn  {statistics} {@var{y} =} unidpdf (@var{x}, @var{N})
 ##
 ## Discrete uniform probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## at @var{x} of a discrete uniform distribution which assumes the integer
-## values 1--@var{df} with equal probability.  The size of @var{p} is the common
-## size of @var{x} and @var{df}.  A scalar input functions as a constant matrix
-## of the same size as the other inputs.
+## of the discrete uniform distribution with parameter @var{N}, which
+## corresponds to the maximum observable value.  @code{unidpdf} assumes the
+## integer values in the range @math{[1,N]} with equal probability.  The size of
+## @var{x} is the common size of @var{p} and @var{N}.  A scalar input functions
+## as a constant matrix of the same size as the other inputs.
+##
+## The maximum observable values in @var{N} must be positive integers, otherwise
+## @qcode{NaN} is returned.
 ##
 ## Warning: The underlying implementation uses the double class and will only
-## be accurate for @var{df} < @code{flintmax} (@w{@math{2^{53}}} on
+## be accurate for @var{N} < @code{flintmax} (@w{@math{2^{53}}} on
 ## IEEE 754 compatible systems).
 ##
-## @seealso{unidcdf, unidinv, unidrnd, unidstat}
+## Further information about the discrete uniform distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Discrete_uniform_distribution}
+##
+## @seealso{unidcdf, unidinv, unidrnd, unidfit, unidstat}
 ## @end deftypefn
 
-function y = unidpdf (x, df)
+function y = unidpdf (x, N)
 
-  if (nargin != 2)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 2)
+    error ("unidpdf: function called with too few input arguments.");
   endif
 
-  if (! isscalar (x) || ! isscalar (df))
-    [retval, x, df] = common_size (x, df);
+  ## Check for common size of X and N
+  if (! isscalar (x) || ! isscalar (N))
+    [retval, x, N] = common_size (x, N);
     if (retval > 0)
-      error ("unidpdf: X and DF must be of common size or scalars.");
+      error ("unidpdf: X and N must be of common size or scalars.");
     endif
   endif
 
-  if (iscomplex (x) || iscomplex (df))
-    error ("unidpdf: X and DF must not be complex.");
+  ## Check for X and N being reals
+  if (iscomplex (x) || iscomplex (N))
+    error ("unidpdf: X and N must not be complex.");
   endif
 
-  if (isa (x, "single") || isa (df, "single"))
+  ## Check for class type
+  if (isa (x, "single") || isa (N, "single"))
     y = zeros (size (x), "single");
   else
     y = zeros (size (x));
   endif
 
-  k = isnan (x) | ! (df > 0 & df == fix (df));
+  k = isnan (x) | ! (N > 0 & N == fix (N));
   y(k) = NaN;
 
-  k = ! k & (x >= 1) & (x <= df) & (x == fix (x));
-  y(k) = 1 ./ df(k);
+  k = ! k & (x >= 1) & (x <= N) & (x == fix (x));
+  y(k) = 1 ./ N(k);
 
 endfunction
 
+%!demo
+%! ## Plot various PDFs from the discrete uniform distribution
+%! x = 0:10;
+%! y1 = unidpdf (x, 5);
+%! y2 = unidpdf (x, 9);
+%! plot (x, y1, "*b", x, y2, "*g")
+%! grid on
+%! xlim ([0, 10])
+%! ylim ([0, 0.25])
+%! legend ({"N = 5", "N = 9"}, "location", "northeast")
+%! title ("Descrete uniform PDF")
+%! xlabel ("values in x")
+%! ylabel ("density")
 
-%!shared x,y
+## Test output
+%!shared x, y
 %! x = [-1 0 1 2 10 11];
 %! y = [0 0 0.1 0.1 0.1 0];
 %!assert (unidpdf (x, 10*ones (1,6)), y)
@@ -81,10 +106,11 @@ endfunction
 %!assert (unidpdf ([x, NaN], single (10)), single ([y, NaN]))
 
 ## Test input validation
-%!error unidpdf ()
-%!error unidpdf (1)
-%!error unidpdf (1,2,3)
-%!error unidpdf (ones (3), ones (2))
-%!error unidpdf (ones (2), ones (3))
-%!error unidpdf (i, 2)
-%!error unidpdf (2, i)
+%!error<unidpdf: function called with too few input arguments.> unidpdf ()
+%!error<unidpdf: function called with too few input arguments.> unidpdf (1)
+%!error<unidpdf: X and N must be of common size or scalars.> ...
+%! unidpdf (ones (3), ones (2))
+%!error<unidpdf: X and N must be of common size or scalars.> ...
+%! unidpdf (ones (2), ones (3))
+%!error<unidpdf: X and N must not be complex.> unidpdf (i, 2)
+%!error<unidpdf: X and N must not be complex.> unidpdf (2, i)

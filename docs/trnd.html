@@ -85,14 +85,18 @@
 </p>
 <p> <code><var>r</var> = trnd (<var>df</var>)</code> returns an array of random numbers chosen
  from the Student&rsquo;s T distribution with <var>df</var> degrees of freedom.  The size
- of <var>r</var> is the size of <var>df</var>.  <var>df</var> must be a finite real number
- greater than 0, otherwise NaN is returned.
+ of <var>r</var> is the size of <var>df</var>.  A scalar input functions as a constant
+ matrix of the same size as the other inputs.  <var>df</var> must be a finite real
+ number greater than 0, otherwise NaN is returned.
 </p>
-<p> When called with a single size argument, return a square matrix with
- the dimension specified.  When called with more than one scalar argument the
- first two arguments are taken as the number of rows and columns and any
- further arguments specify additional matrix dimensions.  The size may also
- be specified with a vector of dimensions <var>sz</var>.
+<p> When called with a single size argument, <code>trnd</code> returns a square matrix
+ with the dimension specified.  When called with more than one scalar
+ argument, the first two arguments are taken as the number of rows and columns
+ and any further arguments specify additional matrix dimensions.  The size may
+ also be specified with a row vector of dimensions, <var>sz</var>.
+</p>
+<p> Further information about the Student&rsquo;s T distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Student%27s_t-distribution">https://en.wikipedia.org/wiki/Student%27s_t-distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="tcdf.html">tcdf</a>, 

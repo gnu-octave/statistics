@@ -159,13 +159,10 @@ function [p, table, stats] = friedman (x, reps, displayopt)
     if reps > 1
       printf("Interaction  %10.4f %5.0f %10.4f %8.2f %9.4f\n", ...
               table{3,2}, table{3,3}, table{3,4}, table{3,5}, table{3,6});
-    else
-      printf("Interaction  %10.4f %5.0f %10.4f\n", ...
-              table{3,2}, table{3,3}, table{3,4});
     endif
     printf("Error        %10.4f %5.0f %10.4f\n", ...
-            table{4,2}, table{4,3}, table{4,4});
-    printf("Total        %10.4f %5.0f\n", table{5,2}, table{5,3});
+            table{end-1,2}, table{end-1,3}, table{end-1,4});
+    printf("Total        %10.4f %5.0f\n", table{end,2}, table{end,3});
   endif
 endfunction
 

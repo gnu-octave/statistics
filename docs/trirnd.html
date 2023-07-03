@@ -80,17 +80,17 @@
 <p> Random arrays from the triangular distribution.
 </p>
 <div class="ms-5">
-<p> <code><var>r</var> = raylrnd (<var>sigma</var>)</code> returns an array of random numbers
+<p> <code><var>r</var> = trirnd (<var>sigma</var>)</code> returns an array of random numbers
  chosen from the triangular distribution with parameters <var>a</var>, <var>b</var>, and
  <var>c</var> on the interval [<var>a</var>, <var>b</var>].  The size of <var>r</var> is the
- common size of the input arguments.  A scalar input functions as a constant
- matrix of the same size as the other inputs.
+ common size of <var>a</var>, <var>b</var>, and <var>c</var>.  A scalar input functions as a
+ constant matrix of the same size as the other inputs.
 </p>
-<p> When called with a single size argument, return a square matrix with
- the dimension specified.  When called with more than one scalar argument the
- first two arguments are taken as the number of rows and columns and any
- further arguments specify additional matrix dimensions.  The size may also
- be specified with a vector of dimensions <var>sz</var>.
+<p> When called with a single size argument, <code>trirnd</code> returns a square
+ matrix with the dimension specified.  When called with more than one scalar
+ argument, the first two arguments are taken as the number of rows and columns
+ and any further arguments specify additional matrix dimensions.  The size may
+ also be specified with a row vector of dimensions, <var>sz</var>.
 </p>
 <p> Further information about the triangular distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Triangular_distribution">https://en.wikipedia.org/wiki/Triangular_distribution</a>

@@ -235,7 +235,9 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
                    varargin{pair_index + 1});
         endswitch
       case {"coeff0", "score0", "options"}
-        error ("pca: parameter %s is only valid with the 'als' method, which is not yet implemented", varargin{pair_index});
+        error (strcat (["pca: parameter %s is only valid with the 'als'"], ...
+                       [" method, which is not yet implemented"]), ...
+               varargin{pair_index});
       otherwise
         error ("pca: unknown property %s", varargin{pair_index});
     endswitch
@@ -463,8 +465,11 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
   ## only show that number of columns
   if (optNumComponentsI != nvars)
     coeff = coeff(:, 1:optNumComponentsI);
+  endif
+  if (optNumComponentsI != nvars && nargout > 1)
     score = score(:, 1:optNumComponentsI);
   endif
+
 endfunction
 
 #return the weighted standard deviation
