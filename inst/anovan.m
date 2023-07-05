@@ -142,10 +142,10 @@
 ## @itemize
 ## @item
 ## @var{dispopt} can be either "on" (default) or "off" and controls the display
-## of the model formula, table of model parameters and the ANOVA table. The
-## F-statistic and p-values are formatted in APA-style. To avoid p-hacking, the
-## table of model parameters is only displayed if we set planned contrasts (see
-## below).
+## of the model formula, table of model parameters, the ANOVA table and the
+## diagnostic plots. The F-statistic and p-values are formatted in APA-style.
+## To avoid p-hacking, the table of model parameters is only displayed if we set
+## planned contrasts (see below).
 ## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "contrasts", @var{contrasts})}
@@ -277,7 +277,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           SSTYPE = value;
         case "varnames"
           VARNAMES = value;
-        case "display"
+        case {"display","displayopt"}
           DISPLAY = value;
         case "contrasts"
           CONTRASTS = value;
@@ -728,7 +728,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     ## Print ANOVA table
     switch (lower (DISPLAY))
 
-      case "on"
+      case {"on", true}
 
         ## Print model formula
         fprintf("\nMODEL FORMULA (based on Wilkinson's notation):\n\n%s\n", formula);
@@ -785,58 +785,88 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         fprintf("\n");
 
         ## Make figure of diagnostic plots
-        figure("Name", "Diagnostic plots: Standardized Model Residuals");
-        resid = STATS.resid;
-        std_resid = zscore (resid);
-        fit = STATS.X * STATS.coeffs(:,1);
-        ## Checks for Normality assumption of model residuals
-        ## Histogram superimposed with fitted Normal distribution
-        #subplot (2, 2, 1);
-        #histfit (std_resid);
-        #title ("Histogram")
-        #xlabel ("Binned Standardized Residuals");
-        #ylabel ("Count");
-        ## Normal probability plot
+        figure ("Name", "Diagnostic Plots: Model Residuals");
+        t = STATS.resid ./ (sqrt (mse * (1 - h))); % Studentized residuals
+        fit = STATS.X * STATS.coeffs(:,1);         % Fitted values
+        [jnk, DI] = sort (D, "descend");           % Indices of sorted D
+        nk = 4;                               % Top nk residuals with largest D
+
+        ## Normal quantile-quantile plot
         subplot (2, 2, 1);
-        normplot (std_resid);
-        xlabel ("Standardized Residuals");
-        ## Checks for homoskedasticity assumption
+        x = ((1 : n)' - .5) / n;
+        [ts, I] = sort (t);
+        q = norminv (x);
+        plot (q, ts, "ok", "markersize", 3);
+        box off;
+        grid on;
+        xlabel ("Theoretical quantiles");
+        ylabel ("Studentized Residuals");
+        title ("Normal Q-Q Plot");
+        arrayfun (@(i) text (q(I == DI(i)), t(DI(i)), ...
+                             sprintf ("  %u", DI(i))), [1:min(nk,n)])
+        iqr = [0.25; 0.75]; 
+        yl = quantile (t, iqr, 1, 6);
+        xl = norminv (iqr);
+        slope = diff (yl) / diff (xl);
+        int = yl(1) - slope * xl(1);
+        ax1_xlim = get (gca, "XLim");
+        hold on; plot (ax1_xlim, slope * ax1_xlim + int, "k-"); hold off;
+        set (gca, "Xlim", ax1_xlim);
+
+        ## Spread-Location Plot
         subplot (2, 2, 2);
-        plot (fit, std_resid, "b+");
+        plot (fit, sqrt (abs (t)), "ko", "markersize", 3);
+        box off;
         xlabel ("Fitted values");
-        ylabel ("Standardized Residuals");
-        title ("Residuals vs Fitted Values")
-        ax1 = get (gca);
-        hold on; plot (ax1.xlim, zeros (1, 2), "r--"); grid ("on"); hold off;
-        ## Checks for outliers and heteroskedasticity
-        subplot (2, 2, 3);
-        plot (fit, sqrt (abs (std_resid)), "b+");
-        xlabel ("Fitted values");
-        ylabel ("sqrt ( |Standardized Residuals| )");
+        ylabel ("sqrt ( | Studentized Residuals | )");
         title ("Spread-Location Plot")
-        ax2 = get (gca);
+        ax2_xlim = get (gca, "XLim");
         hold on; 
-        plot (ax2.xlim, ones (1, 2) * sqrt (2), "b--");
-        plot (ax2.xlim, ones (1, 2) * sqrt (3), "m--"); 
-        plot (ax2.xlim, ones (1, 2) * sqrt (4), "r--");
+        plot (ax2_xlim, ones (1, 2) * sqrt (2), "k:");
+        plot (ax2_xlim, ones (1, 2) * sqrt (3), "k-."); 
+        plot (ax2_xlim, ones (1, 2) * sqrt (4), "k--");
         hold off;
-        ## Check for influential outliers
+        arrayfun (@(i) text (fit(DI(i)), sqrt (abs (t(DI(i)))), ...
+                             sprintf ("  %u", DI(i))), [1:min(nk,n)]);
+        xlim (ax2_xlim); 
+
+        ## Residual-Leverage plot
+        subplot (2, 2, 3);
+        plot (h, t, "ko", "markersize", 3);
+        box off;
+        xlabel ("Leverage")
+        ylabel ("Studentized Residuals");
+        title ("Residual-Leverage Plot")
+        ax3_xlim = get (gca, "XLim");
+        ax3_ylim = get (gca, "YLim");
+        hold on; plot (ax3_xlim, zeros (1, 2), "k-"); hold off;
+        arrayfun (@(i) text (h(DI(i)), t(DI(i)), ...
+                             sprintf ("  %u", DI(i))), [1:min(nk,n)]);
+        set (gca, "ygrid", "on");
+        xlim (ax3_xlim); ylim (ax3_ylim);
+
+        ## Cook's distance stem plot
         subplot (2, 2, 4);
-        stem (D, "b", "markersize", 4);
+        stem (D, "ko", "markersize", 3);
+        box off;
         xlabel ("Obs. number")
         ylabel ("Cook's distance")
-        title ("Influential values")
+        title ("Cook's Distance Stem Plot")
         xlim ([0, n]);
-        ax3 = get (gca);
+        ax4_xlim = get (gca, "XLim");
+        ax4_ylim = get (gca, "YLim");
         hold on; 
-        plot (ax3.xlim, ones (1, 2) * 4 / dfe, "b--");
-        plot (ax3.xlim, ones (1, 2) * 0.5, "m--"); 
-        plot (ax3.xlim, ones (1, 2), "r--"); 
+        plot (ax4_xlim, ones (1, 2) * 4 / dfe, "k:");
+        plot (ax4_xlim, ones (1, 2) * 0.5, "k-.");
+        plot (ax4_xlim, ones (1, 2), "k--");
         hold off;
-        ylim (ax3.ylim);
-        set (findall ( gcf, '-property', 'FontSize'), 'FontSize', 7)
+        arrayfun (@(i) text (DI(i), D(DI(i)), ...
+                             sprintf ("  %u", DI(i))), [1:min(nk,n)]);
+        xlim (ax4_xlim); ylim (ax4_ylim);
 
-      case "off"
+        set (findall ( gcf, "-property", "FontSize"), "FontSize", 7)
+
+      case {"off", false}
 
         ## do nothing
 
