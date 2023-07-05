@@ -200,9 +200,9 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
           ALPHA = value;
         case {"controlgroup","ref"}
           REF = value;
-        case {"ctype","CriticalValueType"}
+        case {"ctype","criticalvaluetype"}
           CTYPE = lower (value);
-        case "display"
+        case {"display","displayopt"}
           DISPLAY = lower (value);
         case {"dim","dimension"}
           DIM = value;
@@ -262,7 +262,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
                        [" if only used to adjust p-values"]))
       endif
       if (!isempty (varargin))
-        if (!any (strcmpi (varargin{1}, {"ctype","CriticalValueType"})) ...
+        if (!any (strcmpi (varargin{1}, {"ctype","criticalvaluetype"})) ...
             || (nargin > 3) )
           error (strcat(["multcompare: invalid input arguments if only"], ...
                         [" used to adjust p-values"]))
@@ -613,32 +613,33 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
 
     ## If requested, plot graph of the difference means for each comparison
     ## with central coverage of confidence intervals at 100*(1-alpha)%
-    if (strcmp (DISPLAY, "on"))
-      H = figure;
-      plot ([0; 0], [0; Np + 1]',"k:"); # Plot vertical dashed line at 0 effect
-      set (gca, "Ydir", "reverse")      # Flip y-axis direction
-      ylim ([0.5, Np + 0.5]);           # Set y-axis limits
-      hold on                           # Plot on the same axis
-      for j = 1:Np
-        if (C(j,6) < ALPHA)
-          ## Plot marker for the difference in means
-          plot (C(j,4), j,"or","MarkerFaceColor", "r");
-          ## Plot line for each confidence interval
-          plot ([C(j,3), C(j,5)], j * ones(2,1), "r-");
-        else
-          ## Plot marker for the difference in means
-          plot (C(j,4), j,"ob","MarkerFaceColor", "b");
-          ## Plot line for each confidence interval
-          plot ([C(j,3), C(j,5)], j * ones(2,1), "b-");
-        endif
-      endfor
-      hold off
-      xlabel (sprintf ("%g%% confidence interval for the difference",...
-                       100 * (1 - ALPHA)));
-      ylabel ("Row number in matrix of comparisons (C)");
-    else
-      H = [];
-    endif
+    switch (lower (DISPLAY))
+      case {'on',true}
+        H = figure;
+        plot ([0; 0], [0; Np + 1]',"k:"); # Plot vertical dashed line at 0 effect
+        set (gca, "Ydir", "reverse")      # Flip y-axis direction
+        ylim ([0.5, Np + 0.5]);           # Set y-axis limits
+        hold on                           # Plot on the same axis
+        for j = 1:Np
+          if (C(j,6) < ALPHA)
+            ## Plot marker for the difference in means
+            plot (C(j,4), j,"or","MarkerFaceColor", "r");
+            ## Plot line for each confidence interval
+            plot ([C(j,3), C(j,5)], j * ones(2,1), "r-");
+          else
+            ## Plot marker for the difference in means
+            plot (C(j,4), j,"ob","MarkerFaceColor", "b");
+            ## Plot line for each confidence interval
+            plot ([C(j,3), C(j,5)], j * ones(2,1), "b-");
+          endif
+        endfor
+        hold off
+        xlabel (sprintf ("%g%% confidence interval for the difference",...
+                         100 * (1 - ALPHA)));
+        ylabel ("Row number in matrix of comparisons (C)");
+      case {'off',false}
+        H = [];
+    endswitch
 
     ## Print multcompare table on screen if no output argument was requested
     if (nargout == 0 || strcmp (DISPLAY, "on"))
