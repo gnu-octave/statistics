@@ -9,6 +9,7 @@ Clustering
  evalclusters
  inconsistent
  kmeans
+ knnsearch
  linkage
  mahal
  mhsample
