@@ -241,7 +241,7 @@ function [label, score, cost] = knnpredict (X, Y, Xclass, varargin)
     endif
   else
     ## empty cost
-    cost = ones(rows(X),numel(unique(Y)));
+    cost = ones(rows(Xclass),numel(unique(Y)));
   endif
 
   ## check scale
