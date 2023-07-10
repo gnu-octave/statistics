@@ -182,7 +182,7 @@ classdef ClassificationKNN
 
   properties (Access = public)
 
-    ## properties that can be set via object
+    ## Properties that can be set via object
     X = [];
     Y = [];
     Xclass = [];
@@ -193,11 +193,11 @@ classdef ClassificationKNN
     exponent;
     distance;
     NSmethod;
-    standerdize;
+    standardize;
 
-    ## additional arguments
-   endproperties
-   properties (Acesss = protected)
+    ## Additional arguments
+  endproperties
+  properties (Acesss = protected)
     k;
     NN;
     cost;                   #cost ,alterable
@@ -205,7 +205,7 @@ classdef ClassificationKNN
     Includeties;
     Breakties;
     NumObsv;
-    Scale;                   # read only
+    Scale;                  # read only
 
     ## variable dependent properties
     classNames;
@@ -216,44 +216,44 @@ classdef ClassificationKNN
   endproperties
 
   methods (Access = public)
-    function this = ClassificationKNN (X, Y, varargin) ##obj constructor
+    function this = ClassificationKNN (X, Y, varargin) ## obj constructor
       if (nargin < 2 && nargin != 0) ## return empty object when no arguments
-        error ("@ClassificationKNN: too few arguments.");
+        error ("ClassificationKNN: too few arguments.");
       endif
 
       if (nargin >= 2) ## add upper condtion for nargin
 
-        if (rows(X) != rows(Y))
-          error ("@ClassificationKNN: number of rows in X and Y must be equal.");
+        if (rows (X) != rows (Y))
+          error ("ClassificationKNN: number of rows in X and Y must be equal.");
         endif
 
-        if ( !isnumeric(X) || !isfinite(X))
-          error ("@ClassificationKNN: Invalid values in X.");
+        if (! isnumeric (X) || ! isfinite (X))
+          error ("ClassificationKNN: Invalid values in X.");
         else
           this.X = X;
-          NumObsv = size (X,1);
+          NumObsv = size (X, 1);
         endif
 
-        ## assign Y
+        ## Assign Y
         this.Y = Y;
 
-        ## adding default values
-            k = 1;
-            cost  = [];                   #cost,alterable
-            Scale = [];                   # read only
-            prior = [];
-            cov   = [];
-            weights  = [];
-            exponent = 2;
-            bucketsize  = 50;
-            distance    = "euclidean";
-            NSmethod    = "exhaustive";
-            standerdize = false;
-            Includeties = false;
-            Breakties   = "equal";
-            NosClasses  = [];
-            classNames  = [];
-            Xclass      = [];
+        ## Adding default values
+        k = 1;
+        cost  = [];                   # cost, alterable
+        Scale = [];                   # read only
+        prior = [];
+        cov   = [];
+        weights  = [];
+        exponent = 2;
+        bucketsize  = 50;
+        distance    = "euclidean";
+        NSmethod    = "exhaustive";
+        standardize = false;
+        Includeties = false;
+        Breakties   = "equal";
+        NosClasses  = [];
+        classNames  = [];
+        Xclass      = [];
 
         while (numel (varargin) > 0)
           switch (tolower (varargin{1}))
@@ -279,8 +279,8 @@ classdef ClassificationKNN
             Includeties = varargin{2};
           case "nsmethod"
             NSmethod = varargin{2};
-          case "standerdize"
-            standerdize = varargin{2};
+          case "standardize"
+            standardize = varargin{2};
           case "includeties"
             IncludeTies = varargin{2};
           case "breakties"
@@ -292,13 +292,14 @@ classdef ClassificationKNN
           case "xclass"
             Xclass = varargin{2};
           otherwise
-            error ("@ClassificationKNN: Invalid NAME in optional pairs of arguments.");
+            error (strcat (["ClassificationKNN: Invalid NAME in"], ...
+                           [" optional pairs of arguments."]));
           endswitch
           varargin(1:2) = [];
         endwhile
 
 
-        ## assign properties related to Y
+        ## Assign properties related to Y
 
         if (isempty (classNames))
           this.classNames = unique (Y);
@@ -309,100 +310,106 @@ classdef ClassificationKNN
 
         ##------checking optional parameters------##
 
-        ## only checking if the arguments are provided and storing if they
-        ## pass the check,
-        ## If not provided the default values will be stored.
+        ## Only checking if the arguments are provided and storing if they
+        ## pass the check. If not provided the default values will be stored.
 
-        ## check if Xclass
-        if ( !isempty (Xclass))
-          if (columns(X) != columns(Xclass))
-            error ("@ClassificationKNN: number of columns in Xclass must be equal to X.");
+        ## Check if Xclass
+        if (! isempty (Xclass))
+          if (columns (X) != columns (Xclass))
+            error (strcat (["ClassificationKNN: number of columns"], ...
+                           [" in Xclass must be equal to X."]));
           else
             this.Xclass = Xclass;
           endif
         endif
 
-        ## check k
-        if ( !isempty (k))
-          if ( !isscalar(k) || !isnumeric(k) || k < 1 || k != round (k))
-            error ("@ClassificationKNN: Invalid value of k.");
+        ## Check k
+        if (! isempty (k))
+          if (! isscalar (k) || ! isnumeric (k) || k < 1 || k != round (k))
+            error ("ClassificationKNN: Invalid value of k.");
           else
             this.k = k;
           endif
         endif
 
-        ## check weights
-        if ( !isempty(weights))
-          if ( !isvector(weights) || rows(X) != length(weights) || sum(weights < 0) != 0)
-            error("@ClassificationKNN: Weights has invalid observarions.");
+        ## Check weights
+        if (! isempty (weights))
+          if (! isvector (weights) || rows (X) != length (weights) ...
+                                   || sum (weights < 0) != 0)
+            error("ClassificationKNN: Weights has invalid observarions.");
           else
             this.weights = weights;
           endif
         endif
-        ## check minkowski distance exponent
-        if ( !isempty (exponent))
-          if ( !isscalar(exponent) || !isnumeric(exponent) || exponent < 0)
-            error ("@ClassificationKNN: Invalid value of Minkowski Exponent.");
+        ## Check minkowski distance exponent
+        if (! isempty (exponent))
+          if (! isscalar (exponent) || ! isnumeric (exponent) || exponent < 0)
+            error ("ClassificationKNN: Invalid value of Minkowski Exponent.");
           else
             this.exponent = exponent;
           endif
         endif
 
-        ## check cost
-        if ( !isempty(cost))
-          if ( !ismatrix (cost) || !isnumeric(cost) || columns (cost)!= numel(unique(Y)) || rows(cost) != rows(X) )
-            error ("@ClassificationKNN: Invalid value in cost or the size of cost.");
+        ## Check cost
+        if (! isempty (cost))
+          if (! ismatrix (cost) || ! isnumeric (cost) || ...
+              columns (cost) != numel (unique (Y)) || rows (cost) != rows (X))
+            error (strcat (["ClassificationKNN: Invalid value in"], ...
+                           [" cost or the size of cost."]));
           else
             this.cost = cost;
           endif
         endif
-        ## check scale
-        if ( !isempty(Scale))
-          if ( !ismatrix (Scale) || any(Scale < 0) || numel(Scale) != rows(X))
-            error ("@ClassificationKNN: Invalid value in Scale or the size of scale.");
+        ## Check scale
+        if (! isempty (Scale))
+          if (! ismatrix (Scale) || any (Scale < 0) || numel (Scale) != rows (X))
+            error (strcat (["ClassificationKNN: Invalid value in"], ...
+                           [" Scale or the size of scale."]));
           else
             this.Scale = Scale;
           endif
         endif
-        ## check cov
-        if ( !isempty(cov))
-          if ( !strcmp(distance,"mahalanobis") || !ismatrix(cov) || !isnumeric(cov))
-            error ("@ClassificationKNN: Invalid value in cov, cov can only be given for mahalanobis distance.");
+        ## Check cov
+        if (! isempty (cov))
+          if (! strcmpi (distance, "mahalanobis") || ...
+              ! ismatrix (cov) || ! isnumeric (cov))
+            error (strat (["ClassificationKNN: Invalid value in COV, COV"], ...
+                          [" can only be given for mahalanobis distance."]));
           else
             this.cov = cov;
           endif
         endif
-        ## check bucketsize
-        if ( !isempty (bucketsize))
-          if ( !isscalar(bucketsize) || bucketsize < 0)
-            error ("@ClassificationKNN: Invalid value of bucketsize.");
+        ## Check bucketsize
+        if (! isempty (bucketsize))
+          if (! isscalar (bucketsize) || bucketsize < 0)
+            error ("ClassificationKNN: Invalid value of bucketsize.");
           else
             this.bucketsize = bucketsize;
           endif
         endif
 
-        ## standerdize
-        if ( !isempty (standerdize))
-          if ( !islogical(standerdize) && standerdize != 1 && standerdize != 0)
-            error ("@ClassificationKNN: value of standerdize must be boolean.");
+        ## standardize
+        if (! isempty (standardize))
+          if (! islogical (standardize) && standardize != 1 && standardize != 0)
+            error ("ClassificationKNN: value of standardize must be boolean.");
           else
-            this.standerdize = standerdize;
+            this.standardize = standardize;
           endif
         endif
-        ## includeties
-        if ( !isempty (Includeties))
-          if ( !islogical(Includeties) && Includeties != 1 && Includeties != 0)
-            error ("@ClassificationKNN: value of Includeties must be boolean");
+        ## Includeties
+        if (! isempty (Includeties))
+          if (! islogical (Includeties) && Includeties != 1 && Includeties != 0)
+            error ("ClassificationKNN: value of Includeties must be boolean");
           else
             this.Includeties = Includeties;
           endif
         endif
 
-        if (!isempty (distance))
+        if (! isempty (distance))
           this.distance = distance;
         endif
 
-        if (!isempty (NSmethod))
+        if (! isempty (NSmethod))
           this.NSmethod = NSmethod;
         endif
 
@@ -418,10 +425,10 @@ classdef ClassificationKNN
     function [label, Score, Cost] = predict (this)
 
       ## check Xclass
-      if ( isempty (this.Xclass))
-        error ("@ClassificationKNN.predict: Xclass is empty");
-      elseif ( columns(this.X) != columns(this.Xclass))
-        error ("@ClassificationKNN.predict: Xclass must have columns equal to X");
+      if (isempty (this.Xclass))
+        error ("@ClassificationKNN.predict: Xclass is empty.");
+      elseif (columns (this.X) != columns (this.Xclass))
+        error ("@ClassificationKNN.predict: Xclass must have columns equal to X.");
       endif
 
       ## check cost
@@ -515,7 +522,7 @@ endclassdef
 %! assert ({a.NosClasses, a.NumObsv, a.Scale, a.Score, a.cost}, {[],[],[],[],[]})
 %! assert ({a.X, a.Xclass, a.Y, a.bucketsize, a.classNames}, {[],[],[],[],[]})
 %! assert ({a.cov, a.distance, a.exponent, a.k, a.label}, {[],[],[],[],[]})
-%! assert ({a.prior, a.standerdize, a.weights}, {[],[],[]})
+%! assert ({a.prior, a.standardize, a.weights}, {[],[],[]})
 
 %!test
 %! warning("off");
@@ -581,10 +588,10 @@ endclassdef
 %! warning("off");
 %! x = [1,2,3;4,5,6;7,8,9;3,2,1];
 %! y = ['a';'a';'b';'b'];
-%! a = ClassificationKNN (x, y, 'standerdize', true);
+%! a = ClassificationKNN (x, y, 'standardize', true);
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ['a';'a';'b';'b'], 1})
-%! assert (a.standerdize, true);
+%! assert (a.standardize, true);
 %! assert ({a.NSmethod,a.distance,a.bucketsize},{"exhaustive","euclidean",50})
 
 %!test
@@ -654,7 +661,7 @@ endclassdef
 %! ClassificationKNN(ones(4,2),ones(4,1), "cov", ones (4,1))
 %!error<@ClassificationKNN: Invalid value of bucketsize.> ...
 %! ClassificationKNN(ones(4,2),ones(4,1), "bucketsize", -5)
-%!error<@ClassificationKNN: value of standerdize must be boolean.> ...
-%! ClassificationKNN(ones(4,2),ones(4,1), "standerdize", 5)
+%!error<@ClassificationKNN: value of standardize must be boolean.> ...
+%! ClassificationKNN(ones(4,2),ones(4,1), "standardize", 5)
 %!error<@ClassificationKNN: number of columns in Xclass must be equal to X.> ...
 %! ClassificationKNN (ones (4,3), ones (4,1), 'Xclass', ones(4,1))
