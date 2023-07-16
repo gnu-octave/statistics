@@ -47,12 +47,12 @@
 ## in the kNN search.  It must be a positive integer value and by default it is
 ## 1. @var{"K"} can be changed by using @code{@var{obj.K} = 10}.
 ##
-## @item @tab @qcode{"weights"} @tab is a @math{Nx1} numeric non-negative matrix of
-## the observational weights, each row in @var{weights} corresponds to the row
-## in @var{Y} and indicates the relative importance or weight to be considered
-## in calculating the Nearest-neighbour, negative values are removed before
-## calculations if weights are specified. this propery cannot be changed via
-## object. default value @qcode{@var{weight} = ones(rows(Y),1)}.
+## @item @tab @qcode{"weights"} @tab is a @math{Nx1} numeric non-negative matrix
+##  of the observational weights, each row in @var{weights} corresponds to the
+## row in @var{Y} and indicates the relative importance or weight to be
+## considered in calculating the Nearest-neighbour, negative values are removed
+##  before calculations if weights are specified. this propery cannot be
+## changed via object. default value @qcode{@var{weight} = ones(rows(Y),1)}.
 ##
 ## @item @tab @qcode{"cost"} @tab is a @math{NxR} numeric matrix containing
 ## misclassification cost for the corresponding instances in @var{X} where
@@ -185,12 +185,12 @@ function obj = fitcknn (X, Y, varargin)
   ## create object
   if ( nargin == 0)
     ## return empty object with warning
-    obj = classificationKNN();
+    obj = ClassificationKNN();
     warning ("fitcknn: No Argument given, Created Object will be empty.");
 
   else
     ## arguments are not empty and are within range
-    obj = classificationKNN(X, Y, varargin{:});
+    obj = ClassificationKNN(X, Y, varargin{:});
   endif
 
 
@@ -209,28 +209,29 @@ endfunction
 %! ## create an object
 %! a = fitcknn (x, y, 'Xclass' , xnew, 'k', 5)
 %! ## predict labels for points in xnew
-%! a.predict()
+%! predict (a)
 %! ## change properties keeping training data and predict again
 %! a.distance = 'hamming';
 %! a.k = 10;
-%! a.predict()
+%! predict (a)
 
 ## Test Output
 %!test
+%! warning("off");
 %! a = fitcknn ();
-%! assert (class (a), "classificationKNN");
+%! assert (class (a), "ClassificationKNN");
 %! assert ({a.Breakties, a.Includeties, a.NN, a.NSmethod}, {[],[],[],[]})
 %! assert ({a.NosClasses, a.NumObsv, a.Scale, a.Score, a.cost}, {[],[],[],[],[]})
 %! assert ({a.X, a.Xclass, a.Y, a.bucketsize, a.classNames}, {[],[],[],[],[]})
-%! assert ({a.cov, a.distance, a.exponent, a.k, a.label}, {[],[],[],[],[]})
-%! assert ({a.prior, a.standerdize, a.weights}, {[],[],[]})
+%! assert ({a.cov, a.distance, a.P, a.k, a.label}, {[],[],[],[],[]})
+%! assert ({a.prior, a.standardize, a.weights}, {[],[],[]})
 
 %!test
 %! warning("off");
 %! x = [1,2,3;4,5,6;7,8,9;3,2,1];
 %! y = ['a';'a';'b';'b'];
 %! a = fitcknn (x, y);
-%! assert (class (a), "classificationKNN");
+%! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ['a';'a';'b';'b'], 1})
 %! assert ({a.NSmethod, a.distance, a.bucketsize},{"exhaustive","euclidean",50})
 
@@ -240,7 +241,7 @@ endfunction
 %! y = ['a';'a';'b';'b'];
 %! k = 10;
 %! a = fitcknn (x, y, "K" ,k);
-%! assert (class (a), "classificationKNN");
+%! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ['a';'a';'b';'b'], 10})
 %! assert ({a.NSmethod, a.distance, a.bucketsize},{"exhaustive","euclidean",50})
 
@@ -250,7 +251,7 @@ endfunction
 %! y = ['a';'a';'b';'b'];
 %! weights = ones (4,1);
 %! a = fitcknn (x, y, "weights" , weights);
-%! assert (class (a), "classificationKNN");
+%! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ['a';'a';'b';'b'], 1})
 %! assert (a.weights, ones (4,1))
 %! assert ({a.NSmethod, a.distance, a.bucketsize},{"exhaustive","euclidean",50})
@@ -259,10 +260,10 @@ endfunction
 %! warning("off");
 %! x = [1,2,3;4,5,6;7,8,9;3,2,1];
 %! y = ['a';'a';'b';'b'];
-%! a = fitcknn (x, y, "exponent" , 10);
-%! assert (class (a), "classificationKNN");
+%! a = fitcknn (x, y, "p" , 10);
+%! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ['a';'a';'b';'b'], 1})
-%! assert (a.exponent, 10)
+%! assert (a.P, 10)
 %! assert ({a.NSmethod, a.distance, a.bucketsize},{"exhaustive","euclidean",50})
 
 %!test
@@ -271,7 +272,7 @@ endfunction
 %! y = ['a';'a';'b';'b'];
 %! cov = rand (4,1);
 %! a = fitcknn (x, y, "cov" , cov, 'distance', 'mahalanobis');
-%! assert (class (a), "classificationKNN");
+%! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ['a';'a';'b';'b'], 1})
 %! assert (a.cov, cov)
 %! assert ({a.NSmethod, a.distance, a.bucketsize},{"exhaustive","mahalanobis",50})
@@ -281,7 +282,7 @@ endfunction
 %! x = [1,2,3;4,5,6;7,8,9;3,2,1];
 %! y = ['a';'a';'b';'b'];
 %! a = fitcknn (x, y, "bucketsize" , 20, 'distance', 'mahalanobis');
-%! assert (class (a), "classificationKNN");
+%! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ['a';'a';'b';'b'], 1})
 %! assert ({a.NSmethod,a.distance,a.bucketsize},{"exhaustive","mahalanobis",20})
 
@@ -289,10 +290,10 @@ endfunction
 %! warning("off");
 %! x = [1,2,3;4,5,6;7,8,9;3,2,1];
 %! y = ['a';'a';'b';'b'];
-%! a = fitcknn (x, y, 'standerdize', true);
-%! assert (class (a), "classificationKNN");
+%! a = fitcknn (x, y, 'standardize', true);
+%! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ['a';'a';'b';'b'], 1})
-%! assert (a.standerdize, true);
+%! assert (a.standardize, true);
 %! assert ({a.NSmethod,a.distance,a.bucketsize},{"exhaustive","euclidean",50})
 
 %!test
@@ -300,7 +301,7 @@ endfunction
 %! x = [1,2,3;4,5,6;7,8,9;3,2,1];
 %! y = ['a';'a';'b';'b'];
 %! a = fitcknn (x, y, 'includeties', true);
-%! assert (class (a), "classificationKNN");
+%! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ['a';'a';'b';'b'], 1})
 %! assert (a.Includeties, true);
 %! assert ({a.NSmethod,a.distance,a.bucketsize},{"exhaustive","euclidean",50})
@@ -311,7 +312,7 @@ endfunction
 %! y = ['a';'a';'b';'b'];
 %! cost = ones (4,2);
 %! a = fitcknn (x, y, 'cost', cost );
-%! assert (class (a), "classificationKNN")
+%! assert (class (a), "ClassificationKNN")
 %! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ['a';'a';'b';'b'], 1})
 %! assert (a.cost, [1,1;1,1;1,1;1,1])
 %! assert ({a.NSmethod,a.distance,a.bucketsize},{"exhaustive","euclidean",50})
@@ -322,7 +323,7 @@ endfunction
 %! y = ['a';'a';'b';'b'];
 %! scale = [1,2,3,4];
 %! a = fitcknn (x, y, 'scale', scale );
-%! assert (class (a), "classificationKNN")
+%! assert (class (a), "ClassificationKNN")
 %! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ['a';'a';'b';'b'], 1})
 %! assert (a.Scale, [1,2,3,4])
 %! assert ({a.NSmethod,a.distance,a.bucketsize},{"exhaustive","euclidean",50})
