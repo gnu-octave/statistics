@@ -20,96 +20,119 @@
 ## @deftypefnx {statistics} {@var{label} =} knnpredict (@var{x}, @var{y}, @var{Xclass}, @var{name}, @var{value})
 ## @deftypefnx {statistics} {[@var{label}, @var{score}, @var{cost}] =} knnpredict (@var{x}, @var{y}, @var{Xclass}, @var{name}, @var{value})
 ##
-## Classify new data points into categries using kNN algorithm
+## Classify new data points into categories using kNN algorithm
 ##
 ## @itemize
 ## @item
-## @code{X} must be a @math{NxP} numeric matrix of input data where rows correspond
-## to observations and columns correspond to features or variables.@var{X} will
-## be used to train the kNN model.
+## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+## correspond to observations and columns correspond to features or variables.
+## @var{X} will be used to train the kNN model.
 ## @item
 ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels of
 ## corresponding predictor data in @var{X}. @var{Y} can contain any type of
 ## categorical data. @var{Y} must have same numbers of Rows as @var{X}.
 ## @item
-## @code{Xclass} must be a @math{MxP} numeric matrix of query/new points that are
-## to be classified into the labels. @var{Xclass} must have same numbers of columns
-## as @var{X}.
+## @code{Xclass} must be a @math{MxP} numeric matrix of query/new points that
+## are to be classified into the labels.
+## @var{Xclass} must have same numbers of columns as @var{X}.
 ##
 ## @emph{ additional parameters that can be passed as name value pairs :}
-## @item
-## @code{K} is the number of nearest neighbours to be considered in kNN search
-##          Default value of @qcode{@var{k} = 1}.
-## @item
-## @code{weights} is a @math{Nx1} numeric non-negative matrix of the observational
-##          weights, each row in @var{weights} corresponds to the row in @var{Y}
-##          and indicates the relative importance or weight to be considered in
-##          calculating the Nearest-neighbour, negative values are removed before
-##          calculations if weights are specified.
-##          default value @qcode{@var{weight} = ones(rows(Y),1)}.
-## @item
-## @code{exponent} is the minkowski distance exponent. Default is @qcode{@var{P} = 2}.
-## @item
-## @code{cost} is a @math{NxR} numeric matrix containing misclassification cost
-##             for the corresponding instances in @var{X} where @var{R} is the
-##             number of unique categories in @var{Y}. If an instance is correctly
-##             classified into its category the cost is calculated to be 1, If not
-##             then 0. default value @qcode{@var{cost} = ones(rows(X),numel(unique(Y)))}.
-## @item
-## @code{scale} is scale for calculating standardized euclidean distance.
-##             Default is @qcode{@var{scale} = []}.
-## @item
-## @code{cov}   is the covariance matrix for computing mahalanobis distance.
-## @item
-## @code{bucketsize} is maximum number of data points per leaf node of kd-tree.
-##              if NSmethod is 'kdtree', Default is @qcode{@var{bucketsize} = 50}.
-## @item
-## @code{distance}   is the distance metric to be used in calculating the distance
-##                   between points. the choice for distance metric are :
-## @itemize @minus
-## @item
-## @strong{'euclidean'}   - Euclidean distance. this is default.
-## @item
-## @strong{'sqeuclidean'} - squared euclidean distance.
-## @item
-## @strong{'cityblock'}   - City Block distance.
-## @item
-## @strong{'chebyshev'}   - Chebyshev distance.
-## @item
-## @strong{'minkowski'}   - Minkowski distance with exponent @code{exponent}
-##                          default is @qcode{@var{P} = 2}.
-## @item
-## @strong{'mahalanobis'} - Mahalanobis distance calculated using covariance matrix @code{cov}.
-## @item
-## @strong{'cosine'}      - Cosine distance.
-## @item
-## @strong{'correlation'} - Correlation distance
-## @item
-## @strong{'spearman'}    - spearman distance
-## @item
-## @strong{'jaccard'}     - jaccard distance.
-## @item
-## @strong{'hamming'}     - Hamming distance.
-## @end itemize
+## @multitable @columnfractions 0.05 0.2 0.75
+## @headitem @tab @var{Name} @tab @var{Value}
 ##
-## @item
-## @code{NSMethod}   is nearest neighbour search method. Choices for @var{NSMethod} are:
-## @itemize @minus
-## @item
-## @strong{'exhaustive'} - function computes the distance of each point in @var{Xclass}
-##                         from the predictor data @var{X} to find nearest neighbours.
-## @item
-## @strong{'kdtree'}     - function builds a kdtree of predictor data @var{x}
-##                         and then searches for query points in @var{Xclass}.
-##                         kdtree search method works best when @var{X} is not sparse
-##                         has less dimensions or columns in @var{X} and large
-##                         number of observations.
-## @end itemize
-## default value of @qcode{@var{NSMethod} = 'exhaustive'}.
+## @item @tab @qcode{"K"} @tab is the number of nearest neighbors to be found
+## in the kNN search.  It must be a positive integer value and by default it is
+## 1.
+## @item @tab @qcode{"weights"} @tab is a @math{Nx1} numeric non-negative matrix
+##          of the observational weights, each row in @var{weights} corresponds
+##          to the row in @var{Y} and indicates the relative importance or
+##          weight to be considered in calculating the Nearest-neighbour,
+##          negative values are removed before calculations if weights are
+##          specified. default value @qcode{@var{weight} = ones(rows(Y),1)}.
 ##
-## @item
-## @code{standerdize} is the flag to indicate if kNN should be calculated by
-##                    standerdizing @var{X}.
+## @item @tab @qcode{"P"} @tab is the Minkowski distance exponent and it must be
+##          a positive scalar.  This argument is only valid when the selected
+##          distance metric is @qcode{"minkowski"}.  By default it is 2.
+##
+## @item @tab @qcode{"scale"} @tab is the scale parameter for the standardized
+##          Euclidean distance and it must be a nonnegative numeric vector of
+##          equal length to the number of columns in @var{X}.  This argument is
+##          only valid when the selected distance metric is @qcode{"seuclidean"}
+##          , in which case each coordinate of @var{X} is scaled by the
+##          corresponding element of @qcode{"scale"}, as is each query point in
+##          @var{Y}.  By default, the scale parameter is the standard deviation
+##          of each coordinate in @var{X}.
+##
+## @item @tab @qcode{"cov"} @tab is the covariance matrix for computing the
+##          mahalanobis distance and it must be a positive definite matrix
+##          matching the the number of columns in @var{X}.  This argument is
+##          only valid when the selected distance metric is
+##          @qcode{"mahalanobis"}.
+## @item @tab @qcode{"cost"} @tab is a @math{NxR} numeric matrix containing
+##          misclassification cost for the corresponding instances in @var{X}
+##          where @var{R} is the number of unique categories in @var{Y}.
+##          If an instance is correctly classified into its category the
+##          cost is calculated to be 1, If not then 0. default value
+##          @qcode{@var{cost} = ones(rows(X),numel(unique(Y)))}.
+##
+## @item @tab @qcode{"BucketSize"} @tab is the maximum number of data points in
+##          the leaf node of the Kd-tree and it must be a positive integer.
+##          This argument is only valid when the selected search
+##          method is @qcode{"kdtree"}.
+##
+## @item @tab @qcode{"Distance"} @tab is the distance metric used by
+## @code{knnsearch} as specified below:
+## @end multitable
+##
+## @multitable @columnfractions 0.1 0.25 0.65
+## @item @tab @qcode{"euclidean"} @tab Euclidean distance.
+## @item @tab @qcode{"seuclidean"} @tab standardized Euclidean distance.  Each
+## coordinate difference between the rows in @var{X} and the query matrix
+## @var{Y} is scaled by dividing by the corresponding element of the standard
+## deviation computed from @var{X}.  To specify a different scaling, use the
+## @qcode{"scale"} name-value argument.
+## @item @tab @qcode{"cityblock"} @tab City block distance.
+## @item @tab @qcode{"chebychev"} @tab Chebychev distance (maximum coordinate
+## difference).
+## @item @tab @qcode{"minkowski"} @tab Minkowski distance.  The default exponent
+## is 2.  To specify a different exponent, use the @qcode{"P"} name-value
+## argument.
+## @item @tab @qcode{"mahalanobis"} @tab Mahalanobis distance, computed using a
+## positive definite covariance matrix.  To change the value of the covariance
+## matrix, use the @qcode{"cov"} name-value argument.
+## @item @tab @qcode{"cosine"} @tab Cosine distance.
+## @item @tab @qcode{"correlation"} @tab One minus the sample linear correlation
+## between observations (treated as sequences of values).
+## @item @tab @qcode{"spearman"} @tab One minus the sample Spearman's rank
+## correlation between observations (treated as sequences of values).
+## @item @tab @qcode{"hamming"} @tab Hamming distance, which is the percentage
+## of coordinates that differ.
+## @item @tab @qcode{"jaccard"} @tab One minus the Jaccard coefficient, which is
+## the percentage of nonzero coordinates that differ.
+## @end multitable
+##
+## @multitable @columnfractions 0.05 0.2 0.75
+## @item @tab @qcode{"NSMethod"} @tab is the nearest neighbor search method used
+## by @code{knnsearch} as specified below.
+## @end multitable
+##
+## @multitable @columnfractions 0.1 0.25 0.65
+## @item @tab @qcode{"kdtree"} @tab Creates and uses a Kd-tree to find nearest
+## neighbors.  @qcode{"kdtree"} is the default value when the number of columns
+## in @var{X} is less than or equal to 10, @var{X} is not sparse, and the
+## distance metric is @qcode{"euclidean"}, @qcode{"cityblock"},
+## @qcode{"chebychev"}, or @qcode{"minkowski"}.  Otherwise, the default value is
+## @qcode{"exhaustive"}.  This argument is only valid when the distance metric
+## is one of the four aforementioned metrics.
+## @item @tab @qcode{"exhaustive"} @tab Uses the exhaustive search algorithm by
+## computing the distance values from all the points in @var{X} to each point in
+## @var{Y}.
+## @end multitable
+##
+## @multitable @columnfractions 0.05 0.2 0.75
+## @item @tab @qcode{"standardize"} @tab is the flag to indicate if kNN should
+##               be calculated standerdizing @var{X}.
+## @end multitable
 ##
 ## @code{@var{label} = knnpredict (@var{X}, @var{Y}, @var{Xclass})}
 ## returns the matrix of labels predicted for the corresponding instances
@@ -126,19 +149,19 @@
 ## @code{[@var{label}, @var{score}, @var{cost}] = knnpredict (@dots{})}
 ## returns the matrix of labels predicted for the corresponding instances
 ## in @code{Xclass}, using the predictor data in @code{X} and @code{Y}.
+##
 ## In addition it also returns
-## @itemize @minus
-## @item
-## @var{score} contains predicted class scores or posterior Probabilities
-##             for each instances for corresponding unique classes in @var{Y}.
-## @item
-## @var{cost}  is a matrix containing expected cost of the classifications.
-##             each row of @var{cost} matrix contains the expected cost of
-##             classification of observations in @var{Xclass} into each class of
-##             unique classes in @var{Y}.
 ##
+## @multitable @columnfractions 0.05 0.2 0.75
+## @item @tab @qcode{"score"} @tab contains predicted class scores or posterior
+##             Probabilities for each instances for corresponding unique
+##             classes in @var{Y}.
+## @item @tab @qcode{"cost"} @tab is a matrix containing expected cost of the
+##             classifications. each row of @var{cost} matrix contains the
+##             expected cost of classification of observations in @var{Xclass}
+##             into each class of unique classes in @var{Y}.
+##@end multitable
 ##
-## @end itemize
 ## @end itemize
 ##
 ## for demo use demo knnpredict
@@ -154,17 +177,17 @@ function [label, score, cost] = knnpredict (X, Y, Xclass, varargin)
 	  error ("knnpredict: too few input arguments.");
   endif
 
-  if (rows(X) != rows(Y))
+  if (rows (X) != rows (Y))
     error ("knnpredict: number of rows in X and Y must be equal.");
   endif
 
-  if (columns(X) != columns(Xclass))
+  if (columns (X) != columns (Xclass))
     error ("knnpredict: number of columns in Xclass must be equal to X.");
   endif
 
   ##check X
   ## remove this do this after removing NaNs
-  if ( !isnumeric(X) || !isfinite(X))
+  if (! isnumeric (X) || ! isfinite (X))
     error ("knnpredict: Invalid values in X.");
   endif
 
@@ -174,14 +197,14 @@ function [label, score, cost] = knnpredict (X, Y, Xclass, varargin)
   ## adding default values
     k = 1;
     cost  = [];
-    Scale = [];
-    cov   = [];
+    S = [];
+    C   = [];
     weights  = [];
-    exponent = 2;
-    bucketsize  = 50;
+    P = 2;
+    BS  = 50;
     distance    = "euclidean";
     NSmethod    = "exhaustive";
-    standerdize = false;
+    standardize = false;
 
 
   ## Parse additional parameters in Name/Value pairs
@@ -191,87 +214,89 @@ function [label, score, cost] = knnpredict (X, Y, Xclass, varargin)
         k = varargin{2};
       case "weights"
         weights = varargin{2};
-      case "exponent"
-        exponent = varargin{2};
+      case "p"
+        P = varargin{2};
       case "cost"
         cost = varargin{2};
       case "scale"
-        Scale = varargin{2};
+        S = varargin{2};
       case "cov"
-        cov = varargin{2};
+        C = varargin{2};
       case "bucketsize"
-        bucketsize = varargin{2};
+        BS = varargin{2};
       case "distance"
         distance = varargin{2};
       case "nsmethod"
         NSmethod = varargin{2};
-      case "standerdize"
-        standerdize = varargin{2};
+      case "standardize"
+        standardize = varargin{2};
       otherwise
         error ("knnsearch: invalid NAME in optional pairs of arguments.");
     endswitch
-    varargin(1:2) = [];
+    varargin (1:2) = [];
   endwhile
 
 
   ##------checking optional parameters------##
   ## check k
-  if ( !isscalar(k) || !isnumeric(k) || k < 1 || k != round (k))
+  if (! isscalar (k) || !isnumeric (k) || k < 1 || k != round (k))
     error ("knnpredict: Invalid value of k.");
   endif
 
   ## check weights
-  if ( !isempty(weights))
-    if ( !isvector(weights) || rows(X) != length(weights) ...
-            || sum(weights < 0) != 0)
+  if (! isempty (weights))
+    if (! isvector (weights) || rows (X) != length (weights) ...
+                             || sum(weights < 0) != 0)
         error("knnpredict: Weights has invalid observarions.");
     endif
   endif
 
   ## check minkowski distance exponent
-  if ( !isscalar(exponent) || !isnumeric(exponent) || exponent < 0)
+  if (! isscalar (P) || ! isnumeric (P) || P < 0)
     error ("knnpredict: Invalid value of Minkowski Exponent.");
   endif
 
   ## check cost
-  if ( !isempty(cost))
-    if ( !isscalar(cost) || !isnumeric(cost) || ...
-        columns != numel(unique(Y)) || rows(cost) != rows(X) )
+  if (! isempty (cost))
+    if (! isscalar (cost) || ! isnumeric(cost) || ...
+        columns != numel (unique(Y)) || rows (cost) != rows (X) )
         error ("knnpredict: Invalid value in cost or the size of cost.");
     endif
   else
     ## empty cost
-    cost = ones(rows(Xclass),numel(unique(Y)));
+    cost = ones (rows (Xclass),numel (unique (Y)));
   endif
 
   ## check scale
-  if ( !isempty(Scale))
-    if ( !isscalar(Scale) || any(Scale) < 0 || numel(Scale) != rows(X))
+  if (! isempty (S))
+    if (! isscalar (S) || any (S) < 0 || numel (S) != rows (X))
       error ("knnpredict: Invalid value in Scale or the size of scale.");
     endif
   endif
 
-  ## check cov
-  if ( !isempty(cov))
-    if ( !strcmp(distance,"mahalanobis") || !ismatrix(cov) || !isnumeric(cov))
-      error ("knnpredict: Invalid value in cov, cov can only be given for mahalanobis distance.");
+  ## check C
+  if (! isempty (C))
+    if (! strcmp (distance,"mahalanobis") || ! ismatrix (C) ...
+                                          || ! isnumeric (C))
+      error (strcat (["knnpredict: Invalid value in cov, cov can only be"], ...
+                    [" given for mahalanobis distance."]));
     endif
   endif
 
-  ## check bucketsize
-  if ( !isscalar(bucketsize) || bucketsize < 0)
+  ## check BS
+  if (! isscalar (BS) || BS < 0)
     error ("knnpredict: Invalid value of bucketsize.");
   endif
 
-  ##standerdize
-  if ( !islogical(standerdize) && standerdize != 1 && standerdize != 0)
-    error ("knnpredict: value of standerdize must be boolean.");
+  ##standardize
+  if (! islogical(standardize) && standardize != 1 && standardize != 0)
+    error ("knnpredict: value of standardize must be boolean.");
   endif
 
 
   ##------checking optional params end------##
 
-  if (standerdize)
+  if (standardize)
     stdX = std (X,0,1);
     mu   = mean(X);
     X    = (X - mu) ./ stdX;
@@ -288,14 +313,14 @@ function [label, score, cost] = knnpredict (X, Y, Xclass, varargin)
 
   if (isempty (X))
     ## no data in X
-    label     = repmat(classNames(1,:),0,1);
-    posterior = NaN(0,classNos);
-    cost      = NaN(0,classNos);
+    label     = repmat (classNames(1,:),0,1);
+    posterior = NaN (0,classNos);
+    cost      = NaN (0,classNos);
   else
     ## calculate the NNs using knnsearch
     [idx, dist] = knnsearch (X, Xclass, "k", k, "NSMethod", NSmethod, ...
-                  "Distance", distance, "P", exponent, "Scale", Scale, "cov", ...
-                  cov, "bucketsize", bucketsize, "sortindices", true);
+                  "Distance", distance, "P", P, "Scale", S, ...
+                  "cov", C, "bucketsize", BS, "sortindices", true);
 
     [label, score, cost_temp] = predictlabel (X, Y, idx, k, weights);
 
@@ -360,31 +385,50 @@ endfunction
 %!
 %! ## calculate 10 nearest-neighbours by minkowski distance
 %! [id, d] = knnsearch (x, point, "K", 10);
+%! ld = knnpredict (x, y, point, "K", 10);
 %!
 %! ## calculate 10 nearest-neighbours by minkowski distance
 %! [idm, dm] = knnsearch (x, point, "K", 10, "distance", "minkowski", "p", 5);
+%! lm = knnpredict (x, y, point, "K", 10, "distance", "minkowski", "p", 5);
 %!
 %! ## calculate 10 nearest-neighbours by chebychev distance
 %! [idc, dc] = knnsearch (x, point, "K", 10, "distance", "chebychev");
+%! lc = knnpredict (x, y, point, "K", 10, "distance", "chebychev");
 %!
 %! ## calculate 10 nearest-neighbours by chebychev distance
 %! [ids, ds] = knnsearch (x, point, "K", 10, "distance", "hamming");
+%! ls = knnpredict (x, y, point, "K", 10, "distance", "hamming");
 %!
 %! ## calculate 10 nearest-neighbours by chebychev distance
 %! [idb, db] = knnsearch (x, point, "K", 10, "distance", "cityblock");
+%! lb = knnpredict (x, y, point, "K", 10, "distance", "cityblock");
 %!
 %! ## calculate 10 nearest-neighbours by chebychev distance
 %! [idh, dh] = knnsearch (x, point, "K", 10, "distance", "manhattan");
+%! lh = knnpredict (x, y, point, "K", 10, "distance", "manhattan");
 %!
 %! ## calculate 10 nearest-neighbours by chebychev distance
 %! [idn, dn] = knnsearch (x, point, "K", 10, "distance", "cosine");
+%! ln = knnpredict (x, y, point, "K", 10, "distance", "cosine");
 %!
 %! ## calculate 10 nearest-neighbours by chebychev distance
 %! [idj, dj] = knnsearch (x, point, "K", 10, "distance", "jaccard");
+%! lj = knnpredict (x, y, point, "K", 10, "distance", "jaccard");
 %!
+%! fprintf (strcat ([" Labels predicted by different distance metrics  "], ...
+%!                 [" for 10 Nearest Neighbours of [5, 1.45] \n"]));
+%! fprintf (strcat (["\n Euclidean : "],[ld{1}]));
+%! fprintf (strcat (["\n Minkowski : "],[lm{1}]));
+%! fprintf (strcat (["\n Chebychev : "],[lc{1}]));
+%! fprintf (strcat (["\n Hamming   : "],[ls{1}]));
+%! fprintf (strcat (["\n cityblock : "],[lb{1}]));
+%! fprintf (strcat (["\n Manhattan : "],[lh{1}]));
+%! fprintf (strcat (["\n Cosine    : "],[ln{1}]));
+%! fprintf (strcat (["\n Jaccard   : "],[lj{1}]));
+%! warning("off");
 %! hold on
-%! s1 = subplot (2, 2, 1)
-%! gscatter(x(:,1), x(:,2), species,[.75 .75 0; 0 .75 .75; .75 0 .75], '.',20)
+%! s1 = subplot (2, 2, 1);
+%! gscatter(x(:,1), x(:,2), species,[.75 .75 0; 0 .75 .75; .75 0 .75], '.',20);
 %! set( s1, 'title', 'euclidean and minkowski distances' );
 %! xlabel('Petal length (cm)');
 %! ylabel('Petal width (cm)');
@@ -395,8 +439,8 @@ endfunction
 %! ylim ([1 2]);
 %! axis square;
 %!
-%! s2 = subplot (2, 2, 2)
-%! gscatter(x(:,1), x(:,2), species,[.75 .75 0; 0 .75 .75; .75 0 .75], '.',20)
+%! s2 = subplot (2, 2, 2);
+%! gscatter(x(:,1), x(:,2), species,[.75 .75 0; 0 .75 .75; .75 0 .75], '.',20);
 %! set( s2, 'title', 'chebychev  and hamming distance' );
 %! xlabel('Petal length (cm)');
 %! ylabel('Petal width (cm)');
@@ -407,8 +451,8 @@ endfunction
 %! ylim ([1 2]);
 %! axis square;
 %!
-%! s3 = subplot (2, 2, 3)
-%! gscatter(x(:,1), x(:,2), species,[.75 .75 0; 0 .75 .75; .75 0 .75], '.',20)
+%! s3 = subplot (2, 2, 3);
+%! gscatter(x(:,1), x(:,2), species,[.75 .75 0; 0 .75 .75; .75 0 .75], '.',20);
 %! set( s3, 'title', 'cityblock and manhattan distance' );
 %! xlabel('Petal length (cm)');
 %! ylabel('Petal width (cm)');
@@ -419,8 +463,8 @@ endfunction
 %! ylim ([1 2]);
 %! axis square;
 %!
-%! s4 = subplot (2, 2, 4)
-%! gscatter(x(:,1), x(:,2), species,[.75 .75 0; 0 .75 .75; .75 0 .75], '.',20)
+%! s4 = subplot (2, 2, 4);
+%! gscatter(x(:,1), x(:,2), species,[.75 .75 0; 0 .75 .75; .75 0 .75], '.',20);
 %! set( s4, 'title', 'cosine and jaccard distance' );
 %! xlabel('Petal length (cm)');
 %! ylabel('Petal width (cm)');
@@ -470,7 +514,7 @@ endfunction
 %! assert (c, [1.0000, 0.4000, 0.6000], 1e-4)
 %!test
 %! xnew = [5, 3, 5, 1.45];
-%! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance", "minkowski", "exponent", 5);
+%! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance", "minkowski", "P", 5);
 %! assert (l, {"versicolor"})
 %! assert (s, [0, 0.5000, 0.5000], 1e-4)
 %! assert (c, [1.0000, 0.5000, 0.5000])
@@ -576,18 +620,18 @@ endfunction
 %!error<knnpredict: Weights has invalid observarions.> ...
 %! knnpredict (ones(4,3),ones(4,1),ones(1,3), "weights", ones(2,1))
 %!error<knnpredict: Invalid value of Minkowski Exponent.> ...
-%! knnpredict (ones(4,3),ones(4,1),ones(1,3), "exponent", -3)
+%! knnpredict (ones(4,3),ones(4,1),ones(1,3), "P", -3)
 %!error<knnpredict: Invalid value in cost or the size of cost.> ...
 %! knnpredict (ones(4,3),ones(4,1),ones(1,3), "cost", [1,2,3;4,5,6;7,8,9])
 %!error<knnpredict: Invalid value in cost or the size of cost.> ...
 %! knnpredict (ones(4,3),ones(4,1),ones(1,3), "cost", ones(4,2))
 %!error<knnpredict: Invalid value in Scale or the size of scale.> ...
-%! knnpredict (ones(4,3),ones(4,1),ones(1,3), "scale", ones(4,2))
+%! knnpredict (ones(4,3),ones(4,1),ones(1,3), "Scale", ones(4,2))
 %!error<knnpredict: Invalid value in Scale or the size of scale.> ...
 %! knnpredict (ones(4,3),ones(4,1),ones(1,3), "scale", [1;2;3;-4])
 %!error<knnpredict: Invalid value in cov, cov can only be given for mahalanobis distance.> ...
 %! knnpredict (ones(4,3),ones(4,1),ones(1,3), "cov", ones(4,2),"distance","euclidean")
 %!error<knnpredict: Invalid value of bucketsize.> ...
 %! knnpredict (ones(4,3),ones(4,1),ones(1,3), "bucketsize",-50)
-%!error<knnpredict: value of standerdize must be boolean.> ...
-%! knnpredict (ones(4,3),ones(4,1),ones(1,3), "standerdize","some")
+%!error<knnpredict: value of standardize must be boolean.> ...
+%! knnpredict (ones(4,3),ones(4,1),ones(1,3), "standardize","some")
