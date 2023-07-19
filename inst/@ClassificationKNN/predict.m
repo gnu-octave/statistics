@@ -31,26 +31,26 @@
 
 function [label, Score, cost] = predict (obj)
 
-      ## check Xclass
+      ## Check Xclass
       if (isempty (obj.Xclass))
         error ("@ClassificationKNN.predict: Xclass is empty.");
       elseif (columns (obj.X) != columns (obj.Xclass))
         error ("@ClassificationKNN.predict: Xclass must have columns equal to X.");
       endif
 
-      ## check cost
+      ## Check cost
       if (isempty (obj.cost))
         ## if empty assign all cost = 1
         obj.cost = ones (rows (obj.X), obj.NosClasses);
       endif
 
       if (isempty (obj.X))
-        ## no data in X
+        ## No data in X
         label     = repmat(classNames(1,:),0,1);
         posterior = NaN(0,classNos);
         cost      = NaN(0,classNos);
       else
-        ## calculate the NNs using knnsearch
+        ## Calculate the NNs using knnsearch
         [idx, dist] = knnsearch (obj.X, obj.Xclass, "k", obj.k, ...
                      "NSMethod", obj.NSmethod, "Distance", obj.distance, ...
                      "P", obj.P, "Scale", obj.Scale, "cov", obj.cov, ...
@@ -61,7 +61,7 @@ function [label, Score, cost] = predict (obj)
 
         cost  = obj.cost(rows(cost_temp),columns(cost_temp)) .* cost_temp;
 
-        ## store predcited in the object variables
+        ## Store predcited in the object variables
 
         obj.NN    = idx;
         obj.label = label;
@@ -72,9 +72,9 @@ function [label, Score, cost] = predict (obj)
 
 endfunction
 
-## function predict label
+## Function predict label
 function [labels, Score, cost_temp] = predictlabel (obj, idx)
-  ## assign intial values
+  ## Assign intial values
   freq = [];
   wsum  = sum (obj.weights);
   Score = [];
@@ -83,7 +83,7 @@ function [labels, Score, cost_temp] = predictlabel (obj, idx)
 
   for i = 1:rows (idx)
     if (!isempty (obj.weights))
-      ## weighted kNN
+      ## Weighted kNN
       for id = 1:numel (obj.classNames)
         freq = [freq; (sum (strcmpi (obj.classNames(id,1), obj.Y(idx(i,:))) .* obj.weights)) / wsum;]
         Score_temp = (freq ./ obj.k)';
@@ -101,7 +101,7 @@ function [labels, Score, cost_temp] = predictlabel (obj, idx)
 
     [val, iu] = max (freq);
 
-    ## set label for the index idx
+    ## Set label for the index idx
     labels = [labels; obj.classNames(iu,1)];
 
   endfor

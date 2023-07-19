@@ -172,7 +172,7 @@
 function [label, score, cost] = knnpredict (X, Y, Xclass, varargin)
 
 
-  ## check positional parameters
+  ## Check positional parameters
   if (nargin < 3)
 	  error ("knnpredict: too few input arguments.");
   endif
@@ -185,16 +185,16 @@ function [label, score, cost] = knnpredict (X, Y, Xclass, varargin)
     error ("knnpredict: number of columns in Xclass must be equal to X.");
   endif
 
-  ##check X
+  ## Check X
   ## remove this do this after removing NaNs
   if (! isnumeric (X) || ! isfinite (X))
     error ("knnpredict: Invalid values in X.");
   endif
 
 
-  ## process optional parameters
+  ## Process optional parameters
 
-  ## adding default values
+  ## Adding default values
     k = 1;
     cost  = [];
     S = [];
@@ -238,12 +238,12 @@ function [label, score, cost] = knnpredict (X, Y, Xclass, varargin)
 
 
   ##------checking optional parameters------##
-  ## check k
+  ## Check k
   if (! isscalar (k) || !isnumeric (k) || k < 1 || k != round (k))
     error ("knnpredict: Invalid value of k.");
   endif
 
-  ## check weights
+  ## Check weights
   if (! isempty (weights))
     if (! isvector (weights) || rows (X) != length (weights) ...
                              || sum(weights < 0) != 0)
@@ -251,30 +251,30 @@ function [label, score, cost] = knnpredict (X, Y, Xclass, varargin)
     endif
   endif
 
-  ## check minkowski distance exponent
+  ## Check minkowski distance exponent
   if (! isscalar (P) || ! isnumeric (P) || P < 0)
     error ("knnpredict: Invalid value of Minkowski Exponent.");
   endif
 
-  ## check cost
+  ## Check cost
   if (! isempty (cost))
     if (! isscalar (cost) || ! isnumeric(cost) || ...
         columns != numel (unique(Y)) || rows (cost) != rows (X) )
         error ("knnpredict: Invalid value in cost or the size of cost.");
     endif
   else
-    ## empty cost
+    ## Empty cost
     cost = ones (rows (Xclass),numel (unique (Y)));
   endif
 
-  ## check scale
+  ## Check scale
   if (! isempty (S))
     if (! isscalar (S) || any (S) < 0 || numel (S) != rows (X))
       error ("knnpredict: Invalid value in Scale or the size of scale.");
     endif
   endif
 
-  ## check C
+  ## Check C
   if (! isempty (C))
     if (! strcmp (distance,"mahalanobis") || ! ismatrix (C) ...
                                           || ! isnumeric (C))
@@ -283,12 +283,12 @@ function [label, score, cost] = knnpredict (X, Y, Xclass, varargin)
     endif
   endif
 
-  ## check BS
+  ## Check BS
   if (! isscalar (BS) || BS < 0)
     error ("knnpredict: Invalid value of bucketsize.");
   endif
 
-  ##standardize
+  ## Standardize
   if (! islogical(standardize) && standardize != 1 && standardize != 0)
     error ("knnpredict: value of standardize must be boolean.");
   endif
@@ -303,13 +303,13 @@ function [label, score, cost] = knnpredict (X, Y, Xclass, varargin)
   endif
 
 
-  ## calculate distance for each point in Xclass and pass to function
+  ## Calculate distance for each point in Xclass and pass to function
   ## to predict label for the data point
   classNames = unique (Y);
   classNos   = numel (classNames);
 
 
-  ## main kNN algorithm
+  ## Main kNN algorithm
 
   if (isempty (X))
     ## no data in X
@@ -317,7 +317,7 @@ function [label, score, cost] = knnpredict (X, Y, Xclass, varargin)
     posterior = NaN (0,classNos);
     cost      = NaN (0,classNos);
   else
-    ## calculate the NNs using knnsearch
+    ## Calculate the NNs using knnsearch
     [idx, dist] = knnsearch (X, Xclass, "k", k, "NSMethod", NSmethod, ...
                   "Distance", distance, "P", P, "Scale", S, ...
                   "cov", C, "bucketsize", BS, "sortindices", true);
@@ -333,7 +333,7 @@ endfunction
 ##-------function labels-------##
 function [labels, score, cost_temp] = predictlabel (x, y, idx, k, weights)
 
-  ## assign intial values
+  ## Assign intial values
   u = unique (y);
   freq = [];
   wsum  = sum (weights);
@@ -347,7 +347,7 @@ function [labels, score, cost_temp] = predictlabel (x, y, idx, k, weights)
 
     if (!isempty (weights))
 
-      ## weighted kNN
+      ## Weighted kNN
       for id = 1:numel (u)
         freq = [freq; (sum (strcmpi (u(id,1), y(idx(i,:))) .* weights)) / wsum;]
         score_temp = (freq ./ k)';
@@ -359,7 +359,7 @@ function [labels, score, cost_temp] = predictlabel (x, y, idx, k, weights)
         freq(id,1) = (sum (strcmpi (u(id,1), y(idx(i,:)))));
       endfor
 
-      ## score calculation
+      ## Score calculation
       score_temp = (freq ./ k)';
       cost_temp  = [cost_temp; ones(1,classNos) - score_temp];
       score = [score; score_temp];
@@ -368,7 +368,7 @@ function [labels, score, cost_temp] = predictlabel (x, y, idx, k, weights)
 
     [val, iu] = max (freq);
 
-    ## set label for the index idx
+    ## Set label for the index idx
     labels = [labels; u(iu,1)];
   endfor
 endfunction

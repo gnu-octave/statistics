@@ -206,9 +206,9 @@ function [idx, dist] = knnsearch (X, Y, varargin)
     error ("knnsearch: Invalid value of bucketsize.");
   endif
 
-  ## check NSMethod and set kdtree as default if the conditions match
+  ## Check NSMethod and set kdtree as default if the conditions match
   if ( isempty (NSMethod))
-    ## set default method 'kdtree' if condintions are satistfied;
+    ## Set default method 'kdtree' if condintions are satistfied;
     if (! issparse (X) && (columns (X) <= 10) && ...
        ( strcmpi (Distance, "euclidean") || strcmpi (Distance, "cityblock")...
       || strcmpi (Distance, "chebychev") || strcmpi (Distance, "minkowski")))
@@ -217,7 +217,7 @@ function [idx, dist] = knnsearch (X, Y, varargin)
       NSMethod = "exhaustive";
     endif
   else
-    ## not empty then check if is exhaustive or kdtree
+    ## Not empty then check if is exhaustive or kdtree
     if ( strcmpi (NSMethod,"kdtree") && ! ( strcmpi (Distance, "euclidean") ...
       || strcmpi (Distance, "cityblock") || strcmpi (Distance, "chebychev") ...
       || strcmpi (Distance, "minkowski")))
@@ -232,8 +232,8 @@ function [idx, dist] = knnsearch (X, Y, varargin)
 
     ## Check for ties and sortindices
     if (! InclTies)
-      ## only return k neighbors
-      ##  no need for returning cell
+      ## Only return k neighbors
+      ## No need for returning cell
       dist = [];
       idx  = [];
       for i = 1:rows (Y)
@@ -244,7 +244,7 @@ function [idx, dist] = knnsearch (X, Y, varargin)
         idx  = [idx;  sorted_D(1:K, 1)'];
       endfor
       if (SI)
-        ## rows are already sorted by distance
+        ## Rows are already sorted by distance
         dist = (dist);
         idx  = (idx);
       else
@@ -252,7 +252,7 @@ function [idx, dist] = knnsearch (X, Y, varargin)
         idx  = (idx);
       endif
     else
-      ## return all neighbors as cell
+      ## Return all neighbors as cell
       dist = cell (rows (Y), 1);
       idx  = cell (rows (Y), 1);
       for i = 1:rows (Y)
@@ -274,7 +274,7 @@ function [idx, dist] = knnsearch (X, Y, varargin)
       [dist, idx] = min (D, [], 2);
     else            # always sort indices in this case
       if (InclTies)
-        ## this part needs fixing so that idx is a cell array (column vector
+        ## This part needs fixing so that idx is a cell array (column vector
         dist = cell (rows (Y), 1);
         idx  = cell (rows (Y), 1);
         for i = 1:rows (Y)
@@ -286,7 +286,7 @@ function [idx, dist] = knnsearch (X, Y, varargin)
           idx  {i} = id (tied_idx, :);
         endfor
       else
-        ## no ties included
+        ## No ties included
         D = calc_dist (X, Y, Distance, P, S, C);
         D = reshape (D, size (Y, 1), size (X, 1));
         [dist, idx] = sort (D, 2);

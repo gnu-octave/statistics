@@ -49,12 +49,12 @@ classdef ClassificationKNN
 ## in the kNN search.  It must be a positive integer value and by default it is
 ## 1. @var{"K"} can be changed by using @code{@var{obj.K} = 10}.
 ##
-## @item @tab @qcode{"weights"} @tab is a @math{Nx1} numeric non-negative matrix of
-## the observational weights, each row in @var{weights} corresponds to the row
-## in @var{Y} and indicates the relative importance or weight to be considered
-## in calculating the Nearest-neighbour, negative values are removed before
-## calculations if weights are specified. this propery cannot be changed via
-## object. default value @qcode{@var{weight} = ones(rows(Y),1)}.
+## @item @tab @qcode{"weights"} @tab is a @math{Nx1} numeric non-negative matrix
+## of the observational weights, each row in @var{weights} corresponds to the
+## row in @var{Y} and indicates the relative importance or weight to be
+## considered in calculating the Nearest-neighbour, negative values are removed
+## before calculations if weights are specified. this propery cannot be changed
+## via object.  Default value @qcode{@var{weight} = ones(rows(Y),1)}.
 ##
 ## @item @tab @qcode{"cost"} @tab is a @math{NxR} numeric matrix containing
 ## misclassification cost for the corresponding instances in @var{X} where
@@ -200,14 +200,14 @@ classdef ClassificationKNN
   properties (Acesss = protected)
     k;
     NN;
-    cost;                   #cost ,alterable
+    cost;                   # cost ,alterable
     bucketsize;
     Includeties;
     Breakties;
     NumObsv;
     Scale;                  # read only
 
-    ## variable dependent properties
+    ## Variable dependent properties
     classNames;
     NosClasses;
     Score;
@@ -216,12 +216,12 @@ classdef ClassificationKNN
   endproperties
 
   methods (Access = public)
-    function this = ClassificationKNN (X, Y, varargin) ## obj constructor
-      if (nargin < 2 && nargin != 0) ## return empty object when no arguments
+    function this = ClassificationKNN (X, Y, varargin) # obj constructor
+      if (nargin < 2 && nargin != 0) # return empty object when no arguments
         error ("ClassificationKNN: too few arguments.");
       endif
 
-      if (nargin >= 2) ## add upper condtion for nargin
+      if (nargin >= 2) # add upper condtion for nargin
 
         if (rows (X) != rows (Y))
           error ("ClassificationKNN: number of rows in X and Y must be equal.");
