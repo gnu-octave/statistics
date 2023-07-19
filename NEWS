@@ -226,6 +226,12 @@
 
  ** knnsearch (fully Matlab compatible)
 
+ ** knnpredict
+
+ ** ClassificationKNN (new classdef)
+
+ ** predict (for ClassificationKNN classdef)
+
  Improvements:
  =============
 

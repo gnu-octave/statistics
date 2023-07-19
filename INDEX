@@ -9,6 +9,7 @@ Clustering
  evalclusters
  inconsistent
  kmeans
+ knnpredict
  knnsearch
  linkage
  mahal
@@ -19,6 +20,9 @@ Clustering
  procrustes
  slicesample
  squareform
+ClassificationKNN (class for KNN classification)
+ @ClassificationKNN/ClassificationKNN
+ @ClassificationKNN/predict
 CVpartition (class of set partitions for cross-validation, used in crossval)
  @cvpartition/cvpartition
  @cvpartition/display
