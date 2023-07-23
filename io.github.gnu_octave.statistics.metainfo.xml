@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: FSFAP -->
+<!-- Copyright (C) 2023 Colin B. Macdonald -->
+<!--
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.  This file is offered as-is,
+without any warranty.
+-->
+<component type="addon">
+  <id>io.github.gnu_octave.statistics</id>
+  <extends>org.octave.Octave</extends>
+  <metadata_license>FSFAP</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <name>Statistics</name>
+  <summary>The Statistics package for GNU Octave</summary>
+
+  <keywords>
+    <keyword>Octave</keyword>
+    <keyword>Statistics</keyword>
+  </keywords>
+
+  <description>
+    <p>
+      The Statistics package for GNU Octave is a collection of functions
+      for statistical analysis.
+    </p>
+  </description>
+
+  <url type="bugtracker">https://github.com/gnu-octave/statistics/issues</url>
+  <url type="homepage">https://gnu-octave.github.io/statistics</url>
+  <developer_name>Octave Community</developer_name>
+  <update_contact>octave-maintainers@gnu.org</update_contact>
+</component>
