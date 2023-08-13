@@ -154,7 +154,7 @@ function [yFit, ySD, yInt] = gampredict (X, y, Xfit, varargin)
   IncludeInt     = false;                ## for predicting the values
   formulas       = [];                   ## formula for GAM model
   dof            = ones(1,columns(X))*8; ## degree of freedom for fitting spline
-  tol            = 1e-3;                 ## positive tolerence to decide convergence
+  tol            = 1e-2;                 ## positive tolerence to decide convergence
 
 
   while (numel (varargin) > 0)
@@ -267,22 +267,27 @@ function [yFit, ySD, yInt] = gampredict (X, y, Xfit, varargin)
   res       = y - intercept;
   [ppfk, RSS] = onecycleBackfit (X, y, res, knots (1), intercept, tol);
   converged = false;
+  num_itn   = 0;
 
 
   ## main loop
   do
+    num_itn += 1;
     ## single cycle of backfit
     for j = 1:columns (X)
 
       ## calculate residuals to fit spline
-      res = res + intercept + ppval (ppfk (j), X (:, j));
+      if (num_itn > 1)
+        res = res + ppval (ppfk (j), X (:, j));
+      endif
+
       gk = smoother (X (:,j), res, knots (j), order);
 
-      ## centering coeffs
-      gk.coefs = gk.coefs - sum (sum (gk.coefs)) / rows (X);
+      ## centering coeffs already starting with residuals = y - intercept
+      ##gk.coefs = gk.coefs - sum (sum (gk.coefs)) / rows (X);
       RSSk (j) = abs (sum (abs (y - ppval (gk, X(:,j)) - intercept )) .^ 2) / rows (y);
       ppfk (j) = gk;
-      res = res - intercept - ppval (ppfk (j), X (:,j));
+      res = res - ppval (ppfk (j), X (:,j));
     endfor
     RSS - RSSk
 
@@ -298,24 +303,26 @@ function [yFit, ySD, yInt] = gampredict (X, y, Xfit, varargin)
 
   ## predict values
   yFit = predict_val (ppfk, Xfit, intercept);
+  yrs  = predict_val (ppfk, X , intercept);
 
   ## calculate yInt
   if (fitstd)
-    rs     = yFit - mean(y);
+    rs     = yFit - yrs;
     var_rs = var (rs);
     var_pr = var (yFit);
     t_mul  = tinv (1 - alpha / 2, dof);
     ytru   = sort (yFit);
     moe    = t_mul * sqrt (var_pr + var_rs);
-
     lower  = (yFit - moe);
     upper  = (yFit + moe);
 
     yInt   = [lower, upper];
 
-
+    ydev   = (yFit - mean (yFit)) .^ 2;
+    ySD    = sqrt ( ydev / (rows(yFit) - 1));
   endif
 
+  num_itn
 endfunction
 
 function pp = smoother (x, res, knots, order)
@@ -443,6 +450,13 @@ endfunction
 %! legend ({"predicted by GAM", "Actual Value"});
 
 ## Test output
+%!x1 = [-0.87382;-0.66688;-0.54738;0.84894;0.22472;-0.92622;-0.26183;0.55114;-0.7225;-0.24424];
+%!x2 = [-0.39428;-0.41286;-0.44929;-0.36923;0.41461;0.46637;-0.63004;0.90951;0.93747;-0.96886];
+%!y  = [-0.92905;-0.48709;-0.16198;-0.87861;0.8525;-0.83343;0.45695;0.66981;0.26195;-0.16609];
+%!test
+%!ypred = gampredict ([x1, x2], y, [x1, x2]);
+%!yex   = [-0.92889;0.47067;-0.17343;-0.88472;0.85391;-0.83498;0.45797;0.67111;0.26083;-0.16618];
+%!assert (ypred, [[-0.92889;0.47067;-0.17343;-0.88472;0.85391;-0.83498;0.45797;0.67111;0.26083;-0.16618]);
 
 ## Test input validation
 %!error<gampredict: too few input arguments.> gampredict (1)
