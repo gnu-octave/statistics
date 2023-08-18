@@ -86,23 +86,23 @@
 ## fit of the each variable. the length of @qcode{"dof"} must be same as the
 ## columns of @qcode{"X"}. default value is 8 for each predictor variable.
 ##
-## @item @tab @qcode{"includeinteractions"} @tab
-##
+## @item @tab @qcode{"includeinteractions"} @tab flag to indicate weather to 
+## include interactions to predict new values from.
 ##
 ## @end multitable
 ##
-## @code{@var{yFit} = knnpredict (@var{X}, @var{y}, @var{Xfit})} returns a
+## @code{@var{yFit} = gampredict (@var{X}, @var{y}, @var{Xfit})} returns a
 ## Numeric Matrix of predicted Response values for predictor data in @var{Xfit},
 ## using a generalised additive model trained using predictor values in @var{X}
 ## and response values in @var{y}.
 ##
 ##
-## @code{@var{yFit} = knnpredict (@var{X}, @var{y}, @var{Xfit}, @var{name}, @var{value})}
+## @code{@var{yFit} = gampredict (@var{X}, @var{y}, @var{Xfit}, @var{name}, @var{value})}
 ## returns a matrix of predicted Response values for predictor data
 ## in @var{Xfit} using GAM regression model with specified options as Name-value
 ## pairs.
 ##
-## @code{[@var{yFit}, @var{ySD}, @var{yInt}] = knnpredict (@var{X}, @var{y}, @var{Xfit})}
+## @code{[@var{yFit}, @var{ySD}, @var{yInt}] = gampredict (@var{X}, @var{y}, @var{Xfit})}
 ## returns @var{yFit} containing the predicted response values for predictor
 ## data in @var{Xfit}, It also returns :
 ##
@@ -271,7 +271,8 @@ function [yFit, ySD, yInt] = gampredict (X, y, Xfit, varargin)
 
 
   ## main loop
-  do
+  #do #changed to a while
+  while (! converged)
     num_itn += 1;
     ## single cycle of backfit
     for j = 1:columns (X)
@@ -289,7 +290,7 @@ function [yFit, ySD, yInt] = gampredict (X, y, Xfit, varargin)
       ppfk (j) = gk;
       res = res - ppval (ppfk (j), X (:,j));
     endfor
-    RSS - RSSk
+    #RSS - RSSk
 
     ## check if RSS is less than the tolerence
     if (all (abs (RSS - RSSk) <= tol))
@@ -298,7 +299,8 @@ function [yFit, ySD, yInt] = gampredict (X, y, Xfit, varargin)
 
     ## update RSS
     RSS = RSSk;
-  until (converged)
+  #until (converged)
+  endwhile
 
 
   ## predict values
@@ -322,7 +324,7 @@ function [yFit, ySD, yInt] = gampredict (X, y, Xfit, varargin)
     ySD    = sqrt ( ydev / (rows(yFit) - 1));
   endif
 
-  num_itn
+  #num_itn
 endfunction
 
 function pp = smoother (x, res, knots, order)
@@ -393,14 +395,14 @@ function [ppf, RSSk] = onecycleBackfit (X, y, res, knots, m, tol)
 for i = 1:2
   for j = 1:columns (X)
     if (i > 1)
-      res = res + m + ppval (ppf (j), X (:, j));
+      res = res + ppval (ppf (j), X (:, j));
     endif
 
     gk = splinefit (X (:,j), res, knots, 'order', 2);
-    gk.coefs = gk.coefs - sum (sum (gk.coefs)) / rows (X);
+    #gk.coefs = gk.coefs - sum (sum (gk.coefs)) / rows (X);
     RSSk = (sum (abs (y - ppval (gk, X(:,j)) - m )) .^ 2) / rows (y);
     ppf (j) = gk;
-    res = res - m - ppval (ppf (j), X (:,j));
+    res = res - ppval (ppf (j), X (:,j));
     #ppf (j).coefs = ppf (j).coefs - sum (sum (ppf (j).coefs)) ./ rows (X);
   endfor
 endfor
