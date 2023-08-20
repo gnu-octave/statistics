@@ -96,7 +96,7 @@
 ## from the previous syntaxes.
 ##
 ## @code{[@var{h}, @var{pval}, @var{adstat}, @var{cv}] = adtest (@dots{})} also
-## returns the test statistic, @var{adstat}, and thhe critical value, @var{cv},
+## returns the test statistic, @var{adstat}, and the critical value, @var{cv},
 ## for the Anderson-Darling test.
 ##
 ## The Anderson-Darling test statistic belongs to the family of Quadratic
