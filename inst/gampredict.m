@@ -149,12 +149,14 @@ function [yFit, varargout] = gampredict (X, Y, Xfit, varargin)
   ## Default values for optional parameters
   Alpha = 0.05;                   # significance level for intervals
   Formula = [];                   # formula for GAM model
-  Interactions = 0;               # number or list of interaction terms
+  Interactions = [];               # number or list of interaction terms
   MaxPValue = 1;                  # max p-value for including interaction terms
   Knots = ones (1, ndims_X) * 5;  # Knots
   DoF = ones (1, ndims_X) * 8;    # Degrees of freedom for fitting spline
   Order = ones (1, ndims_X) * 3;  # Order of spline
   Tol = 1e-2;                     # tolerence for converging splines
+  PredictorNames = [];
+  ResponseName   = [];
 
   ## Number of arguments for Knots, DoF, Order (maximum 2 allowed)
   KDO = 0;
@@ -236,6 +238,23 @@ function [yFit, varargout] = gampredict (X, Y, Xfit, varargin)
 
       case "tol"
         Tol = varargin{2};
+        if (! isnumeric (Tol) || ! isscalar (Tol) || !(Tol > 0))
+          error ("gampredict: Tolerence (tol) must be a scalar > 0.");
+        endif
+      case "responsename"
+        ResponseName = varargin{2};
+        if (! ischar (ResponseName))
+          error ("gampredict: ResponseName must be a string or char.");
+        endif
+      case "predictors"
+        PredictorNames = varargin{2};
+        if (! isempty (PredictorNames))
+          if (! iscellstr (PredictorNames))
+            error ("gampredict: PredictorNames must be supplied as cellstr.");
+          elseif (columns (PredictorNames) != columns (X))
+            error ("gampredict: PredictorNames must have same number of columns as X.");
+          endif
+        endif
 
       otherwise
         error ("gampredict: invalid NAME in optional pairs of arguments.")
@@ -243,28 +262,53 @@ function [yFit, varargout] = gampredict (X, Y, Xfit, varargin)
     varargin (1:2) = [];
   endwhile
 
+  
   ## Process predictor matrix
   notnans  = ! logical (sum (isnan ([Y, X]), 2));
   notnansf = ! logical (sum (isnan (Xfit), 2));
   Y        = Y (notnans);
   X        = X (notnans, :);
   Xfit     = Xfit (notnansf, :);
-  ## This needs to be fixed!!
-  ##
-  ## Here goes the code for adding interaction terms and/or using formula
-  ##
 
-
+  
+  ## Adding interaction terms to the predictor matrix for training
+  if (isempty (PredictorNames))
+    ## empty predictornames generate default
+    PredictorNames = gendefault (columns (X));
+  endif
+  IntMat = [];
+  if (! isempty (Formula))
+    IntMat = parseInteractions (formula, PredictorNames);
+    if (isempty (intMat))
+      ## user has not Specified any Ineractions in the Formula
+      ## check if specified in interactions
+      if (! isempty (Interactions))
+        IntMat = parseInteractions (Interactions, PredictorNames);
+      endif
+    endif
+  else
+    ## formula is empty train model for given terms and check Interactions
+    if (! isempty (Interactions))
+      IntMat = parseInteractions (Interactions, PredictorNames);
+    endif
+  endif
+  
+  if (! isempty (IntMat))
+    for i = 1:rows (IntMatat) 
+      Xint = X (:,IntMat (i, 1)) .* X (:,IntMat (i, 1));
+      X    = [X, Xint]; ## adding interaction term column
+    endfor
+  endif
+  
 
   ## Fit the GAM model
 
   ## Compute intercept and residuals
   intercept   = mean (Y);
   res         = Y - intercept;
-  ## Why is this not included in the main loop?
-  [ppfk, RSS] = onecycleBackfit (X, Y, res, Knots(1), intercept, Tol);
   converged   = false;
   num_itn     = 0;
+  RSS         = zeros (1, columns (X));
 
   ## Main loop
   while (! converged)
@@ -281,7 +325,6 @@ function [yFit, varargout] = gampredict (X, Y, Xfit, varargin)
       ## You used `order(j)-1` previously. Why?
       gk = splinefit (X(:,j), res, Knots(j), 'order', Order(j));
 
-      ## Centering coeffs already starting with residuals = Y - intercept
       ## This might be wrong! We need to check this out
       RSSk (j) = abs (sum (abs (Y - ppval (gk, X(:,j)) ...
                                   - intercept )) .^ 2) / nsample;
@@ -311,8 +354,9 @@ function [yFit, varargout] = gampredict (X, Y, Xfit, varargin)
 
     ## You need to check this code here !!
     rs     = Y - yrs;
-    var_rs = var (rs);
-    var_pr = var (yFit);
+    var_rs = var (rs);    ##
+    var_pr = var (yFit);  ## var is calculated here instead take sqrt(SD)
+                          
     t_mul  = tinv (1 - Alpha / 2, DoF);
 
 
@@ -321,7 +365,8 @@ function [yFit, varargout] = gampredict (X, Y, Xfit, varargin)
 
     varargout{1} = ySD;
     if (nargout > 1)
-      moe    = t_mul * sqrt (var_pr + var_rs);
+      #moe    = t_mul (1) * sqrt (var_pr + var_rs)
+      moe    = t_mul (1) * ySD;
       lower  = (yFit - moe);
       upper  = (yFit + moe);
       yInt   = [lower, upper];
@@ -333,7 +378,6 @@ endfunction
 
 ## Helper function for making prediction of new data based on GAM model
 function ypred = predict_val (ppfk, X, intercept)
-  ## Compute the intercept term
   [nsample, ndims_X] = size (X);
   ypred = ones (nsample, 1) * intercept;
   ## Add the remaining terms
@@ -347,10 +391,10 @@ endfunction
 ## This function has some logic errors and needs updating!!
 ## It's not being used at the moment, so I leave it here as is
 ##
-function intMat = parseInteractions (Formula, predictorNames)
+function intMat = parseInteractions (Formula, PredictorNames)
   intMat = [];
   if (islogical (Formula))
-    if (numel (predictorNames) != columns (Formula))
+    if (numel (PredictorNames) != columns (Formula))
       error ("gampredict: ");
     endif
     for i = 1:rows (Formula)
@@ -371,37 +415,25 @@ function intMat = parseInteractions (Formula, predictorNames)
       for i = 1:numel (intterms)
         if (cell2mat (strfind (intterms (i), ':')))
           inters = strtrim (strsplit (cell2mat (intterms (i)), ':'));
-          in = [in; (index (predictorNames, inters(1)) + ...
-                                          index (predictorNames, inters(2)))];
+          in = [in; (index (PredictorNames, inters(1)) + ...
+                                          index (PredictorNames, inters(2)))];
         endif
       endfor
       ## pass recursively to get intMat
-      intMat = parseInteractions (logical(in), predictorNames);
+      intMat = parseInteractions (logical(in), PredictorNames);
     endif
   else
     error ("gampredict: Invalid value in Interactions.");
   endif
 endfunction
 
-## ------once cycle backfit ------##
-function [ppf, RSSk] = onecycleBackfit (X, Y, res, knots, m, Tol)
-for i = 1:2 # what is the purpose of 2 iterations?
-  for j = 1:columns (X)
-    if (i > 1)
-      res = res + ppval (ppf (j), X (:, j));
-    endif
 
-    gk = splinefit (X (:,j), res, knots, 'order', 2);
-    #gk.coefs = gk.coefs - sum (sum (gk.coefs)) / rows (X);
-    RSSk = (sum (abs (Y - ppval (gk, X(:,j)) - m )) .^ 2) / rows (Y);
-    ppf(j) = gk;
-    res = res - ppval (ppf (j), X (:,j));
-    #ppf (j).coefs = ppf (j).coefs - sum (sum (ppf (j).coefs)) ./ rows (X);
+##------ gendefault to generate default predictornames-----##
+function defs = gendefault (p)
+  for i = 1:p
+    defs {i} = strcat ('x', num2str (i));
   endfor
-endfor
 endfunction
-## ------ onecycleBackfit end -----##
-
 
 
 %!demo
@@ -423,7 +455,9 @@ endfunction
 %!
 %! X = [x1, x2];
 %!
-%! ypred = gampredict (X, Y, X);
+%! [ypred, sd, in] = gampredict (X, Y, X);
+%! [Ysorted, I] = sort (Y);
+%! 
 %!
 %!
 %! subplot (2, 2, 2, "align")
@@ -439,10 +473,15 @@ endfunction
 %! legend ({"predicted by GAM", "Actual Value"});
 %!
 %! subplot (1, 2, 1, "align")
-%! plot (Y, ypred, 'o')
-%! xlabel ("Y"); ylabel ("Y_predicted");
-%! title ("actual vs predicted values");
-%! legend ({"predicted by GAM", "Actual Value"});
+%! plot (Ysorted, 'o')
+%! hold on
+%! plot (ypred (I))
+%! plot (in (I, 1), "k:")
+%! plot (in (I, 2), "k:")
+%! xlabel (" "); ylabel ("Y");
+%! title ("actual vs predicted values with intervals");
+%! legend ({"Expected Value", "Predicted Value", "Prediction Interval"});
+%! hold off 
 
 ## Test output
 %!x1 = [-0.87382;-0.66688;-0.54738;0.84894;0.22472;-0.92622;-0.26183;0.55114;-0.7225;-0.24424];
