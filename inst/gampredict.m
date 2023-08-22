@@ -262,7 +262,7 @@ function [yFit, varargout] = gampredict (X, Y, Xfit, varargin)
     varargin (1:2) = [];
   endwhile
 
-  
+
   ## Process predictor matrix
   notnans  = ! logical (sum (isnan ([Y, X]), 2));
   notnansf = ! logical (sum (isnan (Xfit), 2));
@@ -270,7 +270,7 @@ function [yFit, varargout] = gampredict (X, Y, Xfit, varargin)
   X        = X (notnans, :);
   Xfit     = Xfit (notnansf, :);
 
-  
+
   ## Adding interaction terms to the predictor matrix for training
   if (isempty (PredictorNames))
     ## empty predictornames generate default
@@ -292,14 +292,14 @@ function [yFit, varargout] = gampredict (X, Y, Xfit, varargin)
       IntMat = parseInteractions (Interactions, PredictorNames);
     endif
   endif
-  
+
   if (! isempty (IntMat))
-    for i = 1:rows (IntMatat) 
+    for i = 1:rows (IntMatat)
       Xint = X (:,IntMat (i, 1)) .* X (:,IntMat (i, 1));
       X    = [X, Xint]; ## adding interaction term column
     endfor
   endif
-  
+
 
   ## Fit the GAM model
 
@@ -356,7 +356,7 @@ function [yFit, varargout] = gampredict (X, Y, Xfit, varargin)
     rs     = Y - yrs;
     var_rs = var (rs);    ##
     var_pr = var (yFit);  ## var is calculated here instead take sqrt(SD)
-                          
+
     t_mul  = tinv (1 - Alpha / 2, DoF);
 
 
@@ -437,51 +437,77 @@ endfunction
 
 
 %!demo
-%! ## synthetic datasample consisting of two different function
-%! f1 = @(x) cos (3 *x);
+%! ## Declare two different functions
+%! f1 = @(x) cos (3 * x);
 %! f2 = @(x) x .^ 3;
 %!
-%! samples = 100;
-%! rand("seed",9);
+%! ## Generate 80 samples for f1 and f2
+%! x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
+%! X1 = f1 (x);
+%! X2 = f2 (x);
 %!
-%! ## generating random samples for f1 and f2
-%! x1 = 2 * rand (samples, 1) - 1;
-%! x2 = 2 * rand (samples, 1) - 1;
+%! ## Create a synthetic response by adding noise
+%! rand ("seed", 3);
+%! Ytrue = X1 + X2;
+%! Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);
 %!
-%! Y = f1(x1) + f2(x2);
+%! ## Assemble predictor data
+%! X = [X1, X2];
 %!
-%! ## adding noise to the data
-%! Y = Y + Y .* 0.2 .* rand (samples,1);
+%! ## Train the GAM and test on the same data
+%! [ypred, ySDsd, yInt] = gampredict (X, Y, X, "order", [5,5]);
 %!
-%! X = [x1, x2];
-%!
-%! [ypred, sd, in] = gampredict (X, Y, X);
-%! [Ysorted, I] = sort (Y);
-%! 
-%!
-%!
-%! subplot (2, 2, 2, "align")
-%! plot (x1, ypred, 'o', 'color', 'r', x1, Y, 'o', 'color', 'b')
-%! xlabel ("x1"); ylabel ("Y");
-%! title ("actual vs predicted values for function f1(x) = cos (3x) ");
-%! legend ({"predicted by GAM", "Actual Value"});
-%!
-%! subplot (2, 2, 4, "align")
-%! plot (x2, ypred, 'o', 'color', 'r', x2, Y, 'o', 'color', 'b')
-%! xlabel ("x1"); ylabel ("Y");
-%! title ("actual vs predicted values for function f1(x) = x^3 ");
-%! legend ({"predicted by GAM", "Actual Value"});
-%!
-%! subplot (1, 2, 1, "align")
-%! plot (Ysorted, 'o')
+%! ## Plot the results
+%! figure
+%! [sortedY, indY] = sort (Ytrue);
+%! plot (sortedY, 'r-');
+%! xlim ([0, 80]);
 %! hold on
-%! plot (ypred (I))
-%! plot (in (I, 1), "k:")
-%! plot (in (I, 2), "k:")
-%! xlabel (" "); ylabel ("Y");
-%! title ("actual vs predicted values with intervals");
-%! legend ({"Expected Value", "Predicted Value", "Prediction Interval"});
-%! hold off 
+%! plot (ypred(indY), "g+")
+%! plot (yInt(indY,1),'k:')
+%! plot (yInt(indY,2),'k:')
+%! xlabel ("Predictor samples");
+%! ylabel ("Response");
+%! title ("actual vs predicted values for function f1(x) = cos (3x) ");
+%! legend ({"Theoretical Response", "Predicted Response", "Prediction Intervals"});
+%!
+%! ## Use 30% Holdout partitioning for training and testing data
+%! C = cvpartition (80, "HoldOut", 0.3);
+%! [ypred, ySDsd, yInt] = gampredict (X(training(C),:), Y(training(C)), X(test(C),:));
+%!
+%! ## Plot the results
+%! figure
+%! [sortedY, indY] = sort (Ytrue(test(C)));
+%! plot (sortedY, 'r-');
+%! xlim ([0, sum(test(C))]);
+%! hold on
+%! plot (ypred(indY), "g+")
+%! plot (yInt(indY,1),'k:')
+%! plot (yInt(indY,2),'k:')
+%! xlabel ("Predictor samples");
+%! ylabel ("Response");
+%! title ("actual vs predicted values for function f1(x) = cos (3x) ");
+%! legend ({"Theoretical Response", "Predicted Response", "Prediction Intervals"});
+
+
+%!demo
+%! ## Generate 101 samples based on a sinusoidal function and add some noise
+%! X = [0:0.1*pi:2*pi-0.1*pi]';
+%! Y = sin (X);
+%! rand ("seed", 3);
+%! Y += Y .* 0.5 .* (rand (20, 1) - 0.5);
+%!
+%! ## Train the GAM and test on the same data
+%! [ypred, ySDsd, yInt] = gampredict (X, Y, X);
+%! [Ysorted, I] = sort (Y);
+%!
+%! ## Plot the results
+%! figure
+%! plot (X, ypred, '*', X, Y, '+', X, sin (X), '-')
+%! ylim ([-1.2, 1.2]);
+%! xlabel ("predictor"); ylabel ("response");
+%! title ("actual vs predicted values");
+%! legend ({"Predicted Response", "Actual Response", "Theoretical Response"});
 
 ## Test output
 %!x1 = [-0.87382;-0.66688;-0.54738;0.84894;0.22472;-0.92622;-0.26183;0.55114;-0.7225;-0.24424];
