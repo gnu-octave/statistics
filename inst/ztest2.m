@@ -120,7 +120,7 @@ function [h, pval, zvalue] = ztest2 (x1, n1, x2, n2, varargin)
 
   zvalue  = (p1 - p2) ./ sqrt (pc .* (1 - pc) .* (1 ./ n1 + 1 ./ n2));
 
-  cdf = stdnormal_cdf (zvalue);
+  cdf = normcdf (zvalue);
 
   if (strcmpi (tail, "both"))
     pval = 2 * min (cdf, 1 - cdf);
