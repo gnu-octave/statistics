@@ -411,52 +411,68 @@ endfunction
 %! fprintf (strcat (["\n Manhattan : "],[lh{1}]));
 %! fprintf (strcat (["\n Cosine    : "],[ln{1}]));
 %! fprintf (strcat (["\n Jaccard   : "],[lj{1}]));
-%! warning("off");
+%!
 %! hold on
 %! s1 = subplot (2, 2, 1);
-%! gscatter(x(:,1), x(:,2), species,[.75 .75 0; 0 .75 .75; .75 0 .75], '.',20);
-%! set( s1, 'title', 'euclidean and minkowski distances' );
-%! xlabel('Petal length (cm)');
-%! ylabel('Petal width (cm)');
-%! line(point(1), point(2), 'marker', 'x', 'color', 'k', 'linewidth', 2, 'displayname', 'query point')
-%! line (x(id,1), x(id,2), 'color', [0.5 0.5 0.5],'marker', 'o', 'linestyle', 'none', 'markersize', 10, "displayname", "eulcidean")
-%! line (x(idm,1), x(idm,2), 'color', [0.5 0.5 0.5],'marker', 'd', 'linestyle', 'none', 'markersize', 10, "displayname", "Minkowski")
-%! xlim ([4.5 5.5]);
-%! ylim ([1 2]);
+%! gscatter (x(:,1), x(:,2), species, ...
+%!           [0.75, 0.75, 0; 0, 0.75, 0.75; 0.75, 0, 0.75], ".", 20);
+%! set (s1, "title", "euclidean and minkowski distance metrics");
+%! xlabel ("Petal length (cm)");
+%! ylabel ("Petal width (cm)");
+%! line (point(1), point(2), "marker", "x", "color", "k", "linewidth", 2, ...
+%!       "displayname", "query point")
+%! line (x(id,1), x(id,2), "color", [0.5, 0.5, 0.5], "marker", "o", ...
+%!       "linestyle", "none", "markersize", 10, "displayname", "eulcidean")
+%! line (x(idm,1), x(idm,2), "color", [0.5, 0.5, 0.5], "marker", "d", ...
+%!       "linestyle", "none", "markersize", 10, "displayname", "Minkowski")
+%! xlim ([4.5, 5.5]);
+%! ylim ([1, 2]);
 %! axis square;
 %!
 %! s2 = subplot (2, 2, 2);
-%! gscatter(x(:,1), x(:,2), species,[.75 .75 0; 0 .75 .75; .75 0 .75], '.',20);
-%! set( s2, 'title', 'chebychev  and hamming distance' );
-%! xlabel('Petal length (cm)');
-%! ylabel('Petal width (cm)');
-%! line(point(1), point(2), 'marker', 'x', 'color', 'k', 'linewidth', 2, 'displayname', 'query point')
-%! line (x(idc,1), x(idc,2), 'color', [0.5 0.5 0.5],'marker', 'p', 'linestyle', 'none', 'markersize', 10, "displayname", "chebychev")
-%! line (x(ids,1), x(ids,2), 'color', [0.5 0.5 0.5],'marker', 's', 'linestyle', 'none', 'markersize', 10, "displayname", "hamming")
-%! xlim ([4.5 5.5]);
-%! ylim ([1 2]);
+%! gscatter (x(:,1), x(:,2), species, ...
+%!           [0.75, 0.75, 0; 0, 0.75, 0.75; 0.75, 0, 0.75], ".", 20);
+%! set (s2, "title", "chebychev and hamming distance metrics");
+%! xlabel ("Petal length (cm)");
+%! ylabel ("Petal width (cm)");
+%! line (point(1), point(2), "marker", "x", "color", "k", "linewidth", 2, ...
+%!       "displayname", "query point")
+%! line (x(idc,1), x(idc,2), "color", [0.5, 0.5, 0.5], "marker", "p", ...
+%!       "linestyle", "none", "markersize", 10, "displayname", "chebychev")
+%! line (x(ids,1), x(ids,2), "color", [0.5, 0.5, 0.5], "marker", "s", ...
+%!       "linestyle", "none", "markersize", 10, "displayname", "hamming")
+%! xlim ([4.5, 5.5]);
+%! ylim ([1, 2]);
 %! axis square;
 %!
 %! s3 = subplot (2, 2, 3);
-%! gscatter(x(:,1), x(:,2), species,[.75 .75 0; 0 .75 .75; .75 0 .75], '.',20);
-%! set( s3, 'title', 'cityblock and manhattan distance' );
-%! xlabel('Petal length (cm)');
-%! ylabel('Petal width (cm)');
-%! line(point(1), point(2), 'marker', 'x', 'color', 'k', 'linewidth', 2, 'displayname', 'query point')
-%! line (x(idb,1), x(idb,2), 'color', [0.5 0.5 0.5],'marker', '>', 'linestyle', 'none', 'markersize', 10, "displayname", "cityblock")
-%! line (x(idh,1), x(idh,2), 'color', [0.5 0.5 0.5],'marker', 'd', 'linestyle', 'none', 'markersize', 10, "displayname", "manhattan")
+%! gscatter (x(:,1), x(:,2), species, ...
+%!           [0.75, 0.75, 0; 0, 0.75, 0.75; 0.75, 0, 0.75], ".", 20);
+%! set (s3, "title", "cityblock and manhattan distance metrics");
+%! xlabel ("Petal length (cm)");
+%! ylabel ("Petal width (cm)");
+%! line (point(1), point(2), "marker", "x", "color", "k", "linewidth'", 2, ...
+%!       "displayname", "query point")
+%! line (x(idb,1), x(idb,2), "color", [0.5, 0.5, 0.5], "marker", ">", ...
+%!       "linestyle", "none", "markersize", 10, "displayname", "cityblock")
+%! line (x(idh,1), x(idh,2), "color", [0.5, 0.5, 0.5], "marker", "d", ...
+%!       "linestyle", "none", "markersize", 10, "displayname", "manhattan")
 %! xlim ([4.5 5.5]);
 %! ylim ([1 2]);
 %! axis square;
 %!
 %! s4 = subplot (2, 2, 4);
-%! gscatter(x(:,1), x(:,2), species,[.75 .75 0; 0 .75 .75; .75 0 .75], '.',20);
-%! set( s4, 'title', 'cosine and jaccard distance' );
-%! xlabel('Petal length (cm)');
-%! ylabel('Petal width (cm)');
-%! line(point(1), point(2), 'marker', 'x', 'color', 'k', 'linewidth', 2, 'displayname', 'query point')
-%! line (x(idn,1), x(idn,2), 'color', [0.5 0.5 0.5],'marker', '<', 'linestyle', 'none', 'markersize', 10, "displayname", "cosine")
-%! line (x(idj,1), x(idj,2), 'color', [0.5 0.5 0.5],'marker', 'h', 'linestyle', 'none', 'markersize', 10, "displayname", "jaccard")
+%! gscatter (x(:,1), x(:,2), species, ...
+%!           [0.75, 0.75, 0; 0, 0.75, 0.75; 0.75, 0, 0.75], ".", 20);
+%! set (s4, "title", "cosine and jaccard distance metrics");
+%! xlabel ("Petal length (cm)");
+%! ylabel ("Petal width (cm)");
+%! line (point(1), point(2), "marker", "x", "color", "k", "linewidth", 2, ...
+%!       "displayname", "query point")
+%! line (x(idn,1), x(idn,2), "color", [0.5, 0.5, 0.5], "marker", "<", ...
+%!       "linestyle", "none", "markersize", 10, "displayname", "cosine")
+%! line (x(idj,1), x(idj,2), "color", [0.5, 0.5, 0.5], "marker", "h", ...
+%!       "linestyle", "none", "markersize", 10, "displayname", "jaccard")
 %! xlim ([4.5 5.5]);
 %! ylim ([1 2]);
 %! axis square;
@@ -470,59 +486,60 @@ endfunction
 %! x = meas;
 %! y = species;
 %!test
-%! xnew = [min(x);mean(x);max(x)];
+%! xnew = [min(x); mean(x); max(x)];
 %! [l, s, c] = knnpredict (x, y, xnew, "K", 5);
-%! assert (l, {"setosa";"versicolor";"virginica"})
-%! assert (s, [1, 0, 0;0, 1, 0;0, 0, 1])
-%! assert (c, [0, 1, 1;1, 0, 1;1, 1, 0])
+%! assert (l, {"setosa"; "versicolor"; "virginica"})
+%! assert (s, [1, 0, 0; 0, 1, 0; 0, 0, 1])
+%! assert (c, [0, 1, 1; 1, 0, 1; 1, 1, 0])
 %!test
-%! xnew = [min(x);mean(x);max(x)];
+%! xnew = [min(x); mean(x); max(x)];
 %! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance", "mahalanobis");
-%! assert (l, {"versicolor";"versicolor";"virginica"})
-%! assert (s, [0.3000, 0.7000, 0;0, 0.9000, 0.1000;0.2000, 0.2000, 0.6000], 1e-4)
-%! assert (c, [0.7000, 0.3000, 1.0000;1.0000, 0.1000, 0.9000;0.8000, 0.8000, 0.4000], 1e-4)
+%! assert (l, {"versicolor"; "versicolor"; "virginica"})
+%! assert (s, [0.3, 0.7, 0; 0, 0.9, 0.1; 0.2, 0.2, 0.6], 1e-4)
+%! assert (c, [0.7, 0.3, 1; 1, 0.1, 0.9; 0.8, 0.8, 0.4], 1e-4)
 %!test
-%! xnew = [min(x);mean(x);max(x)];
+%! xnew = [min(x); mean(x); max(x)];
 %! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance", "cosine");
-%! assert (l, {"setosa";"versicolor";"virginica"})
-%! assert (s, [1.0000, 0, 0;0, 1.0000, 0;0, 0.3000, 0.7000], 1e-4)
-%! assert (c, [0, 1.0000, 1.0000;1.0000, 0, 1.0000;1.0000, 0.7000, 0.3000], 1e-4)
+%! assert (l, {"setosa"; "versicolor"; "virginica"})
+%! assert (s, [1, 0, 0; 0, 1, 0; 0, 0.3, 0.7], 1e-4)
+%! assert (c, [0, 1, 1; 1, 0, 1; 1, 0.7, 0.3], 1e-4)
 %!test
-%! xnew = [5.2, 4.1, 1.5,	0.1;5.1,	3.8,	1.9,	0.4;5.1,	3.8, 1.5,	0.3;4.9,	3.6,	1.4,	0.1];
+%! xnew = [5.2, 4.1, 1.5, 0.1; 5.1, 3.8, 1.9, 0.4; ...
+%!         5.1, 3.8, 1.5, 0.3; 4.9, 3.6, 1.4, 0.1];
 %! [l, s, c] = knnpredict (x, y, xnew, "K", 5);
-%! assert (l, {"setosa";"setosa";"setosa";"setosa"})
-%! assert (s, [1, 0, 0;1, 0, 0;1, 0, 0;1, 0, 0])
-%! assert (c, [0, 1, 1;0, 1, 1;0, 1, 1;0, 1, 1])
+%! assert (l, {"setosa"; "setosa"; "setosa"; "setosa"})
+%! assert (s, [1, 0, 0; 1, 0, 0; 1, 0, 0; 1, 0, 0])
+%! assert (c, [0, 1, 1; 0, 1, 1; 0, 1, 1; 0, 1, 1])
 %!test
 %! xnew = [5, 3, 5, 1.45];
 %! [l, s, c] = knnpredict (x, y, xnew, "k", 5);
 %! assert (l, {"versicolor"})
-%! assert (s, [0, 0.6000, 0.4000], 1e-4)
-%! assert (c, [1.0000, 0.4000, 0.6000], 1e-4)
+%! assert (s, [0, 0.6, 0.4], 1e-4)
+%! assert (c, [1, 0.4, 0.6], 1e-4)
 %!test
 %! xnew = [5, 3, 5, 1.45];
 %! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance", "minkowski", "P", 5);
 %! assert (l, {"versicolor"})
-%! assert (s, [0, 0.5000, 0.5000], 1e-4)
-%! assert (c, [1.0000, 0.5000, 0.5000])
+%! assert (s, [0, 0.5, 0.5], 1e-4)
+%! assert (c, [1, 0.5, 0.5], 1e-4)
 %!test
 %! xnew = [5, 3, 5, 1.45];
 %! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance", "jaccard");
 %! assert (l, {"setosa"})
-%! assert (s, [0.9000, 0.1000, 0], 1e-4)
-%! assert (c, [0.1000, 0.9000, 1.0000], 1e-4)
+%! assert (s, [0.9, 0.1, 0], 1e-4)
+%! assert (c, [0.1, 0.9, 1], 1e-4)
 %!test
 %! xnew = [5, 3, 5, 1.45];
 %! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance", "mahalanobis");
 %! assert (l, {"versicolor"})
-%! assert (s, [0.1000, 0.5000, 0.4000], 1e-4)
-%! assert (c, [0.9000, 0.5000, 0.6000], 1e-4)
+%! assert (s, [0.1, 0.5, 0.4], 1e-4)
+%! assert (c, [0.9, 0.5, 0.6], 1e-4)
 %!test
 %! xnew = [5, 3, 5, 1.45];
 %! [l, s, c] = knnpredict (x, y, xnew, "k", 5, "distance","jaccard");
 %! assert (l, {"setosa"})
-%! assert (s, [0.8000, 0.2000, 0], 1e-4)
-%! assert (c, [0.2000, 0.8000, 1.000], 1e-4)
+%! assert (s, [0.8, 0.2, 0], 1e-4)
+%! assert (c, [0.2, 0.8, 1], 1e-4)
 %!test
 %! xnew = [5, 3, 5, 1.45];
 %! [l, s, c] = knnpredict (x, y, xnew, "k", 5, "distance","seuclidean");
@@ -533,32 +550,32 @@ endfunction
 %! xnew = [5, 3, 5, 1.45];
 %! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance","chebychev");
 %! assert (l, {"versicolor"})
-%! assert (s, [0, 0.7000, 0.3000], 1e-4)
-%! assert (c, [1.000, 0.3000, 0.7000], 1e-4)
+%! assert (s, [0, 0.7, 0.3], 1e-4)
+%! assert (c, [1, 0.3, 0.7], 1e-4)
 %!test
 %! xnew = [5, 3, 5, 1.45];
 %! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance","cityblock");
 %! assert (l, {"versicolor"})
-%! assert (s, [0, 0.6000, 0.4000], 1e-4)
-%! assert (c, [1.000, 0.4000, 0.6000], 1e-4)
+%! assert (s, [0, 0.6, 0.4], 1e-4)
+%! assert (c, [1, 0.4, 0.6], 1e-4)
 %!test
 %! xnew = [5, 3, 5, 1.45];
 %! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance","manhattan");
 %! assert (l, {"versicolor"})
-%! assert (s, [0, 0.6000, 0.4000], 1e-4)
-%! assert (c, [1.000, 0.4000, 0.6000], 1e-4)
+%! assert (s, [0, 0.6, 0.4], 1e-4)
+%! assert (c, [1, 0.4, 0.6], 1e-4)
 %!test
 %! xnew = [5, 3, 5, 1.45];
 %! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance","cosine");
 %! assert (l, {"virginica"})
-%! assert (s, [0, 0.1000, 0.9000], 1e-4)
-%! assert (c, [1.000, 0.9000, 0.1000], 1e-4)
+%! assert (s, [0, 0.1, 0.9], 1e-4)
+%! assert (c, [1, 0.9, 0.1], 1e-4)
 %!test
 %! xnew = [5, 3, 5, 1.45];
 %! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance","correlation");
 %! assert (l, {"virginica"})
-%! assert (s, [0, 0.1000, 0.9000], 1e-4)
-%! assert (c, [1.000, 0.9000, 0.1000], 1e-4)
+%! assert (s, [0, 0.1, 0.9], 1e-4)
+%! assert (c, [1, 0.9, 0.1], 1e-4)
 %!test
 %! xnew = [5, 3, 5, 1.45];
 %! [l, s, c] = knnpredict (x, y, xnew, "k", 30, "distance","spearman");
@@ -575,20 +592,20 @@ endfunction
 %! xnew = [5, 3, 5, 1.45];
 %! [l, s, c] = knnpredict (x, y, xnew, "k", 5, "distance","hamming");
 %! assert (l, {"setosa"})
-%! assert (s, [0.8000, 0.2000, 0], 1e-4)
-%! assert (c, [0.2000, 0.8000, 1.0000], 1e-4)
+%! assert (s, [0.8, 0.2, 0], 1e-4)
+%! assert (c, [0.2, 0.8, 1], 1e-4)
 %!test
-%! xnew = [min(x);mean(x);max(x)];
+%! xnew = [min(x); mean(x); max(x)];
 %! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance", "correlation");
 %! assert (l, {"setosa";"versicolor";"virginica"})
-%! assert (s, [1.0000, 0, 0;0, 1.0000, 0;0, 0.4000, 0.6000], 1e-4)
-%! assert (c, [0, 1.0000, 1.0000;1.0000, 0, 1.0000;1.0000, 0.6000, 0.4000], 1e-4)
+%! assert (s, [1, 0, 0; 0, 1, 0; 0, 0.4, 0.6], 1e-4)
+%! assert (c, [0, 1, 1; 1, 0, 1; 1, 0.6, 0.4], 1e-4)
 %!test
 %! xnew = [min(x);mean(x);max(x)];
 %! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance", "hamming");
 %! assert (l, {"setosa";"setosa";"setosa"})
-%! assert (s, [0.9000, 0.1000, 0;1.000, 0, 0;0.5000, 0, 0.5000], 1e-4)
-%! assert (c, [0.1000, 0.9000, 1.0000;0, 1.0000, 1.0000;0.5000, 1.0000, 0.5000], 1e-4)
+%! assert (s, [0.9, 0.1, 0; 1, 0, 0; 0.5, 0, 0.5], 1e-4)
+%! assert (c, [0.1, 0.9, 1; 0, 1, 1; 0.5, 1, 0.5], 1e-4)
 
 ## Test input validation
 %!error<knnpredict: too few input arguments.>knnpredict (1)
