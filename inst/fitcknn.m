@@ -39,9 +39,6 @@
 ## @item
 ## @end itemize
 ##
-## @code{@var{obj} = fitcknn ()} returns an empty k-Nearest Neighbor
-## classification model and produces a warning.
-##
 ## @code{@var{obj} = fitcknn (@dots{}, @var{name}, @var{value})} returns a
 ## k-Nearest Neighbor classification model with additional options specified by
 ## @qcode{Name-Value} pair arguments listed below.
@@ -164,41 +161,27 @@
 ## function calculates and stores the number of unique values in @var{Y}.
 ## @var{"NosClasses"} cannot be changed via @var{obj}.
 ##
-## @item @tab @qcode{"Xclass"} @tab must be a @math{MxP} numeric matrix of
-## query/new points that are to be classified into the class labels.
-## @var{Xclass} must have same numbers of columns as @var{X}. @var{Xclass}
-## can be changed via object @var{obj} using @code{@var{obj.Xclass} = newXclass}.
-## to predict labels for new set of values while keeping the rest of the model
-## same with all its properties.
-##
 ## @end multitable
 ##
-## @seealso{knnpredict, @ClassificationKNN/predict}
+## @seealso{knnpredict, @@ClassificationKNN/predict}
 ## @end deftypefn
 
 function obj = fitcknn (X, Y, varargin)
 
   ## Check input parameters
-  if (nargin < 2 && nargin != 0)
+  if (nargin < 2)
     error ("fitcknn: Too few arguments.");
   endif
   if (mod (nargin, 2) != 0)
     error ("fitcknn: Name-Value arguments must be in pairs.");
   endif
 
-  ## Create object
-  if (nargin == 0)
-    ## Return empty object and issue a warning
-    obj = ClassificationKNN ();
-    warning ("fitcknn: No Argument given, Created Object will be empty.");
-  else
-    ## Check predictor data and labels have equal rows
-    if (rows (X) != rows (Y))
-      error ("fitcknn: number of rows in X and Y must be equal.");
-    endif
-    ## Parse arguments to class def function
-    obj = ClassificationKNN (X, Y, varargin{:});
+  ## Check predictor data and labels have equal rows
+  if (rows (X) != rows (Y))
+    error ("fitcknn: number of rows in X and Y must be equal.");
   endif
+  ## Parse arguments to class def function
+  obj = ClassificationKNN (X, Y, varargin{:});
 
 endfunction
 
@@ -225,23 +208,12 @@ endfunction
 
 ## Test Output
 %!test
-%! warning("off");
-%! a = fitcknn ();
-%! assert (class (a), "ClassificationKNN");
-%! assert ({a.Breakties, a.Includeties, a.NN, a.NSmethod}, {[],[],[],[]})
-%! assert ({a.NosClasses, a.NumObsv, a.Scale, a.Score, a.cost}, {[],[],[],[],[]})
-%! assert ({a.X, a.Xclass, a.Y, a.bucketsize, a.classNames}, {[],[],[],[],[]})
-%! assert ({a.cov, a.distance, a.P, a.k, a.label}, {[],[],[],[],[]})
-%! assert ({a.prior, a.standardize, a.weights}, {[],[],[]})
-
-%!test
 %! x = [1,2,3;4,5,6;7,8,9;3,2,1];
 %! y = ["a";"a";"b";"b"];
 %! a = fitcknn (x, y);
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ["a";"a";"b";"b"], 1})
 %! assert ({a.NSmethod, a.distance, a.bucketsize},{"exhaustive","euclidean",50})
-
 %!test
 %! x = [1,2,3;4,5,6;7,8,9;3,2,1];
 %! y = ['a';'a';'b';'b'];
@@ -250,7 +222,6 @@ endfunction
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ["a";"a";"b";"b"], 10})
 %! assert ({a.NSmethod, a.distance, a.bucketsize},{"exhaustive","euclidean",50})
-
 %!test
 %! x = [1,2,3;4,5,6;7,8,9;3,2,1];
 %! y = ["a";"a";"b";"b"];
@@ -260,7 +231,6 @@ endfunction
 %! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ["a";"a";"b";"b"], 1})
 %! assert (a.weights, ones (4,1))
 %! assert ({a.NSmethod, a.distance, a.bucketsize},{"exhaustive","euclidean",50})
-
 %!test
 %! x = [1,2,3;4,5,6;7,8,9;3,2,1];
 %! y = ["a";"a";"b";"b"];
@@ -269,7 +239,6 @@ endfunction
 %! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ["a";"a";"b";"b"], 1})
 %! assert (a.P, 10)
 %! assert ({a.NSmethod, a.distance, a.bucketsize},{"exhaustive","euclidean",50})
-
 %!test
 %! x = [1,2,3;4,5,6;7,8,9;3,2,1];
 %! y = ["a";"a";"b";"b"];
@@ -279,7 +248,6 @@ endfunction
 %! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ["a";"a";"b";"b"], 1})
 %! assert (a.cov, cov)
 %! assert ({a.NSmethod, a.distance, a.bucketsize},{"exhaustive","mahalanobis",50})
-
 %!test
 %! x = [1,2,3;4,5,6;7,8,9;3,2,1];
 %! y = ["a";"a";"b";"b"];
@@ -287,7 +255,6 @@ endfunction
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ["a";"a";"b";"b"], 1})
 %! assert ({a.NSmethod,a.distance,a.bucketsize},{"exhaustive","mahalanobis",20})
-
 %!test
 %! x = [1,2,3;4,5,6;7,8,9;3,2,1];
 %! y = ["a";"a";"b";"b"];
@@ -296,7 +263,6 @@ endfunction
 %! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ["a";"a";"b";"b"], 1})
 %! assert (a.standardize, true);
 %! assert ({a.NSmethod,a.distance,a.bucketsize},{"exhaustive","euclidean",50})
-
 %!test
 %! x = [1,2,3;4,5,6;7,8,9;3,2,1];
 %! y = ["a";"a";"b";"b"'];
@@ -305,7 +271,6 @@ endfunction
 %! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ["a";"a";"b";"b"], 1})
 %! assert (a.Includeties, true);
 %! assert ({a.NSmethod,a.distance,a.bucketsize},{"exhaustive","euclidean",50})
-
 %!test
 %! x = [1,2,3;4,5,6;7,8,9;3,2,1];
 %! y = ["a";"a";"b";"b"];
@@ -315,7 +280,6 @@ endfunction
 %! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ["a";"a";"b";"b"], 1})
 %! assert (a.cost, [1,1;1,1;1,1;1,1])
 %! assert ({a.NSmethod,a.distance,a.bucketsize},{"exhaustive","euclidean",50})
-
 %!test
 %! x = [1,2,3;4,5,6;7,8,9;3,2,1];
 %! y = ["a";"a";"b";"b"];
@@ -327,11 +291,12 @@ endfunction
 %! assert ({a.NSmethod,a.distance,a.bucketsize},{"exhaustive","euclidean",50})
 
 ## Test input validation
-%!error<fitcknn: Too few arguments.>fitcknn (ones (4,1));
+%!error<fitcknn: Too few arguments.> fitcknn ()
+%!error<fitcknn: Too few arguments.> fitcknn (ones (4,1))
 %!error<fitcknn: Name-Value arguments must be in pairs.>
-%! fitcknn (ones (4,2), ones (4, 1), "K");
+%! fitcknn (ones (4,2), ones (4, 1), "K")
 %!error<fitcknn: number of rows in X and Y must be equal.>
-%! fitcknn (ones (4,2), ones (3, 1));
+%! fitcknn (ones (4,2), ones (3, 1))
 %!error<fitcknn: number of rows in X and Y must be equal.>
-%! fitcknn (ones (4,2), ones (3, 1), "K", 2);
-%!warning<fitcknn: No Argument given, Created Object will be empty.> fitcknn ();
+%! fitcknn (ones (4,2), ones (3, 1), "K", 2)
+%!warning<fitcknn: No Argument given, Created Object will be empty.> fitcknn ()

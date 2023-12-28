@@ -17,17 +17,17 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{label} =} knnpredict (@var{X}, @var{y}, @var{Xclass})
+## @deftypefn  {statistics} {@var{label} =} knnpredict (@var{X}, @var{Y}, @var{XC})
 ## @deftypefnx {statistics} {@var{label} =} knnpredict (@dots{}, @var{name}, @var{value})
 ## @deftypefnx {statistics} {[@var{label}, @var{score}, @var{cost}] =} knnpredict (@dots{}, @var{name}, @var{value})
 ##
 ## Classify new data into categories using the kNN algorithm.
 ##
-## @code{@var{label} = knnpredict (@var{X}, @var{Y}, @var{Xclass})}
+## @code{@var{label} = knnpredict (@var{X}, @var{Y}, @var{XC})}
 ## returns the matrix of labels predicted for the corresponding instances
-## in @code{Xclass}, using the predictor data in @code{X} and corresponding
+## in @code{XC}, using the predictor data in @code{X} and corresponding
 ## categorical data in @code{Y}. @var{X} is used to train the kNN model and
-## values in @var{Xclass} are classified into classes in @var{Y}.
+## values in @var{XC} are classified into classes in @var{Y}.
 ##
 ## @itemize
 ## @item
@@ -39,9 +39,9 @@
 ## corresponding predictor data in @var{X}. @var{Y} can contain any type of
 ## categorical data. @var{Y} must have same numbers of Rows as @var{X}.
 ## @item
-## @code{Xclass} must be a @math{MxP} numeric matrix of query/new points that
+## @code{XC} must be a @math{MxP} numeric matrix of query/new points that
 ## are to be classified into the labels.
-## @var{Xclass} must have same numbers of columns as @var{X}.
+## @var{XC} must have same numbers of columns as @var{X}.
 ## @end itemize
 ##
 ## @code{[@var{label}, @var{score}, @var{cost}] = knnpredict (@dots{})} also
@@ -49,7 +49,7 @@
 ## probabilities for each instance for corresponding unique classes in @var{Y},
 ## and @var{cost}, which is a matrix containing expected cost of the
 ## classifications. Each row in @var{cost} contains the expected cost of
-## classification of observations in @var{Xclass} into each class of unique
+## classification of observations in @var{XC} into each class of unique
 ## classes in @var{Y}.
 ##
 ## @code{@var{label} = knnpredict (@dots{}, @var{Name}, @var{Value})} returns a
@@ -156,7 +156,7 @@
 ## @seealso{knnsearch, fitcknn}
 ## @end deftypefn
 
-function [label, score, cost] = knnpredict (X, Y, Xclass, varargin)
+function [label, score, cost] = knnpredict (X, Y, XC, varargin)
 
   ## Check input arguments
   if (nargin < 3)
@@ -167,8 +167,8 @@ function [label, score, cost] = knnpredict (X, Y, Xclass, varargin)
     error ("knnpredict: number of rows in X and Y must be equal.");
   endif
 
-  if (columns (X) != columns (Xclass))
-    error ("knnpredict: number of columns in Xclass must be equal to X.");
+  if (columns (X) != columns (XC))
+    error ("knnpredict: number of columns in XC must be equal to X.");
   endif
 
   if (! isnumeric (X) || ! isfinite (X))
@@ -248,7 +248,7 @@ function [label, score, cost] = knnpredict (X, Y, Xclass, varargin)
     endif
   else
     ## Empty cost
-    cost = ones (rows (Xclass),numel (unique (Y)));
+    cost = ones (rows (XC),numel (unique (Y)));
   endif
 
   ## Check scale
@@ -287,7 +287,7 @@ function [label, score, cost] = knnpredict (X, Y, Xclass, varargin)
   endif
 
 
-  ## Calculate distance for each point in Xclass and pass to function
+  ## Calculate distance for each point in XC and pass to function
   ## to predict label for the data point
   classNames = unique (Y);
   classNos   = numel (classNames);
@@ -302,7 +302,7 @@ function [label, score, cost] = knnpredict (X, Y, Xclass, varargin)
     cost      = NaN (0, classNos);
   else
     ## Calculate the NNs using knnsearch
-    [idx, dist] = knnsearch (X, Xclass, "k", k, "NSMethod", NSmethod, ...
+    [idx, dist] = knnsearch (X, XC, "k", k, "NSMethod", NSmethod, ...
                   "Distance", distance, "P", P, "Scale", S, ...
                   "cov", C, "bucketsize", BS, "sortindices", true);
 
@@ -485,123 +485,123 @@ endfunction
 %! x = meas;
 %! y = species;
 %!test
-%! xnew = [min(x); mean(x); max(x)];
-%! [l, s, c] = knnpredict (x, y, xnew, "K", 5);
+%! xc = [min(x); mean(x); max(x)];
+%! [l, s, c] = knnpredict (x, y, xc, "K", 5);
 %! assert (l, {"setosa"; "versicolor"; "virginica"})
 %! assert (s, [1, 0, 0; 0, 1, 0; 0, 0, 1])
 %! assert (c, [0, 1, 1; 1, 0, 1; 1, 1, 0])
 %!test
-%! xnew = [min(x); mean(x); max(x)];
-%! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance", "mahalanobis");
+%! xc = [min(x); mean(x); max(x)];
+%! [l, s, c] = knnpredict (x, y, xc, "k", 10, "distance", "mahalanobis");
 %! assert (l, {"versicolor"; "versicolor"; "virginica"})
 %! assert (s, [0.3, 0.7, 0; 0, 0.9, 0.1; 0.2, 0.2, 0.6], 1e-4)
 %! assert (c, [0.7, 0.3, 1; 1, 0.1, 0.9; 0.8, 0.8, 0.4], 1e-4)
 %!test
-%! xnew = [min(x); mean(x); max(x)];
-%! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance", "cosine");
+%! xc = [min(x); mean(x); max(x)];
+%! [l, s, c] = knnpredict (x, y, xc, "k", 10, "distance", "cosine");
 %! assert (l, {"setosa"; "versicolor"; "virginica"})
 %! assert (s, [1, 0, 0; 0, 1, 0; 0, 0.3, 0.7], 1e-4)
 %! assert (c, [0, 1, 1; 1, 0, 1; 1, 0.7, 0.3], 1e-4)
 %!test
-%! xnew = [5.2, 4.1, 1.5, 0.1; 5.1, 3.8, 1.9, 0.4; ...
+%! xc = [5.2, 4.1, 1.5, 0.1; 5.1, 3.8, 1.9, 0.4; ...
 %!         5.1, 3.8, 1.5, 0.3; 4.9, 3.6, 1.4, 0.1];
-%! [l, s, c] = knnpredict (x, y, xnew, "K", 5);
+%! [l, s, c] = knnpredict (x, y, xc, "K", 5);
 %! assert (l, {"setosa"; "setosa"; "setosa"; "setosa"})
 %! assert (s, [1, 0, 0; 1, 0, 0; 1, 0, 0; 1, 0, 0])
 %! assert (c, [0, 1, 1; 0, 1, 1; 0, 1, 1; 0, 1, 1])
 %!test
-%! xnew = [5, 3, 5, 1.45];
-%! [l, s, c] = knnpredict (x, y, xnew, "k", 5);
+%! xc = [5, 3, 5, 1.45];
+%! [l, s, c] = knnpredict (x, y, xc, "k", 5);
 %! assert (l, {"versicolor"})
 %! assert (s, [0, 0.6, 0.4], 1e-4)
 %! assert (c, [1, 0.4, 0.6], 1e-4)
 %!test
-%! xnew = [5, 3, 5, 1.45];
-%! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance", "minkowski", "P", 5);
+%! xc = [5, 3, 5, 1.45];
+%! [l, s, c] = knnpredict (x, y, xc, "k", 10, "distance", "minkowski", "P", 5);
 %! assert (l, {"versicolor"})
 %! assert (s, [0, 0.5, 0.5], 1e-4)
 %! assert (c, [1, 0.5, 0.5], 1e-4)
 %!test
-%! xnew = [5, 3, 5, 1.45];
-%! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance", "jaccard");
+%! xc = [5, 3, 5, 1.45];
+%! [l, s, c] = knnpredict (x, y, xc, "k", 10, "distance", "jaccard");
 %! assert (l, {"setosa"})
 %! assert (s, [0.9, 0.1, 0], 1e-4)
 %! assert (c, [0.1, 0.9, 1], 1e-4)
 %!test
-%! xnew = [5, 3, 5, 1.45];
-%! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance", "mahalanobis");
+%! xc = [5, 3, 5, 1.45];
+%! [l, s, c] = knnpredict (x, y, xc, "k", 10, "distance", "mahalanobis");
 %! assert (l, {"versicolor"})
 %! assert (s, [0.1, 0.5, 0.4], 1e-4)
 %! assert (c, [0.9, 0.5, 0.6], 1e-4)
 %!test
-%! xnew = [5, 3, 5, 1.45];
-%! [l, s, c] = knnpredict (x, y, xnew, "k", 5, "distance","jaccard");
+%! xc = [5, 3, 5, 1.45];
+%! [l, s, c] = knnpredict (x, y, xc, "k", 5, "distance","jaccard");
 %! assert (l, {"setosa"})
 %! assert (s, [0.8, 0.2, 0], 1e-4)
 %! assert (c, [0.2, 0.8, 1], 1e-4)
 %!test
-%! xnew = [5, 3, 5, 1.45];
-%! [l, s, c] = knnpredict (x, y, xnew, "k", 5, "distance","seuclidean");
+%! xc = [5, 3, 5, 1.45];
+%! [l, s, c] = knnpredict (x, y, xc, "k", 5, "distance","seuclidean");
 %! assert (l, {"versicolor"})
 %! assert (s, [0, 1, 0], 1e-4)
 %! assert (c, [1, 0, 1], 1e-4)
 %!test
-%! xnew = [5, 3, 5, 1.45];
-%! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance","chebychev");
+%! xc = [5, 3, 5, 1.45];
+%! [l, s, c] = knnpredict (x, y, xc, "k", 10, "distance","chebychev");
 %! assert (l, {"versicolor"})
 %! assert (s, [0, 0.7, 0.3], 1e-4)
 %! assert (c, [1, 0.3, 0.7], 1e-4)
 %!test
-%! xnew = [5, 3, 5, 1.45];
-%! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance","cityblock");
+%! xc = [5, 3, 5, 1.45];
+%! [l, s, c] = knnpredict (x, y, xc, "k", 10, "distance","cityblock");
 %! assert (l, {"versicolor"})
 %! assert (s, [0, 0.6, 0.4], 1e-4)
 %! assert (c, [1, 0.4, 0.6], 1e-4)
 %!test
-%! xnew = [5, 3, 5, 1.45];
-%! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance","manhattan");
+%! xc = [5, 3, 5, 1.45];
+%! [l, s, c] = knnpredict (x, y, xc, "k", 10, "distance","manhattan");
 %! assert (l, {"versicolor"})
 %! assert (s, [0, 0.6, 0.4], 1e-4)
 %! assert (c, [1, 0.4, 0.6], 1e-4)
 %!test
-%! xnew = [5, 3, 5, 1.45];
-%! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance","cosine");
+%! xc = [5, 3, 5, 1.45];
+%! [l, s, c] = knnpredict (x, y, xc, "k", 10, "distance","cosine");
 %! assert (l, {"virginica"})
 %! assert (s, [0, 0.1, 0.9], 1e-4)
 %! assert (c, [1, 0.9, 0.1], 1e-4)
 %!test
-%! xnew = [5, 3, 5, 1.45];
-%! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance","correlation");
+%! xc = [5, 3, 5, 1.45];
+%! [l, s, c] = knnpredict (x, y, xc, "k", 10, "distance","correlation");
 %! assert (l, {"virginica"})
 %! assert (s, [0, 0.1, 0.9], 1e-4)
 %! assert (c, [1, 0.9, 0.1], 1e-4)
 %!test
-%! xnew = [5, 3, 5, 1.45];
-%! [l, s, c] = knnpredict (x, y, xnew, "k", 30, "distance","spearman");
+%! xc = [5, 3, 5, 1.45];
+%! [l, s, c] = knnpredict (x, y, xc, "k", 30, "distance","spearman");
 %! assert (l, {"versicolor"})
 %! assert (s, [0, 1, 0], 1e-4)
 %! assert (c, [1, 0, 1], 1e-4)
 %!test
-%! xnew = [5, 3, 5, 1.45];
-%! [l, s, c] = knnpredict (x, y, xnew, "k", 30, "distance","hamming");
+%! xc = [5, 3, 5, 1.45];
+%! [l, s, c] = knnpredict (x, y, xc, "k", 30, "distance","hamming");
 %! assert (l, {"setosa"})
 %! assert (s, [0.4333, 0.3333, 0.2333], 1e-4)
 %! assert (c, [0.5667, 0.6667, 0.7667], 1e-4)
 %!test
-%! xnew = [5, 3, 5, 1.45];
-%! [l, s, c] = knnpredict (x, y, xnew, "k", 5, "distance","hamming");
+%! xc = [5, 3, 5, 1.45];
+%! [l, s, c] = knnpredict (x, y, xc, "k", 5, "distance","hamming");
 %! assert (l, {"setosa"})
 %! assert (s, [0.8, 0.2, 0], 1e-4)
 %! assert (c, [0.2, 0.8, 1], 1e-4)
 %!test
-%! xnew = [min(x); mean(x); max(x)];
-%! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance", "correlation");
+%! xc = [min(x); mean(x); max(x)];
+%! [l, s, c] = knnpredict (x, y, xc, "k", 10, "distance", "correlation");
 %! assert (l, {"setosa";"versicolor";"virginica"})
 %! assert (s, [1, 0, 0; 0, 1, 0; 0, 0.4, 0.6], 1e-4)
 %! assert (c, [0, 1, 1; 1, 0, 1; 1, 0.6, 0.4], 1e-4)
 %!test
-%! xnew = [min(x);mean(x);max(x)];
-%! [l, s, c] = knnpredict (x, y, xnew, "k", 10, "distance", "hamming");
+%! xc = [min(x);mean(x);max(x)];
+%! [l, s, c] = knnpredict (x, y, xc, "k", 10, "distance", "hamming");
 %! assert (l, {"setosa";"setosa";"setosa"})
 %! assert (s, [0.9, 0.1, 0; 1, 0, 0; 0.5, 0, 0.5], 1e-4)
 %! assert (c, [0.1, 0.9, 1; 0, 1, 1; 0.5, 1, 0.5], 1e-4)
@@ -611,7 +611,7 @@ endfunction
 %!error<knnpredict: too few input arguments.>knnpredict (1, 2)
 %!error<knnpredict: number of rows in X and Y must be equal.> ...
 %! knnpredict (ones(4,5), ones(5,4),ones(1,1))
-%!error<knnpredict: number of columns in Xclass must be equal to X.> ...
+%!error<knnpredict: number of columns in XC must be equal to X.> ...
 %! knnpredict (ones(4,5), ones(4,1),ones(1,1))
 %!error<knnpredict: Invalid values in X.> ...
 %! knnpredict ([1,2,3;"a",5,6], ones(2,3),ones(1,3))
