@@ -30,8 +30,8 @@ classdef ClassificationKNN
 ## k-Nearest Neighbor classification model.  It is recommended to use the
 ## @code{fitcknn} function to create a @qcode{ClassificationKNN} class object.
 ##
-## @code{@var{obj} = ClassificationKNN (@var{X}, @var{Y})} returns an empty object
-## of class ClassificationKNN with empty properties.
+## @code{@var{obj} = ClassificationKNN (@var{X}, @var{Y})} returns an empty
+## object of class ClassificationKNN with empty properties.
 ##
 ## @code{@var{obj} = ClassificationKNN (@var{X}, @var{Y})} returns an object
 ## of class ClassificationKNN, with @var{X} as predictor data and @var{Y}
