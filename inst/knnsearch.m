@@ -35,7 +35,7 @@
 ## @math{K} nearest neighbour in @var{x} for each @var{y} with distances
 ## returned in @var{dist}.
 ##
-## Additional input arguments can be given as @qcode{Name-Value} pairs.
+## Additional parameters can be specified by @qcode{Name-Value} pair arguments.
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab @var{Name} @tab @var{Value}

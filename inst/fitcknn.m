@@ -27,14 +27,24 @@
 ## classification model, @var{obj}, with @var{X} being the predictor data,
 ## and @var{Y} the class labels of observations in @var{X}.
 ##
-## @code{@var{obj} = fitcknn (@dots{}, @var{name}, @var{value})} returns a
-## k-Nearest Neighbor classification model with additional options specified by
-## @qcode{Name-Value} pair arguments.
+## @itemize
+## @item
+## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+## correspond to observations and columns correspond to features or variables.
+## @var{X} will be used to train the kNN model.
+## @item
+## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels of
+## corresponding predictor data in @var{X}. @var{Y} can contain any type of
+## categorical data. @var{Y} must have same numbers of Rows as @var{X}.
+## @item
+## @end itemize
 ##
 ## @code{@var{obj} = fitcknn ()} returns an empty k-Nearest Neighbor
 ## classification model and produces a warning.
 ##
-## Additional input arguments can be given as @qcode{Name-Value} pairs.
+## @code{@var{obj} = fitcknn (@dots{}, @var{name}, @var{value})} returns a
+## k-Nearest Neighbor classification model with additional options specified by
+## @qcode{Name-Value} pair arguments listed below.
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab @var{Name} @tab @var{Value}
@@ -155,7 +165,7 @@
 ## @var{"NosClasses"} cannot be changed via @var{obj}.
 ##
 ## @item @tab @qcode{"Xclass"} @tab must be a @math{MxP} numeric matrix of
-## query/new points that are to be classified into the clas labels.
+## query/new points that are to be classified into the class labels.
 ## @var{Xclass} must have same numbers of columns as @var{X}. @var{Xclass}
 ## can be changed via object @var{obj} using @code{@var{obj.Xclass} = newXclass}.
 ## to predict labels for new set of values while keeping the rest of the model

@@ -52,10 +52,9 @@
 ## classification of observations in @var{Xclass} into each class of unique
 ## classes in @var{Y}.
 ##
-## @code{@var{label} = knnpredict (@var{X}, @var{Y}, @var{Xclass}, @var{Name}, @var{Value})}
-## returns a matrix @var{label} containing the predicted labels for instances in
-## @var{Xclass} with additional parameters given as @qcode{Name-Value} pair
-## arguments, as listed below.
+## @code{@var{label} = knnpredict (@dots{}, @var{Name}, @var{Value})} returns a
+## matrix @var{label} containing the predicted labels with additional parameters
+## specified by @qcode{Name-Value} pair arguments listed below.
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab @var{Name} @tab @var{Value}

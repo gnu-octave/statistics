@@ -20,7 +20,7 @@ classdef ClassificationKNN
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{obj} =} ClassificationKNN
 ## @deftypefnx {statistics} {@var{obj} =} ClassificationKNN (@var{X}, @var{Y})
-## @deftypefnx {statistics} {@var{obj} =} ClassificationKNN (@var{X}, @var{Y}, @var{name}, @var{value})
+## @deftypefnx {statistics} {@var{obj} =} ClassificationKNN (@dots{}, @var{name}, @var{value})
 ##
 ## Create a @qcode{ClassificationKNN} class object containing a k-Nearest
 ## Neighbor classification model.
@@ -30,19 +30,28 @@ classdef ClassificationKNN
 ## k-Nearest Neighbor classification model.  It is recommended to use the
 ## @code{fitcknn} function to create a @qcode{ClassificationKNN} class object.
 ##
-## @code{@var{obj} = ClassificationKNN (@var{X}, @var{Y})} returns an empty
-## object of class ClassificationKNN with empty properties.
+## @code{@var{obj} = ClassificationKNN ()} returns an empty ClassificationKNN
+## object.
 ##
 ## @code{@var{obj} = ClassificationKNN (@var{X}, @var{Y})} returns an object
 ## of class ClassificationKNN, with @var{X} as predictor data and @var{Y}
 ## with the class labels of observations in @var{X}.
 ##
-## @code{@var{obj} = ClassificationKNN (@var{X}, @var{Y}, @var{name}, @var{value})}
-## returns an object of class ClassificationKNN, with @var{X} as predictor data
-## and @var{Y} with the class labels of observations in @var{X} with additional
-## properties specified in @qcode{Name-Value} pairs.
+## @itemize
+## @item
+## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+## correspond to observations and columns correspond to features or variables.
+## @var{X} will be used to train the kNN model.
+## @item
+## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels of
+## corresponding predictor data in @var{X}. @var{Y} can contain any type of
+## categorical data. @var{Y} must have same numbers of Rows as @var{X}.
+## @item
+## @end itemize
 ##
-## An object of @qcode{ClassificationKNN} contains the following properties :
+## @code{@var{obj} = ClassificationKNN (@dfots{}, @var{name}, @var{value})}
+## returns an object of class ClassificationKNN with additional properties
+## specified by @qcode{Name-Value} pair arguments listed below.
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab @var{property} @tab @var{Description}
