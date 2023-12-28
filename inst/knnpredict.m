@@ -1,4 +1,5 @@
 ## Copyright (C) 2023 Mohammed Azmat Khan <azmat.dev0@gmail.com>
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,10 +18,16 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{label} =} knnpredict (@var{X}, @var{y}, @var{Xclass})
-## @deftypefnx {statistics} {@var{label} =} knnpredict (@var{x}, @var{y}, @var{Xclass}, @var{name}, @var{value})
-## @deftypefnx {statistics} {[@var{label}, @var{score}, @var{cost}] =} knnpredict (@var{x}, @var{y}, @var{Xclass}, @var{name}, @var{value})
+## @deftypefnx {statistics} {@var{label} =} knnpredict (@dots{}, @var{name}, @var{value})
+## @deftypefnx {statistics} {[@var{label}, @var{score}, @var{cost}] =} knnpredict (@dots{}, @var{name}, @var{value})
 ##
-## Classify new data points into categories using kNN algorithm
+## Classify new data into categories using the kNN algorithm.
+##
+## @code{@var{label} = knnpredict (@var{X}, @var{Y}, @var{Xclass})}
+## returns the matrix of labels predicted for the corresponding instances
+## in @code{Xclass}, using the predictor data in @code{X} and corresponding
+## categorical data in @code{Y}. @var{X} is used to train the kNN model and
+## values in @var{Xclass} are classified into classes in @var{Y}.
 ##
 ## @itemize
 ## @item
@@ -35,8 +42,21 @@
 ## @code{Xclass} must be a @math{MxP} numeric matrix of query/new points that
 ## are to be classified into the labels.
 ## @var{Xclass} must have same numbers of columns as @var{X}.
+## @end itemize
 ##
-## @emph{ additional parameters that can be passed as name value pairs :}
+## @code{[@var{label}, @var{score}, @var{cost}] = knnpredict (@dots{})} also
+## returns @var{score}, which contains the predicted class scores or posterior
+## probabilities for each instance for corresponding unique classes in @var{Y},
+## and @var{cost}, which is a matrix containing expected cost of the
+## classifications. Each row in @var{cost} contains the expected cost of
+## classification of observations in @var{Xclass} into each class of unique
+## classes in @var{Y}.
+##
+## @code{@var{label} = knnpredict (@var{X}, @var{Y}, @var{Xclass}, @var{Name}, @var{Value})}
+## returns a matrix @var{label} containing the predicted labels for instances in
+## @var{Xclass} with additional parameters given as @qcode{Name-Value} pair
+## arguments, as listed below.
+##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab @var{Name} @tab @var{Value}
 ##
@@ -131,48 +151,15 @@
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @item @tab @qcode{"standardize"} @tab is the flag to indicate if kNN should
-##               be calculated standerdizing @var{X}.
+## be calculated after standardizing @var{X}.
 ## @end multitable
 ##
-## @code{@var{label} = knnpredict (@var{X}, @var{Y}, @var{Xclass})}
-## returns the matrix of labels predicted for the corresponding instances
-## in @code{Xclass}, using the predictor data in @code{X} and corresponding
-## categorical data in @code{Y}. @var{X} is used to train the kNN model and
-## values in @var{Xclass} are classified into classes in @var{Y}.
-##
-## @code{@var{label} = knnpredict (@var{X}, @var{Y}, @var{Xclass}, @var{Name}, @var{Value})}
-## returns a matrix @var{label} containing the predicted labels for instances in
-## @var{Xclass} with additional parameters given as Name-Value pairs. for example
-## value of nearest-neighbours can be set 10 by specifying "K" as 10, similiarly
-## other optional parameters can be given.
-##
-## @code{[@var{label}, @var{score}, @var{cost}] = knnpredict (@dots{})}
-## returns the matrix of labels predicted for the corresponding instances
-## in @code{Xclass}, using the predictor data in @code{X} and @code{Y}.
-##
-## In addition it also returns
-##
-## @multitable @columnfractions 0.05 0.2 0.75
-## @item @tab @qcode{"score"} @tab contains predicted class scores or posterior
-##             Probabilities for each instances for corresponding unique
-##             classes in @var{Y}.
-## @item @tab @qcode{"cost"} @tab is a matrix containing expected cost of the
-##             classifications. each row of @var{cost} matrix contains the
-##             expected cost of classification of observations in @var{Xclass}
-##             into each class of unique classes in @var{Y}.
-##@end multitable
-##
-## @end itemize
-##
-## for demo use demo knnpredict
-##
-## @seealso{knnsearch}
+## @seealso{knnsearch, fitcknn}
 ## @end deftypefn
 
 function [label, score, cost] = knnpredict (X, Y, Xclass, varargin)
 
-
-  ## Check positional parameters
+  ## Check input arguments
   if (nargin < 3)
 	  error ("knnpredict: too few input arguments.");
   endif
@@ -185,8 +172,6 @@ function [label, score, cost] = knnpredict (X, Y, Xclass, varargin)
     error ("knnpredict: number of columns in Xclass must be equal to X.");
   endif
 
-  ## Check X
-  ## remove this do this after removing NaNs
   if (! isnumeric (X) || ! isfinite (X))
     error ("knnpredict: Invalid values in X.");
   endif
@@ -195,16 +180,16 @@ function [label, score, cost] = knnpredict (X, Y, Xclass, varargin)
   ## Process optional parameters
 
   ## Adding default values
-    k = 1;
-    cost  = [];
-    S = [];
-    C   = [];
-    weights  = [];
-    P = 2;
-    BS  = 50;
-    distance    = "euclidean";
-    NSmethod    = "exhaustive";
-    standardize = false;
+  k = 1;
+  cost = [];
+  S = [];
+  C = [];
+  weights = [];
+  P = 2;
+  BS = 50;
+  distance = "euclidean";
+  NSmethod = "exhaustive";
+  standardize = false;
 
 
   ## Parse additional parameters in Name/Value pairs
@@ -298,7 +283,7 @@ function [label, score, cost] = knnpredict (X, Y, Xclass, varargin)
 
   if (standardize)
     stdX = std (X,0,1);
-    mu   = mean(X);
+    mu   = mean (X);
     X    = (X - mu) ./ stdX;
   endif
 
@@ -313,9 +298,9 @@ function [label, score, cost] = knnpredict (X, Y, Xclass, varargin)
 
   if (isempty (X))
     ## no data in X
-    label     = repmat (classNames(1,:),0,1);
-    posterior = NaN (0,classNos);
-    cost      = NaN (0,classNos);
+    label     = repmat (classNames (1,:), 0, 1);
+    posterior = NaN (0, classNos);
+    cost      = NaN (0, classNos);
   else
     ## Calculate the NNs using knnsearch
     [idx, dist] = knnsearch (X, Xclass, "k", k, "NSMethod", NSmethod, ...
@@ -324,7 +309,7 @@ function [label, score, cost] = knnpredict (X, Y, Xclass, varargin)
 
     [label, score, cost_temp] = predictlabel (X, Y, idx, k, weights);
 
-    cost  = cost(rows(cost_temp),columns(cost_temp)) .* cost_temp;
+    cost  = cost (rows (cost_temp), columns (cost_temp)) .* cost_temp;
   endif
 
 endfunction
@@ -349,7 +334,8 @@ function [labels, score, cost_temp] = predictlabel (x, y, idx, k, weights)
 
       ## Weighted kNN
       for id = 1:numel (u)
-        freq = [freq; (sum (strcmpi (u(id,1), y(idx(i,:))) .* weights)) / wsum;]
+        new_freq = sum (strcmpi (u(id,1), y(idx(i,:))) .* weights) / wsum;
+        freq = [freq; new_freq];
         score_temp = (freq ./ k)';
       endfor
     else
@@ -372,7 +358,7 @@ function [labels, score, cost_temp] = predictlabel (x, y, idx, k, weights)
     labels = [labels; u(iu,1)];
   endfor
 endfunction
-## ------labels------- ##
+
 
 %!demo
 %! ## find 10 nearest neighbour of a point using different distance metrics
@@ -477,6 +463,7 @@ endfunction
 %! hold off
 %!
 %!
+
 ## Test output
 %!shared x, y
 %! load fisheriris
@@ -602,7 +589,6 @@ endfunction
 %! assert (l, {"setosa";"setosa";"setosa"})
 %! assert (s, [0.9000, 0.1000, 0;1.000, 0, 0;0.5000, 0, 0.5000], 1e-4)
 %! assert (c, [0.1000, 0.9000, 1.0000;0, 1.0000, 1.0000;0.5000, 1.0000, 0.5000], 1e-4)
-
 
 ## Test input validation
 %!error<knnpredict: too few input arguments.>knnpredict (1)

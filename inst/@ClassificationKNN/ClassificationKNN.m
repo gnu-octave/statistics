@@ -1,4 +1,5 @@
 ## Copyright (C) 2023 Mohammed Azmat Khan <azmat.dev0@gmail.com>
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -21,22 +22,23 @@ classdef ClassificationKNN
 ## @deftypefnx {statistics} {@var{P} =} ClassificationKNN (@var{X}, @var{Y})
 ## @deftypefnx {statistics} {@var{P} =} ClassificationKNN (@var{X}, @var{Y}, @var{name}, @var{value})
 ##
-## Create a kNN algorithm, ClassificationKNN Object using
-## @var{X}, @var{Y} and other additional Name-Value pairs.
-## Object of class ClassificationKNN can be used to store the training data
-## and values can be altered via Object to predict labels and other data
-## using built-in functions for new observations. It is recommended to use
-## fitcknn to create an object of ClassificationKNN
+## Create a @qcode{ClassificationKNN} class object containing a k-Nearest
+## Neighbor classification model.
 ##
-## @code{@var{P} = ClassificationKNN (@var{X}, @var{Y})} returns an empty Object
+## A @qcode{ClassificationKNN} class object can store the labelled training
+## data, new data points for classification, and various parameters for the
+## k-Nearest Neighbor classification model.  It is recommended to use the
+## @code{fitcknn} function to create a @qcode{ClassificationKNN} class object.
+##
+## @code{@var{P} = ClassificationKNN (@var{X}, @var{Y})} returns an empty object
 ## of class ClassificationKNN with empty properties.
 ##
-## @code{@var{P} = ClassificationKNN (@var{X}, @var{Y})} returns an Object
+## @code{@var{P} = ClassificationKNN (@var{X}, @var{Y})} returns an object
 ## of class ClassificationKNN, with @var{X} as predictor data and @var{Y}
 ## with the class labels of observations in @var{X}.
 ##
 ## @code{@var{P} = ClassificationKNN (@var{X}, @var{Y}, @var{name}, @var{value})}
-## returns an Object of class ClassificationKNN, with @var{X} as predictor data
+## returns an object of class ClassificationKNN, with @var{X} as predictor data
 ## and @var{Y} with the class labels of observations in @var{X} with additional
 ## properties specified in @qcode{Name-Value} pairs.
 ##
@@ -175,9 +177,7 @@ classdef ClassificationKNN
 ##
 ## @end multitable
 ##
-## Methods of class ClassificationKNN are :
-##
-##
+## @seealso{fitcknn, @ClassificationKNN/predict}
 ## @end deftypefn
 
   properties (Access = public)

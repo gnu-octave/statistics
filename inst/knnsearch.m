@@ -19,9 +19,9 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{idx} =} knnsearch (@var{x}, @var{y})
 ## @deftypefnx {statistics} {[@var{idx}, @var{D}] =} knnsearch (@var{x}, @var{y})
-## @deftypefnx {statistics} {[@dots{}] =} knnsearch (@var{x}, @var{y}, @var{name}, @var{value})
+## @deftypefnx {statistics} {[@dots{}] =} knnsearch (@dots{}, @var{name}, @var{value})
 ##
-## Find k-nearest neighbors using input data
+## Find k-nearest neighbors from input data.
 ##
 ## @code{@var{idx} = knnsearch (@var{x}, @var{y})} finds @math{K} nearest
 ## neighbors in @var{x} for @var{y}. It returns @var{idx} which contains indices
@@ -35,7 +35,7 @@
 ## @math{K} nearest neighbour in @var{x} for each @var{y} with distances
 ## returned in @var{dist}.
 ##
-## Additional input arguments can be given as name-value pairs.
+## Additional input arguments can be given as @qcode{Name-Value} pairs.
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab @var{Name} @tab @var{Value}
@@ -131,7 +131,7 @@
 ## name-value pair argument.
 ## @end multitable
 ##
-## @seealso{rangesearch}
+## @seealso{rangesearch, knnpredict}
 ## @end deftypefn
 
 function [idx, dist] = knnsearch (X, Y, varargin)
