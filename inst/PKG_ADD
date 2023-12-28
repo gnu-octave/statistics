@@ -1,9 +1,9 @@
 if (compare_versions (version (), "9", "<"))
   a1_e324kporit985_itogj3_dirlist = ...
-            {"datasets", "dist_fit", "dist_fun", "dist_stat", "shadow9"};
+     {"clusters", "datasets", "dist_fit", "dist_fun", "dist_stat", "shadow9"};
 else
   a1_e324kporit985_itogj3_dirlist = ...
-            {"datasets", "dist_fit", "dist_fun", "dist_stat"};
+     {"clusters", "datasets", "dist_fit", "dist_fun", "dist_stat"};
 endif
 
 d_2seRTE546_oyi_795jg09_dirname = fileparts (canonicalize_file_name ...
