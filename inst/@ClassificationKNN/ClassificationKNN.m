@@ -18,9 +18,9 @@
 
 classdef ClassificationKNN
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{P} =} ClassificationKNN
-## @deftypefnx {statistics} {@var{P} =} ClassificationKNN (@var{X}, @var{Y})
-## @deftypefnx {statistics} {@var{P} =} ClassificationKNN (@var{X}, @var{Y}, @var{name}, @var{value})
+## @deftypefn  {statistics} {@var{obj} =} ClassificationKNN
+## @deftypefnx {statistics} {@var{obj} =} ClassificationKNN (@var{X}, @var{Y})
+## @deftypefnx {statistics} {@var{obj} =} ClassificationKNN (@var{X}, @var{Y}, @var{name}, @var{value})
 ##
 ## Create a @qcode{ClassificationKNN} class object containing a k-Nearest
 ## Neighbor classification model.
@@ -30,14 +30,14 @@ classdef ClassificationKNN
 ## k-Nearest Neighbor classification model.  It is recommended to use the
 ## @code{fitcknn} function to create a @qcode{ClassificationKNN} class object.
 ##
-## @code{@var{P} = ClassificationKNN (@var{X}, @var{Y})} returns an empty object
+## @code{@var{obj} = ClassificationKNN (@var{X}, @var{Y})} returns an empty object
 ## of class ClassificationKNN with empty properties.
 ##
-## @code{@var{P} = ClassificationKNN (@var{X}, @var{Y})} returns an object
+## @code{@var{obj} = ClassificationKNN (@var{X}, @var{Y})} returns an object
 ## of class ClassificationKNN, with @var{X} as predictor data and @var{Y}
 ## with the class labels of observations in @var{X}.
 ##
-## @code{@var{P} = ClassificationKNN (@var{X}, @var{Y}, @var{name}, @var{value})}
+## @code{@var{obj} = ClassificationKNN (@var{X}, @var{Y}, @var{name}, @var{value})}
 ## returns an object of class ClassificationKNN, with @var{X} as predictor data
 ## and @var{Y} with the class labels of observations in @var{X} with additional
 ## properties specified in @qcode{Name-Value} pairs.
