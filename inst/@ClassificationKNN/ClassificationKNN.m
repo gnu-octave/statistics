@@ -302,7 +302,7 @@ classdef ClassificationKNN
         this.NosClasses = numel (this.classNames);
       endif
 
-      ##------checking optional parameters------##
+      ## Assign optional parameters
 
       ## Only checking if the arguments are provided and storing if they
       ## pass the check. If not provided the default values will be stored.

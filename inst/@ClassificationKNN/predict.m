@@ -30,10 +30,10 @@
 ##
 ## @code{@var{label} = predict (@var{obj}, @var{XC}} returns the matrix of
 ## labels predicted for the corresponding instances in @var{XC}, using the
-## predictor data in @code{XC} and corresponding labels, @code{Y}, stored in the
+## predictor data in @code{X} and corresponding labels, @code{Y}, stored in the
 ## k-Nearest Neighbor classification model, @var{obj}.  @var{XC} must be a
 ## @math{MxP} numeric matrix with the same number of features @math{P} as the
-## corresponding kNN model in @var{obj}.
+## corresponding predictors of the kNN model in @var{obj}.
 ##
 ## @code{[@var{label}, @var{score}, @var{cost}] = predict (@var{obj}, @var{XC}}
 ## also returns @var{score}, which contains the predicted class scores or
@@ -46,17 +46,23 @@
 
 function [label, score, cost] = predict (obj, XC)
 
+  ## Chech for sufficient input arguments
+  if (nargin < 2)
+    error ("@ClassificationKNN/predict: Too few arguments.");
+  endif
+
   ## Check for obj being a ClasifficationKNN object
   if (! strcmp (class (obj), "ClasifficationKNN"))
     error (strcat (["@ClassificationKNN/predict: OBJ"], ...
-                   [" must a ClasifficationKNN class object."]));
+                   [" must be a ClasifficationKNN class object."]));
   endif
+
   ## Check for valid XC
   if (isempty (XC))
-    error ("@ClassificationKNN/predict: X is empty.");
+    error ("@ClassificationKNN/predict: XC is empty.");
   elseif (columns (obj.X) != columns (XC))
-    error (strcat (["@ClassificationKNN/predict: XC must have the"], ...
-                   [" same number of features as in the kNN model."]));
+    error (strcat (["@ClassificationKNN/predict: XC must have the same"], ...
+                   [" number of features (columns) as in the kNN model."]));
   endif
 
   ## Check cost
