@@ -31,6 +31,9 @@ CVpartition (class of set partitions for cross-validation, used in crossval)
  @cvpartition/set
  @cvpartition/test
  @cvpartition/training
+RegressionGAM (class for GAM regression)
+ @RegressionGAM/RegressionGAM
+ @RegressionGAM/predict
 Data Manipulation
  combnk
  crosstab
