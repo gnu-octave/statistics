@@ -214,29 +214,39 @@
  Summary of important user-visible changes for statistics 1.6.1:
 -------------------------------------------------------------------
 
- Important Notice: 1) dependency changed to Octave>=7.2.0
-                   2) various distribution functions have been
-                       renamed, deprecated, or modified extensively
-                       so that backwards compatibility is broken
-                   3) `mad`, `mean`, `median`, `std`, `var` functions
+ Important Notice: 1) RegressionGAM classdef might produce erroneous
+                      results. Use cautiously!
+                   2) `mad`, `mean`, `median`, `std`, `var` functions
                        shadow core Octave's respective functions
-                   4) incompatibility with the `nan` package
+                   3) incompatibility with the `nan` package
  New functions:
  ==============
-
- ** knnsearch (fully Matlab compatible)
-
- ** knnpredict
 
  ** ClassificationKNN (new classdef)
 
  ** predict (for ClassificationKNN classdef)
 
+ ** fitcknn
+
+ ** knnpredict
+
+ ** knnsearch (fully Matlab compatible)
+
+ ** RegressionGAM (new classdef)
+
+ ** fitrgam
+
+ ** gampredict
+
+ ** predict (for RegressionGAM classdef)
+
  Improvements:
  =============
 
- ** ridge: bug fixes
+ ** anovan: new features
 
  ** friedman: bug fixes
 
- ** anovan: new features
+ ** regress_gp: updated functionality with RBF kernel
+
+ ** ridge: bug fixes

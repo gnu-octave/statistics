@@ -193,8 +193,10 @@ Machine Learning
  svmtrain
 Model Fitting
  crossval
+ fitcknn
  fitgmdist
  fitlm
+ fitrgam
 Hypothesis Testing
  adtest
  anova1
@@ -254,6 +256,7 @@ Regression
  canoncorr
  cholcov
  dcov
+ gampredict
  logistic_regression
  monotone_smooth
  pca
