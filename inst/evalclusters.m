@@ -358,6 +358,14 @@ endfunction
 %!                                         "silhouette", "clusterpriors", "xxx")
 %!error <'clust' must be a clustering*> evalclusters ([1 1;0 1], [1; 2], "gap")
 
+%!test
+%! load fisheriris;
+%! eva = evalclusters(meas, "kmeans", "calinskiharabasz", "KList", [1:6]);
+%! assert(isa(eva, "CalinskiHarabaszEvaluation"));
+%! assert(eva.NumObservations, 150);
+%! assert(eva.OptimalK, 3);
+%! assert(eva.InspectedK, [1 2 3 4 5 6]);
+
 ## demonstration
 #%!demo
 #%! load fisheriris;
