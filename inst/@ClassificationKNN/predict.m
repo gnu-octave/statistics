@@ -23,17 +23,17 @@
 ## Classify new data points into categories using the kNN algorithm from a
 ## k-Nearest Neighbor classification model, @var{obj}.
 ##
-## @itemize
-## @item
-## @code{obj} must be a @qcode{ClassificationKNN} class object.
-## @end itemize
-##
 ## @code{@var{label} = predict (@var{obj}, @var{XC}} returns the matrix of
 ## labels predicted for the corresponding instances in @var{XC}, using the
 ## predictor data in @code{X} and corresponding labels, @code{Y}, stored in the
 ## k-Nearest Neighbor classification model, @var{obj}.  @var{XC} must be a
 ## @math{MxP} numeric matrix with the same number of features @math{P} as the
 ## corresponding predictors of the kNN model in @var{obj}.
+##
+## @itemize
+## @item
+## @var{obj} must be a @qcode{ClassificationKNN} class object.
+## @end itemize
 ##
 ## @code{[@var{label}, @var{score}, @var{cost}] = predict (@var{obj}, @var{XC}}
 ## also returns @var{score}, which contains the predicted class scores or
@@ -46,7 +46,7 @@
 
 function [label, score, cost] = predict (obj, XC)
 
-  ## Chech for sufficient input arguments
+  ## Check for sufficient input arguments
   if (nargin < 2)
     error ("@ClassificationKNN/predict: Too few arguments.");
   endif

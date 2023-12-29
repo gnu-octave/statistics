@@ -18,8 +18,7 @@
 
 classdef ClassificationKNN
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{obj} =} ClassificationKNN
-## @deftypefnx {statistics} {@var{obj} =} ClassificationKNN (@var{X}, @var{Y})
+## @deftypefn  {statistics} {@var{obj} =} ClassificationKNN (@var{X}, @var{Y})
 ## @deftypefnx {statistics} {@var{obj} =} ClassificationKNN (@dots{}, @var{name}, @var{value})
 ##
 ## Create a @qcode{ClassificationKNN} class object containing a k-Nearest

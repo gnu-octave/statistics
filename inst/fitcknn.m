@@ -17,8 +17,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{obj} =} fitcknn
-## @deftypefnx {statistics} {@var{obj} =} fitcknn (@var{X}, @var{Y})
+## @deftypefn  {statistics} {@var{obj} =} fitcknn (@var{X}, @var{Y})
 ## @deftypefnx {statistics} {@var{obj} =} fitcknn (@dots{}, @var{name}, @var{value})
 ##
 ## Fit a k-Nearest Neighbor classification model.
@@ -170,7 +169,7 @@ function obj = fitcknn (X, Y, varargin)
 
   ## Check input parameters
   if (nargin < 2)
-    error ("fitcknn: Too few arguments.");
+    error ("fitcknn: too few arguments.");
   endif
   if (mod (nargin, 2) != 0)
     error ("fitcknn: Name-Value arguments must be in pairs.");
@@ -291,12 +290,11 @@ endfunction
 %! assert ({a.NSmethod,a.distance,a.bucketsize},{"exhaustive","euclidean",50})
 
 ## Test input validation
-%!error<fitcknn: Too few arguments.> fitcknn ()
-%!error<fitcknn: Too few arguments.> fitcknn (ones (4,1))
+%!error<fitcknn: too few arguments.> fitcknn ()
+%!error<fitcknn: too few arguments.> fitcknn (ones (4,1))
 %!error<fitcknn: Name-Value arguments must be in pairs.>
 %! fitcknn (ones (4,2), ones (4, 1), "K")
 %!error<fitcknn: number of rows in X and Y must be equal.>
 %! fitcknn (ones (4,2), ones (3, 1))
 %!error<fitcknn: number of rows in X and Y must be equal.>
 %! fitcknn (ones (4,2), ones (3, 1), "K", 2)
-%!warning<fitcknn: No Argument given, Created Object will be empty.> fitcknn ()
