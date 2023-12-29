@@ -1,4 +1,5 @@
 ## Copyright (C) 2023 Mohammed Azmat Khan <azmat.dev0@gmail.com>
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -14,125 +15,203 @@
 ##
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
-##
+
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{yFit} =} predict (@var{obj})
 ## @deftypefn  {statistics} {@var{yFit} =} predict (@var{obj}, @var{Xfit})
-## @deftypefn  {statistics} {@var{yFit} =} predict (@var{obj}, @var{Xfit}, @var{Name}, @var{Value})
-## @deftypefnx {statistics} {[@var{yFit}, @var{ySD}, @var{yInt}] =} predict (dots())
+## @deftypefnx {statistics} {@var{yFit} =} predict (@dots{}, @var{Name}, @var{Value})
+## @deftypefnx {statistics} {[@var{yFit}, @var{ySD}, @var{yInt}] =} predict (@dots{})
 ##
-## Predict new data points using trained GAM model object of class 
-## RegressionGAM, by GAM regression
+## Predict new data points using generalized additive model regression object.
+##
+## @code{@var{yFit} = predict (@var{obj}, @var{Xfit}} returns a vector of
+## predicted responses, @var{yFit}, for the predictor data in matrix @var{Xfit}
+## based on the Generalized Additive Model in @var{obj}.  @var{Xfit} must have
+## the same number of features/variables as the training data in @var{obj}.
 ##
 ## @itemize
 ## @item
-## @code{obj} must be an object of class @code{ClassificationKNN}.
+## @var{obj} must be a @qcode{RegressionGAM} class object.
+## @end itemize
+##
+## @code{[@var{yFit}, @var{ySD}, @var{yInt}] = predict (@var{obj}, @var{Xfit}}
+## also returns the standard deviations, @var{ySD}, and prediction intervals,
+## @var{yInt}, of the response variable @var{yFit}, evaluated at each
+## observation in the predictor data @var{Xfit}.
+##
+## @code{@var{yFit} = predict (@dots{}, @var{Name}, @var{Value})} returns the
+## aforementioned results with additional properties specified by
+## @qcode{Name-Value} pair arguments listed below.
+##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab @var{Name} @tab @var{Value}
 ##
-## @item @tab @qcode{"Alpha"} @tab Significance level of the prediction
-## intervals @qcode{"yInt"}. Specified as scalar in range [0,1]. This argument
-## is only valid when @qcode{"fitstd"} is set true. default value is 0.05.
-## for example 'alpha',0.05 return 95% prediction intervals.
+## @item @tab @qcode{"alpha"} @tab significance level of the prediction
+## intervals @var{yInt}, specified as scalar in range @qcode{[0,1]}. The default
+## value is 0.05, which corresponds to 95% prediction intervals.
 ##
-## @item @tab @qcode{"includeinteractions"} @tab flag to indicate weather to 
-## include interactions to predict new values from.
+## @item @tab @qcode{"includeinteractions"} @tab a boolean flag to include
+## interactions to predict new values based on @var{Xfit}.  By default,
+## @qcode{"includeinteractions"} is @qcode{true} when the GAM model in @var{obj}
+## contains a @qcode{obj.Formula} or @qcode{obj.Interactions} fields. Otherwise,
+## is set to @qcode{false}.  If set to @qcode{true} when no interactions are
+## present in the trained model, it will result to an error.  If set to
+## @qcode{false} when using a model that includes interactions, the predictions
+## will be made on the basic model without any interaction terms.  This way you
+## can make predictions from the same GAM model without having to retrain it.
 ## @end multitable
-## @end itemize
-## @end deftypefn
 ##
+## @seealso{fitrgam, gampredict}
+## @end deftypefn
 
 function [yFit, ySD, yInt] = predict (obj, Xfit, varargin)
-  
-  if (nargin < 2 || nargin > 4)
-    error ("@RegressionGAM.predict: Too few arguments.");
+
+  ## Check for sufficient input arguments
+  if (nargin < 2)
+    error ("@RegressionGAM/predict: too few arguments.");
   endif
-  
-  ##check obj
+
+  ## Check for obj being a ClasifficationKNN object
   if (! strcmpi (class (obj), "RegressionGAM"))
-    error (strcat (["@RegressionGAM.predict: obj must be of"], ...
-                   [" Class RegressionGAM."]));
-  endif  
-  if ( isempty (Xfit))
-    error ("@RegressionGAM.predict: Xfit is empty.");
-  elseif (columns (obj.X) != columns (Xfit))
-    error (strcat ( ["@RegressionGAM.predict: number of columns in Xfit"], ...
-                    [" must be equal to X in object."]));
-  else
-    ## clean Xfit data
-    notnansf  = ! logical (sum (isnan (Xfit), 2));
-    Xfit      = Xfit (notnansf, :);
+    error (strcat (["@RegressionGAM/predict: OBJ"], ...
+                   [" must be a RegressionGAM class object."]));
   endif
-  
-  ## Default value for Name-Value Pairs
-  Alpha = 0.05;
-  includeint = false;
-  
+
+  ## Check for valid XC
+  if (isempty (Xfit))
+    error ("@RegressionGAM/predict: Xfit is empty.");
+  elseif (columns (obj.X) != columns (Xfit))
+    error (strcat (["@RegressionGAM/predict: Xfit must have the same"], ...
+                   [" number of features (columns) as in the GAM model."]));
+  endif
+
+  ## Clean Xfit data
+  notnansf  = ! logical (sum (isnan (Xfit), 2));
+  Xfit      = Xfit (notnansf, :);
+
+  ## Default values for Name-Value Pairs
+  alpha = 0.05;
+  if (isempty (obj.IntMatrix))
+    incInt = false;
+  else
+    incInt = true;
+  endif
+
+  ## Parse optional arguments
   while (numel (varargin) > 0)
     switch (tolower (varargin {1}))
-      
+
       case "includeinteractions"
-        includeint = varargin{2};
-        if (! islogical (includeint) || includeint != 0 && includeint != 0)
-          error (strcat (["@RegressionGAM.predict: includeinteractions"], ...
+        tmpInt = varargin{2};
+        if (! islogical (tmpInt) || (tmpInt != 0 && tmpInt != 1))
+          error (strcat (["@RegressionGAM/predict: includeinteractions"], ...
                          [" must be a logical value."]));
         endif
-          
-      case "alpha"
-        Alpha = varargin{2};
-        if (! (isnumeric (Alpha) && isscalar (Alpha) 
-                                 && Alpha > 0 && Alpha < 1))
-          error (strcat (["@RegressionGAM.predict: alpha must be numeric"], ...
-                         [" and in between 0 and 1."]));
+        ## Check model for interactions
+        if (tmpInt && isempty (obj.IntMat))
+          error (strcat (["@RegressionGAM/predict: trained model"], ...
+                         [" does not include any interactions."]));
         endif
-                                     
+        incInt = tmpInt;
+
+      case "alpha"
+        alpha = varargin{2};
+        if (! (isnumeric (alpha) && isscalar (alpha)
+                                  && alpha > 0 && alpha < 1))
+          error (strcat (["@RegressionGAM/predict: alpha must be a"], ...
+                         [" scalar value between 0 and 1."]));
+        endif
+
       otherwise
-        error (strcat(["@RegressionGAM.predict: invalid NAME in"], ...
+        error (strcat(["@RegressionGAM/predict: invalid NAME in"], ...
                       [" optional pairs of arguments."]));
     endswitch
     varargin (1:2) = [];
   endwhile
-   
+
+  ## Choose whether interactions must be included
+  if (incInt)
+    if (! isempty (obj.Interactions))
+      ## Append interaction terms to the predictor matrix
+      for i = 1:rows (obj.IntMat)
+        tindex = logical (obj.IntMat(i,:));
+        Xterms = Xfit(:,tindex);
+        Xinter = ones (rows (Xfit), 1);
+        for c = 1:sum (tindex)
+          Xinter = Xinter .* Xterms(:,c);
+        endfor
+        ## Append interaction terms
+        Xfit = [Xfit, Xinter];
+      endfor
+    else
+      ## Add selected predictors and interaction terms
+      XN = [];
+      for i = 1:rows (obj.IntMat)
+        tindex = logical (obj.IntMat(i,:));
+        Xterms = Xfit(:,tindex);
+        Xinter = ones (rows (Xfit), 1);
+        for c = 1:sum (tindex)
+          Xinter = Xinter .* Xterms(:,c);
+        endfor
+        ## Append selected predictors and interaction terms
+        XN = [XN, Xinter];
+      endfor
+      Xfit = XN;
+    endif
+    ## Get parameters and intercept vectors from model with interactions
+    params = obj.ModelwInt.Parameters;
+    Interc = obj.ModelwInt.Intercept;
+    ## Update length of DoF vector
+    DoF = ones (1, columns (Xfit)) * obj.DoF(1);
+  else
+    ## Get parameters and intercept vectors from base model
+    params = obj.BaseModel.Parameters;
+    Interc = obj.BaseModel.Intercept;
+    ## Get DoF from model
+    DoF = obj.DoF;
+  endif
+
+
   ## Predict values from testing data
-  yFit = predict_val (obj.ppfk, Xfit, obj.Intercept);
-  
+  yFit = predict_val (params, Xfit, Interc);
+
   ## Predict Standard Deviation and Intervals of estimated data (if requested)
   if (nargout > 0)
+    ## Ensure that RowsUsed in the model are selected
+    Y = obj.Y(logical (obj.RowsUsed));
+    X = obj.X(logical (obj.RowsUsed), :);
     ## Predict response from training predictor data with the trained model
-    yrs = predict_val (obj.ppfk, obj.X , obj.Intercept);
+    yrs = predict_val (params, X , Interc);
+
     ## Get the residuals between predicted and actual response data
+    rs     = Y - yrs;
+    var_rs = var (rs);
+    var_pr = var (yFit);  # var is calculated here instead take sqrt(SD)
 
-    rs     = obj.Y - yrs;
-    var_rs = var (rs);    ##
-    var_pr = var (yFit);  ## var is calculated here instead take sqrt(SD)
-
-    t_mul  = tinv (1 - Alpha / 2, obj.DoF);
-
+    t_mul  = tinv (1 - alpha / 2, obj.DoF);
 
     ydev   = (yFit - mean (yFit)) .^ 2;
     ySD    = sqrt (ydev / (rows (yFit) - 1));
 
     varargout{1} = ySD;
     if (nargout > 1)
-      #moe    = t_mul (1) * sqrt (var_pr + var_rs)
       moe    = t_mul (1) * ySD;
       lower  = (yFit - moe);
       upper  = (yFit + moe);
       yInt   = [lower, upper];
-      
+
       varargout{2} = yInt;
     endif
   endif
-  
+
 endfunction
 
 ## Helper function for making prediction of new data based on GAM model
-function ypred = predict_val (ppfk, X, intercept)
+function ypred = predict_val (params, X, intercept)
   [nsample, ndims_X] = size (X);
   ypred = ones (nsample, 1) * intercept;
   ## Add the remaining terms
   for j = 1:ndims_X
-    ypred = ypred + ppval (ppfk(j), X (:,j));
+    ypred = ypred + ppval (params(j), X (:,j));
   endfor
 endfunction
 
@@ -156,18 +235,18 @@ endfunction
 %! X = [X1, X2];
 %!
 %! ## Train the GAM and test on the same data
-%! a = RegressionGAM (X, Y, "order", [5, 5]);
+%! a = fitrgam (X, Y, "order", [5, 5]);
 %! [ypred, ySDsd, yInt] = predict (a, X);
 %!
 %! ## Plot the results
 %! figure
 %! [sortedY, indY] = sort (Ytrue);
-%! plot (sortedY, 'r-');
+%! plot (sortedY, "r-");
 %! xlim ([0, 80]);
 %! hold on
 %! plot (ypred(indY), "g+")
-%! plot (yInt(indY,1),'k:')
-%! plot (yInt(indY,2),'k:')
+%! plot (yInt(indY,1), "k:")
+%! plot (yInt(indY,2), "k:")
 %! xlabel ("Predictor samples");
 %! ylabel ("Response");
 %! title ("actual vs predicted values for function f1(x) = cos (3x) ");
@@ -191,27 +270,25 @@ endfunction
 %! title ("actual vs predicted values for function f1(x) = cos (3x) ");
 %! legend ({"Theoretical Response", "Predicted Response", "Prediction Intervals"});
 
-## Test output
 
 ## Test input validation
-%!error<@RegressionGAM.predict: Too few arguments.> predict()
-%!error<@RegressionGAM.predict: Too few arguments.> predict(1)
-%!error<@RegressionGAM.predict: Too few arguments.> predict(1,2,3,4,5)
-%!error<@RegressionGAM.predict: obj must be of Class RegressionGAM.> ...
-%! predict (1,2)
-%!error<@RegressionGAM.predict: Xfit is empty.> ...
+%!error<@RegressionGAM/predict: too few arguments.> predict()
+%!error<@RegressionGAM/predict: too few arguments.> predict(1)
+%!error<@RegressionGAM/predict: OBJ must be a RegressionGAM class object.> ...
+%! predict (1,2 )
+%!error<@RegressionGAM/predict: Xfit is empty.> ...
 %! predict (RegressionGAM (ones(10,1), ones(10,1)),[])
-%!error<@RegressionGAM.predict: number of columns in Xfit must be equal to X in object.> ...
-%! predict (RegressionGAM(ones(10,2), ones(10,1)),2)
-%!error<@RegressionGAM.predict: invalid NAME in optional pairs of arguments.> ...
+%!error<@RegressionGAM/predict: Xfit must have the same number of features> ...
+%! predict (RegressionGAM(ones(10,2), ones(10,1)), 2)
+%!error<@RegressionGAM/predict: invalid NAME in optional pairs of arguments.> ...
 %! predict (RegressionGAM(ones(10,2), ones(10,1)), ones (10,2), "some", "some")
-%!error<@RegressionGAM.predict: includeinteractions must be a logical value.> ...
+%!error<@RegressionGAM/predict: includeinteractions must be a logical value.> ...
 %! predict (RegressionGAM(ones(10,2), ones(10,1)), ones (10,2), "includeinteractions", "some")
-%!error<@RegressionGAM.predict: includeinteractions must be a logical value.> ...
+%!error<@RegressionGAM/predict: includeinteractions must be a logical value.> ...
 %! predict (RegressionGAM(ones(10,2), ones(10,1)), ones (10,2), "includeinteractions", 5)
-%!error<@RegressionGAM.predict: alpha must be numeric and in between 0 and 1.> ...
+%!error<@RegressionGAM/predict: alpha must be a scalar value between 0 and 1.> ...
 %! predict (RegressionGAM(ones(10,2), ones(10,1)), ones (10,2), "alpha", 5)
-%!error<@RegressionGAM.predict: alpha must be numeric and in between 0 and 1.> ...
+%!error<@RegressionGAM/predict: alpha must be a scalar value between 0 and 1.> ...
 %! predict (RegressionGAM(ones(10,2), ones(10,1)), ones (10,2), "alpha", -1)
-%!error<@RegressionGAM.predict: alpha must be numeric and in between 0 and 1.> ...
+%!error<@RegressionGAM/predict: alpha must be a scalar value between 0 and 1.> ...
 %! predict (RegressionGAM(ones(10,2), ones(10,1)), ones (10,2), "alpha", 'a')
