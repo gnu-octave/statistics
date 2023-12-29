@@ -197,7 +197,7 @@ function [idx, dist] = knnsearch (X, Y, varargin)
     endif
   endif
   if (! isempty (S))
-    if (! isscalar (S) || any (S) < 0 || numel (S) != rows (X) ...
+    if (! isscalar (S) || any (S) < 0 || numel (S) != rows (X)
                        || ! strcmpi (Distance, "seuclidean"))
       error ("knnsearch: Invalid value in Scale or the size of scale.");
     endif
@@ -207,20 +207,20 @@ function [idx, dist] = knnsearch (X, Y, varargin)
   endif
 
   ## Check NSMethod and set kdtree as default if the conditions match
-  if ( isempty (NSMethod))
+  if (isempty (NSMethod))
     ## Set default method 'kdtree' if condintions are satistfied;
     if (! issparse (X) && (columns (X) <= 10) && ...
-       ( strcmpi (Distance, "euclidean") || strcmpi (Distance, "cityblock")...
-      || strcmpi (Distance, "chebychev") || strcmpi (Distance, "minkowski")))
+       (strcmpi (Distance, "euclidean") || strcmpi (Distance, "cityblock")
+     || strcmpi (Distance, "chebychev") || strcmpi (Distance, "minkowski")))
       NSMethod = "kdtree";
     else
       NSMethod = "exhaustive";
     endif
   else
     ## Not empty then check if is exhaustive or kdtree
-    if ( strcmpi (NSMethod,"kdtree") && ! ( strcmpi (Distance, "euclidean") ...
-      || strcmpi (Distance, "cityblock") || strcmpi (Distance, "chebychev") ...
-      || strcmpi (Distance, "minkowski")))
+    if (strcmpi (NSMethod,"kdtree") && ! ( strcmpi (Distance, "euclidean")
+     || strcmpi (Distance, "cityblock") || strcmpi (Distance, "chebychev")
+     || strcmpi (Distance, "minkowski")))
       error ("knnsearch: 'kdtree' cannot be used with the given distance metric.");
     endif
   endif
