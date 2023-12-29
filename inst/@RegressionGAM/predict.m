@@ -70,12 +70,6 @@ function [yFit, ySD, yInt] = predict (obj, Xfit, varargin)
     error ("@RegressionGAM/predict: too few arguments.");
   endif
 
-  ## Check for obj being a ClasifficationKNN object
-  if (! strcmpi (class (obj), "RegressionGAM"))
-    error (strcat (["@RegressionGAM/predict: OBJ"], ...
-                   [" must be a RegressionGAM class object."]));
-  endif
-
   ## Check for valid XC
   if (isempty (Xfit))
     error ("@RegressionGAM/predict: Xfit is empty.");
@@ -272,12 +266,10 @@ endfunction
 
 
 ## Test input validation
-%!error<@RegressionGAM/predict: too few arguments.> predict()
-%!error<@RegressionGAM/predict: too few arguments.> predict(1)
-%!error<@RegressionGAM/predict: OBJ must be a RegressionGAM class object.> ...
-%! predict (1,2 )
+%!error<@RegressionGAM/predict: too few arguments.> ...
+%! predict (RegressionGAM (ones(10,1), ones(10,1)))
 %!error<@RegressionGAM/predict: Xfit is empty.> ...
-%! predict (RegressionGAM (ones(10,1), ones(10,1)),[])
+%! predict (RegressionGAM (ones(10,1), ones(10,1)), [])
 %!error<@RegressionGAM/predict: Xfit must have the same number of features> ...
 %! predict (RegressionGAM(ones(10,2), ones(10,1)), 2)
 %!error<@RegressionGAM/predict: invalid NAME in optional pairs of arguments.> ...

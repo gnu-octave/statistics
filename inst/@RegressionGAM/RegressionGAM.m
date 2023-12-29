@@ -156,7 +156,7 @@ classdef RegressionGAM
     function this = RegressionGAM (X, Y, varargin)
       ## Check for sufficient number of input arguments
       if (nargin < 2)
-        error ("RegressionGAM: too few arguments.");
+        error ("RegressionGAM: too few input arguments.");
       endif
 
       ## Get training sample size and number of variables in training data
@@ -561,8 +561,8 @@ endclassdef
 %! assert ({a.Formula}, {formula})
 
 ## Test input validation
-%!error<RegressionGAM: too few arguments.> RegressionGAM ()
-%!error<RegressionGAM: too few arguments.> RegressionGAM (ones(10,2))
+%!error<RegressionGAM: too few input arguments.> RegressionGAM ()
+%!error<RegressionGAM: too few input arguments.> RegressionGAM (ones(10,2))
 %!error<RegressionGAM: number of rows in X and Y must be equal.> ...
 %! RegressionGAM (ones(10,2), ones (5,1))
 %!error<RegressionGAM: invalid values in X.> ...
