@@ -48,11 +48,11 @@ function [label, score, cost] = predict (obj, XC)
 
   ## Check for sufficient input arguments
   if (nargin < 2)
-    error ("@ClassificationKNN/predict: Too few arguments.");
+    error ("@ClassificationKNN/predict: too few arguments.");
   endif
 
   ## Check for obj being a ClasifficationKNN object
-  if (! strcmp (class (obj), "ClasifficationKNN"))
+  if (! strcmp (class (obj), "ClassificationKNN"))
     error (strcat (["@ClassificationKNN/predict: OBJ"], ...
                    [" must be a ClasifficationKNN class object."]));
   endif
@@ -161,20 +161,20 @@ endfunction
 %! y = species;
 %!test
 %! xc = [min(x); mean(x); max(x)];
-%! obj  = ClassificationKNN (x, y, "k", 5);
+%! obj = fitcknn (x, y, "k", 5);
 %! [l, s, c] = predict (obj, xc);
 %! assert (l, {"setosa"; "versicolor"; "virginica"})
 %! assert (s, [1, 0, 0; 0, 1, 0; 0, 0, 1])
 %! assert (c, [0, 1, 1; 1, 0, 1; 1, 1, 0])
 %!test
 %! xc = [min(x); mean(x); max(x)];
-%! obj  = ClassificationKNN (x, y, "k", 10, "distance", "mahalanobis");
+%! obj = fitcknn (x, y, "k", 10, "distance", "mahalanobis");
 %! [l, s, c] = predict (obj, xc);
 %! assert (s, [0.3, 0.7, 0; 0, 0.9, 0.1; 0.2, 0.2, 0.6], 1e-4)
 %! assert (c, [0.7, 0.3, 1; 1, 0.1, 0.9; 0.8, 0.8, 0.4], 1e-4)
 %!test
 %! xc = [min(x); mean(x); max(x)];
-%! obj  = ClassificationKNN (x, y, "k", 10, "distance", "cosine");
+%! obj = fitcknn (x, y, "k", 10, "distance", "cosine");
 %! [l, s, c] = predict (obj, xc);
 %! assert (l, {"setosa"; "versicolor"; "virginica"})
 %! assert (s, [1, 0, 0; 0, 1, 0; 0, 0.3, 0.7], 1e-4)
@@ -182,119 +182,119 @@ endfunction
 %!test
 %! xc = [5.2, 4.1, 1.5,	0.1; 5.1,	3.8, 1.9,	0.4; ...
 %!         5.1, 3.8, 1.5, 0.3; 4.9, 3.6, 1.4, 0.1];
-%! obj  = ClassificationKNN (x, y, "k", 5);
+%! obj = fitcknn (x, y, "k", 5);
 %! [l, s, c] = predict (obj, xc);
 %! assert (l, {"setosa"; "setosa"; "setosa"; "setosa"})
 %! assert (s, [1, 0, 0; 1, 0, 0; 1, 0, 0; 1, 0, 0])
 %! assert (c, [0, 1, 1; 0, 1, 1; 0, 1, 1; 0, 1, 1])
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj  = ClassificationKNN (x, y, "k", 5);
+%! obj = fitcknn (x, y, "k", 5);
 %! [l, s, c] = predict (obj, xc);
 %! assert (l, {"versicolor"})
 %! assert (s, [0, 0.6, 0.4], 1e-4)
 %! assert (c, [1, 0.4, 0.6], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj  = ClassificationKNN (x, y, "k", 10, "distance", "minkowski", "P", 5);
+%! obj = fitcknn (x, y, "k", 10, "distance", "minkowski", "P", 5);
 %! [l, s, c] = predict (obj, xc);
 %! assert (l, {"versicolor"})
 %! assert (s, [0, 0.5, 0.5], 1e-4)
 %! assert (c, [1, 0.5, 0.5], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj  = ClassificationKNN (x, y, "k", 10, "distance", "jaccard");
+%! obj = fitcknn (x, y, "k", 10, "distance", "jaccard");
 %! [l, s, c] = predict (obj, xc);
 %! assert (l, {"setosa"})
 %! assert (s, [0.9, 0.1, 0], 1e-4)
 %! assert (c, [0.1, 0.9, 1], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj  = ClassificationKNN (x, y, "k", 10, "distance", "mahalanobis");
+%! obj = fitcknn (x, y, "k", 10, "distance", "mahalanobis");
 %! [l, s, c] = predict (obj, xc);
 %! assert (l, {"versicolor"})
 %! assert (s, [0.1000, 0.5000, 0.4000], 1e-4)
 %! assert (c, [0.9000, 0.5000, 0.6000], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj  = ClassificationKNN (x, y, "k", 5, "distance", "jaccard");
+%! obj = fitcknn (x, y, "k", 5, "distance", "jaccard");
 %! [l, s, c] = predict (obj, xc);
 %! assert (l, {"setosa"})
 %! assert (s, [0.8, 0.2, 0], 1e-4)
 %! assert (c, [0.2, 0.8, 1], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj  = ClassificationKNN (x, y, "k", 5, "distance", "seuclidean");
+%! obj = fitcknn (x, y, "k", 5, "distance", "seuclidean");
 %! [l, s, c] = predict (obj, xc);
 %! assert (l, {"versicolor"})
 %! assert (s, [0, 1, 0], 1e-4)
 %! assert (c, [1, 0, 1], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj  = ClassificationKNN (x, y, "k", 10, "distance", "chebychev");
+%! obj = fitcknn (x, y, "k", 10, "distance", "chebychev");
 %! [l, s, c] = predict (obj, xc);
 %! assert (l, {"versicolor"})
 %! assert (s, [0, 0.7, 0.3], 1e-4)
 %! assert (c, [1, 0.3, 0.7], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj  = ClassificationKNN (x, y, "k", 10, "distance", "cityblock");
+%! obj = fitcknn (x, y, "k", 10, "distance", "cityblock");
 %! [l, s, c] = predict (obj, xc);
 %! assert (l, {"versicolor"})
 %! assert (s, [0, 0.6, 0.4], 1e-4)
 %! assert (c, [1, 0.4, 0.6], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj  = ClassificationKNN (x, y, "k", 10, "distance", "manhattan");
+%! obj = fitcknn (x, y, "k", 10, "distance", "manhattan");
 %! [l, s, c] = predict (obj, xc);
 %! assert (l, {"versicolor"})
 %! assert (s, [0, 0.6, 0.4], 1e-4)
 %! assert (c, [1, 0.4, 0.6], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj  = ClassificationKNN (x, y, "k", 10, "distance", "cosine");
+%! obj = fitcknn (x, y, "k", 10, "distance", "cosine");
 %! [l, s, c] = predict (obj, xc);
 %! assert (l, {"virginica"})
 %! assert (s, [0, 0.1, 0.9], 1e-4)
 %! assert (c, [1, 0.9, 0.1], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj  = ClassificationKNN (x, y, "k", 10, "distance", "correlation");
+%! obj = fitcknn (x, y, "k", 10, "distance", "correlation");
 %! [l, s, c] = predict (obj, xc);
 %! assert (l, {"virginica"})
 %! assert (s, [0, 0.1, 0.9], 1e-4)
 %! assert (c, [1, 0.9, 0.1], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj  = ClassificationKNN (x, y, "k", 30, "distance", "spearman");
+%! obj = fitcknn (x, y, "k", 30, "distance", "spearman");
 %! [l, s, c] = predict (obj, xc);
 %! assert (l, {"versicolor"})
 %! assert (s, [0, 1, 0], 1e-4)
 %! assert (c, [1, 0, 1], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj  = ClassificationKNN (x, y, "k", 30, "distance", "hamming");
+%! obj = fitcknn (x, y, "k", 30, "distance", "hamming");
 %! [l, s, c] = predict (obj, xc);
 %! assert (l, {"setosa"})
 %! assert (s, [0.4333, 0.3333, 0.2333], 1e-4)
 %! assert (c, [0.5667, 0.6667, 0.7667], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj  = ClassificationKNN (x, y, "k", 5, "distance", "hamming");
+%! obj = fitcknn (x, y, "k", 5, "distance", "hamming");
 %! [l, s, c] = predict (obj, xc);
 %! assert (l, {"setosa"})
 %! assert (s, [0.8, 0.2, 0], 1e-4)
 %! assert (c, [0.2, 0.8, 1], 1e-4)
 %!test
 %! xc = [min(x); mean(x); max(x)];
-%! obj  = ClassificationKNN (x, y, "k", 10, "distance", "correlation");
+%! obj = fitcknn (x, y, "k", 10, "distance", "correlation");
 %! [l, s, c] = predict (obj, xc);
 %! assert (l, {"setosa"; "versicolor"; "virginica"})
 %! assert (s, [1, 0, 0; 0, 1, 0; 0, 0.4, 0.6], 1e-4)
 %! assert (c, [0, 1, 1; 1, 0, 1; 1, 0.6, 0.4], 1e-4)
 %!test
 %! xc = [min(x); mean(x); max(x)];
-%! obj  = ClassificationKNN (x, y, "k", 10, "distance", "hamming");
+%! obj = fitcknn (x, y, "k", 10, "distance", "hamming");
 %! [l, s, c] = predict (obj, xc);
 %! assert (l, {"setosa";"setosa";"setosa"})
 %! assert (s, [0.9, 0.1, 0; 1, 0, 0; 0.5, 0, 0.5], 1e-4)
