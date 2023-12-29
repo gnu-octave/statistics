@@ -421,7 +421,7 @@ endclassdef
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k}, {x, y, 1})
 %! assert ({a.NSmethod, a.distance}, {"exhaustive", "euclidean"})
-%! assert ({a.bucketsize}, 50)
+%! assert ({a.bucketsize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
@@ -430,7 +430,7 @@ endclassdef
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k}, {x, y, 10})
 %! assert ({a.NSmethod, a.distance}, {"exhaustive", "euclidean"})
-%! assert ({a.bucketsize}, 50)
+%! assert ({a.bucketsize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
@@ -440,7 +440,7 @@ endclassdef
 %! assert ({a.X, a.Y, a.k}, {x, y, 1})
 %! assert (a.weights, ones (4, 1))
 %! assert ({a.NSmethod, a.distance}, {"exhaustive", "euclidean"})
-%! assert ({a.bucketsize}, 50)
+%! assert ({a.bucketsize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
@@ -449,7 +449,7 @@ endclassdef
 %! assert ({a.X, a.Y, a.k}, {x, y, 1})
 %! assert (a.P, 10)
 %! assert ({a.NSmethod, a.distance}, {"exhaustive", "euclidean"})
-%! assert ({a.bucketsize}, 50)
+%! assert ({a.bucketsize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
@@ -458,16 +458,16 @@ endclassdef
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k}, {x, y, 1})
 %! assert (a.cov, cov)
-%! assert ({a.NSmethod, a.distance}, {"exhaustive", "euclidean"})
-%! assert ({a.bucketsize}, 50)
+%! assert ({a.NSmethod, a.distance}, {"exhaustive", "mahalanobis"})
+%! assert ({a.bucketsize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
 %! a = ClassificationKNN (x, y, "bucketsize" , 20, "distance", "mahalanobis");
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k}, {x, y, 1})
-%! assert ({a.NSmethod, a.distance}, {"exhaustive", "euclidean"})
-%! assert ({a.bucketsize}, 20)
+%! assert ({a.NSmethod, a.distance}, {"exhaustive", "mahalanobis"})
+%! assert ({a.bucketsize}, {20})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
@@ -476,7 +476,7 @@ endclassdef
 %! assert ({a.X, a.Y, a.k}, {x, y, 1})
 %! assert (a.standardize, true);
 %! assert ({a.NSmethod, a.distance}, {"exhaustive", "euclidean"})
-%! assert ({a.bucketsize}, 50)
+%! assert ({a.bucketsize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
@@ -485,7 +485,7 @@ endclassdef
 %! assert ({a.X, a.Y, a.k}, {x, y, 1})
 %! assert (a.Includeties, true);
 %! assert ({a.NSmethod, a.distance}, {"exhaustive", "euclidean"})
-%! assert ({a.bucketsize}, 50)
+%! assert ({a.bucketsize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
@@ -495,7 +495,7 @@ endclassdef
 %! assert ({a.X, a.Y, a.k}, {x, y, 1})
 %! assert (a.cost, [1, 1; 1, 1; 1, 1; 1, 1])
 %! assert ({a.NSmethod, a.distance}, {"exhaustive", "euclidean"})
-%! assert ({a.bucketsize}, 50)
+%! assert ({a.bucketsize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
@@ -505,7 +505,7 @@ endclassdef
 %! assert ({a.X, a.Y, a.k}, {x, y, 1})
 %! assert (a.Scale, [1, 2, 3, 4])
 %! assert ({a.NSmethod, a.distance}, {"exhaustive", "euclidean"})
-%! assert ({a.bucketsize}, 50)
+%! assert ({a.bucketsize}, {50})
 
 ## Test input validation
 %!error<ClassificationKNN: too few arguments.> ClassificationKNN()
