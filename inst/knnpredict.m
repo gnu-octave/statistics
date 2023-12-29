@@ -637,3 +637,4 @@ endfunction
 %! knnpredict (ones(4,3),ones(4,1),ones(1,3), "bucketsize",-50)
 %!error<knnpredict: value of standardize must be boolean.> ...
 %! knnpredict (ones(4,3),ones(4,1),ones(1,3), "standardize","some")
+
