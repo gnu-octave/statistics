@@ -192,7 +192,7 @@ classdef RegressionGAM
             if (! isempty (PredictorNames))
               if (! iscellstr (PredictorNames))
                 error (strcat (["RegressionGAM: PredictorNames must"], ...
-                               [" be supplied as cellstr."]));
+                               [" be a cellstring array."]));
               elseif (columns (PredictorNames) != columns (X))
                 error (strcat (["RegressionGAM: PredictorNames must"], ...
                                [" have same number of columns as X."]));
@@ -278,13 +278,14 @@ classdef RegressionGAM
 
           case "tol"
             Tol = varargin{2};
-            if (! isnumeric (Tol) || ! isscalar (Tol) || !(Tol > 0))
+            if (! (isnumeric (Tol) && isscalar (Tol) && (Tol > 0)))
               error ("RegressionGAM: Tolerance must be a Positive scalar.");
             endif
 
           otherwise
             error (strcat (["RegressionGAM: invalid parameter name"],...
                            [" in optional pair arguments."]));
+
         endswitch
         varargin (1:2) = [];
       endwhile
@@ -521,9 +522,11 @@ classdef RegressionGAM
         ## Update RSS
         RSS = RSSk;
       endwhile
+
     endfunction
 
   endmethods
+
 endclassdef
 
 
@@ -609,9 +612,9 @@ endclassdef
 %! RegressionGAM (ones(10,2), ones (10,1), "tol", -1)
 %!error<RegressionGAM: ResponseName must be a char string.> ...
 %! RegressionGAM (ones(10,2), ones (10,1), "responsename", -1)
-%!error<RegressionGAM: PredictorNames must be supplied as cellstr.> ...
+%!error<RegressionGAM: PredictorNames must be a cellstring array.> ...
 %! RegressionGAM (ones(10,2), ones (10,1), "predictors", -1)
-%!error<RegressionGAM: PredictorNames must be supplied as cellstr.> ...
+%!error<RegressionGAM: PredictorNames must be a cellstring array.> ...
 %! RegressionGAM (ones(10,2), ones (10,1), "predictors", ['a','b','c'])
 %!error<RegressionGAM: PredictorNames must have same number of columns as X.> ...
 %! RegressionGAM (ones(10,2), ones (10,1), "predictors", {'a','b','c'})
