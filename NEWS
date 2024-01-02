@@ -214,10 +214,9 @@
  Summary of important user-visible changes for statistics 1.6.1:
 -------------------------------------------------------------------
 
- Important Notice: 1) RegressionGAM classdef might produce erroneous
-                      results. Use cautiously!
-                   2) `mad`, `mean`, `median`, `std`, `var` functions
-                       shadow core Octave's respective functions
+ Important Notice: 1) `mad`, `mean`, `median`, `std`, `var` functions
+                       shadow core Octave's respective functions prior
+                       to Octave v9.1
                    3) incompatibility with the `nan` package
  New functions:
  ==============
@@ -228,15 +227,11 @@
 
  ** fitcknn
 
- ** knnpredict
+ ** fitrgam
 
  ** knnsearch (fully Matlab compatible)
 
  ** RegressionGAM (new classdef)
-
- ** fitrgam
-
- ** gampredict
 
  ** predict (for RegressionGAM classdef)
 
