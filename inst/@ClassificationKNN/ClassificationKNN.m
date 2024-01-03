@@ -301,6 +301,9 @@ classdef ClassificationKNN
             DMs = {"euclidean", "seuclidean", "mahalanobis", "minkowski", ...
                    "cityblock", "manhattan", "chebychev", "cosine", ...
                    "correlation", "spearman", "hamming", "jaccard"};
+            if (! ischar (Distance))
+              error ("ClassificationKNN: Distance must be a character array.");
+            endif
             if (! any (strcmpi (DMs, Distance)))
               error ("ClassificationKNN: unknown distance metric.");
             endif
@@ -827,6 +830,8 @@ endclassdef
 %! ClassificationKNN(ones (5,2), ones (5,1), "Distance", "somemetric")
 %!error<ClassificationKNN: unknown distance metric.> ...
 %! ClassificationKNN(ones (5,2), ones (5,1), "Distance", {"mahalanobis"})
+%!error<ClassificationKNN: unknown distance metric.> ...
+%! ClassificationKNN(ones (5,2), ones (5,1), "Distance", 5)
 
 
 %!error<ClassificationKNN: invalid parameter name in optional pair arguments.> ...
