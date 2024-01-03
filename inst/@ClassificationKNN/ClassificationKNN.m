@@ -367,7 +367,7 @@ classdef ClassificationKNN
           case "nsmethod"
             NSMethod = varargin{2};
             NSM = {"kdtree", "exhaustive"};
-            if (! any (strcmpi (NSM, NSmethod)))
+            if (! any (strcmpi (NSM, NSMethod)))
               error (strcat (["ClassificationKNN: NSMethod must"], ...
                              [" be either 'kdtree', 'exhaustive'."]));
             endif
@@ -585,7 +585,7 @@ endclassdef
 %! load fisheriris
 %! x = meas;
 %! y = species;
-%! a = ClassificationKNN (x, y, "k", 5)
+%! a = ClassificationKNN (x, y, "NumNeighbors", 5)
 
 ## Test constructor
 %!test
@@ -593,28 +593,47 @@ endclassdef
 %! y = ["a"; "a"; "b"; "b"];
 %! a = ClassificationKNN (x, y);
 %! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.k}, {x, y, 1})
+%! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
+%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.BucketSize}, {50})
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! a = ClassificationKNN (x, y, "NSMethod", "exhaustive");
+%! assert (class (a), "ClassificationKNN");
+%! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
 %! assert ({a.NSMethod, a.Distance}, {"exhaustive", "euclidean"})
 %! assert ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
 %! k = 10;
-%! a = ClassificationKNN (x, y, "K" ,k);
+%! a = ClassificationKNN (x, y, "NumNeighbors" ,k);
 %! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.k}, {x, y, 10})
+%! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
+%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.BucketSize}, {50})
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! k = 10;
+%! a = ClassificationKNN (x, y, "NumNeighbors" ,k, "NSMethod", "exhaustive");
+%! assert (class (a), "ClassificationKNN");
+%! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
 %! assert ({a.NSMethod, a.Distance}, {"exhaustive", "euclidean"})
-%! assert ({a.bucketsize}, {50})
+%! assert ({a.BucketSize}, {50})
+%!
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
 %! weights = ones (4,1);
-%! a = ClassificationKNN (x, y, "weights" , weights);
+%! a = ClassificationKNN (x, y, "standardize", 1);
 %! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.k}, {x, y, 1})
-%! assert (a.weights, ones (4, 1))
-%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "euclidean"})
-%! assert ({a.BucketSize}, {50})
+%! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
+%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.Standardize}, {true})
+%! assert ({a.Sigma}, {std (x, [], 1)})
+%! assert ({a.Mu}, {[3.72, 4.25, 4.75]})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
