@@ -333,7 +333,7 @@ classdef ClassificationKNN
           case "scale"
             if (SSC < 1)
               Scale = varargin{2};
-              if (! (isnumeric (Prior) && isvector (Prior)))
+              if (! (isnumeric (Scale) && isvector (Scale)))
                 error ("ClassificationKNN: Scale must be a numeric vector.");
               endif
             else
@@ -587,7 +587,7 @@ endclassdef
 %! y = species;
 %! a = ClassificationKNN (x, y, "NumNeighbors", 5)
 
-## Test constructor
+## Test constructor with NSMethod and NumNeighbors parameters
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
@@ -614,6 +614,15 @@ endclassdef
 %! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
 %! assert ({a.BucketSize}, {50})
 %!test
+%! x = ones (4, 11);
+%! y = ["a"; "a"; "b"; "b"];
+%! k = 10;
+%! a = ClassificationKNN (x, y, "NumNeighbors" ,k);
+%! assert (class (a), "ClassificationKNN");
+%! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
+%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "euclidean"})
+%! assert ({a.BucketSize}, {50})
+%!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
 %! k = 10;
@@ -622,7 +631,17 @@ endclassdef
 %! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
 %! assert ({a.NSMethod, a.Distance}, {"exhaustive", "euclidean"})
 %! assert ({a.BucketSize}, {50})
-%!
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! k = 10;
+%! a = ClassificationKNN (x, y, "NumNeighbors" ,k, "Distance", "hamming");
+%! assert (class (a), "ClassificationKNN");
+%! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
+%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "hamming"})
+%! assert ({a.BucketSize}, {50})
+
+## Test constructor with Standardize and DistParameter parameters
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
@@ -632,28 +651,50 @@ endclassdef
 %! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
 %! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
 %! assert ({a.Standardize}, {true})
-%! assert ({a.Sigma}, {std (x, [], 1)})
-%! assert ({a.Mu}, {[3.72, 4.25, 4.75]})
+%! assert ({a.Sigma}, {std(x, [], 1)})
+%! assert ({a.Mu}, {[3.75, 4.25, 4.75]})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
-%! a = ClassificationKNN (x, y, "P" , 10);
+%! weights = ones (4,1);
+%! a = ClassificationKNN (x, y, "standardize", false);
+%! assert (class (a), "ClassificationKNN");
+%! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
+%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.Standardize}, {false})
+%! assert ({a.Sigma}, {[]})
+%! assert ({a.Mu}, {[]})
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! s = ones (1, 3);
+%! a = ClassificationKNN (x, y, "scale" , s);
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k}, {x, y, 1})
-%! assert (a.P, 10)
-%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "euclidean"})
+%! assert ({a.DistParameter}, {C})
+%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "seuclidean"})
 %! assert ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
-%! cov = rand (4, 1);
-%! a = ClassificationKNN (x, y, "cov" , cov, "distance", "mahalanobis");
+%! C = cov (x);
+%! a = ClassificationKNN (x, y, "cov" , C, "distance", "mahalanobis");
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k}, {x, y, 1})
-%! assert (a.cov, cov)
+%! assert ({a.DistParameter}, {C})
 %! assert ({a.NSMethod, a.Distance}, {"exhaustive", "mahalanobis"})
 %! assert ({a.BucketSize}, {50})
 %!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! a = ClassificationKNN (x, y, "Exponent" , 5);
+%! assert (class (a), "ClassificationKNN");
+%! assert ({a.X, a.Y, a.k}, {x, y, 1})
+%! assert (a.DistParameter, 5)
+%! assert ({a.NSMethod, a.Distance}, {"kdtree", "minkowski"})
+%! assert ({a.BucketSize}, {50})
+%!test
+##
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
 %! a = ClassificationKNN (x, y, "bucketsize" , 20, "distance", "mahalanobis");
