@@ -221,8 +221,8 @@ classdef ClassificationKNN
       Distance        = [];     # Distance metric
       DistanceWeight  = [];     # Distance weighting function
       DistParameter   = [];     # Parameter for distance metric
-      IncludeTies     = false;  # Flag for handling ties
       NSMethod        = [];     # Nearest neighbor search method
+      IncludeTies     = false;  # Flag for handling ties
       BucketSize      = 50;     # Maximum data points in each node
 
       ## Number of parameters for Standardize, Scale, Cov (maximum 1 allowed)
@@ -240,9 +240,9 @@ classdef ClassificationKNN
                                [" be either true or false."]));
               endif
             else
-              error (strcat (["ClassificationKNN: 'Standardize' cannot"], ...
+              error (strcat (["ClassificationKNN: Standardize cannot"], ...
                              [" simultaneously be specified with either"], ...
-                             [" 'Scale' or 'Cov'."]));
+                             [" Scale or Cov."]));
             endif
 
           case "predictornames"
@@ -252,7 +252,7 @@ classdef ClassificationKNN
                              [" be supplied as a cellstring array."]));
             elseif (columns (PredictorNames) != columns (X))
               error (strcat (["ClassificationKNN: PredictorNames must"], ...
-                             [" have same number of columns as X."]));
+                             [" have the same number of columns as X."]));
             endif
 
           case "responsename"
@@ -337,9 +337,9 @@ classdef ClassificationKNN
                 error ("ClassificationKNN: Scale must be a numeric vector.");
               endif
             else
-              error (strcat (["ClassificationKNN: 'Scale' cannot"], ...
+              error (strcat (["ClassificationKNN: Scale cannot"], ...
                              [" simultaneously be specified with either"], ...
-                             [" 'Standardize' or 'Cov'."]));
+                             [" Standardize or Cov."]));
             endif
 
           case "cov"
@@ -352,9 +352,9 @@ classdef ClassificationKNN
                                [" symmetric positive definite matrix."]));
               end_try_catch
             else
-              error (strcat (["ClassificationKNN: 'Cov' cannot"], ...
+              error (strcat (["ClassificationKNN: Cov cannot"], ...
                              [" simultaneously be specified with either"], ...
-                             [" 'Standardize' or 'Scale'."]));
+                             [" Standardize or Scale."]));
             endif
 
           case "exponent"
@@ -369,7 +369,7 @@ classdef ClassificationKNN
             NSM = {"kdtree", "exhaustive"};
             if (! any (strcmpi (NSM, NSMethod)))
               error (strcat (["ClassificationKNN: NSMethod must"], ...
-                             [" be either 'kdtree', 'exhaustive'."]));
+                             [" be either kdtree or exhaustive."]));
             endif
 
           case "includeties"
@@ -439,7 +439,7 @@ classdef ClassificationKNN
       this.ClassNames = gnY;
 
       ## Check X contains valid data
-      if (! isnumeric (X) || ! isfinite (X))
+      if (! (isnumeric (X) && isfinite (X)))
         error ("ClassificationKNN: invalid values in X.");
       endif
 
@@ -557,8 +557,8 @@ classdef ClassificationKNN
       if (! isempty (NSMethod))
         if (strcmpi ("kdtree", NSMethod) && any (strcmpi (kdm, Distance)))
           error (strcat (["ClassificationKNN: kdtree method is only valid"], ...
-                         [" for 'euclidean', 'cityblock', 'manhattan',"], ...
-                         [" 'minkowski', and 'chebychev' distance metrics."]));
+                         [" for euclidean, cityblock, manhattan,"], ...
+                         [" minkowski, and chebychev distance metrics."]));
         endif
         this.NSMethod = NSMethod;
       else
@@ -668,10 +668,9 @@ endclassdef
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
 %! s = ones (1, 3);
-%! a = ClassificationKNN (x, y, "scale" , s);
+%! a = ClassificationKNN (x, y, "scale" , s, "Distance", "seuclidean");
 %! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.k}, {x, y, 1})
-%! assert ({a.DistParameter}, {C})
+%! assert ({a.DistParameter}, {s})
 %! assert ({a.NSMethod, a.Distance}, {"exhaustive", "seuclidean"})
 %! assert ({a.BucketSize}, {50})
 %!test
@@ -680,65 +679,101 @@ endclassdef
 %! C = cov (x);
 %! a = ClassificationKNN (x, y, "cov" , C, "distance", "mahalanobis");
 %! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.k}, {x, y, 1})
 %! assert ({a.DistParameter}, {C})
 %! assert ({a.NSMethod, a.Distance}, {"exhaustive", "mahalanobis"})
 %! assert ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
-%! a = ClassificationKNN (x, y, "Exponent" , 5);
+%! a = ClassificationKNN (x, y, "Exponent" , 5, "Distance", "minkowski");
 %! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.k}, {x, y, 1})
 %! assert (a.DistParameter, 5)
 %! assert ({a.NSMethod, a.Distance}, {"kdtree", "minkowski"})
-%! assert ({a.BucketSize}, {50})
 %!test
-##
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! a = ClassificationKNN (x, y, "Exponent" , 5, "Distance", "minkowski", ...
+%!                        "NSMethod", "exhaustive");
+%! assert (class (a), "ClassificationKNN");
+%! assert (a.DistParameter, 5)
+%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "minkowski"})
+
+## Test constructor with BucketSize and IncludeTies parameters
+%!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
 %! a = ClassificationKNN (x, y, "bucketsize" , 20, "distance", "mahalanobis");
 %! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.k}, {x, y, 1})
 %! assert ({a.NSMethod, a.Distance}, {"exhaustive", "mahalanobis"})
 %! assert ({a.BucketSize}, {20})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
-%! a = ClassificationKNN (x, y, "standardize", true);
-%! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.k}, {x, y, 1})
-%! assert (a.standardize, true);
-%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "euclidean"})
-%! assert ({a.BucketSize}, {50})
-%!test
-%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
 %! a = ClassificationKNN (x, y, "includeties", true);
 %! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.k}, {x, y, 1})
 %! assert (a.IncludeTies, true);
-%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "euclidean"})
+%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! a = ClassificationKNN (x, y);
+%! assert (class (a), "ClassificationKNN");
+%! assert (a.IncludeTies, false);
+%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+
+## Test constructor with Prior and Cost parameters
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! a = ClassificationKNN (x, y);
+%! assert (class (a), "ClassificationKNN")
+%! assert (a.Prior, [0.5; 0.5])
+%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
 %! assert ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
-%! cost = ones (4, 2);
-%! a = ClassificationKNN (x, y, 'cost', cost );
+%! prior = [0.5; 0.5];
+%! a = ClassificationKNN (x, y, 'prior', "empirical");
 %! assert (class (a), "ClassificationKNN")
-%! assert ({a.X, a.Y, a.k}, {x, y, 1})
-%! assert (a.cost, [1, 1; 1, 1; 1, 1; 1, 1])
-%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "euclidean"})
+%! assert (a.Prior, prior)
+%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.BucketSize}, {50})
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "a"; "b"];
+%! prior = [0.75; 0.25];
+%! a = ClassificationKNN (x, y, 'prior', "empirical");
+%! assert (class (a), "ClassificationKNN")
+%! assert (a.Prior, prior)
+%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.BucketSize}, {50})
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "a"; "b"];
+%! prior = [0.5; 0.5];
+%! a = ClassificationKNN (x, y, 'prior', "uniform");
+%! assert (class (a), "ClassificationKNN")
+%! assert (a.Prior, prior)
+%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
 %! assert ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
-%! scale = [1, 2, 3, 4];
-%! a = ClassificationKNN (x, y, "scale", scale );
+%! cost = eye (2);
+%! a = ClassificationKNN (x, y, 'cost', cost);
 %! assert (class (a), "ClassificationKNN")
-%! assert ({a.X, a.Y, a.k}, {x, y, 1})
-%! assert (a.Scale, [1, 2, 3, 4])
-%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "euclidean"})
+%! assert (a.Cost, [1, 0; 0, 1])
+%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.BucketSize}, {50})
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! cost = eye (2);
+%! a = ClassificationKNN (x, y, 'cost', cost, "Distance", "hamming" );
+%! assert (class (a), "ClassificationKNN")
+%! assert (a.Cost, [1, 0; 0, 1])
+%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "hamming"})
 %! assert ({a.BucketSize}, {50})
 
 ## Test input validation
@@ -747,15 +782,33 @@ endclassdef
 %! ClassificationKNN (ones(4, 1))
 %!error<ClassificationKNN: number of rows in X and Y must be equal.> ...
 %! ClassificationKNN(ones (4,2), ones (1,4))
-%!error<ClassificationKNN: Invalid values in X.> ...
+%!error<ClassificationKNN: invalid values in X.> ...
 %! ClassificationKNN([1;2;3;'a';4], ones (5,1))
-%!error<ClassificationKNN: Invalid NAME in optional pairs of arguments.> ...
+%!error<ClassificationKNN: invalid values in X.> ...
+%! ClassificationKNN([1;2;3;Inf;4], ones (5,1))
+%!error<ClassificationKNN: Standardize must be either true or false.> ...
+%! ClassificationKNN(ones (5,3), ones (5,1), "standardize", "a")
+%!error<ClassificationKNN: Standardize cannot simultaneously be specified with> ...
+%! ClassificationKNN(ones (5,2), ones (5,1), "standardize", "a", "scale", [1 1])
+%!error<ClassificationKNN: ClassificationKNN: PredictorNames must be supplied as a cellstring array.> ...
+%! ClassificationKNN(ones (5,2), ones (5,1), "PredictorNames", ["A"])
+%!error<ClassificationKNN: ClassificationKNN: PredictorNames must be supplied as a cellstring array.> ...
+%! ClassificationKNN(ones (5,2), ones (5,1), "PredictorNames", "A")
+%!error<ClassificationKNN: ClassificationKNN: PredictorNames must have same number of columns as X.> ...
+%! ClassificationKNN(ones (5,2), ones (5,1), "PredictorNames", {"A", "B", "C"})
+%!error<ClassificationKNN: ClassificationKNN: ResponseName must be a char string.> ...
+%! ClassificationKNN(ones (5,2), ones (5,1), "ResponseName", {"Y"})
+%!error<ClassificationKNN: ClassificationKNN: ResponseName must be a char string.> ...
+%! ClassificationKNN(ones (5,2), ones (5,1), "ResponseName", 1)
+
+
+%!error<ClassificationKNN: invalid NAME in optional pairs of arguments.> ...
 %! ClassificationKNN(ones (4,2), ones (4,1), "some","some")
-%!error<ClassificationKNN: Invalid value of k.> ...
+%!error<ClassificationKNN: invalid value of k.> ...
 %! ClassificationKNN(ones (4,2),ones (4,1), "K", NaN)
-%!error<ClassificationKNN: Invalid value of k.> ...
+%!error<ClassificationKNN: invalid value of k.> ...
 %! ClassificationKNN(ones (4,2),ones (4,1), "K", -5)
-%!error<ClassificationKNN: Invalid value of k.> ...
+%!error<ClassificationKNN: invalid value of k.> ...
 %! ClassificationKNN(ones (4,2),ones (4,1), "K", 3.14)
 %!error<ClassificationKNN: Weights has invalid observarions.> ...
 %! ClassificationKNN(ones(4,2),ones(4,1), "weights", ones(2,2))
