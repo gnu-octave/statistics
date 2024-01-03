@@ -373,7 +373,7 @@ classdef ClassificationKNN
           case "nsmethod"
             NSMethod = varargin{2};
             NSM = {"kdtree", "exhaustive"};
-            if (! ischar (Distance))
+            if (! ischar (NSMethod))
               error ("ClassificationKNN: NSMethod must be a character array.");
             endif
             if (! any (strcmpi (NSM, NSMethod)))
