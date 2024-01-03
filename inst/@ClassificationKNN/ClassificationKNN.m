@@ -24,14 +24,9 @@ classdef ClassificationKNN
 ## Create a @qcode{ClassificationKNN} class object containing a k-Nearest
 ## Neighbor classification model.
 ##
-## A @qcode{ClassificationKNN} class object can store the labelled training
-## data, new data points for classification, and various parameters for the
-## k-Nearest Neighbor classification model.  It is recommended to use the
-## @code{fitcknn} function to create a @qcode{ClassificationKNN} class object.
-##
-## @code{@var{obj} = ClassificationKNN (@var{X}, @var{Y})} returns an object
-## of class ClassificationKNN, with @var{X} as predictor data and @var{Y}
-## with the class labels of observations in @var{X}.
+## @code{@var{obj} = ClassificationKNN (@var{X}, @var{Y})} returns a
+## ClassificationKNN object, with @var{X} as the predictor data and @var{Y}
+## containing the class labels of observations in @var{X}.
 ##
 ## @itemize
 ## @item
@@ -45,133 +40,114 @@ classdef ClassificationKNN
 ## @item
 ## @end itemize
 ##
-## @code{@var{obj} = ClassificationKNN (@dfots{}, @var{name}, @var{value})}
-## returns an object of class ClassificationKNN with additional properties
-## specified by @qcode{Name-Value} pair arguments listed below.
+## @code{@var{obj} = ClassificationKNN (@dots{}, @var{name}, @var{value})}
+## returns a ClassificationKNN object with parameters specified by
+## @qcode{Name-Value} pair arguments.  Type @code{help fitcknn} for more info.
 ##
-## @multitable @columnfractions 0.05 0.2 0.75
-## @headitem @tab @var{property} @tab @var{Description}
+## A @qcode{ClassificationKNN} object, @var{obj}, stores the labelled training
+## data and various parameters for the k-Nearest Neighbor classification model,
+## which can be accessed in the following fields:
 ##
-## @item @tab @qcode{"K"} @tab is the number of nearest neighbors to be found
-## in the kNN search.  It must be a positive integer value and by default it is
-## 1. @var{"K"} can be changed by using @code{@var{obj.K} = 10}.
+## @multitable @columnfractions 0.28 0.02 0.7
+## @headitem @var{Field} @tab @tab @var{Description}
 ##
-## @item @tab @qcode{"weights"} @tab is a @math{Nx1} numeric non-negative matrix
-## of the observational weights, each row in @var{weights} corresponds to the
-## row in @var{Y} and indicates the relative importance or weight to be
-## considered in calculating the Nearest-neighbour, negative values are removed
-## before calculations if weights are specified. this propery cannot be changed
-## via object.  Default value @qcode{@var{weight} = ones(rows(Y),1)}.
+## @item @qcode{obj.X} @tab @tab Unstandardized predictor data, specified as a
+## numeric matrix.  Each column of @var{X} represents one predictor (variable),
+## and each row represents one observation.
 ##
-## @item @tab @qcode{"cost"} @tab is a @math{NxR} numeric matrix containing
-## misclassification cost for the corresponding instances in @var{X} where
-## @var{R} is the number of unique categories in @var{Y}. If an instance is
-## correctly classified into its category the cost is calculated to be 1, If
-## not then 0. cost matrix can be altered use @code{@var{obj.cost} = somecost}.
-## default value @qcode{@var{cost} = ones(rows(X),numel(unique(Y)))}.
+## @item @qcode{obj.Y} @tab @tab Class labels, specified as a logical or
+## numeric vector, or cell array of character vectors.  Each value in @var{Y} is
+## the observed class label for the corresponding row in @var{X}.
 ##
-## @item @tab @qcode{"P"} @tab is the Minkowski distance exponent and
-## it must be a positive scalar.  This argument is only valid when the selected
-## distance metric is @qcode{"minkowski"}.  By default it is 2.
+## @item @qcode{obj.NumObservations} @tab @tab Number of observations used in
+## training the ClassificationKNN model, specified as a positive integer scalar.
+## This number can be less than the number of rows in the training data because
+## rows containing @qcode{NaN} values are not part of the fit.
 ##
-## @item @tab @qcode{"scale"} @tab is the scale parameter for the standardized
-## Euclidean distance and it must be a nonnegative numeric vector of equal
-## length to the number of columns in @var{X}.  This argument is only valid when
-## the selected distance metric is @qcode{"seuclidean"}, in which case each
-## coordinate of @var{X} is scaled by the corresponding element of
-## @qcode{"scale"}, as is each query point in @var{Y}.  By default, the scale
-## parameter is the standard deviation of each coordinate in @var{X}.
+## @item @qcode{obj.RowsUsed} @tab @tab Rows of the original training data
+## used in fitting the ClassificationKNN model, specified as a numerical vector.
+## If you want to use this vector for indexing the training data in @var{X}, you
+## have to convert it to a logical vector, i.e
+## @qcode{X = obj.X(logical (obj.RowsUsed), :);}
 ##
-## @item @tab @qcode{"Prior"} @tab is the matrix of prior probablities for each
-## unique class in @var{Y}. @var{Prior} can be changed via object using
-## @code{@var{obj.Prior} = somePrior}
+## @item @qcode{obj.Standardize} @tab @tab A boolean flag indicating whether
+## the data in @var{X} have been standardized prior to training.
 ##
-## @item @tab @qcode{"cov"} @tab is the covariance matrix for computing the
-## mahalanobis distance and it must be a positive definite matrix matching the
-## the number of columns in @var{X}.  This argument is only valid when the
-## selected distance metric is @qcode{"mahalanobis"}.
+## @item @qcode{obj.Sigma} @tab @tab Predictor standard deviations, specified
+## as a numeric vector of the same length as the columns in @var{X}.  If the
+## predictor variables have not been standardized, then @qcode{"obj.Sigma"} is
+## empty.
 ##
-## @item @tab @qcode{"BucketSize"} @tab is the maximum number of data points in
-## the leaf node of the Kd-tree and it must be a positive integer.  This
-## argument is only valid when the selected search method is @qcode{"kdtree"}.
+## @item @qcode{obj.Mu} @tab @tab Predictor means, specified as a numeric
+## vector of the same length as the columns in @var{X}.  If the predictor
+## variables have not been standardized, then @qcode{"obj.Mu"} is empty.
 ##
-## @item @tab @qcode{"Distance"} @tab is the distance metric used by
-## @code{knnsearch} as specified below:
-## @end multitable
+## @item @qcode{obj.NumPredictors} @tab @tab The number of predictors
+## (variables) in @var{X}.
 ##
-## @multitable @columnfractions 0.1 0.25 0.65
-## @item @tab @qcode{"euclidean"} @tab Euclidean distance.
-## @item @tab @qcode{"seuclidean"} @tab standardized Euclidean distance.  Each
-## coordinate difference between the rows in @var{X} and the query matrix
-## @var{Y} is scaled by dividing by the corresponding element of the standard
-## deviation computed from @var{X}.  To specify a different scaling, use the
-## @qcode{"scale"} name-value argument.
-## @item @tab @qcode{"cityblock"} @tab City block distance.
-## @item @tab @qcode{"chebychev"} @tab Chebychev distance (maximum coordinate
-## difference).
-## @item @tab @qcode{"minkowski"} @tab Minkowski distance.  The default exponent
-## is 2.  To specify a different exponent, use the @qcode{"P"} name-value
-## argument.
-## @item @tab @qcode{"mahalanobis"} @tab Mahalanobis distance, computed using a
-## positive definite covariance matrix.  To change the value of the covariance
-## matrix, use the @qcode{"cov"} name-value argument.
-## @item @tab @qcode{"cosine"} @tab Cosine distance.
-## @item @tab @qcode{"correlation"} @tab One minus the sample linear correlation
-## between observations (treated as sequences of values).
-## @item @tab @qcode{"spearman"} @tab One minus the sample Spearman's rank
-## correlation between observations (treated as sequences of values).
-## @item @tab @qcode{"hamming"} @tab Hamming distance, which is the percentage
-## of coordinates that differ.
-## @item @tab @qcode{"jaccard"} @tab One minus the Jaccard coefficient, which is
-## the percentage of nonzero coordinates that differ.
-## @end multitable
+## @item @qcode{obj.PredictorNames} @tab @tab Predictor variable names,
+## specified as a cell array of character vectors.  The variable names are in
+## the same order in which they appear in the training data @var{X}.
 ##
-## @multitable @columnfractions 0.05 0.2 0.75
-## @item @tab @qcode{"NSMethod"} @tab is the nearest neighbor search method used
-## by @code{knnsearch} as specified below.
-## @end multitable
+## @item @qcode{obj.ResponseName} @tab @tab Response variable name, specified
+## as a character vector.
 ##
-## @multitable @columnfractions 0.1 0.25 0.65
-## @item @tab @qcode{"kdtree"} @tab Creates and uses a Kd-tree to find nearest
-## neighbors.  @qcode{"kdtree"} is the default value when the number of columns
-## in @var{X} is less than or equal to 10, @var{X} is not sparse, and the
-## distance metric is @qcode{"euclidean"}, @qcode{"cityblock"},
-## @qcode{"chebychev"}, or @qcode{"minkowski"}.  Otherwise, the default value is
-## @qcode{"exhaustive"}.  This argument is only valid when the distance metric
-## is one of the four aforementioned metrics.
-## @item @tab @qcode{"exhaustive"} @tab Uses the exhaustive search algorithm by
-## computing the distance values from all the points in @var{X} to each point in
-## @var{Y}.
-## @end multitable
+## @item @qcode{obj.ClassNames} @tab @tab Names of the classes in the training
+## data @var{Y} with duplicates removed, specified as a cell array of character
+## vectors.
 ##
-## @multitable @columnfractions 0.05 0.2 0.75
-## @item @tab @qcode{"IncludeTies"} @tab is a boolean flag to indicate if the
-## returned values should contain the indices that have same distance as the
-## @math{K^th} neighbor.  When @qcode{false}, @code{knnsearch} chooses the
-## observation with the smallest index among the observations that have the same
-## distance from a query point.  When @qcode{true}, @code{knnsearch} includes
-## all nearest neighbors whose distances are equal to the @math{K^th} smallest
-## distance in the output arguments. To specify @math{K}, use the @qcode{"K"}
-## name-value pair argument.
+## @item @qcode{obj.Prior} @tab @tab Prior probabilities for each class,
+## specified as a numeric vector.  The order of the elements in @qcode{Prior}
+## corresponds to the order of the classes in @qcode{ClassNames}.
 ##
-## @item @tab @qcode{"breakties"} @tab is the method to break ties in kNN
-## algorithm while deciding the label for an observation.
+## @item @qcode{obj.Cost} @tab @tab Cost of the misclassification of a point,
+## specified as a square matrix. @qcode{Cost(i,j)} is the cost of classifying a
+## point into class @qcode{j} if its true class is @qcode{i} (that is, the rows
+## correspond to the true class and the columns correspond to the predicted
+## class).  The order of the rows and columns in @qcode{Cost} corresponds to the
+## order of the classes in @qcode{ClassNames}.  The number of rows and columns
+## in @qcode{Cost} is the number of unique classes in the response.  By default,
+## @qcode{Cost(i,j) = 1} if @qcode{i != j}, and @qcode{Cost(i,j) = 0} if
+## @qcode{i = j}.  In other words, the cost is 0 for correct classification and
+## 1 for incorrect classification.
 ##
-## @item @tab @qcode{"classnames"} @tab is a vector of unique classes in
-## training data @var{Y}.If not given as name-value pair, the function
-## calculates and stores the unique values in @var{Y}. @var{"classnames"} cannot
-## be changed via @var{obj}.
+## @item @qcode{obj.NumNeighbors} @tab @tab Number of nearest neighbors in
+## @var{X} used to classify each point during prediction, specified as a
+## positive integer value.
 ##
-## @item @tab @qcode{"NosClasses"} @tab is a numeric value that stores the
-## number of unique classes in @var{Y}.If not given as name-value pair, the
-## function calculates and stores the number of unique values in @var{Y}.
-## @var{"NosClasses"} cannot be changed via @var{obj}.
+## @item @qcode{obj.Distance} @tab @tab Distance metric, specified as a
+## character vector.  The allowable distance metric names depend on the choice
+## of the neighbor-searcher method.  See the available distance metrics in
+## @code{knnseaarch} for more info.
 ##
-## @item @tab @qcode{"NN"} @tab stores the Nearest-Neighbours indices for the
-## query points in @var{Xclass}. this property cannot be modified.
+## @item @qcode{obj.DistanceWeight} @tab @tab Distance weighting function,
+## specified as a function handle, which accepts a matrix of nonnegative
+## distances, and returns a matrix the same size containing nonnegative distance
+## weights.
 ##
-## @item @tab @qcode{"Score"} @tab store the predicted labels for the query
-## points in @var{Xclass}.this property cannot be modified.
+## @item @qcode{obj.DistParameter} @tab @tab Parameter for the distance
+## metric, specified either as a positive definite covariance matrix (when the
+## distance metric is @qcode{"mahalanobis"}, or a positive scalar as the
+## Minkowski distance exponent (when the distance metric is @qcode{"minkowski"},
+## or a vector of positive scale values with length equal to the number of
+## columns of @var{X} (when the distance metric is @qcode{"seuclidean"}.  For
+## any other distance metric, the value of @qcode{DistParameter} is empty.
+##
+## @item @qcode{obj.NSMethod} @tab @tab Nearest neighbor search method,
+## specified as either @qcode{"kdtree"}, which creates and uses a Kd-tree to
+## find nearest neighbors, or @qcode{"exhaustive"}, which uses the exhaustive
+## search algorithm by computing the distance values from all points in @var{X}
+## to find nearest neighbors.
+##
+## @item @qcode{obj.IncludeTies} @tab @tab A boolean flag indicating whether
+## prediction includes all the neighbors whose distance values are equal to the
+## @math{k-th} smallest distance.  If @qcode{IncludeTies} is @qcode{true},
+## prediction includes all of these neighbors.  Otherwise, prediction uses
+## exactly @math{k} neighbors.
+##
+## @item @qcode{obj.BucketSize} @tab @tab Maximum number of data points in the
+## leaf node of the Kd-tree, specified as positive integer value. This argument
+## is meaningful only when @qcode{NSMethod} is @qcode{"kdtree"}.
 ##
 ## @end multitable
 ##
@@ -180,35 +156,35 @@ classdef ClassificationKNN
 
   properties (Access = public)
 
-    ## Properties that can be set via object
-    X = [];
-    Y = [];
-    Xclass = [];
+    X = [];                   # Predictor data
+    Y = [];                   # Class labels
 
-    prior;
-    cov;
-    weights;
-    P;
-    distance;
-    NSmethod;
-    standardize;
+    NumObservations = [];     # Number of observations in training dataset
+    RowsUsed        = [];     # Rows used in fitting
+    Standardize     = [];     # Flag to standardize predictors
+    Sigma           = [];     # Predictor standard deviations
+    Mu              = [];     # Predictor means
+
+    NumPredictors   = [];     # Number of predictors
+    PredictorNames  = [];     # Predictor variables names
+    ResponseName    = [];     # Response variable name
+    ClassNames      = [];     # Names of classes in Y
+    Prior           = [];     # Prior probability for each class
+    Cost            = [];     # Cost of misclassification
+
+    NumNeighbors    = [];     # Number of nearest neighbors
+    Distance        = [];     # Distance metric
+    DistanceWeight  = [];     # Distance weighting function
+    DistParameter   = [];     # Parameter for distance metric
+    NSMethod        = [];     # Nearest neighbor search method
+    IncludeTies     = [];     # Flag for handling ties
+    BucketSize      = [];     # Maximum data points in each node
+
   endproperties
 
   properties (Acesss = protected)
-    k;
-    NN;
-    cost;                   # cost, alterable
-    bucketsize;
-    Includeties;
-    Breakties;
-    NumObsv;
-    Scale;                  # read only
 
-    ## Variable dependent properties
-    classNames;
-    NosClasses;
-    Score;
-    label;
+
   endproperties
 
   methods (Access = public)
@@ -216,190 +192,388 @@ classdef ClassificationKNN
     function this = ClassificationKNN (X, Y, varargin)
       ## Check for sufficient number of input arguments
       if (nargin < 2)
-        error ("ClassificationKNN: too few arguments.");
+        error ("ClassificationKNN: too few input arguments.");
       endif
 
-      ## Check X and Y
+      ## Check X and Y have the same number of observations
       if (rows (X) != rows (Y))
         error ("ClassificationKNN: number of rows in X and Y must be equal.");
       endif
-      if (! isnumeric (X) || ! isfinite (X))
-        error ("ClassificationKNN: Invalid values in X.");
-      else
-        ## Assign X and Y
-        this.X = X;
-        NumObsv = size (X, 1);
-        this.Y = Y;
-      endif
 
-      ## Default values
-      k = 1;
-      cost  = [];                   # cost, alterable
-      Scale = [];                   # read only
-      prior = [];
-      cov   = [];
-      weights  = [];
-      P = 2;
-      bucketsize  = 50;
-      distance    = "euclidean";
-      NSmethod    = "exhaustive";
-      standardize = false;
-      Includeties = false;
-      Breakties   = "equal";
-      NosClasses  = [];
-      classNames  = [];
-      Xclass      = [];
+      ## Assign original X and Y data to the ClassificationKNN object
+      this.X = X;
+      this.Y = Y;
+
+      ## Get groups in Y
+      [gY, gnY, glY] = grp2idx (Y);
+
+      ## Set default values before parsing optional parameters
+      Standardize     = false;  # Flag to standardize predictors
+      PredictorNames  = [];     # Predictor variables names
+      ResponseName    = [];     # Response variable name
+      ClassNames      = [];     # Names of classes in Y
+      Prior           = [];     # Prior probability for each class
+      Cost            = [];     # Cost of misclassification
+      Scale           = [];     # Distance scale for 'seuclidean'
+      Cov             = [];     # Covariance matrix for 'mahalanobis'
+      Exponent        = [];     # Exponent for 'minkowski'
+      NumNeighbors    = [];     # Number of nearest neighbors
+      Distance        = [];     # Distance metric
+      DistanceWeight  = [];     # Distance weighting function
+      DistParameter   = [];     # Parameter for distance metric
+      IncludeTies     = false;  # Flag for handling ties
+      NSMethod        = [];     # Nearest neighbor search method
+      BucketSize      = 50;     # Maximum data points in each node
+
+      ## Number of parameters for Standardize, Scale, Cov (maximum 1 allowed)
+      SSC = 0;
 
       ## Parse extra parameters
       while (numel (varargin) > 0)
-        switch (tolower (varargin{1}))
-        case "k"
-          k = varargin{2};
-        case "weights"
-          weights = varargin{2};
-        case "cost"
-          cost = varargin{2};
-        case "scale"
-          Scale = varargin{2};
-        case "prior"
-          weights = varargin{2};
-        case "cov"
-          cov = varargin{2};
-        case "p"
-          P = varargin{2};
-        case "bucketsize"
-          bucketsize = varargin{2};
-        case "distance"
-          distance = varargin{2};
-        case "includeties"
-          Includeties = varargin{2};
-        case "nsmethod"
-          NSmethod = varargin{2};
-        case "standardize"
-          standardize = varargin{2};
-        case "includeties"
-          IncludeTies = varargin{2};
-        case "breakties"
-          breakties = varargin{2};
-        case "classnames"
-          classNames = varargin{2};
-        case "nosclasses"
-          NosClasses = varargin{2};
-        otherwise
-          error (strcat (["ClassificationKNN: Invalid NAME in"], ...
-                         [" optional pairs of arguments."]));
+        switch (tolower (varargin {1}))
+
+          case "standardize"
+            if (SSC < 1)
+              Standardize = varargin{2};
+              if (! (Standardize == true || Standardize == false))
+                error (strcat (["ClassificationKNN: Standardize must"], ...
+                               [" be either true or false."]));
+              endif
+            else
+              error (strcat (["ClassificationKNN: 'Standardize' cannot"], ...
+                             [" simultaneously be specified with either"], ...
+                             [" 'Scale' or 'Cov'."]));
+            endif
+
+          case "predictornames"
+            PredictorNames = varargin{2};
+            if (! iscellstr (PredictorNames))
+              error (strcat (["ClassificationKNN: PredictorNames must"], ...
+                             [" be supplied as a cellstring array."]));
+            elseif (columns (PredictorNames) != columns (X))
+              error (strcat (["ClassificationKNN: PredictorNames must"], ...
+                             [" have same number of columns as X."]));
+            endif
+
+          case "responsename"
+            ResponseName = varargin{2};
+            if (! ischar (ResponseName))
+              error ("ClassificationKNN: ResponseName must be a char string.");
+            endif
+
+          case "classnames"
+            ClassNames = varargin{2};
+            if (! iscellstr (ClassNames))
+              error (strcat (["ClassificationKNN: ClassNames must"], ...
+                               [" be a cellstring array."]));
+            endif
+            ## Check that all class names are available in gnY
+            if (! all (cell2mat (cellfun (@(x) any (strcmp (x, gnY)),
+                                 ClassNames, "UniformOutput", false))))
+              error ("ClassificationKNN: not all ClassNames are present in Y");
+            endif
+
+          case "prior"
+            Prior = varargin{2};
+            if (! ((isnumeric (Prior) && isvector (Prior)) ||
+                  (strcmpi (Prior, "empirical") || strcmpi (Prior, "uniform"))))
+              error (strcat (["ClassificationKNN: Prior must be either a"], ...
+                             [" numeric vector or a string."]));
+            endif
+
+          case "cost"
+            Cost = varargin{2};
+            if (! (isnumeric (Cost) && issquare (Cost)))
+              error ("ClassificationKNN: Cost must be a numeric square matrix.");
+            endif
+
+          case "numneighbors"
+            NumNeighbors = varargin{2};
+            if (! (isnumeric (NumNeighbors) && isscalar (NumNeighbors) &&
+                                           fix (NumNeighbors) == NumNeighbors))
+              error (strcat (["ClassificationKNN: NumNeighbors must be a"], ...
+                             [" positive integer."]));
+            endif
+
+          case "distance"
+            Distance = varargin{2};
+            DMs = {"euclidean", "seuclidean", "mahalanobis", "minkowski", ...
+                   "cityblock", "manhattan", "chebychev", "cosine", ...
+                   "correlation", "spearman", "hamming", "jaccard"};
+            if (! any (strcmpi (DMs, Distance)))
+              error ("ClassificationKNN: unknown distance metric.");
+            endif
+
+          case "distanceweight"
+            DistanceWeight = varargin{2};
+            DMs = {"equal", "inverse", "squareinverse"};
+            if (is_function_handle (DistanceWeight))
+              m = eye (5);
+              if (! isequal (size (m), size (DistanceWeight(m))))
+                error (strcat (["ClassificationKNN: function handle for"], ...
+                               [" distance weight must return the same"], ...
+                               [" size as its input."]));
+              endif
+              this.DistanceWeight = DistanceWeight;
+            else
+              if (! any (strcmpi (DMs, DistanceWeight)))
+                error ("ClassificationKNN: invalid distance weight.");
+              endif
+              if (strcmpi ("equal", DistanceWeight))
+                this.DistanceWeight = @(x) x;
+              endif
+              if (strcmpi ("inverse", DistanceWeight))
+                this.DistanceWeight = @(x) x.^(-1);
+              endif
+              if (strcmpi ("squareinverse", DistanceWeight))
+                this.DistanceWeight = @(x) x.^(-2);
+              endif
+            endif
+
+          case "scale"
+            if (SSC < 1)
+              Scale = varargin{2};
+              if (! (isnumeric (Prior) && isvector (Prior)))
+                error ("ClassificationKNN: Scale must be a numeric vector.");
+              endif
+            else
+              error (strcat (["ClassificationKNN: 'Scale' cannot"], ...
+                             [" simultaneously be specified with either"], ...
+                             [" 'Standardize' or 'Cov'."]));
+            endif
+
+          case "cov"
+            if (SSC < 1)
+              Cov = varargin{2};
+              try
+                chol (Cov);
+              catch ME
+                error (strcat (["ClassificationKNN: Cov must be a"], ...
+                               [" symmetric positive definite matrix."]));
+              end_try_catch
+            else
+              error (strcat (["ClassificationKNN: 'Cov' cannot"], ...
+                             [" simultaneously be specified with either"], ...
+                             [" 'Standardize' or 'Scale'."]));
+            endif
+
+          case "exponent"
+            Exponent = varargin{2};
+            if (! (isnumeric (Exponent) && isscalar (Exponent) &&
+                           Exponent > 0 && fix (Exponent) == Exponent))
+              error ("ClassificationKNN: Exponent must be a positive integer.");
+            endif
+
+          case "nsmethod"
+            NSMethod = varargin{2};
+            NSM = {"kdtree", "exhaustive"};
+            if (! any (strcmpi (NSM, NSmethod)))
+              error (strcat (["ClassificationKNN: NSMethod must"], ...
+                             [" be either 'kdtree', 'exhaustive'."]));
+            endif
+
+          case "includeties"
+            IncludeTies = varargin{2};
+            if (! (IncludeTies == true || IncludeTies == false))
+              error (strcat (["ClassificationKNN: IncludeTies must"], ...
+                             [" be either true or false."]));
+            endif
+
+          case "bucketsize"
+            BucketSize = varargin{2};
+            if (! (isnumeric (BucketSize) && isscalar (BucketSize) &&
+                           BucketSize > 0 && fix (BucketSize) == BucketSize))
+              error (strcat (["ClassificationKNN: BucketSize must be a"], ...
+                             [" positive integer."]));
+            endif
+
+          otherwise
+            error (strcat (["ClassificationKNN: invalid parameter name"],...
+                           [" in optional pair arguments."]));
+
         endswitch
-        varargin(1:2) = [];
+        varargin (1:2) = [];
       endwhile
 
+      ## Get number of variables in training data
+      ndims_X = columns (X);
 
-      ## Assign properties related to Y
-      if (isempty (classNames))
-        this.classNames = unique (Y);
+      ## Assign the number of predictors to the ClassificationKNN object
+      this.NumPredictors = ndims_X;
+
+      ## Generate default predictors and response variabe names (if necessary)
+      if (isempty (PredictorNames))
+        for i = 1:ndims_X
+          PredictorNames {i} = strcat ("x", num2str (i));
+        endfor
       endif
-      if (isempty (NosClasses))
-        this.NosClasses = numel (this.classNames);
+      if (isempty (ResponseName))
+        ResponseName = "Y";
       endif
 
-      ## Assign optional parameters
+      ## Assign predictors and response variable names
+      this.PredictorNames = PredictorNames;
+      this.ResponseName   = ResponseName;
 
-      ## Only checking if the arguments are provided and storing if they
-      ## pass the check. If not provided the default values will be stored.
+      ## Handle class names
+      if (isempty (ClassNames))
+        ClassNames = gnY;
+      else
+        ru = logical (zeros (size (Y)));
+        for i = 1:numel (ClassNames)
+          ac = find (gnY, ClassNames{i});
+          ru = ru | ac;
+        endfor
+        X = X(ru);
+        Y = Y(ru);
+        gY = gY(ru);
+      endif
 
-      ## Check k
-      if (! isempty (k))
-        if (! isscalar (k) || ! isnumeric (k) || k < 1 || k != round (k))
-          error ("ClassificationKNN: Invalid value of k.");
-        else
-          this.k = k;
+      ## Remove missing values from X and Y
+      RowsUsed  = ! logical (sum (isnan ([X, gY]), 2));
+      Y         = Y (RowsUsed);
+      X         = X (RowsUsed, :);
+
+      ## Renew groups in Y
+      [gY, gnY, glY] = grp2idx (Y);
+      this.ClassNames = gnY;
+
+      ## Check X contains valid data
+      if (! isnumeric (X) || ! isfinite (X))
+        error ("ClassificationKNN: invalid values in X.");
+      endif
+
+      ## Assign the number of observations and their correspoding indices
+      ## on the original data, which will be used for training the model,
+      ## to the ClassificationKNN object
+      this.NumObservations = rows (X);
+      this.RowsUsed = cast (RowsUsed, "double");
+
+      ## Handle Standardize flag
+      if (Standardize)
+        this.Standardize = true;
+        this.Sigma = std (X, [], 1);
+        this.Mu = mean (X, 1);
+      else
+        this.Standardize = false;
+        this.Sigma = [];
+        this.Mu = [];
+      endif
+
+      ## Handle Prior and Cost
+      if (isempty (Prior) || strcmpi ("uniform", Prior))
+        this.Prior = ones (size (gnY)) ./ numel (gnY);
+      elseif (strcmpi ("empirical", Prior))
+        pr = [];
+        for i = 1:numel (gnY)
+          pr = [pr; sum(gY==i)];
+        endfor
+        this.Prior = pr ./ sum (pr);
+      elseif (isnumeric (Prior))
+        if (numel (gnY) != numel (Prior))
+          error (strcat (["ClassificationKNN: the elements in Prior do not"], ...
+                         [" correspond to selected classes in Y."]));
         endif
+        this.Prior = Prior ./ sum (Prior);
+      endif
+      if (isempty (Cost))
+        this.Cost = eye (numel (gnY));
+      else
+        if (numel (gnY) != sqrt (numel (Cost)))
+          error (strcat (["ClassificationKNN: the number of rows and"], ...
+                         [" columns in Cost must correspond to selected"], ...
+                         [" classes in Y."]));
+        endif
+        this.Cost = Cost;
       endif
 
-      ## Check weights
-      if (! isempty (weights))
-        if (! isvector (weights) || rows (X) != length (weights) ...
-                                 || sum (weights < 0) != 0)
-          error("ClassificationKNN: Weights has invalid observarions.");
-        else
-          this.weights = weights;
-        endif
-      endif
-      ## Check minkowski distance exponent
-      if (! isempty (P))
-        if (! isscalar (P) || ! isnumeric (P) || P < 0)
-          error ("ClassificationKNN: Invalid value of Minkowski Exponent.");
-        else
-          this.P = P;
-        endif
+      ## Get number of neighbors
+      if (isempty (NumNeighbors))
+        this.NumNeighbors = 1;
+      else
+        this.NumNeighbors = NumNeighbors;
       endif
 
-      ## Check cost
-      if (! isempty (cost))
-        if (! ismatrix (cost) || ! isnumeric (cost) || ...
-            columns (cost) != numel (unique (Y)) || rows (cost) != rows (X))
-          error (strcat (["ClassificationKNN: Invalid value in"], ...
-                         [" cost or the size of cost."]));
-        else
-          this.cost = cost;
-        endif
+      ## Get distance metric
+      if (isempty (Distance))
+        Distance = "euclidean";
       endif
-      ## Check scale
+      this.Distance = Distance;
+
+      ## Get distance weight
+      if (isempty (DistanceWeight))
+        this.DistanceWeight = @(x) x;
+      endif
+
+      ## Handle distance metric parameters (Scale, Cov, Exponent)
       if (! isempty (Scale))
-        if (! ismatrix (Scale) || any (Scale < 0) || numel (Scale) != rows (X))
-          error (strcat (["ClassificationKNN: Invalid value in"], ...
-                         [" Scale or the size of scale."]));
-        else
-          this.Scale = Scale;
+        if (! strcmpi (Distance, "seuclidean"))
+          error (strcat (["ClassificationKNN: Scale is only valid when"], ...
+                         [" distance metric is 'seuclidean'."]));
+        endif
+        if (numel (Scale) != ndims_X)
+          error (strcat (["ClassificationKNN: Scale vector must have"], ...
+                         [" equal length to the number of columns in X."]));
+        endif
+        if (any (Scale < 0))
+          error (strcat (["ClassificationKNN: Scale vector must contain"], ...
+                         [" nonnegative scalar values."]));
+        endif
+        this.DistParameter = Scale;
+      else
+        if (strcmpi (Distance, "seuclidean"))
+          this.DistParameter = std (X, [], 1);
         endif
       endif
-      ## Check cov
-      if (! isempty (cov))
-        if (! strcmpi (distance, "mahalanobis") || ...
-            ! ismatrix (cov) || ! isnumeric (cov))
-          error (strcat (["ClassificationKNN: Invalid value in COV, COV"], ...
-                        [" can only be given for mahalanobis distance."]));
-        else
-          this.cov = cov;
+      if (! isempty (Cov))
+        if (! strcmpi (Distance, "mahalanobis"))
+          error (strcat (["ClassificationKNN: Cov is only valid when"], ...
+                         [" distance metric is 'mahalanobis'."]));
+        endif
+        if (columns (Cov) != ndims_X)
+          error (strcat (["ClassificationKNN: Cov matrix must have"], ...
+                         [" equal columns as X."]));
+        endif
+        this.DistParameter = Cov;
+      else
+        if (strcmpi (Distance, "mahalanobis"))
+          this.DistParameter = cov (X);
         endif
       endif
-      ## Check bucketsize
-      if (! isempty (bucketsize))
-        if (! isscalar (bucketsize) || bucketsize < 0)
-          error ("ClassificationKNN: Invalid value of bucketsize.");
-        else
-          this.bucketsize = bucketsize;
+      if (! isempty (Exponent))
+        if (! strcmpi (Distance, "minkowski"))
+          error (strcat (["ClassificationKNN: Exponent is only valid when"], ...
+                         [" distance metric is 'minkowski'."]));
         endif
-      endif
-
-      ## standardize
-      if (! isempty (standardize))
-        if (! islogical (standardize) && standardize != 1 && standardize != 0)
-          error ("ClassificationKNN: value of standardize must be boolean.");
-        else
-          this.standardize = standardize;
-        endif
-      endif
-      ## Includeties
-      if (! isempty (Includeties))
-        if (! islogical (Includeties) && Includeties != 1 && Includeties != 0)
-          error ("ClassificationKNN: value of Includeties must be boolean");
-        else
-          this.Includeties = Includeties;
+        this.DistParameter = Exponent;
+      else
+        if (strcmpi (Distance, "minkowski"))
+          this.DistParameter = 2;
         endif
       endif
 
-      if (! isempty (distance))
-        this.distance = distance;
+      ## Get Nearest neighbor search method
+      kdm = {"euclidean", "cityblock", "manhattan", "minkowski", "chebychev"};
+      if (! isempty (NSMethod))
+        if (strcmpi ("kdtree", NSMethod) && any (strcmpi (kdm, Distance)))
+          error (strcat (["ClassificationKNN: kdtree method is only valid"], ...
+                         [" for 'euclidean', 'cityblock', 'manhattan',"], ...
+                         [" 'minkowski', and 'chebychev' distance metrics."]));
+        endif
+        this.NSMethod = NSMethod;
+      else
+        if (any (strcmpi (kdm, Distance)) && ndims_X <= 10)
+          this.NSMethod = "kdtree";
+        else
+          this.NSMethod = "exhaustive";
+        endif
       endif
 
-      if (! isempty (NSmethod))
-        this.NSmethod = NSmethod;
-      endif
+      ## Assign IncludeTies and BucketSize properties
+      this.IncludeTies = IncludeTies;
+      this.BucketSize = BucketSize;
 
-
-        ## ------ param check and assign end ------ ##
-
-    endfunction ## constructor
+    endfunction
 
   endmethods
 
@@ -420,8 +594,8 @@ endclassdef
 %! a = ClassificationKNN (x, y);
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k}, {x, y, 1})
-%! assert ({a.NSmethod, a.distance}, {"exhaustive", "euclidean"})
-%! assert ({a.bucketsize}, {50})
+%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "euclidean"})
+%! assert ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
@@ -429,7 +603,7 @@ endclassdef
 %! a = ClassificationKNN (x, y, "K" ,k);
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k}, {x, y, 10})
-%! assert ({a.NSmethod, a.distance}, {"exhaustive", "euclidean"})
+%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "euclidean"})
 %! assert ({a.bucketsize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
@@ -439,8 +613,8 @@ endclassdef
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k}, {x, y, 1})
 %! assert (a.weights, ones (4, 1))
-%! assert ({a.NSmethod, a.distance}, {"exhaustive", "euclidean"})
-%! assert ({a.bucketsize}, {50})
+%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "euclidean"})
+%! assert ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
@@ -448,8 +622,8 @@ endclassdef
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k}, {x, y, 1})
 %! assert (a.P, 10)
-%! assert ({a.NSmethod, a.distance}, {"exhaustive", "euclidean"})
-%! assert ({a.bucketsize}, {50})
+%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "euclidean"})
+%! assert ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
@@ -458,16 +632,16 @@ endclassdef
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k}, {x, y, 1})
 %! assert (a.cov, cov)
-%! assert ({a.NSmethod, a.distance}, {"exhaustive", "mahalanobis"})
-%! assert ({a.bucketsize}, {50})
+%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "mahalanobis"})
+%! assert ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
 %! a = ClassificationKNN (x, y, "bucketsize" , 20, "distance", "mahalanobis");
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k}, {x, y, 1})
-%! assert ({a.NSmethod, a.distance}, {"exhaustive", "mahalanobis"})
-%! assert ({a.bucketsize}, {20})
+%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "mahalanobis"})
+%! assert ({a.BucketSize}, {20})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
@@ -475,17 +649,17 @@ endclassdef
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k}, {x, y, 1})
 %! assert (a.standardize, true);
-%! assert ({a.NSmethod, a.distance}, {"exhaustive", "euclidean"})
-%! assert ({a.bucketsize}, {50})
+%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "euclidean"})
+%! assert ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
 %! a = ClassificationKNN (x, y, "includeties", true);
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.k}, {x, y, 1})
-%! assert (a.Includeties, true);
-%! assert ({a.NSmethod, a.distance}, {"exhaustive", "euclidean"})
-%! assert ({a.bucketsize}, {50})
+%! assert (a.IncludeTies, true);
+%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "euclidean"})
+%! assert ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
@@ -494,8 +668,8 @@ endclassdef
 %! assert (class (a), "ClassificationKNN")
 %! assert ({a.X, a.Y, a.k}, {x, y, 1})
 %! assert (a.cost, [1, 1; 1, 1; 1, 1; 1, 1])
-%! assert ({a.NSmethod, a.distance}, {"exhaustive", "euclidean"})
-%! assert ({a.bucketsize}, {50})
+%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "euclidean"})
+%! assert ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
@@ -504,12 +678,13 @@ endclassdef
 %! assert (class (a), "ClassificationKNN")
 %! assert ({a.X, a.Y, a.k}, {x, y, 1})
 %! assert (a.Scale, [1, 2, 3, 4])
-%! assert ({a.NSmethod, a.distance}, {"exhaustive", "euclidean"})
-%! assert ({a.bucketsize}, {50})
+%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "euclidean"})
+%! assert ({a.BucketSize}, {50})
 
 ## Test input validation
-%!error<ClassificationKNN: too few arguments.> ClassificationKNN()
-%!error<ClassificationKNN: too few arguments.> ClassificationKNN(ones(4,1))
+%!error<ClassificationKNN: too few input arguments.> ClassificationKNN ()
+%!error<ClassificationKNN: too few input arguments.> ...
+%! ClassificationKNN (ones(4, 1))
 %!error<ClassificationKNN: number of rows in X and Y must be equal.> ...
 %! ClassificationKNN(ones (4,2), ones (1,4))
 %!error<ClassificationKNN: Invalid values in X.> ...
