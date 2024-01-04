@@ -185,26 +185,6 @@ function obj = fitcknn (X, Y, varargin)
 endfunction
 
 
-%!demo
-%! ## Find 10 nearest neighbour of a point using different distance metrics
-%! ## and compare the results by plotting
-%!
-%! load fisheriris
-%! x = meas;
-%! y = species;
-%! xnew = [5, 3, 5, 1.45];
-%!
-%! ## create an object
-%! a = fitcknn (x, y, "Xclass" , xnew, "k", 5)
-%!
-%! ## predict labels for points in xnew
-%! predict (a)
-%!
-%! ## change properties keeping training data and predict again
-%! a.distance = "hamming";
-%! a.k = 10;
-%! predict (a)
-
 ## Test Output
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];

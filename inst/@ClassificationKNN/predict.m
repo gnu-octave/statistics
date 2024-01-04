@@ -150,25 +150,6 @@ function [label, score, cost] = predict (obj, XC)
 
 endfunction
 
-%!demo
-%! ## find 10 nearest neighbour of a point using different distance metrics
-%! ## and compare the results by plotting
-%!
-%! load fisheriris
-%! x = meas;
-%! y = species;
-%! xc = [5, 3, 5, 1.45];
-%!
-%! ## Create an object
-%! a = fitcknn (x, y, "NumNeighbors", 5)
-%!
-%! ## Predict labels for points in xc
-%! predict (a, xc)
-%!
-%! ## Change properties keeping training data and predict again
-%! a.Distance = "hamming";
-%! a.NumNeighbors = 10;
-%! predict (a, xc)
 
 ## Test output
 %!shared x, y

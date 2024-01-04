@@ -619,13 +619,6 @@ classdef ClassificationKNN
 endclassdef
 
 
-%!demo
-%! ## Create a ClassificationKNN object using fisheriris dataset
-%! load fisheriris
-%! x = meas;
-%! y = species;
-%! a = ClassificationKNN (x, y, "NumNeighbors", 5)
-
 ## Test constructor with NSMethod and NumNeighbors parameters
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
