@@ -111,8 +111,8 @@ function [label, score, cost] = predict (obj, XC)
       NN_idx = idx{i};
       NNdist = dist{i};
     else
-      NN_idx = idx(i);
-      NNdist = dist(i);
+      NN_idx = idx(i,:);
+      NNdist = dist(i,:);
     endif
     k = numel (NN_idx);
     kNNgY = gY(NN_idx);
@@ -212,7 +212,7 @@ endfunction
 %! assert (c, [1, 0.4, 0.6], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "minkowski", "P", 5);
+%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "minkowski", "Exponent", 5);
 %! [l, s, c] = predict (obj, xc);
 %! assert (l, {"versicolor"})
 %! assert (s, [0, 0.5, 0.5], 1e-4)
