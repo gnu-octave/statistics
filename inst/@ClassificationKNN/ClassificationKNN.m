@@ -484,6 +484,7 @@ classdef ClassificationKNN
       if (Standardize)
         this.Standardize = true;
         this.Sigma = std (X, [], 1);
+        this.Sigma(this.Sigma == 0) = 1;  # predictor is constant
         this.Mu = mean (X, 1);
       else
         this.Standardize = false;
@@ -515,7 +516,7 @@ classdef ClassificationKNN
         this.Prior = Prior ./ sum (Prior);
       endif
       if (isempty (Cost))
-        this.Cost = eye (numel (gnY));
+        this.Cost = cast (! eye (numel (gnY)), "double");
       else
         if (numel (gnY) != sqrt (numel (Cost)))
           error (strcat (["ClassificationKNN: the number of rows and"], ...
