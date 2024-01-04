@@ -96,6 +96,15 @@ classdef ClassificationKNN
 ## data @var{Y} with duplicates removed, specified as a cell array of character
 ## vectors.
 ##
+## @item @qcode{obj.BreakTies} @tab @tab Tie-breaking algorithm used by predict
+## when multiple classes have the same smallest cost, specified as one of the
+## following character arrays: @qcode{"smallest"} (default), which favors the
+## class with the smallest index among the tied groups, i.e. the one that
+## appears first in the training labelled data.  @qcode{"nearest"}, which favors
+## the class with the nearest neighbor among the tied groups, i.e. the class
+## with the closest member point according to the distance metric used.
+## @qcode{"nearest"}, which randomly picks one class among the tied groups.
+##
 ## @item @qcode{obj.Prior} @tab @tab Prior probabilities for each class,
 ## specified as a numeric vector.  The order of the elements in @qcode{Prior}
 ## corresponds to the order of the classes in @qcode{ClassNames}.
@@ -169,6 +178,7 @@ classdef ClassificationKNN
     PredictorNames  = [];     # Predictor variables names
     ResponseName    = [];     # Response variable name
     ClassNames      = [];     # Names of classes in Y
+    BreakTies       = [];     # Tie-breaking algorithm
     Prior           = [];     # Prior probability for each class
     Cost            = [];     # Cost of misclassification
 
@@ -212,6 +222,7 @@ classdef ClassificationKNN
       PredictorNames  = [];     # Predictor variables names
       ResponseName    = [];     # Response variable name
       ClassNames      = [];     # Names of classes in Y
+      BreakTies       = [];     # Tie-breaking algorithm
       Prior           = [];     # Prior probability for each class
       Cost            = [];     # Cost of misclassification
       Scale           = [];     # Distance scale for 'seuclidean'
@@ -272,6 +283,17 @@ classdef ClassificationKNN
             if (! all (cell2mat (cellfun (@(x) any (strcmp (x, gnY)),
                                  ClassNames, "UniformOutput", false))))
               error ("ClassificationKNN: not all ClassNames are present in Y.");
+            endif
+
+          case "breakties"
+            BreakTies = varargin{2};
+            if (! ischar (ResponseName))
+              error ("ClassificationKNN: BreakTies must be a character array.");
+            endif
+            ## Check that all class names are available in gnY
+            BTs = {"smallest", "nearest", "random"};
+            if (! any (strcmpi (BTs, BreakTies)))
+              error ("ClassificationKNN: invalid value for BreakTies.");
             endif
 
           case "prior"
@@ -469,6 +491,13 @@ classdef ClassificationKNN
         this.Mu = [];
       endif
 
+      ## Handle BreakTies
+      if (isempty (BreakTies))
+        this.BreakTies = "smallest";
+      else
+        this.BreakTies = BreakTies;
+      endif
+
       ## Handle Prior and Cost
       if (isempty (Prior) || strcmpi ("uniform", Prior))
         this.Prior = ones (size (gnY)) ./ numel (gnY);
@@ -655,7 +684,7 @@ endclassdef
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
 %! weights = ones (4,1);
-%! a = ClassificationKNN (x, y, "standardize", 1);
+%! a = ClassificationKNN (x, y, "Standardize", 1);
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
 %! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
@@ -666,7 +695,7 @@ endclassdef
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
 %! weights = ones (4,1);
-%! a = ClassificationKNN (x, y, "standardize", false);
+%! a = ClassificationKNN (x, y, "Standardize", false);
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
 %! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
@@ -677,7 +706,7 @@ endclassdef
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
 %! s = ones (1, 3);
-%! a = ClassificationKNN (x, y, "scale" , s, "Distance", "seuclidean");
+%! a = ClassificationKNN (x, y, "Scale" , s, "Distance", "seuclidean");
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.DistParameter}, {s})
 %! assert ({a.NSMethod, a.Distance}, {"exhaustive", "seuclidean"})
@@ -686,7 +715,7 @@ endclassdef
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
 %! C = cov (x);
-%! a = ClassificationKNN (x, y, "cov" , C, "distance", "mahalanobis");
+%! a = ClassificationKNN (x, y, "Cov" , C, "distance", "mahalanobis");
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.DistParameter}, {C})
 %! assert ({a.NSMethod, a.Distance}, {"exhaustive", "mahalanobis"})
@@ -711,14 +740,14 @@ endclassdef
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
-%! a = ClassificationKNN (x, y, "bucketsize" , 20, "distance", "mahalanobis");
+%! a = ClassificationKNN (x, y, "BucketSize" , 20, "distance", "mahalanobis");
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.NSMethod, a.Distance}, {"exhaustive", "mahalanobis"})
 %! assert ({a.BucketSize}, {20})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
-%! a = ClassificationKNN (x, y, "includeties", true);
+%! a = ClassificationKNN (x, y, "IncludeTies", true);
 %! assert (class (a), "ClassificationKNN");
 %! assert (a.IncludeTies, true);
 %! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
@@ -743,7 +772,7 @@ endclassdef
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
 %! prior = [0.5; 0.5];
-%! a = ClassificationKNN (x, y, 'prior', "empirical");
+%! a = ClassificationKNN (x, y, "Prior", "empirical");
 %! assert (class (a), "ClassificationKNN")
 %! assert (a.Prior, prior)
 %! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
@@ -752,7 +781,7 @@ endclassdef
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "a"; "b"];
 %! prior = [0.75; 0.25];
-%! a = ClassificationKNN (x, y, 'prior', "empirical");
+%! a = ClassificationKNN (x, y, "Prior", "empirical");
 %! assert (class (a), "ClassificationKNN")
 %! assert (a.Prior, prior)
 %! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
@@ -761,7 +790,7 @@ endclassdef
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "a"; "b"];
 %! prior = [0.5; 0.5];
-%! a = ClassificationKNN (x, y, 'prior', "uniform");
+%! a = ClassificationKNN (x, y, "Prior", "uniform");
 %! assert (class (a), "ClassificationKNN")
 %! assert (a.Prior, prior)
 %! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
@@ -770,7 +799,7 @@ endclassdef
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
 %! cost = eye (2);
-%! a = ClassificationKNN (x, y, 'cost', cost);
+%! a = ClassificationKNN (x, y, "Cost", cost);
 %! assert (class (a), "ClassificationKNN")
 %! assert (a.Cost, [1, 0; 0, 1])
 %! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
@@ -779,7 +808,7 @@ endclassdef
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
 %! cost = eye (2);
-%! a = ClassificationKNN (x, y, 'cost', cost, "Distance", "hamming" );
+%! a = ClassificationKNN (x, y, "Cost", cost, "Distance", "hamming" );
 %! assert (class (a), "ClassificationKNN")
 %! assert (a.Cost, [1, 0; 0, 1])
 %! assert ({a.NSMethod, a.Distance}, {"exhaustive", "hamming"})
@@ -811,6 +840,12 @@ endclassdef
 %! ClassificationKNN (ones (5,2), ones (5,1), "ClassNames", ["1"])
 %!error<ClassificationKNN: not all ClassNames are present in Y.> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), "ClassNames", {"1", "2"})
+%!error<ClassificationKNN: BreakTies must be a character array.> ...
+%! ClassificationKNN (ones (5,2), ones (5,1), "BreakTies", 1)
+%!error<ClassificationKNN: BreakTies must be a character array.> ...
+%! ClassificationKNN (ones (5,2), ones (5,1), "BreakTies", {"1"})
+%!error<ClassificationKNN: ClassificationKNN: invalid value for BreakTies.> ...
+%! ClassificationKNN (ones (5,2), ones (5,1), "BreakTies", "some")
 %!error<ClassificationKNN: Prior must be either a numeric vector or a string.> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), "Prior", {"1", "2"})
 %!error<ClassificationKNN: Cost must be a numeric square matrix.> ...
