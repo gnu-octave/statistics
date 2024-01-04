@@ -9,7 +9,6 @@ Clustering
  evalclusters
  inconsistent
  kmeans
- knnpredict
  knnsearch
  linkage
  mahal
@@ -256,7 +255,6 @@ Regression
  canoncorr
  cholcov
  dcov
- gampredict
  logistic_regression
  monotone_smooth
  pca
