@@ -597,7 +597,7 @@ endfunction
 %! assert (D, [2; 2]);
 %!test
 %! [idx, D] = knnsearch (x, y, "Distance", "manhattan");
-%! assert (idx, [1; 1]);
+%! assert (idx, [1; 2]);
 %! assert (D, [2; 2]);
 %!test
 %! [idx, D] = knnsearch (x, y, "Distance", "chebychev");
