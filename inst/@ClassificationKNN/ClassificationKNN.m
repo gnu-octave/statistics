@@ -287,7 +287,7 @@ classdef ClassificationKNN
 
           case "breakties"
             BreakTies = varargin{2};
-            if (! ischar (ResponseName))
+            if (! ischar (BreakTies))
               error ("ClassificationKNN: BreakTies must be a character array.");
             endif
             ## Check that all class names are available in gnY
