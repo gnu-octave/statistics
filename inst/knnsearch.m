@@ -192,14 +192,14 @@ function [idx, dist] = knnsearch (X, Y, varargin)
   endif
   if (! isempty (C))
     if (! strcmp (Distance, "mahalanobis") || ! ismatrix (C) || ! isnumeric (C))
-      error (strcat (["knnsearch: Invalid value in cov, cov can only"], ...
+      error (strcat (["knnsearch: Invalid value in Cov, Cov can only"], ...
                      [" be given for mahalanobis distance."]));
     endif
   endif
   if (! isempty (S))
-    if (! isscalar (S) || any (S) < 0 || numel (S) != rows (X)
-                       || ! strcmpi (Distance, "seuclidean"))
-      error ("knnsearch: Invalid value in Scale or the size of scale.");
+    if (any (S) < 0 || numel (S) != columns (X)
+                    || ! strcmpi (Distance, "seuclidean"))
+      error ("knnsearch: Invalid value in Scale or the size of Scale.");
     endif
   endif
   if (! isscalar (BS) || BS < 0)
@@ -687,11 +687,11 @@ endfunction
 %! knnsearch(ones (4, 5), ones (1,5), "K" ,0)
 %!error<knnsearch: Invalid value of Minkowski Exponent.> ...
 %! knnsearch(ones (4, 5), ones (1,5),"P",-2)
-%!error<knnsearch: Invalid value in cov, cov can only be given for mahalanobis distance.> ...
+%!error<knnsearch: Invalid value in Cov, Cov can only be given for mahalanobis distance.> ...
 %! knnsearch(ones (4, 5), ones (1, 5), "cov", ["some" "some"])
-%!error<knnsearch: Invalid value in cov, cov can only be given for mahalanobis distance.> ...
+%!error<knnsearch: Invalid value in Cov, Cov can only be given for mahalanobis distance.> ...
 %! knnsearch(ones (4, 5), ones (1, 5), "cov", ones(4,5), "distance", "euclidean")
-%!error<knnsearch: Invalid value in Scale or the size of scale.> ...
+%!error<knnsearch: Invalid value in Scale or the size of Scale.> ...
 %! knnsearch(ones (4, 5), ones (1, 5), "scale", ones(4,5), "distance", "euclidean")
 %!error<knnsearch: Invalid value of bucketsize.> ...
 %! knnsearch(ones (4, 5), ones (1, 5),"bucketsize",-1)
