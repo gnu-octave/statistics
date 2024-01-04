@@ -160,14 +160,14 @@ endfunction
 %! xc = [5, 3, 5, 1.45];
 %!
 %! ## Create an object
-%! a = fitcknn (x, y, "k", 5)
+%! a = fitcknn (x, y, "NumNeighbors", 5)
 %!
 %! ## Predict labels for points in xc
 %! predict (a, xc)
 %!
 %! ## Change properties keeping training data and predict again
-%! a.distance = "hamming";
-%! a.k = 10;
+%! a.Distance = "hamming";
+%! a.NumNeighbors = 10;
 %! predict (a, xc)
 
 ## Test output
