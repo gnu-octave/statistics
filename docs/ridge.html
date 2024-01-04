@@ -141,7 +141,6 @@ lasso,
 
  X = [x1, x2, x3];
 
- x0 = ones (16, 1);
  x1x2 = x1 .* x2;
  x1x3 = x1 .* x3;
  x2x3 = x2 .* x3;
@@ -161,10 +160,71 @@ lasso,
  title ("Ridge Trace")
  legend ("x1", "x2", "x3", "x1x2", "x1x3", "x2x3")
 
+
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
                     <img src="assets/ridge_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+
+ load carbig
+ X = [Acceleration Weight Displacement Horsepower];
+ y = MPG;
+
+ n = length(y);
+
+ rand("seed",1); % For reproducibility
+
+ c = cvpartition(n,'HoldOut',0.3);
+ idxTrain = training(c,1);
+ idxTest = ~idxTrain;
+
+ idxTrain = training(c,1);
+ idxTest = ~idxTrain;
+
+ k = 5;
+ b = ridge(y(idxTrain),X(idxTrain,:),k,0);
+
+ % Predict MPG values for the test data using the model.
+ yhat = b(1) + X(idxTest,:)*b(2:end);
+ scatter(y(idxTest),yhat)
+
+ hold on
+ plot(y(idxTest),y(idxTest),"r")
+ xlabel('Actual MPG')
+ ylabel('Predicted MPG')
+ hold off
+
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/ridge_201.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>

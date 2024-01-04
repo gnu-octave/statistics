@@ -61,7 +61,7 @@
             </div>
             <div class="col-sm-9 col-md-10">
               <h3 class="d-inline-block mr-2">statistics</h3>
-              <b>1.6.0&nbsp;2023-5-28</b>
+              <b>1.6.1&nbsp;2023-8-31</b>
               <p class="indent">
                 The Statistics package for GNU Octave.
               </p>
@@ -72,7 +72,9 @@
            <p>Select Category:
              <select name="cat" onchange="location = this.options[this.selectedIndex].value;">
              <option value="#Clustering">Clustering</option>
+             <option value="#ClassificationKNN (class for KNN classification)">ClassificationKNN (class for KNN classification)</option>
              <option value="#CVpartition (class of set partitions for cross-validation, used in crossval)">CVpartition (class of set partitions for cross-validation, used in crossval)</option>
+             <option value="#RegressionGAM (class for GAM regression)">RegressionGAM (class for GAM regression)</option>
              <option value="#Data Manipulation">Data Manipulation</option>
              <option value="#Descriptive Statistics">Descriptive Statistics</option>
              <option value="#Distributions">Distributions</option>
@@ -172,6 +174,14 @@ cluster tree.</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="knnsearch.html">knnsearch</a>
+                   </code></b>
+                 </td>
+                 <td>Find k-nearest neighbors from input data.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="linkage.html">linkage</a>
                    </code></b>
                  </td>
@@ -246,6 +256,31 @@ slice sampling of Radford M.</td>
              </tbody>
            </table>
            <h3 class="category">
+             <a name="ClassificationKNN (class for KNN classification)">ClassificationKNN (class for KNN classification)</a>
+           </h3>
+           <table class="table table-striped">
+             <tbody>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="@ClassificationKNN_ClassificationKNN.html">@ClassificationKNN/ClassificationKNN</a>
+                   </code></b>
+                 </td>
+                 <td>Create a ClassificationKNN class object containing a k-Nearest Neighbor
+classification model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="@ClassificationKNN_predict.html">@ClassificationKNN/predict</a>
+                   </code></b>
+                 </td>
+                 <td>Classify new data points into categories using the kNN algorithm from a
+k-Nearest Neighbor classification model.</td>
+               </tr>
+             </tbody>
+           </table>
+           <h3 class="category">
              <a name="CVpartition (class of set partitions for cross-validation, used in crossval)">CVpartition (class of set partitions for cross-validation, used in crossval)</a>
            </h3>
            <table class="table table-striped">
@@ -307,6 +342,31 @@ object, C.</td>
                  </td>
                  <td>Return logical vector for training-subset indices from a 'cvpartition'
 object, C.</td>
+               </tr>
+             </tbody>
+           </table>
+           <h3 class="category">
+             <a name="RegressionGAM (class for GAM regression)">RegressionGAM (class for GAM regression)</a>
+           </h3>
+           <table class="table table-striped">
+             <tbody>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="@RegressionGAM_RegressionGAM.html">@RegressionGAM/RegressionGAM</a>
+                   </code></b>
+                 </td>
+                 <td>Create a RegressionGAM class object containing a Generalised Additive
+Model (GAM) for regression.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="@RegressionGAM_predict.html">@RegressionGAM/predict</a>
+                   </code></b>
+                 </td>
+                 <td>Predict new data points using generalized additive model regression
+object.</td>
                </tr>
              </tbody>
            </table>
@@ -2534,6 +2594,14 @@ corresponding DATA which comprise an instance matrtix.</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="fitcknn.html">fitcknn</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a k-Nearest Neighbor classification model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="fitgmdist.html">fitgmdist</a>
                    </code></b>
                  </td>
@@ -2548,6 +2616,14 @@ corresponding DATA which comprise an instance matrtix.</td>
                  <td>Regress the continuous outcome (i.e.  dependent variable) Y on
 continuous or categorical predictors (i.e.  independent variables) X by
 minimizing the sum-of-squared residuals.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitrgam.html">fitrgam</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a Generalised Additive Model (GAM) for regression.</td>
                </tr>
              </tbody>
            </table>

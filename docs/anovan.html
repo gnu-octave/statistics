@@ -195,10 +195,10 @@
  <ul>
 <li>
  <var>dispopt</var> can be either &quot;on&quot; (default) or &quot;off&quot; and controls the display
- of the model formula, table of model parameters and the ANOVA table. The
- F-statistic and p-values are formatted in APA-style. To avoid p-hacking, the
- table of model parameters is only displayed if we set planned contrasts (see
- below).
+ of the model formula, table of model parameters, the ANOVA table and the
+ diagnostic plots. The F-statistic and p-values are formatted in APA-style.
+ To avoid p-hacking, the table of model parameters is only displayed if we set
+ planned contrasts (see below).
  </li></ul>
 
 <p> <code>[&hellip;] = anovan (<var>Y</var>, <var>GROUP</var>, &quot;contrasts&quot;, <var>contrasts</var>)</code>
@@ -213,18 +213,23 @@
 
  <ul>
 <li>
- &quot;simple&quot; or &quot;anova&quot; (default): Simple (ANOVA) contrasts. (The first level
- appearing in the <var>GROUP</var> column is the reference level)
+ &quot;simple&quot; or &quot;anova&quot; (default): Simple (ANOVA) contrast coding. (The first
+ level appearing in the <var>GROUP</var> column is the reference level)
 
  </li><li>
- &quot;poly&quot;: Polynomial contrasts for trend analysis.
+ &quot;poly&quot;: Polynomial contrast coding for trend analysis.
 
  </li><li>
- &quot;helmert&quot;: Helmert contrasts.
+ &quot;helmert&quot;: Helmert contrast coding: the difference between each level with
+ the mean of the subsequent levels.
 
  </li><li>
  &quot;effect&quot;: Deviation effect coding. (The first level appearing in the
  <var>GROUP</var> column is omitted).
+
+ </li><li>
+ &quot;sdif&quot; or &quot;sdiff&quot;: Successive differences contrast coding: the difference
+ between each level with the previous level.
 
  </li><li>
  &quot;treatment&quot;: Treatment contrast (or dummy) coding. (The first level appearing

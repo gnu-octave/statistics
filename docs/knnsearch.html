@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: knnsearch</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+    <style>
+    var {
+      font-style: italics;
+      font-weight: bold;
+    }
+    td {
+      vertical-align: top;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Clustering">
+                    <i class="fas fa-list-alt"></i>
+                    Clustering
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>knnsearch</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>idx</var> = <b>knnsearch</b><i> (<var>x</var>, <var>y</var>)</i></dt>
+<dt><u>statistics:</u> [<var>idx</var>, <var>D</var>] = <b>knnsearch</b><i> (<var>x</var>, <var>y</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>knnsearch</b><i> (&hellip;, <var>name</var>, <var>value</var>)</i></dt>
+</dl>
+
+<p> Find k-nearest neighbors from input data.
+</p>
+<div class="ms-5">
+<p> <code><var>idx</var> = knnsearch (<var>x</var>, <var>y</var>)</code> finds <math>K</math> nearest
+ neighbors in <var>x</var> for <var>y</var>. It returns <var>idx</var> which contains indices
+ of <math>K</math> nearest neighbors of each row of <var>y</var>, If not specified,
+ <code><var>K</var> = 1</code>.  <var>x</var> must be an <math>N&times;P</math> numeric matrix of input
+ data, where rows correspond to observations and columns correspond to
+ features or variables.  <var>y</var> is an <math>M&times;P</math> numeric matrix with query
+ points, which must have the same numbers of column as <var>x</var>.
+</p>
+<p> <code>[<var>idx</var>, <var>dist</var>] = knnsearch (<var>x</var>, <var>y</var>)</code> returns the
+ <math>K</math> nearest neighbour in <var>x</var> for each <var>y</var> with distances
+ returned in <var>dist</var>.
+</p>
+<p> Additional parameters can be specified by <code>Name-Value</code> pair arguments.
+</p>
+ <table>
+<thead><tr><th width="5%"></th><th width="20%"><var>Name</var></th><th width="75%"><var>Value</var></th></tr></thead>
+<tr><td width="5%"></td><td width="20%"><code>&quot;K&quot;</code></td><td width="75%">is the number of nearest neighbors to be found
+ in the kNN search.  It must be a positive integer value and by default it is
+ 1.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;P&quot;</code></td><td width="75%">is the Minkowski distance exponent and it must be
+ a positive scalar.  This argument is only valid when the selected distance
+ metric is <code>&quot;minkowski&quot;</code>.  By default it is 2.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;scale&quot;</code></td><td width="75%">is the scale parameter for the standardized
+ Euclidean distance and it must be a nonnegative numeric vector of equal
+ length to the number of columns in <var>X</var>.  This argument is only valid when
+ the selected distance metric is <code>&quot;seuclidean&quot;</code>, in which case each
+ coordinate of <var>X</var> is scaled by the corresponding element of
+ <code>&quot;scale&quot;</code>, as is each query point in <var>Y</var>.  By default, the scale
+ parameter is the standard deviation of each coordinate in <var>X</var>.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;cov&quot;</code></td><td width="75%">is the covariance matrix for computing the
+ mahalanobis distance and it must be a positive definite matrix matching the
+ the number of columns in <var>X</var>.  This argument is only valid when the
+ selected distance metric is <code>&quot;mahalanobis&quot;</code>.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;BucketSize&quot;</code></td><td width="75%">is the maximum number of data points in
+ the leaf node of the Kd-tree and it must be a positive integer.  This
+ argument is only valid when the selected search method is <code>&quot;kdtree&quot;</code>.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;SortIndices&quot;</code></td><td width="75%">is a boolean flag to sort the returned
+ indices in ascending order by distance and it is <code>true</code> by default.
+ When the selected search method is <code>&quot;exhaustive&quot;</code> or the
+ <code>&quot;IncludeTies&quot;</code> flag is true, <code>knnsearch</code> always sorts the
+ returned indices.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;Distance&quot;</code></td><td width="75%">is the distance metric used by
+ <code>knnsearch</code> as specified below:</td></tr>
+</table>
+
+ <table>
+<tr><td width="10%"></td><td width="25%"><code>&quot;euclidean&quot;</code></td><td width="65%">Euclidean distance.</td></tr>
+<tr><td width="10%"></td><td width="25%"><code>&quot;seuclidean&quot;</code></td><td width="65%">standardized Euclidean distance.  Each
+ coordinate difference between the rows in <var>X</var> and the query matrix
+ <var>Y</var> is scaled by dividing by the corresponding element of the standard
+ deviation computed from <var>X</var>.  To specify a different scaling, use the
+ <code>&quot;scale&quot;</code> name-value argument.</td></tr>
+<tr><td width="10%"></td><td width="25%"><code>&quot;cityblock&quot;</code></td><td width="65%">City block distance.</td></tr>
+<tr><td width="10%"></td><td width="25%"><code>&quot;manhattan&quot;</code></td><td width="65%">Same is City block distance.</td></tr>
+<tr><td width="10%"></td><td width="25%"><code>&quot;chebychev&quot;</code></td><td width="65%">Chebychev distance (maximum coordinate
+ difference).</td></tr>
+<tr><td width="10%"></td><td width="25%"><code>&quot;minkowski&quot;</code></td><td width="65%">Minkowski distance.  The default exponent
+ is 2.  To specify a different exponent, use the <code>&quot;P&quot;</code> name-value
+ argument.</td></tr>
+<tr><td width="10%"></td><td width="25%"><code>&quot;mahalanobis&quot;</code></td><td width="65%">Mahalanobis distance, computed using a
+ positive definite covariance matrix.  To change the value of the covariance
+ matrix, use the <code>&quot;cov&quot;</code> name-value argument.</td></tr>
+<tr><td width="10%"></td><td width="25%"><code>&quot;cosine&quot;</code></td><td width="65%">Cosine distance.</td></tr>
+<tr><td width="10%"></td><td width="25%"><code>&quot;correlation&quot;</code></td><td width="65%">One minus the sample linear correlation
+ between observations (treated as sequences of values).</td></tr>
+<tr><td width="10%"></td><td width="25%"><code>&quot;spearman&quot;</code></td><td width="65%">One minus the sample Spearman&rsquo;s rank
+ correlation between observations (treated as sequences of values).</td></tr>
+<tr><td width="10%"></td><td width="25%"><code>&quot;hamming&quot;</code></td><td width="65%">Hamming distance, which is the percentage
+ of coordinates that differ.</td></tr>
+<tr><td width="10%"></td><td width="25%"><code>&quot;jaccard&quot;</code></td><td width="65%">One minus the Jaccard coefficient, which is
+ the percentage of nonzero coordinates that differ.</td></tr>
+</table>
+
+ <table>
+<tr><td width="5%"></td><td width="20%"><code>&quot;NSMethod&quot;</code></td><td width="75%">is the nearest neighbor search method used
+ by <code>knnsearch</code> as specified below.</td></tr>
+</table>
+
+ <table>
+<tr><td width="10%"></td><td width="25%"><code>&quot;kdtree&quot;</code></td><td width="65%">Creates and uses a Kd-tree to find nearest
+ neighbors.  <code>&quot;kdtree&quot;</code> is the default value when the number of columns
+ in <var>X</var> is less than or equal to 10, <var>X</var> is not sparse, and the
+ distance metric is <code>&quot;euclidean&quot;</code>, <code>&quot;cityblock&quot;</code>,
+ <code>&quot;manhattan&quot;</code>, <code>&quot;chebychev&quot;</code>, or <code>&quot;minkowski&quot;</code>.  Otherwise,
+ the default value is <code>&quot;exhaustive&quot;</code>.  This argument is only valid when
+ the distance metric is one of the four aforementioned metrics.</td></tr>
+<tr><td width="10%"></td><td width="25%"><code>&quot;exhaustive&quot;</code></td><td width="65%">Uses the exhaustive search algorithm by
+ computing the distance values from all the points in <var>X</var> to each point in
+ <var>Y</var>.</td></tr>
+</table>
+
+ <table>
+<tr><td width="5%"></td><td width="20%"><code>&quot;IncludeTies&quot;</code></td><td width="75%">is a boolean flag to indicate if the
+ returned values should contain the indices that have same distance as the
+ <math>K^th</math> neighbor.  When <code>false</code>, <code>knnsearch</code> chooses the
+ observation with the smallest index among the observations that have the same
+ distance from a query point.  When <code>true</code>, <code>knnsearch</code> includes
+ all nearest neighbors whose distances are equal to the <math>K^th</math> smallest
+ distance in the output arguments.  To specify <math>K</math>, use the <code>&quot;K&quot;</code>
+ name-value pair argument.</td></tr>
+</table>
+
+<p> <strong>See also: </strong>
+rangesearch, 
+knnpredict
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/knnsearch.m">knnsearch</a>
+</div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## find 10 nearest neighbour of a point using different distance metrics
+ ## and compare the results by plotting
+ load fisheriris
+ x = meas(:,3:4);
+ y = species;
+ point = [5, 1.45];
+
+ ## calculate 10 nearest-neighbours by minkowski distance
+ [id, d] = knnsearch (x, point, "K", 10);
+
+ ## calculate 10 nearest-neighbours by minkowski distance
+ [idm, dm] = knnsearch (x, point, "K", 10, "distance", "minkowski", "p", 5);
+
+ ## calculate 10 nearest-neighbours by chebychev distance
+ [idc, dc] = knnsearch (x, point, "K", 10, "distance", "chebychev");
+
+ ## plotting the results
+ gscatter (x(:,1), x(:,2), species, [.75 .75 0; 0 .75 .75; .75 0 .75], ".", 20)
+ title ("Fisher's Iris Data - Nearest Neighbors with different types of distance metrics");
+ xlabel("Petal length (cm)");
+ ylabel("Petal width (cm)");
+
+ line (point(1), point(2), "marker", "x", "color", "k", ...
+       "linewidth", 2, "displayname", "query point")
+ line (x(id,1), x(id,2), "color", [0.5 0.5 0.5], "marker", "o", ...
+       "linestyle", "none", "markersize", 10, "displayname", "eulcidean")
+ line (x(idm,1), x(idm,2), "color", [0.5 0.5 0.5], "marker", "d", ...
+       "linestyle", "none", "markersize", 10, "displayname", "Minkowski")
+ line (x(idc,1), x(idc,2), "color", [0.5 0.5 0.5], "marker", "p", ...
+       "linestyle", "none", "markersize", 10, "displayname", "chebychev")
+ xlim ([4.5 5.5]);
+ ylim ([1 2]);
+ axis square;
+
+ans =
+
+  -61.006  -60.646  -59.312
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/knnsearch_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## knnsearch on iris dataset using kdtree method
+ load fisheriris
+ x = meas(:,3:4);
+ gscatter (x(:,1), x(:,2), species, [.75 .75 0; 0 .75 .75; .75 0 .75], ".", 20)
+ title ("Fisher's iris dataset : Nearest Neighbors with kdtree search");
+
+ ## new point to be predicted
+ point = [5 1.45];
+
+ line (point(1), point(2), "marker", "x", "color", "k", ...
+       "linewidth", 2, "displayname", "query point")
+
+ ## knnsearch using kdtree method
+ [idx, d] = knnsearch (x, point, "K", 10, "NSMethod", "kdtree");
+
+ ## plotting predicted neighbours
+ line (x(idx,1), x(idx,2), "color", [0.5 0.5 0.5], "marker", "o", ...
+       "linestyle", "none", "markersize", 10, ...
+       "displayname", "nearest neighbour")
+ xlim ([4 6])
+ ylim ([1 3])
+ axis square
+ ## details of predicted labels
+ tabulate (species(idx))
+
+ ctr = point - d(end);
+ diameter = 2 * d(end);
+ ##  Draw a circle around the 10 nearest neighbors.
+ h = rectangle ("position", [ctr, diameter, diameter], "curvature", [1 1]);
+
+ ## here only 8 neighbours are plotted instead of 10 since the dataset
+ ## contains duplicate values
+
+ans =
+
+  -61.664  -60.873  -59.865
+
+       Value    Count    Percent
+   virginica        2      20.00%
+  versicolor        8      80.00%
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/knnsearch_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

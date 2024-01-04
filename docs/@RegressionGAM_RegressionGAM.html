@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: @RegressionGAM/RegressionGAM</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+    <style>
+    var {
+      font-style: italics;
+      font-weight: bold;
+    }
+    td {
+      vertical-align: top;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#RegressionGAM (class for GAM regression)">
+                    <i class="fas fa-list-alt"></i>
+                    RegressionGAM (class for GAM regression)
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>@RegressionGAM/RegressionGAM</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>obj</var> = <b>RegressionGAM</b><i> (<var>X</var>, <var>Y</var>)</i></dt>
+<dt><u>statistics:</u> <var>obj</var> = <b>RegressionGAM</b><i> (&hellip;, <var>name</var>, <var>value</var>)</i></dt>
+</dl>
+
+<p> Create a <code>RegressionGAM</code> class object containing a Generalised Additive
+ Model (GAM) for regression.
+</p><div class="ms-5">
+
+<p> A <code>RegressionGAM</code> class object can store the predictors and response
+ data along with various parameters for the GAM model.  It is recommended to
+ use the <code>fitrgam</code> function to create a <code>RegressionGAM</code> object.
+</p>
+<p> <code><var>obj</var> = RegressionGAM (<var>X</var>, <var>Y</var>)</code> returns an object of
+ class RegressionGAM, with matrix <var>X</var> containing the predictor data and
+ vector <var>Y</var> containing the continuous response data.
+</p>
+ <ul>
+<li>
+ <var>X</var> must be a <math>N&times;P</math> numeric matrix of input data where rows
+ correspond to observations and columns correspond to features or variables.
+ <var>X</var> will be used to train the GAM model.
+ </li><li>
+ <var>Y</var> must be <math>N&times;1</math> numeric vector containing the response data
+ corresponding to the predictor data in <var>X</var>. <var>Y</var> must have same
+ number of rows as <var>X</var>.
+ </li></ul>
+
+
+<p> <code><var>obj</var> = RegressionGAM (&hellip;, <var>name</var>, <var>value</var>)</code> returns
+ an object of class RegressionGAM with additional properties specified by
+ <code>Name-Value</code> pair arguments listed below.
+</p>
+ <table>
+<thead><tr><th width="5%"></th><th width="20%"><var>Name</var></th><th width="75%"><var>Value</var></th></tr></thead>
+<tr><td width="5%"></td><td width="20%"><code>&quot;predictors&quot;</code></td><td width="75%">Predictor Variable names, specified as
+ a row vector cell of strings with the same length as the columns in <var>X</var>.
+ If omitted, the program will generate default variable names
+ <code>(x1, x2, ..., xn)</code> for each column in <var>X</var>.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;responsename&quot;</code></td><td width="75%">Response Variable Name, specified as
+ a string.  If omitted, the default value is <code>&quot;Y&quot;</code>.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;formula&quot;</code></td><td width="75%">a model specification given as a string in
+ the form <code>&quot;Y ~ terms&quot;</code> where <code>Y</code> represents the reponse variable
+ and <code>terms</code> the predictor variables.  The formula can be used to
+ specify a subset of variables for training model.  For example:
+ <code>&quot;Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3&quot;</code> specifies four linear terms
+ for the first four columns of for predictor data, and <code>x1:x2</code> and
+ <code>x2:x3</code> specify the two interaction terms for 1st-2nd and 3rd-4th
+ columns respectively.  Only these terms will be used for training the model,
+ but <var>X</var> must have at least as many columns as referenced in the formula.
+ If Predictor Variable names have been defined, then the terms in the formula
+ must reference to those.  When <code>&quot;formula&quot;</code> is specified, all terms used
+ for training the model are referenced in the <code>IntMatrix</code> field of the
+ <var>obj</var> class object as a matrix containing the column indexes for each
+ term including both the predictors and the interactions used.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;interactions&quot;</code></td><td width="75%">a logical matrix, a positive integer
+ scalar, or the string <code>&quot;all&quot;</code> for defining the interactions between
+ predictor variables.  When given a logical matrix, it must have the same
+ number of columns as <var>X</var> and each row corresponds to a different
+ interaction term combining the predictors indexed as <code>true</code>.  Each
+ interaction term is appended as a column vector after the available predictor
+ column in <var>X</var>.  When <code>&quot;all&quot;</code> is defined, then all possible
+ combinations of interactions are appended in <var>X</var> before training.  At the
+ moment, parsing a positive integer has the same effect as the <code>&quot;all&quot;</code>
+ option.  When <code>&quot;interactions&quot;</code> is specified, only the interaction terms
+ appended to <var>X</var> are referenced in the <code>IntMatrix</code> field of the
+ <var>obj</var> class object.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;knots&quot;</code></td><td width="75%">a scalar or a row vector with the same
+ columns as <var>X</var>.  It defines the knots for fitting a polynomial when
+ training the GAM.  As a scalar, it is expanded to a row vector.  The default
+ value is 5, hence expanded to <code>ones (1, columns (X)) * 5</code>.  You can
+ parse a row vector with different number of knots for each predictor
+ variable to be fitted with, although not recommended.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;order&quot;</code></td><td width="75%">a scalar or a row vector with the same
+ columns as <var>X</var>.  It defines the order of the polynomial when training the
+ GAM.  As a scalar, it is expanded to a row vector.  The default values is 3,
+ hence expanded to <code>ones (1, columns (X)) * 3</code>.  You can parse a row
+ vector with different number of polynomial order for each predictor variable
+ to be fitted with, although not recommended.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;dof&quot;</code></td><td width="75%">a scalar or a row vector with the same columns
+ as <var>X</var>.  It defines the degrees of freedom for fitting a polynomial when
+ training the GAM.  As a scalar, it is expanded to a row vector.  The default
+ value is 8, hence expanded to <code>ones (1, columns (X)) * 8</code>.  You can
+ parse a row vector with different degrees of freedom for each predictor
+ variable to be fitted with, although not recommended.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;tol&quot;</code></td><td width="75%">a positive scalar to set the tolerance for
+ covergence during training. By defaul, it is set to <code>1e-3</code>.</td></tr>
+</table>
+
+
+<p> You can parse either a <code>&quot;formula&quot;</code> or an <code>&quot;interactions&quot;</code>
+ optional parameter.  Parsing both parameters will result an error.
+ Accordingly, you can only pass up to two parameters among <code>&quot;knots&quot;</code>,
+ <code>&quot;order&quot;</code>, and <code>&quot;dof&quot;</code> to define the required polynomial for
+ training the GAM model.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitrgam.html">fitrgam</a>, 
+  <a href="@RegressionGAM_predict.html">@RegressionGAM/predict</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/@RegressionGAM/RegressionGAM.m">@RegressionGAM/RegressionGAM</a>
+</div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Train a RegressionGAM Model for synthetic values
+ f1 = @(x) cos (3 * x);
+ f2 = @(x) x .^ 3;
+ x1 = 2 * rand (50, 1) - 1;
+ x2 = 2 * rand (50, 1) - 1;
+ y = f1(x1) + f2(x2);
+ y = y + y .* 0.2 .* rand (50,1);
+ X = [x1, x2];
+ a = RegressionGAM (X, y, "tol", 1e-3)
+
+a =
+
+  RegressionGAM object with properties:
+
+            BaseModel: [1x1 struct]
+                  DoF: [1x2 double]
+              Formula: [0x0 double]
+            IntMatrix: [0x0 double]
+         Interactions: [0x0 double]
+                Knots: [1x2 double]
+            ModelwInt: [0x0 double]
+      NumObservations: [1x1 double]
+        NumPredictors: [1x1 double]
+                Order: [1x2 double]
+       PredictorNames: [1x2 cell]
+         ResponseName: Y
+             RowsUsed: [50x1 double]
+                  Tol: [1x1 double]
+                    X: [50x2 double]
+                    Y: [50x1 double]
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

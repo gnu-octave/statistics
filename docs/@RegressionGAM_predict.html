@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: @RegressionGAM/predict</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+    <style>
+    var {
+      font-style: italics;
+      font-weight: bold;
+    }
+    td {
+      vertical-align: top;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#RegressionGAM (class for GAM regression)">
+                    <i class="fas fa-list-alt"></i>
+                    RegressionGAM (class for GAM regression)
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>@RegressionGAM/predict</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>yFit</var> = <b>predict</b><i> (<var>obj</var>, <var>Xfit</var>)</i></dt>
+<dt><u>statistics:</u> <var>yFit</var> = <b>predict</b><i> (&hellip;, <var>Name</var>, <var>Value</var>)</i></dt>
+<dt><u>statistics:</u> [<var>yFit</var>, <var>ySD</var>, <var>yInt</var>] = <b>predict</b><i> (&hellip;)</i></dt>
+</dl>
+
+<p> Predict new data points using generalized additive model regression object.
+</p><div class="ms-5">
+
+<p> <code><var>yFit</var> = predict (<var>obj</var>, <var>Xfit</var></code> returns a vector of
+ predicted responses, <var>yFit</var>, for the predictor data in matrix <var>Xfit</var>
+ based on the Generalized Additive Model in <var>obj</var>.  <var>Xfit</var> must have
+ the same number of features/variables as the training data in <var>obj</var>.
+</p>
+ <ul>
+<li>
+ <var>obj</var> must be a <code>RegressionGAM</code> class object.
+ </li></ul>
+
+
+<p> <code>[<var>yFit</var>, <var>ySD</var>, <var>yInt</var>] = predict (<var>obj</var>, <var>Xfit</var></code>
+ also returns the standard deviations, <var>ySD</var>, and prediction intervals,
+ <var>yInt</var>, of the response variable <var>yFit</var>, evaluated at each
+ observation in the predictor data <var>Xfit</var>.
+</p>
+<p> <code><var>yFit</var> = predict (&hellip;, <var>Name</var>, <var>Value</var>)</code> returns the
+ aforementioned results with additional properties specified by
+ <code>Name-Value</code> pair arguments listed below.
+</p>
+ <table>
+<thead><tr><th width="5%"></th><th width="20%"><var>Name</var></th><th width="75%"><var>Value</var></th></tr></thead>
+<tr><td width="5%"></td><td width="20%"><code>&quot;alpha&quot;</code></td><td width="75%">significance level of the prediction
+ intervals <var>yInt</var>, specified as scalar in range <code>[0,1]</code>. The default
+ value is 0.05, which corresponds to 95% prediction intervals.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;includeinteractions&quot;</code></td><td width="75%">a boolean flag to include
+ interactions to predict new values based on <var>Xfit</var>.  By default,
+ <code>&quot;includeinteractions&quot;</code> is <code>true</code> when the GAM model in <var>obj</var>
+ contains a <code>obj.Formula</code> or <code>obj.Interactions</code> fields. Otherwise,
+ is set to <code>false</code>.  If set to <code>true</code> when no interactions are
+ present in the trained model, it will result to an error.  If set to
+ <code>false</code> when using a model that includes interactions, the predictions
+ will be made on the basic model without any interaction terms.  This way you
+ can make predictions from the same GAM model without having to retrain it.</td></tr>
+</table>
+
+
+<p> <strong>See also: </strong>
+  <a href="fitrgam.html">fitrgam</a>, 
+gampredict
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/@RegressionGAM/predict.m">@RegressionGAM/predict</a>
+</div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Declare two different functions
+ f1 = @(x) cos (3 * x);
+ f2 = @(x) x .^ 3;
+
+ ## Generate 80 samples for f1 and f2
+ x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
+ X1 = f1 (x);
+ X2 = f2 (x);
+
+ ## Create a synthetic response by adding noise
+ rand ("seed", 3);
+ Ytrue = X1 + X2;
+ Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);
+
+ ## Assemble predictor data
+ X = [X1, X2];
+
+ ## Train the GAM and test on the same data
+ a = fitrgam (X, Y, "order", [5, 5]);
+ [ypred, ySDsd, yInt] = predict (a, X);
+
+ ## Plot the results
+ figure
+ [sortedY, indY] = sort (Ytrue);
+ plot (sortedY, "r-");
+ xlim ([0, 80]);
+ hold on
+ plot (ypred(indY), "g+")
+ plot (yInt(indY,1), "k:")
+ plot (yInt(indY,2), "k:")
+ xlabel ("Predictor samples");
+ ylabel ("Response");
+ title ("actual vs predicted values for function f1(x) = cos (3x) ");
+ legend ({"Theoretical Response", "Predicted Response", "Prediction Intervals"});
+
+ ## Use 30% Holdout partitioning for training and testing data
+ C = cvpartition (80, "HoldOut", 0.3);
+ [ypred, ySDsd, yInt] = predict (a, X(test(C),:));
+
+ ## Plot the results
+ figure
+ [sortedY, indY] = sort (Ytrue(test(C)));
+ plot (sortedY, 'r-');
+ xlim ([0, sum(test(C))]);
+ hold on
+ plot (ypred(indY), "g+")
+ plot (yInt(indY,1),'k:')
+ plot (yInt(indY,2),'k:')
+ xlabel ("Predictor samples");
+ ylabel ("Response");
+ title ("actual vs predicted values for function f1(x) = cos (3x) ");
+ legend ({"Theoretical Response", "Predicted Response", "Prediction Intervals"});
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/@RegressionGAM_predict_102.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+                  <div class="text-center">
+                    <img src="assets/@RegressionGAM_predict_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>
