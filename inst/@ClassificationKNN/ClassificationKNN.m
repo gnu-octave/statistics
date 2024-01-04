@@ -150,7 +150,7 @@ classdef ClassificationKNN
 ##
 ## @item @qcode{obj.IncludeTies} @tab @tab A boolean flag indicating whether
 ## prediction includes all the neighbors whose distance values are equal to the
-## @math{k-th} smallest distance.  If @qcode{IncludeTies} is @qcode{true},
+## @math{k^th} smallest distance.  If @qcode{IncludeTies} is @qcode{true},
 ## prediction includes all of these neighbors.  Otherwise, prediction uses
 ## exactly @math{k} neighbors.
 ##

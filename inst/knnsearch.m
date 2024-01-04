@@ -83,6 +83,7 @@
 ## deviation computed from @var{X}.  To specify a different scaling, use the
 ## @qcode{"scale"} name-value argument.
 ## @item @tab @qcode{"cityblock"} @tab City block distance.
+## @item @tab @qcode{"manhattan"} @tab Same is City block distance.
 ## @item @tab @qcode{"chebychev"} @tab Chebychev distance (maximum coordinate
 ## difference).
 ## @item @tab @qcode{"minkowski"} @tab Minkowski distance.  The default exponent
@@ -112,9 +113,9 @@
 ## neighbors.  @qcode{"kdtree"} is the default value when the number of columns
 ## in @var{X} is less than or equal to 10, @var{X} is not sparse, and the
 ## distance metric is @qcode{"euclidean"}, @qcode{"cityblock"},
-## @qcode{"chebychev"}, or @qcode{"minkowski"}.  Otherwise, the default value is
-## @qcode{"exhaustive"}.  This argument is only valid when the distance metric
-## is one of the four aforementioned metrics.
+## @qcode{"manhattan"}, @qcode{"chebychev"}, or @qcode{"minkowski"}.  Otherwise,
+## the default value is @qcode{"exhaustive"}.  This argument is only valid when
+## the distance metric is one of the four aforementioned metrics.
 ## @item @tab @qcode{"exhaustive"} @tab Uses the exhaustive search algorithm by
 ## computing the distance values from all the points in @var{X} to each point in
 ## @var{Y}.
@@ -211,7 +212,8 @@ function [idx, dist] = knnsearch (X, Y, varargin)
     ## Set default method 'kdtree' if condintions are satistfied;
     if (! issparse (X) && (columns (X) <= 10) && ...
        (strcmpi (Distance, "euclidean") || strcmpi (Distance, "cityblock")
-     || strcmpi (Distance, "chebychev") || strcmpi (Distance, "minkowski")))
+     || strcmpi (Distance, "manhattan") || strcmpi (Distance, "chebychev")
+     || strcmpi (Distance, "minkowski")))
       NSMethod = "kdtree";
     else
       NSMethod = "exhaustive";
@@ -219,8 +221,8 @@ function [idx, dist] = knnsearch (X, Y, varargin)
   else
     ## Not empty then check if is exhaustive or kdtree
     if (strcmpi (NSMethod,"kdtree") && ! ( strcmpi (Distance, "euclidean")
-     || strcmpi (Distance, "cityblock") || strcmpi (Distance, "chebychev")
-     || strcmpi (Distance, "minkowski")))
+     || strcmpi (Distance, "cityblock") || strcmpi (Distance, "manhattan")
+     || strcmpi (Distance, "chebychev") || strcmpi (Distance, "minkowski")))
       error ("knnsearch: 'kdtree' cannot be used with the given distance metric.");
     endif
   endif
