@@ -207,87 +207,186 @@ endfunction
 
 ## Test Output
 %!test
-%! x = [1,2,3;4,5,6;7,8,9;3,2,1];
-%! y = ["a";"a";"b";"b"];
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
 %! a = fitcknn (x, y);
 %! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ["a";"a";"b";"b"], 1})
-%! assert ({a.NSmethod, a.distance, a.bucketsize},{"exhaustive","euclidean",50})
+%! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
+%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.BucketSize}, {50})
 %!test
-%! x = [1,2,3;4,5,6;7,8,9;3,2,1];
-%! y = ['a';'a';'b';'b'];
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! a = fitcknn (x, y, "NSMethod", "exhaustive");
+%! assert (class (a), "ClassificationKNN");
+%! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
+%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "euclidean"})
+%! assert ({a.BucketSize}, {50})
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
 %! k = 10;
-%! a = fitcknn (x, y, "K" ,k);
+%! a = fitcknn (x, y, "NumNeighbors" ,k);
 %! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ["a";"a";"b";"b"], 10})
-%! assert ({a.NSmethod, a.distance, a.bucketsize},{"exhaustive","euclidean",50})
+%! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
+%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.BucketSize}, {50})
 %!test
-%! x = [1,2,3;4,5,6;7,8,9;3,2,1];
-%! y = ["a";"a";"b";"b"];
+%! x = ones (4, 11);
+%! y = ["a"; "a"; "b"; "b"];
+%! k = 10;
+%! a = fitcknn (x, y, "NumNeighbors" ,k);
+%! assert (class (a), "ClassificationKNN");
+%! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
+%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "euclidean"})
+%! assert ({a.BucketSize}, {50})
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! k = 10;
+%! a = fitcknn (x, y, "NumNeighbors" ,k, "NSMethod", "exhaustive");
+%! assert (class (a), "ClassificationKNN");
+%! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
+%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "euclidean"})
+%! assert ({a.BucketSize}, {50})
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! k = 10;
+%! a = fitcknn (x, y, "NumNeighbors" ,k, "Distance", "hamming");
+%! assert (class (a), "ClassificationKNN");
+%! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
+%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "hamming"})
+%! assert ({a.BucketSize}, {50})
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
 %! weights = ones (4,1);
-%! a = fitcknn (x, y, "weights" , weights);
+%! a = fitcknn (x, y, "Standardize", 1);
 %! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ["a";"a";"b";"b"], 1})
-%! assert (a.weights, ones (4,1))
-%! assert ({a.NSmethod, a.distance, a.bucketsize},{"exhaustive","euclidean",50})
+%! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
+%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.Standardize}, {true})
+%! assert ({a.Sigma}, {std(x, [], 1)})
+%! assert ({a.Mu}, {[3.75, 4.25, 4.75]})
 %!test
-%! x = [1,2,3;4,5,6;7,8,9;3,2,1];
-%! y = ["a";"a";"b";"b"];
-%! a = fitcknn (x, y, "P" , 10);
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! weights = ones (4,1);
+%! a = fitcknn (x, y, "Standardize", false);
 %! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ["a";"a";"b";"b"], 1})
-%! assert (a.P, 10)
-%! assert ({a.NSmethod, a.distance, a.bucketsize},{"exhaustive","euclidean",50})
+%! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
+%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.Standardize}, {false})
+%! assert ({a.Sigma}, {[]})
+%! assert ({a.Mu}, {[]})
 %!test
-%! x = [1,2,3;4,5,6;7,8,9;3,2,1];
-%! y = ["a";"a";"b";"b"];
-%! cov = rand (4,1);
-%! a = fitcknn (x, y, "cov" , cov, "distance", "mahalanobis");
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! s = ones (1, 3);
+%! a = fitcknn (x, y, "Scale" , s, "Distance", "seuclidean");
 %! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ["a";"a";"b";"b"], 1})
-%! assert (a.cov, cov)
-%! assert ({a.NSmethod, a.distance, a.bucketsize},{"exhaustive","mahalanobis",50})
+%! assert ({a.DistParameter}, {s})
+%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "seuclidean"})
+%! assert ({a.BucketSize}, {50})
 %!test
-%! x = [1,2,3;4,5,6;7,8,9;3,2,1];
-%! y = ["a";"a";"b";"b"];
-%! a = fitcknn (x, y, "bucketsize" , 20, "distance", "mahalanobis");
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! C = cov (x);
+%! a = fitcknn (x, y, "Cov" , C, "distance", "mahalanobis");
 %! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ["a";"a";"b";"b"], 1})
-%! assert ({a.NSmethod,a.distance,a.bucketsize},{"exhaustive","mahalanobis",20})
+%! assert ({a.DistParameter}, {C})
+%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "mahalanobis"})
+%! assert ({a.BucketSize}, {50})
 %!test
-%! x = [1,2,3;4,5,6;7,8,9;3,2,1];
-%! y = ["a";"a";"b";"b"];
-%! a = fitcknn (x, y, "standardize", true);
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! a = fitcknn (x, y, "Exponent" , 5, "Distance", "minkowski");
 %! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ["a";"a";"b";"b"], 1})
-%! assert (a.standardize, true);
-%! assert ({a.NSmethod,a.distance,a.bucketsize},{"exhaustive","euclidean",50})
+%! assert (a.DistParameter, 5)
+%! assert ({a.NSMethod, a.Distance}, {"kdtree", "minkowski"})
 %!test
-%! x = [1,2,3;4,5,6;7,8,9;3,2,1];
-%! y = ["a";"a";"b";"b"'];
-%! a = fitcknn (x, y, "includeties", true);
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! a = fitcknn (x, y, "Exponent" , 5, "Distance", "minkowski", ...
+%!                    "NSMethod", "exhaustive");
 %! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ["a";"a";"b";"b"], 1})
-%! assert (a.Includeties, true);
-%! assert ({a.NSmethod,a.distance,a.bucketsize},{"exhaustive","euclidean",50})
+%! assert (a.DistParameter, 5)
+%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "minkowski"})
 %!test
-%! x = [1,2,3;4,5,6;7,8,9;3,2,1];
-%! y = ["a";"a";"b";"b"];
-%! cost = ones (4,2);
-%! a = fitcknn (x, y, "cost", cost );
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! a = fitcknn (x, y, "BucketSize" , 20, "distance", "mahalanobis");
+%! assert (class (a), "ClassificationKNN");
+%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "mahalanobis"})
+%! assert ({a.BucketSize}, {20})
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! a = fitcknn (x, y, "IncludeTies", true);
+%! assert (class (a), "ClassificationKNN");
+%! assert (a.IncludeTies, true);
+%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! a = fitcknn (x, y);
+%! assert (class (a), "ClassificationKNN");
+%! assert (a.IncludeTies, false);
+%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! a = fitcknn (x, y);
 %! assert (class (a), "ClassificationKNN")
-%! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ["a";"a";"b";"b"], 1})
-%! assert (a.cost, [1,1;1,1;1,1;1,1])
-%! assert ({a.NSmethod,a.distance,a.bucketsize},{"exhaustive","euclidean",50})
+%! assert (a.Prior, [0.5; 0.5])
+%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.BucketSize}, {50})
 %!test
-%! x = [1,2,3;4,5,6;7,8,9;3,2,1];
-%! y = ["a";"a";"b";"b"];
-%! scale = [1,2,3,4];
-%! a = fitcknn (x, y, "scale", scale );
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! prior = [0.5; 0.5];
+%! a = fitcknn (x, y, "Prior", "empirical");
 %! assert (class (a), "ClassificationKNN")
-%! assert ({a.X, a.Y, a.k},{[1,2,3;4,5,6;7,8,9;3,2,1], ["a";"a";"b";"b"], 1})
-%! assert (a.Scale, [1,2,3,4])
-%! assert ({a.NSmethod,a.distance,a.bucketsize},{"exhaustive","euclidean",50})
+%! assert (a.Prior, prior)
+%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.BucketSize}, {50})
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "a"; "b"];
+%! prior = [0.75; 0.25];
+%! a = fitcknn (x, y, "Prior", "empirical");
+%! assert (class (a), "ClassificationKNN")
+%! assert (a.Prior, prior)
+%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.BucketSize}, {50})
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "a"; "b"];
+%! prior = [0.5; 0.5];
+%! a = fitcknn (x, y, "Prior", "uniform");
+%! assert (class (a), "ClassificationKNN")
+%! assert (a.Prior, prior)
+%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.BucketSize}, {50})
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! cost = eye (2);
+%! a = fitcknn (x, y, "Cost", cost);
+%! assert (class (a), "ClassificationKNN")
+%! assert (a.Cost, [1, 0; 0, 1])
+%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.BucketSize}, {50})
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! cost = eye (2);
+%! a = fitcknn (x, y, "Cost", cost, "Distance", "hamming" );
+%! assert (class (a), "ClassificationKNN")
+%! assert (a.Cost, [1, 0; 0, 1])
+%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "hamming"})
+%! assert ({a.BucketSize}, {50})
 
 ## Test input validation
 %!error<fitcknn: too few arguments.> fitcknn ()
