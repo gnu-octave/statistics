@@ -217,7 +217,7 @@
  Important Notice: 1) `mad`, `mean`, `median`, `std`, `var` functions
                        shadow core Octave's respective functions prior
                        to Octave v9.1
-                   3) incompatibility with the `nan` package
+                   2) incompatibility with the `nan` package
  New functions:
  ==============
 

@@ -162,7 +162,7 @@
 ##
 ## @end multitable
 ##
-## @seealso{knnpredict, @@ClassificationKNN/predict}
+## @seealso{@@ClassificationKNN/predict}
 ## @end deftypefn
 
 function obj = fitcknn (X, Y, varargin)
