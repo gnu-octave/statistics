@@ -118,7 +118,11 @@ function h = gscatter (varargin)
   if (isvector (varargin{3})) # only numeric vectors or cellstr
     if (rows (varargin{3}) == n)
       gv = varargin{3};
-      g_names = unique (gv, "rows");
+      if (iscellstr (gv))
+        g_names = unique (gv);  # avoid warning
+      else
+        g_names = unique (gv, "rows");
+      endif
       g_len = numel (g_names);
       if (iscellstr (g_names))
         for i = 1 : g_len
