@@ -21,7 +21,7 @@
 ## @deftypefnx {statistics} {[@var{label}, @var{score}, @var{cost}] =} predict (@var{obj}, @var{XC})
 ##
 ## Classify new data points into categories using the kNN algorithm from a
-## k-Nearest Neighbor classification model, @var{obj}.
+## k-Nearest Neighbor classification model.
 ##
 ## @code{@var{label} = predict (@var{obj}, @var{XC}} returns the matrix of
 ## labels predicted for the corresponding instances in @var{XC}, using the
@@ -32,7 +32,7 @@
 ##
 ## @itemize
 ## @item
-## @var{obj} must be a @qcode{ClassificationKNN} class object.
+## @var{obj} must be a @qcode{ClassificationKNN} object.
 ## @end itemize
 ##
 ## @code{[@var{label}, @var{score}, @var{cost}] = predict (@var{obj}, @var{XC}}
@@ -48,13 +48,7 @@ function [label, score, cost] = predict (obj, XC)
 
   ## Check for sufficient input arguments
   if (nargin < 2)
-    error ("@ClassificationKNN/predict: too few arguments.");
-  endif
-
-  ## Check for obj being a ClasifficationKNN object
-  if (! strcmp (class (obj), "ClassificationKNN"))
-    error (strcat (["@ClassificationKNN/predict: OBJ"], ...
-                   [" must be a ClasifficationKNN class object."]));
+    error ("@ClassificationKNN/predict: too few input arguments.");
   endif
 
   ## Check for valid XC
@@ -65,70 +59,92 @@ function [label, score, cost] = predict (obj, XC)
                    [" number of features (columns) as in the kNN model."]));
   endif
 
-  ## Check cost
-  if (isempty (obj.cost))
-    ## if empty assign all cost = 1
-    obj.cost = ones (rows (obj.X), obj.NosClasses);
+  ## Get training data and labels
+  X = obj.X(logical (obj.RowsUsed),:);
+  Y = obj.Y(logical (obj.RowsUsed),:);
+
+  ## Standardize (if necessary)
+  if (obj.Standardize)
+    X = (X - obj.Mu) ./ obj.Sigma;
+    XC = (XC - obj.Mu) ./ obj.Sigma;
   endif
 
-  if (isempty (obj.X))
-    ## No data in X
-    label     = repmat(classNames(1,:),0,1);
-    posterior = NaN(0,classNos);
-    cost      = NaN(0,classNos);
+  ## Train kNN
+  if (strcmpi (obj.Distance, "seuclidean"))
+    [idx, dist] = knnsearch (obj.X, XC, "k", obj.NumNeighbors, ...
+                  "NSMethod", obj.NSmethod, "Distance", "seuclidean", ...
+                  "Scale", obj.DistParameter, "sortindices", true, ...
+                  "includeties", obj.IncludeTies, "bucketsize", obj.BucketSize);
+
+  elseif (strcmpi (obj.Distance, "mahalanobis"))
+    [idx, dist] = knnsearch (obj.X, XC, "k", obj.NumNeighbors, ...
+                  "NSMethod", obj.NSmethod, "Distance", "mahalanobis", ...
+                  "cov", obj.DistParameter, "sortindices", true, ...
+                  "includeties", obj.IncludeTies, "bucketsize", obj.BucketSize);
+
+  elseif (strcmpi (obj.Distance, "minkowski"))
+    [idx, dist] = knnsearch (obj.X, XC, "k", obj.NumNeighbors, ...
+                  "NSMethod", obj.NSmethod, "Distance", "minkowski", ...
+                  "P", obj.DistParameter, "sortindices", true, ...
+                  "includeties",obj.IncludeTies, "bucketsize", obj.BucketSize);
+
   else
-    ## Calculate the NNs using knnsearch
-    [idx, dist] = knnsearch (obj.X, XC, "k", obj.k, ...
-                 "NSMethod", obj.NSmethod, "Distance", obj.distance, ...
-                 "P", obj.P, "Scale", obj.Scale, "cov", obj.cov, ...
-                 "bucketsize", obj.bucketsize, "sortindices", true, ...
-                 "includeties",obj.Includeties);
-
-    [label, score, cost_temp] = predictlabel (obj, idx);
-    cost  = obj.cost(rows(cost_temp),columns(cost_temp)) .* cost_temp;
-
-    ## Store predicted in the object variables
-    obj.NN    = idx;
-    obj.label = label;
-    obj.score = score;
-    obj.cost  = cost;
+    [idx, dist] = knnsearch (obj.X, XC, "k", obj.NumNeighbors, ...
+                  "NSMethod", obj.NSmethod, "Distance", obj.Distance, ...
+                  "sortindices", true, "includeties", obj.IncludeTies, ...
+                  "bucketsize", obj.BucketSize);
   endif
 
-endfunction
-
-## Helper function to predict labels
-function [labels, score, cost_temp] = predictlabel (obj, idx)
-  ## Assign intial values
-  freq = [];
-  wsum  = sum (obj.weights);
+  ## Make prediction
+  label = {};
   score = [];
-  labels = [];
-  cost_temp = [];
+  cost  = [];
 
+  ## Get IDs and labels for each point in training data
+  [gY, gnY, glY] = grp2idx (Y);
+
+  ## Evaluate the K nearest neighbours for each new point
   for i = 1:rows (idx)
-    if (!isempty (obj.weights))
-      ## Weighted kNN
-      for id = 1:numel (obj.classNames)
-        new_freq = sum (strcmpi (obj.classNames(id,1), obj.Y(idx(i,:)))  .* ...
-                        obj.weights) / wsum;
-        freq = [freq; new_freq];
-        score_tmp = (freq ./ obj.k)';
-      endfor
+
+    ## Get K nearest neighbours
+    if (obj.IncludeTies)
+      NN_idx = idx{i};
+      NNdist = dist{i};
     else
-      ## Non-weighted kNN
-      for id = 1:size (obj.classNames,1) #u{iu(:),2}
-        freq(id,1) = (sum (strcmpi (obj.classNames(id,1), obj.Y(idx(i,:)))));
-      endfor
-      ## Score calculation
-      score_tmp = (freq ./ obj.k)';
-      cost_temp  = [cost_temp; ones(1,obj.NosClasses) - score_tmp];
-      score = [score; score_tmp];
+      NN_idx = idx(i);
+      NNdist = dist(i);
     endif
+    k = numel (NN_idx);
+    kNNgY = gY(NN_idx);
 
-    [val, iu] = max (freq);
+    ## Count frequency for each class
+    for c = 1:numel (obj.ClassNames)
+      freq(c) = sum (kNNgY == c) / k;
+    endfor
 
-    ## Set labels for the index idx
-    labels = [labels; obj.classNames(iu,1)];
+    ## Get label according to BreakTies
+    if (strcmpi (obj.BreakTies, "smallest"))
+      [~, idl] = max (freq);
+    else
+      idl = find (freq == max (freq));
+      tgn = numel (idl);
+      if (tgn > 1)
+        if (strcmpi (obj.BreakTies, "nearest"))
+          for t = 1:tgn
+            tgs(t) = find (gY(NN_idx) == idl(t));
+          endfor
+          [~, idm] = min (tgs);
+          idl = idl(idm);
+        else      # "random"
+          idl = idl(randperm (numel (idl))(1));
+        endif
+      endif
+    endif
+    label = [label; gnY{idl}];
+
+    ## Calculate score and cost
+    score = [score; freq];
+    cost = [cost; 1-freq];
 
   endfor
 
@@ -299,3 +315,11 @@ endfunction
 %! assert (l, {"setosa";"setosa";"setosa"})
 %! assert (s, [0.9, 0.1, 0; 1, 0, 0; 0.5, 0, 0.5], 1e-4)
 %! assert (c, [0.1, 0.9, 1; 0, 1, 1; 0.5, 1, 0.5], 1e-4)
+
+## Test input validation
+%!error<@ClassificationKNN/predict: too few arguments.> ...
+%! predict (ClassificationKNN (ones (4,2), ones (4,1)))
+%!error<@ClassificationKNN/predict: Xfit is empty.> ...
+%! predict (ClassificationKNN (ones (4,2), ones (4,1)), [])
+%!error<@ClassificationKNN/predict: XC must have the same number of features> ...
+%! predict (ClassificationKNN (ones (4,2), ones (4,1)), 1)
