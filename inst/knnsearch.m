@@ -513,7 +513,7 @@ endfunction
 %! xlim ([4.5 5.5]);
 %! ylim ([1 2]);
 %! axis square;
-%!
+
 %!demo
 %! ## knnsearch on iris dataset using kdtree method
 %! load fisheriris
@@ -546,7 +546,7 @@ endfunction
 %! h = rectangle ("position", [ctr, diameter, diameter], "curvature", [1 1]);
 %!
 %! ## here only 8 neighbours are plotted instead of 10 since the dataset
-%! contains duplicate values
+%! ## contains duplicate values
 
 
 ## Test output
