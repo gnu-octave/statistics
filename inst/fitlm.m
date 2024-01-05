@@ -29,7 +29,9 @@
 ## by minimizing the sum-of-squared residuals. Unless requested otherwise,
 ## @qcode{fitlm} prints the model formula, the regression coefficients (i.e.
 ## parameters/contrasts) and an ANOVA table. Note that unlike @qcode{anovan},
-## @qcode{fitlm} treats all factors as continuous by default.
+## @qcode{fitlm} treats all factors as continuous by default. A bootstrap
+## resampling variant of this function, @code{bootlm}, is available in the
+## statistics-resampling package and has similar usage.
 ##
 ## @var{X} must be a column major matrix or cell array consisting of the
 ## predictors. A constant term (intercept) should not be included in X - it
@@ -120,12 +122,10 @@
 ## contrasts. The number appended to each term name in @var{stats}.coeffnames
 ## corresponds to the column number in the relevant contrast matrix for that
 ## factor. The @var{stats} structure can be used as input for @qcode{multcompare}.
-## The @var{stats} structure is recognised by the functions @qcode{bootcoeff}
-## and @qcode{bootemm} from the statistics-bootstrap package. Note that if the
-## model contains a continuous variable and you wish to use the @var{STATS}
-## output as input to @qcode{multcompare}, then the model needs to be refit
-## with the "contrast" parameter set to a sum-to-zero contrast coding scheme,
-## e.g."simple".
+## Note that if the model contains a continuous variable and you wish to use
+## the @var{STATS} output as input to @qcode{multcompare}, then the model needs
+## to be refit with the "contrast" parameter set to a sum-to-zero contrast
+## coding scheme, e.g."simple".
 ##
 ## @seealso{anovan, multcompare}
 ## @end deftypefn
