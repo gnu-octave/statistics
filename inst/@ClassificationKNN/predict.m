@@ -41,7 +41,7 @@
 ## classes, and @var{cost}, which is a matrix containing the expected cost of
 ## the classifications.
 ##
-## @seealso{fitcknn, knnpredict}
+## @seealso{fitcknn, @@ClassificationKNN/ClassificationKNN}
 ## @end deftypefn
 
 function [label, score, cost] = predict (obj, XC)

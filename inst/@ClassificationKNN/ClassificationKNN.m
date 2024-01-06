@@ -554,9 +554,9 @@ classdef ClassificationKNN
           error (strcat (["ClassificationKNN: Scale vector must have"], ...
                          [" equal length to the number of columns in X."]));
         endif
-        if (any (Scale < 0))
+        if (any (Scale <= 0))
           error (strcat (["ClassificationKNN: Scale vector must contain"], ...
-                         [" nonnegative scalar values."]));
+                         [" positive scalar values."]));
         endif
         this.DistParameter = Scale;
       else

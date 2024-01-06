@@ -111,7 +111,7 @@
 ## @qcode{"order"}, and @qcode{"dof"} to define the required polynomial for
 ## training the GAM model.
 ##
-## @seealso{regress, regress_gp, @@RegressionGAM/predict}
+## @seealso{@@RegressionGAM/predict, @@RegressionGAM/RegressionGAM}
 ## @end deftypefn
 
 function obj = fitrgam (X, Y, varargin)

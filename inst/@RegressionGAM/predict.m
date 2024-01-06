@@ -60,7 +60,7 @@
 ## can make predictions from the same GAM model without having to retrain it.
 ## @end multitable
 ##
-## @seealso{fitrgam, gampredict}
+## @seealso{fitrgam, @@RegressionGAM/RegressionGAM}
 ## @end deftypefn
 
 function [yFit, ySD, yInt] = predict (obj, Xfit, varargin)
