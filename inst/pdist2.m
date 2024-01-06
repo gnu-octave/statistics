@@ -1,4 +1,5 @@
 ## Copyright (C) 2014-2019 Piotr Dollar <pdollar@gmail.com>
+## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -64,113 +65,287 @@
 ## @seealso{pdist}
 ## @end deftypefn
 
-function D = pdist2 (X, Y, metric = "euclidean")
+function [D, I] = pdist2 (X, Y, varargin)
 
-  if (nargin < 2 || nargin > 3)
-    print_usage ();
-  elseif (columns (X) != columns (Y))
-    error ("pdist2: X and Y must have equal number of columns");
-  elseif (ndims (X) != 2 || ndims (Y) != 2)
-    error ("pdist2: X and Y must be 2 dimensional matrices");
+  ## Check input data
+  if (nargin < 2)
+	  error ("pdist2: too few input arguments.");
+  endif
+  if (size (X, 2) != size (Y, 2))
+	  error ("pdist2: X and Y must have equal number of columns.");
+  endif
+  if (ndims (X) != 2 || ndims (Y) != 2)
+    error ("pdist2: X and Y must be 2 dimensional matrices.");
   endif
 
-  switch (tolower (metric))
-    case "sqeuclidean",  D = distEucSq (X, Y);
-    case "euclidean",     D = sqrt (distEucSq (X, Y));
-    case "l1",            D = distL1 (X, Y);
-    case "cosine",        D = distCosine (X, Y);
-    case "emd",           D = distEmd (X, Y);
-    case "chisq",         D = distChiSq (X, Y);
-    otherwise
-      error ("pdist2: unknown distance METRIC %s", metric);
+  ## Add default values
+  Distance = "euclidean";   # Distance metric
+  DistParameter = [];       # Distance parameter
+  SortOrder = [];           # Flag for sorting distances to find
+
+  ## Parse additional Distance metric and Distance parameter (if available)
+  DMs = {"euclidean", "squaredeuclidean", "seuclidean", ...
+         "mahalanobis", "cityblock", "minkowski", "chebychev", ...
+         "cosine", "correlation", "hamming", "jaccard", "spearman"};
+  if (numel (varargin) > 0)
+    if (any (strcmpi (DMs, varargin{1})))
+      Distance = tolower (varargin{1});
+      varargin(1) = [];
+      if (numel (varargin) > 0)
+        if (isnumeric (varargin{1}))
+          DistParameter = varargin{1};
+          varargin(1) = [];
+        endif
+      endif
+    endif
+  endif
+
+  ## Parse additional parameters in Name/Value pairs
+  parcount = 0;
+  while (numel (varargin) > 0)
+    if (numel (varargin) < 2)
+      error ("pdist2: missing value in optional name/value paired arguments.");
+    endif
+    switch (tolower (varargin{1}))
+      case "smallest"
+        SortOrder = "ascend";
+        K = varargin{2};
+        parcount += 1;
+      case "largest"
+        SortOrder = "descend";
+        K = varargin{2};
+        parcount += 1;
+      otherwise
+        error ("pdist2: invalid NAME in optional pairs of arguments.");
+    endswitch
+    varargin(1:2) = [];
+  endwhile
+
+  ## Check additional arguments
+  if (parcount > 1)
+    error ("pdist2: you can only use either Smallest or Largest.");
+  endif
+  if (isempty (SortOrder) && nargout > 1)
+    error (strcat (["pdist2: Smallest or Largest must be specified"], ...
+                   [" to compute second output."]));
+  endif
+
+  ## Calculate selected distance
+  [ix, iy] = meshgrid (1:size (X, 1), 1:size (Y, 1));
+  switch (Distance)
+  case "euclidean"
+    D = sqrt (sum ((X(ix(:),:) - Y(iy(:),:)) .^ 2, 2));
+
+  case "squaredeuclidean"
+    D = sum ((X(ix(:),:) - Y(iy(:),:)) .^ 2, 2);
+
+  case "seuclidean"
+    if (isempty (DistParameter))
+      DistParameter = std (X, [], 1);
+    else
+      if (numel (DistParameter) != columns (X))
+        error (strcat (["pdist2: DistParameter for standardized euclidean"], ...
+                       [" must be a vector of equal length to the number"], ...
+                       [" of columns in X."]));
+      endif
+      if (any (DistParameter < 0))
+        error (strcat (["pdist2: DistParameter for standardized euclidean"], ...
+                       [" must be a nonnegative vector."]));
+      endif
+    endif
+    DistParameter(DistParameter == 0) = 1;  # fix constant variable
+    D = sqrt (sum (((X(ix(:),:) - Y(iy(:),:)) ./ DistParameter) .^ 2, 2));
+
+  case "mahalanobis"
+    if (isempty (DistParameter))
+      DistParameter = cov (X(! any (isnan (X), 2),:));
+    else
+      if (columns (DistParameter) != columns (X))
+        error (strcat (["pdist2: DistParameter for mahalanobis distance"], ...
+                       [" must be a covariance matrix with the same"], ...
+                       [" number of columns as X."]));
+      endif
+      try
+        chol (DistParameter);
+      catch ME
+        error (strcat (["pdist2: covariance matrix for mahalanobis"],...
+                       [" distance must be symmetric and positive definite."]));
+      end_try_catch
+    endif
+    dxy = X(ix(:),:) - Y(iy(:),:);
+    D   = sqrt (sum ((dxy  * inv (DistParameter)) .* dxy, 2));
+
+  case "cityblock"
+    D = sum (abs (X(ix(:),:) - Y(iy(:),:)), 2);
+
+  case "minkowski"
+    if (isempty (DistParameter))
+      DistParameter = 2;
+    else
+      if (! (isnumeric (DistParameter) && isscalar (DistParameter)
+                                       && DistParameter > 0))
+        error (strcat (["pdist2: DistParameter for minkowski distance"],...
+                       [" must be a positive scalar."]));
+      endif
+    endif
+    D = sum (abs (X(ix(:),:) - Y(iy(:),:)) .^ DistParameter, 2) .^ ...
+            (1 / DistParameter);
+
+  case "chebychev"
+    D = max (abs (X(ix(:),:) - Y(iy(:),:)), [], 2);
+
+  case "cosine"
+    sx = sum (X .^ 2, 2) .^ (-1 / 2);
+    sy = sum (Y .^ 2, 2) .^ (-1 / 2);
+    D  = 1 - sum (X(ix(:),:) .* Y(iy(:),:), 2) .* sx(ix(:)) .* sy(iy(:));
+
+  case "correlation"
+    mX = mean (X(ix(:),:), 2);
+    mY = mean (Y(iy(:),:), 2);
+    xy = sum ((X(ix(:),:) - mX) .* (Y(iy(:),:) - mY), 2);
+    xx = sqrt (sum ((X(ix(:),:) - mX) .* (X(ix(:),:) - mX), 2));
+    yy = sqrt (sum ((Y(iy(:),:) - mY) .* (Y(iy(:),:) - mY), 2));
+    D = 1 - (xy ./ (xx .* yy));
+
+  case "hamming"
+    D = mean (abs (X(ix(:),:) != Y(iy(:),:)), 2);
+
+  case "jaccard"
+    xy0 = (X(ix(:),:) != 0 | Y(iy(:),:) != 0);
+    D = sum ((X(ix(:),:) != Y(iy(:),:)) & xy0, 2) ./ sum (xy0, 2);
+
+  case "spearman"
+    for i = 1:size (X, 1)
+      rX(i,:) = tiedrank (X(i,:));
+    endfor
+    for i = 1:size (Y, 1)
+      rY(i,:) = tiedrank (Y(i,:));
+    endfor
+    rM = (size (X, 2) + 1) / 2;
+    xy = sum ((rX(ix(:),:) - rM) .* (rY(iy(:),:) - rM), 2);
+    xx = sqrt (sum ((rX(ix(:),:) - rM) .* (rX(ix(:),:) - rM), 2));
+    yy = sqrt (sum ((rY(iy(:),:) - rM) .* (rY(iy(:),:) - rM), 2));
+    D = 1 - (xy ./ (xx .* yy));
+
   endswitch
-  D = max (0, D);
+
+  D = reshape (D, size (Y, 1), size (X, 1))';
+
+  if (nargout > 1)
+    [D, I] = sort (D', 2, SortOrder);
+    K = min (size (D, 2), K);   # fix max K to avoid out of bound error
+    D = D(:,1:K)';
+    I = I(:,1:K)';
+  endif
 
 endfunction
 
-## TODO we could check the value of p and n first, and choose one
-## or the other loop accordingly.
-## L1 COMPUTATION WITH LOOP OVER p, FAST FOR SMALL p.
-## function D = distL1( X, Y )
-## m = size(X,1); n = size(Y,1); p = size(X,2);
-## mOnes = ones(1,m); nOnes = ones(1,n); D = zeros(m,n);
-## for i=1:p
-##   yi = Y(:,i);  yi = yi( :, mOnes );
-##   xi = X(:,i);  xi = xi( :, nOnes );
-##   D = D + abs( xi-yi' );
-## end
 
-function D = distL1 (X, Y)
-  m = rows (X);
-  n = rows (Y);
-  mOnes = ones (1, m);
-  D = zeros (m, n);
-  for i = 1:n
-    yi = Y(i,:);
-    yi = yi(mOnes,:);
-    D(:,i) = sum (abs (X-yi), 2);
-  endfor
-endfunction
-
-function D = distCosine (X, Y)
-  p = columns (X);
-  X = X ./ repmat (sqrt (sumsq (X, 2)), [1 p]);
-  Y = Y ./ repmat (sqrt (sumsq (Y, 2)), [1 p]);
-  D = 1 - X*Y';
-endfunction
-
-function D = distEmd (X, Y)
-  Xcdf = cumsum (X,2);
-  Ycdf = cumsum (Y,2);
-  m = rows (X);
-  n = rows (Y);
-  mOnes = ones (1, m);
-  D = zeros (m, n);
-  for i=1:n
-    ycdf = Ycdf(i,:);
-    ycdfRep = ycdf(mOnes,:);
-    D(:,i) = sum (abs (Xcdf - ycdfRep), 2);
-  endfor
-endfunction
-
-function D = distChiSq (X, Y)
-  ## note: supposedly it's possible to implement this without a loop!
-  m = rows (X);
-  n = rows (Y);
-  mOnes = ones (1, m);
-  D = zeros (m, n);
-  for i = 1:n
-    yi = Y(i, :);
-    yiRep = yi(mOnes, :);
-    s = yiRep + X;
-    d = yiRep - X;
-    D(:,i) = sum (d.^2 ./ (s+eps), 2);
-  endfor
-  D = D/2;
-endfunction
-
-function dists = distEucSq (x, y)
-  xx = sumsq (x, 2);
-  yy = sumsq (y, 2)';
-  dists = max (0, bsxfun (@plus, xx, yy) - 2 * x * (y'));
-endfunction
-
-## euclidean distance as loop for testing purposes
-%!function dist = euclidean_distance (x, y)
-%!  [m, p] = size (X);
-%!  [n, p] = size (Y);
-%!  D = zeros (m, n);
-%!  for i = 1:n
-%!    d = X - repmat (Y(i,:), [m 1]);
-%!    D(:,i) = sumsq (d, 2);
-%!  endfor
-%!endfunction
-
+## Test output
+%!shared x, y
+%! x = [1, 1, 1; 2, 2, 2; 3, 3, 3];
+%! y = [0, 0, 0; 1, 2, 3; 0, 2, 4; 4, 7, 1];
 %!test
-%! x = [1 1 1; 2 2 2; 3 3 3];
-%! y = [0 0 0; 1 2 3; 0 2 4; 4 7 1];
-%! d = sqrt([  3    5   11   45
-%!            12    2    8   30
-%!            27    5   11   21]);
-%! assert (pdist2 (x, y), d)
+%! d = sqrt([3, 5, 11, 45; 12, 2, 8, 30; 27, 5, 11, 21]);
+%! assert (pdist2 (x, y), d);
+%!test
+%! d = [5.1962, 2.2361, 3.3166, 6.7082; ...
+%!      3.4641, 2.2361, 3.3166, 5.4772];
+%! i = [3, 1, 1, 1; 2, 3, 3, 2];
+%! [D, I] = pdist2 (x, y, "euclidean", "largest", 2);
+%! assert ({D, I}, {d, i}, 1e-4);
+%!test
+%! d = [1.7321, 1.4142, 2.8284, 4.5826; ...
+%!      3.4641, 2.2361, 3.3166, 5.4772];
+%! i = [1, 2, 2, 3;2, 1, 1, 2];
+%! [D, I] = pdist2 (x, y, "euclidean", "smallest", 2);
+%! assert ({D, I}, {d, i}, 1e-4);
+%!test
+%! yy = [1 2 3;5 6 7;9 5 1];
+%! d = [0, 6.1644, 5.3852; 1.4142, 6.9282, 8.7750; ...
+%!      3.7417, 7.0711, 9.9499; 6.1644, 10.4881, 10.3441];
+%! i = [2, 4, 4; 3, 2, 2; 1, 3, 3; 4, 1, 1];
+%! [D, I] = pdist2 (y, yy, "euclidean", "smallest", 4);
+%! assert ({D, I}, {d, i}, 1e-4);
+%!test
+%! yy = [1 2 3;5 6 7;9 5 1];
+%! d = [0, 38, 29; 2, 48, 77; 14, 50, 99; 38, 110, 107];
+%! i = [2, 4, 4; 3, 2, 2; 1, 3, 3; 4, 1, 1];
+%! [D, I] = pdist2 (y, yy, "squaredeuclidean", "smallest", 4);
+%! assert ({D, I}, {d, i}, 1e-4);
+%!test
+%! d = [2.1213, 4.2426, 6.3640; 1.2247, 2.4495, 4.4159; ...
+%!      3.2404, 4.8990, 6.8191; 2.7386, 4.2426, 6.1237];
+%! assert (pdist2 (y, x, "mahalanobis"), d, 1e-4);
+%!test
+%! d = [1.2247, 2.4495, 4.4159; 2.1213, 4.2426, 6.1237];
+%! i = [2, 2, 2; 1, 4, 4];
+%! [D, I] = pdist2 (y, x, "mahalanobis", "smallest", 2);
+%! assert ({D, I}, {d, i}, 1e-4);
+%!test
+%! d = [3.2404, 4.8990, 6.8191; 2.7386, 4.2426, 6.3640];
+%! i = [3, 3, 3; 4, 1, 1];
+%! [D, I] = pdist2 (y, x, "mahalanobis", "largest", 2);
+%! assert ({D, I}, {d, i}, 1e-4);
+%!test
+%! yy = [1 2 3;5 6 7;9 5 1];
+%! d = [0, 8.4853, 18.0416; 2.4495, 10.0995, 19.4808; ...
+%!      2.4495, 10.6771, 19.7104; 2.4495, 10.6771, 20.4573];
+%! i = [2, 2, 2; 1, 4, 4; 4, 1, 1; 3, 3, 3];
+%! [D, I] = pdist2 (y, yy, "mahalanobis", "smallest", 4);
+%! assert ({D, I}, {d, i}, 1e-4);
+%!test
+%! d = [3, 3, 5, 9; 6, 2, 4, 8; 9, 3, 5, 7];
+%! assert (pdist2 (x, y, "cityblock"), d);
+%!test
+%! d = [1, 2, 3, 6; 2, 1, 2, 5; 3, 2, 3, 4];
+%! assert (pdist2 (x, y, "chebychev"), d);
+%!test
+%! d = repmat ([NaN, 0.0742, 0.2254, 0.1472], [3, 1]);
+%! assert (pdist2 (x, y, "cosine"), d, 1e-4);
+%!test
+%! yy = [1 2 3;5 6 7;9 5 1];
+%! d = [0, 0, 0.5; 0, 0, 2; 1.5, 1.5, 2; NaN, NaN, NaN];
+%! i = [2, 2, 4; 3, 3, 2; 4, 4, 3; 1, 1, 1];
+%! [D, I] = pdist2 (y, yy, "correlation", "smallest", 4);
+%! assert ({D, I}, {d, i}, eps);
+%! [D, I] = pdist2 (y, yy, "spearman", "smallest", 4);
+%! assert ({D, I}, {d, i}, eps);
+%!test
+%! d = [1, 2/3, 1, 1; 1, 2/3, 1, 1; 1, 2/3, 2/3, 2/3];
+%! i = [1, 1, 1, 2; 2, 2, 3, 3; 3, 3, 2, 1];
+%! [D, I] = pdist2 (x, y, "hamming", "largest", 4);
+%! assert ({D, I}, {d, i}, eps);
+%! [D, I] = pdist2 (x, y, "jaccard", "largest", 4);
+%! assert ({D, I}, {d, i}, eps);
 
+## Test input validation
+%!error<pdist2: too few input arguments.> pdist2 (1)
+%!error<pdist2: X and Y must have equal number of columns.> ...
+%! pdist2 (ones (4, 5), ones (4))
+%!error<pdist2: X and Y must be 2 dimensional matrices.> ...
+%! pdist2 (ones (4, 2, 3), ones (3, 2))
+%!error<pdist2: missing value in optional name/value paired arguments.> ...
+%! pdist2(ones (3), ones (3), "euclidean", "Largest")
+%!error<pdist2: missing value in optional name/value paired arguments.> ...
+%! pdist2(ones (3), ones (3), "minkowski", 3, "Largest")
+%!error<pdist2: invalid NAME in optional pairs of arguments.> ...
+%! pdist2(ones (3), ones (3), "minkowski", 3, "large", 4)
+%!error<pdist2: you can only use either Smallest or Largest.> ...
+%! pdist2(ones (3), ones (3), "minkowski", 3, "Largest", 4, "smallest", 5)
+%!error<pdist2: Smallest or Largest must be specified to compute second output.> ...
+%! [d, i] = pdist2(ones (3), ones (3), "minkowski", 3)
+%!error<pdist2: DistParameter for standardized euclidean must be a vector of> ...
+%! pdist2(ones (3), ones (3), "seuclidean", 3)
+%!error<pdist2: DistParameter for standardized euclidean must be a nonnegative> ...
+%! pdist2(ones (3), ones (3), "seuclidean", [1, -1, 3])
+%!error<pdist2: DistParameter for mahalanobis distance must be a covariance> ...
+%! pdist2(ones (3), eye (3), "mahalanobis", eye(2))
+%!error<pdist2: covariance matrix for mahalanobis distance must be symmetric> ...
+%! pdist2(ones (3), eye (3), "mahalanobis", ones(3))
+%!error<pdist2: DistParameter for minkowski distance must be a positive scalar.> ...
+%! pdist2(ones (3), eye (3), "minkowski", 0)
+%!error<pdist2: DistParameter for minkowski distance must be a positive scalar.> ...
+%! pdist2(ones (3), eye (3), "minkowski", -5)
+%!error<pdist2: DistParameter for minkowski distance must be a positive scalar.> ...
+%! pdist2(ones (3), eye (3), "minkowski", [1, 2])
