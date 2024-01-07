@@ -86,7 +86,7 @@
 ## not then 0. cost matrix can be altered use @code{@var{obj.cost} = somecost}.
 ## default value @qcode{@var{cost} = ones(rows(X),numel(unique(Y)))}.
 ##
-## @item @qcode{obj.Prior} @tab @tab A numeric vector specifying the prior
+## @item @qcode{"Prior"} @tab @tab A numeric vector specifying the prior
 ## probabilities for each class.  The order of the elements in @qcode{Prior}
 ## corresponds to the order of the classes in @qcode{ClassNames}.
 ##
