@@ -752,10 +752,13 @@ endfunction
 
 ## Test warnings
 %!warning<adtest: out of range min p-value:> ...
+%! randn ("seed", 34);
 %! adtest (ones (20,1), "Alpha", 0.000001);
 %!warning<adtest: alpha not within the lookup table.> ...
+%! randn ("seed", 34);
 %! adtest (normrnd(0,1,100,1), "Alpha", 0.99999);
 %!warning<adtest: alpha not within the lookup table.> ...
+%! randn ("seed", 34);
 %! adtest (normrnd(0,1,100,1), "Alpha", 0.00001);
 
 ## Test results
