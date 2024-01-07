@@ -75,32 +75,32 @@
 ## @code{knnsearch} as specified below:
 ## @end multitable
 ##
-## @multitable @columnfractions 0.23 0.02 0.65
-## @item @qcode{"euclidean"} @tab @tab Euclidean distance.
-## @item @qcode{"seuclidean"} @tab @tab standardized Euclidean distance.  Each
+## @multitable @columnfractions 0.05 0.2 0.75
+## @item @tab @qcode{"euclidean"} @tab Euclidean distance.
+## @item @tab @qcode{"seuclidean"} @tab standardized Euclidean distance.  Each
 ## coordinate difference between the rows in @var{X} and the query matrix
 ## @var{Y} is scaled by dividing by the corresponding element of the standard
 ## deviation computed from @var{X}.  To specify a different scaling, use the
 ## @qcode{"Scale"} name-value argument.
-## @item @qcode{"cityblock"} @tab @tab City block distance.
-## @item @qcode{"chebychev"} @tab @tab Chebychev distance (maximum coordinate
+## @item @tab @qcode{"cityblock"} @tab City block distance.
+## @item @tab @qcode{"chebychev"} @tab Chebychev distance (maximum coordinate
 ## difference).
-## @item @qcode{"minkowski"} @tab @tab Minkowski distance.  The default exponent
+## @item @tab @qcode{"minkowski"} @tab Minkowski distance.  The default exponent
 ## is 2.  To specify a different exponent, use the @qcode{"P"} name-value
 ## argument.
-## @item @qcode{"mahalanobis"} @tab @tab Mahalanobis distance, computed using a
+## @item @tab @qcode{"mahalanobis"} @tab Mahalanobis distance, computed using a
 ## positive definite covariance matrix.  To change the value of the covariance
 ## matrix, use the @qcode{"Cov"} name-value argument.
-## @item @qcode{"cosine"} @tab @tab Cosine distance.
-## @item @qcode{"correlation"} @tab @tab One minus the sample linear correlation
+## @item @tab @qcode{"cosine"} @tab Cosine distance.
+## @item @tab @qcode{"correlation"} @tab One minus the sample linear correlation
 ## between observations (treated as sequences of values).
-## @item @qcode{"spearman"} @tab @tab One minus the sample Spearman's rank
+## @item @tab @qcode{"spearman"} @tab One minus the sample Spearman's rank
 ## correlation between observations (treated as sequences of values).
-## @item @qcode{"hamming"} @tab @tab Hamming distance, which is the percentage
+## @item @tab @qcode{"hamming"} @tab Hamming distance, which is the percentage
 ## of coordinates that differ.
-## @item @qcode{"jaccard"} @tab @tab One minus the Jaccard coefficient, which is
+## @item @tab @qcode{"jaccard"} @tab One minus the Jaccard coefficient, which is
 ## the percentage of nonzero coordinates that differ.
-## @item @var{@@distfun} @tab @tab Custom distance function handle.  A distance
+## @item @tab @var{@@distfun} @tab Custom distance function handle.  A distance
 ## function of the form @code{function @var{D2} = distfun (@var{XI}, @var{YI})},
 ## where @var{XI} is a @math{1xP} vector containing a single observation in
 ## @math{P}-dimensional space, @var{YI} is an @math{NxP} matrix containing an
