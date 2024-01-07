@@ -89,6 +89,9 @@ function [paramhat, paramci] = gevfit (x, alpha, options)
     error ("gevfit: X must be a vector.");
   endif
 
+  ## Force to column vector
+  x = x(:);
+
   ## Get X type and convert to double for computation
   is_type = class (x);
   if (strcmpi (is_type, "single"))
