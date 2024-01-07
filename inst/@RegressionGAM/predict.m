@@ -42,14 +42,14 @@
 ## aforementioned results with additional properties specified by
 ## @qcode{Name-Value} pair arguments listed below.
 ##
-## @multitable @columnfractions 0.05 0.2 0.75
-## @headitem @tab @var{Name} @tab @var{Value}
+## @multitable @columnfractions 0.28 0.02 0.7
+## @headitem @var{Name} @tab @tab @var{Value}
 ##
-## @item @tab @qcode{"alpha"} @tab significance level of the prediction
+## @item @qcode{"alpha"} @tab @tab significance level of the prediction
 ## intervals @var{yInt}, specified as scalar in range @qcode{[0,1]}. The default
 ## value is 0.05, which corresponds to 95% prediction intervals.
 ##
-## @item @tab @qcode{"includeinteractions"} @tab a boolean flag to include
+## @item @qcode{"includeinteractions"} @tab @tab a boolean flag to include
 ## interactions to predict new values based on @var{Xfit}.  By default,
 ## @qcode{"includeinteractions"} is @qcode{true} when the GAM model in @var{obj}
 ## contains a @qcode{obj.Formula} or @qcode{obj.Interactions} fields. Otherwise,
