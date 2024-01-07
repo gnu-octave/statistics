@@ -242,6 +242,8 @@
 
  ** friedman: bug fixes
 
+ ** pdist2: updated functionality, fully MATLAB compatible
+
  ** regress_gp: updated functionality with RBF kernel
 
  ** ridge: bug fixes
