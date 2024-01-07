@@ -42,63 +42,89 @@
 ## k-Nearest Neighbor classification model with additional options specified by
 ## @qcode{Name-Value} pair arguments listed below.
 ##
-## @multitable @columnfractions 0.05 0.2 0.75
+## @multitable @columnfractions 0.18 0.02 0.8
 ## @headitem @tab @var{Name} @tab @var{Value}
 ##
-## @item @tab @qcode{"K"} @tab is the number of nearest neighbors to be found
-## in the kNN search.  It must be a positive integer value and by default it is
-## 1. @var{"K"} can be changed by using @code{@var{obj.K} = 10}.
+## @item @qcode{"PredictorNames"} @tab @tab A cell array of character vectors
+## specifying the predictor variable names.  The variable names are assumed to
+## be in the same order as they appear in the training data @var{X}.
 ##
-## @item @tab @qcode{"weights"} @tab is a @math{Nx1} numeric non-negative matrix
-## of the observational weights, each row in @var{weights} corresponds to the
-## row in @var{Y} and indicates the relative importance or weight to be
-## considered in calculating the Nearest-neighbour, negative values are removed
-##  before calculations if weights are specified. this propery cannot be
-## changed via object. default value @qcode{@var{weight} = ones(rows(Y),1)}.
+## @item @qcode{"ResponseName"} @tab @tab A character vector specifying the name
+## of the response variable.
 ##
-## @item @tab @qcode{"cost"} @tab is a @math{NxR} numeric matrix containing
+## @item @qcode{"ClassNames"} @tab @tab A cell array of character vectors
+## specifying the names of the classes in the training data @var{Y}.
+##
+## @item @qcode{"BreakTies"} @tab @tab Tie-breaking algorithm used by predict
+## when multiple classes have the same smallest cost. By default, ties occur
+## when multiple classes have the same number of nearest points among the
+## @math{k} nearest neighbors. The available options are specified by the
+## following character arrays:
+## @end multitable
+##
+## @multitable @columnfractions 0.05 0.2 0.75
+## @item @tab @qcode{"smallest"} @tab This is the default and it favors the
+## class with the smallest index among the tied groups, i.e. the one that
+## appears first in the training labelled data.
+## @item @tab @qcode{"nearest"} @tab This favors the class with the nearest
+## neighbor among the tied groups, i.e. the class with the closest member point
+## according to the distance metric used.
+## @item @tab @qcode{"nearest"} @tab This randomly picks one class among the
+## tied groups.
+## @end multitable
+##
+## @multitable @columnfractions 0.18 0.02 0.8
+## @item @qcode{"BucketSize"} @tab @tab The maximum number of data points in the
+## leaf node of the Kd-tree and it must be a positive integer.  By default, it
+## is 50. This argument is meaningful only when the selected search method is
+## @qcode{"kdtree"}.
+##
+## @item @qcode{"Cost"} @tab @tab A @math{NxR} numeric matrix containing
 ## misclassification cost for the corresponding instances in @var{X} where
-## @var{R} is the number of unique categories in @var{Y}. If an instance is
+## @math{R} is the number of unique categories in @var{Y}.  If an instance is
 ## correctly classified into its category the cost is calculated to be 1, If
 ## not then 0. cost matrix can be altered use @code{@var{obj.cost} = somecost}.
 ## default value @qcode{@var{cost} = ones(rows(X),numel(unique(Y)))}.
 ##
-## @item @tab @qcode{"exponent"} @tab is the Minkowski distance exponent and
-## it must be a positive scalar.  This argument is only valid when the selected
-## distance metric is @qcode{"minkowski"}.  By default it is 2.
+## @item @qcode{obj.Prior} @tab @tab A numeric vector specifying the prior
+## probabilities for each class.  The order of the elements in @qcode{Prior}
+## corresponds to the order of the classes in @qcode{ClassNames}.
 ##
-## @item @tab @qcode{"scale"} @tab is the scale parameter for the standardized
-## Euclidean distance and it must be a nonnegative numeric vector of equal
-## length to the number of columns in @var{X}.  This argument is only valid when
-## the selected distance metric is @qcode{"seuclidean"}, in which case each
-## coordinate of @var{X} is scaled by the corresponding element of
+## @item @qcode{"NumNeighbors"} @tab @tab A positive integer value specifying
+## the number of nearest neighbors to be found in the kNN search.  By default,
+## it is 1.
+##
+## @item @qcode{"Exponent"} @tab @tab A positive scalar (usually an integer)
+## specifying the Minkowski distance exponent.  This argument is only valid when
+## the selected distance metric is @qcode{"minkowski"}.  By default it is 2.
+##
+## @item @qcode{"Scale"} @tab @tab A nonnegative numeric vector specifying the
+## scale parameters for the standardized Euclidean distance.  The vector length
+## must be equal to the number of columns in @var{X}.  This argument is only
+## valid when the selected distance metric is @qcode{"seuclidean"}, in which
+## case each coordinate of @var{X} is scaled by the corresponding element of
 ## @qcode{"scale"}, as is each query point in @var{Y}.  By default, the scale
-## parameter is the standard deviation of each coordinate in @var{X}.
+## parameter is the standard deviation of each coordinate in @var{X}.  If a
+## variable in @var{X} is constant, i.e. zero variance, this value is forced
+## to 1 to avoid division by zero.  This is the equivalent of this variable not
+## being standardized.
 ##
-## @item @tab @qcode{"Prior"} @tab is the matrix of prior probablities for each
-## unique class in @var{Y}. @var{Prior} can be changed via object using
-## @code{@var{obj.Prior} = somePrior}
+## @item @qcode{"Cov"} @tab @tab A square matrix with the same number of columns
+## as @var{X} specifying the covariance matrix for computing the mahalanobis
+## distance.  This must be a positive definite matrix matching.  This argument
+## is only valid when the selected distance metric is @qcode{"mahalanobis"}.
 ##
-## @item @tab @qcode{"cov"} @tab is the covariance matrix for computing the
-## mahalanobis distance and it must be a positive definite matrix matching the
-## the number of columns in @var{X}.  This argument is only valid when the
-## selected distance metric is @qcode{"mahalanobis"}.
-##
-## @item @tab @qcode{"BucketSize"} @tab is the maximum number of data points in
-## the leaf node of the Kd-tree and it must be a positive integer.  This
-## argument is only valid when the selected search method is @qcode{"kdtree"}.
-##
-## @item @tab @qcode{"Distance"} @tab is the distance metric used by
+## @item @qcode{"Distance"} @tab @tab is the distance metric used by
 ## @code{knnsearch} as specified below:
 ## @end multitable
 ##
-## @multitable @columnfractions 0.1 0.25 0.65
+## @multitable @columnfractions 0.05 0.2 0.75
 ## @item @tab @qcode{"euclidean"} @tab Euclidean distance.
 ## @item @tab @qcode{"seuclidean"} @tab standardized Euclidean distance.  Each
 ## coordinate difference between the rows in @var{X} and the query matrix
 ## @var{Y} is scaled by dividing by the corresponding element of the standard
 ## deviation computed from @var{X}.  To specify a different scaling, use the
-## @qcode{"scale"} name-value argument.
+## @qcode{"Scale"} name-value argument.
 ## @item @tab @qcode{"cityblock"} @tab City block distance.
 ## @item @tab @qcode{"chebychev"} @tab Chebychev distance (maximum coordinate
 ## difference).
@@ -107,7 +133,7 @@
 ## argument.
 ## @item @tab @qcode{"mahalanobis"} @tab Mahalanobis distance, computed using a
 ## positive definite covariance matrix.  To change the value of the covariance
-## matrix, use the @qcode{"cov"} name-value argument.
+## matrix, use the @qcode{"Cov"} name-value argument.
 ## @item @tab @qcode{"cosine"} @tab Cosine distance.
 ## @item @tab @qcode{"correlation"} @tab One minus the sample linear correlation
 ## between observations (treated as sequences of values).
@@ -117,28 +143,25 @@
 ## of coordinates that differ.
 ## @item @tab @qcode{"jaccard"} @tab One minus the Jaccard coefficient, which is
 ## the percentage of nonzero coordinates that differ.
+## @item @tab @var{@@distfun} @tab Custom distance function handle.  A distance
+## function of the form @code{function @var{D2} = distfun (@var{XI}, @var{YI})},
+## where @var{XI} is a @math{1xP} vector containing a single observation in
+## @math{P}-dimensional space, @var{YI} is an @math{NxP} matrix containing an
+## arbitrary number of observations in the same @math{P}-dimensional space, and
+## @var{D2} is an @math{NxP} vector of distances, where @qcode{(@var{D2}k)} is
+## the distance between observations @var{XI} and @qcode{(@var{YI}k,:)}.
 ## @end multitable
 ##
-## @multitable @columnfractions 0.05 0.2 0.75
-## @item @tab @qcode{"NSMethod"} @tab is the nearest neighbor search method used
-## by @code{knnsearch} as specified below.
-## @end multitable
+## @multitable @columnfractions 0.18 0.02 0.8
+## @item @qcode{"DistanceWeight"} @tab @tab A distance weighting function,
+## specified either as a function handle, which accepts a matrix of nonnegative
+## distances and returns a matrix the same size containing nonnegative distance
+## weights, or one of the following values: @qcode{"equal"}, which corresponds
+## to no weighting; @qcode{"inverse"}, which corresponds to a weight equal to
+## @math{1/distance}; @qcode{"squaredinverse"}, which corresponds to a weight
+## equal to @math{1/distance^2}.
 ##
-## @multitable @columnfractions 0.1 0.25 0.65
-## @item @tab @qcode{"kdtree"} @tab Creates and uses a Kd-tree to find nearest
-## neighbors.  @qcode{"kdtree"} is the default value when the number of columns
-## in @var{X} is less than or equal to 10, @var{X} is not sparse, and the
-## distance metric is @qcode{"euclidean"}, @qcode{"cityblock"},
-## @qcode{"chebychev"}, or @qcode{"minkowski"}.  Otherwise, the default value is
-## @qcode{"exhaustive"}.  This argument is only valid when the distance metric
-## is one of the four aforementioned metrics.
-## @item @tab @qcode{"exhaustive"} @tab Uses the exhaustive search algorithm by
-## computing the distance values from all the points in @var{X} to each point in
-## @var{Y}.
-## @end multitable
-##
-## @multitable @columnfractions 0.05 0.2 0.75
-## @item @tab @qcode{"IncludeTies"} @tab is a boolean flag to indicate if the
+## @item @qcode{"IncludeTies"} @tab @tab A boolean flag to indicate if the
 ## returned values should contain the indices that have same distance as the
 ## @math{K^th} neighbor.  When @qcode{false}, @code{knnsearch} chooses the
 ## observation with the smallest index among the observations that have the same
@@ -147,22 +170,25 @@
 ## distance in the output arguments. To specify @math{K}, use the @qcode{"K"}
 ## name-value pair argument.
 ##
-## @item @tab @qcode{"breakties"} @tab is the method to break ties in kNN
-## algorithm while deciding the label for an observation.
-##
-## @item @tab @qcode{"classnames"} @tab is a vector of unique classes in
-## training data @var{Y}.If not given as name-value pair, the function
-## calculates and stores the unique values in @var{Y}. @var{"classnames"} cannot
-## be changed via @var{obj}.
-##
-## @item @tab @qcode{"NosClasses"} @tab is a numeric value that stores the
-## number of unique classes in @var{Y}.If not given as name-value pair, the
-## function calculates and stores the number of unique values in @var{Y}.
-## @var{"NosClasses"} cannot be changed via @var{obj}.
-##
+## @item @qcode{"NSMethod"} @tab @tab is the nearest neighbor search method used
+## by @code{knnsearch} as specified below.
 ## @end multitable
 ##
-## @seealso{@@ClassificationKNN/predict, @@ClassificationKNN/ClassificationKNN}
+## @multitable @columnfractions 0.05 0.2 0.75
+## @item @tab @qcode{"kdtree"} @tab Creates and uses a Kd-tree to find nearest
+## neighbors.  @qcode{"kdtree"} is the default value when the number of columns
+## in @var{X} is less than or equal to 10, @var{X} is not sparse, and the
+## distance metric is @qcode{"euclidean"}, @qcode{"cityblock"},
+## @qcode{"manhattan"}, @qcode{"chebychev"}, or @qcode{"minkowski"}.  Otherwise,
+## the default value is @qcode{"exhaustive"}.  This argument is only valid when
+## the distance metric is one of the four aforementioned metrics.
+## @item @tab @qcode{"exhaustive"} @tab Uses the exhaustive search algorithm by
+## computing the distance values from all the points in @var{X} to each point in
+## @var{Y}.
+## @end multitable
+##
+## @seealso{@@ClassificationKNN/predict, @@ClassificationKNN/ClassificationKNN,
+## knnsearch, pdist2}
 ## @end deftypefn
 
 function obj = fitcknn (X, Y, varargin)
