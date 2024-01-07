@@ -433,6 +433,7 @@ endfunction
 %! assert (muHat, 9496.59586737857, 1e-11);
 %! assert (sigmaHat, 3064.021012796456, 2e-12);
 %!test
+%! randn ("seed", 234);
 %! x = normrnd (3, 5, [1000, 1]);
 %! [muHat, sigmaHat, muCI, sigmaCI] = normfit (x, 0.01);
 %! assert (muCI(1) < 3);
