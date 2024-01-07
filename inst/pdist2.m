@@ -212,16 +212,16 @@ function [D, I] = pdist2 (X, Y, varargin)
           DistParameter = cov (X(! any (isnan (X), 2),:));
         else
           if (columns (DistParameter) != columns (X))
-            error (strcat (["pdist2: DistParameter for mahalanobis distance"], ...
-                           [" must be a covariance matrix with the same"], ...
-                           [" number of columns as X."]));
+            error (strcat (["pdist2: DistParameter for mahalanobis"], ...
+                           [" distance must be a covariance matrix with"], ...
+                           [" the same number of columns as X."]));
           endif
-          try
-            chol (DistParameter);
-          catch ME
-            error (strcat (["pdist2: covariance matrix for mahalanobis"],...
-                         [" distance must be symmetric and positive definite."]));
-          end_try_catch
+          [~, p] = chol (DistParameter);
+          if (p != 0)
+            error (strcat (["pdist2: covariance matrix for mahalanobis"], ...
+                           [" distance must be symmetric and positive"], ...
+                           [" definite."]));
+          endif
         endif
         dxy = X(ix(:),:) - Y(iy(:),:);
         D   = sqrt (sum ((dxy  * inv (DistParameter)) .* dxy, 2));

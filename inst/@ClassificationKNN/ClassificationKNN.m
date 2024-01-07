@@ -387,12 +387,11 @@ classdef ClassificationKNN
           case "cov"
             if (SSC < 1)
               Cov = varargin{2};
-              try
-                chol (Cov);
-              catch ME
+              [~, p] = chol (Cov);
+              if (p != 0)
                 error (strcat (["ClassificationKNN: Cov must be a"], ...
                                [" symmetric positive definite matrix."]));
-              end_try_catch
+              endif
               SSC += 1;
             else
               error (strcat (["ClassificationKNN: Cov cannot"], ...
