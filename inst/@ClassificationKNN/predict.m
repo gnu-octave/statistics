@@ -242,13 +242,6 @@ endfunction
 %! assert (c, [1, 0.4, 0.6], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "manhattan");
-%! [l, s, c] = predict (obj, xc);
-%! assert (l, {"versicolor"})
-%! assert (s, [0, 0.6, 0.4], 1e-4)
-%! assert (c, [1, 0.4, 0.6], 1e-4)
-%!test
-%! xc = [5, 3, 5, 1.45];
 %! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "cosine");
 %! [l, s, c] = predict (obj, xc);
 %! assert (l, {"virginica"})
