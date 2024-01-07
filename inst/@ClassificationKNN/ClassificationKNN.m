@@ -160,7 +160,7 @@ classdef ClassificationKNN
 ##
 ## @end multitable
 ##
-## @seealso{fitcknn, @@ClassificationKNN/predict}
+## @seealso{fitcknn, @@ClassificationKNN/predict, knnsearch}
 ## @end deftypefn
 
   properties (Access = public)
@@ -323,11 +323,26 @@ classdef ClassificationKNN
             DMs = {"euclidean", "seuclidean", "mahalanobis", "minkowski", ...
                    "cityblock", "manhattan", "chebychev", "cosine", ...
                    "correlation", "spearman", "hamming", "jaccard"};
-            if (! ischar (Distance))
-              error ("ClassificationKNN: Distance must be a character array.");
-            endif
-            if (! any (strcmpi (DMs, Distance)))
-              error ("ClassificationKNN: unknown distance metric.");
+            if (ischar (Distance))
+              if (! any (strcmpi (DMs, Distance)))
+                error ("ClassificationKNN: unsupported distance metric.");
+              endif
+            elseif (is_function_handle (Distance))
+              ## Check the input output sizes of the user function
+              D2 = [];
+              try
+                D2 = Distance (X(1,:), Y);
+              catch ME
+                error (strcat (["ClassificationKNN: invalid function"], ...
+                               [" handle for distance metric."]));
+              end_try_catch
+              Yrows = rows (Y);
+              if (! isequal (size (D2), [Yrows, 1]))
+                error (strcat (["ClassificationKNN: custom distance"], ...
+                               [" function produces wrong output size."]));
+              endif
+            else
+              error ("ClassificationKNN: invalid distance metric.");
             endif
 
           case "distanceweight"
@@ -554,9 +569,9 @@ classdef ClassificationKNN
           error (strcat (["ClassificationKNN: Scale vector must have"], ...
                          [" equal length to the number of columns in X."]));
         endif
-        if (any (Scale <= 0))
+        if (any (Scale < 0))
           error (strcat (["ClassificationKNN: Scale vector must contain"], ...
-                         [" positive scalar values."]));
+                         [" nonnegative scalar values."]));
         endif
         this.DistParameter = Scale;
       else
@@ -854,12 +869,20 @@ endclassdef
 %! ClassificationKNN (ones (5,2), ones (5,1), "NumNeighbors", 15.2)
 %!error<ClassificationKNN: NumNeighbors must be a positive integer.> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), "NumNeighbors", "asd")
-%!error<ClassificationKNN: Distance must be a character array.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Distance", {"mahalanobis"})
-%!error<ClassificationKNN: Distance must be a character array.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Distance", 5)
-%!error<ClassificationKNN: unknown distance metric.> ...
+%!error<ClassificationKNN: unsupported distance metric.> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), "Distance", "somemetric")
+%!error<ClassificationKNN: invalid function handle for distance metric.> ...
+%! ClassificationKNN (ones (5,2), ones (5,1), "Distance", ...
+%!                    @(v,m) sqrt(repmat(v,rows(m),1)-m,2))
+%!error<ClassificationKNN: custom distance function produces wrong output size.> ...
+%! ClassificationKNN (ones (5,2), ones (5,1), "Distance", ...
+%!                    @(v,m) sqrt(sum(sumsq(repmat(v,rows(m),1)-m,2))))
+%!error<ClassificationKNN: invalid distance metric.> ...
+%! ClassificationKNN (ones (5,2), ones (5,1), "Distance", [1 2 3])
+%!error<ClassificationKNN: invalid distance metric.> ...
+%! ClassificationKNN (ones (5,2), ones (5,1), "Distance", {"mahalanobis"})
+%!error<ClassificationKNN: invalid distance metric.> ...
+%! ClassificationKNN (ones (5,2), ones (5,1), "Distance", logical (5))
 %!error<ClassificationKNN: function handle for distance weight must return the> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), "DistanceWeight", @(x)sum(x))
 %!error<ClassificationKNN: invalid distance weight.> ...
