@@ -71,111 +71,73 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>y</var> = <b>pdist</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> <var>y</var> = <b>pdist</b><i> (<var>x</var>, <var>metric</var>)</i></dt>
-<dt><u>statistics:</u> <var>y</var> = <b>pdist</b><i> (<var>x</var>, <var>metric</var>, <var>metricarg</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> <var>D</var> = <b>pdist</b><i> (<var>X</var>)</i></dt>
+<dt><u>statistics:</u> <var>D</var> = <b>pdist</b><i> (<var>X</var>, <var>Distance</var>)</i></dt>
+<dt><u>statistics:</u> <var>D</var> = <b>pdist</b><i> (<var>X</var>, <var>Distance</var>, <var>DistParameter</var>)</i></dt>
 </dl>
 
-<p> Return the distance between any two rows in <var>x</var>.
+<p> Return the distance between any two rows in <var>X</var>.
 </p>
 <div class="ms-5">
-<p> <var>x</var> is the <var>n</var>x<var>d</var> matrix representing <var>q</var> row
- vectors of size <var>d</var>.
+<p> <code><var>D</var> = pdist (<var>X</var></code> calculates the euclidean distance between
+ pairs of observations in <var>X</var>.  <var>X</var> must be an <math>M&times;P</math> numeric
+ matrix representing <math>M</math> points in <math>P</math>-dimensional space.  This
+ function computes the pairwise distances returned in <var>D</var> as an
+ <math>M&times;(M-1)/P</math> row vector.  Use <code><var>Z</var> = squareform (<var>D</var>)</code> to
+ convert the row vector <var>D</var> into a an <math>M&times;M</math> symmetric matrix <var>Z</var>,
+ where <code><var>Z</var>(i,j)</code> corresponds to the pairwise distance between
+ points <code>i</code> and <code>j</code>.
 </p>
-<p> The output is a dissimilarity matrix formatted as a row vector
- <var>y</var>, <math>(n-1)&times;n/2</math> long, where the distances are in
- the order [(1, 2) (1, 3) &hellip; (2, 3) &hellip; (n-1, n)].  You can
- use the <code>squareform</code> function to display the distances between
- the vectors arranged into an <var>n</var>x<var>n</var> matrix.
+<p> <code><var>D</var> = pdist (<var>X</var>, <var>Y</var>, <var>Distance</var>)</code> returns the
+ distance between pairs of observations in <var>X</var> using the metric specified
+ by <var>Distance</var>, which can be any of the following options.
 </p>
-<p> <code>metric</code> is an optional argument specifying how the distance is
- computed. It can be any of the following ones, defaulting to
- &quot;euclidean&quot;, or a user defined function that takes two arguments
- <var>x</var> and <var>y</var> plus any number of optional arguments,
- where <var>x</var> is a row vector and and <var>y</var> is a matrix having the
- same number of columns as <var>x</var>.  <code>metric</code> returns a column
- vector where row <var>i</var> is the distance between <var>x</var> and row
- <var>i</var> of <var>y</var>. Any additional arguments after the <code>metric</code>
- are passed as metric (<var>x</var>, <var>y</var>, <var>metricarg1</var>,
- <var>metricarg2</var> &hellip;).
+ <table>
+<tr><td width="23%"><code>&quot;euclidean&quot;</code></td><td width="2%"></td><td width="65%">Euclidean distance.</td></tr>
+<tr><td width="23%"><code>&quot;squaredeuclidean&quot;</code></td><td width="2%"></td><td width="65%">Squared Euclidean distance.</td></tr>
+<tr><td width="23%"><code>&quot;seuclidean&quot;</code></td><td width="2%"></td><td width="65%">standardized Euclidean distance.  Each
+ coordinate difference between the rows in <var>X</var> and the query matrix
+ <var>Y</var> is scaled by dividing by the corresponding element of the standard
+ deviation computed from <var>X</var>.  A different scaling vector can be specified
+ with the subsequent <var>DistParameter</var> input argument.</td></tr>
+<tr><td width="23%"><code>&quot;mahalanobis&quot;</code></td><td width="2%"></td><td width="65%">Mahalanobis distance, computed using a
+ positive definite covariance matrix.  A different covariance matrix can be
+ specified with the subsequent <var>DistParameter</var> input argument.</td></tr>
+<tr><td width="23%"><code>&quot;cityblock&quot;</code></td><td width="2%"></td><td width="65%">City block distance.</td></tr>
+<tr><td width="23%"><code>&quot;minkowski&quot;</code></td><td width="2%"></td><td width="65%">Minkowski distance.  The default exponent
+ is 2.  A different exponent can be specified with the subsequent
+ <var>DistParameter</var> input argument.</td></tr>
+<tr><td width="23%"><code>&quot;chebychev&quot;</code></td><td width="2%"></td><td width="65%">Chebychev distance (maximum coordinate
+ difference).</td></tr>
+<tr><td width="23%"><code>&quot;cosine&quot;</code></td><td width="2%"></td><td width="65%">One minus the cosine of the included angle
+ between points (treated as vectors).</td></tr>
+<tr><td width="23%"><code>&quot;correlation&quot;</code></td><td width="2%"></td><td width="65%">One minus the sample linear correlation
+ between observations (treated as sequences of values).</td></tr>
+<tr><td width="23%"><code>&quot;hamming&quot;</code></td><td width="2%"></td><td width="65%">Hamming distance, which is the percentage
+ of coordinates that differ.</td></tr>
+<tr><td width="23%"><code>&quot;jaccard&quot;</code></td><td width="2%"></td><td width="65%">One minus the Jaccard coefficient, which is
+ the percentage of nonzero coordinates that differ.</td></tr>
+<tr><td width="23%"><code>&quot;spearman&quot;</code></td><td width="2%"></td><td width="65%">One minus the sample Spearman&rsquo;s rank
+ correlation between observations (treated as sequences of values).</td></tr>
+<tr><td width="23%"><var>@distfun</var></td><td width="2%"></td><td width="65%">Custom distance function handle.  A distance
+ function of the form <code>function <var>D2</var> = distfun (<var>XI</var>, <var>YI</var>)</code>,
+ where <var>XI</var> is a <math>1&times;P</math> vector containing a single observation in
+ <math>P</math>-dimensional space, <var>YI</var> is an <math>N&times;P</math> matrix containing an
+ arbitrary number of observations in the same <math>P</math>-dimensional space, and
+ <var>D2</var> is an <math>N&times;P</math> vector of distances, where <code>(<var>D2</var>k)</code> is
+ the distance between observations <var>XI</var> and <code>(<var>YI</var>k,:)</code>.</td></tr>
+</table>
+
+<p> <code><var>D</var> = pdist (<var>X</var>, <var>Y</var>, <var>Distance</var>, <var>DistParameter</var>)</code>
+ returns the distance using the metric specified by <var>Distance</var> and
+ <var>DistParameter</var>.  The latter one can only be specified when the selected
+ <var>Distance</var> is <code>&quot;seuclidean&quot;</code>, <code>&quot;minkowski&quot;</code>, and
+ <code>&quot;mahalanobis&quot;</code>.
 </p>
-<p> Predefined distance functions are:
-</p>
- <dl compact="compact">
-<dt> &lsquo;<samp>&quot;euclidean&quot;</samp>&rsquo;</dt>
-</dl>
-<p> Euclidean distance (default).
-</p>
- </dd>
-<dt> &lsquo;<samp>&quot;squaredeuclidean&quot;</samp>&rsquo;</dt>
-</dl>
-<p> Squared Euclidean distance. It omits the square root from the calculation
- of the Euclidean distance. It does not satisfy the triangle inequality.
-</p>
- </dd>
-<dt> &lsquo;<samp>&quot;seuclidean&quot;</samp>&rsquo;</dt>
-</dl>
-<p> Standardized Euclidean distance. Each coordinate in the sum of
- squares is inverse weighted by the sample variance of that
- coordinate.
-</p>
- </dd>
-<dt> &lsquo;<samp>&quot;mahalanobis&quot;</samp>&rsquo;</dt>
-</dl>
-<p> Mahalanobis distance: see the function mahalanobis.
-</p>
- </dd>
-<dt> &lsquo;<samp>&quot;cityblock&quot;</samp>&rsquo;</dt>
-</dl>
-<p> City Block metric, aka Manhattan distance.
-</p>
- </dd>
-<dt> &lsquo;<samp>&quot;minkowski&quot;</samp>&rsquo;</dt>
-</dl>
-<p> Minkowski metric.  Accepts a numeric parameter <var>p</var>: for <var>p</var>=1
- this is the same as the cityblock metric, with <var>p</var>=2 (default) it
- is equal to the euclidean metric.
-</p>
- </dd>
-<dt> &lsquo;<samp>&quot;cosine&quot;</samp>&rsquo;</dt>
-</dl>
-<p> One minus the cosine of the included angle between rows, seen as
- vectors.
-</p>
- </dd>
-<dt> &lsquo;<samp>&quot;correlation&quot;</samp>&rsquo;</dt>
-</dl>
-<p> One minus the sample correlation between points (treated as
- sequences of values).
-</p>
- </dd>
-<dt> &lsquo;<samp>&quot;spearman&quot;</samp>&rsquo;</dt>
-</dl>
-<p> One minus the sample Spearman&rsquo;s rank correlation between
- observations, treated as sequences of values.
-</p>
- </dd>
-<dt> &lsquo;<samp>&quot;hamming&quot;</samp>&rsquo;</dt>
-</dl>
-<p> Hamming distance: the quote of the number of coordinates that differ.
-</p>
- </dd>
-<dt> &lsquo;<samp>&quot;jaccard&quot;</samp>&rsquo;</dt>
-</dl>
-<p> One minus the Jaccard coefficient, the quote of nonzero
- coordinates that differ.
-</p>
- </dd>
-<dt> &lsquo;<samp>&quot;chebychev&quot;</samp>&rsquo;</dt>
-</dl>
-<p> Chebychev distance: the maximum coordinate difference.
- </p></dd>
-</dl>
 <p> <strong>See also: </strong>
-  <a href="linkage.html">linkage</a>, 
-mahalanobis, 
+  <a href="pdist2.html">pdist2</a>, 
   <a href="squareform.html">squareform</a>, 
-  <a href="pdist2.html">pdist2</a>
+  <a href="linkage.html">linkage</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/pdist.m">pdist</a>
