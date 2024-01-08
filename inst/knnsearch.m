@@ -17,23 +17,23 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{idx} =} knnsearch (@var{x}, @var{y})
-## @deftypefnx {statistics} {[@var{idx}, @var{D}] =} knnsearch (@var{x}, @var{y})
+## @deftypefn  {statistics} {@var{idx} =} knnsearch (@var{X}, @var{Y})
+## @deftypefnx {statistics} {[@var{idx}, @var{D}] =} knnsearch (@var{X}, @var{Y})
 ## @deftypefnx {statistics} {[@dots{}] =} knnsearch (@dots{}, @var{name}, @var{value})
 ##
 ## Find k-nearest neighbors from input data.
 ##
-## @code{@var{idx} = knnsearch (@var{x}, @var{y})} finds @math{K} nearest
-## neighbors in @var{x} for @var{y}. It returns @var{idx} which contains indices
-## of @math{K} nearest neighbors of each row of @var{y}, If not specified,
-## @qcode{@var{K} = 1}.  @var{x} must be an @math{NxP} numeric matrix of input
+## @code{@var{idx} = knnsearch (@var{X}, @var{Y})} finds @math{K} nearest
+## neighbors in @var{X} for @var{Y}. It returns @var{idx} which contains indices
+## of @math{K} nearest neighbors of each row of @var{Y}, If not specified,
+## @qcode{@var{K} = 1}.  @var{X} must be an @math{NxP} numeric matrix of input
 ## data, where rows correspond to observations and columns correspond to
-## features or variables.  @var{y} is an @math{MxP} numeric matrix with query
-## points, which must have the same numbers of column as @var{x}.
+## features or variables.  @var{Y} is an @math{MxP} numeric matrix with query
+## points, which must have the same numbers of column as @var{X}.
 ##
-## @code{[@var{idx}, @var{dist}] = knnsearch (@var{x}, @var{y})} returns the
-## @math{K} nearest neighbour in @var{x} for each @var{y} with distances
-## returned in @var{dist}.
+## @code{[@var{idx}, @var{D}] = knnsearch (@var{X}, @var{Y})} also returns the
+## the distances, @var{D}, which correspond to the @math{K} nearest neighbour in
+## @var{X} for each @var{Y}
 ##
 ## Additional parameters can be specified by @qcode{Name-Value} pair arguments.
 ##
@@ -292,14 +292,13 @@ function [idx, dist] = knnsearch (X, Y, varargin)
     endif
   else
 
-    ## Calculate distance and search by exhaustive
+    ## Calculate all distances
     if (K == 1)
       D = pdist2 (X, Y, Distance, DistParameter);
       D = reshape (D', size (Y, 1), size (X, 1));
       [dist, idx] = min (D, [], 2);
     else            # always sort indices in this case
       if (InclTies)
-        ## This part needs fixing so that idx is a cell array (column vector
         dist = cell (rows (Y), 1);
         idx  = cell (rows (Y), 1);
         for i = 1:rows (Y)
@@ -324,9 +323,9 @@ function [idx, dist] = knnsearch (X, Y, varargin)
 endfunction
 
 ## buildkdtree
-function ret = buildkdtree_recur (x, r, d, BS)
+function ret = buildkdtree_recur (X, r, d, BS)
   count = length (r);
-  dimen = size (x, 2);
+  dimen = size (X, 2);
   if (count == 1)
     ret = struct ("point", r(1), "dimen", d);
   else
@@ -336,44 +335,44 @@ function ret = buildkdtree_recur (x, r, d, BS)
     ## Build left sub tree
     if (mid > 1)
       left = r(1:mid-1);
-      left_points = x(left,d);
+      left_points = X(left,d);
       [val, left_idx] = sort (left_points);
       leftr = left(left_idx);
-      ret.left = buildkdtree_recur (x, leftr, d);
+      ret.left = buildkdtree_recur (X, leftr, d);
     endif
     ## Build right sub tree
     if (count > mid)
       right = r(mid+1:count);
-      right_points = x(right,d);
+      right_points = X(right,d);
       [val, right_idx] = sort (right_points);
       rightr = right(right_idx);
-      ret.right = buildkdtree_recur (x, rightr, d);
+      ret.right = buildkdtree_recur (X, rightr, d);
     endif
   endif
 endfunction
 
 ## wrapper function for buildkdtree_recur
-function ret = buildkdtree (x, BS)
-  [val, r] = sort (x(:,1));
-  ret = struct ("data", x, "root", buildkdtree_recur (x, r, 1, BS));
+function ret = buildkdtree (X, BS)
+  [val, r] = sort (X(:,1));
+  ret = struct ("data", X, "root", buildkdtree_recur (X, r, 1, BS));
 endfunction
 
-function farthest = kdtree_cand_farthest (x, p, cand, dist, distparam)
-  D = pdist2 (x, p, dist, distparam);
+function farthest = kdtree_cand_farthest (X, p, cand, dist, distparam)
+  D = pdist2 (X, p, dist, distparam);
   [val, index] = max (D'(cand));
   farthest = cand (index);
 endfunction
 
 ## function to insert into NN list
-function inserted = kdtree_cand_insert (x, p, cand, k, point, dist, distparam)
+function inserted = kdtree_cand_insert (X, p, cand, k, point, dist, distparam)
   if (length (cand) < k)
     inserted = [cand; point];
   else
-    farthest = kdtree_cand_farthest (x, p, cand, dist, distparam);
+    farthest = kdtree_cand_farthest (X, p, cand, dist, distparam);
     if (pdist2 (cand(find(cand == farthest),:), point, dist, distparam))
       inserted = [cand; point];
     else
-      farthest = kdtree_cand_farthest (x, p, cand, dist, distparam);
+      farthest = kdtree_cand_farthest (X, p, cand, dist, distparam);
       cand (find (cand == farthest)) = point;
       inserted = cand;
     endif
@@ -381,87 +380,87 @@ function inserted = kdtree_cand_insert (x, p, cand, k, point, dist, distparam)
 endfunction
 
 ## function to search in a kd tree
-function nn = findkdtree_recur (x, node, p, nn, ...
+function nn = findkdtree_recur (X, node, p, nn, ...
                                         k, dist, distparam)
   point = node.point;
   d = node.dimen;
-  if (x(point,d) > p(d))
+  if (X(point,d) > p(d))
     ## Search in left sub tree
     if (isfield (node, "left"))
-      nn = findkdtree_recur (x, node.left, p, nn, k, dist, distparam);
+      nn = findkdtree_recur (X, node.left, p, nn, k, dist, distparam);
     endif
     ## Add current point if neccessary
-    farthest = kdtree_cand_farthest (x, p, nn, dist, distparam);
-    if (length(nn) < k || pdist2 (x(point,:), p, dist, distparam)
-        <= pdist2 (x(farthest,:), p, dist, distparam))
-      nn = kdtree_cand_insert (x, p, nn, k, point, dist, distparam);
+    farthest = kdtree_cand_farthest (X, p, nn, dist, distparam);
+    if (length(nn) < k || pdist2 (X(point,:), p, dist, distparam)
+        <= pdist2 (X(farthest,:), p, dist, distparam))
+      nn = kdtree_cand_insert (X, p, nn, k, point, dist, distparam);
     endif
     ## Search in right sub tree if neccessary
-    farthest = kdtree_cand_farthest (x, p, nn, dist, distparam);
-    radius = pdist2 (x(farthest,:), p, dist, distparam);
+    farthest = kdtree_cand_farthest (X, p, nn, dist, distparam);
+    radius = pdist2 (X(farthest,:), p, dist, distparam);
     if (isfield (node, "right") &&
-        (length(nn) < k || p(d) + radius > x(point,d)))
-      nn = findkdtree_recur (x, node.right, p, nn, ...
+        (length(nn) < k || p(d) + radius > X(point,d)))
+      nn = findkdtree_recur (X, node.right, p, nn, ...
                                      k, dist, distparam);
     endif
   else
     ## Search in right sub tree
     if (isfield (node, "right"))
-      nn = findkdtree_recur (x, node.right, p, nn, k, dist, distparam);
+      nn = findkdtree_recur (X, node.right, p, nn, k, dist, distparam);
     endif
     ## Add current point if neccessary
-    farthest = kdtree_cand_farthest (x, p, nn, dist, distparam);
-    if (length (nn) < k || pdist2 (x(point,:), p, dist, distparam)
-        <= pdist2 (x(farthest,:), p, dist, distparam))
-      nn = kdtree_cand_insert (x, p, nn, k, point, dist, distparam);
+    farthest = kdtree_cand_farthest (X, p, nn, dist, distparam);
+    if (length (nn) < k || pdist2 (X(point,:), p, dist, distparam)
+        <= pdist2 (X(farthest,:), p, dist, distparam))
+      nn = kdtree_cand_insert (X, p, nn, k, point, dist, distparam);
     endif
     ## Search in left sub tree if neccessary
-    farthest = kdtree_cand_farthest (x, p, nn, dist, distparam);
-    radius = pdist2 (x(farthest,:), p, dist, distparam);
+    farthest = kdtree_cand_farthest (X, p, nn, dist, distparam);
+    radius = pdist2 (X(farthest,:), p, dist, distparam);
     if (isfield (node, "left") &&
-        (length (nn) < k || p(d) - radius <= x(point,d)))
-      nn = findkdtree_recur (x, node.left, p, nn, k, dist, distparam);
+        (length (nn) < k || p(d) - radius <= X(point,d)))
+      nn = findkdtree_recur (X, node.left, p, nn, k, dist, distparam);
     endif
   endif
 endfunction
 
 ## wrapper function for findkdtree_recur
 function nn = findkdtree (tree, p, k, dist, distparam)
-    x = tree.data;
+    X = tree.data;
     root = tree.root;
-    nn = findkdtree_recur (x, root, p, [], k, dist, distparam);
+    nn = findkdtree_recur (X, root, p, [], k, dist, distparam);
 endfunction
 
 %!demo
 %! ## find 10 nearest neighbour of a point using different distance metrics
 %! ## and compare the results by plotting
 %! load fisheriris
-%! x = meas(:,3:4);
-%! y = species;
+%! X = meas(:,3:4);
+%! Y = species;
 %! point = [5, 1.45];
 %!
 %! ## calculate 10 nearest-neighbours by minkowski distance
-%! [id, d] = knnsearch (x, point, "K", 10);
+%! [id, d] = knnsearch (X, point, "K", 10);
 %!
 %! ## calculate 10 nearest-neighbours by minkowski distance
-%! [idm, dm] = knnsearch (x, point, "K", 10, "distance", "minkowski", "p", 5);
+%! [idm, dm] = knnsearch (X, point, "K", 10, "distance", "minkowski", "p", 5);
 %!
 %! ## calculate 10 nearest-neighbours by chebychev distance
-%! [idc, dc] = knnsearch (x, point, "K", 10, "distance", "chebychev");
+%! [idc, dc] = knnsearch (X, point, "K", 10, "distance", "chebychev");
 %!
 %! ## plotting the results
-%! gscatter (x(:,1), x(:,2), species, [.75 .75 0; 0 .75 .75; .75 0 .75], ".", 20)
+%! gscatter (X(:,1), X(:,2), species, [.75 .75 0; 0 .75 .75; .75 0 .75], ".", 20)
 %! title ("Fisher's Iris Data - Nearest Neighbors with different types of distance metrics");
 %! xlabel("Petal length (cm)");
 %! ylabel("Petal width (cm)");
 %!
-%! line (point(1), point(2), "marker", "x", "color", "k", ...
+%! line (point(1), point(2), "marker", "X", "color", "k", ...
 %!       "linewidth", 2, "displayname", "query point")
-%! line (x(id,1), x(id,2), "color", [0.5 0.5 0.5], "marker", "o", ...
+%! line (X(id,1), X(id,2), "color", [0.5 0.5 0.5], "marker", "o", ...
 %!       "linestyle", "none", "markersize", 10, "displayname", "eulcidean")
-%! line (x(idm,1), x(idm,2), "color", [0.5 0.5 0.5], "marker", "d", ...
+%! line (X(idm,1), X(idm,2), "color", [0.5 0.5 0.5], "marker", "d", ...
 %!       "linestyle", "none", "markersize", 10, "displayname", "Minkowski")
-%! line (x(idc,1), x(idc,2), "color", [0.5 0.5 0.5], "marker", "p", ...
+%! line (X(idc,1), X(idc,2), "color", [0.5 0.5 0.5], "marker", "p", ...
 %!       "linestyle", "none", "markersize", 10, "displayname", "chebychev")
 %! xlim ([4.5 5.5]);
 %! ylim ([1 2]);
@@ -470,21 +469,21 @@ endfunction
 %!demo
 %! ## knnsearch on iris dataset using kdtree method
 %! load fisheriris
-%! x = meas(:,3:4);
-%! gscatter (x(:,1), x(:,2), species, [.75 .75 0; 0 .75 .75; .75 0 .75], ".", 20)
+%! X = meas(:,3:4);
+%! gscatter (X(:,1), X(:,2), species, [.75 .75 0; 0 .75 .75; .75 0 .75], ".", 20)
 %! title ("Fisher's iris dataset : Nearest Neighbors with kdtree search");
 %!
 %! ## new point to be predicted
 %! point = [5 1.45];
 %!
-%! line (point(1), point(2), "marker", "x", "color", "k", ...
+%! line (point(1), point(2), "marker", "X", "color", "k", ...
 %!       "linewidth", 2, "displayname", "query point")
 %!
 %! ## knnsearch using kdtree method
-%! [idx, d] = knnsearch (x, point, "K", 10, "NSMethod", "kdtree");
+%! [idx, d] = knnsearch (X, point, "K", 10, "NSMethod", "kdtree");
 %!
 %! ## plotting predicted neighbours
-%! line (x(idx,1), x(idx,2), "color", [0.5 0.5 0.5], "marker", "o", ...
+%! line (X(idx,1), X(idx,2), "color", [0.5 0.5 0.5], "marker", "o", ...
 %!       "linestyle", "none", "markersize", 10, ...
 %!       "displayname", "nearest neighbour")
 %! xlim ([4 6])
@@ -503,20 +502,20 @@ endfunction
 
 
 ## Test output
-%!shared x, y
-%! x = [1, 2, 3, 4; 2, 3, 4, 5; 3, 4, 5, 6];
-%! y = [1, 2, 2, 3; 2, 3, 3, 4];
+%!shared X, Y
+%! X = [1, 2, 3, 4; 2, 3, 4, 5; 3, 4, 5, 6];
+%! Y = [1, 2, 2, 3; 2, 3, 3, 4];
 %!test
-%! [idx, D] = knnsearch (x, y, "Distance", "euclidean");
+%! [idx, D] = knnsearch (X, Y, "Distance", "euclidean");
 %! assert (idx, [1; 1]);
 %! assert (D, ones (2, 1) * sqrt (2));
 %!test
 %! eucldist = @(v,m) sqrt(sumsq(repmat(v,rows(m),1)-m,2));
-%! [idx, D] = knnsearch (x, y, "Distance", eucldist);
+%! [idx, D] = knnsearch (X, Y, "Distance", eucldist);
 %! assert (idx, [1; 1]);
 %! assert (D, ones (2, 1) * sqrt (2));
 %!test
-%! [idx, D] = knnsearch (x, y, "Distance", "euclidean", "includeties", true);
+%! [idx, D] = knnsearch (X, Y, "Distance", "euclidean", "includeties", true);
 %! assert (iscell (idx), true);
 %! assert (iscell (D), true)
 %! assert (idx {1}, [1]);
@@ -524,15 +523,15 @@ endfunction
 %! assert (D{1}, ones (1, 1) * sqrt (2));
 %! assert (D{2}, ones (1, 2) * sqrt (2));
 %!test
-%! [idx, D] = knnsearch (x, y, "Distance", "euclidean", "k", 2);
+%! [idx, D] = knnsearch (X, Y, "Distance", "euclidean", "k", 2);
 %! assert (idx, [1, 2; 1, 2]);
 %! assert (D, [sqrt(2), 3.162277660168380; sqrt(2), sqrt(2)], 1e-14);
 %!test
-%! [idx, D] = knnsearch (x, y, "Distance", "seuclidean");
+%! [idx, D] = knnsearch (X, Y, "Distance", "seuclidean");
 %! assert (idx, [1; 1]);
 %! assert (D, ones (2, 1) * sqrt (2));
 %!test
-%! [idx, D] = knnsearch (x, y, "Distance", "seuclidean", "k", 2);
+%! [idx, D] = knnsearch (X, Y, "Distance", "seuclidean", "k", 2);
 %! assert (idx, [1, 2; 1, 2]);
 %! assert (D, [sqrt(2), 3.162277660168380; sqrt(2), sqrt(2)], 1e-14);
 %!test
@@ -542,43 +541,43 @@ endfunction
 %! assert (idx, [3; 2]);
 %! assert (D, [0; 3.162277660168377], 1e-14);
 %!test
-%! [idx, D] = knnsearch (x, y, "Distance", "minkowski");
+%! [idx, D] = knnsearch (X, Y, "Distance", "minkowski");
 %! assert (idx, [1; 1]);
 %! assert (D, ones (2, 1) * sqrt (2));
 %!test
-%! [idx, D] = knnsearch (x, y, "Distance", "minkowski", "p", 3);
+%! [idx, D] = knnsearch (X, Y, "Distance", "minkowski", "p", 3);
 %! assert (idx, [1; 1]);
 %! assert (D, ones (2, 1) * 1.259921049894873, 1e-14);
 %!test
-%! [idx, D] = knnsearch (x, y, "Distance", "cityblock");
+%! [idx, D] = knnsearch (X, Y, "Distance", "cityblock");
 %! assert (idx, [1; 1]);
 %! assert (D, [2; 2]);
 %!test
-%! [idx, D] = knnsearch (x, y, "Distance", "chebychev");
+%! [idx, D] = knnsearch (X, Y, "Distance", "chebychev");
 %! assert (idx, [1; 1]);
 %! assert (D, [1; 1]);
 %!test
-%! [idx, D] = knnsearch (x, y, "Distance", "cosine");
+%! [idx, D] = knnsearch (X, Y, "Distance", "cosine");
 %! assert (idx, [2; 3]);
 %! assert (D, [0.005674536395645; 0.002911214328620], 1e-14);
 %!test
-%! [idx, D] = knnsearch (x, y, "Distance", "correlation");
+%! [idx, D] = knnsearch (X, Y, "Distance", "correlation");
 %! assert (idx, [1; 1]);
 %! assert (D, ones (2, 1) * 0.051316701949486, 1e-14);
 %!test
-%! [idx, D] = knnsearch (x, y, "Distance", "spearman");
+%! [idx, D] = knnsearch (X, Y, "Distance", "spearman");
 %! assert (idx, [1; 1]);
 %! assert (D, ones (2, 1) * 0.051316701949486, 1e-14);
 %!test
-%! [idx, D] = knnsearch (x, y, "Distance", "hamming");
+%! [idx, D] = knnsearch (X, Y, "Distance", "hamming");
 %! assert (idx, [1; 1]);
 %! assert (D, [0.5; 0.5]);
 %!test
-%! [idx, D] = knnsearch (x, y, "Distance", "jaccard");
+%! [idx, D] = knnsearch (X, Y, "Distance", "jaccard");
 %! assert (idx, [1; 1]);
 %! assert (D, [0.5; 0.5]);
 %!test
-%! [idx, D] = knnsearch (x, y, "Distance", "jaccard", "k", 2);
+%! [idx, D] = knnsearch (X, Y, "Distance", "jaccard", "k", 2);
 %! assert (idx, [1, 2; 1, 2]);
 %! assert (D, [0.5, 1; 0.5, 0.5]);
 %!test
@@ -652,30 +651,30 @@ endfunction
 %!error<knnsearch: invalid NAME in optional pairs of arguments.> ...
 %! knnsearch (ones (4, 2), ones (3, 2), "Distance", "euclidean", "some", "some")
 %!error<knnsearch: only a single distance parameter can be defined.> ...
-%! knnsearch(ones (4, 5), ones (1, 5), "scale", ones (1, 5), "P", 3)
+%! knnsearch (ones (4, 5), ones (1, 5), "scale", ones (1, 5), "P", 3)
 %!error<knnsearch: invalid value of K.> ...
-%! knnsearch(ones (4, 5), ones (1, 5), "K", 0)
+%! knnsearch (ones (4, 5), ones (1, 5), "K", 0)
 %!error<knnsearch: invalid value of Minkowski Exponent.> ...
-%! knnsearch(ones (4, 5), ones (1, 5),"P",-2)
+%! knnsearch (ones (4, 5), ones (1, 5), "P",-2)
 %!error<knnsearch: invalid value in Scale or the size of Scale.> ...
-%! knnsearch(ones (4, 5), ones (1, 5), "scale", ones(4,5), "distance", "euclidean")
+%! knnsearch (ones (4, 5), ones (1, 5), "scale", ones(4,5), "distance", "euclidean")
 %!error<knnsearch: invalid value in Cov, Cov can only be given for mahalanobis distance.> ...
-%! knnsearch(ones (4, 5), ones (1, 5), "cov", ["some" "some"])
+%! knnsearch (ones (4, 5), ones (1, 5), "cov", ["some" "some"])
 %!error<knnsearch: invalid value in Cov, Cov can only be given for mahalanobis distance.> ...
-%! knnsearch(ones (4, 5), ones (1, 5), "cov", ones(4,5), "distance", "euclidean")
+%! knnsearch (ones (4, 5), ones (1, 5), "cov", ones(4,5), "distance", "euclidean")
 %!error<knnsearch: invalid value of bucketsize.> ...
-%! knnsearch(ones (4, 5), ones (1, 5),"bucketsize",-1)
+%! knnsearch (ones (4, 5), ones (1, 5), "bucketsize", -1)
 %!error<knnsearch: 'kdtree' cannot be used with the given distance metric.> ...
-%! knnsearch(ones (4, 5), ones (1, 5),"NSmethod", "kdtree", "distance","cosine")
+%! knnsearch (ones (4, 5), ones (1, 5), "NSmethod", "kdtree", "distance", "cosine")
 %!error<knnsearch: 'kdtree' cannot be used with the given distance metric.> ...
-%! knnsearch(ones (4, 5), ones (1, 5),"NSmethod", "kdtree", "distance","mahalanobis")
+%! knnsearch (ones (4, 5), ones (1, 5), "NSmethod", "kdtree", "distance", "mahalanobis")
 %!error<knnsearch: 'kdtree' cannot be used with the given distance metric.> ...
-%! knnsearch(ones (4, 5), ones (1, 5),"NSmethod", "kdtree", "distance","correlation")
+%! knnsearch (ones (4, 5), ones (1, 5), "NSmethod", "kdtree", "distance", "correlation")
 %!error<knnsearch: 'kdtree' cannot be used with the given distance metric.> ...
-%! knnsearch(ones (4, 5), ones (1, 5),"NSmethod", "kdtree", "distance","seuclidean")
+%! knnsearch (ones (4, 5), ones (1, 5), "NSmethod", "kdtree", "distance", "seuclidean")
 %!error<knnsearch: 'kdtree' cannot be used with the given distance metric.> ...
-%! knnsearch(ones (4, 5), ones (1, 5),"NSmethod", "kdtree", "distance","spearman")
+%! knnsearch (ones (4, 5), ones (1, 5), "NSmethod", "kdtree", "distance", "spearman")
 %!error<knnsearch: 'kdtree' cannot be used with the given distance metric.> ...
-%! knnsearch(ones (4, 5), ones (1, 5),"NSmethod", "kdtree", "distance","hamming")
+%! knnsearch (ones (4, 5), ones (1, 5), "NSmethod", "kdtree", "distance", "hamming")
 %!error<knnsearch: 'kdtree' cannot be used with the given distance metric.> ...
-%! knnsearch(ones (4, 5), ones (1, 5),"NSmethod", "kdtree", "distance","jaccard")
+%! knnsearch (ones (4, 5), ones (1, 5), "NSmethod", "kdtree", "distance", "jaccard")
