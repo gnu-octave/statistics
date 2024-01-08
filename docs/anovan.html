@@ -84,7 +84,9 @@
  algorithms used make <code>anovan</code> suitable for balanced or unbalanced
  factorial (crossed) designs. By default, <code>anovan</code> treats all factors
  as fixed. Examples of function usage can be found by entering the command
- <code>demo anovan</code>.
+ <code>demo anovan</code>. A bootstrap resampling variant of this function,
+ <code>bootlm</code>, is available in the statistics-resampling package and has
+ similar usage.
 </p>
 <div class="ms-5">
 <p> Data is a single vector <var>Y</var> with groups specified by a corresponding
@@ -284,8 +286,6 @@
  contrasts. The number appended to each term name in <var>stats</var>.coeffnames
  corresponds to the column number in the relevant contrast matrix for that
  factor. The <var>stats</var> structure can be used as input for <code>multcompare</code>.
- The <var>stats</var> structure is also recognised by the functions <code>bootcoeff</code>
- and <code>bootemm</code> from the statistics-bootstrap package.
 </p>
 <p> <code>[<var>p</var>, <var>atab</var>, <var>stats</var>, <var>terms</var>] = anovan (&hellip;)</code>
  returns the model term definitions.

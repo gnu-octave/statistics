@@ -99,97 +99,117 @@
  <code>Name-Value</code> pair arguments listed below.
 </p>
  <table>
-<thead><tr><th width="5%"></th><th width="20%"><var>Name</var></th><th width="75%"><var>Value</var></th></tr></thead>
-<tr><td width="5%"></td><td width="20%"><code>&quot;K&quot;</code></td><td width="75%">is the number of nearest neighbors to be found
- in the kNN search.  It must be a positive integer value and by default it is
- 1. <var>&quot;K&quot;</var> can be changed by using <code><var>obj.K</var> = 10</code>.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;weights&quot;</code></td><td width="75%">is a <math>N&times;1</math> numeric non-negative matrix
- of the observational weights, each row in <var>weights</var> corresponds to the
- row in <var>Y</var> and indicates the relative importance or weight to be
- considered in calculating the Nearest-neighbour, negative values are removed
-  before calculations if weights are specified. this propery cannot be
- changed via object. default value <code><var>weight</var> = ones(rows(Y),1)</code>.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;cost&quot;</code></td><td width="75%">is a <math>N&times;R</math> numeric matrix containing
+<thead><tr><th width="18%"></th><th width="2%"><var>Name</var></th><th width="80%"><var>Value</var></th></tr></thead>
+<tr><td width="18%"><code>&quot;PredictorNames&quot;</code></td><td width="2%"></td><td width="80%">A cell array of character vectors
+ specifying the predictor variable names.  The variable names are assumed to
+ be in the same order as they appear in the training data <var>X</var>.</td></tr>
+<tr><td width="18%"><code>&quot;ResponseName&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the name
+ of the response variable.</td></tr>
+<tr><td width="18%"><code>&quot;ClassNames&quot;</code></td><td width="2%"></td><td width="80%">A cell array of character vectors
+ specifying the names of the classes in the training data <var>Y</var>.</td></tr>
+<tr><td width="18%"><code>&quot;BreakTies&quot;</code></td><td width="2%"></td><td width="80%">Tie-breaking algorithm used by predict
+ when multiple classes have the same smallest cost. By default, ties occur
+ when multiple classes have the same number of nearest points among the
+ <math>k</math> nearest neighbors. The available options are specified by the
+ following character arrays:</td></tr>
+</table>
+
+
+ <table>
+<tr><td width="5%"></td><td width="20%"><code>&quot;smallest&quot;</code></td><td width="75%">This is the default and it favors the
+ class with the smallest index among the tied groups, i.e. the one that
+ appears first in the training labelled data.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;nearest&quot;</code></td><td width="75%">This favors the class with the nearest
+ neighbor among the tied groups, i.e. the class with the closest member point
+ according to the distance metric used.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;nearest&quot;</code></td><td width="75%">This randomly picks one class among the
+ tied groups.</td></tr>
+</table>
+
+
+ <table>
+<tr><td width="18%"><code>&quot;BucketSize&quot;</code></td><td width="2%"></td><td width="80%">The maximum number of data points in the
+ leaf node of the Kd-tree and it must be a positive integer.  By default, it
+ is 50. This argument is meaningful only when the selected search method is
+ <code>&quot;kdtree&quot;</code>.</td></tr>
+<tr><td width="18%"><code>&quot;Cost&quot;</code></td><td width="2%"></td><td width="80%">A <math>N&times;R</math> numeric matrix containing
  misclassification cost for the corresponding instances in <var>X</var> where
- <var>R</var> is the number of unique categories in <var>Y</var>. If an instance is
+ <math>R</math> is the number of unique categories in <var>Y</var>.  If an instance is
  correctly classified into its category the cost is calculated to be 1, If
  not then 0. cost matrix can be altered use <code><var>obj.cost</var> = somecost</code>.
  default value <code><var>cost</var> = ones(rows(X),numel(unique(Y)))</code>.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;exponent&quot;</code></td><td width="75%">is the Minkowski distance exponent and
- it must be a positive scalar.  This argument is only valid when the selected
- distance metric is <code>&quot;minkowski&quot;</code>.  By default it is 2.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;scale&quot;</code></td><td width="75%">is the scale parameter for the standardized
- Euclidean distance and it must be a nonnegative numeric vector of equal
- length to the number of columns in <var>X</var>.  This argument is only valid when
- the selected distance metric is <code>&quot;seuclidean&quot;</code>, in which case each
- coordinate of <var>X</var> is scaled by the corresponding element of
+<tr><td width="18%"><code>&quot;Prior&quot;</code></td><td width="2%"></td><td width="80%">A numeric vector specifying the prior
+ probabilities for each class.  The order of the elements in <code>Prior</code>
+ corresponds to the order of the classes in <code>ClassNames</code>.</td></tr>
+<tr><td width="18%"><code>&quot;NumNeighbors&quot;</code></td><td width="2%"></td><td width="80%">A positive integer value specifying
+ the number of nearest neighbors to be found in the kNN search.  By default,
+ it is 1.</td></tr>
+<tr><td width="18%"><code>&quot;Exponent&quot;</code></td><td width="2%"></td><td width="80%">A positive scalar (usually an integer)
+ specifying the Minkowski distance exponent.  This argument is only valid when
+ the selected distance metric is <code>&quot;minkowski&quot;</code>.  By default it is 2.</td></tr>
+<tr><td width="18%"><code>&quot;Scale&quot;</code></td><td width="2%"></td><td width="80%">A nonnegative numeric vector specifying the
+ scale parameters for the standardized Euclidean distance.  The vector length
+ must be equal to the number of columns in <var>X</var>.  This argument is only
+ valid when the selected distance metric is <code>&quot;seuclidean&quot;</code>, in which
+ case each coordinate of <var>X</var> is scaled by the corresponding element of
  <code>&quot;scale&quot;</code>, as is each query point in <var>Y</var>.  By default, the scale
- parameter is the standard deviation of each coordinate in <var>X</var>.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;Prior&quot;</code></td><td width="75%">is the matrix of prior probablities for each
- unique class in <var>Y</var>. <var>Prior</var> can be changed via object using
- <code><var>obj.Prior</var> = somePrior</code></td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;cov&quot;</code></td><td width="75%">is the covariance matrix for computing the
- mahalanobis distance and it must be a positive definite matrix matching the
- the number of columns in <var>X</var>.  This argument is only valid when the
- selected distance metric is <code>&quot;mahalanobis&quot;</code>.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;BucketSize&quot;</code></td><td width="75%">is the maximum number of data points in
- the leaf node of the Kd-tree and it must be a positive integer.  This
- argument is only valid when the selected search method is <code>&quot;kdtree&quot;</code>.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;Distance&quot;</code></td><td width="75%">is the distance metric used by
+ parameter is the standard deviation of each coordinate in <var>X</var>.  If a
+ variable in <var>X</var> is constant, i.e. zero variance, this value is forced
+ to 1 to avoid division by zero.  This is the equivalent of this variable not
+ being standardized.</td></tr>
+<tr><td width="18%"><code>&quot;Cov&quot;</code></td><td width="2%"></td><td width="80%">A square matrix with the same number of columns
+ as <var>X</var> specifying the covariance matrix for computing the mahalanobis
+ distance.  This must be a positive definite matrix matching.  This argument
+ is only valid when the selected distance metric is <code>&quot;mahalanobis&quot;</code>.</td></tr>
+<tr><td width="18%"><code>&quot;Distance&quot;</code></td><td width="2%"></td><td width="80%">is the distance metric used by
  <code>knnsearch</code> as specified below:</td></tr>
 </table>
 
 
  <table>
-<tr><td width="10%"></td><td width="25%"><code>&quot;euclidean&quot;</code></td><td width="65%">Euclidean distance.</td></tr>
-<tr><td width="10%"></td><td width="25%"><code>&quot;seuclidean&quot;</code></td><td width="65%">standardized Euclidean distance.  Each
+<tr><td width="5%"></td><td width="20%"><code>&quot;euclidean&quot;</code></td><td width="75%">Euclidean distance.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;seuclidean&quot;</code></td><td width="75%">standardized Euclidean distance.  Each
  coordinate difference between the rows in <var>X</var> and the query matrix
  <var>Y</var> is scaled by dividing by the corresponding element of the standard
  deviation computed from <var>X</var>.  To specify a different scaling, use the
- <code>&quot;scale&quot;</code> name-value argument.</td></tr>
-<tr><td width="10%"></td><td width="25%"><code>&quot;cityblock&quot;</code></td><td width="65%">City block distance.</td></tr>
-<tr><td width="10%"></td><td width="25%"><code>&quot;chebychev&quot;</code></td><td width="65%">Chebychev distance (maximum coordinate
+ <code>&quot;Scale&quot;</code> name-value argument.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;cityblock&quot;</code></td><td width="75%">City block distance.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;chebychev&quot;</code></td><td width="75%">Chebychev distance (maximum coordinate
  difference).</td></tr>
-<tr><td width="10%"></td><td width="25%"><code>&quot;minkowski&quot;</code></td><td width="65%">Minkowski distance.  The default exponent
+<tr><td width="5%"></td><td width="20%"><code>&quot;minkowski&quot;</code></td><td width="75%">Minkowski distance.  The default exponent
  is 2.  To specify a different exponent, use the <code>&quot;P&quot;</code> name-value
  argument.</td></tr>
-<tr><td width="10%"></td><td width="25%"><code>&quot;mahalanobis&quot;</code></td><td width="65%">Mahalanobis distance, computed using a
+<tr><td width="5%"></td><td width="20%"><code>&quot;mahalanobis&quot;</code></td><td width="75%">Mahalanobis distance, computed using a
  positive definite covariance matrix.  To change the value of the covariance
- matrix, use the <code>&quot;cov&quot;</code> name-value argument.</td></tr>
-<tr><td width="10%"></td><td width="25%"><code>&quot;cosine&quot;</code></td><td width="65%">Cosine distance.</td></tr>
-<tr><td width="10%"></td><td width="25%"><code>&quot;correlation&quot;</code></td><td width="65%">One minus the sample linear correlation
+ matrix, use the <code>&quot;Cov&quot;</code> name-value argument.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;cosine&quot;</code></td><td width="75%">Cosine distance.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;correlation&quot;</code></td><td width="75%">One minus the sample linear correlation
  between observations (treated as sequences of values).</td></tr>
-<tr><td width="10%"></td><td width="25%"><code>&quot;spearman&quot;</code></td><td width="65%">One minus the sample Spearman&rsquo;s rank
+<tr><td width="5%"></td><td width="20%"><code>&quot;spearman&quot;</code></td><td width="75%">One minus the sample Spearman&rsquo;s rank
  correlation between observations (treated as sequences of values).</td></tr>
-<tr><td width="10%"></td><td width="25%"><code>&quot;hamming&quot;</code></td><td width="65%">Hamming distance, which is the percentage
+<tr><td width="5%"></td><td width="20%"><code>&quot;hamming&quot;</code></td><td width="75%">Hamming distance, which is the percentage
  of coordinates that differ.</td></tr>
-<tr><td width="10%"></td><td width="25%"><code>&quot;jaccard&quot;</code></td><td width="65%">One minus the Jaccard coefficient, which is
+<tr><td width="5%"></td><td width="20%"><code>&quot;jaccard&quot;</code></td><td width="75%">One minus the Jaccard coefficient, which is
  the percentage of nonzero coordinates that differ.</td></tr>
+<tr><td width="5%"></td><td width="20%"><var>@distfun</var></td><td width="75%">Custom distance function handle.  A distance
+ function of the form <code>function <var>D2</var> = distfun (<var>XI</var>, <var>YI</var>)</code>,
+ where <var>XI</var> is a <math>1&times;P</math> vector containing a single observation in
+ <math>P</math>-dimensional space, <var>YI</var> is an <math>N&times;P</math> matrix containing an
+ arbitrary number of observations in the same <math>P</math>-dimensional space, and
+ <var>D2</var> is an <math>N&times;P</math> vector of distances, where <code>(<var>D2</var>k)</code> is
+ the distance between observations <var>XI</var> and <code>(<var>YI</var>k,:)</code>.</td></tr>
 </table>
 
 
  <table>
-<tr><td width="5%"></td><td width="20%"><code>&quot;NSMethod&quot;</code></td><td width="75%">is the nearest neighbor search method used
- by <code>knnsearch</code> as specified below.</td></tr>
-</table>
-
-
- <table>
-<tr><td width="10%"></td><td width="25%"><code>&quot;kdtree&quot;</code></td><td width="65%">Creates and uses a Kd-tree to find nearest
- neighbors.  <code>&quot;kdtree&quot;</code> is the default value when the number of columns
- in <var>X</var> is less than or equal to 10, <var>X</var> is not sparse, and the
- distance metric is <code>&quot;euclidean&quot;</code>, <code>&quot;cityblock&quot;</code>,
- <code>&quot;chebychev&quot;</code>, or <code>&quot;minkowski&quot;</code>.  Otherwise, the default value is
- <code>&quot;exhaustive&quot;</code>.  This argument is only valid when the distance metric
- is one of the four aforementioned metrics.</td></tr>
-<tr><td width="10%"></td><td width="25%"><code>&quot;exhaustive&quot;</code></td><td width="65%">Uses the exhaustive search algorithm by
- computing the distance values from all the points in <var>X</var> to each point in
- <var>Y</var>.</td></tr>
-</table>
-
-
- <table>
-<tr><td width="5%"></td><td width="20%"><code>&quot;IncludeTies&quot;</code></td><td width="75%">is a boolean flag to indicate if the
+<tr><td width="18%"><code>&quot;DistanceWeight&quot;</code></td><td width="2%"></td><td width="80%">A distance weighting function,
+ specified either as a function handle, which accepts a matrix of nonnegative
+ distances and returns a matrix the same size containing nonnegative distance
+ weights, or one of the following values: <code>&quot;equal&quot;</code>, which corresponds
+ to no weighting; <code>&quot;inverse&quot;</code>, which corresponds to a weight equal to
+ <math>1/distance</math>; <code>&quot;squaredinverse&quot;</code>, which corresponds to a weight
+ equal to <math>1/distance^2</math>.</td></tr>
+<tr><td width="18%"><code>&quot;IncludeTies&quot;</code></td><td width="2%"></td><td width="80%">A boolean flag to indicate if the
  returned values should contain the indices that have same distance as the
  <math>K^th</math> neighbor.  When <code>false</code>, <code>knnsearch</code> chooses the
  observation with the smallest index among the observations that have the same
@@ -197,22 +217,30 @@
  all nearest neighbors whose distances are equal to the <math>K^th</math> smallest
  distance in the output arguments. To specify <math>K</math>, use the <code>&quot;K&quot;</code>
  name-value pair argument.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;breakties&quot;</code></td><td width="75%">is the method to break ties in kNN
- algorithm while deciding the label for an observation.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;classnames&quot;</code></td><td width="75%">is a vector of unique classes in
- training data <var>Y</var>.If not given as name-value pair, the function
- calculates and stores the unique values in <var>Y</var>. <var>&quot;classnames&quot;</var> cannot
- be changed via <var>obj</var>.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;NosClasses&quot;</code></td><td width="75%">is a numeric value that stores the
- number of unique classes in <var>Y</var>.If not given as name-value pair, the
- function calculates and stores the number of unique values in <var>Y</var>.
- <var>&quot;NosClasses&quot;</var> cannot be changed via <var>obj</var>.</td></tr>
+<tr><td width="18%"><code>&quot;NSMethod&quot;</code></td><td width="2%"></td><td width="80%">is the nearest neighbor search method used
+ by <code>knnsearch</code> as specified below.</td></tr>
+</table>
+
+
+ <table>
+<tr><td width="5%"></td><td width="20%"><code>&quot;kdtree&quot;</code></td><td width="75%">Creates and uses a Kd-tree to find nearest
+ neighbors.  <code>&quot;kdtree&quot;</code> is the default value when the number of columns
+ in <var>X</var> is less than or equal to 10, <var>X</var> is not sparse, and the
+ distance metric is <code>&quot;euclidean&quot;</code>, <code>&quot;cityblock&quot;</code>,
+ <code>&quot;manhattan&quot;</code>, <code>&quot;chebychev&quot;</code>, or <code>&quot;minkowski&quot;</code>.  Otherwise,
+ the default value is <code>&quot;exhaustive&quot;</code>.  This argument is only valid when
+ the distance metric is one of the four aforementioned metrics.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;exhaustive&quot;</code></td><td width="75%">Uses the exhaustive search algorithm by
+ computing the distance values from all the points in <var>X</var> to each point in
+ <var>Y</var>.</td></tr>
 </table>
 
 
 <p> <strong>See also: </strong>
-knnpredict, 
-  <a href="@ClassificationKNN_predict.html">@ClassificationKNN/predict</a>
+  <a href="@ClassificationKNN_predict.html">@ClassificationKNN/predict</a>, 
+  <a href="@ClassificationKNN_ClassificationKNN.html">@ClassificationKNN/ClassificationKNN</a>, 
+  <a href="knnsearch.html">knnsearch</a>, 
+  <a href="pdist2.html">pdist2</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/fitcknn.m">fitcknn</a>

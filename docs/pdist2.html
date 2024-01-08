@@ -71,63 +71,95 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>d</var> = <b>pdist2</b><i> (<var>x</var>, <var>y</var>)</i></dt>
-<dt><u>statistics:</u> <var>d</var> = <b>pdist2</b><i> (<var>x</var>, <var>y</var>, <var>metric</var>)</i></dt>
+<dt><u>statistics:</u> <var>D</var> = <b>pdist2</b><i> (<var>X</var>, <var>Y</var>)</i></dt>
+<dt><u>statistics:</u> <var>D</var> = <b>pdist2</b><i> (<var>X</var>, <var>Y</var>, <var>Distance</var>)</i></dt>
+<dt><u>statistics:</u> <var>D</var> = <b>pdist2</b><i> (<var>X</var>, <var>Y</var>, <var>Distance</var>, <var>DistParameter</var>)</i></dt>
+<dt><u>statistics:</u> <var>D</var> = <b>pdist2</b><i> (&hellip;, <var>Name</var>, <var>Value</var>)</i></dt>
+<dt><u>statistics:</u> [<var>D</var>, <var>I</var>] = <b>pdist2</b><i> (&hellip;, <var>Name</var>, <var>Value</var>)</i></dt>
 </dl>
 
 <p> Compute pairwise distance between two sets of vectors.
 </p>
 <div class="ms-5">
-<p> Let <var>X</var> be an MxP matrix representing m points in P-dimensional space
- and <var>Y</var> be an NxP matrix representing another set of points in the same
- space.  This function computes the M-by-N distance matrix <var>D</var> where
- <code><var>D</var>(i,j)</code> is the distance between <code><var>X</var>(i,:)</code> and
+<p> <code><var>D</var> = pdist2 (<var>X</var>, <var>Y</var>)</code> calculates the euclidean distance
+ between each pair of observations in <var>X</var> and <var>Y</var>.  Let <var>X</var> be an
+ <math>M&times;P</math> matrix representing <math>M</math> points in <math>P</math>-dimensional space
+ and <var>Y</var> be an <math>N&times;P</math> matrix representing another set of points in the
+ same space.  This function computes the <math>M&times;N</math> distance matrix <var>D</var>,
+ where <code><var>D</var>(i,j)</code> is the distance between <code><var>X</var>(i,:)</code> and
  <code><var>Y</var>(j,:)</code>.
 </p>
-<p> The optional argument <var>metric</var> can be used to select different
- distances:
+<p> <code><var>D</var> = pdist2 (<var>X</var>, <var>Y</var>, <var>Distance</var>)</code> returns the
+ distance between each pair of observations in X and Y using the metric
+ specified by <var>Distance</var>, which can be any of the following options.
 </p>
- <dl compact="compact">
-<dt> <code>&quot;euclidean&quot;</code> (default)</dt>
-<dt> <code>&quot;sqeuclidean&quot;</code></dt>
-</dl>
-<p> Compute the squared euclidean distance, i.e., the euclidean distance
- before computing square root.  This is ideal when the interest is on the
- order of the euclidean distances rather than the actual distance value
- because it performs significantly faster while preserving the order.
-</p>
- </dd>
-<dt> <code>&quot;chisq'&quot;</code></dt>
-</dl>
-<p> The chi-squared distance between two vectors is defined as:
- <code>d(x, y) = sum ((xi-yi)^2 / (xi+yi)) / 2</code>.
- The chi-squared distance is useful when comparing histograms.
-</p>
- </dd>
-<dt> <code>&quot;cosine&quot;</code></dt>
-</dl>
-<p> Distance is defined as the cosine of the angle between two vectors.
-</p>
- </dd>
-<dt> <code>&quot;emd&quot;</code></dt>
-</dl>
-<p> Earth Mover&rsquo;s Distance (EMD) between positive vectors (histograms).
- Note for 1D, with all histograms having equal weight, there is a simple
- closed form for the calculation of the EMD.  The EMD between histograms
- <var>x</var> and <var>y</var> is given by <code>sum (abs (cdf (x) - cdf (y)))</code>,
- where <code>cdf</code> is the cumulative distribution function (computed
- simply by <code>cumsum</code>).
-</p>
- </dd>
-<dt> <code>&quot;L1&quot;</code></dt>
-</dl>
-<p> The L1 distance between two vectors is defined as:  <code>sum (abs (x-y))</code>
-</p>
-</dd>
-</dl>
+ <table>
+<tr><td width="23%"><code>&quot;euclidean&quot;</code></td><td width="2%"></td><td width="65%">Euclidean distance.</td></tr>
+<tr><td width="23%"><code>&quot;squaredeuclidean&quot;</code></td><td width="2%"></td><td width="65%">Squared Euclidean distance.</td></tr>
+<tr><td width="23%"><code>&quot;seuclidean&quot;</code></td><td width="2%"></td><td width="65%">standardized Euclidean distance.  Each
+ coordinate difference between the rows in <var>X</var> and the query matrix
+ <var>Y</var> is scaled by dividing by the corresponding element of the standard
+ deviation computed from <var>X</var>.  A different scaling vector can be specified
+ with the subsequent <var>DistParameter</var> input argument.</td></tr>
+<tr><td width="23%"><code>&quot;mahalanobis&quot;</code></td><td width="2%"></td><td width="65%">Mahalanobis distance, computed using a
+ positive definite covariance matrix.  A different covariance matrix can be
+ specified with the subsequent <var>DistParameter</var> input argument.</td></tr>
+<tr><td width="23%"><code>&quot;cityblock&quot;</code></td><td width="2%"></td><td width="65%">City block distance.</td></tr>
+<tr><td width="23%"><code>&quot;minkowski&quot;</code></td><td width="2%"></td><td width="65%">Minkowski distance.  The default exponent
+ is 2.  A different exponent can be specified with the subsequent
+ <var>DistParameter</var> input argument.</td></tr>
+<tr><td width="23%"><code>&quot;chebychev&quot;</code></td><td width="2%"></td><td width="65%">Chebychev distance (maximum coordinate
+ difference).</td></tr>
+<tr><td width="23%"><code>&quot;cosine&quot;</code></td><td width="2%"></td><td width="65%">One minus the cosine of the included angle
+ between points (treated as vectors).</td></tr>
+<tr><td width="23%"><code>&quot;correlation&quot;</code></td><td width="2%"></td><td width="65%">One minus the sample linear correlation
+ between observations (treated as sequences of values).</td></tr>
+<tr><td width="23%"><code>&quot;hamming&quot;</code></td><td width="2%"></td><td width="65%">Hamming distance, which is the percentage
+ of coordinates that differ.</td></tr>
+<tr><td width="23%"><code>&quot;jaccard&quot;</code></td><td width="2%"></td><td width="65%">One minus the Jaccard coefficient, which is
+ the percentage of nonzero coordinates that differ.</td></tr>
+<tr><td width="23%"><code>&quot;spearman&quot;</code></td><td width="2%"></td><td width="65%">One minus the sample Spearman&rsquo;s rank
+ correlation between observations (treated as sequences of values).</td></tr>
+<tr><td width="23%"><var>@distfun</var></td><td width="2%"></td><td width="65%">Custom distance function handle.  A distance
+ function of the form <code>function <var>D2</var> = distfun (<var>XI</var>, <var>YI</var>)</code>,
+ where <var>XI</var> is a <math>1&times;P</math> vector containing a single observation in
+ <math>P</math>-dimensional space, <var>YI</var> is an <math>N&times;P</math> matrix containing an
+ arbitrary number of observations in the same <math>P</math>-dimensional space, and
+ <var>D2</var> is an <math>N&times;P</math> vector of distances, where <code>(<var>D2</var>k)</code> is
+ the distance between observations <var>XI</var> and <code>(<var>YI</var>k,:)</code>.</td></tr>
+</table>
 
+<p> <code><var>D</var> = pdist2 (<var>X</var>, <var>Y</var>, <var>Distance</var>, <var>DistParameter</var>)</code>
+ returns the distance using the metric specified by <var>Distance</var> and
+ <var>DistParameter</var>.  The latter one can only be specified when the selected
+ <var>Distance</var> is <code>&quot;seuclidean&quot;</code>, <code>&quot;minkowski&quot;</code>, and
+ <code>&quot;mahalanobis&quot;</code>.
+</p>
+<p> <code><var>D</var> = pdist2 (&hellip;, <var>Name</var>, <var>Value</var>)</code>  for any previous
+ arguments, modifies the computation using <var>Name</var>-<var>Value</var> parameters.
+ </p><ul>
+<li>
+ <code><var>D</var> = pdist2 (<var>X</var>, <var>Y</var>, <var>Distance</var>, <code>&quot;Smallest&quot;</code>,
+ <var>K</var>)</code> computes the distance using the metric specified by
+ <var>Distance</var> and returns the <var>K</var> smallest pairwise distances to
+ observations in <var>X</var> for each observation in <var>Y</var> in ascending order.
+ </li><li>
+ <code><var>D</var> = pdist2 (<var>X</var>, <var>Y</var>, <var>Distance</var>, <var>DistParameter</var>,
+ <code>&quot;Largest&quot;</code>, <var>K</var>)</code> computes the distance using the metric specified
+ by <var>Distance</var> and <var>DistParameter</var> and returns the <var>K</var> largest
+ pairwise distances in descending order.
+ </li></ul>
+
+<p> <code>[<var>D</var>, <var>I</var>] = pdist2 (&hellip;, <var>Name</var>, <var>Value</var>)</code> also
+ returns the matrix <var>I</var>, which contains the indices of the observations in
+ <var>X</var> corresponding to the distances in <var>D</var>.  You must specify either
+ <code>&quot;Smallest&quot;</code> or <code>&quot;Largest&quot;</code> as an optional <var>Name</var>-<var>Value</var>
+ pair pair argument to compute the second output argument.
+</p>
 <p> <strong>See also: </strong>
-  <a href="pdist.html">pdist</a>
+  <a href="pdist.html">pdist</a>, 
+  <a href="knnsearch.html">knnsearch</a>, 
+rangesearch
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/pdist2.m">pdist2</a>

@@ -85,7 +85,9 @@
  by minimizing the sum-of-squared residuals. Unless requested otherwise,
  <code>fitlm</code> prints the model formula, the regression coefficients (i.e.
  parameters/contrasts) and an ANOVA table. Note that unlike <code>anovan</code>,
- <code>fitlm</code> treats all factors as continuous by default.
+ <code>fitlm</code> treats all factors as continuous by default. A bootstrap
+ resampling variant of this function, <code>bootlm</code>, is available in the
+ statistics-resampling package and has similar usage.
 </p>
 <div class="ms-5">
 <p> <var>X</var> must be a column major matrix or cell array consisting of the
@@ -177,12 +179,10 @@
  contrasts. The number appended to each term name in <var>stats</var>.coeffnames
  corresponds to the column number in the relevant contrast matrix for that
  factor. The <var>stats</var> structure can be used as input for <code>multcompare</code>.
- The <var>stats</var> structure is recognised by the functions <code>bootcoeff</code>
- and <code>bootemm</code> from the statistics-bootstrap package. Note that if the
- model contains a continuous variable and you wish to use the <var>STATS</var>
- output as input to <code>multcompare</code>, then the model needs to be refit
- with the &quot;contrast&quot; parameter set to a sum-to-zero contrast coding scheme,
- e.g.&quot;simple&quot;.
+ Note that if the model contains a continuous variable and you wish to use
+ the <var>STATS</var> output as input to <code>multcompare</code>, then the model needs
+ to be refit with the &quot;contrast&quot; parameter set to a sum-to-zero contrast
+ coding scheme, e.g.&quot;simple&quot;.
 </p>
 <p> <strong>See also: </strong>
   <a href="anovan.html">anovan</a>, 
