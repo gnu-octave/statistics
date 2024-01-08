@@ -215,8 +215,8 @@
 -------------------------------------------------------------------
 
  Important Notice: 1) `mad`, `mean`, `median`, `std`, `var` functions
-                       shadow core Octave's respective functions prior
-                       to Octave v9.1
+                      shadow core Octave's respective functions prior
+                      to Octave v9.1
                    2) incompatibility with the `nan` package
  New functions:
  ==============
@@ -230,6 +230,8 @@
  ** fitrgam
 
  ** knnsearch (fully Matlab compatible)
+
+ ** rangesearch (fully Matlab compatible)
 
  ** RegressionGAM (new classdef)
 
