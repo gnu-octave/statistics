@@ -223,8 +223,17 @@ function [D, I] = pdist2 (X, Y, varargin)
                            [" definite."]));
           endif
         endif
+        ## Get inverse and catch warning if matrix is close to singular
+        ## badly scaled.
+        [DP_inv, rcond] = inv (DistParameter);
+        if (rcond < eps)
+          msg = sprintf (strcat (["pdist2: matrix is close to"], ...
+                                 [" singular or badly scaled.\n RCOND = "], ...
+                                 [" %e. Results may be inaccurate."]), rcond);
+          warning (msg);
+        endif
         dxy = X(ix(:),:) - Y(iy(:),:);
-        D   = sqrt (sum ((dxy  * inv (DistParameter)) .* dxy, 2));
+        D   = sqrt (sum ((dxy  * DP_inv) .* dxy, 2));
 
       case "cityblock"
         D = sum (abs (X(ix(:),:) - Y(iy(:),:)), 2);
@@ -410,7 +419,7 @@ endfunction
 %! eucldist = @(v,m) sqrt(sumsq(repmat(v,rows(m),1)-m,2));
 %! [d, i] = pdist2 (x, y, eucldist, "Smallest", 4);
 %! assert ({D, I}, {d, i});
-%!warning<matrix singular to machine precision> ...
+%!warning<pdist2: matrix is close to singular> ...
 %! pdist2 (xx, xx, "mahalanobis");
 
 ## Test input validation

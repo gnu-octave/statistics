@@ -171,7 +171,16 @@ function D = pdist (X, varargin)
           endif
         endif
         dxx = X(ix(:),:) - X(iy(:),:);
-        D   = sqrt (sum ((dxx  * inv (DistParameter)) .* dxx, 2));
+        ## Get inverse and catch warning if matrix is close to singular
+        ## badly scaled.
+        [DP_inv, rcond] = inv (DistParameter);
+        if (rcond < eps)
+          msg = sprintf (strcat (["pdist: matrix is close to"], ...
+                                 [" singular or badly scaled.\n RCOND = "], ...
+                                 [" %e. Results may be inaccurate."]), rcond);
+          warning (msg);
+        endif
+        D   = sqrt (sum ((dxx  * DP_inv) .* dxx, 2));
 
       case "cityblock"
         D = sum (abs (X(ix(:),:) - X(iy(:),:)), 2);
@@ -279,7 +288,8 @@ endfunction
 %!assert (pdist (x, "squaredeuclidean"), [27, 108, 8, 27, 35, 116]);
 %!assert (pdist (x, "seuclidean"), ...
 %!        [1.8071, 3.6142, 0.9831, 1.8071, 1.8143, 3.4854], 1e-4);
-%!warning<matrix singular to machine precision> pdist (x, "mahalanobis");
+%!warning<pdist: matrix is close to singular> ...
+%! pdist (x, "mahalanobis");
 %!assert (pdist (x, "cityblock"), [9, 18, 4, 9, 9, 18]);
 %!assert (pdist (x, "minkowski"), ...
 %!        [5.1962, 10.3923, 2.8284, 5.1962, 5.9161, 10.7703], 1e-4);
