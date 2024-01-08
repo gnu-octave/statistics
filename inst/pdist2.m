@@ -35,8 +35,8 @@
 ## @qcode{@var{Y}(j,:)}.
 ##
 ## @code{@var{D} = pdist2 (@var{X}, @var{Y}, @var{Distance})} returns the
-## distance between each pair of observations in X and Y using the metric
-## specified by @var{Distance}, which can be any of the following options.
+## distance between each pair of observations in @var{X} and @var{Y} using the
+## metric specified by @var{Distance}, which can be any of the following options.
 ##
 ## @multitable @columnfractions 0.23 0.02 0.65
 ## @item @qcode{"euclidean"} @tab @tab Euclidean distance.
@@ -319,9 +319,10 @@ endfunction
 
 
 ## Test output
-%!shared x, y
+%!shared x, y, xx
 %! x = [1, 1, 1; 2, 2, 2; 3, 3, 3];
 %! y = [0, 0, 0; 1, 2, 3; 0, 2, 4; 4, 7, 1];
+%! xx = [1 2 3; 4 5 6; 7 8 9; 3 2 1];
 %!test
 %! d = sqrt([3, 5, 11, 45; 12, 2, 8, 30; 27, 5, 11, 21]);
 %! assert (pdist2 (x, y), d);
@@ -409,6 +410,8 @@ endfunction
 %! eucldist = @(v,m) sqrt(sumsq(repmat(v,rows(m),1)-m,2));
 %! [d, i] = pdist2 (x, y, eucldist, "Smallest", 4);
 %! assert ({D, I}, {d, i});
+%!warning<matrix singular to machine precision> ...
+%! pdist2 (xx, xx, "mahalanobis");
 
 ## Test input validation
 %!error<pdist2: too few input arguments.> pdist2 (1)
