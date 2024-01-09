@@ -150,6 +150,46 @@ function [label, score, cost] = predict (obj, XC)
 
 endfunction
 
+%!demo
+%! ## Create a k-nearest neighbor classifier for Fisher's iris data with k = 5.
+%! ## Evaluate some model predictions on new data.
+%!
+%! load fisheriris
+%! x = meas;
+%! y = species;
+%! xc = [min(x); mean(x); max(x)];
+%! obj = fitcknn (x, y, "NumNeighbors", 5, "Standardize", 1);
+%! [label, score, cost] = predict (obj, xc)
+
+%!demo
+%! ## Train a k-nearest neighbor classifier for k = 10
+%! ## and plot the decision boundaries.
+%!
+%! load fisheriris
+%! idx = ! strcmp (species, "setosa");
+%! X = meas(idx,3:4);
+%! Y = cast (strcmpi (species(idx), "virginica"), "double");
+%! obj = fitcknn (X, Y, "Standardize", 1, "NumNeighbors", 10, "NSMethod", "exhaustive")
+%! x1 = [min(X(:,1)):0.03:max(X(:,1))];
+%! x2 = [min(X(:,2)):0.02:max(X(:,2))];
+%! [x1G, x2G] = meshgrid (x1, x2);
+%! XGrid = [x1G(:), x2G(:)];
+%! pred = predict (obj, XGrid);
+%! gidx = logical (str2num (cell2mat (pred)));
+%!
+%! figure
+%! scatter (XGrid(gidx,1), XGrid(gidx,2), "markerfacecolor", "magenta");
+%! hold on
+%! scatter (XGrid(!gidx,1), XGrid(!gidx,2), "markerfacecolor", "red");
+%! plot (X(Y == 0, 1), X(Y == 0, 2), "ko", X(Y == 1, 1), X(Y == 1, 2), "kx");
+%! xlabel ("Petal length (cm)");
+%! ylabel ("Petal width (cm)");
+%! title ("5-Nearest Neighbor Classifier Decision Boundary");
+%! legend ({"Versicolor Region", "Virginica Region", ...
+%!         "Sampled Versicolor", "Sampled Virginica"}, ...
+%!         "location", "northwest")
+%! axis tight
+%! hold off
 
 ## Test output
 %!shared x, y
@@ -163,6 +203,13 @@ endfunction
 %! assert (l, {"setosa"; "versicolor"; "virginica"})
 %! assert (s, [1, 0, 0; 0, 1, 0; 0, 0, 1])
 %! assert (c, [0, 1, 1; 1, 0, 1; 1, 1, 0])
+%!test
+%! xc = [min(x); mean(x); max(x)];
+%! obj = fitcknn (x, y, "NumNeighbors", 5, "Standardize", 1);
+%! [l, s, c] = predict (obj, xc);
+%! assert (l, {"versicolor"; "versicolor"; "virginica"})
+%! assert (s, [0.4, 0.6, 0; 0, 1, 0; 0, 0, 1])
+%! assert (c, [0.6, 0.4, 1; 1, 0, 1; 1, 1, 0])
 %!test
 %! xc = [min(x); mean(x); max(x)];
 %! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "mahalanobis");
