@@ -387,73 +387,54 @@ function nn = findkdtree (tree, p, k, dist, distparam)
 endfunction
 
 %!demo
-%! ## find 10 nearest neighbour of a point using different distance metrics
-%! ## and compare the results by plotting
-%! load fisheriris
-%! X = meas(:,3:4);
-%! Y = species;
-%! point = [5, 1.45];
+%! ## Generate 1000 random 2D points from each of five distinct multivariate
+%! ## normal distributions that form five separate classes
+%! N = 1000;
+%! d = 10;
+%! randn ("seed", 5);
+%! X1 = mvnrnd (d * [0, 0], eye (2), 1000);
+%! randn ("seed", 6);
+%! X2 = mvnrnd (d * [1, 1], eye (2), 1000);
+%! randn ("seed", 7);
+%! X3 = mvnrnd (d * [-1, -1], eye (2), 1000);
+%! randn ("seed", 8);
+%! X4 = mvnrnd (d * [1, -1], eye (2), 1000);
+%! randn ("seed", 8);
+%! X5 = mvnrnd (d * [-1, 1], eye (2), 1000);
+%! X = [X1; X2; X3; X4; X5];
 %!
-%! ## calculate 10 nearest-neighbours by minkowski distance
-%! [id, d] = rangesearch (X, point, "K", 10);
+%! ## For each point in X, find the points in X that are within a radius d
+%! ## away from the points in X.
+%! Idx = rangesearch (X, X, d, "NSMethod", "exhaustive");
 %!
-%! ## calculate 10 nearest-neighbours by minkowski distance
-%! [idm, dm] = rangesearch (X, point, "K", 10, "distance", "minkowski", "p", 5);
+%! ## Select the first point in X (corresponding to the first class) and find
+%! ## its nearest neighbors within the radius d.  Display these points in
+%! ## one color and the remaining points in a different color.
+%! x = X(1,:);
+%! nearestPoints = X (Idx{1},:);
+%! nonNearestIdx = true (size (X, 1), 1);
+%! nonNearestIdx(Idx{1}) = false;
 %!
-%! ## calculate 10 nearest-neighbours by chebychev distance
-%! [idc, dc] = rangesearch (X, point, "K", 10, "distance", "chebychev");
+%! scatter (X(nonNearestIdx,1), X(nonNearestIdx,2))
+%! hold on
+%! scatter (nearestPoints(:,1),nearestPoints(:,2))
+%! scatter (x(1), x(2), "black", "filled")
+%! hold off
 %!
-%! ## plotting the results
-%! gscatter (X(:,1), X(:,2), species, [.75 .75 0; 0 .75 .75; .75 0 .75], ".", 20)
-%! title ("Fisher's Iris Data - Nearest Neighbors with different types of distance metrics");
-%! xlabel("Petal length (cm)");
-%! ylabel("Petal width (cm)");
+%! ## Select the last point in X (corresponding to the fifth class) and find
+%! ## its nearest neighbors within the radius d.  Display these points in
+%! ## one color and the remaining points in a different color.
+%! x = X(end,:);
+%! nearestPoints = X (Idx{1},:);
+%! nonNearestIdx = true (size (X, 1), 1);
+%! nonNearestIdx(Idx{1}) = false;
 %!
-%! line (point(1), point(2), "marker", "X", "color", "k", ...
-%!       "linewidth", 2, "displayname", "query point")
-%! line (X(id,1), X(id,2), "color", [0.5 0.5 0.5], "marker", "o", ...
-%!       "linestyle", "none", "markersize", 10, "displayname", "eulcidean")
-%! line (X(idm,1), X(idm,2), "color", [0.5 0.5 0.5], "marker", "d", ...
-%!       "linestyle", "none", "markersize", 10, "displayname", "Minkowski")
-%! line (X(idc,1), X(idc,2), "color", [0.5 0.5 0.5], "marker", "p", ...
-%!       "linestyle", "none", "markersize", 10, "displayname", "chebychev")
-%! xlim ([4.5 5.5]);
-%! ylim ([1 2]);
-%! axis square;
-
-%!demo
-%! ## rangesearch on iris dataset using kdtree method
-%! load fisheriris
-%! X = meas(:,3:4);
-%! gscatter (X(:,1), X(:,2), species, [.75 .75 0; 0 .75 .75; .75 0 .75], ".", 20)
-%! title ("Fisher's iris dataset : Nearest Neighbors with kdtree search");
-%!
-%! ## new point to be predicted
-%! point = [5 1.45];
-%!
-%! line (point(1), point(2), "marker", "X", "color", "k", ...
-%!       "linewidth", 2, "displayname", "query point")
-%!
-%! ## rangesearch using kdtree method
-%! [idx, d] = rangesearch (X, point, "K", 10, "NSMethod", "kdtree");
-%!
-%! ## plotting predicted neighbours
-%! line (X(idx,1), X(idx,2), "color", [0.5 0.5 0.5], "marker", "o", ...
-%!       "linestyle", "none", "markersize", 10, ...
-%!       "displayname", "nearest neighbour")
-%! xlim ([4 6])
-%! ylim ([1 3])
-%! axis square
-%! ## details of predicted labels
-%! tabulate (species(idx))
-%!
-%! ctr = point - d(end);
-%! diameter = 2 * d(end);
-%! ##  Draw a circle around the 10 nearest neighbors.
-%! h = rectangle ("position", [ctr, diameter, diameter], "curvature", [1 1]);
-%!
-%! ## here only 8 neighbours are plotted instead of 10 since the dataset
-%! ## contains duplicate values
+%! figure
+%! scatter (X(nonNearestIdx,1), X(nonNearestIdx,2))
+%! hold on
+%! scatter (nearestPoints(:,1),nearestPoints(:,2))
+%! scatter (x(1), x(2), "black", "filled")
+%! hold off
 
 
 ## Test output
