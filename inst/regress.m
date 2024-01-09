@@ -76,6 +76,7 @@
 ##
 ## NaN values in @var{y} and @var{X} are removed before calculation begins.
 ##
+## @seealso{regress_gp, regression_ftest, regression_ttest}
 ## @end deftypefn
 
 function [b, bint, r, rint, stats] = regress (y, X, alpha)

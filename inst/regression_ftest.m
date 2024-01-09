@@ -63,7 +63,7 @@
 ## 'df1' and 'df2' degrees of freedom, which are returned as fields in the
 ## @var{stats} structure along with the test's F-statistic, 'fstat'
 ##
-## @seealso{regress, regression_ttest}
+## @seealso{regression_ttest, regress, regress_gp}
 ## @end deftypefn
 
 function [h, pval, stats] = regression_ftest (y, x, fm, rm, varargin)

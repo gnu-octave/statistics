@@ -56,7 +56,7 @@
 ## @item @tab @qcode{"right"} @tab @math{beta1} is greater than 0 (right-tailed)
 ## @end multitable
 ##
-## @seealso{regress, regression_ftest}
+## @seealso{regression_ftest, regress, regress_gp}
 ## @end deftypefn
 
 function [h, pval, ci, stats] = regression_ttest (y, x, varargin)
