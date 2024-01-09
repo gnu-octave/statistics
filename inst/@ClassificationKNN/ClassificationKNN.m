@@ -575,7 +575,11 @@ classdef ClassificationKNN
         this.DistParameter = Scale;
       else
         if (strcmpi (Distance, "seuclidean"))
-          this.DistParameter = std (X, [], 1);
+          if (Standardize)
+            this.DistParameter = ones (1, ndims_X);
+          else
+            this.DistParameter = std (X, [], 1);
+          endif
         endif
       endif
       if (! isempty (Cov))
