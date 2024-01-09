@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: knnsearch</title>
+    <title>Statistics: rangesearch</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -64,40 +64,44 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>knnsearch</code></b>
+              Function&nbsp;Reference: <b><code>rangesearch</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>idx</var> = <b>knnsearch</b><i> (<var>X</var>, <var>Y</var>)</i></dt>
-<dt><u>statistics:</u> [<var>idx</var>, <var>D</var>] = <b>knnsearch</b><i> (<var>X</var>, <var>Y</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>knnsearch</b><i> (&hellip;, <var>name</var>, <var>value</var>)</i></dt>
+<dt><u>statistics:</u> <var>idx</var> = <b>rangesearch</b><i> (<var>X</var>, <var>Y</var>, <var>r</var>)</i></dt>
+<dt><u>statistics:</u> [<var>idx</var>, <var>D</var>] = <b>rangesearch</b><i> (<var>X</var>, <var>Y</var>, <var>r</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>rangesearch</b><i> (&hellip;, <var>name</var>, <var>value</var>)</i></dt>
 </dl>
 
-<p> Find k-nearest neighbors from input data.
+<p> Find all neighbors within specified distance from input data.
 </p>
 <div class="ms-5">
-<p> <code><var>idx</var> = knnsearch (<var>X</var>, <var>Y</var>)</code> finds <math>K</math> nearest
- neighbors in <var>X</var> for <var>Y</var>. It returns <var>idx</var> which contains indices
- of <math>K</math> nearest neighbors of each row of <var>Y</var>, If not specified,
- <code><var>K</var> = 1</code>.  <var>X</var> must be an <math>N&times;P</math> numeric matrix of input
- data, where rows correspond to observations and columns correspond to
- features or variables.  <var>Y</var> is an <math>M&times;P</math> numeric matrix with query
- points, which must have the same numbers of column as <var>X</var>.
+<p> <code><var>idx</var> = rangesearch (<var>X</var>, <var>Y</var>, <var>r</var>)</code> returns all the
+ points in <var>X</var> that are within distance <var>r</var> from the points in <var>Y</var>.
+ <var>X</var> must be an <math>N&times;P</math> numeric matrix of input data, where rows
+ correspond to observations and columns correspond to features or variables.
+ <var>Y</var> is an <math>M&times;P</math> numeric matrix with query points, which must have
+ the same numbers of column as <var>X</var>.  <var>r</var> must be a nonnegative scalar
+ value.  <var>idx</var> is an <math>M&times;1</math> cell array, where <math>M</math> is the number
+ of observations in <var>Y</var>.  The vector <code><var>Idx</var>{j}</code> contains the
+ indices of observations (rows) in <var>X</var> whose distances to
+ <code><var>Y</var>(j,:)</code> are not greater than <var>r</var>.
 </p>
-<p> <code>[<var>idx</var>, <var>D</var>] = knnsearch (<var>X</var>, <var>Y</var>)</code> also returns the
- the distances, <var>D</var>, which correspond to the <math>K</math> nearest neighbour in
- <var>X</var> for each <var>Y</var>
+<p> <code>[<var>idx</var>, <var>D</var>] = rangesearch (<var>X</var>, <var>Y</var>, <var>r</var>)</code> also
+ returns the distances, <var>D</var>, which correspond to the points in <var>X</var>
+ that are within distance <var>r</var> from the points in <var>Y</var>.  <var>D</var> is an
+ <math>M&times;1</math> cell array, where <math>M</math> is the number of observations in
+ <var>Y</var>.  The vector <code><var>D</var>{j}</code> contains the indices of
+ observations (rows) in <var>X</var> whose distances to <code><var>Y</var>(j,:)</code> are
+ not greater than <var>r</var>.
 </p>
 <p> Additional parameters can be specified by <code>Name-Value</code> pair arguments.
 </p>
  <table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>&quot;K&quot;</code></td><td width="2%"></td><td width="80%">is the number of nearest neighbors to be found
- in the kNN search.  It must be a positive integer value and by default it is
- 1.</td></tr>
 <tr><td width="18%"><code>&quot;P&quot;</code></td><td width="2%"></td><td width="80%">is the Minkowski distance exponent and it must be
  a positive scalar.  This argument is only valid when the selected distance
  metric is <code>&quot;minkowski&quot;</code>.  By default it is 2.</td></tr>
@@ -118,10 +122,10 @@
 <tr><td width="18%"><code>&quot;SortIndices&quot;</code></td><td width="2%"></td><td width="80%">is a boolean flag to sort the returned
  indices in ascending order by distance and it is <code>true</code> by default.
  When the selected search method is <code>&quot;exhaustive&quot;</code> or the
- <code>&quot;IncludeTies&quot;</code> flag is true, <code>knnsearch</code> always sorts the
+ <code>&quot;IncludeTies&quot;</code> flag is true, <code>rangesearch</code> always sorts the
  returned indices.</td></tr>
 <tr><td width="18%"><code>&quot;Distance&quot;</code></td><td width="2%"></td><td width="80%">is the distance metric used by
- <code>knnsearch</code> as specified below:</td></tr>
+ <code>rangesearch</code> as specified below:</td></tr>
 </table>
 
  <table>
@@ -160,7 +164,7 @@
 
  <table>
 <tr><td width="18%"><code>&quot;NSMethod&quot;</code></td><td width="2%"></td><td width="80%">is the nearest neighbor search method used
- by <code>knnsearch</code> as specified below.</td></tr>
+ by <code>rangesearch</code> as specified below.</td></tr>
 </table>
 
  <table>
@@ -176,24 +180,12 @@
  <var>Y</var>.</td></tr>
 </table>
 
- <table>
-<tr><td width="18%"><code>&quot;IncludeTies&quot;</code></td><td width="2%"></td><td width="80%">is a boolean flag to indicate if the
- returned values should contain the indices that have same distance as the
- <math>K^th</math> neighbor.  When <code>false</code>, <code>knnsearch</code> chooses the
- observation with the smallest index among the observations that have the same
- distance from a query point.  When <code>true</code>, <code>knnsearch</code> includes
- all nearest neighbors whose distances are equal to the <math>K^th</math> smallest
- distance in the output arguments.  To specify <math>K</math>, use the <code>&quot;K&quot;</code>
- name-value pair argument.</td></tr>
-</table>
-
 <p> <strong>See also: </strong>
-  <a href="rangesearch.html">rangesearch</a>, 
-  <a href="pdist2.html">pdist2</a>, 
-  <a href="fitcknn.html">fitcknn</a>
+  <a href="knnsearch.html">knnsearch</a>, 
+  <a href="pdist2.html">pdist2</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/knnsearch.m">knnsearch</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/rangesearch.m">rangesearch</a>
 </div>
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -213,118 +205,62 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## find 10 nearest neighbour of a point using different distance metrics
- ## and compare the results by plotting
- load fisheriris
- X = meas(:,3:4);
- Y = species;
- point = [5, 1.45];
+ ## Generate 1000 random 2D points from each of five distinct multivariate
+ ## normal distributions that form five separate classes
+ N = 1000;
+ d = 10;
+ randn ("seed", 5);
+ X1 = mvnrnd (d * [0, 0], eye (2), 1000);
+ randn ("seed", 6);
+ X2 = mvnrnd (d * [1, 1], eye (2), 1000);
+ randn ("seed", 7);
+ X3 = mvnrnd (d * [-1, -1], eye (2), 1000);
+ randn ("seed", 8);
+ X4 = mvnrnd (d * [1, -1], eye (2), 1000);
+ randn ("seed", 8);
+ X5 = mvnrnd (d * [-1, 1], eye (2), 1000);
+ X = [X1; X2; X3; X4; X5];
 
- ## calculate 10 nearest-neighbours by minkowski distance
- [id, d] = knnsearch (X, point, "K", 10);
+ ## For each point in X, find the points in X that are within a radius d
+ ## away from the points in X.
+ Idx = rangesearch (X, X, d, "NSMethod", "exhaustive");
 
- ## calculate 10 nearest-neighbours by minkowski distance
- [idm, dm] = knnsearch (X, point, "K", 10, "distance", "minkowski", "p", 5);
+ ## Select the first point in X (corresponding to the first class) and find
+ ## its nearest neighbors within the radius d.  Display these points in
+ ## one color and the remaining points in a different color.
+ x = X(1,:);
+ nearestPoints = X (Idx{1},:);
+ nonNearestIdx = true (size (X, 1), 1);
+ nonNearestIdx(Idx{1}) = false;
 
- ## calculate 10 nearest-neighbours by chebychev distance
- [idc, dc] = knnsearch (X, point, "K", 10, "distance", "chebychev");
+ scatter (X(nonNearestIdx,1), X(nonNearestIdx,2))
+ hold on
+ scatter (nearestPoints(:,1),nearestPoints(:,2))
+ scatter (x(1), x(2), "black", "filled")
+ hold off
 
- ## plotting the results
- gscatter (X(:,1), X(:,2), species, [.75 .75 0; 0 .75 .75; .75 0 .75], ".", 20)
- title ("Fisher's Iris Data - Nearest Neighbors with different types of distance metrics");
- xlabel("Petal length (cm)");
- ylabel("Petal width (cm)");
+ ## Select the last point in X (corresponding to the fifth class) and find
+ ## its nearest neighbors within the radius d.  Display these points in
+ ## one color and the remaining points in a different color.
+ x = X(end,:);
+ nearestPoints = X (Idx{1},:);
+ nonNearestIdx = true (size (X, 1), 1);
+ nonNearestIdx(Idx{1}) = false;
 
- line (point(1), point(2), "marker", "X", "color", "k", ...
-       "linewidth", 2, "displayname", "query point")
- line (X(id,1), X(id,2), "color", [0.5 0.5 0.5], "marker", "o", ...
-       "linestyle", "none", "markersize", 10, "displayname", "eulcidean")
- line (X(idm,1), X(idm,2), "color", [0.5 0.5 0.5], "marker", "d", ...
-       "linestyle", "none", "markersize", 10, "displayname", "Minkowski")
- line (X(idc,1), X(idc,2), "color", [0.5 0.5 0.5], "marker", "p", ...
-       "linestyle", "none", "markersize", 10, "displayname", "chebychev")
- xlim ([4.5 5.5]);
- ylim ([1 2]);
- axis square;
-
-ans =
-
-  -61.006  -60.646  -59.312
+ figure
+ scatter (X(nonNearestIdx,1), X(nonNearestIdx,2))
+ hold on
+ scatter (nearestPoints(:,1),nearestPoints(:,2))
+ scatter (x(1), x(2), "black", "filled")
+ hold off
 
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
-                    <img src="assets/knnsearch_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                    <img src="assets/rangesearch_102.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
-
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## knnsearch on iris dataset using kdtree method
- load fisheriris
- X = meas(:,3:4);
- gscatter (X(:,1), X(:,2), species, [.75 .75 0; 0 .75 .75; .75 0 .75], ".", 20)
- title ("Fisher's iris dataset : Nearest Neighbors with kdtree search");
-
- ## new point to be predicted
- point = [5 1.45];
-
- line (point(1), point(2), "marker", "X", "color", "k", ...
-       "linewidth", 2, "displayname", "query point")
-
- ## knnsearch using kdtree method
- [idx, d] = knnsearch (X, point, "K", 10, "NSMethod", "kdtree");
-
- ## plotting predicted neighbours
- line (X(idx,1), X(idx,2), "color", [0.5 0.5 0.5], "marker", "o", ...
-       "linestyle", "none", "markersize", 10, ...
-       "displayname", "nearest neighbour")
- xlim ([4 6])
- ylim ([1 3])
- axis square
- ## details of predicted labels
- tabulate (species(idx))
-
- ctr = point - d(end);
- diameter = 2 * d(end);
- ##  Draw a circle around the 10 nearest neighbors.
- h = rectangle ("position", [ctr, diameter, diameter], "curvature", [1 1]);
-
- ## here only 8 neighbours are plotted instead of 10 since the dataset
- ## contains duplicate values
-
-ans =
-
-  -61.664  -60.873  -59.865
-
-       Value    Count    Percent
-   virginica        2      20.00%
-  versicolor        8      80.00%
-                    </pre></td></tr></tbody>
-                  </table>
                   <div class="text-center">
-                    <img src="assets/knnsearch_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                    <img src="assets/rangesearch_101.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>
