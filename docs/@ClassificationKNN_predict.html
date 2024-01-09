@@ -104,6 +104,147 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/@ClassificationKNN/predict.m">@ClassificationKNN/predict</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a k-nearest neighbor classifier for Fisher's iris data with k = 5.
+ ## Evaluate some model predictions on new data.
+
+ load fisheriris
+ x = meas;
+ y = species;
+ xc = [min(x); mean(x); max(x)];
+ obj = fitcknn (x, y, "NumNeighbors", 5, "Standardize", 1);
+ [label, score, cost] = predict (obj, xc)
+
+label =
+{
+  [1,1] = versicolor
+  [2,1] = versicolor
+  [3,1] = virginica
+}
+
+score =
+
+   0.4000   0.6000        0
+        0   1.0000        0
+        0        0   1.0000
+
+cost =
+
+   0.6000   0.4000   1.0000
+   1.0000        0   1.0000
+   1.0000   1.0000        0
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Train a k-nearest neighbor classifier for k = 10
+ ## and plot the decision boundaries.
+
+ load fisheriris
+ idx = ! strcmp (species, "setosa");
+ X = meas(idx,3:4);
+ Y = cast (strcmpi (species(idx), "virginica"), "double");
+ obj = fitcknn (X, Y, "Standardize", 1, "NumNeighbors", 10, "NSMethod", "exhaustive")
+ x1 = [min(X(:,1)):0.03:max(X(:,1))];
+ x2 = [min(X(:,2)):0.02:max(X(:,2))];
+ [x1G, x2G] = meshgrid (x1, x2);
+ XGrid = [x1G(:), x2G(:)];
+ pred = predict (obj, XGrid);
+ gidx = logical (str2num (cell2mat (pred)));
+
+ figure
+ scatter (XGrid(gidx,1), XGrid(gidx,2), "markerfacecolor", "magenta");
+ hold on
+ scatter (XGrid(!gidx,1), XGrid(!gidx,2), "markerfacecolor", "red");
+ plot (X(Y == 0, 1), X(Y == 0, 2), "ko", X(Y == 1, 1), X(Y == 1, 2), "kx");
+ xlabel ("Petal length (cm)");
+ ylabel ("Petal width (cm)");
+ title ("5-Nearest Neighbor Classifier Decision Boundary");
+ legend ({"Versicolor Region", "Virginica Region", ...
+         "Sampled Versicolor", "Sampled Virginica"}, ...
+         "location", "northwest")
+ axis tight
+ hold off
+
+obj =
+
+  ClassificationKNN object with properties:
+
+            BreakTies: smallest
+           BucketSize: [1x1 double]
+           ClassNames: [2x1 cell]
+                 Cost: [2x2 double]
+        DistParameter: [0x0 double]
+             Distance: euclidean
+       DistanceWeight: [1x1 function_handle]
+          IncludeTies: 0
+                   Mu: [1x2 double]
+             NSMethod: exhaustive
+         NumNeighbors: [1x1 double]
+      NumObservations: [1x1 double]
+        NumPredictors: [1x1 double]
+       PredictorNames: [1x2 cell]
+                Prior: [2x1 double]
+         ResponseName: Y
+             RowsUsed: [100x1 double]
+                Sigma: [1x2 double]
+          Standardize: 1
+                    X: [100x2 double]
+                    Y: [100x1 double]
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/@ClassificationKNN_predict_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         </div>
       </div>
