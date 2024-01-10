@@ -81,8 +81,6 @@
 ## @item
 ##    "slope": slope coefficients
 ## @item
-##    "dfe": degrees of freedom for error
-## @item
 ##    "coeff": regression coefficients (intercepts and slops)
 ## @item
 ##    "covb": estimated covariance matrix for coefficients (coeff)
@@ -91,13 +89,9 @@
 ## @item
 ##    "se": standard errors of the coeff
 ## @item
-##    "s": theoretical dispersion parameter
-## @item
 ##    "z": z statistics for coeff
 ## @item
 ##    "pval": p-values for coeff
-## @item
-##    "resid": raw residuals
 ## @end itemize
 ## @end deftypefn
 
@@ -199,15 +193,12 @@ function [intercept, slope, dev, dl, d2l, P, stats] = logistic_regression (y, x,
     resid = y - P(:,2);
     stats = struct ("intercept", intercept, ...
                     "slope", slope, ...
-                    "dfe", dfe, ...
                     "coeff", tb, ...
                     "cov", cov, ...
                     "coeffcorr", coeffcorr, ...
                     "se", se, ...
-                    "s", 1, ...
                     "z", zstat, ...
-                    "pval", 2 * normcdf (-abs (zstat)), ...
-                    "resid", resid);
+                    "pval", 2 * normcdf (-abs (zstat)));
   endif
 
   if (print >= 1)
