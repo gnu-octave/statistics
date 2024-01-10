@@ -231,6 +231,8 @@
 
  ** knnsearch (fully Matlab compatible)
 
+ ** mnrfit
+
  ** rangesearch (fully Matlab compatible)
 
  ** RegressionGAM (new classdef)

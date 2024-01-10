@@ -257,6 +257,7 @@ Regression
  cholcov
  dcov
  logistic_regression
+ mnrfit
  monotone_smooth
  pca
  pcacov
