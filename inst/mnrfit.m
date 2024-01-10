@@ -25,7 +25,7 @@
 ## Perform logistic regression for binomial responses or multiple ordinal
 ## responses.
 ##
-## Note: This function is currently a wrapper for the @code{logistic_regression)
+## Note: This function is currently a wrapper for the @code{logistic_regression}
 ## function. It can only be used for fitting an ordinal logistic model and a
 ## nominal model with 2 categories (which is an ordinal case).  Hierarchical
 ## models as well as nominal model with more than two classes are not currently
@@ -61,8 +61,8 @@
 ## @code{[@var{B}, @var{dev}, @var{stats}] = mnrfit (@dots{}}  also returns the
 ## deviance of the fit, @var{dev}, and the structure @var{stats} for any of the
 ## previous input arguments. @var{stats} currently only returns values for the
-## fields @qcoode{"beta"}, same as @var{B}, @qcoode{"coeffcorr"}, the estimated
-## correlation matrix for @var{B}, @qcoode{"covd"}, the estimated covariance
+## fields @qcode{"beta"}, same as @var{B}, @qcode{"coeffcorr"}, the estimated
+## correlation matrix for @var{B}, @qcode{"covd"}, the estimated covariance
 ## matrix for @var{B}, and @qcode{"se"}, the standard errors of the coefficient
 ## estimates @var{B}.
 ##
