@@ -21,7 +21,7 @@ You can find its documentation at [https://gnu-octave.github.io/statistics/](htt
 
 ## 2. Install statistics
 
-To install the latest version (1.6.0) you need Octave (>=7.2.0) installed on your system. Install it by typing:
+To install the latest version (1.6.1) you need Octave (>=7.2.0) installed on your system. Install it by typing:
 
   `pkg install -forge statistics`
 
@@ -42,7 +42,7 @@ If you need to install a specific release, for example `1.4.2`, type:
 After installation, type:
 - `pkg load statistics` to load the **statistics** package.
 - `news statistics` to review all the user visible changes since last version.
-- `pkg test statistics` to run a test suite for all 365 [^1] functions currently available and ensure that they work properly on your system.
+- `pkg test statistics` to run a test suite for all 378 [^1] functions currently available and ensure that they work properly on your system.
 
 [^1]: Several functions are still missing from the statistics package, but you are welcome to [contribute](https://github.com/gnu-octave/statistics/blob/main/CONTRIBUTING.md)!
 
@@ -52,7 +52,7 @@ You are encouraged to provide feedback regarding possible bugs, missing features
 
 Please, make sure that when reporting a bug you provide as much information as possible for other users to be able to replicate it. Use [markdown tips](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax) to make your post clear and easy to read and understand your issue.
 
-[^2]: Don't open an issues just for requesting a missing function! Implement it yourself and make an invaluable contribution :innocent:
+[^2]: Don't open an issue just for requesting a missing function! Implement it yourself and make an invaluable contribution :innocent:
 
 ## 4. Contribute
 
