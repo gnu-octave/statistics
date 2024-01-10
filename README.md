@@ -42,7 +42,7 @@ If you need to install a specific release, for example `1.4.2`, type:
 After installation, type:
 - `pkg load statistics` to load the **statistics** package.
 - `news statistics` to review all the user visible changes since last version.
-- `pkg test statistics` to run a test suite for all 378 [^1] functions currently available and ensure that they work properly on your system.
+- `pkg test statistics` to run a test suite for all 379 [^1] functions currently available and ensure that they work properly on your system.
 
 [^1]: Several functions are still missing from the statistics package, but you are welcome to [contribute](https://github.com/gnu-octave/statistics/blob/main/CONTRIBUTING.md)!
 
