@@ -479,14 +479,14 @@ endfunction
 %! r = mvnrnd (Yfit, diag (Ysd)', 50);
 %! plot (xi, r', "c-");
 %! hold on
-%! plot (xi, Yfit, "r-", xi, Yint, "b-");
-%! plot (x, y, ".k", "markersize", 20)
-%! plot (xi, 5 * sin (xi), "-y");
+%! plot (xi, Yfit, "r-;Estimation;", xi, Yint, "b-;Confidence interval;");
+%! plot (x, y, ".k;Predictor points;", "markersize", 20)
+%! plot (xi, 5 * sin (xi), "-y;True Function;");
 %! xlim ([-0.5,2*pi+0.5]);
 %! ylim ([-10,10]);
 %! hold off
 %! title ("GP regression with RBF kernel on noiseless 1D data");
-%! text (-0.5, 4, "theta = 5\n g = 0.01");
+%! text (0, -7, "theta = 5\n g = 0.01");
 
 %!demo
 %! ## RBF fitting on noisy 1D Data
@@ -504,14 +504,14 @@ endfunction
 %! r = mvnrnd (Yfit, diag (Ysd)', 50);
 %! plot (xi, r', "c-");
 %! hold on
-%! plot (xi, Yfit, "r-", xi, Yint, "b-");
-%! plot (x, y, ".k", "markersize", 20)
-%! plot (xi, 5 * sin (xi), "-y");
+%! plot (xi, Yfit, "r-;Estimation;", xi, Yint, "b-;Confidence interval;");
+%! plot (x, y, ".k;Predictor points;", "markersize", 20)
+%! plot (xi, 5 * sin (xi), "-y;True Function;");
 %! xlim ([-0.5,2*pi+0.5]);
 %! ylim ([-10,10]);
 %! hold off
 %! title ("GP regression with RBF kernel on noisy 1D data");
-%! text (-0.5, 4, "theta = 5\n g = 0.01");
+%! text (0, -7, "theta = 5\n g = 0.01");
 
 ## Test input validation
 %!error<Invalid call to regress_gp.> regress_gp (ones (20, 2))
