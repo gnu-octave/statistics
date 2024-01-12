@@ -48,7 +48,7 @@
 ## additional parameterss specified @qcode{Name-Value} pair arguments.
 ##
 ## @multitable @columnfractions 0.18 0.02 0.8
-## @headitem @tab @var{Name} @tab @var{Value}
+## @headitem @var{Name} @tab @tab @var{Value}
 ##
 ## @item @qcode{"model"} @tab @tab Specifies the type of model to fit.
 ## Currently, only @qcode{"ordinal"} is fully supported.  @qcode{"nominal"} is
