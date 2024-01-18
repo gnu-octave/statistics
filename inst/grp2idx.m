@@ -92,7 +92,7 @@ function [g, gn, gl] = grp2idx (s)
     gl(isnan (gl)) = [];
   endif
 
-  if (isargout (2))
+  if (nargout > 1)
     if (iscellstr (gl))
       gn = gl;
     elseif (iscell (gl))
@@ -102,7 +102,7 @@ function [g, gn, gl] = grp2idx (s)
     endif
   endif
 
-  if (isargout (3) && s_was_char)
+  if (nargout > 2 && s_was_char)
     gl = char (gl);
   endif
 

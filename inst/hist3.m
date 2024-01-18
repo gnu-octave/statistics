@@ -174,7 +174,7 @@ function [N, C] = hist3 (X, varargin)
     mesh (hax, x, y, z, "facecolor", [.75 .85 .95], varargin{next_argin:end});
   else
     N = counts;
-    if (isargout (2))
+    if (nargout > 1)
       if (! have_centers)
         C = {(r_edges + [diff(r_edges)([1:end end])]/ 2) ...
              (c_edges + [diff(c_edges)([1:end end])]/ 2)};

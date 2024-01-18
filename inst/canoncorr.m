@@ -56,17 +56,17 @@ function [A,B,r,U,V,stats] = canoncorr (X,Y)
   A .*= f;
   B .*= f;
 
-  if isargout(3) || isargout(6)
+  if (nargout > 2)
     r = max(0, min(diag(S), 1))';
   endif
-  if isargout (4)
+  if (nargout > 3)
     U = X * A;
   endif
-  if isargout (5)
+  if (nargout > 4)
     V = Y * B;
   endif
 
-  if isargout (6)
+  if (nargout > 5)
     Wilks = fliplr(cumprod(fliplr((1 - r .^ 2))));
     chisq = - (k - 1 - (m + n + 1)/2) * log(Wilks);
     df1 = (m - (1:d) + 1) .* (n - (1:d) + 1);
