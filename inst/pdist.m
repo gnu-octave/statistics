@@ -171,13 +171,12 @@ function D = pdist (X, varargin)
           endif
         endif
         dxx = X(ix(:),:) - X(iy(:),:);
-        ## Get inverse and catch warning if matrix is close to singular
-        ## badly scaled.
-        [DP_inv, rcond] = inv (DistParameter);
-        if (rcond < eps)
+        ## Catch warning if matrix is close to singular or badly scaled.
+        [DP_inv, rc] = inv (DistParameter);
+        if (rc < eps)
           msg = sprintf (strcat (["pdist: matrix is close to"], ...
                                  [" singular or badly scaled.\n RCOND = "], ...
-                                 [" %e. Results may be inaccurate."]), rcond);
+                                 [" %e. Results may be inaccurate."]), rc);
           warning (msg);
         endif
         D   = sqrt (sum ((dxx  * DP_inv) .* dxx, 2));

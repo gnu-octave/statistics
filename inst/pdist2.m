@@ -223,17 +223,16 @@ function [D, I] = pdist2 (X, Y, varargin)
                            [" definite."]));
           endif
         endif
-        ## Get inverse and catch warning if matrix is close to singular
-        ## badly scaled.
-        [DP_inv, rcond] = inv (DistParameter);
-        if (rcond < eps)
+        ## Catch warning if matrix is close to singular or badly scaled.
+        [DP_inv, rc] = inv (DistParameter);
+        if (rc < eps)
           msg = sprintf (strcat (["pdist2: matrix is close to"], ...
                                  [" singular or badly scaled.\n RCOND = "], ...
-                                 [" %e. Results may be inaccurate."]), rcond);
+                                 [" %e. Results may be inaccurate."]), rc);
           warning (msg);
         endif
         dxy = X(ix(:),:) - Y(iy(:),:);
-        D   = sqrt (sum ((dxy  * DP_inv) .* dxy, 2));
+        D   = sqrt (sum ((dxy * DP_inv) .* dxy, 2));
 
       case "cityblock"
         D = sum (abs (X(ix(:),:) - Y(iy(:),:)), 2);
