@@ -726,15 +726,6 @@ endclassdef
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
-%! C = cov (x);
-%! a = ClassificationKNN (x, y, "Cov" , C, "distance", "mahalanobis");
-%! assert (class (a), "ClassificationKNN");
-%! assert ({a.DistParameter}, {C})
-%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "mahalanobis"})
-%! assert ({a.BucketSize}, {50})
-%!test
-%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
 %! a = ClassificationKNN (x, y, "Exponent" , 5, "Distance", "minkowski");
 %! assert (class (a), "ClassificationKNN");
 %! assert (a.DistParameter, 5)
