@@ -1,5 +1,5 @@
 ## Copyright (C) 2020-2021 Stefano Guidoni <ilguido@users.sf.net>
-## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2023-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -19,8 +19,8 @@
 classdef ConfusionMatrixChart < handle
 
   ## -*- texinfo -*-
-  ## @deftypefn  {statistics} {@var{p} =} ConfusionMatrixChart ()
-  ## Create object @var{p}, a Confusion Matrix Chart object.
+  ## @deftypefn  {statistics} {@var{cmc} =} ConfusionMatrixChart ()
+  ## Create object @var{cmc}, a Confusion Matrix Chart object.
   ##
   ## @table @asis
   ## @item @qcode{"DiagonalColor"}
@@ -314,8 +314,12 @@ classdef ConfusionMatrixChart < handle
       set (this.hax, "units", string);
     endfunction
 
-    ## display method
-    ## MATLAB compatibility, this tries to mimic the MATLAB behaviour
+    ## -*- texinfo -*-
+    ## @deftypefn  {ConfusionMatrixChart} {} disp (@var{cmc}, @var{order})
+    ## Display the properties of the @code{ConfusionMatrixChart} object
+    ## @var{cmc}.
+    ##
+    ## @end deftypefn
     function disp (this)
       nv_sizes = size (this.NormalizedValues);
       cl_sizes = size (this.ClassLabels);
@@ -327,22 +331,20 @@ classdef ConfusionMatrixChart < handle
         class (this.ClassLabels));
     endfunction
 
-    ## sortClasses
-    ## reorder the chart
+    ## -*- texinfo -*-
+    ## @deftypefn  {ConfusionMatrixChart} {} sortClasses (@var{cmc}, @var{order})
+    ## Sort the classes of the @code{ConfusionMatrixChart} object @var{cmc}
+    ## according to @var{order}.
+    ##
+    ## Valid values for @var{order} can be an array or cell array including
+    ## the same class labels as @var{cm}, or a value like @code{'auto'},
+    ## @code{'ascending-diagonal'}, @code{'descending-diagonal'} and
+    ## @code{'cluster'}.
+    ##
+    ## @end deftypefn
+    ##
+    ## @seealso{confusionchart, linkage, pdist}
     function sortClasses (this, order)
-      ## -*- texinfo -*-
-      ## @deftypefn  {} {} sortClasses (@var{cm},@var{order})
-      ## Sort the classes of the @code{ConfusionMatriChart} object @var{cm}
-      ## according to @var{order}.
-      ##
-      ## Valid values for @var{order} can be an array or cell array including
-      ## the same class labels as @var{cm}, or a value like @code{'auto'},
-      ## @code{'ascending-diagonal'}, @code{'descending-diagonal'} and
-      ## @code{'cluster'}.
-      ##
-      ## @end deftypefn
-      ##
-      ## @seealso{confusionchart, linkage, pdist}
 
       ## check the input parameters
       if (nargin != 2)
@@ -902,7 +904,7 @@ endclassdef
 %!demo
 %! ## Create a simple ConfusionMatrixChart Object
 %!
-%! cm = ConfusionMatrixChart (gca, [1 2; 1 2], {"A","B"},{"XLabel","LABEL A"})
+%! cm = ConfusionMatrixChart (gca, [1 2; 1 2], {"A","B"}, {"XLabel","LABEL A"})
 %! NormalizedValues = cm.NormalizedValues
 %! ClassLabels = cm.ClassLabels
 
@@ -910,6 +912,6 @@ endclassdef
 %! visibility_setting = get (0, "DefaultFigureVisible");
 %!test
 %! set (0, "DefaultFigureVisible", "off");
-%! cm = ConfusionMatrixChart (gca, [1 2; 1 2], {"A","B"},{"XLabel","LABEL A"});
+%! cm = ConfusionMatrixChart (gca, [1 2; 1 2], {"A","B"}, {"XLabel","LABEL A"});
 %! assert (isa (cm, "ConfusionMatrixChart"), true);
 %! set (0, "DefaultFigureVisible", visibility_setting);
