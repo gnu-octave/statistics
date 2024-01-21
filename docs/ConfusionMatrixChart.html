@@ -64,16 +64,16 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>ConfusionMatrixChart</code></b>
+              Class&nbsp;Definition: <b><code>ConfusionMatrixChart</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>ConfusionMatrixChart</b><i> ()</i></dt>
+<dt><u>statistics:</u> <var>cmc</var> = <b>ConfusionMatrixChart</b><i> ()</i></dt>
 </dl>
-<p> Create object <var>p</var>, a Confusion Matrix Chart object.
+<p> Create object <var>cmc</var>, a Confusion Matrix Chart object.
 </p>
 <div class="ms-5">
  <dl compact="compact">
@@ -120,6 +120,113 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/ConfusionMatrixChart.m">ConfusionMatrixChart</a>
 </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Method: <b><code>delete</code></b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+<dl>
+<dt><u>:</u> <b>delete</b><i> (<var>file</var>)</i></dt>
+<dt><u>:</u> <b>delete</b><i> (<var>file1</var>, <var>file2</var>, &hellip;)</i></dt>
+<dt><u>:</u> <b>delete</b><i> (<var>handle</var>)</i></dt>
+</dl>
+<p> Delete the named file or graphics handle.
+</p>
+<div class="ms-5">
+<p> <var>file</var> may contain globbing patterns such as &lsquo;<samp>*</samp>&rsquo;.  Multiple files
+ to be deleted may be specified in the same function call.
+</p>
+<p> <var>handle</var> may be a scalar or vector of graphic handles to delete.
+</p>
+<p> Programming Note: Deleting graphics objects is the proper way to remove
+ features from a plot without clearing the entire figure.
+ <strong>See also: </strong>
+clf, 
+cla, 
+unlink, 
+rmdir
+</p>
+</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Method: <b><code>disp</code></b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+<dl>
+<dt><u>ConfusionMatrixChart:</u> <b>disp</b><i> (<var>cmc</var>, <var>order</var>)</i></dt>
+</dl>
+<p> Display the properties of the <code>ConfusionMatrixChart</code> object
+ <var>cmc</var>.
+</p>
+<div class="ms-5">
+
+</div>
+
+            </div>
+          </div>
+        </div>
+
+
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Method: <b><code>sortClasses</code></b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+<dl>
+<dt><u>ConfusionMatrixChart:</u> <b>sortClasses</b><i> (<var>cmc</var>, <var>order</var>)</i></dt>
+</dl>
+<p> Sort the classes of the <code>ConfusionMatrixChart</code> object <var>cmc</var>
+ according to <var>order</var>.
+</p>
+<div class="ms-5">
+<p> Valid values for <var>order</var> can be an array or cell array including
+ the same class labels as <var>cm</var>, or a value like <code>'auto'</code>,
+ <code>'ascending-diagonal'</code>, <code>'descending-diagonal'</code> and
+ <code>'cluster'</code>.
+</p>
+</dd></dl>
+
+<p> <strong>See also: </strong>
+  <a href="confusionchart.html">confusionchart</a>, 
+  <a href="linkage.html">linkage</a>, 
+  <a href="pdist.html">pdist</a>
+</p>
+</div>
+            </div>
+          </div>
+        </div>
+
+
+
+
+
         <div class="container-xl my-4">
           <div class="card rounded">
             <div class="card-header card-header-mod">
@@ -140,7 +247,7 @@
 
  ## Create a simple ConfusionMatrixChart Object
 
- cm = ConfusionMatrixChart (gca, [1 2; 1 2], {"A","B"},{"XLabel","LABEL A"})
+ cm = ConfusionMatrixChart (gca, [1 2; 1 2], {"A","B"}, {"XLabel","LABEL A"})
  NormalizedValues = cm.NormalizedValues
  ClassLabels = cm.ClassLabels
 
