@@ -88,23 +88,29 @@ endfunction
 %! x = randn(100,1);
 %! cdfplot (x);
 
-## Get current figure visibility so it can be restored after tests
-%!shared visibility_setting
-%! visibility_setting = get (0, "DefaultFigureVisible");
+## Test results
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! x = [2, 4, 3, 2, 4, 3, 2, 5, 6, 4];
-%! [hCDF, stats] = cdfplot (x);
-%! assert (stats.min, 2);
-%! assert (stats.max, 6);
-%! assert (stats.median, 3.5);
-%! assert (stats.std, 1.35400640077266, 1e-14);
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   x = [2, 4, 3, 2, 4, 3, 2, 5, 6, 4];
+%!   [hCDF, stats] = cdfplot (x);
+%!   assert (stats.min, 2);
+%!   assert (stats.max, 6);
+%!   assert (stats.median, 3.5);
+%!   assert (stats.std, 1.35400640077266, 1e-14);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! x = randn(100,1);
-%! cdfplot (x);
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   x = randn(100,1);
+%!   cdfplot (x);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+## Test input validation
 %!error cdfplot ();
 %!error cdfplot ([x',x']);
 %!error cdfplot ([NaN, NaN, NaN, NaN]);

@@ -86,13 +86,17 @@ endfunction
 %! [d, p, stats] = manova1 (X, Origin);
 %! manovacluster (stats)
 
-%!error manovacluster (stats, "some");
-%!shared visibility_setting
-%! visibility_setting = get (0, "DefaultFigureVisible");
+## Test plotting
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! load carbig
-%! X = [MPG Acceleration Weight Displacement];
-%! [d, p, stats] = manova1 (X, Origin);
-%! manovacluster (stats);
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   load carbig
+%!   X = [MPG Acceleration Weight Displacement];
+%!   [d, p, stats] = manova1 (X, Origin);
+%!   manovacluster (stats);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+## Test input validation
+%!error manovacluster (stats, "some");

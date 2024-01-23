@@ -910,20 +910,23 @@ endfunction
 %!error <Sample_IDs must match the data> boxplot (randn (10, 3), 'Sample_IDs', {"a", "b"})
 %!error <with the formalism> boxplot (rand (3, 3), [1 2])
 
-## Get current figure visibility so it can be restored after tests
-%!shared visibility_setting
-%! visibility_setting = get (0, "DefaultFigureVisible");
+## Test plotting
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! [a, b] = boxplot (rand (10, 3));
-%! assert (size (a), [7, 3]);
-%! assert (numel (b.box), 3);
-%! assert (numel (b.whisker), 12);
-%! assert (numel (b.median), 3);
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   [a, b] = boxplot (rand (10, 3));
+%!   assert (size (a), [7, 3]);
+%!   assert (numel (b.box), 3);
+%!   assert (numel (b.whisker), 12);
+%!   assert (numel (b.median), 3);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! [~, b] = boxplot (rand (10, 3), "BoxStyle", "filled", "colors", "ybc");
-%! assert (numel (b.box_fill), 3);
-%! set (0, "DefaultFigureVisible", visibility_setting);
-
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   [~, b] = boxplot (rand (10, 3), "BoxStyle", "filled", "colors", "ybc");
+%!   assert (numel (b.box_fill), 3);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect

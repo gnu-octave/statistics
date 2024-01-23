@@ -189,10 +189,6 @@ function [si, h] = silhouette (X, clust, metric = "sqeuclidean", varargin)
   axis ("ij");
 endfunction
 
-%!error silhouette ();
-%!error silhouette ([1 2; 1 1]);
-%!error <X .* doesn't match .* clust> silhouette ([1 2; 1 1], [1 2 3]');
-%!error <invalid metric> silhouette ([1 2; 1 1], [1 2]', "xxx");
 
 %!demo
 %! load fisheriris;
@@ -202,3 +198,9 @@ endfunction
 %! y_labels(cidcs([1 51 101])) = unique (species);
 %! set (gca, "yticklabel", y_labels);
 %! title ("Fisher's iris data");
+
+## Test input validation
+%!error silhouette ();
+%!error silhouette ([1 2; 1 1]);
+%!error <X .* doesn't match .* clust> silhouette ([1 2; 1 1], [1 2 3]');
+%!error <invalid metric> silhouette ([1 2; 1 1], [1 2]', "xxx");

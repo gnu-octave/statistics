@@ -391,41 +391,53 @@ endfunction
 %! dendrogram (y, "Orientation", "left", "Labels", L);
 %! title ("horizontal orientation and labels");
 
-## Get current figure visibility so it can be restored after tests
+## Test plotting
 %!shared visibility_setting
 %! visibility_setting = get (0, "DefaultFigureVisible");
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! y = [4, 5; 2, 6; 3, 7; 8, 9; 1, 10];
-%! y(:,3) = 1:5;
-%! dendrogram (y);
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   y = [4, 5; 2, 6; 3, 7; 8, 9; 1, 10];
+%!   y(:,3) = 1:5;
+%!   dendrogram (y);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! y = [4, 5; 2, 6; 3, 7; 8, 9; 1, 10];
-%! y(:,3) = 1:5;
-%! dendrogram (y);
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   y = [4, 5; 2, 6; 3, 7; 8, 9; 1, 10];
+%!   y(:,3) = 1:5;
+%!   dendrogram (y);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! v = 2 * rand (30, 1) - 1;
-%! d = abs (bsxfun (@minus, v(:, 1), v(:, 1)'));
-%! y = linkage (squareform (d, "tovector"));
-%! dendrogram (y);
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   v = 2 * rand (30, 1) - 1;
+%!   d = abs (bsxfun (@minus, v(:, 1), v(:, 1)'));
+%!   y = linkage (squareform (d, "tovector"));
+%!   dendrogram (y);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! X = randn (30, 2);
-%! D = pdist (X);
-%! y = linkage (D, "average");
-%! order = optimalleaforder (y, D);
-%! subplot (2, 1, 1);
-%! title ("original leaf order");
-%! dendrogram (y);
-%! subplot (2, 1, 2);
-%! title ("optimal leaf order");
-%! dendrogram (y, "Reorder", order);
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   X = randn (30, 2);
+%!   D = pdist (X);
+%!   y = linkage (D, "average");
+%!   order = optimalleaforder (y, D);
+%!   subplot (2, 1, 1);
+%!   title ("original leaf order");
+%!   dendrogram (y);
+%!   subplot (2, 1, 2);
+%!   title ("optimal leaf order");
+%!   dendrogram (y, "Reorder", order);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
 
 ## Test input validation
 %!error dendrogram ();

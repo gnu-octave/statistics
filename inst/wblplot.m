@@ -358,15 +358,16 @@ endfunction
 %! ## Subtract 30.92 from x to simulate a 3 parameter wbl with gamma = 30.92
 %! wblplot (x - 30.92, c, f, 0.05);
 
-## Get current figure visibility so it can be restored after tests
-%!shared visibility_setting
-%! visibility_setting = get (0, "DefaultFigureVisible");
+## Test plotting
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! x = [16, 34, 53, 75, 93, 120, 150, 191, 240 ,339];
-%! [h, p] = wblplot (x, [], [], 0.05);
-%! assert (numel (h), 4)
-%! assert (p(1), 146.2545, 1E-4)
-%! assert (p(2), 1.1973, 1E-4)
-%! assert (p(3), 0.9999, 5E-5)
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   x = [16, 34, 53, 75, 93, 120, 150, 191, 240 ,339];
+%!   [h, p] = wblplot (x, [], [], 0.05);
+%!   assert (numel (h), 4)
+%!   assert (p(1), 146.2545, 1E-4)
+%!   assert (p(2), 1.1973, 1E-4)
+%!   assert (p(3), 0.9999, 5E-5)
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect

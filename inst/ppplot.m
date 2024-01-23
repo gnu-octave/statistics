@@ -90,15 +90,17 @@ function p = stdnormal_cdf (x)
 endfunction
 
 
+## Test plotting
+%!test
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   ppplot ([2 3 3 4 4 5 6 5 6 7 8 9 8 7 8 9 0 8 7 6 5 4 6 13 8 15 9 9]);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
 ## Test input validation
 %!error ppplot ()
 %!error <ppplot: X must be a numeric vector> ppplot (ones (2,2))
 %!error <ppplot: X must be a numeric vector> ppplot (1, 2)
 %!error <ppplot: DIST must be a strin> ppplot ([1 2 3 4], 2)
-## Test plotting
-%!shared visibility_setting
-%! visibility_setting = get (0, "DefaultFigureVisible");
-%!test
-%! set (0, "DefaultFigureVisible", "off");
-%! ppplot ([2 3 3 4 4 5 6 5 6 7 8 9 8 7 8 9 0 8 7 6 5 4 6 13 8 15 9 9]);
-%! set (0, "DefaultFigureVisible", visibility_setting);

@@ -82,16 +82,32 @@ endfunction
 %!demo
 %! histfit (randn (100, 1))
 
-## testing
-%!shared visibility_setting
-%! visibility_setting = get (0, "DefaultFigureVisible");
+## Test plotting
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! x = [2, 4, 3, 2, 4, 3, 2, 5, 6, 4, 7, 5, 9, 8, 10, 4, 11];
-%! histfit (x);
-%! x = [2, 4, 3, 2, NaN, 3, 2, 5, 6, 4, 7, 5, 9, 8, 10, 4, 11];
-%! histfit (x);
-%! histfit (x, 3);
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   x = [2, 4, 3, 2, 4, 3, 2, 5, 6, 4, 7, 5, 9, 8, 10, 4, 11];
+%!   histfit (x);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   x = [2, 4, 3, 2, NaN, 3, 2, 5, 6, 4, 7, 5, 9, 8, 10, 4, 11];
+%!   histfit (x);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   x = [2, 4, 3, 2, NaN, 3, 2, 5, 6, 4, 7, 5, 9, 8, 10, 4, 11];
+%!   histfit (x, 3);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+## Test input validation
 %!error histfit ();
 %!error histfit ([x',x']);

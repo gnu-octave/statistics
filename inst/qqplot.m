@@ -112,16 +112,18 @@ function [qout, sout] = qqplot (x, dist, varargin)
 endfunction
 
 
+## Test plotting
+%!test
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   qqplot ([2 3 3 4 4 5 6 5 6 7 8 9 8 7 8 9 0 8 7 6 5 4 6 13 8 15 9 9]);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
 ## Test input validation
 %!error qqplot ()
 %!error <qqplot: X must be a numeric vector> qqplot ({1})
 %!error <qqplot: X must be a numeric vector> qqplot (ones (2,2))
 %!error <qqplot: X must be a numeric vecto> qqplot (1, "foobar")
 %!error <qqplot: no inverse CDF found> qqplot ([1 2 3], "foobar")
-## Test plotting
-%!shared visibility_setting
-%! visibility_setting = get (0, "DefaultFigureVisible");
-%!test
-%! set (0, "DefaultFigureVisible", "off");
-%! qqplot ([2 3 3 4 4 5 6 5 6 7 8 9 8 7 8 9 0 8 7 6 5 4 6 13 8 15 9 9]);
-%! set (0, "DefaultFigureVisible", visibility_setting);

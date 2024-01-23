@@ -163,24 +163,28 @@ endfunction
 %! h = normplot(ax, [-10:10]);
 %! set (ax, "xlim", [-11, 21]);
 
-%!test
+## Test input validation
 %!error normplot ();
 %!error normplot (23);
 %!error normplot (23, [1:20]);
 %!error normplot (ones(3,4,5));
 
-## Get current figure visibility so it can be restored after tests
-%!shared visibility_setting
-%! visibility_setting = get (0, "DefaultFigureVisible");
+## Test plotting
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! ax = newplot();
-%! h = normplot(ax, [1:20]);
-%! ax = gca;
-%! h = normplot(ax, [-10:10]);
-%! set (ax, "xlim", [-11, 21]);
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   ax = newplot (hf);
+%!   h = normplot (ax, [1:20]);
+%!   ax = gca;
+%!   h = normplot(ax, [-10:10]);
+%!   set (ax, "xlim", [-11, 21]);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! h = normplot([1:20;5:2:44]');
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   h = normplot([1:20;5:2:44]');
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect

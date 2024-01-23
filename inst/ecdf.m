@@ -307,23 +307,27 @@ endfunction
 %!error kstest ([2,3,4,5,6],"alpha", 0.05, "CDF", [2,3,4;1,3,4;1,2,1]);
 
 ## Test output against MATLAB results
-%!shared visibility_setting
-%! visibility_setting = get (0, "DefaultFigureVisible");
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! x = [2, 3, 4, 3, 5, 4, 6, 5, 8, 3, 7, 8, 9, 0];
-%! [F, x, Flo, Fup] = ecdf (x);
-%! F_out = [0; 0.0714; 0.1429; 0.3571; 0.5; 0.6429; 0.7143; 0.7857; 0.9286; 1];
-%! assert (F, F_out, ones (10,1) * 1e-4);
-%! x_out = [0 0 2 3 4 5 6 7 8 9]';
-%! assert (x, x_out);
-%! Flo_out = [NaN, 0, 0, 0.1061, 0.2381, 0.3919, 0.4776, 0.5708, 0.7937, NaN]';
-%! assert (Flo, Flo_out, ones (10,1) * 1e-4);
-%! Fup_out = [NaN, 0.2063, 0.3262, 0.6081, 0.7619, 0.8939, 0.9509, 1, 1, NaN]';
-%! assert (Fup, Fup_out, ones (10,1) * 1e-4);
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   x = [2, 3, 4, 3, 5, 4, 6, 5, 8, 3, 7, 8, 9, 0];
+%!   [F, x, Flo, Fup] = ecdf (x);
+%!   F_out = [0; 0.0714; 0.1429; 0.3571; 0.5; 0.6429; 0.7143; 0.7857; 0.9286; 1];
+%!   assert (F, F_out, ones (10,1) * 1e-4);
+%!   x_out = [0 0 2 3 4 5 6 7 8 9]';
+%!   assert (x, x_out);
+%!   Flo_out = [NaN, 0, 0, 0.1061, 0.2381, 0.3919, 0.4776, 0.5708, 0.7937, NaN]';
+%!   assert (Flo, Flo_out, ones (10,1) * 1e-4);
+%!   Fup_out = [NaN, 0.2063, 0.3262, 0.6081, 0.7619, 0.8939, 0.9509, 1, 1, NaN]';
+%!   assert (Fup, Fup_out, ones (10,1) * 1e-4);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! x = [2, 3, 4, 3, 5, 4, 6, 5, 8, 3, 7, 8, 9, 0];
-%! ecdf (x);
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   x = [2, 3, 4, 3, 5, 4, 6, 5, 8, 3, 7, 8, 9, 0];
+%!   ecdf (x);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect

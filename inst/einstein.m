@@ -232,19 +232,19 @@ endfunction
 %!demo
 %! einstein (0.6, 0.1)
 
-
-%!shared visibility_setting
-%! visibility_setting = get (0, "DefaultFigureVisible");
+## Test plotting
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! tiles = einstein (0.4, 0.6);
-%! assert (isstruct (tiles), true);
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   tiles = einstein (0.4, 0.6);
+%!   assert (isstruct (tiles), true);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
 
+## Test input validation
 %!error<Invalid call to einstein.  Correct usage is> einstein
 %!error<Invalid call to einstein.  Correct usage is> einstein (0.5)
 %!error<einstein: A and B must be within the open interval> einstein (0, 0.9)
 %!error<einstein: A and B must be within the open interval> einstein (0.4, 1)
 %!error<einstein: A and B must be within the open interval> einstein (-0.4, 1)
-
-

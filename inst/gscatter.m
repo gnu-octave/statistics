@@ -232,7 +232,7 @@ function h = gscatter (varargin)
   hold off;
 endfunction
 
-## demonstration
+
 %!demo
 %! load fisheriris;
 %! X = meas(:,3:4);
@@ -240,23 +240,27 @@ endfunction
 %! gscatter (X(:,1), X(:,2), cidcs, [.75 .75 0; 0 .75 .75; .75 0 .75], "os^");
 %! title ("Fisher's iris data");
 
-## input tests
-%!error gscatter();
-%!error gscatter([1]);
-%!error gscatter([1], [2]);
-%!error <x must be a numeric vector> gscatter('abc', [1 2 3], [1]);
-%!error <x and y must have the same size> gscatter([1 2 3], [1 2], [1]);
-%!error <y must be a numeric vector> gscatter([1 2 3], 'abc', [1]);
-%!error <g must have the same size as x and y> gscatter([1 2], [1 2], [1]);
-%!error <invalid dolegend> gscatter([1 2], [1 2], [1 2], 'rb', 'so', 12, 'xxx');
-## testing demonstration
+## Test plotting
 %!shared visibility_setting
 %! visibility_setting = get (0, "DefaultFigureVisible");
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! load fisheriris;
-%! X = meas(:,3:4);
-%! cidcs = kmeans (X, 3, "Replicates", 5);
-%! gscatter (X(:,1), X(:,2), cidcs, [.75 .75 0; 0 .75 .75; .75 0 .75], "os^");
-%! title ("Fisher's iris data");
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   load fisheriris;
+%!   X = meas(:,3:4);
+%!   cidcs = kmeans (X, 3, "Replicates", 5);
+%!   gscatter (X(:,1), X(:,2), cidcs, [.75 .75 0; 0 .75 .75; .75 0 .75], "os^");
+%!   title ("Fisher's iris data");
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+## Test input validation
+%!error gscatter ();
+%!error gscatter ([1]);
+%!error gscatter ([1], [2]);
+%!error <x must be a numeric vector> gscatter ('abc', [1 2 3], [1]);
+%!error <x and y must have the same size> gscatter ([1 2 3], [1 2], [1]);
+%!error <y must be a numeric vector> gscatter ([1 2 3], 'abc', [1]);
+%!error <g must have the same size as x and y> gscatter ([1 2], [1 2], [1]);
+%!error <invalid dolegend> gscatter ([1 2], [1 2], [1 2], 'rb', 'so', 12, 'xxx');
