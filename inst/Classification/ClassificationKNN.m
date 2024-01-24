@@ -160,7 +160,7 @@ classdef ClassificationKNN
 ##
 ## @end multitable
 ##
-## @seealso{fitcknn, @@ClassificationKNN/predict, knnsearch}
+## @seealso{fitcknn, knnsearch, rangesearch}
 ## @end deftypefn
 
   properties (Access = public)
@@ -192,12 +192,8 @@ classdef ClassificationKNN
 
   endproperties
 
-  properties (Acesss = protected)
-
-
-  endproperties
-
   methods (Access = public)
+
     ## Class object contructor
     function this = ClassificationKNN (X, Y, varargin)
       ## Check for sufficient number of input arguments
@@ -632,9 +628,187 @@ classdef ClassificationKNN
 
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationKNN} {@var{label} =} predict (@var{obj}, @var{XC})
+    ## @deftypefnx {ClassificationKNN} {[@var{label}, @var{score}, @var{cost}] =} predict (@var{obj}, @var{XC})
+    ##
+    ## Classify new data points into categories using the kNN algorithm from a
+    ## k-Nearest Neighbor classification model.
+    ##
+    ## @code{@var{label} = predict (@var{obj}, @var{XC}} returns the matrix of
+    ## labels predicted for the corresponding instances in @var{XC}, using the
+    ## predictor data in @code{X} and corresponding labels, @code{Y}, stored in
+    ## the k-Nearest Neighbor classification model, @var{obj}.  @var{XC} must be
+    ## an @math{MxP} numeric matrix with the same number of features @math{P} as
+    ## the corresponding predictors of the kNN model in @var{obj}.
+    ##
+    ## @itemize
+    ## @item
+    ## @var{obj} must be a @qcode{ClassificationKNN} object.
+    ## @end itemize
+    ##
+    ## @code{[@var{label}, @var{score}, @var{cost}] = predict (@var{obj}, @var{XC}}
+    ## also returns @var{score}, which contains the predicted class scores or
+    ## posterior probabilities for each instance of the corresponding unique
+    ## classes, and @var{cost}, which is a matrix containing the expected cost
+    ## of the classifications.
+    ##
+    ## @seealso{fitcknn, @@ClassificationKNN/ClassificationKNN}
+    ## @end deftypefn
+    function [label, score, cost] = predict (this, XC)
+
+      ## Check for sufficient input arguments
+      if (nargin < 2)
+        error ("ClassificationKNN.predict: too few input arguments.");
+      endif
+
+      ## Check for valid XC
+      if (isempty (XC))
+        error ("ClassificationKNN.predict: XC is empty.");
+      elseif (columns (this.X) != columns (XC))
+        error (strcat (["ClassificationKNN.predict: XC must have the same"], ...
+                       [" number of features (columns) as in the kNN model."]));
+      endif
+
+      ## Get training data and labels
+      X = this.X(logical (this.RowsUsed),:);
+      Y = this.Y(logical (this.RowsUsed),:);
+
+      ## Standardize (if necessary)
+      if (this.Standardize)
+        X = (X - this.Mu) ./ this.Sigma;
+        XC = (XC - this.Mu) ./ this.Sigma;
+      endif
+
+      ## Train kNN
+      if (strcmpi (this.Distance, "seuclidean"))
+        [idx, dist] = knnsearch (X, XC, "k", this.NumNeighbors, ...
+                      "NSMethod", this.NSMethod, "Distance", "seuclidean", ...
+                      "Scale", this.DistParameter, "sortindices", true, ...
+                      "includeties", this.IncludeTies, ...
+                      "bucketsize", this.BucketSize);
+
+      elseif (strcmpi (this.Distance, "mahalanobis"))
+        [idx, dist] = knnsearch (X, XC, "k", this.NumNeighbors, ...
+                      "NSMethod", this.NSMethod, "Distance", "mahalanobis", ...
+                      "cov", this.DistParameter, "sortindices", true, ...
+                      "includeties", this.IncludeTies, ...
+                      "bucketsize", this.BucketSize);
+
+      elseif (strcmpi (this.Distance, "minkowski"))
+        [idx, dist] = knnsearch (X, XC, "k", this.NumNeighbors, ...
+                      "NSMethod", this.NSMethod, "Distance", "minkowski", ...
+                      "P", this.DistParameter, "sortindices", true, ...
+                      "includeties",this.IncludeTies, ...
+                      "bucketsize", this.BucketSize);
+
+      else
+        [idx, dist] = knnsearch (X, XC, "k", this.NumNeighbors, ...
+                      "NSMethod", this.NSMethod, "Distance", this.Distance, ...
+                      "sortindices", true, "includeties", this.IncludeTies, ...
+                      "bucketsize", this.BucketSize);
+      endif
+
+      ## Make prediction
+      label = {};
+      score = [];
+      cost  = [];
+
+      ## Get IDs and labels for each point in training data
+      [gY, gnY, glY] = grp2idx (Y);
+
+      ## Evaluate the K nearest neighbours for each new point
+      for i = 1:rows (idx)
+
+        ## Get K nearest neighbours
+        if (this.IncludeTies)
+          NN_idx = idx{i};
+          NNdist = dist{i};
+        else
+          NN_idx = idx(i,:);
+          NNdist = dist(i,:);
+        endif
+        k = numel (NN_idx);
+        kNNgY = gY(NN_idx);
+
+        ## Count frequency for each class
+        for c = 1:numel (this.ClassNames)
+          freq(c) = sum (kNNgY == c) / k;
+        endfor
+
+        ## Get label according to BreakTies
+        if (strcmpi (this.BreakTies, "smallest"))
+          [~, idl] = max (freq);
+        else
+          idl = find (freq == max (freq));
+          tgn = numel (idl);
+          if (tgn > 1)
+            if (strcmpi (this.BreakTies, "nearest"))
+              for t = 1:tgn
+                tgs(t) = find (gY(NN_idx) == idl(t));
+              endfor
+              [~, idm] = min (tgs);
+              idl = idl(idm);
+            else      # "random"
+              idl = idl(randperm (numel (idl))(1));
+            endif
+          endif
+        endif
+        label = [label; gnY{idl}];
+
+        ## Calculate score and cost
+        score = [score; freq];
+        cost = [cost; 1-freq];
+
+      endfor
+
+    endfunction
+
   endmethods
 
 endclassdef
+
+
+%!demo
+%! ## Create a k-nearest neighbor classifier for Fisher's iris data with k = 5.
+%! ## Evaluate some model predictions on new data.
+%!
+%! load fisheriris
+%! x = meas;
+%! y = species;
+%! xc = [min(x); mean(x); max(x)];
+%! obj = fitcknn (x, y, "NumNeighbors", 5, "Standardize", 1);
+%! [label, score, cost] = predict (obj, xc)
+
+%!demo
+%! ## Train a k-nearest neighbor classifier for k = 10
+%! ## and plot the decision boundaries.
+%!
+%! load fisheriris
+%! idx = ! strcmp (species, "setosa");
+%! X = meas(idx,3:4);
+%! Y = cast (strcmpi (species(idx), "virginica"), "double");
+%! obj = fitcknn (X, Y, "Standardize", 1, "NumNeighbors", 10, "NSMethod", "exhaustive")
+%! x1 = [min(X(:,1)):0.03:max(X(:,1))];
+%! x2 = [min(X(:,2)):0.02:max(X(:,2))];
+%! [x1G, x2G] = meshgrid (x1, x2);
+%! XGrid = [x1G(:), x2G(:)];
+%! pred = predict (obj, XGrid);
+%! gidx = logical (str2num (cell2mat (pred)));
+%!
+%! figure
+%! scatter (XGrid(gidx,1), XGrid(gidx,2), "markerfacecolor", "magenta");
+%! hold on
+%! scatter (XGrid(!gidx,1), XGrid(!gidx,2), "markerfacecolor", "red");
+%! plot (X(Y == 0, 1), X(Y == 0, 2), "ko", X(Y == 1, 1), X(Y == 1, 2), "kx");
+%! xlabel ("Petal length (cm)");
+%! ylabel ("Petal width (cm)");
+%! title ("5-Nearest Neighbor Classifier Decision Boundary");
+%! legend ({"Versicolor Region", "Virginica Region", ...
+%!         "Sampled Versicolor", "Sampled Virginica"}, ...
+%!         "location", "northwest")
+%! axis tight
+%! hold off
 
 
 ## Test constructor with NSMethod and NumNeighbors parameters
@@ -817,7 +991,7 @@ endclassdef
 %! assert ({a.NSMethod, a.Distance}, {"exhaustive", "hamming"})
 %! assert ({a.BucketSize}, {50})
 
-## Test input validation
+## Test input validation for constructor
 %!error<ClassificationKNN: too few input arguments.> ClassificationKNN ()
 %!error<ClassificationKNN: too few input arguments.> ...
 %! ClassificationKNN (ones(4, 1))
@@ -941,3 +1115,157 @@ endclassdef
 %! ClassificationKNN (ones (5,2), ones (5,1), "Exponent", 3)
 %!error<ClassificationKNN: kdtree method is only valid for euclidean, cityblock> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), "Distance", "hamming", "NSMethod", "kdtree")
+
+## Test output for predict method
+%!shared x, y
+%! load fisheriris
+%! x = meas;
+%! y = species;
+%!test
+%! xc = [min(x); mean(x); max(x)];
+%! obj = fitcknn (x, y, "NumNeighbors", 5);
+%! [l, s, c] = predict (obj, xc);
+%! assert (l, {"setosa"; "versicolor"; "virginica"})
+%! assert (s, [1, 0, 0; 0, 1, 0; 0, 0, 1])
+%! assert (c, [0, 1, 1; 1, 0, 1; 1, 1, 0])
+%!test
+%! xc = [min(x); mean(x); max(x)];
+%! obj = fitcknn (x, y, "NumNeighbors", 5, "Standardize", 1);
+%! [l, s, c] = predict (obj, xc);
+%! assert (l, {"versicolor"; "versicolor"; "virginica"})
+%! assert (s, [0.4, 0.6, 0; 0, 1, 0; 0, 0, 1])
+%! assert (c, [0.6, 0.4, 1; 1, 0, 1; 1, 1, 0])
+%!test
+%! xc = [min(x); mean(x); max(x)];
+%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "mahalanobis");
+%! [l, s, c] = predict (obj, xc);
+%! assert (s, [0.3, 0.7, 0; 0, 0.9, 0.1; 0.2, 0.2, 0.6], 1e-4)
+%! assert (c, [0.7, 0.3, 1; 1, 0.1, 0.9; 0.8, 0.8, 0.4], 1e-4)
+%!test
+%! xc = [min(x); mean(x); max(x)];
+%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "cosine");
+%! [l, s, c] = predict (obj, xc);
+%! assert (l, {"setosa"; "versicolor"; "virginica"})
+%! assert (s, [1, 0, 0; 0, 1, 0; 0, 0.3, 0.7], 1e-4)
+%! assert (c, [0, 1, 1; 1, 0, 1; 1, 0.7, 0.3], 1e-4)
+%!test
+%! xc = [5.2, 4.1, 1.5,	0.1; 5.1,	3.8, 1.9,	0.4; ...
+%!         5.1, 3.8, 1.5, 0.3; 4.9, 3.6, 1.4, 0.1];
+%! obj = fitcknn (x, y, "NumNeighbors", 5);
+%! [l, s, c] = predict (obj, xc);
+%! assert (l, {"setosa"; "setosa"; "setosa"; "setosa"})
+%! assert (s, [1, 0, 0; 1, 0, 0; 1, 0, 0; 1, 0, 0])
+%! assert (c, [0, 1, 1; 0, 1, 1; 0, 1, 1; 0, 1, 1])
+%!test
+%! xc = [5, 3, 5, 1.45];
+%! obj = fitcknn (x, y, "NumNeighbors", 5);
+%! [l, s, c] = predict (obj, xc);
+%! assert (l, {"versicolor"})
+%! assert (s, [0, 0.6, 0.4], 1e-4)
+%! assert (c, [1, 0.4, 0.6], 1e-4)
+%!test
+%! xc = [5, 3, 5, 1.45];
+%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "minkowski", "Exponent", 5);
+%! [l, s, c] = predict (obj, xc);
+%! assert (l, {"versicolor"})
+%! assert (s, [0, 0.5, 0.5], 1e-4)
+%! assert (c, [1, 0.5, 0.5], 1e-4)
+%!test
+%! xc = [5, 3, 5, 1.45];
+%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "jaccard");
+%! [l, s, c] = predict (obj, xc);
+%! assert (l, {"setosa"})
+%! assert (s, [0.9, 0.1, 0], 1e-4)
+%! assert (c, [0.1, 0.9, 1], 1e-4)
+%!test
+%! xc = [5, 3, 5, 1.45];
+%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "mahalanobis");
+%! [l, s, c] = predict (obj, xc);
+%! assert (l, {"versicolor"})
+%! assert (s, [0.1000, 0.5000, 0.4000], 1e-4)
+%! assert (c, [0.9000, 0.5000, 0.6000], 1e-4)
+%!test
+%! xc = [5, 3, 5, 1.45];
+%! obj = fitcknn (x, y, "NumNeighbors", 5, "distance", "jaccard");
+%! [l, s, c] = predict (obj, xc);
+%! assert (l, {"setosa"})
+%! assert (s, [0.8, 0.2, 0], 1e-4)
+%! assert (c, [0.2, 0.8, 1], 1e-4)
+%!test
+%! xc = [5, 3, 5, 1.45];
+%! obj = fitcknn (x, y, "NumNeighbors", 5, "distance", "seuclidean");
+%! [l, s, c] = predict (obj, xc);
+%! assert (l, {"versicolor"})
+%! assert (s, [0, 1, 0], 1e-4)
+%! assert (c, [1, 0, 1], 1e-4)
+%!test
+%! xc = [5, 3, 5, 1.45];
+%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "chebychev");
+%! [l, s, c] = predict (obj, xc);
+%! assert (l, {"versicolor"})
+%! assert (s, [0, 0.7, 0.3], 1e-4)
+%! assert (c, [1, 0.3, 0.7], 1e-4)
+%!test
+%! xc = [5, 3, 5, 1.45];
+%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "cityblock");
+%! [l, s, c] = predict (obj, xc);
+%! assert (l, {"versicolor"})
+%! assert (s, [0, 0.6, 0.4], 1e-4)
+%! assert (c, [1, 0.4, 0.6], 1e-4)
+%!test
+%! xc = [5, 3, 5, 1.45];
+%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "cosine");
+%! [l, s, c] = predict (obj, xc);
+%! assert (l, {"virginica"})
+%! assert (s, [0, 0.1, 0.9], 1e-4)
+%! assert (c, [1, 0.9, 0.1], 1e-4)
+%!test
+%! xc = [5, 3, 5, 1.45];
+%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "correlation");
+%! [l, s, c] = predict (obj, xc);
+%! assert (l, {"virginica"})
+%! assert (s, [0, 0.1, 0.9], 1e-4)
+%! assert (c, [1, 0.9, 0.1], 1e-4)
+%!test
+%! xc = [5, 3, 5, 1.45];
+%! obj = fitcknn (x, y, "NumNeighbors", 30, "distance", "spearman");
+%! [l, s, c] = predict (obj, xc);
+%! assert (l, {"versicolor"})
+%! assert (s, [0, 1, 0], 1e-4)
+%! assert (c, [1, 0, 1], 1e-4)
+%!test
+%! xc = [5, 3, 5, 1.45];
+%! obj = fitcknn (x, y, "NumNeighbors", 30, "distance", "hamming");
+%! [l, s, c] = predict (obj, xc);
+%! assert (l, {"setosa"})
+%! assert (s, [0.4333, 0.3333, 0.2333], 1e-4)
+%! assert (c, [0.5667, 0.6667, 0.7667], 1e-4)
+%!test
+%! xc = [5, 3, 5, 1.45];
+%! obj = fitcknn (x, y, "NumNeighbors", 5, "distance", "hamming");
+%! [l, s, c] = predict (obj, xc);
+%! assert (l, {"setosa"})
+%! assert (s, [0.8, 0.2, 0], 1e-4)
+%! assert (c, [0.2, 0.8, 1], 1e-4)
+%!test
+%! xc = [min(x); mean(x); max(x)];
+%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "correlation");
+%! [l, s, c] = predict (obj, xc);
+%! assert (l, {"setosa"; "versicolor"; "virginica"})
+%! assert (s, [1, 0, 0; 0, 1, 0; 0, 0.4, 0.6], 1e-4)
+%! assert (c, [0, 1, 1; 1, 0, 1; 1, 0.6, 0.4], 1e-4)
+%!test
+%! xc = [min(x); mean(x); max(x)];
+%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "hamming");
+%! [l, s, c] = predict (obj, xc);
+%! assert (l, {"setosa";"setosa";"setosa"})
+%! assert (s, [0.9, 0.1, 0; 1, 0, 0; 0.5, 0, 0.5], 1e-4)
+%! assert (c, [0.1, 0.9, 1; 0, 1, 1; 0.5, 1, 0.5], 1e-4)
+
+## Test input validation for predict method
+%!error<ClassificationKNN.predict: too few input arguments.> ...
+%! predict (ClassificationKNN (ones (4,2), ones (4,1)))
+%!error<ClassificationKNN.predict: XC is empty.> ...
+%! predict (ClassificationKNN (ones (4,2), ones (4,1)), [])
+%!error<ClassificationKNN.predict: XC must have the same number of features> ...
+%! predict (ClassificationKNN (ones (4,2), ones (4,1)), 1)
