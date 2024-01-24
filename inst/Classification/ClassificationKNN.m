@@ -192,7 +192,7 @@ classdef ClassificationKNN
 
   endproperties
 
-  methods (Access = public)
+  methods
 
     ## Class object contructor
     function this = ClassificationKNN (X, Y, varargin)
@@ -653,7 +653,7 @@ classdef ClassificationKNN
     ## classes, and @var{cost}, which is a matrix containing the expected cost
     ## of the classifications.
     ##
-    ## @seealso{fitcknn, @@ClassificationKNN/ClassificationKNN}
+    ## @seealso{fitcknn, ClassificationKNN}
     ## @end deftypefn
     function [label, score, cost] = predict (this, XC)
 
