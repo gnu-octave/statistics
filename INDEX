@@ -4,8 +4,8 @@ Clustering
  clusterdata
  cmdscale
  confusionmat
- ConfusionMatrixChart
  cophenet
+ crossval
  evalclusters
  inconsistent
  kmeans
@@ -20,9 +20,15 @@ Clustering
  rangesearch
  slicesample
  squareform
-ClassificationKNN (class for KNN classification)
- @ClassificationKNN/ClassificationKNN
- @ClassificationKNN/predict
+Classification Classes
+ ClassificationKNN
+ ConfusionMatrixChart
+Clustering Classes
+ CalinskiHarabaszEvaluation
+ ClusterCriterion
+ DaviesBouldinEvaluation
+ GapEvaluation
+ SilhouetteEvaluation
 CVpartition (class of set partitions for cross-validation, used in crossval)
  @cvpartition/cvpartition
  @cvpartition/display
@@ -192,7 +198,6 @@ Machine Learning
  svmpredict
  svmtrain
 Model Fitting
- crossval
  fitcknn
  fitgmdist
  fitlm
