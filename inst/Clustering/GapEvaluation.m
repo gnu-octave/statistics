@@ -69,7 +69,7 @@ classdef GapEvaluation < ClusterCriterion
   ## @end deftypefn
   ##
   ## @seealso{evalclusters, ClusterCriterion, CalinskiHarabaszEvaluation,
-  ## DaviesBouldinEvaluation, SilhouetteEvaluation}}
+  ## DaviesBouldinEvaluation, SilhouetteEvaluation}
 
   properties (GetAccess = public, SetAccess = private)
     B = 0;             # number of reference datasets

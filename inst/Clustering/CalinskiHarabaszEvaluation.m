@@ -38,7 +38,7 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
   ## @end deftypefn
   ##
   ## @seealso{evalclusters, ClusterCriterion, DaviesBouldinEvaluation,
-  ## GapEvaluation, SilhouetteEvaluation}}
+  ## GapEvaluation, SilhouetteEvaluation}
 
   properties (GetAccess = public, SetAccess = private)
 

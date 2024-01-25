@@ -48,7 +48,7 @@ classdef SilhouetteEvaluation < ClusterCriterion
   ## @end deftypefn
   ##
   ## @seealso{evalclusters, ClusterCriterion, CalinskiHarabaszEvaluation,
-  ## DaviesBouldinEvaluation, GapEvaluation}}
+  ## DaviesBouldinEvaluation, GapEvaluation}
 
   properties (GetAccess = public, SetAccess = private)
     Distance = "";           # pdist parameter

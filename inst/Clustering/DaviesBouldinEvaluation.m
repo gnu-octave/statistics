@@ -36,7 +36,7 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
   ## @end deftypefn
   ##
   ## @seealso{evalclusters, ClusterCriterion, CalinskiHarabaszEvaluation,
-  ## GapEvaluation, SilhouetteEvaluation}}
+  ## GapEvaluation, SilhouetteEvaluation}
 
   properties (GetAccess = public, SetAccess = private)
 
