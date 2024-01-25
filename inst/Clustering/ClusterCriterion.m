@@ -1,4 +1,5 @@
 ## Copyright (C) 2021 Stefano Guidoni <ilguido@users.sf.net>
+## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,7 +18,7 @@
 
 classdef ClusterCriterion < handle
   ## -*- texinfo -*-
-  ## @deftypefn {} {} ClusterCriterion ()
+  ## @deftypefn  {statistics} {@var{obj} =} ClusterCriterion (@var{x}, @var{clust}, @var{criterion})
   ##
   ## A clustering evaluation object as created by @code{evalclusters}.
   ##
@@ -73,7 +74,7 @@ classdef ClusterCriterion < handle
   ## @end table
   ## @end deftypefn
   ##
-  ## @seealso{CalinskiHarabaszEvaluation, DaviesBouldinEvaluation, evalclusters,
+  ## @seealso{evalclusters, CalinskiHarabaszEvaluation, DaviesBouldinEvaluation,
   ## GapEvaluation, SilhouetteEvaluation}
 
   properties (Access = public)
@@ -100,6 +101,7 @@ classdef ClusterCriterion < handle
   endproperties
 
   methods (Access = public)
+
     ## constructor
     function this = ClusterCriterion (x, clust, KList)
       ## parsing input data
@@ -145,21 +147,20 @@ classdef ClusterCriterion < handle
       this.InspectedK = parseKList (this, KList);
     endfunction
 
-    ## addK
-    ## add one or more new cluster sizes to evaluate
+    ## -*- texinfo -*-
+    ## @deftypefn {ClusterCriterion} {@var{obj} =} addK (@var{obj}, @var{K})
+    ##
+    ## Add a new cluster array to inspect the ClusterCriterion object.
+    ##
+    ## @end deftypefn
     function this = addK (this, k)
-      ## -*- texinfo -*-
-      ## @deftypefn {} {} ClusterCriterion.addK (@var{K})
-      ##
-      ## Add an array of cluster numbers to inspect to the evaluation object.
-      ## @end deftypefn
 
       ## if there is not a clustering function, then we are using a predefined
       ## set of clustering solutions, hence we cannot redefine the number of
       ## solutions
       if (isempty (this.ClusteringFunction))
-        warning (["ClusterCriterion: cannot redefine the list of cluster"...
-          "numbers to evaluate when there is not a clustering function"]);
+        warning (["ClusterCriterion.addK: cannot redefine the list of cluster"...
+                  "numbers to evaluate when there is not a clustering function"]);
         return;
       endif
 
@@ -168,7 +169,7 @@ classdef ClusterCriterion < handle
 
       ## check if the list has changed
       if (length (newList) == length (this.InspectedK))
-        warning ("ClusterCriterion: the list has not changed");
+        warning ("ClusterCriterion.addK: the list has not changed");
       else
         ## update ClusteringSolutions and CriterionValues
         ClusteringSolutions_tmp = zeros (this.NumObservations, ...
@@ -195,16 +196,18 @@ classdef ClusterCriterion < handle
       endif
     endfunction
 
-    ## plot
-    ## plot the CriterionValues against InspectedK and return a handle to the
-    ## plot
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClusterCriterion} {} plot (@var{obj})
+    ## @deftypefnx {ClusterCriterion} {@var{h} =} plot (@var{obj})
+    ##
+    ## Plot the evaluation results.
+    ##
+    ## Plot the CriterionValues against InspectedK from the ClusterCriterion,
+    ## @var{obj}, to the current plot. It can also return a handle to the
+    ## current plot.
+    ##
+    ## @end deftypefn
     function h = plot (this)
-      ## -*- texinfo -*-
-      ## @deftypefn {} {} ClusterCriterion.plot ()
-      ##
-      ## Plot the evaluation results.
-      ## @end deftypefn
-
       yLabel = sprintf ("%s value", this.CriterionName);
       h = gca ();
       hold on;
@@ -214,16 +217,17 @@ classdef ClusterCriterion < handle
       ylabel (yLabel);
       hold off;
     endfunction
-  endmethods
 
-  methods (Abstract = true)
-    function compact ()
-      ## -*- texinfo -*-
-      ## @deftypefn {} {@var{eva} =} ClusterCriterion.compact ()
-      ##
-      ## Return a compact evaluation object.
-      ## @end deftypefn
+    ## -*- texinfo -*-
+    ## @deftypefn {ClusterCriterion} {@var{eva} =} compact (@var{obj})
+    ##
+    ## Return a compact ClusterCriterion object (not implemented yet).
+    ##
+    ## @end deftypefn
+    function this = compact (this)
+      warning ("ClusterCriterion.compact: this method is not yet implemented.");
     endfunction
+
   endmethods
 
   methods (Access = private)

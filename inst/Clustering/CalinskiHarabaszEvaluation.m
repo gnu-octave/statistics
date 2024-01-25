@@ -1,4 +1,5 @@
 ## Copyright (C) 2021 Stefano Guidoni <ilguido@users.sf.net>
+## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,8 +18,8 @@
 
 classdef CalinskiHarabaszEvaluation < ClusterCriterion
   ## -*- texinfo -*-
-  ## @deftypefn {Function File} {@var{eva} =} evalclusters (@var{x}, @var{clust}, @qcode{CalinskiHarabasz})
-  ## @deftypefnx {Function File} {@var{eva} =} evalclusters (@dots{}, @qcode{Name}, @qcode{Value})
+  ## @deftypefn  {statistics} {@var{eva} =} evalclusters (@var{x}, @var{clust}, @qcode{CalinskiHarabasz})
+  ## @deftypefnx {statistics} {@var{eva} =} evalclusters (@dots{}, @qcode{Name}, @qcode{Value})
   ##
   ## A Calinski-Harabasz object to evaluate clustering solutions.
   ##
@@ -36,7 +37,8 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
   ## that scores the highest value.
   ## @end deftypefn
   ##
-  ## @seealso{ClusterCriterion, evalclusters}
+  ## @seealso{evalclusters, ClusterCriterion, DaviesBouldinEvaluation,
+  ## GapEvaluation, SilhouetteEvaluation}}
 
   properties (GetAccess = public, SetAccess = private)
 
@@ -47,6 +49,7 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
   endproperties
 
   methods (Access = public)
+
     ## constructor
     function this = CalinskiHarabaszEvaluation (x, clust, KList)
       this@ClusterCriterion(x, clust, KList);
@@ -55,10 +58,12 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
       this.evaluate(this.InspectedK); # evaluate the list of cluster numbers
     endfunction
 
-    ## set functions
-
-    ## addK
-    ## add new cluster sizes to evaluate
+    ## -*- texinfo -*-
+    ## @deftypefn {CalinskiHarabaszEvaluation} {@var{obj} =} addK (@var{obj}, @var{K})
+    ##
+    ## Add a new cluster array to inspect the CalinskiHarabaszEvaluation object.
+    ##
+    ## @end deftypefn
     function this = addK (this, K)
       addK@ClusterCriterion(this, K);
 
@@ -79,12 +84,39 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
       endif
     endfunction
 
-    ## compact
-    ## ...
-    function this = compact (this)
-      # FIXME: stub!
-      warning ("CalinskiHarabaszEvaluation: compact is unavailable");
+    ## -*- texinfo -*-
+    ## @deftypefn  {CalinskiHarabaszEvaluation} {} plot (@var{obj})
+    ## @deftypefnx {CalinskiHarabaszEvaluation} {@var{h} =} plot (@var{obj})
+    ##
+    ## Plot the evaluation results.
+    ##
+    ## Plot the CriterionValues against InspectedK from the
+    ## CalinskiHarabaszEvaluation, @var{obj}, to the current plot. It can also
+    ## return a handle to the current plot.
+    ##
+    ## @end deftypefn
+    function h = plot (this)
+      yLabel = sprintf ("%s value", this.CriterionName);
+      h = gca ();
+      hold on;
+      plot (this.InspectedK, this.CriterionValues, "bo-");
+      plot (this.OptimalK, this.CriterionValues(this.OptimalIndex), "b*");
+      xlabel ("number of clusters");
+      ylabel (yLabel);
+      hold off;
     endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn {CalinskiHarabaszEvaluation} {@var{eva} =} compact (@var{obj})
+    ##
+    ## Return a compact CalinskiHarabaszEvaluation object (not implemented yet).
+    ##
+    ## @end deftypefn
+    function this = compact (this)
+      warning (["CalinskiHarabaszEvaluation.compact: this"...
+                " method is not yet implemented."]);
+    endfunction
+
   endmethods
 
   methods (Access = protected)

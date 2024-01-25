@@ -1,4 +1,5 @@
 ## Copyright (C) 2021 Stefano Guidoni <ilguido@users.sf.net>
+## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -34,7 +35,8 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
   ## that scores the lowest value.
   ## @end deftypefn
   ##
-  ## @seealso{ClusterCriterion, evalclusters}
+  ## @seealso{evalclusters, ClusterCriterion, CalinskiHarabaszEvaluation,
+  ## GapEvaluation, SilhouetteEvaluation}}
 
   properties (GetAccess = public, SetAccess = private)
 
@@ -45,6 +47,7 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
   endproperties
 
   methods (Access = public)
+
     ## constructor
     function this = DaviesBouldinEvaluation (x, clust, KList)
       this@ClusterCriterion(x, clust, KList);
@@ -53,10 +56,12 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
       this.evaluate(this.InspectedK); # evaluate the list of cluster numbers
     endfunction
 
-    ## set functions
-
-    ## addK
-    ## add new cluster sizes to evaluate
+    ## -*- texinfo -*-
+    ## @deftypefn {DaviesBouldinEvaluation} {@var{obj} =} addK (@var{obj}, @var{K})
+    ##
+    ## Add a new cluster array to inspect the DaviesBouldinEvaluation object.
+    ##
+    ## @end deftypefn
     function this = addK (this, K)
       addK@ClusterCriterion(this, K);
 
@@ -77,12 +82,39 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
       endif
     endfunction
 
-    ## compact
-    ## ...
-    function this = compact (this)
-      # FIXME: stub!
-      warning ("DaviesBouldinEvaluation: compact is unavailable");
+    ## -*- texinfo -*-
+    ## @deftypefn  {DaviesBouldinEvaluation} {} plot (@var{obj})
+    ## @deftypefnx {DaviesBouldinEvaluation} {@var{h} =} plot (@var{obj})
+    ##
+    ## Plot the evaluation results.
+    ##
+    ## Plot the CriterionValues against InspectedK from the
+    ## DaviesBouldinEvaluation ClusterCriterion, @var{obj}, to the current plot.
+    ## It can also return a handle to the current plot.
+    ##
+    ## @end deftypefn
+    function h = plot (this)
+      yLabel = sprintf ("%s value", this.CriterionName);
+      h = gca ();
+      hold on;
+      plot (this.InspectedK, this.CriterionValues, "bo-");
+      plot (this.OptimalK, this.CriterionValues(this.OptimalIndex), "b*");
+      xlabel ("number of clusters");
+      ylabel (yLabel);
+      hold off;
     endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn {DaviesBouldinEvaluation} {@var{eva} =} compact (@var{obj})
+    ##
+    ## Return a compact DaviesBouldinEvaluation object (not implemented yet).
+    ##
+    ## @end deftypefn
+    function this = compact (this)
+      warning (["DaviesBouldinEvaluation.compact: this"...
+                " method is not yet implemented."]);
+    endfunction
+
   endmethods
 
   methods (Access = protected)

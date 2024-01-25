@@ -1,4 +1,5 @@
 ## Copyright (C) 2021 Stefano Guidoni <ilguido@users.sf.net>
+## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -46,19 +47,21 @@ classdef SilhouetteEvaluation < ClusterCriterion
   ## that scores the highest average silhouette value.
   ## @end deftypefn
   ##
-  ## @seealso{ClusterCriterion, evalclusters, silhouette}
+  ## @seealso{evalclusters, ClusterCriterion, CalinskiHarabaszEvaluation,
+  ## DaviesBouldinEvaluation, GapEvaluation}}
 
   properties (GetAccess = public, SetAccess = private)
-    Distance = ""; # pdist parameter
-    ClusterPriors = ""; # evaluation of silhouette values: equal or empirical
+    Distance = "";           # pdist parameter
+    ClusterPriors = "";      # evaluation of silhouette values: equal or empirical
     ClusterSilhouettes = {}; # results of the silhoutte function for each K
   endproperties
 
   properties (Access = protected)
-    DistanceVector = []; # vector of pdist distances
+    DistanceVector = [];     # vector of pdist distances
   endproperties
 
   methods (Access = public)
+
     ## constructor
     function this = SilhouetteEvaluation (x, clust, KList, ...
                     distanceMetric = "sqeuclidean", clusterPriors = "empirical")
@@ -118,10 +121,12 @@ classdef SilhouetteEvaluation < ClusterCriterion
       this.evaluate(this.InspectedK); # evaluate the list of cluster numbers
     endfunction
 
-    ## set functions
-
-    ## addK
-    ## add new cluster sizes to evaluate
+    ## -*- texinfo -*-
+    ## @deftypefn {SilhouetteEvaluation} {@var{obj} =} addK (@var{obj}, @var{K})
+    ##
+    ## Add a new cluster array to inspect the SilhouetteEvaluation object.
+    ##
+    ## @end deftypefn
     function this = addK (this, K)
       addK@ClusterCriterion(this, K);
 
@@ -143,12 +148,39 @@ classdef SilhouetteEvaluation < ClusterCriterion
       endif
     endfunction
 
-    ## compact
-    ## ...
-    function this = compact (this)
-      # FIXME: stub!
-      warning ("SilhouetteEvaluation: compact is unavailable");
+    ## -*- texinfo -*-
+    ## @deftypefn  {SilhouetteEvaluation} {} plot (@var{obj})
+    ## @deftypefnx {SilhouetteEvaluation} {@var{h} =} plot (@var{obj})
+    ##
+    ## Plot the evaluation results.
+    ##
+    ## Plot the CriterionValues against InspectedK from the
+    ## SilhouetteEvaluation ClusterCriterion, @var{obj}, to the current plot.
+    ## It can also return a handle to the current plot.
+    ##
+    ## @end deftypefn
+    function h = plot (this)
+      yLabel = sprintf ("%s value", this.CriterionName);
+      h = gca ();
+      hold on;
+      plot (this.InspectedK, this.CriterionValues, "bo-");
+      plot (this.OptimalK, this.CriterionValues(this.OptimalIndex), "b*");
+      xlabel ("number of clusters");
+      ylabel (yLabel);
+      hold off;
     endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn {SilhouetteEvaluation} {@var{eva} =} compact (@var{obj})
+    ##
+    ## Return a compact SilhouetteEvaluation object (not implemented yet).
+    ##
+    ## @end deftypefn
+    function this = compact (this)
+      warning (["SilhouetteEvaluation.compact: this"...
+                " method is not yet implemented."]);
+    endfunction
+
   endmethods
 
   methods (Access = protected)
