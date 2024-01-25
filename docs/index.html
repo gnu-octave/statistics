@@ -72,7 +72,8 @@
            <p>Select Category:
              <select name="cat" onchange="location = this.options[this.selectedIndex].value;">
              <option value="#Clustering">Clustering</option>
-             <option value="#ClassificationKNN (class for KNN classification)">ClassificationKNN (class for KNN classification)</option>
+             <option value="#Classification Classes">Classification Classes</option>
+             <option value="#Clustering Classes">Clustering Classes</option>
              <option value="#CVpartition (class of set partitions for cross-validation, used in crossval)">CVpartition (class of set partitions for cross-validation, used in crossval)</option>
              <option value="#RegressionGAM (class for GAM regression)">RegressionGAM (class for GAM regression)</option>
              <option value="#Data Manipulation">Data Manipulation</option>
@@ -132,18 +133,18 @@
                <tr>
                  <td>
                    <b><code>
-                   <a href="ConfusionMatrixChart.html">ConfusionMatrixChart</a>
-                   </code></b>
-                 </td>
-                 <td>Create object CMC, a Confusion Matrix Chart object.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
                    <a href="cophenet.html">cophenet</a>
                    </code></b>
                  </td>
                  <td>Compute the cophenetic correlation coefficient.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="crossval.html">crossval</a>
+                   </code></b>
+                 </td>
+                 <td>Perform cross validation on given data.</td>
                </tr>
                <tr>
                  <td>
@@ -264,14 +265,14 @@ slice sampling of Radford M.</td>
              </tbody>
            </table>
            <h3 class="category">
-             <a name="ClassificationKNN (class for KNN classification)">ClassificationKNN (class for KNN classification)</a>
+             <a name="Classification Classes">Classification Classes</a>
            </h3>
            <table class="table table-striped">
              <tbody>
                <tr>
                  <td>
                    <b><code>
-                   <a href="@ClassificationKNN_ClassificationKNN.html">@ClassificationKNN/ClassificationKNN</a>
+                   <a href="ClassificationKNN.html">ClassificationKNN</a>
                    </code></b>
                  </td>
                  <td>Create a ClassificationKNN class object containing a k-Nearest Neighbor
@@ -280,11 +281,57 @@ classification model.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="@ClassificationKNN_predict.html">@ClassificationKNN/predict</a>
+                   <a href="ConfusionMatrixChart.html">ConfusionMatrixChart</a>
                    </code></b>
                  </td>
-                 <td>Classify new data points into categories using the kNN algorithm from a
-k-Nearest Neighbor classification model.</td>
+                 <td>Create object CMC, a Confusion Matrix Chart object.</td>
+               </tr>
+             </tbody>
+           </table>
+           <h3 class="category">
+             <a name="Clustering Classes">Clustering Classes</a>
+           </h3>
+           <table class="table table-striped">
+             <tbody>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="CalinskiHarabaszEvaluation.html">CalinskiHarabaszEvaluation</a>
+                   </code></b>
+                 </td>
+                 <td>A Calinski-Harabasz object to evaluate clustering solutions.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ClusterCriterion.html">ClusterCriterion</a>
+                   </code></b>
+                 </td>
+                 <td>A clustering evaluation object as created by 'evalclusters'.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="DaviesBouldinEvaluation.html">DaviesBouldinEvaluation</a>
+                   </code></b>
+                 </td>
+                 <td>A Davies-Bouldin object to evaluate clustering solutions.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="GapEvaluation.html">GapEvaluation</a>
+                   </code></b>
+                 </td>
+                 <td>A gap object to evaluate clustering solutions.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="SilhouetteEvaluation.html">SilhouetteEvaluation</a>
+                   </code></b>
+                 </td>
+                 <td>A silhouette object to evaluate clustering solutions.</td>
                </tr>
              </tbody>
            </table>
@@ -2591,14 +2638,6 @@ corresponding DATA which comprise an instance matrtix.</td>
            </h3>
            <table class="table table-striped">
              <tbody>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="crossval.html">crossval</a>
-                   </code></b>
-                 </td>
-                 <td>Perform cross validation on given data.</td>
-               </tr>
                <tr>
                  <td>
                    <b><code>

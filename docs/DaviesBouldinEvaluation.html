@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: DaviesBouldinEvaluation</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+    <style>
+    var {
+      font-style: italics;
+      font-weight: bold;
+    }
+    td {
+      vertical-align: top;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Clustering Classes">
+                    <i class="fas fa-list-alt"></i>
+                    Clustering Classes
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Class&nbsp;Definition: <b><code>DaviesBouldinEvaluation</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>Function File:</u> <var>eva</var> = <b>evalclusters</b><i> (<var>x</var>, <var>clust</var>, <code>DaviesBouldin</code>)</i></dt>
+<dt><u>Function File:</u> <var>eva</var> = <b>evalclusters</b><i> (&hellip;, <code>Name</code>, <code>Value</code>)</i></dt>
+</dl>
+
+<p> A Davies-Bouldin object to evaluate clustering solutions.
+</p>
+<div class="ms-5">
+<p> A <code>DaviesBouldinEvaluation</code> object is a <code>ClusterCriterion</code>
+ object used to evaluate clustering solutions using the Davies-Bouldin
+ criterion.
+</p>
+<p> The Davies-Bouldin criterion is based on the ratio between the distances
+ between clusters and within clusters, that is the distances between the
+ centroids and the distances between each datapoint and its centroid.
+</p>
+<p> The best solution according to the Davies-Bouldin criterion is the one
+ that scores the lowest value.
+ </p></dd></dl>
+
+<p> <strong>See also: </strong>
+  <a href="ClusterCriterion.html">ClusterCriterion</a>, 
+  <a href="evalclusters.html">evalclusters</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Clustering/DaviesBouldinEvaluation.m">DaviesBouldinEvaluation</a>
+</div>
+
+
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Method: <b><code>delete</code></b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+<dl>
+<dt><u>:</u> <b>delete</b><i> (<var>file</var>)</i></dt>
+<dt><u>:</u> <b>delete</b><i> (<var>file1</var>, <var>file2</var>, &hellip;)</i></dt>
+<dt><u>:</u> <b>delete</b><i> (<var>handle</var>)</i></dt>
+</dl>
+<p> Delete the named file or graphics handle.
+</p>
+<div class="ms-5">
+<p> <var>file</var> may contain globbing patterns such as &lsquo;<samp>*</samp>&rsquo;.  Multiple files
+ to be deleted may be specified in the same function call.
+</p>
+<p> <var>handle</var> may be a scalar or vector of graphic handles to delete.
+</p>
+<p> Programming Note: Deleting graphics objects is the proper way to remove
+ features from a plot without clearing the entire figure.
+ <strong>See also: </strong>
+clf, 
+cla, 
+unlink, 
+rmdir
+</p>
+</div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Method: <b><code>plot</code></b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+<dl>
+<dt><u>:</u> <b>plot</b><i> (<var>y</var>)</i></dt>
+<dt><u>:</u> <b>plot</b><i> (<var>x</var>, <var>y</var>)</i></dt>
+<dt><u>:</u> <b>plot</b><i> (<var>x</var>, <var>y</var>, <var>fmt</var>)</i></dt>
+<dt><u>:</u> <b>plot</b><i> (&hellip;, <var>property</var>, <var>value</var>, &hellip;)</i></dt>
+<dt><u>:</u> <b>plot</b><i> (<var>x1</var>, <var>y1</var>, &hellip;, <var>xn</var>, <var>yn</var>)</i></dt>
+<dt><u>:</u> <b>plot</b><i> (<var>hax</var>, &hellip;)</i></dt>
+<dt><u>:</u> <var>h</var> = <b>plot</b><i> (&hellip;)</i></dt>
+</dl>
+<p> Produce 2-D plots.
+</p>
+<div class="ms-5">
+<p> Many different combinations of arguments are possible.  The simplest
+ form is
+</p>
+ <table><tr><td>&nbsp;</td><td><pre class="example"> plot (<var>y</var>)
+ </pre></td></tr></table>
+
+ <p> where the argument is taken as the set of <var>y</var> coordinates and the
+ <var>x</var> coordinates are taken to be the range <code>1:numel (<var>y</var>)</code>.
+</p>
+<p> If more than one argument is given, they are interpreted as
+</p>
+ <table><tr><td>&nbsp;</td><td><pre class="example"> plot (<var>y</var>, <var>property</var>, <var>value</var>, &hellip;)
+ </pre></td></tr></table>
+
+ <p> or
+</p>
+ <table><tr><td>&nbsp;</td><td><pre class="example"> plot (<var>x</var>, <var>y</var>, <var>property</var>, <var>value</var>, &hellip;)
+ </pre></td></tr></table>
+
+ <p> or
+</p>
+ <table><tr><td>&nbsp;</td><td><pre class="example"> plot (<var>x</var>, <var>y</var>, <var>fmt</var>, &hellip;)
+ </pre></td></tr></table>
+
+ <p> and so on.  Any number of argument sets may appear.  The <var>x</var> and
+ <var>y</var> values are interpreted as follows:
+</p>
+ <ul>
+<li>
+ If a single data argument is supplied, it is taken as the set of <var>y</var>
+ coordinates and the <var>x</var> coordinates are taken to be the indices of
+ the elements, starting with 1.
+
+ </li><li>
+ If <var>x</var> and <var>y</var> are scalars, a single point is plotted.
+
+ </li><li>
+ <code>squeeze()</code> is applied to arguments with more than two dimensions,
+ but no more than two singleton dimensions.
+
+ </li><li>
+ If both arguments are vectors, the elements of <var>y</var> are plotted versus
+ the elements of <var>x</var>.
+
+ </li><li>
+ If <var>x</var> is a vector and <var>y</var> is a matrix, then
+ the columns (or rows) of <var>y</var> are plotted versus <var>x</var>.
+ (using whichever combination matches, with columns tried first.)
+
+ </li><li>
+ If the <var>x</var> is a matrix and <var>y</var> is a vector,
+ <var>y</var> is plotted versus the columns (or rows) of <var>x</var>.
+ (using whichever combination matches, with columns tried first.)
+
+ </li><li>
+ If both arguments are matrices, the columns of <var>y</var> are plotted
+ versus the columns of <var>x</var>.  In this case, both matrices must have
+ the same number of rows and columns and no attempt is made to transpose
+ the arguments to make the number of rows match.
+ </li></ul>
+
+<p> Multiple property-value pairs may be specified, but they must appear
+ in pairs.  These arguments are applied to the line objects drawn by
+ <code>plot</code>.  Useful properties to modify are <code>&quot;linestyle&quot;</code>,
+ <code>&quot;linewidth&quot;</code>, <code>&quot;color&quot;</code>, <code>&quot;marker&quot;</code>,
+ <code>&quot;markersize&quot;</code>, <code>&quot;markeredgecolor&quot;</code>, <code>&quot;markerfacecolor&quot;</code>.
+ The full list of properties is documented at
+ @ref{Line Properties}.
+</p>
+<p> The <var>fmt</var> format argument can also be used to control the plot style.
+ It is a string composed of four optional parts:
+ &quot;&lt;linestyle&gt;&lt;marker&gt;&lt;color&gt;&lt;;displayname;&gt;&quot;.
+ When a marker is specified, but no linestyle, only the markers are
+ plotted.  Similarly, if a linestyle is specified, but no marker, then
+ only lines are drawn.  If both are specified then lines and markers will
+ be plotted.  If no <var>fmt</var> and no <var>property</var>/<var>value</var> pairs are
+ given, then the default plot style is solid lines with no markers and the
+ color determined by the <code>&quot;colororder&quot;</code> property of the current axes.
+</p>
+<p> Format arguments:
+</p>
+ <dl compact="compact">
+<dt> linestyle</dt>
+</dl>
+
+ <table>
+<tr><td width="6%">&lsquo;<samp>-</samp>&rsquo;</td><td width="94%">Use solid lines (default).</td></tr>
+<tr><td width="6%">&lsquo;<samp>--</samp>&rsquo;</td><td width="94%">Use dashed lines.</td></tr>
+<tr><td width="6%">&lsquo;<samp>:</samp>&rsquo;</td><td width="94%">Use dotted lines.</td></tr>
+<tr><td width="6%">&lsquo;<samp>-.</samp>&rsquo;</td><td width="94%">Use dash-dotted lines.</td></tr>
+</table>
+
+ </dd>
+<dt> marker</dt>
+</dl>
+
+ <table>
+<tr><td width="6%">&lsquo;<samp>+</samp>&rsquo;</td><td width="94%">crosshair</td></tr>
+<tr><td width="6%">&lsquo;<samp>o</samp>&rsquo;</td><td width="94%">circle</td></tr>
+<tr><td width="6%">&lsquo;<samp>*</samp>&rsquo;</td><td width="94%">star</td></tr>
+<tr><td width="6%">&lsquo;<samp>.</samp>&rsquo;</td><td width="94%">point</td></tr>
+<tr><td width="6%">&lsquo;<samp>x</samp>&rsquo;</td><td width="94%">cross</td></tr>
+<tr><td width="6%">&lsquo;<samp>|</samp>&rsquo;</td><td width="94%">vertical line</td></tr>
+<tr><td width="6%">&lsquo;<samp>_</samp>&rsquo;</td><td width="94%">horizontal line</td></tr>
+<tr><td width="6%">&lsquo;<samp>s</samp>&rsquo;</td><td width="94%">square</td></tr>
+<tr><td width="6%">&lsquo;<samp>d</samp>&rsquo;</td><td width="94%">diamond</td></tr>
+<tr><td width="6%">&lsquo;<samp>^</samp>&rsquo;</td><td width="94%">upward-facing triangle</td></tr>
+<tr><td width="6%">&lsquo;<samp>v</samp>&rsquo;</td><td width="94%">downward-facing triangle</td></tr>
+<tr><td width="6%">&lsquo;<samp>&gt;</samp>&rsquo;</td><td width="94%">right-facing triangle</td></tr>
+<tr><td width="6%">&lsquo;<samp>&lt;</samp>&rsquo;</td><td width="94%">left-facing triangle</td></tr>
+<tr><td width="6%">&lsquo;<samp>p</samp>&rsquo;</td><td width="94%">pentagram</td></tr>
+<tr><td width="6%">&lsquo;<samp>h</samp>&rsquo;</td><td width="94%">hexagram</td></tr>
+</table>
+
+ </dd>
+<dt> color</dt>
+</dl>
+
+ <table>
+<tr><td width="21%">&lsquo;<samp>k</samp>&rsquo;, <code>&quot;black&quot;</code></td><td width="79%">blacK</td></tr>
+<tr><td width="21%">&lsquo;<samp>r</samp>&rsquo;, <code>&quot;red&quot;</code></td><td width="79%">Red</td></tr>
+<tr><td width="21%">&lsquo;<samp>g</samp>&rsquo;, <code>&quot;green&quot;</code></td><td width="79%">Green</td></tr>
+<tr><td width="21%">&lsquo;<samp>b</samp>&rsquo;, <code>&quot;blue&quot;</code></td><td width="79%">Blue</td></tr>
+<tr><td width="21%">&lsquo;<samp>y</samp>&rsquo;, <code>&quot;yellow&quot;</code></td><td width="79%">Yellow</td></tr>
+<tr><td width="21%">&lsquo;<samp>m</samp>&rsquo;, <code>&quot;magenta&quot;</code></td><td width="79%">Magenta</td></tr>
+<tr><td width="21%">&lsquo;<samp>c</samp>&rsquo;, <code>&quot;cyan&quot;</code></td><td width="79%">Cyan</td></tr>
+<tr><td width="21%">&lsquo;<samp>w</samp>&rsquo;, <code>&quot;white&quot;</code></td><td width="79%">White</td></tr>
+</table>
+
+ </dd>
+<dt> <code>&quot;;displayname;&quot;</code></dt>
+</dl>
+<p> The text between semicolons is used to set the <code>&quot;displayname&quot;</code>
+ property which determines the label used for the plot legend.
+</p>
+</dd>
+</dl>
+
+<p> The <var>fmt</var> argument may also be used to assign legend labels.
+ To do so, include the desired label between semicolons after the
+ formatting sequence described above, e.g., <code>&quot;+b;Data Series 3;&quot;</code>.
+ Note that the last semicolon is required and Octave will generate
+ an error if it is left out.
+</p>
+<p> Here are some plot examples:
+</p>
+ <table><tr><td>&nbsp;</td><td><pre class="example"> plot (x, y, &quot;or&quot;, x, y2, x, y3, &quot;m&quot;, x, y4, &quot;+&quot;)
+ </pre></td></tr></table>
+
+<p> This command will plot <code>y</code> with red circles, <code>y2</code> with solid
+ lines, <code>y3</code> with solid magenta lines, and <code>y4</code> with points
+ displayed as &lsquo;<samp>+</samp>&rsquo;.
+</p>
+ <table><tr><td>&nbsp;</td><td><pre class="example"> plot (b, &quot;*&quot;, &quot;markersize&quot;, 10)
+ </pre></td></tr></table>
+
+<p> This command will plot the data in the variable <code>b</code>,
+ with points displayed as &lsquo;<samp>*</samp>&rsquo; and a marker size of 10.
+</p>
+ <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> t = 0:0.1:6.3;
+ plot (t, cos(t), &quot;-;cos(t);&quot;, t, sin(t), &quot;-b;sin(t);&quot;);
+ </pre><pre class="example"> </pre></td></tr></table>
+
+<p> This will plot the cosine and sine functions and label them accordingly
+ in the legend.
+</p>
+<p> If the first argument <var>hax</var> is an axes handle, then plot into this axes,
+ rather than the current axes returned by <code>gca</code>.
+</p>
+<p> The optional return value <var>h</var> is a vector of graphics handles to
+ the created line objects.
+</p>
+<p> To save a plot, in one of several image formats such as PostScript
+ or PNG, use the <code>print</code> command.
+</p>
+<p> <strong>See also: </strong>
+axis, 
+box, 
+grid, 
+hold, 
+legend, 
+title, 
+xlabel, 
+ylabel, 
+xlim, 
+ylim, 
+ezplot, 
+errorbar, 
+fplot, 
+line, 
+plot3, 
+polar, 
+loglog, 
+semilogx, 
+semilogy, 
+subplot
+</p>
+</div>
+            </div>
+          </div>
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>
