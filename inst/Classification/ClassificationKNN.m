@@ -160,7 +160,7 @@ classdef ClassificationKNN
 ##
 ## @end multitable
 ##
-## @seealso{fitcknn, knnsearch, rangesearch}
+## @seealso{fitcknn, knnsearch, rangesearch, pdist2}
 ## @end deftypefn
 
   properties (Access = public)
@@ -192,7 +192,7 @@ classdef ClassificationKNN
 
   endproperties
 
-  methods
+  methods (Access = public)
 
     ## Class object contructor
     function this = ClassificationKNN (X, Y, varargin)
