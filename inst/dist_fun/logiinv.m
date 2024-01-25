@@ -19,9 +19,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{x} =} logiinv (@var{p})
-## @deftypefnx {statistics} {@var{x} =} logiinv (@var{p}, @var{mu})
-## @deftypefnx {statistics} {@var{x} =} logiinv (@var{p}, @var{mu}, @var{s})
+## @deftypefn  {statistics} {@var{x} =} logiinv (@var{p}, @var{mu}, @var{s})
 ##
 ## Inverse of the logistic cumulative distribution function (iCDF).
 ##

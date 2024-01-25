@@ -18,9 +18,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{y} =} logipdf (@var{x})
-## @deftypefnx {statistics} {@var{y} =} logipdf (@var{x}, @var{mu})
-## @deftypefnx {statistics} {@var{y} =} logipdf (@var{x}, @var{mu}, @var{s})
+## @deftypefn  {statistics} {@var{y} =} logipdf (@var{x}, @var{mu}, @var{s})
 ##
 ## Logistic probability density function (PDF).
 ##
