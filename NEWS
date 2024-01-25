@@ -253,3 +253,20 @@
  ** regress_gp: updated functionality with RBF kernel
 
  ** ridge: bug fixes
+
+
+ Summary of important user-visible changes for statistics 1.6.2:
+-------------------------------------------------------------------
+
+ Important Notice: 1) `mad`, `mean`, `median`, `std`, `var` functions
+                      shadow core Octave's respective functions prior
+                      to Octave v9.1
+                   2) incompatibility with the `nan` package
+ Improvements:
+ =============
+
+ ** changed ClassificationKNN legacy class to classdef
+
+ ** changed RegressionGAM legacy class to classdef
+
+ ** update figure handling in BISTs, bug fix when calling 'pkg test statistics'
