@@ -703,19 +703,19 @@ classdef RegressionGAM
 
     endfunction
 
+    ## Helper function for making prediction of new data based on GAM model
+    function ypred = predict_val (params, X, intercept)
+      [nsample, ndims_X] = size (X);
+      ypred = ones (nsample, 1) * intercept;
+      ## Add the remaining terms
+      for j = 1:ndims_X
+        ypred = ypred + ppval (params(j), X (:,j));
+      endfor
+    endfunction
+
   endmethods
 
 endclassdef
-
-## Helper function for making prediction of new data based on GAM model
-function ypred = predict_val (params, X, intercept)
-  [nsample, ndims_X] = size (X);
-  ypred = ones (nsample, 1) * intercept;
-  ## Add the remaining terms
-  for j = 1:ndims_X
-    ypred = ypred + ppval (params(j), X (:,j));
-  endfor
-endfunction
 
 
 %!demo
@@ -727,7 +727,7 @@ endfunction
 %! y = f1(x1) + f2(x2);
 %! y = y + y .* 0.2 .* rand (50,1);
 %! X = [x1, x2];
-%! a = RegressionGAM (X, y, "tol", 1e-3)
+%! a = fitrgam (X, y, "tol", 1e-3)
 
 %!demo
 %! ## Declare two different functions
