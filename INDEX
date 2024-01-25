@@ -29,7 +29,7 @@ Clustering Classes
  DaviesBouldinEvaluation
  GapEvaluation
  SilhouetteEvaluation
-CVpartition (class of set partitions for cross-validation, used in crossval)
+CVpartition (legacy class of set partitions for cross-validation, used in crossval)
  @cvpartition/cvpartition
  @cvpartition/display
  @cvpartition/get
@@ -37,9 +37,8 @@ CVpartition (class of set partitions for cross-validation, used in crossval)
  @cvpartition/set
  @cvpartition/test
  @cvpartition/training
-RegressionGAM (class for GAM regression)
- @RegressionGAM/RegressionGAM
- @RegressionGAM/predict
+Regression Classes
+ RegressionGAM
 Data Manipulation
  combnk
  crosstab
