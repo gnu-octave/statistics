@@ -172,7 +172,7 @@
   <a href="regress_gp.html">regress_gp</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="">RegressionGAM</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Regression/RegressionGAM.m">RegressionGAM</a>
 </div>
 
 
@@ -190,9 +190,9 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>yFit</var> = <b>predict</b><i> (<var>obj</var>, <var>Xfit</var>)</i></dt>
-<dt><u>statistics:</u> <var>yFit</var> = <b>predict</b><i> (&hellip;, <var>Name</var>, <var>Value</var>)</i></dt>
-<dt><u>statistics:</u> [<var>yFit</var>, <var>ySD</var>, <var>yInt</var>] = <b>predict</b><i> (&hellip;)</i></dt>
+<dt><u>RegressionGAM:</u> <var>yFit</var> = <b>predict</b><i> (<var>obj</var>, <var>Xfit</var>)</i></dt>
+<dt><u>RegressionGAM:</u> <var>yFit</var> = <b>predict</b><i> (&hellip;, <var>Name</var>, <var>Value</var>)</i></dt>
+<dt><u>RegressionGAM:</u> [<var>yFit</var>, <var>ySD</var>, <var>yInt</var>] = <b>predict</b><i> (&hellip;)</i></dt>
 </dl>
 
 <p> Predict new data points using generalized additive model regression object.
@@ -240,6 +240,150 @@
   <a href="RegressionGAM.html">RegressionGAM</a>
 </p>
 </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Train a RegressionGAM Model for synthetic values
+ f1 = @(x) cos (3 * x);
+ f2 = @(x) x .^ 3;
+ x1 = 2 * rand (50, 1) - 1;
+ x2 = 2 * rand (50, 1) - 1;
+ y = f1(x1) + f2(x2);
+ y = y + y .* 0.2 .* rand (50,1);
+ X = [x1, x2];
+ a = fitrgam (X, y, "tol", 1e-3)
+
+a =
+
+  RegressionGAM object with properties:
+
+            BaseModel: [1x1 struct]
+                  DoF: [1x2 double]
+              Formula: [0x0 double]
+            IntMatrix: [0x0 double]
+         Interactions: [0x0 double]
+                Knots: [1x2 double]
+            ModelwInt: [0x0 double]
+      NumObservations: [1x1 double]
+        NumPredictors: [1x1 double]
+                Order: [1x2 double]
+       PredictorNames: [1x2 cell]
+         ResponseName: Y
+             RowsUsed: [50x1 double]
+                  Tol: [1x1 double]
+                    X: [50x2 double]
+                    Y: [50x1 double]
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Declare two different functions
+ f1 = @(x) cos (3 * x);
+ f2 = @(x) x .^ 3;
+
+ ## Generate 80 samples for f1 and f2
+ x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
+ X1 = f1 (x);
+ X2 = f2 (x);
+
+ ## Create a synthetic response by adding noise
+ rand ("seed", 3);
+ Ytrue = X1 + X2;
+ Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);
+
+ ## Assemble predictor data
+ X = [X1, X2];
+
+ ## Train the GAM and test on the same data
+ a = fitrgam (X, Y, "order", [5, 5]);
+ [ypred, ySDsd, yInt] = predict (a, X);
+
+ ## Plot the results
+ figure
+ [sortedY, indY] = sort (Ytrue);
+ plot (sortedY, "r-");
+ xlim ([0, 80]);
+ hold on
+ plot (ypred(indY), "g+")
+ plot (yInt(indY,1), "k:")
+ plot (yInt(indY,2), "k:")
+ xlabel ("Predictor samples");
+ ylabel ("Response");
+ title ("actual vs predicted values for function f1(x) = cos (3x) ");
+ legend ({"Theoretical Response", "Predicted Response", "Prediction Intervals"});
+
+ ## Use 30% Holdout partitioning for training and testing data
+ C = cvpartition (80, "HoldOut", 0.3);
+ [ypred, ySDsd, yInt] = predict (a, X(test(C),:));
+
+ ## Plot the results
+ figure
+ [sortedY, indY] = sort (Ytrue(test(C)));
+ plot (sortedY, 'r-');
+ xlim ([0, sum(test(C))]);
+ hold on
+ plot (ypred(indY), "g+")
+ plot (yInt(indY,1),'k:')
+ plot (yInt(indY,2),'k:')
+ xlabel ("Predictor samples");
+ ylabel ("Response");
+ title ("actual vs predicted values for function f1(x) = cos (3x) ");
+ legend ({"Theoretical Response", "Predicted Response", "Prediction Intervals"});
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/RegressionGAM_202.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+                  <div class="text-center">
+                    <img src="assets/RegressionGAM_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
             </div>
           </div>
         </div>
