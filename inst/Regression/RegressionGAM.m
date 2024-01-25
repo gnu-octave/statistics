@@ -395,9 +395,9 @@ classdef RegressionGAM
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {statistics} {@var{yFit} =} predict (@var{obj}, @var{Xfit})
-    ## @deftypefnx {statistics} {@var{yFit} =} predict (@dots{}, @var{Name}, @var{Value})
-    ## @deftypefnx {statistics} {[@var{yFit}, @var{ySD}, @var{yInt}] =} predict (@dots{})
+    ## @deftypefn  {RegressionGAM} {@var{yFit} =} predict (@var{obj}, @var{Xfit})
+    ## @deftypefnx {RegressionGAM} {@var{yFit} =} predict (@dots{}, @var{Name}, @var{Value})
+    ## @deftypefnx {RegressionGAM} {[@var{yFit}, @var{ySD}, @var{yInt}] =} predict (@dots{})
     ##
     ## Predict new data points using generalized additive model regression object.
     ##
@@ -703,20 +703,19 @@ classdef RegressionGAM
 
     endfunction
 
-    ## Helper function for making prediction of new data based on GAM model
-    function ypred = predict_val (params, X, intercept)
-      [nsample, ndims_X] = size (X);
-      ypred = ones (nsample, 1) * intercept;
-      ## Add the remaining terms
-      for j = 1:ndims_X
-        ypred = ypred + ppval (params(j), X (:,j));
-      endfor
-    endfunction
-
   endmethods
 
 endclassdef
 
+## Helper function for making prediction of new data based on GAM model
+function ypred = predict_val (params, X, intercept)
+  [nsample, ndims_X] = size (X);
+  ypred = ones (nsample, 1) * intercept;
+  ## Add the remaining terms
+  for j = 1:ndims_X
+    ypred = ypred + ppval (params(j), X (:,j));
+  endfor
+endfunction
 
 %!demo
 %! ## Train a RegressionGAM Model for synthetic values
