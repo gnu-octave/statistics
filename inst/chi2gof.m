@@ -27,7 +27,8 @@
 ## continuous distributions.  The test is performed by grouping the data into
 ## bins, calculating the observed and expected counts for those bins, and
 ## computing the chi-square test statistic
-## @tex $$ \chi ^ 2 = \sum_{i=1}^N \left (O_i - E_i \right) ^ 2 / E_i $$
+## @tex
+## $$ \chi ^ 2 = \sum_{i=1}^N \left (O_i - E_i \right) ^ 2 / E_i $$
 ## @end tex
 ## @ifnottex
 ## SUM((O-E).^2./E),
