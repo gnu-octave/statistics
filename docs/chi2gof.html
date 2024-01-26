@@ -74,7 +74,7 @@
 <dt><u>statistics:</u> <var>h</var> = <b>chi2gof</b><i> (<var>x</var>)</i></dt>
 <dt><u>statistics:</u> [<var>h</var>, <var>p</var>] = <b>chi2gof</b><i> (<var>x</var>)</i></dt>
 <dt><u>statistics:</u> [<var>p</var>, <var>h</var>, <var>stats</var>] = <b>chi2gof</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>chi2gof</b><i> (<var>x</var>, <var>name1</var>, <var>value1</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>chi2gof</b><i> (<var>x</var>, <var>Name</var>, <var>Value</var>, &hellip;)</i></dt>
 </dl>
 
 <p> Chi-square goodness-of-fit test.
@@ -91,8 +91,8 @@
 </p>
 <p> Bins in either tail with an expected count less than 5 are pooled with
  neighboring bins until the count in each extreme bin is at least 5.  If
- bins remain in the interior with counts less than 5, CHI2GOF displays a
- warning.  In that case, you should use fewer bins, or provide bin centers
+ bins remain in the interior with counts less than 5, <code>chi2gof</code> displays
+ a warning.  In that case, you should use fewer bins, or provide bin centers
  or binedges, to increase the expected counts in all bins.
 </p>
 <p> <code><var>h</var> = chi2gof (<var>x</var>)</code> performs a chi-square goodness-of-fit test
@@ -101,9 +101,9 @@
  the null hypothesis (that <var>x</var> is a random sample from a normal
  distribution) cannot be rejected at the 5% significance level, or <var>h</var> = 1
  if the nullhypothesis can be rejected at the 5% level.  <code>chi2gof</code> uses
- by default 10 bins (&rsquo;nbins&rsquo;), and compares the test statistic to a chi-square
- distribution with &rsquo;nbins&rsquo; - 3 degrees of freedom, to take into account that
- two parameters were estimated.
+ by default 10 bins (<code>&quot;nbins&quot;</code>), and compares the test statistic to a
+ chi-square distribution with <code><var>nbins</var> - 3</code> degrees of freedom, to
+ take into account that two parameters were estimated.
 </p>
 <p> <code>[<var>h</var>, <var>p</var>] = chi2gof (<var>x</var>)</code> also returns the p-value <var>p</var>,
  which is the probability of observing the given result, or one more extreme,
@@ -121,39 +121,41 @@
 <tr><td width="5%"></td><td width="30%">&quot;E&quot;</td><td width="65%">Expected count in each bin</td></tr>
 </table>
 
-<p> <code>[&hellip;] = chi2gof (<var>x</var>, <var>name1</var>, <var>value1</var>, &hellip;)</code>
- specifies optional argument name/value pairs chosen from the following list.
+<p> <code>[&hellip;] = chi2gof (<var>x</var>, <var>Name</var>, <var>Value</var>, &hellip;)</code>
+ specifies optional Name/Value pair arguments chosen from the following list.
 </p>
  <table>
 <thead><tr><th width="5%"></th><th width="20%">Name</th><th width="75%">Value</th></tr></thead>
-<tr><td width="5%"></td><td width="20%">&quot;nbins&quot;</td><td width="75%">The number of bins to use.  Default is 10.</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;binctrs&quot;</td><td width="75%">A vector of bin centers.</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;binedges&quot;</td><td width="75%">A vector of bin binedges.</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;cdf&quot;</td><td width="75%">A fully specified cumulative distribution function or a
- a function handle. Alternatively, a cell array whose first element is a
- function handle and all later elements are parameter values, one per cell.
- provided in a cell array whose first element is a function handle, and whose
- later elements are parameter values, one per cell.  The function must take X
- values as its first argument, and other parameters as later arguments.</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;expected&quot;</td><td width="75%">A vector with one element per bin specifying the
- expected counts for each bin.</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;nparams&quot;</td><td width="75%">The number of estimated parameters; used to adjust
- the degrees of freedom to be &rsquo;nbins&rsquo; - 1 - &rsquo;nparams&rsquo;, where &rsquo;nbins&rsquo; is the
- number of bins.</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;emin&quot;</td><td width="75%">The minimum allowed expected value for a bin; any bin
- in either tail having an expected value less than this amount is pooled with
- a neighboring bin.  Use the value 0 to prevent pooling.  Default is 5.</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;frequency&quot;</td><td width="75%">A vector of the same length as <var>x</var> containing
- the frequency of the corresponding <var>x</var> values.</td></tr>
-<tr><td width="5%"></td><td width="20%">&quot;alpha&quot;</td><td width="75%">An ALPHA value such that the hypothesis is rejected
- if <var>p</var> &lt; ALPHA.  Default is ALPHA = 0.05.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;nbins&quot;</code></td><td width="75%">The number of bins to use.  Default is 10.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;binctrs&quot;</code></td><td width="75%">A vector of bin centers.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;binedges&quot;</code></td><td width="75%">A vector of bin binedges.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;cdf&quot;</code></td><td width="75%">A fully specified cumulative distribution
+ function or a function handle provided in a cell array whose first element is
+ a function handle, and all later elements are its parameter values.  The
+ function must take <var>x</var> values as its first argument, and other parameters
+ as later arguments.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;expected&quot;</code></td><td width="75%">A vector with one element per bin
+ specifying the expected counts for each bin.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;nparams&quot;</code></td><td width="75%">The number of estimated parameters; used to
+ adjust the degrees of freedom to be <code><var>nbins</var> - 1 - <var>nparams</var></code>,
+ where <var>nbins</var> is the number of bins.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;emin&quot;</code></td><td width="75%">The minimum allowed expected value for a bin;
+ any bin in either tail having an expected value less than this amount is
+ pooled with a neighboring bin.  Use the value 0 to prevent pooling.  Default
+ is 5.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;frequency&quot;</code></td><td width="75%">A vector of the same length as <var>x</var>
+ containing the frequency of the corresponding <var>x</var> values.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;alpha&quot;</code></td><td width="75%">An <var>alpha</var> value such that the hypothesis
+ is rejected if <code><var>p</var> &lt; <var>alpha</var></code>.  Default is
+ <code><var>alpha</var> = 0.05</code>.</td></tr>
 </table>
 
-<p> You should specify either &quot;cdf&quot; or &quot;expected&quot; parameters, but not both.  If
- your &quot;cdf&quot; input contains extra parameters, these are accounted for
- automatically and there is no need to specify &quot;nparams&quot;.  If your &quot;expected&quot;
- input depends on estimated parameters, you should use the &quot;nparams&quot; parameter
- to ensure that the degrees of freedom for the test is correct.
+<p> You should specify either <code>&quot;cdf&quot;</code> or <code>&quot;expected&quot;</code> parameters, but
+ not both.  If your <code>&quot;cdf&quot;</code> input contains extra parameters, these are
+ accounted for automatically and there is no need to specify <code>&quot;nparams&quot;</code>.
+ If your <code>&quot;expected&quot;</code> input depends on estimated parameters, you should
+ use the <code>&quot;nparams&quot;</code> parameter to ensure that the degrees of freedom for
+ the test is correct.
 </p>
 
 <p><strong>Source Code: </strong>
