@@ -19,7 +19,7 @@
 ## @deftypefn  {statistics} {@var{h} =} chi2gof (@var{x})
 ## @deftypefnx {statistics} {[@var{h}, @var{p}] =} chi2gof (@var{x})
 ## @deftypefnx {statistics} {[@var{p}, @var{h}, @var{stats}] =} chi2gof (@var{x})
-## @deftypefnx {statistics} {[@dots{}] =} chi2gof (@var{x}, @var{name1}, @var{value1}, @dots{})
+## @deftypefnx {statistics} {[@dots{}] =} chi2gof (@var{x}, @var{Name}, @var{Value}, @dots{})
 ##
 ## Chi-square goodness-of-fit test.
 ##
@@ -39,8 +39,8 @@
 ##
 ## Bins in either tail with an expected count less than 5 are pooled with
 ## neighboring bins until the count in each extreme bin is at least 5.  If
-## bins remain in the interior with counts less than 5, CHI2GOF displays a
-## warning.  In that case, you should use fewer bins, or provide bin centers
+## bins remain in the interior with counts less than 5, @code{chi2gof} displays
+## a warning.  In that case, you should use fewer bins, or provide bin centers
 ## or binedges, to increase the expected counts in all bins.
 ##
 ## @code{@var{h} = chi2gof (@var{x})} performs a chi-square goodness-of-fit test
@@ -49,9 +49,9 @@
 ## the null hypothesis (that @var{x} is a random sample from a normal
 ## distribution) cannot be rejected at the 5% significance level, or @var{h} = 1
 ## if the nullhypothesis can be rejected at the 5% level.  @code{chi2gof} uses
-## by default 10 bins ('nbins'), and compares the test statistic to a chi-square
-## distribution with 'nbins' - 3 degrees of freedom, to take into account that
-## two parameters were estimated.
+## by default 10 bins (@qcode{"nbins"}), and compares the test statistic to a
+## chi-square distribution with @qcode{@var{nbins} - 3} degrees of freedom, to
+## take into account that two parameters were estimated.
 ##
 ## @code{[@var{h}, @var{p}] = chi2gof (@var{x})} also returns the p-value @var{p},
 ## which is the probability of observing the given result, or one more extreme,
@@ -69,39 +69,41 @@
 ## @item @tab "E" @tab Expected count in each bin
 ## @end multitable
 ##
-## @code{[@dots{}] = chi2gof (@var{x}, @var{name1}, @var{value1}, @dots{})}
-## specifies optional argument name/value pairs chosen from the following list.
+## @code{[@dots{}] = chi2gof (@var{x}, @var{Name}, @var{Value}, @dots{})}
+## specifies optional Name/Value pair arguments chosen from the following list.
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab Name @tab Value
-## @item @tab "nbins" @tab The number of bins to use.  Default is 10.
-## @item @tab "binctrs" @tab A vector of bin centers.
-## @item @tab "binedges" @tab A vector of bin binedges.
-## @item @tab "cdf" @tab A fully specified cumulative distribution function or a
-## a function handle. Alternatively, a cell array whose first element is a
-## function handle and all later elements are parameter values, one per cell.
-## provided in a cell array whose first element is a function handle, and whose
-## later elements are parameter values, one per cell.  The function must take X
-## values as its first argument, and other parameters as later arguments.
-## @item @tab "expected" @tab A vector with one element per bin specifying the
-## expected counts for each bin.
-## @item @tab "nparams" @tab The number of estimated parameters; used to adjust
-## the degrees of freedom to be 'nbins' - 1 - 'nparams', where 'nbins' is the
-## number of bins.
-## @item @tab "emin" @tab The minimum allowed expected value for a bin; any bin
-## in either tail having an expected value less than this amount is pooled with
-## a neighboring bin.  Use the value 0 to prevent pooling.  Default is 5.
-## @item @tab "frequency" @tab A vector of the same length as @var{x} containing
-## the frequency of the corresponding @var{x} values.
-## @item @tab "alpha" @tab An ALPHA value such that the hypothesis is rejected
-## if @var{p} < ALPHA.  Default is ALPHA = 0.05.
+## @item @tab @qcode{"nbins"} @tab The number of bins to use.  Default is 10.
+## @item @tab @qcode{"binctrs"} @tab A vector of bin centers.
+## @item @tab @qcode{"binedges"} @tab A vector of bin binedges.
+## @item @tab @qcode{"cdf"} @tab A fully specified cumulative distribution
+## function or a function handle provided in a cell array whose first element is
+## a function handle, and all later elements are its parameter values.  The
+## function must take @var{x} values as its first argument, and other parameters
+## as later arguments.
+## @item @tab @qcode{"expected"} @tab A vector with one element per bin
+## specifying the expected counts for each bin.
+## @item @tab @qcode{"nparams"} @tab The number of estimated parameters; used to
+## adjust the degrees of freedom to be @qcode{@var{nbins} - 1 - @var{nparams}},
+## where @var{nbins} is the number of bins.
+## @item @tab @qcode{"emin"} @tab The minimum allowed expected value for a bin;
+## any bin in either tail having an expected value less than this amount is
+## pooled with a neighboring bin.  Use the value 0 to prevent pooling.  Default
+## is 5.
+## @item @tab @qcode{"frequency"} @tab A vector of the same length as @var{x}
+## containing the frequency of the corresponding @var{x} values.
+## @item @tab @qcode{"alpha"} @tab An @var{alpha} value such that the hypothesis
+## is rejected if @qcode{@var{p} < @var{alpha}}.  Default is
+## @qcode{@var{alpha} = 0.05}.
 ## @end multitable
 ##
-## You should specify either "cdf" or "expected" parameters, but not both.  If
-## your "cdf" input contains extra parameters, these are accounted for
-## automatically and there is no need to specify "nparams".  If your "expected"
-## input depends on estimated parameters, you should use the "nparams" parameter
-## to ensure that the degrees of freedom for the test is correct.
+## You should specify either @qcode{"cdf"} or @qcode{"expected"} parameters, but
+## not both.  If your @qcode{"cdf"} input contains extra parameters, these are
+## accounted for automatically and there is no need to specify @qcode{"nparams"}.
+## If your @qcode{"expected"} input depends on estimated parameters, you should
+## use the @qcode{"nparams"} parameter to ensure that the degrees of freedom for
+## the test is correct.
 ##
 ## @end deftypefn
 
