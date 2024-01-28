@@ -189,51 +189,51 @@
               </div>
             </div>
             <div class="card-body">
-dl>
+<dl>
 <dt><u>RegressionGAM:</u> <var>yFit</var> = <b>predict</b><i> (<var>obj</var>, <var>Xfit</var>)</i></dt>
 <dt><u>RegressionGAM:</u> <var>yFit</var> = <b>predict</b><i> (&hellip;, <var>Name</var>, <var>Value</var>)</i></dt>
 <dt><u>RegressionGAM:</u> [<var>yFit</var>, <var>ySD</var>, <var>yInt</var>] = <b>predict</b><i> (&hellip;)</i></dt>
 </dl>
 
-<p>Predict new data points using generalized additive model regression object.
+<p> Predict new data points using generalized additive model regression object.
 </p>
 <div class="ms-5">
-<p><code><var>yFit</var> = predict (<var>obj</var>, <var>Xfit</var></code> returns a vector of
-predicted responses, <var>yFit</var>, for the predictor data in matrix <var>Xfit</var>
-based on the Generalized Additive Model in <var>obj</var>.  <var>Xfit</var> must have
-the same number of features/variables as the training data in <var>obj</var>.
+<p> <code><var>yFit</var> = predict (<var>obj</var>, <var>Xfit</var></code> returns a vector of
+ predicted responses, <var>yFit</var>, for the predictor data in matrix <var>Xfit</var>
+ based on the Generalized Additive Model in <var>obj</var>.  <var>Xfit</var> must have
+ the same number of features/variables as the training data in <var>obj</var>.
 </p>
-<ul>
+ <ul>
 <li>
-<var>obj</var> must be a <code>RegressionGAM</code> class object.
-</li></ul>
+ <var>obj</var> must be a <code>RegressionGAM</code> class object.
+ </li></ul>
 
-<p><code>[<var>yFit</var>, <var>ySD</var>, <var>yInt</var>] = predict (<var>obj</var>, <var>Xfit</var></code>
-also returns the standard deviations, <var>ySD</var>, and prediction intervals,
-<var>yInt</var>, of the response variable <var>yFit</var>, evaluated at each
-observation in the predictor data <var>Xfit</var>.
+<p> <code>[<var>yFit</var>, <var>ySD</var>, <var>yInt</var>] = predict (<var>obj</var>, <var>Xfit</var></code>
+ also returns the standard deviations, <var>ySD</var>, and prediction intervals,
+ <var>yInt</var>, of the response variable <var>yFit</var>, evaluated at each
+ observation in the predictor data <var>Xfit</var>.
 </p>
-<p><code><var>yFit</var> = predict (&hellip;, <var>Name</var>, <var>Value</var>)</code> returns the
-aforementioned results with additional properties specified by
-<code>Name-Value</code> pair arguments listed below.
+<p> <code><var>yFit</var> = predict (&hellip;, <var>Name</var>, <var>Value</var>)</code> returns the
+ aforementioned results with additional properties specified by
+ <code>Name-Value</code> pair arguments listed below.
 </p>
-<table>
+ <table>
 <thead><tr><th width="28%"><var>Name</var></th><th width="2%"></th><th width="70%"><var>Value</var></th></tr></thead>
 <tr><td width="28%"><code>&quot;alpha&quot;</code></td><td width="2%"></td><td width="70%">significance level of the prediction
-intervals <var>yInt</var>, specified as scalar in range <code>[0,1]</code>. The default
-value is 0.05, which corresponds to 95% prediction intervals.</td></tr>
+ intervals <var>yInt</var>, specified as scalar in range <code>[0,1]</code>. The default
+ value is 0.05, which corresponds to 95% prediction intervals.</td></tr>
 <tr><td width="28%"><code>&quot;includeinteractions&quot;</code></td><td width="2%"></td><td width="70%">a boolean flag to include
-interactions to predict new values based on <var>Xfit</var>.  By default,
-<code>&quot;includeinteractions&quot;</code> is <code>true</code> when the GAM model in <var>obj</var>
-contains a <code>obj.Formula</code> or <code>obj.Interactions</code> fields. Otherwise,
-is set to <code>false</code>.  If set to <code>true</code> when no interactions are
-present in the trained model, it will result to an error.  If set to
-<code>false</code> when using a model that includes interactions, the predictions
-will be made on the basic model without any interaction terms.  This way you
-can make predictions from the same GAM model without having to retrain it.</td></tr>
+ interactions to predict new values based on <var>Xfit</var>.  By default,
+ <code>&quot;includeinteractions&quot;</code> is <code>true</code> when the GAM model in <var>obj</var>
+ contains a <code>obj.Formula</code> or <code>obj.Interactions</code> fields. Otherwise,
+ is set to <code>false</code>.  If set to <code>true</code> when no interactions are
+ present in the trained model, it will result to an error.  If set to
+ <code>false</code> when using a model that includes interactions, the predictions
+ will be made on the basic model without any interaction terms.  This way you
+ can make predictions from the same GAM model without having to retrain it.</td></tr>
 </table>
 
-<p><strong>See also: </strong>
+<p> <strong>See also: </strong>
   <a href="fitrgam.html">fitrgam</a>, 
   <a href="RegressionGAM.html">RegressionGAM</a>
 </p>
