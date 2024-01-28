@@ -449,7 +449,7 @@ endfunction
 %! [idc, dc] = knnsearch (X, point, "K", 10, "distance", "chebychev");
 %!
 %! ## plotting the results
-%! gscatter (X(:,1), X(:,2), species, [.75 .75 0; 0 .75 .75; .75 0 .75], ".", 20)
+%! gscatter (X(:,1), X(:,2), species, [.75 .75 0; 0 .75 .75; .75 0 .75], ".", 20);
 %! title ("Fisher's Iris Data - Nearest Neighbors with different types of distance metrics");
 %! xlabel("Petal length (cm)");
 %! ylabel("Petal width (cm)");
@@ -470,7 +470,7 @@ endfunction
 %! ## knnsearch on iris dataset using kdtree method
 %! load fisheriris
 %! X = meas(:,3:4);
-%! gscatter (X(:,1), X(:,2), species, [.75 .75 0; 0 .75 .75; .75 0 .75], ".", 20)
+%! gscatter (X(:,1), X(:,2), species, [.75 .75 0; 0 .75 .75; .75 0 .75], ".", 20);
 %! title ("Fisher's iris dataset : Nearest Neighbors with kdtree search");
 %!
 %! ## new point to be predicted
