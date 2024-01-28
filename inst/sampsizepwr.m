@@ -21,7 +21,7 @@
 ## @deftypefnx {statistics} {@var{n} =} sampsizepwr (@var{testtype}, @var{params}, @var{p1}, @var{power})
 ## @deftypefnx {statistics} {@var{power} =} sampsizepwr (@var{testtype}, @var{params}, @var{p1}, [], @var{n})
 ## @deftypefnx {statistics} {@var{p1} =} sampsizepwr (@var{testtype}, @var{params}, [], @var{power}, @var{n})
-## @deftypefnx {statistics} {[@var{n1}, @var{n2}] =} sampsizepwr ("t2", @var{params}, @var{p1}, @var{power})
+## @deftypefnx {statistics} {[@var{n1}, @var{n2}] =} sampsizepwr (@qcode{"t2"}, @var{params}, @var{p1}, @var{power})
 ## @deftypefnx {statistics} {[@dots{}] =} sampsizepwr (@var{testtype}, @var{params}, @var{p1}, @var{power}, @var{n}, @var{name}, @var{value})
 ##
 ## Sample size and power calculation for hypothesis test.
