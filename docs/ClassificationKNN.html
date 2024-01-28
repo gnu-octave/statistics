@@ -222,19 +222,16 @@ dl>
 k-Nearest Neighbor classification model.
 </p>
 <div class="ms-5">
-<p><code><var>label</var> = predict (<var>obj</var>, <var>XC</var></code> returns the matrix of
+<p><code><var>label</var> = predict (<var>obj</var>, <var>XC</var>)</code> returns the matrix of
 labels predicted for the corresponding instances in <var>XC</var>, using the
-predictor data in <code>X</code> and corresponding labels, <code>Y</code>, stored in
-the k-Nearest Neighbor classification model, <var>obj</var>.  <var>XC</var> must be
-an <math>M&times;P</math> numeric matrix with the same number of features <math>P</math> as
-the corresponding predictors of the kNN model in <var>obj</var>.
+predictor data in <code>obj.X</code> and corresponding labels, <code>obj.Y</code>,
+stored in the k-Nearest Neighbor classification model, <var>obj</var>.
 </p>
-<ul>
-<li>
-<var>obj</var> must be a <code>ClassificationKNN</code> object.
-</li></ul>
-
-<p><code>[<var>label</var>, <var>score</var>, <var>cost</var>] = predict (<var>obj</var>, <var>XC</var></code>
+<p><var>XC</var> must be an <math>M&times;P</math> numeric matrix with the same number of
+features <math>P</math> as the corresponding predictors of the kNN model in
+<var>obj</var>.
+</p>
+<p><code>[<var>label</var>, <var>score</var>, <var>cost</var>] = predict (<var>obj</var>, <var>XC</var>)</code>
 also returns <var>score</var>, which contains the predicted class scores or
 posterior probabilities for each instance of the corresponding unique
 classes, and <var>cost</var>, which is a matrix containing the expected cost
