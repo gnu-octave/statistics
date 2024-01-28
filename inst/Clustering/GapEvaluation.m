@@ -66,10 +66,10 @@ classdef GapEvaluation < ClusterCriterion
   ## max gap value; when the search method is @code{firstMaxSE}, the chosen
   ## gap value is the first one which is inside a standard error from the next
   ## gap value.
-  ## @end deftypefn
   ##
   ## @seealso{evalclusters, ClusterCriterion, CalinskiHarabaszEvaluation,
   ## DaviesBouldinEvaluation, SilhouetteEvaluation}
+  ## @end deftypefn
 
   properties (GetAccess = public, SetAccess = private)
     B = 0;             # number of reference datasets

@@ -45,10 +45,10 @@ classdef SilhouetteEvaluation < ClusterCriterion
   ##
   ## The best solution according to the silhouette criterion is the one
   ## that scores the highest average silhouette value.
-  ## @end deftypefn
   ##
   ## @seealso{evalclusters, ClusterCriterion, CalinskiHarabaszEvaluation,
   ## DaviesBouldinEvaluation, GapEvaluation}
+  ## @end deftypefn
 
   properties (GetAccess = public, SetAccess = private)
     Distance = "";           # pdist parameter

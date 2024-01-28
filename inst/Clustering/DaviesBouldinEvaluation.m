@@ -33,10 +33,10 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
   ##
   ## The best solution according to the Davies-Bouldin criterion is the one
   ## that scores the lowest value.
-  ## @end deftypefn
   ##
   ## @seealso{evalclusters, ClusterCriterion, CalinskiHarabaszEvaluation,
   ## GapEvaluation, SilhouetteEvaluation}
+  ## @end deftypefn
 
   properties (GetAccess = public, SetAccess = private)
 

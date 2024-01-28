@@ -72,10 +72,10 @@ classdef ClusterCriterion < handle
   ## clusters.
   ##
   ## @end table
-  ## @end deftypefn
   ##
   ## @seealso{evalclusters, CalinskiHarabaszEvaluation, DaviesBouldinEvaluation,
   ## GapEvaluation, SilhouetteEvaluation}
+  ## @end deftypefn
 
   properties (Access = public)
     ## public properties

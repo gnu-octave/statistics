@@ -35,10 +35,10 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
   ##
   ## The best solution according to the Calinski-Harabasz criterion is the one
   ## that scores the highest value.
-  ## @end deftypefn
   ##
   ## @seealso{evalclusters, ClusterCriterion, DaviesBouldinEvaluation,
   ## GapEvaluation, SilhouetteEvaluation}
+  ## @end deftypefn
 
   properties (GetAccess = public, SetAccess = private)
 
