@@ -18,8 +18,8 @@
 
 classdef CalinskiHarabaszEvaluation < ClusterCriterion
   ## -*- texinfo -*-
-  ## @deftypefn  {statistics} {@var{eva} =} evalclusters (@var{x}, @var{clust}, @qcode{CalinskiHarabasz})
-  ## @deftypefnx {statistics} {@var{eva} =} evalclusters (@dots{}, @qcode{Name}, @qcode{Value})
+  ## @deftypefn  {statistics} {@var{obj} =} evalclusters (@var{x}, @var{clust}, @qcode{CalinskiHarabasz})
+  ## @deftypefnx {statistics} {@var{obj} =} evalclusters (@dots{}, @qcode{Name}, @qcode{Value})
   ##
   ## A Calinski-Harabasz object to evaluate clustering solutions.
   ##
@@ -107,7 +107,7 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn {CalinskiHarabaszEvaluation} {@var{eva} =} compact (@var{obj})
+    ## @deftypefn {CalinskiHarabaszEvaluation} {@var{obj} =} compact (@var{obj})
     ##
     ## Return a compact CalinskiHarabaszEvaluation object (not implemented yet).
     ##

@@ -18,8 +18,8 @@
 
 classdef DaviesBouldinEvaluation < ClusterCriterion
   ## -*- texinfo -*-
-  ## @deftypefn {Function File} {@var{eva} =} evalclusters (@var{x}, @var{clust}, @qcode{DaviesBouldin})
-  ## @deftypefnx {Function File} {@var{eva} =} evalclusters (@dots{}, @qcode{Name}, @qcode{Value})
+  ## @deftypefn {Function File} {@var{obj} =} evalclusters (@var{x}, @var{clust}, @qcode{DaviesBouldin})
+  ## @deftypefnx {Function File} {@var{obj} =} evalclusters (@dots{}, @qcode{Name}, @qcode{Value})
   ##
   ## A Davies-Bouldin object to evaluate clustering solutions.
   ##
@@ -105,7 +105,7 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn {DaviesBouldinEvaluation} {@var{eva} =} compact (@var{obj})
+    ## @deftypefn {DaviesBouldinEvaluation} {@var{obj} =} compact (@var{obj})
     ##
     ## Return a compact DaviesBouldinEvaluation object (not implemented yet).
     ##

@@ -635,19 +635,16 @@ classdef ClassificationKNN
     ## Classify new data points into categories using the kNN algorithm from a
     ## k-Nearest Neighbor classification model.
     ##
-    ## @code{@var{label} = predict (@var{obj}, @var{XC}} returns the matrix of
+    ## @code{@var{label} = predict (@var{obj}, @var{XC})} returns the matrix of
     ## labels predicted for the corresponding instances in @var{XC}, using the
-    ## predictor data in @code{X} and corresponding labels, @code{Y}, stored in
-    ## the k-Nearest Neighbor classification model, @var{obj}.  @var{XC} must be
-    ## an @math{MxP} numeric matrix with the same number of features @math{P} as
-    ## the corresponding predictors of the kNN model in @var{obj}.
+    ## predictor data in @code{obj.X} and corresponding labels, @code{obj.Y},
+    ## stored in the k-Nearest Neighbor classification model, @var{obj}.
     ##
-    ## @itemize
-    ## @item
-    ## @var{obj} must be a @qcode{ClassificationKNN} object.
-    ## @end itemize
+    ## @var{XC} must be an @math{MxP} numeric matrix with the same number of
+    ## features @math{P} as the corresponding predictors of the kNN model in
+    ## @var{obj}.
     ##
-    ## @code{[@var{label}, @var{score}, @var{cost}] = predict (@var{obj}, @var{XC}}
+    ## @code{[@var{label}, @var{score}, @var{cost}] = predict (@var{obj}, @var{XC})}
     ## also returns @var{score}, which contains the predicted class scores or
     ## posterior probabilities for each instance of the corresponding unique
     ## classes, and @var{cost}, which is a matrix containing the expected cost

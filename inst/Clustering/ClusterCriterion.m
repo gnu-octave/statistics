@@ -219,7 +219,7 @@ classdef ClusterCriterion < handle
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn {ClusterCriterion} {@var{eva} =} compact (@var{obj})
+    ## @deftypefn {ClusterCriterion} {@var{obj} =} compact (@var{obj})
     ##
     ## Return a compact ClusterCriterion object (not implemented yet).
     ##

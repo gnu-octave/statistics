@@ -18,8 +18,8 @@
 
 classdef GapEvaluation < ClusterCriterion
   ## -*- texinfo -*-
-  ## @deftypefn  {statistics} {@var{eva} =} evalclusters (@var{x}, @var{clust}, @qcode{gap})
-  ## @deftypefnx {statistics} {@var{eva} =} evalclusters (@dots{}, @qcode{Name}, @qcode{Value})
+  ## @deftypefn  {statistics} {@var{obj} =} evalclusters (@var{x}, @var{clust}, @qcode{gap})
+  ## @deftypefnx {statistics} {@var{obj} =} evalclusters (@dots{}, @qcode{Name}, @qcode{Value})
   ##
   ## A gap object to evaluate clustering solutions.
   ##
@@ -214,7 +214,7 @@ classdef GapEvaluation < ClusterCriterion
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn {GapEvaluation} {@var{eva} =} compact (@var{obj})
+    ## @deftypefn {GapEvaluation} {@var{obj} =} compact (@var{obj})
     ##
     ## Return a compact GapEvaluation object (not implemented yet).
     ##

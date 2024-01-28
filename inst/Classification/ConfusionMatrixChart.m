@@ -337,9 +337,9 @@ classdef ConfusionMatrixChart < handle
     ## according to @var{order}.
     ##
     ## Valid values for @var{order} can be an array or cell array including
-    ## the same class labels as @var{cm}, or a value like @code{'auto'},
-    ## @code{'ascending-diagonal'}, @code{'descending-diagonal'} and
-    ## @code{'cluster'}.
+    ## the same class labels as @var{cm}, or a value like @code{"auto"},
+    ## @code{"ascending-diagonal"}, @code{"descending-diagonal"} and
+    ## @code{"cluster"}.
     ##
     ## @end deftypefn
     ##

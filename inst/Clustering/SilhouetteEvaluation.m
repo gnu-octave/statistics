@@ -18,8 +18,8 @@
 
 classdef SilhouetteEvaluation < ClusterCriterion
   ## -*- texinfo -*-
-  ## @deftypefn {Function File} {@var{eva} =} evalclusters (@var{x}, @var{clust}, @qcode{silhouette})
-  ## @deftypefnx {Function File} {@var{eva} =} evalclusters (@dots{}, @qcode{Name}, @qcode{Value})
+  ## @deftypefn {Function File} {@var{obj} =} evalclusters (@var{x}, @var{clust}, @qcode{silhouette})
+  ## @deftypefnx {Function File} {@var{obj} =} evalclusters (@dots{}, @qcode{Name}, @qcode{Value})
   ##
   ## A silhouette object to evaluate clustering solutions.
   ##
@@ -171,7 +171,7 @@ classdef SilhouetteEvaluation < ClusterCriterion
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn {SilhouetteEvaluation} {@var{eva} =} compact (@var{obj})
+    ## @deftypefn {SilhouetteEvaluation} {@var{obj} =} compact (@var{obj})
     ##
     ## Return a compact SilhouetteEvaluation object (not implemented yet).
     ##
