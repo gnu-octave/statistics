@@ -87,7 +87,7 @@
 ## @seealso{cdf, icdf, pdf, betarnd, binornd, bisarnd, burrrnd, cauchyrnd,
 ## chi2rnd, evrnd, exprnd, frnd, gamrnd, geornd, gevrnd, gprnd, gumbelrnd,
 ## hnrnd, hygernd, invgrnd, laplacernd, logirnd, loglrnd, lognrnd, nakarnd,
-## nbinrnd, ncfrnd, nctrnd, ncx2rnd, normrnd, poissrnd, raylrnd, rice, trnd,
+## nbinrnd, ncfrnd, nctrnd, ncx2rnd, normrnd, poissrnd, raylrnd, ricernd, trnd,
 ## trirnd, unidrnd, unifrnd, vmrnd, wblrnd}
 ## @end deftypefn
 
