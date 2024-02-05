@@ -3,6 +3,8 @@
 ## Copyright (C) 2021 Nicholas R. Jankowski
 ## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
+## This file is part of the statistics package for GNU Octave.
+##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
 ## published by the Free Software Foundation, either version 3 of the
