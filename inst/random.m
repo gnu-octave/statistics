@@ -1,5 +1,5 @@
 ## Copyright (C) 2007 Soren Hauberg <soren@hauberg.org>
-## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2023-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -75,6 +75,7 @@
 ## @item @qcode{"Normal"} @tab @tab @qcode{"norm"} @tab @tab 2
 ## @item @qcode{"Poisson"} @tab @tab @qcode{"poiss"} @tab @tab 1
 ## @item @qcode{"Rayleigh"} @tab @tab @qcode{"rayl"} @tab @tab 1
+## @item @qcode{"Rician"} @tab @tab @qcode{"rice"} @tab @tab 2
 ## @item @qcode{"Student T"} @tab @tab @qcode{"t"} @tab @tab 1
 ## @item @qcode{"Triangular"} @tab @tab @qcode{"tri"} @tab @tab 3
 ## @item @qcode{"Discrete Uniform"} @tab @tab @qcode{"unid"} @tab @tab 1
@@ -83,11 +84,11 @@
 ## @item @qcode{"Weibull"} @tab @tab @qcode{"wbl"} @tab @tab 2
 ## @end multitable
 ##
-## @seealso{cdf, icdf, pdf, betarnd, binornd, bisarnd, burrrnd, cauchy,
+## @seealso{cdf, icdf, pdf, betarnd, binornd, bisarnd, burrrnd, cauchyrnd,
 ## chi2rnd, evrnd, exprnd, frnd, gamrnd, geornd, gevrnd, gprnd, gumbelrnd,
 ## hnrnd, hygernd, invgrnd, laplacernd, logirnd, loglrnd, lognrnd, nakarnd,
-## nbinrnd, ncfrnd, nctrnd, ncx2rnd, normrnd, poissrnd, raylrnd, trnd, trirnd,
-## unidrnd, unifrnd, vmrnd, wblrnd}
+## nbinrnd, ncfrnd, nctrnd, ncx2rnd, normrnd, poissrnd, raylrnd, rice, trnd,
+## trirnd, unidrnd, unifrnd, vmrnd, wblrnd}
 ## @end deftypefn
 
 function r = random (name, varargin)
@@ -123,6 +124,7 @@ function r = random (name, varargin)
     {"norm"     , "Normal"},                    @normrnd,      2, ...
     {"poiss"    , "Poisson"},                   @poissrnd,     1, ...
     {"rayl"     , "Rayleigh"},                  @raylrnd,      1, ...
+    {"rice"     , "Rician"},                    @ricernd,      2, ...
     {"t"        , "Student T"},                 @trnd,         1, ...
     {"tri"      , "Triangular"},                @trirnd,       3, ...
     {"unid"     , "Discrete Uniform"},          @unidrnd,      1, ...
@@ -238,6 +240,8 @@ endfunction
 %!assert (size (random ("poiss", 5, [10, 20])), size (poissrnd (5, 10, 20)))
 %!assert (size (random ("Rayleigh", 5, [10, 20])), size (raylrnd (5, 10, 20)))
 %!assert (size (random ("rayl", 5, [10, 20])), size (raylrnd (5, 10, 20)))
+%!assert (size (random ("Rician", 5, 1, [10, 20])), size (ricernd (5, 1, 10, 20)))
+%!assert (size (random ("rice", 5, 1, [10, 20])), size (ricernd (5, 1, 10, 20)))
 %!assert (size (random ("Student T", 5, [10, 20])), size (trnd (5, 10, 20)))
 %!assert (size (random ("t", 5, [10, 20])), size (trnd (5, 10, 20)))
 %!assert (size (random ("Triangular", 5, 2, 2, [10, 20])), size (trirnd (5, 2, 2, 10, 20)))

@@ -1,5 +1,5 @@
 ## Copyright (C) 2013 Pantxo Diribarne
-## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -84,6 +84,7 @@
 ## @item @qcode{"Normal"} @tab @tab @qcode{"norm"} @tab @tab 2
 ## @item @qcode{"Poisson"} @tab @tab @qcode{"poiss"} @tab @tab 1
 ## @item @qcode{"Rayleigh"} @tab @tab @qcode{"rayl"} @tab @tab 1
+## @item @qcode{"Rician"} @tab @tab @qcode{"rice"} @tab @tab 2
 ## @item @qcode{"Student T"} @tab @tab @qcode{"t"} @tab @tab 1
 ## @item @qcode{"Triangular"} @tab @tab @qcode{"tri"} @tab @tab 3
 ## @item @qcode{"Discrete Uniform"} @tab @tab @qcode{"unid"} @tab @tab 1
@@ -95,8 +96,8 @@
 ## @seealso{icdf, pdf, cdf, betacdf, binocdf, bisacdf, burrcdf, cauchycdf,
 ## chi2cdf, evcdf, expcdf, fcdf, gamcdf, geocdf, gevcdf, gpcdf, gumbelcdf,
 ## hncdf, hygecdf, invgcdf, laplacecdf, logicdf, loglcdf, logncdf, nakacdf,
-## nbincdf, ncfcdf, nctcdf, ncx2cdf, normcdf, poisscdf, raylcdf, tcdf, tricdf,
-## unidcdf, unifcdf, vmcdf, wblcdf}
+## nbincdf, ncfcdf, nctcdf, ncx2cdf, normcdf, poisscdf, raylcdf, ricecdf,
+## tcdf, tricdf, unidcdf, unifcdf, vmcdf, wblcdf}
 ## @end deftypefn
 
 function p = cdf (name, x, varargin)
@@ -132,6 +133,7 @@ function p = cdf (name, x, varargin)
     {"norm"     , "Normal"},                    @normcdf,      2, ...
     {"poiss"    , "Poisson"},                   @poisscdf,     1, ...
     {"rayl"     , "Rayleigh"},                  @raylcdf,      1, ...
+    {"rice"     , "Rician"},                    @ricecdf,      2, ...
     {"t"        , "Student T"},                 @tcdf,         1, ...
     {"tri"      , "Triangular"},                @tricdf,       3, ...
     {"unid"     , "Discrete Uniform"},          @unidcdf,      1, ...
@@ -262,6 +264,8 @@ endfunction
 %!assert (cdf ("poiss", x, 5, "upper"), poisscdf (x, 5, "upper"))
 %!assert (cdf ("Rayleigh", x, 5), raylcdf (x, 5))
 %!assert (cdf ("rayl", x, 5, "upper"), raylcdf (x, 5, "upper"))
+%!assert (cdf ("Rician", x, 5, 1), ricecdf (x, 5, 1))
+%!assert (cdf ("rice", x, 5, 1, "upper"), ricecdf (x, 5, 1, "upper"))
 %!assert (cdf ("Student T", x, 5), tcdf (x, 5))
 %!assert (cdf ("t", x, 5, "upper"), tcdf (x, 5, "upper"))
 %!assert (cdf ("Triangular", x, 5, 2, 2), tricdf (x, 5, 2, 2))

@@ -76,6 +76,7 @@
 ## @item @qcode{"Normal"} @tab @tab @qcode{"norm"} @tab @tab 2
 ## @item @qcode{"Poisson"} @tab @tab @qcode{"poiss"} @tab @tab 1
 ## @item @qcode{"Rayleigh"} @tab @tab @qcode{"rayl"} @tab @tab 1
+## @item @qcode{"Rician"} @tab @tab @qcode{"rice"} @tab @tab 2
 ## @item @qcode{"Student T"} @tab @tab @qcode{"t"} @tab @tab 1
 ## @item @qcode{"Triangular"} @tab @tab @qcode{"tri"} @tab @tab 3
 ## @item @qcode{"Discrete Uniform"} @tab @tab @qcode{"unid"} @tab @tab 1
@@ -87,8 +88,8 @@
 ## @seealso{icdf, pdf, random, betainv, binoinv, bisainv, burrinv, cauchyinv,
 ## chi2inv, evinv, expinv, finv, gaminv, geoinv, gevinv, gpinv, gumbelinv,
 ## hninv, hygeinv, invginv, laplaceinv, logiinv, loglinv, logninv, nakainv,
-## nbininv, ncfinv, nctinv, ncx2inv, norminv, poissinv, raylinv, tinv, triinv,
-## unidinv, unifinv, vminv, wblinv}
+## nbininv, ncfinv, nctinv, ncx2inv, norminv, poissinv, raylinv, riceinv,
+## tinv, triinv, unidinv, unifinv, vminv, wblinv}
 ## @end deftypefn
 
 function x = icdf (name, p, varargin)
@@ -124,6 +125,7 @@ function x = icdf (name, p, varargin)
     {"norm"     , "Normal"},                    @norminv,      2, ...
     {"poiss"    , "Poisson"},                   @poissinv,     1, ...
     {"rayl"     , "Rayleigh"},                  @raylinv,      1, ...
+    {"rice"     , "Rician"},                    @riceinv,      2, ...
     {"t"        , "Student T"},                 @tinv,         1, ...
     {"tri"      , "Triangular"},                @triinv,       3, ...
     {"unid"     , "Discrete Uniform"},          @unidinv,      1, ...
@@ -240,6 +242,8 @@ endfunction
 %!assert (icdf ("poiss", p, 5), poissinv (p, 5))
 %!assert (icdf ("Rayleigh", p, 5), raylinv (p, 5))
 %!assert (icdf ("rayl", p, 5), raylinv (p, 5))
+%!assert (icdf ("Rician", p, 5, 1), riceinv (p, 5, 1))
+%!assert (icdf ("rice", p, 5, 1), riceinv (p, 5, 1))
 %!assert (icdf ("Student T", p, 5), tinv (p, 5))
 %!assert (icdf ("t", p, 5), tinv (p, 5))
 %!assert (icdf ("Triangular", p, 5, 2, 2), triinv (p, 5, 2, 2))

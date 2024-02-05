@@ -77,6 +77,7 @@
 ## @item @qcode{"Normal"} @tab @tab @qcode{"norm"} @tab @tab 2
 ## @item @qcode{"Poisson"} @tab @tab @qcode{"poiss"} @tab @tab 1
 ## @item @qcode{"Rayleigh"} @tab @tab @qcode{"rayl"} @tab @tab 1
+## @item @qcode{"Rician"} @tab @tab @qcode{"rice"} @tab @tab 2
 ## @item @qcode{"Student T"} @tab @tab @qcode{"t"} @tab @tab 1
 ## @item @qcode{"Triangular"} @tab @tab @qcode{"tri"} @tab @tab 3
 ## @item @qcode{"Discrete Uniform"} @tab @tab @qcode{"unid"} @tab @tab 1
@@ -88,8 +89,8 @@
 ## @seealso{cdf, icdf, random, betapdf, binopdf, bisapdf, burrpdf, cauchypdf,
 ## chi2pdf, evpdf, exppdf, fpdf, gampdf, geopdf, gevpdf, gppdf, gumbelpdf,
 ## hnpdf, hygepdf, invgpdf, laplacepdf, logipdf, loglpdf, lognpdf, nakapdf,
-## nbinpdf, ncfpdf, nctpdf, ncx2pdf, normpdf, poisspdf, raylpdf, tpdf, tripdf,
-## unidpdf, unifpdf, vmpdf, wblpdf}
+## nbinpdf, ncfpdf, nctpdf, ncx2pdf, normpdf, poisspdf, raylpdf, ricepdf,
+## tpdf, tripdf, unidpdf, unifpdf, vmpdf, wblpdf}
 ## @end deftypefn
 
 function y = pdf (name, x, varargin)
@@ -125,6 +126,7 @@ function y = pdf (name, x, varargin)
     {"norm"     , "Normal"},                    @normpdf,      2, ...
     {"poiss"    , "Poisson"},                   @poisspdf,     1, ...
     {"rayl"     , "Rayleigh"},                  @raylpdf,      1, ...
+    {"rice"     , "Rician"},                    @ricepdf,      2, ...
     {"t"        , "Student T"},                 @tpdf,         1, ...
     {"tri"      , "Triangular"},                @tripdf,       3, ...
     {"unid"     , "Discrete Uniform"},          @unidpdf,      1, ...
@@ -241,6 +243,8 @@ endfunction
 %!assert (pdf ("poiss", x, 5), poisspdf (x, 5))
 %!assert (pdf ("Rayleigh", x, 5), raylpdf (x, 5))
 %!assert (pdf ("rayl", x, 5), raylpdf (x, 5))
+%!assert (pdf ("Rician", x, 5, 1), ricepdf (x, 5, 1))
+%!assert (pdf ("rice", x, 5, 1), ricepdf (x, 5, 1))
 %!assert (pdf ("Student T", x, 5), tpdf (x, 5))
 %!assert (pdf ("t", x, 5), tpdf (x, 5))
 %!assert (pdf ("Triangular", x, 5, 2, 2), tripdf (x, 5, 2, 2))
