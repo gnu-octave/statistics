@@ -100,7 +100,7 @@ endfunction
 %!          "λ = 1, c = 1, k = 3", "λ = 1, c = 2, k = 1", ...
 %!          "λ = 1, c = 3, k = 1", "λ = 1, c = 0.5, k = 2"}, ...
 %!         "location", "northwest")
-%! title ("Burr type XII CDF")
+%! title ("Burr type XII iCDF")
 %! xlabel ("probability")
 %! ylabel ("values in x")
 
