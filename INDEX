@@ -106,6 +106,7 @@ Distributions
  normcdf norminv normpdf normrnd
  poisscdf poissinv poisspdf poissrnd
  raylcdf raylinv raylpdf raylrnd
+ ricecdf riceinv ricepdf ricernd
  tcdf tinv tpdf trnd
  tricdf triinv tripdf trirnd
  unidcdf unidinv unidpdf unidrnd

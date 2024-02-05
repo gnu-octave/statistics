@@ -262,6 +262,17 @@
                       shadow core Octave's respective functions prior
                       to Octave v9.1
                    2) incompatibility with the `nan` package
+ New functions:
+ ==============
+
+ ** ricecdf
+
+ ** riceinv
+
+ ** ricepdf
+
+ ** ricernd
+
  Improvements:
  =============
 
