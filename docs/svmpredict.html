@@ -113,6 +113,8 @@
 
 <p>The <code>svmpredict</code> function has three outputs.  The first one, <var>predicted_label</var>, is a vector of predicted labels.  The second output, <var>accuracy</var>, is a vector including accuracy (for classification), mean squared error, and squared correlation coefficient (for regression).  The third is a matrix containing decision values or probability estimates (if <code>-b 1</code>&rsquo; is specified).  If <math>k</math> is the number of classes in training data, for decision values, each row includes results of predicting <math>k(k-1)/2</math> binary-class SVMs.  For classification, <math>k = 1</math> is a special case.  Decision value +1 is returned for each testing instance, instead of an empty vector.  For probabilities, each row contains <math>k</math> values indicating the probability that the testing instance is in each class.  Note that the order of classes here is the same as <code>Label</code> field in the <var>model</var> structure. 
 </p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/src/svmpredict.cc">svmpredict</a>
 </div>
 
 
