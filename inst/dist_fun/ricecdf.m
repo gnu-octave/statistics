@@ -27,7 +27,7 @@
 ## size of @var{x}, @var{nu}, and @var{sigma}.  A scalar input functions as a
 ## constant matrix of the same size as the other inputs.
 ##
-## @code{@var{p} = ricecdf (@var{x}, @var{nu}, @var{sigma, "upper")} computes
+## @code{@var{p} = ricecdf (@var{x}, @var{nu}, @var{sigma}, "upper")} computes
 ## the upper tail probability of the Rician distribution with parameters
 ## @var{nu} and @var{sigma}, at the values in @var{x}.
 ##
