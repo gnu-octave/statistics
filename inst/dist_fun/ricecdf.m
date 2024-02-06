@@ -108,33 +108,33 @@ function Q = marcumQ1 (a, b)
   Q(a != Inf & b == 0) = 1;
   Q(a != Inf & b == Inf) = 0;
   Q(a == Inf & b != Inf) = 1;
-  z = (isnan(Q) & a==0 & b~=Inf);
+  z = isnan (Q) & a == 0 & b != Inf;
   if (any(z))
-    Q(z) = exp((-b(z).^2)./2);
+    Q(z) = exp ((-b(z) .^ 2) ./ 2);
   end
 
-  z = isnan(Q) & ~isnan(a) & ~isnan(b);
+  ## Compute the remaining cases
+  z = isnan (Q) & ! isnan (a) & ! isnan (b);
   if (any(z(:)))
-    aa = (a(z).^2)./2;
-    bb = (b(z).^2)./2;
-
-    d = exp(-aa);
-    h = d;
-    f = bb.*exp(-bb);
+    aa = (a(z) .^ 2) ./ 2;
+    bb = (b(z) .^ 2) ./ 2;
+    eA = exp (-aa);
+    eB = bb .* exp (-bb);
+    h = eA;
+    d = eB .* h;
+    s = d;
+    j = (d > s.*eps(class(d)));
     k = 1;
-    delta = f .* h;
-    sum = delta;
-    j = (delta > sum.*eps(class(delta)));
-    while any(j)
-      d = aa.*d./k;
-      h = h + d;
-      f = bb.*f./(k+1);
-      delta = f .* h;
-      sum(j) = sum(j) + delta(j);
-      j = (delta > sum.*eps(class(delta)));
+    while (any (j))
+      eA = aa .* eA ./ k;
+      h = h + eA;
+      eB = bb .* eB ./ (k + 1);
+      d = eB .* h;
+      s(j) = s (j) + d(j);
+      j = (d > s .* eps (class (d)));
       k = k + 1;
     endwhile
-    Q(z) = 1 - sum;
+    Q(z) = 1 - s;
   endif
 endfunction
 
