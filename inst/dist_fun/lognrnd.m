@@ -1,5 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
+## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This program is free software: you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -23,12 +24,14 @@
 ##
 ## Random arrays from the lognormal distribution.
 ##
-## @code{@var{r} = laplace_rnd (@var{mu}, @var{sigma})} returns an array of
-## random numbers chosen from the lognormal distribution with parameters @var{mu}
-## and @var{sigma}.  The size of @var{r} is the common size of @var{mu} and
-## @var{sigma}.  A scalar input functions as a constant matrix of the same size
-## as the other inputs.  Both parameters must be reals and @var{sigma} > 0.  For
-## @var{sigma} <= 0, NaN is returned.
+## @code{@var{r} = lognrnd (@var{mu}, @var{sigma})} returns an array of random
+## numbers chosen from the lognormal distribution with mean parameter @var{mu}
+## and standard deviation parameter @var{sigma}, each corresponding to the
+## associated normal distribution.  The size of @var{r} is the common size of
+## @var{mu}, and @var{sigma}.  A scalar input functions as a constant matrix of
+## the same size as the other inputs.  Both parameters must be reals and
+## @qcode{@var{sigma} > 0}.  For @qcode{@var{sigma} <= 0}, @qcode{NaN} is
+## returned.
 ##
 ## Both parameters must be reals and @qcode{@var{sigma} > 0}.
 ## For @qcode{@var{sigma} <= 0}, @qcode{NaN} is returned.

@@ -30,11 +30,11 @@
 ## Log-normal cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) of the log-normal distribution with mean @var{mu} and standard
-## deviation @var{sigma} corresponding to the associated normal distribution.
-## The size of @var{p} is the common size of @var{x}, @var{mu} and @var{sigma}.
-## A scalar input functions as a constant matrix of the same size as the other
-## inputs.
+## (CDF) of the log-normal distribution with mean parameter @var{mu} and
+## standard deviation parameter @var{sigma}, each corresponding to the
+## associated normal distribution.  The size of @var{p} is the common size of
+## @var{x}, @var{mu}, and @var{sigma}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
 ##
 ## If a random variable follows this distribution, its logarithm is normally
 ## distributed with mean @var{mu} and standard deviation @var{sigma}.
