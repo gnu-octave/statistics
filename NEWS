@@ -323,3 +323,5 @@
  ** random: add support for Rician distribution
 
  ** ricernd: fixed bug that produced erroneous results
+
+ ** added input validation to all distribution *stat functions
