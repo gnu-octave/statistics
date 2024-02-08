@@ -71,65 +71,36 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] = <b>binostat</b><i> (<var>n</var>, <var>p</var>)</i></dt>
+<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] = <b>binostat</b><i> (<var>n</var>, <var>ps</var>)</i></dt>
 </dl>
 
 <p> Compute statistics of the binomial distribution.
 </p>
 <div class="ms-5">
- <a name="Arguments"></a>
-<h3 class="subheading">Arguments</h3>
-
- <ul>
-<li>
- <var>n</var> is the first parameter of the binomial distribution. The elements
- of <var>n</var> must be natural numbers
-
- </li><li>
- <var>p</var> is the second parameter of the binomial distribution. The
- elements of <var>p</var> must be probabilities
- </li></ul>
-<p> <var>n</var> and <var>p</var> must be of common size or one of them must be scalar
+<p> <code>[<var>m</var>, <var>v</var>] = binostat (<var>n</var>, <var>ps</var>)</code> returns the mean and
+ variance of the binomial distribution with parameters <var>n</var> and <var>ps</var>,
+ where <var>n</var> is the number of trials and <var>ps</var> is the probability of
+ success.
 </p>
- <a name="Return-values"></a>
-<h3 class="subheading">Return values</h3>
-
- <ul>
-<li>
- <var>m</var> is the mean of the binomial distribution
-
- </li><li>
- <var>v</var> is the variance of the binomial distribution
- </li></ul>
-
- <a name="Examples"></a>
-<h3 class="subheading">Examples</h3>
-
- <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> n = 1:6;
- p = 0:0.2:1;
- [m, v] = binostat (n, p)
- </pre><pre class="example">
- </pre><pre class="example"> [m, v] = binostat (n, 0.5)
- </pre><pre class="example"> </pre></td></tr></table>
-
- <a name="References"></a>
-<h3 class="subheading">References</h3>
-
- <ol>
-<li>
- Wendy L. Martinez and Angel R. Martinez. <cite>Computational Statistics
- Handbook with MATLAB</cite>. Appendix E, pages 547-557, Chapman &amp; Hall/CRC,
- 2001.
-
- </li><li>
- Athanasios Papoulis. <cite>Probability, Random Variables, and Stochastic
- Processes</cite>. McGraw-Hill, New York, second edition, 1984.
- </li></ol>
-
+<p> The size of <var>m</var> (mean) and <var>v</var> (variance) is the common size of the
+ input arguments.  A scalar input functions as a constant matrix of the
+ same size as the other inputs.
+</p>
+<p> Further information about the binomial distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Binomial_distribution">https://en.wikipedia.org/wiki/Binomial_distribution</a>
+</p>
+<p> <strong>See also: </strong>
+  <a href="binocdf.html">binocdf</a>, 
+  <a href="binoinv.html">binoinv</a>, 
+  <a href="binopdf.html">binopdf</a>, 
+  <a href="binornd.html">binornd</a>, 
+  <a href="binofit.html">binofit</a>, 
+  <a href="binolike.html">binolike</a>, 
+  <a href="binotest.html">binotest</a>
+</p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_stat/binostat.m">binostat</a>
 </div>
-
 
         </div>
       </div>

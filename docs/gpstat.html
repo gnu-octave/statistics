@@ -71,28 +71,34 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] = <b>gpstat</b><i> (<var>shape</var>, <var>scale</var>, <var>location</var>)</i></dt>
+<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] = <b>gpstat</b><i> (<var>k</var>, <var>sigma</var>, <var>mu</var>)</i></dt>
 </dl>
 
 <p> Compute statistics of the generalized Pareto distribution.
 </p>
 <div class="ms-5">
-<p> <code>[<var>m</var>, <var>v</var>] = gpstat (<var>shape</var>, <var>scale</var>, <var>location</var>)</code>
+<p> <code>[<var>m</var>, <var>v</var>] = gpstat (<var>k</var>, <var>sigma</var>, <var>mu</var>)</code>
  returns the mean and variance of the generalized Pareto distribution with
- <var>shape</var>, <var>scale</var>, and <var>location</var> parameeters.
+ shape parameter <var>k</var>, scale parameter <var>sigma</var>, and location parameter
+ <var>mu</var>.
 </p>
-<p> The default value for <var>location</var> is 0.
+<p> The size of <var>m</var> (mean) and <var>v</var> (variance) is the common size of the
+ input arguments.  A scalar input functions as a constant matrix of the
+ same size as the other inputs.
 </p>
-<p> When <var>shape</var> = 0 and <var>location</var> = 0, the generalized Pareto
+<p> When <var>k</var> = 0 and <var>mu</var> = 0, the generalized Pareto
  distribution is equivalent to the exponential distribution.  When
- <code><var>shape</var> &gt; 0</code> and <code><var>location</var> = <var>scale</var> / <var>shape</var></code>,
+ <code><var>k</var> &gt; 0</code> and <code><var>mu</var> = <var>sigma</var> / <var>k</var></code>,
  the generalized Pareto distribution is equivalent to the Pareto distribution.
  The mean of the generalized Pareto distribution is not finite when
- <code><var>shape</var> &gt;= 1</code>, and the variance is not finite when
- <code><var>shape</var> &gt;= 1/2</code>.  When <code><var>shape</var> &gt;= 0</code>, the generalized
- Pareto distribution has positive density for <code><var>x</var> &gt; <var>location</var></code>,
- or, when <code><var>shape</var> &lt; 0</code>, for
- <code>0 &lt;= (<var>x</var> -  <var>location</var>) / <var>scale</var> &lt;= -1 / <var>shape</var></code>.
+ <code><var>k</var> &gt;= 1</code>, and the variance is not finite when
+ <code><var>k</var> &gt;= 1/2</code>.  When <code><var>k</var> &gt;= 0</code>, the generalized
+ Pareto distribution has positive density for <code><var>x</var> &gt; <var>mu</var></code>,
+ or, when <code><var>k</var> &lt; 0</code>, for
+ <code>0 &lt;= (<var>x</var> -  <var>mu</var>) / <var>sigma</var> &lt;= -1 / <var>k</var></code>.
+</p>
+<p> Further information about the generalized Pareto distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Generalized_Pareto_distribution">https://en.wikipedia.org/wiki/Generalized_Pareto_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="gpcdf.html">gpcdf</a>, 

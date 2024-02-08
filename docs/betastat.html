@@ -77,59 +77,28 @@
 <p> Compute statistics of the Beta distribution.
 </p>
 <div class="ms-5">
- <a name="Arguments"></a>
-<h3 class="subheading">Arguments</h3>
-
- <ul>
-<li>
- <var>a</var> is the first parameter of the beta distribution. <var>a</var> must be
- positive
-
- </li><li>
- <var>b</var> is the second parameter of the beta distribution. <var>b</var> must be
- positive
- </li></ul>
-<p> <var>a</var> and <var>b</var> must be of common size or one of them must be scalar
+<p> <code>[<var>m</var>, <var>v</var>] = betastat (<var>a</var>, <var>b</var>)</code> returns the mean
+ and variance of the Beta distribution with shape parameters <var>a</var> and
+ <var>b</var>.
 </p>
- <a name="Return-values"></a>
-<h3 class="subheading">Return values</h3>
-
- <ul>
-<li>
- <var>m</var> is the mean of the beta distribution
-
- </li><li>
- <var>v</var> is the variance of the beta distribution
- </li></ul>
-
- <a name="Examples"></a>
-<h3 class="subheading">Examples</h3>
-
- <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> a = 1:6;
- b = 1:0.2:2;
- [m, v] = betastat (a, b)
- </pre><pre class="example">
- </pre><pre class="example"> [m, v] = betastat (a, 1.5)
- </pre><pre class="example"> </pre></td></tr></table>
-
- <a name="References"></a>
-<h3 class="subheading">References</h3>
-
- <ol>
-<li>
- Wendy L. Martinez and Angel R. Martinez. <cite>Computational Statistics
- Handbook with MATLAB</cite>. Appendix E, pages 547-557, Chapman &amp; Hall/CRC,
- 2001.
-
- </li><li>
- Athanasios Papoulis. <cite>Probability, Random Variables, and Stochastic
- Processes</cite>. McGraw-Hill, New York, second edition, 1984.
- </li></ol>
-
+<p> The size of <var>m</var> (mean) and <var>v</var> (variance) is the common size of the
+ input arguments.  A scalar input functions as a constant matrix of the
+ same size as the other inputs.
+</p>
+<p> Further information about the Beta distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Beta_distribution">https://en.wikipedia.org/wiki/Beta_distribution</a>
+</p>
+<p> <strong>See also: </strong>
+  <a href="betacdf.html">betacdf</a>, 
+  <a href="betainv.html">betainv</a>, 
+  <a href="betapdf.html">betapdf</a>, 
+  <a href="betarnd.html">betarnd</a>, 
+  <a href="betafit.html">betafit</a>, 
+  <a href="betalike.html">betalike</a>
+</p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_stat/betastat.m">betastat</a>
 </div>
-
 
         </div>
       </div>

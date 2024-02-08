@@ -71,70 +71,46 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>mn</var>, <var>v</var>] = <b>hygestat</b><i> (<var>t</var>, <var>m</var>, <var>n</var>)</i></dt>
+<dt><u>statistics:</u> [<var>mn</var>, <var>v</var>] = <b>hygestat</b><i> (<var>m</var>, <var>k</var>, <var>n</var>)</i></dt>
 </dl>
 
 <p> Compute statistics of the hypergeometric distribution.
 </p>
 <div class="ms-5">
- <a name="Arguments"></a>
-<h3 class="subheading">Arguments</h3>
-
+<p> <code>[<var>mn</var>, <var>v</var>] = hygestat (<var>m</var>, <var>k</var>, <var>n</var>)</code> returns the
+ mean and variance of the hypergeometric distribution parameters <var>m</var>,
+ <var>k</var>, and <var>n</var>.
+</p>
  <ul>
 <li>
- <var>t</var> is the total size of the population of the hypergeometric
- distribution. The elements of <var>t</var> must be positive natural numbers
+ <var>m</var> is the total size of the population of the hypergeometric
+ distribution. The elements of <var>m</var> must be positive natural numbers.
 
  </li><li>
- <var>m</var> is the number of marked items of the hypergeometric distribution.
- The elements of <var>m</var> must be natural numbers
+ <var>k</var> is the number of marked items of the hypergeometric distribution.
+ The elements of <var>k</var> must be natural numbers.
 
  </li><li>
  <var>n</var> is the size of the drawn sample of the hypergeometric
- distribution. The elements of <var>n</var> must be positive natural numbers
+ distribution. The elements of <var>n</var> must be positive natural numbers.
  </li></ul>
-<p> <var>t</var>, <var>m</var>, and <var>n</var> must be of common size or scalar
+
+<p> The size of <var>mn</var> (mean) and <var>v</var> (variance) is the common size of the
+ input arguments.  A scalar input functions as a constant matrix of the
+ same size as the other inputs.
 </p>
- <a name="Return-values"></a>
-<h3 class="subheading">Return values</h3>
-
- <ul>
-<li>
- <var>mn</var> is the mean of the hypergeometric distribution
-
- </li><li>
- <var>v</var> is the variance of the hypergeometric distribution
- </li></ul>
-
- <a name="Examples"></a>
-<h3 class="subheading">Examples</h3>
-
- <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> t = 4:9;
- m = 0:5;
- n = 1:6;
- [mn, v] = hygestat (t, m, n)
- </pre><pre class="example">
- </pre><pre class="example"> [mn, v] = hygestat (t, m, 2)
- </pre><pre class="example"> </pre></td></tr></table>
-
- <a name="References"></a>
-<h3 class="subheading">References</h3>
-
- <ol>
-<li>
- Wendy L. Martinez and Angel R. Martinez. <cite>Computational Statistics
- Handbook with MATLAB</cite>. Appendix E, pages 547-557, Chapman &amp; Hall/CRC,
- 2001.
-
- </li><li>
- Athanasios Papoulis. <cite>Probability, Random Variables, and Stochastic
- Processes</cite>. McGraw-Hill, New York, second edition, 1984.
- </li></ol>
-
+<p> Further information about the hypergeometric distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Hypergeometric_distribution">https://en.wikipedia.org/wiki/Hypergeometric_distribution</a>
+</p>
+<p> <strong>See also: </strong>
+  <a href="hygecdf.html">hygecdf</a>, 
+  <a href="hygeinv.html">hygeinv</a>, 
+  <a href="hygepdf.html">hygepdf</a>, 
+  <a href="hygernd.html">hygernd</a>
+</p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_stat/hygestat.m">hygestat</a>
 </div>
-
 
         </div>
       </div>

@@ -74,62 +74,32 @@
 <dt><u>statistics:</u> [<var>m</var>, <var>v</var>] = <b>lognstat</b><i> (<var>mu</var>, <var>sigma</var>)</i></dt>
 </dl>
 
-<p> Compute statistics of the lognormal distribution.
+<p> Compute statistics of the log-normal distribution.
 </p>
 <div class="ms-5">
- <a name="Arguments"></a>
-<h3 class="subheading">Arguments</h3>
-
- <ul>
-<li>
- <var>mu</var> is the first parameter of the lognormal distribution
-
- </li><li>
- <var>sigma</var> is the second parameter of the lognormal distribution.
- <var>sigma</var> must be positive or zero
- </li></ul>
-<p> <var>mu</var> and <var>sigma</var> must be of common size or one of them must be
- scalar
+<p> <code>[<var>m</var>, <var>v</var>] = lognstat (<var>mu</var>, <var>sigma</var>)</code> returns the mean
+ and variance of the log-normal distribution with mean parameter <var>mu</var> and
+ standard deviation parameter <var>sigma</var>, each corresponding to the
+ associated normal distribution.
 </p>
- <a name="Return-values"></a>
-<h3 class="subheading">Return values</h3>
-
- <ul>
-<li>
- <var>m</var> is the mean of the lognormal distribution
-
- </li><li>
- <var>v</var> is the variance of the lognormal distribution
- </li></ul>
-
- <a name="Examples"></a>
-<h3 class="subheading">Examples</h3>
-
- <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> mu = 0:0.2:1;
- sigma = 0.2:0.2:1.2;
- [m, v] = lognstat (mu, sigma)
- </pre><pre class="example">
- </pre><pre class="example"> [m, v] = lognstat (0, sigma)
- </pre><pre class="example"> </pre></td></tr></table>
-
- <a name="References"></a>
-<h3 class="subheading">References</h3>
-
- <ol>
-<li>
- Wendy L. Martinez and Angel R. Martinez. <cite>Computational Statistics
- Handbook with MATLAB</cite>. Appendix E, pages 547-557, Chapman &amp; Hall/CRC,
- 2001.
-
- </li><li>
- Athanasios Papoulis. <cite>Probability, Random Variables, and Stochastic
- Processes</cite>. McGraw-Hill, New York, second edition, 1984.
- </li></ol>
-
+<p> The size of <var>m</var> (mean) and <var>v</var> (variance) is the common size of the
+ input arguments.  A scalar input functions as a constant matrix of the
+ same size as the other inputs.
+</p>
+<p> Further information about the log-normal distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Log-normal_distribution">https://en.wikipedia.org/wiki/Log-normal_distribution</a>
+</p>
+<p> <strong>See also: </strong>
+  <a href="logncdf.html">logncdf</a>, 
+  <a href="logninv.html">logninv</a>, 
+  <a href="lognpdf.html">lognpdf</a>, 
+  <a href="lognrnd.html">lognrnd</a>, 
+  <a href="lognfit.html">lognfit</a>, 
+  <a href="lognlike.html">lognlike</a>
+</p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_stat/lognstat.m">lognstat</a>
 </div>
-
 
         </div>
       </div>

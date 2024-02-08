@@ -77,38 +77,40 @@
 <p> Compute statistics of the generalized extreme value distribution.
 </p>
 <div class="ms-5">
- <a name="Arguments"></a>
-<h3 class="subheading">Arguments</h3>
-
- <ul>
-<li>
- <var>k</var> is the shape parameter of the GEV distribution.
- (Also denoted gamma or xi.)
- </li><li>
- <var>sigma</var> is the scale parameter of the GEV distribution.
- The elements of <var>sigma</var> must be positive.
- </li><li>
- <var>mu</var> is the location parameter of the GEV distribution.
- </li></ul>
-<p> The inputs must be of common size, or some of them must be scalar.
+<p> <code>[<var>m</var>, <var>v</var>] = gevstat (<var>k</var>, <var>sigma</var>, <var>mu</var>)</code> returns
+ the mean and variance of the generalized extreme value distribution with
+ shape parameter <var>k</var>, scale parameter <var>sigma</var>, and location parameter
+ <var>mu</var>.
 </p>
- <a name="Return-values"></a>
-<h3 class="subheading">Return values</h3>
-
- <ul>
+<p> The size of <var>m</var> (mean) and <var>v</var> (variance) is the common size of the
+ input arguments.  A scalar input functions as a constant matrix of the
+ same size as the other inputs.
+</p>
+<p> The mean of the GEV distribution is not finite when <code><var>k</var> &gt;= 1</code>, and
+ the variance is not finite when <code><var>k</var> &gt;= 1/2</code>.  The GEV distribution
+ has positive density only for values of <var>x</var> such that
+ <code><var>k</var> * (<var>x</var> - <var>mu</var>) / <var>sigma</var> &gt; -1</code>.
+</p>
+<p> Further information about the generalized extreme value distribution can be
+ found at
+ <a href="https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution">https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution</a>
+</p>
+ <a name="References"></a>
+<h3 class="subheading">References</h3>
+ <ol>
 <li>
- <var>m</var> is the mean of the GEV distribution
+ Rolf-Dieter Reiss and Michael Thomas. <cite>Statistical Analysis of Extreme
+ Values with Applications to Insurance, Finance, Hydrology and Other Fields</cite>.
+ Chapter 1, pages 16-17, Springer, 2007.
+ </li></ol>
 
- </li><li>
- <var>v</var> is the variance of the GEV distribution
- </li></ul>
 <p> <strong>See also: </strong>
   <a href="gevcdf.html">gevcdf</a>, 
-  <a href="gevfit.html">gevfit</a>, 
   <a href="gevinv.html">gevinv</a>, 
-  <a href="gevlike.html">gevlike</a>, 
   <a href="gevpdf.html">gevpdf</a>, 
-  <a href="gevrnd.html">gevrnd</a>
+  <a href="gevrnd.html">gevrnd</a>, 
+  <a href="gevfit.html">gevfit</a>, 
+  <a href="gevlike.html">gevlike</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_stat/gevstat.m">gevstat</a>

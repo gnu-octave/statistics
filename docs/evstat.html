@@ -78,16 +78,22 @@
 </p>
 <div class="ms-5">
 <p> <code>[<var>m</var>, <var>v</var>] = evstat (<var>mu</var>, <var>sigma</var>)</code> returns the mean
- and variance of the type 1 extreme value distribution with location parameter
- <var>mu</var> and scale parameter <var>sigma</var>.  The sizes of <var>m</var> and <var>v</var>
- are the common size of <var>mu</var> and <var>sigma</var>.  A scalar input functions as
- a constant matrix of the same size as the other inputs.
+ and variance of the extreme value distribution (also known as the Gumbel
+ or the type I generalized extreme value distribution) with location parameter
+ <var>mu</var> and scale parameter <var>sigma</var>.
+</p>
+<p> The size of <var>m</var> (mean) and <var>v</var> (variance) is the common size of the
+ input arguments.  A scalar input functions as a constant matrix of the
+ same size as the other inputs.
 </p>
 <p> The type 1 extreme value distribution is also known as the Gumbel
- distribution.  The version used here is suitable for modeling minima; the
- mirror image of this distribution can be used to model maxima by negating
- <var>x</var>.  If <var>y</var> has a Weibull distribution, then
- <code><var>x</var> = log (<var>y</var>)</code> has the type 1 extreme value distribution.
+ distribution.  This version is suitable for modeling minima. The mirror image
+ of this distribution can be used to model maxima by negating <var>x</var>.  If
+ <var>y</var> has a Weibull distribution, then <code><var>x</var> = log (<var>y</var>)</code> has
+ the type 1 extreme value distribution.
+</p>
+<p> Further information about the Gumbel distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Gumbel_distribution">https://en.wikipedia.org/wiki/Gumbel_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="evcdf.html">evcdf</a>, 

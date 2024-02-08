@@ -61,7 +61,7 @@
             </div>
             <div class="col-sm-9 col-md-10">
               <h3 class="d-inline-block mr-2">statistics</h3>
-              <b>1.6.3&nbsp;2024-2-8</b>
+              <b>1.6.3&nbsp;2024-2-9</b>
               <p class="indent">
                 The Statistics package for GNU Octave.
               </p>
@@ -78,8 +78,8 @@
              <option value="#Regression Classes">Regression Classes</option>
              <option value="#Data Manipulation">Data Manipulation</option>
              <option value="#Descriptive Statistics">Descriptive Statistics</option>
-             <option value="#Distributions">Distributions</option>
              <option value="#Distribution Fitting">Distribution Fitting</option>
+             <option value="#Distribution Functions">Distribution Functions</option>
              <option value="#Distribution Statistics">Distribution Statistics</option>
              <option value="#Experimental Design">Experimental Design</option>
              <option value="#Machine Learning">Machine Learning</option>
@@ -647,7 +647,417 @@ samples as parameters.</td>
              </tbody>
            </table>
            <h3 class="category">
-             <a name="Distributions">Distributions</a>
+             <a name="Distribution Fitting">Distribution Fitting</a>
+           </h3>
+           <table class="table table-striped">
+             <tbody>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="betafit.html">betafit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameters and confidence intervals for the Beta distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="betalike.html">betalike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the Beta distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="binofit.html">binofit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameter and confidence intervals for the binomial
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="binolike.html">binolike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the binomial distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="bisafit.html">bisafit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate mean and confidence intervals for the Birnbaum-Saunders
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="bisalike.html">bisalike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the Birnbaum-Saunders distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="burrfit.html">burrfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate mean and confidence intervals for the Burr type XII
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="burrlike.html">burrlike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the Burr type XII distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="evfit.html">evfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameters and confidence intervals for the extreme value
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="evlike.html">evlike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the extreme value distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="expfit.html">expfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate mean and confidence intervals for the exponential distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="explike.html">explike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the exponential distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="gamfit.html">gamfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameters and confidence intervals for the Gamma distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="gamlike.html">gamlike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the Gamma distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="geofit.html">geofit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameter and confidence intervals for the geometric
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="gevfit_lmom.html">gevfit_lmom</a>
+                   </code></b>
+                 </td>
+                 <td>Find an estimator (PARAMHAT) of the generalized extreme value (GEV)
+distribution fitting DATA using the method of L-moments.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="gevfit.html">gevfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameters and confidence intervals for the generalized extreme
+value (GEV) distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="gevlike.html">gevlike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the generalized extreme value (GEV)
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="gpfit.html">gpfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameters and confidence intervals for the generalized Pareto
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="gplike.html">gplike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the generalized Pareto distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="gumbelfit.html">gumbelfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameters and confidence intervals for Gumbel distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="gumbellike.html">gumbellike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the extreme value distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="hnfit.html">hnfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameters and confidence intervals for the half-normal
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="hnlike.html">hnlike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the half-normal distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="invgfit.html">invgfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate mean and confidence intervals for the inverse Gaussian
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="invglike.html">invglike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the inverse Gaussian distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="logifit.html">logifit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate mean and confidence intervals for the logistic distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="logilike.html">logilike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the logistic distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="loglfit.html">loglfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate mean and confidence intervals for the log-logistic
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="logllike.html">logllike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the log-logistic distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="lognfit.html">lognfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameters and confidence intervals for the log-normal
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="lognlike.html">lognlike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the log-normal distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="nakafit.html">nakafit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate mean and confidence intervals for the Nakagami distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="nakalike.html">nakalike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the Nakagami distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="nbinfit.html">nbinfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameter and confidence intervals for the negative binomial
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="nbinlike.html">nbinlike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the negative binomial distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="normfit.html">normfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameters and confidence intervals for the normal
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="normlike.html">normlike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the normal distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="poissfit.html">poissfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameter and confidence intervals for the Poisson
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="poisslike.html">poisslike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the Poisson distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="raylfit.html">raylfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameter and confidence intervals for the Rayleigh
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="rayllike.html">rayllike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the Rayleigh distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ricefit.html">ricefit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameters and confidence intervals for the Gamma distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ricelike.html">ricelike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the Rician distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="unidfit.html">unidfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameter and confidence intervals for the discrete uniform
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="unifit.html">unifit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameter and confidence intervals for the continuous uniform
+distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="wblfit.html">wblfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate mean and confidence intervals for the Weibull distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="wbllike.html">wbllike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the Weibull distribution.</td>
+               </tr>
+             </tbody>
+           </table>
+           <h3 class="category">
+             <a name="Distribution Functions">Distribution Functions</a>
            </h3>
            <table class="table table-striped">
              <tbody>
@@ -954,7 +1364,7 @@ samples as parameters.</td>
                    <a href="fcdf.html">fcdf</a>
                    </code></b>
                  </td>
-                 <td>F cumulative distribution function (CDF).</td>
+                 <td>F-cumulative distribution function (CDF).</td>
                </tr>
                <tr>
                  <td>
@@ -962,7 +1372,7 @@ samples as parameters.</td>
                    <a href="finv.html">finv</a>
                    </code></b>
                  </td>
-                 <td>Inverse of the F cumulative distribution function (iCDF).</td>
+                 <td>Inverse of the F-cumulative distribution function (iCDF).</td>
                </tr>
                <tr>
                  <td>
@@ -970,7 +1380,7 @@ samples as parameters.</td>
                    <a href="fpdf.html">fpdf</a>
                    </code></b>
                  </td>
-                 <td>F probability density function (PDF).</td>
+                 <td>F-probability density function (PDF).</td>
                </tr>
                <tr>
                  <td>
@@ -978,7 +1388,7 @@ samples as parameters.</td>
                    <a href="frnd.html">frnd</a>
                    </code></b>
                  </td>
-                 <td>Random arrays from the F distribution.</td>
+                 <td>Random arrays from the F-distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -2017,416 +2427,6 @@ parameters</td>
              </tbody>
            </table>
            <h3 class="category">
-             <a name="Distribution Fitting">Distribution Fitting</a>
-           </h3>
-           <table class="table table-striped">
-             <tbody>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="betafit.html">betafit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate parameters and confidence intervals for the Beta distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="betalike.html">betalike</a>
-                   </code></b>
-                 </td>
-                 <td>Negative log-likelihood for the Beta distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="binofit.html">binofit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate parameter and confidence intervals for the binomial
-distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="binolike.html">binolike</a>
-                   </code></b>
-                 </td>
-                 <td>Negative log-likelihood for the binomial distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="bisafit.html">bisafit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate mean and confidence intervals for the Birnbaum-Saunders
-distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="bisalike.html">bisalike</a>
-                   </code></b>
-                 </td>
-                 <td>Negative log-likelihood for the Birnbaum-Saunders distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="burrfit.html">burrfit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate mean and confidence intervals for the Burr type XII
-distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="burrlike.html">burrlike</a>
-                   </code></b>
-                 </td>
-                 <td>Negative log-likelihood for the Burr type XII distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="evfit.html">evfit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate parameters and confidence intervals for the extreme value
-distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="evlike.html">evlike</a>
-                   </code></b>
-                 </td>
-                 <td>Negative log-likelihood for the extreme value distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="expfit.html">expfit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate mean and confidence intervals for the exponential distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="explike.html">explike</a>
-                   </code></b>
-                 </td>
-                 <td>Negative log-likelihood for the exponential distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="gamfit.html">gamfit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate parameters and confidence intervals for the Gamma distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="gamlike.html">gamlike</a>
-                   </code></b>
-                 </td>
-                 <td>Negative log-likelihood for the Gamma distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="geofit.html">geofit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate parameter and confidence intervals for the geometric
-distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="gevfit_lmom.html">gevfit_lmom</a>
-                   </code></b>
-                 </td>
-                 <td>Find an estimator (PARAMHAT) of the generalized extreme value (GEV)
-distribution fitting DATA using the method of L-moments.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="gevfit.html">gevfit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate parameters and confidence intervals for the generalized extreme
-value (GEV) distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="gevlike.html">gevlike</a>
-                   </code></b>
-                 </td>
-                 <td>Negative log-likelihood for the generalized extreme value (GEV)
-distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="gpfit.html">gpfit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate parameters and confidence intervals for the generalized Pareto
-distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="gplike.html">gplike</a>
-                   </code></b>
-                 </td>
-                 <td>Negative log-likelihood for the generalized Pareto distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="gumbelfit.html">gumbelfit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate parameters and confidence intervals for Gumbel distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="gumbellike.html">gumbellike</a>
-                   </code></b>
-                 </td>
-                 <td>Negative log-likelihood for the extreme value distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="hnfit.html">hnfit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate parameters and confidence intervals for the half-normal
-distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="hnlike.html">hnlike</a>
-                   </code></b>
-                 </td>
-                 <td>Negative log-likelihood for the half-normal distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="invgfit.html">invgfit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate mean and confidence intervals for the inverse Gaussian
-distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="invglike.html">invglike</a>
-                   </code></b>
-                 </td>
-                 <td>Negative log-likelihood for the inverse Gaussian distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="logifit.html">logifit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate mean and confidence intervals for the logistic distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="logilike.html">logilike</a>
-                   </code></b>
-                 </td>
-                 <td>Negative log-likelihood for the logistic distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="loglfit.html">loglfit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate mean and confidence intervals for the log-logistic
-distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="logllike.html">logllike</a>
-                   </code></b>
-                 </td>
-                 <td>Negative log-likelihood for the log-logistic distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="lognfit.html">lognfit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate parameters and confidence intervals for the log-normal
-distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="lognlike.html">lognlike</a>
-                   </code></b>
-                 </td>
-                 <td>Negative log-likelihood for the log-normal distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="nakafit.html">nakafit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate mean and confidence intervals for the Nakagami distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="nakalike.html">nakalike</a>
-                   </code></b>
-                 </td>
-                 <td>Negative log-likelihood for the Nakagami distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="nbinfit.html">nbinfit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate parameter and confidence intervals for the negative binomial
-distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="nbinlike.html">nbinlike</a>
-                   </code></b>
-                 </td>
-                 <td>Negative log-likelihood for the negative binomial distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="normfit.html">normfit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate parameters and confidence intervals for the normal
-distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="normlike.html">normlike</a>
-                   </code></b>
-                 </td>
-                 <td>Negative log-likelihood for the normal distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="poissfit.html">poissfit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate parameter and confidence intervals for the Poisson
-distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="poisslike.html">poisslike</a>
-                   </code></b>
-                 </td>
-                 <td>Negative log-likelihood for the Poisson distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="raylfit.html">raylfit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate parameter and confidence intervals for the Rayleigh
-distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="rayllike.html">rayllike</a>
-                   </code></b>
-                 </td>
-                 <td>Negative log-likelihood for the Rayleigh distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="ricefit.html">ricefit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate parameters and confidence intervals for the Gamma distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="ricelike.html">ricelike</a>
-                   </code></b>
-                 </td>
-                 <td>Negative log-likelihood for the Rician distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="unidfit.html">unidfit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate parameter and confidence intervals for the discrete uniform
-distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="unifit.html">unifit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate parameter and confidence intervals for the continuous uniform
-distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="wblfit.html">wblfit</a>
-                   </code></b>
-                 </td>
-                 <td>Estimate mean and confidence intervals for the Weibull distribution.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="wbllike.html">wbllike</a>
-                   </code></b>
-                 </td>
-                 <td>Negative log-likelihood for the Weibull distribution.</td>
-               </tr>
-             </tbody>
-           </table>
-           <h3 class="category">
              <a name="Distribution Statistics">Distribution Statistics</a>
            </h3>
            <table class="table table-striped">
@@ -2453,7 +2453,7 @@ distribution.</td>
                    <a href="chi2stat.html">chi2stat</a>
                    </code></b>
                  </td>
-                 <td>Compute statistics of the χ^2 distribution.</td>
+                 <td>Compute statistics of the chi-squared distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -2477,7 +2477,7 @@ distribution.</td>
                    <a href="fstat.html">fstat</a>
                    </code></b>
                  </td>
-                 <td>Compute statistics of the F distribution.</td>
+                 <td>Compute statistics of the F-distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -2525,7 +2525,7 @@ distribution.</td>
                    <a href="lognstat.html">lognstat</a>
                    </code></b>
                  </td>
-                 <td>Compute statistics of the lognormal distribution.</td>
+                 <td>Compute statistics of the log-normal distribution.</td>
                </tr>
                <tr>
                  <td>

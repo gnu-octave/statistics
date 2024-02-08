@@ -35,9 +35,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Distributions">
+                  <a class="nav-link" href="index.html#Distribution Functions">
                     <i class="fas fa-list-alt"></i>
-                    Distributions
+                    Distribution Functions
                   </a>
                 </li>
                 <li class="nav-item">
@@ -71,23 +71,23 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>x</var> = <b>hygeinv</b><i> (<var>p</var>, <var>t</var>, <var>m</var>, <var>n</var>)</i></dt>
+<dt><u>statistics:</u> <var>x</var> = <b>hygeinv</b><i> (<var>p</var>, <var>m</var>, <var>k</var>, <var>n</var>)</i></dt>
 </dl>
 
 <p> Inverse of the hypergeometric cumulative distribution function (iCDF).
 </p>
 <div class="ms-5">
 <p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF) of
- the hypergeometric distribution with parameters <var>t</var>, <var>m</var>, and <var>n</var>.
- The size of <var>x</var> is the common size of <var>p</var>, <var>t</var>, <var>m</var>, and
+ the hypergeometric distribution with parameters <var>m</var>, <var>k</var>, and <var>n</var>.
+ The size of <var>x</var> is the common size of <var>p</var>, <var>m</var>, <var>k</var>, and
  <var>n</var>.  A scalar input functions as a constant matrix of the same size as
  the other inputs.
 </p>
-<p> This is the probability of obtaining <var>p</var> marked items when randomly
- drawing a sample of size <var>n</var> without replacement from a population of
- total size <var>t</var> containing <var>m</var> marked items.  The parameters <var>t</var>,
- <var>m</var>, and <var>n</var> must be positive integers with <var>m</var> and <var>n</var> not
- greater than <var>t</var>.
+<p> This is the number of drawn marked items <var>x</var> given a probability <var>p</var>,
+ when randomly drawing a sample of size <var>n</var> without replacement from a
+ population of total size <var>m</var> containing <var>k</var> marked items.  The
+ parameters <var>m</var>, <var>k</var>, and <var>n</var> must be positive integers with
+ <var>k</var> and <var>n</var> not greater than <var>m</var>.
 </p>
 <p> Further information about the hypergeometric distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Hypergeometric_distribution">https://en.wikipedia.org/wiki/Hypergeometric_distribution</a>
@@ -127,8 +127,8 @@
  plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
  grid on
  ylim ([0, 60])
- legend ({"t = 500, m = 50, μ = 100", "t = 500, m = 60, μ = 200", ...
-          "t = 500, m = 70, μ = 300"}, "location", "northwest")
+ legend ({"m = 500, k = 50, n = 100", "m = 500, k = 60, n = 200", ...
+          "m = 500, k = 70, n = 300"}, "location", "northwest")
  title ("Hypergeometric iCDF")
  xlabel ("probability")
  ylabel ("values in p (number of successes)")

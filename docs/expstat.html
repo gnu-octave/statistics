@@ -71,57 +71,31 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] = <b>expstat</b><i> (<var>l</var>)</i></dt>
+<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] = <b>expstat</b><i> (<var>mu</var>)</i></dt>
 </dl>
 
 <p> Compute statistics of the exponential distribution.
 </p>
 <div class="ms-5">
- <a name="Arguments"></a>
-<h3 class="subheading">Arguments</h3>
-
- <ul>
-<li>
- <var>l</var> is the parameter of the exponential distribution. The
- elements of <var>l</var> must be positive
- </li></ul>
-
- <a name="Return-values"></a>
-<h3 class="subheading">Return values</h3>
-
- <ul>
-<li>
- <var>m</var> is the mean of the exponential distribution
-
- </li><li>
- <var>v</var> is the variance of the exponential distribution
- </li></ul>
-
- <a name="Example"></a>
-<h3 class="subheading">Example</h3>
-
- <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> l = 1:6;
- [m, v] = expstat (l)
- </pre><pre class="example"> </pre></td></tr></table>
-
- <a name="References"></a>
-<h3 class="subheading">References</h3>
-
- <ol>
-<li>
- Wendy L. Martinez and Angel R. Martinez. <cite>Computational Statistics
- Handbook with MATLAB</cite>. Appendix E, pages 547-557, Chapman &amp; Hall/CRC,
- 2001.
-
- </li><li>
- Athanasios Papoulis. <cite>Probability, Random Variables, and Stochastic
- Processes</cite>. McGraw-Hill, New York, second edition, 1984.
- </li></ol>
-
+<p> <code>[<var>m</var>, <var>v</var>] = expstat (<var>mu</var>)</code> returns the mean and
+ variance of the exponential distribution with mean parameter <var>mu</var>.
+</p>
+<p> The size of <var>m</var> (mean) and <var>v</var> (variance) is the same size of the
+ input argument.
+</p>
+<p> A common alternative parameterization of the exponential distribution is to
+ use the parameter <math>λ</math> defined as the mean number of events in an
+ interval as opposed to the parameter <math>μ</math>, which is the mean wait time
+ for an event to occur. <math>λ</math> and <math>μ</math> are reciprocals,
+ i.e. <math>μ = 1 / λ</math>.
+</p>
+<p> Further information about the exponential distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Exponential_distribution">https://en.wikipedia.org/wiki/Exponential_distribution</a>
+</p>
 <p> <strong>See also: </strong>
   <a href="expcdf.html">expcdf</a>, 
-  <a href="expfit.html">expfit</a>, 
   <a href="expinv.html">expinv</a>, 
+  <a href="exppdf.html">exppdf</a>, 
   <a href="exprnd.html">exprnd</a>, 
   <a href="expfit.html">expfit</a>, 
   <a href="explike.html">explike</a>

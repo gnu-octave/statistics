@@ -71,57 +71,32 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] = <b>geostat</b><i> (<var>p</var>)</i></dt>
+<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] = <b>geostat</b><i> (<var>ps</var>)</i></dt>
 </dl>
 
 <p> Compute statistics of the geometric distribution.
 </p>
 <div class="ms-5">
- <a name="Arguments"></a>
-<h3 class="subheading">Arguments</h3>
-
- <ul>
-<li>
- <var>p</var> is the rate parameter of the geometric distribution. The
- elements of <var>p</var> must be probabilities
- </li></ul>
-
- <a name="Return-values"></a>
-<h3 class="subheading">Return values</h3>
-
- <ul>
-<li>
- <var>m</var> is the mean of the geometric distribution
-
- </li><li>
- <var>v</var> is the variance of the geometric distribution
- </li></ul>
-
- <a name="Example"></a>
-<h3 class="subheading">Example</h3>
-
- <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> p = 1 ./ (1:6);
- [m, v] = geostat (p)
- </pre><pre class="example"> </pre></td></tr></table>
-
- <a name="References"></a>
-<h3 class="subheading">References</h3>
-
- <ol>
-<li>
- Wendy L. Martinez and Angel R. Martinez. <cite>Computational Statistics
- Handbook with MATLAB</cite>. Appendix E, pages 547-557, Chapman &amp; Hall/CRC,
- 2001.
-
- </li><li>
- Athanasios Papoulis. <cite>Probability, Random Variables, and Stochastic
- Processes</cite>. McGraw-Hill, New York, second edition, 1984.
- </li></ol>
-
+<p> <code>[<var>m</var>, <var>v</var>] = geostat (<var>ps</var>)</code> returns the mean and
+ variance of the geometric distribution with probability of success parameter
+ <var>ps</var>.
+</p>
+<p> The size of <var>m</var> (mean) and <var>v</var> (variance) is the same size of the
+ input argument.
+</p>
+<p> Further information about the geometric distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Geometric_distribution">https://en.wikipedia.org/wiki/Geometric_distribution</a>
+</p>
+<p> <strong>See also: </strong>
+  <a href="geocdf.html">geocdf</a>, 
+  <a href="geoinv.html">geoinv</a>, 
+  <a href="geopdf.html">geopdf</a>, 
+  <a href="geornd.html">geornd</a>, 
+  <a href="geofit.html">geofit</a>
+</p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_stat/geostat.m">geostat</a>
 </div>
-
 
         </div>
       </div>

@@ -35,9 +35,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Distributions">
+                  <a class="nav-link" href="index.html#Distribution Functions">
                     <i class="fas fa-list-alt"></i>
-                    Distributions
+                    Distribution Functions
                   </a>
                 </li>
                 <li class="nav-item">
@@ -71,7 +71,7 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>y</var> = <b>hygepdf</b><i> (<var>x</var>, <var>t</var>, <var>m</var>, <var>n</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>hygepdf</b><i> (<var>x</var>, <var>m</var>, <var>k</var>, <var>n</var>)</i></dt>
 <dt><u>statistics:</u> <var>y</var> = <b>hygepdf</b><i> (&hellip;, <code>&quot;vectorexpand&quot;</code>)</i></dt>
 </dl>
 
@@ -79,23 +79,23 @@
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the probability density function (PDF)
- of the hypergeometric distribution with parameters <var>t</var>, <var>m</var>, and
- <var>n</var>.  The size of <var>y</var> is the common size of <var>x</var>, <var>t</var>,
- <var>m</var>, and <var>n</var>.  A scalar input functions as a constant matrix of the
+ of the hypergeometric distribution with parameters <var>m</var>, <var>k</var>, and
+ <var>n</var>.  The size of <var>y</var> is the common size of <var>x</var>, <var>m</var>,
+ <var>k</var>, and <var>n</var>.  A scalar input functions as a constant matrix of the
  same size as the other inputs.
 </p>
 <p> This is the probability of obtaining <var>x</var> marked items when randomly
  drawing a sample of size <var>n</var> without replacement from a population of
- total size <var>t</var> containing <var>m</var> marked items.  The parameters <var>t</var>,
- <var>m</var>, and <var>n</var> must be positive integers with <var>m</var> and <var>n</var> not
- greater than <var>t</var>.
+ total size <var>m</var> containing <var>k</var> marked items.  The parameters <var>m</var>,
+ <var>k</var>, and <var>n</var> must be positive integers with <var>k</var> and <var>n</var> not
+ greater than <var>m</var>.
 </p>
 <p> If the optional parameter <code>vectorexpand</code> is provided, <var>x</var> may be an
- array with size different from parameters <var>t</var>, <var>m</var>, and <var>n</var>
+ array with size different from parameters <var>m</var>, <var>k</var>, and <var>n</var>
  (which must still be of a common size or scalar).  Each element of <var>x</var>
- will be evaluated against each set of parameters <var>t</var>, <var>m</var>, and
+ will be evaluated against each set of parameters <var>m</var>, <var>k</var>, and
  <var>n</var> in columnwise order. The output <var>y</var> will be an array of size
- <code><var>r</var> x <var>s</var></code>, where <code><var>r</var> = numel (<var>t</var>)</code>, and
+ <code><var>r</var> x <var>s</var></code>, where <code><var>r</var> = numel (<var>m</var>)</code>, and
  <code><var>s</var> = numel (<var>x</var>)</code>.
 </p>
 <p> Further information about the hypergeometric distribution can be found at
@@ -137,8 +137,8 @@
  grid on
  xlim ([0, 60])
  ylim ([0, 0.18])
- legend ({"t = 500, m = 50, μ = 100", "t = 500, m = 60, μ = 200", ...
-          "t = 500, m = 70, μ = 300"}, "location", "northeast")
+ legend ({"m = 500, k = 50, μ = 100", "m = 500, k = 60, μ = 200", ...
+          "m = 500, k = 70, μ = 300"}, "location", "northeast")
  title ("Hypergeometric PDF")
  xlabel ("values in x (number of successes)")
  ylabel ("density")

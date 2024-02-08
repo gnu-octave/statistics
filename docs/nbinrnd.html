@@ -35,9 +35,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Distributions">
+                  <a class="nav-link" href="index.html#Distribution Functions">
                     <i class="fas fa-list-alt"></i>
-                    Distributions
+                    Distribution Functions
                   </a>
                 </li>
                 <li class="nav-item">
@@ -82,9 +82,11 @@
 <div class="ms-5">
 <p> <code><var>rnd</var> = nbinrnd (<var>r</var>, <var>ps</var>)</code> returns an array of random
  numbers chosen from the Laplace distribution with parameters <var>r</var> and
- <var>ps</var>.  The size of <var>rnd</var> is the common size of <var>r</var> and <var>ps</var>.
- A scalar input functions as a constant matrix of the same size as the other
- inputs.
+ <var>ps</var>, where <var>r</var> is the number of successes until the experiment is
+ stopped and <var>ps</var> is the probability of success in each experiment, given
+ the number of failures in <var>x</var>.  The size of <var>rnd</var> is the common size
+ of <var>r</var> and <var>ps</var>.  A scalar input functions as a constant matrix of
+ the same size as the other inputs.
 </p>
 <p> When called with a single size argument, return a square matrix with
  the dimension specified.  When called with more than one scalar argument the
