@@ -24,9 +24,9 @@
 ## Poisson probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## of the Poisson distribution with parameter @var{lambda}.  The size of @var{y}
-## is the common size of @var{x} and @var{lambda}.  A scalar input functions as
-## a constant matrix of the same size as the other inputs.
+## of the Poisson distribution with rate parameter @var{lambda}.  The size of
+## @var{y} is the common size of @var{x} and @var{lambda}.  A scalar input
+## functions as a constant matrix of the same size as the other inputs.
 ##
 ## Further information about the Poisson distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Poisson_distribution}

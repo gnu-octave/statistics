@@ -27,10 +27,10 @@
 ## Random arrays from the Poisson distribution.
 ##
 ## @code{@var{r} = normrnd (@var{lambda})} returns an array of random numbers
-## chosen from the Poisson distribution with parameter @var{lambda}.  The size
-## of @var{r} is the common size of @var{lambda}.  A scalar input functions as a
-## constant matrix of the same size as the other inputs.  @var{lambda} must be a
-## finite real number and greater or equal to 0, otherwise @qcode{NaN} is
+## chosen from the Poisson distribution with rate parameter @var{lambda}.  The
+## size of @var{r} is the common size of @var{lambda}.  A scalar input functions
+## as a constant matrix of the same size as the other inputs.  @var{lambda} must
+## be a finite real number and greater or equal to 0, otherwise @qcode{NaN} is
 ## returned.
 ##
 ## When called with a single size argument, @code{poissrnd} returns a square
