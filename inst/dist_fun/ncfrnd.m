@@ -20,17 +20,17 @@
 ## @deftypefnx {statistics} {@var{r} =} ncfrnd (@var{df1}, @var{df2}, @var{lambda}, @var{rows}, @var{cols}, @dots{})
 ## @deftypefnx {statistics} {@var{r} =} ncfrnd (@var{df1}, @var{df2}, @var{lambda}, [@var{sz}])
 ##
-## Random arrays from the noncentral F distribution.
+## Random arrays from the noncentral @math{F}-distribution.
 ##
 ## @code{@var{x} = ncfrnd (@var{p}, @var{df1}, @var{df2}, @var{lambda})} returns
-## an array of random numbers chosen from the noncentral F distribution with
+## an array of random numbers chosen from the noncentral @math{F}-distribution with
 ## @var{df1} and @var{df2} degrees of freedom and noncentrality parameter
 ## @var{lambda}.  The size of @var{r} is the common size of @var{df1},
 ## @var{df2}, and @var{lambda}.  A scalar input functions as a constant matrix
 ## of the same size as the other input.
 ##
-## @code{ncfrnd} generates values using the definition of a noncentral F random
-## variable, as the ratio of a noncentral chi-squared distribution and a
+## @code{ncfrnd} generates values using the definition of a noncentral @math{F}
+## random variable, as the ratio of a noncentral chi-squared distribution and a
 ## (central) chi-squared distribution.
 ##
 ## When called with a single size argument, @code{ncfrnd} returns a square
@@ -39,8 +39,8 @@
 ## and any further arguments specify additional matrix dimensions.  The size may
 ## also be specified with a row vector of dimensions, @var{sz}.
 ##
-## Further information about the noncentral F distribution can be found at
-## @url{https://en.wikipedia.org/wiki/Noncentral_F-distribution}
+## Further information about the noncentral @math{F}-distribution can be found
+## at @url{https://en.wikipedia.org/wiki/Noncentral_F-distribution}
 ##
 ## @seealso{ncfcdf, ncfinv, ncfpdf, ncfstat, frnd, ncx2rnd, chi2rnd}
 ## @end deftypefn

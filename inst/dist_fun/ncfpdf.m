@@ -18,16 +18,16 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{y} =} ncfpdf (@var{x}, @var{df1}, @var{df2}, @var{lambda})
 ##
-## Noncentral F probability density function (PDF).
+## Noncentral @math{F}-probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## of the noncentral F distribution with @var{df1} and @var{df2} degrees
+## of the noncentral @math{F}-distribution with @var{df1} and @var{df2} degrees
 ## of freedom and noncentrality parameter @var{lambda}.  The size of @var{y} is
 ## the common size of @var{x}, @var{df1}, @var{df2}, and @var{lambda}.  A scalar
 ## input functions as a constant matrix of the same size as the other inputs.
 ##
-## Further information about the noncentral F distribution can be found at
-## @url{https://en.wikipedia.org/wiki/Noncentral_F-distribution}
+## Further information about the noncentral @math{F}-distribution can be found
+## at @url{https://en.wikipedia.org/wiki/Noncentral_F-distribution}
 ##
 ## @seealso{ncfcdf, ncfinv, ncfrnd, ncfstat, fpdf}
 ## @end deftypefn

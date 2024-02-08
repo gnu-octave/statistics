@@ -18,18 +18,18 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{x} =} ncfinv (@var{p}, @var{df1}, @var{df2}, @var{lambda})
 ##
-## Inverse of the noncentral F cumulative distribution function (iCDF).
+## Inverse of the noncentral @math{F}-cumulative distribution function (iCDF).
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
-## the noncentral F distribution with @var{df1} and @var{df2} degrees of freedom
-## and noncentrality parameter @var{lambda}.  The size of @var{x} is the common
-## size of @var{p}, @var{df1}, @var{df2}, and @var{lambda}.  A scalar input
-## functions as a constant matrix of the same size as the other inputs.
+## the noncentral @math{F}-distribution with @var{df1} and @var{df2} degrees of
+## freedom and noncentrality parameter @var{lambda}.  The size of @var{x} is the
+## common size of @var{p}, @var{df1}, @var{df2}, and @var{lambda}.  A scalar
+## input functions as a constant matrix of the same size as the other inputs.
 ##
 ## @code{ncfinv} uses Newton's method to converge to the solution.
 ##
-## Further information about the noncentral F distribution can be found at
-## @url{https://en.wikipedia.org/wiki/Noncentral_F-distribution}
+## Further information about the noncentral @math{F}-distribution can be found
+## at @url{https://en.wikipedia.org/wiki/Noncentral_F-distribution}
 ##
 ## @seealso{ncfcdf, ncfpdf, ncfrnd, ncfstat, finv}
 ## @end deftypefn

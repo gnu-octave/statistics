@@ -19,20 +19,22 @@
 ## @deftypefn  {statistics} {@var{p} =} ncfcdf (@var{x}, @var{df1}, @var{df2}, @var{lambda})
 ## @deftypefnx {statistics} {@var{p} =} ncfcdf (@var{x}, @var{df1}, @var{df2}, @var{lambda}, @qcode{"upper"})
 ##
-## Noncentral F cumulative distribution function (CDF).
+## Noncentral @math{F}-cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) of the noncentral F distribution with @var{df1} and @var{df2} degrees
-## of freedom and noncentrality parameter @var{lambda}.  The size of @var{p} is
-## the common size of @var{x}, @var{df1}, @var{df2}, and @var{lambda}.  A scalar
-## input functions as a constant matrix of the same size as the other inputs.
+## (CDF) of the noncentral @math{F}-distribution with @var{df1} and @var{df2}
+## degrees of freedom and noncentrality parameter @var{lambda}.  The size of
+## @var{p} is the common size of @var{x}, @var{df1}, @var{df2}, and
+## @var{lambda}.  A scalar input functions as a constant matrix of the same size
+## as the other inputs.
 ##
 ## @code{@var{p} = ncfcdf (@var{x}, @var{df1}, @var{df2}, @var{lambda}, "upper")}
-## computes the upper tail probability of the noncentral F distribution with
-## parameters @var{df1}, @var{df2}, and @var{lambda}, at the values in @var{x}.
+## computes the upper tail probability of the noncentral @math{F}-distribution
+## with parameters @var{df1}, @var{df2}, and @var{lambda}, at the values in
+## @var{x}.
 ##
-## Further information about the noncentral F distribution can be found at
-## @url{https://en.wikipedia.org/wiki/Noncentral_F-distribution}
+## Further information about the noncentral @math{F}-distribution can be found
+## at @url{https://en.wikipedia.org/wiki/Noncentral_F-distribution}
 ##
 ## @seealso{ncfinv, ncfpdf, ncfrnd, ncfstat, fcdf}
 ## @end deftypefn
