@@ -22,11 +22,11 @@
 ## @deftypefnx {statistics} {@var{r} =} frnd (@var{df1}, @var{df2}, @var{rows}, @var{cols}, @dots{})
 ## @deftypefnx {statistics} {@var{r} =} frnd (@var{df1}, @var{df2}, [@var{sz}])
 ##
-## Random arrays from the F distribution.
+## Random arrays from the @math{F}-distribution.
 ##
 ## @code{@var{r} = frnd (@var{df1}, @var{df2})} returns an array of random
-## numbers chosen from the F distribution with @var{df1} and @var{df2} degrees
-## of freedom.  The size of @var{r} is the common size of @var{df1} and
+## numbers chosen from the @math{F}-distribution with @var{df1} and @var{df2}
+## degrees of freedom.  The size of @var{r} is the common size of @var{df1} and
 ## @var{df2}.  A scalar input functions as a constant matrix of the same size as
 ## the other inputs.
 ##
@@ -36,7 +36,7 @@
 ## and any further arguments specify additional matrix dimensions.  The size may
 ## also be specified with a row vector of dimensions, @var{sz}.
 ##
-## Further information about the F distribution can be found at
+## Further information about the @math{F}-distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/F-distribution}
 ##
 ## @seealso{fcdf, finv, fpdf, fstat}

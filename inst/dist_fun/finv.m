@@ -19,14 +19,15 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{x} =} finv (@var{p}, @var{df1}, @var{df2})
 ##
-## Inverse of the F cumulative distribution function (iCDF).
+## Inverse of the @math{F}-cumulative distribution function (iCDF).
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
-## the F distribution with @var{df1} and @var{df2} degrees of freedom.  The size
-## of @var{x} is the common size of @var{p}, @var{df1}, and @var{df2}.  A scalar
-## input functions as a constant matrix of the same size as the other inputs.
+## the @math{F}-distribution with @var{df1} and @var{df2} degrees of freedom.
+## The size of @var{x} is the common size of @var{p}, @var{df1}, and @var{df2}.
+## A scalar input functions as a constant matrix of the same size as the other
+## inputs.
 ##
-## Further information about the F distribution can be found at
+## Further information about the @math{F}-distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/F-distribution}
 ##
 ## @seealso{fcdf, fpdf, frnd, fstat}

@@ -22,19 +22,19 @@
 ## @deftypefn  {statistics} {@var{p} =} fcdf (@var{x}, @var{df1}, @var{df2})
 ## @deftypefnx {statistics} {@var{p} =} fcdf (@var{x}, @var{df1}, @var{df2}, @qcode{"upper"})
 ##
-## F cumulative distribution function (CDF).
+## @math{F}-cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) of the F distribution with @var{df1} and @var{df2} degrees of freedom.
-## The size of @var{p} is the common size of @var{x}, @var{df1}, and @var{df2}.
-## A scalar input functions as a constant matrix of the same size as the other
-## inputs.
+## (CDF) of the @math{F}-distribution with @var{df1} and @var{df2} degrees of
+## freedom.  The size of @var{p} is the common size of @var{x}, @var{df1}, and
+## @var{df2}.  A scalar input functions as a constant matrix of the same size as
+## the other inputs.
 ##
 ## @code{@var{p} = fcdf (@var{x}, @var{df1}, @var{df2}, "upper")} computes the
-## upper tail probability of the F distribution with @var{df1} and @var{df2}
-## degrees of freedom, at the values in @var{x}.
+## upper tail probability of the @math{F}-distribution with @var{df1} and
+## @var{df2} degrees of freedom, at the values in @var{x}.
 ##
-## Further information about the F distribution can be found at
+## Further information about the @math{F}-distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/F-distribution}
 ##
 ## @seealso{finv, fpdf, frnd, fstat}

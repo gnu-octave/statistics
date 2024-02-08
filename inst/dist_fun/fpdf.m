@@ -19,15 +19,15 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{y} =} fpdf (@var{x}, @var{df1}, @var{df2})
 ##
-## F probability density function (PDF).
+## @math{F}-probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## of the F distribution with @var{df1} and @var{df2} degrees of freedom.  The
-## size of @var{y} is the common size of @var{x}, @var{df1}, and @var{df2}.  A
-## scalar input functions as a constant matrix of the same size as the other
+## of the @math{F}-distribution with @var{df1} and @var{df2} degrees of freedom.
+## The size of @var{y} is the common size of @var{x}, @var{df1}, and @var{df2}.
+## A scalar input functions as a constant matrix of the same size as the other
 ## inputs.
 ##
-## Further information about the F distribution can be found at
+## Further information about the @math{F}-distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/F-distribution}
 ##
 ## @seealso{fcdf, finv, frnd, fstat}
