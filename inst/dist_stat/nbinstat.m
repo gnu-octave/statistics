@@ -1,4 +1,5 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
+## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,89 +17,58 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {[@var{m}, @var{v}] =} nbinstat (@var{n}, @var{p})
+## @deftypefn  {statistics} {[@var{m}, @var{v}] =} nbinstat (@var{r}, @var{ps})
 ##
 ## Compute statistics of the negative binomial distribution.
 ##
-## @subheading Arguments
+## @code{[@var{m}, @var{v}] = nbinstat (@var{r}, @var{ps})} returns the mean
+## and variance of the negative binomial distribution with parameters @var{r}
+## and @var{ps}, where @var{r} is the number of successes until the experiment
+## is stopped and @var{ps} is the probability of success in each experiment,
+## given the number of failures in @var{x}.
 ##
-## @itemize @bullet
-## @item
-## @var{n} is the first parameter of the negative binomial distribution.  The
-## elements of @var{n} must be natural numbers
+## The size of @var{m} (mean) and @var{v} (variance) is the common size of the
+## input arguments.  A scalar input functions as a constant matrix of the
+## same size as the other inputs.
 ##
-## @item
-## @var{p} is the second parameter of the negative binomial distribution.  The
-## elements of @var{p} must be probabilities
-## @end itemize
-## @var{n} and @var{p} must be of common size or one of them must be scalar
+## Further information about the negative binomial distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Negative_binomial_distribution}
 ##
-## @subheading Return values
-##
-## @itemize @bullet
-## @item
-## @var{m} is the mean of the negative binomial distribution
-##
-## @item
-## @var{v} is the variance of the negative binomial distribution
-## @end itemize
-##
-## @subheading Examples
-##
-## @example
-## @group
-## n = 1:4;
-## p = 0.2:0.2:0.8;
-## [m, v] = nbinstat (n, p)
-## @end group
-##
-## @group
-## [m, v] = nbinstat (n, 0.5)
-## @end group
-## @end example
-##
-## @subheading References
-##
-## @enumerate
-## @item
-## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
-## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
-## 2001.
-##
-## @item
-## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
-## Processes}. McGraw-Hill, New York, second edition, 1984.
-## @end enumerate
+## @seealso{nbincdf, nbininv, nbininv, nbinrnd, nbinfit, nbinlike}
 ## @end deftypefn
 
-function [m, v] = nbinstat (n, p)
+function [m, v] = nbinstat (r, ps)
 
-  # Check arguments
-  if (nargin != 2)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 2)
+    error ("nbinstat: function called with too few input arguments.");
   endif
 
-  if (! isempty (n) && ! ismatrix (n))
-    error ("nbinstat: n must be a numeric matrix");
-  endif
-  if (! isempty (p) && ! ismatrix (p))
-    error ("nbinstat: p must be a numeric matrix");
+  ## Check for R and PS being numeric
+  if (! (isnumeric (r) && isnumeric (ps)))
+    error ("nbinstat: R and PS must be numeric.");
   endif
 
-  if (! isscalar (n) || ! isscalar (p))
-    [retval, n, p] = common_size (n, p);
+  ## Check for R and PS being real
+  if (iscomplex (r) || iscomplex (ps))
+    error ("nbinstat: R and PS must not be complex.");
+  endif
+
+  ## Check for common size of R and PS
+  if (! isscalar (r) || ! isscalar (ps))
+    [retval, r, ps] = common_size (r, ps);
     if (retval > 0)
-      error ("nbinstat: n and p must be of common size or scalar");
+      error ("nbinstat: R and PS must be of common size or scalars.");
     endif
   endif
 
-  # Calculate moments
-  q = 1 - p;
-  m = n .* q ./ p;
-  v = n .* q ./ (p .^ 2);
+  ## Calculate moments
+  q = 1 - ps;
+  m = r .* q ./ ps;
+  v = r .* q ./ (ps .^ 2);
 
-  # Continue argument check
-  k = find (! (n > 0) | ! (n < Inf) | ! (p > 0) | ! (p < 1));
+  ## Continue argument check
+  k = find (! (r > 0) | ! (r < Inf) | ! (ps > 0) | ! (ps < 1));
   if (any (k))
     m(k) = NaN;
     v(k) = NaN;
@@ -106,18 +76,30 @@ function [m, v] = nbinstat (n, p)
 
 endfunction
 
+## Input validation tests
+%!error<nbinstat: function called with too few input arguments.> nbinstat ()
+%!error<nbinstat: function called with too few input arguments.> nbinstat (1)
+%!error<nbinstat: R and PS must be numeric.> nbinstat ({}, 2)
+%!error<nbinstat: R and PS must be numeric.> nbinstat (1, "")
+%!error<nbinstat: R and PS must not be complex.> nbinstat (i, 2)
+%!error<nbinstat: R and PS must not be complex.> nbinstat (1, i)
+%!error<nbinstat: R and PS must be of common size or scalars.> ...
+%! nbinstat (ones (3), ones (2))
+%!error<nbinstat: R and PS must be of common size or scalars.> ...
+%! nbinstat (ones (2), ones (3))
+
+## Output validation tests
 %!test
-%! n = 1:4;
-%! p = 0.2:0.2:0.8;
-%! [m, v] = nbinstat (n, p);
+%! r = 1:4;
+%! ps = 0.2:0.2:0.8;
+%! [m, v] = nbinstat (r, ps);
 %! expected_m = [ 4.0000, 3.0000, 2.0000, 1.0000];
 %! expected_v = [20.0000, 7.5000, 3.3333, 1.2500];
 %! assert (m, expected_m, 0.001);
 %! assert (v, expected_v, 0.001);
-
 %!test
-%! n = 1:4;
-%! [m, v] = nbinstat (n, 0.5);
+%! r = 1:4;
+%! [m, v] = nbinstat (r, 0.5);
 %! expected_m = [1, 2, 3, 4];
 %! expected_v = [2, 4, 6, 8];
 %! assert (m, expected_m, 0.001);
