@@ -92,7 +92,7 @@ endfunction
 %!assert (riceinv (p, 1, 2*ones (1,5)), [NaN 0 3.5354 Inf NaN], 1e-4)
 %!assert (riceinv (p, ones (1,5), 2), [NaN 0 3.5354 Inf NaN], 1e-4)
 %!assert (riceinv (p, [1 0 NaN 1 1], 2), [NaN 0 NaN Inf NaN])
-%!assert (riceinv (p, 1, 2*[1 0 NaN 1 1]), [NaN 0 NaN Inf NaN])
+%!assert (riceinv (p, 1, 2*[1 0 NaN 1 1]), [NaN NaN NaN Inf NaN])
 %!assert (riceinv ([p(1:2) NaN p(4:5)], 1, 2), [NaN 0 NaN Inf NaN])
 
 ## Test class of input preserved
