@@ -82,8 +82,8 @@ function p = tcdf (x, df, uflag)
   k = (x == Inf) & (df > 0);
   p(k) = 1;
 
-  ## Find finite values in X where DF > 0
-  k = isfinite (x) & (df > 0);
+  ## Find finite values in X where 0 < DF < Inf
+  k = isfinite (x) & (df > 0) & (df < Inf);
 
   ## Process more efficiently small positive integer DF up to 1e4
   ks = k & (fix (df) == df) & (df <= 1e4);
@@ -100,7 +100,7 @@ function p = tcdf (x, df, uflag)
     endif
   endif
 
-  ## Proccess remaining values for DF (non-integers and > 1e4)
+  ## Proccess remaining values for DF (non-integers and > 1e4) except DF == Inf
   k &= ! ks;
 
   ## Distinguish between small and big abs(x)
@@ -134,6 +134,10 @@ function p = tcdf (x, df, uflag)
   xpos = (x > 0);
   c = (df == 1);
   p(c) = xpos(c) + acot (-x(c)) / pi;
+
+  ## Special case for DF == Inf
+  k = isfinite (x) & (df == Inf);
+  p(k) = normcdf (x(k));
 
   ## Make the result exact for the median
   p(x == 0 & ! is_nan) = 0.5;
