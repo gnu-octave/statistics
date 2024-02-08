@@ -158,6 +158,8 @@ Distribution Fitting
  poisslike
  raylfit
  rayllike
+ ricefit
+ ricelike
  unidfit
  unifit
  wblfit
@@ -182,6 +184,7 @@ Distribution Statistics
  normstat
  poisstat
  raylstat
+ ricestat
  tstat
  unidstat
  unifstat
