@@ -25,10 +25,10 @@
 ## Random arrays from the Rician distribution.
 ##
 ## @code{@var{r} = ricernd (@var{nu}, @var{sigma})} returns an array of random
-## numbers chosen from the Rician distribution with shape parameters @var{nu} and
-## @var{sigma}.  The size of @var{r} is the common size of @var{nu} and @var{sigma}.
-## A scalar input functions as a constant matrix of the same size as the other
-## inputs.
+## numbers chosen from the Rician distribution with shape parameters @var{nu}
+## and @var{sigma}.  The size of @var{r} is the common size of @var{nu} and
+## @var{sigma}.  A scalar input functions as a constant matrix of the same size
+## as the other inputs.
 ##
 ## When called with a single size argument, @code{ricernd} returns a square
 ## matrix with the dimension specified.  When called with more than one scalar

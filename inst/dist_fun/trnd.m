@@ -26,7 +26,7 @@
 ##
 ## Random arrays from the Student's T distribution.
 ##
-## Return a matrix of random samples from the t (Student) distribution with
+## Return a matrix of random samples from the Students's T distribution with
 ## @var{df} degrees of freedom.
 ##
 ## @code{@var{r} = trnd (@var{df})} returns an array of random numbers chosen
