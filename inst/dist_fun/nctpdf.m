@@ -1,4 +1,4 @@
-## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -18,16 +18,16 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{y} =} nctpdf (@var{x}, @var{df}, @var{mu})
 ##
-## Noncentral Τ probability density function (PDF).
+## Noncentral @math{t}-probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## of the noncentral T distribution with @var{df} degrees of freedom and
-## noncentrality parameter @var{mu}.  The size of @var{y} is the common size of
-## @var{x}, @var{df}, and @var{mu}.  A scalar input functions as a constant
-## matrix of the same size as the other inputs.
+## of the noncentral @math{t}-distribution with @var{df} degrees of freedom and
+## noncentrality parameter @var{mu}.  The size of @var{y} is the common size
+## of @var{x}, @var{df}, and @var{mu}.  A scalar input functions as a
+## constant matrix of the same size as the other inputs.
 ##
-## Further information about the noncentral T distribution can be found at
-## @url{https://en.wikipedia.org/wiki/Noncentral_t-distribution}
+## Further information about the noncentral @math{t}-distribution can be found
+## at @url{https://en.wikipedia.org/wiki/Noncentral_t-distribution}
 ##
 ## @seealso{nctcdf, nctinv, nctrnd, nctstat, tpdf}
 ## @end deftypefn

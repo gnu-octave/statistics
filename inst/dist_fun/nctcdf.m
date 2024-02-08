@@ -1,4 +1,4 @@
-## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -19,20 +19,20 @@
 ## @deftypefn  {statistics} {@var{p} =} nctcdf (@var{x}, @var{df}, @var{mu})
 ## @deftypefnx {statistics} {@var{p} =} nctcdf (@var{x}, @var{df}, @var{mu}, @qcode{"upper"})
 ##
-## Noncentral T cumulative distribution function (CDF).
+## Noncentral @math{t}-cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) of the noncentral T distribution with @var{df} degrees of freedom and
-## noncentrality parameter @var{mu}.  The size of @var{p} is the common size of
-## @var{x}, @var{df}, and @var{mu}.  A scalar input functions as a constant
-## matrix of the same size as the other inputs.
+## (CDF) of the noncentral @math{t}-distribution with @var{df} degrees of
+## freedom and noncentrality parameter @var{mu}.  The size of @var{p} is the
+## common size of @var{x}, @var{df}, and @var{mu}.  A scalar input functions
+## as a constant matrix of the same size as the other inputs.
 ##
-## @code{@var{p} = nctcdf (@var{x}, @var{df}, @var{mu}, "upper")} computes the
-## upper tail probability of the noncentral F distribution with parameters
-## @var{df} and @var{mu}, at the values in @var{x}.
+## @code{@var{p} = nctcdf (@var{x}, @var{df}, @var{mu}, "upper")} computes
+## the upper tail probability of the noncentral @math{t}-distribution with
+## parameters @var{df} and @var{mu}, at the values in @var{x}.
 ##
-## Further information about the noncentral T distribution can be found at
-## @url{https://en.wikipedia.org/wiki/Noncentral_t-distribution}
+## Further information about the noncentral @math{t}-distribution can be found
+## at @url{https://en.wikipedia.org/wiki/Noncentral_t-distribution}
 ##
 ## @seealso{nctinv, nctpdf, nctrnd, nctstat, tcdf}
 ## @end deftypefn

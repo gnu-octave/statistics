@@ -1,4 +1,4 @@
-## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -20,17 +20,17 @@
 ## @deftypefnx {statistics} {@var{r} =} nctrnd (@var{df}, @var{mu}, @var{rows}, @var{cols}, @dots{})
 ## @deftypefnx {statistics} {@var{r} =} nctrnd (@var{df}, @var{mu}, [@var{sz}])
 ##
-## Random arrays from the noncentral T distribution.
+## Random arrays from the noncentral @math{t}-distribution.
 ##
 ## @code{@var{x} = nctrnd (@var{p}, @var{df}, @var{mu})} returns an array of
-## random numbers chosen from the noncentral T distribution with @var{df}
-## degrees of freedom and noncentrality parameter @var{mu}.  The size of @var{r}
-## is the common size of @var{df} and @var{mu}.  A scalar input functions as a
-## constant matrix of the same size as the other input.
+## random numbers chosen from the noncentral @math{t}-distribution with @var{df}
+## degrees of freedom and noncentrality parameter @var{mu}.  The size of
+## @var{r} is the common size of @var{df} and @var{mu}.  A scalar input
+## functions as a constant matrix of the same size as the other input.
 ##
-## @code{nctrnd} generates values using the definition of a noncentral T random
-## variable, as the ratio of a normal with non-zero mean and the sqrt of a
-## chi-square.
+## @code{nctrnd} generates values using the definition of a noncentral @math{t}
+## random variable, as the ratio of a normal distribution with non-zero mean and
+## the sqrt of a chi-squared distribution.
 ##
 ## When called with a single size argument, @code{nctrnd} returns a square
 ## matrix with the dimension specified.  When called with more than one scalar
@@ -38,8 +38,8 @@
 ## and any further arguments specify additional matrix dimensions.  The size may
 ## also be specified with a row vector of dimensions, @var{sz}.
 ##
-## Further information about the noncentral T distribution can be found at
-## @url{https://en.wikipedia.org/wiki/Noncentral_t-distribution}
+## Further information about the noncentral @math{t}-distribution can be found
+## at @url{https://en.wikipedia.org/wiki/Noncentral_t-distribution}
 ##
 ## @seealso{nctcdf, nctinv, nctpdf, nctstat, trnd, normrnd, chi2rnd}
 ## @end deftypefn

@@ -1,4 +1,4 @@
-## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -18,18 +18,18 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{x} =} ncx2inv (@var{p}, @var{df}, @var{mu})
 ##
-## Inverse of the non-central T cumulative distribution function (iCDF).
+## Inverse of the non-central @math{t}-cumulative distribution function (iCDF).
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
-## the noncentral T distribution with @var{df} degrees of freedom and
-## noncentrality parameter @var{mu}.  The size of @var{x} is the common size of
-## @var{p}, @var{df}, and @var{mu}.  A scalar input functions as a constant
-## matrix of the same size as the other inputs.
+## the noncentral @math{t}-distribution with @var{df} degrees of freedom and
+## noncentrality parameter @var{mu}.  The size of @var{x} is the common size
+## of @var{p}, @var{df}, and @var{mu}.  A scalar input functions as a
+## constant matrix of the same size as the other inputs.
 ##
 ## @code{nctinv} uses Newton's method to converge to the solution.
 ##
-## Further information about the noncentral T distribution can be found at
-## @url{https://en.wikipedia.org/wiki/Noncentral_t-distribution}
+## Further information about the noncentral @math{t}-distribution can be found
+## at @url{https://en.wikipedia.org/wiki/Noncentral_t-distribution}
 ##
 ## @seealso{nctcdf, nctpdf, nctrnd, nctstat, tinv}
 ## @end deftypefn
