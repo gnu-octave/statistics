@@ -1,4 +1,5 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
+## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,82 +17,66 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {[@var{m}, @var{v}]} = tstat (@var{n})
+## @deftypefn  {statistics} {[@var{m}, @var{v}] =} tstat (@var{df})
 ##
-## Compute statistics of the @math{t} distribution.
+## Compute statistics for the Student's T distribution.
 ##
-## @subheading Arguments
+## @code{[@var{m}, @var{v}] = tstat (@var{df})} returns the mean and variance of
+## the Student's T distribution with @var{df} degrees of freedom.
 ##
-## @itemize @bullet
-## @item
-## @var{n} is the parameter of the t (Student) distribution. The elements
-## of @var{n} must be positive
-## @end itemize
+## The size of @var{m} (mean) and @var{v} (variance) is the same size of the
+## input argument.
 ##
-## @subheading Return values
+## Further information about the Student's T distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Student%27s_t-distribution}
 ##
-## @itemize @bullet
-## @item
-## @var{m} is the mean of the t (Student) distribution
-##
-## @item
-## @var{v} is the variance of the t (Student) distribution
-## @end itemize
-##
-## @subheading Example
-##
-## @example
-## @group
-## n = 3:8;
-## [m, v] = tstat (n)
-## @end group
-## @end example
-##
-## @subheading References
-##
-## @enumerate
-## @item
-## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
-## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
-## 2001.
-##
-## @item
-## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
-## Processes}. McGraw-Hill, New York, second edition, 1984.
-## @end enumerate
+## @seealso{tcdf, tinv, tpdf, trnd}
 ## @end deftypefn
 
-function [m, v] = tstat (n)
+function [m, v] = tstat (df)
 
-  ## Check arguments
-  if (nargin != 1)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 1)
+    error ("tstat: function called with too few input arguments.");
   endif
 
-  if (! isempty (n) && ! ismatrix (n))
-    error ("tstat: n must be a numeric matrix");
+  ## Check for DF being numeric
+  if (! isnumeric (df))
+    error ("tstat: DF must be numeric.");
+  endif
+
+  ## Check for DF being real
+  if (iscomplex (df))
+    error ("tstat: DF must not be complex.");
   endif
 
   ## Calculate moments
-  m = zeros (size (n));
-  v = n ./ (n - 2);
+  m = zeros (size (df));
+  v = df ./ (df - 2);
 
   ## Continue argument check
-  k = find (! (n > 1) | ! (n < Inf));
+  k = find (! (df > 1) | ! (df < Inf));
   if (any (k))
     m(k) = NaN;
     v(k) = NaN;
   endif
-  k = find (! (n > 2) & (n < Inf));
+  k = find (! (df > 2) & (df < Inf));
   if (any (k))
     v(k) = Inf;
   endif
 
 endfunction
 
+## Input validation tests
+%!error<tstat: function called with too few input arguments.> tstat ()
+%!error<tstat: DF must be numeric.> tstat ({})
+%!error<tstat: DF must be numeric.> tstat ("")
+%!error<tstat: DF must not be complex.> tstat (i)
+
+## Output validation tests
 %!test
-%! n = 3:8;
-%! [m, v] = tstat (n);
+%! df = 3:8;
+%! [m, v] = tstat (df);
 %! expected_m = [0, 0, 0, 0, 0, 0];
 %! expected_v = [3.0000, 2.0000, 1.6667, 1.5000, 1.4000, 1.3333];
 %! assert (m, expected_m);
