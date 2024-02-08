@@ -60,7 +60,7 @@ function x = riceinv (p, nu, sigma)
     x = zeros (size (p));
   endif
 
-  k = nu < 0 | sigma < 0 | p < 0 | p > 1 | ...
+  k = nu < 0 | sigma <= 0 | p < 0 | p > 1 | ...
                isnan (p) | isnan (nu) | isnan (sigma);
   x(k) = NaN;
 

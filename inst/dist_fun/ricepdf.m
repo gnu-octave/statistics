@@ -60,7 +60,7 @@ function y = ricepdf (x, nu, sigma)
     y = zeros (size (x));
   endif
 
-  k = nu < 0 | sigma < 0 | x < 0 | isnan (x) | isnan (nu) | isnan (sigma);
+  k = nu < 0 | sigma <= 0 | x < 0 | isnan (x) | isnan (nu) | isnan (sigma);
   y(k) = NaN;
 
   k = ! k;

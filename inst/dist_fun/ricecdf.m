@@ -74,13 +74,13 @@ function p = ricecdf (x, nu, sigma, uflag)
   endif
 
   ## Force 1 for upper flag and X <= 0
-  k0 = nu >= 0 & sigma >= 0 & x < 0;
+  k0 = nu >= 0 & sigma > 0 & x < 0;
   if (uflag && any (k0(:)))
     p(k0) = 1;
   end
 
   ## Calculate Rayleigh CDF for valid parameter and data range
-  k = nu >= 0 & sigma >= 0 & x >= 0;
+  k = nu >= 0 & sigma > 0 & x >= 0;
   if (any (k(:)))
     if (uflag)
         p(k) = marcumQ1 (nu(k) ./ sigma(k), x(k) ./ sigma(k));
