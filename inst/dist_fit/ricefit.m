@@ -210,7 +210,7 @@ endfunction
 %! set (h(1), "facecolor", "c");
 %! set (h(2), "facecolor", "g");
 %! set (h(3), "facecolor", "r");
-%! ylim ([0, 0.6]);
+%! ylim ([0, 0.7]);
 %! xlim ([0, 12]);
 %! hold on
 %!
