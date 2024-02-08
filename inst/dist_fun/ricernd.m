@@ -96,11 +96,11 @@ function r = ricernd (nu, sigma, varargin)
     cls = "double";
   endif
 
-  ## Return NaNs for out of range values of DF and LAMBDA
+  ## Return NaNs for out of range values of NU and SIGMA
   nu(nu < 0) = NaN;
   sigma(sigma <= 0) = NaN;
 
-  ## Force DF and LAMBDA into the same size as SZ (if necessary)
+  ## Force NU and SIGMA into the same size as SZ (if necessary)
   if (isscalar (nu))
     nu = repmat (nu, sz);
   endif
@@ -109,9 +109,7 @@ function r = ricernd (nu, sigma, varargin)
   endif
 
   ## Generate random sample from the Rician distribution
-  r = randp ((nu./sigma).^2 ./ 2);
-  r(r > 0) = 2 * randg (r(r > 0)) + 2 * randg (1);
-  r = sigma .* sqrt (r);
+  r = sigma .* sqrt (ncx2rnd (2, (nu ./ sigma) .^ 2, sz));
   ## Cast to appropriate class
   r = cast (r, cls);
 
