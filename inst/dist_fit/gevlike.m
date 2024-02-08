@@ -338,38 +338,32 @@ endfunction
 %! k = 0.2;
 %! sigma = 0.3;
 %! mu = 0.5;
-%! [L, D, C] = gevlike ([k sigma mu], x);
+%! [L, C] = gevlike ([k sigma mu], x);
 %! expected_L = 0.75942;
-%! expected_D = [0.53150; -0.67790; -2.40674];
 %! expected_C = [-0.12547 1.77884 1.06731; 1.77884 16.40761 8.48877; 1.06731 8.48877 0.27979];
 %! assert (L, expected_L, 0.001);
-%! assert (D, expected_D, 0.001);
 %! assert (C, inv (expected_C), 0.001);
 %!test
 %! x = 1;
 %! k = 0;
 %! sigma = 0.3;
 %! mu = 0.5;
-%! [L, D, C] = gevlike ([k sigma mu], x);
+%! [L, C] = gevlike ([k sigma mu], x);
 %! expected_L = 0.65157;
-%! expected_D = [0.54011; -1.17291; -2.70375];
 %! expected_C = [0.090036 3.41229 2.047337; 3.412229 24.760027 12.510190; 2.047337 12.510190 2.098618];
 %! assert (L, expected_L, 0.001);
-%! assert (D, expected_D, 0.001);
 %! assert (C, inv (expected_C), 0.001);
 %!test
 %! x = -5:-1;
 %! k = -0.2;
 %! sigma = 0.3;
 %! mu = 0.5;
-%! [L, D, C] = gevlike ([k sigma mu], x);
+%! [L, C] = gevlike ([k sigma mu], x);
 %! expected_L = 3786.4;
-%! expected_D = [6.4511e+04; -4.8194e+04; 3.0633e+03];
 %! expected_C = [1.6802e-07, 4.6110e-06, 8.7297e-05; ...
 %!               4.6110e-06, 7.5693e-06, 1.2034e-05; ...
 %!               8.7297e-05, 1.2034e-05, -0.0019125];
 %! assert (L, expected_L, -0.001);
-%! assert (D, expected_D, -0.001);
 %! assert (C, expected_C, -0.001);
 
 ## Test input validation
