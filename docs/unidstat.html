@@ -71,57 +71,33 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] = <b>unidstat</b><i> (<var>n</var>)</i></dt>
+<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] = <b>unidstat</b><i> (<var>df</var>)</i></dt>
 </dl>
 
-<p> Compute statistics of the discrete uniform distribution.
+<p> Compute statistics of the discrete uniform cumulative distribution.
 </p>
 <div class="ms-5">
- <a name="Arguments"></a>
-<h3 class="subheading">Arguments</h3>
-
- <ul>
-<li>
- <var>n</var> is the parameter of the discrete uniform distribution. The elements
- of <var>n</var> must be positive natural numbers
- </li></ul>
-
- <a name="Return-values"></a>
-<h3 class="subheading">Return values</h3>
-
- <ul>
-<li>
- <var>m</var> is the mean of the discrete uniform distribution
-
- </li><li>
- <var>v</var> is the variance of the discrete uniform distribution
- </li></ul>
-
- <a name="Example"></a>
-<h3 class="subheading">Example</h3>
-
- <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> n = 1:6;
- [m, v] = unidstat (n)
- </pre><pre class="example"> </pre></td></tr></table>
-
- <a name="References"></a>
-<h3 class="subheading">References</h3>
-
- <ol>
-<li>
- Wendy L. Martinez and Angel R. Martinez. <cite>Computational Statistics
- Handbook with MATLAB</cite>. Appendix E, pages 547-557, Chapman &amp; Hall/CRC,
- 2001.
-
- </li><li>
- Athanasios Papoulis. <cite>Probability, Random Variables, and Stochastic
- Processes</cite>. McGraw-Hill, New York, second edition, 1984.
- </li></ol>
-
+<p> <code>[<var>m</var>, <var>v</var>] = unidstat (<var>df</var>)</code> returns the mean and variance
+ of the discrete uniform cumulative distribution with parameter <var>N</var>, which
+ corresponds to the maximum observable value and must be a positive natural
+ number.
+</p>
+<p> The size of <var>m</var> (mean) and <var>v</var> (variance) is the same size of the
+ input argument.
+</p>
+<p> Further information about the discrete uniform distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Discrete_uniform_distribution">https://en.wikipedia.org/wiki/Discrete_uniform_distribution</a>
+</p>
+<p> <strong>See also: </strong>
+  <a href="unidcdf.html">unidcdf</a>, 
+  <a href="unidinv.html">unidinv</a>, 
+  <a href="unidpdf.html">unidpdf</a>, 
+  <a href="unidrnd.html">unidrnd</a>, 
+  <a href="unidfit.html">unidfit</a>
+</p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_stat/unidstat.m">unidstat</a>
 </div>
-
 
         </div>
       </div>

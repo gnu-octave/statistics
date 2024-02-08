@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: poisstat</title>
+    <title>Statistics: ricestat</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -64,38 +64,40 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>poisstat</code></b>
+              Function&nbsp;Reference: <b><code>ricestat</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] = <b>poisstat</b><i> (<var>lambda</var>)</i></dt>
+<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] = <b>ricestat</b><i> (<var>nu</var>, <var>sigma</var>)</i></dt>
 </dl>
 
-<p> Compute statistics of the Poisson distribution.
+<p> Compute statistics of the Rician distribution.
 </p>
 <div class="ms-5">
-<p> <code>[<var>m</var>, <var>v</var>] = poisstat (<var>lambda</var>)</code> returns the mean and
- variance of the Poisson distribution with rate parameter <var>lambda</var>.
+<p> <code>[<var>m</var>, <var>v</var>] = ricestat (<var>nu</var>, <var>sigma</var>)</code> returns the mean
+ and variance of the Rician distribution with non-centrality (distance)
+ parameter <var>nu</var> and scale parameter <var>sigma</var>.
 </p>
-<p> The size of <var>m</var> (mean) and <var>v</var> (variance) is the same size of the
- input argument.
+<p> The size of <var>m</var> (mean) and <var>v</var> (variance) is the common size of the
+ input arguments.  A scalar input functions as a constant matrix of the
+ same size as the other inputs.
 </p>
-<p> Further information about the Poisson distribution can be found at
- <a href="https://en.wikipedia.org/wiki/Poisson_distribution">https://en.wikipedia.org/wiki/Poisson_distribution</a>
+<p> Further information about the Rician distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Rice_distribution">https://en.wikipedia.org/wiki/Rice_distribution</a>
 </p>
 <p> <strong>See also: </strong>
-  <a href="poisscdf.html">poisscdf</a>, 
-  <a href="poissinv.html">poissinv</a>, 
-  <a href="poisspdf.html">poisspdf</a>, 
-  <a href="poissrnd.html">poissrnd</a>, 
-  <a href="poissfit.html">poissfit</a>, 
-  <a href="poisslike.html">poisslike</a>
+  <a href="ricecdf.html">ricecdf</a>, 
+  <a href="riceinv.html">riceinv</a>, 
+  <a href="ricepdf.html">ricepdf</a>, 
+  <a href="ricernd.html">ricernd</a>, 
+  <a href="ricefit.html">ricefit</a>, 
+  <a href="ricelike.html">ricelike</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_stat/poisstat.m">poisstat</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_stat/ricestat.m">ricestat</a>
 </div>
 
         </div>

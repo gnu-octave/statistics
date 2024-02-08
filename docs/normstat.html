@@ -71,65 +71,34 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>mn</var>, <var>v</var>] = <b>normstat</b><i> (<var>m</var>, <var>s</var>)</i></dt>
+<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] = <b>normstat</b><i> (<var>mu</var>, <var>sigma</var>)</i></dt>
 </dl>
 
 <p> Compute statistics of the normal distribution.
 </p>
 <div class="ms-5">
- <a name="Arguments"></a>
-<h3 class="subheading">Arguments</h3>
-
- <ul>
-<li>
- <var>m</var> is the mean of the normal distribution
-
- </li><li>
- <var>s</var> is the standard deviation of the normal distribution.
- <var>s</var> must be positive
- </li></ul>
-<p> <var>m</var> and <var>s</var> must be of common size or one of them must be
- scalar
+<p> <code>[<var>m</var>, <var>v</var>] = normstat (<var>mu</var>, <var>sigma</var>)</code> returns the mean
+ and variance of the normal distribution with non-centrality (distance)
+ parameter <var>mu</var> and scale parameter <var>sigma</var>.
 </p>
- <a name="Return-values"></a>
-<h3 class="subheading">Return values</h3>
-
- <ul>
-<li>
- <var>mn</var> is the mean of the normal distribution
-
- </li><li>
- <var>v</var> is the variance of the normal distribution
- </li></ul>
-
- <a name="Examples"></a>
-<h3 class="subheading">Examples</h3>
-
- <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> m = 1:6;
- s = 0:0.2:1;
- [mn, v] = normstat (m, s)
- </pre><pre class="example">
- </pre><pre class="example"> [mn, v] = normstat (0, s)
- </pre><pre class="example"> </pre></td></tr></table>
-
- <a name="References"></a>
-<h3 class="subheading">References</h3>
-
- <ol>
-<li>
- Wendy L. Martinez and Angel R. Martinez. <cite>Computational Statistics
- Handbook with MATLAB</cite>. Appendix E, pages 547-557, Chapman &amp; Hall/CRC,
- 2001.
-
- </li><li>
- Athanasios Papoulis. <cite>Probability, Random Variables, and Stochastic
- Processes</cite>. McGraw-Hill, New York, second edition, 1984.
- </li></ol>
-
+<p> The size of <var>m</var> (mean) and <var>v</var> (variance) is the common size of the
+ input arguments.  A scalar input functions as a constant matrix of the
+ same size as the other inputs.
+</p>
+<p> Further information about the normal distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Normal_distribution">https://en.wikipedia.org/wiki/Normal_distribution</a>
+</p>
+<p> <strong>See also: </strong>
+  <a href="norminv.html">norminv</a>, 
+  <a href="norminv.html">norminv</a>, 
+  <a href="normpdf.html">normpdf</a>, 
+  <a href="normrnd.html">normrnd</a>, 
+  <a href="normfit.html">normfit</a>, 
+  <a href="normlike.html">normlike</a>
+</p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_stat/normstat.m">normstat</a>
 </div>
-
 
         </div>
       </div>

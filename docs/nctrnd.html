@@ -76,18 +76,18 @@
 <dt><u>statistics:</u> <var>r</var> = <b>nctrnd</b><i> (<var>df</var>, <var>mu</var>, [<var>sz</var>])</i></dt>
 </dl>
 
-<p> Random arrays from the noncentral T distribution.
+<p> Random arrays from the noncentral <math>t</math>-distribution.
 </p>
 <div class="ms-5">
 <p> <code><var>x</var> = nctrnd (<var>p</var>, <var>df</var>, <var>mu</var>)</code> returns an array of
- random numbers chosen from the noncentral T distribution with <var>df</var>
- degrees of freedom and noncentrality parameter <var>mu</var>.  The size of <var>r</var>
- is the common size of <var>df</var> and <var>mu</var>.  A scalar input functions as a
- constant matrix of the same size as the other input.
+ random numbers chosen from the noncentral <math>t</math>-distribution with <var>df</var>
+ degrees of freedom and noncentrality parameter <var>mu</var>.  The size of
+ <var>r</var> is the common size of <var>df</var> and <var>mu</var>.  A scalar input
+ functions as a constant matrix of the same size as the other input.
 </p>
-<p> <code>nctrnd</code> generates values using the definition of a noncentral T random
- variable, as the ratio of a normal with non-zero mean and the sqrt of a
- chi-square.
+<p> <code>nctrnd</code> generates values using the definition of a noncentral <math>t</math>
+ random variable, as the ratio of a normal distribution with non-zero mean and
+ the sqrt of a chi-squared distribution.
 </p>
 <p> When called with a single size argument, <code>nctrnd</code> returns a square
  matrix with the dimension specified.  When called with more than one scalar
@@ -95,8 +95,8 @@
  and any further arguments specify additional matrix dimensions.  The size may
  also be specified with a row vector of dimensions, <var>sz</var>.
 </p>
-<p> Further information about the noncentral T distribution can be found at
- <a href="https://en.wikipedia.org/wiki/Noncentral_t-distribution">https://en.wikipedia.org/wiki/Noncentral_t-distribution</a>
+<p> Further information about the noncentral <math>t</math>-distribution can be found
+ at <a href="https://en.wikipedia.org/wiki/Noncentral_t-distribution">https://en.wikipedia.org/wiki/Noncentral_t-distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="nctcdf.html">nctcdf</a>, 

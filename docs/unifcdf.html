@@ -79,10 +79,11 @@
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the cumulative distribution function
- (CDF) of the continuous uniform distribution on the interval <code>[<var>a</var>,
- <var>b</var>]</code>.  The size of <var>p</var> is the common size of <var>x</var>, <var>a</var>, and
- <var>b</var>.  A scalar input functions as a constant matrix of the same size as
- the other inputs.
+ (CDF) of the continuous uniform distribution with parameters <var>a</var> and
+ <var>b</var>, which define the lower and upper bounds of the interval
+ <code>[<var>a</var>, <var>b</var>]</code>.  The size of <var>p</var> is the common size of
+ <var>x</var>, <var>a</var>, and <var>b</var>.  A scalar input functions as a constant matrix
+ of the same size as the other inputs.
 </p>
 <p> <code>[&hellip;] = unifcdf (<var>x</var>, <var>a</var>, <var>b</var>, &quot;upper&quot;)</code> computes the
  upper tail probability of the continuous uniform distribution with parameters

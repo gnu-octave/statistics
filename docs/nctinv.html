@@ -74,19 +74,19 @@
 <dt><u>statistics:</u> <var>x</var> = <b>ncx2inv</b><i> (<var>p</var>, <var>df</var>, <var>mu</var>)</i></dt>
 </dl>
 
-<p> Inverse of the non-central T cumulative distribution function (iCDF).
+<p> Inverse of the non-central <math>t</math>-cumulative distribution function (iCDF).
 </p>
 <div class="ms-5">
 <p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF) of
- the noncentral T distribution with <var>df</var> degrees of freedom and
- noncentrality parameter <var>mu</var>.  The size of <var>x</var> is the common size of
- <var>p</var>, <var>df</var>, and <var>mu</var>.  A scalar input functions as a constant
- matrix of the same size as the other inputs.
+ the noncentral <math>t</math>-distribution with <var>df</var> degrees of freedom and
+ noncentrality parameter <var>mu</var>.  The size of <var>x</var> is the common size
+ of <var>p</var>, <var>df</var>, and <var>mu</var>.  A scalar input functions as a
+ constant matrix of the same size as the other inputs.
 </p>
 <p> <code>nctinv</code> uses Newton&rsquo;s method to converge to the solution.
 </p>
-<p> Further information about the noncentral T distribution can be found at
- <a href="https://en.wikipedia.org/wiki/Noncentral_t-distribution">https://en.wikipedia.org/wiki/Noncentral_t-distribution</a>
+<p> Further information about the noncentral <math>t</math>-distribution can be found
+ at <a href="https://en.wikipedia.org/wiki/Noncentral_t-distribution">https://en.wikipedia.org/wiki/Noncentral_t-distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="nctcdf.html">nctcdf</a>, 

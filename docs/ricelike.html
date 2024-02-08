@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: poisstat</title>
+    <title>Statistics: ricelike</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -35,9 +35,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Distribution Statistics">
+                  <a class="nav-link" href="index.html#Distribution Fitting">
                     <i class="fas fa-list-alt"></i>
-                    Distribution Statistics
+                    Distribution Fitting
                   </a>
                 </li>
                 <li class="nav-item">
@@ -64,38 +64,57 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>poisstat</code></b>
+              Function&nbsp;Reference: <b><code>ricelike</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] = <b>poisstat</b><i> (<var>lambda</var>)</i></dt>
+<dt><u>statistics:</u> <var>nlogL</var> = <b>ricelike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>nlogL</var>, <var>acov</var>] = <b>ricelike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>ricelike</b><i> (<var>params</var>, <var>x</var>, <var>censor</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>ricelike</b><i> (<var>params</var>, <var>x</var>, <var>censor</var>, <var>freq</var>)</i></dt>
 </dl>
 
-<p> Compute statistics of the Poisson distribution.
+<p> Negative log-likelihood for the Rician distribution.
 </p>
 <div class="ms-5">
-<p> <code>[<var>m</var>, <var>v</var>] = poisstat (<var>lambda</var>)</code> returns the mean and
- variance of the Poisson distribution with rate parameter <var>lambda</var>.
+<p> <code><var>nlogL</var> = ricelike (<var>params</var>, <var>x</var>)</code> returns the negative
+ log likelihood of the data in <var>x</var> corresponding to the Rician
+ distribution with (1) non-centrality (distance) parameter <var>nu</var> and (2)
+ scale parameter <var>sigma</var> given in the two-element vector <var>params</var>.
 </p>
-<p> The size of <var>m</var> (mean) and <var>v</var> (variance) is the same size of the
- input argument.
+<p> <code>[<var>nlogL</var>, <var>acov</var>] = ricelike (<var>params</var>, <var>x</var>)</code> also
+ returns the inverse of Fisher&rsquo;s information matrix, <var>acov</var>.  If the input
+ parameter values in <var>params</var> are the maximum likelihood estimates, the
+ diagonal elements of <var>params</var> are their asymptotic variances.
 </p>
-<p> Further information about the Poisson distribution can be found at
- <a href="https://en.wikipedia.org/wiki/Poisson_distribution">https://en.wikipedia.org/wiki/Poisson_distribution</a>
+<p> <code>[&hellip;] = ricelike (<var>params</var>, <var>x</var>, <var>censor</var>)</code> accepts a
+ boolean vector, <var>censor</var>, of the same size as <var>x</var> with <code>1</code>s for
+ observations that are right-censored and <code>0</code>s for observations that are
+ observed exactly.  By default, or if left empty,
+ <code><var>censor</var> = zeros (size (<var>x</var>))</code>.
+</p>
+<p> <code>[&hellip;] = ricelike (<var>params</var>, <var>x</var>, <var>censor</var>, <var>freq</var>)</code>
+ accepts a frequency vector, <var>freq</var>, of the same size as <var>x</var>.
+ <var>freq</var> typically contains integer frequencies for the corresponding
+ elements in <var>x</var>, but it can contain any non-integer non-negative values.
+ By default, or if left empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
+</p>
+<p> Further information about the Rician distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Rice_distribution">https://en.wikipedia.org/wiki/Rice_distribution</a>
 </p>
 <p> <strong>See also: </strong>
-  <a href="poisscdf.html">poisscdf</a>, 
-  <a href="poissinv.html">poissinv</a>, 
-  <a href="poisspdf.html">poisspdf</a>, 
-  <a href="poissrnd.html">poissrnd</a>, 
-  <a href="poissfit.html">poissfit</a>, 
-  <a href="poisslike.html">poisslike</a>
+  <a href="ricecdf.html">ricecdf</a>, 
+  <a href="riceinv.html">riceinv</a>, 
+  <a href="ricepdf.html">ricepdf</a>, 
+  <a href="ricernd.html">ricernd</a>, 
+  <a href="ricefit.html">ricefit</a>, 
+  <a href="ricestat.html">ricestat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_stat/poisstat.m">poisstat</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/ricelike.m">ricelike</a>
 </div>
 
         </div>

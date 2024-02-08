@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: poisstat</title>
+    <title>Statistics: tlsrnd</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -35,9 +35,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Distribution Statistics">
+                  <a class="nav-link" href="index.html#Distributions">
                     <i class="fas fa-list-alt"></i>
-                    Distribution Statistics
+                    Distributions
                   </a>
                 </li>
                 <li class="nav-item">
@@ -64,38 +64,52 @@
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
               <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>poisstat</code></b>
+              Function&nbsp;Reference: <b><code>tlsrnd</code></b>
               </h3>
             </div>
           </div>
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] = <b>poisstat</b><i> (<var>lambda</var>)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>tlsrnd</b><i> (<var>mu</var>, <var>sigma</var>, <var>df</var>)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>tlsrnd</b><i> (<var>mu</var>, <var>sigma</var>, <var>df</var>, <var>rows</var>)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>tlsrnd</b><i> (<var>mu</var>, <var>sigma</var>, <var>df</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>tlsrnd</b><i> (<var>mu</var>, <var>sigma</var>, <var>df</var>, [<var>sz</var>])</i></dt>
 </dl>
 
-<p> Compute statistics of the Poisson distribution.
+<p> Random arrays from the location-scale Student&rsquo;s T distribution.
 </p>
 <div class="ms-5">
-<p> <code>[<var>m</var>, <var>v</var>] = poisstat (<var>lambda</var>)</code> returns the mean and
- variance of the Poisson distribution with rate parameter <var>lambda</var>.
+<p> Return a matrix of random samples from the location-scale Student&rsquo;s T
+ distribution with location parameter <var>mu</var>, scale parameter <var>sigma</var>,
+ and <var>df</var> degrees of freedom.
 </p>
-<p> The size of <var>m</var> (mean) and <var>v</var> (variance) is the same size of the
- input argument.
+<p> <code><var>r</var> = tlsrnd (<var>df</var>)</code> returns an array of random numbers chosen
+ from the location-scale Student&rsquo;s T distribution with location parameter
+ <var>mu</var>, scale parameter <var>sigma</var>, and <var>df</var> degrees of freedom.  The
+ size of <var>r</var> is the common size of <var>mu</var>, <var>sigma</var>, and <var>df</var>.  A
+ scalar input functions as a constant matrix of the same size as the other
+ inputs.
 </p>
-<p> Further information about the Poisson distribution can be found at
- <a href="https://en.wikipedia.org/wiki/Poisson_distribution">https://en.wikipedia.org/wiki/Poisson_distribution</a>
+<p> When called with a single size argument, <code>tlsrnd</code> returns a square
+ matrix with the dimension specified.  When called with more than one scalar
+ argument, the first two arguments are taken as the number of rows and columns
+ and any further arguments specify additional matrix dimensions.  The size may
+ also be specified with a row vector of dimensions, <var>sz</var>.
+</p>
+<p> Further information about the location-scale Student&rsquo;s T distribution can be
+ found at <a href="https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution">https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution</a>
 </p>
 <p> <strong>See also: </strong>
-  <a href="poisscdf.html">poisscdf</a>, 
-  <a href="poissinv.html">poissinv</a>, 
-  <a href="poisspdf.html">poisspdf</a>, 
-  <a href="poissrnd.html">poissrnd</a>, 
-  <a href="poissfit.html">poissfit</a>, 
-  <a href="poisslike.html">poisslike</a>
+  <a href="tlscdf.html">tlscdf</a>, 
+  <a href="tlsinv.html">tlsinv</a>, 
+  <a href="tlspdf.html">tlspdf</a>, 
+tlsfit, 
+tlslike, 
+  <a href="tlsstat.html">tlsstat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_stat/poisstat.m">poisstat</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/tlsrnd.m">tlsrnd</a>
 </div>
 
         </div>

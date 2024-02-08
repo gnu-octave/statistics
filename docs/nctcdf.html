@@ -75,21 +75,21 @@
 <dt><u>statistics:</u> <var>p</var> = <b>nctcdf</b><i> (<var>x</var>, <var>df</var>, <var>mu</var>, <code>&quot;upper&quot;</code>)</i></dt>
 </dl>
 
-<p> Noncentral T cumulative distribution function (CDF).
+<p> Noncentral <math>t</math>-cumulative distribution function (CDF).
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the cumulative distribution function
- (CDF) of the noncentral T distribution with <var>df</var> degrees of freedom and
- noncentrality parameter <var>mu</var>.  The size of <var>p</var> is the common size of
- <var>x</var>, <var>df</var>, and <var>mu</var>.  A scalar input functions as a constant
- matrix of the same size as the other inputs.
+ (CDF) of the noncentral <math>t</math>-distribution with <var>df</var> degrees of
+ freedom and noncentrality parameter <var>mu</var>.  The size of <var>p</var> is the
+ common size of <var>x</var>, <var>df</var>, and <var>mu</var>.  A scalar input functions
+ as a constant matrix of the same size as the other inputs.
 </p>
-<p> <code><var>p</var> = nctcdf (<var>x</var>, <var>df</var>, <var>mu</var>, &quot;upper&quot;)</code> computes the
- upper tail probability of the noncentral F distribution with parameters
- <var>df</var> and <var>mu</var>, at the values in <var>x</var>.
+<p> <code><var>p</var> = nctcdf (<var>x</var>, <var>df</var>, <var>mu</var>, &quot;upper&quot;)</code> computes
+ the upper tail probability of the noncentral <math>t</math>-distribution with
+ parameters <var>df</var> and <var>mu</var>, at the values in <var>x</var>.
 </p>
-<p> Further information about the noncentral T distribution can be found at
- <a href="https://en.wikipedia.org/wiki/Noncentral_t-distribution">https://en.wikipedia.org/wiki/Noncentral_t-distribution</a>
+<p> Further information about the noncentral <math>t</math>-distribution can be found
+ at <a href="https://en.wikipedia.org/wiki/Noncentral_t-distribution">https://en.wikipedia.org/wiki/Noncentral_t-distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="nctinv.html">nctinv</a>, 

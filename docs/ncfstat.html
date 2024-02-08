@@ -71,25 +71,30 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] = <b>ncfstat</b><i> (<var>df1</var>, <var>df1</var>, <var>delta</var>)</i></dt>
+<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] = <b>ncfstat</b><i> (<var>df1</var>, <var>df1</var>, <var>lambda</var>)</i></dt>
 </dl>
 
-<p> Compute statistics for the noncentral <math>F</math> distribution.
+<p> Compute statistics for the noncentral <math>F</math>-distribution.
 </p>
 <div class="ms-5">
-<p> <code>[<var>m</var>, <var>v</var>] = ncfstat (<var>df1</var>, <var>df1</var>, <var>delta</var>)</code>
- returns the mean and variance of the noncentral F distribution with <var>df1</var>
- and <var>df2</var> degrees of freedom and noncentrality parameter <var>delta</var>.
+<p> <code>[<var>m</var>, <var>v</var>] = ncfstat (<var>df1</var>, <var>df1</var>, <var>lambda</var>)</code>
+ returns the mean and variance of the noncentral <math>F</math>-distribution with
+ <var>df1</var> and <var>df2</var> degrees of freedom and noncentrality parameter
+ <var>lambda</var>.
 </p>
-<p> The size of <var>m</var> and <var>v</var> is the common size of the input arguments.
- Scalar input arguments <var>df1</var>, <var>df2</var>, and <var>delta</var> are regarded as
- constant matrices of the same size as the other input.
+<p> The size of <var>m</var> (mean) and <var>v</var> (variance) is the common size of the
+ input arguments.  A scalar input functions as a constant matrix of the same
+ size as the other inputs.
+</p>
+<p> Further information about the noncentral <math>F</math>-distribution can be found
+ at <a href="https://en.wikipedia.org/wiki/Noncentral_F-distribution">https://en.wikipedia.org/wiki/Noncentral_F-distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="ncfcdf.html">ncfcdf</a>, 
   <a href="ncfinv.html">ncfinv</a>, 
   <a href="ncfpdf.html">ncfpdf</a>, 
-  <a href="ncfrnd.html">ncfrnd</a>
+  <a href="ncfrnd.html">ncfrnd</a>, 
+  <a href="fstat.html">fstat</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_stat/ncfstat.m">ncfstat</a>

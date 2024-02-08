@@ -71,57 +71,30 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] <b>=</b><i> tstat (<var>n</var>)</i></dt>
+<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] = <b>tstat</b><i> (<var>df</var>)</i></dt>
 </dl>
 
-<p> Compute statistics of the <math>t</math> distribution.
+<p> Compute statistics of the Student&rsquo;s T distribution.
 </p>
 <div class="ms-5">
- <a name="Arguments"></a>
-<h3 class="subheading">Arguments</h3>
-
- <ul>
-<li>
- <var>n</var> is the parameter of the t (Student) distribution. The elements
- of <var>n</var> must be positive
- </li></ul>
-
- <a name="Return-values"></a>
-<h3 class="subheading">Return values</h3>
-
- <ul>
-<li>
- <var>m</var> is the mean of the t (Student) distribution
-
- </li><li>
- <var>v</var> is the variance of the t (Student) distribution
- </li></ul>
-
- <a name="Example"></a>
-<h3 class="subheading">Example</h3>
-
- <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> n = 3:8;
- [m, v] = tstat (n)
- </pre><pre class="example"> </pre></td></tr></table>
-
- <a name="References"></a>
-<h3 class="subheading">References</h3>
-
- <ol>
-<li>
- Wendy L. Martinez and Angel R. Martinez. <cite>Computational Statistics
- Handbook with MATLAB</cite>. Appendix E, pages 547-557, Chapman &amp; Hall/CRC,
- 2001.
-
- </li><li>
- Athanasios Papoulis. <cite>Probability, Random Variables, and Stochastic
- Processes</cite>. McGraw-Hill, New York, second edition, 1984.
- </li></ol>
-
+<p> <code>[<var>m</var>, <var>v</var>] = tstat (<var>df</var>)</code> returns the mean and variance of
+ the Student&rsquo;s T distribution with <var>df</var> degrees of freedom.
+</p>
+<p> The size of <var>m</var> (mean) and <var>v</var> (variance) is the same size of the
+ input argument.
+</p>
+<p> Further information about the Student&rsquo;s T distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Student%27s_t-distribution">https://en.wikipedia.org/wiki/Student%27s_t-distribution</a>
+</p>
+<p> <strong>See also: </strong>
+  <a href="tcdf.html">tcdf</a>, 
+  <a href="tinv.html">tinv</a>, 
+  <a href="tpdf.html">tpdf</a>, 
+  <a href="trnd.html">trnd</a>
+</p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_stat/tstat.m">tstat</a>
 </div>
-
 
         </div>
       </div>
