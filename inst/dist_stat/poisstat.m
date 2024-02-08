@@ -1,4 +1,5 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
+## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -20,65 +21,40 @@
 ##
 ## Compute statistics of the Poisson distribution.
 ##
-## @subheading Arguments
+## @code{[@var{m}, @var{v}] = poisstat (@var{lambda})} returns the mean and
+## variance of the Poisson distribution with rate parameter @var{lambda}.
 ##
-## @itemize @bullet
-## @item
-## @var{lambda} is the parameter of the Poisson distribution. The
-## elements of @var{lambda} must be positive
-## @end itemize
+## The size of @var{m} (mean) and @var{v} (variance) is the same size of the
+## input argument.
 ##
-## @subheading Return values
+## Further information about the Poisson distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Poisson_distribution}
 ##
-## @itemize @bullet
-## @item
-## @var{m} is the mean of the Poisson distribution
-##
-## @item
-## @var{v} is the variance of the Poisson distribution
-## @end itemize
-##
-## @subheading Example
-##
-## @example
-## @group
-## lambda = 1 ./ (1:6);
-## [m, v] = poisstat (lambda)
-## @end group
-## @end example
-##
-## @subheading References
-##
-## @enumerate
-## @item
-## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
-## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
-## 2001.
-##
-## @item
-## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
-## Processes}. McGraw-Hill, New York, second edition, 1984.
-## @end enumerate
-##
-## @seealso{poisscdf, poissinv, poisspdf, poissrnd}
+## @seealso{poisscdf, poissinv, poisspdf, poissrnd, poissfit, poisslike}
 ## @end deftypefn
 
 function [m, v] = poisstat (lambda)
 
-  # Check arguments
-  if (nargin != 1)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 1)
+    error ("poisstat: function called with too few input arguments.");
   endif
 
-  if (! isempty (lambda) && ! ismatrix (lambda))
-    error ("poisstat: lambda must be a numeric matrix");
+  ## Check for SIGMA being numeric
+  if (! isnumeric (lambda))
+    error ("poisstat: SIGMA must be numeric.");
   endif
 
-  # Set moments
+  ## Check for SIGMA being real
+  if (iscomplex (lambda))
+    error ("poisstat: SIGMA must not be complex.");
+  endif
+
+  ## Set moments
   m = lambda;
   v = lambda;
 
-  # Continue argument check
+  ## Continue argument check
   k = find (! (lambda > 0) | ! (lambda < Inf));
   if (any (k))
     m(k) = NaN;
@@ -87,6 +63,13 @@ function [m, v] = poisstat (lambda)
 
 endfunction
 
+## Input validation tests
+%!error<poisstat: function called with too few input arguments.> poisstat ()
+%!error<poisstat: SIGMA must be numeric.> poisstat ({})
+%!error<poisstat: SIGMA must be numeric.> poisstat ("")
+%!error<poisstat: SIGMA must not be complex.> poisstat (i)
+
+## Output validation tests
 %!test
 %! lambda = 1 ./ (1:6);
 %! [m, v] = poisstat (lambda);

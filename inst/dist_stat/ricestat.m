@@ -18,15 +18,15 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{m}, @var{v}] =} ricestat (@var{nu}, @var{sigma})
 ##
-## Compute statistics for the Rician distribution.
+## Compute statistics of the Rician distribution.
 ##
 ## @code{[@var{m}, @var{v}] = ricestat (@var{nu}, @var{sigma})} returns the mean
 ## and variance of the Rician distribution with non-centrality (distance)
 ## parameter @var{nu} and scale parameter @var{sigma}.
 ##
 ## The size of @var{m} (mean) and @var{v} (variance) is the common size of the
-## input arguments.  Scalar input arguments @var{nu} and @var{sigma} are
-## regarded as constant matrices of the same size as the other input.
+## input arguments.  A scalar input functions as a constant matrix of the
+## same size as the other inputs.
 ##
 ## Further information about the Rician distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Rice_distribution}
@@ -46,12 +46,12 @@ function [m, v] = ricestat (nu, sigma)
     error ("ricestat: NU and SIGMA must be numeric.");
   endif
 
-  ## Check for NU, SIGMA, and DF being real
+  ## Check for NU and SIGMA being real
   if (iscomplex (nu) || iscomplex (sigma))
     error ("ricestat: NU and SIGMA must not be complex.");
   endif
 
-  ## Check for common size of MU, SIGMA, and DF
+  ## Check for common size of NU and SIGMA
   if (! isscalar (nu) || ! isscalar (sigma))
     [retval, nu, sigma] = common_size (nu, sigma);
     if (retval > 0)

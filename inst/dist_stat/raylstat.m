@@ -1,4 +1,5 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
+## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -20,63 +21,40 @@
 ##
 ## Compute statistics of the Rayleigh distribution.
 ##
-## @subheading Arguments
+## @code{[@var{m}, @var{v}] = raylstat (@var{sigma})} returns the mean and
+## variance of the Rayleigh distribution with scale parameter @var{sigma}.
 ##
-## @itemize @bullet
-## @item
-## @var{sigma} is the parameter of the Rayleigh distribution. The elements
-## of @var{sigma} must be positive.
-## @end itemize
+## The size of @var{m} (mean) and @var{v} (variance) is the same size of the
+## input argument.
 ##
-## @subheading Return values
+## Further information about the Rayleigh distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Rayleigh_distribution}
 ##
-## @itemize @bullet
-## @item
-## @var{m} is the mean of the Rayleigh distribution.
-##
-## @item
-## @var{v} is the variance of the Rayleigh distribution.
-## @end itemize
-##
-## @subheading Example
-##
-## @example
-## @group
-## sigma = 1:6;
-## [m, v] = raylstat (sigma)
-## @end group
-## @end example
-##
-## @subheading References
-##
-## @enumerate
-## @item
-## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
-## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
-## 2001.
-##
-## @item
-## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
-## Processes}. McGraw-Hill, New York, second edition, 1984.
-## @end enumerate
+## @seealso{raylcdf, raylinv, raylpdf, raylrnd, raylfit, rayllike}
 ## @end deftypefn
 
 function [m, v] = raylstat (sigma)
 
-  # Check arguments
-  if (nargin != 1)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 1)
+    error ("raylstat: function called with too few input arguments.");
   endif
 
-  if (! isempty (sigma) && ! ismatrix (sigma))
-    error ("raylstat: sigma must be a numeric matrix");
+  ## Check for SIGMA being numeric
+  if (! isnumeric (sigma))
+    error ("raylstat: SIGMA must be numeric.");
   endif
 
-  # Calculate moments
+  ## Check for SIGMA being real
+  if (iscomplex (sigma))
+    error ("raylstat: SIGMA must not be complex.");
+  endif
+
+  ## Calculate moments
   m = sigma .* sqrt (pi ./ 2);
   v = (2 - pi ./ 2) .* sigma .^ 2;
 
-  # Continue argument check
+  ## Continue argument check
   k = find (! (sigma > 0));
   if (any (k))
     m(k) = NaN;
@@ -85,6 +63,13 @@ function [m, v] = raylstat (sigma)
 
 endfunction
 
+## Input validation tests
+%!error<raylstat: function called with too few input arguments.> raylstat ()
+%!error<raylstat: SIGMA must be numeric.> raylstat ({})
+%!error<raylstat: SIGMA must be numeric.> raylstat ("")
+%!error<raylstat: SIGMA must not be complex.> raylstat (i)
+
+## Output validation tests
 %!test
 %! sigma = 1:6;
 %! [m, v] = raylstat (sigma);

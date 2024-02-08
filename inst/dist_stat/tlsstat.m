@@ -18,7 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{m}, @var{v}] =} tlsstat (@var{mu}, @var{sigma}, @var{df})
 ##
-## Compute statistics for the location-scale Student's T distribution.
+## Compute statistics of the location-scale Student's T distribution.
 ##
 ## @code{[@var{m}, @var{v}] = tlsstat (@var{mu}, @var{sigma}, @var{df})} returns
 ## the mean and variance of the location-scale Student's T distribution with
@@ -26,8 +26,8 @@
 ## degrees of freedom.
 ##
 ## The size of @var{m} (mean) and @var{v} (variance) is the common size of the
-## input arguments.  Scalar input arguments @var{mu}, @var{sigma}, and @var{df}
-## are regarded as constant matrices of the same size as the other inputs.
+## input arguments.  A scalar input functions as a constant matrix of the
+## same size as the other inputs.
 ##
 ## Further information about the location-scale Student's T distribution can be
 ## found at @url{https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution}

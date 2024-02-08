@@ -1,4 +1,5 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
+## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,107 +17,86 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {[@var{mn}, @var{v}] =} normstat (@var{m}, @var{s})
+## @deftypefn  {statistics} {[@var{m}, @var{v}] =} normstat (@var{mu}, @var{sigma})
 ##
 ## Compute statistics of the normal distribution.
 ##
-## @subheading Arguments
+## @code{[@var{m}, @var{v}] = normstat (@var{mu}, @var{sigma})} returns the mean
+## and variance of the normal distribution with non-centrality (distance)
+## parameter @var{mu} and scale parameter @var{sigma}.
 ##
-## @itemize @bullet
-## @item
-## @var{m} is the mean of the normal distribution
+## The size of @var{m} (mean) and @var{v} (variance) is the common size of the
+## input arguments.  A scalar input functions as a constant matrix of the
+## same size as the other inputs.
 ##
-## @item
-## @var{s} is the standard deviation of the normal distribution.
-## @var{s} must be positive
-## @end itemize
-## @var{m} and @var{s} must be of common size or one of them must be
-## scalar
+## Further information about the normal distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Normal_distribution}
 ##
-## @subheading Return values
-##
-## @itemize @bullet
-## @item
-## @var{mn} is the mean of the normal distribution
-##
-## @item
-## @var{v} is the variance of the normal distribution
-## @end itemize
-##
-## @subheading Examples
-##
-## @example
-## @group
-## m = 1:6;
-## s = 0:0.2:1;
-## [mn, v] = normstat (m, s)
-## @end group
-##
-## @group
-## [mn, v] = normstat (0, s)
-## @end group
-## @end example
-##
-## @subheading References
-##
-## @enumerate
-## @item
-## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
-## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
-## 2001.
-##
-## @item
-## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
-## Processes}. McGraw-Hill, New York, second edition, 1984.
-## @end enumerate
+## @seealso{norminv, norminv, normpdf, normrnd, normfit, normlike}
 ## @end deftypefn
 
-function [mn, v] = normstat (m, s)
+function [m, v] = normstat (mu, sigma)
 
-  # Check arguments
-  if (nargin != 2)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 2)
+    error ("normstat: function called with too few input arguments.");
   endif
 
-  if (! isempty (m) && ! ismatrix (m))
-    error ("normstat: m must be a numeric matrix");
-  endif
-  if (! isempty (s) && ! ismatrix (s))
-    error ("normstat: s must be a numeric matrix");
+  ## Check for MU and SIGMA being numeric
+  if (! (isnumeric (mu) && isnumeric (sigma)))
+    error ("normstat: MU and SIGMA must be numeric.");
   endif
 
-  if (! isscalar (m) || ! isscalar (s))
-    [retval, m, s] = common_size (m, s);
+  ## Check for MU and SIGMA being real
+  if (iscomplex (mu) || iscomplex (sigma))
+    error ("normstat: MU and SIGMA must not be complex.");
+  endif
+
+  ## Check for common size of MU and SIGMA
+  if (! isscalar (mu) || ! isscalar (sigma))
+    [retval, mu, sigma] = common_size (mu, sigma);
     if (retval > 0)
-      error ("normstat: m and s must be of common size or scalar");
+      error ("normstat: MU and SIGMA must be of common size or scalars.");
     endif
   endif
 
-  # Set moments
-  mn = m;
-  v = s .* s;
+  ## Calculate moments
+  m = mu;
+  v = sigma .* sigma;
 
-  # Continue argument check
-  k = find (! (s > 0) | ! (s < Inf));
+  ## Continue argument check
+  k = find (! (sigma > 0) | ! (sigma < Inf));
   if (any (k))
-    mn(k) = NaN;
+    m(k) = NaN;
     v(k) = NaN;
   endif
 
 endfunction
 
-%!test
-%! m = 1:6;
-%! s = 0.2:0.2:1.2;
-%! [mn, v] = normstat (m, s);
-%! expected_v = [0.0400, 0.1600, 0.3600, 0.6400, 1.0000, 1.4400];
-%! assert (mn, m);
-%! assert (v, expected_v, 0.001);
+## Input validation tests
+%!error<normstat: function called with too few input arguments.> normstat ()
+%!error<normstat: function called with too few input arguments.> normstat (1)
+%!error<normstat: MU and SIGMA must be numeric.> normstat ({}, 2)
+%!error<normstat: MU and SIGMA must be numeric.> normstat (1, "")
+%!error<normstat: MU and SIGMA must not be complex.> normstat (i, 2)
+%!error<normstat: MU and SIGMA must not be complex.> normstat (1, i)
+%!error<normstat: MU and SIGMA must be of common size or scalars.> ...
+%! normstat (ones (3), ones (2))
+%!error<normstat: MU and SIGMA must be of common size or scalars.> ...
+%! normstat (ones (2), ones (3))
 
+## Output validation tests
 %!test
-%! s = 0.2:0.2:1.2;
-%! [mn, v] = normstat (0, s);
+%! mu = 1:6;
+%! sigma = 0.2:0.2:1.2;
+%! [m, v] = normstat (mu, sigma);
+%! expected_v = [0.0400, 0.1600, 0.3600, 0.6400, 1.0000, 1.4400];
+%! assert (m, mu);
+%! assert (v, expected_v, 0.001);
+%!test
+%! sigma = 0.2:0.2:1.2;
+%! [m, v] = normstat (0, sigma);
 %! expected_mn = [0, 0, 0, 0, 0, 0];
 %! expected_v = [0.0400, 0.1600, 0.3600, 0.6400, 1.0000, 1.4400];
-%! assert (mn, expected_mn, 0.001);
+%! assert (m, expected_mn, 0.001);
 %! assert (v, expected_v, 0.001);

@@ -19,7 +19,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{m}, @var{v}] =} tstat (@var{df})
 ##
-## Compute statistics for the Student's T distribution.
+## Compute statistics of the Student's T distribution.
 ##
 ## @code{[@var{m}, @var{v}] = tstat (@var{df})} returns the mean and variance of
 ## the Student's T distribution with @var{df} degrees of freedom.

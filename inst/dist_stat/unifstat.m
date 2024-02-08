@@ -1,4 +1,5 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
+## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,86 +17,55 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {[@var{m}, @var{v}] =} unifstat (@var{a}, @var{b})
+## @deftypefn  {statistics} {[@var{m}, @var{v}] =} unifstat (@var{df})
 ##
-## Compute statistics of the continuous uniform distribution.
+## Compute statistics of the continuous uniform cumulative distribution.
 ##
-## @subheading Arguments
+## @code{[@var{m}, @var{v}] = unifstat (@var{df})} returns the mean and variance
+## of the continuous uniform cumulative distribution with parameters @var{a} and
+## @var{b}, which define the lower and upper bounds of the interval
+## @qcode{[@var{a}, @var{b}]}.
 ##
-## @itemize @bullet
-## @item
-## @var{a} is the first parameter of the continuous uniform distribution
+## The size of @var{m} (mean) and @var{v} (variance) is the common size of the
+## input arguments.  A scalar input functions as a constant matrix of the
+## same size as the other inputs.
 ##
-## @item
-## @var{b} is the second parameter of the continuous uniform distribution
-## @end itemize
-## @var{a} and @var{b} must be of common size or one of them must be scalar
-## and @var{a} must be less than @var{b}
+## Further information about the continuous uniform distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Continuous_uniform_distribution}
 ##
-## @subheading Return values
-##
-## @itemize @bullet
-## @item
-## @var{m} is the mean of the continuous uniform distribution
-##
-## @item
-## @var{v} is the variance of the continuous uniform distribution
-## @end itemize
-##
-## @subheading Examples
-##
-## @example
-## @group
-## a = 1:6;
-## b = 2:2:12;
-## [m, v] = unifstat (a, b)
-## @end group
-##
-## @group
-## [m, v] = unifstat (a, 10)
-## @end group
-## @end example
-##
-## @subheading References
-##
-## @enumerate
-## @item
-## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
-## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
-## 2001.
-##
-## @item
-## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
-## Processes}. McGraw-Hill, New York, second edition, 1984.
-## @end enumerate
+## @seealso{unifcdf, unifinv, unifpdf, unifrnd, unifit}
 ## @end deftypefn
 
 function [m, v] = unifstat (a, b)
 
-  # Check arguments
-  if (nargin != 2)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 2)
+    error ("unifstat: function called with too few input arguments.");
   endif
 
-  if (! isempty (a) && ! ismatrix (a))
-    error ("unifstat: a must be a numeric matrix");
-  endif
-  if (! isempty (b) && ! ismatrix (b))
-    error ("unifstat: b must be a numeric matrix");
+  ## Check for A and B being numeric
+  if (! (isnumeric (a) && isnumeric (b)))
+    error ("unifstat: A and B must be numeric.");
   endif
 
+  ## Check for A and B being real
+  if (iscomplex (a) || iscomplex (b))
+    error ("unifstat: A and B must not be complex.");
+  endif
+
+  ## Check for common size of A and B
   if (! isscalar (a) || ! isscalar (b))
     [retval, a, b] = common_size (a, b);
     if (retval > 0)
-      error ("unifstat: a and b must be of common size or scalar");
+      error ("unifstat: A and B must be of common size or scalars.");
     endif
   endif
 
-  # Calculate moments
+  ## Calculate moments
   m = (a + b) ./ 2;
   v = ((b - a) .^ 2) ./ 12;
 
-  # Continue argument check
+  ## Continue argument check
   k = find (! (-Inf < a) | ! (a < b) | ! (b < Inf));
   if (any (k))
     m(k) = NaN;
@@ -104,6 +74,19 @@ function [m, v] = unifstat (a, b)
 
 endfunction
 
+## Input validation tests
+%!error<unifstat: function called with too few input arguments.> unifstat ()
+%!error<unifstat: function called with too few input arguments.> unifstat (1)
+%!error<unifstat: A and B must be numeric.> unifstat ({}, 2)
+%!error<unifstat: A and B must be numeric.> unifstat (1, "")
+%!error<unifstat: A and B must not be complex.> unifstat (i, 2)
+%!error<unifstat: A and B must not be complex.> unifstat (1, i)
+%!error<unifstat: A and B must be of common size or scalars.> ...
+%! unifstat (ones (3), ones (2))
+%!error<unifstat: A and B must be of common size or scalars.> ...
+%! unifstat (ones (2), ones (3))
+
+## Output validation tests
 %!test
 %! a = 1:6;
 %! b = 2:2:12;
@@ -112,7 +95,6 @@ endfunction
 %! expected_v = [0.0833, 0.3333, 0.7500, 1.3333, 2.0833, 3.0000];
 %! assert (m, expected_m, 0.001);
 %! assert (v, expected_v, 0.001);
-
 %!test
 %! a = 1:6;
 %! [m, v] = unifstat (a, 10);

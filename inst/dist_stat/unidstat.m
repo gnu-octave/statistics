@@ -1,4 +1,5 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
+## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,68 +17,47 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {[@var{m}, @var{v}] =} unidstat (@var{n})
+## @deftypefn  {statistics} {[@var{m}, @var{v}] =} unidstat (@var{df})
 ##
-## Compute statistics of the discrete uniform distribution.
+## Compute statistics of the discrete uniform cumulative distribution.
 ##
-## @subheading Arguments
+## @code{[@var{m}, @var{v}] = unidstat (@var{df})} returns the mean and variance
+## of the discrete uniform cumulative distribution with parameter @var{N}, which
+## corresponds to the maximum observable value and must be a positive natural
+## number.
 ##
-## @itemize @bullet
-## @item
-## @var{n} is the parameter of the discrete uniform distribution. The elements
-## of @var{n} must be positive natural numbers
-## @end itemize
+## The size of @var{m} (mean) and @var{v} (variance) is the same size of the
+## input argument.
 ##
-## @subheading Return values
+## Further information about the discrete uniform distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Discrete_uniform_distribution}
 ##
-## @itemize @bullet
-## @item
-## @var{m} is the mean of the discrete uniform distribution
-##
-## @item
-## @var{v} is the variance of the discrete uniform distribution
-## @end itemize
-##
-## @subheading Example
-##
-## @example
-## @group
-## n = 1:6;
-## [m, v] = unidstat (n)
-## @end group
-## @end example
-##
-## @subheading References
-##
-## @enumerate
-## @item
-## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
-## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
-## 2001.
-##
-## @item
-## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
-## Processes}. McGraw-Hill, New York, second edition, 1984.
-## @end enumerate
+## @seealso{unidcdf, unidinv, unidpdf, unidrnd, unidfit}
 ## @end deftypefn
 
-function [m, v] = unidstat (n)
+function [m, v] = unidstat (N)
 
-  # Check arguments
-  if (nargin != 1)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 1)
+    error ("unidstat: function called with too few input arguments.");
   endif
 
-  if (! isempty (n) && ! ismatrix (n))
-    error ("unidstat: n must be a numeric matrix");
+  ## Check for N being numeric
+  if (! isnumeric (N))
+    error ("unidstat: N must be numeric.");
   endif
 
-  # Calculate moments
-  m = (n + 1) ./ 2;
-  v = ((n .^ 2) - 1) ./ 12;
+  ## Check for N being real
+  if (iscomplex (N))
+    error ("unidstat: N must not be complex.");
+  endif
 
-  # Continue argument check
-  k = find (! (n > 0) | ! (n < Inf) | ! (n == round (n)));
+  ## Calculate moments
+  m = (N + 1) ./ 2;
+  v = ((N .^ 2) - 1) ./ 12;
+
+  ## Continue argument check
+  k = find (! (N > 0) | ! (N < Inf) | ! (N == round (N)));
   if (any (k))
     m(k) = NaN;
     v(k) = NaN;
@@ -85,9 +65,16 @@ function [m, v] = unidstat (n)
 
 endfunction
 
+## Input validation tests
+%!error<unidstat: function called with too few input arguments.> unidstat ()
+%!error<unidstat: N must be numeric.> unidstat ({})
+%!error<unidstat: N must be numeric.> unidstat ("")
+%!error<unidstat: N must not be complex.> unidstat (i)
+
+## Output validation tests
 %!test
-%! n = 1:6;
-%! [m, v] = unidstat (n);
+%! N = 1:6;
+%! [m, v] = unidstat (N);
 %! expected_m = [1.0000, 1.5000, 2.0000, 2.5000, 3.0000, 3.5000];
 %! expected_v = [0.0000, 0.2500, 0.6667, 1.2500, 2.0000, 2.9167];
 %! assert (m, expected_m, 0.001);

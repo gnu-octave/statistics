@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,36 +16,51 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {[@var{m}, @var{v}] =} ncx2stat (@var{df}, @var{delta})
+## @deftypefn  {statistics} {[@var{m}, @var{v}] =} ncx2stat (@var{df}, @var{lambda})
 ##
-## Compute statistics for the noncentral @math{χ^2} distribution.
+## Compute statistics for the noncentral chi-squared distribution.
 ##
-## @code{[@var{m}, @var{v}] = ncx2stat (@var{df}, @var{delta})} returns the mean
-## and variance of the noncentral chi-square distribution with @var{df} degrees
-## of freedom and noncentrality parameter @var{delta}.
+## @code{[@var{m}, @var{v}] = ncx2stat (@var{df}, @var{lambda})} returns the
+## mean and variance of the noncentral chi-squared distribution with @var{df}
+## degrees of freedom and noncentrality parameter @var{lambda}.
 ##
-## The size of @var{m} and @var{v} is the common size of the input arguments.
-## Scalar input arguments @var{df} and @var{delta} are regarded as constant
-## matrices of the same size as the other input.
+## The size of @var{m} (mean) and @var{v} (variance) is the common size of the
+## input arguments.  A scalar input functions as a constant matrix of the
+## same size as the other inputs.
+##
+## Further information about the noncentral chi-squared distribution can be
+## found at @url{https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution}
 ##
 ## @seealso{ncx2cdf, ncx2inv, ncx2pdf, ncx2rnd}
 ## @end deftypefn
 
-function [m, v] = ncx2stat (df, delta)
+function [m, v] = ncx2stat (df, lambda)
 
-  ## Check for valid input arguments
-  if (nargin <  2)
-    error ("ncx2stat: too few input arguments.");
+  ## Check for valid number of input arguments
+  if (nargin < 2)
+    error ("ncx2stat: function called with too few input arguments.");
   endif
 
-  ## Check and fix size of input arguments
-  [err, df, delta] = common_size (df, delta);
-  if (err > 0)
-    error ("ncx2stat: input size mismatch.");
+  ## Check for DF and LAMBDA being numeric
+  if (! (isnumeric (df) && isnumeric (lambda)))
+    error ("ncx2stat: DF and LAMBDA must be numeric.");
+  endif
+
+  ## Check for DF and LAMBDA being real
+  if (iscomplex (df) || iscomplex (lambda))
+    error ("ncx2stat: DF and LAMBDA must not be complex.");
+  endif
+
+  ## Check for common size of DF and LAMBDA
+  if (! isscalar (df) || ! isscalar (lambda))
+    [retval, df, lambda] = common_size (df, lambda);
+    if (retval > 0)
+      error ("ncx2stat: DF and LAMBDA must be of common size or scalars.");
+    endif
   endif
 
   ## Initialize mean and variance
-  if (isa (df, "single") || isa (delta, "single"))
+  if (isa (df, "single") || isa (lambda, "single"))
     m = NaN (size (df), "single");
     v = m;
   else
@@ -54,18 +69,25 @@ function [m, v] = ncx2stat (df, delta)
   endif
 
   ## Compute mean and variance for valid parameter values.
-  k = (df > 0 & delta >= 0);
+  k = (df > 0 & lambda >= 0);
   if (any (k(:)))
-    m(k) = delta(k) + df(k);
-    v(k) = 2 * (df(k) + 2 * (delta(k)));
+    m(k) = lambda(k) + df(k);
+    v(k) = 2 * (df(k) + 2 * (lambda(k)));
   endif
 
 endfunction
 
 ## Input validation tests
-%!error<ncx2stat: too few input arguments.> p = ncx2stat ();
-%!error<ncx2stat: too few input arguments.> p = ncx2stat (1);
-%!error<ncx2stat: input size mismatch.> p = ncx2stat ([4, 3], [3, 4, 5]);
+%!error<ncx2stat: function called with too few input arguments.> ncx2stat ()
+%!error<ncx2stat: function called with too few input arguments.> ncx2stat (1)
+%!error<ncx2stat: DF and LAMBDA must be numeric.> ncx2stat ({}, 2)
+%!error<ncx2stat: DF and LAMBDA must be numeric.> ncx2stat (1, "")
+%!error<ncx2stat: DF and LAMBDA must not be complex.> ncx2stat (i, 2)
+%!error<ncx2stat: DF and LAMBDA must not be complex.> ncx2stat (1, i)
+%!error<ncx2stat: DF and LAMBDA must be of common size or scalars.> ...
+%! ncx2stat (ones (3), ones (2))
+%!error<ncx2stat: DF and LAMBDA must be of common size or scalars.> ...
+%! ncx2stat (ones (2), ones (3))
 
 ## Output validation tests
 %!shared df, d1
