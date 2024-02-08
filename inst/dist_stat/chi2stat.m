@@ -1,4 +1,5 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
+## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,68 +17,45 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {[@var{m}, @var{v}] =} chi2stat (@var{n})
+## @deftypefn  {statistics} {[@var{m}, @var{v}] =} chi2stat (@var{df})
 ##
-## Compute statistics of the @math{χ^2} distribution.
+## Compute statistics of the chi-squared distribution.
 ##
-## @subheading Arguments
+## @code{[@var{m}, @var{v}] = chi2stat (@var{df})} returns the mean and
+## variance of the chi-squared distribution with @var{df} degrees of freedom.
 ##
-## @itemize @bullet
-## @item
-## @var{n} is the parameter of the chi-square distribution. The elements
-## of @var{n} must be positive
-## @end itemize
+## The size of @var{m} (mean) and @var{v} (variance) is the same size of the
+## input argument.
 ##
-## @subheading Return values
+## Further information about the chi-squared distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Chi-squared_distribution}
 ##
-## @itemize @bullet
-## @item
-## @var{m} is the mean of the chi-square distribution
-##
-## @item
-## @var{v} is the variance of the chi-square distribution
-## @end itemize
-##
-## @subheading Example
-##
-## @example
-## @group
-## n = 1:6;
-## [m, v] = chi2stat (n)
-## @end group
-## @end example
-##
-## @subheading References
-##
-## @enumerate
-## @item
-## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
-## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
-## 2001.
-##
-## @item
-## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
-## Processes}. McGraw-Hill, New York, second edition, 1984.
-## @end enumerate
+## @seealso{chi2cdf, chi2inv, chi2pdf, chi2rnd}
 ## @end deftypefn
 
-function [m, v] = chi2stat (n)
+function [m, v] = chi2stat (df)
 
-  # Check arguments
-  if (nargin != 1)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 1)
+    error ("chi2stat: function called with too few input arguments.");
   endif
 
-  if (! isempty (n) && ! ismatrix (n))
-    error ("chi2stat: n must be a numeric matrix");
+  ## Check for DF being numeric
+  if (! isnumeric (df))
+    error ("chi2stat: DF must be numeric.");
   endif
 
-  # Calculate moments
-  m = n;
-  v = 2 .* n;
+  ## Check for DF being real
+  if (iscomplex (df))
+    error ("chi2stat: DF must not be complex.");
+  endif
 
-  # Continue argument check
-  k = find (! (n > 0) | ! (n < Inf));
+  ## Calculate moments
+  m = df;
+  v = 2 .* df;
+
+  ## Continue argument check
+  k = find (! (df > 0) | ! (df < Inf));
   if (any (k))
     m(k) = NaN;
     v(k) = NaN;
@@ -85,8 +63,15 @@ function [m, v] = chi2stat (n)
 
 endfunction
 
+## Input validation tests
+%!error<chi2stat: function called with too few input arguments.> chi2stat ()
+%!error<chi2stat: DF must be numeric.> chi2stat ({})
+%!error<chi2stat: DF must be numeric.> chi2stat ("")
+%!error<chi2stat: DF must not be complex.> chi2stat (i)
+
+## Output validation tests
 %!test
-%! n = 1:6;
-%! [m, v] = chi2stat (n);
-%! assert (m, n);
+%! df = 1:6;
+%! [m, v] = chi2stat (df);
+%! assert (m, df);
 %! assert (v, [2, 4, 6, 8, 10, 12], 0.001);

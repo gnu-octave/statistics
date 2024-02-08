@@ -1,4 +1,5 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
+## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -20,68 +21,49 @@
 ##
 ## Compute statistics of the Beta distribution.
 ##
-## @subheading Arguments
+## @code{[@var{m}, @var{v}] = betastat (@var{a}, @var{b})} returns the mean
+## and variance of the Beta distribution with shape parameters @var{a} and
+## @var{b}.
 ##
-## @itemize @bullet
-## @item
-## @var{a} is the first parameter of the beta distribution. @var{a} must be
-## positive
+## The size of @var{m} (mean) and @var{v} (variance) is the common size of the
+## input arguments.  A scalar input functions as a constant matrix of the
+## same size as the other inputs.
 ##
-## @item
-## @var{b} is the second parameter of the beta distribution. @var{b} must be
-## positive
-## @end itemize
-## @var{a} and @var{b} must be of common size or one of them must be scalar
+## Further information about the Beta distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Beta_distribution}
 ##
-## @subheading Return values
-##
-## @itemize @bullet
-## @item
-## @var{m} is the mean of the beta distribution
-##
-## @item
-## @var{v} is the variance of the beta distribution
-## @end itemize
-##
-## @subheading Examples
-##
-## @example
-## @group
-## a = 1:6;
-## b = 1:0.2:2;
-## [m, v] = betastat (a, b)
-## @end group
-##
-## @group
-## [m, v] = betastat (a, 1.5)
-## @end group
-## @end example
-##
-## @subheading References
-##
-## @enumerate
-## @item
-## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
-## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
-## 2001.
-##
-## @item
-## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
-## Processes}. McGraw-Hill, New York, second edition, 1984.
-## @end enumerate
+## @seealso{betacdf, betainv, betapdf, betarnd, betafit, betalike}
 ## @end deftypefn
 
 function [m, v] = betastat (a, b)
 
-  if (nargin != 2)
-    print_usage ();
-  elseif (! isscalar (a) && ! isscalar (b) && ! size_equal (a, b))
-    error ("betastat: a and b must be of common size or scalar");
+  ## Check for valid number of input arguments
+  if (nargin < 2)
+    error ("betastat: function called with too few input arguments.");
   endif
 
+  ## Check for A and B being numeric
+  if (! (isnumeric (a) && isnumeric (b)))
+    error ("betastat: A and B must be numeric.");
+  endif
+
+  ## Check for A and B being real
+  if (iscomplex (a) || iscomplex (b))
+    error ("betastat: A and B must not be complex.");
+  endif
+
+  ## Check for common size of A and B
+  if (! isscalar (a) || ! isscalar (b))
+    [retval, a, b] = common_size (a, b);
+    if (retval > 0)
+      error ("betastat: A and B must be of common size or scalars.");
+    endif
+  endif
+
+  ## Catch invalid parameters
   k = find (! (a > 0 & b > 0));
 
-  # Calculate moments
+  ## Calculate moments
   a_b = a + b;
   m = a ./ (a_b);
   m(k) = NaN;
@@ -93,6 +75,19 @@ function [m, v] = betastat (a, b)
 
 endfunction
 
+## Input validation tests
+%!error<betastat: function called with too few input arguments.> betastat ()
+%!error<betastat: function called with too few input arguments.> betastat (1)
+%!error<betastat: A and B must be numeric.> betastat ({}, 2)
+%!error<betastat: A and B must be numeric.> betastat (1, "")
+%!error<betastat: A and B must not be complex.> betastat (i, 2)
+%!error<betastat: A and B must not be complex.> betastat (1, i)
+%!error<betastat: A and B must be of common size or scalars.> ...
+%! betastat (ones (3), ones (2))
+%!error<betastat: A and B must be of common size or scalars.> ...
+%! betastat (ones (2), ones (3))
+
+## Output validation tests
 %!test
 %! a = -2:6;
 %! b = 0.4:0.2:2;
@@ -101,7 +96,6 @@ endfunction
 %! expected_v = [NaN NaN NaN 0.0833, 0.0558, 0.0402, 0.0309, 0.0250, 0.0208];
 %! assert (m, expected_m, eps*100);
 %! assert (v, expected_v, 0.001);
-
 %!test
 %! a = -2:1:6;
 %! [m, v] = betastat (a, 1.5);
@@ -109,7 +103,6 @@ endfunction
 %! expected_v = [NaN NaN NaN 0.0686, 0.0544, 0.0404, 0.0305, 0.0237, 0.0188];
 %! assert (m, expected_m);
 %! assert (v, expected_v, 0.001);
-
 %!test
 %! a = [14  Inf   10  NaN  10];
 %! b = [12    9  NaN  Inf  12];
@@ -118,12 +111,8 @@ endfunction
 %! expected_v = [168/18252 NaN NaN NaN 120/11132];
 %! assert (m, expected_m);
 %! assert (v, expected_v);
-
 %!assert (nthargout (1:2, @betastat, 5, []), {[], []})
 %!assert (nthargout (1:2, @betastat, [], 5), {[], []})
-%!assert (nthargout (1:2, @betastat, "", 5), {[], []})
-%!assert (nthargout (1:2, @betastat, true, 5), {1/6, 5/252})
-
 %!assert (size (betastat (rand (10, 5, 4), rand (10, 5, 4))), [10 5 4])
 %!assert (size (betastat (rand (10, 5, 4), 7)), [10 5 4])
 

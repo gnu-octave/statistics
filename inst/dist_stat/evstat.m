@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -22,16 +22,22 @@
 ## Compute statistics of the extreme value distribution.
 ##
 ## @code{[@var{m}, @var{v}] = evstat (@var{mu}, @var{sigma})} returns the mean
-## and variance of the type 1 extreme value distribution with location parameter
-## @var{mu} and scale parameter @var{sigma}.  The sizes of @var{m} and @var{v}
-## are the common size of @var{mu} and @var{sigma}.  A scalar input functions as
-## a constant matrix of the same size as the other inputs.
+## and variance of the extreme value distribution (also known as the Gumbel
+## or the type I generalized extreme value distribution) with location parameter
+## @var{mu} and scale parameter @var{sigma}.
+##
+## The size of @var{m} (mean) and @var{v} (variance) is the common size of the
+## input arguments.  A scalar input functions as a constant matrix of the
+## same size as the other inputs.
 ##
 ## The type 1 extreme value distribution is also known as the Gumbel
-## distribution.  The version used here is suitable for modeling minima; the
-## mirror image of this distribution can be used to model maxima by negating
-## @var{x}.  If @var{y} has a Weibull distribution, then
-## @code{@var{x} = log (@var{y})} has the type 1 extreme value distribution.
+## distribution.  This version is suitable for modeling minima. The mirror image
+## of this distribution can be used to model maxima by negating @var{x}.  If
+## @var{y} has a Weibull distribution, then @code{@var{x} = log (@var{y})} has
+## the type 1 extreme value distribution.
+##
+## Further information about the Gumbel distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Gumbel_distribution}
 ##
 ## @seealso{evcdf, evinv, evpdf, evrnd, evfit, evlike}
 ## @end deftypefn
@@ -40,36 +46,49 @@ function [m, v] = evstat (mu, sigma)
 
   ## Check for valid number of input arguments
   if (nargin < 2)
-    error ("evstat: too few input arguments.");
+    error ("evstat: function called with too few input arguments.");
   endif
-  ## Check for MU and SIGMA being reals
+
+  ## Check for MU and SIGMA being numeric
+  if (! (isnumeric (mu) && isnumeric (sigma)))
+    error ("evstat: MU and SIGMA must be numeric.");
+  endif
+
+  ## Check for MU and SIGMA being real
   if (iscomplex (mu) || iscomplex (sigma))
     error ("evstat: MU and SIGMA must not be complex.");
   endif
+
   ## Check for common size of MU and SIGMA
   if (! isscalar (mu) || ! isscalar (sigma))
-    [err, mu, sigma] = common_size (mu, sigma);
-    if (err > 0)
+    [retval, mu, sigma] = common_size (mu, sigma);
+    if (retval > 0)
       error ("evstat: MU and SIGMA must be of common size or scalars.");
     endif
   endif
+
   ## Return NaNs for out of range values of SIGMA
   sigma(sigma <= 0) = NaN;
+
   ## Calculate mean and variance
   m = mu + psi(1) .* sigma;
   v = (pi .* sigma) .^ 2 ./ 6;
 
 endfunction
 
-## Test input validation
-%!error<evstat: too few input arguments.> evstat ()
-%!error<evstat: too few input arguments.> evstat (1)
+## Input validation tests
+%!error<evstat: function called with too few input arguments.> evstat ()
+%!error<evstat: function called with too few input arguments.> evstat (1)
+%!error<evstat: MU and SIGMA must be numeric.> evstat ({}, 2)
+%!error<evstat: MU and SIGMA must be numeric.> evstat (1, "")
 %!error<evstat: MU and SIGMA must not be complex.> evstat (i, 2)
-%!error<evstat: MU and SIGMA must not be complex.> evstat (2, i)
+%!error<evstat: MU and SIGMA must not be complex.> evstat (1, i)
 %!error<evstat: MU and SIGMA must be of common size or scalars.> ...
 %! evstat (ones (3), ones (2))
+%!error<evstat: MU and SIGMA must be of common size or scalars.> ...
+%! evstat (ones (2), ones (3))
 
-## Test results
+## Output validation tests
 %!shared x, y0, y1
 %! x = [-5, 0, 1, 2, 3];
 %! y0 = [NaN, NaN, 0.4228, 0.8456, 1.2684];

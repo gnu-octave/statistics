@@ -1,4 +1,5 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
+## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,70 +17,51 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {[@var{m}, @var{v}] =} expstat (@var{l})
+## @deftypefn  {statistics} {[@var{m}, @var{v}] =} expstat (@var{mu})
 ##
 ## Compute statistics of the exponential distribution.
 ##
-## @subheading Arguments
+## @code{[@var{m}, @var{v}] = expstat (@var{mu})} returns the mean and
+## variance of the exponential distribution with mean parameter @var{mu}.
 ##
-## @itemize @bullet
-## @item
-## @var{l} is the parameter of the exponential distribution. The
-## elements of @var{l} must be positive
-## @end itemize
+## The size of @var{m} (mean) and @var{v} (variance) is the same size of the
+## input argument.
 ##
-## @subheading Return values
+## A common alternative parameterization of the exponential distribution is to
+## use the parameter @math{λ} defined as the mean number of events in an
+## interval as opposed to the parameter @math{μ}, which is the mean wait time
+## for an event to occur. @math{λ} and @math{μ} are reciprocals,
+## i.e. @math{μ = 1 / λ}.
 ##
-## @itemize @bullet
-## @item
-## @var{m} is the mean of the exponential distribution
+## Further information about the exponential distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Exponential_distribution}
 ##
-## @item
-## @var{v} is the variance of the exponential distribution
-## @end itemize
-##
-## @subheading Example
-##
-## @example
-## @group
-## l = 1:6;
-## [m, v] = expstat (l)
-## @end group
-## @end example
-##
-## @subheading References
-##
-## @enumerate
-## @item
-## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
-## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
-## 2001.
-##
-## @item
-## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
-## Processes}. McGraw-Hill, New York, second edition, 1984.
-## @end enumerate
-##
-## @seealso{expcdf, expfit, expinv, exprnd, expfit, explike}
+## @seealso{expcdf, expinv, exppdf, exprnd, expfit, explike}
 ## @end deftypefn
 
-function [m, v] = expstat (l)
+function [m, v] = expstat (mu)
 
-  # Check arguments
-  if (nargin != 1)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 1)
+    error ("expstat: function called with too few input arguments.");
   endif
 
-  if (! isempty (l) && ! ismatrix (l))
-    error ("expstat: l must be a numeric matrix");
+  ## Check for MU being numeric
+  if (! isnumeric (mu))
+    error ("expstat: MU must be numeric.");
   endif
 
-  # Calculate moments
-  m = l;
+  ## Check for MU being real
+  if (iscomplex (mu))
+    error ("expstat: MU must not be complex.");
+  endif
+
+  ## Calculate moments
+  m = mu;
   v = m .^ 2;
 
-  # Continue argument check
-  k = find (! (l > 0) | ! (l < Inf));
+  ## Continue argument check
+  k = find (! (mu > 0) | ! (mu < Inf));
   if (any (k))
     m(k) = NaN;
     v(k) = NaN;
@@ -87,8 +69,15 @@ function [m, v] = expstat (l)
 
 endfunction
 
+## Input validation tests
+%!error<expstat: function called with too few input arguments.> expstat ()
+%!error<expstat: MU must be numeric.> expstat ({})
+%!error<expstat: MU must be numeric.> expstat ("")
+%!error<expstat: MU must not be complex.> expstat (i)
+
+## Output validation tests
 %!test
-%! l = 1:6;
-%! [m, v] = expstat (l);
+%! mu = 1:6;
+%! [m, v] = expstat (mu);
 %! assert (m, [1, 2, 3, 4, 5, 6], 0.001);
 %! assert (v, [1, 4, 9, 16, 25, 36], 0.001);

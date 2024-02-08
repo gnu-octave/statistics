@@ -1,4 +1,5 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
+## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,115 +17,93 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {[@var{mn}, @var{v}] =} fstat (@var{m}, @var{n})
+## @deftypefn  {statistics} {[@var{m}, @var{v}] =} fstat (@var{df1}, @var{df2})
 ##
-## Compute statistics of the @math{F} distribution.
+## Compute statistics of the @math{F}-distribution.
 ##
-## @subheading Arguments
+## @code{[@var{m}, @var{v}] = fstat (@var{df1}, @var{df2})} returns the mean and
+## variance of the @math{F}-distribution with @var{df1} and @var{df2} degrees
+## of freedom.
 ##
-## @itemize @bullet
-## @item
-## @var{m} is the first parameter of the F distribution. The elements
-## of @var{m} must be positive
+## The size of @var{m} (mean) and @var{v} (variance) is the common size of the
+## input arguments.  A scalar input functions as a constant matrix of the
+## same size as the other inputs.
 ##
-## @item
-## @var{n} is the second parameter of the F distribution. The
-## elements of @var{n} must be positive
-## @end itemize
-## @var{m} and @var{n} must be of common size or one of them must be scalar
+## Further information about the @math{F}-distribution can be found at
+## @url{https://en.wikipedia.org/wiki/F-distribution}
 ##
-## @subheading Return values
-##
-## @itemize @bullet
-## @item
-## @var{mn} is the mean of the F distribution. The mean is undefined for
-## @var{n} not greater than 2
-##
-## @item
-## @var{v} is the variance of the F distribution. The variance is undefined
-## for @var{n} not greater than 4
-## @end itemize
-##
-## @subheading Examples
-##
-## @example
-## @group
-## m = 1:6;
-## n = 5:10;
-## [mn, v] = fstat (m, n)
-## @end group
-##
-## @group
-## [mn, v] = fstat (m, 5)
-## @end group
-## @end example
-##
-## @subheading References
-##
-## @enumerate
-## @item
-## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
-## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
-## 2001.
-##
-## @item
-## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
-## Processes}. McGraw-Hill, New York, second edition, 1984.
-## @end enumerate
+## @seealso{fcdf, finv, fpdf, frnd}
 ## @end deftypefn
 
-function [mn, v] = fstat (m, n)
+function [m, v] = fstat (df1, df2)
 
-  # Check arguments
-  if (nargin != 2)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 2)
+    error ("fstat: function called with too few input arguments.");
   endif
 
-  if (! isempty (m) && ! ismatrix (m))
-    error ("fstat: m must be a numeric matrix");
-  endif
-  if (! isempty (n) && ! ismatrix (n))
-    error ("fstat: n must be a numeric matrix");
+  ## Check for DF1 and DF2 being numeric
+  if (! (isnumeric (df1) && isnumeric (df2)))
+    error ("fstat: DF1 and DF2 must be numeric.");
   endif
 
-  if (! isscalar (m) || ! isscalar (n))
-    [retval, m, n] = common_size (m, n);
+  ## Check for DF1 and DF2 being real
+  if (iscomplex (df1) || iscomplex (df2))
+    error ("fstat: DF1 and DF2 must not be complex.");
+  endif
+
+  ## Check for common size of DF1 and DF2
+  if (! isscalar (df1) || ! isscalar (df2))
+    [retval, df1, df2] = common_size (df1, df2);
     if (retval > 0)
-      error ("fstat: m and n must be of common size or scalar");
+      error ("fstat: DF1 and DF2 must be of common size or scalars.");
     endif
   endif
 
-  # Calculate moments
-  mn = n ./ (n - 2);
-  v = (2 .* (n .^ 2) .* (m + n - 2)) ./ (m .* ((n - 2) .^ 2) .* (n - 4));
+  ## Calculate moments
+  m = df2 ./ (df2 - 2);
+  v = (2 .* (df2 .^ 2) .* (df1 + df2 - 2)) ./ ...
+      (df1 .* ((df2 - 2) .^ 2) .* (df2 - 4));
 
-  # Continue argument check
-  k = find (! (m > 0) | ! (m < Inf) | ! (n > 2) | ! (n < Inf));
+  ## Continue argument check
+  k = find (! (df1 > 0) | ! (df1 < Inf) | ! (df2 > 2) | ! (df2 < Inf));
   if (any (k))
-    mn(k) = NaN;
+    m(k) = NaN;
     v(k) = NaN;
   endif
 
-  k = find (! (n > 4));
+  k = find (! (df2 > 4));
   if (any (k))
     v(k) = NaN;
   endif
 
 endfunction
 
+## Input validation tests
+%!error<fstat: function called with too few input arguments.> fstat ()
+%!error<fstat: function called with too few input arguments.> fstat (1)
+%!error<fstat: DF1 and DF2 must be numeric.> fstat ({}, 2)
+%!error<fstat: DF1 and DF2 must be numeric.> fstat (1, "")
+%!error<fstat: DF1 and DF2 must not be complex.> fstat (i, 2)
+%!error<fstat: DF1 and DF2 must not be complex.> fstat (1, i)
+%!error<fstat: DF1 and DF2 must be of common size or scalars.> ...
+%! fstat (ones (3), ones (2))
+%!error<fstat: DF1 and DF2 must be of common size or scalars.> ...
+%! fstat (ones (2), ones (3))
+
+## Output validation tests
 %!test
-%! m = 1:6;
-%! n = 5:10;
-%! [mn, v] = fstat (m, n);
+%! df1 = 1:6;
+%! df2 = 5:10;
+%! [m, v] = fstat (df1, df2);
 %! expected_mn = [1.6667, 1.5000, 1.4000, 1.3333, 1.2857, 1.2500];
 %! expected_v = [22.2222, 6.7500, 3.4844, 2.2222, 1.5869, 1.2153];
-%! assert (mn, expected_mn, 0.001);
+%! assert (m, expected_mn, 0.001);
 %! assert (v, expected_v, 0.001);
-
 %!test
-%! m = 1:6;
-%! [mn, v] = fstat (m, 5);
+%! df1 = 1:6;
+%! [m, v] = fstat (df1, 5);
 %! expected_mn = [1.6667, 1.6667, 1.6667, 1.6667, 1.6667, 1.6667];
 %! expected_v = [22.2222, 13.8889, 11.1111, 9.7222, 8.8889, 8.3333];
-%! assert (mn, expected_mn, 0.001);
+%! assert (m, expected_mn, 0.001);
 %! assert (v, expected_v, 0.001);

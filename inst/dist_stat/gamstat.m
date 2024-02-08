@@ -1,4 +1,5 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
+## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -12,92 +13,67 @@
 ## FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
 ## details.
 ##
-## You should have received a copy of the GNU General Public License along with
+## You should have received k copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {[@var{m}, @var{v}] =} gamstat (@var{a}, @var{b})
+## @deftypefn  {statistics} {[@var{m}, @var{v}] =} gamstat (@var{k}, @var{theta})
 ##
 ## Compute statistics of the Gamma distribution.
 ##
-## @subheading Arguments
+## @code{[@var{m}, @var{v}] = gamstat (@var{k}, @var{theta})} returns the mean
+## and variance of the Gamma distribution with with shape parameter @var{k} and
+## scale parameter @var{theta}.
 ##
-## @itemize @bullet
-## @item
-## @var{a} is the first parameter of the gamma distribution. @var{a} must be
-## positive
+## The size of @var{m} (mean) and @var{v} (variance) is the common size of the
+## input arguments.  A scalar input functions as a constant matrix of the
+## same size as the other inputs.
 ##
-## @item
-## @var{b} is the second parameter of the gamma distribution. @var{b} must be
-## positive
-## @end itemize
-## @var{a} and @var{b} must be of common size or one of them must be scalar
-##
-## @subheading Return values
-##
-## @itemize @bullet
-## @item
-## @var{m} is the mean of the gamma distribution
-##
-## @item
-## @var{v} is the variance of the gamma distribution
-## @end itemize
-##
-## @subheading Examples
-##
-## @example
-## @group
-## a = 1:6;
-## b = 1:0.2:2;
-## [m, v] = gamstat (a, b)
-## @end group
-##
-## @group
-## [m, v] = gamstat (a, 1.5)
-## @end group
-## @end example
-##
-## @subheading References
-##
+## There are two equivalent parameterizations in common use:
 ## @enumerate
-## @item
-## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
-## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
-## 2001.
-##
-## @item
-## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
-## Processes}. McGraw-Hill, New York, second edition, 1984.
+## @item With a shape parameter @math{k} and a scale parameter @math{θ}, which
+## is used by @code{gamrnd}.
+## @item With a shape parameter @math{α = k} and an inverse scale parameter
+## @math{β = 1 / θ}, called a rate parameter.
 ## @end enumerate
+##
+## Further information about the Gamma distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Gamma_distribution}
+##
+## @seealso{gamcdf, gaminv, gampdf, gamrnd, gamfit, gamlike}
 ## @end deftypefn
 
-function [m, v] = gamstat (a, b)
+function [m, v] = gamstat (k, theta)
 
-  # Check arguments
-  if (nargin != 2)
-    print_usage ();
+  ## Check for valid number of input arguments
+  if (nargin < 2)
+    error ("gamstat: function called with too few input arguments.");
   endif
 
-  if (! isempty (a) && ! ismatrix (a))
-    error ("gamstat: a must be a numeric matrix");
-  endif
-  if (! isempty (b) && ! ismatrix (b))
-    error ("gamstat: b must be a numeric matrix");
+  ## Check for K and THETA being numeric
+  if (! (isnumeric (k) && isnumeric (theta)))
+    error ("gamstat: K and THETA must be numeric.");
   endif
 
-  if (! isscalar (a) || ! isscalar (b))
-    [retval, a, b] = common_size (a, b);
+  ## Check for K and THETA being real
+  if (iscomplex (k) || iscomplex (theta))
+    error ("gamstat: K and THETA must not be complex.");
+  endif
+
+  ## Check for common size of K and THETA
+  if (! isscalar (k) || ! isscalar (theta))
+    [retval, k, theta] = common_size (k, theta);
     if (retval > 0)
-      error ("gamstat: a and b must be of common size or scalar");
+      error ("gamstat: K and THETA must be of common size or scalars.");
     endif
   endif
 
-  # Calculate moments
-  m = a .* b;
-  v = a .* (b .^ 2);
+  ## Calculate moments
+  m = k .* theta;
+  v = k .* (theta .^ 2);
 
-  # Continue argument check
-  k = find (! (a > 0) | ! (a < Inf) | ! (b > 0) | ! (b < Inf));
+  ## Continue argument check
+  k = find (! (k > 0) | ! (k < Inf) | ! (theta > 0) | ! (theta < Inf));
   if (any (k))
     m(k) = NaN;
     v(k) = NaN;
@@ -105,18 +81,30 @@ function [m, v] = gamstat (a, b)
 
 endfunction
 
+## Input validation tests
+%!error<gamstat: function called with too few input arguments.> gamstat ()
+%!error<gamstat: function called with too few input arguments.> gamstat (1)
+%!error<gamstat: K and THETA must be numeric.> gamstat ({}, 2)
+%!error<gamstat: K and THETA must be numeric.> gamstat (1, "")
+%!error<gamstat: K and THETA must not be complex.> gamstat (i, 2)
+%!error<gamstat: K and THETA must not be complex.> gamstat (1, i)
+%!error<gamstat: K and THETA must be of common size or scalars.> ...
+%! gamstat (ones (3), ones (2))
+%!error<gamstat: K and THETA must be of common size or scalars.> ...
+%! gamstat (ones (2), ones (3))
+
+## Output validation tests
 %!test
-%! a = 1:6;
-%! b = 1:0.2:2;
-%! [m, v] = gamstat (a, b);
+%! k = 1:6;
+%! theta = 1:0.2:2;
+%! [m, v] = gamstat (k, theta);
 %! expected_m = [1.00, 2.40, 4.20,  6.40,  9.00, 12.00];
 %! expected_v = [1.00, 2.88, 5.88, 10.24, 16.20, 24.00];
 %! assert (m, expected_m, 0.001);
 %! assert (v, expected_v, 0.001);
-
 %!test
-%! a = 1:6;
-%! [m, v] = gamstat (a, 1.5);
+%! k = 1:6;
+%! [m, v] = gamstat (k, 1.5);
 %! expected_m = [1.50, 3.00, 4.50, 6.00,  7.50,  9.00];
 %! expected_v = [2.25, 4.50, 6.75, 9.00, 11.25, 13.50];
 %! assert (m, expected_m, 0.001);
