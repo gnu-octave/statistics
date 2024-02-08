@@ -281,3 +281,33 @@
  ** changed RegressionGAM legacy class to classdef
 
  ** update figure handling in BISTs, bug fix when calling 'pkg test statistics'
+
+
+ Summary of important user-visible changes for statistics 1.6.3:
+-------------------------------------------------------------------
+
+ Important Notice: 1) `mad`, `mean`, `median`, `std`, `var` functions
+                      shadow core Octave's respective functions prior
+                      to Octave v9.1
+                   2) incompatibility with the `nan` package
+ New functions:
+ ==============
+
+ ** ricefit
+
+ ** ricelike
+
+ ** ricestat
+
+ Improvements:
+ =============
+
+ ** cdf: add support for Rician distribution
+
+ ** icdf: add support for Rician distribution
+
+ ** pdf: add support for Rician distribution
+
+ ** random: add support for Rician distribution
+
+ ** ricernd: fixed bug that produced erroneous results
