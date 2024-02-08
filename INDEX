@@ -108,6 +108,7 @@ Distributions
  raylcdf raylinv raylpdf raylrnd
  ricecdf riceinv ricepdf ricernd
  tcdf tinv tpdf trnd
+ tlscdf tlsinv tlspdf tlsrnd
  tricdf triinv tripdf trirnd
  unidcdf unidinv unidpdf unidrnd
  unifcdf unifinv unifpdf unifrnd
@@ -185,6 +186,7 @@ Distribution Statistics
  poisstat
  raylstat
  ricestat
+ tlsstat
  tstat
  unidstat
  unifstat

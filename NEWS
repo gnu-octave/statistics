@@ -299,10 +299,22 @@
 
  ** ricestat
 
+ ** tlscdf
+
+ ** tlsinv
+
+ ** tlspdf
+
+ ** tlsrnd
+
+ ** tlsstat
+
  Improvements:
  =============
 
  ** cdf: add support for Rician distribution
+
+ ** gevlike: deprecate gradient as a second output argument (undocumented)
 
  ** icdf: add support for Rician distribution
 
