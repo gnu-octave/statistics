@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -23,8 +23,8 @@
 ##
 ## @code{[@var{m}, @var{v}] = gpstat (@var{k}, @var{sigma}, @var{mu})}
 ## returns the mean and variance of the generalized Pareto distribution with
-## with shape parameter @var{k}, scale parameter @var{sigma}, and location
-## parameter @var{mu}.
+## shape parameter @var{k}, scale parameter @var{sigma}, and location parameter
+## @var{mu}.
 ##
 ## The size of @var{m} (mean) and @var{v} (variance) is the common size of the
 ## input arguments.  A scalar input functions as a constant matrix of the
