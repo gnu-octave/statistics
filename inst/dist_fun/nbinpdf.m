@@ -25,9 +25,11 @@
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
 ## at @var{x} of the negative binomial distribution with parameters @var{r} and
-## @var{ps}.  The size of @var{y} is the common size of @var{x}, @var{r}, and
-## @var{ps}.  A scalar input functions as a constant matrix of the same size as
-## the other inputs.
+## @var{ps}, where @var{r} is the number of successes until the experiment is
+## stopped and @var{ps} is the probability of success in each experiment, given
+## the number of failures in @var{x}.  The size of @var{y} is the common size of
+## @var{x}, @var{r}, and @var{ps}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
 ##
 ## When @var{r} is an integer, the negative binomial distribution is also known
 ## as the Pascal distribution and it models the number of failures in @var{x}

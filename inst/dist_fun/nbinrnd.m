@@ -28,9 +28,11 @@
 ##
 ## @code{@var{rnd} = nbinrnd (@var{r}, @var{ps})} returns an array of random
 ## numbers chosen from the Laplace distribution with parameters @var{r} and
-## @var{ps}.  The size of @var{rnd} is the common size of @var{r} and @var{ps}.
-## A scalar input functions as a constant matrix of the same size as the other
-## inputs.
+## @var{ps}, where @var{r} is the number of successes until the experiment is
+## stopped and @var{ps} is the probability of success in each experiment, given
+## the number of failures in @var{x}.  The size of @var{rnd} is the common size
+## of @var{r} and @var{ps}.  A scalar input functions as a constant matrix of
+## the same size as the other inputs.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
