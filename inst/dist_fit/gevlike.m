@@ -18,7 +18,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{nlogL} =} gevlike (@var{params}, @var{x})
-## @deftypefnx {statistics} {[@var{nlogL} @var{ACOV}] =} gevlike (@var{params}, @var{x})
+## @deftypefnx {statistics} {[@var{nlogL}, @var{acov}] =} gevlike (@var{params}, @var{x})
 ##
 ## Negative log-likelihood for the generalized extreme value (GEV) distribution.
 ##
@@ -61,7 +61,7 @@
 ## @seealso{gevcdf, gevinv, gevpdf, gevrnd, gevfit, gevstat}
 ## @end deftypefn
 
-function [nlogL, Grad, ACOV] = gevlike (params, x)
+function [nlogL, acov] = gevlike (params, x)
 
   ## Check input arguments
   if (nargin < 2)
@@ -89,7 +89,7 @@ function [nlogL, Grad, ACOV] = gevlike (params, x)
   if (nargout > 1)
   	[Grad, kk_terms] = gevgrad (x, k, sigma, mu, k_terms);
     FIM = gevfim (x, k, sigma, mu, k_terms, kk_terms);
-    ACOV = inv (FIM);
+    acov = inv (FIM);
   endif
 
 endfunction
