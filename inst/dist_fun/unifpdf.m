@@ -24,10 +24,11 @@
 ## Continuous uniform probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## of the continuous uniform distribution on the interval @qcode{[@var{a},
-## @var{b}]}.  The size of @var{y} is the common size of @var{x}, @var{a}, and
-## @var{b}.  A scalar input functions as a constant matrix of the same size as
-## the other inputs.
+## of the continuous uniform distribution with parameters @var{a} and @var{b},
+## which define the lower and upper bounds of the interval
+## @qcode{[@var{a}, @var{b}]}.  The size of @var{y} is the common size of
+## @var{x}, @var{a}, and @var{b}.  A scalar input functions as a constant matrix
+## of the same size as the other inputs.
 ##
 ## Further information about the continuous uniform distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Continuous_uniform_distribution}

@@ -28,7 +28,8 @@
 ## Random arrays from the continuous uniform distribution.
 ##
 ## @code{@var{r} = unifrnd (@var{a}, @var{b})} returns an array of random
-## numbers chosen from the continuous uniform distribution on the interval
+## numbers chosen from the continuous uniform distribution with parameters
+## @var{a} and @var{b}, which define the lower and upper bounds of the interval
 ## @qcode{[@var{a}, @var{b}]}.  The size of @var{r} is the common size of
 ## @var{a} and @var{b}.  A scalar input functions as a constant matrix of the
 ## same size as the other inputs.

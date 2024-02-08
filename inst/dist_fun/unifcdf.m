@@ -25,10 +25,11 @@
 ## Continuous uniform cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) of the continuous uniform distribution on the interval @qcode{[@var{a},
-## @var{b}]}.  The size of @var{p} is the common size of @var{x}, @var{a}, and
-## @var{b}.  A scalar input functions as a constant matrix of the same size as
-## the other inputs.
+## (CDF) of the continuous uniform distribution with parameters @var{a} and
+## @var{b}, which define the lower and upper bounds of the interval
+## @qcode{[@var{a}, @var{b}]}.  The size of @var{p} is the common size of
+## @var{x}, @var{a}, and @var{b}.  A scalar input functions as a constant matrix
+## of the same size as the other inputs.
 ##
 ## @code{[@dots{}] = unifcdf (@var{x}, @var{a}, @var{b}, "upper")} computes the
 ## upper tail probability of the continuous uniform distribution with parameters
