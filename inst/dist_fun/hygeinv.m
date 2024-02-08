@@ -20,21 +20,21 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{x} =} hygeinv (@var{p}, @var{t}, @var{m}, @var{n})
+## @deftypefn  {statistics} {@var{x} =} hygeinv (@var{p}, @var{m}, @var{k}, @var{n})
 ##
 ## Inverse of the hypergeometric cumulative distribution function (iCDF).
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
-## the hypergeometric distribution with parameters @var{t}, @var{m}, and @var{n}.
-## The size of @var{x} is the common size of @var{p}, @var{t}, @var{m}, and
+## the hypergeometric distribution with parameters @var{m}, @var{k}, and @var{n}.
+## The size of @var{x} is the common size of @var{p}, @var{m}, @var{k}, and
 ## @var{n}.  A scalar input functions as a constant matrix of the same size as
 ## the other inputs.
 ##
-## This is the probability of obtaining @var{p} marked items when randomly
-## drawing a sample of size @var{n} without replacement from a population of
-## total size @var{t} containing @var{m} marked items.  The parameters @var{t},
-## @var{m}, and @var{n} must be positive integers with @var{m} and @var{n} not
-## greater than @var{t}.
+## This is the number of drawn marked items @var{x} given a probability @var{p},
+## when randomly drawing a sample of size @var{n} without replacement from a
+## population of total size @var{m} containing @var{k} marked items.  The
+## parameters @var{m}, @var{k}, and @var{n} must be positive integers with
+## @var{k} and @var{n} not greater than @var{m}.
 ##
 ## Further information about the hypergeometric distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Hypergeometric_distribution}
@@ -42,7 +42,7 @@
 ## @seealso{hygeinv, hygepdf, hygernd, hygestat}
 ## @end deftypefn
 
-function x = hygeinv (p, t, m, n)
+function x = hygeinv (p, m, k, n)
 
   ## Check for valid number of input arguments
   if (nargin < 4)
@@ -50,39 +50,39 @@ function x = hygeinv (p, t, m, n)
   endif
 
   ## Check for common size of P, T, M, and N
-  if (! isscalar (p) || ! isscalar (t) || ! isscalar (m) || ! isscalar (n))
-    [retval, p, t, m, n] = common_size (p, t, m, n);
+  if (! isscalar (p) || ! isscalar (m) || ! isscalar (k) || ! isscalar (n))
+    [retval, p, m, k, n] = common_size (p, m, k, n);
     if (retval > 0)
       error ("hygeinv: P, T, M, and N must be of common size or scalars.");
     endif
   endif
 
   ## Check for P, T, M, and N being reals
-  if (iscomplex (p) || iscomplex (t) || iscomplex (m) || iscomplex (n))
+  if (iscomplex (p) || iscomplex (m) || iscomplex (k) || iscomplex (n))
     error ("hygeinv: P, T, M, and N must not be complex.");
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (t, "single")
-                        || isa (m, "single") || isa (n, "single"))
+  if (isa (p, "single") || isa (m, "single")
+                        || isa (k, "single") || isa (n, "single"))
     x = NaN (size (p), "single");
   else
     x = NaN (size (p));
   endif
 
-  ok = ((t >= 0) & (m >= 0) & (n > 0) & (m <= t) & (n <= t) &
-        (t == fix (t)) & (m == fix (m)) & (n == fix (n)));
+  ok = ((m >= 0) & (k >= 0) & (n > 0) & (k <= m) & (n <= m) &
+        (m == fix (m)) & (k == fix (k)) & (n == fix (n)));
 
-  if (isscalar (t))
+  if (isscalar (m))
     if (ok)
-      x = discrete_inv (p, 0 : n, hygepdf (0 : n, t, m, n));
+      x = discrete_inv (p, 0 : n, hygepdf (0 : n, m, k, n));
       x(p == 0) = 0;  # Hack to return correct value for start of distribution
     endif
   else
-    k = (p == 0);
-    x (ok & k) = 0; # set any p=0 to 0 if not already set to output NaN
-    k = (p == 1);
-    x (ok & k) = n(ok & k);
+    p_0 = (p == 0);
+    x (ok & p_0) = 0; # set any p=0 to 0 if not already set to output NaN
+    p_0 = (p == 1);
+    x (ok & p_0) = n(ok & p_0);
     ok &= (p>0 & p<1); # remove 0's and p's outside (0,1), leave unfilled as NaN
 
     if (any (ok(:)))
@@ -90,7 +90,7 @@ function x = hygeinv (p, t, m, n)
       v = 0 : max (n(:));
 
       ## Manually perform discrete_inv to enable vectorizing with array input
-      p_tmp = cumsum (hygepdf (v, t(ok), m(ok), n, "vectorexpand"), 2);
+      p_tmp = cumsum (hygepdf (v, m(ok), k(ok), n, "vectorexpand"), 2);
       sz_p = size (p_tmp);
       end_locs = sub2ind (sz_p, [1 : numel(n)]', n(:) + 1);
 
@@ -118,8 +118,8 @@ endfunction
 %! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
 %! grid on
 %! ylim ([0, 60])
-%! legend ({"t = 500, m = 50, μ = 100", "t = 500, m = 60, μ = 200", ...
-%!          "t = 500, m = 70, μ = 300"}, "location", "northwest")
+%! legend ({"m = 500, k = 50, n = 100", "m = 500, k = 60, n = 200", ...
+%!          "m = 500, k = 70, n = 300"}, "location", "northwest")
 %! title ("Hypergeometric iCDF")
 %! xlabel ("probability")
 %! ylabel ("values in p (number of successes)")

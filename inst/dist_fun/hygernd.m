@@ -20,21 +20,21 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{r} =} hygernd (@var{t}, @var{m}, @var{n})
-## @deftypefnx {statistics} {@var{r} =} hygernd (@var{t}, @var{m}, @var{n}, @var{rows})
-## @deftypefnx {statistics} {@var{r} =} hygernd (@var{t}, @var{m}, @var{n}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} {@var{r} =} hygernd (@var{t}, @var{m}, @var{n}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} hygernd (@var{m}, @var{k}, @var{n})
+## @deftypefnx {statistics} {@var{r} =} hygernd (@var{m}, @var{k}, @var{n}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} hygernd (@var{m}, @var{k}, @var{n}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} hygernd (@var{m}, @var{k}, @var{n}, [@var{sz}])
 ##
 ## Random arrays from the hypergeometric distribution.
 ##
-## @code{@var{r} = hygernd ((@var{t}, @var{m}, @var{n}} returns an array of
+## @code{@var{r} = hygernd ((@var{m}, @var{k}, @var{n}} returns an array of
 ## random numbers chosen from the hypergeometric distribution with parameters
-## @var{t}, @var{m}, and @var{n}.  The size of @var{r} is the common size of
-## @var{t}, @var{m}, and @var{n}.  A scalar input functions as a constant matrix
+## @var{m}, @var{k}, and @var{n}.  The size of @var{r} is the common size of
+## @var{m}, @var{k}, and @var{n}.  A scalar input functions as a constant matrix
 ## of the same size as the other inputs.
 ##
-## The parameters @var{t}, @var{m}, and @var{n} must be positive integers
-## with @var{m} and @var{n} not greater than @var{t}.
+## The parameters @var{m}, @var{k}, and @var{n} must be positive integers
+## with @var{k} and @var{n} not greater than @var{m}.
 ##
 ## When called with a single size argument, @code{hygernd} returns a square
 ## matrix with the dimension specified.  When called with more than one scalar
@@ -48,7 +48,7 @@
 ## @seealso{hygecdf, hygeinv, hygepdf, hygestat}
 ## @end deftypefn
 
-function r = hygernd (t, m, n, varargin)
+function r = hygernd (m, k, n, varargin)
 
   ## Check for valid number of input arguments
   if (nargin < 3)
@@ -56,21 +56,21 @@ function r = hygernd (t, m, n, varargin)
   endif
 
   ## Check for common size of T, M, and N
-  if (! isscalar (t) || ! isscalar (m) || ! isscalar (n))
-    [retval, t, m, n] = common_size (t, m, n);
+  if (! isscalar (m) || ! isscalar (k) || ! isscalar (n))
+    [retval, m, k, n] = common_size (m, k, n);
     if (retval > 0)
       error ("hygernd: T, M, and N must be of common size or scalars.");
     endif
   endif
 
   ## Check for T, M, and N being reals
-  if (iscomplex (t) || iscomplex (m) || iscomplex (n))
+  if (iscomplex (m) || iscomplex (k) || iscomplex (n))
     error ("hygernd: T, M, and N must not be complex.");
   endif
 
   ## Parse and check SIZE arguments
   if (nargin == 3)
-    sz = size (t);
+    sz = size (m);
   elseif (nargin == 4)
     if (isscalar (varargin{1}) && varargin{1} >= 0 ...
                                && varargin{1} == fix (varargin{1}))
@@ -91,25 +91,25 @@ function r = hygernd (t, m, n, varargin)
   endif
 
   ## Check that parameters match requested dimensions in size
-  if (! isscalar (t) && ! isequal (size (t), sz))
+  if (! isscalar (m) && ! isequal (size (m), sz))
     error ("hygernd: T, M, and N must be scalars or of size SZ.");
   endif
 
   ## Check for class type
-  if (isa (t, "single") || isa (m, "single") || isa (n, "single"))
+  if (isa (m, "single") || isa (k, "single") || isa (n, "single"))
     cls = "single";
   else
     cls = "double";
   endif
 
-  ok = ((t >= 0) & (m >= 0) & (n > 0) & (m <= t) & (n <= t) &
-        (t == fix (t)) & (m == fix (m)) & (n == fix (n)));
+  ok = ((m >= 0) & (k >= 0) & (n > 0) & (k <= m) & (n <= m) &
+        (m == fix (m)) & (k == fix (k)) & (n == fix (n)));
 
   ## Generate random sample from the hypergeometric distribution
-  if (isscalar (t))
+  if (isscalar (m))
     if (ok)
       v = 0:n;
-      p = hygepdf (v, t, m, n);
+      p = hygepdf (v, m, k, n);
       r = v(lookup (cumsum (p(1:end-1)) / sum (p), rand (sz)) + 1);
       r = reshape (r, sz);
       if (strcmp (cls, "single"))
@@ -123,7 +123,7 @@ function r = hygernd (t, m, n, varargin)
     n = n(ok);
     num_n = numel (n);
     v = 0 : max (n(:));
-    p = cumsum (hygepdf (v, t(ok), m(ok), n, "vectorexpand"), 2);
+    p = cumsum (hygepdf (v, m(ok), k(ok), n, "vectorexpand"), 2);
 
     ## Manual row-wise vectorization of lookup, which returns index of element
     ## less than or equal to test value, zero if test value is less than lowest

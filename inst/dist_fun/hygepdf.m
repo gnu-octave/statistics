@@ -20,29 +20,29 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{y} =} hygepdf (@var{x}, @var{t}, @var{m}, @var{n})
+## @deftypefn  {statistics} {@var{y} =} hygepdf (@var{x}, @var{m}, @var{k}, @var{n})
 ## @deftypefnx {statistics} {@var{y} =} hygepdf (@dots{}, @qcode{"vectorexpand"})
 ##
 ## Hypergeometric probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## of the hypergeometric distribution with parameters @var{t}, @var{m}, and
-## @var{n}.  The size of @var{y} is the common size of @var{x}, @var{t},
-## @var{m}, and @var{n}.  A scalar input functions as a constant matrix of the
+## of the hypergeometric distribution with parameters @var{m}, @var{k}, and
+## @var{n}.  The size of @var{y} is the common size of @var{x}, @var{m},
+## @var{k}, and @var{n}.  A scalar input functions as a constant matrix of the
 ## same size as the other inputs.
 ##
 ## This is the probability of obtaining @var{x} marked items when randomly
 ## drawing a sample of size @var{n} without replacement from a population of
-## total size @var{t} containing @var{m} marked items.  The parameters @var{t},
-## @var{m}, and @var{n} must be positive integers with @var{m} and @var{n} not
-## greater than @var{t}.
+## total size @var{m} containing @var{k} marked items.  The parameters @var{m},
+## @var{k}, and @var{n} must be positive integers with @var{k} and @var{n} not
+## greater than @var{m}.
 ##
 ## If the optional parameter @qcode{vectorexpand} is provided, @var{x} may be an
-## array with size different from parameters @var{t}, @var{m}, and @var{n}
+## array with size different from parameters @var{m}, @var{k}, and @var{n}
 ## (which must still be of a common size or scalar).  Each element of @var{x}
-## will be evaluated against each set of parameters @var{t}, @var{m}, and
+## will be evaluated against each set of parameters @var{m}, @var{k}, and
 ## @var{n} in columnwise order. The output @var{y} will be an array of size
-## @qcode{@var{r} x @var{s}}, where @qcode{@var{r} = numel (@var{t})}, and
+## @qcode{@var{r} x @var{s}}, where @qcode{@var{r} = numel (@var{m})}, and
 ## @qcode{@var{s} = numel (@var{x})}.
 ##
 ## Further information about the hypergeometric distribution can be found at
@@ -51,7 +51,7 @@
 ## @seealso{hygecdf, hygeinv, hygernd, hygestat}
 ## @end deftypefn
 
-function y = hygepdf (x, t, m, n, vect_expand)
+function y = hygepdf (x, m, k, n, vect_expand)
 
   ## Check for valid number of input arguments
   if (nargin < 4)
@@ -59,7 +59,7 @@ function y = hygepdf (x, t, m, n, vect_expand)
   endif
 
   ## Check for X, T, M, and N being reals
-  if (iscomplex (x) || iscomplex (t) || iscomplex (m) || iscomplex (n))
+  if (iscomplex (x) || iscomplex (m) || iscomplex (k) || iscomplex (n))
     error ("hygepdf: X, T, M, and N must not be complex.");
   endif
 
@@ -70,35 +70,35 @@ function y = hygepdf (x, t, m, n, vect_expand)
 
   if strcmpi (vect_expand, "vectorexpand")
     ## Expansion to improve vectorization of hyge calling functions.
-    ## Project inputs over a 2D array with x(:) as a row vector and t,m,n as
-    ## a column vector. each y(i,j) is hygepdf(x(j), t(i), m(i), n(i))
+    ## Project inputs over a 2D array with x(:) as a row vector and m,k,n as
+    ## a column vector. each y(i,j) is hygepdf(x(j), m(i), k(i), n(i))
     ## Following expansion, remainder of algorithm processes as normal.
 
-    if (! isscalar (t) || ! isscalar (m) || ! isscalar (n))
-      [retval, t, m, n] = common_size (t, m, n);
+    if (! isscalar (m) || ! isscalar (k) || ! isscalar (n))
+      [retval, m, k, n] = common_size (m, k, n);
       if (retval > 0)
         error ("hygepdf: T, M, and N must be of common size or scalars.");
       endif
       ## Ensure col vectors before expansion
-      t = t(:);
       m = m(:);
+      k = k(:);
       n = n(:);
     endif
 
-    ## Expand x,t,m,n to arrays of size numel(t) x numel(x)
-    sz = [numel(t), numel(x)];
+    ## Expand x,m,k,n to arrays of size numel(m) x numel(x)
+    sz = [numel(m), numel(x)];
     x = x(:)'; # ensure row vector before expansion
 
     x = x(ones (sz(1), 1), :);
-    t = t(:, ones (sz(2), 1));
     m = m(:, ones (sz(2), 1));
+    k = k(:, ones (sz(2), 1));
     n = n(:, ones (sz(2), 1));
 
   else
 
     ## Check for common size of X, T, M, and N
-    if (! isscalar (t) || ! isscalar (m) || ! isscalar (n))
-      [retval, x, t, m, n] = common_size (x, t, m, n);
+    if (! isscalar (m) || ! isscalar (k) || ! isscalar (n))
+      [retval, x, m, k, n] = common_size (x, m, k, n);
       if (retval > 0)
         error ("hygepdf: X, T, M, and N must be of common size or scalars.");
       endif
@@ -109,33 +109,34 @@ function y = hygepdf (x, t, m, n, vect_expand)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (t, "single")
-                        || isa (m, "single") || isa (n, "single"))
+  if (isa (x, "single") || isa (m, "single")
+                        || isa (k, "single") || isa (n, "single"))
     y = zeros (sz, "single");
   else
     y = zeros (sz);
   endif
 
   ## Everything in nel gives NaN
-  nel = (isnan (x) | (t < 0) | (m < 0) | (n <= 0) | (m > t) | (n > t) |
-        (t != fix (t)) | (m != fix (m)) | (n != fix (n)));
+  nel = (isnan (x) | (m < 0) | (k < 0) | (n <= 0) | (k > m) | (n > m) |
+        (m != fix (m)) | (k != fix (k)) | (n != fix (n)));
   ## Everything in zel gives 0 unless in nel
-  zel = ((x != fix (x)) | (x < 0) | (x > m) | (n < x) | (n-x > t-m));
+  zel = ((x != fix (x)) | (x < 0) | (x > k) | (n < x) | (n-x > m-k));
 
   y(nel) = NaN;
 
-  k = ! nel & ! zel;
-  if (any (k(:)))
-    if (isscalar (t))
-      y(k) = exp (gammaln (m+1) - gammaln (m-x(k)+1) - gammaln (x(k)+1) +...
-                 gammaln (t-m+1) - gammaln (t-m-n+x(k)+1) - ...
-                 gammaln (n-x(k)+1) - gammaln (t+1) + gammaln (t-n+1) + ...
-                 gammaln (n+1));
+  ok = ! nel & ! zel;
+  if (any (ok(:)))
+    if (isscalar (m))
+      y(ok) = exp (gammaln (k+1) - gammaln (k-x(ok)+1) - gammaln (x(ok)+1) + ...
+                   gammaln (m-k+1) - gammaln (m-k-n+x(ok)+1) - ...
+                   gammaln (n-x(ok)+1) - gammaln (m+1) + gammaln (m-n+1) + ...
+                   gammaln (n+1));
     else
-      y(k) = exp (gammaln (m(k)+1) - gammaln (m(k)-x(k)+1) - ...
-                 gammaln (x(k)+1) + gammaln (t(k)-m(k)+1) - ...
-                 gammaln (t(k)-m(k)-n(k)+x(k)+1) - gammaln (n(k)-x(k)+1) - ...
-                 gammaln (t(k)+1) + gammaln (t(k)-n(k)+1) + gammaln (n(k)+1));
+      y(ok) = exp (gammaln (k(ok)+1) - gammaln (k(ok)-x(ok)+1) - ...
+                   gammaln (x(ok)+1) + gammaln (m(ok)-k(ok)+1) - ...
+                   gammaln (m(ok)-k(ok)-n(ok)+x(ok)+1) - ...
+                   gammaln (n(ok)-x(ok)+1) - gammaln (m(ok)+1) + ...
+                   gammaln (m(ok)-n(ok)+1) + gammaln (n(ok)+1));
     endif
   endif
 
@@ -151,8 +152,8 @@ endfunction
 %! grid on
 %! xlim ([0, 60])
 %! ylim ([0, 0.18])
-%! legend ({"t = 500, m = 50, μ = 100", "t = 500, m = 60, μ = 200", ...
-%!          "t = 500, m = 70, μ = 300"}, "location", "northeast")
+%! legend ({"m = 500, k = 50, μ = 100", "m = 500, k = 60, μ = 200", ...
+%!          "m = 500, k = 70, μ = 300"}, "location", "northeast")
 %! title ("Hypergeometric PDF")
 %! xlabel ("values in x (number of successes)")
 %! ylabel ("density")

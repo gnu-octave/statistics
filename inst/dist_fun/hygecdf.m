@@ -20,26 +20,26 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{p} =} hygecdf (@var{x}, @var{t}, @var{m}, @var{n})
-## @deftypefnx {statistics} {@var{p} =} hygecdf (@var{x}, @var{t}, @var{m}, @var{n}, @qcode{"upper"})
+## @deftypefn  {statistics} {@var{p} =} hygecdf (@var{x}, @var{m}, @var{k}, @var{n})
+## @deftypefnx {statistics} {@var{p} =} hygecdf (@var{x}, @var{m}, @var{k}, @var{n}, @qcode{"upper"})
 ##
 ## Hypergeometric cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) of the hypergeometric distribution with parameters @var{t}, @var{m},
-## and @var{n}.  The size of @var{p} is the common size of @var{x}, @var{t},
-## @var{m}, and @var{n}.  A scalar input functions as a constant matrix of the
+## (CDF) of the hypergeometric distribution with parameters @var{m}, @var{k},
+## and @var{n}.  The size of @var{p} is the common size of @var{x}, @var{m},
+## @var{k}, and @var{n}.  A scalar input functions as a constant matrix of the
 ## same size as the other inputs.
 ##
-## This is the probability of obtaining not more than @var{x} marked items
-## when randomly drawing a sample of size @var{n} without replacement from a
-## population of total size @var{t} containing @var{m} marked items. The
-## parameters @var{t}, @var{m}, and @var{n} must be positive integers with
-## @var{m} and @var{n} not greater than @var{t}.
+## This is the cumulative probability of obtaining not more than @var{x} marked
+## items when randomly drawing a sample of size @var{n} without replacement from
+## a population of total size @var{m} containing @var{k} marked items. The
+## parameters @var{m}, @var{k}, and @var{n} must be positive integers with
+## @var{k} and @var{n} not greater than @var{m}.
 ##
-## @code{[@dots{}] = hygecdf (@var{x}, @var{t}, @var{m}, @var{n}, "upper")}
+## @code{[@dots{}] = hygecdf (@var{x}, @var{m}, @var{k}, @var{n}, "upper")}
 ## computes the upper tail probability of the hypergeometric distribution with
-## parameters @var{t}, @var{m}, and @var{n}, at the values in @var{x}.
+## parameters @var{m}, @var{k}, and @var{n}, at the values in @var{x}.
 ##
 ## Further information about the hypergeometric distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Hypergeometric_distribution}
@@ -47,29 +47,29 @@
 ## @seealso{hygeinv, hygepdf, hygernd, hygestat}
 ## @end deftypefn
 
-function p = hygecdf (x, t, m, n, uflag)
+function p = hygecdf (x, m, k, n, uflag)
 
   ## Check for valid number of input arguments
   if (nargin < 4)
     error ("hygecdf: function called with too few input arguments.");
   endif
 
-  ## Check for common size of X, T, M, and N
-  if (! isscalar (x) || ! isscalar (t) || ! isscalar (m) || ! isscalar (n))
-    [retval, x, t, m, n] = common_size (x, t, m, n);
+  ## Check for common size of X, T, k, and N
+  if (! isscalar (x) || ! isscalar (m) || ! isscalar (k) || ! isscalar (n))
+    [retval, x, m, k, n] = common_size (x, m, k, n);
     if (retval > 0)
-      error ("hygecdf: X, T, M, and N must be of common size or scalars.");
+      error ("hygecdf: X, T, k, and N must be of common size or scalars.");
     endif
   endif
 
-  ## Check for X, T, M, and N being reals
-  if (iscomplex (x) || iscomplex (t) || iscomplex (m) || iscomplex (n))
-    error ("hygecdf: X, T, M, and N must not be complex.");
+  ## Check for X, T, k, and N being reals
+  if (iscomplex (x) || iscomplex (m) || iscomplex (k) || iscomplex (n))
+    error ("hygecdf: X, T, k, and N must not be complex.");
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (t, "single")
-                        || isa (m, "single") || isa (n, "single"))
+  if (isa (x, "single") || isa (m, "single")
+                        || isa (k, "single") || isa (n, "single"))
     p = zeros (size (x), "single");
   else
     p = zeros (size (x));
@@ -78,54 +78,54 @@ function p = hygecdf (x, t, m, n, uflag)
   ## Check for "upper" flag
   if (nargin > 4 && strcmpi (uflag, "upper"))
     x = n - floor(x) - 1;
-    m = t - m;
+    k = m - k;
   elseif (nargin > 4 && ! strcmpi (uflag, "upper"))
     error ("hygecdf: invalid argument for upper tail.");
   endif
 
   ## Force 1 where required
-  k1 = (x >= n | x >= m);
-  p(k1) = 1;
+  is_1 = (x >= n | x >= k);
+  p(is_1) = 1;
 
   ## Force NaNs where required
-  k2 = (isnan (x) | isnan (t) | isnan (m) | isnan (n) | ...
-        t < 0 | m < 0 | n < 0 | round (t) != t | round (m) != m | ...
-        round (n) != n | n > t | m > t);
-  p(k2) = NaN;
+  is_nan = (isnan (x) | isnan (m) | isnan (k) | isnan (n) | ...
+            m < 0 | k < 0 | n < 0 | round (m) != m | round (k) != k | ...
+            round (n) != n | n > m | k > m);
+  p(is_nan) = NaN;
 
   ## Get values for which P = 0
-  k3 = (t - m - n + x + 1 <= 0 | x < 0);
+  is_0 = (m - k - n + x + 1 <= 0 | x < 0);
 
-  ok = ! (k1 | k2 | k3);
+  ok = ! (is_1 | is_nan | is_0);
 
   ## Compute hypergeometric CDF
-  if any(ok(:))
+  if (any (ok(:)))
     ## For improved accuracy, compute the upper tail 1-p instead
     ## of the lower tail pfor x values that are larger than the mean
-    lo = (x <= m .* n ./ t);
+    lo = (x <= k .* n ./ m);
     ok_lo = ok & lo;
     if (any (ok_lo(:)))
-      p(ok_lo) = localPDF (floor (x(ok_lo)), t(ok_lo), m(ok_lo), n(ok_lo));
+      p(ok_lo) = localPDF (floor (x(ok_lo)), m(ok_lo), k(ok_lo), n(ok_lo));
     endif
     ok_hi = ok & ! lo;
     if (any (ok_hi(:)))
       p(ok_hi) = 1 - localPDF (n(ok_hi) - floor (x(ok_hi)) - 1, ...
-                               t(ok_hi), t(ok_hi) - m(ok_hi), n(ok_hi));
+                               m(ok_hi), m(ok_hi) - k(ok_hi), n(ok_hi));
     endif
   endif
 
 endfunction
 
-function p = localPDF (x, t, m, n)
-  HPDF = hygepdf (x, t, m, n);
+function p = localPDF (x, m, k, n)
+  HPDF = hygepdf (x, m, k, n);
 
-  ## Compute hygecdf(x,t,m,n)/hygepdf(x,t,m,n) with a series
+  ## Compute hygecdf(x,m,k,n)/hygepdf(x,m,k,n) with a series
   ## whose terms can be computed recursively, backwards.
   xmax = max (x(:));
   ybig = repmat((0:xmax)', 1, length (x));
   xbig = repmat(x(:)', xmax + 1, 1);
-  mbig = repmat(t(:)', xmax + 1, 1);
-  kbig = repmat(m(:)', xmax + 1, 1);
+  mbig = repmat(m(:)', xmax + 1, 1);
+  kbig = repmat(k(:)', xmax + 1, 1);
   nbig = repmat(n(:)', xmax + 1, 1);
 
   terms = ((ybig+1) .* (mbig-kbig-nbig+ybig+1)) ./ ((nbig-ybig) .* (kbig-ybig));
@@ -149,8 +149,8 @@ endfunction
 %! plot (x, p1, "*b", x, p2, "*g", x, p3, "*r")
 %! grid on
 %! xlim ([0, 60])
-%! legend ({"t = 500, m = 50, μ = 100", "t = 500, m = 60, μ = 200", ...
-%!          "t = 500, m = 70, μ = 300"}, "location", "southeast")
+%! legend ({"m = 500, k = 50, n = 100", "m = 500, k = 60, n = 200", ...
+%!          "m = 500, k = 70, n = 300"}, "location", "southeast")
 %! title ("Hypergeometric CDF")
 %! xlabel ("values in x (number of successes)")
 %! ylabel ("probability")
@@ -199,13 +199,13 @@ endfunction
 %!error<hygecdf: function called with too few input arguments.> hygecdf (1,2,3)
 %!error<hygecdf: invalid argument for upper tail.> hygecdf (1,2,3,4,5)
 %!error<hygecdf: invalid argument for upper tail.> hygecdf (1,2,3,4,"uper")
-%!error<hygecdf: X, T, M, and N must be of common size or scalars.> ...
+%!error<hygecdf: X, T, k, and N must be of common size or scalars.> ...
 %! hygecdf (ones (2), ones (3), 1, 1)
-%!error<hygecdf: X, T, M, and N must be of common size or scalars.> ...
+%!error<hygecdf: X, T, k, and N must be of common size or scalars.> ...
 %! hygecdf (1, ones (2), ones (3), 1)
-%!error<hygecdf: X, T, M, and N must be of common size or scalars.> ...
+%!error<hygecdf: X, T, k, and N must be of common size or scalars.> ...
 %! hygecdf (1, 1, ones (2), ones (3))
-%!error<hygecdf: X, T, M, and N must not be complex.> hygecdf (i, 2, 2, 2)
-%!error<hygecdf: X, T, M, and N must not be complex.> hygecdf (2, i, 2, 2)
-%!error<hygecdf: X, T, M, and N must not be complex.> hygecdf (2, 2, i, 2)
-%!error<hygecdf: X, T, M, and N must not be complex.> hygecdf (2, 2, 2, i)
+%!error<hygecdf: X, T, k, and N must not be complex.> hygecdf (i, 2, 2, 2)
+%!error<hygecdf: X, T, k, and N must not be complex.> hygecdf (2, i, 2, 2)
+%!error<hygecdf: X, T, k, and N must not be complex.> hygecdf (2, 2, i, 2)
+%!error<hygecdf: X, T, k, and N must not be complex.> hygecdf (2, 2, 2, i)

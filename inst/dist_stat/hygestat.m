@@ -1,4 +1,5 @@
 ## Copyright (C) 2006, 2007 Arno Onken <asnelt@asnelt.org>
+## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,117 +17,109 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {[@var{mn}, @var{v}] =} hygestat (@var{t}, @var{m}, @var{n})
+## @deftypefn  {statistics} {[@var{mn}, @var{v}] =} hygestat (@var{m}, @var{k}, @var{n})
 ##
 ## Compute statistics of the hypergeometric distribution.
 ##
-## @subheading Arguments
+## @code{[@var{mn}, @var{v}] = hygestat (@var{m}, @var{k}, @var{n})} returns the
+## mean and variance of the hypergeometric distribution parameters @var{m},
+## @var{k}, and @var{n}.
 ##
-## @itemize @bullet
+## @itemize
 ## @item
-## @var{t} is the total size of the population of the hypergeometric
-## distribution. The elements of @var{t} must be positive natural numbers
+## @var{m} is the total size of the population of the hypergeometric
+## distribution. The elements of @var{m} must be positive natural numbers.
 ##
 ## @item
-## @var{m} is the number of marked items of the hypergeometric distribution.
-## The elements of @var{m} must be natural numbers
+## @var{k} is the number of marked items of the hypergeometric distribution.
+## The elements of @var{k} must be natural numbers.
 ##
 ## @item
 ## @var{n} is the size of the drawn sample of the hypergeometric
-## distribution. The elements of @var{n} must be positive natural numbers
-## @end itemize
-## @var{t}, @var{m}, and @var{n} must be of common size or scalar
-##
-## @subheading Return values
-##
-## @itemize @bullet
-## @item
-## @var{mn} is the mean of the hypergeometric distribution
-##
-## @item
-## @var{v} is the variance of the hypergeometric distribution
+## distribution. The elements of @var{n} must be positive natural numbers.
 ## @end itemize
 ##
-## @subheading Examples
+## The size of @var{mn} (mean) and @var{v} (variance) is the common size of the
+## input arguments.  A scalar input functions as a constant matrix of the
+## same size as the other inputs.
 ##
-## @example
-## @group
-## t = 4:9;
-## m = 0:5;
-## n = 1:6;
-## [mn, v] = hygestat (t, m, n)
-## @end group
+## Further information about the hypergeometric distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Hypergeometric_distribution}
 ##
-## @group
-## [mn, v] = hygestat (t, m, 2)
-## @end group
-## @end example
-##
-## @subheading References
-##
-## @enumerate
-## @item
-## Wendy L. Martinez and Angel R. Martinez. @cite{Computational Statistics
-## Handbook with MATLAB}. Appendix E, pages 547-557, Chapman & Hall/CRC,
-## 2001.
-##
-## @item
-## Athanasios Papoulis. @cite{Probability, Random Variables, and Stochastic
-## Processes}. McGraw-Hill, New York, second edition, 1984.
-## @end enumerate
+## @seealso{hygecdf, hygeinv, hygepdf, hygernd}
 ## @end deftypefn
 
-function [mn, v] = hygestat (t, m, n)
+function [mn, v] = hygestat (m, k, n)
 
-  # Check arguments
-  if (nargin != 3)
-    print_usage ();
-  endif
-
-  if (! isempty (t) && ! ismatrix (t))
-    error ("hygestat: t must be a numeric matrix");
-  endif
-  if (! isempty (m) && ! ismatrix (m))
-    error ("hygestat: m must be a numeric matrix");
-  endif
-  if (! isempty (n) && ! ismatrix (n))
-    error ("hygestat: n must be a numeric matrix");
+  ## Check for valid number of input arguments
+  if (nargin < 3)
+    error ("hygestat: function called with too few input arguments.");
   endif
 
-  if (! isscalar (t) || ! isscalar (m) || ! isscalar (n))
-    [retval, t, m, n] = common_size (t, m, n);
+  ## Check for M, K, and N being numeric
+  if (! (isnumeric (m) && isnumeric (k) && isnumeric (n)))
+    error ("hygestat: M, K, and N must be numeric.");
+  endif
+
+  ## Check for M, K, and N being real
+  if (iscomplex (m) || iscomplex (k) || iscomplex (n))
+    error ("hygestat: M, K, and N must not be complex.");
+  endif
+
+  ## Check for common size of M, K, and N
+  if (! isscalar (m) || ! isscalar (k) || ! isscalar (n))
+    [retval, m, k, n] = common_size (m, k, n);
     if (retval > 0)
-      error ("hygestat: t, m and n must be of common size or scalar");
+      error ("hygestat: M, K, and N must be of common size or scalars.");
     endif
   endif
 
-  # Calculate moments
-  mn = (n .* m) ./ t;
-  v = (n .* (m ./ t) .* (1 - m ./ t) .* (t - n)) ./ (t - 1);
+  ## Calculate moments
+  mn = (n .* k) ./ m;
+  v = (n .* (k ./ m) .* (1 - k ./ m) .* (m - n)) ./ (m - 1);
 
-  # Continue argument check
-  k = find (! (t >= 0) | ! (m >= 0) | ! (n > 0) | ! (t == round (t)) | ! (m == round (m)) | ! (n == round (n)) | ! (m <= t) | ! (n <= t));
-  if (any (k))
-    mn(k) = NaN;
-    v(k) = NaN;
+  ## Continue argument check
+  is_nan = find (! (m >= 0) | ! (k >= 0) | ! (n > 0) | ! (m == round (m)) | ...
+                 ! (k == round (k)) | ! (n == round (n)) | ! (k <= m) | ...
+                 ! (n <= m));
+  if (any (is_nan))
+    mn(is_nan) = NaN;
+    v(is_nan) = NaN;
   endif
 
 endfunction
 
+## Input validation tests
+%!error<hygestat: function called with too few input arguments.> hygestat ()
+%!error<hygestat: function called with too few input arguments.> hygestat (1)
+%!error<hygestat: function called with too few input arguments.> hygestat (1, 2)
+%!error<hygestat: M, K, and N must be numeric.> hygestat ({}, 2, 3)
+%!error<hygestat: M, K, and N must be numeric.> hygestat (1, "", 3)
+%!error<hygestat: M, K, and N must be numeric.> hygestat (1, 2, "")
+%!error<hygestat: M, K, and N must not be complex.> hygestat (i, 2, 3)
+%!error<hygestat: M, K, and N must not be complex.> hygestat (1, i, 3)
+%!error<hygestat: M, K, and N must not be complex.> hygestat (1, 2, i)
+%!error<hygestat: M, K, and N must be of common size or scalars.> ...
+%! hygestat (ones (3), ones (2), 3)
+%!error<hygestat: M, K, and N must be of common size or scalars.> ...
+%! hygestat (ones (2), 2, ones (3))
+%!error<hygestat: M, K, and N must be of common size or scalars.> ...
+%! hygestat (1, ones (2), ones (3))
+
+## Output validation tests
 %!test
-%! t = 4:9;
-%! m = 0:5;
+%! m = 4:9;
+%! k = 0:5;
 %! n = 1:6;
-%! [mn, v] = hygestat (t, m, n);
+%! [mn, v] = hygestat (m, k, n);
 %! expected_mn = [0.0000, 0.4000, 1.0000, 1.7143, 2.5000, 3.3333];
 %! expected_v = [0.0000, 0.2400, 0.4000, 0.4898, 0.5357, 0.5556];
 %! assert (mn, expected_mn, 0.001);
 %! assert (v, expected_v, 0.001);
-
 %!test
-%! t = 4:9;
-%! m = 0:5;
-%! [mn, v] = hygestat (t, m, 2);
+%! m = 4:9;
+%! k = 0:5;
+%! [mn, v] = hygestat (m, k, 2);
 %! expected_mn = [0.0000, 0.4000, 0.6667, 0.8571, 1.0000, 1.1111];
 %! expected_v = [0.0000, 0.2400, 0.3556, 0.4082, 0.4286, 0.4321];
 %! assert (mn, expected_mn, 0.001);
