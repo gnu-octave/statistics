@@ -312,16 +312,16 @@
  Improvements:
  =============
 
- ** cdf: add support for Rician distribution
+ ** cdf: add support for Rician and location-scale T distributions
 
  ** gevlike: deprecate gradient as a second output argument (undocumented)
 
- ** icdf: add support for Rician distribution
+ ** icdf: add support for Rician and location-scale T distributions
 
- ** pdf: add support for Rician distribution
+ ** pdf: add support for Rician and location-scale T distributions
 
- ** random: add support for Rician distribution
+ ** random: add support for Rician and location-scale T distributions
 
  ** ricernd: fixed bug that produced erroneous results
 
- ** added input validation to all distribution *stat functions
+ ** updated input validation and documentation to distribution *stat functions
