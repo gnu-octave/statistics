@@ -86,6 +86,7 @@
 ## @item @qcode{"Rayleigh"} @tab @tab @qcode{"rayl"} @tab @tab 1
 ## @item @qcode{"Rician"} @tab @tab @qcode{"rice"} @tab @tab 2
 ## @item @qcode{"Student T"} @tab @tab @qcode{"t"} @tab @tab 1
+## @item @qcode{"location-scale T"} @tab @tab @qcode{"tls"} @tab @tab 3
 ## @item @qcode{"Triangular"} @tab @tab @qcode{"tri"} @tab @tab 3
 ## @item @qcode{"Discrete Uniform"} @tab @tab @qcode{"unid"} @tab @tab 1
 ## @item @qcode{"Uniform"} @tab @tab @qcode{"unif"} @tab @tab 2
@@ -135,6 +136,7 @@ function p = cdf (name, x, varargin)
     {"rayl"     , "Rayleigh"},                  @raylcdf,      1, ...
     {"rice"     , "Rician"},                    @ricecdf,      2, ...
     {"t"        , "Student T"},                 @tcdf,         1, ...
+    {"tls"      , "location-scale T"},          @tlscdf,       3, ...
     {"tri"      , "Triangular"},                @tricdf,       3, ...
     {"unid"     , "Discrete Uniform"},          @unidcdf,      1, ...
     {"unif"     , "Uniform"},                   @unifcdf,      2, ...
@@ -268,6 +270,8 @@ endfunction
 %!assert (cdf ("rice", x, 5, 1, "upper"), ricecdf (x, 5, 1, "upper"))
 %!assert (cdf ("Student T", x, 5), tcdf (x, 5))
 %!assert (cdf ("t", x, 5, "upper"), tcdf (x, 5, "upper"))
+%!assert (cdf ("location-scale T", x, 5, 1, 2), tlscdf (x, 5, 1, 2))
+%!assert (cdf ("tls", x, 5, 1, 2, "upper"), tlscdf (x, 5, 1, 2, "upper"))
 %!assert (cdf ("Triangular", x, 5, 2, 2), tricdf (x, 5, 2, 2))
 %!assert (cdf ("tri", x, 5, 2, 2, "upper"), tricdf (x, 5, 2, 2, "upper"))
 %!assert (cdf ("Discrete Uniform", x, 5), unidcdf (x, 5))

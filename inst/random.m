@@ -77,6 +77,7 @@
 ## @item @qcode{"Rayleigh"} @tab @tab @qcode{"rayl"} @tab @tab 1
 ## @item @qcode{"Rician"} @tab @tab @qcode{"rice"} @tab @tab 2
 ## @item @qcode{"Student T"} @tab @tab @qcode{"t"} @tab @tab 1
+## @item @qcode{"location-scale T"} @tab @tab @qcode{"tls"} @tab @tab 3
 ## @item @qcode{"Triangular"} @tab @tab @qcode{"tri"} @tab @tab 3
 ## @item @qcode{"Discrete Uniform"} @tab @tab @qcode{"unid"} @tab @tab 1
 ## @item @qcode{"Uniform"} @tab @tab @qcode{"unif"} @tab @tab 2
@@ -126,6 +127,7 @@ function r = random (name, varargin)
     {"rayl"     , "Rayleigh"},                  @raylrnd,      1, ...
     {"rice"     , "Rician"},                    @ricernd,      2, ...
     {"t"        , "Student T"},                 @trnd,         1, ...
+    {"tls"      , "location-scale T"},          @tlsrnd,       3, ...
     {"tri"      , "Triangular"},                @trirnd,       3, ...
     {"unid"     , "Discrete Uniform"},          @unidrnd,      1, ...
     {"unif"     , "Uniform"},                   @unifrnd,      2, ...
@@ -244,6 +246,8 @@ endfunction
 %!assert (size (random ("rice", 5, 1, [10, 20])), size (ricernd (5, 1, 10, 20)))
 %!assert (size (random ("Student T", 5, [10, 20])), size (trnd (5, 10, 20)))
 %!assert (size (random ("t", 5, [10, 20])), size (trnd (5, 10, 20)))
+%!assert (size (random ("location-scale T", 5, 1, 2, [10, 20])), size (tlsrnd (5, 1, 2, 10, 20)))
+%!assert (size (random ("tls", 5, 1, 2, [10, 20])), size (tlsrnd (5, 1, 2, 10, 20)))
 %!assert (size (random ("Triangular", 5, 2, 2, [10, 20])), size (trirnd (5, 2, 2, 10, 20)))
 %!assert (size (random ("tri", 5, 2, 2, [10, 20])), size (trirnd (5, 2, 2, 10, 20)))
 %!assert (size (random ("Discrete Uniform", 5, [10, 20])), size (unidrnd (5, 10, 20)))

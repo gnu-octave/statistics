@@ -79,6 +79,7 @@
 ## @item @qcode{"Rayleigh"} @tab @tab @qcode{"rayl"} @tab @tab 1
 ## @item @qcode{"Rician"} @tab @tab @qcode{"rice"} @tab @tab 2
 ## @item @qcode{"Student T"} @tab @tab @qcode{"t"} @tab @tab 1
+## @item @qcode{"location-scale T"} @tab @tab @qcode{"tls"} @tab @tab 3
 ## @item @qcode{"Triangular"} @tab @tab @qcode{"tri"} @tab @tab 3
 ## @item @qcode{"Discrete Uniform"} @tab @tab @qcode{"unid"} @tab @tab 1
 ## @item @qcode{"Uniform"} @tab @tab @qcode{"unif"} @tab @tab 2
@@ -128,6 +129,7 @@ function y = pdf (name, x, varargin)
     {"rayl"     , "Rayleigh"},                  @raylpdf,      1, ...
     {"rice"     , "Rician"},                    @ricepdf,      2, ...
     {"t"        , "Student T"},                 @tpdf,         1, ...
+    {"tls"      , "location-scale T"},          @tlspdf,       3, ...
     {"tri"      , "Triangular"},                @tripdf,       3, ...
     {"unid"     , "Discrete Uniform"},          @unidpdf,      1, ...
     {"unif"     , "Uniform"},                   @unifpdf,      2, ...
@@ -247,6 +249,8 @@ endfunction
 %!assert (pdf ("rice", x, 5, 1), ricepdf (x, 5, 1))
 %!assert (pdf ("Student T", x, 5), tpdf (x, 5))
 %!assert (pdf ("t", x, 5), tpdf (x, 5))
+%!assert (pdf ("location-scale T", x, 5, 1, 2), tlspdf (x, 5, 1, 2))
+%!assert (pdf ("tls", x, 5, 1, 2), tlspdf (x, 5, 1, 2))
 %!assert (pdf ("Triangular", x, 5, 2, 2), tripdf (x, 5, 2, 2))
 %!assert (pdf ("tri", x, 5, 2, 2), tripdf (x, 5, 2, 2))
 %!assert (pdf ("Discrete Uniform", x, 5), unidpdf (x, 5))

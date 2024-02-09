@@ -78,6 +78,7 @@
 ## @item @qcode{"Rayleigh"} @tab @tab @qcode{"rayl"} @tab @tab 1
 ## @item @qcode{"Rician"} @tab @tab @qcode{"rice"} @tab @tab 2
 ## @item @qcode{"Student T"} @tab @tab @qcode{"t"} @tab @tab 1
+## @item @qcode{"location-scale T"} @tab @tab @qcode{"tls"} @tab @tab 3
 ## @item @qcode{"Triangular"} @tab @tab @qcode{"tri"} @tab @tab 3
 ## @item @qcode{"Discrete Uniform"} @tab @tab @qcode{"unid"} @tab @tab 1
 ## @item @qcode{"Uniform"} @tab @tab @qcode{"unif"} @tab @tab 2
@@ -127,6 +128,7 @@ function x = icdf (name, p, varargin)
     {"rayl"     , "Rayleigh"},                  @raylinv,      1, ...
     {"rice"     , "Rician"},                    @riceinv,      2, ...
     {"t"        , "Student T"},                 @tinv,         1, ...
+    {"tls"      , "location-scale T"},          @tlsinv,       3, ...
     {"tri"      , "Triangular"},                @triinv,       3, ...
     {"unid"     , "Discrete Uniform"},          @unidinv,      1, ...
     {"unif"     , "Uniform"},                   @unifinv,      2, ...
@@ -246,6 +248,8 @@ endfunction
 %!assert (icdf ("rice", p, 5, 1), riceinv (p, 5, 1))
 %!assert (icdf ("Student T", p, 5), tinv (p, 5))
 %!assert (icdf ("t", p, 5), tinv (p, 5))
+%!assert (icdf ("location-scale T", p, 5, 1, 2), tlsinv (p, 5, 1, 2))
+%!assert (icdf ("tls", p, 5, 1, 2), tlsinv (p, 5, 1, 2))
 %!assert (icdf ("Triangular", p, 5, 2, 2), triinv (p, 5, 2, 2))
 %!assert (icdf ("tri", p, 5, 2, 2), triinv (p, 5, 2, 2))
 %!assert (icdf ("Discrete Uniform", p, 5), unidinv (p, 5))
