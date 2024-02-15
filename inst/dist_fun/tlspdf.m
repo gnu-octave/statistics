@@ -31,7 +31,7 @@
 ## Further information about the location-scale Student's T distribution can be
 ## found at @url{https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution}
 ##
-## @seealso{tlscdf, tlspdf, tlsrnd, tlsfit, tlslike, tlsstat}
+## @seealso{tlscdf, tlsinv, tlsrnd, tlsfit, tlslike, tlsstat}
 ## @end deftypefn
 
 function y = tlspdf (x, mu, sigma, df)
