@@ -62,10 +62,10 @@ function [phat, pci] = mle (x, varargin)
         endif
       case "ntrials"
         ntrials = varargin{2};
-        if (! (isscalar (ntrials) && isreal (alpha) && ntrials > 0
+        if (! (isscalar (ntrials) && isreal (ntrials) && ntrials > 0
                                   && fix (ntrials) == ntrials))
           error (strcat (["mle: 'ntrials' argument must be a positive"], ...
-                         [" integer scalar value"]));
+                         [" integer scalar value."]));
         endif
       case {"theta", "mu"}
         mu = varargin{2};
@@ -88,7 +88,7 @@ function [phat, pci] = mle (x, varargin)
   endwhile
 
   ## Switch to known distributions
-  switch (tolower (dist))
+  switch (tolower (distname))
 
     case "bernoulli"
       if (! isempty (censor))
@@ -225,6 +225,7 @@ function [phat, pci] = mle (x, varargin)
       if (! isempty (censor))
         error (strcat (["mle: censoring is not supported for"], ...
                        [" the Half Normal distribution."]));
+      endif
       if (! isempty (freq))
         x = expandFreq (x, freq);
       endif
@@ -330,7 +331,7 @@ function [phat, pci] = mle (x, varargin)
         [phat, pci] = tlsfit (x, alpha, censor, freq, options);
       endif
 
-    case {"unid", "uniform discrete", "discrete uniform", 'discrete'}
+    case {"unid", "uniform discrete", "discrete uniform", "discrete"}
       if (! isempty (censor))
         error (strcat (["mle: censoring is not supported for"], ...
                        [" the Discrete Uniform distribution."]));
@@ -368,9 +369,6 @@ endfunction
 
 ## Helper function for expanding data according to frequency vector
 function xf = expandFreq (x, freq)
-  if (! isequal (size (x), size (freq)))
-    error ("mle: X and FREQ vectors mismatch.");
-  endif
   if (! all (freq == round (freq)) || any (freq < 0))
     error ("mle: FREQ vector must contain non-negative integer values.");
   endif
@@ -379,3 +377,66 @@ function xf = expandFreq (x, freq)
     xf = [xf, repmat(x(i), 1, freq(i))];
   endfor
 endfunction
+
+## Test input validation
+%!error <mle: X must be a numeric vector of real values.> mle (ones (2))
+%!error <mle: X must be a numeric vector of real values.> mle ("text")
+%!error <mle: X must be a numeric vector of real values.> mle ([1, 2, 3, i, 5])
+%!error <mle: optional arguments must be in NAME-VALUE pairs.> ...
+%! mle ([1:50], "distribution")
+%!error <mle: 'censoring' argument must have the same size as the input data in X.> ...
+%! mle ([1:50], "censoring", logical ([1,0,1,0]))
+%!error <mle: 'frequency' argument must have the same size as the input data in X.> ...
+%! mle ([1:50], "frequency", [1,0,1,0])
+%!error <mle: invalid value for 'alpha' argument.> mle ([1:50], "alpha", [0.05, 0.01])
+%!error <mle: invalid value for 'alpha' argument.> mle ([1:50], "alpha", 1)
+%!error <mle: invalid value for 'alpha' argument.> mle ([1:50], "alpha", -1)
+%!error <mle: invalid value for 'alpha' argument.> mle ([1:50], "alpha", i)
+%!error <mle: 'ntrials' argument must be a positive integer scalar value.> ...
+%! mle ([1:50], "ntrials", -1)
+%!error <mle: 'ntrials' argument must be a positive integer scalar value.> ...
+%! mle ([1:50], "ntrials", [20, 50])
+%!error <mle: 'ntrials' argument must be a positive integer scalar value.> ...
+%! mle ([1:50], "ntrials", [20.3])
+%!error <mle: 'ntrials' argument must be a positive integer scalar value.> ...
+%! mle ([1:50], "ntrials", 3i)
+%!error <mle: 'options' argument must be a structure compatible for 'fminsearch'.> ...
+%! mle ([1:50], "options", 4)
+%!error <mle: 'options' argument must be a structure compatible for 'fminsearch'.> ...
+%! mle ([1:50], "options", struct ("x", 3))
+%!error <mle: unknown parameter name.> mle ([1:50], "NAME", "value")
+%!error <mle: censoring is not supported for the Bernoulli distribution.> ...
+%! mle ([1 0 1 0], "distribution", "bernoulli", "censoring", [1 1 0 0])
+%!error <mle: invalid data for the Bernoulli distribution.> ...
+%! mle ([1 2 1 0], "distribution", "bernoulli")
+%!error <mle: censoring is not supported for the Beta distribution.> ...
+%! mle ([1 0 1 0], "distribution", "beta", "censoring", [1 1 0 0])
+%!error <mle: censoring is not supported for the Binomial distribution.> ...
+%! mle ([1 0 1 0], "distribution", "bino", "censoring", [1 1 0 0])
+%!error <mle: 'Ntrials' parameter is required for the Binomial distribution.> ...
+%! mle ([1 0 1 0], "distribution", "bino")
+%!error <mle: censoring is not supported for the Geometric distribution.> ...
+%! mle ([1 0 1 0], "distribution", "geo", "censoring", [1 1 0 0])
+%!error <mle: censoring is not supported for the Generalized Extreme Value distribution.> ...
+%! mle ([1 0 1 0], "distribution", "gev", "censoring", [1 1 0 0])
+%!error <mle: censoring is not supported for the Generalized Pareto distribution.> ...
+%! mle ([1 0 1 0], "distribution", "gp", "censoring", [1 1 0 0])
+%!error <mle: invalid 'theta' location parameter for the Generalized Pareto distribution.> ...
+%! mle ([1 0 -1 0], "distribution", "gp")
+%!error <mle: censoring is not supported for the Half Normal distribution.> ...
+%! mle ([1 0 1 0], "distribution", "hn", "censoring", [1 1 0 0])
+%!error <mle: invalid 'mu' location parameter for the Half Normal distribution.> ...
+%! mle ([1 0 -1 0], "distribution", "hn")
+%!error <mle: censoring is not supported for the Negative Binomial distribution.> ...
+%! mle ([1 0 1 0], "distribution", "nbin", "censoring", [1 1 0 0])
+%!error <mle: censoring is not supported for the Poisson distribution.> ...
+%! mle ([1 0 1 0], "distribution", "poisson", "censoring", [1 1 0 0])
+%!error <mle: censoring is not supported for the Discrete Uniform distribution.> ...
+%! mle ([1 0 1 0], "distribution", "unid", "censoring", [1 1 0 0])
+%!error <mle: censoring is not supported for the Continuous Uniform distribution.> ...
+%! mle ([1 0 1 0], "distribution", "unif", "censoring", [1 1 0 0])
+%!error <mle: unrecognized distribution name.> mle ([1:50], "distribution", "value")
+%!error <mle: censoring is not supported for the Continuous Uniform distribution.> ...
+%! mle ([1 0 1 0], "distribution", "unif", "censoring", [1 1 0 0])
+%!error <mle: FREQ vector must contain non-negative integer values.> ...
+%! mle ([1 0 1 0], "distribution", "nbin", "frequency", [-1 1 0 0])
