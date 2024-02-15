@@ -796,8 +796,8 @@ endfunction
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = tLocationScaleDistribution(1, 1);
-%! pd(2) = tLocationScaleDistribution(1, 3);
+%! pd = tLocationScaleDistribution (0, 1, 1);
+%! pd(2) = tLocationScaleDistribution (0, 1, 3);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)
