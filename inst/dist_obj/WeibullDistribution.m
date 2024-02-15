@@ -22,11 +22,6 @@ classdef WeibullDistribution
   ##
   ## Weibull probability distribution object.
   ##
-  ## In probability theory and statistics, the Weibull distribution is a
-  ## continuous probability distribution.  It models a broad range of random
-  ## variables, largely in the nature of a time to failure or time between
-  ## events.
-  ##
   ## A @code{WeibullDistribution} object consists of parameters, a model
   ## description, and sample data for a Weibull probability distribution.
   ##
@@ -109,18 +104,18 @@ classdef WeibullDistribution
 
   methods (Hidden)
 
-    function pd = WeibullDistribution (lambda, k)
+    function this = WeibullDistribution (lambda, k)
       if (nargin == 0)
         lambda = 1;
         k = 1;
       endif
       checkparams (lambda, k)
-      pd.InputData = [];
-      pd.IsTruncated = false;
-      pd.NegLogLikelihood = [];
-      pd.ParameterValues = [lambda, k];
-      pd.ParameterIsFixed = [true, true];
-      pd.ParameterCovariance = zeros (pd.NumParameters);
+      this.InputData = [];
+      this.IsTruncated = false;
+      this.NegLogLikelihood = [];
+      this.ParameterValues = [lambda, k];
+      this.ParameterIsFixed = [true, true];
+      this.ParameterCovariance = zeros (this.NumParameters);
     endfunction
 
     function display (this)
@@ -545,7 +540,7 @@ classdef WeibullDistribution
     ## @var{makedist} function, but it includes the truncation interval.
     ##
     ## @end deftypefn
-    function t = truncate (this, lower, upper)
+    function this = truncate (this, lower, upper)
       if (! isscalar (this))
         error ("truncate: requires a scalar probability distribution.");
       endif
@@ -557,7 +552,9 @@ classdef WeibullDistribution
       this.Truncation = [lower, upper];
       this.IsTruncated = true;
       this.InputData = [];
-      t = this;
+      this.NegLogLikelihood = [];
+      this.ParameterIsFixed = [true, true];
+      this.ParameterCovariance = zeros (this.NumParameters);
     endfunction
 
     ## -*- texinfo -*-
