@@ -67,6 +67,8 @@ Descriptive Statistics
  std
  trimmean
  var
+Distribution Classes
+ WeibullDistribution
 Distribution Fitting
  betafit
  betalike
@@ -112,6 +114,8 @@ Distribution Fitting
  rayllike
  ricefit
  ricelike
+ tlsfit
+ tlslike
  unidfit
  unifit
  wblfit
@@ -191,6 +195,12 @@ Distribution Statistics
  unidstat
  unifstat
  wblstat
+Distribution Wrappers
+ cdf
+ icdf
+ mle
+ pdf
+ random
 Experimental Design
  fullfact
  ff2n
@@ -281,8 +291,3 @@ Regression
 Transforms
  logit
  probit
-Wrappers
- cdf
- icdf
- pdf
- random
