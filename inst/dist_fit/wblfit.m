@@ -23,7 +23,7 @@
 ## @deftypefnx {statistics} {[@dots{}] =} wblfit (@var{x}, @var{alpha}, @var{censor}, @var{freq})
 ## @deftypefnx {statistics} {[@dots{}] =} wblfit (@var{x}, @var{alpha}, @var{censor}, @var{freq}, @var{options})
 ##
-## Estimate mean and confidence intervals for the Weibull distribution.
+## Estimate parameters and confidence intervals for the Weibull distribution.
 ##
 ## @code{@var{muhat} = wblfit (@var{x})} returns the maximum likelihood
 ## estimates of the parameters of the Weibull distribution given the data in
@@ -51,7 +51,7 @@
 ## elements in @var{x}, but it can contain any non-integer non-negative values.
 ## By default, or if left empty, @qcode{@var{freq} = ones (size (@var{x}))}.
 ##
-## @code{[@dots{}] = evfit (@dots{}, @var{options})} specifies control
+## @code{[@dots{}] = wblfit (@dots{}, @var{options})} specifies control
 ## parameters for the iterative algorithm used to compute ML estimates with the
 ## @code{fminsearch} function.  @var{options} is a structure with the following
 ## fields and their default values:
@@ -166,7 +166,7 @@ endfunction
 %! title ("Three population samples from different Weibull distibutions")
 %! hold off
 
-## Test results
+## Test output
 %!test
 %! x = 1:50;
 %! [paramhat, paramci] = wblfit (x);

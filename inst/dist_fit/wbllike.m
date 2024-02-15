@@ -113,7 +113,7 @@ function [nlogL, acov] = wbllike (params, x, censor, freq)
 
 endfunction
 
-## Results compared with Matlab
+## Test output
 %!test
 %! x = 1:50;
 %! [nlogL, acov] = wbllike ([2.3, 1.2], x);

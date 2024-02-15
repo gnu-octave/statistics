@@ -28,7 +28,7 @@
 ## @code{@var{paramhat} = nbinfit (@var{x})} returns the maximum likelihood
 ## estimates of the parameters of the negative binomial distribution given the
 ## data in vector @var{x}.  @qcode{@var{paramhat}(1)} is the number of successes
-## until the experiment is stopped, @var{r}, and @qcode{@var{paramhat}(1)} is
+## until the experiment is stopped, @var{r}, and @qcode{@var{paramhat}(2)} is
 ## the probability of success in each experiment, @var{ps}.
 ##
 ## @code{[@var{paramhat}, @var{paramci}] = nbinfit (@var{x})} returns the 95%
