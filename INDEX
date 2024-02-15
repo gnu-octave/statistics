@@ -71,56 +71,33 @@ Distribution Classes
  tLocationScaleDistribution
  WeibullDistribution
 Distribution Fitting
- betafit
- betalike
- binofit
- binolike
- bisafit
- bisalike
- burrfit
- burrlike
- evfit
- evlike
- expfit
- explike
- gamfit
- gamlike
+ betafit betalike
+ binofit binolike
+ bisafit bisalike
+ burrfit burrlike
+ evfit evlike
+ expfit explike
+ gamfit gamlike
  geofit
  gevfit_lmom
- gevfit
- gevlike
- gpfit
- gplike
- gumbelfit
- gumbellike
- hnfit
- hnlike
- invgfit
- invglike
- logifit
- logilike
- loglfit
- logllike
- lognfit
- lognlike
- nakafit
- nakalike
- nbinfit
- nbinlike
- normfit
- normlike
- poissfit
- poisslike
- raylfit
- rayllike
- ricefit
- ricelike
- tlsfit
- tlslike
+ gevfit gevlike
+ gpfit gplike
+ gumbelfit gumbellike
+ hnfit hnlike
+ invgfit invglike
+ logifit logilike
+ loglfit logllike
+ lognfit lognlike
+ nakafit nakalike
+ nbinfit nbinlike
+ normfit normlike
+ poissfit poisslike
+ raylfit rayllike
+ ricefit ricelike
+ tlsfit tlslike
  unidfit
  unifit
- wblfit
- wbllike
+ wblfit wbllike
 Distribution Functions
  betacdf betainv betapdf betarnd
  binocdf binoinv binopdf binornd
