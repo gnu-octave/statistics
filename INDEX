@@ -176,6 +176,7 @@ Distribution Statistics
 Distribution Wrappers
  cdf
  icdf
+ makedist
  mle
  pdf
  random
