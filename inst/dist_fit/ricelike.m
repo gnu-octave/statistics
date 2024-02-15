@@ -26,8 +26,8 @@
 ##
 ## @code{@var{nlogL} = ricelike (@var{params}, @var{x})} returns the negative
 ## log likelihood of the data in @var{x} corresponding to the Rician
-## distribution with (1) non-centrality (distance) parameter @var{nu} and (2)
-## scale parameter @var{sigma} given in the two-element vector @var{params}.
+## distribution with (1) non-centrality (distance) parameter @math{nu} and (2)
+## scale parameter @math{sigma} given in the two-element vector @var{params}.
 ##
 ## @code{[@var{nlogL}, @var{acov}] = ricelike (@var{params}, @var{x})} also
 ## returns the inverse of Fisher's information matrix, @var{acov}.  If the input
@@ -202,7 +202,7 @@ function Q = marcumQ1 (a, b)
   z = isnan (Q) & a == 0 & b != Inf;
   if (any(z))
     Q(z) = exp ((-b(z) .^ 2) ./ 2);
-  end
+  endif
 
   ## Compute the remaining cases
   z = isnan (Q) & ! isnan (a) & ! isnan (b);

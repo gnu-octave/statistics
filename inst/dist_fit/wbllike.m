@@ -25,8 +25,8 @@
 ##
 ## @code{@var{nlogL} = wbllike (@var{params}, @var{data})} returns the negative
 ## log-likelihood of the data in @var{x} corresponding to the Weibull
-## distribution with (1) scale parameter @var{lambda} and (2) shape parameter
-## @var{k} given in the two-element vector @var{params}.
+## distribution with (1) scale parameter @math{lambda} and (2) shape parameter
+## @math{k} given in the two-element vector @var{params}.
 ##
 ## @code{[@var{nlogL}, @var{acov}] = wbllike (@var{params}, @var{data})} also
 ## returns the inverse of Fisher's information matrix, @var{acov}.  If the input
