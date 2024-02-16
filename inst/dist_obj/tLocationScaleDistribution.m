@@ -55,7 +55,8 @@ classdef tLocationScaleDistribution
   ## Further information about the location-scale Student's T distribution can be
   ## found at @url{https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution}
   ##
-  ## @seealso{fitdist, makedist}
+  ## @seealso{fitdist, makedist, tlscdf, tlsinv, tlspdf, tlsrnd, tlsfit,
+  ## tlslike, tlsstat}
   ## @end deftypefn
 
   properties (Dependent = true)
@@ -71,7 +72,7 @@ classdef tLocationScaleDistribution
     NumParameters = 3;
     ParameterNames = {"mu", "sigma", "nu"};
     ParameterRange = [-Inf, realmin, realmin; Inf, Inf, Inf];
-    ParameterLogCI = [true, true, true];
+    ParameterLogCI = [false, true, true];
     ParameterDescription = {"Location", "Scale", "Degrees of Freedom"};
   endproperties
 
