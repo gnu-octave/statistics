@@ -12,26 +12,22 @@ classdef UniformDistribution
   ## @multitable @columnfractions 0.25 0.48 0.27
   ## @headitem @var{Parameter} @tab @var{Description} @tab @var{Support}
   ##
-  ## @item @qcode{Lower} @tab Location parameter @tab @math{-Inf < Lower < Inf}
-  ## @item @qcode{Upper} @tab Scale parameter @tab @math{Upper > 0}
-  ## @item @qcode{nu} @tab Degrees of Freedom @tab @math{nu > 0}
+  ## @item @qcode{Lower} @tab Lower limit @tab @math{-Inf < Lower < Upper}
+  ## @item @qcode{Upper} @tab Upper limit @tab @math{Lower < Upper < Inf}
   ## @end multitable
   ##
   ## There are several ways to create a @code{UniformDistribution} object.
   ##
   ## @itemize
-  ## @item Fit a distribution to data using the @code{fitdist} function.
   ## @item Create a distribution with specified parameter values using the
   ## @code{makedist} function.
-  ## @item Use the constructor @qcode{UniformDistribution (@var{lambda},
-  ## @var{Lower})} to create a uniform distribution with specified parameter values.
-  ## @item Use the static method @qcode{UniformDistribution.fit (@var{x},
-  ## @var{censor}, @var{freq}, @var{options})} to a distribution to data @var{x}.
+  ## @item Use the constructor @qcode{UniformDistribution (@var{Lower},
+  ## @var{Upper})} to create a uniform distribution with specified parameter
+  ## values.
   ## @end itemize
   ##
-  ## It is highly recommended to use @code{fitdist} and @code{makedist}
-  ## functions to create probability distribution objects, instead of the
-  ## constructor and the aforementioned static method.
+  ## It is highly recommended to use @code{makedist} function to create
+  ## probability distribution objects, instead of the constructor.
   ##
   ## A @code{UniformDistribution} object contains the following
   ## properties, which can be accessed using dot notation.
@@ -49,10 +45,10 @@ classdef UniformDistribution
   ## @code{pdf}, @code{plot}, @code{random}, @code{std}, @code{truncate},
   ## @code{var}.
   ##
-  ## Further information about the continuous uniform distribution can be found at
-  ## @url{https://en.wikipedia.org/wiki/Continuous_uniform_distribution}
+  ## Further information about the continuous uniform distribution can be found
+  ## at @url{https://en.wikipedia.org/wiki/Continuous_uniform_distribution}
   ##
-  ## @seealso{makedist}
+  ## @seealso{makedist, unifcdf, unifinv, unifpdf, unifrnd, unifit, unifstat}
   ## @end deftypefn
 
   properties (Dependent = true)
