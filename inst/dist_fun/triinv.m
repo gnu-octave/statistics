@@ -24,7 +24,7 @@
 ## Inverse of the triangular cumulative distribution function (iCDF).
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
-## the triangular distribution with parameters @var{a}, @var{b}, and @var{c} on
+## the triangular distribution with parameters @var{a}, @var{b}, and @var{c} in
 ## the interval @qcode{[@var{a}, @var{b}]}.  The size of @var{x} is the common
 ## size of the input arguments.  A scalar input functions as a constant matrix
 ## of the same size as the other inputs.
@@ -32,7 +32,7 @@
 ## Further information about the triangular distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Triangular_distribution}
 ##
-## @seealso{tricdf, tripdf, trirnd}
+## @seealso{tricdf, tripdf, trirnd, tristat}
 ## @end deftypefn
 
 function x = triinv (p, a, b, c)

@@ -28,7 +28,7 @@
 ##
 ## @code{@var{r} = trirnd (@var{sigma})} returns an array of random numbers
 ## chosen from the triangular distribution with parameters @var{a}, @var{b}, and
-## @var{c} on the interval [@var{a}, @var{b}].  The size of @var{r} is the
+## @var{c} in the interval [@var{a}, @var{b}].  The size of @var{r} is the
 ## common size of @var{a}, @var{b}, and @var{c}.  A scalar input functions as a
 ## constant matrix of the same size as the other inputs.
 ##
@@ -41,7 +41,7 @@
 ## Further information about the triangular distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Triangular_distribution}
 ##
-## @seealso{tricdf, triinv, tripdf}
+## @seealso{tricdf, triinv, tripdf, tristat}
 ## @end deftypefn
 
 function rnd = trirnd (a, b, c, varargin)

@@ -25,14 +25,14 @@
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
 ## of the triangular distribution with parameters @var{a}, @var{b}, and @var{c}
-## on the interval @qcode{[@var{a}, @var{b}]}.  The size of @var{y} is the
+## in the interval @qcode{[@var{a}, @var{b}]}.  The size of @var{y} is the
 ## common size of the input arguments.  A scalar input functions as a constant
 ## matrix of the same size as the other inputs.
 ##
 ## Further information about the triangular distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Triangular_distribution}
 ##
-## @seealso{tricdf, triinv, trirnd}
+## @seealso{tricdf, triinv, trirnd, tristat}
 ## @end deftypefn
 
 function y = tripdf (x, a, b, c)

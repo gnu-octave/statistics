@@ -26,7 +26,7 @@
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
 ## (CDF) of the triangular distribution with parameters @var{a}, @var{b}, and
-## @var{c} on the interval @qcode{[@var{a}, @var{b}]}.  The size of @var{p} is
+## @var{c} in the interval @qcode{[@var{a}, @var{b}]}.  The size of @var{p} is
 ## the common size of the input arguments.  A scalar input functions as a
 ## constant matrix of the same size as the other inputs.
 ##
@@ -37,7 +37,7 @@
 ## Further information about the triangular distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Triangular_distribution}
 ##
-## @seealso{triinv, tripdf, trirnd}
+## @seealso{triinv, tripdf, trirnd, tristat}
 ## @end deftypefn
 
 function p = tricdf (x, a, b, c, uflag)
