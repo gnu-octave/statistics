@@ -69,6 +69,7 @@ Descriptive Statistics
  var
 Distribution Classes
  tLocationScaleDistribution
+ UniformDistribution
  WeibullDistribution
 Distribution Fitting
  betafit betalike
@@ -169,6 +170,7 @@ Distribution Statistics
  raylstat
  ricestat
  tlsstat
+ tristat
  tstat
  unidstat
  unifstat
