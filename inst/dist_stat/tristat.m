@@ -21,12 +21,21 @@
 ## Compute statistics of the Triangular distribution.
 ##
 ## @code{[@var{m}, @var{v}] = tristat (@var{a}, @var{b}, @var{c})} returns the
-## mean and variance of the Triangular distribution with parameters @var{a},
-## @var{b}, and @var{c} on the interval @qcode{[@var{a}, @var{b}]}.
+## mean and variance of the Triangular distribution with lower limit parameter
+## @var{a}, peak location (mode) parameter @var{b}, and upper limit parameter
+## @var{c}.
 ##
 ## The size of @var{m} (mean) and @var{v} (variance) is the common size of the
 ## input arguments.  A scalar input functions as a constant matrix of the
 ## same size as the other inputs.
+##
+## Note that the order of the parameter input arguments has been changed after
+## statistics version 1.6.3 in order to be MATLAB compatible with the parameters
+## used in the TriangularDistribution probability distribution object.  More
+## specifically, the positions of the parameters @var{b} and @var{c} have been
+## swapped.  As a result, the naming conventions no longer coinside with those
+## used in Wikipedia, in which @math{b} denotes the upper limit and @math{c}
+## denotes the mode or peak parameter.
 ##
 ## Further information about the triangular distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Triangular_distribution}
@@ -56,7 +65,7 @@ function [m, v] = tristat (a, b, c)
   v = (a .^ 2 + b .^ 2 + c .^ 2 - a .* b - a .* c - b .* c) ./ 18;
 
   ## Continue argument check
-  k = find (! (a < b) | ! (a <= c & c <= b));
+  k = find (! (a < c) | ! (a <= b & b <= c));
   if (any (k))
     m(k) = NaN;
     v(k) = NaN;
@@ -78,8 +87,8 @@ endfunction
 ## Output validation tests
 %!test
 %! a = 1:5;
-%! b = 5:9;
-%! c = 3:7;
+%! b = 3:7;
+%! c = 5:9;
 %! [m, v] = tristat (a, b, c);
 %! expected_m = [3, 4, 5, 6, 7];
 %! assert (m, expected_m);

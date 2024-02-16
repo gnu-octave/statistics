@@ -1,6 +1,6 @@
 ## Copyright (C) 1997-2015 Kurt Hornik
 ## Copyright (C) 2016 Dag Lyberg
-## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2023-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -25,14 +25,22 @@
 ## Triangular cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) of the triangular distribution with parameters @var{a}, @var{b}, and
-## @var{c} in the interval @qcode{[@var{a}, @var{b}]}.  The size of @var{p} is
-## the common size of the input arguments.  A scalar input functions as a
-## constant matrix of the same size as the other inputs.
+## (CDF) of the triangular distribution with lower limit parameter @var{a}, peak
+## location (mode) parameter @var{b}, and upper limit parameter @var{c}.  The
+## size of @var{p} is the common size of the input arguments.  A scalar input
+## functions as a constant matrix of the same size as the other inputs.
 ##
 ## @code{@var{p} = tricdf (@var{x}, @var{a}, @var{b}, @var{c}, "upper")}
 ## computes the upper tail probability of the triangular distribution with
 ## parameters @var{a}, @var{b}, and @var{c}, at the values in @var{x}.
+##
+## Note that the order of the parameter input arguments has been changed after
+## statistics version 1.6.3 in order to be MATLAB compatible with the parameters
+## used in the TriangularDistribution probability distribution object.  More
+## specifically, the positions of the parameters @var{b} and @var{c} have been
+## swapped.  As a result, the naming conventions no longer coinside with those
+## used in Wikipedia, in which @math{b} denotes the upper limit and @math{c}
+## denotes the mode or peak parameter.
 ##
 ## Further information about the triangular distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Triangular_distribution}
@@ -80,24 +88,24 @@ function p = tricdf (x, a, b, c, uflag)
   endif
 
   ## Force NaNs for out of range parameters.
-  k = isnan (x) | ! (a < b) | ! (c >= a) | ! (c <= b);
+  k = isnan (x) | ! (a < c) | ! (b >= a) | ! (b <= c);
   p(k) = NaN;
 
   ## Find valid values in parameters and data
-  k = (a < b) & (a <= c) & (c <= b);
+  k = (a < c) & (a <= b) & (b <= c);
   k1 = (x <= a) & k;
-  k2 = (x > a) & (x <= c) & k;
-  k3 = (x > c) & (x < b) & k;
-  k4 = (x >= b) & k;
+  k2 = (x > a) & (x <= b) & k;
+  k3 = (x > b) & (x < c) & k;
+  k4 = (x >= c) & k;
 
   ## Compute triangular CDF
   if (uflag)
     p(k1) = 1;
-    p(k2) = 1 - ((x(k2) - a(k2)) .^ 2) ./ ((b(k2) - a(k2)) .* (c(k2) - a(k2)));
-    p(k3) = ((b(k3) - x(k3)) .^ 2) ./ ((b(k3) - a(k3)) .* (b(k3) - c(k3)));
+    p(k2) = 1 - ((x(k2) - a(k2)) .^ 2) ./ ((c(k2) - a(k2)) .* (b(k2) - a(k2)));
+    p(k3) = ((c(k3) - x(k3)) .^ 2) ./ ((c(k3) - a(k3)) .* (c(k3) - b(k3)));
   else
-    p(k2) = ((x(k2) - a(k2)) .^ 2) ./ ((b(k2) - a(k2)) .* (c(k2) - a(k2)));
-    p(k3) = 1 - ((b(k3) - x(k3)) .^ 2) ./ ((b(k3) - a(k3)) .* (b(k3) - c(k3)));
+    p(k2) = ((x(k2) - a(k2)) .^ 2) ./ ((c(k2) - a(k2)) .* (b(k2) - a(k2)));
+    p(k3) = 1 - ((c(k3) - x(k3)) .^ 2) ./ ((c(k3) - a(k3)) .* (c(k3) - b(k3)));
     p(k4) = 1;
   endif
 
@@ -106,15 +114,15 @@ endfunction
 %!demo
 %! ## Plot various CDFs from the triangular distribution
 %! x = 0.001:0.001:10;
-%! p1 = tricdf (x, 3, 6, 4);
-%! p2 = tricdf (x, 1, 5, 2);
-%! p3 = tricdf (x, 2, 9, 3);
-%! p4 = tricdf (x, 2, 9, 5);
+%! p1 = tricdf (x, 3, 4, 6);
+%! p2 = tricdf (x, 1, 2, 5);
+%! p3 = tricdf (x, 2, 3, 9);
+%! p4 = tricdf (x, 2, 5, 9);
 %! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c")
 %! grid on
 %! xlim ([0, 10])
-%! legend ({"a = 3, b = 6, c = 4", "a = 1, b = 5, c = 2", ...
-%!          "a = 2, b = 9, c = 3", "a = 2, b = 9, c = 5"}, ...
+%! legend ({"a = 3, b = 4, c = 6", "a = 1, b = 2, c = 5", ...
+%!          "a = 2, b = 3, c = 9", "a = 2, b = 5, c = 9"}, ...
 %!         "location", "southeast")
 %! title ("Triangular CDF")
 %! xlabel ("values in x")
@@ -124,28 +132,28 @@ endfunction
 %!shared x, y
 %! x = [-1, 0, 0.1, 0.5, 0.9, 1, 2] + 1;
 %! y = [0, 0, 0.02, 0.5, 0.98, 1 1];
-%!assert (tricdf (x, ones (1,7), 2*ones (1,7), 1.5*ones (1,7)), y, eps)
-%!assert (tricdf (x, 1*ones (1,7), 2, 1.5), y, eps)
-%!assert (tricdf (x, 1*ones (1,7), 2, 1.5, "upper"), 1 - y, eps)
-%!assert (tricdf (x, 1, 2*ones (1,7), 1.5), y, eps)
-%!assert (tricdf (x, 1, 2, 1.5*ones (1,7)), y, eps)
-%!assert (tricdf (x, 1, 2, 1.5), y, eps)
-%!assert (tricdf (x, [1, 1, NaN, 1, 1, 1, 1], 2, 1.5), ...
+%!assert (tricdf (x, ones (1,7), 1.5 * ones (1, 7), 2 * ones (1, 7)), y, eps)
+%!assert (tricdf (x, 1 * ones (1, 7), 1.5, 2), y, eps)
+%!assert (tricdf (x, 1 * ones (1, 7), 1.5, 2, "upper"), 1 - y, eps)
+%!assert (tricdf (x, 1, 1.5, 2 * ones (1, 7)), y, eps)
+%!assert (tricdf (x, 1, 1.5 * ones (1, 7), 2), y, eps)
+%!assert (tricdf (x, 1, 1.5, 2), y, eps)
+%!assert (tricdf (x, [1, 1, NaN, 1, 1, 1, 1], 1.5, 2), ...
 %! [y(1:2), NaN, y(4:7)], eps)
-%!assert (tricdf (x, 1, 2*[1, 1, NaN, 1, 1, 1, 1], 1.5), ...
+%!assert (tricdf (x, 1, 1.5, 2*[1, 1, NaN, 1, 1, 1, 1]), ...
 %! [y(1:2), NaN, y(4:7)], eps)
-%!assert (tricdf (x, 1, 2, 1.5*[1, 1, NaN, 1, 1, 1, 1]), ...
+%!assert (tricdf (x, 1, 1.5, 2*[1, 1, NaN, 1, 1, 1, 1]), ...
 %! [y(1:2), NaN, y(4:7)], eps)
-%!assert (tricdf ([x, NaN], 1, 2, 1.5), [y, NaN], eps)
+%!assert (tricdf ([x, NaN], 1, 1.5, 2), [y, NaN], eps)
 
 ## Test class of input preserved
-%!assert (tricdf (single ([x, NaN]), 1, 2, 1.5), ...
+%!assert (tricdf (single ([x, NaN]), 1, 1.5, 2), ...
 %! single ([y, NaN]), eps("single"))
-%!assert (tricdf ([x, NaN], single (1), 2, 1.5), ...
+%!assert (tricdf ([x, NaN], single (1), 1.5, 2), ...
 %! single ([y, NaN]), eps("single"))
-%!assert (tricdf ([x, NaN], 1, single (2), 1.5), ...
+%!assert (tricdf ([x, NaN], 1, single (1.5), 2), ...
 %! single ([y, NaN]), eps("single"))
-%!assert (tricdf ([x, NaN], 1, 2, single (1.5)), ...
+%!assert (tricdf ([x, NaN], 1, 1.5, single (2)), ...
 %! single ([y, NaN]), eps("single"))
 
 ## Test input validation

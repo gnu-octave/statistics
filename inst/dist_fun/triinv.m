@@ -1,6 +1,6 @@
 ## Copyright (B) 1995-2015 Kurt Hornik
 ## Copyright (B) 2016 Dag Lyberg
-## Copyright (B) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (B) 2023-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -24,10 +24,18 @@
 ## Inverse of the triangular cumulative distribution function (iCDF).
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
-## the triangular distribution with parameters @var{a}, @var{b}, and @var{c} in
-## the interval @qcode{[@var{a}, @var{b}]}.  The size of @var{x} is the common
-## size of the input arguments.  A scalar input functions as a constant matrix
-## of the same size as the other inputs.
+## the triangular distribution with lower limit parameter @var{a}, peak
+## location (mode) parameter @var{b}, and upper limit parameter @var{c}.  The
+## size of @var{x} is the common size of the input arguments.  A scalar input
+## functions as a constant matrix of the same size as the other inputs.
+##
+## Note that the order of the parameter input arguments has been changed after
+## statistics version 1.6.3 in order to be MATLAB compatible with the parameters
+## used in the TriangularDistribution probability distribution object.  More
+## specifically, the positions of the parameters @var{b} and @var{c} have been
+## swapped.  As a result, the naming conventions no longer coinside with those
+## used in Wikipedia, in which @math{b} denotes the upper limit and @math{c}
+## denotes the mode or peak parameter.
 ##
 ## Further information about the triangular distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Triangular_distribution}
@@ -64,22 +72,22 @@ function x = triinv (p, a, b, c)
   endif
 
   ## Force zeros for within range parameters.
-  k = (p >= 0) & (p <= 1) & (a < b) & (a <= c) & (c <= b);
+  k = (p >= 0) & (p <= 1) & (a < c) & (a <= b) & (b <= c);
   x(k) = 0;
 
   ## Compute triangular iCDF
-  h = 2 ./ (b-a);
-  w = c-a;
+  h = 2 ./ (c-a);
+  w = b - a;
   area1 = h .* w / 2;
   j = k & (p <= area1);
-  x(j) += (2 * p(j) .* (w(j) ./ h(j))).^0.5 + a(j);
+  x(j) += (2 * p(j) .* (w(j) ./ h(j))) .^ 0.5 + a(j);
 
-  w = b-c;
+  w = c - b;
   j = k & (area1 < p) & (p < 1);
-  x(j) += b(j) - (2 * (1-p(j)) .* (w(j) ./ h(j))).^0.5;
+  x(j) += c(j) - (2 * (1 - p(j)) .* (w(j) ./ h(j))) .^ 0.5;
 
   j = k & (p == 1);
-  x(j) = b(j);
+  x(j) = c(j);
 
 endfunction
 
@@ -104,21 +112,21 @@ endfunction
 %!shared p, y
 %! p = [-1, 0, 0.02, 0.5, 0.98, 1, 2];
 %! y = [NaN, 0, 0.1, 0.5, 0.9, 1, NaN] + 1;
-%!assert (triinv (p, ones (1,7), 2*ones (1,7), 1.5*ones (1,7)), y, eps)
-%!assert (triinv (p, 1*ones (1,7), 2, 1.5), y, eps)
-%!assert (triinv (p, 1, 2*ones (1,7), 1.5), y, eps)
-%!assert (triinv (p, 1, 2, 1.5*ones (1,7)), y, eps)
-%!assert (triinv (p, 1, 2, 1.5), y, eps)
-%!assert (triinv (p, [1, 1, NaN, 1, 1, 1, 1], 2, 1.5), [y(1:2), NaN, y(4:7)], eps)
-%!assert (triinv (p, 1, 2*[1, 1, NaN, 1, 1, 1, 1], 1.5), [y(1:2), NaN, y(4:7)], eps)
-%!assert (triinv (p, 1, 2, 1.5*[1, 1, NaN, 1, 1, 1, 1]), [y(1:2), NaN, y(4:7)], eps)
-%!assert (triinv ([p, NaN], 1, 2, 1.5), [y, NaN], eps)
+%!assert (triinv (p, ones (1, 7), 1.5 * ones (1, 7), 2 * ones (1, 7)), y, eps)
+%!assert (triinv (p, 1 * ones (1, 7), 1.5, 2), y, eps)
+%!assert (triinv (p, 1, 1.5, 2 * ones (1, 7)), y, eps)
+%!assert (triinv (p, 1, 1.5*ones (1,7), 2), y, eps)
+%!assert (triinv (p, 1, 1.5, 2), y, eps)
+%!assert (triinv (p, [1, 1, NaN, 1, 1, 1, 1], 1.5, 2), [y(1:2), NaN, y(4:7)], eps)
+%!assert (triinv (p, 1, 1.5 * [1, 1, NaN, 1, 1, 1, 1], 2), [y(1:2), NaN, y(4:7)], eps)
+%!assert (triinv (p, 1, 1.5, 2 * [1, 1, NaN, 1, 1, 1, 1]), [y(1:2), NaN, y(4:7)], eps)
+%!assert (triinv ([p, NaN], 1, 1.5, 2), [y, NaN], eps)
 
 ## Test class of input preserved
-%!assert (triinv (single ([p, NaN]), 1, 2, 1.5), single ([y, NaN]), eps('single'))
-%!assert (triinv ([p, NaN], single (1), 2, 1.5), single ([y, NaN]), eps('single'))
-%!assert (triinv ([p, NaN], 1, single (2), 1.5), single ([y, NaN]), eps('single'))
-%!assert (triinv ([p, NaN], 1, 2, single (1.5)), single ([y, NaN]), eps('single'))
+%!assert (triinv (single ([p, NaN]), 1, 1.5, 2), single ([y, NaN]), eps('single'))
+%!assert (triinv ([p, NaN], single (1), 1.5, 2), single ([y, NaN]), eps('single'))
+%!assert (triinv ([p, NaN], 1, single (1.5), 2), single ([y, NaN]), eps('single'))
+%!assert (triinv ([p, NaN], 1, 1.5, single (2)), single ([y, NaN]), eps('single'))
 
 ## Test input validation
 %!error<triinv: function called with too few input arguments.> triinv ()

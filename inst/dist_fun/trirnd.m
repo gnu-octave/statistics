@@ -1,6 +1,6 @@
 ## Copyright (C) 1997-2015 Kurt Hornik
 ## Copyright (C) 2016 Dag Lyberg
-## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2023-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -27,16 +27,25 @@
 ## Random arrays from the triangular distribution.
 ##
 ## @code{@var{r} = trirnd (@var{sigma})} returns an array of random numbers
-## chosen from the triangular distribution with parameters @var{a}, @var{b}, and
-## @var{c} in the interval [@var{a}, @var{b}].  The size of @var{r} is the
-## common size of @var{a}, @var{b}, and @var{c}.  A scalar input functions as a
-## constant matrix of the same size as the other inputs.
+## chosen from the triangular distribution with lower limit parameter @var{a},
+## peak location (mode) parameter @var{b}, and upper limit parameter @var{c}.
+## The size of @var{r} is the common size of @var{a}, @var{b}, and @var{c}.  A
+## scalar input functions as a constant matrix of the same size as the other
+## inputs.
 ##
 ## When called with a single size argument, @code{trirnd} returns a square
 ## matrix with the dimension specified.  When called with more than one scalar
 ## argument, the first two arguments are taken as the number of rows and columns
 ## and any further arguments specify additional matrix dimensions.  The size may
 ## also be specified with a row vector of dimensions, @var{sz}.
+##
+## Note that the order of the parameter input arguments has been changed after
+## statistics version 1.6.3 in order to be MATLAB compatible with the parameters
+## used in the TriangularDistribution probability distribution object.  More
+## specifically, the positions of the parameters @var{b} and @var{c} have been
+## swapped.  As a result, the naming conventions no longer coinside with those
+## used in Wikipedia, in which @math{b} denotes the upper limit and @math{c}
+## denotes the mode or peak parameter.
 ##
 ## Further information about the triangular distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Triangular_distribution}
@@ -103,56 +112,56 @@ function rnd = trirnd (a, b, c, varargin)
 
   ## Generate random sample from triangular distribution
   if (scalarABC)
-    if ((-Inf < a) && (a < b) && (a <= c) && (c <= b) && (b < Inf))
-      w = b-a;
-      left_width = c-a;
-      right_width = b-c;
+    if ((-Inf < a) && (a < c) && (a <= b) && (b <= c) && (c < Inf))
+      w = c-a;
+      left_width = b-a;
+      right_width = c-b;
       h = 2 / w;
       left_area = h * left_width / 2;
       rnd = rand (sz, cls);
       idx = rnd < left_area;
       rnd(idx) = a + (rnd(idx) * w * left_width).^0.5;
-      rnd(~idx) = b - ((1-rnd(~idx)) * w * right_width).^0.5;
+      rnd(~idx) = c - ((1-rnd(~idx)) * w * right_width).^0.5;
     else
       rnd = NaN (sz, cls);
     endif
   else
-    w = b-a;
-    left_width = c-a;
-    right_width = b-c;
+    w = c-a;
+    left_width = b-a;
+    right_width = c-b;
     h = 2 ./ w;
     left_area = h .* left_width / 2;
     rnd = rand (sz, cls);
     k = rnd < left_area;
     rnd(k) = a(k) + (rnd(k) .* w(k) .* left_width(k)).^0.5;
-    rnd(~k) = b(~k) - ((1-rnd(~k)) .* w(~k) .* right_width(~k)).^0.5;
+    rnd(~k) = c(~k) - ((1-rnd(~k)) .* w(~k) .* right_width(~k)).^0.5;
 
-    k = ! (-Inf < a) | ! (a < b) | ! (a <= c) | ! (c <= b) | ! (b < Inf);
+    k = ! (-Inf < a) | ! (a < c) | ! (a <= b) | ! (b <= c) | ! (c < Inf);
     rnd(k) = NaN;
   endif
 
 endfunction
 
 ## Test results
-%!assert (size (trirnd (1,2,1.5)), [1, 1])
-%!assert (size (trirnd (1*ones (2,1), 2,1.5)), [2, 1])
-%!assert (size (trirnd (1*ones (2,2), 2,1.5)), [2, 2])
-%!assert (size (trirnd (1, 2*ones (2,1), 1.5)), [2, 1])
-%!assert (size (trirnd (1, 2*ones (2,2), 1.5)), [2, 2])
-%!assert (size (trirnd (1, 2, 1.5*ones (2,1))), [2, 1])
-%!assert (size (trirnd (1, 2, 1.5*ones (2,2))), [2, 2])
-%!assert (size (trirnd (1, 2, 1.5, 3)), [3, 3])
-%!assert (size (trirnd (1, 2, 1.5, [4 1])), [4, 1])
-%!assert (size (trirnd (1, 2, 1.5, 4, 1)), [4, 1])
+%!assert (size (trirnd (1, 1.5, 2)), [1, 1])
+%!assert (size (trirnd (1 * ones (2, 1), 1.5, 2)), [2, 1])
+%!assert (size (trirnd (1 * ones (2, 2), 1.5, 2)), [2, 2])
+%!assert (size (trirnd (1, 1.5 * ones (2, 1), 2)), [2, 1])
+%!assert (size (trirnd (1, 1.5 * ones (2, 2), 2)), [2, 2])
+%!assert (size (trirnd (1, 1.5, 2 * ones (2, 1))), [2, 1])
+%!assert (size (trirnd (1, 1.5, 2 * ones (2, 2))), [2, 2])
+%!assert (size (trirnd (1, 1.5, 2, 3)), [3, 3])
+%!assert (size (trirnd (1, 1.5, 2, [4, 1])), [4, 1])
+%!assert (size (trirnd (1, 1.5, 2, 4, 1)), [4, 1])
 
 ## Test class of input preserved
-%!assert (class (trirnd (1,2,1.5)), "double")
-%!assert (class (trirnd (single (1),2,1.5)), "single")
-%!assert (class (trirnd (single ([1 1]),2,1.5)), "single")
-%!assert (class (trirnd (1,single (2),1.5)), "single")
-%!assert (class (trirnd (1,single ([2 2]),1.5)), "single")
-%!assert (class (trirnd (1,2,single (1.5))), "single")
-%!assert (class (trirnd (1,2,single ([1.5 1.5]))), "single")
+%!assert (class (trirnd (1, 1.5, 2)), "double")
+%!assert (class (trirnd (single (1), 1.5, 2)), "single")
+%!assert (class (trirnd (single ([1, 1]), 1.5, 2)), "single")
+%!assert (class (trirnd (1, single (1.5), 2)), "single")
+%!assert (class (trirnd (1, single ([1.5, 1.5]), 2)), "single")
+%!assert (class (trirnd (1, 1.5, single (1.5))), "single")
+%!assert (class (trirnd (1, 1.5, single ([2, 2]))), "single")
 
 ## Test input validation
 %!error<trirnd: function called with too few input arguments.> trirnd ()

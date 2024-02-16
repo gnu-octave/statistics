@@ -1,6 +1,6 @@
 ## Copyright (C) 1997-2015 Kurt Hornik
 ## Copyright (C) 2016 Dag Lyberg
-## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2023-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -24,10 +24,18 @@
 ## Triangular probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## of the triangular distribution with parameters @var{a}, @var{b}, and @var{c}
-## in the interval @qcode{[@var{a}, @var{b}]}.  The size of @var{y} is the
-## common size of the input arguments.  A scalar input functions as a constant
-## matrix of the same size as the other inputs.
+## of the triangular distribution with lower limit parameter @var{a}, peak
+## location (mode) parameter @var{b}, and upper limit parameter @var{c}.  The
+## size of @var{y} is the common size of the input arguments.  A scalar input
+## functions as a constant matrix of the same size as the other inputs.
+##
+## Note that the order of the parameter input arguments has been changed after
+## statistics version 1.6.3 in order to be MATLAB compatible with the parameters
+## used in the TriangularDistribution probability distribution object.  More
+## specifically, the positions of the parameters @var{b} and @var{c} have been
+## swapped.  As a result, the naming conventions no longer coinside with those
+## used in Wikipedia, in which @math{b} denotes the upper limit and @math{c}
+## denotes the mode or peak parameter.
 ##
 ## Further information about the triangular distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Triangular_distribution}
@@ -64,33 +72,33 @@ function y = tripdf (x, a, b, c)
   endif
 
   ## Force NaNs for out of range parameters.
-  k = isnan (x) | !(a < b) | !(c >= a) | !(c <= b) ;
+  k = isnan (x) | ! (a < c) | ! (b >= a) | ! (b <= c);
   y(k) = NaN;
 
-  k = (x >= a) & (x <= b) & (a < b) & (a <= c) & (c <= b);
-  h = 2 ./ (b-a);
+  k = (x >= a) & (x <= c) & (a < c) & (a <= b) & (b <= c);
+  h = 2 ./ (c - a);
 
-  j = k & (a <= x) & (x < c);
-  y(j) = h(j) .* (x(j)-a(j)) ./ (c(j)-a(j));
-  j = k & (x == c);
+  j = k & (a <= x) & (x < b);
+  y(j) = h(j) .* (x(j) - a(j)) ./ (b(j) - a(j));
+  j = k & (x == b);
   y(j) = h(j);
-  j = k & (c < x) & (x <= b);
-  y(j) = h(j) .* (b(j)-x(j)) ./ (b(j)-c(j));
+  j = k & (b < x) & (x <= c);
+  y(j) = h(j) .* (c(j) - x(j)) ./ (c(j) - b(j));
 
 endfunction
 
 %!demo
 %! ## Plot various CDFs from the triangular distribution
 %! x = 0.001:0.001:10;
-%! y1 = tripdf (x, 3, 6, 4);
-%! y2 = tripdf (x, 1, 5, 2);
-%! y3 = tripdf (x, 2, 9, 3);
-%! y4 = tripdf (x, 2, 9, 5);
+%! y1 = tripdf (x, 3, 4, 6);
+%! y2 = tripdf (x, 1, 2, 5);
+%! y3 = tripdf (x, 2, 3, 9);
+%! y4 = tripdf (x, 2, 5, 9);
 %! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-c")
 %! grid on
 %! xlim ([0, 10])
-%! legend ({"a = 3, b = 6, c = 4", "a = 1, b = 5, c = 2", ...
-%!          "a = 2, b = 9, c = 3", "a = 2, b = 9, c = 5"}, ...
+%! legend ({"a = 3, b = 4, c = 6", "a = 1, b = 2, c = 5", ...
+%!          "a = 2, b = 3, c = 9", "a = 2, b = 5, c = 9"}, ...
 %!         "location", "northeast")
 %! title ("Triangular CDF")
 %! xlabel ("values in x")
@@ -101,21 +109,21 @@ endfunction
 %! x = [-1, 0, 0.1, 0.5, 0.9, 1, 2] + 1;
 %! y = [0, 0, 0.4, 2, 0.4, 0, 0];
 %! deps = 2*eps;
-%!assert (tripdf (x, ones (1,7), 2*ones (1,7), 1.5*ones (1,7)), y, deps)
-%!assert (tripdf (x, 1*ones (1,7), 2, 1.5), y, deps)
-%!assert (tripdf (x, 1, 2*ones (1,7), 1.5), y, deps)
-%!assert (tripdf (x, 1, 2, 1.5*ones (1,7)), y, deps)
-%!assert (tripdf (x, 1, 2, 1.5), y, deps)
-%!assert (tripdf (x, [1, 1, NaN, 1, 1, 1, 1], 2, 1.5), [y(1:2), NaN, y(4:7)], deps)
-%!assert (tripdf (x, 1, 2*[1, 1, NaN, 1, 1, 1, 1], 1.5), [y(1:2), NaN, y(4:7)], deps)
-%!assert (tripdf (x, 1, 2, 1.5*[1, 1, NaN, 1, 1, 1, 1]), [y(1:2), NaN, y(4:7)], deps)
-%!assert (tripdf ([x, NaN], 1, 2, 1.5), [y, NaN], deps)
+%!assert (tripdf (x, ones (1,7), 1.5*ones (1,7), 2*ones (1,7)), y, deps)
+%!assert (tripdf (x, 1*ones (1,7), 1.5, 2), y, deps)
+%!assert (tripdf (x, 1, 1.5, 2*ones (1,7)), y, deps)
+%!assert (tripdf (x, 1, 1.5*ones (1,7), 2), y, deps)
+%!assert (tripdf (x, 1, 1.5, 2), y, deps)
+%!assert (tripdf (x, [1, 1, NaN, 1, 1, 1, 1], 1.5, 2), [y(1:2), NaN, y(4:7)], deps)
+%!assert (tripdf (x, 1, 1.5, 2*[1, 1, NaN, 1, 1, 1, 1]), [y(1:2), NaN, y(4:7)], deps)
+%!assert (tripdf (x, 1, 1.5*[1, 1, NaN, 1, 1, 1, 1], 2), [y(1:2), NaN, y(4:7)], deps)
+%!assert (tripdf ([x, NaN], 1, 1.5, 2), [y, NaN], deps)
 
 ## Test class of input preserved
-%!assert (tripdf (single ([x, NaN]), 1, 2, 1.5), single ([y, NaN]), eps("single"))
-%!assert (tripdf ([x, NaN], single (1), 2, 1.5), single ([y, NaN]), eps("single"))
-%!assert (tripdf ([x, NaN], 1, single (2), 1.5), single ([y, NaN]), eps("single"))
-%!assert (tripdf ([x, NaN], 1, 2, single (1.5)), single ([y, NaN]), eps("single"))
+%!assert (tripdf (single ([x, NaN]), 1, 1.5, 2), single ([y, NaN]), eps("single"))
+%!assert (tripdf ([x, NaN], single (1), 1.5, 2), single ([y, NaN]), eps("single"))
+%!assert (tripdf ([x, NaN], 1, 1.5, single (2)), single ([y, NaN]), eps("single"))
+%!assert (tripdf ([x, NaN], 1, single (1.5), 2), single ([y, NaN]), eps("single"))
 
 ## Test input validation
 %!error<tripdf: function called with too few input arguments.> tripdf ()
