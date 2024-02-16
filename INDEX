@@ -68,7 +68,9 @@ Descriptive Statistics
  trimmean
  var
 Distribution Classes
+ RicianDistribution
  tLocationScaleDistribution
+ TriangularDistribution
  UniformDistribution
  WeibullDistribution
 Distribution Fitting
