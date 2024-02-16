@@ -16,13 +16,13 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {[@var{m}, @var{v}] =} tlsstat (@var{mu}, @var{sigma}, @var{df})
+## @deftypefn  {statistics} {[@var{m}, @var{v}] =} tlsstat (@var{mu}, @var{sigma}, @var{nu})
 ##
 ## Compute statistics of the location-scale Student's T distribution.
 ##
-## @code{[@var{m}, @var{v}] = tlsstat (@var{mu}, @var{sigma}, @var{df})} returns
+## @code{[@var{m}, @var{v}] = tlsstat (@var{mu}, @var{sigma}, @var{nu})} returns
 ## the mean and variance of the location-scale Student's T distribution with
-## location parameter @var{mu}, scale parameter @var{sigma}, and @var{df}
+## location parameter @var{mu}, scale parameter @var{sigma}, and @var{nu}
 ## degrees of freedom.
 ##
 ## The size of @var{m} (mean) and @var{v} (variance) is the common size of the
@@ -35,42 +35,42 @@
 ## @seealso{tlscdf, tlsinv, tlspdf, tlsrnd, tlsfit, tlslike}
 ## @end deftypefn
 
-function [m, v] = tlsstat (mu, sigma, df)
+function [m, v] = tlsstat (mu, sigma, nu)
 
   ## Check for valid number of input arguments
   if (nargin < 3)
     error ("tlsstat: function called with too few input arguments.");
   endif
 
-  ## Check for MU, SIGMA, and DF being numeric
-  if (! (isnumeric (mu) && isnumeric (sigma) && isnumeric (df)))
-    error ("tlsstat: MU, SIGMA, and DF must be numeric.");
+  ## Check for MU, SIGMA, and NU being numeric
+  if (! (isnumeric (mu) && isnumeric (sigma) && isnumeric (nu)))
+    error ("tlsstat: MU, SIGMA, and NU must be numeric.");
   endif
 
-  ## Check for MU, SIGMA, and DF being real
-  if (iscomplex (mu) || iscomplex (sigma) || iscomplex (df))
-    error ("tlsstat: MU, SIGMA, and DF must not be complex.");
+  ## Check for MU, SIGMA, and NU being real
+  if (iscomplex (mu) || iscomplex (sigma) || iscomplex (nu))
+    error ("tlsstat: MU, SIGMA, and NU must not be complex.");
   endif
 
-  ## Check for common size of MU, SIGMA, and DF
-  if (! isscalar (mu) || ! isscalar (sigma) || ! isscalar (df))
-    [retval, mu, sigma, df] = common_size (mu, sigma, df);
+  ## Check for common size of MU, SIGMA, and NU
+  if (! isscalar (mu) || ! isscalar (sigma) || ! isscalar (nu))
+    [retval, mu, sigma, nu] = common_size (mu, sigma, nu);
     if (retval > 0)
-      error ("tlsstat: MU, SIGMA, and DF must be of common size or scalars.");
+      error ("tlsstat: MU, SIGMA, and NU must be of common size or scalars.");
     endif
   endif
 
   ## Calculate moments
-  m = zeros (size (df)) + mu;
-  v = sigma .* (df ./ (df - 2));
+  m = zeros (size (nu)) + mu;
+  v = sigma .* (nu ./ (nu - 2));
 
   ## Continue argument check
-  k = find (! (df > 1) | ! (df < Inf));
+  k = find (! (nu > 1) | ! (nu < Inf));
   if (any (k))
     m(k) = NaN;
     v(k) = NaN;
   endif
-  k = find (! (df > 2) & (df < Inf));
+  k = find (! (nu > 2) & (nu < Inf));
   if (any (k))
     v(k) = NaN;
   endif
@@ -81,17 +81,17 @@ endfunction
 %!error<tlsstat: function called with too few input arguments.> tlsstat ()
 %!error<tlsstat: function called with too few input arguments.> tlsstat (1)
 %!error<tlsstat: function called with too few input arguments.> tlsstat (1, 2)
-%!error<tlsstat: MU, SIGMA, and DF must be numeric.> tlsstat ({}, 2, 3)
-%!error<tlsstat: MU, SIGMA, and DF must be numeric.> tlsstat (1, "", 3)
-%!error<tlsstat: MU, SIGMA, and DF must be numeric.> tlsstat (1, 2, ["d"])
-%!error<tlsstat: MU, SIGMA, and DF must not be complex.> tlsstat (i, 2, 3)
-%!error<tlsstat: MU, SIGMA, and DF must not be complex.> tlsstat (1, i, 3)
-%!error<tlsstat: MU, SIGMA, and DF must not be complex.> tlsstat (1, 2, i)
-%!error<tlsstat: MU, SIGMA, and DF must be of common size or scalars.> ...
+%!error<tlsstat: MU, SIGMA, and NU must be numeric.> tlsstat ({}, 2, 3)
+%!error<tlsstat: MU, SIGMA, and NU must be numeric.> tlsstat (1, "", 3)
+%!error<tlsstat: MU, SIGMA, and NU must be numeric.> tlsstat (1, 2, ["d"])
+%!error<tlsstat: MU, SIGMA, and NU must not be complex.> tlsstat (i, 2, 3)
+%!error<tlsstat: MU, SIGMA, and NU must not be complex.> tlsstat (1, i, 3)
+%!error<tlsstat: MU, SIGMA, and NU must not be complex.> tlsstat (1, 2, i)
+%!error<tlsstat: MU, SIGMA, and NU must be of common size or scalars.> ...
 %! tlsstat (ones (3), ones (2), 1)
-%!error<tlsstat: MU, SIGMA, and DF must be of common size or scalars.> ...
+%!error<tlsstat: MU, SIGMA, and NU must be of common size or scalars.> ...
 %! tlsstat (ones (2), 1, ones (3))
-%!error<tlsstat: MU, SIGMA, and DF must be of common size or scalars.> ...
+%!error<tlsstat: MU, SIGMA, and NU must be of common size or scalars.> ...
 %! tlsstat (1, ones (2), ones (3))
 
 ## Output validation tests
