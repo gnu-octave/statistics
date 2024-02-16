@@ -500,7 +500,7 @@ classdef tLocationScaleDistribution
         ## pick the appropriate size from
         lx = this.Truncation(1);
         ux = this.Truncation(2);
-        ratio = 1 / diff (ricecdf ([ux, lx], this.nu, this.sigma));
+        ratio = 1 / diff (tlscdf ([ux, lx], this.mu, this.sigma, this.nu));
         nsize = 2 * ratio * ps;     # times 2 to be on the safe side
         ## Generate the numbers and remove out-of-bound random samples
         r = tlsrnd (this.mu, this.sigma, this.nu, nsize, 1);
@@ -575,11 +575,11 @@ classdef tLocationScaleDistribution
       endif
       if (this.IsTruncated)
         fm = @(x) x .* pdf (this, x);
-        mu = integral (fm, this.Truncation(1), this.Truncation(2));
-        fv =  @(x) ((x - mu) .^ 2) .* pdf (pd, x);
+        m = integral (fm, this.Truncation(1), this.Truncation(2));
+        fv =  @(x) ((x - m) .^ 2) .* pdf (pd, x);
         v = integral (fv, this.Truncation(1), this.Truncation(2));
       else
-        [~, v] = wblstat (this.lambda, this.mu);
+        [~, v] = tlsstat (this.mu, this.sigma, this.nu);
       endif
     endfunction
 
@@ -587,7 +587,7 @@ classdef tLocationScaleDistribution
 
   methods (Static, Hidden)
 
-    function pd = fit(x, varargin)
+    function pd = fit (x, varargin)
       ## Check input arguments
       if (nargin < 2)
         censor = [];
@@ -597,6 +597,8 @@ classdef tLocationScaleDistribution
       endif
       if (nargin < 4)
         options.Display = "off";
+        options.MaxFunEvals = 400;
+        options.MaxIter = 200;
         options.TolX = 1e-6;
       endif
       ## Fit data

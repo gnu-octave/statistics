@@ -16,33 +16,33 @@
 ## along with this program; see the file COPYING.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-classdef WeibullDistribution
+classdef RicianDistribution
   ## -*- texinfo -*-
-  ## @deftypefn {statistics} WeibullDistribution
+  ## @deftypefn {statistics} RicianDistribution
   ##
-  ## Weibull probability distribution object.
+  ## Rician probability distribution object.
   ##
-  ## A @code{WeibullDistribution} object consists of parameters, a model
-  ## description, and sample data for a Weibull probability distribution.
+  ## A @code{RicianDistribution} object consists of parameters, a model
+  ## description, and sample data for a Rician probability distribution.
   ##
-  ## The Weibull distribution uses the following parameters.
+  ## The Rician distribution uses the following parameters.
   ##
   ## @multitable @columnfractions 0.25 0.48 0.27
   ## @headitem @var{Parameter} @tab @var{Description} @tab @var{Support}
   ##
-  ## @item @qcode{lambda} @tab Scale parameter @tab @math{lambda > 0}
-  ## @item @qcode{k} @tab Scale parameter @tab @math{k > 0}
+  ## @item @qcode{nu} @tab Scale parameter @tab @math{nu >= 0}
+  ## @item @qcode{sigma} @tab Scale parameter @tab @math{sigma > 0}
   ## @end multitable
   ##
-  ## There are several ways to create a @code{WeibullDistribution} object.
+  ## There are several ways to create a @code{RicianDistribution} object.
   ##
   ## @itemize
   ## @item Fit a distribution to data using the @code{fitdist} function.
   ## @item Create a distribution with specified parameter values using the
   ## @code{makedist} function.
-  ## @item Use the constructor @qcode{WeibullDistribution (@var{lambda},
-  ## @var{k})} to create a Weibull distribution with specified parameter values.
-  ## @item Use the static method @qcode{WeibullDistribution.fit (@var{x},
+  ## @item Use the constructor @qcode{RicianDistribution (@var{nu}, @var{sigma})}
+  ## to create a Rician distribution with specified parameter values.
+  ## @item Use the static method @qcode{RicianDistribution.fit (@var{x},
   ## @var{censor}, @var{freq}, @var{options})} to a distribution to data @var{x}.
   ## @end itemize
   ##
@@ -50,7 +50,7 @@ classdef WeibullDistribution
   ## functions to create probability distribution objects, instead of the
   ## constructor and the aforementioned static method.
   ##
-  ## A @code{WeibullDistribution} object contains the following properties,
+  ## A @code{RicianDistribution} object contains the following properties,
   ## which can be accessed using dot notation.
   ##
   ## @multitable @columnfractions 0.25 0.25 0.25 0.25
@@ -62,37 +62,37 @@ classdef WeibullDistribution
   ## @qcode{IsTruncated} @tab @qcode{InputData}
   ## @end multitable
   ##
-  ## A @code{WeibullDistribution} object contains the following methods:
+  ## A @code{RicianDistribution} object contains the following methods:
   ## @code{cdf}, @code{icdf}, @code{iqr}, @code{mean}, @code{median},
   ## @code{negloglik}, @code{paramci}, @code{pdf}, @code{plot}, @code{proflik},
   ## @code{random}, @code{std}, @code{truncate}, @code{var}.
   ##
-  ## Further information about the Weibull distribution can be found at
+  ## Further information about the Rician distribution can be found at
   ## @url{https://en.wikipedia.org/wiki/Weibull_distribution}
   ##
-  ## @seealso{fitdist, makedist, wblcdf, wblinv, wblpdf, wblrnd, wblfit,
-  ## wbllike, wblstat, wblplot}
+  ## @seealso{fitdist, makedist, ricecdf, riceinv, ricepdf, ricernd, ricefit,
+  ## ricelike, ricestat}
   ## @end deftypefn
 
   properties (Dependent = true)
-    lambda
-    k
+    nu
+    sigma
   endproperties
 
   properties (GetAccess = public, Constant = true)
-    DistributionName = "WeibullDistribution";
-    DistributionCode = "wbl";
+    DistributionName = "RicianDistribution";
+    DistributionCode = "rice";
     NumParameters = 2;
-    ParameterNames = {"lambda", "k"};
-    ParameterDescription = {"Scale", "Shape"};
+    ParameterNames = {"nu", "sigma"};
+    ParameterDescription = {"Non-centrality Distance", "Scale"};
   endproperties
 
   properties (GetAccess = private, Constant = true)
-    ParameterRange = [realmin, realmin; Inf, Inf];
+    ParameterRange = [0, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected)
+  properties (GetAccess = public , SetAccess = protected)
     ParameterValues
     ParameterCI
     ParameterCovariance
@@ -104,50 +104,50 @@ classdef WeibullDistribution
 
   methods (Hidden)
 
-    function this = WeibullDistribution (lambda, k)
+    function this = RicianDistribution (nu, sigma)
       if (nargin == 0)
-        lambda = 1;
-        k = 1;
+        nu = 1;
+        sigma = 1;
       endif
-      checkparams (lambda, k)
+      checkparams (nu, sigma)
       this.InputData = [];
       this.IsTruncated = false;
-      this.ParameterValues = [lambda, k];
+      this.ParameterValues = [nu, sigma];
       this.ParameterIsFixed = [true, true];
       this.ParameterCovariance = zeros (this.NumParameters);
     endfunction
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "Weibull distribution");
+      __disp__ (this, "Rician distribution");
     endfunction
 
     function disp (this)
-      __disp__ (this, "Weibull distribution");
+      __disp__ (this, "Rician distribution");
     endfunction
 
-    function this = set.lambda (this, lambda)
-      checkparams (lambda, this.k)
+    function this = set.nu (this, nu)
+      checkparams (nu, this.sigma)
       this.InputData = [];
-      this.ParameterValues(1) = lambda;
+      this.ParameterValues(1) = nu;
       this.ParameterIsFixed = [true, true];
       this.ParameterCovariance = zeros (this.NumParameters);
     endfunction
 
-    function lambda = get.lambda (this)
-        lambda = this.ParameterValues(1);
+    function nu = get.nu (this)
+      nu = this.ParameterValues(1);
     endfunction
 
-    function this = set.k (this, k)
-      checkparams (this.lambda, k)
+    function this = set.sigma (this, sigma)
+      checkparams (this.nu, sigma)
       this.InputData = [];
-      this.ParameterValues(2) = k;
+      this.ParameterValues(2) = sigma;
       this.ParameterIsFixed = [true, true];
       this.ParameterCovariance = zeros (this.NumParameters);
     endfunction
 
-    function k = get.k (this)
-      k = this.ParameterValues(2);
+    function sigma = get.sigma (this)
+      sigma = this.ParameterValues(2);
     endfunction
 
   endmethods
@@ -155,8 +155,8 @@ classdef WeibullDistribution
   methods (Access = public)
 
     ## -*- texinfo -*-
-    ## @deftypefn  {WeibullDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
-    ## @deftypefnx {WeibullDistribution} {@var{p} =} cdf (@var{pd}, @var{x}, @qcode{"upper"})
+    ## @deftypefn  {RicianDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
+    ## @deftypefnx {RicianDistribution} {@var{p} =} cdf (@var{pd}, @var{x}, @qcode{"upper"})
     ##
     ## Compute the cumulative distribution function (CDF).
     ##
@@ -182,7 +182,7 @@ classdef WeibullDistribution
         utail = false;
       endif
       ## Do the computations
-      p = wblcdf (x, this.lambda, this.k);
+      p = ricecdf (x, this.nu, this.sigma);
       if (this.IsTruncated)
         lx = this.Truncation(1);
         lb = x < lx;
@@ -190,8 +190,8 @@ classdef WeibullDistribution
         ub = x > ux;
         p(lb) = 0;
         p(ub) = 1;
-        p(! (lb | ub)) -= wblcdf (lx, this.lambda, this.k);
-        p(! (lb | ub)) /= diff (wblcdf ([lx, ux], this.lambda, this.k));
+        p(! (lb | ub)) -= ricecdf (lx, this.nu, this.sigma);
+        p(! (lb | ub)) /= diff (ricecdf ([lx, ux], this.nu, this.sigma));
       endif
       ## Apply uflag
       if (utail)
@@ -200,7 +200,7 @@ classdef WeibullDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {WeibullDistribution} {@var{p} =} icdf (@var{pd}, @var{p})
+    ## @deftypefn  {RicianDistribution} {@var{p} =} icdf (@var{pd}, @var{p})
     ##
     ## Compute the cumulative distribution function (CDF).
     ##
@@ -214,18 +214,18 @@ classdef WeibullDistribution
         error ("icdf: requires a scalar probability distribution.");
       endif
       if (this.IsTruncated)
-        lp = wblcdf (this.Truncation(1), this.lambda, this.k);
-        up = wblcdf (this.Truncation(2), this.lambda, this.k);
+        lp = ricecdf (this.Truncation(1), this.nu, this.sigma);
+        up = ricecdf (this.Truncation(2), this.nu, this.sigma);
         ## Adjust p values within range of p @ lower limit and p @ upper limit
         np = lp + (up - lp) .* p;
-        x = wblinv (np, this.lambda, this.k);
+        x = riceinv (np, this.nu, this.sigma);
       else
-        x = wblinv (p, this.lambda, this.k);
+        x = riceinv (p, this.nu, this.sigma);
       endif
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {WeibullDistribution} {@var{r} =} iqr (@var{pd})
+    ## @deftypefn  {RicianDistribution} {@var{r} =} iqr (@var{pd})
     ##
     ## Compute the interquartile range of a probability distribution.
     ##
@@ -241,7 +241,7 @@ classdef WeibullDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {WeibullDistribution} {@var{m} =} mean (@var{pd})
+    ## @deftypefn  {RicianDistribution} {@var{m} =} mean (@var{pd})
     ##
     ## Compute the mean of a probability distribution.
     ##
@@ -257,12 +257,12 @@ classdef WeibullDistribution
         fm = @(x) x .* pdf (this, x);
         m = integral (fm, this.Truncation(1), this.Truncation(2));
       else
-        m = wblstat (this.lambda, this.k);
+        m = ricestat (this.nu, this.sigma);
       endif
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {WeibullDistribution} {@var{m} =} median (@var{pd})
+    ## @deftypefn  {RicianDistribution} {@var{m} =} median (@var{pd})
     ##
     ## Compute the median of a probability distribution.
     ##
@@ -277,15 +277,15 @@ classdef WeibullDistribution
       if (this.IsTruncated)
         lx = this.Truncation(1);
         ux = this.Truncation(2);
-        Fa_b = wblcdf ([lx, ux], this.lambda, this.k);
-        m = wblinv (sum (Fa_b) / 2, this.lambda, this.k);
+        Fa_b = ricecdf ([lx, ux], this.nu, this.sigma);
+        m = riceinv (sum (Fa_b) / 2, this.nu, this.sigma);
       else
-        m = wblinv (0.5, this.lambda, this.k);
+        m = riceinv (0.5, this.nu, this.sigma);
       endif
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {WeibullDistribution} {@var{nlogL} =} negloglik (@var{pd})
+    ## @deftypefn  {RicianDistribution} {@var{nlogL} =} negloglik (@var{pd})
     ##
     ## Compute the negative loglikelihood of a probability distribution.
     ##
@@ -301,13 +301,13 @@ classdef WeibullDistribution
         nlogL = [];
         return
       endif
-      nlogL = - wbllike ([this.lambda, this.k], this.InputData.data, ...
-                         this.InputData.cens, this.InputData.freq);
+      nlogL = - ricelike ([this.nu, this.sigma], this.InputData.data, ...
+                          this.InputData.cens, this.InputData.freq);
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {WeibullDistribution} {@var{ci} =} paramci (@var{pd})
-    ## @deftypefnx {WeibullDistribution} {@var{ci} =} paramci (@var{pd}, @var{Name}, @var{Value})
+    ## @deftypefn  {RicianDistribution} {@var{ci} =} paramci (@var{pd})
+    ## @deftypefnx {RicianDistribution} {@var{ci} =} paramci (@var{pd}, @var{Name}, @var{Value})
     ##
     ## Compute the confidence intervals for probability distribution parameters.
     ##
@@ -348,7 +348,7 @@ classdef WeibullDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {WeibullDistribution} {@var{y} =} pdf (@var{pd}, @var{x})
+    ## @deftypefn  {RicianDistribution} {@var{y} =} pdf (@var{pd}, @var{x})
     ##
     ## Compute the probability distribution function (PDF).
     ##
@@ -361,21 +361,21 @@ classdef WeibullDistribution
       if (! isscalar (this))
         error ("pdf: requires a scalar probability distribution.");
       endif
-      y = wblpdf (x, this.lambda, this.k);
+      y = ricepdf (x, this.nu, this.sigma);
       if (this.IsTruncated)
         lx = this.Truncation(1);
         lb = x < lx;
         ux = this.Truncation(2);
         ub = x > ux;
         y(lb | ub) = 0;
-        y(! (lb | ub)) /= diff (wblcdf ([lx, ux], this.lambda, this.k));
+        y(! (lb | ub)) /= diff (ricecdf ([lx, ux], this.nu, this.sigma));
       endif
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {WeibullDistribution} {} plot (@var{pd})
-    ## @deftypefnx {WeibullDistribution} {} plot (@var{pd}, @var{Name}, @var{Value})
-    ## @deftypefnx {WeibullDistribution} {@var{h} =} plot (@dots{})
+    ## @deftypefn  {RicianDistribution} {} plot (@var{pd})
+    ## @deftypefnx {RicianDistribution} {} plot (@var{pd}, @var{Name}, @var{Value})
+    ## @deftypefnx {RicianDistribution} {@var{h} =} plot (@dots{})
     ##
     ## Plot a probability distribution object.
     ##
@@ -426,10 +426,10 @@ classdef WeibullDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {WeibullDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum})
-    ## @deftypefnx {WeibullDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum}, @qcode{"Display"}, @var{display})
-    ## @deftypefnx {WeibullDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum}, @var{setparam})
-    ## @deftypefnx {WeibullDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum}, @var{setparam}, @qcode{"Display"}, @var{display})
+    ## @deftypefn  {RicianDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum})
+    ## @deftypefnx {RicianDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum}, @qcode{"Display"}, @var{display})
+    ## @deftypefnx {RicianDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum}, @var{setparam})
+    ## @deftypefnx {RicianDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum}, @var{setparam}, @qcode{"Display"}, @var{display})
     ##
     ## Profile likelihood function for a probability distribution object.
     ##
@@ -452,9 +452,9 @@ classdef WeibullDistribution
     ## @var{setparam}, @qcode{"Display"}, @qcode{"on"})} also plots the profile
     ## likelihood against the user-defined range of the selected parameter.
     ##
-    ## For the Weibull distribution, @qcode{@var{pnum} = 1} selects the
-    ## parameter @qcode{lambda} and @qcode{@var{pnum} = 2} selects the parameter
-    ## @var{k}.
+    ## For the Rician distribution, @qcode{@var{pnum} = 1} selects the
+    ## parameter @qcode{nu} and @qcode{@var{pnum} = 2} selects the parameter
+    ## @var{sigma}.
     ##
     ## When opted to display the profile likelihood plot, @code{proflik} also
     ## plots the baseline loglikelihood computed at the lower bound of the 95%
@@ -474,10 +474,10 @@ classdef WeibullDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {WeibullDistribution} {@var{y} =} random (@var{pd})
-    ## @deftypefnx {WeibullDistribution} {@var{y} =} random (@var{pd}, @var{rows})
-    ## @deftypefnx {WeibullDistribution} {@var{y} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
-    ## @deftypefnx {WeibullDistribution} {@var{y} =} random (@var{pd}, [@var{sz}])
+    ## @deftypefn  {RicianDistribution} {@var{y} =} random (@var{pd})
+    ## @deftypefnx {RicianDistribution} {@var{y} =} random (@var{pd}, @var{rows})
+    ## @deftypefnx {RicianDistribution} {@var{y} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
+    ## @deftypefnx {RicianDistribution} {@var{y} =} random (@var{pd}, [@var{sz}])
     ##
     ## Generate random arrays from the probability distribution object.
     ##
@@ -497,17 +497,27 @@ classdef WeibullDistribution
         error ("random: requires a scalar probability distribution.");
       endif
       if (this.IsTruncated)
-        lp = wblcdf (this.Truncation(1), this.lambda, this.k);
-        up = wblcdf (this.Truncation(2), this.lambda, this.k);
-        u = unifrnd (lp, up, varargin{:});
-        r = this.lambda .* (- log (u)) .^ (1 / this.k);
+        sz = [varargin{:}];
+        ps = prod (sz);
+        ## Get an estimate of how many more random numbers we need to randomly
+        ## pick the appropriate size from
+        lx = this.Truncation(1);
+        ux = this.Truncation(2);
+        ratio = 1 / diff (ricecdf ([ux, lx], this.nu, this.sigma));
+        nsize = 2 * ratio * ps;       # times 2 to be on the safe side
+        ## Generate the numbers and remove out-of-bound random samples
+        r = ricernd (this.nu, this.sigma, nsize, 1);
+        r(r < lx | r > ux) = [];
+        ## Randomly select the required size and reshape to requested dimensions
+        r = randperm (r, ps);
+        r = reshape (r, sz);
       else
-        r = wblrnd (this.lambda, this.k, varargin{:});
+        r = ricernd (this.nu, this.sigma, varargin{:});
       endif
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {WeibullDistribution} {@var{s} =} std (@var{pd})
+    ## @deftypefn  {RicianDistribution} {@var{s} =} std (@var{pd})
     ##
     ## Compute the standard deviation of a probability distribution.
     ##
@@ -519,12 +529,12 @@ classdef WeibullDistribution
       if (! isscalar (this))
         error ("std: requires a scalar probability distribution.");
       endif
-      v = var (this.lambda, this.k);
+      v = var (this.nu, this.sigma);
       s = sqrt (v);
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {WeibullDistribution} {@var{t} =} truncate (@var{pd}, @var{lower}, @var{upper})
+    ## @deftypefn  {RicianDistribution} {@var{t} =} truncate (@var{pd}, @var{lower}, @var{upper})
     ##
     ## Truncate a probability distribution.
     ##
@@ -554,7 +564,7 @@ classdef WeibullDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {WeibullDistribution} {@var{v} =} var (@var{pd})
+    ## @deftypefn  {RicianDistribution} {@var{v} =} var (@var{pd})
     ##
     ## Compute the variance of a probability distribution.
     ##
@@ -572,7 +582,7 @@ classdef WeibullDistribution
         fv =  @(x) ((x - m) .^ 2) .* pdf (pd, x);
         v = integral (fv, this.Truncation(1), this.Truncation(2));
       else
-        [~, v] = wblstat (this.lambda, this.k);
+        [~, v] = ricestat (this.nu, this.sigma);
       endif
     endfunction
 
@@ -595,17 +605,17 @@ classdef WeibullDistribution
         options.TolX = 1e-6;
       endif
       ## Fit data
-      [phat, pci] = wblfit (x, 0.05, censor, freq, options);
-      [~, acov] = wbllike (phat, x, censor, freq);
+      [phat, pci] = ricefit (x, 0.05, censor, freq, options);
+      [~, acov] = ricelike (phat, x, censor, freq);
       ## Create fitted distribution object
-      pd = WeibullDistribution.makeFitted ...
+      pd = RicianDistribution.makeFitted ...
            (phat, pci, acov, x, censor, freq);
     endfunction
 
     function pd = makeFitted (phat, pci, acov, x, censor, freq)
-      lambda = phat(1);
-      k = phat(2);
-      pd = WeibullDistribution (lambda, k);
+      nu = phat(1);
+      sigma = phat(2);
+      pd = RicianDistribution (nu, sigma);
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = [false, false];
       pd.ParameterCovariance = acov;
@@ -616,162 +626,163 @@ classdef WeibullDistribution
 
 endclassdef
 
-function checkparams (lambda, k)
-  if (! (isscalar (lambda) && isnumeric (lambda) && isreal (lambda)
-                           && isfinite (lambda) && lambda > 0 ))
-    error ("WeibullDistribution: LAMBDA must be a positive real scalar.")
+function checkparams (nu, sigma)
+  if (! (isscalar (nu) && isnumeric (nu) && isreal (nu) && isfinite (nu)
+                       && nu >= 0 ))
+    error ("RicianDistribution: NU must be a non-negative real scalar.")
   endif
-  if (! (isscalar (k) && isnumeric (k) && isreal (k) && isfinite (k) && k > 0))
-    error ("WeibullDistribution: K must be a positive real scalar.")
+  if (! (isscalar (sigma) && isnumeric (sigma) && isreal (sigma)
+                          && isfinite (sigma) && sigma > 0))
+    error ("RicianDistribution: SIGMA must be a positive real scalar.")
   endif
 endfunction
 
 ## Test input validation
-## 'WeibullDistribution' constructor
-%!error <WeibullDistribution: LAMBDA must be a positive real scalar.> ...
-%! WeibullDistribution(0, 1)
-%!error <WeibullDistribution: LAMBDA must be a positive real scalar.> ...
-%! WeibullDistribution(-1, 1)
-%!error <WeibullDistribution: LAMBDA must be a positive real scalar.> ...
-%! WeibullDistribution(Inf, 1)
-%!error <WeibullDistribution: LAMBDA must be a positive real scalar.> ...
-%! WeibullDistribution(i, 1)
-%!error <WeibullDistribution: LAMBDA must be a positive real scalar.> ...
-%! WeibullDistribution("a", 1)
-%!error <WeibullDistribution: LAMBDA must be a positive real scalar.> ...
-%! WeibullDistribution([1, 2], 1)
-%!error <WeibullDistribution: LAMBDA must be a positive real scalar.> ...
-%! WeibullDistribution(NaN, 1)
-%!error <WeibullDistribution: K must be a positive real scalar.> ...
-%! WeibullDistribution(1, 0)
-%!error <WeibullDistribution: K must be a positive real scalar.> ...
-%! WeibullDistribution(1, -1)
-%!error <WeibullDistribution: K must be a positive real scalar.> ...
-%! WeibullDistribution(1, Inf)
-%!error <WeibullDistribution: K must be a positive real scalar.> ...
-%! WeibullDistribution(1, i)
-%!error <WeibullDistribution: K must be a positive real scalar.> ...
-%! WeibullDistribution(1, "a")
-%!error <WeibullDistribution: K must be a positive real scalar.> ...
-%! WeibullDistribution(1, [1, 2])
-%!error <WeibullDistribution: K must be a positive real scalar.> ...
-%! WeibullDistribution(1, NaN)
+## 'RicianDistribution' constructor
+%!error <RicianDistribution: NU must be a non-negative real scalar.> ...
+%! RicianDistribution(-eps, 1)
+%!error <RicianDistribution: NU must be a non-negative real scalar.> ...
+%! RicianDistribution(-1, 1)
+%!error <RicianDistribution: NU must be a non-negative real scalar.> ...
+%! RicianDistribution(Inf, 1)
+%!error <RicianDistribution: NU must be a non-negative real scalar.> ...
+%! RicianDistribution(i, 1)
+%!error <RicianDistribution: NU must be a non-negative real scalar.> ...
+%! RicianDistribution("a", 1)
+%!error <RicianDistribution: NU must be a non-negative real scalar.> ...
+%! RicianDistribution([1, 2], 1)
+%!error <RicianDistribution: NU must be a non-negative real scalar.> ...
+%! RicianDistribution(NaN, 1)
+%!error <RicianDistribution: SIGMA must be a positive real scalar.> ...
+%! RicianDistribution(1, 0)
+%!error <RicianDistribution: SIGMA must be a positive real scalar.> ...
+%! RicianDistribution(1, -1)
+%!error <RicianDistribution: SIGMA must be a positive real scalar.> ...
+%! RicianDistribution(1, Inf)
+%!error <RicianDistribution: SIGMA must be a positive real scalar.> ...
+%! RicianDistribution(1, i)
+%!error <RicianDistribution: SIGMA must be a positive real scalar.> ...
+%! RicianDistribution(1, "a")
+%!error <RicianDistribution: SIGMA must be a positive real scalar.> ...
+%! RicianDistribution(1, [1, 2])
+%!error <RicianDistribution: SIGMA must be a positive real scalar.> ...
+%! RicianDistribution(1, NaN)
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (WeibullDistribution, 2, "uper")
+%! cdf (RicianDistribution, 2, "uper")
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (WeibullDistribution, 2, 3)
+%! cdf (RicianDistribution, 2, 3)
 
 ## 'paramci' method
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
-%! paramci (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), "alpha")
+%! paramci (RicianDistribution.fit (ricernd (1, 1, [1, 100])), "alpha")
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), "alpha", 0)
+%! paramci (RicianDistribution.fit (ricernd (1, 1, [1, 100])), "alpha", 0)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), "alpha", 1)
+%! paramci (RicianDistribution.fit (ricernd (1, 1, [1, 100])), "alpha", 1)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), "alpha", [0.5 2])
+%! paramci (RicianDistribution.fit (ricernd (1, 1, [1, 100])), "alpha", [0.5 2])
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), "alpha", "")
+%! paramci (RicianDistribution.fit (ricernd (1, 1, [1, 100])), "alpha", "")
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), "alpha", {0.05})
+%! paramci (RicianDistribution.fit (ricernd (1, 1, [1, 100])), "alpha", {0.05})
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), ...
-%! "parameter", "k", "alpha", {0.05})
+%! paramci (RicianDistribution.fit (ricernd (1, 1, [1, 100])), ...
+%! "parameter", "nu", "alpha", {0.05})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), ...
-%! "parameter", {"lambda", "k", "param"})
+%! paramci (RicianDistribution.fit (ricernd (1, 1, [1, 100])), ...
+%! "parameter", {"nu", "sigma", "param"})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), ...
-%! "alpha", 0.01, "parameter", {"lambda", "k", "param"})
+%! paramci (RicianDistribution.fit (ricernd (1, 1, [1, 100])), ...
+%! "alpha", 0.01, "parameter", {"nu", "sigma", "param"})
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), ...
+%! paramci (RicianDistribution.fit (ricernd (1, 1, [1, 100])), ...
 %! "parameter", "param")
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), ...
+%! paramci (RicianDistribution.fit (ricernd (1, 1, [1, 100])), ...
 %! "alpha", 0.01, "parameter", "param")
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), ...
+%! paramci (RicianDistribution.fit (ricernd (1, 1, [1, 100])), ...
 %! "NAME", "value")
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), ...
+%! paramci (RicianDistribution.fit (ricernd (1, 1, [1, 100])), ...
 %! "alpha", 0.01, "NAME", "value")
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), ...
-%! "alpha", 0.01, "parameter", "k", "NAME", "value")
+%! paramci (RicianDistribution.fit (ricernd (1, 1, [1, 100])), ...
+%! "alpha", 0.01, "parameter", "nu", "NAME", "value")
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (WeibullDistribution, "Parent")
+%! plot (RicianDistribution, "Parent")
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (WeibullDistribution, "PlotType", 12)
+%! plot (RicianDistribution, "PlotType", 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (WeibullDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (RicianDistribution, "PlotType", {"pdf", "cdf"})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (WeibullDistribution, "PlotType", "pdfcdf")
+%! plot (RicianDistribution, "PlotType", "pdfcdf")
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (WeibullDistribution, "Discrete", "pdfcdf")
+%! plot (RicianDistribution, "Discrete", "pdfcdf")
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (WeibullDistribution, "Discrete", [1, 0])
+%! plot (RicianDistribution, "Discrete", [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (WeibullDistribution, "Discrete", {true})
+%! plot (RicianDistribution, "Discrete", {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (WeibullDistribution, "Parent", 12)
+%! plot (RicianDistribution, "Parent", 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (WeibullDistribution, "Parent", "hax")
+%! plot (RicianDistribution, "Parent", "hax")
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...
-%! proflik (WeibullDistribution, 2)
+%! proflik (RicianDistribution, 2)
 %!error <proflik: PNUM must be a scalar number indexing a valid parameter.> ...
-%! proflik (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), 3)
+%! proflik (RicianDistribution.fit (ricernd (1, 1, [1, 100])), 3)
 %!error <proflik: PNUM must be a scalar number indexing a valid parameter.> ...
-%! proflik (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), [1, 2])
+%! proflik (RicianDistribution.fit (ricernd (1, 1, [1, 100])), [1, 2])
 %!error <proflik: PNUM must be a scalar number indexing a valid parameter.> ...
-%! proflik (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), {1})
+%! proflik (RicianDistribution.fit (ricernd (1, 1, [1, 100])), {1})
 %!error <proflik: SETPARAM must be a numeric vector.> ...
-%! proflik (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), 1, ones (2))
+%! proflik (RicianDistribution.fit (ricernd (1, 1, [1, 100])), 1, ones (2))
 %!error <proflik: missing VALUE for 'Display' argument.> ...
-%! proflik (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), 1, ...
+%! proflik (RicianDistribution.fit (ricernd (1, 1, [1, 100])), 1, ...
 %! "Display")
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), 1, ...
+%! proflik (RicianDistribution.fit (ricernd (1, 1, [1, 100])), 1, ...
 %! "Display", 1)
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), 1, ...
+%! proflik (RicianDistribution.fit (ricernd (1, 1, [1, 100])), 1, ...
 %! "Display", {1})
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), 1, ...
+%! proflik (RicianDistribution.fit (ricernd (1, 1, [1, 100])), 1, ...
 %! "Display", {"on"})
 %!error <proflik: invalid VALUE size for 'Display' argument.> ...
-%! proflik (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), 1, ...
+%! proflik (RicianDistribution.fit (ricernd (1, 1, [1, 100])), 1, ...
 %! "Display", ["on"; "on"])
 %!error <proflik: invalid VALUE for 'Display' argument.> ...
-%! proflik (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), 1, ...
+%! proflik (RicianDistribution.fit (ricernd (1, 1, [1, 100])), 1, ...
 %! "Display", "onnn")
 %!error <proflik: invalid NAME for optional arguments.> ...
-%! proflik (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), 1, ...
+%! proflik (RicianDistribution.fit (ricernd (1, 1, [1, 100])), 1, ...
 %! "NAME", "on")
 %!error <proflik: invalid optional argument.> ...
-%! proflik (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), 1, ...
+%! proflik (RicianDistribution.fit (ricernd (1, 1, [1, 100])), 1, ...
 %! {"NAME"}, "on")
 %!error <proflik: invalid optional argument.> ...
-%! proflik (WeibullDistribution.fit (wblrnd (1, 1, [1, 100])), 1, ...
+%! proflik (RicianDistribution.fit (ricernd (1, 1, [1, 100])), 1, ...
 %! {[1 2 3 4]}, "Display", "on")
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...
-%! truncate (WeibullDistribution)
+%! truncate (RicianDistribution)
 %!error <truncate: missing input argument.> ...
-%! truncate (WeibullDistribution, 2)
+%! truncate (RicianDistribution, 2)
 %!error <truncate: invalid lower upper limits.> ...
-%! truncate (WeibullDistribution, 4, 2)
+%! truncate (RicianDistribution, 4, 2)
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = WeibullDistribution(1, 1);
-%! pd(2) = WeibullDistribution(1, 3);
+%! pd = RicianDistribution(1, 1);
+%! pd(2) = RicianDistribution(1, 3);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)

@@ -1,35 +1,36 @@
-classdef UniformDistribution
+classdef TriangularDistribution
   ## -*- texinfo -*-
-  ## @deftypefn {statistics} UniformDistribution
+  ## @deftypefn {statistics} TriangularDistribution
   ##
-  ## Continuous uniform probability distribution object.
+  ## Triangular probability distribution object.
   ##
-  ## A @code{UniformDistribution} object consists of parameters, a model
-  ## description, and sample data for a uniform probability distribution.
+  ## A @code{TriangularDistribution} object consists of parameters, a model
+  ## description, and sample data for a triangular probability distribution.
   ##
-  ## The uniform distribution uses the following parameters.
+  ## The triangular distribution uses the following parameters.
   ##
   ## @multitable @columnfractions 0.25 0.48 0.27
   ## @headitem @var{Parameter} @tab @var{Description} @tab @var{Support}
   ##
-  ## @item @qcode{Lower} @tab Lower limit @tab @math{-Inf < Lower < Upper}
-  ## @item @qcode{Upper} @tab Upper limit @tab @math{Lower < Upper < Inf}
+  ## @item @qcode{A} @tab Lower limit @tab @math{-Inf < A < Inf}
+  ## @item @qcode{B} @tab Peak location @tab @math{A <= B <= C}
+  ## @item @qcode{C} @tab Upper limit @tab @math{C > A}
   ## @end multitable
   ##
-  ## There are several ways to create a @code{UniformDistribution} object.
+  ## There are several ways to create a @code{TriangularDistribution} object.
   ##
   ## @itemize
   ## @item Create a distribution with specified parameter values using the
   ## @code{makedist} function.
-  ## @item Use the constructor @qcode{UniformDistribution (@var{Lower},
-  ## @var{Upper})} to create a uniform distribution with specified parameter
+  ## @item Use the constructor @qcode{TriangularDistribution (@var{A}, @var{B}
+  ## @var{C})} to create a triangular distribution with specified parameter
   ## values.
   ## @end itemize
   ##
   ## It is highly recommended to use @code{makedist} function to create
   ## probability distribution objects, instead of the constructor.
   ##
-  ## A @code{UniformDistribution} object contains the following
+  ## A @code{TriangularDistribution} object contains the following
   ## properties, which can be accessed using dot notation.
   ##
   ## @multitable @columnfractions 0.25 0.25 0.25 0.25
@@ -39,28 +40,29 @@ classdef UniformDistribution
   ## @qcode{Truncation} @tab @qcode{IsTruncated}
   ## @end multitable
   ##
-  ## A @code{UniformDistribution} object contains the following methods:
+  ## A @code{TriangularDistribution} object contains the following methods:
   ## @code{cdf}, @code{icdf}, @code{iqr}, @code{mean}, @code{median},
   ## @code{pdf}, @code{plot}, @code{random}, @code{std}, @code{truncate},
   ## @code{var}.
   ##
-  ## Further information about the continuous uniform distribution can be found
+  ## Further information about the continuous triangular distribution can be found
   ## at @url{https://en.wikipedia.org/wiki/Continuous_uniform_distribution}
   ##
-  ## @seealso{makedist, unifcdf, unifinv, unifpdf, unifrnd, unifit, unifstat}
+  ## @seealso{makedist, tricdf, triinv, tripdf, trirnd, tristat}
   ## @end deftypefn
 
   properties (Dependent = true)
-    Lower
-    Upper
+    A
+    B
+    C
   endproperties
 
   properties (GetAccess = public, Constant = true)
-    DistributionName = "UniformDistribution";
-    DistributionCode = "unif";
-    NumParameters = 2;
-    ParameterNames = {"Lower", "Upper"};
-    ParameterDescription = {"Lower limit", "Upper limit"};
+    DistributionName = "TriangularDistribution";
+    DistributionCode = "tri";
+    NumParameters = 3;
+    ParameterNames = {"A", "B", "C"};
+    ParameterDescription = {"Lower limit", "Peak location", "Upper limit"};
   endproperties
 
   properties (GetAccess = public , SetAccess = protected)
@@ -71,41 +73,51 @@ classdef UniformDistribution
 
   methods (Hidden)
 
-    function this = UniformDistribution (Lower, Upper)
+    function this = TriangularDistribution (A, B, C)
       if (nargin == 0)
-        Lower = 0;
-        Upper = 1;
+        A = 0;
+        B = 0.5;
+        C = 1;
       endif
-      checkparams (Lower, Upper)
+      checkparams (A, B, C)
       this.IsTruncated = false;
-      this.ParameterValues = [Lower, Upper];
+      this.ParameterValues = [A, B, C];
     endfunction
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "Uniform distribution (continuous)");
+      __disp__ (this, "Triangular distribution");
     endfunction
 
     function disp (this)
-      __disp__ (this, "Uniform distribution (continuous)");
+      __disp__ (this, "Triangular distribution");
     endfunction
 
-    function this = set.Lower (this, Lower)
-      checkparams (Lower, this.Upper)
-      this.ParameterValues(1) = Lower;
+    function this = set.A (this, A)
+      checkparams (A, this.B, this.C)
+      this.ParameterValues(1) = A;
     endfunction
 
-    function Lower = get.Lower (this)
-      Lower = this.ParameterValues(1);
+    function A = get.A (this)
+      A = this.ParameterValues(1);
     endfunction
 
-    function this = set.Upper (this, Upper)
-      checkparams (this.Lower, Upper)
-      this.ParameterValues(2) = Upper;
+    function this = set.B (this, B)
+      checkparams (this.A, B, this.C)
+      this.ParameterValues(2) = B;
     endfunction
 
-    function Upper = get.Upper (this)
-      Upper = this.ParameterValues(2);
+    function B = get.B (this)
+      B = this.ParameterValues(2);
+    endfunction
+
+    function this = set.C (this, C)
+      checkparams (this.A, this.B, C)
+      this.ParameterValues(2) = C;
+    endfunction
+
+    function C = get.C (this)
+      C = this.ParameterValues(2);
     endfunction
 
   endmethods
@@ -113,8 +125,8 @@ classdef UniformDistribution
   methods (Access = public)
 
     ## -*- texinfo -*-
-    ## @deftypefn  {UniformDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
-    ## @deftypefnx {UniformDistribution} {@var{p} =} cdf (@var{pd}, @var{x}, @qcode{"upper"})
+    ## @deftypefn  {TriangularDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
+    ## @deftypefnx {TriangularDistribution} {@var{p} =} cdf (@var{pd}, @var{x}, @qcode{"upper"})
     ##
     ## Compute the cumulative distribution function (CDF).
     ##
@@ -140,7 +152,7 @@ classdef UniformDistribution
         utail = false;
       endif
       ## Do the computations
-      p = unifcdf (x, this.Lower, this.Upper);
+      p = tricdf (x, this.A, this.B, this.C);
       if (this.IsTruncated)
         lx = this.Truncation(1);
         lb = x < lx;
@@ -148,8 +160,8 @@ classdef UniformDistribution
         ub = x > ux;
         p(lb) = 0;
         p(ub) = 1;
-        p(! (lb | ub)) -= unifcdf (lx, this.Lower, this.Upper);
-        p(! (lb | ub)) /= diff (unifcdf ([lx, ux], this.Lower, this.Upper));
+        p(! (lb | ub)) -= tricdf (lx, this.A, this.B, this.C);
+        p(! (lb | ub)) /= diff (tricdf ([lx, ux], this.A, this.B, this.C));
       endif
       ## Apply uflag
       if (utail)
@@ -158,7 +170,7 @@ classdef UniformDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {UniformDistribution} {@var{p} =} icdf (@var{pd}, @var{p})
+    ## @deftypefn  {TriangularDistribution} {@var{p} =} icdf (@var{pd}, @var{p})
     ##
     ## Compute the cumulative distribution function (CDF).
     ##
@@ -172,18 +184,18 @@ classdef UniformDistribution
         error ("icdf: requires a scalar probability distribution.");
       endif
       if (this.IsTruncated)
-        lp = unifcdf (this.Truncation(1), this.Lower, this.Upper);
-        up = unifcdf (this.Truncation(2), this.Lower, this.Upper);
+        lp = tricdf (this.Truncation(1), this.A, this.B, this.C);
+        up = tricdf (this.Truncation(2), this.A, this.B, this.C);
         ## Adjust p values within range of p @ lower limit and p @ upper limit
         np = lp + (up - lp) .* p;
-        x = unifinv (np, this.Lower, this.Upper);
+        x = triinv (np, this.A, this.B, this.C);
       else
-        x = unifinv (p, this.Lower, this.Upper);
+        x = triinv (p, this.A, this.B, this.C);
       endif
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {UniformDistribution} {@var{r} =} iqr (@var{pd})
+    ## @deftypefn  {TriangularDistribution} {@var{r} =} iqr (@var{pd})
     ##
     ## Compute the interquartile range of a probability distribution.
     ##
@@ -199,7 +211,7 @@ classdef UniformDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {UniformDistribution} {@var{m} =} mean (@var{pd})
+    ## @deftypefn  {TriangularDistribution} {@var{m} =} mean (@var{pd})
     ##
     ## Compute the mean of a probability distribution.
     ##
@@ -215,12 +227,12 @@ classdef UniformDistribution
         fm = @(x) x .* pdf (this, x);
         m = integral (fm, this.Truncation(1), this.Truncation(2));
       else
-        m = unifstat (this.Lower, this.Upper);
+        m = tristat (this.A, this.B, this.C);
       endif
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {UniformDistribution} {@var{m} =} median (@var{pd})
+    ## @deftypefn  {TriangularDistribution} {@var{m} =} median (@var{pd})
     ##
     ## Compute the median of a probability distribution.
     ##
@@ -235,15 +247,15 @@ classdef UniformDistribution
       if (this.IsTruncated)
         lx = this.Truncation(1);
         ux = this.Truncation(2);
-        Fa_b = unifcdf ([lx, ux], this.Lower, this.Upper);
-        m = unifinv (sum (Fa_b) / 2, this.Lower, this.Upper);
+        Fa_b = tricdf ([lx, ux], this.A, this.B, this.C);
+        m = triinv (sum (Fa_b) / 2, this.A, this.B, this.C);
       else
-        m = unifstat (this.Lower, this.Upper);
+        m = tristat (this.A, this.B, this.C);
       endif
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {UniformDistribution} {@var{y} =} pdf (@var{pd}, @var{x})
+    ## @deftypefn  {TriangularDistribution} {@var{y} =} pdf (@var{pd}, @var{x})
     ##
     ## Compute the probability distribution function (PDF).
     ##
@@ -256,21 +268,21 @@ classdef UniformDistribution
       if (! isscalar (this))
         error ("pdf: requires a scalar probability distribution.");
       endif
-      y = unifpdf (x, this.Lower, this.Upper);
+      y = tripdf (x, this.A, this.B, this.C);
       if (this.IsTruncated)
         lx = this.Truncation(1);
         lb = x < lx;
         ux = this.Truncation(2);
         ub = x > ux;
         y(lb | ub) = 0;
-        y(! (lb | ub)) /= diff (unifcdf ([lx, ux], this.Lower, this.Upper));
+        y(! (lb | ub)) /= diff (tricdf ([lx, ux], this.A, this.B, this.C));
       endif
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {UniformDistribution} {} plot (@var{pd})
-    ## @deftypefnx {UniformDistribution} {} plot (@var{pd}, @var{Name}, @var{Value})
-    ## @deftypefnx {UniformDistribution} {@var{h} =} plot (@dots{})
+    ## @deftypefn  {TriangularDistribution} {} plot (@var{pd})
+    ## @deftypefnx {TriangularDistribution} {} plot (@var{pd}, @var{Name}, @var{Value})
+    ## @deftypefnx {TriangularDistribution} {@var{h} =} plot (@dots{})
     ##
     ## Plot a probability distribution object.
     ##
@@ -321,10 +333,10 @@ classdef UniformDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {UniformDistribution} {@var{y} =} random (@var{pd})
-    ## @deftypefnx {UniformDistribution} {@var{y} =} random (@var{pd}, @var{rows})
-    ## @deftypefnx {UniformDistribution} {@var{y} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
-    ## @deftypefnx {UniformDistribution} {@var{y} =} random (@var{pd}, [@var{sz}])
+    ## @deftypefn  {TriangularDistribution} {@var{y} =} random (@var{pd})
+    ## @deftypefnx {TriangularDistribution} {@var{y} =} random (@var{pd}, @var{rows})
+    ## @deftypefnx {TriangularDistribution} {@var{y} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
+    ## @deftypefnx {TriangularDistribution} {@var{y} =} random (@var{pd}, [@var{sz}])
     ##
     ## Generate random arrays from the probability distribution object.
     ##
@@ -344,14 +356,27 @@ classdef UniformDistribution
         error ("random: requires a scalar probability distribution.");
       endif
       if (this.IsTruncated)
-        r = unifrnd (this.Truncation(1), this.Truncation(2), varargin{:});
+        sz = [varargin{:}];
+        ps = prod (sz);
+        ## Get an estimate of how many more random numbers we need to randomly
+        ## pick the appropriate size from
+        lx = this.Truncation(1);
+        ux = this.Truncation(2);
+        ratio = 1 / diff (tricdf ([ux, lx], this.A, this.B, this.C));
+        nsize = 2 * ratio * ps;     # times 2 to be on the safe side
+        ## Generate the numbers and remove out-of-bound random samples
+        r = trirnd (this.A, this.B, this.C, nsize, 1);
+        r(r < lx | r > ux) = [];
+        ## Randomly select the required size and reshape to requested dimensions
+        r = randperm (r, ps);
+        r = reshape (r, sz);
       else
-        r = unifrnd (this.Lower, this.Upper, varargin{:});
+        r = trirnd (this.A, this.B, this.C, varargin{:});
       endif
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {UniformDistribution} {@var{s} =} std (@var{pd})
+    ## @deftypefn  {TriangularDistribution} {@var{s} =} std (@var{pd})
     ##
     ## Compute the standard deviation of a probability distribution.
     ##
@@ -363,12 +388,12 @@ classdef UniformDistribution
       if (! isscalar (this))
         error ("std: requires a scalar probability distribution.");
       endif
-      v = var (this.Lower, this.Upper);
+      v = var (this.A, this.B, this.C);
       s = sqrt (v);
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {UniformDistribution} {@var{t} =} truncate (@var{pd}, @var{lower}, @var{upper})
+    ## @deftypefn  {TriangularDistribution} {@var{t} =} truncate (@var{pd}, @var{lower}, @var{upper})
     ##
     ## Truncate a probability distribution.
     ##
@@ -390,15 +415,15 @@ classdef UniformDistribution
       elseif (lower >= upper)
         error ("truncate: invalid lower upper limits.");
       endif
-      ## Check boundaries and constrain within support [Lower, Upper]
-      lower(lower < this.Lower) = this.Lower;
-      upper(upper > this.Upper) = this.Upper;
+      ## Check boundaries and constrain within support [A, C]
+      lower(lower < this.A) = this.A;
+      upper(upper > this.C) = this.C;
       this.Truncation = [lower, upper];
       this.IsTruncated = true;
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {UniformDistribution} {@var{v} =} var (@var{pd})
+    ## @deftypefn  {TriangularDistribution} {@var{v} =} var (@var{pd})
     ##
     ## Compute the variance of a probability distribution.
     ##
@@ -416,7 +441,7 @@ classdef UniformDistribution
         fv =  @(x) ((x - m) .^ 2) .* pdf (pd, x);
         v = integral (fv, this.Truncation(1), this.Truncation(2));
       else
-        [~, v] = unifstat (this.Lower, this.Upper);
+        [~, v] = tristat (this.A, this.B, this.C);
       endif
     endfunction
 
@@ -424,83 +449,101 @@ classdef UniformDistribution
 
 endclassdef
 
-function checkparams (Lower, Upper)
-  if (! (isscalar (Lower) && isnumeric (Lower) && isreal (Lower)
-                          && isfinite (Lower)))
-    error ("UniformDistribution: LOWER must be a real scalar.")
+function checkparams (A, B, C)
+  if (! (isscalar (A) && isnumeric (A) && isreal (A) && isfinite (A)))
+    error ("TriangularDistribution: lower limit A must be a real scalar.")
   endif
-  if (! (isscalar (Upper) && isnumeric (Upper) && isreal (Upper)
-                          && isfinite (Upper)))
-    error ("UniformDistribution: UPPER must be a real scalar.")
+  if (! (isscalar (B) && isnumeric (B) && isreal (B) && isfinite (B)))
+    error ("TriangularDistribution: mode B must be a real scalar.")
   endif
-  if (! (Lower < Upper))
-    error ("UniformDistribution: LOWER must be less than UPPER.")
+  if (! (isscalar (C) && isnumeric (C) && isreal (C) && isfinite (C)))
+    error ("TriangularDistribution: upper limit C must be a real scalar.")
+  endif
+  if (! (A < C))
+    error (strcat (["TriangularDistribution: lower limit A must"], ...
+                   [" be less than upper limit C."]))
+  endif
+  if (! (A <= B && B <= C))
+    error (strcat (["TriangularDistribution: mode B must be within"], ...
+                   [" lower limit A and upper limit C."]))
   endif
 endfunction
 
 ## Test input validation
-## 'UniformDistribution' constructor
-%!error <UniformDistribution: LOWER must be a real scalar.> ...
-%! UniformDistribution (i, 1)
-%!error <UniformDistribution: LOWER must be a real scalar.> ...
-%! UniformDistribution (Inf, 1)
-%!error <UniformDistribution: LOWER must be a real scalar.> ...
-%! UniformDistribution ([1, 2], 1)
-%!error <UniformDistribution: LOWER must be a real scalar.> ...
-%! UniformDistribution ("a", 1)
-%!error <UniformDistribution: LOWER must be a real scalar.> ...
-%! UniformDistribution (NaN, 1)
-%!error <UniformDistribution: UPPER must be a real scalar.> ...
-%! UniformDistribution (1, i)
-%!error <UniformDistribution: UPPER must be a real scalar.> ...
-%! UniformDistribution (1, Inf)
-%!error <UniformDistribution: UPPER must be a real scalar.> ...
-%! UniformDistribution (1, [1, 2])
-%!error <UniformDistribution: UPPER must be a real scalar.> ...
-%! UniformDistribution (1, "a")
-%!error <UniformDistribution: UPPER must be a real scalar.> ...
-%! UniformDistribution (1, NaN)
-%!error <UniformDistribution: LOWER must be less than UPPER.> ...
-%! UniformDistribution (2, 1)
+## 'TriangularDistribution' constructor
+%!error <TriangularDistribution: lower limit A must be a real scalar.> ...
+%! TriangularDistribution (i, 1, 2)
+%!error <TriangularDistribution: lower limit A must be a real scalar.> ...
+%! TriangularDistribution (Inf, 1, 2)
+%!error <TriangularDistribution: lower limit A must be a real scalar.> ...
+%! TriangularDistribution ([1, 2], 1, 2)
+%!error <TriangularDistribution: lower limit A must be a real scalar.> ...
+%! TriangularDistribution ("a", 1, 2)
+%!error <TriangularDistribution: lower limit A must be a real scalar.> ...
+%! TriangularDistribution (NaN, 1, 2)
+%!error <TriangularDistribution: mode B must be a real scalar.> ...
+%! TriangularDistribution (1, i, 2)
+%!error <TriangularDistribution: mode B must be a real scalar.> ...
+%! TriangularDistribution (1, Inf, 2)
+%!error <TriangularDistribution: mode B must be a real scalar.> ...
+%! TriangularDistribution (1, [1, 2], 2)
+%!error <TriangularDistribution: mode B must be a real scalar.> ...
+%! TriangularDistribution (1, "a", 2)
+%!error <TriangularDistribution: mode B must be a real scalar.> ...
+%! TriangularDistribution (1, NaN, 2)
+%!error <TriangularDistribution: upper limit C must be a real scalar.> ...
+%! TriangularDistribution (1, 2, i)
+%!error <TriangularDistribution: upper limit C must be a real scalar.> ...
+%! TriangularDistribution (1, 2, Inf)
+%!error <TriangularDistribution: upper limit C must be a real scalar.> ...
+%! TriangularDistribution (1, 2, [1, 2])
+%!error <TriangularDistribution: upper limit C must be a real scalar.> ...
+%! TriangularDistribution (1, 2, "a")
+%!error <TriangularDistribution: upper limit C must be a real scalar.> ...
+%! TriangularDistribution (1, 2, NaN)
+%!error <TriangularDistribution: lower limit A must be less than upper limit C.> ...
+%! TriangularDistribution (1, 1, 1)
+%!error <TriangularDistribution: mode B must be within lower limit A and upper limit C.> ...
+%! TriangularDistribution (1, 0.5, 2)
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (UniformDistribution, 2, "uper")
+%! cdf (TriangularDistribution, 2, "uper")
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (UniformDistribution, 2, 3)
+%! cdf (TriangularDistribution, 2, 3)
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (UniformDistribution, "Parent")
+%! plot (TriangularDistribution, "Parent")
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (UniformDistribution, "PlotType", 12)
+%! plot (TriangularDistribution, "PlotType", 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (UniformDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (TriangularDistribution, "PlotType", {"pdf", "cdf"})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (UniformDistribution, "PlotType", "pdfcdf")
+%! plot (TriangularDistribution, "PlotType", "pdfcdf")
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (UniformDistribution, "Discrete", "pdfcdf")
+%! plot (TriangularDistribution, "Discrete", "pdfcdf")
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (UniformDistribution, "Discrete", [1, 0])
+%! plot (TriangularDistribution, "Discrete", [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (UniformDistribution, "Discrete", {true})
+%! plot (TriangularDistribution, "Discrete", {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (UniformDistribution, "Parent", 12)
+%! plot (TriangularDistribution, "Parent", 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (UniformDistribution, "Parent", "hax")
+%! plot (TriangularDistribution, "Parent", "hax")
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...
-%! truncate (UniformDistribution)
+%! truncate (TriangularDistribution)
 %!error <truncate: missing input argument.> ...
-%! truncate (UniformDistribution, 2)
+%! truncate (TriangularDistribution, 2)
 %!error <truncate: invalid lower upper limits.> ...
-%! truncate (UniformDistribution, 4, 2)
+%! truncate (TriangularDistribution, 4, 2)
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = UniformDistribution (0, 1);
-%! pd(2) = UniformDistribution (0, 2);
+%! pd = TriangularDistribution (0, 1, 2);
+%! pd(2) = TriangularDistribution (0, 1, 2);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)
