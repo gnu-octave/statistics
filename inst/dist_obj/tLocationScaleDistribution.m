@@ -38,11 +38,9 @@ classdef tLocationScaleDistribution
   ##
   ## @multitable @columnfractions 0.25 0.25 0.25 0.25
   ## @item @qcode{DistributionName} @tab @qcode{DistributionCode} @tab
-  ## @qcode{CensoringAllowed} @tab @qcode{NumParameters}
-  ## @item @qcode{ParameterNames} @tab @qcode{ParameterRange} @tab
-  ## @qcode{ParameterLogCI} @tab @qcode{ParameterDescription}
-  ## @item @qcode{ParameterValues} @tab @qcode{ParameterCI} @tab
-  ## @qcode{NegLogLikelihood} @tab @qcode{ParameterCovariance}
+  ## @qcode{NumParameters} @tab @qcode{ParameterNames}
+  ## @item @qcode{ParameterDescription} @tab @qcode{ParameterValues} @tab
+  ## @qcode{ParameterValues} @tab @qcode{ParameterCI}
   ## @item @qcode{ParameterIsFixed} @tab @qcode{Truncation} @tab
   ## @qcode{IsTruncated} @tab @qcode{InputData}
   ## @end multitable
@@ -68,18 +66,19 @@ classdef tLocationScaleDistribution
   properties (GetAccess = public, Constant = true)
     DistributionName = "tLocationScaleDistribution";
     DistributionCode = "tls";
-    CensoringAllowed = true;
     NumParameters = 3;
     ParameterNames = {"mu", "sigma", "nu"};
-    ParameterRange = [-Inf, realmin, realmin; Inf, Inf, Inf];
-    ParameterLogCI = [false, true, true];
     ParameterDescription = {"Location", "Scale", "Degrees of Freedom"};
   endproperties
 
-  properties (GetAccess = public , SetAccess = protected)
+  properties (GetAccess = private, Constant = true)
+    ParameterRange = [-Inf, realmin, realmin; Inf, Inf, Inf];
+    ParameterLogCI = [false, true, true];
+  endproperties
+
+  properties (GetAccess = public, SetAccess = protected)
     ParameterValues
     ParameterCI
-    NegLogLikelihood
     ParameterCovariance
     ParameterIsFixed
     Truncation
@@ -98,7 +97,6 @@ classdef tLocationScaleDistribution
       checkparams (mu, sigma, nu)
       this.InputData = [];
       this.IsTruncated = false;
-      this.NegLogLikelihood = [];
       this.ParameterValues = [mu, sigma, nu];
       this.ParameterIsFixed = [true, true, true];
       this.ParameterCovariance = zeros (this.NumParameters);
@@ -116,7 +114,6 @@ classdef tLocationScaleDistribution
     function this = set.mu (this, mu)
       checkparams (mu, this.sigma, this.nu)
       this.InputData = [];
-      this.NegLogLikelihood = [];
       this.ParameterValues(1) = mu;
       this.ParameterIsFixed = [true, true, true];
       this.ParameterCovariance = zeros (this.NumParameters);
@@ -129,10 +126,9 @@ classdef tLocationScaleDistribution
     function this = set.sigma (this, sigma)
       checkparams (this.mu, sigma, this.nu)
       this.InputData = [];
-      this.NegLogLikelihood = [];
       this.ParameterValues(2) = sigma;
+      this.ParameterIsFixed = [true, true, true];
       this.ParameterCovariance = zeros (this.NumParameters);
-      this.InputData = [];
     endfunction
 
     function sigma = get.sigma (this)
@@ -142,10 +138,9 @@ classdef tLocationScaleDistribution
     function this = set.nu (this, nu)
       checkparams (this.mu, this.sigma, nu)
       this.InputData = [];
-      this.NegLogLikelihood = [];
       this.ParameterValues(3) = nu;
+      this.ParameterIsFixed = [true, true, true];
       this.ParameterCovariance = zeros (this.NumParameters);
-      this.InputData = [];
     endfunction
 
     function nu = get.nu (this)
@@ -561,8 +556,7 @@ classdef tLocationScaleDistribution
       this.Truncation = [lower, upper];
       this.IsTruncated = true;
       this.InputData = [];
-      this.NegLogLikelihood = [];
-      this.ParameterIsFixed = [true, true];
+      this.ParameterIsFixed = [true, true, true];
       this.ParameterCovariance = zeros (this.NumParameters);
     endfunction
 
@@ -607,20 +601,19 @@ classdef tLocationScaleDistribution
       endif
       ## Fit data
       [phat, pci] = tlsfit (x, 0.05, censor, freq, options);
-      [nlogL, acov] = tlslike (phat, x, censor, freq);
+      [~, acov] = tlslike (phat, x, censor, freq);
       ## Create fitted distribution object
       pd = tLocationScaleDistribution.makeFitted ...
-           (phat, pci, nlogL, acov, x, censor, freq);
+           (phat, pci, acov, x, censor, freq);
     endfunction
 
-    function pd = makeFitted (phat, pci, nlogL, acov, x, censor, freq)
+    function pd = makeFitted (phat, pci, acov, x, censor, freq)
       mu = phat(1);
       sigma = phat(2);
       nu = phat(2);
       pd = tLocationScaleDistribution (mu, sigma, nu);
       pd.ParameterCI = pci;
-      pd.NegLogLikelihood = nlogL;
-      pd.ParameterIsFixed = [false, false];
+      pd.ParameterIsFixed = [false, false, false];
       pd.ParameterCovariance = acov;
       pd.InputData = struct ("data", x, "cens", censor, "freq", freq);
     endfunction

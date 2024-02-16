@@ -55,11 +55,9 @@ classdef WeibullDistribution
   ##
   ## @multitable @columnfractions 0.25 0.25 0.25 0.25
   ## @item @qcode{DistributionName} @tab @qcode{DistributionCode} @tab
-  ## @qcode{CensoringAllowed} @tab @qcode{NumParameters}
-  ## @item @qcode{ParameterNames} @tab @qcode{ParameterRange} @tab
-  ## @qcode{ParameterLogCI} @tab @qcode{ParameterDescription}
-  ## @item @qcode{ParameterValues} @tab @qcode{ParameterCI} @tab
-  ## @qcode{NegLogLikelihood} @tab @qcode{ParameterCovariance}
+  ## @qcode{NumParameters} @tab @qcode{ParameterNames}
+  ## @item @qcode{ParameterDescription} @tab @qcode{ParameterValues} @tab
+  ## @qcode{ParameterValues} @tab @qcode{ParameterCI}
   ## @item @qcode{ParameterIsFixed} @tab @qcode{Truncation} @tab
   ## @qcode{IsTruncated} @tab @qcode{InputData}
   ## @end multitable
@@ -84,18 +82,19 @@ classdef WeibullDistribution
   properties (GetAccess = public, Constant = true)
     DistributionName = "WeibullDistribution";
     DistributionCode = "wbl";
-    CensoringAllowed = true;
     NumParameters = 2;
     ParameterNames = {"lambda", "k"};
-    ParameterRange = [realmin, realmin; Inf, Inf];
-    ParameterLogCI = [true, true];
     ParameterDescription = {"Scale", "Shape"};
   endproperties
 
-  properties (GetAccess = public , SetAccess = protected)
+  properties (GetAccess = private, Constant = true)
+    ParameterRange = [realmin, realmin; Inf, Inf];
+    ParameterLogCI = [true, true];
+  endproperties
+
+  properties (GetAccess = public, SetAccess = protected)
     ParameterValues
     ParameterCI
-    NegLogLikelihood
     ParameterCovariance
     ParameterIsFixed
     Truncation
@@ -113,7 +112,6 @@ classdef WeibullDistribution
       checkparams (lambda, k)
       this.InputData = [];
       this.IsTruncated = false;
-      this.NegLogLikelihood = [];
       this.ParameterValues = [lambda, k];
       this.ParameterIsFixed = [true, true];
       this.ParameterCovariance = zeros (this.NumParameters);
@@ -131,7 +129,6 @@ classdef WeibullDistribution
     function this = set.lambda (this, lambda)
       checkparams (lambda, this.k)
       this.InputData = [];
-      this.NegLogLikelihood = [];
       this.ParameterValues(1) = lambda;
       this.ParameterIsFixed = [true, true];
       this.ParameterCovariance = zeros (this.NumParameters);
@@ -144,7 +141,6 @@ classdef WeibullDistribution
     function this = set.k (this, k)
       checkparams (this.lambda, k)
       this.InputData = [];
-      this.NegLogLikelihood = [];
       this.ParameterValues(2) = k;
       this.ParameterIsFixed = [true, true];
       this.ParameterCovariance = zeros (this.NumParameters);
@@ -599,18 +595,17 @@ classdef WeibullDistribution
       endif
       ## Fit data
       [phat, pci] = wblfit (x, 0.05, censor, freq, options);
-      [nlogL, acov] = wbllike (phat, x, censor, freq);
+      [~, acov] = wbllike (phat, x, censor, freq);
       ## Create fitted distribution object
       pd = WeibullDistribution.makeFitted ...
-           (phat, pci, nlogL, acov, x, censor, freq);
+           (phat, pci, acov, x, censor, freq);
     endfunction
 
-    function pd = makeFitted (phat, pci, nlogL, acov, x, censor, freq)
+    function pd = makeFitted (phat, pci, acov, x, censor, freq)
       lambda = phat(1);
       k = phat(2);
       pd = WeibullDistribution (lambda, k);
       pd.ParameterCI = pci;
-      pd.NegLogLikelihood = nlogL;
       pd.ParameterIsFixed = [false, false];
       pd.ParameterCovariance = acov;
       pd.InputData = struct ("data", x, "cens", censor, "freq", freq);

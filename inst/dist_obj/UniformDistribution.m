@@ -34,10 +34,9 @@ classdef UniformDistribution
   ##
   ## @multitable @columnfractions 0.25 0.25 0.25 0.25
   ## @item @qcode{DistributionName} @tab @qcode{DistributionCode} @tab
-  ## @qcode{CensoringAllowed} @tab @qcode{NumParameters}
-  ## @item @qcode{ParameterNames} @tab @qcode{ParameterRange} @tab
-  ## @qcode{ParameterDescription} @tab @qcode{ParameterValues}
-  ## @item @qcode{IsTruncated} @tab @qcode{Truncation} @tab @tab
+  ## @qcode{NumParameters} @tab @qcode{ParameterNames}
+  ## @item @qcode{ParameterDescription} @tab @qcode{ParameterValues} @tab
+  ## @qcode{Truncation} @tab @qcode{IsTruncated}
   ## @end multitable
   ##
   ## A @code{UniformDistribution} object contains the following methods:
@@ -59,10 +58,8 @@ classdef UniformDistribution
   properties (GetAccess = public, Constant = true)
     DistributionName = "UniformDistribution";
     DistributionCode = "unif";
-    CensoringAllowed = false;
     NumParameters = 2;
     ParameterNames = {"Lower", "Upper"};
-    ParameterRange = [-Inf, -Inf; Inf, Inf];
     ParameterDescription = {"Lower limit", "Upper limit"};
   endproperties
 
@@ -420,10 +417,6 @@ classdef UniformDistribution
         [~, v] = unifstat (this.lambda, this.Lower);
       endif
     endfunction
-
-  endmethods
-
-  methods (Static, Hidden)
 
   endmethods
 
