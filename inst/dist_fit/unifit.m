@@ -41,7 +41,7 @@
 ## or if left empty, @qcode{@var{freq} = ones (size (@var{x}))}.
 ##
 ## Further information about the continuous uniform distribution can be found at
-## @url{https://en.wikipedia.org/wiki/Discrete_uniform_distribution}
+## @url{https://en.wikipedia.org/wiki/Continuous_uniform_distribution}
 ##
 ## @seealso{unifcdf, unifinv, unifpdf, unifrnd, unifstat}
 ## @end deftypefn
