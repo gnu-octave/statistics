@@ -14,7 +14,7 @@ classdef tLocationScaleDistribution
   ##
   ## @item @qcode{mu} @tab Location parameter @tab @math{-Inf < mu < Inf}
   ## @item @qcode{sigma} @tab Scale parameter @tab @math{sigma > 0}
-  ## @item @qcode{df} @tab Scale parameter @tab @math{df > 0}
+  ## @item @qcode{nu} @tab Degrees of Freedom @tab @math{nu > 0}
   ## @end multitable
   ##
   ## There are several ways to create a @code{tLocationScaleDistribution} object.
@@ -61,7 +61,7 @@ classdef tLocationScaleDistribution
   properties (Dependent = true)
     mu
     sigma
-    df
+    nu
   endproperties
 
   properties (GetAccess = public, Constant = true)
@@ -69,7 +69,7 @@ classdef tLocationScaleDistribution
     DistributionCode = "tls";
     CensoringAllowed = true;
     NumParameters = 3;
-    ParameterNames = {"mu", "sigma", "df"};
+    ParameterNames = {"mu", "sigma", "nu"};
     ParameterRange = [-Inf, realmin, realmin; Inf, Inf, Inf];
     ParameterLogCI = [true, true, true];
     ParameterDescription = {"Location", "Scale", "Degrees of Freedom"};
@@ -88,17 +88,17 @@ classdef tLocationScaleDistribution
 
   methods (Hidden)
 
-    function this = tLocationScaleDistribution (mu, sigma, df)
+    function this = tLocationScaleDistribution (mu, sigma, nu)
       if (nargin == 0)
         mu = 0;
         sigma = 1;
-        df = 5;
+        nu = 5;
       endif
-      checkparams (mu, sigma, df)
+      checkparams (mu, sigma, nu)
       this.InputData = [];
       this.IsTruncated = false;
       this.NegLogLikelihood = [];
-      this.ParameterValues = [mu, sigma, df];
+      this.ParameterValues = [mu, sigma, nu];
       this.ParameterIsFixed = [true, true, true];
       this.ParameterCovariance = zeros (this.NumParameters);
     endfunction
@@ -113,7 +113,7 @@ classdef tLocationScaleDistribution
     endfunction
 
     function this = set.mu (this, mu)
-      checkparams (mu, this.sigma, this.df)
+      checkparams (mu, this.sigma, this.nu)
       this.InputData = [];
       this.NegLogLikelihood = [];
       this.ParameterValues(1) = mu;
@@ -126,7 +126,7 @@ classdef tLocationScaleDistribution
     endfunction
 
     function this = set.sigma (this, sigma)
-      checkparams (this.mu, sigma, this.df)
+      checkparams (this.mu, sigma, this.nu)
       this.InputData = [];
       this.NegLogLikelihood = [];
       this.ParameterValues(2) = sigma;
@@ -138,17 +138,17 @@ classdef tLocationScaleDistribution
       sigma = this.ParameterValues(2);
     endfunction
 
-    function this = set.df (this, df)
-      checkparams (this.mu, this.sigma, df)
+    function this = set.nu (this, nu)
+      checkparams (this.mu, this.sigma, nu)
       this.InputData = [];
       this.NegLogLikelihood = [];
-      this.ParameterValues(3) = df;
+      this.ParameterValues(3) = nu;
       this.ParameterCovariance = zeros (this.NumParameters);
       this.InputData = [];
     endfunction
 
-    function df = get.df (this)
-      df = this.ParameterValues(3);
+    function nu = get.nu (this)
+      nu = this.ParameterValues(3);
     endfunction
 
   endmethods
@@ -183,7 +183,7 @@ classdef tLocationScaleDistribution
         utail = false;
       endif
       ## Do the computations
-      p = tlscdf (x, this.mu, this.sigma, this.df);
+      p = tlscdf (x, this.mu, this.sigma, this.nu);
       if (this.IsTruncated)
         lx = this.Truncation(1);
         lb = x < lx;
@@ -191,8 +191,8 @@ classdef tLocationScaleDistribution
         ub = x > ux;
         p(lb) = 0;
         p(ub) = 1;
-        p(! (lb | ub)) -= tlscdf (lx, this.mu, this.sigma, this.df);
-        p(! (lb | ub)) /= diff (tlscdf ([lx, ux], this.mu, this.sigma, this.df));
+        p(! (lb | ub)) -= tlscdf (lx, this.mu, this.sigma, this.nu);
+        p(! (lb | ub)) /= diff (tlscdf ([lx, ux], this.mu, this.sigma, this.nu));
       endif
       ## Apply uflag
       if (utail)
@@ -215,13 +215,13 @@ classdef tLocationScaleDistribution
         error ("icdf: requires a scalar probability distribution.");
       endif
       if (this.IsTruncated)
-        lp = tlscdf (this.Truncation(1), this.mu, this.sigma, this.df);
-        up = tlscdf (this.Truncation(2), this.mu, this.sigma, this.df);
+        lp = tlscdf (this.Truncation(1), this.mu, this.sigma, this.nu);
+        up = tlscdf (this.Truncation(2), this.mu, this.sigma, this.nu);
         ## Adjust p values within range of p @ lower limit and p @ upper limit
         np = lp + (up - lp) .* p;
-        x = tlsinv (np, this.mu, this.sigma, this.df);
+        x = tlsinv (np, this.mu, this.sigma, this.nu);
       else
-        x = tlsinv (p, this.mu, this.sigma, this.df);
+        x = tlsinv (p, this.mu, this.sigma, this.nu);
       endif
     endfunction
 
@@ -258,7 +258,7 @@ classdef tLocationScaleDistribution
         fm = @(x) x .* pdf (this, x);
         m = integral (fm, this.Truncation(1), this.Truncation(2));
       else
-        m = tlsstat (this.mu, this.sigma, this.df);
+        m = tlsstat (this.mu, this.sigma, this.nu);
       endif
     endfunction
 
@@ -278,10 +278,10 @@ classdef tLocationScaleDistribution
       if (this.IsTruncated)
         lx = this.Truncation(1);
         ux = this.Truncation(2);
-        Fa_b = wblcdf ([lx, ux], this.mu, this.sigma, this.df);
-        m = tlsinv (sum (Fa_b) / 2, this.mu, this.sigma, this.df);
+        Fa_b = wblcdf ([lx, ux], this.mu, this.sigma, this.nu);
+        m = tlsinv (sum (Fa_b) / 2, this.mu, this.sigma, this.nu);
       else
-        m = tlsstat (this.mu, this.sigma, this.df);
+        m = tlsstat (this.mu, this.sigma, this.nu);
       endif
     endfunction
 
@@ -302,7 +302,7 @@ classdef tLocationScaleDistribution
         nlogL = [];
         return
       endif
-      nlogL = - tlslike ([this.mu, this.sigma, this.df], this.InputData.data, ...
+      nlogL = - tlslike ([this.mu, this.sigma, this.nu], this.InputData.data, ...
                          this.InputData.cens, this.InputData.freq);
     endfunction
 
@@ -362,14 +362,14 @@ classdef tLocationScaleDistribution
       if (! isscalar (this))
         error ("pdf: requires a scalar probability distribution.");
       endif
-      y = tlspdf (x, this.mu, this.sigma, this.df);
+      y = tlspdf (x, this.mu, this.sigma, this.nu);
       if (this.IsTruncated)
         lx = this.Truncation(1);
         lb = x < lx;
         ux = this.Truncation(2);
         ub = x > ux;
         y(lb | ub) = 0;
-        y(! (lb | ub)) /= diff (tlscdf ([lx, ux], this.mu, this.sigma, this.df));
+        y(! (lb | ub)) /= diff (tlscdf ([lx, ux], this.mu, this.sigma, this.nu));
       endif
     endfunction
 
@@ -455,7 +455,7 @@ classdef tLocationScaleDistribution
     ##
     ## For the location-scale T distribution, @qcode{@var{pnum} = 1} selects the
     ## parameter @qcode{mu}, @qcode{@var{pnum} = 2} selects the parameter
-    ## @qcode{sigma}, and @qcode{@var{pnum} = 3} selects the parameter @var{df}.
+    ## @qcode{sigma}, and @qcode{@var{pnum} = 3} selects the parameter @var{nu}.
     ##
     ## When opted to display the profile likelihood plot, @code{proflik} also
     ## plots the baseline loglikelihood computed at the lower bound of the 95%
@@ -507,13 +507,13 @@ classdef tLocationScaleDistribution
         ratio = 1 / diff (ricecdf ([ux, lx], this.nu, this.sigma));
         nsize = 2 * ratio * ps;     # times 2 to be on the safe side
         ## Generate the numbers and remove out-of-bound random samples
-        r = tlsrnd (this.mu, this.sigma, this.df, nsize, 1);
+        r = tlsrnd (this.mu, this.sigma, this.nu, nsize, 1);
         r(r < lx | r > ux) = [];
         ## Randomly select the required size and reshape to requested dimensions
         r = randperm (r, ps);
         r = reshape (r, sz);
       else
-        r = tlsrnd (this.mu, this.sigma, this.df, varargin{:});
+        r = tlsrnd (this.mu, this.sigma, this.nu, varargin{:});
       endif
     endfunction
 
@@ -530,7 +530,7 @@ classdef tLocationScaleDistribution
       if (! isscalar (this))
         error ("std: requires a scalar probability distribution.");
       endif
-      v = var (this.mu, this.sigma, this.df);
+      v = var (this.mu, this.sigma, this.nu);
       s = sqrt (v);
     endfunction
 
@@ -615,8 +615,8 @@ classdef tLocationScaleDistribution
     function pd = makeFitted (phat, pci, nlogL, acov, x, censor, freq)
       mu = phat(1);
       sigma = phat(2);
-      df = phat(2);
-      pd = tLocationScaleDistribution (mu, sigma, df);
+      nu = phat(2);
+      pd = tLocationScaleDistribution (mu, sigma, nu);
       pd.ParameterCI = pci;
       pd.NegLogLikelihood = nlogL;
       pd.ParameterIsFixed = [false, false];
@@ -628,7 +628,7 @@ classdef tLocationScaleDistribution
 
 endclassdef
 
-function checkparams (mu, sigma, df)
+function checkparams (mu, sigma, nu)
   if (! (isscalar (mu) && isnumeric (mu) && isreal (mu) && isfinite (mu)))
     error ("tLocationScaleDistribution: MU must be a real scalar.")
   endif
@@ -636,9 +636,9 @@ function checkparams (mu, sigma, df)
                           && isfinite (sigma) && sigma > 0))
     error ("tLocationScaleDistribution: SIGMA must be a positive real scalar.")
   endif
-  if (! (isscalar (df) && isnumeric (df) && isreal (df)
-                       && isfinite (df) && df > 0))
-    error ("tLocationScaleDistribution: DF must be a positive real scalar.")
+  if (! (isscalar (nu) && isnumeric (nu) && isreal (nu)
+                       && isfinite (nu) && nu > 0))
+    error ("tLocationScaleDistribution: NU must be a positive real scalar.")
   endif
 endfunction
 
@@ -668,19 +668,19 @@ endfunction
 %! tLocationScaleDistribution(0, [1, 2], 1)
 %!error <tLocationScaleDistribution: SIGMA must be a positive real scalar.> ...
 %! tLocationScaleDistribution(0, NaN, 1)
-%!error <tLocationScaleDistribution: DF must be a positive real scalar.> ...
+%!error <tLocationScaleDistribution: NU must be a positive real scalar.> ...
 %! tLocationScaleDistribution(0, 1, 0)
-%!error <tLocationScaleDistribution: DF must be a positive real scalar.> ...
+%!error <tLocationScaleDistribution: NU must be a positive real scalar.> ...
 %! tLocationScaleDistribution(0, 1, -1)
-%!error <tLocationScaleDistribution: DF must be a positive real scalar.> ...
+%!error <tLocationScaleDistribution: NU must be a positive real scalar.> ...
 %! tLocationScaleDistribution(0, 1, Inf)
-%!error <tLocationScaleDistribution: DF must be a positive real scalar.> ...
+%!error <tLocationScaleDistribution: NU must be a positive real scalar.> ...
 %! tLocationScaleDistribution(0, 1, i)
-%!error <tLocationScaleDistribution: DF must be a positive real scalar.> ...
+%!error <tLocationScaleDistribution: NU must be a positive real scalar.> ...
 %! tLocationScaleDistribution(0, 1, "a")
-%!error <tLocationScaleDistribution: DF must be a positive real scalar.> ...
+%!error <tLocationScaleDistribution: NU must be a positive real scalar.> ...
 %! tLocationScaleDistribution(0, 1, [1, 2])
-%!error <tLocationScaleDistribution: DF must be a positive real scalar.> ...
+%!error <tLocationScaleDistribution: NU must be a positive real scalar.> ...
 %! tLocationScaleDistribution(0, 1, NaN)
 
 ## 'cdf' method

@@ -19,21 +19,21 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{r} =} tlsrnd (@var{mu}, @var{sigma}, @var{df})
-## @deftypefnx {statistics} {@var{r} =} tlsrnd (@var{mu}, @var{sigma}, @var{df}, @var{rows})
-## @deftypefnx {statistics} {@var{r} =} tlsrnd (@var{mu}, @var{sigma}, @var{df}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} {@var{r} =} tlsrnd (@var{mu}, @var{sigma}, @var{df}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} tlsrnd (@var{mu}, @var{sigma}, @var{nu})
+## @deftypefnx {statistics} {@var{r} =} tlsrnd (@var{mu}, @var{sigma}, @var{nu}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} tlsrnd (@var{mu}, @var{sigma}, @var{nu}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} tlsrnd (@var{mu}, @var{sigma}, @var{nu}, [@var{sz}])
 ##
 ## Random arrays from the location-scale Student's T distribution.
 ##
 ## Return a matrix of random samples from the location-scale Student's T
 ## distribution with location parameter @var{mu}, scale parameter @var{sigma},
-## and @var{df} degrees of freedom.
+## and @var{nu} degrees of freedom.
 ##
-## @code{@var{r} = tlsrnd (@var{df})} returns an array of random numbers chosen
+## @code{@var{r} = tlsrnd (@var{nu})} returns an array of random numbers chosen
 ## from the location-scale Student's T distribution with location parameter
-## @var{mu}, scale parameter @var{sigma}, and @var{df} degrees of freedom.  The
-## size of @var{r} is the common size of @var{mu}, @var{sigma}, and @var{df}.  A
+## @var{mu}, scale parameter @var{sigma}, and @var{nu} degrees of freedom.  The
+## size of @var{r} is the common size of @var{mu}, @var{sigma}, and @var{nu}.  A
 ## scalar input functions as a constant matrix of the same size as the other
 ## inputs.
 ##
@@ -49,29 +49,29 @@
 ## @seealso{tlscdf, tlsinv, tlspdf, tlsfit, tlslike, tlsstat}
 ## @end deftypefn
 
-function r = tlsrnd (mu, sigma, df, varargin)
+function r = tlsrnd (mu, sigma, nu, varargin)
 
   ## Check for valid number of input arguments
   if (nargin < 3)
     error ("tlsrnd: function called with too few input arguments.");
   endif
 
-  ## Check for common size of MU, SIGMA, and DF
-  if (! isscalar (mu) || ! isscalar (sigma) || ! isscalar (df))
-    [retval, mu, sigma, df] = common_size (mu, sigma, df);
+  ## Check for common size of MU, SIGMA, and NU
+  if (! isscalar (mu) || ! isscalar (sigma) || ! isscalar (nu))
+    [retval, mu, sigma, nu] = common_size (mu, sigma, nu);
     if (retval > 0)
-      error ("tlsrnd: MU, SIGMA, and DF must be of common size or scalars.");
+      error ("tlsrnd: MU, SIGMA, and NU must be of common size or scalars.");
     endif
   endif
 
-  ## Check for DF being real
-  if (iscomplex (mu) || iscomplex (sigma) || iscomplex (df))
-    error ("tlsrnd: MU, SIGMA, and DF must not be complex.");
+  ## Check for NU being real
+  if (iscomplex (mu) || iscomplex (sigma) || iscomplex (nu))
+    error ("tlsrnd: MU, SIGMA, and NU must not be complex.");
   endif
 
   ## Parse and check SIZE arguments
   if (nargin == 3)
-    sz = size (df);
+    sz = size (nu);
   elseif (nargin == 4)
     if (isscalar (varargin{1}) && varargin{1} >= 0 ...
                                && varargin{1} == fix (varargin{1}))
@@ -92,19 +92,19 @@ function r = tlsrnd (mu, sigma, df, varargin)
   endif
 
   ## Check that parameters match requested dimensions in size
-  if (! isscalar (df) && ! isequal (size (df), sz))
-    error ("tlsrnd: MU, SIGMA, and DF must be scalar or of size SZ.");
+  if (! isscalar (nu) && ! isequal (size (nu), sz))
+    error ("tlsrnd: MU, SIGMA, and NU must be scalar or of size SZ.");
   endif
 
   ## Check for class type
-  if (isa (mu, "single") || isa (sigma, "single") || isa (df, "single"))
+  if (isa (mu, "single") || isa (sigma, "single") || isa (nu, "single"))
     cls = "single";
   else
     cls = "double";
   endif
 
   ## Call trnd to do the work
-  r = mu + sigma .* trnd (df, sz);
+  r = mu + sigma .* trnd (nu, sz);
 
   ## Force class type
   r = cast (r, cls);
@@ -139,15 +139,15 @@ endfunction
 %!error<tlsrnd: function called with too few input arguments.> tlsrnd ()
 %!error<tlsrnd: function called with too few input arguments.> tlsrnd (1)
 %!error<tlsrnd: function called with too few input arguments.> tlsrnd (1, 2)
-%!error<tlsrnd: MU, SIGMA, and DF must be of common size or scalars.> ...
+%!error<tlsrnd: MU, SIGMA, and NU must be of common size or scalars.> ...
 %! tlsrnd (ones (3), ones (2), 1)
-%!error<tlsrnd: MU, SIGMA, and DF must be of common size or scalars.> ...
+%!error<tlsrnd: MU, SIGMA, and NU must be of common size or scalars.> ...
 %! tlsrnd (ones (2), 1, ones (3))
-%!error<tlsrnd: MU, SIGMA, and DF must be of common size or scalars.> ...
+%!error<tlsrnd: MU, SIGMA, and NU must be of common size or scalars.> ...
 %! tlsrnd (1, ones (2), ones (3))
-%!error<tlsrnd: MU, SIGMA, and DF must not be complex.> tlsrnd (i, 2, 3)
-%!error<tlsrnd: MU, SIGMA, and DF must not be complex.> tlsrnd (1, i, 3)
-%!error<tlsrnd: MU, SIGMA, and DF must not be complex.> tlsrnd (1, 2, i)
+%!error<tlsrnd: MU, SIGMA, and NU must not be complex.> tlsrnd (i, 2, 3)
+%!error<tlsrnd: MU, SIGMA, and NU must not be complex.> tlsrnd (1, i, 3)
+%!error<tlsrnd: MU, SIGMA, and NU must not be complex.> tlsrnd (1, 2, i)
 %!error<tlsrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
 %! tlsrnd (1, 2, 3, -1)
 %!error<tlsrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
@@ -164,13 +164,13 @@ endfunction
 %! tlsrnd (1, 2, 3, 2, -1, 5)
 %!error<tlsrnd: dimensions must be non-negative integers.> ...
 %! tlsrnd (1, 2, 3, 2, 1.5, 5)
-%!error<tlsrnd: MU, SIGMA, and DF must be scalar or of size SZ.> ...
+%!error<tlsrnd: MU, SIGMA, and NU must be scalar or of size SZ.> ...
 %! tlsrnd (ones (2,2), 2, 3, 3)
-%!error<tlsrnd: MU, SIGMA, and DF must be scalar or of size SZ.> ...
+%!error<tlsrnd: MU, SIGMA, and NU must be scalar or of size SZ.> ...
 %! tlsrnd (1, ones (2,2), 3, 3)
-%!error<tlsrnd: MU, SIGMA, and DF must be scalar or of size SZ.> ...
+%!error<tlsrnd: MU, SIGMA, and NU must be scalar or of size SZ.> ...
 %! tlsrnd (1, 2, ones (2,2), 3)
-%!error<tlsrnd: MU, SIGMA, and DF must be scalar or of size SZ.> ...
+%!error<tlsrnd: MU, SIGMA, and NU must be scalar or of size SZ.> ...
 %! tlsrnd (1, 2, ones (2,2), [3, 3])
-%!error<tlsrnd: MU, SIGMA, and DF must be scalar or of size SZ.> ...
+%!error<tlsrnd: MU, SIGMA, and NU must be scalar or of size SZ.> ...
 %! tlsrnd (1, 2, ones (2,2), 2, 3)

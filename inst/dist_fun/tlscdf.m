@@ -17,21 +17,21 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{p} =} tlscdf (@var{x}, @var{mu}, @var{sigma}, @var{df})
-## @deftypefnx {statistics} {@var{p} =} tlscdf (@var{x}, @var{mu}, @var{sigma}, @var{df}, @qcode{"upper"})
+## @deftypefn  {statistics} {@var{p} =} tlscdf (@var{x}, @var{mu}, @var{sigma}, @var{nu})
+## @deftypefnx {statistics} {@var{p} =} tlscdf (@var{x}, @var{mu}, @var{sigma}, @var{nu}, @qcode{"upper"})
 ##
 ## Location-scale Student's T cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
 ## (CDF) of the location-scale Student's T distribution with location parameter
-## @var{mu}, scale parameter @var{sigma}, and @var{df} degrees of freedom.  The
+## @var{mu}, scale parameter @var{sigma}, and @var{nu} degrees of freedom.  The
 ## size of @var{p} is the common size of @var{x}, @var{mu}, @var{sigma}, and
-## @var{df}. A scalar input functions as a constant matrix of the same size as
+## @var{nu}. A scalar input functions as a constant matrix of the same size as
 ## the other inputs.
 ##
-## @code{@var{p} = tlscdf (@var{x}, @var{mu}, @var{sigma}, @var{df}, "upper")}
+## @code{@var{p} = tlscdf (@var{x}, @var{mu}, @var{sigma}, @var{nu}, "upper")}
 ## computes the upper tail probability of the location-scale Student's T
-## distribution with parameters @var{mu}, @var{sigma}, and @var{df}, at the
+## distribution with parameters @var{mu}, @var{sigma}, and @var{nu}, at the
 ## values in @var{x}.
 ##
 ## Further information about the location-scale Student's T distribution can be
@@ -40,7 +40,7 @@
 ## @seealso{tlsinv, tlspdf, tlsrnd, tlsfit, tlslike, tlsstat}
 ## @end deftypefn
 
-function p = tlscdf (x, mu, sigma, df, uflag)
+function p = tlscdf (x, mu, sigma, nu, uflag)
 
   ## Check for valid number of input arguments
   if (nargin < 4)
@@ -55,22 +55,22 @@ function p = tlscdf (x, mu, sigma, df, uflag)
     error ("tlscdf: invalid argument for upper tail.");
   endif
 
-  ## Check for common size of X, MU, SIGMA, and DF
-  if (! isscalar (x) || ! isscalar (mu) || ! isscalar (sigma) || ! isscalar (df))
-    [err, x, mu, sigma, df] = common_size (x, mu, sigma, df);
+  ## Check for common size of X, MU, SIGMA, and NU
+  if (! isscalar (x) || ! isscalar (mu) || ! isscalar (sigma) || ! isscalar (nu))
+    [err, x, mu, sigma, nu] = common_size (x, mu, sigma, nu);
     if (err > 0)
-      error ("tlscdf: X, MU, SIGMA, and DF must be of common size or scalars.");
+      error ("tlscdf: X, MU, SIGMA, and NU must be of common size or scalars.");
     endif
   endif
 
-  ## Check for X, MU, SIGMA, and DF being reals
-  if (iscomplex (x) || iscomplex (mu) || iscomplex (sigma) || iscomplex (df))
-    error ("tlscdf: X, MU, SIGMA, and DF must not be complex.");
+  ## Check for X, MU, SIGMA, and NU being reals
+  if (iscomplex (x) || iscomplex (mu) || iscomplex (sigma) || iscomplex (nu))
+    error ("tlscdf: X, MU, SIGMA, and NU must not be complex.");
   endif
 
   ## Check for class type
   if (isa (x, "single") || isa (mu, "single") ||
-      isa (sigma, "single") || isa (df, "single"))
+      isa (sigma, "single") || isa (nu, "single"))
     cls = "single";
   else
     cls = "double";
@@ -81,9 +81,9 @@ function p = tlscdf (x, mu, sigma, df, uflag)
 
   ## Call tcdf to do the work
   if (upper)
-    p = tcdf ((x - mu) ./ sigma, df, "upper");
+    p = tcdf ((x - mu) ./ sigma, nu, "upper");
   else
-    p = tcdf ((x - mu) ./ sigma, df);
+    p = tcdf ((x - mu) ./ sigma, nu);
   endif
 
   ## Force class type
@@ -102,8 +102,8 @@ endfunction
 %! grid on
 %! xlim ([-8, 8])
 %! ylim ([0, 1])
-%! legend ({"mu = 0, sigma = 1, df = 1", "mu = 0, sigma = 2, df = 2", ...
-%!          "mu = 3, sigma = 2, df = 5", 'mu = -1, sigma = 3, df = \infty'}, ...
+%! legend ({"mu = 0, sigma = 1, nu = 1", "mu = 0, sigma = 2, nu = 2", ...
+%!          "mu = 3, sigma = 2, nu = 5", 'mu = -1, sigma = 3, nu = \infty'}, ...
 %!         "location", "northwest")
 %! title ("Location-scale Student's T CDF")
 %! xlabel ("values in x")
@@ -134,19 +134,19 @@ endfunction
 %!error<tlscdf: function called with too few input arguments.> tlscdf (1, 2, 3)
 %!error<tlscdf: invalid argument for upper tail.> tlscdf (1, 2, 3, 4, "uper")
 %!error<tlscdf: invalid argument for upper tail.> tlscdf (1, 2, 3, 4, 5)
-%!error<tlscdf: X, MU, SIGMA, and DF must be of common size or scalars.> ...
+%!error<tlscdf: X, MU, SIGMA, and NU must be of common size or scalars.> ...
 %! tlscdf (ones (3), ones (2), 1, 1)
-%!error<tlscdf: X, MU, SIGMA, and DF must be of common size or scalars.> ...
+%!error<tlscdf: X, MU, SIGMA, and NU must be of common size or scalars.> ...
 %! tlscdf (ones (3), 1, ones (2), 1)
-%!error<tlscdf: X, MU, SIGMA, and DF must be of common size or scalars.> ...
+%!error<tlscdf: X, MU, SIGMA, and NU must be of common size or scalars.> ...
 %! tlscdf (ones (3), 1, 1, ones (2))
-%!error<tlscdf: X, MU, SIGMA, and DF must be of common size or scalars.> ...
+%!error<tlscdf: X, MU, SIGMA, and NU must be of common size or scalars.> ...
 %! tlscdf (ones (3), ones (2), 1, 1, "upper")
-%!error<tlscdf: X, MU, SIGMA, and DF must be of common size or scalars.> ...
+%!error<tlscdf: X, MU, SIGMA, and NU must be of common size or scalars.> ...
 %! tlscdf (ones (3), 1, ones (2), 1, "upper")
-%!error<tlscdf: X, MU, SIGMA, and DF must be of common size or scalars.> ...
+%!error<tlscdf: X, MU, SIGMA, and NU must be of common size or scalars.> ...
 %! tlscdf (ones (3), 1, 1, ones (2), "upper")
-%!error<tlscdf: X, MU, SIGMA, and DF must not be complex.> tlscdf (i, 2, 1, 1)
-%!error<tlscdf: X, MU, SIGMA, and DF must not be complex.> tlscdf (2, i, 1, 1)
-%!error<tlscdf: X, MU, SIGMA, and DF must not be complex.> tlscdf (2, 1, i, 1)
-%!error<tlscdf: X, MU, SIGMA, and DF must not be complex.> tlscdf (2, 1, 1, i)
+%!error<tlscdf: X, MU, SIGMA, and NU must not be complex.> tlscdf (i, 2, 1, 1)
+%!error<tlscdf: X, MU, SIGMA, and NU must not be complex.> tlscdf (2, i, 1, 1)
+%!error<tlscdf: X, MU, SIGMA, and NU must not be complex.> tlscdf (2, 1, i, 1)
+%!error<tlscdf: X, MU, SIGMA, and NU must not be complex.> tlscdf (2, 1, 1, i)

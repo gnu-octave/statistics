@@ -31,7 +31,7 @@
 ## given the data in @var{x}.  @qcode{@var{paramhat}(1)} is the location
 ## parameter, @math{mu}, @qcode{@var{paramhat}(2)} is the scale parameter,
 ## @math{sigma}, and @qcode{@var{paramhat}(3)} is the degrees of freedom,
-## @math{df}.
+## @math{nu}.
 ##
 ## @code{[@var{paramhat}, @var{paramci}] = tlsfit (@var{x})} returns the 95%
 ## confidence intervals for the parameter estimates.
@@ -118,8 +118,8 @@ function [paramhat, paramci] = tlsfit (x, alpha, censor, freq, options)
   sigma = 1.253 * mad (x_uncensored);
   mom = kurtosis (x_uncensored);
   mom(mom < 4) = 4;
-  df = 2 * (2 * mom - 3) / (mom - 3);
-  x0 = [mu, sigma, df];
+  nu = 2 * (2 * mom - 3) / (mom - 3);
+  x0 = [mu, sigma, nu];
 
   ## Minimize negative log-likelihood to estimate parameters
   f = @(params) tlslike (params, x, censor, freq);
@@ -185,28 +185,28 @@ endfunction
 %! hold on
 %!
 %! ## Estimate their lambda parameter
-%! mu_sigma_dfA = tlsfit (r(:,1));
-%! mu_sigma_dfB = tlsfit (r(:,2));
-%! mu_sigma_dfC = tlsfit (r(:,3));
+%! mu_sigma_nuA = tlsfit (r(:,1));
+%! mu_sigma_nuB = tlsfit (r(:,2));
+%! mu_sigma_nuC = tlsfit (r(:,3));
 %!
 %! ## Plot their estimated PDFs
 %! x = [-20:0.1:20];
-%! y = tlspdf (x, mu_sigma_dfA(1), mu_sigma_dfA(2), mu_sigma_dfA(3));
+%! y = tlspdf (x, mu_sigma_nuA(1), mu_sigma_nuA(2), mu_sigma_nuA(3));
 %! plot (x, y, "-pr");
-%! y = tlspdf (x, mu_sigma_dfB(1), mu_sigma_dfB(2), mu_sigma_dfB(3));
+%! y = tlspdf (x, mu_sigma_nuB(1), mu_sigma_nuB(2), mu_sigma_nuB(3));
 %! plot (x, y, "-sg");
-%! y = tlspdf (x, mu_sigma_dfC(1), mu_sigma_dfC(2), mu_sigma_dfC(3));
+%! y = tlspdf (x, mu_sigma_nuC(1), mu_sigma_nuC(2), mu_sigma_nuC(3));
 %! plot (x, y, "-^c");
 %! hold off
-%! legend ({"Normalized HIST of sample 1 with μ=0, σ=2 and df=1", ...
-%!          "Normalized HIST of sample 2 with μ=5, σ=2 and df=1", ...
-%!          "Normalized HIST of sample 3 with μ=3, σ=4 and df=3", ...
-%!          sprintf("PDF for sample 1 with estimated μ=%0.2f, σ=%0.2f, and df=%0.2f", ...
-%!                  mu_sigma_dfA(1), mu_sigma_dfA(2), mu_sigma_dfA(3)), ...
-%!          sprintf("PDF for sample 2 with estimated μ=%0.2f, σ=%0.2f, and df=%0.2f", ...
-%!                  mu_sigma_dfB(1), mu_sigma_dfB(2), mu_sigma_dfB(3)), ...
-%!          sprintf("PDF for sample 3 with estimated μ=%0.2f, σ=%0.2f, and df=%0.2f", ...
-%!                  mu_sigma_dfC(1), mu_sigma_dfC(2), mu_sigma_dfC(3))})
+%! legend ({"Normalized HIST of sample 1 with μ=0, σ=2 and nu=1", ...
+%!          "Normalized HIST of sample 2 with μ=5, σ=2 and nu=1", ...
+%!          "Normalized HIST of sample 3 with μ=3, σ=4 and nu=3", ...
+%!          sprintf("PDF for sample 1 with estimated μ=%0.2f, σ=%0.2f, and ν=%0.2f", ...
+%!                  mu_sigma_nuA(1), mu_sigma_nuA(2), mu_sigma_nuA(3)), ...
+%!          sprintf("PDF for sample 2 with estimated μ=%0.2f, σ=%0.2f, and ν=%0.2f", ...
+%!                  mu_sigma_nuB(1), mu_sigma_nuB(2), mu_sigma_nuB(3)), ...
+%!          sprintf("PDF for sample 3 with estimated μ=%0.2f, σ=%0.2f, and ν=%0.2f", ...
+%!                  mu_sigma_nuC(1), mu_sigma_nuC(2), mu_sigma_nuC(3))})
 %! title ("Three population samples from different location-scale T distibutions")
 %! hold off
 

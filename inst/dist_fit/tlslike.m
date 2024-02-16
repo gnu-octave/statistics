@@ -26,7 +26,7 @@
 ## @code{@var{nlogL} = tlslike (@var{params}, @var{x})} returns the negative
 ## log-likelihood of the x in @var{x} corresponding to the location-scale T
 ## distribution with (1) location parameter @math{mu}, (2) scale parameter
-## @math{sigma} and (3) degrees of freedom @math{df} given in the three-element
+## @math{sigma} and (3) degrees of freedom @math{nu} given in the three-element
 ## vector @var{params}.
 ##
 ## @code{[@var{nlogL}, @var{acov}] = tlslike (@var{params}, @var{x})} also
@@ -139,22 +139,22 @@ function nlogL = tlsnll (x, params, censor, freq)
   mu = params(1);
   sigma = params(2);
   sigma(sigma <= 0) = NaN;
-  df = params(3);
-  df(df <= 0) = NaN;
+  nu = params(3);
+  nu(nu <= 0) = NaN;
 
   z = (x - mu) ./ sigma;
-  w = df + (z .^ 2);
+  w = nu + (z .^ 2);
   logw = log (w);
 
-  L = - 0.5 .* (df + 1) .* logw + gammaln (0.5 .* (df + 1)) ...
-      - gammaln (0.5 .* df) + 0.5 .* df .* log (df) ...
+  L = - 0.5 .* (nu + 1) .* logw + gammaln (0.5 .* (nu + 1)) ...
+      - gammaln (0.5 .* nu) + 0.5 .* nu .* log (nu) ...
       - log (sigma) - 0.5 .* log (pi);
 
   n_censored = sum (freq .* censor);
   if (n_censored > 0)
     censored = (censor == 1);
-    if (df < 1e7)   # Use incomplete beta function
-      S_censored = betainc (df ./ w(censored), 0.5 .* df, 0.5) ./ 2;
+    if (nu < 1e7)   # Use incomplete beta function
+      S_censored = betainc (nu ./ w(censored), 0.5 .* nu, 0.5) ./ 2;
       S_censored(z(censored) < 0) = 1 - S_censored(z(censored) < 0);
     else            # Use a normal approximation
       S_censored = log(0.5 * erfc(z(censored) ./ sqrt(2)));
