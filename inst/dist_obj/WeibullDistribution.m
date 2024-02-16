@@ -72,7 +72,8 @@ classdef WeibullDistribution
   ## Further information about the Weibull distribution can be found at
   ## @url{https://en.wikipedia.org/wiki/Weibull_distribution}
   ##
-  ## @seealso{fitdist, makedist}
+  ## @seealso{fitdist, makedist, wblcdf, wblinv, wblpdf, wblrnd, wblfit,
+  ## wbllike, wblstat, wblplot}
   ## @end deftypefn
 
   properties (Dependent = true)
