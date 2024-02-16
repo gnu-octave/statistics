@@ -428,7 +428,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = [];
+      pd = RicianDistribution (nu, sigma);
 
     case "stable"
       alpha = 2;
@@ -450,6 +450,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
+      warning ("makedist: 'Stable' distribution not supported yet.");
       pd = [];
 
     case "tlocationscale"
@@ -490,23 +491,23 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = [];
+      pd = TriangularDistribution (A, B, C);
 
     case "uniform"
-      lower = 0;
-      upper = 1;
+      Lower = 0;
+      Upper = 1;
       while (numel (varargin) > 0)
         switch (tolower (varargin{1}))
           case "lower"
-            lower = varargin{2};
+            Lower = varargin{2};
           case "upper"
-            upper = varargin{2};
+            Upper = varargin{2};
           otherwise
             error ("makedist: unknown parameter for 'Uniform' distribution.");
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = [];
+      pd = UniformDistribution (Lower, Upper);
 
     case "weibull"
       lambda = 1;
