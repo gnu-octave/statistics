@@ -28,7 +28,6 @@ function ci = __paramci__ (pd, varargin)
 
   ## Get Distribution specific info
   distname = pd.DistributionCode;
-  censored = pd.CensoringAllowed;
   parnames = pd.ParameterNames(! pd.ParameterIsFixed);
 
   ## Add defaults and parse optional arguments
