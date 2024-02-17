@@ -64,6 +64,7 @@ classdef tLocationScaleDistribution
   endproperties
 
   properties (GetAccess = public, Constant = true)
+    CensoringAllowed = true;
     DistributionName = "tLocationScaleDistribution";
     DistributionCode = "tls";
     NumParameters = 3;
