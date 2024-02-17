@@ -95,19 +95,31 @@ function [nlogl, param] = __proflik__ (pd, pnum, varargin)
   ## Compute negative log likelihood for the given parameter range by
   ## calling the appropriate likelihood function
   params = pd.ParameterValues;
-  for i = 1:numel (param)
-    params(pnum) = param(i);
-    fname = sprintf ("%slike", pd.DistributionCode);
-    nlogl(i) = - feval (fname, params, pd.InputData.data, ...
-                        pd.InputData.cens, pd.InputData.freq);
-  endfor
+  if (pd.CensoringAllowed)
+    for i = 1:numel (param)
+      params(pnum) = param(i);
+      fname = sprintf ("%slike", pd.DistributionCode);
+      nlogl(i) = - feval (fname, params, pd.InputData.data, ...
+                          pd.InputData.cens, pd.InputData.freq);
+    endfor
+  else
+    for i = 1:numel (param)
+      params(pnum) = param(i);
+      fname = sprintf ("%slike", pd.DistributionCode);
+      nlogl(i) = - feval (fname, params, pd.InputData.data, pd.InputData.freq);
+    endfor
+  endif
 
   ## Plot the loglikelihood values against the range of the selected parameter
   if (Display)
     ## Get 95% confidence
     params(pnum) = lower;
-    nll_conf = - feval (fname, params, pd.InputData.data, ...
-                        pd.InputData.cens, pd.InputData.freq);
+    if (pd.CensoringAllowed)
+      nll_conf = - feval (fname, params, pd.InputData.data, ...
+                          pd.InputData.cens, pd.InputData.freq);
+    else
+      nll_conf = - feval (fname, params, pd.InputData.data, pd.InputData.freq);
+    endif
     plot (optpar(pnum), optnll, "ok;Estimate;", ...
           param, nlogl, "-r;Exact log likelihood;", ...
           param, repmat (nll_conf, size (param)), ":b;95% confidence;");
