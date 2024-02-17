@@ -385,6 +385,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
+      warning ("makedist: 'PiecewiseLinear' distribution not supported yet.");
       pd = [];
 
     case "poisson"
@@ -412,7 +413,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = [];
+      pd = RayleighDistribution (sigma);
 
     case "rician"
       nu = 1;
@@ -483,7 +484,7 @@ function pd = makedist (varargin)
             A = varargin{2};
           case "b"
             B = varargin{2};
-          case {"c", "nu"}
+          case "c"
             C = varargin{2};
           otherwise
             error (strcat (["makedist: unknown parameter for"], ...
@@ -528,6 +529,114 @@ function pd = makedist (varargin)
   endswitch
 
 endfunction
+
+## Test output
+%!test
+%! pd = makedist ("Rayleigh");
+%! assert (class (pd), "RayleighDistribution");
+%! assert (pd.sigma, 1);
+%!test
+%! pd = makedist ("Rayleigh", "sigma", 5);
+%! assert (pd.sigma, 5);
+%!test
+%! pd = makedist ("Rician");
+%! assert (class (pd), "RicianDistribution");
+%! assert (pd.nu, 1);
+%! assert (pd.sigma, 1);
+%!test
+%! pd = makedist ("Rician", "nu", 3);
+%! assert (pd.nu, 3);
+%! assert (pd.sigma, 1);
+%!test
+%! pd = makedist ("Rician", "sigma", 3);
+%! assert (pd.nu, 1);
+%! assert (pd.sigma, 3);
+%!test
+%! pd = makedist ("Rician", "nu", 2, "sigma", 3);
+%! assert (pd.nu, 2);
+%! assert (pd.sigma, 3);
+%!warning
+%! pd = makedist ("stable");
+%! assert (class (pd), "double");
+%! assert (isempty (pd), true);
+%!test
+%! pd = makedist ("tlocationscale");
+%! assert (class (pd), "tLocationScaleDistribution");
+%! assert (pd.mu, 0);
+%! assert (pd.sigma, 1);
+%! assert (pd.nu, 5);
+%!test
+%! pd = makedist ("tlocationscale", "mu", 5);
+%! assert (pd.mu, 5);
+%! assert (pd.sigma, 1);
+%! assert (pd.nu, 5);
+%!test
+%! pd = makedist ("tlocationscale", "sigma", 2);
+%! assert (pd.mu, 0);
+%! assert (pd.sigma, 2);
+%! assert (pd.nu, 5);
+%!test
+%! pd = makedist ("tlocationscale", "mu", 5, "sigma", 2);
+%! assert (pd.mu, 5);
+%! assert (pd.sigma, 2);
+%! assert (pd.nu, 5);
+%!test
+%! pd = makedist ("tlocationscale", "nu", 1, "sigma", 2);
+%! assert (pd.mu, 0);
+%! assert (pd.sigma, 2);
+%! assert (pd.nu, 1);
+%!test
+%! pd = makedist ("tlocationscale", "mu", -2, "sigma", 3, "nu", 1);
+%! assert (pd.mu, -2);
+%! assert (pd.sigma, 3);
+%! assert (pd.nu, 1);
+%!test
+%! pd = makedist ("Triangular");
+%! assert (class (pd), "TriangularDistribution");
+%! assert (pd.A, 0);
+%! assert (pd.B, 0.5);
+%! assert (pd.C, 1);
+%!test
+%! pd = makedist ("Triangular", "A", -2);
+%! assert (pd.A, -2);
+%! assert (pd.B, 0.5);
+%! assert (pd.C, 1);
+%!test
+%! pd = makedist ("Triangular", "A", 0.5, "B", 0.9);
+%! assert (pd.A, 0.5);
+%! assert (pd.B, 0.9);
+%! assert (pd.C, 1);
+%!test
+%! pd = makedist ("Triangular", "A", 1, "B", 2, "C", 5);
+%! assert (pd.A, 1);
+%! assert (pd.B, 2);
+%! assert (pd.C, 5);
+%!test
+%! pd = makedist ("Uniform");
+%! assert (class (pd), "UniformDistribution");
+%! assert (pd.Lower, 0);
+%! assert (pd.Upper, 1);
+%!test
+%! pd = makedist ("Uniform", "Lower", -2);
+%! assert (pd.Lower, -2);
+%! assert (pd.Upper, 1);
+%!test
+%! pd = makedist ("Uniform", "Lower", 1, "Upper", 3);
+%! assert (pd.Lower, 1);
+%! assert (pd.Upper, 3);
+%!test
+%! pd = makedist ("Weibull");
+%! assert (class (pd), "WeibullDistribution");
+%! assert (pd.lambda, 1);
+%! assert (pd.k, 1);
+%!test
+%! pd = makedist ("Weibull", "lambda", 3);
+%! assert (pd.lambda, 3);
+%! assert (pd.k, 1);
+%!test
+%! pd = makedist ("Weibull", "lambda", 3, "k", 2);
+%! assert (pd.lambda, 3);
+%! assert (pd.k, 2);
 
 ## Test input validation
 %!error <makedist: DISTNAME must be a character vector.> makedist (1)
@@ -591,5 +700,3 @@ endfunction
 %! makedist ("Uniform", "mu", 1, "sdfs", 34)
 %!error <makedist: unknown parameter for 'Weibull' distribution.> ...
 %! makedist ("Weibull", "mu", 1, "sdfs", 34)
-
-
