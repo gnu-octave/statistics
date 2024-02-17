@@ -2,19 +2,18 @@
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
-## This program is free software: you can redistribute it and/or
-## modify it under the terms of the GNU General Public License as
-## published by the Free Software Foundation, either version 3 of the
-## License, or (at your option) any later version.
+## This program is free software; you can redistribute it and/or modify it under
+## the terms of the GNU General Public License as published by the Free Software
+## Foundation; either version 3 of the License, or (at your option) any later
+## version.
 ##
-## This program is distributed in the hope that it will be useful, but
-## WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-## General Public License for more details.
+## This program is distributed in the hope that it will be useful, but WITHOUT
+## ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+## FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+## details.
 ##
-## You should have received a copy of the GNU General Public License
-## along with this program; see the file COPYING.  If not, see
-## <http://www.gnu.org/licenses/>.
+## You should have received a copy of the GNU General Public License along with
+## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{x} =} riceinv (@var{p}, @var{nu}, @var{sigma})
@@ -22,10 +21,10 @@
 ## Inverse of the Rician distribution (iCDF).
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## of the Rician distribution with with with non-centrality (distance) parameter
-## @var{nu} and scale parameter @var{sigma}.  The size of @var{x} is the common
-## size of @var{x}, @var{nu}, and @var{sigma}.  A scalar input functions as a
-## constant matrix of the same size as the other inputs.
+## of the Rician distribution with non-centrality (distance) parameter @var{nu}
+## and scale parameter @var{sigma}.  The size of @var{x} is the common size of
+## @var{x}, @var{nu}, and @var{sigma}.  A scalar input functions as a constant
+## matrix of the same size as the other inputs.
 ##
 ## Further information about the Rician distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Rice_distribution}
@@ -70,7 +69,7 @@ function x = riceinv (p, nu, sigma)
 endfunction
 
 %!demo
-%! ## Plot various iCDFs from the Beta distribution
+%! ## Plot various iCDFs from the Rician distribution
 %! p = 0.001:0.001:0.999;
 %! x1 = riceinv (p, 0, 1);
 %! x2 = riceinv (p, 0.5, 1);
@@ -81,7 +80,7 @@ endfunction
 %! grid on
 %! legend ({"ν = 0, σ = 1", "ν = 0.5, σ = 1", "ν = 1, σ = 1", ...
 %!          "ν = 2, σ = 1", "ν = 4, σ = 1"}, "location", "northwest")
-%! title ("Beta iCDF")
+%! title ("Rician iCDF")
 %! xlabel ("probability")
 %! ylabel ("values in x")
 
