@@ -399,7 +399,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = [];
+      pd = PoissonDistribution (lambda);
 
     case "rayleigh"
       sigma = 1;
