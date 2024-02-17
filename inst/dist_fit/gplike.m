@@ -19,6 +19,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{nlogL} =} gplike (@var{params}, @var{x})
 ## @deftypefnx {statistics} {[@var{nlogL}, @var{acov}] =} gplike (@var{params}, @var{x})
+## @deftypefnx {statistics} {[@var{nlogL}, @var{acov}] =} gplike (@var{params}, @var{x}, @var{freq})
 ##
 ## Negative log-likelihood for the generalized Pareto distribution.
 ##
@@ -34,6 +35,12 @@
 ## parameter values in @var{params} are the maximum likelihood estimates, the
 ## diagonal elements of @var{acov} are their asymptotic variances.   @var{acov}
 ## is based on the observed Fisher's information, not the expected information.
+##
+## @code{[@dots{}] = gplike (@var{params}, @var{x}, @var{freq})} accepts a
+## frequency vector, @var{freq}, of the same size as @var{x}.  @var{freq}
+## typically contains integer frequencies for the corresponding elements in
+## @var{x}, but it can contain any non-integer non-negative values.  By default,
+## or if left empty, @qcode{@var{freq} = ones (size (@var{x}))}.
 ##
 ## When @qcode{@var{k} = 0} and @qcode{@var{mu} = 0}, the Generalized Pareto CDF
 ## is equivalent to the exponential distribution.  When @qcode{@var{k} > 0} and
@@ -51,18 +58,38 @@
 ## @seealso{gpcdf, gpinv, gppdf, gprnd, gpfit, gpstat}
 ## @end deftypefn
 
-function [nlogL, acov] = gplike (params, x)
+function [nlogL, acov] = gplike (params, x, freq=[])
 
   ## Check input arguments
   if (nargin < 2)
     error ("gplike: function called with too few input arguments.");
   endif
+
   if (! isvector (x))
     error ("gplike: X must be a vector.");
   endif
+
   if (numel (params) != 2)
     error ("gplike: PARAMS must be a two-element vector.");
   endif
+
+  if (isempty (freq))
+    freq = ones (size (x));
+  elseif (! isequal (size (x), size (freq)))
+    error ("gplike: X and FREQ vectors mismatch.");
+  elseif (any (freq < 0))
+    error ("gplike: FREQ must not contain negative values.");
+  endif
+
+  ## Expand frequency vector (if necessary)
+  if (! all (freq == 1))
+    xf = [];
+    for i = 1:numel (freq)
+      xf = [xf, repmat(x(i), 1, freq(i))];
+    endfor
+    x = xf;
+  endif
+
   ## Get SHAPE and SCALE parameters
   shape = params(1);
   scale = params(2);
@@ -112,7 +139,9 @@ endfunction
 %!assert (gplike ([2, 3], 4), 3.047536764863501, 1e-14)
 %!assert (gplike ([1, 2], 4), 2.890371757896165, 1e-14)
 %!assert (gplike ([2, 3], [1:10]), 32.57864322725392, 1e-14)
+%!assert (gplike ([2, 3], [1:10], ones (1,10)), 32.57864322725392, 1e-14)
 %!assert (gplike ([1, 2], [1:10]), 31.65666282460443, 1e-14)
+%!assert (gplike ([1, 2], [1:10], ones (1,10)), 31.65666282460443, 1e-14)
 %!assert (gplike ([1, NaN], [1:10]), NaN)
 
 ## Test input validation
@@ -121,3 +150,7 @@ endfunction
 %!error<gplike: X must be a vector.> gplike ([1, 2], [])
 %!error<gplike: X must be a vector.> gplike ([1, 2], ones (2))
 %!error<gplike: PARAMS must be a two-element vector.> gplike (2, [1:10])
+%!error<gplike: X and FREQ vectors mismatch.> ...
+%! gplike ([1, 2], ones (10, 1), ones (8,1))
+%!error<gplike: FREQ must not contain negative values.> ...
+%! gplike ([1, 2], ones (1, 8), [1 1 1 1 1 1 1 -1])

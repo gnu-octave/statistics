@@ -18,6 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{nlogL} =} hnlike (@var{params}, @var{x})
 ## @deftypefnx {statistics} {[@var{nlogL}, @var{acov}] =} hnlike (@var{params}, @var{x})
+## @deftypefnx {statistics} {[@var{nlogL}, @var{acov}] =} hnlike (@var{params}, @var{x}, @var{freq})
 ##
 ## Negative log-likelihood for the half-normal distribution.
 ##
@@ -31,6 +32,12 @@
 ## parameter values in @var{params} are the maximum likelihood estimates, the
 ## diagonal elements of @var{params} are their asymptotic variances.
 ##
+## @code{[@dots{}] = hnlike (@var{params}, @var{x}, @var{freq})} accepts a
+## frequency vector, @var{freq}, of the same size as @var{x}.  @var{freq}
+## typically contains integer frequencies for the corresponding elements in
+## @var{x}, but it can contain any non-integer non-negative values.  By default,
+## or if left empty, @qcode{@var{freq} = ones (size (@var{x}))}.
+##
 ## The half-normal CDF is only defined for @qcode{@var{x} >= @var{mu}}.
 ##
 ## Further information about the half-normal distribution can be found at
@@ -39,12 +46,13 @@
 ## @seealso{hncdf, hninv, hnpdf, hnrnd, hnfit}
 ## @end deftypefn
 
-function [nlogL, acov] = hnlike (params, x)
+function [nlogL, acov] = hnlike (params, x, freq=[])
 
   ## Check input arguments and add defaults
   if (nargin < 2)
     error ("hnlike: function called with too few input arguments.");
   endif
+
   if (numel (params) != 2)
     error ("hnlike: wrong parameters length.");
   endif
@@ -56,6 +64,23 @@ function [nlogL, acov] = hnlike (params, x)
     return
   elseif (! isvector (x) || ! isreal (x))
     error ("hnlike: X must be a vector of real values.");
+  endif
+
+  if (isempty (freq))
+    freq = ones (size (x));
+  elseif (! isequal (size (x), size (freq)))
+    error ("hnlike: X and FREQ vectors mismatch.");
+  elseif (any (freq < 0))
+    error ("hnlike: FREQ must not contain negative values.");
+  endif
+
+  ## Expand frequency vector (if necessary)
+  if (! all (freq == 1))
+    xf = [];
+    for i = 1:numel (freq)
+      xf = [xf, repmat(x(i), 1, freq(i))];
+    endfor
+    x = xf;
   endif
 
   ## Get MU and SIGMA parameters
@@ -88,6 +113,11 @@ endfunction
 %! paramhat = hnfit (x, 0);
 %! [nlogL, acov] = hnlike (paramhat, x);
 %! assert (nlogL, 64.179177404891300, 1e-14);
+%!test
+%! x = 1:20;
+%! paramhat = hnfit (x, 0);
+%! [nlogL, acov] = hnlike (paramhat, x, ones (1, 20));
+%! assert (nlogL, 64.179177404891300, 1e-14);
 
 ## Test input validation
 %!error<hnlike: function called with too few input arguments.> ...
@@ -98,3 +128,7 @@ endfunction
 %! hnlike ([0, 3], ones (2));
 %!error<hnlike: X must be a vector of real values.> ...
 %! hnlike ([0, 3], [1, 2, 3, 4, 5+i]);
+%!error<hnlike: X and FREQ vectors mismatch.> ...
+%! hnlike ([1, 2], ones (10, 1), ones (8,1))
+%!error<hnlike: FREQ must not contain negative values.> ...
+%! hnlike ([1, 2], ones (1, 8), [1 1 1 1 1 1 1 -1])
