@@ -80,6 +80,7 @@ classdef RicianDistribution
   endproperties
 
   properties (GetAccess = public, Constant = true)
+    CensoringAllowed = true;
     DistributionName = "RicianDistribution";
     DistributionCode = "rice";
     NumParameters = 2;

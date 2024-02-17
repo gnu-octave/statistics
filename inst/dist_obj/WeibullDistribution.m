@@ -80,6 +80,7 @@ classdef WeibullDistribution
   endproperties
 
   properties (GetAccess = public, Constant = true)
+    CensoringAllowed = true;
     DistributionName = "WeibullDistribution";
     DistributionCode = "wbl";
     NumParameters = 2;

@@ -56,6 +56,7 @@ classdef UniformDistribution
   endproperties
 
   properties (GetAccess = public, Constant = true)
+    CensoringAllowed = false;
     DistributionName = "UniformDistribution";
     DistributionCode = "unif";
     NumParameters = 2;

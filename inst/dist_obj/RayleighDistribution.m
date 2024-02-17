@@ -78,6 +78,7 @@ classdef RayleighDistribution
   endproperties
 
   properties (GetAccess = public, Constant = true)
+    CensoringAllowed = true;
     DistributionName = "RayleighDistribution";
     DistributionCode = "rayl";
     NumParameters = 1;

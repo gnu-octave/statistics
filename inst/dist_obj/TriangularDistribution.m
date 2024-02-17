@@ -58,6 +58,7 @@ classdef TriangularDistribution
   endproperties
 
   properties (GetAccess = public, Constant = true)
+    CensoringAllowed = false;
     DistributionName = "TriangularDistribution";
     DistributionCode = "tri";
     NumParameters = 3;
