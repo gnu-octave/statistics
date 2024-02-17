@@ -31,11 +31,11 @@ function ci = __disp__ (pd, distname)
     PVstr = sprintf ("%%%dg", PVlen);
 
     ## Prepare template for fitted and not fitted distributions
-    if (isempty (pd.InputData))
-      pat1 = ["  %+7s = ", PVstr, "\n"];
+    pat1 = ["  %+7s = ", PVstr, "   [%g, %g]\n"];
+    pat2 = ["  %+7s = ", PVstr, "\n"];
+    if (all (pd.ParameterIsFixed))
       fitted = false;
     else
-      pat2 = ["  %+7s = ", PVstr, "   [%g, %g]\n"];
       fitted = true;
     endif
 
@@ -44,11 +44,11 @@ function ci = __disp__ (pd, distname)
     fprintf ("  %s\n", distname);
     ## Print parameter values
     for i = 1:pd.NumParameters
-      if (fitted && ! pd.ParameterIsFixed)
-        fprintf (pat2, pd.ParameterNames{i}, pd.ParameterValues(i), ...
+      if (fitted && ! pd.ParameterIsFixed(i))
+        fprintf (pat1, pd.ParameterNames{i}, pd.ParameterValues(i), ...
                        pd.ParameterCI(1,i), pd.ParameterCI(2,i));
       else
-        fprintf (pat1, pd.ParameterNames{i}, pd.ParameterValues(i));
+        fprintf (pat2, pd.ParameterNames{i}, pd.ParameterValues(i));
       endif
     endfor
     ## Print trunctation interval if applicable
