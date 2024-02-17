@@ -67,6 +67,7 @@ classdef UniformDistribution
     ParameterValues
     Truncation
     IsTruncated
+    InputData = [];
   endproperties
 
   methods (Hidden)

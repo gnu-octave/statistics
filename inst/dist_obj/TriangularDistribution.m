@@ -69,6 +69,7 @@ classdef TriangularDistribution
     ParameterValues
     Truncation
     IsTruncated
+    InputData = [];
   endproperties
 
   methods (Hidden)
@@ -113,11 +114,11 @@ classdef TriangularDistribution
 
     function this = set.C (this, C)
       checkparams (this.A, this.B, C)
-      this.ParameterValues(2) = C;
+      this.ParameterValues(3) = C;
     endfunction
 
     function C = get.C (this)
-      C = this.ParameterValues(2);
+      C = this.ParameterValues(3);
     endfunction
 
   endmethods
