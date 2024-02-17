@@ -140,6 +140,7 @@ Distribution Functions
  nctcdf nctinv nctpdf nctrnd
  ncx2cdf ncx2inv ncx2pdf ncx2rnd
  normcdf norminv normpdf normrnd
+ plcdf plinv plpdf plrnd
  poisscdf poissinv poisspdf poissrnd
  raylcdf raylinv raylpdf raylrnd
  ricecdf riceinv ricepdf ricernd
@@ -170,6 +171,7 @@ Distribution Statistics
  nctstat
  ncx2stat
  normstat
+ plstat
  poisstat
  raylstat
  ricestat
