@@ -310,7 +310,7 @@ function [phat, pci] = mle (x, varargin)
         [phat, pci] = poissfit (x, alpha, freq);
       endif
 
-    case {"poiss", "poisson"}
+    case {"rayl", "rayleigh"}
       if (nargout < 2)
         phat = raylfit (x, alpha, censor, freq);
       else
