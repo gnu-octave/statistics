@@ -641,7 +641,7 @@ classdef tLocationScaleDistribution
     function pd = makeFitted (phat, pci, acov, x, censor, freq)
       mu = phat(1);
       sigma = phat(2);
-      nu = phat(2);
+      nu = phat(3);
       pd = tLocationScaleDistribution (mu, sigma, nu);
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = [false, false, false];
