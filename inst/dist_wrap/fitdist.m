@@ -15,7 +15,7 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-function pd = fitdist (varargin)
+function [varargout] = fitdist (varargin)
 
   ## Add list of supported probability distribution objects
   PDO = {'Beta'; 'Binomial'; 'BirnbaumSaunders'; 'Burr'; 'ExtremeValue'; ...
@@ -27,7 +27,7 @@ function pd = fitdist (varargin)
 
   ## Check for input arguments
   if (nargin == 0)
-    pd = PDO;
+    varargout{1} = PDO;
     return
   elseif (nargin == 1)
     error ("fitdist: DISTNAME is required.");
@@ -109,7 +109,7 @@ function pd = fitdist (varargin)
         endif
 
       case {"kernel", "support", "width"}
-        printf ("fitdist: parameter not supported yet.");
+        warning ("fitdist: parameter not supported yet.");
       otherwise
         error ("fitdist: unknown parameter name.");
     endswitch
@@ -117,6 +117,9 @@ function pd = fitdist (varargin)
   endwhile
 
   ## Handle group variable
+  if (isempty (groupvar) && nargout > 1)
+    error ("fitdist: must define GROUPVAR for more than one output arguments.");
+  endif
   if (! isempty (groupvar))
     [g, gn, gl] = grp2idx (groupvar);
     groups = numel (gn);
@@ -427,3 +430,10 @@ endfunction
 %! fitdist ([1, 2, 3], "normal", "options", 0)
 %!error <fitdist: 'options' argument must be a structure compatible for 'fminsearch'.> ...
 %! fitdist ([1, 2, 3], "normal", "options", struct ("options", 1))
+%!warning fitdist ([1, 2, 3], "kernel", "kernel", "normal")
+%!warning fitdist ([1, 2, 3], "kernel", "support", "positive")
+%!warning fitdist ([1, 2, 3], "kernel", "width", 1)
+%!error <fitdist: unknown parameter name.> ...
+%! fitdist ([1, 2, 3], "normal", "param", struct ("options", 1))
+%!error <fitdist: must define GROUPVAR for more than one output arguments.> ...
+%! [pdca, gn, gl] = fitdist ([1, 2, 3], "normal");
