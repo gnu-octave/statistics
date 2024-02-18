@@ -582,9 +582,13 @@ classdef PoissonDistribution
       ## Check input arguments
       if (nargin < 2)
         alpha = 0.05;
+      else
+        alpha = varargin{1};
       endif
-      if (nargin < 2)
+      if (nargin < 3)
         freq = [];
+      else
+        freq = varargin{2};
       endif
       ## Fit data
       [phat, pci] = poissfit (x, alpha, freq);

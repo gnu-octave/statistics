@@ -584,18 +584,26 @@ classdef WeibullDistribution
       ## Check input arguments
       if (nargin < 2)
         alpha = 0.05;
+      else
+        alpha = varargin{1};
       endif
       if (nargin < 3)
         censor = [];
+      else
+        censor = varargin{2};
       endif
       if (nargin < 4)
         freq = [];
+      else
+        freq = varargin{3};
       endif
       if (nargin < 5)
         options.Display = "off";
         options.MaxFunEvals = 400;
         options.MaxIter = 200;
         options.TolX = 1e-6;
+      else
+        options = varargin{4};
       endif
       ## Fit data
       [phat, pci] = wblfit (x, alpha, censor, freq, options);
