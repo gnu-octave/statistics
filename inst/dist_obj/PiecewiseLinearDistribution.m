@@ -350,7 +350,16 @@ classdef PiecewiseLinearDistribution
         error ("random: requires a scalar probability distribution.");
       endif
       if (this.IsTruncated)
-        r = plrnd (this.Truncation(1), this.Truncation(2), varargin{:});
+        lp = plcdf (this.Truncation(1), this.x, this.Fx);
+        up = plcdf (this.Truncation(2), this.x, this.Fx);
+        u = unifrnd (lp, up, varargin{:});
+        r = zeros (size (u));
+        [~, bin] = histc (u(:)', this.Fx);
+        r0 = this.x(bin);
+        dx = diff (this.x);
+        dF = diff (this.Fx);
+        dr = (u(:)' - this.Fx(bin)) .* dx(bin) ./ dF(bin);
+        r(:) = r0 + dr;
       else
         r = plrnd (this.x, this.Fx, varargin{:});
       endif
