@@ -289,11 +289,21 @@ function [varargout] = fitdist (varargin)
       endif
 
     case "negativebinomial"
-      warning ("fitdist: 'NegativeBinomial' distribution not supported yet.");
+      ## Expand frequency here (and grouping vector, if given)
+      if (! isempty (freq))
+        x = expandFreq (x, freq);
+        if (! isempty (groupvar))
+          g = expandFreq (g, freq);
+        endif
+      endif
       if (isempty (groupvar))
-        varargout{1} = [];
+        varargout{1} = NegativeBinomialDistribution.fit (x, alpha, options);
       else
-        varargout{1} = [];
+        pd = NegativeBinomialDistribution.fit (x(g==1), alpha, options);
+        for i = 2:groups
+          pd(i) = NegativeBinomialDistribution.fit (x(g==i), alpha, options);
+        endfor
+        varargout{1} = pd;
         varargout{2} = gn;
         varargout{3} = gl;
       endif
@@ -400,7 +410,35 @@ function [varargout] = fitdist (varargin)
 
 endfunction
 
+## Helper function for expanding data according to frequency vector
+function xf = expandFreq (x, freq)
+  if (! all (freq == round (freq)) || any (freq < 0))
+    error (strcat (["fitdist: 'frequency' argument must contain"], ...
+                   [" non-negative integer values."]));
+  endif
+  xf = [];
+  for i = 1:numel (freq)
+    xf = [xf, repmat(x(i), 1, freq(i))];
+  endfor
+endfunction
+
 ## Test output
+%!test
+%! x = nbinrnd (2, 0.5, 100, 1);
+%! pd = fitdist (x, "negativebinomial");
+%! [phat, pci] = nbinfit (x);
+%! assert ([pd.R, pd.P], phat);
+%! assert (paramci (pd), pci);
+%!test
+%! x1 = nbinrnd (2, 0.5, 100, 1);
+%! x2 = nbinrnd (5, 0.8, 100, 1);
+%! pd = fitdist ([x1; x2], "negativebinomial", "By", [ones(100,1); 2*ones(100,1)]);
+%! [phat, pci] = nbinfit (x1);
+%! assert ([pd(1).R, pd(1).P], phat);
+%! assert (paramci (pd(1)), pci);
+%! [phat, pci] = nbinfit (x2);
+%! assert ([pd(2).R, pd(2).P], phat);
+%! assert (paramci (pd(2)), pci);
 %!test
 %! x = normrnd (1, 1, 100, 1);
 %! pd = fitdist (x, "normal");
@@ -517,6 +555,8 @@ endfunction
 %! fitdist ([1, 2, 3], "normal", "Censoring", [1, 2])
 %!error <fitdist: 'frequency' argument must have the same size as the input data in X.> ...
 %! fitdist ([1, 2, 3], "normal", "frequency", [1, 2])
+%!error <fitdist: 'frequency' argument must contain non-negative integer values.> ...
+%! fitdist ([1, 2, 3], "negativebinomial", "frequency", [1, -2, 3])
 %!error <fitdist: invalid value for 'alpha' argument.> ...
 %! fitdist ([1, 2, 3], "normal", "alpha", [1, 2])
 %!error <fitdist: invalid value for 'alpha' argument.> ...

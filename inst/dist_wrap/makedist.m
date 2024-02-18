@@ -337,21 +337,21 @@ function pd = makedist (varargin)
       pd = [];
 
     case "negativebinomial"
-      r = 1;
-      ps = 0;
+      R = 1;
+      P = 0.5;
       while (numel (varargin) > 0)
         switch (tolower (varargin{1}))
           case "r"
-            r = varargin{2};
+            R = varargin{2};
           case {"ps", "p"}
-            ps = varargin{2};
+            P = varargin{2};
           otherwise
             error (strcat (["makedist: unknown parameter for"], ...
                            [" 'NegativeBinomial' distribution."]));
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = [];
+      pd = NegativeBinomialDistribution (R, P);
 
     case "normal"
       mu = 0;
@@ -529,6 +529,21 @@ function pd = makedist (varargin)
 endfunction
 
 ## Test output
+%!test
+%! pd = makedist ("NegativeBinomial");
+%! assert (class (pd), "NegativeBinomialDistribution");
+%! assert (pd.R, 1);
+%! assert (pd.P, 0.5);
+%!test
+%! pd = makedist ("NegativeBinomial", "R", 5);
+%! assert (class (pd), "NegativeBinomialDistribution");
+%! assert (pd.R, 5);
+%! assert (pd.P, 0.5);
+%!test
+%! pd = makedist ("NegativeBinomial", "p", 0.3);
+%! assert (class (pd), "NegativeBinomialDistribution");
+%! assert (pd.R, 1);
+%! assert (pd.P, 0.3);
 %!test
 %! pd = makedist ("Normal");
 %! assert (class (pd), "NormalDistribution");
