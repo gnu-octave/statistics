@@ -26,36 +26,56 @@
 function ci = __disp__ (pd, distname)
 
   if (isscalar (pd))
-    ## Get required length for parameter values
-    PVlen = max (arrayfun (@(x) numel (sprintf ("%g", x)), pd.ParameterValues));
-    PVstr = sprintf ("%%%dg", PVlen);
 
-    ## Prepare template for fitted and not fitted distributions
-    pat1 = ["  %+7s = ", PVstr, "   [%g, %g]\n"];
-    pat2 = ["  %+7s = ", PVstr, "\n"];
-    if (all (pd.ParameterIsFixed))
-      fitted = false;
-    else
-      fitted = true;
-    endif
-
-    ## Print distribution header
-    fprintf ("  %s\n\n", pd.DistributionName);
-    fprintf ("  %s\n", distname);
-    ## Print parameter values
-    for i = 1:pd.NumParameters
-      if (fitted && ! pd.ParameterIsFixed(i))
-        fprintf (pat1, pd.ParameterNames{i}, pd.ParameterValues(i), ...
-                       pd.ParameterCI(1,i), pd.ParameterCI(2,i));
+    ## Handle special case of PiecewiseLinearDistribution
+    if (strcmpi (pd.DistributionName, "PiecewiseLinearDistribution"))
+      ## Print distribution header
+      fprintf ("  %s\n\n", pd.DistributionName);
+      ## Print parameter values
+      for i = 1:numel (pd.x)
+        fprintf ("F(%g) = %g\n", pd.x(i), pd.Fx(i));
+      endfor
+      ## Print trunctation interval if applicable
+      if (pd.IsTruncated)
+        fprintf ("  Truncated to the interval [%g, %g]\n\n", pd.Truncation);
       else
-        fprintf (pat2, pd.ParameterNames{i}, pd.ParameterValues(i));
+        fprintf ("\n");
       endif
-    endfor
-    ## Print trunctation interval if applicable
-    if (pd.IsTruncated)
-      fprintf ("  Truncated to the interval [%g, %g]\n\n", pd.Truncation);
+
+    ## Handle all other cases
     else
-      fprintf ("\n");
+      ## Get required length for parameter values
+      PVlen = max (arrayfun (@(x) numel (sprintf ("%g", x)), ...
+                             pd.ParameterValues));
+      PVstr = sprintf ("%%%dg", PVlen);
+
+      ## Prepare template for fitted and not fitted distributions
+      pat1 = ["  %+7s = ", PVstr, "   [%g, %g]\n"];
+      pat2 = ["  %+7s = ", PVstr, "\n"];
+      if (all (pd.ParameterIsFixed))
+        fitted = false;
+      else
+        fitted = true;
+      endif
+
+      ## Print distribution header
+      fprintf ("  %s\n\n", pd.DistributionName);
+      fprintf ("  %s\n", distname);
+      ## Print parameter values
+      for i = 1:pd.NumParameters
+        if (fitted && ! pd.ParameterIsFixed(i))
+          fprintf (pat1, pd.ParameterNames{i}, pd.ParameterValues(i), ...
+                         pd.ParameterCI(1,i), pd.ParameterCI(2,i));
+        else
+          fprintf (pat2, pd.ParameterNames{i}, pd.ParameterValues(i));
+        endif
+      endfor
+      ## Print trunctation interval if applicable
+      if (pd.IsTruncated)
+        fprintf ("  Truncated to the interval [%g, %g]\n\n", pd.Truncation);
+      else
+        fprintf ("\n");
+      endif
     endif
   else
     fprintf ("%dx%d %s array\n", size (pd), class (pd));
