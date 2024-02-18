@@ -583,19 +583,23 @@ classdef NormalDistribution
     function pd = fit (x, varargin)
       ## Check input arguments
       if (nargin < 2)
-        censor = [];
+        alpha = [];
       endif
       if (nargin < 3)
-        freq = [];
+        censor = [];
       endif
       if (nargin < 4)
+        freq = [];
+      endif
+      if (nargin < 5)
         options.Display = "off";
         options.MaxFunEvals = 400;
         options.MaxIter = 200;
         options.TolX = 1e-6;
       endif
       ## Fit data
-      [muhat, sigmahat, muci, sigmaci] = normfit (x, 0.05, censor, freq, options);
+      [muhat, sigmahat, muci, sigmaci] = normfit ...
+                                         (x, alpha, censor, freq, options);
       phat = [muhat, sigmahat];
       pci = [muci(:), sigmaci(:)];
       [~, acov] = normlike (phat, x, censor, freq);

@@ -581,10 +581,13 @@ classdef PoissonDistribution
     function pd = fit (x, varargin)
       ## Check input arguments
       if (nargin < 2)
+        alpha = 0.05;
+      endif
+      if (nargin < 2)
         freq = [];
       endif
       ## Fit data
-      [phat, pci] = poissfit (x, 0.05, freq);
+      [phat, pci] = poissfit (x, alpha, freq);
       [~, acov] = poisslike (phat, x, freq);
       ## Create fitted distribution object
       pd = PoissonDistribution.makeFitted ...

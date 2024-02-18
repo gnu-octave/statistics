@@ -569,13 +569,16 @@ classdef RayleighDistribution
     function pd = fit (x, varargin)
       ## Check input arguments
       if (nargin < 2)
-        censor = [];
+        alpha = 0.05;
       endif
       if (nargin < 3)
+        censor = [];
+      endif
+      if (nargin < 4)
         freq = [];
       endif
       ## Fit data
-      [phat, pci] = raylfit (x, 0.05, censor, freq);
+      [phat, pci] = raylfit (x, alpha, censor, freq);
       [~, acov] = rayllike (phat, x, censor, freq);
       ## Create fitted distribution object
       pd = RayleighDistribution.makeFitted ...

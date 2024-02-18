@@ -593,19 +593,22 @@ classdef RicianDistribution
     function pd = fit (x, varargin)
       ## Check input arguments
       if (nargin < 2)
-        censor = [];
+        alpha = 0.05;
       endif
       if (nargin < 3)
-        freq = [];
+        censor = [];
       endif
       if (nargin < 4)
+        freq = [];
+      endif
+      if (nargin < 5)
         options.Display = "off";
         options.MaxFunEvals = 400;
         options.MaxIter = 200;
         options.TolX = 1e-6;
       endif
       ## Fit data
-      [phat, pci] = ricefit (x, 0.05, censor, freq, options);
+      [phat, pci] = ricefit (x, alpha, censor, freq, options);
       [~, acov] = ricelike (phat, x, censor, freq);
       ## Create fitted distribution object
       pd = RicianDistribution.makeFitted ...
