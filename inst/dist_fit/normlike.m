@@ -2,19 +2,18 @@
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
-## Octave is free software; you can redistribute it and/or modify it
-## under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 3 of the License, or (at
-## your option) any later version.
+## This program is free software; you can redistribute it and/or modify it under
+## the terms of the GNU General Public License as published by the Free Software
+## Foundation; either version 3 of the License, or (at your option) any later
+## version.
 ##
-## Octave is distributed in the hope that it will be useful, but
-## WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-## General Public License for more details.
+## This program is distributed in the hope that it will be useful, but WITHOUT
+## ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+## FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+## details.
 ##
-## You should have received a copy of the GNU General Public License
-## along with Octave; see the file COPYING.  If not, see
-## <http://www.gnu.org/licenses/>.
+## You should have received a copy of the GNU General Public License along with
+## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{nlogL} =} normlike (@var{params}, @var{x})
@@ -44,6 +43,9 @@
 ## @var{freq} typically contains integer frequencies for the corresponding
 ## elements in @var{x}, but it may contain any non-integer non-negative
 ## values.  Pass in [] for @var{censor} to use its default value.
+##
+## Further information about the normal distribution can be found at
+## @url{https://en.wikipedia.org/wiki/Normal_distribution}
 ##
 ## @seealso{normcdf, norminv, normpdf, normrnd, normfit, normstat}
 ## @end deftypefn
