@@ -266,7 +266,7 @@ classdef PoissonDistribution
         Fa_b = poisscdf ([lx, ux], this.lambda);
         m = poissinv (sum (Fa_b) / 2, this.lambda);
       else
-        m = this.lambda .* sqrt (2 * log (2));
+        m = poissinv (0.5, this.lambda);
       endif
     endfunction
 

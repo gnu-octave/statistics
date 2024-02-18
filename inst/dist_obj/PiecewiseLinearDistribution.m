@@ -244,7 +244,7 @@ classdef PiecewiseLinearDistribution
         Fa_b = plcdf ([lx, ux], this.x, this.Fx);
         m = plinv (sum (Fa_b) / 2, this.x, this.Fx);
       else
-        m = plstat (this.x, this.Fx);
+        m = plinv (0.5, this.x, this.Fx);
       endif
     endfunction
 
