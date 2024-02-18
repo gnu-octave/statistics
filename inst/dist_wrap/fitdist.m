@@ -51,8 +51,8 @@ function [varargout] = fitdist (varargin)
 
   ## Add defaults
   groupvar = [];
-  censor = [];
-  freq = [];
+  censor = zeros (size (x));
+  freq = ones (size (x));
   alpha = 0.05;
   ntrials = [];
   mu = 0;
@@ -75,13 +75,13 @@ function [varargout] = fitdist (varargin)
         endif
       case "censoring"
         censor = varargin{2};
-        if (! isequal (size (x), size (censor)) && ! isempty (censor))
+        if (! isequal (size (x), size (censor)))
           error (strcat (["fitdist: 'censoring' argument must have the same"], ...
                          [" size as the input data in X."]));
         endif
       case "frequency"
         freq = varargin{2};
-        if (! isequal (size (x), size (freq)) && ! isempty (freq))
+        if (! isequal (size (x), size (freq)))
           error (strcat (["fitdist: 'frequency' argument must have the same"], ...
                          [" size as the input data in X."]));
         endif
@@ -395,6 +395,37 @@ function [varargout] = fitdist (varargin)
 endfunction
 
 ## Test output
+%!test
+%! x = tlsrnd (0, 1, 1, 100, 1);
+%! pd = fitdist (x, "tlocationscale");
+%! [phat, pci] = tlsfit (x);
+%! assert ([pd.mu, pd.sigma, pd.nu], phat);
+%! assert (paramci (pd), pci);
+%!test
+%! x1 = tlsrnd (0, 1, 1, 100, 1);
+%! x2 = tlsrnd (5, 2, 1, 100, 1);
+%! pd = fitdist ([x1; x2] "tlocationscale", "By", [ones(100,1); 2*ones(100,1)]);
+%! [phat, pci] = tlsfit (x1);
+%! assert ([pd(1).mu, pd(1).sigma, pd(1).nu], phat);
+%! assert (paramci (pd(1)), pci);
+%! [phat, pci] = tlsfit (x2);
+%! assert ([pd(2).mu, pd(2).sigma, pd(2).nu], phat);
+%! assert (paramci (pd(2)), pci);
+%!test
+%! x = [1 2 3 4 5];
+%! pd = fitdist (x, "weibull");
+%! [phat, pci] = wblfit (x);
+%! assert ([pd.lambda, pd.k], phat);
+%! assert (paramci (pd), pci);
+%!test
+%! x = [1 2 3 4 5 6 7 8 9 10];
+%! pd = fitdist (x, "weibull", "By", [1 1 1 1 1 2 2 2 2 2]);
+%! [phat, pci] = wblfit (x(1:5));
+%! assert ([pd(1).lambda, pd(1).k], phat);
+%! assert (paramci (pd(1)), pci);
+%! [phat, pci] = wblfit (x(6:10));
+%! assert ([pd(2).lambda, pd(2).k], phat);
+%! assert (paramci (pd(2)), pci);
 
 ## Test input validation
 %!error <fitdist: DISTNAME is required.> fitdist (1)
@@ -430,9 +461,9 @@ endfunction
 %! fitdist ([1, 2, 3], "normal", "options", 0)
 %!error <fitdist: 'options' argument must be a structure compatible for 'fminsearch'.> ...
 %! fitdist ([1, 2, 3], "normal", "options", struct ("options", 1))
-%!warning fitdist ([1, 2, 3], "kernel", "kernel", "normal")
-%!warning fitdist ([1, 2, 3], "kernel", "support", "positive")
-%!warning fitdist ([1, 2, 3], "kernel", "width", 1)
+%!warning fitdist ([1, 2, 3], "kernel", "kernel", "normal");
+%!warning fitdist ([1, 2, 3], "kernel", "support", "positive");
+%!warning fitdist ([1, 2, 3], "kernel", "width", 1);
 %!error <fitdist: unknown parameter name.> ...
 %! fitdist ([1, 2, 3], "normal", "param", struct ("options", 1))
 %!error <fitdist: must define GROUPVAR for more than one output arguments.> ...
