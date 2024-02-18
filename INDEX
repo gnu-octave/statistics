@@ -185,6 +185,7 @@ Distribution Statistics
  wblstat
 Distribution Wrappers
  cdf
+ fitdist
  icdf
  makedist
  mle
