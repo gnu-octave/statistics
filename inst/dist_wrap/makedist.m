@@ -566,7 +566,6 @@ endfunction
 %! pd = makedist ("Poisson", "lambda", 5);
 %! assert (pd.lambda, 5);
 %!test
-%!test
 %! pd = makedist ("Rayleigh");
 %! assert (class (pd), "RayleighDistribution");
 %! assert (pd.sigma, 1);

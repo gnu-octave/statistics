@@ -357,7 +357,13 @@ function [varargout] = fitdist (varargin)
 
     case "stable"
       warning ("fitdist: 'Stable' distribution not supported yet.");
-      pd = [];
+      if (isempty (groupvar))
+        varargout{1} = [];
+      else
+        varargout{1} = [];
+        varargout{2} = gn;
+        varargout{3} = gl;
+      endif
 
     case "tlocationscale"
       if (isempty (groupvar))
@@ -396,6 +402,72 @@ endfunction
 
 ## Test output
 %!test
+%! x = normrnd (1, 1, 100, 1);
+%! pd = fitdist (x, "normal");
+%! [muhat, sigmahat, muci, sigmaci] = normfit (x);
+%! assert ([pd.mu, pd.sigma], [muhat, sigmahat]);
+%! assert (paramci (pd), [muci, sigmaci]);
+%!test
+%! x1 = normrnd (1, 1, 100, 1);
+%! x2 = normrnd (5, 2, 100, 1);
+%! pd = fitdist ([x1; x2], "normal", "By", [ones(100,1); 2*ones(100,1)]);
+%! [muhat, sigmahat, muci, sigmaci] = normfit (x1);
+%! assert ([pd(1).mu, pd(1).sigma], [muhat, sigmahat]);
+%! assert (paramci (pd(1)), [muci, sigmaci]);
+%! [muhat, sigmahat, muci, sigmaci] = normfit (x2);
+%! assert ([pd(2).mu, pd(2).sigma], [muhat, sigmahat]);
+%! assert (paramci (pd(2)), [muci, sigmaci]);
+%!test
+%! x = poissrnd (1, 100, 1);
+%! pd = fitdist (x, "poisson");
+%! [phat, pci] = poissfit (x);
+%! assert (pd.lambda, phat);
+%! assert (paramci (pd), pci);
+%!test
+%! x1 = poissrnd (1, 100, 1);
+%! x2 = poissrnd (5, 100, 1);
+%! pd = fitdist ([x1; x2], "poisson", "By", [ones(100,1); 2*ones(100,1)]);
+%! [phat, pci] = poissfit (x1);
+%! assert (pd(1).lambda, phat);
+%! assert (paramci (pd(1)), pci);
+%! [phat, pci] = poissfit (x2);
+%! assert (pd(2).lambda, phat);
+%! assert (paramci (pd(2)), pci);
+%!test
+%! x = raylrnd (1, 100, 1);
+%! pd = fitdist (x, "rayleigh");
+%! [phat, pci] = raylfit (x);
+%! assert (pd.sigma, phat);
+%! assert (paramci (pd), pci);
+%!test
+%! x1 = raylrnd (1, 100, 1);
+%! x2 = raylrnd (5, 100, 1);
+%! pd = fitdist ([x1; x2], "rayleigh", "By", [ones(100,1); 2*ones(100,1)]);
+%! [phat, pci] = raylfit (x1);
+%! assert ( pd(1).sigma, phat);
+%! assert (paramci (pd(1)), pci);
+%! [phat, pci] = raylfit (x2);
+%! assert (pd(2).sigma, phat);
+%! assert (paramci (pd(2)), pci);
+%!test
+%! x = ricernd (1, 1, 100, 1);
+%! pd = fitdist (x, "rician");
+%! [phat, pci] = ricefit (x);
+%! assert ([pd.nu, pd.sigma], phat);
+%! assert (paramci (pd), pci);
+%!test
+%! x1 = ricernd (1, 1, 100, 1);
+%! x2 = ricernd (5, 2, 100, 1);
+%! pd = fitdist ([x1; x2], "rician", "By", [ones(100,1); 2*ones(100,1)]);
+%! [phat, pci] = ricefit (x1);
+%! assert ([pd(1).nu, pd(1).sigma], phat);
+%! assert (paramci (pd(1)), pci);
+%! [phat, pci] = ricefit (x2);
+%! assert ([pd(2).nu, pd(2).sigma], phat);
+%! assert (paramci (pd(2)), pci);
+%!warning <fitdist: 'Stable' distribution not supported yet.> ...
+%! fitdist ([1 2 3 4 5], "Stable");
+%!test
 %! x = tlsrnd (0, 1, 1, 100, 1);
 %! pd = fitdist (x, "tlocationscale");
 %! [phat, pci] = tlsfit (x);
@@ -404,7 +476,7 @@ endfunction
 %!test
 %! x1 = tlsrnd (0, 1, 1, 100, 1);
 %! x2 = tlsrnd (5, 2, 1, 100, 1);
-%! pd = fitdist ([x1; x2] "tlocationscale", "By", [ones(100,1); 2*ones(100,1)]);
+%! pd = fitdist ([x1; x2], "tlocationscale", "By", [ones(100,1); 2*ones(100,1)]);
 %! [phat, pci] = tlsfit (x1);
 %! assert ([pd(1).mu, pd(1).sigma, pd(1).nu], phat);
 %! assert (paramci (pd(1)), pci);
