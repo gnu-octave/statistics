@@ -4,19 +4,18 @@
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
-## This program is free software: you can redistribute it and/or
-## modify it under the terms of the GNU General Public License as
-## published by the Free Software Foundation, either version 3 of the
-## License, or (at your option) any later version.
+## This program is free software; you can redistribute it and/or modify it under
+## the terms of the GNU General Public License as published by the Free Software
+## Foundation; either version 3 of the License, or (at your option) any later
+## version.
 ##
-## This program is distributed in the hope that it will be useful, but
-## WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-## General Public License for more details.
+## This program is distributed in the hope that it will be useful, but WITHOUT
+## ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+## FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+## details.
 ##
-## You should have received a copy of the GNU General Public License
-## along with this program; see the file COPYING.  If not, see
-## <http://www.gnu.org/licenses/>.
+## You should have received a copy of the GNU General Public License along with
+## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{rnd} =} nbinrnd (@var{r}, @var{ps})
@@ -27,12 +26,12 @@
 ## Random arrays from the negative binomial distribution.
 ##
 ## @code{@var{rnd} = nbinrnd (@var{r}, @var{ps})} returns an array of random
-## numbers chosen from the Laplace distribution with parameters @var{r} and
-## @var{ps}, where @var{r} is the number of successes until the experiment is
-## stopped and @var{ps} is the probability of success in each experiment, given
-## the number of failures in @var{x}.  The size of @var{rnd} is the common size
-## of @var{r} and @var{ps}.  A scalar input functions as a constant matrix of
-## the same size as the other inputs.
+## numbers chosen from the negative binomial distribution with parameters
+## @var{r} and @var{ps}, where @var{r} is the number of successes until the
+## experiment is stopped and @var{ps} is the probability of success in each
+## experiment, given the number of failures in @var{x}.  The size of @var{rnd}
+## is the common size of @var{r} and @var{ps}.  A scalar input functions as a
+## constant matrix of the same size as the other inputs.
 ##
 ## When called with a single size argument, return a square matrix with
 ## the dimension specified.  When called with more than one scalar argument the
