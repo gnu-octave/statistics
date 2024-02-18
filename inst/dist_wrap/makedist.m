@@ -371,13 +371,13 @@ function pd = makedist (varargin)
       pd = [];
 
     case "piecewiselinear"
-      x = 1;
-      Fx = 1;
+      x = [0, 1];
+      Fx = [0, 1];
       while (numel (varargin) > 0)
         switch (tolower (varargin{1}))
           case "x"
             x = varargin{2};
-          case "Fx"
+          case "fx"
             Fx = varargin{2};
           otherwise
             error (strcat (["makedist: unknown parameter for"], ...
@@ -385,8 +385,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      warning ("makedist: 'PiecewiseLinear' distribution not supported yet.");
-      pd = [];
+      pd = PiecewiseLinearDistribution (x, Fx);
 
     case "poisson"
       lambda = 1;
@@ -531,6 +530,15 @@ function pd = makedist (varargin)
 endfunction
 
 ## Test output
+%!test
+%! pd = makedist ("PiecewiseLinear");
+%! assert (class (pd), "PiecewiseLinearDistribution");
+%! assert (pd.x, [0; 1]);
+%! assert (pd.Fx, [0; 1]);
+%!test
+%! pd = makedist ("PiecewiseLinear", "x", [0, 1, 2], "Fx", [0, 0.5, 1]);
+%! assert (pd.x, [0; 1; 2]);
+%! assert (pd.Fx, [0; 0.5; 1]);
 %!test
 %! pd = makedist ("Poisson");
 %! assert (class (pd), "PoissonDistribution");
