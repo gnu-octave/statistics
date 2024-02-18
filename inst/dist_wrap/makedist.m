@@ -119,22 +119,6 @@ function pd = makedist (varargin)
       endwhile
       pd = [];
 
-    case "gamma"
-      k = 1;
-      theta = 1;
-      while (numel (varargin) > 0)
-        switch (tolower (varargin{1}))
-          case {"k", "a"}
-            k = varargin{2};
-          case {"theta", "b"}
-            theta = varargin{2};
-          otherwise
-            error ("makedist: unknown parameter for 'Gamma' distribution.");
-        endswitch
-        varargin([1:2]) = [];
-      endwhile
-      pd = [];
-
     case "extremevalue"
       mu = 0;
       while (numel (varargin) > 0)
@@ -158,6 +142,22 @@ function pd = makedist (varargin)
           otherwise
             error (strcat (["makedist: unknown parameter for"], ...
                            [" 'Exponential' distribution."]));
+        endswitch
+        varargin([1:2]) = [];
+      endwhile
+      pd = [];
+
+    case "gamma"
+      k = 1;
+      theta = 1;
+      while (numel (varargin) > 0)
+        switch (tolower (varargin{1}))
+          case {"k", "a"}
+            k = varargin{2};
+          case {"theta", "b"}
+            theta = varargin{2};
+          otherwise
+            error ("makedist: unknown parameter for 'Gamma' distribution.");
         endswitch
         varargin([1:2]) = [];
       endwhile
