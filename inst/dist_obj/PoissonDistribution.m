@@ -79,7 +79,7 @@ classdef PoissonDistribution
   properties (GetAccess = public, Constant = true)
     CensoringAllowed = false;
     DistributionName = "PoissonDistribution";
-    DistributionCode = "rayl";
+    DistributionCode = "poiss";
     NumParameters = 1;
     ParameterNames = {"lambda"};
     ParameterDescription = {"Rate"};
