@@ -583,7 +583,7 @@ classdef NormalDistribution
     function pd = fit (x, varargin)
       ## Check input arguments
       if (nargin < 2)
-        alpha = [];
+        alpha = 0.05;
       endif
       if (nargin < 3)
         censor = [];
