@@ -2,19 +2,18 @@
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
-## This program is free software: you can redistribute it and/or
-## modify it under the terms of the GNU General Public License as
-## published by the Free Software Foundation, either version 3 of the
-## License, or (at your option) any later version.
+## This program is free software; you can redistribute it and/or modify it under
+## the terms of the GNU General Public License as published by the Free Software
+## Foundation; either version 3 of the License, or (at your option) any later
+## version.
 ##
-## This program is distributed in the hope that it will be useful, but
-## WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-## General Public License for more details.
+## This program is distributed in the hope that it will be useful, but WITHOUT
+## ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+## FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+## details.
 ##
-## You should have received a copy of the GNU General Public License
-## along with this program; see the file COPYING.  If not, see
-## <http://www.gnu.org/licenses/>.
+## You should have received a copy of the GNU General Public License along with
+## this program; if not, see <http://www.gnu.org/licenses/>.
 
 function pd = makedist (varargin)
 
@@ -368,7 +367,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = [];
+      pd = NormalDistribution (mu, sigma);
 
     case "piecewiselinear"
       x = [0, 1];
@@ -530,6 +529,26 @@ function pd = makedist (varargin)
 endfunction
 
 ## Test output
+%!test
+%! pd = makedist ("Normal");
+%! assert (class (pd), "NormalDistribution");
+%! assert (pd.mu, 0);
+%! assert (pd.sigma, 1);
+%!test
+%! pd = makedist ("Normal", "mu", 5);
+%! assert (class (pd), "NormalDistribution");
+%! assert (pd.mu, 5);
+%! assert (pd.sigma, 1);
+%!test
+%! pd = makedist ("Normal", "sigma", 5);
+%! assert (class (pd), "NormalDistribution");
+%! assert (pd.mu, 0);
+%! assert (pd.sigma, 5);
+%!test
+%! pd = makedist ("Normal", "mu", -3, "sigma", 5);
+%! assert (class (pd), "NormalDistribution");
+%! assert (pd.mu, -3);
+%! assert (pd.sigma, 5);
 %!test
 %! pd = makedist ("PiecewiseLinear");
 %! assert (class (pd), "PiecewiseLinearDistribution");
