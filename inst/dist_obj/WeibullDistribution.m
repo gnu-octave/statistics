@@ -87,7 +87,7 @@ classdef WeibullDistribution
     ParameterDescription = {"Scale", "Shape"};
   endproperties
 
-  properties (GetAccess = private, Constant = true)
+  properties (GetAccess = public, Constant = true)
     ParameterRange = [realmin, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
@@ -519,7 +519,7 @@ classdef WeibullDistribution
       if (! isscalar (this))
         error ("std: requires a scalar probability distribution.");
       endif
-      v = var (this.lambda, this.k);
+      v = var (this);
       s = sqrt (v);
     endfunction
 

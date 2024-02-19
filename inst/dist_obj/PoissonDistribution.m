@@ -85,7 +85,7 @@ classdef PoissonDistribution
     ParameterDescription = {"Rate"};
   endproperties
 
-  properties (GetAccess = private, Constant = true)
+  properties (GetAccess = public, Constant = true)
     ParameterRange = [realmin; Inf];
     ParameterLogCI = true;
   endproperties
@@ -512,7 +512,7 @@ classdef PoissonDistribution
       if (! isscalar (this))
         error ("std: requires a scalar probability distribution.");
       endif
-      v = var (this.lambda);
+      v = var (this);
       s = sqrt (v);
     endfunction
 

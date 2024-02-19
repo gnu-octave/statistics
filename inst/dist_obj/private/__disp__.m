@@ -42,6 +42,19 @@ function ci = __disp__ (pd, distname)
         fprintf ("\n");
       endif
 
+    ## Handle special case of MultinomialDistribution
+    elseif (strcmpi (pd.DistributionName, "MultinomialDistribution"))
+      ## Print distribution header
+      fprintf ("  %s\n\n", pd.DistributionName);
+      ## Print parameter values
+      fprintf ("  Probabilities:\n");
+      fprintf ("    %0.4f", pd.Probabilities);
+      fprintf ("\n\n");
+      ## Print trunctation interval if applicable
+      if (pd.IsTruncated)
+        fprintf ("  Truncated to the interval [%g, %g]\n\n", pd.Truncation);
+      endif
+
     ## Handle all other cases
     else
       ## Get required length for parameter values
@@ -52,10 +65,17 @@ function ci = __disp__ (pd, distname)
       ## Prepare template for fitted and not fitted distributions
       pat1 = ["  %+7s = ", PVstr, "   [%g, %g]\n"];
       pat2 = ["  %+7s = ", PVstr, "\n"];
-      if (all (pd.ParameterIsFixed))
+
+      ## Grad distributions that are non fittable
+      if (any (strcmpi (pd.DistributionCode, {"unif", "tri"})))
         fitted = false;
+        ParameterIsFixed = true;
+      elseif (all (pd.ParameterIsFixed))
+        fitted = false;
+        ParameterIsFixed = pd.ParameterIsFixed;
       else
         fitted = true;
+        ParameterIsFixed = true;
       endif
 
       ## Print distribution header
@@ -63,7 +83,7 @@ function ci = __disp__ (pd, distname)
       fprintf ("  %s\n", distname);
       ## Print parameter values
       for i = 1:pd.NumParameters
-        if (fitted && ! pd.ParameterIsFixed(i))
+        if (fitted && ! ParameterIsFixed(i))
           fprintf (pat1, pd.ParameterNames{i}, pd.ParameterValues(i), ...
                          pd.ParameterCI(1,i), pd.ParameterCI(2,i));
         else

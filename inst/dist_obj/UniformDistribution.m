@@ -381,7 +381,7 @@ classdef UniformDistribution
       if (! isscalar (this))
         error ("std: requires a scalar probability distribution.");
       endif
-      v = var (this.Lower, this.Upper);
+      v = var (this);
       s = sqrt (v);
     endfunction
 

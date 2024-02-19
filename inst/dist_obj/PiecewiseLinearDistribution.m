@@ -395,7 +395,7 @@ classdef PiecewiseLinearDistribution
       if (! isscalar (this))
         error ("std: requires a scalar probability distribution.");
       endif
-      v = var (this.x, this.Fx);
+      v = var (this);
       s = sqrt (v);
     endfunction
 

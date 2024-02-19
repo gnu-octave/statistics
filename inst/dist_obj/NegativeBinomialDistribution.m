@@ -87,7 +87,7 @@ classdef NegativeBinomialDistribution
     ParameterDescription = {"Number of successes", "Probability of success"};
   endproperties
 
-  properties (GetAccess = private, Constant = true)
+  properties (GetAccess = public, Constant = true)
     ParameterRange = [realmin, realmin; Inf, 1];
     ParameterLogCI = [true, true];
   endproperties
@@ -528,7 +528,7 @@ classdef NegativeBinomialDistribution
       if (! isscalar (this))
         error ("std: requires a scalar probability distribution.");
       endif
-      v = var (this.R, this.P);
+      v = var (this);
       s = sqrt (v);
     endfunction
 

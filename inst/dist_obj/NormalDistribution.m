@@ -87,7 +87,7 @@ classdef NormalDistribution
     ParameterDescription = {"Mean", "Standard Deviation"};
   endproperties
 
-  properties (GetAccess = private, Constant = true)
+  properties (GetAccess = public, Constant = true)
     ParameterRange = [-Inf, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
@@ -519,7 +519,7 @@ classdef NormalDistribution
       if (! isscalar (this))
         error ("std: requires a scalar probability distribution.");
       endif
-      v = var (this.mu, this.sigma);
+      v = var (this);
       s = sqrt (v);
     endfunction
 

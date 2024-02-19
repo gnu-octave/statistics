@@ -84,11 +84,11 @@ classdef NakagamiDistribution
     DistributionCode = "naka";
     NumParameters = 2;
     ParameterNames = {"mu", "omega"};
-    ParameterDescription = {"Shape parameter", "Scale parameter"};
+    ParameterDescription = {"Shape parameter", "Spread parameter"};
   endproperties
 
-  properties (GetAccess = private, Constant = true)
-    ParameterRange = [realmin, realmin; Inf, Inf];
+  properties (GetAccess = public, Constant = true)
+    ParameterRange = [0.5, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
 
@@ -529,7 +529,7 @@ classdef NakagamiDistribution
       if (! isscalar (this))
         error ("std: requires a scalar probability distribution.");
       endif
-      v = var (this.mu, this.omega);
+      v = var (this);
       s = sqrt (v);
     endfunction
 
@@ -643,40 +643,40 @@ endclassdef
 
 function checkparams (mu, omega)
   if (! (isscalar (mu) && isnumeric (mu) && isreal (mu)
-                       && isfinite (mu) && mu > 0))
-    error ("NakagamiDistribution: MU must be a positive scalar.")
+                       && isfinite (mu) && mu >= 0.5))
+    error ("NakagamiDistribution: MU must be a real scalar of at least 0.5.")
   endif
   if (! (isscalar (omega) && isnumeric (omega) && isreal (omega)
                           && isfinite (omega) && omega > 0))
-    error ("NakagamiDistribution: OMEGA must be a positive scalar.")
+    error ("NakagamiDistribution: OMEGA must be a positive real scalar.")
   endif
 endfunction
 
 ## Test input validation
 ## 'NakagamiDistribution' constructor
-%!error <NakagamiDistribution: MU must be a positive scalar.> ...
+%!error <NakagamiDistribution: MU must be a real scalar of at least 0.5.> ...
 %! NakagamiDistribution(Inf, 1)
-%!error <NakagamiDistribution: MU must be a positive scalar.> ...
+%!error <NakagamiDistribution: MU must be a real scalar of at least 0.5.> ...
 %! NakagamiDistribution(i, 1)
-%!error <NakagamiDistribution: MU must be a positive scalar.> ...
+%!error <NakagamiDistribution: MU must be a real scalar of at least 0.5.> ...
 %! NakagamiDistribution("a", 1)
-%!error <NakagamiDistribution: MU must be a positive scalar.> ...
+%!error <NakagamiDistribution: MU must be a real scalar of at least 0.5.> ...
 %! NakagamiDistribution([1, 2], 1)
-%!error <NakagamiDistribution: MU must be a positive scalar.> ...
+%!error <NakagamiDistribution: MU must be a real scalar of at least 0.5.> ...
 %! NakagamiDistribution(NaN, 1)
-%!error <NakagamiDistribution: OMEGA must be a positive scalar.> ...
+%!error <NakagamiDistribution: OMEGA must be a positive real scalar.> ...
 %! NakagamiDistribution(1, 0)
-%!error <NakagamiDistribution: OMEGA must be a positive scalar.> ...
+%!error <NakagamiDistribution: OMEGA must be a positive real scalar.> ...
 %! NakagamiDistribution(1, -1)
-%!error <NakagamiDistribution: OMEGA must be a positive scalar.> ...
+%!error <NakagamiDistribution: OMEGA must be a positive real scalar.> ...
 %! NakagamiDistribution(1, Inf)
-%!error <NakagamiDistribution: OMEGA must be a positive scalar.> ...
+%!error <NakagamiDistribution: OMEGA must be a positive real scalar.> ...
 %! NakagamiDistribution(1, i)
-%!error <NakagamiDistribution: OMEGA must be a positive scalar.> ...
+%!error <NakagamiDistribution: OMEGA must be a positive real scalar.> ...
 %! NakagamiDistribution(1, "a")
-%!error <NakagamiDistribution: OMEGA must be a positive scalar.> ...
+%!error <NakagamiDistribution: OMEGA must be a positive real scalar.> ...
 %! NakagamiDistribution(1, [1, 2])
-%!error <NakagamiDistribution: OMEGA must be a positive scalar.> ...
+%!error <NakagamiDistribution: OMEGA must be a positive real scalar.> ...
 %! NakagamiDistribution(1, NaN)
 
 ## 'cdf' method

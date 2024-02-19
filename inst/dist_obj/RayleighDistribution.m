@@ -85,7 +85,7 @@ classdef RayleighDistribution
     ParameterDescription = {"Scale"};
   endproperties
 
-  properties (GetAccess = private, Constant = true)
+  properties (GetAccess = public, Constant = true)
     ParameterRange = [realmin; Inf];
     ParameterLogCI = true;
   endproperties
@@ -503,7 +503,7 @@ classdef RayleighDistribution
       if (! isscalar (this))
         error ("std: requires a scalar probability distribution.");
       endif
-      v = var (this.sigma);
+      v = var (this);
       s = sqrt (v);
     endfunction
 

@@ -406,7 +406,7 @@ classdef TriangularDistribution
       if (! isscalar (this))
         error ("std: requires a scalar probability distribution.");
       endif
-      v = var (this.A, this.B, this.C);
+      v = var (this);
       s = sqrt (v);
     endfunction
 

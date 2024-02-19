@@ -87,7 +87,7 @@ classdef RicianDistribution
     ParameterDescription = {"Non-centrality Distance", "Scale"};
   endproperties
 
-  properties (GetAccess = private, Constant = true)
+  properties (GetAccess = public, Constant = true)
     ParameterRange = [0, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
@@ -529,7 +529,7 @@ classdef RicianDistribution
       if (! isscalar (this))
         error ("std: requires a scalar probability distribution.");
       endif
-      v = var (this.nu, this.sigma);
+      v = var (this);
       s = sqrt (v);
     endfunction
 

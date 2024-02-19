@@ -89,7 +89,7 @@ classdef tLocationScaleDistribution
     ParameterDescription = {"Location", "Scale", "Degrees of Freedom"};
   endproperties
 
-  properties (GetAccess = private, Constant = true)
+  properties (GetAccess = public, Constant = true)
     ParameterRange = [-Inf, realmin, realmin; Inf, Inf, Inf];
     ParameterLogCI = [false, true, true];
   endproperties
@@ -544,7 +544,7 @@ classdef tLocationScaleDistribution
       if (! isscalar (this))
         error ("std: requires a scalar probability distribution.");
       endif
-      v = var (this.mu, this.sigma, this.nu);
+      v = var (this);
       s = sqrt (v);
     endfunction
 
