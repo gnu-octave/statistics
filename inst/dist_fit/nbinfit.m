@@ -20,7 +20,9 @@
 ## @deftypefn  {statistics} {@var{paramhat} =} nbinfit (@var{x})
 ## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} nbinfit (@var{x})
 ## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} nbinfit (@var{x}, @var{alpha})
+## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} nbinfit (@var{x}, @var{alpha}, @var{freq})
 ## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} nbinfit (@var{x}, @var{alpha}, @var{options})
+## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} nbinfit (@var{x}, @var{alpha}, @var{freq}, @var{options})
 ##
 ## Estimate parameter and confidence intervals for the negative binomial
 ## distribution.
@@ -38,6 +40,12 @@
 ## returns the @qcode{100 * (1 - @var{alpha})} percent confidence intervals of
 ## the estimated parameter.  By default, the optional argument @var{alpha} is
 ## 0.05 corresponding to 95% confidence intervals.
+##
+## @code{[@dots{}] = nbinlike (@var{params}, @var{x}, @var{freq})} accepts a
+## frequency vector, @var{freq}, of the same size as @var{x}.  @var{freq}
+## must contain non-negative integer frequencies for the corresponding elements
+## in @var{x}.  By default, or if left empty,
+## @qcode{@var{freq} = ones (size (@var{x}))}.
 ##
 ## @code{[@var{paramhat}, @var{paramci}] = nbinfit (@var{x}, @var{alpha},
 ## @var{options})} specifies control parameters for the iterative algorithm used
@@ -74,7 +82,7 @@
 ## @seealso{nbincdf, nbininv, nbinpdf, nbinrnd, nbinlike, nbinstat}
 ## @end deftypefn
 
-function [paramhat, paramci] = nbinfit (x, alpha, options)
+function [paramhat, paramci] = nbinfit (x, alpha, varargin)
 
   ## Check data in X
   if (any (x < 0))
@@ -94,20 +102,50 @@ function [paramhat, paramci] = nbinfit (x, alpha, options)
     error ("nbinfit: wrong value for ALPHA.");
   endif
 
-  ## Get options structure or add defaults
-  if (nargin < 3)
-    options.Display = "off";
-    options.MaxFunEvals = 400;
-    options.MaxIter = 200;
-    options.TolX = 1e-6;
-  else
+  ## Add defaults
+  freq = ones (size (x));
+  options.Display = "off";
+  options.MaxFunEvals = 400;
+  options.MaxIter = 200;
+  options.TolX = 1e-6;
+
+  ## Check extra arguments for FREQ vector and/or 'options' structure
+  if (numel (varargin) == 1 && isstruct (varargin{1}))
+    options = varargin{1};
+  elseif (numel (varargin) == 1 && isnumeric (varargin{1}))
+    freq = varargin{1};
+  elseif (numel (varargin) == 2)
+    freq = varargin{1};
+    options = varargin{2};
+  endif
+
+  ## Check extra parameters
+  if (nargin > 2)
+    ## Check for valid freq vector
+    if (! isequal (size (x), size (freq)))
+      error ("nbinfit: X and FREQ vectors mismatch.");
+    elseif (any (freq < 0))
+      error ("nbinfit: FREQ must not contain negative values.");
+    elseif (any (fix (freq) != freq))
+      error ("nbinfit: FREQ must contain integer values.");
+    endif
+    ## Check for valid options structure
     if (! isstruct (options) || ! isfield (options, "Display") ||
         ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
                                            || ! isfield (options, "TolX"))
-      error (strcat (["nbinfit: 'options' 3rd argument must be a"], ...
+      error (strcat (["nbinfit: 'options' argument must be a"], ...
                      [" structure with 'Display', 'MaxFunEvals',"], ...
                      [" 'MaxIter', and 'TolX' fields present."]));
     endif
+  endif
+
+  ## Expand frequency
+  if (! all (freq == 1))
+    xf = [];
+    for i = 1:numel (freq)
+      xf = [xf, repmat(x(i), 1, freq(i))];
+    endfor
+    x = xf;
   endif
 
   ## Ensure that a negative binomial fit is valid.
@@ -226,6 +264,16 @@ endfunction
 %! assert (paramhat, [8.8067, 0.6156], 1e-4);
 %! assert (paramci(:,1), [0; 30.7068], 1e-4);
 %! assert (paramci(:,2), [0.0217; 1], 1e-4);
+%!test
+%! [paramhat, paramci] = nbinfit ([1:10], 0.05, ones (1, 10));
+%! assert (paramhat, [8.8067, 0.6156], 1e-4);
+%! assert (paramci(:,1), [0; 30.7068], 1e-4);
+%! assert (paramci(:,2), [0.0217; 1], 1e-4);
+%!test
+%! [paramhat, paramci] = nbinfit ([1:11], 0.05, [ones(1, 10), 0]);
+%! assert (paramhat, [8.8067, 0.6156], 1e-4);
+%! assert (paramci(:,1), [0; 30.7068], 1e-4);
+%! assert (paramci(:,2), [0.0217; 1], 1e-4);
 
 ## Test input validation
 %!error<nbinfit: X cannot have negative values.> nbinfit ([-1 2 3 3])
@@ -234,5 +282,13 @@ endfunction
 %!error<nbinfit: wrong value for ALPHA.> nbinfit ([1 2 3], 0)
 %!error<nbinfit: wrong value for ALPHA.> nbinfit ([1 2 3], 1.2)
 %!error<nbinfit: wrong value for ALPHA.> nbinfit ([1 2 3], [0.02 0.05])
-%!error<nbinfit: 'options' 3rd argument must be a structure> ...
-%! nbinfit ([1, 2, 3, 4, 5], 0.05, 2);
+%!error<nbinfit: X and FREQ vectors mismatch.> ...
+%! nbinfit ([1, 2, 3, 4, 5], 0.05, [1, 2, 3, 2]);
+%!error<nbinfit: FREQ must not contain negative values.> ...
+%! nbinfit ([1, 2, 3, 4, 5], 0.05, [1, 2, 3, 2, -1]);
+%!error<nbinfit: FREQ must contain integer values.> ...
+%! nbinfit ([1, 2, 3, 4, 5], 0.05, [1, 2, 3, 2, 1.5]);
+%!error<nbinfit: 'options' argument must be a structure> ...
+%! nbinfit ([1, 2, 3, 4, 5], 0.05, struct ("option", 234));
+%!error<nbinfit: 'options' argument must be a structure> ...
+%! nbinfit ([1, 2, 3, 4, 5], 0.05, ones (1,5), struct ("option", 234));

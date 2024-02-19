@@ -45,7 +45,7 @@
 ## @seealso{poisscdf, poissinv, poisspdf, poissrnd, poissfit, poisstat}
 ## @end deftypefn
 
-function [nlogL, avar] = poisslike (lambda, x, freq=[])
+function [nlogL, avar] = poisslike (lambda, x, freq)
 
   ## Check input arguments
   if (nargin < 2)
@@ -60,7 +60,7 @@ function [nlogL, avar] = poisslike (lambda, x, freq=[])
     error ("poisslike: X must be a vector of non-negative values.");
   endif
 
-  if (isempty (freq))
+  if (nargin < 3 || isempty (freq))
     freq = ones (size (x));
   elseif (! isequal (size (x), size (freq)))
     error ("poisslike: X and FREQ vectors mismatch.");

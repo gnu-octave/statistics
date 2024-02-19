@@ -73,6 +73,8 @@ function [nlogL, acov] = tlslike (params, x, censor, freq)
   endif
   if (nargin < 4 || isempty (freq))
     freq = ones (size (x));
+  elseif (any (freq < 0))
+    error ("tlslike: FREQ cannot have negative values.");
   elseif (isequal (size (x), size (freq)))
     nulls = find (freq == 0);
     if (numel (nulls) > 0)
@@ -181,3 +183,4 @@ endfunction
 %!error<tlslike: X must be a vector.> tlslike ([12, 3, 1], ones (10, 2));
 %!error<tlslike: X and CENSOR> tlslike ([12, 15, 1], [1:50], [1, 2, 3]);
 %!error<tlslike: X and FREQ> tlslike ([12, 15, 1], [1:50], [], [1, 2, 3]);
+%!error<tlslike: FREQ cannot> tlslike ([12, 15, 1], [1:3], [], [1, 2, -3]);

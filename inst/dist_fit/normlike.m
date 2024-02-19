@@ -69,6 +69,8 @@ function [nlogL, avar] = normlike (params, x, censor, freq)
   endif
   if nargin < 4 || isempty (freq)
     freq = ones (size (x));
+  elseif (any (freq < 0))
+    error ("normlike: FREQ must not contain negative values.");
   elseif (isequal (size (x), size (freq)))
     nulls = find (freq == 0);
     if (numel (nulls) > 0)
@@ -132,6 +134,8 @@ endfunction
 %! normlike ([12, 15], [1:50], [1, 2, 3]);
 %!error<normlike: X and FREQ vectors mismatch.> ...
 %! normlike ([12, 15], [1:50], [], [1, 2, 3]);
+%!error<normlike: FREQ must not contain negative values.> ...
+%! normlike ([12, 15], [1:5], [], [1, 2, 3, 2, -1]);
 
 ## Results compared with Matlab
 %!test

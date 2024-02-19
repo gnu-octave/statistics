@@ -42,9 +42,9 @@
 ##
 ## @code{[@dots{}] = nakalike (@var{params}, @var{x}, @var{censor}, @var{freq})}
 ## accepts a frequency vector, @var{freq}, of the same size as @var{x}.
-## @var{freq} typically contains integer frequencies for the corresponding
-## elements in @var{x}, but it can contain any non-integer non-negative values.
-## By default, or if left empty, @qcode{@var{freq} = ones (size (@var{x}))}.
+## @var{freq} must contain non-negative integer frequencies for the
+## corresponding elements in @var{x}.  By default, or if left empty,
+## @qcode{@var{freq} = ones (size (@var{x}))}.
 ##
 ## Further information about the Nakagami distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Nakagami_distribution}
@@ -79,6 +79,10 @@ function [nlogL, acov] = nakalike (params, x, censor, freq)
     freq = ones (size (x));
   elseif (! isequal (size (x), size (freq)))
     error ("nakalike: X and FREQ vector mismatch.");
+  elseif (any (freq < 0))
+    error ("nakalike: FREQ must not contain negative values.");
+  elseif (any (fix (freq) != freq))
+    error ("nakafit: FREQ must contain integer values.");
   endif
 
   ## Expand frequency and censor vectors (if necessary)
@@ -316,6 +320,12 @@ endfunction
 %!test
 %! nlogL = nakalike ([1.17404, 11], [1:5]);
 %! assert (nlogL, 8.6976, 1e-4);
+%!test
+%! nlogL = nakalike ([1.17404, 11], [1:5], [], [1, 1, 1, 1, 1]);
+%! assert (nlogL, 8.6976, 1e-4);
+%!test
+%! nlogL = nakalike ([1.17404, 11], [1:6], [], [1, 1, 1, 1, 1, 0]);
+%! assert (nlogL, 8.6976, 1e-4);
 
 ## Test input validation
 %!error<nakalike: function called with too few input arguments.> nakalike (3.25)
@@ -328,3 +338,5 @@ endfunction
 %! nakalike ([1.5, 0.2], [1:5], [0, 0, 0, 0, 0], [1, 1, 1])
 %!error<nakalike: X and FREQ vector mismatch.> ...
 %! nakalike ([1.5, 0.2], [1:5], [], [1, 1, 1])
+%!error<nakalike: FREQ must not contain negative values.> ...
+%! nakalike ([1.5, 0.2], [1:5], [], [1, 1, 1, 1, -1])

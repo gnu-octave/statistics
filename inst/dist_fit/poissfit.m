@@ -48,7 +48,7 @@
 ## @seealso{poisscdf, poissinv, poisspdf, poissrnd, poisslike, poisstat}
 ## @end deftypefn
 
-function [lambdahat, lambdaci] = poissfit (x, alpha, freq=[])
+function [lambdahat, lambdaci] = poissfit (x, alpha, freq)
 
   ## Check input arguments
   if (any (x < 0))
@@ -61,7 +61,7 @@ function [lambdahat, lambdaci] = poissfit (x, alpha, freq=[])
     error ("poissfit: wrong value for ALPHA.");
   endif
 
-  if (isempty (freq))
+  if (nargin < 3 || isempty (freq))
     freq = ones (size (x));
   elseif (! isequal (size (x), size (freq)))
     error ("poissfit: X and FREQ vectors mismatch.");

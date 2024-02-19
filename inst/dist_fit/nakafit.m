@@ -45,11 +45,11 @@
 ## observed exactly.  By default, or if left empty,
 ## @qcode{@var{censor} = zeros (size (@var{x}))}.
 ##
-## @code{[@dots{}] = nakafit (@var{x}, @var{alpha}, @var{censor}, @var{freq})}
+## @code{[@dots{}] = nakafit (@var{params}, @var{x}, @var{censor}, @var{freq})}
 ## accepts a frequency vector, @var{freq}, of the same size as @var{x}.
-## @var{freq} typically contains integer frequencies for the corresponding
-## elements in @var{x}, but it can contain any non-integer non-negative values.
-## By default, or if left empty, @qcode{@var{freq} = ones (size (@var{x}))}.
+## @var{freq} must contain non-negative integer frequencies for the
+## corresponding elements in @var{x}.  By default, or if left empty,
+## @qcode{@var{freq} = ones (size (@var{x}))}.
 ##
 ## @code{[@dots{}] = nakafit (@dots{}, @var{options})} specifies control
 ## parameters for the iterative algorithm used to compute ML estimates with the
@@ -96,6 +96,10 @@ function [paramhat, paramci] = nakafit (x, alpha, censor, freq, options)
     freq = ones (size (x));
   elseif (! isequal (size (x), size (freq)))
     error ("nakafit: X and FREQ vectors mismatch.");
+  elseif (any (freq < 0))
+    error ("nakafit: FREQ must not contain negative values.");
+  elseif (any (fix (freq) != freq))
+    error ("nakafit: FREQ must contain integer values.");
   endif
 
   ## Get options structure or add defaults
@@ -224,5 +228,9 @@ endfunction
 %! nakafit ([1, 2, 3, 4, 5], 0.05, zeros (1,5), [1 1 0]);
 %!error<nakafit: X and FREQ vectors mismatch.> ...
 %! nakafit ([1, 2, 3, 4, 5], [], [], [1 1 0 1 1]');
+%!error<nakafit: FREQ must not contain negative values.> ...
+%! nakafit ([1, 2, 3, 4, 5], [], [], [1 1 -1 1 1]);
+%!error<nakafit: FREQ must contain integer values.> ...
+%! nakafit ([1, 2, 3, 4, 5], [], [], [1 1 1.5 1 1]);
 %!error<nakafit: 'options' 5th argument must be a structure> ...
 %! nakafit ([1, 2, 3, 4, 5], 0.05, [], [], 2);

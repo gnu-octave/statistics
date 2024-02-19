@@ -73,6 +73,8 @@ function [Nhat, Nci] = unidfit (x, alpha, freq)
     freq = ones (size (x));
   elseif (! isequal (size (x), size (freq)))
     error ("unidfit: X and FREQ vector mismatch.");
+  elseif (any (freq < 0))
+    error ("unidfit: FREQ cannot have negative values.");
   endif
 
   ## Expand frequency and censor vectors (if necessary)
@@ -152,3 +154,5 @@ endfunction
 %! unidfit ([1.5, 0.2], [], [0, 0, 0, 0, 0])
 %!error<unidfit: X and FREQ vector mismatch.> ...
 %! unidfit ([1.5, 0.2], [], [1, 1, 1])
+%!error<unidfit: FREQ cannot have negative values.> ...
+%! unidfit ([1.5, 0.2], [], [1, -1])

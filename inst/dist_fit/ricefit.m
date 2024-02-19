@@ -98,6 +98,8 @@ function [paramhat, paramci] = ricefit (x, alpha, censor, freq, options)
     freq = ones (size (x));
   elseif (! isequal (size (x), size (freq)))
     error ("ricefit: X and FREQ vectors mismatch.");
+  elseif (any (freq < 0))
+    error ("ricefit: FREQ cannot have negative values.");
   endif
 
   ## Get options structure or add defaults
@@ -281,5 +283,7 @@ endfunction
 %!error<ricefit: wrong value for ALPHA.> ricefit ([1:50], [0.01 0.02])
 %!error<ricefit: X and CENSOR vectors mismatch.> ricefit ([1:50], [], [1 1])
 %!error<ricefit: X and FREQ vectors mismatch.> ricefit ([1:50], [], [], [1 1])
+%!error<ricefit: FREQ cannot have negative values.> ...
+%! ricefit ([1:5], [], [], [1, 1, 2, 1, -1])
 %!error<ricefit: X must contain positive values.> ricefit ([1 2 3 -4])
 %!error<ricefit: X must contain positive values.> ricefit ([1 2 0], [], [1 0 0])

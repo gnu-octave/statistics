@@ -131,6 +131,8 @@ function [muhat, sigmahat, muci, sigmaci] = normfit (x, alpha, censor, freq, opt
   ## Check frequency vector
   if (nargin < 4 || isempty (freq))
     freq = 1;
+  elseif (any (freq < 0))
+    error ("normfit: FREQ must not contain negative values.");
   elseif (isequal (size (x), size (freq)))
     n = sum (freq);
     is_zero = find (freq == 0);
@@ -457,4 +459,6 @@ endfunction
 %! normfit (ones (20,1), [], zeros(15,1))
 %!error<normfit: X and FREQ vectors mismatch.> ...
 %! normfit (ones (20,1), [], zeros(20,1), ones(25,1))
+%!error<normfit: FREQ must not contain negative values.> ...
+%! normfit (ones (5,1), [], zeros(5,1), [1, 2, 1, 2, -1]')
 %!error<normfit: > normfit (ones (20,1), [], zeros(20,1), ones(20,1), "options")

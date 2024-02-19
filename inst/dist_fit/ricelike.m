@@ -79,6 +79,8 @@ function [nlogL, acov] = ricelike (params, x, censor, freq)
     freq = ones (size (x));
   elseif (! isequal (size (x), size (freq)))
     error ("ricelike: X and FREQ vector mismatch.");
+  elseif (any (freq < 0))
+    error ("ricelike: FREQ must not contain negative values.");
   endif
 
   ## Expand frequency and censor vectors (if necessary)
@@ -248,3 +250,5 @@ endfunction
 %! ricelike ([1.5, 0.2], [1:5], [0, 0, 0, 0, 0], [1, 1, 1])
 %!error<ricelike: X and FREQ vector mismatch.> ...
 %! ricelike ([1.5, 0.2], [1:5], [], [1, 1, 1])
+%!error<ricelike: FREQ must not contain negative values.> ...
+%! ricelike ([1.5, 0.2], [1:5], [], [1, 1, 1, 0, -1])

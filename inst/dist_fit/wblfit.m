@@ -96,6 +96,8 @@ function [paramhat, paramci] = wblfit (x, alpha, censor, freq, options)
     freq = ones (size (x));
   elseif (! isequal (size (x), size (freq)))
     error ("wblfit: X and FREQ vectors mismatch.");
+  elseif (any (freq < 0))
+    error ("wblfit: FREQ cannot have negative values.");
   endif
 
   ## Get options structure or add defaults
@@ -192,6 +194,8 @@ endfunction
 %! wblfit ([1, 2, 3, 4, 5], [], [1 1 0 1 1]');
 %!error<wblfit: X and FREQ vectors mismatch.> ...
 %! wblfit ([1, 2, 3, 4, 5], 0.05, zeros (1,5), [1 1 0]);
+%!error<wblfit: FREQ cannot have negative values.> ...
+%! wblfit ([1, 2, 3, 4, 5], [], [], [1 1 0 -1 1]);
 %!error<wblfit: X and FREQ vectors mismatch.> ...
 %! wblfit ([1, 2, 3, 4, 5], [], [], [1 1 0 1 1]');
 %!error<wblfit: 'options' 5th argument must be a structure> ...

@@ -72,6 +72,8 @@ function [nlogL, acov] = wbllike (params, x, censor, freq)
   endif
   if (nargin < 4 || isempty (freq))
     freq = ones (size (x));
+  elseif (any (freq < 0))
+    error ("wbllike: FREQ cannot have negative values.");
   elseif (isequal (size (x), size (freq)))
     nulls = find (freq == 0);
     if (numel (nulls) > 0)
@@ -106,8 +108,8 @@ function [nlogL, acov] = wbllike (params, x, censor, freq)
   if (nargout > 1)
     ucen = (1 - censor);
     nH11 = sum (freq .* (k .* ((1 + k) .* expz - ucen))) ./ l .^ 2;
-    nH12 = -sum(freq .* (((1 + k .* logz) .* expz - ucen))) ./ l;
-    nH22 = sum(freq .* ((logz .^ 2) .* expz + ucen ./ k .^ 2));
+    nH12 = -sum (freq .* (((1 + k .* logz) .* expz - ucen))) ./ l;
+    nH22 = sum (freq .* ((logz .^ 2) .* expz + ucen ./ k .^ 2));
     acov = [nH22, -nH12; -nH12, nH11] / (nH11 * nH22 - nH12 * nH12);
   endif
 
@@ -139,3 +141,5 @@ endfunction
 %!error<wbllike: X must be a vector.> wbllike ([12, 3], ones (10, 2));
 %!error<wbllike: X and CENSOR> wbllike ([12, 15], [1:50], [1, 2, 3]);
 %!error<wbllike: X and FREQ> wbllike ([12, 15], [1:50], [], [1, 2, 3]);
+%!error<wbllike: FREQ cannot have negative values.> ...
+%! wbllike ([12, 15], [1:5], [], [1, 2, 3, -1, 0]);

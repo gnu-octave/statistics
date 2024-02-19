@@ -19,6 +19,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{nlogL} =} nbinlike (@var{params}, @var{x})
 ## @deftypefnx {statistics} {[@var{nlogL}, @var{avar}] =} nbinlike (@var{params}, @var{x})
+## @deftypefnx {statistics} {[@var{nlogL}, @var{avar}] =} nbinlike (@var{params}, @var{x}, @var{freq})
 ##
 ## Negative log-likelihood for the negative binomial distribution.
 ##
@@ -33,6 +34,12 @@
 ## returns the inverse of Fisher's information matrix, @var{avar}.  If the input
 ## parameter values in @var{params} are the maximum likelihood estimates, the
 ## diagonal elements of @var{params} are their asymptotic variances.
+##
+## @code{[@dots{}] = nbinlike (@var{params}, @var{x}, @var{freq})} accepts a
+## frequency vector, @var{freq}, of the same size as @var{x}.  @var{freq}
+## must contain non-negative integer frequencies for the corresponding elements
+## in @var{x}.  By default, or if left empty,
+## @qcode{@var{freq} = ones (size (@var{x}))}.
 ##
 ## When @var{r} is an integer, the negative binomial distribution is also known
 ## as the Pascal distribution and it models the number of failures in @var{x}
@@ -58,7 +65,7 @@
 ## @seealso{nbincdf, nbininv, nbinpdf, nbinrnd, nbinfit, nbinstat}
 ## @end deftypefn
 
-function [nlogL, avar] = nbinlike (params, x)
+function [nlogL, avar] = nbinlike (params, x, freq)
 
   ## Check input arguments
   if (nargin < 2)
@@ -91,6 +98,16 @@ function [nlogL, avar] = nbinlike (params, x)
                    [" in the range [0,1]."]));
   endif
 
+  if (nargin < 3 || isempty (freq))
+    freq = ones (size (x));
+  elseif (! isequal (size (x), size (freq)))
+    error ("nbinlike: X and FREQ vectors mismatch.");
+  elseif (any (freq < 0))
+    error ("nbinlike: FREQ must not contain negative values.");
+  elseif (any (fix (freq) != freq))
+    error ("nbinlike: FREQ must contain integer values.");
+  endif
+
   ## Compute negative log-likelihood and asymptotic variance
   r = params(1);
   ps = params(2);
@@ -114,7 +131,7 @@ function [nlogL, avar] = nbinlike (params, x)
 endfunction
 
 ## Test output
-%!assert (nbinlike ([2.42086, 0.0867043],[1:50]), 205.5942, 1e-4)
+%!assert (nbinlike ([2.42086, 0.0867043], [1:50]), 205.5942, 1e-4)
 %!assert (nbinlike ([3.58823, 0.254697], [1:20]), 63.6435, 1e-4)
 %!assert (nbinlike ([8.80671, 0.615565], [1:10]), 24.7410, 1e-4)
 %!assert (nbinlike ([22.1756, 0.831306], [1:8]), 17.9528, 1e-4)
@@ -129,3 +146,9 @@ endfunction
 %!error<nbinlike: number of successes,> nbinlike ([0, 0.2], [1:15])
 %!error<nbinlike: probability of success,> nbinlike ([5, 1.2], [3, 5])
 %!error<nbinlike: probability of success,> nbinlike ([5, -0.2], [3, 5])
+%!error<nbinlike: X and FREQ vectors mismatch.> ...
+%! nbinlike ([5, 0.2], ones (10, 1), ones (8,1))
+%!error<nbinlike: FREQ must not contain negative values.> ...
+%! nbinlike ([5, 0.2], ones (1, 8), [1 1 1 1 1 1 1 -1])
+%!error<nbinlike: FREQ must contain integer values.> ...
+%! nbinlike ([5, 0.2], ones (1, 8), [1 1 1 1 1 1 1 1.5])

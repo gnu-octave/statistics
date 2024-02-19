@@ -97,6 +97,8 @@ function [paramhat, paramci] = tlsfit (x, alpha, censor, freq, options)
     freq = ones (size (x));
   elseif (! isequal (size (x), size (freq)))
     error ("tlsfit: X and FREQ vectors mismatch.");
+  elseif (any (freq < 0))
+    error ("tlsfit: FREQ cannot have negative values.");
   endif
 
   ## Get options structure or add defaults
@@ -237,5 +239,7 @@ endfunction
 %! tlsfit ([1, 2, 3, 4, 5], 0.05, zeros (1,5), [1 1 0]);
 %!error<tlsfit: X and FREQ vectors mismatch.> ...
 %! tlsfit ([1, 2, 3, 4, 5], [], [], [1 1 0 1 1]');
+%!error<tlsfit: FREQ cannot have negative values.> ...
+%! tlsfit ([1, 2, 3, 4, 5], [], [], [1 1 0 1 -1]);
 %!error<tlsfit: 'options' 5th argument must be a structure> ...
 %! tlsfit ([1, 2, 3, 4, 5], 0.05, [], [], 2);
