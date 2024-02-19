@@ -618,10 +618,10 @@ classdef NegativeBinomialDistribution
       [phat, pci] = nbinfit (x, alpha, freq, options);
       [~, acov] = nbinlike (phat, x, freq);
       ## Create fitted distribution object
-      pd = NegativeBinomialDistribution.makeFitted (phat, pci, acov, x);
+      pd = NegativeBinomialDistribution.makeFitted (phat, pci, acov, x, freq);
     endfunction
 
-    function pd = makeFitted (phat, pci, acov, x)
+    function pd = makeFitted (phat, pci, acov, x, freq)
       R = phat(1);
       P = phat(2);
       pd = NegativeBinomialDistribution (R, P);

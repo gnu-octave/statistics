@@ -283,7 +283,6 @@ function [varargout] = fitdist (varargin)
       endif
 
     case "nakagami"
-      warning ("fitdist: 'Nakagami' distribution not supported yet.");
       if (isempty (groupvar))
         varargout{1} = NakagamiDistribution.fit ...
                        (x, alpha, censor, freq, options);
@@ -294,14 +293,15 @@ function [varargout] = fitdist (varargin)
           pd(i) = NakagamiDistribution.fit ...
                   (x(g==i), alpha, censor(g==i), freq(g==i), options);
         endfor
-        varargout{1} = [];
+        varargout{1} = pd;
         varargout{2} = gn;
         varargout{3} = gl;
       endif
 
     case "negativebinomial"
       if (isempty (groupvar))
-        varargout{1} = NegativeBinomialDistribution.fit (x, alpha, options);
+        varargout{1} = NegativeBinomialDistribution.fit ...
+                       (x, alpha, freq, options);
       else
         pd = NegativeBinomialDistribution.fit ...
              (x(g==1), alpha, freq(g==1), options);

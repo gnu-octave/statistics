@@ -540,7 +540,7 @@ endfunction
 %! assert (pd.mu, 5);
 %! assert (pd.omega, 1);
 %!test
-%! pd = makedist ("Nakagami", "p", 0.3);
+%! pd = makedist ("Nakagami", "omega", 0.3);
 %! assert (class (pd), "NakagamiDistribution");
 %! assert (pd.mu, 1);
 %! assert (pd.omega, 0.3);
