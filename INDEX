@@ -68,6 +68,7 @@ Descriptive Statistics
  trimmean
  var
 Distribution Classes
+ MultinomialDistribution
  NakagamiDistribution
  NegativeBinomialDistribution
  NormalDistribution
@@ -170,6 +171,7 @@ Distribution Statistics
  gpstat
  hygestat
  lognstat
+ nakastat
  nbinstat
  ncfstat
  nctstat
