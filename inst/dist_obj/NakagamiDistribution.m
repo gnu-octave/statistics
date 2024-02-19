@@ -15,13 +15,13 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-classdef NegativeBinomialDistribution
+classdef NakagamiDistribution
   ## -*- texinfo -*-
-  ## @deftypefn {statistics} NegativeBinomialDistribution
+  ## @deftypefn {statistics} NakagamiDistribution
   ##
   ## Normal probability distribution object.
   ##
-  ## A @code{NegativeBinomialDistribution} object consists of parameters, a model
+  ## A @code{NakagamiDistribution} object consists of parameters, a model
   ## description, and sample data for a normal probability distribution.
   ##
   ## The normal distribution uses the following parameters.
@@ -29,19 +29,19 @@ classdef NegativeBinomialDistribution
   ## @multitable @columnfractions 0.25 0.48 0.27
   ## @headitem @var{Parameter} @tab @var{Description} @tab @var{Support}
   ##
-  ## @item @qcode{R} @tab Number of successes @tab @math{R > 0}
-  ## @item @qcode{P} @tab Probability of success @tab @math{0 < P <- 1}
+  ## @item @qcode{mu} @tab Number of successes @tab @math{mu > 0}
+  ## @item @qcode{omega} @tab Probability of success @tab @math{omega > 0}
   ## @end multitable
   ##
-  ## There are several ways to create a @code{NegativeBinomialDistribution} object.
+  ## There are several ways to create a @code{NakagamiDistribution} object.
   ##
   ## @itemize
   ## @item Fit a distribution to data using the @code{fitdist} function.
   ## @item Create a distribution with specified parameter values using the
   ## @code{makedist} function.
-  ## @item Use the constructor @qcode{NegativeBinomialDistribution (@var{R}, @var{P})}
+  ## @item Use the constructor @qcode{NakagamiDistribution (@var{mu}, @var{omega})}
   ## to create a normal distribution with specified parameter values.
-  ## @item Use the static method @qcode{NegativeBinomialDistribution.fit (@var{x},
+  ## @item Use the static method @qcode{NakagamiDistribution.fit (@var{x},
   ## @var{censor}, @var{freq}, @var{options})} to a distribution to data @var{x}.
   ## @end itemize
   ##
@@ -49,7 +49,7 @@ classdef NegativeBinomialDistribution
   ## functions to create probability distribution objects, instead of the
   ## constructor and the aforementioned static method.
   ##
-  ## A @code{NegativeBinomialDistribution} object contains the following properties,
+  ## A @code{NakagamiDistribution} object contains the following properties,
   ## which can be accessed using dot notation.
   ##
   ## @multitable @columnfractions 0.25 0.25 0.25 0.25
@@ -61,34 +61,34 @@ classdef NegativeBinomialDistribution
   ## @qcode{IsTruncated} @tab @qcode{InputData}
   ## @end multitable
   ##
-  ## A @code{NegativeBinomialDistribution} object contains the following methods:
+  ## A @code{NakagamiDistribution} object contains the following methods:
   ## @code{cdf}, @code{icdf}, @code{iqr}, @code{mean}, @code{median},
   ## @code{negloglik}, @code{paramci}, @code{pdf}, @code{plot}, @code{proflik},
   ## @code{random}, @code{std}, @code{truncate}, @code{var}.
   ##
-  ## Further information about the negative binomial distribution can be found at
-  ## @url{https://en.wikipedia.org/wiki/Negative_binomial_distribution}
+  ## Further information about the Nakagami distribution can be found at
+  ## @url{https://en.wikipedia.org/wiki/Nakagami_distribution}
   ##
-  ## @seealso{fitdist, makedist, nbincdf, nbininv, nbinpdf, nbinrnd, normfit,
-  ## nbinlike, nbinstat}
+  ## @seealso{fitdist, makedist, nakacdf, nakainv, nakapdf, nakarnd, normfit,
+  ## nakalike, nakastat}
   ## @end deftypefn
 
   properties (Dependent = true)
-    R
-    P
+    mu
+    omega
   endproperties
 
   properties (GetAccess = public, Constant = true)
-    CensoringAllowed = false;
-    DistributionName = "NegativeBinomialDistribution";
-    DistributionCode = "nbin";
+    CensoringAllowed = true;
+    DistributionName = "NakagamiDistribution";
+    DistributionCode = "naka";
     NumParameters = 2;
-    ParameterNames = {"R", "P"};
-    ParameterDescription = {"Number of successes", "Probability of success"};
+    ParameterNames = {"mu", "omega"};
+    ParameterDescription = {"Shape parameter", "Scale parameter"};
   endproperties
 
   properties (GetAccess = private, Constant = true)
-    ParameterRange = [realmin, realmin; Inf, 1];
+    ParameterRange = [realmin, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
 
@@ -104,15 +104,15 @@ classdef NegativeBinomialDistribution
 
   methods (Hidden)
 
-    function this = NegativeBinomialDistribution (R, P)
+    function this = NakagamiDistribution (mu, omega)
       if (nargin == 0)
-        R = 1;
-        P = 0.5;
+        mu = 1;
+        omega = 1;
       endif
-      checkparams (R, P)
+      checkparams (mu, omega)
       this.InputData = [];
       this.IsTruncated = false;
-      this.ParameterValues = [R, P];
+      this.ParameterValues = [mu, omega];
       this.ParameterIsFixed = [true, true];
       this.ParameterCovariance = zeros (this.NumParameters);
     endfunction
@@ -126,28 +126,28 @@ classdef NegativeBinomialDistribution
       __disp__ (this, "normal distribution");
     endfunction
 
-    function this = set.R (this, R)
-      checkparams (R, this.P)
+    function this = set.mu (this, mu)
+      checkparams (mu, this.omega)
       this.InputData = [];
-      this.ParameterValues(1) = R;
+      this.ParameterValues(1) = mu;
       this.ParameterIsFixed = [true, true];
       this.ParameterCovariance = zeros (this.NumParameters);
     endfunction
 
-    function R = get.R (this)
-      R = this.ParameterValues(1);
+    function mu = get.mu (this)
+      mu = this.ParameterValues(1);
     endfunction
 
-    function this = set.P (this, P)
-      checkparams (this.R, P)
+    function this = set.omega (this, omega)
+      checkparams (this.mu, omega)
       this.InputData = [];
-      this.ParameterValues(2) = P;
+      this.ParameterValues(2) = omega;
       this.ParameterIsFixed = [true, true];
       this.ParameterCovariance = zeros (this.NumParameters);
     endfunction
 
-    function P = get.P (this)
-      P = this.ParameterValues(2);
+    function omega = get.omega (this)
+      omega = this.ParameterValues(2);
     endfunction
 
   endmethods
@@ -155,8 +155,8 @@ classdef NegativeBinomialDistribution
   methods (Access = public)
 
     ## -*- texinfo -*-
-    ## @deftypefn  {NegativeBinomialDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
-    ## @deftypefnx {NegativeBinomialDistribution} {@var{p} =} cdf (@var{pd}, @var{x}, @qcode{"upper"})
+    ## @deftypefn  {NakagamiDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
+    ## @deftypefnx {NakagamiDistribution} {@var{p} =} cdf (@var{pd}, @var{x}, @qcode{"upper"})
     ##
     ## Compute the cumulative distribution function (CDF).
     ##
@@ -182,7 +182,7 @@ classdef NegativeBinomialDistribution
         utail = false;
       endif
       ## Do the computations
-      p = nbincdf (x, this.R, this.P);
+      p = nakacdf (x, this.mu, this.omega);
       if (this.IsTruncated)
         lx = this.Truncation(1);
         lb = x < lx;
@@ -190,8 +190,8 @@ classdef NegativeBinomialDistribution
         ub = x > ux;
         p(lb) = 0;
         p(ub) = 1;
-        p(! (lb | ub)) -= nbincdf (lx, this.R, this.P);
-        p(! (lb | ub)) /= diff (nbincdf ([lx, ux], this.R, this.P));
+        p(! (lb | ub)) -= nakacdf (lx, this.mu, this.omega);
+        p(! (lb | ub)) /= diff (nakacdf ([lx, ux], this.mu, this.omega));
       endif
       ## Apply uflag
       if (utail)
@@ -200,7 +200,7 @@ classdef NegativeBinomialDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {NegativeBinomialDistribution} {@var{p} =} icdf (@var{pd}, @var{p})
+    ## @deftypefn  {NakagamiDistribution} {@var{p} =} icdf (@var{pd}, @var{p})
     ##
     ## Compute the cumulative distribution function (CDF).
     ##
@@ -214,18 +214,18 @@ classdef NegativeBinomialDistribution
         error ("icdf: requires a scalar probability distribution.");
       endif
       if (this.IsTruncated)
-        lp = nbincdf (this.Truncation(1), this.R, this.P);
-        up = nbincdf (this.Truncation(2), this.R, this.P);
+        lp = nakacdf (this.Truncation(1), this.mu, this.omega);
+        up = nakacdf (this.Truncation(2), this.mu, this.omega);
         ## Adjust p values within range of p @ lower limit and p @ upper limit
         np = lp + (up - lp) .* p;
-        x = nbininv (np, this.R, this.P);
+        x = nakainv (np, this.mu, this.omega);
       else
-        x = nbininv (p, this.R, this.P);
+        x = nakainv (p, this.mu, this.omega);
       endif
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {NegativeBinomialDistribution} {@var{r} =} iqr (@var{pd})
+    ## @deftypefn  {NakagamiDistribution} {@var{r} =} iqr (@var{pd})
     ##
     ## Compute the interquartile range of a probability distribution.
     ##
@@ -241,7 +241,7 @@ classdef NegativeBinomialDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {NegativeBinomialDistribution} {@var{m} =} mean (@var{pd})
+    ## @deftypefn  {NakagamiDistribution} {@var{m} =} mean (@var{pd})
     ##
     ## Compute the mean of a probability distribution.
     ##
@@ -257,12 +257,12 @@ classdef NegativeBinomialDistribution
         fm = @(x) x .* pdf (this, x);
         m = integral (fm, this.Truncation(1), this.Truncation(2));
       else
-        m = nbinstat (this.R, this.P);
+        m = nakastat (this.mu, this.omega);
       endif
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {NegativeBinomialDistribution} {@var{m} =} median (@var{pd})
+    ## @deftypefn  {NakagamiDistribution} {@var{m} =} median (@var{pd})
     ##
     ## Compute the median of a probability distribution.
     ##
@@ -277,15 +277,15 @@ classdef NegativeBinomialDistribution
       if (this.IsTruncated)
         lx = this.Truncation(1);
         ux = this.Truncation(2);
-        Fa_b = nbincdf ([lx, ux], this.R, this.P);
-        m = nbininv (sum (Fa_b) / 2, this.R, this.P);
+        Fa_b = nakacdf ([lx, ux], this.mu, this.omega);
+        m = nakainv (sum (Fa_b) / 2, this.mu, this.omega);
       else
-        m = nbininv (0.5, this.R, this.P);
+        m = nakainv (0.5, this.mu, this.omega);
       endif
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {NegativeBinomialDistribution} {@var{nlogL} =} negloglik (@var{pd})
+    ## @deftypefn  {NakagamiDistribution} {@var{nlogL} =} negloglik (@var{pd})
     ##
     ## Compute the negative loglikelihood of a probability distribution.
     ##
@@ -301,12 +301,13 @@ classdef NegativeBinomialDistribution
         nlogL = [];
         return
       endif
-      nlogL = - nbinlike ([this.R, this.P], this.InputData.data);
+      nlogL = - nakalike ([this.mu, this.omega], this.InputData.data, ...
+                          this.InputData.cens, this.InputData.freq);
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {NegativeBinomialDistribution} {@var{ci} =} paramci (@var{pd})
-    ## @deftypefnx {NegativeBinomialDistribution} {@var{ci} =} paramci (@var{pd}, @var{Name}, @var{Value})
+    ## @deftypefn  {NakagamiDistribution} {@var{ci} =} paramci (@var{pd})
+    ## @deftypefnx {NakagamiDistribution} {@var{ci} =} paramci (@var{pd}, @var{Name}, @var{Value})
     ##
     ## Compute the confidence intervals for probability distribution parameters.
     ##
@@ -347,7 +348,7 @@ classdef NegativeBinomialDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {NegativeBinomialDistribution} {@var{y} =} pdf (@var{pd}, @var{x})
+    ## @deftypefn  {NakagamiDistribution} {@var{y} =} pdf (@var{pd}, @var{x})
     ##
     ## Compute the probability distribution function (PDF).
     ##
@@ -360,21 +361,21 @@ classdef NegativeBinomialDistribution
       if (! isscalar (this))
         error ("pdf: requires a scalar probability distribution.");
       endif
-      y = nbinpdf (x, this.R, this.P);
+      y = nakapdf (x, this.mu, this.omega);
       if (this.IsTruncated)
         lx = this.Truncation(1);
         lb = x < lx;
         ux = this.Truncation(2);
         ub = x > ux;
         y(lb | ub) = 0;
-        y(! (lb | ub)) /= diff (nbincdf ([lx, ux], this.R, this.P));
+        y(! (lb | ub)) /= diff (nakacdf ([lx, ux], this.mu, this.omega));
       endif
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {NegativeBinomialDistribution} {} plot (@var{pd})
-    ## @deftypefnx {NegativeBinomialDistribution} {} plot (@var{pd}, @var{Name}, @var{Value})
-    ## @deftypefnx {NegativeBinomialDistribution} {@var{h} =} plot (@dots{})
+    ## @deftypefn  {NakagamiDistribution} {} plot (@var{pd})
+    ## @deftypefnx {NakagamiDistribution} {} plot (@var{pd}, @var{Name}, @var{Value})
+    ## @deftypefnx {NakagamiDistribution} {@var{h} =} plot (@dots{})
     ##
     ## Plot a probability distribution object.
     ##
@@ -425,10 +426,10 @@ classdef NegativeBinomialDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {NegativeBinomialDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum})
-    ## @deftypefnx {NegativeBinomialDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum}, @qcode{"Display"}, @var{display})
-    ## @deftypefnx {NegativeBinomialDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum}, @var{setparam})
-    ## @deftypefnx {NegativeBinomialDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum}, @var{setparam}, @qcode{"Display"}, @var{display})
+    ## @deftypefn  {NakagamiDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum})
+    ## @deftypefnx {NakagamiDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum}, @qcode{"Display"}, @var{display})
+    ## @deftypefnx {NakagamiDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum}, @var{setparam})
+    ## @deftypefnx {NakagamiDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum}, @var{setparam}, @qcode{"Display"}, @var{display})
     ##
     ## Profile likelihood function for a probability distribution object.
     ##
@@ -452,8 +453,8 @@ classdef NegativeBinomialDistribution
     ## likelihood against the user-defined range of the selected parameter.
     ##
     ## For the negative binomial distribution, @qcode{@var{pnum} = 1} selects
-    ## the parameter @qcode{R} and @qcode{@var{pnum} = 2} selects the parameter
-    ## @var{P}.
+    ## the parameter @qcode{mu} and @qcode{@var{pnum} = 2} selects the parameter
+    ## @var{omega}.
     ##
     ## When opted to display the profile likelihood plot, @code{proflik} also
     ## plots the baseline loglikelihood computed at the lower bound of the 95%
@@ -473,10 +474,10 @@ classdef NegativeBinomialDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {NegativeBinomialDistribution} {@var{y} =} random (@var{pd})
-    ## @deftypefnx {NegativeBinomialDistribution} {@var{y} =} random (@var{pd}, @var{rows})
-    ## @deftypefnx {NegativeBinomialDistribution} {@var{y} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
-    ## @deftypefnx {NegativeBinomialDistribution} {@var{y} =} random (@var{pd}, [@var{sz}])
+    ## @deftypefn  {NakagamiDistribution} {@var{y} =} random (@var{pd})
+    ## @deftypefnx {NakagamiDistribution} {@var{y} =} random (@var{pd}, @var{rows})
+    ## @deftypefnx {NakagamiDistribution} {@var{y} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
+    ## @deftypefnx {NakagamiDistribution} {@var{y} =} random (@var{pd}, [@var{sz}])
     ##
     ## Generate random arrays from the probability distribution object.
     ##
@@ -502,21 +503,21 @@ classdef NegativeBinomialDistribution
         ## pick the appropriate size from
         lx = this.Truncation(1);
         ux = this.Truncation(2);
-        ratio = 1 / diff (poisscdf ([ux, lx], this.R, this.P));
+        ratio = 1 / diff (poisscdf ([ux, lx], this.mu, this.omega));
         nsize = 2 * ratio * ps;       # times 2 to be on the safe side
         ## Generate the numbers and remove out-of-bound random samples
-        r = nbinrnd (this.R, this.P, nsize, 1);
+        r = nakarnd (this.mu, this.omega, nsize, 1);
         r(r < lx | r > ux) = [];
         ## Randomly select the required size and reshape to requested dimensions
         r = randperm (r, ps);
         r = reshape (r, sz);
       else
-        r = nbinrnd (this.R, this.P, varargin{:});
+        r = nakarnd (this.mu, this.omega, varargin{:});
       endif
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {NegativeBinomialDistribution} {@var{s} =} std (@var{pd})
+    ## @deftypefn  {NakagamiDistribution} {@var{s} =} std (@var{pd})
     ##
     ## Compute the standard deviation of a probability distribution.
     ##
@@ -528,12 +529,12 @@ classdef NegativeBinomialDistribution
       if (! isscalar (this))
         error ("std: requires a scalar probability distribution.");
       endif
-      v = var (this.R, this.P);
+      v = var (this.mu, this.omega);
       s = sqrt (v);
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {NegativeBinomialDistribution} {@var{t} =} truncate (@var{pd}, @var{lower}, @var{upper})
+    ## @deftypefn  {NakagamiDistribution} {@var{t} =} truncate (@var{pd}, @var{lower}, @var{upper})
     ##
     ## Truncate a probability distribution.
     ##
@@ -568,7 +569,7 @@ classdef NegativeBinomialDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {NegativeBinomialDistribution} {@var{v} =} var (@var{pd})
+    ## @deftypefn  {NakagamiDistribution} {@var{v} =} var (@var{pd})
     ##
     ## Compute the variance of a probability distribution.
     ##
@@ -586,7 +587,7 @@ classdef NegativeBinomialDistribution
         fv =  @(x) ((x - m) .^ 2) .* pdf (pd, x);
         v = integral (fv, this.Truncation(1), this.Truncation(2));
       else
-        [~, v] = nbinstat (this.R, this.P);
+        [~, v] = nakastat (this.mu, this.omega);
       endif
     endfunction
 
@@ -602,194 +603,197 @@ classdef NegativeBinomialDistribution
         alpha = varargin{1};
       endif
       if (nargin < 3)
-        freq = [];
+        censor = [];
       else
-        freq = varargin{2};
+        censor = varargin{2};
       endif
       if (nargin < 4)
+        freq = [];
+      else
+        freq = varargin{3};
+      endif
+      if (nargin < 5)
         options.Display = "off";
         options.MaxFunEvals = 400;
         options.MaxIter = 200;
         options.TolX = 1e-6;
       else
-        options = varargin{3};
+        options = varargin{4};
       endif
       ## Fit data
-      [phat, pci] = nbinfit (x, alpha, freq, options);
-      [~, acov] = nbinlike (phat, x, freq);
+      [phat, pci] = nbinfit (x, alpha, censor, freq, options);
+      [~, acov] = nakalike (phat, x, censor, freq);
       ## Create fitted distribution object
-      pd = NegativeBinomialDistribution.makeFitted (phat, pci, acov, x);
+      pd = NakagamiDistribution.makeFitted (phat, pci, acov, x, censor, freq);
     endfunction
 
-    function pd = makeFitted (phat, pci, acov, x)
-      R = phat(1);
-      P = phat(2);
-      pd = NegativeBinomialDistribution (R, P);
+    function pd = makeFitted (phat, pci, acov, x, censor, freq)
+      mu = phat(1);
+      omega = phat(2);
+      pd = NakagamiDistribution (mu, omega);
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = [false, false];
       pd.ParameterCovariance = acov;
-      pd.InputData = struct ("data", x, "cens", [], "freq", freq);
+      pd.InputData = struct ("data", x, "cens", censor, "freq", freq);
     endfunction
 
   endmethods
 
 endclassdef
 
-function checkparams (R, P)
-  if (! (isscalar (R) && isnumeric (R) && isreal (R) && isfinite (R) && R > 0))
-    error ("NegativeBinomialDistribution: R must be a positive scalar.")
+function checkparams (mu, omega)
+  if (! (isscalar (mu) && isnumeric (mu) && isreal (mu)
+                       && isfinite (mu) && mu > 0))
+    error ("NakagamiDistribution: MU must be a positive scalar.")
   endif
-  if (! (isscalar (P) && isnumeric (P) && isreal (P) && isfinite (P)
-                      && P > 0 && P <= 1))
-    error (strcat (["NegativeBinomialDistribution: P must be a real"], ...
-                   [" scalar bounded in the range (0, 1]."]))
+  if (! (isscalar (omega) && isnumeric (omega) && isreal (omega)
+                          && isfinite (omega) && omega > 0))
+    error ("NakagamiDistribution: OMEGA must be a positive scalar.")
   endif
 endfunction
 
 ## Test input validation
-## 'NegativeBinomialDistribution' constructor
-%!error <NegativeBinomialDistribution: R must be a positive scalar.> ...
-%! NegativeBinomialDistribution(Inf, 1)
-%!error <NegativeBinomialDistribution: R must be a positive scalar.> ...
-%! NegativeBinomialDistribution(i, 1)
-%!error <NegativeBinomialDistribution: R must be a positive scalar.> ...
-%! NegativeBinomialDistribution("a", 1)
-%!error <NegativeBinomialDistribution: R must be a positive scalar.> ...
-%! NegativeBinomialDistribution([1, 2], 1)
-%!error <NegativeBinomialDistribution: R must be a positive scalar.> ...
-%! NegativeBinomialDistribution(NaN, 1)
-%!error <NegativeBinomialDistribution: P must be a real scalar bounded in the range> ...
-%! NegativeBinomialDistribution(1, 0)
-%!error <NegativeBinomialDistribution: P must be a real scalar bounded in the range> ...
-%! NegativeBinomialDistribution(1, -1)
-%!error <NegativeBinomialDistribution: P must be a real scalar bounded in the range> ...
-%! NegativeBinomialDistribution(1, Inf)
-%!error <NegativeBinomialDistribution: P must be a real scalar bounded in the range> ...
-%! NegativeBinomialDistribution(1, i)
-%!error <NegativeBinomialDistribution: P must be a real scalar bounded in the range> ...
-%! NegativeBinomialDistribution(1, "a")
-%!error <NegativeBinomialDistribution: P must be a real scalar bounded in the range> ...
-%! NegativeBinomialDistribution(1, [1, 2])
-%!error <NegativeBinomialDistribution: P must be a real scalar bounded in the range> ...
-%! NegativeBinomialDistribution(1, NaN)
-%!error <NegativeBinomialDistribution: P must be a real scalar bounded in the range> ...
-%! NegativeBinomialDistribution(1, 1.2)
+## 'NakagamiDistribution' constructor
+%!error <NakagamiDistribution: MU must be a positive scalar.> ...
+%! NakagamiDistribution(Inf, 1)
+%!error <NakagamiDistribution: MU must be a positive scalar.> ...
+%! NakagamiDistribution(i, 1)
+%!error <NakagamiDistribution: MU must be a positive scalar.> ...
+%! NakagamiDistribution("a", 1)
+%!error <NakagamiDistribution: MU must be a positive scalar.> ...
+%! NakagamiDistribution([1, 2], 1)
+%!error <NakagamiDistribution: MU must be a positive scalar.> ...
+%! NakagamiDistribution(NaN, 1)
+%!error <NakagamiDistribution: OMEGA must be a positive scalar.> ...
+%! NakagamiDistribution(1, 0)
+%!error <NakagamiDistribution: OMEGA must be a positive scalar.> ...
+%! NakagamiDistribution(1, -1)
+%!error <NakagamiDistribution: OMEGA must be a positive scalar.> ...
+%! NakagamiDistribution(1, Inf)
+%!error <NakagamiDistribution: OMEGA must be a positive scalar.> ...
+%! NakagamiDistribution(1, i)
+%!error <NakagamiDistribution: OMEGA must be a positive scalar.> ...
+%! NakagamiDistribution(1, "a")
+%!error <NakagamiDistribution: OMEGA must be a positive scalar.> ...
+%! NakagamiDistribution(1, [1, 2])
+%!error <NakagamiDistribution: OMEGA must be a positive scalar.> ...
+%! NakagamiDistribution(1, NaN)
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (NegativeBinomialDistribution, 2, "uper")
+%! cdf (NakagamiDistribution, 2, "uper")
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (NegativeBinomialDistribution, 2, 3)
+%! cdf (NakagamiDistribution, 2, 3)
 
 ## 'paramci' method
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
-%! paramci (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), "alpha")
+%! paramci (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), "alpha")
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), "alpha", 0)
+%! paramci (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), "alpha", 0)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), "alpha", 1)
+%! paramci (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), "alpha", 1)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), "alpha", [0.5 2])
+%! paramci (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), "alpha", [0.5 2])
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), "alpha", "")
+%! paramci (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), "alpha", "")
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), "alpha", {0.05})
+%! paramci (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), "alpha", {0.05})
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), ...
-%! "parameter", "R", "alpha", {0.05})
+%! paramci (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), ...
+%! "parameter", "mu", "alpha", {0.05})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), ...
-%! "parameter", {"R", "P", "param"})
+%! paramci (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), ...
+%! "parameter", {"mu", "omega", "param"})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), ...
-%! "alpha", 0.01, "parameter", {"R", "P", "param"})
+%! paramci (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), ...
+%! "alpha", 0.01, "parameter", {"mu", "omega", "param"})
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), ...
+%! paramci (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), ...
 %! "parameter", "param")
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), ...
+%! paramci (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), ...
 %! "alpha", 0.01, "parameter", "param")
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), ...
+%! paramci (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), ...
 %! "NAME", "value")
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), ...
+%! paramci (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), ...
 %! "alpha", 0.01, "NAME", "value")
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), ...
-%! "alpha", 0.01, "parameter", "R", "NAME", "value")
+%! paramci (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), ...
+%! "alpha", 0.01, "parameter", "mu", "NAME", "value")
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (NegativeBinomialDistribution, "Parent")
+%! plot (NakagamiDistribution, "Parent")
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (NegativeBinomialDistribution, "PlotType", 12)
+%! plot (NakagamiDistribution, "PlotType", 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (NegativeBinomialDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (NakagamiDistribution, "PlotType", {"pdf", "cdf"})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (NegativeBinomialDistribution, "PlotType", "pdfcdf")
+%! plot (NakagamiDistribution, "PlotType", "pdfcdf")
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (NegativeBinomialDistribution, "Discrete", "pdfcdf")
+%! plot (NakagamiDistribution, "Discrete", "pdfcdf")
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (NegativeBinomialDistribution, "Discrete", [1, 0])
+%! plot (NakagamiDistribution, "Discrete", [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (NegativeBinomialDistribution, "Discrete", {true})
+%! plot (NakagamiDistribution, "Discrete", {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (NegativeBinomialDistribution, "Parent", 12)
+%! plot (NakagamiDistribution, "Parent", 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (NegativeBinomialDistribution, "Parent", "hax")
+%! plot (NakagamiDistribution, "Parent", "hax")
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...
-%! proflik (NegativeBinomialDistribution, 2)
+%! proflik (NakagamiDistribution, 2)
 %!error <proflik: PNUM must be a scalar number indexing a valid parameter.> ...
-%! proflik (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), 3)
+%! proflik (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), 3)
 %!error <proflik: PNUM must be a scalar number indexing a valid parameter.> ...
-%! proflik (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), [1, 2])
+%! proflik (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), [1, 2])
 %!error <proflik: PNUM must be a scalar number indexing a valid parameter.> ...
-%! proflik (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), {1})
+%! proflik (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), {1})
 %!error <proflik: SETPARAM must be a numeric vector.> ...
-%! proflik (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), 1, ones (2))
+%! proflik (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), 1, ones (2))
 %!error <proflik: missing VALUE for 'Display' argument.> ...
-%! proflik (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), 1, ...
+%! proflik (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), 1, ...
 %! "Display")
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), 1, ...
+%! proflik (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), 1, ...
 %! "Display", 1)
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), 1, ...
+%! proflik (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), 1, ...
 %! "Display", {1})
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), 1, ...
+%! proflik (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), 1, ...
 %! "Display", {"on"})
 %!error <proflik: invalid VALUE size for 'Display' argument.> ...
-%! proflik (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), 1, ...
+%! proflik (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), 1, ...
 %! "Display", ["on"; "on"])
 %!error <proflik: invalid VALUE for 'Display' argument.> ...
-%! proflik (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), 1, ...
+%! proflik (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), 1, ...
 %! "Display", "onnn")
 %!error <proflik: invalid NAME for optional arguments.> ...
-%! proflik (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), 1, ...
+%! proflik (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), 1, ...
 %! "NAME", "on")
 %!error <proflik: invalid optional argument.> ...
-%! proflik (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), 1, ...
+%! proflik (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), 1, ...
 %! {"NAME"}, "on")
 %!error <proflik: invalid optional argument.> ...
-%! proflik (NegativeBinomialDistribution.fit (nbinrnd (1, 0.5, [1, 100])), 1, ...
+%! proflik (NakagamiDistribution.fit (nakarnd (1, 0.5, [1, 100])), 1, ...
 %! {[1 2 3 4]}, "Display", "on")
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...
-%! truncate (NegativeBinomialDistribution)
+%! truncate (NakagamiDistribution)
 %!error <truncate: missing input argument.> ...
-%! truncate (NegativeBinomialDistribution, 2)
+%! truncate (NakagamiDistribution, 2)
 %!error <truncate: invalid lower upper limits.> ...
-%! truncate (NegativeBinomialDistribution, 4, 2)
+%! truncate (NakagamiDistribution, 4, 2)
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = NegativeBinomialDistribution(1, 0.5);
-%! pd(2) = NegativeBinomialDistribution(1, 0.6);
+%! pd = NakagamiDistribution(1, 0.5);
+%! pd(2) = NakagamiDistribution(1, 0.6);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)

@@ -320,7 +320,7 @@ function pd = makedist (varargin)
       pd = [];
 
     case "nakagami"
-      mu = 0;
+      mu = 1;
       omega = 1;
       while (numel (varargin) > 0)
         switch (tolower (varargin{1}))
@@ -334,7 +334,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = [];
+      pd = NakagamiDistribution (mu, omega);
 
     case "negativebinomial"
       R = 1;
@@ -529,6 +529,21 @@ function pd = makedist (varargin)
 endfunction
 
 ## Test output
+%!test
+%! pd = makedist ("Nakagami");
+%! assert (class (pd), "NakagamiDistribution");
+%! assert (pd.mu, 1);
+%! assert (pd.omega, 1);
+%!test
+%! pd = makedist ("Nakagami", "mu", 5);
+%! assert (class (pd), "NakagamiDistribution");
+%! assert (pd.mu, 5);
+%! assert (pd.omega, 1);
+%!test
+%! pd = makedist ("Nakagami", "p", 0.3);
+%! assert (class (pd), "NakagamiDistribution");
+%! assert (pd.mu, 1);
+%! assert (pd.omega, 0.3);
 %!test
 %! pd = makedist ("NegativeBinomial");
 %! assert (class (pd), "NegativeBinomialDistribution");

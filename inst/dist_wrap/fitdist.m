@@ -76,14 +76,18 @@ function [varargout] = fitdist (varargin)
       case "censoring"
         censor = varargin{2};
         if (! isequal (size (x), size (censor)))
-          error (strcat (["fitdist: 'censoring' argument must have the same"], ...
-                         [" size as the input data in X."]));
+          error (strcat (["fitdist: 'censoring' argument must have the"], ...
+                         [" same size as the input data in X."]));
         endif
       case "frequency"
         freq = varargin{2};
         if (! isequal (size (x), size (freq)))
-          error (strcat (["fitdist: 'frequency' argument must have the same"], ...
-                         [" size as the input data in X."]));
+          error (strcat (["fitdist: 'frequency' argument must have the"], ...
+                         [" same size as the input data in X."]));
+        endif
+        if (any (freq != round (freq)) || any (freq < 0))
+          error (strcat (["fitdist: 'frequency' argument must contain"], ...
+                         [" non-negative integer values."]));
         endif
       case "alpha"
         alpha = varargin{2};
@@ -104,8 +108,8 @@ function [varargout] = fitdist (varargin)
         if (! isstruct (options) || ! isfield (options, "Display") ||
             ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
                                                || ! isfield (options, "TolX"))
-          error (strcat (["fitdist: 'options' argument must be a structure"], ...
-                         [" compatible for 'fminsearch'."]));
+          error (strcat (["fitdist: 'options' argument must be a"], ...
+                         [" structure compatible for 'fminsearch'."]));
         endif
 
       case {"kernel", "support", "width"}
@@ -281,27 +285,29 @@ function [varargout] = fitdist (varargin)
     case "nakagami"
       warning ("fitdist: 'Nakagami' distribution not supported yet.");
       if (isempty (groupvar))
-        varargout{1} = [];
+        varargout{1} = NakagamiDistribution.fit ...
+                       (x, alpha, censor, freq, options);
       else
+        pd = NakagamiDistribution.fit ...
+             (x(g==1), alpha, censor(g==1), freq(g==1), options);
+        for i = 2:groups
+          pd(i) = NakagamiDistribution.fit ...
+                  (x(g==i), alpha, censor(g==i), freq(g==i), options);
+        endfor
         varargout{1} = [];
         varargout{2} = gn;
         varargout{3} = gl;
       endif
 
     case "negativebinomial"
-      ## Expand frequency here (and grouping vector, if given)
-      if (! isempty (freq))
-        x = expandFreq (x, freq);
-        if (! isempty (groupvar))
-          g = expandFreq (g, freq);
-        endif
-      endif
       if (isempty (groupvar))
         varargout{1} = NegativeBinomialDistribution.fit (x, alpha, options);
       else
-        pd = NegativeBinomialDistribution.fit (x(g==1), alpha, options);
+        pd = NegativeBinomialDistribution.fit ...
+             (x(g==1), alpha, freq(g==1), options);
         for i = 2:groups
-          pd(i) = NegativeBinomialDistribution.fit (x(g==i), alpha, options);
+          pd(i) = NegativeBinomialDistribution.fit ...
+                  (x(g==i), alpha, freq(g==i), options);
         endfor
         varargout{1} = pd;
         varargout{2} = gn;
@@ -410,19 +416,23 @@ function [varargout] = fitdist (varargin)
 
 endfunction
 
-## Helper function for expanding data according to frequency vector
-function xf = expandFreq (x, freq)
-  if (! all (freq == round (freq)) || any (freq < 0))
-    error (strcat (["fitdist: 'frequency' argument must contain"], ...
-                   [" non-negative integer values."]));
-  endif
-  xf = [];
-  for i = 1:numel (freq)
-    xf = [xf, repmat(x(i), 1, freq(i))];
-  endfor
-endfunction
-
 ## Test output
+%!test
+%! x = nakarnd (2, 0.5, 100, 1);
+%! pd = fitdist (x, "Nakagami");
+%! [phat, pci] = nakafit (x);
+%! assert ([pd.mu, pd.omega], phat);
+%! assert (paramci (pd), pci);
+%!test
+%! x1 = nakarnd (2, 0.5, 100, 1);
+%! x2 = nakarnd (5, 0.8, 100, 1);
+%! pd = fitdist ([x1; x2], "Nakagami", "By", [ones(100,1); 2*ones(100,1)]);
+%! [phat, pci] = nakafit (x1);
+%! assert ([pd(1).mu, pd(1).omega], phat);
+%! assert (paramci (pd(1)), pci);
+%! [phat, pci] = nakafit (x2);
+%! assert ([pd(2).mu, pd(2).omega], phat);
+%! assert (paramci (pd(2)), pci);
 %!test
 %! x = nbinrnd (2, 0.5, 100, 1);
 %! pd = fitdist (x, "negativebinomial");

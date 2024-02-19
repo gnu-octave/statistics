@@ -54,6 +54,10 @@ function [phat, pci] = mle (x, varargin)
           error (strcat (["mle: 'frequency' argument must have the same"], ...
                          [" size as the input data in X."]));
         endif
+        if (any (freq != round (freq)) || any (freq < 0))
+          error (strcat (["mle: 'frequency' argument must contain"], ...
+                         [" non-negative integer values."]));
+        endif
       case "alpha"
         alpha = varargin{2};
         if (! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1)
@@ -278,13 +282,10 @@ function [phat, pci] = mle (x, varargin)
         error (strcat (["mle: censoring is not supported for"], ...
                        [" the Negative Binomial distribution."]));
       endif
-      if (! isempty (freq))
-        x = expandFreq (x, freq);
-      endif
       if (nargout < 2)
-        phat = nbinfit (x, alpha, options);
+        phat = nbinfit (x, alpha, freq, options);
       else
-        [phat, pci] = nbinfit (x, alpha, options);
+        [phat, pci] = nbinfit (x, alpha, freq, options);
       endif
 
     case {"norm", "normal"}
@@ -368,9 +369,6 @@ endfunction
 
 ## Helper function for expanding data according to frequency vector
 function xf = expandFreq (x, freq)
-  if (! all (freq == round (freq)) || any (freq < 0))
-    error ("mle: FREQ vector must contain non-negative integer values.");
-  endif
   xf = [];
   for i = 1:numel (freq)
     xf = [xf, repmat(x(i), 1, freq(i))];
@@ -387,6 +385,10 @@ endfunction
 %! mle ([1:50], "censoring", logical ([1,0,1,0]))
 %!error <mle: 'frequency' argument must have the same size as the input data in X.> ...
 %! mle ([1:50], "frequency", [1,0,1,0])
+%!error <mle: 'frequency' argument must contain non-negative integer values.> ...
+%! mle ([1 0 1 0], "frequency", [-1 1 0 0])
+%!error <mle: 'frequency' argument must contain non-negative integer values.> ...
+%! mle ([1 0 1 0], "distribution", "nbin", "frequency", [-1 1 0 0])
 %!error <mle: invalid value for 'alpha' argument.> mle ([1:50], "alpha", [0.05, 0.01])
 %!error <mle: invalid value for 'alpha' argument.> mle ([1:50], "alpha", 1)
 %!error <mle: invalid value for 'alpha' argument.> mle ([1:50], "alpha", -1)
@@ -437,5 +439,3 @@ endfunction
 %!error <mle: unrecognized distribution name.> mle ([1:50], "distribution", "value")
 %!error <mle: censoring is not supported for the Continuous Uniform distribution.> ...
 %! mle ([1 0 1 0], "distribution", "unif", "censoring", [1 1 0 0])
-%!error <mle: FREQ vector must contain non-negative integer values.> ...
-%! mle ([1 0 1 0], "distribution", "nbin", "frequency", [-1 1 0 0])
