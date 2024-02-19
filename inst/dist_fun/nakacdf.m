@@ -39,7 +39,7 @@
 ## Further information about the Nakagami distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Nakagami_distribution}
 ##
-## @seealso{nakainv, nakapdf, nakarnd, nakafit, nakalike}
+## @seealso{nakainv, nakapdf, nakarnd, nakafit, nakalike, nakastat}
 ## @end deftypefn
 
 function p = nakacdf (x, mu, omega, uflag)

@@ -26,7 +26,7 @@
 ##
 ## @code{@var{nlogL} = nakalike (@var{params}, @var{x})} returns the negative
 ## log likelihood of the data in @var{x} corresponding to the Nakagami
-## distribution with (1) scale parameter @var{mu} and (2) shape parameter
+## distribution with (1) shape parameter @var{mu} and (2) spread parameter
 ## @var{omega} given in the two-element vector @var{params}.
 ##
 ## @code{[@var{nlogL}, @var{acov}] = nakalike (@var{params}, @var{x})} also
@@ -49,7 +49,7 @@
 ## Further information about the Nakagami distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Nakagami_distribution}
 ##
-## @seealso{nakacdf, nakainv, nakapdf, nakarnd, nakafit}
+## @seealso{nakacdf, nakainv, nakapdf, nakarnd, nakafit, nakastat}
 ## @end deftypefn
 
 function [nlogL, acov] = nakalike (params, x, censor, freq)

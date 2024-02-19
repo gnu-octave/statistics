@@ -27,8 +27,8 @@
 ##
 ## @code{@var{mu0} = nakafit (@var{x})} returns the maximum likelihood
 ## estimates of the parameters of the Nakagami distribution given the data in
-## @var{x}.  @qcode{@var{paramhat}(1)} is the scale parameter, @var{mu}, and
-## @qcode{@var{paramhat}(2)} is the shape parameter, @var{omega}.
+## @var{x}.  @qcode{@var{paramhat}(1)} is the shape parameter, @var{mu}, and
+## @qcode{@var{paramhat}(2)} is the spread parameter, @var{omega}.
 ##
 ## @code{[@var{paramhat}, @var{paramci}] = nakafit (@var{x})} returns the 95%
 ## confidence intervals for the parameter estimates.
@@ -65,7 +65,7 @@
 ## Further information about the Nakagami distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Nakagami_distribution}
 ##
-## @seealso{nakacdf, nakainv, nakapdf, nakarnd, nakalike}
+## @seealso{nakacdf, nakainv, nakapdf, nakarnd, nakalike, nakastat}
 ## @end deftypefn
 
 function [paramhat, paramci] = nakafit (x, alpha, censor, freq, options)
