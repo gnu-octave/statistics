@@ -317,7 +317,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = [];
+      pd = MultinomialDistribution (probs);
 
     case "nakagami"
       mu = 1;
