@@ -434,13 +434,19 @@ endfunction
 %! assert ([pd(2).mu, pd(2).omega], phat);
 %! assert (paramci (pd(2)), pci);
 %!test
+%! randp ("seed", 123);
+%! randg ("seed", 321);
 %! x = nbinrnd (2, 0.5, 100, 1);
 %! pd = fitdist (x, "negativebinomial");
 %! [phat, pci] = nbinfit (x);
 %! assert ([pd.R, pd.P], phat);
 %! assert (paramci (pd), pci);
 %!test
+%! randp ("seed", 345);
+%! randg ("seed", 543);
 %! x1 = nbinrnd (2, 0.5, 100, 1);
+%! randp ("seed", 432);
+%! randg ("seed", 234);
 %! x2 = nbinrnd (5, 0.8, 100, 1);
 %! pd = fitdist ([x1; x2], "negativebinomial", "By", [ones(100,1); 2*ones(100,1)]);
 %! [phat, pci] = nbinfit (x1);
