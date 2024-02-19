@@ -68,6 +68,7 @@ Descriptive Statistics
  trimmean
  var
 Distribution Classes
+ NakagamiDistribution
  NegativeBinomialDistribution
  NormalDistribution
  PiecewiseLinearDistribution
