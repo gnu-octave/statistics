@@ -103,7 +103,7 @@ function [paramhat, paramci] = nbinfit (x, alpha, varargin)
   endif
 
   ## Add defaults
-  freq = ones (size (x));
+  freq = [];
   options.Display = "off";
   options.MaxFunEvals = 400;
   options.MaxIter = 200;
@@ -117,6 +117,9 @@ function [paramhat, paramci] = nbinfit (x, alpha, varargin)
   elseif (numel (varargin) == 2)
     freq = varargin{1};
     options = varargin{2};
+  endif
+  if (isempty (freq))
+    freq = ones (size (freq));
   endif
 
   ## Check extra parameters

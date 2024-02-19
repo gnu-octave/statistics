@@ -69,7 +69,7 @@ classdef NakagamiDistribution
   ## Further information about the Nakagami distribution can be found at
   ## @url{https://en.wikipedia.org/wiki/Nakagami_distribution}
   ##
-  ## @seealso{fitdist, makedist, nakacdf, nakainv, nakapdf, nakarnd, normfit,
+  ## @seealso{fitdist, makedist, nakacdf, nakainv, nakapdf, nakarnd, nakafit,
   ## nakalike, nakastat}
   ## @end deftypefn
 
@@ -621,7 +621,7 @@ classdef NakagamiDistribution
         options = varargin{4};
       endif
       ## Fit data
-      [phat, pci] = nbinfit (x, alpha, censor, freq, options);
+      [phat, pci] = nakafit (x, alpha, censor, freq, options);
       [~, acov] = nakalike (phat, x, censor, freq);
       ## Create fitted distribution object
       pd = NakagamiDistribution.makeFitted (phat, pci, acov, x, censor, freq);

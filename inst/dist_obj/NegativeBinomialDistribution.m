@@ -69,7 +69,7 @@ classdef NegativeBinomialDistribution
   ## Further information about the negative binomial distribution can be found at
   ## @url{https://en.wikipedia.org/wiki/Negative_binomial_distribution}
   ##
-  ## @seealso{fitdist, makedist, nbincdf, nbininv, nbinpdf, nbinrnd, normfit,
+  ## @seealso{fitdist, makedist, nbincdf, nbininv, nbinpdf, nbinrnd, nbinfit,
   ## nbinlike, nbinstat}
   ## @end deftypefn
 
