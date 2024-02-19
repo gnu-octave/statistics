@@ -63,7 +63,7 @@ classdef MultinomialDistribution
   ## Further information about the multinomial distribution can be found at
   ## @url{https://en.wikipedia.org/wiki/Multinomial_distribution}
   ##
-  ## @seealso{fitdist, makedist, mncdf, mninv, mnpdf, mnrnd, mnstat}
+  ## @seealso{fitdist, makedist, mnpdf, mnrnd}
   ## @end deftypefn
 
   properties (Dependent = true)
