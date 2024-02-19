@@ -69,7 +69,7 @@ function [paramhat, paramci] = unifit (x, alpha, freq)
   endif
 
   ## Check frequency vector
-  if (nargin > || isempty (freq))
+  if (nargin < 3 || isempty (freq))
     freq = ones (size (x));
   elseif (! isequal (size (x), size (freq)))
     error ("unifit: X and FREQ vector mismatch.");
