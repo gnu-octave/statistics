@@ -119,7 +119,7 @@ function [paramhat, paramci] = nbinfit (x, alpha, varargin)
     options = varargin{2};
   endif
   if (isempty (freq))
-    freq = ones (size (freq));
+    freq = ones (size (x));
   endif
 
   ## Check extra parameters
