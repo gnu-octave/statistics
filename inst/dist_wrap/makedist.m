@@ -530,6 +530,14 @@ endfunction
 
 ## Test output
 %!test
+%! pd = makedist ("Multinomial");
+%! assert (class (pd), "MultinomialDistribution");
+%! assert (pd.Probabilities, [0.5, 0.5]);
+%!test
+%! pd = makedist ("Multinomial", "Probabilities", [0.2, 0.3, 0.1, 0.4]);
+%! assert (class (pd), "MultinomialDistribution");
+%! assert (pd.Probabilities, [0.2, 0.3, 0.1, 0.4]);
+%!test
 %! pd = makedist ("Nakagami");
 %! assert (class (pd), "NakagamiDistribution");
 %! assert (pd.mu, 1);
