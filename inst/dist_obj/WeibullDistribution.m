@@ -109,7 +109,7 @@ classdef WeibullDistribution
         lambda = 1;
         k = 1;
       endif
-      checkparams (lambda, k)
+      checkparams (lambda, k);
       this.InputData = [];
       this.IsTruncated = false;
       this.ParameterValues = [lambda, k];
@@ -127,7 +127,7 @@ classdef WeibullDistribution
     endfunction
 
     function this = set.lambda (this, lambda)
-      checkparams (lambda, this.k)
+      checkparams (lambda, this.k);
       this.InputData = [];
       this.ParameterValues(1) = lambda;
       this.ParameterIsFixed = [true, true];
@@ -139,7 +139,7 @@ classdef WeibullDistribution
     endfunction
 
     function this = set.k (this, k)
-      checkparams (this.lambda, k)
+      checkparams (this.lambda, k);
       this.InputData = [];
       this.ParameterValues(2) = k;
       this.ParameterIsFixed = [true, true];
@@ -569,7 +569,7 @@ classdef WeibullDistribution
       if (this.IsTruncated)
         fm = @(x) x .* pdf (this, x);
         m = integral (fm, this.Truncation(1), this.Truncation(2));
-        fv =  @(x) ((x - m) .^ 2) .* pdf (pd, x);
+        fv =  @(x) ((x - m) .^ 2) .* pdf (this, x);
         v = integral (fv, this.Truncation(1), this.Truncation(2));
       else
         [~, v] = wblstat (this.lambda, this.k);

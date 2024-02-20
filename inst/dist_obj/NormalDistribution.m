@@ -109,7 +109,7 @@ classdef NormalDistribution
         mu = 0;
         sigma = 1;
       endif
-      checkparams (mu, sigma)
+      checkparams (mu, sigma);
       this.InputData = [];
       this.IsTruncated = false;
       this.ParameterValues = [mu, sigma];
@@ -127,7 +127,7 @@ classdef NormalDistribution
     endfunction
 
     function this = set.mu (this, mu)
-      checkparams (mu, this.sigma)
+      checkparams (mu, this.sigma);
       this.InputData = [];
       this.ParameterValues(1) = mu;
       this.ParameterIsFixed = [true, true];
@@ -139,7 +139,7 @@ classdef NormalDistribution
     endfunction
 
     function this = set.sigma (this, sigma)
-      checkparams (this.mu, sigma)
+      checkparams (this.mu, sigma);
       this.InputData = [];
       this.ParameterValues(2) = sigma;
       this.ParameterIsFixed = [true, true];
@@ -569,7 +569,7 @@ classdef NormalDistribution
       if (this.IsTruncated)
         fm = @(x) x .* pdf (this, x);
         m = integral (fm, this.Truncation(1), this.Truncation(2));
-        fv =  @(x) ((x - m) .^ 2) .* pdf (pd, x);
+        fv =  @(x) ((x - m) .^ 2) .* pdf (this, x);
         v = integral (fv, this.Truncation(1), this.Truncation(2));
       else
         [~, v] = normstat (this.mu, this.sigma);

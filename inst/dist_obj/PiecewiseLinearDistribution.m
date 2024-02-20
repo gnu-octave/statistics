@@ -99,7 +99,7 @@ classdef PiecewiseLinearDistribution
         x = x(:);
         Fx = Fx(:);
       endif
-      checkparams (x, Fx)
+      checkparams (x, Fx);
       this.IsTruncated = false;
       this.ParameterValues = [x, Fx];
     endfunction
@@ -114,7 +114,7 @@ classdef PiecewiseLinearDistribution
     endfunction
 
     function this = set.x (this, x)
-      checkparams (x, this.Fx)
+      checkparams (x, this.Fx);
       this.ParameterValues(:,1) = x;
     endfunction
 
@@ -123,7 +123,7 @@ classdef PiecewiseLinearDistribution
     endfunction
 
     function this = set.Fx (this, Fx)
-      checkparams (this.x, Fx)
+      checkparams (this.x, Fx);
       this.ParameterValues(:,2) = Fx;
     endfunction
 
@@ -442,7 +442,7 @@ classdef PiecewiseLinearDistribution
       if (this.IsTruncated)
         fm = @(x) x .* pdf (this, x);
         m = integral (fm, this.Truncation(1), this.Truncation(2));
-        fv =  @(x) ((x - m) .^ 2) .* pdf (pd, x);
+        fv =  @(x) ((x - m) .^ 2) .* pdf (this, x);
         v = integral (fv, this.Truncation(1), this.Truncation(2));
       else
         [~, v] = plstat (this.x, this.Fx);

@@ -94,7 +94,7 @@ classdef UniformDistribution
         Lower = 0;
         Upper = 1;
       endif
-      checkparams (Lower, Upper)
+      checkparams (Lower, Upper);
       this.IsTruncated = false;
       this.ParameterValues = [Lower, Upper];
     endfunction
@@ -109,7 +109,7 @@ classdef UniformDistribution
     endfunction
 
     function this = set.Lower (this, Lower)
-      checkparams (Lower, this.Upper)
+      checkparams (Lower, this.Upper);
       this.ParameterValues(1) = Lower;
     endfunction
 
@@ -118,7 +118,7 @@ classdef UniformDistribution
     endfunction
 
     function this = set.Upper (this, Upper)
-      checkparams (this.Lower, Upper)
+      checkparams (this.Lower, Upper);
       this.ParameterValues(2) = Upper;
     endfunction
 
@@ -431,7 +431,7 @@ classdef UniformDistribution
       if (this.IsTruncated)
         fm = @(x) x .* pdf (this, x);
         m = integral (fm, this.Truncation(1), this.Truncation(2));
-        fv =  @(x) ((x - m) .^ 2) .* pdf (pd, x);
+        fv =  @(x) ((x - m) .^ 2) .* pdf (this, x);
         v = integral (fv, this.Truncation(1), this.Truncation(2));
       else
         [~, v] = unifstat (this.Lower, this.Upper);

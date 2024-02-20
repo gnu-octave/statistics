@@ -91,7 +91,7 @@ classdef MultinomialDistribution
       if (nargin == 0)
         Probabilities = [0.5, 0.5];
       endif
-      checkparams (Probabilities)
+      checkparams (Probabilities);
       this.IsTruncated = false;
       this.ParameterValues = Probabilities;
     endfunction
@@ -106,7 +106,7 @@ classdef MultinomialDistribution
     endfunction
 
     function this = set.Probabilities (this, Probabilities)
-      checkparams (Probabilities)
+      checkparams (Probabilities);
       this.ParameterValues(1) = Probabilities;
     endfunction
 

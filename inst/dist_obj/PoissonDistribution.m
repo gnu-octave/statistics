@@ -106,7 +106,7 @@ classdef PoissonDistribution
       if (nargin == 0)
         lambda = 1;
       endif
-      checkparams (lambda)
+      checkparams (lambda);
       this.InputData = [];
       this.IsTruncated = false;
       this.ParameterValues = lambda;
@@ -124,7 +124,7 @@ classdef PoissonDistribution
     endfunction
 
     function this = set.lambda (this, lambda)
-      checkparams (lambda)
+      checkparams (lambda);
       this.InputData = [];
       this.ParameterValues(1) = lambda;
       this.ParameterIsFixed = true;
@@ -567,7 +567,7 @@ classdef PoissonDistribution
       if (this.IsTruncated)
         fm = @(x) x .* pdf (this, x);
         m = integral (fm, this.Truncation(1), this.Truncation(2));
-        fv =  @(x) ((x - m) .^ 2) .* pdf (pd, x);
+        fv =  @(x) ((x - m) .^ 2) .* pdf (this, x);
         v = integral (fv, this.Truncation(1), this.Truncation(2));
       else
         [~, v] = poisstat (this.lambda);

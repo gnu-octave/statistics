@@ -109,7 +109,7 @@ classdef RicianDistribution
         nu = 1;
         sigma = 1;
       endif
-      checkparams (nu, sigma)
+      checkparams (nu, sigma);
       this.InputData = [];
       this.IsTruncated = false;
       this.ParameterValues = [nu, sigma];
@@ -127,7 +127,7 @@ classdef RicianDistribution
     endfunction
 
     function this = set.nu (this, nu)
-      checkparams (nu, this.sigma)
+      checkparams (nu, this.sigma);
       this.InputData = [];
       this.ParameterValues(1) = nu;
       this.ParameterIsFixed = [true, true];
@@ -139,7 +139,7 @@ classdef RicianDistribution
     endfunction
 
     function this = set.sigma (this, sigma)
-      checkparams (this.nu, sigma)
+      checkparams (this.nu, sigma);
       this.InputData = [];
       this.ParameterValues(2) = sigma;
       this.ParameterIsFixed = [true, true];
@@ -579,7 +579,7 @@ classdef RicianDistribution
       if (this.IsTruncated)
         fm = @(x) x .* pdf (this, x);
         m = integral (fm, this.Truncation(1), this.Truncation(2));
-        fv =  @(x) ((x - m) .^ 2) .* pdf (pd, x);
+        fv =  @(x) ((x - m) .^ 2) .* pdf (this, x);
         v = integral (fv, this.Truncation(1), this.Truncation(2));
       else
         [~, v] = ricestat (this.nu, this.sigma);

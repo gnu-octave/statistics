@@ -106,7 +106,7 @@ classdef RayleighDistribution
       if (nargin == 0)
         sigma = 1;
       endif
-      checkparams (sigma)
+      checkparams (sigma);
       this.InputData = [];
       this.IsTruncated = false;
       this.ParameterValues = sigma;
@@ -124,7 +124,7 @@ classdef RayleighDistribution
     endfunction
 
     function this = set.sigma (this, sigma)
-      checkparams (sigma)
+      checkparams (sigma);
       this.InputData = [];
       this.ParameterValues(1) = sigma;
       this.ParameterIsFixed = true;
@@ -555,7 +555,7 @@ classdef RayleighDistribution
       if (this.IsTruncated)
         fm = @(x) x .* pdf (this, x);
         m = integral (fm, this.Truncation(1), this.Truncation(2));
-        fv =  @(x) ((x - m) .^ 2) .* pdf (pd, x);
+        fv =  @(x) ((x - m) .^ 2) .* pdf (this, x);
         v = integral (fv, this.Truncation(1), this.Truncation(2));
       else
         [~, v] = raylstat (this.sigma);

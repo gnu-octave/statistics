@@ -112,7 +112,7 @@ classdef tLocationScaleDistribution
         sigma = 1;
         nu = 5;
       endif
-      checkparams (mu, sigma, nu)
+      checkparams (mu, sigma, nu);
       this.InputData = [];
       this.IsTruncated = false;
       this.ParameterValues = [mu, sigma, nu];
@@ -130,7 +130,7 @@ classdef tLocationScaleDistribution
     endfunction
 
     function this = set.mu (this, mu)
-      checkparams (mu, this.sigma, this.nu)
+      checkparams (mu, this.sigma, this.nu);
       this.InputData = [];
       this.ParameterValues(1) = mu;
       this.ParameterIsFixed = [true, true, true];
@@ -142,7 +142,7 @@ classdef tLocationScaleDistribution
     endfunction
 
     function this = set.sigma (this, sigma)
-      checkparams (this.mu, sigma, this.nu)
+      checkparams (this.mu, sigma, this.nu);
       this.InputData = [];
       this.ParameterValues(2) = sigma;
       this.ParameterIsFixed = [true, true, true];
@@ -154,7 +154,7 @@ classdef tLocationScaleDistribution
     endfunction
 
     function this = set.nu (this, nu)
-      checkparams (this.mu, this.sigma, nu)
+      checkparams (this.mu, this.sigma, nu);
       this.InputData = [];
       this.ParameterValues(3) = nu;
       this.ParameterIsFixed = [true, true, true];
@@ -594,7 +594,7 @@ classdef tLocationScaleDistribution
       if (this.IsTruncated)
         fm = @(x) x .* pdf (this, x);
         m = integral (fm, this.Truncation(1), this.Truncation(2));
-        fv =  @(x) ((x - m) .^ 2) .* pdf (pd, x);
+        fv =  @(x) ((x - m) .^ 2) .* pdf (this, x);
         v = integral (fv, this.Truncation(1), this.Truncation(2));
       else
         [~, v] = tlsstat (this.mu, this.sigma, this.nu);

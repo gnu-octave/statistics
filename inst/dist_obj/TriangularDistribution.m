@@ -97,7 +97,7 @@ classdef TriangularDistribution
         B = 0.5;
         C = 1;
       endif
-      checkparams (A, B, C)
+      checkparams (A, B, C);
       this.IsTruncated = false;
       this.ParameterValues = [A, B, C];
     endfunction
@@ -112,7 +112,7 @@ classdef TriangularDistribution
     endfunction
 
     function this = set.A (this, A)
-      checkparams (A, this.B, this.C)
+      checkparams (A, this.B, this.C);
       this.ParameterValues(1) = A;
     endfunction
 
@@ -121,7 +121,7 @@ classdef TriangularDistribution
     endfunction
 
     function this = set.B (this, B)
-      checkparams (this.A, B, this.C)
+      checkparams (this.A, B, this.C);
       this.ParameterValues(2) = B;
     endfunction
 
@@ -130,7 +130,7 @@ classdef TriangularDistribution
     endfunction
 
     function this = set.C (this, C)
-      checkparams (this.A, this.B, C)
+      checkparams (this.A, this.B, C);
       this.ParameterValues(3) = C;
     endfunction
 
@@ -456,7 +456,7 @@ classdef TriangularDistribution
       if (this.IsTruncated)
         fm = @(x) x .* pdf (this, x);
         m = integral (fm, this.Truncation(1), this.Truncation(2));
-        fv =  @(x) ((x - m) .^ 2) .* pdf (pd, x);
+        fv =  @(x) ((x - m) .^ 2) .* pdf (this, x);
         v = integral (fv, this.Truncation(1), this.Truncation(2));
       else
         [~, v] = tristat (this.A, this.B, this.C);

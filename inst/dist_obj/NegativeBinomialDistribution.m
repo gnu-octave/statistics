@@ -109,7 +109,7 @@ classdef NegativeBinomialDistribution
         R = 1;
         P = 0.5;
       endif
-      checkparams (R, P)
+      checkparams (R, P);
       this.InputData = [];
       this.IsTruncated = false;
       this.ParameterValues = [R, P];
@@ -127,7 +127,7 @@ classdef NegativeBinomialDistribution
     endfunction
 
     function this = set.R (this, R)
-      checkparams (R, this.P)
+      checkparams (R, this.P);
       this.InputData = [];
       this.ParameterValues(1) = R;
       this.ParameterIsFixed = [true, true];
@@ -139,7 +139,7 @@ classdef NegativeBinomialDistribution
     endfunction
 
     function this = set.P (this, P)
-      checkparams (this.R, P)
+      checkparams (this.R, P);
       this.InputData = [];
       this.ParameterValues(2) = P;
       this.ParameterIsFixed = [true, true];
@@ -583,7 +583,7 @@ classdef NegativeBinomialDistribution
       if (this.IsTruncated)
         fm = @(x) x .* pdf (this, x);
         m = integral (fm, this.Truncation(1), this.Truncation(2));
-        fv =  @(x) ((x - m) .^ 2) .* pdf (pd, x);
+        fv =  @(x) ((x - m) .^ 2) .* pdf (this, x);
         v = integral (fv, this.Truncation(1), this.Truncation(2));
       else
         [~, v] = nbinstat (this.R, this.P);

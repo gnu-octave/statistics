@@ -109,7 +109,7 @@ classdef NakagamiDistribution
         mu = 1;
         omega = 1;
       endif
-      checkparams (mu, omega)
+      checkparams (mu, omega);
       this.InputData = [];
       this.IsTruncated = false;
       this.ParameterValues = [mu, omega];
@@ -127,7 +127,7 @@ classdef NakagamiDistribution
     endfunction
 
     function this = set.mu (this, mu)
-      checkparams (mu, this.omega)
+      checkparams (mu, this.omega);
       this.InputData = [];
       this.ParameterValues(1) = mu;
       this.ParameterIsFixed = [true, true];
@@ -139,7 +139,7 @@ classdef NakagamiDistribution
     endfunction
 
     function this = set.omega (this, omega)
-      checkparams (this.mu, omega)
+      checkparams (this.mu, omega);
       this.InputData = [];
       this.ParameterValues(2) = omega;
       this.ParameterIsFixed = [true, true];
@@ -584,7 +584,7 @@ classdef NakagamiDistribution
       if (this.IsTruncated)
         fm = @(x) x .* pdf (this, x);
         m = integral (fm, this.Truncation(1), this.Truncation(2));
-        fv =  @(x) ((x - m) .^ 2) .* pdf (pd, x);
+        fv =  @(x) ((x - m) .^ 2) .* pdf (this, x);
         v = integral (fv, this.Truncation(1), this.Truncation(2));
       else
         [~, v] = nakastat (this.mu, this.omega);
