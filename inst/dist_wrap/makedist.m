@@ -303,7 +303,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = [];
+      pd = LoguniformDistribution (lower, upper);
 
     case "multinomial"
       probs = [0.5, 0.5];
@@ -529,6 +529,19 @@ function pd = makedist (varargin)
 endfunction
 
 ## Test output
+%!test
+%! pd = makedist ("Loguniform");
+%! assert (class (pd), "LoguniformDistribution");
+%! assert (pd.Lower, 1);
+%! assert (pd.Upper, 4);
+%!test
+%! pd = makedist ("Loguniform", "Lower", 2);
+%! assert (pd.Lower, 2);
+%! assert (pd.Upper, 4);
+%!test
+%! pd = makedist ("Loguniform", "Lower", 1, "Upper", 3);
+%! assert (pd.Lower, 1);
+%! assert (pd.Upper, 3);
 %!test
 %! pd = makedist ("Multinomial");
 %! assert (class (pd), "MultinomialDistribution");

@@ -29,8 +29,8 @@ classdef LoguniformDistribution
   ## @multitable @columnfractions 0.25 0.48 0.27
   ## @headitem @var{Parameter} @tab @var{Description} @tab @var{Support}
   ##
-  ## @item @qcode{Lower} @tab Outcome probabilities @tab
-  ## @math{0 <= Lower(i) <= 1; sum_i (Lower) = 1}
+  ## @item @qcode{Lower} @tab Lower limit @tab @math{0 < Lower < Upper}
+  ## @item @qcode{Upper} @tab Upper limit @tab @math{Lower < Upper < Inf}
   ## @end multitable
   ##
   ## There are several ways to create a @code{LoguniformDistribution} object.
