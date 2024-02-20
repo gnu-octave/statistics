@@ -67,7 +67,7 @@ function ci = __disp__ (pd, distname)
       pat2 = ["  %+7s = ", PVstr, "\n"];
 
       ## Grad distributions that are non fittable
-      if (any (strcmpi (pd.DistributionCode, {"unif", "tri"})))
+      if (any (strcmpi (pd.DistributionCode, {"unif", "tri", "logu"})))
         fitted = false;
         ParameterIsFixed = true;
       elseif (all (pd.ParameterIsFixed))

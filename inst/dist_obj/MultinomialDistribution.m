@@ -407,9 +407,8 @@ classdef MultinomialDistribution
       else
         cp = cumsum (this.Probabilities);
       endif
-      bins = min ([0, cp], 1); % protect against accumulated round-off
-      bins(end) = 1; % get the upper edge exact
-
+      bins = min ([0, cp], 1);
+      bins(end) = 1;
       [~, r] = histc (rand (ps, 1), bins);
       r = reshape (r, sz);
       if (this.IsTruncated)
