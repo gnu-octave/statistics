@@ -43,7 +43,7 @@
 ## and any further arguments specify additional matrix dimensions.  The size may
 ## also be specified with a row vector of dimensions, @var{sz}.
 ##
-## Further information about the log-normal distribution can be found at
+## Further information about the lognormal distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Log-normal_distribution}
 ##
 ## @seealso{logncdf, logninv, lognpdf, lognfit, lognlike, lognstat}

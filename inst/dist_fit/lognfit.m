@@ -24,10 +24,10 @@
 ## @deftypefnx {statistics} {[@dots{}] =} lognfit (@var{x}, @var{alpha}, @var{censor}, @var{freq})
 ## @deftypefnx {statistics} {[@dots{}] =} lognfit (@var{x}, @var{alpha}, @var{censor}, @var{freq}, @var{options})
 ##
-## Estimate parameters and confidence intervals for the log-normal distribution.
+## Estimate parameters and confidence intervals for the lognormal distribution.
 ##
 ## @code{@var{paramhat} = lognfit (@var{x})} returns the maximum likelihood
-## estimates of the parameters of the log-normal distribution given the data in
+## estimates of the parameters of the lognormal distribution given the data in
 ## vector @var{x}.  @qcode{@var{paramhat}([1, 2])} corresponds to the mean and
 ## standard deviation, respectively, of the associated normal distribution.
 ##
@@ -71,7 +71,7 @@
 ## variance of @qcode{log (@var{x})}.  With censored data, the maximum
 ## likelihood estimate is returned.
 ##
-## Further information about the log-normal distribution can be found at
+## Further information about the lognormal distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Log-normal_distribution}
 ##
 ## @seealso{logncdf, logninv, lognpdf, lognrnd, lognlike, lognstat}

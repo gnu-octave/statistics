@@ -39,7 +39,7 @@
 ## @qcode{@var{sigma} > 0}.  For @qcode{@var{sigma} <= 0}, @qcode{NaN} is
 ## returned.
 ##
-## Further information about the log-normal distribution can be found at
+## Further information about the lognormal distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Log-normal_distribution}
 ##
 ## @seealso{logncdf, logninv, lognrnd, lognfit, lognlike, lognstat}

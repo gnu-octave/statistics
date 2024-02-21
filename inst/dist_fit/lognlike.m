@@ -22,10 +22,10 @@
 ## @deftypefnx {statistics} {[@dots{}] =} lognlike (@var{params}, @var{x}, @var{censor})
 ## @deftypefnx {statistics} {[@dots{}] =} lognlike (@var{params}, @var{x}, @var{censor}, @var{freq})
 ##
-## Negative log-likelihood for the log-normal distribution.
+## Negative log-likelihood for the lognormal distribution.
 ##
 ## @code{@var{nlogL} = lognlike (@var{params}, @var{x})} returns the negative
-## log-likelihood of the data in @var{x} corresponding to the log-normal
+## log-likelihood of the data in @var{x} corresponding to the lognormal
 ## distribution with (1) location parameter @var{mu} and (2) scale parameter
 ## @var{sigma} given in the two-element vector @var{params}, which correspond to
 ## the mean and standard deviation of the associated normal distribution.
@@ -53,7 +53,7 @@
 ## elements in @var{x}, but it can contain any non-integer non-negative values.
 ## By default, or if left empty, @qcode{@var{freq} = ones (size (@var{x}))}.
 ##
-## Further information about the log-normal distribution can be found at
+## Further information about the lognormal distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Log-normal_distribution}
 ##
 ## @seealso{logncdf, logninv, lognpdf, lognrnd, lognfit, lognstat}

@@ -19,10 +19,10 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{m}, @var{v}] =} lognstat (@var{mu}, @var{sigma})
 ##
-## Compute statistics of the log-normal distribution.
+## Compute statistics of the lognormal distribution.
 ##
 ## @code{[@var{m}, @var{v}] = lognstat (@var{mu}, @var{sigma})} returns the mean
-## and variance of the log-normal distribution with mean parameter @var{mu} and
+## and variance of the lognormal distribution with mean parameter @var{mu} and
 ## standard deviation parameter @var{sigma}, each corresponding to the
 ## associated normal distribution.
 ##
@@ -30,7 +30,7 @@
 ## input arguments.  A scalar input functions as a constant matrix of the
 ## same size as the other inputs.
 ##
-## Further information about the log-normal distribution can be found at
+## Further information about the lognormal distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Log-normal_distribution}
 ##
 ## @seealso{logncdf, logninv, lognpdf, lognrnd, lognfit, lognlike}

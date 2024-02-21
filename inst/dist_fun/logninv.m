@@ -22,10 +22,10 @@
 ## @deftypefnx {statistics} {@var{x} =} logninv (@var{p}, @var{mu})
 ## @deftypefnx {statistics} {@var{x} =} logninv (@var{p}, @var{mu}, @var{sigma})
 ##
-## Inverse of the log-normal cumulative distribution function (iCDF).
+## Inverse of the lognormal cumulative distribution function (iCDF).
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
-## the log-normal distribution with mean parameter @var{mu} and standard
+## the lognormal distribution with mean parameter @var{mu} and standard
 ## deviation parameter @var{sigma}, each corresponding to the associated normal
 ## distribution.  The size of @var{x} is the common size of @var{p}, @var{mu},
 ## and @var{sigma}.  A scalar input functions as a constant matrix of the same
@@ -39,7 +39,7 @@
 ## @qcode{@var{sigma} > 0}.  For @qcode{@var{sigma} <= 0}, @qcode{NaN} is
 ## returned.
 ##
-## Further information about the log-normal distribution can be found at
+## Further information about the lognormal distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Log-normal_distribution}
 ##
 ## @seealso{logncdf, lognpdf, lognrnd, lognfit, lognlike, lognstat}

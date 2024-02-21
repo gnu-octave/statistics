@@ -273,11 +273,17 @@ function [varargout] = fitdist (varargin)
       endif
 
     case "lognormal"
-      warning ("fitdist: 'Lognormal' distribution not supported yet.");
       if (isempty (groupvar))
-        varargout{1} = [];
+        varargout{1} = LognormalDistribution.fit ...
+                       (x, alpha, censor, freq, options);
       else
-        varargout{1} = [];
+        pd = LognormalDistribution.fit ...
+             (x(g==1), alpha, censor(g==1), freq(g==1), options);
+        for i = 2:groups
+          pd(i) = LognormalDistribution.fit ...
+                  (x(g==i), alpha, censor(g==i), freq(g==i), options);
+        endfor
+        varargout{1} = pd;
         varargout{2} = gn;
         varargout{3} = gl;
       endif
@@ -417,6 +423,22 @@ function [varargout] = fitdist (varargin)
 endfunction
 
 ## Test output
+%!test
+%! x = lognrnd (1, 1, 100, 1);
+%! pd = fitdist (x, "lognormal");
+%! [phat, pci] = lognfit (x);
+%! assert ([pd.mu, pd.sigma], phat);
+%! assert (paramci (pd), pci);
+%!test
+%! x1 = lognrnd (1, 1, 100, 1);
+%! x2 = lognrnd (5, 2, 100, 1);
+%! pd = fitdist ([x1; x2], "lognormal", "By", [ones(100,1); 2*ones(100,1)]);
+%! [phat, pci] = lognfit (x1);
+%! assert ([pd(1).mu, pd(1).sigma], phat);
+%! assert (paramci (pd(1)), pci);
+%! [phat, pci] = lognfit (x2);
+%! assert ([pd(2).mu, pd(2).sigma], phat);
+%! assert (paramci (pd(2)), pci);
 %!test
 %! x = nakarnd (2, 0.5, 100, 1);
 %! pd = fitdist (x, "Nakagami");

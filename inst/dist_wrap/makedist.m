@@ -286,7 +286,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = [];
+      pd = LognormalDistribution (mu, sigma);
 
     case "loguniform"
       lower = 1;
@@ -529,6 +529,23 @@ function pd = makedist (varargin)
 endfunction
 
 ## Test output
+%!test
+%! pd = makedist ("Lognormal");
+%! assert (class (pd), "LognormalDistribution");
+%! assert (pd.mu, 0);
+%! assert (pd.sigma, 1);
+%!test
+%! pd = makedist ("Lognormal", "mu", 5);
+%! assert (pd.mu, 5);
+%! assert (pd.sigma, 1);
+%!test
+%! pd = makedist ("Lognormal", "sigma", 5);
+%! assert (pd.mu, 0);
+%! assert (pd.sigma, 5);
+%!test
+%! pd = makedist ("Lognormal", "mu", -3, "sigma", 5);
+%! assert (pd.mu, -3);
+%! assert (pd.sigma, 5);
 %!test
 %! pd = makedist ("Loguniform");
 %! assert (class (pd), "LoguniformDistribution");

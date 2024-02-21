@@ -26,10 +26,10 @@
 ## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} logncdf (@var{x}, @var{mu}, @var{sigma}, @var{pcov}, @var{alpha})
 ## @deftypefnx {statistics} {[@var{p}, @var{plo}, @var{pup}] =} logncdf (@dots{}, @qcode{"upper"})
 ##
-## Log-normal cumulative distribution function (CDF).
+## Lognormal cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
-## (CDF) of the log-normal distribution with mean parameter @var{mu} and
+## (CDF) of the lognormal distribution with mean parameter @var{mu} and
 ## standard deviation parameter @var{sigma}, each corresponding to the
 ## associated normal distribution.  The size of @var{p} is the common size of
 ## @var{x}, @var{mu}, and @var{sigma}.  A scalar input functions as a constant
@@ -56,7 +56,7 @@
 ## probability of the log-normal distribution with parameters @var{mu} and
 ## @var{sigma}, at the values in @var{x}.
 ##
-## Further information about the log-normal distribution can be found at
+## Further information about the lognormal distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Log-normal_distribution}
 ##
 ## @seealso{logninv, lognpdf, lognrnd, lognfit, lognlike, lognstat}
