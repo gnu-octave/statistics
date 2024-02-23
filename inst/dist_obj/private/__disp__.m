@@ -75,7 +75,7 @@ function ci = __disp__ (pd, distname)
         ParameterIsFixed = pd.ParameterIsFixed;
       else
         fitted = true;
-        ParameterIsFixed = true;
+        ParameterIsFixed = pd.ParameterIsFixed;
       endif
 
       ## Print distribution header
