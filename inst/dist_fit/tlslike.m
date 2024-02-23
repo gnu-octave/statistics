@@ -115,7 +115,7 @@ function [nlogL, acov] = tlslike (params, x, censor, freq)
     endfor
 
     ## Fill in the upper triangle
-    nH = nH + triu(nH',1);
+    nH = nH + triu (nH', 1);
 
     ## Normalize the second differences to get derivative estimates
     nH = nH ./ (4 .* dp(:) * dp(:)' + diag (8 * dp(:) .^ 2));
