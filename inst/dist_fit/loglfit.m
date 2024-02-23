@@ -27,8 +27,8 @@
 ##
 ## @code{@var{mu0} = loglfit (@var{x})} returns the maximum likelihood
 ## estimates of the parameters of the log-logistic distribution given the data
-## in @var{x}.  @qcode{@var{paramhat}(1)} is the scale parameter, @var{a}, and
-## @qcode{@var{paramhat}(2)} is the shape parameter, @var{b}.
+## in @var{x}.  @qcode{@var{paramhat}(1)} is the mean parameter, @var{mu}, and
+## @qcode{@var{paramhat}(2)} is the scale parameter, @var{sigma}.
 ##
 ## @code{[@var{paramhat}, @var{paramci}] = loglfit (@var{x})} returns the 95%
 ## confidence intervals for the parameter estimates.
@@ -62,20 +62,20 @@
 ## @item @qcode{@var{options}.TolX = 1e-6}
 ## @end itemize
 ##
-## Further information about the log-logistic distribution can be found at
+## Further information about the loglogistic distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Log-logistic_distribution}
 ##
-## MATLAB compatibility: MATLAB uses an alternative parameterization given by
-## the pair @math{μ, s}, i.e. @var{mu} and @var{s}, in analogy with the logistic
-## distribution.  Their relation to the @var{a} and @var{b} parameters is given
-## below:
+## OCTAVE/MATLAB use an alternative parameterization given by the pair
+## @math{μ, σ}, i.e. @var{mu} and @var{sigma}, in analogy with the logistic
+## distribution.  Their relation to the @math{α} and @math{b} parameters used
+## in Wikipedia are given below:
 ##
 ## @itemize
-## @item @qcode{@var{a} = exp (@var{mu})}
-## @item @qcode{@var{b} = 1 / @var{s}}
+## @item @qcode{@var{mu} = log (@var{a})}
+## @item @qcode{@var{sigma} = 1 / @var{a}}
 ## @end itemize
 ##
-## @seealso{loglcdf, loglinv, loglpdf, loglrnd, logllike}
+## @seealso{loglcdf, loglinv, loglpdf, loglrnd, logllike, loglstat}
 ## @end deftypefn
 
 function [paramhat, paramci] = loglfit (x, alpha, censor, freq, options)
@@ -138,9 +138,9 @@ function [paramhat, paramci] = loglfit (x, alpha, censor, freq, options)
   endif
 
   ## Use MLEs of the uncensored data as initial searching values
-  x_uncensored = x(censor == 0);
-  a0 = mean (x_uncensored);
-  b0 = 1 ./ (std (x_uncensored) .* sqrt (3) ./ pi);
+  logx_uncensored = log (x(censor == 0));
+  a0 = mean (logx_uncensored);
+  b0 = 1 ./ (std (logx_uncensored) .* sqrt (3) ./ pi);
   x0 = [a0, b0];
 
   ## Minimize negative log-likelihood to estimate parameters
@@ -172,7 +172,7 @@ function [paramhat, paramci] = loglfit (x, alpha, censor, freq, options)
     ## Compute muci using a normal approximation
     paramci(:,1) = norminv (probs, paramhat(1), se(1));
     ## Compute sci using a normal approximation for log (s) and transform back
-    paramci(:,2) = exp (norminv (probs, log (paramhat(2)), log (se(2))));
+    paramci(:,2) = exp (norminv (probs, log (paramhat(2)), se(2)/paramhat(2)));
  endif
 
 endfunction
@@ -180,11 +180,11 @@ endfunction
 %!demo
 %! ## Sample 3 populations from different log-logistic distibutions
 %! rand ("seed", 5)  # for reproducibility
-%! r1 = loglrnd (1, 1, 2000, 1);
+%! r1 = loglrnd (0, 1, 2000, 1);
 %! rand ("seed", 2)   # for reproducibility
-%! r2 = loglrnd (1, 2, 2000, 1);
+%! r2 = loglrnd (0, 0.5, 2000, 1);
 %! rand ("seed", 7)   # for reproducibility
-%! r3 = loglrnd (1, 8, 2000, 1);
+%! r3 = loglrnd (0, 0.125, 2000, 1);
 %! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
@@ -224,16 +224,18 @@ endfunction
 
 ## Test output
 %!test
-%! paramhat = loglfit ([1:50]);
-%! paramhat_out = [exp(3.097175), 1/0.468525];
-%! assert (paramhat, paramhat_out, 1e-4);
+%! [paramhat, paramci] = loglfit ([1:50]);
+%! paramhat_out = [3.09717, 0.468525];
+%! paramci_out = [2.87261, 0.370616; 3.32174, 0.5923];
+%! assert (paramhat, paramhat_out, 1e-5);
+%! assert (paramci, paramci_out, 1e-5);
 %!test
 %! paramhat = loglfit ([1:5]);
-%! paramhat_out = [exp(1.01124), 1/0.336449];
-%! assert (paramhat, paramhat_out, 1e-4);
+%! paramhat_out = [1.01124, 0.336449];
+%! assert (paramhat, paramhat_out, 1e-5);
 %!test
 %! paramhat = loglfit ([1:6], [], [], [1 1 1 1 1 0]);
-%! paramhat_out = [exp(1.01124), 1/0.336449];
+%! paramhat_out = [1.01124, 0.336449];
 %! assert (paramhat, paramhat_out, 1e-4);
 %!test
 %! paramhat = loglfit ([1:5], [], [], [1 1 1 1 2]);
