@@ -81,7 +81,6 @@ function [m, v] = loglstat (mu, sigma)
   m(sigma <= 0) = NaN;
   v(sigma <= 0) = NaN;
 
-
 endfunction
 
 ## Input validation tests
