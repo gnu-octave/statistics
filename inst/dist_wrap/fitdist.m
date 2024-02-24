@@ -253,11 +253,17 @@ function [varargout] = fitdist (varargin)
       endif
 
     case "logistic"
-      warning ("fitdist: 'Logistic' distribution not supported yet.");
       if (isempty (groupvar))
-        varargout{1} = [];
+        varargout{1} = LogisticDistribution.fit ...
+                       (x, alpha, censor, freq, options);
       else
-        varargout{1} = [];
+        pd = LogisticDistribution.fit ...
+             (x(g==1), alpha, censor(g==1), freq(g==1), options);
+        for i = 2:groups
+          pd(i) = LogisticDistribution.fit ...
+                  (x(g==i), alpha, censor(g==i), freq(g==i), options);
+        endfor
+        varargout{1} = pd;
         varargout{2} = gn;
         varargout{3} = gl;
       endif
@@ -429,6 +435,22 @@ function [varargout] = fitdist (varargin)
 endfunction
 
 ## Test output
+%!test
+%! x = logirnd (1, 1, 100, 1);
+%! pd = fitdist (x, "logistic");
+%! [phat, pci] = logifit (x);
+%! assert ([pd.mu, pd.sigma], phat);
+%! assert (paramci (pd), pci);
+%!test
+%! x1 = logirnd (1, 1, 100, 1);
+%! x2 = logirnd (5, 2, 100, 1);
+%! pd = fitdist ([x1; x2], "logistic", "By", [ones(100,1); 2*ones(100,1)]);
+%! [phat, pci] = logifit (x1);
+%! assert ([pd(1).mu, pd(1).sigma], phat);
+%! assert (paramci (pd(1)), pci);
+%! [phat, pci] = logifit (x2);
+%! assert ([pd(2).mu, pd(2).sigma], phat);
+%! assert (paramci (pd(2)), pci);
 %!test
 %! x = loglrnd (1, 1, 100, 1);
 %! pd = fitdist (x, "loglogistic");

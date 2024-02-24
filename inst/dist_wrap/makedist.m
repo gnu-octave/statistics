@@ -252,7 +252,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = [];
+      pd = LogisticDistribution (mu, sigma);
 
     case "loglogistic"
       mu = 0;
@@ -529,6 +529,23 @@ function pd = makedist (varargin)
 endfunction
 
 ## Test output
+%!test
+%! pd = makedist ("logistic");
+%! assert (class (pd), "LogisticDistribution");
+%! assert (pd.mu, 0);
+%! assert (pd.sigma, 1);
+%!test
+%! pd = makedist ("logistic", "mu", 5);
+%! assert (pd.mu, 5);
+%! assert (pd.sigma, 1);
+%!test
+%! pd = makedist ("logistic", "sigma", 5);
+%! assert (pd.mu, 0);
+%! assert (pd.sigma, 5);
+%!test
+%! pd = makedist ("logistic", "mu", 3, "sigma", 5);
+%! assert (pd.mu, 3);
+%! assert (pd.sigma, 5);
 %!test
 %! pd = makedist ("loglogistic");
 %! assert (class (pd), "LoglogisticDistribution");
