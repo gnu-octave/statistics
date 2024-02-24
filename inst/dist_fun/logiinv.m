@@ -18,18 +18,18 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{x} =} logiinv (@var{p}, @var{mu}, @var{s})
+## @deftypefn  {statistics} {@var{x} =} logiinv (@var{p}, @var{mu}, @var{sigma})
 ##
 ## Inverse of the logistic cumulative distribution function (iCDF).
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
 ## the logistic distribution with location parameter @var{mu} and scale
-## parameter @var{s}.  The size of @var{p} is the common size of @var{x},
-## @var{mu}, and @var{s}.  A scalar input functions as a constant matrix of
+## parameter @var{sigma}.  The size of @var{p} is the common size of @var{x},
+## @var{mu}, and @var{sigma}.  A scalar input functions as a constant matrix of
 ## the same size as the other inputs.
 ##
-## Both parameters must be reals and @qcode{@var{s} > 0}.
-## For @qcode{@var{s} <= 0}, @qcode{NaN} is returned.
+## Both parameters must be reals and @qcode{@var{sigma} > 0}.
+## For @qcode{@var{sigma} <= 0}, @qcode{NaN} is returned.
 ##
 ## Further information about the logistic distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Logistic_distribution}
@@ -37,42 +37,41 @@
 ## @seealso{logicdf, logipdf, logirnd, logifit, logilike, logistat}
 ## @end deftypefn
 
-function x = logiinv (p, mu, s)
+function x = logiinv (p, mu, sigma)
 
   ## Check for valid number of input arguments
   if (nargin < 3)
     error ("logiinv: function called with too few input arguments.");
   endif
 
-  ## Check for common size of P, MU, and S
-  if (! isscalar (p) || ! isscalar (mu) || ! isscalar(s))
-    [retval, p, mu, s] = common_size (p, mu, s);
+  ## Check for common size of P, MU, and SIGMA
+  if (! isscalar (p) || ! isscalar (mu) || ! isscalar(sigma))
+    [retval, p, mu, sigma] = common_size (p, mu, sigma);
     if (retval > 0)
-      error (strcat (["logiinv: P, MU, and S must be of"], ...
-                     [" common size or scalars."]));
+      error ("logiinv: P, MU, and SIGMA must be of common size or scalars.");
     endif
   endif
 
-  ## Check for X, MU, and S being reals
-  if (iscomplex (p) || iscomplex (mu) || iscomplex (s))
-    error ("logiinv: P, MU, and S must not be complex.");
+  ## Check for X, MU, and SIGMA being reals
+  if (iscomplex (p) || iscomplex (mu) || iscomplex (sigma))
+    error ("logiinv: P, MU, and SIGMA must not be complex.");
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (mu, "single") || isa (s, "single"));
+  if (isa (p, "single") || isa (mu, "single") || isa (sigma, "single"));
     x = NaN (size (p), "single");
   else
     x = NaN (size (p));
   endif
 
-  k = (p == 0) & (s > 0);
+  k = (p == 0) & (sigma > 0);
   x(k) = -Inf;
 
-  k = (p == 1) & (s > 0);
+  k = (p == 1) & (sigma > 0);
   x(k) = Inf;
 
-  k = (p > 0) & (p < 1) & (s > 0);
-  x(k) = mu(k) + s(k) .* log (p(k) ./ (1 - p(k)));
+  k = (p > 0) & (p < 1) & (sigma > 0);
+  x(k) = mu(k) + sigma(k) .* log (p(k) ./ (1 - p(k)));
 
 endfunction
 
@@ -86,8 +85,8 @@ endfunction
 %! x5 = logiinv (p, 2, 1);
 %! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c", p, x5, "-m")
 %! grid on
-%! legend ({"μ = 5, s = 2", "μ = 9, s = 3", "μ = 9, s = 4", ...
-%!          "μ = 6, s = 2", "μ = 2, s = 1"}, "location", "southeast")
+%! legend ({"μ = 5, σ = 2", "μ = 9, σ = 3", "μ = 9, σ = 4", ...
+%!          "μ = 6, σ = 2", "μ = 2, σ = 1"}, "location", "southeast")
 %! title ("Logistic iCDF")
 %! xlabel ("probability")
 %! ylabel ("x")
@@ -112,12 +111,12 @@ endfunction
 %!error<logiinv: function called with too few input arguments.> logiinv (1)
 %!error<logiinv: function called with too few input arguments.> ...
 %! logiinv (1, 2)
-%!error<logiinv: P, MU, and S must be of common size or scalars.> ...
+%!error<logiinv: P, MU, and SIGMA must be of common size or scalars.> ...
 %! logiinv (1, ones (2), ones (3))
-%!error<logiinv: P, MU, and S must be of common size or scalars.> ...
+%!error<logiinv: P, MU, and SIGMA must be of common size or scalars.> ...
 %! logiinv (ones (2), 1, ones (3))
-%!error<logiinv: P, MU, and S must be of common size or scalars.> ...
+%!error<logiinv: P, MU, and SIGMA must be of common size or scalars.> ...
 %! logiinv (ones (2), ones (3), 1)
-%!error<logiinv: P, MU, and S must not be complex.> logiinv (i, 2, 3)
-%!error<logiinv: P, MU, and S must not be complex.> logiinv (1, i, 3)
-%!error<logiinv: P, MU, and S must not be complex.> logiinv (1, 2, i)
+%!error<logiinv: P, MU, and SIGMA must not be complex.> logiinv (i, 2, 3)
+%!error<logiinv: P, MU, and SIGMA must not be complex.> logiinv (1, i, 3)
+%!error<logiinv: P, MU, and SIGMA must not be complex.> logiinv (1, 2, i)

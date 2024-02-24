@@ -65,7 +65,7 @@
 ## Further information about the logistic distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Logistic_distribution}
 ##
-## @seealso{logicdf, logiinv, logipdf, logirnd, logilike}
+## @seealso{logicdf, logiinv, logipdf, logirnd, logilike, logistat}
 ## @end deftypefn
 
 function [paramhat, paramci] = logifit (x, alpha, censor, freq, options)

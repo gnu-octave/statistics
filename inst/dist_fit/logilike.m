@@ -1,4 +1,4 @@
-## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2023-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -27,7 +27,7 @@
 ## @code{@var{nlogL} = logilike (@var{params}, @var{x})} returns the negative
 ## log likelihood of the data in @var{x} corresponding to the logistic
 ## distribution with (1) location parameter @var{mu} and (2) scale parameter
-## @var{s} given in the two-element vector @var{params}.
+## @var{sigma} given in the two-element vector @var{params}.
 ##
 ## @code{[@var{nlogL}, @var{acov}] = logilike (@var{params}, @var{x})} also
 ## returns the inverse of Fisher's information matrix, @var{acov}.  If the input
@@ -49,7 +49,7 @@
 ## Further information about the logistic distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Logistic_distribution}
 ##
-## @seealso{logicdf, logiinv, logipdf, logirnd, logifit}
+## @seealso{logicdf, logiinv, logipdf, logirnd, logifit, logistat}
 ## @end deftypefn
 
 function [nlogL, acov] = logilike (params, x, censor, freq)
@@ -94,48 +94,40 @@ function [nlogL, acov] = logilike (params, x, censor, freq)
     censor = cf;
   endif
 
-  ## Get parameters
-  mu = params(1);
-  s = params(2);
+  ## Compute the negative loglikelihood
+  nlogL = loginll (params, x, censor, freq);
 
-  z = (x - mu) ./ s;
-  logclogitz = log (1 ./ (1 + exp (z)));
-  k = (z > 700);
-  if (any (k))
-    logclogitz(k) = z(k);
-  endif
-
-  L = z + 2 .* logclogitz - log (s);
-  n_censored = sum (freq .* censor);
-  ## Handle censored data
-  if (n_censored > 0)
-    censored = (censor == 1);
-    L(censored) = logclogitz(censored);
-  endif
-
-  ## Sum up the neg log likelihood
-  if (s < 0)
-    nlogL = Inf;
-  else
-    nlogL = -sum (freq .* L);
-  endif
-
-  ## Compute asymptotic covariance
+  ## Compute the negative hessian and invert to get the information matrix
   if (nargout > 1)
-    ## Compute first order central differences of the log-likelihood gradient
-    dp = 0.0001 .* max (abs (params), 1);
+    ei = zeros (1, 2);
+    ej = zeros (1, 2);
+    nH = zeros (2, 2);
+    dp = (eps ^ (1/4)) .* max (abs (params), 1);
+    for i = 1:2
+      ei(i) = dp(i);
+      for j = 1:(i-1)
+        ej(j) = dp(j);
+        ## Four-point central difference for mixed second partials
+        nH(i,j) = loginll (params+ei+ej, x, censor, freq) ...
+                - loginll (params+ei-ej, x, censor, freq) ...
+                - loginll (params-ei+ej, x, censor, freq) ...
+                + loginll (params-ei-ej, x, censor, freq);
+        ej(j) = 0;
+      endfor
+      ## Five-point central difference for pure second partial
+      nH(i,i) = - loginll (params+2*ei, x, censor, freq) ...
+                + 16 * loginll (params+ei, x, censor, freq) - 30 * nlogL ...
+                + 16 * loginll (params-ei, x, censor, freq) ...
+                - loginll (params-2*ei, x, censor, freq);
+      ei(i) = 0;
+    endfor
 
-    ngrad_p1 = logi_grad (params + [dp(1), 0], x, censor, freq);
-    ngrad_m1 = logi_grad (params - [dp(1), 0], x, censor, freq);
-    ngrad_p2 = logi_grad (params + [0, dp(2)], x, censor, freq);
-    ngrad_m2 = logi_grad (params - [0, dp(2)], x, censor, freq);
+    ## Fill in the upper triangle
+    nH = nH + triu (nH', 1);
 
-    ## Compute negative Hessian by normalizing the differences by the increment
-    nH = [(ngrad_p1(:) - ngrad_m1(:))./(2 * dp(1)), ...
-          (ngrad_p2(:) - ngrad_m2(:))./(2 * dp(2))];
+    ## Normalize the second differences to get derivative estimates
+    nH = nH ./ (4 .* dp(:) * dp(:)' + diag (8 * dp(:) .^ 2));
 
-    ## Force neg Hessian being symmetric
-    nH = 0.5 .* (nH + nH');
     ## Check neg Hessian is positive definite
     [R, p] = chol (nH);
     if (p > 0)
@@ -143,28 +135,39 @@ function [nlogL, acov] = logilike (params, x, censor, freq)
       acov = NaN (2);
       return
     endif
-    ## ACOV estimate is the negative inverse of the Hessian.
+
+    ## ACOV estimate is the negative inverse of the Hessian
     Rinv = inv (R);
-    acov = Rinv * Rinv;
+    acov = Rinv * Rinv';
   endif
 
 endfunction
 
-## Helper function for computing negative gradient
-function ngrad = logi_grad (params, x, censor, freq)
+## Helper function for computing negative loglikelihood
+function nlogL = loginll (params, x, censor, freq)
+  ## Get parameters
   mu = params(1);
-  s = params(2);
-  z = (x - mu) ./ s;
-  logitz = 1 ./ (1 + exp (-z));
-  dL1 = (2 .* logitz - 1) ./ sigma;
-  dL2 = z .* dL1 - 1 ./ sigma;
+  sigma = params(2);
+  ## Compute intermediate values
+  z = (x - mu) ./ sigma;
+  logclogitz = log (1 ./ (1 + exp (z)));
+  k = (z > 700);
+  if (any (k))
+    logclogitz(k) = z(k);
+  endif
+  L = z + 2 .* logclogitz - log (sigma);
   n_censored = sum (freq .* censor);
+  ## Handle censored data
   if (n_censored > 0)
     censored = (censor == 1);
-    dL1(censored) = logitz(censored) ./ sigma;
-    dL2(censored) = z(censored) .* dL1(censored);
+    L(censored) = logclogitz(censored);
   endif
-  ngrad = -[sum(freq .* dL1), sum(freq .* dL2)];
+  ## Sum up the neg log likelihood
+  if (sigma < 0)
+    nlogL = Inf;
+  else
+    nlogL = -sum (freq .* L);
+  endif
 endfunction
 
 
