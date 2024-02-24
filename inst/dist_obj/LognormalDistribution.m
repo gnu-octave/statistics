@@ -219,6 +219,8 @@ classdef LognormalDistribution
         lp = logncdf (this.Truncation(1), this.mu, this.sigma);
         up = logncdf (this.Truncation(2), this.mu, this.sigma);
         ## Adjust p values within range of p @ lower limit and p @ upper limit
+        is_nan = p < 0 | p > 1;
+        p(is_nan) = NaN;
         np = lp + (up - lp) .* p;
         x = logninv (np, this.mu, this.sigma);
       else
