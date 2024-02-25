@@ -509,8 +509,6 @@ classdef LogisticDistribution
       if (! isscalar (this))
         error ("random: requires a scalar probability distribution.");
       endif
-      a = exp (this.mu);
-      b = 1 / this.sigma;
       if (this.IsTruncated)
         lp = logicdf (this.Truncation(1), this.mu, this.sigma);
         up = logicdf (this.Truncation(2), this.mu, this.sigma);
