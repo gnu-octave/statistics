@@ -19,6 +19,7 @@
 ## @deftypefn  {statistics} {@var{paramhat} =} hnfit (@var{x}, @var{mu})
 ## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} hnfit (@var{x}, @var{mu})
 ## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} hnfit (@var{x}, @var{mu}, @var{alpha})
+## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} hnfit (@var{x}, @var{mu}, @var{alpha}, @var{freq})
 ##
 ## Estimate parameters and confidence intervals for the half-normal distribution.
 ##
@@ -40,15 +41,21 @@
 ## scale parameter.  By default, the optional argument @var{alpha} is 0.05
 ## corresponding to 95% confidence intervals.
 ##
+## @code{[@dots{}] = hnfit (@var{params}, @var{x}, @var{freq})} accepts a
+## frequency vector, @var{freq}, of the same size as @var{x}.  @var{freq}
+## must contain non-negative integer frequencies for the corresponding elements
+## in @var{x}.  By default, or if left empty,
+## @qcode{@var{freq} = ones (size (@var{x}))}.
+##
 ## The half-normal CDF is only defined for @qcode{@var{x} >= @var{mu}}.
 ##
 ## Further information about the half-normal distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Half-normal_distribution}
 ##
-## @seealso{hncdf, hninv, hnpdf, hnrnd, hnlike}
+## @seealso{hncdf, hninv, hnpdf, hnrnd, hnlike, hnstat}
 ## @end deftypefn
 
-function [paramhat, paramci] = hnfit (x, mu, alpha)
+function [paramhat, paramci] = hnfit (x, mu, alpha, freq)
 
   ## Check for valid number of input arguments
   if (nargin < 2)
@@ -75,12 +82,28 @@ function [paramhat, paramci] = hnfit (x, mu, alpha)
   endif
 
   ## Parse ALPHA argument or add default
-  if (nargin > 2)
-    if (! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1)
-      error ("hnfit: wrong value for ALPHA.");
-    endif
-  else
+  if (nargin < 3 || isempty (alpha))
     alpha = 0.05;
+  elseif (! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1)
+    error ("hnfit: wrong value for ALPHA.");
+  endif
+
+  ## Parse FREQ argument or add default
+  if (nargin < 4 || isempty (freq))
+    freq = ones (size (x));
+  elseif (! isequal (size (x), size (freq)))
+    error ("hnfit: X and FREQ vectors mismatch.");
+  elseif (any (freq < 0))
+    error ("hnfit: FREQ must not contain negative values.");
+  endif
+
+  ## Expand frequency vector (if necessary)
+  if (! all (freq == 1))
+    xf = [];
+    for i = 1:numel (freq)
+      xf = [xf, repmat(x(i), 1, freq(i))];
+    endfor
+    x = xf;
   endif
 
   ## Estimate parameters
@@ -161,3 +184,7 @@ endfunction
 %!error<hnfit: wrong value for ALPHA.> hnfit ([0.01:0.1:0.99], 0, i);
 %!error<hnfit: wrong value for ALPHA.> hnfit ([0.01:0.1:0.99], 0, -1);
 %!error<hnfit: wrong value for ALPHA.> hnfit ([0.01:0.1:0.99], 0, [0.05, 0.01]);
+%!error<hnfit: X and FREQ vectors mismatch.>
+%! hnfit ([1 2 3], 0, [], [1 5])
+%!error<hnfit: FREQ must not contain negative values.>
+%! hnfit ([1 2 3], 0, [], [1 5 -1])

@@ -43,10 +43,10 @@
 ## Further information about the half-normal distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Half-normal_distribution}
 ##
-## @seealso{hncdf, hninv, hnpdf, hnrnd, hnfit}
+## @seealso{hncdf, hninv, hnpdf, hnrnd, hnfit, hnstat}
 ## @end deftypefn
 
-function [nlogL, acov] = hnlike (params, x, freq=[])
+function [nlogL, acov] = hnlike (params, x, freq)
 
   ## Check input arguments and add defaults
   if (nargin < 2)
@@ -66,7 +66,8 @@ function [nlogL, acov] = hnlike (params, x, freq=[])
     error ("hnlike: X must be a vector of real values.");
   endif
 
-  if (isempty (freq))
+  ## Parse FREQ argument or add default
+  if (nargin < 3 || isempty (freq))
     freq = ones (size (x));
   elseif (! isequal (size (x), size (freq)))
     error ("hnlike: X and FREQ vectors mismatch.");
