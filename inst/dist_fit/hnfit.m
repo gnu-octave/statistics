@@ -16,20 +16,20 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{paramhat} =} hnfit (@var{x}, @var{mu})
-## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} hnfit (@var{x}, @var{mu})
+## @deftypefn  {statistics} {[@var{paramhat}, @var{paramci}] =} hnfit (@var{x}, @var{mu})
 ## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} hnfit (@var{x}, @var{mu}, @var{alpha})
 ## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} hnfit (@var{x}, @var{mu}, @var{alpha}, @var{freq})
 ##
 ## Estimate parameters and confidence intervals for the half-normal distribution.
 ##
-## @code{@var{paramhat} = hnfit (@var{x})} returns the maximum likelihood
-## estimates of the parameters of the half-normal distribution given the data in
-## vector @var{x}.  @qcode{@var{paramhat}(1)} is the location parameter,
-## @var{mu}, and @qcode{@var{paramhat}(2)} is the scale parameter, @var{sigma}.
-## Although @var{mu} is returned in the estimated @var{paramhat}, @code{hnfit}
-## does not estimate the location parameter @var{mu}, and it must be assumed to
-## be known.
+## @code{@var{paramhat} = hnfit (@var{x}, @var{mu})} returns the maximum
+## likelihood estimates of the parameters of the half-normal distribution given
+## the data in vector @var{x} and the location parameter @var{mu}.
+## @qcode{@var{paramhat}(1)} is the location parameter, @var{mu}, and
+## @qcode{@var{paramhat}(2)} is the scale parameter, @var{sigma}.  Although
+## @var{mu} is returned in the estimated @var{paramhat}, @code{hnfit} does not
+## estimate the location parameter @var{mu}, and it must be assumed to be known,
+## given as a fixed parameter in input argument @var{mu}.
 ##
 ## @code{[@var{paramhat}, @var{paramci}] = hnfit (@var{x}, @var{mu})} returns
 ## the 95% confidence intervals for the estimated scale parameter @var{sigma}.
