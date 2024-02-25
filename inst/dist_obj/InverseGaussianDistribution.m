@@ -454,7 +454,7 @@ classdef InverseGaussianDistribution
     ## @var{setparam}, @qcode{"Display"}, @qcode{"on"})} also plots the profile
     ## likelihood against the user-defined range of the selected parameter.
     ##
-    ## For the logistic distribution, @qcode{@var{pnum} = 1} selects the
+    ## For the inverse Gaussian distribution, @qcode{@var{pnum} = 1} selects the
     ## parameter @qcode{mu} and @qcode{@var{pnum} = 2} selects the parameter
     ## @var{lambda}.
     ##
