@@ -502,14 +502,14 @@ classdef NegativeBinomialDistribution
         ## pick the appropriate size from
         lx = this.Truncation(1);
         ux = this.Truncation(2);
-        ratio = 1 / diff (poisscdf ([ux, lx], this.R, this.P));
-        nsize = 2 * ratio * ps;       # times 2 to be on the safe side
+        ratio = 1 / diff (poisscdf ([lx, ux], this.R, this.P));
+        nsize = fix (2 * ratio * ps);       # times 2 to be on the safe side
         ## Generate the numbers and remove out-of-bound random samples
         r = nbinrnd (this.R, this.P, nsize, 1);
         r(r < lx | r > ux) = [];
         ## Randomly select the required size and reshape to requested dimensions
-        r = randperm (r, ps);
-        r = reshape (r, sz);
+        idx = randperm (numel (r), ps);
+        r = reshape (r(idx), sz);
       else
         r = nbinrnd (this.R, this.P, varargin{:});
       endif

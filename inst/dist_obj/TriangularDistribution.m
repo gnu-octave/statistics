@@ -380,14 +380,14 @@ classdef TriangularDistribution
         ## pick the appropriate size from
         lx = this.Truncation(1);
         ux = this.Truncation(2);
-        ratio = 1 / diff (tricdf ([ux, lx], this.A, this.B, this.C));
-        nsize = 2 * ratio * ps;     # times 2 to be on the safe side
+        ratio = 1 / diff (tricdf ([lx, ux], this.A, this.B, this.C));
+        nsize = fix (2 * ratio * ps);     # times 2 to be on the safe side
         ## Generate the numbers and remove out-of-bound random samples
         r = trirnd (this.A, this.B, this.C, nsize, 1);
         r(r < lx | r > ux) = [];
         ## Randomly select the required size and reshape to requested dimensions
-        r = randperm (r, ps);
-        r = reshape (r, sz);
+        idx = randperm (numel (r), ps);
+        r = reshape (r(idx), sz);
       else
         r = trirnd (this.A, this.B, this.C, varargin{:});
       endif

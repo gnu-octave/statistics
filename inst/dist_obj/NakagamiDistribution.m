@@ -503,14 +503,14 @@ classdef NakagamiDistribution
         ## pick the appropriate size from
         lx = this.Truncation(1);
         ux = this.Truncation(2);
-        ratio = 1 / diff (poisscdf ([ux, lx], this.mu, this.omega));
-        nsize = 2 * ratio * ps;       # times 2 to be on the safe side
+        ratio = 1 / diff (poisscdf ([lx, ux], this.mu, this.omega));
+        nsize = fix (2 * ratio * ps);       # times 2 to be on the safe side
         ## Generate the numbers and remove out-of-bound random samples
         r = nakarnd (this.mu, this.omega, nsize, 1);
         r(r < lx | r > ux) = [];
         ## Randomly select the required size and reshape to requested dimensions
-        r = randperm (r, ps);
-        r = reshape (r, sz);
+        idx = randperm (numel (r), ps);
+        r = reshape (r(idx), sz);
       else
         r = nakarnd (this.mu, this.omega, varargin{:});
       endif

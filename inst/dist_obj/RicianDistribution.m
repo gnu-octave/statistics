@@ -504,13 +504,13 @@ classdef RicianDistribution
         lx = this.Truncation(1);
         ux = this.Truncation(2);
         ratio = 1 / diff (ricecdf ([ux, lx], this.nu, this.sigma));
-        nsize = 2 * ratio * ps;       # times 2 to be on the safe side
+        nsize = fix (2 * ratio * ps);       # times 2 to be on the safe side
         ## Generate the numbers and remove out-of-bound random samples
         r = ricernd (this.nu, this.sigma, nsize, 1);
         r(r < lx | r > ux) = [];
         ## Randomly select the required size and reshape to requested dimensions
-        r = randperm (r, ps);
-        r = reshape (r, sz);
+        idx = randperm (numel (r), ps);
+        r = reshape (r(idx), sz);
       else
         r = ricernd (this.nu, this.sigma, varargin{:});
       endif
