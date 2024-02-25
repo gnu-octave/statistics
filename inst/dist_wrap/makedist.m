@@ -235,7 +235,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = [];
+      pd = InverseGaussianDistribution (mu, lambda);
 
     case "logistic"
       mu = 0;
@@ -529,6 +529,23 @@ function pd = makedist (varargin)
 endfunction
 
 ## Test output
+%!test
+%! pd = makedist ("InverseGaussian");
+%! assert (class (pd), "InverseGaussianDistribution");
+%! assert (pd.mu, 1);
+%! assert (pd.lambda, 1);
+%!test
+%! pd = makedist ("InverseGaussian", "mu", 5);
+%! assert (pd.mu, 5);
+%! assert (pd.lambda, 1);
+%!test
+%! pd = makedist ("InverseGaussian", "lambda", 5);
+%! assert (pd.mu, 1);
+%! assert (pd.lambda, 5);
+%!test
+%! pd = makedist ("InverseGaussian", "mu", 3, "lambda", 5);
+%! assert (pd.mu, 3);
+%! assert (pd.lambda, 5);
 %!test
 %! pd = makedist ("logistic");
 %! assert (class (pd), "LogisticDistribution");

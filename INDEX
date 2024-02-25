@@ -68,6 +68,7 @@ Descriptive Statistics
  trimmean
  var
 Distribution Classes
+ InverseGaussianDistribution
  LogisticDistribution
  LoglogisticDistribution
  LognormalDistribution
@@ -174,6 +175,8 @@ Distribution Statistics
  gevstat
  gpstat
  hygestat
+ invgstat
+ logistat
  loglstat
  lognstat
  nakastat

@@ -233,11 +233,17 @@ function [varargout] = fitdist (varargin)
       endif
 
     case "inversegaussian"
-      warning ("fitdist: 'InverseGaussian' distribution not supported yet.");
       if (isempty (groupvar))
-        varargout{1} = [];
+        varargout{1} = InverseGaussianDistribution.fit ...
+                       (x, alpha, censor, freq, options);
       else
-        varargout{1} = [];
+        pd = InverseGaussianDistribution.fit ...
+             (x(g==1), alpha, censor(g==1), freq(g==1), options);
+        for i = 2:groups
+          pd(i) = InverseGaussianDistribution.fit ...
+                  (x(g==i), alpha, censor(g==i), freq(g==i), options);
+        endfor
+        varargout{1} = pd;
         varargout{2} = gn;
         varargout{3} = gl;
       endif
@@ -435,6 +441,22 @@ function [varargout] = fitdist (varargin)
 endfunction
 
 ## Test output
+%!test
+%! x = invgrnd (1, 1, 100, 1);
+%! pd = fitdist (x, "InverseGaussian");
+%! [phat, pci] = invgfit (x);
+%! assert ([pd.lambda, pd.sigma], phat);
+%! assert (paramci (pd), pci);
+%!test
+%! x1 = invgrnd (1, 1, 100, 1);
+%! x2 = invgrnd (5, 2, 100, 1);
+%! pd = fitdist ([x1; x2], "InverseGaussian", "By", [ones(100,1); 2*ones(100,1)]);
+%! [phat, pci] = invgfit (x1);
+%! assert ([pd(1).lambda, pd(1).sigma], phat);
+%! assert (paramci (pd(1)), pci);
+%! [phat, pci] = invgfit (x2);
+%! assert ([pd(2).lambda, pd(2).sigma], phat);
+%! assert (paramci (pd(2)), pci);
 %!test
 %! x = logirnd (1, 1, 100, 1);
 %! pd = fitdist (x, "logistic");
