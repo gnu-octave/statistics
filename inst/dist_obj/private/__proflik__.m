@@ -27,7 +27,7 @@
 function [nlogl, param] = __proflik__ (pd, pnum, varargin)
 
   ## Check for valid pnum
-  npvec = [1:pd.NumParameters];
+  npvec = find (pd.ParameterIsFixed == false);
   if (! (isnumeric (pnum) && isscalar (pnum) && ismember (pnum, npvec)))
     error ("proflik: PNUM must be a scalar number indexing a valid parameter.");
   endif

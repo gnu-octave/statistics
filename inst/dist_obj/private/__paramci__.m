@@ -72,7 +72,13 @@ function ci = __paramci__ (pd, varargin)
                    "alpha", alpha, "ntrials", ntrials, ...
                    "frequency", pd.InputData.freq);
 
-  elseif (any (strcmpi (distname, {"gp", "hn"})))
+  elseif (strcmpi (distname, "gp"))
+    theta = pd.theta;
+    [~, ci] = mle (pd.InputData.data, "distribution", distname, ...
+                   "alpha", alpha, "theta", theta, ...
+                   "frequency", pd.InputData.freq);
+
+  elseif (strcmpi (distname, "hn"))
     mu = pd.mu;
     [~, ci] = mle (pd.InputData.data, "distribution", distname, ...
                    "alpha", alpha, "mu", mu, "frequency", pd.InputData.freq);
