@@ -1,7 +1,7 @@
 ## Copyright (C) 1997-2015 Kurt Hornik
 ## Copyright (C) 2016 Dag Lyberg
 ## Copyright (C) 2018 John Donoghue
-## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -19,31 +19,32 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{p} =} gpcdf (@var{x}, @var{k}, @var{sigma}, @var{mu})
-## @deftypefnx {statistics} {@var{p} =} gpcdf (@var{x}, @var{k}, @var{sigma}, @var{mu}, @qcode{"upper"})
+## @deftypefn  {statistics} {@var{p} =} gpcdf (@var{x}, @var{k}, @var{sigma}, @var{theta})
+## @deftypefnx {statistics} {@var{p} =} gpcdf (@var{x}, @var{k}, @var{sigma}, @var{theta}, @qcode{"upper"})
 ##
 ## Generalized Pareto cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
 ## (CDF) of the generalized Pareto distribution with shape parameter @var{k},
-## scale parameter @var{sigma}, and location parameter @var{mu}.  The size of
-## @var{p} is the common size of @var{x}, @var{k}, @var{sigma}, and @var{mu}.
+## scale parameter @var{sigma}, and location parameter @var{theta}.  The size of
+## @var{p} is the common size of @var{x}, @var{k}, @var{sigma}, and @var{theta}.
 ## A scalar input functions as a constant matrix of the same size as the other
 ## inputs.
 ##
-## @code{[@dots{}] = gpcdf(@var{x}, @var{k}, @var{sigma}, @var{mu}, "upper")}
+## @code{[@dots{}] = gpcdf(@var{x}, @var{k}, @var{sigma}, @var{theta}, "upper")}
 ## computes the upper tail probability of the generalized Pareto distribution
-## with parameters @var{k}, @var{sigma}, and @var{mu}, at the values in @var{x}.
+## with parameters @var{k}, @var{sigma}, and @var{theta}, at the values in
+## @var{x}.
 ##
-## When @qcode{@var{k} = 0} and @qcode{@var{mu} = 0}, the Generalized Pareto CDF
+## When @qcode{@var{k} = 0} and @qcode{@var{theta} = 0}, the Generalized Pareto
 ## is equivalent to the exponential distribution.  When @qcode{@var{k} > 0} and
-## @code{@var{mu} = @var{k} / @var{k}} the Generalized Pareto is equivalent to
-## the Pareto distribution.  The mean of the Generalized Pareto is not finite
+## @code{@var{theta} = @var{k} / @var{k}} the Generalized Pareto is equivalent
+## τπ the Pareto distribution.  The mean of the Generalized Pareto is not finite
 ## when @qcode{@var{k} >= 1} and the variance is not finite when
 ## @qcode{@var{k} >= 1/2}.  When @qcode{@var{k} >= 0}, the Generalized Pareto
-## has positive density for @qcode{@var{x} > @var{mu}}, or, when
-## @qcode{@var{mu} < 0}, for
-## @qcode{0 <= (@var{x} - @var{mu}) / @var{sigma} <= -1 / @var{k}}.
+## has positive density for @qcode{@var{x} > @var{theta}}, or, when
+## @qcode{@var{theta} < 0}, for
+## @qcode{0 <= (@var{x} - @var{theta}) / @var{sigma} <= -1 / @var{k}}.
 ##
 ## Further information about the generalized Pareto distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Generalized_Pareto_distribution}
@@ -51,7 +52,7 @@
 ## @seealso{gpinv, gppdf, gprnd, gpfit, gplike, gpstat}
 ## @end deftypefn
 
-function p = gpcdf (x, k, sigma, mu, uflag)
+function p = gpcdf (x, k, sigma, theta, uflag)
 
   ## Check for valid number of input arguments
   if (nargin < 4)
@@ -69,22 +70,22 @@ function p = gpcdf (x, k, sigma, mu, uflag)
     uflag = false;
   endif
 
-  ## Check for common size of X, K, SIGMA, and MU
-  if (! isscalar (x) || ! isscalar (k) || ! isscalar (sigma) || ! isscalar (mu))
-    [err, x, k, sigma, mu] = common_size (x, k, sigma, mu);
+  ## Check for common size of X, K, SIGMA, and THETA
+  if (! isscalar (x) || ! isscalar (k) || ! isscalar (sigma) || ! isscalar (theta))
+    [err, x, k, sigma, theta] = common_size (x, k, sigma, theta);
     if (err > 0)
-      error ("gpcdf: X, K, SIGMA, and MU must be of common size or scalars.");
+      error ("gpcdf: X, K, SIGMA, and THETA must be of common size or scalars.");
     endif
   endif
 
-  ## Check for X, K, SIGMA, and MU being reals
-  if (iscomplex (x) || iscomplex (k) || iscomplex (sigma) || iscomplex (mu))
-    error ("gpcdf: X, K, SIGMA, and MU must not be complex.");
+  ## Check for X, K, SIGMA, and THETA being reals
+  if (iscomplex (x) || iscomplex (k) || iscomplex (sigma) || iscomplex (theta))
+    error ("gpcdf: X, K, SIGMA, and THETA must not be complex.");
   endif
 
   ## Check for class type
   if (isa (x, "single") || isa (k, "single") ...
-                        || isa (sigma, "single") || isa (mu, "single"));
+                        || isa (sigma, "single") || isa (theta, "single"));
     is_class = "single";
   else
     is_class = "double";
@@ -96,8 +97,8 @@ function p = gpcdf (x, k, sigma, mu, uflag)
   ## Return NaNs for out of range values of sigma parameter
   sigma(sigma <= 0) = NaN;
 
-  ## Calculate (x-mu)/sigma => 0 and force zero below that
-  z = (x - mu) ./ sigma;
+  ## Calculate (x-theta)/sigma => 0 and force zero below that
+  z = (x - theta) ./ sigma;
   z(z < 0) = 0;
 
   ## Compute cases for SHAPE == 0
@@ -144,9 +145,9 @@ endfunction
 %!       x, p4, "-c", x, p5, "-m", x, p6, "-k")
 %! grid on
 %! xlim ([0, 5])
-%! legend ({"ξ = 1, σ = 1, μ = 0", "ξ = 5, σ = 1, μ = 0", ...
-%!          "ξ = 20, σ = 1, μ = 0", "ξ = 1, σ = 2, μ = 0", ...
-%!          "ξ = 5, σ = 2, μ = 0", "ξ = 20, σ = 2, μ = 0"}, ...
+%! legend ({"k = 1, σ = 1, θ = 0", "k = 5, σ = 1, θ = 0", ...
+%!          "k = 20, σ = 1, θ = 0", "k = 1, σ = 2, θ = 0", ...
+%!          "k = 5, σ = 2, θ = 0", "k = 20, σ = 2, θ = 0"}, ...
 %!         "location", "northwest")
 %! title ("Generalized Pareto CDF")
 %! xlabel ("values in x")
@@ -241,15 +242,15 @@ endfunction
 %!error<gpcdf: function called with too few input arguments.> gpcdf (1, 2, 3)
 %!error<gpcdf: invalid argument for upper tail.> gpcdf (1, 2, 3, 4, "tail")
 %!error<gpcdf: invalid argument for upper tail.> gpcdf (1, 2, 3, 4, 5)
-%!error<gpcdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
+%!error<gpcdf: X, K, SIGMA, and THETA must be of common size or scalars.> ...
 %! gpcdf (ones (3), ones (2), ones(2), ones(2))
-%!error<gpcdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
+%!error<gpcdf: X, K, SIGMA, and THETA must be of common size or scalars.> ...
 %! gpcdf (ones (2), ones (3), ones(2), ones(2))
-%!error<gpcdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
+%!error<gpcdf: X, K, SIGMA, and THETA must be of common size or scalars.> ...
 %! gpcdf (ones (2), ones (2), ones(3), ones(2))
-%!error<gpcdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
+%!error<gpcdf: X, K, SIGMA, and THETA must be of common size or scalars.> ...
 %! gpcdf (ones (2), ones (2), ones(2), ones(3))
-%!error<gpcdf: X, K, SIGMA, and MU must not be complex.> gpcdf (i, 2, 3, 4)
-%!error<gpcdf: X, K, SIGMA, and MU must not be complex.> gpcdf (1, i, 3, 4)
-%!error<gpcdf: X, K, SIGMA, and MU must not be complex.> gpcdf (1, 2, i, 4)
-%!error<gpcdf: X, K, SIGMA, and MU must not be complex.> gpcdf (1, 2, 3, i)
+%!error<gpcdf: X, K, SIGMA, and THETA must not be complex.> gpcdf (i, 2, 3, 4)
+%!error<gpcdf: X, K, SIGMA, and THETA must not be complex.> gpcdf (1, i, 3, 4)
+%!error<gpcdf: X, K, SIGMA, and THETA must not be complex.> gpcdf (1, 2, i, 4)
+%!error<gpcdf: X, K, SIGMA, and THETA must not be complex.> gpcdf (1, 2, 3, i)

@@ -18,19 +18,19 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{r} =} gprnd (@var{k}, @var{sigma}, @var{mu})
-## @deftypefnx {statistics} {@var{r} =} gprnd (@var{k}, @var{sigma}, @var{mu}, @var{rows})
-## @deftypefnx {statistics} {@var{r} =} gprnd (@var{k}, @var{sigma}, @var{mu}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} {@var{r} =} gprnd (@var{k}, @var{sigma}, @var{mu}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} gprnd (@var{k}, @var{sigma}, @var{theta})
+## @deftypefnx {statistics} {@var{r} =} gprnd (@var{k}, @var{sigma}, @var{theta}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} gprnd (@var{k}, @var{sigma}, @var{theta}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} gprnd (@var{k}, @var{sigma}, @var{theta}, [@var{sz}])
 ##
 ## Random arrays from the generalized Pareto distribution.
 ##
-## @code{@var{r} = gprnd (@var{k}, @var{sigma}, @var{mu})} returns an array of
-## random numbers chosen from the generalized Pareto distribution with shape
+## @code{@var{r} = gprnd (@var{k}, @var{sigma}, @var{theta})} returns an array
+## of random numbers chosen from the generalized Pareto distribution with shape
 ## parameter @var{k}, scale parameter @var{sigma}, and location parameter
-## @var{mu}.  The size of @var{r} is the common size of @var{k}, @var{sigma},
-## and @var{mu}.  A scalar input functions as a constant matrix of the same size
-## as the other inputs.
+## @var{theta}.  The size of @var{r} is the common size of @var{k}, @var{sigma},
+## and @var{theta}.  A scalar input functions as a constant matrix of the same
+## size as the other inputs.
 ##
 ## When called with a single size argument, @code{gprnd} returns a square
 ## matrix with the dimension specified.  When called with more than one scalar
@@ -38,15 +38,15 @@
 ## and any further arguments specify additional matrix dimensions.  The size may
 ## also be specified with a row vector of dimensions, @var{sz}.
 ##
-## When @qcode{@var{k} = 0} and @qcode{@var{mu} = 0}, the Generalized Pareto CDF
+## When @qcode{@var{k} = 0} and @qcode{@var{theta} = 0}, the Generalized Pareto
 ## is equivalent to the exponential distribution.  When @qcode{@var{k} > 0} and
-## @code{@var{mu} = @var{k} / @var{k}} the Generalized Pareto is equivalent to
-## the Pareto distribution.  The mean of the Generalized Pareto is not finite
+## @code{@var{theta} = @var{k} / @var{k}} the Generalized Pareto is equivalent
+## to the Pareto distribution.  The mean of the Generalized Pareto is not finite
 ## when @qcode{@var{k} >= 1} and the variance is not finite when
 ## @qcode{@var{k} >= 1/2}.  When @qcode{@var{k} >= 0}, the Generalized Pareto
-## has positive density for @qcode{@var{x} > @var{mu}}, or, when
-## @qcode{@var{mu} < 0}, for
-## @qcode{0 <= (@var{x} - @var{mu}) / @var{sigma} <= -1 / @var{k}}.
+## has positive density for @qcode{@var{x} > @var{theta}}, or, when
+## @qcode{@var{theta} < 0}, for
+## @qcode{0 <= (@var{x} - @var{theta}) / @var{sigma} <= -1 / @var{k}}.
 ##
 ## Further information about the generalized Pareto distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Generalized_Pareto_distribution}
@@ -54,24 +54,24 @@
 ## @seealso{gpcdf, gpinv, gppdf, gpfit, gplike, gpstat}
 ## @end deftypefn
 
-function r = gprnd (k, sigma, mu, varargin)
+function r = gprnd (k, sigma, theta, varargin)
 
   ## Check for valid number of input arguments
   if (nargin < 3)
     error ("gprnd: function called with too few input arguments.");
   endif
 
-  ## Check for common size of K, SIGMA, and MU
-  if (! isscalar (k) || ! isscalar (sigma) || ! isscalar (mu))
-    [retval, k, sigma, mu] = common_size (k, sigma, mu);
+  ## Check for common size of K, SIGMA, and THETA
+  if (! isscalar (k) || ! isscalar (sigma) || ! isscalar (theta))
+    [retval, k, sigma, theta] = common_size (k, sigma, theta);
     if (retval > 0)
-      error ("gprnd: K, SIGMA, and MU must be of common size or scalars.");
+      error ("gprnd: K, SIGMA, and THETA must be of common size or scalars.");
     endif
   endif
 
-  ## Check for K, SIGMA, and MU being reals
-  if (iscomplex (k) || iscomplex (sigma) || iscomplex (mu))
-    error ("gprnd: K, SIGMA, and MU must not be complex.");
+  ## Check for K, SIGMA, and THETA being reals
+  if (iscomplex (k) || iscomplex (sigma) || iscomplex (theta))
+    error ("gprnd: K, SIGMA, and THETA must not be complex.");
   endif
 
   ## Parse and check SIZE arguments
@@ -98,11 +98,11 @@ function r = gprnd (k, sigma, mu, varargin)
 
   ## Check that parameters match requested dimensions in size
   if (!isscalar (k) && ! isequal (size (k), sz))
-    error ("gprnd: K, SIGMA, and MU must be scalars or of size SZ.");
+    error ("gprnd: K, SIGMA, and THETA must be scalars or of size SZ.");
   endif
 
   ## Check for class type
-  if (isa (k, "single") || isa (sigma, "single") || isa (mu, "single"))
+  if (isa (k, "single") || isa (sigma, "single") || isa (theta, "single"))
     cls = "single";
   else
     cls = "double";
@@ -112,7 +112,7 @@ function r = gprnd (k, sigma, mu, varargin)
   r = rand (sz, cls);
 
   ## Find valid parameters
-  vr = (isfinite (r)) & (mu > -Inf) & (mu < Inf) ...
+  vr = (isfinite (r)) & (theta > -Inf) & (theta < Inf) ...
                       & (sigma > 0) & (sigma < Inf) ...
                       & (-Inf < k) & (k < Inf);
 
@@ -121,16 +121,16 @@ function r = gprnd (k, sigma, mu, varargin)
 
   if (isscalar (k))
     if (k == 0)
-      r(vr) = mu - (sigma .* log (1 - r(vr)));
+      r(vr) = theta - (sigma .* log (1 - r(vr)));
     else
-      r(vr) = mu + ((sigma .* ((r(vr) .^ -k) - 1)) ./ k);
+      r(vr) = theta + ((sigma .* ((r(vr) .^ -k) - 1)) ./ k);
     endif
   else
     if (any (k == 0))
-      r(vr) = mu(vr) - (sigma(vr) .* log (1 - r(vr)));
+      r(vr) = theta(vr) - (sigma(vr) .* log (1 - r(vr)));
     endif
     if (any (k < 0 | k > 0))
-      r(vr) = mu(vr) + ((sigma(vr) .* ((r(vr) .^ -k(vr)) - 1)) ./ k(vr));
+      r(vr) = theta(vr) + ((sigma(vr) .* ((r(vr) .^ -k(vr)) - 1)) ./ k(vr));
     endif
   endif
 
@@ -181,15 +181,15 @@ endfunction
 %!error<gprnd: function called with too few input arguments.> gprnd ()
 %!error<gprnd: function called with too few input arguments.> gprnd (1)
 %!error<gprnd: function called with too few input arguments.> gprnd (1, 2)
-%!error<gprnd: K, SIGMA, and MU must be of common size or scalars.> ...
+%!error<gprnd: K, SIGMA, and THETA must be of common size or scalars.> ...
 %! gprnd (ones (3), ones (2), ones (2))
-%!error<gprnd: K, SIGMA, and MU must be of common size or scalars.> ...
+%!error<gprnd: K, SIGMA, and THETA must be of common size or scalars.> ...
 %! gprnd (ones (2), ones (3), ones (2))
-%!error<gprnd: K, SIGMA, and MU must be of common size or scalars.> ...
+%!error<gprnd: K, SIGMA, and THETA must be of common size or scalars.> ...
 %! gprnd (ones (2), ones (2), ones (3))
-%!error<gprnd: K, SIGMA, and MU must not be complex.> gprnd (i, 2, 3)
-%!error<gprnd: K, SIGMA, and MU must not be complex.> gprnd (1, i, 3)
-%!error<gprnd: K, SIGMA, and MU must not be complex.> gprnd (1, 2, i)
+%!error<gprnd: K, SIGMA, and THETA must not be complex.> gprnd (i, 2, 3)
+%!error<gprnd: K, SIGMA, and THETA must not be complex.> gprnd (1, i, 3)
+%!error<gprnd: K, SIGMA, and THETA must not be complex.> gprnd (1, 2, i)
 %!error<gprnd: SZ must be a scalar or a row vector of non-negative integers.> ...
 %! gprnd (1, 2, 3, -1)
 %!error<gprnd: SZ must be a scalar or a row vector of non-negative integers.> ...
@@ -204,9 +204,9 @@ endfunction
 %! gprnd (1, 2, 3, 2, -1, 5)
 %!error<gprnd: dimensions must be non-negative integers.> ...
 %! gprnd (1, 2, 3, 2, 1.5, 5)
-%!error<gprnd: K, SIGMA, and MU must be scalars or of size SZ.> ...
+%!error<gprnd: K, SIGMA, and THETA must be scalars or of size SZ.> ...
 %! gprnd (2, ones (2), 2, 3)
-%!error<gprnd: K, SIGMA, and MU must be scalars or of size SZ.> ...
+%!error<gprnd: K, SIGMA, and THETA must be scalars or of size SZ.> ...
 %! gprnd (2, ones (2), 2, [3, 2])
-%!error<gprnd: K, SIGMA, and MU must be scalars or of size SZ.> ...
+%!error<gprnd: K, SIGMA, and THETA must be scalars or of size SZ.> ...
 %! gprnd (2, ones (2), 2, 3, 2)
