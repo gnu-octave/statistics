@@ -229,17 +229,14 @@ function [phat, pci] = mle (x, varargin)
         error (strcat (["mle: censoring is not supported for"], ...
                        [" the Half Normal distribution."]));
       endif
-      if (! isempty (freq))
-        x = expandFreq (x, freq);
-      endif
       if (any (x < mu))
         error (strcat (["mle: invalid 'mu' location parameter"], ...
                        [" for the Half Normal distribution."]));
       endif
       if (nargout < 2)
-        phat = hnfit (x - mu, alpha, options);
+        phat = hnfit (x, mu, alpha, freq);
       else
-        [phat, pci] = hnfit (x - mu, alpha, options);
+        [phat, pci] = hnfit (x, mu, alpha, freq);
       endif
 
     case {"invg", "inversegaussian", "inverse gaussian"}

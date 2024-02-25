@@ -218,7 +218,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = [];
+      pd = HalfNormalDistribution (mu, sigma);
 
     case "inversegaussian"
       mu = 1;
@@ -529,6 +529,23 @@ function pd = makedist (varargin)
 endfunction
 
 ## Test output
+%!test
+%! pd = makedist ("HalfNormal");
+%! assert (class (pd), "HalfNormalDistribution");
+%! assert (pd.mu, 0);
+%! assert (pd.sigma, 1);
+%!test
+%! pd = makedist ("HalfNormal", "mu", 5);
+%! assert (pd.mu, 5);
+%! assert (pd.sigma, 1);
+%!test
+%! pd = makedist ("HalfNormal", "sigma", 5);
+%! assert (pd.mu, 0);
+%! assert (pd.sigma, 5);
+%!test
+%! pd = makedist ("HalfNormal", "mu", 3, "sigma", 5);
+%! assert (pd.mu, 3);
+%! assert (pd.sigma, 5);
 %!test
 %! pd = makedist ("InverseGaussian");
 %! assert (class (pd), "InverseGaussianDistribution");

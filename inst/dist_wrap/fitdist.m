@@ -223,11 +223,17 @@ function [varargout] = fitdist (varargin)
       endif
 
     case "halfnormal"
-      warning ("fitdist: 'HalfNormal' distribution not supported yet.");
+      if (any (x - mu < 0))
+        error ("fitdist: invalid MU value for half-normal distribution.");
+      endif
       if (isempty (groupvar))
-        varargout{1} = [];
+        varargout{1} = HalfNormalDistribution.fit (x, mu, alpha, freq);
       else
-        varargout{1} = [];
+        pd = HalfNormalDistribution.fit (x(g==1), mu, alpha, freq(g==1));
+        for i = 2:groups
+          pd(i) = HalfNormalDistribution.fit (x(g==i), mu, alpha, freq(g==i));
+        endfor
+        varargout{1} = pd;
         varargout{2} = gn;
         varargout{3} = gl;
       endif
@@ -441,6 +447,39 @@ function [varargout] = fitdist (varargin)
 endfunction
 
 ## Test output
+%!test
+%! x = hnrnd (0, 1, 100, 1);
+%! pd = fitdist (x, "HalfNormal");
+%! [phat, pci] = hnfit (x, 0);
+%! assert ([pd.mu, pd.sigma], phat);
+%! assert (paramci (pd), pci);
+%!test
+%! x = hnrnd (1, 1, 100, 1);
+%! pd = fitdist (x, "HalfNormal", "mu", 1);
+%! [phat, pci] = hnfit (x, 1);
+%! assert ([pd.mu, pd.sigma], phat);
+%! assert (paramci (pd), pci);
+%!test
+%! x1 = hnrnd (0, 1, 100, 1);
+%! x2 = hnrnd (0, 2, 100, 1);
+%! pd = fitdist ([x1; x2], "HalfNormal", "By", [ones(100,1); 2*ones(100,1)]);
+%! [phat, pci] = hnfit (x1, 0);
+%! assert ([pd(1).mu, pd(1).sigma], phat);
+%! assert (paramci (pd(1)), pci);
+%! [phat, pci] = hnfit (x2, 0);
+%! assert ([pd(2).mu, pd(2).sigma], phat);
+%! assert (paramci (pd(2)), pci);
+%!test
+%! x1 = hnrnd (2, 1, 100, 1);
+%! x2 = hnrnd (2, 2, 100, 1);
+%! pd = fitdist ([x1; x2], "HalfNormal", "mu", 2, ...
+%!               "By", [ones(100,1); 2*ones(100,1)]);
+%! [phat, pci] = hnfit (x1, 2);
+%! assert ([pd(1).mu, pd(1).sigma], phat);
+%! assert (paramci (pd(1)), pci);
+%! [phat, pci] = hnfit (x2, 2);
+%! assert ([pd(2).mu, pd(2).sigma], phat);
+%! assert (paramci (pd(2)), pci);
 %!test
 %! x = invgrnd (1, 1, 100, 1);
 %! pd = fitdist (x, "InverseGaussian");
@@ -684,3 +723,5 @@ endfunction
 %! fitdist ([1, 2, 3], "normal", "param", struct ("options", 1))
 %!error <fitdist: must define GROUPVAR for more than one output arguments.> ...
 %! [pdca, gn, gl] = fitdist ([1, 2, 3], "normal");
+%!error <fitdist: invalid MU value for half-normal distribution.> ...
+%! fitdist ([1, 2, 3], "halfnormal", "mu", 2);
