@@ -49,7 +49,7 @@
 ## Further information about the inverse Gaussian distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Inverse_Gaussian_distribution}
 ##
-## @seealso{invgcdf, invginv, invgpdf, invgrnd, invgfit}
+## @seealso{invgcdf, invginv, invgpdf, invgrnd, invgfit, invgstat}
 ## @end deftypefn
 
 function [nlogL, acov] = invglike (params, x, censor, freq)

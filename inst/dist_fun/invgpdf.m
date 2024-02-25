@@ -32,7 +32,7 @@
 ## Further information about the inverse Gaussian distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Inverse_Gaussian_distribution}
 ##
-## @seealso{invgcdf, invginv, invgrnd, invgfit, invglike}
+## @seealso{invgcdf, invginv, invgrnd, invgfit, invglike, invgstat}
 ## @end deftypefn
 
 function y = invgpdf (x, mu, lambda)

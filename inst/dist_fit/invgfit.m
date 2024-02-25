@@ -65,7 +65,7 @@
 ## Further information about the inverse Gaussian distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Inverse_Gaussian_distribution}
 ##
-## @seealso{invgcdf, invginv, invgpdf, invgrnd, invglike}
+## @seealso{invgcdf, invginv, invgpdf, invgrnd, invglike, invgstat}
 ## @end deftypefn
 
 function [paramhat, paramci] = invgfit (x, alpha, censor, freq, options)
