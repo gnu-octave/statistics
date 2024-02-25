@@ -66,18 +66,8 @@ classdef InverseGaussianDistribution
   ## @code{negloglik}, @code{paramci}, @code{pdf}, @code{plot}, @code{proflik},
   ## @code{random}, @code{std}, @code{truncate}, @code{var}.
   ##
-  ## Further information about the logistic distribution can be found at
-  ## @url{https://en.wikipedia.org/wiki/Log-normal_distribution}
-  ##
-  ## OCTAVE/MATLAB use an alternative parameterization given by the pair
-  ## @math{μ, s}, i.e. @var{mu} and @var{lambda}, in analogy with the logistic
-  ## distribution.  Their relation to the @math{α} and @math{b} parameters used
-  ## in Wikipedia are given below:
-  ##
-  ## @itemize
-  ## @item @qcode{@var{mu} = log (@var{a})}
-  ## @item @qcode{@var{lambda} = 1 / @var{a}}
-  ## @end itemize
+  ## Further information about the inverse Gaussian distribution can be found at
+  ## @url{https://en.wikipedia.org/wiki/Inverse_Gaussian_distribution}
   ##
   ## @seealso{fitdist, makedist, invgcdf, invginv, invgpdf, invgrnd, lognfit,
   ## invglike, invgstat}
