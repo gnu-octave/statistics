@@ -17,29 +17,28 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {[@var{m}, @var{v}] =} gpstat (@var{k}, @var{sigma}, @var{mu})
+## @deftypefn  {statistics} {[@var{m}, @var{v}] =} gpstat (@var{k}, @var{sigma}, @var{theta})
 ##
 ## Compute statistics of the generalized Pareto distribution.
 ##
-## @code{[@var{m}, @var{v}] = gpstat (@var{k}, @var{sigma}, @var{mu})}
+## @code{[@var{m}, @var{v}] = gpstat (@var{k}, @var{sigma}, @var{theta})}
 ## returns the mean and variance of the generalized Pareto distribution with
 ## shape parameter @var{k}, scale parameter @var{sigma}, and location parameter
-## @var{mu}.
+## @var{theta}.
 ##
 ## The size of @var{m} (mean) and @var{v} (variance) is the common size of the
 ## input arguments.  A scalar input functions as a constant matrix of the
 ## same size as the other inputs.
 ##
-## When @var{k} = 0 and @var{mu} = 0, the generalized Pareto
-## distribution is equivalent to the exponential distribution.  When
-## @code{@var{k} > 0} and @code{@var{mu} = @var{sigma} / @var{k}},
-## the generalized Pareto distribution is equivalent to the Pareto distribution.
-## The mean of the generalized Pareto distribution is not finite when
-## @code{@var{k} >= 1}, and the variance is not finite when
-## @code{@var{k} >= 1/2}.  When @code{@var{k} >= 0}, the generalized
-## Pareto distribution has positive density for @code{@var{x} > @var{mu}},
-## or, when @code{@var{k} < 0}, for
-## @code{0 <= (@var{x} -  @var{mu}) / @var{sigma} <= -1 / @var{k}}.
+## When @var{k} = 0 and @var{theta} = 0, the generalized Pareto distribution is
+## equivalent to the exponential distribution.  When @code{@var{k} > 0} and
+## @code{@var{theta} = @var{sigma} / @var{k}}, the generalized Pareto
+## distribution is equivalent to the Pareto distribution.  The mean of the
+## generalized Pareto distribution is not finite when @code{@var{k} >= 1}, and
+## the variance is not finite when @code{@var{k} >= 1/2}.  When
+## @code{@var{k} >= 0}, the generalized Pareto distribution has positive density
+## for @code{@var{x} > @var{theta}}, or, when @code{@var{k} < 0}, for
+## @code{0 <= (@var{x} -  @var{theta}) / @var{sigma} <= -1 / @var{k}}.
 ##
 ## Further information about the generalized Pareto distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Generalized_Pareto_distribution}
@@ -47,7 +46,7 @@
 ## @seealso{gpcdf, gpinv, gppdf, gprnd, gpfit, gplike}
 ## @end deftypefn
 
-function [m, v] = gpstat (k, sigma, mu)
+function [m, v] = gpstat (k, sigma, theta)
 
   ## Check for valid number of input arguments
   if (nargin < 3)
@@ -55,18 +54,18 @@ function [m, v] = gpstat (k, sigma, mu)
   endif
 
   ## Check for K, SIGMA, and MU being numeric
-  if (! (isnumeric (k) && isnumeric (sigma) && isnumeric (mu)))
+  if (! (isnumeric (k) && isnumeric (sigma) && isnumeric (theta)))
     error ("gpstat: K, SIGMA, and MU must be numeric.");
   endif
 
   ## Check for K, SIGMA, and MU being real
-  if (iscomplex (k) || iscomplex (sigma) || iscomplex (mu))
+  if (iscomplex (k) || iscomplex (sigma) || iscomplex (theta))
     error ("gpstat: K, SIGMA, and MU must not be complex.");
   endif
 
   ## Check for common size of K, SIGMA, and MU
-  if (! isscalar (k) || ! isscalar (sigma) || ! isscalar (mu))
-    [retval, k, sigma, mu] = common_size (k, sigma, mu);
+  if (! isscalar (k) || ! isscalar (sigma) || ! isscalar (theta))
+    [retval, k, sigma, theta] = common_size (k, sigma, theta);
     if (retval > 0)
       error ("gpstat: K, SIGMA, and MU must be of common size or scalars.");
     endif
@@ -76,7 +75,7 @@ function [m, v] = gpstat (k, sigma, mu)
   sigma(sigma <= 0) = NaN;
 
   ## Check for appropriate class
-  if (isa (k, "single") || isa (sigma, "single") || isa (mu, "single"));
+  if (isa (k, "single") || isa (sigma, "single") || isa (theta, "single"));
     is_class = "single";
   else
     is_class = "double";
@@ -106,7 +105,7 @@ function [m, v] = gpstat (k, sigma, mu)
   v(k >= 1/2) = Inf;
 
   ## Compute mean and variance
-  m = mu + sigma .* m;
+  m = theta + sigma .* m;
   v = sigma .^ 2 .* v;
 
 endfunction
