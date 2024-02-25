@@ -445,17 +445,17 @@ endfunction
 %! x = invgrnd (1, 1, 100, 1);
 %! pd = fitdist (x, "InverseGaussian");
 %! [phat, pci] = invgfit (x);
-%! assert ([pd.lambda, pd.sigma], phat);
+%! assert ([pd.mu, pd.lambda], phat);
 %! assert (paramci (pd), pci);
 %!test
 %! x1 = invgrnd (1, 1, 100, 1);
 %! x2 = invgrnd (5, 2, 100, 1);
 %! pd = fitdist ([x1; x2], "InverseGaussian", "By", [ones(100,1); 2*ones(100,1)]);
 %! [phat, pci] = invgfit (x1);
-%! assert ([pd(1).lambda, pd(1).sigma], phat);
+%! assert ([pd(1).mu, pd(1).lambda], phat);
 %! assert (paramci (pd(1)), pci);
 %! [phat, pci] = invgfit (x2);
-%! assert ([pd(2).lambda, pd(2).sigma], phat);
+%! assert ([pd(2).mu, pd(2).lambda], phat);
 %! assert (paramci (pd(2)), pci);
 %!test
 %! x = logirnd (1, 1, 100, 1);

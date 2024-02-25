@@ -535,8 +535,8 @@ endfunction
 %! [0, 0, 0.2857, 0.4286, 0.2857, 0, NaN, 0], 1e-4);
 %!assert (pdf (t, [-5, 1, 2, 4, 6, NaN, 0]), ...
 %! [0, 0, 0.2857, 0.2857, 0, NaN, 0], 1e-4);
-%!assert (unique (random (pd, 10, 5)), [1, 2, 3, 4, 5, 6]');
-%!assert (unique (random (t, 10, 5)), [2, 3, 4]');
+%!assert (unique (random (pd, 1000, 5)), [1, 2, 3, 4, 5, 6]');
+%!assert (unique (random (t, 1000, 5)), [2, 3, 4]');
 %!assert (std (pd), 1.4177, 1e-4);
 %!assert (std (t), 0.7559, 1e-4);
 %!assert (var (pd), 2.0100, 1e-4);
