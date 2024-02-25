@@ -56,6 +56,7 @@ function [varargout] = fitdist (varargin)
   alpha = 0.05;
   ntrials = [];
   mu = 0;
+  theta = 1;
   options.Display = "off";
   options.MaxFunEvals = 400;
   options.MaxIter = 200;
@@ -101,8 +102,10 @@ function [varargout] = fitdist (varargin)
           error (strcat (["fitdist: 'ntrials' argument must be a positive"], ...
                          [" integer scalar value."]));
         endif
-      case {"theta", "mu"}
+      case {"mu"}
         mu = varargin{2};
+      case {"theta"}
+        theta = varargin{2};
       case "options"
         options = varargin{2};
         if (! isstruct (options) || ! isfield (options, "Display") ||
@@ -213,11 +216,20 @@ function [varargout] = fitdist (varargin)
       endif
 
     case "generalizedpareto"
-      warning ("fitdist: 'GeneralizedPareto' distribution not supported yet.");
+      if (any (x - theta < 0))
+        error ("fitdist: invalid THETA value for generalized Pareto distribution.");
+      endif
       if (isempty (groupvar))
-        varargout{1} = [];
+        varargout{1} = GeneralizedParetoDistribution.fit ...
+                       (x, theta, alpha, freq, options);
       else
-        varargout{1} = [];
+        pd = GeneralizedParetoDistribution.fit ...
+             (x(g==1), theta, alpha, freq(g==1), options);
+        for i = 2:groups
+          pd(i) = GeneralizedParetoDistribution.fit ...
+                  (x(g==i), theta, alpha, freq(g==i), options);
+        endfor
+        varargout{1} = pd;
         varargout{2} = gn;
         varargout{3} = gl;
       endif
@@ -447,6 +459,40 @@ function [varargout] = fitdist (varargin)
 endfunction
 
 ## Test output
+%!test
+%! x = gprnd (1, 1, 1, 100, 1);
+%! pd = fitdist (x, "GeneralizedPareto");
+%! [phat, pci] = gpfit (x, 1);
+%! assert ([pd.k, pd.sigma, pd.theta], phat);
+%! assert (paramci (pd), pci);
+%!test
+%! x = gprnd (1, 1, 2, 100, 1);
+%! pd = fitdist (x, "GeneralizedPareto", "theta", 2);
+%! [phat, pci] = gpfit (x, 2);
+%! assert ([pd.k, pd.sigma, pd.theta], phat);
+%! assert (paramci (pd), pci);
+%!test
+%! x1 = gprnd (1, 1, 1, 100, 1);
+%! x2 = gprnd (0, 2, 1, 100, 1);
+%! pd = fitdist ([x1; x2], "GeneralizedPareto", ...
+%!               "By", [ones(100,1); 2*ones(100,1)]);
+%! [phat, pci] = gpfit (x1, 1);
+%! assert ([pd(1).k, pd(1).sigma, pd(1).theta], phat);
+%! assert (paramci (pd(1)), pci);
+%! [phat, pci] = gpfit (x2, 1);
+%! assert ([pd(2).k, pd(2).sigma, pd(2).theta], phat);
+%! assert (paramci (pd(2)), pci);
+%!test
+%! x1 = gprnd (3, 2, 2, 100, 1);
+%! x2 = gprnd (2, 3, 2, 100, 1);
+%! pd = fitdist ([x1; x2], "GeneralizedPareto", "theta", 2, ...
+%!               "By", [ones(100,1); 2*ones(100,1)]);
+%! [phat, pci] = gpfit (x1, 2);
+%! assert ([pd(1).k, pd(1).sigma, pd(1).theta], phat);
+%! assert (paramci (pd(1)), pci);
+%! [phat, pci] = gpfit (x2, 2);
+%! assert ([pd(2).k, pd(2).sigma, pd(2).theta], phat);
+%! assert (paramci (pd(2)), pci);
 %!test
 %! x = hnrnd (0, 1, 100, 1);
 %! pd = fitdist (x, "HalfNormal");
@@ -723,5 +769,7 @@ endfunction
 %! fitdist ([1, 2, 3], "normal", "param", struct ("options", 1))
 %!error <fitdist: must define GROUPVAR for more than one output arguments.> ...
 %! [pdca, gn, gl] = fitdist ([1, 2, 3], "normal");
+%!error <fitdist: invalid THETA value for generalized Pareto distribution.> ...
+%! fitdist ([1, 2, 3], "generalizedpareto", "theta", 2);
 %!error <fitdist: invalid MU value for half-normal distribution.> ...
 %! fitdist ([1, 2, 3], "halfnormal", "mu", 2);

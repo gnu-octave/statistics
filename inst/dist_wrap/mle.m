@@ -28,6 +28,7 @@ function [phat, pci] = mle (x, varargin)
   alpha = 0.05;
   ntrials = [];
   mu = 0;
+  theta = 1;
   options.Display = "off";
   options.MaxFunEvals = 400;
   options.MaxIter = 200;
@@ -70,8 +71,10 @@ function [phat, pci] = mle (x, varargin)
           error (strcat (["mle: 'ntrials' argument must be a positive"], ...
                          [" integer scalar value."]));
         endif
-      case {"theta", "mu"}
+      case {"mu"}
         mu = varargin{2};
+      case {"theta"}
+        theta = varargin{2};
       case "options"
         options = varargin{2};
         if (! isstruct (options) || ! isfield (options, "Display") ||
@@ -204,17 +207,14 @@ function [phat, pci] = mle (x, varargin)
         error (strcat (["mle: censoring is not supported for"], ...
                        [" the Generalized Pareto distribution."]));
       endif
-      if (! isempty (freq))
-        x = expandFreq (x, freq);
-      endif
-      if (any (x < mu))
+      if (any (x < theta))
         error (strcat (["mle: invalid 'theta' location parameter"], ...
                        [" for the Generalized Pareto distribution."]));
       endif
       if (nargout < 2)
-        phat = gevfit (x - mu, alpha, options);
+        phat = gpfit (x, theta, alpha, freq, options);
       else
-        [phat, pci] = gevfit (x - mu, alpha, options);
+        [phat, pci] = gpfit (x, theta, alpha, freq, options);
       endif
 
     case "gumbel"
