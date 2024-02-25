@@ -38,7 +38,7 @@
 ## Further information about the half-normal distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Half-normal_distribution}
 ##
-## @seealso{hncdf, hninv, hnpdf, hnfit, hnlike}
+## @seealso{hncdf, hninv, hnpdf, hnfit, hnlike, hnstat}
 ## @end deftypefn
 
 function r = hnrnd (mu, sigma, varargin)
