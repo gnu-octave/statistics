@@ -217,6 +217,8 @@ classdef NegativeBinomialDistribution
         lp = nbincdf (this.Truncation(1), this.R, this.P);
         up = nbincdf (this.Truncation(2), this.R, this.P);
         ## Adjust p values within range of p @ lower limit and p @ upper limit
+        is_nan = p < 0 | p > 1;
+        p(is_nan) = NaN;
         np = lp + (up - lp) .* p;
         x = nbininv (np, this.R, this.P);
       else

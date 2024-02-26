@@ -198,6 +198,8 @@ classdef PiecewiseLinearDistribution
         lp = plcdf (this.Truncation(1), this.x, this.Fx);
         up = plcdf (this.Truncation(2), this.x, this.Fx);
         ## Adjust p values within range of p @ lower limit and p @ upper limit
+        is_nan = p < 0 | p > 1;
+        p(is_nan) = NaN;
         np = lp + (up - lp) .* p;
         x = plinv (np, this.x, this.Fx);
       else

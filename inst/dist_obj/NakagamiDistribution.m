@@ -217,6 +217,8 @@ classdef NakagamiDistribution
         lp = nakacdf (this.Truncation(1), this.mu, this.omega);
         up = nakacdf (this.Truncation(2), this.mu, this.omega);
         ## Adjust p values within range of p @ lower limit and p @ upper limit
+        is_nan = p < 0 | p > 1;
+        p(is_nan) = NaN;
         np = lp + (up - lp) .* p;
         x = nakainv (np, this.mu, this.omega);
       else

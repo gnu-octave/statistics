@@ -217,6 +217,8 @@ classdef RicianDistribution
         lp = ricecdf (this.Truncation(1), this.nu, this.sigma);
         up = ricecdf (this.Truncation(2), this.nu, this.sigma);
         ## Adjust p values within range of p @ lower limit and p @ upper limit
+        is_nan = p < 0 | p > 1;
+        p(is_nan) = NaN;
         np = lp + (up - lp) .* p;
         x = riceinv (np, this.nu, this.sigma);
       else

@@ -202,6 +202,8 @@ classdef RayleighDistribution
         lp = raylcdf (this.Truncation(1), this.sigma);
         up = raylcdf (this.Truncation(2), this.sigma);
         ## Adjust p values within range of p @ lower limit and p @ upper limit
+        is_nan = p < 0 | p > 1;
+        p(is_nan) = NaN;
         np = lp + (up - lp) .* p;
         x = raylinv (np, this.sigma);
       else
