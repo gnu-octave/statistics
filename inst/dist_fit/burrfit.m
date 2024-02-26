@@ -53,13 +53,13 @@
 ## By default, or if left empty, @qcode{@var{freq} = ones (size (@var{x}))}.
 ##
 ## @code{[@dots{}] = burrfit (@dots{}, @var{options})} specifies control
-## parameters for the iterative algorithm used to compute ML estimates with the
-## @code{fminsearch} function.  @var{options} is a structure with the following
-## fields and their default values:
+## parameters for the iterative algorithm used to compute the maximum likelihood
+## estimates.  @var{options} is a structure with the following field and its
+## default value:
 ## @itemize
 ## @item @qcode{@var{options}.Display = "off"}
-## @item @qcode{@var{options}.MaxFunEvals = 1000}
-## @item @qcode{@var{options}.MaxIter = 500}
+## @item @qcode{@var{options}.MaxFunEvals = 400}
+## @item @qcode{@var{options}.MaxIter = 200}
 ## @item @qcode{@var{options}.TolX = 1e-6}
 ## @end itemize
 ##
@@ -99,13 +99,15 @@ function [paramhat, paramci] = burrfit (x, alpha, censor, freq, options)
     freq = ones (size (x));
   elseif (! isequal (size (x), size (freq)))
     error ("burrfit: X and FREQ vectors mismatch.");
+  elseif (any (freq < 0))
+    error ("burrfit: FREQ must not contain negative values.");
   endif
 
   ## Get options structure or add defaults
   if (nargin < 5)
     options.Display = "off";
-    options.MaxFunEvals = 1000;
-    options.MaxIter = 500;
+    options.MaxFunEvals = 400;
+    options.MaxIter = 200;
     options.TolX = 1e-6;
   else
     if (! isstruct (options) || ! isfield (options, "Display") ||
@@ -394,9 +396,9 @@ endfunction
 %! burrfit ([1, 2, 3, 4, 5], 0.05, [1 1 0]);
 %!error<burrfit: X and CENSOR vectors mismatch.> ...
 %! burrfit ([1, 2, 3, 4, 5], [], [1 1 0 1 1]');
-%!error<burrfit: X and FREQ vectors mismatch.> ...
-%! burrfit ([1, 2, 3, 4, 5], 0.05, zeros (1,5), [1 1 0]);
-%!error<burrfit: X and FREQ vectors mismatch.> ...
-%! burrfit ([1, 2, 3, 4, 5], [], [], [1 1 0 1 1]');
+%!error<burrfit: X and FREQ vectors mismatch.>
+%! burrfit ([1, 2, 3, 4, 5], 0.05, [], [1, 1, 5])
+%!error<burrfit: FREQ must not contain negative values.>
+%! burrfit ([1, 2, 3, 4, 5], 0.05, [], [1, 5, 1, 1, -1])
 %!error<burrfit: 'options' 5th argument must be a structure> ...
-%! burrfit ([1, 2, 3, 4, 5], 0.05, [], [], 2);
+%! burrfit ([1:10], 0.05, [], [], 5)

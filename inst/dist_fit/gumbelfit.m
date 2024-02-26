@@ -57,6 +57,9 @@
 ## estimates.  @var{options} is a structure with the following field and its
 ## default value:
 ## @itemize
+## @item @qcode{@var{options}.Display = "off"}
+## @item @qcode{@var{options}.MaxFunEvals = 400}
+## @item @qcode{@var{options}.MaxIter = 200}
 ## @item @qcode{@var{options}.TolX = 1e-6}
 ## @end itemize
 ##
@@ -85,47 +88,52 @@ function [paramhat, paramci] = gumbelfit (x, alpha, censor, freq, options)
   endif
 
   ## Check alpha
-  if (nargin > 1)
+  if (nargin < 2 || isempty (alpha))
+    alpha = 0.05;
+  else
     if (! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1)
       error ("gumbelfit: wrong value for ALPHA.");
     endif
-  else
-    alpha = 0.05;
   endif
 
   ## Check censor vector
-  if (nargin > 2)
-    if (! isempty (censor) && ! all (size (censor) == size (x)))
-      error ("gumbelfit: X and CENSOR vectors mismatch.");
-    endif
-  else
+  if (nargin < 3 || isempty (censor))
     censor = zeros (size (x));
+  elseif (! isequal (size (x), size (censor)))
+    error ("gumbelfit: X and CENSOR vectors mismatch.");
   endif
 
-  ## Check frequency vector
-  if (nargin > 3)
-    if (! isempty (freq) && ! all (size (freq) == size (x)))
-      error ("gumbelfit: X and FREQ vectors mismatch.");
-    endif
-    ## Remove elements with zero frequency (if applicable)
-    rm = find (freq == 0);
-    if (length (rm) > 0)
-      x(rm) = [];
-      censor(rm) = [];
-      freq(rm) = [];
-    endif
-  else
+  ## Parse FREQ argument or add default
+  if (nargin < 4 || isempty (freq))
     freq = ones (size (x));
+  elseif (! isequal (size (x), size (freq)))
+    error ("gumbelfit: X and FREQ vectors mismatch.");
+  elseif (any (freq < 0))
+    error ("gumbelfit: FREQ must not contain negative values.");
   endif
 
   ## Get options structure or add defaults
-  if (nargin > 4)
-    if (! isstruct (options) || ! isfield (options, "TolX"))
-      error (strcat (["gumbelfit: 'options' 5th argument must be a"], ...
-                     [" structure with 'TolX' field present."]));
-    endif
-  else
+  if (nargin < 5)
+    options.Display = "off";
+    options.MaxFunEvals = 400;
+    options.MaxIter = 200;
     options.TolX = 1e-6;
+  else
+    if (! isstruct (options) || ! isfield (options, "Display") ||
+        ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
+                                           || ! isfield (options, "TolX"))
+      error (strcat (["gumbelfit: 'options' 5th argument must be a"], ...
+                     [" structure with 'Display', 'MaxFunEvals',"], ...
+                     [" 'MaxIter', and 'TolX' fields present."]));
+    endif
+  endif
+
+  ## Remove zeros and NaNs from frequency vector (if necessary)
+  if (! all (freq == 1))
+    remove = freq == 0 | isnan (freq);
+    x(remove) = [];
+    censor(remove) = [];
+    freq(remove) = [];
   endif
 
   ## If X is a column vector, make X, CENSOR, and FREQ row vectors
@@ -220,5 +228,7 @@ endfunction
 %! gumbelfit ([1, 2, 3, 4, 5], 0.05, [1 1 0]);
 %!error<gumbelfit: X and FREQ vectors mismatch.> ...
 %! gumbelfit ([1, 2, 3, 4, 5], 0.05, [], [1 1 0]);
+%!error<gamfit: FREQ must not contain negative values.>
+%! gamfit ([1, 2, 3], 0.05, [], [1 5 -1])
 %!error<gumbelfit: 'options' 5th argument> ...
 %! gumbelfit ([1, 2, 3, 4, 5], 0.05, [], [], 2);

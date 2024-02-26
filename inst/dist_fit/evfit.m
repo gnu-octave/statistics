@@ -128,16 +128,12 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
     endif
   endif
 
-  ## Expand frequency vector (if necessary)
+  ## Remove zeros and NaNs from frequency vector (if necessary)
   if (! all (freq == 1))
-    xf = [];
-    cf = [];
-    for i = 1:numel (freq)
-      xf = [xf, repmat(x(i), 1, freq(i))];
-      cf = [cf, repmat(censor(i), 1, freq(i))];
-    endfor
-    x = xf;
-    censor = cf;
+    remove = freq == 0 | isnan (freq);
+    x(remove) = [];
+    censor(remove) = [];
+    freq(remove) = [];
   endif
 
   ## If X is a column vector, make X, CENSOR, and FREQ row vectors

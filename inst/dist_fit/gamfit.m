@@ -102,11 +102,13 @@ function [paramhat, paramci] = gamfit (x, alpha, censor, freq, options)
     error ("gamfit: X and CENSOR vectors mismatch.");
   endif
 
-  ## Check frequency vector
+  ## Parse FREQ argument or add default
   if (nargin < 4 || isempty (freq))
     freq = ones (size (x));
   elseif (! isequal (size (x), size (freq)))
     error ("gamfit: X and FREQ vectors mismatch.");
+  elseif (any (freq < 0))
+    error ("gamfit: FREQ must not contain negative values.");
   endif
 
   ## Get options structure or add defaults
@@ -125,6 +127,14 @@ function [paramhat, paramci] = gamfit (x, alpha, censor, freq, options)
     endif
   endif
 
+  ## Remove zeros and NaNs from frequency vector (if necessary)
+  if (! all (freq == 1))
+    remove = freq == 0 | isnan (freq);
+    x(remove) = [];
+    censor(remove) = [];
+    freq(remove) = [];
+  endif
+
   ## Get sample size and data type
   cls = class (x);
   szx = sum (freq);
@@ -136,7 +146,7 @@ function [paramhat, paramci] = gamfit (x, alpha, censor, freq, options)
     error ("gamfit: X cannot contain negative values.");
   endif
   if (ncen > 0 && any (x <= 0))
-    error ("gamfit: X must contain positive values.");
+    error ("gamfit: X must contain positive values when censored.");
   endif
 
   ## Handle ill-conditioned cases: no data or all censored
@@ -440,7 +450,12 @@ endfunction
 %!error<gamfit: wrong value for ALPHA.> gamfit (x, "a")
 %!error<gamfit: wrong value for ALPHA.> gamfit (x, i)
 %!error<gamfit: wrong value for ALPHA.> gamfit (x, [0.01 0.02])
-%!error<gamfit: X and CENSOR vectors mismatch.> gamfit (x, [], [1 1])
-%!error<gamfit: X and FREQ vectors mismatch.> gamfit (x, [], [], [1 1])
+%!error<gamfit: X and FREQ vectors mismatch.>
+%! gamfit ([1 2 3], 0.05, [], [1 5])
+%!error<gamfit: FREQ must not contain negative values.>
+%! gamfit ([1 2 3], 0.05, [], [1 5 -1])
+%!error<gamfit: 'options' 5th argument must be a structure> ...
+%! gamfit ([1:10], 0.05, [], [], 5)
 %!error<gamfit: X cannot contain negative values.> gamfit ([1 2 3 -4])
-%!error<gamfit: X must contain positive values.> gamfit ([1 2 0], [], [1 0 0])
+%!error<gamfit: X must contain positive values when censored.> ...
+%! gamfit ([1 2 0], [], [1 0 0])
