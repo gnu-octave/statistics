@@ -26,6 +26,8 @@ function pd = makedist (varargin)
          'PiecewiseLinear'; 'Poisson'; 'Rayleigh'; 'Rician'; ...
          'Stable'; 'tLocationScale'; 'Triangular'; 'Uniform'; 'Weibull'};
 
+  ABBR = {"bisa", "ev", "gev", "gp", "hn", "invg", "nbin", "tls"};
+
   ## Check for input arguments
   if (nargin == 0)
     pd = PDO;
@@ -38,7 +40,7 @@ function pd = makedist (varargin)
   ## Check distribution name
   if (! (ischar (distname) && size (distname, 1) == 1))
     error ("makedist: DISTNAME must be a character vector.");
-  elseif (! any (strcmpi (distname, PDO)))
+  elseif (! (any (strcmpi (distname, PDO)) || any (strcmpi (distname, ABBR))))
     error ("makedist: unrecognized distribution name.");
   endif
 
@@ -83,7 +85,7 @@ function pd = makedist (varargin)
       endwhile
       pd = [];
 
-    case "birnbaumsaunders"
+    case {"birnbaumsaunders", "bisa"}
       beta = 1;
       gamma = 1;
       while (numel (varargin) > 0)
@@ -119,7 +121,7 @@ function pd = makedist (varargin)
       endwhile
       pd = [];
 
-    case "extremevalue"
+    case {"extremevalue", "ev"}
       mu = 0;
       while (numel (varargin) > 0)
         switch (tolower (varargin{1}))
@@ -163,7 +165,7 @@ function pd = makedist (varargin)
       endwhile
       pd = [];
 
-    case "generalizedextremevalue"
+    case {"generalizedextremevalue", "gev"}
       k = 0;
       sigma = 1;
       mu = 0;
@@ -183,7 +185,7 @@ function pd = makedist (varargin)
       endwhile
       pd = GeneralizedExtremeValueDistribution (k, sigma, mu);
 
-    case "generalizedpareto"
+    case {"generalizedpareto", "gp"}
     k = 1;
     sigma = 1;
     theta = 1;
@@ -203,7 +205,7 @@ function pd = makedist (varargin)
       endwhile
       pd = GeneralizedParetoDistribution (k, sigma, theta);
 
-    case "halfnormal"
+    case {"halfnormal", "hn"}
       mu = 0;
       sigma = 1;
       while (numel (varargin) > 0)
@@ -220,7 +222,7 @@ function pd = makedist (varargin)
       endwhile
       pd = HalfNormalDistribution (mu, sigma);
 
-    case "inversegaussian"
+    case {"inversegaussian", "invg"}
       mu = 1;
       lambda = 1;
       while (numel (varargin) > 0)
@@ -336,7 +338,7 @@ function pd = makedist (varargin)
       endwhile
       pd = NakagamiDistribution (mu, omega);
 
-    case "negativebinomial"
+    case {"negativebinomial", "nbin"}
       R = 1;
       P = 0.5;
       while (numel (varargin) > 0)
@@ -452,7 +454,7 @@ function pd = makedist (varargin)
       warning ("makedist: 'Stable' distribution not supported yet.");
       pd = [];
 
-    case "tlocationscale"
+    case {"tlocationscale", "tls"}
       mu = 0;
       sigma = 1;
       df = 5;

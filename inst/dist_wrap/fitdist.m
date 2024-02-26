@@ -25,7 +25,7 @@ function [varargout] = fitdist (varargin)
          'NegativeBinomial'; 'Normal'; 'Poisson'; 'Rayleigh'; 'Rician'; ...
          'Stable'; 'tLocationScale'; 'Weibull'};
 
-  ABBR = {"gev", "gp", "nbin"};
+  ABBR = {"bisa", "ev", "gev", "gp", "hn", "invg", "nbin", "tls"};
 
   ## Check for input arguments
   if (nargin == 0)
@@ -157,7 +157,7 @@ function [varargout] = fitdist (varargin)
         varargout{3} = gl;
       endif
 
-    case "birnbaumsaunders"
+    case {"birnbaumsaunders", "bisa"}
       warning ("fitdist: 'BirnbaumSaunders' distribution not supported yet.");
       if (isempty (groupvar))
         varargout{1} = [];
@@ -177,7 +177,7 @@ function [varargout] = fitdist (varargin)
         varargout{3} = gl;
       endif
 
-    case "extremevalue"
+    case {"extremevalue", "ev"}
       warning ("fitdist: 'ExtremeValue' distribution not supported yet.");
       if (isempty (groupvar))
         varargout{1} = [];
@@ -223,7 +223,7 @@ function [varargout] = fitdist (varargin)
         varargout{3} = gl;
       endif
 
-    case "generalizedpareto"
+    case {"generalizedpareto", "gp"}
       if (any (x - theta < 0))
         error ("fitdist: invalid THETA value for generalized Pareto distribution.");
       endif
@@ -242,7 +242,7 @@ function [varargout] = fitdist (varargin)
         varargout{3} = gl;
       endif
 
-    case "halfnormal"
+    case {"halfnormal", "hn"}
       if (any (x - mu < 0))
         error ("fitdist: invalid MU value for half-normal distribution.");
       endif
@@ -258,7 +258,7 @@ function [varargout] = fitdist (varargin)
         varargout{3} = gl;
       endif
 
-    case "inversegaussian"
+    case {"inversegaussian", "invg"}
       if (isempty (groupvar))
         varargout{1} = InverseGaussianDistribution.fit ...
                        (x, alpha, censor, freq, options);
@@ -348,7 +348,7 @@ function [varargout] = fitdist (varargin)
         varargout{3} = gl;
       endif
 
-    case "negativebinomial"
+    case {"negativebinomial", "nbin"}
       if (isempty (groupvar))
         varargout{1} = NegativeBinomialDistribution.fit ...
                        (x, alpha, freq, options);
@@ -431,7 +431,7 @@ function [varargout] = fitdist (varargin)
         varargout{3} = gl;
       endif
 
-    case "tlocationscale"
+    case {"tlocationscale", "tls"}
       if (isempty (groupvar))
         varargout{1} = tLocationScaleDistribution.fit ...
                        (x, alpha, censor, freq, options);
