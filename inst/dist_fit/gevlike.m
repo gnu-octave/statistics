@@ -1,5 +1,5 @@
 ## Copyright (C) 2012 Nir Krakauer <nkrakauer@ccny.cuny.edu>
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -19,6 +19,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{nlogL} =} gevlike (@var{params}, @var{x})
 ## @deftypefnx {statistics} {[@var{nlogL}, @var{acov}] =} gevlike (@var{params}, @var{x})
+## @deftypefnx {statistics} {[@var{nlogL}, @var{acov}] =} gevlike (@var{params}, @var{x}, @var{freq})
 ##
 ## Negative log-likelihood for the generalized extreme value (GEV) distribution.
 ##
@@ -31,6 +32,12 @@
 ## returns the inverse of Fisher's information matrix, @var{acov}.  If the input
 ## parameter values in @var{params} are the maximum likelihood estimates, the
 ## diagonal elements of @var{acov} are their asymptotic variances.
+##
+## @code{[@dots{}] = nbinlike (@var{params}, @var{x}, @var{freq})} accepts a
+## frequency vector, @var{freq}, of the same size as @var{x}.  @var{freq}
+## must contain non-negative integer frequencies for the corresponding elements
+## in @var{x}.  By default, or if left empty,
+## @qcode{@var{freq} = ones (size (@var{x}))}.
 ##
 ## When @qcode{@var{k} < 0}, the GEV is the type III extreme value distribution.
 ## When @qcode{@var{k} > 0}, the GEV distribution is the type II, or Frechet,
@@ -50,18 +57,10 @@
 ## found at
 ## @url{https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution}
 ##
-## @subheading References
-## @enumerate
-## @item
-## Rolf-Dieter Reiss and Michael Thomas. @cite{Statistical Analysis of Extreme
-## Values with Applications to Insurance, Finance, Hydrology and Other Fields}.
-## Chapter 1, pages 16-17, Springer, 2007.
-## @end enumerate
-##
 ## @seealso{gevcdf, gevinv, gevpdf, gevrnd, gevfit, gevstat}
 ## @end deftypefn
 
-function [nlogL, acov] = gevlike (params, x)
+function [nlogL, acov] = gevlike (params, x, freq)
 
   ## Check input arguments
   if (nargin < 2)
@@ -74,6 +73,25 @@ function [nlogL, acov] = gevlike (params, x)
 
   if (length (params) != 3)
     error ("gevlike: PARAMS must be a three-element vector.");
+  endif
+
+  if (nargin < 3 || isempty (freq))
+    freq = ones (size (x));
+  elseif (! isequal (size (x), size (freq)))
+    error ("gevlike: X and FREQ vectors mismatch.");
+  elseif (any (freq < 0))
+    error ("gevlike: FREQ must not contain negative values.");
+  elseif (any (fix (freq) != freq))
+    error ("gevlike: FREQ must contain integer values.");
+  endif
+
+  ## Expand frequency
+  if (! all (freq == 1))
+    xf = [];
+    for i = 1:numel (freq)
+      xf = [xf, repmat(x(i), 1, freq(i))];
+    endfor
+    x = xf;
   endif
 
   k = params(1);
@@ -365,6 +383,18 @@ endfunction
 %!               8.7297e-05, 1.2034e-05, -0.0019125];
 %! assert (L, expected_L, -0.001);
 %! assert (C, expected_C, -0.001);
+%!test
+%! x = -5:0;
+%! k = -0.2;
+%! sigma = 0.3;
+%! mu = 0.5;
+%! [L, C] = gevlike ([k sigma mu], x, [1, 1, 1, 1, 1, 0]);
+%! expected_L = 3786.4;
+%! expected_C = [1.6802e-07, 4.6110e-06, 8.7297e-05; ...
+%!               4.6110e-06, 7.5693e-06, 1.2034e-05; ...
+%!               8.7297e-05, 1.2034e-05, -0.0019125];
+%! assert (L, expected_L, -0.001);
+%! assert (C, expected_C, -0.001);
 
 ## Test input validation
 %!error<gevlike: function called with too few input arguments.> gevlike (3.25)
@@ -373,3 +403,9 @@ endfunction
 %! gevlike ([1, 2], [1, 3, 5, 7])
 %!error<gevlike: PARAMS must be a three-element vector.> ...
 %! gevlike ([1, 2, 3, 4], [1, 3, 5, 7])
+%!error<gevlike: X and FREQ vectors mismatch.> ...
+%! gevlike ([5, 0.2, 1], ones (10, 1), ones (8,1))
+%!error<gevlike: FREQ must not contain negative values.> ...
+%! gevlike ([5, 0.2, 1], ones (1, 8), [1 1 1 1 1 1 1 -1])
+%!error<gevlike: FREQ must contain integer values.> ...
+%! gevlike ([5, 0.2, 1], ones (1, 8), [1 1 1 1 1 1 1 1.5])

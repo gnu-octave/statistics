@@ -1,5 +1,5 @@
 ## Copyright (C) 2012-2021 Nir Krakauer <nkrakauer@ccny.cuny.edu>
-## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
