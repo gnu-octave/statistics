@@ -47,10 +47,20 @@ function ci = __paramci__ (pd, varargin)
         endif
 
       case "parameter"
-        if (iscell (varargin{2}) && numel (varargin{2}) > numel (parnames))
+        if (! isvector (varargin{2}) ||
+            ((iscellstr (varargin{2}) || isnumeric (varargin{2})) &&
+            numel (varargin{2}) > numel (parnames)))
           error ("paramci: invalid VALUE size for 'Parameter' argument.");
         endif
-        param = strcmpi (varargin{2}, parnames);
+        if (iscellstr (varargin{2}))
+          tmp = cellfun (@(x) strcmpi (x, parnames), varargin{2}, ...
+                        "UniformOutput", false);
+          param = or (tmp{:});
+        elseif (isnumeric (varargin{2}))
+          param = ismember (parnames, varargin{2});
+        else  # assume it is a character vector
+          param = strcmpi (varargin{2}, parnames);
+        endif
         if (! any (param))
           error ("paramci: unknown distribution parameter.");
         endif
