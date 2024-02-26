@@ -150,20 +150,20 @@ function pd = makedist (varargin)
       pd = [];
 
     case "gamma"
-      k = 1;
-      theta = 1;
+      a = 1;
+      b = 1;
       while (numel (varargin) > 0)
         switch (tolower (varargin{1}))
-          case {"k", "a"}
-            k = varargin{2};
-          case {"theta", "b"}
-            theta = varargin{2};
+          case "a"
+            a = varargin{2};
+          case "b"
+            b = varargin{2};
           otherwise
             error ("makedist: unknown parameter for 'Gamma' distribution.");
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = [];
+      pd = GammaDistribution (a, b);
 
     case {"generalizedextremevalue", "gev"}
       k = 0;
@@ -531,6 +531,23 @@ function pd = makedist (varargin)
 endfunction
 
 ## Test output
+%!test
+%! pd = makedist ("gamma");
+%! assert (class (pd), "GammaDistribution");
+%! assert (pd.a, 1);
+%! assert (pd.b, 1);
+%!test
+%! pd = makedist ("gamma", "a", 5);
+%! assert (pd.a, 5);
+%! assert (pd.b, 1);
+%!test
+%! pd = makedist ("gamma", "b", 5);
+%! assert (pd.a, 1);
+%! assert (pd.b, 5);
+%!test
+%! pd = makedist ("gamma", "a", 3, "b", 5);
+%! assert (pd.a, 3);
+%! assert (pd.b, 5);
 %!test
 %! pd = makedist ("GeneralizedExtremeValue");
 %! assert (class (pd), "GeneralizedExtremeValueDistribution");

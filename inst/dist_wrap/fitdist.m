@@ -198,11 +198,16 @@ function [varargout] = fitdist (varargin)
       endif
 
     case "gamma"
-      warning ("fitdist: 'Gamma' distribution not supported yet.");
       if (isempty (groupvar))
-        varargout{1} = [];
+        varargout{1} = GammaDistribution.fit (x, alpha, censor, freq, options);
       else
-        varargout{1} = [];
+        pd = GammaDistribution.fit ...
+             (x(g==1), alpha, censor(g==i), freq(g==1), options);
+        for i = 2:groups
+          pd(i) = GammaDistribution.fit ...
+                  (x(g==i), alpha, censor(g==i), freq(g==i), options);
+        endfor
+        varargout{1} = pd;
         varargout{2} = gn;
         varargout{3} = gl;
       endif
@@ -468,15 +473,34 @@ endfunction
 
 ## Test output
 %!test
-%! x = gevrnd (1, 1, 0, 100, 1);
+%! x = gamrnd (1, 1, 100, 1);
+%! pd = fitdist (x, "Gamma");
+%! [phat, pci] = gamfit (x);
+%! assert ([pd.a, pd.b], phat);
+%! assert (paramci (pd), pci);
+%!test
+%! x1 = gamrnd (1, 1, 100, 1);
+%! x2 = gamrnd (5, 2, 100, 1);
+%! pd = fitdist ([x1; x2], "Gamma", "By", [ones(100,1); 2*ones(100,1)]);
+%! [phat, pci] = gamfit (x1);
+%! assert ([pd(1).a, pd(1).b], phat);
+%! assert (paramci (pd(1)), pci);
+%! [phat, pci] = gamfit (x2);
+%! assert ([pd(2).a, pd(2).b], phat);
+%! assert (paramci (pd(2)), pci);
+%!test
+%! rand ("seed", 4);   # for reproducibility
+%! x = gevrnd (-0.5, 1, 2, 1000, 1);
 %! pd = fitdist (x, "generalizedextremevalue");
 %! [phat, pci] = gevfit (x);
 %! assert ([pd.k, pd.sigma, pd.mu], phat);
 %! assert (paramci (pd), pci);
 %!test
-%! x1 = gevrnd (1, 1, 0, 100, 1);
-%! x2 = gevrnd (5, 2, 0, 100, 1);
-%! pd = fitdist ([x1; x2], "gev", "By", [ones(100,1); 2*ones(100,1)]);
+%! rand ("seed", 5);   # for reproducibility
+%! x1 = gevrnd (-0.5, 1, 2, 1000, 1);
+%! rand ("seed", 9);   # for reproducibility
+%! x2 = gevrnd (0, 1, -4, 1000, 1);
+%! pd = fitdist ([x1; x2], "gev", "By", [ones(1000,1); 2*ones(1000,1)]);
 %! [phat, pci] = gevfit (x1);
 %! assert ([pd(1).k, pd(1).sigma, pd(1).mu], phat);
 %! assert (paramci (pd(1)), pci);
