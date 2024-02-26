@@ -193,6 +193,7 @@ function [varargout] = fitdist (varargin)
       endif
 
     case {"extremevalue", "ev"}
+      if (isempty (groupvar))
         varargout{1} = ExtremeValueDistribution.fit ...
                        (x, alpha, censor, freq, options);
       else
