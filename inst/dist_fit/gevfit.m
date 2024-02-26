@@ -20,12 +20,12 @@
 ## @deftypefn  {statistics} {@var{paramhat} =} gevfit (@var{x})
 ## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} gevfit (@var{x})
 ## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} gevfit (@var{x}, @var{alpha})
-## @deftypefnx {statistics} {[@dots{}] =} gevfit (@var{x}, @var{alpha}, @var{options})
+## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} gevfit (@var{x}, @var{alpha}, @var{freq})
+## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} gevfit (@var{x}, @var{alpha}, @var{options})
+## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} gevfit (@var{x}, @var{alpha}, @var{freq}, @var{options})
 ##
 ## Estimate parameters and confidence intervals for the generalized extreme
 ## value (GEV) distribution.
-##
-## @subheading Arguments
 ##
 ## @code{@var{paramhat} = gevfit (@var{x})} returns the maximum likelihood
 ## estimates of the parameters of the GEV distribution given the data in
@@ -42,14 +42,20 @@
 ## 0.05 corresponding to 95% confidence intervals.  Pass in @qcode{[]} for
 ## @var{alpha} to use the default values.
 ##
-## @code{[@dots{}] = gevfit (@dots{}, @var{options})} specifies control
-## parameters for the iterative algorithm used to compute the maximum likelihood
-## estimates.  @var{options} is a structure with the following field and its
-## default value:
+## @code{[@dots{}] = gevfit (@var{params}, @var{x}, @var{freq})} accepts a
+## frequency vector, @var{freq}, of the same size as @var{x}.  @var{freq}
+## must contain non-negative integer frequencies for the corresponding elements
+## in @var{x}.  By default, or if left empty,
+## @qcode{@var{freq} = ones (size (@var{x}))}.
+##
+## @code{[@var{paramhat}, @var{paramci}] = gevfit (@var{x}, @var{alpha},
+## @var{options})} specifies control parameters for the iterative algorithm used
+## to compute ML estimates with the @code{fminsearch} function.  @var{options}
+## is a structure with the following fields and their default values:
 ## @itemize
 ## @item @qcode{@var{options}.Display = "off"}
-## @item @qcode{@var{options}.MaxFunEvals = 1000}
-## @item @qcode{@var{options}.MaxIter = 500}
+## @item @qcode{@var{options}.MaxFunEvals = 400}
+## @item @qcode{@var{options}.MaxIter = 200}
 ## @item @qcode{@var{options}.TolX = 1e-6}
 ## @end itemize
 ##
@@ -71,26 +77,15 @@
 ## found at
 ## @url{https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution}
 ##
-## @subheading References
-## @enumerate
-## @item
-## Rolf-Dieter Reiss and Michael Thomas. @cite{Statistical Analysis of Extreme
-## Values with Applications to Insurance, Finance, Hydrology and Other Fields}.
-## Chapter 1, pages 16-17, Springer, 2007.
-## @end enumerate
-##
 ## @seealso{gevcdf, gevinv, gevpdf, gevrnd, gevlike, gevstat}
 ## @end deftypefn
 
-function [paramhat, paramci] = gevfit (x, alpha, options)
+function [paramhat, paramci] = gevfit (x, alpha, varargin)
 
   ## Check X is vector
   if (! isvector (x))
     error ("gevfit: X must be a vector.");
   endif
-
-  ## Force to column vector
-  x = x(:);
 
   ## Get X type and convert to double for computation
   is_type = class (x);
@@ -125,23 +120,57 @@ function [paramhat, paramci] = gevfit (x, alpha, options)
     endif
   endif
 
-  ## Get options structure or add defaults
-  if (nargin < 3)
-    options.Display = "off";
-    options.MaxFunEvals = 400;
-    options.MaxIter = 200;
-    options.TolX = 1e-6;
-  else
+  ## Add defaults
+  freq = [];
+  options.Display = "off";
+  options.MaxFunEvals = 400;
+  options.MaxIter = 200;
+  options.TolX = 1e-6;
+
+  ## Check extra arguments for FREQ vector and/or 'options' structure
+  if (nargin > 2)
+    if (numel (varargin) == 1 && isstruct (varargin{1}))
+      options = varargin{1};
+    elseif (numel (varargin) == 1 && isnumeric (varargin{1}))
+      freq = varargin{1};
+    elseif (numel (varargin) == 2)
+      freq = varargin{1};
+      options = varargin{2};
+    endif
+    if (isempty (freq))
+      freq = ones (size (x));
+    endif
+    ## Check for valid freq vector
+    if (! isequal (size (x), size (freq)))
+      error ("gevfit: X and FREQ vectors mismatch.");
+    elseif (any (freq < 0))
+      error ("gevfit: FREQ must not contain negative values.");
+    elseif (any (fix (freq) != freq))
+      error ("gevfit: FREQ must contain integer values.");
+    endif
+    ## Check for valid options structure
     if (! isstruct (options) || ! isfield (options, "Display") ||
         ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
                                            || ! isfield (options, "TolX"))
-      error (strcat (["gevfit: 'options' 5th argument must be a"], ...
+      error (strcat (["gevfit: 'options' argument must be a"], ...
                      [" structure with 'Display', 'MaxFunEvals',"], ...
                      [" 'MaxIter', and 'TolX' fields present."]));
     endif
   endif
 
-  ## Compute initial parameters if not parsed as an input argument
+  ## Expand frequency
+  if (! all (freq == 1))
+    xf = [];
+    for i = 1:numel (freq)
+      xf = [xf, repmat(x(i), 1, freq(i))];
+    endfor
+    x = xf;
+  endif
+
+  ## Force to column vector
+  x = x(:);
+
+  ## Compute initial parameters
   F = (0.5:1:(sample_size - 0.5))' ./ sample_size;
   k_0 = fminsearch (@(k) 1 - corr (x, gevinv (F, k, 1, 0)), 0);
   paramguess = [k_0, polyfit(gevinv(F,k_0,1,0),x',1)];
@@ -270,3 +299,13 @@ endfunction
 %!error<gevfit: wrong value for ALPHA.> gevfit ([1, 2, 3, 4, 5], 1.2);
 %!error<gevfit: wrong value for ALPHA.> gevfit ([1, 2, 3, 4, 5], 0);
 %!error<gevfit: wrong value for ALPHA.> gevfit ([1, 2, 3, 4, 5], "alpha");
+%!error<gevfit: X and FREQ vectors mismatch.> ...
+%! gevfit ([1, 2, 3, 4, 5], 0.05, [1, 2, 3, 2]);
+%!error<gevfit: FREQ must not contain negative values.> ...
+%! gevfit ([1, 2, 3, 4, 5], 0.05, [1, 2, 3, 2, -1]);
+%!error<gevfit: FREQ must contain integer values.> ...
+%! gevfit ([1, 2, 3, 4, 5], 0.05, [1, 2, 3, 2, 1.5]);
+%!error<gevfit: 'options' argument must be a structure> ...
+%! gevfit ([1, 2, 3, 4, 5], 0.05, struct ("option", 234));
+%!error<gevfit: 'options' argument must be a structure> ...
+%! gevfit ([1, 2, 3, 4, 5], 0.05, ones (1,5), struct ("option", 234));
