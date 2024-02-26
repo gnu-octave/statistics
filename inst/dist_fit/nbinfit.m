@@ -110,20 +110,18 @@ function [paramhat, paramci] = nbinfit (x, alpha, varargin)
   options.TolX = 1e-6;
 
   ## Check extra arguments for FREQ vector and/or 'options' structure
-  if (numel (varargin) == 1 && isstruct (varargin{1}))
-    options = varargin{1};
-  elseif (numel (varargin) == 1 && isnumeric (varargin{1}))
-    freq = varargin{1};
-  elseif (numel (varargin) == 2)
-    freq = varargin{1};
-    options = varargin{2};
-  endif
-  if (isempty (freq))
-    freq = ones (size (x));
-  endif
-
-  ## Check extra parameters
   if (nargin > 2)
+    if (numel (varargin) == 1 && isstruct (varargin{1}))
+      options = varargin{1};
+    elseif (numel (varargin) == 1 && isnumeric (varargin{1}))
+      freq = varargin{1};
+    elseif (numel (varargin) == 2)
+      freq = varargin{1};
+      options = varargin{2};
+    endif
+    if (isempty (freq))
+      freq = ones (size (x));
+    endif
     ## Check for valid freq vector
     if (! isequal (size (x), size (freq)))
       error ("nbinfit: X and FREQ vectors mismatch.");
