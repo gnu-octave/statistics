@@ -26,10 +26,11 @@
 
 function [nlogl, param] = __proflik__ (pd, pnum, varargin)
 
-  ## Check for valid pnum
+  ## Check for non-fixed pnum
   npvec = find (pd.ParameterIsFixed == false);
   if (! (isnumeric (pnum) && isscalar (pnum) && ismember (pnum, npvec)))
-    error ("proflik: PNUM must be a scalar number indexing a valid parameter.");
+    error (strcat (["proflik: PNUM must be a scalar number"], ...
+                   [" indexing a non-fixed parameter."]));
   endif
 
   ## Add defaults and parse optional arguments
@@ -69,7 +70,7 @@ function [nlogl, param] = __proflik__ (pd, pnum, varargin)
     endif
   endwhile
 
-  ## Get fitted parameter CI and restrict for valid range
+  ## Get fitted parameter CI and restrict for non-fixed range
   pname = pd.ParameterNames{pnum};
   lower = pd.ParameterCI(1, pnum);
   if (lower < pd.ParameterRange(1,pnum))
@@ -83,7 +84,7 @@ function [nlogl, param] = __proflik__ (pd, pnum, varargin)
   if (isempty (param))
     param = [lower:(upper-lower)/100:upper];
   else
-    ## Restrict user defined parameter range within valid range
+    ## Restrict user defined parameter range within non-fixed range
     param(param < pd.ParameterRange(1,pnum)) = [];
     param(param > pd.ParameterRange(2,pnum)) = [];
   endif
