@@ -69,6 +69,7 @@ Descriptive Statistics
  var
 Distribution Classes
  ExponentialDistribution
+ ExtremeValueDistribution
  GammaDistribution
  GeneralizedExtremeValueDistribution
  GeneralizedParetoDistribution

@@ -18,8 +18,8 @@
 function pd = makedist (varargin)
 
   ## Add list of supported probability distribution objects
-  PDO = {'Beta'; 'Binomial'; 'BirnbaumSaunders'; 'Burr'; 'ExtremeValue'; ...
-         'Exponential'; 'Gamma'; 'GeneralizedExtremeValue'; ...
+  PDO = {'Beta'; 'Binomial'; 'BirnbaumSaunders'; 'Burr'; 'Exponential'; ...
+         'ExtremeValue'; 'Gamma'; 'GeneralizedExtremeValue'; ...
          'GeneralizedPareto'; 'HalfNormal'; 'InverseGaussian'; ...
          'Logistic'; 'Loglogistic'; 'Lognormal'; 'Loguniform'; ...
          'Multinomial'; 'Nakagami'; 'NegativeBinomial'; 'Normal'; ...
@@ -121,20 +121,6 @@ function pd = makedist (varargin)
       endwhile
       pd = [];
 
-    case {"extremevalue", "ev"}
-      mu = 0;
-      while (numel (varargin) > 0)
-        switch (tolower (varargin{1}))
-          case "mu"
-            mu = varargin{2};
-          otherwise
-            error (strcat (["makedist: unknown parameter for"], ...
-                           [" 'ExtremeValue' distribution."]));
-        endswitch
-        varargin([1:2]) = [];
-      endwhile
-      pd = [];
-
     case "exponential"
       mu = 1;
       while (numel (varargin) > 0)
@@ -148,6 +134,23 @@ function pd = makedist (varargin)
         varargin([1:2]) = [];
       endwhile
       pd = ExponentialDistribution (mu);
+
+    case {"extremevalue", "ev"}
+      mu = 0;
+      sigma = 1;
+      while (numel (varargin) > 0)
+        switch (tolower (varargin{1}))
+          case "mu"
+            mu = varargin{2};
+          case "sigma"
+            sigma = varargin{2};
+          otherwise
+            error (strcat (["makedist: unknown parameter for"], ...
+                           [" 'ExtremeValue' distribution."]));
+        endswitch
+        varargin([1:2]) = [];
+      endwhile
+      pd = ExtremeValueDistribution (mu, sigma);
 
     case "gamma"
       a = 1;
@@ -538,6 +541,26 @@ endfunction
 %!test
 %! pd = makedist ("exponential", "mu", 5);
 %! assert (pd.mu, 5);
+%!test
+%! pd = makedist ("extremevalue");
+%! assert (class (pd), "ExtremeValueDistribution");
+%! assert (pd.mu, 0);
+%! assert (pd.sigma, 1);
+%!test
+%! pd = makedist ("extremevalue", "mu", 5);
+%! assert (class (pd), "ExtremeValueDistribution");
+%! assert (pd.mu, 5);
+%! assert (pd.sigma, 1);
+%!test
+%! pd = makedist ("ev", "sigma", 5);
+%! assert (class (pd), "ExtremeValueDistribution");
+%! assert (pd.mu, 0);
+%! assert (pd.sigma, 5);
+%!test
+%! pd = makedist ("ev", "mu", -3, "sigma", 5);
+%! assert (class (pd), "ExtremeValueDistribution");
+%! assert (pd.mu, -3);
+%! assert (pd.sigma, 5);
 %!test
 %! pd = makedist ("gamma");
 %! assert (class (pd), "GammaDistribution");

@@ -18,8 +18,8 @@
 function [varargout] = fitdist (varargin)
 
   ## Add list of supported probability distribution objects
-  PDO = {'Beta'; 'Binomial'; 'BirnbaumSaunders'; 'Burr'; 'ExtremeValue'; ...
-         'Exponential'; 'Gamma'; 'GeneralizedExtremeValue'; ...
+  PDO = {'Beta'; 'Binomial'; 'BirnbaumSaunders'; 'Burr'; 'Exponential'; ...
+         'ExtremeValue'; 'Gamma'; 'GeneralizedExtremeValue'; ...
          'GeneralizedPareto'; 'HalfNormal'; 'InverseGaussian'; ...
          'Kernel'; 'Logistic'; 'Loglogistic'; 'Lognormal'; 'Nakagami'; ...
          'NegativeBinomial'; 'Normal'; 'Poisson'; 'Rayleigh'; 'Rician'; ...
@@ -177,16 +177,6 @@ function [varargout] = fitdist (varargin)
         varargout{3} = gl;
       endif
 
-    case {"extremevalue", "ev"}
-      warning ("fitdist: 'ExtremeValue' distribution not supported yet.");
-      if (isempty (groupvar))
-        varargout{1} = [];
-      else
-        varargout{1} = [];
-        varargout{2} = gn;
-        varargout{3} = gl;
-      endif
-
     case "exponential"
       if (isempty (groupvar))
         varargout{1} = ExponentialDistribution.fit (x, alpha, censor, freq);
@@ -196,6 +186,21 @@ function [varargout] = fitdist (varargin)
         for i = 2:groups
           pd(i) = ExponentialDistribution.fit ...
                   (x(g==i), alpha, censor(g==i), freq(g==i));
+        endfor
+        varargout{1} = pd;
+        varargout{2} = gn;
+        varargout{3} = gl;
+      endif
+
+    case {"extremevalue", "ev"}
+        varargout{1} = ExtremeValueDistribution.fit ...
+                       (x, alpha, censor, freq, options);
+      else
+        pd = ExtremeValueDistribution.fit ...
+             (x(g==1), alpha, censor(g==i), freq(g==1), options);
+        for i = 2:groups
+          pd(i) = ExtremeValueDistribution.fit ...
+                  (x(g==i), alpha, censor(g==i), freq(g==i), options);
         endfor
         varargout{1} = pd;
         varargout{2} = gn;
@@ -494,6 +499,22 @@ endfunction
 %! [muhat, muci] = expfit (x2);
 %! assert ([pd(2).mu], muhat);
 %! assert (paramci (pd(2)), muci);
+%!test
+%! x = evrnd (1, 1, 100, 1);
+%! pd = fitdist (x, "ev");
+%! [phat, pci] = evfit (x);
+%! assert ([pd.mu, pd.sigma], phat);
+%! assert (paramci (pd), pci);
+%!test
+%! x1 = evrnd (1, 1, 100, 1);
+%! x2 = evrnd (5, 2, 100, 1);
+%! pd = fitdist ([x1; x2], "extremevalue", "By", [ones(100,1); 2*ones(100,1)]);
+%! [phat, pci] = evfit (x1);
+%! assert ([pd(1).mu, pd(1).sigma], phat);
+%! assert (paramci (pd(1)), pci);
+%! [phat, pci] = evfit (x2);
+%! assert ([pd(2).mu, pd(2).sigma], phat);
+%! assert (paramci (pd(2)), pci);
 %!test
 %! x = gamrnd (1, 1, 100, 1);
 %! pd = fitdist (x, "Gamma");
