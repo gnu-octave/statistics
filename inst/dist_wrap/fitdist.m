@@ -25,6 +25,8 @@ function [varargout] = fitdist (varargin)
          'NegativeBinomial'; 'Normal'; 'Poisson'; 'Rayleigh'; 'Rician'; ...
          'Stable'; 'tLocationScale'; 'Weibull'};
 
+  ABBR = {"gev", "gp", "nbin"};
+
   ## Check for input arguments
   if (nargin == 0)
     varargout{1} = PDO;
@@ -40,7 +42,7 @@ function [varargout] = fitdist (varargin)
   ## Check distribution name
   if (! (ischar (distname) && size (distname, 1) == 1))
     error ("fitdist: DISTNAME must be a character vector.");
-  elseif (! any (strcmpi (distname, PDO)))
+  elseif (! (any (strcmpi (distname, PDO)) || any (strcmpi (distname, ABBR))))
     error ("fitdist: unrecognized distribution name.");
   endif
 
@@ -205,12 +207,18 @@ function [varargout] = fitdist (varargin)
         varargout{3} = gl;
       endif
 
-    case "generalizedextremevalue"
-      warning ("fitdist: 'GeneralizedExtremeValue' distribution not supported yet.");
+    case {"generalizedextremevalue", "gev"}
       if (isempty (groupvar))
-        varargout{1} = [];
+        varargout{1} = GeneralizedExtremeValueDistribution.fit ...
+                       (x, alpha, freq, options);
       else
-        varargout{1} = [];
+        pd = GeneralizedExtremeValueDistribution.fit ...
+             (x(g==1), alpha, freq(g==1), options);
+        for i = 2:groups
+          pd(i) = GeneralizedExtremeValueDistribution.fit ...
+                  (x(g==i), alpha, freq(g==i), options);
+        endfor
+        varargout{1} = pd;
         varargout{2} = gn;
         varargout{3} = gl;
       endif
@@ -460,6 +468,22 @@ endfunction
 
 ## Test output
 %!test
+%! x = gevrnd (1, 1, 0, 100, 1);
+%! pd = fitdist (x, "generalizedextremevalue");
+%! [phat, pci] = gevfit (x);
+%! assert ([pd.k, pd.sigma, pd.mu], phat);
+%! assert (paramci (pd), pci);
+%!test
+%! x1 = gevrnd (1, 1, 0, 100, 1);
+%! x2 = gevrnd (5, 2, 0, 100, 1);
+%! pd = fitdist ([x1; x2], "gev", "By", [ones(100,1); 2*ones(100,1)]);
+%! [phat, pci] = gevfit (x1);
+%! assert ([pd(1).k, pd(1).sigma, pd(1).mu], phat);
+%! assert (paramci (pd(1)), pci);
+%! [phat, pci] = gevfit (x2);
+%! assert ([pd(2).k, pd(2).sigma, pd(2).mu], phat);
+%! assert (paramci (pd(2)), pci);
+%!test
 %! x = gprnd (1, 1, 1, 100, 1);
 %! pd = fitdist (x, "GeneralizedPareto");
 %! [phat, pci] = gpfit (x, 1);
@@ -474,8 +498,7 @@ endfunction
 %!test
 %! x1 = gprnd (1, 1, 1, 100, 1);
 %! x2 = gprnd (0, 2, 1, 100, 1);
-%! pd = fitdist ([x1; x2], "GeneralizedPareto", ...
-%!               "By", [ones(100,1); 2*ones(100,1)]);
+%! pd = fitdist ([x1; x2], "gp", "By", [ones(100,1); 2*ones(100,1)]);
 %! [phat, pci] = gpfit (x1, 1);
 %! assert ([pd(1).k, pd(1).sigma, pd(1).theta], phat);
 %! assert (paramci (pd(1)), pci);
@@ -621,7 +644,7 @@ endfunction
 %! randp ("seed", 432);
 %! randg ("seed", 234);
 %! x2 = nbinrnd (5, 0.8, 100, 1);
-%! pd = fitdist ([x1; x2], "negativebinomial", "By", [ones(100,1); 2*ones(100,1)]);
+%! pd = fitdist ([x1; x2], "nbin", "By", [ones(100,1); 2*ones(100,1)]);
 %! [phat, pci] = nbinfit (x1);
 %! assert ([pd(1).R, pd(1).P], phat);
 %! assert (paramci (pd(1)), pci);

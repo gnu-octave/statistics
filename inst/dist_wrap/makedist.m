@@ -181,7 +181,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = [];
+      pd = GeneralizedExtremeValueDistribution (k, sigma, mu);
 
     case "generalizedpareto"
     k = 1;
@@ -529,6 +529,32 @@ function pd = makedist (varargin)
 endfunction
 
 ## Test output
+%!test
+%! pd = makedist ("GeneralizedExtremeValue");
+%! assert (class (pd), "GeneralizedExtremeValueDistribution");
+%! assert (pd.k, 0);
+%! assert (pd.sigma, 1);
+%! assert (pd.mu, 0);
+%!test
+%! pd = makedist ("GeneralizedExtremeValue", "k", 5);
+%! assert (pd.k, 5);
+%! assert (pd.sigma, 1);
+%! assert (pd.mu, 0);
+%!test
+%! pd = makedist ("GeneralizedExtremeValue", "sigma", 5);
+%! assert (pd.k, 0);
+%! assert (pd.sigma, 5);
+%! assert (pd.mu, 0);
+%!test
+%! pd = makedist ("GeneralizedExtremeValue", "k", 3, "sigma", 5);
+%! assert (pd.k, 3);
+%! assert (pd.sigma, 5);
+%! assert (pd.mu, 0);
+%!test
+%! pd = makedist ("GeneralizedExtremeValue", "mu", 3, "sigma", 5);
+%! assert (pd.k, 0);
+%! assert (pd.sigma, 5);
+%! assert (pd.mu, 3);
 %!test
 %! pd = makedist ("GeneralizedPareto");
 %! assert (class (pd), "GeneralizedParetoDistribution");

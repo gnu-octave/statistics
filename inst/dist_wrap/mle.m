@@ -193,13 +193,10 @@ function [phat, pci] = mle (x, varargin)
         error (strcat (["mle: censoring is not supported for the"], ...
                        [" Generalized Extreme Value distribution."]));
       endif
-      if (! isempty (freq))
-        x = expandFreq (x, freq);
-      endif
       if (nargout < 2)
-        phat = gevfit (x, alpha, options);
+        phat = gevfit (x, alpha, freq, options);
       else
-        [phat, pci] = gevfit (x, alpha, options);
+        [phat, pci] = gevfit (x, alpha, freq, options);
       endif
 
     case {"gp", "generalized pareto"}
