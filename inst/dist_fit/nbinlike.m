@@ -108,6 +108,15 @@ function [nlogL, avar] = nbinlike (params, x, freq)
     error ("nbinlike: FREQ must contain integer values.");
   endif
 
+  ## Expand frequency
+  if (! all (freq == 1))
+    xf = [];
+    for i = 1:numel (freq)
+      xf = [xf, repmat(x(i), 1, freq(i))];
+    endfor
+    x = xf;
+  endif
+
   ## Compute negative log-likelihood and asymptotic variance
   r = params(1);
   ps = params(2);
@@ -135,6 +144,7 @@ endfunction
 %!assert (nbinlike ([3.58823, 0.254697], [1:20]), 63.6435, 1e-4)
 %!assert (nbinlike ([8.80671, 0.615565], [1:10]), 24.7410, 1e-4)
 %!assert (nbinlike ([22.1756, 0.831306], [1:8]), 17.9528, 1e-4)
+%!assert (nbinlike ([22.1756, 0.831306], [1:9], [ones(1,8), 0]), 17.9528, 1e-4)
 
 ## Test input validation
 %!error<nbinlike: function called with too few input arguments.> nbinlike (3.25)
