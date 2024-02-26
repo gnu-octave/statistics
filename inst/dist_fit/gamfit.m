@@ -1,5 +1,5 @@
 ## Copyright (C) 2019 Nir Krakauer <mail@nirkrakauer.net>
-## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2023-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Based on previous work by Martijn van Oosterhout <kleptog@svana.org>
 ## originally granted to the public domain.
 ##
@@ -31,8 +31,8 @@
 ##
 ## @code{@var{paramhat} = gamfit (@var{x})} returns the maximum likelihood
 ## estimates of the parameters of the Gamma distribution given the data in
-## @var{x}.  @qcode{@var{paramhat}(1)} is the shape parameter, @var{k}, and
-## @qcode{@var{paramhat}(2)} is the scale parameter, @var{theta}.
+## @var{x}.  @qcode{@var{paramhat}(1)} is the shape parameter, @var{a}, and
+## @qcode{@var{paramhat}(2)} is the scale parameter, @var{b}.
 ##
 ## @code{[@var{paramhat}, @var{paramci}] = gamfit (@var{x})} returns the 95%
 ## confidence intervals for the parameter estimates.
@@ -61,18 +61,17 @@
 ## default value:
 ## @itemize
 ## @item @qcode{@var{options}.Display = "off"}
-## @item @qcode{@var{options}.MaxFunEvals = 1000}
-## @item @qcode{@var{options}.MaxIter = 500}
+## @item @qcode{@var{options}.MaxFunEvals = 400}
+## @item @qcode{@var{options}.MaxIter = 200}
 ## @item @qcode{@var{options}.TolX = 1e-6}
 ## @end itemize
 ##
-## There are two equivalent parameterizations in common use:
-## @enumerate
-## @item With a shape parameter @math{k} and a scale parameter @math{θ}, which
-## is used by @code{gamcdf}.
-## @item With a shape parameter @math{α = k} and an inverse scale parameter
-## @math{β = 1 / θ}, called a rate parameter.
-## @end enumerate
+## OCTAVE/MATLAB use the alternative parameterization given by the pair
+## @math{α, β}, i.e. shape @var{a} and scale @var{b}.  In Wikipedia, the two
+## common parameterizations use the pairs @math{k, θ}, as shape and scale, and
+## @math{α, β}, as shape and rate, respectively.  The parameter names @var{a}
+## and @var{b} used here (for MATLAB compatibility) correspond to the parameter
+## notation @math{k, θ} instead of the @math{α, β} as reported in Wikipedia.
 ##
 ## Further information about the Gamma distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Gamma_distribution}
@@ -156,18 +155,18 @@ function [paramhat, paramci] = gamfit (x, alpha, censor, freq, options)
 
   ## When CENSOR and FREQ are default
   if (all (censor == 0) && all (freq == 1))
-    ## Optimize with respect to log(k), since both K and THETA must be positive
+    ## Optimize with respect to log(a), since both A and B must be positive
     meanx = mean (x);
     x0 = 0;
 
     ## Minimize negative log-likelihood to estimate parameters
-    f = @(logk) gamfit_search (logk, meanx, x);
-    [logk, ~, err, output] = fminsearch (f, x0, options);
+    f = @(loga) gamfit_search (loga, meanx, x);
+    [loga, ~, err, output] = fminsearch (f, x0, options);
 
-    ## Inverse log(k)
-    k = exp (logk);
-    theta = meanx / k;
-    paramhat = [k, theta];
+    ## Inverse log(a)
+    a = exp (loga);
+    b = meanx / a;
+    paramhat = [a, b];
 
     ## Handle errors
     if (err == 0)
@@ -198,12 +197,12 @@ function [paramhat, paramci] = gamfit (x, alpha, censor, freq, options)
 
     ## Use Method of Moments for initial estimates
     meansqx = sum (freq .* (scaledx - 1) .^ 2) / szx;
-    theta = meansqx * szx / (szx - 1);
-    k = 1 / theta;
+    b = meansqx * szx / (szx - 1);
+    a = 1 / b;
 
     ## Ensure that MLEs is possible, otherwise return initial estimates
     if (any (scaledx == 0))
-      paramhat = [k, theta*scale];
+      paramhat = [a, b*scale];
       paramci = nan (2, cls);
       warning ("gamfit: X contains zeros.");
       return
@@ -214,8 +213,8 @@ function [paramhat, paramci] = gamfit (x, alpha, censor, freq, options)
       ## Bracket the root of the scale parameter likelihood equation
       sumlogx = sum (freq .* log (scaledx));
       bracket = sumlogx / szx;
-      if (lkeqn (k, bracket) > 0)
-        upper = k;
+      if (lkeqn (a, bracket) > 0)
+        upper = a;
         lower = 0.5 * upper;
         while (lkeqn (lower, bracket) > 0)
           upper = lower;
@@ -225,7 +224,7 @@ function [paramhat, paramci] = gamfit (x, alpha, censor, freq, options)
           endif
         endwhile
       else
-        lower = k;
+        lower = a;
         upper = 2 * lower;
         while (lkeqn (upper, bracket) < 0)
           lower = upper;
@@ -240,11 +239,11 @@ function [paramhat, paramci] = gamfit (x, alpha, censor, freq, options)
       ## Find the root of the likelihood equation.
       opts = optimset ("fzero");
       opts = optimset (opts, "Display", "off");
-      f = @(k) lkeqn (k, bracket);
-      [k, lkeqnval, err] = fzero (f, bounds, opts);
+      f = @(a) lkeqn (a, bracket);
+      [a, lkeqnval, err] = fzero (f, bounds, opts);
 
-      ## Rescale THETA
-      paramhat = [k, (1/k)*scale];
+      ## Rescale B
+      paramhat = [a, (1/a)*scale];
     endif
 
   ## With censoring
@@ -323,15 +322,15 @@ function [paramhat, paramci] = gamfit (x, alpha, censor, freq, options)
 endfunction
 
 ## Helper function so we only have to minimize for one variable.
-function nlogL = gamfit_search (logk, meanx, x)
-  k = exp (logk);
-  theta = meanx / k;
-  nlogL = gamlike ([k, theta], x);
+function nlogL = gamfit_search (loga, meanx, x)
+  a = exp (loga);
+  b = meanx / a;
+  nlogL = gamlike ([a, b], x);
 endfunction
 
 ## Helper function for MLE with no censoring
-function v = lkeqn (k, bracket)
-v = -bracket - log (k) + psi (k);
+function v = lkeqn (a, bracket)
+v = -bracket - log (a) + psi (a);
 endfunction
 
 %!demo
@@ -355,28 +354,28 @@ endfunction
 %! hold on
 %!
 %! ## Estimate their α and β parameters
-%! k_thetaA = gamfit (r(:,1));
-%! k_thetaB = gamfit (r(:,2));
-%! k_thetaC = gamfit (r(:,3));
+%! a_bA = gamfit (r(:,1));
+%! a_bB = gamfit (r(:,2));
+%! a_bC = gamfit (r(:,3));
 %!
 %! ## Plot their estimated PDFs
 %! x = [0.01,0.1:0.2:18];
-%! y = gampdf (x, k_thetaA(1), k_thetaA(2));
+%! y = gampdf (x, a_bA(1), a_bA(2));
 %! plot (x, y, "-pr");
-%! y = gampdf (x, k_thetaB(1), k_thetaB(2));
+%! y = gampdf (x, a_bB(1), a_bB(2));
 %! plot (x, y, "-sg");
-%! y = gampdf (x, k_thetaC(1), k_thetaC(2));
+%! y = gampdf (x, a_bC(1), a_bC(2));
 %! plot (x, y, "-^c");
 %! hold off
-%! legend ({"Normalized HIST of sample 1 with k=1 and θ=2", ...
-%!          "Normalized HIST of sample 2 with k=2 and θ=2", ...
-%!          "Normalized HIST of sample 3 with k=7.5 and θ=1", ...
-%!          sprintf("PDF for sample 1 with estimated k=%0.2f and θ=%0.2f", ...
-%!                  k_thetaA(1), k_thetaA(2)), ...
-%!          sprintf("PDF for sample 2 with estimated k=%0.2f and θ=%0.2f", ...
-%!                  k_thetaB(1), k_thetaB(2)), ...
-%!          sprintf("PDF for sample 3 with estimated k=%0.2f and θ=%0.2f", ...
-%!                  k_thetaC(1), k_thetaC(2))})
+%! legend ({"Normalized HIST of sample 1 with α=1 and β=2", ...
+%!          "Normalized HIST of sample 2 with α=2 and β=2", ...
+%!          "Normalized HIST of sample 3 with α=7.5 and β=1", ...
+%!          sprintf("PDF for sample 1 with estimated α=%0.2f and β=%0.2f", ...
+%!                  a_bA(1), a_bA(2)), ...
+%!          sprintf("PDF for sample 2 with estimated α=%0.2f and β=%0.2f", ...
+%!                  a_bB(1), a_bB(2)), ...
+%!          sprintf("PDF for sample 3 with estimated α=%0.2f and β=%0.2f", ...
+%!                  a_bC(1), a_bC(2))})
 %! title ("Three population samples from different Gamma distibutions")
 %! hold off
 
@@ -438,7 +437,7 @@ endfunction
 %!error<gamfit: wrong value for ALPHA.> gamfit (x, 1)
 %!error<gamfit: wrong value for ALPHA.> gamfit (x, -1)
 %!error<gamfit: wrong value for ALPHA.> gamfit (x, {0.05})
-%!error<gamfit: wrong value for ALPHA.> gamfit (x, "k")
+%!error<gamfit: wrong value for ALPHA.> gamfit (x, "a")
 %!error<gamfit: wrong value for ALPHA.> gamfit (x, i)
 %!error<gamfit: wrong value for ALPHA.> gamfit (x, [0.01 0.02])
 %!error<gamfit: X and CENSOR vectors mismatch.> gamfit (x, [], [1 1])

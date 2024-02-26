@@ -1,6 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
-## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2023-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -18,23 +18,22 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{y} =} gampdf (@var{x}, @var{k}, @var{theta})
+## @deftypefn  {statistics} {@var{y} =} gampdf (@var{x}, @var{a}, @var{b})
 ##
 ## Gamma probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## of the Gamma distribution with shape parameter @var{k} and scale parameter
-## @var{theta}.  The size of @var{y} is the common size of @var{x}, @var{k} and
-## @var{theta}.  A scalar input functions as a constant matrix of the same size
+## of the Gamma distribution with shape parameter @var{a} and scale parameter
+## @var{b}.  The size of @var{y} is the common size of @var{x}, @var{a} and
+## @var{b}.  A scalar input functions as a constant matrix of the same size
 ## as the other inputs.
 ##
-## There are two equivalent parameterizations in common use:
-## @enumerate
-## @item With a shape parameter @math{k} and a scale parameter @math{θ}, which
-## is used by @code{gampdf}.
-## @item With a shape parameter @math{α = k} and an inverse scale parameter
-## @math{β = 1 / θ}, called a rate parameter.
-## @end enumerate
+## OCTAVE/MATLAB use the alternative parameterization given by the pair
+## @math{α, β}, i.e. shape @var{a} and scale @var{b}.  In Wikipedia, the two
+## common parameterizations use the pairs @math{k, θ}, as shape and scale, and
+## @math{α, β}, as shape and rate, respectively.  The parameter names @var{a}
+## and @var{b} used here (for MATLAB compatibility) correspond to the parameter
+## notation @math{k, θ} instead of the @math{α, β} as reported in Wikipedia.
 ##
 ## Further information about the Gamma distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Gamma_distribution}
@@ -42,54 +41,54 @@
 ## @seealso{gamcdf, gaminv, gamrnd, gamfit, gamlike, gamstat}
 ## @end deftypefn
 
-function y = gampdf (x, k, theta)
+function y = gampdf (x, a, b)
 
   ## Check for valid number of input arguments
   if (nargin < 3)
     error ("gampdf: function called with too few input arguments.");
   endif
 
-  ## Check for common size of X, K, and THETA
-  if (! isscalar (k) || ! isscalar (theta))
-    [retval, x, k, theta] = common_size (x, k, theta);
+  ## Check for common size of X, A, and B
+  if (! isscalar (a) || ! isscalar (b))
+    [retval, x, a, b] = common_size (x, a, b);
     if (retval > 0)
-      error ("gampdf: X, K, and THETA must be of common size or scalars.");
+      error ("gampdf: X, A, and B must be of common size or scalars.");
     endif
   endif
 
-  ## Check for X, K, and THETA being reals
-  if (iscomplex (x) || iscomplex (k) || iscomplex (theta))
-    error ("gampdf: X, K, and THETA must not be complex.");
+  ## Check for X, A, and B being reals
+  if (iscomplex (x) || iscomplex (a) || iscomplex (b))
+    error ("gampdf: X, A, and B must not be complex.");
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (k, "single") || isa (theta, "single"))
+  if (isa (x, "single") || isa (a, "single") || isa (b, "single"))
     y = zeros (size (x), "single");
   else
     y = zeros (size (x));
   endif
 
   ## Force NaNs for out of range parameters
-  is_nan = ! (k > 0) | ! (theta > 0) | isnan (x);
+  is_nan = ! (a > 0) | ! (b > 0) | isnan (x);
   y(is_nan) = NaN;
 
   ## Handle all other valid cases
-  v = (x >= 0) & (k > 0) & (k <= 1) & (theta > 0);
-  if (isscalar (k) && isscalar (theta))
-    y(v) = (x(v) .^ (k - 1)) ...
-              .* exp (- x(v) / theta) / gamma (k) / (theta ^ k);
+  v = (x >= 0) & (a > 0) & (a <= 1) & (b > 0);
+  if (isscalar (a) && isscalar (b))
+    y(v) = (x(v) .^ (a - 1)) ...
+              .* exp (- x(v) / b) / gamma (a) / (b ^ a);
   else
-    y(v) = (x(v) .^ (k(v) - 1)) ...
-              .* exp (- x(v) ./ theta(v)) ./ gamma (k(v)) ./ (theta(v) .^ k(v));
+    y(v) = (x(v) .^ (a(v) - 1)) ...
+              .* exp (- x(v) ./ b(v)) ./ gamma (a(v)) ./ (b(v) .^ a(v));
   endif
 
-  v = (x >= 0) & (k > 1) & (theta > 0);
-  if (isscalar (k) && isscalar (theta))
-    y(v) = exp (- k * log (theta) + (k-1) * log (x(v))
-                  - x(v) / theta - gammaln (k));
+  v = (x >= 0) & (a > 1) & (b > 0);
+  if (isscalar (a) && isscalar (b))
+    y(v) = exp (- a * log (b) + (a-1) * log (x(v))
+                  - x(v) / b - gammaln (a));
   else
-    y(v) = exp (- k(v) .* log (theta(v)) + (k(v)-1) .* log (x(v))
-                  - x(v) ./ theta(v) - gammaln (k(v)));
+    y(v) = exp (- a(v) .* log (b(v)) + (a(v)-1) .* log (x(v))
+                  - x(v) ./ b(v) - gammaln (a(v)));
   endif
 
 endfunction
@@ -105,12 +104,12 @@ endfunction
 %! y6 = gampdf (x, 7.5, 1);
 %! y7 = gampdf (x, 0.5, 1);
 %! plot (x, y1, "-r", x, y2, "-g", x, y3, "-y", x, y4, "-m", ...
-%!       x, y5, "-k", x, y6, "-b", x, y7, "-c")
+%!       x, y5, "-a", x, y6, "-b", x, y7, "-c")
 %! grid on
 %! ylim ([0,0.5])
-%! legend ({"α = 1, θ = 2", "α = 2, θ = 2", "α = 3, θ = 2", ...
-%!          "α = 5, θ = 1", "α = 9, θ = 0.5", "α = 7.5, θ = 1", ...
-%!          "α = 0.5, θ = 1"}, "location", "northeast")
+%! legend ({"α = 1, β = 2", "α = 2, β = 2", "α = 3, β = 2", ...
+%!          "α = 5, β = 1", "α = 9, β = 0.5", "α = 7.5, β = 1", ...
+%!          "α = 0.5, β = 1"}, "location", "northeast")
 %! title ("Gamma PDF")
 %! xlabel ("values in x")
 %! ylabel ("density")
@@ -135,12 +134,12 @@ endfunction
 %!error<gampdf: function called with too few input arguments.> gampdf ()
 %!error<gampdf: function called with too few input arguments.> gampdf (1)
 %!error<gampdf: function called with too few input arguments.> gampdf (1,2)
-%!error<gampdf: X, K, and THETA must be of common size or scalars.> ...
+%!error<gampdf: X, A, and B must be of common size or scalars.> ...
 %! gampdf (ones (3), ones (2), ones (2))
-%!error<gampdf: X, K, and THETA must be of common size or scalars.> ...
+%!error<gampdf: X, A, and B must be of common size or scalars.> ...
 %! gampdf (ones (2), ones (3), ones (2))
-%!error<gampdf: X, K, and THETA must be of common size or scalars.> ...
+%!error<gampdf: X, A, and B must be of common size or scalars.> ...
 %! gampdf (ones (2), ones (2), ones (3))
-%!error<gampdf: X, K, and THETA must not be complex.> gampdf (i, 2, 2)
-%!error<gampdf: X, K, and THETA must not be complex.> gampdf (2, i, 2)
-%!error<gampdf: X, K, and THETA must not be complex.> gampdf (2, 2, i)
+%!error<gampdf: X, A, and B must not be complex.> gampdf (i, 2, 2)
+%!error<gampdf: X, A, and B must not be complex.> gampdf (2, i, 2)
+%!error<gampdf: X, A, and B must not be complex.> gampdf (2, 2, i)

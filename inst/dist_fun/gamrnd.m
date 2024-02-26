@@ -1,6 +1,6 @@
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 1995-2016 Kurt Hornik
-## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2023-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -18,17 +18,17 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{r} =} gamrnd (@var{k}, @var{theta})
-## @deftypefnx {statistics} {@var{r} =} gamrnd (@var{k}, @var{theta}, @var{rows})
-## @deftypefnx {statistics} {@var{r} =} gamrnd (@var{k}, @var{theta}, @var{rows}, @var{cols}, @dots{})
-## @deftypefnx {statistics} {@var{r} =} gamrnd (@var{k}, @var{theta}, [@var{sz}])
+## @deftypefn  {statistics} {@var{r} =} gamrnd (@var{a}, @var{b})
+## @deftypefnx {statistics} {@var{r} =} gamrnd (@var{a}, @var{b}, @var{rows})
+## @deftypefnx {statistics} {@var{r} =} gamrnd (@var{a}, @var{b}, @var{rows}, @var{cols}, @dots{})
+## @deftypefnx {statistics} {@var{r} =} gamrnd (@var{a}, @var{b}, [@var{sz}])
 ##
 ## Random arrays from the Gamma distribution.
 ##
-## @code{@var{r} = gamrnd (@var{k}, @var{theta})} returns an array of random
-## numbers chosen from the Gamma distribution with shape parameter @var{k} and
-## scale parameter @var{theta}.  The size of @var{r} is the common size of
-## @var{k} and @var{theta}.  A scalar input functions as a constant matrix of
+## @code{@var{r} = gamrnd (@var{a}, @var{b})} returns an array of random
+## numbers chosen from the Gamma distribution with shape parameter @var{a} and
+## scale parameter @var{b}.  The size of @var{r} is the common size of
+## @var{a} and @var{b}.  A scalar input functions as a constant matrix of
 ## the same size as the other inputs.
 ##
 ## When called with a single size argument, @code{gamrnd} returns a square
@@ -37,13 +37,12 @@
 ## and any further arguments specify additional matrix dimensions.  The size may
 ## also be specified with a row vector of dimensions, @var{sz}.
 ##
-## There are two equivalent parameterizations in common use:
-## @enumerate
-## @item With a shape parameter @math{k} and a scale parameter @math{θ}, which
-## is used by @code{gamrnd}.
-## @item With a shape parameter @math{α = k} and an inverse scale parameter
-## @math{β = 1 / θ}, called a rate parameter.
-## @end enumerate
+## OCTAVE/MATLAB use the alternative parameterization given by the pair
+## @math{α, β}, i.e. shape @var{a} and scale @var{b}.  In Wikipedia, the two
+## common parameterizations use the pairs @math{k, θ}, as shape and scale, and
+## @math{α, β}, as shape and rate, respectively.  The parameter names @var{a}
+## and @var{b} used here (for MATLAB compatibility) correspond to the parameter
+## notation @math{k, θ} instead of the @math{α, β} as reported in Wikipedia.
 ##
 ## Further information about the Gamma distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Gamma_distribution}
@@ -51,29 +50,29 @@
 ## @seealso{gamcdf, gaminv, gampdf, gamfit, gamlike, gamstat}
 ## @end deftypefn
 
-function r = gamrnd (k, theta, varargin)
+function r = gamrnd (a, b, varargin)
 
   ## Check for valid number of input arguments
   if (nargin < 2)
     error ("gamrnd: function called with too few input arguments.");
   endif
 
-  ## Check for common size of K and THETA
-  if (! isscalar (k) || ! isscalar (theta))
-    [retval, k, theta] = common_size (k, theta);
+  ## Check for common size of A and B
+  if (! isscalar (a) || ! isscalar (b))
+    [retval, a, b] = common_size (a, b);
     if (retval > 0)
-      error ("gamrnd: K and THETA must be of common size or scalars.");
+      error ("gamrnd: A and B must be of common size or scalars.");
     endif
   endif
 
-  ## Check for K and THETA being reals
-  if (iscomplex (k) || iscomplex (theta))
-    error ("gamrnd: K and THETA must not be complex.");
+  ## Check for A and B being reals
+  if (iscomplex (a) || iscomplex (b))
+    error ("gamrnd: A and B must not be complex.");
   endif
 
   ## Parse and check SIZE arguments
   if (nargin == 2)
-    sz = size (k);
+    sz = size (a);
   elseif (nargin == 3)
     if (isscalar (varargin{1}) && varargin{1} >= 0 ...
                                && varargin{1} == fix (varargin{1}))
@@ -94,29 +93,29 @@ function r = gamrnd (k, theta, varargin)
   endif
 
   ## Check that parameters match requested dimensions in size
-  if (! isscalar (k) && ! isequal (size (k), sz))
-    error ("gamrnd: K and THETA must be scalars or of size SZ.");
+  if (! isscalar (a) && ! isequal (size (a), sz))
+    error ("gamrnd: A and B must be scalars or of size SZ.");
   endif
 
   ## Check for class type
-  if (isa (k, "single") || isa (theta, "single"))
+  if (isa (a, "single") || isa (b, "single"))
     cls = "single";
   else
     cls = "double";
   endif
 
   ## Generate random sample from Gamma distribution
-  if (isscalar (k) && isscalar (theta))
-    if ((k > 0) && (k < Inf) && (theta > 0) && (theta < Inf))
-      r = theta * randg (k, sz, cls);
+  if (isscalar (a) && isscalar (b))
+    if ((a > 0) && (a < Inf) && (b > 0) && (b < Inf))
+      r = b * randg (a, sz, cls);
     else
       r = NaN (sz, cls);
     endif
   else
     r = NaN (sz, cls);
 
-    valid = (k > 0) & (k < Inf) & (theta > 0) & (theta < Inf);
-    r(valid) = theta(valid) .* randg (k(valid), cls);
+    valid = (a > 0) & (a < Inf) & (b > 0) & (b < Inf);
+    r(valid) = b(valid) .* randg (a(valid), cls);
   endif
 
 endfunction
@@ -145,12 +144,12 @@ endfunction
 ## Test input validation
 %!error<gamrnd: function called with too few input arguments.> gamrnd ()
 %!error<gamrnd: function called with too few input arguments.> gamrnd (1)
-%!error<gamrnd: K and THETA must be of common size or scalars.> ...
+%!error<gamrnd: A and B must be of common size or scalars.> ...
 %! gamrnd (ones (3), ones (2))
-%!error<gamrnd: K and THETA must be of common size or scalars.> ...
+%!error<gamrnd: A and B must be of common size or scalars.> ...
 %! gamrnd (ones (2), ones (3))
-%!error<gamrnd: K and THETA must not be complex.> gamrnd (i, 2, 3)
-%!error<gamrnd: K and THETA must not be complex.> gamrnd (1, i, 3)
+%!error<gamrnd: A and B must not be complex.> gamrnd (i, 2, 3)
+%!error<gamrnd: A and B must not be complex.> gamrnd (1, i, 3)
 %!error<gamrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
 %! gamrnd (1, 2, -1)
 %!error<gamrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
@@ -165,9 +164,9 @@ endfunction
 %! gamrnd (1, 2, 2, -1, 5)
 %!error<gamrnd: dimensions must be non-negative integers.> ...
 %! gamrnd (1, 2, 2, 1.5, 5)
-%!error<gamrnd: K and THETA must be scalars or of size SZ.> ...
+%!error<gamrnd: A and B must be scalars or of size SZ.> ...
 %! gamrnd (2, ones (2), 3)
-%!error<gamrnd: K and THETA must be scalars or of size SZ.> ...
+%!error<gamrnd: A and B must be scalars or of size SZ.> ...
 %! gamrnd (2, ones (2), [3, 2])
-%!error<gamrnd: K and THETA must be scalars or of size SZ.> ...
+%!error<gamrnd: A and B must be scalars or of size SZ.> ...
 %! gamrnd (2, ones (2), 3, 2)

@@ -1,4 +1,4 @@
-## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Based on previous work by Martijn van Oosterhout <kleptog@svana.org>
 ## originally granted to the public domain.
 ##
@@ -28,8 +28,8 @@
 ##
 ## @code{@var{nlogL} = gamlike (@var{params}, @var{x})} returns the negative
 ## log likelihood of the data in @var{x} corresponding to the Gamma distribution
-## with (1) shape parameter @var{k} and (2) scale parameter @var{theta} given in
-## the two-element vector @var{params}.
+## with (1) shape parameter @var{a} and (2) scale parameter @var{b} given in the
+## two-element vector @var{params}.
 ##
 ## @code{[@var{nlogL}, @var{acov}] = gamlike (@var{params}, @var{x})} also
 ## returns the inverse of Fisher's information matrix, @var{acov}.  If the input
@@ -48,13 +48,12 @@
 ## elements in @var{x}, but it can contain any non-integer non-negative values.
 ## By default, or if left empty, @qcode{@var{freq} = ones (size (@var{x}))}.
 ##
-## There are two equivalent parameterizations in common use:
-## @enumerate
-## @item With a shape parameter @math{k} and a scale parameter @math{θ}, which
-## is used by @code{gamcdf}.
-## @item With a shape parameter @math{α = k} and an inverse scale parameter
-## @math{β = 1 / θ}, called a rate parameter.
-## @end enumerate
+## OCTAVE/MATLAB use the alternative parameterization given by the pair
+## @math{α, β}, i.e. shape @var{a} and scale @var{b}.  In Wikipedia, the two
+## common parameterizations use the pairs @math{k, θ}, as shape and scale, and
+## @math{α, β}, as shape and rate, respectively.  The parameter names @var{a}
+## and @var{b} used here (for MATLAB compatibility) correspond to the parameter
+## notation @math{k, θ} instead of the @math{α, β} as reported in Wikipedia.
 ##
 ## Further information about the Gamma distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Gamma_distribution}
@@ -93,23 +92,23 @@ function [nlogL, acov] = gamlike (params, x, censor, freq)
   endif
 
   ## Get K and THETA values
-  k = params(1);
-  t = params(2);
+  a = params(1);
+  b = params(2);
 
   ## Parameters K and THETA must be positive, otherwise make them NaN
-  k(k <= 0) = NaN;
-  t(t <= 0) = NaN;
+  a(a <= 0) = NaN;
+  b(b <= 0) = NaN;
 
   ## Data in X must be positive, otherwise make it NaN
   x(x <= 0) = NaN;
 
   ## Compute the individual log-likelihood terms
-  z = x ./ t;
-  L = (k - 1) .* log (z) - z - gammaln (k) - log (t);
+  z = x ./ b;
+  L = (a - 1) .* log (z) - z - gammaln (a) - log (b);
   n_censored = sum (freq .* censor);
   if (n_censored > 0)
     z_censored = z(logical (censor));
-    Scen = gammainc (z_censored, k, "upper");
+    Scen = gammainc (z_censored, a, "upper");
     L(logical (censor)) = log (Scen);
   endif
 
@@ -123,22 +122,22 @@ function [nlogL, acov] = gamlike (params, x, censor, freq)
   ## Invert to get the observed information matrix.
   if (nargout == 2)
     ## Calculate all data
-    dL11 = -psi (1, k) * ones (size (z), "like", z);
-    dL12 = -(1 ./ t) * ones (size (z), "like", z);
-    dL22 = -(2 .* z - k) ./ (t .^ 2);
+    dL11 = -psi (1, a) * ones (size (z), "like", z);
+    dL12 = -(1 ./ b) * ones (size (z), "like", z);
+    dL22 = -(2 .* z - a) ./ (b .^ 2);
     ## Calculate censored data
     if (n_censored > 0)
       ## Compute derivatives
-      [y, dy, d2y] = dgammainc (z_censored, k);
+      [y, dy, d2y] = dgammainc (z_censored, a);
       dlnS = dy ./ y;
       d2lnS = d2y ./ y - dlnS.*dlnS;
 
-      #[dlnS,d2lnS] = dlngamsf(z_censored,k);
+      #[dlnS,d2lnS] = dlngamsf(z_censored,a);
       logzcen = log(z_censored);
-      tmp = exp(k .* logzcen - z_censored - gammaln(k) - log(t)) ./ Scen;
+      tmp = exp(a .* logzcen - z_censored - gammaln(a) - log(b)) ./ Scen;
       dL11(logical (censor)) = d2lnS;
-      dL12(logical (censor)) = tmp .* (logzcen - dlnS - psi(0,k));
-      dL22(logical (censor)) = tmp .* ((z_censored-1-k)./t - tmp);
+      dL12(logical (censor)) = tmp .* (logzcen - dlnS - psi(0,a));
+      dL22(logical (censor)) = tmp .* ((z_censored-1-a)./b - tmp);
     endif
     nH11 = -sum(freq .* dL11);
     nH12 = -sum(freq .* dL12);
@@ -154,7 +153,7 @@ function [nlogL, acov] = gamlike (params, x, censor, freq)
 endfunction
 
 ## Compute the incomplete Gamma function with its 1st and 2nd derivatives
-function [y, dy, d2y] = dgammainc (x, k)
+function [y, dy, d2y] = dgammainc (x, a)
 
   ## Initialize return variables
   y = nan (size (x));
@@ -163,18 +162,18 @@ function [y, dy, d2y] = dgammainc (x, k)
 
   ## Use approximation for K > 2^20
   ulim = 2^20;
-  is_lim = find (k > ulim);
+  is_lim = find (a > ulim);
   if (! isempty (is_lim))
-    x(is_lim) = max (ulim - 1/3 + sqrt (ulim ./ k(is_lim)) .* ...
-                     (x(is_lim) - (k(is_lim) - 1/3)), 0);
-    k(is_lim) = ulim;
+    x(is_lim) = max (ulim - 1/3 + sqrt (ulim ./ a(is_lim)) .* ...
+                     (x(is_lim) - (a(is_lim) - 1/3)), 0);
+    a(is_lim) = ulim;
   endif
 
-  ## For x < k+1
-  is_lo = find(x < k + 1 & x != 0);
+  ## For x < a+1
+  is_lo = find(x < a + 1 & x != 0);
   if (! isempty (is_lo))
     x_lo = x(is_lo);
-    k_lo = k(is_lo);
+    k_lo = a(is_lo);
     k_1 = k_lo;
     step = 1;
     d1st = 0;
@@ -193,7 +192,7 @@ function [y, dy, d2y] = dgammainc (x, k)
     endwhile
     fklo = exp (-x_lo + k_lo .* log (x_lo) - gammaln (k_lo + 1));
     y_lo = fklo .* stsum;
-    ## Fix very small k
+    ## Fix very small a
     y_lo(x_lo > 0 & y_lo > 1) = 1;
     ## Compute 1st derivative
     dlogfklo = (log (x_lo) - psi (k_lo + 1));
@@ -208,11 +207,11 @@ function [y, dy, d2y] = dgammainc (x, k)
     d2y(is_lo) = -d2y_lo;
   endif
 
-  ## For x >= k+1
-  is_hi = find(x >= k+1);
+  ## For x >= a+1
+  is_hi = find(x >= a+1);
   if (! isempty (is_hi))
     x_hi = x(is_hi);
-    k_hi = k(is_hi);
+    k_hi = a(is_hi);
     zc = 0;
     k0 = 0;
     k1 = k_hi;
@@ -276,10 +275,10 @@ function [y, dy, d2y] = dgammainc (x, k)
     d2y(is_x0) = 0;
   endif
 
-  ## Handle k == 0
-  is_k0 = find (k == 0);
+  ## Handle a == 0
+  is_k0 = find (a == 0);
   if (! isempty (is_k0))
-    is_k0x0 = find (k == 0 & x == 0);
+    is_k0x0 = find (a == 0 & x == 0);
     ## Considering the upper tail
     y(is_k0) = 0;
     dy(is_k0x0) = Inf;
