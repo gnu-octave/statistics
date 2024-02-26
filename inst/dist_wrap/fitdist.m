@@ -491,7 +491,7 @@ endfunction
 %! [muhat, muci] = expfit (x1);
 %! assert ([pd(1).mu], muhat);
 %! assert (paramci (pd(1)), muci);
-%! [phat, pci] = expfit (x2);
+%! [muhat, muci] = expfit (x2);
 %! assert ([pd(2).mu], muhat);
 %! assert (paramci (pd(2)), muci);
 %!test

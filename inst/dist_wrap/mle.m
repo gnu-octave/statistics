@@ -165,9 +165,9 @@ function [phat, pci] = mle (x, varargin)
 
     case {"exp", "exponential"}
       if (nargout < 2)
-        phat = expfit (x, alpha, censor, freq, options);
+        phat = expfit (x, alpha, censor, freq);
       else
-        [phat, pci] = expfit (x, alpha, censor, freq, options);
+        [phat, pci] = expfit (x, alpha, censor, freq);
       endif
 
     case {"gam", "gamma"}
