@@ -319,8 +319,8 @@ classdef GeneralizedParetoDistribution
         nlogL = [];
         return
       endif
-      nlogL = - gplike ([this.k, this.sigma, this.theta], this.InputData.data, ...
-                        this.InputData.cens, this.InputData.freq);
+      nlogL = - gplike ([this.k, this.sigma, this.theta], ...
+                        this.InputData.data, this.InputData.freq);
     endfunction
 
     ## -*- texinfo -*-
