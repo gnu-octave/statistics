@@ -136,7 +136,7 @@ function pd = makedist (varargin)
       pd = [];
 
     case "exponential"
-      mu = 0;
+      mu = 1;
       while (numel (varargin) > 0)
         switch (tolower (varargin{1}))
           case "mu"
@@ -147,7 +147,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = [];
+      pd = ExponentialDistribution (mu);
 
     case "gamma"
       a = 1;
@@ -531,6 +531,13 @@ function pd = makedist (varargin)
 endfunction
 
 ## Test output
+%!test
+%! pd = makedist ("exponential");
+%! assert (class (pd), "ExponentialDistribution");
+%! assert (pd.mu, 1);
+%!test
+%! pd = makedist ("exponential", "mu", 5);
+%! assert (pd.mu, 5);
 %!test
 %! pd = makedist ("gamma");
 %! assert (class (pd), "GammaDistribution");

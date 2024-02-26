@@ -188,11 +188,16 @@ function [varargout] = fitdist (varargin)
       endif
 
     case "exponential"
-      warning ("fitdist: 'Exponential' distribution not supported yet.");
       if (isempty (groupvar))
-        varargout{1} = [];
+        varargout{1} = ExponentialDistribution.fit (x, alpha, censor, freq);
       else
-        varargout{1} = [];
+        pd = ExponentialDistribution.fit ...
+             (x(g==1), alpha, censor(g==1), freq(g==1));
+        for i = 2:groups
+          pd(i) = ExponentialDistribution.fit ...
+                  (x(g==i), alpha, censor(g==i), freq(g==i));
+        endfor
+        varargout{1} = pd;
         varargout{2} = gn;
         varargout{3} = gl;
       endif
@@ -230,7 +235,8 @@ function [varargout] = fitdist (varargin)
 
     case {"generalizedpareto", "gp"}
       if (any (x - theta < 0))
-        error ("fitdist: invalid THETA value for generalized Pareto distribution.");
+        error (strcat (["fitdist: invalid THETA value for generalized"], ...
+                       [" Pareto distribution."]));
       endif
       if (isempty (groupvar))
         varargout{1} = GeneralizedParetoDistribution.fit ...
@@ -472,6 +478,22 @@ function [varargout] = fitdist (varargin)
 endfunction
 
 ## Test output
+%!test
+%! x = exprnd (1, 100, 1);
+%! pd = fitdist (x, "exponential");
+%! [muhat, muci] = expfit (x);
+%! assert ([pd.mu], muhat);
+%! assert (paramci (pd), muci);
+%!test
+%! x1 = exprnd (1, 100, 1);
+%! x2 = exprnd (5, 100, 1);
+%! pd = fitdist ([x1; x2], "exponential", "By", [ones(100,1); 2*ones(100,1)]);
+%! [muhat, muci] = expfit (x1);
+%! assert ([pd(1).mu], muhat);
+%! assert (paramci (pd(1)), muci);
+%! [phat, pci] = expfit (x2);
+%! assert ([pd(2).mu], muhat);
+%! assert (paramci (pd(2)), muci);
 %!test
 %! x = gamrnd (1, 1, 100, 1);
 %! pd = fitdist (x, "Gamma");
