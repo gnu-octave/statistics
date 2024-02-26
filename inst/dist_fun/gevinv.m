@@ -67,6 +67,9 @@ function x = gevinv (p, k, sigma, mu)
     error ("gevinv: P, K, SIGMA, and MU must not be complex.");
   endif
 
+  is_neginf = p == 0;
+  is_posinf = p == 1;
+  is_nan = p < 0 | p > 1 | isnan (p);
   x = p;
 
   llP = log (-log (p));
@@ -77,7 +80,9 @@ function x = gevinv (p, k, sigma, mu)
   ii = (abs(kllP) < 1E-4);
   x(ii) = mu(ii) - sigma(ii) .* llP(ii) .* (1 - kllP(ii) .* (1 - kllP(ii)));
   x(~ii) = mu(~ii) + (sigma(~ii) ./ k(~ii)) .* (exp(-kllP(~ii)) - 1);
-
+  x(is_neginf) = -Inf;
+  x(is_posinf) = Inf;
+  x(is_nan) = NaN;
 endfunction
 
 %!demo
