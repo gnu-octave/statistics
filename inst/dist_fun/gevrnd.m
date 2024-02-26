@@ -54,14 +54,6 @@
 ## found at
 ## @url{https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution}
 ##
-## @subheading References
-## @enumerate
-## @item
-## Rolf-Dieter Reiss and Michael Thomas. @cite{Statistical Analysis of Extreme
-## Values with Applications to Insurance, Finance, Hydrology and Other Fields}.
-## Chapter 1, pages 16-17, Springer, 2007.
-## @end enumerate
-##
 ## @seealso{gevcdf, gevinv, gevpdf, gevfit, gevlike, gevstat}
 ## @end deftypefn
 
