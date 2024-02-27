@@ -32,7 +32,7 @@
 ## Further information about the Burr distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Burr_distribution}
 ##
-## @seealso{burrcdf, burrinv, burrrnd, burrfit, burrlike}
+## @seealso{burrcdf, burrinv, burrrnd, burrfit, burrlike, burrstat}
 ## @end deftypefn
 
 function y = burrpdf (x, lambda, c, k)
@@ -68,8 +68,8 @@ function y = burrpdf (x, lambda, c, k)
   y(j) = NaN;
 
   ## Find valid values in parameters and data
-  j = (x > 0) & (0 < lambda) & (lambda < Inf) & (0 < c) & (c < Inf) ...
-              & (0 < k) & (k < Inf);
+  j = (x >= 0) & (0 < lambda) & (lambda < Inf) & (0 < c) & (c < Inf) ...
+               & (0 < k) & (k < Inf);
 
   ## Compute Burr PDF
   if (isscalar (lambda) && isscalar (c) && isscalar(k))
@@ -106,7 +106,7 @@ endfunction
 ## Test output
 %!shared x, y
 %! x = [-1, 0, 1, 2, Inf];
-%! y = [0, 0, 1/4, 1/9, 0];
+%! y = [0, 1, 1/4, 1/9, 0];
 %!assert (burrpdf (x, ones(1,5), ones (1,5), ones (1,5)), y)
 %!assert (burrpdf (x, 1, 1, 1), y)
 %!assert (burrpdf (x, [1, 1, NaN, 1, 1], 1, 1), [y(1:2), NaN, y(4:5)])

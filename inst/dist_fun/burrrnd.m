@@ -41,7 +41,7 @@
 ## Further information about the Burr distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Burr_distribution}
 ##
-## @seealso{burrcdf, burrinv, burrpdf, burrfit, burrlike}
+## @seealso{burrcdf, burrinv, burrpdf, burrfit, burrlike, burrstat}
 ## @end deftypefn
 
 function r = burrrnd (lambda, c, k, varargin)
