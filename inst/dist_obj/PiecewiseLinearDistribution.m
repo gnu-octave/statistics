@@ -62,9 +62,9 @@ classdef PiecewiseLinearDistribution
   ## @code{cdf}, @code{icdf}, @code{iqr}, @code{mean}, @code{median},
   ## @code{pdf}, @code{plot}, @code{random}, @code{std}, @code{truncate},
   ## @code{var}.
-##
-## Further information about the piecewise linear distribution can be found at
-## @url{https://en.wikipedia.org/wiki/Piecewise_linear_function}
+  ##
+  ## Further information about the piecewise linear distribution can be found at
+  ## @url{https://en.wikipedia.org/wiki/Piecewise_linear_function}
   ##
   ## @seealso{makedist, plcdf, plinv, plpdf, plrnd, plstat}
   ## @end deftypefn
@@ -202,6 +202,8 @@ classdef PiecewiseLinearDistribution
         p(is_nan) = NaN;
         np = lp + (up - lp) .* p;
         x = plinv (np, this.x, this.Fx);
+        x(x < this.Truncation(1)) = this.Truncation(1);
+        x(x > this.Truncation(2)) = this.Truncation(2);
       else
         x = plinv (p, this.x, this.Fx);
       endif

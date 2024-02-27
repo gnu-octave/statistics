@@ -209,6 +209,8 @@ classdef TriangularDistribution
         p(is_nan) = NaN;
         np = lp + (up - lp) .* p;
         x = triinv (np, this.A, this.B, this.C);
+        x(x < this.Truncation(1)) = this.Truncation(1);
+        x(x > this.Truncation(2)) = this.Truncation(2);
       else
         x = triinv (p, this.A, this.B, this.C);
       endif

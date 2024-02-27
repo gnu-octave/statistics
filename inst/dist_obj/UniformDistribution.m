@@ -197,6 +197,8 @@ classdef UniformDistribution
         p(is_nan) = NaN;
         np = lp + (up - lp) .* p;
         x = unifinv (np, this.Lower, this.Upper);
+        x(x < this.Truncation(1)) = this.Truncation(1);
+        x(x > this.Truncation(2)) = this.Truncation(2);
       else
         x = unifinv (p, this.Lower, this.Upper);
       endif
