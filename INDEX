@@ -68,6 +68,7 @@ Descriptive Statistics
  trimmean
  var
 Distribution Classes
+ BurrDistribution
  ExponentialDistribution
  ExtremeValueDistribution
  GammaDistribution
@@ -172,6 +173,7 @@ Distribution Functions
 Distribution Statistics
  betastat
  binostat
+ burrstat
  chi2stat
  evstat
  expstat
