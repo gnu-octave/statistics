@@ -103,13 +103,13 @@ function pd = makedist (varargin)
       pd = [];
 
     case "burr"
-      lambda = 1;
+      alpha = 1;
       c = 1;
       k = 1;
       while (numel (varargin) > 0)
         switch (tolower (varargin{1}))
           case {"lambda", "alpha"}
-            lambda = varargin{2};
+            alpha = varargin{2};
           case "c"
             c = varargin{2};
           case "k"
@@ -119,7 +119,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = [];
+      pd = BurrDistribution (alpha, c, k);
 
     case "exponential"
       mu = 1;
@@ -534,6 +534,32 @@ function pd = makedist (varargin)
 endfunction
 
 ## Test output
+%!test
+%! pd = makedist ("burr");
+%! assert (class (pd), "BurrDistribution");
+%! assert (pd.alpha, 1);
+%! assert (pd.c, 1);
+%! assert (pd.k, 1);
+%!test
+%! pd = makedist ("burr", "k", 5);
+%! assert (pd.alpha, 1);
+%! assert (pd.c, 1);
+%! assert (pd.k, 5);
+%!test
+%! pd = makedist ("burr", "c", 5);
+%! assert (pd.alpha, 1);
+%! assert (pd.c, 5);
+%! assert (pd.k, 1);
+%!test
+%! pd = makedist ("burr", "alpha", 3, "c", 5);
+%! assert (pd.alpha, 3);
+%! assert (pd.c, 5);
+%! assert (pd.k, 1);
+%!test
+%! pd = makedist ("burr", "k", 3, "c", 5);
+%! assert (pd.alpha, 1);
+%! assert (pd.c, 5);
+%! assert (pd.k, 3);
 %!test
 %! pd = makedist ("exponential");
 %! assert (class (pd), "ExponentialDistribution");
