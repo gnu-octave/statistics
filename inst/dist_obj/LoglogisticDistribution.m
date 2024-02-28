@@ -130,11 +130,11 @@ classdef LoglogisticDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "loglogistic distribution");
+      __disp__ (this, "Log-Logistic distribution");
     endfunction
 
     function disp (this)
-      __disp__ (this, "loglogistic distribution");
+      __disp__ (this, "Log-Logistic distribution");
     endfunction
 
     function this = set.mu (this, mu)
@@ -654,6 +654,36 @@ function checkparams (mu, sigma)
     error ("LoglogisticDistribution: SIGMA must be a positive real scalar.")
   endif
 endfunction
+
+## Test output
+%!shared pd, t
+%! pd = LoglogisticDistribution;
+%! t = truncate (pd, 2, 4);
+%!assert (cdf (pd, [0:5]), [0, 0.5, 0.6667, 0.75, 0.8, 0.8333], 1e-4);
+%!assert (cdf (t, [0:5]), [0, 0, 0, 0.625, 1, 1], 1e-4);
+%!assert (cdf (pd, [1.5, 2, 3, 4]), [0.6, 0.6667, 0.75, 0.8], 1e-4);
+%!assert (cdf (t, [1.5, 2, 3, 4]), [0, 0, 0.625, 1], 1e-4);
+%!assert (icdf (pd, [0:0.2:1]), [0, 0.25, 0.6667, 1.5, 4, Inf], 1e-4);
+%!assert (icdf (t, [0:0.2:1]), [2, 2.2609, 2.5714, 2.9474, 3.4118, 4], 1e-4);
+%!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, 0.6667, 1.5, 4, Inf, NaN], 1e-4);
+%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 2.5714, 2.9474, 3.4118, 4, NaN], 1e-4);
+%!assert (iqr (pd), 2.6667, 1e-4);
+%!assert (iqr (t), 0.9524, 1e-4);
+%!assert (mean (pd), Inf);
+%!assert (mean (t), 2.8312, 1e-4);
+%!assert (median (pd), 1, 1e-4);
+%!assert (median (t), 2.75, 1e-4);
+%!assert (pdf (pd, [0:5]), [0, 0.25, 0.1111, 0.0625, 0.04, 0.0278], 1e-4);
+%!assert (pdf (t, [0:5]), [0, 0, 0.8333, 0.4687, 0.3, 0], 1e-4);
+%!assert (pdf (pd, [-1, 1:4, NaN]), [0, 0.25, 0.1111, 0.0625, 0.04, NaN], 1e-4);
+%!assert (pdf (t, [-1, 1:4, NaN]), [0, 0, 0.8333, 0.4687, 0.3, NaN], 1e-4);
+%!assert (isequal (size (random (pd, 100, 50)), [100, 50]))
+%!assert (any (random (t, 1000, 1) < 2), false);
+%!assert (any (random (t, 1000, 1) > 4), false);
+%!assert (std (pd), Inf);
+%!assert (std (t), 0.5674, 1e-4);
+%!assert (var (pd), Inf);
+%!assert (var (t), 0.3220, 1e-4);
 
 ## Test input validation
 ## 'LoglogisticDistribution' constructor

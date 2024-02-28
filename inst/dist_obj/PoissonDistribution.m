@@ -490,10 +490,10 @@ classdef PoissonDistribution
         ## pick the appropriate size from
         lx = this.Truncation(1);
         ux = this.Truncation(2);
-        ratio = 1 / diff (poisscdf ([lx, ux], this.nu, this.sigma));
+        ratio = 1 / diff (poisscdf ([lx, ux], this.lambda));
         nsize = fix (2 * ratio * ps);       # times 2 to be on the safe side
         ## Generate the numbers and remove out-of-bound random samples
-        r = poissrnd (this.nu, this.sigma, nsize, 1);
+        r = poissrnd (this.lambda, nsize, 1);
         r(r < lx | r > ux) = [];
         ## Randomly select the required size and reshape to requested dimensions
         idx = randperm (numel (r), ps);
@@ -621,6 +621,36 @@ function checkparams (lambda)
     error ("PoissonDistribution: LAMBDA must be a positive real scalar.")
   endif
 endfunction
+
+## Test output
+%!shared pd, t
+%! pd = PoissonDistribution;
+%! t = truncate (pd, 2, 4);
+%!assert (cdf (pd, [0:5]), [0.3679, 0.7358, 0.9197, 0.9810, 0.9963, 0.9994], 1e-4);
+#%!assert (cdf (t, [0:5]), [0, 0, 0.7059, 0.9412, 1, 1], 1e-4);
+%!assert (cdf (pd, [1.5, 2, 3, 4]), [0.7358, 0.9197, 0.9810, 0.9963], 1e-4);
+#%!assert (cdf (t, [1.5, 2, 3, 4]), [0, 0.7059, 0.9412, 1], 1e-4);
+%!assert (icdf (pd, [0:0.2:1]), [0, 0, 1, 1, 2, Inf], 1e-4);
+#%!assert (icdf (t, [0:0.2:1]), [2, 2, 2, 2, 3, 4], 1e-4);
+%!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, 1, 1, 2, Inf, NaN], 1e-4);
+#%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 2, 2, 3, 4, NaN], 1e-4);
+%!assert (iqr (pd), 2);
+#%!assert (iqr (t), 1);
+%!assert (mean (pd), 1);
+#%!assert (mean (t), 2.3529, 1e-4);
+%!assert (median (pd), 1);
+#%!assert (median (t), 2);
+%!assert (pdf (pd, [0:5]), [0.3679, 0.3679, 0.1839, 0.0613, 0.0153, 0.0031], 1e-4);
+#%!assert (pdf (t, [0:5]), [0, 0, 0.7059, 0.2353, 0.0588, 0], 1e-4);
+%!assert (pdf (pd, [-1, 1:4, NaN]), [0, 0.3679, 0.1839, 0.0613, 0.0153, NaN], 1e-4);
+#%!assert (pdf (t, [-1, 1:4, NaN]), [0, 0, 0.7059, 0.2353, 0.0588, NaN], 1e-4);
+%!assert (isequal (size (random (pd, 100, 50)), [100, 50]))
+%!assert (any (random (t, 1000, 1) < 2), false);
+%!assert (any (random (t, 1000, 1) > 4), false);
+%!assert (std (pd), 1);
+#%!assert (std (t), 0.5882, 1e-4);
+%!assert (var (pd), 1);
+#%!assert (var (t), 0.3460, 1e-4);
 
 ## Test input validation
 ## 'PoissonDistribution' constructor

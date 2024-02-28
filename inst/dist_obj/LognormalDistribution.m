@@ -643,6 +643,36 @@ function checkparams (mu, sigma)
   endif
 endfunction
 
+## Test output
+%!shared pd, t
+%! pd = LognormalDistribution;
+%! t = truncate (pd, 2, 4);
+%!assert (cdf (pd, [0:5]), [0, 0.5, 0.7559, 0.8640, 0.9172, 0.9462], 1e-4);
+%!assert (cdf (t, [0:5]), [0, 0, 0, 0.6705, 1, 1], 1e-4);
+%!assert (cdf (pd, [1.5, 2, 3, 4]), [0.6574, 0.7559, 0.8640, 0.9172], 1e-4);
+%!assert (cdf (t, [1.5, 2, 3, 4]), [0, 0, 0.6705, 1], 1e-4);
+%!assert (icdf (pd, [0:0.2:1]), [0, 0.4310, 0.7762, 1.2883, 2.3201, Inf], 1e-4);
+%!assert (icdf (t, [0:0.2:1]), [2, 2.2256, 2.5015, 2.8517, 3.3199, 4], 1e-4);
+%!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, 0.7762, 1.2883, 2.3201, Inf, NaN], 1e-4);
+%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 2.5015, 2.8517, 3.3199, 4, NaN], 1e-4);
+%!assert (iqr (pd), 1.4536, 1e-4);
+%!assert (iqr (t), 0.8989, 1e-4);
+%!assert (mean (pd), 1.6487, 1e-4);
+%!assert (mean (t), 2.7692, 1e-4);
+%!assert (median (pd), 1, 1e-4);
+%!assert (median (t), 2.6653, 1e-4);
+%!assert (pdf (pd, [0:5]), [0, 0.3989, 0.1569, 0.0727, 0.0382, 0.0219], 1e-4);
+%!assert (pdf (t, [0:5]), [0, 0, 0.9727, 0.4509, 0.2366, 0], 1e-4);
+%!assert (pdf (pd, [-1, 1:4, NaN]), [0, 0.3989, 0.1569, 0.0727, 0.0382, NaN], 1e-4);
+%!assert (pdf (t, [-1, 1:4, NaN]), [0, 0, 0.9727, 0.4509, 0.2366, NaN], 1e-4);
+%!assert (isequal (size (random (pd, 100, 50)), [100, 50]))
+%!assert (any (random (t, 1000, 1) < 2), false);
+%!assert (any (random (t, 1000, 1) > 4), false);
+%!assert (std (pd), 2.1612, 1e-4);
+%!assert (std (t), 0.5540, 1e-4);
+%!assert (var (pd), 4.6708, 1e-4);
+%!assert (var (t), 0.3069, 1e-4);
+
 ## Test input validation
 ## 'LognormalDistribution' constructor
 %!error <LognormalDistribution: MU must be a real scalar.> ...
