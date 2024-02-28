@@ -100,7 +100,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = [];
+      pd = BirnbaumSaundersDistribution (beta, gamma);
 
     case "burr"
       alpha = 1;
@@ -534,6 +534,23 @@ function pd = makedist (varargin)
 endfunction
 
 ## Test output
+%!test
+%! pd = makedist ("birnbaumsaunders");
+%! assert (class (pd), "BirnbaumSaundersDistribution");
+%! assert (pd.beta, 1);
+%! assert (pd.gamma, 1);
+%!test
+%! pd = makedist ("birnbaumsaunders", "beta", 5);
+%! assert (pd.beta, 5);
+%! assert (pd.gamma, 1);
+%!test
+%! pd = makedist ("birnbaumsaunders", "gamma", 5);
+%! assert (pd.beta, 1);
+%! assert (pd.gamma, 5);
+%!test
+%! pd = makedist ("birnbaumsaunders", "beta", 3, "gamma", 5);
+%! assert (pd.beta, 3);
+%! assert (pd.gamma, 5);
 %!test
 %! pd = makedist ("burr");
 %! assert (class (pd), "BurrDistribution");
