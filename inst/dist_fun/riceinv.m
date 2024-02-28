@@ -16,14 +16,14 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{x} =} riceinv (@var{p}, @var{nu}, @var{sigma})
+## @deftypefn  {statistics} {@var{x} =} riceinv (@var{p}, @var{s}, @var{sigma})
 ##
 ## Inverse of the Rician distribution (iCDF).
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF)
-## of the Rician distribution with non-centrality (distance) parameter @var{nu}
+## of the Rician distribution with non-centrality (distance) parameter @var{s}
 ## and scale parameter @var{sigma}.  The size of @var{x} is the common size of
-## @var{x}, @var{nu}, and @var{sigma}.  A scalar input functions as a constant
+## @var{x}, @var{s}, and @var{sigma}.  A scalar input functions as a constant
 ## matrix of the same size as the other inputs.
 ##
 ## Further information about the Rician distribution can be found at
@@ -32,39 +32,39 @@
 ## @seealso{ricecdf, ricepdf, ricernd, ricefit, ricelike, ricestat}
 ## @end deftypefn
 
-function x = riceinv (p, nu, sigma)
+function x = riceinv (p, s, sigma)
 
   ## Check for valid number of input arguments
   if (nargin < 3)
     error ("riceinv: function called with too few input arguments.");
   endif
 
-  ## Check for common size of P, NU, and B
-  if (! isscalar (p) || ! isscalar (nu) || ! isscalar (sigma))
-    [retval, p, nu, sigma] = common_size (p, nu, sigma);
+  ## Check for common size of P, S, and B
+  if (! isscalar (p) || ! isscalar (s) || ! isscalar (sigma))
+    [retval, p, s, sigma] = common_size (p, s, sigma);
     if (retval > 0)
-      error ("riceinv: P, NU, and B must be of common size or scalars.");
+      error ("riceinv: P, S, and B must be of common size or scalars.");
     endif
   endif
 
-  ## Check for P, NU, and B being reals
-  if (iscomplex (p) || iscomplex (nu) || iscomplex (sigma))
-    error ("riceinv: P, NU, and B must not be complex.");
+  ## Check for P, S, and B being reals
+  if (iscomplex (p) || iscomplex (s) || iscomplex (sigma))
+    error ("riceinv: P, S, and B must not be complex.");
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (nu, "single") || isa (sigma, "single"))
+  if (isa (p, "single") || isa (s, "single") || isa (sigma, "single"))
     x = zeros (size (p), "single");
   else
     x = zeros (size (p));
   endif
 
-  k = nu < 0 | sigma <= 0 | p < 0 | p > 1 | ...
-               isnan (p) | isnan (nu) | isnan (sigma);
+  k = s < 0 | sigma <= 0 | p < 0 | p > 1 | ...
+               isnan (p) | isnan (s) | isnan (sigma);
   x(k) = NaN;
 
   k = ! k;
-  x(k) = sigma(k) .* sqrt (ncx2inv (p(k), 2, (nu(k) ./ sigma(k)) .^ 2));
+  x(k) = sigma(k) .* sqrt (ncx2inv (p(k), 2, (s(k) ./ sigma(k)) .^ 2));
 
 endfunction
 
@@ -78,8 +78,8 @@ endfunction
 %! x5 = riceinv (p, 4, 1);
 %! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-m", p, x5, "-k")
 %! grid on
-%! legend ({"ν = 0, σ = 1", "ν = 0.5, σ = 1", "ν = 1, σ = 1", ...
-%!          "ν = 2, σ = 1", "ν = 4, σ = 1"}, "location", "northwest")
+%! legend ({"s = 0, σ = 1", "s = 0.5, σ = 1", "s = 1, σ = 1", ...
+%!          "s = 2, σ = 1", "s = 4, σ = 1"}, "location", "northwest")
 %! title ("Rician iCDF")
 %! xlabel ("probability")
 %! ylabel ("values in x")
@@ -108,12 +108,12 @@ endfunction
 %!error<riceinv: function called with too few input arguments.> riceinv (1)
 %!error<riceinv: function called with too few input arguments.> riceinv (1,2)
 %!error<riceinv: function called with too many inputs> riceinv (1,2,3,4)
-%!error<riceinv: P, NU, and B must be of common size or scalars.> ...
+%!error<riceinv: P, S, and B must be of common size or scalars.> ...
 %! riceinv (ones (3), ones (2), ones (2))
-%!error<riceinv: P, NU, and B must be of common size or scalars.> ...
+%!error<riceinv: P, S, and B must be of common size or scalars.> ...
 %! riceinv (ones (2), ones (3), ones (2))
-%!error<riceinv: P, NU, and B must be of common size or scalars.> ...
+%!error<riceinv: P, S, and B must be of common size or scalars.> ...
 %! riceinv (ones (2), ones (2), ones (3))
-%!error<riceinv: P, NU, and B must not be complex.> riceinv (i, 2, 2)
-%!error<riceinv: P, NU, and B must not be complex.> riceinv (2, i, 2)
-%!error<riceinv: P, NU, and B must not be complex.> riceinv (2, 2, i)
+%!error<riceinv: P, S, and B must not be complex.> riceinv (i, 2, 2)
+%!error<riceinv: P, S, and B must not be complex.> riceinv (2, i, 2)
+%!error<riceinv: P, S, and B must not be complex.> riceinv (2, 2, i)

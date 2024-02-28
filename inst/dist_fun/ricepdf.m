@@ -16,14 +16,14 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{y} =} ricepdf (@var{x}, @var{nu}, @var{sigma})
+## @deftypefn  {statistics} {@var{y} =} ricepdf (@var{x}, @var{s}, @var{sigma})
 ##
 ## Rician probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## of the Rician distribution with non-centrality (distance) parameter @var{nu}
+## of the Rician distribution with non-centrality (distance) parameter @var{s}
 ## and scale parameter @var{sigma}.  The size of @var{y} is the common size of
-## @var{x}, @var{nu}, and @var{sigma}.  A scalar input functions as a constant
+## @var{x}, @var{s}, and @var{sigma}.  A scalar input functions as a constant
 ## matrix of the same size as the other inputs.
 ##
 ## Further information about the Rician distribution can be found at
@@ -32,40 +32,40 @@
 ## @seealso{ricecdf, riceinv, ricernd, ricefit, ricelike, ricestat}
 ## @end deftypefn
 
-function y = ricepdf (x, nu, sigma)
+function y = ricepdf (x, s, sigma)
 
   ## Check for valid number of input arguments
   if (nargin < 3)
     error ("ricepdf: function called with too few input arguments.");
   endif
 
-  ## Check for common size of X, NU, and SIGMA
-  if (! isscalar (x) || ! isscalar (nu) || ! isscalar (sigma))
-    [retval, x, nu, sigma] = common_size (x, nu, sigma);
+  ## Check for common size of X, S, and SIGMA
+  if (! isscalar (x) || ! isscalar (s) || ! isscalar (sigma))
+    [retval, x, s, sigma] = common_size (x, s, sigma);
     if (retval > 0)
-      error ("ricepdf: X, NU, and SIGMA must be of common size or scalars.");
+      error ("ricepdf: X, S, and SIGMA must be of common size or scalars.");
     endif
   endif
 
-  ## Check for X, NU, and SIGMA being reals
-  if (iscomplex (x) || iscomplex (nu) || iscomplex (sigma))
-    error ("ricepdf: X, NU, and SIGMA must not be complex.");
+  ## Check for X, S, and SIGMA being reals
+  if (iscomplex (x) || iscomplex (s) || iscomplex (sigma))
+    error ("ricepdf: X, S, and SIGMA must not be complex.");
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (nu, "single") || isa (sigma, "single"));
+  if (isa (x, "single") || isa (s, "single") || isa (sigma, "single"));
     y = zeros (size (x), "single");
   else
     y = zeros (size (x));
   endif
 
-  k = nu < 0 | sigma <= 0 | x < 0 | isnan (x) | isnan (nu) | isnan (sigma);
+  k = s < 0 | sigma <= 0 | x < 0 | isnan (x) | isnan (s) | isnan (sigma);
   y(k) = NaN;
 
   k = ! k;
   ## Do the math
   x_k = x(k);
-  n_k = nu(k);
+  n_k = s(k);
   s_sq = sigma(k) .^ 2;
   x_s2 = x_k ./ s_sq;
   xnsq = (x_k .^ 2 + n_k .^ 2) ./ (2 .* s_sq);
@@ -93,8 +93,8 @@ endfunction
 %! grid on
 %! ylim ([0, 0.65])
 %! xlim ([0, 8])
-%! legend ({"ν = 0, σ = 1", "ν = 0.5, σ = 1", "ν = 1, σ = 1", ...
-%!          "ν = 2, σ = 1", "ν = 4, σ = 1"}, "location", "northeast")
+%! legend ({"s = 0, σ = 1", "s = 0.5, σ = 1", "s = 1, σ = 1", ...
+%!          "s = 2, σ = 1", "s = 4, σ = 1"}, "location", "northeast")
 %! title ("Rician PDF")
 %! xlabel ("values in x")
 %! ylabel ("density")
@@ -120,12 +120,12 @@ endfunction
 %!error<ricepdf: function called with too few input arguments.> ricepdf (1)
 %!error<ricepdf: function called with too few input arguments.> ricepdf (1,2)
 %!error<ricepdf: function called with too many inputs> ricepdf (1,2,3,4)
-%!error<ricepdf: X, NU, and SIGMA must be of common size or scalars.> ...
+%!error<ricepdf: X, S, and SIGMA must be of common size or scalars.> ...
 %! ricepdf (ones (3), ones (2), ones (2))
-%!error<ricepdf: X, NU, and SIGMA must be of common size or scalars.> ...
+%!error<ricepdf: X, S, and SIGMA must be of common size or scalars.> ...
 %! ricepdf (ones (2), ones (3), ones (2))
-%!error<ricepdf: X, NU, and SIGMA must be of common size or scalars.> ...
+%!error<ricepdf: X, S, and SIGMA must be of common size or scalars.> ...
 %! ricepdf (ones (2), ones (2), ones (3))
-%!error<ricepdf: X, NU, and SIGMA must not be complex.> ricepdf (i, 2, 2)
-%!error<ricepdf: X, NU, and SIGMA must not be complex.> ricepdf (2, i, 2)
-%!error<ricepdf: X, NU, and SIGMA must not be complex.> ricepdf (2, 2, i)
+%!error<ricepdf: X, S, and SIGMA must not be complex.> ricepdf (i, 2, 2)
+%!error<ricepdf: X, S, and SIGMA must not be complex.> ricepdf (2, i, 2)
+%!error<ricepdf: X, S, and SIGMA must not be complex.> ricepdf (2, 2, i)

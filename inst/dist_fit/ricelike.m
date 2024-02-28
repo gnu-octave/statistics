@@ -26,7 +26,7 @@
 ##
 ## @code{@var{nlogL} = ricelike (@var{params}, @var{x})} returns the negative
 ## log likelihood of the data in @var{x} corresponding to the Rician
-## distribution with (1) non-centrality (distance) parameter @math{nu} and (2)
+## distribution with (1) non-centrality (distance) parameter @math{s} and (2)
 ## scale parameter @math{sigma} given in the two-element vector @var{params}.
 ##
 ## @code{[@var{nlogL}, @var{acov}] = ricelike (@var{params}, @var{x})} also

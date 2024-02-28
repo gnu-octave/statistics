@@ -16,20 +16,20 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{p} =} ricecdf (@var{x}, @var{nu}, @var{sigma})
-## @deftypefnx {statistics} {@var{p} =} ricecdf (@var{x}, @var{nu}, @var{sigma}, @qcode{"upper"})
+## @deftypefn  {statistics} {@var{p} =} ricecdf (@var{x}, @var{s}, @var{sigma})
+## @deftypefnx {statistics} {@var{p} =} ricecdf (@var{x}, @var{s}, @var{sigma}, @qcode{"upper"})
 ##
 ## Rician cumulative distribution function (CDF).
 ##
 ## For each element of @var{x}, compute the cumulative distribution function
 ## (CDF) of the Rician distribution with non-centrality (distance) parameter
-## @var{nu} and scale parameter @var{sigma}.  The size of @var{p} is the common
-## size of @var{x}, @var{nu}, and @var{sigma}.  A scalar input functions as a
+## @var{s} and scale parameter @var{sigma}.  The size of @var{p} is the common
+## size of @var{x}, @var{s}, and @var{sigma}.  A scalar input functions as a
 ## constant matrix of the same size as the other inputs.
 ##
-## @code{@var{p} = ricecdf (@var{x}, @var{nu}, @var{sigma}, "upper")} computes
+## @code{@var{p} = ricecdf (@var{x}, @var{s}, @var{sigma}, "upper")} computes
 ## the upper tail probability of the Rician distribution with parameters
-## @var{nu} and @var{sigma}, at the values in @var{x}.
+## @var{s} and @var{sigma}, at the values in @var{x}.
 ##
 ## Further information about the Rician distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Rice_distribution}
@@ -37,7 +37,7 @@
 ## @seealso{riceinv, ricepdf, ricernd, ricefit, ricelike, ricestat}
 ## @end deftypefn
 
-function p = ricecdf (x, nu, sigma, uflag)
+function p = ricecdf (x, s, sigma, uflag)
 
   ## Check for valid number of input arguments
   if (nargin < 3)
@@ -53,39 +53,39 @@ function p = ricecdf (x, nu, sigma, uflag)
     uflag = false;
   endif
 
-  ## Check for common size of X and SIGMA
-  if (! isscalar (x) || ! isscalar (nu) || ! isscalar (sigma))
-    [retval, x, nu, sigma] = common_size (x, nu, sigma);
+  ## Check for common size of X, S, and SIGMA
+  if (! isscalar (x) || ! isscalar (s) || ! isscalar (sigma))
+    [retval, x, s, sigma] = common_size (x, s, sigma);
     if (retval > 0)
-      error ("ricecdf: X, NU, and SIGMA must be of common size or scalars.");
+      error ("ricecdf: X, S, and SIGMA must be of common size or scalars.");
     endif
   endif
 
-  ## Check for X and SIGMA being reals
-  if (iscomplex (x) || iscomplex (nu) || iscomplex (sigma))
-    error ("ricecdf: X, NU, and SIGMA must not be complex.");
+  ## Check for X, S, and SIGMA being reals
+  if (iscomplex (x) || iscomplex (s) || iscomplex (sigma))
+    error ("ricecdf: X, S, and SIGMA must not be complex.");
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (nu, "single") || isa (sigma, "single"));
+  if (isa (x, "single") || isa (s, "single") || isa (sigma, "single"));
     p = zeros (size (x), "single");
   else
     p = zeros (size (x));
   endif
 
   ## Force 1 for upper flag and X <= 0
-  k0 = nu >= 0 & sigma > 0 & x < 0;
+  k0 = s >= 0 & sigma > 0 & x < 0;
   if (uflag && any (k0(:)))
     p(k0) = 1;
   end
 
   ## Calculate Rayleigh CDF for valid parameter and data range
-  k = nu >= 0 & sigma > 0 & x >= 0;
+  k = s >= 0 & sigma > 0 & x >= 0;
   if (any (k(:)))
     if (uflag)
-        p(k) = marcumQ1 (nu(k) ./ sigma(k), x(k) ./ sigma(k));
+        p(k) = marcumQ1 (s(k) ./ sigma(k), x(k) ./ sigma(k));
     else
-        p(k) = 1 - marcumQ1 (nu(k) ./ sigma(k), x(k) ./ sigma(k));
+        p(k) = 1 - marcumQ1 (s(k) ./ sigma(k), x(k) ./ sigma(k));
     endif
   endif
 
@@ -150,8 +150,8 @@ endfunction
 %! grid on
 %! ylim ([0, 1])
 %! xlim ([0, 8])
-%! legend ({"ν = 0, σ = 1", "ν = 0.5, σ = 1", "ν = 1, σ = 1", ...
-%!          "ν = 2, σ = 1", "ν = 4, σ = 1"}, "location", "southeast")
+%! legend ({"s = 0, σ = 1", "s = 0.5, σ = 1", "s = 1, σ = 1", ...
+%!          "s = 2, σ = 1", "s = 4, σ = 1"}, "location", "southeast")
 %! title ("Rician CDF")
 %! xlabel ("values in x")
 %! ylabel ("probability")
@@ -177,8 +177,8 @@ endfunction
 ## Test output
 %!test
 %! x = 0:0.5:2.5;
-%! nu = 1:6;
-%! p = ricecdf (x, nu, 1);
+%! s = 1:6;
+%! p = ricecdf (x, s, 1);
 %! expected_p = [0.0000, 0.0179, 0.0108, 0.0034, 0.0008, 0.0001];
 %! assert (p, expected_p, 0.001);
 %!test
@@ -209,12 +209,12 @@ endfunction
 %!error<ricecdf: function called with too few input arguments.> ricecdf (1, 2)
 %!error<ricecdf: invalid argument for upper tail.> ricecdf (1, 2, 3, "uper")
 %!error<ricecdf: invalid argument for upper tail.> ricecdf (1, 2, 3, 4)
-%!error<ricecdf: X, NU, and SIGMA must be of common size or scalars.> ...
+%!error<ricecdf: X, S, and SIGMA must be of common size or scalars.> ...
 %! ricecdf (ones (3), ones (2), ones (2))
-%!error<ricecdf: X, NU, and SIGMA must be of common size or scalars.> ...
+%!error<ricecdf: X, S, and SIGMA must be of common size or scalars.> ...
 %! ricecdf (ones (2), ones (3), ones (2))
-%!error<ricecdf: X, NU, and SIGMA must be of common size or scalars.> ...
+%!error<ricecdf: X, S, and SIGMA must be of common size or scalars.> ...
 %! ricecdf (ones (2), ones (2), ones (3))
-%!error<ricecdf: X, NU, and SIGMA must not be complex.> ricecdf (i, 2, 3)
-%!error<ricecdf: X, NU, and SIGMA must not be complex.> ricecdf (2, i, 3)
-%!error<ricecdf: X, NU, and SIGMA must not be complex.> ricecdf (2, 2, i)
+%!error<ricecdf: X, S, and SIGMA must not be complex.> ricecdf (i, 2, 3)
+%!error<ricecdf: X, S, and SIGMA must not be complex.> ricecdf (2, i, 3)
+%!error<ricecdf: X, S, and SIGMA must not be complex.> ricecdf (2, 2, i)

@@ -16,13 +16,13 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {[@var{m}, @var{v}] =} ricestat (@var{nu}, @var{sigma})
+## @deftypefn  {statistics} {[@var{m}, @var{v}] =} ricestat (@var{s}, @var{sigma})
 ##
 ## Compute statistics of the Rician distribution.
 ##
-## @code{[@var{m}, @var{v}] = ricestat (@var{nu}, @var{sigma})} returns the mean
+## @code{[@var{m}, @var{v}] = ricestat (@var{s}, @var{sigma})} returns the mean
 ## and variance of the Rician distribution with non-centrality (distance)
-## parameter @var{nu} and scale parameter @var{sigma}.
+## parameter @var{s} and scale parameter @var{sigma}.
 ##
 ## The size of @var{m} (mean) and @var{v} (variance) is the common size of the
 ## input arguments.  A scalar input functions as a constant matrix of the
@@ -34,47 +34,47 @@
 ## @seealso{ricecdf, riceinv, ricepdf, ricernd, ricefit, ricelike}
 ## @end deftypefn
 
-function [m, v] = ricestat (nu, sigma)
+function [m, v] = ricestat (s, sigma)
 
   ## Check for valid number of input arguments
   if (nargin < 2)
     error ("ricestat: function called with too few input arguments.");
   endif
 
-  ## Check for NU and SIGMA being numeric
-  if (! (isnumeric (nu) && isnumeric (sigma)))
-    error ("ricestat: NU and SIGMA must be numeric.");
+  ## Check for S and SIGMA being numeric
+  if (! (isnumeric (s) && isnumeric (sigma)))
+    error ("ricestat: S and SIGMA must be numeric.");
   endif
 
-  ## Check for NU and SIGMA being real
-  if (iscomplex (nu) || iscomplex (sigma))
-    error ("ricestat: NU and SIGMA must not be complex.");
+  ## Check for S and SIGMA being real
+  if (iscomplex (s) || iscomplex (sigma))
+    error ("ricestat: S and SIGMA must not be complex.");
   endif
 
-  ## Check for common size of NU and SIGMA
-  if (! isscalar (nu) || ! isscalar (sigma))
-    [retval, nu, sigma] = common_size (nu, sigma);
+  ## Check for common size of S and SIGMA
+  if (! isscalar (s) || ! isscalar (sigma))
+    [retval, s, sigma] = common_size (s, sigma);
     if (retval > 0)
-      error ("ricestat: NU and SIGMA must be of common size or scalars.");
+      error ("ricestat: S and SIGMA must be of common size or scalars.");
     endif
   endif
 
   ## Initialize mean and variance
-  if (isa (nu, "single") || isa (sigma, "single"))
-    m = NaN (size (nu), "single");
+  if (isa (s, "single") || isa (sigma, "single"))
+    m = NaN (size (s), "single");
     v = m;
   else
-    m = NaN (size (nu));
+    m = NaN (size (s));
     v = m;
   endif
 
   ## Compute mean and variance for valid parameter values.
-  k = (nu >= 0 & sigma > 0);
+  k = (s >= 0 & sigma > 0);
   if (any (k(:)))
-    thetasq = (nu(k) .^ 2) ./ (sigma(k) .^ 2);
+    thetasq = (s(k) .^ 2) ./ (sigma(k) .^ 2);
     L = Laguerre_half (-0.5 .* thetasq);
     m(k) = sigma(k) .* sqrt (pi / 2) .* L;
-    v(k) = 2 * (sigma(k) .^ 2) + nu(k) .^ 2 - ...
+    v(k) = 2 * (sigma(k) .^ 2) + s(k) .^ 2 - ...
            (0.5 .* pi .* sigma(k) .^ 2) .* L .^ 2;
   endif
 
@@ -87,23 +87,23 @@ endfunction
 ## Input validation tests
 %!error<ricestat: function called with too few input arguments.> ricestat ()
 %!error<ricestat: function called with too few input arguments.> ricestat (1)
-%!error<ricestat: NU and SIGMA must be numeric.> ricestat ({}, 2)
-%!error<ricestat: NU and SIGMA must be numeric.> ricestat (1, "")
-%!error<ricestat: NU and SIGMA must not be complex.> ricestat (i, 2)
-%!error<ricestat: NU and SIGMA must not be complex.> ricestat (1, i)
-%!error<ricestat: NU and SIGMA must be of common size or scalars.> ...
+%!error<ricestat: S and SIGMA must be numeric.> ricestat ({}, 2)
+%!error<ricestat: S and SIGMA must be numeric.> ricestat (1, "")
+%!error<ricestat: S and SIGMA must not be complex.> ricestat (i, 2)
+%!error<ricestat: S and SIGMA must not be complex.> ricestat (1, i)
+%!error<ricestat: S and SIGMA must be of common size or scalars.> ...
 %! ricestat (ones (3), ones (2))
-%!error<ricestat: NU and SIGMA must be of common size or scalars.> ...
+%!error<ricestat: S and SIGMA must be of common size or scalars.> ...
 %! ricestat (ones (2), ones (3))
 
 ## Output validation tests
-%!shared nu, sigma
-%! nu = [2, 0, -1, 1, 4];
+%!shared s, sigma
+%! s = [2, 0, -1, 1, 4];
 %! sigma = [1, NaN, 3, -1, 2];
-%!assert (ricestat (nu, sigma), [2.2724, NaN, NaN, NaN, 4.5448], 1e-4);
-%!assert (ricestat ([nu(1:2), nu(4:5)], 1), [2.2724, 1.2533, 1.5486, 4.1272], 1e-4);
-%!assert (ricestat ([nu(1:2), nu(4:5)], 3), [4.1665, 3.7599, 3.8637, 5.2695], 1e-4);
-%!assert (ricestat ([nu(1:2), nu(4:5)], 2), [3.0971, 2.5066, 2.6609, 4.5448], 1e-4);
+%!assert (ricestat (s, sigma), [2.2724, NaN, NaN, NaN, 4.5448], 1e-4);
+%!assert (ricestat ([s(1:2), s(4:5)], 1), [2.2724, 1.2533, 1.5486, 4.1272], 1e-4);
+%!assert (ricestat ([s(1:2), s(4:5)], 3), [4.1665, 3.7599, 3.8637, 5.2695], 1e-4);
+%!assert (ricestat ([s(1:2), s(4:5)], 2), [3.0971, 2.5066, 2.6609, 4.5448], 1e-4);
 %!assert (ricestat (2, [sigma(1), sigma(3:5)]), [2.2724, 4.1665, NaN, 3.0971], 1e-4);
 %!assert (ricestat (0, [sigma(1), sigma(3:5)]), [1.2533, 3.7599, NaN, 2.5066], 1e-4);
 %!assert (ricestat (1, [sigma(1), sigma(3:5)]), [1.5486, 3.8637, NaN, 2.6609], 1e-4);
