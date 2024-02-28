@@ -33,6 +33,12 @@
 ## parameter values in @var{params} are the maximum likelihood estimates, the
 ## diagonal elements of @var{params} are their asymptotic variances.
 ##
+## @code{[@dots{}] = betalike (@var{params}, @var{x}, @var{freq})} accepts a
+## frequency vector, @var{freq}, of the same size as @var{x}.  @var{freq}
+## must contain non-negative integer frequencies for the corresponding elements
+## in @var{x}.  By default, or if left empty,
+## @qcode{@var{freq} = ones (size (@var{x}))}.
+##
 ## The Beta distribution is defined on the open interval @math{(0,1)}.  However,
 ## @code{betafit} can also compute the unbounded beta likelihood function for
 ## data that include exact zeros or ones.  In such cases, zeros and ones are
@@ -45,7 +51,7 @@
 ## @seealso{betacdf, betainv, betapdf, betarnd, betafit, betastat}
 ## @end deftypefn
 
-function [nlogL, avar] = betalike (params, x)
+function [nlogL, avar] = betalike (params, x, freq)
 
   ## Check input arguments and add defaults
   if (nargin < 2)
@@ -53,6 +59,25 @@ function [nlogL, avar] = betalike (params, x)
   endif
   if (numel (params) != 2)
     error ("betalike: wrong parameters length.");
+  endif
+
+  if (nargin < 3 || isempty (freq))
+    freq = ones (size (x));
+  elseif (! isequal (size (x), size (freq)))
+    error ("betalike: X and FREQ vectors mismatch.");
+  elseif (any (freq < 0))
+    error ("betalike: FREQ must not contain negative values.");
+  elseif (any (fix (freq) != freq))
+    error ("betalike: FREQ must contain integer values.");
+  endif
+
+  ## Expand frequency
+  if (! all (freq == 1))
+    xf = [];
+    for i = 1:numel (freq)
+      xf = [xf, repmat(x(i), 1, freq(i))];
+    endfor
+    x = xf;
   endif
 
   ## Get α and β parameters
@@ -173,3 +198,9 @@ endfunction
 %!error<betalike: function called with too few input arguments.> ...
 %! betalike ([12, 15]);
 %!error<betalike: wrong parameters length.> betalike ([12, 15, 3], [1:50]);
+%!error<betalike: X and FREQ vectors mismatch.> ...
+%! betalike ([12, 15], ones (10, 1), ones (8,1))
+%!error<betalike: FREQ must not contain negative values.> ...
+%! betalike ([12, 15], ones (1, 8), [1 1 1 1 1 1 1 -1])
+%!error<betalike: FREQ must contain integer values.> ...
+%! betalike ([12, 15], ones (1, 8), [1 1 1 1 1 1 1 1.5])
