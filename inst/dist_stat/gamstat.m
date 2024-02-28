@@ -22,7 +22,7 @@
 ## Compute statistics of the Gamma distribution.
 ##
 ## @code{[@var{m}, @var{v}] = gamstat (@var{a}, @var{b})} returns the mean
-## and variance of the Gamma distribution with with shape parameter @var{a} and
+## and variance of the Gamma distribution with shape parameter @var{a} and
 ## scale parameter @var{b}.
 ##
 ## The size of @var{m} (mean) and @var{v} (variance) is the common size of the
