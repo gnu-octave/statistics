@@ -19,38 +19,42 @@ classdef NegativeBinomialDistribution
   ## -*- texinfo -*-
   ## @deftypefn {statistics} NegativeBinomialDistribution
   ##
-  ## Normal probability distribution object.
+  ## Negative binomial probability distribution object.
   ##
-  ## A @code{NegativeBinomialDistribution} object consists of parameters, a model
-  ## description, and sample data for a normal probability distribution.
+  ## A @code{NegativeBinomialDistribution} object consists of parameters, a
+  ## model description, and sample data for a negative binomial probability
+  ## distribution.
   ##
-  ## The normal distribution uses the following parameters.
+  ## The negative binomial distribution uses the following parameters.
   ##
   ## @multitable @columnfractions 0.25 0.48 0.27
   ## @headitem @var{Parameter} @tab @var{Description} @tab @var{Support}
   ##
   ## @item @qcode{R} @tab Number of successes @tab @math{R > 0}
-  ## @item @qcode{P} @tab Probability of success @tab @math{0 < P <- 1}
+  ## @item @qcode{P} @tab Probability of success @tab @math{0 < P <= 1}
   ## @end multitable
   ##
-  ## There are several ways to create a @code{NegativeBinomialDistribution} object.
+  ## There are several ways to create a @code{NegativeBinomialDistribution}
+  ## object.
   ##
   ## @itemize
   ## @item Fit a distribution to data using the @code{fitdist} function.
   ## @item Create a distribution with specified parameter values using the
   ## @code{makedist} function.
-  ## @item Use the constructor @qcode{NegativeBinomialDistribution (@var{R}, @var{P})}
-  ## to create a normal distribution with specified parameter values.
-  ## @item Use the static method @qcode{NegativeBinomialDistribution.fit (@var{x},
-  ## @var{censor}, @var{freq}, @var{options})} to a distribution to data @var{x}.
+  ## @item Use the constructor @qcode{NegativeBinomialDistribution (@var{R},
+  ## @var{P})} to create a negative binomial distribution with specified
+  ## parameter values.
+  ## @item Use the static method @qcode{NegativeBinomialDistribution.fit
+  ## (@var{x}, @var{censor}, @var{freq}, @var{options})} to a distribution to
+  ## data @var{x}.
   ## @end itemize
   ##
   ## It is highly recommended to use @code{fitdist} and @code{makedist}
   ## functions to create probability distribution objects, instead of the
   ## constructor and the aforementioned static method.
   ##
-  ## A @code{NegativeBinomialDistribution} object contains the following properties,
-  ## which can be accessed using dot notation.
+  ## A @code{NegativeBinomialDistribution} object contains the following
+  ## properties, which can be accessed using dot notation.
   ##
   ## @multitable @columnfractions 0.25 0.25 0.25 0.25
   ## @item @qcode{DistributionName} @tab @qcode{DistributionCode} @tab
@@ -66,8 +70,8 @@ classdef NegativeBinomialDistribution
   ## @code{negloglik}, @code{paramci}, @code{pdf}, @code{plot}, @code{proflik},
   ## @code{random}, @code{std}, @code{truncate}, @code{var}.
   ##
-  ## Further information about the negative binomial distribution can be found at
-  ## @url{https://en.wikipedia.org/wiki/Negative_binomial_distribution}
+  ## Further information about the negative binomial distribution can be found
+  ## at @url{https://en.wikipedia.org/wiki/Negative_binomial_distribution}
   ##
   ## @seealso{fitdist, makedist, nbincdf, nbininv, nbinpdf, nbinrnd, nbinfit,
   ## nbinlike, nbinstat}
@@ -119,11 +123,11 @@ classdef NegativeBinomialDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "normal distribution");
+      __disp__ (this, "negative binomial distribution");
     endfunction
 
     function disp (this)
-      __disp__ (this, "normal distribution");
+      __disp__ (this, "negative binomial distribution");
     endfunction
 
     function this = set.R (this, R)
