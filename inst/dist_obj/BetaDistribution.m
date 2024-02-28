@@ -645,6 +645,36 @@ function checkparams (a, b)
   endif
 endfunction
 
+## Test output
+%!shared pd, t
+%! pd = BetaDistribution;
+%! t = truncate (pd, 0.2, 0.8);
+%!assert (cdf (pd, [0:0.2:1]), [0, 0.2, 0.4, 0.6, 0.8, 1], 1e-4);
+%!assert (cdf (t, [0:0.2:1]), [0, 0, 0.3333, 0.6667, 1, 1], 1e-4);
+%!assert (cdf (pd, [-1, 1, NaN]), [0, 1, NaN], 1e-4);
+%!assert (cdf (t, [-1, 1, NaN]), [0, 1, NaN], 1e-4);
+%!assert (icdf (pd, [0:0.2:1]), [0, 0.2, 0.4, 0.6, 0.8, 1], 1e-4);
+%!assert (icdf (t, [0:0.2:1]), [0.2, 0.32, 0.44, 0.56, 0.68, 0.8], 1e-4);
+%!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, 0.4, 0.6, 0.8, 1, NaN], 1e-4);
+%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 0.44, 0.56, 0.68, 0.8, NaN], 1e-4);
+%!assert (iqr (pd), 0.5, 1e-4);
+%!assert (iqr (t), 0.3, 1e-4);
+%!assert (mean (pd), 0.5);
+%!assert (mean (t), 0.5, 1e-6);
+%!assert (median (pd), 0.5);
+%!assert (median (t), 0.5, 1e-6);
+%!assert (pdf (pd, [0:0.2:1]), [1, 1, 1, 1, 1, 1], 1e-4);
+%!assert (pdf (t, [0:0.2:1]), [0, 1.6667, 1.6667, 1.6667, 1.6667, 0], 1e-4);
+%!assert (pdf (pd, [-1, 1, NaN]), [0, 1, NaN], 1e-4);
+%!assert (pdf (t, [-1, 1, NaN]), [0, 0, NaN], 1e-4);
+%!assert (isequal (size (random (pd, 100, 50)), [100, 50]))
+%!assert (any (random (t, 1000, 1) < 0.2), false);
+%!assert (any (random (t, 1000, 1) > 0.8), false);
+%!assert (std (pd), 0.2887, 1e-4);
+%!assert (std (t), 0.1732, 1e-4);
+%!assert (var (pd), 0.0833, 1e-4);
+%!assert (var (t), 0.0300, 1e-4);
+
 ## Test input validation
 ## 'BetaDistribution' constructor
 %!error <BetaDistribution: A must be a positive real scalar.> ...

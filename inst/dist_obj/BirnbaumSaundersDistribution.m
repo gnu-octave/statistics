@@ -653,6 +653,36 @@ function checkparams (beta, gamma)
   endif
 endfunction
 
+## Test output
+%!shared pd, t
+%! pd = BirnbaumSaundersDistribution;
+%! t = truncate (pd, 2, 4);
+%!assert (cdf (pd, [0:5]), [0, 0.5, 0.7602, 0.8759, 0.9332, 0.9632], 1e-4);
+%!assert (cdf (t, [0:5]), [0, 0, 0, 0.6687, 1, 1], 1e-4);
+%!assert (cdf (pd, [1.5, 2, 3, 4, NaN]), [0.6585, 0.7602, 0.8759, 0.9332, NaN], 1e-4);
+%!assert (cdf (t, [1.5, 2, 3, 4, NaN]), [0, 0, 0.6687, 1, NaN], 1e-4);
+%!assert (icdf (pd, [0:0.2:1]), [0, 0.4411, 0.7767, 1.2875, 2.2673, Inf], 1e-4);
+%!assert (icdf (t, [0:0.2:1]), [2, 2.2293, 2.5073, 2.8567, 3.3210, 4], 1e-4);
+%!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, 0.7767, 1.2875, 2.2673, Inf, NaN], 1e-4);
+%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 2.5073, 2.8567, 3.3210, 4, NaN], 1e-4);
+%!assert (iqr (pd), 1.4236, 1e-4);
+%!assert (iqr (t), 0.8968, 1e-4);
+%!assert (mean (pd), 1.5, eps);
+%!assert (mean (t), 2.7723, 1e-4);
+%!assert (median (pd), 1, 1e-4);
+%!assert (median (t), 2.6711, 1e-4);
+%!assert (pdf (pd, [0:5]), [0, 0.3989, 0.1648, 0.0788, 0.0405, 0.0216], 1e-4);
+%!assert (pdf (t, [0:5]), [0, 0, 0.9528, 0.4559, 0.2340, 0], 1e-4);
+%!assert (pdf (pd, [-1, 1.5, NaN]), [0, 0.2497, NaN], 1e-4);
+%!assert (pdf (t, [-1, 1.5, NaN]), [0, 0, NaN], 1e-4);
+%!assert (isequal (size (random (pd, 100, 50)), [100, 50]))
+%!assert (any (random (t, 1000, 1) < 2), false);
+%!assert (any (random (t, 1000, 1) > 4), false);
+%!assert (std (pd), 1.5, eps);
+%!assert (std (t), 0.5528, 1e-4);
+%!assert (var (pd), 2.25, eps);
+%!assert (var (t), 0.3056, 1e-4);
+
 ## Test input validation
 ## 'BirnbaumSaundersDistribution' constructor
 %!error <BirnbaumSaundersDistribution: BETA must be a positive real scalar.> ...
