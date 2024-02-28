@@ -56,9 +56,13 @@ function y = raylpdf (x, sigma)
   y = x .* exp ((-x .^ 2) ./ (2 .* sigma .^ 2)) ./ (sigma .^ 2);
 
   ## Continue argument check
-  k = find (! (x >= 0) | ! (x < Inf) | ! (sigma > 0));
+  k = find (! isfinite (x) | ! (sigma > 0));
   if (any (k))
     y(k) = NaN;
+  endif
+  k = x < 0;
+  if (any (k))
+    y(k) = 0;
   endif
 
 endfunction
