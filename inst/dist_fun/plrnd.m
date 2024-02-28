@@ -90,6 +90,10 @@ function r = plrnd (x, Fx, varargin)
     sz = [varargin{:}];
   endif
 
+  ## Force X and FX into row vectors
+  x = x(:)';
+  Fx = Fx(:)';
+
   ## Check for class type
   if (isa (x, "single") || isa (Fx, "single"))
     cls = "single";

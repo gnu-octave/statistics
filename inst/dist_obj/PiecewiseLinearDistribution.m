@@ -371,15 +371,17 @@ classdef PiecewiseLinearDistribution
         error ("random: requires a scalar probability distribution.");
       endif
       if (this.IsTruncated)
-        lp = plcdf (this.Truncation(1), this.x, this.Fx);
-        up = plcdf (this.Truncation(2), this.x, this.Fx);
+        x = this.x(:)';
+        Fx = this.Fx(:)';
+        lp = plcdf (this.Truncation(1), x, Fx);
+        up = plcdf (this.Truncation(2), x, Fx);
         u = unifrnd (lp, up, varargin{:});
         r = zeros (size (u));
-        [~, bin] = histc (u(:)', this.Fx);
-        r0 = this.x(bin);
-        dx = diff (this.x);
-        dF = diff (this.Fx);
-        dr = (u(:)' - this.Fx(bin)) .* dx(bin) ./ dF(bin);
+        [~, bin] = histc (u(:)', Fx);
+        r0 = x(bin);
+        dx = diff (x);
+        dF = diff (Fx);
+        dr = (u(:)' - Fx(bin)) .* dx(bin) ./ dF(bin);
         r(:) = r0 + dr;
       else
         r = plrnd (this.x, this.Fx, varargin{:});
@@ -490,26 +492,26 @@ endfunction
 %!assert (cdf (t, [120, 130, 140, 150, 200]), [0, 0, 0.4274, 0.5403, 1], 1e-4);
 %!assert (cdf (pd, [100, 250, NaN]), [0, 1, NaN], 1e-4);
 %!assert (cdf (t, [115, 290, NaN]), [0, 1, NaN], 1e-4);
-%!assert (icdf (pd, [0:0.2:1]), [111, 127.5, 136.62, 196.67, 182.17, 202], 1e-2);
+%!assert (icdf (pd, [0:0.2:1]), [111, 127.5, 136.62, 169.67, 182.17, 202], 1e-2);
 %!assert (icdf (t, [0:0.2:1]), [130, 134.15, 139.26, 162.5, 173.99, 180], 1e-2);
-%!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NA, 136.62, 196.67, 182.17, 202, NA], 1e-4);
-%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NA, 139.26, 162.5, 173.99, 180, NA], 1e-4);
+%!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NA, 136.62, 169.67, 182.17, 202, NA], 1e-2);
+%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NA, 139.26, 162.5, 173.99, 180, NA], 1e-2);
 %!assert (iqr (pd), 50.0833, 1e-4);
 %!assert (iqr (t), 36.8077, 1e-4);
 %!assert (mean (pd), 153.61);
 #%!assert (mean (t), 0, eps);
 %!assert (median (pd), 142);
-%!assert (median (t), 141.9462);
+%!assert (median (t), 141.9462, 1e-4);
 %!assert (pdf (pd, [120, 130, 140, 150, 200]), [0.0133, 0.0240, 0.0186, 0.0024, 0.0046], 1e-4);
 %!assert (pdf (t, [120, 130, 140, 150, 200]), [0, 0.0482, 0.0373, 0.0048, 0], 1e-4);
 %!assert (pdf (pd, [100, 250, NaN]), [0, 0, NaN], 1e-4);
 %!assert (pdf (t, [100, 250, NaN]), [0, 0, NaN], 1e-4);
 %!assert (isequal (size (random (pd, 100, 50)), [100, 50]))
-%!assert (any (random (t, 1000, 1) < -2), false);
-%!assert (any (random (t, 1000, 1) > 2), false);
-%!assert (std (pd), 26.5196);
+%!assert (any (random (t, 1000, 1) < 130), false);
+%!assert (any (random (t, 1000, 1) > 180), false);
+%!assert (std (pd), 26.5196, 1e-4);
 #%!assert (std (t), 0.8796, 1e-4);
-%!assert (var (pd), 1);
+%!assert (var (pd), 703.2879, 1e-4);
 #%!assert (var (t), 0.7737, 1e-4);
 
 ## Test input validation
