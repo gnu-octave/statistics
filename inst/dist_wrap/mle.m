@@ -116,13 +116,10 @@ function [phat, pci] = mle (x, varargin)
       if (! isempty (censor))
         error ("mle: censoring is not supported for the Beta distribution.");
       endif
-      if (! isempty (freq))
-        x = expandFreq (x, freq);
-      endif
       if (nargout < 2)
-        phat = betafit (x, alpha, options);
+        phat = betafit (x, alpha, freq, options);
       else
-        [phat, pci] = betafit (x, alpha, options);
+        [phat, pci] = betafit (x, alpha, freq, options);
       endif
 
     case {"binomial", "bino"}

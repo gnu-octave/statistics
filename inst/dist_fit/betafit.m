@@ -19,7 +19,9 @@
 ## @deftypefn  {statistics} {@var{paramhat} =} betafit (@var{x})
 ## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} betafit (@var{x})
 ## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} betafit (@var{x}, @var{alpha})
+## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} betafit (@var{x}, @var{alpha}, @var{freq})
 ## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} betafit (@var{x}, @var{alpha}, @var{options})
+## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} betafit (@var{x}, @var{alpha}, @var{freq}, @var{options})
 ##
 ## Estimate parameters and confidence intervals for the Beta distribution.
 ##
@@ -36,6 +38,12 @@
 ## @qcode{100 * (1 - @var{alpha})} percent confidence intervals of the estimated
 ## parameter.  By default, the optional argument @var{alpha} is 0.05
 ## corresponding to 95% confidence intervals.
+##
+## @code{[@dots{}] = betafit (@var{params}, @var{x}, @var{freq})} accepts a
+## frequency vector, @var{freq}, of the same size as @var{x}.  @var{freq}
+## must contain non-negative integer frequencies for the corresponding elements
+## in @var{x}.  By default, or if left empty,
+## @qcode{@var{freq} = ones (size (@var{x}))}.
 ##
 ## @code{[@var{paramhat}, @var{paramci}] = nbinfit (@var{x}, @var{alpha},
 ## @var{options})} specifies control parameters for the iterative algorithm used
@@ -60,7 +68,7 @@
 ## @seealso{betacdf, betainv, betapdf, betarnd, betalike, betastat}
 ## @end deftypefn
 
-function [paramhat, paramci] = betafit (x, alpha, options)
+function [paramhat, paramci] = betafit (x, alpha, varargin)
 
   ## Check X for being a vector
   if (isempty (x))
@@ -70,9 +78,6 @@ function [paramhat, paramci] = betafit (x, alpha, options)
   elseif (! isvector (x) || ! isreal (x))
     error ("betafit: X must be a vector of real values.");
   endif
-
-  ## Remove missing values
-  x(isnan (x)) = [];
 
   ## Check that X contains values in the range [0,1]
   if (any (x < 0) || any (x > 1))
@@ -84,29 +89,65 @@ function [paramhat, paramci] = betafit (x, alpha, options)
     error ("betafit: X must contain distinct values.");
   endif
 
-  ## Parse ALPHA argument or add default
-  if (nargin > 1)
+  ## Check ALPHA
+  if (nargin < 2 || isempty (alpha))
+    alpha = 0.05;
+  else
     if (! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1)
       error ("betafit: wrong value for ALPHA.");
     endif
-  else
-    alpha = 0.05;
   endif
 
-  ## Get options structure or add defaults
-  if (nargin < 3)
-    options.Display = "off";
-    options.MaxFunEvals = 400;
-    options.MaxIter = 200;
-    options.TolX = 1e-6;
-  else
+  ## Add defaults
+  freq = ones (size (x));
+  options.Display = "off";
+  options.MaxFunEvals = 400;
+  options.MaxIter = 200;
+  options.TolX = 1e-6;
+
+  ## Check extra arguments for FREQ vector and/or 'options' structure
+  if (nargin > 2)
+    if (numel (varargin) == 1 && isstruct (varargin{1}))
+      options = varargin{1};
+    elseif (numel (varargin) == 1 && isnumeric (varargin{1}))
+      freq = varargin{1};
+    elseif (numel (varargin) == 2)
+      freq = varargin{1};
+      options = varargin{2};
+    endif
+    if (isempty (freq))
+      freq = ones (size (x));
+    endif
+    ## Check for valid freq vector
+    if (! isequal (size (x), size (freq)))
+      error ("betafit: X and FREQ vectors mismatch.");
+    elseif (any (freq < 0))
+      error ("betafit: FREQ must not contain negative values.");
+    elseif (any (fix (freq) != freq))
+      error ("betafit: FREQ must contain integer values.");
+    endif
+    ## Check for valid options structure
     if (! isstruct (options) || ! isfield (options, "Display") ||
         ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
                                            || ! isfield (options, "TolX"))
-      error (strcat (["gamfit: 'options' 5th argument must be a"], ...
+      error (strcat (["betafit: 'options' argument must be a"], ...
                      [" structure with 'Display', 'MaxFunEvals',"], ...
                      [" 'MaxIter', and 'TolX' fields present."]));
     endif
+  endif
+
+  ## Remove missing values
+  remove = isnan (x) | isnan (freq);
+  x(remove) = [];
+  freq(remove) = [];
+
+  ## Expand frequency
+  if (! all (freq == 1))
+    xf = [];
+    for i = 1:numel (freq)
+      xf = [xf, repmat(x(i), 1, freq(i))];
+    endfor
+    x = xf;
   endif
 
   ## Estimate initial parameters
@@ -237,3 +278,13 @@ endfunction
 %!error<betafit: X must be in the range> betafit ([0.5, 1.2]);
 %!error<betafit: X must contain distinct values.> betafit ([0.1, 0.1]);
 %!error<betafit: wrong value for ALPHA.> betafit ([0.01:0.1:0.99], 1.2);
+%!error<betafit: X and FREQ vectors mismatch.> ...
+%! betafit ([0.01:0.01:0.05], 0.05, [1, 2, 3, 2]);
+%!error<betafit: FREQ must not contain negative values.> ...
+%! betafit ([0.01:0.01:0.05], 0.05, [1, 2, 3, 2, -1]);
+%!error<betafit: FREQ must contain integer values.> ...
+%! betafit ([0.01:0.01:0.05], 0.05, [1, 2, 3, 2, 1.5]);
+%!error<betafit: 'options' argument must be a structure> ...
+%! betafit ([0.01:0.01:0.05], 0.05, struct ("option", 234));
+%!error<betafit: 'options' argument must be a structure> ...
+%! betafit ([0.01:0.01:0.05], 0.05, ones (1,5), struct ("option", 234));
