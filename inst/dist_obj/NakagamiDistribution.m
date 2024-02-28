@@ -507,7 +507,7 @@ classdef NakagamiDistribution
         ## pick the appropriate size from
         lx = this.Truncation(1);
         ux = this.Truncation(2);
-        ratio = 1 / diff (poisscdf ([lx, ux], this.mu, this.omega));
+        ratio = 1 / diff (nakacdf ([lx, ux], this.mu, this.omega));
         nsize = fix (2 * ratio * ps);       # times 2 to be on the safe side
         ## Generate the numbers and remove out-of-bound random samples
         r = nakarnd (this.mu, this.omega, nsize, 1);
@@ -655,6 +655,36 @@ function checkparams (mu, omega)
     error ("NakagamiDistribution: OMEGA must be a positive real scalar.")
   endif
 endfunction
+
+## Test output
+%!shared pd, t
+%! pd = NakagamiDistribution;
+%! t = truncate (pd, 2, 4);
+%!assert (cdf (pd, [0:5]), [0, 0.6321, 0.9817, 0.9999, 1, 1], 1e-4);
+%!assert (cdf (t, [0:5]), [0, 0, 0, 0.9933, 1, 1], 1e-4);
+%!assert (cdf (pd, [1.5, 2, 3, 4]), [0.8946, 0.9817, 0.9999, 1], 1e-4);
+%!assert (cdf (t, [1.5, 2, 3, 4]), [0, 0, 0.9933, 1], 1e-4);
+%!assert (icdf (pd, [0:0.2:1]), [0, 0.4724, 0.7147, 0.9572, 1.2686, Inf], 1e-4);
+%!assert (icdf (t, [0:0.2:1]), [2, 2.0550, 2.1239, 2.2173, 2.3684, 4], 1e-4);
+%!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, 0.7147, 0.9572, 1.2686, Inf, NaN], 1e-4);
+%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 2.1239, 2.2173, 2.3684, 4, NaN], 1e-4);
+%!assert (iqr (pd), 0.6411, 1e-4);
+%!assert (iqr (t), 0.2502, 1e-4);
+%!assert (mean (pd), 0.8862, 1e-4);
+%!assert (mean (t), 2.2263, 1e-4);
+%!assert (median (pd), 0.8326, 1e-4);
+%!assert (median (t), 2.1664, 1e-4);
+%!assert (pdf (pd, [0:5]), [0, 0.7358, 0.0733, 0.0007, 0, 0], 1e-4);
+%!assert (pdf (t, [0:5]), [0, 0, 4, 0.0404, 0, 0], 1e-4);
+%!assert (pdf (pd, [-1, 1:4, NaN]), [0, 0.7358, 0.0733, 0.0007, 0, NaN], 1e-4);
+%!assert (pdf (t, [-1, 1:4, NaN]), [0, 0, 4, 0.0404, 0, NaN], 1e-4);
+%!assert (isequal (size (random (pd, 100, 50)), [100, 50]))
+%!assert (any (random (t, 1000, 1) < 2), false);
+%!assert (any (random (t, 1000, 1) > 4), false);
+%!assert (std (pd), 0.4633, 1e-4);
+%!assert (std (t), 0.2083, 1e-4);
+%!assert (var (pd), 0.2146, 1e-4);
+%!assert (var (t), 0.0434, 1e-4);
 
 ## Test input validation
 ## 'NakagamiDistribution' constructor
