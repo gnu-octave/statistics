@@ -296,7 +296,7 @@ classdef tLocationScaleDistribution
       if (this.IsTruncated)
         lx = this.Truncation(1);
         ux = this.Truncation(2);
-        Fa_b = wblcdf ([lx, ux], this.mu, this.sigma, this.nu);
+        Fa_b = tlscdf ([lx, ux], this.mu, this.sigma, this.nu);
         m = tlsinv (sum (Fa_b) / 2, this.mu, this.sigma, this.nu);
       else
         m = tlsstat (this.mu, this.sigma, this.nu);
@@ -670,6 +670,36 @@ function checkparams (mu, sigma, nu)
     error ("tLocationScaleDistribution: NU must be a positive real scalar.")
   endif
 endfunction
+
+## Test output
+%!shared pd, t
+%! pd = tLocationScaleDistribution;
+%! t = truncate (pd, 2, 4);
+%!assert (cdf (pd, [0:5]), [0.5, 0.8184, 0.9490, 0.9850, 0.9948, 0.9979], 1e-4);
+%!assert (cdf (t, [0:5]), [0, 0, 0, 0.7841, 1, 1], 1e-4);
+%!assert (cdf (pd, [1.5, 2, 3, 4, NaN]), [0.9030, 0.9490, 0.9850, 0.9948, NaN], 1e-4);
+%!assert (cdf (t, [1.5, 2, 3, 4, NaN]), [0, 0, 0.7841, 1, NaN], 1e-4);
+%!assert (icdf (pd, [0:0.2:1]), [-Inf, -0.9195, -0.2672, 0.2672, 0.9195, Inf], 1e-4);
+%!assert (icdf (t, [0:0.2:1]), [2, 2.1559, 2.3533, 2.6223, 3.0432, 4], 1e-4);
+%!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, -0.2672, 0.2672, 0.9195, Inf, NaN], 1e-4);
+%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 2.3533, 2.6223, 3.0432, 4, NaN], 1e-4);
+%!assert (iqr (pd), 1.4534, 1e-4);
+%!assert (iqr (t), 0.7139, 1e-4);
+%!assert (mean (pd), 0, eps);
+%!assert (mean (t), 2.6099, 1e-4);
+%!assert (median (pd), 0, eps);
+%!assert (median (t), 2.4758, 1e-4);
+%!assert (pdf (pd, [0:5]), [0.3796, 0.2197, 0.0651, 0.0173, 0.0051, 0.0018], 1e-4);
+%!assert (pdf (t, [0:5]), [0, 0, 1.4209, 0.3775, 0.1119, 0], 1e-4);
+%!assert (pdf (pd, [-1, 1.5, NaN]), [0.2197, 0.1245, NaN], 1e-4);
+%!assert (pdf (t, [-1, 1.5, NaN]), [0, 0, NaN], 1e-4);
+%!assert (isequal (size (random (pd, 100, 50)), [100, 50]))
+%!assert (any (random (t, 1000, 1) < 2), false);
+%!assert (any (random (t, 1000, 1) > 4), false);
+%!assert (std (pd), 1.2910, 1e-4);
+%!assert (std (t), 0.4989, 1e-4);
+%!assert (var (pd), 1.6667, 1e-4);
+%!assert (var (t), 0.2489, 1e-4);
 
 ## Test input validation
 ## 'tLocationScaleDistribution' constructor
