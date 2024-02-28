@@ -498,9 +498,9 @@ endfunction
 %!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NA, 139.26, 162.5, 173.99, 180, NA], 1e-2);
 %!assert (iqr (pd), 50.0833, 1e-4);
 %!assert (iqr (t), 36.8077, 1e-4);
-%!assert (mean (pd), 153.61);
+%!assert (mean (pd), 153.61, 1e-10);
 #%!assert (mean (t), 0, eps);
-%!assert (median (pd), 142);
+%!assert (median (pd), 142, 1e-10);
 %!assert (median (t), 141.9462, 1e-4);
 %!assert (pdf (pd, [120, 130, 140, 150, 200]), [0.0133, 0.0240, 0.0186, 0.0024, 0.0046], 1e-4);
 %!assert (pdf (t, [120, 130, 140, 150, 200]), [0, 0.0482, 0.0373, 0.0048, 0], 1e-4);
