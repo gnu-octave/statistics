@@ -33,7 +33,7 @@
 ## parameter values in @var{params} are the maximum likelihood estimates, the
 ## diagonal elements of @var{acov} are their asymptotic variances.
 ##
-## @code{[@dots{}] = nbinlike (@var{params}, @var{x}, @var{freq})} accepts a
+## @code{[@dots{}] = gevlike (@var{params}, @var{x}, @var{freq})} accepts a
 ## frequency vector, @var{freq}, of the same size as @var{x}.  @var{freq}
 ## must contain non-negative integer frequencies for the corresponding elements
 ## in @var{x}.  By default, or if left empty,
