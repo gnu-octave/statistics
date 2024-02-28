@@ -60,6 +60,11 @@ function y = plpdf (data, x, Fx)
     error ("plpdf: DATA, X, and FX must not be complex.");
   endif
 
+  ## Force DATA, X, and FX into row vectors
+  data = data(:)';
+  x = x(:)';
+  Fx = Fx(:)';
+
   ## Check for class type
   if (isa (data, "single") || isa (x, "single") || isa (Fx, "single"));
     y = zeros (size (data), "single");
