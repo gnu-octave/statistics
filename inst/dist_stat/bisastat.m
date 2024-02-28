@@ -61,7 +61,7 @@ function [m, v] = bisastat (beta, gamma)
 
   ## Calculate moments
   m = beta .* (1 + ((gamma .^ 2) ./ 2));
-  v = ((beta .* gamma) .^ 2) .* (1 + ((5 .* (gamma .^ 2)) ./ 2));
+  v = ((beta .* gamma) .^ 2) .* (1 + ((5 .* (gamma .^ 2)) ./ 4));
 
   ## Continue argument check
   beta = find (! (beta > 0) | ! (beta < Inf) | ! (gamma > 0) | ! (gamma < Inf));
@@ -90,13 +90,13 @@ endfunction
 %! gamma = 1:0.2:2;
 %! [m, v] = bisastat (beta, gamma);
 %! expected_m = [1.50, 3.44, 5.94,  9.12,  13.10, 18];
-%! expected_v = [3.50, 26.50, 104.08, 303.10, 737.10, 1584];
+%! expected_v = [2.25, 16.128, 60.858, 172.032, 409.050, 864];
 %! assert (m, expected_m, 1e-2);
-%! assert (v, expected_v, 1e-2);
+%! assert (v, expected_v, 1e-3);
 %!test
 %! beta = 1:6;
 %! [m, v] = bisastat (beta, 1.5);
 %! expected_m = [2.125, 4.25, 6.375, 8.5, 10.625, 12.75];
-%! expected_v = [14.906, 59.625, 134.156, 238.5, 372.656, 536.625];
+%! expected_v = [8.5781, 34.3125, 77.2031, 137.2500, 214.4531, 308.8125];
 %! assert (m, expected_m, 1e-3);
-%! assert (v, expected_v, 1e-3);
+%! assert (v, expected_v, 1e-4);
