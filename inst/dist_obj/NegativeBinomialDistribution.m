@@ -650,6 +650,36 @@ function checkparams (R, P)
   endif
 endfunction
 
+## Test output
+%!shared pd, t
+%! pd = NegativeBinomialDistribution;
+%! t = truncate (pd, 2, 4);
+%!assert (cdf (pd, [0:5]), [0.5, 0.75, 0.875, 0.9375, 0.9688, 0.9844], 1e-4);
+#%!assert (cdf (t, [0:5]), [0, 0, 0.5714, 0.8571, 1, 1], 1e-4);
+%!assert (cdf (pd, [1.5, 2, 3, 4]), [0.75, 0.875, 0.9375, 0.9688], 1e-4);
+#%!assert (cdf (t, [1.5, 2, 3, 4]), [0, 0.5714, 0.8571, 1], 1e-4);
+%!assert (icdf (pd, [0:0.2:1]), [0, 0, 0, 1, 2, Inf], 1e-4);
+#%!assert (icdf (t, [0:0.2:1]), [2, 2, 2, 3, 3, 4], 1e-4);
+%!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, 0, 1, 2, Inf, NaN], 1e-4);
+#%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 2, 3, 3, 4, NaN], 1e-4);
+%!assert (iqr (pd), 1);
+#%!assert (iqr (t), 1);
+%!assert (mean (pd), 1);
+#%!assert (mean (t), 2.5714, 1e-4);
+%!assert (median (pd), 0);
+#%!assert (median (t), 2);
+%!assert (pdf (pd, [0:5]), [0.5, 0.25, 0.125, 0.0625, 0.0312, 0.0156], 1e-4);
+#%!assert (pdf (t, [0:5]), [0, 0, 0.5714, 0.2857, 0.1429, 0], 1e-4);
+%!assert (pdf (pd, [-1, 1:4, NaN]), [0, 0.25, 0.125, 0.0625, 0.0312, NaN], 1e-4);
+#%!assert (pdf (t, [-1, 1:4, NaN]), [0, 0, 0.5714, 0.2857, 0.1429, NaN], 1e-4);
+%!assert (isequal (size (random (pd, 100, 50)), [100, 50]))
+#%!assert (any (random (t, 1000, 1) < 2), false);
+#%!assert (any (random (t, 1000, 1) > 4), false);
+%!assert (std (pd), 1.4142, 1e-4);
+#%!assert (std (t), 0.7284, 1e-4);
+%!assert (var (pd), 2);
+#%!assert (var (t), 0.5306, 1e-4);
+
 ## Test input validation
 ## 'NegativeBinomialDistribution' constructor
 %!error <NegativeBinomialDistribution: R must be a positive scalar.> ...

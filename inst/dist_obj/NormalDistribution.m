@@ -644,6 +644,36 @@ function checkparams (mu, sigma)
   endif
 endfunction
 
+## Test output
+%!shared pd, t
+%! pd = NormalDistribution;
+%! t = truncate (pd, -2, 2);
+%!assert (cdf (pd, [0:5]), [0.5, 0.8413, 0.9772, 0.9987, 1, 1], 1e-4);
+%!assert (cdf (t, [0:5]), [0.5, 0.8576, 1, 1, 1, 1], 1e-4);
+%!assert (cdf (pd, [1.5, 2, 3, 4]), [0.9332, 0.9772, 0.9987, 1], 1e-4);
+%!assert (cdf (t, [1.5, 2, 3, 4]), [0.9538, 1, 1, 1], 1e-4);
+%!assert (icdf (pd, [0:0.2:1]), [-Inf, -0.8416, -0.2533, 0.2533, 0.8416, Inf], 1e-4);
+%!assert (icdf (t, [0:0.2:1]), [-2, -0.7938, -0.2416, 0.2416, 0.7938, 2], 1e-4);
+%!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, -0.2533, 0.2533, 0.8416, Inf, NaN], 1e-4);
+%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, -0.2416, 0.2416, 0.7938, 2, NaN], 1e-4);
+%!assert (iqr (pd), 1.3490, 1e-4);
+%!assert (iqr (t), 1.2782, 1e-4);
+%!assert (mean (pd), 0);
+%!assert (mean (t), 0, eps);
+%!assert (median (pd), 0);
+%!assert (median (t), 0);
+%!assert (pdf (pd, [0:5]), [0.3989, 0.2420, 0.0540, 0.0044, 0.0001, 0], 1e-4);
+%!assert (pdf (t, [0:5]), [0.4180, 0.2535, 0.0566, 0, 0, 0], 1e-4);
+%!assert (pdf (pd, [-1, 1:4, NaN]), [0.2420, 0.2420, 0.0540, 0.0044, 0.0001, NaN], 1e-4);
+%!assert (pdf (t, [-1, 1:4, NaN]), [0.2535, 0.2535, 0.0566, 0, 0, NaN], 1e-4);
+%!assert (isequal (size (random (pd, 100, 50)), [100, 50]))
+%!assert (any (random (t, 1000, 1) < -2), false);
+%!assert (any (random (t, 1000, 1) > 2), false);
+%!assert (std (pd), 1);
+%!assert (std (t), 0.8796, 1e-4);
+%!assert (var (pd), 1);
+%!assert (var (t), 0.7737, 1e-4);
+
 ## Test input validation
 ## 'NormalDistribution' constructor
 %!error <NormalDistribution: MU must be a real scalar.> ...
