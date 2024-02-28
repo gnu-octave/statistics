@@ -419,12 +419,12 @@ function pd = makedist (varargin)
       pd = RayleighDistribution (sigma);
 
     case "rician"
-      nu = 1;
+      s = 1;
       sigma = 1;
       while (numel (varargin) > 0)
         switch (tolower (varargin{1}))
-          case {"nu", "s"}
-            nu = varargin{2};
+          case "s"
+            s = varargin{2};
           case "sigma"
             sigma = varargin{2};
           otherwise
@@ -432,7 +432,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = RicianDistribution (nu, sigma);
+      pd = RicianDistribution (s, sigma);
 
     case "stable"
       alpha = 2;
@@ -872,19 +872,19 @@ endfunction
 %!test
 %! pd = makedist ("Rician");
 %! assert (class (pd), "RicianDistribution");
-%! assert (pd.nu, 1);
+%! assert (pd.s, 1);
 %! assert (pd.sigma, 1);
 %!test
-%! pd = makedist ("Rician", "nu", 3);
-%! assert (pd.nu, 3);
+%! pd = makedist ("Rician", "s", 3);
+%! assert (pd.s, 3);
 %! assert (pd.sigma, 1);
 %!test
 %! pd = makedist ("Rician", "sigma", 3);
-%! assert (pd.nu, 1);
+%! assert (pd.s, 1);
 %! assert (pd.sigma, 3);
 %!test
-%! pd = makedist ("Rician", "nu", 2, "sigma", 3);
-%! assert (pd.nu, 2);
+%! pd = makedist ("Rician", "s", 2, "sigma", 3);
+%! assert (pd.s, 2);
 %! assert (pd.sigma, 3);
 %!warning
 %! pd = makedist ("stable");

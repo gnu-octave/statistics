@@ -812,17 +812,17 @@ endfunction
 %! x = ricernd (1, 1, 100, 1);
 %! pd = fitdist (x, "rician");
 %! [phat, pci] = ricefit (x);
-%! assert ([pd.nu, pd.sigma], phat);
+%! assert ([pd.s, pd.sigma], phat);
 %! assert (paramci (pd), pci);
 %!test
 %! x1 = ricernd (1, 1, 100, 1);
 %! x2 = ricernd (5, 2, 100, 1);
 %! pd = fitdist ([x1; x2], "rician", "By", [ones(100,1); 2*ones(100,1)]);
 %! [phat, pci] = ricefit (x1);
-%! assert ([pd(1).nu, pd(1).sigma], phat);
+%! assert ([pd(1).s, pd(1).sigma], phat);
 %! assert (paramci (pd(1)), pci);
 %! [phat, pci] = ricefit (x2);
-%! assert ([pd(2).nu, pd(2).sigma], phat);
+%! assert ([pd(2).s, pd(2).sigma], phat);
 %! assert (paramci (pd(2)), pci);
 %!warning <fitdist: 'Stable' distribution not supported yet.> ...
 %! fitdist ([1 2 3 4 5], "Stable");

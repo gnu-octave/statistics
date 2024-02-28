@@ -29,7 +29,7 @@ classdef RicianDistribution
   ## @multitable @columnfractions 0.25 0.48 0.27
   ## @headitem @var{Parameter} @tab @var{Description} @tab @var{Support}
   ##
-  ## @item @qcode{nu} @tab Scale parameter @tab @math{nu >= 0}
+  ## @item @qcode{s} @tab Noncentrality parameter @tab @math{s >= 0}
   ## @item @qcode{sigma} @tab Scale parameter @tab @math{sigma > 0}
   ## @end multitable
   ##
@@ -39,7 +39,7 @@ classdef RicianDistribution
   ## @item Fit a distribution to data using the @code{fitdist} function.
   ## @item Create a distribution with specified parameter values using the
   ## @code{makedist} function.
-  ## @item Use the constructor @qcode{RicianDistribution (@var{nu}, @var{sigma})}
+  ## @item Use the constructor @qcode{RicianDistribution (@var{s}, @var{sigma})}
   ## to create a Rician distribution with specified parameter values.
   ## @item Use the static method @qcode{RicianDistribution.fit (@var{x},
   ## @var{censor}, @var{freq}, @var{options})} to a distribution to data @var{x}.
@@ -74,7 +74,7 @@ classdef RicianDistribution
   ## @end deftypefn
 
   properties (Dependent = true)
-    nu
+    s
     sigma
   endproperties
 
@@ -83,7 +83,7 @@ classdef RicianDistribution
     DistributionName = "RicianDistribution";
     DistributionCode = "rice";
     NumParameters = 2;
-    ParameterNames = {"nu", "sigma"};
+    ParameterNames = {"s", "sigma"};
     ParameterDescription = {"Non-centrality Distance", "Scale"};
   endproperties
 
@@ -104,15 +104,15 @@ classdef RicianDistribution
 
   methods (Hidden)
 
-    function this = RicianDistribution (nu, sigma)
+    function this = RicianDistribution (s, sigma)
       if (nargin == 0)
-        nu = 1;
+        s = 1;
         sigma = 1;
       endif
-      checkparams (nu, sigma);
+      checkparams (s, sigma);
       this.InputData = [];
       this.IsTruncated = false;
-      this.ParameterValues = [nu, sigma];
+      this.ParameterValues = [s, sigma];
       this.ParameterIsFixed = [true, true];
       this.ParameterCovariance = zeros (this.NumParameters);
     endfunction
@@ -126,20 +126,20 @@ classdef RicianDistribution
       __disp__ (this, "Rician distribution");
     endfunction
 
-    function this = set.nu (this, nu)
-      checkparams (nu, this.sigma);
+    function this = set.s (this, s)
+      checkparams (s, this.sigma);
       this.InputData = [];
-      this.ParameterValues(1) = nu;
+      this.ParameterValues(1) = s;
       this.ParameterIsFixed = [true, true];
       this.ParameterCovariance = zeros (this.NumParameters);
     endfunction
 
-    function nu = get.nu (this)
-      nu = this.ParameterValues(1);
+    function s = get.s (this)
+      s = this.ParameterValues(1);
     endfunction
 
     function this = set.sigma (this, sigma)
-      checkparams (this.nu, sigma);
+      checkparams (this.s, sigma);
       this.InputData = [];
       this.ParameterValues(2) = sigma;
       this.ParameterIsFixed = [true, true];
@@ -182,7 +182,7 @@ classdef RicianDistribution
         utail = false;
       endif
       ## Do the computations
-      p = ricecdf (x, this.nu, this.sigma);
+      p = ricecdf (x, this.s, this.sigma);
       if (this.IsTruncated)
         lx = this.Truncation(1);
         lb = x < lx;
@@ -190,8 +190,8 @@ classdef RicianDistribution
         ub = x > ux;
         p(lb) = 0;
         p(ub) = 1;
-        p(! (lb | ub)) -= ricecdf (lx, this.nu, this.sigma);
-        p(! (lb | ub)) /= diff (ricecdf ([lx, ux], this.nu, this.sigma));
+        p(! (lb | ub)) -= ricecdf (lx, this.s, this.sigma);
+        p(! (lb | ub)) /= diff (ricecdf ([lx, ux], this.s, this.sigma));
       endif
       ## Apply uflag
       if (utail)
@@ -214,17 +214,17 @@ classdef RicianDistribution
         error ("icdf: requires a scalar probability distribution.");
       endif
       if (this.IsTruncated)
-        lp = ricecdf (this.Truncation(1), this.nu, this.sigma);
-        up = ricecdf (this.Truncation(2), this.nu, this.sigma);
+        lp = ricecdf (this.Truncation(1), this.s, this.sigma);
+        up = ricecdf (this.Truncation(2), this.s, this.sigma);
         ## Adjust p values within range of p @ lower limit and p @ upper limit
         is_nan = p < 0 | p > 1;
         p(is_nan) = NaN;
         np = lp + (up - lp) .* p;
-        x = riceinv (np, this.nu, this.sigma);
+        x = riceinv (np, this.s, this.sigma);
         x(x < this.Truncation(1)) = this.Truncation(1);
         x(x > this.Truncation(2)) = this.Truncation(2);
       else
-        x = riceinv (p, this.nu, this.sigma);
+        x = riceinv (p, this.s, this.sigma);
       endif
     endfunction
 
@@ -261,7 +261,7 @@ classdef RicianDistribution
         fm = @(x) x .* pdf (this, x);
         m = integral (fm, this.Truncation(1), this.Truncation(2));
       else
-        m = ricestat (this.nu, this.sigma);
+        m = ricestat (this.s, this.sigma);
       endif
     endfunction
 
@@ -281,10 +281,10 @@ classdef RicianDistribution
       if (this.IsTruncated)
         lx = this.Truncation(1);
         ux = this.Truncation(2);
-        Fa_b = ricecdf ([lx, ux], this.nu, this.sigma);
-        m = riceinv (sum (Fa_b) / 2, this.nu, this.sigma);
+        Fa_b = ricecdf ([lx, ux], this.s, this.sigma);
+        m = riceinv (sum (Fa_b) / 2, this.s, this.sigma);
       else
-        m = riceinv (0.5, this.nu, this.sigma);
+        m = riceinv (0.5, this.s, this.sigma);
       endif
     endfunction
 
@@ -305,7 +305,7 @@ classdef RicianDistribution
         nlogL = [];
         return
       endif
-      nlogL = - ricelike ([this.nu, this.sigma], this.InputData.data, ...
+      nlogL = - ricelike ([this.s, this.sigma], this.InputData.data, ...
                           this.InputData.cens, this.InputData.freq);
     endfunction
 
@@ -365,14 +365,14 @@ classdef RicianDistribution
       if (! isscalar (this))
         error ("pdf: requires a scalar probability distribution.");
       endif
-      y = ricepdf (x, this.nu, this.sigma);
+      y = ricepdf (x, this.s, this.sigma);
       if (this.IsTruncated)
         lx = this.Truncation(1);
         lb = x < lx;
         ux = this.Truncation(2);
         ub = x > ux;
         y(lb | ub) = 0;
-        y(! (lb | ub)) /= diff (ricecdf ([lx, ux], this.nu, this.sigma));
+        y(! (lb | ub)) /= diff (ricecdf ([lx, ux], this.s, this.sigma));
       endif
     endfunction
 
@@ -457,7 +457,7 @@ classdef RicianDistribution
     ## likelihood against the user-defined range of the selected parameter.
     ##
     ## For the Rician distribution, @qcode{@var{pnum} = 1} selects the
-    ## parameter @qcode{nu} and @qcode{@var{pnum} = 2} selects the parameter
+    ## parameter @qcode{s} and @qcode{@var{pnum} = 2} selects the parameter
     ## @var{sigma}.
     ##
     ## When opted to display the profile likelihood plot, @code{proflik} also
@@ -507,16 +507,16 @@ classdef RicianDistribution
         ## pick the appropriate size from
         lx = this.Truncation(1);
         ux = this.Truncation(2);
-        ratio = 1 / diff (ricecdf ([lx, ux], this.nu, this.sigma));
+        ratio = 1 / diff (ricecdf ([lx, ux], this.s, this.sigma));
         nsize = fix (2 * ratio * ps);       # times 2 to be on the safe side
         ## Generate the numbers and remove out-of-bound random samples
-        r = ricernd (this.nu, this.sigma, nsize, 1);
+        r = ricernd (this.s, this.sigma, nsize, 1);
         r(r < lx | r > ux) = [];
         ## Randomly select the required size and reshape to requested dimensions
         idx = randperm (numel (r), ps);
         r = reshape (r(idx), sz);
       else
-        r = ricernd (this.nu, this.sigma, varargin{:});
+        r = ricernd (this.s, this.sigma, varargin{:});
       endif
     endfunction
 
@@ -586,7 +586,7 @@ classdef RicianDistribution
         fv =  @(x) ((x - m) .^ 2) .* pdf (this, x);
         v = integral (fv, this.Truncation(1), this.Truncation(2));
       else
-        [~, v] = ricestat (this.nu, this.sigma);
+        [~, v] = ricestat (this.s, this.sigma);
       endif
     endfunction
 
@@ -628,9 +628,9 @@ classdef RicianDistribution
     endfunction
 
     function pd = makeFitted (phat, pci, acov, x, censor, freq)
-      nu = phat(1);
+      s = phat(1);
       sigma = phat(2);
-      pd = RicianDistribution (nu, sigma);
+      pd = RicianDistribution (s, sigma);
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = [false, false];
       pd.ParameterCovariance = acov;
@@ -641,9 +641,9 @@ classdef RicianDistribution
 
 endclassdef
 
-function checkparams (nu, sigma)
-  if (! (isscalar (nu) && isnumeric (nu) && isreal (nu) && isfinite (nu)
-                       && nu >= 0 ))
+function checkparams (s, sigma)
+  if (! (isscalar (s) && isnumeric (s) && isreal (s) && isfinite (s)
+                       && s >= 0 ))
     error ("RicianDistribution: NU must be a non-negative real scalar.")
   endif
   if (! (isscalar (sigma) && isnumeric (sigma) && isreal (sigma)
@@ -735,12 +735,12 @@ endfunction
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
 %! paramci (RicianDistribution.fit (x), "alpha", {0.05})
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (RicianDistribution.fit (x), "parameter", "nu", "alpha", {0.05})
+%! paramci (RicianDistribution.fit (x), "parameter", "s", "alpha", {0.05})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (RicianDistribution.fit (x), "parameter", {"nu", "sigma", "param"})
+%! paramci (RicianDistribution.fit (x), "parameter", {"s", "sigma", "param"})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
 %! paramci (RicianDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", {"nu", "sigma", "param"})
+%!          "parameter", {"s", "sigma", "param"})
 %!error <paramci: unknown distribution parameter.> ...
 %! paramci (RicianDistribution.fit (x), "parameter", "param")
 %!error <paramci: unknown distribution parameter.> ...
@@ -750,7 +750,7 @@ endfunction
 %!error <paramci: invalid NAME for optional argument.> ...
 %! paramci (RicianDistribution.fit (x), "alpha", 0.01, "NAME", "value")
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (RicianDistribution.fit (x), "alpha", 0.01, "parameter", "nu", ...
+%! paramci (RicianDistribution.fit (x), "alpha", 0.01, "parameter", "s", ...
 %!          "NAME", "value")
 
 ## 'plot' method
