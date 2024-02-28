@@ -507,7 +507,7 @@ classdef RicianDistribution
         ## pick the appropriate size from
         lx = this.Truncation(1);
         ux = this.Truncation(2);
-        ratio = 1 / diff (ricecdf ([ux, lx], this.nu, this.sigma));
+        ratio = 1 / diff (ricecdf ([lx, ux], this.nu, this.sigma));
         nsize = fix (2 * ratio * ps);       # times 2 to be on the safe side
         ## Generate the numbers and remove out-of-bound random samples
         r = ricernd (this.nu, this.sigma, nsize, 1);
@@ -651,6 +651,36 @@ function checkparams (nu, sigma)
     error ("RicianDistribution: SIGMA must be a positive real scalar.")
   endif
 endfunction
+
+## Test output
+%!shared pd, t
+%! pd = RicianDistribution;
+%! t = truncate (pd, 2, 4);
+%!assert (cdf (pd, [0:5]), [0, 0.2671, 0.7310, 0.9563, 0.9971, 0.9999], 1e-4);
+%!assert (cdf (t, [0:5]), [0, 0, 0, 0.8466, 1, 1], 1e-4);
+%!assert (cdf (pd, [1.5, 2, 3, 4, NaN]), [0.5120, 0.7310, 0.9563, 0.9971, NaN], 1e-4);
+%!assert (cdf (t, [1.5, 2, 3, 4, NaN]), [0, 0, 0.8466, 1, NaN], 1e-4);
+%!assert (icdf (pd, [0:0.2:1]), [0, 0.8501, 1.2736, 1.6863, 2.2011, Inf], 1e-4);
+%!assert (icdf (t, [0:0.2:1]), [2, 2.1517, 2.3296, 2.5545, 2.8868, 4], 1e-4);
+%!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, 1.2736, 1.6863, 2.2011, Inf, NaN], 1e-4);
+%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 2.3296, 2.5545, 2.8868, 4, NaN], 1e-4);
+%!assert (iqr (pd), 1.0890, 1e-4);
+%!assert (iqr (t), 0.5928, 1e-4);
+%!assert (mean (pd), 1.5486, 1e-4);
+%!assert (mean (t), 2.5380, 1e-4);
+%!assert (median (pd), 1.4755, 1e-4);
+%!assert (median (t), 2.4341, 1e-4);
+%!assert (pdf (pd, [0:5]), [0, 0.4658, 0.3742, 0.0987, 0.0092, 0.0003], 1e-4);
+%!assert (pdf (t, [0:5]), [0, 0, 1.4063, 0.3707, 0.0346, 0], 1e-4);
+%!assert (pdf (pd, [-1, 1.5, NaN]), [0, 0.4864, NaN], 1e-4);
+%!assert (pdf (t, [-1, 1.5, NaN]), [0, 0, NaN], 1e-4);
+%!assert (isequal (size (random (pd, 100, 50)), [100, 50]))
+%!assert (any (random (t, 1000, 1) < 2), false);
+%!assert (any (random (t, 1000, 1) > 4), false);
+%!assert (std (pd), 0.7758, 1e-4);
+%!assert (std (t), 0.4294, 1e-4);
+%!assert (var (pd), 0.6019, 1e-4);
+%!assert (var (t), 0.1844, 1e-4);
 
 ## Test input validation
 ## 'RicianDistribution' constructor
