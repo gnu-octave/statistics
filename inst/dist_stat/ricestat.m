@@ -74,7 +74,8 @@ function [m, v] = ricestat (nu, sigma)
     thetasq = (nu(k) .^ 2) ./ (sigma(k) .^ 2);
     L = Laguerre_half (-0.5 .* thetasq);
     m(k) = sigma(k) .* sqrt (pi / 2) .* L;
-    v(k) = 2 * (sigma(k) .^ 2) + nu(k) .^ 2 - (0.5 .* pi .* sigma(k) .^ 2) .* L;
+    v(k) = 2 * (sigma(k) .^ 2) + nu(k) .^ 2 - ...
+           (0.5 .* pi .* sigma(k) .^ 2) .* L .^ 2;
   endif
 
 endfunction
