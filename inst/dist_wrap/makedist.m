@@ -67,7 +67,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = [];
+      pd = BetaDistribution (a, b);
 
     case "binomial"
       N = 1;
@@ -534,6 +534,23 @@ function pd = makedist (varargin)
 endfunction
 
 ## Test output
+%!test
+%! pd = makedist ("beta");
+%! assert (class (pd), "BetaDistribution");
+%! assert (pd.a, 1);
+%! assert (pd.b, 1);
+%!test
+%! pd = makedist ("beta", "a", 5);
+%! assert (pd.a, 5);
+%! assert (pd.b, 1);
+%!test
+%! pd = makedist ("beta", "b", 5);
+%! assert (pd.a, 1);
+%! assert (pd.b, 5);
+%!test
+%! pd = makedist ("beta", "a", 3, "b", 5);
+%! assert (pd.a, 3);
+%! assert (pd.b, 5);
 %!test
 %! pd = makedist ("birnbaumsaunders");
 %! assert (class (pd), "BirnbaumSaundersDistribution");

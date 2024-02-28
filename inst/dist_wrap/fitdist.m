@@ -138,11 +138,14 @@ function [varargout] = fitdist (varargin)
   switch (tolower (distname))
 
     case "beta"
-      warning ("fitdist: 'Beta' distribution not supported yet.");
       if (isempty (groupvar))
-        varargout{1} = [];
+        varargout{1} = BetaDistribution.fit (x, alpha, freq, options);
       else
-        varargout{1} = [];
+        pd = BetaDistribution.fit (x(g==1), alpha, freq(g==1), options);
+        for i = 2:groups
+          pd(i) = BetaDistribution.fit (x(g==i), alpha, freq(g==i), options);
+        endfor
+        varargout{1} = pd;
         varargout{2} = gn;
         varargout{3} = gl;
       endif
@@ -490,6 +493,22 @@ function [varargout] = fitdist (varargin)
 endfunction
 
 ## Test output
+%!test
+%! x = betarnd (1, 1, 100, 1);
+%! pd = fitdist (x, "Beta");
+%! [phat, pci] = betafit (x);
+%! assert ([pd.a, pd.b], phat);
+%! assert (paramci (pd), pci);
+%!test
+%! x1 = betarnd (1, 1, 100, 1);
+%! x2 = betarnd (5, 2, 100, 1);
+%! pd = fitdist ([x1; x2], "Beta", "By", [ones(100,1); 2*ones(100,1)]);
+%! [phat, pci] = betafit (x1);
+%! assert ([pd(1).a, pd(1).b], phat);
+%! assert (paramci (pd(1)), pci);
+%! [phat, pci] = betafit (x2);
+%! assert ([pd(2).a, pd(2).b], phat);
+%! assert (paramci (pd(2)), pci);
 %!test
 %! x = bisarnd (1, 1, 100, 1);
 %! pd = fitdist (x, "BirnbaumSaunders");
