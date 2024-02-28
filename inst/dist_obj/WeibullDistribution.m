@@ -501,10 +501,20 @@ classdef WeibullDistribution
         error ("random: requires a scalar probability distribution.");
       endif
       if (this.IsTruncated)
-        lp = wblcdf (this.Truncation(1), this.lambda, this.k);
-        up = wblcdf (this.Truncation(2), this.lambda, this.k);
-        u = unifrnd (lp, up, varargin{:});
-        r = this.lambda .* (- log (u)) .^ (1 / this.k);
+        sz = [varargin{:}];
+        ps = prod (sz);
+        ## Get an estimate of how many more random numbers we need to randomly
+        ## pick the appropriate size from
+        lx = this.Truncation(1);
+        ux = this.Truncation(2);
+        ratio = 1 / diff (wblcdf ([lx, ux], this.lambda, this.k));
+        nsize = fix (2 * ratio * ps);       # times 2 to be on the safe side
+        ## Generate the numbers and remove out-of-bound random samples
+        r = wblrnd (this.lambda, this.k, nsize, 1);
+        r(r < lx | r > ux) = [];
+        ## Randomly select the required size and reshape to requested dimensions
+        idx = randperm (numel (r), ps);
+        r = reshape (r(idx), sz);
       else
         r = wblrnd (this.lambda, this.k, varargin{:});
       endif
@@ -640,6 +650,36 @@ function checkparams (lambda, k)
     error ("WeibullDistribution: K must be a positive real scalar.")
   endif
 endfunction
+
+## Test output
+%!shared pd, t
+%! pd = WeibullDistribution;
+%! t = truncate (pd, 2, 4);
+%!assert (cdf (pd, [0:5]), [0, 0.6321, 0.8647, 0.9502, 0.9817, 0.9933], 1e-4);
+%!assert (cdf (t, [0:5]), [0, 0, 0, 0.7311, 1, 1], 1e-4);
+%!assert (cdf (pd, [1.5, 2, 3, 4, NaN]), [0.7769, 0.8647, 0.9502, 0.9817, NaN], 1e-4);
+%!assert (cdf (t, [1.5, 2, 3, 4, NaN]), [0, 0, 0.7311, 1, NaN], 1e-4);
+%!assert (icdf (pd, [0:0.2:1]), [0, 0.2231, 0.5108, 0.9163, 1.6094, Inf], 1e-4);
+%!assert (icdf (t, [0:0.2:1]), [2, 2.1899, 2.4244, 2.7315, 3.1768, 4], 1e-4);
+%!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, 0.5108, 0.9163, 1.6094, Inf, NaN], 1e-4);
+%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 2.4244, 2.7315, 3.1768, 4, NaN], 1e-4);
+%!assert (iqr (pd), 1.0986, 1e-4);
+%!assert (iqr (t), 0.8020, 1e-4);
+%!assert (mean (pd), 1, 1e-14);
+%!assert (mean (t), 2.6870, 1e-4);
+%!assert (median (pd), 0.6931, 1e-4);
+%!assert (median (t), 2.5662, 1e-4);
+%!assert (pdf (pd, [0:5]), [1, 0.3679, 0.1353, 0.0498, 0.0183, 0.0067], 1e-4);
+%!assert (pdf (t, [0:5]), [0, 0, 1.1565, 0.4255, 0.1565, 0], 1e-4);
+%!assert (pdf (pd, [-1, 1.5, NaN]), [0, 0.2231, NaN], 1e-4);
+%!assert (pdf (t, [-1, 1.5, NaN]), [0, 0, NaN], 1e-4);
+%!assert (isequal (size (random (pd, 100, 50)), [100, 50]))
+%!assert (any (random (t, 1000, 1) < 2), false);
+%!assert (any (random (t, 1000, 1) > 4), false);
+%!assert (std (pd), 1, 1e-14);
+%!assert (std (t), 0.5253, 1e-4);
+%!assert (var (pd), 1, 1e-14);
+%!assert (var (t), 0.2759, 1e-4);
 
 ## Test input validation
 ## 'WeibullDistribution' constructor

@@ -460,6 +460,36 @@ function checkparams (Lower, Upper)
   endif
 endfunction
 
+## Test output
+%!shared pd, t
+%! pd = UniformDistribution (0, 5);
+%! t = truncate (pd, 2, 4);
+%!assert (cdf (pd, [0:5]), [0, 0.2, 0.4, 0.6, 0.8, 1], 1e-4);
+%!assert (cdf (t, [0:5]), [0, 0, 0, 0.5, 1, 1], 1e-4);
+%!assert (cdf (pd, [1.5, 2, 3, 4, NaN]), [0.3, 0.4, 0.6, 0.8, NaN], 1e-4);
+%!assert (cdf (t, [1.5, 2, 3, 4, NaN]), [0, 0, 0.5, 1, NaN], 1e-4);
+%!assert (icdf (pd, [0:0.2:1]), [0, 1, 2, 3, 4, 5], 1e-4);
+%!assert (icdf (t, [0:0.2:1]), [2, 2.4, 2.8, 3.2, 3.6, 4], 1e-4);
+%!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, 2, 3, 4, 5, NaN], 1e-4);
+%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 2.8, 3.2, 3.6, 4, NaN], 1e-4);
+%!assert (iqr (pd), 2.5, 1e-14);
+%!assert (iqr (t), 1, 1e-14);
+%!assert (mean (pd), 2.5, 1e-14);
+%!assert (mean (t), 3, 1e-14);
+%!assert (median (pd), 2.5, 1e-14);
+%!assert (median (t), 3, 1e-14);
+%!assert (pdf (pd, [0:5]), [0.2, 0.2, 0.2, 0.2, 0.2, 0.2], 1e-4);
+%!assert (pdf (t, [0:5]), [0, 0, 0.5, 0.5, 0.5, 0], 1e-4);
+%!assert (pdf (pd, [-1, 1.5, NaN]), [0, 0.2, NaN], 1e-4);
+%!assert (pdf (t, [-1, 1.5, NaN]), [0, 0, NaN], 1e-4);
+%!assert (isequal (size (random (pd, 100, 50)), [100, 50]))
+%!assert (any (random (t, 1000, 1) < 2), false);
+%!assert (any (random (t, 1000, 1) > 4), false);
+%!assert (std (pd), 1.4434, 1e-4);
+%!assert (std (t), 0.5774, 1e-4);
+%!assert (var (pd), 2.0833, 1e-4);
+%!assert (var (t), 0.3333, 1e-4);
+
 ## Test input validation
 ## 'UniformDistribution' constructor
 %!error <UniformDistribution: LOWER must be a real scalar.> ...
