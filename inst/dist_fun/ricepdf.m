@@ -76,6 +76,9 @@ function y = ricepdf (x, nu, sigma)
   ## Fix arithmetic overflow due to exponent
   y(epxt > (log(realmax(class(y))))) = 0;
 
+  ## Fix x < 0 -> 0
+  y(x < 0) = 0;
+
 endfunction
 
 %!demo
@@ -99,12 +102,12 @@ endfunction
 ## Test output
 %!shared x, y
 %! x = [-1 0 0.5 1 2];
-%! y = [NaN 0 0.1073 0.1978 0.2846];
+%! y = [0 0 0.1073 0.1978 0.2846];
 %!assert (ricepdf (x, ones (1, 5), 2 * ones (1, 5)), y, 1e-4)
 %!assert (ricepdf (x, 1, 2 * ones (1, 5)), y, 1e-4)
 %!assert (ricepdf (x, ones (1, 5), 2), y, 1e-4)
-%!assert (ricepdf (x, [0 NaN 1 1 1], 2), [NaN NaN y(3:5)], 1e-4)
-%!assert (ricepdf (x, 1, 2 * [0 NaN 1 1 1]), [NaN NaN y(3:5)], 1e-4)
+%!assert (ricepdf (x, [0 NaN 1 1 1], 2), [0 NaN y(3:5)], 1e-4)
+%!assert (ricepdf (x, 1, 2 * [0 NaN 1 1 1]), [0 NaN y(3:5)], 1e-4)
 %!assert (ricepdf ([x, NaN], 1, 2), [y, NaN], 1e-4)
 
 ## Test class of input preserved
