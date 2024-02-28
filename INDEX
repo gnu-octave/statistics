@@ -173,6 +173,7 @@ Distribution Functions
 Distribution Statistics
  betastat
  binostat
+ bisastat
  burrstat
  chi2stat
  evstat
