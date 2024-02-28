@@ -478,6 +478,40 @@ function checkparams (x, Fx)
   endif
 endfunction
 
+## Test output
+%!shared pd, t
+%! load patients
+%! [f, x] = ecdf (Weight);
+%! f = f(1:5:end);
+%! x = x(1:5:end);
+%! pd = PiecewiseLinearDistribution (x, f);
+%! t = truncate (pd, 130, 180);
+%!assert (cdf (pd, [120, 130, 140, 150, 200]), [0.0767, 0.25, 0.4629, 0.5190, 0.9908], 1e-4);
+%!assert (cdf (t, [120, 130, 140, 150, 200]), [0, 0, 0.4274, 0.5403, 1], 1e-4);
+%!assert (cdf (pd, [100, 250, NaN]), [0, 1, NaN], 1e-4);
+%!assert (cdf (t, [115, 290, NaN]), [0, 1, NaN], 1e-4);
+%!assert (icdf (pd, [0:0.2:1]), [111, 127.5, 136.62, 196.67, 182.17, 202], 1e-2);
+%!assert (icdf (t, [0:0.2:1]), [130, 134.15, 139.26, 162.5, 173.99, 180], 1e-2);
+%!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NA, 136.62, 196.67, 182.17, 202, NA], 1e-4);
+%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NA, 139.26, 162.5, 173.99, 180, NA], 1e-4);
+%!assert (iqr (pd), 50.0833, 1e-4);
+%!assert (iqr (t), 36.8077, 1e-4);
+%!assert (mean (pd), 153.61);
+#%!assert (mean (t), 0, eps);
+%!assert (median (pd), 142);
+%!assert (median (t), 141.9462);
+%!assert (pdf (pd, [120, 130, 140, 150, 200]), [0.0133, 0.0240, 0.0186, 0.0024, 0.0046], 1e-4);
+%!assert (pdf (t, [120, 130, 140, 150, 200]), [0, 0.0482, 0.0373, 0.0048, 0], 1e-4);
+%!assert (pdf (pd, [100, 250, NaN]), [0, 0, NaN], 1e-4);
+%!assert (pdf (t, [100, 250, NaN]), [0, 0, NaN], 1e-4);
+%!assert (isequal (size (random (pd, 100, 50)), [100, 50]))
+%!assert (any (random (t, 1000, 1) < -2), false);
+%!assert (any (random (t, 1000, 1) > 2), false);
+%!assert (std (pd), 26.5196);
+#%!assert (std (t), 0.8796, 1e-4);
+%!assert (var (pd), 1);
+#%!assert (var (t), 0.7737, 1e-4);
+
 ## Test input validation
 ## 'PiecewiseLinearDistribution' constructor
 %!error <PiecewiseLinearDistribution: X must be a real vector.> ...
