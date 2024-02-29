@@ -69,6 +69,7 @@ Descriptive Statistics
  var
 Distribution Classes
  BetaDistribution
+ BinomialDistribution
  BirnbaumSaundersDistribution
  BurrDistribution
  ExponentialDistribution

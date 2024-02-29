@@ -56,7 +56,7 @@ function [varargout] = fitdist (varargin)
   censor = zeros (size (x));
   freq = ones (size (x));
   alpha = 0.05;
-  ntrials = [];
+  ntrials = 1;
   mu = 0;
   theta = 1;
   options.Display = "off";
@@ -151,11 +151,17 @@ function [varargout] = fitdist (varargin)
       endif
 
     case "binomial"
-      warning ("fitdist: 'Binomial' distribution not supported yet.");
+      if (any (x > ntrials))
+        error ("fitdist: invalid NTRIALS value for Binomial distribution.")
+      endif
       if (isempty (groupvar))
-        varargout{1} = [];
+        varargout{1} = BinomialDistribution.fit (x, ntrials, alpha, freq);
       else
-        varargout{1} = [];
+        pd = BinomialDistribution.fit (x(g==1), ntrials, alpha, freq(g==1));
+        for i = 2:groups
+          pd(i) = BinomialDistribution.fit (x(g==i), ntrials, alpha, freq(g==i));
+        endfor
+        varargout{1} = pd;
         varargout{2} = gn;
         varargout{3} = gl;
       endif
@@ -508,6 +514,43 @@ endfunction
 %! assert (paramci (pd(1)), pci);
 %! [phat, pci] = betafit (x2);
 %! assert ([pd(2).a, pd(2).b], phat);
+%! assert (paramci (pd(2)), pci);
+%!test
+%! N = 1;
+%! x = binornd (N, 0.5, 100, 1);
+%! pd = fitdist (x, "binomial");
+%! [phat, pci] = binofit (sum (x), numel (x));
+%! assert ([pd.N, pd.p], [N, phat]);
+%! assert (paramci (pd), pci);
+%!test
+%! N = 3;
+%! x = binornd (N, 0.4, 100, 1);
+%! pd = fitdist (x, "binomial", "ntrials", N);
+%! [phat, pci] = binofit (sum (x), numel (x) * N);
+%! assert ([pd.N, pd.p], [N, phat]);
+%! assert (paramci (pd), pci);
+%!test
+%! N = 1;
+%! x1 = binornd (N, 0.5, 100, 1);
+%! x2 = binornd (N, 0.7, 100, 1);
+%! pd = fitdist ([x1; x2], "binomial", "By", [ones(100,1); 2*ones(100,1)]);
+%! [phat, pci] = binofit (sum (x1), numel (x1));
+%! assert ([pd(1).N, pd(1).p], [N, phat]);
+%! assert (paramci (pd(1)), pci);
+%! [phat, pci] = binofit (sum (x2), numel (x2));
+%! assert ([pd(2).N, pd(2).p], [N, phat]);
+%! assert (paramci (pd(2)), pci);
+%!test
+%! N = 5;
+%! x1 = binornd (N, 0.5, 100, 1);
+%! x2 = binornd (N, 0.8, 100, 1);
+%! pd = fitdist ([x1; x2], "binomial", "ntrials", N, ...
+%!               "By", [ones(100,1); 2*ones(100,1)]);
+%! [phat, pci] = binofit (sum (x1), numel (x1) * N);
+%! assert ([pd(1).N, pd(1).p], [N, phat]);
+%! assert (paramci (pd(1)), pci);
+%! [phat, pci] = binofit (sum (x2), numel (x2) * N);
+%! assert ([pd(2).N, pd(2).p], [N, phat]);
 %! assert (paramci (pd(2)), pci);
 %!test
 %! x = bisarnd (1, 1, 100, 1);

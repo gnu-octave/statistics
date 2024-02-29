@@ -71,19 +71,19 @@ function pd = makedist (varargin)
 
     case "binomial"
       N = 1;
-      ps = 0.5;
+      p = 0.5;
       while (numel (varargin) > 0)
         switch (tolower (varargin{1}))
-          case "N"
+          case "n"
             N = varargin{2};
-          case {"ps", "p"}
-            ps = varargin{2};
+          case "p"
+            p = varargin{2};
           otherwise
             error ("makedist: unknown parameter for 'Binomial' distribution.");
         endswitch
         varargin([1:2]) = [];
       endwhile
-      pd = [];
+      pd = BinomialDistribution (N, p);
 
     case {"birnbaumsaunders", "bisa"}
       beta = 1;
@@ -551,6 +551,23 @@ endfunction
 %! pd = makedist ("beta", "a", 3, "b", 5);
 %! assert (pd.a, 3);
 %! assert (pd.b, 5);
+%!test
+%! pd = makedist ("binomial");
+%! assert (class (pd), "BinomialDistribution");
+%! assert (pd.N, 1);
+%! assert (pd.p, 0.5);
+%!test
+%! pd = makedist ("binomial", "N", 5);
+%! assert (pd.N, 5);
+%! assert (pd.p, 0.5);
+%!test
+%! pd = makedist ("binomial", "p", 0.2);
+%! assert (pd.N, 1);
+%! assert (pd.p, 0.2);
+%!test
+%! pd = makedist ("binomial", "N", 3, "p", 0.3);
+%! assert (pd.N, 3);
+%! assert (pd.p, 0.3);
 %!test
 %! pd = makedist ("birnbaumsaunders");
 %! assert (class (pd), "BirnbaumSaundersDistribution");
