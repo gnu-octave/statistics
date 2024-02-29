@@ -19,7 +19,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{nlogL} =} gplike (@var{params}, @var{x})
 ## @deftypefnx {statistics} {[@var{nlogL}, @var{acov}] =} gplike (@var{params}, @var{x})
-## @deftypefnx {statistics} {[@var{nlogL}, @var{acov}] =} gplike (@var{params}, @var{x}, @var{freq})
+## @deftypefnx {statistics} {[@dots{}] =} gplike (@var{params}, @var{x}, @var{freq})
 ##
 ## Negative log-likelihood for the generalized Pareto distribution.
 ##

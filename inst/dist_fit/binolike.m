@@ -19,6 +19,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{nlogL} =} binolike (@var{params}, @var{x})
 ## @deftypefnx {statistics} {[@var{nlogL}, @var{acov}] =} binolike (@var{params}, @var{x})
+## @deftypefnx {statistics} {[@dots{}] =} binolike (@var{params}, @var{x}, @var{freq})
 ##
 ## Negative log-likelihood for the binomial distribution.
 ##
@@ -35,13 +36,19 @@
 ## parameter values in @var{params} are the maximum likelihood estimates, the
 ## diagonal elements of @var{params} are their asymptotic variances.
 ##
+## @code{[@dots{}] = binolike (@var{params}, @var{x}, @var{freq})} accepts a
+## frequency vector, @var{freq}, of the same size as @var{x}.  @var{freq}
+## typically contains integer frequencies for the corresponding elements in
+## @var{x}, but it can contain any non-integer non-negative values.  By default,
+## or if left empty, @qcode{@var{freq} = ones (size (@var{x}))}.
+##
 ## Further information about the binomial distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Binomial_distribution}
 ##
 ## @seealso{binocdf, binoinv, binopdf, binornd, binofit, binostat}
 ## @end deftypefn
 
-function [nlogL, acov] = binolike (params, x)
+function [nlogL, acov] = binolike (params, x, freq)
 
   ## Check input arguments
   if (nargin < 2)
@@ -50,10 +57,6 @@ function [nlogL, acov] = binolike (params, x)
 
   if (! isvector (x))
     error ("binolike: X must be a vector.");
-  endif
-
-  if (any (x < 0))
-    error ("binolike: X cannot have negative values.");
   endif
 
   if (length (params) != 2)
@@ -68,6 +71,32 @@ function [nlogL, acov] = binolike (params, x)
   if (params(2) < 0 || params(2) > 1)
     error (strcat (["binolike: probability of success, PARAMS(2), must be"], ...
                    [" in the range [0,1]."]));
+  endif
+
+  ## Parse FREQ argument or add default
+  if (nargin < 3 || isempty (freq))
+    freq = ones (size (x));
+  elseif (! isequal (size (x), size (freq)))
+    error ("binolike: X and FREQ vectors mismatch.");
+  elseif (any (freq < 0))
+    error ("binolike: FREQ must not contain negative values.");
+  endif
+
+  ## Expand frequency vector (if necessary)
+  if (! all (freq == 1))
+    ## Remove NaNs and zeros
+    remove = isnan (freq) | freq == 0;
+    x(remove) = [];
+    freq(remove) = [];
+    xf = [];
+    for i = 1:numel (freq)
+      xf = [xf, repmat(x(i), 1, freq(i))];
+    endfor
+    x = xf;
+  endif
+
+  if (any (x < 0))
+    error ("binolike: X cannot have negative values.");
   endif
 
   if (any (x > params(1)))
@@ -98,7 +127,6 @@ endfunction
 ## Test input validation
 %!error<binolike: function called with too few input arguments.> binolike (3.25)
 %!error<binolike: X must be a vector.> binolike ([5, 0.2], ones (2))
-%!error<binolike: X cannot have negative values.> binolike ([5, 0.2], [-1, 3])
 %!error<binolike: PARAMS must be a two-element vector.> ...
 %! binolike ([1, 0.2, 3], [1, 3, 5, 7])
 %!error<binolike: number of trials,> binolike ([1.5, 0.2], 1)
@@ -106,4 +134,9 @@ endfunction
 %!error<binolike: number of trials,> binolike ([Inf, 0.2], 1)
 %!error<binolike: probability of success,> binolike ([5, 1.2], [3, 5])
 %!error<binolike: probability of success,> binolike ([5, -0.2], [3, 5])
+%!error<binolike: X and FREQ vectors mismatch.> ...
+%! binolike ([5, 0.5], ones (10, 1), ones (8,1))
+%!error<binolike: FREQ must not contain negative values.> ...
+%! binolike ([5, 0.5], ones (1, 8), [1 1 1 1 1 1 1 -1])
+%!error<binolike: X cannot have negative values.> binolike ([5, 0.2], [-1, 3])
 %!error<binolike: number of successes,> binolike ([5, 0.2], [3, 5, 7])

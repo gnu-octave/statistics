@@ -1,4 +1,4 @@
-## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2023-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -65,14 +65,18 @@ function [pshat, psci] = binofit (x, n, alpha)
   if (any (n < 0) || any (n != round (n)) || any (isinf (n)))
     error ("binofit: N must be a non-negative integer.");
   endif
-  if (any (x > n))
-    error ("binofit: N cannot be greater than X.");
+  if (! (isscalar (n) || isequal (size (n), size (x))))
+    error ("binofit: N must be a scalar or the same size as X.");
   endif
-
+  if (any (x > n))
+    error ("binofit: N must be at least as large as X.");
+  endif
   if (nargin < 3 || isempty (alpha))
     alpha = 0.05;
-  elseif (! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1)
-    error ("binofit: wrong value for ALPHA.");
+  else
+    if (! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1)
+      error ("binofit: wrong value for ALPHA.");
+    endif
   endif
 
   ## Compute pshat
@@ -151,8 +155,15 @@ endfunction
 ## Test input validation
 %!error<binofit: function called with too few input arguments.> ...
 %! binofit ([1 2 3 4])
-%!error<binofit: X cannot have negative values.> binofit (-1, [1 2 3 3])
-%!error<binofit: N must be a non-negative integer.> binofit (1, [1 2 -1 3])
-%!error<binofit: wrong value for ALPHA.> binofit (1, [1 2 3], 0)
-%!error<binofit: wrong value for ALPHA.> binofit (1, [1 2 3], 1.2)
-%!error<binofit: wrong value for ALPHA.> binofit (1, [1 2 3], [0.02 0.05])
+%!error<binofit: X cannot have negative values.> ...
+%! binofit ([-1, 4, 3, 2], [1, 2, 3, 3])
+%!error<binofit: X must be a vector.> binofit (ones(2), [1, 2, 3, 3])
+%!error<binofit: N must be a non-negative integer.> ...
+%! binofit ([1, 4, 3, 2], [1, 2, -1, 3])
+%!error<binofit: N must be a scalar or the same size as X.> ...
+%! binofit ([1, 4, 3, 2], [5, 5, 5])
+%!error<binofit: N must be at least as large as X.> ...
+%! binofit ([1, 4, 3, 2], [5, 3, 5, 5])
+%!error<binofit: wrong value for ALPHA.> binofit ([1, 2, 1], 3, 1.2);
+%!error<binofit: wrong value for ALPHA.> binofit ([1, 2, 1], 3, 0);
+%!error<binofit: wrong value for ALPHA.> binofit ([1, 2, 1], 3, "alpha");

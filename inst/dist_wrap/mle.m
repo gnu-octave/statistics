@@ -24,7 +24,7 @@ function [phat, pci] = mle (x, varargin)
 
   ## Add defaults
   censor = [];
-  freq = [];
+  freq = ones (size (x));
   alpha = 0.05;
   ntrials = [];
   mu = 0;
@@ -51,7 +51,7 @@ function [phat, pci] = mle (x, varargin)
         endif
       case "frequency"
         freq = varargin{2};
-        if (! isequal (size (x), size (freq)) && ! isempty (freq))
+        if (! isequal (size (x), size (freq)))
           error (strcat (["mle: 'frequency' argument must have the same"], ...
                          [" size as the input data in X."]));
         endif
@@ -130,13 +130,10 @@ function [phat, pci] = mle (x, varargin)
         error (strcat (["mle: 'Ntrials' parameter is required"], ...
                        [" for the Binomial distribution."]));
       endif
-      if (! isempty (freq))
-        x = expandFreq (x, freq);
-      endif
       if (nargout < 2)
-        phat = binofit (sum (x), ntrials);
+        phat = binofit (sum (x .* freq), sum (freq) .* ntrials);
       else
-        [phat, pci] = binofit (sum (x), ntrials, alpha);
+        [phat, pci] = binofit (sum (x .* freq), sum (freq) .* ntrials, alpha);
       endif
 
     case {"bisa", "BirnbaumSaunders"}
@@ -359,11 +356,18 @@ function [phat, pci] = mle (x, varargin)
 endfunction
 
 ## Helper function for expanding data according to frequency vector
-function xf = expandFreq (x, freq)
-  xf = [];
-  for i = 1:numel (freq)
-    xf = [xf, repmat(x(i), 1, freq(i))];
-  endfor
+function [x, freq] = expandFreq (x, freq)
+  ## Remove NaNs and zeros
+  remove = isnan (freq);
+  x(remove) = [];
+  freq(remove) = [];
+  if (! all (freq == 1))
+    xf = [];
+    for i = 1:numel (freq)
+      xf = [xf, repmat(x(i), 1, freq(i))];
+    endfor
+  endif
+  x = xf;
 endfunction
 
 ## Test input validation
