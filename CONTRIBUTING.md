@@ -106,7 +106,7 @@ x = max (sin (y+3), 2);
 - An exception are matrix or cell constructors.
 ```
 >> a = [sin(x), cos(x)];
->> b = {sin(x), cos)x)};
+>> b = {sin(x), cos(x)};
 ```
 **Note:** spaces in the above example would result in a parse error!
 
