@@ -325,3 +325,136 @@
  ** ricernd: fixed bug that produced erroneous results
 
  ** updated input validation and documentation to distribution *stat functions
+
+
+ Summary of important user-visible changes for statistics 1.6.4:
+-------------------------------------------------------------------
+
+ Important Notice: 1) `mad`, `mean`, `median`, `std`, `var` functions
+                      shadow core Octave's respective functions prior
+                      to Octave v9.1
+                   2) incompatibility with the `nan` package
+ New functions:
+ ==============
+
+ ** bisastat
+
+ ** burrstat
+
+ ** fitdist
+
+ ** hnstat
+
+ ** invgstat
+
+ ** logistat
+
+ ** loglstat
+
+ ** makedist
+
+ ** mle
+
+ ** nakastat
+
+ ** plcdf
+
+ ** plinv
+
+ ** plpdf
+
+ ** plrnd
+
+ ** plstat
+
+ ** tlsfit
+
+ ** tlslike
+
+ ** tristat
+
+ New classdefs:
+ ==============
+
+ ** BetaDistribution
+
+ ** BinomialDistribution
+
+ ** BirnbaumSaundersDistribution
+
+ ** BurrDistribution
+
+ ** ExponentialDistribution
+
+ ** ExtremeValueDistribution
+
+ ** GammaDistribution
+
+ ** GeneralizedExtremeValueDistribution
+
+ ** GeneralizedParetoDistribution
+
+ ** HalfNormalDistribution
+
+ ** InverseGaussianDistribution
+
+ ** LogisticDistribution
+
+ ** LoglogisticDistribution
+
+ ** LognormalDistribution
+
+ ** LoguniformDistribution
+
+ ** MultinomialDistribution
+
+ ** NakagamiDistribution
+
+ ** NegativeBinomialDistribution
+
+ ** NormalDistribution
+
+ ** PiecewiseLinearDistribution
+
+ ** PoissonDistribution
+
+ ** RayleighDistribution
+
+ ** RicianDistribution
+
+ ** tLocationScaleDistribution
+
+ ** TriangularDistribution
+
+ ** UniformDistribution
+
+ ** WeibullDistribution
+
+ Improvements:
+ =============
+
+ ** binolike: accepts frequency vector as third input argument
+
+ ** gevfit: accepts frequency vector as third input argument
+
+ ** gevlike: accepts frequency vector as third input argument
+
+ ** gpfit: accepts frequency vector and requires fixed parameter 'theta'
+
+ ** gplike: accepts frequency vector as third input argument
+
+ ** logl* distribution functions: changed parameters for MATLAB compatibility
+
+ ** hnfit: accepts frequency vector as third input argument
+
+ ** hnlike: accepts frequency vector as third input argument
+
+ ** nbinfit: accepts frequency vector as third input argument
+
+ ** nbinlike: accepts frequency vector as third input argument
+
+ ** tri* distribution functions: swapped the order of b and c input arguments
+
+ ** unidfit: accepts frequency vector as third input argument
+
+ ** unifit: accepts frequency vector as third input argument
