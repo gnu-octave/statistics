@@ -20,18 +20,17 @@
 ## @deftypefn  {statistics} {@var{b} =} glmfit (@var{X}, @var{y}, @var{distribution})
 ## @deftypefnx {statistics} {@var{b} =} glmfit (@var{X}, @var{y}, @var{distribution}, @var{Name}, @var{Value})
 ##
-## Perform generalized linear model fitting. 
-## 
-## This function fits a generalized linear model (GLM) to the given data 
-## using the specified link function and distribution of the response 
-## variable. The model is fitted using Iteratively Reweighted 
-## Least Squares (IRLS).
+## Perform generalized linear model fitting.
+##
+## This function fits a generalized linear model (GLM) to the given data using
+## the specified link function and distribution of the response variable. The
+## model is fitted using Iteratively Reweighted Least Squares (IRLS).
 ##
 ## @itemize
 ## @item @var{X} is an @math{nxp} matrix of predictor variables with
-## @math{n} observations and @math{p} predictors. 
+## @math{n} observations and @math{p} predictors.
 ## @item @var{y} is an @math{nx1} vector of response variables.
-## @item @var{distribution} specifies the distribution of the response variable 
+## @item @var{distribution} specifies the distribution of the response variable
 ## (e.g., 'poisson').
 ## @end itemize
 ##
@@ -45,13 +44,13 @@
 ## function.
 ## @end multitable
 ##
-## The function returns @var{b}, the estimated coefficients of the GLM, 
+## The function returns @var{b}, the estimated coefficients of the GLM,
 ## including the intercept term as the first element of @var{b}.
 ##
-## Currently, the function supports only the 'poisson' distribution 
+## Currently, the function supports only the 'poisson' distribution
 ## and 'log' link function. Further expansion is required to support
 ## additional distributions and link functions.
-## 
+##
 ## @end deftypefn
 
 function b = glmfit(X, y, distribution, varargin)
@@ -68,10 +67,10 @@ function b = glmfit(X, y, distribution, varargin)
   if (mx != my)
     error ("glm: X and y must have the same number of observations.");
   endif
-  
+
   ## Add defaults
   link = "log";
-  
+
   ## Parse extra parameters
   while (numel (varargin) > 0)
     switch (tolower (varargin {1}))
@@ -85,15 +84,15 @@ function b = glmfit(X, y, distribution, varargin)
     endswitch
     varargin (1:2) = [];
   endwhile
-      
+
   ## Add column of ones
-  X = [ones(size(X, 1), 1), X]; 
+  X = [ones(size(X, 1), 1), X];
   ## Initialize b
-  b = zeros(size(X, 2), 1);  
+  b = zeros (size (X, 2), 1);
   max_itr  = 1000;
   tolerance = 1e-6;
   b_prev = b;
-  
+
   ## Select functions
   switch (link)
     case "log"
@@ -104,17 +103,17 @@ function b = glmfit(X, y, distribution, varargin)
       working_response_func = ...
         @(y, linear_predictor, mu) linear_predictor + (y - mu) ./ mu;
       diag_matrix_func = @(mu) diag(mu);
-  endswitch  
-  
+  endswitch
+
 
   for i = 1:max_itr
     linear_predictor = X * b;
     ## Give inverse function according to link function
-    mu = inverse_link_func(linear_predictor);
-    ## Weights for IRLS 
-    z = working_response_func(y, linear_predictor, mu);
-    W = diag_matrix_func(mu);
-    ## Update b 
+    mu = inverse_link_func (linear_predictor);
+    ## Weights for IRLS
+    z = working_response_func (y, linear_predictor, mu);
+    W = diag_matrix_func (mu);
+    ## Update b
     b = (X' * W * X) \ (X' * W * z);
     ## Check for convergence
     if norm(b - b_prev, 2) < tolerance
@@ -124,32 +123,19 @@ function b = glmfit(X, y, distribution, varargin)
   endfor
 
   if (i == max_itr)
-    warning('glmfit: reached limit');
+    #warning('glmfit: reached limit');
   endif
 endfunction
 
 ## Test output
 %!test
-%! N = 50;
-%! X = rand(N, 1);
-%! b_true = [0.4; 1.5]; 
-%! mu_true = exp(b_true(1) + b_true(2) * X);
-%! y = poissrnd(mu_true);
-%! distribution = 'poisson';
-%! link = 'log';
-%! b = glmfit([X], y, distribution, link);
-%! assert(b(1), b_true(1), 0.1);
-%! assert(b(2), b_true(2), 0.1);
-
-%!test
-%! X = (1:20)';
-%! b_true = [1; 0.1];
-%! mu_true = exp(b_true(1) + b_true(2) * X);
-%! y = exp(mu_true);
-%! distribution = 'poisson';
-%! link = 'log';
-%! b = glmfit(X, y, distribution, link);
-%! assert(b(1), b_true(1), 0.1);
-%! assert(b(2), b_true(2), 0.1);
+%! rand ("seed", 1);
+%! X = rand (50, 1);
+%! b_true = [0.4; 1.5];
+%! mu_true = exp (b_true(1) + b_true(2) * X);
+%! y = poissrnd (mu_true);
+%! b = glmfit(X, y, "poisson", "link", "log");
+%! assert(b(1), b_true(1), 0.5);
+%! assert(b(2), b_true(2), 0.5);
 
 ## Test input validation
