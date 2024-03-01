@@ -71,8 +71,8 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>tlscdf</b><i> (<var>x</var>, <var>mu</var>, <var>sigma</var>, <var>df</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>tlscdf</b><i> (<var>x</var>, <var>mu</var>, <var>sigma</var>, <var>df</var>, <code>&quot;upper&quot;</code>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>tlscdf</b><i> (<var>x</var>, <var>mu</var>, <var>sigma</var>, <var>nu</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>tlscdf</b><i> (<var>x</var>, <var>mu</var>, <var>sigma</var>, <var>nu</var>, <code>&quot;upper&quot;</code>)</i></dt>
 </dl>
 
 <p> Location-scale Student&rsquo;s T cumulative distribution function (CDF).
@@ -80,14 +80,14 @@
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the cumulative distribution function
  (CDF) of the location-scale Student&rsquo;s T distribution with location parameter
- <var>mu</var>, scale parameter <var>sigma</var>, and <var>df</var> degrees of freedom.  The
+ <var>mu</var>, scale parameter <var>sigma</var>, and <var>nu</var> degrees of freedom.  The
  size of <var>p</var> is the common size of <var>x</var>, <var>mu</var>, <var>sigma</var>, and
- <var>df</var>. A scalar input functions as a constant matrix of the same size as
+ <var>nu</var>. A scalar input functions as a constant matrix of the same size as
  the other inputs.
 </p>
-<p> <code><var>p</var> = tlscdf (<var>x</var>, <var>mu</var>, <var>sigma</var>, <var>df</var>, &quot;upper&quot;)</code>
+<p> <code><var>p</var> = tlscdf (<var>x</var>, <var>mu</var>, <var>sigma</var>, <var>nu</var>, &quot;upper&quot;)</code>
  computes the upper tail probability of the location-scale Student&rsquo;s T
- distribution with parameters <var>mu</var>, <var>sigma</var>, and <var>df</var>, at the
+ distribution with parameters <var>mu</var>, <var>sigma</var>, and <var>nu</var>, at the
  values in <var>x</var>.
 </p>
 <p> Further information about the location-scale Student&rsquo;s T distribution can be
@@ -97,8 +97,8 @@
   <a href="tlsinv.html">tlsinv</a>, 
   <a href="tlspdf.html">tlspdf</a>, 
   <a href="tlsrnd.html">tlsrnd</a>, 
-tlsfit, 
-tlslike, 
+  <a href="tlsfit.html">tlsfit</a>, 
+  <a href="tlslike.html">tlslike</a>, 
   <a href="tlsstat.html">tlsstat</a>
 </p>
 <p><strong>Source Code: </strong>
@@ -132,8 +132,8 @@ tlslike,
  grid on
  xlim ([-8, 8])
  ylim ([0, 1])
- legend ({"mu = 0, sigma = 1, df = 1", "mu = 0, sigma = 2, df = 2", ...
-          "mu = 3, sigma = 2, df = 5", 'mu = -1, sigma = 3, df = \infty'}, ...
+ legend ({"mu = 0, sigma = 1, nu = 1", "mu = 0, sigma = 2, nu = 2", ...
+          "mu = 3, sigma = 2, nu = 5", 'mu = -1, sigma = 3, nu = \infty'}, ...
          "location", "northwest")
  title ("Location-scale Student's T CDF")
  xlabel ("values in x")

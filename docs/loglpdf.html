@@ -71,33 +71,33 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>y</var> = <b>loglpdf</b><i> (<var>x</var>, <var>a</var>, <var>b</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>loglpdf</b><i> (<var>x</var>, <var>mu</var>, <var>sigma</var>)</i></dt>
 </dl>
 
-<p> Log-logistic probability density function (PDF).
+<p> Loglogistic probability density function (PDF).
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the probability density function (PDF)
- of the log-logistic distribution with with scale parameter <var>a</var> and shape
- parameter <var>b</var>.  The size of <var>y</var> is the common size of <var>x</var>,
- <var>a</var>, and <var>b</var>.  A scalar input functions as a constant matrix of the
- same size as the other inputs.
+ of the loglogistic distribution with mean parameter <var>mu</var> and scale
+ parameter <var>sigma</var>.  The size of <var>y</var> is the common size of <var>x</var>,
+ <var>mu</var>, and <var>sigma</var>.  A scalar input functions as a constant matrix of
+ the same size as the other inputs.
 </p>
-<p> Both parameters, <var>a</var> and <var>b</var>, must be positive reals, otherwise
+<p> Both parameters, <var>mu</var> and <var>sigma</var>, must be positive reals, otherwise
  <code>NaN</code> is returned.   <var>x</var> is supported in the range <math>[0,Inf)</math>,
  otherwise <code>0</code> is returned.
 </p>
-<p> Further information about the log-logistic distribution can be found at
+<p> Further information about the loglogistic distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Log-logistic_distribution">https://en.wikipedia.org/wiki/Log-logistic_distribution</a>
 </p>
-<p> MATLAB compatibility: MATLAB uses an alternative parameterization given by
- the pair <math>μ, s</math>, i.e. <var>mu</var> and <var>s</var>, in analogy with the logistic
- distribution.  Their relation to the <var>a</var> and <var>b</var> parameters is given
- below:
+<p> OCTAVE/MATLAB use an alternative parameterization given by the pair
+ <math>μ, σ</math>, i.e. <var>mu</var> and <var>sigma</var>, in analogy with the logistic
+ distribution.  Their relation to the <math>α</math> and <math>b</math> parameters used
+ in Wikipedia are given below:
 </p>
  <ul>
-<li> <code><var>a</var> = exp (<var>mu</var>)</code>
- </li><li> <code><var>b</var> = 1 / <var>s</var></code>
+<li> <code><var>mu</var> = log (<var>a</var>)</code>
+ </li><li> <code><var>sigma</var> = 1 / <var>a</var></code>
  </li></ul>
 
 <p> <strong>See also: </strong>
@@ -105,7 +105,8 @@
   <a href="loglinv.html">loglinv</a>, 
   <a href="loglrnd.html">loglrnd</a>, 
   <a href="loglfit.html">loglfit</a>, 
-  <a href="logllike.html">logllike</a>
+  <a href="logllike.html">logllike</a>, 
+  <a href="loglstat.html">loglstat</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/loglpdf.m">loglpdf</a>
@@ -129,21 +130,21 @@
                     <td><pre class="example">
 
  ## Plot various PDFs from the log-logistic distribution
- x = 0:0.001:2;
- y1 = loglpdf (x, 1, 0.5);
- y2 = loglpdf (x, 1, 1);
- y3 = loglpdf (x, 1, 2);
- y4 = loglpdf (x, 1, 4);
- y5 = loglpdf (x, 1, 8);
+ x = 0.001:0.001:2;
+ y1 = loglpdf (x, log (1), 1/0.5);
+ y2 = loglpdf (x, log (1), 1);
+ y3 = loglpdf (x, log (1), 1/2);
+ y4 = loglpdf (x, log (1), 1/4);
+ y5 = loglpdf (x, log (1), 1/8);
  plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-c", x, y5, "-m")
  grid on
  ylim ([0,3])
- legend ({"β = 0.5", "β = 1", "β = 2", "β = 4", "β = 8"}, ...
-         "location", "northeast")
+ legend ({"σ = 2 (β = 0.5)", "σ = 1 (β = 1)", "σ = 0.5 (β = 2)", ...
+          "σ = 0.25 (β = 4)", "σ = 0.125 (β = 8)"}, "location", "northeast")
  title ("Log-logistic PDF")
  xlabel ("values in x")
  ylabel ("density")
- text (0.5, 2.8, "α = 1, values of β as shown in legend")
+ text (0.1, 2.8, "μ = 0 (α = 1), values of σ (β) as shown in legend")
 
                     </pre></td></tr></tbody>
                   </table>

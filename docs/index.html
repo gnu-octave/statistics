@@ -61,7 +61,7 @@
             </div>
             <div class="col-sm-9 col-md-10">
               <h3 class="d-inline-block mr-2">statistics</h3>
-              <b>1.6.3&nbsp;2024-2-9</b>
+              <b>1.6.4&nbsp;2024-3-1</b>
               <p class="indent">
                 The Statistics package for GNU Octave.
               </p>
@@ -78,9 +78,11 @@
              <option value="#Regression Classes">Regression Classes</option>
              <option value="#Data Manipulation">Data Manipulation</option>
              <option value="#Descriptive Statistics">Descriptive Statistics</option>
+             <option value="#Distribution Classes">Distribution Classes</option>
              <option value="#Distribution Fitting">Distribution Fitting</option>
              <option value="#Distribution Functions">Distribution Functions</option>
              <option value="#Distribution Statistics">Distribution Statistics</option>
+             <option value="#Distribution Wrappers">Distribution Wrappers</option>
              <option value="#Experimental Design">Experimental Design</option>
              <option value="#Machine Learning">Machine Learning</option>
              <option value="#Model Fitting">Model Fitting</option>
@@ -89,7 +91,6 @@
              <option value="#Plotting">Plotting</option>
              <option value="#Regression">Regression</option>
              <option value="#Transforms">Transforms</option>
-             <option value="#Wrappers">Wrappers</option>
              </select>
            <p>
 
@@ -647,6 +648,229 @@ samples as parameters.</td>
              </tbody>
            </table>
            <h3 class="category">
+             <a name="Distribution Classes">Distribution Classes</a>
+           </h3>
+           <table class="table table-striped">
+             <tbody>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="BetaDistribution.html">BetaDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Beta probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="BinomialDistribution.html">BinomialDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Binomial probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="BirnbaumSaundersDistribution.html">BirnbaumSaundersDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Gamma probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="BurrDistribution.html">BurrDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Burr probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ExponentialDistribution.html">ExponentialDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Exponential probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ExtremeValueDistribution.html">ExtremeValueDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Extreme value probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="GammaDistribution.html">GammaDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Gamma probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="GeneralizedExtremeValueDistribution.html">GeneralizedExtremeValueDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Generalized extreme value probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="GeneralizedParetoDistribution.html">GeneralizedParetoDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Generalized Pareto probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="HalfNormalDistribution.html">HalfNormalDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Half-normal probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="InverseGaussianDistribution.html">InverseGaussianDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Logistic probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="LogisticDistribution.html">LogisticDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Logistic probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="LoglogisticDistribution.html">LoglogisticDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Loglogistic probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="LognormalDistribution.html">LognormalDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Lognormal probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="LoguniformDistribution.html">LoguniformDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Loguniform probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="MultinomialDistribution.html">MultinomialDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Multinomial probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="NakagamiDistribution.html">NakagamiDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Normal probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="NegativeBinomialDistribution.html">NegativeBinomialDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Negative binomial probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="NormalDistribution.html">NormalDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Normal probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="PiecewiseLinearDistribution.html">PiecewiseLinearDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Continuous uniform probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="PoissonDistribution.html">PoissonDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Poisson probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="RayleighDistribution.html">RayleighDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Rayleigh probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="RicianDistribution.html">RicianDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Rician probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="tLocationScaleDistribution.html">tLocationScaleDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Weibull probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="TriangularDistribution.html">TriangularDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Triangular probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="UniformDistribution.html">UniformDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Continuous uniform probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="WeibullDistribution.html">WeibullDistribution</a>
+                   </code></b>
+                 </td>
+                 <td>Weibull probability distribution object.</td>
+               </tr>
+             </tbody>
+           </table>
+           <h3 class="category">
              <a name="Distribution Fitting">Distribution Fitting</a>
            </h3>
            <table class="table table-striped">
@@ -909,7 +1133,7 @@ distribution.</td>
                    <a href="lognfit.html">lognfit</a>
                    </code></b>
                  </td>
-                 <td>Estimate parameters and confidence intervals for the log-normal
+                 <td>Estimate parameters and confidence intervals for the lognormal
 distribution.</td>
                </tr>
                <tr>
@@ -918,7 +1142,7 @@ distribution.</td>
                    <a href="lognlike.html">lognlike</a>
                    </code></b>
                  </td>
-                 <td>Negative log-likelihood for the log-normal distribution.</td>
+                 <td>Negative log-likelihood for the lognormal distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1023,6 +1247,23 @@ distribution.</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="tlsfit.html">tlsfit</a>
+                   </code></b>
+                 </td>
+                 <td>Estimate parameters and confidence intervals for the Location-scale
+Student's T distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="tlslike.html">tlslike</a>
+                   </code></b>
+                 </td>
+                 <td>Negative log-likelihood for the location-scale Student's T distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="unidfit.html">unidfit</a>
                    </code></b>
                  </td>
@@ -1044,7 +1285,8 @@ distribution.</td>
                    <a href="wblfit.html">wblfit</a>
                    </code></b>
                  </td>
-                 <td>Estimate mean and confidence intervals for the Weibull distribution.</td>
+                 <td>Estimate parameters and confidence intervals for the Weibull
+distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1752,7 +1994,7 @@ with given parameters.</td>
                    <a href="loglcdf.html">loglcdf</a>
                    </code></b>
                  </td>
-                 <td>Log-logistic cumulative distribution function (CDF).</td>
+                 <td>Loglogistic cumulative distribution function (CDF).</td>
                </tr>
                <tr>
                  <td>
@@ -1768,7 +2010,7 @@ with given parameters.</td>
                    <a href="loglpdf.html">loglpdf</a>
                    </code></b>
                  </td>
-                 <td>Log-logistic probability density function (PDF).</td>
+                 <td>Loglogistic probability density function (PDF).</td>
                </tr>
                <tr>
                  <td>
@@ -1776,7 +2018,7 @@ with given parameters.</td>
                    <a href="loglrnd.html">loglrnd</a>
                    </code></b>
                  </td>
-                 <td>Random arrays from the log-logistic distribution.</td>
+                 <td>Random arrays from the loglogistic distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -1784,7 +2026,7 @@ with given parameters.</td>
                    <a href="logncdf.html">logncdf</a>
                    </code></b>
                  </td>
-                 <td>Log-normal cumulative distribution function (CDF).</td>
+                 <td>Lognormal cumulative distribution function (CDF).</td>
                </tr>
                <tr>
                  <td>
@@ -1792,7 +2034,7 @@ with given parameters.</td>
                    <a href="logninv.html">logninv</a>
                    </code></b>
                  </td>
-                 <td>Inverse of the log-normal cumulative distribution function (iCDF).</td>
+                 <td>Inverse of the lognormal cumulative distribution function (iCDF).</td>
                </tr>
                <tr>
                  <td>
@@ -2075,6 +2317,38 @@ with given parameters.</td>
                    </code></b>
                  </td>
                  <td>Random arrays from the normal distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="plcdf.html">plcdf</a>
+                   </code></b>
+                 </td>
+                 <td>Piecewise linear cumulative distribution function (CDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="plinv.html">plinv</a>
+                   </code></b>
+                 </td>
+                 <td>Inverse of the piecewise linear distribution (iCDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="plpdf.html">plpdf</a>
+                   </code></b>
+                 </td>
+                 <td>Piecewise linear probability density function (PDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="plrnd.html">plrnd</a>
+                   </code></b>
+                 </td>
+                 <td>Random arrays from the piecewise linear distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -2450,6 +2724,22 @@ parameters</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="bisastat.html">bisastat</a>
+                   </code></b>
+                 </td>
+                 <td>Compute statistics of the Birnbaum-Saunders distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="burrstat.html">burrstat</a>
+                   </code></b>
+                 </td>
+                 <td>Compute statistics of the Burr type XII distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="chi2stat.html">chi2stat</a>
                    </code></b>
                  </td>
@@ -2514,6 +2804,14 @@ parameters</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="hnstat.html">hnstat</a>
+                   </code></b>
+                 </td>
+                 <td>Compute statistics of the half-normal distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="hygestat.html">hygestat</a>
                    </code></b>
                  </td>
@@ -2522,10 +2820,42 @@ parameters</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="invgstat.html">invgstat</a>
+                   </code></b>
+                 </td>
+                 <td>Compute statistics of the inverse Gaussian distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="logistat.html">logistat</a>
+                   </code></b>
+                 </td>
+                 <td>Compute statistics of the logistic distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="loglstat.html">loglstat</a>
+                   </code></b>
+                 </td>
+                 <td>Compute statistics of the loglogistic distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="lognstat.html">lognstat</a>
                    </code></b>
                  </td>
-                 <td>Compute statistics of the log-normal distribution.</td>
+                 <td>Compute statistics of the lognormal distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="nakastat.html">nakastat</a>
+                   </code></b>
+                 </td>
+                 <td>Compute statistics of the Nakagami distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -2570,6 +2900,14 @@ parameters</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="plstat.html">plstat</a>
+                   </code></b>
+                 </td>
+                 <td>Compute statistics of the piecewise linear distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="poisstat.html">poisstat</a>
                    </code></b>
                  </td>
@@ -2602,6 +2940,14 @@ parameters</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="tristat.html">tristat</a>
+                   </code></b>
+                 </td>
+                 <td>Compute statistics of the Triangular distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="tstat.html">tstat</a>
                    </code></b>
                  </td>
@@ -2630,6 +2976,69 @@ parameters</td>
                    </code></b>
                  </td>
                  <td>Compute statistics of the Weibull distribution.</td>
+               </tr>
+             </tbody>
+           </table>
+           <h3 class="category">
+             <a name="Distribution Wrappers">Distribution Wrappers</a>
+           </h3>
+           <table class="table table-striped">
+             <tbody>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="cdf.html">cdf</a>
+                   </code></b>
+                 </td>
+                 <td>Return the CDF of a univariate distribution evaluated at X.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitdist.html">fitdist</a>
+                   </code></b>
+                 </td>
+                 <td>Create probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="icdf.html">icdf</a>
+                   </code></b>
+                 </td>
+                 <td>Return the inverse CDF of a univariate distribution evaluated at P.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="makedist.html">makedist</a>
+                   </code></b>
+                 </td>
+                 <td>Create probability distribution object.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="mle.html">mle</a>
+                   </code></b>
+                 </td>
+                 <td>Compute maximum likelihood estimates.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="pdf.html">pdf</a>
+                   </code></b>
+                 </td>
+                 <td>Return the PDF of a univariate distribution evaluated at X.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="random.html">random</a>
+                   </code></b>
+                 </td>
+                 <td>Random arrays from a given one-, two-, or three-parameter distribution.</td>
                </tr>
              </tbody>
            </table>
@@ -3251,6 +3660,14 @@ regression.</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="glmfit.html">glmfit</a>
+                   </code></b>
+                 </td>
+                 <td>Perform generalized linear model fitting.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="logistic_regression.html">logistic_regression</a>
                    </code></b>
                  </td>
@@ -3369,45 +3786,6 @@ model 'y = X * beta + e'.</td>
                    </code></b>
                  </td>
                  <td>Probit transformation</td>
-               </tr>
-             </tbody>
-           </table>
-           <h3 class="category">
-             <a name="Wrappers">Wrappers</a>
-           </h3>
-           <table class="table table-striped">
-             <tbody>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="cdf.html">cdf</a>
-                   </code></b>
-                 </td>
-                 <td>Return the CDF of a univariate distribution evaluated at X.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="icdf.html">icdf</a>
-                   </code></b>
-                 </td>
-                 <td>Return the inverse CDF of a univariate distribution evaluated at P.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="pdf.html">pdf</a>
-                   </code></b>
-                 </td>
-                 <td>Return the PDF of a univariate distribution evaluated at X.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="random.html">random</a>
-                   </code></b>
-                 </td>
-                 <td>Random arrays from a given one-, two-, or three-parameter distribution.</td>
                </tr>
              </tbody>
            </table>

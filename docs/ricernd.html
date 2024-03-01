@@ -71,20 +71,20 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>r</var> = <b>ricernd</b><i> (<var>nu</var>, <var>sigma</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>ricernd</b><i> (<var>nu</var>, <var>sigma</var>, <var>rows</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>ricernd</b><i> (<var>nu</var>, <var>sigma</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>ricernd</b><i> (<var>nu</var>, <var>sigma</var>, [<var>sz</var>])</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>ricernd</b><i> (<var>s</var>, <var>sigma</var>)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>ricernd</b><i> (<var>s</var>, <var>sigma</var>, <var>rows</var>)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>ricernd</b><i> (<var>s</var>, <var>sigma</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>ricernd</b><i> (<var>s</var>, <var>sigma</var>, [<var>sz</var>])</i></dt>
 </dl>
 
 <p> Random arrays from the Rician distribution.
 </p>
 <div class="ms-5">
-<p> <code><var>r</var> = ricernd (<var>nu</var>, <var>sigma</var>)</code> returns an array of random
- numbers chosen from the Rician distribution with shape parameters <var>nu</var>
- and <var>sigma</var>.  The size of <var>r</var> is the common size of <var>nu</var> and
- <var>sigma</var>.  A scalar input functions as a constant matrix of the same size
- as the other inputs.
+<p> <code><var>r</var> = ricernd (<var>s</var>, <var>sigma</var>)</code> returns an array of random
+ numbers chosen from the Rician distribution with noncentrality parameter
+ <var>s</var> and scale parameter <var>sigma</var>.  The size of <var>r</var> is the common
+ size of <var>s</var> and <var>sigma</var>.  A scalar input functions as a constant
+ matrix of the same size as the other inputs.
 </p>
 <p> When called with a single size argument, <code>ricernd</code> returns a square
  matrix with the dimension specified.  When called with more than one scalar

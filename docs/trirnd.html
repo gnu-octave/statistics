@@ -81,10 +81,11 @@
 </p>
 <div class="ms-5">
 <p> <code><var>r</var> = trirnd (<var>sigma</var>)</code> returns an array of random numbers
- chosen from the triangular distribution with parameters <var>a</var>, <var>b</var>, and
- <var>c</var> on the interval [<var>a</var>, <var>b</var>].  The size of <var>r</var> is the
- common size of <var>a</var>, <var>b</var>, and <var>c</var>.  A scalar input functions as a
- constant matrix of the same size as the other inputs.
+ chosen from the triangular distribution with lower limit parameter <var>a</var>,
+ peak location (mode) parameter <var>b</var>, and upper limit parameter <var>c</var>.
+ The size of <var>r</var> is the common size of <var>a</var>, <var>b</var>, and <var>c</var>.  A
+ scalar input functions as a constant matrix of the same size as the other
+ inputs.
 </p>
 <p> When called with a single size argument, <code>trirnd</code> returns a square
  matrix with the dimension specified.  When called with more than one scalar
@@ -92,13 +93,22 @@
  and any further arguments specify additional matrix dimensions.  The size may
  also be specified with a row vector of dimensions, <var>sz</var>.
 </p>
+<p> Note that the order of the parameter input arguments has been changed after
+ statistics version 1.6.3 in order to be MATLAB compatible with the parameters
+ used in the TriangularDistribution probability distribution object.  More
+ specifically, the positions of the parameters <var>b</var> and <var>c</var> have been
+ swapped.  As a result, the naming conventions no longer coinside with those
+ used in Wikipedia, in which <math>b</math> denotes the upper limit and <math>c</math>
+ denotes the mode or peak parameter.
+</p>
 <p> Further information about the triangular distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Triangular_distribution">https://en.wikipedia.org/wiki/Triangular_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="tricdf.html">tricdf</a>, 
   <a href="triinv.html">triinv</a>, 
-  <a href="tripdf.html">tripdf</a>
+  <a href="tripdf.html">tripdf</a>, 
+  <a href="tristat.html">tristat</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/trirnd.m">trirnd</a>

@@ -78,10 +78,18 @@
 </p>
 <div class="ms-5">
 <p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF) of
- the triangular distribution with parameters <var>a</var>, <var>b</var>, and <var>c</var> on
- the interval <code>[<var>a</var>, <var>b</var>]</code>.  The size of <var>x</var> is the common
- size of the input arguments.  A scalar input functions as a constant matrix
- of the same size as the other inputs.
+ the triangular distribution with lower limit parameter <var>a</var>, peak
+ location (mode) parameter <var>b</var>, and upper limit parameter <var>c</var>.  The
+ size of <var>x</var> is the common size of the input arguments.  A scalar input
+ functions as a constant matrix of the same size as the other inputs.
+</p>
+<p> Note that the order of the parameter input arguments has been changed after
+ statistics version 1.6.3 in order to be MATLAB compatible with the parameters
+ used in the TriangularDistribution probability distribution object.  More
+ specifically, the positions of the parameters <var>b</var> and <var>c</var> have been
+ swapped.  As a result, the naming conventions no longer coinside with those
+ used in Wikipedia, in which <math>b</math> denotes the upper limit and <math>c</math>
+ denotes the mode or peak parameter.
 </p>
 <p> Further information about the triangular distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Triangular_distribution">https://en.wikipedia.org/wiki/Triangular_distribution</a>
@@ -89,7 +97,8 @@
 <p> <strong>See also: </strong>
   <a href="tricdf.html">tricdf</a>, 
   <a href="tripdf.html">tripdf</a>, 
-  <a href="trirnd.html">trirnd</a>
+  <a href="trirnd.html">trirnd</a>, 
+  <a href="tristat.html">tristat</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/triinv.m">triinv</a>

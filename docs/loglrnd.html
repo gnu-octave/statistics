@@ -71,40 +71,40 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>r</var> = <b>loglrnd</b><i> (<var>a</var>, <var>b</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>loglrnd</b><i> (<var>a</var>, <var>b</var>, <var>rows</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>loglrnd</b><i> (<var>a</var>, <var>b</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>loglrnd</b><i> (<var>a</var>, <var>b</var>, [<var>sz</var>])</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>loglrnd</b><i> (<var>mu</var>, <var>sigma</var>)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>loglrnd</b><i> (<var>mu</var>, <var>sigma</var>, <var>rows</var>)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>loglrnd</b><i> (<var>mu</var>, <var>sigma</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> <var>r</var> = <b>loglrnd</b><i> (<var>mu</var>, <var>sigma</var>, [<var>sz</var>])</i></dt>
 </dl>
 
-<p> Random arrays from the log-logistic distribution.
+<p> Random arrays from the loglogistic distribution.
 </p>
 <div class="ms-5">
-<p> <code><var>r</var> = loglrnd (<var>a</var>, <var>b</var>)</code> returns an array of random
- numbers chosen from the log-logistic distribution with scale parameter
- <var>a</var> and shape parameter <var>b</var>.  The size of <var>r</var> is the common size
- of <var>a</var> and <var>b</var>.  A scalar input functions as a constant matrix of the
- same size as the other inputs.
+<p> <code><var>r</var> = loglrnd (<var>mu</var>, <var>sigma</var>)</code> returns an array of random
+ numbers chosen from the loglogistic distribution with mean parameter <var>mu</var>
+ and scale parameter <var>sigma</var>.  The size of <var>r</var> is the common size of
+ <var>mu</var> and <var>sigma</var>.  A scalar input functions as a constant matrix of
+ the same size as the other inputs.
 </p>
 <p> Both parameters must be positive reals, otherwise <code>NaN</code> is returned.
 </p>
-<p> When called with a single size argument, <code>loglrnd</code> returns a square
+<p> When called with mu single size argument, <code>loglrnd</code> returns mu square
  matrix with the dimension specified.  When called with more than one scalar
  argument, the first two arguments are taken as the number of rows and columns
  and any further arguments specify additional matrix dimensions.  The size may
- also be specified with a row vector of dimensions, <var>sz</var>.
+ also be specified with mu row vector of dimensions, <var>sz</var>.
 </p>
-<p> Further information about the log-logistic distribution can be found at
+<p> Further information about the loglogistic distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Log-logistic_distribution">https://en.wikipedia.org/wiki/Log-logistic_distribution</a>
 </p>
-<p> MATLAB compatibility: MATLAB uses an alternative parameterization given by
- the pair <math>μ, s</math>, i.e. <var>mu</var> and <var>s</var>, in analogy with the logistic
- distribution.  Their relation to the <var>a</var> and <var>b</var> parameters is given
- below:
+<p> OCTAVE/MATLAB use an alternative parameterization given by the pair
+ <math>μ, σ</math>, i.e. <var>mu</var> and <var>sigma</var>, in analogy with the logistic
+ distribution.  Their relation to the <math>α</math> and <math>b</math> parameters used
+ in Wikipedia are given below:
 </p>
  <ul>
-<li> <code><var>a</var> = exp (<var>mu</var>)</code>
- </li><li> <code><var>b</var> = 1 / <var>s</var></code>
+<li> <code><var>mu</var> = log (<var>a</var>)</code>
+ </li><li> <code><var>sigma</var> = 1 / <var>a</var></code>
  </li></ul>
 
 <p> <strong>See also: </strong>
@@ -112,7 +112,8 @@
   <a href="loglinv.html">loglinv</a>, 
   <a href="loglpdf.html">loglpdf</a>, 
   <a href="loglfit.html">loglfit</a>, 
-  <a href="logllike.html">logllike</a>
+  <a href="logllike.html">logllike</a>, 
+  <a href="loglstat.html">loglstat</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/loglrnd.m">loglrnd</a>

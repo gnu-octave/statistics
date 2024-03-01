@@ -71,21 +71,22 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>paramhat</var> = <b>hnfit</b><i> (<var>x</var>, <var>mu</var>)</i></dt>
 <dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>hnfit</b><i> (<var>x</var>, <var>mu</var>)</i></dt>
 <dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>hnfit</b><i> (<var>x</var>, <var>mu</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>hnfit</b><i> (<var>x</var>, <var>mu</var>, <var>alpha</var>, <var>freq</var>)</i></dt>
 </dl>
 
 <p> Estimate parameters and confidence intervals for the half-normal distribution.
 </p>
 <div class="ms-5">
-<p> <code><var>paramhat</var> = hnfit (<var>x</var>)</code> returns the maximum likelihood
- estimates of the parameters of the half-normal distribution given the data in
- vector <var>x</var>.  <code><var>paramhat</var>(1)</code> is the location parameter,
- <var>mu</var>, and <code><var>paramhat</var>(2)</code> is the scale parameter, <var>sigma</var>.
- Although <var>mu</var> is returned in the estimated <var>paramhat</var>, <code>hnfit</code>
- does not estimate the location parameter <var>mu</var>, and it must be assumed to
- be known.
+<p> <code><var>paramhat</var> = hnfit (<var>x</var>, <var>mu</var>)</code> returns the maximum
+ likelihood estimates of the parameters of the half-normal distribution given
+ the data in vector <var>x</var> and the location parameter <var>mu</var>.
+ <code><var>paramhat</var>(1)</code> is the location parameter, <var>mu</var>, and
+ <code><var>paramhat</var>(2)</code> is the scale parameter, <var>sigma</var>.  Although
+ <var>mu</var> is returned in the estimated <var>paramhat</var>, <code>hnfit</code> does not
+ estimate the location parameter <var>mu</var>, and it must be assumed to be known,
+ given as a fixed parameter in input argument <var>mu</var>.
 </p>
 <p> <code>[<var>paramhat</var>, <var>paramci</var>] = hnfit (<var>x</var>, <var>mu</var>)</code> returns
  the 95% confidence intervals for the estimated scale parameter <var>sigma</var>.
@@ -97,6 +98,12 @@
  scale parameter.  By default, the optional argument <var>alpha</var> is 0.05
  corresponding to 95% confidence intervals.
 </p>
+<p> <code>[&hellip;] = hnfit (<var>params</var>, <var>x</var>, <var>freq</var>)</code> accepts a
+ frequency vector, <var>freq</var>, of the same size as <var>x</var>.  <var>freq</var>
+ must contain non-negative integer frequencies for the corresponding elements
+ in <var>x</var>.  By default, or if left empty,
+ <code><var>freq</var> = ones (size (<var>x</var>))</code>.
+</p>
 <p> The half-normal CDF is only defined for <code><var>x</var> &gt;= <var>mu</var></code>.
 </p>
 <p> Further information about the half-normal distribution can be found at
@@ -107,7 +114,8 @@
   <a href="hninv.html">hninv</a>, 
   <a href="hnpdf.html">hnpdf</a>, 
   <a href="hnrnd.html">hnrnd</a>, 
-  <a href="hnlike.html">hnlike</a>
+  <a href="hnlike.html">hnlike</a>, 
+  <a href="hnstat.html">hnstat</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/hnfit.m">hnfit</a>

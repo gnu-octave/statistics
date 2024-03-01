@@ -73,6 +73,7 @@
 <dl>
 <dt><u>statistics:</u> <var>nlogL</var> = <b>hnlike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
 <dt><u>statistics:</u> [<var>nlogL</var>, <var>acov</var>] = <b>hnlike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>nlogL</var>, <var>acov</var>] = <b>hnlike</b><i> (<var>params</var>, <var>x</var>, <var>freq</var>)</i></dt>
 </dl>
 
 <p> Negative log-likelihood for the half-normal distribution.
@@ -88,6 +89,12 @@
  parameter values in <var>params</var> are the maximum likelihood estimates, the
  diagonal elements of <var>params</var> are their asymptotic variances.
 </p>
+<p> <code>[&hellip;] = hnlike (<var>params</var>, <var>x</var>, <var>freq</var>)</code> accepts a
+ frequency vector, <var>freq</var>, of the same size as <var>x</var>.  <var>freq</var>
+ typically contains integer frequencies for the corresponding elements in
+ <var>x</var>, but it can contain any non-integer non-negative values.  By default,
+ or if left empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
+</p>
 <p> The half-normal CDF is only defined for <code><var>x</var> &gt;= <var>mu</var></code>.
 </p>
 <p> Further information about the half-normal distribution can be found at
@@ -98,7 +105,8 @@
   <a href="hninv.html">hninv</a>, 
   <a href="hnpdf.html">hnpdf</a>, 
   <a href="hnrnd.html">hnrnd</a>, 
-  <a href="hnfit.html">hnfit</a>
+  <a href="hnfit.html">hnfit</a>, 
+  <a href="hnstat.html">hnstat</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/hnlike.m">hnlike</a>

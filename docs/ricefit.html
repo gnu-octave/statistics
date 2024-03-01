@@ -85,8 +85,8 @@
 <p> <code><var>paramhat</var> = ricefit (<var>x</var>)</code> returns the maximum likelihood
  estimates of the parameters of the Rician distribution given the data in
  <var>x</var>.  <code><var>paramhat</var>(1)</code> is the non-centrality (distance)
- parameter, <var>nu</var>, and <code><var>paramhat</var>(2)</code> is the scale parameter,
- <var>sigma</var>.
+ parameter, <math>s</math>, and <code><var>paramhat</var>(2)</code> is the scale parameter,
+ <math>sigma</math>.
 </p>
 <p> <code>[<var>paramhat</var>, <var>paramci</var>] = ricefit (<var>x</var>)</code> returns the 95%
  confidence intervals for the parameter estimates.
@@ -175,28 +175,28 @@
  hold on
 
  ## Estimate their α and β parameters
- nu_sigmaA = ricefit (r(:,1));
- nu_sigmaB = ricefit (r(:,2));
- nu_sigmaC = ricefit (r(:,3));
+ s_sigmaA = ricefit (r(:,1));
+ s_sigmaB = ricefit (r(:,2));
+ s_sigmaC = ricefit (r(:,3));
 
  ## Plot their estimated PDFs
  x = [0.01,0.1:0.2:18];
- y = ricepdf (x, nu_sigmaA(1), nu_sigmaA(2));
+ y = ricepdf (x, s_sigmaA(1), s_sigmaA(2));
  plot (x, y, "-pr");
- y = ricepdf (x, nu_sigmaB(1), nu_sigmaB(2));
+ y = ricepdf (x, s_sigmaB(1), s_sigmaB(2));
  plot (x, y, "-sg");
- y = ricepdf (x, nu_sigmaC(1), nu_sigmaC(2));
+ y = ricepdf (x, s_sigmaC(1), s_sigmaC(2));
  plot (x, y, "-^c");
  hold off
- legend ({"Normalized HIST of sample 1 with k=1 and θ=2", ...
-          "Normalized HIST of sample 2 with k=2 and θ=4", ...
-          "Normalized HIST of sample 3 with k=7.5 and θ=1", ...
-          sprintf("PDF for sample 1 with estimated k=%0.2f and θ=%0.2f", ...
-                  nu_sigmaA(1), nu_sigmaA(2)), ...
-          sprintf("PDF for sample 2 with estimated k=%0.2f and θ=%0.2f", ...
-                  nu_sigmaB(1), nu_sigmaB(2)), ...
-          sprintf("PDF for sample 3 with estimated k=%0.2f and θ=%0.2f", ...
-                  nu_sigmaC(1), nu_sigmaC(2))})
+ legend ({"Normalized HIST of sample 1 with s=1 and σ=2", ...
+          "Normalized HIST of sample 2 with s=2 and σ=4", ...
+          "Normalized HIST of sample 3 with s=7.5 and σ=1", ...
+          sprintf("PDF for sample 1 with estimated s=%0.2f and σ=%0.2f", ...
+                  s_sigmaA(1), s_sigmaA(2)), ...
+          sprintf("PDF for sample 2 with estimated s=%0.2f and σ=%0.2f", ...
+                  s_sigmaB(1), s_sigmaB(2)), ...
+          sprintf("PDF for sample 3 with estimated s=%0.2f and σ=%0.2f", ...
+                  s_sigmaC(1), s_sigmaC(2))})
  title ("Three population samples from different Rician distibutions")
  hold off
 

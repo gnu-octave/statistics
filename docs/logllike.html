@@ -102,17 +102,17 @@
  elements in <var>x</var>, but it can contain any non-integer non-negative values.
  By default, or if left empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
 </p>
-<p> Further information about the log-logistic distribution can be found at
+<p> Further information about the loglogistic distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Log-logistic_distribution">https://en.wikipedia.org/wiki/Log-logistic_distribution</a>
 </p>
-<p> MATLAB compatibility: MATLAB uses an alternative parameterization given by
- the pair <math>μ, s</math>, i.e. <var>mu</var> and <var>s</var>, in analogy with the logistic
- distribution.  Their relation to the <var>a</var> and <var>b</var> parameters is given
- below:
+<p> OCTAVE/MATLAB use an alternative parameterization given by the pair
+ <math>μ, σ</math>, i.e. <var>mu</var> and <var>sigma</var>, in analogy with the logistic
+ distribution.  Their relation to the <math>α</math> and <math>b</math> parameters used
+ in Wikipedia are given below:
 </p>
  <ul>
-<li> <code><var>a</var> = exp (<var>mu</var>)</code>
- </li><li> <code><var>b</var> = 1 / <var>s</var></code>
+<li> <code><var>mu</var> = log (<var>a</var>)</code>
+ </li><li> <code><var>sigma</var> = 1 / <var>a</var></code>
  </li></ul>
 
 <p> <strong>See also: </strong>
@@ -120,7 +120,8 @@
   <a href="loglinv.html">loglinv</a>, 
   <a href="loglpdf.html">loglpdf</a>, 
   <a href="loglrnd.html">loglrnd</a>, 
-  <a href="loglfit.html">loglfit</a>
+  <a href="loglfit.html">loglfit</a>, 
+  <a href="loglstat.html">loglstat</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/logllike.m">logllike</a>

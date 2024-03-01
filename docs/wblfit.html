@@ -79,7 +79,7 @@
 <dt><u>statistics:</u> [&hellip;] = <b>wblfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</i></dt>
 </dl>
 
-<p> Estimate mean and confidence intervals for the Weibull distribution.
+<p> Estimate parameters and confidence intervals for the Weibull distribution.
 </p>
 <div class="ms-5">
 <p> <code><var>muhat</var> = wblfit (<var>x</var>)</code> returns the maximum likelihood
@@ -108,12 +108,14 @@
  elements in <var>x</var>, but it can contain any non-integer non-negative values.
  By default, or if left empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
 </p>
-<p> <code>[&hellip;] = evfit (&hellip;, <var>options</var>)</code> specifies control
- parameters for the iterative algorithm used to compute ML estimates with the
- <code>fminsearch</code> function.  <var>options</var> is a structure with the following
- fields and their default values:
+<p> <code>[&hellip;] = wblfit (&hellip;, <var>options</var>)</code> specifies control
+ parameters for the iterative algorithm used to compute the maximum likelihood
+ estimates.  <var>options</var> is a structure with the following field and its
+ default value:
  </p><ul>
 <li> <code><var>options</var>.Display = &quot;off&quot;</code>
+ </li><li> <code><var>options</var>.MaxFunEvals = 400</code>
+ </li><li> <code><var>options</var>.MaxIter = 200</code>
  </li><li> <code><var>options</var>.TolX = 1e-6</code>
  </li></ul>
 

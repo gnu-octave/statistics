@@ -71,17 +71,17 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>y</var> = <b>ricepdf</b><i> (<var>x</var>, <var>nu</var>, <var>sigma</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>ricepdf</b><i> (<var>x</var>, <var>s</var>, <var>sigma</var>)</i></dt>
 </dl>
 
 <p> Rician probability density function (PDF).
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the probability density function (PDF)
- of the Rician distribution with with non-centrality (distance) parameter
- <var>nu</var> and scale parameter <var>sigma</var>.  The size of <var>y</var> is the common
- size of <var>x</var>, <var>nu</var>, and <var>sigma</var>.  A scalar input functions as a
- constant matrix of the same size as the other inputs.
+ of the Rician distribution with non-centrality (distance) parameter <var>s</var>
+ and scale parameter <var>sigma</var>.  The size of <var>y</var> is the common size of
+ <var>x</var>, <var>s</var>, and <var>sigma</var>.  A scalar input functions as a constant
+ matrix of the same size as the other inputs.
 </p>
 <p> Further information about the Rician distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Rice_distribution">https://en.wikipedia.org/wiki/Rice_distribution</a>
@@ -126,8 +126,8 @@
  grid on
  ylim ([0, 0.65])
  xlim ([0, 8])
- legend ({"ν = 0, σ = 1", "ν = 0.5, σ = 1", "ν = 1, σ = 1", ...
-          "ν = 2, σ = 1", "ν = 4, σ = 1"}, "location", "northeast")
+ legend ({"s = 0, σ = 1", "s = 0.5, σ = 1", "s = 1, σ = 1", ...
+          "s = 2, σ = 1", "s = 4, σ = 1"}, "location", "northeast")
  title ("Rician PDF")
  xlabel ("values in x")
  ylabel ("density")

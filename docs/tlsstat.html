@@ -71,15 +71,15 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] = <b>tlsstat</b><i> (<var>mu</var>, <var>sigma</var>, <var>df</var>)</i></dt>
+<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] = <b>tlsstat</b><i> (<var>mu</var>, <var>sigma</var>, <var>nu</var>)</i></dt>
 </dl>
 
 <p> Compute statistics of the location-scale Student&rsquo;s T distribution.
 </p>
 <div class="ms-5">
-<p> <code>[<var>m</var>, <var>v</var>] = tlsstat (<var>mu</var>, <var>sigma</var>, <var>df</var>)</code> returns
+<p> <code>[<var>m</var>, <var>v</var>] = tlsstat (<var>mu</var>, <var>sigma</var>, <var>nu</var>)</code> returns
  the mean and variance of the location-scale Student&rsquo;s T distribution with
- location parameter <var>mu</var>, scale parameter <var>sigma</var>, and <var>df</var>
+ location parameter <var>mu</var>, scale parameter <var>sigma</var>, and <var>nu</var>
  degrees of freedom.
 </p>
 <p> The size of <var>m</var> (mean) and <var>v</var> (variance) is the common size of the
@@ -94,8 +94,8 @@
   <a href="tlsinv.html">tlsinv</a>, 
   <a href="tlspdf.html">tlspdf</a>, 
   <a href="tlsrnd.html">tlsrnd</a>, 
-tlsfit, 
-tlslike
+  <a href="tlsfit.html">tlsfit</a>, 
+  <a href="tlslike.html">tlslike</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_stat/tlsstat.m">tlsstat</a>

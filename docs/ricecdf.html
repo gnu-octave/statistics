@@ -71,8 +71,8 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>ricecdf</b><i> (<var>x</var>, <var>nu</var>, <var>sigma</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>ricecdf</b><i> (<var>x</var>, <var>nu</var>, <var>sigma</var>, <code>&quot;upper&quot;</code>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>ricecdf</b><i> (<var>x</var>, <var>s</var>, <var>sigma</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>ricecdf</b><i> (<var>x</var>, <var>s</var>, <var>sigma</var>, <code>&quot;upper&quot;</code>)</i></dt>
 </dl>
 
 <p> Rician cumulative distribution function (CDF).
@@ -80,13 +80,13 @@
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the cumulative distribution function
  (CDF) of the Rician distribution with non-centrality (distance) parameter
- <var>nu</var> and scale parameter <var>sigma</var>.  The size of <var>p</var> is the common
- size of <var>x</var>, <var>nu</var>, and <var>sigma</var>.  A scalar input functions as a
+ <var>s</var> and scale parameter <var>sigma</var>.  The size of <var>p</var> is the common
+ size of <var>x</var>, <var>s</var>, and <var>sigma</var>.  A scalar input functions as a
  constant matrix of the same size as the other inputs.
 </p>
-<p> <code><var>p</var> = ricecdf (<var>x</var>, <var>nu</var>, <var>sigma</var>, &quot;upper&quot;)</code> computes
+<p> <code><var>p</var> = ricecdf (<var>x</var>, <var>s</var>, <var>sigma</var>, &quot;upper&quot;)</code> computes
  the upper tail probability of the Rician distribution with parameters
- <var>nu</var> and <var>sigma</var>, at the values in <var>x</var>.
+ <var>s</var> and <var>sigma</var>, at the values in <var>x</var>.
 </p>
 <p> Further information about the Rician distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Rice_distribution">https://en.wikipedia.org/wiki/Rice_distribution</a>
@@ -131,8 +131,8 @@
  grid on
  ylim ([0, 1])
  xlim ([0, 8])
- legend ({"ν = 0, σ = 1", "ν = 0.5, σ = 1", "ν = 1, σ = 1", ...
-          "ν = 2, σ = 1", "ν = 4, σ = 1"}, "location", "southeast")
+ legend ({"s = 0, σ = 1", "s = 0.5, σ = 1", "s = 1, σ = 1", ...
+          "s = 2, σ = 1", "s = 4, σ = 1"}, "location", "southeast")
  title ("Rician CDF")
  xlabel ("values in x")
  ylabel ("probability")

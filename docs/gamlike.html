@@ -82,8 +82,8 @@
 <div class="ms-5">
 <p> <code><var>nlogL</var> = gamlike (<var>params</var>, <var>x</var>)</code> returns the negative
  log likelihood of the data in <var>x</var> corresponding to the Gamma distribution
- with (1) shape parameter <var>k</var> and (2) scale parameter <var>theta</var> given in
- the two-element vector <var>params</var>.
+ with (1) shape parameter <var>a</var> and (2) scale parameter <var>b</var> given in the
+ two-element vector <var>params</var>.
 </p>
 <p> <code>[<var>nlogL</var>, <var>acov</var>] = gamlike (<var>params</var>, <var>x</var>)</code> also
  returns the inverse of Fisher&rsquo;s information matrix, <var>acov</var>.  If the input
@@ -102,14 +102,13 @@
  elements in <var>x</var>, but it can contain any non-integer non-negative values.
  By default, or if left empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
 </p>
-<p> There are two equivalent parameterizations in common use:
- </p><ol>
-<li> With a shape parameter <math>k</math> and a scale parameter <math>θ</math>, which
- is used by <code>gamcdf</code>.
- </li><li> With a shape parameter <math>α = k</math> and an inverse scale parameter
- <math>β = 1 / θ</math>, called a rate parameter.
- </li></ol>
-
+<p> OCTAVE/MATLAB use the alternative parameterization given by the pair
+ <math>α, β</math>, i.e. shape <var>a</var> and scale <var>b</var>.  In Wikipedia, the two
+ common parameterizations use the pairs <math>k, θ</math>, as shape and scale, and
+ <math>α, β</math>, as shape and rate, respectively.  The parameter names <var>a</var>
+ and <var>b</var> used here (for MATLAB compatibility) correspond to the parameter
+ notation <math>k, θ</math> instead of the <math>α, β</math> as reported in Wikipedia.
+</p>
 <p> Further information about the Gamma distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Gamma_distribution">https://en.wikipedia.org/wiki/Gamma_distribution</a>
 </p>

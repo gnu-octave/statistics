@@ -84,8 +84,8 @@
 <div class="ms-5">
 <p> <code><var>mu0</var> = nakafit (<var>x</var>)</code> returns the maximum likelihood
  estimates of the parameters of the Nakagami distribution given the data in
- <var>x</var>.  <code><var>paramhat</var>(1)</code> is the scale parameter, <var>mu</var>, and
- <code><var>paramhat</var>(2)</code> is the shape parameter, <var>omega</var>.
+ <var>x</var>.  <code><var>paramhat</var>(1)</code> is the shape parameter, <var>mu</var>, and
+ <code><var>paramhat</var>(2)</code> is the spread parameter, <var>omega</var>.
 </p>
 <p> <code>[<var>paramhat</var>, <var>paramci</var>] = nakafit (<var>x</var>)</code> returns the 95%
  confidence intervals for the parameter estimates.
@@ -102,11 +102,11 @@
  observed exactly.  By default, or if left empty,
  <code><var>censor</var> = zeros (size (<var>x</var>))</code>.
 </p>
-<p> <code>[&hellip;] = nakafit (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</code>
+<p> <code>[&hellip;] = nakafit (<var>params</var>, <var>x</var>, <var>censor</var>, <var>freq</var>)</code>
  accepts a frequency vector, <var>freq</var>, of the same size as <var>x</var>.
- <var>freq</var> typically contains integer frequencies for the corresponding
- elements in <var>x</var>, but it can contain any non-integer non-negative values.
- By default, or if left empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
+ <var>freq</var> must contain non-negative integer frequencies for the
+ corresponding elements in <var>x</var>.  By default, or if left empty,
+ <code><var>freq</var> = ones (size (<var>x</var>))</code>.
 </p>
 <p> <code>[&hellip;] = nakafit (&hellip;, <var>options</var>)</code> specifies control
  parameters for the iterative algorithm used to compute ML estimates with the
@@ -127,7 +127,8 @@
   <a href="nakainv.html">nakainv</a>, 
   <a href="nakapdf.html">nakapdf</a>, 
   <a href="nakarnd.html">nakarnd</a>, 
-  <a href="nakalike.html">nakalike</a>
+  <a href="nakalike.html">nakalike</a>, 
+  <a href="nakastat.html">nakastat</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/nakafit.m">nakafit</a>

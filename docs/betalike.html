@@ -90,6 +90,12 @@
  parameter values in <var>params</var> are the maximum likelihood estimates, the
  diagonal elements of <var>params</var> are their asymptotic variances.
 </p>
+<p> <code>[&hellip;] = betalike (<var>params</var>, <var>x</var>, <var>freq</var>)</code> accepts a
+ frequency vector, <var>freq</var>, of the same size as <var>x</var>.  <var>freq</var>
+ must contain non-negative integer frequencies for the corresponding elements
+ in <var>x</var>.  By default, or if left empty,
+ <code><var>freq</var> = ones (size (<var>x</var>))</code>.
+</p>
 <p> The Beta distribution is defined on the open interval <math>(0,1)</math>.  However,
  <code>betafit</code> can also compute the unbounded beta likelihood function for
  data that include exact zeros or ones.  In such cases, zeros and ones are

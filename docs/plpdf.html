@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: plpdf</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+    <style>
+    var {
+      font-style: italics;
+      font-weight: bold;
+    }
+    td {
+      vertical-align: top;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Distribution Functions">
+                    <i class="fas fa-list-alt"></i>
+                    Distribution Functions
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Function&nbsp;Reference: <b><code>plpdf</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> <var>y</var> = <b>plpdf</b><i> (<var>data</var>, <var>x</var>, <var>Fx</var>)</i></dt>
+</dl>
+
+<p> Piecewise linear probability density function (PDF).
+</p>
+<div class="ms-5">
+<p> For each element of <var>data</var>, compute the probability density function
+ (PDF) of the piecewise linear distribution with a vector of <var>x</var> values at
+ which the CDF changes slope and a vector of CDF values <var>Fx</var> that
+ correspond to each value in <var>x</var>.  Both <var>x</var> and <var>Fx</var> must be
+ vectors of the same size and at least 2-elements long.  The size of <var>p</var>
+ is the same as <var>data</var>.
+</p>
+<p> Further information about the piecewise linear distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Piecewise_linear_function">https://en.wikipedia.org/wiki/Piecewise_linear_function</a>
+</p>
+<p> <strong>See also: </strong>
+  <a href="plcdf.html">plcdf</a>, 
+  <a href="plinv.html">plinv</a>, 
+  <a href="plrnd.html">plrnd</a>, 
+  <a href="plstat.html">plstat</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/plpdf.m">plpdf</a>
+</div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various PDFs from the Piecewise linear distribution
+ data = 0:0.01:10;
+ x1 = [0, 1, 3, 4, 7, 10];
+ Fx1 = [0, 0.2, 0.5, 0.6, 0.7, 1];
+ x2 = [0, 2, 5, 6, 7, 8];
+ Fx2 = [0, 0.1, 0.3, 0.6, 0.9, 1];
+ y1 = plpdf (data, x1, Fx1);
+ y2 = plpdf (data, x2, Fx2);
+ plot (data, y1, "-b", data, y2, "g")
+ grid on
+ ylim ([0, 0.6])
+ xlim ([0, 10])
+ legend ({"x1, Fx1", "x2, Fx2"}, "location", "northeast")
+ title ("Piecewise linear CDF")
+ xlabel ("values in data")
+ ylabel ("density")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/plpdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

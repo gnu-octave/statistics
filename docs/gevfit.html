@@ -74,16 +74,15 @@
 <dt><u>statistics:</u> <var>paramhat</var> = <b>gevfit</b><i> (<var>x</var>)</i></dt>
 <dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>gevfit</b><i> (<var>x</var>)</i></dt>
 <dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>gevfit</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>gevfit</b><i> (<var>x</var>, <var>alpha</var>, <var>options</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>gevfit</b><i> (<var>x</var>, <var>alpha</var>, <var>freq</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>gevfit</b><i> (<var>x</var>, <var>alpha</var>, <var>options</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>gevfit</b><i> (<var>x</var>, <var>alpha</var>, <var>freq</var>, <var>options</var>)</i></dt>
 </dl>
 
 <p> Estimate parameters and confidence intervals for the generalized extreme
  value (GEV) distribution.
 </p>
 <div class="ms-5">
- <a name="Arguments"></a>
-<h3 class="subheading">Arguments</h3>
-
 <p> <code><var>paramhat</var> = gevfit (<var>x</var>)</code> returns the maximum likelihood
  estimates of the parameters of the GEV distribution given the data in
  <var>x</var>.  <code><var>paramhat</var>(1)</code> is the shape parameter, <var>k</var>, and
@@ -99,14 +98,20 @@
  0.05 corresponding to 95% confidence intervals.  Pass in <code>[]</code> for
  <var>alpha</var> to use the default values.
 </p>
-<p> <code>[&hellip;] = gevfit (&hellip;, <var>options</var>)</code> specifies control
- parameters for the iterative algorithm used to compute the maximum likelihood
- estimates.  <var>options</var> is a structure with the following field and its
- default value:
+<p> <code>[&hellip;] = gevfit (<var>params</var>, <var>x</var>, <var>freq</var>)</code> accepts a
+ frequency vector, <var>freq</var>, of the same size as <var>x</var>.  <var>freq</var>
+ must contain non-negative integer frequencies for the corresponding elements
+ in <var>x</var>.  By default, or if left empty,
+ <code><var>freq</var> = ones (size (<var>x</var>))</code>.
+</p>
+<p> <code>[<var>paramhat</var>, <var>paramci</var>] = gevfit (<var>x</var>, <var>alpha</var>,
+ <var>options</var>)</code> specifies control parameters for the iterative algorithm used
+ to compute ML estimates with the <code>fminsearch</code> function.  <var>options</var>
+ is a structure with the following fields and their default values:
  </p><ul>
 <li> <code><var>options</var>.Display = &quot;off&quot;</code>
- </li><li> <code><var>options</var>.MaxFunEvals = 1000</code>
- </li><li> <code><var>options</var>.MaxIter = 500</code>
+ </li><li> <code><var>options</var>.MaxFunEvals = 400</code>
+ </li><li> <code><var>options</var>.MaxIter = 200</code>
  </li><li> <code><var>options</var>.TolX = 1e-6</code>
  </li></ul>
 
@@ -128,15 +133,6 @@
  found at
  <a href="https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution">https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution</a>
 </p>
- <a name="References"></a>
-<h3 class="subheading">References</h3>
- <ol>
-<li>
- Rolf-Dieter Reiss and Michael Thomas. <cite>Statistical Analysis of Extreme
- Values with Applications to Insurance, Finance, Hydrology and Other Fields</cite>.
- Chapter 1, pages 16-17, Springer, 2007.
- </li></ol>
-
 <p> <strong>See also: </strong>
   <a href="gevcdf.html">gevcdf</a>, 
   <a href="gevinv.html">gevinv</a>, 
@@ -192,11 +188,11 @@
  plot (x, y, "-sg");
  ylim ([0, 0.7])
  xlim ([-7, 5])
- legend ({"Normalized HIST of sample 1 with ξ=-0.5, σ=1, μ=2", ...
-          "Normalized HIST of sample 2 with ξ=0, σ=1, μ=-4",
-     sprintf("PDF for sample 1 with estimated ξ=%0.2f, σ=%0.2f, μ=%0.2f", ...
+ legend ({"Normalized HIST of sample 1 with k=-0.5, σ=1, μ=2", ...
+          "Normalized HIST of sample 2 with k=0, σ=1, μ=-4",
+     sprintf("PDF for sample 1 with estimated k=%0.2f, σ=%0.2f, μ=%0.2f", ...
                  k_sigma_muA(1), k_sigma_muA(2), k_sigma_muA(3)), ...
-     sprintf("PDF for sample 3 with estimated ξ=%0.2f, σ=%0.2f, μ=%0.2f", ...
+     sprintf("PDF for sample 3 with estimated k=%0.2f, σ=%0.2f, μ=%0.2f", ...
                  k_sigma_muB(1), k_sigma_muB(2), k_sigma_muB(3))})
  title ("Two population samples from different exponential distibutions")
  hold off

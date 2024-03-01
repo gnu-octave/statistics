@@ -71,31 +71,30 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] = <b>gpstat</b><i> (<var>k</var>, <var>sigma</var>, <var>mu</var>)</i></dt>
+<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] = <b>gpstat</b><i> (<var>k</var>, <var>sigma</var>, <var>theta</var>)</i></dt>
 </dl>
 
 <p> Compute statistics of the generalized Pareto distribution.
 </p>
 <div class="ms-5">
-<p> <code>[<var>m</var>, <var>v</var>] = gpstat (<var>k</var>, <var>sigma</var>, <var>mu</var>)</code>
+<p> <code>[<var>m</var>, <var>v</var>] = gpstat (<var>k</var>, <var>sigma</var>, <var>theta</var>)</code>
  returns the mean and variance of the generalized Pareto distribution with
  shape parameter <var>k</var>, scale parameter <var>sigma</var>, and location parameter
- <var>mu</var>.
+ <var>theta</var>.
 </p>
 <p> The size of <var>m</var> (mean) and <var>v</var> (variance) is the common size of the
  input arguments.  A scalar input functions as a constant matrix of the
  same size as the other inputs.
 </p>
-<p> When <var>k</var> = 0 and <var>mu</var> = 0, the generalized Pareto
- distribution is equivalent to the exponential distribution.  When
- <code><var>k</var> &gt; 0</code> and <code><var>mu</var> = <var>sigma</var> / <var>k</var></code>,
- the generalized Pareto distribution is equivalent to the Pareto distribution.
- The mean of the generalized Pareto distribution is not finite when
- <code><var>k</var> &gt;= 1</code>, and the variance is not finite when
- <code><var>k</var> &gt;= 1/2</code>.  When <code><var>k</var> &gt;= 0</code>, the generalized
- Pareto distribution has positive density for <code><var>x</var> &gt; <var>mu</var></code>,
- or, when <code><var>k</var> &lt; 0</code>, for
- <code>0 &lt;= (<var>x</var> -  <var>mu</var>) / <var>sigma</var> &lt;= -1 / <var>k</var></code>.
+<p> When <var>k</var> = 0 and <var>theta</var> = 0, the generalized Pareto distribution is
+ equivalent to the exponential distribution.  When <code><var>k</var> &gt; 0</code> and
+ <code><var>theta</var> = <var>sigma</var> / <var>k</var></code>, the generalized Pareto
+ distribution is equivalent to the Pareto distribution.  The mean of the
+ generalized Pareto distribution is not finite when <code><var>k</var> &gt;= 1</code>, and
+ the variance is not finite when <code><var>k</var> &gt;= 1/2</code>.  When
+ <code><var>k</var> &gt;= 0</code>, the generalized Pareto distribution has positive density
+ for <code><var>x</var> &gt; <var>theta</var></code>, or, when <code><var>k</var> &lt; 0</code>, for
+ <code>0 &lt;= (<var>x</var> -  <var>theta</var>) / <var>sigma</var> &lt;= -1 / <var>k</var></code>.
 </p>
 <p> Further information about the generalized Pareto distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Generalized_Pareto_distribution">https://en.wikipedia.org/wiki/Generalized_Pareto_distribution</a>

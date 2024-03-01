@@ -71,8 +71,8 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>logicdf</b><i> (<var>x</var>, <var>mu</var>, <var>s</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>logicdf</b><i> (<var>x</var>, <var>mu</var>, <var>s</var>, <code>&quot;upper&quot;</code>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>logicdf</b><i> (<var>x</var>, <var>mu</var>, <var>sigma</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>logicdf</b><i> (<var>x</var>, <var>mu</var>, <var>sigma</var>, <code>&quot;upper&quot;</code>)</i></dt>
 </dl>
 
 <p> Logistic cumulative distribution function (CDF).
@@ -80,16 +80,16 @@
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the cumulative distribution function
  (CDF) of the logistic distribution with location parameter <var>mu</var> and scale
- parameter <var>s</var>.  The size of <var>p</var> is the common size of <var>x</var>,
- <var>mu</var>, and <var>s</var>.  A scalar input functions as a constant matrix of
+ parameter <var>sigma</var>.  The size of <var>p</var> is the common size of <var>x</var>,
+ <var>mu</var>, and <var>sigma</var>.  A scalar input functions as a constant matrix of
  the same size as the other inputs.
 </p>
-<p> Both parameters must be reals and <code><var>s</var> &gt; 0</code>.
- For <code><var>s</var> &lt;= 0</code>, <code>NaN</code> is returned.
+<p> Both parameters must be reals and <code><var>sigma</var> &gt; 0</code>.
+ For <code><var>sigma</var> &lt;= 0</code>, <code>NaN</code> is returned.
 </p>
-<p> <code><var>p</var> = logicdf (<var>x</var>, <var>mu</var>, <var>s</var>, &quot;upper&quot;)</code> computes
+<p> <code><var>p</var> = logicdf (<var>x</var>, <var>mu</var>, <var>sigma</var>, &quot;upper&quot;)</code> computes
  the upper tail probability of the logistic distribution with parameters
- <var>mu</var> and <var>s</var>, at the values in <var>x</var>.
+ <var>mu</var> and <var>sigma</var>, at the values in <var>x</var>.
 </p>
 <p> Further information about the logistic distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Logistic_distribution">https://en.wikipedia.org/wiki/Logistic_distribution</a>
@@ -100,7 +100,7 @@
   <a href="logirnd.html">logirnd</a>, 
   <a href="logifit.html">logifit</a>, 
   <a href="logilike.html">logilike</a>, 
-logistat
+  <a href="logistat.html">logistat</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/logicdf.m">logicdf</a>
@@ -132,8 +132,8 @@ logistat
  p5 = logicdf (x, 2, 1);
  plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c", x, p5, "-m")
  grid on
- legend ({"μ = 5, s = 2", "μ = 9, s = 3", "μ = 9, s = 4", ...
-          "μ = 6, s = 2", "μ = 2, s = 1"}, "location", "southeast")
+ legend ({"μ = 5, σ = 2", "μ = 9, σ = 3", "μ = 9, σ = 4", ...
+          "μ = 6, σ = 2", "μ = 2, σ = 1"}, "location", "southeast")
  title ("Logistic CDF")
  xlabel ("values in x")
  ylabel ("probability")

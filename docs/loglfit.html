@@ -84,8 +84,8 @@
 <div class="ms-5">
 <p> <code><var>mu0</var> = loglfit (<var>x</var>)</code> returns the maximum likelihood
  estimates of the parameters of the log-logistic distribution given the data
- in <var>x</var>.  <code><var>paramhat</var>(1)</code> is the scale parameter, <var>a</var>, and
- <code><var>paramhat</var>(2)</code> is the shape parameter, <var>b</var>.
+ in <var>x</var>.  <code><var>paramhat</var>(1)</code> is the mean parameter, <var>mu</var>, and
+ <code><var>paramhat</var>(2)</code> is the scale parameter, <var>sigma</var>.
 </p>
 <p> <code>[<var>paramhat</var>, <var>paramci</var>] = loglfit (<var>x</var>)</code> returns the 95%
  confidence intervals for the parameter estimates.
@@ -119,17 +119,17 @@
  </li><li> <code><var>options</var>.TolX = 1e-6</code>
  </li></ul>
 
-<p> Further information about the log-logistic distribution can be found at
+<p> Further information about the loglogistic distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Log-logistic_distribution">https://en.wikipedia.org/wiki/Log-logistic_distribution</a>
 </p>
-<p> MATLAB compatibility: MATLAB uses an alternative parameterization given by
- the pair <math>μ, s</math>, i.e. <var>mu</var> and <var>s</var>, in analogy with the logistic
- distribution.  Their relation to the <var>a</var> and <var>b</var> parameters is given
- below:
+<p> OCTAVE/MATLAB use an alternative parameterization given by the pair
+ <math>μ, σ</math>, i.e. <var>mu</var> and <var>sigma</var>, in analogy with the logistic
+ distribution.  Their relation to the <math>α</math> and <math>b</math> parameters used
+ in Wikipedia are given below:
 </p>
  <ul>
-<li> <code><var>a</var> = exp (<var>mu</var>)</code>
- </li><li> <code><var>b</var> = 1 / <var>s</var></code>
+<li> <code><var>mu</var> = log (<var>a</var>)</code>
+ </li><li> <code><var>sigma</var> = 1 / <var>a</var></code>
  </li></ul>
 
 <p> <strong>See also: </strong>
@@ -137,7 +137,8 @@
   <a href="loglinv.html">loglinv</a>, 
   <a href="loglpdf.html">loglpdf</a>, 
   <a href="loglrnd.html">loglrnd</a>, 
-  <a href="logllike.html">logllike</a>
+  <a href="logllike.html">logllike</a>, 
+  <a href="loglstat.html">loglstat</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/loglfit.m">loglfit</a>
@@ -162,11 +163,11 @@
 
  ## Sample 3 populations from different log-logistic distibutions
  rand ("seed", 5)  # for reproducibility
- r1 = loglrnd (1, 1, 2000, 1);
+ r1 = loglrnd (0, 1, 2000, 1);
  rand ("seed", 2)   # for reproducibility
- r2 = loglrnd (1, 2, 2000, 1);
+ r2 = loglrnd (0, 0.5, 2000, 1);
  rand ("seed", 7)   # for reproducibility
- r3 = loglrnd (1, 8, 2000, 1);
+ r3 = loglrnd (0, 0.125, 2000, 1);
  r = [r1, r2, r3];
 
  ## Plot them normalized and fix their colors

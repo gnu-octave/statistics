@@ -83,7 +83,7 @@
 <p> <code><var>nlogL</var> = logilike (<var>params</var>, <var>x</var>)</code> returns the negative
  log likelihood of the data in <var>x</var> corresponding to the logistic
  distribution with (1) location parameter <var>mu</var> and (2) scale parameter
- <var>s</var> given in the two-element vector <var>params</var>.
+ <var>sigma</var> given in the two-element vector <var>params</var>.
 </p>
 <p> <code>[<var>nlogL</var>, <var>acov</var>] = logilike (<var>params</var>, <var>x</var>)</code> also
  returns the inverse of Fisher&rsquo;s information matrix, <var>acov</var>.  If the input
@@ -110,7 +110,8 @@
   <a href="logiinv.html">logiinv</a>, 
   <a href="logipdf.html">logipdf</a>, 
   <a href="logirnd.html">logirnd</a>, 
-  <a href="logifit.html">logifit</a>
+  <a href="logifit.html">logifit</a>, 
+  <a href="logistat.html">logistat</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/logilike.m">logilike</a>

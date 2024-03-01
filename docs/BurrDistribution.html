@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: BurrDistribution</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+    <style>
+    var {
+      font-style: italics;
+      font-weight: bold;
+    }
+    td {
+      vertical-align: top;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Distribution Classes">
+                    <i class="fas fa-list-alt"></i>
+                    Distribution Classes
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="card rounded">
+        <div class="card-header card-header-mod">
+          <div class="row d-flex flex-wrap align-items-center">
+            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+              <h3 class="d-inline-block mr-2">
+              Class&nbsp;Definition: <b><code>BurrDistribution</code></b>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+<dl>
+<dt><u>statistics:</u> BurrDistribution</dt>
+</dl>
+
+<p> Burr probability distribution object.
+</p>
+<div class="ms-5">
+<p> A <code>BurrDistribution</code> object consists of parameters, a model
+ description, and sample data for a Burr probability distribution.
+</p>
+<p> The Burr distribution uses the following parameters.
+</p>
+ <table>
+<thead><tr><th width="25%"><var>Parameter</var></th><th width="48%"><var>Description</var></th><th width="27%"><var>Support</var></th></tr></thead>
+<tr><td width="25%"><code>alpha</code></td><td width="48%">Shape</td><td width="27%"><math>-Inf &lt; alpha &lt; Inf</math></td></tr>
+<tr><td width="25%"><code>c</code></td><td width="48%">Scale</td><td width="27%"><math>c &gt; 0</math></td></tr>
+<tr><td width="25%"><code>k</code></td><td width="48%">Location</td><td width="27%"><math>-Inf &lt; k &lt; Inf</math></td></tr>
+</table>
+
+<p> There are several ways to create a <code>BurrDistribution</code> object.
+</p>
+ <ul>
+<li> Fit a distribution to data using the <code>fitdist</code> function.
+ </li><li> Create a distribution with specified parameter values using the
+ <code>makedist</code> function.
+ </li><li> Use the constructor <code>BurrDistribution (<var>alpha</var>, <var>c</var>)</code>
+ to create a generalized extreme value distribution
+ with specified parameter values.
+ </li><li> Use the static method <code>BurrDistribution.fit
+ (<var>x</var>, <var>alpha</var>, <var>freq</var>)</code> to a distribution to data <var>x</var>.
+ </li></ul>
+
+<p> It is highly recommended to use <code>fitdist</code> and <code>makedist</code>
+ functions to create probability distribution objects, instead of the
+ constructor and the aforementioned static method.
+</p>
+<p> A <code>BurrDistribution</code> object contains the following
+ properties, which can be accessed using dot notation.
+</p>
+ <table>
+<tr><td width="25%"><code>DistributionName</code></td><td width="25%"><code>DistributionCode</code></td><td width="25%"><code>NumParameters</code></td><td width="25%"><code>ParameterNames</code></td></tr>
+<tr><td width="25%"><code>ParameterDescription</code></td><td width="25%"><code>ParameterValues</code></td><td width="25%"><code>ParameterValues</code></td><td width="25%"><code>ParameterCI</code></td></tr>
+<tr><td width="25%"><code>ParameterIsFixed</code></td><td width="25%"><code>Truncation</code></td><td width="25%"><code>IsTruncated</code></td><td width="25%"><code>InputData</code></td></tr>
+</table>
+
+<p> A <code>BurrDistribution</code> object contains the following
+ methods:
+ <code>cdf</code>, <code>icdf</code>, <code>iqr</code>, <code>mean</code>, <code>median</code>,
+ <code>negloglik</code>, <code>paramci</code>, <code>pdf</code>, <code>plot</code>, <code>proflik</code>,
+ <code>random</code>, <code>std</code>, <code>truncate</code>, <code>var</code>.
+</p>
+<p> Further information about the Burr distribution can be found at
+ <a href="https://en.wikipedia.org/wiki/Burr_distribution">https://en.wikipedia.org/wiki/Burr_distribution</a>
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitdist.html">fitdist</a>, 
+  <a href="makedist.html">makedist</a>, 
+  <a href="burrcdf.html">burrcdf</a>, 
+  <a href="burrinv.html">burrinv</a>, 
+  <a href="burrpdf.html">burrpdf</a>, 
+  <a href="burrrnd.html">burrrnd</a>, 
+  <a href="burrfit.html">burrfit</a>, 
+  <a href="burrlike.html">burrlike</a>, 
+  <a href="burrstat.html">burrstat</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_obj/BurrDistribution.m">BurrDistribution</a>
+</div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Method: <b><code>cdf</code></b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+<dl>
+<dt><u>BurrDistribution:</u> <var>p</var> = <b>icdf</b><i> (<var>pd</var>, <var>p</var>)</i></dt>
+</dl>
+
+<p> Compute the cumulative distribution function (CDF).
+</p>
+<div class="ms-5">
+<p> <code><var>p</var> = icdf (<var>pd</var>, <var>x</var>)</code> computes the quantile (the
+ inverse of the CDF) of the probability distribution object, <var>pd</var>,
+ evaluated at the values in <var>x</var>.
+</p>
+
+</div>
+
+            </div>
+          </div>
+        </div>
+
+
+
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Method: <b><code>icdf</code></b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+<dl>
+<dt><u>BurrDistribution:</u> <var>p</var> = <b>icdf</b><i> (<var>pd</var>, <var>p</var>)</i></dt>
+</dl>
+
+<p> Compute the cumulative distribution function (CDF).
+</p>
+<div class="ms-5">
+<p> <code><var>p</var> = icdf (<var>pd</var>, <var>x</var>)</code> computes the quantile (the
+ inverse of the CDF) of the probability distribution object, <var>pd</var>,
+ evaluated at the values in <var>x</var>.
+</p>
+
+</div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Method: <b><code>iqr</code></b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+<dl>
+<dt><u>BurrDistribution:</u> <var>r</var> = <b>iqr</b><i> (<var>pd</var>)</i></dt>
+</dl>
+
+<p> Compute the interquartile range of a probability distribution.
+</p>
+<div class="ms-5">
+<p> <code><var>r</var> = iqr (<var>pd</var>)</code> computes the interquartile range of the
+ probability distribution object, <var>pd</var>.
+</p>
+
+</div>
+
+            </div>
+          </div>
+        </div>
+
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Method: <b><code>mean</code></b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+<dl>
+<dt><u>BurrDistribution:</u> <var>m</var> = <b>mean</b><i> (<var>pd</var>)</i></dt>
+</dl>
+
+<p> Compute the mean of a probability distribution.
+</p>
+<div class="ms-5">
+<p> <code><var>m</var> = mean (<var>pd</var>)</code> computes the mean of the probability
+ distribution object, <var>pd</var>.
+</p>
+
+</div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Method: <b><code>median</code></b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+<dl>
+<dt><u>BurrDistribution:</u> <var>m</var> = <b>median</b><i> (<var>pd</var>)</i></dt>
+</dl>
+
+<p> Compute the median of a probability distribution.
+</p>
+<div class="ms-5">
+<p> <code><var>m</var> = median (<var>pd</var>)</code> computes the median of the probability
+ distribution object, <var>pd</var>.
+</p>
+
+</div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Method: <b><code>negloglik</code></b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+<dl>
+<dt><u>BurrDistribution:</u> <var>nlogL</var> = <b>negloglik</b><i> (<var>pd</var>)</i></dt>
+</dl>
+
+<p> Compute the negative loglikelihood of a probability distribution.
+</p>
+<div class="ms-5">
+<p> <code><var>m</var> = negloglik (<var>pd</var>)</code> computes the negative loglikelihood
+ of the probability distribution object, <var>pd</var>.
+</p>
+
+</div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Method: <b><code>paramci</code></b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+<dl>
+<dt><u>BurrDistribution:</u> <var>ci</var> = <b>paramci</b><i> (<var>pd</var>)</i></dt>
+<dt><u>BurrDistribution:</u> <var>ci</var> = <b>paramci</b><i> (<var>pd</var>, <var>Name</var>, <var>Value</var>)</i></dt>
+</dl>
+
+<p> Compute the confidence intervals for probability distribution parameters.
+</p>
+<div class="ms-5">
+<p> <code><var>ci</var> = paramci (<var>pd</var>)</code> computes the lower and upper
+ boundaries of the 95% confidence interval for each parameter of the
+ probability distribution object, <var>pd</var>.
+</p>
+<p> <code><var>ci</var> = paramci (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code> computes the
+ confidence intervals with additional options specified specified by
+ <code>Name-Value</code> pair arguments listed below.
+</p>
+ <table>
+<thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
+<tr><td width="18%"><code>&quot;Alpha&quot;</code></td><td width="2%"></td><td width="80%">A scalar value in the range <math>(0,1)</math>
+ specifying the significance level for the confidence interval.  The
+ default value 0.05 corresponds to a 95% confidence interval.</td></tr>
+<tr><td width="18%"><code>&quot;Parameter&quot;</code></td><td width="2%"></td><td width="80%">A character vector or a cell array of
+ character vectors specifying the parameter names for which to compute
+ confidence intervals.  By default, <code>paramci</code> computes confidence
+ intervals for all distribution parameters.</td></tr>
+</table>
+
+<p> <code>paramci</code> is meaningful only when <var>pd</var> is fitted to data,
+ otherwise an empty array, <code>[]</code>, is returned.
+</p>
+
+</div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Method: <b><code>pdf</code></b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+<dl>
+<dt><u>BurrDistribution:</u> <var>y</var> = <b>pdf</b><i> (<var>pd</var>, <var>x</var>)</i></dt>
+</dl>
+
+<p> Compute the probability distribution function (PDF).
+</p>
+<div class="ms-5">
+<p> <code><var>y</var> = pdf (<var>pd</var>, <var>x</var>)</code> computes the PDF of the
+ probability distribution object, <var>pd</var>, evaluated at the values in
+ <var>x</var>.
+</p>
+
+</div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Method: <b><code>plot</code></b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+<dl>
+<dt><u>BurrDistribution:</u> <b>plot</b><i> (<var>pd</var>)</i></dt>
+<dt><u>BurrDistribution:</u> <b>plot</b><i> (<var>pd</var>, <var>Name</var>, <var>Value</var>)</i></dt>
+<dt><u>BurrDistribution:</u> <var>h</var> = <b>plot</b><i> (&hellip;)</i></dt>
+</dl>
+
+<p> Plot a probability distribution object.
+</p>
+<div class="ms-5">
+<p> <code>plot (<var>pd</var></code> plots a probability density function (PDF) of the
+ probability distribution object <var>pd</var>.  If <var>pd</var> contains data,
+ which have been fitted by <code>fitdist</code>, the PDF is superimposed over a
+ histogram of the data.
+</p>
+<p> <code>plot (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code> specifies additional
+ options with the <code>Name-Value</code> pair arguments listed below.
+</p>
+ <table>
+<thead><tr><th width="18%"></th><th width="2%"><var>Name</var></th><th width="80%"><var>Value</var></th></tr></thead>
+<tr><td width="18%"><code>&quot;PlotType&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the plot
+ type.  <code>&quot;pdf&quot;</code> plots the probability density function (PDF).  When
+ <var>pd</var> is fit to data, the PDF is superimposed on a histogram of the
+ data.  <code>&quot;cdf&quot;</code> plots the cumulative density function (CDF).  When
+ <var>pd</var> is fit to data, the CDF is superimposed over an empirical CDF.
+ <code>&quot;probability&quot;</code> plots a probability plot using a CDF of the data
+ and a CDF of the fitted probability distribution.  This option is
+ available only when <var>pd</var> is fitted to data.</td></tr>
+<tr><td width="18%"><code>&quot;Discrete&quot;</code></td><td width="2%"></td><td width="80%">A logical scalar to specify whether to
+ plot the PDF or CDF of a discrete distribution object as a line plot or a
+ stem plot, by specifying <code>false</code> or <code>true</code>, respectively.  By
+ default, it is <code>true</code> for discrete distributions and <code>false</code>
+ for continuous distributions.  When <var>pd</var> is a continuous distribution
+ object, option is ignored.</td></tr>
+<tr><td width="18%"><code>&quot;Parent&quot;</code></td><td width="2%"></td><td width="80%">An axes graphics object for plot.  If
+ not specified, the <code>plot</code> function plots into the current axes or
+ creates a new axes object if one does not exist.</td></tr>
+</table>
+
+<p> <code><var>h</var> = plot (&hellip;)</code> returns a graphics handle to the plotted
+ objects.
+</p>
+
+</div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Method: <b><code>proflik</code></b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+<dl>
+<dt><u>BurrDistribution:</u> [<var>nlogL</var>, <var>param</var>] = <b>proflik</b><i> (<var>pd</var>, <var>pnum</var>)</i></dt>
+<dt><u>BurrDistribution:</u> [<var>nlogL</var>, <var>param</var>] = <b>proflik</b><i> (<var>pd</var>, <var>pnum</var>, <code>&quot;Display&quot;</code>, <var>display</var>)</i></dt>
+<dt><u>BurrDistribution:</u> [<var>nlogL</var>, <var>param</var>] = <b>proflik</b><i> (<var>pd</var>, <var>pnum</var>, <var>setparam</var>)</i></dt>
+<dt><u>BurrDistribution:</u> [<var>nlogL</var>, <var>param</var>] = <b>proflik</b><i> (<var>pd</var>, <var>pnum</var>, <var>setparam</var>, <code>&quot;Display&quot;</code>, <var>display</var>)</i></dt>
+</dl>
+
+<p> Profile likelihood function for a probability distribution object.
+</p>
+<div class="ms-5">
+<p> <code>[<var>nlogL</var>, <var>param</var>] = proflik (<var>pd</var>, <var>pnum</var>)</code>
+ returns a vector <var>nlogL</var> of negative loglikelihood values and a
+ vector <var>param</var> of corresponding parameter values for the parameter in
+ the position indicated by <var>pnum</var>.  By default, <code>proflik</code> uses
+ the lower and upper bounds of the 95% confidence interval and computes
+ 100 equispaced values for the selected parameter.  <var>pd</var> must be
+ fitted to data.
+</p>
+<p> <code>[<var>nlogL</var>, <var>param</var>] = proflik (<var>pd</var>, <var>pnum</var>,
+ <code>&quot;Display&quot;</code>, <code>&quot;on&quot;</code>)</code> also plots the profile likelihood
+ against the default range of the selected parameter.
+</p>
+<p> <code>[<var>nlogL</var>, <var>param</var>] = proflik (<var>pd</var>, <var>pnum</var>,
+ <var>setparam</var>)</code> defines a user-defined range of the selected parameter.
+</p>
+<p> <code>[<var>nlogL</var>, <var>param</var>] = proflik (<var>pd</var>, <var>pnum</var>,
+ <var>setparam</var>, <code>&quot;Display&quot;</code>, <code>&quot;on&quot;</code>)</code> also plots the profile
+ likelihood against the user-defined range of the selected parameter.
+</p>
+<p> For the generalized extreme value distribution, <code><var>pnum</var> = 1</code>
+ selects the parameter <code>alpha</code>, <code><var>pnum</var> = 2</code> selects the
+ parameter <var>c</var>, and <code><var>pnum</var> = 3</code> selects the parameter
+ <var>k</var>.
+</p>
+<p> When opted to display the profile likelihood plot, <code>proflik</code> also
+ plots the baseline loglikelihood computed at the lower bound of the 95%
+ confidence interval and estimated maximum likelihood.  The latter might
+ not be observable if it is outside of the used-defined range of parameter
+ values.
+</p>
+
+</div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Method: <b><code>random</code></b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+<dl>
+<dt><u>BurrDistribution:</u> <var>y</var> = <b>random</b><i> (<var>pd</var>)</i></dt>
+<dt><u>BurrDistribution:</u> <var>y</var> = <b>random</b><i> (<var>pd</var>, <var>rows</var>)</i></dt>
+<dt><u>BurrDistribution:</u> <var>y</var> = <b>random</b><i> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
+<dt><u>BurrDistribution:</u> <var>y</var> = <b>random</b><i> (<var>pd</var>, [<var>sz</var>])</i></dt>
+</dl>
+
+<p> Generate random arrays from the probability distribution object.
+</p>
+<div class="ms-5">
+<p> <code><var>r</var> = random (<var>pd</var>)</code> returns a random number from the
+ distribution object <var>pd</var>.
+</p>
+<p> When called with a single size argument, <code>betarnd</code> returns a square
+ matrix with the dimension specified.  When called with more than one
+ scalar argument, the first two arguments are taken as the number of rows
+ and columns and any further arguments specify additional matrix
+ dimensions.  The size may also be specified with a row vector of
+ dimensions, <var>sz</var>.
+</p>
+
+</div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Method: <b><code>std</code></b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+<dl>
+<dt><u>BurrDistribution:</u> <var>s</var> = <b>std</b><i> (<var>pd</var>)</i></dt>
+</dl>
+
+<p> Compute the standard deviation of a probability distribution.
+</p>
+<div class="ms-5">
+<p> <code><var>s</var> = std (<var>pd</var>)</code> computes the standard deviation of the
+ probability distribution object, <var>pd</var>.
+</p>
+
+</div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Method: <b><code>truncate</code></b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+<dl>
+<dt><u>BurrDistribution:</u> <var>t</var> = <b>truncate</b><i> (<var>pd</var>, <var>lower</var>, <var>upper</var>)</i></dt>
+</dl>
+
+<p> Truncate a probability distribution.
+</p>
+<div class="ms-5">
+<p> <code><var>t</var> = truncate (<var>pd</var>)</code> returns a probability distribution
+ <var>t</var>, which is the probability distribution <var>pd</var> truncated to the
+ specified interval with lower limit, <var>lower</var>, and upper limit,
+ <var>upper</var>.  If <var>pd</var> is fitted to data with <code>fitdist</code>, the
+ returned probability distribution <var>t</var> is not fitted, does not contain
+ any data or estimated values, and it is as it has been created with the
+ <var>makedist</var> function, but it includes the truncation interval.
+</p>
+
+</div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Method: <b><code>var</code></b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+<dl>
+<dt><u>BurrDistribution:</u> <var>v</var> = <b>var</b><i> (<var>pd</var>)</i></dt>
+</dl>
+
+<p> Compute the variance of a probability distribution.
+</p>
+<div class="ms-5">
+<p> <code><var>v</var> = var (<var>pd</var>)</code> computes the standard deviation of the
+ probability distribution object, <var>pd</var>.
+</p>
+
+</div>
+
+            </div>
+          </div>
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

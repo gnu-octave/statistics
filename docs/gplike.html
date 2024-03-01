@@ -73,6 +73,7 @@
 <dl>
 <dt><u>statistics:</u> <var>nlogL</var> = <b>gplike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
 <dt><u>statistics:</u> [<var>nlogL</var>, <var>acov</var>] = <b>gplike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>gplike</b><i> (<var>params</var>, <var>x</var>, <var>freq</var>)</i></dt>
 </dl>
 
 <p> Negative log-likelihood for the generalized Pareto distribution.
@@ -80,16 +81,21 @@
 <div class="ms-5">
 <p> <code><var>nlogL</var> = gplike (<var>params</var>, <var>x</var>)</code> returns the negative
  log-likelihood of the data in <var>x</var> corresponding to the generalized Pareto
- distribution with (1) shape parameter <var>k</var> and (2) scale parameter
- <var>sigma</var> given in the two-element vector <var>params</var>.  <code>gplike</code>
- does not allow a location parameter and it must be assumed known, and
- subtracted from <var>x</var> before calling <code>gplike</code>.
+ distribution with (1) shape parameter <var>k</var>, (2) scale parameter
+ <var>sigma</var>, and (3) location parameter <var>theta</var> given in the
+ three-element vector <var>params</var>.
 </p>
 <p> <code>[<var>nlogL</var>, <var>acov</var>] = gplike (<var>params</var>, <var>x</var>)</code> returns
  the inverse of Fisher&rsquo;s information matrix, <var>acov</var>.  If the input
  parameter values in <var>params</var> are the maximum likelihood estimates, the
  diagonal elements of <var>acov</var> are their asymptotic variances.   <var>acov</var>
  is based on the observed Fisher&rsquo;s information, not the expected information.
+</p>
+<p> <code>[&hellip;] = gplike (<var>params</var>, <var>x</var>, <var>freq</var>)</code> accepts a
+ frequency vector, <var>freq</var>, of the same size as <var>x</var>.  <var>freq</var>
+ typically contains integer frequencies for the corresponding elements in
+ <var>x</var>, but it can contain any non-integer non-negative values.  By default,
+ or if left empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
 </p>
 <p> When <code><var>k</var> = 0</code> and <code><var>mu</var> = 0</code>, the Generalized Pareto CDF
  is equivalent to the exponential distribution.  When <code><var>k</var> &gt; 0</code> and

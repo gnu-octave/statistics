@@ -73,6 +73,7 @@
 <dl>
 <dt><u>statistics:</u> <var>nlogL</var> = <b>binolike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
 <dt><u>statistics:</u> [<var>nlogL</var>, <var>acov</var>] = <b>binolike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
+<dt><u>statistics:</u> [&hellip;] = <b>binolike</b><i> (<var>params</var>, <var>x</var>, <var>freq</var>)</i></dt>
 </dl>
 
 <p> Negative log-likelihood for the binomial distribution.
@@ -90,6 +91,12 @@
  returns the inverse of Fisher&rsquo;s information matrix, <var>acov</var>.  If the input
  parameter values in <var>params</var> are the maximum likelihood estimates, the
  diagonal elements of <var>params</var> are their asymptotic variances.
+</p>
+<p> <code>[&hellip;] = binolike (<var>params</var>, <var>x</var>, <var>freq</var>)</code> accepts a
+ frequency vector, <var>freq</var>, of the same size as <var>x</var>.  <var>freq</var>
+ typically contains integer frequencies for the corresponding elements in
+ <var>x</var>, but it can contain any non-integer non-negative values.  By default,
+ or if left empty, <code><var>freq</var> = ones (size (<var>x</var>))</code>.
 </p>
 <p> Further information about the binomial distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Binomial_distribution">https://en.wikipedia.org/wiki/Binomial_distribution</a>

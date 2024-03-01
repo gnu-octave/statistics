@@ -78,10 +78,18 @@
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the probability density function (PDF)
- of the triangular distribution with parameters <var>a</var>, <var>b</var>, and <var>c</var>
- on the interval <code>[<var>a</var>, <var>b</var>]</code>.  The size of <var>y</var> is the
- common size of the input arguments.  A scalar input functions as a constant
- matrix of the same size as the other inputs.
+ of the triangular distribution with lower limit parameter <var>a</var>, peak
+ location (mode) parameter <var>b</var>, and upper limit parameter <var>c</var>.  The
+ size of <var>y</var> is the common size of the input arguments.  A scalar input
+ functions as a constant matrix of the same size as the other inputs.
+</p>
+<p> Note that the order of the parameter input arguments has been changed after
+ statistics version 1.6.3 in order to be MATLAB compatible with the parameters
+ used in the TriangularDistribution probability distribution object.  More
+ specifically, the positions of the parameters <var>b</var> and <var>c</var> have been
+ swapped.  As a result, the naming conventions no longer coinside with those
+ used in Wikipedia, in which <math>b</math> denotes the upper limit and <math>c</math>
+ denotes the mode or peak parameter.
 </p>
 <p> Further information about the triangular distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Triangular_distribution">https://en.wikipedia.org/wiki/Triangular_distribution</a>
@@ -89,7 +97,8 @@
 <p> <strong>See also: </strong>
   <a href="tricdf.html">tricdf</a>, 
   <a href="triinv.html">triinv</a>, 
-  <a href="trirnd.html">trirnd</a>
+  <a href="trirnd.html">trirnd</a>, 
+  <a href="tristat.html">tristat</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/tripdf.m">tripdf</a>
@@ -114,15 +123,15 @@
 
  ## Plot various CDFs from the triangular distribution
  x = 0.001:0.001:10;
- y1 = tripdf (x, 3, 6, 4);
- y2 = tripdf (x, 1, 5, 2);
- y3 = tripdf (x, 2, 9, 3);
- y4 = tripdf (x, 2, 9, 5);
+ y1 = tripdf (x, 3, 4, 6);
+ y2 = tripdf (x, 1, 2, 5);
+ y3 = tripdf (x, 2, 3, 9);
+ y4 = tripdf (x, 2, 5, 9);
  plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-c")
  grid on
  xlim ([0, 10])
- legend ({"a = 3, b = 6, c = 4", "a = 1, b = 5, c = 2", ...
-          "a = 2, b = 9, c = 3", "a = 2, b = 9, c = 5"}, ...
+ legend ({"a = 3, b = 4, c = 6", "a = 1, b = 2, c = 5", ...
+          "a = 2, b = 3, c = 9", "a = 2, b = 5, c = 9"}, ...
          "location", "northeast")
  title ("Triangular CDF")
  xlabel ("values in x")

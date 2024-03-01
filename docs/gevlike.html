@@ -73,6 +73,7 @@
 <dl>
 <dt><u>statistics:</u> <var>nlogL</var> = <b>gevlike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
 <dt><u>statistics:</u> [<var>nlogL</var>, <var>acov</var>] = <b>gevlike</b><i> (<var>params</var>, <var>x</var>)</i></dt>
+<dt><u>statistics:</u> [<var>nlogL</var>, <var>acov</var>] = <b>gevlike</b><i> (<var>params</var>, <var>x</var>, <var>freq</var>)</i></dt>
 </dl>
 
 <p> Negative log-likelihood for the generalized extreme value (GEV) distribution.
@@ -87,6 +88,12 @@
  returns the inverse of Fisher&rsquo;s information matrix, <var>acov</var>.  If the input
  parameter values in <var>params</var> are the maximum likelihood estimates, the
  diagonal elements of <var>acov</var> are their asymptotic variances.
+</p>
+<p> <code>[&hellip;] = gevlike (<var>params</var>, <var>x</var>, <var>freq</var>)</code> accepts a
+ frequency vector, <var>freq</var>, of the same size as <var>x</var>.  <var>freq</var>
+ must contain non-negative integer frequencies for the corresponding elements
+ in <var>x</var>.  By default, or if left empty,
+ <code><var>freq</var> = ones (size (<var>x</var>))</code>.
 </p>
 <p> When <code><var>k</var> &lt; 0</code>, the GEV is the type III extreme value distribution.
  When <code><var>k</var> &gt; 0</code>, the GEV distribution is the type II, or Frechet,
@@ -106,15 +113,6 @@
  found at
  <a href="https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution">https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution</a>
 </p>
- <a name="References"></a>
-<h3 class="subheading">References</h3>
- <ol>
-<li>
- Rolf-Dieter Reiss and Michael Thomas. <cite>Statistical Analysis of Extreme
- Values with Applications to Insurance, Finance, Hydrology and Other Fields</cite>.
- Chapter 1, pages 16-17, Springer, 2007.
- </li></ol>
-
 <p> <strong>See also: </strong>
   <a href="gevcdf.html">gevcdf</a>, 
   <a href="gevinv.html">gevinv</a>, 

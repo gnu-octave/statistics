@@ -71,37 +71,37 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>loglcdf</b><i> (<var>x</var>, <var>a</var>, <var>b</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>loglcdf</b><i> (<var>x</var>, <var>a</var>, <var>b</var>, <code>&quot;upper&quot;</code>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>loglcdf</b><i> (<var>x</var>, <var>mu</var>, <var>sigma</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>loglcdf</b><i> (<var>x</var>, <var>mu</var>, <var>sigma</var>, <code>&quot;upper&quot;</code>)</i></dt>
 </dl>
 
-<p> Log-logistic cumulative distribution function (CDF).
+<p> Loglogistic cumulative distribution function (CDF).
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the cumulative distribution function
- (CDF) of the log-logistic distribution with scale parameter <var>a</var> and shape
- parameter <var>b</var>.  The size of <var>p</var> is the common size of <var>x</var>,
- <var>a</var>, and <var>b</var>.  A scalar input functions as a constant matrix of the
- same size as the other inputs.
+ (CDF) of the loglogistic distribution with mean parameter <var>mu</var> and scale
+ parameter <var>sigma</var>.  The size of <var>p</var> is the common size of <var>x</var>,
+ <var>mu</var>, and <var>sigma</var>.  A scalar input functions as a constant matrix of
+ the same size as the other inputs.
 </p>
-<p> Both parameters, <var>a</var> and <var>b</var>, must be positive reals and <var>x</var> is
- supported in the range <math>[0,inf)</math>, otherwise <code>NaN</code> is returned.
+<p> Both parameters, <var>mu</var> and <var>sigma</var>, must be positive reals and <var>x</var>
+ is supported in the range <math>[0,inf)</math>, otherwise <code>NaN</code> is returned.
 </p>
-<p> <code><var>p</var> = loglcdf (<var>x</var>, <var>a</var>, <var>b</var>, &quot;upper&quot;)</code> computes the
- upper tail probability of the log-logistic distribution with parameters
- <var>a</var> and <var>b</var>, at the values in <var>x</var>.
+<p> <code><var>p</var> = loglcdf (<var>x</var>, <var>mu</var>, <var>sigma</var>, &quot;upper&quot;)</code> computes
+ the upper tail probability of the log-logistic distribution with parameters
+ <var>mu</var> and <var>sigma</var>, at the values in <var>x</var>.
 </p>
-<p> Further information about the log-logistic distribution can be found at
+<p> Further information about the loglogistic distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Log-logistic_distribution">https://en.wikipedia.org/wiki/Log-logistic_distribution</a>
 </p>
-<p> MATLAB compatibility: MATLAB uses an alternative parameterization given by
- the pair <math>μ, s</math>, i.e. <var>mu</var> and <var>s</var>, in analogy with the logistic
- distribution.  Their relation to the <var>a</var> and <var>b</var> parameters is given
- below:
+<p> OCTAVE/MATLAB use an alternative parameterization given by the pair
+ <math>μ, σ</math>, i.e. <var>mu</var> and <var>sigma</var>, in analogy with the logistic
+ distribution.  Their relation to the <math>α</math> and <math>b</math> parameters used
+ in Wikipedia are given below:
 </p>
  <ul>
-<li> <code><var>a</var> = exp (<var>mu</var>)</code>
- </li><li> <code><var>b</var> = 1 / <var>s</var></code>
+<li> <code><var>mu</var> = log (<var>a</var>)</code>
+ </li><li> <code><var>sigma</var> = 1 / <var>a</var></code>
  </li></ul>
 
 <p> <strong>See also: </strong>
@@ -109,7 +109,8 @@
   <a href="loglpdf.html">loglpdf</a>, 
   <a href="loglrnd.html">loglrnd</a>, 
   <a href="loglfit.html">loglfit</a>, 
-  <a href="logllike.html">logllike</a>
+  <a href="logllike.html">logllike</a>, 
+  <a href="loglstat.html">loglstat</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/loglcdf.m">loglcdf</a>
@@ -134,19 +135,19 @@
 
  ## Plot various CDFs from the log-logistic distribution
  x = 0:0.001:2;
- p1 = loglcdf (x, 1, 0.5);
- p2 = loglcdf (x, 1, 1);
- p3 = loglcdf (x, 1, 2);
- p4 = loglcdf (x, 1, 4);
- p5 = loglcdf (x, 1, 8);
+ p1 = loglcdf (x, log (1), 1/0.5);
+ p2 = loglcdf (x, log (1), 1);
+ p3 = loglcdf (x, log (1), 1/2);
+ p4 = loglcdf (x, log (1), 1/4);
+ p5 = loglcdf (x, log (1), 1/8);
  plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c", x, p5, "-m")
- legend ({"β = 0.5", "β = 1", "β = 2", "β = 4", "β = 8"}, ...
-         "location", "northwest")
+ legend ({"σ = 2 (β = 0.5)", "σ = 1 (β = 1)", "σ = 0.5 (β = 2)", ...
+          "σ = 0.25 (β = 4)", "σ = 0.125 (β = 8)"}, "location", "northwest")
  grid on
  title ("Log-logistic CDF")
  xlabel ("values in x")
  ylabel ("probability")
- text (0.05, 0.64, "α = 1, values of β as shown in legend")
+ text (0.05, 0.64, "μ = 0 (α = 1), values of σ (β) as shown in legend")
 
                     </pre></td></tr></tbody>
                   </table>

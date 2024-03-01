@@ -71,17 +71,17 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>x</var> = <b>riceinv</b><i> (<var>p</var>, <var>nu</var>, <var>sigma</var>)</i></dt>
+<dt><u>statistics:</u> <var>x</var> = <b>riceinv</b><i> (<var>p</var>, <var>s</var>, <var>sigma</var>)</i></dt>
 </dl>
 
 <p> Inverse of the Rician distribution (iCDF).
 </p>
 <div class="ms-5">
 <p> For each element of <var>p</var>, compute the quantile (the inverse of the CDF)
- of the Rician distribution with with with non-centrality (distance) parameter
- <var>nu</var> and scale parameter <var>sigma</var>.  The size of <var>x</var> is the common
- size of <var>x</var>, <var>nu</var>, and <var>sigma</var>.  A scalar input functions as a
- constant matrix of the same size as the other inputs.
+ of the Rician distribution with non-centrality (distance) parameter <var>s</var>
+ and scale parameter <var>sigma</var>.  The size of <var>x</var> is the common size of
+ <var>x</var>, <var>s</var>, and <var>sigma</var>.  A scalar input functions as a constant
+ matrix of the same size as the other inputs.
 </p>
 <p> Further information about the Rician distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Rice_distribution">https://en.wikipedia.org/wiki/Rice_distribution</a>
@@ -115,7 +115,7 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Plot various iCDFs from the Beta distribution
+ ## Plot various iCDFs from the Rician distribution
  p = 0.001:0.001:0.999;
  x1 = riceinv (p, 0, 1);
  x2 = riceinv (p, 0.5, 1);
@@ -124,9 +124,9 @@
  x5 = riceinv (p, 4, 1);
  plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-m", p, x5, "-k")
  grid on
- legend ({"ν = 0, σ = 1", "ν = 0.5, σ = 1", "ν = 1, σ = 1", ...
-          "ν = 2, σ = 1", "ν = 4, σ = 1"}, "location", "northwest")
- title ("Beta iCDF")
+ legend ({"s = 0, σ = 1", "s = 0.5, σ = 1", "s = 1, σ = 1", ...
+          "s = 2, σ = 1", "s = 4, σ = 1"}, "location", "northwest")
+ title ("Rician iCDF")
  xlabel ("probability")
  ylabel ("values in x")
 

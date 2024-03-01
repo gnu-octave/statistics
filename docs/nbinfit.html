@@ -74,7 +74,9 @@
 <dt><u>statistics:</u> <var>paramhat</var> = <b>nbinfit</b><i> (<var>x</var>)</i></dt>
 <dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>nbinfit</b><i> (<var>x</var>)</i></dt>
 <dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>nbinfit</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>nbinfit</b><i> (<var>x</var>, <var>alpha</var>, <var>freq</var>)</i></dt>
 <dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>nbinfit</b><i> (<var>x</var>, <var>alpha</var>, <var>options</var>)</i></dt>
+<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>nbinfit</b><i> (<var>x</var>, <var>alpha</var>, <var>freq</var>, <var>options</var>)</i></dt>
 </dl>
 
 <p> Estimate parameter and confidence intervals for the negative binomial
@@ -84,7 +86,7 @@
 <p> <code><var>paramhat</var> = nbinfit (<var>x</var>)</code> returns the maximum likelihood
  estimates of the parameters of the negative binomial distribution given the
  data in vector <var>x</var>.  <code><var>paramhat</var>(1)</code> is the number of successes
- until the experiment is stopped, <var>r</var>, and <code><var>paramhat</var>(1)</code> is
+ until the experiment is stopped, <var>r</var>, and <code><var>paramhat</var>(2)</code> is
  the probability of success in each experiment, <var>ps</var>.
 </p>
 <p> <code>[<var>paramhat</var>, <var>paramci</var>] = nbinfit (<var>x</var>)</code> returns the 95%
@@ -94,6 +96,12 @@
  returns the <code>100 * (1 - <var>alpha</var>)</code> percent confidence intervals of
  the estimated parameter.  By default, the optional argument <var>alpha</var> is
  0.05 corresponding to 95% confidence intervals.
+</p>
+<p> <code>[&hellip;] = nbinlike (<var>params</var>, <var>x</var>, <var>freq</var>)</code> accepts a
+ frequency vector, <var>freq</var>, of the same size as <var>x</var>.  <var>freq</var>
+ must contain non-negative integer frequencies for the corresponding elements
+ in <var>x</var>.  By default, or if left empty,
+ <code><var>freq</var> = ones (size (<var>x</var>))</code>.
 </p>
 <p> <code>[<var>paramhat</var>, <var>paramci</var>] = nbinfit (<var>x</var>, <var>alpha</var>,
  <var>options</var>)</code> specifies control parameters for the iterative algorithm used

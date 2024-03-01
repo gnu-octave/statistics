@@ -71,26 +71,25 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>y</var> = <b>gampdf</b><i> (<var>x</var>, <var>k</var>, <var>theta</var>)</i></dt>
+<dt><u>statistics:</u> <var>y</var> = <b>gampdf</b><i> (<var>x</var>, <var>a</var>, <var>b</var>)</i></dt>
 </dl>
 
 <p> Gamma probability density function (PDF).
 </p>
 <div class="ms-5">
 <p> For each element of <var>x</var>, compute the probability density function (PDF)
- of the Gamma distribution with shape parameter <var>k</var> and scale parameter
- <var>theta</var>.  The size of <var>y</var> is the common size of <var>x</var>, <var>k</var> and
- <var>theta</var>.  A scalar input functions as a constant matrix of the same size
+ of the Gamma distribution with shape parameter <var>a</var> and scale parameter
+ <var>b</var>.  The size of <var>y</var> is the common size of <var>x</var>, <var>a</var> and
+ <var>b</var>.  A scalar input functions as a constant matrix of the same size
  as the other inputs.
 </p>
-<p> There are two equivalent parameterizations in common use:
- </p><ol>
-<li> With a shape parameter <math>k</math> and a scale parameter <math>θ</math>, which
- is used by <code>gampdf</code>.
- </li><li> With a shape parameter <math>α = k</math> and an inverse scale parameter
- <math>β = 1 / θ</math>, called a rate parameter.
- </li></ol>
-
+<p> OCTAVE/MATLAB use the alternative parameterization given by the pair
+ <math>α, β</math>, i.e. shape <var>a</var> and scale <var>b</var>.  In Wikipedia, the two
+ common parameterizations use the pairs <math>k, θ</math>, as shape and scale, and
+ <math>α, β</math>, as shape and rate, respectively.  The parameter names <var>a</var>
+ and <var>b</var> used here (for MATLAB compatibility) correspond to the parameter
+ notation <math>k, θ</math> instead of the <math>α, β</math> as reported in Wikipedia.
+</p>
 <p> Further information about the Gamma distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Gamma_distribution">https://en.wikipedia.org/wiki/Gamma_distribution</a>
 </p>
@@ -136,9 +135,9 @@
        x, y5, "-k", x, y6, "-b", x, y7, "-c")
  grid on
  ylim ([0,0.5])
- legend ({"α = 1, θ = 2", "α = 2, θ = 2", "α = 3, θ = 2", ...
-          "α = 5, θ = 1", "α = 9, θ = 0.5", "α = 7.5, θ = 1", ...
-          "α = 0.5, θ = 1"}, "location", "northeast")
+ legend ({"α = 1, β = 2", "α = 2, β = 2", "α = 3, β = 2", ...
+          "α = 5, β = 1", "α = 9, β = 0.5", "α = 7.5, β = 1", ...
+          "α = 0.5, β = 1"}, "location", "northeast")
  title ("Gamma PDF")
  xlabel ("values in x")
  ylabel ("density")
