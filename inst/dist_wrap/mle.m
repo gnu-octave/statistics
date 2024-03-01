@@ -15,6 +15,56 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
+## -*- texinfo -*-
+## @deftypefn  {statistics} {@var{phat} =} mle (@var{x})
+## @deftypefnx {statistics} {@var{phat} =} mle (@var{x}, @var{Name}, @var{Value})
+## @deftypefnx {statistics} {[@var{phat}, @var{pci}] =} mle (@dots{})
+##
+## Compute maximum likelihood estimates.
+##
+## @code{@var{phat} = mle (@var{x})} returns the maximum likelihood estimates
+## (MLEs) for the parameters of a normal distribution using the sample data in
+## @var{x}, which must be a numeric vector of real values.
+##
+## @code{@var{phat} = mle (@var{x}, @var{Name}, @var{Value})} returns the MLEs
+## with additional options specified by @qcode{Name-Value} pair arguments listed
+## below.
+##
+## @multitable @columnfractions 0.18 0.02 0.8
+## @headitem @var{Name} @tab @tab @var{Value}
+##
+## @item @qcode{"distribution"} @tab @tab A character vector specifying the
+## distribution type for which to estimate parameters.
+##
+## @item @qcode{"Ntrials"} @tab @tab A scalar specifying the number of trials
+## for the corresponding element of @var{x} for the binomial distribution.
+##
+## @item @qcode{"theta"} @tab @tab A scalar specifying the location parameter
+## for the generalized Pareto distribution.
+##
+## @item @qcode{"mu"} @tab @tab A scalar specifying the location parameter
+## for the half-normal distribution.
+##
+## @item @qcode{"censoring"} @tab @tab A vector of the same size as @var{x}
+## indicating censored data in @var{x}.  By default it is
+## @qcode{@var{censor} = zeros (size (@var{x}))}.
+##
+## @item @qcode{"frequency"} @tab @tab A vector of nonnegative integer counts of
+## the same size as @var{x} used as frequency observations.  By default it is
+## @qcode{@var{freq} = ones (size (@var{x}))}.
+##
+## @item @qcode{"alpha"} @tab @tab A scalar in the range @math{(0,1)}, as the
+## significance level for the confidence interval @var{pci}.  By default it is
+## 0.05 corresponding to 95% confidence intervals.
+##
+## @item @qcode{"options"} @tab @tab A structure specifying the control
+## parameters for the iterative algorithm used to compute ML estimates with the
+## @code{fminsearch} function.
+## @end multitable
+##
+## @seealso{fitdist, makedist}
+## @end deftypefn
+
 function [phat, pci] = mle (x, varargin)
 
   ## Check data

@@ -15,6 +15,71 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
+## -*- texinfo -*-
+## @deftypefn  {statistics} {@var{pd} =} fitdist (@var{x}, @var{distname})
+## @deftypefnx {statistics} {@var{pd} =} fitdist (@var{x}, @var{distname}, @var{Name}, @var{Value})
+## @deftypefnx {statistics} {[@var{pdca}, @var{gn}, @var{gl}] =} fitdist @
+## (@var{x}, @var{distname}, @qcode{"By"}, @var{groupvar})
+## @deftypefnx {statistics} {[@var{pdca}, @var{gn}, @var{gl}] =} fitdist @
+## (@var{x}, @var{distname}, @qcode{"By"}, @var{groupvar}, @var{Name}, @var{Value})
+##
+## Create probability distribution object.
+##
+## @code{@var{pd} = fitdist (@var{x}, @var{distname})} creates a probability
+## distribution distribution object by fitting the distribution specified by
+## @var{distname} to the data in vector @var{x}.
+##
+## @code{@var{pd} = fitdist (@var{x}, @var{distname}, @var{Name}, @var{Value})}
+## creates the probability distribution object with additional options specified
+## by one or more @qcode{Name-Value} pair arguments listed below.
+##
+## @multitable @columnfractions 0.18 0.02 0.8
+## @headitem @var{Name} @tab @tab @var{Value}
+##
+## @item @qcode{"distribution"} @tab @tab A character vector specifying the
+## distribution type for which to estimate parameters.
+##
+## @item @qcode{"Ntrials"} @tab @tab A scalar specifying the number of trials
+## for the corresponding element of @var{x} for the binomial distribution.
+##
+## @item @qcode{"theta"} @tab @tab A scalar specifying the location parameter
+## for the generalized Pareto distribution.
+##
+## @item @qcode{"mu"} @tab @tab A scalar specifying the location parameter
+## for the half-normal distribution.
+##
+## @item @qcode{"censoring"} @tab @tab A vector of the same size as @var{x}
+## indicating censored data in @var{x}.  By default it is
+## @qcode{@var{censor} = zeros (size (@var{x}))}.
+##
+## @item @qcode{"frequency"} @tab @tab A vector of nonnegative integer counts of
+## the same size as @var{x} used as frequency observations.  By default it is
+## @qcode{@var{freq} = ones (size (@var{x}))}.
+##
+## @item @qcode{"alpha"} @tab @tab A scalar in the range @math{(0,1)}, as the
+## significance level for the confidence interval @var{pci}.  By default it is
+## 0.05 corresponding to 95% confidence intervals.
+##
+## @item @qcode{"options"} @tab @tab A structure specifying the control
+## parameters for the iterative algorithm used to compute ML estimates with the
+## @code{fminsearch} function.
+## @end multitable
+##
+## @code{[@var{pdca}, @var{gn}, @var{gl}] = fitdist (@var{x}, @var{distname},
+## @qcode{"By"}, @var{groupvar})} creates probability distribution objects by
+## fitting the distribution specified by @var{distname} to the data in @var{x}
+## based on the grouping variable @var{groupvar}. It returns a cell array of
+## fitted probability distribution objec@var{pdca}pdca, a cell array of group
+## labels, @var{gn}, and a cell array of grouping variable levels, @var{gl}.
+##
+## @code{[@var{pdca}, @var{gn}, @var{gl}] = fitdist (@var{x}, @var{distname},
+## @qcode{"By"}, @var{groupvar}, @var{Name}, @var{Value})} returns the same
+## output arguments using additional options specified by one or more
+## @qcode{Name-Value} pair arguments mentioned above.
+##
+## @seealso{fitdist}
+## @end deftypefn
+
 function [varargout] = fitdist (varargin)
 
   ## Add list of supported probability distribution objects

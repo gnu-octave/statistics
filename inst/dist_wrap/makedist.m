@@ -15,6 +15,27 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
+## -*- texinfo -*-
+## @deftypefn  {statistics} {@var{pd} =} makedist (@var{distname})
+## @deftypefnx {statistics} {@var{pd} =} makedist (@var{distname}, @var{Name}, @var{Value})
+## @deftypefnx {statistics} {@var{list} =} makedist
+##
+## Create probability distribution object.
+##
+## @code{@var{pd} = makedist (@var{distname})} creates a probability
+## distribution object for the distribution specified in @var{distname}, using
+## the default parameter values.
+##
+## @code{@var{pd} = makedist (@var{distname}, @var{Name}, @var{Value})} also
+## creates a probability distribution object with one or more distribution
+## parameter values specified by @qcode{Name-Value} pair arguments.
+##
+## @code{@var{list} = makedist}  returns a cell array, @var{list}, containing a
+## list of the probability distributions that makedist can create.
+##
+## @seealso{fitdist}
+## @end deftypefn
+
 function pd = makedist (varargin)
 
   ## Add list of supported probability distribution objects
