@@ -18,7 +18,8 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{b} =} glmfit (@var{X}, @var{y}, @var{distribution})
-## @deftypefnx {statistics} {@var{b} =} glmfit (@var{X}, @var{y}, @var{distribution}, @var{Name}, @var{Value})
+## @deftypefnx {statistics} {@var{b} =} glmfit (@var{X}, @var{y}, @var{distribution}, 
+## @var{Name}, @var{Value})
 ##
 ## Perform generalized linear model fitting.
 ##
@@ -40,7 +41,7 @@
 ## @multitable @columnfractions 0.18 0.02 0.8
 ## @headitem @tab @var{Name} @tab @var{Value}
 ##
-## @item @qcode{"link"} @tab @tab A character vector specifying a lin
+## @item @qcode{"link"} @tab @tab A character vector specifying a link
 ## function.
 ## @end multitable
 ##
@@ -139,3 +140,18 @@ endfunction
 %! assert(b(2), b_true(2), 0.5);
 
 ## Test input validation
+%!error glmfit()
+%!error glmfit(rand(5,2))
+%!error glmfit(rand(5,2),rand(5,1))
+%!error glmfit(rand(5,2), rand(5,1), 'poisson', 'link')
+%!error <X must be a numeric.> glmfit('abc', rand(6,1), 'poisson')
+%!error <y must be a numeric.> glmfit(rand(5,2), 'abc', 'poisson')
+%!error <invalid distribution.> glmfit(rand(5,2), rand(5,1), 2)
+%!error <invalid parameter name.> glmfit(rand(5,2), rand(5,1), 'poisson', 2, 'log')
+%!error <invalid link function.> glmfit(rand(5,2), rand(5,1), 'poisson', 'link', 2)
+%!error <glmfit: X and y must have same number of observations.> glmfit(rand(5,2), rand(6,1), 'poisson')
+%!error <glmfit: y cannot be a matrix.> glmfit(rand(10,2), ones(2,2), 'poisson')
+%!error <glmfit: unsupported link function.> glmfit(rand(10,2), rand(10,1), 'poisson', 'link', 'inverse')
+%!error <glmfit: unsupported parameter name.> glmfit(rand(10,2), rand(10,1), 'poisson', 'notALink', 'log')
+%!error <glmfit: distribution must be a recognized value.> glmfit(rand(10,2), rand(10,1), 'xyz')
+
