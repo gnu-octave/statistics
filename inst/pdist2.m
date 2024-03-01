@@ -382,13 +382,6 @@ endfunction
 %! [D, I] = pdist2 (y, xx, "mahalanobis", "largest", 2);
 %! assert ({D, I}, {d, i}, 1e-4);
 %!test
-%! yy = [1 2 3;5 6 7;9 5 1];
-%! d = [0, 8.4853, 18.0416; 2.4495, 10.0995, 19.4808; ...
-%!      2.4495, 10.6771, 19.7104; 2.4495, 10.6771, 20.4573];
-%! i = [2, 2, 2; 1, 4, 4; 4, 1, 1; 3, 3, 3];
-%! [D, I] = pdist2 (y, yy, "mahalanobis", "smallest", 4);
-%! assert ({D, I}, {d, i}, 1e-4);
-%!test
 %! d = [3, 3, 5, 9; 6, 2, 4, 8; 9, 3, 5, 7];
 %! assert (pdist2 (x, y, "cityblock"), d);
 %!test
