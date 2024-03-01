@@ -291,6 +291,7 @@ Regression
  canoncorr
  cholcov
  dcov
+ glmfit
  logistic_regression
  mnrfit
  monotone_smooth

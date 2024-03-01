@@ -343,6 +343,8 @@
 
  ** fitdist
 
+ ** glmfit (needs a lot of work yet)
+
  ** hnstat
 
  ** invgstat
@@ -378,7 +380,7 @@
 
  ** BetaDistribution
 
- ** BinomialDistribution
+ ** BinomialDistribution (methods on truncated distributions do not work yet)
 
  ** BirnbaumSaundersDistribution
 
@@ -411,12 +413,14 @@
  ** NakagamiDistribution
 
  ** NegativeBinomialDistribution
+    (methods on truncated distributions do not work yet)
 
  ** NormalDistribution
 
  ** PiecewiseLinearDistribution
+    ('mean', 'std', and 'var' methods fail for truncated distributions)
 
- ** PoissonDistribution
+ ** PoissonDistribution (methods on truncated distributions do not work yet)
 
  ** RayleighDistribution
 
