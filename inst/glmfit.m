@@ -17,8 +17,9 @@
 ## see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} {@var{b} =} glmfit (@var{X}, @var{y}, 
-## @var{distribution}, @var{link})
+## @deftypefn  {statistics} {@var{b} =} glmfit (@var{X}, @var{y}, @var{distribution})
+## @deftypefnx {statistics} {@var{b} =} glmfit (@var{X}, @var{y}, @var{distribution}, @var{Name}, @var{Value})
+##
 ## Perform generalized linear model fitting. 
 ## 
 ## This function fits a generalized linear model (GLM) to the given data 
@@ -26,12 +27,23 @@
 ## variable. The model is fitted using Iteratively Reweighted 
 ## Least Squares (IRLS).
 ##
-## @var{X} is an @var{n}-by-@var{p} matrix of predictor variables with 
-## @var{n} observations and @var{p} predictors. 
-## @var{y} is an @var{n}-by-1 vector of response variables.
-## @var{distribution} specifies the distribution of the response variable 
-## (e.g., 'poisson'). 
-## @var{link} specifies the link function to use (e.g., 'log').
+## @itemize
+## @item @var{X} is an @math{nxp} matrix of predictor variables with
+## @math{n} observations and @math{p} predictors. 
+## @item @var{y} is an @math{nx1} vector of response variables.
+## @item @var{distribution} specifies the distribution of the response variable 
+## (e.g., 'poisson').
+## @end itemize
+##
+## @code{@var{b} = glmfit (@var{X}, @var{y}, @var{distribution}, @var{Name},
+## @var{Value})} specifies additional options using @qcode{Name-Value} pair
+## arguments.
+## @multitable @columnfractions 0.18 0.02 0.8
+## @headitem @tab @var{Name} @tab @var{Value}
+##
+## @item @qcode{"link"} @tab @tab A character vector specifying a lin
+## function.
+## @end multitable
 ##
 ## The function returns @var{b}, the estimated coefficients of the GLM, 
 ## including the intercept term as the first element of @var{b}.
@@ -42,73 +54,81 @@
 ## 
 ## @end deftypefn
 
-function b = glmfit(X, y, distribution, link)
-    ## Check input
-    y = round (y(:));
-    if (nargin < 2)
-        X = zeros (length (y), 0);
-    endif;
-    xymissing = (isnan (y) | any (isnan (X), 2));
-    y(xymissing) = [];
-    X(xymissing,:) = [];
-    [my, ny] = size (y);
-    [mx, nx] = size (X);
-    if (mx != my)
-        error ("glm: X and y must have the same number of observations.");
-    endif
-
-    ## Add column of ones
-    X    = [ones(size(X, 1), 1), X]; 
-    ## Initialize b
-    b = zeros(size(X, 2), 1);  
-    max_itr  = 1000;
-    tolerance = 1e-6;
-    b_prev = b;
+function b = glmfit(X, y, distribution, varargin)
+  ## Check input
+  y = round (y(:));
+  if (nargin < 2)
+    X = zeros (length (y), 0);
+  endif
+  xymissing = (isnan (y) | any (isnan (X), 2));
+  y(xymissing) = [];
+  X(xymissing,:) = [];
+  [my, ny] = size (y);
+  [mx, nx] = size (X);
+  if (mx != my)
+    error ("glm: X and y must have the same number of observations.");
+  endif
   
-    ## Select functions 
-    [inverse_link_func, working_response_func, diag_matrix_func] = select_func(distribution, link);
-
-    for i = 1:max_itr
-        linear_predictor = X * b;
-        ## Give inverse function according to link function
-        mu = inverse_link_func(linear_predictor);
-        ## Weights for IRLS 
-        z = working_response_func(y, linear_predictor, mu);
-        W = diag_matrix_func(mu);
-        ## Update b 
-        b = (X' * W * X) \ (X' * W * z);
-        ## Check for convergence
-        if norm(b - b_prev, 2) < tolerance
-            break;
+  ## Add defaults
+  link = "log";
+  
+  ## Parse extra parameters
+  while (numel (varargin) > 0)
+    switch (tolower (varargin {1}))
+      case "link"
+        link = varargin{2};
+        if (! any (strcmpi (link, {"log"})))
+          error ("glmfit: unsupported link function.");
         endif
-        b_prev = b;
-    endfor
+      otherwise
+        error ("glmfit: unknown parameter name.");
+    endswitch
+    varargin (1:2) = [];
+  endwhile
+      
+  ## Add column of ones
+  X = [ones(size(X, 1), 1), X]; 
+  ## Initialize b
+  b = zeros(size(X, 2), 1);  
+  max_itr  = 1000;
+  tolerance = 1e-6;
+  b_prev = b;
+  
+  ## Select functions
+  switch (link)
+    case "log"
+      inverse_link_func = @(linear_predictor) exp(linear_predictor);
+  endswitch
+  switch (distribution)
+    case "poisson"
+      working_response_func = ...
+        @(y, linear_predictor, mu) linear_predictor + (y - mu) ./ mu;
+      diag_matrix_func = @(mu) diag(mu);
+  endswitch  
+  
 
-    if (i == max_itr)
-        warning('glmfit: reached limit');
+  for i = 1:max_itr
+    linear_predictor = X * b;
+    ## Give inverse function according to link function
+    mu = inverse_link_func(linear_predictor);
+    ## Weights for IRLS 
+    z = working_response_func(y, linear_predictor, mu);
+    W = diag_matrix_func(mu);
+    ## Update b 
+    b = (X' * W * X) \ (X' * W * z);
+    ## Check for convergence
+    if norm(b - b_prev, 2) < tolerance
+      break;
     endif
-end
+    b_prev = b;
+  endfor
 
-function [inverse_link_func, working_response_func, diag_matrix_func] = select_func(distribution, link)
-    switch link
-        case 'log'
-            inverse_link_func = @(linear_predictor) exp(linear_predictor);
-        ## Add cases for other link functions 
-        otherwise
-            error('Unsupported link function.');
-    endswitch
+  if (i == max_itr)
+    warning('glmfit: reached limit');
+  endif
+endfunction
 
-    switch distribution
-        case 'poisson'
-            working_response_func = @(y, linear_predictor, mu) linear_predictor + (y - mu) ./ mu;
-            diag_matrix_func = @(mu) diag(mu);
-        ## Add other cases
-        otherwise
-            error('Unsupported distribution.');
-    endswitch
-end
-
-
+## Test output
 %!test
 %! N = 50;
 %! X = rand(N, 1);
@@ -131,3 +151,5 @@ end
 %! b = glmfit(X, y, distribution, link);
 %! assert(b(1), b_true(1), 0.1);
 %! assert(b(2), b_true(2), 0.1);
+
+## Test input validation
