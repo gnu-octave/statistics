@@ -114,7 +114,7 @@ endfunction
 %! x6 = gaminv (p, 7.5, 1);
 %! x7 = gaminv (p, 0.5, 1);
 %! plot (p, x1, "-r", p, x2, "-g", p, x3, "-y", p, x4, "-m", ...
-%!       p, x5, "-a", p, x6, "-b", p, x7, "-c")
+%!       p, x5, "-k", p, x6, "-b", p, x7, "-c")
 %! ylim ([0, 20])
 %! grid on
 %! legend ({"α = 1, β = 2", "α = 2, β = 2", "α = 3, β = 2", ...

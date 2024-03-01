@@ -269,8 +269,8 @@ endfunction
 %! hold on
 %!
 %! ## Estimate their α and β parameters
-%! k_sigmaA = gpfit (r(:,1));
-%! k_sigmaB = gpfit (r(:,2));
+%! k_sigmaA = gpfit (r(:,1), theta);
+%! k_sigmaB = gpfit (r(:,2), theta);
 %!
 %! ## Plot their estimated PDFs
 %! x = [0.01, 0.1:0.2:18];
