@@ -289,7 +289,6 @@ endfunction
 %!assert (mad ([1,2,3]',1,2), zeros (3,1))
 %!assert (mad ([1,2,3]',0,1), 2/3)
 %!assert (mad ([1,2,3]',1,1), 1)
-%!assert (mad ([1,2,3]',1,1), 1) ##REDUNDANT
 
 ## Test vector or matrix input with scalar DIM
 %!test
@@ -349,12 +348,12 @@ endfunction
 %!assert (mad (-Inf), NaN)
 %!assert (mad (-Inf, 1), NaN)
 %!assert (mad ([-Inf Inf]), NaN)
-##%!assert (mad ([-Inf Inf], 1), NaN) ##PROBLEM?
+%!assert (mad ([-Inf Inf], 1), NaN)
 %!assert (mad ([3 Inf]), Inf)
 %!assert (mad ([3 4 Inf]), Inf)
-##%!assert (mad ([3 4 Inf], 1), Inf) ##PROBLEM?
+%!assert (mad ([3 4 Inf], 1), Inf)
 %!assert (mad ([Inf 3 4]), Inf)
-##%!assert (mad ([Inf 3 4], 1), Inf) ##PROBLEM?
+%!assert (mad ([Inf 3 4], 1), Inf)
 %!assert (mad ([Inf 3 Inf]), Inf)
 %!assert (mad ([Inf 3 Inf], 1), Inf)
 %!assert (mad ([1 2; 3 Inf]), [1 Inf])
