@@ -289,7 +289,6 @@ endfunction
 %!assert (mad ([1,2,3]',1,2), zeros (3,1))
 %!assert (mad ([1,2,3]',0,1), 2/3)
 %!assert (mad ([1,2,3]',1,1), 1)
-%!assert (mad ([1,2,3]',1,1), 1)
 
 ## Test vector or matrix input with scalar DIM
 %!test
@@ -384,6 +383,27 @@ endfunction
 %!assert (mad([1 2 4i; 3 2i 4], 1), [1, 1.4142, 2.8284], 1e-4)
 %!assert (mad([1 2 4i; 3 2i 4], 1, 2), [1; 1])
 %!assert (mad([1 2 4i; 3 2i 4], 0, 2), [1.9493; 1.8084], 1e-4)
+
+## Test all-inf handling
+%!assert <*65405> (mad ([-Inf Inf]), NaN)
+%!assert <*65405> (mad ([-Inf Inf], 0), NaN)
+%!assert <*65405> (mad ([-Inf Inf], 1), NaN)
+%!assert <*65405> (mad ([-Inf Inf]', 0), NaN)
+%!assert <*65405> (mad ([-Inf Inf]', 1), NaN)
+%!assert <*65405> (mad ([-Inf Inf]', 0, 1), NaN)
+%!assert <*65405> (mad ([-Inf Inf]', 0, 2), [NaN; NaN])
+%!assert <*65405> (mad ([-Inf Inf]', 0, 3), [NaN; NaN])
+%!assert <*65405> (mad ([-Inf Inf]', 1, 1), NaN)
+%!assert <*65405> (mad ([-Inf Inf]', 1, 2), [NaN; NaN])
+%!assert <*65405> (mad ([-Inf Inf]', 1, 3), [NaN; NaN])
+%!assert <*65405> (mad (Inf(2), 0), [NaN, NaN])
+%!assert <*65405> (mad (Inf(2), 1), [NaN, NaN])
+%!assert <*65405> (mad (Inf(2), 0, 1), [NaN, NaN])
+%!assert <*65405> (mad (Inf(2), 0, 2), [NaN; NaN])
+%!assert <*65405> (mad (Inf(2), 0, 3), NaN(2))
+%!assert <*65405> (mad (Inf(2), 1, 1), [NaN, NaN])
+%!assert <*65405> (mad (Inf(2), 1, 2), [NaN; NaN])
+%!assert <*65405> (mad (Inf(2), 1, 3), NaN(2))
 
 ## Test input case insensitivity
 %!assert (mad ([1 2 3], 0, "aLL"), 2/3)
