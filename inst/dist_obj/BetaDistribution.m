@@ -712,6 +712,7 @@ endfunction
 
 ## 'paramci' method
 %!shared x
+%! randg ("seed", 1);
 %! x = betarnd (1, 1, [100, 1]);
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
 %! paramci (BetaDistribution.fit (x), "alpha")
