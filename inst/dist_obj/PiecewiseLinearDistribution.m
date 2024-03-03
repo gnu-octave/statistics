@@ -240,7 +240,8 @@ classdef PiecewiseLinearDistribution
       endif
       if (this.IsTruncated)
         fm = @(x) x .* pdf (this, x);
-        m = integral (fm, this.Truncation(1), this.Truncation(2));
+        m = integral (fm, this.Truncation(1), this.Truncation(2), ...
+                      "ArrayValued", 1);
       else
         m = plstat (this.x, this.Fx);
       endif
@@ -447,9 +448,11 @@ classdef PiecewiseLinearDistribution
       endif
       if (this.IsTruncated)
         fm = @(x) x .* pdf (this, x);
-        m = integral (fm, this.Truncation(1), this.Truncation(2));
+        m = integral (fm, this.Truncation(1), this.Truncation(2), ...
+                      "ArrayValued", 1);
         fv =  @(x) ((x - m) .^ 2) .* pdf (this, x);
-        v = integral (fv, this.Truncation(1), this.Truncation(2));
+        v = integral (fv, this.Truncation(1), this.Truncation(2), ...
+                      "ArrayValued", 1);
       else
         [~, v] = plstat (this.x, this.Fx);
       endif
@@ -499,7 +502,7 @@ endfunction
 %!assert (iqr (pd), 50.0833, 1e-4);
 %!assert (iqr (t), 36.8077, 1e-4);
 %!assert (mean (pd), 153.61, 1e-10);
-#%!assert (mean (t), 0, eps);
+%!assert (mean (t), 152.311, 1e-4);
 %!assert (median (pd), 142, 1e-10);
 %!assert (median (t), 141.9462, 1e-4);
 %!assert (pdf (pd, [120, 130, 140, 150, 200]), [0.0133, 0.0240, 0.0186, 0.0024, 0.0046], 1e-4);
@@ -510,9 +513,9 @@ endfunction
 %!assert (any (random (t, 1000, 1) < 130), false);
 %!assert (any (random (t, 1000, 1) > 180), false);
 %!assert (std (pd), 26.5196, 1e-4);
-#%!assert (std (t), 0.8796, 1e-4);
+%!assert (std (t), 18.2941, 1e-4);
 %!assert (var (pd), 703.2879, 1e-4);
-#%!assert (var (t), 0.7737, 1e-4);
+%!assert (var (t), 334.6757, 1e-4);
 
 ## Test input validation
 ## 'PiecewiseLinearDistribution' constructor
