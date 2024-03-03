@@ -261,6 +261,12 @@ function m = median (x, varargin)
     return;
   endif
 
+   if (all (isnan (x)(:)))
+    ## all NaN input, output single or double NaNs in pre-determined size
+    m = NaN(sz_out, outtype);
+    return
+  endif
+
   if (szx(dim) == 1)
     ## Operation along singleton dimension - nothing to do
     if (! strcmp (class (x), outtype))
@@ -563,6 +569,24 @@ endfunction
 %!assert (median ([NaN 2 ; NaN 4], "omitnan"), [NaN 3])
 %!assert (median (ones (1, 0, 3)), NaN (1, 1, 3))
 
+## Test all NaN vectors and arrays - see bug #65405
+%!assert <*65405> (median ([NaN NaN], 1, "omitnan"), [NaN NaN])
+%!assert <*65405> (median ([NaN NaN], 2, "omitnan"), NaN)
+%!assert <*65405> (median ([NaN NaN]', 1, "omitnan"), NaN)
+%!assert <*65405> (median ([NaN NaN]', 2, "omitnan"), [NaN; NaN])
+%!assert <*65405> (median ([NaN NaN], "omitnan"), NaN)
+%!assert <*65405> (median ([NaN NaN]', "omitnan"), NaN)
+%!assert <*65405> (median (NaN(1,9), 1, "omitnan"), NaN(1,9))
+%!assert <*65405> (median (NaN(1,9), 2, "omitnan"), NaN)
+%!assert <*65405> (median (NaN(1,9), 3, "omitnan"), NaN(1,9))
+%!assert <*65405> (median (NaN(9,1), 1, "omitnan"), NaN)
+%!assert <*65405> (median (NaN(9,1), 2, "omitnan"), NaN(9,1))
+%!assert <*65405> (median (NaN(9,1), 3, "omitnan"), NaN(9,1))
+%!assert <*65405> (median (NaN(9,2), 1, "omitnan"), NaN(1,2))
+%!assert <*65405> (median (NaN(9,2), 2, "omitnan"), NaN(9,1))
+%!assert <*65405> (median (NaN(9,2), "omitnan"), NaN(1,2))
+
+## Test single inputs
 %!assert (median (NaN("single")), NaN("single"))
 %!assert (median (NaN("single"), "omitnan"), NaN("single"))
 %!assert (median (NaN("single"), "double"), NaN("double"))
