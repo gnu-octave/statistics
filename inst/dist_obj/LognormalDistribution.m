@@ -708,6 +708,7 @@ endfunction
 
 ## 'paramci' method
 %!shared x
+%! randn ("seed", 1);
 %! x = lognrnd (1, 1, [1, 100]);
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
 %! paramci (LognormalDistribution.fit (x), "alpha")
