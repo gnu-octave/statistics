@@ -249,7 +249,7 @@ function m = mad (x, flag=0, varargin)
   else
     if (flag)         # Compute median absolute deviation
       m = median (abs (x - median(x, dim, "omitnan")), dim, "omitnan");
-      m(sum (isinf (x), 2) > 0) = Inf;
+      m(sum (isinf (x), 1) > 0.5 * size (x, 1)) = Inf;
 
     else              # Compute mean absolute deviation
       idx = isnan (x);
@@ -260,8 +260,9 @@ function m = mad (x, flag=0, varargin)
       x2 = abs (x - m1);
       x2(idx) = 0;
       m = sum (x2, dim) ./ n;
-      m(sum (isinf (x), 2) > 0) = Inf;
+      m(sum (isinf (x), 1) > 0) = Inf;
     endif
+      m(all (isinf (x), 1)) = NaN;
   endif
 
   if (perm_flag)
@@ -382,6 +383,14 @@ endfunction
 %!assert (mad ([3, 4, 5, Inf], 1), 1)
 %!assert (mad ([3, 4, Inf, Inf], 1), Inf)
 %!assert (mad ([3, Inf, Inf, Inf], 1), Inf)
+
+%!assert (mad ([1, 2; 3, 4; Inf, Inf], 0), [Inf, Inf])
+%!assert (mad ([1, 2; 3, 4; Inf, Inf], 1), [2, 2])
+%!assert (mad ([1, 2; 3, Inf; Inf, Inf], 1), [2, Inf])
+%!assert (mad ([1, 2; 3, 4; 5, 6; Inf, Inf], 1), [2, 2])
+%!assert (mad ([1, 2; 3, 4; 5, Inf; Inf, Inf], 1), [2, Inf])
+%!assert (mad ([Inf, 2; Inf, 4; Inf, Inf], 0), [NaN, Inf])
+%!assert (mad ([Inf, 2; Inf, 4; Inf, Inf], 1), [NaN, 2])
 
 %!assert (mad ([]), NaN)
 %!assert (mad (ones(1,0)), NaN)
