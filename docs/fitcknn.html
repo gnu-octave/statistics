@@ -76,8 +76,8 @@
 </dl>
 
 <p> Fit a k-Nearest Neighbor classification model.
-</p><div class="ms-5">
-
+</p>
+<div class="ms-5">
 <p> <code><var>obj</var> = fitcknn (<var>X</var>, <var>Y</var>)</code> returns a k-Nearest Neighbor
  classification model, <var>obj</var>, with <var>X</var> being the predictor data,
  and <var>Y</var> the class labels of observations in <var>X</var>.
@@ -92,7 +92,6 @@
  corresponding predictor data in <var>X</var>. <var>Y</var> can contain any type of
  categorical data. <var>Y</var> must have same numbers of Rows as <var>X</var>.
  </li></ul>
-
 
 <p> <code><var>obj</var> = fitcknn (&hellip;, <var>name</var>, <var>value</var>)</code> returns a
  k-Nearest Neighbor classification model with additional options specified by
@@ -114,7 +113,6 @@
  following character arrays:</td></tr>
 </table>
 
-
  <table>
 <tr><td width="5%"></td><td width="20%"><code>&quot;smallest&quot;</code></td><td width="75%">This is the default and it favors the
  class with the smallest index among the tied groups, i.e. the one that
@@ -125,7 +123,6 @@
 <tr><td width="5%"></td><td width="20%"><code>&quot;nearest&quot;</code></td><td width="75%">This randomly picks one class among the
  tied groups.</td></tr>
 </table>
-
 
  <table>
 <tr><td width="18%"><code>&quot;BucketSize&quot;</code></td><td width="2%"></td><td width="80%">The maximum number of data points in the
@@ -165,7 +162,6 @@
  <code>knnsearch</code> as specified below:</td></tr>
 </table>
 
-
  <table>
 <tr><td width="5%"></td><td width="20%"><code>&quot;euclidean&quot;</code></td><td width="75%">Euclidean distance.</td></tr>
 <tr><td width="5%"></td><td width="20%"><code>&quot;seuclidean&quot;</code></td><td width="75%">standardized Euclidean distance.  Each
@@ -200,7 +196,6 @@
  the distance between observations <var>XI</var> and <code>(<var>YI</var>k,:)</code>.</td></tr>
 </table>
 
-
  <table>
 <tr><td width="18%"><code>&quot;DistanceWeight&quot;</code></td><td width="2%"></td><td width="80%">A distance weighting function,
  specified either as a function handle, which accepts a matrix of nonnegative
@@ -221,7 +216,6 @@
  by <code>knnsearch</code> as specified below.</td></tr>
 </table>
 
-
  <table>
 <tr><td width="5%"></td><td width="20%"><code>&quot;kdtree&quot;</code></td><td width="75%">Creates and uses a Kd-tree to find nearest
  neighbors.  <code>&quot;kdtree&quot;</code> is the default value when the number of columns
@@ -234,7 +228,6 @@
  computing the distance values from all the points in <var>X</var> to each point in
  <var>Y</var>.</td></tr>
 </table>
-
 
 <p> <strong>See also: </strong>
   <a href="ClassificationKNN.html">ClassificationKNN</a>, 
