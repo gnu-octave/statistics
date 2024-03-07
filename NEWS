@@ -477,4 +477,6 @@
 
  ** mad/median: correct mad handling of vectors with multiple Infs
 
+ ** PiecewiseLinearDistribution: fix truncated `mean`, `std`, and `var` methods
+
  ** various fixes to avoid errors when testing the package functions
