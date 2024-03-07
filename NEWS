@@ -462,3 +462,19 @@
  ** unidfit: accepts frequency vector as third input argument
 
  ** unifit: accepts frequency vector as third input argument
+
+
+ Summary of important user-visible changes for statistics 1.6.5:
+-------------------------------------------------------------------
+
+ Important Notice: 1) `mad`, `mean`, `median`, `std`, `var` functions
+                      shadow core Octave's respective functions prior
+                      to Octave v9.1
+                   2) incompatibility with the `nan` package
+
+ Improvements:
+ =============
+
+ ** mad/median: correct mad handling of vectors with multiple Infs
+
+ ** various fixes to avoid errors when testing the package functions
