@@ -720,6 +720,7 @@ endfunction
 
 ## 'paramci' method
 %!shared x
+%! rand ("seed", 5);
 %! x = bisarnd (1, 1, [100, 1]);
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
 %! paramci (BirnbaumSaundersDistribution.fit (x), "alpha")

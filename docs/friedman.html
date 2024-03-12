@@ -82,8 +82,8 @@
  two-way layout.  <code>friedman</code> tests the null hypothesis that the column
  effects are all the same against the alternative that they are not all the
  same.
-</p><div class="ms-5">
-
+</p>
+<div class="ms-5">
 <p> <code>friedman</code> requires one up to three input arguments:
 </p>
  <ul>
@@ -98,7 +98,6 @@
  table, when it is &rsquo;on&rsquo; (default) and suppressing the display when it is &rsquo;off&rsquo;.
  </li></ul>
 
-
 <p> <code>friedman</code> returns up to three output arguments:
 </p>
  <ul>
@@ -111,7 +110,6 @@
  a multiple comparison of medians with the MULTCOMPARE function.
  </li></ul>
 
-
 <p> If friedman is called without any output arguments, then it prints the results
  in a one-way ANOVA table to the standard output as if <var>displayopt</var> is
  &rsquo;on&rsquo;.
@@ -123,11 +121,9 @@
  </pre></td></tr></table>
 
 
-
  <table><tr><td>&nbsp;</td><td><pre class="example"> [p, anovatab, stats] = friedman (popcorn, 3, &quot;off&quot;);
  disp (p);
  </pre></td></tr></table>
-
 
 <p> <strong>See also: </strong>
   <a href="anova2.html">anova2</a>, 

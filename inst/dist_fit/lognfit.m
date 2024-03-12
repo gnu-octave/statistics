@@ -181,6 +181,7 @@ endfunction
 
 ## Test output
 %!test
+%! randn ("seed", 1);
 %! x = lognrnd (3, 5, [1000, 1]);
 %! [paramhat, paramci] = lognfit (x, 0.01);
 %! assert (paramci(1,1) < 3);

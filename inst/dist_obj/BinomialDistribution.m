@@ -711,6 +711,7 @@ endfunction
 
 ## 'paramci' method
 %!shared x
+%! rand ("seed", 2);
 %! x = binornd (5, 0.5, [1, 100]);
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
 %! paramci (BinomialDistribution.fit (x, 6), "alpha")

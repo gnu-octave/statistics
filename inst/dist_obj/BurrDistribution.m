@@ -757,6 +757,7 @@ endfunction
 
 ## 'paramci' method
 %!shared x
+%! rand ("seed", 4);
 %! x = burrrnd (1, 1, 1, [1, 100]);
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
 %! paramci (BurrDistribution.fit (x), "alpha")

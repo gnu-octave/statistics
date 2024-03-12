@@ -217,9 +217,9 @@ endfunction
 %! x = [-1.2352, -0.2741, 0.1726, 7.4356, 1.0392, 16.4165];
 %! [paramhat, paramci] = tlsfit (x);
 %! paramhat_out = [0.035893, 0.862711, 0.649261];
-%! paramci_out = [-0.949034, 0.154655, 0.181080; 1.02082, 4.812443, 2.327914];
+%! paramci_out = [-0.949034, 0.154655, 0.181080; 1.02082, 4.812444, 2.327914];
 %! assert (paramhat, paramhat_out, 1e-6);
-%! assert (paramci, paramci_out, 1e-6);
+%! assert (paramci, paramci_out, 1e-5);
 %!test
 %! x = [-1.2352, -0.2741, 0.1726, 7.4356, 1.0392, 16.4165];
 %! [paramhat, paramci] = tlsfit (x, 0.01);

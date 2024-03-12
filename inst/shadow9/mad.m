@@ -237,7 +237,7 @@ function m = mad (x, flag=0, varargin)
         v = sort (abs (x - c));
         m = (v(k) + v(k + 1)) / 2;
       endif
-      m(sum (isinf (x)) > 0) = Inf;
+      m(sum (isinf (x)) >= 0.5 * numel (x)) = Inf;
 
     else              # Compute mean absolute deviation
       x = x(! isnan (x));
@@ -249,7 +249,7 @@ function m = mad (x, flag=0, varargin)
   else
     if (flag)         # Compute median absolute deviation
       m = median (abs (x - median(x, dim, "omitnan")), dim, "omitnan");
-      m(sum (isinf (x), 2) > 0) = Inf;
+      m(sum (isinf (x), 1) > 0.5 * size (x, 1)) = Inf;
 
     else              # Compute mean absolute deviation
       idx = isnan (x);
@@ -260,8 +260,9 @@ function m = mad (x, flag=0, varargin)
       x2 = abs (x - m1);
       x2(idx) = 0;
       m = sum (x2, dim) ./ n;
-      m(sum (isinf (x), 2) > 0) = Inf;
+      m(sum (isinf (x), 1) > 0) = Inf;
     endif
+      m(all (isinf (x), 1)) = NaN;
   endif
 
   if (perm_flag)
@@ -288,7 +289,6 @@ endfunction
 %!assert (mad ([1,2,3]',0,2), zeros (3,1))
 %!assert (mad ([1,2,3]',1,2), zeros (3,1))
 %!assert (mad ([1,2,3]',0,1), 2/3)
-%!assert (mad ([1,2,3]',1,1), 1)
 %!assert (mad ([1,2,3]',1,1), 1)
 
 ## Test vector or matrix input with scalar DIM
@@ -352,13 +352,45 @@ endfunction
 %!assert (mad ([-Inf Inf], 1), NaN)
 %!assert (mad ([3 Inf]), Inf)
 %!assert (mad ([3 4 Inf]), Inf)
-%!assert (mad ([3 4 Inf], 1), Inf)
 %!assert (mad ([Inf 3 4]), Inf)
-%!assert (mad ([Inf 3 4], 1), Inf)
 %!assert (mad ([Inf 3 Inf]), Inf)
 %!assert (mad ([Inf 3 Inf], 1), Inf)
 %!assert (mad ([1 2; 3 Inf]), [1 Inf])
 %!assert (mad ([1 2; 3 Inf], 1), [1 Inf])
+
+%!assert (mad ([3, 4, Inf]), Inf)
+%!assert (mad ([Inf, 3, 4]), Inf)
+%!assert (mad ([3, 4, Inf], 0), Inf)
+%!assert (mad ([3, 4, Inf], 0, 1), [0, 0, NaN])
+%!assert (mad ([3, 4, Inf], 0, 2), Inf)
+%!assert (mad ([3, 4, Inf], 0, 3), [0, 0, NaN])
+%!assert (mad ([3, 4, Inf]', 0), Inf)
+%!assert (mad ([3, 4, Inf]', 0, 1), Inf)
+%!assert (mad ([3, 4, Inf]', 0, 2), [0; 0; NaN])
+%!assert (mad ([3, 4, Inf]', 0, 3), [0; 0; NaN])
+
+%!assert (mad ([Inf, 3, 4], 1), 1)
+%!assert (mad ([3, 4, Inf], 1), 1)
+%!assert (mad ([3, 4, Inf], 1, 1), [0, 0, NaN])
+%!assert (mad ([3, 4, Inf], 1, 2), 1)
+%!assert (mad ([3, 4, Inf], 1, 3), [0, 0, NaN])
+%!assert (mad ([3, 4, Inf]', 1), 1)
+%!assert (mad ([3, 4, Inf]', 1, 1), 1)
+%!assert (mad ([3, 4, Inf]', 1, 2), [0; 0; NaN])
+%!assert (mad ([3, 4, Inf]', 1, 3), [0; 0; NaN])
+
+%!assert (mad ([3, Inf, Inf], 1), Inf)
+%!assert (mad ([3, 4, 5, Inf], 1), 1)
+%!assert (mad ([3, 4, Inf, Inf], 1), Inf)
+%!assert (mad ([3, Inf, Inf, Inf], 1), Inf)
+
+%!assert (mad ([1, 2; 3, 4; Inf, Inf], 0), [Inf, Inf])
+%!assert (mad ([1, 2; 3, 4; Inf, Inf], 1), [2, 2])
+%!assert (mad ([1, 2; 3, Inf; Inf, Inf], 1), [2, Inf])
+%!assert (mad ([1, 2; 3, 4; 5, 6; Inf, Inf], 1), [2, 2])
+%!assert (mad ([1, 2; 3, 4; 5, Inf; Inf, Inf], 1), [2, Inf])
+%!assert (mad ([Inf, 2; Inf, 4; Inf, Inf], 0), [NaN, Inf])
+%!assert (mad ([Inf, 2; Inf, 4; Inf, Inf], 1), [NaN, 2])
 
 %!assert (mad ([]), NaN)
 %!assert (mad (ones(1,0)), NaN)
@@ -384,6 +416,27 @@ endfunction
 %!assert (mad([1 2 4i; 3 2i 4], 1), [1, 1.4142, 2.8284], 1e-4)
 %!assert (mad([1 2 4i; 3 2i 4], 1, 2), [1; 1])
 %!assert (mad([1 2 4i; 3 2i 4], 0, 2), [1.9493; 1.8084], 1e-4)
+
+## Test all-inf handling
+%!assert <*65405> (mad ([-Inf Inf]), NaN)
+%!assert <*65405> (mad ([-Inf Inf], 0), NaN)
+%!assert <*65405> (mad ([-Inf Inf], 1), NaN)
+%!assert <*65405> (mad ([-Inf Inf]', 0), NaN)
+%!assert <*65405> (mad ([-Inf Inf]', 1), NaN)
+%!assert <*65405> (mad ([-Inf Inf]', 0, 1), NaN)
+%!assert <*65405> (mad ([-Inf Inf]', 0, 2), [NaN; NaN])
+%!assert <*65405> (mad ([-Inf Inf]', 0, 3), [NaN; NaN])
+%!assert <*65405> (mad ([-Inf Inf]', 1, 1), NaN)
+%!assert <*65405> (mad ([-Inf Inf]', 1, 2), [NaN; NaN])
+%!assert <*65405> (mad ([-Inf Inf]', 1, 3), [NaN; NaN])
+%!assert <*65405> (mad (Inf(2), 0), [NaN, NaN])
+%!assert <*65405> (mad (Inf(2), 1), [NaN, NaN])
+%!assert <*65405> (mad (Inf(2), 0, 1), [NaN, NaN])
+%!assert <*65405> (mad (Inf(2), 0, 2), [NaN; NaN])
+%!assert <*65405> (mad (Inf(2), 0, 3), NaN(2))
+%!assert <*65405> (mad (Inf(2), 1, 1), [NaN, NaN])
+%!assert <*65405> (mad (Inf(2), 1, 2), [NaN; NaN])
+%!assert <*65405> (mad (Inf(2), 1, 3), NaN(2))
 
 ## Test input case insensitivity
 %!assert (mad ([1 2 3], 0, "aLL"), 2/3)

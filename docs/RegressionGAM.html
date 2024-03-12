@@ -77,8 +77,8 @@
 
 <p> Create a <code>RegressionGAM</code> class object containing a Generalised Additive
  Model (GAM) for regression.
-</p><div class="ms-5">
-
+</p>
+<div class="ms-5">
 <p> A <code>RegressionGAM</code> class object can store the predictors and response
  data along with various parameters for the GAM model.  It is recommended to
  use the <code>fitrgam</code> function to create a <code>RegressionGAM</code> object.
@@ -97,7 +97,6 @@
  corresponding to the predictor data in <var>X</var>. <var>Y</var> must have same
  number of rows as <var>X</var>.
  </li></ul>
-
 
 <p> <code><var>obj</var> = RegressionGAM (&hellip;, <var>name</var>, <var>value</var>)</code> returns
  an object of class RegressionGAM with additional properties specified by
@@ -158,7 +157,6 @@
 <tr><td width="5%"></td><td width="20%"><code>&quot;tol&quot;</code></td><td width="75%">a positive scalar to set the tolerance for
  covergence during training. By defaul, it is set to <code>1e-3</code>.</td></tr>
 </table>
-
 
 <p> You can parse either a <code>&quot;formula&quot;</code> or an <code>&quot;interactions&quot;</code>
  optional parameter.  Parsing both parameters will result an error.

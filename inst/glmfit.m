@@ -134,6 +134,7 @@ endfunction
 %! X = rand (50, 1);
 %! b_true = [0.4; 1.5];
 %! mu_true = exp (b_true(1) + b_true(2) * X);
+%! randp ("seed", 1);
 %! y = poissrnd (mu_true);
 %! b = glmfit(X, y, "poisson", "link", "log");
 %! assert(b(1), b_true(1), 0.5);
