@@ -6,6 +6,7 @@ Clustering
  confusionmat
  cophenet
  crossval
+ editDistance
  evalclusters
  inconsistent
  kmeans

@@ -480,3 +480,19 @@
  ** PiecewiseLinearDistribution: fix truncated `mean`, `std`, and `var` methods
 
  ** various fixes to avoid errors when testing the package functions
+
+
+ Summary of important user-visible changes for statistics 1.6.6:
+-------------------------------------------------------------------
+
+ Important Notice: 1) `mad`, `mean`, `median`, `std`, `var` functions
+                      shadow core Octave's respective functions prior
+                      to Octave v9.1
+                   2) incompatibility with the `nan` package
+ New functions:
+ ==============
+
+ ** editDistance
+
+ Improvements:
+ =============
