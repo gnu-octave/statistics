@@ -1,4 +1,4 @@
-clear -f libsvmread libsvmwrite svmpredict svmtrain
+clear -f editDistance libsvmread libsvmwrite svmpredict svmtrain
 
 if (compare_versions (version (), "9", "<"))
   a1_e324kporit985_itogj3_dirlist = ...
