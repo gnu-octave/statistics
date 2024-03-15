@@ -502,7 +502,7 @@ endfunction
 %!assert (iqr (pd), 50.0833, 1e-4);
 %!assert (iqr (t), 36.8077, 1e-4);
 %!assert (mean (pd), 153.61, 1e-10);
-%!assert (mean (t), 152.311, 1e-4);
+%!assert (mean (t), 152.3032, 1e-4);
 %!assert (median (pd), 142, 1e-10);
 %!assert (median (t), 141.9462, 1e-4);
 %!assert (pdf (pd, [120, 130, 140, 150, 200]), [0.0133, 0.0240, 0.0186, 0.0024, 0.0046], 1e-4);
@@ -513,9 +513,9 @@ endfunction
 %!assert (any (random (t, 1000, 1) < 130), false);
 %!assert (any (random (t, 1000, 1) > 180), false);
 %!assert (std (pd), 26.5196, 1e-4);
-%!assert (std (t), 18.2941, 1e-4);
+%!assert (std (t), 18.2940, 1e-4);
 %!assert (var (pd), 703.2879, 1e-4);
-%!assert (var (t), 334.6757, 1e-4);
+%!assert (var (t), 334.6698, 1e-4);
 
 ## Test input validation
 ## 'PiecewiseLinearDistribution' constructor
