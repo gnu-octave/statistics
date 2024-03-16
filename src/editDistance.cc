@@ -86,7 +86,7 @@ int LevensDist (const string& s1, const string& s2)
 }
 
 // Function for comparing the Levenshtein distance against a minimum distance
-bool minLevensDist (const string& s1, const string& s2, int minDist)
+bool minLevensDist (const string& s1, const string& s2, int const& minDist)
 {
   int rows = s1.length() + 1;
 	int cols = s2.length() + 1;
@@ -195,6 +195,7 @@ identifying as @qcode{true} the pairs that DO NOT exceed @var{minDist}. \n\n\
       int sz = szA * (szA - 1) / 2;
       octave_idx_type idx = 0;
       Matrix D(sz, 1);
+      #pragma omp parallel for
       for (octave_idx_type i = 0; i < szA - 1; i++)
       {
         string s1 = strA(i).string_value();
@@ -265,6 +266,7 @@ identifying as @qcode{true} the pairs that DO NOT exceed @var{minDist}. \n\n\
       int sz = szA * (szA - 1) / 2;
       octave_idx_type idx = 0;
       boolMatrix D(sz, 1);
+      #pragma omp parallel for
       for (octave_idx_type i = 0; i < szA - 1; i++)
       {
         string s1 = strA(i).string_value();
