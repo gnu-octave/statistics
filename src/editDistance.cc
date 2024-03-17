@@ -39,7 +39,7 @@ int minimum (int a, int b, int c)
 
 
 // Function for computing the Levenshtein distance
-int LevensDist (const string& s1, const string& s2)
+int LevensDist (const string& s1, const string s2)
 {
   const int rows = s1.length() + 1;
 	const int cols = s2.length() + 1;
@@ -86,7 +86,7 @@ int LevensDist (const string& s1, const string& s2)
 }
 
 // Function for comparing the Levenshtein distance against a minimum distance
-bool minLevensDist (const string& s1, const string& s2, int const& minDist)
+bool minLevensDist (const string& s1, const string& s2, int const minDist)
 {
   int rows = s1.length() + 1;
 	int cols = s2.length() + 1;
@@ -172,18 +172,42 @@ identifying as @qcode{true} the pairs that DO NOT exceed @var{minDist}. \n\n\
 @end deftypefn")
 {
   int nargin = args.length();
-  // check for invalid number of input arguments
+  // Check for invalid number of input arguments
   if (nargin > 3)
   {
     error ("editDistance: too many input arguments.");
   }
+  // Check for last argument being numeric (minDist)
+  int minDist;
+  bool doMinDist;
+  if (nargin > 1 && args(nargin-1).isnumeric())
+  {
+    // Check minDist input argument
+    if (args(nargin-1).numel() != 1)
+    {
+      error ("editDistance: minDist must be a scalar value.");
+    }
+    Matrix tmp = args(nargin-1).matrix_value();
+    if (tmp(0,0) < 0 || floor (tmp(0,0)) != tmp(0,0))
+    {
+      error ("editDistance: minDist must be a nonnegative integer.");
+    }
+    minDist = static_cast<int>(tmp(0,0));
+    doMinDist = true;
+    nargin--;
+  }
+  else
+  {
+    doMinDist = false;
+  }
+  // Check cases of string arguments
   octave_value_list retval;
   if (nargin == 1)
   {
     if (args(0).iscellstr())
     {
       // Get cellstr input argument
-      Cell strA = args(0).cellstr_value();
+      const Cell strA = args(0).cellstr_value();
       int szA = strA.numel();
       // For scalar input return distance to itself, i.e. 0
       if (szA == 1)
@@ -194,22 +218,39 @@ identifying as @qcode{true} the pairs that DO NOT exceed @var{minDist}. \n\n\
       // Compute the distance vector
       int sz = szA * (szA - 1) / 2;
       octave_idx_type idx = 0;
-      Matrix D(sz, 1);
-      #pragma omp parallel for
-      for (octave_idx_type i = 0; i < szA - 1; i++)
+      if (doMinDist)
       {
-        string s1 = strA(i).string_value();
-        for (octave_idx_type j = i + 1; j < szA; j++)
+        boolMatrix D(sz, 1);
+        #pragma omp parallel for
+        for (octave_idx_type i = 0; i < szA - 1; i++)
         {
-          D(idx++, 0) = LevensDist (s1, strA(j).string_value());
+          string s1 = strA(i).string_value();
+          for (octave_idx_type j = i + 1; j < szA; j++)
+          {
+            D(idx++,0) = minLevensDist (s1, strA(j).string_value(), minDist);
+          }
         }
+        retval(0) = D;
       }
-      retval(0) = D;
+      else
+      {
+        Matrix D(sz, 1);
+        #pragma omp parallel for
+        for (octave_idx_type i = 0; i < szA - 1; i++)
+        {
+          string s1 = strA(i).string_value();
+          for (octave_idx_type j = i + 1; j < szA; j++)
+          {
+            D(idx++, 0) = LevensDist (s1, strA(j).string_value());
+          }
+        }
+        retval(0) = D;
+      }
       return retval;
     }
     else
     {
-      error ("editDistance: single input argument must be a cellstr.");
+      error ("editDistance: STR1 must be a cellstr.");
     }
   }
   else if (nargin == 2)
@@ -217,123 +258,102 @@ identifying as @qcode{true} the pairs that DO NOT exceed @var{minDist}. \n\n\
     if (args(0).iscellstr() && args(1).iscellstr())
     {
       // Get cellstr input arguments
-      Cell strA = args(0).cellstr_value();
-      Cell strB = args(1).cellstr_value();
+      const Cell strA = args(0).cellstr_value();
+      const Cell strB = args(1).cellstr_value();
+      // Check cellstr sizes match
       int szA = strA.numel();
       int szB = strB.numel();
-      // Check cellstr sizes match
-      if (szA != szB)
+      if (szA != 1 && szB != 1 && szA != szB)
       {
         error ("editDistance: cellstr input arguments size mismatch.");
       }
       // Compute the distance vector
-      Matrix D (szA, 1);
-      for (octave_idx_type i = 0; i < szA; i++)
+      if (szA == 1 && szB != 1)
       {
-        D(i,0) = LevensDist (strA(i).string_value(), strB(i).string_value());
+        if (doMinDist)
+        {
+          boolMatrix D (szB, 1);
+          for (octave_idx_type i = 0; i < szB; i++)
+          {
+            D(i,0) = minLevensDist (strA(0).string_value(),
+                                    strB(i).string_value(), minDist);
+          }
+          retval(0) = D;
+        }
+        else
+        {
+          Matrix D (szB, 1);
+          for (octave_idx_type i = 0; i < szB; i++)
+          {
+            D(i,0) = LevensDist (strA(0).string_value(),
+                                 strB(i).string_value());
+          }
+          retval(0) = D;
+        }
       }
-      retval(0) = D;
-      return retval;
+      else if (szA != 1 && szB == 1)
+      {
+        if (doMinDist)
+        {
+          boolMatrix D (szA, 1);
+          for (octave_idx_type i = 0; i < szA; i++)
+          {
+            D(i,0) = minLevensDist (strA(i).string_value(),
+                                    strB(0).string_value(), minDist);
+          }
+          retval(0) = D;
+        }
+        else
+        {
+          Matrix D (szA, 1);
+          for (octave_idx_type i = 0; i < szA; i++)
+          {
+            D(i,0) = LevensDist (strA(i).string_value(),
+                                 strB(0).string_value());
+          }
+          retval(0) = D;
+        }
+      }
+      else
+      {
+        if (doMinDist)
+        {
+          boolMatrix D (szA, 1);
+          for (octave_idx_type i = 0; i < szA; i++)
+          {
+            D(i,0) = minLevensDist (strA(i).string_value(),
+                                    strB(i).string_value(), minDist);
+          }
+          retval(0) = D;
+        }
+        else
+        {
+          Matrix D (szA, 1);
+          for (octave_idx_type i = 0; i < szA; i++)
+          {
+            D(i,0) = LevensDist (strA(i).string_value(),
+                                 strB(i).string_value());
+          }
+          retval(0) = D;
+        }
+      }
+
     }
     else if (args(0).is_string() && args(1).is_string())
     {
-      retval(0) = LevensDist (args(0).string_value(), args(1).string_value());
-      return retval;
-    }
-    else if (args(0).iscellstr() && args(1).isnumeric())
-    {
-      // Check minDist input argument
-      if (args(1).numel() != 1)
+      if (doMinDist)
       {
-        error ("editDistance: minDist must be a scalar value.");
+        retval(0) = minLevensDist (args(0).string_value(),
+                                   args(1).string_value(), minDist);
       }
-      Matrix tmp = args(1).matrix_value();
-      if (tmp(0,0) < 0 || floor (tmp(0,0)) != tmp(0,0))
+      else
       {
-        error ("editDistance: minDist must be a nonnegative integer.");
+        retval(0) = LevensDist (args(0).string_value(), args(1).string_value());
       }
-      int minDist = static_cast<int>(tmp(0,0));
-      // Get cellstr input argument
-      Cell strA = args(0).cellstr_value();
-      int szA = strA.numel();
-      // For scalar input return comparison with itself, i.e. true
-      if (szA == 1)
-      {
-        retval(0) = true;
-        return retval;
-      }
-      // Compute the distance vector
-      int sz = szA * (szA - 1) / 2;
-      octave_idx_type idx = 0;
-      boolMatrix D(sz, 1);
-      #pragma omp parallel for
-      for (octave_idx_type i = 0; i < szA - 1; i++)
-      {
-        string s1 = strA(i).string_value();
-        for (octave_idx_type j = i + 1; j < szA; j++)
-        {
-          D(idx++,0) = minLevensDist (s1, strA(j).string_value(), minDist);
-        }
-      }
-      retval(0) = D;
-      return retval;
     }
     else
     {
-      error ("editDistance: invalid types of input arguments.");
-    }
-  }
-  else
-  {
-    if (args(0).iscellstr() && args(1).iscellstr() && args(2).isnumeric())
-    {
-      // Check minDist input argument
-      if (args(2).numel() != 1)
-      {
-        error ("editDistance: minDist must be a scalar value.");
-      }
-      Matrix tmp = args(2).matrix_value();
-      if (tmp(0,0) < 0 || floor (tmp(0,0)) != tmp(0,0))
-      {
-        error ("editDistance: minDist must be a nonnegative integer.");
-      }
-      int minDist = static_cast<int>(tmp(0,0));
-      // Get cellstr input arguments
-      Cell strA = args(0).cellstr_value();
-      Cell strB = args(1).cellstr_value();
-      int szA = strA.numel();
-      int szB = strB.numel();
-      // Check cellstr sizes match
-      if (szA != szB)
-      {
-        error ("editDistance: cellstr input arguments size mismatch.");
-      }
-      // Create a distance vector
-      boolMatrix D (szA, 1);
-      for (octave_idx_type i = 0; i < szA; i++)
-      {
-        D(i,0) = minLevensDist (strA(i).string_value(),
-                                strB(i).string_value(), minDist);
-      }
-      retval(0) = D;
-      return retval;
-    }
-    else if (args(0).is_string() && args(1).is_string() && args(2).isnumeric())
-    {
-      // Check minDist input argument
-      if (args(2).numel() != 1)
-      {
-        error ("editDistance: minDist must be a scalar value.");
-      }
-      Matrix tmp = args(2).matrix_value();
-      if (tmp(0,0) < 0 || floor (tmp(0,0)) != tmp(0,0))
-      {
-        error ("editDistance: minDist must be a nonnegative integer.");
-      }
-      int minDist = static_cast<int>(tmp(0,0));
-      retval(0) = minLevensDist (args(0).string_value(),
-                                 args(1).string_value(), minDist);
-      return retval;
+      error ("editDistance: STR1 and STR2 must be either strings or cellstr.");
     }
   }
   return retval;
@@ -341,36 +361,42 @@ identifying as @qcode{true} the pairs that DO NOT exceed @var{minDist}. \n\n\
 
 /*
 %!error <editDistance: too many input arguments.> d = editDistance (1, 2, 3, 4);
-%!error <editDistance: single input argument must be a cellstr.> ...
-%! d = editDistance ([1, 2, 3]);
-%!error <editDistance: single input argument must be a cellstr.> ...
-%! d = editDistance (["AS","SD","AD", "AS"]);
-%!error <editDistance: cellstr input arguments size mismatch.> ...
-%! d = editDistance ({"AS","SD","AD"}, {"AS", "AS"});
 %!error <editDistance: minDist must be a scalar value.> ...
 %! d = editDistance ({"AS","SD","AD"}, [1, 2]);
 %!error <editDistance: minDist must be a nonnegative integer.> ...
 %! d = editDistance ({"AS","SD","AD"}, -2);
 %!error <editDistance: minDist must be a nonnegative integer.> ...
 %! d = editDistance ({"AS","SD","AD"}, 1.25);
-%!error <editDistance: invalid types of input arguments.> ...
-%! d = editDistance (["AS","SD","AD"], 2);
-%!error <editDistance: invalid types of input arguments.> ...
-%! d = editDistance (["AS","SD","AD"], 2);
 %!error <editDistance: minDist must be a scalar value.> ...
 %! d = editDistance ({"AS","SD","AD"}, {"AS","SD","AD"}, [1, 2]);
 %!error <editDistance: minDist must be a nonnegative integer.> ...
 %! d = editDistance ({"AS","SD","AD"}, {"AS","SD","AD"}, -2);
 %!error <editDistance: minDist must be a nonnegative integer.> ...
 %! d = editDistance ({"AS","SD","AD"}, {"AS","SD","AD"}, 1.25);
-%!error <editDistance: cellstr input arguments size mismatch.> ...
-%! d = editDistance ({"AS","SD","AD"}, {"AS","SD","AD", "AF"}, 2);
 %!error <editDistance: minDist must be a scalar value.> ...
 %! d = editDistance ("string1", "string2", [1, 2]);
 %!error <editDistance: minDist must be a nonnegative integer.> ...
 %! d = editDistance ("string1", "string2", -2);
 %!error <editDistance: minDist must be a nonnegative integer.> ...
 %! d = editDistance ("string1", "string2", 1.25);
+%!error <editDistance: STR1 must be a cellstr.> ...
+%! d = editDistance ([1, 2, 3]);
+%!error <editDistance: STR1 must be a cellstr.> ...
+%! d = editDistance (["AS","SD","AD","AS"]);
+%!error <editDistance: STR1 must be a cellstr.> ...
+%! d = editDistance (["AS","SD","AD"], 2);
+%!error <editDistance: STR1 and STR2 must be either strings or cellstr.> ...
+%! d = editDistance (logical ([1,2,3]), {"AS","AS","AD"});
+%!error <editDistance: STR1 and STR2 must be either strings or cellstr.> ...
+%! d = editDistance ({"AS","SD","AD"}, logical ([1,2,3]));
+%!error <editDistance: STR1 and STR2 must be either strings or cellstr.> ...
+%! d = editDistance ([1,2,3], {"AS","AS","AD"});
+%!error <editDistance: STR1 and STR2 must be either strings or cellstr.> ...
+%! d = editDistance ({"AS","SD","AD"}, {1,2,3});
+%!error <editDistance: cellstr input arguments size mismatch.> ...
+%! d = editDistance ({"AS","SD","AD"}, {"AS", "AS"});
+%!error <editDistance: cellstr input arguments size mismatch.> ...
+%! d = editDistance ({"AS","SD","AD"}, {"AS","SD","AD","AF"}, 2);
 %!test
 %! d = editDistance ({"AS","SD","AD"});
 %! assert (d, [2; 1; 1]);
@@ -384,7 +410,23 @@ identifying as @qcode{true} the pairs that DO NOT exceed @var{minDist}. \n\n\
 %! assert (d, [0; 1; 2]);
 %! assert (class (d), "double");
 %!test
+%! d = editDistance ({"AS","SD","AD"}, {"AS"});
+%! assert (d, [0; 2; 1]);
+%! assert (class (d), "double");
+%!test
+%! d = editDistance ({"AS"}, {"AS","SD","AD"});
+%! assert (d, [0; 2; 1]);
+%! assert (class (d), "double");
+%!test
 %! d = editDistance ({"AS","SD","AD"}, {"AS", "AD", "SE"}, 1);
+%! assert (d, logical ([1; 1; 0]));
+%! assert (class (d), "logical");
+%!test
+%! d = editDistance ({"AS","SD","AD"}, {"AS"}, 1);
+%! assert (d, logical ([1; 0; 1]));
+%! assert (class (d), "logical");
+%!test
+%! d = editDistance ({"AS"}, {"AS", "AD", "SE"}, 1);
 %! assert (d, logical ([1; 1; 0]));
 %! assert (class (d), "logical");
 %!test
