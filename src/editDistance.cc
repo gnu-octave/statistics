@@ -178,6 +178,23 @@ vector<vector<int>> IAcellvec (const boolMatrix& B)
   return IAcell;
 }
 
+// Transform to IAcellvec to Cell
+Cell IA2cell (const vector<vector<int>>& IAc, const vector<int>& IAv)
+{
+  Cell IA(IAv.size(), 1);
+  for (octave_idx_type i = 0; i < IAv.size(); i++)
+  {
+    int idx = IAv[i];
+    Matrix IAidx(IAc[idx].size(), 1);
+    for (octave_idx_type j = 0; j < IAc[idx].size(); j++)
+    {
+      IAidx(j,0) = IAc[idx][j] + 1;
+    }
+    IA(i,0) = IAidx;
+  }
+  return IA;
+}
+
 // Compute unique indexing IA vector
 vector<int> IAvector (const vector<vector<int>>& IAcell)
 {
@@ -208,41 +225,182 @@ vector<int> IAvector (const vector<vector<int>>& IAcell)
   return IA;
 }
 
+// Transform to IAvector to Matrix
+Matrix IA2mat (const vector<int>& IAv)
+{
+  Matrix IA(IAv.size(), 1);
+  for (octave_idx_type i = 0; i < IAv.size(); i++)
+  {
+    IA(i,0) = IAv[i] + 1;
+  }
+  return IA;
+}
+
+// Compute unique indexing IA vector
+Matrix ICvector (const vector<vector<int>>& IAc, const int& szA)
+{
+  Matrix IC(szA, 1);
+  vector<int> IC_done;
+  for (int i = 0; i < IAc.size(); i++)
+  {
+    for (int j = 0; j < IAc[i].size(); j++)
+    {
+      if (binary_search(IC_done.begin(), IC_done.end(), IAc[i][j]))
+      {
+        break;
+      }
+      else
+      {
+        octave_idx_type idx = IAc[i][j];
+        IC(idx,0) = i + 1;
+        IC_done.push_back(IAc[i][j]);
+      }
+    }
+  }
+  return IC;
+}
+
+// Functionality for uniquetol
+octave_value_list uniquetol (const int& nargout, const Cell& A, const Matrix& D,
+                             const int& minDist, const bool& OutputAllIndices)
+{
+  octave_value_list retval (nargout);
+  boolMatrix B = double2bool (D, minDist);
+  vector<vector<int>> IAc = IAcellvec (B);
+  vector<int> IAv = IAvector (IAc);
+  // Build cellstr with unique elements
+  Cell C(IAv.size(), 1);
+  if (A.iscellstr())
+  {
+    for (octave_idx_type i = 0; i < IAv.size(); i++)
+    {
+      C(i,0) = A(IAv[i]).string_value();
+    }
+  }
+  else
+  {
+    for (octave_idx_type i = 0; i < IAv.size(); i++)
+    {
+      C(i,0) = A.elem(IAv[i]);
+    }
+  }
+  retval(0) = C;
+  // Build IA vector output
+  if (nargout > 1 && OutputAllIndices)
+  {
+    retval(1) = IA2cell (IAc, IAv);
+  }
+  else if (nargout > 1)
+  {
+    retval(1) = IA2mat (IAv);
+  }
+  // Build IC vector output
+  if (nargout > 2)
+  {
+    retval(2) = ICvector (IAc, A.numel());
+  }
+  return retval;
+}
+
+// Expand a cell scalar to a cell vector
+Cell expand (const Cell& IN, const int& sz)
+{
+  //octave_idx_type sz = static_cast<int>(sz_out);
+  Cell OUT(sz, 1);
+  for (octave_idx_type i = 0; i < sz; i++)
+  {
+    OUT(i,0) = IN.elem(0);
+  }
+  return OUT;
+}
+
 DEFUN_DLD(editDistance, args, nargout,
           "-*- texinfo -*-\n\
- @deftypefn  {statistics} {@var{d} =} editDistance (@var{str1})\n\
- @deftypefnx {statistics} {@var{d} =} editDistance (@var{doc1})\n\
+ @deftypefn  {statistics} {@var{d} =} editDistance (@var{str})\n\
+ @deftypefnx {statistics} {@var{d} =} editDistance (@var{doc})\n\
  @deftypefnx {statistics} {@var{C} =} editDistance (@dots{}, @var{minDist})\n\
  @deftypefnx {statistics} {[@var{C}, @var{IA}, @var{IC}] =} editDistance @\
  (@dots{}, @var{minDist})\n\
  @deftypefnx {statistics} {[@var{C}, @var{IA}, @var{IC}] =} editDistance @\
- (@dots{}, @var{minDist}, @qcode{\"OutputAllIndices\"}, @qcode{true})\n\
- @deftypefnx {statistics} {[@var{C}, @var{IA}, @var{IC}] =} editDistance @\
- (@dots{}, @var{minDist}, @qcode{\"OutputAllIndices\"}, @qcode{false})\n\
+ (@dots{}, @var{minDist}, @qcode{\"OutputAllIndices\"}, @var{value})\n\
  @deftypefnx {statistics} {@var{d} =} editDistance (@var{str1}, @var{str2})\n\
- @deftypefnx {statistics} {@var{d} =} editDistance (@dots{}, @var{minDist})\n\
+ @deftypefnx {statistics} {@var{d} =} editDistance (@var{doc1}, @var{doc2})\n\
 \n\
 \n\
-Compute the edit (Levenshtein) distance between character vectors. \
+Compute the edit (Levenshtein) distance between strings or documents. \
 \n\n\
-@code{@var{d} = editDistance (@var{str1})} takes a cell array of character \
-vectors and computes the Levenshtein distance between each pair of elements in \
-@var{str1}.  If @var{str1} is a @qcode{cellstr} vector with @math{N} elements, \
-the distance @var{d} is an @math{(N * (N-1)) / 2)} column vector of doubles. \
-If @var{str1} is an array (that is @code{all (size (str1) > 1) = true}), then \
-it is converted to a column vector as in @code{str1 = str1(:)}. \n\n\
+@code{@var{d} = editDistance (@var{str})} takes a cell array of character \
+vectors and computes the Levenshtein distance between each pair of strings in \
+@var{str} as the lowest number of grapheme insertions, deletions, and \
+substitutions required to convert string @qcode{@var{str}@{1@}} to string \
+@qcode{@var{str}@{2@}}.  If @var{str} is a @qcode{cellstr} vector with \
+@math{N} elements, the returned distance @var{d} is an @math{(N * (N-1)) / 2)} \
+column vector of doubles.  If @var{str} is an array (that is @code{all (size \
+(str) > 1) = true}), then it is transformed to a column vector as in \
+@code{str = str(:)}.  @code{editDistance} expects @var{str} to be a column \
+vector, if it is row vector, it is transformed to a column vector.\n\n\
+\
+@code{@var{d} = editDistance (@var{doc})} can also take a cell array \
+containing cell arrays of character vectors, in which case each element of \
+@var{doc} is regarded as a document, and the character vector in each element \
+of the cell string array is regarded a token.  @code{editDistance} computes \
+the Levenshtein distance between each pair of cell elements in @var{doc} as \
+the lowest number of token insertions, deletions, and substitutions required \
+to convert document @qcode{@var{doc}@{1@}} to document @qcode{@var{doc}@{2@}}. \
+If @var{doc} is a @qcode{cell} vector with @math{N} elements, the distance \
+@var{d} is an @math{(N * (N-1)) / 2)} column vector of doubles.  If @var{doc} \
+is an array (that is @code{all (size (doc) > 1) = true}), then it is converted \
+to a column vector as in @code{doc = doc(:)}.\n\n\
+\
+@code{@var{C} = editDistance (@dots{}, @var{minDist})} specifies a minimum \
+distance, @var{minDist}, which is regarded as a similarity threshold between \
+each pair of strings or documents, defined in the previous syntaces.  In this \
+case, @code{editDistance} resembles the functionality of the @code{uniquetol} \
+function and returns the unique strings or documents that are similar up to \
+@var{minDist} distance.  @var{C} is either a cellstring array or a cell array \
+of cellstrings, depending on the first input argument.\n\n\
+\
+@code{[@var{C}, @var{IA}, @var{IC}] = editDistance (@dots{}, @var{minDist})} \
+also returns index vectors @var{IA} and @var{IC}.  Assuming @var{A} contains \
+either strings @var{str} or documents @var{doc} as defined above, @var{IA} \
+is a column vector of indices to the first occurrence of similar elements such \
+that @qcode{@var{C} = @var{A}(@var{IA})}, and @var{IC} is a column vector of \
+indices such that @qcode{@var{A} ~ @var{C}(@var{IC})} where @qcode{~} means \
+that the strings or documents are within the specified distance @var{minDist} \
+of each other.\n\n\
+\
+@code{[@var{C}, @var{IA}, @var{IC}] = editDistance (@dots{}, @var{minDist}, \
+@qcode{\"OutputAllIndices\"}, @var{value})} specifies the type of the second \
+output index @var{IA}.  @var{value} must be a logical scalar.  When set to \
+@code{true}, @var{IA} is a cell array containing the vectors of indices for \
+ALL elements in @var{A} that are within the specified distance @var{minDist} \
+of each other.  Each cell in @var{IA} corresponds to a value in @var{C} and \
+the values in each cell correspond to locations in @var{A}.  If @var{value} is \
+set to @code{false}, then @var{IA} is returned as an index vector described in \
+the previous syntax.\n\n\
+\
 @code{@var{d} = editDistance (@var{str1}, @var{str2})} can also take two \
-character vectors, @var{str1} and @var{str2}, and compute the Levenshtein \
-distance between them or two cell arrays of character vectors and compute the \
-pairwise distance between them.  In the latter case, @var{str1} and @var{str2} \
-must have the same number of cell elements.  If @var{str1} and/or @var{str2} \
-are arrays (that is @code{all (size (str1) > 1) = true}), then they are \
-converted to a column vector as in @code{str1 = str1(:)}. \n\n\
-@code{@var{d} = editDistance (@dots{}, @var{minDist})} can also take an \
-optional argument, @var{minDist}, which defines an upper threshold of \
-Levenshtein distance to compare with.  This optional argument supports both \
-previous syntaxes, but the returned argument @var{d} is a logical vector \
-identifying as @qcode{true} the pairs that DO NOT exceed @var{minDist}. \n\n\
+character vectors, @var{str1} and @var{str2} and compute the Levenshtein \
+distance @var{d} as the lowest number of grapheme insertions, deletions, and \
+substitutions required to convert @var{str1} to @var{str2}.  @var{str1} and \
+@var{str2} may also be cellstring arrays, in which case the pairwise distance \
+is computed between @qcode{@var{str1}@{n@}} and @qcode{@var{str1}@{n@}}.  The \
+cellstring arrays must be of the same size or scalars, in which case the \
+scalar is expanded to the size of the other cellstring input.  The returned \
+distance @var{d} is a column vector with the same number of elements as the \
+cellstring arrays.  If @var{str1}  or @var{str2} is an array, then it is \
+transformed to a column vector.  @code{editDistance} expects both @var{str1} \
+and @var{str2} to be a column vectors, if not, they are transformed into \
+column vectors.\n\n\
+\
+@code{@var{d} = editDistance (@var{doc1}, @var{doc2})} can also take two cell \
+array containing cell arrays of character vectors, in which case each element \
+of @var{doc1} and @var{dos2} is regarded as a document, and the character \
+vector in each element of the cell string array is regarded a token.  \
+@code{editDistance} computes the pairwise Levenshtein distance between the \
+of cell elements in @var{doc1} and @var{doc2} as the lowest number of token \
+insertions, deletions, and substitutions required to convert document \
+@qcode{@var{doc1}@{n@}} to document @qcode{@var{doc1}@{n@}}.\n\n\
 @end deftypefn")
 {
   int nargin = args.length();
@@ -262,7 +420,8 @@ identifying as @qcode{true} the pairs that DO NOT exceed @var{minDist}. \n\n\
       }
       else
       {
-        error ("editDistance: value for OutputAllIndices must be a logical scalar.");
+        error ("editDistance: value for OutputAllIndices "
+               "must be a logical scalar.");
       }
       nargin--;
       nargin--;
@@ -296,6 +455,11 @@ identifying as @qcode{true} the pairs that DO NOT exceed @var{minDist}. \n\n\
   {
     doMinDist = false;
   }
+  // Check for invalid number of output arguments
+  if ((nargout > 3 && doMinDist) || (nargout > 1 && ! doMinDist))
+  {
+    error ("editDistance: too many output arguments.");
+  }
   // Check cases of string arguments
   octave_value_list retval (nargout);
   if (nargin == 1)
@@ -327,50 +491,10 @@ identifying as @qcode{true} the pairs that DO NOT exceed @var{minDist}. \n\n\
         }
         D(szA - 1,szA - 1) = 0;
       }
-      // If minDist is given, revert functionality from 'pdist' to 'uniquetol'
-      // and return a vector indexing similar strings
+      // If minDist is given, change functionality from 'pdist' to 'uniquetol'
       if (doMinDist)
       {
-        boolMatrix B = double2bool (D, minDist);
-        vector<vector<int>> IAc;
-        vector<int> IAv;
-        IAc = IAcellvec (B);
-        IAv = IAvector (IAc);
-        // Build cellstr with unique elements
-        Cell C(IAv.size(), 1);
-        for (octave_idx_type i = 0; i < IAv.size(); i++)
-        {
-          C(i,0) = strA(IAv[i]).string_value();
-        }
-        retval(0) = C;
-        // Build IA vector output
-        if (nargout > 1)
-        {
-          if (OutputAllIndices)
-          {
-            Cell IA(IAv.size(), 1);
-            for (octave_idx_type i = 0; i < IAv.size(); i++)
-            {
-              int idx = IAv[i];
-              Matrix IAidx(IAc[idx].size(), 1);
-              for (octave_idx_type j = 0; j < IAc[idx].size(); j++)
-              {
-                IAidx(j,0) = IAc[idx][j] + 1;
-              }
-              IA(i,0) = IAidx;
-            }
-            retval(1) = IA;
-          }
-          else
-          {
-            Matrix IA(IAv.size(), 1);
-            for (octave_idx_type i = 0; i < IAv.size(); i++)
-            {
-              IA(i,0) = IAv[i] + 1;
-            }
-            retval(1) = IA;
-          }
-        }
+        retval = uniquetol (nargout, strA, D, minDist, OutputAllIndices);
       }
       else
       {
@@ -381,10 +505,10 @@ identifying as @qcode{true} the pairs that DO NOT exceed @var{minDist}. \n\n\
     }
     else if (args(0).iscell())
     {
-      // Get cellstr input argument
+      // Get cell input argument
       const Cell docA = args(0).cell_value();
       int szA = docA.numel();
-      // Check that all cell elements contain cellstr arrays
+      // Check that all cell elements contain cellstring arrays
       for (octave_idx_type i = 0; i < szA - 1; i++)
       {
         Cell tmp = docA.elem(i);
@@ -416,50 +540,10 @@ identifying as @qcode{true} the pairs that DO NOT exceed @var{minDist}. \n\n\
         }
         D(szA - 1,szA - 1) = 0;
       }
-      // If minDist is given, revert functionality from 'pdist' to 'uniquetol'
-      // and return a vector indexing similar documents
+      // If minDist is given, change functionality from 'pdist' to 'uniquetol'
       if (doMinDist)
       {
-        boolMatrix B = double2bool (D, minDist);
-        vector<vector<int>> IAc;
-        vector<int> IAv;
-        IAc = IAcellvec (B);
-        IAv = IAvector (IAc);
-        // Build cellstr with unique elements
-        Cell C(IAv.size(), 1);
-        for (octave_idx_type i = 0; i < IAv.size(); i++)
-        {
-          C(i,0) = docA(IAv[i]).cell_value();
-        }
-        retval(0) = C;
-        // Build IA vector output
-        if (nargout > 1)
-        {
-          if (OutputAllIndices)
-          {
-            Cell IA(IAv.size(), 1);
-            for (octave_idx_type i = 0; i < IAv.size(); i++)
-            {
-              int idx = IAv[i];
-              Matrix IAidx(IAc[idx].size(), 1);
-              for (octave_idx_type j = 0; j < IAc[idx].size(); j++)
-              {
-                IAidx(j,0) = IAc[idx][j] + 1;
-              }
-              IA(i,0) = IAidx;
-            }
-            retval(1) = IA;
-          }
-          else
-          {
-            Matrix IA(IAv.size(), 1);
-            for (octave_idx_type i = 0; i < IAv.size(); i++)
-            {
-              IA(i,0) = IAv[i] + 1;
-            }
-            retval(1) = IA;
-          }
-        }
+        retval = uniquetol (nargout, docA, D, minDist, OutputAllIndices);
       }
       else
       {
@@ -478,8 +562,8 @@ identifying as @qcode{true} the pairs that DO NOT exceed @var{minDist}. \n\n\
     if (args(0).iscellstr() && args(1).iscellstr())
     {
       // Get cellstr input arguments
-      const Cell strA = args(0).cellstr_value();
-      const Cell strB = args(1).cellstr_value();
+      Cell strA = args(0).cellstr_value();
+      Cell strB = args(1).cellstr_value();
       // Check cellstr sizes match
       int szA = strA.numel();
       int szB = strB.numel();
@@ -487,80 +571,78 @@ identifying as @qcode{true} the pairs that DO NOT exceed @var{minDist}. \n\n\
       {
         error ("editDistance: cellstr input arguments size mismatch.");
       }
-      // Preallocate the distance vector
-      int szV = szA;
-      if (szA == 1)
-      {
-        szV = szB;
-      }
-      Matrix D(szV, 1);
-      // Compute the distance vector
+      // Preallocate the distance vector and expand as necessary
+      int sz = szA;
       if (szA == 1 && szB != 1)
       {
-        for (octave_idx_type i = 0; i < szB; i++)
-        {
-          D(i,0) = LevensDistStr (strA(0).string_value(),
-                                  strB(i).string_value());
-        }
-        retval(0) = D;
+        sz = szB;
+        strA = expand (strA, sz);
       }
       else if (szA != 1 && szB == 1)
       {
-        for (octave_idx_type i = 0; i < szA; i++)
-        {
-          D(i,0) = LevensDistStr (strA(i).string_value(),
-                                  strB(0).string_value());
-        }
-        retval(0) = D;
+        strB = expand (strB, sz);
       }
-      else
+      Matrix D(sz, 1);
+      // Compute the distance vector
+      for (octave_idx_type i = 0; i < sz; i++)
       {
-        for (octave_idx_type i = 0; i < szA; i++)
-        {
-          D(i,0) = LevensDistStr (strA(i).string_value(),
-                                  strB(i).string_value());
-        }
-        retval(0) = D;
+        D(i,0) = LevensDistStr (strA(i).string_value(), strB(i).string_value());
       }
-      if (doMinDist)
+      retval(0) = D;
+    }
+    else if (args(0).iscell() && args(1).iscell())
+    {
+      // Get cell input arguments
+      Cell docA = args(0).cell_value();
+      Cell docB = args(1).cell_value();
+      // Check cell sizes match
+      int szA = docA.numel();
+      int szB = docB.numel();
+      if (szA != 1 && szB != 1 && szA != szB)
       {
-        boolMatrix Bvec(szV, 1);
-        for (octave_idx_type i = 0; i < szV; i++)
-        {
-          if (D(i,0) <= minDist)
-          {
-            Bvec(i,0) = true;
-          }
-          else
-          {
-            Bvec(i,0) = false;
-          }
-        }
-        retval(0) = Bvec;
+        error ("editDistance: cellstr input arguments size mismatch.");
       }
-      else
+      // Check both cell arrays contain cellstring arrays
+      for (octave_idx_type i = 0; i < szA - 1; i++)
       {
-        retval(0) = D;
+        Cell tmp = docA.elem(i);
+        if (! tmp.iscellstr())
+        {
+          error ("editDistance: first tokenizedDocument "
+                 "does not contain cellstr arrays.");
+        }
       }
+      for (octave_idx_type i = 0; i < szB - 1; i++)
+      {
+        Cell tmp = docB.elem(i);
+        if (! tmp.iscellstr())
+        {
+          error ("editDistance: second tokenizedDocument "
+                 "does not contain cellstr arrays.");
+        }
+      }
+      // Preallocate the distance vector and expand as necessary
+      int sz = szA;
+      if (szA == 1 && szB != 1)
+      {
+        sz = szB;
+        docA = expand (docA, sz);
+      }
+      else if (szA != 1 && szB == 1)
+      {
+        docB = expand (docB, sz);
+      }
+      Matrix D(sz, 1);
+      // Compute the distance vector
+      for (octave_idx_type i = 0; i < sz; i++)
+      {
+        D(i,0) = LevensDistDoc (docA.elem(i), docB.elem(i));
+      }
+      retval(0) = D;
     }
     else if (args(0).is_string() && args(1).is_string())
     {
-      int d = LevensDistStr (args(0).string_value(), args(1).string_value());
-      if (doMinDist)
-      {
-        if (d <= minDist)
-        {
-          retval(0) = true;
-        }
-        else
-        {
-          retval(0) = false;
-        }
-      }
-      else
-      {
-        retval(0) = d;
-      }
+      retval(0) = LevensDistStr (args(0).string_value(),args(1).string_value());
     }
     else
     {
@@ -572,6 +654,10 @@ identifying as @qcode{true} the pairs that DO NOT exceed @var{minDist}. \n\n\
 
 /*
 %!error <editDistance: too many input arguments.> d = editDistance (1, 2, 3, 4);
+%!error <editDistance: too many output arguments.> ...
+%! [C, IA, IC, I] = editDistance ({"AS","SD","AD"}, 1);
+%!error <editDistance: too many output arguments.> ...
+%! [C, IA] = editDistance ({"AS","SD","AD"});
 %!error <editDistance: minDist must be a scalar value.> ...
 %! d = editDistance ({"AS","SD","AD"}, [1, 2]);
 %!error <editDistance: minDist must be a nonnegative integer.> ...
@@ -606,12 +692,12 @@ identifying as @qcode{true} the pairs that DO NOT exceed @var{minDist}. \n\n\
 %! d = editDistance ({"AS","SD","AD"}, logical ([1,2,3]));
 %!error <editDistance: STR1 and STR2 must be either strings or cellstr.> ...
 %! d = editDistance ([1,2,3], {"AS","AS","AD"});
-%!error <editDistance: STR1 and STR2 must be either strings or cellstr.> ...
+%!error <editDistance: first tokenizedDocument does not contain cellstr arrays.> ...
+%! d = editDistance ({1,2,3}, {"AS","SD","AD"});
+%!error <editDistance: second tokenizedDocument does not contain cellstr arrays.> ...
 %! d = editDistance ({"AS","SD","AD"}, {1,2,3});
 %!error <editDistance: cellstr input arguments size mismatch.> ...
 %! d = editDistance ({"AS","SD","AD"}, {"AS", "AS"});
-%!error <editDistance: cellstr input arguments size mismatch.> ...
-%! d = editDistance ({"AS","SD","AD"}, {"AS","SD","AD","AF"}, 2);
 %!test
 %! d = editDistance ({"AS","SD","AD"});
 %! assert (d, [2; 1; 1]);
@@ -638,6 +724,12 @@ identifying as @qcode{true} the pairs that DO NOT exceed @var{minDist}. \n\n\
 %! assert (A(IA{2}), {"FDE"; "EDS"});
 %! assert (A(IA{3}), {"OPA"});
 %!test
+%! A = {"ASS"; "SDS"; "FDE"; "EDS"; "OPA"};
+%! [C, IA, IC] = editDistance (A, 2);
+%! assert (class (IA), "double");
+%! assert (A(IA), C);
+%! assert (IC, [1; 1; 3; 1; 5]);
+%!test
 %! d = editDistance ({"AS","SD","AD"}, {"AS", "AD", "SE"});
 %! assert (d, [0; 1; 2]);
 %! assert (class (d), "double");
@@ -650,23 +742,7 @@ identifying as @qcode{true} the pairs that DO NOT exceed @var{minDist}. \n\n\
 %! assert (d, [0; 2; 1]);
 %! assert (class (d), "double");
 %!test
-%! b = editDistance ({"AS","SD","AD"}, {"AS", "AD", "SE"}, 1);
-%! assert (b, logical ([1; 1; 0]));
-%! assert (class (b), "logical");
-%!test
-%! b = editDistance ({"AS","SD","AD"}, {"AS"}, 1);
-%! assert (b, logical ([1; 0; 1]));
-%! assert (class (b), "logical");
-%!test
-%! b = editDistance ({"AS"}, {"AS", "AD", "SE"}, 1);
-%! assert (b, logical ([1; 1; 0]));
-%! assert (class (b), "logical");
-%!test
 %! b = editDistance ("Octave", "octave");
 %! assert (b, 1);
 %! assert (class (b), "double");
-%!test
-%! b = editDistance ("Octave", "octave", 1);
-%! assert (b, true);
-%! assert (class (b), "logical");
 */
