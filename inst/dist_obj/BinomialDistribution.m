@@ -284,7 +284,11 @@ classdef BinomialDistribution
         Fa_b = binocdf ([lx, ux], this.N, this.p);
         m = binoinv (sum (Fa_b) / 2, this.N, this.p);
       else
-        m = binoinv (0.5, this.N, this.p);
+        if (! __traditional__() & this.p == 0.5 & rem (this.N, 2) == 1)
+          m = this.mean ();
+        else
+          m = binoinv (0.5, this.N, this.p);
+        endif
       endif
     endfunction
 
@@ -662,7 +666,7 @@ endfunction
 #%!assert (iqr (t), 1);
 %!assert (mean (pd), 2.5, 1e-10);
 #%!assert (mean (t), 2.8, 1e-10);
-%!assert (median (pd), 3);
+%!assert (median (pd), 2.5);
 #%!assert (median (t), 3);
 %!assert (pdf (pd, [0:5]), [0.0312, 0.1562, 0.3125, 0.3125, 0.1562, 0.0312], 1e-4);
 #%!assert (pdf (t, [0:5]), [0, 0, 0.4, 0.4, 0.2, 0], 1e-4);
