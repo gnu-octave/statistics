@@ -108,6 +108,7 @@ endfunction
 %!assert (fpdf (x, 2, [0 NaN Inf 2 2]), [NaN NaN NaN y(4:5)], eps)
 %!assert (fpdf ([x, NaN], 2, 2), [y, NaN], eps)
 %!test #F (x, 1, df1) == T distribution (sqrt (x), df1) / sqrt (x)
+%! rand ("seed", 1234);    # for reproducibility
 %! xr = rand (10,1);
 %! xr = xr(x > 0.1 & x < 0.9);
 %! yr = tpdf (sqrt (xr), 2) ./ sqrt (xr);
