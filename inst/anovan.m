@@ -519,10 +519,12 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           endif
           TERMS = zeros (N + Nx, N);
           TERMS(1:N,:) = eye (N);
+          cnt = N + 1;
           for j = 1:N
             for i = j:N-1
-              TERMS(N+j+i-1,j) = 1;
-              TERMS(N+j+i-1,i+1) = 1;
+              TERMS(cnt,j) = 1;
+              TERMS(cnt,i+1) = 1;
+              cnt++;
             endfor
           endfor
         otherwise
@@ -804,7 +806,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         title ("Normal Q-Q Plot");
         arrayfun (@(i) text (q(I == DI(i)), t(DI(i)), ...
                              sprintf ("  %u", DI(i))), [1:min(nk,n)])
-        iqr = [0.25; 0.75]; 
+        iqr = [0.25; 0.75];
         yl = quantile (t, iqr, 1, 6);
         xl = norminv (iqr);
         slope = diff (yl) / diff (xl);
@@ -821,14 +823,14 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         ylabel ("sqrt ( | Studentized Residuals | )");
         title ("Spread-Location Plot")
         ax2_xlim = get (gca, "XLim");
-        hold on; 
+        hold on;
         plot (ax2_xlim, ones (1, 2) * sqrt (2), "k:");
-        plot (ax2_xlim, ones (1, 2) * sqrt (3), "k-."); 
+        plot (ax2_xlim, ones (1, 2) * sqrt (3), "k-.");
         plot (ax2_xlim, ones (1, 2) * sqrt (4), "k--");
         hold off;
         arrayfun (@(i) text (fit(DI(i)), sqrt (abs (t(DI(i)))), ...
                              sprintf ("  %u", DI(i))), [1:min(nk,n)]);
-        xlim (ax2_xlim); 
+        xlim (ax2_xlim);
 
         ## Residual-Leverage plot
         subplot (2, 2, 3);
@@ -855,7 +857,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         xlim ([0, n]);
         ax4_xlim = get (gca, "XLim");
         ax4_ylim = get (gca, "YLim");
-        hold on; 
+        hold on;
         plot (ax4_xlim, ones (1, 2) * 4 / dfe, "k:");
         plot (ax4_xlim, ones (1, 2) * 0.5, "k-.");
         plot (ax4_xlim, ones (1, 2), "k--");
