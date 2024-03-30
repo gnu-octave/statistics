@@ -306,7 +306,7 @@ function [A, idx_out] = fillmissing (A, varargin)
   if (next_varg < nargin)
 
     #set dim. if specified, it is the only numeric option that can appear next
-    if isnumeric (varargin{next_varg})
+    if (isnumeric (varargin{next_varg}))
       dim = varargin{next_varg};
       if (! (isscalar (dim) && (dim > 0)))
         error ("fillmissing: DIM must be a positive scalar.");
@@ -314,7 +314,7 @@ function [A, idx_out] = fillmissing (A, varargin)
       next_varg++;
     else
       ## default dim is first nonsingleton dimension of A
-      if isscalar (A)
+      if (isscalar (A))
         dim = 1;
       else
         dim = find (sz_A > 1, 1, "first");
@@ -360,7 +360,7 @@ function [A, idx_out] = fillmissing (A, varargin)
             ## array with numel equal to the elements orthogonal to
             ## the dim or certain string methads. For non-numeric A,
             ## "constant" method is not valid.
-            if ischar (propval)
+            if (ischar (propval))
               switch (lower (propval))
                 case {"extrap", "previous", "next", "nearest", "none", ...
                        "linear", "spline", "pchip", "makima"}
@@ -384,8 +384,8 @@ function [A, idx_out] = fillmissing (A, varargin)
 
           case "missinglocations"
 
-            if !(isnumeric (A) || islogical (A) || isinteger (A) || ...
-                   ischar (A) || iscellstr (A))
+            if (! (isnumeric (A) || islogical (A) || isinteger (A) || ...
+                   ischar (A) || iscellstr (A)))
               error (["fillmissing: MissingLocations option is not ", ...
                         "compatible with data type '%s'."], class (A));
             endif
@@ -429,7 +429,7 @@ function [A, idx_out] = fillmissing (A, varargin)
   else
     ## no inputs after method
     ## set default dim
-    if isscalar (A)
+    if (isscalar (A))
       dim = 1;
     else
       dim = find (sz_A > 1, 1, "first");
@@ -438,7 +438,7 @@ function [A, idx_out] = fillmissing (A, varargin)
   endif
 
   ## reduce calls to size and avoid overruns checking sz_A for high dims
-  if dim > ndims_A
+  if (dim > ndims_A)
     sz_A = [sz_A, ones(1, dim - ndims_A)];
     ndims_A = numel (sz_A);
   endif
@@ -447,14 +447,14 @@ function [A, idx_out] = fillmissing (A, varargin)
   if (isempty (samplepoints))
     samplepoints = [1 : sz_A_dim]';
   endif
-  if isempty (missing_locs)
+  if (isempty (missing_locs))
     missing_locs = ismissing (A);
   endif
 
   ## endvalues treated separately from interior missing_locs
   if (isempty (endgap_method) || strcmp (endgap_method, "extrap"))
     endgap_method = method;
-    if strcmp(endgap_method, "constant")
+    if (strcmp(endgap_method, "constant"))
       endgap_val = v;
     endif
   endif
@@ -1436,12 +1436,12 @@ function med = columnwise_median (x)
       szx = [szx(1), prod(szx(2:end))];
     endif
 
-    if any (m_idx_odd(:))
+    if (any (m_idx_odd(:)))
       x_idx_odd = sub2ind (szx, k(m_idx_odd)(:), find(m_idx_odd)(:));
       med(m_idx_odd) = x(x_idx_odd);
     endif
 
-    if any (m_idx_even(:))
+    if (any (m_idx_even(:)))
       k_even = k(m_idx_even)(:);
       x_idx_even = sub2ind (szx, [k_even, k_even+1], ...
                                 (find (m_idx_even))(:,[1 1]));
@@ -1926,7 +1926,7 @@ endfunction
 %!assert (fillmissing ([1 2 NaN NaN 3 4], @(x,y,z) x+y+z, 0.5),[1 2 NaN NaN 3 4])
 
 %!function A = testfcn (x,y,z)
-%!  if isempty (y)
+%!  if (isempty (y))
 %!    A = z;
 %!  elseif (numel (y) == 1)
 %!    A = repelem (x(1), numel(z));
@@ -1959,7 +1959,7 @@ endfunction
 ##  when calcuating move_fcn results. should review against future versions.
 %!test
 %!function A = testfcn (x,y,z)
-%!  if isempty (y)
+%!  if (isempty (y))
 %!    A = z;
 %!  elseif (numel (y) == 1)
 %!    A = repelem (x(1), numel(z));
