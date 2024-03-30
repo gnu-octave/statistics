@@ -1430,14 +1430,14 @@ function med = columnwise_median (x)
     endif
 
     if any (m_idx_odd(:))
-      x_idx_odd = sub2ind (szx, k(m_idx_odd)(:), find(m_idx_odd)(:));;
+      x_idx_odd = sub2ind (szx, k(m_idx_odd)(:), find(m_idx_odd)(:));
       med(m_idx_odd) = x(x_idx_odd);
     endif
 
     if any (m_idx_even(:))
       k_even = k(m_idx_even)(:);
       x_idx_even = sub2ind (szx, [k_even, k_even+1], ...
-                                (find (m_idx_even))(:,[1 1]));;
+                                (find (m_idx_even))(:,[1 1]));
       med(m_idx_even) = sum (x(x_idx_even), 2) / 2;
     endif
   endif
