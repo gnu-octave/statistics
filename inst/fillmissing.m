@@ -748,7 +748,7 @@ function [A, idx_out] = fillmissing (A, varargin)
 
           switch (method)
             case "movmean"
-              if sz_A_dim > 1
+              if (sz_A_dim > 1)
                 allmissing = (missing_locs | endgap_locs)(:,:);
 
                 ## create temporary flattened array for processing,
@@ -844,7 +844,14 @@ function [A, idx_out] = fillmissing (A, varargin)
 
             case "movmedian"
 
-              if sz_A_dim > 1
+              if (sz_A_dim > 1)
+
+                if (missinglocations)
+                  ## median assumes empty locs have NaN.  Missinglocations
+                  ## may point to a non-NaN number that will be assumed valid.
+                  ## Replace with NaNs.
+                  A(missing_locs) = NaN;
+                endif
 
                 cols_to_use = any (missing_locs(:,:), 1);
 
@@ -1067,7 +1074,7 @@ function [A, idx_out] = fillmissing (A, varargin)
                 idx_out(missing_locs) = ! ismissing (fill_vals);
 
               elseif (missinglocations)
-                ## any missing_loc processed and not skipped must become true
+                ## any missing_locs processed and not skipped must become true
                 idx_out(missing_locs) = removed_element_idx(gap_full_sort_idx);
               endif
             endif
@@ -2109,7 +2116,10 @@ endfunction
 %! [A, idx] = fillmissing ([1 NaN 1 NaN 1],  @(x,y,z) NaN (size (z)), 3, "missinglocations", logical([0 1 0 1 1]));
 %! assert (A, [1 NaN 1 NaN NaN]);
 %! assert (idx, logical([0 0 0 0 0]));
-
+%!test
+%! [A, idx] = fillmissing ([1 2 5], 'movmedian', 3, 'missinglocations', logical([0 1 0]));
+%! assert (A, [1 3 5]);
+%! assert (idx, logical([0 1 0]));
 
 ##Test char and cellstr
 %!assert (fillmissing (' foo bar ', "constant", 'X'), 'XfooXbarX')
