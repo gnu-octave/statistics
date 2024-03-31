@@ -479,9 +479,6 @@
 
  ** PiecewiseLinearDistribution: fix truncated `mean`, `std`, and `var` methods
 
- ** fillmissing:  combining `movmedian` method and `missinglocation` option
-                  no longer ignores non-NaN values.
-
  ** various fixes to avoid errors when testing the package functions
 
 
@@ -499,3 +496,6 @@
 
  Improvements:
  =============
+
+ ** fillmissing:  combining `movmedian` method and `missinglocation` option
+                  no longer ignores non-NaN values.
