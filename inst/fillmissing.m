@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{B} =} fillmissing (@var{A}, 'constant', @var{v})
+## @deftypefn  {statistics} {@var{B} =} fillmissing (@var{A}, "constant", @var{v})
 ## @deftypefnx {statistics} {@var{B} =} fillmissing (@var{A}, @var{method})
 ## @deftypefnx {statistics} {@var{B} =} fillmissing (@var{A}, @var{move_method}, @var{window_size})
 ## @deftypefnx {statistics} {@var{B} =} fillmissing (@var{A}, @var{fill_function}, @var{window_size})
@@ -193,7 +193,7 @@
 
 function [A, idx_out] = fillmissing (A, varargin)
 
-  if (nargin < 2)|| (nargin > 12)
+  if ((nargin < 2)|| (nargin > 12))
      print_usage ();
   endif
 
@@ -226,11 +226,12 @@ function [A, idx_out] = fillmissing (A, varargin)
       idx_out = false (sz_A);
   endif
 
-  ## process input arguments
+  ## Process input arguments.
   if (is_function_handle (method))
-    ## verify function handle and window
+
+    ## Verify function handle and window.
     if ((nargin < 3) || ! isnumeric (varargin{2}) || ...
-          ! any( numel (varargin{2})==[1 2]))
+          ! any (numel (varargin{2}) == [1, 2]))
       error (["fillmissing: fill function handle must be followed by ", ...
               "a numeric scalar or two-element vector window size."]);
     elseif (nargin (method) < 3)
@@ -260,7 +261,7 @@ function [A, idx_out] = fillmissing (A, varargin)
         endif
 
         v = varargin{2};
-        if ! (isscalar (v) || isempty (v))
+        if (! (isscalar (v) || isempty (v)))
           v = v(:);
         endif
 
@@ -268,7 +269,7 @@ function [A, idx_out] = fillmissing (A, varargin)
           error ("fillmissing: a numeric fill value cannot be emtpy.");
         endif
 
-        ## type check v against A
+        ## Type check v against A.
         if (iscellstr (A) && ischar (v) && ! iscellstr (v))
           v = {v};
         endif
@@ -280,7 +281,7 @@ function [A, idx_out] = fillmissing (A, varargin)
           error ("fillmissing: fill value must be the same data type as 'A'.");
         endif
 
-        ## v can't be size checked until after processing rest of inputs
+        ## v can't be size checked until after processing rest of inputs.
         next_varg = 3;
 
       case {"movmean", "movmedian"}
@@ -290,7 +291,7 @@ function [A, idx_out] = fillmissing (A, varargin)
         endif
 
         if ((nargin < 3) || ! isnumeric (varargin{2}) || ...
-              ! any( numel (varargin{2})==[1 2]))
+              ! any (numel (varargin{2}) == [1, 2]))
           error (["fillmissing: moving window method must be followed by ", ...
                    "a numeric scalar or two-element vector."]);
         endif
@@ -302,19 +303,19 @@ function [A, idx_out] = fillmissing (A, varargin)
     endswitch
   endif
 
-  ## process any more parameters
+  ## Process any more parameters.
   if (next_varg < nargin)
 
-    #set dim. if specified, it is the only numeric option that can appear next
-    if isnumeric (varargin{next_varg})
+    ## Set dim.  If specified, it is the only numeric option allowed next.
+    if (isnumeric (varargin{next_varg}))
       dim = varargin{next_varg};
       if (! (isscalar (dim) && (dim > 0)))
         error ("fillmissing: DIM must be a positive scalar.");
       endif
       next_varg++;
     else
-      ## default dim is first nonsingleton dimension of A
-      if isscalar (A)
+      ## Default dim is first nonsingleton dimension of A.
+      if (isscalar (A))
         dim = 1;
       else
         dim = find (sz_A > 1, 1, "first");
@@ -322,12 +323,12 @@ function [A, idx_out] = fillmissing (A, varargin)
     endif
     sz_A_dim = size (A, dim);
 
-    ## process any remaining inputs, must be name-value pairs
+    ## Process any remaining inputs, must be name-value pairs.
     while (next_varg < nargin)
 
       propname = varargin{next_varg};
       if (next_varg + 1 == nargin)
-        ## must be at least one more input with 1st containing value
+        ## Must be at least one more input with 1st containing value.
         error ("fillmissing: properties must be given as name-value pairs.");
 
       else
@@ -340,11 +341,11 @@ function [A, idx_out] = fillmissing (A, varargin)
           propname = lower (propname);
         endif
 
-        ## input validation for names and values
+        ## Input validation for names and values.
         switch (propname)
           case "samplepoints"
             ## val must be sorted, unique, numeric vector the same size
-            ## as size(A,dim)
+            ## as size(A,dim).
             if (! (isnumeric (propval) && isvector (propval)
                  && (numel (propval) == sz_A_dim) && issorted (propval)
                  && (numel (propval) == numel (unique (propval)))))
@@ -356,11 +357,11 @@ function [A, idx_out] = fillmissing (A, varargin)
             standard_samplepoints = all (diff (samplepoints, 1, 1) == 1);
 
           case "endvalues"
-            ## for numeric A, val must be numeric scalar, a numeric
+            ## For numeric A, val must be numeric scalar, a numeric
             ## array with numel equal to the elements orthogonal to
             ## the dim or certain string methads. For non-numeric A,
             ## "constant" method is not valid.
-            if ischar (propval)
+            if (ischar (propval))
               switch (lower (propval))
                 case {"extrap", "previous", "next", "nearest", "none", ...
                        "linear", "spline", "pchip", "makima"}
@@ -384,8 +385,8 @@ function [A, idx_out] = fillmissing (A, varargin)
 
           case "missinglocations"
 
-            if !(isnumeric (A) || islogical (A) || isinteger (A) || ...
-                   ischar (A) || iscellstr (A))
+            if (! (isnumeric (A) || islogical (A) || isinteger (A) || ...
+                   ischar (A) || iscellstr (A)))
               error (["fillmissing: MissingLocations option is not ", ...
                         "compatible with data type '%s'."], class (A));
             endif
@@ -395,7 +396,7 @@ function [A, idx_out] = fillmissing (A, varargin)
                         "cannot be used simultaneously."]);
             endif
 
-            ## val must be logical array same size as A
+            ## val must be logical array same size as A.
             if (! (islogical (propval) && isequal (sz_A, size (propval))))
               error (["fillmissing: MissingLocations must be a logical ", ...
                        "array the same size as A."]);
@@ -405,7 +406,7 @@ function [A, idx_out] = fillmissing (A, varargin)
             missing_locs = propval;
 
           case "maxgap"
-            ## val must be positive numeric scalar
+            ## val must be positive numeric scalar.
             if (! (isnumeric (propval) && isscalar (propval) && (propval > 0)))
               error ("fillmissing: MaxGap must be a positive numeric scalar.");
             endif
@@ -427,9 +428,10 @@ function [A, idx_out] = fillmissing (A, varargin)
     endwhile
 
   else
-    ## no inputs after method
-    ## set default dim
-    if isscalar (A)
+    ## No inputs after method.
+
+    ## Set default dim.
+    if (isscalar (A))
       dim = 1;
     else
       dim = find (sz_A > 1, 1, "first");
@@ -437,28 +439,27 @@ function [A, idx_out] = fillmissing (A, varargin)
     sz_A_dim = size (A, dim);
   endif
 
-  ## reduce calls to size and avoid overruns checking sz_A for high dims
-  if dim > ndims_A
+  ## Reduce calls to size and avoid overruns checking sz_A for high dims.
+  if (dim > ndims_A)
     sz_A = [sz_A, ones(1, dim - ndims_A)];
     ndims_A = numel (sz_A);
   endif
 
-  ## set defaults for any unspecified parameters
+  ## Set defaults for any unspecified parameters.
   if (isempty (samplepoints))
     samplepoints = [1 : sz_A_dim]';
   endif
-  if isempty (missing_locs)
+  if (isempty (missing_locs))
     missing_locs = ismissing (A);
   endif
 
-  ## endvalues treated separately from interior missing_locs
+  ## endvalues treated separately from interior missing_locs.
   if (isempty (endgap_method) || strcmp (endgap_method, "extrap"))
     endgap_method = method;
-    if strcmp(endgap_method, "constant")
+    if (strcmp(endgap_method, "constant"))
       endgap_val = v;
     endif
   endif
-
 
   ## missingvalues option not compatible with some methods and inputs:
   if (isinteger (A) || islogical (A))
@@ -474,10 +475,9 @@ function [A, idx_out] = fillmissing (A, varargin)
     endif
   endif
 
-
-  ## verify size of v and endgap_val for 'constant' methods, resize for A
-  orthogonal_size = [sz_A(1:dim-1), 1, sz_A(dim+1:end)]; # orthog. to dim size
-  numel_orthogonal = prod (orthogonal_size); # numel perpen. to dim
+  ## Verify size of v and endgap_val for 'constant' methods, resize for A.
+  orthogonal_size = [sz_A(1:dim-1), 1, sz_A(dim+1:end)]; # orthog. to dim size.
+  numel_orthogonal = prod (orthogonal_size); # numel perpen. to dim.
   if (strcmp (method, "constant") && (! isscalar (v)))
     if (numel (v) != numel_orthogonal)
       error (["fillmissing: fill value 'V' must be a scalar or a %d ", ...
@@ -496,10 +496,10 @@ function [A, idx_out] = fillmissing (A, varargin)
     endif
   endif
 
-  ## simplify processing by temporarily permuting A so operation always on dim1
-  ## revert permutation at the end
+  ## Simplify processing by temporarily permuting A so operation always on dim1.
+  ## Revert permutation at the end.
   dim_idx_perm = [1 : ndims_A];
-  dim_idx_flip(1 : max(dim, ndims_A)) = {':'};
+  dim_idx_flip(1 : max(dim, ndims_A)) = {":"};
   dim_idx_flip(1) = [sz_A_dim:-1:1];
 
   if (dim != 1)
@@ -520,75 +520,77 @@ function [A, idx_out] = fillmissing (A, varargin)
     endif
   endif
 
-  ## precalculate fill data for several methods
+  ## Precalculate fill data for several methods.
   zero_padding = zeros (orthogonal_size);
   samplepoints_expand = samplepoints(:, ones (1, prod (sz_A(2:end))));
 
-  ##find endgap locations
+  ## Find endgap locations.
   if (sz_A_dim < 3)
-    ## all missing are endgaps
+    ## All missing are endgaps.
     endgap_locs = missing_locs;
   else
-    ## use cumsums starting from first and last part in dim to find missing
+    ## Use cumsums starting from first and last part in dim to find missing
     ## values in and adjacent to end locations.
     endgap_locs = cumprod (missing_locs,1) | ...
                   (cumprod (missing_locs(dim_idx_flip{:}),1))(dim_idx_flip{:});
   endif
-  ## remove endgap_locs from missing_locs to avoid double processing
+  ## Remove endgap_locs from missing_locs to avoid double processing.
   missing_locs(endgap_locs) = false;
 
-  ## remove elements from missing and end location arrays if maxgap is specified
+  ## Remove elements from missing and end location arrays if maxgap is specified.
   if (! isempty (maxgap))
-    ## missing_locs: if samplepoints value diff on either side of missing
+    ## missing_locs: If samplepoints value diff on either side of missing
     ## elements is > maxgap, remove those values.
-    ## for endgaps, use diff of inside and missing end samplepoint values
-    ## and remove from endgaps
+    ## For endgaps, use diff of inside and missing end samplepoint values
+    ## and remove from endgaps.
 
-    ## First check gapsize of any interior missings in missing_locs
+    ## First check gapsize of any interior missings in missing_locs.
     if (any (missing_locs(:)))
-      ## locations in front of gaps
+      ## Locations in front of gaps
       loc_before = [diff(missing_locs,1,1); zero_padding] == 1;
-      ## locations in back of gaps
+      ## Locations in back of gaps
       loc_after = diff ([zero_padding; missing_locs],1,1) == -1;
 
-      ## value of samplepoints at front and back locs
+      ## Value of samplepoints at front and back locs
       sampvals_before = samplepoints_expand(loc_before);
       sampvals_after = samplepoints_expand(loc_after);
 
-      ## evaluate which gaps are too big to fill
+      ## Evaluate which gaps are too big to fill.
       gaps_to_remove = (sampvals_after - sampvals_before) > maxgap;
 
-      ## convert those gaps into an array element list
-      idxs_to_remove = arrayfun ('colon', ...
+      ## Convert those gaps into an array element list.
+      idxs_to_remove = arrayfun ("colon", ...
                               ((find (loc_before))(gaps_to_remove ) + 1), ...
                                ((find (loc_after))(gaps_to_remove ) - 1), ...
                                  "UniformOutput", false);
-      ## remove those elements from missing_locs
+      ## Remove those elements from missing_locs.
       missing_locs([idxs_to_remove{:}]) = false;
 
     endif
 
-    ##then do any endgaps
+    ## Then do any endgaps.
     if (any (endgap_locs(:)))
-      ## if any are all missing, remove for any value of maxgap
+      ## If any are all missing, remove for any value of maxgap.
       endgap_locs &= ! prod (endgap_locs, 1);
 
       if ((sz_A_dim < 3) && (abs (samplepoints(2) - samplepoints(1)) > maxgap))
-        ## shortcut - all missings are ends and exceed maxgap.
+        ## Shortcut - all missings are ends and exceed maxgap.
           endgap_locs(:) = false;
       else
 
-        ## check gap size of front endgaps
+        ## Check gap size of front endgaps.
 
-        ##find loc element after gap
+        ## Find loc element after gap.
         nextvals =  sum (cumprod (endgap_locs,1)) + 1;
-        ## compare diff between values at those points and at base with maxgap
+
+        ## Compare diff between values at those points and at base with maxgap.
         ends_to_remove = abs (samplepoints(nextvals) - samplepoints(1)) ...
                              > maxgap;
-        ## remove any with gap>maxgap
+
+        ## Remove any with gap>maxgap.
         endgap_locs((cumprod (endgap_locs,1)) & ends_to_remove) = false;
 
-        ## flip, repeat for back endgaps, then unflip and remove.
+        ## Flip, repeat for back endgaps, then unflip and remove.
         nextvals =  sum (cumprod (endgap_locs(dim_idx_flip{:}),1)) + 1;
         ends_to_remove = abs (samplepoints(end:-1:1)(nextvals) ...
                                   - samplepoints(end)) > maxgap;
@@ -607,11 +609,11 @@ function [A, idx_out] = fillmissing (A, varargin)
   endif
 
 
-  ## Actaully fill the missing data
+  ## Actaully fill the missing data.
 
-  ## process central missing values (all gaps bound by two valid datapoints)
-  ## for each method, calcualte fill_vals, which will be used in assignment
-  ## A(missing_locs) = fill_vals, and if idx_flag, populate idx_out
+  ## Process central missing values (all gaps bound by two valid datapoints).
+  ## For each method, calcualte fill_vals, which will be used in assignment
+  ## A(missing_locs) = fill_vals, and if idx_flag, populate idx_out.
   if (any (missing_locs(:)))
     switch (method)
       case "constant"
@@ -623,9 +625,9 @@ function [A, idx_out] = fillmissing (A, varargin)
         endif
 
         if (idx_flag)
-          ## if any v are the missing type, those get removed from idx_out
-          ## unless using 'missinglocations'
-          if (! missinglocations) && any (miss_v = ismissing (v))
+          ## If any v are the missing type, those get removed from idx_out
+          ## unless using 'missinglocations'.
+          if ((! missinglocations) && any (miss_v = ismissing (v)))
             idx_out(missing_locs) = true;
             idx_out(missing_locs & miss_v) = false;
 
@@ -635,7 +637,7 @@ function [A, idx_out] = fillmissing (A, varargin)
         endif
 
       case {"previous", "next", "nearest", "linear"}
-        ## find element locations bounding each gap
+        ## Find element locations bounding each gap.
         loc_before = [diff(missing_locs, 1, 1); zero_padding] == 1;
         loc_after = diff ([zero_padding; missing_locs], 1, 1) == -1;
         gapsizes = find (loc_after) - find (loc_before) - 1;
@@ -649,33 +651,33 @@ function [A, idx_out] = fillmissing (A, varargin)
             fill_vals = repelems (A(loc_after), gap_count_idx)';
 
           case {"nearest", "linear"}
-            ## determine which missings go with values before or after
-            ## gap based on samplevalue distance. (equal dist goes to after)
+            ## Determine which missings go with values before or after
+            ## gap based on samplevalue distance. (Equal dist goes to after.)
 
-            ## find sample values before and after gaps
+            ## Find sample values before and after gaps.
             sampvals_before = samplepoints_expand(loc_before);
             sampvals_after = samplepoints_expand(loc_after);
 
-            ## build cell with linear indices of elements in each gap
-            gap_locations = arrayfun ('colon', (find (loc_before)) + 1, ...
+            ## Build cell with linear indices of elements in each gap.
+            gap_locations = arrayfun ("colon", (find (loc_before)) + 1, ...
                                (find (loc_after)) - 1, "UniformOutput", false);
 
-            ## get sample values at those elements
+            ## Get sample values at those elements.
             [sampvals_in_gaps, ~] = ind2sub (sz_A, [gap_locations{:}]);
             sampvals_in_gaps = samplepoints(sampvals_in_gaps);
 
-            ## expand first and last vectors for each gap point
+            ## Expand first and last vectors for each gap point.
             Avals_before = repelems (A(loc_before), gap_count_idx)';
             Avals_after = repelems (A(loc_after), gap_count_idx)';
 
             switch (method)
               case "nearest"
-                ## calculate gap mid point for each gap element
+                ## Calculate gap mid point for each gap element.
                 sampvals_midgap = repelems ( ...
                           (sampvals_before + sampvals_after)/2, gap_count_idx)';
 
-                ## generate fill vectors sorting elements into nearest before
-                ## or after
+                ## Generate fill vectors sorting elements into nearest before
+                ## or after.
                 prev_fill = (sampvals_in_gaps < sampvals_midgap);
                 next_fill = (sampvals_in_gaps >= sampvals_midgap);
                 fill_vals = A(missing_locs);
@@ -683,11 +685,11 @@ function [A, idx_out] = fillmissing (A, varargin)
                 fill_vals(next_fill) = Avals_after(next_fill);
 
               case "linear"
-                ## expand samplepoint values for interpolation x-values
+                ## Expand samplepoint values for interpolation x-values.
                 sampvals_before = repelems (sampvals_before, gap_count_idx)';
                 sampvals_after = repelems (sampvals_after, gap_count_idx)';
 
-                ## linearly interpolate
+                ## Linearly interpolate:
                 fill_vals = ((Avals_after - Avals_before) ...
                                    ./ (sampvals_after - sampvals_before)) ...
                                    .* (sampvals_in_gaps - sampvals_before) ...
@@ -696,22 +698,22 @@ function [A, idx_out] = fillmissing (A, varargin)
         endswitch
 
         if (idx_flag)
-          ## mid gaps will always be filled by above methods.
+          ## Mid gaps will always be filled by above methods.
           idx_out(missing_locs) = true;
         endif
 
       case {"spline", "pchip", "makima"}
-        ## pass more complex interpolations to interp1
+        ## Pass more complex interpolations to interp1.
 
-        ## TODO: vectorized 'linear' is ~10-100x faster than using interp1.
-        ## look to speed these up as well.
+        ## FIXME: vectorized 'linear' is ~10-100x faster than using interp1.
+        ## Look to speed these up as well.
 
-        ## identify columns needing interpolation to reduce empty operations
+        ## Identify columns needing interpolation to reduce empty operations.
         cols_to_use = any (missing_locs, 1);
 
         ## missinglocations may send columns with NaN and less than 2
-        ## real values resulting in interp1 error. Trim those columns,
-        ## prepopulate fill_vals with NaN, mark as filled.
+        ## real values resulting in interp1 error.  Trim those columns,
+        ## pre-populate fill_vals with NaN, mark as filled.
 
         if (missinglocations)
           fill_vals = NaN (sum (missing_locs(:, cols_to_use)(:)), 1);
@@ -738,8 +740,8 @@ function [A, idx_out] = fillmissing (A, varargin)
           idx_out(missing_locs) = true;
         endif
 
-      case {"movmean","movmedian"}
-        ## check window size versus smallest sample gaps. if window smaller,
+      case {"movmean", "movmedian"}
+        ## Check window size versus smallest sample gaps.  If window smaller,
         ## nothing to do, break out early.
         if ((isscalar (window_size) && ...
                         (window_size/2 >= min (diff (samplepoints)))) || ...
@@ -748,29 +750,29 @@ function [A, idx_out] = fillmissing (A, varargin)
 
           switch (method)
             case "movmean"
-              if sz_A_dim > 1
+              if (sz_A_dim > 1)
                 allmissing = (missing_locs | endgap_locs)(:,:);
 
-                ## create temporary flattened array for processing,
+                ## Create temporary flattened array for processing,
                 A_sum = A(:,:);
                 A_sum (allmissing) = 0;
 
                 if (standard_samplepoints && ...
                         all (round (window_size) == window_size))
-                  ## window size based on vector elements
+                  ## Window size based on vector elements.
 
-                  ## faster codepath for uniform, unit-spacing samplepoints
+                  ## Faster codepath for uniform, unit-spacing samplepoints
                   ## and integer valued window sizes.
 
                   if (isscalar (window_size))
                     window_width = window_size;
                     if (mod (window_size, 2))
-                      ## odd window size
-                      ## equal number of values on either side of gap
+                      ## Odd window size:
+                      ## Equal number of values on either side of gap.
                       window_size = (window_width - 1) .* [0.5, 0.5];
                     else
-                      ## even window size
-                      ## one extra element on previous side of gap
+                      ## Even window size:
+                      ## One extra element on previous side of gap.
                       window_size(1) = window_width/2;
                       window_size(2) = window_size(1) - 1;
                     endif
@@ -778,22 +780,22 @@ function [A, idx_out] = fillmissing (A, varargin)
                     window_width = window_size(1) + window_size(2) + 1;
                   endif
 
-                  ## use columnwise convolution of windowing vector and A for
+                  ## Use columnwise convolution of windowing vector and A for
                   ## vectorized summation.
                   conv_vector = ones (window_width, 1);
                   A_sum = convn (A_sum, conv_vector, ...
                             "full")(1 + window_size(2):end - window_size(1), :);
 
-                  ## get count of values contributing to convolution to account
+                  ## Get count of values contributing to convolution to account
                   ## for missing elements and to calculate mean.
                   A_sum_count = convn (! allmissing, conv_vector, ...
                             "full")(1 + window_size(2):end - window_size(1), :);
 
                 else
-                  ## window size based on sample point distance. Works for non
+                  ## Window size based on sample point distance. Works for non
                   ## integer, non uniform values.
 
-                  ## use A_sum (flattened to 2D), project slice windows in dim3
+                  ## Use A_sum (flattened to 2D), project slice windows in dim3
                   ## automatic broadcasting to get window summations & counts
 
                   samplepoints_shift = ...
@@ -819,10 +821,10 @@ function [A, idx_out] = fillmissing (A, varargin)
 
                     ## FIXME: when sum can handle nanflag, the 'else' path
                     ## should be able to be made to handle the vectorized
-                    ## summation even with 'missinglocations'
+                    ## summation even with 'missinglocations'.
                     A_nan = isnan (A_sum);
                     A_temp = A_sum .* samplepoints_slice_windows;
-                    A_temp(!samplepoints_slice_windows & A_nan) = 0;
+                    A_temp(! samplepoints_slice_windows & A_nan) = 0;
                     A_sum = permute (sum (A_temp, 1), [3,2,1]);
 
                   else
@@ -835,8 +837,8 @@ function [A, idx_out] = fillmissing (A, varargin)
                           [3,2,1]);
                 endif
 
-                ## build fill values
-                fill_vals = A(missing_locs); # prefill to include missing vals
+                ## Build fill values.
+                fill_vals = A(missing_locs); # Prefill to include missing vals.
                 fillable_gaps = missing_locs(:,:) & A_sum_count;
                 fill_vals(fillable_gaps(missing_locs(:,:))) = ...
                            A_sum(fillable_gaps) ./ A_sum_count(fillable_gaps);
@@ -844,7 +846,14 @@ function [A, idx_out] = fillmissing (A, varargin)
 
             case "movmedian"
 
-              if sz_A_dim > 1
+              if (sz_A_dim > 1)
+
+                if (missinglocations)
+                  ## Median assumes empty locs have NaN.  Missinglocations
+                  ## may point to a non-NaN number that will be assumed valid.
+                  ## Replace with NaNs.
+                  A(missing_locs) = NaN;
+                endif
 
                 cols_to_use = any (missing_locs(:,:), 1);
 
@@ -866,8 +875,8 @@ function [A, idx_out] = fillmissing (A, varargin)
                                  samplepoints_shift <= window_size(2), [1,3,2]);
                 endif
 
-                ## use moving window slices to project A and use
-                ## custom function for vectorized full array median computation
+                ## Use moving window slices to project A and use
+                ## custom function for vectorized full array median computation.
                 A_med = A(:, cols_to_use);
                 nan_slice_windows = double (samplepoints_slice_windows);
                 nan_slice_windows(! samplepoints_slice_windows) = NaN;
@@ -892,19 +901,19 @@ function [A, idx_out] = fillmissing (A, varargin)
 
       case "movfcn"
 
-        ## for each gap construct:
+        ## For each gap construct:
         ## xval - data values in window on either side of gap, including
         ## other missing values
         ## xloc - sample point values for those xval
         ## gap_loc - sample point values for gap elements
-        ## if window has xval fully empty skip processing gap
+        ## If window has xval fully empty skip processing gap.
 
-        ## missing_locs might include endgap_locs
-        ## need to build gap locations accounting for both types
+        ## missing_locs might include endgap_locs.
+        ## Need to build gap locations accounting for both types.
 
-        ## missing values can include more than just numeric inputs
+        ## Missing values can include more than just numeric inputs.
 
-        ## windows containing no data points (e.g., endgaps when window
+        ## Windows containing no data points (e.g., endgaps when window
         ## is one sided [3 0] or [0 2], will be dropped from processing,
         ## not being passed to the mov_fcn.
 
@@ -914,11 +923,11 @@ function [A, idx_out] = fillmissing (A, varargin)
           window_size(1) = -window_size(1);
         endif
 
-        ## midgap bounds
+        ## Midgap bounds
         loc_before = [diff(missing_locs, 1, 1); zero_padding] == 1;
         loc_after = diff ([zero_padding; missing_locs], 1, 1) == -1;
 
-        ## front/back endgap locations and bounds
+        ## Front/back endgap locations and bounds
         front_gap_locs = logical (cumprod (missing_locs, 1));
         front_next_locs = diff ([zero_padding; front_gap_locs], 1, 1) == -1;
 
@@ -926,13 +935,13 @@ function [A, idx_out] = fillmissing (A, varargin)
                   cumprod (missing_locs(dim_idx_flip{:}), 1)(dim_idx_flip{:}));
         back_prev_locs = [diff(back_gap_locs, 1, 1); zero_padding] == 1;
 
-        ## remove gap double counting
+        ## Remove gap double counting.
         back_gap_locs &= ! front_gap_locs;
         loc_before &= ! back_prev_locs;
         loc_after &= ! front_next_locs;
 
-        ## build gap location array using gap starts and lengths.
-        ## simplest to use front / mid / back ordering, track later with sort.
+        ## Build gap location array using gap starts and lengths.
+        ## Simplest to use front / mid / back ordering, track later with sort.
         gap_start_locs = ...
                 [find(front_gap_locs & [true; false(sz_A_dim-1,1)])(:); ...
                     find(circshift (loc_before, 1, 1))(:);
@@ -942,29 +951,29 @@ function [A, idx_out] = fillmissing (A, varargin)
                        find(loc_after) - find(loc_before) - 1;...
                           (sum (back_gap_locs, 1))(any (back_gap_locs, 1))(:)];
 
-        ## separate arrayfun/cellfun faster than single fun with
-        ## composite anonymous function
-        gap_locations = arrayfun ('colon', gap_start_locs, ...
+        ## Separate arrayfun/cellfun faster than single fun with
+        ## composite anonymous function.
+        gap_locations = arrayfun ("colon", gap_start_locs, ...
                       gap_start_locs + gapsizes - 1, "UniformOutput", false);
 
-        gap_locations = cellfun('transpose', ...
+        gap_locations = cellfun("transpose", ...
                                     gap_locations, "UniformOutput", false);
 
-        ## sorting index to bridge front-mid-back and linear index ordering
+        ## Sorting index to bridge front-mid-back and linear index ordering.
         [~, gap_full_sort_idx] = sort (vertcat (gap_locations{:}));
 
-        ## remove front or back gaps from gapsizes & gap_locations
-        ## if front/back window size = 0, or if full column is missing
+        ## Remove front or back gaps from gapsizes & gap_locations.
+        ## If front/back window size = 0, or if full column is missing.
 
-        ## index to track empty/removed elements
+        ## Index to track empty/removed elements.
         removed_element_idx = true (numel (gap_full_sort_idx), 1);
         removed_front_elements = 0;
         removed_back_elements = 0;
 
-        ## simple front/back gap trimming for either window size = 0
+        ## Simple front/back gap trimming for either window size = 0.
 
         if (! window_size(2))
-          ## if no back facing window, ignore front gaps
+          ## If no back facing window, ignore front gaps.
           removed_front_gap_count = sum (front_gap_locs(1,:));
           removed_front_elements = sum (gapsizes(1 : removed_front_gap_count));
           removed_element_idx(1 : removed_front_elements) = false;
@@ -981,7 +990,7 @@ function [A, idx_out] = fillmissing (A, varargin)
         endif
 
         if (! window_size(1))
-          ## if no front facing window, ignore back gaps.
+          ## If no front facing window, ignore back gaps.
           removed_back_gap_count = sum (back_gap_locs(end,:));
           removed_back_elements = sum (...
                             gapsizes(end - removed_back_gap_count + 1 : end));
@@ -994,7 +1003,7 @@ function [A, idx_out] = fillmissing (A, varargin)
           gap_sample_values = cellfun_subsref (gap_locations, false, ...
                                                      {samplepoints_expand});
 
-          ## build [row,column] locations array for windows around each gap
+          ## Build [row,column] locations array for windows around each gap.
           window_points_r_c = cell (numel (gapsizes), 2);
           window_points_r_c(:,1) = cellfun (@(x) ...
                 ([1:sz_A_dim]')((samplepoints<x(1) & samplepoints >= ...
@@ -1004,11 +1013,11 @@ function [A, idx_out] = fillmissing (A, varargin)
                          gap_sample_values, "UniformOutput", false);
           window_points_r_c(:,2) = cellfun ( ...
                @(x,y) (fix ((x(1)-1)/sz_A_dim)+1)(ones (size(y))), ...
-                 gap_locations, window_points_r_c(:,1),"UniformOutput",false);
+                 gap_locations, window_points_r_c(:,1), "UniformOutput",false);
 
 
-          ## if any window is emtpy, do not pass that gap to the move_fcn
-          empty_gaps = cellfun ('isempty', window_points_r_c(:,1));
+          ## If any window is emtpy, do not pass that gap to the move_fcn.
+          empty_gaps = cellfun ("isempty", window_points_r_c(:,1));
           if (any (empty_gaps))
             removed_element_idx(...
                   repelems (empty_gaps, [1:numel(gapsizes); gapsizes'])')...
@@ -1022,19 +1031,19 @@ function [A, idx_out] = fillmissing (A, varargin)
           if (! isempty (gapsizes))
             ## Aval = A values at window locations
             ## Aloc = sample values at window locations
-            A_window_indexes = cellfun ('sub2ind', {sz_A}, ...
+            A_window_indexes = cellfun ("sub2ind", {sz_A}, ...
                            window_points_r_c(:,1), window_points_r_c(:,2), ...
                                "UniformOutput", false);
             Aval = cellfun_subsref (A_window_indexes, false, {A});
             Aloc = cellfun_subsref (window_points_r_c(:,1), false, ...
                                                             {samplepoints});
 
-            ##build fill values
+            ## Build fill values.
             fill_vals_C = cellfun (move_fcn, Aval, Aloc, ...
                         gap_sample_values(:,1), "UniformOutput", false);
 
-            ## check for output of move_fcn having different size than gaps
-            if (! all (cellfun ('numel', fill_vals_C) == gapsizes))
+            ## Check for output of move_fcn having different size than gaps.
+            if (! all (cellfun ("numel", fill_vals_C) == gapsizes))
               error (["fillmissing: fill function return values must be ", ...
                               "the same size as the gaps."]);
             endif
@@ -1047,14 +1056,14 @@ function [A, idx_out] = fillmissing (A, varargin)
                                 fill_vals_trim(gap_trim_sort_idx);
 
             if (idx_flag)
-              ## for movfcn with A of type having missing:
-              ## any outputs still containing class's 'missing' values
+              ## For movfcn with A of type having missing:
+              ## Any outputs still containing class's 'missing' values
               ## are counted as not filled in idx_out, even if the value
               ## was put there by the movfcn. This is true even if
               ## missinglocations is used. If missinglocations changed
               ## a value with no apparent change, it still shows up
               ## as filled.
-              ## if A has no missing value (int or logical), then without
+              ## If A has no missing value (int or logical), then without
               ## missinglocations, idx_out is always empty. With
               ## missinglocations, compatible behavior is undefined as
               ## Matlab 2022a has an apparent bug producing a error message
@@ -1067,7 +1076,7 @@ function [A, idx_out] = fillmissing (A, varargin)
                 idx_out(missing_locs) = ! ismissing (fill_vals);
 
               elseif (missinglocations)
-                ## any missing_loc processed and not skipped must become true
+                ## Any missing_locs processed and not skipped must become true.
                 idx_out(missing_locs) = removed_element_idx(gap_full_sort_idx);
               endif
             endif
@@ -1084,7 +1093,7 @@ function [A, idx_out] = fillmissing (A, varargin)
 
   endif
 
-  ## process endgaps
+  ## Process endgaps:
   if (any (endgap_locs(:)))
     switch (endgap_method)
       case "none"
@@ -1097,8 +1106,8 @@ function [A, idx_out] = fillmissing (A, varargin)
           fill_vals = (endgap_locs .* endgap_val)(endgap_locs);
         endif
         if (idx_flag)
-          ## if any v are the missing type, those get removed from idx_out
-          ## unless using 'missinglocations'
+          ## If any v are the missing type, those get removed from idx_out
+          ## unless using 'missinglocations'.
           idx_out(endgap_locs) = true;
           if (! missinglocations) && any (miss_ev = ismissing (endgap_val))
             idx_out(endgap_locs & miss_ev) = false;
@@ -1107,79 +1116,79 @@ function [A, idx_out] = fillmissing (A, varargin)
 
       case {"previous", "next", "nearest", "linear", ...
                  "spline", "pchip", "makima"}
-        ## all of these methods require sz_A_dim >= 2. shortcut path otherwise
+        ## All of these methods require sz_A_dim >= 2. shortcut path otherwise.
         if (sz_A_dim < 2)
           endgap_locs(:) = false;
         else
 
           switch (endgap_method)
             case "previous"
-              ## remove any gaps at front of array, includes all-missing cols
+              ## Remove any gaps at front of array, includes all-missing cols.
               endgap_locs (logical (cumprod (endgap_locs,1))) = false;
 
               if (any (endgap_locs(:)))
 
-                ##find locations of the 'prev' value to use for filling
+                ## Find locations of the 'prev' value to use for filling.
                 subsval_loc = [diff(endgap_locs, 1, 1); zero_padding] == 1;
 
-                ##calculate the number of spots each 'prev' needs to fill
+                ## Calculate the number of spots each 'prev' needs to fill.
                 gapsizes = (sum (endgap_locs, 1))(any (endgap_locs, 1))(:);
 
-                ## construct substitution value vector
+                ## Construct substitution value vector.
                 fill_vals = repelems (A(subsval_loc), ...
                                         [1:numel(gapsizes); gapsizes'])';
               endif
 
             case "next"
-              ## remove any gaps at back of array from endgap_locs
-              ## includes any all-missing columns
+              ## Remove any gaps at back of array from endgap_locs
+              ## including any all-missing columns.
               endgap_locs(logical (cumprod ( ...
                        endgap_locs(dim_idx_flip{:}), 1)(dim_idx_flip{:}))) ...
                           = false;
               if (any (endgap_locs(:)))
-                ##find locations of the 'next' value to use for filling
+                ## Find locations of the 'next' value to use for filling.
                 subsval_loc = diff ([zero_padding; endgap_locs],1,1) == -1;
-                ##calculate the number of spots each 'next' needs to fill
+                ## Calculate the number of spots each 'next' needs to fill.
                 gapsizes = (sum (endgap_locs, 1))(any (endgap_locs, 1))(:);
-                ## construct substitution value vector
+                ## Construct substitution value vector.
                 fill_vals = repelems (A(subsval_loc), ...
                                         [1:numel(gapsizes); gapsizes'])';
               endif
 
             case "nearest"
 
-              ## remove any all-missing columns
+              ## Remove any all-missing columns.
               endgap_locs &= (! prod (endgap_locs, 1));
 
               if (any (endgap_locs(:)))
-                ## find front end info
+                ## Find front end info.
                 front_gap_locs = logical (cumprod (endgap_locs, 1));
                 front_next_loc = diff ( ...
                                     [zero_padding; front_gap_locs], 1, 1) == -1;
                 front_gapsizes = (sum (front_gap_locs, 1))(any ...
                                                             (front_gap_locs,1));
 
-                ## find back end info
+                ## Find back end info.
                 back_gap_locs = logical ( ...
                     cumprod (endgap_locs(dim_idx_flip{:}), 1)(dim_idx_flip{:}));
                 back_prev_loc = [diff(back_gap_locs, 1, 1); zero_padding] == 1;
                 back_gapsizes = (sum (back_gap_locs, 1))(any (back_gap_locs,1));
 
-                ## combine into fill variables
+                ## Combine into fill variables.
                 [~, fb_sort_idx] = sort ...
                                   ([find(front_gap_locs); find(back_gap_locs)]);
                 fillval_loc = [find(front_next_loc); find(back_prev_loc)];
                 gapsizes = [front_gapsizes; back_gapsizes];
 
-                ## construct substitution value vector with sort order to mix
-                ## fronts and backs in column order
+                ## Construct substitution value vector with sort order to mix
+                ## fronts and backs in column order.
                 fill_vals = (repelems (A(fillval_loc), ...
                              [1:numel(gapsizes); gapsizes'])')(fb_sort_idx);
               endif
 
 
             case "linear"
-              ## endgaps not guaranteed to have enough points to interpolate
+              ## Endgaps not guaranteed to have enough points to interpolate.
               cols_to_use = (sum (! (missing_locs | endgap_locs), 1) > 1) ...
                                & any (endgap_locs, 1);
               interp_locs = ! (missing_locs | endgap_locs) & cols_to_use;
@@ -1187,18 +1196,18 @@ function [A, idx_out] = fillmissing (A, varargin)
 
               if (any (endgap_locs(:)))
 
-                ## process front endgaps
+                ## Process front endgaps:
                 front_gap_locs = logical (cumprod (endgap_locs, 1));
                 fill_vals_front = [];
 
                 if (any (front_gap_locs(:)))
                   front_gapsizes = (sum (front_gap_locs, 1))(any ...
                                                             (front_gap_locs,1));
-                  ## collect first data point after gap & expand to gapsize
+                  ## Collect first data point after gap & expand to gapsize.
                   front_interppoint_1 = repelems ( find (...
                         diff ([zero_padding; front_gap_locs], 1, 1) == -1), ...
                                    [1:numel(front_gapsizes); front_gapsizes'])';
-                  ## collect second data point after gap & expand to gapsize
+                  ## Collect second data point after gap & expand to gapsize.
                   front_interppoint_2 = repelems ( find ( ...
                            diff ([zero_padding; ((cumsum (interp_locs, 1) .* ...
                                any (front_gap_locs, 1)) == 2)], 1, 1) == 1), ...
@@ -1209,7 +1218,7 @@ function [A, idx_out] = fillmissing (A, varargin)
                                     [front_interppoint_1, front_interppoint_2]);
                   front_gap_loc_sampvals = samplepoints_expand(front_gap_locs);
 
-                  ## hack for vector automatic orientation forcing col vector
+                  ## Hack for vector automatic orientation forcing col vector.
                   if (isvector (front_interp_Avals))
                     front_interp_Avals = (front_interp_Avals(:)).';
                   endif
@@ -1217,7 +1226,7 @@ function [A, idx_out] = fillmissing (A, varargin)
                     front_interp_sampvals = (front_interp_sampvals(:)).';
                   endif
 
-                  ## perform interpolation for every gap point
+                  ## Perform interpolation for every gap point.
                   interp_slopes_front = diff (front_interp_Avals, 1, 2) ...
                                           ./ diff (front_interp_sampvals, 1, 2);
                   fill_vals_front = interp_slopes_front .* ...
@@ -1226,7 +1235,7 @@ function [A, idx_out] = fillmissing (A, varargin)
                                                     front_interp_Avals(:,1);
                 endif
 
-                ## process back endgaps
+                ## Process back endgaps:
                 back_gap_locs = logical ( ...
                     cumprod (endgap_locs(dim_idx_flip{:}), 1)(dim_idx_flip{:}));
                 fill_vals_back = [];
@@ -1235,12 +1244,12 @@ function [A, idx_out] = fillmissing (A, varargin)
                   back_gapsizes = (sum ( ...
                                      back_gap_locs, 1))(any (back_gap_locs,1));
 
-                  ## collect last data point before gap & expand to gapsize
+                  ## Collect last data point before gap & expand to gapsize.
                   back_interppoint_2 = repelems ( ...
                       find ([diff(back_gap_locs, 1, 1); zero_padding] == 1), ...
                                 [1:numel(back_gapsizes); back_gapsizes'])';
 
-                  ## collect 2nd to last data point before gap & expand to gap
+                  ## Collect 2nd to last data point before gap & expand to gap.
                   back_interppoint_1 = repelems ( ...
                             find ((diff ([zero_padding; ...
                               ((cumsum (interp_locs(dim_idx_flip{:}), 1) .* ...
@@ -1248,14 +1257,14 @@ function [A, idx_out] = fillmissing (A, varargin)
                                    1, 1) == 1)(dim_idx_flip{:})), ...
                                      [1:numel(back_gapsizes); back_gapsizes'])';
 
-                  ## build linear interpolant vectors
+                  ## Build linear interpolant vectors.
                   back_interp_Avals = A([back_interppoint_1, ...
                                           back_interppoint_2]);
                   back_interp_sampvals = samplepoints_expand( ...
                                       [back_interppoint_1, back_interppoint_2]);
                   back_gap_loc_sampvals = samplepoints_expand(back_gap_locs);
 
-                  ## hack for vector automatic orientation forcing col vector
+                  ## Hack for vector automatic orientation forcing col vector.
                   if (isvector (back_interp_Avals))
                     back_interp_Avals = (back_interp_Avals(:)).';
                   endif
@@ -1263,7 +1272,7 @@ function [A, idx_out] = fillmissing (A, varargin)
                     back_interp_sampvals = (back_interp_sampvals(:)).';
                   endif
 
-                  ## perform interpolation for every gap point
+                  ## Perform interpolation for every gap point.
                   interp_slopes_back = diff (back_interp_Avals, 1, 2) ...
                                           ./ diff (back_interp_sampvals, 1, 2);
                   fill_vals_back = interp_slopes_back .* ...
@@ -1279,10 +1288,10 @@ function [A, idx_out] = fillmissing (A, varargin)
 
             case {"spline", "pchip", "makima"}
               ## endgap_locs not guaranteed to have 2 points.
-              ## need to ignore columns with < 2 values, or with nothing to do
+              ## Need to ignore columns with < 2 values, or with nothing to do.
               cols_to_use = (sum (! (endgap_locs | missing_locs), 1) > 1) ...
                                & any (endgap_locs, 1);
-              ## trim out unused cols from endgap_locs
+              ## Trim out unused cols from endgap_locs.
               endgap_locs &= cols_to_use;
 
               if (missinglocations)
@@ -1319,15 +1328,15 @@ function [A, idx_out] = fillmissing (A, varargin)
         endif
     endswitch
 
-    ## some methods remove fill locations, only process if not empty
+    ## Some methods remove fill locations, only process if not empty.
     if (any (endgap_locs(:)))
-      ## replace missings with appropriate fill values
+      ## Replace missings with appropriate fill values.
       A(endgap_locs) = fill_vals;
     endif
   endif
 
   if (reshape_flag)
-    ## revert permutation
+    ## Revert permutation:
     A = permute (A, dim_idx_perm);
     if (idx_flag)
       idx_out = permute (idx_out, dim_idx_perm);
@@ -1338,28 +1347,27 @@ endfunction
 
 
 function varargout = cellfun_subsref (x, TF, varargin)
-  ## utility fcn for cellfun (@(x) A(x), x, "UniformOutput", true/false)
-  ## ~50% faster than anonymous function call
+  ## Utility fcn for cellfun (@(x) A(x), x, "UniformOutput", true/false).
+  ## ~50% faster than anonymous function call.
   ## pass A, x, and truefalse.
-  ## if nargaut > 1, repeat for C2 with B(x), C3 with C(x), etc.
+  ## If nargout > 1, repeat for C2 with B(x), C3 with C(x), etc.
 
   x_C = num2cell (struct ("type", "()", "subs", num2cell (x)));
   for (idx = 1 : numel (varargin))
-    varargout{idx} = cellfun ('subsref', varargin{idx}, x_C, ...
+    varargout{idx} = cellfun ("subsref", varargin{idx}, x_C, ...
                                                      "UniformOutput", TF);
   endfor
 endfunction
 
 
-
 function fill_vals = other_interpolants (data_array, primary_locs,
                                           secondary_locs, method, samplepoints)
-  ## use interp1 to perform more complex interpolations. will only be performed
+  ## Use interp1 to perform more complex interpolations. Will only be performed
   ## on numerical data.
   ## primary_locs is missing_locs or endgap_locs, whichever the fill_vals are
   ## being returned for.  secondary_locs is the other.
   ##
-  ## TODO: splitting out from columnwise cellfun to interp1 would increase
+  ## FIXME: splitting out from columnwise cellfun to interp1 would increase
   ## speed a lot, but cannot count on same number of elements being processed
   ## in each column.
   ##
@@ -1370,31 +1378,30 @@ function fill_vals = other_interpolants (data_array, primary_locs,
   ## data_array values with NaN, interp1 will ignore those and interpolate with
   ## other data points.  Matlab will instead return NaN.
 
-  ## find logical data and empty location indices for each column to be
-  ## used in columnwise call to interp1 (cast as columnwise cell arrays)
+  ## Find logical data and empty location indices for each column to be
+  ## used in columnwise call to interp1 (cast as columnwise cell arrays).
 
   interp_data_locs = num2cell ((! (primary_locs | secondary_locs)), 1);
   interp_locs_tofill = num2cell (primary_locs, 1);
 
-  ## build cell arrays with sample and interp values to pass to interp1
+  ## Build cell arrays with sample and interp values to pass to interp1.
   [A_interpvalues, interp_samplevals] = cellfun_subsref (interp_data_locs, ...
                               false, num2cell (data_array, 1), {samplepoints});
 
   interp_empty_samplevals = cellfun_subsref (interp_locs_tofill, false, ...
                                                                {samplepoints});
 
-  ## generate fill_vals using interp1 for missing locations.
-  fill_vals = vertcat (cellfun ('interp1', interp_samplevals, ...
+  ## Generate fill_vals using interp1 for missing locations.
+  fill_vals = vertcat (cellfun ("interp1", interp_samplevals, ...
                A_interpvalues, interp_empty_samplevals, {method}, ...
-                {'extrap'}, 'UniformOutput', false){:});
+                {"extrap"}, "UniformOutput", false){:});
 endfunction
 
 
-
 function med = columnwise_median (x)
-  ## takes a column of values, ignores any NaN values, retuns the median
-  ## of what's left.  returns NaN if no values.
-  ## uses only built-in fns to avoid 3x 'median' slowdown
+  ## Take a column of values, ignore any NaN values, return the median
+  ## of what's left.  Return NaN if no values.
+  ## Uses only built-in fns to avoid 3x 'median' slowdown.
 
   szx = size (x);
 
@@ -1412,14 +1419,14 @@ function med = columnwise_median (x)
       ## even
       med = (x(n/2) + x((n/2)+1))/2;
     else
-      ## only called for types with missing = NaN
+      ## Only called for types with missing = NaN.
       med = NaN;
     endif
 
   else
-    x = sort (x, 1); # NaNs sent to bottom
+    x = sort (x, 1); # NaNs sent to bottom.
     n = sum (! isnan (x), 1);
-    m_idx_odd = logical (mod (n, 2)); # 0 even or zero, 1 odd
+    m_idx_odd = logical (mod (n, 2)); # 0 even or zero, 1 odd.
     m_idx_even = !m_idx_odd & (n != 0);
     k = floor ((n + 1) ./ 2);
 
@@ -1429,15 +1436,15 @@ function med = columnwise_median (x)
       szx = [szx(1), prod(szx(2:end))];
     endif
 
-    if any (m_idx_odd(:))
-      x_idx_odd = sub2ind (szx, k(m_idx_odd)(:), find(m_idx_odd)(:));;
+    if (any (m_idx_odd(:)))
+      x_idx_odd = sub2ind (szx, k(m_idx_odd)(:), find(m_idx_odd)(:));
       med(m_idx_odd) = x(x_idx_odd);
     endif
 
-    if any (m_idx_even(:))
+    if (any (m_idx_even(:)))
       k_even = k(m_idx_even)(:);
       x_idx_even = sub2ind (szx, [k_even, k_even+1], ...
-                                (find (m_idx_even))(:,[1 1]));;
+                                (find (m_idx_even))(:, [1, 1]));
       med(m_idx_even) = sum (x(x_idx_even), 2) / 2;
     endif
   endif
@@ -1445,15 +1452,15 @@ function med = columnwise_median (x)
 endfunction
 
 
-%!assert (fillmissing ([1 2 3], "constant", 99), [1 2 3])
-%!assert (fillmissing ([1 2 NaN], "constant", 99), [1 2 99])
-%!assert (fillmissing ([NaN 2 NaN], "constant", 99), [99 2 99])
-%!assert (fillmissing ([1 2 3]', "constant", 99), [1 2 3]')
-%!assert (fillmissing ([1 2 NaN]', "constant", 99), [1 2 99]')
+%!assert (fillmissing ([1, 2, 3], "constant", 99), [1, 2, 3])
+%!assert (fillmissing ([1, 2, NaN], "constant", 99), [1, 2, 99])
+%!assert (fillmissing ([NaN, 2, NaN], "constant", 99), [99, 2, 99])
+%!assert (fillmissing ([1, 2, 3]', "constant", 99), [1, 2, 3]')
+%!assert (fillmissing ([1, 2, NaN]', "constant", 99), [1, 2, 99]')
 
-%!assert (fillmissing ([1 2 3; 4 5 6], "constant", 99), [1 2 3; 4 5 6])
-%!assert (fillmissing ([1 2 NaN; 4 NaN 6], "constant", 99), [1 2 99; 4 99 6])
-%!assert (fillmissing ([NaN 2 NaN; 4 NaN 6], "constant", [97, 98, 99]), [97 2 99; 4 98 6])
+%!assert (fillmissing ([1, 2, 3; 4, 5, 6], "constant", 99), [1, 2, 3; 4, 5, 6])
+%!assert (fillmissing ([1, 2, NaN; 4, NaN, 6], "constant", 99), [1, 2, 99; 4, 99, 6])
+%!assert (fillmissing ([NaN, 2, NaN; 4, NaN, 6], "constant", [97, 98, 99]), [97, 2, 99; 4, 98, 6])
 
 %!test
 %! x = cat (3, [1, 2, NaN; 4, NaN, 6], [NaN, 2, 3; 4, 5, NaN]);
@@ -1473,553 +1480,572 @@ endfunction
 %! assert (fillmissing (x, "constant", [88:99], 99), y);
 
 %!test
-%! x = reshape([1:24],4,3,2);
+%! x = reshape ([1:24], 4, 3, 2);
 %! x([1, 6, 7, 9, 12, 14, 16, 19, 22, 23]) = NaN;
 %! y = x;
-%! y([1,6,7,9 12, 14, 16, 19, 22, 23]) = [94 95 95 96 96 97 97 98 99 99];
+%! y([1, 6, 7, 9, 12, 14, 16, 19, 22, 23]) = [94, 95, 95, 96, 96, 97, 97, 98, 99, 99];
 %! assert (fillmissing (x, "constant", [94:99], 1), y);
-%! y([1,6,7,9 12, 14, 16, 19, 22, 23]) = [92 93 94 92 95 97 99 98 97 98];
+%! y([1, 6, 7, 9, 12, 14, 16, 19, 22, 23]) = [92, 93, 94, 92, 95, 97, 99, 98, 97, 98];
 %! assert (fillmissing (x, "constant", [92:99], 2), y);
-%! y([1,6,7,9 12, 14, 16, 19, 22, 23]) = [88 93 94 96 99 89 91 94 97 98];
+%! y([1, 6, 7, 9, 12, 14, 16, 19, 22, 23]) = [88, 93, 94, 96, 99, 89, 91, 94, 97, 98];
 %! assert (fillmissing (x, "constant", [88:99], 3), y);
-%! y([1,6,7,9 12, 14, 16, 19, 22, 23]) = [76 81 82 84 87 89 91 94 97 98];
+%! y([1, 6, 7, 9, 12, 14, 16, 19, 22, 23]) = [76, 81, 82, 84, 87, 89, 91, 94, 97, 98];
 %! assert (fillmissing (x, "constant", [76:99], 99), y);
 
-## tests with different endvalues behavior
-%!assert (fillmissing ([1 2 3], "constant", 99, "endvalues", 88), [1 2 3])
-%!assert (fillmissing ([1 NaN 3], "constant", 99, "endvalues", 88), [1 99 3])
-%!assert (fillmissing ([1 2 NaN], "constant", 99, "endvalues", 88), [1 2 88])
-%!assert (fillmissing ([NaN 2 3], "constant", 99, "endvalues", 88), [88 2 3])
-%!assert (fillmissing ([NaN NaN 3], "constant", 99, "endvalues", 88), [88 88 3])
-%!assert (fillmissing ([1 NaN NaN], "constant", 99, "endvalues", 88), [1 88 88])
-%!assert (fillmissing ([NaN 2 NaN], "constant", 99, "endvalues", 88), [88 2 88])
-%!assert (fillmissing ([NaN 2 NaN]', "constant", 99, "endvalues", 88), [88 2 88]')
-%!assert (fillmissing ([1 NaN 3 NaN 5], "constant", 99, "endvalues", 88), [1 99 3 99 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], "constant", 99, "endvalues", 88), [1 99 99 99 5])
-%!assert (fillmissing ([NaN NaN NaN NaN 5], "constant", 99, "endvalues", 88), [88 88 88 88 5])
-%!assert (fillmissing ([1 NaN 3 4 NaN], "constant", 99, "endvalues", 88), [1 99 3 4 88])
-%!assert (fillmissing ([1 NaN 3 4 NaN], "constant", 99, 1, "endvalues", 88), [1 88 3 4 88])
-%!assert (fillmissing ([1 NaN 3 4 NaN], "constant", 99, 1, "endvalues", "extrap"), [1 99 3 4 99])
+## Tests with different endvalues behavior
+%!assert (fillmissing ([1, 2, 3], "constant", 99, "endvalues", 88), [1, 2, 3])
+%!assert (fillmissing ([1, NaN, 3], "constant", 99, "endvalues", 88), [1, 99, 3])
+%!assert (fillmissing ([1, 2, NaN], "constant", 99, "endvalues", 88), [1, 2, 88])
+%!assert (fillmissing ([NaN, 2, 3], "constant", 99, "endvalues", 88), [88, 2, 3])
+%!assert (fillmissing ([NaN, NaN, 3], "constant", 99, "endvalues", 88), [88, 88, 3])
+%!assert (fillmissing ([1, NaN, NaN], "constant", 99, "endvalues", 88), [1, 88, 88])
+%!assert (fillmissing ([NaN, 2, NaN], "constant", 99, "endvalues", 88), [88, 2, 88])
+%!assert (fillmissing ([NaN, 2, NaN]', "constant", 99, "endvalues", 88), [88, 2, 88]')
+%!assert (fillmissing ([1, NaN, 3, NaN, 5], "constant", 99, "endvalues", 88), [1, 99, 3, 99, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "constant", 99, "endvalues", 88), [1, 99, 99, 99, 5])
+%!assert (fillmissing ([NaN, NaN, NaN, NaN, 5], "constant", 99, "endvalues", 88), [88, 88, 88, 88, 5])
+%!assert (fillmissing ([1, NaN, 3, 4, NaN], "constant", 99, "endvalues", 88), [1, 99, 3, 4, 88])
+%!assert (fillmissing ([1, NaN, 3, 4, NaN], "constant", 99, 1, "endvalues", 88), [1, 88, 3, 4, 88])
+%!assert (fillmissing ([1, NaN, 3, 4, NaN], "constant", 99, 1, "endvalues", "extrap"), [1, 99, 3, 4, 99])
 
 %!test
 %! x = reshape ([1:24], 3, 4, 2);
 %! y = x;
-%! x([1,2,5,6,8,10,13,16,18,19,20,21,22]) = NaN;
-%! y([1,2,5,6,10,13,16,18,19,20,21,22])= 88; y([8])=99;
+%! x([1, 2, 5, 6, 8, 10, 13, 16, 18, 19, 20, 21, 22]) = NaN;
+%! y([1, 2, 5, 6, 10, 13, 16, 18, 19, 20, 21, 22]) = 88;
+%! y([8]) = 99;
 %! assert (fillmissing (x, "constant", 99, "endvalues", 88), y);
 %! assert (fillmissing (x, "constant", 99, 1, "endvalues", 88), y);
-%! y = x; y([1,2,5,8,10,13,16,19,22])= 88; y([6,18,20,21])=99;
+%! y = x;
+%! y([1, 2, 5, 8, 10, 13, 16, 19, 22]) = 88;
+%! y([6, 18, 20, 21]) = 99;
 %! assert (fillmissing (x, "constant", 99, 2, "endvalues", 88), y);
-%! y(y==99) = 88;
+%! y(y == 99) = 88;
 %! assert (fillmissing (x, "constant", 99, 3, "endvalues", 88), y);
 %! assert (fillmissing (x, "constant", 99, 4, "endvalues", 88), y);
 %! assert (fillmissing (x, "constant", 99, 99, "endvalues", 88), y);
 %! y([8]) = 94;
 %! assert (fillmissing (x, "constant", [92:99], 1, "endvalues", 88), y);
-%! y([6,8,18,20,21]) = [96,88,99,98,99];
+%! y([6, 8, 18, 20, 21]) = [96, 88, 99, 98, 99];
 %! assert (fillmissing (x, "constant", [94:99], 2, "endvalues", 88), y);
-%! y = x; y(isnan(y)) = 88;
+%! y = x;
+%! y(isnan (y)) = 88;
 %! assert (fillmissing (x, "constant", [88:99], 3, "endvalues", 88), y);
-%! y = x; y(isnan(y)) = [82,82,83,83,94,85,86,87,87,88,88,88,89];
+%! y = x;
+%! y(isnan (y)) = [82, 82, 83, 83, 94, 85, 86, 87, 87, 88, 88, 88, 89];
 %! assert (fillmissing (x, "constant", [92:99], 1, "endvalues", [82:89]), y);
-%! y = x; y(isnan(y)) = [84,85,85,96,85,84,87,87,99,87,98,99,87];
+%! y = x;
+%! y(isnan (y)) = [84, 85, 85, 96, 85, 84, 87, 87, 99, 87, 98, 99, 87];
 %! assert (fillmissing (x, "constant", [94:99], 2, "endvalues", [84:89]), y);
-%! y = x; y(isnan(y)) = [68,69,72,73,75,77,68,71,73,74,75,76,77];
+%! y = x;
+%! y(isnan (y)) = [68, 69, 72, 73, 75, 77, 68, 71, 73, 74, 75, 76, 77];
 %! assert (fillmissing (x, "constant", [88:99], 3, "endvalues", [68:79]), y);
-%! assert (fillmissing (x, "constant", [88:93;94:99]', 3, "endvalues", [68:73;74:79]'), y)
+%! assert (fillmissing (x, "constant", [88:93; 94:99]', 3, "endvalues", [68:73; 74:79]'), y)
 
 %!test
-%! x = reshape([1:24],4,3,2);
+%! x = reshape ([1:24],4,3,2);
 %! x([1, 6, 7, 9, 12, 14, 16, 19, 22, 23]) = NaN;
 %! y = x;
-%! y([1,6,7,9 12, 14, 16, 19, 22, 23]) = [94 95 95 96 96 97 97 98 99 99];
+%! y([1, 6, 7, 9, 12, 14, 16, 19, 22, 23]) = [94, 95, 95, 96, 96, 97, 97, 98, 99, 99];
 %! assert (fillmissing (x, "constant", [94:99], 1), y);
-%! y([1,6,7,9 12, 14, 16, 19, 22, 23]) = [92 93 94 92 95 97 99 98 97 98];
+%! y([1, 6, 7, 9, 12, 14, 16, 19, 22, 23]) = [92, 93, 94, 92, 95, 97, 99, 98, 97, 98];
 %! assert (fillmissing (x, "constant", [92:99], 2), y);
-%! y([1,6,7,9 12, 14, 16, 19, 22, 23]) = [88 93 94 96 99 89 91 94 97 98];
+%! y([1, 6, 7, 9, 12, 14, 16, 19, 22, 23]) = [88, 93, 94, 96, 99, 89, 91, 94, 97, 98];
 %! assert (fillmissing (x, "constant", [88:99], 3), y);
-%! y([1,6,7,9 12, 14, 16, 19, 22, 23]) = [76 81 82 84 87 89 91 94 97 98];
+%! y([1, 6, 7, 9, 12, 14, 16, 19, 22, 23]) = [76, 81, 82, 84, 87, 89, 91, 94, 97, 98];
 %! assert (fillmissing (x, "constant", [76:99], 99), y);
 
 ## next/previous tests
-%!assert (fillmissing ([1 2 3], "previous"), [1 2 3])
-%!assert (fillmissing ([1 2 3], "next"), [1 2 3])
-%!assert (fillmissing ([1 2 3]', "previous"), [1 2 3]')
-%!assert (fillmissing ([1 2 3]', "next"), [1 2 3]')
-%!assert (fillmissing ([1 2 NaN], "previous"), [1 2 2])
-%!assert (fillmissing ([1 2 NaN], "next"), [1 2 NaN])
-%!assert (fillmissing ([NaN 2 NaN], "previous"), [NaN 2 2])
-%!assert (fillmissing ([NaN 2 NaN], "next"), [2 2 NaN])
-%!assert (fillmissing ([1 NaN 3], "previous"), [1 1 3])
-%!assert (fillmissing ([1 NaN 3], "next"), [1 3 3])
-%!assert (fillmissing ([1 2 NaN; 4 NaN 6], "previous", 1), [1 2 NaN; 4 2 6])
-%!assert (fillmissing ([1 2 NaN; 4 NaN 6], "previous", 2), [1 2 2; 4 4 6])
-%!assert (fillmissing ([1 2 NaN; 4 NaN 6], "previous", 3), [1 2 NaN; 4 NaN 6])
-%!assert (fillmissing ([1 2 NaN; 4 NaN 6], "next", 1), [1 2 6; 4 NaN 6])
-%!assert (fillmissing ([1 2 NaN; 4 NaN 6], "next", 2), [1 2 NaN; 4 6 6])
-%!assert (fillmissing ([1 2 NaN; 4 NaN 6], "next", 3), [1 2 NaN; 4 NaN 6])
+%!assert (fillmissing ([1, 2, 3], "previous"), [1, 2, 3])
+%!assert (fillmissing ([1, 2, 3], "next"), [1, 2, 3])
+%!assert (fillmissing ([1, 2, 3]', "previous"), [1, 2, 3]')
+%!assert (fillmissing ([1, 2, 3]', "next"), [1, 2, 3]')
+%!assert (fillmissing ([1, 2, NaN], "previous"), [1, 2, 2])
+%!assert (fillmissing ([1, 2, NaN], "next"), [1, 2, NaN])
+%!assert (fillmissing ([NaN, 2, NaN], "previous"), [NaN, 2, 2])
+%!assert (fillmissing ([NaN, 2, NaN], "next"), [2, 2, NaN])
+%!assert (fillmissing ([1, NaN, 3], "previous"), [1, 1, 3])
+%!assert (fillmissing ([1, NaN, 3], "next"), [1, 3, 3])
+%!assert (fillmissing ([1, 2, NaN; 4, NaN, 6], "previous", 1), [1, 2, NaN; 4, 2, 6])
+%!assert (fillmissing ([1, 2, NaN; 4, NaN, 6], "previous", 2), [1, 2, 2; 4, 4, 6])
+%!assert (fillmissing ([1, 2, NaN; 4, NaN, 6], "previous", 3), [1, 2, NaN; 4, NaN, 6])
+%!assert (fillmissing ([1, 2, NaN; 4, NaN, 6], "next", 1), [1, 2, 6; 4, NaN, 6])
+%!assert (fillmissing ([1, 2, NaN; 4, NaN, 6], "next", 2), [1, 2, NaN; 4, 6, 6])
+%!assert (fillmissing ([1, 2, NaN; 4, NaN, 6], "next", 3), [1, 2, NaN; 4, NaN, 6])
 
 %!test
-%! x = reshape([1:24],4,3,2);
+%! x = reshape ([1:24], 4, 3, 2);
 %! x([1, 6, 7, 9, 12, 14, 16, 19, 22, 23]) = NaN;
 %! y = x;
-%! y([1, 6, 7, 9, 14, 19, 22, 23]) = [2 8 8 10 15 20 24 24];
+%! y([1, 6, 7, 9, 14, 19, 22, 23]) = [2, 8, 8, 10, 15, 20, 24, 24];
 %! assert (fillmissing (x, "next", 1), y);
 %! y = x;
 %! y([1, 6, 7, 14, 16]) = [5, 10, 11, 18, 20];
 %! assert (fillmissing (x, "next", 2), y);
 %! y = x;
-%! y([1, 6, 9, 12]) = [13 18 21 24];
+%! y([1, 6, 9, 12]) = [13, 18, 21, 24];
 %! assert (fillmissing (x, "next", 3), y);
 %! assert (fillmissing (x, "next", 99), x);
 %! y = x;
-%! y([6, 7, 12, 14, 16, 19, 22, 23]) = [5 5 11 13 15 18 21 21];
+%! y([6, 7, 12, 14, 16, 19, 22, 23]) = [5, 5, 11, 13, 15, 18, 21, 21];
 %! assert (fillmissing (x, "previous", 1), y);
 %! y = x;
-%! y([6, 7, 9, 12, 19, 22, 23]) = [2 3 5 8 15 18 15];
+%! y([6, 7, 9, 12, 19, 22, 23]) = [2, 3, 5, 8, 15, 18, 15];
 %! assert (fillmissing (x, "previous", 2), y);
 %! y = x;
-%! y([14, 16, 22, 23]) = [2 4 10 11];
+%! y([14, 16, 22, 23]) = [2, 4, 10, 11];
 %! assert (fillmissing (x, "previous", 3), y);
 %! assert (fillmissing (x, "previous", 99), x);
 
 ## next/previous tests with different endvalue behavior
-%!assert (fillmissing ([1 2 3], "constant", 0, "endvalues", "previous"), [1 2 3])
-%!assert (fillmissing ([1 2 3], "constant", 0, "endvalues", "next"), [1 2 3])
-%!assert (fillmissing ([1 NaN 3], "constant", 0, "endvalues", "previous"), [1 0 3])
-%!assert (fillmissing ([1 NaN 3], "constant", 0, "endvalues", "next"), [1 0 3])
-%!assert (fillmissing ([1 2 NaN], "constant", 0, "endvalues", "previous"), [1 2 2])
-%!assert (fillmissing ([1 2 NaN], "constant", 0, "endvalues", "next"), [1 2 NaN])
-%!assert (fillmissing ([1 NaN NaN], "constant", 0, "endvalues", "previous"), [1 1 1])
-%!assert (fillmissing ([1 NaN NaN], "constant", 0, "endvalues", "next"), [1 NaN NaN])
-%!assert (fillmissing ([NaN 2 3], "constant", 0, "endvalues", "previous"), [NaN 2 3])
-%!assert (fillmissing ([NaN 2 3], "constant", 0, "endvalues", "next"), [2 2 3])
-%!assert (fillmissing ([NaN NaN 3], "constant", 0, "endvalues", "previous"), [NaN NaN 3])
-%!assert (fillmissing ([NaN NaN 3], "constant", 0, "endvalues", "next"), [3 3 3])
-%!assert (fillmissing ([NaN NaN NaN], "constant", 0, "endvalues", "previous"), [NaN NaN NaN])
-%!assert (fillmissing ([NaN NaN NaN], "constant", 0, "endvalues", "next"), [NaN NaN NaN])
-%!assert (fillmissing ([NaN 2 NaN 4 NaN], "constant", 0, "endvalues", "previous"), [NaN 2 0 4 4])
-%!assert (fillmissing ([NaN 2 NaN 4 NaN], "constant", 0, "endvalues", "next"), [2 2 0 4 NaN])
-%!assert (fillmissing ([NaN 2 NaN 4 NaN], "constant", 0, 1, "endvalues", "previous"), [NaN 2 NaN 4 NaN])
-%!assert (fillmissing ([NaN 2 NaN 4 NaN], "constant", 0, 1, "endvalues", "next"), [NaN 2 NaN 4 NaN])
-%!assert (fillmissing ([NaN 2 NaN 4 NaN], "constant", 0, 2, "endvalues", "previous"), [NaN 2 0 4 4])
-%!assert (fillmissing ([NaN 2 NaN 4 NaN], "constant", 0, 2, "endvalues", "next"), [2 2 0 4 NaN])
-%!assert (fillmissing ([NaN 2 NaN 4 NaN], "constant", 0, 3, "endvalues", "previous"), [NaN 2 NaN 4 NaN])
-%!assert (fillmissing ([NaN 2 NaN 4 NaN], "constant", 0, 3, "endvalues", "next"), [NaN 2 NaN 4 NaN])
+%!assert (fillmissing ([1, 2, 3], "constant", 0, "endvalues", "previous"), [1, 2, 3])
+%!assert (fillmissing ([1, 2, 3], "constant", 0, "endvalues", "next"), [1, 2, 3])
+%!assert (fillmissing ([1, NaN, 3], "constant", 0, "endvalues", "previous"), [1, 0, 3])
+%!assert (fillmissing ([1, NaN, 3], "constant", 0, "endvalues", "next"), [1, 0, 3])
+%!assert (fillmissing ([1, 2, NaN], "constant", 0, "endvalues", "previous"), [1, 2, 2])
+%!assert (fillmissing ([1, 2, NaN], "constant", 0, "endvalues", "next"), [1, 2, NaN])
+%!assert (fillmissing ([1, NaN, NaN], "constant", 0, "endvalues", "previous"), [1, 1, 1])
+%!assert (fillmissing ([1, NaN, NaN], "constant", 0, "endvalues", "next"), [1, NaN, NaN])
+%!assert (fillmissing ([NaN, 2, 3], "constant", 0, "endvalues", "previous"), [NaN, 2, 3])
+%!assert (fillmissing ([NaN, 2, 3], "constant", 0, "endvalues", "next"), [2, 2, 3])
+%!assert (fillmissing ([NaN, NaN, 3], "constant", 0, "endvalues", "previous"), [NaN, NaN, 3])
+%!assert (fillmissing ([NaN, NaN, 3], "constant", 0, "endvalues", "next"), [3, 3, 3])
+%!assert (fillmissing ([NaN, NaN, NaN], "constant", 0, "endvalues", "previous"), [NaN, NaN, NaN])
+%!assert (fillmissing ([NaN, NaN, NaN], "constant", 0, "endvalues", "next"), [NaN, NaN, NaN])
+%!assert (fillmissing ([NaN, 2, NaN, 4, NaN], "constant", 0, "endvalues", "previous"), [NaN, 2, 0, 4, 4])
+%!assert (fillmissing ([NaN, 2, NaN, 4, NaN], "constant", 0, "endvalues", "next"), [2, 2, 0, 4, NaN])
+%!assert (fillmissing ([NaN, 2, NaN, 4, NaN], "constant", 0, 1, "endvalues", "previous"), [NaN, 2, NaN, 4, NaN])
+%!assert (fillmissing ([NaN, 2, NaN, 4, NaN], "constant", 0, 1, "endvalues", "next"), [NaN, 2, NaN, 4, NaN])
+%!assert (fillmissing ([NaN, 2, NaN, 4, NaN], "constant", 0, 2, "endvalues", "previous"), [NaN, 2, 0, 4, 4])
+%!assert (fillmissing ([NaN, 2, NaN, 4, NaN], "constant", 0, 2, "endvalues", "next"), [2, 2, 0, 4, NaN])
+%!assert (fillmissing ([NaN, 2, NaN, 4, NaN], "constant", 0, 3, "endvalues", "previous"), [NaN, 2, NaN, 4, NaN])
+%!assert (fillmissing ([NaN, 2, NaN, 4, NaN], "constant", 0, 3, "endvalues", "next"), [NaN, 2, NaN, 4, NaN])
 
 %!test
 %! x = reshape ([1:24], 3, 4, 2);
-%! x([1,2,5,6,8,10,13,16,18,19,20,21,22]) = NaN;
+%! x([1, 2, 5, 6, 8, 10, 13, 16, 18, 19, 20, 21, 22]) = NaN;
 %! y = x;
-%! y([5,6,8,18])=[4,4,0,17];
+%! y([5, 6, 8, 18]) = [4, 4, 0, 17];
 %! assert (fillmissing (x, "constant", 0, "endvalues", "previous"), y);
 %! assert (fillmissing (x, "constant", 0, 1, "endvalues", "previous"), y);
 %! y = x;
-%! y([6,10,18,20,21])=[0,7,0,0,0];
+%! y([6, 10, 18, 20, 21]) = [0, 7, 0, 0, 0];
 %! assert (fillmissing (x, "constant", 0, 2, "endvalues", "previous"), y);
 %! y = x;
-%! y([16,19,21])=[4,7,9];
+%! y([16, 19, 21]) = [4, 7, 9];
 %! assert (fillmissing (x, "constant", 0, 3, "endvalues", "previous"), y);
 %! assert (fillmissing (x, "constant", 0, 4, "endvalues", "previous"), x);
 %! assert (fillmissing (x, "constant", 0, 99, "endvalues", "previous"), x);
 %! y = x;
-%! y([1,2,8,10,13,16,22])=[3,3,0,11,14,17,23];
+%! y([1, 2, 8, 10, 13, 16, 22]) = [3, 3, 0, 11, 14, 17, 23];
 %! assert (fillmissing (x, "constant", 0, "endvalues", "next"), y);
 %! assert (fillmissing (x, "constant", 0, 1, "endvalues", "next"), y);
 %! y = x;
-%! y([1,2,5,6,8,18,20,21])=[4,11,11,0,11,0,0,0];
+%! y([1, 2, 5, 6, 8, 18, 20, 21]) = [4, 11, 11, 0, 11, 0, 0, 0];
 %! assert (fillmissing (x, "constant", 0, 2, "endvalues", "next"), y);
 %! y = x;
-%! y([2,5])=[14,17];
+%! y([2, 5]) = [14, 17];
 %! assert (fillmissing (x, "constant", 0, 3, "endvalues", "next"), y);
 %! assert (fillmissing (x, "constant", 0, 4, "endvalues", "next"), x);
 %! assert (fillmissing (x, "constant", 0, 99, "endvalues", "next"), x);
 
-##tests for nearest
-%!assert (fillmissing ([1 2 3], "nearest"), [1 2 3])
-%!assert (fillmissing ([1 2 3]', "nearest"), [1 2 3]')
-%!assert (fillmissing ([1 2 NaN], "nearest"), [1 2 2])
-%!assert (fillmissing ([NaN 2 NaN], "nearest"), [2 2 2])
-%!assert (fillmissing ([1 NaN 3], "nearest"), [1 3 3])
-%!assert (fillmissing ([1 2 NaN; 4 NaN 6], "nearest", 1), [1 2 6; 4 2 6])
-%!assert (fillmissing ([1 2 NaN; 4 NaN 6], "nearest", 2), [1 2 2; 4 6 6])
-%!assert (fillmissing ([1 2 NaN; 4 NaN 6], "nearest", 3), [1 2 NaN; 4 NaN 6])
-%!assert (fillmissing ([1 NaN 3 NaN 5], "nearest"), [1 3 3 5 5])
-%!assert (fillmissing ([1 NaN 3 NaN 5], "nearest", "samplepoints", [0 1 2 3 4]), [1 3 3 5 5])
-%!assert (fillmissing ([1 NaN 3 NaN 5], "nearest", "samplepoints", [0.5 1 2 3 5]), [1 1 3 3 5])
+## Tests for nearest
+%!assert (fillmissing ([1, 2, 3], "nearest"), [1, 2, 3])
+%!assert (fillmissing ([1, 2, 3]', "nearest"), [1, 2, 3]')
+%!assert (fillmissing ([1, 2, NaN], "nearest"), [1, 2, 2])
+%!assert (fillmissing ([NaN, 2, NaN], "nearest"), [2, 2, 2])
+%!assert (fillmissing ([1, NaN, 3], "nearest"), [1, 3, 3])
+%!assert (fillmissing ([1, 2, NaN; 4, NaN, 6], "nearest", 1), [1, 2, 6; 4, 2, 6])
+%!assert (fillmissing ([1, 2, NaN; 4, NaN, 6], "nearest", 2), [1, 2, 2; 4, 6, 6])
+%!assert (fillmissing ([1, 2, NaN; 4, NaN, 6], "nearest", 3), [1, 2, NaN; 4, NaN, 6])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5], "nearest"), [1, 3, 3, 5, 5])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5], "nearest", "samplepoints", [0, 1, 2, 3, 4]), [1, 3, 3, 5, 5])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5], "nearest", "samplepoints", [0.5, 1, 2, 3, 5]), [1, 1, 3, 3, 5])
 
 %!test
-%! x = reshape([1:24],4,3,2);
+%! x = reshape ([1:24], 4, 3, 2);
 %! x([1, 6, 7, 9, 12, 14, 16, 19, 22, 23]) = NaN;
 %! y = x;
-%! y([1, 6, 7, 9, 12, 14, 16, 19, 22, 23]) = [2 5 8 10 11 15 15 20 21 24];
+%! y([1, 6, 7, 9, 12, 14, 16, 19, 22, 23]) = [2, 5, 8, 10, 11, 15, 15, 20, 21, 24];
 %! assert (fillmissing (x, "nearest", 1), y);
 %! y = x;
-%! y([1, 6, 7, 9, 12, 14, 16, 19, 22, 23]) = [5 10 11 5 8 18 20 15 18 15];
+%! y([1, 6, 7, 9, 12, 14, 16, 19, 22, 23]) = [5, 10, 11, 5, 8, 18, 20, 15, 18, 15];
 %! assert (fillmissing (x, "nearest", 2), y);
 %! y = x;
-%! y([1, 6, 9, 12, 14, 16, 22, 23]) = [13 18 21 24 2 4 10 11];
+%! y([1, 6, 9, 12, 14, 16, 22, 23]) = [13, 18, 21, 24, 2, 4, 10, 11];
 %! assert (fillmissing (x, "nearest", 3), y);
 %! assert (fillmissing (x, "nearest", 99), x);
 
-##tests for nearest with diff endvalue behavior
-%!assert (fillmissing ([1 2 3], "constant", 0, "endvalues", "nearest"), [1 2 3])
-%!assert (fillmissing ([1 NaN 3], "constant", 0, "endvalues", "nearest"), [1 0 3])
-%!assert (fillmissing ([1 2 NaN], "constant", 0, "endvalues", "nearest"), [1 2 2])
-%!assert (fillmissing ([1 NaN NaN], "constant", 0, "endvalues", "nearest"), [1 1 1])
-%!assert (fillmissing ([NaN 2 3], "constant", 0, "endvalues", "nearest"), [2 2 3])
-%!assert (fillmissing ([NaN NaN 3], "constant", 0, "endvalues", "nearest"), [3 3 3])
-%!assert (fillmissing ([NaN NaN NaN], "constant", 0, "endvalues", "nearest"), [NaN NaN NaN])
-%!assert (fillmissing ([NaN 2 NaN 4 NaN], "constant", 0, "endvalues", "nearest"), [2 2 0 4 4])
-%!assert (fillmissing ([NaN 2 NaN 4 NaN], "constant", 0, 1, "endvalues", "nearest"), [NaN 2 NaN 4 NaN])
-%!assert (fillmissing ([NaN 2 NaN 4 NaN], "constant", 0, 2, "endvalues", "nearest"), [2 2 0 4 4])
-%!assert (fillmissing ([NaN 2 NaN 4 NaN], "constant", 0, 3, "endvalues", "nearest"), [NaN 2 NaN 4 NaN])
+## Tests for nearest with diff endvalue behavior
+%!assert (fillmissing ([1, 2, 3], "constant", 0, "endvalues", "nearest"), [1, 2, 3])
+%!assert (fillmissing ([1, NaN, 3], "constant", 0, "endvalues", "nearest"), [1 0 3])
+%!assert (fillmissing ([1, 2, NaN], "constant", 0, "endvalues", "nearest"), [1, 2, 2])
+%!assert (fillmissing ([1, NaN, NaN], "constant", 0, "endvalues", "nearest"), [1, 1, 1])
+%!assert (fillmissing ([NaN, 2, 3], "constant", 0, "endvalues", "nearest"), [2, 2, 3])
+%!assert (fillmissing ([NaN, NaN, 3], "constant", 0, "endvalues", "nearest"), [3, 3, 3])
+%!assert (fillmissing ([NaN, NaN, NaN], "constant", 0, "endvalues", "nearest"), [NaN, NaN, NaN])
+%!assert (fillmissing ([NaN, 2, NaN, 4, NaN], "constant", 0, "endvalues", "nearest"), [2, 2, 0, 4, 4])
+%!assert (fillmissing ([NaN, 2, NaN, 4, NaN], "constant", 0, 1, "endvalues", "nearest"), [NaN, 2, NaN, 4, NaN])
+%!assert (fillmissing ([NaN, 2, NaN, 4, NaN], "constant", 0, 2, "endvalues", "nearest"), [2, 2, 0, 4, 4])
+%!assert (fillmissing ([NaN, 2, NaN, 4, NaN], "constant", 0, 3, "endvalues", "nearest"), [NaN, 2, NaN, 4, NaN])
 
 %!test
 %! x = reshape ([1:24], 3, 4, 2);
-%! x([1,2,5,6,8,10,13,16,18,19,20,21,22]) = NaN;
+%! x([1, 2, 5, 6, 8, 10, 13, 16, 18, 19, 20, 21, 22]) = NaN;
 %! y = x;
-%! y([1,2,5,6,8,10,13,16,18,22])=[3 3 4 4 0 11 14 17 17 23];
+%! y([1, 2, 5, 6, 8, 10, 13, 16, 18, 22]) = [3, 3, 4, 4, 0, 11, 14, 17, 17, 23];
 %! assert (fillmissing (x, "constant", 0, "endvalues", "nearest"), y);
 %! assert (fillmissing (x, "constant", 0, 1, "endvalues", "nearest"), y);
 %! y = x;
-%! y([1,2,5,6,8,10,18,20,21])=[4 11 11 0 11 7 0 0 0];
+%! y([1, 2, 5, 6, 8, 10, 18, 20, 21]) = [4, 11, 11, 0, 11, 7, 0, 0, 0];
 %! assert (fillmissing (x, "constant", 0, 2, "endvalues", "nearest"), y);
 %! y = x;
-%! y([2,5,16,19,21])=[14 17 4 7 9];
+%! y([2, 5, 16, 19, 21]) = [14, 17, 4, 7, 9];
 %! assert (fillmissing (x, "constant", 0, 3, "endvalues", "nearest"), y);
 %! assert (fillmissing (x, "constant", 0, 99, "endvalues", "nearest"), x);
 
-##tests for linear
-%!assert (fillmissing ([1 2 3], "linear"), [1 2 3])
-%!assert (fillmissing ([1 2 3]', "linear"), [1 2 3]')
-%!assert (fillmissing ([1 2 NaN], "linear"), [1 2 3])
-%!assert (fillmissing ([NaN 2 NaN], "linear"), [NaN 2 NaN])
-%!assert (fillmissing ([1 NaN 3], "linear"), [1 2 3])
-%!assert (fillmissing ([1 2 NaN; 4 NaN 6], "linear", 1), [1 2 NaN; 4 NaN 6])
-%!assert (fillmissing ([1 2 NaN; 4 NaN 6], "linear", 2), [1 2 3; 4 5 6])
-%!assert (fillmissing ([1 2 NaN; 4 NaN 6], "linear", 3), [1 2 NaN; 4 NaN 6])
-%!assert (fillmissing ([1 NaN 3 NaN 5], "linear"), [1 2 3 4 5])
-%!assert (fillmissing ([1 NaN 3 NaN 5], "linear", "samplepoints", [0 1 2 3 4]), [1 2 3 4 5])
-%!assert (fillmissing ([1 NaN 3 NaN 5], "linear", "samplepoints", [0 1.5 2 5 14]), [1 2.5 3 3.5 5], eps)
+## Tests for linear
+%!assert (fillmissing ([1, 2, 3], "linear"), [1, 2, 3])
+%!assert (fillmissing ([1, 2, 3]', "linear"), [1, 2, 3]')
+%!assert (fillmissing ([1, 2, NaN], "linear"), [1, 2, 3])
+%!assert (fillmissing ([NaN, 2, NaN], "linear"), [NaN, 2, NaN])
+%!assert (fillmissing ([1, NaN, 3], "linear"), [1, 2, 3])
+%!assert (fillmissing ([1, 2, NaN; 4, NaN, 6], "linear", 1), [1, 2, NaN; 4, NaN, 6])
+%!assert (fillmissing ([1, 2, NaN; 4, NaN, 6], "linear", 2), [1, 2, 3; 4, 5, 6])
+%!assert (fillmissing ([1, 2, NaN; 4, NaN, 6], "linear", 3), [1, 2, NaN; 4, NaN, 6])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5], "linear"), [1, 2, 3, 4, 5])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5], "linear", "samplepoints", [0, 1, 2, 3, 4]), [1, 2, 3, 4, 5])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5], "linear", "samplepoints", [0, 1.5, 2, 5, 14]), [1, 2.5, 3, 3.5, 5], eps)
 
 %!test
-%! x = reshape([1:24],4,3,2);
+%! x = reshape ([1:24], 4, 3, 2);
 %! x([1, 6, 7, 9, 12, 14, 16, 19, 22, 23]) = NaN;
-%! assert (fillmissing (x, "linear", 1), reshape([1:24],4,3,2));
-%! y = reshape([1:24],4,3,2);
-%! y([1 9 14 19 22 23]) = NaN;
+%! assert (fillmissing (x, "linear", 1), reshape ([1:24], 4, 3, 2));
+%! y = reshape ([1:24], 4, 3, 2);
+%! y([1, 9, 14, 19, 22, 23]) = NaN;
 %! assert (fillmissing (x, "linear", 2), y);
-%! y = reshape([1:24],4,3,2);
+%! y = reshape ([1:24], 4, 3, 2);
 %! y([1, 6, 7, 9, 12, 14, 16, 19, 22, 23]) = NaN;
 %! assert (fillmissing (x, "linear", 3), y);
 %! assert (fillmissing (x, "linear", 99), x);
 
-##tests for linear with diff endvalue behavior
-%!assert (fillmissing ([1 2 3], "linear", "endvalues", 0), [1 2 3])
-%!assert (fillmissing ([1 NaN 3], "linear", "endvalues", 0), [1 2 3])
-%!assert (fillmissing ([1 2 NaN], "linear", "endvalues", 0), [1 2 0])
-%!assert (fillmissing ([1 NaN NaN], "linear", "endvalues", 0), [1 0 0])
-%!assert (fillmissing ([NaN 2 3], "linear", "endvalues", 0), [0 2 3])
-%!assert (fillmissing ([NaN NaN 3], "linear", "endvalues", 0), [0 0 3])
-%!assert (fillmissing ([NaN NaN NaN], "linear", "endvalues", 0), [0 0 0])
-%!assert (fillmissing ([NaN 2 NaN 4 NaN], "linear", "endvalues", 0), [0 2 3 4 0])
-%!assert (fillmissing ([NaN 2 NaN 4 NaN], "linear", 1, "endvalues", 0), [0 2 0 4 0])
-%!assert (fillmissing ([NaN 2 NaN 4 NaN], "linear", 2, "endvalues", 0), [0 2 3 4 0])
-%!assert (fillmissing ([NaN 2 NaN 4 NaN], "linear", 3, "endvalues", 0), [0 2 0 4 0])
+## Tests for linear with diff endvalue behavior
+%!assert (fillmissing ([1, 2, 3], "linear", "endvalues", 0), [1, 2, 3])
+%!assert (fillmissing ([1, NaN, 3], "linear", "endvalues", 0), [1, 2, 3])
+%!assert (fillmissing ([1, 2, NaN], "linear", "endvalues", 0), [1, 2, 0])
+%!assert (fillmissing ([1, NaN, NaN], "linear", "endvalues", 0), [1, 0, 0])
+%!assert (fillmissing ([NaN, 2, 3], "linear", "endvalues", 0), [0, 2, 3])
+%!assert (fillmissing ([NaN, NaN, 3], "linear", "endvalues", 0), [0, 0, 3])
+%!assert (fillmissing ([NaN, NaN, NaN], "linear", "endvalues", 0), [0, 0, 0])
+%!assert (fillmissing ([NaN, 2, NaN, 4, NaN], "linear", "endvalues", 0), [0, 2, 3, 4, 0])
+%!assert (fillmissing ([NaN, 2, NaN, 4, NaN], "linear", 1, "endvalues", 0), [0, 2, 0, 4, 0])
+%!assert (fillmissing ([NaN, 2, NaN, 4, NaN], "linear", 2, "endvalues", 0), [0, 2, 3, 4, 0])
+%!assert (fillmissing ([NaN, 2, NaN, 4, NaN], "linear", 3, "endvalues", 0), [0, 2, 0, 4, 0])
 
 %!test
 %! x = reshape ([1:24], 3, 4, 2);
-%! x([1,2,5,6,8,10,13,16,18,19,20,21,22]) = NaN;
+%! x([1, 2, 5, 6, 8, 10, 13, 16, 18, 19, 20, 21, 22]) = NaN;
 %! y = x;
-%! y([1,2,5,6,10,13,16,18,19,20,21,22])=0; y(8)=8;
+%! y([1, 2, 5, 6, 10, 13, 16, 18, 19, 20, 21, 22]) = 0;
+%! y(8) = 8;
 %! assert (fillmissing (x, "linear", "endvalues", 0), y);
 %! assert (fillmissing (x, "linear", 1, "endvalues", 0), y);
 %! y = x;
-%! y([1,2,5,8,10,13,16,19,22])=0; y([6,18,20,21])=[6,18,20,21];
+%! y([1, 2, 5, 8, 10, 13, 16, 19, 22]) = 0;
+%! y([6, 18, 20, 21]) = [6, 18, 20, 21];
 %! assert (fillmissing (x, "linear", 2, "endvalues", 0), y);
 %! y = x;
-%! y(isnan(y))=0;
+%! y(isnan(y)) = 0;
 %! assert (fillmissing (x, "linear", 3, "endvalues", 0), y);
 %! assert (fillmissing (x, "linear", 99, "endvalues", 0), y);
 
-##tests with linear only on endvalues
-%!assert (fillmissing ([1 2 3], "constant", 99, "endvalues", "linear"), [1 2 3])
-%!assert (fillmissing ([1 NaN 3], "constant", 99, "endvalues", "linear"), [1 99 3])
-%!assert (fillmissing ([1 NaN 3 NaN], "constant", 99, "endvalues", "linear"), [1 99 3 4])
-%!assert (fillmissing ([NaN 2 NaN 4 NaN], "constant", 99, "endvalues", "linear"), [1 2 99 4 5])
-%!assert (fillmissing ([NaN 2 NaN NaN], "constant", 99, "endvalues", "linear"), [NaN 2 NaN NaN])
-%!assert (fillmissing ([NaN 2 NaN 4 NaN], "constant", 99, "endvalues", "linear", "samplepoints", [1 2 3 4 5]), [1 2 99 4 5])
-%!assert (fillmissing ([NaN 2 NaN 4 NaN], "constant", 99, "endvalues", "linear", "samplepoints", [0 2 3 4 10]), [0 2 99 4 10])
+## Tests with linear only on endvalues
+%!assert (fillmissing ([1, 2, 3], "constant", 99, "endvalues", "linear"), [1, 2, 3])
+%!assert (fillmissing ([1, NaN, 3], "constant", 99, "endvalues", "linear"), [1, 99, 3])
+%!assert (fillmissing ([1, NaN, 3, NaN], "constant", 99, "endvalues", "linear"), [1, 99, 3, 4])
+%!assert (fillmissing ([NaN, 2, NaN, 4, NaN], "constant", 99, "endvalues", "linear"), [1, 2, 99, 4, 5])
+%!assert (fillmissing ([NaN, 2, NaN, NaN], "constant", 99, "endvalues", "linear"), [NaN, 2, NaN, NaN])
+%!assert (fillmissing ([NaN, 2, NaN, 4, NaN], "constant", 99, "endvalues", "linear", "samplepoints", [1, 2, 3, 4, 5]), [1, 2, 99, 4, 5])
+%!assert (fillmissing ([NaN, 2, NaN, 4, NaN], "constant", 99, "endvalues", "linear", "samplepoints", [0, 2, 3, 4, 10]), [0, 2, 99, 4, 10])
 
-##test other interpolants
+## Test other interpolants
+%!test
 %! x = reshape ([1:24], 3, 4, 2);
-%! x([1,2,5,6,8,10,13,16,18,19,20,21,22]) = NaN;
+%! x([1, 2, 5, 6, 8, 10, 13, 16, 18, 19, 20, 21, 22]) = NaN;
 %! y = x;
-%! y([1,6,10,18,20,21]) = [2.5, 5, 8.5, 17.25, 21, 21.75];
+%! y([1, 6, 10, 18, 20, 21]) = [2.5, 5, 8.5, 17.25, 21, 21.75];
 %! assert (fillmissing (x, "linear", 2, "samplepoints", [2 4 8 10]), y, eps);
-%! y([1,6,10,18,20,21]) = [2.5, 4.5, 8.5, 17.25, 21.5, 21.75];
-%! assert (fillmissing (x, "spline", 2, "samplepoints", [2 4 8 10]), y, eps);
-%! y([1,6,10,18,20,21]) = [2.5, 4.559386973180077, 8.5, 17.25, 21.440613026819925, 21.75];
-%! assert (fillmissing (x, "pchip", 2, "samplepoints", [2 4 8 10]), y, 10*eps);
+%! y([1, 6, 10, 18, 20, 21]) = [2.5, 4.5, 8.5, 17.25, 21.5, 21.75];
+%! assert (fillmissing (x, "spline", 2, "samplepoints", [2, 4, 8, 10]), y, eps);
+%! y([1, 6, 10, 18, 20, 21]) = [2.5, 4.559386973180077, 8.5, 17.25, 21.440613026819925, 21.75];
+%! assert (fillmissing (x, "pchip", 2, "samplepoints", [2, 4, 8, 10]), y, 10*eps);
 
 ## known fail: makima method not yet implemented in interp1
 %!test <60965>
 %! x = reshape ([1:24], 3, 4, 2);
-%! x([1,2,5,6,8,10,13,16,18,19,20,21,22]) = NaN;
+%! x([1, 2, 5, 6, 8, 10, 13, 16, 18, 19, 20, 21, 22]) = NaN;
 %! y = x;
-%! y([1,6,10,18,20,21]) = [2.5, 4.609523809523809, 8.5, 17.25, 21.390476190476186, 21.75];
-%! assert (fillmissing (x, "makima", 2, "samplepoints", [2 4 8 10]), y, 10*eps);
+%! y([1, 6, 10, 18, 20, 21]) = [2.5, 4.609523809523809, 8.5, 17.25, 21.390476190476186, 21.75];
+%! assert (fillmissing (x, "makima", 2, "samplepoints", [2, 4, 8, 10]), y, 10*eps);
 
-##test other interpolants code path on endvalues
-%!assert (fillmissing ([1 2 3], "constant", 99, "endvalues", "spline"), [1 2 3])
-%!assert (fillmissing ([1 NaN 3], "constant", 99, "endvalues", "spline"), [1 99 3])
-%!assert (fillmissing ([1 NaN 3 NaN], "constant", 99, "endvalues", "spline"), [1 99 3 4])
-%!assert (fillmissing ([NaN 2 NaN 4 NaN], "constant", 99, "endvalues", "spline"), [1 2 99 4 5])
-%!assert (fillmissing ([NaN 2 NaN NaN], "constant", 99, "endvalues", "spline"), [NaN 2 NaN NaN])
-%!assert (fillmissing ([NaN 2 NaN 4 NaN], "constant", 99, "endvalues", "spline", "samplepoints", [1 2 3 4 5]), [1 2 99 4 5])
-%!assert (fillmissing ([NaN 2 NaN 4 NaN], "constant", 99, "endvalues", "spline", "samplepoints", [0 2 3 4 10]), [0 2 99 4 10])
+## Test other interpolants code path on endvalues
+%!assert (fillmissing ([1, 2, 3], "constant", 99, "endvalues", "spline"), [1, 2, 3])
+%!assert (fillmissing ([1, NaN, 3], "constant", 99, "endvalues", "spline"), [1, 99, 3])
+%!assert (fillmissing ([1, NaN, 3, NaN], "constant", 99, "endvalues", "spline"), [1, 99, 3, 4])
+%!assert (fillmissing ([NaN, 2, NaN, 4, NaN], "constant", 99, "endvalues", "spline"), [1, 2, 99, 4, 5])
+%!assert (fillmissing ([NaN, 2, NaN, NaN], "constant", 99, "endvalues", "spline"), [NaN, 2, NaN, NaN])
+%!assert (fillmissing ([NaN, 2, NaN, 4, NaN], "constant", 99, "endvalues", "spline", "samplepoints", [1, 2, 3, 4, 5]), [1, 2, 99, 4, 5])
+%!assert (fillmissing ([NaN, 2, NaN, 4, NaN], "constant", 99, "endvalues", "spline", "samplepoints", [0, 2, 3, 4, 10]), [0, 2, 99, 4, 10])
 
+## Test movmean
+%!assert (fillmissing ([1, 2, 3], "movmean", 1), [1, 2, 3])
+%!assert (fillmissing ([1, 2, NaN], "movmean", 1), [1, 2, NaN])
+%!assert (fillmissing ([1, 2, 3], "movmean", 2), [1, 2, 3])
+%!assert (fillmissing ([1, 2, 3], "movmean", [1, 0]), [1, 2, 3])
+%!assert (fillmissing ([1, 2, 3]', "movmean", 2), [1, 2, 3]')
+%!assert (fillmissing ([1, 2, NaN], "movmean", 2), [1, 2, 2])
+%!assert (fillmissing ([1, 2, NaN], "movmean", [1, 0]), [1, 2, 2])
+%!assert (fillmissing ([1, 2, NaN], "movmean", [1, 0]'), [1, 2, 2])
+%!assert (fillmissing ([NaN, 2, NaN], "movmean", 2), [NaN, 2, 2])
+%!assert (fillmissing ([NaN, 2, NaN], "movmean", [1, 0]), [NaN, 2, 2])
+%!assert (fillmissing ([NaN, 2, NaN], "movmean", [0, 1]), [2, 2, NaN])
+%!assert (fillmissing ([NaN, 2, NaN], "movmean", [0, 1.1]), [2, 2, NaN])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5], "movmean", [3, 0]), [1, 1, 3, 2, 5])
+%!assert (fillmissing ([1, 2, NaN; 4, NaN, 6], "movmean", 3, 1), [1, 2, 6; 4, 2, 6])
+%!assert (fillmissing ([1, 2, NaN; 4, NaN, 6], "movmean", 3, 2), [1, 2, 2; 4, 5, 6])
+%!assert (fillmissing ([1, 2, NaN; 4, NaN, 6], "movmean", 3, 3), [1, 2, NaN; 4, NaN, 6])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5], "movmean", 99), [1, 3, 3, 3, 5])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5], "movmean", 99, 1), [1, NaN, 3, NaN, 5])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5]', "movmean", 99, 1), [1, 3, 3, 3, 5]')
+%!assert (fillmissing ([1, NaN, 3, NaN, 5], "movmean", 99, 2), [1, 3, 3, 3, 5])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5]', "movmean", 99, 2), [1, NaN, 3, NaN, 5]')
 
-## test movmean
-%!assert (fillmissing ([1 2 3], "movmean", 1), [1 2 3])
-%!assert (fillmissing ([1 2 NaN], "movmean", 1), [1 2 NaN])
-%!assert (fillmissing ([1 2 3], "movmean", 2), [1 2 3])
-%!assert (fillmissing ([1 2 3], "movmean", [1 0]), [1 2 3])
-%!assert (fillmissing ([1 2 3]', "movmean", 2), [1 2 3]')
-%!assert (fillmissing ([1 2 NaN], "movmean", 2), [1 2 2])
-%!assert (fillmissing ([1 2 NaN], "movmean", [1 0]), [1 2 2])
-%!assert (fillmissing ([1 2 NaN], "movmean", [1 0]'), [1 2 2])
-%!assert (fillmissing ([NaN 2 NaN], "movmean", 2), [NaN 2 2])
-%!assert (fillmissing ([NaN 2 NaN], "movmean", [1 0]), [NaN 2 2])
-%!assert (fillmissing ([NaN 2 NaN], "movmean", [0 1]), [2 2 NaN])
-%!assert (fillmissing ([NaN 2 NaN], "movmean", [0 1.1]), [2 2 NaN])
-%!assert (fillmissing ([1 NaN 3 NaN 5], "movmean", [3 0]), [1 1 3 2 5])
-%!assert (fillmissing ([1 2 NaN; 4 NaN 6], "movmean", 3, 1), [1 2 6; 4 2 6])
-%!assert (fillmissing ([1 2 NaN; 4 NaN 6], "movmean", 3, 2), [1 2 2; 4 5 6])
-%!assert (fillmissing ([1 2 NaN; 4 NaN 6], "movmean", 3, 3), [1 2 NaN; 4 NaN 6])
-%!assert (fillmissing ([1 NaN 3 NaN 5], "movmean", 99), [1 3 3 3 5])
-%!assert (fillmissing ([1 NaN 3 NaN 5], "movmean", 99, 1), [1 NaN 3 NaN 5])
-%!assert (fillmissing ([1 NaN 3 NaN 5]', "movmean", 99, 1), [1 3 3 3 5]')
-%!assert (fillmissing ([1 NaN 3 NaN 5], "movmean", 99, 2), [1 3 3 3 5])
-%!assert (fillmissing ([1 NaN 3 NaN 5]', "movmean", 99, 2), [1 NaN 3 NaN 5]')
-
-%!assert (fillmissing ([1 NaN NaN NaN 5], "movmean", 3, "samplepoints", [1 2 3 4 5]), [1 1 NaN 5 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], "movmean", [1 1], "samplepoints", [1 2 3 4 5]), [1 1 NaN 5 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], "movmean", [1.5 1.5], "samplepoints", [1 2 3 4 5]), [1 1 NaN 5 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], "movmean", 4, "samplepoints", [1 2 3 4 5]), [1 1 1 5 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], "movmean", [2 2], "samplepoints", [1 2 3 4 5]), [1 1 3 5 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], "movmean", 4.0001, "samplepoints", [1 2 3 4 5]), [1 1 3 5 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], "movmean", 3, "samplepoints", [1.5 2 3 4 5]), [1 1 1 5 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], "movmean", 3, "samplepoints", [1 2 3 4 4.5]), [1 1 NaN 5 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], "movmean", 3, "samplepoints", [1.5 2 3 4 4.5]), [1 1 1 5 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], "movmean", [1.5 1.5], "samplepoints", [1.5 2 3 4 5]), [1 1 1 5 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], "movmean", [1.5 1.5], "samplepoints", [1 2 3 4 4.5]), [1 1 5 5 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], "movmean", [1.5 1.5], "samplepoints", [1.5 2 3 4 4.5]), [1 1 3 5 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "movmean", 3, "samplepoints", [1, 2, 3, 4, 5]), [1, 1, NaN, 5, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "movmean", [1, 1], "samplepoints", [1, 2, 3, 4, 5]), [1, 1, NaN, 5, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "movmean", [1.5, 1.5], "samplepoints", [1, 2, 3, 4, 5]), [1, 1, NaN, 5, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "movmean", 4, "samplepoints", [1, 2, 3, 4, 5]), [1, 1, 1, 5, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "movmean", [2, 2], "samplepoints", [1, 2, 3, 4, 5]), [1, 1, 3, 5, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "movmean", 4.0001, "samplepoints", [1, 2, 3, 4, 5]), [1, 1, 3, 5, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "movmean", 3, "samplepoints", [1.5, 2, 3, 4, 5]), [1, 1, 1, 5, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "movmean", 3, "samplepoints", [1 2, 3, 4, 4.5]), [1, 1, NaN, 5, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "movmean", 3, "samplepoints", [1.5, 2, 3, 4, 4.5]), [1, 1, 1, 5, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "movmean", [1.5, 1.5], "samplepoints", [1.5, 2, 3, 4, 5]), [1, 1, 1, 5, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "movmean", [1.5, 1.5], "samplepoints", [1, 2, 3, 4, 4.5]), [1, 1, 5, 5, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "movmean", [1.5, 1.5], "samplepoints", [1.5, 2 3, 4, 4.5]), [1, 1, 3, 5, 5])
 
 %!test
 %! x = reshape ([1:24], 3, 4, 2);
-%! x([1,2,5,6,8,10,13,16,18,19,20,21,22]) = NaN;
+%! x([1, 2, 5, 6, 8, 10, 13, 16, 18, 19, 20, 21, 22]) = NaN;
 %! y = x;
-%! y([2,5,8,10,13,16,18,22]) = [3,4,8,11,14,17,17,23];
+%! y([2, 5, 8, 10, 13, 16, 18, 22]) = [3, 4, 8, 11, 14, 17, 17, 23];
 %! assert (fillmissing (x, "movmean", 3), y);
-%! assert (fillmissing (x, "movmean", [1 1]), y);
+%! assert (fillmissing (x, "movmean", [1, 1]), y);
 %! assert (fillmissing (x, "movmean", 3, "endvalues", "extrap"), y);
-%! assert (fillmissing (x, "movmean", 3, "samplepoints", [1 2 3]), y);
+%! assert (fillmissing (x, "movmean", 3, "samplepoints", [1, 2, 3]), y);
 %! y = x;
-%! y([1,6,8,10,18,20,21]) = [4,6,11,7,15,20,24];
+%! y([1, 6, 8, 10, 18, 20, 21]) = [4, 6, 11, 7, 15, 20, 24];
 %! assert (fillmissing (x, "movmean", 3, 2), y);
-%! assert (fillmissing (x, "movmean", [1 1], 2), y);
+%! assert (fillmissing (x, "movmean", [1, 1], 2), y);
 %! assert (fillmissing (x, "movmean", 3, 2, "endvalues", "extrap"), y);
-%! assert (fillmissing (x, "movmean", 3, 2, "samplepoints", [1 2 3 4]), y);
-%! y([1,18]) = NaN; y(6) = 9;
-%! assert (fillmissing (x, "movmean", 3, 2, "samplepoints", [0 2 3 4]), y);
+%! assert (fillmissing (x, "movmean", 3, 2, "samplepoints", [1, 2, 3, 4]), y);
+%! y([1, 18]) = NaN;
+%! y(6) = 9;
+%! assert (fillmissing (x, "movmean", 3, 2, "samplepoints", [0, 2, 3, 4]), y);
 %! y = x;
-%! y([1,2,5,6,10,13,16,18,19,20,21,22]) = 99; y(8) = 8;
+%! y([1, 2, 5, 6, 10, 13, 16, 18, 19, 20, 21, 22]) = 99;
+%! y(8) = 8;
 %! assert (fillmissing (x, "movmean", 3, "endvalues", 99), y);
 %! y = x;
-%! y([1,2,5,8,10,13,16,19,22]) = 99; y([6,18,20,21]) = [6,15,20,24];
+%! y([1, 2, 5, 8, 10, 13, 16, 19, 22]) = 99;
+%! y([6, 18, 20, 21]) = [6, 15, 20, 24];
 %! assert (fillmissing (x, "movmean", 3, 2, "endvalues", 99), y);
 
 
-## test movmedian
-%!assert (fillmissing ([1 2 3], "movmedian", 1), [1 2 3])
-%!assert (fillmissing ([1 2 NaN], "movmedian", 1), [1 2 NaN])
-%!assert (fillmissing ([1 2 3], "movmedian", 2), [1 2 3])
-%!assert (fillmissing ([1 2 3], "movmedian", [1 0]), [1 2 3])
-%!assert (fillmissing ([1 2 3]', "movmedian", 2), [1 2 3]')
-%!assert (fillmissing ([1 2 NaN], "movmedian", 2), [1 2 2])
-%!assert (fillmissing ([1 2 NaN], "movmedian", [1 0]), [1 2 2])
-%!assert (fillmissing ([1 2 NaN], "movmedian", [1 0]'), [1 2 2])
-%!assert (fillmissing ([NaN 2 NaN], "movmedian", 2), [NaN 2 2])
-%!assert (fillmissing ([NaN 2 NaN], "movmedian", [1 0]), [NaN 2 2])
-%!assert (fillmissing ([NaN 2 NaN], "movmedian", [0 1]), [2 2 NaN])
-%!assert (fillmissing ([NaN 2 NaN], "movmedian", [0 1.1]), [2 2 NaN])
-%!assert (fillmissing ([1 NaN 3 NaN 5], "movmedian", [3 0]), [1 1 3 2 5])
-%!assert (fillmissing ([1 2 NaN; 4 NaN 6], "movmedian", 3, 1), [1 2 6; 4 2 6])
-%!assert (fillmissing ([1 2 NaN; 4 NaN 6], "movmedian", 3, 2), [1 2 2; 4 5 6])
-%!assert (fillmissing ([1 2 NaN; 4 NaN 6], "movmedian", 3, 3), [1 2 NaN; 4 NaN 6])
-%!assert (fillmissing ([1 NaN 3 NaN 5], "movmedian", 99), [1 3 3 3 5])
-%!assert (fillmissing ([1 NaN 3 NaN 5], "movmedian", 99, 1), [1 NaN 3 NaN 5])
-%!assert (fillmissing ([1 NaN 3 NaN 5]', "movmedian", 99, 1), [1 3 3 3 5]')
-%!assert (fillmissing ([1 NaN 3 NaN 5], "movmedian", 99, 2), [1 3 3 3 5])
-%!assert (fillmissing ([1 NaN 3 NaN 5]', "movmedian", 99, 2), [1 NaN 3 NaN 5]')
+## Test movmedian
+%!assert (fillmissing ([1, 2, 3], "movmedian", 1), [1, 2, 3])
+%!assert (fillmissing ([1, 2, NaN], "movmedian", 1), [1, 2, NaN])
+%!assert (fillmissing ([1, 2, 3], "movmedian", 2), [1, 2, 3])
+%!assert (fillmissing ([1, 2, 3], "movmedian", [1, 0]), [1, 2, 3])
+%!assert (fillmissing ([1, 2, 3]', "movmedian", 2), [1, 2, 3]')
+%!assert (fillmissing ([1, 2, NaN], "movmedian", 2), [1, 2, 2])
+%!assert (fillmissing ([1, 2, NaN], "movmedian", [1, 0]), [1, 2, 2])
+%!assert (fillmissing ([1, 2, NaN], "movmedian", [1, 0]'), [1, 2, 2])
+%!assert (fillmissing ([NaN, 2, NaN], "movmedian", 2), [NaN, 2, 2])
+%!assert (fillmissing ([NaN, 2, NaN], "movmedian", [1, 0]), [NaN, 2, 2])
+%!assert (fillmissing ([NaN, 2, NaN], "movmedian", [0, 1]), [2, 2, NaN])
+%!assert (fillmissing ([NaN, 2, NaN], "movmedian", [0, 1.1]), [2, 2, NaN])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5], "movmedian", [3, 0]), [1, 1, 3, 2, 5])
+%!assert (fillmissing ([1, 2, NaN; 4, NaN, 6], "movmedian", 3, 1), [1, 2, 6; 4, 2, 6])
+%!assert (fillmissing ([1, 2, NaN; 4, NaN, 6], "movmedian", 3, 2), [1, 2, 2; 4, 5, 6])
+%!assert (fillmissing ([1, 2, NaN; 4, NaN, 6], "movmedian", 3, 3), [1, 2, NaN; 4, NaN, 6])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5], "movmedian", 99), [1, 3, 3, 3, 5])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5], "movmedian", 99, 1), [1, NaN, 3, NaN, 5])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5]', "movmedian", 99, 1), [1, 3, 3, 3, 5]')
+%!assert (fillmissing ([1, NaN, 3, NaN, 5], "movmedian", 99, 2), [1, 3, 3, 3, 5])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5]', "movmedian", 99, 2), [1, NaN, 3, NaN, 5]')
 
-%!assert (fillmissing ([1 NaN NaN NaN 5], "movmedian", 3, "samplepoints", [1 2 3 4 5]), [1 1 NaN 5 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], "movmedian", [1 1], "samplepoints", [1 2 3 4 5]), [1 1 NaN 5 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], "movmedian", [1.5 1.5], "samplepoints", [1 2 3 4 5]), [1 1 NaN 5 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], "movmedian", 4, "samplepoints", [1 2 3 4 5]), [1 1 1 5 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], "movmedian", [2 2], "samplepoints", [1 2 3 4 5]), [1 1 3 5 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], "movmedian", 4.0001, "samplepoints", [1 2 3 4 5]), [1 1 3 5 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], "movmedian", 3, "samplepoints", [1.5 2 3 4 5]), [1 1 1 5 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], "movmedian", 3, "samplepoints", [1 2 3 4 4.5]), [1 1 NaN 5 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], "movmedian", 3, "samplepoints", [1.5 2 3 4 4.5]), [1 1 1 5 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], "movmedian", [1.5 1.5], "samplepoints", [1.5 2 3 4 5]), [1 1 1 5 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], "movmedian", [1.5 1.5], "samplepoints", [1 2 3 4 4.5]), [1 1 5 5 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], "movmedian", [1.5 1.5], "samplepoints", [1.5 2 3 4 4.5]), [1 1 3 5 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "movmedian", 3, "samplepoints", [1, 2, 3, 4, 5]), [1, 1, NaN, 5, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "movmedian", [1, 1], "samplepoints", [1, 2, 3, 4, 5]), [1, 1, NaN, 5, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "movmedian", [1.5, 1.5], "samplepoints", [1, 2, 3, 4, 5]), [1, 1, NaN, 5, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "movmedian", 4, "samplepoints", [1, 2, 3, 4, 5]), [1, 1, 1, 5, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "movmedian", [2, 2], "samplepoints", [1, 2, 3, 4, 5]), [1, 1, 3, 5, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "movmedian", 4.0001, "samplepoints", [1, 2, 3, 4, 5]), [1, 1, 3, 5, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "movmedian", 3, "samplepoints", [1.5 2 3 4 5]), [1, 1, 1, 5, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "movmedian", 3, "samplepoints", [1 2 3 4 4.5]), [1, 1, NaN, 5, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "movmedian", 3, "samplepoints", [1.5 2 3 4 4.5]), [1, 1, 1, 5, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "movmedian", [1.5, 1.5], "samplepoints", [1.5 2 3 4 5]), [1, 1, 1, 5, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "movmedian", [1.5, 1.5], "samplepoints", [1 2 3 4 4.5]), [1, 1, 5, 5, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], "movmedian", [1.5, 1.5], "samplepoints", [1.5 2 3 4 4.5]), [1, 1, 3, 5, 5])
 
 %!test
 %! x = reshape ([1:24], 3, 4, 2);
-%! x([1,2,5,6,8,10,13,16,18,19,20,21,22]) = NaN;
+%! x([1, 2, 5, 6, 8, 10, 13, 16, 18, 19, 20, 21, 22]) = NaN;
 %! y = x;
-%! y([2 5 8 10 13 16 18 22]) = [3 4 8 11 14 17 17 23];
+%! y([2, 5, 8, 10, 13, 16, 18, 22]) = [3, 4, 8, 11, 14, 17, 17, 23];
 %! assert (fillmissing (x, "movmedian", 3), y);
-%! assert (fillmissing (x, "movmedian", [1 1]), y);
+%! assert (fillmissing (x, "movmedian", [1, 1]), y);
 %! assert (fillmissing (x, "movmedian", 3, "endvalues", "extrap"), y);
-%! assert (fillmissing (x, "movmedian", 3, "samplepoints", [1 2 3]), y);
+%! assert (fillmissing (x, "movmedian", 3, "samplepoints", [1, 2, 3]), y);
 %! y = x;
-%! y([1 6 8 10 18 20 21]) = [4 6 11 7 15 20 24];
+%! y([1, 6, 8, 10, 18, 20, 21]) = [4, 6, 11, 7, 15, 20, 24];
 %! assert (fillmissing (x, "movmedian", 3, 2), y);
-%! assert (fillmissing (x, "movmedian", [1 1], 2), y);
+%! assert (fillmissing (x, "movmedian", [1, 1], 2), y);
 %! assert (fillmissing (x, "movmedian", 3, 2, "endvalues", "extrap"), y);
-%! assert (fillmissing (x, "movmedian", 3, 2, "samplepoints", [1 2 3 4]), y);
-%! y([1,18]) = NaN; y(6) = 9;
-%! assert (fillmissing (x, "movmedian", 3, 2, "samplepoints", [0 2 3 4]), y);
+%! assert (fillmissing (x, "movmedian", 3, 2, "samplepoints", [1, 2, 3, 4]), y);
+%! y([1,18]) = NaN;
+%! y(6) = 9;
+%! assert (fillmissing (x, "movmedian", 3, 2, "samplepoints", [0, 2, 3, 4]), y);
 %! y = x;
-%! y([1,2,5,6,10,13,16,18,19,20,21,22]) = 99; y(8) = 8;
+%! y([1, 2, 5, 6, 10, 13, 16, 18, 19, 20, 21, 22]) = 99;
+%! y(8) = 8;
 %! assert (fillmissing (x, "movmedian", 3, "endvalues", 99), y);
 %! y = x;
-%! y([1,2,5,8,10,13,16,19,22]) = 99; y([6,18,20,21]) = [6,15,20,24];
+%! y([1, 2, 5, 8, 10, 13, 16, 19, 22]) = 99;
+%! y([6, 18, 20, 21]) = [6, 15, 20, 24];
 %! assert (fillmissing (x, "movmedian", 3, 2, "endvalues", 99), y);
 
-## test movfcn
-%!assert (fillmissing ([1 2 3], @(x,y,z) x+y+z, 2), [1 2 3])
-%!assert (fillmissing ([1 2 NaN], @(x,y,z) x+y+z, 1), [1 2 NaN])
-%!assert (fillmissing ([1 2 3], @(x,y,z) x+y+z, 2), [1 2 3])
-%!assert (fillmissing ([1 2 3], @(x,y,z) x+y+z, [1 0]), [1 2 3])
-%!assert (fillmissing ([1 2 3]', @(x,y,z) x+y+z, 2), [1 2 3]')
-%!assert (fillmissing ([1 2 NaN], @(x,y,z) x+y+z, 2), [1 2 7])
-%!assert (fillmissing ([1 2 NaN], @(x,y,z) x+y+z, [1 0]), [1 2 7])
-%!assert (fillmissing ([1 2 NaN], @(x,y,z) x+y+z, [1 0]'), [1 2 7])
-%!assert (fillmissing ([NaN 2 NaN], @(x,y,z) x+y+z, 2), [5 2 7])
-%!assert (fillmissing ([NaN 2 NaN], @(x,y,z) x+y+z, [1 0]), [NaN 2 7])
-%!assert (fillmissing ([NaN 2 NaN], @(x,y,z) x+y+z, [0 1]), [5 2 NaN])
-%!assert (fillmissing ([NaN 2 NaN], @(x,y,z) x+y+z, [0 1.1]), [5 2 NaN])
-%!assert (fillmissing ([1 2 NaN NaN 3 4], @(x,y,z) x+y+z, 2),[1 2 7 12 3 4])
-%!assert (fillmissing ([1 2 NaN NaN 3 4], @(x,y,z) x+y+z, 0.5),[1 2 NaN NaN 3 4])
+## Test movfcn
+%!assert (fillmissing ([1, 2, 3], @(x,y,z) x+y+z, 2), [1, 2, 3])
+%!assert (fillmissing ([1, 2, NaN], @(x,y,z) x+y+z, 1), [1, 2, NaN])
+%!assert (fillmissing ([1, 2, 3], @(x,y,z) x+y+z, 2), [1, 2, 3])
+%!assert (fillmissing ([1, 2, 3], @(x,y,z) x+y+z, [1, 0]), [1, 2, 3])
+%!assert (fillmissing ([1, 2, 3]', @(x,y,z) x+y+z, 2), [1, 2, 3]')
+%!assert (fillmissing ([1, 2, NaN], @(x,y,z) x+y+z, 2), [1, 2, 7])
+%!assert (fillmissing ([1, 2, NaN], @(x,y,z) x+y+z, [1, 0]), [1, 2, 7])
+%!assert (fillmissing ([1, 2, NaN], @(x,y,z) x+y+z, [1, 0]'), [1, 2, 7])
+%!assert (fillmissing ([NaN, 2, NaN], @(x,y,z) x+y+z, 2), [5, 2, 7])
+%!assert (fillmissing ([NaN, 2, NaN], @(x,y,z) x+y+z, [1, 0]), [NaN, 2, 7])
+%!assert (fillmissing ([NaN, 2, NaN], @(x,y,z) x+y+z, [0, 1]), [5, 2, NaN])
+%!assert (fillmissing ([NaN, 2, NaN], @(x,y,z) x+y+z, [0, 1.1]), [5, 2, NaN])
+%!assert (fillmissing ([1, 2, NaN, NaN, 3, 4], @(x,y,z) x+y+z, 2), [1, 2, 7, 12, 3, 4])
+%!assert (fillmissing ([1, 2, NaN, NaN, 3, 4], @(x,y,z) x+y+z, 0.5), [1, 2, NaN, NaN, 3, 4])
 
-%!function A = testfcn (x,y,z)
-%!  if isempty (y)
+%!function A = testfcn (x, y, z)
+%!  if (isempty (y))
 %!    A = z;
 %!  elseif (numel (y) == 1)
 %!    A = repelem (x(1), numel(z));
 %!  else
-%!    A = interp1 (y, x, z, "linear","extrap");
+%!    A = interp1 (y, x, z, "linear", "extrap");
 %!  endif
 %!endfunction
-%!assert (fillmissing ([1 NaN 3 NaN 5], @testfcn, [3 0]), [1 1 3 NaN 5])
-%!assert (fillmissing ([1 2 NaN; 4 NaN 6], @testfcn, 3, 1), [1 2 6; 4 2 6])
-%!assert (fillmissing ([1 2 NaN; 4 NaN 6], @testfcn, 3, 2), [1 2 2; 4 5 6])
-%!assert (fillmissing ([1 2 NaN; 4 NaN 6], @testfcn, 3, 3), [1 2 NaN; 4 NaN 6])
-%!assert (fillmissing ([1 NaN 3 NaN 5], @testfcn, 99), [1 2 3 4 5])
-%!assert (fillmissing ([1 NaN 3 NaN 5], @testfcn, 99, 1), [1 NaN 3 NaN 5]) ##known not-compatible. matlab bug ML2022a: [1 1 3 1 5]
-%!assert (fillmissing ([1 NaN 3 NaN 5]', @testfcn, 99, 1), [1 2 3 4 5]')
-%!assert (fillmissing ([1 NaN 3 NaN 5], @testfcn, 99, 2), [1 2 3 4 5])
-%!assert (fillmissing ([1 NaN 3 NaN 5]', @testfcn, 99, 2), [1 NaN 3 NaN 5]') ##known not-compatible. matlab bug ML2022a: [1 1 3 1 5]'
-%!assert (fillmissing ([1 NaN 3 NaN 5], @testfcn, 99, 3), [1 NaN 3 NaN 5])
-%!assert (fillmissing ([1 NaN 3 NaN 5]', @testfcn, 99, 3), [1 NaN 3 NaN 5]')
-%!assert (fillmissing ([1 NaN NaN NaN 5], @testfcn, 3, "samplepoints", [1 2 3 4 5]), [1 2 3 4 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], @testfcn, [1 1], "samplepoints", [1 2 3 4 5]), [1 2 3 4 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], @testfcn, [1.5 1.5], "samplepoints", [1 2 3 4 5]), [1 2 3 4 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], @testfcn, 4, "samplepoints", [1 2 3 4 5]), [1 2 3 4 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], @testfcn, [2 2], "samplepoints", [1 2 3 4 5]), [1 2 3 4 5])
-%!assert (fillmissing ([1 NaN NaN NaN 5], @testfcn, 3, "samplepoints", [1 2 2.5 3 3.5]), [1 2.6 3.4 4.2 5], 10*eps)
-%!assert (fillmissing ([NaN NaN 3 NaN 5], @testfcn, 99, 1), [NaN NaN 3 NaN 5]) ##known not-compatible. matlab bug ML2022a: [1 1 3 1 5]
+%!assert (fillmissing ([1, NaN, 3, NaN, 5], @testfcn, [3, 0]), [1, 1, 3, NaN, 5])
+%!assert (fillmissing ([1, 2, NaN; 4, NaN, 6], @testfcn, 3, 1), [1, 2, 6; 4, 2, 6])
+%!assert (fillmissing ([1, 2, NaN; 4, NaN, 6], @testfcn, 3, 2), [1, 2, 2; 4, 5, 6])
+%!assert (fillmissing ([1, 2, NaN; 4, NaN, 6], @testfcn, 3, 3), [1, 2, NaN; 4, NaN, 6])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5], @testfcn, 99), [1, 2, 3, 4, 5])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5], @testfcn, 99, 1), [1, NaN, 3, NaN, 5]) ##known not-compatible. matlab bug ML2022a: [1, 1, 3, 1, 5]
+%!assert (fillmissing ([1, NaN, 3, NaN, 5]', @testfcn, 99, 1), [1, 2, 3, 4, 5]')
+%!assert (fillmissing ([1, NaN, 3, NaN, 5], @testfcn, 99, 2), [1, 2, 3, 4, 5])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5]', @testfcn, 99, 2), [1, NaN, 3, NaN, 5]') ##known not-compatible. matlab bug ML2022a: [1, 1, 3, 1, 5]'
+%!assert (fillmissing ([1, NaN, 3, NaN, 5], @testfcn, 99, 3), [1, NaN, 3, NaN, 5])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5]', @testfcn, 99, 3), [1, NaN, 3, NaN, 5]')
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], @testfcn, 3, "samplepoints", [1, 2, 3, 4, 5]), [1, 2, 3, 4, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], @testfcn, [1, 1], "samplepoints", [1, 2, 3, 4, 5]), [1, 2, 3, 4, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], @testfcn, [1.5, 1.5], "samplepoints", [1, 2, 3, 4, 5]), [1, 2, 3, 4, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], @testfcn, 4, "samplepoints", [1, 2, 3, 4, 5]), [1, 2, 3, 4, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], @testfcn, [2, 2], "samplepoints", [1, 2, 3, 4, 5]), [1, 2, 3, 4, 5])
+%!assert (fillmissing ([1, NaN, NaN, NaN, 5], @testfcn, 3, "samplepoints", [1, 2, 2.5, 3, 3.5]), [1, 2.6, 3.4, 4.2, 5], 10*eps)
+%!assert (fillmissing ([NaN, NaN, 3, NaN, 5], @testfcn, 99, 1), [NaN, NaN, 3, NaN, 5]) ##known not-compatible. matlab bug ML2022a: [1, 1, 3, 1, 5]
 
-## known noncompatible. for move_fcn method, ML2021b (1) ignores windowsize
+## Known noncompatible. For move_fcn method, ML2021b (1) ignores windowsize
 ## for full missing column and processes it anyway, (2) doesn't consider it
 ## part of endvalues unlike all other methods, (3) ignores samplepoint values
-##  when calcuating move_fcn results. should review against future versions.
+## when calcuating move_fcn results. should review against future versions.
 %!test
-%!function A = testfcn (x,y,z)
-%!  if isempty (y)
+%!function A = testfcn (x, y, z)
+%!  if (isempty (y))
 %!    A = z;
 %!  elseif (numel (y) == 1)
 %!    A = repelem (x(1), numel(z));
 %!  else
-%!    A = interp1 (y, x, z, "linear","extrap");
+%!    A = interp1 (y, x, z, "linear", "extrap");
 %!  endif
 %!endfunction
 %! x = reshape ([1:24], 3, 4, 2);
-%! x([1,2,5,6,8,10,13,16,18,19,20,21,22]) = NaN;
+%! x([1, 2, 5, 6, 8, 10, 13, 16, 18, 19, 20, 21, 22]) = NaN;
 %! y = x;
-%! y([1,2,5,6,8,10,13,16,18,22]) = [3,3,4,4,8,11,14,17,17,23];
+%! y([1, 2, 5, 6, 8, 10, 13, 16, 18, 22]) = [3, 3, 4, 4, 8, 11, 14, 17, 17, 23];
 %! assert (fillmissing (x, @testfcn, 3), y);
-%! assert (fillmissing (x, @testfcn, [1 1]), y);
+%! assert (fillmissing (x, @testfcn, [1, 1]), y);
 %! assert (fillmissing (x, @testfcn, 3, "endvalues", "extrap"), y);
-%! assert (fillmissing (x, @testfcn, 3, "samplepoints", [1 2 3]), y);
+%! assert (fillmissing (x, @testfcn, 3, "samplepoints", [1, 2, 3]), y);
 %! y= x;
-%! y(isnan(x)) = 99; y(8) = 8;
+%! y(isnan (x)) = 99;
+%! y(8) = 8;
 %! assert (fillmissing (x, @testfcn, 3, "endvalues", 99), y)
 %! y = x;
-%! y([1,2,5,6,8,10,18,20,21]) = [4,11,11,6,11,7,18,20,21];
+%! y([1, 2, 5, 6, 8, 10, 18, 20, 21]) = [4, 11, 11, 6, 11, 7, 18, 20, 21];
 %! assert (fillmissing (x, @testfcn, 3, 2), y);
-%! assert (fillmissing (x, @testfcn, [1 1], 2), y);
+%! assert (fillmissing (x, @testfcn, [1, 1], 2), y);
 %! assert (fillmissing (x, @testfcn, 3, 2, "endvalues", "extrap"), y);
-%! assert (fillmissing (x, @testfcn, 3, 2, "samplepoints", [1 2 3 4]), y);
-%! y(1) = NaN; y([6,18,21]) = [9,24,24];
-%! assert (fillmissing (x, @testfcn, 3, 2, "samplepoints", [0 2 3 4]), y);
+%! assert (fillmissing (x, @testfcn, 3, 2, "samplepoints", [1, 2, 3, 4]), y);
+%! y(1) = NaN;
+%! y([6, 18, 21]) = [9, 24, 24];
+%! assert (fillmissing (x, @testfcn, 3, 2, "samplepoints", [0, 2, 3, 4]), y);
 %! y = x;
-%! y([1,2,5,6,10,13,16,18,19,20,21,22]) = 99; y(8) = [8];
+%! y([1, 2, 5, 6, 10, 13, 16, 18, 19, 20, 21, 22]) = 99;
+%! y(8) = 8;
 %! assert (fillmissing (x, @testfcn, 3, "endvalues", 99), y);
-%! y([6,18,20,21]) = [6,18,20,21]; y(8)=99;
+%! y([6, 18, 20, 21]) = [6, 18, 20, 21];
+%! y(8) = 99;
 %! assert (fillmissing (x, @testfcn, 3, 2, "endvalues", 99), y);
-%! y([6,18,20,21]) = 99;
+%! y([6, 18, 20, 21]) = 99;
 %! assert (fillmissing (x, @testfcn, 3, 3, "endvalues", 99), y);
 
-##test maxgap for mid and end points
-%!assert (fillmissing ([1 2 3], "constant", 0, "maxgap", 1), [1 2 3])
-%!assert (fillmissing ([1 2 3], "constant", 0, "maxgap", 99), [1 2 3])
-%!assert (fillmissing ([1 NaN 3], "constant", 0, "maxgap", 1), [1 NaN 3])
-%!assert (fillmissing ([1 NaN 3], "constant", 0, "maxgap", 1.999), [1 NaN 3])
-%!assert (fillmissing ([1 NaN 3], "constant", 0, "maxgap", 2), [1 0 3])
-%!assert (fillmissing ([1 NaN NaN 4], "constant", 0, "maxgap", 2), [1 NaN NaN 4])
-%!assert (fillmissing ([1 NaN NaN 4], "constant", 0, "maxgap", 3), [1 0 0 4])
-%!assert (fillmissing ([1 NaN 3 NaN 5], "constant", 0, "maxgap", 2), [1 0 3 0 5])
-%!assert (fillmissing ([NaN 2 NaN], "constant", 0, "maxgap", 0.999), [NaN 2 NaN])
-%!assert (fillmissing ([NaN 2 NaN], "constant", 0, "maxgap", 1), [0 2 0])
-%!assert (fillmissing ([NaN 2 NaN NaN], "constant", 0, "maxgap", 1), [0 2 NaN NaN])
-%!assert (fillmissing ([NaN 2 NaN NaN], "constant", 0, "maxgap", 2), [0 2 0 0])
-%!assert (fillmissing ([NaN NaN NaN], "constant", 0, "maxgap", 1), [NaN NaN NaN])
-%!assert (fillmissing ([NaN NaN NaN], "constant", 0, "maxgap", 3), [NaN NaN NaN])
-%!assert (fillmissing ([NaN NaN NaN], "constant", 0, "maxgap", 999), [NaN NaN NaN])
-%!assert (fillmissing ([1 NaN 3 NaN 5], "constant", 0, "maxgap", 2, "samplepoints", [0 1 2 3 5]), [1 0 3 NaN 5])
-%!assert (fillmissing ([1 NaN 3 NaN 5]', "constant", 0, "maxgap", 2, "samplepoints", [0 1 2 3 5]), [1 0 3 NaN 5]')
-%!assert (fillmissing ([1 NaN 3 NaN 5], "constant", 0, "maxgap", 2, "samplepoints", [0 2 3 4 5]), [1 NaN 3 0 5])
-%!assert (fillmissing ([1 NaN 3 NaN 5; 1 NaN 3 NaN 5], "constant", 0, 2, "maxgap", 2, "samplepoints", [0 2 3 4 5]), [1 NaN 3 0 5; 1 NaN 3 0 5])
+## Test maxgap for mid and end points
+%!assert (fillmissing ([1, 2, 3], "constant", 0, "maxgap", 1), [1, 2, 3])
+%!assert (fillmissing ([1, 2, 3], "constant", 0, "maxgap", 99), [1, 2, 3])
+%!assert (fillmissing ([1, NaN, 3], "constant", 0, "maxgap", 1), [1, NaN, 3])
+%!assert (fillmissing ([1, NaN, 3], "constant", 0, "maxgap", 1.999), [1, NaN, 3])
+%!assert (fillmissing ([1, NaN, 3], "constant", 0, "maxgap", 2), [1, 0, 3])
+%!assert (fillmissing ([1, NaN, NaN, 4], "constant", 0, "maxgap", 2), [1, NaN, NaN, 4])
+%!assert (fillmissing ([1, NaN, NaN, 4], "constant", 0, "maxgap", 3), [1, 0, 0, 4])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5], "constant", 0, "maxgap", 2), [1, 0, 3, 0, 5])
+%!assert (fillmissing ([NaN, 2, NaN], "constant", 0, "maxgap", 0.999), [NaN, 2, NaN])
+%!assert (fillmissing ([NaN, 2, NaN], "constant", 0, "maxgap", 1), [0, 2, 0])
+%!assert (fillmissing ([NaN, 2, NaN, NaN], "constant", 0, "maxgap", 1), [0, 2, NaN, NaN])
+%!assert (fillmissing ([NaN, 2, NaN, NaN], "constant", 0, "maxgap", 2), [0, 2, 0, 0])
+%!assert (fillmissing ([NaN, NaN, NaN], "constant", 0, "maxgap", 1), [NaN, NaN, NaN])
+%!assert (fillmissing ([NaN, NaN, NaN], "constant", 0, "maxgap", 3), [NaN, NaN, NaN])
+%!assert (fillmissing ([NaN, NaN, NaN], "constant", 0, "maxgap", 999), [NaN, NaN, NaN])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5], "constant", 0, "maxgap", 2, "samplepoints", [0, 1, 2, 3, 5]), [1, 0, 3, NaN, 5])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5]', "constant", 0, "maxgap", 2, "samplepoints", [0, 1, 2, 3, 5]), [1, 0, 3, NaN, 5]')
+%!assert (fillmissing ([1, NaN, 3, NaN, 5], "constant", 0, "maxgap", 2, "samplepoints", [0, 2, 3, 4, 5]), [1, NaN, 3, 0, 5])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5; 1, NaN, 3, NaN, 5], "constant", 0, 2, "maxgap", 2, "samplepoints", [0, 2, 3, 4, 5]), [1, NaN, 3, 0, 5; 1, NaN, 3, 0, 5])
 
 %!test
 %! x = cat (3, [1, 2, NaN; 4, NaN, NaN], [NaN, 2, 3; 4, 5, NaN]);
 %! assert (fillmissing (x, "constant", 0, "maxgap", 0.1), x);
 %! y = x;
-%! y([4,7,12]) = 0;
+%! y([4, 7, 12]) = 0;
 %! assert (fillmissing (x, "constant", 0, "maxgap", 1), y);
 %! assert (fillmissing (x, "constant", 0, 1, "maxgap", 1), y);
 %! y = x;
-%! y([5,7,12]) = 0;
+%! y([5, 7, 12]) = 0;
 %! assert (fillmissing (x, "constant", 0, 2, "maxgap", 1), y);
 %! y = x;
-%! y([4,5,7]) = 0;
+%! y([4, 5, 7]) = 0;
 %! assert (fillmissing (x, "constant", 0, 3, "maxgap", 1), y);
 
 ## 2nd output
@@ -2027,223 +2053,225 @@ endfunction
 %!test
 %! x = cat (3, [1, 2, NaN; 4, NaN, NaN], [NaN, 2, 3; 4, 5, NaN]);
 %! [~, idx] = fillmissing (x, "constant", 0, "maxgap", 1);
-%! assert (idx, logical (cat (3, [0 0 0; 0 1 0], [1 0 0; 0 0 1])));
+%! assert (idx, logical (cat (3, [0, 0, 0; 0, 1, 0], [1, 0, 0; 0, 0, 1])));
 %! [~, idx] = fillmissing (x, "constant", 0, 1, "maxgap", 1);
-%! assert (idx, logical (cat (3, [0 0 0; 0 1 0], [1 0 0; 0 0 1])));
+%! assert (idx, logical (cat (3, [0, 0, 0; 0, 1, 0], [1, 0, 0; 0, 0, 1])));
 %! [~, idx] = fillmissing (x, "constant", 0, 2, "maxgap", 1);
-%! assert (idx, logical (cat (3, [0 0 1; 0 0 0], [1 0 0; 0 0 1])));
+%! assert (idx, logical (cat (3, [0, 0, 1; 0, 0, 0], [1, 0, 0; 0, 0, 1])));
 %! [~, idx] = fillmissing (x, "constant", 0, 3, "maxgap", 1);
-%! assert (idx, logical (cat (3, [0 0 1; 0 1 0], [1 0 0; 0 0 0])));
+%! assert (idx, logical (cat (3, [0, 0, 1; 0, 1, 0], [1, 0, 0; 0, 0, 0])));
 
-## verify idx matches when methods leave gaps unfilled, or when fill looks
-## the same
+## Verify idx matches when methods leave gaps unfilled, or when fill looks
+## the same.
 %!test
 %! x = [NaN, 2, 3];
-%! [~,idx] = fillmissing (x, "previous");
-%! assert (idx, logical ([0 0 0]));
-%! [~,idx] = fillmissing (x, "movmean", 1);
-%! assert (idx, logical ([0 0 0]));
-%! x = [1:3;4:6;7:9];
-%! x([2,4,7,9]) = NaN;
-%! [~,idx] = fillmissing (x, "linear");
-%! assert (idx, logical ([0 1 0;1 0 0;0 0 0]));
-%! [~,idx] = fillmissing (x, "movmean", 2);
-%! assert (idx, logical ([0 0 0;1 0 0;0 0 1]));
-%! [A, idx] = fillmissing ([1 2 3 NaN NaN], 'movmean',2);
-%! assert (A, [1 2 3 3 NaN]);
-%! assert (idx, logical([0 0 0 1 0]));
-%! [A, idx] = fillmissing ([1 2 3 NaN NaN], 'movmean',3);
-%! assert (A, [1 2 3 3 NaN]);
-%! assert (idx, logical([0 0 0 1 0]));
-%! [A, idx] = fillmissing ([1 2 NaN NaN NaN], 'movmedian', 2);
-%! assert (A, [1 2 2 NaN NaN]);
-%! assert (idx, logical([0 0 1 0 0]));
-%! [A, idx] = fillmissing ([1 2 3 NaN NaN], 'movmedian', 3);
-%! assert (A, [1 2 3 3 NaN]);
-%! assert (idx, logical([0 0 0 1 0]));
-%! [A, idx] = fillmissing ([1 NaN 1 NaN 1],  @(x,y,z) z, 3);
-%! assert (A, [1 2 1 4 1]);
-%! assert (idx, logical([0 1 0 1 0]));
-%! [A, idx] = fillmissing ([1 NaN 1 NaN 1],  @(x,y,z) NaN (size (z)), 3);
-%! assert (A, [1 NaN 1 NaN 1]);
-%! assert (idx, logical([0 0 0 0 0]));
+%! [~, idx] = fillmissing (x, "previous");
+%! assert (idx, logical ([0, 0, 0]));
+%! [~, idx] = fillmissing (x, "movmean", 1);
+%! assert (idx, logical ([0, 0, 0]));
+%! x = [1:3; 4:6; 7:9];
+%! x([2, 4, 7, 9]) = NaN;
+%! [~, idx] = fillmissing (x, "linear");
+%! assert (idx, logical ([0, 1, 0; 1, 0, 0; 0, 0, 0]));
+%! [~, idx] = fillmissing (x, "movmean", 2);
+%! assert (idx, logical ([0, 0, 0; 1, 0, 0; 0, 0, 1]));
+%! [A, idx] = fillmissing ([1, 2, 3, NaN, NaN], "movmean",2);
+%! assert (A, [1, 2, 3, 3, NaN]);
+%! assert (idx, logical ([0, 0, 0, 1, 0]));
+%! [A, idx] = fillmissing ([1, 2, 3, NaN, NaN], "movmean",3);
+%! assert (A, [1, 2, 3, 3, NaN]);
+%! assert (idx, logical ([0, 0, 0, 1, 0]));
+%! [A, idx] = fillmissing ([1, 2, NaN, NaN, NaN], "movmedian", 2);
+%! assert (A, [1, 2, 2, NaN, NaN]);
+%! assert (idx, logical ([0, 0, 1, 0, 0]));
+%! [A, idx] = fillmissing ([1, 2, 3, NaN, NaN], "movmedian", 3);
+%! assert (A, [1, 2, 3, 3, NaN]);
+%! assert (idx, logical ([0, 0, 0, 1, 0]));
+%! [A, idx] = fillmissing ([1, NaN, 1, NaN, 1],  @(x,y,z) z, 3);
+%! assert (A, [1, 2, 1, 4, 1]);
+%! assert (idx, logical ([0, 1, 0, 1, 0]));
+%! [A, idx] = fillmissing ([1, NaN, 1, NaN, 1],  @(x,y,z) NaN (size (z)), 3);
+%! assert (A, [1, NaN, 1, NaN, 1]);
+%! assert (idx, logical ([0, 0, 0, 0, 0]));
 
-#test missinglocations
-%!assert (fillmissing ([1 2 3], "constant", 99, "missinglocations", logical([0 0 0])), [1 2 3])
-%!assert (fillmissing ([1 2 3], "constant", 99, "missinglocations", logical([1 1 1])), [99 99 99])
-%!assert (fillmissing ([1 NaN 2 3 NaN], "constant", 99, "missinglocations", logical([1 0 1 0 1])), [99 NaN 99 3 99])
-%!assert (fillmissing ([1 NaN 3 NaN 5], "constant", NaN, "missinglocations", logical([0 1 1 1 0])), [1 NaN NaN NaN 5])
-%!assert (fillmissing (["foo ";" bar"], "constant", 'X', "missinglocations", logical([0 0 0 0; 0 0 0 0])), ["foo ";" bar"])
-%!assert (fillmissing (["foo ";" bar"], "constant", 'X', "missinglocations", logical([1 0 1 0; 0 1 1 0])), ["XoX ";" XXr"])
-%!assert (fillmissing ({"foo","", "bar"}, "constant", 'X', "missinglocations", logical([0 0 0])), {"foo","", "bar"})
-%!assert (fillmissing ({"foo","", "bar"}, "constant", 'X', "missinglocations", logical([1 1 0])), {"X","X","bar"})
+## Test missinglocations
+%!assert (fillmissing ([1, 2, 3], "constant", 99, "missinglocations", logical ([0, 0, 0])), [1, 2, 3])
+%!assert (fillmissing ([1, 2, 3], "constant", 99, "missinglocations", logical ([1, 1, 1])), [99, 99, 99])
+%!assert (fillmissing ([1, NaN, 2, 3, NaN], "constant", 99, "missinglocations", logical ([1, 0, 1, 0, 1])), [99, NaN, 99, 3, 99])
+%!assert (fillmissing ([1, NaN, 3, NaN, 5], "constant", NaN, "missinglocations", logical ([0, 1, 1, 1, 0])), [1, NaN, NaN, NaN, 5])
+%!assert (fillmissing (["foo "; " bar"], "constant", "X", "missinglocations", logical ([0, 0, 0, 0; 0, 0, 0, 0])), ["foo "; " bar"])
+%!assert (fillmissing (["foo "; " bar"], "constant", "X", "missinglocations", logical ([1, 0, 1, 0; 0, 1, 1, 0])), ["XoX "; " XXr"])
+%!assert (fillmissing ({"foo", "", "bar"}, "constant", "X", "missinglocations", logical ([0, 0, 0])), {"foo", "", "bar"})
+%!assert (fillmissing ({"foo", "", "bar"}, "constant", "X", "missinglocations", logical ([1, 1, 0])), {"X", "X", "bar"})
 %!test
-%! [~,idx] = fillmissing ([1 NaN 3 NaN 5], "constant", NaN);
-%! assert (idx, logical([0 0 0 0 0]));
-%! [~,idx] = fillmissing ([1 NaN 3 NaN 5], "constant", NaN, "missinglocations", logical([0 1 1 1 0]));
-%! assert (idx, logical([0 1 1 1 0]));
-%! [A, idx] = fillmissing ([1 2 NaN 1 NaN], 'movmean', 3.1, 'missinglocations', logical([0 0 1 1 0]));
-%! assert (A, [1 2 2 NaN NaN]);
-%! assert (idx, logical([0 0 1 0 0]));
-%! [A, idx] = fillmissing ([1 2 NaN NaN NaN], 'movmean', 2, 'missinglocations', logical([0 0 1 1 0]));
-%! assert (A, [1 2 2 NaN NaN]);
-%! assert (idx, logical([0 0 1 0 0]));
-%! [A, idx] = fillmissing ([1 2 NaN 1 NaN], 'movmean', 3, 'missinglocations', logical([0 0 1 1 0]));
-%! assert (A, [1 2 2 NaN NaN]);
-%! assert (idx, logical([0 0 1 0 0]));
-%! [A, idx] = fillmissing ([1 2 NaN NaN NaN], 'movmean', 3, 'missinglocations', logical([0 0 1 1 0]));
-%! assert (A, [1 2 2 NaN NaN]);
-%! assert (idx, logical([0 0 1 0 0]));
-%! [A, idx] = fillmissing ([1 2 NaN NaN NaN], 'movmedian', 2, 'missinglocations', logical([0 0 1 1 0]));
-%! assert (A, [1 2 2 NaN NaN]);
-%! assert (idx, logical([0 0 1 0 0]));
-%! [A, idx] = fillmissing ([1 2 NaN NaN NaN], 'movmedian', 3, 'missinglocations', logical([0 0 1 1 0]));
-%! assert (A, [1 2 2 NaN NaN]);
-%! assert (idx, logical([0 0 1 0 0]));
-%! [A, idx] = fillmissing ([1 2 NaN NaN NaN], 'movmedian', 3.1, 'missinglocations', logical([0 0 1 1 0]));
-%! assert (A, [1 2 2 NaN NaN]);
-%! assert (idx, logical([0 0 1 0 0]));
-%! [A, idx] = fillmissing ([1 NaN 1 NaN 1],  @(x,y,z) ones (size (z)), 3, "missinglocations", logical([0 1 0 1 1]));
-%! assert (A, [1 1 1 1 1]);
-%! assert (idx, logical([0 1 0 1 1]));
-%! [A, idx] = fillmissing ([1 NaN 1 NaN 1],  @(x,y,z) NaN (size (z)), 3, "missinglocations", logical([0 1 0 1 1]));
-%! assert (A, [1 NaN 1 NaN NaN]);
-%! assert (idx, logical([0 0 0 0 0]));
+%! [~, idx] = fillmissing ([1, NaN, 3, NaN, 5], "constant", NaN);
+%! assert (idx, logical ([0, 0, 0, 0, 0]));
+%! [~, idx] = fillmissing ([1 NaN 3 NaN 5], "constant", NaN, "missinglocations", logical ([0, 1, 1, 1, 0]));
+%! assert (idx, logical ([0, 1, 1, 1, 0]));
+%! [A, idx] = fillmissing ([1, 2, NaN, 1, NaN], "movmean", 3.1, "missinglocations", logical ([0, 0, 1, 1, 0]));
+%! assert (A, [1, 2, 2, NaN, NaN]);
+%! assert (idx, logical ([0, 0, 1, 0, 0]));
+%! [A, idx] = fillmissing ([1, 2, NaN, NaN, NaN], "movmean", 2, "missinglocations", logical ([0, 0, 1, 1, 0]));
+%! assert (A, [1, 2, 2, NaN, NaN]);
+%! assert (idx, logical ([0, 0, 1, 0, 0]));
+%! [A, idx] = fillmissing ([1, 2, NaN, 1, NaN], "movmean", 3, "missinglocations", logical ([0, 0, 1, 1, 0]));
+%! assert (A, [1, 2, 2, NaN, NaN]);
+%! assert (idx, logical ([0, 0, 1, 0, 0]));
+%! [A, idx] = fillmissing ([1, 2, NaN, NaN, NaN], "movmean", 3, "missinglocations", logical ([0, 0, 1, 1, 0]));
+%! assert (A, [1, 2, 2, NaN, NaN]);
+%! assert (idx, logical ([0, 0, 1, 0, 0]));
+%! [A, idx] = fillmissing ([1, 2, NaN, NaN, NaN], "movmedian", 2, "missinglocations", logical ([0, 0, 1, 1, 0]));
+%! assert (A, [1, 2, 2, NaN, NaN]);
+%! assert (idx, logical ([0, 0, 1, 0, 0]));
+%! [A, idx] = fillmissing ([1, 2, NaN, NaN, NaN], "movmedian", 3, "missinglocations", logical ([0, 0, 1, 1, 0]));
+%! assert (A, [1, 2, 2, NaN, NaN]);
+%! assert (idx, logical ([0, 0, 1, 0, 0]));
+%! [A, idx] = fillmissing ([1, 2, NaN, NaN, NaN], "movmedian", 3.1, "missinglocations", logical ([0, 0, 1, 1, 0]));
+%! assert (A, [1, 2, 2, NaN, NaN]);
+%! assert (idx, logical ([0, 0, 1, 0, 0]));
+%! [A, idx] = fillmissing ([1, NaN, 1, NaN, 1],  @(x,y,z) ones (size (z)), 3, "missinglocations", logical ([0, 1, 0, 1, 1]));
+%! assert (A, [1, 1, 1, 1, 1]);
+%! assert (idx, logical ([0, 1, 0, 1, 1]));
+%! [A, idx] = fillmissing ([1, NaN, 1, NaN, 1],  @(x,y,z) NaN (size (z)), 3, "missinglocations", logical ([0, 1, 0, 1, 1]));
+%! assert (A, [1, NaN, 1, NaN, NaN]);
+%! assert (idx, logical ([0, 0, 0, 0, 0]));
+%!test
+%! [A, idx] = fillmissing ([1, 2, 5], "movmedian", 3, "missinglocations", logical ([0, 1, 0]));
+%! assert (A, [1, 3, 5]);
+%! assert (idx, logical ([0, 1, 0]));
 
-
-##Test char and cellstr
-%!assert (fillmissing (' foo bar ', "constant", 'X'), 'XfooXbarX')
-%!assert (fillmissing ([' foo';'bar '], "constant", 'X'), ['Xfoo';'barX'])
-%!assert (fillmissing ([' foo';'bar '], "next"), ['bfoo';'bar '])
-%!assert (fillmissing ([' foo';'bar '], "next", 1), ['bfoo';'bar '])
-%!assert (fillmissing ([' foo';'bar '], "previous"), [' foo';'baro'])
-%!assert (fillmissing ([' foo';'bar '], "previous", 1), [' foo';'baro'])
-%!assert (fillmissing ([' foo';'bar '], "nearest"), ['bfoo';'baro'])
-%!assert (fillmissing ([' foo';'bar '], "nearest", 1), ['bfoo';'baro'])
-%!assert (fillmissing ([' foo';'bar '], "next", 2), ['ffoo';'bar '])
-%!assert (fillmissing ([' foo';'bar '], "previous", 2), [' foo';'barr'])
-%!assert (fillmissing ([' foo';'bar '], "nearest", 2), ['ffoo';'barr'])
-%!assert (fillmissing ([' foo';'bar '], "next", 3), [' foo';'bar '])
-%!assert (fillmissing ([' foo';'bar '], "previous", 3), [' foo';'bar '])
-%!assert (fillmissing ([' foo';'bar '], "nearest", 3), [' foo';'bar '])
-%!assert (fillmissing ({'foo','bar'}, "constant", 'a'), {'foo','bar'})
-%!assert (fillmissing ({'foo','bar'}, "constant", {'a'}), {'foo','bar'})
-%!assert (fillmissing ({'foo', '', 'bar'}, "constant", 'a'), {'foo', 'a', 'bar'})
-%!assert (fillmissing ({'foo', '', 'bar'}, "constant", {'a'}), {'foo', 'a', 'bar'})
-%!assert (fillmissing ({'foo', '', 'bar'}, "previous"), {'foo', 'foo', 'bar'})
-%!assert (fillmissing ({'foo', '', 'bar'}, "next"), {'foo', 'bar', 'bar'})
-%!assert (fillmissing ({'foo', '', 'bar'}, "nearest"), {'foo', 'bar', 'bar'})
-%!assert (fillmissing ({'foo', '', 'bar'}, "previous", 2), {'foo', 'foo', 'bar'})
-%!assert (fillmissing ({'foo', '', 'bar'}, "next", 2), {'foo', 'bar', 'bar'})
-%!assert (fillmissing ({'foo', '', 'bar'}, "nearest", 2), {'foo', 'bar', 'bar'})
-%!assert (fillmissing ({'foo', '', 'bar'}, "previous", 1), {'foo', '', 'bar'})
-%!assert (fillmissing ({'foo', '', 'bar'}, "previous", 1), {'foo', '', 'bar'})
-%!assert (fillmissing ({'foo', '', 'bar'}, "next", 1), {'foo', '', 'bar'})
-%!assert (fillmissing ({'foo', '', 'bar'}, "nearest", 1), {'foo', '', 'bar'})
+## Test char and cellstr
+%!assert (fillmissing (" foo bar ", "constant", "X"), "XfooXbarX")
+%!assert (fillmissing ([" foo"; "bar "], "constant", "X"), ["Xfoo"; "barX"])
+%!assert (fillmissing ([" foo"; "bar "], "next"), ["bfoo"; "bar "])
+%!assert (fillmissing ([" foo"; "bar "], "next", 1), ["bfoo"; "bar "])
+%!assert (fillmissing ([" foo"; "bar "], "previous"), [" foo"; "baro"])
+%!assert (fillmissing ([" foo"; "bar "], "previous", 1), [" foo"; "baro"])
+%!assert (fillmissing ([" foo"; "bar "], "nearest"), ["bfoo"; "baro"])
+%!assert (fillmissing ([" foo"; "bar "], "nearest", 1), ["bfoo"; "baro"])
+%!assert (fillmissing ([" foo"; "bar "], "next", 2), ["ffoo"; "bar "])
+%!assert (fillmissing ([" foo"; "bar "], "previous", 2), [" foo"; "barr"])
+%!assert (fillmissing ([" foo"; "bar "], "nearest", 2), ["ffoo"; "barr"])
+%!assert (fillmissing ([" foo"; "bar "], "next", 3), [" foo"; "bar "])
+%!assert (fillmissing ([" foo"; "bar "], "previous", 3), [" foo"; "bar "])
+%!assert (fillmissing ([" foo"; "bar "], "nearest", 3), [" foo"; "bar "])
+%!assert (fillmissing ({"foo", "bar"}, "constant", "a"), {"foo", "bar"})
+%!assert (fillmissing ({"foo", "bar"}, "constant", {"a"}), {"foo", "bar"})
+%!assert (fillmissing ({"foo", "", "bar"}, "constant", "a"), {"foo", "a", "bar"})
+%!assert (fillmissing ({"foo", "", "bar"}, "constant", {"a"}), {"foo", "a", "bar"})
+%!assert (fillmissing ({"foo", "", "bar"}, "previous"), {"foo", "foo", "bar"})
+%!assert (fillmissing ({"foo", "", "bar"}, "next"), {"foo", "bar", "bar"})
+%!assert (fillmissing ({"foo", "", "bar"}, "nearest"), {"foo", "bar", "bar"})
+%!assert (fillmissing ({"foo", "", "bar"}, "previous", 2), {"foo", "foo", "bar"})
+%!assert (fillmissing ({"foo", "", "bar"}, "next", 2), {"foo", "bar", "bar"})
+%!assert (fillmissing ({"foo", "", "bar"}, "nearest", 2), {"foo", "bar", "bar"})
+%!assert (fillmissing ({"foo", "", "bar"}, "previous", 1), {"foo", "", "bar"})
+%!assert (fillmissing ({"foo", "", "bar"}, "previous", 1), {"foo", "", "bar"})
+%!assert (fillmissing ({"foo", "", "bar"}, "next", 1), {"foo", "", "bar"})
+%!assert (fillmissing ({"foo", "", "bar"}, "nearest", 1), {"foo", "", "bar"})
 %!assert (fillmissing ("abc ", @(x,y,z) x+y+z, 2), "abcj")
-%!assert (fillmissing ({'foo', '', 'bar'}, @(x,y,z) x(1), 3), {'foo','foo','bar'})
+%!assert (fillmissing ({"foo", "", "bar"}, @(x,y,z) x(1), 3), {"foo", "foo", "bar"})
 
 %!test
 %! [A, idx] = fillmissing (" a b c", "constant", " ");
 %! assert (A, " a b c");
-%! assert (idx, logical([0 0 0 0 0 0]));
+%! assert (idx, logical ([0, 0, 0, 0, 0, 0]));
 %! [A, idx] = fillmissing ({"foo", "", "bar", ""}, "constant", "");
 %! assert (A, {"foo", "", "bar", ""});
-%! assert (idx, logical([0 0 0 0]));
+%! assert (idx, logical ([0, 0, 0, 0]));
 %! [A, idx] = fillmissing ({"foo", "", "bar", ""}, "constant", {""});
 %! assert (A, {"foo", "", "bar", ""});
-%! assert (idx, logical([0 0 0 0]));
-%! [A,idx] = fillmissing (' f o o ', @(x,y,z) repelem ("a", numel (z)), 3);
+%! assert (idx, logical ([0, 0, 0, 0]));
+%! [A,idx] = fillmissing (" f o o ", @(x,y,z) repelem ("a", numel (z)), 3);
 %! assert (A, "afaoaoa");
-%! assert (idx, logical([1 0 1 0 1 0 1]));
-%! [A,idx] = fillmissing (' f o o ', @(x,y,z) repelem (" ", numel (z)), 3);
+%! assert (idx, logical ([1, 0, 1, 0, 1, 0, 1]));
+%! [A,idx] = fillmissing (" f o o ", @(x,y,z) repelem (" ", numel (z)), 3);
 %! assert (A, " f o o ");
-%! assert (idx, logical([0 0 0 0 0 0 0]));
-%! [A,idx] = fillmissing ({'','foo',''}, @(x,y,z) repelem ({'a'}, numel (z)), 3);
-%! assert (A, {'a','foo','a'});
-%! assert (idx, logical([1 0 1]));
-%! [A,idx] = fillmissing ({'','foo',''}, @(x,y,z) repelem ({''}, numel (z)), 3);
-%! assert (A, {'','foo',''});
-%! assert (idx, logical([0 0 0]));
+%! assert (idx, logical ([0, 0, 0, 0, 0, 0, 0]));
+%! [A,idx] = fillmissing ({"", "foo", ""}, @(x,y,z) repelem ({"a"}, numel (z)), 3);
+%! assert (A, {"a", "foo", "a"});
+%! assert (idx, logical ([1, 0, 1]));
+%! [A,idx] = fillmissing ({"", "foo", ""}, @(x,y,z) repelem ({""}, numel (z)), 3);
+%! assert (A, {"", "foo", ""});
+%! assert (idx, logical ([0, 0, 0]));
 
-
-##types without a defined 'missing' (currently logical, int) that can be filled
-%!assert (fillmissing (logical ([1 0 1 0 1]), "constant", true), logical ([1 0 1 0 1]))
-%!assert (fillmissing (logical ([1 0 1 0 1]), "constant", false, 'missinglocations', logical([1 0 1 0 1])), logical ([0 0 0 0 0]))
-%!assert (fillmissing (logical ([1 0 1 0 1]), "previous",  'missinglocations', logical([1 0 1 0 1])), logical ([1 0 0 0 0]))
-%!assert (fillmissing (logical ([1 0 1 0 1]), "next",  'missinglocations', logical([1 0 1 0 1])), logical ([0 0 0 0 1]))
-%!assert (fillmissing (logical ([1 0 1 0 1]), "nearest", 'missinglocations', logical([1 0 1 0 1])), logical ([0 0 0 0 0]))
-%!assert (fillmissing (logical ([1 0 1 0 1]),  @(x,y,z) false(size(z)), 3), logical ([1 0 1 0 1]))
-%!assert (fillmissing (logical ([1 0 1 0 1]),  @(x,y,z) false(size(z)), 3, 'missinglocations', logical([1 0 1 0 1])), logical ([0 0 0 0 0]))
-%!assert (fillmissing (logical ([1 0 1 0 1]),  @(x,y,z) false(size(z)), [2 0], 'missinglocations', logical([1 0 1 0 1])), logical ([1 0 0 0 0]))
+## Types without a defined 'missing' (currently logical, int) that can be filled
+%!assert (fillmissing (logical ([1, 0, 1, 0, 1]), "constant", true), logical ([1, 0, 1, 0, 1]))
+%!assert (fillmissing (logical ([1, 0, 1, 0, 1]), "constant", false, "missinglocations", logical ([1, 0, 1, 0, 1])), logical ([0, 0, 0, 0, 0]))
+%!assert (fillmissing (logical ([1, 0, 1, 0, 1]), "previous",  "missinglocations", logical ([1, 0, 1, 0, 1])), logical ([1, 0, 0, 0, 0]))
+%!assert (fillmissing (logical ([1, 0, 1, 0, 1]), "next",  "missinglocations", logical ([1, 0, 1, 0, 1])), logical ([0, 0, 0, 0, 1]))
+%!assert (fillmissing (logical ([1, 0, 1, 0, 1]), "nearest", "missinglocations", logical ([1, 0, 1, 0, 1])), logical ([0, 0, 0, 0, 0]))
+%!assert (fillmissing (logical ([1, 0, 1, 0, 1]),  @(x,y,z) false(size(z)), 3), logical ([1, 0, 1, 0, 1]))
+%!assert (fillmissing (logical ([1, 0, 1, 0, 1]),  @(x,y,z) false(size(z)), 3, "missinglocations", logical ([1, 0, 1, 0, 1])), logical ([0, 0, 0, 0, 0]))
+%!assert (fillmissing (logical ([1, 0, 1, 0, 1]),  @(x,y,z) false(size(z)), [2, 0], "missinglocations", logical ([1, 0, 1, 0, 1])), logical ([1, 0, 0, 0, 0]))
 %!test
-%! x = logical ([1 0 1 0 1]);
-%! [~,idx] = fillmissing (x, "constant", true);
-%! assert (idx, logical([0 0 0 0 0]));
-%! [~,idx] = fillmissing (x, "constant", false, 'missinglocations', logical([1 0 1 0 1]));
-%! assert (idx, logical([1 0 1 0 1]));
-%! [~,idx] = fillmissing (x, "constant", true, 'missinglocations', logical([1 0 1 0 1]));
-%! assert (idx, logical([1 0 1 0 1]));
-%! [~,idx] = fillmissing (x, "previous", 'missinglocations', logical([1 0 1 0 1]));
-%! assert (idx, logical([0 0 1 0 1]));
-%! [~,idx] = fillmissing (x, "next",  'missinglocations', logical([1 0 1 0 1]));
-%! assert (idx, logical([1 0 1 0 0]));
-%! [~,idx] = fillmissing (x, "nearest", 'missinglocations', logical([1 0 1 0 1]));
-%! assert (idx, logical([1 0 1 0 1]));
-%! [~,idx] = fillmissing (x, @(x,y,z) false(size(z)), 3);
-%! assert (idx, logical ([0 0 0 0 0]))
-%! [~,idx] = fillmissing (x, @(x,y,z) false(size(z)), 3, 'missinglocations', logical([1 0 1 0 1]));
-%! assert (idx, logical ([1 0 1 0 1]))
-%! [~,idx] = fillmissing (x, @(x,y,z) false(size(z)), [2 0], 'missinglocations', logical([1 0 1 0 1]));
-%! assert (idx, logical ([0 0 1 0 1]))
+%! x = logical ([1, 0, 1, 0, 1]);
+%! [~, idx] = fillmissing (x, "constant", true);
+%! assert (idx, logical ([0, 0, 0, 0, 0]));
+%! [~, idx] = fillmissing (x, "constant", false, "missinglocations", logical ([1, 0, 1, 0, 1]));
+%! assert (idx, logical ([1, 0, 1, 0, 1]));
+%! [~, idx] = fillmissing (x, "constant", true, "missinglocations", logical ([1, 0, 1, 0, 1]));
+%! assert (idx, logical ([1, 0, 1, 0, 1]));
+%! [~, idx] = fillmissing (x, "previous", "missinglocations", logical ([1, 0, 1, 0, 1]));
+%! assert (idx, logical ([0, 0, 1, 0, 1]));
+%! [~, idx] = fillmissing (x, "next",  "missinglocations", logical ([1, 0, 1, 0, 1]));
+%! assert (idx, logical ([1, 0, 1, 0, 0]));
+%! [~, idx] = fillmissing (x, "nearest", "missinglocations", logical ([1, 0, 1, 0, 1]));
+%! assert (idx, logical ([1, 0, 1, 0, 1]));
+%! [~, idx] = fillmissing (x, @(x,y,z) false(size(z)), 3);
+%! assert (idx, logical ([0, 0, 0, 0, 0]))
+%! [~, idx] = fillmissing (x, @(x,y,z) false(size(z)), 3, "missinglocations", logical ([1, 0, 1, 0, 1]));
+%! assert (idx, logical ([1, 0, 1, 0, 1]))
+%! [~, idx] = fillmissing (x, @(x,y,z) false(size(z)), [2 0], "missinglocations", logical ([1, 0, 1, 0, 1]));
+%! assert (idx, logical ([0, 0, 1, 0, 1]))
 
-%!assert (fillmissing (int32 ([1 2 3 4 5]), "constant", 0), int32 ([1 2 3 4 5]))
-%!assert (fillmissing (int32 ([1 2 3 4 5]), "constant", 0,'missinglocations', logical([1 0 1 0 1])), int32 ([0 2 0 4 0]))
-%!assert (fillmissing (int32 ([1 2 3 4 5]), "previous", 'missinglocations', logical([1 0 1 0 1])), int32 ([1 2 2 4 4]))
-%!assert (fillmissing (int32 ([1 2 3 4 5]), "next", 'missinglocations', logical([1 0 1 0 1])), int32 ([2 2 4 4 5]))
-%!assert (fillmissing (int32 ([1 2 3 4 5]), "nearest", 'missinglocations', logical([1 0 1 0 1])), int32 ([2 2 4 4 4]))
-%!assert (fillmissing (int32 ([1 2 3 4 5]), @(x,y,z) z+10, 3), int32 ([1 2 3 4 5]))
-%!assert (fillmissing (int32 ([1 2 3 4 5]), @(x,y,z) z+10, 3, 'missinglocations', logical([1 0 1 0 1])), int32 ([11 2 13 4 15]))
-%!assert (fillmissing (int32 ([1 2 3 4 5]), @(x,y,z) z+10, [2 0], 'missinglocations', logical([1 0 1 0 1])), int32 ([1 2 13 4 15]))
+%!assert (fillmissing (int32 ([1, 2, 3, 4, 5]), "constant", 0), int32 ([1, 2, 3, 4, 5]))
+%!assert (fillmissing (int32 ([1, 2, 3, 4, 5]), "constant", 0, "missinglocations", logical ([1, 0, 1, 0, 1])), int32 ([0, 2, 0, 4, 0]))
+%!assert (fillmissing (int32 ([1, 2, 3, 4, 5]), "previous", "missinglocations", logical ([1, 0, 1, 0, 1])), int32 ([1, 2, 2, 4, 4]))
+%!assert (fillmissing (int32 ([1, 2, 3, 4, 5]), "next", "missinglocations", logical ([1, 0, 1, 0, 1])), int32 ([2, 2, 4, 4, 5]))
+%!assert (fillmissing (int32 ([1, 2, 3, 4, 5]), "nearest", "missinglocations", logical ([1, 0, 1, 0, 1])), int32 ([2, 2, 4, 4, 4]))
+%!assert (fillmissing (int32 ([1, 2, 3, 4, 5]), @(x,y,z) z+10, 3), int32 ([1, 2, 3, 4, 5]))
+%!assert (fillmissing (int32 ([1, 2, 3, 4, 5]), @(x,y,z) z+10, 3, "missinglocations", logical ([1, 0, 1, 0, 1])), int32 ([11, 2, 13, 4, 15]))
+%!assert (fillmissing (int32 ([1, 2, 3, 4, 5]), @(x,y,z) z+10, [2, 0], "missinglocations", logical ([1, 0, 1, 0, 1])), int32 ([1, 2, 13, 4, 15]))
 %!test
-%! x = int32 ([1 2 3 4 5]);
-%! [~,idx] = fillmissing (x, "constant", 0);
-%! assert (idx, logical([0 0 0 0 0]));
-%! [~,idx] = fillmissing (x, "constant", 0, 'missinglocations', logical([1 0 1 0 1]));
-%! assert (idx, logical([1 0 1 0 1]));
-%! [~,idx] = fillmissing (x, "constant", 3, 'missinglocations', logical([0 0 1 0 0]));
-%! assert (idx, logical([0 0 1 0 0]));
-%! [~,idx] = fillmissing (x, "previous", 'missinglocations', logical([1 0 1 0 1]));
-%! assert (idx, logical([0 0 1 0 1]));
-%! [~,idx] = fillmissing (x, "next", 'missinglocations', logical([1 0 1 0 1]));
-%! assert (idx, logical([1 0 1 0 0]));
-%! [~,idx] = fillmissing (x, "nearest", 'missinglocations', logical([1 0 1 0 1]));
-%! assert (idx, logical([1 0 1 0 1]));
-%! [~,idx] = fillmissing (x, @(x,y,z) z+10, 3);
-%! assert (idx, logical([0 0 0 0 0]));
-%! [~,idx] = fillmissing (x, @(x,y,z) z+10, 3, 'missinglocations', logical([1 0 1 0 1]));
-%! assert (idx, logical([1 0 1 0 1]));
-%! [~,idx] = fillmissing (x, @(x,y,z) z+10, [2 0], 'missinglocations', logical([1 0 1 0 1]));
-%! assert (idx, logical([0 0 1 0 1]));
+%! x = int32 ([1, 2, 3, 4, 5]);
+%! [~, idx] = fillmissing (x, "constant", 0);
+%! assert (idx, logical ([0, 0, 0, 0, 0]));
+%! [~, idx] = fillmissing (x, "constant", 0, "missinglocations", logical ([1, 0, 1, 0, 1]));
+%! assert (idx, logical ([1, 0, 1, 0, 1]));
+%! [~, idx] = fillmissing (x, "constant", 3, "missinglocations", logical ([0, 0, 1, 0, 0]));
+%! assert (idx, logical ([0, 0, 1, 0, 0]));
+%! [~, idx] = fillmissing (x, "previous", "missinglocations", logical ([1, 0, 1, 0, 1]));
+%! assert (idx, logical ([0, 0, 1, 0, 1]));
+%! [~, idx] = fillmissing (x, "next", "missinglocations", logical ([1, 0, 1, 0, 1]));
+%! assert (idx, logical ([1, 0, 1, 0, 0]));
+%! [~, idx] = fillmissing (x, "nearest", "missinglocations", logical ([1, 0, 1, 0, 1]));
+%! assert (idx, logical ([1, 0, 1, 0, 1]));
+%! [~, idx] = fillmissing (x, @(x,y,z) z+10, 3);
+%! assert (idx, logical ([0, 0, 0, 0, 0]));
+%! [~, idx] = fillmissing (x, @(x,y,z) z+10, 3, "missinglocations", logical ([1, 0, 1, 0, 1]));
+%! assert (idx, logical ([1, 0, 1, 0, 1]));
+%! [~, idx] = fillmissing (x, @(x,y,z) z+10, [2 0], "missinglocations", logical ([1, 0, 1, 0, 1]));
+%! assert (idx, logical ([0, 0, 1, 0, 1]));
 
-## other data type passthrough
+## Other data type passthrough
 %!test
-%! [A, idx] = fillmissing ([struct struct], "constant", 1);
-%! assert (A, [struct struct])
-%! assert (idx, [false false])
+%! [A, idx] = fillmissing ([struct, struct], "constant", 1);
+%! assert (A, [struct, struct])
+%! assert (idx, [false, false])
 
 ## Test input validation and error messages
 %!error <Invalid call> fillmissing ()
 %!error <Invalid call> fillmissing (1)
-%!error <Invalid call> fillmissing (1,2,3,4,5,6,7,8,9,10,11,12,13)
+%!error <Invalid call> fillmissing (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
 %!error <second input must be a> fillmissing (1, 2)
 %!error <unknown fill method 'foo'> fillmissing (1, "foo")
 %!error <fill function must accept at least> fillmissing (1, @(x) x, 1)
 %!error <fill function must accept at least> fillmissing (1, @(x,y) x+y, 1)
 %!error <interpolation methods only valid for numeric> fillmissing ("a b c", "linear")
-%!error <interpolation methods only valid for numeric> fillmissing ({'a','b'}, "linear")
+%!error <interpolation methods only valid for numeric> fillmissing ({"a", "b"}, "linear")
 %!error <'movmean' and 'movmedian' methods only valid for numeric> fillmissing ("a b c", "movmean", 2)
-%!error <'movmean' and 'movmedian' methods only valid for numeric> fillmissing ({'a','b'}, "movmean", 2)
+%!error <'movmean' and 'movmedian' methods only valid for numeric> fillmissing ({"a", "b"}, "movmean", 2)
 %!error <'constant' method must be followed by> fillmissing (1, "constant")
 %!error <a numeric fill value cannot be emtpy> fillmissing (1, "constant", [])
 %!error <fill value must be the same data type> fillmissing (1, "constant", "a")
@@ -2254,49 +2282,49 @@ endfunction
 %!error <moving window method must be followed by> fillmissing (1, "movmedian")
 %!error <DIM must be a positive scalar> fillmissing (1, "constant", 1, 0)
 %!error <DIM must be a positive scalar> fillmissing (1, "constant", 1, -1)
-%!error <DIM must be a positive scalar> fillmissing (1, "constant", 1, [1 2])
+%!error <DIM must be a positive scalar> fillmissing (1, "constant", 1, [1, 2])
 %!error <properties must be given as> fillmissing (1, "constant", 1, "samplepoints")
 %!error <properties must be given as> fillmissing (1, "constant", 1, "foo")
 %!error <properties must be given as> fillmissing (1, "constant", 1, 1, "foo")
 %!error <invalid parameter name specified> fillmissing (1, "constant", 1, 2, {1}, 4)
-%!error <SamplePoints must be a> fillmissing ([1 2 3], "constant", 1, 2, "samplepoints", [1 2])
-%!error <SamplePoints must be a> fillmissing ([1 2 3], "constant", 1, 2, "samplepoints", [3 1 2])
-%!error <SamplePoints must be a> fillmissing ([1 2 3], "constant", 1, 2, "samplepoints", [1 1 2])
-%!error <SamplePoints must be a> fillmissing ([1 2 3], "constant", 1, 2, "samplepoints", "abc")
-%!error <SamplePoints must be a> fillmissing ([1 2 3], "constant", 1, 2, "samplepoints", logical([1 1 1]))
-%!error <SamplePoints must be a> fillmissing ([1 2 3], "constant", 1, 1, "samplepoints", [1 2 3])
-%!error <EndValues method 'constant' only valid> fillmissing ('foo', "next", "endvalues", 1)
+%!error <SamplePoints must be a> fillmissing ([1, 2, 3], "constant", 1, 2, "samplepoints", [1, 2])
+%!error <SamplePoints must be a> fillmissing ([1, 2, 3], "constant", 1, 2, "samplepoints", [3, 1, 2])
+%!error <SamplePoints must be a> fillmissing ([1, 2, 3], "constant", 1, 2, "samplepoints", [1, 1, 2])
+%!error <SamplePoints must be a> fillmissing ([1, 2, 3], "constant", 1, 2, "samplepoints", "abc")
+%!error <SamplePoints must be a> fillmissing ([1, 2, 3], "constant", 1, 2, "samplepoints", logical ([1, 1, 1]))
+%!error <SamplePoints must be a> fillmissing ([1, 2, 3], "constant", 1, 1, "samplepoints", [1, 2, 3])
+%!error <EndValues method 'constant' only valid> fillmissing ("foo", "next", "endvalues", 1)
 %!error <invalid EndValues method 'foo'> fillmissing (1, "constant", 1, 1, "endvalues", "foo")
-%!error <EndValues must be a scalar or a 1 element array> fillmissing ([1 2 3], "constant", 1, 2, "endvalues", [1 2 3])
-%!error <EndValues must be a scalar or a 3 element array> fillmissing ([1 2 3], "constant", 1, 1, "endvalues", [1 2])
-%!error <EndValues must be a scalar or a 12 element array> fillmissing (randi(5,4,3,2), "constant", 1, 3, "endvalues", [1 2])
+%!error <EndValues must be a scalar or a 1 element array> fillmissing ([1, 2, 3], "constant", 1, 2, "endvalues", [1, 2, 3])
+%!error <EndValues must be a scalar or a 3 element array> fillmissing ([1, 2, 3], "constant", 1, 1, "endvalues", [1, 2])
+%!error <EndValues must be a scalar or a 12 element array> fillmissing (randi(5,4,3,2), "constant", 1, 3, "endvalues", [1, 2])
 %!error <EndValues must be numeric or a> fillmissing (1, "constant", 1, 1, "endvalues", {1})
 %!error <invalid parameter name 'foo'> fillmissing (1, "constant", 1, 2, "foo", 4)
 %!error <MissingLocations option is not compatible with> fillmissing (struct, "constant", 1, "missinglocations", false)
 %!error <MissingLocations and MaxGap options> fillmissing (1, "constant", 1, 2, "maxgap", 1, "missinglocations", false)
 %!error <MissingLocations and MaxGap options> fillmissing (1, "constant", 1, 2, "missinglocations", false, "maxgap", 1)
 %!error <the 'replacevalues' option has not> fillmissing (1, "constant", 1, "replacevalues", true)
-%!error <the 'datavariables' option has not> fillmissing (1, "constant", 1, "datavariables", 'Varname')
+%!error <the 'datavariables' option has not> fillmissing (1, "constant", 1, "datavariables", "Varname")
 %!error <MissingLocations must be a> fillmissing (1, "constant", 1, 2, "missinglocations", 1)
-%!error <MissingLocations must be a> fillmissing (1, "constant", 1, 2, "missinglocations", 'a')
-%!error <MissingLocations must be a> fillmissing (1, "constant", 1, 2, "missinglocations", [true false])
+%!error <MissingLocations must be a> fillmissing (1, "constant", 1, 2, "missinglocations", "a")
+%!error <MissingLocations must be a> fillmissing (1, "constant", 1, 2, "missinglocations", [true, false])
 %!error <MissingLocations cannot be used with method> fillmissing (true, "linear", "missinglocations", true)
-%!error <MissingLocations cannot be used with method> fillmissing (int8(1), "linear", "missinglocations", true)
+%!error <MissingLocations cannot be used with method> fillmissing (int8 (1), "linear", "missinglocations", true)
 %!error <MissingLocations cannot be used with EndValues method> fillmissing (true, "next", "missinglocations", true, "EndValues", "linear")
 %!error <MissingLocations cannot be used with EndValues method> fillmissing (true, "next", "EndValues", "linear", "missinglocations", true)
-%!error <MissingLocations cannot be used with EndValues method> fillmissing (int8(1), "next", "missinglocations", true, "EndValues", "linear")
-%!error <MissingLocations cannot be used with EndValues method> fillmissing (int8(1), "next", "EndValues", "linear", "missinglocations", true)
+%!error <MissingLocations cannot be used with EndValues method> fillmissing (int8 (1), "next", "missinglocations", true, "EndValues", "linear")
+%!error <MissingLocations cannot be used with EndValues method> fillmissing (int8 (1), "next", "EndValues", "linear", "missinglocations", true)
 %!error <MaxGap must be a positive numeric scalar> fillmissing (1, "constant", 1, 2, "maxgap", true)
-%!error <MaxGap must be a positive numeric scalar> fillmissing (1, "constant", 1, 2, "maxgap", 'a')
-%!error <MaxGap must be a positive numeric scalar> fillmissing (1, "constant", 1, 2, "maxgap", [1 2])
+%!error <MaxGap must be a positive numeric scalar> fillmissing (1, "constant", 1, 2, "maxgap", "a")
+%!error <MaxGap must be a positive numeric scalar> fillmissing (1, "constant", 1, 2, "maxgap", [1, 2])
 %!error <MaxGap must be a positive numeric scalar> fillmissing (1, "constant", 1, 2, "maxgap", 0)
 %!error <MaxGap must be a positive numeric scalar> fillmissing (1, "constant", 1, 2, "maxgap", -1)
-%!error <fill value 'V' must be a scalar or a 1> fillmissing ([1 2 3], "constant", [1 2 3])
-%!error <fill value 'V' must be a scalar or a 1> fillmissing ([1 2 3]', "constant", [1 2 3])
-%!error <fill value 'V' must be a scalar or a 1> fillmissing ([1 2 3]', "constant", [1 2 3], 1)
-%!error <fill value 'V' must be a scalar or a 1> fillmissing ([1 2 3], "constant", [1 2 3], 2)
-%!error <fill value 'V' must be a scalar or a 6> fillmissing (randi(5,4,3,2), "constant", [1 2], 1)
-%!error <fill value 'V' must be a scalar or a 8> fillmissing (randi(5,4,3,2), "constant", [1 2], 2)
-%!error <fill value 'V' must be a scalar or a 12> fillmissing (randi(5,4,3,2), "constant", [1 2], 3)
+%!error <fill value 'V' must be a scalar or a 1> fillmissing ([1, 2, 3], "constant", [1, 2, 3])
+%!error <fill value 'V' must be a scalar or a 1> fillmissing ([1, 2, 3]', "constant", [1, 2, 3])
+%!error <fill value 'V' must be a scalar or a 1> fillmissing ([1, 2, 3]', "constant", [1, 2, 3], 1)
+%!error <fill value 'V' must be a scalar or a 1> fillmissing ([1, 2, 3], "constant", [1, 2, 3], 2)
+%!error <fill value 'V' must be a scalar or a 6> fillmissing (randi (5, 4, 3, 2), "constant", [1, 2], 1)
+%!error <fill value 'V' must be a scalar or a 8> fillmissing (randi (5, 4, 3, 2), "constant", [1, 2], 2)
+%!error <fill value 'V' must be a scalar or a 12> fillmissing (randi (5, 4, 3, 2), "constant", [1, 2], 3)
 %!error <fill function handle must be followed by> fillmissing (1, @(x,y,z) x+y+z)
-%!error <fill function return values must be the same size> fillmissing ([1 NaN 2], @(x,y,z) [1 2], 2)
+%!error <fill function return values must be the same size> fillmissing ([1, NaN, 2], @(x,y,z) [1, 2], 2)
