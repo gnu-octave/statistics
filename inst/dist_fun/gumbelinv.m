@@ -111,25 +111,25 @@ function [x, xlo, xup] = gumbelinv (p, mu, beta, pcov, alpha)
   ## Compute inverse of type 1 extreme value cdf
   k = (eps <= p & p < 1);
   if (all (k(:)))
-    q = log (-log (p));
+    q = -log (-log (p));
   else
     q = zeros (size (p), is_class);
-    q(k) = log (-log (p(k)));
+    q(k) = -log (-log (p(k)));
     ## Return -Inf for p = 0 and Inf for p = 1
-    q(p < eps) = Inf;
-    q(p == 1) = -Inf;
+    q(p < eps) = -Inf;
+    q(p == 1) = Inf;
     ## Return NaN for out of range values of P
     q(p < 0 | 1 < p | isnan (p)) = NaN;
   endif
 
   ## Return NaN for out of range values of BETA
   beta(beta <= 0) = NaN;
-  x = -(beta .* q + mu);
+  x = (beta .* q) + mu;
 
   ## Compute confidence bounds if requested.
   if (nargout >= 2)
     xvar = pcov(1,1) + 2 * pcov(1,2) * q + pcov(2,2) * q .^ 2;
-    if (any (xvar < 0))
+    if (any (xvar < 0)) || any(isnan(xvar))
       error ("gumbelinv: bad covariance matrix.");
     endif
     z = -norminv (alpha / 2);
@@ -164,7 +164,7 @@ endfunction
 %!assert (gumbelinv (p, zeros (1,4), ones (1,4)), x, 1e-4)
 %!assert (gumbelinv (p, 0, ones (1,4)), x, 1e-4)
 %!assert (gumbelinv (p, zeros (1,4), 1), x, 1e-4)
-%!assert (gumbelinv (p, [0, -Inf, NaN, Inf], 1), [-Inf, Inf, NaN, -Inf], 1e-4)
+%!assert (gumbelinv (p, [0, -Inf, NaN, Inf], 1), [-Inf, -Inf, NaN, Inf], 1e-4)
 %!assert (gumbelinv (p, 0, [Inf, NaN, -1, 0]), [-Inf, NaN, NaN, NaN], 1e-4)
 %!assert (gumbelinv ([p(1:2), NaN, p(4)], 0, 1), [x(1:2), NaN, x(4)], 1e-4)
 
@@ -173,6 +173,11 @@ endfunction
 %!assert (gumbelinv (single ([p, NaN]), 0, 1), single ([x, NaN]), 1e-4)
 %!assert (gumbelinv ([p, NaN], single (0), 1), single ([x, NaN]), 1e-4)
 %!assert (gumbelinv ([p, NaN], 0, single (1)), single ([x, NaN]), 1e-4)
+
+## Test whether gumbelcdf is successfully inverted
+%! p = [0.05, 0.5, 0.95];
+%! x = gumbelinv(p);
+%!assert (gumbelcdf(x), p, 1e-4)
 
 ## Test input validation
 %!error<gumbelinv: invalid number of input arguments.> gumbelinv ()
