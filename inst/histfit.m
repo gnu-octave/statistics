@@ -25,9 +25,10 @@
 ##
 ## Plot histogram with superimposed distribution fit.
 ##
-## @code{histfit (@var{x)} plots a histogram of the values in the vector @var{x}
-## using the number of bins equal to the square root of the number of nonmissing
-## elements in @var{x} and superimposes a fitted normal density function.
+## @code{histfit (@var{x})} plots a histogram of the values in the vector
+## @var{x} using the number of bins equal to the square root of the number of
+## non-missing elements in @var{x} and superimposes a fitted normal density
+## function.
 ##
 ## @code{histfit (@var{x}, @var{nbins})} plots a histogram of the values in the
 ## vector @var{x} using @var{nbins} number of bins in the histogram and
