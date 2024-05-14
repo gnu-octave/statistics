@@ -103,7 +103,7 @@ function [varargout] = histfit (varargin)
   endif
 
   ## Plot the histogram
-  if (strcmpi (distname, "poisson"))
+  if (any (strcmpi (distname, {"poisson", "NegativeBinomial", "nbin"})))
     binwidth = 1;
     xmin = min (x) - 1;
     xmax = max (x) + 1;
@@ -120,7 +120,7 @@ function [varargout] = histfit (varargin)
   pd = fitdist (x, distname);
 
   ## Compute density function
-  if (strcmpi (distname, "poisson"))
+  if (any (strcmpi (distname, {"poisson", "NegativeBinomial", "nbin"})))
     x = [min(x):max(x)]';
     y = pdf (pd, x);
   else
@@ -131,7 +131,7 @@ function [varargout] = histfit (varargin)
   ## Normalize density line and overplot the histogram
   y = xsize * y * binwidth;
   hold on;
-  if (strcmpi (distname, "poisson"))
+  if (any (strcmpi (distname, {"poisson", "NegativeBinomial", "nbin"})))
     h(2) = plot (ax, x, y, ";;r-o");
   else
     h(2) = plot (ax, x, y, ";;r-");
