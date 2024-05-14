@@ -71,30 +71,46 @@
         </div>
         <div class="card-body">
 <dl>
+<dt><u>statistics:</u> <b>histfit</b><i> (<var>x</var>)</i></dt>
 <dt><u>statistics:</u> <b>histfit</b><i> (<var>x</var>, <var>nbins</var>)</i></dt>
-<dt><u>statistics:</u> <var>h</var> = <b>histfit</b><i> (<var>x</var>, <var>nbins</var>)</i></dt>
+<dt><u>statistics:</u> <b>histfit</b><i> (<var>x</var>, <var>nbins</var>, <var>distname</var>)</i></dt>
+<dt><u>statistics:</u> <b>histfit</b><i> (<var>ax</var>, &hellip;)</i></dt>
+<dt><u>statistics:</u> <var>h</var> = <b>histfit</b><i> (&hellip;)</i></dt>
 </dl>
 
-<p> Plot histogram with superimposed fitted normal density.
+<p> Plot histogram with superimposed distribution fit.
 </p>
 <div class="ms-5">
-<p> <code>histfit (<var>x</var>, <var>nbins</var>)</code> plots a histogram of the values in
- the vector <var>x</var> using <var>nbins</var> bars in the histogram.  With one input
- argument, <var>nbins</var> is set to the square root of the number of elements in
- <var>x</var>.
+<p> <code>histfit (<var>x</var>)</code> plots a histogram of the values in the vector
+ <var>x</var> using the number of bins equal to the square root of the number of
+ non-missing elements in <var>x</var> and superimposes a fitted normal density
+ function.
 </p>
-<p> <code><var>h</var> = histfit (<var>x</var>, <var>nbins</var>)</code> returns the bins and fitted
- line handles of the plot in <var>h</var>.
+<p> <code>histfit (<var>x</var>, <var>nbins</var>)</code> plots a histogram of the values in the
+ vector <var>x</var> using <var>nbins</var> number of bins in the histogram and
+ superimposes a fitted normal density function.
 </p>
-<p> Example
+<p> <code>histfit (<var>x</var>, <var>nbins</var>, <var>distname</var>)</code> plots a histogram of
+ the values in the vector <var>x</var> using <var>nbins</var> number of bins in the
+ histogram and superimposes a fitted density function from the distribution
+ specified by <var>distname</var>.
 </p>
- <table><tr><td>&nbsp;</td><td><pre class="example"> histfit (randn (100, 1))
- </pre></td></tr></table>
-
+<p> <code>histfit (<var>ax</var>, &hellip;)</code> uses the axes handle <var>ax</var> to plot the
+ histogram and the fitted density function onto followed by any of the input
+ argument combinations specified in the previous syntaxes.
+</p>
+<p> <code><var>h</var> = histfit (&hellip;)</code> returns a vector of handles <var>h</var>, where
+ <code><var>h</var>(1)</code> is the handle to the histogram and <code><var>h</var>(1)</code> is
+ the handle to the density curve.
+</p>
+<p> Note: calling <code>fitdist</code> without any input arguments will return a cell
+ array of character vectors listing all supported distributions.
+</p>
 <p> <strong>See also: </strong>
 bar, 
 hist, 
-pareto
+  <a href="normplot.html">normplot</a>, 
+  <a href="fitdist.html">fitdist</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/histfit.m">histfit</a>
@@ -123,6 +139,70 @@ pareto
                   </table>
                   <div class="text-center">
                     <img src="assets/histfit_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ histfit (poissrnd (2, 1000, 1), 10, "Poisson")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/histfit_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 3
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ histfit (betarnd (3, 10, 1000, 1), 10, "beta")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/histfit_301.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>

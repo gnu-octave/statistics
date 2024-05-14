@@ -71,113 +71,130 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> LogisticDistribution</dt>
+<dt><u>statistics:</u> <var>p</var> = <b>cdf</b><i> (<var>name</var>, <var>x</var>, <var>A</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>cdf</b><i> (<var>name</var>, <var>x</var>, <var>A</var>, <var>B</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>cdf</b><i> (<var>name</var>, <var>x</var>, <var>A</var>, <var>B</var>, <var>C</var>)</i></dt>
+<dt><u>statistics:</u> <var>p</var> = <b>cdf</b><i> (&hellip;, <code>&quot;upper&quot;</code>)</i></dt>
 </dl>
 
-<p> Logistic probability distribution object.
+<p> Return the CDF of a univariate distribution evaluated at <var>x</var>.
 </p>
 <div class="ms-5">
-<p> A <code>LogisticDistribution</code> object consists of parameters, a model
- description, and sample data for a logistic probability distribution.
+<p> <code>cdf</code> is a wrapper for the univariate cumulative distribution functions
+ available in the statistics package.  See the corresponding functions&rsquo; help
+ to learn the signification of the parameters after <var>x</var>.
 </p>
-<p> The logistic distribution uses the following parameters.
+<p> <code><var>p</var> = cdf (<var>name</var>, <var>x</var>, <var>A</var>)</code> returns the CDF for the
+ one-parameter distribution family specified by <var>name</var> and the
+ distribution parameter <var>A</var>, evaluated at the values in <var>x</var>.
+</p>
+<p> <code><var>p</var> = cdf (<var>name</var>, <var>x</var>, <var>A</var>, <var>B</var>)</code> returns the CDF
+ for the two-parameter distribution family specified by <var>name</var> and the
+ distribution parameters <var>A</var> and <var>B</var>, evaluated at the values in
+ <var>x</var>.
+</p>
+<p> <code><var>p</var> = cdf (<var>name</var>, <var>x</var>, <var>A</var>, <var>B</var>, <var>C</var>)</code> returns
+ the CDF for the three-parameter distribution family specified by <var>name</var>
+ and the distribution parameters <var>A</var>, <var>B</var>, and <var>C</var>, evaluated at
+ the values in <var>x</var>.
+</p>
+<p> <code><var>p</var> = cdf (&hellip;, <code>&quot;upper&quot;</code>)</code> returns the complement of the
+ CDF using an algorithm that more accurately computes the extreme upper-tail
+ probabilities.  <code>&quot;upper&quot;</code> can follow any of the input arguments in the
+ previous syntaxes.
+</p>
+<p> <var>name</var> must be a char string of the name or the abbreviation of the
+ desired cumulative distribution function as listed in the followng table.
+ The last column shows the number of required parameters that should be parsed
+ after <var>x</var> to the desired CDF.  The optional input argument
+ <code>&quot;upper&quot;</code> does not count in the required number of parameters.
 </p>
  <table>
-<thead><tr><th width="25%"><var>Parameter</var></th><th width="48%"><var>Description</var></th><th width="27%"><var>Support</var></th></tr></thead>
-<tr><td width="25%"><code>mu</code></td><td width="48%">Mean of logarithmic values</td><td width="27%"><math>mu &gt;= 0</math></td></tr>
-<tr><td width="25%"><code>sigma</code></td><td width="48%">Scale of logarithmic values</td><td width="27%"><math>sigma &gt; 0</math></td></tr>
+<thead><tr><th width="40%">Distribution Name</th><th width="5%"></th><th width="20%">Abbreviation</th><th width="5%"></th><th width="30%">Input Parameters</th></tr></thead>
+<tr><td width="40%"><code>&quot;Beta&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;beta&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Binomial&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;bino&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Birnbaum-Saunders&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;bisa&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Burr&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;burr&quot;</code></td><td width="5%"></td><td width="30%">3</td></tr>
+<tr><td width="40%"><code>&quot;Cauchy&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;cauchy&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Chi-squared&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;chi2&quot;</code></td><td width="5%"></td><td width="30%">1</td></tr>
+<tr><td width="40%"><code>&quot;Extreme Value&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;ev&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Exponential&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;exp&quot;</code></td><td width="5%"></td><td width="30%">1</td></tr>
+<tr><td width="40%"><code>&quot;F-Distribution&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;f&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Gamma&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;gam&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Geometric&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;geo&quot;</code></td><td width="5%"></td><td width="30%">1</td></tr>
+<tr><td width="40%"><code>&quot;Generalized Extreme Value&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;gev&quot;</code></td><td width="5%"></td><td width="30%">3</td></tr>
+<tr><td width="40%"><code>&quot;Generalized Pareto&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;gp&quot;</code></td><td width="5%"></td><td width="30%">3</td></tr>
+<tr><td width="40%"><code>&quot;Gumbel&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;gumbel&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Half-normal&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;hn&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Hypergeometric&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;hyge&quot;</code></td><td width="5%"></td><td width="30%">3</td></tr>
+<tr><td width="40%"><code>&quot;Inverse Gaussian&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;invg&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Laplace&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;laplace&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Logistic&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;logi&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Log-Logistic&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;logl&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Lognormal&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;logn&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Nakagami&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;naka&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Negative Binomial&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;nbin&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Noncentral F-Distribution&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;ncf&quot;</code></td><td width="5%"></td><td width="30%">3</td></tr>
+<tr><td width="40%"><code>&quot;Noncentral Student T&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;nct&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Noncentral Chi-Squared&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;ncx2&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Normal&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;norm&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Poisson&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;poiss&quot;</code></td><td width="5%"></td><td width="30%">1</td></tr>
+<tr><td width="40%"><code>&quot;Rayleigh&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;rayl&quot;</code></td><td width="5%"></td><td width="30%">1</td></tr>
+<tr><td width="40%"><code>&quot;Rician&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;rice&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Student T&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;t&quot;</code></td><td width="5%"></td><td width="30%">1</td></tr>
+<tr><td width="40%"><code>&quot;location-scale T&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;tls&quot;</code></td><td width="5%"></td><td width="30%">3</td></tr>
+<tr><td width="40%"><code>&quot;Triangular&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;tri&quot;</code></td><td width="5%"></td><td width="30%">3</td></tr>
+<tr><td width="40%"><code>&quot;Discrete Uniform&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;unid&quot;</code></td><td width="5%"></td><td width="30%">1</td></tr>
+<tr><td width="40%"><code>&quot;Uniform&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;unif&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Von Mises&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;vm&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>&quot;Weibull&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;wbl&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
 </table>
-
-<p> There are several ways to create a <code>LogisticDistribution</code> object.
-</p>
- <ul>
-<li> Fit a distribution to data using the <code>fitdist</code> function.
- </li><li> Create a distribution with specified parameter values using the
- <code>makedist</code> function.
- </li><li> Use the constructor <code>LogisticDistribution (<var>mu</var>, <var>sigma</var>)</code>
- to create a logistic distribution with specified parameter values.
- </li><li> Use the static method <code>LogisticDistribution.fit (<var>x</var>,
- <var>censor</var>, <var>freq</var>, <var>options</var>)</code> to a distribution to data <var>x</var>.
- </li></ul>
-
-<p> It is highly recommended to use <code>fitdist</code> and <code>makedist</code>
- functions to create probability distribution objects, instead of the
- constructor and the aforementioned static method.
-</p>
-<p> A <code>LogisticDistribution</code> object contains the following properties,
- which can be accessed using dot notation.
-</p>
- <table>
-<tr><td width="25%"><code>DistributionName</code></td><td width="25%"><code>DistributionCode</code></td><td width="25%"><code>NumParameters</code></td><td width="25%"><code>ParameterNames</code></td></tr>
-<tr><td width="25%"><code>ParameterDescription</code></td><td width="25%"><code>ParameterValues</code></td><td width="25%"><code>ParameterValues</code></td><td width="25%"><code>ParameterCI</code></td></tr>
-<tr><td width="25%"><code>ParameterIsFixed</code></td><td width="25%"><code>Truncation</code></td><td width="25%"><code>IsTruncated</code></td><td width="25%"><code>InputData</code></td></tr>
-</table>
-
-<p> A <code>LogisticDistribution</code> object contains the following methods:
- <code>cdf</code>, <code>icdf</code>, <code>iqr</code>, <code>mean</code>, <code>median</code>,
- <code>negloglik</code>, <code>paramci</code>, <code>pdf</code>, <code>plot</code>, <code>proflik</code>,
- <code>random</code>, <code>std</code>, <code>truncate</code>, <code>var</code>.
-</p>
-<p> Further information about the logistic distribution can be found at
- <a href="https://en.wikipedia.org/wiki/Log-normal_distribution">https://en.wikipedia.org/wiki/Log-normal_distribution</a>
-</p>
-<p> OCTAVE/MATLAB use an alternative parameterization given by the pair
- <math>μ, s</math>, i.e. <var>mu</var> and <var>sigma</var>, in analogy with the logistic
- distribution.  Their relation to the <math>α</math> and <math>b</math> parameters used
- in Wikipedia are given below:
-</p>
- <ul>
-<li> <code><var>mu</var> = log (<var>a</var>)</code>
- </li><li> <code><var>sigma</var> = 1 / <var>a</var></code>
- </li></ul>
 
 <p> <strong>See also: </strong>
-  <a href="fitdist.html">fitdist</a>, 
-  <a href="makedist.html">makedist</a>, 
+  <a href="icdf.html">icdf</a>, 
+  <a href="pdf.html">pdf</a>, 
+  <a href="cdf.html">cdf</a>, 
+  <a href="betacdf.html">betacdf</a>, 
+  <a href="binocdf.html">binocdf</a>, 
+  <a href="bisacdf.html">bisacdf</a>, 
+  <a href="burrcdf.html">burrcdf</a>, 
+  <a href="cauchycdf.html">cauchycdf</a>, 
+  <a href="chi2cdf.html">chi2cdf</a>, 
+  <a href="evcdf.html">evcdf</a>, 
+  <a href="expcdf.html">expcdf</a>, 
+  <a href="fcdf.html">fcdf</a>, 
+  <a href="gamcdf.html">gamcdf</a>, 
+  <a href="geocdf.html">geocdf</a>, 
+  <a href="gevcdf.html">gevcdf</a>, 
+  <a href="gpcdf.html">gpcdf</a>, 
+  <a href="gumbelcdf.html">gumbelcdf</a>, 
+  <a href="hncdf.html">hncdf</a>, 
+  <a href="hygecdf.html">hygecdf</a>, 
+  <a href="invgcdf.html">invgcdf</a>, 
+  <a href="laplacecdf.html">laplacecdf</a>, 
   <a href="logicdf.html">logicdf</a>, 
-  <a href="logiinv.html">logiinv</a>, 
-  <a href="logipdf.html">logipdf</a>, 
-  <a href="logirnd.html">logirnd</a>, 
-  <a href="lognfit.html">lognfit</a>, 
-  <a href="logilike.html">logilike</a>, 
-  <a href="logistat.html">logistat</a>
+  <a href="loglcdf.html">loglcdf</a>, 
+  <a href="logncdf.html">logncdf</a>, 
+  <a href="nakacdf.html">nakacdf</a>, 
+  <a href="nbincdf.html">nbincdf</a>, 
+  <a href="ncfcdf.html">ncfcdf</a>, 
+  <a href="nctcdf.html">nctcdf</a>, 
+  <a href="ncx2cdf.html">ncx2cdf</a>, 
+  <a href="normcdf.html">normcdf</a>, 
+  <a href="poisscdf.html">poisscdf</a>, 
+  <a href="raylcdf.html">raylcdf</a>, 
+  <a href="ricecdf.html">ricecdf</a>, 
+  <a href="tcdf.html">tcdf</a>, 
+  <a href="tlscdf.html">tlscdf</a>, 
+  <a href="tricdf.html">tricdf</a>, 
+  <a href="unidcdf.html">unidcdf</a>, 
+  <a href="unifcdf.html">unifcdf</a>, 
+  <a href="vmcdf.html">vmcdf</a>, 
+  <a href="wblcdf.html">wblcdf</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_obj/LogisticDistribution.m">LogisticDistribution</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Method: <b><code>cdf</code></b>
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-<dl>
-<dt><u>LogisticDistribution:</u> <var>p</var> = <b>icdf</b><i> (<var>pd</var>, <var>p</var>)</i></dt>
-</dl>
-
-<p> Compute the cumulative distribution function (CDF).
-</p>
-<div class="ms-5">
-<p> <code><var>p</var> = icdf (<var>pd</var>, <var>x</var>)</code> computes the quantile (the
- inverse of the CDF) of the probability distribution object, <var>pd</var>,
- evaluated at the values in <var>x</var>.
-</p>
-
-</div>
-
-            </div>
-          </div>
-        </div>
-
-
-
-
         <div class="container-xl my-4">
           <div class="card rounded">
             <div class="card-header card-header-mod">
@@ -236,7 +253,6 @@
             </div>
           </div>
         </div>
-
 
         <div class="container-xl my-4">
           <div class="card rounded">

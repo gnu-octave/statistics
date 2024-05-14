@@ -71,77 +71,66 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>m</var> = <b>mean</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> <var>m</var> = <b>mean</b><i> (<var>x</var>, &quot;all&quot;)</i></dt>
-<dt><u>statistics:</u> <var>m</var> = <b>mean</b><i> (<var>x</var>, <var>dim</var>)</i></dt>
-<dt><u>statistics:</u> <var>m</var> = <b>mean</b><i> (<var>x</var>, <var>vecdim</var>)</i></dt>
-<dt><u>statistics:</u> <var>m</var> = <b>mean</b><i> (&hellip;, <var>outtype</var>)</i></dt>
-<dt><u>statistics:</u> <var>m</var> = <b>mean</b><i> (&hellip;, <var>nanflag</var>)</i></dt>
+<dt><u>:</u> <var>m</var> = <b>mean</b><i> (<var>x</var>)</i></dt>
+<dt><u>:</u> <var>m</var> = <b>mean</b><i> (<var>x</var>, <var>dim</var>)</i></dt>
+<dt><u>:</u> <var>m</var> = <b>mean</b><i> (<var>x</var>, <var>vecdim</var>)</i></dt>
+<dt><u>:</u> <var>m</var> = <b>mean</b><i> (<var>x</var>, &quot;all&quot;)</i></dt>
+<dt><u>:</u> <var>m</var> = <b>mean</b><i> (&hellip;, <var>nanflag</var>)</i></dt>
+<dt><u>:</u> <var>m</var> = <b>mean</b><i> (&hellip;, <var>outtype</var>)</i></dt>
 </dl>
-
 <p> Compute the mean of the elements of <var>x</var>.
 </p>
 <div class="ms-5">
- <ul>
-<li>
- If <var>x</var> is a vector, then <code>mean(<var>x</var>)</code> returns the
- mean of the elements in <var>x</var> defined as
+<p> If <var>x</var> is a vector, then <code>mean (<var>x</var>)</code> returns the mean of the
+ elements in <var>x</var> defined as
  $$ {\rm mean}(x) = \bar{x} = {1\over N} \sum_{i=1}^N x_i $$
-   where <math>N</math> is the length of the <var>x</var> vector.
-
- </li><li>
- If <var>x</var> is a matrix, then <code>mean(<var>x</var>)</code> returns a row vector
- with the mean of each columns in <var>x</var>.
-
- </li><li>
- If <var>x</var> is a multidimensional array, then <code>mean(<var>x</var>)</code>
- operates along the first nonsingleton dimension of <var>x</var>.
- </li></ul>
-
-<p> <code>mean (<var>x</var>, <var>dim</var>)</code> returns the mean along the operating
- dimension <var>dim</var> of <var>x</var>.  For <var>dim</var> greater than
- <code>ndims (<var>x</var>)</code>, then <var>m</var> = <var>x</var>.
+</p> 
+<p> If <var>x</var> is an array, then <code>mean(<var>x</var>)</code> computes the mean along
+ the first non-singleton dimension of <var>x</var>.
 </p>
-<p> <code>mean (<var>x</var>, <var>vecdim</var>)</code> returns the mean over the
- dimensions specified in the vector <var>vecdim</var>.  For example, if <var>x</var>
- is a 2-by-3-by-4 array, then <code>mean (<var>x</var>, [1 2])</code> returns a
- 1-by-1-by-4 array.  Each element of the output array is the mean of the
- elements on the corresponding page of <var>x</var>.  If <var>vecdim</var> indexes all
- dimensions of <var>x</var>, then it is equivalent to <code>mean (<var>x</var>, &quot;all&quot;)</code>.
- Any dimension in <var>vecdim</var> greater than <code>ndims (<var>x</var>)</code> is ignored.
+<p> The optional variable <var>dim</var> forces <code>mean</code> to operate over the
+ specified dimension, which must be a positive integer-valued number.
+ Specifying any singleton dimension in <var>x</var>, including any dimension
+ exceeding <code>ndims (<var>x</var>)</code>, will result in a mean equal to <var>x</var>.
 </p>
-<p> <code>mean (<var>x</var>, &quot;all&quot;)</code> returns the mean of all the elements in <var>x</var>.
- The optional flag &quot;all&quot; cannot be used together with <var>dim</var> or
- <var>vecdim</var> input arguments.
+<p> Specifying the dimensions as  <var>vecdim</var>, a vector of non-repeating
+ dimensions, will return the mean over the array slice defined by
+ <var>vecdim</var>.  If <var>vecdim</var> indexes all dimensions of <var>x</var>, then it is
+ equivalent to the option <code>&quot;all&quot;</code>.  Any dimension in <var>vecdim</var>
+ greater than <code>ndims (<var>x</var>)</code> is ignored.
 </p>
-<p> <code>mean (&hellip;, <var>outtype</var>)</code> returns the mean with a specified data
- type, using any of the input arguments in the previous syntaxes.
+<p> Specifying the dimension as <code>&quot;all&quot;</code> will force <code>mean</code> to operate
+ on all elements of <var>x</var>, and is equivalent to <code>mean (<var>x</var>(:))</code>.
+</p>
+<p> The optional input <var>outtype</var> specifies the data type that is returned.
  <var>outtype</var> can take the following values:
- </p><ul>
-<li> &quot;default&quot;
- Output is of type double, unless the input is single in which case the output
- is of type single.
+</p>
+ <dl compact="compact">
+<dt> <code>'default'</code> : Output is of type double, unless the input is</dt>
+</dl>
+<p> single in which case the output is of type single.
+</p>
+ </dd>
+<dt> <code>'double'</code> : Output is of type double.</dt>
+<dt> <code>'native'</code> : Output is of the same type as the input as reported</dt>
+</dl>
+<p> by (<code>class (<var>x</var>)</code>), unless the input is logical in which case the
+ output is of type double.
+ </p></dd>
+</dl>
 
- </li><li> &quot;double&quot;
- Output is of type double.
-
- </li><li> &quot;native&quot;.
- Output is of the same type as the input (<code>class (<var>x</var>)</code>), unless the
- input is logical in which case the output is of type double or a character
- array in which case an error is produced.
- </li></ul>
-
-<p> <code>mean (&hellip;, <var>nanflag</var>)</code> specifies whether to exclude NaN values
- from the calculation, using any of the input argument combinations in
- previous syntaxes.  By default, NaN values are included in the calculation
- (<var>nanflag</var> has the value &quot;includenan&quot;).  To exclude NaN values, set the
- value of <var>nanflag</var> to &quot;omitnan&quot;.
+<p> The optional variable <var>nanflag</var> specifies whether to include or exclude
+ NaN values from the calculation using any of the previously specified input
+ argument combinations.  The default value for <var>nanflag</var> is
+ <code>&quot;includenan&quot;</code> which keeps NaN values in the calculation.  To exclude
+ NaN values set the value of <var>nanflag</var> to <code>&quot;omitnan&quot;</code>.  The output
+ will still contain NaN values if <var>x</var> consists of all NaN values in the
+ operating dimension.
 </p>
 <p> <strong>See also: </strong>
-  <a href="trimmean.html">trimmean</a>, 
   <a href="median.html">median</a>, 
-  <a href="mad.html">mad</a>, 
-mode
+mode, 
+movmean
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/shadow9/mean.m">mean</a>

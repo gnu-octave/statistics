@@ -71,56 +71,62 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>m</var> = <b>mad</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> <var>m</var> = <b>mad</b><i> (<var>x</var>, <var>flag</var>)</i></dt>
-<dt><u>statistics:</u> <var>m</var> = <b>mad</b><i> (<var>x</var>, <var>flag</var>, <code>&quot;all&quot;</code>)</i></dt>
-<dt><u>statistics:</u> <var>m</var> = <b>mad</b><i> (<var>x</var>, <var>flag</var>, <var>dim</var>)</i></dt>
-<dt><u>statistics:</u> <var>m</var> = <b>mad</b><i> (<var>x</var>, <var>flag</var>, <var>vecdim</var>)</i></dt>
+<dt><u>:</u> <var>m</var> = <b>mad</b><i> (<var>x</var>)</i></dt>
+<dt><u>:</u> <var>m</var> = <b>mad</b><i> (<var>x</var>, <var>opt</var>)</i></dt>
+<dt><u>:</u> <var>m</var> = <b>mad</b><i> (<var>x</var>, <var>opt</var>, <var>dim</var>)</i></dt>
+<dt><u>:</u> <var>m</var> = <b>mad</b><i> (<var>x</var>, <var>opt</var>, <var>vecdim</var>)</i></dt>
+<dt><u>:</u> <var>m</var> = <b>mad</b><i> (<var>x</var>, <var>opt</var>, &quot;all&quot;)</i></dt>
 </dl>
-
-<p> Compute the mean or median absolute deviation (MAD).
+<p> Compute the mean or median absolute deviation (MAD) of the elements of
+ <var>x</var>.
 </p>
 <div class="ms-5">
-<p> <code>mad (<var>x</var>)</code> returns the mean absolute deviation of the values in
- <var>x</var>.  <code>mad</code> treats NaNs as missing values and removes them.
+<p> The mean absolute deviation is defined as
 </p>
- <ul>
-<li>
- If <var>x</var> is a vector, then <code>mad</code> returns the mean or median absolute
- deviation of the values in <var>X</var>.
- </li><li>
- If <var>x</var> is a matrix, then <code>mad</code> returns the mean or median absolute
- deviation of each column of <var>X</var>.
- </li><li>
- If <var>x</var> is an multidimensional array, then <code>mad (<var>x</var>)</code> operates
- along the first non-singleton dimension of <var>x</var>.
- </li></ul>
+ <table><tr><td>&nbsp;</td><td><pre class="example"> <var>mad</var> = mean (abs (<var>x</var> - mean (<var>x</var>)))
+ </pre></td></tr></table>
 
-<p> <code>mad (<var>x</var>, <var>flag</var>)</code> specifies whether to compute the mean
- absolute deviation (<code>flag = 0</code>, the default) or the median absolute
- deviation (<code>flag = 1</code>). Passing an empty variable, defaults to 0.
+<p> The median absolute deviation is defined as
 </p>
-<p> <code>mad (<var>x</var>, <var>flag</var>, <code>&quot;all&quot;</code>)</code> returns the MAD of all the
- elements in <var>x</var>.
+ <table><tr><td>&nbsp;</td><td><pre class="example"> <var>mad</var> = median (abs (<var>x</var> - median (<var>x</var>)))
+ </pre></td></tr></table>
+
+<p> If <var>x</var> is a vector, compute <code>mad</code> for each element in <var>x</var>.  If
+ <var>x</var> is an array the calculation is performed over the first
+ non-singleton dimension.
 </p>
-<p> The optional variable <var>dim</var> forces <code>mad</code> to operate over the
- specified dimension, which must be a positive integer-valued number.
- Specifying any singleton dimension in <var>x</var>, including any dimension
- exceeding <code>ndims (<var>x</var>)</code>, will result in a MAD equal to
- <code>zeros (size (<var>x</var>))</code>, while non-finite elements are returned as NaNs.
+<p> <code>mad</code> excludes NaN values from calculation similar to using the
+ <code>omitnan</code> option in <code>var</code>, <code>mean</code>, and <code>median</code>.
 </p>
-<p> <code>mad (<var>x</var>, <var>flag</var>, <var>vecdim</var>)</code> returns the MAD over the
- dimensions specified in the vector <var>vecdim</var>.  For example, if <var>x</var>
- is a 2-by-3-by-4 array, then <code>mad (<var>x</var>, [1 2])</code> returns a
- 1-by-1-by-4 array.  Each element of the output array is the median of the
- elements on the corresponding page of <var>x</var>.  If <var>vecdim</var> indexes all
- dimensions of <var>x</var>, then it is equivalent to <code>mad (<var>x</var>, &quot;all&quot;)</code>.
- Any dimension in <var>vecdim</var> greater than <code>ndims (<var>x</var>)</code> is ignored.
+<p> The optional argument <var>opt</var> determines whether mean or median absolute
+ deviation is calculated.  The default is 0 which corresponds to mean
+ absolute deviation; a value of 1 corresponds to median absolute deviation.
+ Passing an empty input [] defaults to mean absolute deviation
+ (<var>opt</var> = 0).
 </p>
-<p> <strong>See also: </strong>
-  <a href="median.html">median</a>, 
+<p> The optional argument <var>dim</var> forces <code>mad</code> to operate along the
+ specified dimension.  Specifying any singleton dimension in <var>x</var>,
+ including any dimension exceeding <code>ndims (<var>x</var>)</code>, will result in
+ an output of 0.
+</p>
+<p> Specifying the dimension as <var>vecdim</var>, a vector of non-repeating
+ dimensions, will return the <code>mad</code> over the array slice defined by
+ <var>vecdim</var>.  If <var>vecdim</var> indexes all dimensions of <var>x</var>, then it is
+ equivalent to the option <code>&quot;all&quot;</code>.  Any dimension included in
+ <var>vecdim</var> greater than <code>ndims (<var>x</var>)</code> is ignored.
+</p>
+<p> Specifying the dimension as <code>&quot;all&quot;</code> will force <code>mad</code> to operate
+ on all elements of <var>x</var>, and is equivalent to <code>mad (<var>x</var>(:))</code>.
+</p>
+<p> As a measure of dispersion, <code>mad</code> is less affected by outliers than
+ <code>std</code>.
+ <strong>See also: </strong>
+bounds, 
+range, 
+iqr, 
+  <a href="std.html">std</a>, 
   <a href="mean.html">mean</a>, 
-mode
+  <a href="median.html">median</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/shadow9/mad.m">mad</a>

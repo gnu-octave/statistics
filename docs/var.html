@@ -71,78 +71,93 @@
         </div>
         <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>v</var> = <b>var</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> <var>v</var> = <b>var</b><i> (<var>x</var>, <var>w</var>)</i></dt>
-<dt><u>statistics:</u> <var>v</var> = <b>var</b><i> (<var>x</var>, <var>w</var>, &quot;all&quot;)</i></dt>
-<dt><u>statistics:</u> <var>v</var> = <b>var</b><i> (<var>x</var>, <var>w</var>, <var>dim</var>)</i></dt>
-<dt><u>statistics:</u> <var>v</var> = <b>var</b><i> (<var>x</var>, <var>w</var>, <var>vecdim</var>)</i></dt>
-<dt><u>statistics:</u> <var>v</var> = <b>var</b><i> (&hellip;, <var>nanflag</var>)</i></dt>
-<dt><u>statistics:</u> [<var>v</var>, <var>m</var>] = <b>var</b><i> (&hellip;)</i></dt>
+<dt><u>:</u> <var>v</var> = <b>var</b><i> (<var>x</var>)</i></dt>
+<dt><u>:</u> <var>v</var> = <b>var</b><i> (<var>x</var>, <var>w</var>)</i></dt>
+<dt><u>:</u> <var>v</var> = <b>var</b><i> (<var>x</var>, <var>w</var>, <var>dim</var>)</i></dt>
+<dt><u>:</u> <var>v</var> = <b>var</b><i> (<var>x</var>, <var>w</var>, <var>vecdim</var>)</i></dt>
+<dt><u>:</u> <var>v</var> = <b>var</b><i> (<var>x</var>, <var>w</var>, <code>&quot;all&quot;</code>)</i></dt>
+<dt><u>:</u> <var>v</var> = <b>var</b><i> (&hellip;, <var>nanflag</var>)</i></dt>
+<dt><u>:</u> [<var>v</var>, <var>m</var>] = <b>var</b><i> (&hellip;)</i></dt>
 </dl>
-
-<p> Compute the variance of the elements of <var>x</var>.
+<p> Compute the variance of the elements of the vector <var>x</var>.
 </p>
 <div class="ms-5">
- <ul>
-<li>
- If <var>x</var> is a vector, then <code>var(<var>x</var>)</code> returns the variance of the
- elements in <var>x</var> defined as
- $$ {\rm var}(x) = {1\over N-1} \sum_{i=1}^N |x_i - \bar x |^2 $$
-   where <math>N</math> is the length of the <var>x</var> vector.
+<p> The variance is defined as
+ $$ {\rm var}(x) = {1\over N-1} \sum_{i=1}^N (x_i - \bar x )^2 $$
+</p> 
+<p> If <var>x</var> is an array, compute the variance along the first non-singleton
+ dimensions of <var>x</var>.
+</p>
+<p> The optional argument <var>w</var> determines the weighting scheme to use.  Valid
+ values are:
+</p>
+ <dl compact="compact">
+<dt> 0 [default]:</dt>
+</dl>
+<p> Normalize with <math>N-1</math> (population variance).  This provides the square
+ root of the best unbiased estimator of the variance.
+</p>
+ </dd>
+<dt> 1:</dt>
+</dl>
+<p> Normalize with <math>N</math> (sample variance).  This provides the square root of
+ the second moment around the mean.
+</p>
+ </dd>
+<dt> a vector:</dt>
+</dl>
+<p> Compute the weighted variance with non-negative weights.  The length of
+ <var>w</var> must equal the size of <var>x</var> in the operating dimension.  NaN
+ values are permitted in <var>w</var>, will be multiplied with the associated
+ values in <var>x</var>, and can be excluded by the <var>nanflag</var> option.
+</p>
+ </dd>
+<dt> an array:</dt>
+</dl>
+<p> Similar to vector weights, but <var>w</var> must be the same size as <var>x</var>.  If
+ the operating dimension is supplied as <var>vecdim</var> or <code>&quot;all&quot;</code> and
+ <var>w</var> is not a scalar, <var>w</var> must be an same-sized array.
+ </p></dd>
+</dl>
 
- </li><li>
- If <var>x</var> is a matrix, then <code>var (<var>x</var>)</code> returns a row vector with
- the variance of each column in <var>x</var>.
-
- </li><li>
- If <var>x</var> is a multi-dimensional array, then <code>var (<var>x</var>)</code> operates
- along the first non-singleton dimension of <var>x</var>.
- </li></ul>
-
-<p> <code>var (<var>x</var>, <var>w</var>)</code> specifies a weighting scheme.  When <var>w</var> = 0
- (default), the variance is normalized by N-1 (population variance) where N is
- the number of observations.  When <var>w</var> = 1, the variance is normalized by
- the number of observations (sample variance).  To use the default value you
- may pass an empty input argument [] before entering other options.
+<p> Note: <var>w</var> must always be specified before specifying any of the
+ following dimension options.  To use the default value for <var>w</var> you
+ may pass an empty input argument [].
 </p>
-<p> <var>w</var> can also be an array of non-negative numbers.  When <var>w</var> is a
- vector, it must have the same length as the number of elements in the
- operating dimension of <var>x</var>.  If <var>w</var> is a matrix or n-D array, or the
- operating dimension is supplied as a <var>vecdim</var> or &quot;all&quot;, <var>w</var> must be
- the same size as <var>x</var>.  NaN values are permitted in <var>w</var>, will be
- multiplied with the associated values in <var>x</var>, and can be excluded by the
- <var>nanflag</var> option.
+<p> The optional variable <var>dim</var> forces <code>var</code> to operate over the
+ specified dimension, which must be a positive integer-valued number.
+ Specifying any singleton dimension in <var>x</var>, including any dimension
+ exceeding <code>ndims (<var>x</var>)</code>, will result in a variance of 0.
 </p>
-<p> <code>var (<var>x</var>, [], <var>dim</var>)</code> returns the variance along the operating
- dimension <var>dim</var> of <var>x</var>.  For <var>dim</var> greater than
- <code>ndims (<var>x</var>)</code> <var>v</var> is returned as zeros of the same size as
- <var>x</var> and <var>m</var> = <var>x</var>.
+<p> Specifying the dimensions as  <var>vecdim</var>, a vector of non-repeating
+ dimensions, will return the variance calculated over the array slice defined
+ by <var>vecdim</var>.  If <var>vecdim</var> indexes all dimensions of <var>x</var>, then it
+ is equivalent to the option <code>&quot;all&quot;</code>.  Any dimension in <var>vecdim</var>
+ greater than <code>ndims (<var>x</var>)</code> is ignored.
 </p>
-<p> <code>var (<var>x</var>, [], <var>vecdim</var>)</code> returns the variance over the
- dimensions specified in the vector <var>vecdim</var>.  For example, if <var>x</var>
- is a 2-by-3-by-4 array, then <code>var (<var>x</var>, [1 2])</code> returns a
- 1-by-1-by-4 array.  Each element of the output array is the variance of the
- elements on the corresponding page of <var>x</var>.  If <var>vecdim</var> indexes all
- dimensions of <var>x</var>, then it is equivalent to <code>var (<var>x</var>, &quot;all&quot;)</code>.
- Any dimension in <var>vecdim</var> greater than <code>ndims (<var>x</var>)</code> is ignored.
+<p> Specifying the dimension as <code>&quot;all&quot;</code> will force <code>var</code> to
+ operate on all elements of <var>x</var>, and is equivalent to <code>var
+ (<var>x</var>(:))</code>.
 </p>
-<p> <code>var (<var>x</var>, &quot;all&quot;)</code> returns the variance of all the elements in
- <var>x</var>.  The optional flag &quot;all&quot; cannot be used together with <var>dim</var> or
- <var>vecdim</var> input arguments.
+<p> The optional variable <var>nanflag</var> specifies whether to include or exclude
+ NaN values from the calculation using any of the previously specified input
+ argument combinations.  The default value for <var>nanflag</var> is
+ <code>&quot;includenan&quot;</code> which keeps NaN values in the calculation.  To
+ exclude NaN values set the value of <var>nanflag</var> to <code>&quot;omitnan&quot;</code>.
+ The output will still contain NaN values if <var>x</var> consists of all NaN
+ values in the operating dimension.
 </p>
-<p> <code>var (&hellip;, <var>nanflag</var>)</code> specifies whether to exclude NaN values
- from the calculation using any of the input argument combinations in previous
- syntaxes.  The default value for <var>nanflag</var> is &quot;includenan&quot;, and keeps NaN
- values in the calculation. To exclude NaN values, set the value of
- <var>nanflag</var> to &quot;omitnan&quot;.
-</p>
-<p> <code>[<var>v</var>, <var>m</var>] = var (&hellip;)</code> also returns the mean of the
+<p> The optional second output variable <var>m</var> contains the mean of the
  elements of <var>x</var> used to calculate the variance.  If <var>v</var> is the
- weighted variance, then <var>m</var> is the weighted mean.
+ weighted variance, then <var>m</var> is also the weighted mean.
 </p>
 <p> <strong>See also: </strong>
   <a href="std.html">std</a>, 
-  <a href="mean.html">mean</a>
+  <a href="mean.html">mean</a>, 
+cov, 
+skewness, 
+kurtosis, 
+moment
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/shadow9/var.m">var</a>

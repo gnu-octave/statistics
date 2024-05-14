@@ -116,7 +116,7 @@
  <code>&quot;By&quot;</code>, <var>groupvar</var>)</code> creates probability distribution objects by
  fitting the distribution specified by <var>distname</var> to the data in <var>x</var>
  based on the grouping variable <var>groupvar</var>. It returns a cell array of
- fitted probability distribution objec<var>pdca</var>pdca, a cell array of group
+ fitted probability distribution object, <var>pdca</var>, a cell array of group
  labels, <var>gn</var>, and a cell array of grouping variable levels, <var>gl</var>.
 </p>
 <p> <code>[<var>pdca</var>, <var>gn</var>, <var>gl</var>] = fitdist (<var>x</var>, <var>distname</var>,
@@ -124,8 +124,11 @@
  output arguments using additional options specified by one or more
  <code>Name-Value</code> pair arguments mentioned above.
 </p>
+<p> Note: calling <code>fitdist</code> without any input arguments will return a cell
+ array of character vectors listing all supported distributions.
+</p>
 <p> <strong>See also: </strong>
-  <a href="fitdist.html">fitdist</a>
+  <a href="makedist.html">makedist</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_wrap/fitdist.m">fitdist</a>

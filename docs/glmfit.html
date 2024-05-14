@@ -72,44 +72,122 @@
         <div class="card-body">
 <dl>
 <dt><u>statistics:</u> <var>b</var> = <b>glmfit</b><i> (<var>X</var>, <var>y</var>, <var>distribution</var>)</i></dt>
-<dt><u>statistics:</u> <var>b</var> = <b>glmfit</b><i> (<var>X</var>, <var>y</var>, <var>distribution</var>, <var>Name</var>, <var>Value</var>)</i></dt>
+<dt><u>statistics:</u> <var>b</var> = <b>glmfit</b><i> (<var>X</var>, <var>y</var>, <var>distribution</var>,<var>Name</var>, <var>Value</var>)</i></dt>
+<dt><u>statistics:</u> [<var>b</var>, <var>dev</var>] = <b>glmfit</b><i> (&hellip;)</i></dt>
 </dl>
 
 <p> Perform generalized linear model fitting.
 </p>
 <div class="ms-5">
-<p> This function fits a generalized linear model (GLM) to the given data using
- the specified link function and distribution of the response variable. The
- model is fitted using Iteratively Reweighted Least Squares (IRLS).
+<p> <code><var>b</var> = glmfit (<var>X</var>, <var>y</var>, <var>distribution</var>)</code> returns a
+ coefficient estimates vector, <var>b</var> for a
+ generalized linear regression model of responses in <var>y</var> and
+ predictors in <var>X</var>, using the <var>distribution</var>.
 </p>
  <ul>
-<li> <var>X</var> is an <math>n&times;p</math> matrix of predictor variables with
+<li> <var>X</var> is an <math>n&times;p</math> numeric matrix of predictor variables with
  <math>n</math> observations and <math>p</math> predictors.
- </li><li> <var>y</var> is an <math>n&times;1</math> vector of response variables.
+ </li><li> <var>y</var> is a <math>n&times; 1</math> numeric vector of responses for all supported
+ distributions, except for the &rsquo;binomial&rsquo; distribution which can also have
+ <var>y</var> as a <math>n&times; 2</math> matrix, where the first column contains the number
+ of successes and the second column contains the number of trials.
  </li><li> <var>distribution</var> specifies the distribution of the response variable
  (e.g., &rsquo;poisson&rsquo;).
  </li></ul>
 
-<p> <code><var>b</var> = glmfit (<var>X</var>, <var>y</var>, <var>distribution</var>, <var>Name</var>,
- <var>Value</var>)</code> specifies additional options using <code>Name-Value</code> pair
- arguments.
- </p><table>
-<thead><tr><th width="18%"></th><th width="2%"><var>Name</var></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>&quot;link&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying a lin
+<p> <code><var>b</var> = glmfit (&hellip;, <var>Name</var>, <var>Value</var>)</code>
+ specifies additional options using <code>Name-Value</code> pair arguments.
+</p>
+ <table>
+<thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
+<tr><td width="18%"><code>&quot;link&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying a link
  function.</td></tr>
+<tr><td width="18%"><code>&quot;constant&quot;</code></td><td width="2%"></td><td width="80%">Specifies whether to
+ include a constant term in the model. Options are
+ <var>&quot;on&quot;</var> (default) or <var>&quot;off&quot;</var>.</td></tr>
 </table>
 
-<p> The function returns <var>b</var>, the estimated coefficients of the GLM,
- including the intercept term as the first element of <var>b</var>.
+<p> <code>[<var>b</var>, <var>dev</var>] = glmfit (&hellip;)</code>
+ returns the estimated coefficient vector, <var>b</var>, as well as
+ the deviance, <var>dev</var>, of the fit.
 </p>
-<p> Currently, the function supports only the &rsquo;poisson&rsquo; distribution
- and &rsquo;log&rsquo; link function. Further expansion is required to support
- additional distributions and link functions.
-</p>
-
+<p> Supported distributions include &rsquo;poisson&rsquo;, &rsquo;binomial&rsquo;, and &rsquo;normal&rsquo;.
+ Supported link functions include &rsquo;identity&rsquo;, &rsquo;log&rsquo;, &rsquo;logit&rsquo;, &rsquo;probit&rsquo;,
+ &rsquo;loglog&rsquo;, &rsquo;comploglog&rsquo;, &rsquo;reciprocal&rsquo; and a custom link.
+ Custom link function provided as a structure with three fields:
+ Link Function, Derivative Function, Inverse Function.
+ </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/glmfit.m">glmfit</a>
 </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ rand ("seed", 1);
+ X = rand (100, 1);
+ b_true = [0.5; -1.2];
+ mu = exp (b_true(1) + b_true(2) * X);
+ randp ("seed", 1);
+ y = poissrnd (mu);
+ ## Fit a GLM model using the poisson distribution
+ [b,dev] = glmfit (X, y, 'poisson');
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ x = [2100 2300 2500 2700 2900 3100 3300 3500 3700 3900 4100 4300]';
+ n = [48 42 31 34 31 21 23 23 21 16 17 21]';
+ y = [1 2 0 3 8 8 14 17 19 15 17 21]';
+ [b,dev] = glmfit (x,[y n],'binomial','Link','probit');
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
         </div>
