@@ -497,5 +497,7 @@
  Improvements:
  =============
 
- ** fillmissing:  combining `movmedian` method and `missinglocation` option
-                  no longer ignores non-NaN values.
+ ** fillmissing: combining `movmedian` method and `missinglocation` option
+                 no longer ignores non-NaN values.
+
+ ** histfit: updated support for other distributions, fixed MATLAB compatibility
