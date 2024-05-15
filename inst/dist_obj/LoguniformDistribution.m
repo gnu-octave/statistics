@@ -19,12 +19,12 @@ classdef LoguniformDistribution
   ## -*- texinfo -*-
   ## @deftypefn {statistics} LoguniformDistribution
   ##
-  ## Loguniform probability distribution object.
+  ## Log-uniform probability distribution object.
   ##
   ## A @code{LoguniformDistribution} object consists of parameters, a model
-  ## description, and sample data for a loguniform probability distribution.
+  ## description, and sample data for a log-uniform probability distribution.
   ##
-  ## The loguniform distribution uses the following parameters.
+  ## The log-uniform distribution uses the following parameters.
   ##
   ## @multitable @columnfractions 0.25 0.48 0.27
   ## @headitem @var{Parameter} @tab @var{Description} @tab @var{Support}
@@ -39,7 +39,7 @@ classdef LoguniformDistribution
   ## @item Create a distribution with specified parameter values using the
   ## @code{makedist} function.
   ## @item Use the constructor @qcode{LoguniformDistribution (@var{Lower})}
-  ## to create a loguniform distribution with specified parameter values.
+  ## to create a log-uniform distribution with specified parameter values.
   ## @end itemize
   ##
   ## It is highly recommended to use the @code{makedist} function to create
@@ -60,7 +60,7 @@ classdef LoguniformDistribution
   ## @code{pdf}, @code{plot}, @code{random}, @code{std}, @code{truncate},
   ## @code{var}.
   ##
-  ## Further information about the loguniform distribution can be found at
+  ## Further information about the log-uniform distribution can be found at
   ## @url{https://en.wikipedia.org/wiki/Reciprocal_distribution}
   ##
   ## @seealso{fitdist, makedist}

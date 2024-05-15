@@ -426,7 +426,7 @@ classdef NegativeBinomialDistribution
       if (! isscalar (this))
         error ("plot: requires a scalar probability distribution.");
       endif
-      h = __plot__ (this, false, varargin{:});
+      h = __plot__ (this, true, varargin{:});
       if (nargout > 0)
         varargout{1} = h;
       endif

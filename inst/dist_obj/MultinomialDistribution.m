@@ -367,7 +367,7 @@ classdef MultinomialDistribution
       if (! isscalar (this))
         error ("plot: requires a scalar probability distribution.");
       endif
-      h = __plot__ (this, false, varargin{:});
+      h = __plot__ (this, true, varargin{:});
       if (nargout > 0)
         varargout{1} = h;
       endif
@@ -500,8 +500,9 @@ endclassdef
 function checkparams (Probabilities)
   if (! (isvector (Probabilities) && isnumeric (Probabilities) &&
          isreal (Probabilities) && isfinite (Probabilities) &&
-         sum (Probabilities) == 1))
-    error ("MultinomialDistribution: PROBABILITIES must be a positive real scalar.")
+         sum (Probabilities) - 1 < eps * 100))
+    error (["MultinomialDistribution: PROBABILITIES must be a vector", ...
+            " of positive real scalars that sum up to 1."])
   endif
 endfunction
 

@@ -67,7 +67,7 @@ classdef LogisticDistribution
   ## @code{random}, @code{std}, @code{truncate}, @code{var}.
   ##
   ## Further information about the logistic distribution can be found at
-  ## @url{https://en.wikipedia.org/wiki/Log-normal_distribution}
+  ## @url{https://en.wikipedia.org/wiki/Logistic_distribution}
   ##
   ## OCTAVE/MATLAB use an alternative parameterization given by the pair
   ## @math{μ, s}, i.e. @var{mu} and @var{sigma}, in analogy with the logistic
