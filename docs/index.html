@@ -10,6 +10,18 @@
     <script type="text/javascript" async
       src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
     </script>
+    <script type="text/javascript">
+      window.addEventListener("load", () => {
+        for (let i of document.querySelectorAll(".collapse ul")) {
+          let tog = document.createElement("div");
+          tog.innerHTML = i.previousSibling.textContent;
+          tog.className = "toggle";
+          tog.onclick = () => tog.classList.toggle("show");
+          i.parentElement.removeChild(i.previousSibling);
+          i.parentElement.insertBefore(tog, i);
+        }
+      });
+    </script>
     <style>
     var {
       font-style: italics;
@@ -17,6 +29,18 @@
     }
     td {
       vertical-align: top;
+    }
+    [id^="togList"],                        /* HIDE CHECKBOX */
+    [id^="togList"] ~ .list,                /* HIDE LIST */
+    [id^="togList"] + label  span + span,   /* HIDE "Collapse" */
+    [id^="togList"]:checked + label span{   /* HIDE "Expand" (IF CHECKED) */
+      display:none;
+    }
+    [id^="togList"]:checked + label span + span{
+      display:inline-block;                 /* SHOW "Collapse" (IF CHECKED) */
+    }
+    [id^="togList"]:checked ~ .list{
+      display:block;                        /* SHOW LIST (IF CHECKED) */
     }
     </style>
   </head>
@@ -74,7 +98,7 @@
              <option value="#Clustering">Clustering</option>
              <option value="#Classification Classes">Classification Classes</option>
              <option value="#Clustering Classes">Clustering Classes</option>
-             <option value="#CVpartition (legacy class of set partitions for cross-validation, used in crossval)">CVpartition (legacy class of set partitions for cross-validation, used in crossval)</option>
+             <option value="#CVpartition">CVpartition</option>
              <option value="#Regression Classes">Regression Classes</option>
              <option value="#Data Manipulation">Data Manipulation</option>
              <option value="#Descriptive Statistics">Descriptive Statistics</option>
@@ -345,7 +369,7 @@ classification model.</td>
              </tbody>
            </table>
            <h3 class="category">
-             <a name="CVpartition (legacy class of set partitions for cross-validation, used in crossval)">CVpartition (legacy class of set partitions for cross-validation, used in crossval)</a>
+             <a name="CVpartition">CVpartition</a>
            </h3>
            <table class="table table-striped">
              <tbody>

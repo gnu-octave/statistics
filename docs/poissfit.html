@@ -10,6 +10,18 @@
     <script type="text/javascript" async
       src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
     </script>
+    <script type="text/javascript">
+      window.addEventListener("load", () => {
+        for (let i of document.querySelectorAll(".collapse ul")) {
+          let tog = document.createElement("div");
+          tog.innerHTML = i.previousSibling.textContent;
+          tog.className = "toggle";
+          tog.onclick = () => tog.classList.toggle("show");
+          i.parentElement.removeChild(i.previousSibling);
+          i.parentElement.insertBefore(tog, i);
+        }
+      });
+    </script>
     <style>
     var {
       font-style: italics;
@@ -17,6 +29,18 @@
     }
     td {
       vertical-align: top;
+    }
+    [id^="togList"],                        /* HIDE CHECKBOX */
+    [id^="togList"] ~ .list,                /* HIDE LIST */
+    [id^="togList"] + label  span + span,   /* HIDE "Collapse" */
+    [id^="togList"]:checked + label span{   /* HIDE "Expand" (IF CHECKED) */
+      display:none;
+    }
+    [id^="togList"]:checked + label span + span{
+      display:inline-block;                 /* SHOW "Collapse" (IF CHECKED) */
+    }
+    [id^="togList"]:checked ~ .list{
+      display:block;                        /* SHOW LIST (IF CHECKED) */
     }
     </style>
   </head>
@@ -59,17 +83,679 @@
       </div>
     </div>
     <div class="container-xl my-4">
-      <div class="card rounded">
-        <div class="card-header card-header-mod">
-          <div class="row d-flex flex-wrap align-items-center">
-            <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-              <h3 class="d-inline-block mr-2">
-              Function&nbsp;Reference: <b><code>poissfit</code></b>
-              </h3>
-            </div>
+      <div class="row flex-nowrap" style="min-height:0">
+        <div class="col-md-2 bg-light" style="overflow-y: scroll; width: 250px;">
+          <div class="p-2" style="text-align: center;">
+            <h3>Function List</h3>
           </div>
-        </div>
-        <div class="card-body">
+			<div class="row">
+				<input id="togList1" type="checkbox">
+				<label for="togList1">
+					<span><h5>CVpartition</h5></span>
+					<span><h5>CVpartition</h5></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="@cvpartition_cvpartition.html" class="text-decoration-none">@cvpartition/cvpartition</a></li>
+					<li><a href="@cvpartition_display.html" class="text-decoration-none">@cvpartition/display</a></li>
+					<li><a href="@cvpartition_get.html" class="text-decoration-none">@cvpartition/get</a></li>
+					<li><a href="@cvpartition_repartition.html" class="text-decoration-none">@cvpartition/repartition</a></li>
+					<li><a href="@cvpartition_set.html" class="text-decoration-none">@cvpartition/set</a></li>
+					<li><a href="@cvpartition_test.html" class="text-decoration-none">@cvpartition/test</a></li>
+					<li><a href="@cvpartition_training.html" class="text-decoration-none">@cvpartition/training</a></li>
+				</ul>
+			</div>
+			</div>
+			<div class="row">
+				<input id="togList2" type="checkbox">
+				<label for="togList2">
+					<span><h5>Classification Classes</h5></span>
+					<span><h5>Classification Classes</h5></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="ClassificationKNN.html" class="text-decoration-none">ClassificationKNN</a></li>
+					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none">ConfusionMatrixChart</a></li>
+				</ul>
+			</div>
+			</div>
+			<div class="row">
+				<input id="togList3" type="checkbox">
+				<label for="togList3">
+					<span><h5>Clustering</h5></span>
+					<span><h5>Clustering</h5></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="cluster.html" class="text-decoration-none">cluster</a></li>
+					<li><a href="clusterdata.html" class="text-decoration-none">clusterdata</a></li>
+					<li><a href="cmdscale.html" class="text-decoration-none">cmdscale</a></li>
+					<li><a href="confusionmat.html" class="text-decoration-none">confusionmat</a></li>
+					<li><a href="cophenet.html" class="text-decoration-none">cophenet</a></li>
+					<li><a href="crossval.html" class="text-decoration-none">crossval</a></li>
+					<li><a href="editDistance.html" class="text-decoration-none">editDistance</a></li>
+					<li><a href="evalclusters.html" class="text-decoration-none">evalclusters</a></li>
+					<li><a href="inconsistent.html" class="text-decoration-none">inconsistent</a></li>
+					<li><a href="kmeans.html" class="text-decoration-none">kmeans</a></li>
+					<li><a href="knnsearch.html" class="text-decoration-none">knnsearch</a></li>
+					<li><a href="linkage.html" class="text-decoration-none">linkage</a></li>
+					<li><a href="mahal.html" class="text-decoration-none">mahal</a></li>
+					<li><a href="mhsample.html" class="text-decoration-none">mhsample</a></li>
+					<li><a href="optimalleaforder.html" class="text-decoration-none">optimalleaforder</a></li>
+					<li><a href="pdist.html" class="text-decoration-none">pdist</a></li>
+					<li><a href="pdist2.html" class="text-decoration-none">pdist2</a></li>
+					<li><a href="procrustes.html" class="text-decoration-none">procrustes</a></li>
+					<li><a href="rangesearch.html" class="text-decoration-none">rangesearch</a></li>
+					<li><a href="slicesample.html" class="text-decoration-none">slicesample</a></li>
+					<li><a href="squareform.html" class="text-decoration-none">squareform</a></li>
+				</ul>
+			</div>
+			</div>
+			<div class="row">
+				<input id="togList4" type="checkbox">
+				<label for="togList4">
+					<span><h5>Clustering Classes</h5></span>
+					<span><h5>Clustering Classes</h5></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="CalinskiHarabaszEvaluation.html" class="text-decoration-none">CalinskiHarabaszEvaluation</a></li>
+					<li><a href="ClusterCriterion.html" class="text-decoration-none">ClusterCriterion</a></li>
+					<li><a href="DaviesBouldinEvaluation.html" class="text-decoration-none">DaviesBouldinEvaluation</a></li>
+					<li><a href="GapEvaluation.html" class="text-decoration-none">GapEvaluation</a></li>
+					<li><a href="SilhouetteEvaluation.html" class="text-decoration-none">SilhouetteEvaluation</a></li>
+				</ul>
+			</div>
+			</div>
+			<div class="row">
+				<input id="togList5" type="checkbox">
+				<label for="togList5">
+					<span><h5>Data Manipulation</h5></span>
+					<span><h5>Data Manipulation</h5></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="combnk.html" class="text-decoration-none">combnk</a></li>
+					<li><a href="crosstab.html" class="text-decoration-none">crosstab</a></li>
+					<li><a href="datasample.html" class="text-decoration-none">datasample</a></li>
+					<li><a href="fillmissing.html" class="text-decoration-none">fillmissing</a></li>
+					<li><a href="grp2idx.html" class="text-decoration-none">grp2idx</a></li>
+					<li><a href="ismissing.html" class="text-decoration-none">ismissing</a></li>
+					<li><a href="isoutlier.html" class="text-decoration-none">isoutlier</a></li>
+					<li><a href="normalise_distribution.html" class="text-decoration-none">normalise_distribution</a></li>
+					<li><a href="rmmissing.html" class="text-decoration-none">rmmissing</a></li>
+					<li><a href="standardizeMissing.html" class="text-decoration-none">standardizeMissing</a></li>
+					<li><a href="tabulate.html" class="text-decoration-none">tabulate</a></li>
+				</ul>
+			</div>
+			</div>
+			<div class="row">
+				<input id="togList6" type="checkbox">
+				<label for="togList6">
+					<span><h5>Descriptive Statistics</h5></span>
+					<span><h5>Descriptive Statistics</h5></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="cdfcalc.html" class="text-decoration-none">cdfcalc</a></li>
+					<li><a href="cl_multinom.html" class="text-decoration-none">cl_multinom</a></li>
+					<li><a href="geomean.html" class="text-decoration-none">geomean</a></li>
+					<li><a href="grpstats.html" class="text-decoration-none">grpstats</a></li>
+					<li><a href="harmmean.html" class="text-decoration-none">harmmean</a></li>
+					<li><a href="jackknife.html" class="text-decoration-none">jackknife</a></li>
+					<li><a href="mad.html" class="text-decoration-none">mad</a></li>
+					<li><a href="mean.html" class="text-decoration-none">mean</a></li>
+					<li><a href="median.html" class="text-decoration-none">median</a></li>
+					<li><a href="nanmax.html" class="text-decoration-none">nanmax</a></li>
+					<li><a href="nanmin.html" class="text-decoration-none">nanmin</a></li>
+					<li><a href="nansum.html" class="text-decoration-none">nansum</a></li>
+					<li><a href="std.html" class="text-decoration-none">std</a></li>
+					<li><a href="trimmean.html" class="text-decoration-none">trimmean</a></li>
+					<li><a href="var.html" class="text-decoration-none">var</a></li>
+				</ul>
+			</div>
+			</div>
+			<div class="row">
+				<input id="togList7" type="checkbox">
+				<label for="togList7">
+					<span><h5>Distribution Classes</h5></span>
+					<span><h5>Distribution Classes</h5></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="BetaDistribution.html" class="text-decoration-none">BetaDistribution</a></li>
+					<li><a href="BinomialDistribution.html" class="text-decoration-none">BinomialDistribution</a></li>
+					<li><a href="BirnbaumSaundersDistribution.html" class="text-decoration-none">BirnbaumSaundersDistribution</a></li>
+					<li><a href="BurrDistribution.html" class="text-decoration-none">BurrDistribution</a></li>
+					<li><a href="ExponentialDistribution.html" class="text-decoration-none">ExponentialDistribution</a></li>
+					<li><a href="ExtremeValueDistribution.html" class="text-decoration-none">ExtremeValueDistribution</a></li>
+					<li><a href="GammaDistribution.html" class="text-decoration-none">GammaDistribution</a></li>
+					<li><a href="GeneralizedExtremeValueDistribution.html" class="text-decoration-none">GeneralizedExtremeValueDistribution</a></li>
+					<li><a href="GeneralizedParetoDistribution.html" class="text-decoration-none">GeneralizedParetoDistribution</a></li>
+					<li><a href="HalfNormalDistribution.html" class="text-decoration-none">HalfNormalDistribution</a></li>
+					<li><a href="InverseGaussianDistribution.html" class="text-decoration-none">InverseGaussianDistribution</a></li>
+					<li><a href="LogisticDistribution.html" class="text-decoration-none">LogisticDistribution</a></li>
+					<li><a href="LoglogisticDistribution.html" class="text-decoration-none">LoglogisticDistribution</a></li>
+					<li><a href="LognormalDistribution.html" class="text-decoration-none">LognormalDistribution</a></li>
+					<li><a href="LoguniformDistribution.html" class="text-decoration-none">LoguniformDistribution</a></li>
+					<li><a href="MultinomialDistribution.html" class="text-decoration-none">MultinomialDistribution</a></li>
+					<li><a href="NakagamiDistribution.html" class="text-decoration-none">NakagamiDistribution</a></li>
+					<li><a href="NegativeBinomialDistribution.html" class="text-decoration-none">NegativeBinomialDistribution</a></li>
+					<li><a href="NormalDistribution.html" class="text-decoration-none">NormalDistribution</a></li>
+					<li><a href="PiecewiseLinearDistribution.html" class="text-decoration-none">PiecewiseLinearDistribution</a></li>
+					<li><a href="PoissonDistribution.html" class="text-decoration-none">PoissonDistribution</a></li>
+					<li><a href="RayleighDistribution.html" class="text-decoration-none">RayleighDistribution</a></li>
+					<li><a href="RicianDistribution.html" class="text-decoration-none">RicianDistribution</a></li>
+					<li><a href="tLocationScaleDistribution.html" class="text-decoration-none">tLocationScaleDistribution</a></li>
+					<li><a href="TriangularDistribution.html" class="text-decoration-none">TriangularDistribution</a></li>
+					<li><a href="UniformDistribution.html" class="text-decoration-none">UniformDistribution</a></li>
+					<li><a href="WeibullDistribution.html" class="text-decoration-none">WeibullDistribution</a></li>
+				</ul>
+			</div>
+			</div>
+			<div class="row">
+				<input id="togList8" type="checkbox" checked >
+				<label for="togList8">
+					<span><h5>Distribution Fitting</h5></span>
+					<span><h5>Distribution Fitting</h5></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="betafit.html" class="text-decoration-none">betafit</a></li>
+					<li><a href="betalike.html" class="text-decoration-none">betalike</a></li>
+					<li><a href="binofit.html" class="text-decoration-none">binofit</a></li>
+					<li><a href="binolike.html" class="text-decoration-none">binolike</a></li>
+					<li><a href="bisafit.html" class="text-decoration-none">bisafit</a></li>
+					<li><a href="bisalike.html" class="text-decoration-none">bisalike</a></li>
+					<li><a href="burrfit.html" class="text-decoration-none">burrfit</a></li>
+					<li><a href="burrlike.html" class="text-decoration-none">burrlike</a></li>
+					<li><a href="evfit.html" class="text-decoration-none">evfit</a></li>
+					<li><a href="evlike.html" class="text-decoration-none">evlike</a></li>
+					<li><a href="expfit.html" class="text-decoration-none">expfit</a></li>
+					<li><a href="explike.html" class="text-decoration-none">explike</a></li>
+					<li><a href="gamfit.html" class="text-decoration-none">gamfit</a></li>
+					<li><a href="gamlike.html" class="text-decoration-none">gamlike</a></li>
+					<li><a href="geofit.html" class="text-decoration-none">geofit</a></li>
+					<li><a href="gevfit_lmom.html" class="text-decoration-none">gevfit_lmom</a></li>
+					<li><a href="gevfit.html" class="text-decoration-none">gevfit</a></li>
+					<li><a href="gevlike.html" class="text-decoration-none">gevlike</a></li>
+					<li><a href="gpfit.html" class="text-decoration-none">gpfit</a></li>
+					<li><a href="gplike.html" class="text-decoration-none">gplike</a></li>
+					<li><a href="gumbelfit.html" class="text-decoration-none">gumbelfit</a></li>
+					<li><a href="gumbellike.html" class="text-decoration-none">gumbellike</a></li>
+					<li><a href="hnfit.html" class="text-decoration-none">hnfit</a></li>
+					<li><a href="hnlike.html" class="text-decoration-none">hnlike</a></li>
+					<li><a href="invgfit.html" class="text-decoration-none">invgfit</a></li>
+					<li><a href="invglike.html" class="text-decoration-none">invglike</a></li>
+					<li><a href="logifit.html" class="text-decoration-none">logifit</a></li>
+					<li><a href="logilike.html" class="text-decoration-none">logilike</a></li>
+					<li><a href="loglfit.html" class="text-decoration-none">loglfit</a></li>
+					<li><a href="logllike.html" class="text-decoration-none">logllike</a></li>
+					<li><a href="lognfit.html" class="text-decoration-none">lognfit</a></li>
+					<li><a href="lognlike.html" class="text-decoration-none">lognlike</a></li>
+					<li><a href="nakafit.html" class="text-decoration-none">nakafit</a></li>
+					<li><a href="nakalike.html" class="text-decoration-none">nakalike</a></li>
+					<li><a href="nbinfit.html" class="text-decoration-none">nbinfit</a></li>
+					<li><a href="nbinlike.html" class="text-decoration-none">nbinlike</a></li>
+					<li><a href="normfit.html" class="text-decoration-none">normfit</a></li>
+					<li><a href="normlike.html" class="text-decoration-none">normlike</a></li>
+					<li><a href="poissfit.html" class="text-decoration-none fw-bolder">poissfit</a></li>
+					<li><a href="poisslike.html" class="text-decoration-none">poisslike</a></li>
+					<li><a href="raylfit.html" class="text-decoration-none">raylfit</a></li>
+					<li><a href="rayllike.html" class="text-decoration-none">rayllike</a></li>
+					<li><a href="ricefit.html" class="text-decoration-none">ricefit</a></li>
+					<li><a href="ricelike.html" class="text-decoration-none">ricelike</a></li>
+					<li><a href="tlsfit.html" class="text-decoration-none">tlsfit</a></li>
+					<li><a href="tlslike.html" class="text-decoration-none">tlslike</a></li>
+					<li><a href="unidfit.html" class="text-decoration-none">unidfit</a></li>
+					<li><a href="unifit.html" class="text-decoration-none">unifit</a></li>
+					<li><a href="wblfit.html" class="text-decoration-none">wblfit</a></li>
+					<li><a href="wbllike.html" class="text-decoration-none">wbllike</a></li>
+				</ul>
+			</div>
+			</div>
+			<div class="row">
+				<input id="togList9" type="checkbox">
+				<label for="togList9">
+					<span><h5>Distribution Functions</h5></span>
+					<span><h5>Distribution Functions</h5></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="betacdf.html" class="text-decoration-none">betacdf</a></li>
+					<li><a href="betainv.html" class="text-decoration-none">betainv</a></li>
+					<li><a href="betapdf.html" class="text-decoration-none">betapdf</a></li>
+					<li><a href="betarnd.html" class="text-decoration-none">betarnd</a></li>
+					<li><a href="binocdf.html" class="text-decoration-none">binocdf</a></li>
+					<li><a href="binoinv.html" class="text-decoration-none">binoinv</a></li>
+					<li><a href="binopdf.html" class="text-decoration-none">binopdf</a></li>
+					<li><a href="binornd.html" class="text-decoration-none">binornd</a></li>
+					<li><a href="bisacdf.html" class="text-decoration-none">bisacdf</a></li>
+					<li><a href="bisainv.html" class="text-decoration-none">bisainv</a></li>
+					<li><a href="bisapdf.html" class="text-decoration-none">bisapdf</a></li>
+					<li><a href="bisarnd.html" class="text-decoration-none">bisarnd</a></li>
+					<li><a href="burrcdf.html" class="text-decoration-none">burrcdf</a></li>
+					<li><a href="burrinv.html" class="text-decoration-none">burrinv</a></li>
+					<li><a href="burrpdf.html" class="text-decoration-none">burrpdf</a></li>
+					<li><a href="burrrnd.html" class="text-decoration-none">burrrnd</a></li>
+					<li><a href="bvncdf.html" class="text-decoration-none">bvncdf</a></li>
+					<li><a href="bvtcdf.html" class="text-decoration-none">bvtcdf</a></li>
+					<li><a href="cauchycdf.html" class="text-decoration-none">cauchycdf</a></li>
+					<li><a href="cauchyinv.html" class="text-decoration-none">cauchyinv</a></li>
+					<li><a href="cauchypdf.html" class="text-decoration-none">cauchypdf</a></li>
+					<li><a href="cauchyrnd.html" class="text-decoration-none">cauchyrnd</a></li>
+					<li><a href="chi2cdf.html" class="text-decoration-none">chi2cdf</a></li>
+					<li><a href="chi2inv.html" class="text-decoration-none">chi2inv</a></li>
+					<li><a href="chi2pdf.html" class="text-decoration-none">chi2pdf</a></li>
+					<li><a href="chi2rnd.html" class="text-decoration-none">chi2rnd</a></li>
+					<li><a href="copulacdf.html" class="text-decoration-none">copulacdf</a></li>
+					<li><a href="copulapdf.html" class="text-decoration-none">copulapdf</a></li>
+					<li><a href="copularnd.html" class="text-decoration-none">copularnd</a></li>
+					<li><a href="evcdf.html" class="text-decoration-none">evcdf</a></li>
+					<li><a href="evinv.html" class="text-decoration-none">evinv</a></li>
+					<li><a href="evpdf.html" class="text-decoration-none">evpdf</a></li>
+					<li><a href="evrnd.html" class="text-decoration-none">evrnd</a></li>
+					<li><a href="expcdf.html" class="text-decoration-none">expcdf</a></li>
+					<li><a href="expinv.html" class="text-decoration-none">expinv</a></li>
+					<li><a href="exppdf.html" class="text-decoration-none">exppdf</a></li>
+					<li><a href="exprnd.html" class="text-decoration-none">exprnd</a></li>
+					<li><a href="fcdf.html" class="text-decoration-none">fcdf</a></li>
+					<li><a href="finv.html" class="text-decoration-none">finv</a></li>
+					<li><a href="fpdf.html" class="text-decoration-none">fpdf</a></li>
+					<li><a href="frnd.html" class="text-decoration-none">frnd</a></li>
+					<li><a href="gamcdf.html" class="text-decoration-none">gamcdf</a></li>
+					<li><a href="gaminv.html" class="text-decoration-none">gaminv</a></li>
+					<li><a href="gampdf.html" class="text-decoration-none">gampdf</a></li>
+					<li><a href="gamrnd.html" class="text-decoration-none">gamrnd</a></li>
+					<li><a href="geocdf.html" class="text-decoration-none">geocdf</a></li>
+					<li><a href="geoinv.html" class="text-decoration-none">geoinv</a></li>
+					<li><a href="geopdf.html" class="text-decoration-none">geopdf</a></li>
+					<li><a href="geornd.html" class="text-decoration-none">geornd</a></li>
+					<li><a href="gevcdf.html" class="text-decoration-none">gevcdf</a></li>
+					<li><a href="gevinv.html" class="text-decoration-none">gevinv</a></li>
+					<li><a href="gevpdf.html" class="text-decoration-none">gevpdf</a></li>
+					<li><a href="gevrnd.html" class="text-decoration-none">gevrnd</a></li>
+					<li><a href="gpcdf.html" class="text-decoration-none">gpcdf</a></li>
+					<li><a href="gpinv.html" class="text-decoration-none">gpinv</a></li>
+					<li><a href="gppdf.html" class="text-decoration-none">gppdf</a></li>
+					<li><a href="gprnd.html" class="text-decoration-none">gprnd</a></li>
+					<li><a href="gumbelcdf.html" class="text-decoration-none">gumbelcdf</a></li>
+					<li><a href="gumbelinv.html" class="text-decoration-none">gumbelinv</a></li>
+					<li><a href="gumbelpdf.html" class="text-decoration-none">gumbelpdf</a></li>
+					<li><a href="gumbelrnd.html" class="text-decoration-none">gumbelrnd</a></li>
+					<li><a href="hncdf.html" class="text-decoration-none">hncdf</a></li>
+					<li><a href="hninv.html" class="text-decoration-none">hninv</a></li>
+					<li><a href="hnpdf.html" class="text-decoration-none">hnpdf</a></li>
+					<li><a href="hnrnd.html" class="text-decoration-none">hnrnd</a></li>
+					<li><a href="hygecdf.html" class="text-decoration-none">hygecdf</a></li>
+					<li><a href="hygeinv.html" class="text-decoration-none">hygeinv</a></li>
+					<li><a href="hygepdf.html" class="text-decoration-none">hygepdf</a></li>
+					<li><a href="hygernd.html" class="text-decoration-none">hygernd</a></li>
+					<li><a href="invgcdf.html" class="text-decoration-none">invgcdf</a></li>
+					<li><a href="invginv.html" class="text-decoration-none">invginv</a></li>
+					<li><a href="invgpdf.html" class="text-decoration-none">invgpdf</a></li>
+					<li><a href="invgrnd.html" class="text-decoration-none">invgrnd</a></li>
+					<li><a href="iwishpdf.html" class="text-decoration-none">iwishpdf</a></li>
+					<li><a href="iwishrnd.html" class="text-decoration-none">iwishrnd</a></li>
+					<li><a href="jsucdf.html" class="text-decoration-none">jsucdf</a></li>
+					<li><a href="jsupdf.html" class="text-decoration-none">jsupdf</a></li>
+					<li><a href="laplacecdf.html" class="text-decoration-none">laplacecdf</a></li>
+					<li><a href="laplaceinv.html" class="text-decoration-none">laplaceinv</a></li>
+					<li><a href="laplacepdf.html" class="text-decoration-none">laplacepdf</a></li>
+					<li><a href="laplacernd.html" class="text-decoration-none">laplacernd</a></li>
+					<li><a href="logicdf.html" class="text-decoration-none">logicdf</a></li>
+					<li><a href="logiinv.html" class="text-decoration-none">logiinv</a></li>
+					<li><a href="logipdf.html" class="text-decoration-none">logipdf</a></li>
+					<li><a href="logirnd.html" class="text-decoration-none">logirnd</a></li>
+					<li><a href="loglcdf.html" class="text-decoration-none">loglcdf</a></li>
+					<li><a href="loglinv.html" class="text-decoration-none">loglinv</a></li>
+					<li><a href="loglpdf.html" class="text-decoration-none">loglpdf</a></li>
+					<li><a href="loglrnd.html" class="text-decoration-none">loglrnd</a></li>
+					<li><a href="logncdf.html" class="text-decoration-none">logncdf</a></li>
+					<li><a href="logninv.html" class="text-decoration-none">logninv</a></li>
+					<li><a href="lognpdf.html" class="text-decoration-none">lognpdf</a></li>
+					<li><a href="lognrnd.html" class="text-decoration-none">lognrnd</a></li>
+					<li><a href="mnpdf.html" class="text-decoration-none">mnpdf</a></li>
+					<li><a href="mnrnd.html" class="text-decoration-none">mnrnd</a></li>
+					<li><a href="mvncdf.html" class="text-decoration-none">mvncdf</a></li>
+					<li><a href="mvnpdf.html" class="text-decoration-none">mvnpdf</a></li>
+					<li><a href="mvnrnd.html" class="text-decoration-none">mvnrnd</a></li>
+					<li><a href="mvtcdf.html" class="text-decoration-none">mvtcdf</a></li>
+					<li><a href="mvtpdf.html" class="text-decoration-none">mvtpdf</a></li>
+					<li><a href="mvtrnd.html" class="text-decoration-none">mvtrnd</a></li>
+					<li><a href="mvtcdfqmc.html" class="text-decoration-none">mvtcdfqmc</a></li>
+					<li><a href="nakacdf.html" class="text-decoration-none">nakacdf</a></li>
+					<li><a href="nakainv.html" class="text-decoration-none">nakainv</a></li>
+					<li><a href="nakapdf.html" class="text-decoration-none">nakapdf</a></li>
+					<li><a href="nakarnd.html" class="text-decoration-none">nakarnd</a></li>
+					<li><a href="nbincdf.html" class="text-decoration-none">nbincdf</a></li>
+					<li><a href="nbininv.html" class="text-decoration-none">nbininv</a></li>
+					<li><a href="nbinpdf.html" class="text-decoration-none">nbinpdf</a></li>
+					<li><a href="nbinrnd.html" class="text-decoration-none">nbinrnd</a></li>
+					<li><a href="ncfcdf.html" class="text-decoration-none">ncfcdf</a></li>
+					<li><a href="ncfinv.html" class="text-decoration-none">ncfinv</a></li>
+					<li><a href="ncfpdf.html" class="text-decoration-none">ncfpdf</a></li>
+					<li><a href="ncfrnd.html" class="text-decoration-none">ncfrnd</a></li>
+					<li><a href="nctcdf.html" class="text-decoration-none">nctcdf</a></li>
+					<li><a href="nctinv.html" class="text-decoration-none">nctinv</a></li>
+					<li><a href="nctpdf.html" class="text-decoration-none">nctpdf</a></li>
+					<li><a href="nctrnd.html" class="text-decoration-none">nctrnd</a></li>
+					<li><a href="ncx2cdf.html" class="text-decoration-none">ncx2cdf</a></li>
+					<li><a href="ncx2inv.html" class="text-decoration-none">ncx2inv</a></li>
+					<li><a href="ncx2pdf.html" class="text-decoration-none">ncx2pdf</a></li>
+					<li><a href="ncx2rnd.html" class="text-decoration-none">ncx2rnd</a></li>
+					<li><a href="normcdf.html" class="text-decoration-none">normcdf</a></li>
+					<li><a href="norminv.html" class="text-decoration-none">norminv</a></li>
+					<li><a href="normpdf.html" class="text-decoration-none">normpdf</a></li>
+					<li><a href="normrnd.html" class="text-decoration-none">normrnd</a></li>
+					<li><a href="plcdf.html" class="text-decoration-none">plcdf</a></li>
+					<li><a href="plinv.html" class="text-decoration-none">plinv</a></li>
+					<li><a href="plpdf.html" class="text-decoration-none">plpdf</a></li>
+					<li><a href="plrnd.html" class="text-decoration-none">plrnd</a></li>
+					<li><a href="poisscdf.html" class="text-decoration-none">poisscdf</a></li>
+					<li><a href="poissinv.html" class="text-decoration-none">poissinv</a></li>
+					<li><a href="poisspdf.html" class="text-decoration-none">poisspdf</a></li>
+					<li><a href="poissrnd.html" class="text-decoration-none">poissrnd</a></li>
+					<li><a href="raylcdf.html" class="text-decoration-none">raylcdf</a></li>
+					<li><a href="raylinv.html" class="text-decoration-none">raylinv</a></li>
+					<li><a href="raylpdf.html" class="text-decoration-none">raylpdf</a></li>
+					<li><a href="raylrnd.html" class="text-decoration-none">raylrnd</a></li>
+					<li><a href="ricecdf.html" class="text-decoration-none">ricecdf</a></li>
+					<li><a href="riceinv.html" class="text-decoration-none">riceinv</a></li>
+					<li><a href="ricepdf.html" class="text-decoration-none">ricepdf</a></li>
+					<li><a href="ricernd.html" class="text-decoration-none">ricernd</a></li>
+					<li><a href="tcdf.html" class="text-decoration-none">tcdf</a></li>
+					<li><a href="tinv.html" class="text-decoration-none">tinv</a></li>
+					<li><a href="tpdf.html" class="text-decoration-none">tpdf</a></li>
+					<li><a href="trnd.html" class="text-decoration-none">trnd</a></li>
+					<li><a href="tlscdf.html" class="text-decoration-none">tlscdf</a></li>
+					<li><a href="tlsinv.html" class="text-decoration-none">tlsinv</a></li>
+					<li><a href="tlspdf.html" class="text-decoration-none">tlspdf</a></li>
+					<li><a href="tlsrnd.html" class="text-decoration-none">tlsrnd</a></li>
+					<li><a href="tricdf.html" class="text-decoration-none">tricdf</a></li>
+					<li><a href="triinv.html" class="text-decoration-none">triinv</a></li>
+					<li><a href="tripdf.html" class="text-decoration-none">tripdf</a></li>
+					<li><a href="trirnd.html" class="text-decoration-none">trirnd</a></li>
+					<li><a href="unidcdf.html" class="text-decoration-none">unidcdf</a></li>
+					<li><a href="unidinv.html" class="text-decoration-none">unidinv</a></li>
+					<li><a href="unidpdf.html" class="text-decoration-none">unidpdf</a></li>
+					<li><a href="unidrnd.html" class="text-decoration-none">unidrnd</a></li>
+					<li><a href="unifcdf.html" class="text-decoration-none">unifcdf</a></li>
+					<li><a href="unifinv.html" class="text-decoration-none">unifinv</a></li>
+					<li><a href="unifpdf.html" class="text-decoration-none">unifpdf</a></li>
+					<li><a href="unifrnd.html" class="text-decoration-none">unifrnd</a></li>
+					<li><a href="vmcdf.html" class="text-decoration-none">vmcdf</a></li>
+					<li><a href="vminv.html" class="text-decoration-none">vminv</a></li>
+					<li><a href="vmpdf.html" class="text-decoration-none">vmpdf</a></li>
+					<li><a href="vmrnd.html" class="text-decoration-none">vmrnd</a></li>
+					<li><a href="wblcdf.html" class="text-decoration-none">wblcdf</a></li>
+					<li><a href="wblinv.html" class="text-decoration-none">wblinv</a></li>
+					<li><a href="wblpdf.html" class="text-decoration-none">wblpdf</a></li>
+					<li><a href="wblrnd.html" class="text-decoration-none">wblrnd</a></li>
+					<li><a href="wienrnd.html" class="text-decoration-none">wienrnd</a></li>
+					<li><a href="wishpdf.html" class="text-decoration-none">wishpdf</a></li>
+					<li><a href="wishrnd.html" class="text-decoration-none">wishrnd</a></li>
+				</ul>
+			</div>
+			</div>
+			<div class="row">
+				<input id="togList10" type="checkbox">
+				<label for="togList10">
+					<span><h5>Distribution Statistics</h5></span>
+					<span><h5>Distribution Statistics</h5></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="betastat.html" class="text-decoration-none">betastat</a></li>
+					<li><a href="binostat.html" class="text-decoration-none">binostat</a></li>
+					<li><a href="bisastat.html" class="text-decoration-none">bisastat</a></li>
+					<li><a href="burrstat.html" class="text-decoration-none">burrstat</a></li>
+					<li><a href="chi2stat.html" class="text-decoration-none">chi2stat</a></li>
+					<li><a href="evstat.html" class="text-decoration-none">evstat</a></li>
+					<li><a href="expstat.html" class="text-decoration-none">expstat</a></li>
+					<li><a href="fstat.html" class="text-decoration-none">fstat</a></li>
+					<li><a href="gamstat.html" class="text-decoration-none">gamstat</a></li>
+					<li><a href="geostat.html" class="text-decoration-none">geostat</a></li>
+					<li><a href="gevstat.html" class="text-decoration-none">gevstat</a></li>
+					<li><a href="gpstat.html" class="text-decoration-none">gpstat</a></li>
+					<li><a href="hnstat.html" class="text-decoration-none">hnstat</a></li>
+					<li><a href="hygestat.html" class="text-decoration-none">hygestat</a></li>
+					<li><a href="invgstat.html" class="text-decoration-none">invgstat</a></li>
+					<li><a href="logistat.html" class="text-decoration-none">logistat</a></li>
+					<li><a href="loglstat.html" class="text-decoration-none">loglstat</a></li>
+					<li><a href="lognstat.html" class="text-decoration-none">lognstat</a></li>
+					<li><a href="nakastat.html" class="text-decoration-none">nakastat</a></li>
+					<li><a href="nbinstat.html" class="text-decoration-none">nbinstat</a></li>
+					<li><a href="ncfstat.html" class="text-decoration-none">ncfstat</a></li>
+					<li><a href="nctstat.html" class="text-decoration-none">nctstat</a></li>
+					<li><a href="ncx2stat.html" class="text-decoration-none">ncx2stat</a></li>
+					<li><a href="normstat.html" class="text-decoration-none">normstat</a></li>
+					<li><a href="plstat.html" class="text-decoration-none">plstat</a></li>
+					<li><a href="poisstat.html" class="text-decoration-none">poisstat</a></li>
+					<li><a href="raylstat.html" class="text-decoration-none">raylstat</a></li>
+					<li><a href="ricestat.html" class="text-decoration-none">ricestat</a></li>
+					<li><a href="tlsstat.html" class="text-decoration-none">tlsstat</a></li>
+					<li><a href="tristat.html" class="text-decoration-none">tristat</a></li>
+					<li><a href="tstat.html" class="text-decoration-none">tstat</a></li>
+					<li><a href="unidstat.html" class="text-decoration-none">unidstat</a></li>
+					<li><a href="unifstat.html" class="text-decoration-none">unifstat</a></li>
+					<li><a href="wblstat.html" class="text-decoration-none">wblstat</a></li>
+				</ul>
+			</div>
+			</div>
+			<div class="row">
+				<input id="togList11" type="checkbox">
+				<label for="togList11">
+					<span><h5>Distribution Wrappers</h5></span>
+					<span><h5>Distribution Wrappers</h5></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="cdf.html" class="text-decoration-none">cdf</a></li>
+					<li><a href="fitdist.html" class="text-decoration-none">fitdist</a></li>
+					<li><a href="icdf.html" class="text-decoration-none">icdf</a></li>
+					<li><a href="makedist.html" class="text-decoration-none">makedist</a></li>
+					<li><a href="mle.html" class="text-decoration-none">mle</a></li>
+					<li><a href="pdf.html" class="text-decoration-none">pdf</a></li>
+					<li><a href="random.html" class="text-decoration-none">random</a></li>
+				</ul>
+			</div>
+			</div>
+			<div class="row">
+				<input id="togList12" type="checkbox">
+				<label for="togList12">
+					<span><h5>Experimental Design</h5></span>
+					<span><h5>Experimental Design</h5></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="fullfact.html" class="text-decoration-none">fullfact</a></li>
+					<li><a href="ff2n.html" class="text-decoration-none">ff2n</a></li>
+					<li><a href="sigma_pts.html" class="text-decoration-none">sigma_pts</a></li>
+					<li><a href="x2fx.html" class="text-decoration-none">x2fx</a></li>
+				</ul>
+			</div>
+			</div>
+			<div class="row">
+				<input id="togList13" type="checkbox">
+				<label for="togList13">
+					<span><h5>Hypothesis Testing</h5></span>
+					<span><h5>Hypothesis Testing</h5></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="adtest.html" class="text-decoration-none">adtest</a></li>
+					<li><a href="anova1.html" class="text-decoration-none">anova1</a></li>
+					<li><a href="anova2.html" class="text-decoration-none">anova2</a></li>
+					<li><a href="anovan.html" class="text-decoration-none">anovan</a></li>
+					<li><a href="bartlett_test.html" class="text-decoration-none">bartlett_test</a></li>
+					<li><a href="barttest.html" class="text-decoration-none">barttest</a></li>
+					<li><a href="binotest.html" class="text-decoration-none">binotest</a></li>
+					<li><a href="chi2gof.html" class="text-decoration-none">chi2gof</a></li>
+					<li><a href="chi2test.html" class="text-decoration-none">chi2test</a></li>
+					<li><a href="correlation_test.html" class="text-decoration-none">correlation_test</a></li>
+					<li><a href="fishertest.html" class="text-decoration-none">fishertest</a></li>
+					<li><a href="friedman.html" class="text-decoration-none">friedman</a></li>
+					<li><a href="hotelling_t2test.html" class="text-decoration-none">hotelling_t2test</a></li>
+					<li><a href="hotelling_t2test2.html" class="text-decoration-none">hotelling_t2test2</a></li>
+					<li><a href="kruskalwallis.html" class="text-decoration-none">kruskalwallis</a></li>
+					<li><a href="kstest.html" class="text-decoration-none">kstest</a></li>
+					<li><a href="kstest2.html" class="text-decoration-none">kstest2</a></li>
+					<li><a href="levene_test.html" class="text-decoration-none">levene_test</a></li>
+					<li><a href="manova1.html" class="text-decoration-none">manova1</a></li>
+					<li><a href="mcnemar_test.html" class="text-decoration-none">mcnemar_test</a></li>
+					<li><a href="multcompare.html" class="text-decoration-none">multcompare</a></li>
+					<li><a href="ranksum.html" class="text-decoration-none">ranksum</a></li>
+					<li><a href="regression_ftest.html" class="text-decoration-none">regression_ftest</a></li>
+					<li><a href="regression_ttest.html" class="text-decoration-none">regression_ttest</a></li>
+					<li><a href="runstest.html" class="text-decoration-none">runstest</a></li>
+					<li><a href="sampsizepwr.html" class="text-decoration-none">sampsizepwr</a></li>
+					<li><a href="signtest.html" class="text-decoration-none">signtest</a></li>
+					<li><a href="ttest.html" class="text-decoration-none">ttest</a></li>
+					<li><a href="ttest2.html" class="text-decoration-none">ttest2</a></li>
+					<li><a href="vartest.html" class="text-decoration-none">vartest</a></li>
+					<li><a href="vartest2.html" class="text-decoration-none">vartest2</a></li>
+					<li><a href="vartestn.html" class="text-decoration-none">vartestn</a></li>
+					<li><a href="ztest.html" class="text-decoration-none">ztest</a></li>
+					<li><a href="ztest2.html" class="text-decoration-none">ztest2</a></li>
+				</ul>
+			</div>
+			</div>
+			<div class="row">
+				<input id="togList14" type="checkbox">
+				<label for="togList14">
+					<span><h5>I/O</h5></span>
+					<span><h5>I/O</h5></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="libsvmread.html" class="text-decoration-none">libsvmread</a></li>
+					<li><a href="libsvmwrite.html" class="text-decoration-none">libsvmwrite</a></li>
+				</ul>
+			</div>
+			</div>
+			<div class="row">
+				<input id="togList15" type="checkbox">
+				<label for="togList15">
+					<span><h5>Machine Learning</h5></span>
+					<span><h5>Machine Learning</h5></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="hmmestimate.html" class="text-decoration-none">hmmestimate</a></li>
+					<li><a href="hmmgenerate.html" class="text-decoration-none">hmmgenerate</a></li>
+					<li><a href="hmmviterbi.html" class="text-decoration-none">hmmviterbi</a></li>
+					<li><a href="svmpredict.html" class="text-decoration-none">svmpredict</a></li>
+					<li><a href="svmtrain.html" class="text-decoration-none">svmtrain</a></li>
+				</ul>
+			</div>
+			</div>
+			<div class="row">
+				<input id="togList16" type="checkbox">
+				<label for="togList16">
+					<span><h5>Model Fitting</h5></span>
+					<span><h5>Model Fitting</h5></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="fitcknn.html" class="text-decoration-none">fitcknn</a></li>
+					<li><a href="fitgmdist.html" class="text-decoration-none">fitgmdist</a></li>
+					<li><a href="fitlm.html" class="text-decoration-none">fitlm</a></li>
+					<li><a href="fitrgam.html" class="text-decoration-none">fitrgam</a></li>
+				</ul>
+			</div>
+			</div>
+			<div class="row">
+				<input id="togList17" type="checkbox">
+				<label for="togList17">
+					<span><h5>Plotting</h5></span>
+					<span><h5>Plotting</h5></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="boxplot.html" class="text-decoration-none">boxplot</a></li>
+					<li><a href="cdfplot.html" class="text-decoration-none">cdfplot</a></li>
+					<li><a href="confusionchart.html" class="text-decoration-none">confusionchart</a></li>
+					<li><a href="dendrogram.html" class="text-decoration-none">dendrogram</a></li>
+					<li><a href="ecdf.html" class="text-decoration-none">ecdf</a></li>
+					<li><a href="einstein.html" class="text-decoration-none">einstein</a></li>
+					<li><a href="gscatter.html" class="text-decoration-none">gscatter</a></li>
+					<li><a href="histfit.html" class="text-decoration-none">histfit</a></li>
+					<li><a href="hist3.html" class="text-decoration-none">hist3</a></li>
+					<li><a href="manovacluster.html" class="text-decoration-none">manovacluster</a></li>
+					<li><a href="normplot.html" class="text-decoration-none">normplot</a></li>
+					<li><a href="ppplot.html" class="text-decoration-none">ppplot</a></li>
+					<li><a href="qqplot.html" class="text-decoration-none">qqplot</a></li>
+					<li><a href="silhouette.html" class="text-decoration-none">silhouette</a></li>
+					<li><a href="violin.html" class="text-decoration-none">violin</a></li>
+					<li><a href="wblplot.html" class="text-decoration-none">wblplot</a></li>
+				</ul>
+			</div>
+			</div>
+			<div class="row">
+				<input id="togList18" type="checkbox">
+				<label for="togList18">
+					<span><h5>Regression</h5></span>
+					<span><h5>Regression</h5></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="canoncorr.html" class="text-decoration-none">canoncorr</a></li>
+					<li><a href="cholcov.html" class="text-decoration-none">cholcov</a></li>
+					<li><a href="dcov.html" class="text-decoration-none">dcov</a></li>
+					<li><a href="glmfit.html" class="text-decoration-none">glmfit</a></li>
+					<li><a href="logistic_regression.html" class="text-decoration-none">logistic_regression</a></li>
+					<li><a href="mnrfit.html" class="text-decoration-none">mnrfit</a></li>
+					<li><a href="monotone_smooth.html" class="text-decoration-none">monotone_smooth</a></li>
+					<li><a href="pca.html" class="text-decoration-none">pca</a></li>
+					<li><a href="pcacov.html" class="text-decoration-none">pcacov</a></li>
+					<li><a href="pcares.html" class="text-decoration-none">pcares</a></li>
+					<li><a href="plsregress.html" class="text-decoration-none">plsregress</a></li>
+					<li><a href="princomp.html" class="text-decoration-none">princomp</a></li>
+					<li><a href="regress.html" class="text-decoration-none">regress</a></li>
+					<li><a href="regress_gp.html" class="text-decoration-none">regress_gp</a></li>
+					<li><a href="ridge.html" class="text-decoration-none">ridge</a></li>
+					<li><a href="stepwisefit.html" class="text-decoration-none">stepwisefit</a></li>
+				</ul>
+			</div>
+			</div>
+			<div class="row">
+				<input id="togList19" type="checkbox">
+				<label for="togList19">
+					<span><h5>Regression Classes</h5></span>
+					<span><h5>Regression Classes</h5></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="RegressionGAM.html" class="text-decoration-none">RegressionGAM</a></li>
+				</ul>
+			</div>
+			</div>
+			<div class="row">
+				<input id="togList20" type="checkbox">
+				<label for="togList20">
+					<span><h5>Transforms</h5></span>
+					<span><h5>Transforms</h5></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="logit.html" class="text-decoration-none">logit</a></li>
+					<li><a href="probit.html" class="text-decoration-none">probit</a></li>
+				</ul>
+			</div>
+			</div>
+
+			  </div>
+			  <div class="col-md-10">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <h3 class="d-inline-block mr-2">
+                Function&nbsp;Reference: <b><code>poissfit</code></b>
+                </h3>
+              </div>
+            </div>
+            <div class="card-body">
 <dl>
 <dt><u>statistics:</u> <var>lambdahat</var> = <b>poissfit</b><i> (<var>x</var>)</i></dt>
 <dt><u>statistics:</u> [<var>lambdahat</var>, <var>lambdaci</var>] = <b>poissfit</b><i> (<var>x</var>)</i></dt>
@@ -185,6 +871,8 @@
         </div>
 
 
+            </div>
+          </div>
         </div>
       </div>
     </div>
