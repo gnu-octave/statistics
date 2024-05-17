@@ -30,7 +30,7 @@ Clustering Classes
  DaviesBouldinEvaluation
  GapEvaluation
  SilhouetteEvaluation
-CVpartition (legacy class of set partitions for cross-validation, used in crossval)
+CVpartition
  @cvpartition/cvpartition
  @cvpartition/display
  @cvpartition/get
