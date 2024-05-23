@@ -66,7 +66,7 @@ classdef PoissonDistribution
   ## @code{random}, @code{std}, @code{truncate}, @code{var}.
   ##
   ## Further information about the Poisson distribution can be found at
-  ## @url{https://en.wikipedia.org/wiki/Rayleigh_distribution}
+  ## @url{https://en.wikipedia.org/wiki/Poisson_distribution}
   ##
   ## @seealso{fitdist, makedist, poisscdf, poissinv, poisspdf, poissrnd,
   ## poissfit, poisslike, poisstat}
@@ -407,7 +407,7 @@ classdef PoissonDistribution
       if (! isscalar (this))
         error ("plot: requires a scalar probability distribution.");
       endif
-      h = __plot__ (this, false, varargin{:});
+      h = __plot__ (this, true, varargin{:});
       if (nargout > 0)
         varargout{1} = h;
       endif

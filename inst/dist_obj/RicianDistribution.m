@@ -67,7 +67,7 @@ classdef RicianDistribution
   ## @code{random}, @code{std}, @code{truncate}, @code{var}.
   ##
   ## Further information about the Rician distribution can be found at
-  ## @url{https://en.wikipedia.org/wiki/Weibull_distribution}
+  ## @url{https://en.wikipedia.org/wiki/Rice_distribution}
   ##
   ## @seealso{fitdist, makedist, ricecdf, riceinv, ricepdf, ricernd, ricefit,
   ## ricelike, ricestat}

@@ -62,8 +62,8 @@ classdef TriangularDistribution
   ## @code{pdf}, @code{plot}, @code{random}, @code{std}, @code{truncate},
   ## @code{var}.
   ##
-  ## Further information about the continuous triangular distribution can be found
-  ## at @url{https://en.wikipedia.org/wiki/Continuous_uniform_distribution}
+  ## Further information about the triangular distribution can be found
+  ## at @url{https://en.wikipedia.org/wiki/Triangular_distribution}
   ##
   ## @seealso{makedist, tricdf, triinv, tripdf, trirnd, tristat}
   ## @end deftypefn

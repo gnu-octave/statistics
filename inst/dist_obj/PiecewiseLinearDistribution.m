@@ -19,12 +19,12 @@ classdef PiecewiseLinearDistribution
   ## -*- texinfo -*-
   ## @deftypefn {statistics} PiecewiseLinearDistribution
   ##
-  ## Continuous uniform probability distribution object.
+  ## Piecewise linear probability distribution object.
   ##
   ## A @code{PiecewiseLinearDistribution} object consists of parameters, a model
   ## description, and sample data for a uniform probability distribution.
   ##
-  ## The uniform distribution uses the following parameters.
+  ## The piecewise linear distribution uses the following parameters.
   ##
   ## @multitable @columnfractions 0.25 0.48 0.27
   ## @headitem @var{Parameter} @tab @var{Description} @tab @var{Support}
@@ -35,7 +35,8 @@ classdef PiecewiseLinearDistribution
   ## @math{x} @tab @math{0 <= Fx <= 1}
   ## @end multitable
   ##
-  ## There are several ways to create a @code{PiecewiseLinearDistribution} object.
+  ## There are several ways to create a @code{PiecewiseLinearDistribution}
+  ## object.
   ##
   ## @itemize
   ## @item Create a distribution with specified parameter values using the

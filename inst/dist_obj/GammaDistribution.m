@@ -66,8 +66,8 @@ classdef GammaDistribution
   ## @code{negloglik}, @code{paramci}, @code{pdf}, @code{plot}, @code{proflik},
   ## @code{random}, @code{std}, @code{truncate}, @code{var}.
   ##
-  ## Further information about the inverse Gaussian distribution can be found at
-  ## @url{https://en.wikipedia.org/wiki/Inverse_Gaussian_distribution}
+  ## Further information about the Gamma distribution can be found at
+  ## @url{https://en.wikipedia.org/wiki/Gamma_distribution}
   ##
   ## @seealso{fitdist, makedist, gamcdf, gaminv, gampdf, gamrnd, lognfit,
   ## gamlike, gamstat}

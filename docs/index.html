@@ -10,13 +10,40 @@
     <script type="text/javascript" async
       src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
     </script>
+    <script type="text/javascript">
+      window.addEventListener("load", () => {
+        for (let i of document.querySelectorAll(".collapse ul")) {
+          let tog = document.createElement("div");
+          tog.innerHTML = i.previousSibling.textContent;
+          tog.className = "toggle";
+          tog.onclick = () => tog.classList.toggle("show");
+          i.parentElement.removeChild(i.previousSibling);
+          i.parentElement.insertBefore(tog, i);
+        }
+      });
+    </script>
     <style>
+    h6:hover {
+      color: gray;
+    }
     var {
       font-style: italics;
       font-weight: bold;
     }
     td {
       vertical-align: top;
+    }
+    [id^="togList"],                        /* HIDE CHECKBOX */
+    [id^="togList"] ~ .list,                /* HIDE LIST */
+    [id^="togList"] + label  span + span,   /* HIDE "Collapse" */
+    [id^="togList"]:checked + label span{   /* HIDE "Expand" (IF CHECKED) */
+      display:none;
+    }
+    [id^="togList"]:checked + label span + span{
+      display:inline-block;                 /* SHOW "Collapse" (IF CHECKED) */
+    }
+    [id^="togList"]:checked ~ .list{
+      display:block;                        /* SHOW LIST (IF CHECKED) */
     }
     </style>
   </head>
@@ -61,7 +88,7 @@
             </div>
             <div class="col-sm-9 col-md-10">
               <h3 class="d-inline-block mr-2">statistics</h3>
-              <b>1.6.5&nbsp;2024-3-7</b>
+              <b>1.6.6&nbsp;2024-5-16</b>
               <p class="indent">
                 The Statistics package for GNU Octave.
               </p>
@@ -74,7 +101,7 @@
              <option value="#Clustering">Clustering</option>
              <option value="#Classification Classes">Classification Classes</option>
              <option value="#Clustering Classes">Clustering Classes</option>
-             <option value="#CVpartition (legacy class of set partitions for cross-validation, used in crossval)">CVpartition (legacy class of set partitions for cross-validation, used in crossval)</option>
+             <option value="#CVpartition">CVpartition</option>
              <option value="#Regression Classes">Regression Classes</option>
              <option value="#Data Manipulation">Data Manipulation</option>
              <option value="#Descriptive Statistics">Descriptive Statistics</option>
@@ -146,6 +173,14 @@
                    </code></b>
                  </td>
                  <td>Perform cross validation on given data.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="editDistance.html">editDistance</a>
+                   </code></b>
+                 </td>
+                 <td>Compute the edit (Levenshtein) distance between strings or documents.</td>
                </tr>
                <tr>
                  <td>
@@ -337,7 +372,7 @@ classification model.</td>
              </tbody>
            </table>
            <h3 class="category">
-             <a name="CVpartition (legacy class of set partitions for cross-validation, used in crossval)">CVpartition (legacy class of set partitions for cross-validation, used in crossval)</a>
+             <a name="CVpartition">CVpartition</a>
            </h3>
            <table class="table table-striped">
              <tbody>
@@ -579,7 +614,8 @@ samples as parameters.</td>
                    <a href="mad.html">mad</a>
                    </code></b>
                  </td>
-                 <td>Compute the mean or median absolute deviation (MAD).</td>
+                 <td>Compute the mean or median absolute deviation (MAD) of the elements of
+X.</td>
                </tr>
                <tr>
                  <td>
@@ -627,7 +663,7 @@ samples as parameters.</td>
                    <a href="std.html">std</a>
                    </code></b>
                  </td>
-                 <td>Compute the standard deviation of the elements of X.</td>
+                 <td>Compute the standard deviation of the elements of the vector X.</td>
                </tr>
                <tr>
                  <td>
@@ -643,7 +679,7 @@ samples as parameters.</td>
                    <a href="var.html">var</a>
                    </code></b>
                  </td>
-                 <td>Compute the variance of the elements of X.</td>
+                 <td>Compute the variance of the elements of the vector X.</td>
                </tr>
              </tbody>
            </table>
@@ -770,7 +806,7 @@ samples as parameters.</td>
                    <a href="LoguniformDistribution.html">LoguniformDistribution</a>
                    </code></b>
                  </td>
-                 <td>Loguniform probability distribution object.</td>
+                 <td>Log-uniform probability distribution object.</td>
                </tr>
                <tr>
                  <td>
@@ -810,7 +846,7 @@ samples as parameters.</td>
                    <a href="PiecewiseLinearDistribution.html">PiecewiseLinearDistribution</a>
                    </code></b>
                  </td>
-                 <td>Continuous uniform probability distribution object.</td>
+                 <td>Piecewise linear probability distribution object.</td>
                </tr>
                <tr>
                  <td>
@@ -3559,7 +3595,7 @@ a file specified by FILENAME.</td>
                    <a href="histfit.html">histfit</a>
                    </code></b>
                  </td>
-                 <td>Plot histogram with superimposed fitted normal density.</td>
+                 <td>Plot histogram with superimposed distribution fit.</td>
                </tr>
                <tr>
                  <td>

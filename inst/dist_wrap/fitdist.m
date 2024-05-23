@@ -69,7 +69,7 @@
 ## @qcode{"By"}, @var{groupvar})} creates probability distribution objects by
 ## fitting the distribution specified by @var{distname} to the data in @var{x}
 ## based on the grouping variable @var{groupvar}. It returns a cell array of
-## fitted probability distribution objec@var{pdca}pdca, a cell array of group
+## fitted probability distribution object, @var{pdca}, a cell array of group
 ## labels, @var{gn}, and a cell array of grouping variable levels, @var{gl}.
 ##
 ## @code{[@var{pdca}, @var{gn}, @var{gl}] = fitdist (@var{x}, @var{distname},
@@ -77,7 +77,10 @@
 ## output arguments using additional options specified by one or more
 ## @qcode{Name-Value} pair arguments mentioned above.
 ##
-## @seealso{fitdist}
+## Note: calling @code{fitdist} without any input arguments will return a cell
+## array of character vectors listing all supported distributions.
+##
+## @seealso{makedist}
 ## @end deftypefn
 
 function [varargout] = fitdist (varargin)

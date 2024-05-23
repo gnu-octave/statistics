@@ -21,7 +21,7 @@ You can find its documentation at [https://gnu-octave.github.io/statistics/](htt
 
 ## 2. Install statistics
 
-To install the latest release (1.6.5) you need Octave (>=7.2.0) installed on your system. Install it by typing:
+To install the latest release (1.6.6) you need Octave (>=7.2.0) installed on your system. Install it by typing:
 
   `pkg install -forge statistics`
 
@@ -29,7 +29,7 @@ You can automatically download and install the latest development version of the
 
   `pkg install "https://github.com/gnu-octave/statistics/archive/refs/heads/main.zip"`
 
-If you need to install a specific release, for example `1.4.2`, type:
+If you need to install a specific older release, for example `1.4.2`, type:
 
   `pkg install "https://github.com/gnu-octave/statistics/archive/refs/tags/release-1.4.2.tar.gz"`
 

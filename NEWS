@@ -497,5 +497,14 @@
  Improvements:
  =============
 
- ** fillmissing:  combining `movmedian` method and `missinglocation` option
-                  no longer ignores non-NaN values.
+ ** fillmissing: combining `movmedian` method and `missinglocation` option
+                 no longer ignores non-NaN values.
+
+ ** gumbelinv: fix incorrect return value due to misplaced minus sign
+
+ ** glmfit: fix input validation, parameter parsing, and update documentation
+
+ ** histfit: updated support for other distributions, fixed MATLAB compatibility
+
+ ** plot method for probability distribution objects partially implemented to
+    allow plotting PDF and superimposing it over histograms of fitted data.
