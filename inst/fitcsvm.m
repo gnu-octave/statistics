@@ -17,13 +17,13 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{obj} =} fitcsvm (@var{X}, @var{Y})
-## @deftypefnx {statistics} {@var{obj} =} fitcsvm (@dots{}, @var{name}, @var{value})
+## @deftypefn  {statistics} {@var{Mdl} =} fitcsvm (@var{X}, @var{Y})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcsvm (@dots{}, @var{name}, @var{value})
 ##
 ## Fit a Support Vector Machine classification model.
 ##
-## @code{@var{obj} = fitcsvm (@var{X}, @var{Y})} returns a Support Vector Machine
-## classification model, @var{obj}, with @var{X} being the predictor data,
+## @code{@var{Mdl} = fitcsvm (@var{X}, @var{Y})} returns a Support Vector Machine
+## classification model, @var{Mdl}, with @var{X} being the predictor data,
 ## and @var{Y} the class labels of observations in @var{X}.
 ##
 ## @itemize
@@ -35,121 +35,114 @@
 ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels of
 ## corresponding predictor data in @var{X}. @var{Y} can contain any type of
 ## categorical data. @var{Y} must have same numbers of Rows as @var{X}.
-## @item
+##
 ## @end itemize
 ##
-## @code{@var{obj} = fitcsvm (@dots{}, @var{name}, @var{value})} returns a
+## @code{@var{Mdl} = fitcsvm (@dots{}, @var{name}, @var{value})} returns a
 ## Support Vector Machine model with additional options specified by
 ## @qcode{Name-Value} pair arguments listed below.
 ##
-## @multitable @columnfractions 0.18 0.02 0.8
+## @multitable @columnfractions 0.05 0.4 0.75
 ## @headitem @tab @var{Name} @tab @var{Value}
 ##
-## @item @qcode{"Alpha"} @tab A vector of non negative elements used as
-## initial estimates of the alpha coefficients. Each element in the vector
-## corresponds to a row in the input data @var(X). The default value of Alpha is:
-## The default value of Alpha is:
-## - For two-class learning: zeros(size(X,1), 1)
-## - For one-class learning: 0.5 * ones(size(X,1), 1)
+## @item @tab @qcode{"SVMtype"} @tab Specifies the type of SVM. It accepts the
+## following options: (Default is 'C_SVC')
 ##
-## @item @qcode{"BoxConstraint"} @tab A positive scalar that specifies the
-## upper bound of Lagrange multipliers ie C in [0,C]. It determines the trade-off
-## between maximizing the margin and minimizing the classification error. The
+## @itemize
+##
+## @item 'C_SVC': C-SVC is the standard SVM formulation for classification tasks.
+## It aims to find the optimal hyperplane that separates different classes by
+## maximizing the margin between them while allowing some misclassifications.
+## The parameter C controls the trade-off between maximizing the margin and
+## minimizing the classification error.
+##
+## @item 'nu_SVC': ν-SVC is a variation of the standard SVM that introduces
+## a parameter ν (nu) as an upper bound on the fraction of margin errors and
+## a lower bound on the fraction of support vectors. This formulation provides
+## more control over the number of support vectors and the margin errors,
+## making it useful for specific classification scenarios.
+##
+## @item 'one_class_SVC': One-Class SVM is used for anomaly detection and
+## novelty detection tasks. It aims to separate the data points of a single
+## class from the origin in a high-dimensional feature space. This method is
+## particularly useful for identifying outliers or unusual patterns in the data.
+##
+## @end itemize
+##
+## @item @tab @qcode{"KernelFunction"} @tab Specifies the method for computing
+## elements of the Gram matrix. It accepts the following options:
+## (default is 'gaussian' or 'rbf')
+##
+## @itemize
+##
+## @item 'linear': @math{u'*v} Computes the linear kernel, which is simply the dot
+## product of the input vectors.
+##
+## @item 'polynomial': @math{(gamma*u'*v + coef0)^degree} Computes the polynomial
+## kernel, which raises the dot product of the input vectors to a specified power.
+##
+## @item 'gaussian' or 'rbf': @math{exp(-gamma*|u-v|^2)} Computes the Gaussian
+## kernel, also known as the radial basis function (RBF) kernel. It measures the
+## similarity between two vectors in a high-dimensional space.
+##
+## @item 'sigmoid': @math{tanh(gamma*u'*v + coef0)} Computes the sigmoid kernel,
+## which is inspired by the activation function used in neural networks. The
+## sigmoid kernel maps the input vectors into a hyperbolic tangent function space.
+##
+## @item 'precomputed': You can also specify precomputed kernel
+## (kernel values in training_set_file)
+##
+## @end itemize
+##
+## @item @tab @qcode{"PolynomialOrder"} @tab A positive integer that specifies
+## the order of polynomial in kernel function. The default value is 3.
+##
+## @item @tab @qcode{"Gamma"} @tab Specifies the gamma in kernel function.
+## The default value is @math{gamma = 1/(number of features)}.
+##
+## @item @tab @qcode{"KernelOffset"} @tab A nonnegative scalar that specifies
+## the @math{coef0} in kernel function. For the polynomial kernel, it influences
+## the polynomial's shift, and for the sigmoid kernel, it affects the hyperbolic
+## tangent's shift. The default value is 0.
+##
+## @item @tab @qcode{"Nu"} @tab A positive scalar, in the range (0,1] that
+## specifies the parameter nu of nu-SVC, one-class SVM. The default value is 0.5.
+##
+## @item @tab @qcode{"CacheSize"} @tab A positive scalar that specifies the
+## cache size. The default value is 100.
+##
+## @item @tab @qcode{"Epsilon"} @tab A nonnegative scalar that specifies
+## the tolerance of termination criterion. The default value is 1e-3.
+##
+## @item @tab @qcode{"Shrinking"} @tab Specifies whether to use shrinking
+## heuristics. It accepts either 0 or 1. The default value is 1.
+##
+## @item @tab @qcode{"Probability_estimates"} @tab Specifies whether to train
+## the model for probability estimates. It accepts either 0 or 1. The default
+## value is 0.
+##
+## @item @tab @qcode{"Weight"} @tab Specifies the parameter C of class i to
+## weight*C, for C-SVC. The default value is 1.
+##
+## @item @tab @qcode{"BoxConstraint"} @tab A positive scalar that specifies the
+## upper bound of Lagrange multipliers ie C in [0,C] i.e, the parameter C of
+## class i to weight*C, for C-SVC. It determines the trade-off between
+## maximizing the margin and minimizing the classification error. The
 ## default value of BoxConstraint is 1.
 ##
-## @item @qcode{"CacheSize"} @tab Specifies the cache size. It can be:
-## @itemize
-## @item A positive scalar that specifies the cache size in megabytes (MB).
-## @item A string "maximal" which will result in cache large enough to hold the
-## entire Gram matrix of size @math{NxN} where N is the number of rows in X.
-## The default value is 1000.
-## @end itemize
-##
-## @item @qcode{"CategoricalPredictors"} @tab @tab
-##
-## @item @qcode{"ClassNames"} @tab @tab
-##
-## @item @qcode{"ClipAlphas"} @tab @tab
-##
-## @item @qcode{"Cost"} @tab @tab
-##
-## @item @qcode{"CrossVal"} @tab @tab
-##
-## @item @qcode{"CVPartition"} @tab @tab
-##
-## @item @qcode{"Holdout"} @tab @tab
-##
-## @item @qcode{"KFold"} @tab @tab
-##
-## @item @qcode{"Leaveout"} @tab @tab
-##
-## @item @qcode{"GapTolerance"} @tab @tab
-##
-## @item @qcode{"DeltaGradientTolerance"} @tab @tab
-##
-## @item @qcode{"KKTTolerance"} @tab @tab
-##
-## @item @qcode{"IterationLimit"} @tab @tab
-##
-## @item @qcode{"KernelFunction"} @tab @tab Specifies the method for computing
-## elements of the Gram matrix. It accepts the following options:
-## @itemize
-## @item 'linear': Computes the linear kernel, which is simply the dot product
-## of the input vectors.
-## @item 'gaussian' or 'rbf': Computes the Gaussian kernel, also known as the
-## radial basis function (RBF) kernel. It measures the similarity between two
-## vectors in a high-dimensional space.
-## @item 'polynomial': Computes the polynomial kernel, which raises the
-## dot product of the input vectors to a specified power.
-## @item You can also specify the name of a custom kernel function. It must be of
-## the form: function G = KernelFunc(U, V)
-## This custom function must take two input matrices, U and V, and return a
-## matrix G of size M-by-N, where M and N are the number of rows in U and V.
-## @end itemize
-##
-## @item @qcode{"KernelScale"} @tab @tab
-##
-## @item @qcode{"KernelOffset"} @tab @tab
-##
-## @item @qcode{"OptimizeHyperparameters"} @tab @tab
-##
-## @item @qcode{"PolynomialOrder"} @tab @tab
-##
-## @item @qcode{"Nu"} @tab @tab
-##
-## @item @qcode{"NumPrint"} @tab @tab
-##
-## @item @qcode{"OutlierFraction"} @tab @tab
-##
-## @item @qcode{"PredictorNames"} @tab @tab
-##
-## @item @qcode{"Prior"} @tab @tab
-##
-## @item @qcode{"RemoveDuplicates"} @tab @tab
-##
-## @item @qcode{"ResponseName"} @tab @tab Response Variable Name, specified as
-## a string. If omitted, the default value is @qcode{"Y"}.
-##
-## @item @qcode{"ScoreTransform"} @tab @tab
-##
-## @item @qcode{"Solver"} @tab @tab
-##
-## @item @qcode{"ShrinkagePeriod"} @tab @tab
-##
-## @item @qcode{"Standardize"} @tab @tab
-##
-## @item @qcode{"Verbose"} @tab @tab
-##
-## @item @qcode{"Weights"} @tab @tab
-##
-## @item @qcode{"DeltaGradientTolerance"} @tab @tab
+## @item @tab @qcode{"KFold"} @tab Specifies the value of k (number of folds)
+## The dataset is divided into k equal-sized subsets (folds). The model is
+## trained k times, each time using k-1 subsets for training and the remaining
+## subset for validation. This process helps in assessing the model's
+## generalization capability by averaging the cross validation accuracy across
+## all folds. The default value is 10.
 ##
 ## @end multitable
 ##
 ## @seealso{ClassificationSVM, svmtrain, svmpredict}
 ## @end deftypefn
 
-function obj = fitcsvm (X, Y, varargin)
+function Mdl = fitcsvm (X, Y, varargin)
 
   ## Check input parameters
   if (nargin < 2)
@@ -164,7 +157,7 @@ function obj = fitcsvm (X, Y, varargin)
     error ("fitcsvm: number of rows in X and Y must be equal.");
   endif
   ## Parse arguments to class def function
-  obj = ClassificationSVM (X, Y, varargin{:});
+  Mdl = ClassificationSVM (X, Y, varargin{:});
 
 endfunction
 
@@ -179,7 +172,7 @@ endfunction
 %!error<fitcsvm: too few arguments.> fitcsvm ()
 %!error<fitcsvm: too few arguments.> fitcsvm (ones (4,1))
 %!error<fitcsvm: Name-Value arguments must be in pairs.>
-%! fitcsvm (ones (4,2), ones (4, 1), 'Prior')
+%! fitcsvm (ones (4,2), ones (4, 1), 'KFold')
 %!error<fitcsvm: number of rows in X and Y must be equal.>
 %! fitcsvm (ones (4,2), ones (3, 1))
 %!error<fitcsvm: number of rows in X and Y must be equal.>
