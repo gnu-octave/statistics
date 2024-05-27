@@ -22,7 +22,7 @@ classdef ClassificationSVM
 ## @deftypefnx {statistics} {@var{obj} =} ClassificationSVM (@dots{}, @var{name}, @var{value})
 ##
 ## Create a @qcode{ClassificationSVM} class object containing a Support Vector
-## classification model.
+## Machine classification model.
 ##
 ## @code{@var{obj} = ClassificationSVM (@var{X}, @var{Y})} returns a
 ## ClassificationSVM object, with @var{X} as the predictor data and @var{Y}
@@ -37,7 +37,6 @@ classdef ClassificationSVM
 ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels of
 ## corresponding predictor data in @var{X}. @var{Y} can contain any type of
 ## categorical data. @var{Y} must have same numbers of Rows as @var{X}.
-## @item
 ## @end itemize
 ##
 ## @code{@var{obj} = ClassificationSVM (@dots{}, @var{name}, @var{value})}
@@ -48,136 +47,75 @@ classdef ClassificationSVM
 ## data and various parameters for the Support Vector machine classification
 ## model, which can be accessed in the following fields:
 ##
-## @multitable @columnfractions 0.28 0.02 0.7
-## @headitem @var{Field} @tab @tab @var{Description}
+## @multitable @columnfractions 0.02 0.35 0.7
+## @headitem @tab @var{Field} @tab @var{Description}
 ##
-## @item @qcode{obj.X} @tab @tab Unstandardized predictor data, specified as a
+## @item @tab @qcode{"obj.X"} @tab Unstandardized predictor data, specified as a
 ## numeric matrix.  Each column of @var{X} represents one predictor (variable),
 ## and each row represents one observation.
 ##
-## @item @qcode{obj.Y} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
-##
-## @item @qcode{obj.NumObservations} @tab @tab Class labels, specified as a logical or
+## @item @tab @qcode{"obj.Y"} @tab Class labels, specified as a logical or
 ## numeric vector, or cell array of character vectors.  Each value in @var{Y} is
 ## the observed class label for the corresponding row in @var{X}.
 ##
-## @item @qcode{obj.W} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
+## @item @tab @qcode{"obj.ModelParameters"} @tab  This field contains the parameters
+## used to train the SVM model, such as C, gamma, kernel type, etc. These
+## parameters define the behavior and performance of the SVM. For example,
+## 'C' controls the trade-off between achieving a low training error and a low
+## testing error, 'gamma' defines the influence of a single training example,
+## and 'kernel type' specifies the type of transformation applied to the input.
 ##
-## @item @qcode{obj.ModelParameters} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
+## @item @tab @qcode{"obj.NumClasses"} @tab The number of classes in the classification
+## problem. For a binary classification, NumClasses is 2. In the case of a
+## one-class SVM, NumClasses is also considered as 2 because the one-class SVM
+## tries to separate data from one class against all other possible instances.
 ##
-## @item @qcode{obj.PredictorNames} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
+## @item @tab @qcode{"obj.SupportVectorCount"} @tab The total number of support vectors
+## in the model. Support vectors are the data points that lie closest to the
+## decision surface (or hyperplane) and are most difficult to classify. They
+## are critical elements of the training dataset as they directly influence the
+## position and orientation of the decision surface.
 ##
-## @item @qcode{obj.ExpandedPredictorNames} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
+## @item @tab @qcode{"obj.Rho"} @tab Rho is the bias term in the decision function
+## @math{sgn(w^Tx - rho)}. It represents the offset of the hyperplane from the
+## origin. In other words, it is the value that helps to determine the decision
+## boundary in the feature space, allowing the SVM to make classifications.
 ##
-## @item @qcode{obj.ResponseName} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
+## @item @tab @qcode{"obj.ClassNames"} @tab The labels for each class in the
+## classification problem. It provides the actual names or identifiers for the
+## classes being predicted by the model. This field is empty for one-class SVM
+## because it only involves a single class during training and testing.
 ##
-## @item @qcode{obj.ClassNames} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
+## @item @tab @qcode{"obj.SupportVectorIndices"} @tab Indices of the support vectors
+## in the training dataset. This field indicates the positions of the support
+## vectors within the original training data. It helps in identifying which data
+## points are the most influential in constructing the decision boundary.
 ##
-## @item @qcode{obj.Cost} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
+## @item @tab @qcode{"obj.ProbA"} @tab Pairwise probability estimates for binary
+## classification problem. This field is empty if the Probability_estimates is
+## set to 0 or in one-class SVM. It is part of the pairwise coupling method used
+## to estimate the probability that a data point belongs to a particular class.
 ##
-## @item @qcode{obj.Prior} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
+## @item @tab @qcode{"obj.ProbB"} @tab Pairwise probability estimates for binary
+## classification problem. This field is empty if the Probability_estimates is
+## set to 0 or in one-class SVM. Similar to ProbA, this field is used in
+## conjunction with ProbA to provide probability estimates of class memberships.
 ##
-## @item @qcode{obj.ScoreTransform} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
+## @item @tab @qcode{"obj.SupportVectorPerClass"} @tab The number of support vectors
+## for each class. This field provides a count of how many support vectors
+## belong to each class. This field is empty for one-class SVM because it does
+## not categorize support vectors by class.
 ##
-## @item @qcode{obj.Alpha} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
+## @item @tab @qcode{"obj.SupportVectorCoef"} @tab Coefficients for the support vectors
+## in the decision functions. It contains all the @math{alpha_i * y_i}, where
+## alpha_i are the Lagrange multipliers and y_i are the class labels. These
+## coefficients are used to scale the influence of each support vector on the
+## decision boundary.
 ##
-## @item @qcode{obj.Beta} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
-##
-## @item @qcode{obj.Bias} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
-##
-## @item @qcode{obj.KernelParameters} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
-##
-## @item @qcode{obj.Mu} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
-##
-## @item @qcode{obj.Sigma} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
-##
-## @item @qcode{obj.SupportVectors} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
-##
-## @item @qcode{obj.SupportVectorLabels} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
-##
-## @item @qcode{obj.BoxConstraint} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
-##
-## @item @qcode{obj.CacheInfo} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
-##
-## @item @qcode{obj.ConvergenceInfo} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
-##
-## @item @qcode{obj.Gradient} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
-##
-## @item @qcode{obj.IsSupportVector} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
-##
-## @item @qcode{obj.Nu} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
-##
-## @item @qcode{obj.NumIterations} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
-##
-## @item @qcode{obj.OutlierFraction} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
-##
-## @item @qcode{obj.ShrinkagePeriod} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
-##
-## @item @qcode{obj.Solver} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
-##
-## @item @qcode{obj.RowsUsed} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
-##
-## @item @qcode{obj.HyperparameterOptimizationResults} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
+## @item @tab @qcode{"obj.SupportVectors"} @tab It contains all the support vectors.
+## Support vectors are the critical elements of the training data that are used
+## to define the position of the decision boundary in the feature space. They
+## are the data points that are most informative for the classification task.
 ##
 ## @end multitable
 ##
@@ -248,6 +186,7 @@ classdef ClassificationSVM
           X(:, Y) = [];
         elseif (isstring(Y))          ## if formula is given as input
           parts = strsplit(Y, '~');
+          endif
           if (numel(parts) != 2)
               error("ClassificationSVM: Formula must be of the form 'y ~ x1 + x2 + ...'");
           endif
@@ -261,8 +200,8 @@ classdef ClassificationSVM
           for i = 1:numel(predictorVars)
               if (!ismember(predictorVars{i}, X.Properties.VariableNames))
                   error("ClassificationSVM: Predictor variable not found in table.");
-              end
-          endif
+              endif
+          endfor
           ## Extract response variable
           Y = X.(responseVar);
 
@@ -297,33 +236,33 @@ classdef ClassificationSVM
       endif
 
       BoxConstraint           = 1;
-      CacheSize               = 1000;
-      CategoricalPredictors   = ;
-      ClassNames              = ;
+      CacheSize               = 100;
+##      CategoricalPredictors   = ;
+##      ClassNames              = ;
       ClipAlphas              = true;
-      Cost                    = ;
+##      Cost                    = ;
       CrossVal                = 'off';
-      CVPartition             = ;
+##      CVPartition             = ;
       Holdout                 = [];
       KFold                   = 10;
-      Leaveout                = ;
+##      Leaveout                = ;
       GapTolerance            = 0;
       DeltaGradientTolerance  = [];
       KKTTolerance            = [];
       IterationLimit          = 1e6;
       KernelScale             = 1;
-      KernelOffset            = ;
+##      KernelOffset            = ;
       OptimizeHyperparameters = 'none';
       PolynomialOrder         = 3;
       Nu                      = 0.5;
       NumPrint                = 1000;
       OutlierFraction         = 0;
       PredictorNames          = {};           #Predictor variable names
-      Prior                   = ;
+##      Prior                   = ;
       RemoveDuplicates        = false;
       ResponseName            = 'Y';           #Response variable name
       ScoreTransform          = 'none';
-      Solver                  = ;
+##      Solver                  = ;
       ShrinkagePeriod         = 0;
       Standardize             = false;
       Verbose                 = 0;
@@ -334,14 +273,53 @@ classdef ClassificationSVM
       while (numel (varargin) > 0)
         switch (tolower (varargin {1}))
 
-          case "alpha"
-          Alpha = varargin{2};
-            if (!isvector(alpha))
-              error ("ClassificationSVM: Alpha must be a vector.");
-            elseif (size(alpha, 1) != rows(X))
-              error ("ClassificationSVM: Alpha must have one element per row of X.");
-            elseif (any(alpha < 0))
-              error ("ClassificationSVM: Alpha must be non-negative.");
+          case "svmtype"
+            SVMtype = tolower(varargin{2});
+            if (!(ischar(SVMtype)))
+              error("ClassificationSVM: SVMtype must be a string.");
+            endif
+            if (ischar(svmtype))
+              if (! any (strcmpi (KernelFunction, {"c_svc", "nu_svc",  ...
+                "one_class_svc"})))
+              error ("ClassificationSVM: unsupported SVMtype.");
+              endif
+            endif
+
+          case "kernelfunction"
+            KernelFunction = tolower(varargin{2});
+            if (!(ischar(kernelfunction)))
+              error("ClassificationSVM: KernelFunction must be a string.");
+            endif
+            if (ischar(kernelfunction))
+              if (! any (strcmpi (KernelFunction, {"linear", "gaussian", "rbf", ...
+                "polynomial", "sigmoid", "precomputed"})))
+              error ("ClassificationSVM: unsupported Kernel function.");
+              endif
+            endif
+
+          case "polynomialorder"
+            PolynomialOrder = varargin{2};
+            if (! (isnumeric(PolynomialOrder) && PolynomialOrder > 0))
+              error ("ClassificationSVM: PolynomialOrder must be a positive integer.");
+            endif
+
+          case "kerneloffset"
+            KernelOffset = varargin{2};
+            if (! isnumeric(KernelOffset) && isscalar(KernelOffset)...
+              && KernelOffset >= 0)
+              error ("ClassificationSVM: KernelOffset must be a non-negative scalar.");
+            endif
+
+          case "nu"
+            Nu = varargin{2};
+            if ( !((isscalar(Nu) && Nu > 0 )))
+              error ("ClassificationSVM: Nu must be positive scalar.");
+            endif
+
+          case "cachesize"
+            CacheSize = varargin{2};
+            if ( !(isscalar(CacheSize) && CacheSize > 0))
+              error ("ClassificationSVM: CacheSize must be a positive scalar.");
             endif
 
           case "boxconstraint"
@@ -350,24 +328,18 @@ classdef ClassificationSVM
               error ("ClassificationSVM: BoxConstraint must be a positive scalar.");
             endif
 
-          case "cachesize"
-            CacheSize = varargin{2};
-            if ( isscalar(CacheSize))
-              if (CacheSize <= 0)
-              error ("ClassificationSVM: CacheSize must be a positive scalar.");
-            elseif (isstring(CacheSize) && tolower(CacheSize) != "maximal")
-              error ("ClassificationSVM: unidentified CacheSize.");
-            else
-              error (strcat(["ClassificationSVM: CacheSize must be either"], ...
-              [" a positive scalar or a string 'maximal'."]));
+          case "kfold"
+            KFold = varargin{2};
+            if (! isnumeric(KFold))
+              error ("ClassificationSVM: KFold must be a numeric value.");
             endif
 
-          case "categoricalpredictors"
-            if (! ((isnumeric (CategoricalPredictors) && isvector (CategoricalPredictors)) ||
-                  (strcmpi (CategoricalPredictors, "all") || )))
-              error (strcat (["ClassificationSVM: CategoricalPredictors must be either a"], ...
-                             [" numeric vector or a string."]));
-            endif
+##          case "categoricalpredictors"
+##            if (! ((isnumeric (CategoricalPredictors) && isvector (CategoricalPredictors)) ||
+##                  (strcmpi (CategoricalPredictors, "all") || ())))
+##              error (strcat (["ClassificationSVM: CategoricalPredictors must be either a"], ...
+##                             [" numeric vector or a string."]));
+##            endif
 
           case "classnames"
 
@@ -397,11 +369,7 @@ classdef ClassificationSVM
             endif
 
 
-          case "kfold"
-            KFold = varargin{2};
-            if (! isnumeric(KFold))
-              error ("ClassificationSVM: KFold must be a numeric value.");
-            endif
+
 
           case "leaveout"
 
@@ -417,11 +385,11 @@ classdef ClassificationSVM
           case "deltagradienttolerance"
             DeltaGradientTolerance = varargin{2};
             if (! isnumeric(DeltaGradientTolerance))
-              error (strcat(["ClassificationSVM: DeltaGradientTolerance must ], ...
+              error (strcat(["ClassificationSVM: DeltaGradientTolerance must "], ...
               ["be a numeric value."]));
             endif
             if (GapTolerance < 0)
-              error (strcat(["ClassificationSVM: DeltaGradientTolerance must ], ...
+              error (strcat(["ClassificationSVM: DeltaGradientTolerance must" ], ...
               ["be non-negative scalar."]));
             endif
 
@@ -435,49 +403,26 @@ classdef ClassificationSVM
               error ("ClassificationSVM: IterationLimit must be a positive number.");
             endif
 
-          case "kernelfunction"
-            KernelFunction = varargin{2};
-            if (!(ischar(kernelfunction) || isa(KernelFunction, 'function_handle')))
-              error("ClassificationSVM: KernelFunction must be a string or a function handle.");
-            endif
-            if (ischar(kernelfunction))
-              if (! any (strcmpi (KernelFunction, {"linear", "gaussian", "rbf", ...
-                "polynomial"})))
-              error ("ClassificationSVM: unsupported Kernel function.");
-            endif
 
           case "kernelscale"
 
-          case "kerneloffset"
-            KernelOffset = varargin{2};
-            if (! isnumeric(KernelOffset) && isscalar(KernelOffset)...
-              && KernelOffset >= 0)
-              error ("ClassificationSVM: KernelOffset must be a non-negative scalar.");
-            endif
+
 
           case "optimizehyperparameters"
 
-          case "polynomialorder"
-            PolynomialOrder = varargin{2};
-            if (! isnumeric(PolynomialOrder))
-              error ("ClassificationSVM: PolynomialOrder must be a positive integer.");
-            endif
 
-          case "nu"
-            Nu = varargin{2};
-            if ( !((isscalar(Nu) && Nu > 0 ))
-              error ("ClassificationSVM: Nu must be positive scalar.");
-            endif
+
+
 
           case "numprint"
             NumPrint = varargin{2};
-            if ( !((isscalar(NumPrint) && NumPrint >= 0 ))
+            if ( !((isscalar(NumPrint) && NumPrint >= 0 )))
               error ("ClassificationSVM: NumPrint must be non-negative scalar.");
             endif
 
           case "outlierfraction"
             OutlierFraction = varargin{2};
-            if (! (isscalar(OutlierFraction) && OutlierFraction >= 0 && OutlierFraction <= 1)
+            if (! (isscalar(OutlierFraction) && OutlierFraction >= 0 && OutlierFraction <= 1))
               error (strcat(["ClassificationSVM: OutlierFraction must be a scalar"], ...
               [" between 0 and 1."]));
             endif
@@ -544,6 +489,7 @@ classdef ClassificationSVM
                 DeltaGradientTolerance = 1e-3;
               elseif(isempty(KKTTolerance))
                 KKTTolerance = 0;
+                endif
             elseif(Solver=='isda')
               if(isempty(KernelOffset))
                 KernelOffset = 0.1;
@@ -551,6 +497,7 @@ classdef ClassificationSVM
                 DeltaGradientTolerance = 0;
               elseif(isempty(KKTTolerance))
                 KKTTolerance = 1e-3;
+                endif
             endif
 
           case "shrinkageperiod"
@@ -577,8 +524,11 @@ classdef ClassificationSVM
         endswitch
         varargin (1:2) = [];
       endwhile
+
     endfunction
+
    endmethods
+
 endclassdef
 
 
