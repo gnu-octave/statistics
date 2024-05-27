@@ -3,7 +3,7 @@ Copyright (C) 2021 Chih-Chung Chang and Chih-Jen Lin
 
 This file is part of the statistics package for GNU Octave.
 Permission granted by Chih-Jen Lin to the package maintainer to include this
-ile and double license under GPLv3 by means of personal communication.
+file and double license under GPLv3 by means of personal communication.
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
