@@ -194,50 +194,52 @@ classdef ClassificationSVM
         switch (tolower (varargin {1}))
 
           case "svmtype"
-            SVMtype = tolower(varargin{2});
+            SVMtype = varargin{2};
             if (!(ischar(SVMtype)))
               error("ClassificationSVM: SVMtype must be a string.");
             endif
-            if (ischar(svmtype))
-              if (! any (strcmpi (svmtype, {"c_svc", "nu_svc",  ...
+            if (ischar(SVMtype))
+              if (! any (strcmpi (tolower(SVMtype), {"c_svc", "nu_svc",  ...
                 "one_class_svc"})))
               error ("ClassificationSVM: unsupported SVMtype.");
               endif
             endif
+            SVMtype = tolower(SVMtype);
 
           case "kernelfunction"
-            KernelFunction = tolower(varargin{2});
-            if (!(ischar(kernelfunction)))
+            KernelFunction = varargin{2};
+            if (!(ischar(KernelFunction)))
               error("ClassificationSVM: KernelFunction must be a string.");
             endif
-            if (ischar(kernelfunction))
-              if (! any (strcmpi (KernelFunction, {"linear", "gaussian", "rbf", ...
+            if (ischar(KernelFunction))
+              if (! any (strcmpi (tolower(KernelFunction), {"linear", "gaussian", "rbf", ...
                 "polynomial", "sigmoid", "precomputed"})))
               error ("ClassificationSVM: unsupported Kernel function.");
               endif
             endif
+            KernelFunction = tolower(KernelFunction);
 
           case "polynomialorder"
             PolynomialOrder = varargin{2};
             if (! (isnumeric(PolynomialOrder) && isscalar(PolynomialOrder)
               && (PolynomialOrder > 0) && mod(PolynomialOrder, 1) == 0))
-              error (strcat(["ClassificationSVM: PolynomialOrder must be a "], ...
-              ["positive integer"]));
+              error (strcat(["ClassificationSVM: PolynomialOrder must be a"], ...
+              [" positive integer."]));
             endif
 
           case "kerneloffset"
             KernelOffset = varargin{2};
             if (! (isnumeric(KernelOffset) && isscalar(KernelOffset)
-              && KernelOffset >= 0))
+              && (KernelOffset >= 0)))
               error (strcat(["ClassificationSVM: KernelOffset must be a non"], ...
               ["-negative scalar."]));
             endif
 
           case "nu"
             Nu = varargin{2};
-            if ( !((isscalar(Nu) && (Nu > 0) && (Nu <= 1))))
-              error (strcat(["ClassificationSVM: Nu must be positive scalar "], ...
-              ["in the range (0,1]."]));
+            if ( !(isscalar(Nu) && (Nu > 0) && (Nu <= 1)))
+              error (strcat(["ClassificationSVM: Nu must be a positive scalar"], ...
+              [" in the range 0 < Nu <= 1."]));
             endif
 
           case "cachesize"
@@ -247,8 +249,8 @@ classdef ClassificationSVM
             endif
 
           case "epsilon"
-            epsilon = varargin{2};
-            if ( !(isscalar(epsilon) && epsilon >= 0))
+            Epsilon = varargin{2};
+            if ( !(isscalar(Epsilon) && (Epsilon >= 0)))
               error ("ClassificationSVM: Epsilon must be a positive scalar.");
             endif
 
@@ -267,13 +269,13 @@ classdef ClassificationSVM
 
           case "weight"
             Weight = varargin{2};
-            if ( !(isscalar(Weight) && Weight > 0))
+            if ( !(isscalar(Weight) && (Weight > 0)))
               error ("ClassificationSVM: Weight must be a positive scalar.");
             endif
 
           case "boxconstraint"
             BoxConstraint = varargin{2};
-            if ( !(isscalar(BoxConstraint) && BoxConstraint > 0))
+            if ( !(isscalar(BoxConstraint) && (BoxConstraint > 0)))
               error ("ClassificationSVM: BoxConstraint must be a positive scalar.");
             endif
 
@@ -302,113 +304,61 @@ endclassdef
 ## Test input validation for constructor
 %!error<ClassificationSVM: too few input arguments.> ClassificationSVM ()
 %!error<ClassificationSVM: too few input arguments.> ClassificationSVM (ones(10,2))
-%!error<ClassificationSVM: Y must be of the form 'y ~ x1 + x2 + ...'>
-%! ClassificationSVM (table([1,2],[9,8],[5,6], 'VariableNames', {'y', 'x1', 'x2'}), 'y x1 + x2');
-%!error<ClassificationSVM: Y must be of the form 'y ~ x1 + x2 + ...'>
-%! ClassificationSVM (table([1,2],[9,8],[5,6], 'VariableNames', {'y', 'x1', 'x2'}), 'x1 + x2');
-%!error<ClassificationSVM: Y must be of the form 'y ~ x1 + x2 + ...'>
-%! ClassificationSVM (table([1,2],[9,8],[5,6], 'VariableNames', {'y', 'x1', 'x2'}), 'y ~ ');
-%!error<ClassificationSVM: Response variable not found in table.>
-%! ClassificationSVM (table([1,2],[9,8],[5,6], 'VariableNames', {'y', 'x1', 'x2'}), 'y1 ~ x1 + x2');
-%!error<ClassificationSVM: Predictor variable not found in table.>
-%! ClassificationSVM (table([1,2],[9,8],[5,6], 'VariableNames', {'y', 'x1', 'x2'}), 'y ~ x1 + x3');
-%!error<ClassificationSVM: Invalid Y.>
-%! ClassificationSVM (table([1,2],[9,8],[5,6], 'VariableNames', {'y', 'x1', 'x2'}), 1);
 %!error<ClassificationSVM: number of rows in X and Y must be equal.> ...
 %! ClassificationSVM (ones(10,2), ones (5,1))
-%!error<ClassificationSVM: SVM only supports one class or two class learning.>
-%! ClassificationSVM (ones(10,2), ones (10,3))
-%!error<ClassificationSVM: Alpha must be a vector.>
-%! ClassificationSVM (ones(10,2), ones (10,1), "Alpha", 1)
-%!error<ClassificationSVM: Alpha must have one element per row of X.>
-%! ClassificationSVM (ones(10,2), ones (10,1), "Alpha", ones(5,1))
-%!error<ClassificationSVM: Alpha must be non-negative.>
-%! ClassificationSVM (ones(10,2), ones (10,1), "Alpha", -1)
-%!error<ClassificationSVM: BoxConstraint must be a positive scalar.>
-%! ClassificationSVM (ones(10,2), ones (10,1), "BoxConstraint", -1)
-%!error<ClassificationSVM: CacheSize must be a positive scalar.>
-%! ClassificationSVM (ones(10,2), ones (10,1), "CacheSize", -100)
-%!error<ClassificationSVM: unidentified CacheSize.>
-%! ClassificationSVM (ones(10,2), ones (10,1), "CacheSize", 'some')
-%!error<ClassificationSVM: CacheSize must be either a positive scalar or a string 'maximal'>
-%! ClassificationSVM (ones(10,2), ones (10,1), "CacheSize", [1,2])
-
-%!error<ClassificationSVM: KernelFunction must be a string or a function handle.>
-%! ClassificationSVM (ones(10,2), ones (10,1), "KernelFunction",[1,2])
-%!error<ClassificationSVM: unsupported Kernel function.>
-%! ClassificationSVM (ones(10,2), ones (10,1), "KernelFunction","some")
-
-
-
-%!error<ClassificationSVM: PredictorNames must be a cellstring array.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), "PredictorNames", -1)
-%!error<ClassificationSVM: PredictorNames must be a cellstring array.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), "PredictorNames", ['a','b','c'])
-%!error<ClassificationSVM: PredictorNames must have same number of columns as X.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), "PredictorNames", {'a','b','c'})
+%!error<ClassificationSVM: SVMtype must be a string.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "svmtype", 123)
+%!error<ClassificationSVM: unsupported SVMtype.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "svmtype", "unsupported_type")
+%!error<ClassificationSVM: KernelFunction must be a string.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "kernelfunction", 123)
+%!error<ClassificationSVM: unsupported Kernel function.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "kernelfunction", "unsupported_function")
+%!error<ClassificationSVM: PolynomialOrder must be a positive integer.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "polynomialorder", -1)
+%!error<ClassificationSVM: PolynomialOrder must be a positive integer.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "polynomialorder", 0.5)
+%!error<ClassificationSVM: PolynomialOrder must be a positive integer.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "polynomialorder", [1,2])
+%!error<ClassificationSVM: KernelOffset must be a non-negative scalar.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "kerneloffset", -1)
+%!error<ClassificationSVM: KernelOffset must be a non-negative scalar.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "kerneloffset", [1,2])
+%!error<ClassificationSVM: Nu must be a positive scalar in the range 0 < Nu <= 1.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "nu", -0.5)
+%!error<ClassificationSVM: Nu must be a positive scalar in the range 0 < Nu <= 1.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "nu", 1.5)
+%!error<ClassificationSVM: CacheSize must be a positive scalar.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "cachesize", -1)
+%!error<ClassificationSVM: CacheSize must be a positive scalar.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "cachesize", [1,2])
+%!error<ClassificationSVM: Epsilon must be a positive scalar.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "epsilon", -0.1)
+%!error<ClassificationSVM: Epsilon must be a positive scalar.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "epsilon", [0.1,0.2])
+%!error<ClassificationSVM: Shrinking must be either 0 or 1.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "shrinking", 2)
+%!error<ClassificationSVM: Shrinking must be either 0 or 1.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "shrinking", -1)
+%!error<ClassificationSVM: ProbabilityEstimates must be either 0 or 1.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "probabilityestimates", 2)
+%!error<ClassificationSVM: ProbabilityEstimates must be either 0 or 1.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "probabilityestimates", -1)
+%!error<ClassificationSVM: Weight must be a positive scalar.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "weight", -1)
+%!error<ClassificationSVM: Weight must be a positive scalar.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "weight", [1,2])
+%!error<ClassificationSVM: BoxConstraint must be a positive scalar.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "boxconstraint", -1)
+%!error<ClassificationSVM: BoxConstraint must be a positive scalar.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "boxconstraint", [1,2])
+%!error<ClassificationSVM: KFold must be a positive integer greater than 1.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "kfold", 1)
+%!error<ClassificationSVM: KFold must be a positive integer greater than 1.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "kfold", -1)
+%!error<ClassificationSVM: KFold must be a positive integer greater than 1.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "kfold", 0.5)
+%!error<ClassificationSVM: KFold must be a positive integer greater than 1.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "kfold", [1,2])
 %!error<ClassificationSVM: invalid parameter name in optional pair arguments.> ...
 %! ClassificationSVM (ones(10,2), ones (10,1), "some", "some")
-
-%!error<ClassificationSVM: invalid values in X.> ...
-%! ClassificationSVM ([1;2;3;"a";4], ones (5,1))
-
-%!error<ClassificationSVM: Formula must be a string.>
-%! ClassificationSVM (ones(10,2), ones (10,1), "formula", {"y~x1+x2"})
-%!error<ClassificationSVM: Formula must be a string.>
-%! ClassificationSVM (ones(10,2), ones (10,1), "formula", [0, 1, 0])
-%!error<ClassificationSVM: invalid syntax in Formula.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), "formula", "something")
-%!error<ClassificationSVM: no predictor terms in Formula.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), "formula", "something~")
-%!error<ClassificationSVM: no predictor terms in Formula.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), "formula", "something~")
-%!error<ClassificationSVM: some predictors have not been identified> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), "formula", "something~x1:")
-%!error<ClassificationSVM: invalid Interactions parameter.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), "interactions", "some")
-%!error<ClassificationSVM: invalid Interactions parameter.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), "interactions", -1)
-%!error<ClassificationSVM: invalid Interactions parameter.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), "interactions", [1 2 3 4])
-%!error<ClassificationSVM: number of interaction terms requested is larger than> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), "interactions", 3)
-%!error<ClassificationSVM: Formula has been already defined.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), "formula", "y ~ x1 + x2", "interactions", 1)
-%!error<ClassificationSVM: Interactions have been already defined.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), "interactions", 1, "formula", "y ~ x1 + x2")
-%!error<ClassificationSVM: invalid value for Knots.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), "knots", "a")
-%!error<ClassificationSVM: DoF and Order have been set already.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), "order", 3, "dof", 2, "knots", 5)
-%!error<ClassificationSVM: invalid value for DoF.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), "dof", 'a')
-%!error<ClassificationSVM: Knots and Order have been set already.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), "knots", 5, "order", 3, "dof", 2)
-%!error<ClassificationSVM: invalid value for Order.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), "order", 'a')
-%!error<ClassificationSVM: DoF and Knots have been set already.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), "knots", 5, "dof", 2, "order", 2)
-%!error<ClassificationSVM: Tolerance must be a Positive scalar.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), "tol", -1)
-%!error<ClassificationSVM: ResponseName must be a char string.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), "responsename", -1)
-
-
-## Test input validation for predict method
-%!error<ClassificationSVM.predict: too few arguments.> ...
-%! predict (ClassificationSVM (ones(10,1), ones(10,1)))
-%!error<ClassificationSVM.predict: Xfit is empty.> ...
-%! predict (ClassificationSVM (ones(10,1), ones(10,1)), [])
-%!error<ClassificationSVM.predict: Xfit must have the same number of features> ...
-%! predict (ClassificationSVM(ones(10,2), ones(10,1)), 2)
-%!error<ClassificationSVM.predict: invalid NAME in optional pairs of arguments.> ...
-%! predict (ClassificationSVM(ones(10,2), ones(10,1)), ones (10,2), "some", "some")
-%!error<ClassificationSVM.predict: includeinteractions must be a logical value.> ...
-%! predict (ClassificationSVM(ones(10,2), ones(10,1)), ones (10,2), "includeinteractions", "some")
-%!error<ClassificationSVM.predict: includeinteractions must be a logical value.> ...
-%! predict (ClassificationSVM(ones(10,2), ones(10,1)), ones (10,2), "includeinteractions", 5)
-
-
-
-
-
