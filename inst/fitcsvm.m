@@ -117,12 +117,12 @@
 ## @item @tab @qcode{"Shrinking"} @tab Specifies whether to use shrinking
 ## heuristics. It accepts either 0 or 1. The default value is 1.
 ##
-## @item @tab @qcode{"Probability_estimates"} @tab Specifies whether to train
+## @item @tab @qcode{"ProbabilityEstimates"} @tab Specifies whether to train
 ## the model for probability estimates. It accepts either 0 or 1. The default
 ## value is 0.
 ##
-## @item @tab @qcode{"Weight"} @tab Specifies the parameter C of class i to
-## weight*C, for C-SVC. The default value is 1.
+## @item @tab @qcode{"Weight"} @tab A positive scalar which specifies the
+## parameter C of class i to weight*C, for C-SVC. The default value is 1.
 ##
 ## @item @tab @qcode{"BoxConstraint"} @tab A positive scalar that specifies the
 ## upper bound of Lagrange multipliers ie C in [0,C] i.e, the parameter C of
@@ -130,12 +130,12 @@
 ## maximizing the margin and minimizing the classification error. The
 ## default value of BoxConstraint is 1.
 ##
-## @item @tab @qcode{"KFold"} @tab Specifies the value of k (number of folds)
-## The dataset is divided into k equal-sized subsets (folds). The model is
-## trained k times, each time using k-1 subsets for training and the remaining
-## subset for validation. This process helps in assessing the model's
-## generalization capability by averaging the cross validation accuracy across
-## all folds. The default value is 10.
+## @item @tab @qcode{"KFold"} @tab A positive integer greater than 1 which
+## specifies the value of k (number of folds). The dataset is divided into k
+## equal-sized subsets (folds). The model is trained k times, each time using
+## k-1 subsets for training and the remaining subset for validation. This
+## process helps in assessing the model's generalization capability by averaging
+## the cross validation accuracy across all folds. The default value is 10.
 ##
 ## @end multitable
 ##
