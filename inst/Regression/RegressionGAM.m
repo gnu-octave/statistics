@@ -147,7 +147,7 @@ classdef RegressionGAM
 
   methods (Access = public)
 
-    ## Class object contructor
+    ## Class object constructor
     function this = RegressionGAM (X, Y, varargin)
       ## Check for sufficient number of input arguments
       if (nargin < 2)
