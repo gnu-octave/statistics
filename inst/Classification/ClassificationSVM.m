@@ -178,13 +178,13 @@ classdef ClassificationSVM
       PolynomialOrder         = 3;
       Gamma                   = 1 / (ndims_X);
       KernelOffset            = 0;
+      BoxConstraint           = 1;
       Nu                      = 0.5;
       CacheSize               = 100;
-      Epsilon                 = 1e-3;
+      Tolerance               = 1e-3;
       Shrinking               = 1;
       ProbabilityEstimates    = 0;
       Weight                  = 1;
-      BoxConstraint           = 1;
       KFold                   = 10;
 
 
@@ -200,11 +200,19 @@ classdef ClassificationSVM
             endif
             if (ischar(SVMtype))
               if (! any (strcmpi (tolower(SVMtype), {"c_svc", "nu_svc",  ...
-                "one_class_svc"})))
+                "one_class_svm"})))
               error ("ClassificationSVM: unsupported SVMtype.");
               endif
             endif
             SVMtype = tolower(SVMtype);
+            switch (SVMtype)
+              case "c_svc"
+                s = 0;
+              case "nu_svc"
+                s = 1;
+              case "one_class_svm"
+                s = 2;
+            endswitch
 
           case "kernelfunction"
             KernelFunction = varargin{2};
@@ -212,12 +220,24 @@ classdef ClassificationSVM
               error("ClassificationSVM: KernelFunction must be a string.");
             endif
             if (ischar(KernelFunction))
-              if (! any (strcmpi (tolower(KernelFunction), {"linear", "gaussian", "rbf", ...
+              if (! any (strcmpi (tolower(KernelFunction), {"linear", "rbf", ...
                 "polynomial", "sigmoid", "precomputed"})))
               error ("ClassificationSVM: unsupported Kernel function.");
               endif
             endif
             KernelFunction = tolower(KernelFunction);
+            switch (KernelFunction)
+              case "linear"
+                t = 0;
+              case "polynomial"
+                t = 1;
+              case "rbf"
+                t = 2;
+              case "sigmoid"
+                t = 3;
+              case "precomputed"
+                t = 4;
+            endswitch
 
           case "polynomialorder"
             PolynomialOrder = varargin{2};
@@ -226,6 +246,14 @@ classdef ClassificationSVM
               error (strcat(["ClassificationSVM: PolynomialOrder must be a"], ...
               [" positive integer."]));
             endif
+            d = PolynomialOrder;
+
+          case "gamma"
+            Gamma = varargin{2};
+            if ( !(isscalar(Gamma) && (Gamma > 0)))
+              error ("ClassificationSVM: Gamma must be a positive scalar.");
+            endif
+            g = Gamma;
 
           case "kerneloffset"
             KernelOffset = varargin{2};
@@ -234,6 +262,14 @@ classdef ClassificationSVM
               error (strcat(["ClassificationSVM: KernelOffset must be a non"], ...
               ["-negative scalar."]));
             endif
+            r = KernelOffset;
+
+          case "boxconstraint"
+            BoxConstraint = varargin{2};
+            if ( !(isscalar(BoxConstraint) && (BoxConstraint > 0)))
+              error ("ClassificationSVM: BoxConstraint must be a positive scalar.");
+            endif
+            c = BoxConstraint;
 
           case "nu"
             Nu = varargin{2};
@@ -241,24 +277,28 @@ classdef ClassificationSVM
               error (strcat(["ClassificationSVM: Nu must be a positive scalar"], ...
               [" in the range 0 < Nu <= 1."]));
             endif
+            n = Nu;
 
           case "cachesize"
             CacheSize = varargin{2};
             if ( !(isscalar(CacheSize) && CacheSize > 0))
               error ("ClassificationSVM: CacheSize must be a positive scalar.");
             endif
+            m = CacheSize;
 
-          case "epsilon"
-            Epsilon = varargin{2};
-            if ( !(isscalar(Epsilon) && (Epsilon >= 0)))
-              error ("ClassificationSVM: Epsilon must be a positive scalar.");
+          case "tolerance"
+            Tolerance = varargin{2};
+            if ( !(isscalar(Tolerance) && (Tolerance >= 0)))
+              error ("ClassificationSVM: Tolerance must be a positive scalar.");
             endif
+            e = Tolerance;
 
           case "shrinking"
             Shrinking = varargin{2};
             if ( !ismember(Shrinking, [0, 1]) )
               error ("ClassificationSVM: Shrinking must be either 0 or 1.");
             endif
+            h =  Shrinking;
 
           case "probabilityestimates"
             ProbabilityEstimates = varargin{2};
@@ -266,18 +306,14 @@ classdef ClassificationSVM
               error ( strcat(["ClassificationSVM: ProbabilityEstimates must be"], ...
              [" either 0 or 1."]));
             endif
+            b = ProbabilityEstimates;
 
           case "weight"
             Weight = varargin{2};
             if ( !(isscalar(Weight) && (Weight > 0)))
               error ("ClassificationSVM: Weight must be a positive scalar.");
             endif
-
-          case "boxconstraint"
-            BoxConstraint = varargin{2};
-            if ( !(isscalar(BoxConstraint) && (BoxConstraint > 0)))
-              error ("ClassificationSVM: BoxConstraint must be a positive scalar.");
-            endif
+            w = Weight;
 
           case "kfold"
             KFold = varargin{2};
@@ -285,6 +321,7 @@ classdef ClassificationSVM
               && mod(KFold, 1) == 0 ))
               error ("ClassificationSVM: KFold must be a positive integer greater than 1.");
             endif
+            n = KFold;
 
           otherwise
             error (strcat (["ClassificationSVM: invalid parameter name"],...
@@ -293,6 +330,60 @@ classdef ClassificationSVM
         endswitch
         varargin (1:2) = [];
       endwhile
+
+    ## Assign properties
+    this.X = X;
+    this.Y = Y;
+
+##    This is kept if the output of Model.parameter is not sufficient
+##    this.ModelParameters = struct('SVMtype', SVMtype, ...
+##                                 'KernelFunction', KernelFunction, ...
+##                                 'PolynomialOrder', PolynomialOrder, ...
+##                                 'Gamma', Gamma, ...
+##                                 'KernelOffset', KernelOffset, ...
+##                                 'BoxConstraint', BoxConstraint, ...
+##                                 'Nu', Nu, ...
+##                                 'CacheSize', CacheSize, ...
+##                                 'Tolerance', Tolerance, ...
+##                                 'Shrinking', Shrinking, ...
+##                                 'ProbabilityEstimates', ProbabilityEstimates, ...
+##                                 'Weight', Weight, ...
+##                                 'KFold', KFold);
+
+    ## svmpredict:
+    ##    '-s':  SVMtype
+    ##    '-t':  KernelFunction
+    ##    '-d':  PolynomialOrder
+    ##    '-g':  Gamma
+    ##    '-r':  KernelOffset
+    ##    '-c':  BoxConstraint
+    ##    '-n':  Nu
+    ##    '-m':  CacheSize
+    ##    '-e':  Tolerance
+    ##    '-h':  Shrinking
+    ##    '-b':  ProbabilityEstimates
+    ##    '-w':  Weight
+    ##    '-v':  KFold
+
+    ## Train the SVM model using svmtrain
+    svm_options = sprintf( strcat(["-s %d -t %d -d %d -g %f -r %f -c %f -n %f"], ...
+                                  [" -m %f -e %f -h %d -b %d -w %f -v %d"]), ...
+                                   s, t, d, g, r, c, n, m, e, h, b, w, v);
+
+    this.Model = svmtrain(this.X, this.Y, svm_options);
+
+    this.ModelParameters = Model.Parameters;
+    this.NumClasses = Model.nr_class;
+    this.SupportVectorCount = Model.totalSV;
+    this.Rho = Model.rho;
+    this.ClassNames = Model.Label;
+    this.SupportVectorIndices = Model.sv_indices;
+    this.ProbA = Model.ProbA;
+    this.ProbB = Model.ProbB;
+    this.SupportVectorPerClass = Model.nSV;
+    this.SupportVectorCoef = Model.sv_coef;
+    this.SupportVectors = Model.SVs;
+    this.Solver = Solver;
 
     endfunction
 
@@ -320,6 +411,14 @@ endclassdef
 %! ClassificationSVM (ones(10,2), ones(10,1), "polynomialorder", 0.5)
 %!error<ClassificationSVM: PolynomialOrder must be a positive integer.> ...
 %! ClassificationSVM (ones(10,2), ones(10,1), "polynomialorder", [1,2])
+%!error<ClassificationSVM: Gamma must be a positive scalar.> ...
+%! ClassificationSVM (ones(10,2), ones (10,1), "Gamma", -1)
+%!error<ClassificationSVM: Gamma must be a positive scalar.> ...
+%! ClassificationSVM (ones(10,2), ones (10,1), "Gamma", 0)
+%!error<ClassificationSVM: Gamma must be a positive scalar.> ...
+%! ClassificationSVM (ones(10,2), ones (10,1), "Gamma", [1, 2])
+%!error<ClassificationSVM: Gamma must be a positive scalar.> ...
+%! ClassificationSVM (ones(10,2), ones (10,1), "Gamma", "invalid")
 %!error<ClassificationSVM: KernelOffset must be a non-negative scalar.> ...
 %! ClassificationSVM (ones(10,2), ones(10,1), "kerneloffset", -1)
 %!error<ClassificationSVM: KernelOffset must be a non-negative scalar.> ...
@@ -332,10 +431,10 @@ endclassdef
 %! ClassificationSVM (ones(10,2), ones(10,1), "cachesize", -1)
 %!error<ClassificationSVM: CacheSize must be a positive scalar.> ...
 %! ClassificationSVM (ones(10,2), ones(10,1), "cachesize", [1,2])
-%!error<ClassificationSVM: Epsilon must be a positive scalar.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), "epsilon", -0.1)
-%!error<ClassificationSVM: Epsilon must be a positive scalar.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), "epsilon", [0.1,0.2])
+%!error<ClassificationSVM: Tolerance must be a positive scalar.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "tolerance", -0.1)
+%!error<ClassificationSVM: Tolerance must be a positive scalar.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "tolerance", [0.1,0.2])
 %!error<ClassificationSVM: Shrinking must be either 0 or 1.> ...
 %! ClassificationSVM (ones(10,2), ones(10,1), "shrinking", 2)
 %!error<ClassificationSVM: Shrinking must be either 0 or 1.> ...
