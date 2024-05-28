@@ -62,7 +62,7 @@
 ## more control over the number of support vectors and the margin errors,
 ## making it useful for specific classification scenarios.
 ##
-## @item 'one_class_SVC': One-Class SVM is used for anomaly detection and
+## @item 'one_class_SVM': One-Class SVM is used for anomaly detection and
 ## novelty detection tasks. It aims to separate the data points of a single
 ## class from the origin in a high-dimensional feature space. This method is
 ## particularly useful for identifying outliers or unusual patterns in the data.
@@ -81,9 +81,9 @@
 ## @item 'polynomial': @math{(gamma*u'*v + coef0)^degree} Computes the polynomial
 ## kernel, which raises the dot product of the input vectors to a specified power.
 ##
-## @item 'gaussian' or 'rbf': @math{exp(-gamma*|u-v|^2)} Computes the Gaussian
-## kernel, also known as the radial basis function (RBF) kernel. It measures the
-## similarity between two vectors in a high-dimensional space.
+## @item 'rbf': @math{exp(-gamma*|u-v|^2)} Computes the radial basis function
+## (RBF) kernel. It measures the similarity between two vectors in a
+## high-dimensional space.
 ##
 ## @item 'sigmoid': @math{tanh(gamma*u'*v + coef0)} Computes the sigmoid kernel,
 ## which is inspired by the activation function used in neural networks. The
@@ -105,13 +105,19 @@
 ## the polynomial's shift, and for the sigmoid kernel, it affects the hyperbolic
 ## tangent's shift. The default value is 0.
 ##
+## @item @tab @qcode{"BoxConstraint"} @tab A positive scalar that specifies the
+## upper bound of Lagrange multipliers ie C in [0,C] i.e, the parameter C of
+## class i to weight*C, for C-SVC. It determines the trade-off between
+## maximizing the margin and minimizing the classification error. The
+## default value of BoxConstraint is 1.
+##
 ## @item @tab @qcode{"Nu"} @tab A positive scalar, in the range (0,1] that
 ## specifies the parameter nu of nu-SVC, one-class SVM. The default value is 0.5.
 ##
 ## @item @tab @qcode{"CacheSize"} @tab A positive scalar that specifies the
 ## cache size. The default value is 100.
 ##
-## @item @tab @qcode{"Epsilon"} @tab A nonnegative scalar that specifies
+## @item @tab @qcode{"Tolerance"} @tab A nonnegative scalar that specifies
 ## the tolerance of termination criterion. The default value is 1e-3.
 ##
 ## @item @tab @qcode{"Shrinking"} @tab Specifies whether to use shrinking
@@ -123,12 +129,6 @@
 ##
 ## @item @tab @qcode{"Weight"} @tab A positive scalar which specifies the
 ## parameter C of class i to weight*C, for C-SVC. The default value is 1.
-##
-## @item @tab @qcode{"BoxConstraint"} @tab A positive scalar that specifies the
-## upper bound of Lagrange multipliers ie C in [0,C] i.e, the parameter C of
-## class i to weight*C, for C-SVC. It determines the trade-off between
-## maximizing the margin and minimizing the classification error. The
-## default value of BoxConstraint is 1.
 ##
 ## @item @tab @qcode{"KFold"} @tab A positive integer greater than 1 which
 ## specifies the value of k (number of folds). The dataset is divided into k
