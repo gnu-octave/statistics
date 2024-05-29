@@ -150,6 +150,7 @@ classdef ClassificationSVM
     ProbA                   = [];     # Pairwise probability estimates
     ProbB                   = [];     # Pairwise probability estimates
     Solver                  = 'SMO';  # Solver used
+    Model                   = [];     # Model
 
   endproperties
 
@@ -166,6 +167,11 @@ classdef ClassificationSVM
       ## Get training sample size and number of variables in training data
       nsample = rows (X);                    #Number of samples in X
       ndims_X = columns (X);                 #Number of dimensions in X
+
+      ## For debugging
+##      disp(nsample);
+##      disp(ndims_X);
+##      disp(rows(Y));
 
       ## Check correspodence between predictors and response
       if (nsample != rows (Y))
@@ -204,15 +210,6 @@ classdef ClassificationSVM
               error ("ClassificationSVM: unsupported SVMtype.");
               endif
             endif
-            SVMtype = tolower(SVMtype);
-            switch (SVMtype)
-              case "c_svc"
-                s = 0;
-              case "nu_svc"
-                s = 1;
-              case "one_class_svm"
-                s = 2;
-            endswitch
 
           case "kernelfunction"
             KernelFunction = varargin{2};
@@ -225,19 +222,6 @@ classdef ClassificationSVM
               error ("ClassificationSVM: unsupported Kernel function.");
               endif
             endif
-            KernelFunction = tolower(KernelFunction);
-            switch (KernelFunction)
-              case "linear"
-                t = 0;
-              case "polynomial"
-                t = 1;
-              case "rbf"
-                t = 2;
-              case "sigmoid"
-                t = 3;
-              case "precomputed"
-                t = 4;
-            endswitch
 
           case "polynomialorder"
             PolynomialOrder = varargin{2};
@@ -246,14 +230,12 @@ classdef ClassificationSVM
               error (strcat(["ClassificationSVM: PolynomialOrder must be a"], ...
               [" positive integer."]));
             endif
-            d = PolynomialOrder;
 
           case "gamma"
             Gamma = varargin{2};
             if ( !(isscalar(Gamma) && (Gamma > 0)))
               error ("ClassificationSVM: Gamma must be a positive scalar.");
             endif
-            g = Gamma;
 
           case "kerneloffset"
             KernelOffset = varargin{2};
@@ -262,14 +244,12 @@ classdef ClassificationSVM
               error (strcat(["ClassificationSVM: KernelOffset must be a non"], ...
               ["-negative scalar."]));
             endif
-            r = KernelOffset;
 
           case "boxconstraint"
             BoxConstraint = varargin{2};
             if ( !(isscalar(BoxConstraint) && (BoxConstraint > 0)))
               error ("ClassificationSVM: BoxConstraint must be a positive scalar.");
             endif
-            c = BoxConstraint;
 
           case "nu"
             Nu = varargin{2};
@@ -277,28 +257,24 @@ classdef ClassificationSVM
               error (strcat(["ClassificationSVM: Nu must be a positive scalar"], ...
               [" in the range 0 < Nu <= 1."]));
             endif
-            n = Nu;
 
           case "cachesize"
             CacheSize = varargin{2};
             if ( !(isscalar(CacheSize) && CacheSize > 0))
               error ("ClassificationSVM: CacheSize must be a positive scalar.");
             endif
-            m = CacheSize;
 
           case "tolerance"
             Tolerance = varargin{2};
             if ( !(isscalar(Tolerance) && (Tolerance >= 0)))
               error ("ClassificationSVM: Tolerance must be a positive scalar.");
             endif
-            e = Tolerance;
 
           case "shrinking"
             Shrinking = varargin{2};
             if ( !ismember(Shrinking, [0, 1]) )
               error ("ClassificationSVM: Shrinking must be either 0 or 1.");
             endif
-            h =  Shrinking;
 
           case "probabilityestimates"
             ProbabilityEstimates = varargin{2};
@@ -306,14 +282,12 @@ classdef ClassificationSVM
               error ( strcat(["ClassificationSVM: ProbabilityEstimates must be"], ...
              [" either 0 or 1."]));
             endif
-            b = ProbabilityEstimates;
 
           case "weight"
             Weight = varargin{2};
             if ( !(isscalar(Weight) && (Weight > 0)))
               error ("ClassificationSVM: Weight must be a positive scalar.");
             endif
-            w = Weight;
 
           case "kfold"
             KFold = varargin{2};
@@ -321,7 +295,6 @@ classdef ClassificationSVM
               && mod(KFold, 1) == 0 ))
               error ("ClassificationSVM: KFold must be a positive integer greater than 1.");
             endif
-            n = KFold;
 
           otherwise
             error (strcat (["ClassificationSVM: invalid parameter name"],...
@@ -330,6 +303,40 @@ classdef ClassificationSVM
         endswitch
         varargin (1:2) = [];
       endwhile
+
+      SVMtype = tolower(SVMtype);
+        switch (SVMtype)
+          case "c_svc"
+            s = 0;
+          case "nu_svc"
+            s = 1;
+          case "one_class_svm"
+            s = 2;
+        endswitch
+      KernelFunction = tolower(KernelFunction);
+        switch (KernelFunction)
+          case "linear"
+            t = 0;
+          case "polynomial"
+            t = 1;
+          case "rbf"
+            t = 2;
+          case "sigmoid"
+            t = 3;
+          case "precomputed"
+            t = 4;
+        endswitch
+      d = PolynomialOrder;
+      g = Gamma;
+      r = KernelOffset;
+      c = BoxConstraint;
+      n = Nu;
+      m = CacheSize;
+      e = Tolerance;
+      h =  Shrinking;
+      b = ProbabilityEstimates;
+      w = Weight;
+      v = KFold;
 
     ## Assign properties
     this.X = X;
@@ -370,7 +377,16 @@ classdef ClassificationSVM
                                   [" -m %f -e %f -h %d -b %d -w %f -v %d"]), ...
                                    s, t, d, g, r, c, n, m, e, h, b, w, v);
 
-    this.Model = svmtrain(this.X, this.Y, svm_options);
+##    disp(svm_options); ## For debugging
+
+
+    labels = this.Y;
+    features = this.X;
+    features_sparse = sparse(features);
+    libsvmwrite('svm', labels, features_sparse);
+    [y,x] =  libsvmread('svm');
+
+    this.Model = svmtrain(y, x, svm_options);
 
     this.ModelParameters = Model.Parameters;
     this.NumClasses = Model.nr_class;
@@ -386,7 +402,40 @@ classdef ClassificationSVM
     this.Solver = Solver;
 
     endfunction
+##..................................................................................................
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationSVM} {@var{label} =} predict (@var{obj}, @var{XC})
+    ## @deftypefnx {ClassificationSVM} {[@var{label}, @var{accuracy}, @var{decision_values}] =} predict (@var{obj}, @var{XC})
+    ## @deftypefnx {ClassificationSVM} {[@var{label}, @var{accuracy}, @var{prob_estimates}] =} predict (@var{obj}, @var{XC})
+    ##
+    ## This function predicts new labels from a testing instance matrix based on
+    ## the Support Vector Machine classification model created by the constructor.
+    ##
+    ## @code{@var{label} = predict (@var{obj}, @var{XC})} returns the matrix of
+    ## labels predicted for the corresponding instances in @var{XC}, using the
+    ## predictor data in @code{obj.X} and corresponding labels, @code{obj.Y},
+    ## stored in the k-Nearest Neighbor classification model, @var{obj}.
+    ##
+    ## @var{XC} must be an @math{MxP} numeric matrix with the same number of
+    ## features @math{P} as the corresponding predictors of the kNN model in
+    ## @var{obj}.
+    ##
+    ## @code{[@var{label}, @var{score}, @var{cost}] = predict (@var{obj}, @var{XC})}
+    ## also returns @var{score}, which contains the predicted class scores or
+    ## posterior probabilities for each instance of the corresponding unique
+    ## classes, and @var{cost}, which is a matrix containing the expected cost
+    ## of the classifications.
+    ##
+    ## @seealso{fitcsvm, ClassificationSVM}
+    ## @end deftypefn
+    function [label, score, cost] = predict (this, XC)
 
+      ## Check for sufficient input arguments
+      if (nargin < 2)
+        error ("ClassificationSVM.predict: too few input arguments.");
+      endif
+    endfunction
+##........................................................................................................
    endmethods
 
 endclassdef
