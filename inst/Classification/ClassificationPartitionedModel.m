@@ -405,7 +405,7 @@ endclassdef
 
 %!test
 %! x = ones(4, 11);
-%! y = {"a"; "a"; "b"; "b"};  % Use cell array of character vectors
+%! y = {"a"; "a"; "b"; "b"};
 %! k = 3;
 %! a = fitcknn(x, y, "NumNeighbors", k);
 %! partition = cvpartition(y, "LeaveOut");
