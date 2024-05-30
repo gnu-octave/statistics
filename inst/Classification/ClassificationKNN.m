@@ -103,7 +103,7 @@ classdef ClassificationKNN
 ## appears first in the training labelled data.  @qcode{"nearest"}, which favors
 ## the class with the nearest neighbor among the tied groups, i.e. the class
 ## with the closest member point according to the distance metric used.
-## @qcode{"nearest"}, which randomly picks one class among the tied groups.
+## @qcode{"random"}, which randomly picks one class among the tied groups.
 ##
 ## @item @qcode{obj.Prior} @tab @tab Prior probabilities for each class,
 ## specified as a numeric vector.  The order of the elements in @qcode{Prior}
@@ -194,7 +194,7 @@ classdef ClassificationKNN
 
   methods (Access = public)
 
-    ## Class object contructor
+    ## Class object constructor
     function this = ClassificationKNN (X, Y, varargin)
       ## Check for sufficient number of input arguments
       if (nargin < 2)
