@@ -1,6 +1,7 @@
 ## Copyright (C) 2023 Mohammed Azmat Khan <azmat.dev0@gmail.com>
 ## Copyright (C) 2023-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
-##
+## Copyright (C) 2024 Ruchika Sonagote <ruchikasonagote2003@gmail.com>
+## 
 ## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software; you can redistribute it and/or modify it under
@@ -761,6 +762,107 @@ classdef ClassificationKNN
 
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationKNN} {@var{CVMdl} =} crossval (@var{obj})
+    ## @deftypefnx {ClassificationKNN} {@var{CVMdl} =} crossval (@var{obj}, @var{name}, @var{value})
+    ##
+    ## Perform cross-validation on a k-Nearest Neighbor classification model.
+    ##
+    ## @code{@var{CVMdl} = crossval (@var{obj})} returns a cross-validated model object,
+    ## @var{CVMdl}, from a trained model, @var{obj}, using 10-fold cross-validation by default.
+    ## 
+    ## @code{@var{CVMdl} = crossval (@var{obj}, @var{name}, @var{value})} specifies additional
+    ## name-value pair arguments to customise the cross-validation process.
+    ## 
+    ## @multitable @columnfractions 0.18 0.02 0.8
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{"kfold"} @tab @tab Specify the number of folds to use in k-fold
+    ## cross-validation. @code{'kfold', @var{k}} where @var{k} is an integer greater than 1.
+    ## 
+    ## @item @qcode{"holdout"} @tab @tab Specify the fraction of the data to hold out for
+    ## testing. @code{'holdout', @var{p}} where @var{p} is a scalar in the range (0,1).
+    ##
+    ## @item @qcode{"leaveout"} @tab @tab Specify whether to perform leave-one-out
+    ## cross-validation. @code{'leaveout', @var{Value}} where @var{Value} is 'on' or 'off'.
+    ##
+    ## @item @qcode{"cvPartition"} @tab @tab Provide a cross-validation partition object.
+    ## @code{'cvPartition', @var{CVObject}} where @var{CVObject} is a @var{cvPartition} object.
+    ##
+    ## @end multitable
+    ##
+    ## The returned @var{CVMdl} is a @code{ClassificationPartitionedModel} object
+    ## that contains the cross-validated results.
+    ##
+    ## @seealso{fitcknn, ClassificationKNN, cvpartition, ClassificationPartitionedModel}
+    ## @end deftypefn
+
+    function CVMdl = crossval (this, varargin)
+      ## Check input
+      if (nargin < 1)
+        error ("ClassificationKNN.crossval: Too few input arguments.");
+      elseif (numel (varargin) == 1)
+        error ("ClassificationKNN.crossval: Name-Value arguments must be in pairs.");
+      elseif (numel (varargin) > 2)
+        error ("ClassificationKNN.crossval: Specify only one of the Name-Value arguments.");
+      endif
+
+      numSamples  = size (this.X, 1);
+      numFolds    = 10;                    
+      holdout     = [];
+      leaveout    = 'off';
+      cvPartition = [];
+
+      ## Parse extra parameters
+      if (numel (varargin) > 0)
+        Value = varargin {2};
+        switch lower (varargin {1})
+          case 'kfold'
+            if (isnumeric (Value) && isscalar (Value) && (Value == fix (Value)) && Value > 1 )
+              numFolds = Value;
+            else
+              error ('ClassificationKNN.crossval: Number of folds should be an integer value greater than 1.');
+            endif
+          case 'holdout'
+            if (isnumeric (Value) && isscalar (Value) && Value > 0 && Value < 1)
+              holdout = Value;
+            else
+              error ('ClassificationKNN.crossval: Value should be a numeric value in the range 0 to 1.');
+            endif
+          case 'leaveout'
+            if (ischar (Value) && (strcmpi (Value, 'on') || strcmpi (Value, 'off')))
+              leaveout = Value;
+            else
+              error ("ClassificationKNN.crossval: Value should be either 'on' or 'off'.");
+            endif
+          case 'cvpartition'
+            if (isa (Value, 'cvpartition'))
+              cvPartition = Value;
+            else
+              error ('ClassificationKNN.crossval: Value should be a cvPartition object.');
+            endif
+          otherwise
+            error ('ClassificationKNN.crossval: Invalid name-value arguments');
+        endswitch
+        varargin (1:2) = [];
+      endif
+
+      ## Determine the cross-validation method to use
+      if (!isempty (cvPartition))
+        partition = cvPartition;
+      elseif (!isempty (holdout))
+        partition = cvpartition (numSamples, 'Holdout', holdout);
+      elseif (strcmpi (leaveout, 'on'))
+        partition = cvpartition (numSamples, 'LeaveOut');
+      else
+        partition = cvpartition (numSamples, 'KFold', numFolds);
+      endif
+
+      ## Create a cross-validated model object
+      CVMdl = ClassificationPartitionedModel (this, partition);
+
+    endfunction  
+
   endmethods
 
 endclassdef
@@ -807,6 +909,33 @@ endclassdef
 %! axis tight
 %! hold off
 
+%!demo
+%! load fisheriris
+%! x = meas;
+%! y = species;
+%! obj = fitcknn (x, y, "NumNeighbors", 5, "Standardize", 1);
+%! 
+%! ## Create a cross-validated model
+%! CVMdl = crossval (obj)
+
+%!demo
+%! load fisheriris
+%! x = meas;
+%! y = species;
+%! covMatrix = cov (x);
+%!
+%! ## Fit the k-NN model using the 'mahalanobis' distance
+%! ## and the custom covariance matrix
+%! obj = fitcknn(x, y, 'NumNeighbors', 5, 'Distance','mahalanobis', 'Cov', covMatrix);
+%!
+%! ## Create a partition model using cvpartition
+%! Partition = cvpartition (size (x, 1), 'kfold', 12);
+%!
+%! ## Create cross-validated model using 'cvPartition' name-value argument
+%! CVMdl = crossval (obj, 'cvPartition', Partition)
+%! 
+%! ## Access the trained model from first fold of cross-validation
+%! CVMdl.Trained{1}
 
 ## Test constructor with NSMethod and NumNeighbors parameters
 %!test
@@ -1266,3 +1395,72 @@ endclassdef
 %! predict (ClassificationKNN (ones (4,2), ones (4,1)), [])
 %!error<ClassificationKNN.predict: XC must have the same number of features> ...
 %! predict (ClassificationKNN (ones (4,2), ones (4,1)), 1)
+
+## Test output for crossval method
+%!shared x, y, obj
+%! load fisheriris
+%! x = meas;
+%! y = species;
+%! covMatrix = cov (x);
+%! obj = fitcknn (x, y, 'NumNeighbors', 5, 'Distance', 'mahalanobis', 'Cov', covMatrix);
+%!test
+%! CVMdl = crossval (obj);
+%! assert (class (CVMdl), "ClassificationPartitionedModel")
+%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert (CVMdl.KFold == 10)
+%! assert (CVMdl.ModelParameters.NumNeighbors == 5)
+%! assert (strcmp (CVMdl.ModelParameters.Distance, "mahalanobis"))
+%! assert (class (CVMdl.Trained{1}), "ClassificationKNN")
+%! assert (!CVMdl.ModelParameters.Standardize)
+%!test
+%! CVMdl = crossval (obj, "KFold", 5);
+%! assert (class (CVMdl), "ClassificationPartitionedModel")
+%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert (CVMdl.KFold == 5)
+%! assert (CVMdl.ModelParameters.NumNeighbors == 5)
+%! assert (strcmp (CVMdl.ModelParameters.Distance, "mahalanobis"))
+%! assert (class (CVMdl.Trained{1}), "ClassificationKNN")
+%! assert (CVMdl.ModelParameters.Standardize == obj.Standardize)
+%!test
+%! obj = fitcknn (x, y, "NumNeighbors", 5, "Distance", "cityblock");
+%! CVMdl = crossval (obj, "HoldOut", 0.2);
+%! assert (class (CVMdl), "ClassificationPartitionedModel")
+%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert (CVMdl.ModelParameters.NumNeighbors == 5) 
+%! assert (strcmp (CVMdl.ModelParameters.Distance, "cityblock"))
+%! assert (class (CVMdl.Trained{1}), "ClassificationKNN")
+%! assert (CVMdl.ModelParameters.Standardize == obj.Standardize)
+%!test
+%! obj = fitcknn (x, y, "NumNeighbors", 10, "Distance", "cityblock");
+%! CVMdl = crossval (obj, "LeaveOut", 'on');
+%! assert (class (CVMdl), "ClassificationPartitionedModel")
+%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert (CVMdl.ModelParameters.NumNeighbors == 10)
+%! assert (strcmp (CVMdl.ModelParameters.Distance, "cityblock"))
+%! assert (class (CVMdl.Trained{1}), "ClassificationKNN")
+%! assert (CVMdl.ModelParameters.Standardize == obj.Standardize)
+%!test
+%! obj = fitcknn (x, y, "NumNeighbors", 10, "Distance", "cityblock");
+%! partition = cvpartition (size (x, 1), 'KFold', 3);
+%! CVMdl = crossval (obj, 'cvPartition', partition);
+%! assert (class (CVMdl), "ClassificationPartitionedModel")
+%! assert (CVMdl.KFold == 3)
+%! assert (CVMdl.ModelParameters.NumNeighbors == 10)
+%! assert (strcmp (CVMdl.ModelParameters.Distance, "cityblock"))
+%! assert (class (CVMdl.Trained{1}), "ClassificationKNN")
+%! assert (CVMdl.ModelParameters.Standardize == obj.Standardize)
+
+## Test input validation for crossval method
+%!error<ClassificationKNN.crossval: Name-Value arguments must be in pairs.> ...
+%! crossval (ClassificationKNN (ones (4,2), ones (4,1)), "kfold")
+%!error<ClassificationKNN.crossval: Specify only one of the Name-Value arguments.>...
+%! crossval (ClassificationKNN (ones (4,2), ones (4,1)), "kfold", 12, "holdout", 0.2)
+%!error<ClassificationKNN.crossval: Number of folds should be an integer value greater than 1.> ...
+%! crossval (ClassificationKNN (ones (4,2), ones (4,1)), "kfold", 'a')
+%!error<ClassificationKNN.crossval: Value should be a numeric value in the range 0 to 1.> ...
+%! crossval (ClassificationKNN (ones (4,2), ones (4,1)), "holdout", 2)
+%!error<ClassificationKNN.crossval: Value should be either 'on' or 'off'.> ...
+%! crossval (ClassificationKNN (ones (4,2), ones (4,1)), "leaveout", 1)
+%!error<ClassificationKNN.crossval: Value should be a cvPartition object.> ...
+%! crossval (ClassificationKNN (ones (4,2), ones (4,1)), "cvpartition", 1)
+
