@@ -178,6 +178,11 @@ classdef ClassificationSVM
         error ("ClassificationSVM: number of rows in X and Y must be equal.");
       endif
 
+      ## Validate that Y is numeric
+      if (!isnumeric(Y))
+        error ("ClassificationSVM: Y must be a numeric array.");
+      endif
+
 
       SVMtype                 = 'C_SVC';
       KernelFunction          = 'rbf';
@@ -190,10 +195,10 @@ classdef ClassificationSVM
       Tolerance               = 1e-3;
       Shrinking               = 1;
       ProbabilityEstimates    = 0;
-      Weight                  = 1;
+      Weight                  = [];
       KFold                   = 10;
 
-
+      weight_given            = "no";
 
       ## Parse extra parameters
       while (numel (varargin) > 0)
@@ -284,10 +289,31 @@ classdef ClassificationSVM
             endif
 
           case "weight"
+
             Weight = varargin{2};
-            if ( !(isscalar(Weight) && (Weight > 0)))
-              error ("ClassificationSVM: Weight must be a positive scalar.");
+            weight_given = "yes";
+
+            ## Check if weights is a structure
+            if (!isstruct(Weight))
+                error("ClassificationSVM: Weights must be provided as a structure.");
             endif
+
+            ## Get the field names of the structure
+            weightFields = fieldnames(Weight);
+
+            ## Iterate over each field and validate
+            for i = 1:length(weightFields)
+                ## The field name must be a numeric string
+                classLabel = str2double(weightFields{i});
+                if (isnan(classLabel))
+                    error("ClassificationSVM: Class labels in the weight structure must be numeric.");
+                endif
+
+                ## The field value must be a numeric scalar
+                if (!(isnumeric(Weight.(weightFields{i})) && isscalar(Weight.(weightFields{i}))))
+                    error("ClassificationSVM: Weights in the weight structure must be numeric scalars.");
+                endif
+            endfor
 
           case "kfold"
             KFold = varargin{2};
@@ -333,9 +359,8 @@ classdef ClassificationSVM
       n = Nu;
       m = CacheSize;
       e = Tolerance;
-      h =  Shrinking;
+      h = Shrinking;
       b = ProbabilityEstimates;
-      w = Weight;
       v = KFold;
 
     ## Assign properties
@@ -369,24 +394,61 @@ classdef ClassificationSVM
     ##    '-e':  Tolerance
     ##    '-h':  Shrinking
     ##    '-b':  ProbabilityEstimates
-    ##    '-w':  Weight
+    ##    '-wi':  Weight
     ##    '-v':  KFold
 
-    ## Train the SVM model using svmtrain
-    svm_options = sprintf( strcat(["-s %d -t %d -d %d -g %f -r %f -c %f -n %f"], ...
-                                  [" -m %f -e %f -h %d -b %d -w %f -v %d"]), ...
-                                   s, t, d, g, r, c, n, m, e, h, b, w, v);
+    if (strcmp(weight_given, "yes"))
+      ## Initialize an empty string
+      weight_options = '';
 
-##    disp(svm_options); ## For debugging
+      ## Get the field names of the structure
+      weightFields = fieldnames(Weight);
+
+      ## Iterate over each field and format it into the LIBSVM weight string
+      for i = 1:length(weightFields)
+          ## Convert the field name to a numeric value (class label)
+          classLabel = str2double(weightFields{i});
+
+          ## Get the corresponding weight
+          wi = Weight.(weightFields{i});
+
+          ## Append to the weight_options string
+          weight_options = strcat(weight_options, sprintf(' -w%d %.2f ', classLabel, wi));
+      endfor
+
+      ## Remove the trailing space
+      weight_options = strtrim(weight_options);
+
+      ## Train the SVM model using svmtrain
+      svm_options = sprintf(strcat(["-s %d -t %d -d %d -g %f -r %f -c %f -n %f"], ...
+                                   [" -m %f -e %f -h %d -b %d %s -v %d"]), ...
+                            s, t, d, g, r, c, n, m, e, h, b, weight_options, v);
+
+    elseif (strcmp(weight_given, "no"))
+
+      ## Train the SVM model using svmtrain
+      svm_options = sprintf(strcat(["-s %d -t %d -d %d -g %f -r %f -c %f -n %f"], ...
+                                  [" -m %f -e %f -h %d -b %d -v %d"]), ...
+                            s, t, d, g, r, c, n, m, e, h, b, v);
+    endif
+
+    disp(svm_options); ## For debugging
 
 
-    labels = this.Y;
-    features = this.X;
-    features_sparse = sparse(features);
-    libsvmwrite('svm', labels, features_sparse);
-    [y,x] =  libsvmread('svm');
+##    labels = this.Y;
+##    features = this.X;
+##    features_sparse = sparse(features);
+##    libsvmwrite('svm', labels, features_sparse);
+##    [y,x] =  libsvmread('svm');
 
-    this.Model = svmtrain(y, x, svm_options);
+    y=Y;
+    x=X;
+
+    Model= svmtrain(y, x, svm_options);
+    printf("Is model a structure?");
+    isstruct(Model)
+    Model.Parameters
+    this.Model = Model;
 
     this.ModelParameters = Model.Parameters;
     this.NumClasses = Model.nr_class;
@@ -402,7 +464,7 @@ classdef ClassificationSVM
     this.Solver = Solver;
 
     endfunction
-##..................................................................................................
+
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationSVM} {@var{label} =} predict (@var{obj}, @var{XC})
     ## @deftypefnx {ClassificationSVM} {[@var{label}, @var{accuracy}, @var{decision_values}] =} predict (@var{obj}, @var{XC})
@@ -414,10 +476,10 @@ classdef ClassificationSVM
     ## @code{@var{label} = predict (@var{obj}, @var{XC})} returns the matrix of
     ## labels predicted for the corresponding instances in @var{XC}, using the
     ## predictor data in @code{obj.X} and corresponding labels, @code{obj.Y},
-    ## stored in the k-Nearest Neighbor classification model, @var{obj}.
+    ## stored in the Support Vector Machine classification model, @var{obj}.
     ##
     ## @var{XC} must be an @math{MxP} numeric matrix with the same number of
-    ## features @math{P} as the corresponding predictors of the kNN model in
+    ## features @math{P} as the corresponding predictors of the SVM model in
     ## @var{obj}.
     ##
     ## @code{[@var{label}, @var{score}, @var{cost}] = predict (@var{obj}, @var{XC})}
@@ -428,6 +490,14 @@ classdef ClassificationSVM
     ##
     ## @seealso{fitcsvm, ClassificationSVM}
     ## @end deftypefn
+
+    ##       This function does classification on a test vector x
+    ##    given a model.
+    ##
+    ##    For a classification model, the predicted class for x is returned.
+    ## For an one-class model, +1 or -1 is
+    ##    returned.
+
     function [label, score, cost] = predict (this, XC)
 
       ## Check for sufficient input arguments
@@ -435,10 +505,22 @@ classdef ClassificationSVM
         error ("ClassificationSVM.predict: too few input arguments.");
       endif
     endfunction
-##........................................................................................................
+
    endmethods
 
 endclassdef
+
+
+%!demo
+%! ## Create a Support Vector Machine classifier for Fisher's iris data.
+%!
+%! load fisheriris
+%! X = meas;                   # Feature matrix
+%! Y = species;                # Class labels
+%! ## Convert species to numerical labels
+%! ## 'setosa' -> 1, 'versicolor' -> 2, 'virginica' -> 3
+%! Y = grp2idx(Y);
+%! obj = fitcsvm (X, Y);
 
 
 ## Test input validation for constructor
@@ -446,6 +528,8 @@ endclassdef
 %!error<ClassificationSVM: too few input arguments.> ClassificationSVM (ones(10,2))
 %!error<ClassificationSVM: number of rows in X and Y must be equal.> ...
 %! ClassificationSVM (ones(10,2), ones (5,1))
+%!error<ClassificationSVM: Y must be a numeric array.> ...
+%! ClassificationSVM (ones(5,2), ['A';'B';'A';'C';'B'])
 %!error<ClassificationSVM: SVMtype must be a string.> ...
 %! ClassificationSVM (ones(10,2), ones(10,1), "svmtype", 123)
 %!error<ClassificationSVM: unsupported SVMtype.> ...
@@ -492,10 +576,12 @@ endclassdef
 %! ClassificationSVM (ones(10,2), ones(10,1), "probabilityestimates", 2)
 %!error<ClassificationSVM: ProbabilityEstimates must be either 0 or 1.> ...
 %! ClassificationSVM (ones(10,2), ones(10,1), "probabilityestimates", -1)
-%!error<ClassificationSVM: Weight must be a positive scalar.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), "weight", -1)
-%!error<ClassificationSVM: Weight must be a positive scalar.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), "weight", [1,2])
+%!error<ClassificationSVM: Weights must be provided as a structure.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "weight", 1)
+%!error<ClassificationSVM: Class labels in the weight structure must be numeric.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "weight", struct('a',15, '2',7))
+%!error<ClassificationSVM: Weights in the weight structure must be numeric scalars.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "weight", struct('1', 'a', '2',7))
 %!error<ClassificationSVM: BoxConstraint must be a positive scalar.> ...
 %! ClassificationSVM (ones(10,2), ones(10,1), "boxconstraint", -1)
 %!error<ClassificationSVM: BoxConstraint must be a positive scalar.> ...
