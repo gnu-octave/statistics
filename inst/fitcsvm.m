@@ -33,8 +33,8 @@
 ## @var{X} will be used to train the SVM model.
 ## @item
 ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels of
-## corresponding predictor data in @var{X}. @var{Y} can contain any type of
-## categorical data. @var{Y} must have same numbers of Rows as @var{X}.
+## corresponding predictor data in @var{X}. @var{Y} can contain numerical type
+## of data. @var{Y} must have same numbers of Rows as @var{X}.
 ##
 ## @end itemize
 ##
@@ -66,6 +66,7 @@
 ## novelty detection tasks. It aims to separate the data points of a single
 ## class from the origin in a high-dimensional feature space. This method is
 ## particularly useful for identifying outliers or unusual patterns in the data.
+## For one-class SVM, @var{Y} has no effect and can be any number.
 ##
 ## @end itemize
 ##
@@ -127,8 +128,10 @@
 ## the model for probability estimates. It accepts either 0 or 1. The default
 ## value is 0.
 ##
-## @item @tab @qcode{"Weight"} @tab A positive scalar which specifies the
-## parameter C of class i to weight*C, for C-SVC. The default value is 1.
+## @item @tab @qcode{"Weight"} @tab Provided as a structure with two fields:
+## Class labels and the corresponding weight which is a scalar which specifies
+## the parameter C of class i to weight*C, for C-SVC. The default value is
+## 1 for all classes.
 ##
 ## @item @tab @qcode{"KFold"} @tab A positive integer greater than 1 which
 ## specifies the value of k (number of folds). The dataset is divided into k
