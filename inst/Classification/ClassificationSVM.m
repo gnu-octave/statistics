@@ -58,6 +58,15 @@ classdef ClassificationSVM
 ## numeric vector, or cell array of character vectors.  Each value in @var{Y} is
 ## the observed class label for the corresponding row in @var{X}.
 ##
+## @item @tab @qcode{"obj.CrossValidationAccuracy"} @tab This property is
+## computed during the cross-validation process and represents the proportion of
+## correctly classified instances in the validation sets. It is calculated by
+## performing a k-fold cross-validation on the training dataset. The dataset is
+## divided into k subsets (folds), and the SVM model is trained on k-1 subsets
+## while the remaining subset is used for validation. This process is repeated
+## k times, each time using a different subset for validation. The accuracy is
+## the average of the accuracies from each fold.
+##
 ## @item @tab @qcode{"obj.ModelParameters"} @tab  This field contains the
 ## parameters used to train the SVM model, such as C, gamma, kernel type, etc.
 ## These parameters define the behavior and performance of the SVM. For example,
@@ -136,6 +145,7 @@ classdef ClassificationSVM
     X                       = [];     # Predictor data
     Y                       = [];     # Class labels
 
+    CrossValidationAccuracy = [];     # Cross Validation Accuracy of the model
     ModelParameters         = [];     # SVM parameters.
     NumClasses              = [];     # Number of classes in Y
     ClassNames              = [];     # Names of classes in Y
@@ -149,8 +159,7 @@ classdef ClassificationSVM
 
     ProbA                   = [];     # Pairwise probability estimates
     ProbB                   = [];     # Pairwise probability estimates
-    Solver                  = 'SMO';  # Solver used
-    Model                   = [];     # Model
+    Solver                  = "SMO";  # Solver used
 
   endproperties
 
@@ -168,7 +177,7 @@ classdef ClassificationSVM
       nsample = rows (X);                    #Number of samples in X
       ndims_X = columns (X);                 #Number of dimensions in X
 
-      ## For debugging
+## For debugging
 ##      disp(nsample);
 ##      disp(ndims_X);
 ##      disp(rows(Y));
@@ -421,35 +430,26 @@ classdef ClassificationSVM
 
       ## Train the SVM model using svmtrain
       svm_options = sprintf(strcat(["-s %d -t %d -d %d -g %f -r %f -c %f -n %f"], ...
-                                   [" -m %f -e %f -h %d -b %d %s -v %d"]), ...
-                            s, t, d, g, r, c, n, m, e, h, b, weight_options, v);
+                                   [" -m %f -e %f -h %d -b %d %s"]), ...
+                            s, t, d, g, r, c, n, m, e, h, b, weight_options);
 
     elseif (strcmp(weight_given, "no"))
 
       ## Train the SVM model using svmtrain
       svm_options = sprintf(strcat(["-s %d -t %d -d %d -g %f -r %f -c %f -n %f"], ...
-                                  [" -m %f -e %f -h %d -b %d -v %d"]), ...
-                            s, t, d, g, r, c, n, m, e, h, b, v);
+                                  [" -m %f -e %f -h %d -b %d"]), ...
+                            s, t, d, g, r, c, n, m, e, h, b);
     endif
 
-    disp(svm_options); ## For debugging
+##    disp(svm_options); ## For debugging
 
+    svm_options_with_kfold = strcat(svm_options, sprintf(" -v %d -q", v));
 
-##    labels = this.Y;
-##    features = this.X;
-##    features_sparse = sparse(features);
-##    libsvmwrite('svm', labels, features_sparse);
-##    [y,x] =  libsvmread('svm');
+##    disp(svm_options_with_kfold); ## For debugging
 
-    y=Y;
-    x=X;
+    Model= svmtrain(Y, X, svm_options);
 
-    Model= svmtrain(y, x, svm_options);
-    printf("Is model a structure?");
-    isstruct(Model)
-    Model.Parameters
-    this.Model = Model;
-
+    this.CrossValidationAccuracy = svmtrain(Y, X, svm_options_with_kfold);
     this.ModelParameters = Model.Parameters;
     this.NumClasses = Model.nr_class;
     this.SupportVectorCount = Model.totalSV;
@@ -461,7 +461,7 @@ classdef ClassificationSVM
     this.SupportVectorPerClass = Model.nSV;
     this.SupportVectorCoef = Model.sv_coef;
     this.SupportVectors = Model.SVs;
-    this.Solver = Solver;
+    this.Solver = "SMO";
 
     endfunction
 
