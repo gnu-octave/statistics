@@ -29,28 +29,86 @@
 ## @end deftypefn
 
 function [v, idx] = nanmax (X, Y, DIM)
-  if nargin < 1 || nargin > 3
+  if (nargin < 1 || nargin > 3)
     print_usage;
-  elseif nargin == 1 || (nargin == 2 && isempty(Y))
-    nanvals = isnan(X);
+  elseif (nargin == 1 || (nargin == 2 && isempty (Y)))
+    nanvals = isnan (X);
     X(nanvals) = -Inf;
     [v, idx] = max (X);
-    v(all(nanvals)) = NaN;
-  elseif (nargin == 3 && isempty(Y))
-    nanvals = isnan(X);
+    v(all (nanvals)) = NaN;
+  elseif (nargin == 3 && strcmpi (DIM, "all") && isempty (Y))
+    X = X(:);
+    nanvals = isnan (X);
     X(nanvals) = -Inf;
-    [v, idx] = max (X,[],DIM);
-    v(all(nanvals,DIM)) = NaN;
+    [v, idx] = max (X);
+    v(all (nanvals)) = NaN;
+  elseif (nargin == 3 && isempty (Y))
+    if (isscalar (DIM))
+      nanvals = isnan (X);
+      X(nanvals) = -Inf;
+      [v, idx] = max (X, [], DIM);
+      v(all (nanvals, DIM)) = NaN;
+    else
+      vecdim = sort (DIM);
+      if (! all (diff (vecdim)))
+         error ("nanmax: VECDIM must contain non-repeating positive integers.");
+      endif
+      ## Ignore dimensions in VECDIM larger than actual array
+      vecdim(find (vecdim > ndims (X))) = [];
+
+      if (isempty (vecdim))
+        v = X;
+        if (nargout > 1)
+          idx = reshape ([1:numel(X)], size (X));
+        endif
+      else
+
+        ## Calculate permutation vector
+        szx = size (X);
+        remdims = 1:ndims (X);      # All dimensions
+        remdims(vecdim) = [];       # Delete dimensions specified by vecdim
+        nremd = numel (remdims);
+
+        ## If all dimensions are given, it is equivalent to 'all' flag
+        if (nremd == 0)
+          X = X(:);
+          nanvals = isnan (X);
+          X(nanvals) = -Inf;
+          [v, idx] = max (X);
+          v(all (nanvals)) = NaN;
+
+        else
+          ## Permute to push vecdims to back
+          perm = [remdims, vecdim];
+          X = permute (X, perm);
+
+          ## Reshape to squash all vecdims in final dimension
+
+          sznew = [szx(remdims), prod(szx(vecdim))];
+          X = reshape (X, sznew);
+
+          ## Calculate nanmax on final dimension
+          DIM = nremd + 1;
+          nanvals = isnan (X);
+          X(nanvals) = -Inf;
+          [v, idx] = max (X, [], DIM);
+          v(all (nanvals, DIM)) = NaN;
+
+          ## Inverse permute back to correct dimensions
+          v = ipermute (v, perm);
+          idx = ipermute (idx, perm);
+        endif
+      endif
+    endif
   else
-    Xnan = isnan(X);
-    Ynan = isnan(Y);
+    if (nargout > 1)
+      error ("nanmax: a second output is not supported with this syntax.");
+    endif
+    Xnan = isnan (X);
+    Ynan = isnan (Y);
     X(Xnan) = -Inf;
     Y(Ynan) = -Inf;
-    if (nargin == 3)
-      [v, idx] = max(X,Y,DIM);
-    else
-      [v, idx] = max(X,Y);
-    endif
+    v = max (X, Y);
     v(Xnan & Ynan) = NaN;
   endif
 endfunction
