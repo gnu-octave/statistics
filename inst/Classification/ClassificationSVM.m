@@ -192,7 +192,6 @@ classdef ClassificationSVM
         error ("ClassificationSVM: Y must be a numeric array.");
       endif
 
-
       SVMtype                 = 'C_SVC';
       KernelFunction          = 'rbf';
       PolynomialOrder         = 3;
@@ -232,7 +231,7 @@ classdef ClassificationSVM
             endif
             if (ischar(KernelFunction))
               if (! any (strcmpi (tolower(KernelFunction), {"linear", "rbf", ...
-                "polynomial", "sigmoid", "precomputed"})))
+                "polynomial", "sigmoid"})))
               error ("ClassificationSVM: unsupported Kernel function.");
               endif
             endif
@@ -358,8 +357,6 @@ classdef ClassificationSVM
             t = 2;
           case "sigmoid"
             t = 3;
-          case "precomputed"
-            t = 4;
         endswitch
       d = PolynomialOrder;
       g = Gamma;
@@ -430,14 +427,14 @@ classdef ClassificationSVM
 
       ## Train the SVM model using svmtrain
       svm_options = sprintf(strcat(["-s %d -t %d -d %d -g %f -r %f -c %f -n %f"], ...
-                                   [" -m %f -e %f -h %d -b %d %s"]), ...
+                                   [" -m %f -e %f -h %d -b %d %s -q"]), ...
                             s, t, d, g, r, c, n, m, e, h, b, weight_options);
 
     elseif (strcmp(weight_given, "no"))
 
       ## Train the SVM model using svmtrain
       svm_options = sprintf(strcat(["-s %d -t %d -d %d -g %f -r %f -c %f -n %f"], ...
-                                  [" -m %f -e %f -h %d -b %d"]), ...
+                                  [" -m %f -e %f -h %d -b %d -q"]), ...
                             s, t, d, g, r, c, n, m, e, h, b);
     endif
 
@@ -447,7 +444,7 @@ classdef ClassificationSVM
 
 ##    disp(svm_options_with_kfold); ## For debugging
 
-    Model= svmtrain(Y, X, svm_options);
+    Model = svmtrain(Y, X, svm_options);
 
     this.CrossValidationAccuracy = svmtrain(Y, X, svm_options_with_kfold);
     this.ModelParameters = Model.Parameters;
@@ -467,43 +464,84 @@ classdef ClassificationSVM
 
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationSVM} {@var{label} =} predict (@var{obj}, @var{XC})
-    ## @deftypefnx {ClassificationSVM} {[@var{label}, @var{accuracy}, @var{decision_values}] =} predict (@var{obj}, @var{XC})
-    ## @deftypefnx {ClassificationSVM} {[@var{label}, @var{accuracy}, @var{prob_estimates}] =} predict (@var{obj}, @var{XC})
+    ## @deftypefnx {ClassificationSVM} {[@var{label}, @var{decision_values}] =} predict (@dots{}, @var{name}, @var{value})
+    ## @deftypefnx {ClassificationSVM} {[@var{label}, @var{prob_estimates}] =} predict (@dots{})
     ##
-    ## This function predicts new labels from a testing instance matrix based on
-    ## the Support Vector Machine classification model created by the constructor.
+    ## Classify new data points into categories using the Support Vector Machine
+    ## classification object.
     ##
-    ## @code{@var{label} = predict (@var{obj}, @var{XC})} returns the matrix of
+    ## @code{@var{label} = predict (@var{obj}, @var{XC})} returns the vector of
     ## labels predicted for the corresponding instances in @var{XC}, using the
     ## predictor data in @code{obj.X} and corresponding labels, @code{obj.Y},
     ## stored in the Support Vector Machine classification model, @var{obj}.
+    ## For one-class model, +1 or -1 is returned.
     ##
+    ## @itemize
+    ## @item
+    ## @var{obj} must be a @qcode{ClassificationSVM} class object.
+    ##
+    ## @item
     ## @var{XC} must be an @math{MxP} numeric matrix with the same number of
     ## features @math{P} as the corresponding predictors of the SVM model in
     ## @var{obj}.
     ##
-    ## @code{[@var{label}, @var{score}, @var{cost}] = predict (@var{obj}, @var{XC})}
-    ## also returns @var{score}, which contains the predicted class scores or
-    ## posterior probabilities for each instance of the corresponding unique
-    ## classes, and @var{cost}, which is a matrix containing the expected cost
-    ## of the classifications.
+    ## @end itemize
+    ##
+    ## @code{[@var{label}, @var{prob_estimates}] = predict (@var{obj}, @var{XC}, "ProbabilityEstimates", 1)}
+    ## also returns @var{prob_estimates}, If k is the number of classes in
+    ## training data, each row contains k values indicating the probability that
+    ## the testing instance is in each class.
+    ##
+    ## @code{[@var{label}, @var{decision_values}] = predict (@var{obj}, @var{XC}, "ProbabilityEstimates", 0)}
+    ## also returns @var{decision_values},  If k is the number of classes in
+    ## training data, each row includes results of predicting k(k-1)/2
+    ## binary-class SVMs.  For classification, k = 1 is a special case.
+    ## Decision value +1 is returned for each testing instance, instead of
+    ## an empty vector.
+    ##
+    ##
+    ## @code{@var{label} = predict (@dots{}, @var{Name}, @var{Value})} returns the
+    ## aforementioned results with additional properties specified by
+    ## @qcode{Name-Value} pair arguments listed below.
+    ##
+    ## @multitable @columnfractions 0.28 0.02 0.7
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{"ProbabilityEstimates"} @tab @tab Specifies whether to
+    ## output Probability Estimates or Decision Values. It accepts either
+    ## 0 or 1. The default value is 0.
+    ##
+    ## @itemize
+    ##
+    ## @item
+    ## 0 return decision values.
+    ##
+    ## @item
+    ## 1 return probability estimates.
+    ##
+    ## @end itemize
+    ##
+    ## @end multitable
     ##
     ## @seealso{fitcsvm, ClassificationSVM}
     ## @end deftypefn
 
-    ##       This function does classification on a test vector x
-    ##    given a model.
-    ##
-    ##    For a classification model, the predicted class for x is returned.
-    ## For an one-class model, +1 or -1 is
-    ##    returned.
-
-    function [label, score, cost] = predict (this, XC)
+    function [label, value] = predict (this, XC, varargin)
 
       ## Check for sufficient input arguments
       if (nargin < 2)
         error ("ClassificationSVM.predict: too few input arguments.");
       endif
+
+      ## Check for valid XC
+      if (isempty (XC))
+        error ("ClassificationSVM.predict: XC is empty.");
+      elseif (columns (this.X) != columns (XC))
+        error (strcat (["ClassificationSVM.predict: XC must have the same"], ...
+                       [" number of features (columns) as in the SVM model."]));
+      endif
+
+      [predict_label_L, accuracy_L, dec_values_L] = svmpredict(test_label, test_data, model_linear);
     endfunction
 
    endmethods
@@ -596,3 +634,11 @@ endclassdef
 %! ClassificationSVM (ones(10,2), ones(10,1), "kfold", [1,2])
 %!error<ClassificationSVM: invalid parameter name in optional pair arguments.> ...
 %! ClassificationSVM (ones(10,2), ones (10,1), "some", "some")
+
+## Test input validation for predict method
+%!error<ClassificationSVM.predict: too few input arguments.> ...
+%! predict (ClassificationSVM (ones (40,2), ones (40,1)))
+%!error<ClassificationSVM.predict: XC is empty.> ...
+%! predict (ClassificationSVM (ones (40,2), ones (40,1)), [])
+%!error<ClassificationSVM.predict: XC must have the same number of features> ...
+%! predict (ClassificationSVM (ones (40,2), ones (40,1)), 1)
