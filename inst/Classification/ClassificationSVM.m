@@ -160,10 +160,14 @@ classdef ClassificationSVM
     ProbA                   = [];     # Pairwise probability estimates
     ProbB                   = [];     # Pairwise probability estimates
     Solver                  = "SMO";  # Solver used
-    Model                   = [];
 
   endproperties
 
+  properties (Access = private)
+
+    Model                   = [];
+
+  endproperties
 
   methods (Access = public)
 
@@ -178,7 +182,7 @@ classdef ClassificationSVM
       nsample = rows (X);                    #Number of samples in X
       ndims_X = columns (X);                 #Number of dimensions in X
 
-## For debugging
+##      For debugging
 ##      disp(nsample);
 ##      disp(ndims_X);
 ##      disp(rows(Y));
@@ -441,14 +445,13 @@ classdef ClassificationSVM
 
 ##    disp(svm_options); ## For debugging
 
-    svm_options_with_kfold = strcat(svm_options, sprintf(" -v %d -q", v));
+    svm_options_with_kfold = strcat(svm_options, sprintf(" -v %d ", v));
 
 ##    disp(svm_options_with_kfold); ## For debugging
 
     Model = svmtrain(Y, X, svm_options);
 
     this.Model =  Model;
-
     this.CrossValidationAccuracy = svmtrain(Y, X, svm_options_with_kfold);
     this.ModelParameters = Model.Parameters;
     this.NumClasses = Model.nr_class;
@@ -569,7 +572,14 @@ classdef ClassificationSVM
 
       predict_options = sprintf(strcat(["-b %d -q"]), b);
 
-      [predict_label_L, accuracy_L, dec_values_L] = svmpredict(ones(rows(XC)), XC, this.Model, predict_options);
+      [predict_label_L, accuracy_L, dec_values_L] = svmpredict(ones(rows(XC),1), XC, this.Model, predict_options);
+
+##      printf("predict_label_L:");
+##      disp(predict_label_L);
+##      printf("accuracy_L"); ## Garbage
+##      disp(accuracy_L);
+##      printf("dec_values_L");
+##      disp(dec_values_L);
 
       if (nargout > 0)
         varargout{1} = predict_label_L;
