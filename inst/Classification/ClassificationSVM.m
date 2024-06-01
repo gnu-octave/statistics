@@ -160,6 +160,7 @@ classdef ClassificationSVM
     ProbA                   = [];     # Pairwise probability estimates
     ProbB                   = [];     # Pairwise probability estimates
     Solver                  = "SMO";  # Solver used
+    Model                   = [];
 
   endproperties
 
@@ -285,13 +286,13 @@ classdef ClassificationSVM
 
           case "shrinking"
             Shrinking = varargin{2};
-            if ( !ismember(Shrinking, [0, 1]) )
+            if ( !(ismember(Shrinking, [0, 1]) && isscalar(Shrinking)))
               error ("ClassificationSVM: Shrinking must be either 0 or 1.");
             endif
 
           case "probabilityestimates"
             ProbabilityEstimates = varargin{2};
-            if ( !ismember(ProbabilityEstimates, [0, 1]) )
+            if ( !(ismember(ProbabilityEstimates, [0, 1]) && isscalar(ProbabilityEstimates)))
               error ( strcat(["ClassificationSVM: ProbabilityEstimates must be"], ...
              [" either 0 or 1."]));
             endif
@@ -446,6 +447,8 @@ classdef ClassificationSVM
 
     Model = svmtrain(Y, X, svm_options);
 
+    this.Model =  Model;
+
     this.CrossValidationAccuracy = svmtrain(Y, X, svm_options_with_kfold);
     this.ModelParameters = Model.Parameters;
     this.NumClasses = Model.nr_class;
@@ -533,6 +536,10 @@ classdef ClassificationSVM
         error ("ClassificationSVM.predict: too few input arguments.");
       endif
 
+      if (mod (nargin, 2) != 0)
+        error ("ClassificationSVM.predict: Name-Value arguments must be in pairs.");
+      endif
+
       ## Check for valid XC
       if (isempty (XC))
         error ("ClassificationSVM.predict: XC is empty.");
@@ -541,7 +548,36 @@ classdef ClassificationSVM
                        [" number of features (columns) as in the SVM model."]));
       endif
 
-      [predict_label_L, accuracy_L, dec_values_L] = svmpredict(test_label, test_data, model_linear);
+      b = 0;  ## Default: return decision values.
+
+      while (numel (varargin) > 0)
+        switch (tolower (varargin {1}))
+
+          case "probabilityestimates"
+            b = varargin{2};
+            if ( !(ismember(b, [0, 1]) && isscalar(b)))
+              error (strcat (["ClassificationSVM.predict: ProbabilityEstimates"], ...
+                             [" must be either 1 or 0."]));
+            endif
+
+          otherwise
+            error (strcat (["ClassificationSVM.predict: invalid parameter name"],...
+                           [" in optional pair arguments."]));
+          endswitch
+        varargin (1:2) = [];
+      endwhile
+
+      predict_options = sprintf(strcat(["-b %d -q"]), b);
+
+      [predict_label_L, accuracy_L, dec_values_L] = svmpredict(ones(rows(XC)), XC, this.Model, predict_options);
+
+      if (nargout > 0)
+        varargout{1} = predict_label_L;
+        if (nargout > 1)
+          varargout{2} = dec_values_L;
+        endif
+      endif
+
     endfunction
 
    endmethods
@@ -610,10 +646,14 @@ endclassdef
 %! ClassificationSVM (ones(10,2), ones(10,1), "shrinking", 2)
 %!error<ClassificationSVM: Shrinking must be either 0 or 1.> ...
 %! ClassificationSVM (ones(10,2), ones(10,1), "shrinking", -1)
+%!error<ClassificationSVM: Shrinking must be either 0 or 1.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "shrinking", [1 0])
 %!error<ClassificationSVM: ProbabilityEstimates must be either 0 or 1.> ...
 %! ClassificationSVM (ones(10,2), ones(10,1), "probabilityestimates", 2)
 %!error<ClassificationSVM: ProbabilityEstimates must be either 0 or 1.> ...
 %! ClassificationSVM (ones(10,2), ones(10,1), "probabilityestimates", -1)
+%!error<ClassificationSVM: ProbabilityEstimates must be either 0 or 1.> ...
+%! ClassificationSVM (ones(10,2), ones(10,1), "probabilityestimates", [0 1])
 %!error<ClassificationSVM: Weights must be provided as a structure.> ...
 %! ClassificationSVM (ones(10,2), ones(10,1), "weight", 1)
 %!error<ClassificationSVM: Class labels in the weight structure must be numeric.> ...
@@ -638,7 +678,17 @@ endclassdef
 ## Test input validation for predict method
 %!error<ClassificationSVM.predict: too few input arguments.> ...
 %! predict (ClassificationSVM (ones (40,2), ones (40,1)))
+%!error<ClassificationSVM.predict: Name-Value arguments must be in pairs.> ...
+%! predict (ClassificationSVM (ones (40,2), ones (40,1)), zeros(2,2), "ProbabilityEstimates")
 %!error<ClassificationSVM.predict: XC is empty.> ...
 %! predict (ClassificationSVM (ones (40,2), ones (40,1)), [])
 %!error<ClassificationSVM.predict: XC must have the same number of features> ...
 %! predict (ClassificationSVM (ones (40,2), ones (40,1)), 1)
+%!error<ClassificationSVM.predict: ProbabilityEstimates must be either 1 or 0.> ...
+%! predict (ClassificationSVM (ones (40,2), ones (40,1)), zeros(2,2),"ProbabilityEstimates", "some")
+%!error<ClassificationSVM.predict: ProbabilityEstimates must be either 1 or 0.> ...
+%! predict (ClassificationSVM (ones (40,2), ones (40,1)), zeros(2,2),"ProbabilityEstimates", 3)
+%!error<ClassificationSVM.predict: ProbabilityEstimates must be either 1 or 0.> ...
+%! predict (ClassificationSVM (ones (40,2), ones (40,1)), zeros(2,2),"ProbabilityEstimates", [1 0])
+%!error<ClassificationSVM.predict: invalid parameter name in optional pair arguments.> ...
+%! predict (ClassificationSVM (ones (40,2), ones (40,1)), zeros(2,2), "some", "some")
