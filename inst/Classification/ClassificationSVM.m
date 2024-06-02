@@ -575,7 +575,7 @@ classdef ClassificationSVM
       [predict_label_L, accuracy_L, dec_values_L] = svmpredict(ones(rows(XC),1), XC, this.Model, predict_options);
 
       if (nargout > 0)
-        label = predict_label_L
+        label = predict_label_L;
         if (nargout > 1)
           value = dec_values_L;
         endif
@@ -614,8 +614,7 @@ endclassdef
 %!
 %! ## Calculate the accuracy
 %! accuracy = sum(predicted_labels == Y_test) / length(Y_test) * 100;
-%! printf("Prediction Accuracy: ");
-%! disp(accuracy);
+%! printf('Prediction Accuracy = %d%%\n', accuracy);
 
 ## Test input validation for constructor
 %!error<ClassificationSVM: too few input arguments.> ClassificationSVM ()
