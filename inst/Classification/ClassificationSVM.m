@@ -574,17 +574,10 @@ classdef ClassificationSVM
 
       [predict_label_L, accuracy_L, dec_values_L] = svmpredict(ones(rows(XC),1), XC, this.Model, predict_options);
 
-##      printf("predict_label_L:");
-##      disp(predict_label_L);
-##      printf("accuracy_L"); ## Garbage
-##      disp(accuracy_L);
-##      printf("dec_values_L");
-##      disp(dec_values_L);
-
       if (nargout > 0)
-        varargout{1} = predict_label_L;
+        label = predict_label_L
         if (nargout > 1)
-          varargout{2} = dec_values_L;
+          value = dec_values_L;
         endif
       endif
 
@@ -604,8 +597,25 @@ endclassdef
 %! ## Convert species to numerical labels
 %! ## 'setosa' -> 1, 'versicolor' -> 2, 'virginica' -> 3
 %! Y = grp2idx(Y);
-%! obj = fitcsvm (X, Y);
-
+%!
+%! ## Randomly partition the data into training and testing sets
+%! cv = cvpartition(Y, 'HoldOut', 0.33);  # 33% data for testing, 67% for training
+%!
+%! X_train = X(training(cv), :);
+%! Y_train = Y(training(cv));
+%!
+%! X_test = X(test(cv), :);
+%! Y_test = Y(test(cv));
+%!
+%! svm_obj = fitcsvm(X_train, Y_train,"svmtype",'c_svc',"kernelfunction",'rbf');
+%!
+%! ## Predict the labels for the test set
+%! predicted_labels = svm_obj.predict(X_test);
+%!
+%! ## Calculate the accuracy
+%! accuracy = sum(predicted_labels == Y_test) / length(Y_test) * 100;
+%! printf("Prediction Accuracy: ");
+%! disp(accuracy);
 
 ## Test input validation for constructor
 %!error<ClassificationSVM: too few input arguments.> ClassificationSVM ()
