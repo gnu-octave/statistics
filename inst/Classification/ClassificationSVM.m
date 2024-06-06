@@ -452,7 +452,7 @@ classdef ClassificationSVM
     Model = svmtrain(Y, X, svm_options);
 
     this.Model =  Model;
-    this.CrossValidationAccuracy = svmtrain(Y, X, svm_options_with_kfold);
+    this.CrossValidationAccuracy = evalc('svmtrain(Y, X, svm_options_with_kfold)');
     this.ModelParameters = Model.Parameters;
     this.NumClasses = Model.nr_class;
     this.SupportVectorCount = Model.totalSV;
@@ -485,12 +485,10 @@ classdef ClassificationSVM
     ## @itemize
     ## @item
     ## @var{obj} must be a @qcode{ClassificationSVM} class object.
-    ##
     ## @item
     ## @var{XC} must be an @math{MxP} numeric matrix with the same number of
     ## features @math{P} as the corresponding predictors of the SVM model in
     ## @var{obj}.
-    ##
     ## @end itemize
     ##
     ## @code{[@var{label}, @var{prob_estimates}] = predict (@var{obj}, @var{XC}, "ProbabilityEstimates", 1)}
@@ -518,13 +516,10 @@ classdef ClassificationSVM
     ## 0 or 1. The default value is 0.
     ##
     ## @itemize
-    ##
     ## @item
     ## 0 return decision values.
-    ##
     ## @item
     ## 1 return probability estimates.
-    ##
     ## @end itemize
     ##
     ## @end multitable
@@ -583,13 +578,70 @@ classdef ClassificationSVM
 
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationSVM} {@var{m} =} margin (@var{obj}, @var{X}, @var{Y})
+    ##
+    ## Determine the classification margins for an Support Vector Machine
+    ## classification object.
+    ##
+    ## @code{@var{m} = margin (@var{obj}, @var{X}, @var{Y})} returns the
+    ## classification margins for the trained support vector machine (SVM)
+    ## classifier @var{obj} using the sample data in @var{X} and the class
+    ## labels in @var{Y}.
+    ##
+    ## @itemize
+    ## @item
+    ## @var{obj} must be a @qcode{ClassificationSVM} class object.
+    ## @item
+    ## @var{X} must be an @math{MxP} numeric matrix with the same number of
+    ## features @math{P} as the corresponding predictors of the SVM model in
+    ## @var{obj}.
+    ## @item
+    ## @var{Y} must be @math{Mx1} numeric vector containing the class labels
+    ## corresponding to the predictor data in @var{X}. @var{Y} must have same
+    ## number of rows as @var{X}.
+    ## @end itemize
+    ##
+    ## @seealso{fitcsvm, ClassificationSVM}
+    ## @end deftypefn
+
+    function m = margin (this, X, Y)
+
+      ## Check for sufficient input arguments
+      if (nargin < 3)
+        error ("ClassificationSVM.margin: too few input arguments.");
+      endif
+
+      ## Check for valid X
+      if (isempty (X))
+        error ("ClassificationSVM.margin: X is empty.");
+      elseif (columns (this.X) != columns (X))
+        error (strcat (["ClassificationSVM.margin: X must have the same"], ...
+                       [" number of features (columns) as in the SVM model."]));
+      endif
+
+      ## Check for valid Y
+      if (isempty (Y))
+        error ("ClassificationSVM.margin: Y is empty.");
+      elseif (rows (X)!= rows (Y))
+        error (strcat (["ClassificationSVM.margin: Y must have the same"], ...
+                       [" number of rows as X."]));
+      endif
+
+      predict_options = sprintf("-q");
+
+      [predict_label_L, accuracy_L, dec_values_L] = svmpredict(Y, X, this.Model, predict_options);
+      m = dec_values_L
+    endfunction
+
    endmethods
 
 endclassdef
 
 
 %!demo
-%! ## Create a Support Vector Machine classifier for Fisher's iris data.
+%! ## Create a Support Vector Machine classifier for Fisher's iris data and
+%! ## predict labels for test data.
 %!
 %! load fisheriris
 %! X = meas;                   # Feature matrix
@@ -597,6 +649,8 @@ endclassdef
 %! ## Convert species to numerical labels
 %! ## 'setosa' -> 1, 'versicolor' -> 2, 'virginica' -> 3
 %! Y = grp2idx(Y);
+%!
+%! rng(1); ## For reproducibility
 %!
 %! ## Randomly partition the data into training and testing sets
 %! cv = cvpartition(Y, 'HoldOut', 0.33);  # 33% data for testing, 67% for training
@@ -615,6 +669,25 @@ endclassdef
 %! ## Calculate the accuracy
 %! accuracy = sum(predicted_labels == Y_test) / length(Y_test) * 100;
 %! printf('Prediction Accuracy = %d%%\n', accuracy);
+
+%!demo
+%! ## Create a Support Vector Machine classifier for Fisher's iris data and plot
+%! ## the support vectors.
+%!
+%! load fisheriris
+%! inds = !strcmp(species,'setosa');
+%! X = meas(inds,3:4);              # Feature matrix
+%! Y = grp2idx(species(inds));      # Class Labels
+%!
+%! SVMModel = fitcsvm(X,Y)
+%!
+%! sv = SVMModel.SupportVectors;
+%! figure
+%! gscatter(X(:,1),X(:,2),Y)
+%! hold on
+%! plot(sv(:,1),sv(:,2),'ko','MarkerSize',10)
+%! legend('versicolor','virginica','Support Vector')
+%! hold off
 
 ## Test input validation for constructor
 %!error<ClassificationSVM: too few input arguments.> ClassificationSVM ()
@@ -711,3 +784,17 @@ endclassdef
 %! predict (ClassificationSVM (ones (40,2), ones (40,1)), zeros(2,2),"ProbabilityEstimates", [1 0])
 %!error<ClassificationSVM.predict: invalid parameter name in optional pair arguments.> ...
 %! predict (ClassificationSVM (ones (40,2), ones (40,1)), zeros(2,2), "some", "some")
+
+## Test input validation for margin method
+%!error<ClassificationSVM.margin: too few input arguments.> ...
+%! margin (ClassificationSVM (ones (40,2), ones (40,1)))
+%!error<ClassificationSVM.margin: too few input arguments.> ...
+%! margin (ClassificationSVM (ones (40,2), ones (40,1)), zeros(2,2))
+%!error<ClassificationSVM.margin: X is empty.> ...
+%! margin (ClassificationSVM (ones (40,2), ones (40,1)), [], zeros(2,2))
+%!error<ClassificationSVM.margin: X must have the same number of features> ...
+%! margin (ClassificationSVM (ones (40,2), ones (40,1)), 1, zeros(2,2))
+%!error<ClassificationSVM.margin: Y is empty.> ...
+%! margin (ClassificationSVM (ones (40,2), ones (40,1)), zeros(2,2), [])
+%!error<ClassificationSVM.margin: Y must have the same number of rows as X.> ...
+%! margin (ClassificationSVM (ones (40,2), ones (40,1)), zeros(2,2), 1)
