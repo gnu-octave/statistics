@@ -581,17 +581,21 @@ classdef ClassificationSVM
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationSVM} {@var{m} =} margin (@var{obj}, @var{X}, @var{Y})
     ##
-    ## Determine the classification margins for an Support Vector Machine
+    ## Determine the classification margins for a Support Vector Machine
     ## classification object.
     ##
     ## @code{@var{m} = margin (@var{obj}, @var{X}, @var{Y})} returns the
     ## classification margins for the trained support vector machine (SVM)
     ## classifier @var{obj} using the sample data in @var{X} and the class
-    ## labels in @var{Y}.
+    ## labels in @var{Y}. It supports only binary classifier models. The
+    ## classification margin is commonly defined as @var{m} = @var{y}f(@var{x}),
+    ## where @var{f(x)} is the classification score and @var{y} is the true
+    ## class label corresponding to @var{x}. A greater margin indicates a better
+    ## model.
     ##
     ## @itemize
     ## @item
-    ## @var{obj} must be a @qcode{ClassificationSVM} class object.
+    ## @var{obj} must be a binary @qcode{ClassificationSVM} class object.
     ## @item
     ## @var{X} must be an @math{MxP} numeric matrix with the same number of
     ## features @math{P} as the corresponding predictors of the SVM model in
@@ -610,6 +614,12 @@ classdef ClassificationSVM
       ## Check for sufficient input arguments
       if (nargin < 3)
         error ("ClassificationSVM.margin: too few input arguments.");
+      endif
+
+      ## Check if binary classifier model or not.
+      if (this.NumClasses != 2)
+        error (strcat(["ClassificationSVM.margin: Only binary classifier SVM"],
+       [" model is supported."]));
       endif
 
       ## Check for valid X
@@ -786,14 +796,16 @@ endclassdef
 
 ## Test input validation for margin method
 %!error<ClassificationSVM.margin: too few input arguments.> ...
-%! margin (ClassificationSVM (ones (40,2), ones (40,1)))
+%! margin (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)))
 %!error<ClassificationSVM.margin: too few input arguments.> ...
-%! margin (ClassificationSVM (ones (40,2), ones (40,1)), zeros(2,2))
+%! margin (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), zeros(2,2))
+%!error<ClassificationSVM.margin: Only binary classifier SVM model is supported.> ...
+%! margin (ClassificationSVM (ones (40,2),randi([1, 3], 40, 1)), zeros(2,2), ones(2,1))
 %!error<ClassificationSVM.margin: X is empty.> ...
-%! margin (ClassificationSVM (ones (40,2), ones (40,1)), [], zeros(2,2))
+%! margin (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), [], zeros(2,2))
 %!error<ClassificationSVM.margin: X must have the same number of features> ...
-%! margin (ClassificationSVM (ones (40,2), ones (40,1)), 1, zeros(2,2))
+%! margin (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), 1, zeros(2,2))
 %!error<ClassificationSVM.margin: Y is empty.> ...
-%! margin (ClassificationSVM (ones (40,2), ones (40,1)), zeros(2,2), [])
+%! margin (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), zeros(2,2), [])
 %!error<ClassificationSVM.margin: Y must have the same number of rows as X.> ...
-%! margin (ClassificationSVM (ones (40,2), ones (40,1)), zeros(2,2), 1)
+%! margin (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), zeros(2,2), 1)
