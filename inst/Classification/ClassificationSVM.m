@@ -628,10 +628,9 @@ classdef ClassificationSVM
                        [" number of rows as X."]));
       endif
 
-      predict_options = sprintf("-q");
+      [predict_label_L, accuracy_L, dec_values_L] = svmpredict(Y, X, this.Model, '-q');
+      m = 2 * Y .* dec_values_L;
 
-      [predict_label_L, accuracy_L, dec_values_L] = svmpredict(Y, X, this.Model, predict_options);
-      m = dec_values_L
     endfunction
 
    endmethods
