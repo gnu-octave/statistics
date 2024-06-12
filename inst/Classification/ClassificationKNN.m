@@ -462,7 +462,7 @@ classdef ClassificationKNN
       else
         ru = logical (zeros (size (Y)));
         for i = 1:numel (ClassNames)
-          ac = find (gnY, ClassNames{i});
+          ac = find (strcmp (gnY, ClassNames{i}));
           ru = ru | ac;
         endfor
         X = X(ru);
@@ -992,6 +992,15 @@ endclassdef
 %! y = {'9'; '9'; '6'; '7'};
 %! a = ClassificationKNN (x, y);
 %! assert (a.Prior, [0.5; 0.25; 0.25])
+
+## Test constructor with ClassNames parameter
+%!test
+%! load fisheriris
+%! x = meas;
+%! y = species;
+%! ClassNames = {'setosa', 'versicolor', 'virginica'};
+%! a = ClassificationKNN (x, y, 'ClassNames', ClassNames);
+%! assert (a.ClassNames, ClassNames')
 
 ## Test input validation for constructor
 %!error<ClassificationKNN: too few input arguments.> ClassificationKNN ()
