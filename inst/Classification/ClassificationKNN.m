@@ -510,9 +510,9 @@ classdef ClassificationKNN
       endif
 
       ## Handle Prior and Cost
-      if (isempty (Prior) || strcmpi ("uniform", Prior))
+      if (strcmpi ("uniform", Prior))
         this.Prior = ones (size (gnY)) ./ numel (gnY);
-      elseif (strcmpi ("empirical", Prior))
+      elseif (isempty (Prior) || strcmpi ("empirical", Prior))
         pr = [];
         for i = 1:numel (gnY)
           pr = [pr; sum(gY==i)];
@@ -987,6 +987,11 @@ endclassdef
 %! assert (a.Cost, [1, 0; 0, 1])
 %! assert ({a.NSMethod, a.Distance}, {"exhaustive", "hamming"})
 %! assert ({a.BucketSize}, {50})
+%!test
+%! x = [1, 2; 3, 4; 5,6; 5, 8];
+%! y = {'9'; '9'; '6'; '7'};
+%! a = ClassificationKNN (x, y);
+%! assert (a.Prior, [0.5; 0.25; 0.25])
 
 ## Test input validation for constructor
 %!error<ClassificationKNN: too few input arguments.> ClassificationKNN ()
