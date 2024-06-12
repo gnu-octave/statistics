@@ -609,6 +609,7 @@ classdef ClassificationSVM
     ## @seealso{fitcsvm, ClassificationSVM}
     ## @end deftypefn
 
+
     function m = margin (this, X, Y)
 
       ## Check for sufficient input arguments
@@ -640,6 +641,146 @@ classdef ClassificationSVM
 
       [~, ~, dec_values_L] = svmpredict(Y, X, this.Model, '-q');
       m = 2 * Y .* dec_values_L;
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationSVM} {@var{l} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {ClassificationSVM} {@var{l} =} loss (@dots{}, @var{name}, @var{value})
+    ##
+    ## Determine the classification error for a Support Vector Machine
+    ## classifier.
+    ##
+    ## @code{@var{l} = loss (@var{obj}, @var{X}, @var{Y})} returns the
+    ## predictive accuracy of support vector machine (SVM) classification models.
+    ## Comparing the same type of loss across multiple models allows you to
+    ## identify which model is more accurate, with a lower loss indicating
+    ## superior predictive performance. It supports only binary classifier
+    ## models.
+    ##
+    ## @itemize
+    ## @item
+    ## @var{obj} must be a binary @qcode{ClassificationSVM} class object.
+    ## @item
+    ## @var{X} must be an @math{MxP} numeric matrix with the same number of
+    ## features @math{P} as the corresponding predictors of the SVM model in
+    ## @var{obj}.
+    ## @item
+    ## @var{Y} must be @math{Mx1} numeric vector containing the class labels
+    ## corresponding to the predictor data in @var{X}. @var{Y} must have same
+    ## number of rows as @var{X}.
+    ## @end itemize
+    ##
+    ## @code{@var{l} = loss (@dots{}, @var{Name}, @var{Value})} returns the
+    ## aforementioned results with additional properties specified by
+    ## @qcode{Name-Value} pair arguments listed below.
+    ##
+    ## @multitable @columnfractions 0.28 0.02 0.7
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{"LossFun"} @tab @tab Loss function, specified as a built-in
+    ## loss function name. It accepts the following options: (Default is
+    ## 'classiferror')
+    ##
+    ## @itemize
+    ##
+    ## @item 'binodeviance': Binomial deviance
+    ##
+    ## @item 'classifcost': Observed misclassification cost
+    ##
+    ## @item 'classiferror': Misclassified rate in decimal
+    ##
+    ## @item 'exponential': Exponential loss
+    ##
+    ## @item 'hinge': Hinge loss
+    ##
+    ## @item 'logit': Logistic loss
+    ##
+    ## @item 'mincost': Minimal expected misclassification cost (for
+    ## classification scores that are posterior probabilities)
+    ##
+    ## @item 'quadratic': Quadratic loss
+    ##
+    ## @end itemize
+    ##
+    ## @item @qcode{"Weights"} @tab @tab Specified as a numeric vector which
+    ## weighs the each observation (row) in X. The size of Weights must be equal
+    ## to the number of rows in X. The default value is: ones(size(X,1),1)
+    ##
+    ##
+    ## @end multitable
+    ##
+    ## @seealso{fitcsvm, ClassificationSVM}
+    ## @end deftypefn
+
+    function l = loss (this, X, Y, varargin)
+
+      ## Check for sufficient input arguments
+      if (nargin < 3)
+        error ("ClassificationSVM.loss: too few input arguments.");
+      endif
+
+      if (mod (nargin, 2) == 0)
+        error ("ClassificationSVM.loss: Name-Value arguments must be in pairs.");
+      endif
+
+      ## Check if binary classifier model or not.
+      if (this.NumClasses != 2)
+        error (strcat(["ClassificationSVM.loss: Only binary classifier SVM"],
+       [" model is supported."]));
+      endif
+
+      ## Check for valid X
+      if (isempty (X))
+        error ("ClassificationSVM.loss: X is empty.");
+      elseif (columns (this.X) != columns (X))
+        error (strcat (["ClassificationSVM.loss: X must have the same"], ...
+                       [" number of features (columns) as in the SVM model."]));
+      endif
+
+      ## Check for valid Y
+      if (isempty (Y))
+        error ("ClassificationSVM.loss: Y is empty.");
+      elseif (rows (X)!= rows (Y))
+        error (strcat (["ClassificationSVM.loss: Y must have the same"], ...
+                       [" number of rows as X."]));
+      endif
+
+      ## Parse extra parameters
+      while (numel (varargin) > 0)
+        switch (tolower (varargin {1}))
+
+          case "lossfun"
+            LossFun = varargin{2};
+            if (!(ischar(LossFun)))
+              error("ClassificationSVM.loss: LossFun must be a string.");
+            endif
+            if (ischar(LossFun))
+              if (! any (strcmpi (tolower(LossFun), {"binodeviance", "classifcost",  ...
+                "classiferror", "exponential", "hinge", "logit", "mincost", "quadratic"})))
+              error ("ClassificationSVM.loss: unsupported Loss function.");
+              endif
+            endif
+
+          case "weights"
+            Weights = varargin{2};
+            ## Validate if weights is a numeric vector
+            if(!(isnumeric(Weights) && isvector(Weights)))
+              error("ClassificationSVM.loss: Weights must be a numeric vector.");
+            endif
+
+            ## Check if the size of weights matches the number of rows in X
+            if (numel(Weights) != size(X, 1))
+              error(strcat (["ClassificationSVM.loss: The size of Weights must"], ...
+             [" be equal to the number of rows in X."]));
+            endif
+
+           otherwise
+            error (strcat (["ClassificationSVM.loss: invalid parameter name"],...
+                           [" in optional pair arguments."]));
+          endswitch
+        varargin (1:2) = [];
+      endwhile
 
     endfunction
 
@@ -809,3 +950,35 @@ endclassdef
 %! margin (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), zeros(2,2), [])
 %!error<ClassificationSVM.margin: Y must have the same number of rows as X.> ...
 %! margin (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), zeros(2,2), 1)
+
+## Test input validation for loss method
+%!error<ClassificationSVM.loss: too few input arguments.> ...
+%! loss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)))
+%!error<ClassificationSVM.loss: too few input arguments.> ...
+%! loss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), zeros(2,2))
+%!error<ClassificationSVM.loss: Name-Value arguments must be in pairs.> ...
+%! loss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), zeros(2,2), ones(2,1), "LossFun")
+%!error<ClassificationSVM.loss: Only binary classifier SVM model is supported.> ...
+%! loss (ClassificationSVM (ones (40,2),randi([1, 3], 40, 1)), zeros(2,2), ones(2,1))
+%!error<ClassificationSVM.loss: X is empty.> ...
+%! loss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), [], zeros(2,2))
+%!error<ClassificationSVM.loss: X must have the same number of features> ...
+%! loss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), 1, zeros(2,2))
+%!error<ClassificationSVM.loss: Y is empty.> ...
+%! loss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), zeros(2,2), [])
+%!error<ClassificationSVM.loss: Y must have the same number of rows as X.> ...
+%! loss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), zeros(2,2), 1)
+%!error<ClassificationSVM.loss: LossFun must be a string.> ...
+%! loss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), zeros(2,2), ones(2,1), "LossFun", 1)
+%!error<ClassificationSVM.loss: unsupported Loss function.> ...
+%! loss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), zeros(2,2), ones(2,1), "LossFun", "some")
+%!error<ClassificationSVM.loss: Weights must be a numeric vector.> ...
+%! loss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), zeros(2,2), ones(2,1), "Weights", ['a','b'])
+%!error<ClassificationSVM.loss: Weights must be a numeric vector.> ...
+%! loss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), zeros(2,2), ones(2,1), "Weights", 'a')
+%!error<ClassificationSVM.loss: The size of Weights must be equal to the number of rows in X.> ...
+%! loss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), zeros(2,2), ones(2,1), "Weights", [1,2,3])
+%!error<ClassificationSVM.loss: The size of Weights must be equal to the number of rows in X.> ...
+%! loss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), zeros(2,2), ones(2,1), "Weights", 3)
+%!error<ClassificationSVM.loss: invalid parameter name in optional pair arguments.> ...
+%! loss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), zeros(2,2), ones(2,1), "some", "some")
