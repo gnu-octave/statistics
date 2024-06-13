@@ -197,6 +197,7 @@ classdef ClassificationSVM
         error ("ClassificationSVM: Y must be a numeric array.");
       endif
 
+      ## Set default values before parsing optional parameters
       SVMtype                 = 'C_SVC';
       KernelFunction          = 'rbf';
       PolynomialOrder         = 3;
@@ -609,7 +610,6 @@ classdef ClassificationSVM
     ## @seealso{fitcsvm, ClassificationSVM}
     ## @end deftypefn
 
-
     function m = margin (this, X, Y)
 
       ## Check for sufficient input arguments
@@ -684,29 +684,42 @@ classdef ClassificationSVM
     ##
     ## @itemize
     ##
-    ## @item 'binodeviance': Binomial deviance
+    ## @item 'binodeviance': Binomial deviance:
+    ## The binomial deviance loss function is used to evaluate the performance
+    ## of a binary classifier. It is calculated as:
+    ## @math{L = \sum_{j=1}^{n} w_j \log \{1 + \exp [-2m_j]\}}
     ##
-    ## @item 'classifcost': Observed misclassification cost
+    ## @item 'classiferror': Misclassification rate in decimal
+    ## The classification error measures the fraction of misclassified instances
+    ## out of the total instances. It is calculated as:
+    ## @math{L = \frac{1}{n} \sum_{j=1}^{n} \mathbb{I}(m_j \leq 0)}
     ##
-    ## @item 'classiferror': Misclassified rate in decimal
+    ## @item 'exponential': Exponential loss:
+    ## The exponential loss function is used to penalize misclassified instances
+    ## exponentially. It is calculated as:
+    ## @math{L = \sum_{j=1}^{n} w_j \exp [-m_j]}
     ##
-    ## @item 'exponential': Exponential loss
+    ## @item 'hinge': Hinge loss:
+    ## The hinge loss function is often used for maximum-margin classification,
+    ## particularly for support vector machines. It is calculated as:
+    ## @math{L = \sum_{j=1}^{n} w_j \max (0, 1 - m_j)}
     ##
-    ## @item 'hinge': Hinge loss
+    ## @item 'logit': Logistic loss:
+    ## The logistic loss function, also known as log loss, measures the
+    ## performance of a classification model where the prediction is a
+    ## probability value. It is calculated as:
+    ## @math{L = \sum_{j=1}^{n} w_j \log \{1 + \exp [-m_j]\}}
     ##
-    ## @item 'logit': Logistic loss
-    ##
-    ## @item 'mincost': Minimal expected misclassification cost (for
-    ## classification scores that are posterior probabilities)
-    ##
-    ## @item 'quadratic': Quadratic loss
+    ## @item 'quadratic': Quadratic loss:
+    ## The quadratic loss function penalizes the square of the margin.
+    ## It is calculated as:
+    ## @math{L = \sum_{j=1}^{n} w_j (1 - m_j)^2}
     ##
     ## @end itemize
     ##
     ## @item @qcode{"Weights"} @tab @tab Specified as a numeric vector which
-    ## weighs the each observation (row) in X. The size of Weights must be equal
+    ## weighs each observation (row) in X. The size of Weights must be equal
     ## to the number of rows in X. The default value is: ones(size(X,1),1)
-    ##
     ##
     ## @end multitable
     ##
@@ -746,6 +759,10 @@ classdef ClassificationSVM
                        [" number of rows as X."]));
       endif
 
+      ## Set default values before parsing optional parameters
+      LossFun                 = 'classiferror';
+      Weights                 = ones(size(X,1),1);
+
       ## Parse extra parameters
       while (numel (varargin) > 0)
         switch (tolower (varargin {1}))
@@ -756,8 +773,8 @@ classdef ClassificationSVM
               error("ClassificationSVM.loss: LossFun must be a string.");
             endif
             if (ischar(LossFun))
-              if (! any (strcmpi (tolower(LossFun), {"binodeviance", "classifcost",  ...
-                "classiferror", "exponential", "hinge", "logit", "mincost", "quadratic"})))
+              if (! any (strcmpi (tolower(LossFun), {"binodeviance",  ...
+                "classiferror", "exponential", "hinge", "logit", "quadratic"})))
               error ("ClassificationSVM.loss: unsupported Loss function.");
               endif
             endif
@@ -781,6 +798,36 @@ classdef ClassificationSVM
           endswitch
         varargin (1:2) = [];
       endwhile
+
+      ## Compute the classification score
+      [~, ~, dec_values_L] = svmpredict(Y, X, this.Model, '-q');
+
+        ## Compute the margin
+        margin = Y .* dec_values_L;
+
+        ## Compute the loss based on the specified loss function
+        switch tolower(LossFun)
+          case "classiferror"
+            l = mean((margin <= 0) .* Weights);
+
+          case "hinge"
+            l = mean(max(0, 1 - margin) .* Weights);
+
+          case "logit"
+            l = mean(log(1 + exp(-margin)) .* Weights);
+
+          case "exponential"
+            l = mean(exp(-margin) .* Weights);
+
+          case "quadratic"
+            l = mean((1 - margin).^2 .* Weights);
+
+          case "binodeviance"
+            l = mean(log(1 + exp(-2 * margin)) .* Weights);
+
+          otherwise
+            error("ClassificationSVM.loss: unsupported Loss function.");
+        endswitch
 
     endfunction
 
