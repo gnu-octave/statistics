@@ -566,7 +566,7 @@ classdef ClassificationSVM
         varargin (1:2) = [];
       endwhile
 
-      predict_options = sprintf(strcat(["-b %d -q"]), b);
+      predict_options = sprintf("-b %d -q", b);
 
       [predict_label_L, accuracy_L, dec_values_L] = svmpredict(ones(rows(XC),1), XC, this.Model, predict_options);
 
@@ -831,6 +831,99 @@ classdef ClassificationSVM
 
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationSVM} {@var{label} =} resubpredict (@var{obj})
+    ## @deftypefnx {ClassificationSVM} {[@var{label}, @var{decision_values}] =} resubpredict (@dots{}, @var{name}, @var{value})
+    ## @deftypefnx {ClassificationSVM} {[@var{label}, @var{prob_estimates}] =} resubpredict (@dots{})
+    ##
+    ## Classify the training data using the trained Support Vector Machine
+    ## classification object.
+    ##
+    ## @code{@var{label} = resubpredict (@var{obj})} returns the vector of
+    ## labels predicted for the corresponding instances in the training data,
+    ## using the predictor data in @code{obj.X} and corresponding labels,
+    ## @code{obj.Y}, stored in the Support Vector Machine classification model,
+    ## @var{obj}. For one-class model, +1 or -1 is returned.
+    ##
+    ## @itemize
+    ## @item
+    ## @var{obj} must be a @qcode{ClassificationSVM} class object.
+    ## @end itemize
+    ##
+    ## @code{[@var{label}, @var{prob_estimates}] = resubpredict (@var{obj}, "ProbabilityEstimates", 1)}
+    ## also returns @var{prob_estimates}. If k is the number of classes in the
+    ## training data, each row contains k values indicating the probability that
+    ## the training instance is in each class.
+    ##
+    ## @code{[@var{label}, @var{decision_values}] = resubpredict (@var{obj}, "ProbabilityEstimates", 0)}
+    ## also returns @var{decision_values}.  If k is the number of classes in the
+    ## training data, each row includes results of predicting k(k-1)/2
+    ## binary-class SVMs.  For classification, k = 1 is a special case.
+    ## Decision value +1 is returned for each training instance, instead of
+    ## an empty vector.
+    ##
+    ##
+    ## @code{@var{label} = resubpredict (@dots{}, @var{Name}, @var{Value})}
+    ## returns the aforementioned results with additional properties specified
+    ## by @qcode{Name-Value} pair arguments listed below.
+    ##
+    ## @multitable @columnfractions 0.28 0.02 0.7
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{"ProbabilityEstimates"} @tab @tab Specifies whether to
+    ## output Probability Estimates or Decision Values. It accepts either
+    ## 0 or 1. The default value is 0.
+    ##
+    ## @itemize
+    ## @item
+    ## 0 return decision values.
+    ## @item
+    ## 1 return probability estimates.
+    ## @end itemize
+    ##
+    ## @end multitable
+    ##
+    ## @seealso{fitcsvm, ClassificationSVM}
+    ## @end deftypefn
+
+    function [label, value] = resubpredict (this, varargin)
+
+      if (mod (nargin, 2) != 1)
+        error ("ClassificationSVM.resubpredict: Name-Value arguments must be in pairs.");
+      endif
+
+      b = 0;  ## Default: return decision values.
+
+      while (numel (varargin) > 0)
+        switch (tolower (varargin {1}))
+
+          case "probabilityestimates"
+            b = varargin{2};
+            if ( !(ismember(b, [0, 1]) && isscalar(b)))
+              error (strcat (["ClassificationSVM.resubpredict: ProbabilityEstimates"], ...
+                             [" must be either 1 or 0."]));
+            endif
+
+          otherwise
+            error (strcat (["ClassificationSVM.resubpredict: invalid parameter name"],...
+                           [" in optional pair arguments."]));
+          endswitch
+        varargin (1:2) = [];
+      endwhile
+
+      predict_options = sprintf("-b %d -q", b);
+
+      [predict_label_L, accuracy_L, dec_values_L] = svmpredict(this.Y, this.X, this.Model, predict_options);
+
+      if (nargout > 0)
+        label = predict_label_L;
+        if (nargout > 1)
+          value = dec_values_L;
+        endif
+      endif
+
+    endfunction
+
    endmethods
 
 endclassdef
@@ -1029,3 +1122,15 @@ endclassdef
 %! loss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), zeros(2,2), ones(2,1), "Weights", 3)
 %!error<ClassificationSVM.loss: invalid parameter name in optional pair arguments.> ...
 %! loss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), zeros(2,2), ones(2,1), "some", "some")
+
+## Test input validation for resubpredict method
+%!error<ClassificationSVM.resubpredict: Name-Value arguments must be in pairs.> ...
+%! resubpredict (ClassificationSVM (ones (40,2), ones (40,1)), "ProbabilityEstimates")
+%!error<ClassificationSVM.resubpredict: ProbabilityEstimates must be either 1 or 0.> ...
+%! resubpredict (ClassificationSVM (ones (40,2), ones (40,1)), "ProbabilityEstimates", "some")
+%!error<ClassificationSVM.resubpredict: ProbabilityEstimates must be either 1 or 0.> ...
+%! resubpredict (ClassificationSVM (ones (40,2), ones (40,1)), "ProbabilityEstimates", 3)
+%!error<ClassificationSVM.resubpredict: ProbabilityEstimates must be either 1 or 0.> ...
+%! resubpredict (ClassificationSVM (ones (40,2), ones (40,1)), "ProbabilityEstimates", [1 0])
+%!error<ClassificationSVM.resubpredict: invalid parameter name in optional pair arguments.> ...
+%! resubpredict (ClassificationSVM (ones (40,2), ones (40,1)), "some", "some")
