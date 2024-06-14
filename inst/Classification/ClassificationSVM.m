@@ -596,7 +596,7 @@ classdef ClassificationSVM
     ##
     ## @itemize
     ## @item
-    ## @var{obj} must be a binary @qcode{ClassificationSVM} class object.
+    ## @var{obj} must be a binary class @qcode{ClassificationSVM} object.
     ## @item
     ## @var{X} must be an @math{MxP} numeric matrix with the same number of
     ## features @math{P} as the corresponding predictors of the SVM model in
@@ -660,7 +660,7 @@ classdef ClassificationSVM
     ##
     ## @itemize
     ## @item
-    ## @var{obj} must be a binary @qcode{ClassificationSVM} class object.
+    ## @var{obj} must be a binary class @qcode{ClassificationSVM} object.
     ## @item
     ## @var{X} must be an @math{MxP} numeric matrix with the same number of
     ## features @math{P} as the corresponding predictors of the SVM model in
@@ -938,7 +938,7 @@ classdef ClassificationSVM
     ##
     ## @itemize
     ## @item
-    ## @var{obj} must be a binary @qcode{ClassificationSVM} class object.
+    ## @var{obj} must be a binary class @qcode{ClassificationSVM} object.
     ## @end itemize
     ##
     ## @code{@var{l} = resubLoss (@dots{}, @var{Name}, @var{Value})} returns the
@@ -1077,6 +1077,43 @@ classdef ClassificationSVM
           otherwise
             error("ClassificationSVM.resubloss: unsupported Loss function.");
         endswitch
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationSVM} {@var{m} =} resubMargin (@var{obj})
+    ##
+    ## Determine the resubstitution margins for a Support Vector Machine
+    ## classification object.
+    ##
+    ## @code{@var{m} = resubMargin (@var{obj})} returns the resubstitution
+    ## classification margins for the trained support vector machine (SVM)
+    ## classifier @var{obj} using the training data stored in @code{obj.X} and
+    ## the corresponding class labels stored in @code{obj.Y}. It supports only
+    ## binary classifier models. The classification margin is commonly defined
+    ## as @var{m} = @var{y}f(@var{x}), where @var{f(x)} is the classification
+    ## score and @var{y} is the true class label corresponding to @var{x}. A
+    ## greater margin indicates a better model.
+    ##
+    ## @itemize
+    ## @item
+    ## @var{obj} must be a binary class @qcode{ClassificationSVM} object.
+    ## @end itemize
+    ##
+    ## @seealso{fitcsvm, ClassificationSVM}
+    ## @end deftypefn
+
+    function m = resubMargin (this)
+
+      ## Check if binary classifier model or not.
+      if (this.NumClasses != 2)
+        error (strcat(["ClassificationSVM.resubMargin: Only binary classifier SVM"], ...
+                      [" model is supported."]));
+      endif
+
+      ## Get the decision values for the training data
+      [~, ~, dec_values_L] = svmpredict(this.Y, this.X, this.Model, '-q');
+      m = this.Y .* dec_values_L;
 
     endfunction
 
@@ -1310,3 +1347,7 @@ endclassdef
 %! resubLoss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "Weights", 3)
 %!error<ClassificationSVM.resubLoss: invalid parameter name in optional pair arguments.> ...
 %! resubLoss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "some", "some")
+
+## Test input validation for resubMargin method
+%!error<ClassificationSVM.resubMargin: Only binary classifier SVM model is supported.> ...
+%! resubMargin (ClassificationSVM (ones (40,2),randi([1, 3], 40, 1)))
