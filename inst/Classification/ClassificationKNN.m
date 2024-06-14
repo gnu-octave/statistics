@@ -1104,6 +1104,104 @@ classdef ClassificationKNN
 
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn {ClassificationKNN} {@var{m} =} margin (@var{obj}, @var{X}, @var{Y})
+    ##
+    ## @code{@var{m} = margin (@var{obj}, @var{X}, @var{Y})} returns the classification 
+    ## margins for @var{obj} with data @var{X} and classification @var{Y}. @var{m} is
+    ## a numeric vector of length size (X,1).
+    ##
+    ## @itemize
+    ## @item
+    ## @code{obj} is a @var{ClassificationKNN} object trained on @code{X} and @code{Y}.
+    ## @item
+    ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+    ## correspond to observations and columns correspond to features or variables.
+    ## @item
+    ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels of
+    ## corresponding predictor data in @var{X}. @var{Y} must have same numbers of Rows as @var{X}.
+    ## @end itemize
+    ##
+    ## The classification margin for each observation is the difference between the classification
+    ## score for the true class and the maximal classification score for the false classes.
+    ## 
+    ## @seealso{fitcknn, ClassificationKNN}
+    ## @end deftypefn
+    function m = margin (this, X, Y)
+
+      ## Check for sufficient input arguments
+      if (nargin < 3)
+        error ("ClassificationKNN.margin: too few input arguments.");
+      endif
+
+      ## Validate Y
+      valid_types = {'char', 'string', 'logical', 'single', 'double', 'cell'};
+      if (! (any (strcmp (class (Y), valid_types))))
+        error ("ClassificationKNN.margin: Y must be of a valid type.");
+      endif
+
+      ## Validate X
+      valid_types = {'single', 'double'};
+      if (! (any (strcmp (class (X), valid_types))))
+        error ("ClassificationKNN.margin: X must be of a valid type.");
+      endif
+
+      ## Validate size of Y
+      if (size (Y, 1) != size (X, 1))
+        error ("ClassificationKNN.margin: Y must have the same number of rows as X.");
+      endif
+
+      ## Convert Y to a cell array of strings
+      if (ischar (Y) || isstring (Y)) 
+        Y = cellstr (Y);
+      elseif (isnumeric (Y))
+        Y = cellstr (num2str (Y));
+      elseif (islogical (Y))
+        Y = cellstr (num2str (double (Y)));
+      elseif (iscell (Y))
+        Y = cellfun (@num2str, Y, 'UniformOutput', false);
+      else
+        error ("ClassificationKNN.margin: Y must be a numeric, logical, char, string, or cell array.");
+      endif
+
+      ## Check if Y contains correct classes
+      if (! all (ismember (unique (Y), this.ClassNames)))
+        error ("ClassificationKNN.margin: Y must contain only the classes in ClassNames.");
+      endif
+
+      ## Number of Observations
+      n = size (X, 1);
+      
+      ## Initialize the margin vector
+      m = zeros (n, 1);
+
+      ## Calculate the classification scores
+      [~, scores] = predict (this, X);
+
+      ## Loop over each observation to compute the margin
+      for i = 1:n
+        ## True class index
+        true_class_idx = find (ismember (this.ClassNames, Y{i}));
+        
+        ## Score for the true class
+        true_class_score = scores(i, true_class_idx);
+
+        ## Get the maximal score for the false classes
+        scores(i, true_class_idx) = -Inf;              ## Temporarily
+        max_false_class_score = max (scores(i, :));
+        if (max_false_class_score == -Inf)
+          m = NaN;
+          return;
+        endif  
+        scores(i, true_class_idx) = true_class_score;  ## Restore
+        
+        ## Calculate the margin
+        m(i) = true_class_score - max_false_class_score;
+      endfor
+
+    endfunction
+
+
   endmethods
 
 endclassdef
@@ -1184,6 +1282,13 @@ endclassdef
 %! model = fitcknn (X, Y);
 %! customLossFun = @(C, S, W, Cost) sum (W .* sum (abs (C - S), 2));
 %! L = loss (model, X, Y, 'LossFun', customLossFun)
+
+%!demo
+%! load fisheriris
+%! mdl = fitcknn (meas, species);
+%! X = mean (meas);
+%! Y = {'versicolor'};
+%! m = margin (mdl, X, Y)
 
 ## Test constructor with NSMethod and NumNeighbors parameters
 %!test
@@ -1830,3 +1935,46 @@ endclassdef
 %! loss (ClassificationKNN (ones (4,2), ones (4,1)), ones (4,2), ones (4,1), 'LossFun', 'a')
 %!error<ClassificationKNN.loss: Invalid Weights.> ...
 %! loss (ClassificationKNN (ones (4,2), ones (4,1)), ones (4,2), ones (4,1), 'Weights', 'w')
+
+## Test output for margin method
+%!test
+%! load fisheriris
+%! mdl = fitcknn (meas, species, 'NumNeighbors', 5);
+%! X = mean (meas);
+%! Y = {'versicolor'};
+%! m = margin (mdl, X, Y);
+%! assert (m, 1)
+%!test
+%! X = [1, 2; 3, 4; 5, 6];
+%! Y = [1; 2; 3];
+%! mdl = fitcknn (X, Y);
+%! m = margin (mdl, X, Y);
+%! assert (m, [1; 1; 1])
+%!test
+%! X = [7, 8; 9, 10];
+%! Y = ['1'; '2'];
+%! mdl = fitcknn (X, Y);
+%! m = margin (mdl, X, Y);
+%! assert (m, [1; 1])
+%!test
+%! X = [11, 12];
+%! Y = {'1'};
+%! mdl = fitcknn (X, Y);
+%! m = margin (mdl, X, Y);
+%! assert (isnan (m))
+%!test
+%! X = [1, 2; 3, 4; 5, 6];
+%! Y = [1; 2; 3];
+%! mdl = fitcknn (X, Y);
+%! X1 = [15, 16];
+%! Y1 = [1];
+%! m = margin (mdl, X1, Y1);
+%! assert (m, -1)
+
+## Test input validation for loss method
+%!error<ClassificationKNN.margin: too few input arguments.> ...
+%! margin (ClassificationKNN (ones (4,2), ones (4,1)))
+%!error<ClassificationKNN.margin: too few input arguments.> ...
+%! margin (ClassificationKNN (ones (4,2), ones (4,1)), ones (4,2))
+%!error<ClassificationKNN.margin: Y must have the same number of rows as X.> ...
+%! margin (ClassificationKNN (ones (4,2), ones (4,1)), ones (4,2), ones (3,1))

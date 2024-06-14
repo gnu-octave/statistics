@@ -203,7 +203,7 @@ classdef ClassificationPartitionedModel
 		endfunction
 
 		## -*- texinfo -*-
-		## @deftypefn  {ClassificationPartitionedModel} {@var{label} =} predict (@var{CVMdl})
+		## @deftypefn  {ClassificationPartitionedModel} {@var{label} =} kfoldPredict (@var{CVMdl})
 		## @deftypefnx {ClassificationPartitionedModel} {[@var{label}, @var{score}, @var{cost}] =} kfoldPredict (@var{CVMdl})
 		##
 		## Predict responses for observations not used for training in a cross-validated
