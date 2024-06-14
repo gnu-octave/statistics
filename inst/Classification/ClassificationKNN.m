@@ -38,7 +38,6 @@ classdef ClassificationKNN
 ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels of
 ## corresponding predictor data in @var{X}. @var{Y} can contain any type of
 ## categorical data. @var{Y} must have same numbers of Rows as @var{X}.
-## @item
 ## @end itemize
 ##
 ## @code{@var{obj} = ClassificationKNN (@dots{}, @var{name}, @var{value})}
@@ -848,9 +847,9 @@ classdef ClassificationKNN
       endif
 
       ## Determine the cross-validation method to use
-      if (!isempty (cvPartition))
+      if (! isempty (cvPartition))
         partition = cvPartition;
-      elseif (!isempty (holdout))
+      elseif (! isempty (holdout))
         partition = cvpartition (numSamples, 'Holdout', holdout);
       elseif (strcmpi (leaveout, 'on'))
         partition = cvpartition (numSamples, 'LeaveOut');
@@ -862,6 +861,248 @@ classdef ClassificationKNN
       CVMdl = ClassificationPartitionedModel (this, partition);
 
     endfunction  
+
+    ## -*- texinfo -*-
+    ## @deftypefn {ClassificationKNN} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {ClassificationKNN} {@var{L} =} loss (@dots{}, @var{name}, @var{value})
+    ##
+    ## Compute loss for a trained ClassificationKNN object.
+    ## 
+    ## @code{@var{L} = loss (@var{obj}, @var{X}, @var{Y})} computes the @var{L} loss
+    ## using the default loss function ('mincost').
+    ##
+    ## @itemize
+    ## @item
+    ## @code{obj} is a @var{ClassificationKNN} object trained on @code{X} and @code{Y}.
+    ## @item
+    ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+    ## correspond to observations and columns correspond to features or variables.
+    ## @item
+    ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels of
+    ## corresponding predictor data in @var{X}. @var{Y} must have same numbers of Rows as @var{X}.
+    ## @end itemize
+    ##
+    ## @code{@var{L} = loss (@dots{}, @var{name}, @var{value})} allows additional options specified by
+    ## name-value pairs:
+    ##
+    ## @multitable @columnfractions 0.18 0.02 0.8
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{"LossFun"} @tab @tab Specifies the loss function to use. Can be a function handle with four 
+    ## input arguments (C, S, W, Cost) which returns a scalar value or one of:
+    ## 'binodeviance', 'classifcost', 'classiferror', 'exponential', 'hinge', 'logit','mincost', 'quadratic'.
+    ## @itemize
+    ## @item
+    ## @code{C} is a logical matrix of size @math{NxK}, where @math{N} is the number of observations and 
+    ## @math{K} is the number of classes. The element @code{C(i,j)} is true if the class label of the 
+    ## i-th observation is equal to the j-th class.
+    ## @item
+    ## @code{S} is a numeric matrix of size @math{NxK}, where each element represents the classification 
+    ## score for the corresponding class.
+    ## @item
+    ## @code{W} is a numeric vector of length @math{N}, representing the observation weights.
+    ## @item
+    ## @code{Cost} is a @math{KxK} matrix representing the misclassification costs.
+    ## @end itemize
+    ##
+    ## @item @qcode{"Weights"} @tab @tab Specifies observation weights, must be a numeric vector of length equal to
+    ## the number of rows in X. Default is @code{ones (size (X, 1))}. loss normalizes the weights so 
+    ## that observation weights in each class sum to the prior probability of that class.
+    ## When you supply Weights, loss computes the weighted classification loss.
+    ##
+    ## @end multitable
+    ##
+    ## @seealso{fitcknn, ClassificationKNN}
+    ## @end deftypefn
+    function L = loss (this, X, Y, varargin)
+
+      ## Check for sufficient input arguments
+      if (nargin < 3)
+        error ("ClassificationKNN.loss: too few input arguments.");
+      elseif (mod (nargin - 3, 2) != 0)
+        error ("ClassificationKNN.loss: Name-Value arguments must be in pairs.");
+      elseif (nargin > 7)
+        error ("ClassificationKNN.loss: Too many input arguments.");
+      endif
+
+      ## Default values
+      LossFun = 'mincost';
+      Weights = [];
+
+      ## Validate Y
+      valid_types = {'char', 'string', 'logical', 'single', 'double', 'cell'};
+      if (! (any (strcmp (class (Y), valid_types))))
+        error ("ClassificationKNN.loss: Y must be of a valid type.");
+      endif     
+
+      ## Validate size of Y
+      if (size (Y, 1) != size (X, 1))
+        error ("ClassificationKNN.loss: Y must have the same number of rows as X.");
+      endif
+
+      ## Parse name-value arguments
+      while (numel (varargin) > 0)
+        Value = varargin{2};
+        switch (tolower (varargin{1}))
+          case 'lossfun'
+            if (isa (Value, 'function_handle'))
+              ## Check if the loss function is valid
+              if (nargin (Value) != 4)
+                error ("ClassificationKNN.loss: Custom loss function must accept exactly four input arguments.");
+              endif
+              try
+                n = 1;
+                K = 2;
+                C_test = false (n, K);
+                S_test = zeros (n, K);
+                W_test = ones (n, 1);
+                Cost_test = ones (K) - eye (K);
+                test_output = Value (C_test, S_test, W_test, Cost_test);
+                if (! isscalar (test_output))
+                  error ("ClassificationKNN.loss: Custom loss function must return a scalar value.");
+                endif
+              catch
+                error ("ClassificationKNN.loss: Custom loss function is not valid or does not produce correct output.");
+              end_try_catch
+              LossFun = Value;
+            elseif (ischar (Value) && any (strcmpi (Value, {"binodeviance", "classifcost", ...
+                "classiferror", "exponential", "hinge", "logit", "mincost", "quadratic"})))
+              LossFun = Value;
+            else
+              error ("ClassificationKNN.loss: Invalid loss function.");
+            endif
+          case 'weights'
+            if (isnumeric (Value) && isvector (Value))
+              if (numel (Value) != size (X ,1))
+                error ("ClassificationKNN.loss: The size of Weights must be equal to the number of rows in X.");
+              elseif (numel (Value) == size (X, 1))
+                Weights = Value;
+              endif
+            else
+              error ("ClassificationKNN.loss: Invalid Weights.");
+            endif
+          otherwise
+            error ("ClassificationKNN.loss: Invalid name-value arguments");
+        endswitch
+        varargin (1:2) = [];
+      endwhile
+
+      ## Check for missing values in X
+      if (! isa (LossFun, 'function_handle'))
+        lossfun = tolower (LossFun);
+        if (! strcmp (lossfun, 'mincost') && ! strcmp (lossfun, 'classiferror') && ! strcmp (lossfun, 'classifcost') && any (isnan (X(:))))
+            L = NaN;
+            return;
+        endif
+      endif
+
+      ## Convert Y to a cell array of strings
+      if (ischar (Y) || isstring (Y)) 
+        Y = cellstr (Y);
+      elseif (isnumeric (Y))
+        Y = cellstr (num2str (Y));
+      elseif (islogical (Y))
+        Y = cellstr (num2str (double (Y)));
+      elseif (iscell (Y))
+        Y = cellfun (@num2str, Y, 'UniformOutput', false);
+      else
+        error ("ClassificationKNN.loss: Y must be a numeric, logical, char, string, or cell array.");
+      endif
+
+      ## Check if Y contains correct classes
+      if (! all (ismember (unique (Y), this.ClassNames)))
+        error ("ClassificationKNN.loss: Y must contain only the classes in ClassNames.");
+      endif
+      
+      ## Set default weights if not specified
+      if (isempty (Weights))
+        Weights = ones (size (X, 1), 1);
+      endif
+
+      ## Normalize Weights
+      unique_classes = this.ClassNames;
+      class_prior_probs = this.Prior;          
+      norm_weights = zeros (size (Weights));    
+      for i = 1:numel (unique_classes)
+        class_idx = ismember (Y, unique_classes{i});
+        if (sum (Weights(class_idx)) > 0)
+          norm_weights(class_idx) = Weights(class_idx) * class_prior_probs(i) / sum (Weights(class_idx));
+        endif
+      endfor
+      Weights = norm_weights / sum (norm_weights);
+
+      ## Number of observations 
+      n = size (X, 1);                                                
+
+      ## Predict classification scores
+      [label, scores] = predict (this, X);
+
+      ## C is vector of K-1 zeros, with 1 in the position corresponding to the true class 
+      K = numel (this.ClassNames);
+      C = false (n, K);
+      for i = 1:n
+        class_idx = find (ismember (this.ClassNames, Y{i}));
+        C(i, class_idx) = true;
+      endfor   
+      Y_new = C';
+
+      ## Compute the loss using custom loss function 
+      if (isa (LossFun, 'function_handle'))
+        L = LossFun (C, scores, Weights, this.Cost);
+        return;
+      endif
+
+      ## Compute the scalar classification score for each observation
+      m_j = zeros (n, 1);
+      for i = 1:n
+        m_j(i) = scores(i,:) * Y_new(:,i);
+      endfor
+
+      ## Compute the loss
+      switch (tolower (LossFun))
+        case 'binodeviance'
+          b = log (1 + exp (-2 * m_j));
+          L = (Weights') * b;
+        case 'hinge'
+          h = max (0, 1 - m_j);
+          L = (Weights') * h;
+        case 'exponential'
+          e = exp (-m_j);
+          L = (Weights') * e;
+        case 'logit'
+          l = log (1 + exp (-m_j));
+          L = (Weights') * l;
+        case 'quadratic'
+          q = (1 - m_j) .^ 2;
+          L = (Weights') * q;
+        case 'classiferror'
+          L = 0;
+          for i = 1:n
+            L = L + Weights(i) * (! isequal (Y(i), label(i)));
+          endfor
+        case 'mincost'
+          Cost = this.Cost;
+          L = 0;
+          for i = 1:n
+            f_Xj = scores(i, :);                    # Class posterior probabilities for observation Xj
+            gamma_jk = f_Xj * Cost;                 # Expected misclassification cost for each class k
+            [~, min_cost_class] = min (gamma_jk);   # Class with minimal expected misclassification cost
+            cj = Cost(find (ismember (this.ClassNames, Y(i))), min_cost_class);  # Cost incurred for the prediction
+            L = L + Weights(i) * cj;                # Weighted minimal expected misclassification cost
+          endfor
+        case 'classifcost'
+          Cost = this.Cost;
+          L = 0;
+          for i = 1:n
+            y_idx = find (ismember (this.ClassNames, Y(i)));          # True class index
+            y_hat_idx = find (ismember (this.ClassNames, label(i)));  # Predicted class index
+            L = L + Weights(i) * Cost(y_idx, y_hat_idx);
+          endfor
+        otherwise
+          error ("ClassificationKNN.loss: Invalid loss function.");
+      endswitch
+
+    endfunction
 
   endmethods
 
@@ -936,6 +1177,13 @@ endclassdef
 %! 
 %! ## Access the trained model from first fold of cross-validation
 %! CVMdl.Trained{1}
+
+%!demo
+%! X = [1, 2; 3, 4; 5, 6];
+%! Y = {'A'; 'B'; 'A'};
+%! model = fitcknn (X, Y);
+%! customLossFun = @(C, S, W, Cost) sum (W .* sum (abs (C - S), 2));
+%! L = loss (model, X, Y, 'LossFun', customLossFun)
 
 ## Test constructor with NSMethod and NumNeighbors parameters
 %!test
@@ -1478,3 +1726,107 @@ endclassdef
 %!error<ClassificationKNN.crossval: Value should be a cvPartition object.> ...
 %! crossval (ClassificationKNN (ones (4,2), ones (4,1)), "cvpartition", 1)
 
+## Test output for loss method
+%!test
+%! load fisheriris
+%! model = fitcknn (meas, species, 'NumNeighbors', 5);
+%! X = mean (meas);
+%! Y = {'versicolor'};
+%! L = loss (model, X, Y);
+%! assert (L, 0)
+%!test
+%! X = [1, 2; 3, 4; 5, 6];
+%! Y = {'A'; 'B'; 'A'};
+%! model = fitcknn (X, Y);
+%! X_test = [1, 6; 3, 3];
+%! Y_test = {'A'; 'B'};
+%! L = loss (model, X_test, Y_test);
+%! assert (abs (L - 0.6667) > 1e-5)
+%!test
+%! X = [1, 2; 3, 4; 5, 6];
+%! Y = {'A'; 'B'; 'A'};
+%! model = fitcknn (X, Y);
+%! X_with_nan = [1, 2; NaN, 4];
+%! Y_test = {'A'; 'B'};
+%! L = loss (model, X_with_nan, Y_test);
+%! assert (abs (L - 0.3333) < 1e-4)
+%!test
+%! X = [1, 2; 3, 4; 5, 6];
+%! Y = {'A'; 'B'; 'A'};
+%! model = fitcknn (X, Y);
+%! X_with_nan = [1, 2; NaN, 4];
+%! Y_test = {'A'; 'B'};
+%! L = loss (model, X_with_nan, Y_test, 'LossFun', 'logit');
+%! assert (isnan (L))
+%!test
+%! X = [1, 2; 3, 4; 5, 6];
+%! Y = {'A'; 'B'; 'A'};
+%! model = fitcknn (X, Y);
+%! customLossFun = @(C, S, W, Cost) sum (W .* sum (abs (C - S), 2));
+%! L = loss (model, X, Y, 'LossFun', customLossFun);
+%! assert (L, 0)
+%!test
+%! X = [1, 2; 3, 4; 5, 6];
+%! Y = [1; 2; 1];
+%! model = fitcknn (X, Y);
+%! L = loss (model, X, Y, 'LossFun', 'classiferror');
+%! assert (L, 0)
+%!test
+%! X = [1, 2; 3, 4; 5, 6];
+%! Y = [true; false; true];
+%! model = fitcknn (X, Y);
+%! L = loss (model, X, Y, 'LossFun', 'binodeviance');
+%! assert (abs (L - 0.1269) < 1e-4)
+%!test
+%! X = [1, 2; 3, 4; 5, 6];
+%! Y = ['1'; '2'; '1'];
+%! model = fitcknn (X, Y);
+%! L = loss (model, X, Y, 'LossFun', 'classiferror');
+%! assert (L, 0)
+%!test
+%! X = [1, 2; 3, 4; 5, 6];
+%! Y = ['1'; '2'; '3'];
+%! model = fitcknn (X, Y);
+%! X_test = [3, 3];
+%! Y_test = ['1'];
+%! L = loss (model, X_test, Y_test, 'LossFun', 'quadratic');
+%! assert (L, 1)
+%!test
+%! X = [1, 2; 3, 4; 5, 6];
+%! Y = ['1'; '2'; '3'];
+%! model = fitcknn (X, Y);
+%! X_test = [3, 3; 5, 7];
+%! Y_test = ['1'; '2'];
+%! L = loss (model, X_test, Y_test, 'LossFun', 'classifcost');
+%! assert (L, 1)
+%!test
+%! X = [1, 2; 3, 4; 5, 6];
+%! Y = ['1'; '2'; '3'];
+%! model = fitcknn (X, Y);
+%! X_test = [3, 3; 5, 7];
+%! Y_test = ['1'; '2'];
+%! L = loss (model, X_test, Y_test, 'LossFun', 'hinge');
+%! assert (L, 1)
+%!test
+%! X = [1, 2; 3, 4; 5, 6];
+%! Y = ['1'; '2'; '3'];
+%! model = fitcknn (X, Y);
+%! X_test = [3, 3; 5, 7];
+%! Y_test = ['1'; '2'];
+%! W = [1; 2];
+%! L = loss (model, X_test, Y_test, 'LossFun', 'logit', 'Weights', W);
+%! assert (abs (L - 0.6931) < 1e-4)
+
+## Test input validation for loss method
+%!error<ClassificationKNN.loss: too few input arguments.> ...
+%! loss (ClassificationKNN (ones (4,2), ones (4,1)))
+%!error<ClassificationKNN.loss: too few input arguments.> ...
+%! loss (ClassificationKNN (ones (4,2), ones (4,1)), ones (4,2))
+%!error<ClassificationKNN.loss: Name-Value arguments must be in pairs.> ...
+%! loss (ClassificationKNN (ones (4,2), ones (4,1)), ones (4,2), ones (4,1), 'LossFun')
+%!error<ClassificationKNN.loss: Y must have the same number of rows as X.> ...
+%! loss (ClassificationKNN (ones (4,2), ones (4,1)), ones (4,2), ones (3,1))
+%!error<ClassificationKNN.loss: Invalid loss function.> ...
+%! loss (ClassificationKNN (ones (4,2), ones (4,1)), ones (4,2), ones (4,1), 'LossFun', 'a')
+%!error<ClassificationKNN.loss: Invalid Weights.> ...
+%! loss (ClassificationKNN (ones (4,2), ones (4,1)), ones (4,2), ones (4,1), 'Weights', 'w')

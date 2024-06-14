@@ -160,21 +160,21 @@ classdef ClassificationPartitionedModel
 						paramName = acceptableParams{i};
 						if (isprop (Mdl, paramName))
 							paramValue = Mdl.(paramName);
-							if (!isempty (paramValue))
+							if (! isempty (paramValue))
 								args = [args, {paramName, paramValue}];
 							endif
 						else
-							switch paramName
+							switch (paramName)
 								case 'Cov'
-									if (strcmpi (Mdl.Distance, 'mahalanobis') && !isempty (Mdl.DistParameter))
+									if (strcmpi (Mdl.Distance, 'mahalanobis') && (! isempty (Mdl.DistParameter)))
 										args = [args, {'Cov', Mdl.DistParameter}];
 									endif
 								case 'Exponent'
-									if (strcmpi (Mdl.Distance,'minkowski') && !isempty (Mdl.DistParameter))
+									if (strcmpi (Mdl.Distance,'minkowski') && (! isempty (Mdl.DistParameter)))
 										args = [args, {'Exponent', Mdl.DistParameter}];
 									endif
 								case 'Scale'
-									if (strcmpi (Mdl.Distance, 'seuclidean') && !isempty (Mdl.DistParameter))
+									if (strcmpi (Mdl.Distance, 'seuclidean') && (! isempty (Mdl.DistParameter)))
 										args = [args, {'Scale', Mdl.DistParameter}];
 									endif
 							endswitch
@@ -243,13 +243,13 @@ classdef ClassificationPartitionedModel
 
 		function [label, Score, Cost] = kfoldPredict (this)
 			## Initialize the label vector based on the type of Y
-			if iscellstr (this.Y)
+			if (iscellstr (this.Y))
 				label = cell (this.NumObservations, 1);
-			elseif islogical (this.Y)
+			elseif (islogical (this.Y))
 				label = false (this.NumObservations, 1);
-			elseif isnumeric (this.Y)
+			elseif (isnumeric (this.Y))
 				label = zeros (this.NumObservations, 1);
-			elseif ischar (this.Y)
+			elseif (ischar (this.Y))
 				label = char (zeros (this.NumObservations, size (this.Y, 2)));
 			else
 				error ('ClassificationPartitionedModel.kfoldPredict: Unsupported data type for Y');
@@ -348,7 +348,7 @@ endclassdef
 %! assert (cvModel.ModelParameters.NumNeighbors, 1);
 %! assert (cvModel.ModelParameters.NSMethod, "kdtree");
 %! assert (cvModel.ModelParameters.Distance, "euclidean");
-%! assert (!cvModel.ModelParameters.Standardize);
+%! assert (! cvModel.ModelParameters.Standardize);
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
@@ -361,7 +361,7 @@ endclassdef
 %! assert (cvModel.ModelParameters.NumNeighbors, 1);
 %! assert (cvModel.ModelParameters.NSMethod, "exhaustive");
 %! assert (cvModel.ModelParameters.Distance, "euclidean");
-%! assert (!cvModel.ModelParameters.Standardize);
+%! assert (! cvModel.ModelParameters.Standardize);
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
@@ -375,7 +375,7 @@ endclassdef
 %! assert (cvModel.ModelParameters.NumNeighbors, k);
 %! assert (cvModel.ModelParameters.NSMethod, "kdtree");
 %! assert (cvModel.ModelParameters.Distance, "euclidean");
-%! assert (!cvModel.ModelParameters.Standardize);
+%! assert (! cvModel.ModelParameters.Standardize);
 
 ## Test input validation for ClassificationPartitionedModel
 %!error<ClassificationPartitionedModel: Too few input arguments.> ...
@@ -384,41 +384,22 @@ endclassdef
 %! ClassificationPartitionedModel (ClassificationKNN (ones (4,2), ones (4,1)))
 
 ## Test for kfoldPredict
-##%!test
-##%! x = ones (4, 11);
-##%! y = {"a"; "a"; "b"; "b"};
-##%! k = 3;
-##%! a = fitcknn (x, y, "NumNeighbors" ,k);
-##%! partition = cvpartition (y, "LeaveOut");
-##%! cvModel = ClassificationPartitionedModel (a, partition);
-##%! [label, score, cost] = kfoldPredict (cvModel);
-##%! assert (class (cvModel), "ClassificationPartitionedModel");
-##%! assert ({cvModel.X, cvModel.Y}, {x, y});
-##%! assert (cvModel.NumObservations, 4);
-##%! assert (cvModel.ModelParameters.NumNeighbors, k);
-##%! assert (cvModel.ModelParameters.NSMethod, "exhaustive");
-##%! assert (cvModel.ModelParameters.Distance, "euclidean");
-##%! assert (!cvModel.ModelParameters.Standardize);
-##%! assert (label, {"a"; "a"; "b"; "b"});
-##%! assert (score, [0.6667, 0.3333; 0.6667, 0.3333; 0.6667, 0.3333; 0.6667, 0.3333], 1e-4);
-##%! assert (cost, [0.3333, 0.6667; 0.3333, 0.6667; 0.3333, 0.6667; 0.3333, 0.6667], 1e-4);
-
 %!test
 %! x = ones(4, 11);
 %! y = {"a"; "a"; "b"; "b"};
 %! k = 3;
-%! a = fitcknn(x, y, "NumNeighbors", k);
-%! partition = cvpartition(y, "LeaveOut");
-%! cvModel = ClassificationPartitionedModel(a, partition);
-%! [label, score, cost] = kfoldPredict(cvModel);
-%! assert(class(cvModel), "ClassificationPartitionedModel");
-%! assert({cvModel.X, cvModel.Y}, {x, y});
-%! assert(cvModel.NumObservations, 4);
-%! assert(cvModel.ModelParameters.NumNeighbors, k);
-%! assert(cvModel.ModelParameters.NSMethod, "exhaustive");
-%! assert(cvModel.ModelParameters.Distance, "euclidean");
-%! assert(!cvModel.ModelParameters.Standardize);
-%! assert(label, {"b"; "b"; "a"; "a"});
-%! assert(score, [0.3333, 0.6667; 0.3333, 0.6667; 0.6667, 0.3333; 0.6667, 0.3333], 1e-4);
-%! assert(cost, [0.6667, 0.3333; 0.6667, 0.3333; 0.3333, 0.6667; 0.3333, 0.6667], 1e-4);
+%! a = fitcknn (x, y, "NumNeighbors", k);
+%! partition = cvpartition (y, "LeaveOut");
+%! cvModel = ClassificationPartitionedModel (a, partition);
+%! [label, score, cost] = kfoldPredict (cvModel);
+%! assert (class(cvModel), "ClassificationPartitionedModel");
+%! assert ({cvModel.X, cvModel.Y}, {x, y});
+%! assert (cvModel.NumObservations, 4);
+%! assert (cvModel.ModelParameters.NumNeighbors, k);
+%! assert (cvModel.ModelParameters.NSMethod, "exhaustive");
+%! assert (cvModel.ModelParameters.Distance, "euclidean");
+%! assert (! cvModel.ModelParameters.Standardize);
+%! assert (label, {"b"; "b"; "a"; "a"});
+%! assert (score, [0.3333, 0.6667; 0.3333, 0.6667; 0.6667, 0.3333; 0.6667, 0.3333], 1e-4);
+%! assert (cost, [0.6667, 0.3333; 0.6667, 0.3333; 0.3333, 0.6667; 0.3333, 0.6667], 1e-4);
 
