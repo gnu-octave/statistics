@@ -645,13 +645,13 @@ classdef ClassificationSVM
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {ClassificationSVM} {@var{l} =} loss (@var{obj}, @var{X}, @var{Y})
-    ## @deftypefnx {ClassificationSVM} {@var{l} =} loss (@dots{}, @var{name}, @var{value})
+    ## @deftypefn  {ClassificationSVM} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {ClassificationSVM} {@var{L} =} loss (@dots{}, @var{name}, @var{value})
     ##
     ## Determine the classification error for a Support Vector Machine
     ## classifier.
     ##
-    ## @code{@var{l} = loss (@var{obj}, @var{X}, @var{Y})} returns the
+    ## @code{@var{L} = loss (@var{obj}, @var{X}, @var{Y})} returns the
     ## predictive accuracy of support vector machine (SVM) classification models.
     ## Comparing the same type of loss across multiple models allows you to
     ## identify which model is more accurate, with a lower loss indicating
@@ -671,7 +671,7 @@ classdef ClassificationSVM
     ## number of rows as @var{X}.
     ## @end itemize
     ##
-    ## @code{@var{l} = loss (@dots{}, @var{Name}, @var{Value})} returns the
+    ## @code{@var{L} = loss (@dots{}, @var{Name}, @var{Value})} returns the
     ## aforementioned results with additional properties specified by
     ## @qcode{Name-Value} pair arguments listed below.
     ##
@@ -726,7 +726,7 @@ classdef ClassificationSVM
     ## @seealso{fitcsvm, ClassificationSVM}
     ## @end deftypefn
 
-    function l = loss (this, X, Y, varargin)
+    function L = loss (this, X, Y, varargin)
 
       ## Check for sufficient input arguments
       if (nargin < 3)
@@ -808,22 +808,22 @@ classdef ClassificationSVM
         ## Compute the loss based on the specified loss function
         switch tolower(LossFun)
           case "classiferror"
-            l = mean((margin <= 0) .* Weights);
+            L = mean((margin <= 0) .* Weights);
 
           case "hinge"
-            l = mean(max(0, 1 - margin) .* Weights);
+            L = mean(max(0, 1 - margin) .* Weights);
 
           case "logit"
-            l = mean(log(1 + exp(-margin)) .* Weights);
+            L = mean(log(1 + exp(-margin)) .* Weights);
 
           case "exponential"
-            l = mean(exp(-margin) .* Weights);
+            L = mean(exp(-margin) .* Weights);
 
           case "quadratic"
-            l = mean((1 - margin).^2 .* Weights);
+            L = mean((1 - margin).^2 .* Weights);
 
           case "binodeviance"
-            l = mean(log(1 + exp(-2 * margin)) .* Weights);
+            L = mean(log(1 + exp(-2 * margin)) .* Weights);
 
           otherwise
             error("ClassificationSVM.loss: unsupported Loss function.");
@@ -832,14 +832,14 @@ classdef ClassificationSVM
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {ClassificationSVM} {@var{label} =} resubpredict (@var{obj})
-    ## @deftypefnx {ClassificationSVM} {[@var{label}, @var{decision_values}] =} resubpredict (@dots{}, @var{name}, @var{value})
-    ## @deftypefnx {ClassificationSVM} {[@var{label}, @var{prob_estimates}] =} resubpredict (@dots{})
+    ## @deftypefn  {ClassificationSVM} {@var{label} =} resubPredict (@var{obj})
+    ## @deftypefnx {ClassificationSVM} {[@var{label}, @var{decision_values}] =} resubPredict (@dots{}, @var{name}, @var{value})
+    ## @deftypefnx {ClassificationSVM} {[@var{label}, @var{prob_estimates}] =} resubPredict (@dots{})
     ##
     ## Classify the training data using the trained Support Vector Machine
     ## classification object.
     ##
-    ## @code{@var{label} = resubpredict (@var{obj})} returns the vector of
+    ## @code{@var{label} = resubPredict (@var{obj})} returns the vector of
     ## labels predicted for the corresponding instances in the training data,
     ## using the predictor data in @code{obj.X} and corresponding labels,
     ## @code{obj.Y}, stored in the Support Vector Machine classification model,
@@ -850,12 +850,12 @@ classdef ClassificationSVM
     ## @var{obj} must be a @qcode{ClassificationSVM} class object.
     ## @end itemize
     ##
-    ## @code{[@var{label}, @var{prob_estimates}] = resubpredict (@var{obj}, "ProbabilityEstimates", 1)}
+    ## @code{[@var{label}, @var{prob_estimates}] = resubPredict (@var{obj}, "ProbabilityEstimates", 1)}
     ## also returns @var{prob_estimates}. If k is the number of classes in the
     ## training data, each row contains k values indicating the probability that
     ## the training instance is in each class.
     ##
-    ## @code{[@var{label}, @var{decision_values}] = resubpredict (@var{obj}, "ProbabilityEstimates", 0)}
+    ## @code{[@var{label}, @var{decision_values}] = resubPredict (@var{obj}, "ProbabilityEstimates", 0)}
     ## also returns @var{decision_values}.  If k is the number of classes in the
     ## training data, each row includes results of predicting k(k-1)/2
     ## binary-class SVMs.  For classification, k = 1 is a special case.
@@ -863,7 +863,7 @@ classdef ClassificationSVM
     ## an empty vector.
     ##
     ##
-    ## @code{@var{label} = resubpredict (@dots{}, @var{Name}, @var{Value})}
+    ## @code{@var{label} = resubPredict (@dots{}, @var{Name}, @var{Value})}
     ## returns the aforementioned results with additional properties specified
     ## by @qcode{Name-Value} pair arguments listed below.
     ##
@@ -886,10 +886,10 @@ classdef ClassificationSVM
     ## @seealso{fitcsvm, ClassificationSVM}
     ## @end deftypefn
 
-    function [label, value] = resubpredict (this, varargin)
+    function [label, value] = resubPredict (this, varargin)
 
       if (mod (nargin, 2) != 1)
-        error ("ClassificationSVM.resubpredict: Name-Value arguments must be in pairs.");
+        error ("ClassificationSVM.resubPredict: Name-Value arguments must be in pairs.");
       endif
 
       b = 0;  ## Default: return decision values.
@@ -900,12 +900,12 @@ classdef ClassificationSVM
           case "probabilityestimates"
             b = varargin{2};
             if ( !(ismember(b, [0, 1]) && isscalar(b)))
-              error (strcat (["ClassificationSVM.resubpredict: ProbabilityEstimates"], ...
+              error (strcat (["ClassificationSVM.resubPredict: ProbabilityEstimates"], ...
                              [" must be either 1 or 0."]));
             endif
 
           otherwise
-            error (strcat (["ClassificationSVM.resubpredict: invalid parameter name"],...
+            error (strcat (["ClassificationSVM.resubPredict: invalid parameter name"],...
                            [" in optional pair arguments."]));
           endswitch
         varargin (1:2) = [];
@@ -921,6 +921,162 @@ classdef ClassificationSVM
           value = dec_values_L;
         endif
       endif
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationSVM} {@var{L} =} resubLoss (@var{obj})
+    ## @deftypefnx {ClassificationSVM} {@var{L} =} resubLoss (@dots{}, @var{name}, @var{value})
+    ##
+    ## Compute the resubstitution classification loss for the trained Support
+    ## Vector Machine classification object.
+    ##
+    ## @code{@var{L} = resubLoss (@var{obj})} returns the classification loss by
+    ## resubstitution (L), or the in-sample classification loss, for the trained
+    ## classification model @var{obj} using the training data stored in
+    ## @code{obj.X} and the corresponding class labels stored in @code{obj.Y}.
+    ##
+    ## @itemize
+    ## @item
+    ## @var{obj} must be a binary @qcode{ClassificationSVM} class object.
+    ## @end itemize
+    ##
+    ## @code{@var{l} = resubLoss (@dots{}, @var{Name}, @var{Value})} returns the
+    ## aforementioned results with additional properties specified by
+    ## @qcode{Name-Value} pair arguments listed below.
+    ##
+    ## @multitable @columnfractions 0.28 0.02 0.7
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{"LossFun"} @tab @tab Loss function, specified as a built-in
+    ## loss function name. It accepts the following options: (Default is
+    ## 'classiferror')
+    ##
+    ## @itemize
+    ##
+    ## @item 'binodeviance': Binomial deviance:
+    ## The binomial deviance loss function is used to evaluate the performance
+    ## of a binary classifier. It is calculated as:
+    ## @math{L = \sum_{j=1}^{n} w_j \log \{1 + \exp [-2m_j]\}}
+    ##
+    ## @item 'classiferror': Misclassification rate in decimal
+    ## The classification error measures the fraction of misclassified instances
+    ## out of the total instances. It is calculated as:
+    ## @math{L = \frac{1}{n} \sum_{j=1}^{n} \mathbb{I}(m_j \leq 0)}
+    ##
+    ## @item 'exponential': Exponential loss:
+    ## The exponential loss function is used to penalize misclassified instances
+    ## exponentially. It is calculated as:
+    ## @math{L = \sum_{j=1}^{n} w_j \exp [-m_j]}
+    ##
+    ## @item 'hinge': Hinge loss:
+    ## The hinge loss function is often used for maximum-margin classification,
+    ## particularly for support vector machines. It is calculated as:
+    ## @math{L = \sum_{j=1}^{n} w_j \max (0, 1 - m_j)}
+    ##
+    ## @item 'logit': Logistic loss:
+    ## The logistic loss function, also known as log loss, measures the
+    ## performance of a classification model where the prediction is a
+    ## probability value. It is calculated as:
+    ## @math{L = \sum_{j=1}^{n} w_j \log \{1 + \exp [-m_j]\}}
+    ##
+    ## @item 'quadratic': Quadratic loss:
+    ## The quadratic loss function penalizes the square of the margin.
+    ## It is calculated as:
+    ## @math{L = \sum_{j=1}^{n} w_j (1 - m_j)^2}
+    ##
+    ## @end itemize
+    ##
+    ## @item @qcode{"Weights"} @tab @tab Specified as a numeric vector which
+    ## weighs each observation (row) in X. The size of Weights must be equal
+    ## to the number of rows in X. The default value is: ones(size(X,1),1)
+    ##
+    ## @end multitable
+    ##
+    ## @seealso{fitcsvm, ClassificationSVM}
+    ## @end deftypefn
+
+    function L = resubLoss(this, varargin)
+
+      if (mod(nargin, 2) != 1)
+        error("ClassificationSVM.resubLoss: Name-Value arguments must be in pairs.");
+      endif
+
+      ## Check if binary classifier model or not.
+      if (this.NumClasses != 2)
+        error (strcat(["ClassificationSVM.resubloss: Only binary classifier SVM"],
+       [" model is supported."]));
+      endif
+
+      ## Set default values before parsing optional parameters
+      LossFun                        = 'classiferror';
+      Weights                        = ones(size(this.X, 1), 1);
+
+      ## Parse extra parameters
+      while (numel(varargin) > 0)
+        switch (tolower(varargin{1}))
+
+          case "lossfun"
+            LossFun = varargin{2};
+            if (!ischar(LossFun))
+              error("ClassificationSVM.resubLoss: LossFun must be a string.");
+            endif
+            if (ischar(LossFun))
+              if (!any(strcmpi(tolower(LossFun), {"binodeviance", ...
+                    "classiferror", "exponential", "hinge", "logit", "quadratic"})))
+                error("ClassificationSVM.resubLoss: unsupported Loss function.");
+              endif
+            endif
+
+          case "weights"
+            Weights = varargin{2};
+            ## Validate if weights is a numeric vector
+            if (!(isnumeric(Weights) && isvector(Weights)))
+              error("ClassificationSVM.resubLoss: Weights must be a numeric vector.");
+            endif
+
+            ## Check if the size of weights matches the number of rows in X
+            if (numel(Weights) != size(this.X, 1))
+              error(strcat(["ClassificationSVM.resubLoss: The size of Weights must"],
+             [" be equal to the number of rows in X."]));
+            endif
+
+          otherwise
+            error(strcat(["ClassificationSVM.resubLoss: invalid parameter name"], ...
+                         [" in optional pair arguments."]));
+        endswitch
+        varargin(1:2) = [];
+      endwhile
+
+      ## Compute the classification score
+      [~, ~, dec_values_L] = svmpredict(this.Y, this.X, this.Model, '-q');
+
+      ## Compute the margin
+      margin = this.Y .* dec_values_L;
+
+        ## Compute the loss based on the specified loss function
+        switch tolower(LossFun)
+          case "classiferror"
+            L = mean((margin <= 0) .* Weights);
+
+          case "hinge"
+            L = mean(max(0, 1 - margin) .* Weights);
+
+          case "logit"
+            L = mean(log(1 + exp(-margin)) .* Weights);
+
+          case "exponential"
+            L = mean(exp(-margin) .* Weights);
+
+          case "quadratic"
+            L = mean((1 - margin).^2 .* Weights);
+
+          case "binodeviance"
+            L = mean(log(1 + exp(-2 * margin)) .* Weights);
+
+          otherwise
+            error("ClassificationSVM.resubloss: unsupported Loss function.");
+        endswitch
 
     endfunction
 
@@ -1123,14 +1279,34 @@ endclassdef
 %!error<ClassificationSVM.loss: invalid parameter name in optional pair arguments.> ...
 %! loss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), zeros(2,2), ones(2,1), "some", "some")
 
-## Test input validation for resubpredict method
-%!error<ClassificationSVM.resubpredict: Name-Value arguments must be in pairs.> ...
-%! resubpredict (ClassificationSVM (ones (40,2), ones (40,1)), "ProbabilityEstimates")
-%!error<ClassificationSVM.resubpredict: ProbabilityEstimates must be either 1 or 0.> ...
-%! resubpredict (ClassificationSVM (ones (40,2), ones (40,1)), "ProbabilityEstimates", "some")
-%!error<ClassificationSVM.resubpredict: ProbabilityEstimates must be either 1 or 0.> ...
-%! resubpredict (ClassificationSVM (ones (40,2), ones (40,1)), "ProbabilityEstimates", 3)
-%!error<ClassificationSVM.resubpredict: ProbabilityEstimates must be either 1 or 0.> ...
-%! resubpredict (ClassificationSVM (ones (40,2), ones (40,1)), "ProbabilityEstimates", [1 0])
-%!error<ClassificationSVM.resubpredict: invalid parameter name in optional pair arguments.> ...
-%! resubpredict (ClassificationSVM (ones (40,2), ones (40,1)), "some", "some")
+## Test input validation for resubPredict method
+%!error<ClassificationSVM.resubPredict: Name-Value arguments must be in pairs.> ...
+%! resubPredict (ClassificationSVM (ones (40,2), ones (40,1)), "ProbabilityEstimates")
+%!error<ClassificationSVM.resubPredict: ProbabilityEstimates must be either 1 or 0.> ...
+%! resubPredict (ClassificationSVM (ones (40,2), ones (40,1)), "ProbabilityEstimates", "some")
+%!error<ClassificationSVM.resubPredict: ProbabilityEstimates must be either 1 or 0.> ...
+%! resubPredict (ClassificationSVM (ones (40,2), ones (40,1)), "ProbabilityEstimates", 3)
+%!error<ClassificationSVM.resubPredict: ProbabilityEstimates must be either 1 or 0.> ...
+%! resubPredict (ClassificationSVM (ones (40,2), ones (40,1)), "ProbabilityEstimates", [1 0])
+%!error<ClassificationSVM.resubPredict: invalid parameter name in optional pair arguments.> ...
+%! resubPredict (ClassificationSVM (ones (40,2), ones (40,1)), "some", "some")
+
+## Test input validation for resubLoss method
+%!error<ClassificationSVM.resubLoss: Name-Value arguments must be in pairs.> ...
+%! resubLoss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "LossFun")
+%!error<ClassificationSVM.resubloss: Only binary classifier SVM model is supported.> ...
+%! resubLoss (ClassificationSVM (ones (40,2),randi([1, 3], 40, 1)))
+%!error<ClassificationSVM.resubLoss: LossFun must be a string.> ...
+%! resubLoss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "LossFun", 1)
+%!error<ClassificationSVM.resubLoss: unsupported Loss function.> ...
+%! resubLoss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "LossFun", "some")
+%!error<ClassificationSVM.resubLoss: Weights must be a numeric vector.> ...
+%! resubLoss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "Weights", ['a','b'])
+%!error<ClassificationSVM.resubLoss: Weights must be a numeric vector.> ...
+%! resubLoss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "Weights", 'a')
+%!error<ClassificationSVM.resubLoss: The size of Weights must be equal to the number of rows in X.> ...
+%! resubLoss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "Weights", [1,2,3])
+%!error<ClassificationSVM.resubLoss: The size of Weights must be equal to the number of rows in X.> ...
+%! resubLoss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "Weights", 3)
+%!error<ClassificationSVM.resubLoss: invalid parameter name in optional pair arguments.> ...
+%! resubLoss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "some", "some")
