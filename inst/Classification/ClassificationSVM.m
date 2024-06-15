@@ -1287,7 +1287,7 @@ endclassdef
 %! rng(1); ## For reproducibility
 %!
 %! ## Randomly partition the data into training and testing sets
-%! cv = cvpartition(Y, 'Holdout', 0.33);  # 33% data for testing, 67% for training
+%! cv = cvpartition(Y, 'HoldOut', 0.33);  # 33% data for testing, 67% for training
 %!
 %! X_train = X(training(cv), :);
 %! Y_train = Y(training(cv));
@@ -1516,7 +1516,8 @@ endclassdef
 %! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "KFold", -1)
 %!error<ClassificationSVM.crossval: Number of folds should be an integer value greater than 1.> ...
 %! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "KFold", 11.5)
-
+%!error<ClassificationSVM.crossval: Number of folds should be an integer value greater than 1.> ...
+%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "KFold", [1,2])
 %!error<ClassificationSVM.crossval: Holdout should be a numeric value in the range 0 to 1.> ...
 %! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "Holdout", 'a')
 %!error<ClassificationSVM.crossval: Holdout should be a numeric value in the range 0 to 1.> ...
