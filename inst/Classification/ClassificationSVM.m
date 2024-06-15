@@ -1117,6 +1117,157 @@ classdef ClassificationSVM
 
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationSVM} {@var{CVMdl} =} crossval (@var{obj})
+    ## @deftypefnx {ClassificationSVM} {@var{CVMdl} =} crossval (@dots{}, @var{name}, @var{value})
+    ##
+    ## Cross Validates Support Vector Machine classification object.
+    ##
+    ## @code{@var{CVMdl} = crossval (@var{obj})} returns a cross-validated model
+    ## object, @var{CVMdl}, from a trained model, @var{obj}, using 10-fold
+    ## cross-validation by default.
+    ##
+    ## @code{@var{CVMdl} = crossval (@var{obj}, @var{name}, @var{value})}
+    ## specifies additional name-value pair arguments to customise the
+    ## cross-validation process.
+    ##
+    ## @multitable @columnfractions 0.28 0.02 0.7
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{"KFold"} @tab @tab Specify the number of folds to use in
+    ## k-fold cross-validation. @code{'kfold', @var{k}} where @var{k} is an
+    ## integer greater than 1.
+    ##
+    ## @item @qcode{"Holdout"} @tab @tab Specify the fraction of the data to
+    ## hold out for testing. @code{'holdout', @var{p}} where @var{p} is a scalar
+    ## in the range (0,1).
+    ##
+    ## @item @qcode{"CVPartition"} @tab @tab Specify the fraction of the data to
+    ## hold out for testing. @code{'holdout', @var{p}} where @var{p} is a scalar
+    ## in the range (0,1).
+    ##
+    ## @item @qcode{"Leaveout"} @tab @tab Specify whether to perform
+    ## leave-one-out cross-validation. @code{'leaveout', @var{Value}} where
+    ## @var{Value} is 'on' or 'off'.
+    ##
+    ## @end multitable
+    ##
+    ## @seealso{cvpartition, fitcsvm, ClassificationSVM}
+    ## @end deftypefn
+
+    function CVMdl = crossval (this, varargin)
+
+      ## Check for sufficient input arguments
+      if (nargin < 1)
+        error ("ClassificationSVM.crossval: too few input arguments.");
+      endif
+
+      if (numel (varargin) == 1)
+        error ("ClassificationSVM.crossval: Name-Value arguments must be in pairs.");
+      elseif (numel (varargin) > 2)
+        error ("ClassificationSVM.crossval: Specify only one of the Name-Value arguments.");
+      endif
+
+      ## Set default values before parsing optional parameters
+      numSamples  = size (this.X, 1);
+      numFolds    = 10;
+      Holdout     = [];
+      Leaveout    = 'off';
+      CVPartition = [];
+
+      ## Parse extra parameters
+      while (numel (varargin) > 0)
+        switch (tolower (varargin {1}))
+
+          case 'kfold'
+            numFolds = varargin{2};
+            if (!((isnumeric (numFolds) && isscalar (numFolds)
+              && (numFolds == fix (numFolds)) && numFolds > 1 )))
+              error (strcat (["ClassificationSVM.crossval: Number of folds"],...
+             [" should be an integer value greater than 1."]));
+            endif
+
+          case 'holdout'
+            Holdout = varargin{2};
+            if (!(isnumeric (Holdout) && isscalar (Holdout) && Holdout > 0
+              && Holdout < 1))
+              error (strcat (["ClassificationSVM.crossval: Holdout should be a"],...
+              [" numeric value in the range 0 to 1."]));
+            endif
+
+          case 'leaveout'
+            Leaveout = varargin{2};
+            if (!(ischar (Leaveout)
+              && (strcmpi (Leaveout, 'on') || strcmpi (Leaveout, 'off'))))
+              error (strcat (["ClassificationSVM.crossval: Leaveout should be"],...
+              [" either 'on' or 'off'."]));
+            endif
+
+          case 'cvpartition'
+            CVPartition = varargin{2};
+            if (!(isa (CVPartition, 'cvpartition')))
+              error (strcat (["ClassificationSVM.crossval: CVPartition should"],...
+              [" be a cvPartition object."]));
+            endif
+
+           otherwise
+            error (strcat (["ClassificationSVM.crossval: invalid parameter name"],...
+                           [" in optional pair arguments."]));
+          endswitch
+        varargin (1:2) = [];
+      endwhile
+
+      ## Determine the cross-validation method to use
+      if (! isempty (CVPartition))
+        partition = CVPartition;
+      elseif (! isempty (holdout))
+        partition = cvpartition (numSamples, 'Holdout', holdout);
+      elseif (strcmpi (Leaveout, 'on'))
+        partition = cvpartition (numSamples, 'LeaveOut');
+      else
+        partition = cvpartition (numSamples, 'KFold', numFolds);
+      endif
+
+      ## Perform the cross-validation
+      numTestSets = partition.NumTestSets;
+      models = cell (numTestSets, 1);
+
+      for i = 1:numTestSets
+        trainIdx = training (partition, i);
+        testIdx = test (partition, i);
+
+        XTrain = this.X(trainIdx, :);
+        YTrain = this.Y(trainIdx, :);
+
+        ## Extract parameters for fitcsvm
+        params = {
+          'SVMtype', this.SVMtype, ...
+          'KernelFunction', this.KernelFunction, ...
+          'PolynomialOrder', this.PolynomialOrder, ...
+          'Gamma', this.Gamma, ...
+          'KernelOffset', this.KernelOffset, ...
+          'BoxConstraint', this.BoxConstraint, ...
+          'Nu', this.Nu, ...
+          'CacheSize', this.CacheSize, ...
+          'Tolerance', this.Tolerance, ...
+          'Shrinking', this.Shrinking, ...
+          'ProbabilityEstimates', this.ProbabilityEstimates, ...
+          'Weight', this.Weight
+        };
+
+        ## Train the SVM on the training subset
+        trainedModel = fitcsvm (XTrain, YTrain, params{:});
+
+        ## Store the trained model
+        models{i} = trainedModel;
+      endfor
+
+      ## Return a cross-validated model object
+      CVMdl = struct ('Trained', {models}, 'Partition', partition);
+      CVMdl = class (CVMdl, 'ClassificationPartitionedModel');
+
+    endfunction
+
    endmethods
 
 endclassdef
@@ -1136,7 +1287,7 @@ endclassdef
 %! rng(1); ## For reproducibility
 %!
 %! ## Randomly partition the data into training and testing sets
-%! cv = cvpartition(Y, 'HoldOut', 0.33);  # 33% data for testing, 67% for training
+%! cv = cvpartition(Y, 'Holdout', 0.33);  # 33% data for testing, 67% for training
 %!
 %! X_train = X(training(cv), :);
 %! Y_train = Y(training(cv));
@@ -1351,3 +1502,36 @@ endclassdef
 ## Test input validation for resubMargin method
 %!error<ClassificationSVM.resubMargin: Only binary classifier SVM model is supported.> ...
 %! resubMargin (ClassificationSVM (ones (40,2),randi([1, 3], 40, 1)))
+
+## Test input validation for crossval method
+%!error<ClassificationSVM.crossval: Name-Value arguments must be in pairs.> ...
+%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "KFold")
+%!error<ClassificationSVM.crossval: Specify only one of the Name-Value arguments.> ...
+%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "KFold", 5, "leaveout", 'on')
+%!error<ClassificationSVM.crossval: Number of folds should be an integer value greater than 1.> ...
+%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "KFold", 'a')
+%!error<ClassificationSVM.crossval: Number of folds should be an integer value greater than 1.> ...
+%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "KFold", 1)
+%!error<ClassificationSVM.crossval: Number of folds should be an integer value greater than 1.> ...
+%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "KFold", -1)
+%!error<ClassificationSVM.crossval: Number of folds should be an integer value greater than 1.> ...
+%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "KFold", 11.5)
+
+%!error<ClassificationSVM.crossval: Holdout should be a numeric value in the range 0 to 1.> ...
+%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "Holdout", 'a')
+%!error<ClassificationSVM.crossval: Holdout should be a numeric value in the range 0 to 1.> ...
+%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "Holdout", 11.5)
+%!error<ClassificationSVM.crossval: Holdout should be a numeric value in the range 0 to 1.> ...
+%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "Holdout", -1)
+%!error<ClassificationSVM.crossval: Holdout should be a numeric value in the range 0 to 1.> ...
+%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "Holdout", 0)
+%!error<ClassificationSVM.crossval: Holdout should be a numeric value in the range 0 to 1.> ...
+%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "Holdout", 1)
+%!error<ClassificationSVM.crossval: Leaveout should be either 'on' or 'off'.> ...
+%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "Leaveout", 1)
+%!error<ClassificationSVM.crossval: CVPartition should be a cvPartition object.> ...
+%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "CVPartition", 1)
+%!error<ClassificationSVM.crossval: CVPartition should be a cvPartition object.> ...
+%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "CVPartition", 'a')
+%!error<ClassificationSVM.crossval: invalid parameter name in optional pair arguments.> ...
+%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "some", "some")
