@@ -1323,6 +1323,79 @@ endclassdef
 %! legend('versicolor','virginica','Support Vector')
 %! hold off
 
+%!demo
+%! ## Create a Support Vector Machine classifier and determine margin for test
+%! ## data.
+%! pkg load statistics
+%! load fisheriris
+%! rng(1);  ## For reproducibility
+%!
+%! ## Select indices of the non-setosa species
+%! inds = !strcmp(species, 'setosa');
+%!
+%!  ## Select features and labels for non-setosa species
+%! X = meas(inds, 3:4);
+%! Y = grp2idx(species(inds));
+%!
+%! ##  Convert labels to +1 and -1
+%! unique_classes = unique(Y);
+%! Y(Y == unique_classes(1)) = -1;
+%! Y(Y == unique_classes(2)) = 1;
+%!
+%! ## Partition data for training and testing
+%! cv = cvpartition(Y, 'HoldOut', 0.15);
+%! X_train = X(training(cv), :);
+%! Y_train = Y(training(cv));
+%! X_test = X(test(cv), :);
+%! Y_test = Y(test(cv));
+%!
+%! ## Train the SVM model
+%! CVSVMModel = fitcsvm(X_train, Y_train);
+%!
+%! ## Calculate margins
+%! m = margin(CVSVMModel, X_test, Y_test);
+%! disp(m);
+
+%!demo
+%! ## Create a Support Vector Machine classifier and determine loss for test
+%! ## data.
+%! pkg load statistics
+%! load fisheriris
+%! rng(1);  ## For reproducibility
+%!
+%!  ## Select indices of the non-setosa species
+%! inds = !strcmp(species, 'setosa');
+%!
+%!  ## Select features and labels for non-setosa species
+%! X = meas(inds, 3:4);
+%! Y = grp2idx(species(inds));
+%!
+%! ##  Convert labels to +1 and -1
+%! unique_classes = unique(Y);
+%! Y(Y == unique_classes(1)) = -1;
+%! Y(Y == unique_classes(2)) = 1;
+%!
+%! ## Randomly partition the data into training and testing sets
+%! cv = cvpartition(Y, 'HoldOut', 0.33);  ## 33% data for testing, 67% for training
+%!
+%! X_train = X(training(cv), :);
+%! Y_train = Y(training(cv));
+%!
+%! X_test = X(test(cv), :);
+%! Y_test = Y(test(cv));
+%!
+%! ## Train the SVM model
+%! SVMModel = fitcsvm(X_train, Y_train);
+%!
+%! ## Calculate loss
+%!
+%! L = loss(SVMModel,X_test,Y_test,'LossFun','binodeviance')
+%! L = loss(SVMModel,X_test,Y_test,'LossFun','classiferror')
+%! L = loss(SVMModel,X_test,Y_test,'LossFun','exponential')
+%! L = loss(SVMModel,X_test,Y_test,'LossFun','hinge')
+%! L = loss(SVMModel,X_test,Y_test,'LossFun','logit')
+%! L = loss(SVMModel,X_test,Y_test,'LossFun','quadratic')
+
 ## Test input validation for constructor
 %!error<ClassificationSVM: too few input arguments.> ClassificationSVM ()
 %!error<ClassificationSVM: too few input arguments.> ClassificationSVM (ones(10,2))
