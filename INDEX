@@ -273,6 +273,7 @@ I/O
  libsvmwrite
 Plotting
  bar3
+ bar3h
  boxplot
  cdfplot
  confusionchart
