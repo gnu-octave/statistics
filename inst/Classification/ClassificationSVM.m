@@ -92,6 +92,33 @@ classdef ClassificationSVM
 ## decision boundary in the feature space, allowing the SVM to make
 ## classifications.
 ##
+## @item @tab @qcode{"obj.KernelOffset"} @tab It is the offset to be added
+## to the kernel function's result. This parameter is used to shift the decision
+## boundary of the SVM. It is particularly useful for certain kernel functions
+## like the polynomial kernel, where it can help control the flexibility and
+## complexity of the model. The value of `KernelOffset` is a numeric scalar.
+##
+## @item @tab @qcode{"obj.BoxConstraint"} @tab Stores the box constraint
+## parameter, also known as C, which controls the trade-off between achieving
+## a low training error and a low testing error that is, it regulates the
+## balance between the margin size and classification error. Higher values of
+## `BoxConstraint` aim to fit the training data more accurately, potentially at
+## the risk of overfitting. The value of `BoxConstraint` is a positive numeric
+## scalar.
+##
+## @item @tab @qcode{"obj.CacheSize"} @tab It is the size of the kernel
+## cache in megabytes. The cache is used to store the kernel matrix, which can
+## speed up the computation of the SVM by avoiding recalculations. A larger
+## cache size can improve training speed, especially for large datasets, but
+## it also increases memory usage. The value of `CacheSize` is a positive
+## numeric scalar.
+##
+## @item @tab @qcode{"obj.SVMtype"} @tab Stores the type of Support Vector
+## Machine (SVM) to be used for classification. The `SVMtype` property
+## determines the formulation of the SVM, such as C-SVM or ν-SVM. Each type has
+## its own characteristics and usage scenarios. The value of `SVMtype` is a
+## string indicating the type of SVM.
+##
 ## @item @tab @qcode{"obj.ClassNames"} @tab The labels for each class in the
 ## classification problem. It provides the actual names or identifiers for the
 ## classes being predicted by the model. This field is empty for one-class SVM
@@ -150,6 +177,10 @@ classdef ClassificationSVM
     NumClasses              = [];     # Number of classes in Y
     ClassNames              = [];     # Names of classes in Y
     Rho                     = [];     # Bias term
+    KernelOffset            = [];
+    BoxConstraint           = [];
+    CacheSize               = [];
+    SVMtype                 = [];
 
     SupportVectors          = [];     # Support vectors
     SupportVectorIndices    = [];     # Indices of Support vectors
@@ -166,6 +197,14 @@ classdef ClassificationSVM
   properties (Access = private)
 
     Model                   = [];
+    KernelFunction          = [];
+    PolynomialOrder         = [];
+    Gamma                   = [];
+    Nu                      = [];
+    Tolerance               = [];
+    Shrinking               = [];
+    ProbabilityEstimates    = [];
+    Weight                  = [];
 
   endproperties
 
@@ -378,6 +417,18 @@ classdef ClassificationSVM
     ## Assign properties
     this.X = X;
     this.Y = Y;
+    this.KernelOffset            = KernelOffset;
+    this.BoxConstraint           = BoxConstraint;
+    this.CacheSize               = CacheSize;
+    this.SVMtype                 = SVMtype;
+    this.KernelFunction          = KernelFunction;
+    this.PolynomialOrder         = PolynomialOrder;
+    this.Gamma                   = Gamma;
+    this.Nu                      = Nu;
+    this.Tolerance               = Tolerance;
+    this.Shrinking               = Shrinking;
+    this.ProbabilityEstimates    = ProbabilityEstimates;
+    this.Weight                  = Weight;
 
 ##    This is kept if the output of Model.parameter is not sufficient
 ##    this.ModelParameters = struct('SVMtype', SVMtype, ...
@@ -1220,27 +1271,21 @@ classdef ClassificationSVM
       ## Determine the cross-validation method to use
       if (! isempty (CVPartition))
         partition = CVPartition;
-      elseif (! isempty (holdout))
-        partition = cvpartition (numSamples, 'Holdout', holdout);
+      elseif (! isempty (Holdout))
+        partition = cvpartition (numSamples, 'Holdout', Holdout);
       elseif (strcmpi (Leaveout, 'on'))
         partition = cvpartition (numSamples, 'LeaveOut');
       else
         partition = cvpartition (numSamples, 'KFold', numFolds);
       endif
 
+      numTestSets = get(partition, "NumTestSets");
+
       ## Perform the cross-validation
-      numTestSets = partition.NumTestSets;
       models = cell (numTestSets, 1);
 
-      for i = 1:numTestSets
-        trainIdx = training (partition, i);
-        testIdx = test (partition, i);
-
-        XTrain = this.X(trainIdx, :);
-        YTrain = this.Y(trainIdx, :);
-
-        ## Extract parameters for fitcsvm
-        params = {
+      ## Extract parameters for fitcsvm
+      params = {
           'SVMtype', this.SVMtype, ...
           'KernelFunction', this.KernelFunction, ...
           'PolynomialOrder', this.PolynomialOrder, ...
@@ -1251,9 +1296,15 @@ classdef ClassificationSVM
           'CacheSize', this.CacheSize, ...
           'Tolerance', this.Tolerance, ...
           'Shrinking', this.Shrinking, ...
-          'ProbabilityEstimates', this.ProbabilityEstimates, ...
-          'Weight', this.Weight
+          'ProbabilityEstimates', this.ProbabilityEstimates
         };
+
+      for i = 1:numTestSets
+        trainIdx = training (partition, i);
+        testIdx = test (partition, i);
+
+        XTrain = this.X(trainIdx, :);
+        YTrain = this.Y(trainIdx, :);
 
         ## Train the SVM on the training subset
         trainedModel = fitcsvm (XTrain, YTrain, params{:});
@@ -1264,9 +1315,8 @@ classdef ClassificationSVM
 
       ## Return a cross-validated model object
       CVMdl = struct ('Trained', {models}, 'Partition', partition);
-      CVMdl = class (CVMdl, 'ClassificationPartitionedModel');
 
-    endfunction
+      endfunction
 
    endmethods
 
