@@ -508,3 +508,30 @@
 
  ** plot method for probability distribution objects partially implemented to
     allow plotting PDF and superimposing it over histograms of fitted data.
+
+
+ Summary of important user-visible changes for statistics 1.6.7:
+-------------------------------------------------------------------
+
+ Important Notice: 1) `mad`, `mean`, `median`, `std`, `var` functions
+                      shadow core Octave's respective functions prior
+                      to Octave v9.1
+                   2) incompatibility with the `nan` package
+ New functions:
+ ==============
+
+ ** bar3
+
+ ** bar3h
+
+ Improvements:
+ =============
+
+ ** ClassificationKNN: bug fixes in computing Prior and when parsing
+                       explicit ClassNanes (github issue #148)
+
+ ** nanmax: update functionality to support VECDIM and 'all' options, fix error
+            when requesting a mutual comparison (savannah bug #65802)
+
+ ** nanmin: update functionality to support VECDIM and 'all' options, fix error
+            when requesting a mutual comparison (savannah bug #65802)
