@@ -23,6 +23,7 @@ Clustering
  squareform
 Classification Classes
  ClassificationKNN
+ ClassificationPartitionedModel
  ConfusionMatrixChart
 Clustering Classes
  CalinskiHarabaszEvaluation
