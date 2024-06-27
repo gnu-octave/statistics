@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: tlsstat</title>
+    <title>Statistics: ClassificationPartitionedModel</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -62,9 +62,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Distribution Statistics">
+                  <a class="nav-link" href="index.html#Classification Classes">
                     <i class="fas fa-list-alt"></i>
-                    Distribution Statistics
+                    Classification Classes
                   </a>
                 </li>
                 <li class="nav-item">
@@ -111,7 +111,7 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList2" type="checkbox">
+				<input id="togList2" type="checkbox" checked>
 				<label for="togList2">
 					<span><h6>Classification Classes</h6></span>
 					<span><h6>Classification Classes</h6></span>
@@ -119,7 +119,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="ClassificationKNN.html" class="text-decoration-none font-monospace"><small>ClassificationKNN</small></a></li>
-					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
+					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace fw-bolder"><small>ClassificationPartitionedModel</small></a></li>
 					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none font-monospace"><small>ConfusionMatrixChart</small></a></li>
 				</ul>
 				</div>
@@ -504,7 +504,7 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList10" type="checkbox" checked>
+				<input id="togList10" type="checkbox">
 				<label for="togList10">
 					<span><h6>Distribution Statistics</h6></span>
 					<span><h6>Distribution Statistics</h6></span>
@@ -539,7 +539,7 @@
 					<li><a href="poisstat.html" class="text-decoration-none font-monospace"><small>poisstat</small></a></li>
 					<li><a href="raylstat.html" class="text-decoration-none font-monospace"><small>raylstat</small></a></li>
 					<li><a href="ricestat.html" class="text-decoration-none font-monospace"><small>ricestat</small></a></li>
-					<li><a href="tlsstat.html" class="text-decoration-none font-monospace fw-bolder"><small>tlsstat</small></a></li>
+					<li><a href="tlsstat.html" class="text-decoration-none font-monospace"><small>tlsstat</small></a></li>
 					<li><a href="tristat.html" class="text-decoration-none font-monospace"><small>tristat</small></a></li>
 					<li><a href="tstat.html" class="text-decoration-none font-monospace"><small>tstat</small></a></li>
 					<li><a href="unidstat.html" class="text-decoration-none font-monospace"><small>unidstat</small></a></li>
@@ -758,41 +758,729 @@
             <div class="card-header card-header-mod">
               <div class="row d-flex flex-wrap align-items-center">
                 <h3 class="d-inline-block mr-2">
-                Function&nbsp;Reference: <b><code>tlsstat</code></b>
+                Class&nbsp;Definition: <b><code>ClassificationPartitionedModel</code></b>
                 </h3>
               </div>
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>m</var>, <var>v</var>] = <b>tlsstat</b><i> (<var>mu</var>, <var>sigma</var>, <var>nu</var>)</i></dt>
+<dt><u>statistics:</u> <var>CVMdl</var> = <b>ClassificationPartitionedModel</b><i> (<var>Mdl</var>, <var>Partition</var>)</i></dt>
 </dl>
 
-<p> Compute statistics of the location-scale Student&rsquo;s T distribution.
+<p> Create a <code>ClassificationPartitionedModel</code> class for cross-validation
+ of classification models.
 </p>
 <div class="ms-5">
-<p> <code>[<var>m</var>, <var>v</var>] = tlsstat (<var>mu</var>, <var>sigma</var>, <var>nu</var>)</code> returns
- the mean and variance of the location-scale Student&rsquo;s T distribution with
- location parameter <var>mu</var>, scale parameter <var>sigma</var>, and <var>nu</var>
- degrees of freedom.
-</p>
-<p> The size of <var>m</var> (mean) and <var>v</var> (variance) is the common size of the
- input arguments.  A scalar input functions as a constant matrix of the
- same size as the other inputs.
-</p>
-<p> Further information about the location-scale Student&rsquo;s T distribution can be
- found at <a href="https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution">https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution</a>
-</p>
+<p> <code><var>CVMdl</var> = ClassificationPartitionedModel (<var>Mdl</var>, <var>Partition</var>)</code> returns a
+ ClassificationPartitionedModel object, with <var>Mdl</var> as the trained ClassificationKNN
+ object and <var>Partition</var> as the partitioning object obtained using cvpartition function.
+</p> 
+<p> A <code>ClassificationPartitionedModel</code> object, <var>CVMdl</var>, stores the classification
+ models trained on cross-validated folds
+ and various parameters for the cross-validated model,
+ which can be accessed in the following fields:
+</p> 
+ <table>
+<thead><tr><th width="32%"><var>Field</var></th><th width="2%"></th><th width="70%"><var>Description</var></th></tr></thead>
+<tr><td width="32%"><code>CVMdl.X</code></td><td width="2%"></td><td width="70%">Unstandardized predictor data, specified as a
+ numeric matrix.  Each column of <var>X</var> represents one predictor (variable),
+ and each row represents one observation.</td></tr>
+<tr><td width="32%"><code>CVMdl.Y</code></td><td width="2%"></td><td width="70%">Class labels, specified as a logical or
+ numeric vector, or cell array of character vectors.  Each value in <var>Y</var> is
+ the observed class label for the corresponding row in <var>X</var>.</td></tr>
+<tr><td width="32%"><code>CVMdl.ClassNames</code></td><td width="2%"></td><td width="70%">Names of the classes in the training
+ data <var>Y</var> with duplicates removed, specified as a cell array of character
+ vectors.</td></tr>
+<tr><td width="32%"><code>CVMdl.Cost</code></td><td width="2%"></td><td width="70%">Cost of the misclassification of a point,
+ specified as a square matrix. <code>Cost(i,j)</code> is the cost of classifying a
+ point into class <code>j</code> if its true class is <code>i</code> (that is, the rows
+ correspond to the true class and the columns correspond to the predicted
+ class).  The order of the rows and columns in <code>Cost</code> corresponds to the
+ order of the classes in <code>ClassNames</code>.  The number of rows and columns
+ in <code>Cost</code> is the number of unique classes in the response.  By default,
+ <code>Cost(i,j) = 1</code> if <code>i != j</code>, and <code>Cost(i,j) = 0</code> if
+ <code>i = j</code>.  In other words, the cost is 0 for correct classification and
+ 1 for incorrect classification.</td></tr>
+<tr><td width="32%"><code>CVMdl.CrossValidatedModel</code></td><td width="2%"></td><td width="70%">Class of the cross-validated model,
+ specified as a character vector. This field contains the type of model that was
+ used for the training, e.g., <code>&quot;ClassificationKNN&quot;</code>.</td></tr>
+<tr><td width="32%"><code>CVMdl.KFold</code></td><td width="2%"></td><td width="70%">Number of cross-validated folds,
+ specified as a positive interger scalar. Represents how many folds the data was divided
+ into for cross-validation purposes.</td></tr>
+<tr><td width="32%"><code>CVMdl.ModelParameters</code></td><td width="2%"></td><td width="70%">Model parameters used during
+ training, specified as a structure. This includes any model-specific parameters
+ that were configured prior to training, such as <code>NumNeighbors</code> or 
+ <code>Distance</code> in the case of a KNN model.</td></tr>
+<tr><td width="32%"><code>CVMdl.NumObservations</code></td><td width="2%"></td><td width="70%">Number of observations used in
+ training the ClassificationKNN model, specified as a positive integer scalar.
+ This number can be less than the number of rows in the training data because
+ rows containing <code>NaN</code> values are not part of the fit.</td></tr>
+<tr><td width="32%"><code>CVMdl.Partition</code></td><td width="2%"></td><td width="70%">Partition configuration used for
+ cross-validation, specified as a cvpartition object. This field stores the
+ cvpartition instance that describes how the data was split into training and
+ validation sets.</td></tr>
+<tr><td width="32%"><code>CVMdl.PredictorNames</code></td><td width="2%"></td><td width="70%">Predictor variable names,
+ specified as a cell array of character vectors.  The variable names are in
+ the same order in which they appear in the training data <var>X</var>.</td></tr>
+<tr><td width="32%"><code>CVMdl.Prior</code></td><td width="2%"></td><td width="70%">Prior probabilities for each class,
+ specified as a numeric vector.  The order of the elements in <code>Prior</code>
+ corresponds to the order of the classes in <code>ClassNames</code>.</td></tr>
+<tr><td width="32%"><code>CVMdl.ResponseName</code></td><td width="2%"></td><td width="70%">Response variable name, specified
+ as a character vector.</td></tr>
+<tr><td width="32%"><code>CVMdl.Trained</code></td><td width="2%"></td><td width="70%">Models trained on each fold,
+ specified as a cell array of models. Each cell contains a model trained on
+ the minus-one fold of the data (all but one fold used for training and the
+ remaining fold used for validation).</td></tr>
+</table>
+
 <p> <strong>See also: </strong>
-  <a href="tlscdf.html">tlscdf</a>, 
-  <a href="tlsinv.html">tlsinv</a>, 
-  <a href="tlspdf.html">tlspdf</a>, 
-  <a href="tlsrnd.html">tlsrnd</a>, 
-  <a href="tlsfit.html">tlsfit</a>, 
-  <a href="tlslike.html">tlslike</a>
+cvpartition, 
+  <a href="ClassificationKNN.html">ClassificationKNN</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_stat/tlsstat.m">tlsstat</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Classification/ClassificationPartitionedModel.m">ClassificationPartitionedModel</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Method: <b><code>kfoldPredict</code></b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+<dl>
+<dt><u>ClassificationPartitionedModel:</u> <var>label</var> = <b>kfoldPredict</b><i> (<var>CVMdl</var>)</i></dt>
+<dt><u>ClassificationPartitionedModel:</u> [<var>label</var>, <var>score</var>, <var>cost</var>] = <b>kfoldPredict</b><i> (<var>CVMdl</var>)</i></dt>
+</dl>
+
+<p> Predict responses for observations not used for training in a cross-validated
+ classification model.
+</p>
+<div class="ms-5">
+<p> <code><var>[label, Score, Cost]</var> = kfoldPredict (<var>CVMdl</var>)</code> returns the predicted
+ class labels, classification scores, and classification costs for the data used
+ to train the cross-validated model <var>CVMdl</var>.
+</p>
+<p> <var>CVMdl</var> is a <code>ClassificationPartitionedModel</code> object. The function predicts
+ the response for each observation that was held out during training in the
+ cross-validation process.
+</p>
+ <table>
+<thead><tr><th width="28%"><var>Output</var></th><th width="2%"></th><th width="70%"><var>Description</var></th></tr></thead>
+<tr><td width="28%"><code>label</code></td><td width="2%"></td><td width="70%">Predicted class labels, returned as a vector
+ or cell array. The type of <var>label</var> matches the type of <var>Y</var> in the original
+ training data. Each element of <var>label</var> corresponds to the predicted class
+ label for the corresponding row in <var>X</var>.</td></tr>
+<tr><td width="28%"><code>Score</code></td><td width="2%"></td><td width="70%">Classification scores, returned as a numeric
+ matrix. Each row of <var>Score</var> corresponds to an observation, and each column
+ corresponds to a class. The value in row <var>i</var> and column <var>j</var> is the
+ classification score for class <var>j</var> for observation <var>i</var>.</td></tr>
+<tr><td width="28%"><code>Cost</code></td><td width="2%"></td><td width="70%">Classification costs, returned as a numeric
+ matrix. Each row of <var>Cost</var> corresponds to an observation, and each column
+ corresponds to a class. The value in row <var>i</var> and column <var>j</var> is the
+ classification cost for class <var>j</var> for observation <var>i</var>. This output is
+ optional and only returned if requested.</td></tr>
+</table>
+
+<p> <strong>See also: </strong>
+  <a href="ClassificationKNN.html">ClassificationKNN</a>, 
+  <a href="ClassificationPartitionedModel.html">ClassificationPartitionedModel</a>
+</p>
+</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+
+ load fisheriris
+ x = meas;
+ y = species;
+
+ ## Create a KNN classifier model
+ obj = fitcknn (x, y, "NumNeighbors", 5, "Standardize", 1);
+ 
+ ## Create a partition for 5-fold cross-validation
+ partition = cvpartition (y, "KFold", 5);
+ 
+ ## Create the ClassificationPartitionedModel object
+ cvModel = crossval (obj, 'cvPartition', partition)
+
+cvModel =
+
+  ClassificationPartitionedModel object with properties:
+
+                   BinEdges: [0x0 double]
+      CategoricalPredictors: [0x0 double]
+                 ClassNames: [3x1 cell]
+                       Cost: [3x3 double]
+        CrossValidatedModel: ClassificationKNN
+                      KFold: [1x1 double]
+            ModelParameters: [1x1 struct]
+            NumObservations: [1x1 double]
+                  Partition: [1x1 cvpartition]
+             PredictorNames: [1x4 cell]
+                      Prior: [3x1 double]
+               ResponseName: Y
+             ScoreTransform: [0x0 double]
+                    Trained: [5x1 cell]
+                          W: [0x0 double]
+                          X: [150x4 double]
+                          Y: [150x1 cell]
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+
+ load fisheriris
+ x = meas;
+ y = species;
+
+ ## Create a KNN classifier model
+ obj = fitcknn (x, y, "NumNeighbors", 5, "Standardize", 1);
+ 
+ ## Create the ClassificationPartitionedModel object
+ cvModel = crossval (obj)
+
+ ## Predict the class labels for the observations not used for training
+ [label, score, cost] = kfoldPredict (cvModel)
+
+cvModel =
+
+  ClassificationPartitionedModel object with properties:
+
+                   BinEdges: [0x0 double]
+      CategoricalPredictors: [0x0 double]
+                 ClassNames: [3x1 cell]
+                       Cost: [3x3 double]
+        CrossValidatedModel: ClassificationKNN
+                      KFold: [1x1 double]
+            ModelParameters: [1x1 struct]
+            NumObservations: [1x1 double]
+                  Partition: [1x1 cvpartition]
+             PredictorNames: [1x4 cell]
+                      Prior: [3x1 double]
+               ResponseName: Y
+             ScoreTransform: [0x0 double]
+                    Trained: [10x1 cell]
+                          W: [0x0 double]
+                          X: [150x4 double]
+                          Y: [150x1 cell]
+
+label =
+{
+  [1,1] = setosa
+  [2,1] = setosa
+  [3,1] = setosa
+  [4,1] = setosa
+  [5,1] = setosa
+  [6,1] = setosa
+  [7,1] = setosa
+  [8,1] = setosa
+  [9,1] = setosa
+  [10,1] = setosa
+  [11,1] = setosa
+  [12,1] = setosa
+  [13,1] = setosa
+  [14,1] = setosa
+  [15,1] = setosa
+  [16,1] = setosa
+  [17,1] = setosa
+  [18,1] = setosa
+  [19,1] = setosa
+  [20,1] = setosa
+  [21,1] = setosa
+  [22,1] = setosa
+  [23,1] = setosa
+  [24,1] = setosa
+  [25,1] = setosa
+  [26,1] = setosa
+  [27,1] = setosa
+  [28,1] = setosa
+  [29,1] = setosa
+  [30,1] = setosa
+  [31,1] = setosa
+  [32,1] = setosa
+  [33,1] = setosa
+  [34,1] = setosa
+  [35,1] = setosa
+  [36,1] = setosa
+  [37,1] = setosa
+  [38,1] = setosa
+  [39,1] = setosa
+  [40,1] = setosa
+  [41,1] = setosa
+  [42,1] = setosa
+  [43,1] = setosa
+  [44,1] = setosa
+  [45,1] = setosa
+  [46,1] = setosa
+  [47,1] = setosa
+  [48,1] = setosa
+  [49,1] = setosa
+  [50,1] = setosa
+  [51,1] = versicolor
+  [52,1] = versicolor
+  [53,1] = versicolor
+  [54,1] = versicolor
+  [55,1] = versicolor
+  [56,1] = versicolor
+  [57,1] = versicolor
+  [58,1] = versicolor
+  [59,1] = versicolor
+  [60,1] = versicolor
+  [61,1] = versicolor
+  [62,1] = versicolor
+  [63,1] = versicolor
+  [64,1] = versicolor
+  [65,1] = versicolor
+  [66,1] = versicolor
+  [67,1] = versicolor
+  [68,1] = versicolor
+  [69,1] = virginica
+  [70,1] = versicolor
+  [71,1] = virginica
+  [72,1] = versicolor
+  [73,1] = virginica
+  [74,1] = versicolor
+  [75,1] = versicolor
+  [76,1] = versicolor
+  [77,1] = versicolor
+  [78,1] = virginica
+  [79,1] = versicolor
+  [80,1] = versicolor
+  [81,1] = versicolor
+  [82,1] = versicolor
+  [83,1] = versicolor
+  [84,1] = virginica
+  [85,1] = versicolor
+  [86,1] = versicolor
+  [87,1] = versicolor
+  [88,1] = versicolor
+  [89,1] = versicolor
+  [90,1] = versicolor
+  [91,1] = versicolor
+  [92,1] = versicolor
+  [93,1] = versicolor
+  [94,1] = versicolor
+  [95,1] = versicolor
+  [96,1] = versicolor
+  [97,1] = versicolor
+  [98,1] = versicolor
+  [99,1] = versicolor
+  [100,1] = versicolor
+  [101,1] = virginica
+  [102,1] = virginica
+  [103,1] = virginica
+  [104,1] = virginica
+  [105,1] = virginica
+  [106,1] = virginica
+  [107,1] = versicolor
+  [108,1] = virginica
+  [109,1] = virginica
+  [110,1] = virginica
+  [111,1] = virginica
+  [112,1] = virginica
+  [113,1] = virginica
+  [114,1] = virginica
+  [115,1] = virginica
+  [116,1] = virginica
+  [117,1] = virginica
+  [118,1] = virginica
+  [119,1] = virginica
+  [120,1] = versicolor
+  [121,1] = virginica
+  [122,1] = virginica
+  [123,1] = virginica
+  [124,1] = virginica
+  [125,1] = virginica
+  [126,1] = virginica
+  [127,1] = versicolor
+  [128,1] = versicolor
+  [129,1] = virginica
+  [130,1] = virginica
+  [131,1] = virginica
+  [132,1] = virginica
+  [133,1] = virginica
+  [134,1] = versicolor
+  [135,1] = virginica
+  [136,1] = virginica
+  [137,1] = virginica
+  [138,1] = virginica
+  [139,1] = virginica
+  [140,1] = virginica
+  [141,1] = virginica
+  [142,1] = virginica
+  [143,1] = virginica
+  [144,1] = virginica
+  [145,1] = virginica
+  [146,1] = virginica
+  [147,1] = virginica
+  [148,1] = virginica
+  [149,1] = virginica
+  [150,1] = virginica
+}
+
+score =
+
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+   1.0000        0        0
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   0.8000   0.2000
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   0.6000   0.4000
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   0.4000   0.6000
+        0   1.0000        0
+        0   0.4000   0.6000
+        0   1.0000        0
+        0   0.2000   0.8000
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   0.2000   0.8000
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0        0   1.0000
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0   1.0000        0
+        0        0   1.0000
+        0   0.2000   0.8000
+        0        0   1.0000
+        0        0   1.0000
+        0        0   1.0000
+        0        0   1.0000
+        0   1.0000        0
+        0        0   1.0000
+        0        0   1.0000
+        0        0   1.0000
+        0   0.2000   0.8000
+        0        0   1.0000
+        0        0   1.0000
+        0   0.2000   0.8000
+        0        0   1.0000
+        0        0   1.0000
+        0        0   1.0000
+        0        0   1.0000
+        0        0   1.0000
+        0   0.6000   0.4000
+        0        0   1.0000
+        0        0   1.0000
+        0        0   1.0000
+        0   0.4000   0.6000
+        0        0   1.0000
+        0        0   1.0000
+        0   0.6000   0.4000
+        0   0.6000   0.4000
+        0        0   1.0000
+        0        0   1.0000
+        0        0   1.0000
+        0        0   1.0000
+        0        0   1.0000
+        0   0.8000   0.2000
+        0   0.2000   0.8000
+        0        0   1.0000
+        0        0   1.0000
+        0        0   1.0000
+        0   0.4000   0.6000
+        0        0   1.0000
+        0        0   1.0000
+        0   0.2000   0.8000
+        0   0.2000   0.8000
+        0        0   1.0000
+        0        0   1.0000
+        0        0   1.0000
+        0   0.4000   0.6000
+        0   0.2000   0.8000
+        0        0   1.0000
+        0   0.4000   0.6000
+
+cost =
+
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+        0   1.0000   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000   0.2000   0.8000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000   0.4000   0.6000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000   0.6000   0.4000
+   1.0000        0   1.0000
+   1.0000   0.6000   0.4000
+   1.0000        0   1.0000
+   1.0000   0.8000   0.2000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000   0.8000   0.2000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000   1.0000        0
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000        0   1.0000
+   1.0000   1.0000        0
+   1.0000   0.8000   0.2000
+   1.0000   1.0000        0
+   1.0000   1.0000        0
+   1.0000   1.0000        0
+   1.0000   1.0000        0
+   1.0000        0   1.0000
+   1.0000   1.0000        0
+   1.0000   1.0000        0
+   1.0000   1.0000        0
+   1.0000   0.8000   0.2000
+   1.0000   1.0000        0
+   1.0000   1.0000        0
+   1.0000   0.8000   0.2000
+   1.0000   1.0000        0
+   1.0000   1.0000        0
+   1.0000   1.0000        0
+   1.0000   1.0000        0
+   1.0000   1.0000        0
+   1.0000   0.4000   0.6000
+   1.0000   1.0000        0
+   1.0000   1.0000        0
+   1.0000   1.0000        0
+   1.0000   0.6000   0.4000
+   1.0000   1.0000        0
+   1.0000   1.0000        0
+   1.0000   0.4000   0.6000
+   1.0000   0.4000   0.6000
+   1.0000   1.0000        0
+   1.0000   1.0000        0
+   1.0000   1.0000        0
+   1.0000   1.0000        0
+   1.0000   1.0000        0
+   1.0000   0.2000   0.8000
+   1.0000   0.8000   0.2000
+   1.0000   1.0000        0
+   1.0000   1.0000        0
+   1.0000   1.0000        0
+   1.0000   0.6000   0.4000
+   1.0000   1.0000        0
+   1.0000   1.0000        0
+   1.0000   0.8000   0.2000
+   1.0000   0.8000   0.2000
+   1.0000   1.0000        0
+   1.0000   1.0000        0
+   1.0000   1.0000        0
+   1.0000   0.6000   0.4000
+   1.0000   0.8000   0.2000
+   1.0000   1.0000        0
+   1.0000   0.6000   0.4000
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>

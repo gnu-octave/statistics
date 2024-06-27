@@ -1,7 +1,7 @@
 ## Copyright (C) 2023 Mohammed Azmat Khan <azmat.dev0@gmail.com>
 ## Copyright (C) 2023-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2024 Ruchika Sonagote <ruchikasonagote2003@gmail.com>
-## 
+##
 ## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software; you can redistribute it and/or modify it under
@@ -644,13 +644,17 @@ classdef ClassificationKNN
     ## features @math{P} as the corresponding predictors of the kNN model in
     ## @var{obj}.
     ##
-    ## @code{[@var{label}, @var{score}, @var{cost}] = predict (@var{obj}, @var{XC})}
-    ## also returns @var{score}, which contains the predicted class scores or
-    ## posterior probabilities for each instance of the corresponding unique
-    ## classes, and @var{cost}, which is a matrix containing the expected cost
-    ## of the classifications.
+    ## @code{[@var{label}, @var{score}, @var{cost}] = predict (@var{obj},
+    ## @var{XC})} also returns @var{score}, which contains the predicted class
+    ## scores or posterior probabilities for each instance of the corresponding
+    ## unique classes, and @var{cost}, which is a matrix containing the expected
+    ## cost of the classifications.
     ##
-    ## @seealso{fitcknn, ClassificationKNN}
+    ## Note! @code{predict} is explicitly using @qcode{"exhaustive"} as the
+    ## nearest search method due to the very slow implementation of
+    ## @qcode{"kdtree"} in the @code{knnsearch} function.
+    ##
+    ## @seealso{fitcknn, ClassificationKNN, knnsearch}
     ## @end deftypefn
     function [label, score, cost] = predict (this, XC)
 
@@ -680,28 +684,28 @@ classdef ClassificationKNN
       ## Train kNN
       if (strcmpi (this.Distance, "seuclidean"))
         [idx, dist] = knnsearch (X, XC, "k", this.NumNeighbors, ...
-                      "NSMethod", this.NSMethod, "Distance", "seuclidean", ...
+                      "NSMethod", "exhaustive", "Distance", "seuclidean", ...
                       "Scale", this.DistParameter, "sortindices", true, ...
                       "includeties", this.IncludeTies, ...
                       "bucketsize", this.BucketSize);
 
       elseif (strcmpi (this.Distance, "mahalanobis"))
         [idx, dist] = knnsearch (X, XC, "k", this.NumNeighbors, ...
-                      "NSMethod", this.NSMethod, "Distance", "mahalanobis", ...
+                      "NSMethod", "exhaustive", "Distance", "mahalanobis", ...
                       "cov", this.DistParameter, "sortindices", true, ...
                       "includeties", this.IncludeTies, ...
                       "bucketsize", this.BucketSize);
 
       elseif (strcmpi (this.Distance, "minkowski"))
         [idx, dist] = knnsearch (X, XC, "k", this.NumNeighbors, ...
-                      "NSMethod", this.NSMethod, "Distance", "minkowski", ...
+                      "NSMethod", "exhaustive", "Distance", "minkowski", ...
                       "P", this.DistParameter, "sortindices", true, ...
                       "includeties",this.IncludeTies, ...
                       "bucketsize", this.BucketSize);
 
       else
         [idx, dist] = knnsearch (X, XC, "k", this.NumNeighbors, ...
-                      "NSMethod", this.NSMethod, "Distance", this.Distance, ...
+                      "NSMethod", "exhaustive", "Distance", this.Distance, ...
                       "sortindices", true, "includeties", this.IncludeTies, ...
                       "bucketsize", this.BucketSize);
       endif
@@ -767,33 +771,40 @@ classdef ClassificationKNN
     ##
     ## Perform cross-validation on a k-Nearest Neighbor classification model.
     ##
-    ## @code{@var{CVMdl} = crossval (@var{obj})} returns a cross-validated model object,
-    ## @var{CVMdl}, from a trained model, @var{obj}, using 10-fold cross-validation by default.
-    ## 
-    ## @code{@var{CVMdl} = crossval (@var{obj}, @var{name}, @var{value})} specifies additional
-    ## name-value pair arguments to customise the cross-validation process.
-    ## 
+    ## @code{@var{CVMdl} = crossval (@var{obj})} returns a cross-validated model
+    ## object, @var{CVMdl}, from a trained model, @var{obj}, using 10-fold
+    ## cross-validation by default.
+    ##
+    ## @code{@var{CVMdl} = crossval (@var{obj}, @var{name}, @var{value})}
+    ## specifies additional name-value pair arguments to customise the
+    ## cross-validation process.
+    ##
     ## @multitable @columnfractions 0.18 0.02 0.8
     ## @headitem @var{Name} @tab @tab @var{Value}
     ##
-    ## @item @qcode{"kfold"} @tab @tab Specify the number of folds to use in k-fold
-    ## cross-validation. @code{'kfold', @var{k}} where @var{k} is an integer greater than 1.
-    ## 
-    ## @item @qcode{"holdout"} @tab @tab Specify the fraction of the data to hold out for
-    ## testing. @code{'holdout', @var{p}} where @var{p} is a scalar in the range (0,1).
+    ## @item @qcode{"kfold"} @tab @tab Specify the number of folds to use in
+    ## k-fold cross-validation. @code{'kfold', @var{k}} where @var{k} is an
+    ## integer greater than 1.
     ##
-    ## @item @qcode{"leaveout"} @tab @tab Specify whether to perform leave-one-out
-    ## cross-validation. @code{'leaveout', @var{Value}} where @var{Value} is 'on' or 'off'.
+    ## @item @qcode{"holdout"} @tab @tab Specify the fraction of the data to
+    ## hold out for testing.  @code{'holdout', @var{p}}, where @var{p} is a
+    ## scalar in the range @math{(0,1)}.
     ##
-    ## @item @qcode{"cvPartition"} @tab @tab Provide a cross-validation partition object.
-    ## @code{'cvPartition', @var{CVObject}} where @var{CVObject} is a @var{cvPartition} object.
+    ## @item @qcode{"leaveout"} @tab @tab Specify whether to perform
+    ## leave-one-out cross-validation. @code{'leaveout', @var{Value}}, where
+    ## @var{Value} is either @qcode{'on'} or @qcode{'off'}.
+    ##
+    ## @item @qcode{"cvPartition"} @tab @tab Provide a cross-validation
+    ## partition object.  @code{'cvPartition', @var{CVObject}}, where
+    ## @var{CVObject} is a @var{cvPartition} object.
     ##
     ## @end multitable
     ##
-    ## The returned @var{CVMdl} is a @code{ClassificationPartitionedModel} object
-    ## that contains the cross-validated results.
+    ## The returned @var{CVMdl} is a @code{ClassificationPartitionedModel}
+    ## object that contains the cross-validated results.
     ##
-    ## @seealso{fitcknn, ClassificationKNN, cvpartition, ClassificationPartitionedModel}
+    ## @seealso{fitcknn, ClassificationKNN, cvpartition,
+    ## ClassificationPartitionedModel}
     ## @end deftypefn
 
     function CVMdl = crossval (this, varargin)
@@ -807,7 +818,7 @@ classdef ClassificationKNN
       endif
 
       numSamples  = size (this.X, 1);
-      numFolds    = 10;                    
+      numFolds    = 10;
       holdout     = [];
       leaveout    = 'off';
       cvPartition = [];
@@ -860,44 +871,47 @@ classdef ClassificationKNN
       ## Create a cross-validated model object
       CVMdl = ClassificationPartitionedModel (this, partition);
 
-    endfunction  
+    endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn {ClassificationKNN} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefn  {ClassificationKNN} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
     ## @deftypefnx {ClassificationKNN} {@var{L} =} loss (@dots{}, @var{name}, @var{value})
     ##
     ## Compute loss for a trained ClassificationKNN object.
-    ## 
-    ## @code{@var{L} = loss (@var{obj}, @var{X}, @var{Y})} computes the @var{L} loss
-    ## using the default loss function ('mincost').
+    ##
+    ## @code{@var{L} = loss (@var{obj}, @var{X}, @var{Y})} computes the loss,
+    ## @var{L}, using the default loss function @qcode{'mincost'}.
     ##
     ## @itemize
     ## @item
-    ## @code{obj} is a @var{ClassificationKNN} object trained on @code{X} and @code{Y}.
+    ## @code{obj} is a @var{ClassificationKNN} object trained on @code{X} and
+    ## @code{Y}.
     ## @item
     ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
-    ## correspond to observations and columns correspond to features or variables.
+    ## correspond to observations and columns correspond to features or
+    ## variables.
     ## @item
-    ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels of
-    ## corresponding predictor data in @var{X}. @var{Y} must have same numbers of Rows as @var{X}.
+    ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels
+    ## of corresponding predictor data in @var{X}.  @var{Y} must have same
+    ## numbers of Rows as @var{X}.
     ## @end itemize
     ##
-    ## @code{@var{L} = loss (@dots{}, @var{name}, @var{value})} allows additional options specified by
-    ## name-value pairs:
+    ## @code{@var{L} = loss (@dots{}, @var{name}, @var{value})} allows
+    ## additional options specified by @var{name}-@var{value} pairs:
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8
     ## @headitem @var{Name} @tab @tab @var{Value}
     ##
-    ## @item @qcode{"LossFun"} @tab @tab Specifies the loss function to use. Can be a function handle with four 
-    ## input arguments (C, S, W, Cost) which returns a scalar value or one of:
+    ## @item @qcode{"LossFun"} @tab @tab Specifies the loss function to use.
+    ## Can be a function handle with four input arguments (C, S, W, Cost) which returns a scalar value or one of:
     ## 'binodeviance', 'classifcost', 'classiferror', 'exponential', 'hinge', 'logit','mincost', 'quadratic'.
     ## @itemize
     ## @item
-    ## @code{C} is a logical matrix of size @math{NxK}, where @math{N} is the number of observations and 
-    ## @math{K} is the number of classes. The element @code{C(i,j)} is true if the class label of the 
+    ## @code{C} is a logical matrix of size @math{NxK}, where @math{N} is the number of observations and
+    ## @math{K} is the number of classes. The element @code{C(i,j)} is true if the class label of the
     ## i-th observation is equal to the j-th class.
     ## @item
-    ## @code{S} is a numeric matrix of size @math{NxK}, where each element represents the classification 
+    ## @code{S} is a numeric matrix of size @math{NxK}, where each element represents the classification
     ## score for the corresponding class.
     ## @item
     ## @code{W} is a numeric vector of length @math{N}, representing the observation weights.
@@ -906,7 +920,7 @@ classdef ClassificationKNN
     ## @end itemize
     ##
     ## @item @qcode{"Weights"} @tab @tab Specifies observation weights, must be a numeric vector of length equal to
-    ## the number of rows in X. Default is @code{ones (size (X, 1))}. loss normalizes the weights so 
+    ## the number of rows in X. Default is @code{ones (size (X, 1))}. loss normalizes the weights so
     ## that observation weights in each class sum to the prior probability of that class.
     ## When you supply Weights, loss computes the weighted classification loss.
     ##
@@ -933,7 +947,7 @@ classdef ClassificationKNN
       valid_types = {'char', 'string', 'logical', 'single', 'double', 'cell'};
       if (! (any (strcmp (class (Y), valid_types))))
         error ("ClassificationKNN.loss: Y must be of a valid type.");
-      endif     
+      endif
 
       ## Validate size of Y
       if (size (Y, 1) != size (X, 1))
@@ -997,7 +1011,7 @@ classdef ClassificationKNN
       endif
 
       ## Convert Y to a cell array of strings
-      if (ischar (Y)) 
+      if (ischar (Y))
         Y = cellstr (Y);
       elseif (isnumeric (Y))
         Y = cellstr (num2str (Y));
@@ -1013,7 +1027,7 @@ classdef ClassificationKNN
       if (! all (ismember (unique (Y), this.ClassNames)))
         error ("ClassificationKNN.loss: Y must contain only the classes in ClassNames.");
       endif
-      
+
       ## Set default weights if not specified
       if (isempty (Weights))
         Weights = ones (size (X, 1), 1);
@@ -1021,8 +1035,8 @@ classdef ClassificationKNN
 
       ## Normalize Weights
       unique_classes = this.ClassNames;
-      class_prior_probs = this.Prior;          
-      norm_weights = zeros (size (Weights));    
+      class_prior_probs = this.Prior;
+      norm_weights = zeros (size (Weights));
       for i = 1:numel (unique_classes)
         class_idx = ismember (Y, unique_classes{i});
         if (sum (Weights(class_idx)) > 0)
@@ -1031,22 +1045,22 @@ classdef ClassificationKNN
       endfor
       Weights = norm_weights / sum (norm_weights);
 
-      ## Number of observations 
-      n = size (X, 1);                                                
+      ## Number of observations
+      n = size (X, 1);
 
       ## Predict classification scores
       [label, scores] = predict (this, X);
 
-      ## C is vector of K-1 zeros, with 1 in the position corresponding to the true class 
+      ## C is vector of K-1 zeros, with 1 in the position corresponding to the true class
       K = numel (this.ClassNames);
       C = false (n, K);
       for i = 1:n
         class_idx = find (ismember (this.ClassNames, Y{i}));
         C(i, class_idx) = true;
-      endfor   
+      endfor
       Y_new = C';
 
-      ## Compute the loss using custom loss function 
+      ## Compute the loss using custom loss function
       if (isa (LossFun, 'function_handle'))
         L = LossFun (C, scores, Weights, this.Cost);
         return;
@@ -1107,7 +1121,7 @@ classdef ClassificationKNN
     ## -*- texinfo -*-
     ## @deftypefn {ClassificationKNN} {@var{m} =} margin (@var{obj}, @var{X}, @var{Y})
     ##
-    ## @code{@var{m} = margin (@var{obj}, @var{X}, @var{Y})} returns the classification 
+    ## @code{@var{m} = margin (@var{obj}, @var{X}, @var{Y})} returns the classification
     ## margins for @var{obj} with data @var{X} and classification @var{Y}. @var{m} is
     ## a numeric vector of length size (X,1).
     ##
@@ -1124,7 +1138,7 @@ classdef ClassificationKNN
     ##
     ## The classification margin for each observation is the difference between the classification
     ## score for the true class and the maximal classification score for the false classes.
-    ## 
+    ##
     ## @seealso{fitcknn, ClassificationKNN}
     ## @end deftypefn
     function m = margin (this, X, Y)
@@ -1152,7 +1166,7 @@ classdef ClassificationKNN
       endif
 
       ## Convert Y to a cell array of strings
-      if (ischar (Y)) 
+      if (ischar (Y))
         Y = cellstr (Y);
       elseif (isnumeric (Y))
         Y = cellstr (num2str (Y));
@@ -1171,7 +1185,7 @@ classdef ClassificationKNN
 
       ## Number of Observations
       n = size (X, 1);
-      
+
       ## Initialize the margin vector
       m = zeros (n, 1);
 
@@ -1182,7 +1196,7 @@ classdef ClassificationKNN
       for i = 1:n
         ## True class index
         true_class_idx = find (ismember (this.ClassNames, Y{i}));
-        
+
         ## Score for the true class
         true_class_score = scores(i, true_class_idx);
 
@@ -1192,9 +1206,9 @@ classdef ClassificationKNN
         if (max_false_class_score == -Inf)
           m = NaN;
           return;
-        endif  
+        endif
         scores(i, true_class_idx) = true_class_score;  ## Restore
-        
+
         ## Calculate the margin
         m(i) = true_class_score - max_false_class_score;
       endfor
@@ -1215,27 +1229,27 @@ classdef ClassificationKNN
     ## @item
     ## @code{obj} is a trained @var{ClassificationKNN} object.
     ## @item
-    ## @code{Vars} is a vector of positive integers, character vector, string array, or cell array of character 
+    ## @code{Vars} is a vector of positive integers, character vector, string array, or cell array of character
     ## vectors representing predictor variables (it can be indices of predictor variables in @var{obj.X}).
     ## @item
-    ## @code{Labels} is a character vector, logical vector, numeric vector, or cell array of character vectors 
+    ## @code{Labels} is a character vector, logical vector, numeric vector, or cell array of character vectors
     ## representing class labels. (column vector)
     ## @end itemize
     ##
-    ## @code{@var{[pd, x, y]} = partialDependence (@dots{}, @var{Data})} specifies new predictor data to use for 
+    ## @code{@var{[pd, x, y]} = partialDependence (@dots{}, @var{Data})} specifies new predictor data to use for
     ## computing the partial dependence.
     ##
-    ## @code{@var{[pd, x, y]} = partialDependence (@dots{}, @var{name}, @var{value})} allows additional 
+    ## @code{@var{[pd, x, y]} = partialDependence (@dots{}, @var{name}, @var{value})} allows additional
     ## options specified by name-value pairs:
     ##
     ## @multitable @columnfractions 0.32 0.02 0.7
     ## @headitem @var{Name} @tab @tab @var{Value}
     ##
-    ## @item @qcode{"NumObservationsToSample"} @tab @tab Number of observations to sample. 
+    ## @item @qcode{"NumObservationsToSample"} @tab @tab Number of observations to sample.
     ## Must be a positive integer. Defaults to the number of observations in the training data.
-    ## @item @qcode{"QueryPoints"} @tab @tab Points at which to evaluate the partial dependence. 
+    ## @item @qcode{"QueryPoints"} @tab @tab Points at which to evaluate the partial dependence.
     ## Must be a numeric column vector, numeric two-column matrix, or cell array of character column vectors.
-    ## @item @qcode{"UseParallel"} @tab @tab Logical value indicating whether to perform computations in parallel. 
+    ## @item @qcode{"UseParallel"} @tab @tab Logical value indicating whether to perform computations in parallel.
     ## Defaults to @code{false}.
     ## @end multitable
     ##
@@ -1281,7 +1295,7 @@ classdef ClassificationKNN
       endif
 
       ## Convert Labels to a cell array of strings
-      if (ischar (Labels)) 
+      if (ischar (Labels))
         Labels = cellstr (Labels);
       elseif (isnumeric (Labels))
         Labels = cellstr (num2str (Labels));
@@ -1296,10 +1310,10 @@ classdef ClassificationKNN
 
       ## Additional validation to match ClassNames
       if (! all (ismember (Labels, this.ClassNames)))
-        error (["ClassificationKNN.partialDependence: Labels must match the", ... 
+        error (["ClassificationKNN.partialDependence: Labels must match the", ...
                 " class names in the ClassNames property."]);
       endif
-      
+
       ## Default values
       Data = this.X;
       UseParallel = false;
@@ -1309,7 +1323,7 @@ classdef ClassificationKNN
       ## Check for Data and other optional arguments
       if (nargin > 3)
         if (size (varargin{1}) == size (this.X))
-          Data = varargin{1}; 
+          Data = varargin{1};
           ## Ensure Data consistency
           if (! all (size (Data, 2) == numel (this.PredictorNames)))
             error (["ClassificationKNN.partialDependence: Data must have the same number and order",...
@@ -1332,14 +1346,14 @@ classdef ClassificationKNN
           idx = 1;
         endif
 
-        ## Handle name-value pair arguments 
+        ## Handle name-value pair arguments
         for i = idx:2:length (varargin)
           if (! ischar (varargin{i}))
             error ("ClassificationKNN.partialDependence: Name arguments must be strings.");
           endif
           Value = varargin{i+1};
           ## Parse name-value pairs
-          switch (lower (varargin{i}))           
+          switch (lower (varargin{i}))
             case 'numobservationstosample'
               if (! isnumeric (Value) || Value <= 0 || Value != round (Value))
                 error ("ClassificationKNN.partialDependence: NumObservationsToSample must be a positive integer.");
@@ -1358,7 +1372,7 @@ classdef ClassificationKNN
               if (! islogical (UseParallel))
                 error ("ClassificationKNN.partialDependence: UseParallel must be a logical value.");
               endif
-              UseParallel = Value;      
+              UseParallel = Value;
             otherwise
               error ("Name-value pair argument not recognized.");
           endswitch
@@ -1509,7 +1523,7 @@ endclassdef
 %! x = meas;
 %! y = species;
 %! obj = fitcknn (x, y, "NumNeighbors", 5, "Standardize", 1);
-%! 
+%!
 %! ## Create a cross-validated model
 %! CVMdl = crossval (obj)
 
@@ -1528,7 +1542,7 @@ endclassdef
 %!
 %! ## Create cross-validated model using 'cvPartition' name-value argument
 %! CVMdl = crossval (obj, 'cvPartition', Partition)
-%! 
+%!
 %! ## Access the trained model from first fold of cross-validation
 %! CVMdl.Trained{1}
 
@@ -2049,7 +2063,7 @@ endclassdef
 %! CVMdl = crossval (obj, "HoldOut", 0.2);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (CVMdl.ModelParameters.NumNeighbors == 5) 
+%! assert (CVMdl.ModelParameters.NumNeighbors == 5)
 %! assert (strcmp (CVMdl.ModelParameters.Distance, "cityblock"))
 %! assert (class (CVMdl.Trained{1}), "ClassificationKNN")
 %! assert (CVMdl.ModelParameters.Standardize == obj.Standardize)
