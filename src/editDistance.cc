@@ -509,7 +509,7 @@ insertions, deletions, and substitutions required to convert document \
       const Cell docA = args(0).cell_value();
       int szA = docA.numel();
       // Check that all cell elements contain cellstring arrays
-      for (octave_idx_type i = 0; i < szA - 1; i++)
+      for (octave_idx_type i = 0; i < szA; i++)
       {
         Cell tmp = docA.elem(i);
         if (! tmp.iscellstr())
@@ -603,7 +603,7 @@ insertions, deletions, and substitutions required to convert document \
         error ("editDistance: cellstr input arguments size mismatch.");
       }
       // Check both cell arrays contain cellstring arrays
-      for (octave_idx_type i = 0; i < szA - 1; i++)
+      for (octave_idx_type i = 0; i < szA; i++)
       {
         Cell tmp = docA.elem(i);
         if (! tmp.iscellstr())
@@ -612,7 +612,7 @@ insertions, deletions, and substitutions required to convert document \
                  "does not contain cellstr arrays.");
         }
       }
-      for (octave_idx_type i = 0; i < szB - 1; i++)
+      for (octave_idx_type i = 0; i < szB; i++)
       {
         Cell tmp = docB.elem(i);
         if (! tmp.iscellstr())
