@@ -76,11 +76,12 @@
 ##
 ## @itemize
 ##
-## @item 'linear': @math{u'*v} Computes the linear kernel, which is simply the dot
-## product of the input vectors.
+## @item 'linear': @math{u'*v} Computes the linear kernel, which is simply the
+## dot product of the input vectors.
 ##
-## @item 'polynomial': @math{(gamma*u'*v + coef0)^degree} Computes the polynomial
-## kernel, which raises the dot product of the input vectors to a specified power.
+## @item 'polynomial': @math{(gamma*u'*v + coef0)^degree} Computes the
+## polynomial kernel, which raises the dot product of the input vectors to a
+## specified power.
 ##
 ## @item 'rbf': @math{exp(-gamma*|u-v|^2)} Computes the radial basis function
 ## (RBF) kernel. It measures the similarity between two vectors in a
@@ -88,7 +89,8 @@
 ##
 ## @item 'sigmoid': @math{tanh(gamma*u'*v + coef0)} Computes the sigmoid kernel,
 ## which is inspired by the activation function used in neural networks. The
-## sigmoid kernel maps the input vectors into a hyperbolic tangent function space.
+## sigmoid kernel maps the input vectors into a hyperbolic tangent function
+## space.
 ##
 ## @item 'precomputed': You can also specify precomputed kernel
 ## (kernel values in training_set_file)
@@ -113,7 +115,8 @@
 ## default value of BoxConstraint is 1.
 ##
 ## @item @tab @qcode{"Nu"} @tab A positive scalar, in the range (0,1] that
-## specifies the parameter nu of nu-SVC, one-class SVM. The default value is 0.5.
+## specifies the parameter nu of nu-SVC, one-class SVM. The default value is
+## 0.5.
 ##
 ## @item @tab @qcode{"CacheSize"} @tab A positive scalar that specifies the
 ## cache size. The default value is 100.
