@@ -1,5 +1,5 @@
 ## Copyright (C) 2024 Ruchika Sonagote <ruchikasonagote2003@gmail.com>
-## 
+##
 ## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software; you can redistribute it and/or modify it under
@@ -22,15 +22,16 @@ classdef ClassificationPartitionedModel
 ## Create a @qcode{ClassificationPartitionedModel} class for cross-validation
 ## of classification models.
 ##
-## @code{@var{CVMdl} = ClassificationPartitionedModel (@var{Mdl}, @var{Partition})} returns a
-## ClassificationPartitionedModel object, with @var{Mdl} as the trained ClassificationKNN
-## object and @var{Partition} as the partitioning object obtained using cvpartition function.
-## 
-## A @qcode{ClassificationPartitionedModel} object, @var{CVMdl}, stores the classification
-## models trained on cross-validated folds
+## @code{@var{CVMdl} = ClassificationPartitionedModel (@var{Mdl},
+## @var{Partition})} returns a ClassificationPartitionedModel object, with
+## @var{Mdl} as the trained ClassificationKNN object and @var{Partition} as
+## the partitioning object obtained using cvpartition function.
+##
+## A @qcode{ClassificationPartitionedModel} object, @var{CVMdl}, stores the
+## classification models trained on cross-validated folds
 ## and various parameters for the cross-validated model,
 ## which can be accessed in the following fields:
-## 
+##
 ## @multitable @columnfractions 0.32 0.02 0.7
 ## @headitem @var{Field} @tab @tab @var{Description}
 ##
@@ -57,18 +58,19 @@ classdef ClassificationPartitionedModel
 ## @qcode{i = j}.  In other words, the cost is 0 for correct classification and
 ## 1 for incorrect classification.
 ##
-## @item @qcode{CVMdl.CrossValidatedModel} @tab @tab Class of the cross-validated model,
-## specified as a character vector. This field contains the type of model that was
+## @item @qcode{CVMdl.CrossValidatedModel} @tab @tab Class of the
+## cross-validated model, specified as a character vector. This field
+## contains the type of model that was
 ## used for the training, e.g., @qcode{"ClassificationKNN"}.
 ##
 ## @item @qcode{CVMdl.KFold} @tab @tab Number of cross-validated folds,
-## specified as a positive interger scalar. Represents how many folds the data was divided
-## into for cross-validation purposes.
+## specified as a positive interger scalar. Represents how many folds the
+## data was divided into for cross-validation purposes.
 ##
 ## @item @qcode{CVMdl.ModelParameters} @tab @tab Model parameters used during
-## training, specified as a structure. This includes any model-specific parameters
-## that were configured prior to training, such as @qcode{NumNeighbors} or 
-## @qcode{Distance} in the case of a KNN model.
+## training, specified as a structure. This includes any model-specific
+## parameters that were configured prior to training, such as
+## @qcode{NumNeighbors} or @qcode{Distance} in the case of a KNN model.
 ##
 ## @item @qcode{CVMdl.NumObservations} @tab @tab Number of observations used in
 ## training the ClassificationKNN model, specified as a positive integer scalar.
@@ -123,11 +125,11 @@ classdef ClassificationPartitionedModel
 
   methods (Access = public)
     ## Constructor to initialize the partitioned model
-    function this = ClassificationPartitionedModel (Mdl, Partition)  
-      
+    function this = ClassificationPartitionedModel (Mdl, Partition)
+
       ## Check input arguments
       if (nargin < 2)
-        error ("ClassificationPartitionedModel: Too few input arguments.");
+        error ("ClassificationPartitionedModel: too few input arguments.");
       endif
 
       ## Set properties
@@ -165,15 +167,18 @@ classdef ClassificationPartitionedModel
             else
               switch (paramName)
                 case 'Cov'
-                  if (strcmpi (Mdl.Distance, 'mahalanobis') && (! isempty (Mdl.DistParameter)))
+                  if (strcmpi (Mdl.Distance, 'mahalanobis') && ...
+                      (! isempty (Mdl.DistParameter)))
                     args = [args, {'Cov', Mdl.DistParameter}];
                   endif
                 case 'Exponent'
-                  if (strcmpi (Mdl.Distance,'minkowski') && (! isempty (Mdl.DistParameter)))
+                  if (strcmpi (Mdl.Distance,'minkowski') && ...
+                      (! isempty (Mdl.DistParameter)))
                     args = [args, {'Exponent', Mdl.DistParameter}];
                   endif
                 case 'Scale'
-                  if (strcmpi (Mdl.Distance,'seuclidean') && (! isempty (Mdl.DistParameter)))
+                  if (strcmpi (Mdl.Distance,'seuclidean') && ...
+                      (! isempty (Mdl.DistParameter)))
                     args = [args, {'Scale', Mdl.DistParameter}];
                   endif
               endswitch
@@ -183,12 +188,14 @@ classdef ClassificationPartitionedModel
           ## Train model on k-1 folds and reserve 1 fold for validation
           for k = 1:this.KFold
             trainIdx = training (this.Partition, k);
-            this.Trained{k} = fitcknn (this.X(trainIdx, :), this.Y(trainIdx), args{:});
+            this.Trained{k} = fitcknn (this.X(trainIdx, :), ...
+                  this.Y(trainIdx), args{:});
           endfor
 
           ## State the ModelParameters
           params = struct();
-          paramList = {'NumNeighbors', 'Distance', 'DistParameter', 'NSMethod', 'DistanceWeight', 'Standardize'};
+          paramList = {'NumNeighbors', 'Distance', 'DistParameter', ...
+                  'NSMethod', 'DistanceWeight', 'Standardize'};
           for i = 1:numel (paramList)
             paramName = paramList{i};
             if (isprop (Mdl, paramName))
@@ -197,42 +204,46 @@ classdef ClassificationPartitionedModel
           endfor
           this.ModelParameters = params;
         otherwise
-          error ("ClassificationPartitionedModel: Unsupported model type.");
-      endswitch          
+          error ("ClassificationPartitionedModel: unsupported model type.");
+      endswitch
     endfunction
 
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationPartitionedModel} {@var{label} =} kfoldPredict (@var{CVMdl})
     ## @deftypefnx {ClassificationPartitionedModel} {[@var{label}, @var{score}, @var{cost}] =} kfoldPredict (@var{CVMdl})
     ##
-    ## Predict responses for observations not used for training in a cross-validated
-    ## classification model.
+    ## Predict responses for observations not used for training in a
+    ## cross-validated classification model.
     ##
-    ## @code{@var{[label, Score, Cost]} = kfoldPredict (@var{CVMdl})} returns the predicted
-    ## class labels, classification scores, and classification costs for the data used
+    ## @code{@var{[label, Score, Cost]} = kfoldPredict (@var{CVMdl})}
+    ## returns the predicted class labels, classification scores, and
+    ## classification costs for the data used
     ## to train the cross-validated model @var{CVMdl}.
     ##
-    ## @var{CVMdl} is a @code{ClassificationPartitionedModel} object. The function predicts
-    ## the response for each observation that was held out during training in the
-    ## cross-validation process.
+    ## @var{CVMdl} is a @code{ClassificationPartitionedModel} object.
+    ## The function predicts the response for each observation that was
+    ## held out during training in the cross-validation process.
     ##
     ## @multitable @columnfractions 0.28 0.02 0.7
     ## @headitem @var{Output} @tab @tab @var{Description}
     ##
-    ## @item @qcode{label} @tab @tab Predicted class labels, returned as a vector
-    ## or cell array. The type of @var{label} matches the type of @var{Y} in the original
-    ## training data. Each element of @var{label} corresponds to the predicted class
+    ## @item @qcode{label} @tab @tab Predicted class labels, returned as a
+    ## vector or cell array. The type of @var{label} matches the type of
+    ## @var{Y} in the original training data. Each element of @var{label}
+    ## corresponds to the predicted class
     ## label for the corresponding row in @var{X}.
     ##
-    ## @item @qcode{Score} @tab @tab Classification scores, returned as a numeric
-    ## matrix. Each row of @var{Score} corresponds to an observation, and each column
-    ## corresponds to a class. The value in row @var{i} and column @var{j} is the
+    ## @item @qcode{Score} @tab @tab Classification scores, returned as a
+    ## numeric matrix. Each row of @var{Score} corresponds to an observation,
+    ## and each column corresponds to a class. The value in row @var{i} and
+    ## column @var{j} is the
     ## classification score for class @var{j} for observation @var{i}.
     ##
-    ## @item @qcode{Cost} @tab @tab Classification costs, returned as a numeric
-    ## matrix. Each row of @var{Cost} corresponds to an observation, and each column
-    ## corresponds to a class. The value in row @var{i} and column @var{j} is the
-    ## classification cost for class @var{j} for observation @var{i}. This output is
+    ## @item @qcode{Cost} @tab @tab Classification costs, returned as a
+    ## numeric matrix. Each row of @var{Cost} corresponds to an observation,
+    ## and each column corresponds to a class. The value in row @var{i}
+    ## and column @var{j} is the classification cost for class @var{j} for
+    ## observation @var{i}. This output is
     ## optional and only returned if requested.
     ##
     ## @end multitable
@@ -250,7 +261,8 @@ classdef ClassificationPartitionedModel
       elseif (ischar (this.Y))
         label = char (zeros (this.NumObservations, size (this.Y, 2)));
       else
-        error ('ClassificationPartitionedModel.kfoldPredict: Unsupported data type for Y');
+        error (["ClassificationPartitionedModel.kfoldPredict: ", ...
+                "unsupported data type for Y."]);
       endif
 
       ## Initialize the score and cost matrices
@@ -281,7 +293,7 @@ classdef ClassificationPartitionedModel
 
             label(testIdx) = predictedLabel;
             Score(testIdx, :) = score;
-            
+
             if (nargout > 2)
               Cost(testIdx, :) = cost;
             endif
@@ -295,7 +307,8 @@ classdef ClassificationPartitionedModel
             Cost(testIdx, :) = NaN;
           endif
         otherwise
-          error ("ClassificationPartitionedModel.kfoldPredict: Unsupported Model");
+          error (["ClassificationPartitionedModel.kfoldPredict: ", ...
+                  "unsupported model."]);
       endswitch
     endfunction
   endmethods
@@ -333,7 +346,7 @@ endclassdef
 %! [label, score, cost] = kfoldPredict (cvModel)
 
 
-## Tests  
+## Tests
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
@@ -375,9 +388,9 @@ endclassdef
 %! assert (! cvModel.ModelParameters.Standardize);
 
 ## Test input validation for ClassificationPartitionedModel
-%!error<ClassificationPartitionedModel: Too few input arguments.> ...
+%!error<ClassificationPartitionedModel: too few input arguments.> ...
 %! ClassificationPartitionedModel ()
-%!error<ClassificationPartitionedModel: Too few input arguments.> ...
+%!error<ClassificationPartitionedModel: too few input arguments.> ...
 %! ClassificationPartitionedModel (ClassificationKNN (ones (4,2), ones (4,1)))
 
 ## Test for kfoldPredict
@@ -397,8 +410,7 @@ endclassdef
 %! assert (cvModel.ModelParameters.Distance, "euclidean");
 %! assert (! cvModel.ModelParameters.Standardize);
 %! assert (label, {"b"; "b"; "a"; "a"});
-%! assert (score, [0.3333, 0.6667; 0.3333, 0.6667; 0.6667, 0.3333; 0.6667, 0.3333], 1e-4);
-%! assert (cost, [0.6667, 0.3333; 0.6667, 0.3333; 0.3333, 0.6667; 0.3333, 0.6667], 1e-4);
-
-
-
+%! assert (score, [0.3333, 0.6667; 0.3333, 0.6667; 0.6667, 0.3333; ...
+%!          0.6667, 0.3333], 1e-4);
+%! assert (cost, [0.6667, 0.3333; 0.6667, 0.3333; 0.3333, 0.6667; ...
+%!          0.3333, 0.6667], 1e-4);
