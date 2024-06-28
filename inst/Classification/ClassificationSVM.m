@@ -492,23 +492,23 @@ classdef ClassificationSVM
       weight_options = strtrim(weight_options);
 
       ## Train the SVM model using svmtrain
-      svm_options = sprintf(strcat(["-s %d -t %d -d %d -g %f -r %f -c %f "], ...
-                                   ["-n %f -m %f -e %f -h %d -b %d %s -q"]), ...
+      svm_options = sprintf(strcat(["-s %d -t %d -d %d -g %f -r %f -c %f"], ...
+                                   [" -n %f -m %f -e %f -h %d -b %d %s -q"]), ...
                                s, t, d, g, r, c, n, m, e, h, b, weight_options);
 
     elseif (strcmp(weight_given, "no"))
 
       ## Train the SVM model using svmtrain
-      svm_options = sprintf(strcat(["-s %d -t %d -d %d -g %f -r %f -c %f "], ...
-                                  ["-n %f -m %f -e %f -h %d -b %d -q"]), ...
+      svm_options = sprintf(strcat(["-s %d -t %d -d %d -g %f -r %f -c %f"], ...
+                                  [" -n %f -m %f -e %f -h %d -b %d -q"]), ...
                                s, t, d, g, r, c, n, m, e, h, b);
     endif
 
-    ##    disp(svm_options); ## For debugging
+##  disp(svm_options); ## For debugging
 
     svm_options_with_kfold = strcat(svm_options, sprintf(" -v %d ", v));
 
-    ##    disp(svm_options_with_kfold); ## For debugging
+##  disp(svm_options_with_kfold); ## For debugging
 
     Model = svmtrain(Y, X, svm_options);
 
