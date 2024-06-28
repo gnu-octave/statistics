@@ -995,25 +995,32 @@ cvpartition,
  <table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
 <tr><td width="18%"><code>&quot;LossFun&quot;</code></td><td width="2%"></td><td width="80%">Specifies the loss function to use.
- Can be a function handle with four input arguments (C, S, W, Cost) which returns a scalar value or one of:
- &rsquo;binodeviance&rsquo;, &rsquo;classifcost&rsquo;, &rsquo;classiferror&rsquo;, &rsquo;exponential&rsquo;, &rsquo;hinge&rsquo;, &rsquo;logit&rsquo;,&rsquo;mincost&rsquo;, &rsquo;quadratic&rsquo;.
+ Can be a function handle with four input arguments (C, S, W, Cost)
+ which returns a scalar value or one of:
+ &rsquo;binodeviance&rsquo;, &rsquo;classifcost&rsquo;, &rsquo;classiferror&rsquo;, &rsquo;exponential&rsquo;,
+ &rsquo;hinge&rsquo;, &rsquo;logit&rsquo;,&rsquo;mincost&rsquo;, &rsquo;quadratic&rsquo;.
  <ul>
 <li>
- <code>C</code> is a logical matrix of size <math>N&times;K</math>, where <math>N</math> is the number of observations and
- <math>K</math> is the number of classes. The element <code>C(i,j)</code> is true if the class label of the
- i-th observation is equal to the j-th class.
+ <code>C</code> is a logical matrix of size <math>N&times;K</math>, where <math>N</math> is the
+ number of observations and <math>K</math> is the number of classes.
+ The element <code>C(i,j)</code> is true if the class label of the i-th
+ observation is equal to the j-th class.
  </li><li>
- <code>S</code> is a numeric matrix of size <math>N&times;K</math>, where each element represents the classification
- score for the corresponding class.
+ <code>S</code> is a numeric matrix of size <math>N&times;K</math>, where each element
+ represents the classification score for the corresponding class.
  </li><li>
- <code>W</code> is a numeric vector of length <math>N</math>, representing the observation weights.
+ <code>W</code> is a numeric vector of length <math>N</math>, representing
+ the observation weights.
  </li><li>
- <code>Cost</code> is a <math>K&times;K</math> matrix representing the misclassification costs.
+ <code>Cost</code> is a <math>K&times;K</math> matrix representing the misclassification
+ costs.
  </li></ul></td></tr>
-<tr><td width="18%"><code>&quot;Weights&quot;</code></td><td width="2%"></td><td width="80%">Specifies observation weights, must be a numeric vector of length equal to
- the number of rows in X. Default is <code>ones (size (X, 1))</code>. loss normalizes the weights so
- that observation weights in each class sum to the prior probability of that class.
- When you supply Weights, loss computes the weighted classification loss.</td></tr>
+<tr><td width="18%"><code>&quot;Weights&quot;</code></td><td width="2%"></td><td width="80%">Specifies observation weights, must be
+ a numeric vector of length equal to the number of rows in X.
+ Default is <code>ones (size (X, 1))</code>. loss normalizes the weights so that
+ observation weights in each class sum to the prior probability of that
+ class. When you supply Weights, loss computes the weighted
+ classification loss.</td></tr>
 </table>
 
 <p> <strong>See also: </strong>
@@ -1041,24 +1048,28 @@ cvpartition,
 <dt><u>ClassificationKNN:</u> <var>m</var> = <b>margin</b><i> (<var>obj</var>, <var>X</var>, <var>Y</var>)</i></dt>
 </dl>
 
-<p> <code><var>m</var> = margin (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> returns the classification
- margins for <var>obj</var> with data <var>X</var> and classification <var>Y</var>. <var>m</var> is
- a numeric vector of length size (X,1).
+<p> <code><var>m</var> = margin (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> returns
+ the classification margins for <var>obj</var> with data <var>X</var> and
+ classification <var>Y</var>. <var>m</var> is a numeric vector of length size (X,1).
 </p>
 <div class="ms-5">
  <ul>
 <li>
- <code>obj</code> is a <var>ClassificationKNN</var> object trained on <code>X</code> and <code>Y</code>.
+ <code>obj</code> is a <var>ClassificationKNN</var> object trained on <code>X</code>
+ and <code>Y</code>.
  </li><li>
  <code>X</code> must be a <math>N&times;P</math> numeric matrix of input data where rows
- correspond to observations and columns correspond to features or variables.
+ correspond to observations and columns correspond to features or
+ variables.
  </li><li>
- <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels of
- corresponding predictor data in <var>X</var>. <var>Y</var> must have same numbers of Rows as <var>X</var>.
+ <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels
+ of corresponding predictor data in <var>X</var>. <var>Y</var> must have same
+ numbers of Rows as <var>X</var>.
  </li></ul>
 
-<p> The classification margin for each observation is the difference between the classification
- score for the true class and the maximal classification score for the false classes.
+<p> The classification margin for each observation is the difference between
+ the classification score for the true class and the maximal
+ classification score for the false classes.
 </p>
 <p> <strong>See also: </strong>
   <a href="fitcknn.html">fitcknn</a>, 
@@ -1090,33 +1101,42 @@ cvpartition,
 <p> Compute partial dependence for a trained ClassificationKNN object.
 </p>
 <div class="ms-5">
-<p> <code><var>[pd, x, y]</var> = partialDependence (<var>obj</var>, <var>Vars</var>, <var>Labels</var>)</code> computes the partial
- dependence of the classification scores on the variables <var>Vars</var> for the specified class <var>Labels</var>.
+<p> <code><var>[pd, x, y]</var> = partialDependence (<var>obj</var>, <var>Vars</var>,
+ <var>Labels</var>)</code>
+ computes the partial dependence of the classification scores on the
+ variables <var>Vars</var> for the specified class <var>Labels</var>.
 </p>
  <ul>
 <li>
  <code>obj</code> is a trained <var>ClassificationKNN</var> object.
  </li><li>
- <code>Vars</code> is a vector of positive integers, character vector, string array, or cell array of character
- vectors representing predictor variables (it can be indices of predictor variables in <var>obj.X</var>).
+ <code>Vars</code> is a vector of positive integers, character vector,
+ string array, or cell array of character
+ vectors representing predictor variables (it can be indices of
+ predictor variables in <var>obj.X</var>).
  </li><li>
- <code>Labels</code> is a character vector, logical vector, numeric vector, or cell array of character vectors
- representing class labels. (column vector)
+ <code>Labels</code> is a character vector, logical vector, numeric vector,
+ or cell array of character vectors representing class
+ labels. (column vector)
  </li></ul>
 
-<p> <code><var>[pd, x, y]</var> = partialDependence (&hellip;, <var>Data</var>)</code> specifies new predictor data to use for
- computing the partial dependence.
+<p> <code><var>[pd, x, y]</var> = partialDependence (&hellip;, <var>Data</var>)</code>
+ specifies new predictor data to use for computing the partial dependence.
 </p>
-<p> <code><var>[pd, x, y]</var> = partialDependence (&hellip;, <var>name</var>, <var>value</var>)</code> allows additional
- options specified by name-value pairs:
+<p> <code><var>[pd, x, y]</var> = partialDependence (&hellip;, <var>name</var>,
+ <var>value</var>)</code> allows additional options specified by name-value pairs:
 </p>
  <table>
 <thead><tr><th width="32%"><var>Name</var></th><th width="2%"></th><th width="70%"><var>Value</var></th></tr></thead>
-<tr><td width="32%"><code>&quot;NumObservationsToSample&quot;</code></td><td width="2%"></td><td width="70%">Number of observations to sample.
- Must be a positive integer. Defaults to the number of observations in the training data.</td></tr>
-<tr><td width="32%"><code>&quot;QueryPoints&quot;</code></td><td width="2%"></td><td width="70%">Points at which to evaluate the partial dependence.
- Must be a numeric column vector, numeric two-column matrix, or cell array of character column vectors.</td></tr>
-<tr><td width="32%"><code>&quot;UseParallel&quot;</code></td><td width="2%"></td><td width="70%">Logical value indicating whether to perform computations in parallel.
+<tr><td width="32%"><code>&quot;NumObservationsToSample&quot;</code></td><td width="2%"></td><td width="70%">Number of
+ observations to sample. Must be a positive integer. Defaults to the
+ number of observations in the training data.</td></tr>
+<tr><td width="32%"><code>&quot;QueryPoints&quot;</code></td><td width="2%"></td><td width="70%">Points at which to evaluate
+ the partial dependence.
+ Must be a numeric column vector, numeric two-column matrix, or
+ cell array of character column vectors.</td></tr>
+<tr><td width="32%"><code>&quot;UseParallel&quot;</code></td><td width="2%"></td><td width="70%">Logical value indicating
+ whether to perform computations in parallel.
  Defaults to <code>false</code>.</td></tr>
 </table>
 
@@ -1125,7 +1145,8 @@ cvpartition,
  <ul>
 <li> <code>pd</code>: Partial dependence values.
  </li><li> <code>x</code>: Query points for the first predictor variable in Vars.
- </li><li> <code>y</code>: Query points for the second predictor variable in Vars (if applicable).
+ </li><li> <code>y</code>: Query points for the second predictor variable in
+ Vars (if applicable).
  </li></ul>
 
 <p> <strong>See also: </strong>
@@ -1410,7 +1431,8 @@ CVMdl =
 
  ## Fit the k-NN model using the 'mahalanobis' distance
  ## and the custom covariance matrix
- obj = fitcknn(x, y, 'NumNeighbors', 5, 'Distance','mahalanobis', 'Cov', covMatrix);
+ obj = fitcknn(x, y, 'NumNeighbors', 5, 'Distance','mahalanobis', ...
+ 'Cov', covMatrix);
 
  ## Create a partition model using cvpartition
  Partition = cvpartition (size (x, 1), 'kfold', 12);
@@ -1500,6 +1522,7 @@ ans =
  Y = {'A'; 'B'; 'A'};
  model = fitcknn (X, Y);
  customLossFun = @(C, S, W, Cost) sum (W .* sum (abs (C - S), 2));
+ ## Calculate loss using custom loss function
  L = loss (model, X, Y, 'LossFun', customLossFun)
 
 L = 0
@@ -1530,6 +1553,76 @@ L = 0
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
+ X = [1, 2; 3, 4; 5, 6];
+ Y = {'A'; 'B'; 'A'};
+ model = fitcknn (X, Y);
+ ## Calculate loss using 'mincost' loss function
+ L = loss (model, X, Y, 'LossFun', 'mincost')
+
+L = 0
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 7
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ X = [1, 2; 3, 4; 5, 6];
+ Y = ['1'; '2'; '3'];
+ model = fitcknn (X, Y);
+ X_test = [3, 3; 5, 7];
+ Y_test = ['1'; '2'];
+ ## Specify custom Weights
+ W = [1; 2];
+ L = loss (model, X_test, Y_test, 'LossFun', 'logit', 'Weights', W);
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 8
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
  load fisheriris
  mdl = fitcknn (meas, species);
  X = mean (meas);
@@ -1537,6 +1630,43 @@ L = 0
  m = margin (mdl, X, Y)
 
 m = 1
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 9
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ X = [1, 2; 4, 5; 7, 8; 3, 2];
+ Y = [2; 1; 3; 2];
+ ## Train the model
+ mdl = fitcknn (X, Y);
+ ## Specify Vars and Labels
+ Vars = 1;
+ Labels = 2;
+ ## Calculate partialDependence
+ [pd, x, y] = partialDependence (mdl, Vars, Labels);
+
                     </pre></td></tr></tbody>
                   </table>
 
