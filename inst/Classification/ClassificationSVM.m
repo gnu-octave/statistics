@@ -513,7 +513,7 @@ classdef ClassificationSVM
     Model = svmtrain(Y, X, svm_options);
 
     this.Model =  Model;
-    this.CrossValidationAccuracy = evalc('svmtrain(Y, X, svm_options_with_kfold)');
+    this.CrossValidationAccuracy = svmtrain(Y, X, svm_options_with_kfold);
     this.ModelParameters = Model.Parameters;
     this.NumClasses = Model.nr_class;
     this.SupportVectorCount = Model.totalSV;
