@@ -136,6 +136,13 @@
 ## the parameter C of class i to weight*C, for C-SVC. The default value is
 ## 1 for all classes.
 ##
+## @item @tab @qcode{"PredictorNames"} @tab A cell array of character vectors
+## specifying the predictor variable names.  The variable names are assumed to
+## be in the same order as they appear in the training data @var{X}.
+##
+## @item @tab @qcode{"ResponseName"} @tab A character vector specifying the name
+## of the response variable.
+##
 ## @item @tab @qcode{"KFold"} @tab A positive integer greater than 1 which
 ## specifies the value of k (number of folds). The dataset is divided into k
 ## equal-sized subsets (folds). The model is trained k times, each time using
