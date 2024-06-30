@@ -1,4 +1,5 @@
 ## Copyright (C) 2024 Ruchika Sonagote <ruchikasonagote2003@gmail.com>
+## Copyright (C) 2024 Pallav Purbia <pallavpurbia@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -24,8 +25,9 @@ classdef ClassificationPartitionedModel
 ##
 ## @code{@var{CVMdl} = ClassificationPartitionedModel (@var{Mdl},
 ## @var{Partition})} returns a ClassificationPartitionedModel object, with
-## @var{Mdl} as the trained ClassificationKNN object and @var{Partition} as
-## the partitioning object obtained using cvpartition function.
+## @var{Mdl} as the trained ClassificationKNN or ClassificationSVM object and
+## @var{Partition} as the partitioning object obtained using cvpartition
+## function.
 ##
 ## A @qcode{ClassificationPartitionedModel} object, @var{CVMdl}, stores the
 ## classification models trained on cross-validated folds
@@ -89,7 +91,7 @@ classdef ClassificationPartitionedModel
 ## @item @qcode{CVMdl.Prior} @tab @tab Prior probabilities for each class,
 ## specified as a numeric vector.  The order of the elements in @qcode{Prior}
 ## corresponds to the order of the classes in @qcode{ClassNames}.
-## 
+##
 ## @item @qcode{CVMdl.ResponseName} @tab @tab Response variable name, specified
 ## as a character vector.
 ##
@@ -100,7 +102,7 @@ classdef ClassificationPartitionedModel
 ##
 ## @end multitable
 ##
-## @seealso{cvpartition, ClassificationKNN}
+## @seealso{cvpartition, ClassificationKNN, ClassificationSVM}
 ## @end deftypefn
 
   properties
@@ -137,14 +139,16 @@ classdef ClassificationPartitionedModel
       this.Y = Mdl.Y;
       this.KFold = get (Partition, "NumTestSets");
       this.ClassNames = Mdl.ClassNames;
-      this.Prior = Mdl.Prior;
-      this.Cost = Mdl.Cost;
       this.ResponseName = Mdl.ResponseName;
       this.NumObservations = Mdl.NumObservations;
       this.PredictorNames = Mdl.PredictorNames;
       this.Trained = cell (get (Partition, "NumTestSets"), 1);
       this.Partition = Partition;
       this.CrossValidatedModel = class (Mdl);
+      if ( class(Mdl) != "ClassificationSVM")
+        this.Prior = Mdl.Prior;
+        this.Cost = Mdl.Cost;
+      endif
 
       ## Set model parameters
       switch (this.CrossValidatedModel)
@@ -203,6 +207,36 @@ classdef ClassificationPartitionedModel
             endif
           endfor
           this.ModelParameters = params;
+
+        case 'ClassificationSVM'
+
+          this.Prior = "Not supported";
+          this.Cost = "Not supported";
+
+          ## Extract parameters for fitcsvm
+          args = {
+          'SVMtype', this.SVMtype, ...
+          'KernelFunction', (this.ModelParameters).KernelFunction, ...
+          'PolynomialOrder', (this.ModelParameters).PolynomialOrder, ...
+          'Gamma', (this.ModelParameters).Gamma, ...
+          'KernelOffset', this.KernelOffset, ...
+          'BoxConstraint', this.BoxConstraint, ...
+          'Nu', (this.ModelParameters).Nu, ...
+          'CacheSize', this.CacheSize, ...
+          'Tolerance', (this.ModelParameters).Tolerance, ...
+          'Shrinking', (this.ModelParameters).Shrinking, ...
+          'ProbabilityEstimates', (this.ModelParameters).ProbabilityEstimates,
+          'Weight', (this.ModelParameters).Weight
+           };
+
+          ## Train model on k-1 folds and reserve 1 fold for validation
+          for k = 1:this.KFold
+              trainIdx = training (this.Partition, k);
+              this.Trained{k} = fitcsvm (this.X(trainIdx, :), ...
+                    this.Y(trainIdx), args{:});
+              this.ModelParameters = (this.Trained{k}).ModelParameters;
+          endfor
+
         otherwise
           error ("ClassificationPartitionedModel: unsupported model type.");
       endswitch
@@ -323,10 +357,10 @@ endclassdef
 %!
 %! ## Create a KNN classifier model
 %! obj = fitcknn (x, y, "NumNeighbors", 5, "Standardize", 1);
-%! 
+%!
 %! ## Create a partition for 5-fold cross-validation
 %! partition = cvpartition (y, "KFold", 5);
-%! 
+%!
 %! ## Create the ClassificationPartitionedModel object
 %! cvModel = crossval (obj, 'cvPartition', partition)
 
@@ -338,7 +372,7 @@ endclassdef
 %!
 %! ## Create a KNN classifier model
 %! obj = fitcknn (x, y, "NumNeighbors", 5, "Standardize", 1);
-%! 
+%!
 %! ## Create the ClassificationPartitionedModel object
 %! cvModel = crossval (obj)
 %!

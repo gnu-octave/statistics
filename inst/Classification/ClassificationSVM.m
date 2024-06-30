@@ -124,6 +124,18 @@ classdef ClassificationSVM
 ## classes being predicted by the model. This field is empty for one-class SVM
 ## because it only involves a single class during training and testing.
 ##
+## @item @tab @qcode{"obj.NumObservations"} @tab Number of observations used in
+## training the ClassificationSVM model, specified as a positive integer scalar.
+## This number can be less than the number of rows in the training data because
+## rows containing @qcode{NaN} values are not part of the fit.
+##
+## @item @tab @qcode{"obj.ResponseName"} @tab Response variable name, specified
+## as a character vector.
+##
+## @item @tab @qcode{"obj.PredictorNames"} @tab Predictor variable names,
+## specified as a cell array of character vectors.  The variable names are in
+## the same order in which they appear in the training data @var{X}.
+##
 ## @item @tab @qcode{"obj.SupportVectorIndices"} @tab Indices of the support
 ## vectors in the training dataset. This field indicates the positions of the
 ## support vectors within the original training data. It helps in identifying
@@ -176,6 +188,10 @@ classdef ClassificationSVM
     ModelParameters         = [];     # SVM parameters.
     NumClasses              = [];     # Number of classes in Y
     ClassNames              = [];     # Names of classes in Y
+    NumObservations         = [];     # Number of Observations
+    ResponseName            = [];     # Response variable name
+    PredictorNames          = [];     # Predictor variable name
+
     Rho                     = [];     # Bias term
     KernelOffset            = [];     # Kernel Offset
     BoxConstraint           = [];     # Box Constraint
@@ -237,6 +253,9 @@ classdef ClassificationSVM
         error ("ClassificationSVM: Y must be a numeric array.");
       endif
 
+      ## Get groups in Y
+      [gY, gnY, glY] = grp2idx (Y);
+
       ## Set default values before parsing optional parameters
       SVMtype                 = 'C_SVC';
       KernelFunction          = 'rbf';
@@ -251,6 +270,9 @@ classdef ClassificationSVM
       ProbabilityEstimates    = 0;
       Weight                  = [];
       KFold                   = 10;
+      NumObservations         = [];
+      ResponseName            = [];
+      PredictorNames          = [];
 
       weight_given            = "no";
 
@@ -344,6 +366,22 @@ classdef ClassificationSVM
                              [" must be either 0 or 1."]));
             endif
 
+          case "responsename"
+            ResponseName = varargin{2};
+            if (! ischar (ResponseName))
+              error ("ClassificationSVM: ResponseName must be a character array.");
+            endif
+
+          case "predictornames"
+            PredictorNames = varargin{2};
+            if (! iscellstr (PredictorNames))
+              error (strcat (["ClassificationSVM: PredictorNames must"], ...
+                             [" be supplied as a cellstring array."]));
+            elseif (columns (PredictorNames) != columns (X))
+              error (strcat (["ClassificationSVM: PredictorNames must"], ...
+                             [" have the same number of columns as X."]));
+            endif
+
           case "weight"
 
             Weight = varargin{2};
@@ -391,6 +429,27 @@ classdef ClassificationSVM
         varargin (1:2) = [];
       endwhile
 
+      ## Remove missing values from X and Y
+      RowsUsed  = ! logical (sum (isnan ([X, gY]), 2));
+      Y         = Y (RowsUsed);
+      X         = X (RowsUsed, :);
+
+      this.NumObservations = rows (X);
+
+      ## Generate default predictors and response variabe names (if necessary)
+      if (isempty (PredictorNames))
+        for i = 1:ndims_X
+          PredictorNames {i} = strcat ("x", num2str (i));
+        endfor
+      endif
+      if (isempty (ResponseName))
+        ResponseName = "Y";
+      endif
+
+      ## Assign predictors and response variable names
+      this.PredictorNames = PredictorNames;
+      this.ResponseName   = ResponseName;
+
       SVMtype = tolower(SVMtype);
         switch (SVMtype)
           case "c_svc"
@@ -437,21 +496,6 @@ classdef ClassificationSVM
     this.Shrinking               = Shrinking;
     this.ProbabilityEstimates    = ProbabilityEstimates;
     this.Weight                  = Weight;
-
-##    This is kept if the output of Model.parameter is not sufficient
-##    this.ModelParameters = struct('SVMtype', SVMtype, ...
-##                                 'KernelFunction', KernelFunction, ...
-##                                 'PolynomialOrder', PolynomialOrder, ...
-##                                 'Gamma', Gamma, ...
-##                                 'KernelOffset', KernelOffset, ...
-##                                 'BoxConstraint', BoxConstraint, ...
-##                                 'Nu', Nu, ...
-##                                 'CacheSize', CacheSize, ...
-##                                 'Tolerance', Tolerance, ...
-##                                 'Shrinking', Shrinking, ...
-##                                 'ProbabilityEstimates', ProbabilityEstimates,
-##                                 'Weight', Weight, ...
-##                                 'KFold', KFold);
 
     ## svmpredict:
     ##    '-s':  SVMtype
@@ -504,17 +548,25 @@ classdef ClassificationSVM
                                s, t, d, g, r, c, n, m, e, h, b);
     endif
 
-##  disp(svm_options); ## For debugging
+    ##  disp(svm_options); ## For debugging
 
     svm_options_with_kfold = strcat(svm_options, sprintf(" -v %d ", v));
 
-##  disp(svm_options_with_kfold); ## For debugging
+    ##  disp(svm_options_with_kfold); ## For debugging
 
     Model = svmtrain(Y, X, svm_options);
 
     this.Model =  Model;
     this.CrossValidationAccuracy = svmtrain(Y, X, svm_options_with_kfold);
-    this.ModelParameters = Model.Parameters;
+    this.ModelParameters = struct(...
+                                  'KernelFunction', this.KernelFunction,
+                                  'PolynomialOrder', this.PolynomialOrder,
+                                  'Gamma', this.Gamma,
+                                  'Nu', this.Nu,
+                                  'Tolerance', this.Tolerance,
+                                  'Shrinking', this.Shrinking,
+                                  'ProbabilityEstimates', this.ProbabilityEstimates,
+                                  'Weight', this.Weight);
     this.NumClasses = Model.nr_class;
     this.SupportVectorCount = Model.totalSV;
     this.Rho = Model.rho;
@@ -1302,42 +1354,8 @@ classdef ClassificationSVM
         partition = cvpartition (numSamples, 'KFold', numFolds);
       endif
 
-      numTestSets = get(partition, "NumTestSets");
-
-      ## Perform the cross-validation
-      models = cell (numTestSets, 1);
-
-      ## Extract parameters for fitcsvm
-      params = {
-          'SVMtype', this.SVMtype, ...
-          'KernelFunction', this.KernelFunction, ...
-          'PolynomialOrder', this.PolynomialOrder, ...
-          'Gamma', this.Gamma, ...
-          'KernelOffset', this.KernelOffset, ...
-          'BoxConstraint', this.BoxConstraint, ...
-          'Nu', this.Nu, ...
-          'CacheSize', this.CacheSize, ...
-          'Tolerance', this.Tolerance, ...
-          'Shrinking', this.Shrinking, ...
-          'ProbabilityEstimates', this.ProbabilityEstimates
-        };
-
-      for i = 1:numTestSets
-        trainIdx = training (partition, i);
-        testIdx = test (partition, i);
-
-        XTrain = this.X(trainIdx, :);
-        YTrain = this.Y(trainIdx, :);
-
-        ## Train the SVM on the training subset
-        trainedModel = fitcsvm (XTrain, YTrain, params{:});
-
-        ## Store the trained model
-        models{i} = trainedModel;
-      endfor
-
-      ## Return a cross-validated model object
-      CVMdl = struct ('Trained', {models}, 'Partition', partition);
+      ## Create a cross-validated model object
+      CVMdl = ClassificationPartitionedModel (this, partition);
 
       endfunction
 
@@ -1526,6 +1544,16 @@ endclassdef
 %! ClassificationSVM (ones(10,2), ones(10,1), "probabilityestimates", -1)
 %!error<ClassificationSVM: ProbabilityEstimates must be either 0 or 1.> ...
 %! ClassificationSVM (ones(10,2), ones(10,1), "probabilityestimates", [0 1])
+%!error<ClassificationSVM: PredictorNames must be supplied as a cellstring array.> ...
+%! ClassificationSVM (ones (5,2), ones (5,1), "PredictorNames", ["A"])
+%!error<ClassificationSVM: PredictorNames must be supplied as a cellstring array.> ...
+%! ClassificationSVM (ones (5,2), ones (5,1), "PredictorNames", "A")
+%!error<ClassificationSVM: PredictorNames must have the same number of columns as X.> ...
+%! ClassificationSVM (ones (5,2), ones (5,1), "PredictorNames", {"A", "B", "C"})
+%!error<ClassificationSVM: ResponseName must be a character array.> ...
+%! ClassificationSVM (ones (5,2), ones (5,1), "ResponseName", {"Y"})
+%!error<ClassificationSVM: ResponseName must be a character array.> ...
+%! ClassificationSVM (ones (5,2), ones (5,1), "ResponseName", 1)
 %!error<ClassificationSVM: Weights must be provided as a structure.> ...
 %! ClassificationSVM (ones(10,2), ones(10,1), "weight", 1)
 %!error<ClassificationSVM: Class labels in the weight structure must be numeric.> ...
