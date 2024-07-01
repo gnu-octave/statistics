@@ -278,7 +278,8 @@ classdef ClassificationPartitionedModel
     ##
     ## @end multitable
     ##
-    ## @seealso{ClassificationKNN, ClassificationPartitionedModel}
+    ## @seealso{ClassificationKNN, ClassificationSVM,
+    ## ClassificationPartitionedModel}
     ## @end deftypefn
     function [label, Score, Cost] = kfoldPredict (this)
       ## Initialize the label vector based on the type of Y
@@ -336,6 +337,30 @@ classdef ClassificationPartitionedModel
             Score(testIdx, :) = NaN;
             Cost(testIdx, :) = NaN;
           endif
+
+        case 'ClassificationSVM'
+
+          if (nargout > 1 && this.KFold != 1)
+           error(["ClassificationPartitionedModel.kfoldPredict: only label", ...
+                 " as output is supported for ClassificationSVM", ...
+                 " cross validated models."]);
+          endif
+
+          for k = 1:this.KFold
+              testIdx = test (this.Partition, k);
+              model = this.Trained{k};
+              predictedLabel = predict (model, this.X(testIdx, :));
+              label(testIdx) = predictedLabel;
+          endfor
+
+          ## Handle single fold case (holdout)
+          if (this.KFold == 1)
+            testIdx = test (this.Partition, 1);
+            label(testIdx) = mode (this.Y);
+            Score(testIdx, :) = NaN;
+            Cost(testIdx, :) = NaN;
+          endif
+
         otherwise
           error (["ClassificationPartitionedModel.kfoldPredict: ", ...
                   "unsupported model."]);
@@ -444,3 +469,7 @@ endclassdef
 %!          0.6667, 0.3333], 1e-4);
 %! assert (cost, [0.6667, 0.3333; 0.6667, 0.3333; 0.3333, 0.6667; ...
 %!          0.3333, 0.6667], 1e-4);
+
+## Test input validation for kfoldPredict
+%!error<ClassificationPartitionedModel.kfoldPredict: only label as output is supported for ClassificationSVM cross validated models.> ...
+%! [a, b] = kfoldPredict(crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "KFold", 5))
