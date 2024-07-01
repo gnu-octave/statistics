@@ -400,6 +400,41 @@ endclassdef
 %! ## Predict the class labels for the observations not used for training
 %! [label, score, cost] = kfoldPredict (cvModel)
 
+%!demo
+%!
+%! load fisheriris
+%! X = meas;                   # Feature matrix
+%! Y = species;                # Class labels
+%! ## Convert species to numerical labels
+%! ## 'setosa' -> 1, 'versicolor' -> 2, 'virginica' -> 3
+%! Y = grp2idx(Y);
+%!
+%! ## Create a SVM classifier model
+%! obj = fitcsvm (X, Y,"svmtype",'c_svc',"kernelfunction",'rbf');
+%!
+%! ## Create a partition for 5-fold cross-validation
+%! partition = cvpartition (Y, "KFold", 5);
+%!
+%! ## Create the ClassificationPartitionedModel object
+%! cvModel = crossval (obj, 'cvPartition', partition)
+
+%!demo
+%!
+%! load fisheriris
+%! X = meas;                   # Feature matrix
+%! Y = species;                # Class labels
+%! ## Convert species to numerical labels
+%! ## 'setosa' -> 1, 'versicolor' -> 2, 'virginica' -> 3
+%! Y = grp2idx(Y);
+%!
+%! ## Create a SVM classifier model
+%! obj = fitcsvm (X, Y,"svmtype",'c_svc',"kernelfunction",'rbf');
+%!
+%! ## Create the ClassificationPartitionedModel object
+%! cvModel = crossval (obj)
+%!
+%! ## Predict the class labels for the observations not used for training
+%! label = kfoldPredict (cvModel)
 
 ## Tests
 %!test

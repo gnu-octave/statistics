@@ -1417,7 +1417,6 @@ endclassdef
 %!demo
 %! ## Create a Support Vector Machine classifier and determine margin for test
 %! ## data.
-%! pkg load statistics
 %! load fisheriris
 %! rng(1);  ## For reproducibility
 %!
@@ -1450,7 +1449,6 @@ endclassdef
 %!demo
 %! ## Create a Support Vector Machine classifier and determine loss for test
 %! ## data.
-%! pkg load statistics
 %! load fisheriris
 %! rng(1);  ## For reproducibility
 %!
