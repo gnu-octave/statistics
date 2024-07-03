@@ -175,11 +175,54 @@ function Mdl = fitcsvm (X, Y, varargin)
 endfunction
 
 %!demo
-## No demo for now.
+%! ## Create a Support Vector Machine classifier for Fisher's iris data
+%!
+%! load fisheriris
+%! X = meas;                   # Feature matrix
+%! Y = species;                # Class labels
+%! ## Convert species to numerical labels
+%! ## 'setosa' -> 1, 'versicolor' -> 2, 'virginica' -> 3
+%! Y = grp2idx(Y);
+%!
+%! # create an object
+%! a = fitcsvm (X, Y)
 
 ## Test constructor
 %!test
-## No test for now.
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1; 4, 5, 6; 7, 8, 9; 3, 2, 1; 4, 5, 6; 7, 8, 9; 3, 2, 1; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = [1; 2; 3; 4; 2; 3; 4; 2; 3; 4; 2; 3; 4];
+%! a = fitcsvm (x, y);
+%! assert (class (a), "ClassificationSVM");
+%! assert ({a.X, a.Y}, {x, y})
+%! assert (a.NumObservations, 13)
+%! assert ({a.ResponseName, a.PredictorNames}, {"Y", {"x1", "x2", "x3"}})
+%! assert ({a.Solver, a.SVMtype}, {"SMO", "c_svc"})
+%! assert ({a.NumClasses, a.ClassNames}, {4, [1; 2; 3; 4]})
+
+## Test Output
+%!test
+%! x = [1, 2; 2, 3; 3, 4; 4, 5; 2, 3; 3, 4; 2, 3; 3, 4; 2, 3; 3, 4];
+%! y = [1; 1; -1; -1; 1; -1; -1; -1; -1; -1];
+%! a = fitcsvm (x, y);
+%! assert (class (a), "ClassificationSVM");
+%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, "rbf"})
+%! assert ({a.BoxConstraint, a.KernelOffset}, {1, 0})
+%! assert (a.ClassNames, [1; -1])
+%! assert (a.Solver, "SMO")
+%!test
+%! x = [1, 2; 2, 3; 3, 4; 4, 5; 2, 3; 3, 4; 2, 3; 3, 4; 2, 3; 3, 4];
+%! y = [1; 1; -1; -1; 1; -1; -1; -1; -1; -1];
+%! a = fitcsvm (x, y, "KernelFunction", "rbf", "BoxConstraint", 2, "KernelOffset", 2);
+%! assert (class (a), "ClassificationSVM");
+%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, "rbf"})
+%! assert ({a.BoxConstraint, a.KernelOffset}, {2, 2})
+%!test
+%! x = [1, 2; 2, 3; 3, 4; 4, 5; 2, 3; 3, 4; 2, 3; 3, 4; 2, 3; 3, 4];
+%! y = [1; 1; -1; -1; 1; -1; -1; -1; -1; -1];
+%! a = fitcsvm (x, y, "KernelFunction", "polynomial", "PolynomialOrder", 3);
+%! assert (class (a), "ClassificationSVM");
+%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, "polynomial"})
+%! assert (a.ModelParameters.PolynomialOrder, 3)
 
 ## Test input validation
 %!error<fitcsvm: too few arguments.> fitcsvm ()
