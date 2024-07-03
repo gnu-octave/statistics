@@ -189,7 +189,8 @@ endfunction
 
 ## Test constructor
 %!test
-%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1; 4, 5, 6; 7, 8, 9; 3, 2, 1; 4, 5, 6; 7, 8, 9; 3, 2, 1; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1; 4, 5, 6; ...
+%! 7, 8, 9; 3, 2, 1; 4, 5, 6; 7, 8, 9; 3, 2, 1; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = [1; 2; 3; 4; 2; 3; 4; 2; 3; 4; 2; 3; 4];
 %! a = fitcsvm (x, y);
 %! assert (class (a), "ClassificationSVM");
@@ -212,7 +213,8 @@ endfunction
 %!test
 %! x = [1, 2; 2, 3; 3, 4; 4, 5; 2, 3; 3, 4; 2, 3; 3, 4; 2, 3; 3, 4];
 %! y = [1; 1; -1; -1; 1; -1; -1; -1; -1; -1];
-%! a = fitcsvm (x, y, "KernelFunction", "rbf", "BoxConstraint", 2, "KernelOffset", 2);
+%! a = fitcsvm (x, y, "KernelFunction", "rbf", "BoxConstraint", 2, ...
+%! "KernelOffset", 2);
 %! assert (class (a), "ClassificationSVM");
 %! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, "rbf"})
 %! assert ({a.BoxConstraint, a.KernelOffset}, {2, 2})
