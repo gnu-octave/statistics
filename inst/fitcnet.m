@@ -20,7 +20,7 @@
 ## @deftypefn  {statistics} {@var{obj} =} fitcnet (@var{X}, @var{Y})
 ## @deftypefnx {statistics} {@var{obj} =} fitcnet (@dots{}, @var{name}, @var{value})
 ##
-## Train a Neural Network classification model.
+## Fit a Neural Network classification model.
 ##
 ## @code{@var{obj} = fitcnet (@var{X}, @var{Y})} returns a Neural Network
 ## classification model, @var{obj}, with @var{X} being the predictor data,
@@ -30,21 +30,49 @@
 ## @item
 ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
 ## correspond to observations and columns correspond to features or variables.
-## @var{X} will be used to train the SVM model.
+## @var{X} will be used to train the Classification Neural Network model.
 ## @item
 ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels of
 ## corresponding predictor data in @var{X}. @var{Y} can contain any type of
 ## categorical data. @var{Y} must have same numbers of Rows as @var{X}.
-## @item
 ## @end itemize
 ##
 ## @code{@var{obj} = fitcnet (@dots{}, @var{name}, @var{value})} returns a
 ## Neural Network model with additional options specified by
 ## @qcode{Name-Value} pair arguments listed below.
 ##
-## @multitable @columnfractions 0.18 0.02 0.8
+## @multitable @columnfractions 0.05 0.4 0.75
 ## @headitem @tab @var{Name} @tab @var{Value}
 ##
+## @item @tab @qcode{"LayerSizes"} @tab A positive integer greater than 1 which
+## specifies the value of k (number of folds).
+##
+## @item @tab @qcode{"Activations"} @tab A positive integer greater than 1 which
+## specifies the value of k (number of folds).
+##
+## @item @tab @qcode{"LayerWeightsInitializer"} @tab A positive integer greater than 1 which
+## specifies the value of k (number of folds).
+##
+## @item @tab @qcode{"LayerBiasesInitializer"} @tab A positive integer greater than 1 which
+## specifies the value of k (number of folds).
+##
+## @item @tab @qcode{"InitialStepSize"} @tab A positive integer greater than 1 which
+## specifies the value of k (number of folds).
+##
+## @item @tab @qcode{"IterationLimit"} @tab A positive integer greater than 1 which
+## specifies the value of k (number of folds).
+##
+## @item @tab @qcode{"GradientTolerance"} @tab A positive integer greater than 1 which
+## specifies the value of k (number of folds).
+##
+## @item @tab @qcode{"LossTolerance"} @tab A positive integer greater than 1 which
+## specifies the value of k (number of folds).
+##
+## @item @tab @qcode{"StepTolerance"} @tab A positive integer greater than 1 which
+## specifies the value of k (number of folds).
+##
+## @item @tab @qcode{"Weights"} @tab A positive integer greater than 1 which
+## specifies the value of k (number of folds).
 ##
 ## @end multitable
 ##
@@ -81,8 +109,8 @@ endfunction
 %!error<fitcnet: too few arguments.> fitcnet ()
 %!error<fitcnet: too few arguments.> fitcnet (ones (4,1))
 %!error<fitcnet: Name-Value arguments must be in pairs.>
-%! fitcnet (ones (4,2), ones (4, 1), 'Prior')
+%! fitcnet (ones (4,2), ones (4, 1), 'LayerSizes')
 %!error<fitcnet: number of rows in X and Y must be equal.>
 %! fitcnet (ones (4,2), ones (3, 1))
 %!error<fitcnet: number of rows in X and Y must be equal.>
-%! fitcnet (ones (4,2), ones (3, 1), 'KFold', 2)
+%! fitcnet (ones (4,2), ones (3, 1), 'LayerSizes', 2)
