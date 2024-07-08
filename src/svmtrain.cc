@@ -34,11 +34,13 @@ this program; if not, see <http://www.gnu.org/licenses/>.
 #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
 
 void print_null(const char *s) {}
-//void print_string_octave(const char *s) {printf(s);}
+//void print_string_octave(const char *s) {&printf;}
+int print_null_(const char *s,...) {return 0;}
+int (*info_)(const char *fmt,...) = &printf;
 
 // svm arguments
 struct svm_parameter param;		// set by parse_command_line
-struct svm_problem prob;		// set by read_problem
+struct svm_problem prob;		  // set by read_problem
 struct svm_model *model;
 struct svm_node *x_space;
 int cross_validation;
@@ -69,19 +71,22 @@ double do_cross_validation()
 			sumyy += y*y;
 			sumvy += v*y;
 		}
-		printf("Cross Validation Mean squared error = %g\n",total_error/prob.l);
-		printf("Cross Validation Squared correlation coefficient = %g\n",
-			((prob.l*sumvy-sumv*sumy)*(prob.l*sumvy-sumv*sumy))/
-			((prob.l*sumvv-sumv*sumv)*(prob.l*sumyy-sumy*sumy))
-			);
+		info_("Cross Validation Mean squared error = %g\n",total_error/prob.l);
+		info_("Cross Validation Squared correlation coefficient = %g\n",
+			    ((prob.l*sumvy-sumv*sumy)*(prob.l*sumvy-sumv*sumy))/
+			    ((prob.l*sumvv-sumv*sumv)*(prob.l*sumyy-sumy*sumy)));
 		retval = total_error/prob.l;
 	}
 	else
 	{
 		for(i=0;i<prob.l;i++)
+    {
 			if(target[i] == prob.y[i])
+      {
 				++total_correct;
-		printf("Cross Validation Accuracy = %g%%\n",100.0*total_correct/prob.l);
+      }
+    }
+		info_("Cross Validation Accuracy = %g%%\n",100.0*total_correct/prob.l);
 		retval = 100.0*total_correct/prob.l;
 	}
 	free(target);
@@ -174,6 +179,7 @@ int parse_command_line(int nrhs, const octave_value_list args, char *model_file_
 				break;
 			case 'q':
 				print_func = &print_null;
+			  info_ = &print_null_;
 				i--;
 				break;
 			case 'v':
