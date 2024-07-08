@@ -235,8 +235,8 @@ classdef ClassificationSVM
       endif
 
       ## Get training sample size and number of variables in training data
-      nsample = rows (X);                    #Number of samples in X
-      ndims_X = columns (X);                 #Number of dimensions in X
+      nsample = rows (X);                    # Number of samples in X
+      ndims_X = columns (X);                 # Number of dimensions in X
 
       ##      For debugging
       ##      disp(nsample);
@@ -248,13 +248,20 @@ classdef ClassificationSVM
         error ("ClassificationSVM: number of rows in X and Y must be equal.");
       endif
 
+      ## Get groups in Y
+      [gY, gnY, glY] = grp2idx (Y);
+
+      ## Remove missing values from X and Y
+      RowsUsed  = ! logical (sum (isnan ([X, gY]), 2));
+      Y         = Y (RowsUsed);
+      X         = X (RowsUsed, :);
+
+      this.NumObservations = rows (X);
+
       ## Validate that Y is numeric
       if (!isnumeric(Y))
         error ("ClassificationSVM: Y must be a numeric array.");
       endif
-
-      ## Get groups in Y
-      [gY, gnY, glY] = grp2idx (Y);
 
       ## Set default values before parsing optional parameters
       SVMtype                 = 'C_SVC';
@@ -428,13 +435,6 @@ classdef ClassificationSVM
         endswitch
         varargin (1:2) = [];
       endwhile
-
-      ## Remove missing values from X and Y
-      RowsUsed  = ! logical (sum (isnan ([X, gY]), 2));
-      Y         = Y (RowsUsed);
-      X         = X (RowsUsed, :);
-
-      this.NumObservations = rows (X);
 
       ## Generate default predictors and response variabe names (if necessary)
       if (isempty (PredictorNames))
@@ -1613,6 +1613,32 @@ endclassdef
 %! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, "polynomial"})
 %! assert (a.ModelParameters.PolynomialOrder, 3)
 
+## Test output for predict method
+%!shared x, y, x_train, x_test, y_train, y_test
+%! load fisheriris
+%! rng(1);  ## For reproducibility
+%! inds = !strcmp(species, 'setosa');
+%! x = meas(inds, 3:4);
+%! y = grp2idx(species(inds));
+%!
+%! ##  Convert labels to +1 and -1
+%! unique_classes = unique(y);
+%! y(y == unique_classes(1)) = -1;
+%! y(y == unique_classes(2)) = 1;
+%!
+%! ## Partition data for training and testing
+%! cv = cvpartition(y, 'HoldOut', 0.15);
+%! x_train = x(training(cv), :);
+%! y_train = y(training(cv));
+%! x_test = x(test(cv), :);
+%! y_test = y(test(cv));
+%!test
+%! xc = [min(x); mean(x); max(x)];
+%! obj = fitcsvm (x, y);
+%! [label, dec_values] = predict (obj, xc);
+%! expected_labels = [-1; 1; 1];
+%! assert (label, expected_labels);
+
 ## Test input validation for predict method
 %!error<ClassificationSVM.predict: too few input arguments.> ...
 %! predict (ClassificationSVM (ones (40,2), ones (40,1)))
@@ -1635,6 +1661,14 @@ endclassdef
 %!error<ClassificationSVM.predict: invalid parameter name in optional pair > ...
 %! predict (ClassificationSVM (ones (40,2), ones (40,1)), zeros(2,2), ...
 %! "some", "some")
+
+## Test output for margin method
+%!test
+%! CVSVMModel = fitcsvm(x_train, y_train);
+%! expected_margin = [1.1377;3.2286;2.9374;2.2876;3.6340;3.5114;3.8173;3.8072;
+%! 3.9284;2.6964;0.6389;3.3335;0.2199;3.4311;1.8858];
+%! margin = margin(CVSVMModel, x_test, y_test);
+%! assert (abs (margin - expected_margin) < 1e-4);
 
 ## Test input validation for margin method
 %!error<ClassificationSVM.margin: too few input arguments.> ...
