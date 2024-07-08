@@ -376,7 +376,8 @@ classdef ClassificationSVM
           case "responsename"
             ResponseName = varargin{2};
             if (! ischar (ResponseName))
-              error ("ClassificationSVM: ResponseName must be a character array.");
+              error (strcat (["ClassificationSVM: ResponseName must be"], ...
+                             [" a character array."]));
             endif
 
           case "predictornames"
@@ -1686,6 +1687,28 @@ endclassdef
 %! margin (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), zeros(2,2), [])
 %!error<ClassificationSVM.margin: Y must have the same number of rows as X.> ...
 %! margin (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), zeros(2,2), 1)
+
+## Test output for loss method
+%!test
+%! SVMModel = fitcsvm(x_train, y_train);
+%! L1_expected = 0.1247;
+%! L2_expected = 0;
+%! L3_expected = 0.3152;
+%! L4_expected = 0.1373;
+%! L5_expected = 0.2611;
+%! L6_expected = 0.4634;
+%! L1 = loss(SVMModel,x_test,y_test,'LossFun','binodeviance');
+%! L2 = loss(SVMModel,x_test,y_test,'LossFun','classiferror');
+%! L3 = loss(SVMModel,x_test,y_test,'LossFun','exponential');
+%! L4 = loss(SVMModel,x_test,y_test,'LossFun','hinge');
+%! L5 = loss(SVMModel,x_test,y_test,'LossFun','logit');
+%! L6 = loss(SVMModel,x_test,y_test,'LossFun','quadratic');
+%! assert (abs (L1 - L1_expected) < 1e-4);
+%! assert (abs (L2 - L2_expected) < 1e-4);
+%! assert (abs (L3 - L3_expected) < 1e-4);
+%! assert (abs (L4 - L4_expected) < 1e-4);
+%! assert (abs (L5 - L5_expected) < 1e-4);
+%! assert (abs (L6 - L6_expected) < 1e-4);
 
 ## Test input validation for loss method
 %!error<ClassificationSVM.loss: too few input arguments.> ...
