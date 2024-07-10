@@ -1,5 +1,4 @@
 ## Copyright (C) 2024 Pallav Purbia <pallavpurbia@gmail.com>
-## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
