@@ -69,7 +69,7 @@
 ## @item @tab @qcode{"nearest"} @tab This favors the class with the nearest
 ## neighbor among the tied groups, i.e. the class with the closest member point
 ## according to the distance metric used.
-## @item @tab @qcode{"nearest"} @tab This randomly picks one class among the
+## @item @tab @qcode{"random"} @tab This randomly picks one class among the
 ## tied groups.
 ## @end multitable
 ##

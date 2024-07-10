@@ -1,4 +1,5 @@
 ## Copyright (C) 2024 Ruchika Sonagote <ruchikasonagote2003@gmail.com>
+## Copyright (C) 2024 Pallav Purbia <pallavpurbia@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -24,8 +25,9 @@ classdef ClassificationPartitionedModel
 ##
 ## @code{@var{CVMdl} = ClassificationPartitionedModel (@var{Mdl},
 ## @var{Partition})} returns a ClassificationPartitionedModel object, with
-## @var{Mdl} as the trained ClassificationKNN object and @var{Partition} as
-## the partitioning object obtained using cvpartition function.
+## @var{Mdl} as the trained ClassificationKNN or ClassificationSVM object and
+## @var{Partition} as the partitioning object obtained using cvpartition
+## function.
 ##
 ## A @qcode{ClassificationPartitionedModel} object, @var{CVMdl}, stores the
 ## classification models trained on cross-validated folds
@@ -89,7 +91,7 @@ classdef ClassificationPartitionedModel
 ## @item @qcode{CVMdl.Prior} @tab @tab Prior probabilities for each class,
 ## specified as a numeric vector.  The order of the elements in @qcode{Prior}
 ## corresponds to the order of the classes in @qcode{ClassNames}.
-## 
+##
 ## @item @qcode{CVMdl.ResponseName} @tab @tab Response variable name, specified
 ## as a character vector.
 ##
@@ -100,7 +102,7 @@ classdef ClassificationPartitionedModel
 ##
 ## @end multitable
 ##
-## @seealso{cvpartition, ClassificationKNN}
+## @seealso{cvpartition, ClassificationKNN, ClassificationSVM}
 ## @end deftypefn
 
   properties
@@ -137,14 +139,16 @@ classdef ClassificationPartitionedModel
       this.Y = Mdl.Y;
       this.KFold = get (Partition, "NumTestSets");
       this.ClassNames = Mdl.ClassNames;
-      this.Prior = Mdl.Prior;
-      this.Cost = Mdl.Cost;
       this.ResponseName = Mdl.ResponseName;
       this.NumObservations = Mdl.NumObservations;
       this.PredictorNames = Mdl.PredictorNames;
       this.Trained = cell (get (Partition, "NumTestSets"), 1);
       this.Partition = Partition;
       this.CrossValidatedModel = class (Mdl);
+      if ( class(Mdl) != "ClassificationSVM")
+        this.Prior = Mdl.Prior;
+        this.Cost = Mdl.Cost;
+      endif
 
       ## Set model parameters
       switch (this.CrossValidatedModel)
@@ -203,6 +207,32 @@ classdef ClassificationPartitionedModel
             endif
           endfor
           this.ModelParameters = params;
+
+        case 'ClassificationSVM'
+
+          this.Prior = "Not supported";
+          this.Cost = "Not supported";
+          params = Mdl.ModelParameters;
+
+          ## Train model on k-1 folds and reserve 1 fold for validation
+          for k = 1:this.KFold
+              trainIdx = training (this.Partition, k);
+              this.Trained{k} = fitcsvm ...
+                          (this.X(trainIdx, :), this.Y(trainIdx), ...
+                          'SVMtype', Mdl.SVMtype, ...
+                          'KernelFunction', params.KernelFunction, ...
+                          'PolynomialOrder', params.PolynomialOrder, ...
+                          'Gamma', params.Gamma, ...
+                          'KernelOffset', Mdl.KernelOffset, ...
+                          'BoxConstraint', Mdl.BoxConstraint, ...
+                          'Nu', params.Nu, ...
+                          'CacheSize', Mdl.CacheSize, ...
+                          'Tolerance', params.Tolerance, ...
+                          'Shrinking', params.Shrinking, ...
+                          'ProbabilityEstimates', params.ProbabilityEstimates);
+              this.ModelParameters = (this.Trained{k}).ModelParameters;
+          endfor
+
         otherwise
           error ("ClassificationPartitionedModel: unsupported model type.");
       endswitch
@@ -248,7 +278,8 @@ classdef ClassificationPartitionedModel
     ##
     ## @end multitable
     ##
-    ## @seealso{ClassificationKNN, ClassificationPartitionedModel}
+    ## @seealso{ClassificationKNN, ClassificationSVM,
+    ## ClassificationPartitionedModel}
     ## @end deftypefn
     function [label, Score, Cost] = kfoldPredict (this)
       ## Initialize the label vector based on the type of Y
@@ -306,6 +337,30 @@ classdef ClassificationPartitionedModel
             Score(testIdx, :) = NaN;
             Cost(testIdx, :) = NaN;
           endif
+
+        case 'ClassificationSVM'
+
+          if (nargout > 1 && this.KFold != 1)
+           error(["ClassificationPartitionedModel.kfoldPredict: only label", ...
+                 " as output is supported for ClassificationSVM", ...
+                 " cross validated models."]);
+          endif
+
+          for k = 1:this.KFold
+              testIdx = test (this.Partition, k);
+              model = this.Trained{k};
+              predictedLabel = predict (model, this.X(testIdx, :));
+              label(testIdx) = predictedLabel;
+          endfor
+
+          ## Handle single fold case (holdout)
+          if (this.KFold == 1)
+            testIdx = test (this.Partition, 1);
+            label(testIdx) = mode (this.Y);
+            Score(testIdx, :) = NaN;
+            Cost(testIdx, :) = NaN;
+          endif
+
         otherwise
           error (["ClassificationPartitionedModel.kfoldPredict: ", ...
                   "unsupported model."]);
@@ -323,10 +378,10 @@ endclassdef
 %!
 %! ## Create a KNN classifier model
 %! obj = fitcknn (x, y, "NumNeighbors", 5, "Standardize", 1);
-%! 
+%!
 %! ## Create a partition for 5-fold cross-validation
 %! partition = cvpartition (y, "KFold", 5);
-%! 
+%!
 %! ## Create the ClassificationPartitionedModel object
 %! cvModel = crossval (obj, 'cvPartition', partition)
 
@@ -338,13 +393,48 @@ endclassdef
 %!
 %! ## Create a KNN classifier model
 %! obj = fitcknn (x, y, "NumNeighbors", 5, "Standardize", 1);
-%! 
+%!
 %! ## Create the ClassificationPartitionedModel object
 %! cvModel = crossval (obj)
 %!
 %! ## Predict the class labels for the observations not used for training
 %! [label, score, cost] = kfoldPredict (cvModel)
 
+%!demo
+%!
+%! load fisheriris
+%! X = meas;                   # Feature matrix
+%! Y = species;                # Class labels
+%! ## Convert species to numerical labels
+%! ## 'setosa' -> 1, 'versicolor' -> 2, 'virginica' -> 3
+%! Y = grp2idx(Y);
+%!
+%! ## Create a SVM classifier model
+%! obj = fitcsvm (X, Y,"svmtype",'c_svc',"kernelfunction",'rbf');
+%!
+%! ## Create a partition for 5-fold cross-validation
+%! partition = cvpartition (Y, "KFold", 5);
+%!
+%! ## Create the ClassificationPartitionedModel object
+%! cvModel = crossval (obj, 'cvPartition', partition)
+
+%!demo
+%!
+%! load fisheriris
+%! X = meas;                   # Feature matrix
+%! Y = species;                # Class labels
+%! ## Convert species to numerical labels
+%! ## 'setosa' -> 1, 'versicolor' -> 2, 'virginica' -> 3
+%! Y = grp2idx(Y);
+%!
+%! ## Create a SVM classifier model
+%! obj = fitcsvm (X, Y,"svmtype",'c_svc',"kernelfunction",'rbf');
+%!
+%! ## Create the ClassificationPartitionedModel object
+%! cvModel = crossval (obj)
+%!
+%! ## Predict the class labels for the observations not used for training
+%! label = kfoldPredict (cvModel)
 
 ## Tests
 %!test
@@ -386,6 +476,37 @@ endclassdef
 %! assert (cvModel.ModelParameters.NSMethod, "kdtree");
 %! assert (cvModel.ModelParameters.Distance, "euclidean");
 %! assert (! cvModel.ModelParameters.Standardize);
+%!test
+%! load fisheriris
+%! inds = !strcmp(species, 'setosa');
+%! x = meas(inds, 3:4);
+%! y = grp2idx(species(inds));
+%! SVMModel = fitcsvm(x,y);
+%! CVMdl = crossval (SVMModel, "KFold", 5);
+%! assert (class (CVMdl), "ClassificationPartitionedModel")
+%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert (CVMdl.KFold == 5)
+%! assert (class (CVMdl.Trained{1}), "ClassificationSVM")
+%!test
+%! load fisheriris
+%! inds = !strcmp(species, 'setosa');
+%! x = meas(inds, 3:4);
+%! y = grp2idx(species(inds));
+%! obj = fitcsvm (x, y);
+%! CVMdl = crossval (obj, "HoldOut", 0.2);
+%! assert (class (CVMdl), "ClassificationPartitionedModel")
+%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert (class (CVMdl.Trained{1}), "ClassificationSVM")
+%!test
+%! load fisheriris
+%! inds = !strcmp(species, 'setosa');
+%! x = meas(inds, 3:4);
+%! y = grp2idx(species(inds));
+%! obj = fitcsvm (x, y);
+%! CVMdl = crossval (obj, "LeaveOut", 'on');
+%! assert (class (CVMdl), "ClassificationPartitionedModel")
+%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert (class (CVMdl.Trained{1}), "ClassificationSVM")
 
 ## Test input validation for ClassificationPartitionedModel
 %!error<ClassificationPartitionedModel: too few input arguments.> ...
@@ -414,3 +535,7 @@ endclassdef
 %!          0.6667, 0.3333], 1e-4);
 %! assert (cost, [0.6667, 0.3333; 0.6667, 0.3333; 0.3333, 0.6667; ...
 %!          0.3333, 0.6667], 1e-4);
+
+## Test input validation for kfoldPredict
+%!error<ClassificationPartitionedModel.kfoldPredict: only label as output is supported for ClassificationSVM cross validated models.> ...
+%! [a, b] = kfoldPredict(crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "KFold", 5))
