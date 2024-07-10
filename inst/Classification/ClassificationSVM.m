@@ -1601,6 +1601,35 @@ endclassdef
 %! [label, dec_values] = predict (obj, xc);
 %! expected_labels = [-1; 1; 1];
 %! assert (label, expected_labels);
+%!test
+%! obj = fitcsvm(x_train, y_train);
+%! label = predict(obj, x_test);
+%! assert(ismember(label, [-1, 1]));
+%!test
+%! obj = fitcsvm(x_train, y_train, 'KernelFunction', 'rbf');
+%! label = predict(obj, x_test);
+%! assert(ismember(label, [-1, 1]));
+%! accuracy = sum(label == y_test) / length(y_test) * 100;
+%! assert (accuracy, 100);
+%!test
+%! obj = fitcsvm(x_train, y_train, 'BoxConstraint', 2);
+%! label = predict(obj, x_test);
+%! assert(ismember(label, [-1, 1]));
+%! accuracy = sum(label == y_test) / length(y_test) * 100;
+%! assert (accuracy, 100);
+%!test
+%! obj = fitcsvm(x_train, y_train, 'KernelFunction', 'polynomial',
+%! 'PolynomialOrder', 3);
+%! label = predict(obj, x_test);
+%! assert(ismember(label, [-1, 1]));
+%! accuracy = sum(label == y_test) / length(y_test) * 100;
+%! assert (accuracy, 100);
+%!test
+%! obj = fitcsvm(x_train, y_train, 'KernelFunction', 'linear');
+%! label = predict(obj, x_test);
+%! assert(ismember(label, [-1, 1]));
+%! accuracy = sum(label == y_test) / length(y_test) * 100;
+%! assert (accuracy, 100);
 
 ## Test input validation for predict method
 %!error<ClassificationSVM.predict: too few input arguments.> ...
@@ -1754,6 +1783,27 @@ endclassdef
 %!error<ClassificationSVM.resubLoss: invalid parameter name in optional pai> ...
 %! resubLoss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "some", ...
 %! "some")
+
+## Test output for crossval method
+%!test
+%! SVMModel = fitcsvm(x,y);
+%! CVMdl = crossval (SVMModel, "KFold", 5);
+%! assert (class (CVMdl), "ClassificationPartitionedModel")
+%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert (CVMdl.KFold == 5)
+%! assert (class (CVMdl.Trained{1}), "ClassificationSVM")
+%!test
+%! obj = fitcsvm (x, y);
+%! CVMdl = crossval (obj, "HoldOut", 0.2);
+%! assert (class (CVMdl), "ClassificationPartitionedModel")
+%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert (class (CVMdl.Trained{1}), "ClassificationSVM")
+%!test
+%! obj = fitcsvm (x, y);
+%! CVMdl = crossval (obj, "LeaveOut", 'on');
+%! assert (class (CVMdl), "ClassificationPartitionedModel")
+%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert (class (CVMdl.Trained{1}), "ClassificationSVM")
 
 ## Test input validation for crossval method
 %!error<ClassificationSVM.crossval: Name-Value arguments must be in pairs.> ...

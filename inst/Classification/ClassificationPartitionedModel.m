@@ -476,6 +476,37 @@ endclassdef
 %! assert (cvModel.ModelParameters.NSMethod, "kdtree");
 %! assert (cvModel.ModelParameters.Distance, "euclidean");
 %! assert (! cvModel.ModelParameters.Standardize);
+%!test
+%! load fisheriris
+%! inds = !strcmp(species, 'setosa');
+%! x = meas(inds, 3:4);
+%! y = grp2idx(species(inds));
+%! SVMModel = fitcsvm(x,y);
+%! CVMdl = crossval (SVMModel, "KFold", 5);
+%! assert (class (CVMdl), "ClassificationPartitionedModel")
+%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert (CVMdl.KFold == 5)
+%! assert (class (CVMdl.Trained{1}), "ClassificationSVM")
+%!test
+%! load fisheriris
+%! inds = !strcmp(species, 'setosa');
+%! x = meas(inds, 3:4);
+%! y = grp2idx(species(inds));
+%! obj = fitcsvm (x, y);
+%! CVMdl = crossval (obj, "HoldOut", 0.2);
+%! assert (class (CVMdl), "ClassificationPartitionedModel")
+%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert (class (CVMdl.Trained{1}), "ClassificationSVM")
+%!test
+%! load fisheriris
+%! inds = !strcmp(species, 'setosa');
+%! x = meas(inds, 3:4);
+%! y = grp2idx(species(inds));
+%! obj = fitcsvm (x, y);
+%! CVMdl = crossval (obj, "LeaveOut", 'on');
+%! assert (class (CVMdl), "ClassificationPartitionedModel")
+%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert (class (CVMdl.Trained{1}), "ClassificationSVM")
 
 ## Test input validation for ClassificationPartitionedModel
 %!error<ClassificationPartitionedModel: too few input arguments.> ...
