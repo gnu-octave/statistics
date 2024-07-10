@@ -1,5 +1,4 @@
 ## Copyright (C) 2024 Pallav Purbia <pallavpurbia@gmail.com>
-## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -1206,43 +1205,6 @@ classdef ClassificationSVM
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {ClassificationSVM} {@var{m} =} resubMargin (@var{obj})
-    ##
-    ## Determine the resubstitution margins for a Support Vector Machine
-    ## classification object.
-    ##
-    ## @code{@var{m} = resubMargin (@var{obj})} returns the resubstitution
-    ## classification margins for the trained support vector machine (SVM)
-    ## classifier @var{obj} using the training data stored in @code{obj.X} and
-    ## the corresponding class labels stored in @code{obj.Y}. It supports only
-    ## binary classifier models. The classification margin is commonly defined
-    ## as @var{m} = @var{y}f(@var{x}), where @var{f(x)} is the classification
-    ## score and @var{y} is the true class label corresponding to @var{x}. A
-    ## greater margin indicates a better model.
-    ##
-    ## @itemize
-    ## @item
-    ## @var{obj} must be a binary class @qcode{ClassificationSVM} object.
-    ## @end itemize
-    ##
-    ## @seealso{fitcsvm, ClassificationSVM}
-    ## @end deftypefn
-
-    function m = resubMargin (this)
-
-      ## Check if binary classifier model or not.
-      if (this.NumClasses != 2)
-        error (strcat(["ClassificationSVM.resubMargin: only binary"], ...
-                      [" classifier SVM model is supported."]));
-      endif
-
-      ## Get the decision values for the training data
-      [~, ~, dec_values_L] = svmpredict(this.Y, this.X, this.Model, '-q');
-      m = this.Y .* dec_values_L;
-
-    endfunction
-
-    ## -*- texinfo -*-
     ## @deftypefn  {ClassificationSVM} {@var{CVMdl} =} crossval (@var{obj})
     ## @deftypefnx {ClassificationSVM} {@var{CVMdl} =} crossval (@dots{}, @var{name}, @var{value})
     ##
@@ -1792,10 +1754,6 @@ endclassdef
 %!error<ClassificationSVM.resubLoss: invalid parameter name in optional pai> ...
 %! resubLoss (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "some", ...
 %! "some")
-
-## Test input validation for resubMargin method
-%!error<ClassificationSVM.resubMargin: only binary classifier SVM model is > ...
-%! resubMargin (ClassificationSVM (ones (40,2),randi([1, 3], 40, 1)))
 
 ## Test input validation for crossval method
 %!error<ClassificationSVM.crossval: Name-Value arguments must be in pairs.> ...
