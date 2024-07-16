@@ -24,6 +24,7 @@ Clustering
 Classification Classes
  ClassificationKNN
  ClassificationPartitionedModel
+ ClassificationSVM
  ConfusionMatrixChart
 Clustering Classes
  CalinskiHarabaszEvaluation
@@ -231,6 +232,7 @@ Machine Learning
  svmtrain
 Model Fitting
  fitcknn
+ fitcsvm
  fitgmdist
  fitlm
  fitrgam

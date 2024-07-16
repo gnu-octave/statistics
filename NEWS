@@ -535,3 +535,30 @@
 
  ** nanmin: update functionality to support VECDIM and 'all' options, fix error
             when requesting a mutual comparison (savannah bug #65802)
+
+
+ Summary of important user-visible changes for statistics 1.6.8:
+-------------------------------------------------------------------
+
+ Important Notice: 1) `mad`, `mean`, `median`, `std`, `var` functions
+                      shadow core Octave's respective functions prior
+                      to Octave v9.1
+                   2) incompatibility with the `nan` package
+ New functions:
+ ==============
+
+ ** fitcsvm
+
+ New classdefs:
+ ==============
+
+ ** ClassificationPartitionedModel
+
+ ** ClassificationSVM
+
+ Improvements:
+ =============
+
+ ** ClassificationKNN: new methods and various bug fixes
+
+ ** fitcsvm: support for cross-validation
