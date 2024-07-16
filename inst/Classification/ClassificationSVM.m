@@ -149,9 +149,9 @@ classdef ClassificationSVM
 ## labels specified as an @math{sx1} numeric vector, where @math{s} is the
 ## number of support vectors equal to @qcode{sum (obj.IsSupportVector)}.  A
 ## value of +1 in @code{SupportVectorLabels} indicates that the corresponding
-## support vector belongs to the positive class @qcode{(ClassNames{2})}.  A
+## support vector belongs to the positive class @qcode{(ClassNames@{2@})}.  A
 ## value of -1 indicates that the corresponding support vector belongs to the
-## negative class @qcode{(ClassNames{1})}.
+## negative class @qcode{(ClassNames@{1@})}.
 ##
 ## @item @tab @qcode{obj.SupportVectors} @tab The support vectors of the
 ## trained SVM classifier specified an @math{sxp} numeric matrix, where @math{s}
