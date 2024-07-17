@@ -411,9 +411,9 @@ endclassdef
 %!
 %! ## Predict the class labels for the observations not used for training
 %! [label, score, cost] = kfoldPredict (cvModel);
-%! disp (label(1:10));
-%! disp (score(1:10,:));
-%! disp (cost(1:10,:));
+%! fprintf ("Cross-validated accuracy = %1.2f%% (%d/%d)\n", ...
+%!          sum (strcmp (label, y)) / numel (y) *100, ...
+%!          sum (strcmp (label, y)), numel (y))
 
 ## Tests
 %!test
