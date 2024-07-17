@@ -359,14 +359,14 @@ classdef ClassificationPartitionedModel
             model = this.Trained{k};
             [predictedLabel, score] = predict (model, this.X(testIdx, :));
             label(testIdx) = predictedLabel;
-            Score(testIdx) = score;
+            Score(testIdx, :) = score;
           endfor
 
           ## Handle single fold case (holdout)
           if (this.KFold == 1)
             testIdx = test (this.Partition, 1);
             label(testIdx) = mode (this.Y);
-            Score(testIdx) = NaN;
+            Score(testIdx, :) = NaN;
           endif
 
         otherwise
