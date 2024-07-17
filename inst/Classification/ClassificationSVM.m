@@ -278,7 +278,7 @@ classdef ClassificationSVM
             ResponseName = varargin{2};
             if (! ischar (ResponseName))
               error (strcat (["ClassificationSVM: 'ResponseName' must"], ...
-                             [" be a character array."]));
+                             [" be a character vector."]));
             endif
 
           case "classnames"
@@ -425,7 +425,11 @@ classdef ClassificationSVM
 
       ## Handle class names
       if (! isempty (ClassNames))
-        ru = find (! ismember (glY, ClassNames));
+        if (iscellstr (ClassNames))
+          ru = find (! ismember (gnY, ClassNames));
+        else
+          ru = find (! ismember (glY, ClassNames));
+        endif
         for i = 1:numel (ru)
           gY(gY == ru(i)) = NaN;
         endfor
@@ -1584,9 +1588,9 @@ endclassdef
 %! ClassificationSVM (ones(10,2), ones (10,1), "PredictorNames", ['x1';'x2'])
 %!error<ClassificationSVM: 'PredictorNames' must have the same number of columns as X.> ...
 %! ClassificationSVM (ones(10,2), ones (10,1), "PredictorNames", {'x1','x2','x3'})
-%!error<ClassificationSVM: 'ResponseName' must be a character array.> ...
+%!error<ClassificationSVM: 'ResponseName' must be a character vector.> ...
 %! ClassificationSVM (ones(10,2), ones (10,1), "ResponseName", {'Y'})
-%!error<ClassificationSVM: 'ResponseName' must be a character array.> ...
+%!error<ClassificationSVM: 'ResponseName' must be a character vector.> ...
 %! ClassificationSVM (ones(10,2), ones (10,1), "ResponseName", 21)
 %!error<ClassificationSVM: 'ClassNames' must be a cellstring, logical or numeric vector.> ...
 %! ClassificationSVM (ones(10,2), ones (10,1), "ClassNames", @(x)x)
