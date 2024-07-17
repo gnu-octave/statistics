@@ -120,6 +120,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="ClassificationKNN.html" class="text-decoration-none font-monospace fw-bolder"><small>ClassificationKNN</small></a></li>
 					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
+					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
 					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none font-monospace"><small>ConfusionMatrixChart</small></a></li>
 				</ul>
 				</div>
@@ -664,6 +665,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fitcknn.html" class="text-decoration-none font-monospace"><small>fitcknn</small></a></li>
+					<li><a href="fitcsvm.html" class="text-decoration-none font-monospace"><small>fitcsvm</small></a></li>
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
@@ -852,6 +854,10 @@
  <code>Cost(i,j) = 1</code> if <code>i != j</code>, and <code>Cost(i,j) = 0</code> if
  <code>i = j</code>.  In other words, the cost is 0 for correct classification and
  1 for incorrect classification.</td></tr>
+<tr><td width="28%"><code>obj.ScoreTransform</code></td><td width="2%"></td><td width="70%">A function_handle which is used
+ for transforming the kNN prediction score into a posterior probability.  By
+ default, it is <code>'none'</code>, in which case the <code>predict</code> and
+ <code>resubPredict</code> methods return the prediction scores.</td></tr>
 <tr><td width="28%"><code>obj.NumNeighbors</code></td><td width="2%"></td><td width="70%">Number of nearest neighbors in
  <var>X</var> used to classify each point during prediction, specified as a
  positive integer value.</td></tr>
@@ -907,11 +913,11 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>ClassificationKNN:</u> <var>CVMdl</var> = <b>crossval</b><i> (<var>obj</var>)</i></dt>
-<dt><u>ClassificationKNN:</u> <var>CVMdl</var> = <b>crossval</b><i> (<var>obj</var>, <var>name</var>, <var>value</var>)</i></dt>
+<dt><u>ClassificationSVM:</u> <var>CVMdl</var> = <b>crossval</b><i> (<var>obj</var>)</i></dt>
+<dt><u>ClassificationSVM:</u> <var>CVMdl</var> = <b>crossval</b><i> (&hellip;, <var>Name</var>, <var>Value</var>)</i></dt>
 </dl>
 
-<p> Perform cross-validation on a k-Nearest Neighbor classification model.
+<p> Cross Validate a Support Vector Machine classification object.
 </p>
 <div class="ms-5">
 <p> <code><var>CVMdl</var> = crossval (<var>obj</var>)</code> returns a cross-validated model
@@ -919,28 +925,25 @@
  cross-validation by default.
 </p>
 <p> <code><var>CVMdl</var> = crossval (<var>obj</var>, <var>name</var>, <var>value</var>)</code>
- specifies additional name-value pair arguments to customise the
+ specifies additional name-value pair arguments to customize the
  cross-validation process.
 </p>
  <table>
-<thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>&quot;kfold&quot;</code></td><td width="2%"></td><td width="80%">Specify the number of folds to use in
- k-fold cross-validation. <code>'kfold', <var>k</var></code> where <var>k</var> is an
+<thead><tr><th width="28%"><var>Name</var></th><th width="2%"></th><th width="70%"><var>Value</var></th></tr></thead>
+<tr><td width="28%"><code>&quot;KFold&quot;</code></td><td width="2%"></td><td width="70%">Specify the number of folds to use in
+ k-fold cross-validation.  <code>&quot;KFold&quot;, <var>k</var></code>, where <var>k</var> is an
  integer greater than 1.</td></tr>
-<tr><td width="18%"><code>&quot;holdout&quot;</code></td><td width="2%"></td><td width="80%">Specify the fraction of the data to
- hold out for testing.  <code>'holdout', <var>p</var></code>, where <var>p</var> is a
+<tr><td width="28%"><code>&quot;Holdout&quot;</code></td><td width="2%"></td><td width="70%">Specify the fraction of the data to
+ hold out for testing.  <code>&quot;Holdout&quot;, <var>p</var></code>, where <var>p</var> is a
  scalar in the range <math>(0,1)</math>.</td></tr>
-<tr><td width="18%"><code>&quot;leaveout&quot;</code></td><td width="2%"></td><td width="80%">Specify whether to perform
- leave-one-out cross-validation. <code>'leaveout', <var>Value</var></code>, where
- <var>Value</var> is either <code>'on'</code> or <code>'off'</code>.</td></tr>
-<tr><td width="18%"><code>&quot;cvPartition&quot;</code></td><td width="2%"></td><td width="80%">Provide a cross-validation
- partition object.  <code>'cvPartition', <var>CVObject</var></code>, where
- <var>CVObject</var> is a <var>cvPartition</var> object.</td></tr>
+<tr><td width="28%"><code>&quot;Leaveout&quot;</code></td><td width="2%"></td><td width="70%">Specify whether to perform
+ leave-one-out cross-validation.  <code>&quot;Leaveout&quot;, <var>Value</var></code>, where
+ <var>Value</var> is &rsquo;on&rsquo; or &rsquo;off&rsquo;.</td></tr>
+<tr><td width="28%"><code>&quot;CVPartition&quot;</code></td><td width="2%"></td><td width="70%">Specify a <code>cvpartition</code>
+ object used for cross-validation.  <code>&quot;CVPartition&quot;, <var>cv</var></code>, where
+ <code>isa (<var>cv</var>, &quot;cvpartition&quot;)</code> = 1.</td></tr>
 </table>
 
-<p> The returned <var>CVMdl</var> is a <code>ClassificationPartitionedModel</code>
- object that contains the cross-validated results.
-</p>
 <p> <strong>See also: </strong>
   <a href="fitcknn.html">fitcknn</a>, 
   <a href="ClassificationKNN.html">ClassificationKNN</a>, 
@@ -1171,28 +1174,35 @@ cvpartition,
             </div>
             <div class="card-body">
 <dl>
-<dt><u>ClassificationKNN:</u> <var>label</var> = <b>predict</b><i> (<var>obj</var>, <var>XC</var>)</i></dt>
-<dt><u>ClassificationKNN:</u> [<var>label</var>, <var>score</var>, <var>cost</var>] = <b>predict</b><i> (<var>obj</var>, <var>XC</var>)</i></dt>
+<dt><u>ClassificationKNN:</u> <var>labels</var> = <b>predict</b><i> (<var>obj</var>, <var>XC</var>)</i></dt>
+<dt><u>ClassificationKNN:</u> [<var>labels</var>, <var>scores</var>, <var>cost</var>] = <b>predict</b><i> (<var>obj</var>, <var>XC</var>)</i></dt>
 </dl>
 
 <p> Classify new data points into categories using the kNN algorithm from a
  k-Nearest Neighbor classification model.
 </p>
 <div class="ms-5">
-<p> <code><var>label</var> = predict (<var>obj</var>, <var>XC</var>)</code> returns the matrix of
+<p> <code><var>labels</var> = predict (<var>obj</var>, <var>XC</var>)</code> returns the matrix of
  labels predicted for the corresponding instances in <var>XC</var>, using the
  predictor data in <code>obj.X</code> and corresponding labels, <code>obj.Y</code>,
  stored in the k-Nearest Neighbor classification model, <var>obj</var>.
 </p>
-<p> <var>XC</var> must be an <math>M&times;P</math> numeric matrix with the same number of
- features <math>P</math> as the corresponding predictors of the kNN model in
+ <ul>
+<li>
+ <var>obj</var> must be a <code>ClassificationKNN</code> class object.
+ </li><li>
+ <var>XC</var> must be an <math>M&times;P</math> numeric matrix with the same number of
+ features <math>P</math> as the corresponding predictors of the SVM model in
  <var>obj</var>.
-</p>
-<p> <code>[<var>label</var>, <var>score</var>, <var>cost</var>] = predict (<var>obj</var>,
- <var>XC</var>)</code> also returns <var>score</var>, which contains the predicted class
+ </li></ul>
+
+<p> <code>[<var>labels</var>, <var>scores</var>, <var>cost</var>] = predict (<var>obj</var>,
+ <var>XC</var>)</code> also returns <var>scores</var>, which contains the predicted class
  scores or posterior probabilities for each instance of the corresponding
  unique classes, and <var>cost</var>, which is a matrix containing the expected
- cost of the classifications.
+ cost of the classifications.  By default, <var>scores</var> returns the
+ posterior probabilities for KNN models, unless a specific ScoreTransform
+ function has been specified.  See <code>fitcknn</code> for more info.
 </p>
 <p> Note! <code>predict</code> is explicitly using <code>&quot;exhaustive&quot;</code> as the
  nearest search method due to the very slow implementation of
@@ -1282,91 +1292,6 @@ cost =
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Train a k-nearest neighbor classifier for k = 10
- ## and plot the decision boundaries.
-
- load fisheriris
- idx = ! strcmp (species, "setosa");
- X = meas(idx,3:4);
- Y = cast (strcmpi (species(idx), "virginica"), "double");
- obj = fitcknn (X, Y, "Standardize", 1, "NumNeighbors", 10, "NSMethod", "exhaustive")
- x1 = [min(X(:,1)):0.03:max(X(:,1))];
- x2 = [min(X(:,2)):0.02:max(X(:,2))];
- [x1G, x2G] = meshgrid (x1, x2);
- XGrid = [x1G(:), x2G(:)];
- pred = predict (obj, XGrid);
- gidx = logical (str2num (cell2mat (pred)));
-
- figure
- scatter (XGrid(gidx,1), XGrid(gidx,2), "markerfacecolor", "magenta");
- hold on
- scatter (XGrid(!gidx,1), XGrid(!gidx,2), "markerfacecolor", "red");
- plot (X(Y == 0, 1), X(Y == 0, 2), "ko", X(Y == 1, 1), X(Y == 1, 2), "kx");
- xlabel ("Petal length (cm)");
- ylabel ("Petal width (cm)");
- title ("5-Nearest Neighbor Classifier Decision Boundary");
- legend ({"Versicolor Region", "Virginica Region", ...
-         "Sampled Versicolor", "Sampled Virginica"}, ...
-         "location", "northwest")
- axis tight
- hold off
-
-obj =
-
-  ClassificationKNN object with properties:
-
-            BreakTies: smallest
-           BucketSize: [1x1 double]
-           ClassNames: [2x1 cell]
-                 Cost: [2x2 double]
-        DistParameter: [0x0 double]
-             Distance: euclidean
-       DistanceWeight: [1x1 function_handle]
-          IncludeTies: 0
-                   Mu: [1x2 double]
-             NSMethod: exhaustive
-         NumNeighbors: [1x1 double]
-      NumObservations: [1x1 double]
-        NumPredictors: [1x1 double]
-       PredictorNames: [1x2 cell]
-                Prior: [2x1 double]
-         ResponseName: Y
-             RowsUsed: [100x1 double]
-                Sigma: [1x2 double]
-          Standardize: 1
-                    X: [100x2 double]
-                    Y: [100x1 double]
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/ClassificationKNN_201.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 3
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
  load fisheriris
  x = meas;
  y = species;
@@ -1391,9 +1316,9 @@ CVMdl =
              PredictorNames: [1x4 cell]
                       Prior: [3x1 double]
                ResponseName: Y
-             ScoreTransform: [0x0 double]
+             ScoreTransform: none
+                Standardize: 1
                     Trained: [10x1 cell]
-                          W: [0x0 double]
                           X: [150x4 double]
                           Y: [150x1 cell]
 
@@ -1412,7 +1337,7 @@ CVMdl =
               <div class="row d-flex flex-wrap align-items-center">
                 <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
                   <h3 class="d-inline-block mr-2">
-                  Example: 4
+                  Example: 3
                   </h3>
                 </div>
               </div>
@@ -1459,9 +1384,9 @@ CVMdl =
              PredictorNames: [1x4 cell]
                       Prior: [3x1 double]
                ResponseName: Y
-             ScoreTransform: [0x0 double]
+             ScoreTransform: none
+                Standardize: 0
                     Trained: [12x1 cell]
-                          W: [0x0 double]
                           X: [150x4 double]
                           Y: [150x1 cell]
 
@@ -1486,6 +1411,7 @@ ans =
                 Prior: [3x1 double]
          ResponseName: Y
              RowsUsed: [137x1 double]
+       ScoreTransform: none
                 Sigma: [0x0 double]
           Standardize: 0
                     X: [137x4 double]
@@ -1506,7 +1432,7 @@ ans =
               <div class="row d-flex flex-wrap align-items-center">
                 <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
                   <h3 class="d-inline-block mr-2">
-                  Example: 5
+                  Example: 4
                   </h3>
                 </div>
               </div>
@@ -1541,7 +1467,7 @@ L = 0
               <div class="row d-flex flex-wrap align-items-center">
                 <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
                   <h3 class="d-inline-block mr-2">
-                  Example: 6
+                  Example: 5
                   </h3>
                 </div>
               </div>
@@ -1575,7 +1501,7 @@ L = 0
               <div class="row d-flex flex-wrap align-items-center">
                 <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
                   <h3 class="d-inline-block mr-2">
-                  Example: 7
+                  Example: 6
                   </h3>
                 </div>
               </div>
@@ -1611,7 +1537,7 @@ L = 0
               <div class="row d-flex flex-wrap align-items-center">
                 <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
                   <h3 class="d-inline-block mr-2">
-                  Example: 8
+                  Example: 7
                   </h3>
                 </div>
               </div>
@@ -1645,7 +1571,7 @@ m = 1
               <div class="row d-flex flex-wrap align-items-center">
                 <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
                   <h3 class="d-inline-block mr-2">
-                  Example: 9
+                  Example: 8
                   </h3>
                 </div>
               </div>
@@ -1667,6 +1593,56 @@ m = 1
  ## Calculate partialDependence
  [pd, x, y] = partialDependence (mdl, Vars, Labels);
 
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 9
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ X = [1, 2; 4, 5; 7, 8; 3, 2];
+ Y = [2; 1; 3; 2];
+ ## Train the model
+ mdl = fitcknn (X, Y);
+ ## Specify Vars and Labels
+ Vars = 1;
+ Labels = 1;
+ queryPoints = [linspace(0, 1, 3)', linspace(0, 1, 3)'];
+ ## Calculate partialDependence using queryPoints
+ [pd, x, y] = partialDependence (mdl, Vars, Labels, 'QueryPoints', ...
+ queryPoints)
+
+pd =
+
+   0.2500   0.2500   0.2500
+
+x =
+
+        0        0
+   0.5000   0.5000
+   1.0000   1.0000
+
+y = [](0x0)
                     </pre></td></tr></tbody>
                   </table>
 

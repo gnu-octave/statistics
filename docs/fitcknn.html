@@ -120,6 +120,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="ClassificationKNN.html" class="text-decoration-none font-monospace"><small>ClassificationKNN</small></a></li>
 					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
+					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
 					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none font-monospace"><small>ConfusionMatrixChart</small></a></li>
 				</ul>
 				</div>
@@ -664,6 +665,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fitcknn.html" class="text-decoration-none font-monospace fw-bolder"><small>fitcknn</small></a></li>
+					<li><a href="fitcsvm.html" class="text-decoration-none font-monospace"><small>fitcsvm</small></a></li>
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
@@ -764,41 +766,80 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>obj</var> = <b>fitcknn</b><i> (<var>X</var>, <var>Y</var>)</i></dt>
-<dt><u>statistics:</u> <var>obj</var> = <b>fitcknn</b><i> (&hellip;, <var>name</var>, <var>value</var>)</i></dt>
+<dt><u>statistics:</u> <var>Mdl</var> = <b>fitcknn</b><i> (<var>X</var>, <var>Y</var>)</i></dt>
+<dt><u>statistics:</u> <var>Mdl</var> = <b>fitcknn</b><i> (&hellip;, <var>name</var>, <var>value</var>)</i></dt>
 </dl>
 
 <p> Fit a k-Nearest Neighbor classification model.
 </p>
 <div class="ms-5">
-<p> <code><var>obj</var> = fitcknn (<var>X</var>, <var>Y</var>)</code> returns a k-Nearest Neighbor
- classification model, <var>obj</var>, with <var>X</var> being the predictor data,
- and <var>Y</var> the class labels of observations in <var>X</var>.
+<p> <code><var>Mdl</var> = fitcknn (<var>X</var>, <var>Y</var>)</code> returns a k-Nearest Neighbor
+ classification model, <var>Mdl</var>, with <var>X</var> being the predictor data, and
+ <var>Y</var> the class labels of observations in <var>X</var>.
 </p>
  <ul>
 <li>
- <code>X</code> must be a <math>N&times;P</math> numeric matrix of input data where rows
+ <code>X</code> must be a <math>N&times;P</math> numeric matrix of predictor data where rows
  correspond to observations and columns correspond to features or variables.
- <var>X</var> will be used to train the kNN model.
  </li><li>
  <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels of
- corresponding predictor data in <var>X</var>. <var>Y</var> can contain any type of
- categorical data. <var>Y</var> must have same numbers of Rows as <var>X</var>.
+ corresponding predictor data in <var>X</var>.  <var>Y</var> can be numerical, logical,
+ char array or cell array of character vectors.  <var>Y</var> must have same number
+ of rows as <var>X</var>.
  </li></ul>
 
-<p> <code><var>obj</var> = fitcknn (&hellip;, <var>name</var>, <var>value</var>)</code> returns a
+<p> <code><var>Mdl</var> = fitcknn (&hellip;, <var>name</var>, <var>value</var>)</code> returns a
  k-Nearest Neighbor classification model with additional options specified by
  <code>Name-Value</code> pair arguments listed below.
 </p>
+ <a name="Model-Parameters"></a>
+<h3 class="subheading">Model Parameters</h3>
+
  <table>
-<thead><tr><th width="18%"></th><th width="2%"><var>Name</var></th><th width="80%"><var>Value</var></th></tr></thead>
+<thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
+<tr><td width="18%"><code>&quot;Standardize&quot;</code></td><td width="2%"></td><td width="80%">A boolean flag indicating whether
+ the data in <var>X</var> should be standardized prior to training.</td></tr>
 <tr><td width="18%"><code>&quot;PredictorNames&quot;</code></td><td width="2%"></td><td width="80%">A cell array of character vectors
  specifying the predictor variable names.  The variable names are assumed to
  be in the same order as they appear in the training data <var>X</var>.</td></tr>
 <tr><td width="18%"><code>&quot;ResponseName&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the name
  of the response variable.</td></tr>
-<tr><td width="18%"><code>&quot;ClassNames&quot;</code></td><td width="2%"></td><td width="80%">A cell array of character vectors
- specifying the names of the classes in the training data <var>Y</var>.</td></tr>
+<tr><td width="18%"><code>&quot;ClassNames&quot;</code></td><td width="2%"></td><td width="80%">Names of the classes in the class
+ labels, <var>Y</var>, used for fitting the kNN model.  <code>ClassNames</code> are of
+ the same type as the class labels in <var>Y</var>.</td></tr>
+<tr><td width="18%"><code>&quot;Prior&quot;</code></td><td width="2%"></td><td width="80%">A numeric vector specifying the prior
+ probabilities for each class.  The order of the elements in <code>Prior</code>
+ corresponds to the order of the classes in <code>ClassNames</code>.</td></tr>
+<tr><td width="18%"><code>&quot;Cost&quot;</code></td><td width="2%"></td><td width="80%">A <math>N&times;R</math> numeric matrix containing
+ misclassification cost for the corresponding instances in <var>X</var> where
+ <math>R</math> is the number of unique categories in <var>Y</var>.  If an instance is
+ correctly classified into its category the cost is calculated to be 1,
+ otherwise 0. cost matrix can be altered use <code><var>Mdl.cost</var> = somecost</code>.
+ default value <code><var>cost</var> = ones(rows(X),numel(unique(Y)))</code>.</td></tr>
+<tr><td width="18%"><code>&quot;ScoreTransform&quot;</code></td><td width="2%"></td><td width="80%">A character vector defining one of
+ the following functions or a user defined function handle, which is used
+ for transforming the prediction scores returned by the <code>predict</code> and
+ <code>resubPredict</code> methods.  Default value is <code>'none'</code>.</td></tr>
+</table>
+
+ <table>
+<thead><tr><th width="5%"></th><th width="20%"><var>Value</var></th><th width="75%"><var>Description</var></th></tr></thead>
+<tr><td width="5%"></td><td width="20%"><code>&quot;doublelogit&quot;</code></td><td width="75%"><math>1 ./ (1 + e&times;p .^ (-2&times;&times;))</math></td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;invlogit&quot;</code></td><td width="75%"><math>log (&times; ./ (1 -&times;))</math></td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;ismax&quot;</code></td><td width="75%">Sets the score for the class with the largest
+ score to 1, and sets the scores for all other classes to 0</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;logit&quot;</code></td><td width="75%"><math>1 ./ (1 + e&times;p .^ (-&times;))</math></td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;none&quot;</code></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;identity&quot;</code></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;sign&quot;</code></td><td width="75%"><math>-1 for&times; &lt; 0, 0 for&times; = 0, 1 for&times; &gt; 0</math></td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;symmetric&quot;</code></td><td width="75%"><math>2&times;&times; + 1</math></td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;symmetricismax&quot;</code></td><td width="75%">Sets the score for the class with
+ the largest score to 1, and sets the scores for all other classes to -1</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;symmetriclogit&quot;</code></td><td width="75%"><math>2 ./ (1 + e&times;p .^ (-&times;)) - 1</math></td></tr>
+</table>
+
+ <table>
+<thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
 <tr><td width="18%"><code>&quot;BreakTies&quot;</code></td><td width="2%"></td><td width="80%">Tie-breaking algorithm used by predict
  when multiple classes have the same smallest cost. By default, ties occur
  when multiple classes have the same number of nearest points among the
@@ -807,30 +848,23 @@
 </table>
 
  <table>
+<thead><tr><th width="5%"></th><th width="20%"><var>Value</var></th><th width="75%"><var>Description</var></th></tr></thead>
 <tr><td width="5%"></td><td width="20%"><code>&quot;smallest&quot;</code></td><td width="75%">This is the default and it favors the
  class with the smallest index among the tied groups, i.e. the one that
  appears first in the training labelled data.</td></tr>
 <tr><td width="5%"></td><td width="20%"><code>&quot;nearest&quot;</code></td><td width="75%">This favors the class with the nearest
  neighbor among the tied groups, i.e. the class with the closest member point
  according to the distance metric used.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;nearest&quot;</code></td><td width="75%">This randomly picks one class among the
+<tr><td width="5%"></td><td width="20%"><code>&quot;random&quot;</code></td><td width="75%">This randomly picks one class among the
  tied groups.</td></tr>
 </table>
 
  <table>
+<thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
 <tr><td width="18%"><code>&quot;BucketSize&quot;</code></td><td width="2%"></td><td width="80%">The maximum number of data points in the
  leaf node of the Kd-tree and it must be a positive integer.  By default, it
  is 50. This argument is meaningful only when the selected search method is
  <code>&quot;kdtree&quot;</code>.</td></tr>
-<tr><td width="18%"><code>&quot;Cost&quot;</code></td><td width="2%"></td><td width="80%">A <math>N&times;R</math> numeric matrix containing
- misclassification cost for the corresponding instances in <var>X</var> where
- <math>R</math> is the number of unique categories in <var>Y</var>.  If an instance is
- correctly classified into its category the cost is calculated to be 1, If
- not then 0. cost matrix can be altered use <code><var>obj.cost</var> = somecost</code>.
- default value <code><var>cost</var> = ones(rows(X),numel(unique(Y)))</code>.</td></tr>
-<tr><td width="18%"><code>&quot;Prior&quot;</code></td><td width="2%"></td><td width="80%">A numeric vector specifying the prior
- probabilities for each class.  The order of the elements in <code>Prior</code>
- corresponds to the order of the classes in <code>ClassNames</code>.</td></tr>
 <tr><td width="18%"><code>&quot;NumNeighbors&quot;</code></td><td width="2%"></td><td width="80%">A positive integer value specifying
  the number of nearest neighbors to be found in the kNN search.  By default,
  it is 1.</td></tr>
@@ -856,6 +890,7 @@
 </table>
 
  <table>
+<thead><tr><th width="5%"></th><th width="20%"><var>Value</var></th><th width="75%"><var>Description</var></th></tr></thead>
 <tr><td width="5%"></td><td width="20%"><code>&quot;euclidean&quot;</code></td><td width="75%">Euclidean distance.</td></tr>
 <tr><td width="5%"></td><td width="20%"><code>&quot;seuclidean&quot;</code></td><td width="75%">standardized Euclidean distance.  Each
  coordinate difference between the rows in <var>X</var> and the query matrix
@@ -890,6 +925,7 @@
 </table>
 
  <table>
+<thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
 <tr><td width="18%"><code>&quot;DistanceWeight&quot;</code></td><td width="2%"></td><td width="80%">A distance weighting function,
  specified either as a function handle, which accepts a matrix of nonnegative
  distances and returns a matrix the same size containing nonnegative distance
@@ -910,6 +946,7 @@
 </table>
 
  <table>
+<thead><tr><th width="5%"></th><th width="20%"><var>Value</var></th><th width="75%"><var>Description</var></th></tr></thead>
 <tr><td width="5%"></td><td width="20%"><code>&quot;kdtree&quot;</code></td><td width="75%">Creates and uses a Kd-tree to find nearest
  neighbors.  <code>&quot;kdtree&quot;</code> is the default value when the number of columns
  in <var>X</var> is less than or equal to 10, <var>X</var> is not sparse, and the
@@ -922,8 +959,48 @@
  <var>Y</var>.</td></tr>
 </table>
 
+ <a name="Cross-Validation-Options"></a>
+<h3 class="subheading">Cross Validation Options</h3>
+
+ <table>
+<thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
+<tr><td width="18%"><code>&quot;Crossval&quot;</code></td><td width="2%"></td><td width="80%">Cross-validation flag specified as
+ <code>'on'</code> or <code>'off'</code>.  If <code>'on'</code> is specified, a 10-fold
+ cross validation is performed and a <code>ClassificationPartitionedModel</code> is
+ returned in <var>Mdl</var>.  To override this cross-validation setting, use only
+ one of the following Name-Value pair arguments.</td></tr>
+<tr><td width="18%"><code>&quot;CVPartition&quot;</code></td><td width="2%"></td><td width="80%">A <code>cvpartition</code> object that
+ specifies the type of cross-validation and the indexing for the training and
+ validation sets.  A <code>ClassificationPartitionedModel</code> is returned in
+ <var>Mdl</var> and the trained model is stored in the <code>Trained</code> property.</td></tr>
+<tr><td width="18%"><code>&quot;Holdout&quot;</code></td><td width="2%"></td><td width="80%">Fraction of the data used for holdout
+ validation, specified as a scalar value in the range <math>[0,1]</math>.  When
+ specified, a randomly selected percentage is reserved as validation data and
+ the remaining set is used for training.  The trained model is stored in the
+ <code>Trained</code> property of the <code>ClassificationPartitionedModel</code> returned
+ in <var>Mdl</var>.  <code>&quot;Holdout&quot;</code> partitioning attempts to ensure that each
+ partition represents the classes proportionately.</td></tr>
+<tr><td width="18%"><code>&quot;KFold&quot;</code></td><td width="2%"></td><td width="80%">Number of folds to use in the cross-validated
+ model, specified as a positive integer value greater than 1.  When specified,
+ then the data is randomly partitioned in <math>k</math> sets and for each set, the
+ set is reserved as validation data while the remaining <math>k-1</math> sets are
+ used for training.  The trained models are stored in the <code>Trained</code>
+ property of the <code>ClassificationPartitionedModel</code> returned in <var>Mdl</var>.
+ <code>&quot;KFold&quot;</code> partitioning attempts to ensure that each partition
+ represents the classes proportionately.</td></tr>
+<tr><td width="18%"><code>&quot;Leaveout&quot;</code></td><td width="2%"></td><td width="80%">Leave-one-out cross-validation flag
+ specified as <code>'on'</code> or <code>'off'</code>.  If <code>'on'</code> is specified,
+ then for each of the <math>n</math> observations (where <math>n</math> is the number of
+ observations, excluding missing observations, specified in the
+ <code>NumObservations</code> property of the model), one observation is reserved as
+ validation data while the remaining observations are used for training.  The
+ trained models are stored in the <code>Trained</code> property of the
+ <code>ClassificationPartitionedModel</code> returned in <var>Mdl</var>.</td></tr>
+</table>
+
 <p> <strong>See also: </strong>
   <a href="ClassificationKNN.html">ClassificationKNN</a>, 
+  <a href="ClassificationPartitionedModel.html">ClassificationPartitionedModel</a>, 
   <a href="knnsearch.html">knnsearch</a>, 
   <a href="rangesearch.html">rangesearch</a>, 
   <a href="pdist2.html">pdist2</a>
@@ -931,6 +1008,92 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/fitcknn.m">fitcknn</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Train a k-nearest neighbor classifier for k = 10
+ ## and plot the decision boundaries.
+
+ load fisheriris
+ idx = ! strcmp (species, "setosa");
+ X = meas(idx,3:4);
+ Y = cast (strcmpi (species(idx), "virginica"), "double");
+ obj = fitcknn (X, Y, "Standardize", 1, "NumNeighbors", 10, "NSMethod", "exhaustive")
+ x1 = [min(X(:,1)):0.03:max(X(:,1))];
+ x2 = [min(X(:,2)):0.02:max(X(:,2))];
+ [x1G, x2G] = meshgrid (x1, x2);
+ XGrid = [x1G(:), x2G(:)];
+ pred = predict (obj, XGrid);
+ gidx = logical (str2num (cell2mat (pred)));
+
+ figure
+ scatter (XGrid(gidx,1), XGrid(gidx,2), "markerfacecolor", "magenta");
+ hold on
+ scatter (XGrid(!gidx,1), XGrid(!gidx,2), "markerfacecolor", "red");
+ plot (X(Y == 0, 1), X(Y == 0, 2), "ko", X(Y == 1, 1), X(Y == 1, 2), "kx");
+ xlabel ("Petal length (cm)");
+ ylabel ("Petal width (cm)");
+ title ("5-Nearest Neighbor Classifier Decision Boundary");
+ legend ({"Versicolor Region", "Virginica Region", ...
+         "Sampled Versicolor", "Sampled Virginica"}, ...
+         "location", "northwest")
+ axis tight
+ hold off
+
+obj =
+
+  ClassificationKNN object with properties:
+
+            BreakTies: smallest
+           BucketSize: [1x1 double]
+           ClassNames: [2x1 cell]
+                 Cost: [2x2 double]
+        DistParameter: [0x0 double]
+             Distance: euclidean
+       DistanceWeight: [1x1 function_handle]
+          IncludeTies: 0
+                   Mu: [1x2 double]
+             NSMethod: exhaustive
+         NumNeighbors: [1x1 double]
+      NumObservations: [1x1 double]
+        NumPredictors: [1x1 double]
+       PredictorNames: [1x2 cell]
+                Prior: [2x1 double]
+         ResponseName: Y
+             RowsUsed: [100x1 double]
+       ScoreTransform: none
+                Sigma: [1x2 double]
+          Standardize: 1
+                    X: [100x2 double]
+                    Y: [100x1 double]
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/fitcknn_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
