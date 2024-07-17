@@ -235,7 +235,7 @@ classdef ClassificationSVM
 
       ## Set default values before parsing optional parameters
       SVMtype                 = 'c_svc';
-      KernelFunction          = 'rbf';
+      KernelFunction          = [];
       KernelScale             = 1;
       KernelOffset            = 0;
       PolynomialOrder         = 3;
@@ -451,6 +451,13 @@ classdef ClassificationSVM
                          [" problem with only one class available."]));
         endif
         SVMtype = 'one_class_svm';
+        if (isempty (KernelFunction))
+          KernelFunction = 'rbf';
+        endif
+      else
+        if (isempty (KernelFunction))
+          KernelFunction = 'linear';
+        endif
       endif
 
       ## Check that we are dealing only with one-class or binary classification
@@ -1414,26 +1421,6 @@ classdef ClassificationSVM
 
 endclassdef
 
-
-%!demo
-%! ## Create a Support Vector Machine classifier for Fisher's iris data and plot
-%! ## the support vectors.
-%!
-%! load fisheriris
-%! inds = !strcmp(species,'setosa');
-%! X = meas(inds,3:4);              # Feature matrix
-%! Y = grp2idx(species(inds));      # Class Labels
-%!
-%! SVMModel = fitcsvm(X,Y)
-%!
-%! sv = SVMModel.SupportVectors;
-%! figure
-%! gscatter(X(:,1),X(:,2),Y)
-%! hold on
-%! plot(sv(:,1),sv(:,2),'ko','MarkerSize',10)
-%! legend('versicolor','virginica','Support Vector')
-%! hold off
-
 %!demo
 %! ## Create a Support Vector Machine classifier and determine margin for test
 %! ## data.
@@ -1522,7 +1509,7 @@ endclassdef
 %! y = [1; 1; -1; -1; 1; -1; -1; -1; -1; -1];
 %! a = ClassificationSVM (x, y);
 %! assert (class (a), "ClassificationSVM");
-%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, "rbf"})
+%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, "linear"})
 %! assert (a.ModelParameters.BoxConstraint, 1)
 %! assert (a.ClassNames, [1; -1])
 %! assert (a.ModelParameters.KernelOffset, 0)
@@ -1659,7 +1646,7 @@ endclassdef
 %! y = grp2idx (species(inds));
 %!test
 %! xc = [min(x); mean(x); max(x)];
-%! obj = fitcsvm (x, y);
+%! obj = fitcsvm (x, y, 'KernelFunction', 'rbf');
 %! assert (isempty (obj.Alpha), true)
 %! assert (sum (obj.IsSupportVector), numel (obj.Beta))
 %! [label, score] = predict (obj, xc);
@@ -1671,7 +1658,7 @@ endclassdef
 %! assert (probs(:,1), [0.968554; 0.445186; 0.041888], 1e-5);
 %! assert (probs(:,1) + probs(:,2), [1; 1; 1], 0.05)
 %!test
-%! obj = fitcsvm (x, y, 'KernelFunction', 'linear');
+%! obj = fitcsvm (x, y);
 %! assert (isempty (obj.Beta), true)
 %! assert (sum (obj.IsSupportVector), numel (obj.Alpha))
 %! assert (numel (obj.Alpha), 24)
@@ -1700,7 +1687,7 @@ endclassdef
 ## Test output for margin method
 %!test
 %! rand ("seed", 1);
-%! CVSVMModel = fitcsvm (x, y, 'HoldOut', 0.15);
+%! CVSVMModel = fitcsvm (x, y, 'KernelFunction', 'rbf', 'HoldOut', 0.15);
 %! obj = CVSVMModel.Trained{1};
 %! testInds = test (CVSVMModel.Partition);
 %! expected_margin = [3.7373;  3.0418;  3.9400;  -0.267;  2.6938; ...
@@ -1726,7 +1713,7 @@ endclassdef
 ## Test output for loss method
 %!test
 %! rand ("seed", 1);
-%! CVSVMModel = fitcsvm (x, y, 'HoldOut', 0.15);
+%! CVSVMModel = fitcsvm (x, y, 'KernelFunction', 'rbf', 'HoldOut', 0.15);
 %! obj = CVSVMModel.Trained{1};
 %! testInds = test (CVSVMModel.Partition);
 %! L1 = loss (obj, x(testInds,:), y(testInds,:), 'LossFun', 'binodeviance');

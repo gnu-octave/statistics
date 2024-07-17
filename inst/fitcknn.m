@@ -357,6 +357,35 @@ function Mdl = fitcknn (X, Y, varargin)
 
 endfunction
 
+%!demo
+%! ## Train a k-nearest neighbor classifier for k = 10
+%! ## and plot the decision boundaries.
+%!
+%! load fisheriris
+%! idx = ! strcmp (species, "setosa");
+%! X = meas(idx,3:4);
+%! Y = cast (strcmpi (species(idx), "virginica"), "double");
+%! obj = fitcknn (X, Y, "Standardize", 1, "NumNeighbors", 10, "NSMethod", "exhaustive")
+%! x1 = [min(X(:,1)):0.03:max(X(:,1))];
+%! x2 = [min(X(:,2)):0.02:max(X(:,2))];
+%! [x1G, x2G] = meshgrid (x1, x2);
+%! XGrid = [x1G(:), x2G(:)];
+%! pred = predict (obj, XGrid);
+%! gidx = logical (str2num (cell2mat (pred)));
+%!
+%! figure
+%! scatter (XGrid(gidx,1), XGrid(gidx,2), "markerfacecolor", "magenta");
+%! hold on
+%! scatter (XGrid(!gidx,1), XGrid(!gidx,2), "markerfacecolor", "red");
+%! plot (X(Y == 0, 1), X(Y == 0, 2), "ko", X(Y == 1, 1), X(Y == 1, 2), "kx");
+%! xlabel ("Petal length (cm)");
+%! ylabel ("Petal width (cm)");
+%! title ("5-Nearest Neighbor Classifier Decision Boundary");
+%! legend ({"Versicolor Region", "Virginica Region", ...
+%!         "Sampled Versicolor", "Sampled Virginica"}, ...
+%!         "location", "northwest")
+%! axis tight
+%! hold off
 
 ## Test Output
 %!test

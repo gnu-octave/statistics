@@ -112,8 +112,10 @@
 ##
 ## @item @qcode{"KernelFunction"} @tab @tab A character vector specifying the
 ## method for computing elements of the Gram matrix.  The available kernel
-## functions are @qcode{'gaussian'} or @qcode{'rbf'}, which is the default,
-## @qcode{'linear'}, @qcode{'polynomial'}, and @qcode{'sigmoid'}.
+## functions are @qcode{'gaussian'} or @qcode{'rbf'}, @qcode{'linear'},
+## @qcode{'polynomial'}, and @qcode{'sigmoid'}.  For one-class learning, the
+## default Kernel function is @qcode{'rbf'}. For two-class learning the default
+## is @qcode{'linear'}.
 ##
 ## @item @tab @qcode{"PolynomialOrder"} @tab A positive integer that specifies
 ## the order of polynomial in kernel function.  The default value is 3.  Unless
@@ -286,17 +288,24 @@ function Mdl = fitcsvm (X, Y, varargin)
 endfunction
 
 %!demo
-%! ## Create a Support Vector Machine classifier for Fisher's iris data
+%! ## Use a subset of Fisher's iris data set
 %!
 %! load fisheriris
-%! X = meas;                   # Feature matrix
-%! Y = species;                # Class labels
-%! ## Convert species to numerical labels
-%! ## 'setosa' -> 1, 'versicolor' -> 2, 'virginica' -> 3
-%! Y = grp2idx(Y);
+%! inds = ! strcmp (species, 'setosa');
+%! X = meas(inds, [3,4]);
+%! Y = species(inds);
 %!
-%! # create an object
-%! a = fitcsvm (X, Y)
+%! ## Train a linear SVM classifier
+%! SVMModel = fitcsvm (X, Y)
+%!
+%! ## Plot a scatter diagram of the data and circle the support vectors.
+%! sv = SVMModel.SupportVectors;
+%! figure
+%! gscatter (X(:,1), X(:,2), Y)
+%! hold on
+%! plot (sv(:,1), sv(:,2), 'ko', 'MarkerSize', 10)
+%! legend ('versicolor', 'virginica', 'Support Vector')
+%! hold off
 
 ## Test constructor
 %!test
