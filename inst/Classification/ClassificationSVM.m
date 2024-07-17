@@ -1415,38 +1415,6 @@ classdef ClassificationSVM
 endclassdef
 
 
-
-%!demo
-%! ## Create a Support Vector Machine classifier for Fisher's iris data and
-%! ## predict labels for test data.
-%!
-%! load fisheriris
-%! X = meas;                   # Feature matrix
-%! Y = species;                # Class labels
-%! ## Convert species to numerical labels
-%! ## 'setosa' -> 1, 'versicolor' -> 2, 'virginica' -> 3
-%! Y = grp2idx(Y);
-%!
-%! rng(1); ## For reproducibility
-%!
-%! ## Randomly partition the data into training and testing sets
-%! cv = cvpartition(Y, 'HoldOut', 0.3); # 30% data for testing, 60% for training
-%!
-%! X_train = X(training(cv), :);
-%! Y_train = Y(training(cv));
-%!
-%! X_test = X(test(cv), :);
-%! Y_test = Y(test(cv));
-%!
-%! svm_obj = fitcsvm(X_train, Y_train,"svmtype",'c_svc',"kernelfunction",'rbf');
-%!
-%! ## Predict the labels for the test set
-%! predicted_labels = svm_obj.predict(X_test);
-%!
-%! ## Calculate the accuracy
-%! accuracy = sum(predicted_labels == Y_test) / length(Y_test) * 100;
-%! printf('Prediction Accuracy = %d%%\n', accuracy);
-
 %!demo
 %! ## Create a Support Vector Machine classifier for Fisher's iris data and plot
 %! ## the support vectors.

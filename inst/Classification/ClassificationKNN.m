@@ -1759,10 +1759,10 @@ endfunction
 %! ## Specify Vars and Labels
 %! Vars = 1;
 %! Labels = 1;
-%! queryPoints = {linspace(0, 1, 3)', linspace(0, 1, 3)'};
+%! queryPoints = [linspace(0, 1, 3)', linspace(0, 1, 3)'];
 %! ## Calculate partialDependence using queryPoints
 %! [pd, x, y] = partialDependence (mdl, Vars, Labels, 'QueryPoints', ...
-%! queryPoints);
+%! queryPoints)
 
 ## Test constructor with NSMethod and NumNeighbors parameters
 %!test
