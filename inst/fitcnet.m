@@ -17,62 +17,96 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{obj} =} fitcnet (@var{X}, @var{Y})
-## @deftypefnx {statistics} {@var{obj} =} fitcnet (@dots{}, @var{name}, @var{value})
+## @deftypefn  {statistics} {@var{Mdl} =} fitcnet (@var{X}, @var{Y})
+## @deftypefnx {statistics} {@var{Mdl} =} fitcnet (@dots{}, @var{name}, @var{value})
 ##
 ## Fit a Neural Network classification model.
 ##
-## @code{@var{obj} = fitcnet (@var{X}, @var{Y})} returns a Neural Network
-## classification model, @var{obj}, with @var{X} being the predictor data,
-## and @var{Y} the class labels of observations in @var{X}.
+## @code{@var{Mdl} = fitcnet (@var{X}, @var{Y})} returns a Neural Network
+## classification model, @var{Mdl}, with @var{X} being the predictor data, and
+## @var{Y} the class labels of observations in @var{X}.
 ##
 ## @itemize
 ## @item
-## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+## @code{X} must be a @math{NxP} numeric matrix of predictor data where rows
 ## correspond to observations and columns correspond to features or variables.
-## @var{X} will be used to train the Classification Neural Network model.
 ## @item
 ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels of
 ## corresponding predictor data in @var{X}. @var{Y} can contain any type of
-## categorical data. @var{Y} must have same numbers of Rows as @var{X}.
+## categorical data. @var{Y} must have same numbers of rows as @var{X}.
 ## @end itemize
 ##
-## @code{@var{obj} = fitcnet (@dots{}, @var{name}, @var{value})} returns a
-## Neural Network model with additional options specified by
+## @code{@var{Mdl} = fitcnet (@dots{}, @var{name}, @var{value})} returns a
+## Neural Network classification model with additional options specified by
 ## @qcode{Name-Value} pair arguments listed below.
 ##
-## @multitable @columnfractions 0.05 0.4 0.75
-## @headitem @tab @var{Name} @tab @var{Value}
+## @subheading Model Parameters
 ##
-## @item @tab @qcode{"LayerSizes"} @tab A positive integer greater than 1 which
-## specifies the value of k (number of folds).
+## @multitable @columnfractions 0.18 0.02 0.8
+## @headitem @var{Name} @tab @tab @var{Value}
 ##
-## @item @tab @qcode{"Activations"} @tab A positive integer greater than 1 which
-## specifies the value of k (number of folds).
+## @item @qcode{"Standardize"} @tab @tab A boolean flag indicating whether
+## the data in @var{X} should be standardized prior to training.
 ##
-## @item @tab @qcode{"LayerWeightsInitializer"} @tab A positive integer greater than 1 which
-## specifies the value of k (number of folds).
+## @item @qcode{"PredictorNames"} @tab @tab A cell array of character vectors
+## specifying the predictor variable names.  The variable names are assumed to
+## be in the same order as they appear in the training data @var{X}.
 ##
-## @item @tab @qcode{"LayerBiasesInitializer"} @tab A positive integer greater than 1 which
-## specifies the value of k (number of folds).
+## @item @qcode{"ResponseName"} @tab @tab A character vector specifying the name
+## of the response variable.
 ##
-## @item @tab @qcode{"InitialStepSize"} @tab A positive integer greater than 1 which
-## specifies the value of k (number of folds).
+## @item @qcode{"ClassNames"} @tab @tab Names of the classes in the class
+## labels, @var{Y}, used for fitting the Neural Network model.
+## @qcode{ClassNames} are of the same type as the class labels in @var{Y}.
 ##
-## @item @tab @qcode{"IterationLimit"} @tab A positive integer greater than 1 which
-## specifies the value of k (number of folds).
+## @item @qcode{"LayerSizes"} @tab @tab A vector of positive integers that
+## defines the sizes of the fully connected layers in the neural network model.
+## Each element in LayerSizes corresponds to the number of outputs for the
+## respective fully connected layer in the neural network model.
+## The default value is 10.
 ##
-## @item @tab @qcode{"GradientTolerance"} @tab A positive integer greater than 1 which
-## specifies the value of k (number of folds).
+## @item @qcode{"Activations"} @tab @tab A character vector specifying the
+## activation function for the fully connected layers of the neural network
+## model.  The available Activation functions are @qcode{'relu'}, which is the
+## default, or @qcode{'tanh'}, @qcode{'sigmoid'}, and @qcode{'none'}.
 ##
-## @item @tab @qcode{"LossTolerance"} @tab A positive integer greater than 1 which
-## specifies the value of k (number of folds).
+## @item @qcode{"LayerWeightsInitializer"} @tab @tab A character vector
+## specifying the function to initialize fully connected layer weights. The
+## available Layer Weights Initializer are @qcode{'glorot'}, which is the
+## default, and @qcode{'he'}.
 ##
-## @item @tab @qcode{"StepTolerance"} @tab A positive integer greater than 1 which
-## specifies the value of k (number of folds).
+## @item @qcode{"LayerBiasesInitializer"} @tab @tab A character vector
+## specifying the type of initial fully connected layer biases. The available
+## Layer Biases Initializer are @qcode{'zeros'}, which is the default, and
+## @qcode{'ones'}.
+
 ##
-## @item @tab @qcode{"Weights"} @tab A positive integer greater than 1 which
-## specifies the value of k (number of folds).
+## @item @qcode{"InitialStepSize"} @tab @tab A positive integer greater than 1
+## which specifies the value of k (number of folds).
+
+
+##
+## @item @qcode{"IterationLimit"} @tab @tab A positive integer scalar that
+## specifies the maximum number of training iterations. The default value is
+## 1e3.
+##
+## @item @qcode{"GradientTolerance"} @tab @tab A nonnegative scalar that
+## specifies the relative gradient tolerance as a termination criterion. The
+## default value is 1e-6.
+##
+## @item @qcode{"LossTolerance"} @tab @tab A nonnegative scalar. If the function
+## loss at some iteration is smaller than LossTolerance, then the training
+## process terminates. The default value is 1e-6.
+##
+## @item @qcode{"StepTolerance"} @tab @tab A nonnegative scalar. If the step
+## size at some iteration is smaller than StepTolerance, then the training
+## process terminates. The default value is 1e-6.
+##
+## @item @qcode{"Weights"} @tab @tab Observation weights, specified as a
+## nonnegative numeric vector. This weights each observation in X with the
+## corresponding value in Weights. The length of Weights must equal the number
+## of observations in X. By default, Weights is ones(n,1), where n is the number
+## of observations in X.
 ##
 ## @end multitable
 ##
@@ -93,7 +127,8 @@ function obj = fitcnet (X, Y, varargin)
   if (rows (X) != rows (Y))
     error ("fitcnet: number of rows in X and Y must be equal.");
   endif
-  ## Parse arguments to class def function
+
+  ## Parse arguments to classdef constructor
   obj = ClassificationNeuralNetwork (X, Y, varargin{:});
 
 endfunction
