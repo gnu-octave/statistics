@@ -112,46 +112,48 @@
 ##
 ## @item @qcode{"KernelFunction"} @tab @tab A character vector specifying the
 ## method for computing elements of the Gram matrix.  The available kernel
-## functions are @qcode{'gaussian'} or @qcode{'rbf'}, which is the default,
-## @qcode{'linear'}, @qcode{'polynomial'}, and @qcode{'sigmoid'}.
+## functions are @qcode{'gaussian'} or @qcode{'rbf'}, @qcode{'linear'},
+## @qcode{'polynomial'}, and @qcode{'sigmoid'}.  For one-class learning, the
+## default Kernel function is @qcode{'rbf'}. For two-class learning the default
+## is @qcode{'linear'}.
 ##
-## @item @tab @qcode{"PolynomialOrder"} @tab A positive integer that specifies
+## @item @qcode{"PolynomialOrder"} @tab @tab A positive integer that specifies
 ## the order of polynomial in kernel function.  The default value is 3.  Unless
 ## the @qcode{"KernelFunction"} is set to @qcode{'polynomial'}, this parameter
 ## is ignored.
 ##
-## @item @tab @qcode{"KernelScale"} @tab A positive scalar that specifies a
+## @item @qcode{"KernelScale"} @tab @tab A positive scalar that specifies a
 ## scaling factor for the @math{γ} (gamma) parameter, which can be seen as the
 ## inverse of the radius of influence of samples selected by the model as
 ## support vectors.  The @math{γ} (gamma) parameter is computed as
 ## @math{gamma = @qcode{KernelScale} / (number of features)}.  The default value
 ## for @qcode{"KernelScale"} is 1.
 ##
-## @item @tab @qcode{"KernelOffset"} @tab A nonnegative scalar that specifies
+## @item @qcode{"KernelOffset"} @tab @tab A nonnegative scalar that specifies
 ## the @math{coef0} in kernel function. For the polynomial kernel, it influences
 ## the polynomial's shift, and for the sigmoid kernel, it affects the hyperbolic
 ## tangent's shift. The default value for @qcode{"KernelOffset"} is 0.
 ##
-## @item @tab @qcode{"BoxConstraint"} @tab A positive scalar that specifies the
+## @item @qcode{"BoxConstraint"} @tab @tab A positive scalar that specifies the
 ## upper bound of the Lagrange multipliers, i.e. the parameter C, which is used
 ## for training @qcode{"C_SVC"} and @qcode{"one_class_SVM"} type of models.  It
 ## determines the trade-off between maximizing the margin and minimizing the
 ## classification error. The default value for @qcode{"BoxConstraint"} is 1.
 ##
-## @item @tab @qcode{"Nu"} @tab A positive scalar, in the range @math{(0,1]}
+## @item @qcode{"Nu"} @tab @tab A positive scalar, in the range @math{(0,1]}
 ## that specifies the parameter @math{ν} (nu) for training @qcode{"nu_SVC"} and
 ## @qcode{"one_class_SVM"} type of models.  Unless overriden by setting the
 ## @qcode{"SVMtype"} parameter, setting the @qcode{"Nu"} parameter always forces
 ## the training model type to @qcode{"one_class_SVM"}, in which case, the number
 ## of classes in @var{Y} is ignored.  The default value for @qcode{"Nu"} is 1.
 ##
-## @item @tab @qcode{"CacheSize"} @tab A positive scalar that specifies the
+## @item @qcode{"CacheSize"} @tab @tab A positive scalar that specifies the
 ## memory requirements (in MB) for storing the Gram matrix. The default is 1000.
 ##
-## @item @tab @qcode{"Tolerance"} @tab A nonnegative scalar that specifies
+## @item @qcode{"Tolerance"} @tab @tab A nonnegative scalar that specifies
 ## the tolerance of termination criterion. The default value is 1e-3.
 ##
-## @item @tab @qcode{"Shrinking"} @tab Specifies whether to use shrinking
+## @item @qcode{"Shrinking"} @tab @tab Specifies whether to use shrinking
 ## heuristics. It accepts either 0 or 1. The default value is 1.
 ## @end multitable
 ##
@@ -286,17 +288,24 @@ function Mdl = fitcsvm (X, Y, varargin)
 endfunction
 
 %!demo
-%! ## Create a Support Vector Machine classifier for Fisher's iris data
+%! ## Use a subset of Fisher's iris data set
 %!
 %! load fisheriris
-%! X = meas;                   # Feature matrix
-%! Y = species;                # Class labels
-%! ## Convert species to numerical labels
-%! ## 'setosa' -> 1, 'versicolor' -> 2, 'virginica' -> 3
-%! Y = grp2idx(Y);
+%! inds = ! strcmp (species, 'setosa');
+%! X = meas(inds, [3,4]);
+%! Y = species(inds);
 %!
-%! # create an object
-%! a = fitcsvm (X, Y)
+%! ## Train a linear SVM classifier
+%! SVMModel = fitcsvm (X, Y)
+%!
+%! ## Plot a scatter diagram of the data and circle the support vectors.
+%! sv = SVMModel.SupportVectors;
+%! figure
+%! gscatter (X(:,1), X(:,2), Y)
+%! hold on
+%! plot (sv(:,1), sv(:,2), 'ko', 'MarkerSize', 10)
+%! legend ('versicolor', 'virginica', 'Support Vector')
+%! hold off
 
 ## Test constructor
 %!test
@@ -316,7 +325,7 @@ endfunction
 %! y = [1; 1; -1; -1; 1; -1; -1; -1; -1; -1];
 %! a = fitcsvm (x, y);
 %! assert (class (a), "ClassificationSVM");
-%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, "rbf"})
+%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, "linear"})
 %! assert (a.ModelParameters.BoxConstraint, 1)
 %! assert (a.ModelParameters.KernelOffset, 0)
 %! assert (a.ClassNames, [1; -1])

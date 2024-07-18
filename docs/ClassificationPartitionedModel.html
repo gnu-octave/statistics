@@ -120,6 +120,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="ClassificationKNN.html" class="text-decoration-none font-monospace"><small>ClassificationKNN</small></a></li>
 					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace fw-bolder"><small>ClassificationPartitionedModel</small></a></li>
+					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
 					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none font-monospace"><small>ConfusionMatrixChart</small></a></li>
 				</ul>
 				</div>
@@ -664,6 +665,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fitcknn.html" class="text-decoration-none font-monospace"><small>fitcknn</small></a></li>
+					<li><a href="fitcsvm.html" class="text-decoration-none font-monospace"><small>fitcsvm</small></a></li>
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
@@ -773,8 +775,9 @@
 <div class="ms-5">
 <p> <code><var>CVMdl</var> = ClassificationPartitionedModel (<var>Mdl</var>,
  <var>Partition</var>)</code> returns a ClassificationPartitionedModel object, with
- <var>Mdl</var> as the trained ClassificationKNN object and <var>Partition</var> as
- the partitioning object obtained using cvpartition function.
+ <var>Mdl</var> as the trained ClassificationKNN or ClassificationSVM object and
+ <var>Partition</var> as the partitioning object obtained using cvpartition
+ function.
 </p>
 <p> A <code>ClassificationPartitionedModel</code> object, <var>CVMdl</var>, stores the
  classification models trained on cross-validated folds
@@ -837,7 +840,8 @@
 
 <p> <strong>See also: </strong>
 cvpartition, 
-  <a href="ClassificationKNN.html">ClassificationKNN</a>
+  <a href="ClassificationKNN.html">ClassificationKNN</a>, 
+  <a href="ClassificationSVM.html">ClassificationSVM</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Classification/ClassificationPartitionedModel.m">ClassificationPartitionedModel</a>
@@ -894,6 +898,7 @@ cvpartition,
 
 <p> <strong>See also: </strong>
   <a href="ClassificationKNN.html">ClassificationKNN</a>, 
+  <a href="ClassificationSVM.html">ClassificationSVM</a>, 
   <a href="ClassificationPartitionedModel.html">ClassificationPartitionedModel</a>
 </p>
 </div>
@@ -926,10 +931,10 @@ cvpartition,
 
  ## Create a KNN classifier model
  obj = fitcknn (x, y, "NumNeighbors", 5, "Standardize", 1);
- 
+
  ## Create a partition for 5-fold cross-validation
  partition = cvpartition (y, "KFold", 5);
- 
+
  ## Create the ClassificationPartitionedModel object
  cvModel = crossval (obj, 'cvPartition', partition)
 
@@ -949,9 +954,9 @@ cvModel =
              PredictorNames: [1x4 cell]
                       Prior: [3x1 double]
                ResponseName: Y
-             ScoreTransform: [0x0 double]
+             ScoreTransform: none
+                Standardize: 1
                     Trained: [5x1 cell]
-                          W: [0x0 double]
                           X: [150x4 double]
                           Y: [150x1 cell]
 
@@ -989,495 +994,17 @@ cvModel =
 
  ## Create a KNN classifier model
  obj = fitcknn (x, y, "NumNeighbors", 5, "Standardize", 1);
- 
+
  ## Create the ClassificationPartitionedModel object
- cvModel = crossval (obj)
+ cvModel = crossval (obj);
 
  ## Predict the class labels for the observations not used for training
- [label, score, cost] = kfoldPredict (cvModel)
+ [label, score, cost] = kfoldPredict (cvModel);
+ fprintf ("Cross-validated accuracy = %1.2f%% (%d/%d)\n", ...
+          sum (strcmp (label, y)) / numel (y) *100, ...
+          sum (strcmp (label, y)), numel (y))
 
-cvModel =
-
-  ClassificationPartitionedModel object with properties:
-
-                   BinEdges: [0x0 double]
-      CategoricalPredictors: [0x0 double]
-                 ClassNames: [3x1 cell]
-                       Cost: [3x3 double]
-        CrossValidatedModel: ClassificationKNN
-                      KFold: [1x1 double]
-            ModelParameters: [1x1 struct]
-            NumObservations: [1x1 double]
-                  Partition: [1x1 cvpartition]
-             PredictorNames: [1x4 cell]
-                      Prior: [3x1 double]
-               ResponseName: Y
-             ScoreTransform: [0x0 double]
-                    Trained: [10x1 cell]
-                          W: [0x0 double]
-                          X: [150x4 double]
-                          Y: [150x1 cell]
-
-label =
-{
-  [1,1] = setosa
-  [2,1] = setosa
-  [3,1] = setosa
-  [4,1] = setosa
-  [5,1] = setosa
-  [6,1] = setosa
-  [7,1] = setosa
-  [8,1] = setosa
-  [9,1] = setosa
-  [10,1] = setosa
-  [11,1] = setosa
-  [12,1] = setosa
-  [13,1] = setosa
-  [14,1] = setosa
-  [15,1] = setosa
-  [16,1] = setosa
-  [17,1] = setosa
-  [18,1] = setosa
-  [19,1] = setosa
-  [20,1] = setosa
-  [21,1] = setosa
-  [22,1] = setosa
-  [23,1] = setosa
-  [24,1] = setosa
-  [25,1] = setosa
-  [26,1] = setosa
-  [27,1] = setosa
-  [28,1] = setosa
-  [29,1] = setosa
-  [30,1] = setosa
-  [31,1] = setosa
-  [32,1] = setosa
-  [33,1] = setosa
-  [34,1] = setosa
-  [35,1] = setosa
-  [36,1] = setosa
-  [37,1] = setosa
-  [38,1] = setosa
-  [39,1] = setosa
-  [40,1] = setosa
-  [41,1] = setosa
-  [42,1] = setosa
-  [43,1] = setosa
-  [44,1] = setosa
-  [45,1] = setosa
-  [46,1] = setosa
-  [47,1] = setosa
-  [48,1] = setosa
-  [49,1] = setosa
-  [50,1] = setosa
-  [51,1] = versicolor
-  [52,1] = versicolor
-  [53,1] = versicolor
-  [54,1] = versicolor
-  [55,1] = versicolor
-  [56,1] = versicolor
-  [57,1] = versicolor
-  [58,1] = versicolor
-  [59,1] = versicolor
-  [60,1] = versicolor
-  [61,1] = versicolor
-  [62,1] = versicolor
-  [63,1] = versicolor
-  [64,1] = versicolor
-  [65,1] = versicolor
-  [66,1] = versicolor
-  [67,1] = versicolor
-  [68,1] = versicolor
-  [69,1] = virginica
-  [70,1] = versicolor
-  [71,1] = virginica
-  [72,1] = versicolor
-  [73,1] = virginica
-  [74,1] = versicolor
-  [75,1] = versicolor
-  [76,1] = versicolor
-  [77,1] = versicolor
-  [78,1] = virginica
-  [79,1] = versicolor
-  [80,1] = versicolor
-  [81,1] = versicolor
-  [82,1] = versicolor
-  [83,1] = versicolor
-  [84,1] = virginica
-  [85,1] = versicolor
-  [86,1] = versicolor
-  [87,1] = versicolor
-  [88,1] = versicolor
-  [89,1] = versicolor
-  [90,1] = versicolor
-  [91,1] = versicolor
-  [92,1] = versicolor
-  [93,1] = versicolor
-  [94,1] = versicolor
-  [95,1] = versicolor
-  [96,1] = versicolor
-  [97,1] = versicolor
-  [98,1] = versicolor
-  [99,1] = versicolor
-  [100,1] = versicolor
-  [101,1] = virginica
-  [102,1] = virginica
-  [103,1] = virginica
-  [104,1] = virginica
-  [105,1] = virginica
-  [106,1] = virginica
-  [107,1] = versicolor
-  [108,1] = virginica
-  [109,1] = virginica
-  [110,1] = virginica
-  [111,1] = virginica
-  [112,1] = virginica
-  [113,1] = virginica
-  [114,1] = virginica
-  [115,1] = virginica
-  [116,1] = virginica
-  [117,1] = virginica
-  [118,1] = virginica
-  [119,1] = virginica
-  [120,1] = versicolor
-  [121,1] = virginica
-  [122,1] = virginica
-  [123,1] = virginica
-  [124,1] = virginica
-  [125,1] = virginica
-  [126,1] = virginica
-  [127,1] = versicolor
-  [128,1] = versicolor
-  [129,1] = virginica
-  [130,1] = virginica
-  [131,1] = virginica
-  [132,1] = virginica
-  [133,1] = virginica
-  [134,1] = versicolor
-  [135,1] = virginica
-  [136,1] = virginica
-  [137,1] = virginica
-  [138,1] = virginica
-  [139,1] = virginica
-  [140,1] = virginica
-  [141,1] = virginica
-  [142,1] = virginica
-  [143,1] = virginica
-  [144,1] = virginica
-  [145,1] = virginica
-  [146,1] = virginica
-  [147,1] = virginica
-  [148,1] = virginica
-  [149,1] = virginica
-  [150,1] = virginica
-}
-
-score =
-
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-   1.0000        0        0
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   0.8000   0.2000
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   0.6000   0.4000
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   0.4000   0.6000
-        0   1.0000        0
-        0   0.4000   0.6000
-        0   1.0000        0
-        0   0.2000   0.8000
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   0.2000   0.8000
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0        0   1.0000
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0   1.0000        0
-        0        0   1.0000
-        0   0.2000   0.8000
-        0        0   1.0000
-        0        0   1.0000
-        0        0   1.0000
-        0        0   1.0000
-        0   1.0000        0
-        0        0   1.0000
-        0        0   1.0000
-        0        0   1.0000
-        0   0.2000   0.8000
-        0        0   1.0000
-        0        0   1.0000
-        0   0.2000   0.8000
-        0        0   1.0000
-        0        0   1.0000
-        0        0   1.0000
-        0        0   1.0000
-        0        0   1.0000
-        0   0.6000   0.4000
-        0        0   1.0000
-        0        0   1.0000
-        0        0   1.0000
-        0   0.4000   0.6000
-        0        0   1.0000
-        0        0   1.0000
-        0   0.6000   0.4000
-        0   0.6000   0.4000
-        0        0   1.0000
-        0        0   1.0000
-        0        0   1.0000
-        0        0   1.0000
-        0        0   1.0000
-        0   0.8000   0.2000
-        0   0.2000   0.8000
-        0        0   1.0000
-        0        0   1.0000
-        0        0   1.0000
-        0   0.4000   0.6000
-        0        0   1.0000
-        0        0   1.0000
-        0   0.2000   0.8000
-        0   0.2000   0.8000
-        0        0   1.0000
-        0        0   1.0000
-        0        0   1.0000
-        0   0.4000   0.6000
-        0   0.2000   0.8000
-        0        0   1.0000
-        0   0.4000   0.6000
-
-cost =
-
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-        0   1.0000   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000   0.2000   0.8000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000   0.4000   0.6000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000   0.6000   0.4000
-   1.0000        0   1.0000
-   1.0000   0.6000   0.4000
-   1.0000        0   1.0000
-   1.0000   0.8000   0.2000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000   0.8000   0.2000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000   1.0000        0
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000        0   1.0000
-   1.0000   1.0000        0
-   1.0000   0.8000   0.2000
-   1.0000   1.0000        0
-   1.0000   1.0000        0
-   1.0000   1.0000        0
-   1.0000   1.0000        0
-   1.0000        0   1.0000
-   1.0000   1.0000        0
-   1.0000   1.0000        0
-   1.0000   1.0000        0
-   1.0000   0.8000   0.2000
-   1.0000   1.0000        0
-   1.0000   1.0000        0
-   1.0000   0.8000   0.2000
-   1.0000   1.0000        0
-   1.0000   1.0000        0
-   1.0000   1.0000        0
-   1.0000   1.0000        0
-   1.0000   1.0000        0
-   1.0000   0.4000   0.6000
-   1.0000   1.0000        0
-   1.0000   1.0000        0
-   1.0000   1.0000        0
-   1.0000   0.6000   0.4000
-   1.0000   1.0000        0
-   1.0000   1.0000        0
-   1.0000   0.4000   0.6000
-   1.0000   0.4000   0.6000
-   1.0000   1.0000        0
-   1.0000   1.0000        0
-   1.0000   1.0000        0
-   1.0000   1.0000        0
-   1.0000   1.0000        0
-   1.0000   0.2000   0.8000
-   1.0000   0.8000   0.2000
-   1.0000   1.0000        0
-   1.0000   1.0000        0
-   1.0000   1.0000        0
-   1.0000   0.6000   0.4000
-   1.0000   1.0000        0
-   1.0000   1.0000        0
-   1.0000   0.8000   0.2000
-   1.0000   0.8000   0.2000
-   1.0000   1.0000        0
-   1.0000   1.0000        0
-   1.0000   1.0000        0
-   1.0000   0.6000   0.4000
-   1.0000   0.8000   0.2000
-   1.0000   1.0000        0
-   1.0000   0.6000   0.4000
-
+Cross-validated accuracy = 93.33% (140/150)
                     </pre></td></tr></tbody>
                   </table>
 

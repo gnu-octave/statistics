@@ -135,6 +135,12 @@ classdef ClassificationPartitionedModel
         error ("ClassificationPartitionedModel: too few input arguments.");
       endif
 
+      ## Check for valid object types
+      validTypes = {'ClassificationKNN', 'ClassificationSVM'};
+      if (! any (strcmp (class (Mdl), validTypes)))
+        error ("ClassificationPartitionedModel: unsupported model type.");
+      endif
+
       ## Set properties
       this.X = Mdl.X;
       this.Y = Mdl.Y;
@@ -161,7 +167,7 @@ classdef ClassificationPartitionedModel
           KNNparams = {'PredictorNames', 'ResponseName', 'BreakTies', ...
                        'NSMethod', 'BucketSize', 'NumNeighbors', 'Exponent', ...
                        'Scale', 'Cov', 'Distance', 'DistanceWeight', ...
-                       'IncludeTies', 'Standardize'};
+                       'IncludeTies'};
           ## Set parameters
           for i = 1:numel (KNNparams)
             paramName = KNNparams{i};
@@ -240,8 +246,6 @@ classdef ClassificationPartitionedModel
           ## Store ModelParameters to ClassificationPartitionedModel object
           this.ModelParameters = params;
 
-        otherwise
-          error ("ClassificationPartitionedModel: unsupported model type.");
       endswitch
     endfunction
 
@@ -289,6 +293,7 @@ classdef ClassificationPartitionedModel
     ## ClassificationPartitionedModel}
     ## @end deftypefn
     function [label, Score, Cost] = kfoldPredict (this)
+
       ## Initialize the label vector based on the type of Y
       if (iscellstr (this.Y))
         label = cell (this.NumObservations, 1);
@@ -298,9 +303,6 @@ classdef ClassificationPartitionedModel
         label = zeros (this.NumObservations, 1);
       elseif (ischar (this.Y))
         label = char (zeros (this.NumObservations, size (this.Y, 2)));
-      else
-        error (["ClassificationPartitionedModel.kfoldPredict: ", ...
-                "unsupported data type for Y."]);
       endif
 
       ## Initialize the score and cost matrices
@@ -359,14 +361,14 @@ classdef ClassificationPartitionedModel
             model = this.Trained{k};
             [predictedLabel, score] = predict (model, this.X(testIdx, :));
             label(testIdx) = predictedLabel;
-            Score(testIdx) = score;
+            Score(testIdx, :) = score;
           endfor
 
           ## Handle single fold case (holdout)
           if (this.KFold == 1)
             testIdx = test (this.Partition, 1);
             label(testIdx) = mode (this.Y);
-            Score(testIdx) = NaN;
+            Score(testIdx, :) = NaN;
           endif
 
         otherwise
@@ -405,46 +407,13 @@ endclassdef
 %! obj = fitcknn (x, y, "NumNeighbors", 5, "Standardize", 1);
 %!
 %! ## Create the ClassificationPartitionedModel object
-%! cvModel = crossval (obj)
+%! cvModel = crossval (obj);
 %!
 %! ## Predict the class labels for the observations not used for training
-%! [label, score, cost] = kfoldPredict (cvModel)
-
-%!demo
-%!
-%! load fisheriris
-%! X = meas;                   # Feature matrix
-%! Y = species;                # Class labels
-%! ## Convert species to numerical labels
-%! ## 'setosa' -> 1, 'versicolor' -> 2, 'virginica' -> 3
-%! Y = grp2idx(Y);
-%!
-%! ## Create a SVM classifier model
-%! obj = fitcsvm (X, Y,"svmtype",'c_svc',"kernelfunction",'rbf');
-%!
-%! ## Create a partition for 5-fold cross-validation
-%! partition = cvpartition (Y, "KFold", 5);
-%!
-%! ## Create the ClassificationPartitionedModel object
-%! cvModel = crossval (obj, 'cvPartition', partition)
-
-%!demo
-%!
-%! load fisheriris
-%! X = meas;                   # Feature matrix
-%! Y = species;                # Class labels
-%! ## Convert species to numerical labels
-%! ## 'setosa' -> 1, 'versicolor' -> 2, 'virginica' -> 3
-%! Y = grp2idx(Y);
-%!
-%! ## Create a SVM classifier model
-%! obj = fitcsvm (X, Y,"svmtype",'c_svc',"kernelfunction",'rbf');
-%!
-%! ## Create the ClassificationPartitionedModel object
-%! cvModel = crossval (obj)
-%!
-%! ## Predict the class labels for the observations not used for training
-%! label = kfoldPredict (cvModel)
+%! [label, score, cost] = kfoldPredict (cvModel);
+%! fprintf ("Cross-validated accuracy = %1.2f%% (%d/%d)\n", ...
+%!          sum (strcmp (label, y)) / numel (y) *100, ...
+%!          sum (strcmp (label, y)), numel (y))
 
 ## Tests
 %!test
@@ -523,6 +492,9 @@ endclassdef
 %! ClassificationPartitionedModel ()
 %!error<ClassificationPartitionedModel: too few input arguments.> ...
 %! ClassificationPartitionedModel (ClassificationKNN (ones (4,2), ones (4,1)))
+%!error<ClassificationPartitionedModel: unsupported model type.> ...
+%! ClassificationPartitionedModel (RegressionGAM (ones (40,2), ...
+%! randi ([1, 2], 40, 1)), cvpartition (randi ([1, 2], 40, 1), 'Holdout', 0.3))
 
 ## Test for kfoldPredict
 %!test
@@ -547,5 +519,5 @@ endclassdef
 %!          0.3333, 0.6667], 1e-4);
 
 ## Test input validation for kfoldPredict
-%!error<ClassificationPartitionedModel.kfoldPredict: only label as output is supported for ClassificationSVM cross validated models.> ...
-%! [a, b] = kfoldPredict(crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), "KFold", 5))
+%!error<ClassificationPartitionedModel.kfoldPredict: 'Cost' output is not supported for ClassificationSVM cross validated models.> ...
+%! [label, score, cost] = kfoldPredict (crossval (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1))))
