@@ -561,4 +561,4 @@
 
  ** ClassificationKNN: new methods and various bug fixes
 
- ** fitcsvm: support for cross-validation
+ ** fitcknn: support for cross-validation
