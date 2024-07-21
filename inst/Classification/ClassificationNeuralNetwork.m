@@ -174,7 +174,7 @@ classdef ClassificationNeuralNetwork
     ConvergenceInfo       = [];  # Convergence Information   .........................have to assign
     TrainingHistory       = [];  # Training history          .........................have to assign
     Solver                = [];  # Solver used
-
+Lambda = 1;
   endproperties
 
   methods (Access = public)
@@ -515,24 +515,24 @@ classdef ClassificationNeuralNetwork
     ## @seealso{fitcnet, ClassificationNeuralNetwork}
     ## @end deftypefn
 
-    function labels = predict (this, XC)
+    function labels = predict(this, XC)
 
       ## Check for sufficient input arguments
       if (nargin < 2)
-        error ("ClassificationNeuralNetwork.predict: too few input arguments.");
+        error("ClassificationNeuralNetwork.predict: too few input arguments.");
       endif
 
-      if (mod (nargin, 2) != 0)
-        error (strcat (["ClassificationNeuralNetwork.predict: Name-Value"], ...
-                       [" arguments must be in pairs."]));
+      if (mod(nargin, 2) != 0)
+        error(strcat(["ClassificationNeuralNetwork.predict: Name-Value"], ...
+                     [" arguments must be in pairs."]));
       endif
 
       ## Check for valid XC
-      if (isempty (XC))
-        error ("ClassificationNeuralNetwork.predict: XC is empty.");
-      elseif (columns (this.X) != columns (XC))
-        error (strcat (["ClassificationNeuralNetwork.predict: XC must have the"], ...
-                       [" same number of features as in the SVM model."]));
+      if (isempty(XC))
+        error("ClassificationNeuralNetwork.predict: XC is empty.");
+      elseif (columns(this.X) != columns(XC))
+        error(strcat(["ClassificationNeuralNetwork.predict: XC must have the"], ...
+                     [" same number of features as in the Neural Network model."]));
       endif
 
       ## Standardize (if necessary)
@@ -543,12 +543,16 @@ classdef ClassificationNeuralNetwork
       ## Forward propagation
       A = XC;
       for i = 1:length(this.LayerSizes)+1
-        Z = A * this.LayerWeights{i} + this.LayerBiases{i};
-        if (i < length(this.LayerSizes))
+        Z = A * this.LayerWeights{i}' + this.LayerBiases{i}';
+    ####printf("Z");
+    ####disp(Z);
+        if (i <= length(this.LayerSizes))
           A = this.Layer_Activation(Z);
         else
           A = this.softmax(Z);
         endif
+    ####printf("A");
+    ####disp(A);
       endfor
 
       ## Get the predicted labels (class with highest probability)
@@ -575,6 +579,25 @@ classdef ClassificationNeuralNetwork
       endswitch
     endfunction
 
+    ## Activation Gradient
+    function dz = activation_gradient(dA, z)
+      switch this.Activations
+        case 'relu'
+          A = max(0, z);
+          dz = dA .* (A > 0);
+        case 'tanh'
+          A = tanh(z);
+          dz = dA .* (1 - A.^2);
+        case 'sigmoid'
+          A = 1 ./ (1 + exp(-z));
+          dz = dA .* A .* (1 - A);
+        case 'none'
+          A = z;
+          dz = dA;
+      endswitch
+    endfunction
+
+
     ## Softmax activation function
     function softmax = softmax(this,z)
       exp_z = exp(z - max(z, [], 2));  # Stability improvement
@@ -582,7 +605,7 @@ classdef ClassificationNeuralNetwork
     endfunction
 
     ## Initialize weights and biases based on the specified initializers
-    function this = parameter_initializer(this,LayerWeightsInitializer,LayerBiasesInitializer)
+    function this = parameter_initializer(this, LayerWeightsInitializer, LayerBiasesInitializer)
 
       numLayers = numel(this.LayerSizes);
       inputSize = this.NumPredictors;
@@ -599,17 +622,17 @@ classdef ClassificationNeuralNetwork
         ## Initialize weights
         if (strcmpi(LayerWeightsInitializer, 'glorot'))
           limit = sqrt(6 / (prevLayerSize + layerSize));
-          this.LayerWeights{i} = 2 * limit * (rand(prevLayerSize, layerSize) - 0.5);
+          this.LayerWeights{i} = 2 * limit * (rand(layerSize, prevLayerSize) - 0.5);
         elseif (strcmpi(LayerWeightsInitializer, 'he'))
           limit = sqrt(2 / prevLayerSize);
-          this.LayerWeights{i} = limit * randn(prevLayerSize, layerSize);
+          this.LayerWeights{i} = limit * randn(layerSize, prevLayerSize);
         endif
 
         ## Initialize biases
         if (strcmpi(LayerBiasesInitializer, 'zeros'))
-          this.LayerBiases{i} = zeros(1, layerSize);
+          this.LayerBiases{i} = zeros(layerSize, 1);
         elseif (strcmpi(LayerBiasesInitializer, 'ones'))
-          this.LayerBiases{i} = ones(1, layerSize);
+          this.LayerBiases{i} = ones(layerSize, 1);
         endif
       endfor
 
@@ -620,21 +643,35 @@ classdef ClassificationNeuralNetwork
       ## Initialize output layer weights
       if (strcmpi(LayerWeightsInitializer, 'glorot'))
         limit = sqrt(6 / (prevLayerSize + outputLayerSize));
-        this.LayerWeights{end+1} = 2 * limit * (rand(prevLayerSize, outputLayerSize) - 0.5);
+        this.LayerWeights{end+1} = 2 * limit * (rand(outputLayerSize, prevLayerSize) - 0.5);
       elseif (strcmpi(LayerWeightsInitializer, 'he'))
         limit = sqrt(2 / prevLayerSize);
-        this.LayerWeights{end+1} = limit * randn(prevLayerSize, outputLayerSize);
+        this.LayerWeights{end+1} = limit * randn(outputLayerSize, prevLayerSize);
       endif
 
       ## Initialize output layer biases
       if (strcmpi(LayerBiasesInitializer, 'zeros'))
-        this.LayerBiases{end+1} = zeros(1, outputLayerSize);
-      elseif strcmpi(LayerBiasesInitializer, 'ones')
-        this.LayerBiases{end+1} = ones(1, outputLayerSize);
+        this.LayerBiases{end+1} = zeros(outputLayerSize, 1);
+      elseif (strcmpi(LayerBiasesInitializer, 'ones'))
+        this.LayerBiases{end+1} = ones(outputLayerSize, 1);
       endif
 
     endfunction
 
+    ## Cross-entropy loss function
+    function loss = cross_entropy_loss(this, predictions, targets)
+        m = size(predictions, 1); % number of examples
+        loss = -sum(sum(targets .* log(predictions))) / m;
+    endfunction
+
+##    ## Convert class labels to one-hot encoding
+##    function one_hot = to_one_hot(this, labels, num_classes)
+##        num_samples = length(labels);
+##        one_hot = zeros(num_samples, num_classes);
+##        for i = 1:num_samples
+##            one_hot(i, labels(i)) = 1;
+##        endfor
+##    endfunction
   endmethods
 endclassdef
 
