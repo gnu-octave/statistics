@@ -174,7 +174,16 @@ classdef ClassificationNeuralNetwork
     ConvergenceInfo       = [];  # Convergence Information   .........................have to assign
     TrainingHistory       = [];  # Training history          .........................have to assign
     Solver                = [];  # Solver used
-Lambda = 1;
+
+  endproperties
+
+    properties (Access = private)
+
+    gY                    = [];
+    gnY                   = [];
+    glY                   = [];
+    parameter_vector      = []; ## may or may not be used
+
   endproperties
 
   methods (Access = public)
@@ -407,6 +416,10 @@ Lambda = 1;
       [gY, gnY, glY] = grp2idx (Y);
       this.ClassNames = gnY;  # Keep the same type as Y
 
+      this.gY = gY;
+      this.gnY = gnY;
+      this.glY = glY;
+
 ##      printf("gY: ");
 ##      disp(gY);
 ##      printf("gnY: ");
@@ -490,6 +503,11 @@ Lambda = 1;
 
       this = parameter_initializer(this,LayerWeightsInitializer,LayerBiasesInitializer);
 
+      options = optimset('MaxIter', IterationLimit, 'TolFun', LossTolerance, 'TolX', StepTolerance);
+      initialThetaVec = this.vectorize_parameters();
+      [optThetaVec, cost] = fminunc(@(thetaVec) costFunction(thetaVec, this, X, Y), initialThetaVec, options);
+      [this.LayerWeights, this.LayerBiases] = reshape_parameters(this, optThetaVec);
+
     endfunction
 
     ## -*- texinfo -*-
@@ -519,20 +537,20 @@ Lambda = 1;
 
       ## Check for sufficient input arguments
       if (nargin < 2)
-        error("ClassificationNeuralNetwork.predict: too few input arguments.");
+        error ("ClassificationNeuralNetwork.predict: too few input arguments.");
       endif
 
-      if (mod(nargin, 2) != 0)
-        error(strcat(["ClassificationNeuralNetwork.predict: Name-Value"], ...
+      if (mod (nargin, 2) != 0)
+        error (strcat(["ClassificationNeuralNetwork.predict: Name-Value"], ...
                      [" arguments must be in pairs."]));
       endif
 
       ## Check for valid XC
-      if (isempty(XC))
-        error("ClassificationNeuralNetwork.predict: XC is empty.");
+      if (isempty (XC))
+        error ("ClassificationNeuralNetwork.predict: XC is empty.");
       elseif (columns(this.X) != columns(XC))
-        error(strcat(["ClassificationNeuralNetwork.predict: XC must have the"], ...
-                     [" same number of features as in the Neural Network model."]));
+        error (strcat (["ClassificationNeuralNetwork.predict: XC must have the"], ...
+                       [" same number of features as in the Neural Network model."]));
       endif
 
       ## Standardize (if necessary)
@@ -547,7 +565,7 @@ Lambda = 1;
     ####printf("Z");
     ####disp(Z);
         if (i <= length(this.LayerSizes))
-          A = this.Layer_Activation(Z);
+          [A, z] = this.Layer_Activation(Z);
         else
           A = this.softmax(Z);
         endif
@@ -555,7 +573,7 @@ Lambda = 1;
     ####disp(A);
       endfor
 
-      ## Get the predicted labels (class with highest probability)
+      # Get the predicted labels (class with highest probability)
       [~, labels] = max(A, [], 2);
       labels = this.ClassNames(labels);
 
@@ -566,7 +584,7 @@ Lambda = 1;
   ## Helper functions
   methods (Access = private)
     ## Activation function
-    function A = Layer_Activation(this,z)
+    function [A, z] = Layer_Activation(this,z)
       switch this.Activations
         case 'relu'
           A = max(0, z);
@@ -580,7 +598,7 @@ Lambda = 1;
     endfunction
 
     ## Activation Gradient
-    function dz = activation_gradient(dA, z)
+    function dz = Activation_Gradient(dA, z)
       switch this.Activations
         case 'relu'
           A = max(0, z);
@@ -596,7 +614,6 @@ Lambda = 1;
           dz = dA;
       endswitch
     endfunction
-
 
     ## Softmax activation function
     function softmax = softmax(this,z)
@@ -658,20 +675,121 @@ Lambda = 1;
 
     endfunction
 
-    ## Cross-entropy loss function
-    function loss = cross_entropy_loss(this, predictions, targets)
-        m = size(predictions, 1); % number of examples
-        loss = -sum(sum(targets .* log(predictions))) / m;
+    ## One Hot Vector Encoder
+    function one_hot_vector = one_hot_encoder(this, Y)
+       ## one_hot_vector = sparse(1:numel(Y), Y,1); fastest and most memory efficient option but the output is sparse and I don't know how to work with it.
+       one_hot_vector = bsxfun(@eq, Y(:), 1:max(Y));
     endfunction
 
-##    ## Convert class labels to one-hot encoding
-##    function one_hot = to_one_hot(this, labels, num_classes)
-##        num_samples = length(labels);
-##        one_hot = zeros(num_samples, num_classes);
-##        for i = 1:num_samples
-##            one_hot(i, labels(i)) = 1;
-##        endfor
-##    endfunction
+    ## Cross Entropy Loss function
+    function loss = compute_cross_entropy_loss(this, Y_pred, Y_true)
+
+      ## One-hot encode the true labels
+      one_hot_Y_true = this.one_hot_encoder(Y_true);
+
+      ## Number of observations
+      m = size(Y_true, 1);
+
+      ## Adding a small value to Y_pred to avoid log(0)
+      Y_pred = Y_pred + eps;
+
+      ## Compute the cross-entropy loss
+      loss = -sum(sum(one_hot_Y_true .* log(Y_pred))) / m;
+    endfunction
+
+    ## Vectorize the parameters so that they can be used for fminunc
+    function thetaVec = vectorize_parameters(this)
+      thetaVec = [];
+      for i = 1:numel(this.LayerWeights)
+        thetaVec = [thetaVec; this.LayerWeights{i}(:)];
+        thetaVec = [thetaVec; this.LayerBiases{i}(:)];
+      endfor
+    endfunction
+
+    ## Cost Function
+    function [J, gradVec] = costFunction(thetaVec, this, X, Y)
+      [LayerWeights, LayerBiases] = reshape_parameters(this, thetaVec);
+
+      ## Forward Propagation
+      A = X';
+      Zs = cell(numel(LayerWeights), 1);
+      As = cell(numel(LayerWeights), 1);
+
+      for i = 1:numel(LayerWeights)
+        Zs{i} = LayerWeights{i} * A + LayerBiases{i};
+        if i == numel(LayerWeights)
+          A = this.softmax(Zs{i}');
+        else
+          [A, ~] = this.Layer_Activation(Zs{i});
+          A = A';
+        endif
+        As{i} = A;
+      endfor
+
+      ## Compute Loss
+      J = this.compute_cross_entropy_loss(A', Y);
+
+      ## Backward Propagation
+      m = size(X, 1);
+      dA = A' - this.one_hot_encoder(Y);
+      dWs = cell(numel(LayerWeights), 1);
+      dBs = cell(numel(LayerWeights), 1);
+
+      for i = numel(LayerWeights):-1:1
+        if i == numel(LayerWeights)
+          dZ = dA;
+        else
+          dA = LayerWeights{i+1}' * dZ;
+          dZ = this.Activation_Gradient(dA, Zs{i});
+        endif
+
+        dWs{i} = dZ * As{i-1}' / m;
+        dBs{i} = sum(dZ, 2) / m;
+      endfor
+
+      ## Vectorize Gradients
+      gradVec = [];
+      for i = 1:numel(dWs)
+        gradVec = [gradVec; dWs{i}(:)];
+        gradVec = [gradVec; dBs{i}(:)];
+      endfor
+    endfunction
+
+    function [LayerWeights, LayerBiases] = reshape_parameters(this, thetaVec)
+      LayerWeights = cell(numel(this.LayerSizes) + 1, 1);
+      LayerBiases = cell(numel(this.LayerSizes) + 1, 1);
+
+      offset = 0;
+      inputSize = this.NumPredictors;
+
+      for i = 1:numel(this.LayerSizes)
+        layerSize = this.LayerSizes(i);
+
+        if i == 1
+          prevLayerSize = inputSize;
+        else
+          prevLayerSize = this.LayerSizes(i-1);
+        endif
+
+        w_size = layerSize * prevLayerSize;
+        b_size = layerSize;
+
+        LayerWeights{i} = reshape(thetaVec(offset + 1:offset + w_size), layerSize, prevLayerSize);
+        offset = offset + w_size;
+        LayerBiases{i} = reshape(thetaVec(offset + 1:offset + b_size), layerSize, 1);
+        offset = offset + b_size;
+      endfor
+
+      outputLayerSize = numel(this.ClassNames);
+      prevLayerSize = this.LayerSizes(end);
+      w_size = outputLayerSize * prevLayerSize;
+      b_size = outputLayerSize;
+
+      LayerWeights{end} = reshape(thetaVec(offset + 1:offset + w_size), outputLayerSize, prevLayerSize);
+      offset = offset + w_size;
+      LayerBiases{end} = reshape(thetaVec(offset + 1:offset + b_size), outputLayerSize, 1);
+    endfunction
+
   endmethods
 endclassdef
 
