@@ -504,11 +504,11 @@ classdef ClassificationNeuralNetwork
       this = parameter_initializer(this,LayerWeightsInitializer,LayerBiasesInitializer);
 ## already trained weights(just for checking if forward propagation works or not. which it does work)
 ##this.LayerWeights{1} = [
-##-2.9823,	-3.8519,	7.1521,	9.9223;
-##-0.4188,	0.1895,	0.0812,	-0.1952;
-##0.3027,	0.0646,	-0.3976,	-0.0660;
-##-0.2450,	-0.2422,	-0.3497,	-0.6926;
-##0.8523,	4.5536,	-6.7396,	-3.5799;
+##-2.9823, -3.8519, 7.1521, 9.9223;
+##-0.4188, 0.1895, 0.0812, -0.1952;
+##0.3027, 0.0646, -0.3976, -0.0660;
+##-0.2450, -0.2422, -0.3497, -0.6926;
+##0.8523, 4.5536, -6.7396, -3.5799;
 ##];
 ##this.LayerWeights{2} = [
 ##5.3509,	0.8036,	4.4741,	-0.9038,	-3.6919;
@@ -768,11 +768,11 @@ classdef ClassificationNeuralNetwork
           A = this.softmax(Zs{i}');
         else
           [A, ~] = this.Layer_Activation(Zs{i});
+          A = A';
         endif
         ## After activation:
         ## A should have the same dimensions as Zs{i} (transposed if softmax)
         printf("A (after activation): %dx%d\n", size(A, 1), size(A, 2));
-
         As{i} = A;
       endfor
 
