@@ -59,6 +59,17 @@
 ## labels, @var{Y}, used for fitting the Neural Network model.
 ## @qcode{ClassNames} are of the same type as the class labels in @var{Y}.
 ##
+## @item @qcode{"Prior"} @tab @tab A numeric vector specifying the prior
+## probabilities for each class.  The order of the elements in @qcode{Prior}
+## corresponds to the order of the classes in @qcode{ClassNames}.
+##
+## @item @qcode{"Cost"} @tab @tab A @math{NxR} numeric matrix containing
+## misclassification cost for the corresponding instances in @var{X} where
+## @math{R} is the number of unique categories in @var{Y}.  If an instance is
+## correctly classified into its category the cost is calculated to be 1,
+## otherwise 0. Cost matrix can be altered use @code{@var{Mdl.cost} = somecost}.
+## default value @qcode{@var{cost} = ones(rows(X),numel(unique(Y)))}.
+##
 ## @item @qcode{"LayerSizes"} @tab @tab A vector of positive integers that
 ## defines the sizes of the fully connected layers in the neural network model.
 ## Each element in LayerSizes corresponds to the number of outputs for the
@@ -101,12 +112,6 @@
 ## @item @qcode{"StepTolerance"} @tab @tab A nonnegative scalar. If the step
 ## size at some iteration is smaller than StepTolerance, then the training
 ## process terminates. The default value is 1e-6.
-##
-## @item @qcode{"Weights"} @tab @tab Observation weights, specified as a
-## nonnegative numeric vector. This weights each observation in X with the
-## corresponding value in Weights. The length of Weights must equal the number
-## of observations in X. By default, Weights is ones(n,1), where n is the number
-## of observations in X.
 ##
 ## @end multitable
 ##
