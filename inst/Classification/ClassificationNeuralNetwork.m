@@ -502,9 +502,47 @@ classdef ClassificationNeuralNetwork
       this.Solver = "LBFGS";
 
       this = parameter_initializer(this,LayerWeightsInitializer,LayerBiasesInitializer);
+## already trained weights(just for checking if forward propagation works or not. which it does work)
+##this.LayerWeights{1} = [
+##-2.9823,	-3.8519,	7.1521,	9.9223;
+##-0.4188,	0.1895,	0.0812,	-0.1952;
+##0.3027,	0.0646,	-0.3976,	-0.0660;
+##-0.2450,	-0.2422,	-0.3497,	-0.6926;
+##0.8523,	4.5536,	-6.7396,	-3.5799;
+##];
+##this.LayerWeights{2} = [
+##5.3509,	0.8036,	4.4741,	-0.9038,	-3.6919;
+##3.8612,	-0.6853,	4.9577,	-0.3016,	-2.9650;
+##];
+##this.LayerWeights{3} = [
+##-10.5846,	-7.5079;
+##6.4736,	1.1391;
+##3.0274,	6.4106;
+## ];
+##this.LayerBiases{1} = [
+##-4.3681;
+##0;
+##0.5462;
+##0;
+##0.4710;
+##];
+##this.LayerBiases{2} = [
+##0.4464;
+##-6.2276;
+##];
+##this.LayerBiases{3} = [
+##18.3889;
+##-6.3130;
+##-12.0759;
+##];
 
-      options = optimset('MaxIter', IterationLimit, 'TolFun', LossTolerance, 'TolX', StepTolerance);
-      initialThetaVec = this.vectorize_parameters();
+     options = optimset('MaxIter', IterationLimit, 'TolFun', LossTolerance, 'TolX', StepTolerance);
+     initialThetaVec = this.vectorize_parameters();
+     initialThetaVec
+##     [LayerWeights, LayerBiases] = reshape_parameters(this, initialThetaVec);
+##     LayerWeights
+##     LayerBiases
+##     LayerWeights{1}
       [optThetaVec, cost] = fminunc(@(thetaVec) costFunction(thetaVec, this, X, Y), initialThetaVec, options);
       [this.LayerWeights, this.LayerBiases] = reshape_parameters(this, optThetaVec);
 
@@ -716,13 +754,25 @@ classdef ClassificationNeuralNetwork
       As = cell(numel(LayerWeights), 1);
 
       for i = 1:numel(LayerWeights)
+        ## Print dimensions for debugging
+        printf("Layer %d\n", i);
+        printf("LayerWeights{%d}: %dx%d\n", i, size(LayerWeights{i}, 1), size(LayerWeights{i}, 2));
+        printf("A: %dx%d\n", size(A, 1), size(A, 2));
+
         Zs{i} = LayerWeights{i} * A + LayerBiases{i};
+        ## After this line:
+        ## Zs{i} should have dimensions: size(LayerWeights{i}, 1) x size(A, 2)
+        printf("Zs{%d}: %dx%d\n", i, size(Zs{i}, 1), size(Zs{i}, 2));
+
         if i == numel(LayerWeights)
           A = this.softmax(Zs{i}');
         else
           [A, ~] = this.Layer_Activation(Zs{i});
-          A = A';
         endif
+        ## After activation:
+        ## A should have the same dimensions as Zs{i} (transposed if softmax)
+        printf("A (after activation): %dx%d\n", size(A, 1), size(A, 2));
+
         As{i} = A;
       endfor
 
