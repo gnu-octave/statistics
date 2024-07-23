@@ -19,7 +19,6 @@ classdef ClassificationDiscriminant
 	properties (Access = public)
 		X = [];                   # Predictor data
     Y = [];                   # Class labels
-
     NumObservations = [];     # Number of observations in training dataset
     RowsUsed        = [];     # Rows used in fitting
     Sigma           = [];     # Predictor standard deviations
@@ -29,7 +28,6 @@ classdef ClassificationDiscriminant
     ClassNames      = [];     # Names of classes in Y
     Prior           = [];     # Prior probability for each class
     Cost            = [];     # Cost of misclassification
-
 		Coeffs          = [];   # Coefficient matrices
     Delta           = [];   # threshold for linear discriminant model
     DiscrimType     = [];   # Discriminant type
