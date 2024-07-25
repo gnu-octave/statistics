@@ -295,14 +295,14 @@ classdef ClassificationNeuralNetwork
             LayerSizes = varargin{2};
             if (! (isnumeric(LayerSizes) && isvector(LayerSizes)
               && all(LayerSizes > 0) && all(mod(LayerSizes, 1) == 0)))
-              error (strcat (["ClassificationNeuralNetwork: LayerSizes"], ...
+              error (strcat (["ClassificationNeuralNetwork: 'LayerSizes'"], ...
                              [" must be a positive integer vector."]));
             endif
 
           case 'activations'
             Activations = varargin{2};
             if (!(ischar(Activations)))
-              error (strcat (["ClassificationNeuralNetwork: Activations"], ...
+              error (strcat (["ClassificationNeuralNetwork: 'Activations'"], ...
                              [" must be a string."]));
             endif
             if (ischar(Activations))
@@ -318,13 +318,13 @@ classdef ClassificationNeuralNetwork
             LayerWeightsInitializer = varargin{2};
             if (!(ischar(LayerWeightsInitializer)))
               error (strcat (["ClassificationNeuralNetwork:"], ...
-                             [" LayerWeightsInitializer must be a string."]));
+                             [" 'LayerWeightsInitializer' must be a string."]));         ############<<<<<<
             endif
-            if (ischar(LayerWeightsInitializer))
+            if (ischar (LayerWeightsInitializer))
               if (! any (strcmpi (tolower(LayerWeightsInitializer), ...
                                  {"glorot", "he"})))
               error (strcat (["ClassificationNeuralNetwork: unsupported"], ...
-                             [" LayerWeightsInitializer function."]));
+                             [" 'LayerWeightsInitializer' function."]));
               endif
             endif
 
@@ -332,13 +332,13 @@ classdef ClassificationNeuralNetwork
             LayerBiasesInitializer = varargin{2};
             if (!(ischar(LayerBiasesInitializer)))
               error (strcat (["ClassificationNeuralNetwork:"], ...
-                             [" LayerBiasesInitializer must be a string."]));
+                             [" 'LayerBiasesInitializer' must be a string."]));
             endif
             if (ischar(LayerBiasesInitializer))
               if (! any (strcmpi (tolower(LayerBiasesInitializer), {"zeros", ...
                     "ones"})))
               error (strcat (["ClassificationNeuralNetwork: unsupported"], ...
-                             [" LayerBiasesInitializer function."]));
+                             [" 'LayerBiasesInitializer' function."]));
               endif
             endif
 
@@ -346,14 +346,14 @@ classdef ClassificationNeuralNetwork
             InitialStepSize = varargin{2};
             if ( !(isscalar(InitialStepSize) && (InitialStepSize > 0)))
               error (strcat (["ClassificationNeuralNetwork:"], ...
-                             [" InitialStepSize must be a positive scalar."]));
+                             [" 'InitialStepSize' must be a positive scalar."]));
             endif
 
           case 'iterationlimit'
             IterationLimit = varargin{2};
             if (! (isnumeric(IterationLimit) && isscalar(IterationLimit)
               && (IterationLimit > 0) && mod(IterationLimit, 1) == 0))
-              error (strcat (["ClassificationNeuralNetwork: IterationLimit"], ...
+              error (strcat (["ClassificationNeuralNetwork: 'IterationLimit'"], ...
                              [" must be a positive integer."]));
             endif
 
@@ -361,7 +361,7 @@ classdef ClassificationNeuralNetwork
             GradientTolerance = varargin{2};
             if (! (isnumeric(GradientTolerance) && isscalar(GradientTolerance)
               && (GradientTolerance >= 0)))
-              error (strcat (["ClassificationNeuralNetwork: GradientTolerance"], ...
+              error (strcat (["ClassificationNeuralNetwork: 'GradientTolerance'"], ...
                              [" must be a non-negative scalar."]));
             endif
 
@@ -369,7 +369,7 @@ classdef ClassificationNeuralNetwork
             LossTolerance = varargin{2};
             if (! (isnumeric(LossTolerance) && isscalar(LossTolerance)
               && (LossTolerance >= 0)))
-              error (strcat (["ClassificationNeuralNetwork: LossTolerance"], ...
+              error (strcat (["ClassificationNeuralNetwork: 'LossTolerance'"], ...
                              [" must be a non-negative scalar."]));
             endif
 
@@ -377,7 +377,7 @@ classdef ClassificationNeuralNetwork
             StepTolerance = varargin{2};
             if (! (isnumeric(StepTolerance) && isscalar(StepTolerance)
               && (StepTolerance >= 0)))
-              error (strcat (["ClassificationNeuralNetwork: StepTolerance"], ...
+              error (strcat (["ClassificationNeuralNetwork: 'StepTolerance'"], ...
                              [" must be a non-negative scalar."]));
             endif
 
@@ -502,7 +502,7 @@ classdef ClassificationNeuralNetwork
       this.Solver = "LBFGS";
 
       this = parameter_initializer(this,LayerWeightsInitializer,LayerBiasesInitializer);
-## already trained weights(just for checking if forward propagation works or not. which it does work)
+#### already trained weights(just for checking if forward propagation works or not. which it does work)
 ##this.LayerWeights{1} = [
 ##-2.9823, -3.8519, 7.1521, 9.9223;
 ##-0.4188, 0.1895, 0.0812, -0.1952;
@@ -536,13 +536,14 @@ classdef ClassificationNeuralNetwork
 ##-12.0759;
 ##];
 
-     options = optimset('MaxIter', IterationLimit, 'TolFun', LossTolerance, 'TolX', StepTolerance);
-     initialThetaVec = this.vectorize_parameters();
-     initialThetaVec
-##     [LayerWeights, LayerBiases] = reshape_parameters(this, initialThetaVec);
-##     LayerWeights
-##     LayerBiases
-##     LayerWeights{1}
+      options = optimset('MaxIter', IterationLimit, 'TolFun', LossTolerance, 'TolX', StepTolerance);
+      initialThetaVec = this.vectorize_parameters();
+##    For debuggin
+##    initialThetaVec
+##    [LayerWeights, LayerBiases] = reshape_parameters(this, initialThetaVec);
+##    LayerWeights
+##    LayerBiases
+##    LayerWeights{1}
       [optThetaVec, cost] = fminunc(@(thetaVec) costFunction(thetaVec, this, X, Y), initialThetaVec, options);
       [this.LayerWeights, this.LayerBiases] = reshape_parameters(this, optThetaVec);
 
@@ -600,15 +601,15 @@ classdef ClassificationNeuralNetwork
       A = XC;
       for i = 1:length(this.LayerSizes)+1
         Z = A * this.LayerWeights{i}' + this.LayerBiases{i}';
-    ####printf("Z");
-    ####disp(Z);
+    ##printf("Z");
+    ##disp(Z);
         if (i <= length(this.LayerSizes))
           [A, z] = this.Layer_Activation(Z);
         else
           A = this.softmax(Z);
         endif
-    ####printf("A");
-    ####disp(A);
+    ##printf("A");
+    ##disp(A);
       endfor
 
       # Get the predicted labels (class with highest probability)
@@ -636,7 +637,7 @@ classdef ClassificationNeuralNetwork
     endfunction
 
     ## Activation Gradient
-    function dz = Activation_Gradient(dA, z)
+    function dz = Activation_Gradient(this, dA, z)
       switch this.Activations
         case 'relu'
           A = max(0, z);
@@ -746,42 +747,45 @@ classdef ClassificationNeuralNetwork
 
     ## Cost Function
     function [J, gradVec] = costFunction(thetaVec, this, X, Y)
+      ## Reshape Parameters
       [LayerWeights, LayerBiases] = reshape_parameters(this, thetaVec);
 
-      ## Forward Propagation
-      A = X';
+      ## Initialize storage for forward propagation
       Zs = cell(numel(LayerWeights), 1);
       As = cell(numel(LayerWeights), 1);
 
-      for i = 1:numel(LayerWeights)
-        ## Print dimensions for debugging
-        printf("Layer %d\n", i);
-        printf("LayerWeights{%d}: %dx%d\n", i, size(LayerWeights{i}, 1), size(LayerWeights{i}, 2));
-        printf("A: %dx%d\n", size(A, 1), size(A, 2));
 
-        Zs{i} = LayerWeights{i} * A + LayerBiases{i};
-        ## After this line:
-        ## Zs{i} should have dimensions: size(LayerWeights{i}, 1) x size(A, 2)
-        printf("Zs{%d}: %dx%d\n", i, size(Zs{i}, 1), size(Zs{i}, 2));
+      ## Forward propagation
+      A = X;
+      for i = 1:length(this.LayerSizes)+1
 
-        if i == numel(LayerWeights)
-          A = this.softmax(Zs{i}');
+##  ## Print dimensions for debugging
+##  printf("Layer %d\n", i);
+##  printf("LayerWeights{%d}: %dx%d\n", i, size(LayerWeights{i}, 1), size(LayerWeights{i}, 2));
+##  printf("A: %dx%d\n", size(A, 1), size(A, 2));
+
+        Zs{i} = A * this.LayerWeights{i}' + this.LayerBiases{i}';
+
+## printf("Zs{%d}: %dx%d\n", i, size(Zs{i}, 1), size(Zs{i}, 2));
+
+        if (i <= length(this.LayerSizes))
+          [A, z] = this.Layer_Activation(Zs{i});
         else
-          [A, ~] = this.Layer_Activation(Zs{i});
-          A = A';
+          A = this.softmax(Zs{i});
         endif
-        ## After activation:
-        ## A should have the same dimensions as Zs{i} (transposed if softmax)
-        printf("A (after activation): %dx%d\n", size(A, 1), size(A, 2));
+
+## printf("A (after activation): %dx%d\n", size(A, 1), size(A, 2));
+
         As{i} = A;
       endfor
 
       ## Compute Loss
-      J = this.compute_cross_entropy_loss(A', Y);
+      J = this.compute_cross_entropy_loss(A, Y);
+      J
 
       ## Backward Propagation
       m = size(X, 1);
-      dA = A' - this.one_hot_encoder(Y);
+      dA = A - this.one_hot_encoder(Y);
       dWs = cell(numel(LayerWeights), 1);
       dBs = cell(numel(LayerWeights), 1);
 
@@ -789,12 +793,16 @@ classdef ClassificationNeuralNetwork
         if i == numel(LayerWeights)
           dZ = dA;
         else
-          dA = LayerWeights{i+1}' * dZ;
+          dA = dZ * LayerWeights{i+1};
           dZ = this.Activation_Gradient(dA, Zs{i});
         endif
 
-        dWs{i} = dZ * As{i-1}' / m;
-        dBs{i} = sum(dZ, 2) / m;
+        if i == 1
+          dWs{i} = (dZ' * X) / m;
+        else
+          dWs{i} = (dZ' * As{i-1}) / m;
+        endif
+        dBs{i} = sum(dZ, 1)' / m;
       endfor
 
       ## Vectorize Gradients
@@ -803,8 +811,10 @@ classdef ClassificationNeuralNetwork
         gradVec = [gradVec; dWs{i}(:)];
         gradVec = [gradVec; dBs{i}(:)];
       endfor
+
     endfunction
 
+    ## Converts thetaVec to LayerWeights and LayerBiases
     function [LayerWeights, LayerBiases] = reshape_parameters(this, thetaVec)
       LayerWeights = cell(numel(this.LayerSizes) + 1, 1);
       LayerBiases = cell(numel(this.LayerSizes) + 1, 1);
@@ -880,51 +890,51 @@ endclassdef
 %! ClassificationNeuralNetwork (ones (5,2), ones (5,1), "Cost", "string")
 %!error<ClassificationNeuralNetwork: 'Cost' must be a numeric square matrix.> ...
 %! ClassificationNeuralNetwork (ones (5,2), ones (5,1), "Cost", {eye(2)})
-%!error<ClassificationNeuralNetwork: LayerSizes must be a positive integer vector.> ...
+%!error<ClassificationNeuralNetwork: 'LayerSizes' must be a positive integer vector.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LayerSizes", -1)
-%!error<ClassificationNeuralNetwork: LayerSizes must be a positive integer vector.> ...
+%!error<ClassificationNeuralNetwork: 'LayerSizes' must be a positive integer vector.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LayerSizes", 0.5)
-%!error<ClassificationNeuralNetwork: LayerSizes must be a positive integer vector.> ...
+%!error<ClassificationNeuralNetwork: 'LayerSizes' must be a positive integer vector.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LayerSizes", [1,-2])
-%!error<ClassificationNeuralNetwork: LayerSizes must be a positive integer vector.> ...
+%!error<ClassificationNeuralNetwork: 'LayerSizes' must be a positive integer vector.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LayerSizes", [10,20,30.5])
-%!error<ClassificationNeuralNetwork: Activations must be a string.> ...
+%!error<ClassificationNeuralNetwork: 'Activations' must be a string.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "Activations", 123)
 %!error<ClassificationNeuralNetwork: unsupported Activation function.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "Activations", "unsupported_type")
-%!error<ClassificationNeuralNetwork: LayerWeightsInitializer must be a string.> ...
+%!error<ClassificationNeuralNetwork: 'LayerWeightsInitializer' must be a string.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LayerWeightsInitializer", 123)
-%!error<ClassificationNeuralNetwork: unsupported LayerWeightsInitializer function.> ...
+%!error<ClassificationNeuralNetwork: unsupported 'LayerWeightsInitializer' function.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LayerWeightsInitializer", "unsupported_type")
-%!error<ClassificationNeuralNetwork: LayerBiasesInitializer must be a string.> ...
+%!error<ClassificationNeuralNetwork: 'LayerBiasesInitializer' must be a string.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LayerBiasesInitializer", 123)
-%!error<ClassificationNeuralNetwork: unsupported LayerBiasesInitializer function.> ...
+%!error<ClassificationNeuralNetwork: unsupported 'LayerBiasesInitializer' function.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LayerBiasesInitializer", "unsupported_type")
-%!error<ClassificationNeuralNetwork: InitialStepSize must be a positive scalar.> ...
+%!error<ClassificationNeuralNetwork: 'InitialStepSize' must be a positive scalar.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones (10,1), "InitialStepSize", -1)
-%!error<ClassificationNeuralNetwork: InitialStepSize must be a positive scalar.> ...
+%!error<ClassificationNeuralNetwork: 'InitialStepSize' must be a positive scalar.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones (10,1), "InitialStepSize", 0)
-%!error<ClassificationNeuralNetwork: InitialStepSize must be a positive scalar.> ...
+%!error<ClassificationNeuralNetwork: 'InitialStepSize' must be a positive scalar.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones (10,1), "InitialStepSize", [1, 2])
-%!error<ClassificationNeuralNetwork: InitialStepSize must be a positive scalar.> ...
+%!error<ClassificationNeuralNetwork: 'InitialStepSize' must be a positive scalar.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones (10,1), "InitialStepSize", "invalid")
-%!error<ClassificationNeuralNetwork: IterationLimit must be a positive integer.> ...
+%!error<ClassificationNeuralNetwork: 'IterationLimit' must be a positive integer.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "IterationLimit", -1)
-%!error<ClassificationNeuralNetwork: IterationLimit must be a positive integer.> ...
+%!error<ClassificationNeuralNetwork: 'IterationLimit' must be a positive integer.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "IterationLimit", 0.5)
-%!error<ClassificationNeuralNetwork: IterationLimit must be a positive integer.> ...
+%!error<ClassificationNeuralNetwork: 'IterationLimit' must be a positive integer.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "IterationLimit", [1,2])
-%!error<ClassificationNeuralNetwork: GradientTolerance must be a non-negative scalar.> ...
+%!error<ClassificationNeuralNetwork: 'GradientTolerance' must be a non-negative scalar.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "GradientTolerance", -1)
-%!error<ClassificationNeuralNetwork: GradientTolerance must be a non-negative scalar.> ...
+%!error<ClassificationNeuralNetwork: 'GradientTolerance' must be a non-negative scalar.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "GradientTolerance", [1,2])
-%!error<ClassificationNeuralNetwork: LossTolerance must be a non-negative scalar.> ...
+%!error<ClassificationNeuralNetwork: 'LossTolerance' must be a non-negative scalar.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LossTolerance", -1)
-%!error<ClassificationNeuralNetwork: LossTolerance must be a non-negative scalar.> ...
+%!error<ClassificationNeuralNetwork: 'LossTolerance' must be a non-negative scalar.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LossTolerance", [1,2])
-%!error<ClassificationNeuralNetwork: StepTolerance must be a non-negative scalar.> ...
+%!error<ClassificationNeuralNetwork: 'StepTolerance' must be a non-negative scalar.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "StepTolerance", -1)
-%!error<ClassificationNeuralNetwork: StepTolerance must be a non-negative scalar.> ...
+%!error<ClassificationNeuralNetwork: 'StepTolerance' must be a non-negative scalar.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "StepTolerance", [1,2])
 %!error<ClassificationNeuralNetwork: invalid parameter name in optional pair arguments.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "some", "some")
