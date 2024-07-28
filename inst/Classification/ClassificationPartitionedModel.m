@@ -154,7 +154,7 @@ classdef ClassificationPartitionedModel
       this.CrossValidatedModel = class (Mdl);
       this.Prior = Mdl.Prior;
       this.Cost = Mdl.Cost;
-      if (class (Mdl) != "ClassificationDiscriminant")
+      if (! strcmpi (class (Mdl), "ClassificationDiscriminant"))
         this.Standardize = Mdl.Standardize;
         this.ScoreTransform = Mdl.ScoreTransform;
       endif
@@ -253,7 +253,7 @@ classdef ClassificationPartitionedModel
           args = {};
           ## List of acceptable parameters for fitcdiscr
           DiscrParams = {'PredictorNames', 'ResponseName', 'Gamma', ...
-                        , 'DiscrimType'};
+                         'DiscrimType'};
           ## Set parameters
           for i = 1:numel (DiscrParams)
             paramName = DiscrParams{i};
