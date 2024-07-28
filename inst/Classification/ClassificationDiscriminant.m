@@ -16,149 +16,259 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 classdef ClassificationDiscriminant
-	properties (Access = public)
-		X = [];                   # Predictor data
+## -*- texinfo -*-
+## @deftypefn  {statistics} {@var{obj} =} ClassificationDiscriminant (@var{X}, @var{Y})
+## @deftypefnx {statistics} {@var{obj} =} ClassificationDiscriminant (@dots{}, @var{name}, @var{value})
+##
+## Create a @qcode{ClassificationDiscriminant} class object containing a
+## discriminant analysis model.
+##
+## @code{@var{obj} = ClassificationDiscriminant (@var{X}, @var{Y})} returns a
+## ClassificationDiscriminant object, with @var{X} as the predictor data
+## and @var{Y} containing the class labels of observations in @var{X}.
+##
+## @itemize
+## @item
+## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+## correspond to observations and columns correspond to features or variables.
+## @var{X} will be used to train the discriminant model.
+## @item
+## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels of
+## corresponding predictor data in @var{X}. @var{Y} can contain any type of
+## categorical data. @var{Y} must have the same number of rows as @var{X}.
+## @end itemize
+##
+## @code{@var{obj} = ClassificationDiscriminant (@dots{}, @var{name}, @var{value})}
+## returns a ClassificationDiscriminant object with parameters specified by
+## @qcode{Name-Value} pair arguments.
+## Type @code{help ClassificationDiscriminant} for more info.
+##
+## A @qcode{ClassificationDiscriminant} object, @var{obj}, stores the labeled
+## training data and various parameters for the discriminant analysis model,
+## which can be accessed in the following fields:
+##
+## @multitable @columnfractions 0.28 0.02 0.7
+## @headitem @var{Field} @tab @tab @var{Description}
+##
+## @item @qcode{obj.X} @tab @tab Unstandardized predictor data, specified as a
+## numeric matrix.  Each column of @var{X} represents one predictor (variable),
+## and each row represents one observation.
+##
+## @item @qcode{obj.Y} @tab @tab Class labels, specified as a logical,
+## numeric vector, or cell array of character vectors. Each value in @var{Y}
+## is the observed class label for the corresponding row in @var{X}.
+##
+## @item @qcode{obj.NumObservations} @tab @tab Number of observations used in
+## training the ClassificationDiscriminant model, specified as a positive
+## integer scalar.
+##
+## @item @qcode{obj.RowsUsed} @tab @tab Rows of the original training data
+## used in fitting the ClassificationDiscriminant model, specified as a
+## numerical vector.
+##
+## @item @qcode{obj.PredictorNames} @tab @tab Predictor variable names,
+## specified as a cell array of character vectors. The variable names are in
+## the same order in which they appear in the training data @var{X}.
+##
+## @item @qcode{obj.ResponseName} @tab @tab Response variable name, specified
+## as a character vector.
+##
+## @item @qcode{obj.ClassNames} @tab @tab Names of the classes in the training
+## data @var{Y} with duplicates removed, specified as a cell array of character
+## vectors.
+##
+## @item @qcode{obj.Prior} @tab @tab Prior probabilities for each class,
+## specified as a numeric vector.  The order of the elements in @qcode{Prior}
+## corresponds to the order of the classes in @qcode{ClassNames}.
+##
+## @item @qcode{obj.Cost} @tab @tab Cost of the misclassification of a point,
+## specified as a square matrix. @qcode{Cost(i,j)} is the cost of classifying a
+## point into class @qcode{j} if its true class is @qcode{i} (that is, the rows
+## correspond to the true class and the columns correspond to the predicted
+## class).  The order of the rows and columns in @qcode{Cost} corresponds to the
+## order of the classes in @qcode{ClassNames}.  The number of rows and columns
+## in @qcode{Cost} is the number of unique classes in the response.  By default,
+## @qcode{Cost(i,j) = 1} if @qcode{i != j}, and @qcode{Cost(i,j) = 0} if
+## @qcode{i = j}.  In other words, the cost is 0 for correct classification and
+## 1 for incorrect classification.
+##
+## @item @qcode{obj.Sigma} @tab @tab Within-class covariance matrix, specified
+## as a numeric matrix. For 'linear' discriminant type matrix is of size
+## @math{pxp}, where p is the number of predictors.
+##
+## @item @qcode{obj.Mu} @tab @tab Class means, specified as a @math{Kxp}
+## real matrix. K is the number of classes, and p is the number of
+## predictors.
+##
+## @item @qcode{obj.Coeffs} @tab @tab Coefficient matrices, specified as a
+## struct array.
+##
+## @item @qcode{obj.Delta} @tab @tab Threshold for linear discriminant model,
+## specified as a numeric scalar.
+##
+## @item @qcode{obj.DiscrimType} @tab @tab Discriminant type, specified as a
+## character vector.
+##
+## @item @qcode{obj.Gamma} @tab @tab Gamma regularization parameter, specified
+## as a numeric scalar.
+##
+## @item @qcode{obj.MinGamma} @tab @tab Minimum value of Gamma so that the
+## correlation matrix is invertible, specified as nonnegative scalar.
+##
+## @item @qcode{obj.LogDetSigma} @tab @tab Logarithm of the determinant of the
+## within-class covariance matrix. For linear discriminant analysis it is
+## specified as a numeric scalar.
+##
+## @item @qcode{obj.XCentered} @tab @tab X data with class means
+## subtracted, returned as a real matrix.
+##
+## @end multitable
+##
+## @seealso{ClassificationDiscriminant}
+## @end deftypefn
+
+  properties (Access = public)
+    X = [];                   # Predictor data
     Y = [];                   # Class labels
+
     NumObservations = [];     # Number of observations in training dataset
     RowsUsed        = [];     # Rows used in fitting
-    Sigma           = [];     # Predictor standard deviations
-    Mu              = [];     # Predictor means
-		PredictorNames  = [];     # Predictor variables names
+    PredictorNames  = [];     # Predictor variables names
     ResponseName    = [];     # Response variable name
     ClassNames      = [];     # Names of classes in Y
     Prior           = [];     # Prior probability for each class
-    Cost            = [];     # Cost of misclassification
-		Coeffs          = [];   # Coefficient matrices
-    Delta           = [];   # threshold for linear discriminant model
-    DiscrimType     = [];   # Discriminant type
-    Gamma           = [];   # Gamma regularization parameter
-    MinGamma        = [];
-    LogDetSigma     = [];   # Log of det of within-class covariance matrix
-		XCentered       = [];   # X data with class means subtracted
+    Cost            = [];     # Cost of Misclassification
 
-	endproperties
+    Sigma           = [];     # Within-class covariance
+    Mu              = [];     # Class means
+    Coeffs          = [];     # Coefficient matrices
+    Delta           = [];     # Threshold for linear discriminant model
+    DiscrimType     = [];     # Discriminant type
+    Gamma           = [];     # Gamma regularization parameter
+    MinGamma        = [];     # Minmum value of Gamma
+    LogDetSigma     = [];     # Log of det of within-class covariance matrix
+    XCentered       = [];     # X data with class means subtracted
+  endproperties
 
-	methods (Access = public)
-		## constructor
-		function this = ClassificationDiscriminant (X, Y, varargin)
+  methods (Access = public)
 
-			## Check for sufficient number of input arguments
-			if (nargin < 2)
+    ## constructor
+    function this = ClassificationDiscriminant (X, Y, varargin)
+
+      ## Check for sufficient number of input arguments
+      if (nargin < 2)
         error ("ClassificationDiscriminant: too few input arguments.");
       endif
 
-			## Check X and Y have the same number of observations
+      ## Validate X
+      if (! isnumeric (X))
+        error ("ClassificationDiscriminant: X must be a numeric matrix.");
+      endif
+
+      ## Check X and Y have the same number of observations
       if (rows (X) != rows (Y))
         error (["ClassificationDiscriminant: number of rows ", ...
                 "in X and Y must be equal."]);
       endif
 
-			## Assign original X and Y data 
+      ## Assign original X and Y data
       this.X = X;
       this.Y = Y;
 
-			## Get groups in Y
-			[gY, gnY, glY] = grp2idx (Y);
+      ## Get groups in Y
+      [gY, gnY, glY] = grp2idx (Y);
 
-			## Validate Y
-      if (! (iscellstr (Y) || ischar (Y) || isnumeric (Y) || islogical (Y)))
-        error (["ClassificationDiscriminant: Y must be a character array, ", ...
-                "numeric vector, or cell array of character vectors."]);
-      endif
-
-			## Validate X
-      if (! isnumeric (X))
-        error ("ClassificationDiscriminant: X must be a numeric matrix.");
-      endif
-
-			## Set default values before parsing optional parameters
+      ## Set default values before parsing optional parameters
       ClassNames           = [];
       Cost                 = [];
       DiscrimType          = "linear";
       Gamma                = 0;
       Delta                = 0;
-    	PredictorNames       = [];
+      PredictorNames       = [];
       ResponseName         = 'Y';
       Prior                = "empirical";
       FillCoeffs           = "on";
 
-			## Parse optional parameters
+      ## Parse optional parameters
       while (numel (varargin) > 0)
         switch (lower (varargin{1}))
 
-					case "predictornames"
+          case "predictornames"
             PredictorNames = varargin{2};
             if (! iscellstr (PredictorNames))
-              error (strcat (["ClassificationDiscriminant: 'PredictorNames' must"], ...
-                             [" be supplied as a cellstring array."]));
+              error (["ClassificationDiscriminant: PredictorNames ", ...
+                      "must be supplied as a cellstring array."]);
             elseif (columns (PredictorNames) != columns (X))
-              error (strcat (["ClassificationDiscriminant: 'PredictorNames' must"], ...
-                             [" have the same number of columns as X."]));
+              error (["ClassificationDiscriminant: PredictorNames ", ...
+                      "must have the same number of columns as X."]);
             endif
-					
-					case "responsename"
+
+          case "responsename"
             ResponseName = varargin{2};
             if (! ischar (ResponseName))
-              error (strcat (["ClassificationDiscriminant: 'ResponseName'"], ...
-                             [" must be a character vector."]));
+              error (["ClassificationDiscriminant: ResponseName", ...
+                       " must be a character vector."]);
             endif
 
           case "classnames"
             ClassNames = varargin{2};
             if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
                                           || islogical (ClassNames)))
-              error (strcat (["ClassificationDiscriminant: 'ClassNames' must be a"], ...
-                             [" cellstring, logical or numeric vector."]));
+              error (["ClassificationDiscriminant: ClassNames must be a", ...
+                      " cellstring, logical or numeric vector."]);
             endif
             ## Check that all class names are available in gnY
             if (iscellstr (ClassNames))
               if (! all (cell2mat (cellfun (@(x) any (strcmp (x, gnY)),
                                    ClassNames, "UniformOutput", false))))
-                error (strcat (["ClassificationDiscriminant: not all 'ClassNames'"], ...
-                               [" are present in Y."]));
+                error (["ClassificationDiscriminant: not all ClassNames", ...
+                        " are present in Y."]);
               endif
             else
               if (! all (cell2mat (arrayfun (@(x) any (x == glY),
                                    ClassNames, "UniformOutput", false))))
-                error (strcat (["ClassificationDiscriminant: not all 'ClassNames'"], ...
-                               [" are present in Y."]));
+                error (["ClassificationDiscriminant: not all ClassNames", ...
+                        " are present in Y."]);
               endif
             endif
-					
-					case "prior"
+
+          case "prior"
             Prior = varargin{2};
             if (! ((isnumeric (Prior) && isvector (Prior)) ||
                   (strcmpi (Prior, "empirical") || strcmpi (Prior, "uniform"))))
-              error (strcat (["ClassificationDiscriminant: 'Prior' must be either"], ...
-                             [" a numeric vector or a character vector."]));
+              error (["ClassificationDiscriminant: Prior must be either", ...
+                      " a numeric vector or a character vector."]);
             endif
 
           case "cost"
             Cost = varargin{2};
             if (! (isnumeric (Cost) && issquare (Cost)))
-              error (strcat (["ClassificationDiscriminant: 'Cost' must be"], ...
-                             [" a numeric square matrix."]));
+              error (["ClassificationDiscriminant: Cost must be", ...
+                      " a numeric square matrix."]);
             endif
-					
-					case "discrimtype"
+
+          case "discrimtype"
             DiscrimType = tolower (varargin{2});
             if (! (strcmpi (DiscrimType, "linear")))
-              error ("ClassificationDiscriminant: DiscrimType not suppoorted.");
+                error (["ClassificationDiscriminant: unsuppoorted ", ...
+                      "discriminant type."]);
             endif
-					
-					case "fillcoeffs"
+
+          case "fillcoeffs"
             FillCoeffs = tolower (varargin{2});
             if (! any (strcmpi (FillCoeffs, {"on", "off"})))
-              error ("ClassificationDiscriminant: FillCoeffs must be 'on' or 'off'.");
+              error (["ClassificationDiscriminant: FillCoeffs must ", ...
+                      "be 'on' or 'off'."]);
             endif
 
           case "gamma"
             Gamma = varargin{2};
             if (Gamma >= 1 || Gamma < 0)
-              error ("ClassificationDiscriminant: Gamma must be between 0 and 1.")
+              error (["ClassificationDiscriminant: Gamma must be ", ...
+                      "between 0 and 1."]);
             endif
 
-					otherwise
+          otherwise
             error ("ClassificationDiscriminant: invalid name-value arguments.");
         endswitch
         varargin (1:2) = [];
@@ -174,7 +284,7 @@ classdef ClassificationDiscriminant
         ResponseName = "Y";
       endif
 
-			## Assign predictors and response variable names
+      ## Assign predictors and response variable names
       this.PredictorNames = PredictorNames;
       this.ResponseName   = ResponseName;
 
@@ -190,7 +300,7 @@ classdef ClassificationDiscriminant
         endfor
       endif
 
-			## Remove missing values from X and Y
+      ## Remove missing values from X and Y
       RowsUsed  = ! logical (sum (isnan ([X, gY]), 2));
       Y         = Y (RowsUsed);
       X         = X (RowsUsed, :);
@@ -204,10 +314,10 @@ classdef ClassificationDiscriminant
         error ("ClassificationDiscriminant: invalid values in X.");
       endif
 
-			this.NumObservations = rows (X);
+      this.NumObservations = rows (X);
       this.RowsUsed = cast (RowsUsed, "double");
 
-			## Handle Prior and Cost
+      ## Handle Prior and Cost
       if (strcmpi ("uniform", Prior))
         this.Prior = ones (size (gnY)) ./ numel (gnY);
       elseif (isempty (Prior) || strcmpi ("empirical", Prior))
@@ -218,8 +328,8 @@ classdef ClassificationDiscriminant
         this.Prior = pr ./ sum (pr);
       elseif (isnumeric (Prior))
         if (numel (gnY) != numel (Prior))
-          error (strcat (["ClassificationDiscriminant: the elements in 'Prior'"], ...
-                         [" do not correspond to selected classes in Y."]));
+          error (["ClassificationDiscriminant: the elements in Prior", ...
+                  " do not correspond to selected classes in Y."]);
         endif
         this.Prior = Prior ./ sum (Prior);
       endif
@@ -227,33 +337,33 @@ classdef ClassificationDiscriminant
         this.Cost = cast (! eye (numel (gnY)), "double");
       else
         if (numel (gnY) != sqrt (numel (Cost)))
-          error (strcat (["ClassificationDiscriminant: the number of rows"], ...
-                         [" and columns in 'Cost' must correspond"], ...
-                         [" to selected classes in Y."]));
+          error (["ClassificationDiscriminant: the number of rows", ...
+                    " and columns in Cost must correspond", ...
+                    " to selected classes in Y."]);
         endif
         this.Cost = Cost;
       endif
 
-			## Assign DiscrimType
+      ## Assign DiscrimType
       this.DiscrimType = DiscrimType;
       this.Delta = Delta;
       this.Gamma = Gamma;
 
-			num_classes = numel (this.ClassNames);
+      num_classes = numel (this.ClassNames);
       num_features = columns (X);
       this.Mu = zeros (num_classes, num_features);
       for i = 1:num_classes
         this.Mu(i, :) = mean (X(gY == i, :), 1);
       endfor
 
-			## Center the predictors (XCentered)
-      this.XCentered = zeros (size(X));
+      ## Center the predictors (XCentered)
+      this.XCentered = zeros (size (X));
       for i = 1:rows (X)
         class_idx = gY(i);
         this.XCentered(i, :) = X(i, :) - this.Mu(class_idx, :);
       endfor
 
-			## Calculate Within-class covariance (Sigma)
+      ## Calculate Within-class covariance (Sigma)
       if (strcmp (this.DiscrimType, "linear"))
         this.Sigma = zeros (num_features);
         for i = 1:num_classes
@@ -264,7 +374,6 @@ classdef ClassificationDiscriminant
         D = diag (diag (this.Sigma));
         ## Regularize Sigma
         this.Sigma = (this.Sigma * (1 - this.Gamma)) + (D * this.Gamma);
-        
         this.MinGamma = 0;
         ## Calculate the MinGamma
         if (det (this.Sigma) <= 0)
@@ -273,16 +382,14 @@ classdef ClassificationDiscriminant
           sigma = this.Sigma;
           while (true)
             sigma = (sigma * (1 - gamma)) + (D * gamma);
-            
             if (det (sigma) > 0)
               minGamma = gamma;
               break;
             endif
-            
             gamma = gamma + step;
-            
             if (gamma > 1)
-              error ("ClassificationDiscriminant: Failed to find MinGamma within reasonable range.");
+              error (["ClassificationDiscriminant: Failed to ", ...
+                      "find MinGamma within reasonable range."]);
             endif
           endwhile
 
@@ -294,12 +401,12 @@ classdef ClassificationDiscriminant
         endif
       endif
 
-			## Calculate log determinant of Sigma
+      ## Calculate log determinant of Sigma
       if (strcmp (this.DiscrimType, "linear"))
         this.LogDetSigma = log (det (this.Sigma));
       endif
 
-			if (strcmpi (FillCoeffs, "on"))
+      if (strcmpi (FillCoeffs, "on"))
         ## Calculate coefficients
         switch (this.DiscrimType)
           case "linear"
@@ -313,7 +420,10 @@ classdef ClassificationDiscriminant
                 this.Coeffs(i, j).Class2 = this.ClassNames{j};
                 if (i != j)
                   A = (this.Mu(i, :) - this.Mu(j, :)) / this.Sigma;
-                  K = log (this.Prior(i) / this.Prior(j)) - 0.5 * (this.Mu(i, :) / this.Sigma * this.Mu(i, :)') + 0.5 * (this.Mu(j, :) / this.Sigma * this.Mu(j, :)');
+                  K = log (this.Prior(i) ...
+                      / this.Prior(j)) - 0.5 * (this.Mu(i, :) ...
+                      / this.Sigma * this.Mu(i, :)') + 0.5 * (this.Mu(j, :) ...
+                      / this.Sigma * this.Mu(j, :)');
                   this.Coeffs(i, j).DiscrimType = this.DiscrimType;
                   this.Coeffs(i, j).Linear = A';
                   this.Coeffs(i, j).Const = K;
@@ -321,27 +431,66 @@ classdef ClassificationDiscriminant
               endfor
             endfor
           otherwise
-            error ("ClassificationDiscriminant: discriminant type not supported.");
+            error ("ClassificationDiscriminant: unsupported discriminant type.");
         endswitch
-			endif
+      endif
 
-		endfunction
+    endfunction
 
-		function [label, score, cost] = predict (this, XC)
-			## Check for sufficient input arguments
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationDiscriminant} {@var{label} =} predict (@var{obj}, @var{XC})
+    ## @deftypefnx {ClassificationDiscriminant} {[@var{label}, @var{score}, @var{cost}] =} predict (@var{obj}, @var{XC})
+    ##
+    ## Classify new data points into categories using the discriminant
+    ## analysis model from a ClassificationDiscriminant object.
+    ##
+    ## @code{@var{label} = predict (@var{obj}, @var{XC})} returns the vector of
+    ## labels predicted for the corresponding instances in @var{XC}, using the
+    ## predictor data in @code{obj.X} and corresponding labels, @code{obj.Y},
+    ## stored in the ClassificationDiscriminant model, @var{obj}.
+    ##
+    ## @itemize
+    ## @item
+    ## @var{obj} must be a @qcode{ClassificationDiscriminant} class object.
+    ## @item
+    ## @var{XC} must be an @math{MxP} numeric matrix with the same number of
+    ## features @math{P} as the corresponding predictors of the discriminant model
+    ## in @var{obj}.
+    ## @end itemize
+    ##
+    ## @code{[@var{label}, @var{score}, @var{cost}] = predict (@var{obj},
+    ## @var{XC})} also returns @var{score}, which contains the predicted class
+    ## scores or posterior probabilities for each instance of the corresponding
+    ## unique classes, and @var{cost}, which is a matrix containing the expected
+    ## cost of the classifications.
+    ##
+    ## The @var{score} matrix contains the posterior probabilities for each class,
+    ## calculated using the multivariate normal probability density function and
+    ## the prior probabilities of each class. These scores are normalized to ensure
+    ## they sum to 1 for each observation.
+    ##
+    ## The @var{cost} matrix contains the expected classification cost for each
+    ## class, computed based on the posterior probabilities and the specified
+    ## misclassification costs.
+    ##
+    ## @seealso{ClassificationDiscriminant, ClassificationDiscriminant}
+    ## @end deftypefn
+
+    function [label, score, cost] = predict (this, XC)
+      ## Check for sufficient input arguments
       if (nargin < 2)
         error ("ClassificationDiscriminant.predict: too few input arguments.");
       endif
 
-			## Check for valid XC
+      ## Check for valid XC
       if (isempty (XC))
         error ("ClassificationDiscriminant.predict: XC is empty.");
       elseif (columns (this.X) != columns (XC))
         error (["ClassificationDiscriminant.predict: XC must have the same", ...
-                " number of features (columns) as in the Discriminant model."]);
+                " number of features."]);
       endif
 
-			## Get training data and labels
+      ## Get training data and labels
       X = this.X(logical (this.RowsUsed),:);
       Y = this.Y(logical (this.RowsUsed),:);
 
@@ -350,7 +499,7 @@ classdef ClassificationDiscriminant
       score = zeros (numObservations, numClasses);
       cost = zeros (numObservations, numClasses);
 
-			## Calculate discriminant score (posterior probabilities)
+      ## Calculate discriminant score (posterior probabilities)
       for i = 1:numClasses
         for j = 1:numObservations
           P_x_given_k = mvnpdf (XC(j, :), this.Mu(i, :), this.Sigma);
@@ -358,31 +507,89 @@ classdef ClassificationDiscriminant
         endfor
       endfor
 
-			## Normalize score to get posterior probabilities
+      ## Normalize score to get posterior probabilities
       scoreSum = sum (score, 2);
       score = bsxfun (@rdivide, score, scoreSum);
-      
+
       ## Handle numerical issues
       score(isnan (score)) = 0;
-      #score(score < 1e-4) = 0;
 
       ## Calculate expected classification cost
       for i = 1:numClasses
         cost(:, i) = sum (bsxfun (@times, score, this.Cost(:, i)'), 2);
       endfor
 
-      ## Set small values in cost to zero
-      #cost(cost < 1e-4) = 0;
-
       ## Predict the class labels based on the minimum cost
       [~, minIdx] = min (cost, [], 2);
       label = this.ClassNames(minIdx);
 
-		endfunction
+    endfunction
 
-		function L = loss (this, X, Y, varargin)
-
-			## Check for sufficient input arguments
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationDiscriminant} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {ClassificationDiscriminant} {@var{L} =} loss (@dots{}, @var{name}, @var{value})
+    ##
+    ## Compute loss for a trained ClassificationDiscriminant object.
+    ##
+    ## @code{@var{L} = loss (@var{obj}, @var{X}, @var{Y})} computes the loss,
+    ## @var{L}, using the default loss function @qcode{'mincost'}.
+    ##
+    ## @itemize
+    ## @item
+    ## @code{obj} is a @var{ClassificationDiscriminant} object trained on @code{X} and
+    ## @code{Y}.
+    ## @item
+    ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+    ## correspond to observations and columns correspond to features or
+    ## variables.
+    ## @item
+    ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels
+    ## of corresponding predictor data in @var{X}. @var{Y} must have same
+    ## numbers of Rows as @var{X}.
+    ## @end itemize
+    ##
+    ## @code{@var{L} = loss (@dots{}, @var{name}, @var{value})} allows
+    ## additional options specified by @var{name}-@var{value} pairs:
+    ##
+    ## @multitable @columnfractions 0.18 0.02 0.8
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{"LossFun"} @tab @tab Specifies the loss function to use.
+    ## Can be a function handle with four input arguments (C, S, W, Cost)
+    ## which returns a scalar value or one of:
+    ## 'binodeviance', 'classifcost', 'classiferror', 'exponential',
+    ## 'hinge', 'logit','mincost', 'quadratic'.
+    ## @itemize
+    ## @item
+    ## @code{C} is a logical matrix of size @math{NxK}, where @math{N} is the
+    ## number of observations and @math{K} is the number of classes.
+    ## The element @code{C(i,j)} is true if the class label of the i-th
+    ## observation is equal to the j-th class.
+    ## @item
+    ## @code{S} is a numeric matrix of size @math{NxK}, where each element
+    ## represents the classification score for the corresponding class.
+    ## @item
+    ## @code{W} is a numeric vector of length @math{N}, representing
+    ## the observation weights.
+    ## @item
+    ## @code{Cost} is a @math{KxK} matrix representing the misclassification
+    ## costs.
+    ## @end itemize
+    ##
+    ## @item @qcode{"Weights"} @tab @tab Specifies observation weights, must be
+    ## a numeric vector of length equal to the number of rows in X.
+    ## Default is @code{ones (size (X, 1))}. loss normalizes the weights so that
+    ## observation weights in each class sum to the prior probability of that
+    ## class. When you supply Weights, loss computes the weighted
+    ## classification loss.
+    ##
+    ## @end multitable
+    ##
+    ## @seealso{ClassificationDiscriminant}
+    ## @end deftypefn
+    function L = loss (this, X, Y, varargin)
+    
+      ## Check for sufficient input arguments
       if (nargin < 3)
         error ("ClassificationDiscriminant.loss: too few input arguments.");
       elseif (mod (nargin - 3, 2) != 0)
@@ -391,8 +598,8 @@ classdef ClassificationDiscriminant
       elseif (nargin > 7)
         error ("ClassificationDiscriminant.loss: too many input arguments.");
       endif
-
-			## Default values
+      
+      ## Default values
       LossFun = 'mincost';
       Weights = [];
 
@@ -407,8 +614,8 @@ classdef ClassificationDiscriminant
         error (["ClassificationDiscriminant.loss: Y must have the same number", ...
                 " of rows as X."]);
       endif
-
-			## Parse name-value arguments
+      
+      ## Parse name-value arguments
       while (numel (varargin) > 0)
         Value = varargin{2};
         switch (tolower (varargin{1}))
@@ -459,8 +666,8 @@ classdef ClassificationDiscriminant
         endswitch
         varargin (1:2) = [];
       endwhile
-
-			## Check for missing values in X
+      
+      ## Check for missing values in X
       if (! isa (LossFun, 'function_handle'))
         lossfun = tolower (LossFun);
         if (! strcmp (lossfun, 'mincost') && ! strcmp (lossfun, ...
@@ -470,8 +677,8 @@ classdef ClassificationDiscriminant
             return;
         endif
       endif
-
-			## Convert Y to a cell array of strings
+      
+      ## Convert Y to a cell array of strings
       if (ischar (Y))
         Y = cellstr (Y);
       elseif (isnumeric (Y))
@@ -484,8 +691,8 @@ classdef ClassificationDiscriminant
         error (["ClassificationDiscriminant.loss: Y must be a numeric,", ...
                 " logical, char, string, or cell array."]);
       endif
-
-			## Check if Y contains correct classes
+      
+      ## Check if Y contains correct classes
       if (! all (ismember (unique (Y), this.ClassNames)))
         error (["ClassificationDiscriminant.loss: Y must contain only", ...
                 " the classes in ClassNames."]);
@@ -495,8 +702,8 @@ classdef ClassificationDiscriminant
       if (isempty (Weights))
         Weights = ones (size (X, 1), 1);
       endif
-
-			## Normalize Weights
+      
+      ## Normalize Weights
       unique_classes = this.ClassNames;
       class_prior_probs = this.Prior;
       norm_weights = zeros (size (Weights));
@@ -511,8 +718,8 @@ classdef ClassificationDiscriminant
 
       ## Number of observations
       n = size (X, 1);
-
-			## Predict classification scores
+      
+      ## Predict classification scores
       [label, scores] = predict (this, X);
 
       ## C is vector of K-1 zeros, with 1 in the
@@ -524,8 +731,8 @@ classdef ClassificationDiscriminant
         C(i, class_idx) = true;
       endfor
       Y_new = C';
-
-			## Compute the loss using custom loss function
+      
+      ## Compute the loss using custom loss function
       if (isa (LossFun, 'function_handle'))
         L = LossFun (C, scores, Weights, this.Cost);
         return;
@@ -536,8 +743,8 @@ classdef ClassificationDiscriminant
       for i = 1:n
         m_j(i) = scores(i,:) * Y_new(:,i);
       endfor
-
-			## Compute the loss
+      
+      ## Compute the loss
       switch (tolower (LossFun))
         case 'binodeviance'
           b = log (1 + exp (-2 * m_j));
@@ -579,11 +786,37 @@ classdef ClassificationDiscriminant
           endfor
         otherwise
           error ("ClassificationDiscriminant.loss: invalid loss function.");
-      endswitch
+      endswitch  
+    endfunction
 
-		endfunction
-
-		function m = margin (this, X, Y)
+    ## -*- texinfo -*-
+    ## @deftypefn {ClassificationDiscriminant} {@var{m} =} margin (@var{obj}, @var{X}, @var{Y})
+    ##
+    ## @code{@var{m} = margin (@var{obj}, @var{X}, @var{Y})} returns
+    ## the classification margins for @var{obj} with data @var{X} and
+    ## classification @var{Y}. @var{m} is a numeric vector of length size (X,1).
+    ##
+    ## @itemize
+    ## @item
+    ## @code{obj} is a @var{ClassificationDiscriminant} object trained on @code{X}
+    ## and @code{Y}.
+    ## @item
+    ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+    ## correspond to observations and columns correspond to features or
+    ## variables.
+    ## @item
+    ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels
+    ## of corresponding predictor data in @var{X}. @var{Y} must have same
+    ## numbers of Rows as @var{X}.
+    ## @end itemize
+    ##
+    ## The classification margin for each observation is the difference between
+    ## the classification score for the true class and the maximal
+    ## classification score for the false classes.
+    ##
+    ## @seealso{fitcdiscr, ClassificationDiscriminant}
+    ## @end deftypefn
+    function m = margin (this, X, Y)
 
       ## Check for sufficient input arguments
       if (nargin < 3)
@@ -660,7 +893,45 @@ classdef ClassificationDiscriminant
 
     endfunction
 
-		function CVMdl = crossval (this, varargin)
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationDiscriminant} {@var{CVMdl} =} crossval (@var{obj})
+    ## @deftypefnx {ClassificationDiscriminant} {@var{CVMdl} =} crossval (@dots{}, @var{Name}, @var{Value})
+    ##
+    ## Cross Validate a Support Vector Machine classification object.
+    ##
+    ## @code{@var{CVMdl} = crossval (@var{obj})} returns a cross-validated model
+    ## object, @var{CVMdl}, from a trained model, @var{obj}, using 10-fold
+    ## cross-validation by default.
+    ##
+    ## @code{@var{CVMdl} = crossval (@var{obj}, @var{name}, @var{value})}
+    ## specifies additional name-value pair arguments to customize the
+    ## cross-validation process.
+    ##
+    ## @multitable @columnfractions 0.28 0.02 0.7
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{"KFold"} @tab @tab Specify the number of folds to use in
+    ## k-fold cross-validation.  @code{"KFold", @var{k}}, where @var{k} is an
+    ## integer greater than 1.
+    ##
+    ## @item @qcode{"Holdout"} @tab @tab Specify the fraction of the data to
+    ## hold out for testing.  @code{"Holdout", @var{p}}, where @var{p} is a
+    ## scalar in the range @math{(0,1)}.
+    ##
+    ## @item @qcode{"Leaveout"} @tab @tab Specify whether to perform
+    ## leave-one-out cross-validation.  @code{"Leaveout", @var{Value}}, where
+    ## @var{Value} is 'on' or 'off'.
+    ##
+    ## @item @qcode{"CVPartition"} @tab @tab Specify a @qcode{cvpartition}
+    ## object used for cross-validation.  @code{"CVPartition", @var{cv}}, where
+    ## @code{isa (@var{cv}, "cvpartition")} = 1.
+    ##
+    ## @end multitable
+    ##
+    ## @seealso{fitcdiscr, ClassificationDiscriminant, cvpartition,
+    ## ClassificationPartitionedModel}
+    ## @end deftypefn
+    function CVMdl = crossval (this, varargin)
       ## Check input
       if (nargin < 1)
         error ("ClassificationDiscriminant.crossval: too few input arguments.");
@@ -679,8 +950,8 @@ classdef ClassificationDiscriminant
       Holdout     = [];
       Leaveout    = 'off';
       CVPartition = [];
-
-			## Parse extra parameters
+      
+      ## Parse extra parameters
       while (numel (varargin) > 0)
         switch (tolower (varargin {1}))
 
@@ -721,8 +992,8 @@ classdef ClassificationDiscriminant
           endswitch
         varargin (1:2) = [];
       endwhile
-
-			## Determine the cross-validation method to use
+      
+      ## Determine the cross-validation method to use
       if (! isempty (CVPartition))
         partition = CVPartition;
       elseif (! isempty (Holdout))
@@ -735,13 +1006,12 @@ classdef ClassificationDiscriminant
 
       ## Create a cross-validated model object
       CVMdl = ClassificationPartitionedModel (this, partition);
-
-		endfunction
-	endmethods
+    endfunction
+  endmethods
 endclassdef
 
 %!demo
-%! ## Create discriminant classifier for Fisher's iris data
+%! ## Create discriminant classifier
 %! ## Evaluate some model predictions on new data.
 %!
 %! load fisheriris
@@ -751,12 +1021,35 @@ endclassdef
 %! obj = fitcdiscr (x, y, "NumNeighbors", 5, "Standardize", 1);
 %! [label, score, cost] = predict (obj, xc);
 
+%!demo
+%! load fisheriris
+%! model = fitcdiscr (meas, species);
+%! X = mean (meas);
+%! Y = {'versicolor'};
+%! ## Compute loss for discriminant model
+%! L = loss (model, X, Y);
+
+%!demo
+%! load fisheriris
+%! mdl = fitcdiscr (meas, species);
+%! X = mean (meas);
+%! Y = {'versicolor'};
+%! ## Margin for discriminant model
+%! m = margin (mdl, X, Y);
+
+%!demo
+%! load fisheriris
+%! x = meas;
+%! y = species;
+%! obj = fitcdiscr (x, y, "gamma", 0.4);
+%! ## Cross-validation for discriminant model
+%! CVMdl = crossval (obj);
 
 ## Test Constructor
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
-%! a = ClassificationDiscriminant (x, y);
+%! a = fitcdiscr (x, y);
 %! sigma = [6.2500, 8.2500, 10.2500; ...
 %!          8.2500, 11.2500, 14.2500; ...
 %!          10.2500, 14.2500, 18.2500];
@@ -778,7 +1071,7 @@ endclassdef
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
-%! a = ClassificationDiscriminant (x, y, "Gamma", 0.5);
+%! a = fitcdiscr (x, y, "Gamma", 0.5);
 %! sigma = [6.2500, 4.1250, 5.1250; ...
 %!          4.1250, 11.2500, 7.1250; ...
 %!          5.1250, 7.1250, 18.2500];
@@ -804,37 +1097,37 @@ endclassdef
 %! ClassificationDiscriminant (ones(4, 1))
 %!error<ClassificationDiscriminant: number of rows in X and Y must be equal.> ...
 %! ClassificationDiscriminant (ones (4,2), ones (1,4))
-%!error<ClassificationDiscriminant: 'PredictorNames' must be supplied as a cellstring array.> ...
+%!error<ClassificationDiscriminant: PredictorNames must be supplied as a cellstring array.> ...
 %! ClassificationDiscriminant (ones (5,2), ones (5,1), "PredictorNames", ["A"])
-%!error<ClassificationDiscriminant: 'PredictorNames' must be supplied as a cellstring array.> ...
+%!error<ClassificationDiscriminant: PredictorNames must be supplied as a cellstring array.> ...
 %! ClassificationDiscriminant (ones (5,2), ones (5,1), "PredictorNames", "A")
-%!error<ClassificationDiscriminant: 'PredictorNames' must have the same number of columns as X.> ...
+%!error<ClassificationDiscriminant: PredictorNames must have the same number of columns as X.> ...
 %! ClassificationDiscriminant (ones (5,2), ones (5,1), "PredictorNames", {"A", "B", "C"})
-%!error<ClassificationDiscriminant: 'ResponseName' must be a character vector.> ...
+%!error<ClassificationDiscriminant: ResponseName must be a character vector.> ...
 %! ClassificationDiscriminant (ones (5,2), ones (5,1), "ResponseName", {"Y"})
-%!error<ClassificationDiscriminant: 'ResponseName' must be a character vector.> ...
+%!error<ClassificationDiscriminant: ResponseName must be a character vector.> ...
 %! ClassificationDiscriminant (ones (5,2), ones (5,1), "ResponseName", 1)
-%!error<ClassificationDiscriminant: 'ClassNames' must be a cellstring, logical or numeric vector.> ...
+%!error<ClassificationDiscriminant: ClassNames must be a cellstring, logical or numeric vector.> ...
 %! ClassificationDiscriminant (ones(10,2), ones (10,1), "ClassNames", @(x)x)
-%!error<ClassificationDiscriminant: 'ClassNames' must be a cellstring, logical or numeric vector.> ...
+%!error<ClassificationDiscriminant: ClassNames must be a cellstring, logical or numeric vector.> ...
 %! ClassificationDiscriminant (ones(10,2), ones (10,1), "ClassNames", ['a'])
-%!error<ClassificationDiscriminant: not all 'ClassNames' are present in Y.> ...
+%!error<ClassificationDiscriminant: not all ClassNames are present in Y.> ...
 %! ClassificationDiscriminant (ones(10,2), ones (10,1), "ClassNames", [1, 2])
-%!error<ClassificationDiscriminant: not all 'ClassNames' are present in Y.> ...
+%!error<ClassificationDiscriminant: not all ClassNames are present in Y.> ...
 %! ClassificationDiscriminant (ones(5,2), {'a';'b';'a';'a';'b'}, "ClassNames", {'a','c'})
-%!error<ClassificationDiscriminant: not all 'ClassNames' are present in Y.> ...
+%!error<ClassificationDiscriminant: not all ClassNames are present in Y.> ...
 %! ClassificationDiscriminant (ones(10,2), logical (ones (10,1)), "ClassNames", [true, false])
-%!error<ClassificationDiscriminant: 'Prior' must be either a numeric vector or a character vector.> ...
+%!error<ClassificationDiscriminant: Prior must be either a numeric vector or a character vector.> ...
 %! ClassificationDiscriminant (ones (5,2), ones (5,1), "Prior", {"1", "2"})
-%!error<ClassificationDiscriminant: the elements in 'Prior' do not correspond to selected classes in Y.> ...
+%!error<ClassificationDiscriminant: the elements in Prior do not correspond to selected classes in Y.> ...
 %! ClassificationDiscriminant (ones (5,2), ones (5,1), "Prior", [1 2])
-%!error<ClassificationDiscriminant: the number of rows and columns in 'Cost' must correspond to selected classes in Y.> ...
+%!error<ClassificationDiscriminant: the number of rows and columns in Cost must correspond to selected classes in Y.> ...
 %! ClassificationDiscriminant (ones (5,2), ones (5,1), "Cost", [1 2; 1 3])
-%!error<ClassificationDiscriminant: 'Cost' must be a numeric square matrix.> ...
+%!error<ClassificationDiscriminant: Cost must be a numeric square matrix.> ...
 %! ClassificationDiscriminant (ones (5,2), ones (5,1), "Cost", [1, 2])
-%!error<ClassificationDiscriminant: 'Cost' must be a numeric square matrix.> ...
+%!error<ClassificationDiscriminant: Cost must be a numeric square matrix.> ...
 %! ClassificationDiscriminant (ones (5,2), ones (5,1), "Cost", "string")
-%!error<ClassificationDiscriminant: 'Cost' must be a numeric square matrix.> ...
+%!error<ClassificationDiscriminant: Cost must be a numeric square matrix.> ...
 %! ClassificationDiscriminant (ones (5,2), ones (5,1), "Cost", {eye(2)})
 
 ## Test predict method
@@ -870,8 +1163,104 @@ endclassdef
 %! predict (ClassificationDiscriminant (ones (4,2), ones (4,1)))
 %!error<ClassificationDiscriminant.predict: XC is empty.> ...
 %! predict (ClassificationDiscriminant (ones (4,2), ones (4,1)), [])
-%!error<ClassificationDiscriminant.predict: XC must have the same number of features> ...
+%!error<ClassificationDiscriminant.predict: XC must have the same number of features.> ...
 %! predict (ClassificationDiscriminant (ones (4,2), ones (4,1)), 1)
+
+## Test loss method
+%!test
+%! load fisheriris
+%! model = fitcdiscr (meas, species);
+%! X = mean (meas);
+%! Y = {'versicolor'};
+%! L = loss (model, X, Y);
+%! assert (L, 0)
+%!test
+%! X = [1, 2; 3, 4; 5, 6];
+%! Y = {'A'; 'B'; 'A'};
+%! model = fitcdiscr (X, Y, "Gamma", 0.4);
+%! X_test = [1, 6; 3, 3];
+%! Y_test = {'A'; 'B'};
+%! L = loss (model, X_test, Y_test);
+%! assert (L, 0.3333, 1e-4)
+%!test
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];
+%! Y = ['1'; '2'; '3'; '1'];
+%! model = fitcdiscr (X, Y, "gamma" , 0.5);
+%! X_test = [3, 3];
+%! Y_test = ['1'];
+%! L = loss (model, X_test, Y_test, 'LossFun', 'quadratic');
+%! assert (L, 0.2423, 1e-4)
+%!test
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];
+%! Y = ['1'; '2'; '3'; '1'];
+%! model = fitcdiscr (X, Y, "gamma" , 0.5);
+%! X_test = [3, 3; 5, 7];
+%! Y_test = ['1'; '2'];
+%! L = loss (model, X_test, Y_test, 'LossFun', 'classifcost');
+%! assert (L, 0.3333, 1e-4)
+%!test
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];
+%! Y = ['1'; '2'; '3'; '1'];
+%! model = fitcdiscr (X, Y, "gamma" , 0.5);
+%! X_test = [3, 3; 5, 7];
+%! Y_test = ['1'; '2'];
+%! L = loss (model, X_test, Y_test, 'LossFun', 'hinge');
+%! assert (L, 0.5886, 1e-4)
+%!test
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];
+%! Y = ['1'; '2'; '3'; '1'];
+%! model = fitcdiscr (X, Y, "gamma" , 0.5);
+%! X_test = [3, 3; 5, 7];
+%! Y_test = ['1'; '2'];
+%! W = [1; 2];
+%! L = loss (model, X_test, Y_test, 'LossFun', 'logit', 'Weights', W);
+%! assert (L, 0.5107, 1e-4)
+%!test
+%! X = [1, 2; 3, 4; 5, 6];
+%! Y = {'A'; 'B'; 'A'};
+%! model = fitcdiscr (X, Y, "gamma" , 0.5);
+%! X_with_nan = [1, 2; NaN, 4];
+%! Y_test = {'A'; 'B'};
+%! L = loss (model, X_with_nan, Y_test)
+%! assert (L, 0.3333, 1e-4)
+%!test
+%! X = [1, 2; 3, 4; 5, 6];
+%! Y = {'A'; 'B'; 'A'};
+%! model = fitcdiscr (X, Y);
+%! X_with_nan = [1, 2; NaN, 4];
+%! Y_test = {'A'; 'B'};
+%! L = loss (model, X_with_nan, Y_test, 'LossFun', 'logit');
+%! assert (isnan (L))
+%!test
+%! X = [1, 2; 3, 4; 5, 6];
+%! Y = {'A'; 'B'; 'A'};
+%! model = fitcdiscr (X, Y);
+%! customLossFun = @(C, S, W, Cost) sum (W .* sum (abs (C - S), 2));
+%! L = loss (model, X, Y, 'LossFun', customLossFun);
+%! assert (L, 0.8889, 1e-4)
+%!test
+%! X = [1, 2; 3, 4; 5, 6];
+%! Y = [1; 2; 1];
+%! model = fitcdiscr (X, Y);
+%! L = loss (model, X, Y, 'LossFun', 'classiferror');
+%! assert (L, 0.3333, 1e-4)
+
+## Test input validation for loss method
+%!error<ClassificationDiscriminant.loss: too few input arguments.> ...
+%! loss (ClassificationDiscriminant (ones (4,2), ones (4,1)))
+%!error<ClassificationDiscriminant.loss: too few input arguments.> ...
+%! loss (ClassificationDiscriminant (ones (4,2), ones (4,1)), ones (4,2))
+%!error<ClassificationDiscriminant.loss: name-value arguments must be in pairs.> ...
+%! loss (ClassificationDiscriminant (ones (4,2), ones (4,1)), ones (4,2), ...
+%!        ones (4,1), 'LossFun')
+%!error<ClassificationDiscriminant.loss: Y must have the same number of rows as X.> ...
+%! loss (ClassificationDiscriminant (ones (4,2), ones (4,1)), ones (4,2), ones (3,1))
+%!error<ClassificationDiscriminant.loss: invalid loss function.> ...
+%! loss (ClassificationDiscriminant (ones (4,2), ones (4,1)), ones (4,2), ...
+%!        ones (4,1), 'LossFun', 'a')
+%!error<ClassificationDiscriminant.loss: invalid Weights.> ...
+%! loss (ClassificationDiscriminant (ones (4,2), ones (4,1)), ones (4,2), ...
+%!        ones (4,1), 'Weights', 'w')
 
 ## Test margin method
 %! load fisheriris
