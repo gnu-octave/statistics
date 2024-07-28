@@ -136,7 +136,7 @@ classdef ClassificationPartitionedModel
       endif
 
       ## Check for valid object types
-      validTypes = {'ClassificationKNN', 'ClassificationSVM'};
+      validTypes = {'ClassificationKNN', 'ClassificationSVM', 'ClassificationDiscriminant'};
       if (! any (strcmp (class (Mdl), validTypes)))
         error ("ClassificationPartitionedModel: unsupported model type.");
       endif
@@ -144,7 +144,6 @@ classdef ClassificationPartitionedModel
       ## Set properties
       this.X = Mdl.X;
       this.Y = Mdl.Y;
-      this.Standardize = Mdl.Standardize;
       this.KFold = get (Partition, "NumTestSets");
       this.Trained = cell (this.KFold, 1);
       this.ClassNames = Mdl.ClassNames;
@@ -155,7 +154,10 @@ classdef ClassificationPartitionedModel
       this.CrossValidatedModel = class (Mdl);
       this.Prior = Mdl.Prior;
       this.Cost = Mdl.Cost;
-      this.ScoreTransform = Mdl.ScoreTransform;
+      if (class (Mdl) != "ClassificationDiscriminant")
+        this.Standardize = Mdl.Standardize;
+        this.ScoreTransform = Mdl.ScoreTransform;
+      endif
 
       ## Switch Classification object types
       switch (this.CrossValidatedModel)
@@ -245,6 +247,30 @@ classdef ClassificationPartitionedModel
 
           ## Store ModelParameters to ClassificationPartitionedModel object
           this.ModelParameters = params;
+
+        case "ClassificationDiscriminant"
+          ## Arguments to pass in fitcdiscr
+          args = {};
+          ## List of acceptable parameters for fitcdiscr
+          DiscrParams = {'PredictorNames', 'ResponseName', 'Gamma', ...
+                        , 'DiscrimType'};
+          ## Set parameters
+          for i = 1:numel (DiscrParams)
+            paramName = DiscrParams{i};
+            if (isprop (Mdl, paramName))
+              paramValue = Mdl.(paramName);
+              if (! isempty (paramValue))
+                args = [args, {paramName, Mdl.(paramName)}];
+              endif
+            endif
+          endfor
+
+          ## Train model according to partition object
+          for k = 1:this.KFold
+            idx = training (this.Partition, k);
+            this.Trained{k} = fitcdiscr (this.X(idx, :), ...
+                  this.Y(idx), "FillCoeffs", "off", args{:});
+          endfor
 
       endswitch
     endfunction
@@ -369,6 +395,42 @@ classdef ClassificationPartitionedModel
             testIdx = test (this.Partition, 1);
             label(testIdx) = mode (this.Y);
             Score(testIdx, :) = NaN;
+          endif
+
+        case 'ClassificationDiscriminant'
+          for k = 1:this.KFold
+            testIdx = test (this.Partition, k);
+            model = this.Trained{k};
+
+            [predictedLabel, score, cost] = predict (model, this.X(testIdx, :));
+
+            ## Convert cell array of labels to appropriate type
+            if (iscell (predictedLabel))
+              if (isnumeric (this.Y))
+                predictedLabel = cellfun (@str2num, predictedLabel);
+              elseif (ischar (this.Y) || isstring (this.Y))
+                predictedLabel = string (predictedLabel);
+              elseif (islogical (this.Y))
+                predictedLabel = cellfun (@logical, predictedLabel);
+              elseif (iscellstr (this.Y))
+                predictedLabel = predictedLabel;
+              endif
+            endif
+
+            label(testIdx) = predictedLabel;
+            Score(testIdx, :) = score;
+
+            if (nargout > 2)
+              Cost(testIdx, :) = cost;
+            endif
+          endfor
+
+          ## Handle single fold case (holdout)
+          if (this.KFold == 1)
+            testIdx = test (this.Partition, 1);
+            label(testIdx) = mode (this.Y);
+            Score(testIdx, :) = NaN;
+            Cost(testIdx, :) = NaN;
           endif
 
         otherwise
