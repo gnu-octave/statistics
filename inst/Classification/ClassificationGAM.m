@@ -33,10 +33,11 @@ classdef ClassificationGAM
     Intercept       = [];     # Intercept term
     PairDetectionBinEdges = []; # Pair-detection bin edges
     ReasonForTermination  = []; # Reason for termination
+
   endproperties
 
   methods (Access = public)
-    ## class object constructor
+    ## constructor
     function this = ClassificationGAM (X, Y, varargin)
 
       ## Check for sufficient number of input arguments
@@ -44,83 +45,139 @@ classdef ClassificationGAM
         error ("ClassificationGAM: too few input arguments.");
       endif
 
-      ## Check X and Y have the same number of observations
-      if (rows (X) != rows (Y))
-        error ("ClassificationGAM: number of rows in X and Y must be equal.");
+      ## Validate X
+      if (! isnumeric (X))
+        error ("ClassificationGAM: X must be a numeric matrix.");
       endif
 
-      ## Assign original X and Y data to the ClassificationGAM object
+      ## Check X and Y have the same number of observations
+      if (rows (X) != rows (Y))
+        error (["ClassificationGAM: number of rows ", ...
+                "in X and Y must be equal."]);
+      endif
+
+      ## Assign original X and Y data
       this.X = X;
       this.Y = Y;
-      
+
       ## Get groups in Y
       [gY, gnY, glY] = grp2idx (Y);
 
       ## Set default values before parsing optional parameters
-      PredictorNames  = [];     # Predictor variables names
-      ResponseName    = [];     # Response variable name
-      ClassNames      = [];     # Names of classes in Y
-      Prior           = [];     # Prior probability for each class
-      Cost            = [];     # Cost of misclassification
-      
-      ## Parse extra parameters
+      ClassNames           = [];
+      Cost                 = [];
+      PredictorNames       = [];
+      ResponseName         = 'Y';
+      Prior                = "empirical";
+      InitialLearnRateForInteractions = 1;
+      InitialLearnRateForPredictors   = 1;
+      NumTreesPerPredictor = 300;
+      NumTreesPerInteraction = 100;
+
+      ## Parse optional parameters
       while (numel (varargin) > 0)
-        switch (tolower (varargin {1}))
+        switch (lower (varargin{1}))
+
           case "predictornames"
             PredictorNames = varargin{2};
             if (! iscellstr (PredictorNames))
-              error (strcat (["ClassificationKNN: PredictorNames must"], ...
-                             [" be supplied as a cellstring array."]));
+              error (["ClassificationGAM: PredictorNames ", ...
+                      "must be supplied as a cellstring array."]);
             elseif (columns (PredictorNames) != columns (X))
-              error (strcat (["ClassificationKNN: PredictorNames must"], ...
-                             [" have the same number of columns as X."]));
+              error (["ClassificationGAM: PredictorNames ", ...
+                      "must have the same number of columns as X."]);
             endif
 
           case "responsename"
             ResponseName = varargin{2};
             if (! ischar (ResponseName))
-              error ("ClassificationKNN: ResponseName must be a character array.");
+              error (["ClassificationGAM: ResponseName", ...
+                       " must be a character vector."]);
             endif
 
           case "classnames"
             ClassNames = varargin{2};
-            if (! iscellstr (ClassNames))
-              error (strcat (["ClassificationKNN: ClassNames must"], ...
-                               [" be a cellstring array."]));
+            if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
+                                          || islogical (ClassNames)))
+              error (["ClassificationGAM: ClassNames must be a", ...
+                      " cellstring, logical or numeric vector."]);
             endif
             ## Check that all class names are available in gnY
-            if (! all (cell2mat (cellfun (@(x) any (strcmp (x, gnY)),
-                                 ClassNames, "UniformOutput", false))))
-              error ("ClassificationKNN: not all ClassNames are present in Y.");
+            if (iscellstr (ClassNames))
+              if (! all (cell2mat (cellfun (@(x) any (strcmp (x, gnY)),
+                                   ClassNames, "UniformOutput", false))))
+                error (["ClassificationGAM: not all ClassNames", ...
+                        " are present in Y."]);
+              endif
+            else
+              if (! all (cell2mat (arrayfun (@(x) any (x == glY),
+                                   ClassNames, "UniformOutput", false))))
+                error (["ClassificationGAM: not all ClassNames", ...
+                        " are present in Y."]);
+              endif
             endif
-          
+
           case "prior"
             Prior = varargin{2};
             if (! ((isnumeric (Prior) && isvector (Prior)) ||
                   (strcmpi (Prior, "empirical") || strcmpi (Prior, "uniform"))))
-              error (strcat (["ClassificationKNN: Prior must be either a"], ...
-                             [" numeric vector or a string."]));
+              error (["ClassificationGAM: Prior must be either", ...
+                      " a numeric vector or a character vector."]);
             endif
 
           case "cost"
             Cost = varargin{2};
             if (! (isnumeric (Cost) && issquare (Cost)))
-              error ("ClassificationKNN: Cost must be a numeric square matrix.");
+              error (["ClassificationGAM: Cost must be", ...
+                      " a numeric square matrix."]);
+            endif
+
+          case "initiallearnrateforinteractions"
+            InitialLearnRateForInteractions = varargin{2};
+            if (InitialLearnRateForInteractions <= 0 && InitialLearnRateForInteractions > 1)
+              error ("ClassificationGAM: InitialLearnRateForInteractions must be between 0 and 1.")
+            endif
+
+          case "initiallearnrateforpredictors"
+            InitialLearnRateForPredictors = varargin{2};
+            if (InitialLearnRateForPredictors <= 0 && InitialLearnRateForPredictors > 1)
+              error ("ClassificationGAM: InitialLearnRateForPredictors must be between 0 and 1.")
+            endif
+
+          case "numtreesperpredictor"
+            NumTreesPerPredictor = varargin{2};
+            if (NumTreesPerPredictor <= 0)
+              error ("ClassificationGAM: NumTreesPerPredictor must be positive integer scalar.")
             endif
           
+          case "numtreesperinteraction"
+            NumTreesPerInteraction = varargin{2};
+            if (NumTreesPerInteraction <= 0)
+              error ("ClassificationGAM: NumTreesPerInteraction must be positive integer scalar.")
+            endif
+
+          case "interactions"
+            Interactions = varargin{2};
+            if (isnumeric (Interactions) && isscalar (Interactions) && Interactions >= 0)
+              Interactions = Interactions;
+            elseif (islogical (Interactions) && ismatrix (Interactions) && columns (Interactions) == columns (X))
+              Interactions = Interactions;
+            elseif (ischar (Interactions) && strcmpi (Interactions, 'all'))
+              Interactions = 'all';
+            else
+              error ("ClassificationGAM: Interactions must be a nonnegative integer, logical matrix, or 'all'.");
+            endif
+
+
+          otherwise
+            error ("ClassificationGAM: invalid name-value arguments.");
         endswitch
         varargin (1:2) = [];
       endwhile
 
-      ## Get number of variables in training data
-      ndims_X = columns (X);
-
-      ## Assign the number of predictors to the ClassificationKNN object
-      this.NumPredictors = ndims_X;
-
       ## Generate default predictors and response variabe names (if necessary)
       if (isempty (PredictorNames))
-        for i = 1:ndims_X
+        for i = 1:columns (X)
           PredictorNames {i} = strcat ("x", num2str (i));
         endfor
       endif
@@ -133,17 +190,15 @@ classdef ClassificationGAM
       this.ResponseName   = ResponseName;
 
       ## Handle class names
-      if (isempty (ClassNames))
-        ClassNames = gnY;
-      else
-        ru = logical (zeros (size (Y)));
-        for i = 1:numel (ClassNames)
-          ac = find (strcmp (gnY, ClassNames{i}));
-          ru = ru | ac;
+      if (! isempty (ClassNames))
+        if (iscellstr (ClassNames))
+          ru = find (! ismember (gnY, ClassNames));
+        else
+          ru = find (! ismember (glY, ClassNames));
+        endif
+        for i = 1:numel (ru)
+          gY(gY == ru(i)) = NaN;
         endfor
-        X = X(ru);
-        Y = Y(ru);
-        gY = gY(ru);
       endif
 
       ## Remove missing values from X and Y
@@ -157,12 +212,9 @@ classdef ClassificationGAM
 
       ## Check X contains valid data
       if (! (isnumeric (X) && isfinite (X)))
-        error ("ClassificationKNN: invalid values in X.");
+        error ("ClassificationGAM: invalid values in X.");
       endif
 
-      ## Assign the number of observations and their correspoding indices
-      ## on the original data, which will be used for training the model,
-      ## to the ClassificationKNN object
       this.NumObservations = rows (X);
       this.RowsUsed = cast (RowsUsed, "double");
 
@@ -177,8 +229,8 @@ classdef ClassificationGAM
         this.Prior = pr ./ sum (pr);
       elseif (isnumeric (Prior))
         if (numel (gnY) != numel (Prior))
-          error (strcat (["ClassificationKNN: the elements in Prior do not"], ...
-                         [" correspond to selected classes in Y."]));
+          error (["ClassificationGAM: the elements in Prior", ...
+                  " do not correspond to selected classes in Y."]);
         endif
         this.Prior = Prior ./ sum (Prior);
       endif
@@ -186,21 +238,12 @@ classdef ClassificationGAM
         this.Cost = cast (! eye (numel (gnY)), "double");
       else
         if (numel (gnY) != sqrt (numel (Cost)))
-          error (strcat (["ClassificationKNN: the number of rows and"], ...
-                         [" columns in Cost must correspond to selected"], ...
-                         [" classes in Y."]));
+          error (["ClassificationGAM: the number of rows", ...
+                    " and columns in Cost must correspond", ...
+                    " to selected classes in Y."]);
         endif
         this.Cost = Cost;
       endif
-
-
     endfunction
   endmethods
 endclassdef
-
-## demo
-
-## tests for constructor
-## tests for input validation of constructor
-## tests for predict
-## tests for input validation of predict
