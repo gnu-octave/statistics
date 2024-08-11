@@ -219,6 +219,8 @@ classdef NegativeBinomialDistribution
       endif
       umax = nbininv (1, this.R, this.P);
       if (this.IsTruncated)
+        ## Find out of range p values
+        is_nan = p < 0 | p > 1;
         ## Get lower and upper boundaries
         lx = ceil (this.Truncation(1));
         ux = floor (this.Truncation(2));
@@ -226,6 +228,7 @@ classdef NegativeBinomialDistribution
         lp = nbincdf (lx - 1, this.R, this.P);
         up = nbincdf (ux, this.R, this.P);
         p = lp + p * (up - lp);
+        p(is_nan) = NaN;
       endif
       x = nbininv (p, this.R, this.P);
       if (this.IsTruncated)

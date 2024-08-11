@@ -175,8 +175,8 @@ classdef PoissonDistribution
         ub = x > ux;
         p(lb) = 0;
         p(ub) = 1;
-        p(! (lb | ub)) -= poisscdf (lx, this.lambda);
-        p(! (lb | ub)) /= diff (poisscdf ([lx, ux], this.lambda));
+        p(! (lb | ub)) -= poisscdf (lx - 1, this.lambda);
+        p(! (lb | ub)) /= diff (poisscdf ([lx-1, ux], this.lambda));
       endif
       ## Apply uflag
       if (utail)
@@ -198,18 +198,23 @@ classdef PoissonDistribution
       if (! isscalar (this))
         error ("icdf: requires a scalar probability distribution.");
       endif
+      umax = poissinv (1, this.lambda);
       if (this.IsTruncated)
-        lp = poisscdf (this.Truncation(1), this.lambda);
-        up = poisscdf (this.Truncation(2), this.lambda);
-        ## Adjust p values within range of p @ lower limit and p @ upper limit
+        ## Find out of range p values
         is_nan = p < 0 | p > 1;
+        ## Get lower and upper boundaries
+        lx = ceil (this.Truncation(1));
+        ux = floor (this.Truncation(2));
+        ux = min (ux, umax);
+        lp = poisscdf (lx - 1, this.lambda);
+        up = poisscdf (ux, this.lambda);
+        p = lp + p * (up - lp);
         p(is_nan) = NaN;
-        np = lp + (up - lp) .* p;
-        x = poissinv (np, this.lambda);
+      endif
+      x = poissinv (p, this.lambda);
+      if (this.IsTruncated)
         x(x < this.Truncation(1)) = this.Truncation(1);
         x(x > this.Truncation(2)) = this.Truncation(2);
-      else
-        x = poissinv (p, this.lambda);
       endif
     endfunction
 
@@ -242,11 +247,22 @@ classdef PoissonDistribution
       if (! isscalar (this))
         error ("mean: requires a scalar probability distribution.");
       endif
+      [um, uv] = poisstat (this.lambda);
       if (this.IsTruncated)
-        fm = @(x) x .* pdf (this, x);
-        m = integral (fm, this.Truncation(1), this.Truncation(2));
+        lx = ceil (this.Truncation(1));
+        ux = floor (this.Truncation(2));
+        ux = min (ux, poissinv (1, this.lambda));
+        ## Handle infinite support on the right
+        if (isequal (ux, Inf))
+          ratio = 1 / diff (poisscdf ([lx-1, ux], this.lambda));
+          x = 0:lx-1;
+          m = ratio * (um - sum (x .* poisspdf (x, this.lambda)));
+        else
+          x = lx:ux;
+          m = sum (x .* pdf (this, x));
+        endif
       else
-        m = poisstat (this.lambda);
+        m = um;
       endif
     endfunction
 
@@ -266,7 +282,7 @@ classdef PoissonDistribution
       if (this.IsTruncated)
         lx = this.Truncation(1);
         ux = this.Truncation(2);
-        Fa_b = poisscdf ([lx, ux], this.lambda);
+        Fa_b = poisscdf ([lx-1, ux], this.lambda);
         m = poissinv (sum (Fa_b) / 2, this.lambda);
       else
         m = poissinv (0.5, this.lambda);
@@ -356,7 +372,7 @@ classdef PoissonDistribution
         ux = this.Truncation(2);
         ub = x > ux;
         y(lb | ub) = 0;
-        y(! (lb | ub)) /= diff (poisscdf ([lx, ux], this.lambda));
+        y(! (lb | ub)) /= diff (poisscdf ([lx-1, ux], this.lambda));
       endif
     endfunction
 
@@ -569,10 +585,24 @@ classdef PoissonDistribution
         error ("var: requires a scalar probability distribution.");
       endif
       if (this.IsTruncated)
-        fm = @(x) x .* pdf (this, x);
-        m = integral (fm, this.Truncation(1), this.Truncation(2));
-        fv =  @(x) ((x - m) .^ 2) .* pdf (this, x);
-        v = integral (fv, this.Truncation(1), this.Truncation(2));
+        ## Calculate untruncated mean and variance
+        [um, uv] = poisstat (this.lambda);
+        ## Calculate truncated mean
+        m = mean (this);
+        ## Get lower and upper boundaries
+        lx = ceil (this.Truncation(1));
+        ux = floor (this.Truncation(2));
+        ux = min (ux, poissinv (1, this.lambda));
+        ## Handle infinite support on the right
+        if (isequal (ux, Inf))
+          ratio = 1 / diff (poisscdf ([lx-1, ux], this.lambda));
+          x = 0:lx-1;
+          v = ratio * (uv + (um - m) ^ 2 - sum (((x - m) .^ 2) .* ...
+                                                poisspdf (x, this.lambda)));
+        else
+          x = lx:ux;
+          v = sum (((x - m) .^ 2) .* pdf (this, x));
+        endif
       else
         [~, v] = poisstat (this.lambda);
       endif
@@ -623,34 +653,42 @@ function checkparams (lambda)
 endfunction
 
 ## Test output
-%!shared pd, t
+%!shared pd, t, t_inf
 %! pd = PoissonDistribution;
 %! t = truncate (pd, 2, 4);
+%! t_inf = truncate (pd, 2, Inf);
 %!assert (cdf (pd, [0:5]), [0.3679, 0.7358, 0.9197, 0.9810, 0.9963, 0.9994], 1e-4);
-#%!assert (cdf (t, [0:5]), [0, 0, 0.7059, 0.9412, 1, 1], 1e-4);
+%!assert (cdf (t, [0:5]), [0, 0, 0.7059, 0.9412, 1, 1], 1e-4);
+%!assert (cdf (t_inf, [0:5]), [0, 0, 0.6961, 0.9281, 0.9861, 0.9978], 1e-4);
 %!assert (cdf (pd, [1.5, 2, 3, 4]), [0.7358, 0.9197, 0.9810, 0.9963], 1e-4);
-#%!assert (cdf (t, [1.5, 2, 3, 4]), [0, 0.7059, 0.9412, 1], 1e-4);
+%!assert (cdf (t, [1.5, 2, 3, 4]), [0, 0.7059, 0.9412, 1], 1e-4);
 %!assert (icdf (pd, [0:0.2:1]), [0, 0, 1, 1, 2, Inf], 1e-4);
-#%!assert (icdf (t, [0:0.2:1]), [2, 2, 2, 2, 3, 4], 1e-4);
+%!assert (icdf (t, [0:0.2:1]), [2, 2, 2, 2, 3, 4], 1e-4);
+%!assert (icdf (t_inf, [0:0.2:1]), [2, 2, 2, 2, 3, Inf], 1e-4);
 %!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, 1, 1, 2, Inf, NaN], 1e-4);
-#%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 2, 2, 3, 4, NaN], 1e-4);
+%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 2, 2, 3, 4, NaN], 1e-4);
 %!assert (iqr (pd), 2);
-#%!assert (iqr (t), 1);
+%!assert (iqr (t), 1);
 %!assert (mean (pd), 1);
-#%!assert (mean (t), 2.3529, 1e-4);
+%!assert (mean (t), 2.3529, 1e-4);
+%!assert (mean (t_inf), 2.3922, 1e-4);
 %!assert (median (pd), 1);
-#%!assert (median (t), 2);
+%!assert (median (t), 2);
+%!assert (median (t_inf), 2);
 %!assert (pdf (pd, [0:5]), [0.3679, 0.3679, 0.1839, 0.0613, 0.0153, 0.0031], 1e-4);
-#%!assert (pdf (t, [0:5]), [0, 0, 0.7059, 0.2353, 0.0588, 0], 1e-4);
+%!assert (pdf (t, [0:5]), [0, 0, 0.7059, 0.2353, 0.0588, 0], 1e-4);
+%!assert (pdf (t_inf, [0:5]), [0, 0, 0.6961, 0.2320, 0.0580, 0.0116], 1e-4);
 %!assert (pdf (pd, [-1, 1:4, NaN]), [0, 0.3679, 0.1839, 0.0613, 0.0153, NaN], 1e-4);
-#%!assert (pdf (t, [-1, 1:4, NaN]), [0, 0, 0.7059, 0.2353, 0.0588, NaN], 1e-4);
+%!assert (pdf (t, [-1, 1:4, NaN]), [0, 0, 0.7059, 0.2353, 0.0588, NaN], 1e-4);
 %!assert (isequal (size (random (pd, 100, 50)), [100, 50]))
 %!assert (any (random (t, 1000, 1) < 2), false);
 %!assert (any (random (t, 1000, 1) > 4), false);
 %!assert (std (pd), 1);
-#%!assert (std (t), 0.5882, 1e-4);
+%!assert (std (t), 0.5882, 1e-4);
+%!assert (std (t_inf), 0.6738, 1e-4);
 %!assert (var (pd), 1);
-#%!assert (var (t), 0.3460, 1e-4);
+%!assert (var (t), 0.3460, 1e-4);
+%!assert (var (t_inf), 0.4540, 1e-4);
 
 ## Test input validation
 ## 'PoissonDistribution' constructor

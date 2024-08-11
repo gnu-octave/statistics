@@ -215,6 +215,8 @@ classdef BinomialDistribution
       endif
       umax = binoinv (1, this.N, this.p);
       if (this.IsTruncated && this.Truncation(2) >= umax)
+        ## Find out of range p values
+        is_nan = p < 0 | p > 1;
         ## Get lower and upper boundaries
         lx = ceil (this.Truncation(1));
         ux = floor (this.Truncation(2));
@@ -222,6 +224,7 @@ classdef BinomialDistribution
         lp = binocdf (lx - 1, this.N, this.p);
         up = binocdf (ux, this.N, this.p);
         p = lp + p * (up - lp);
+        p(is_nan) = NaN;
       endif
       x = binoinv (p, this.N, this.p);
       if (this.IsTruncated)
