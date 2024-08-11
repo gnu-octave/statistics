@@ -103,7 +103,6 @@ function [lb, ub, xmin, xmax] = compute_boundaries (pd)
   ub = m + 3 * s;
   xmin = m - 3.5 * s;
   xmax = m + 3.5 * s;
-
   ## Fix boundaries for specific distributions
   PD = {"bino", "bisa", "burr", "exp", "gam", "invg", "logl", ...
         "logn", "naka", "nbin", "poiss", "rayl", "rice", "wbl"};
