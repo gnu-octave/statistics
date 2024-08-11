@@ -645,6 +645,35 @@ function checkparams (a, b)
   endif
 endfunction
 
+%!demo
+%! ## Generate a data set of 5000 random samples from a Beta distribution with
+%! ## parameters a = 2 and b = 4.  Fit a Beta to this data and plot a PDF for
+%! ## the fitted Beta distribution superimposed on a histogram of the data
+%!
+%! pd = makedist ("Beta", "a", 2, "b", 4)
+%! randg ("seed", 21);
+%! data = random (pd, 5000, 1);
+%! pd = fitdist (data, "Beta")
+%! plot (pd)
+%! title (sprintf ("Fitted Beta distribution with a = %0.2f and b = %0.2f", ...
+%!                 pd.a, pd.b))
+
+%!demo
+%! ## Plot the PDF of a Beta distribution, with parameters a = 2 and b = 4,
+%! ## truncated at [0.1, 0.8] intervals. Generate 10000 random samples from
+%! ## this truncated distribution and superimpose a histogram with 100 bins
+%! ## scaled accordingly
+%!
+%! pd = makedist ("Beta", "a", 2, "b", 4)
+%! t = truncate (pd, 0.1, 0.8)
+%! randg ("seed", 21);
+%! data = random (t, 10000, 1);
+%! plot (t)
+%! title ("Beta distribution (a = 2, b = 4) truncated at [0.1, 0.8]")
+%! hold on
+%! hist (data, 100, 140)
+%! hold off
+
 ## Test output
 %!shared pd, t
 %! pd = BetaDistribution;

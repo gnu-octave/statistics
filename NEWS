@@ -559,6 +559,15 @@
  Improvements:
  =============
 
+ ** BinomialDistribution: fixed computations on truncated distribution
+                          methods (github issue #128)
+
  ** ClassificationKNN: new methods and various bug fixes
 
  ** fitcknn: support for cross-validation
+
+ ** NegativeBinomialDistribution: fixed computations on truncated distribution
+                                  methods (github issue #128)
+
+ ** PoissonDistribution: fixed computations on truncated distribution
+                         methods (github issue #128)
