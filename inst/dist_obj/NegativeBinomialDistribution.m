@@ -194,8 +194,8 @@ classdef NegativeBinomialDistribution
         ub = x > ux;
         p(lb) = 0;
         p(ub) = 1;
-        p(! (lb | ub)) -= nbincdf (lx, this.R, this.P);
-        p(! (lb | ub)) /= diff (nbincdf ([lx, ux], this.R, this.P));
+        p(! (lb | ub)) -= nbincdf (lx - 1, this.R, this.P);
+        p(! (lb | ub)) /= diff (nbincdf ([lx-1, ux], this.R, this.P));
       endif
       ## Apply uflag
       if (utail)
@@ -217,18 +217,20 @@ classdef NegativeBinomialDistribution
       if (! isscalar (this))
         error ("icdf: requires a scalar probability distribution.");
       endif
+      umax = nbininv (1, this.R, this.P);
       if (this.IsTruncated)
-        lp = nbincdf (this.Truncation(1), this.R, this.P);
-        up = nbincdf (this.Truncation(2), this.R, this.P);
-        ## Adjust p values within range of p @ lower limit and p @ upper limit
-        is_nan = p < 0 | p > 1;
-        p(is_nan) = NaN;
-        np = lp + (up - lp) .* p;
-        x = nbininv (np, this.R, this.P);
+        ## Get lower and upper boundaries
+        lx = ceil (this.Truncation(1));
+        ux = floor (this.Truncation(2));
+        ux = min (ux, umax);
+        lp = nbincdf (lx - 1, this.R, this.P);
+        up = nbincdf (ux, this.R, this.P);
+        p = lp + p * (up - lp);
+      endif
+      x = nbininv (p, this.R, this.P);
+      if (this.IsTruncated)
         x(x < this.Truncation(1)) = this.Truncation(1);
         x(x > this.Truncation(2)) = this.Truncation(2);
-      else
-        x = nbininv (p, this.R, this.P);
       endif
     endfunction
 
@@ -261,11 +263,22 @@ classdef NegativeBinomialDistribution
       if (! isscalar (this))
         error ("mean: requires a scalar probability distribution.");
       endif
+      [um, uv] = nbinstat (this.R, this.P);
       if (this.IsTruncated)
-        fm = @(x) x .* pdf (this, x);
-        m = integral (fm, this.Truncation(1), this.Truncation(2));
+        lx = ceil (this.Truncation(1));
+        ux = floor (this.Truncation(2));
+        ux = min (ux, nbininv (1, this.R, this.P));
+        ## Handle infinite support on the right
+        if (isequal (ux, Inf))
+          ratio = 1 / diff (nbincdf ([lx-1, ux], this.R, this.P));
+          x = 0:lx-1;
+          m = ratio * (um - sum (x .* nbinpdf (x, this.R, this.P)));
+        else
+          x = lx:ux;
+          m = sum (x .* pdf (this, x));
+        endif
       else
-        m = nbinstat (this.R, this.P);
+        m = um;
       endif
     endfunction
 
@@ -375,7 +388,7 @@ classdef NegativeBinomialDistribution
         ux = this.Truncation(2);
         ub = x > ux;
         y(lb | ub) = 0;
-        y(! (lb | ub)) /= diff (nbincdf ([lx, ux], this.R, this.P));
+        y(! (lb | ub)) /= diff (nbincdf ([lx-1, ux], this.R, this.P));
       endif
     endfunction
 
@@ -510,7 +523,7 @@ classdef NegativeBinomialDistribution
         ## pick the appropriate size from
         lx = this.Truncation(1);
         ux = this.Truncation(2);
-        ratio = 1 / diff (poisscdf ([lx, ux], this.R, this.P));
+        ratio = 1 / diff (nbincdf ([lx-1, ux], this.R, this.P));
         nsize = fix (2 * ratio * ps);       # times 2 to be on the safe side
         ## Generate the numbers and remove out-of-bound random samples
         r = nbinrnd (this.R, this.P, nsize, 1);
@@ -589,10 +602,24 @@ classdef NegativeBinomialDistribution
         error ("var: requires a scalar probability distribution.");
       endif
       if (this.IsTruncated)
-        fm = @(x) x .* pdf (this, x);
-        m = integral (fm, this.Truncation(1), this.Truncation(2));
-        fv =  @(x) ((x - m) .^ 2) .* pdf (this, x);
-        v = integral (fv, this.Truncation(1), this.Truncation(2));
+        ## Calculate untruncated mean and variance
+        [um, uv] = nbinstat (this.R, this.P);
+        ## Calculate truncated mean
+        m = mean (this);
+        ## Get lower and upper boundaries
+        lx = ceil (this.Truncation(1));
+        ux = floor (this.Truncation(2));
+        ux = min (ux, nbininv (1, this.R, this.P));
+        ## Handle infinite support on the right
+        if (isequal (ux, Inf))
+          ratio = 1 / diff (nbincdf ([lx-1, ux], this.R, this.P));
+          x = 0:lx-1;
+          v = ratio * (uv + (um - m) ^ 2 - sum (((x - m) .^ 2) .* ...
+                                                nbinpdf (x, this.R, this.P)));
+        else
+          x = lx:ux;
+          v = sum (((x - m) .^ 2) .* pdf (this, x));
+        endif
       else
         [~, v] = nbinstat (this.R, this.P);
       endif
@@ -655,34 +682,41 @@ function checkparams (R, P)
 endfunction
 
 ## Test output
-%!shared pd, t
-%! pd = NegativeBinomialDistribution;
+%!shared pd, t, t_inf
+%! pd = NegativeBinomialDistribution (5, 0.5);
 %! t = truncate (pd, 2, 4);
-%!assert (cdf (pd, [0:5]), [0.5, 0.75, 0.875, 0.9375, 0.9688, 0.9844], 1e-4);
-#%!assert (cdf (t, [0:5]), [0, 0, 0.5714, 0.8571, 1, 1], 1e-4);
-%!assert (cdf (pd, [1.5, 2, 3, 4]), [0.75, 0.875, 0.9375, 0.9688], 1e-4);
-#%!assert (cdf (t, [1.5, 2, 3, 4]), [0, 0.5714, 0.8571, 1], 1e-4);
-%!assert (icdf (pd, [0:0.2:1]), [0, 0, 0, 1, 2, Inf], 1e-4);
-#%!assert (icdf (t, [0:0.2:1]), [2, 2, 2, 3, 3, 4], 1e-4);
-%!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, 0, 1, 2, Inf, NaN], 1e-4);
-#%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 2, 3, 3, 4, NaN], 1e-4);
-%!assert (iqr (pd), 1);
-#%!assert (iqr (t), 1);
-%!assert (mean (pd), 1);
-#%!assert (mean (t), 2.5714, 1e-4);
-%!assert (median (pd), 0);
-#%!assert (median (t), 2);
-%!assert (pdf (pd, [0:5]), [0.5, 0.25, 0.125, 0.0625, 0.0312, 0.0156], 1e-4);
-#%!assert (pdf (t, [0:5]), [0, 0, 0.5714, 0.2857, 0.1429, 0], 1e-4);
-%!assert (pdf (pd, [-1, 1:4, NaN]), [0, 0.25, 0.125, 0.0625, 0.0312, NaN], 1e-4);
-#%!assert (pdf (t, [-1, 1:4, NaN]), [0, 0, 0.5714, 0.2857, 0.1429, NaN], 1e-4);
+%! t_inf = truncate (pd, 2, Inf);
+%!assert (cdf (pd, [0:5]), [0.0312, 0.1094, 0.2266, 0.3633, 0.5, 0.6230], 1e-4);
+%!assert (cdf (t, [0:5]), [0, 0, 0.3, 0.65, 1, 1], 1e-4);
+%!assert (cdf (t_inf, [0:5]), [0, 0, 0.1316, 0.2851, 0.4386, 0.5768], 1e-4);
+%!assert (cdf (pd, [1.5, 2, 3, 4]), [0.1094, 0.2266, 0.3633, 0.5000], 1e-4);
+%!assert (cdf (t, [1.5, 2, 3, 4]), [0, 0.3, 0.65, 1], 1e-4);
+%!assert (icdf (pd, [0:0.2:1]), [0, 2, 4, 5, 7, Inf], 1e-4);
+%!assert (icdf (t, [0:0.2:1]), [2, 2, 3, 3, 4, 4], 1e-4);
+%!assert (icdf (t_inf, [0:0.2:1]), [2, 3, 4, 6, 8, Inf], 1e-4);
+%!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, 4, 5, 7, Inf, NaN], 1e-4);
+%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 3, 3, 4, 4, NaN], 1e-4);
+%!assert (iqr (pd), 4);
+%!assert (iqr (t), 2);
+%!assert (mean (pd), 5);
+%!assert (mean (t), 3.0500, 1e-4);
+%!assert (mean (t_inf), 5.5263, 1e-4);
+%!assert (median (pd), 4);
+%!assert (median (t), 3);
+%!assert (pdf (pd, [0:5]), [0.0312, 0.0781, 0.1172, 0.1367, 0.1367, 0.1230], 1e-4);
+%!assert (pdf (t, [0:5]), [0, 0, 0.3, 0.35, 0.35, 0], 1e-4);
+%!assert (pdf (t_inf, [0:5]), [0, 0, 0.1316, 0.1535, 0.1535, 0.1382], 1e-4);
+%!assert (pdf (pd, [-1, 1:4, NaN]), [0, 0.0781, 0.1172, 0.1367, 0.1367, NaN], 1e-4);
+%!assert (pdf (t, [-1, 1:4, NaN]), [0, 0, 0.3, 0.35, 0.35, NaN], 1e-4);
 %!assert (isequal (size (random (pd, 100, 50)), [100, 50]))
-#%!assert (any (random (t, 1000, 1) < 2), false);
-#%!assert (any (random (t, 1000, 1) > 4), false);
-%!assert (std (pd), 1.4142, 1e-4);
-#%!assert (std (t), 0.7284, 1e-4);
-%!assert (var (pd), 2);
-#%!assert (var (t), 0.5306, 1e-4);
+%!assert (any (random (t, 1000, 1) < 2), false);
+%!assert (any (random (t, 1000, 1) > 4), false);
+%!assert (std (pd), 3.1623, 1e-4);
+%!assert (std (t), 0.8047, 1e-4);
+%!assert (std (t_inf), 2.9445, 1e-4);
+%!assert (var (pd), 10);
+%!assert (var (t), 0.6475, 1e-4);
+%!assert (var (t_inf), 8.6704, 1e-4);
 
 ## Test input validation
 ## 'NegativeBinomialDistribution' constructor
