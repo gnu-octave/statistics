@@ -729,7 +729,7 @@ classdef ClassificationNeuralNetwork
         if (! strcmp (this.ScoreTransform, "none"))
           f = this.ScoreTransform;
           if (! strcmp (class (f), "function_handle"))
-            error (strcat (["ClassificationNeuralNetwork.predict:"], ...
+            error (strcat (["ClassificationNeuralNetwork.resubPredict:"], ...
                            [" 'ScoreTransform' must be a"], ...
                            [" 'function_handle' object."]));
           endif
@@ -1171,7 +1171,12 @@ endclassdef
 %! ClassificationNeuralNetwork ([1;2;3;'a';4], ones (5,1))
 %!error<ClassificationNeuralNetwork: invalid values in X.> ...
 %! ClassificationNeuralNetwork ([1;2;3;Inf;4], ones (5,1))
-
+%!error<ClassificationNeuralNetwork: the elements in 'Prior' do not correspond to selected classes in Y.> ...
+%! ClassificationNeuralNetwork (ones (5,2), ones (5,1), "Prior", [0,1])
+%!error<ClassificationNeuralNetwork: the elements in 'Prior' do not correspond to selected classes in Y.> ...
+%! ClassificationNeuralNetwork (ones (5,2), [1;1;2;2;3], "ClassNames", [1,2], "Prior", [0,0.4,0.6])
+%!error<ClassificationNeuralNetwork: the number of rows and columns in 'Cost' must correspond to the selected classes in Y.> ...
+%! ClassificationNeuralNetwork (ones (5,2), [1;1;2;2;3], "ClassNames", [1,2], "Cost", ones (3))
 
 ## Test output for predict method
 %!shared x, y, x_train, x_test, y_train, y_test, objST
@@ -1192,6 +1197,10 @@ endclassdef
 %! objST.ScoreTransform = "a";
 %!error<ClassificationNeuralNetwork.predict: 'ScoreTransform' must be a 'function_handle' object.> ...
 %! [labels, scores] = predict (objST, x);
+
+## Test input validation for resubPredict method
+%!error<ClassificationNeuralNetwork.resubPredict: 'ScoreTransform' must be a 'function_handle' object.> ...
+%! [labels, scores] = resubPredict (objST);
 
 ## Test output for crossval method
 %!test
