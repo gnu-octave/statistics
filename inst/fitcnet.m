@@ -1,5 +1,4 @@
 ## Copyright (C) 2024 Pallav Purbia <pallavpurbia@gmail.com>
-## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -42,7 +41,7 @@
 ##
 ## @subheading Model Parameters
 ##
-## @multitable @columnfractions 0.18 0.02 0.8
+## @multitable @columnfractions 0.32 0.02 0.8
 ## @headitem @var{Name} @tab @tab @var{Value}
 ##
 ## @item @qcode{"Standardize"} @tab @tab A boolean flag indicating whether
@@ -78,32 +77,23 @@
 ##
 ## @item @qcode{"Activations"} @tab @tab A character vector specifying the
 ## activation function for the fully connected layers of the neural network
-## model.  The available Activation functions are @qcode{'relu'}, which is the
-## default, or @qcode{'tanh'}, @qcode{'sigmoid'}, and @qcode{'none'}.
+## model.  The available Activation functions are @qcode{'relu'},
+## @qcode{'tanh'}, @qcode{'sigmoid'}, and @qcode{'none'}. The default value is
+## @qcode{'relu'}.
 ##
 ## @item @qcode{"LayerWeightsInitializer"} @tab @tab A character vector
 ## specifying the function to initialize fully connected layer weights. The
-## available Layer Weights Initializer are @qcode{'glorot'}, which is the
-## default, and @qcode{'he'}.
+## available Layer Weights Initializer are @qcode{'glorot'}, and @qcode{'he'}.
+## The default value is @qcode{'glorot'}.
 ##
 ## @item @qcode{"LayerBiasesInitializer"} @tab @tab A character vector
 ## specifying the type of initial fully connected layer biases. The available
-## Layer Biases Initializer are @qcode{'zeros'}, which is the default, and
-## @qcode{'ones'}.
-
-##
-## @item @qcode{"InitialStepSize"} @tab @tab A positive integer greater than 1
-## which specifies the value of k (number of folds).
-
-
+## Layer Biases Initializer are @qcode{'zeros'}, and @qcode{'ones'}. The default
+## value is @qcode{'zeros'}.
 ##
 ## @item @qcode{"IterationLimit"} @tab @tab A positive integer scalar that
 ## specifies the maximum number of training iterations. The default value is
 ## 1e3.
-##
-## @item @qcode{"GradientTolerance"} @tab @tab A nonnegative scalar that
-## specifies the relative gradient tolerance as a termination criterion. The
-## default value is 1e-6.
 ##
 ## @item @qcode{"LossTolerance"} @tab @tab A nonnegative scalar. If the function
 ## loss at some iteration is smaller than LossTolerance, then the training
@@ -113,6 +103,26 @@
 ## size at some iteration is smaller than StepTolerance, then the training
 ## process terminates. The default value is 1e-6.
 ##
+## @item @qcode{"ScoreTransform"} @tab @tab A character vector defining one of
+## the following functions or a user defined function handle, which is used
+## for transforming the prediction scores returned by the @code{predict} and
+## @code{resubPredict} methods.  Default value is @qcode{'none'}.
+## @end multitable
+##
+## @multitable @columnfractions 0.05 0.3 0.75
+## @headitem @tab @var{Value} @tab @var{Description}
+## @item @tab @qcode{"doublelogit"} @tab @math{1 ./ (1 + exp .^ (-2 * x))}
+## @item @tab @qcode{"invlogit"} @tab @math{log (x ./ (1 - x))}
+## @item @tab @qcode{"ismax"} @tab Sets the score for the class with the largest
+## score to 1, and sets the scores for all other classes to 0
+## @item @tab @qcode{"logit"} @tab @math{1 ./ (1 + exp .^ (-x))}
+## @item @tab @qcode{"none"} @tab @math{x} (no transformation)
+## @item @tab @qcode{"identity"} @tab @math{x} (no transformation)
+## @item @tab @qcode{"sign"} @tab @math{-1 for x < 0, 0 for x = 0, 1 for x > 0}
+## @item @tab @qcode{"symmetric"} @tab @math{2 * x + 1}
+## @item @tab @qcode{"symmetricismax"} @tab Sets the score for the class with
+## the largest score to 1, and sets the scores for all other classes to -1
+## @item @tab @qcode{"symmetriclogit"} @tab @math{2 ./ (1 + exp .^ (-x)) - 1}
 ## @end multitable
 ##
 ## @seealso{ClassificationNeuralNetwork}
