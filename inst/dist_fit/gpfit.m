@@ -184,7 +184,8 @@ function [paramhat, paramci] = gpfit (x, theta, alpha, freq, options)
   paramhat = [k0, log(s0)];
 
   ## Maximize the log-likelihood with respect to shape and log_scale.
-  [paramhat, ~, err, output] = fminsearch (@negloglike, paramhat, options, x);
+  f = @(paramhat) negloglike (paramhat, x);
+  [paramhat, ~, err, output] = fminsearch (f, paramhat, options);
   paramhat(2) = exp (paramhat(2));
   paramhat = [paramhat, theta];
 
