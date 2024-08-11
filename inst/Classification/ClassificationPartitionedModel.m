@@ -26,9 +26,9 @@ classdef ClassificationPartitionedModel
 ##
 ## @code{@var{CVMdl} = ClassificationPartitionedModel (@var{Mdl},
 ## @var{Partition})} returns a ClassificationPartitionedModel object, with
-## @var{Mdl} as the trained ClassificationKNN or ClassificationSVM object and
-## @var{Partition} as the partitioning object obtained using cvpartition
-## function.
+## @var{Mdl} as the trained ClassificationKNN or, ClassificationSVM
+## or, ClassificationNeuralNetwork object and @var{Partition} as the partitioning
+## object obtained using cvpartition function.
 ##
 ## A @qcode{ClassificationPartitionedModel} object, @var{CVMdl}, stores the
 ## classification models trained on cross-validated folds
@@ -103,7 +103,8 @@ classdef ClassificationPartitionedModel
 ##
 ## @end multitable
 ##
-## @seealso{cvpartition, ClassificationKNN, ClassificationSVM}
+## @seealso{cvpartition, ClassificationKNN, ClassificationSVM,
+## ClassificationNeuralNetwork}
 ## @end deftypefn
 
   properties
@@ -136,7 +137,8 @@ classdef ClassificationPartitionedModel
       endif
 
       ## Check for valid object types
-      validTypes = {'ClassificationKNN', 'ClassificationSVM'};
+      validTypes = {'ClassificationKNN', 'ClassificationSVM', ...
+      'ClassificationNeuralNetwork'};
       if (! any (strcmp (class (Mdl), validTypes)))
         error ("ClassificationPartitionedModel: unsupported model type.");
       endif
@@ -246,6 +248,40 @@ classdef ClassificationPartitionedModel
           ## Store ModelParameters to ClassificationPartitionedModel object
           this.ModelParameters = params;
 
+        case 'ClassificationNeuralNetwork'
+          ## Get ModelParameters structure from ClassificationNeuralNetwork obj
+          param = Mdl.ModelParameters;
+
+          ## Arguments to pass in fitcnet
+          args = {};
+          ## List of acceptable parameters for fitcnet
+          NNparams = {'LayerSizes', 'Activations', ...
+                      'LayerWeightsInitializer', 'LayerBiasesInitializer', ...
+                      'IterationLimit', 'LossTolerance', 'StepTolerance'};
+          ## Set parameters
+          for i = 1:numel (NNparams)
+            paramName = NNparams{i};
+            paramValue = param.(paramName);
+            if (! isempty (paramValue))
+              args = [args, {paramName, param.(paramName)}];
+            endif
+          endfor
+
+          ## Train model according to partition object
+          for k = 1:this.KFold
+            idx = training (this.Partition, k);
+            this.Trained{k} = fitcnet (this.X(idx, :), this.Y(idx), ...
+                              'Standardize', Mdl.Standardize, ...
+                              'PredictorNames', Mdl.PredictorNames, ...
+                              'ResponseName', Mdl.ResponseName, ...
+                              'ClassNames', Mdl.ClassNames, ...
+                              'Prior', Mdl.Prior, ...
+                              'Cost', Mdl.Cost, ...
+                               args{:});
+            ## Store ModelParameters to ClassificationPartitionedModel object
+            this.ModelParameters = (this.Trained{k}).ModelParameters;
+          endfor
+
       endswitch
     endfunction
 
@@ -290,7 +326,7 @@ classdef ClassificationPartitionedModel
     ## @end multitable
     ##
     ## @seealso{ClassificationKNN, ClassificationSVM,
-    ## ClassificationPartitionedModel}
+    ## ClassificationNeuralNetwork, ClassificationPartitionedModel}
     ## @end deftypefn
     function [label, Score, Cost] = kfoldPredict (this)
 
@@ -353,6 +389,29 @@ classdef ClassificationPartitionedModel
           if (nargout > 2)
            error(["ClassificationPartitionedModel.kfoldPredict: 'Cost'", ...
                  " output is not supported for ClassificationSVM", ...
+                 " cross validated models."]);
+          endif
+
+          for k = 1:this.KFold
+            testIdx = test (this.Partition, k);
+            model = this.Trained{k};
+            [predictedLabel, score] = predict (model, this.X(testIdx, :));
+            label(testIdx) = predictedLabel;
+            Score(testIdx, :) = score;
+          endfor
+
+          ## Handle single fold case (holdout)
+          if (this.KFold == 1)
+            testIdx = test (this.Partition, 1);
+            label(testIdx) = mode (this.Y);
+            Score(testIdx, :) = NaN;
+          endif
+
+        case 'ClassificationNeuralNetwork'                                        ########### check this out.
+
+          if (nargout > 2)
+           error(["ClassificationPartitionedModel.kfoldPredict: 'Cost'", ...
+                 " output is not supported for ClassificationNeuralNetwork", ...
                  " cross validated models."]);
           endif
 
@@ -521,3 +580,5 @@ endclassdef
 ## Test input validation for kfoldPredict
 %!error<ClassificationPartitionedModel.kfoldPredict: 'Cost' output is not supported for ClassificationSVM cross validated models.> ...
 %! [label, score, cost] = kfoldPredict (crossval (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1))))
+%!error<ClassificationPartitionedModel.kfoldPredict: 'Cost' output is not supported for ClassificationNeuralNetwork cross validated models.> ...
+%! [label, score, cost] = kfoldPredict (crossval (ClassificationNeuralNetwork (ones (40,2), randi ([1, 2], 40, 1))))

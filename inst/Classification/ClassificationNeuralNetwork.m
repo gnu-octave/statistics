@@ -47,18 +47,18 @@ classdef ClassificationNeuralNetwork
 ## training data and various parameters for the Neural Network classification
 ## model, which can be accessed in the following fields:
 ##
-## @multitable @columnfractions 0.28 0.02 0.7
+## @multitable @columnfractions 0.32 0.02 0.7
 ## @headitem @var{Field} @tab @tab @var{Description}
 ##
-## @item @qcode{"obj.X"} @tab @tab Unstandardized predictor data, specified as a
+## @item @qcode{obj.X} @tab @tab Unstandardized predictor data, specified as a
 ## numeric matrix.  Each column of @var{X} represents one predictor (variable),
 ## and each row represents one observation.
 ##
-## @item @qcode{"obj.Y"} @tab @tab Class labels, specified as a logical or
+## @item @qcode{obj.Y} @tab @tab Class labels, specified as a logical or
 ## numeric vector, or cell array of character vectors.  Each value in @var{Y} is
 ## the observed class label for the corresponding row in @var{X}.
 ##
-## @item @qcode{"obj.NumObservations"} @tab @tab Number of observations used in
+## @item @qcode{obj.NumObservations} @tab @tab Number of observations used in
 ## training the model, specified as a positive integer scalar. This number can
 ## be less than the number of rows in the training data because rows containing
 ## @qcode{NaN} values are not part of the fit.
@@ -95,51 +95,56 @@ classdef ClassificationNeuralNetwork
 ## labels, @var{Y}, used for fitting the ClassificationNeuralNetwork model.
 ## @qcode{ClassNames} are of the same type as the class labels in @var{Y}.
 ##
-
-
-
-
-
-## @item @qcode{"obj.LayerSizes"} @tab @tab Sizes of the fully connected layers
+## @item @qcode{obj.LayerSizes} @tab @tab Sizes of the fully connected layers
 ## in the neural network model, returned as a positive integer vector. The ith
 ## element of LayerSizes is the number of outputs in the ith fully connected
 ## layer of the neural network model. LayerSizes does not include the size of
 ## the final fully connected layer. This layer always has K outputs, where K
 ## is the number of classes in Y.
-
-
-
-
-
-
-
 ##
-## @item @qcode{"obj.LayerWeights"} @tab @tab Response variable name, specified
-## as a character vector.
+## @item @qcode{obj.LayerWeights} @tab @tab A cell array containing the learned
+## weights for the fully connected layers. Each element of the cell array
+## represents the weights for the corresponding fully connected layer.
 ##
-## @item @qcode{"obj.LayerBiases"} @tab @tab Response variable name, specified
-## as a character vector.
+## @item @qcode{obj.LayerBiases} @tab @tab A cell array containing the learned
+## biases for the fully connected layers. Each element of the cell array
+## corresponds to the biases for the respective fully connected layer,
+## including the final layer.
 ##
-## @item @qcode{"obj.Activations"} @tab @tab Response variable name, specified
-## as a character vector.
+## @item @qcode{obj.Activations} @tab @tab  A character vector specifying the
+## activation function used for the fully connected layers of the neural network
+## model.
 ##
-## @item @qcode{"obj.OutputLayerActivation"} @tab @tab Response variable name, specified
-## as a character vector.
+## @item @qcode{obj.OutputLayerActivation} @tab @tab Activation function for the
+## final fully connected layer, returned as 'softmax'.
 ##
-## @item @qcode{"obj.ModelParameters"} @tab @tab A structure containing the
+## @item @qcode{obj.ModelParameters} @tab @tab A structure containing the
 ## parameters used to train the Neural Network classifier model with the
-## following fields: @code{SVMtype}, @code{BoxConstraint}, @code{CacheSize}, @code{KernelScale},
-## @code{KernelOffset}, @code{KernelFunction}, @code{PolynomialOrder},
-## @code{Nu}, @code{Tolerance}, and @code{Shrinking}.
+## following fields: @code{LayerSizes}, @code{Activations},
+## @code{LayerWeightsInitializer}, @code{LayerBiasesInitializer},
+## @code{IterationLimit}, @code{LossTolerance}, and @code{StepTolerance}. Type
+## @code{help fitcnet} for more info on their usage and default values.
 ##
-## @item @qcode{"obj.ConvergenceInfo"} @tab @tab Response variable name, specified
-## as a character vector.
+## @item @qcode{obj.ConvergenceInfo} @tab @tab A structure containing the
+## Convergence info of the Neural Network classifier model with the following
+## fields:
+## @multitable @columnfractions 0.05 0.30 0.75
+## @headitem @tab @var{Value} @tab @var{Description}
+## @item @tab @qcode{"Iterations"} @tab The count of training iterations
+## completed during the neural network model's training process.
+## @item @tab @qcode{"TrainingLoss"} @tab The loss value recorded for the model
+## after training.
+## @item @tab @qcode{"Time"} @tab The cumulative time taken for all iterations,
+## measured in seconds.
+## @end multitable
 ##
-## @item @qcode{"obj.TrainingHistory"} @tab @tab Response variable name, specified
-## as a character vector.
+## @item @qcode{obj.Solver} @tab @tab Solver used to train the neural network
+## model, returned as 'Gradient Search'.
 ##
-## @item @qcode{"obj.Solver"} @tab @tab Response variable name, specified
-## as a character vector.
+## @item @qcode{obj.ScoreTransform} @tab @tab A function_handle which is used
+## for transforming the Neural Network prediction score into a posterior
+## probability.  By default, it is @qcode{'none'}, in which case the
+## @code{predict} and @code{resubPredict} methods return the prediction scores.
 ##
 ## @end multitable
 ##
@@ -164,25 +169,27 @@ classdef ClassificationNeuralNetwork
     Prior                 = [];  # Prior probability for each class
     Cost                  = [];  # Cost of misclassification
 
+    ScoreTransform        = [];  # Transformation for classification scores
+
     LayerSizes            = [];  # Size of fully connected layers
     LayerWeights          = [];  # Learned layer weights
     LayerBiases           = [];  # Learned layer biases
     Activations           = [];  # Activation function for fully connected layer
     OutputLayerActivation = [];  # Activation function for final connected layer
 
-    ModelParameters       = [];  # Model parameters          .........................have to assign
-    ConvergenceInfo       = [];  # Convergence Information   .........................have to assign
-    TrainingHistory       = [];  # Training history          .........................have to assign
+    ModelParameters       = [];  # Model parameters
+    ConvergenceInfo       = [];  # Training history
     Solver                = [];  # Solver used
 
   endproperties
 
-    properties (Access = private)
+  properties (Access = private)
 
-    gY                    = [];
-    gnY                   = [];
-    glY                   = [];
-    parameter_vector      = []; ## may or may not be used
+    LayerWeightsInitializer = [];
+    LayerBiasesInitializer  = [];
+    IterationLimit          = [];
+    LossTolerance           = [];
+    StepTolerance           = [];
 
   endproperties
 
@@ -219,11 +226,11 @@ classdef ClassificationNeuralNetwork
       Activations             = 'relu';
       LayerWeightsInitializer = 'glorot';
       LayerBiasesInitializer  = 'zeros';
-      InitialStepSize         = [];
       IterationLimit          = 1e3;
-      GradientTolerance       = 1e-6;
       LossTolerance           = 1e-6;
       StepTolerance           = 1e-6;
+      ConvergenceInfo         = struct();
+      this.ScoreTransform     = 'none';
 
       ## Parse extra parameters
       while (numel (varargin) > 0)
@@ -232,33 +239,36 @@ classdef ClassificationNeuralNetwork
           case "standardize"
             Standardize = varargin{2};
             if (! (Standardize == true || Standardize == false))
-              error (strcat (["ClassificationNeuralNetwork: 'Standardize'"], ...
-                             [" must be either true or false."]));
+              error (strcat (["ClassificationNeuralNetwork:"], ...
+                             [" 'Standardize' must be either true or false."]));
             endif
 
           case "predictornames"
             PredictorNames = varargin{2};
             if (! iscellstr (PredictorNames))
-              error (strcat (["ClassificationNeuralNetwork: 'PredictorNames'"], ...
-                             [" must be supplied as a cellstring array."]));
+              error (strcat (["ClassificationNeuralNetwork:"], ...
+                             [" 'PredictorNames' must be supplied as a"], ...
+                             [" cellstring array."]));
             elseif (columns (PredictorNames) != columns (X))
-              error (strcat (["ClassificationNeuralNetwork: 'PredictorNames'"], ...
-                             [" must have the same number of columns as X."]));
+              error (strcat (["ClassificationNeuralNetwork:"], ...
+                             [" 'PredictorNames' must have the same"], ...
+                             [" number of columns as X."]));
             endif
 
           case "responsename"
             ResponseName = varargin{2};
             if (! ischar (ResponseName))
-              error (strcat (["ClassificationNeuralNetwork: 'ResponseName'"], ...
-                             [" must be a character vector."]));
+              error (strcat (["ClassificationNeuralNetwork:"], ...
+                             [" 'ResponseName' must be a character vector."]));
             endif
 
           case "classnames"
             ClassNames = varargin{2};
             if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
                                           || islogical (ClassNames)))
-              error (strcat (["ClassificationNeuralNetwork: 'ClassNames' must"], ...
-                             [" be a cellstring, logical or numeric vector."]));
+              error (strcat (["ClassificationNeuralNetwork:"], ...
+                             [" 'ClassNames' must be a cellstring,"], ...
+                             [" logical or numeric vector."]));
             endif
             ## Check that all class names are available in gnY
             if (iscellstr (ClassNames))
@@ -287,8 +297,8 @@ classdef ClassificationNeuralNetwork
           case "cost"
             Cost = varargin{2};
             if (! (isnumeric (Cost) && issquare (Cost)))
-              error (strcat (["ClassificationNeuralNetwork: 'Cost' must be"], ...
-                             [" a numeric square matrix."]));
+              error (strcat (["ClassificationNeuralNetwork: 'Cost' must"], ...
+                             [" be a numeric square matrix."]));
             endif
 
           case 'layersizes'
@@ -318,7 +328,7 @@ classdef ClassificationNeuralNetwork
             LayerWeightsInitializer = varargin{2};
             if (!(ischar(LayerWeightsInitializer)))
               error (strcat (["ClassificationNeuralNetwork:"], ...
-                             [" 'LayerWeightsInitializer' must be a string."]));         ############<<<<<<
+                             [" 'LayerWeightsInitializer' must be a string."]));
             endif
             if (ischar (LayerWeightsInitializer))
               if (! any (strcmpi (tolower(LayerWeightsInitializer), ...
@@ -342,43 +352,77 @@ classdef ClassificationNeuralNetwork
               endif
             endif
 
-          case 'initialstepsize'
-            InitialStepSize = varargin{2};
-            if ( !(isscalar(InitialStepSize) && (InitialStepSize > 0)))
-              error (strcat (["ClassificationNeuralNetwork:"], ...
-                             [" 'InitialStepSize' must be a positive scalar."]));
-            endif
-
           case 'iterationlimit'
             IterationLimit = varargin{2};
             if (! (isnumeric(IterationLimit) && isscalar(IterationLimit)
               && (IterationLimit > 0) && mod(IterationLimit, 1) == 0))
-              error (strcat (["ClassificationNeuralNetwork: 'IterationLimit'"], ...
-                             [" must be a positive integer."]));
-            endif
-
-          case 'gradienttolerance'
-            GradientTolerance = varargin{2};
-            if (! (isnumeric(GradientTolerance) && isscalar(GradientTolerance)
-              && (GradientTolerance >= 0)))
-              error (strcat (["ClassificationNeuralNetwork: 'GradientTolerance'"], ...
-                             [" must be a non-negative scalar."]));
+              error (strcat (["ClassificationNeuralNetwork:"], ...
+                             [" 'IterationLimit' must be a positive"], ...
+                             [" integer."]));
             endif
 
           case 'losstolerance'
             LossTolerance = varargin{2};
             if (! (isnumeric(LossTolerance) && isscalar(LossTolerance)
               && (LossTolerance >= 0)))
-              error (strcat (["ClassificationNeuralNetwork: 'LossTolerance'"], ...
-                             [" must be a non-negative scalar."]));
+              error (strcat (["ClassificationNeuralNetwork:"], ...
+                             [" 'LossTolerance' must be a non-negative"], ...
+                             [" scalar."]));
             endif
 
           case 'steptolerance'
             StepTolerance = varargin{2};
             if (! (isnumeric(StepTolerance) && isscalar(StepTolerance)
               && (StepTolerance >= 0)))
-              error (strcat (["ClassificationNeuralNetwork: 'StepTolerance'"], ...
-                             [" must be a non-negative scalar."]));
+              error (strcat (["ClassificationNeuralNetwork:"], ...
+                             [" 'StepTolerance' must be a non-negative"], ...
+                             [" scalar."]));
+            endif
+
+          case "scoretransform"
+            ScoreTransform = varargin{2};
+            stList = {"doublelogit", "invlogit", "ismax", "logit", "none", ...
+                      "identity", "sign", "symmetric", "symmetricismax", ...
+                      "symmetriclogit"};
+            if (! (ischar (ScoreTransform) ||
+                   strcmp (class (ScoreTransform), "function_handle")))
+              error (strcat (["ClassificationNeuralNetwork:"], ...
+                             [" 'ScoreTransform' must be a character"], ...
+                             [" vector or a function handle."]));
+            endif
+            if (! ismember (ScoreTransform, stList))
+              error (strcat (["ClassificationNeuralNetwork: unrecognized"], ...
+                             [" 'ScoreTransform' function."]));
+            endif
+            ## Handle ScoreTransform here
+            if (is_function_handle (ScoreTransform))
+              m = eye (5);
+              if (! isequal (size (m), size (ScoreTransform (m))))
+                error (strcat (["ClassificationNeuralNetwork: function"], ...
+                               [" handle for 'ScoreTransform' must return"], ...
+                               [" the same size as its input."]));
+              endif
+              this.ScoreTransform = ScoreTransform;
+            else
+              if (strcmpi ("doublelogit", ScoreTransform))
+                this.ScoreTransform = @(x) 1 ./ (1 + exp .^ (-2 * x));
+              elseif (strcmpi ("invlogit", ScoreTransform))
+                this.ScoreTransform = @(x) log (x ./ (1 - x));
+              elseif (strcmpi ("ismax", ScoreTransform))
+                this.ScoreTransform = eval (sprintf ("@(x) ismax (x)"));
+              elseif (strcmpi ("logit", ScoreTransform))
+                this.ScoreTransform = @(x) 1 ./ (1 + exp .^ (-x));
+              elseif (strcmpi ("identity", ScoreTransform))
+                this.ScoreTransform = 'none';
+              elseif (strcmpi ("sign", ScoreTransform))
+                this.ScoreTransform = @(x) sign (x);
+              elseif (strcmpi ("symmetric", ScoreTransform))
+                this.ScoreTransform = @(x) 2 * x - 1;
+              elseif (strcmpi ("symmetricismax", ScoreTransform))
+                this.ScoreTransform = eval (sprintf ("@(x) symmetricismax (x)"));
+              elseif (strcmpi ("symmetriclogit", ScoreTransform))
+                this.ScoreTransform = @(x) 2 ./ (1 + exp .^ (-x)) - 1;
+              endif
             endif
 
           otherwise
@@ -415,17 +459,6 @@ classdef ClassificationNeuralNetwork
       ## Renew groups in Y
       [gY, gnY, glY] = grp2idx (Y);
       this.ClassNames = gnY;  # Keep the same type as Y
-
-      this.gY = gY;
-      this.gnY = gnY;
-      this.glY = glY;
-
-##      printf("gY: ");
-##      disp(gY);
-##      printf("gnY: ");
-##      disp(gnY);
-##      printf("glY: ");
-##      disp(glY);
 
       ## Force Y into numeric
       if (! isnumeric (Y))
@@ -499,64 +532,60 @@ classdef ClassificationNeuralNetwork
       this.LayerSizes = LayerSizes;
       this.Activations = Activations;
       this.OutputLayerActivation = "softmax";
-      this.Solver = "LBFGS";
+      this.Solver = "Gradient Search";
+      this.LayerWeightsInitializer = LayerWeightsInitializer;
+      this.LayerBiasesInitializer = LayerBiasesInitializer;
+      this.IterationLimit = IterationLimit;
+      this.LossTolerance = LossTolerance;
+      this.StepTolerance = StepTolerance;
 
-      this = parameter_initializer(this,LayerWeightsInitializer,LayerBiasesInitializer);
-#### already trained weights(just for checking if forward propagation works or not. which it does work)
-##this.LayerWeights{1} = [
-##-2.9823, -3.8519, 7.1521, 9.9223;
-##-0.4188, 0.1895, 0.0812, -0.1952;
-##0.3027, 0.0646, -0.3976, -0.0660;
-##-0.2450, -0.2422, -0.3497, -0.6926;
-##0.8523, 4.5536, -6.7396, -3.5799;
-##];
-##this.LayerWeights{2} = [
-##5.3509,	0.8036,	4.4741,	-0.9038,	-3.6919;
-##3.8612,	-0.6853,	4.9577,	-0.3016,	-2.9650;
-##];
-##this.LayerWeights{3} = [
-##-10.5846,	-7.5079;
-##6.4736,	1.1391;
-##3.0274,	6.4106;
-## ];
-##this.LayerBiases{1} = [
-##-4.3681;
-##0;
-##0.5462;
-##0;
-##0.4710;
-##];
-##this.LayerBiases{2} = [
-##0.4464;
-##-6.2276;
-##];
-##this.LayerBiases{3} = [
-##18.3889;
-##-6.3130;
-##-12.0759;
-##];
-
-      options = optimset('MaxIter', IterationLimit, 'TolFun', LossTolerance, 'TolX', StepTolerance);
+      this = parameter_initializer(this,LayerWeightsInitializer, ...
+                                   LayerBiasesInitializer);
+      options = optimset('MaxIter', IterationLimit, 'TolFun', LossTolerance, ...
+                         'TolX', StepTolerance);
       initialThetaVec = this.vectorize_parameters();
-##    For debuggin
-##    initialThetaVec
-##    [LayerWeights, LayerBiases] = reshape_parameters(this, initialThetaVec);
-##    LayerWeights
-##    LayerBiases
-##    LayerWeights{1}
-      [optThetaVec, cost] = fminunc(@(thetaVec) costFunction(thetaVec, this, X, Y), initialThetaVec, options);
-      [this.LayerWeights, this.LayerBiases] = reshape_parameters(this, optThetaVec);
+
+
+      ## Start timing the training process
+      tic;
+
+      [optThetaVec, cost] = fminunc(@(thetaVec) ...
+                 costFunction(thetaVec, this, X, Y), initialThetaVec, options);
+
+      ## Store the total time spent in the training history
+      ConvergenceInfo.Time = toc;
+
+      ConvergenceInfo.Iterations = IterationLimit;
+      ConvergenceInfo.TrainingLoss = cost;
+
+      [this.LayerWeights, this.LayerBiases] = ...
+                                          reshape_parameters(this, optThetaVec);
+
+      ## Populate ModelParameters structure
+      params = struct();
+      paramList = {'LayerSizes', 'Activations', 'LayerWeightsInitializer', ...
+                   'LayerBiasesInitializer', 'IterationLimit', ...
+                   'LossTolerance', 'StepTolerance'};
+      for i = 1:numel (paramList)
+        paramName = paramList{i};
+        if (isprop (this, paramName))
+          params.(paramName) = this.(paramName);
+        endif
+      endfor
+      this.ModelParameters = params;
+      this.ConvergenceInfo = ConvergenceInfo;
 
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {ClassificationNeuralNetwork} {@var{labels} =} predict (@var{obj}, @var{X})
+    ## @deftypefn  {ClassificationNeuralNetwork} {@var{labels} =} predict (@var{obj}, @var{XC})
+    ## @deftypefnx {ClassificationNeuralNetwork} {[@var{labels}, @var{scores}] =} predict (@var{obj}, @var{XC})
     ##
     ## Classify new data points into categories using the Neural Network
     ## classification object.
     ##
-    ## @code{@var{labels} = predict (@var{obj}, @var{X})} returns the vector of
-    ## labels predicted for the corresponding instances in @var{X}, using the
+    ## @code{@var{labels} = predict (@var{obj}, @var{XC})} returns the vector of
+    ## labels predicted for the corresponding instances in @var{XC}, using the
     ## predictor data in @code{obj.X} and corresponding labels, @code{obj.Y},
     ## stored in the Neural Network classification model, @var{obj}.
     ##
@@ -569,27 +598,30 @@ classdef ClassificationNeuralNetwork
     ## @var{obj}.
     ## @end itemize
     ##
+    ## @code{[@var{labels}, @var{scores}] = predict (@var{obj}, @var{XC}} also
+    ## returns @var{scores}, which represent the probability of each label
+    ## belonging to a specific class. For each observation in X, the predicted
+    ## class label is the one with the highest score among all classes.
+    ## Alternatively, @var{scores} can contain the posterior probabilities if
+    ## the ScoreTransform has been previously set.
+    ##
     ## @seealso{fitcnet, ClassificationNeuralNetwork}
     ## @end deftypefn
 
-    function labels = predict(this, XC)
+    function [labels, scores] = predict(this, XC)
 
       ## Check for sufficient input arguments
       if (nargin < 2)
         error ("ClassificationNeuralNetwork.predict: too few input arguments.");
       endif
 
-      if (mod (nargin, 2) != 0)
-        error (strcat(["ClassificationNeuralNetwork.predict: Name-Value"], ...
-                     [" arguments must be in pairs."]));
-      endif
-
       ## Check for valid XC
       if (isempty (XC))
         error ("ClassificationNeuralNetwork.predict: XC is empty.");
       elseif (columns(this.X) != columns(XC))
-        error (strcat (["ClassificationNeuralNetwork.predict: XC must have the"], ...
-                       [" same number of features as in the Neural Network model."]));
+        error (strcat (["ClassificationNeuralNetwork.predict: XC must"], ...
+                       [" have the same number of features as in the"], ...
+                       [" Neural Network model."]));
       endif
 
       ## Standardize (if necessary)
@@ -601,20 +633,232 @@ classdef ClassificationNeuralNetwork
       A = XC;
       for i = 1:length(this.LayerSizes)+1
         Z = A * this.LayerWeights{i}' + this.LayerBiases{i}';
-    ##printf("Z");
-    ##disp(Z);
         if (i <= length(this.LayerSizes))
           [A, z] = this.Layer_Activation(Z);
         else
           A = this.softmax(Z);
         endif
-    ##printf("A");
-    ##disp(A);
       endfor
+
+      scores = A;
 
       # Get the predicted labels (class with highest probability)
       [~, labels] = max(A, [], 2);
       labels = this.ClassNames(labels);
+
+      if (nargout > 1)
+        ## Apply ScoreTransform to return probability estimates
+        if (! strcmp (this.ScoreTransform, "none"))
+          f = this.ScoreTransform;
+          if (! strcmp (class (f), "function_handle"))
+            error (strcat (["ClassificationNeuralNetwork.predict:"], ...
+                           [" 'ScoreTransform' must be a"], ...
+                           [" 'function_handle' object."]));
+          endif
+          scores = f (scores);
+        endif
+      endif
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationNeuralNetwork} {@var{labels} =} resubPredict (@var{obj})
+    ## @deftypefnx {ClassificationNeuralNetwork} {[@var{labels}, @var{scores}] =} resubPredict (@var{obj})
+    ##
+    ## Classify the training data using the trained Neural Network
+    ## classification object.
+    ##
+    ## @code{@var{labels} = resubPredict (@var{obj})} returns the vector of
+    ## labels predicted for the corresponding instances in the training data,
+    ## using the predictor data in @code{obj.X} and corresponding labels,
+    ## @code{obj.Y}, stored in the Neural Network classification model,
+    ## @var{obj}.
+    ##
+    ## @itemize
+    ## @item
+    ## @var{obj} must be a @qcode{ClassificationNeuralNetwork} class object.
+    ## @end itemize
+    ##
+    ## @code{[@var{labels}, @var{scores}] = resubPredict (@var{obj}, @var{XC})}
+    ## also returns @var{scores}, which represent the probability of each label
+    ## belonging to a specific class. For each observation in X, the predicted
+    ## class label is the one with the highest score among all classes.
+    ## Alternatively, @var{scores} can contain the posterior probabilities if
+    ## the ScoreTransform has been previously set.
+    ##
+    ## @seealso{fitcnet, ClassificationNeuralNetwork}
+    ## @end deftypefn
+
+    function [labels, scores] = resubPredict (this)
+
+      ## Get used rows (if necessary)
+      if (sum (this.RowsUsed) != rows (this.X))
+        RowsUsed = logical (this.RowsUsed);
+        X = this.X(RowsUsed);
+        Y = this.Y(RowsUsed);
+      else
+        X = this.X;
+        Y = this.Y;
+      endif
+
+      ## Standardize (if necessary)
+      if (this.Standardize)
+        X = (X - this.Mu) ./ this.Sigma;
+      endif
+
+      ## Predict labels from new data
+      ## Forward propagation
+      A = X;
+      for i = 1:length(this.LayerSizes)+1
+        Z = A * this.LayerWeights{i}' + this.LayerBiases{i}';
+        if (i <= length(this.LayerSizes))
+          [A, z] = this.Layer_Activation(Z);
+        else
+          A = this.softmax(Z);
+        endif
+      endfor
+
+      scores = A;
+
+      # Get the predicted labels (class with highest probability)
+      [~, labels] = max(A, [], 2);
+      labels = this.ClassNames(labels);
+
+      if (nargout > 1)
+        ## Apply ScoreTransform to return probability estimates
+        if (! strcmp (this.ScoreTransform, "none"))
+          f = this.ScoreTransform;
+          if (! strcmp (class (f), "function_handle"))
+            error (strcat (["ClassificationNeuralNetwork.predict:"], ...
+                           [" 'ScoreTransform' must be a"], ...
+                           [" 'function_handle' object."]));
+          endif
+          scores = f (scores);
+        endif
+      endif
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationNeuralNetwork} {@var{CVMdl} =} crossval (@var{obj})
+    ## @deftypefnx {ClassificationNeuralNetwork} {@var{CVMdl} =} crossval (@dots{}, @var{Name}, @var{Value})
+    ##
+    ## Cross Validate a Neural Network classification object.
+    ##
+    ## @code{@var{CVMdl} = crossval (@var{obj})} returns a cross-validated model
+    ## object, @var{CVMdl}, from a trained model, @var{obj}, using 10-fold
+    ## cross-validation by default.
+    ##
+    ## @code{@var{CVMdl} = crossval (@var{obj}, @var{name}, @var{value})}
+    ## specifies additional name-value pair arguments to customize the
+    ## cross-validation process.
+    ##
+    ## @multitable @columnfractions 0.28 0.02 0.7
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{"KFold"} @tab @tab Specify the number of folds to use in
+    ## k-fold cross-validation.  @code{"KFold", @var{k}}, where @var{k} is an
+    ## integer greater than 1.
+    ##
+    ## @item @qcode{"Holdout"} @tab @tab Specify the fraction of the data to
+    ## hold out for testing.  @code{"Holdout", @var{p}}, where @var{p} is a
+    ## scalar in the range @math{(0,1)}.
+    ##
+    ## @item @qcode{"Leaveout"} @tab @tab Specify whether to perform
+    ## leave-one-out cross-validation.  @code{"Leaveout", @var{Value}}, where
+    ## @var{Value} is 'on' or 'off'.
+    ##
+    ## @item @qcode{"CVPartition"} @tab @tab Specify a @qcode{cvpartition}
+    ## object used for cross-validation.  @code{"CVPartition", @var{cv}}, where
+    ## @code{isa (@var{cv}, "cvpartition")} = 1.
+    ##
+    ## @end multitable
+    ##
+    ## @seealso{fitcnet, ClassificationNeuralNetwork, cvpartition,
+    ## ClassificationPartitionedModel}
+    ## @end deftypefn
+
+    function CVMdl = crossval (this, varargin)
+
+      ## Check for sufficient input arguments
+      if (nargin < 1)
+        error ("ClassificationNeuralNetwork.crossval: too few input arguments.");
+      endif
+
+      if (numel (varargin) == 1)
+        error (strcat (["ClassificationNeuralNetwork.crossval: Name-Value"], ...
+                       [" arguments must be in pairs."]));
+      elseif (numel (varargin) > 2)
+        error (strcat (["ClassificationNeuralNetwork.crossval: specify"], ...
+                       [" only one of the optional Name-Value paired"], ...
+                       [" arguments."]));
+      endif
+
+      ## Set default values before parsing optional parameters
+      numSamples  = size (this.X, 1);
+      numFolds    = 10;
+      Holdout     = [];
+      Leaveout    = 'off';
+      CVPartition = [];
+
+      ## Parse extra parameters
+      while (numel (varargin) > 0)
+        switch (tolower (varargin {1}))
+
+          case 'kfold'
+            numFolds = varargin{2};
+            if (! (isnumeric (numFolds) && isscalar (numFolds)
+                   && (numFolds == fix (numFolds)) && numFolds > 1))
+              error (strcat (["ClassificationNeuralNetwork.crossval:"], ...
+                             [" 'KFold' must be an integer value greater"], ...
+                             [" than 1."]));
+            endif
+
+          case 'holdout'
+            Holdout = varargin{2};
+            if (! (isnumeric (Holdout) && isscalar (Holdout) && Holdout > 0
+                   && Holdout < 1))
+              error (strcat (["ClassificationNeuralNetwork.crossval:"], ...
+                             [" 'Holdout' must be a numeric value between"], ...
+                             [" 0 and 1."]));
+            endif
+
+          case 'leaveout'
+            Leaveout = varargin{2};
+            if (! (ischar (Leaveout)
+                   && (strcmpi (Leaveout, 'on') || strcmpi (Leaveout, 'off'))))
+              error (strcat (["ClassificationNeuralNetwork.crossval:"], ...
+                             [" 'Leaveout' must be either 'on' or 'off'."]));
+            endif
+
+          case 'cvpartition'
+            CVPartition = varargin{2};
+            if (!(isa (CVPartition, 'cvpartition')))
+              error (strcat (["ClassificationNeuralNetwork.crossval:"], ...
+                             [" 'CVPartition' must be a 'cvpartition'"], ...
+                             [" object."]));
+            endif
+
+          otherwise
+            error (strcat (["ClassificationNeuralNetwork.crossval: invalid"],...
+                           [" parameter name in optional paired arguments."]));
+          endswitch
+        varargin (1:2) = [];
+      endwhile
+
+      ## Determine the cross-validation method to use
+      if (! isempty (CVPartition))
+        partition = CVPartition;
+      elseif (! isempty (Holdout))
+        partition = cvpartition (numSamples, 'Holdout', Holdout);
+      elseif (strcmpi (Leaveout, 'on'))
+        partition = cvpartition (numSamples, 'LeaveOut');
+      else
+        partition = cvpartition (numSamples, 'KFold', numFolds);
+      endif
+
+      ## Create a cross-validated model object
+      CVMdl = ClassificationPartitionedModel (this, partition);
 
     endfunction
 
@@ -661,8 +905,8 @@ classdef ClassificationNeuralNetwork
     endfunction
 
     ## Initialize weights and biases based on the specified initializers
-    function this = parameter_initializer(this, LayerWeightsInitializer, LayerBiasesInitializer)
-
+    function this = parameter_initializer(this, LayerWeightsInitializer, ...
+                                          LayerBiasesInitializer)
       numLayers = numel(this.LayerSizes);
       inputSize = this.NumPredictors;
 
@@ -678,7 +922,8 @@ classdef ClassificationNeuralNetwork
         ## Initialize weights
         if (strcmpi(LayerWeightsInitializer, 'glorot'))
           limit = sqrt(6 / (prevLayerSize + layerSize));
-          this.LayerWeights{i} = 2 * limit * (rand(layerSize, prevLayerSize) - 0.5);
+          this.LayerWeights{i} = 2 * limit * (rand(layerSize, ...
+                                                   prevLayerSize) - 0.5);
         elseif (strcmpi(LayerWeightsInitializer, 'he'))
           limit = sqrt(2 / prevLayerSize);
           this.LayerWeights{i} = limit * randn(layerSize, prevLayerSize);
@@ -699,10 +944,12 @@ classdef ClassificationNeuralNetwork
       ## Initialize output layer weights
       if (strcmpi(LayerWeightsInitializer, 'glorot'))
         limit = sqrt(6 / (prevLayerSize + outputLayerSize));
-        this.LayerWeights{end+1} = 2 * limit * (rand(outputLayerSize, prevLayerSize) - 0.5);
+        this.LayerWeights{end+1} = 2 * limit * (rand(outputLayerSize, ...
+                                                prevLayerSize) - 0.5);
       elseif (strcmpi(LayerWeightsInitializer, 'he'))
         limit = sqrt(2 / prevLayerSize);
-        this.LayerWeights{end+1} = limit * randn(outputLayerSize, prevLayerSize);
+        this.LayerWeights{end+1} = limit * randn(outputLayerSize, ...
+                                                 prevLayerSize);
       endif
 
       ## Initialize output layer biases
@@ -716,7 +963,6 @@ classdef ClassificationNeuralNetwork
 
     ## One Hot Vector Encoder
     function one_hot_vector = one_hot_encoder(this, Y)
-       ## one_hot_vector = sparse(1:numel(Y), Y,1); fastest and most memory efficient option but the output is sparse and I don't know how to work with it.
        one_hot_vector = bsxfun(@eq, Y(:), 1:max(Y));
     endfunction
 
@@ -754,34 +1000,21 @@ classdef ClassificationNeuralNetwork
       Zs = cell(numel(LayerWeights), 1);
       As = cell(numel(LayerWeights), 1);
 
-
       ## Forward propagation
       A = X;
       for i = 1:length(this.LayerSizes)+1
-
-##  ## Print dimensions for debugging
-##  printf("Layer %d\n", i);
-##  printf("LayerWeights{%d}: %dx%d\n", i, size(LayerWeights{i}, 1), size(LayerWeights{i}, 2));
-##  printf("A: %dx%d\n", size(A, 1), size(A, 2));
-
         Zs{i} = A * this.LayerWeights{i}' + this.LayerBiases{i}';
-
-## printf("Zs{%d}: %dx%d\n", i, size(Zs{i}, 1), size(Zs{i}, 2));
 
         if (i <= length(this.LayerSizes))
           [A, z] = this.Layer_Activation(Zs{i});
         else
           A = this.softmax(Zs{i});
         endif
-
-## printf("A (after activation): %dx%d\n", size(A, 1), size(A, 2));
-
         As{i} = A;
       endfor
 
       ## Compute Loss
       J = this.compute_cross_entropy_loss(A, Y);
-      J
 
       ## Backward Propagation
       m = size(X, 1);
@@ -834,9 +1067,11 @@ classdef ClassificationNeuralNetwork
         w_size = layerSize * prevLayerSize;
         b_size = layerSize;
 
-        LayerWeights{i} = reshape(thetaVec(offset + 1:offset + w_size), layerSize, prevLayerSize);
+        LayerWeights{i} = reshape(thetaVec(offset + 1:offset + w_size), ...
+                                  layerSize, prevLayerSize);
         offset = offset + w_size;
-        LayerBiases{i} = reshape(thetaVec(offset + 1:offset + b_size), layerSize, 1);
+        LayerBiases{i} = reshape(thetaVec(offset + 1:offset + b_size), ...
+                                 layerSize, 1);
         offset = offset + b_size;
       endfor
 
@@ -845,9 +1080,11 @@ classdef ClassificationNeuralNetwork
       w_size = outputLayerSize * prevLayerSize;
       b_size = outputLayerSize;
 
-      LayerWeights{end} = reshape(thetaVec(offset + 1:offset + w_size), outputLayerSize, prevLayerSize);
+      LayerWeights{end} = reshape(thetaVec(offset + 1:offset + w_size), ...
+                                  outputLayerSize, prevLayerSize);
       offset = offset + w_size;
-      LayerBiases{end} = reshape(thetaVec(offset + 1:offset + b_size), outputLayerSize, 1);
+      LayerBiases{end} = reshape(thetaVec(offset + 1:offset + b_size), ...
+                                 outputLayerSize, 1);
     endfunction
 
   endmethods
@@ -910,24 +1147,12 @@ endclassdef
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LayerBiasesInitializer", 123)
 %!error<ClassificationNeuralNetwork: unsupported 'LayerBiasesInitializer' function.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LayerBiasesInitializer", "unsupported_type")
-%!error<ClassificationNeuralNetwork: 'InitialStepSize' must be a positive scalar.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones (10,1), "InitialStepSize", -1)
-%!error<ClassificationNeuralNetwork: 'InitialStepSize' must be a positive scalar.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones (10,1), "InitialStepSize", 0)
-%!error<ClassificationNeuralNetwork: 'InitialStepSize' must be a positive scalar.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones (10,1), "InitialStepSize", [1, 2])
-%!error<ClassificationNeuralNetwork: 'InitialStepSize' must be a positive scalar.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones (10,1), "InitialStepSize", "invalid")
 %!error<ClassificationNeuralNetwork: 'IterationLimit' must be a positive integer.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "IterationLimit", -1)
 %!error<ClassificationNeuralNetwork: 'IterationLimit' must be a positive integer.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "IterationLimit", 0.5)
 %!error<ClassificationNeuralNetwork: 'IterationLimit' must be a positive integer.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "IterationLimit", [1,2])
-%!error<ClassificationNeuralNetwork: 'GradientTolerance' must be a non-negative scalar.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "GradientTolerance", -1)
-%!error<ClassificationNeuralNetwork: 'GradientTolerance' must be a non-negative scalar.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "GradientTolerance", [1,2])
 %!error<ClassificationNeuralNetwork: 'LossTolerance' must be a non-negative scalar.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LossTolerance", -1)
 %!error<ClassificationNeuralNetwork: 'LossTolerance' must be a non-negative scalar.> ...
@@ -936,16 +1161,24 @@ endclassdef
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "StepTolerance", -1)
 %!error<ClassificationNeuralNetwork: 'StepTolerance' must be a non-negative scalar.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "StepTolerance", [1,2])
+%!error<ClassificationNeuralNetwork: 'ScoreTransform' must be a character vector or a function handle.> ...
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "ScoreTransform", [1,2])
+%!error<ClassificationNeuralNetwork: unrecognized 'ScoreTransform' function.> ...
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "ScoreTransform", "unsupported_type")
 %!error<ClassificationNeuralNetwork: invalid parameter name in optional pair arguments.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "some", "some")
 %!error<ClassificationNeuralNetwork: invalid values in X.> ...
 %! ClassificationNeuralNetwork ([1;2;3;'a';4], ones (5,1))
 %!error<ClassificationNeuralNetwork: invalid values in X.> ...
 %! ClassificationNeuralNetwork ([1;2;3;Inf;4], ones (5,1))
-%!error<ClassificationNeuralNetwork: the elements in 'Prior' do not correspond to selected classes in Y.> ...
-%! ClassificationNeuralNetwork (ones (5,2), ones (5,1), "Prior", [1 2])
-%!error<ClassificationNeuralNetwork: the number of rows and columns in 'Cost' must correspond to the selected classes in Y.> ...
-%! ClassificationNeuralNetwork (ones (5,2), ones (5,1), "Cost", [1 2; 1 3])
+
+
+## Test output for predict method
+%!shared x, y, x_train, x_test, y_train, y_test, objST
+%! load fisheriris
+%! inds = ! strcmp (species, 'setosa');
+%! x = meas(inds, 3:4);
+%! y = grp2idx (species(inds));
 
 ## Test input validation for predict method
 %!error<ClassificationNeuralNetwork.predict: too few input arguments.> ...
@@ -954,3 +1187,64 @@ endclassdef
 %! predict (ClassificationNeuralNetwork (ones (4,2), ones (4,1)), [])
 %!error<ClassificationNeuralNetwork.predict: XC must have the same number of features> ...
 %! predict (ClassificationNeuralNetwork (ones (4,2), ones (4,1)), 1)
+%!test
+%! objST = fitcnet (x, y);
+%! objST.ScoreTransform = "a";
+%!error<ClassificationNeuralNetwork.predict: 'ScoreTransform' must be a 'function_handle' object.> ...
+%! [labels, scores] = predict (objST, x);
+
+## Test output for crossval method
+%!test
+%! Mdl = fitcnet(x,y);
+%! CVMdl = crossval (Mdl, "KFold", 5);
+%! assert (class (CVMdl), "ClassificationPartitionedModel")
+%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert (CVMdl.KFold == 5)
+%! assert (class (CVMdl.Trained{1}), "ClassificationNeuralNetwork")
+%!test
+%! obj = fitcnet (x, y);
+%! CVMdl = crossval (obj, "HoldOut", 0.2);
+%! assert (class (CVMdl), "ClassificationPartitionedModel")
+%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert (class (CVMdl.Trained{1}), "ClassificationNeuralNetwork")
+%!test
+%! obj = fitcnet (x, y);
+%! CVMdl = crossval (obj, "LeaveOut", 'on');
+%! assert (class (CVMdl), "ClassificationPartitionedModel")
+%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert (class (CVMdl.Trained{1}), "ClassificationNeuralNetwork")
+
+## Test input validation for crossval method
+%!error<ClassificationNeuralNetwork.crossval: Name-Value arguments must be in pairs.> ...
+%! crossval (ClassificationNeuralNetwork (ones (40,2),randi([1, 2], 40, 1)), "KFold")
+%!error<ClassificationNeuralNetwork.crossval: specify only one of the optional Name-Value paired arguments.> ...
+%! crossval (ClassificationNeuralNetwork (ones (40,2),randi([1, 2], 40, 1)), ...
+%! "KFold", 5, "leaveout", 'on')
+%!error<ClassificationNeuralNetwork.crossval: 'KFold' must be an integer value greater than 1.> ...
+%! crossval (ClassificationNeuralNetwork (ones (40,2),randi([1, 2], 40, 1)), "KFold", 'a')
+%!error<ClassificationNeuralNetwork.crossval: 'KFold' must be an integer value greater than 1.> ...
+%! crossval (ClassificationNeuralNetwork (ones (40,2),randi([1, 2], 40, 1)), "KFold", 1)
+%!error<ClassificationNeuralNetwork.crossval: 'KFold' must be an integer value greater than 1.> ...
+%! crossval (ClassificationNeuralNetwork (ones (40,2),randi([1, 2], 40, 1)), "KFold", -1)
+%!error<ClassificationNeuralNetwork.crossval: 'KFold' must be an integer value greater than 1.> ...
+%! crossval (ClassificationNeuralNetwork (ones (40,2),randi([1, 2], 40, 1)), "KFold", 11.5)
+%!error<ClassificationNeuralNetwork.crossval: 'KFold' must be an integer value greater than 1.> ...
+%! crossval (ClassificationNeuralNetwork (ones (40,2),randi([1, 2], 40, 1)), "KFold", [1,2])
+%!error<ClassificationNeuralNetwork.crossval: 'Holdout' must be a numeric value between 0 and 1.> ...
+%! crossval (ClassificationNeuralNetwork (ones (40,2),randi([1, 2], 40, 1)), "Holdout", 'a')
+%!error<ClassificationNeuralNetwork.crossval: 'Holdout' must be a numeric value between 0 and 1.> ...
+%! crossval (ClassificationNeuralNetwork (ones (40,2),randi([1, 2], 40, 1)), "Holdout", 11.5)
+%!error<ClassificationNeuralNetwork.crossval: 'Holdout' must be a numeric value between 0 and 1.> ...
+%! crossval (ClassificationNeuralNetwork (ones (40,2),randi([1, 2], 40, 1)), "Holdout", -1)
+%!error<ClassificationNeuralNetwork.crossval: 'Holdout' must be a numeric value between 0 and 1.> ...
+%! crossval (ClassificationNeuralNetwork (ones (40,2),randi([1, 2], 40, 1)), "Holdout", 0)
+%!error<ClassificationNeuralNetwork.crossval: 'Holdout' must be a numeric value between 0 and 1.> ...
+%! crossval (ClassificationNeuralNetwork (ones (40,2),randi([1, 2], 40, 1)), "Holdout", 1)
+%!error<ClassificationNeuralNetwork.crossval: 'Leaveout' must be either 'on' or 'off'.> ...
+%! crossval (ClassificationNeuralNetwork (ones (40,2),randi([1, 2], 40, 1)), "Leaveout", 1)
+%!error<ClassificationNeuralNetwork.crossval: 'CVPartition' must be a 'cvpartition' object.> ...
+%! crossval (ClassificationNeuralNetwork (ones (40,2),randi([1, 2], 40, 1)), "CVPartition", 1)
+%!error<ClassificationNeuralNetwork.crossval: 'CVPartition' must be a 'cvpartition' object.> ...
+%! crossval (ClassificationNeuralNetwork (ones (40,2),randi([1, 2], 40, 1)), "CVPartition", 'a')
+%!error<ClassificationNeuralNetwork.crossval: invalid parameter name in optional paired arguments> ...
+%! crossval (ClassificationNeuralNetwork (ones (40,2),randi([1, 2], 40, 1)), "some", "some")
