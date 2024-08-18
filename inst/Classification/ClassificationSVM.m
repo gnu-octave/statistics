@@ -1401,9 +1401,89 @@ classdef ClassificationSVM
 
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationSVM} {} savemodel (@var{obj}, @var{filename})
+    ##
+    ## Save a ClassificationSVM object.
+    ##
+    ## @code{savemodel (@var{obj}, @var{filename})} saves a ClassificationSVM
+    ## object into a file defined by @var{filename}.
+    ##
+    ## @seealso{loadmodel, fitcknn, ClassificationSVM, cvpartition,
+    ## ClassificationPartitionedModel}
+    ## @end deftypefn
+
+    function savemodel (obj, fname)
+      ## Generate variable for class name
+      classdef_name = "ClassificationSVM";
+
+      ## Create variables from model properties
+      X = obj.X;
+      Y = obj.Y;
+      NumObservations     = obj.NumObservations;
+      RowsUsed            = obj.RowsUsed;
+      Standardize         = obj.Standardize;
+      Sigma               = obj.Sigma;
+      Mu                  = obj.Mu;
+      NumPredictors       = obj.NumPredictors;
+      PredictorNames      = obj.PredictorNames;
+      ResponseName        = obj.ResponseName;
+      ClassNames          = obj.ClassNames;
+      Prior               = obj.Prior;
+      Cost                = obj.Cost;
+      ScoreTransform      = obj.ScoreTransform;
+      ModelParameters     = obj.ModelParameters;
+      Alpha               = obj.Alpha;
+      Beta                = obj.Beta;
+      Bias                = obj.Bias;
+      IsSupportVector     = obj.IsSupportVector;
+      SupportVectorLabels = obj.SupportVectorLabels;
+      SupportVectors      = obj.SupportVectors;
+
+      Model               = obj.Model;
+      SVMtype             = obj.SVMtype;
+      BoxConstraint       = obj.BoxConstraint;
+      CacheSize           = obj.CacheSize;
+      KernelScale         = obj.KernelScale;
+      KernelOffset        = obj.KernelOffset;
+      KernelFunction      = obj.KernelFunction;
+      PolynomialOrder     = obj.PolynomialOrder;
+      Nu                  = obj.Nu;
+      Tolerance           = obj.Tolerance;
+      Shrinking           = obj.Shrinking;
+
+      ## Save classdef name and all model properties as individual variables
+      save (fname, "classdef_name", "X", "Y", "NumObservations", "RowsUsed", ...
+            "Standardize", "Sigma", "Mu", "NumPredictors", "PredictorNames", ...
+            "ResponseName", "ClassNames", "Prior", "Cost", "ScoreTransform", ...
+            "ModelParameters", "Alpha", "Beta", "Bias", "IsSupportVector", ...
+            "SupportVectorLabels", "SupportVectors", "Model", "SVMtype", ...
+            "BoxConstraint", "CacheSize", "KernelScale", "KernelOffset", ...
+            "KernelFunction", "PolynomialOrder", "Nu", "Tolerance", "Shrinking");
+    endfunction
+
   endmethods
 
   methods (Static, Hidden)
+
+    function mdl = load_model (filename, data)
+      ## Create a ClassificationSVM object
+      mdl = ClassificationSVM (1, 1);
+
+      ## Get fieldnames from DATA (including private properties)
+      names = fieldnames (data);
+
+      ## Copy data into object
+      for i = 1:numel (names)
+        ## Check that fieldnames in DATA match properties in ClassificationSVM
+        try
+          mdl.(names{i}) = data.(names{i});
+        catch
+          error ("ClassificationSVM.load_model: invalid model in '%s'.", ...
+                 filename)
+        end_try_catch
+      endfor
+    endfunction
 
     ## Helper functions for fitPosterior
     function prob = step (score, ub, lb, prior)

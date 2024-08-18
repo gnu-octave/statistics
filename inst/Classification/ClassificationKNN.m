@@ -1622,7 +1622,7 @@ classdef ClassificationKNN
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {ClassificationSVM} {} savemodel (@var{obj}, @var{filename})
+    ## @deftypefn  {ClassificationKNN} {} savemodel (@var{obj}, @var{filename})
     ##
     ## Save a ClassificationKNN object.
     ##
@@ -1633,7 +1633,7 @@ classdef ClassificationKNN
     ## ClassificationPartitionedModel}
     ## @end deftypefn
 
-    function mdl = savemodel (obj, fname)
+    function savemodel (obj, fname)
       ## Generate variable for class name
       classdef_name = "ClassificationKNN";
 
