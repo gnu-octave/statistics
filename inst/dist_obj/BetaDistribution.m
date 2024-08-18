@@ -647,8 +647,8 @@ endfunction
 
 %!demo
 %! ## Generate a data set of 5000 random samples from a Beta distribution with
-%! ## parameters a = 2 and b = 4.  Fit a Beta to this data and plot a PDF for
-%! ## the fitted Beta distribution superimposed on a histogram of the data
+%! ## parameters a = 2 and b = 4.  Fit a Beta distribution to this data and plot
+%! ## a PDF of the fitted distribution superimposed on a histogram of the data
 %!
 %! pd = makedist ("Beta", "a", 2, "b", 4)
 %! randg ("seed", 21);
@@ -673,6 +673,20 @@ endfunction
 %! hold on
 %! hist (data, 100, 140)
 %! hold off
+
+%!demo
+%! ## Generate a data set of 100 random samples from a Beta distribution with
+%! ## parameters a = 2 and b = 4.  Fit a Beta distribution to this data and plot
+%! ## its CDF superimposed over an empirical CDF of the data
+%!
+%! pd = makedist ("Beta", "a", 2, "b", 4)
+%! randg ("seed", 21);
+%! data = random (pd, 100, 1);
+%! pd = fitdist (data, "Beta")
+%! plot (pd, "plottype", "cdf")
+%! title (sprintf ("Fitted Beta distribution with a = %0.2f and b = %0.2f", ...
+%!                 pd.a, pd.b))
+%! legend ({"empirical CDF", "fitted CDF"}, "location", "east")
 
 ## Test output
 %!shared pd, t
