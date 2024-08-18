@@ -656,7 +656,7 @@ endfunction
 %! assert ([pd(1).alpha, pd(1).c, pd(1).k], phat);
 %! assert (paramci (pd(1)), pci);
 %! [phat, pci] = burrfit (x2);
-%! assert ([pd(2).alpha, pd(1).c, pd(1).k], phat);
+%! assert ([pd(2).alpha, pd(2).c, pd(2).k], phat);
 %! assert (paramci (pd(2)), pci);
 %!test
 %! x = exprnd (1, 100, 1);
