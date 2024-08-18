@@ -610,8 +610,8 @@ classdef ClassificationNeuralNetwork
     ## @var{obj} must be a @qcode{ClassificationNeuralNetwork} class object.
     ## @item
     ## @var{X} must be an @math{MxP} numeric matrix with the same number of
-    ## features @math{P} as the corresponding predictors of the SVM model in
-    ## @var{obj}.
+    ## features @math{P} as the corresponding predictors of the Neural Network
+    ## model in @var{obj}.
     ## @end itemize
     ##
     ## @code{[@var{labels}, @var{scores}] = predict (@var{obj}, @var{XC}} also
@@ -878,11 +878,89 @@ classdef ClassificationNeuralNetwork
 
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationNeuralNetwork} {} savemodel (@var{obj}, @var{filename})
+    ##
+    ## Save a ClassificationNeuralNetwork object.
+    ##
+    ## @code{savemodel (@var{obj}, @var{filename})} saves a
+    ## ClassificationNeuralNetwork object into a file defined by @var{filename}.
+    ##
+    ## @seealso{loadmodel, fitcnet, ClassificationNeuralNetwork, cvpartition,
+    ## ClassificationPartitionedModel}
+    ## @end deftypefn
+
+    function savemodel (obj, fname)
+      ## Generate variable for class name
+      classdef_name = "ClassificationNeuralNetwork";
+
+      ## Create variables from model properties
+      X = obj.X;
+      Y = obj.Y;
+      NumObservations         = obj.NumObservations;
+      RowsUsed                = obj.RowsUsed;
+      Standardize             = obj.Standardize;
+      Sigma                   = obj.Sigma;
+      Mu                      = obj.Mu;
+      NumPredictors           = obj.NumPredictors;
+      PredictorNames          = obj.PredictorNames;
+      ResponseName            = obj.ResponseName;
+      ClassNames              = obj.ClassNames;
+      Prior                   = obj.Prior;
+      Cost                    = obj.Cost;
+      ScoreTransform          = obj.ScoreTransform;
+      ModelParameters         = obj.ModelParameters;
+      LayerSizes              = obj.LayerSizes;
+      LayerWeights            = obj.LayerWeights;
+      LayerBiases             = obj.LayerBiases;
+      Activations             = obj.Activations;
+      OutputLayerActivation   = obj.OutputLayerActivation;
+      ConvergenceInfo         = obj.ConvergenceInfo;
+      Solver                  = obj.Solver;
+
+      LayerWeightsInitializer = obj.LayerWeightsInitializer;
+      LayerBiasesInitializer  = obj.LayerBiasesInitializer;
+      IterationLimit          = obj.IterationLimit;
+      LossTolerance           = obj.LossTolerance;
+      StepTolerance           = obj.StepTolerance;
+
+      ## Save classdef name and all model properties as individual variables
+      save (fname, "classdef_name", "X", "Y", "NumObservations", "RowsUsed", ...
+            "Standardize", "Sigma", "Mu", "NumPredictors", "PredictorNames", ...
+            "ResponseName", "ClassNames", "Prior", "Cost", "ScoreTransform", ...
+            "ModelParameters", "LayerSizes", "LayerWeights", "LayerBiases", ...
+            "Activations", "OutputLayerActivation", "ConvergenceInfo", ...
+            "Solver", "LayerWeightsInitializer", "LayerBiasesInitializer", ...
+            "IterationLimit", "LossTolerance", "StepTolerance");
+    endfunction
+
+  endmethods
+
+  methods (Static, Hidden)
+
+    function mdl = load_model (filename, data)
+      ## Create a ClassificationNeuralNetwork object
+      mdl = ClassificationNeuralNetwork (1, 1);
+
+      ## Get fieldnames from DATA (including private properties)
+      names = fieldnames (data);
+
+      ## Copy data into object
+      for i = 1:numel (names)
+        ## Check that fieldnames in DATA match properties in ClassificationNeuralNetwork
+        try
+          mdl.(names{i}) = data.(names{i});
+        catch
+          error (strcat (["ClassificationNeuralNetwork.load_model:"], ...
+                         [" invalid model in '%s'."]), filename)
+        end_try_catch
+      endfor
+    endfunction
+
   endmethods
 
   ## Helper functions
   methods (Access = private)
-
 
     ## Initialize weights and biases based on the specified initializers
     function this = parameter_initializer (this, LayerWeightsInitializer, ...
