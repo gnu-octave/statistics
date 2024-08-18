@@ -274,6 +274,7 @@ Hypothesis Testing
 I/O
  libsvmread
  libsvmwrite
+ loadmodel
 Plotting
  bar3
  bar3h

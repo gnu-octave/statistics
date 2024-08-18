@@ -251,11 +251,17 @@ function [varargout] = fitdist (varargin)
       endif
 
     case "burr"
-      warning ("fitdist: 'Burr' distribution not supported yet.");
       if (isempty (groupvar))
-        varargout{1} = [];
+        varargout{1} = BurrDistribution.fit ...
+                       (x, alpha, censor, freq, options);
       else
-        varargout{1} = [];
+        pd = BurrDistribution.fit ...
+             (x(g==1), alpha, censor(g==1), freq(g==1), options);
+        for i = 2:groups
+          pd(i) = BurrDistribution.fit ...
+                  (x(g==i), alpha, censor(g==i), freq(g==i), options);
+        endfor
+        varargout{1} = pd;
         varargout{2} = gn;
         varargout{3} = gl;
       endif
@@ -281,7 +287,7 @@ function [varargout] = fitdist (varargin)
                        (x, alpha, censor, freq, options);
       else
         pd = ExtremeValueDistribution.fit ...
-             (x(g==1), alpha, censor(g==i), freq(g==1), options);
+             (x(g==1), alpha, censor(g==1), freq(g==1), options);
         for i = 2:groups
           pd(i) = ExtremeValueDistribution.fit ...
                   (x(g==i), alpha, censor(g==i), freq(g==i), options);
@@ -296,7 +302,7 @@ function [varargout] = fitdist (varargin)
         varargout{1} = GammaDistribution.fit (x, alpha, censor, freq, options);
       else
         pd = GammaDistribution.fit ...
-             (x(g==1), alpha, censor(g==i), freq(g==1), options);
+             (x(g==1), alpha, censor(g==1), freq(g==1), options);
         for i = 2:groups
           pd(i) = GammaDistribution.fit ...
                   (x(g==i), alpha, censor(g==i), freq(g==i), options);
@@ -635,6 +641,22 @@ endfunction
 %! assert (paramci (pd(1)), pci);
 %! [phat, pci] = bisafit (x2);
 %! assert ([pd(2).beta, pd(2).gamma], phat);
+%! assert (paramci (pd(2)), pci);
+%!test
+%! x = burrrnd (1, 2, 1, 100, 1);
+%! pd = fitdist (x, "Burr");
+%! [phat, pci] = burrfit (x);
+%! assert ([pd.alpha, pd.c, pd.k], phat);
+%! assert (paramci (pd), pci);
+%!test
+%! x1 = burrrnd (1, 2, 1, 100, 1);
+%! x2 = burrrnd (1, 0.5, 2, 100, 1);
+%! pd = fitdist ([x1; x2], "burr", "By", [ones(100,1); 2*ones(100,1)]);
+%! [phat, pci] = burrfit (x1);
+%! assert ([pd(1).alpha, pd(1).c, pd(1).k], phat);
+%! assert (paramci (pd(1)), pci);
+%! [phat, pci] = burrfit (x2);
+%! assert ([pd(2).alpha, pd(2).c, pd(2).k], phat);
 %! assert (paramci (pd(2)), pci);
 %!test
 %! x = exprnd (1, 100, 1);

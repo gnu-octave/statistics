@@ -104,11 +104,14 @@ function [lb, ub, xmin, xmax] = compute_boundaries (pd)
   xmin = m - 3.5 * s;
   xmax = m + 3.5 * s;
   ## Fix boundaries for specific distributions
-  PD = {"bino", "bisa", "burr", "exp", "gam", "invg", "logl", ...
+  PD = {"bino", "bisa", "exp", "gam", "invg", "logl", ...
         "logn", "naka", "nbin", "poiss", "rayl", "rice", "wbl"};
   if (strcmpi (pd.DistributionCode, "beta"))
     lb = xmin = 0;
     ub = xmax = 1;
+  elseif (strcmpi (pd.DistributionCode, "burr"))
+    lb = xmin = 0;
+    ub = xmax = m + 3 * iqr (pd);
   elseif (any (strcmpi (pd.DistributionCode, PD)))
     lb = max (m - 3 * s, 0);
     xmin = max (m - 3.5 * s, 0);
@@ -218,6 +221,10 @@ function h = plot_pdf (pd, ax, DistType, Discrete)
       x = pd.InputData.data;
     endif
 
+    ## Keep data within plotting boundaries
+    [lb, ub, xmin, xmax] = compute_boundaries (pd);
+    x(x < lb | x > ub) = [];
+
     ## Compute the patch or histogram for data
     xsize = numel (x);
     if (DistType)
@@ -234,7 +241,7 @@ function h = plot_pdf (pd, ax, DistType, Discrete)
     endif
 
     ## Compute stem or line for PDF
-    if (DistType)
+    if (Discrete)
       x = [min(x):max(x)]';
       y = pdf (pd, x);
     else

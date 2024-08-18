@@ -549,6 +549,8 @@
 
  ** fitcsvm
 
+ ** loadmodel
+
  New classdefs:
  ==============
 
@@ -563,6 +565,8 @@
                           methods (github issue #128)
 
  ** ClassificationKNN: new methods and various bug fixes
+
+ ** finv: fix erratic output for very large DF2 (savannah bug #66034)
 
  ** fitcknn: support for cross-validation
 

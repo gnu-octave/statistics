@@ -1508,7 +1508,7 @@ classdef ClassificationKNN
     ## @deftypefn  {ClassificationKNN} {@var{CVMdl} =} crossval (@var{obj})
     ## @deftypefnx {ClassificationKNN} {@var{CVMdl} =} crossval (@dots{}, @var{Name}, @var{Value})
     ##
-    ## Cross Validate a Support Vector Machine classification object.
+    ## Cross Validate a ClassificationKNN object.
     ##
     ## @code{@var{CVMdl} = crossval (@var{obj})} returns a cross-validated model
     ## object, @var{CVMdl}, from a trained model, @var{obj}, using 10-fold
@@ -1619,6 +1619,75 @@ classdef ClassificationKNN
       ## Create a cross-validated model object
       CVMdl = ClassificationPartitionedModel (this, partition);
 
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationKNN} {} savemodel (@var{obj}, @var{filename})
+    ##
+    ## Save a ClassificationKNN object.
+    ##
+    ## @code{savemodel (@var{obj}, @var{filename})} saves a ClassificationKNN
+    ## object into a file defined by @var{filename}.
+    ##
+    ## @seealso{loadmodel, fitcknn, ClassificationKNN, cvpartition,
+    ## ClassificationPartitionedModel}
+    ## @end deftypefn
+
+    function savemodel (obj, fname)
+      ## Generate variable for class name
+      classdef_name = "ClassificationKNN";
+
+      ## Create variables from model properties
+      X = obj.X;
+      Y = obj.Y;
+      NumObservations = obj.NumObservations;
+      RowsUsed        = obj.RowsUsed;
+      Standardize     = obj.Standardize;
+      Sigma           = obj.Sigma;
+      Mu              = obj.Mu;
+      NumPredictors   = obj.NumPredictors;
+      PredictorNames  = obj.PredictorNames;
+      ResponseName    = obj.ResponseName;
+      ClassNames      = obj.ClassNames;
+      Prior           = obj.Prior;
+      Cost            = obj.Cost;
+      ScoreTransform  = obj.ScoreTransform;
+      BreakTies       = obj.BreakTies;
+      NumNeighbors    = obj.NumNeighbors;
+      Distance        = obj.Distance;
+      DistanceWeight  = obj.DistanceWeight;
+      DistParameter   = obj.DistParameter;
+      NSMethod        = obj.NSMethod;
+      IncludeTies     = obj.IncludeTies;
+      BucketSize      = obj.BucketSize;
+
+      ## Save classdef name and all model properties as individual variables
+      save (fname, "classdef_name", "X", "Y", "NumObservations", "RowsUsed", ...
+            "Standardize", "Sigma", "Mu", "NumPredictors", "PredictorNames", ...
+            "ResponseName", "ClassNames", "Prior", "Cost", "ScoreTransform", ...
+            "BreakTies", "NumNeighbors", "Distance", "DistanceWeight", ...
+            "DistParameter", "NSMethod", "IncludeTies", "BucketSize");
+    endfunction
+
+  endmethods
+
+  methods (Static, Hidden)
+
+    function mdl = load_model (filename, data)
+      ## Create a ClassificationKNN object
+      mdl = ClassificationKNN (1, 1);
+
+      ## Check that fieldnames in DATA match properties in ClassificationKNN
+      names = fieldnames (data);
+      props = fieldnames (mdl);
+      if (! isequal (sort (names), sort (props)))
+        error ("ClassificationKNN.load_model: invalid model in '%s'.", filename)
+      endif
+
+      ## Copy data into object
+      for i = 1:numel (props)
+        mdl.(props{i}) = data.(props{i});
+      endfor
     endfunction
 
   endmethods
