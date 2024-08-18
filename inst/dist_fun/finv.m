@@ -64,6 +64,10 @@ function x = finv (p, df1, df2)
   k = (p == 1) & (df1 > 0) & (df1 < Inf) & (df2 > 0) & (df2 < Inf);
   x(k) = Inf;
 
+  ## Limit df2 to 1e6 unless it is Inf
+  k = (df2 > 1e6) & (df2 < Inf);
+  df2(k) = 1e6;
+
   k = (p >= 0) & (p < 1) & (df1 > 0) & (df1 < Inf) & (df2 > 0) & (df2 < Inf);
   if (isscalar (df1) && isscalar (df2))
     x(k) = ((1 ./ betainv (1 - p(k), df2/2, df1/2) - 1) * df2 / df1);
@@ -71,6 +75,10 @@ function x = finv (p, df1, df2)
     x(k) = ((1 ./ betainv (1 - p(k), df2(k)/2, df1(k)/2) - 1)
               .* df2(k) ./ df1(k));
   endif
+
+  ## Handle case when DF2 is infinite
+  k = (p >= 0) & (p < 1) & (df1 > 0) & (df1 < Inf) & (df2 == Inf);
+  x(k) = chi2inv (p(k), df1(k)) ./ df1(k);
 
 endfunction
 
@@ -101,6 +109,13 @@ endfunction
 %!assert (finv (p, [2 -Inf NaN Inf 2], 2), [NaN NaN NaN NaN NaN])
 %!assert (finv (p, 2, [2 -Inf NaN Inf 2]), [NaN NaN NaN NaN NaN])
 %!assert (finv ([p(1:2) NaN p(4:5)], 2, 2), [NaN 0 NaN Inf NaN])
+
+## Test for bug #66034 (savannah)
+%!assert (finv (0.025, 10, 1e6), 0.3247, 1e-4)
+%!assert (finv (0.025, 10, 1e7), 0.3247, 1e-4)
+%!assert (finv (0.025, 10, 1e10), 0.3247, 1e-4)
+%!assert (finv (0.025, 10, 1e255), 0.3247, 1e-4)
+%!assert (finv (0.025, 10, Inf), 0.3247, 1e-4)
 
 ## Test class of input preserved
 %!assert (finv ([p, NaN], 2, 2), [NaN 0 1 Inf NaN NaN])
