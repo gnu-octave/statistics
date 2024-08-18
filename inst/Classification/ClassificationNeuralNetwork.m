@@ -1,4 +1,5 @@
 ## Copyright (C) 2024 Pallav Purbia <pallavpurbia@gmail.com>
+## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -539,27 +540,42 @@ classdef ClassificationNeuralNetwork
       this.LossTolerance = LossTolerance;
       this.StepTolerance = StepTolerance;
 
-      this = parameter_initializer(this,LayerWeightsInitializer, ...
-                                   LayerBiasesInitializer);
-      options = optimset('MaxIter', IterationLimit, 'TolFun', LossTolerance, ...
-                         'TolX', StepTolerance);
-      initialThetaVec = this.vectorize_parameters();
+      ## Compute initial parameters
+      this = parameter_initializer (this,LayerWeightsInitializer, ...
+                                    LayerBiasesInitializer);
 
+      ## Vectorize initial parameters so that they can be used for fminunc
+      initialThetaVec = [];
+      for i = 1:numel (this.LayerWeights)
+        initialThetaVec = [initialThetaVec; this.LayerWeights{i}(:)];
+        initialThetaVec = [initialThetaVec; this.LayerBiases{i}(:)];
+      endfor
+
+      ## Set options for fminunc
+      options = optimset ('MaxIter', IterationLimit, ...
+                          'TolFun', LossTolerance, ...
+                          'TolX', StepTolerance, ...
+                          'GradObj', 'on');
 
       ## Start timing the training process
       tic;
+      f = @(J, grad) costFunction (initialThetaVec, this.NumPredictors, ...
+                                   this.LayerSizes, numel (this.ClassNames), ...
+                                   this.LayerWeights, this.LayerBiases, ...
+                                   this.Activations, X, Y);
+      [optThetaVec, cost, ~, out] = fminunc (f, initialThetaVec, options);
 
-      [optThetaVec, cost] = fminunc(@(thetaVec) ...
-                 costFunction(thetaVec, this, X, Y), initialThetaVec, options);
-
-      ## Store the total time spent in the training history
+      ## Store training time, iterations, and cost into the model
       ConvergenceInfo.Time = toc;
-
-      ConvergenceInfo.Iterations = IterationLimit;
+      ConvergenceInfo.Iterations = out.iterations;
       ConvergenceInfo.TrainingLoss = cost;
 
-      [this.LayerWeights, this.LayerBiases] = ...
-                                          reshape_parameters(this, optThetaVec);
+      ## Convert thetaVec back to LayerWeights and LayerBiases
+      [LW, LB] = reshape_parameters (optThetaVec, this.NumPredictors, ...
+                                     this.LayerSizes, numel (this.ClassNames));
+      ## Save Weights and Biases into the model
+      this.LayerWeights = LW;
+      this.LayerBiases = LB;
 
       ## Populate ModelParameters structure
       params = struct();
@@ -608,7 +624,7 @@ classdef ClassificationNeuralNetwork
     ## @seealso{fitcnet, ClassificationNeuralNetwork}
     ## @end deftypefn
 
-    function [labels, scores] = predict(this, XC)
+    function [labels, scores] = predict (this, XC)
 
       ## Check for sufficient input arguments
       if (nargin < 2)
@@ -618,7 +634,7 @@ classdef ClassificationNeuralNetwork
       ## Check for valid XC
       if (isempty (XC))
         error ("ClassificationNeuralNetwork.predict: XC is empty.");
-      elseif (columns(this.X) != columns(XC))
+      elseif (columns (this.X) != columns (XC))
         error (strcat (["ClassificationNeuralNetwork.predict: XC must"], ...
                        [" have the same number of features as in the"], ...
                        [" Neural Network model."]));
@@ -631,19 +647,19 @@ classdef ClassificationNeuralNetwork
 
       ## Forward propagation
       A = XC;
-      for i = 1:length(this.LayerSizes)+1
+      for i = 1:length (this.LayerSizes) + 1
         Z = A * this.LayerWeights{i}' + this.LayerBiases{i}';
-        if (i <= length(this.LayerSizes))
-          [A, z] = this.Layer_Activation(Z);
+        if (i <= length (this.LayerSizes))
+          A = Layer_Activation (this.Activations, Z);
         else
-          A = this.softmax(Z);
+          A = softmax (Z);
         endif
       endfor
 
       scores = A;
 
       # Get the predicted labels (class with highest probability)
-      [~, labels] = max(A, [], 2);
+      [~, labels] = max (A, [], 2);
       labels = this.ClassNames(labels);
 
       if (nargout > 1)
@@ -709,19 +725,19 @@ classdef ClassificationNeuralNetwork
       ## Predict labels from new data
       ## Forward propagation
       A = X;
-      for i = 1:length(this.LayerSizes)+1
+      for i = 1:length (this.LayerSizes)+1
         Z = A * this.LayerWeights{i}' + this.LayerBiases{i}';
         if (i <= length(this.LayerSizes))
-          [A, z] = this.Layer_Activation(Z);
+          A = Layer_Activation (this.Activations, Z);
         else
-          A = this.softmax(Z);
+          A = softmax (Z);
         endif
       endfor
 
       scores = A;
 
       # Get the predicted labels (class with highest probability)
-      [~, labels] = max(A, [], 2);
+      [~, labels] = max (A, [], 2);
       labels = this.ClassNames(labels);
 
       if (nargout > 1)
@@ -862,52 +878,16 @@ classdef ClassificationNeuralNetwork
 
     endfunction
 
-   endmethods
+  endmethods
 
   ## Helper functions
   methods (Access = private)
-    ## Activation function
-    function [A, z] = Layer_Activation(this,z)
-      switch this.Activations
-        case 'relu'
-          A = max(0, z);
-        case 'tanh'
-          A = tanh(z);
-        case 'sigmoid'
-          A = 1 ./ (1 + exp(-z));
-        case 'none'
-          A = z;
-      endswitch
-    endfunction
 
-    ## Activation Gradient
-    function dz = Activation_Gradient(this, dA, z)
-      switch this.Activations
-        case 'relu'
-          A = max(0, z);
-          dz = dA .* (A > 0);
-        case 'tanh'
-          A = tanh(z);
-          dz = dA .* (1 - A.^2);
-        case 'sigmoid'
-          A = 1 ./ (1 + exp(-z));
-          dz = dA .* A .* (1 - A);
-        case 'none'
-          A = z;
-          dz = dA;
-      endswitch
-    endfunction
-
-    ## Softmax activation function
-    function softmax = softmax(this,z)
-      exp_z = exp(z - max(z, [], 2));  # Stability improvement
-      softmax = exp_z ./ sum(exp_z, 2);
-    endfunction
 
     ## Initialize weights and biases based on the specified initializers
-    function this = parameter_initializer(this, LayerWeightsInitializer, ...
-                                          LayerBiasesInitializer)
-      numLayers = numel(this.LayerSizes);
+    function this = parameter_initializer (this, LayerWeightsInitializer, ...
+                                           LayerBiasesInitializer)
+      numLayers = numel (this.LayerSizes);
       inputSize = this.NumPredictors;
 
       for i = 1:numLayers
@@ -920,175 +900,212 @@ classdef ClassificationNeuralNetwork
         layerSize = this.LayerSizes(i);
 
         ## Initialize weights
-        if (strcmpi(LayerWeightsInitializer, 'glorot'))
-          limit = sqrt(6 / (prevLayerSize + layerSize));
-          this.LayerWeights{i} = 2 * limit * (rand(layerSize, ...
-                                                   prevLayerSize) - 0.5);
-        elseif (strcmpi(LayerWeightsInitializer, 'he'))
-          limit = sqrt(2 / prevLayerSize);
-          this.LayerWeights{i} = limit * randn(layerSize, prevLayerSize);
+        if (strcmpi (LayerWeightsInitializer, 'glorot'))
+          limit = sqrt (6 / (prevLayerSize + layerSize));
+          this.LayerWeights{i} = 2 * limit * (rand (layerSize, ...
+                                                    prevLayerSize) - 0.5);
+        elseif (strcmpi (LayerWeightsInitializer, 'he'))
+          limit = sqrt (2 / prevLayerSize);
+          this.LayerWeights{i} = limit * randn (layerSize, prevLayerSize);
         endif
 
         ## Initialize biases
-        if (strcmpi(LayerBiasesInitializer, 'zeros'))
-          this.LayerBiases{i} = zeros(layerSize, 1);
-        elseif (strcmpi(LayerBiasesInitializer, 'ones'))
-          this.LayerBiases{i} = ones(layerSize, 1);
+        if (strcmpi (LayerBiasesInitializer, 'zeros'))
+          this.LayerBiases{i} = zeros (layerSize, 1);
+        elseif (strcmpi (LayerBiasesInitializer, 'ones'))
+          this.LayerBiases{i} = ones (layerSize, 1);
         endif
       endfor
 
       ## Initialize the weights and biases for the output layer
-      outputLayerSize = numel(this.ClassNames);
+      outputLayerSize = numel (this.ClassNames);
       prevLayerSize = this.LayerSizes(end);
 
       ## Initialize output layer weights
-      if (strcmpi(LayerWeightsInitializer, 'glorot'))
-        limit = sqrt(6 / (prevLayerSize + outputLayerSize));
-        this.LayerWeights{end+1} = 2 * limit * (rand(outputLayerSize, ...
+      if (strcmpi (LayerWeightsInitializer, 'glorot'))
+        limit = sqrt (6 / (prevLayerSize + outputLayerSize));
+        this.LayerWeights{end+1} = 2 * limit * (rand (outputLayerSize, ...
                                                 prevLayerSize) - 0.5);
       elseif (strcmpi(LayerWeightsInitializer, 'he'))
-        limit = sqrt(2 / prevLayerSize);
-        this.LayerWeights{end+1} = limit * randn(outputLayerSize, ...
-                                                 prevLayerSize);
+        limit = sqrt (2 / prevLayerSize);
+        this.LayerWeights{end+1} = limit * randn (outputLayerSize, ...
+                                                  prevLayerSize);
       endif
 
       ## Initialize output layer biases
-      if (strcmpi(LayerBiasesInitializer, 'zeros'))
-        this.LayerBiases{end+1} = zeros(outputLayerSize, 1);
-      elseif (strcmpi(LayerBiasesInitializer, 'ones'))
-        this.LayerBiases{end+1} = ones(outputLayerSize, 1);
+      if (strcmpi (LayerBiasesInitializer, 'zeros'))
+        this.LayerBiases{end+1} = zeros (outputLayerSize, 1);
+      elseif (strcmpi (LayerBiasesInitializer, 'ones'))
+        this.LayerBiases{end+1} = ones (outputLayerSize, 1);
       endif
 
     endfunction
 
-    ## One Hot Vector Encoder
-    function one_hot_vector = one_hot_encoder(this, Y)
-       one_hot_vector = bsxfun(@eq, Y(:), 1:max(Y));
-    endfunction
-
-    ## Cross Entropy Loss function
-    function loss = compute_cross_entropy_loss(this, Y_pred, Y_true)
-
-      ## One-hot encode the true labels
-      one_hot_Y_true = this.one_hot_encoder(Y_true);
-
-      ## Number of observations
-      m = size(Y_true, 1);
-
-      ## Adding a small value to Y_pred to avoid log(0)
-      Y_pred = Y_pred + eps;
-
-      ## Compute the cross-entropy loss
-      loss = -sum(sum(one_hot_Y_true .* log(Y_pred))) / m;
-    endfunction
-
-    ## Vectorize the parameters so that they can be used for fminunc
-    function thetaVec = vectorize_parameters(this)
-      thetaVec = [];
-      for i = 1:numel(this.LayerWeights)
-        thetaVec = [thetaVec; this.LayerWeights{i}(:)];
-        thetaVec = [thetaVec; this.LayerBiases{i}(:)];
-      endfor
-    endfunction
-
-    ## Cost Function
-    function [J, gradVec] = costFunction(thetaVec, this, X, Y)
-      ## Reshape Parameters
-      [LayerWeights, LayerBiases] = reshape_parameters(this, thetaVec);
-
-      ## Initialize storage for forward propagation
-      Zs = cell(numel(LayerWeights), 1);
-      As = cell(numel(LayerWeights), 1);
-
-      ## Forward propagation
-      A = X;
-      for i = 1:length(this.LayerSizes)+1
-        Zs{i} = A * this.LayerWeights{i}' + this.LayerBiases{i}';
-
-        if (i <= length(this.LayerSizes))
-          [A, z] = this.Layer_Activation(Zs{i});
-        else
-          A = this.softmax(Zs{i});
-        endif
-        As{i} = A;
-      endfor
-
-      ## Compute Loss
-      J = this.compute_cross_entropy_loss(A, Y);
-
-      ## Backward Propagation
-      m = size(X, 1);
-      dA = A - this.one_hot_encoder(Y);
-      dWs = cell(numel(LayerWeights), 1);
-      dBs = cell(numel(LayerWeights), 1);
-
-      for i = numel(LayerWeights):-1:1
-        if i == numel(LayerWeights)
-          dZ = dA;
-        else
-          dA = dZ * LayerWeights{i+1};
-          dZ = this.Activation_Gradient(dA, Zs{i});
-        endif
-
-        if i == 1
-          dWs{i} = (dZ' * X) / m;
-        else
-          dWs{i} = (dZ' * As{i-1}) / m;
-        endif
-        dBs{i} = sum(dZ, 1)' / m;
-      endfor
-
-      ## Vectorize Gradients
-      gradVec = [];
-      for i = 1:numel(dWs)
-        gradVec = [gradVec; dWs{i}(:)];
-        gradVec = [gradVec; dBs{i}(:)];
-      endfor
-
-    endfunction
-
-    ## Converts thetaVec to LayerWeights and LayerBiases
-    function [LayerWeights, LayerBiases] = reshape_parameters(this, thetaVec)
-      LayerWeights = cell(numel(this.LayerSizes) + 1, 1);
-      LayerBiases = cell(numel(this.LayerSizes) + 1, 1);
-
-      offset = 0;
-      inputSize = this.NumPredictors;
-
-      for i = 1:numel(this.LayerSizes)
-        layerSize = this.LayerSizes(i);
-
-        if i == 1
-          prevLayerSize = inputSize;
-        else
-          prevLayerSize = this.LayerSizes(i-1);
-        endif
-
-        w_size = layerSize * prevLayerSize;
-        b_size = layerSize;
-
-        LayerWeights{i} = reshape(thetaVec(offset + 1:offset + w_size), ...
-                                  layerSize, prevLayerSize);
-        offset = offset + w_size;
-        LayerBiases{i} = reshape(thetaVec(offset + 1:offset + b_size), ...
-                                 layerSize, 1);
-        offset = offset + b_size;
-      endfor
-
-      outputLayerSize = numel(this.ClassNames);
-      prevLayerSize = this.LayerSizes(end);
-      w_size = outputLayerSize * prevLayerSize;
-      b_size = outputLayerSize;
-
-      LayerWeights{end} = reshape(thetaVec(offset + 1:offset + w_size), ...
-                                  outputLayerSize, prevLayerSize);
-      offset = offset + w_size;
-      LayerBiases{end} = reshape(thetaVec(offset + 1:offset + b_size), ...
-                                 outputLayerSize, 1);
-    endfunction
-
   endmethods
+
 endclassdef
+
+## Helper functions
+
+## Activation function
+function A = Layer_Activation (Activations, z)
+  switch Activations
+    case 'relu'
+      A = max (0, z);
+    case 'tanh'
+      A = tanh (z);
+    case 'sigmoid'
+      A = 1 ./ (1 + exp (-z));
+    case 'none'
+      A = z;
+  endswitch
+endfunction
+
+## Activation Gradient
+function dz = Activation_Gradient (Activations, dA, z)
+  switch Activations
+    case 'relu'
+      A = max (0, z);
+      dz = dA .* (A > 0);
+    case 'tanh'
+      A = tanh (z);
+      dz = dA .* (1 - A .^ 2);
+    case 'sigmoid'
+      A = 1 ./ (1 + exp (-z));
+      dz = dA .* A .* (1 - A);
+    case 'none'
+      A = z;
+      dz = dA;
+  endswitch
+endfunction
+
+## Softmax activation function
+function s_max = softmax (z)
+  exp_z = exp (z - max (z, [], 2));  # Stability improvement
+  s_max = exp_z ./ sum (exp_z, 2);
+endfunction
+
+## One Hot Vector Encoder
+function one_hot_vector = one_hot_encoder (Y)
+   one_hot_vector = bsxfun (@eq, Y(:), 1:max (Y));
+endfunction
+
+## Cross Entropy Loss function
+function loss = compute_cross_entropy_loss (Y_pred, Y_true)
+
+  ## One-hot encode the true labels
+  one_hot_Y_true = one_hot_encoder (Y_true);
+
+  ## Number of observations
+  m = size (Y_true, 1);
+
+  ## Adding a small value to Y_pred to avoid log(0)
+  Y_pred = Y_pred + eps;
+
+  ## Compute the cross-entropy loss
+  loss = -sum (sum (one_hot_Y_true .* log (Y_pred))) / m;
+endfunction
+
+## in_LS = this.NumPredictors
+## all_LS = this.LayerSizes
+## out_LS = numel (this.ClassNames)
+## _LW = this.LayerWeights
+## _LB = this.LayerBiases
+## Activations = this.Activations
+
+## Cost Function
+function [J, gradVec] = costFunction (thetaVec, in_LS, all_LS, out_LS, ...
+                                      _LW, _LB, Activations, X, Y)
+  ## Reshape Parameters
+  [LW, LB] = reshape_parameters (thetaVec, in_LS, all_LS, out_LS);
+
+  ## Initialize storage for forward propagation
+  Zs = cell (numel (LW), 1);
+  As = cell (numel (LW), 1);
+
+  ## Forward propagation
+  A = X;
+  NumOfLayers = numel (all_LS);
+  for i = 1:NumOfLayers + 1
+    Zs{i} = A * _LW{i}' + _LB{i}';
+
+    if (i <= NumOfLayers)
+      A = Layer_Activation (Activations, Zs{i});
+    else
+      A = softmax (Zs{i});
+    endif
+    As{i} = A;
+  endfor
+
+  ## Compute Loss
+  J = compute_cross_entropy_loss (A, Y);
+
+  ## Backward Propagation
+  m = size (X, 1);
+  dA = A - one_hot_encoder (Y);
+  dWs = cell (numel (LW), 1);
+  dBs = cell (numel (LW), 1);
+
+  for i = numel (LW):-1:1
+    if i == numel (LW)
+      dZ = dA;
+    else
+      dA = dZ * LW{i+1};
+      dZ = Activation_Gradient (Activations, dA, Zs{i});
+    endif
+
+    if i == 1
+      dWs{i} = (dZ' * X) / m;
+    else
+      dWs{i} = (dZ' * As{i-1}) / m;
+    endif
+    dBs{i} = sum (dZ, 1)' / m;
+  endfor
+
+  ## Vectorize Gradients
+  gradVec = [];
+  for i = 1:numel(dWs)
+    gradVec = [gradVec; dWs{i}(:)];
+    gradVec = [gradVec; dBs{i}(:)];
+  endfor
+
+endfunction
+
+## Converts thetaVec to LayerWeights and LayerBiases
+function [LW, LB] = reshape_parameters (thetaVec, in_LS, all_LS, out_LS)
+
+  NumOfLayers = numel (all_LS);
+  LW = cell (NumOfLayers + 1, 1);
+  LB = cell (NumOfLayers + 1, 1);
+
+  offset = 0;
+
+  for i = 1:NumOfLayers
+    cLS = all_LS(i);    # current Layer Size
+
+    if i == 1
+      pLS = in_LS;      # previous Layer Size
+    else
+      pLS = all_LS(i-1);
+    endif
+
+    w_size = cLS * pLS;
+    b_size = cLS;
+
+    LW{i} = reshape (thetaVec(offset + 1:offset + w_size), cLS, pLS);
+    offset = offset + w_size;
+    LB{i} = reshape (thetaVec(offset + 1:offset + b_size), cLS, 1);
+    offset = offset + b_size;
+  endfor
+
+  pLS = all_LS(end);
+  w_size = out_LS * pLS;
+  b_size = out_LS;
+
+  LW{end} = reshape (thetaVec(offset + 1:offset + w_size), out_LS, pLS);
+  offset = offset + w_size;
+  LB{end} = reshape (thetaVec(offset + 1:offset + b_size), out_LS, 1);
+endfunction
 
 ## Test input validation for constructor
 %!error<ClassificationNeuralNetwork: too few input arguments.> ...
