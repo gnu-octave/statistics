@@ -660,7 +660,7 @@ endfunction
 
 %!demo
 %! ## Plot the PDF of a Beta distribution, with parameters a = 2 and b = 4,
-%! ## truncated at [0.1, 0.8] intervals. Generate 10000 random samples from
+%! ## truncated at [0.1, 0.8] intervals.  Generate 10000 random samples from
 %! ## this truncated distribution and superimpose a histogram with 100 bins
 %! ## scaled accordingly
 %!
