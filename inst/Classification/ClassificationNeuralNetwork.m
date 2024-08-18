@@ -152,7 +152,7 @@ classdef ClassificationNeuralNetwork
 ## @seealso{fitcnet}
 ## @end deftypefn
 
-  properties (Access = public)
+  properties (SetAccess = private, GetAccess = public)
 
     X                     = [];  # Predictor data
     Y                     = [];  # Class labels
