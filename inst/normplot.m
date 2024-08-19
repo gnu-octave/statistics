@@ -134,7 +134,7 @@ function h = normplot (varargin)
        0.75, 0.90, 0.95, 0.98, 0.99, 0.997, 0.999];
   label = {"0.001", "0.003", "0.01", "0.02", "0.05", "0.10", "0.25", "0.50", ...
            "0.75", "0.90", "0.95", "0.98", "0.99", "0.997", "0.999"};
-  tick  = norminv(p,0,1);
+  tick = norminv (p, 0, 1);
   set (ax, "ytick", tick, "yticklabel", label);
   ## Set view range with a bit of space around data
   range = nanmax (x(:)) - nanmin (x(:));
