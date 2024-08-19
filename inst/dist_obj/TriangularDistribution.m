@@ -190,7 +190,7 @@ classdef TriangularDistribution
     ## -*- texinfo -*-
     ## @deftypefn  {TriangularDistribution} {@var{p} =} icdf (@var{pd}, @var{p})
     ##
-    ## Compute the cumulative distribution function (CDF).
+    ## Compute the inverse cumulative distribution function (iCDF).
     ##
     ## @code{@var{p} = icdf (@var{pd}, @var{x})} computes the quantile (the
     ## inverse of the CDF) of the probability distribution object, @var{pd},
@@ -583,6 +583,10 @@ endfunction
 %! plot (TriangularDistribution, "Parent", 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
 %! plot (TriangularDistribution, "Parent", "hax")
+%!error <plot: invalid NAME for optional argument.> ...
+%! plot (TriangularDistribution, "invalidNAME", "pdf")
+%!error <plot: no fitted DATA to plot a probability plot.> ...
+%! plot (TriangularDistribution, "PlotType", "probability")
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...

@@ -83,7 +83,10 @@ function h = __plot__ (pd, DistType, varargin)
     case "cdf"
       h = plot_cdf (pd, ax, DistType, Discrete);
     case "probability"
-
+      if (isempty (pd.InputData))
+        error ("plot: no fitted DATA to plot a probability plot.");
+      endif
+      h = plot_prob (pd, ax, DistType, Discrete);
   endswitch
 
 endfunction
@@ -417,6 +420,50 @@ function h = plot_cdf (pd, ax, DistType, Discrete)
       hold off;
     endif
   endif
+
+endfunction
+
+function h = plot_prob (pd, ax, DistType, Discrete)
+
+  ## Expand frequency vector (if necessary)
+  if (any (pd.InputData.freq != 1))
+    x = expand_freq (pd.InputData.data, pd.InputData.freq);
+  else
+    x = pd.InputData.data;
+  endif
+
+  ## Compute the probabilities for data
+  n = rows (x);
+  y = icdf (pd, ([1:n]' - 0.5) / n);
+  x = sort (x);
+
+  ## Plot reference line
+  X = Y = [x(1); x(end)];
+  h(2) = line (ax, X, Y, "LineStyle", "-.", "Marker", "none", "color", "red");
+  hold on;
+  h(1) = plot (ax, x, y, "LineStyle", "none", "Marker", "+", "color", "blue");
+
+  ## Plot labels
+  ylabel "Probability"
+  xlabel "Data"
+
+  ## Plot grid
+  p = [0.001, 0.005, 0.01, 0.02, 0.05, 0.10, 0.25, 0.5, ...
+       0.75, 0.90, 0.95, 0.98, 0.99, 0.995, 0.999];
+  label = {"0.001", "0.005", "0.01", "0.02", "0.05", "0.10", "0.25", "0.50", ...
+           "0.75", "0.90", "0.95", "0.98", "0.99", "0.995", "0.999"};
+  tick = icdf (pd, p);
+  set (ax, "ytick", tick, "yticklabel", label);
+
+  ## Compute plot boundaries
+  [~, ~, xmin, xmax] = compute_boundaries (pd);
+  ## Set view range with a bit of space around data
+  ymin = icdf (pd, 0.25 ./ n);
+  ymax = icdf (pd, (n - 0.25) ./ n);
+  set (ax, "ylim", [ymin, ymax], "xlim", [xmin, xmax]);
+  grid (ax, "on");
+  box (ax, "off");
+  hold off;
 
 endfunction
 

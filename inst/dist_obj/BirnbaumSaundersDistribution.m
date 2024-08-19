@@ -160,7 +160,7 @@ classdef BirnbaumSaundersDistribution
     ## @deftypefn  {BirnbaumSaundersDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
     ## @deftypefnx {BirnbaumSaundersDistribution} {@var{p} =} cdf (@var{pd}, @var{x}, @qcode{"upper"})
     ##
-    ## Compute the cumulative distribution function (CDF).
+    ## Compute the inverse cumulative distribution function (iCDF).
     ##
     ## @code{@var{p} = cdf (@var{pd}, @var{x})} computes the CDF of the
     ## probability distribution object, @var{pd}, evaluated at the values in
@@ -821,6 +821,10 @@ endfunction
 %! plot (BirnbaumSaundersDistribution, "Parent", 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
 %! plot (BirnbaumSaundersDistribution, "Parent", "hax")
+%!error <plot: invalid NAME for optional argument.> ...
+%! plot (BirnbaumSaundersDistribution, "invalidNAME", "pdf")
+%!error <plot: no fitted DATA to plot a probability plot.> ...
+%! plot (BirnbaumSaundersDistribution, "PlotType", "probability")
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...

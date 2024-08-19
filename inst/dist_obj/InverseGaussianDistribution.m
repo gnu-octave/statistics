@@ -202,7 +202,7 @@ classdef InverseGaussianDistribution
     ## -*- texinfo -*-
     ## @deftypefn  {InverseGaussianDistribution} {@var{p} =} icdf (@var{pd}, @var{p})
     ##
-    ## Compute the cumulative distribution function (CDF).
+    ## Compute the inverse cumulative distribution function (iCDF).
     ##
     ## @code{@var{p} = icdf (@var{pd}, @var{x})} computes the quantile (the
     ## inverse of the CDF) of the probability distribution object, @var{pd},
@@ -773,6 +773,10 @@ endfunction
 %! plot (InverseGaussianDistribution, "Parent", 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
 %! plot (InverseGaussianDistribution, "Parent", "hax")
+%!error <plot: invalid NAME for optional argument.> ...
+%! plot (InverseGaussianDistribution, "invalidNAME", "pdf")
+%!error <plot: no fitted DATA to plot a probability plot.> ...
+%! plot (InverseGaussianDistribution, "PlotType", "probability")
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...
