@@ -73,7 +73,7 @@ function h = __plot__ (pd, DistType, varargin)
 
   ## Check for invalid cases of probability type bafore creating new axes
   if (strcmpi (PlotType, "probability"))
-    if (! isfield (pd, "InputData"))
+    if (! isprop (pd, "InputData"))
       msg = "plot: 'probability' PlotType is not supported for '%s'.";
       error (sprintf (msg, pd.DistributionName));
     endif
