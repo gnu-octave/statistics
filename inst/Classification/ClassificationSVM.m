@@ -475,8 +475,7 @@ classdef ClassificationSVM
       ## Force Y labels to -1 and +1 to avoid numeric issues with different
       ## compiling options; see https://github.com/cjlin1/libsvm/issues/220
       if (nclasses == 2)
-        Y(Y == 1) = -1;
-        Y(Y == 2) = +1;
+        Y(Y == 2) = -1;
       endif
 
       ## Check X contains valid data
