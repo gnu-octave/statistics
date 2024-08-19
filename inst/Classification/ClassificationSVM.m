@@ -442,10 +442,11 @@ classdef ClassificationSVM
 
       ## Renew groups in Y
       [gY, gnY, glY] = grp2idx (Y);
+      nclasses = numel (gnY);
       this.ClassNames = glY;  # Keep the same type as Y
 
       ## If only one class available, force 'SVMtype' to 'one_class_svm'
-      if (numel (gnY) == 1)
+      if (nclasses == 1)
         if (! SVMtype_override && ! strcmp (SVMtype, 'one_class_svm'))
           error (strcat (["ClassificationSVM: cannot train a binary"], ...
                          [" problem with only one class available."]));
@@ -461,7 +462,7 @@ classdef ClassificationSVM
       endif
 
       ## Check that we are dealing only with one-class or binary classification
-      if (numel (gnY) > 2)
+      if (nclasses > 2)
         error (strcat (["ClassificationSVM: can only be used for"], ...
                        [" one-class or two-class learning."]));
       endif
@@ -469,6 +470,13 @@ classdef ClassificationSVM
       ## Force Y into numeric
       if (! isnumeric (Y))
         Y = gY;
+      endif
+
+      ## Force Y labels to -1 and +1 to avoid numeric issues with different
+      ## compiling options; see https://github.com/cjlin1/libsvm/issues/220
+      if (nclasses == 2)
+        Y(Y == 1) = -1;
+        Y(Y == 2) = +1;
       endif
 
       ## Check X contains valid data
@@ -496,24 +504,24 @@ classdef ClassificationSVM
 
       ## Handle Prior and Cost
       if (strcmpi ("uniform", Prior))
-        this.Prior = ones (size (gnY)) ./ numel (gnY);
+        this.Prior = ones (size (gnY)) ./ nclasses;
       elseif (isempty (Prior) || strcmpi ("empirical", Prior))
         pr = [];
-        for i = 1:numel (gnY)
+        for i = 1:nclasses
           pr = [pr; sum(gY==i)];
         endfor
         this.Prior = pr ./ sum (pr);
       elseif (isnumeric (Prior))
-        if (numel (gnY) != numel (Prior))
+        if (nclasses != numel (Prior))
           error (strcat (["ClassificationSVM: the elements in 'Prior' do"], ...
                          [" not correspond to selected classes in Y."]));
         endif
         this.Prior = Prior ./ sum (Prior);
       endif
       if (isempty (Cost))
-        this.Cost = cast (! eye (numel (gnY)), "double");
+        this.Cost = cast (! eye (nclasses), "double");
       else
-        if (numel (gnY) != sqrt (numel (Cost)))
+        if (nclasses != sqrt (numel (Cost)))
           error (strcat (["ClassificationSVM: the number of rows and"], ...
                          [" columns in 'Cost' must correspond to"], ...
                          [" the selected classes in Y."]));
