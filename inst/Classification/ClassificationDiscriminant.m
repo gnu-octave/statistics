@@ -479,7 +479,7 @@ classdef ClassificationDiscriminant
     ## class, computed based on the posterior probabilities and the specified
     ## misclassification costs.
     ##
-    ## @seealso{ClassificationDiscriminant, ClassificationDiscriminant}
+    ## @seealso{ClassificationDiscriminant, fitcdiscr}
     ## @end deftypefn
 
     function [label, score, cost] = predict (this, XC)
