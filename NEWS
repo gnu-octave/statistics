@@ -573,8 +573,8 @@
  ** NegativeBinomialDistribution: fixed computations on truncated distribution
                                   methods (github issue #128)
 
- ** plot method for probability distribution objects updated to plot CDF
-    and superimposing it over empirical CDF of fitted data.
+ ** plot method for probability distribution objects updated to support 'cdf'
+    and 'probability' PlotType options (github issue #129)
 
  ** PoissonDistribution: fixed computations on truncated distribution
                          methods (github issue #128)
