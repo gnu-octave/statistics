@@ -71,6 +71,17 @@ function h = __plot__ (pd, DistType, varargin)
     varargin([1:2]) = [];
   endwhile
 
+  ## Check for invalid cases of probability type bafore creating new axes
+  if (strcmpi (PlotType, "probability"))
+    if (! isprop (pd, "InputData"))
+      msg = "plot: 'probability' PlotType is not supported for '%s'.";
+      error (sprintf (msg, pd.DistributionName));
+    endif
+    if (isempty (pd.InputData))
+      error ("plot: no fitted DATA to plot a probability plot.");
+    endif
+  endif
+
   ## Get current axes or create new ones
   if (isempty (ax))
     ax = gca ();
@@ -83,9 +94,6 @@ function h = __plot__ (pd, DistType, varargin)
     case "cdf"
       h = plot_cdf (pd, ax, DistType, Discrete);
     case "probability"
-      if (isempty (pd.InputData))
-        error ("plot: no fitted DATA to plot a probability plot.");
-      endif
       h = plot_prob (pd, ax, DistType, Discrete);
   endswitch
 
