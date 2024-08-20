@@ -71,6 +71,17 @@ function h = __plot__ (pd, DistType, varargin)
     varargin([1:2]) = [];
   endwhile
 
+  ## Check for invalid cases of probability type bafore creating new axes
+  if (strcmpi (PlotType, "probability"))
+    if (! isprop (pd, "InputData"))
+      msg = "plot: 'probability' PlotType is not supported for '%s'.";
+      error (sprintf (msg, pd.DistributionName));
+    endif
+    if (isempty (pd.InputData))
+      error ("plot: no fitted DATA to plot a probability plot.");
+    endif
+  endif
+
   ## Get current axes or create new ones
   if (isempty (ax))
     ax = gca ();
@@ -83,7 +94,7 @@ function h = __plot__ (pd, DistType, varargin)
     case "cdf"
       h = plot_cdf (pd, ax, DistType, Discrete);
     case "probability"
-
+      h = plot_prob (pd, ax, DistType, Discrete);
   endswitch
 
 endfunction
@@ -104,11 +115,14 @@ function [lb, ub, xmin, xmax] = compute_boundaries (pd)
   xmin = m - 3.5 * s;
   xmax = m + 3.5 * s;
   ## Fix boundaries for specific distributions
-  PD = {"bino", "bisa", "burr", "exp", "gam", "invg", "logl", ...
+  PD = {"bino", "bisa", "exp", "gam", "invg", "logl", ...
         "logn", "naka", "nbin", "poiss", "rayl", "rice", "wbl"};
   if (strcmpi (pd.DistributionCode, "beta"))
     lb = xmin = 0;
     ub = xmax = 1;
+  elseif (strcmpi (pd.DistributionCode, "burr"))
+    lb = xmin = 0;
+    ub = xmax = m + 3 * iqr (pd);
   elseif (any (strcmpi (pd.DistributionCode, PD)))
     lb = max (m - 3 * s, 0);
     xmin = max (m - 3.5 * s, 0);
@@ -218,6 +232,10 @@ function h = plot_pdf (pd, ax, DistType, Discrete)
       x = pd.InputData.data;
     endif
 
+    ## Keep data within plotting boundaries
+    [lb, ub, xmin, xmax] = compute_boundaries (pd);
+    x(x < lb | x > ub) = [];
+
     ## Compute the patch or histogram for data
     xsize = numel (x);
     if (DistType)
@@ -234,7 +252,7 @@ function h = plot_pdf (pd, ax, DistType, Discrete)
     endif
 
     ## Compute stem or line for PDF
-    if (DistType)
+    if (Discrete)
       x = [min(x):max(x)]';
       y = pdf (pd, x);
     else
@@ -410,6 +428,50 @@ function h = plot_cdf (pd, ax, DistType, Discrete)
       hold off;
     endif
   endif
+
+endfunction
+
+function h = plot_prob (pd, ax, DistType, Discrete)
+
+  ## Expand frequency vector (if necessary)
+  if (any (pd.InputData.freq != 1))
+    x = expand_freq (pd.InputData.data, pd.InputData.freq);
+  else
+    x = pd.InputData.data;
+  endif
+
+  ## Compute the probabilities for data
+  n = rows (x);
+  y = icdf (pd, ([1:n]' - 0.5) / n);
+  x = sort (x);
+
+  ## Plot reference line
+  X = Y = [x(1); x(end)];
+  h(2) = line (ax, X, Y, "LineStyle", "-.", "Marker", "none", "color", "red");
+  hold on;
+  h(1) = plot (ax, x, y, "LineStyle", "none", "Marker", "+", "color", "blue");
+
+  ## Plot labels
+  ylabel "Probability"
+  xlabel "Data"
+
+  ## Plot grid
+  p = [0.001, 0.005, 0.01, 0.02, 0.05, 0.10, 0.25, 0.5, ...
+       0.75, 0.90, 0.95, 0.98, 0.99, 0.995, 0.999];
+  label = {"0.001", "0.005", "0.01", "0.02", "0.05", "0.10", "0.25", "0.50", ...
+           "0.75", "0.90", "0.95", "0.98", "0.99", "0.995", "0.999"};
+  tick = icdf (pd, p);
+  set (ax, "ytick", tick, "yticklabel", label);
+
+  ## Compute plot boundaries
+  [~, ~, xmin, xmax] = compute_boundaries (pd);
+  ## Set view range with a bit of space around data
+  ymin = icdf (pd, 0.25 ./ n);
+  ymax = icdf (pd, (n - 0.25) ./ n);
+  set (ax, "ylim", [ymin, ymax], "xlim", [xmin, xmax]);
+  grid (ax, "on");
+  box (ax, "off");
+  hold off;
 
 endfunction
 

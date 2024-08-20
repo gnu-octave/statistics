@@ -182,7 +182,7 @@ classdef MultinomialDistribution
     ## -*- texinfo -*-
     ## @deftypefn  {MultinomialDistribution} {@var{p} =} icdf (@var{pd}, @var{p})
     ##
-    ## Compute the cumulative distribution function (CDF).
+    ## Compute the inverse cumulative distribution function (iCDF).
     ##
     ## @code{@var{p} = icdf (@var{pd}, @var{x})} computes the quantile (the
     ## inverse of the CDF) of the probability distribution object, @var{pd},
@@ -587,6 +587,10 @@ endfunction
 %! plot (MultinomialDistribution, "Parent", 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
 %! plot (MultinomialDistribution, "Parent", "hax")
+%!error <plot: invalid NAME for optional argument.> ...
+%! plot (MultinomialDistribution, "invalidNAME", "pdf")
+%!error <plot: 'probability' PlotType is not supported for 'MultinomialDistribution'.> ...
+%! plot (MultinomialDistribution, "PlotType", "probability")
 
 ## 'truncate' method
 %!error <truncate: is_nan input argument.> ...

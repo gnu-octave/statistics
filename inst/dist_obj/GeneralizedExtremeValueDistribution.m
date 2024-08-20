@@ -222,7 +222,7 @@ classdef GeneralizedExtremeValueDistribution
     ## -*- texinfo -*-
     ## @deftypefn  {GeneralizedExtremeValueDistribution} {@var{p} =} icdf (@var{pd}, @var{p})
     ##
-    ## Compute the cumulative distribution function (CDF).
+    ## Compute the inverse cumulative distribution function (iCDF).
     ##
     ## @code{@var{p} = icdf (@var{pd}, @var{x})} computes the quantile (the
     ## inverse of the CDF) of the probability distribution object, @var{pd},
@@ -803,6 +803,10 @@ endfunction
 %! plot (GeneralizedExtremeValueDistribution, "Parent", 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
 %! plot (GeneralizedExtremeValueDistribution, "Parent", "hax")
+%!error <plot: invalid NAME for optional argument.> ...
+%! plot (GeneralizedExtremeValueDistribution, "invalidNAME", "pdf")
+%!error <plot: no fitted DATA to plot a probability plot.> ...
+%! plot (GeneralizedExtremeValueDistribution, "PlotType", "probability")
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...

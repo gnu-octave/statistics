@@ -160,7 +160,7 @@ classdef BirnbaumSaundersDistribution
     ## @deftypefn  {BirnbaumSaundersDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
     ## @deftypefnx {BirnbaumSaundersDistribution} {@var{p} =} cdf (@var{pd}, @var{x}, @qcode{"upper"})
     ##
-    ## Compute the cumulative distribution function (CDF).
+    ## Compute the inverse cumulative distribution function (iCDF).
     ##
     ## @code{@var{p} = cdf (@var{pd}, @var{x})} computes the CDF of the
     ## probability distribution object, @var{pd}, evaluated at the values in
@@ -653,6 +653,51 @@ function checkparams (beta, gamma)
   endif
 endfunction
 
+%!demo
+%! ## Generate a data set of 5000 random samples from a Birnbaum-Saunders
+%! ## distribution with parameters β = 1 and γ = 0.5.  Fit a Birnbaum-Saunders
+%! ## distribution to this data and plot a PDF of the fitted distribution
+%! ## superimposed on a histogram of the data
+%!
+%! pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)
+%! randg ("seed", 21);
+%! data = random (pd, 5000, 1);
+%! pd = fitdist (data, "BirnbaumSaunders")
+%! plot (pd)
+%! msg = "Fitted Birnbaum-Saunders distribution with a = %0.2f and b = %0.2f";
+%! title (sprintf (msg, pd.beta, pd.gamma))
+
+%!demo
+%! ## Plot the PDF of a Birnbaum-Saunders distribution, with parameters beta = 1
+%! ## and gamma = 0.5, truncated at [0, 2] intervals.  Generate 10000 random
+%! ## samples from this truncated distribution and superimpose a histogram with
+%! ## 100 bins scaled accordingly
+%!
+%! pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)
+%! t = truncate (pd, 0, 2)
+%! randg ("seed", 21);
+%! data = random (t, 10000, 1);
+%! plot (t)
+%! title ("Birnbaum-Saunders distribution (a = 2, b = 4) truncated at [0.1, 0.8]")
+%! hold on
+%! hist (data, 100, 50)
+%! hold off
+
+%!demo
+%! ## Generate a data set of 100 random samples from a Birnbaum-Saunders
+%! ## distribution with parameters β = 1 and γ = 0.5.  Fit a Birnbaum-Saunders
+%! ## distribution to this data and plot its CDF superimposed over an empirical
+%! ## CDF of the data
+%!
+%! pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)
+%! randg ("seed", 21);
+%! data = random (pd, 100, 1);
+%! pd = fitdist (data, "BirnbaumSaunders")
+%! plot (pd, "plottype", "cdf")
+%! title (sprintf ("Fitted Beta distribution with a = %0.2f and b = %0.2f", ...
+%!                 pd.beta, pd.gamma))
+%! legend ({"empirical CDF", "fitted CDF"}, "location", "east")
+
 ## Test output
 %!shared pd, t
 %! pd = BirnbaumSaundersDistribution;
@@ -776,6 +821,10 @@ endfunction
 %! plot (BirnbaumSaundersDistribution, "Parent", 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
 %! plot (BirnbaumSaundersDistribution, "Parent", "hax")
+%!error <plot: invalid NAME for optional argument.> ...
+%! plot (BirnbaumSaundersDistribution, "invalidNAME", "pdf")
+%!error <plot: no fitted DATA to plot a probability plot.> ...
+%! plot (BirnbaumSaundersDistribution, "PlotType", "probability")
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...

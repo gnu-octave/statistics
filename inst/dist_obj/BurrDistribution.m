@@ -219,7 +219,7 @@ classdef BurrDistribution
     ## -*- texinfo -*-
     ## @deftypefn  {BurrDistribution} {@var{p} =} icdf (@var{pd}, @var{p})
     ##
-    ## Compute the cumulative distribution function (CDF).
+    ## Compute the inverse cumulative distribution function (iCDF).
     ##
     ## @code{@var{p} = icdf (@var{pd}, @var{x})} computes the quantile (the
     ## inverse of the CDF) of the probability distribution object, @var{pd},
@@ -674,6 +674,53 @@ function checkparams (alpha, c, k)
   endif
 endfunction
 
+%!demo
+%! ## Generate a data set of 5000 random samples from a Burr type XII
+%! ## distribution with parameters alpha = 1, c = 2, and k = 1.  Fit a Burr type
+%! ## XII distribution to this data and plot a PDF of the fitted distribution
+%! ## superimposed on a histogram of the data
+%!
+%! pd = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)
+%! rand ("seed", 21);
+%! data = random (pd, 5000, 1);
+%! pd = fitdist (data, "Burr")
+%! plot (pd)
+%! msg = strcat (["Fitted Burr type XII distribution with"], ...
+%!                [" alpha = %0.2f, c =  %0.2f, and k = %0.2f"]);
+%! title (sprintf (msg, pd.alpha, pd.c, pd.k))
+
+%!demo
+%! ## Plot the PDF of a Burr type XII distribution, with parameters alpha = 1,
+%! ## c = 2, and k = 1, truncated at [0, 2] intervals. Generate 10000 random
+%! ## samples from this truncated distribution and superimpose a histogram with
+%! ## 100 bins scaled accordingly
+%!
+%! pd = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)
+%! t = truncate (pd, 0.5, 2.5)
+%! rand ("seed", 21);
+%! data = random (t, 10000, 1);
+%! plot (t)
+%! title ("Burr type XII distribution (alpha = 1, c = 2, k = 1) truncated at [0.5, 2.5]")
+%! hold on
+%! hist (data, 100, 50)
+%! hold off
+
+%!demo
+%! ## Generate a data set of 100 random samples from a Burr type XII
+%! ## distribution with parameters alpha = 1, c = 2, and k = 1.  Fit a Burr type
+%! ## XII  distribution to this data and plot its CDF superimposed over an
+%! ## empirical CDF of the data
+%!
+%! pd = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)
+%! rand ("seed", 21);
+%! data = random (pd, 100, 1);
+%! pd = fitdist (data, "Burr")
+%! plot (pd, "plottype", "cdf")
+%! msg = strcat (["Fitted Burr type XII distribution with"], ...
+%!                [" alpha = %0.2f, c =  %0.2f, and k = %0.2f"]);
+%! title (sprintf (msg, pd.alpha, pd.c, pd.k))
+%! legend ({"empirical CDF", "fitted CDF"}, "location", "east")
+
 ## Test output
 %!shared pd, t
 %! pd = BurrDistribution;
@@ -809,6 +856,10 @@ endfunction
 %! plot (BurrDistribution, "Parent", 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
 %! plot (BurrDistribution, "Parent", "hax")
+%!error <plot: invalid NAME for optional argument.> ...
+%! plot (BurrDistribution, "invalidNAME", "pdf")
+%!error <plot: no fitted DATA to plot a probability plot.> ...
+%! plot (BurrDistribution, "PlotType", "probability")
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...

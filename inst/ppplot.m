@@ -40,7 +40,7 @@
 ## and @var{x}, use
 ##
 ## @example
-## ppplot (x, "uniform", 2, 4)
+## ppplot (x, "unif", 2, 4)
 ## @end example
 ##
 ## @noindent

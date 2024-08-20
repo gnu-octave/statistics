@@ -681,6 +681,7 @@ function [s_o, hs_o] = boxplot (data, varargin)
   outliers2_tags_y = outliers2_y;
 
   ## Do the plot
+  hold_status = ishold ();
   if (orientation)
     ## Define outlier_tags' vertical alignment
     outlier_tags_alignment = {"horizontalalignment", "left"};
@@ -786,7 +787,10 @@ function [s_o, hs_o] = boxplot (data, varargin)
     set (gca(), "ytick", groups, "yticklabel", labels);
     hs.labels = get (gcf, "currentaxes");
   endif
-  hold off;
+  ## Retain original ishold status
+  if (! hold_status)
+    hold off;
+  endif
 
   ## Return output arguments if desired
   if (nargout >= 1)
@@ -927,6 +931,15 @@ endfunction
 %! unwind_protect
 %!   [~, b] = boxplot (rand (10, 3), "BoxStyle", "filled", "colors", "ybc");
 %!   assert (numel (b.box_fill), 3);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   hold on
+%!   [a, b] = boxplot (rand (10, 3));
+%!   assert (ishold, true);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
