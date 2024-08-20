@@ -349,8 +349,6 @@ classdef ClassificationPartitionedModel
             if (iscell (predictedLabel))
               if (isnumeric (this.Y))
                 predictedLabel = cellfun (@str2num, predictedLabel);
-              elseif (ischar (this.Y) || isstring (this.Y))
-                predictedLabel = string (predictedLabel);
               elseif (islogical (this.Y))
                 predictedLabel = cellfun (@logical, predictedLabel);
               elseif (iscellstr (this.Y))
@@ -408,8 +406,6 @@ classdef ClassificationPartitionedModel
             if (iscell (predictedLabel))
               if (isnumeric (this.Y))
                 predictedLabel = cellfun (@str2num, predictedLabel);
-              elseif (ischar (this.Y) || isstring (this.Y))
-                predictedLabel = string (predictedLabel);
               elseif (islogical (this.Y))
                 predictedLabel = cellfun (@logical, predictedLabel);
               elseif (iscellstr (this.Y))
@@ -519,10 +515,10 @@ endclassdef
 %! assert (! cvModel.ModelParameters.Standardize);
 %!test
 %! load fisheriris
-%! inds = !strcmp(species, 'setosa');
+%! inds = ! strcmp (species, 'setosa');
 %! x = meas(inds, 3:4);
-%! y = grp2idx(species(inds));
-%! SVMModel = fitcsvm(x,y);
+%! y = grp2idx (species(inds));
+%! SVMModel = fitcsvm (x,y);
 %! CVMdl = crossval (SVMModel, "KFold", 5);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
@@ -530,9 +526,9 @@ endclassdef
 %! assert (class (CVMdl.Trained{1}), "ClassificationSVM")
 %!test
 %! load fisheriris
-%! inds = !strcmp(species, 'setosa');
+%! inds = ! strcmp (species, 'setosa');
 %! x = meas(inds, 3:4);
-%! y = grp2idx(species(inds));
+%! y = grp2idx (species(inds));
 %! obj = fitcsvm (x, y);
 %! CVMdl = crossval (obj, "HoldOut", 0.2);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
@@ -540,14 +536,35 @@ endclassdef
 %! assert (class (CVMdl.Trained{1}), "ClassificationSVM")
 %!test
 %! load fisheriris
-%! inds = !strcmp(species, 'setosa');
+%! inds = ! strcmp (species, 'setosa');
 %! x = meas(inds, 3:4);
-%! y = grp2idx(species(inds));
+%! y = grp2idx (species(inds));
 %! obj = fitcsvm (x, y);
 %! CVMdl = crossval (obj, "LeaveOut", 'on');
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (class (CVMdl.Trained{1}), "ClassificationSVM")
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! a = fitcdiscr (x, y, "gamma", 0.3);
+%! cvModel = crossval (a, "KFold", 5);
+%! assert (class (cvModel), "ClassificationPartitionedModel");
+%! assert (cvModel.NumObservations, 4);
+%! assert (numel (cvModel.Trained), 5);
+%! assert (cvModel.CrossValidatedModel, "ClassificationDiscriminant");
+%! assert (cvModel.KFold, 5);
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! k = 3;
+%! a = fitcdiscr (x, y);
+%! cvModel = crossval (a, "LeaveOut", "on");
+%! assert (class (cvModel), "ClassificationPartitionedModel");
+%! assert ({cvModel.X, cvModel.Y}, {x, y});
+%! assert (cvModel.NumObservations, 4);
+%! assert (numel (cvModel.Trained), 4);
+%! assert (cvModel.CrossValidatedModel, "ClassificationDiscriminant");
 
 ## Test input validation for ClassificationPartitionedModel
 %!error<ClassificationPartitionedModel: too few input arguments.> ...
@@ -579,6 +596,20 @@ endclassdef
 %!          0.6667, 0.3333], 1e-4);
 %! assert (cost, [0.6667, 0.3333; 0.6667, 0.3333; 0.3333, 0.6667; ...
 %!          0.3333, 0.6667], 1e-4);
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = {"a"; "a"; "b"; "b"};
+%! a = fitcdiscr (x, y,"gamma", 0.5);
+%! cvModel = crossval (a, "Kfold", 4);
+%! [label, score, cost] = kfoldPredict (cvModel);
+%! assert (class(cvModel), "ClassificationPartitionedModel");
+%! assert ({cvModel.X, cvModel.Y}, {x, y});
+%! assert (cvModel.NumObservations, 4);
+%! assert (label, {"b"; "b"; "a"; "a"});
+%! assert (score, [4.5380e-01, 5.4620e-01; 2.4404e-01, 7.5596e-01; ...
+%!         9.9392e-01, 6.0844e-03; 9.9820e-01, 1.8000e-03], 1e-4);
+%! assert (cost, [5.4620e-01, 4.5380e-01; 7.5596e-01, 2.4404e-01; ...
+%!         6.0844e-03, 9.9392e-01; 1.8000e-03, 9.9820e-01], 1e-4);
 
 ## Test input validation for kfoldPredict
 %!error<ClassificationPartitionedModel.kfoldPredict: 'Cost' output is not supported for ClassificationSVM cross validated models.> ...
