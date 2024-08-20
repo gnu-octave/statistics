@@ -22,6 +22,10 @@ classdef ClassificationGAM
 ##
 ## Create a @qcode{ClassificationGAM} class object containing a generalized
 ## additive classification model.
+## The @qcode{ClassificationGAM} class implements a gradient boosting algorithm 
+## for classification, using spline fitting as the weak learner. This approach 
+## allows the model to capture non-linear relationships between predictors and 
+## the binary response variable.
 ##
 ## @code{@var{obj} = ClassificationGAM (@var{X}, @var{Y})} returns a
 ## ClassificationGAM object, with @var{X} as the predictor data and @var{Y}
@@ -32,7 +36,7 @@ classdef ClassificationGAM
 ## @code{X} must be a @math{NxP} numeric matrix of predictor data where rows
 ## correspond to observations and columns correspond to features or variables.
 ## @item
-## @code{Y} is @math{Nx1} numeric vector containing binary class labels, 
+## @code{Y} is @math{Nx1} numeric vector containing binary class labels,
 ## typically 0 or 1.
 ## @end itemize
 ##
@@ -105,10 +109,10 @@ classdef ClassificationGAM
 ## @qcode{i = j}.  In other words, the cost is 0 for correct classification and
 ## 1 for incorrect classification.
 ##
-## @item @qcode{obj.Formula} @tab @tab A model specification given as a string in
-## the form @qcode{"Y ~ terms"} where @qcode{Y} represents the reponse variable
-## and @qcode{terms} the predictor variables.  The formula can be used to
-## specify a subset of variables for training model.  For example:
+## @item @qcode{obj.Formula} @tab @tab A model specification given as a string
+## in the form @qcode{"Y ~ terms"} where @qcode{Y} represents the reponse
+## variable and @qcode{terms} the predictor variables. The formula can be used
+## to specify a subset of variables for training model. For example:
 ## @qcode{"Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3"} specifies four linear terms
 ## for the first four columns of for predictor data, and @qcode{x1:x2} and
 ## @qcode{x2:x3} specify the two interaction terms for 1st-2nd and 3rd-4th
@@ -147,12 +151,13 @@ classdef ClassificationGAM
 ## vector with different number of polynomial order for each predictor variable
 ## to be fitted with, although not recommended.
 ##
-## @item @qcode{obj.DoF} @tab @tab A scalar or a row vector with the same columns
-## as @var{X}.  It defines the degrees of freedom for fitting a polynomial when
-## training the GAM.  As a scalar, it is expanded to a row vector.  The default
-## value is 8, hence expanded to @qcode{ones (1, columns (X)) * 8}.  You can
-## parse a row vector with different degrees of freedom for each predictor
-## variable to be fitted with, although not recommended.
+## @item @qcode{obj.DoF} @tab @tab A scalar or a row vector with the same
+## columns as @var{X}.  It defines the degrees of freedom for fitting a
+## polynomial when training the GAM.  As a scalar, it is expanded to a row
+## vector.  The default value is 8, hence expanded to
+## @qcode{ones (1, columns (X)) * 8}. You can parse a row vector with different
+## degrees of freedom for each predictor variable to be fitted with,
+## although not recommended.
 ##
 ## @end multitable
 ##
@@ -180,7 +185,7 @@ classdef ClassificationGAM
     ResponseName    = [];   # Response variable name
     ClassNames      = [];   # Names of classes in Y
     Cost            = [];   # Cost of Misclassification
-    
+
     Formula         = [];   # Formula for GAM model
     Interactions    = [];   # Number or matrix of interaction terms
 
@@ -414,7 +419,7 @@ classdef ClassificationGAM
 
       ## Assign the number of original predictors to the ClassificationGAM object
       this.NumPredictors = ndims_X;
-      
+
       if (isempty (Cost))
         this.Cost = cast (! eye (numel (gnY)), "double");
       else
@@ -507,16 +512,18 @@ classdef ClassificationGAM
     ## @var{obj}.
     ##
     ## @code{@var{label} = predict (@var{obj}, @var{X}, 'IncludeInteractions', @var{includeInteractions})}
-    ## allows you to specify whether interaction terms should be included when making predictions.
+    ## allows you to specify whether interaction terms should be included when
+    ## making predictions.
     ##
-    ## @code{[@var{label}, @var{score}] = predict (@dots{})} also returns @var{score}, which
-    ## contains the predicted class scores or posterior probabilities for each observation.
+    ## @code{[@var{label}, @var{score}] = predict (@dots{})} also returns
+    ## @var{score}, which contains the predicted class scores or posterior
+    ## probabilities for each observation.
     ##
     ## @itemize
     ## @item
     ## @var{obj} must be a @qcode{ClassificationGAM} class object.
     ## @item
-    ## @var{X} must be an @math{MxP} numeric matrix where each row is an observation 
+    ## @var{X} must be an @math{MxP} numeric matrix where each row is an observation
     ## and each column corresponds to a predictor variable.
     ## @item
     ## @var{includeInteractions} is a 'true' or 'false' indicating whether to
@@ -556,13 +563,13 @@ classdef ClassificationGAM
           case "includeinteractions"
             tmpInt = varargin{2};
             if (! islogical (tmpInt) || (tmpInt != 0 && tmpInt != 1))
-              error (["ClassificationGAM.predict: includeinteractions", ...
+              error (["ClassificatioGAM.predict: includeinteractions", ...
                         " must be a logical value."]);
             endif
             ## Check model for interactions
             if (tmpInt && isempty (this.IntMatrix))
-              error (["ClassificationGAM.predict: trained model", ...
-                          " does not include any interactions."]);
+              error (["ClassificatioGAM.predict: trained model", ...
+                        " does not include any interactions."]);
             endif
             incInt = tmpInt;
 
@@ -642,7 +649,7 @@ classdef ClassificationGAM
           error (strcat (["ClassificationGAM: columns in Interactions logical"], ...
                          [" matrix must equal to the number of predictors."]));
         endif
-        intMat = this.Interactions
+        intMat = this.Interactions;
       elseif (isnumeric (this.Interactions))
         ## Need to measure the effect of all interactions to keep the best
         ## performing. Just check that the given number is not higher than
@@ -722,7 +729,7 @@ classdef ClassificationGAM
       ## Initialize variables
       [n_samples, n_features] = size (X);
       RSS = zeros (1, n_features);
-      
+
       ## Initialize model predictions with the intercept (log-odds)
       p = Inter;
       intercept = log (p / (1 - p));
@@ -733,28 +740,28 @@ classdef ClassificationGAM
         ## Compute the gradient
         y_pred = 1 ./ (1 + exp (-f));  ## Sigmoid function
         gradient = Y - y_pred;        ## Negative gradient of log-loss
-        
+
         ## Initialize a variable to store predictions for this iteration
         f_new = zeros (n_samples, 1);
-        
+
         for j = 1:n_features
           ## Fit a spline to the gradient for feature X_j
           spline_model = splinefit (X(:, j), gradient, Knots(j), "order", Order(j));
-          
+
           ## Predict using the fitted spline
           spline_pred = ppval (spline_model, X(:, j));
-          
+
           ## Store the spline model parameters
           param(j) = spline_model;
-          
+
           ## Update the model predictions
           f_new = f_new + learning_rate * spline_pred;
         endfor
-        
+
         ## Update the overall model predictions
         f = f + f_new ;
       endfor
-      
+
       ## Final residuals and RSS calculation
       res = Y  - 1 ./ (1 + exp (-f));
       RSS = sum (res .^ 2);
@@ -780,7 +787,6 @@ function scores = predict_val (params, XC, intercept)
   scores = [neg_prob, pos_prob];
 endfunction
 
-## demo
 %!demo
 %! ## Train a GAM classifier for binary classification
 %! ## using specific data and plot the decision boundaries.
@@ -799,7 +805,7 @@ endfunction
 %! x2 = [min(X(:,2)):0.1:max(X(:,2))];
 %! [x1G, x2G] = meshgrid (x1, x2);
 %! XGrid = [x1G(:), x2G(:)];
-%! [labels, score] = predict (obj, XGrid)
+%! [labels, score] = predict (obj, XGrid);
 
 ## Tests for constructor
 %!test
@@ -814,15 +820,32 @@ endfunction
 %! assert (a.PredictorNames, PredictorNames)
 %! assert (a.BaseModel.Intercept, 0)
 %!test
-%! x = [1, 2; 3, 4; 5, 6; 7, 8; 9, 10];
-%! y = [1; 0; 1; 0; 1];
-%! a = ClassificationGAM (x, y, "interactions", "all");
+%! load fisheriris
+%! inds = strcmp (species,'versicolor') | strcmp (species,'virginica');
+%! X = meas(inds, :);
+%! Y = species(inds, :)';
+%! Y = strcmp (Y, 'virginica')';
+%! a = ClassificationGAM (X, Y, 'Formula', 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3');
 %! assert (class (a), "ClassificationGAM");
-%! assert ({a.X, a.Y, a.NumObservations}, {x, y, 5})
-%! assert ({a.NumPredictors, a.ResponseName}, {2, "Y"})
-%! assert (a.ClassNames, {'1'; '0'})
-%! assert (a.PredictorNames, {'x1', 'x2'})
-%! assert (a.ModelwInt.Intercept, 0.4055, 1e-1)
+%! assert ({a.X, a.Y, a.NumObservations}, {X, Y, 100})
+%! assert ({a.NumPredictors, a.ResponseName}, {4, "Y"})
+%! assert (a.ClassNames, {'0'; '1'})
+%! assert (a.Formula, 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3')
+%! assert (a.PredictorNames, {'x1', 'x2', 'x3', 'x4'})
+%! assert (a.ModelwInt.Intercept, 0)
+%!test
+%! X = [2, 3, 5; 4, 6, 8; 1, 2, 3; 7, 8, 9; 5, 4, 3];
+%! Y = [0; 1; 0; 1; 1];
+%! a = ClassificationGAM(X, Y, 'Knots', [4, 4, 4], 'Order', [3, 3, 3]);
+%! assert (class (a), "ClassificationGAM");
+%! assert ({a.X, a.Y, a.NumObservations}, {X, Y, 5})
+%! assert ({a.NumPredictors, a.ResponseName}, {3, "Y"})
+%! assert (a.ClassNames, {'0'; '1'})
+%! assert (a.PredictorNames, {'x1', 'x2', 'x3'})
+%! assert (a.Knots, [4, 4, 4])
+%! assert (a.Order, [3, 3, 3])
+%! assert (a.DoF, [7, 7, 7])
+%! assert (a.BaseModel.Intercept, 0.4055, 1e-1)
 
 ## Test input validation for constructor
 %!error<ClassificationGAM: too few input arguments.> ClassificationGAM ()
@@ -859,21 +882,37 @@ endfunction
 
 ## Tests for predict method
 %!test
-%! load fisheriris
-%! inds = strcmp (species,'versicolor') | strcmp (species,'virginica');
-%! X = meas(inds, :);
-%! Y = species(inds, :)';
-%! Y = strcmp (Y, 'virginica')';
-%! a = ClassificationGAM (X, Y, 'Formula', 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3');
-%! l = {0; 0; 0; 0; 0};
-%! labels = predict (a, X);
+%! x = [1, 2; 3, 4; 5, 6; 7, 8; 9, 10];
+%! y = [1; 0; 1; 0; 1];
+%! a = ClassificationGAM (x, y, "interactions", "all");
+%! l = {'0'; '0'; '0'; '0'; '0'};
+%! s = [0.3760, 0.6240; 0.4259, 0.5741; 0.3760, 0.6240; ...
+%!      0.4259, 0.5741; 0.3760, 0.6240];
+%! [labels, scores] = predict (a, x);
 %! assert (class (a), "ClassificationGAM");
-%! assert ({a.X, a.Y, a.NumObservations}, {X, Y, 100})
-%! assert ({a.NumPredictors, a.ResponseName}, {4, "Y"})
+%! assert ({a.X, a.Y, a.NumObservations}, {x, y, 5})
+%! assert ({a.NumPredictors, a.ResponseName}, {2, "Y"})
+%! assert (a.ClassNames, {'1'; '0'})
+%! assert (a.PredictorNames, {'x1', 'x2'})
+%! assert (a.ModelwInt.Intercept, 0.4055, 1e-1)
+%! assert (labels, l)
+%! assert (scores, s, 1e-1)
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = [0; 0; 1; 1];
+%! interactions = [false, true,  false; true,  false, true; false, true,  false];
+%! a = fitcgam (x, y, "learningrate", 0.2, "interactions", interactions);
+%! [label, score] = predict (a, x, "includeinteractions", true);
+%! l = {'0'; '0'; '1'; '1'};
+%! s = [0.5106, 0.4894; 0.5135, 0.4865; 0.4864, 0.5136; 0.4847, 0.5153];
+%! assert (class (a), "ClassificationGAM");
+%! assert ({a.X, a.Y, a.NumObservations}, {x, y, 4})
+%! assert ({a.NumPredictors, a.ResponseName}, {3, "Y"})
 %! assert (a.ClassNames, {'0'; '1'})
-%! assert (a.Formula, 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3')
-%! assert (a.PredictorNames, {'x1', 'x2', 'x3', 'x4'})
+%! assert (a.PredictorNames, {'x1', 'x2', 'x3'})
 %! assert (a.ModelwInt.Intercept, 0)
+%! assert (label, l)
+%! assert (score, s, 1e-1)
 
 ## Test input validation for predict method
 %!error<ClassificationGAM.predict: too few input arguments.> ...

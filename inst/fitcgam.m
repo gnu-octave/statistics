@@ -30,7 +30,7 @@
 ## @code{X} must be a @math{NxP} numeric matrix of predictor data where rows
 ## correspond to observations and columns correspond to features or variables.
 ## @item
-## @code{Y} is @math{Nx1} numeric vector containing binary class labels, 
+## @code{Y} is @math{Nx1} numeric vector containing binary class labels,
 ## typically 0 or 1.
 ## @end itemize
 ##
