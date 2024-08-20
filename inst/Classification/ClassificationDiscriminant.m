@@ -124,7 +124,7 @@ classdef ClassificationDiscriminant
 ##
 ## @end multitable
 ##
-## @seealso{ClassificationDiscriminant}
+## @seealso{fitcdiscr}
 ## @end deftypefn
 
   properties (Access = public)
@@ -372,6 +372,12 @@ classdef ClassificationDiscriminant
         endfor
         this.Sigma = this.Sigma / (this.NumObservations - num_classes);
         D = diag (diag (this.Sigma));
+
+        ## fix me: MinGamma calculation is not same as Matlab. 
+        ## Instead of using (det (sigma) > 0) this criteria (line no: 391)
+        ## may be Matlab is using some threshold.
+        ## Also linear search might not be best here.
+
         ## Regularize Sigma
         this.Sigma = (this.Sigma * (1 - this.Gamma)) + (D * this.Gamma);
         this.MinGamma = 0;
@@ -1018,7 +1024,7 @@ endclassdef
 %! x = meas;
 %! y = species;
 %! xc = [min(x); mean(x); max(x)];
-%! obj = fitcdiscr (x, y, "NumNeighbors", 5, "Standardize", 1);
+%! obj = fitcdiscr (x, y);
 %! [label, score, cost] = predict (obj, xc);
 
 %!demo
@@ -1027,7 +1033,7 @@ endclassdef
 %! X = mean (meas);
 %! Y = {'versicolor'};
 %! ## Compute loss for discriminant model
-%! L = loss (model, X, Y);
+%! L = loss (model, X, Y)
 
 %!demo
 %! load fisheriris
@@ -1035,7 +1041,7 @@ endclassdef
 %! X = mean (meas);
 %! Y = {'versicolor'};
 %! ## Margin for discriminant model
-%! m = margin (mdl, X, Y);
+%! m = margin (mdl, X, Y)
 
 %!demo
 %! load fisheriris
@@ -1043,13 +1049,14 @@ endclassdef
 %! y = species;
 %! obj = fitcdiscr (x, y, "gamma", 0.4);
 %! ## Cross-validation for discriminant model
-%! CVMdl = crossval (obj);
+%! CVMdl = crossval (obj)
 
 ## Test Constructor
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
-%! a = fitcdiscr (x, y);
+%! PredictorNames = {'Feature1', 'Feature2', 'Feature3'};
+%! a = ClassificationDiscriminant (x, y, "PredictorNames", PredictorNames);
 %! sigma = [6.2500, 8.2500, 10.2500; ...
 %!          8.2500, 11.2500, 14.2500; ...
 %!          10.2500, 14.2500, 18.2500];
@@ -1068,10 +1075,11 @@ endclassdef
 %! assert (a.Mu, mu)
 %! assert (a.XCentered, xCentered)
 %! assert (a.LogDetSigma, -29.369, 1e-4)
+%! assert (a.PredictorNames, PredictorNames)
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
-%! a = fitcdiscr (x, y, "Gamma", 0.5);
+%! a = ClassificationDiscriminant (x, y, "Gamma", 0.5);
 %! sigma = [6.2500, 4.1250, 5.1250; ...
 %!          4.1250, 11.2500, 7.1250; ...
 %!          5.1250, 7.1250, 18.2500];
