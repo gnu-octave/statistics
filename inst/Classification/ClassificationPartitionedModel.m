@@ -522,25 +522,22 @@ endclassdef
 
 ## Tests
 %!test
-%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
-%! a = fitcdiscr (x, y, "gamma", 0.3);
+%! load fisheriris
+%! a = fitcdiscr (meas, species, "gamma", 0.3);
 %! cvModel = crossval (a, "KFold", 5);
 %! assert (class (cvModel), "ClassificationPartitionedModel");
-%! assert (cvModel.NumObservations, 4);
+%! assert (cvModel.NumObservations, 150);
 %! assert (numel (cvModel.Trained), 5);
 %! assert (cvModel.CrossValidatedModel, "ClassificationDiscriminant");
 %! assert (cvModel.KFold, 5);
 %!test
-%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
-%! k = 3;
-%! a = fitcdiscr (x, y);
-%! cvModel = crossval (a, "LeaveOut", "on");
+%! load fisheriris
+%! a = fitcdiscr (meas, species, "gamma", 0.5, "fillcoeffs", "off");
+%! cvModel = crossval (a, "HoldOut", 0.3);
 %! assert (class (cvModel), "ClassificationPartitionedModel");
-%! assert ({cvModel.X, cvModel.Y}, {x, y});
-%! assert (cvModel.NumObservations, 4);
-%! assert (numel (cvModel.Trained), 4);
+%! assert ({cvModel.X, cvModel.Y}, {meas, species});
+%! assert (cvModel.NumObservations, 150);
+%! assert (numel (cvModel.Trained), 1);
 %! assert (cvModel.CrossValidatedModel, "ClassificationDiscriminant");
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
@@ -555,7 +552,6 @@ endclassdef
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
-%! k = 3;
 %! a = fitcgam (x, y);
 %! cvModel = crossval (a, "LeaveOut", "on");
 %! assert (class (cvModel), "ClassificationPartitionedModel");
@@ -601,7 +597,6 @@ endclassdef
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
-%! k = 3;
 %! a = fitcnet (x, y, "LayerSizes", [5, 3]);
 %! cvModel = crossval (a, "LeaveOut", "on");
 %! assert (class (cvModel), "ClassificationPartitionedModel");
@@ -666,19 +661,18 @@ endclassdef
 
 ## Test for kfoldPredict
 %!test
-%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = {"a"; "a"; "b"; "b"};
-%! a = fitcdiscr (x, y, "gamma", 0.5, "fillcoeffs", "off");
+%! load fisheriris
+%! a = fitcdiscr (meas, species, "gamma", 0.5, "fillcoeffs", "off");
 %! cvModel = crossval (a, "Kfold", 4);
 %! [label, score, cost] = kfoldPredict (cvModel);
 %! assert (class(cvModel), "ClassificationPartitionedModel");
-%! assert ({cvModel.X, cvModel.Y}, {x, y});
-%! assert (cvModel.NumObservations, 4);
-%! assert (label, {"b"; "b"; "a"; "a"});
-%! assert (score, [4.5380e-01, 5.4620e-01; 2.4404e-01, 7.5596e-01; ...
-%!         9.9392e-01, 6.0844e-03; 9.9820e-01, 1.8000e-03], 1e-4);
-%! assert (cost, [5.4620e-01, 4.5380e-01; 7.5596e-01, 2.4404e-01; ...
-%!         6.0844e-03, 9.9392e-01; 1.8000e-03, 9.9820e-01], 1e-4);
+%! assert ({cvModel.X, cvModel.Y}, {meas, species});
+%! assert (cvModel.NumObservations, 150);
+%!# assert (label, {"b"; "b"; "a"; "a"});
+%!# assert (score, [4.5380e-01, 5.4620e-01; 2.4404e-01, 7.5596e-01; ...
+%!#         9.9392e-01, 6.0844e-03; 9.9820e-01, 1.8000e-03], 1e-4);
+%!# assert (cost, [5.4620e-01, 4.5380e-01; 7.5596e-01, 2.4404e-01; ...
+%!#         6.0844e-03, 9.9392e-01; 1.8000e-03, 9.9820e-01], 1e-4);
 %!test
 %! x = ones(4, 11);
 %! y = {"a"; "a"; "b"; "b"};

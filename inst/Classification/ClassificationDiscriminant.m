@@ -1408,10 +1408,10 @@ endclassdef
 %! assert (CVMdl.KFold == 10)
 %! assert (class (CVMdl.Trained{1}), "ClassificationDiscriminant")
 %!test
-%! CVMdl = crossval (obj, "KFold", 5);
+%! CVMdl = crossval (obj, "KFold", 3);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (CVMdl.KFold == 5)
+%! assert (CVMdl.KFold == 3)
 %! assert (class (CVMdl.Trained{1}), "ClassificationDiscriminant")
 %!test
 %! CVMdl = crossval (obj, "HoldOut", 0.2);
@@ -1424,10 +1424,10 @@ endclassdef
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (class (CVMdl.Trained{1}), "ClassificationDiscriminant")
 %!test
-%! partition = cvpartition (size (x, 1), 'KFold', 5);
+%! partition = cvpartition (y, 'KFold', 3);
 %! CVMdl = crossval (obj, 'cvPartition', partition);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
-%! assert (CVMdl.KFold == 5)
+%! assert (CVMdl.KFold == 3)
 %! assert (class (CVMdl.Trained{1}), "ClassificationDiscriminant")
 
 ## Test input validation for crossval method
