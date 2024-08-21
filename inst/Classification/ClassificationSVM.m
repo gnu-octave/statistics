@@ -1264,8 +1264,7 @@ classdef ClassificationSVM
                        [" the optional Name-Value paired arguments."]));
       endif
 
-      ## Set default values before parsing optional parameters
-      numSamples  = size (this.X, 1);
+      ## Add default values
       numFolds    = 10;
       Holdout     = [];
       Leaveout    = 'off';
@@ -1317,11 +1316,11 @@ classdef ClassificationSVM
       if (! isempty (CVPartition))
         partition = CVPartition;
       elseif (! isempty (Holdout))
-        partition = cvpartition (numSamples, 'Holdout', Holdout);
+        partition = cvpartition (this.Y, 'Holdout', Holdout);
       elseif (strcmpi (Leaveout, 'on'))
-        partition = cvpartition (numSamples, 'LeaveOut');
+        partition = cvpartition (this.Y, 'LeaveOut');
       else
-        partition = cvpartition (numSamples, 'KFold', numFolds);
+        partition = cvpartition (this.Y, 'KFold', numFolds);
       endif
 
       ## Create a cross-validated model object
@@ -1500,7 +1499,7 @@ classdef ClassificationSVM
 
     function prob = sigmoid (score, a, b)
       prob = zeros (size (score));
-      prob = 1 ./ (1 + exp (a * score + b));
+      prob = 1 ./ (1 + exp (-a * score + b));
     endfunction
 
   endmethods
@@ -1741,7 +1740,7 @@ endclassdef
 %! assert (score(:,1), -score(:,2), eps)
 %! obj = fitPosterior (obj);
 %! [label, probs] = predict (obj, xc);
-%! assert (probs(:,1), [0.968554; 0.445186; 0.041888], 1e-5);
+%! assert (probs(:,2), [0.975591; 0.427934; 0.030357], 1e-5);
 %! assert (probs(:,1) + probs(:,2), [1; 1; 1], 0.05)
 %!test
 %! obj = fitcsvm (x, y);
@@ -1776,9 +1775,9 @@ endclassdef
 %! CVSVMModel = fitcsvm (x, y, 'KernelFunction', 'rbf', 'HoldOut', 0.15);
 %! obj = CVSVMModel.Trained{1};
 %! testInds = test (CVSVMModel.Partition);
-%! expected_margin = [3.7373;  3.0418;  3.9400;  -0.267;  2.6938; ...
-%!                    3.7373;  2.7256;  3.7234; -6.9825; -0.5341; ...
-%!                    -1.418; -8.2889; -7.1628; -8.2889; -6.4997];
+%! expected_margin = [2.0001;  0.8579;  1.6690;  3.4144;  3.4555; ...
+%!                    2.6609;  3.5253; -4.0003; -6.3417; -6.4513; ...
+%!                   -3.0535; -7.5059; -1.6702; -5.6232; -7.3644];
 %! margin = margin (obj, x(testInds,:), y(testInds,:));
 %! assert (margin, expected_margin, 1e-4);
 
@@ -1808,12 +1807,12 @@ endclassdef
 %! L4 = loss (obj, x(testInds,:), y(testInds,:), 'LossFun', 'hinge');
 %! L5 = loss (obj, x(testInds,:), y(testInds,:), 'LossFun', 'logit');
 %! L6 = loss (obj, x(testInds,:), y(testInds,:), 'LossFun', 'quadratic');
-%! assert (L1, 2.7305, 1e-4);
+%! assert (L1, 2.8712, 1e-4);
 %! assert (L2, 0.5333, 1e-4);
-%! assert (L3, 15.101, 1e-3);
-%! assert (L4, 1.8481, 1e-4);
-%! assert (L5, 1.5109, 1e-4);
-%! assert (L6, 8.1119, 1e-4);
+%! assert (L3, 10.971, 1e-3);
+%! assert (L4, 1.9828, 1e-4);
+%! assert (L5, 1.5849, 1e-4);
+%! assert (L6, 7.6748, 1e-4);
 
 ## Test input validation for loss method
 %!error<ClassificationSVM.loss: too few input arguments.> ...
@@ -1873,7 +1872,7 @@ endclassdef
 
 ## Test output for crossval method
 %!test
-%! SVMModel = fitcsvm(x,y);
+%! SVMModel = fitcsvm (x,y);
 %! CVMdl = crossval (SVMModel, "KFold", 5);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})

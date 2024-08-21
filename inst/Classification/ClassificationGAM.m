@@ -716,7 +716,7 @@ classdef ClassificationGAM
                        [" one of the optional Name-Value paired arguments."]));
       endif
 
-      numSamples  = size (this.X, 1);
+      ## Add default values
       numFolds    = 10;
       Holdout     = [];
       Leaveout    = 'off';
@@ -768,11 +768,11 @@ classdef ClassificationGAM
       if (! isempty (CVPartition))
         partition = CVPartition;
       elseif (! isempty (Holdout))
-        partition = cvpartition (numSamples, 'Holdout', Holdout);
+        partition = cvpartition (this.Y, 'Holdout', Holdout);
       elseif (strcmpi (Leaveout, 'on'))
-        partition = cvpartition (numSamples, 'LeaveOut');
+        partition = cvpartition (this.Y, 'LeaveOut');
       else
-        partition = cvpartition (numSamples, 'KFold', numFolds);
+        partition = cvpartition (this.Y, 'KFold', numFolds);
       endif
 
       ## Create a cross-validated model object
@@ -884,7 +884,7 @@ classdef ClassificationGAM
       for iter = 1:num_iterations
         ## Compute the gradient
         y_pred = 1 ./ (1 + exp (-f));  ## Sigmoid function
-        gradient = Y - y_pred;        ## Negative gradient of log-loss
+        gradient = Y - y_pred;         ## Negative gradient of log-loss
 
         ## Initialize a variable to store predictions for this iteration
         f_new = zeros (n_samples, 1);

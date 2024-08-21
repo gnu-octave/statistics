@@ -977,7 +977,7 @@ classdef ClassificationDiscriminant
                        [" one of the optional Name-Value paired arguments."]));
       endif
 
-      numSamples  = size (this.X, 1);
+      ## Add default values
       numFolds    = 10;
       Holdout     = [];
       Leaveout    = 'off';
@@ -1029,11 +1029,11 @@ classdef ClassificationDiscriminant
       if (! isempty (CVPartition))
         partition = CVPartition;
       elseif (! isempty (Holdout))
-        partition = cvpartition (numSamples, 'Holdout', Holdout);
+        partition = cvpartition (this.Y, 'Holdout', Holdout);
       elseif (strcmpi (Leaveout, 'on'))
-        partition = cvpartition (numSamples, 'LeaveOut');
+        partition = cvpartition (this.Y, 'LeaveOut');
       else
-        partition = cvpartition (numSamples, 'KFold', numFolds);
+        partition = cvpartition (this.Y, 'KFold', numFolds);
       endif
 
       ## Create a cross-validated model object
