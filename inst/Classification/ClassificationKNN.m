@@ -2644,7 +2644,7 @@ endfunction
 %! partition = cvpartition (y, 'KFold', 3);
 %! CVMdl = crossval (obj, 'cvPartition', partition);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
-%! assert (CVMdl.KFold == 5)
+%! assert (CVMdl.KFold == 3)
 %! assert (CVMdl.ModelParameters.NumNeighbors == 10)
 %! assert (strcmp (CVMdl.ModelParameters.Distance, "cityblock"))
 %! assert (class (CVMdl.Trained{1}), "ClassificationKNN")

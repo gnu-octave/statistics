@@ -1168,7 +1168,7 @@ endfunction
 %! partition = cvpartition (y, 'KFold', 3);
 %! CVMdl = crossval (obj, 'cvPartition', partition);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
-%! assert (CVMdl.KFold == 5)
+%! assert (CVMdl.KFold == 3)
 %! assert (class (CVMdl.Trained{1}), "ClassificationGAM")
 
 ## Test input validation for crossval method
