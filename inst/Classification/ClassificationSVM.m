@@ -1779,8 +1779,8 @@ endclassdef
 %! expected_margin = [2.0000;  0.8579;  1.6690;  3.4141;  3.4552; ...
 %!                    2.6605;  3.5251; -4.0000; -6.3411; -6.4511; ...
 %!                   -3.0532; -7.5054; -1.6700; -5.6227; -7.3640];
-%! margin = margin (obj, x(testInds,:), y(testInds,:));
-%! assert (margin, expected_margin, 1e-4);
+%! computed_margin = margin (obj, x(testInds,:), y(testInds,:));
+%! assert (computed_margin, expected_margin, 1e-4);
 
 ## Test input validation for margin method
 %!error<ClassificationSVM.margin: too few input arguments.> ...
