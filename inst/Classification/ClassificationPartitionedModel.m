@@ -172,17 +172,19 @@ classdef ClassificationPartitionedModel
           args = {};
           ## List of acceptable parameters for fitcdiscr
           DiscrParams = {'PredictorNames', 'ResponseName', 'ClassNames', ...
-                         'FillCoeffs', 'Cost', 'DiscrimType', 'Gamma'};
+                         'Cost', 'DiscrimType', 'Gamma'};
           ## Set parameters
           for i = 1:numel (DiscrParams)
             paramName = DiscrParams{i};
-            if (isprop (Mdl, paramName))
-              paramValue = Mdl.(paramName);
-              if (! isempty (paramValue))
-                args = [args, {paramName, paramValue}];
-              endif
+            paramValue = Mdl.(paramName);
+            if (! isempty (paramValue))
+              args = [args, {paramName, paramValue}];
             endif
           endfor
+          ## Add 'FillCoeffs' parameter
+          if (isempty (Mdl.Coeffs))
+            args = [args, {'FillCoeffs', 'off'}];
+          endif
 
           ## Train model according to partition object
           for k = 1:this.KFold
@@ -211,11 +213,9 @@ classdef ClassificationPartitionedModel
           ## Set parameters
           for i = 1:numel (GAMparams)
             paramName = GAMparams{i};
-            if (isprop (Mdl, paramName))
-              paramValue = Mdl.(paramName);
-              if (! isempty (paramValue))
-                args = [args, {paramName, Mdl.(paramName)}];
-              endif
+            paramValue = Mdl.(paramName);
+            if (! isempty (paramValue))
+              args = [args, {paramName, paramValue}];
             endif
           endfor
 
@@ -294,21 +294,25 @@ classdef ClassificationPartitionedModel
           this.ModelParameters = params;
 
         case 'ClassificationNeuralNetwork'
-          ## Get ModelParameters structure from ClassificationNeuralNetwork
-          param = Mdl.ModelParameters;
-
           ## Arguments to pass in fitcnet
           args = {};
           ## List of acceptable parameters for fitcnet
           NNparams = {'PredictorNames', 'ResponseName', 'ClassNames', ...
                       'Prior', 'Cost', 'ScoreTransform', 'Standardize', ...
-                      'LayerSizes', 'Activations', ...
-                      'LayerWeightsInitializer', 'LayerBiasesInitializer', ...
-                      'IterationLimit', 'LossTolerance', 'StepTolerance'};
+                      'LayerSizes', 'Activations'};
           ## Set parameters
           for i = 1:numel (NNparams)
             paramName = NNparams{i};
-            paramValue = param.(paramName);
+            paramValue = Mdl.(paramName);
+            if (! isempty (paramValue))
+              args = [args, {paramName, paramValue}];
+            endif
+          endfor
+          NNparams = {'LayerBiasesInitializer', 'LayerWeightsInitializer', ...
+                      'IterationLimit', 'LossTolerance', 'StepTolerance'};
+          for i = 1:numel (NNparams)
+            paramName = NNparams{i};
+            paramValue = Mdl.ModelParameters.(paramName);
             if (! isempty (paramValue))
               args = [args, {paramName, paramValue}];
             endif
@@ -321,15 +325,12 @@ classdef ClassificationPartitionedModel
           endfor
 
           ## Store ModelParameters to ClassificationPartitionedModel object
-          params = struct();
-          paramList = {'LayerSizes', 'Activations', 'IterationLimit', ...
-                       'LayerBiasesInitializer', 'LayerWeightsInitializer', ...
-                       'LossTolerance', 'StepTolerance'};
-          for i = 1:numel (paramList)
-            paramName = paramList{i};
-            if (isprop (Mdl, paramName))
-              params.(paramName) = Mdl.(paramName);
-            endif
+          params.LayerSizes = Mdl.ModelParameters.LayerSizes;
+          params.Activations = Mdl.ModelParameters.Activations;
+          for i = 1:numel (NNparams)
+            paramName = NNparams{i};
+            paramValue = Mdl.ModelParameters.(paramName);
+            params.(paramName) = Mdl.ModelParameters.(paramName);
           endfor
           this.ModelParameters = params;
 
@@ -587,6 +588,27 @@ endclassdef
 %! assert (cvModel.ModelParameters.NSMethod, "exhaustive");
 %! assert (cvModel.ModelParameters.Distance, "euclidean");
 %! assert (! cvModel.ModelParameters.Standardize);
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! a = fitcnet (x, y);
+%! cvModel = crossval (a, "KFold", 5);
+%! assert (class (cvModel), "ClassificationPartitionedModel");
+%! assert (cvModel.NumObservations, 4);
+%! assert (numel (cvModel.Trained), 5);
+%! assert (cvModel.CrossValidatedModel, "ClassificationNeuralNetwork");
+%! assert (cvModel.KFold, 5);
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! k = 3;
+%! a = fitcnet (x, y, "LayerSizes", [5, 3]);
+%! cvModel = crossval (a, "LeaveOut", "on");
+%! assert (class (cvModel), "ClassificationPartitionedModel");
+%! assert ({cvModel.X, cvModel.Y}, {x, y});
+%! assert (cvModel.NumObservations, 4);
+%! assert (numel (cvModel.Trained), 4);
+%! assert (cvModel.CrossValidatedModel, "ClassificationNeuralNetwork");
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];

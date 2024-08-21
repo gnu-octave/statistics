@@ -520,7 +520,7 @@ classdef ClassificationNeuralNetwork
       ## Generate default predictors and response variabe names (if necessary)
       if (isempty (PredictorNames))
         for i = 1:ndims_X
-          PredictorNames {i} = strcat ("x", num2str (i));
+          PredictorNames{i} = strcat ("x", num2str (i));
         endfor
       endif
       if (isempty (ResponseName))
@@ -541,7 +541,7 @@ classdef ClassificationNeuralNetwork
       this.StepTolerance = StepTolerance;
 
       ## Compute initial parameters
-      this = parameter_initializer (this,LayerWeightsInitializer, ...
+      this = parameter_initializer (this, LayerWeightsInitializer, ...
                                     LayerBiasesInitializer);
 
       ## Vectorize initial parameters so that they can be used for fminunc
@@ -1299,7 +1299,7 @@ endfunction
 
 ## Test output for crossval method
 %!test
-%! Mdl = fitcnet(x,y);
+%! Mdl = fitcnet (x, y);
 %! CVMdl = crossval (Mdl, "KFold", 5);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})

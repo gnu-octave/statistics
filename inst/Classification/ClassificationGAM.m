@@ -195,6 +195,9 @@ classdef ClassificationGAM
     Order           = [];   # Order of spline fitting
     DoF             = [];   # Degrees of freedom for fitting spline
 
+    LearningRate    = [];   # Learning rate for training
+    NumIterations   = [];   # Max number of iterations for training
+
   endproperties
 
   methods (Access = public)
@@ -439,11 +442,13 @@ classdef ClassificationGAM
       endif
 
       ## Assign remaining optional parameters
-      this.Formula      = Formula;
-      this.Interactions = Interactions;
-      this.Knots        = Knots;
-      this.Order        = Order;
-      this.DoF          = DoF;
+      this.Formula       = Formula;
+      this.Interactions  = Interactions;
+      this.Knots         = Knots;
+      this.Order         = Order;
+      this.DoF           = DoF;
+      this.LearningRate  = LearningRate;
+      this.NumIterations = NumIterations;
 
       ## Fit the basic model
       Inter = mean (Y);
