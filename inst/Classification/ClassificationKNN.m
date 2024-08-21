@@ -1629,8 +1629,7 @@ classdef ClassificationKNN
     ## @code{savemodel (@var{obj}, @var{filename})} saves a ClassificationKNN
     ## object into a file defined by @var{filename}.
     ##
-    ## @seealso{loadmodel, fitcknn, ClassificationKNN, cvpartition,
-    ## ClassificationPartitionedModel}
+    ## @seealso{loadmodel, fitcknn, ClassificationKNN}
     ## @end deftypefn
 
     function savemodel (obj, fname)
