@@ -609,6 +609,7 @@ classdef ClassificationDiscriminant
     ##
     ## @seealso{ClassificationDiscriminant}
     ## @end deftypefn
+
     function L = loss (this, X, Y, varargin)
 
       ## Check for sufficient input arguments
@@ -815,6 +816,7 @@ classdef ClassificationDiscriminant
         otherwise
           error ("ClassificationDiscriminant.loss: invalid loss function.");
       endswitch
+
     endfunction
 
     ## -*- texinfo -*-
@@ -844,6 +846,7 @@ classdef ClassificationDiscriminant
     ##
     ## @seealso{fitcdiscr, ClassificationDiscriminant}
     ## @end deftypefn
+
     function m = margin (this, X, Y)
 
       ## Check for sufficient input arguments
@@ -925,7 +928,7 @@ classdef ClassificationDiscriminant
     ## @deftypefn  {ClassificationDiscriminant} {@var{CVMdl} =} crossval (@var{obj})
     ## @deftypefnx {ClassificationDiscriminant} {@var{CVMdl} =} crossval (@dots{}, @var{Name}, @var{Value})
     ##
-    ## Cross Validate a Support Vector Machine classification object.
+    ## Cross Validate a Discriminant classification object.
     ##
     ## @code{@var{CVMdl} = crossval (@var{obj})} returns a cross-validated model
     ## object, @var{CVMdl}, from a trained model, @var{obj}, using 10-fold
@@ -959,6 +962,7 @@ classdef ClassificationDiscriminant
     ## @seealso{fitcdiscr, ClassificationDiscriminant, cvpartition,
     ## ClassificationPartitionedModel}
     ## @end deftypefn
+
     function CVMdl = crossval (this, varargin)
       ## Check input
       if (nargin < 1)
