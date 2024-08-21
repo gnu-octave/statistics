@@ -711,7 +711,7 @@ classdef ClassificationKNN
     ## @var{obj} must be a @qcode{ClassificationKNN} class object.
     ## @item
     ## @var{XC} must be an @math{MxP} numeric matrix with the same number of
-    ## features @math{P} as the corresponding predictors of the SVM model in
+    ## features @math{P} as the corresponding predictors of the KNN model in
     ## @var{obj}.
     ## @end itemize
     ##
@@ -1505,8 +1505,8 @@ classdef ClassificationKNN
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {ClassificationSVM} {@var{CVMdl} =} crossval (@var{obj})
-    ## @deftypefnx {ClassificationSVM} {@var{CVMdl} =} crossval (@dots{}, @var{Name}, @var{Value})
+    ## @deftypefn  {ClassificationKNN} {@var{CVMdl} =} crossval (@var{obj})
+    ## @deftypefnx {ClassificationKNN} {@var{CVMdl} =} crossval (@dots{}, @var{Name}, @var{Value})
     ##
     ## Cross Validate a ClassificationKNN object.
     ##
