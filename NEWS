@@ -547,12 +547,20 @@
  New functions:
  ==============
 
+ ** fitcdiscr
+
+ ** fitcgam
+
  ** fitcsvm
 
  ** loadmodel
 
  New classdefs:
  ==============
+
+ ** ClassificationDiscriminant
+
+ ** ClassificationGAM
 
  ** ClassificationPartitionedModel
 

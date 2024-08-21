@@ -22,6 +22,8 @@ Clustering
  slicesample
  squareform
 Classification Classes
+ ClassificationDiscriminant
+ ClassificationGAM
  ClassificationKNN
  ClassificationPartitionedModel
  ClassificationSVM
@@ -231,6 +233,8 @@ Machine Learning
  svmpredict
  svmtrain
 Model Fitting
+ fitcdiscr
+ fitcgam
  fitcknn
  fitcsvm
  fitgmdist
