@@ -1,4 +1,5 @@
 ## Copyright (C) 2024 Ruchika Sonagote <ruchikasonagote2003@gmail.com>
+## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -22,9 +23,9 @@ classdef ClassificationGAM
 ##
 ## Create a @qcode{ClassificationGAM} class object containing a generalized
 ## additive classification model.
-## The @qcode{ClassificationGAM} class implements a gradient boosting algorithm 
-## for classification, using spline fitting as the weak learner. This approach 
-## allows the model to capture non-linear relationships between predictors and 
+## The @qcode{ClassificationGAM} class implements a gradient boosting algorithm
+## for classification, using spline fitting as the weak learner. This approach
+## allows the model to capture non-linear relationships between predictors and
 ## the binary response variable.
 ##
 ## @code{@var{obj} = ClassificationGAM (@var{X}, @var{Y})} returns a
@@ -184,6 +185,7 @@ classdef ClassificationGAM
     PredictorNames  = [];   # Predictor variable names
     ResponseName    = [];   # Response variable name
     ClassNames      = [];   # Names of classes in Y
+    Prior           = [];   # Prior probability for each class
     Cost            = [];   # Cost of Misclassification
 
     Formula         = [];   # Formula for GAM model
@@ -245,58 +247,58 @@ classdef ClassificationGAM
           case "predictornames"
             PredictorNames = varargin{2};
             if (! iscellstr (PredictorNames))
-              error (["ClassificationGAM: PredictorNames ", ...
-                      "must be supplied as a cellstring array."]);
-            elseif (columns (PredictorNames) != columns (X))
-              error (["ClassificationGAM: PredictorNames ", ...
-                      "must have the same number of columns as X."]);
+              error (strcat (["ClassificationGAM: 'PredictorNames'"], ...
+                             [" must be supplied as a cellstring array."]));
+            elseif (numel (PredictorNames) != columns (X))
+              error (strcat (["ClassificationGAM: 'PredictorNames'"], ...
+                             [" must equal the number of columns in X."]));
+            endif
+
+          case "responsename"
+            ResponseName = varargin{2};
+            if (! ischar (ResponseName))
+              error (strcat (["ClassificationGAM: 'ResponseName'"], ...
+                             [" must be a character vector."]));
             endif
 
           case "classnames"
             ClassNames = varargin{2};
             if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
                                           || islogical (ClassNames)))
-              error (["ClassificationGAM: ClassNames must be a", ...
-                      " cellstring, logical or numeric vector."]);
+              error (strcat (["ClassificationGAM: 'ClassNames' must be a"], ...
+                             [" cellstring, logical or numeric vector."]));
             endif
             ## Check that all class names are available in gnY
+            msg = "ClassificationGAM: not all 'ClassNames' are present in Y.";
             if (iscellstr (ClassNames))
               if (! all (cell2mat (cellfun (@(x) any (strcmp (x, gnY)),
                                    ClassNames, "UniformOutput", false))))
-                error (["ClassificationGAM: not all ClassNames", ...
-                        " are present in Y."]);
+                error (msg);
               endif
             else
               if (! all (cell2mat (arrayfun (@(x) any (x == glY),
                                    ClassNames, "UniformOutput", false))))
-                error (["ClassificationGAM: not all ClassNames", ...
-                        " are present in Y."]);
+                error (msg);
               endif
-            endif
-
-          case "responsename"
-            ResponseName = varargin{2};
-            if (! ischar (ResponseName))
-              error (["ClassificationGAM: ResponseName", ...
-                       " must be a character vector."]);
             endif
 
           case "cost"
             Cost = varargin{2};
             if (! (isnumeric (Cost) && issquare (Cost)))
-              error (["ClassificationGAM: Cost must be", ...
-                      " a numeric square matrix."]);
+              error (strcat (["ClassificationGAM: 'Cost' must be"], ...
+                             [" a numeric square matrix."]));
             endif
 
           case "formula"
             if (F_I < 1)
               Formula = varargin{2};
               if (! ischar (Formula) && ! islogical (Formula))
-                error ("ClassificationGAM: Formula must be a string.");
+                error ("ClassificationGAM: 'Formula' must be a string.");
               endif
               F_I += 1;
             else
-              error ("ClassificationGAM: Interactions have been already defined.");
+              error (strcat (["ClassificationGAM: 'Interactions'"], ...
+                             [" have already been defined."]))';
             endif
 
           case "interactions"
@@ -310,11 +312,11 @@ classdef ClassificationGAM
               elseif (ischar (tmp) && strcmpi (tmp, "all"))
                 Interactions = tmp;
               else
-                error ("ClassificationGAM: invalid Interactions parameter.");
+                error ("ClassificationGAM: invalid 'Interactions' parameter.");
               endif
               F_I += 1;
             else
-              error ("ClassificationGAM: Formula has been already defined.");
+              error ("ClassificationGAM: 'Formula' has already been defined.");
             endif
 
           case "knots"
@@ -322,13 +324,14 @@ classdef ClassificationGAM
               Knots = varargin{2};
               if (! isnumeric (Knots) || ! (isscalar (Knots) ||
                   isequal (size (Knots), [1, ndims_X])))
-                error ("ClassificationGAM: invalid value for Knots.");
+                error ("ClassificationGAM: invalid value for 'Knots'.");
               endif
               DoF = Knots + Order;
               Order = DoF - Knots;
               KOD += 1;
             else
-              error ("ClassificationGAM: DoF and Order have been set already.");
+              error (strcat (["ClassificationGAM: 'DoF' and 'Order'"], ...
+                             [" have been set already."]));
             endif
 
           case "order"
@@ -336,13 +339,14 @@ classdef ClassificationGAM
               Order = varargin{2};
               if (! isnumeric (Order) || ! (isscalar (Order) ||
                   isequal (size (Order), [1, ndims_X])))
-                error ("ClassificationGAM: invalid value for Order.");
+                error ("ClassificationGAM: invalid value for 'Order'.");
               endif
               DoF = Knots + Order;
               Knots = DoF - Order;
               KOD += 1;
             else
-              error ("ClassificationGAM: DoF and Knots have been set already.");
+              error (strcat (["ClassificationGAM: 'DoF' and 'Knots'"], ...
+                             [" have been set already."]));
             endif
 
           case "dof"
@@ -350,30 +354,33 @@ classdef ClassificationGAM
               DoF = varargin{2};
               if (! isnumeric (DoF) ||
                   ! (isscalar (DoF) || isequal (size (DoF), [1, ndims_X])))
-                error ("ClassificationGAM: invalid value for DoF.");
+                error ("ClassificationGAM: invalid value for 'DoF'.");
               endif
               Knots = DoF - Order;
               Order = DoF - Knots;
               KOD += 1;
             else
-              error ("ClassificationGAM: Knots and Order have been set already.");
+              error (strcat (["ClassificationGAM: 'Knots' and 'Order'"], ...
+                             [" have been set already."]));
             endif
 
           case "learningrate"
             LearningRate = varargin{2};
             if (LearningRate > 1 || LearningRate <= 0)
-              error ("ClassificationGAM: learning rate must be between 0 and 1.");
+              error (strcat (["ClassificationGAM: 'LearningRate'"], ...
+                             [" must be between 0 and 1."]));
             endif
-          
+
           case "numiterations"
             NumIterations = varargin{2};
             if (! isnumeric (NumIterations) || NumIterations <= 0)
-              error ("ClassificationGAM: NumIterations must be positive numeric.")
+              error (strcat (["ClassificationGAM: 'NumIterations'"], ...
+                             [" must be a positive integer value."]));
             endif
 
           otherwise
-            error (["ClassificationGAM: invalid parameter name",...
-                      " in optional pair arguments."]);
+            error (strcat (["ClassificationGAM: invalid parameter"], ...
+                           [" name in optional pair arguments."]));
 
         endswitch
         varargin (1:2) = [];
@@ -424,9 +431,9 @@ classdef ClassificationGAM
         this.Cost = cast (! eye (numel (gnY)), "double");
       else
         if (numel (gnY) != sqrt (numel (Cost)))
-          error (["ClassificationGAM: the number of rows", ...
-                    " and columns in Cost must correspond", ...
-                    " to selected classes in Y."]);
+          error (strcat (["ClassificationGAM: the number of rows"], ...
+                         [" and columns in 'Cost' must correspond"], ...
+                         [" to selected classes in Y."]));
         endif
         this.Cost = Cost;
       endif
@@ -440,7 +447,9 @@ classdef ClassificationGAM
 
       ## Fit the basic model
       Inter = mean (Y);
-      [iter, param, res, RSS, intercept] = this.fitGAM (X, Y, Inter, Knots, Order, LearningRate, NumIterations);
+      [iter, param, res, RSS, intercept] = this.fitGAM (X, Y, Inter, Knots, ...
+                                                        Order, LearningRate, ...
+                                                        NumIterations);
       this.BaseModel.Intercept  = intercept;
       this.BaseModel.Parameters = param;
       this.BaseModel.Iterations = iter;
@@ -489,7 +498,9 @@ classdef ClassificationGAM
         DoF   = ones (1, columns (X)) * DoF(1);   # Degrees of freedom
 
         ## Fit the model with interactions
-        [iter, param, res, RSS, intercept] = this.fitGAM (X, Y, Inter, Knots, Order, LearningRate, NumIterations);
+        [iter, param, res, RSS, intercept] = this.fitGAM (X, Y, Inter, Knots, ...
+                                                          Order, LearningRate, ...
+                                                          NumIterations);
         this.ModelwInt.Intercept  = intercept;
         this.ModelwInt.Parameters = param;
         this.ModelwInt.Iterations = iter;
@@ -501,19 +512,19 @@ classdef ClassificationGAM
 
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationGAM} {@var{label} =} predict (@var{obj}, @var{XC})
-    ## @deftypefnx {ClassificationGAM} {@var{label} =} predict (@dots{}, 'IncludeInteractions', @var{includeInteractions})
+    ## @deftypefnx {ClassificationGAM} {@var{label} =} predict (@dots{}, @qcode{'IncludeInteractions'}, @var{includeInteractions})
     ## @deftypefnx {ClassificationGAM} {[@var{label}, @var{score}] =} predict (@dots{})
     ##
     ## Predict labels for new data using the Generalized Additive Model (GAM)
     ## stored in a ClassificationGAM object.
     ##
-    ## @code{@var{label} = predict (@var{obj}, @var{XC})} returns the predicted labels
-    ## for the data in @var{X} based on the model stored in the ClassificationGAM object,
-    ## @var{obj}.
+    ## @code{@var{label} = predict (@var{obj}, @var{XC})} returns the predicted
+    ## labels for the data in @var{X} based on the model stored in the
+    ## ClassificationGAM object, @var{obj}.
     ##
-    ## @code{@var{label} = predict (@var{obj}, @var{X}, 'IncludeInteractions', @var{includeInteractions})}
-    ## allows you to specify whether interaction terms should be included when
-    ## making predictions.
+    ## @code{@var{label} = predict (@var{obj}, @var{X}, 'IncludeInteractions',
+    ## @var{includeInteractions})} allows you to specify whether interaction
+    ## terms should be included when making predictions.
     ##
     ## @code{[@var{label}, @var{score}] = predict (@dots{})} also returns
     ## @var{score}, which contains the predicted class scores or posterior
@@ -523,8 +534,8 @@ classdef ClassificationGAM
     ## @item
     ## @var{obj} must be a @qcode{ClassificationGAM} class object.
     ## @item
-    ## @var{X} must be an @math{MxP} numeric matrix where each row is an observation
-    ## and each column corresponds to a predictor variable.
+    ## @var{X} must be an @math{MxP} numeric matrix where each row is an
+    ## observation and each column corresponds to a predictor variable.
     ## @item
     ## @var{includeInteractions} is a 'true' or 'false' indicating whether to
     ## include interaction terms in the predictions.
@@ -545,7 +556,7 @@ classdef ClassificationGAM
         error ("ClassificationGAM.predict: XC is empty.");
       elseif (columns (this.X) != columns (XC))
         error (["ClassificationGAM.predict: XC must have the same", ...
-                " number of features."]);
+                " number of features as the trained model."]);
       endif
 
       ## Clean XC data
@@ -637,7 +648,7 @@ classdef ClassificationGAM
 
     endfunction
   endmethods
-  
+
   ## Helper functions
   methods (Access = private)
 
@@ -646,7 +657,7 @@ classdef ClassificationGAM
       if (islogical (this.Interactions))
         ## Check that interaction matrix corresponds to predictors
         if (numel (this.PredictorNames) != columns (this.Interactions))
-          error (strcat (["ClassificationGAM: columns in Interactions logical"], ...
+          error (strcat (["ClassificationGAM: columns in 'Interactions'"], ...
                          [" matrix must equal to the number of predictors."]));
         endif
         intMat = this.Interactions;
@@ -680,17 +691,17 @@ classdef ClassificationGAM
       intMat = [];
       ## Check formula for syntax
       if (isempty (strfind (this.Formula, '~')))
-        error ("ClassificationGAM: invalid syntax in Formula.");
+        error ("ClassificationGAM: invalid syntax in 'Formula'.");
       endif
       ## Split formula and keep predictor terms
       formulaParts = strsplit (this.Formula, '~');
       ## Check there is some string after '~'
       if (numel (formulaParts) < 2)
-        error ("ClassificationGAM: no predictor terms in Formula.");
+        error ("ClassificationGAM: no predictor terms in 'Formula'.");
       endif
       predictorString = strtrim (formulaParts{2});
       if (isempty (predictorString))
-        error ("ClassificationGAM: no predictor terms in Formula.");
+        error ("ClassificationGAM: no predictor terms in 'Formula'.");
       endif
       ## Spit additive terms (between + sign)
       aterms = strtrim (strsplit (predictorString, '+'));
@@ -712,7 +723,8 @@ classdef ClassificationGAM
           endfor
           ## Check that all predictors have been identified
           if (sum (iterms) != t)
-            error ("ClassificationGAM: some predictors have not been identified.");
+            error (strcat (["ClassificationGAM: some predictors"], ...
+                           [" have not been identified."]));
           endif
           ## Append to interactions matrix
           intMat = [intMat; iterms];
@@ -725,7 +737,8 @@ classdef ClassificationGAM
     endfunction
 
     ## Fit the model
-    function [iter, param, res, RSS, intercept] = fitGAM (this, X, Y, Inter, Knots, Order, learning_rate, num_iterations)
+    function [iter, param, res, RSS, intercept] = fitGAM (this, X, Y, Inter, ...
+                                    Knots, Order, learning_rate, num_iterations)
       ## Initialize variables
       [n_samples, n_features] = size (X);
       RSS = zeros (1, n_features);
@@ -746,7 +759,8 @@ classdef ClassificationGAM
 
         for j = 1:n_features
           ## Fit a spline to the gradient for feature X_j
-          spline_model = splinefit (X(:, j), gradient, Knots(j), "order", Order(j));
+          spline_model = splinefit (X(:, j), gradient, Knots(j), ...
+                                             "order", Order(j));
 
           ## Predict using the fitted spline
           spline_pred = ppval (spline_model, X(:, j));
@@ -768,6 +782,75 @@ classdef ClassificationGAM
     endfunction
 
   endmethods
+
+  methods (Access = public)
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationGAM} {} savemodel (@var{obj}, @var{filename})
+    ##
+    ## Save a ClassificationGAM object.
+    ##
+    ## @code{savemodel (@var{obj}, @var{filename})} saves a ClassificationGAM
+    ## object into a file defined by @var{filename}.
+    ##
+    ## @seealso{loadmodel, fitcgam, ClassificationGAM, cvpartition,
+    ## ClassificationPartitionedModel}
+    ## @end deftypefn
+
+    function savemodel (obj, fname)
+      ## Generate variable for class name
+      classdef_name = "ClassificationGAM";
+
+      ## Create variables from model properties
+      X = obj.X;
+      Y = obj.Y;
+      BaseModel       = obj.BaseModel;
+      ModelwInt       = obj.ModelwInt;
+      IntMatrix       = obj.IntMatrix;
+      NumObservations = obj.NumObservations;
+      RowsUsed        = obj.RowsUsed;
+      NumPredictors   = obj.NumPredictors;
+      PredictorNames  = obj.PredictorNames;
+      ResponseName    = obj.ResponseName;
+      ClassNames      = obj.ClassNames;
+      Prior           = obj.Prior;
+      Cost            = obj.Cost;
+      Formula         = obj.Formula;
+      Interactions    = obj.Interactions;
+      Knots           = obj.Knots;
+      Order           = obj.Order;
+      DoF             = obj.DoF;
+
+      ## Save classdef name and all model properties as individual variables
+      save (fname, "classdef_name", "X", "Y", "BaseModel", "ModelwInt", ...
+            "IntMatrix", "NumObservations", "RowsUsed", "NumPredictors", ...
+            "PredictorNames", "ResponseName", "ClassNames", "Prior", "Cost", ...
+            "Formula", "Interactions", "Knots", "Order", "DoF");
+    endfunction
+
+  endmethods
+
+  methods (Static, Hidden)
+
+    function mdl = load_model (filename, data)
+      ## Create a ClassificationGAM object
+      mdl = ClassificationGAM (1, 1);
+
+      ## Check that fieldnames in DATA match properties in ClassificationGAM
+      names = fieldnames (data);
+      props = fieldnames (mdl);
+      if (! isequal (sort (names), sort (props)))
+        error ("ClassificationGAM.load_model: invalid model in '%s'.", filename)
+      endif
+
+      ## Copy data into object
+      for i = 1:numel (props)
+        mdl.(props{i}) = data.(props{i});
+      endfor
+    endfunction
+
+  endmethods
+
 endclassdef
 
 ## Helper function
@@ -853,31 +936,31 @@ endfunction
 %! ClassificationGAM (ones(4, 1))
 %!error<ClassificationGAM: number of rows in X and Y must be equal.> ...
 %! ClassificationGAM (ones (4,2), ones (1,4))
-%!error<ClassificationGAM: PredictorNames must be supplied as a cellstring array.> ...
+%!error<ClassificationGAM: 'PredictorNames' must be supplied as a cellstring array.> ...
 %! ClassificationGAM (ones (5,2), ones (5,1), "PredictorNames", ["A"])
-%!error<ClassificationGAM: PredictorNames must be supplied as a cellstring array.> ...
+%!error<ClassificationGAM: 'PredictorNames' must be supplied as a cellstring array.> ...
 %! ClassificationGAM (ones (5,2), ones (5,1), "PredictorNames", "A")
-%!error<ClassificationGAM: PredictorNames must have the same number of columns as X.> ...
+%!error<ClassificationGAM: 'PredictorNames' must equal the number of columns in X.> ...
 %! ClassificationGAM (ones (5,2), ones (5,1), "PredictorNames", {"A", "B", "C"})
-%!error<ClassificationGAM: ResponseName must be a character vector.> ...
+%!error<ClassificationGAM: 'ResponseName' must be a character vector.> ...
 %! ClassificationGAM (ones (5,2), ones (5,1), "ResponseName", {"Y"})
-%!error<ClassificationGAM: ResponseName must be a character vector.> ...
+%!error<ClassificationGAM: 'ResponseName' must be a character vector.> ...
 %! ClassificationGAM (ones (5,2), ones (5,1), "ResponseName", 1)
-%!error<ClassificationGAM: ClassNames must be a cellstring, logical or numeric vector.> ...
+%!error<ClassificationGAM: 'ClassNames' must be a cellstring, logical or numeric vector.> ...
 %! ClassificationGAM (ones(10,2), ones (10,1), "ClassNames", @(x)x)
-%!error<ClassificationGAM: ClassNames must be a cellstring, logical or numeric vector.> ...
+%!error<ClassificationGAM: 'ClassNames' must be a cellstring, logical or numeric vector.> ...
 %! ClassificationGAM (ones(10,2), ones (10,1), "ClassNames", ['a'])
-%!error<ClassificationGAM: not all ClassNames are present in Y.> ...
+%!error<ClassificationGAM: not all 'ClassNames' are present in Y.> ...
 %! ClassificationGAM (ones(10,2), ones (10,1), "ClassNames", [1, 2])
-%!error<ClassificationGAM: not all ClassNames are present in Y.> ...
+%!error<ClassificationGAM: not all 'ClassNames' are present in Y.> ...
 %! ClassificationGAM (ones(5,2), {'a';'b';'a';'a';'b'}, "ClassNames", {'a','c'})
-%!error<ClassificationGAM: not all ClassNames are present in Y.> ...
+%!error<ClassificationGAM: not all 'ClassNames' are present in Y.> ...
 %! ClassificationGAM (ones(10,2), logical (ones (10,1)), "ClassNames", [true, false])
-%!error<ClassificationGAM: Cost must be a numeric square matrix.> ...
+%!error<ClassificationGAM: 'Cost' must be a numeric square matrix.> ...
 %! ClassificationGAM (ones (5,2), ones (5,1), "Cost", [1, 2])
-%!error<ClassificationGAM: Cost must be a numeric square matrix.> ...
+%!error<ClassificationGAM: 'Cost' must be a numeric square matrix.> ...
 %! ClassificationGAM (ones (5,2), ones (5,1), "Cost", "string")
-%!error<ClassificationGAM: Cost must be a numeric square matrix.> ...
+%!error<ClassificationGAM: 'Cost' must be a numeric square matrix.> ...
 %! ClassificationGAM (ones (5,2), ones (5,1), "Cost", {eye(2)})
 
 ## Tests for predict method
@@ -919,5 +1002,5 @@ endfunction
 %! predict (ClassificationGAM (ones (4,2), ones (4,1)))
 %!error<ClassificationGAM.predict: XC is empty.> ...
 %! predict (ClassificationGAM (ones (4,2), ones (4,1)), [])
-%!error<ClassificationGAM.predict: XC must have the same number of features> ...
+%!error<ClassificationGAM.predict: XC must have the same number of features as the trained model.> ...
 %! predict (ClassificationGAM (ones (4,2), ones (4,1)), 1)
