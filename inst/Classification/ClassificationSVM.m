@@ -590,7 +590,7 @@ classdef ClassificationSVM
 
       ## Build options string for svmtrain function
       str_options = strcat (["-s %d -t %d -g %f -d %d -r %f"], ...
-                            [" -c %f -n %f -m %f -e %f -h %d -q"]);
+                            [" -c %f -n %f -m %f -e %e -h %d -q"]);
       svm_options = sprintf (str_options, s, t, g, PolynomialOrder, ...
                              KernelOffset, BoxConstraint, Nu, ...
                              CacheSize, Tolerance, Shrinking);
@@ -1731,16 +1731,16 @@ endclassdef
 %! y = grp2idx (species(inds));
 %!test
 %! xc = [min(x); mean(x); max(x)];
-%! obj = fitcsvm (x, y, 'KernelFunction', 'rbf');
+%! obj = fitcsvm (x, y, 'KernelFunction', 'rbf', 'Tolerance', 1e-7);
 %! assert (isempty (obj.Alpha), true)
 %! assert (sum (obj.IsSupportVector), numel (obj.Beta))
 %! [label, score] = predict (obj, xc);
 %! assert (label, [1; 2; 2]);
-%! assert (score(:,1), [0.993493; -0.080445; -0.937146], 1e-5);
+%! assert (score(:,1), [0.99285; -0.080296; -0.93694], 1e-5);
 %! assert (score(:,1), -score(:,2), eps)
 %! obj = fitPosterior (obj);
 %! [label, probs] = predict (obj, xc);
-%! assert (probs(:,2), [0.975591; 0.427934; 0.030357], 1e-5);
+%! assert (probs(:,2), [0.97555; 0.428164; 0.030385], 1e-5);
 %! assert (probs(:,1) + probs(:,2), [1; 1; 1], 0.05)
 %!test
 %! obj = fitcsvm (x, y);
