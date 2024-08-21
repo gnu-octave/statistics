@@ -862,7 +862,7 @@ classdef ClassificationSVM
       ## Check for valid Y
       if (isempty (Y))
         error ("ClassificationSVM.margin: Y is empty.");
-      elseif (rows (X)!= rows (Y))
+      elseif (rows (X) != rows (Y))
         error (strcat (["ClassificationSVM.margin: Y must have"], ...
                        [" the same number of rows as X."]));
       endif
@@ -1772,12 +1772,13 @@ endclassdef
 ## Test output for margin method
 %!test
 %! rand ("seed", 1);
-%! CVSVMModel = fitcsvm (x, y, 'KernelFunction', 'rbf', 'HoldOut', 0.15);
+%! CVSVMModel = fitcsvm (x, y, 'KernelFunction', 'rbf', 'HoldOut', 0.15, ...
+%!                       'Tolerance', 1e-7);
 %! obj = CVSVMModel.Trained{1};
 %! testInds = test (CVSVMModel.Partition);
-%! expected_margin = [2.0001;  0.8579;  1.6690;  3.4144;  3.4555; ...
-%!                    2.6609;  3.5253; -4.0003; -6.3417; -6.4513; ...
-%!                   -3.0535; -7.5059; -1.6702; -5.6232; -7.3644];
+%! expected_margin = [2.0000;  0.8579;  1.6690;  3.4141;  3.4552; ...
+%!                    2.6605;  3.5251; -4.0000; -6.3411; -6.4511; ...
+%!                   -3.0532; -7.5054; -1.6700; -5.6227; -7.3640];
 %! margin = margin (obj, x(testInds,:), y(testInds,:));
 %! assert (margin, expected_margin, 1e-4);
 
