@@ -1416,8 +1416,7 @@ classdef ClassificationSVM
     ## @code{savemodel (@var{obj}, @var{filename})} saves a ClassificationSVM
     ## object into a file defined by @var{filename}.
     ##
-    ## @seealso{loadmodel, fitcknn, ClassificationSVM, cvpartition,
-    ## ClassificationPartitionedModel}
+    ## @seealso{loadmodel, fitcsvm, ClassificationSVM}
     ## @end deftypefn
 
     function savemodel (obj, fname)
