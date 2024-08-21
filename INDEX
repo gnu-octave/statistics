@@ -25,6 +25,7 @@ Classification Classes
  ClassificationDiscriminant
  ClassificationGAM
  ClassificationKNN
+ ClassificationNeuralNetwork
  ClassificationPartitionedModel
  ClassificationSVM
  ConfusionMatrixChart
@@ -236,6 +237,7 @@ Model Fitting
  fitcdiscr
  fitcgam
  fitcknn
+ fitcnet
  fitcsvm
  fitgmdist
  fitlm

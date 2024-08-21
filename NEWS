@@ -551,6 +551,8 @@
 
  ** fitcgam
 
+ ** fitcnet
+
  ** fitcsvm
 
  ** loadmodel
@@ -561,6 +563,8 @@
  ** ClassificationDiscriminant
 
  ** ClassificationGAM
+
+ ** ClassificationNeuralNetwork
 
  ** ClassificationPartitionedModel
 
