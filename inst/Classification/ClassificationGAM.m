@@ -647,6 +647,123 @@ classdef ClassificationGAM
       labels = this.ClassNames (minIdx);
 
     endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationGAM} {@var{CVMdl} =} crossval (@var{obj})
+    ## @deftypefnx {ClassificationGAM} {@var{CVMdl} =} crossval (@dots{}, @var{Name}, @var{Value})
+    ##
+    ## Cross Validate a Generalized Additive Model classification object.
+    ##
+    ## @code{@var{CVMdl} = crossval (@var{obj})} returns a cross-validated model
+    ## object, @var{CVMdl}, from a trained model, @var{obj}, using 10-fold
+    ## cross-validation by default.
+    ##
+    ## @code{@var{CVMdl} = crossval (@var{obj}, @var{name}, @var{value})}
+    ## specifies additional name-value pair arguments to customize the
+    ## cross-validation process.
+    ##
+    ## @multitable @columnfractions 0.28 0.02 0.7
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{"KFold"} @tab @tab Specify the number of folds to use in
+    ## k-fold cross-validation.  @code{"KFold", @var{k}}, where @var{k} is an
+    ## integer greater than 1.
+    ##
+    ## @item @qcode{"Holdout"} @tab @tab Specify the fraction of the data to
+    ## hold out for testing.  @code{"Holdout", @var{p}}, where @var{p} is a
+    ## scalar in the range @math{(0,1)}.
+    ##
+    ## @item @qcode{"Leaveout"} @tab @tab Specify whether to perform
+    ## leave-one-out cross-validation.  @code{"Leaveout", @var{Value}}, where
+    ## @var{Value} is 'on' or 'off'.
+    ##
+    ## @item @qcode{"CVPartition"} @tab @tab Specify a @qcode{cvpartition}
+    ## object used for cross-validation.  @code{"CVPartition", @var{cv}}, where
+    ## @code{isa (@var{cv}, "cvpartition")} = 1.
+    ##
+    ## @end multitable
+    ##
+    ## @seealso{fitcgam, ClassificationGAM, cvpartition,
+    ## ClassificationPartitionedModel}
+    ## @end deftypefn
+
+    function CVMdl = crossval (this, varargin)
+      ## Check input
+      if (nargin < 1)
+        error ("ClassificationGAM.crossval: too few input arguments.");
+      endif
+
+      if (numel (varargin) == 1)
+        error (strcat (["ClassificationGAM.crossval: Name-Value"], ...
+                       [" arguments must be in pairs."]));
+      elseif (numel (varargin) > 2)
+        error (strcat (["ClassificationGAM.crossval: specify only"], ...
+                       [" one of the optional Name-Value paired arguments."]));
+      endif
+
+      numSamples  = size (this.X, 1);
+      numFolds    = 10;
+      Holdout     = [];
+      Leaveout    = 'off';
+      CVPartition = [];
+
+      ## Parse extra parameters
+      while (numel (varargin) > 0)
+        switch (tolower (varargin {1}))
+
+          case 'kfold'
+            numFolds = varargin{2};
+            if (! (isnumeric (numFolds) && isscalar (numFolds)
+                   && (numFolds == fix (numFolds)) && numFolds > 1))
+              error (strcat (["ClassificationGAM.crossval: 'KFold'"], ...
+                             [" must be an integer value greater than 1."]));
+            endif
+
+          case 'holdout'
+            Holdout = varargin{2};
+            if (! (isnumeric (Holdout) && isscalar (Holdout) && Holdout > 0
+                   && Holdout < 1))
+              error (strcat (["ClassificationGAM.crossval: 'Holdout'"], ...
+                             [" must be a numeric value between 0 and 1."]));
+            endif
+
+          case 'leaveout'
+            Leaveout = varargin{2};
+            if (! (ischar (Leaveout)
+                   && (strcmpi (Leaveout, 'on') || strcmpi (Leaveout, 'off'))))
+              error (strcat (["ClassificationGAM.crossval: 'Leaveout'"], ...
+                             [" must be either 'on' or 'off'."]));
+            endif
+
+          case 'cvpartition'
+            CVPartition = varargin{2};
+            if (!(isa (CVPartition, 'cvpartition')))
+              error (strcat (["ClassificationGAM.crossval: 'CVPartition'"],...
+                             [" must be a 'cvpartition' object."]));
+            endif
+
+          otherwise
+            error (strcat (["ClassificationGAM.crossval: invalid"],...
+                           [" parameter name in optional paired arguments."]));
+          endswitch
+        varargin (1:2) = [];
+      endwhile
+
+      ## Determine the cross-validation method to use
+      if (! isempty (CVPartition))
+        partition = CVPartition;
+      elseif (! isempty (Holdout))
+        partition = cvpartition (numSamples, 'Holdout', Holdout);
+      elseif (strcmpi (Leaveout, 'on'))
+        partition = cvpartition (numSamples, 'LeaveOut');
+      else
+        partition = cvpartition (numSamples, 'KFold', numFolds);
+      endif
+
+      ## Create a cross-validated model object
+      CVMdl = ClassificationPartitionedModel (this, partition);
+    endfunction
+
   endmethods
 
   ## Helper functions
@@ -919,7 +1036,7 @@ endfunction
 %!test
 %! X = [2, 3, 5; 4, 6, 8; 1, 2, 3; 7, 8, 9; 5, 4, 3];
 %! Y = [0; 1; 0; 1; 1];
-%! a = ClassificationGAM(X, Y, 'Knots', [4, 4, 4], 'Order', [3, 3, 3]);
+%! a = ClassificationGAM (X, Y, 'Knots', [4, 4, 4], 'Order', [3, 3, 3]);
 %! assert (class (a), "ClassificationGAM");
 %! assert ({a.X, a.Y, a.NumObservations}, {X, Y, 5})
 %! assert ({a.NumPredictors, a.ResponseName}, {3, "Y"})
@@ -983,7 +1100,7 @@ endfunction
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = [0; 0; 1; 1];
-%! interactions = [false, true,  false; true,  false, true; false, true,  false];
+%! interactions = [false, true, false; true, false, true; false, true, false];
 %! a = fitcgam (x, y, "learningrate", 0.2, "interactions", interactions);
 %! [label, score] = predict (a, x, "includeinteractions", true);
 %! l = {'0'; '0'; '1'; '1'};
@@ -1004,3 +1121,52 @@ endfunction
 %! predict (ClassificationGAM (ones (4,2), ones (4,1)), [])
 %!error<ClassificationGAM.predict: XC must have the same number of features as the trained model.> ...
 %! predict (ClassificationGAM (ones (4,2), ones (4,1)), 1)
+
+## Test crossval method
+%!shared x, y, obj
+%! load fisheriris
+%! x = meas;
+%! y = species;
+%! obj = fitcgam (x, y, "Interactions", "all");
+%!test
+%! CVMdl = crossval (obj);
+%! assert (class (CVMdl), "ClassificationPartitionedModel")
+%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert (CVMdl.KFold == 10)
+%! assert (class (CVMdl.Trained{1}), "ClassificationGAM")
+%!test
+%! CVMdl = crossval (obj, "KFold", 5);
+%! assert (class (CVMdl), "ClassificationPartitionedModel")
+%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert (CVMdl.KFold == 5)
+%! assert (class (CVMdl.Trained{1}), "ClassificationGAM")
+%!test
+%! CVMdl = crossval (obj, "HoldOut", 0.2);
+%! assert (class (CVMdl), "ClassificationPartitionedModel")
+%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert (class (CVMdl.Trained{1}), "ClassificationGAM")
+%!test
+%! CVMdl = crossval (obj, "LeaveOut", 'on');
+%! assert (class (CVMdl), "ClassificationPartitionedModel")
+%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert (class (CVMdl.Trained{1}), "ClassificationGAM")
+%!test
+%! partition = cvpartition (size (x, 1), 'KFold', 3);
+%! CVMdl = crossval (obj, 'cvPartition', partition);
+%! assert (class (CVMdl), "ClassificationPartitionedModel")
+%! assert (CVMdl.KFold == 3)
+%! assert (class (CVMdl.Trained{1}), "ClassificationGAM")
+
+## Test input validation for crossval method
+%!error<ClassificationGAM.crossval: Name-Value arguments must be in pairs.> ...
+%! crossval (obj, "kfold")
+%!error<ClassificationGAM.crossval: specify only one of the optional Name-Value paired arguments.>...
+%! crossval (obj, "kfold", 12, "holdout", 0.2)
+%!error<ClassificationGAM.crossval: 'KFold' must be an integer value greater than 1.> ...
+%! crossval (obj, "kfold", 'a')
+%!error<ClassificationGAM.crossval: 'Holdout' must be a numeric value between 0 and 1.> ...
+%! crossval (obj, "holdout", 2)
+%!error<ClassificationGAM.crossval: 'Leaveout' must be either 'on' or 'off'.> ...
+%! crossval (obj, "leaveout", 1)
+%!error<ClassificationGAM.crossval: 'CVPartition' must be a 'cvpartition' object.> ...
+%! crossval (obj, "cvpartition", 1)

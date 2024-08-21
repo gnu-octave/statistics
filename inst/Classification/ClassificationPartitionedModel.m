@@ -136,7 +136,8 @@ classdef ClassificationPartitionedModel
       endif
 
       ## Check for valid object types
-      validTypes = {'ClassificationKNN', 'ClassificationSVM', 'ClassificationDiscriminant'};
+      validTypes = {'ClassificationDiscriminant', 'ClassificationGAM', ...
+                    'ClassificationKNN', 'ClassificationSVM'};
       if (! any (strcmp (class (Mdl), validTypes)))
         error ("ClassificationPartitionedModel: unsupported model type.");
       endif
@@ -154,13 +155,82 @@ classdef ClassificationPartitionedModel
       this.CrossValidatedModel = class (Mdl);
       this.Prior = Mdl.Prior;
       this.Cost = Mdl.Cost;
-      if (! strcmpi (class (Mdl), "ClassificationDiscriminant"))
+      is_valid = {'ClassificationKNN', 'ClassificationSVM'};
+      if (any (strcmpi (class (Mdl), is_valid)))
         this.Standardize = Mdl.Standardize;
         this.ScoreTransform = Mdl.ScoreTransform;
       endif
 
       ## Switch Classification object types
       switch (this.CrossValidatedModel)
+
+        case "ClassificationDiscriminant"
+          ## Arguments to pass in fitcdiscr
+          args = {};
+          ## List of acceptable parameters for fitcdiscr
+          DiscrParams = {'PredictorNames', 'ResponseName', 'ClassNames', ...
+                         'DiscrimType', 'FillCoeffs', 'Gamma'};
+          ## Set parameters
+          for i = 1:numel (DiscrParams)
+            paramName = DiscrParams{i};
+            if (isprop (Mdl, paramName))
+              paramValue = Mdl.(paramName);
+              if (! isempty (paramValue))
+                args = [args, {paramName, Mdl.(paramName)}];
+              endif
+            endif
+          endfor
+
+          ## Train model according to partition object
+          for k = 1:this.KFold
+            idx = training (this.Partition, k);
+            this.Trained{k} = fitcdiscr (this.X(idx, :), this.Y(idx), args{:});
+          endfor
+
+          ## Store ModelParameters to ClassificationPartitionedModel object
+          params = struct();
+          paramList = {'DiscrimType', 'FillCoeffs', 'Gamma'};
+          for i = 1:numel (paramList)
+            paramName = paramList{i};
+            if (isprop (Mdl, paramName))
+              params.(paramName) = Mdl.(paramName);
+            endif
+          endfor
+          this.ModelParameters = params;
+
+        case "ClassificationGAM"
+          ## Arguments to pass in fitcgam
+          args = {};
+          ## List of acceptable parameters for fitcdiscr
+          GAMparams = {'PredictorNames', 'ResponseName', 'ClassNames', ...
+                       'Cost', 'Formula', 'Interactions', 'Knots', 'Order'};
+          ## Set parameters
+          for i = 1:numel (GAMparams)
+            paramName = GAMparams{i};
+            if (isprop (Mdl, paramName))
+              paramValue = Mdl.(paramName);
+              if (! isempty (paramValue))
+                args = [args, {paramName, Mdl.(paramName)}];
+              endif
+            endif
+          endfor
+
+          ## Train model according to partition object
+          for k = 1:this.KFold
+            idx = training (this.Partition, k);
+            this.Trained{k} = fitcgam (this.X(idx, :), this.Y(idx), args{:});
+          endfor
+
+          ## Store ModelParameters to ClassificationPartitionedModel object
+          params = struct();
+          paramList = {'Formula', 'Interactions', 'Knots', 'Order', 'DoF'};
+          for i = 1:numel (paramList)
+            paramName = paramList{i};
+            if (isprop (Mdl, paramName))
+              params.(paramName) = Mdl.(paramName);
+            endif
+          endfor
+          this.ModelParameters = params;
 
         case 'ClassificationKNN'
           ## Arguments to pass in fitcknn
@@ -248,30 +318,6 @@ classdef ClassificationPartitionedModel
           ## Store ModelParameters to ClassificationPartitionedModel object
           this.ModelParameters = params;
 
-        case "ClassificationDiscriminant"
-          ## Arguments to pass in fitcdiscr
-          args = {};
-          ## List of acceptable parameters for fitcdiscr
-          DiscrParams = {'PredictorNames', 'ResponseName', 'Gamma', ...
-                         'DiscrimType'};
-          ## Set parameters
-          for i = 1:numel (DiscrParams)
-            paramName = DiscrParams{i};
-            if (isprop (Mdl, paramName))
-              paramValue = Mdl.(paramName);
-              if (! isempty (paramValue))
-                args = [args, {paramName, Mdl.(paramName)}];
-              endif
-            endif
-          endfor
-
-          ## Train model according to partition object
-          for k = 1:this.KFold
-            idx = training (this.Partition, k);
-            this.Trained{k} = fitcdiscr (this.X(idx, :), ...
-                  this.Y(idx), "FillCoeffs", "off", args{:});
-          endfor
-
       endswitch
     endfunction
 
@@ -320,6 +366,14 @@ classdef ClassificationPartitionedModel
     ## @end deftypefn
     function [label, Score, Cost] = kfoldPredict (this)
 
+      ## Input validation
+      is_svm = strcmpi (this.CrossValidatedModel, "ClassificationSVM");
+      if (is_svm && nargout > 2)
+        error (strcat (["ClassificationPartitionedModel.kfoldPredict:"], ...
+                       [" 'Cost' output is not supported for"], ...
+                       [" ClassificationSVM cross validated models."]));
+      endif
+
       ## Initialize the label vector based on the type of Y
       if (iscellstr (this.Y))
         label = cell (this.NumObservations, 1);
@@ -335,104 +389,48 @@ classdef ClassificationPartitionedModel
       Score = nan (this.NumObservations, numel (this.ClassNames));
       Cost = nan (this.NumObservations, numel (this.ClassNames));
 
-      ## Predict label, score, cost for each observation
-      switch (this.CrossValidatedModel)
+      ## Predict label, score, and cost (if applicable) for each KFold partition
+      for k = 1:this.KFold
 
-        case 'ClassificationKNN'
-          for k = 1:this.KFold
-            testIdx = test (this.Partition, k);
-            model = this.Trained{k};
+        ## Get data and trained model for this fold
+        testIdx = test (this.Partition, k);
+        model = this.Trained{k};
 
-            [predictedLabel, score, cost] = predict (model, this.X(testIdx, :));
+        ## Train
+        if (is_svm)
+          [predictedLabel, score] = predict (model, this.X(testIdx, :));
+        else
+          [predictedLabel, score, cost] = predict (model, this.X(testIdx, :));
+        endif
 
-            ## Convert cell array of labels to appropriate type
-            if (iscell (predictedLabel))
-              if (isnumeric (this.Y))
-                predictedLabel = cellfun (@str2num, predictedLabel);
-              elseif (islogical (this.Y))
-                predictedLabel = cellfun (@logical, predictedLabel);
-              elseif (iscellstr (this.Y))
-                predictedLabel = predictedLabel;
-              endif
-            endif
-
-            label(testIdx) = predictedLabel;
-            Score(testIdx, :) = score;
-
-            if (nargout > 2)
-              Cost(testIdx, :) = cost;
-            endif
-          endfor
-
-          ## Handle single fold case (holdout)
-          if (this.KFold == 1)
-            testIdx = test (this.Partition, 1);
-            label(testIdx) = mode (this.Y);
-            Score(testIdx, :) = NaN;
-            Cost(testIdx, :) = NaN;
+        ## Convert cell array of labels to appropriate type (if applicable)
+        if (iscell (predictedLabel))
+          if (isnumeric (this.Y))
+            predictedLabel = cellfun (@str2num, predictedLabel);
+          elseif (islogical (this.Y))
+            predictedLabel = cellfun (@logical, predictedLabel);
+          elseif (iscellstr (this.Y))
+            predictedLabel = predictedLabel;
           endif
+        endif
 
-        case 'ClassificationSVM'
+        ## Get labels, score, and cost (if applicable)
+        label(testIdx) = predictedLabel;
+        Score(testIdx, :) = score;
+        if (nargout > 2)
+          Cost(testIdx, :) = cost;
+        endif
 
-          if (nargout > 2)
-           error(["ClassificationPartitionedModel.kfoldPredict: 'Cost'", ...
-                 " output is not supported for ClassificationSVM", ...
-                 " cross validated models."]);
-          endif
+      endfor
 
-          for k = 1:this.KFold
-            testIdx = test (this.Partition, k);
-            model = this.Trained{k};
-            [predictedLabel, score] = predict (model, this.X(testIdx, :));
-            label(testIdx) = predictedLabel;
-            Score(testIdx, :) = score;
-          endfor
+      ## Handle single fold case (holdout)
+      if (this.KFold == 1)
+        testIdx = test (this.Partition, 1);
+        label(testIdx) = mode (this.Y);
+        Score(testIdx, :) = NaN;
+        Cost(testIdx, :) = NaN;
+      endif
 
-          ## Handle single fold case (holdout)
-          if (this.KFold == 1)
-            testIdx = test (this.Partition, 1);
-            label(testIdx) = mode (this.Y);
-            Score(testIdx, :) = NaN;
-          endif
-
-        case 'ClassificationDiscriminant'
-          for k = 1:this.KFold
-            testIdx = test (this.Partition, k);
-            model = this.Trained{k};
-
-            [predictedLabel, score, cost] = predict (model, this.X(testIdx, :));
-
-            ## Convert cell array of labels to appropriate type
-            if (iscell (predictedLabel))
-              if (isnumeric (this.Y))
-                predictedLabel = cellfun (@str2num, predictedLabel);
-              elseif (islogical (this.Y))
-                predictedLabel = cellfun (@logical, predictedLabel);
-              elseif (iscellstr (this.Y))
-                predictedLabel = predictedLabel;
-              endif
-            endif
-
-            label(testIdx) = predictedLabel;
-            Score(testIdx, :) = score;
-
-            if (nargout > 2)
-              Cost(testIdx, :) = cost;
-            endif
-          endfor
-
-          ## Handle single fold case (holdout)
-          if (this.KFold == 1)
-            testIdx = test (this.Partition, 1);
-            label(testIdx) = mode (this.Y);
-            Score(testIdx, :) = NaN;
-            Cost(testIdx, :) = NaN;
-          endif
-
-        otherwise
-          error (["ClassificationPartitionedModel.kfoldPredict: ", ...
-                  "unsupported model."]);
-      endswitch
     endfunction
 
   endmethods
@@ -474,6 +472,48 @@ endclassdef
 %!          sum (strcmp (label, y)), numel (y))
 
 ## Tests
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! a = fitcdiscr (x, y, "gamma", 0.3);
+%! cvModel = crossval (a, "KFold", 5);
+%! assert (class (cvModel), "ClassificationPartitionedModel");
+%! assert (cvModel.NumObservations, 4);
+%! assert (numel (cvModel.Trained), 5);
+%! assert (cvModel.CrossValidatedModel, "ClassificationDiscriminant");
+%! assert (cvModel.KFold, 5);
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! k = 3;
+%! a = fitcdiscr (x, y);
+%! cvModel = crossval (a, "LeaveOut", "on");
+%! assert (class (cvModel), "ClassificationPartitionedModel");
+%! assert ({cvModel.X, cvModel.Y}, {x, y});
+%! assert (cvModel.NumObservations, 4);
+%! assert (numel (cvModel.Trained), 4);
+%! assert (cvModel.CrossValidatedModel, "ClassificationDiscriminant");
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! a = fitcgam (x, y, "Interactions", "all");
+%! cvModel = crossval (a, "KFold", 5);
+%! assert (class (cvModel), "ClassificationPartitionedModel");
+%! assert (cvModel.NumObservations, 4);
+%! assert (numel (cvModel.Trained), 5);
+%! assert (cvModel.CrossValidatedModel, "ClassificationGAM");
+%! assert (cvModel.KFold, 5);
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! k = 3;
+%! a = fitcgam (x, y);
+%! cvModel = crossval (a, "LeaveOut", "on");
+%! assert (class (cvModel), "ClassificationPartitionedModel");
+%! assert ({cvModel.X, cvModel.Y}, {x, y});
+%! assert (cvModel.NumObservations, 4);
+%! assert (numel (cvModel.Trained), 4);
+%! assert (cvModel.CrossValidatedModel, "ClassificationGAM");
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
@@ -544,27 +584,6 @@ endclassdef
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (class (CVMdl.Trained{1}), "ClassificationSVM")
-%!test
-%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
-%! a = fitcdiscr (x, y, "gamma", 0.3);
-%! cvModel = crossval (a, "KFold", 5);
-%! assert (class (cvModel), "ClassificationPartitionedModel");
-%! assert (cvModel.NumObservations, 4);
-%! assert (numel (cvModel.Trained), 5);
-%! assert (cvModel.CrossValidatedModel, "ClassificationDiscriminant");
-%! assert (cvModel.KFold, 5);
-%!test
-%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
-%! k = 3;
-%! a = fitcdiscr (x, y);
-%! cvModel = crossval (a, "LeaveOut", "on");
-%! assert (class (cvModel), "ClassificationPartitionedModel");
-%! assert ({cvModel.X, cvModel.Y}, {x, y});
-%! assert (cvModel.NumObservations, 4);
-%! assert (numel (cvModel.Trained), 4);
-%! assert (cvModel.CrossValidatedModel, "ClassificationDiscriminant");
 
 ## Test input validation for ClassificationPartitionedModel
 %!error<ClassificationPartitionedModel: too few input arguments.> ...
@@ -576,6 +595,20 @@ endclassdef
 %! randi ([1, 2], 40, 1)), cvpartition (randi ([1, 2], 40, 1), 'Holdout', 0.3))
 
 ## Test for kfoldPredict
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = {"a"; "a"; "b"; "b"};
+%! a = fitcdiscr (x, y,"gamma", 0.5);
+%! cvModel = crossval (a, "Kfold", 4);
+%! [label, score, cost] = kfoldPredict (cvModel);
+%! assert (class(cvModel), "ClassificationPartitionedModel");
+%! assert ({cvModel.X, cvModel.Y}, {x, y});
+%! assert (cvModel.NumObservations, 4);
+%! assert (label, {"b"; "b"; "a"; "a"});
+%! assert (score, [4.5380e-01, 5.4620e-01; 2.4404e-01, 7.5596e-01; ...
+%!         9.9392e-01, 6.0844e-03; 9.9820e-01, 1.8000e-03], 1e-4);
+%! assert (cost, [5.4620e-01, 4.5380e-01; 7.5596e-01, 2.4404e-01; ...
+%!         6.0844e-03, 9.9392e-01; 1.8000e-03, 9.9820e-01], 1e-4);
 %!test
 %! x = ones(4, 11);
 %! y = {"a"; "a"; "b"; "b"};
@@ -596,20 +629,6 @@ endclassdef
 %!          0.6667, 0.3333], 1e-4);
 %! assert (cost, [0.6667, 0.3333; 0.6667, 0.3333; 0.3333, 0.6667; ...
 %!          0.3333, 0.6667], 1e-4);
-%!test
-%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = {"a"; "a"; "b"; "b"};
-%! a = fitcdiscr (x, y,"gamma", 0.5);
-%! cvModel = crossval (a, "Kfold", 4);
-%! [label, score, cost] = kfoldPredict (cvModel);
-%! assert (class(cvModel), "ClassificationPartitionedModel");
-%! assert ({cvModel.X, cvModel.Y}, {x, y});
-%! assert (cvModel.NumObservations, 4);
-%! assert (label, {"b"; "b"; "a"; "a"});
-%! assert (score, [4.5380e-01, 5.4620e-01; 2.4404e-01, 7.5596e-01; ...
-%!         9.9392e-01, 6.0844e-03; 9.9820e-01, 1.8000e-03], 1e-4);
-%! assert (cost, [5.4620e-01, 4.5380e-01; 7.5596e-01, 2.4404e-01; ...
-%!         6.0844e-03, 9.9392e-01; 1.8000e-03, 9.9820e-01], 1e-4);
 
 ## Test input validation for kfoldPredict
 %!error<ClassificationPartitionedModel.kfoldPredict: 'Cost' output is not supported for ClassificationSVM cross validated models.> ...
