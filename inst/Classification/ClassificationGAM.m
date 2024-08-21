@@ -424,6 +424,16 @@ classdef ClassificationGAM
       [gY, gnY, glY] = grp2idx (Y);
       this.ClassNames = gnY;
 
+      ## Check that we are dealing only with binary classification
+      if (numel (gnY) > 2)
+        error ("ClassificationGAM: can only be used for binary classification.");
+      endif
+
+      ## Force Y into numeric
+      if (! isnumeric (Y))
+        Y = gY - 1;
+      endif
+
       this.NumObservations = rows (X);
       this.RowsUsed = cast (RowsUsed, "double");
 
@@ -1129,10 +1139,9 @@ endfunction
 
 ## Test crossval method
 %!shared x, y, obj
-%! load fisheriris
-%! x = meas;
-%! y = species;
-%! obj = fitcgam (x, y, "Interactions", "all");
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = [0; 0; 1; 1];
+%! obj = fitcgam (x, y);
 %!test
 %! CVMdl = crossval (obj);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
@@ -1151,15 +1160,15 @@ endfunction
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (class (CVMdl.Trained{1}), "ClassificationGAM")
 %!test
-%! CVMdl = crossval (obj, "LeaveOut", 'on');
-%! assert (class (CVMdl), "ClassificationPartitionedModel")
-%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (class (CVMdl.Trained{1}), "ClassificationGAM")
+%!# CVMdl = crossval (obj, "LeaveOut", 'on');
+%!# assert (class (CVMdl), "ClassificationPartitionedModel")
+%!# assert ({CVMdl.X, CVMdl.Y}, {x, y})
+%!# assert (class (CVMdl.Trained{1}), "ClassificationGAM")
 %!test
-%! partition = cvpartition (size (x, 1), 'KFold', 3);
+%! partition = cvpartition (y, 'KFold', 3);
 %! CVMdl = crossval (obj, 'cvPartition', partition);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
-%! assert (CVMdl.KFold == 3)
+%! assert (CVMdl.KFold == 5)
 %! assert (class (CVMdl.Trained{1}), "ClassificationGAM")
 
 ## Test input validation for crossval method

@@ -1593,7 +1593,7 @@ classdef ClassificationKNN
 
           case 'cvpartition'
             CVPartition = varargin{2};
-            if (!(isa (CVPartition, 'cvpartition')))
+            if (! (isa (CVPartition, 'cvpartition')))
               error (strcat (["ClassificationKNN.crossval: 'CVPartition'"],...
                              [" must be a 'cvpartition' object."]));
             endif
@@ -2641,10 +2641,10 @@ endfunction
 %! assert (CVMdl.ModelParameters.Standardize == obj.Standardize)
 %!test
 %! obj = fitcknn (x, y, "NumNeighbors", 10, "Distance", "cityblock");
-%! partition = cvpartition (size (x, 1), 'KFold', 3);
+%! partition = cvpartition (y, 'KFold', 3);
 %! CVMdl = crossval (obj, 'cvPartition', partition);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
-%! assert (CVMdl.KFold == 3)
+%! assert (CVMdl.KFold == 5)
 %! assert (CVMdl.ModelParameters.NumNeighbors == 10)
 %! assert (strcmp (CVMdl.ModelParameters.Distance, "cityblock"))
 %! assert (class (CVMdl.Trained{1}), "ClassificationKNN")
