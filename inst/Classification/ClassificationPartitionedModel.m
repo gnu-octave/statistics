@@ -103,7 +103,8 @@ classdef ClassificationPartitionedModel
 ##
 ## @end multitable
 ##
-## @seealso{cvpartition, ClassificationKNN, ClassificationSVM}
+## @seealso{cvpartition, ClassificationDiscriminant, ClassificationGAM,
+## ClassificationKNN, ClassificationNeuralNetwork, ClassificationSVM}
 ## @end deftypefn
 
   properties
@@ -137,7 +138,8 @@ classdef ClassificationPartitionedModel
 
       ## Check for valid object types
       validTypes = {'ClassificationDiscriminant', 'ClassificationGAM', ...
-                    'ClassificationKNN', 'ClassificationSVM'};
+                    'ClassificationKNN', 'ClassificationNeuralNetwork', ...
+                    'ClassificationSVM'};
       if (! any (strcmp (class (Mdl), validTypes)))
         error ("ClassificationPartitionedModel: unsupported model type.");
       endif
@@ -155,7 +157,8 @@ classdef ClassificationPartitionedModel
       this.CrossValidatedModel = class (Mdl);
       this.Prior = Mdl.Prior;
       this.Cost = Mdl.Cost;
-      is_valid = {'ClassificationKNN', 'ClassificationSVM'};
+      is_valid = {'ClassificationKNN', 'ClassificationNeuralNetwork', ...
+                  'ClassificationSVM'};
       if (any (strcmpi (class (Mdl), is_valid)))
         this.Standardize = Mdl.Standardize;
         this.ScoreTransform = Mdl.ScoreTransform;
@@ -169,14 +172,14 @@ classdef ClassificationPartitionedModel
           args = {};
           ## List of acceptable parameters for fitcdiscr
           DiscrParams = {'PredictorNames', 'ResponseName', 'ClassNames', ...
-                         'DiscrimType', 'FillCoeffs', 'Gamma'};
+                         'FillCoeffs', 'Cost', 'DiscrimType', 'Gamma'};
           ## Set parameters
           for i = 1:numel (DiscrParams)
             paramName = DiscrParams{i};
             if (isprop (Mdl, paramName))
               paramValue = Mdl.(paramName);
               if (! isempty (paramValue))
-                args = [args, {paramName, Mdl.(paramName)}];
+                args = [args, {paramName, paramValue}];
               endif
             endif
           endfor
@@ -203,7 +206,8 @@ classdef ClassificationPartitionedModel
           args = {};
           ## List of acceptable parameters for fitcdiscr
           GAMparams = {'PredictorNames', 'ResponseName', 'ClassNames', ...
-                       'Cost', 'Formula', 'Interactions', 'Knots', 'Order'};
+                       'Cost', 'Formula', 'Interactions', 'Knots', 'Order', ...
+                       'LearningRate', 'NumIterations'};
           ## Set parameters
           for i = 1:numel (GAMparams)
             paramName = GAMparams{i};
@@ -223,7 +227,8 @@ classdef ClassificationPartitionedModel
 
           ## Store ModelParameters to ClassificationPartitionedModel object
           params = struct();
-          paramList = {'Formula', 'Interactions', 'Knots', 'Order', 'DoF'};
+          paramList = {'Formula', 'Interactions', 'Knots', 'Order', 'DoF', ...
+                       'LearningRate', 'NumIterations'};
           for i = 1:numel (paramList)
             paramName = paramList{i};
             if (isprop (Mdl, paramName))
@@ -236,7 +241,8 @@ classdef ClassificationPartitionedModel
           ## Arguments to pass in fitcknn
           args = {};
           ## List of acceptable parameters for fitcknn
-          KNNparams = {'PredictorNames', 'ResponseName', 'BreakTies', ...
+          KNNparams = {'PredictorNames', 'ResponseName', 'ClassNames', ...
+                       'Prior', 'Cost', 'ScoreTransform', 'BreakTies', ...
                        'NSMethod', 'BucketSize', 'NumNeighbors', 'Exponent', ...
                        'Scale', 'Cov', 'Distance', 'DistanceWeight', ...
                        'IncludeTies'};
@@ -246,7 +252,7 @@ classdef ClassificationPartitionedModel
             if (isprop (Mdl, paramName))
               paramValue = Mdl.(paramName);
               if (! isempty (paramValue))
-                args = [args, {paramName, Mdl.(paramName)}];
+                args = [args, {paramName, paramValue}];
               endif
             else
               switch (paramName)
@@ -287,6 +293,46 @@ classdef ClassificationPartitionedModel
           endfor
           this.ModelParameters = params;
 
+        case 'ClassificationNeuralNetwork'
+          ## Get ModelParameters structure from ClassificationNeuralNetwork
+          param = Mdl.ModelParameters;
+
+          ## Arguments to pass in fitcnet
+          args = {};
+          ## List of acceptable parameters for fitcnet
+          NNparams = {'PredictorNames', 'ResponseName', 'ClassNames', ...
+                      'Prior', 'Cost', 'ScoreTransform', 'Standardize', ...
+                      'LayerSizes', 'Activations', ...
+                      'LayerWeightsInitializer', 'LayerBiasesInitializer', ...
+                      'IterationLimit', 'LossTolerance', 'StepTolerance'};
+          ## Set parameters
+          for i = 1:numel (NNparams)
+            paramName = NNparams{i};
+            paramValue = param.(paramName);
+            if (! isempty (paramValue))
+              args = [args, {paramName, paramValue}];
+            endif
+          endfor
+
+          ## Train model according to partition object
+          for k = 1:this.KFold
+            idx = training (this.Partition, k);
+            this.Trained{k} = fitcnet (this.X(idx, :), this.Y(idx), args{:});
+          endfor
+
+          ## Store ModelParameters to ClassificationPartitionedModel object
+          params = struct();
+          paramList = {'LayerSizes', 'Activations', 'IterationLimit', ...
+                       'LayerBiasesInitializer', 'LayerWeightsInitializer', ...
+                       'LossTolerance', 'StepTolerance'};
+          for i = 1:numel (paramList)
+            paramName = paramList{i};
+            if (isprop (Mdl, paramName))
+              params.(paramName) = Mdl.(paramName);
+            endif
+          endfor
+          this.ModelParameters = params;
+
         case 'ClassificationSVM'
           ## Get ModelParameters structure from ClassificationKNN object
           params = Mdl.ModelParameters;
@@ -312,7 +358,6 @@ classdef ClassificationPartitionedModel
                               'CacheSize', params.CacheSize, ...
                               'Tolerance', params.Tolerance, ...
                               'Shrinking', params.Shrinking);
-            this.ModelParameters = (this.Trained{k}).ModelParameters;
           endfor
 
           ## Store ModelParameters to ClassificationPartitionedModel object
@@ -364,11 +409,13 @@ classdef ClassificationPartitionedModel
     ## @seealso{ClassificationKNN, ClassificationSVM,
     ## ClassificationPartitionedModel}
     ## @end deftypefn
+
     function [label, Score, Cost] = kfoldPredict (this)
 
       ## Input validation
-      is_svm = strcmpi (this.CrossValidatedModel, "ClassificationSVM");
-      if (is_svm && nargout > 2)
+      no_cost_models = {'ClassificationNeuralNetwork', 'ClassificationSVM'};
+      no_cost = any (strcmp (this.CrossValidatedModel, no_cost_models));
+      if (no_cost && nargout > 2)
         error (strcat (["ClassificationPartitionedModel.kfoldPredict:"], ...
                        [" 'Cost' output is not supported for"], ...
                        [" ClassificationSVM cross validated models."]));
@@ -389,6 +436,15 @@ classdef ClassificationPartitionedModel
       Score = nan (this.NumObservations, numel (this.ClassNames));
       Cost = nan (this.NumObservations, numel (this.ClassNames));
 
+      ## Handle single fold case (holdout)
+      if (this.KFold == 1)
+        testIdx = test (this.Partition, 1);
+        label(testIdx) = mode (this.Y);
+        Score(testIdx, :) = NaN;
+        Cost(testIdx, :) = NaN;
+        return;
+      endif
+
       ## Predict label, score, and cost (if applicable) for each KFold partition
       for k = 1:this.KFold
 
@@ -397,7 +453,7 @@ classdef ClassificationPartitionedModel
         model = this.Trained{k};
 
         ## Train
-        if (is_svm)
+        if (no_cost)
           [predictedLabel, score] = predict (model, this.X(testIdx, :));
         else
           [predictedLabel, score, cost] = predict (model, this.X(testIdx, :));
@@ -422,14 +478,6 @@ classdef ClassificationPartitionedModel
         endif
 
       endfor
-
-      ## Handle single fold case (holdout)
-      if (this.KFold == 1)
-        testIdx = test (this.Partition, 1);
-        label(testIdx) = mode (this.Y);
-        Score(testIdx, :) = NaN;
-        Cost(testIdx, :) = NaN;
-      endif
 
     endfunction
 
@@ -598,7 +646,7 @@ endclassdef
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = {"a"; "a"; "b"; "b"};
-%! a = fitcdiscr (x, y,"gamma", 0.5);
+%! a = fitcdiscr (x, y, "gamma", 0.5, "fillcoeffs", "off");
 %! cvModel = crossval (a, "Kfold", 4);
 %! [label, score, cost] = kfoldPredict (cvModel);
 %! assert (class(cvModel), "ClassificationPartitionedModel");
