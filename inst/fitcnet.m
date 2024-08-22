@@ -75,6 +75,9 @@
 ## respective fully connected layer in the neural network model.
 ## The default value is 10.
 ##
+## @item @qcode{"LearningRate"} @tab @tab A positive scalar value that defines
+## the learning rate during the gradient descent.  Default value is 0.01.
+##
 ## @item @qcode{"Activations"} @tab @tab A character vector specifying the
 ## activation function for the fully connected layers of the neural network
 ## model.  The available Activation functions are @qcode{'relu'},
