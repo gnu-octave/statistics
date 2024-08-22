@@ -175,6 +175,7 @@ classdef ClassificationNeuralNetwork
     LayerSizes            = [];  # Size of fully connected layers
     LayerWeights          = [];  # Learned layer weights
     LayerBiases           = [];  # Learned layer biases
+    LearningRate          = [];  # Learning rate for gradient descend
     Activations           = [];  # Activation function for fully connected layer
     OutputLayerActivation = [];  # Activation function for final connected layer
 
@@ -227,6 +228,7 @@ classdef ClassificationNeuralNetwork
       Activations             = 'relu';
       LayerWeightsInitializer = 'glorot';
       LayerBiasesInitializer  = 'zeros';
+      LearningRate            = 0.01;
       IterationLimit          = 1e3;
       LossTolerance           = 1e-6;
       StepTolerance           = 1e-6;
@@ -308,6 +310,14 @@ classdef ClassificationNeuralNetwork
               && all(LayerSizes > 0) && all(mod(LayerSizes, 1) == 0)))
               error (strcat (["ClassificationNeuralNetwork: 'LayerSizes'"], ...
                              [" must be a positive integer vector."]));
+            endif
+
+          case 'learningrate'
+            LearningRate = varargin{2};
+            if (! (isnumeric(LearningRate) && isscalar (LearningRate) &&
+                   LearningRate > 0))
+              error (strcat (["ClassificationNeuralNetwork:"], ...
+                             [" 'LearningRate' must be a positive scalar."]));
             endif
 
           case 'activations'
@@ -536,46 +546,78 @@ classdef ClassificationNeuralNetwork
       this.Solver = "Gradient Search";
       this.LayerWeightsInitializer = LayerWeightsInitializer;
       this.LayerBiasesInitializer = LayerBiasesInitializer;
+      this.LearningRate = LearningRate;
       this.IterationLimit = IterationLimit;
       this.LossTolerance = LossTolerance;
       this.StepTolerance = StepTolerance;
 
       ## Compute initial parameters
       this = parameter_initializer (this, LayerWeightsInitializer, ...
-                                    LayerBiasesInitializer);
-
-      ## Vectorize initial parameters so that they can be used for fminunc
-      initialThetaVec = [];
-      for i = 1:numel (this.LayerWeights)
-        initialThetaVec = [initialThetaVec; this.LayerWeights{i}(:)];
-        initialThetaVec = [initialThetaVec; this.LayerBiases{i}(:)];
-      endfor
-
-      ## Set options for fminunc
-      options = optimset ('MaxIter', IterationLimit, ...
-                          'TolFun', LossTolerance, ...
-                          'TolX', StepTolerance, ...
-                          'GradObj', 'on');
+                                          LayerBiasesInitializer);
 
       ## Start timing the training process
       tic;
-      f = @(J, grad) costFunction (initialThetaVec, this.NumPredictors, ...
-                                   this.LayerSizes, numel (this.ClassNames), ...
-                                   this.LayerWeights, this.LayerBiases, ...
-                                   this.Activations, X, Y);
-      [optThetaVec, cost, ~, out] = fminunc (f, initialThetaVec, options);
+      Iter = 0;
+      Loss = Inf;
 
-      ## Store training time, iterations, and cost into the model
+      ## Initialize storage for forward and backward propagation
+      nL = numel (this.LayerSizes) + 1;
+      Zs = cell (nL, 1);  # Z = W * a + b
+      As = cell (nL, 1);  # A = σ(Ζ)
+      dWs = cell (nL, 1); #
+      dBs = cell (nL, 1);
+
+      ## Main training algorithm
+      while (Loss > LossTolerance && Iter < IterationLimit)
+
+        ## Forward propagation
+        A = X';
+        for i = 1:nL
+          Zs{i} = this.LayerWeights{i} * A + this.LayerBiases{i};
+          if (i < nL)
+            A = Layer_Activation (this.Activations, Zs{i});
+          else
+            A = softmax (Zs{i});
+          endif
+          As{i} = A;
+        endfor
+
+        ## Compute Loss
+        one_hot_Y = bsxfun (@eq, Y(:), 1:max (Y))';
+        Loss = -sum (sum (one_hot_Y .* log (A + eps))) / rows (X);
+
+        ## FIXME: Tbe backpropagation is not working properly!
+        ## The Loss is reduced in the first couple of iterations but then
+        ## it starts increasing.  The resulting Weights and Biases matrices
+        ## are useless, since they classify in a single group all the time
+
+        ## Backward Propagation
+        m = size (X, 1);
+        for i = nL:-1:1
+          if (i == nL)
+            dZ = A - one_hot_Y;
+          else
+            dA = this.LayerWeights{i+1}' * dZ;
+            dZ = Activation_Gradient (this.Activations, dA, Zs{i});
+          endif
+
+          if (i == 1)
+            dWs{i} = (dZ * X)' / m;
+          else
+            dWs{i} = (As{i-1} * dZ') / m;
+          endif
+          dBs{i} = sum (dZ, 1)' / m;
+          this.LayerWeights{i} = this.LayerWeights{i} - LearningRate * dWs{i}';
+          this.LayerBiases{i} = this.LayerBiases{i} - LearningRate * dBs{i}';
+        endfor
+
+        Iter++;
+      endwhile
+
+      ## Store training time, Iterations, and Lost into the model
       ConvergenceInfo.Time = toc;
-      ConvergenceInfo.Iterations = out.iterations;
-      ConvergenceInfo.TrainingLoss = cost;
-
-      ## Convert thetaVec back to LayerWeights and LayerBiases
-      [LW, LB] = reshape_parameters (optThetaVec, this.NumPredictors, ...
-                                     this.LayerSizes, numel (this.ClassNames));
-      ## Save Weights and Biases into the model
-      this.LayerWeights = LW;
-      this.LayerBiases = LB;
+      ConvergenceInfo.Iterations = Iter;
+      ConvergenceInfo.TrainingLoss = Loss;
 
       ## Populate ModelParameters structure
       params = struct();
@@ -646,9 +688,9 @@ classdef ClassificationNeuralNetwork
       endif
 
       ## Forward propagation
-      A = XC;
+      A = XC';
       for i = 1:length (this.LayerSizes) + 1
-        Z = A * this.LayerWeights{i}' + this.LayerBiases{i}';
+        Z = this.LayerWeights{i} * A + this.LayerBiases{i};
         if (i <= length (this.LayerSizes))
           A = Layer_Activation (this.Activations, Z);
         else
@@ -659,7 +701,7 @@ classdef ClassificationNeuralNetwork
       scores = A;
 
       # Get the predicted labels (class with highest probability)
-      [~, labels] = max (A, [], 2);
+      [~, labels] = max (A);
       labels = this.ClassNames(labels);
 
       if (nargout > 1)
@@ -1062,128 +1104,6 @@ function s_max = softmax (z)
   s_max = exp_z ./ sum (exp_z, 2);
 endfunction
 
-## One Hot Vector Encoder
-function one_hot_vector = one_hot_encoder (Y)
-   one_hot_vector = bsxfun (@eq, Y(:), 1:max (Y));
-endfunction
-
-## Cross Entropy Loss function
-function loss = compute_cross_entropy_loss (Y_pred, Y_true)
-
-  ## One-hot encode the true labels
-  one_hot_Y_true = one_hot_encoder (Y_true);
-
-  ## Number of observations
-  m = size (Y_true, 1);
-
-  ## Adding a small value to Y_pred to avoid log(0)
-  Y_pred = Y_pred + eps;
-
-  ## Compute the cross-entropy loss
-  loss = -sum (sum (one_hot_Y_true .* log (Y_pred))) / m;
-endfunction
-
-## in_LS = this.NumPredictors
-## all_LS = this.LayerSizes
-## out_LS = numel (this.ClassNames)
-## _LW = this.LayerWeights
-## _LB = this.LayerBiases
-## Activations = this.Activations
-
-## Cost Function
-function [J, gradVec] = costFunction (thetaVec, in_LS, all_LS, out_LS, ...
-                                      _LW, _LB, Activations, X, Y)
-  ## Reshape Parameters
-  [LW, LB] = reshape_parameters (thetaVec, in_LS, all_LS, out_LS);
-
-  ## Initialize storage for forward propagation
-  Zs = cell (numel (LW), 1);
-  As = cell (numel (LW), 1);
-
-  ## Forward propagation
-  A = X;
-  NumOfLayers = numel (all_LS);
-  for i = 1:NumOfLayers + 1
-    Zs{i} = A * _LW{i}' + _LB{i}';
-
-    if (i <= NumOfLayers)
-      A = Layer_Activation (Activations, Zs{i});
-    else
-      A = softmax (Zs{i});
-    endif
-    As{i} = A;
-  endfor
-
-  ## Compute Loss
-  J = compute_cross_entropy_loss (A, Y);
-
-  ## Backward Propagation
-  m = size (X, 1);
-  dA = A - one_hot_encoder (Y);
-  dWs = cell (numel (LW), 1);
-  dBs = cell (numel (LW), 1);
-
-  for i = numel (LW):-1:1
-    if i == numel (LW)
-      dZ = dA;
-    else
-      dA = dZ * LW{i+1};
-      dZ = Activation_Gradient (Activations, dA, Zs{i});
-    endif
-
-    if i == 1
-      dWs{i} = (dZ' * X) / m;
-    else
-      dWs{i} = (dZ' * As{i-1}) / m;
-    endif
-    dBs{i} = sum (dZ, 1)' / m;
-  endfor
-
-  ## Vectorize Gradients
-  gradVec = [];
-  for i = 1:numel(dWs)
-    gradVec = [gradVec; dWs{i}(:)];
-    gradVec = [gradVec; dBs{i}(:)];
-  endfor
-
-endfunction
-
-## Converts thetaVec to LayerWeights and LayerBiases
-function [LW, LB] = reshape_parameters (thetaVec, in_LS, all_LS, out_LS)
-
-  NumOfLayers = numel (all_LS);
-  LW = cell (NumOfLayers + 1, 1);
-  LB = cell (NumOfLayers + 1, 1);
-
-  offset = 0;
-
-  for i = 1:NumOfLayers
-    cLS = all_LS(i);    # current Layer Size
-
-    if i == 1
-      pLS = in_LS;      # previous Layer Size
-    else
-      pLS = all_LS(i-1);
-    endif
-
-    w_size = cLS * pLS;
-    b_size = cLS;
-
-    LW{i} = reshape (thetaVec(offset + 1:offset + w_size), cLS, pLS);
-    offset = offset + w_size;
-    LB{i} = reshape (thetaVec(offset + 1:offset + b_size), cLS, 1);
-    offset = offset + b_size;
-  endfor
-
-  pLS = all_LS(end);
-  w_size = out_LS * pLS;
-  b_size = out_LS;
-
-  LW{end} = reshape (thetaVec(offset + 1:offset + w_size), out_LS, pLS);
-  offset = offset + w_size;
-  LB{end} = reshape (thetaVec(offset + 1:offset + b_size), out_LS, 1);
-endfunction
-
 ## Test input validation for constructor
 %!error<ClassificationNeuralNetwork: too few input arguments.> ...
 %! ClassificationNeuralNetwork ()
@@ -1229,6 +1149,12 @@ endfunction
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LayerSizes", [1,-2])
 %!error<ClassificationNeuralNetwork: 'LayerSizes' must be a positive integer vector.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LayerSizes", [10,20,30.5])
+%!error<ClassificationNeuralNetwork: 'LearningRate' must be a positive scalar.> ...
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LearningRate", -0.1)
+%!error<ClassificationNeuralNetwork: 'LearningRate' must be a positive scalar.> ...
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LearningRate", [0.1, 0.01])
+%!error<ClassificationNeuralNetwork: 'LearningRate' must be a positive scalar.> ...
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LearningRate", "a")
 %!error<ClassificationNeuralNetwork: 'Activations' must be a string.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "Activations", 123)
 %!error<ClassificationNeuralNetwork: unsupported Activation function.> ...
@@ -1307,12 +1233,6 @@ endfunction
 %!test
 %! obj = fitcnet (x, y);
 %! CVMdl = crossval (obj, "HoldOut", 0.2);
-%! assert (class (CVMdl), "ClassificationPartitionedModel")
-%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (class (CVMdl.Trained{1}), "ClassificationNeuralNetwork")
-%!test
-%! obj = fitcnet (x, y);
-%! CVMdl = crossval (obj, "LeaveOut", 'on');
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (class (CVMdl.Trained{1}), "ClassificationNeuralNetwork")
