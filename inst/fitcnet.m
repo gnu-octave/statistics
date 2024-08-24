@@ -1,4 +1,5 @@
 ## Copyright (C) 2024 Pallav Purbia <pallavpurbia@gmail.com>
+## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -62,13 +63,6 @@
 ## probabilities for each class.  The order of the elements in @qcode{Prior}
 ## corresponds to the order of the classes in @qcode{ClassNames}.
 ##
-## @item @qcode{"Cost"} @tab @tab A @math{NxR} numeric matrix containing
-## misclassification cost for the corresponding instances in @var{X} where
-## @math{R} is the number of unique categories in @var{Y}.  If an instance is
-## correctly classified into its category the cost is calculated to be 1,
-## otherwise 0. Cost matrix can be altered use @code{@var{Mdl.cost} = somecost}.
-## default value @qcode{@var{cost} = ones(rows(X),numel(unique(Y)))}.
-##
 ## @item @qcode{"LayerSizes"} @tab @tab A vector of positive integers that
 ## defines the sizes of the fully connected layers in the neural network model.
 ## Each element in LayerSizes corresponds to the number of outputs for the
@@ -78,33 +72,19 @@
 ## @item @qcode{"LearningRate"} @tab @tab A positive scalar value that defines
 ## the learning rate during the gradient descent.  Default value is 0.01.
 ##
-## @item @qcode{"Activations"} @tab @tab A character vector specifying the
-## activation function for the fully connected layers of the neural network
-## model.  The available Activation functions are @qcode{'relu'},
+## @item @qcode{"Activations"} @tab @tab A character vector or a cellstr vector
+## specifying the activation function(s) for the fully connected layers of the
+## neural network including the output layer.  The available Activation
+## functions are @qcode{'linear'}, @qcode{'sigmoid'},
 ## @qcode{'tanh'}, @qcode{'sigmoid'}, and @qcode{'none'}. The default value is
-## @qcode{'relu'}.
-##
-## @item @qcode{"LayerWeightsInitializer"} @tab @tab A character vector
-## specifying the function to initialize fully connected layer weights. The
-## available Layer Weights Initializer are @qcode{'glorot'}, and @qcode{'he'}.
-## The default value is @qcode{'glorot'}.
-##
-## @item @qcode{"LayerBiasesInitializer"} @tab @tab A character vector
-## specifying the type of initial fully connected layer biases. The available
-## Layer Biases Initializer are @qcode{'zeros'}, and @qcode{'ones'}. The default
-## value is @qcode{'zeros'}.
+## @qcode{'sigmoid'}.
 ##
 ## @item @qcode{"IterationLimit"} @tab @tab A positive integer scalar that
 ## specifies the maximum number of training iterations. The default value is
 ## 1e3.
 ##
-## @item @qcode{"LossTolerance"} @tab @tab A nonnegative scalar. If the function
-## loss at some iteration is smaller than LossTolerance, then the training
-## process terminates. The default value is 1e-6.
-##
-## @item @qcode{"StepTolerance"} @tab @tab A nonnegative scalar. If the step
-## size at some iteration is smaller than StepTolerance, then the training
-## process terminates. The default value is 1e-6.
+## @item @qcode{"DisplayInfo"} @tab @tab A boolean flag indicating whether to
+## print information during training.
 ##
 ## @item @qcode{"ScoreTransform"} @tab @tab A character vector defining one of
 ## the following functions or a user defined function handle, which is used
@@ -152,11 +132,25 @@ function obj = fitcnet (X, Y, varargin)
 endfunction
 
 %!demo
-## No demo for now.
+%! ## Train a Neural Network on the Fisher's Iris data set and display
+%! ## a confusion chart with the classification results.
+%!
+%! load fisheriris
+%! Mdl = fitcnet (meas, species, "DisplayInfo", false);
+%! pred = resubPredict(Mdl);
+%! cm = confusionmat (species, pred);
+%! confusionchart (cm, Mdl.ClassNames)
 
 ## Test constructor
 %!test
-## No test for now.
+%! load fisheriris
+%! x = meas;
+%! y = grp2idx (species);
+%! Mdl = fitcnet (x, y, "IterationLimit", 50, "DisplayInfo", false);
+%! assert (class (Mdl), "ClassificationNeuralNetwork");
+%! assert (numel (Mdl.ModelParameters.LayerWeights), 2);
+%! assert (size (Mdl.ModelParameters.LayerWeights{1}), [10, 5]);
+%! assert (size (Mdl.ModelParameters.LayerWeights{2}), [3, 11]);
 
 ## Test input validation
 %!error<fitcnet: too few arguments.> fitcnet ()

@@ -228,6 +228,8 @@ Experimental Design
  sigma_pts
  x2fx
 Machine Learning
+ fcnnpredict
+ fcnntrain
  hmmestimate
  hmmgenerate
  hmmviterbi

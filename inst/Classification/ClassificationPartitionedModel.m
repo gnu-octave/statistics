@@ -155,8 +155,10 @@ classdef ClassificationPartitionedModel
       this.PredictorNames = Mdl.PredictorNames;
       this.Partition = Partition;
       this.CrossValidatedModel = class (Mdl);
-      this.Prior = Mdl.Prior;
-      this.Cost = Mdl.Cost;
+      if (! strcmpi (class (Mdl), 'ClassificationNeuralNetwork'))
+        this.Prior = Mdl.Prior;
+        this.Cost = Mdl.Cost;
+      endif
       is_valid = {'ClassificationKNN', 'ClassificationNeuralNetwork', ...
                   'ClassificationSVM'};
       if (any (strcmpi (class (Mdl), is_valid)))
@@ -298,21 +300,13 @@ classdef ClassificationPartitionedModel
           args = {};
           ## List of acceptable parameters for fitcnet
           NNparams = {'PredictorNames', 'ResponseName', 'ClassNames', ...
-                      'Prior', 'Cost', 'ScoreTransform', 'Standardize', ...
-                      'LayerSizes', 'Activations'};
+                      'ScoreTransform', 'Standardize', 'LayerSizes', ...
+                      'Activations', 'LearningRate', 'IterationLimit', ...
+                      'DisplayInfo'};
           ## Set parameters
           for i = 1:numel (NNparams)
             paramName = NNparams{i};
             paramValue = Mdl.(paramName);
-            if (! isempty (paramValue))
-              args = [args, {paramName, paramValue}];
-            endif
-          endfor
-          NNparams = {'LayerBiasesInitializer', 'LayerWeightsInitializer', ...
-                      'IterationLimit', 'LossTolerance', 'StepTolerance'};
-          for i = 1:numel (NNparams)
-            paramName = NNparams{i};
-            paramValue = Mdl.ModelParameters.(paramName);
             if (! isempty (paramValue))
               args = [args, {paramName, paramValue}];
             endif
@@ -325,12 +319,14 @@ classdef ClassificationPartitionedModel
           endfor
 
           ## Store ModelParameters to ClassificationPartitionedModel object
-          params.LayerSizes = Mdl.ModelParameters.LayerSizes;
-          params.Activations = Mdl.ModelParameters.Activations;
-          for i = 1:numel (NNparams)
-            paramName = NNparams{i};
-            paramValue = Mdl.ModelParameters.(paramName);
-            params.(paramName) = Mdl.ModelParameters.(paramName);
+          params = struct();
+          paramList = {'LayerSizes', 'Activations', 'LearningRate', ...
+                       'IterationLimit', 'Solver'};
+          for i = 1:numel (paramList)
+            paramName = paramList{i};
+            if (isprop (Mdl, paramName))
+              params.(paramName) = Mdl.(paramName);
+            endif
           endfor
           this.ModelParameters = params;
 
@@ -437,15 +433,6 @@ classdef ClassificationPartitionedModel
       Score = nan (this.NumObservations, numel (this.ClassNames));
       Cost = nan (this.NumObservations, numel (this.ClassNames));
 
-      ## Handle single fold case (holdout)
-      if (this.KFold == 1)
-        testIdx = test (this.Partition, 1);
-        label(testIdx) = mode (this.Y);
-        Score(testIdx, :) = NaN;
-        Cost(testIdx, :) = NaN;
-        return;
-      endif
-
       ## Predict label, score, and cost (if applicable) for each KFold partition
       for k = 1:this.KFold
 
@@ -479,6 +466,15 @@ classdef ClassificationPartitionedModel
         endif
 
       endfor
+
+      ## Handle single fold case (holdout)
+      if (this.KFold == 1)
+        testIdx = test (this.Partition, 1);
+        label(testIdx) = mode (this.Y);
+        Score(testIdx, :) = NaN;
+        Cost(testIdx, :) = NaN;
+        return;
+      endif
 
     endfunction
 
