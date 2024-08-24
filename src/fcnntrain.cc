@@ -26,7 +26,7 @@ this program; if not, see <http://www.gnu.org/licenses/>.
 #include <octave/oct.h>
 #include <octave/parse.h>
 #include <octave/ov-struct.h>
-#include "fcnn.cc"
+#include "fcnn.cpp"
 
 using namespace std;
 
