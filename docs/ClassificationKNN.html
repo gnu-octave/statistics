@@ -807,42 +807,42 @@
  which can be accessed in the following fields:
 </p>
  <table>
-<thead><tr><th width="28%"><var>Field</var></th><th width="2%"></th><th width="70%"><var>Description</var></th></tr></thead>
-<tr><td width="28%"><code>obj.X</code></td><td width="2%"></td><td width="70%">Unstandardized predictor data, specified as a
+<thead><tr><th width="23%"><var>Field</var></th><th width="2%"></th><th width="75%"><var>Description</var></th></tr></thead>
+<tr><td width="23%"><code>X</code></td><td width="2%"></td><td width="75%">Unstandardized predictor data, specified as a
  numeric matrix.  Each column of <var>X</var> represents one predictor (variable),
  and each row represents one observation.</td></tr>
-<tr><td width="28%"><code>obj.Y</code></td><td width="2%"></td><td width="70%">Class labels, specified as a logical or
+<tr><td width="23%"><code>Y</code></td><td width="2%"></td><td width="75%">Class labels, specified as a logical or
  numeric vector, or cell array of character vectors.  Each value in <var>Y</var> is
  the observed class label for the corresponding row in <var>X</var>.</td></tr>
-<tr><td width="28%"><code>obj.NumObservations</code></td><td width="2%"></td><td width="70%">Number of observations used in
+<tr><td width="23%"><code>NumObservations</code></td><td width="2%"></td><td width="75%">Number of observations used in
  training the ClassificationKNN model, specified as a positive integer scalar.
  This number can be less than the number of rows in the training data because
  rows containing <code>NaN</code> values are not part of the fit.</td></tr>
-<tr><td width="28%"><code>obj.RowsUsed</code></td><td width="2%"></td><td width="70%">Rows of the original training data
+<tr><td width="23%"><code>RowsUsed</code></td><td width="2%"></td><td width="75%">Rows of the original training data
  used in fitting the ClassificationKNN model, specified as a numerical vector.
  If you want to use this vector for indexing the training data in <var>X</var>, you
  have to convert it to a logical vector, i.e
  <code>X = obj.X(logical (obj.RowsUsed), :);</code></td></tr>
-<tr><td width="28%"><code>obj.Standardize</code></td><td width="2%"></td><td width="70%">A boolean flag indicating whether
+<tr><td width="23%"><code>Standardize</code></td><td width="2%"></td><td width="75%">A boolean flag indicating whether
  the data in <var>X</var> have been standardized prior to training.</td></tr>
-<tr><td width="28%"><code>obj.Sigma</code></td><td width="2%"></td><td width="70%">Predictor standard deviations, specified
+<tr><td width="23%"><code>Sigma</code></td><td width="2%"></td><td width="75%">Predictor standard deviations, specified
  as a numeric vector of the same length as the columns in <var>X</var>.  If the
  predictor variables have not been standardized, then <code>&quot;obj.Sigma&quot;</code> is
  empty.</td></tr>
-<tr><td width="28%"><code>obj.Mu</code></td><td width="2%"></td><td width="70%">Predictor means, specified as a numeric
+<tr><td width="23%"><code>Mu</code></td><td width="2%"></td><td width="75%">Predictor means, specified as a numeric
  vector of the same length as the columns in <var>X</var>.  If the predictor
  variables have not been standardized, then <code>&quot;obj.Mu&quot;</code> is empty.</td></tr>
-<tr><td width="28%"><code>obj.NumPredictors</code></td><td width="2%"></td><td width="70%">The number of predictors
+<tr><td width="23%"><code>NumPredictors</code></td><td width="2%"></td><td width="75%">The number of predictors
  (variables) in <var>X</var>.</td></tr>
-<tr><td width="28%"><code>obj.PredictorNames</code></td><td width="2%"></td><td width="70%">Predictor variable names,
+<tr><td width="23%"><code>PredictorNames</code></td><td width="2%"></td><td width="75%">Predictor variable names,
  specified as a cell array of character vectors.  The variable names are in
  the same order in which they appear in the training data <var>X</var>.</td></tr>
-<tr><td width="28%"><code>obj.ResponseName</code></td><td width="2%"></td><td width="70%">Response variable name, specified
+<tr><td width="23%"><code>ResponseName</code></td><td width="2%"></td><td width="75%">Response variable name, specified
  as a character vector.</td></tr>
-<tr><td width="28%"><code>obj.ClassNames</code></td><td width="2%"></td><td width="70%">Names of the classes in the training
+<tr><td width="23%"><code>ClassNames</code></td><td width="2%"></td><td width="75%">Names of the classes in the training
  data <var>Y</var> with duplicates removed, specified as a cell array of character
  vectors.</td></tr>
-<tr><td width="28%"><code>obj.BreakTies</code></td><td width="2%"></td><td width="70%">Tie-breaking algorithm used by predict
+<tr><td width="23%"><code>BreakTies</code></td><td width="2%"></td><td width="75%">Tie-breaking algorithm used by predict
  when multiple classes have the same smallest cost, specified as one of the
  following character arrays: <code>&quot;smallest&quot;</code> (default), which favors the
  class with the smallest index among the tied groups, i.e. the one that
@@ -850,10 +850,10 @@
  the class with the nearest neighbor among the tied groups, i.e. the class
  with the closest member point according to the distance metric used.
  <code>&quot;random&quot;</code>, which randomly picks one class among the tied groups.</td></tr>
-<tr><td width="28%"><code>obj.Prior</code></td><td width="2%"></td><td width="70%">Prior probabilities for each class,
+<tr><td width="23%"><code>Prior</code></td><td width="2%"></td><td width="75%">Prior probabilities for each class,
  specified as a numeric vector.  The order of the elements in <code>Prior</code>
  corresponds to the order of the classes in <code>ClassNames</code>.</td></tr>
-<tr><td width="28%"><code>obj.Cost</code></td><td width="2%"></td><td width="70%">Cost of the misclassification of a point,
+<tr><td width="23%"><code>Cost</code></td><td width="2%"></td><td width="75%">Cost of the misclassification of a point,
  specified as a square matrix. <code>Cost(i,j)</code> is the cost of classifying a
  point into class <code>j</code> if its true class is <code>i</code> (that is, the rows
  correspond to the true class and the columns correspond to the predicted
@@ -863,39 +863,39 @@
  <code>Cost(i,j) = 1</code> if <code>i != j</code>, and <code>Cost(i,j) = 0</code> if
  <code>i = j</code>.  In other words, the cost is 0 for correct classification and
  1 for incorrect classification.</td></tr>
-<tr><td width="28%"><code>obj.ScoreTransform</code></td><td width="2%"></td><td width="70%">A function_handle which is used
+<tr><td width="23%"><code>ScoreTransform</code></td><td width="2%"></td><td width="75%">A function_handle which is used
  for transforming the kNN prediction score into a posterior probability.  By
  default, it is <code>'none'</code>, in which case the <code>predict</code> and
  <code>resubPredict</code> methods return the prediction scores.</td></tr>
-<tr><td width="28%"><code>obj.NumNeighbors</code></td><td width="2%"></td><td width="70%">Number of nearest neighbors in
+<tr><td width="23%"><code>NumNeighbors</code></td><td width="2%"></td><td width="75%">Number of nearest neighbors in
  <var>X</var> used to classify each point during prediction, specified as a
  positive integer value.</td></tr>
-<tr><td width="28%"><code>obj.Distance</code></td><td width="2%"></td><td width="70%">Distance metric, specified as a
+<tr><td width="23%"><code>Distance</code></td><td width="2%"></td><td width="75%">Distance metric, specified as a
  character vector.  The allowable distance metric names depend on the choice
  of the neighbor-searcher method.  See the available distance metrics in
  <code>knnseaarch</code> for more info.</td></tr>
-<tr><td width="28%"><code>obj.DistanceWeight</code></td><td width="2%"></td><td width="70%">Distance weighting function,
+<tr><td width="23%"><code>DistanceWeight</code></td><td width="2%"></td><td width="75%">Distance weighting function,
  specified as a function handle, which accepts a matrix of nonnegative
  distances, and returns a matrix the same size containing nonnegative distance
  weights.</td></tr>
-<tr><td width="28%"><code>obj.DistParameter</code></td><td width="2%"></td><td width="70%">Parameter for the distance
+<tr><td width="23%"><code>DistParameter</code></td><td width="2%"></td><td width="75%">Parameter for the distance
  metric, specified either as a positive definite covariance matrix (when the
  distance metric is <code>&quot;mahalanobis&quot;</code>, or a positive scalar as the
  Minkowski distance exponent (when the distance metric is <code>&quot;minkowski&quot;</code>,
  or a vector of positive scale values with length equal to the number of
  columns of <var>X</var> (when the distance metric is <code>&quot;seuclidean&quot;</code>.  For
  any other distance metric, the value of <code>DistParameter</code> is empty.</td></tr>
-<tr><td width="28%"><code>obj.NSMethod</code></td><td width="2%"></td><td width="70%">Nearest neighbor search method,
+<tr><td width="23%"><code>NSMethod</code></td><td width="2%"></td><td width="75%">Nearest neighbor search method,
  specified as either <code>&quot;kdtree&quot;</code>, which creates and uses a Kd-tree to
  find nearest neighbors, or <code>&quot;exhaustive&quot;</code>, which uses the exhaustive
  search algorithm by computing the distance values from all points in <var>X</var>
  to find nearest neighbors.</td></tr>
-<tr><td width="28%"><code>obj.IncludeTies</code></td><td width="2%"></td><td width="70%">A boolean flag indicating whether
+<tr><td width="23%"><code>IncludeTies</code></td><td width="2%"></td><td width="75%">A boolean flag indicating whether
  prediction includes all the neighbors whose distance values are equal to the
  <math>k^th</math> smallest distance.  If <code>IncludeTies</code> is <code>true</code>,
  prediction includes all of these neighbors.  Otherwise, prediction uses
  exactly <math>k</math> neighbors.</td></tr>
-<tr><td width="28%"><code>obj.BucketSize</code></td><td width="2%"></td><td width="70%">Maximum number of data points in the
+<tr><td width="23%"><code>BucketSize</code></td><td width="2%"></td><td width="75%">Maximum number of data points in the
  leaf node of the Kd-tree, specified as positive integer value. This argument
  is meaningful only when <code>NSMethod</code> is <code>&quot;kdtree&quot;</code>.</td></tr>
 </table>

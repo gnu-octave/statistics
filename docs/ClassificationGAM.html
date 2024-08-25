@@ -809,44 +809,44 @@
  classification, which can be accessed in the following fields:
 </p>
  <table>
-<thead><tr><th width="28%"><var>Field</var></th><th width="2%"></th><th width="70%"><var>Description</var></th></tr></thead>
-<tr><td width="28%"><code>obj.X</code></td><td width="2%"></td><td width="70%">Predictor data, specified as a
+<thead><tr><th width="23%"><var>Field</var></th><th width="2%"></th><th width="75%"><var>Description</var></th></tr></thead>
+<tr><td width="23%"><code>X</code></td><td width="2%"></td><td width="75%">Predictor data, specified as a
  numeric matrix. Each column of <var>X</var> represents one predictor (variable),
  and each row represents one observation.</td></tr>
-<tr><td width="28%"><code>obj.Y</code></td><td width="2%"></td><td width="70%">Class labels, specified as numeric vector
+<tr><td width="23%"><code>Y</code></td><td width="2%"></td><td width="75%">Class labels, specified as numeric vector
  of 0&rsquo;s and 1&rsquo;s. Each value in <var>Y</var> is the observed class
  label for the corresponding row in <var>X</var>.</td></tr>
-<tr><td width="28%"><code>obj.BaseModel</code></td><td width="2%"></td><td width="70%">A structure containing the parameters
+<tr><td width="23%"><code>BaseModel</code></td><td width="2%"></td><td width="75%">A structure containing the parameters
  of the base model without any interaction terms. The base model represents
  the generalized additive model (GAM) with only the main effects (predictor
  terms) included.</td></tr>
-<tr><td width="28%"><code>obj.ModelwInt</code></td><td width="2%"></td><td width="70%">A structure containing the parameters
+<tr><td width="23%"><code>ModelwInt</code></td><td width="2%"></td><td width="75%">A structure containing the parameters
  of the model that includes interaction terms. This model extends the base
  model by adding interaction terms between predictors, as specified by the
  <code>Interactions</code> property.</td></tr>
-<tr><td width="28%"><code>obj.IntMatrix</code></td><td width="2%"></td><td width="70%">A logical matrix or a matrix of
+<tr><td width="23%"><code>IntMatrix</code></td><td width="2%"></td><td width="75%">A logical matrix or a matrix of
  column indices that describes the interaction terms applied to the predictor
  data.</td></tr>
-<tr><td width="28%"><code>obj.NumObservations</code></td><td width="2%"></td><td width="70%">Number of observations used in
+<tr><td width="23%"><code>NumObservations</code></td><td width="2%"></td><td width="75%">Number of observations used in
  training the ClassificationGAM model, specified as a positive integer scalar.
  This number can be less than the number of rows in the training data because
  rows containing <code>NaN</code> values are not part of the fit.</td></tr>
-<tr><td width="28%"><code>obj.RowsUsed</code></td><td width="2%"></td><td width="70%">Rows of the original training data
+<tr><td width="23%"><code>RowsUsed</code></td><td width="2%"></td><td width="75%">Rows of the original training data
  used in fitting the ClassificationGAM model, specified as a numerical vector.
  If you want to use this vector for indexing the training data in <var>X</var>, you
  have to convert it to a logical vector, i.e
  <code>X = obj.X(logical (obj.RowsUsed), :);</code></td></tr>
-<tr><td width="28%"><code>obj.NumPredictors</code></td><td width="2%"></td><td width="70%">The number of predictors
+<tr><td width="23%"><code>NumPredictors</code></td><td width="2%"></td><td width="75%">The number of predictors
  (variables) in <var>X</var>.</td></tr>
-<tr><td width="28%"><code>obj.PredictorNames</code></td><td width="2%"></td><td width="70%">Predictor variable names,
+<tr><td width="23%"><code>PredictorNames</code></td><td width="2%"></td><td width="75%">Predictor variable names,
  specified as a cell array of character vectors. The variable names are in
  the same order in which they appear in the training data <var>X</var>.</td></tr>
-<tr><td width="28%"><code>obj.ResponseName</code></td><td width="2%"></td><td width="70%">Response variable name, specified
+<tr><td width="23%"><code>ResponseName</code></td><td width="2%"></td><td width="75%">Response variable name, specified
  as a character vector.</td></tr>
-<tr><td width="28%"><code>obj.ClassNames</code></td><td width="2%"></td><td width="70%">Names of the classes in the training
+<tr><td width="23%"><code>ClassNames</code></td><td width="2%"></td><td width="75%">Names of the classes in the training
  data <var>Y</var> with duplicates removed, specified as a cell array of character
  vectors.</td></tr>
-<tr><td width="28%"><code>obj.Cost</code></td><td width="2%"></td><td width="70%">Cost of the misclassification of a point,
+<tr><td width="23%"><code>Cost</code></td><td width="2%"></td><td width="75%">Cost of the misclassification of a point,
  specified as a square matrix. <code>Cost(i,j)</code> is the cost of classifying a
  point into class <code>j</code> if its true class is <code>i</code> (that is, the rows
  correspond to the true class and the columns correspond to the predicted
@@ -856,7 +856,7 @@
  <code>Cost(i,j) = 1</code> if <code>i != j</code>, and <code>Cost(i,j) = 0</code> if
  <code>i = j</code>.  In other words, the cost is 0 for correct classification and
  1 for incorrect classification.</td></tr>
-<tr><td width="28%"><code>obj.Formula</code></td><td width="2%"></td><td width="70%">A model specification given as a string
+<tr><td width="23%"><code>Formula</code></td><td width="2%"></td><td width="75%">A model specification given as a string
  in the form <code>&quot;Y ~ terms&quot;</code> where <code>Y</code> represents the reponse
  variable and <code>terms</code> the predictor variables. The formula can be used
  to specify a subset of variables for training model. For example:
@@ -870,7 +870,7 @@
  for training the model are referenced in the <code>IntMatrix</code> field of the
  <var>obj</var> class object as a matrix containing the column indexes for each
  term including both the predictors and the interactions used.</td></tr>
-<tr><td width="28%"><code>obj.Interactions</code></td><td width="2%"></td><td width="70%">A logical matrix, a positive integer
+<tr><td width="23%"><code>Interactions</code></td><td width="2%"></td><td width="75%">A logical matrix, a positive integer
  scalar, or the string <code>&quot;all&quot;</code> for defining the interactions between
  predictor variables.  When given a logical matrix, it must have the same
  number of columns as <var>X</var> and each row corresponds to a different
@@ -882,19 +882,19 @@
  option.  When <code>&quot;interactions&quot;</code> is specified, only the interaction terms
  appended to <var>X</var> are referenced in the <code>IntMatrix</code> field of the
  <var>obj</var> class object.</td></tr>
-<tr><td width="28%"><code>obj.Knots</code></td><td width="2%"></td><td width="70%">A scalar or a row vector with the same
+<tr><td width="23%"><code>Knots</code></td><td width="2%"></td><td width="75%">A scalar or a row vector with the same
  columns as <var>X</var>.  It defines the knots for fitting a polynomial when
  training the GAM.  As a scalar, it is expanded to a row vector.  The default
  value is 5, hence expanded to <code>ones (1, columns (X)) * 5</code>.  You can
  parse a row vector with different number of knots for each predictor
  variable to be fitted with, although not recommended.</td></tr>
-<tr><td width="28%"><code>obj.Order</code></td><td width="2%"></td><td width="70%">A scalar or a row vector with the same
+<tr><td width="23%"><code>Order</code></td><td width="2%"></td><td width="75%">A scalar or a row vector with the same
  columns as <var>X</var>.  It defines the order of the polynomial when training the
  GAM.  As a scalar, it is expanded to a row vector.  The default values is 3,
  hence expanded to <code>ones (1, columns (X)) * 3</code>.  You can parse a row
  vector with different number of polynomial order for each predictor variable
  to be fitted with, although not recommended.</td></tr>
-<tr><td width="28%"><code>obj.DoF</code></td><td width="2%"></td><td width="70%">A scalar or a row vector with the same
+<tr><td width="23%"><code>DoF</code></td><td width="2%"></td><td width="75%">A scalar or a row vector with the same
  columns as <var>X</var>.  It defines the degrees of freedom for fitting a
  polynomial when training the GAM.  As a scalar, it is expanded to a row
  vector.  The default value is 8, hence expanded to

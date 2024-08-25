@@ -794,17 +794,17 @@
  which can be accessed in the following fields:
 </p>
  <table>
-<thead><tr><th width="32%"><var>Field</var></th><th width="2%"></th><th width="70%"><var>Description</var></th></tr></thead>
-<tr><td width="32%"><code>CVMdl.X</code></td><td width="2%"></td><td width="70%">Unstandardized predictor data, specified as a
+<thead><tr><th width="23%"><var>Field</var></th><th width="2%"></th><th width="75%"><var>Description</var></th></tr></thead>
+<tr><td width="23%"><code>X</code></td><td width="2%"></td><td width="75%">Unstandardized predictor data, specified as a
  numeric matrix.  Each column of <var>X</var> represents one predictor (variable),
  and each row represents one observation.</td></tr>
-<tr><td width="32%"><code>CVMdl.Y</code></td><td width="2%"></td><td width="70%">Class labels, specified as a logical or
+<tr><td width="23%"><code>Y</code></td><td width="2%"></td><td width="75%">Class labels, specified as a logical or
  numeric vector, or cell array of character vectors.  Each value in <var>Y</var> is
  the observed class label for the corresponding row in <var>X</var>.</td></tr>
-<tr><td width="32%"><code>CVMdl.ClassNames</code></td><td width="2%"></td><td width="70%">Names of the classes in the training
+<tr><td width="23%"><code>ClassNames</code></td><td width="2%"></td><td width="75%">Names of the classes in the training
  data <var>Y</var> with duplicates removed, specified as a cell array of character
  vectors.</td></tr>
-<tr><td width="32%"><code>CVMdl.Cost</code></td><td width="2%"></td><td width="70%">Cost of the misclassification of a point,
+<tr><td width="23%"><code>Cost</code></td><td width="2%"></td><td width="75%">Cost of the misclassification of a point,
  specified as a square matrix. <code>Cost(i,j)</code> is the cost of classifying a
  point into class <code>j</code> if its true class is <code>i</code> (that is, the rows
  correspond to the true class and the columns correspond to the predicted
@@ -814,34 +814,34 @@
  <code>Cost(i,j) = 1</code> if <code>i != j</code>, and <code>Cost(i,j) = 0</code> if
  <code>i = j</code>.  In other words, the cost is 0 for correct classification and
  1 for incorrect classification.</td></tr>
-<tr><td width="32%"><code>CVMdl.CrossValidatedModel</code></td><td width="2%"></td><td width="70%">Class of the
+<tr><td width="23%"><code>CrossValidatedModel</code></td><td width="2%"></td><td width="75%">Class of the
  cross-validated model, specified as a character vector. This field
  contains the type of model that was
  used for the training, e.g., <code>&quot;ClassificationKNN&quot;</code>.</td></tr>
-<tr><td width="32%"><code>CVMdl.KFold</code></td><td width="2%"></td><td width="70%">Number of cross-validated folds,
+<tr><td width="23%"><code>KFold</code></td><td width="2%"></td><td width="75%">Number of cross-validated folds,
  specified as a positive interger scalar. Represents how many folds the
  data was divided into for cross-validation purposes.</td></tr>
-<tr><td width="32%"><code>CVMdl.ModelParameters</code></td><td width="2%"></td><td width="70%">Model parameters used during
+<tr><td width="23%"><code>ModelParameters</code></td><td width="2%"></td><td width="75%">Model parameters used during
  training, specified as a structure. This includes any model-specific
  parameters that were configured prior to training, such as
  <code>NumNeighbors</code> or <code>Distance</code> in the case of a KNN model.</td></tr>
-<tr><td width="32%"><code>CVMdl.NumObservations</code></td><td width="2%"></td><td width="70%">Number of observations used in
+<tr><td width="23%"><code>NumObservations</code></td><td width="2%"></td><td width="75%">Number of observations used in
  training the ClassificationKNN model, specified as a positive integer scalar.
  This number can be less than the number of rows in the training data because
  rows containing <code>NaN</code> values are not part of the fit.</td></tr>
-<tr><td width="32%"><code>CVMdl.Partition</code></td><td width="2%"></td><td width="70%">Partition configuration used for
+<tr><td width="23%"><code>Partition</code></td><td width="2%"></td><td width="75%">Partition configuration used for
  cross-validation, specified as a cvpartition object. This field stores the
  cvpartition instance that describes how the data was split into training and
  validation sets.</td></tr>
-<tr><td width="32%"><code>CVMdl.PredictorNames</code></td><td width="2%"></td><td width="70%">Predictor variable names,
+<tr><td width="23%"><code>PredictorNames</code></td><td width="2%"></td><td width="75%">Predictor variable names,
  specified as a cell array of character vectors.  The variable names are in
  the same order in which they appear in the training data <var>X</var>.</td></tr>
-<tr><td width="32%"><code>CVMdl.Prior</code></td><td width="2%"></td><td width="70%">Prior probabilities for each class,
+<tr><td width="23%"><code>Prior</code></td><td width="2%"></td><td width="75%">Prior probabilities for each class,
  specified as a numeric vector.  The order of the elements in <code>Prior</code>
  corresponds to the order of the classes in <code>ClassNames</code>.</td></tr>
-<tr><td width="32%"><code>CVMdl.ResponseName</code></td><td width="2%"></td><td width="70%">Response variable name, specified
+<tr><td width="23%"><code>ResponseName</code></td><td width="2%"></td><td width="75%">Response variable name, specified
  as a character vector.</td></tr>
-<tr><td width="32%"><code>CVMdl.Trained</code></td><td width="2%"></td><td width="70%">Models trained on each fold,
+<tr><td width="23%"><code>Trained</code></td><td width="2%"></td><td width="75%">Models trained on each fold,
  specified as a cell array of models. Each cell contains a model trained on
  the minus-one fold of the data (all but one fold used for training and the
  remaining fold used for validation).</td></tr>

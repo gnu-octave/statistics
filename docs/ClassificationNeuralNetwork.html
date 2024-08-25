@@ -808,82 +808,85 @@
  model, which can be accessed in the following fields:
 </p>
  <table>
-<thead><tr><th width="32%"><var>Field</var></th><th width="2%"></th><th width="70%"><var>Description</var></th></tr></thead>
-<tr><td width="32%"><code>obj.X</code></td><td width="2%"></td><td width="70%">Unstandardized predictor data, specified as a
+<thead><tr><th width="23%"><var>Field</var></th><th width="2%"></th><th width="75%"><var>Description</var></th></tr></thead>
+<tr><td width="23%"><code>X</code></td><td width="2%"></td><td width="75%">Unstandardized predictor data, specified as a
  numeric matrix.  Each column of <var>X</var> represents one predictor (variable),
  and each row represents one observation.</td></tr>
-<tr><td width="32%"><code>obj.Y</code></td><td width="2%"></td><td width="70%">Class labels, specified as a logical or
+<tr><td width="23%"><code>Y</code></td><td width="2%"></td><td width="75%">Class labels, specified as a logical or
  numeric vector, or cell array of character vectors.  Each value in <var>Y</var> is
  the observed class label for the corresponding row in <var>X</var>.</td></tr>
-<tr><td width="32%"><code>obj.NumObservations</code></td><td width="2%"></td><td width="70%">Number of observations used in
+<tr><td width="23%"><code>NumObservations</code></td><td width="2%"></td><td width="75%">Number of observations used in
  training the model, specified as a positive integer scalar. This number can
  be less than the number of rows in the training data because rows containing
  <code>NaN</code> values are not part of the fit.</td></tr>
-<tr><td width="32%"><code>obj.RowsUsed</code></td><td width="2%"></td><td width="70%">Rows of the original training data
+<tr><td width="23%"><code>RowsUsed</code></td><td width="2%"></td><td width="75%">Rows of the original training data
  used in fitting the ClassificationNeuralNetwork model, specified as a
  numerical vector. If you want to use this vector for indexing the training
  data in <var>X</var>, you have to convert it to a logical vector, i.e
  <code>X = obj.X(logical (obj.RowsUsed), :);</code></td></tr>
-<tr><td width="32%"><code>obj.Standardize</code></td><td width="2%"></td><td width="70%">A boolean flag indicating whether
+<tr><td width="23%"><code>Standardize</code></td><td width="2%"></td><td width="75%">A boolean flag indicating whether
  the data in <var>X</var> have been standardized prior to training.</td></tr>
-<tr><td width="32%"><code>obj.Sigma</code></td><td width="2%"></td><td width="70%">Predictor standard deviations, specified
+<tr><td width="23%"><code>Sigma</code></td><td width="2%"></td><td width="75%">Predictor standard deviations, specified
  as a numeric vector of the same length as the columns in <var>X</var>.  If the
  predictor variables have not been standardized, then <code>&quot;obj.Sigma&quot;</code> is
  empty.</td></tr>
-<tr><td width="32%"><code>obj.Mu</code></td><td width="2%"></td><td width="70%">Predictor means, specified as a numeric
+<tr><td width="23%"><code>Mu</code></td><td width="2%"></td><td width="75%">Predictor means, specified as a numeric
  vector of the same length as the columns in <var>X</var>.  If the predictor
  variables have not been standardized, then <code>&quot;obj.Mu&quot;</code> is empty.</td></tr>
-<tr><td width="32%"><code>obj.NumPredictors</code></td><td width="2%"></td><td width="70%">The number of predictors
+<tr><td width="23%"><code>NumPredictors</code></td><td width="2%"></td><td width="75%">The number of predictors
  (variables) in <var>X</var>.</td></tr>
-<tr><td width="32%"><code>obj.PredictorNames</code></td><td width="2%"></td><td width="70%">Predictor variable names,
+<tr><td width="23%"><code>PredictorNames</code></td><td width="2%"></td><td width="75%">Predictor variable names,
  specified as a cell array of character vectors.  The variable names are in
  the same order in which they appear in the training data <var>X</var>.</td></tr>
-<tr><td width="32%"><code>obj.ResponseName</code></td><td width="2%"></td><td width="70%">Response variable name, specified
+<tr><td width="23%"><code>ResponseName</code></td><td width="2%"></td><td width="75%">Response variable name, specified
  as a character vector.</td></tr>
-<tr><td width="32%"><code>obj.ClassNames</code></td><td width="2%"></td><td width="70%">Names of the classes in the class
+<tr><td width="23%"><code>ClassNames</code></td><td width="2%"></td><td width="75%">Names of the classes in the class
  labels, <var>Y</var>, used for fitting the ClassificationNeuralNetwork model.
  <code>ClassNames</code> are of the same type as the class labels in <var>Y</var>.</td></tr>
-<tr><td width="32%"><code>obj.LayerSizes</code></td><td width="2%"></td><td width="70%">Sizes of the fully connected layers
+<tr><td width="23%"><code>LayerSizes</code></td><td width="2%"></td><td width="75%">Sizes of the fully connected layers
  in the neural network model, returned as a positive integer vector. The ith
  element of LayerSizes is the number of outputs in the ith fully connected
  layer of the neural network model. LayerSizes does not include the size of
  the final fully connected layer. This layer always has K outputs, where K
  is the number of classes in Y.</td></tr>
-<tr><td width="32%"><code>obj.Activations</code></td><td width="2%"></td><td width="70%">A character vector specifying the
+<tr><td width="23%"><code>Activations</code></td><td width="2%"></td><td width="75%">A character vector specifying the
  activation function used for the fully connected layers of the neural network
  model.</td></tr>
-<tr><td width="32%"><code>obj.LearningRate</code></td><td width="2%"></td><td width="70%">A positive scalar value defining the
+<tr><td width="23%"><code>LearningRate</code></td><td width="2%"></td><td width="75%">A positive scalar value defining the
  learning rate used by the gradient descend algorithm during training.</td></tr>
-<tr><td width="32%"><code>obj.IterationLimit</code></td><td width="2%"></td><td width="70%">A positive scalar value defining
+<tr><td width="23%"><code>IterationLimit</code></td><td width="2%"></td><td width="75%">A positive scalar value defining
  the number of epochs for training the model.</td></tr>
-<tr><td width="32%"><code>&quot;DisplayInfo&quot;</code></td><td width="2%"></td><td width="70%">A boolean flag indicating whether to
+<tr><td width="23%"><code>DisplayInfo</code></td><td width="2%"></td><td width="75%">A boolean flag indicating whether to
  print information during training.</td></tr>
-<tr><td width="32%"><code>obj.ModelParameters</code></td><td width="2%"></td><td width="70%">A structure containing the
+<tr><td width="23%"><code>ModelParameters</code></td><td width="2%"></td><td width="75%">A structure containing the
  parameters used to train the Neural Network classifier model containing the
  fields <code>LayerWeights</code> and <code>Activations</code> as generated by the
  <code>fcnntrain</code> function.</td></tr>
-<tr><td width="32%"><code>obj.ConvergenceInfo</code></td><td width="2%"></td><td width="70%">A structure containing the
+<tr><td width="23%"><code>ConvergenceInfo</code></td><td width="2%"></td><td width="75%">A structure containing the
  Convergence info of the Neural Network classifier model with the following
  fields:
+
  <table>
-<thead><tr><th width="5%"></th><th width="30%"><var>Value</var></th><th width="75%"><var>Description</var></th></tr></thead>
-<tr><td width="5%"></td><td width="30%"><code>&quot;Accuracy&quot;</code></td><td width="75%">The prediction accuracy at each
+<thead><tr><th width="5%"></th><th width="30%"><var>Fields</var></th><th width="75%"><var>Description</var></th></tr></thead>
+<tr><td width="5%"></td><td width="30%"><code>Accuracy</code></td><td width="75%">The prediction accuracy at each
  iteration during the neural network model&rsquo;s training process.</td></tr>
-<tr><td width="5%"></td><td width="30%"><code>&quot;TrainingLoss&quot;</code></td><td width="75%">The loss value recorded at each
+<tr><td width="5%"></td><td width="30%"><code>TrainingLoss</code></td><td width="75%">The loss value recorded at each
  iteration during the neural network model&rsquo;s training process.</td></tr>
-<tr><td width="5%"></td><td width="30%"><code>&quot;Time&quot;</code></td><td width="75%">The cumulative time taken for all iterations,
+<tr><td width="5%"></td><td width="30%"><code>Time</code></td><td width="75%">The cumulative time taken for all iterations,
  measured in seconds.</td></tr>
 </table></td></tr>
-<tr><td width="32%"><code>obj.Solver</code></td><td width="2%"></td><td width="70%">Solver used to train the neural network
+<tr><td width="23%"><code>Solver</code></td><td width="2%"></td><td width="75%">Solver used to train the neural network
  model, returned as &rsquo;Gradient Search&rsquo;.</td></tr>
-<tr><td width="32%"><code>obj.ScoreTransform</code></td><td width="2%"></td><td width="70%">A function_handle which is used
+<tr><td width="23%"><code>ScoreTransform</code></td><td width="2%"></td><td width="75%">A function_handle which is used
  for transforming the Neural Network prediction score into a posterior
  probability.  By default, it is <code>'none'</code>, in which case the
  <code>predict</code> and <code>resubPredict</code> methods return the prediction scores.</td></tr>
 </table>
 
 <p> <strong>See also: </strong>
-  <a href="fitcnet.html">fitcnet</a>
+  <a href="fitcnet.html">fitcnet</a>, 
+  <a href="fcnntrain.html">fcnntrain</a>, 
+  <a href="fcnnpredict.html">fcnnpredict</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Classification/ClassificationNeuralNetwork.m">ClassificationNeuralNetwork</a>
