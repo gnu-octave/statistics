@@ -118,7 +118,10 @@
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="ClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>ClassificationDiscriminant</small></a></li>
+					<li><a href="ClassificationGAM.html" class="text-decoration-none font-monospace"><small>ClassificationGAM</small></a></li>
 					<li><a href="ClassificationKNN.html" class="text-decoration-none font-monospace"><small>ClassificationKNN</small></a></li>
+					<li><a href="ClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>ClassificationNeuralNetwork</small></a></li>
 					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
 					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
 					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none font-monospace"><small>ConfusionMatrixChart</small></a></li>
@@ -637,6 +640,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="libsvmread.html" class="text-decoration-none font-monospace"><small>libsvmread</small></a></li>
 					<li><a href="libsvmwrite.html" class="text-decoration-none font-monospace"><small>libsvmwrite</small></a></li>
+					<li><a href="loadmodel.html" class="text-decoration-none font-monospace"><small>loadmodel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -648,6 +652,8 @@
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="fcnnpredict.html" class="text-decoration-none font-monospace"><small>fcnnpredict</small></a></li>
+					<li><a href="fcnntrain.html" class="text-decoration-none font-monospace"><small>fcnntrain</small></a></li>
 					<li><a href="hmmestimate.html" class="text-decoration-none font-monospace"><small>hmmestimate</small></a></li>
 					<li><a href="hmmgenerate.html" class="text-decoration-none font-monospace"><small>hmmgenerate</small></a></li>
 					<li><a href="hmmviterbi.html" class="text-decoration-none font-monospace"><small>hmmviterbi</small></a></li>
@@ -664,7 +670,10 @@
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="fitcdiscr.html" class="text-decoration-none font-monospace"><small>fitcdiscr</small></a></li>
+					<li><a href="fitcgam.html" class="text-decoration-none font-monospace"><small>fitcgam</small></a></li>
 					<li><a href="fitcknn.html" class="text-decoration-none font-monospace"><small>fitcknn</small></a></li>
+					<li><a href="fitcnet.html" class="text-decoration-none font-monospace"><small>fitcnet</small></a></li>
 					<li><a href="fitcsvm.html" class="text-decoration-none font-monospace"><small>fitcsvm</small></a></li>
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
@@ -849,7 +858,7 @@
 <dt><u>BurrDistribution:</u> <var>p</var> = <b>icdf</b><i> (<var>pd</var>, <var>p</var>)</i></dt>
 </dl>
 
-<p> Compute the cumulative distribution function (CDF).
+<p> Compute the inverse cumulative distribution function (iCDF).
 </p>
 <div class="ms-5">
 <p> <code><var>p</var> = icdf (<var>pd</var>, <var>x</var>)</code> computes the quantile (the
@@ -879,7 +888,7 @@
 <dt><u>BurrDistribution:</u> <var>p</var> = <b>icdf</b><i> (<var>pd</var>, <var>p</var>)</i></dt>
 </dl>
 
-<p> Compute the cumulative distribution function (CDF).
+<p> Compute the inverse cumulative distribution function (iCDF).
 </p>
 <div class="ms-5">
 <p> <code><var>p</var> = icdf (<var>pd</var>, <var>x</var>)</code> computes the quantile (the
@@ -1334,6 +1343,189 @@
 
 </div>
 
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate a data set of 5000 random samples from a Burr type XII
+ ## distribution with parameters alpha = 1, c = 2, and k = 1.  Fit a Burr type
+ ## XII distribution to this data and plot a PDF of the fitted distribution
+ ## superimposed on a histogram of the data
+
+ pd = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)
+ rand ("seed", 21);
+ data = random (pd, 5000, 1);
+ pd = fitdist (data, "Burr")
+ plot (pd)
+ msg = strcat (["Fitted Burr type XII distribution with"], ...
+                [" alpha = %0.2f, c =  %0.2f, and k = %0.2f"]);
+ title (sprintf (msg, pd.alpha, pd.c, pd.k))
+
+pd =
+  BurrDistribution
+
+  normal distribution
+    alpha = 1
+        c = 2
+        k = 1
+
+pd =
+  BurrDistribution
+
+  normal distribution
+    alpha = 0.943213   [0.920634, 0.966345]
+        c =  2.01899   [1.9726, 2.06648]
+        k = 0.946371   [0.857098, 1.04494]
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/BurrDistribution_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot the PDF of a Burr type XII distribution, with parameters alpha = 1,
+ ## c = 2, and k = 1, truncated at [0, 2] intervals. Generate 10000 random
+ ## samples from this truncated distribution and superimpose a histogram with
+ ## 100 bins scaled accordingly
+
+ pd = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)
+ t = truncate (pd, 0.5, 2.5)
+ rand ("seed", 21);
+ data = random (t, 10000, 1);
+ plot (t)
+ title ("Burr type XII distribution (alpha = 1, c = 2, k = 1) truncated at [0.5, 2.5]")
+ hold on
+ hist (data, 100, 50)
+ hold off
+
+pd =
+  BurrDistribution
+
+  normal distribution
+    alpha = 1
+        c = 2
+        k = 1
+
+t =
+  BurrDistribution
+
+  normal distribution
+    alpha = 1
+        c = 2
+        k = 1
+  Truncated to the interval [0.5, 2.5]
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/BurrDistribution_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 3
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate a data set of 100 random samples from a Burr type XII
+ ## distribution with parameters alpha = 1, c = 2, and k = 1.  Fit a Burr type
+ ## XII  distribution to this data and plot its CDF superimposed over an
+ ## empirical CDF of the data
+
+ pd = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)
+ rand ("seed", 21);
+ data = random (pd, 100, 1);
+ pd = fitdist (data, "Burr")
+ plot (pd, "plottype", "cdf")
+ msg = strcat (["Fitted Burr type XII distribution with"], ...
+                [" alpha = %0.2f, c =  %0.2f, and k = %0.2f"]);
+ title (sprintf (msg, pd.alpha, pd.c, pd.k))
+ legend ({"empirical CDF", "fitted CDF"}, "location", "east")
+
+pd =
+  BurrDistribution
+
+  normal distribution
+    alpha = 1
+        c = 2
+        k = 1
+
+pd =
+  BurrDistribution
+
+  normal distribution
+    alpha = 1.18986   [1.01271, 1.39799]
+        c = 1.91252   [1.62314, 2.25348]
+        k = 1.30385   [0.625566, 2.71757]
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/BurrDistribution_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
             </div>
           </div>
         </div>

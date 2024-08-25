@@ -118,7 +118,10 @@
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="ClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>ClassificationDiscriminant</small></a></li>
+					<li><a href="ClassificationGAM.html" class="text-decoration-none font-monospace"><small>ClassificationGAM</small></a></li>
 					<li><a href="ClassificationKNN.html" class="text-decoration-none font-monospace"><small>ClassificationKNN</small></a></li>
+					<li><a href="ClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>ClassificationNeuralNetwork</small></a></li>
 					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
 					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
 					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none font-monospace"><small>ConfusionMatrixChart</small></a></li>
@@ -637,6 +640,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="libsvmread.html" class="text-decoration-none font-monospace"><small>libsvmread</small></a></li>
 					<li><a href="libsvmwrite.html" class="text-decoration-none font-monospace"><small>libsvmwrite</small></a></li>
+					<li><a href="loadmodel.html" class="text-decoration-none font-monospace"><small>loadmodel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -648,6 +652,8 @@
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="fcnnpredict.html" class="text-decoration-none font-monospace"><small>fcnnpredict</small></a></li>
+					<li><a href="fcnntrain.html" class="text-decoration-none font-monospace"><small>fcnntrain</small></a></li>
 					<li><a href="hmmestimate.html" class="text-decoration-none font-monospace"><small>hmmestimate</small></a></li>
 					<li><a href="hmmgenerate.html" class="text-decoration-none font-monospace"><small>hmmgenerate</small></a></li>
 					<li><a href="hmmviterbi.html" class="text-decoration-none font-monospace"><small>hmmviterbi</small></a></li>
@@ -664,7 +670,10 @@
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="fitcdiscr.html" class="text-decoration-none font-monospace"><small>fitcdiscr</small></a></li>
+					<li><a href="fitcgam.html" class="text-decoration-none font-monospace"><small>fitcgam</small></a></li>
 					<li><a href="fitcknn.html" class="text-decoration-none font-monospace"><small>fitcknn</small></a></li>
+					<li><a href="fitcnet.html" class="text-decoration-none font-monospace"><small>fitcnet</small></a></li>
 					<li><a href="fitcsvm.html" class="text-decoration-none font-monospace"><small>fitcsvm</small></a></li>
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
@@ -775,8 +784,8 @@
 <p> Summary statistics by group.  <code>grpstats</code> computes groupwise summary
  statistics, for data in a matrix <var>x</var>.  <code>grpstats</code> treats NaNs as
  missing values, and removes them.
-</p><div class="ms-5">
-
+</p>
+<div class="ms-5">
 <p> <code><var>means</var> = grpstats (<var>x</var>, <var>group</var>)</code>, when X is a matrix of
  observations, returns the means of each column of <var>x</var> by <var>group</var>.
  <var>group</var> is a grouping variable defined as a categorical variable,
@@ -806,7 +815,6 @@
 <tr><td width="5%"></td><td width="20%">&quot;gname&quot;</td><td width="75%">group name</td></tr>
 </table>
 
-
 <p> <code>[&hellip;] = grpstats (<var>x</var>, <var>group</var>, <var>whichstats</var>,
  <var>alpha</var>)</code> specifies the confidence level as 100(1-ALPHA)% for the &quot;meanci&quot;
  and &quot;predci&quot; options.  Default value for <var>alpha</var> is 0.05.
@@ -820,7 +828,6 @@
  set (gca, &quot;xtick&quot;, 1:n, &quot;xticklabel&quot;, g);
  title (&quot;95% prediction intervals for mean weight by year&quot;)
  </pre></td></tr></table>
-
 
 <p> <strong>See also: </strong>
   <a href="grp2idx.html">grp2idx</a>

@@ -118,7 +118,10 @@
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="ClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>ClassificationDiscriminant</small></a></li>
+					<li><a href="ClassificationGAM.html" class="text-decoration-none font-monospace"><small>ClassificationGAM</small></a></li>
 					<li><a href="ClassificationKNN.html" class="text-decoration-none font-monospace"><small>ClassificationKNN</small></a></li>
+					<li><a href="ClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>ClassificationNeuralNetwork</small></a></li>
 					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
 					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
 					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none font-monospace"><small>ConfusionMatrixChart</small></a></li>
@@ -637,6 +640,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="libsvmread.html" class="text-decoration-none font-monospace"><small>libsvmread</small></a></li>
 					<li><a href="libsvmwrite.html" class="text-decoration-none font-monospace"><small>libsvmwrite</small></a></li>
+					<li><a href="loadmodel.html" class="text-decoration-none font-monospace"><small>loadmodel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -648,6 +652,8 @@
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="fcnnpredict.html" class="text-decoration-none font-monospace"><small>fcnnpredict</small></a></li>
+					<li><a href="fcnntrain.html" class="text-decoration-none font-monospace"><small>fcnntrain</small></a></li>
 					<li><a href="hmmestimate.html" class="text-decoration-none font-monospace"><small>hmmestimate</small></a></li>
 					<li><a href="hmmgenerate.html" class="text-decoration-none font-monospace"><small>hmmgenerate</small></a></li>
 					<li><a href="hmmviterbi.html" class="text-decoration-none font-monospace"><small>hmmviterbi</small></a></li>
@@ -664,7 +670,10 @@
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="fitcdiscr.html" class="text-decoration-none font-monospace"><small>fitcdiscr</small></a></li>
+					<li><a href="fitcgam.html" class="text-decoration-none font-monospace"><small>fitcgam</small></a></li>
 					<li><a href="fitcknn.html" class="text-decoration-none font-monospace"><small>fitcknn</small></a></li>
+					<li><a href="fitcnet.html" class="text-decoration-none font-monospace"><small>fitcnet</small></a></li>
 					<li><a href="fitcsvm.html" class="text-decoration-none font-monospace"><small>fitcsvm</small></a></li>
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
@@ -846,7 +855,7 @@
 <dt><u>BetaDistribution:</u> <var>p</var> = <b>icdf</b><i> (<var>pd</var>, <var>p</var>)</i></dt>
 </dl>
 
-<p> Compute the cumulative distribution function (CDF).
+<p> Compute the inverse cumulative distribution function (iCDF).
 </p>
 <div class="ms-5">
 <p> <code><var>p</var> = icdf (<var>pd</var>, <var>x</var>)</code> computes the quantile (the
@@ -876,7 +885,7 @@
 <dt><u>BetaDistribution:</u> <var>p</var> = <b>icdf</b><i> (<var>pd</var>, <var>p</var>)</i></dt>
 </dl>
 
-<p> Compute the cumulative distribution function (CDF).
+<p> Compute the inverse cumulative distribution function (iCDF).
 </p>
 <div class="ms-5">
 <p> <code><var>p</var> = icdf (<var>pd</var>, <var>x</var>)</code> computes the quantile (the
@@ -1329,6 +1338,236 @@
 
 </div>
 
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate a data set of 5000 random samples from a Beta distribution with
+ ## parameters a = 2 and b = 4.  Fit a Beta distribution to this data and plot
+ ## a PDF of the fitted distribution superimposed on a histogram of the data
+
+ pd = makedist ("Beta", "a", 2, "b", 4)
+ randg ("seed", 21);
+ data = random (pd, 5000, 1);
+ pd = fitdist (data, "Beta")
+ plot (pd)
+ title (sprintf ("Fitted Beta distribution with a = %0.2f and b = %0.2f", ...
+                 pd.a, pd.b))
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 2
+        b = 4
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 1.97369   [1.90215, 2.04792]
+        b = 3.91487   [3.76164, 4.07435]
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/BetaDistribution_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot the PDF of a Beta distribution, with parameters a = 2 and b = 4,
+ ## truncated at [0.1, 0.8] intervals.  Generate 10000 random samples from
+ ## this truncated distribution and superimpose a histogram with 100 bins
+ ## scaled accordingly
+
+ pd = makedist ("Beta", "a", 2, "b", 4)
+ t = truncate (pd, 0.1, 0.8)
+ randg ("seed", 21);
+ data = random (t, 10000, 1);
+ plot (t)
+ title ("Beta distribution (a = 2, b = 4) truncated at [0.1, 0.8]")
+ hold on
+ hist (data, 100, 140)
+ hold off
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 2
+        b = 4
+
+t =
+  BetaDistribution
+
+  beta distribution
+        a = 2
+        b = 4
+  Truncated to the interval [0.1, 0.8]
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/BetaDistribution_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 3
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate a data set of 100 random samples from a Beta distribution with
+ ## parameters a = 2 and b = 4.  Fit a Beta distribution to this data and plot
+ ## its CDF superimposed over an empirical CDF of the data
+
+ pd = makedist ("Beta", "a", 2, "b", 4)
+ randg ("seed", 21);
+ data = random (pd, 100, 1);
+ pd = fitdist (data, "Beta")
+ plot (pd, "plottype", "cdf")
+ title (sprintf ("Fitted Beta distribution with a = %0.2f and b = %0.2f", ...
+                 pd.a, pd.b))
+ legend ({"empirical CDF", "fitted CDF"}, "location", "east")
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 2
+        b = 4
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 1.58844   [1.2184, 2.07086]
+        b =  3.3298   [2.43615, 4.55126]
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/BetaDistribution_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 4
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate a data set of 200 random samples from a Beta distribution with
+ ## parameters a = 2 and b = 4.  Display a probability plot for the Beta
+ ## distribution fit to the data.
+
+ pd = makedist ("Beta", "a", 2, "b", 4)
+ randg ("seed", 21);
+ data = random (pd, 200, 1);
+ pd = fitdist (data, "Beta")
+ plot (pd, "plottype", "probability")
+ title (sprintf ("Probability plot of a fitted Beta distribution with a = %0.2f and b = %0.2f", ...
+                 pd.a, pd.b))
+ legend ({"empirical CDF", "fitted CDF"}, "location", "southeast")
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 2
+        b = 4
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 1.68235   [1.42401, 1.98756]
+        b =  3.7591   [3.1139, 4.53798]
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/BetaDistribution_401.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
             </div>
           </div>
         </div>

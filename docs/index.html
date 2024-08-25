@@ -88,7 +88,7 @@
             </div>
             <div class="col-sm-9 col-md-10">
               <h3 class="d-inline-block mr-2">statistics</h3>
-              <b>1.6.7&nbsp;2024-6-24</b>
+              <b>1.6.8&nbsp;2024-8-25</b>
               <p class="indent">
                 The Statistics package for GNU Octave.
               </p>
@@ -308,11 +308,38 @@ slice sampling of Radford M.</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="ClassificationDiscriminant.html">ClassificationDiscriminant</a>
+                   </code></b>
+                 </td>
+                 <td>Create a ClassificationDiscriminant class object containing a
+discriminant analysis model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ClassificationGAM.html">ClassificationGAM</a>
+                   </code></b>
+                 </td>
+                 <td>Create a ClassificationGAM class object containing a generalized
+additive classification model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="ClassificationKNN.html">ClassificationKNN</a>
                    </code></b>
                  </td>
                  <td>Create a ClassificationKNN class object containing a k-Nearest Neighbor
 classification model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ClassificationNeuralNetwork.html">ClassificationNeuralNetwork</a>
+                   </code></b>
+                 </td>
+                 <td>Create a ClassificationNeuralNetwork class object containing a Neural
+Network classification model.</td>
                </tr>
                <tr>
                  <td>
@@ -3143,6 +3170,22 @@ parameters</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="fcnnpredict.html">fcnnpredict</a>
+                   </code></b>
+                 </td>
+                 <td>Make predictions from a fully connected Neural Network.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fcnntrain.html">fcnntrain</a>
+                   </code></b>
+                 </td>
+                 <td>Train a fully connected Neural Network.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="hmmestimate.html">hmmestimate</a>
                    </code></b>
                  </td>
@@ -3192,10 +3235,34 @@ corresponding DATA which comprise an instance matrtix.</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="fitcdiscr.html">fitcdiscr</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a Linear Discriminant Analysis classification model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitcgam.html">fitcgam</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a Generalized Additive Model (GAM) for binary classification.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="fitcknn.html">fitcknn</a>
                    </code></b>
                  </td>
                  <td>Fit a k-Nearest Neighbor classification model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="fitcnet.html">fitcnet</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a Neural Network classification model.</td>
                </tr>
                <tr>
                  <td>
@@ -3551,6 +3618,14 @@ from a LIBSVM data file and stores them in LABELS and DATA respectively.</td>
                  </td>
                  <td>This function saves the labels and the corresponding instance_matrix in
 a file specified by FILENAME.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="loadmodel.html">loadmodel</a>
+                   </code></b>
+                 </td>
+                 <td>Load a Classification or Regression model from a file.</td>
                </tr>
              </tbody>
            </table>

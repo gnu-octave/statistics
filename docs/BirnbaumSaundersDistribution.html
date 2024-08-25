@@ -118,7 +118,10 @@
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="ClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>ClassificationDiscriminant</small></a></li>
+					<li><a href="ClassificationGAM.html" class="text-decoration-none font-monospace"><small>ClassificationGAM</small></a></li>
 					<li><a href="ClassificationKNN.html" class="text-decoration-none font-monospace"><small>ClassificationKNN</small></a></li>
+					<li><a href="ClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>ClassificationNeuralNetwork</small></a></li>
 					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
 					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
 					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none font-monospace"><small>ConfusionMatrixChart</small></a></li>
@@ -637,6 +640,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="libsvmread.html" class="text-decoration-none font-monospace"><small>libsvmread</small></a></li>
 					<li><a href="libsvmwrite.html" class="text-decoration-none font-monospace"><small>libsvmwrite</small></a></li>
+					<li><a href="loadmodel.html" class="text-decoration-none font-monospace"><small>loadmodel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -648,6 +652,8 @@
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="fcnnpredict.html" class="text-decoration-none font-monospace"><small>fcnnpredict</small></a></li>
+					<li><a href="fcnntrain.html" class="text-decoration-none font-monospace"><small>fcnntrain</small></a></li>
 					<li><a href="hmmestimate.html" class="text-decoration-none font-monospace"><small>hmmestimate</small></a></li>
 					<li><a href="hmmgenerate.html" class="text-decoration-none font-monospace"><small>hmmgenerate</small></a></li>
 					<li><a href="hmmviterbi.html" class="text-decoration-none font-monospace"><small>hmmviterbi</small></a></li>
@@ -664,7 +670,10 @@
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="fitcdiscr.html" class="text-decoration-none font-monospace"><small>fitcdiscr</small></a></li>
+					<li><a href="fitcgam.html" class="text-decoration-none font-monospace"><small>fitcgam</small></a></li>
 					<li><a href="fitcknn.html" class="text-decoration-none font-monospace"><small>fitcknn</small></a></li>
+					<li><a href="fitcnet.html" class="text-decoration-none font-monospace"><small>fitcnet</small></a></li>
 					<li><a href="fitcsvm.html" class="text-decoration-none font-monospace"><small>fitcsvm</small></a></li>
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
@@ -1331,6 +1340,181 @@
 
 </div>
 
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate a data set of 5000 random samples from a Birnbaum-Saunders
+ ## distribution with parameters β = 1 and γ = 0.5.  Fit a Birnbaum-Saunders
+ ## distribution to this data and plot a PDF of the fitted distribution
+ ## superimposed on a histogram of the data
+
+ pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)
+ randg ("seed", 21);
+ data = random (pd, 5000, 1);
+ pd = fitdist (data, "BirnbaumSaunders")
+ plot (pd)
+ msg = "Fitted Birnbaum-Saunders distribution with a = %0.2f and b = %0.2f";
+ title (sprintf (msg, pd.beta, pd.gamma))
+
+pd =
+  BirnbaumSaundersDistribution
+
+  gamma distribution
+     beta =   1
+    gamma = 0.5
+
+pd =
+  BirnbaumSaundersDistribution
+
+  gamma distribution
+     beta =  1.00908   [0.995523, 1.02282]
+    gamma = 0.504102   [0.494318, 0.51408]
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/BirnbaumSaundersDistribution_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot the PDF of a Birnbaum-Saunders distribution, with parameters beta = 1
+ ## and gamma = 0.5, truncated at [0, 2] intervals.  Generate 10000 random
+ ## samples from this truncated distribution and superimpose a histogram with
+ ## 100 bins scaled accordingly
+
+ pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)
+ t = truncate (pd, 0, 2)
+ randg ("seed", 21);
+ data = random (t, 10000, 1);
+ plot (t)
+ title ("Birnbaum-Saunders distribution (a = 2, b = 4) truncated at [0.1, 0.8]")
+ hold on
+ hist (data, 100, 50)
+ hold off
+
+pd =
+  BirnbaumSaundersDistribution
+
+  gamma distribution
+     beta =   1
+    gamma = 0.5
+
+t =
+  BirnbaumSaundersDistribution
+
+  gamma distribution
+     beta =   1
+    gamma = 0.5
+  Truncated to the interval [0, 2]
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/BirnbaumSaundersDistribution_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 3
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate a data set of 100 random samples from a Birnbaum-Saunders
+ ## distribution with parameters β = 1 and γ = 0.5.  Fit a Birnbaum-Saunders
+ ## distribution to this data and plot its CDF superimposed over an empirical
+ ## CDF of the data
+
+ pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)
+ randg ("seed", 21);
+ data = random (pd, 100, 1);
+ pd = fitdist (data, "BirnbaumSaunders")
+ plot (pd, "plottype", "cdf")
+ title (sprintf ("Fitted Beta distribution with a = %0.2f and b = %0.2f", ...
+                 pd.beta, pd.gamma))
+ legend ({"empirical CDF", "fitted CDF"}, "location", "east")
+
+pd =
+  BirnbaumSaundersDistribution
+
+  gamma distribution
+     beta =   1
+    gamma = 0.5
+
+pd =
+  BirnbaumSaundersDistribution
+
+  gamma distribution
+     beta =  0.95916   [0.868955, 1.05873]
+    gamma = 0.521745   [0.454224, 0.599305]
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/BirnbaumSaundersDistribution_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
             </div>
           </div>
         </div>
