@@ -35,22 +35,22 @@ classdef ClassificationPartitionedModel
 ## and various parameters for the cross-validated model,
 ## which can be accessed in the following fields:
 ##
-## @multitable @columnfractions 0.32 0.02 0.7
+## @multitable @columnfractions 0.23 0.02 0.75
 ## @headitem @var{Field} @tab @tab @var{Description}
 ##
-## @item @qcode{CVMdl.X} @tab @tab Unstandardized predictor data, specified as a
+## @item @qcode{X} @tab @tab Unstandardized predictor data, specified as a
 ## numeric matrix.  Each column of @var{X} represents one predictor (variable),
 ## and each row represents one observation.
 ##
-## @item @qcode{CVMdl.Y} @tab @tab Class labels, specified as a logical or
+## @item @qcode{Y} @tab @tab Class labels, specified as a logical or
 ## numeric vector, or cell array of character vectors.  Each value in @var{Y} is
 ## the observed class label for the corresponding row in @var{X}.
 ##
-## @item @qcode{CVMdl.ClassNames} @tab @tab Names of the classes in the training
+## @item @qcode{ClassNames} @tab @tab Names of the classes in the training
 ## data @var{Y} with duplicates removed, specified as a cell array of character
 ## vectors.
 ##
-## @item @qcode{CVMdl.Cost} @tab @tab Cost of the misclassification of a point,
+## @item @qcode{Cost} @tab @tab Cost of the misclassification of a point,
 ## specified as a square matrix. @qcode{Cost(i,j)} is the cost of classifying a
 ## point into class @qcode{j} if its true class is @qcode{i} (that is, the rows
 ## correspond to the true class and the columns correspond to the predicted
@@ -61,42 +61,42 @@ classdef ClassificationPartitionedModel
 ## @qcode{i = j}.  In other words, the cost is 0 for correct classification and
 ## 1 for incorrect classification.
 ##
-## @item @qcode{CVMdl.CrossValidatedModel} @tab @tab Class of the
+## @item @qcode{CrossValidatedModel} @tab @tab Class of the
 ## cross-validated model, specified as a character vector. This field
 ## contains the type of model that was
 ## used for the training, e.g., @qcode{"ClassificationKNN"}.
 ##
-## @item @qcode{CVMdl.KFold} @tab @tab Number of cross-validated folds,
+## @item @qcode{KFold} @tab @tab Number of cross-validated folds,
 ## specified as a positive interger scalar. Represents how many folds the
 ## data was divided into for cross-validation purposes.
 ##
-## @item @qcode{CVMdl.ModelParameters} @tab @tab Model parameters used during
+## @item @qcode{ModelParameters} @tab @tab Model parameters used during
 ## training, specified as a structure. This includes any model-specific
 ## parameters that were configured prior to training, such as
 ## @qcode{NumNeighbors} or @qcode{Distance} in the case of a KNN model.
 ##
-## @item @qcode{CVMdl.NumObservations} @tab @tab Number of observations used in
+## @item @qcode{NumObservations} @tab @tab Number of observations used in
 ## training the ClassificationKNN model, specified as a positive integer scalar.
 ## This number can be less than the number of rows in the training data because
 ## rows containing @qcode{NaN} values are not part of the fit.
 ##
-## @item @qcode{CVMdl.Partition} @tab @tab Partition configuration used for
+## @item @qcode{Partition} @tab @tab Partition configuration used for
 ## cross-validation, specified as a cvpartition object. This field stores the
 ## cvpartition instance that describes how the data was split into training and
 ## validation sets.
 ##
-## @item @qcode{CVMdl.PredictorNames} @tab @tab Predictor variable names,
+## @item @qcode{PredictorNames} @tab @tab Predictor variable names,
 ## specified as a cell array of character vectors.  The variable names are in
 ## the same order in which they appear in the training data @var{X}.
 ##
-## @item @qcode{CVMdl.Prior} @tab @tab Prior probabilities for each class,
+## @item @qcode{Prior} @tab @tab Prior probabilities for each class,
 ## specified as a numeric vector.  The order of the elements in @qcode{Prior}
 ## corresponds to the order of the classes in @qcode{ClassNames}.
 ##
-## @item @qcode{CVMdl.ResponseName} @tab @tab Response variable name, specified
+## @item @qcode{ResponseName} @tab @tab Response variable name, specified
 ## as a character vector.
 ##
-## @item @qcode{CVMdl.Trained} @tab @tab Models trained on each fold,
+## @item @qcode{Trained} @tab @tab Models trained on each fold,
 ## specified as a cell array of models. Each cell contains a model trained on
 ## the minus-one fold of the data (all but one fold used for training and the
 ## remaining fold used for validation).

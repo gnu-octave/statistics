@@ -48,59 +48,59 @@ classdef ClassificationSVM
 ## data and various parameters for the Support Vector machine classification
 ## model, which can be accessed in the following fields:
 ##
-## @multitable @columnfractions 0.28 0.02 0.7
+## @multitable @columnfractions 0.23 0.02 0.75
 ## @headitem @var{Field} @tab @tab @var{Description}
 ##
-## @item @qcode{obj.X} @tab @tab Unstandardized predictor data, specified as a
+## @item @qcode{X} @tab @tab Unstandardized predictor data, specified as a
 ## numeric matrix.  Each column of @var{X} represents one predictor (variable),
 ## and each row represents one observation.
 ##
-## @item @qcode{obj.Y} @tab @tab Class labels, specified as a logical or
+## @item @qcode{Y} @tab @tab Class labels, specified as a logical or
 ## numeric vector, or cell array of character vectors.  Each value in @var{Y} is
 ## the observed class label for the corresponding row in @var{X}.
 ##
-## @item  @qcode{obj.NumObservations} @tab@tab Number of observations used in
+## @item  @qcode{NumObservations} @tab@tab Number of observations used in
 ## training the ClassificationSVM model, specified as a positive integer scalar.
 ## This number can be less than the number of rows in the training data because
 ## rows containing @qcode{NaN} values are not part of the fit.
 ##
-## @item @qcode{obj.RowsUsed} @tab @tab Rows of the original training data
+## @item @qcode{RowsUsed} @tab @tab Rows of the original training data
 ## used in fitting the ClassificationSVM model, specified as a numerical vector.
 ## If you want to use this vector for indexing the training data in @var{X}, you
 ## have to convert it to a logical vector, i.e
 ## @qcode{X = obj.X(logical (obj.RowsUsed), :);}
 ##
-## @item @qcode{obj.Standardize} @tab @tab A boolean flag indicating whether
+## @item @qcode{Standardize} @tab @tab A boolean flag indicating whether
 ## the data in @var{X} have been standardized prior to training.
 ##
-## @item @qcode{obj.Sigma} @tab @tab Predictor standard deviations, specified
+## @item @qcode{Sigma} @tab @tab Predictor standard deviations, specified
 ## as a numeric vector of the same length as the columns in @var{X}.  If the
 ## predictor variables have not been standardized, then @qcode{"obj.Sigma"} is
 ## empty.
 ##
-## @item @qcode{obj.Mu} @tab @tab Predictor means, specified as a numeric
+## @item @qcode{Mu} @tab @tab Predictor means, specified as a numeric
 ## vector of the same length as the columns in @var{X}.  If the predictor
 ## variables have not been standardized, then @qcode{"obj.Mu"} is empty.
 ##
-## @item @qcode{obj.NumPredictors} @tab @tab The number of predictors
+## @item @qcode{NumPredictors} @tab @tab The number of predictors
 ## (variables) in @var{X}.
 ##
-## @item @qcode{obj.PredictorNames} @tab @tab Predictor variable names,
+## @item @qcode{PredictorNames} @tab @tab Predictor variable names,
 ## specified as a cell array of character vectors.  The variable names are in
 ## the same order in which they appear in the training data @var{X}.
 ##
-## @item @qcode{obj.ResponseName} @tab @tab Response variable name, specified
+## @item @qcode{ResponseName} @tab @tab Response variable name, specified
 ## as a character vector.
 ##
-## @item @qcode{obj.ClassNames} @tab @tab Names of the classes in the class
+## @item @qcode{ClassNames} @tab @tab Names of the classes in the class
 ## labels, @var{Y}, used for fitting the SVM model.  @qcode{ClassNames} are of
 ## the same type as the class labels in @var{Y}.
 ##
-## @item @qcode{obj.Prior} @tab @tab Prior probabilities for each class,
+## @item @qcode{Prior} @tab @tab Prior probabilities for each class,
 ## specified as a numeric vector.  The order of the elements in @qcode{Prior}
 ## corresponds to the order of the classes in @qcode{ClassNames}.
 ##
-## @item @qcode{obj.Cost} @tab @tab Cost of the misclassification of a point,
+## @item @qcode{Cost} @tab @tab Cost of the misclassification of a point,
 ## specified as a square matrix. @qcode{Cost(i,j)} is the cost of classifying a
 ## point into class @qcode{j} if its true class is @qcode{i} (that is, the rows
 ## correspond to the true class and the columns correspond to the predicted
@@ -111,7 +111,7 @@ classdef ClassificationSVM
 ## @qcode{i = j}.  In other words, the cost is 0 for correct classification and
 ## 1 for incorrect classification.
 ##
-## @item @qcode{obj.ScoreTransform} @tab @tab A function_handle which is used
+## @item @qcode{ScoreTransform} @tab @tab A function_handle which is used
 ## for transforming the SVM prediction score into a posterior probability.  By
 ## default, it is @qcode{'none'}, in which case the @code{predict} and
 ## @code{resubPredict} methods return the prediction scores.  Use the
@@ -119,33 +119,33 @@ classdef ClassificationSVM
 ## in which case the @code{predict} and @code{resubPredict} methods return the
 ## posterior probabilities.
 ##
-## @item @qcode{obj.ModelParameters} @tab @tab  A structure containing the
+## @item @qcode{ModelParameters} @tab @tab  A structure containing the
 ## parameters used to train the SVM model with the following fields:
 ## @code{SVMtype}, @code{BoxConstraint}, @code{CacheSize}, @code{KernelScale},
 ## @code{KernelOffset}, @code{KernelFunction}, @code{PolynomialOrder},
 ## @code{Nu}, @code{Tolerance}, and @code{Shrinking}.  Type @code{help fitcsvm}
 ## for more info on their usage and default values.
 ##
-## @item @qcode{obj.Alpha} @tab @tab The coefficients of the trained SVM
+## @item @qcode{Alpha} @tab @tab The coefficients of the trained SVM
 ## classifier specified as an @math{sx1} numeric vector, where @math{s} is the
 ## number of support vectors equal to @qcode{sum (obj.IsSupportVector)}.  If the
 ## SVM classifier was trained with a @qcode{'linear'} kernel function, then
 ## @qcode{obj.Alpha} is left empty.
 ##
-## @item @qcode{obj.Beta} @tab @tab The linear predictor coefficients specified
+## @item @qcode{Beta} @tab @tab The linear predictor coefficients specified
 ## as an @math{sx1} numeric vector, where @math{s} is the number of support
 ## vectors equal to @qcode{sum (obj.IsSupportVector)}.  If the SVM classifier
 ## was trained with a kernel function other than @qcode{'linear'}, then
 ## @qcode{obj.Beta} is left empty.
 ##
-## @item @qcode{obj.Bias} @tab @tab The bias term specified as a scalar.
+## @item @qcode{Bias} @tab @tab The bias term specified as a scalar.
 ##
-## @item @qcode{obj.IsSupportVector} @tab @tab Support vector indicator,
+## @item @qcode{IsSupportVector} @tab @tab Support vector indicator,
 ## specified as an @math{Nx1} logical vector that flags whether a corresponding
 ## observation in the predictor data matrix is a Support Vector.  @math{N} is
 ## the number of observations in the training data (see @code{NumObservations}).
 ##
-## @item @qcode{obj.SupportVectorLabels} @tab @tab The support vector class
+## @item @qcode{SupportVectorLabels} @tab @tab The support vector class
 ## labels specified as an @math{sx1} numeric vector, where @math{s} is the
 ## number of support vectors equal to @qcode{sum (obj.IsSupportVector)}.  A
 ## value of +1 in @code{SupportVectorLabels} indicates that the corresponding
@@ -153,7 +153,7 @@ classdef ClassificationSVM
 ## value of -1 indicates that the corresponding support vector belongs to the
 ## negative class @qcode{(ClassNames@{1@})}.
 ##
-## @item @qcode{obj.SupportVectors} @tab @tab The support vectors of the
+## @item @qcode{SupportVectors} @tab @tab The support vectors of the
 ## trained SVM classifier specified an @math{sxp} numeric matrix, where @math{s}
 ## is the number of support vectors equal to @qcode{sum (obj.IsSupportVector)},
 ## and @math{p} is the number of predictor variables in the predictor data.

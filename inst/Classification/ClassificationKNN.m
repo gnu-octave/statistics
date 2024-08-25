@@ -48,55 +48,55 @@ classdef ClassificationKNN
 ## data and various parameters for the k-Nearest Neighbor classification model,
 ## which can be accessed in the following fields:
 ##
-## @multitable @columnfractions 0.28 0.02 0.7
+## @multitable @columnfractions 0.23 0.02 0.75
 ## @headitem @var{Field} @tab @tab @var{Description}
 ##
-## @item @qcode{obj.X} @tab @tab Unstandardized predictor data, specified as a
+## @item @qcode{X} @tab @tab Unstandardized predictor data, specified as a
 ## numeric matrix.  Each column of @var{X} represents one predictor (variable),
 ## and each row represents one observation.
 ##
-## @item @qcode{obj.Y} @tab @tab Class labels, specified as a logical or
+## @item @qcode{Y} @tab @tab Class labels, specified as a logical or
 ## numeric vector, or cell array of character vectors.  Each value in @var{Y} is
 ## the observed class label for the corresponding row in @var{X}.
 ##
-## @item @qcode{obj.NumObservations} @tab @tab Number of observations used in
+## @item @qcode{NumObservations} @tab @tab Number of observations used in
 ## training the ClassificationKNN model, specified as a positive integer scalar.
 ## This number can be less than the number of rows in the training data because
 ## rows containing @qcode{NaN} values are not part of the fit.
 ##
-## @item @qcode{obj.RowsUsed} @tab @tab Rows of the original training data
+## @item @qcode{RowsUsed} @tab @tab Rows of the original training data
 ## used in fitting the ClassificationKNN model, specified as a numerical vector.
 ## If you want to use this vector for indexing the training data in @var{X}, you
 ## have to convert it to a logical vector, i.e
 ## @qcode{X = obj.X(logical (obj.RowsUsed), :);}
 ##
-## @item @qcode{obj.Standardize} @tab @tab A boolean flag indicating whether
+## @item @qcode{Standardize} @tab @tab A boolean flag indicating whether
 ## the data in @var{X} have been standardized prior to training.
 ##
-## @item @qcode{obj.Sigma} @tab @tab Predictor standard deviations, specified
+## @item @qcode{Sigma} @tab @tab Predictor standard deviations, specified
 ## as a numeric vector of the same length as the columns in @var{X}.  If the
 ## predictor variables have not been standardized, then @qcode{"obj.Sigma"} is
 ## empty.
 ##
-## @item @qcode{obj.Mu} @tab @tab Predictor means, specified as a numeric
+## @item @qcode{Mu} @tab @tab Predictor means, specified as a numeric
 ## vector of the same length as the columns in @var{X}.  If the predictor
 ## variables have not been standardized, then @qcode{"obj.Mu"} is empty.
 ##
-## @item @qcode{obj.NumPredictors} @tab @tab The number of predictors
+## @item @qcode{NumPredictors} @tab @tab The number of predictors
 ## (variables) in @var{X}.
 ##
-## @item @qcode{obj.PredictorNames} @tab @tab Predictor variable names,
+## @item @qcode{PredictorNames} @tab @tab Predictor variable names,
 ## specified as a cell array of character vectors.  The variable names are in
 ## the same order in which they appear in the training data @var{X}.
 ##
-## @item @qcode{obj.ResponseName} @tab @tab Response variable name, specified
+## @item @qcode{ResponseName} @tab @tab Response variable name, specified
 ## as a character vector.
 ##
-## @item @qcode{obj.ClassNames} @tab @tab Names of the classes in the training
+## @item @qcode{ClassNames} @tab @tab Names of the classes in the training
 ## data @var{Y} with duplicates removed, specified as a cell array of character
 ## vectors.
 ##
-## @item @qcode{obj.BreakTies} @tab @tab Tie-breaking algorithm used by predict
+## @item @qcode{BreakTies} @tab @tab Tie-breaking algorithm used by predict
 ## when multiple classes have the same smallest cost, specified as one of the
 ## following character arrays: @qcode{"smallest"} (default), which favors the
 ## class with the smallest index among the tied groups, i.e. the one that
@@ -105,11 +105,11 @@ classdef ClassificationKNN
 ## with the closest member point according to the distance metric used.
 ## @qcode{"random"}, which randomly picks one class among the tied groups.
 ##
-## @item @qcode{obj.Prior} @tab @tab Prior probabilities for each class,
+## @item @qcode{Prior} @tab @tab Prior probabilities for each class,
 ## specified as a numeric vector.  The order of the elements in @qcode{Prior}
 ## corresponds to the order of the classes in @qcode{ClassNames}.
 ##
-## @item @qcode{obj.Cost} @tab @tab Cost of the misclassification of a point,
+## @item @qcode{Cost} @tab @tab Cost of the misclassification of a point,
 ## specified as a square matrix. @qcode{Cost(i,j)} is the cost of classifying a
 ## point into class @qcode{j} if its true class is @qcode{i} (that is, the rows
 ## correspond to the true class and the columns correspond to the predicted
@@ -120,26 +120,26 @@ classdef ClassificationKNN
 ## @qcode{i = j}.  In other words, the cost is 0 for correct classification and
 ## 1 for incorrect classification.
 ##
-## @item @qcode{obj.ScoreTransform} @tab @tab A function_handle which is used
+## @item @qcode{ScoreTransform} @tab @tab A function_handle which is used
 ## for transforming the kNN prediction score into a posterior probability.  By
 ## default, it is @qcode{'none'}, in which case the @code{predict} and
 ## @code{resubPredict} methods return the prediction scores.
 ##
-## @item @qcode{obj.NumNeighbors} @tab @tab Number of nearest neighbors in
+## @item @qcode{NumNeighbors} @tab @tab Number of nearest neighbors in
 ## @var{X} used to classify each point during prediction, specified as a
 ## positive integer value.
 ##
-## @item @qcode{obj.Distance} @tab @tab Distance metric, specified as a
+## @item @qcode{Distance} @tab @tab Distance metric, specified as a
 ## character vector.  The allowable distance metric names depend on the choice
 ## of the neighbor-searcher method.  See the available distance metrics in
 ## @code{knnseaarch} for more info.
 ##
-## @item @qcode{obj.DistanceWeight} @tab @tab Distance weighting function,
+## @item @qcode{DistanceWeight} @tab @tab Distance weighting function,
 ## specified as a function handle, which accepts a matrix of nonnegative
 ## distances, and returns a matrix the same size containing nonnegative distance
 ## weights.
 ##
-## @item @qcode{obj.DistParameter} @tab @tab Parameter for the distance
+## @item @qcode{DistParameter} @tab @tab Parameter for the distance
 ## metric, specified either as a positive definite covariance matrix (when the
 ## distance metric is @qcode{"mahalanobis"}, or a positive scalar as the
 ## Minkowski distance exponent (when the distance metric is @qcode{"minkowski"},
@@ -147,19 +147,19 @@ classdef ClassificationKNN
 ## columns of @var{X} (when the distance metric is @qcode{"seuclidean"}.  For
 ## any other distance metric, the value of @qcode{DistParameter} is empty.
 ##
-## @item @qcode{obj.NSMethod} @tab @tab Nearest neighbor search method,
+## @item @qcode{NSMethod} @tab @tab Nearest neighbor search method,
 ## specified as either @qcode{"kdtree"}, which creates and uses a Kd-tree to
 ## find nearest neighbors, or @qcode{"exhaustive"}, which uses the exhaustive
 ## search algorithm by computing the distance values from all points in @var{X}
 ## to find nearest neighbors.
 ##
-## @item @qcode{obj.IncludeTies} @tab @tab A boolean flag indicating whether
+## @item @qcode{IncludeTies} @tab @tab A boolean flag indicating whether
 ## prediction includes all the neighbors whose distance values are equal to the
 ## @math{k^th} smallest distance.  If @qcode{IncludeTies} is @qcode{true},
 ## prediction includes all of these neighbors.  Otherwise, prediction uses
 ## exactly @math{k} neighbors.
 ##
-## @item @qcode{obj.BucketSize} @tab @tab Maximum number of data points in the
+## @item @qcode{BucketSize} @tab @tab Maximum number of data points in the
 ## leaf node of the Kd-tree, specified as positive integer value. This argument
 ## is meaningful only when @qcode{NSMethod} is @qcode{"kdtree"}.
 ##

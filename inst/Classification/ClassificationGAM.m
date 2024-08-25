@@ -49,57 +49,57 @@ classdef ClassificationGAM
 ## data and various parameters for the Generalized Additive Model (GAM) for
 ## classification, which can be accessed in the following fields:
 ##
-## @multitable @columnfractions 0.28 0.02 0.7
+## @multitable @columnfractions 0.23 0.02 0.75
 ## @headitem @var{Field} @tab @tab @var{Description}
 ##
-## @item @qcode{obj.X} @tab @tab Predictor data, specified as a
+## @item @qcode{X} @tab @tab Predictor data, specified as a
 ## numeric matrix. Each column of @var{X} represents one predictor (variable),
 ## and each row represents one observation.
 ##
-## @item @qcode{obj.Y} @tab @tab Class labels, specified as numeric vector
+## @item @qcode{Y} @tab @tab Class labels, specified as numeric vector
 ## of 0's and 1's. Each value in @var{Y} is the observed class
 ## label for the corresponding row in @var{X}.
 ##
-## @item @qcode{obj.BaseModel} @tab @tab A structure containing the parameters
+## @item @qcode{BaseModel} @tab @tab A structure containing the parameters
 ## of the base model without any interaction terms. The base model represents
 ## the generalized additive model (GAM) with only the main effects (predictor
 ## terms) included.
 ##
-## @item @qcode{obj.ModelwInt} @tab @tab A structure containing the parameters
+## @item @qcode{ModelwInt} @tab @tab A structure containing the parameters
 ## of the model that includes interaction terms. This model extends the base
 ## model by adding interaction terms between predictors, as specified by the
 ## @qcode{Interactions} property.
 ##
-## @item @qcode{obj.IntMatrix} @tab @tab A logical matrix or a matrix of
+## @item @qcode{IntMatrix} @tab @tab A logical matrix or a matrix of
 ## column indices that describes the interaction terms applied to the predictor
 ## data.
 ##
-## @item @qcode{obj.NumObservations} @tab @tab Number of observations used in
+## @item @qcode{NumObservations} @tab @tab Number of observations used in
 ## training the ClassificationGAM model, specified as a positive integer scalar.
 ## This number can be less than the number of rows in the training data because
 ## rows containing @qcode{NaN} values are not part of the fit.
 ##
-## @item @qcode{obj.RowsUsed} @tab @tab Rows of the original training data
+## @item @qcode{RowsUsed} @tab @tab Rows of the original training data
 ## used in fitting the ClassificationGAM model, specified as a numerical vector.
 ## If you want to use this vector for indexing the training data in @var{X}, you
 ## have to convert it to a logical vector, i.e
 ## @qcode{X = obj.X(logical (obj.RowsUsed), :);}
 ##
-## @item @qcode{obj.NumPredictors} @tab @tab The number of predictors
+## @item @qcode{NumPredictors} @tab @tab The number of predictors
 ## (variables) in @var{X}.
 ##
-## @item @qcode{obj.PredictorNames} @tab @tab Predictor variable names,
+## @item @qcode{PredictorNames} @tab @tab Predictor variable names,
 ## specified as a cell array of character vectors. The variable names are in
 ## the same order in which they appear in the training data @var{X}.
 ##
-## @item @qcode{obj.ResponseName} @tab @tab Response variable name, specified
+## @item @qcode{ResponseName} @tab @tab Response variable name, specified
 ## as a character vector.
 ##
-## @item @qcode{obj.ClassNames} @tab @tab Names of the classes in the training
+## @item @qcode{ClassNames} @tab @tab Names of the classes in the training
 ## data @var{Y} with duplicates removed, specified as a cell array of character
 ## vectors.
 ##
-## @item @qcode{obj.Cost} @tab @tab Cost of the misclassification of a point,
+## @item @qcode{Cost} @tab @tab Cost of the misclassification of a point,
 ## specified as a square matrix. @qcode{Cost(i,j)} is the cost of classifying a
 ## point into class @qcode{j} if its true class is @qcode{i} (that is, the rows
 ## correspond to the true class and the columns correspond to the predicted
@@ -110,7 +110,7 @@ classdef ClassificationGAM
 ## @qcode{i = j}.  In other words, the cost is 0 for correct classification and
 ## 1 for incorrect classification.
 ##
-## @item @qcode{obj.Formula} @tab @tab A model specification given as a string
+## @item @qcode{Formula} @tab @tab A model specification given as a string
 ## in the form @qcode{"Y ~ terms"} where @qcode{Y} represents the reponse
 ## variable and @qcode{terms} the predictor variables. The formula can be used
 ## to specify a subset of variables for training model. For example:
@@ -125,7 +125,7 @@ classdef ClassificationGAM
 ## @var{obj} class object as a matrix containing the column indexes for each
 ## term including both the predictors and the interactions used.
 ##
-## @item @qcode{obj.Interactions} @tab @tab A logical matrix, a positive integer
+## @item @qcode{Interactions} @tab @tab A logical matrix, a positive integer
 ## scalar, or the string @qcode{"all"} for defining the interactions between
 ## predictor variables.  When given a logical matrix, it must have the same
 ## number of columns as @var{X} and each row corresponds to a different
@@ -138,21 +138,21 @@ classdef ClassificationGAM
 ## appended to @var{X} are referenced in the @qcode{IntMatrix} field of the
 ## @var{obj} class object.
 ##
-## @item @qcode{obj.Knots} @tab @tab A scalar or a row vector with the same
+## @item @qcode{Knots} @tab @tab A scalar or a row vector with the same
 ## columns as @var{X}.  It defines the knots for fitting a polynomial when
 ## training the GAM.  As a scalar, it is expanded to a row vector.  The default
 ## value is 5, hence expanded to @qcode{ones (1, columns (X)) * 5}.  You can
 ## parse a row vector with different number of knots for each predictor
 ## variable to be fitted with, although not recommended.
 ##
-## @item @qcode{obj.Order} @tab @tab A scalar or a row vector with the same
+## @item @qcode{Order} @tab @tab A scalar or a row vector with the same
 ## columns as @var{X}.  It defines the order of the polynomial when training the
 ## GAM.  As a scalar, it is expanded to a row vector.  The default values is 3,
 ## hence expanded to @qcode{ones (1, columns (X)) * 3}.  You can parse a row
 ## vector with different number of polynomial order for each predictor variable
 ## to be fitted with, although not recommended.
 ##
-## @item @qcode{obj.DoF} @tab @tab A scalar or a row vector with the same
+## @item @qcode{DoF} @tab @tab A scalar or a row vector with the same
 ## columns as @var{X}.  It defines the degrees of freedom for fitting a
 ## polynomial when training the GAM.  As a scalar, it is expanded to a row
 ## vector.  The default value is 8, hence expanded to

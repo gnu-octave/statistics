@@ -48,41 +48,41 @@ classdef ClassificationDiscriminant
 ## training data and various parameters for the discriminant analysis model,
 ## which can be accessed in the following fields:
 ##
-## @multitable @columnfractions 0.28 0.02 0.7
+## @multitable @columnfractions 0.23 0.02 0.75
 ## @headitem @var{Field} @tab @tab @var{Description}
 ##
-## @item @qcode{obj.X} @tab @tab Unstandardized predictor data, specified as a
+## @item @qcode{X} @tab @tab Unstandardized predictor data, specified as a
 ## numeric matrix.  Each column of @var{X} represents one predictor (variable),
 ## and each row represents one observation.
 ##
-## @item @qcode{obj.Y} @tab @tab Class labels, specified as a logical,
+## @item @qcode{Y} @tab @tab Class labels, specified as a logical,
 ## numeric vector, or cell array of character vectors. Each value in @var{Y}
 ## is the observed class label for the corresponding row in @var{X}.
 ##
-## @item @qcode{obj.NumObservations} @tab @tab Number of observations used in
+## @item @qcode{NumObservations} @tab @tab Number of observations used in
 ## training the ClassificationDiscriminant model, specified as a positive
 ## integer scalar.
 ##
-## @item @qcode{obj.RowsUsed} @tab @tab Rows of the original training data
+## @item @qcode{RowsUsed} @tab @tab Rows of the original training data
 ## used in fitting the ClassificationDiscriminant model, specified as a
 ## numerical vector.
 ##
-## @item @qcode{obj.PredictorNames} @tab @tab Predictor variable names,
+## @item @qcode{PredictorNames} @tab @tab Predictor variable names,
 ## specified as a cell array of character vectors. The variable names are in
 ## the same order in which they appear in the training data @var{X}.
 ##
-## @item @qcode{obj.ResponseName} @tab @tab Response variable name, specified
+## @item @qcode{ResponseName} @tab @tab Response variable name, specified
 ## as a character vector.
 ##
-## @item @qcode{obj.ClassNames} @tab @tab Names of the classes in the training
+## @item @qcode{ClassNames} @tab @tab Names of the classes in the training
 ## data @var{Y} with duplicates removed, specified as a cell array of character
 ## vectors.
 ##
-## @item @qcode{obj.Prior} @tab @tab Prior probabilities for each class,
+## @item @qcode{Prior} @tab @tab Prior probabilities for each class,
 ## specified as a numeric vector.  The order of the elements in @qcode{Prior}
 ## corresponds to the order of the classes in @qcode{ClassNames}.
 ##
-## @item @qcode{obj.Cost} @tab @tab Cost of the misclassification of a point,
+## @item @qcode{Cost} @tab @tab Cost of the misclassification of a point,
 ## specified as a square matrix. @qcode{Cost(i,j)} is the cost of classifying a
 ## point into class @qcode{j} if its true class is @qcode{i} (that is, the rows
 ## correspond to the true class and the columns correspond to the predicted
@@ -93,34 +93,34 @@ classdef ClassificationDiscriminant
 ## @qcode{i = j}.  In other words, the cost is 0 for correct classification and
 ## 1 for incorrect classification.
 ##
-## @item @qcode{obj.Sigma} @tab @tab Within-class covariance matrix, specified
+## @item @qcode{Sigma} @tab @tab Within-class covariance matrix, specified
 ## as a numeric matrix. For 'linear' discriminant type matrix is of size
 ## @math{pxp}, where p is the number of predictors.
 ##
-## @item @qcode{obj.Mu} @tab @tab Class means, specified as a @math{Kxp}
+## @item @qcode{Mu} @tab @tab Class means, specified as a @math{Kxp}
 ## real matrix. K is the number of classes, and p is the number of
 ## predictors.
 ##
-## @item @qcode{obj.Coeffs} @tab @tab Coefficient matrices, specified as a
+## @item @qcode{Coeffs} @tab @tab Coefficient matrices, specified as a
 ## struct array.
 ##
-## @item @qcode{obj.Delta} @tab @tab Threshold for linear discriminant model,
+## @item @qcode{Delta} @tab @tab Threshold for linear discriminant model,
 ## specified as a numeric scalar.
 ##
-## @item @qcode{obj.DiscrimType} @tab @tab Discriminant type, specified as a
+## @item @qcode{DiscrimType} @tab @tab Discriminant type, specified as a
 ## character vector.
 ##
-## @item @qcode{obj.Gamma} @tab @tab Gamma regularization parameter, specified
+## @item @qcode{Gamma} @tab @tab Gamma regularization parameter, specified
 ## as a numeric scalar.
 ##
-## @item @qcode{obj.MinGamma} @tab @tab Minimum value of Gamma so that the
+## @item @qcode{MinGamma} @tab @tab Minimum value of Gamma so that the
 ## correlation matrix is invertible, specified as nonnegative scalar.
 ##
-## @item @qcode{obj.LogDetSigma} @tab @tab Logarithm of the determinant of the
+## @item @qcode{LogDetSigma} @tab @tab Logarithm of the determinant of the
 ## within-class covariance matrix. For linear discriminant analysis it is
 ## specified as a numeric scalar.
 ##
-## @item @qcode{obj.XCentered} @tab @tab X data with class means
+## @item @qcode{XCentered} @tab @tab X data with class means
 ## subtracted, returned as a real matrix.
 ##
 ## @end multitable
