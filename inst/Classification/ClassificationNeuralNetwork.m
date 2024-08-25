@@ -113,7 +113,7 @@ classdef ClassificationNeuralNetwork
 ## @item @qcode{obj.IterationLimit} @tab @tab A positive scalar value defining
 ## the number of epochs for training the model.
 ##
-## @item @qcode{"DisplayInfo"} @tab @tab A boolean flag indicating whether to
+## @item @qcode{obj.DisplayInfo} @tab @tab A boolean flag indicating whether to
 ## print information during training.
 ##
 ## @item @qcode{obj.ModelParameters} @tab @tab A structure containing the
@@ -124,6 +124,7 @@ classdef ClassificationNeuralNetwork
 ## @item @qcode{obj.ConvergenceInfo} @tab @tab A structure containing the
 ## Convergence info of the Neural Network classifier model with the following
 ## fields:
+##
 ## @multitable @columnfractions 0.05 0.30 0.75
 ## @headitem @tab @var{Value} @tab @var{Description}
 ## @item @tab @qcode{"Accuracy"} @tab The prediction accuracy at each
@@ -144,7 +145,7 @@ classdef ClassificationNeuralNetwork
 ##
 ## @end multitable
 ##
-## @seealso{fitcnet}
+## @seealso{fitcnet, fcnntrain, fcnnpredict}
 ## @end deftypefn
 
   properties (Access = public)

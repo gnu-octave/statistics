@@ -126,26 +126,26 @@ classdef ClassificationSVM
 ## @code{Nu}, @code{Tolerance}, and @code{Shrinking}.  Type @code{help fitcsvm}
 ## for more info on their usage and default values.
 ##
-## @item @tab @qcode{obj.Alpha} @tab The coefficients of the trained SVM
+## @item @qcode{obj.Alpha} @tab @tab The coefficients of the trained SVM
 ## classifier specified as an @math{sx1} numeric vector, where @math{s} is the
 ## number of support vectors equal to @qcode{sum (obj.IsSupportVector)}.  If the
 ## SVM classifier was trained with a @qcode{'linear'} kernel function, then
 ## @qcode{obj.Alpha} is left empty.
 ##
-## @item @tab @qcode{obj.Beta} @tab The linear predictor coefficients specified
+## @item @qcode{obj.Beta} @tab @tab The linear predictor coefficients specified
 ## as an @math{sx1} numeric vector, where @math{s} is the number of support
 ## vectors equal to @qcode{sum (obj.IsSupportVector)}.  If the SVM classifier
 ## was trained with a kernel function other than @qcode{'linear'}, then
 ## @qcode{obj.Beta} is left empty.
 ##
-## @item @tab @qcode{obj.Bias} @tab The bias term specified as a scalar.
+## @item @qcode{obj.Bias} @tab @tab The bias term specified as a scalar.
 ##
-## @item @tab @qcode{obj.IsSupportVector} @tab Support vector indicator,
+## @item @qcode{obj.IsSupportVector} @tab @tab Support vector indicator,
 ## specified as an @math{Nx1} logical vector that flags whether a corresponding
 ## observation in the predictor data matrix is a Support Vector.  @math{N} is
 ## the number of observations in the training data (see @code{NumObservations}).
 ##
-## @item @tab @qcode{obj.SupportVectorLabels} @tab The support vector class
+## @item @qcode{obj.SupportVectorLabels} @tab @tab The support vector class
 ## labels specified as an @math{sx1} numeric vector, where @math{s} is the
 ## number of support vectors equal to @qcode{sum (obj.IsSupportVector)}.  A
 ## value of +1 in @code{SupportVectorLabels} indicates that the corresponding
@@ -153,7 +153,7 @@ classdef ClassificationSVM
 ## value of -1 indicates that the corresponding support vector belongs to the
 ## negative class @qcode{(ClassNames@{1@})}.
 ##
-## @item @tab @qcode{obj.SupportVectors} @tab The support vectors of the
+## @item @qcode{obj.SupportVectors} @tab @tab The support vectors of the
 ## trained SVM classifier specified an @math{sxp} numeric matrix, where @math{s}
 ## is the number of support vectors equal to @qcode{sum (obj.IsSupportVector)},
 ## and @math{p} is the number of predictor variables in the predictor data.
