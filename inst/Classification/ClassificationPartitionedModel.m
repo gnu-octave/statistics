@@ -301,8 +301,8 @@ classdef ClassificationPartitionedModel
           ## List of acceptable parameters for fitcnet
           NNparams = {'PredictorNames', 'ResponseName', 'ClassNames', ...
                       'ScoreTransform', 'Standardize', 'LayerSizes', ...
-                      'Activations', 'LearningRate', 'IterationLimit', ...
-                      'DisplayInfo'};
+                      'Activations', 'OutputLayerActivation', ...
+                      'LearningRate', 'IterationLimit', 'DisplayInfo'};
           ## Set parameters
           for i = 1:numel (NNparams)
             paramName = NNparams{i};
@@ -320,8 +320,8 @@ classdef ClassificationPartitionedModel
 
           ## Store ModelParameters to ClassificationPartitionedModel object
           params = struct();
-          paramList = {'LayerSizes', 'Activations', 'LearningRate', ...
-                       'IterationLimit', 'Solver'};
+          paramList = {'LayerSizes', 'Activations', 'OutputLayerActivation', ...
+                       'LearningRate', 'IterationLimit', 'Solver'};
           for i = 1:numel (paramList)
             paramName = paramList{i};
             if (isprop (Mdl, paramName))
@@ -414,8 +414,8 @@ classdef ClassificationPartitionedModel
       no_cost = any (strcmp (this.CrossValidatedModel, no_cost_models));
       if (no_cost && nargout > 2)
         error (strcat (["ClassificationPartitionedModel.kfoldPredict:"], ...
-                       [" 'Cost' output is not supported for"], ...
-                       [" ClassificationSVM cross validated models."]));
+                       [" 'Cost' output is not supported for %s cross"], ...
+                       [" validated models."]), this.CrossValidatedModel);
       endif
 
       ## Initialize the label vector based on the type of Y
@@ -693,3 +693,5 @@ endclassdef
 ## Test input validation for kfoldPredict
 %!error<ClassificationPartitionedModel.kfoldPredict: 'Cost' output is not supported for ClassificationSVM cross validated models.> ...
 %! [label, score, cost] = kfoldPredict (crossval (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1))))
+%!error<ClassificationPartitionedModel.kfoldPredict: 'Cost' output is not supported for ClassificationNeuralNetwork cross validated models.> ...
+%! [label, score, cost] = kfoldPredict (crossval (ClassificationNeuralNetwork (ones (40,2), randi ([1, 2], 40, 1))))

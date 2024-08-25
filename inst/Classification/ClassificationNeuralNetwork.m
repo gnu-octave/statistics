@@ -103,9 +103,12 @@ classdef ClassificationNeuralNetwork
 ## the final fully connected layer. This layer always has K outputs, where K
 ## is the number of classes in Y.
 ##
-## @item @qcode{Activations} @tab @tab  A character vector specifying the
-## activation function used for the fully connected layers of the neural network
-## model.
+## @item @qcode{Activations} @tab @tab  A character vector or a cell array of
+## character vector specifying the activation functions used in the hidden
+## layers of the neural network.
+##
+## @item @qcode{OutputLayerActivation} @tab @tab  A character vector specifying
+## the activation function of the output layer the neural network.
 ##
 ## @item @qcode{LearningRate} @tab @tab A positive scalar value defining the
 ## learning rate used by the gradient descend algorithm during training.
@@ -167,7 +170,8 @@ classdef ClassificationNeuralNetwork
     ScoreTransform        = [];  # Transformation for classification scores
 
     LayerSizes            = [];  # Size of fully connected layers
-    Activations           = [];  # Activation function for fully connected layer
+    Activations           = [];  # Activation functions for hidden layers
+    OutputLayerActivation = [];  # Activation function for output layer
     LearningRate          = [];  # Learning rate for gradient descend
     IterationLimit        = [];  # Number of training epochs
 
@@ -207,12 +211,16 @@ classdef ClassificationNeuralNetwork
       ClassNames              = [];
       LayerSizes              = 10;
       Activations             = 'sigmoid';
+      OutputLayerActivation   = 'sigmoid';
       LearningRate            = 0.01;
-      IterationLimit          = 100;
+      IterationLimit          = 1000;
       DisplayInfo             = false;
       this.ScoreTransform     = 'none';
       this.Solver = "Gradient Descend";
 
+      ## Supported activation functions
+      acList = {"linear", "sigmoid", "relu", "tanh", "softmax", ...
+                          "lrelu", "prelu", "elu", "gelu"};
       ## Parse extra parameters
       while (numel (varargin) > 0)
         switch (tolower (varargin {1}))
@@ -289,12 +297,10 @@ classdef ClassificationNeuralNetwork
                              [" must be a character vector or a"], ...
                              [" cellstring vector."]));
             endif
-            acList = {"linear", "sigmoid", "relu", "tanh", "softmax", ...
-                      "lrelu", "prelu", "elu", "gelu"};
             if (ischar (Activations))
               if (! any (strcmpi (Activations, acList)))
-              error (strcat (["ClassificationNeuralNetwork: unsupported"], ...
-                             [" 'Activation' function."]));
+                error (strcat (["ClassificationNeuralNetwork: unsupported"], ...
+                               [" 'Activation' function."]));
               endif
             else
               if (! all (cell2mat (cellfun (@(x) any (strcmpi (x, acList)),
@@ -304,6 +310,19 @@ classdef ClassificationNeuralNetwork
               endif
             endif
             Activations = tolower (Activations);
+
+          case 'outputlayeractivation'
+            OutputLayerActivation = varargin{2};
+            if (! (ischar (OutputLayerActivation)))
+              error (strcat (["ClassificationNeuralNetwork:"], ...
+                             [" 'OutputLayerActivation' must be a"], ...
+                             [" character vector."]));
+            endif
+            if (! any (strcmpi (OutputLayerActivation, acList)))
+              error (strcat (["ClassificationNeuralNetwork: unsupported"], ...
+                             [" 'OutputLayerActivation' function."]));
+            endif
+            OutputLayerActivation = tolower (OutputLayerActivation);
 
           case 'iterationlimit'
             IterationLimit = varargin{2};
@@ -447,57 +466,27 @@ classdef ClassificationNeuralNetwork
       ## Store training parameters
       this.LayerSizes = LayerSizes;
       this.Activations = Activations;
+      this.OutputLayerActivation = OutputLayerActivation;
       this.LearningRate = LearningRate;
       this.IterationLimit = IterationLimit;
       this.DisplayInfo = DisplayInfo;
 
       ## Encode activations for fcnntrain (expand if needed)
-      nlayers = numel (LayerSizes) + 1;
+      nlayers = numel (LayerSizes);
       if (ischar (Activations))
-        switch (Activations)
-          case "linear"
-            ActivationCodes = zeros (1, nlayers);
-          case "sigmoid"
-            ActivationCodes = ones (1, nlayers);
-          case "relu"
-            ActivationCodes = 2 * ones (1, nlayers);
-          case "tanh"
-            ActivationCodes = 3 * ones (1, nlayers);
-          case "softmax"
-            ActivationCodes = 4 * ones (1, nlayers);
-          case {"lrelu", "prelu"}
-            ActivationCodes = 5 * ones (1, nlayers);
-          case "elu"
-            ActivationCodes = 6 * ones (1, nlayers);
-          case "gelu"
-            ActivationCodes = 7 * ones (1, nlayers);
-        endswitch
+        ActivationCodes = ones (1, nlayers) * activationCode (Activations);
       elseif (nlayers != numel (Activations))
         error (strcat (["ClassificationNeuralNetwork: 'Activations'"], ...
                        [" vector does not match the number of layers."]));
       else
         ActivationCodes = [];
         for i = 1:nlayers
-          switch (Activations{i})
-            case "linear"
-              ActivationCodes = [ActivationCodes, 0];
-            case "sigmoid"
-              ActivationCodes = [ActivationCodes, 1];
-            case "relu"
-              ActivationCodes = [ActivationCodes, 2];
-            case "tanh"
-              ActivationCodes = [ActivationCodes, 3];
-            case "softmax"
-              ActivationCodes = [ActivationCodes, 4];
-            case {"lrelu", "prelu"}
-              ActivationCodes = [ActivationCodes, 5];
-            case "elu"
-              ActivationCodes = [ActivationCodes, 6];
-            case "gelu"
-              ActivationCodes = [ActivationCodes, 7];
-          endswitch
+          code = activationCode (Activations{i});
+          ActivationCodes = [ActivationCodes, code];
         endfor
       endif
+      code = activationCode (OutputLayerActivation);
+      ActivationCodes = [ActivationCodes, code];
 
       ## Start the training process
       tic;
@@ -851,6 +840,27 @@ classdef ClassificationNeuralNetwork
 
 endclassdef
 
+function numCode = activationCode (strCode)
+  switch (strCode)
+    case "linear"
+      numCode = 0;
+    case "sigmoid"
+      numCode = 1;
+    case "relu"
+      numCode = 2;
+    case "tanh"
+      numCode = 3;
+    case "softmax"
+      numCode = 4;
+    case {"lrelu", "prelu"}
+      numCode = 5;
+    case "elu"
+      numCode = 6;
+    case "gelu"
+      numCode = 7;
+  endswitch
+endfunction
+
 ## Test input validation for constructor
 %!error<ClassificationNeuralNetwork: too few input arguments.> ...
 %! ClassificationNeuralNetwork ()
@@ -899,9 +909,14 @@ endclassdef
 %!error<ClassificationNeuralNetwork: unsupported 'Activation' function.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "Activations", "unsupported_type")
 %!error<ClassificationNeuralNetwork: unsupported 'Activation' functions.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "Activations", {"sigmoid", "unsupported_type"})
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LayerSizes", [10, 5], ...
+%! "Activations", {"sigmoid", "unsupported_type"})
 %!error<ClassificationNeuralNetwork: 'Activations' vector does not match the number of layers.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "Activations", {"sigmoid", "relu", "softmax"})
+%!error<ClassificationNeuralNetwork: 'OutputLayerActivation' must be a character vector.> ...
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "OutputLayerActivation", 123)
+%!error<ClassificationNeuralNetwork: unsupported 'OutputLayerActivation' function.> ...
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "OutputLayerActivation", "unsupported_type")
 %!error<ClassificationNeuralNetwork: 'IterationLimit' must be a positive integer.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "IterationLimit", -1)
 %!error<ClassificationNeuralNetwork: 'IterationLimit' must be a positive integer.> ...

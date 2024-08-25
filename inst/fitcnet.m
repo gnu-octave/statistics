@@ -73,15 +73,20 @@
 ## the learning rate during the gradient descent.  Default value is 0.01.
 ##
 ## @item @qcode{"Activations"} @tab @tab A character vector or a cellstr vector
-## specifying the activation function(s) for the fully connected layers of the
-## neural network including the output layer.  The available Activation
-## functions are @qcode{'linear'}, @qcode{'sigmoid'},
+## specifying the activation functions for the hidden layers of the neural
+## network (excluding the output layer).  The available activation functions are
+## @qcode{'linear'}, @qcode{'sigmoid'}, @qcode{'tanh'}, @qcode{'sigmoid'}, and
+## @qcode{'none'}. The default value is @qcode{'sigmoid'}.
+##
+## @item @qcode{"OutputLayerActivation"} @tab @tab A character vector specifying
+## the activation function for the output layer of the neural network.  The
+## available activation functions are @qcode{'linear'}, @qcode{'sigmoid'},
 ## @qcode{'tanh'}, @qcode{'sigmoid'}, and @qcode{'none'}. The default value is
 ## @qcode{'sigmoid'}.
 ##
 ## @item @qcode{"IterationLimit"} @tab @tab A positive integer scalar that
 ## specifies the maximum number of training iterations.  The default value is
-## 100.
+## 1000.
 ##
 ## @item @qcode{"DisplayInfo"} @tab @tab A boolean flag indicating whether to
 ## print information during training.  Default is @qcode{false}.
@@ -137,9 +142,8 @@ endfunction
 %!
 %! load fisheriris
 %! Mdl = fitcnet (meas, species);
-%! pred = resubPredict(Mdl);
-%! cm = confusionmat (species, pred);
-%! confusionchart (cm, Mdl.ClassNames)
+%! pred_species = resubPredict (Mdl);
+%! confusionchart (species, pred_species);
 
 ## Test constructor
 %!test
