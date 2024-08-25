@@ -207,8 +207,8 @@ classdef ClassificationNeuralNetwork
       LayerSizes              = 10;
       Activations             = 'sigmoid';
       LearningRate            = 0.01;
-      IterationLimit          = 1e3;
-      DisplayInfo             = true;
+      IterationLimit          = 100;
+      DisplayInfo             = false;
       this.ScoreTransform     = 'none';
       this.Solver = "Gradient Descend";
 
@@ -923,7 +923,7 @@ endclassdef
 %! load fisheriris
 %! x = meas;
 %! y = grp2idx (species);
-%! Mdl = fitcnet (x, y, "IterationLimit", 50, "DisplayInfo", false);
+%! Mdl = fitcnet (x, y, "IterationLimit", 100);
 
 ## Test input validation for predict method
 %!error<ClassificationNeuralNetwork.predict: too few input arguments.> ...
@@ -933,7 +933,7 @@ endclassdef
 %!error<ClassificationNeuralNetwork.predict: XC must have the same number of features> ...
 %! predict (Mdl, 1)
 %!test
-%! objST = fitcnet (x, y, "DisplayInfo", false, "IterationLimit", 50);
+%! objST = fitcnet (x, y, "IterationLimit", 100);
 %! objST.ScoreTransform = "a";
 %!error<ClassificationNeuralNetwork.predict: 'ScoreTransform' must be a 'function_handle' object.> ...
 %! [labels, scores] = predict (objST, x);

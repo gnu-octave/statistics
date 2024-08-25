@@ -80,11 +80,11 @@
 ## @qcode{'sigmoid'}.
 ##
 ## @item @qcode{"IterationLimit"} @tab @tab A positive integer scalar that
-## specifies the maximum number of training iterations. The default value is
-## 1e3.
+## specifies the maximum number of training iterations.  The default value is
+## 100.
 ##
 ## @item @qcode{"DisplayInfo"} @tab @tab A boolean flag indicating whether to
-## print information during training.
+## print information during training.  Default is @qcode{false}.
 ##
 ## @item @qcode{"ScoreTransform"} @tab @tab A character vector defining one of
 ## the following functions or a user defined function handle, which is used
@@ -136,7 +136,7 @@ endfunction
 %! ## a confusion chart with the classification results.
 %!
 %! load fisheriris
-%! Mdl = fitcnet (meas, species, "DisplayInfo", false);
+%! Mdl = fitcnet (meas, species);
 %! pred = resubPredict(Mdl);
 %! cm = confusionmat (species, pred);
 %! confusionchart (cm, Mdl.ClassNames)
@@ -146,7 +146,7 @@ endfunction
 %! load fisheriris
 %! x = meas;
 %! y = grp2idx (species);
-%! Mdl = fitcnet (x, y, "IterationLimit", 50, "DisplayInfo", false);
+%! Mdl = fitcnet (x, y, "IterationLimit", 50);
 %! assert (class (Mdl), "ClassificationNeuralNetwork");
 %! assert (numel (Mdl.ModelParameters.LayerWeights), 2);
 %! assert (size (Mdl.ModelParameters.LayerWeights{1}), [10, 5]);

@@ -583,7 +583,7 @@ endclassdef
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = {"a"; "a"; "b"; "b"};
-%! a = fitcnet (x, y, "DisplayInfo", false, "IterationLimit", 50);
+%! a = fitcnet (x, y, "IterationLimit", 50);
 %! cvModel = crossval (a, "KFold", 5);
 %! assert (class (cvModel), "ClassificationPartitionedModel");
 %! assert (cvModel.NumObservations, 4);
@@ -593,7 +593,7 @@ endclassdef
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = {"a"; "a"; "b"; "b"};
-%! a = fitcnet (x, y, "LayerSizes", [5, 3], "DisplayInfo", false);
+%! a = fitcnet (x, y, "LayerSizes", [5, 3]);
 %! cvModel = crossval (a, "LeaveOut", "on");
 %! assert (class (cvModel), "ClassificationPartitionedModel");
 %! assert ({cvModel.X, cvModel.Y}, {x, y});
