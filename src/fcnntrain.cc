@@ -111,9 +111,41 @@ neural network model's training process. \
 @seealso{fcnnpredict, fitcnet, ClassificationNeuralNetwork} \n\
 @end deftypefn")
 {
+  // Check for correct number of input/output arguments
+  if (args.length () < 7)
+  {
+    error ("fcnntrain: too few input arguments.");
+  }
+  if (nargout > 1)
+  {
+    error ("fcnntrain: too many output arguments.");
+  }
   // int seed = time(NULL);
   int seed = 0;
   srand (seed);
+
+  // Do some input validation while loading trainind data and labels
+  if (! args(0).isnumeric () || args(0).iscomplex ())
+  {
+    error ("fcnntrain: X must be a real numeric matrix.");
+  }
+  if (args(0).isempty ())
+  {
+    error ("fcnntrain: X cannot be empty.");
+  }
+  if (! args(1).isnumeric () || args(1).iscomplex ())
+  {
+    error ("fcnntrain: Y must be a real numeric matrix.");
+  }
+  if (args(1).isempty ())
+  {
+    error ("fcnntrain: Y cannot be empty.");
+  }
+  if (args(0).rows () != args(1).rows ())
+  {
+    error ("fcnntrain: X and Y must have the same number of rows.");
+  }
+
   // Construct 2D vector from data in X
   int n = args(0).rows ();
   int d = args(0).columns ();
@@ -132,7 +164,27 @@ neural network model's training process. \
   for (int i = 0; i < n; i++)
   {
     labels[i] = Y(i);
+    if (labels[i] < 1)
+    {
+      error ("fcnntrain: labels in Y must be positive integers.");
+    }
   }
+  // Check LayerSizes and Activations input arguments
+  if (! args(2).isnumeric () || args(2).iscomplex () || args(2).isempty () ||
+        args(2).rows () != 1)
+  {
+    error ("fcnntrain: LayerSizes must be a row vector of integer values.");
+  }
+  if (! args(3).isnumeric () || args(3).iscomplex () || args(3).isempty () ||
+        args(3).rows () != 1 || args(3).columns () < 2)
+  {
+    error ("fcnntrain: Activations must be a row vector of integer values.");
+  }
+  if (args(2).numel () != args(3).numel () - 1)
+  {
+    error ("fcnntrain: Activations do not match LayerSizes.");
+  }
+
   // Create a vector of layers sized appropriately
   vector<DenseLayer> WeightBias;
   vector<ActivationLayer> Activation;
@@ -143,8 +195,17 @@ neural network model's training process. \
   for (int i = 0; i < args(2).numel (); i++)
   {
     int output_size = (int) LayerSizes(i);
+    if (output_size < 1)
+    {
+      error ("fcnntrain: cannot have a layer of zero size.");
+    }
     DenseLayer DL = DenseLayer (input_size, output_size);
-    ActivationLayer AL = ActivationLayer (ActiveCode(i), 0.01);
+    int code = ActiveCode(i);
+    if (code < 0 || code > 7)
+    {
+      error ("fcnntrain: invalid Activations code.");
+    }
+    ActivationLayer AL = ActivationLayer (code, 0.01);
     WeightBias.push_back (DL);
     Activation.push_back (AL);
     input_size = output_size;
@@ -157,9 +218,32 @@ neural network model's training process. \
   WeightBias.push_back (DL);
   Activation.push_back (AL);
 
+  // Input validation on LearningRate, Epochs, and DisplayInfo
+  if (! args(4).is_scalar_type () || ! args(4).isnumeric ())
+  {
+    error ("fcnntrain: LearningRate must be a positive scalar value.");
+  }
+  double learning_rate = args(4).scalar_value ();
+  if (learning_rate <= 0)
+  {
+    error ("fcnntrain: LearningRate must be a positive scalar value.");
+  }
+  if (! args(5).is_scalar_type () || ! args(5).isnumeric ())
+  {
+    error ("fcnntrain: Epochs must be a positive scalar value.");
+  }
+  if (args(5).scalar_value () < 1)
+  {
+    error ("fcnntrain: Epochs must be a positive scalar value.");
+  }
+  if (! args(6).is_bool_scalar ())
+  {
+    error ("fcnntrain: DisplayInfo must be a boolean scalar.");
+  }
+
+  // Define return variables
   vector<double> Accuracy;
   vector<double> Loss;
-  double learning_rate = args(4).scalar_value ();
 
   // Start training
   int epoch = 0;
@@ -292,3 +376,69 @@ neural network model's training process. \
   return retval;
 }
 
+/*
+%!shared X, Y, MODEL
+%! load fisheriris
+%! X = meas;
+%! Y = grp2idx (species);
+%!error <fcnntrain: too few input arguments.> ...
+%! model = fcnntrain (X, Y);
+%!error <fcnntrain: too many output arguments.> ...
+%! [Q, W] = fcnntrain (X, Y, 10, [1, 1], 0.025, 50, false);
+%!error <fcnntrain: X must be a real numeric matrix.> ...
+%! fcnntrain (complex (X), Y, 10, [1, 1], 0.025, 50, false);
+%!error <fcnntrain: X must be a real numeric matrix.> ...
+%! fcnntrain ({X}, Y, 10, [1, 1], 0.025, 50, false);
+%!error <fcnntrain: X cannot be empty.> ...
+%! fcnntrain ([], Y, 10, [1, 1], 0.025, 50, false);
+%!error <fcnntrain: Y must be a real numeric matrix.> ...
+%! fcnntrain (X, complex (Y), 10, [1, 1], 0.025, 50, false);
+%!error <fcnntrain: Y must be a real numeric matrix.> ...
+%! fcnntrain (X, {Y}, 10, [1, 1], 0.025, 50, false);
+%!error <fcnntrain: Y cannot be empty.> ...
+%! fcnntrain (X, [], 10, [1, 1], 0.025, 50, false);
+%!error <fcnntrain: X and Y must have the same number of rows.> ...
+%! fcnntrain (X, Y([1:50]), 10, [1, 1], 0.025, 50, false);
+%!error <fcnntrain: labels in Y must be positive integers.> ...
+%! fcnntrain (X, Y - 1, 10, [1, 1], 0.025, 50, false);
+%!error <fcnntrain: LayerSizes must be a row vector of integer values.> ...
+%! fcnntrain (X, Y, [10; 5], [1, 1, 1], 0.025, 50, false);
+%!error <fcnntrain: LayerSizes must be a row vector of integer values.> ...
+%! fcnntrain (X, Y, "10", [1, 1], 0.025, 50, false);
+%!error <fcnntrain: LayerSizes must be a row vector of integer values.> ...
+%! fcnntrain (X, Y, {10}, [1, 1], 0.025, 50, false);
+%!error <fcnntrain: LayerSizes must be a row vector of integer values.> ...
+%! fcnntrain (X, Y, complex (10), [1, 1], 0.025, 50, false);
+%!error <fcnntrain: Activations must be a row vector of integer values.> ...
+%! fcnntrain (X, Y, 10, [1; 1], 0.025, 50, false);
+%!error <fcnntrain: Activations must be a row vector of integer values.> ...
+%! fcnntrain (X, Y, 10, {1, 1}, 0.025, 50, false);
+%!error <fcnntrain: Activations must be a row vector of integer values.> ...
+%! fcnntrain (X, Y, 10, "1", 0.025, 50, false);
+%!error <fcnntrain: Activations must be a row vector of integer values.> ...
+%! fcnntrain (X, Y, 10, complex ([1, 1]), 0.025, 50, false);
+%!error <fcnntrain: Activations do not match LayerSizes.> ...
+%! fcnntrain (X, Y, 10, [1, 1, 1], 0.025, 50, false);
+%!error <fcnntrain: cannot have a layer of zero size.> ...
+%! fcnntrain (X, Y, [10, 0, 5], [1, 1, 1, 1], 0.025, 50, false);
+%!error <fcnntrain: invalid Activations code.> ...
+%! fcnntrain (X, Y, 10, [-1, 1], 0.025, 50, false);
+%!error <fcnntrain: invalid Activations code.> ...
+%! fcnntrain (X, Y, 10, [8, 1], 0.025, 50, false);
+%!error <fcnntrain: LearningRate must be a positive scalar value.> ...
+%! fcnntrain (X, Y, 10, [1, 1], -0.025, 50, false);
+%!error <fcnntrain: LearningRate must be a positive scalar value.> ...
+%! fcnntrain (X, Y, 10, [1, 1], 0, 50, false);
+%!error <fcnntrain: LearningRate must be a positive scalar value.> ...
+%! fcnntrain (X, Y, 10, [1, 1], [0.025, 0.001], 50, false);
+%!error <fcnntrain: LearningRate must be a positive scalar value.> ...
+%! fcnntrain (X, Y, 10, [1, 1], {0.025}, 50, false);
+%!error <fcnntrain: Epochs must be a positive scalar value.> ...
+%! fcnntrain (X, Y, 10, [1, 1], 0.025, 0, false);
+%!error <fcnntrain: Epochs must be a positive scalar value.> ...
+%! fcnntrain (X, Y, 10, [1, 1], 0.025, [50, 25], false);
+%!error <fcnntrain: DisplayInfo must be a boolean scalar.> ...
+%! fcnntrain (X, Y, 10, [1, 1], 0.025, 50, 0);
+%!error <fcnntrain: DisplayInfo must be a boolean scalar.> ...
+%! fcnntrain (X, Y, 10, [1, 1], 0.025, 50, 1);
+*/

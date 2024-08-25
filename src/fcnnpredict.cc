@@ -62,11 +62,64 @@ neural networks output in @var{scores}. \
 @seealso{fcnntrain, fitcnet, ClassificationNeuralNetwork} \n\
 @end deftypefn")
 {
-  // Construct 2D vector from data in XC
+  // Check for correct number of input/output arguments
+  if (args.length () < 2)
+  {
+    error ("fcnnpredict: too few input arguments.");
+  }
+  if (nargout > 2)
+  {
+    error ("fcnnpredict: too many output arguments.");
+  }
+
+  // Do some input validation while loading the trained model
+  if (! (args(0).isstruct () && args(0).numel () == 1))
+  {
+    error ("fcnnpredict: first argument must be a scalar structure.");
+  }
+  octave_scalar_map fcnn_model = args(0).scalar_map_value ();
+  if (! fcnn_model.isfield ("LayerWeights"))
+  {
+    error ("fcnnpredict: model does not have a 'LayerWeights' field.");
+  }
+  if (! fcnn_model.getfield("LayerWeights").iscell () ||
+      ! (fcnn_model.getfield("LayerWeights").rows () == 1 &&
+         fcnn_model.getfield("LayerWeights").columns () > 1))
+  {
+    error ("fcnnpredict: 'LayerWeights' must be a cell row vector.");
+  }
+  Cell LayerWeights = fcnn_model.getfield("LayerWeights").cell_value();
+  if (! fcnn_model.isfield ("Activations"))
+  {
+    error ("fcnnpredict: model does not have an 'Activations' field.");
+  }
+  if (! fcnn_model.getfield("Activations").isnumeric () ||
+      ! (fcnn_model.getfield("Activations").rows () == 1 &&
+         fcnn_model.getfield("Activations").columns () > 1))
+  {
+    error ("fcnnpredict: 'Activations' must be a numeric row vector.");
+  }
+  RowVector ActiveCode = fcnn_model.getfield("Activations").row_vector_value();
+
+  // Do some input validation while loading the testing data
+  if (! args(1).isnumeric () || args(1).iscomplex ())
+  {
+    error ("fcnnpredict: XC must be a real numeric matrix.");
+  }
+  if (args(1).isempty ())
+  {
+    error ("fcnnpredict: XC cannot be empty.");
+  }
+  if (args(1).columns () != LayerWeights.elem(0).columns () - 1)
+  {
+    error ("fcnnpredict: the features in XC do not match the trained model.");
+  }
+  Matrix X = args(1).matrix_value ();
   int n = args(1).rows ();
   int d = args(1).columns ();
+
+  // Construct 2D vector from data in XC
   vector<vector<double>> data (n, vector<double>(d, 0));
-  Matrix X = args(1).matrix_value ();
   for (int i = 0; i < n; i++)
   {
     for (int j = 0; j < d; j++)
@@ -74,17 +127,6 @@ neural networks output in @var{scores}. \
       data[i][j] = X(i,j);
     }
   }
-  // Construct 1D vector from labels in Y
-  vector<int> labels(n, 0);
-  ColumnVector Y = args(1).column_vector_value ();
-  for (int i = 0; i < n; i++)
-  {
-    labels[i] = Y(i);
-  }
-  // Get WeightBias cell array and Activations vector from model structure
-  octave_scalar_map fcnn_model = args(0).scalar_map_value ();
-  Cell LayerWeights = fcnn_model.getfield("LayerWeights").cell_value();
-  RowVector ActiveCode = fcnn_model.getfield("Activations").row_vector_value();
 
   // Create a vector of layers sized appropriately
   vector<DenseLayer> WeightBias;
@@ -174,3 +216,59 @@ neural networks output in @var{scores}. \
   return retval;
 }
 
+/*
+%!shared X, Y, MODEL
+%! load fisheriris
+%! X = meas;
+%! Y = grp2idx (species);
+%! MODEL = fcnntrain (X, Y, 10, [1, 1], 0.025, 100, false);
+%!test
+%! [Y_pred, Y_scores] = fcnnpredict (MODEL, X);
+%! assert (numel (Y_pred), numel (Y));
+%! assert (isequal (size (Y_pred), size (Y)), true);
+%! assert (columns (Y_scores), numel (unique (Y)));
+%! assert (rows (Y_scores), numel (Y));
+%!error <fcnnpredict: too few input arguments.> ...
+%! fcnnpredict (MODEL);
+%!error <fcnnpredict: too many output arguments.> ...
+%! [Q, W, E] = fcnnpredict (MODEL, X);
+%!error <fcnnpredict: first argument must be a scalar structure.> ...
+%! fcnnpredict (1, X);
+%!error <fcnnpredict: first argument must be a scalar structure.> ...
+%! fcnnpredict (struct ("L", {1, 2, 3}), X);
+%!error <fcnnpredict: model does not have a 'LayerWeights' field.> ...
+%! fcnnpredict (struct ("L", 1), X);
+%!error <fcnnpredict: 'LayerWeights' must be a cell row vector.> ...
+%! fcnnpredict (struct ("LayerWeights", 1), X);
+%!error <fcnnpredict: 'LayerWeights' must be a cell row vector.> ...
+%! fcnnpredict (struct ("LayerWeights", {1}), X);
+%!error <fcnnpredict: 'LayerWeights' must be a cell row vector.> ...
+%! fcnnpredict (struct ("LayerWeights", {{1; 2; 3}}), X);
+%!error <fcnnpredict: model does not have an 'Activations' field.> ...
+%! fcnnpredict (struct ("LayerWeights", {[{ones(3)},{ones(3)}]}, "R", 2), X);
+%!error <fcnnpredict: 'Activations' must be a numeric row vector.> ...
+%! fcnnpredict (struct ("LayerWeights", {[{ones(3)},{ones(3)}]}, ...
+%!                      "Activations", [2]), X);
+%!error <fcnnpredict: 'Activations' must be a numeric row vector.> ...
+%! fcnnpredict (struct ("LayerWeights", {[{ones(3)},{ones(3)}]}, ...
+%!                      "Activations", [2; 2]), X);
+%!error <fcnnpredict: 'Activations' must be a numeric row vector.> ...
+%! fcnnpredict (struct ("LayerWeights", {[{ones(3)},{ones(3)}]}, ...
+%!                      "Activations", {{2, 2}}), X);
+%!error <fcnnpredict: 'Activations' must be a numeric row vector.> ...
+%! fcnnpredict (struct ("LayerWeights", {[{ones(3)},{ones(3)}]}, ...
+%!                      "Activations", {{"sigmoid", "softmax"}}), X);
+%!error <fcnnpredict: 'Activations' must be a numeric row vector.> ...
+%! fcnnpredict (struct ("LayerWeights", {[{ones(3)},{ones(3)}]}, ...
+%!                      "Activations", "sigmoid"), X);
+%!error <fcnnpredict: XC must be a real numeric matrix.> ...
+%! fcnnpredict (MODEL, complex (X));
+%!error <fcnnpredict: XC must be a real numeric matrix.> ...
+%! fcnnpredict (MODEL, {1, 2, 3, 4});
+%!error <fcnnpredict: XC must be a real numeric matrix.> ...
+%! fcnnpredict (MODEL, "asd");
+%!error <fcnnpredict: XC cannot be empty.> ...
+%! fcnnpredict (MODEL, []);
+%!error <fcnnpredict: the features in XC do not match the trained model.> ...
+%! fcnnpredict (MODEL, X(:,[1:3]));
+*/
