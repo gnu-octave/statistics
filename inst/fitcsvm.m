@@ -151,7 +151,7 @@
 ## memory requirements (in MB) for storing the Gram matrix. The default is 1000.
 ##
 ## @item @qcode{"Tolerance"} @tab @tab A nonnegative scalar that specifies
-## the tolerance of termination criterion. The default value is 1e-3.
+## the tolerance of termination criterion. The default value is 1e-6.
 ##
 ## @item @qcode{"Shrinking"} @tab @tab Specifies whether to use shrinking
 ## heuristics. It accepts either 0 or 1. The default value is 1.
