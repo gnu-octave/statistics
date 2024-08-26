@@ -576,6 +576,48 @@ classdef RegressionGAM
 
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {RegressionGAM} {} savemodel (@var{obj}, @var{filename})
+    ##
+    ## Save a RegressionGAM object.
+    ##
+    ## @code{savemodel (@var{obj}, @var{filename})} saves a RegressionGAM
+    ## object into a file defined by @var{filename}.
+    ##
+    ## @seealso{loadmodel, fitrgam, RegressionGAM}
+    ## @end deftypefn
+
+    function savemodel (obj, fname)
+      ## Generate variable for class name
+      classdef_name = "RegressionGAM";
+
+      ## Create variables from model properties
+      X = obj.X;
+      Y = obj.Y;
+      NumObservations     = obj.NumObservations;
+      RowsUsed            = obj.RowsUsed;
+      NumPredictors       = obj.NumPredictors;
+      PredictorNames      = obj.PredictorNames;
+      ResponseName        = obj.ResponseName;
+
+      Formula             = obj.Formula;
+      Interactions        = obj.Interactions;
+      Knots               = obj.Knots;
+      Order               = obj.Order;
+      DoF                 = obj.DoF;
+      Tol                 = obj.Tol;
+
+      BaseModel           = obj.BaseModel;
+      ModelwInt           = obj.ModelwInt;
+      IntMatrix           = obj.IntMatrix;
+
+      ## Save classdef name and all model properties as individual variables
+      save (fname, "classdef_name", "X", "Y", "NumObservations", "RowsUsed", ...
+            "NumPredictors", "PredictorNames", "ResponseName", "Formula", ...
+            "Interactions", "Knots", "Order", "DoF", "Tol", "BaseModel", ...
+            "ModelwInt", "IntMatrix");
+    endfunction
+
   endmethods
 
   ## Helper functions
@@ -701,6 +743,29 @@ classdef RegressionGAM
         RSS = RSSk;
       endwhile
 
+    endfunction
+
+  endmethods
+
+  methods (Static, Hidden)
+
+    function mdl = load_model (filename, data)
+      ## Create a RegressionGAM object
+      mdl = RegressionGAM (1, 1);
+
+      ## Get fieldnames from DATA (including private properties)
+      names = fieldnames (data);
+
+      ## Copy data into object
+      for i = 1:numel (names)
+        ## Check that fieldnames in DATA match properties in RegressionGAM
+        try
+          mdl.(names{i}) = data.(names{i});
+        catch
+          error ("RegressionGAM.load_model: invalid model in '%s'.", ...
+                 filename)
+        end_try_catch
+      endfor
     endfunction
 
   endmethods
