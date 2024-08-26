@@ -242,7 +242,7 @@ classdef ClassificationSVM
       BoxConstraint           = 1;
       Nu                      = 0.5;
       CacheSize               = 1000;
-      Tolerance               = 1e-3;
+      Tolerance               = 1e-6;
       Shrinking               = 1;
       Standardize             = false;
       ResponseName            = [];
@@ -1808,12 +1808,12 @@ endclassdef
 %! L4 = loss (obj, x(testInds,:), y(testInds,:), 'LossFun', 'hinge');
 %! L5 = loss (obj, x(testInds,:), y(testInds,:), 'LossFun', 'logit');
 %! L6 = loss (obj, x(testInds,:), y(testInds,:), 'LossFun', 'quadratic');
-%! assert (L1, 2.8712, 1e-4);
+%! assert (L1, 2.8711, 1e-4);
 %! assert (L2, 0.5333, 1e-4);
-%! assert (L3, 10.971, 1e-3);
-%! assert (L4, 1.9828, 1e-4);
+%! assert (L3, 10.9685, 1e-4);
+%! assert (L4, 1.9827, 1e-4);
 %! assert (L5, 1.5849, 1e-4);
-%! assert (L6, 7.6748, 1e-4);
+%! assert (L6, 7.6739, 1e-4);
 
 ## Test input validation for loss method
 %!error<ClassificationSVM.loss: too few input arguments.> ...
