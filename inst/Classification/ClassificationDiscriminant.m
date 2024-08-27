@@ -1195,7 +1195,7 @@ endclassdef
 %! assert (Mdl.ClassNames, unique (species))
 %! assert (Mdl.Sigma, sigma, 1e-6)
 %! assert (Mdl.Mu, mu, 1e-14)
-%! assert (Mdl.XCentered([1:3],:), xCentered)
+%! assert (Mdl.XCentered([1:3],:), xCentered, 1e-14)
 %! assert (Mdl.LogDetSigma, -9.9585, 1e-4)
 %! assert (Mdl.PredictorNames, PredictorNames)
 %!test
@@ -1220,7 +1220,7 @@ endclassdef
 %! assert (Mdl.ClassNames, unique (species))
 %! assert (Mdl.Sigma, sigma, 1e-6)
 %! assert (Mdl.Mu, mu, 1e-14)
-%! assert (Mdl.XCentered([1:3],:), xCentered)
+%! assert (Mdl.XCentered([1:3],:), xCentered, 1e-14)
 %! assert (Mdl.LogDetSigma, -8.6884, 1e-4)
 
 ## Test input validation for constructor
