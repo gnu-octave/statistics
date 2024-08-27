@@ -142,61 +142,31 @@ endfunction
 
 ## Tests
 %!test
-%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
-%! PredictorNames = {'Feature1', 'Feature2', 'Feature3'};
-%! a = fitcdiscr (x, y, "PredictorNames", PredictorNames);
-%! sigma = [6.2500, 8.2500, 10.2500; ...
-%!          8.2500, 11.2500, 14.2500; ...
-%!          10.2500, 14.2500, 18.2500];
-%! mu = [2.5000, 3.5000, 4.5000; ...
-%!       5.0000, 5.0000, 5.0000];
-%! xCentered = [-1.5000, -1.5000, -1.5000; ...
-%!              1.5000, 1.5000, 1.5000; ...
-%!              2.0000, 3.0000, 4.0000; ...
-%!             -2.0000, -3.0000, -4.0000];
-%! assert (class (a), "ClassificationDiscriminant");
-%! assert ({a.X, a.Y, a.NumObservations}, {x, y, 4})
-%! assert ({a.DiscrimType, a.ResponseName}, {"linear", "Y"})
-%! assert ({a.Gamma, a.MinGamma}, {1e-15, 1e-15})
-%! assert (a.ClassNames, {'a'; 'b'})
-%! assert (a.Sigma, sigma, 1e-11)
-%! assert (a.Mu, mu)
-%! assert (a.XCentered, xCentered)
-%! assert (a.LogDetSigma, -29.369, 1e-4)
-%! assert (a.PredictorNames, PredictorNames)
-%!test
-%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
-%! a = fitcdiscr (x, y, "Gamma", 0.5);
-%! sigma = [6.2500, 4.1250, 5.1250; ...
-%!          4.1250, 11.2500, 7.1250; ...
-%!          5.1250, 7.1250, 18.2500];
-%! mu = [2.5000, 3.5000, 4.5000; ...
-%!       5.0000, 5.0000, 5.0000];
-%! xCentered = [-1.5000, -1.5000, -1.5000; ...
-%!              1.5000, 1.5000, 1.5000; ...
-%!              2.0000, 3.0000, 4.0000; ...
-%!             -2.0000, -3.0000, -4.0000];
-%! assert (class (a), "ClassificationDiscriminant");
-%! assert ({a.X, a.Y, a.NumObservations}, {x, y, 4})
-%! assert ({a.DiscrimType, a.ResponseName}, {"linear", "Y"})
-%! assert ({a.Gamma, a.MinGamma}, {0.5, 0})
-%! assert (a.ClassNames, {'a'; 'b'})
-%! assert (a.Sigma, sigma)
-%! assert (a.Mu, mu)
-%! assert (a.XCentered, xCentered)
-%! assert (a.LogDetSigma, 6.4940, 1e-4)
-%!test
-%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "a"; "b"];
-%! prior = [0.5; 0.5];
-%! a = fitcdiscr (x, y, "Prior", "uniform", "Gamma", 0.2);
-%! assert (class (a), "ClassificationDiscriminant");
-%! assert ({a.X, a.Y, a.NumObservations}, {x, y, 4})
-%! assert ({a.DiscrimType, a.ResponseName}, {"linear", "Y"})
-%! assert (a.ClassNames, {'a'; 'b'})
-%! assert (a.Prior, prior)
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species, "Gamma", 0.5);
+%! [label, score, cost] = predict (Mdl, [2, 2, 2, 2]);
+%! assert (label, {'versicolor'})
+%! assert (score, [0, 0.9999, 0.0001], 1e-4)
+%! assert (cost, [1, 0.0001, 0.9999], 1e-4)
+%! [label, score, cost] = predict (Mdl, [2.5, 2.5, 2.5, 2.5]);
+%! assert (label, {'versicolor'})
+%! assert (score, [0, 0.6368, 0.3632], 1e-4)
+%! assert (cost, [1, 0.3632, 0.6368], 1e-4)
+%! assert (class (Mdl), "ClassificationDiscriminant");
+%! assert ({Mdl.X, Mdl.Y, Mdl.NumObservations}, {meas, species, 150})
+%! assert ({Mdl.DiscrimType, Mdl.ResponseName}, {"linear", "Y"})
+%! assert ({Mdl.Gamma, Mdl.MinGamma}, {0.5, 0})
+%! assert (Mdl.ClassNames, unique (species))
+%! sigma = [0.265008, 0.046361, 0.083757, 0.019201; ...
+%!          0.046361, 0.115388, 0.027622, 0.016355; ...
+%!          0.083757, 0.027622, 0.185188, 0.021333; ...
+%!          0.019201, 0.016355, 0.021333, 0.041882];
+%! assert (Mdl.Sigma, sigma, 1e-6)
+%! mu = [5.0060, 3.4280, 1.4620, 0.2460; ...
+%!       5.9360, 2.7700, 4.2600, 1.3260; ...
+%!       6.5880, 2.9740, 5.5520, 2.0260];
+%! assert (Mdl.Mu, mu, 1e-14)
+%! assert (Mdl.LogDetSigma, -8.6884, 1e-4)
 
 ## Test input validation
 %!error<fitcdiscr: too few arguments.> fitcdiscr ()
