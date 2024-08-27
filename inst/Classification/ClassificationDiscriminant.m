@@ -1298,11 +1298,11 @@ endclassdef
 %! y = species;
 %! Mdl = fitcdiscr (meas, species, "Gamma", 0.5);
 %! [label, score, cost] = predict (Mdl, [2, 2, 2, 2]);
-%! assert (label, 'versicolor')
+%! assert (label, {'versicolor'})
 %! assert (score, [0, 0.9999, 0.0001], 1e-4)
 %! assert (cost, [1, 0.0001, 0.9999], 1e-4)
 %! [label, score, cost] = predict (Mdl, [2.5, 2.5, 2.5, 2.5]);
-%! assert (label, 'versicolor')
+%! assert (label, {'versicolor'})
 %! assert (score, [0, 0.6368, 0.3632], 1e-4)
 %! assert (cost, [1, 0.3632, 0.6368], 1e-4)
 %!test
