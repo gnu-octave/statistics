@@ -1174,29 +1174,28 @@ endfunction
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (CVMdl.KFold == 10)
-%! assert (class (CVMdl.Trained{1}), "ClassificationGAM")
+%! assert (class (CVMdl.Trained{1}), "CompactClassificationGAM")
+%! assert (CVMdl.CrossValidatedModel, "ClassificationGAM")
 %!test
 %! CVMdl = crossval (obj, "KFold", 5);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (CVMdl.KFold == 5)
-%! assert (class (CVMdl.Trained{1}), "ClassificationGAM")
+%! assert (class (CVMdl.Trained{1}), "CompactClassificationGAM")
+%! assert (CVMdl.CrossValidatedModel, "ClassificationGAM")
 %!test
 %! CVMdl = crossval (obj, "HoldOut", 0.2);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (class (CVMdl.Trained{1}), "ClassificationGAM")
-%!test
-%!# CVMdl = crossval (obj, "LeaveOut", 'on');
-%!# assert (class (CVMdl), "ClassificationPartitionedModel")
-%!# assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%!# assert (class (CVMdl.Trained{1}), "ClassificationGAM")
+%! assert (class (CVMdl.Trained{1}), "CompactClassificationGAM")
+%! assert (CVMdl.CrossValidatedModel, "ClassificationGAM")
 %!test
 %! partition = cvpartition (y, 'KFold', 3);
 %! CVMdl = crossval (obj, 'cvPartition', partition);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert (CVMdl.KFold == 3)
-%! assert (class (CVMdl.Trained{1}), "ClassificationGAM")
+%! assert (class (CVMdl.Trained{1}), "CompactClassificationGAM")
+%! assert (CVMdl.CrossValidatedModel, "ClassificationGAM")
 
 ## Test input validation for crossval method
 %!error<ClassificationGAM.crossval: Name-Value arguments must be in pairs.> ...

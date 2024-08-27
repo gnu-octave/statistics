@@ -940,12 +940,14 @@ endfunction
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (CVMdl.KFold == 5)
-%! assert (class (CVMdl.Trained{1}), "ClassificationNeuralNetwork")
+%! assert (class (CVMdl.Trained{1}), "CompactClassificationNeuralNetwork")
+%! assert (CVMdl.CrossValidatedModel, "ClassificationNeuralNetwork")
 %!test
 %! CVMdl = crossval (Mdl, "HoldOut", 0.2);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (class (CVMdl.Trained{1}), "ClassificationNeuralNetwork")
+%! assert (class (CVMdl.Trained{1}), "CompactClassificationNeuralNetwork")
+%! assert (CVMdl.CrossValidatedModel, "ClassificationNeuralNetwork")
 
 ## Test input validation for crossval method
 %!error<ClassificationNeuralNetwork.crossval: Name-Value arguments must be in pairs.> ...

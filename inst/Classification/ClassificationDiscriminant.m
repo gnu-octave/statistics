@@ -1461,29 +1461,34 @@ endclassdef
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (CVMdl.KFold == 10)
-%! assert (class (CVMdl.Trained{1}), "ClassificationDiscriminant")
+%! assert (class (CVMdl.Trained{1}), "CompactClassificationDiscriminant")
+%! assert (CVMdl.CrossValidatedModel, "ClassificationDiscriminant")
 %!test
 %! CVMdl = crossval (obj, "KFold", 3);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (CVMdl.KFold == 3)
-%! assert (class (CVMdl.Trained{1}), "ClassificationDiscriminant")
+%! assert (class (CVMdl.Trained{1}), "CompactClassificationDiscriminant")
+%! assert (CVMdl.CrossValidatedModel, "ClassificationDiscriminant")
 %!test
 %! CVMdl = crossval (obj, "HoldOut", 0.2);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (class (CVMdl.Trained{1}), "ClassificationDiscriminant")
+%! assert (class (CVMdl.Trained{1}), "CompactClassificationDiscriminant")
+%! assert (CVMdl.CrossValidatedModel, "ClassificationDiscriminant")
 %!test
 %! CVMdl = crossval (obj, "LeaveOut", 'on');
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (class (CVMdl.Trained{1}), "ClassificationDiscriminant")
+%! assert (class (CVMdl.Trained{1}), "CompactClassificationDiscriminant")
+%! assert (CVMdl.CrossValidatedModel, "ClassificationDiscriminant")
 %!test
 %! partition = cvpartition (y, 'KFold', 3);
 %! CVMdl = crossval (obj, 'cvPartition', partition);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert (CVMdl.KFold == 3)
-%! assert (class (CVMdl.Trained{1}), "ClassificationDiscriminant")
+%! assert (class (CVMdl.Trained{1}), "CompactClassificationDiscriminant")
+%! assert (CVMdl.CrossValidatedModel, "ClassificationDiscriminant")
 
 ## Test input validation for crossval method
 %!error<ClassificationDiscriminant.crossval: Name-Value arguments must be in pairs.> ...
