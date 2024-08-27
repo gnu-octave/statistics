@@ -261,12 +261,13 @@ classdef SilhouetteEvaluation < ClusterCriterion
       endif
 
       ## get the silhouette values for every clustering
-      set (0, 'DefaultFigureVisible', 'off'); # temporarily disable figures
       for iter = 1 : length (this.InspectedK)
         ## do it only for the specified K values
         if (any (this.InspectedK(iter) == K))
+          ## Custom call to silhouette to avoid plotting any figures
           this.ClusterSilhouettes{iter} = silhouette (UsableX, ...
-                                            this.ClusteringSolutions(:, iter));
+                                          this.ClusteringSolutions(:, iter), ...
+                                          "sqeuclidean", "DoNotPlot");
           if (strcmpi (this.ClusterPriors, "empirical"))
             this.CriterionValues(iter) = mean (this.ClusterSilhouettes{iter});
           else
@@ -281,7 +282,6 @@ classdef SilhouetteEvaluation < ClusterCriterion
           endif
         endif
       endfor
-      set (0, 'DefaultFigureVisible', 'on'); # enable figures again
 
       [~, this.OptimalIndex] = max (this.CriterionValues);
       this.OptimalK = this.InspectedK(this.OptimalIndex(1));

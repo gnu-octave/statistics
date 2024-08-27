@@ -1,5 +1,6 @@
 ## Copyright (C) 2016 Nan Zhou <zhnanx@gmail.com>
 ## Copyright (C) 2021 Stefano Guidoni <ilguido@users.sf.net>
+## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -50,12 +51,13 @@
 ##
 ## Optional input value @var{Metric} is the metric used to compute the distances
 ## between data points. Since @code{silhouette} uses @code{pdist} to compute
-## these distances, @var{Metric} is quite similar to the option @var{Metric} of
-## pdist and it can be:
+## these distances, @var{Metric} is similar to the @var{Distance} input argument
+## of @code{pdist} and it can be:
 ## @itemize @bullet
-## @item A known distance metric defined as a string: @qcode{Euclidean},
-## @qcode{sqEuclidean} (default), @qcode{cityblock}, @qcode{cosine},
-## @qcode{correlation}, @qcode{Hamming}, @qcode{Jaccard}.
+## @item A known distance metric defined as a string: @qcode{euclidean},
+## @qcode{squaredeuclidean} (default), @qcode{seuclidean}, @qcode{mahalanobis},
+## @qcode{cityblock}, @qcode{minkowski}, @qcode{chebychev}, @qcode{cosine},
+## @qcode{correlation}, @qcode{hamming}, @qcode{jaccard}, or @qcode{spearman}.
 ##
 ## @item A vector as those created by @code{pdist}. In this case @var{X} does
 ## nothing.
@@ -73,10 +75,23 @@
 ##
 ## @seealso{dendrogram, evalclusters, kmeans, linkage, pdist}
 
-function [si, h] = silhouette (X, clust, metric = "sqeuclidean", varargin)
+function [si, h] = silhouette (X, clust, metric = "squaredeuclidean", varargin)
   ## check the input parameters
   if (nargin < 2)
     print_usage ();
+  endif
+
+  ## Check for last argument being 'DoNotPlot' to prevent from opening a figure
+  ## Undocumented feature to avoid issues with faiing tests.  It is only used by
+  ## SilhouetteEvaluation class.
+  DisplayPlot = true;
+  if (numel (varargin) > 0)
+    if (ischar (varargin{end}))
+      if (strcmp (varargin{end}, "DoNotPlot"))
+        DisplayPlot = false;
+        varargin{end} = [];
+      endif
+    endif
   endif
 
   n = size (clust, 1);
@@ -95,8 +110,9 @@ function [si, h] = silhouette (X, clust, metric = "sqeuclidean", varargin)
     switch (metric)
       case "sqeuclidean"
         metric = "squaredeuclidean";
-      case { "euclidean", "cityblock", "cosine", ...
-           "correlation", "hamming", "jaccard" }
+      case {"euclidean", "squaredeuclidean", "seuclidean", "mahalanobis", ...
+            "cityblock", "minkowski", "chebychev", "cosine", "correlation", ...
+            "hamming", "jaccard", "spearman"}
         ;
       otherwise
         error ("silhouette: invalid metric '%s'", metric);
@@ -169,24 +185,26 @@ function [si, h] = silhouette (X, clust, metric = "sqeuclidean", varargin)
 
   ## plot
   ## a poor man silhouette graph
-  vBarsc = zeros (m, 1);
-  vPadding = [0; 0; 0; 0];
-  Bars = vPadding;
+  if (DisplayPlot)
+    vBarsc = zeros (m, 1);
+    vPadding = [0; 0; 0; 0];
+    Bars = vPadding;
 
-  for i = 1 : m
-    vBar = si(find (clust == clusterIDs(i)));
-    vBarsc(i) = length (Bars) + (length (vBar) / 2);
-    Bars = [Bars; (sort (vBar, "descend")); vPadding];
-  endfor
+    for i = 1 : m
+      vBar = si(find (clust == clusterIDs(i)));
+      vBarsc(i) = length (Bars) + (length (vBar) / 2);
+      Bars = [Bars; (sort (vBar, "descend")); vPadding];
+    endfor
 
-  figure();
-  h = barh (Bars, "hist", "facecolor", [0 0.4471 0.7412]);
+    figure();
+    h = barh (Bars, "hist", "facecolor", [0 0.4471 0.7412]);
 
-  xlabel ("Silhouette Value");
-  ylabel ("Cluster");
-  set (gca, "ytick", vBarsc, "yticklabel", clusterIDs);
-  ylim ([0 (length (Bars))]);
-  axis ("ij");
+    xlabel ("Silhouette Value");
+    ylabel ("Cluster");
+    set (gca, "ytick", vBarsc, "yticklabel", clusterIDs);
+    ylim ([0 (length (Bars))]);
+    axis ("ij");
+  endif
 endfunction
 
 
