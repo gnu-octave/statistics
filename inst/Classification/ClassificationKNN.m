@@ -1591,33 +1591,33 @@ classdef ClassificationKNN
     ## @seealso{loadmodel, fitcknn, ClassificationKNN}
     ## @end deftypefn
 
-    function savemodel (obj, fname)
+    function savemodel (this, fname)
       ## Generate variable for class name
       classdef_name = "ClassificationKNN";
 
       ## Create variables from model properties
-      X = obj.X;
-      Y = obj.Y;
-      NumObservations = obj.NumObservations;
-      RowsUsed        = obj.RowsUsed;
-      Standardize     = obj.Standardize;
-      Sigma           = obj.Sigma;
-      Mu              = obj.Mu;
-      NumPredictors   = obj.NumPredictors;
-      PredictorNames  = obj.PredictorNames;
-      ResponseName    = obj.ResponseName;
-      ClassNames      = obj.ClassNames;
-      Prior           = obj.Prior;
-      Cost            = obj.Cost;
-      ScoreTransform  = obj.ScoreTransform;
-      BreakTies       = obj.BreakTies;
-      NumNeighbors    = obj.NumNeighbors;
-      Distance        = obj.Distance;
-      DistanceWeight  = obj.DistanceWeight;
-      DistParameter   = obj.DistParameter;
-      NSMethod        = obj.NSMethod;
-      IncludeTies     = obj.IncludeTies;
-      BucketSize      = obj.BucketSize;
+      X = this.X;
+      Y = this.Y;
+      NumObservations = this.NumObservations;
+      RowsUsed        = this.RowsUsed;
+      Standardize     = this.Standardize;
+      Sigma           = this.Sigma;
+      Mu              = this.Mu;
+      NumPredictors   = this.NumPredictors;
+      PredictorNames  = this.PredictorNames;
+      ResponseName    = this.ResponseName;
+      ClassNames      = this.ClassNames;
+      Prior           = this.Prior;
+      Cost            = this.Cost;
+      ScoreTransform  = this.ScoreTransform;
+      BreakTies       = this.BreakTies;
+      NumNeighbors    = this.NumNeighbors;
+      Distance        = this.Distance;
+      DistanceWeight  = this.DistanceWeight;
+      DistParameter   = this.DistParameter;
+      NSMethod        = this.NSMethod;
+      IncludeTies     = this.IncludeTies;
+      BucketSize      = this.BucketSize;
 
       ## Save classdef name and all model properties as individual variables
       save (fname, "classdef_name", "X", "Y", "NumObservations", "RowsUsed", ...

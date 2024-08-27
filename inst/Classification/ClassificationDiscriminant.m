@@ -1060,9 +1060,9 @@ classdef ClassificationDiscriminant
     ## CompactClassificationDiscriminant}
     ## @end deftypefn
 
-    function CVMdl = compact (obj)
+    function CVMdl = compact (this)
       ## Greate a compact model
-      CVMdl = CompactClassificationDiscriminant (obj);
+      CVMdl = CompactClassificationDiscriminant (this);
     endfunction
 
     ## -*- texinfo -*-
@@ -1076,31 +1076,31 @@ classdef ClassificationDiscriminant
     ## @seealso{loadmodel, fitcdiscr, ClassificationDiscriminant}
     ## @end deftypefn
 
-    function savemodel (obj, fname)
+    function savemodel (this, fname)
       ## Generate variable for class name
       classdef_name = "ClassificationDiscriminant";
 
       ## Create variables from model properties
-      X = obj.X;
-      Y = obj.Y;
-      NumObservations = obj.NumObservations;
-      RowsUsed        = obj.RowsUsed;
-      NumPredictors   = obj.NumPredictors;
-      PredictorNames  = obj.PredictorNames;
-      ResponseName    = obj.ResponseName;
-      ClassNames      = obj.ClassNames;
-      Prior           = obj.Prior;
-      Cost            = obj.Cost;
-      ScoreTransform  = obj.ScoreTransform;
-      Sigma           = obj.Sigma;
-      Mu              = obj.Mu;
-      Coeffs          = obj.Coeffs;
-      Delta           = obj.Delta;
-      DiscrimType     = obj.DiscrimType;
-      Gamma           = obj.Gamma;
-      MinGamma        = obj.MinGamma;
-      LogDetSigma     = obj.LogDetSigma;
-      XCentered       = obj.XCentered;
+      X = this.X;
+      Y = this.Y;
+      NumObservations = this.NumObservations;
+      RowsUsed        = this.RowsUsed;
+      NumPredictors   = this.NumPredictors;
+      PredictorNames  = this.PredictorNames;
+      ResponseName    = this.ResponseName;
+      ClassNames      = this.ClassNames;
+      Prior           = this.Prior;
+      Cost            = this.Cost;
+      ScoreTransform  = this.ScoreTransform;
+      Sigma           = this.Sigma;
+      Mu              = this.Mu;
+      Coeffs          = this.Coeffs;
+      Delta           = this.Delta;
+      DiscrimType     = this.DiscrimType;
+      Gamma           = this.Gamma;
+      MinGamma        = this.MinGamma;
+      LogDetSigma     = this.LogDetSigma;
+      XCentered       = this.XCentered;
 
       ## Save classdef name and all model properties as individual variables
       save (fname, "classdef_name", "X", "Y", "NumObservations", "RowsUsed", ...

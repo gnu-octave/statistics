@@ -937,9 +937,9 @@ classdef ClassificationGAM
     ## @seealso{fitcdiscr, ClassificationGAM, CompactClassificationGAM}
     ## @end deftypefn
 
-    function CVMdl = compact (obj)
+    function CVMdl = compact (this)
       ## Greate a compact model
-      CVMdl = CompactClassificationGAM (obj);
+      CVMdl = CompactClassificationGAM (this);
     endfunction
 
     ## -*- texinfo -*-
@@ -954,30 +954,30 @@ classdef ClassificationGAM
     ## ClassificationPartitionedModel}
     ## @end deftypefn
 
-    function savemodel (obj, fname)
+    function savemodel (this, fname)
       ## Generate variable for class name
       classdef_name = "ClassificationGAM";
 
       ## Create variables from model properties
-      X = obj.X;
-      Y = obj.Y;
-      NumObservations = obj.NumObservations;
-      RowsUsed        = obj.RowsUsed;
-      NumPredictors   = obj.NumPredictors;
-      PredictorNames  = obj.PredictorNames;
-      ResponseName    = obj.ResponseName;
-      ClassNames      = obj.ClassNames;
-      Prior           = obj.Prior;
-      Cost            = obj.Cost;
-      ScoreTransform  = obj.ScoreTransform;
-      Formula         = obj.Formula;
-      Interactions    = obj.Interactions;
-      Knots           = obj.Knots;
-      Order           = obj.Order;
-      DoF             = obj.DoF;
-      BaseModel       = obj.BaseModel;
-      ModelwInt       = obj.ModelwInt;
-      IntMatrix       = obj.IntMatrix;
+      X = this.X;
+      Y = this.Y;
+      NumObservations = this.NumObservations;
+      RowsUsed        = this.RowsUsed;
+      NumPredictors   = this.NumPredictors;
+      PredictorNames  = this.PredictorNames;
+      ResponseName    = this.ResponseName;
+      ClassNames      = this.ClassNames;
+      Prior           = this.Prior;
+      Cost            = this.Cost;
+      ScoreTransform  = this.ScoreTransform;
+      Formula         = this.Formula;
+      Interactions    = this.Interactions;
+      Knots           = this.Knots;
+      Order           = this.Order;
+      DoF             = this.DoF;
+      BaseModel       = this.BaseModel;
+      ModelwInt       = this.ModelwInt;
+      IntMatrix       = this.IntMatrix;
 
       ## Save classdef name and all model properties as individual variables
       save (fname, "classdef_name", "X", "Y", "NumObservations", "RowsUsed", ...

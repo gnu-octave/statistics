@@ -1416,9 +1416,9 @@ classdef ClassificationSVM
     ## @seealso{fitcnet, ClassificationSVM, CompactClassificationSVM}
     ## @end deftypefn
 
-    function CVMdl = compact (obj)
+    function CVMdl = compact (this)
       ## Greate a compact model
-      CVMdl = CompactClassificationSVM (obj);
+      CVMdl = CompactClassificationSVM (this);
     endfunction
 
     ## -*- texinfo -*-
@@ -1432,44 +1432,44 @@ classdef ClassificationSVM
     ## @seealso{loadmodel, fitcsvm, ClassificationSVM}
     ## @end deftypefn
 
-    function savemodel (obj, fname)
+    function savemodel (this, fname)
       ## Generate variable for class name
       classdef_name = "ClassificationSVM";
 
       ## Create variables from model properties
-      X = obj.X;
-      Y = obj.Y;
-      NumObservations     = obj.NumObservations;
-      RowsUsed            = obj.RowsUsed;
-      NumPredictors       = obj.NumPredictors;
-      PredictorNames      = obj.PredictorNames;
-      ResponseName        = obj.ResponseName;
-      ClassNames          = obj.ClassNames;
-      Prior               = obj.Prior;
-      Cost                = obj.Cost;
-      ScoreTransform      = obj.ScoreTransform;
-      Standardize         = obj.Standardize;
-      Sigma               = obj.Sigma;
-      Mu                  = obj.Mu;
-      ModelParameters     = obj.ModelParameters;
-      Alpha               = obj.Alpha;
-      Beta                = obj.Beta;
-      Bias                = obj.Bias;
-      IsSupportVector     = obj.IsSupportVector;
-      SupportVectorLabels = obj.SupportVectorLabels;
-      SupportVectors      = obj.SupportVectors;
+      X = this.X;
+      Y = this.Y;
+      NumObservations     = this.NumObservations;
+      RowsUsed            = this.RowsUsed;
+      NumPredictors       = this.NumPredictors;
+      PredictorNames      = this.PredictorNames;
+      ResponseName        = this.ResponseName;
+      ClassNames          = this.ClassNames;
+      Prior               = this.Prior;
+      Cost                = this.Cost;
+      ScoreTransform      = this.ScoreTransform;
+      Standardize         = this.Standardize;
+      Sigma               = this.Sigma;
+      Mu                  = this.Mu;
+      ModelParameters     = this.ModelParameters;
+      Alpha               = this.Alpha;
+      Beta                = this.Beta;
+      Bias                = this.Bias;
+      IsSupportVector     = this.IsSupportVector;
+      SupportVectorLabels = this.SupportVectorLabels;
+      SupportVectors      = this.SupportVectors;
 
-      Model               = obj.Model;
-      SVMtype             = obj.SVMtype;
-      BoxConstraint       = obj.BoxConstraint;
-      CacheSize           = obj.CacheSize;
-      KernelScale         = obj.KernelScale;
-      KernelOffset        = obj.KernelOffset;
-      KernelFunction      = obj.KernelFunction;
-      PolynomialOrder     = obj.PolynomialOrder;
-      Nu                  = obj.Nu;
-      Tolerance           = obj.Tolerance;
-      Shrinking           = obj.Shrinking;
+      Model               = this.Model;
+      SVMtype             = this.SVMtype;
+      BoxConstraint       = this.BoxConstraint;
+      CacheSize           = this.CacheSize;
+      KernelScale         = this.KernelScale;
+      KernelOffset        = this.KernelOffset;
+      KernelFunction      = this.KernelFunction;
+      PolynomialOrder     = this.PolynomialOrder;
+      Nu                  = this.Nu;
+      Tolerance           = this.Tolerance;
+      Shrinking           = this.Shrinking;
 
       ## Save classdef name and all model properties as individual variables
       save (fname, "classdef_name", "X", "Y", "NumObservations", "RowsUsed", ...
