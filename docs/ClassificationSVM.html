@@ -124,6 +124,10 @@
 					<li><a href="ClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>ClassificationNeuralNetwork</small></a></li>
 					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
 					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace fw-bolder"><small>ClassificationSVM</small></a></li>
+					<li><a href="CompactClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>CompactClassificationDiscriminant</small></a></li>
+					<li><a href="CompactClassificationGAM.html" class="text-decoration-none font-monospace"><small>CompactClassificationGAM</small></a></li>
+					<li><a href="CompactClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactClassificationNeuralNetwork</small></a></li>
+					<li><a href="CompactClassificationSVM.html" class="text-decoration-none font-monospace"><small>CompactClassificationSVM</small></a></li>
 					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none font-monospace"><small>ConfusionMatrixChart</small></a></li>
 				</ul>
 				</div>
@@ -869,6 +873,8 @@
  <code>KernelOffset</code>, <code>KernelFunction</code>, <code>PolynomialOrder</code>,
  <code>Nu</code>, <code>Tolerance</code>, and <code>Shrinking</code>.  Type <code>help fitcsvm</code>
  for more info on their usage and default values.</td></tr>
+<tr><td width="23%"><code>Model</code></td><td width="2%"></td><td width="75%">A structure containing the trained model in
+ <code>'libsvm'</code> format.</td></tr>
 <tr><td width="23%"><code>Alpha</code></td><td width="2%"></td><td width="75%">The coefficients of the trained SVM
  classifier specified as an <math>s&times;1</math> numeric vector, where <math>s</math> is the
  number of support vectors equal to <code>sum (obj.IsSupportVector)</code>.  If the
@@ -905,6 +911,38 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Classification/ClassificationSVM.m">ClassificationSVM</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Method: <b><code>compact</code></b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+<dl>
+<dt><u>ClassificationSVM:</u> <var>CVMdl</var> = <b>compact</b><i> (<var>obj</var>)</i></dt>
+</dl>
+
+<p> Create a CompactClassificationSVM object.
+</p>
+<div class="ms-5">
+<p> <code><var>CVMdl</var> = compact (<var>obj</var>)</code> creates a compact version of the
+ ClassificationSVM object, <var>obj</var>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitcnet.html">fitcnet</a>, 
+  <a href="ClassificationSVM.html">ClassificationSVM</a>, 
+  <a href="CompactClassificationSVM.html">CompactClassificationSVM</a>
+</p>
+</div>
+            </div>
+          </div>
+        </div>
+
         <div class="container-xl my-4">
           <div class="card rounded">
             <div class="card-header card-header-mod">
@@ -1188,8 +1226,7 @@ cvpartition,
 <div class="ms-5">
 <p> <code><var>labels</var> = predict (<var>obj</var>, <var>XC</var>)</code> returns the vector of
  labels predicted for the corresponding instances in <var>XC</var>, using the
- predictor data in <code>obj.X</code> and corresponding labels, <code>obj.Y</code>,
- stored in the Support Vector Machine classification model, <var>obj</var>.
+ trained Support Vector Machine classification model, <var>obj</var>.
  For one-class SVM model, +1 or -1 is returned.
 </p>
  <ul>
@@ -1197,7 +1234,7 @@ cvpartition,
  <var>obj</var> must be a <code>ClassificationSVM</code> class object.
  </li><li>
  <var>XC</var> must be an <math>M&times;P</math> numeric matrix with the same number of
- features <math>P</math> as the corresponding predictors of the SVM model in
+ predictors <math>P</math> as the corresponding predictors of the SVM model in
  <var>obj</var>.
  </li></ul>
 
@@ -1514,10 +1551,10 @@ ClassificationSVM.fitPosterior
 
 L = 0.1500
 L = 0.066667
-L = 0.2812
+L = 0.2811
 L = 0.1667
 L = 0.2089
-L = 3.6095
+L = 3.6107
                     </pre></td></tr></tbody>
                   </table>
 

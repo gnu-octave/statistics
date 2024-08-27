@@ -124,6 +124,10 @@
 					<li><a href="ClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>ClassificationNeuralNetwork</small></a></li>
 					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
 					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
+					<li><a href="CompactClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>CompactClassificationDiscriminant</small></a></li>
+					<li><a href="CompactClassificationGAM.html" class="text-decoration-none font-monospace"><small>CompactClassificationGAM</small></a></li>
+					<li><a href="CompactClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactClassificationNeuralNetwork</small></a></li>
+					<li><a href="CompactClassificationSVM.html" class="text-decoration-none font-monospace"><small>CompactClassificationSVM</small></a></li>
 					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none font-monospace"><small>ConfusionMatrixChart</small></a></li>
 				</ul>
 				</div>
@@ -877,6 +881,38 @@
               <div class="row d-flex flex-wrap align-items-center">
                 <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
                   <h3 class="d-inline-block mr-2">
+                  Method: <b><code>compact</code></b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+<dl>
+<dt><u>ClassificationDiscriminant:</u> <var>CVMdl</var> = <b>compact</b><i> (<var>obj</var>)</i></dt>
+</dl>
+
+<p> Create a CompactClassificationDiscriminant object.
+</p>
+<div class="ms-5">
+<p> <code><var>CVMdl</var> = compact (<var>obj</var>)</code> creates a compact version of the
+ ClassificationDiscriminant object, <var>obj</var>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitcdiscr.html">fitcdiscr</a>, 
+  <a href="ClassificationDiscriminant.html">ClassificationDiscriminant</a>, 
+  <a href="CompactClassificationDiscriminant.html">CompactClassificationDiscriminant</a>
+</p>
+</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
                   Method: <b><code>crossval</code></b>
                   </h3>
                 </div>
@@ -1292,7 +1328,7 @@ CVMdl =
              PredictorNames: [1x4 cell]
                       Prior: [3x1 double]
                ResponseName: Y
-             ScoreTransform: [0x0 double]
+             ScoreTransform: none
                 Standardize: [0x0 double]
                     Trained: [10x1 cell]
                           X: [150x4 double]

@@ -124,6 +124,10 @@
 					<li><a href="ClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>ClassificationNeuralNetwork</small></a></li>
 					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
 					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
+					<li><a href="CompactClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>CompactClassificationDiscriminant</small></a></li>
+					<li><a href="CompactClassificationGAM.html" class="text-decoration-none font-monospace"><small>CompactClassificationGAM</small></a></li>
+					<li><a href="CompactClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactClassificationNeuralNetwork</small></a></li>
+					<li><a href="CompactClassificationSVM.html" class="text-decoration-none font-monospace"><small>CompactClassificationSVM</small></a></li>
 					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none font-monospace"><small>ConfusionMatrixChart</small></a></li>
 				</ul>
 				</div>
@@ -826,14 +830,18 @@
 <tr><td width="32%"><code>&quot;LearningRate&quot;</code></td><td width="2%"></td><td width="80%">A positive scalar value that defines
  the learning rate during the gradient descent.  Default value is 0.01.</td></tr>
 <tr><td width="32%"><code>&quot;Activations&quot;</code></td><td width="2%"></td><td width="80%">A character vector or a cellstr vector
- specifying the activation function(s) for the fully connected layers of the
- neural network including the output layer.  The available Activation
- functions are <code>'linear'</code>, <code>'sigmoid'</code>,
+ specifying the activation functions for the hidden layers of the neural
+ network (excluding the output layer).  The available activation functions are
+ <code>'linear'</code>, <code>'sigmoid'</code>, <code>'tanh'</code>, <code>'sigmoid'</code>, and
+ <code>'none'</code>. The default value is <code>'sigmoid'</code>.</td></tr>
+<tr><td width="32%"><code>&quot;OutputLayerActivation&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying
+ the activation function for the output layer of the neural network.  The
+ available activation functions are <code>'linear'</code>, <code>'sigmoid'</code>,
  <code>'tanh'</code>, <code>'sigmoid'</code>, and <code>'none'</code>. The default value is
  <code>'sigmoid'</code>.</td></tr>
 <tr><td width="32%"><code>&quot;IterationLimit&quot;</code></td><td width="2%"></td><td width="80%">A positive integer scalar that
  specifies the maximum number of training iterations.  The default value is
- 100.</td></tr>
+ 1000.</td></tr>
 <tr><td width="32%"><code>&quot;DisplayInfo&quot;</code></td><td width="2%"></td><td width="80%">A boolean flag indicating whether to
  print information during training.  Default is <code>false</code>.</td></tr>
 <tr><td width="32%"><code>&quot;ScoreTransform&quot;</code></td><td width="2%"></td><td width="80%">A character vector defining one of
@@ -887,17 +895,8 @@
 
  load fisheriris
  Mdl = fitcnet (meas, species);
- pred = resubPredict(Mdl);
- cm = confusionmat (species, pred);
- confusionchart (cm, Mdl.ClassNames)
-
-ans =
-
-ConfusionMatrixChart with properties:
-
-	NormalizedValues: [ 3x3 double ]
-	ClassLabels: { 3x1 cell }
-
+ pred_species = resubPredict (Mdl);
+ confusionchart (species, pred_species);
 
                     </pre></td></tr></tbody>
                   </table>

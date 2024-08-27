@@ -124,6 +124,10 @@
 					<li><a href="ClassificationNeuralNetwork.html" class="text-decoration-none font-monospace fw-bolder"><small>ClassificationNeuralNetwork</small></a></li>
 					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
 					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
+					<li><a href="CompactClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>CompactClassificationDiscriminant</small></a></li>
+					<li><a href="CompactClassificationGAM.html" class="text-decoration-none font-monospace"><small>CompactClassificationGAM</small></a></li>
+					<li><a href="CompactClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactClassificationNeuralNetwork</small></a></li>
+					<li><a href="CompactClassificationSVM.html" class="text-decoration-none font-monospace"><small>CompactClassificationSVM</small></a></li>
 					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none font-monospace"><small>ConfusionMatrixChart</small></a></li>
 				</ul>
 				</div>
@@ -849,9 +853,11 @@
  layer of the neural network model. LayerSizes does not include the size of
  the final fully connected layer. This layer always has K outputs, where K
  is the number of classes in Y.</td></tr>
-<tr><td width="23%"><code>Activations</code></td><td width="2%"></td><td width="75%">A character vector specifying the
- activation function used for the fully connected layers of the neural network
- model.</td></tr>
+<tr><td width="23%"><code>Activations</code></td><td width="2%"></td><td width="75%">A character vector or a cell array of
+ character vector specifying the activation functions used in the hidden
+ layers of the neural network.</td></tr>
+<tr><td width="23%"><code>OutputLayerActivation</code></td><td width="2%"></td><td width="75%">A character vector specifying
+ the activation function of the output layer the neural network.</td></tr>
 <tr><td width="23%"><code>LearningRate</code></td><td width="2%"></td><td width="75%">A positive scalar value defining the
  learning rate used by the gradient descend algorithm during training.</td></tr>
 <tr><td width="23%"><code>IterationLimit</code></td><td width="2%"></td><td width="75%">A positive scalar value defining
@@ -891,6 +897,38 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Classification/ClassificationNeuralNetwork.m">ClassificationNeuralNetwork</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Method: <b><code>compact</code></b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+<dl>
+<dt><u>ClassificationNeuralNetwork:</u> <var>CVMdl</var> = <b>compact</b><i> (<var>obj</var>)</i></dt>
+</dl>
+
+<p> Create a CompactClassificationNeuralNetwork object.
+</p>
+<div class="ms-5">
+<p> <code><var>CVMdl</var> = compact (<var>obj</var>)</code> creates a compact version of the
+ ClassificationNeuralNetwork object, <var>obj</var>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitcnet.html">fitcnet</a>, 
+  <a href="ClassificationNeuralNetwork.html">ClassificationNeuralNetwork</a>, 
+  <a href="CompactClassificationNeuralNetwork.html">CompactClassificationNeuralNetwork</a>
+</p>
+</div>
+            </div>
+          </div>
+        </div>
+
         <div class="container-xl my-4">
           <div class="card rounded">
             <div class="card-header card-header-mod">
@@ -969,16 +1007,15 @@ cvpartition,
 <div class="ms-5">
 <p> <code><var>labels</var> = predict (<var>obj</var>, <var>XC</var>)</code> returns the vector of
  labels predicted for the corresponding instances in <var>XC</var>, using the
- predictor data in <code>obj.X</code> and corresponding labels, <code>obj.Y</code>,
- stored in the Neural Network classification model, <var>obj</var>.
+ trained neural network classification model in <var>obj</var>.
 </p>
  <ul>
 <li>
  <var>obj</var> must be a <code>ClassificationNeuralNetwork</code> class object.
  </li><li>
  <var>X</var> must be an <math>M&times;P</math> numeric matrix with the same number of
- features <math>P</math> as the corresponding predictors of the Neural Network
- model in <var>obj</var>.
+ predictors <math>P</math> as the corresponding predictors of the trained neural
+ network model in <var>obj</var>.
  </li></ul>
 
 <p> <code>[<var>labels</var>, <var>scores</var>] = predict (<var>obj</var>, <var>XC</var></code> also

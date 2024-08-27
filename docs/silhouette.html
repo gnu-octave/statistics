@@ -124,6 +124,10 @@
 					<li><a href="ClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>ClassificationNeuralNetwork</small></a></li>
 					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
 					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
+					<li><a href="CompactClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>CompactClassificationDiscriminant</small></a></li>
+					<li><a href="CompactClassificationGAM.html" class="text-decoration-none font-monospace"><small>CompactClassificationGAM</small></a></li>
+					<li><a href="CompactClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactClassificationNeuralNetwork</small></a></li>
+					<li><a href="CompactClassificationSVM.html" class="text-decoration-none font-monospace"><small>CompactClassificationSVM</small></a></li>
 					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none font-monospace"><small>ConfusionMatrixChart</small></a></li>
 				</ul>
 				</div>
@@ -800,12 +804,13 @@
 </p>
 <p> Optional input value <var>Metric</var> is the metric used to compute the distances
  between data points. Since <code>silhouette</code> uses <code>pdist</code> to compute
- these distances, <var>Metric</var> is quite similar to the option <var>Metric</var> of
- pdist and it can be:
+ these distances, <var>Metric</var> is similar to the <var>Distance</var> input argument
+ of <code>pdist</code> and it can be:
  </p><ul>
-<li> A known distance metric defined as a string: <code>Euclidean</code>,
- <code>sqEuclidean</code> (default), <code>cityblock</code>, <code>cosine</code>,
- <code>correlation</code>, <code>Hamming</code>, <code>Jaccard</code>.
+<li> A known distance metric defined as a string: <code>euclidean</code>,
+ <code>squaredeuclidean</code> (default), <code>seuclidean</code>, <code>mahalanobis</code>,
+ <code>cityblock</code>, <code>minkowski</code>, <code>chebychev</code>, <code>cosine</code>,
+ <code>correlation</code>, <code>hamming</code>, <code>jaccard</code>, or <code>spearman</code>.
 
  </li><li> A vector as those created by <code>pdist</code>. In this case <var>X</var> does
  nothing.

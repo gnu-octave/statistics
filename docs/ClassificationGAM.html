@@ -124,6 +124,10 @@
 					<li><a href="ClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>ClassificationNeuralNetwork</small></a></li>
 					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
 					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
+					<li><a href="CompactClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>CompactClassificationDiscriminant</small></a></li>
+					<li><a href="CompactClassificationGAM.html" class="text-decoration-none font-monospace"><small>CompactClassificationGAM</small></a></li>
+					<li><a href="CompactClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactClassificationNeuralNetwork</small></a></li>
+					<li><a href="CompactClassificationSVM.html" class="text-decoration-none font-monospace"><small>CompactClassificationSVM</small></a></li>
 					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none font-monospace"><small>ConfusionMatrixChart</small></a></li>
 				</ul>
 				</div>
@@ -781,12 +785,13 @@
 
 <p> Create a <code>ClassificationGAM</code> class object containing a generalized
  additive classification model.
- The <code>ClassificationGAM</code> class implements a gradient boosting algorithm
+</p>
+<div class="ms-5">
+<p> The <code>ClassificationGAM</code> class implements a gradient boosting algorithm
  for classification, using spline fitting as the weak learner. This approach
  allows the model to capture non-linear relationships between predictors and
  the binary response variable.
 </p>
-<div class="ms-5">
 <p> <code><var>obj</var> = ClassificationGAM (<var>X</var>, <var>Y</var>)</code> returns a
  ClassificationGAM object, with <var>X</var> as the predictor data and <var>Y</var>
  containing the class labels of observations in <var>X</var>.
@@ -910,11 +915,45 @@
  training the GAM model.
 </p>
 <p> <strong>See also: </strong>
-  <a href="fitcgam.html">fitcgam</a>
+  <a href="fitcgam.html">fitcgam</a>, 
+  <a href="CompactClassificationGAM.html">CompactClassificationGAM</a>, 
+  <a href="ClassificationPartitionedModel.html">ClassificationPartitionedModel</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Classification/ClassificationGAM.m">ClassificationGAM</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Method: <b><code>compact</code></b>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+<dl>
+<dt><u>ClassificationGAM:</u> <var>CVMdl</var> = <b>compact</b><i> (<var>obj</var>)</i></dt>
+</dl>
+
+<p> Create a CompactClassificationGAM object.
+</p>
+<div class="ms-5">
+<p> <code><var>CVMdl</var> = compact (<var>obj</var>)</code> creates a compact version of the
+ ClassificationGAM object, <var>obj</var>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitcdiscr.html">fitcdiscr</a>, 
+  <a href="ClassificationGAM.html">ClassificationGAM</a>, 
+  <a href="CompactClassificationGAM.html">CompactClassificationGAM</a>
+</p>
+</div>
+            </div>
+          </div>
+        </div>
+
         <div class="container-xl my-4">
           <div class="card rounded">
             <div class="card-header card-header-mod">
@@ -996,7 +1035,7 @@ cvpartition,
  labels for the data in <var>X</var> based on the model stored in the
  ClassificationGAM object, <var>obj</var>.
 </p>
-<p> <code><var>label</var> = predict (<var>obj</var>, <var>X</var>, 'IncludeInteractions',
+<p> <code><var>label</var> = predict (<var>obj</var>, <var>XC</var>, 'IncludeInteractions',
  <var>includeInteractions</var>)</code> allows you to specify whether interaction
  terms should be included when making predictions.
 </p>
@@ -1008,7 +1047,7 @@ cvpartition,
 <li>
  <var>obj</var> must be a <code>ClassificationGAM</code> class object.
  </li><li>
- <var>X</var> must be an <math>M&times;P</math> numeric matrix where each row is an
+ <var>XC</var> must be an <math>M&times;P</math> numeric matrix where each row is an
  observation and each column corresponds to a predictor variable.
  </li><li>
  <var>includeInteractions</var> is a &rsquo;true&rsquo; or &rsquo;false&rsquo; indicating whether to
@@ -1016,8 +1055,8 @@ cvpartition,
  </li></ul>
 
 <p> <strong>See also: </strong>
-  <a href="ClassificationGAM.html">ClassificationGAM</a>, 
-  <a href="fitcgam.html">fitcgam</a>
+  <a href="fitcgam.html">fitcgam</a>, 
+  <a href="ClassificationGAM.html">ClassificationGAM</a>
 </p>
 </div>
             </div>
@@ -1117,6 +1156,7 @@ obj =
                 Prior: [0x0 double]
          ResponseName: Y
              RowsUsed: [10x1 double]
+       ScoreTransform: none
                     X: [10x2 double]
                     Y: [10x1 double]
 
