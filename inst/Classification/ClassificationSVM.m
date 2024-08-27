@@ -1845,7 +1845,7 @@ endclassdef
 
 ## Test output for crossval method
 %!test
-%! SVMModel = fitcsvm (x,y);
+%! SVMModel = fitcsvm (x, y);
 %! CVMdl = crossval (SVMModel, "KFold", 5);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})

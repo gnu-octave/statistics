@@ -191,7 +191,8 @@ classdef ClassificationPartitionedModel
           ## Train model according to partition object
           for k = 1:this.KFold
             idx = training (this.Partition, k);
-            this.Trained{k} = fitcdiscr (this.X(idx, :), this.Y(idx), args{:});
+            tmp = fitcdiscr (this.X(idx, :), this.Y(idx), args{:});
+            this.Trained{k} = compact (tmp);
           endfor
 
           ## Store ModelParameters to ClassificationPartitionedModel object
@@ -224,7 +225,8 @@ classdef ClassificationPartitionedModel
           ## Train model according to partition object
           for k = 1:this.KFold
             idx = training (this.Partition, k);
-            this.Trained{k} = fitcgam (this.X(idx, :), this.Y(idx), args{:});
+            tmp = fitcgam (this.X(idx, :), this.Y(idx), args{:});
+            this.Trained{k} = compact (tmp);
           endfor
 
           ## Store ModelParameters to ClassificationPartitionedModel object
@@ -315,7 +317,8 @@ classdef ClassificationPartitionedModel
           ## Train model according to partition object
           for k = 1:this.KFold
             idx = training (this.Partition, k);
-            this.Trained{k} = fitcnet (this.X(idx, :), this.Y(idx), args{:});
+            tmp = fitcnet (this.X(idx, :), this.Y(idx), args{:});
+            this.Trained{k} = compact (tmp);
           endfor
 
           ## Store ModelParameters to ClassificationPartitionedModel object
@@ -338,23 +341,24 @@ classdef ClassificationPartitionedModel
           for k = 1:this.KFold
             idx = training (this.Partition, k);
             ## Pass all arguments directly to fitcsvm
-            this.Trained{k} = fitcsvm (this.X(idx, :), this.Y(idx), ...
-                              'Standardize', Mdl.Standardize, ...
-                              'PredictorNames', Mdl.PredictorNames, ...
-                              'ResponseName', Mdl.ResponseName, ...
-                              'ClassNames', Mdl.ClassNames, ...
-                              'Prior', Mdl.Prior, ...
-                              'Cost', Mdl.Cost, ...
-                              'SVMtype', params.SVMtype, ...
-                              'KernelFunction', params.KernelFunction, ...
-                              'PolynomialOrder', params.PolynomialOrder, ...
-                              'KernelScale', params.KernelScale, ...
-                              'KernelOffset', params.KernelOffset, ...
-                              'BoxConstraint', params.BoxConstraint, ...
-                              'Nu', params.Nu, ...
-                              'CacheSize', params.CacheSize, ...
-                              'Tolerance', params.Tolerance, ...
-                              'Shrinking', params.Shrinking);
+            tmp = fitcsvm (this.X(idx, :), this.Y(idx), ...
+                           'Standardize', Mdl.Standardize, ...
+                           'PredictorNames', Mdl.PredictorNames, ...
+                           'ResponseName', Mdl.ResponseName, ...
+                           'ClassNames', Mdl.ClassNames, ...
+                           'Prior', Mdl.Prior, ...
+                           'Cost', Mdl.Cost, ...
+                           'SVMtype', params.SVMtype, ...
+                           'KernelFunction', params.KernelFunction, ...
+                           'PolynomialOrder', params.PolynomialOrder, ...
+                           'KernelScale', params.KernelScale, ...
+                           'KernelOffset', params.KernelOffset, ...
+                           'BoxConstraint', params.BoxConstraint, ...
+                           'Nu', params.Nu, ...
+                           'CacheSize', params.CacheSize, ...
+                           'Tolerance', params.Tolerance, ...
+                           'Shrinking', params.Shrinking);
+            this.Trained{k} = compact (tmp);
           endfor
 
           ## Store ModelParameters to ClassificationPartitionedModel object
@@ -524,6 +528,7 @@ endclassdef
 %! assert (class (cvModel), "ClassificationPartitionedModel");
 %! assert (cvModel.NumObservations, 150);
 %! assert (numel (cvModel.Trained), 5);
+%! assert (class (cvModel.Trained{1}), "CompactClassificationDiscriminant");
 %! assert (cvModel.CrossValidatedModel, "ClassificationDiscriminant");
 %! assert (cvModel.KFold, 5);
 %!test
@@ -534,6 +539,7 @@ endclassdef
 %! assert ({cvModel.X, cvModel.Y}, {meas, species});
 %! assert (cvModel.NumObservations, 150);
 %! assert (numel (cvModel.Trained), 1);
+%! assert (class (cvModel.Trained{1}), "CompactClassificationDiscriminant");
 %! assert (cvModel.CrossValidatedModel, "ClassificationDiscriminant");
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
@@ -543,6 +549,7 @@ endclassdef
 %! assert (class (cvModel), "ClassificationPartitionedModel");
 %! assert (cvModel.NumObservations, 4);
 %! assert (numel (cvModel.Trained), 5);
+%! assert (class (cvModel.Trained{1}), "CompactClassificationGAM");
 %! assert (cvModel.CrossValidatedModel, "ClassificationGAM");
 %! assert (cvModel.KFold, 5);
 %!test
@@ -554,6 +561,7 @@ endclassdef
 %! assert ({cvModel.X, cvModel.Y}, {x, y});
 %! assert (cvModel.NumObservations, 4);
 %! assert (numel (cvModel.Trained), 4);
+%! assert (class (cvModel.Trained{1}), "CompactClassificationGAM");
 %! assert (cvModel.CrossValidatedModel, "ClassificationGAM");
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
@@ -562,6 +570,7 @@ endclassdef
 %! partition = cvpartition (y, "KFold", 5);
 %! cvModel = ClassificationPartitionedModel (a, partition);
 %! assert (class (cvModel), "ClassificationPartitionedModel");
+%! assert (class (cvModel.Trained{1}), "ClassificationKNN");
 %! assert (cvModel.NumObservations, 4);
 %! assert (cvModel.ModelParameters.NumNeighbors, 1);
 %! assert (cvModel.ModelParameters.NSMethod, "kdtree");
@@ -574,10 +583,26 @@ endclassdef
 %! partition = cvpartition (y, "HoldOut", 0.2);
 %! cvModel = ClassificationPartitionedModel (a, partition);
 %! assert (class (cvModel), "ClassificationPartitionedModel");
+%! assert (class (cvModel.Trained{1}), "ClassificationKNN");
 %! assert ({cvModel.X, cvModel.Y}, {x, y});
 %! assert (cvModel.NumObservations, 4);
 %! assert (cvModel.ModelParameters.NumNeighbors, 1);
 %! assert (cvModel.ModelParameters.NSMethod, "exhaustive");
+%! assert (cvModel.ModelParameters.Distance, "euclidean");
+%! assert (! cvModel.ModelParameters.Standardize);
+%!test
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! y = ["a"; "a"; "b"; "b"];
+%! k = 3;
+%! a = fitcknn (x, y, "NumNeighbors" ,k);
+%! partition = cvpartition (y, "LeaveOut");
+%! cvModel = ClassificationPartitionedModel (a, partition);
+%! assert (class (cvModel), "ClassificationPartitionedModel");
+%! assert (class (cvModel.Trained{1}), "ClassificationKNN");
+%! assert ({cvModel.X, cvModel.Y}, {x, y});
+%! assert (cvModel.NumObservations, 4);
+%! assert (cvModel.ModelParameters.NumNeighbors, k);
+%! assert (cvModel.ModelParameters.NSMethod, "kdtree");
 %! assert (cvModel.ModelParameters.Distance, "euclidean");
 %! assert (! cvModel.ModelParameters.Standardize);
 %!test
@@ -588,6 +613,7 @@ endclassdef
 %! assert (class (cvModel), "ClassificationPartitionedModel");
 %! assert (cvModel.NumObservations, 4);
 %! assert (numel (cvModel.Trained), 5);
+%! assert (class (cvModel.Trained{1}), "CompactClassificationNeuralNetwork");
 %! assert (cvModel.CrossValidatedModel, "ClassificationNeuralNetwork");
 %! assert (cvModel.KFold, 5);
 %!test
@@ -599,21 +625,8 @@ endclassdef
 %! assert ({cvModel.X, cvModel.Y}, {x, y});
 %! assert (cvModel.NumObservations, 4);
 %! assert (numel (cvModel.Trained), 4);
+%! assert (class (cvModel.Trained{1}), "CompactClassificationNeuralNetwork");
 %! assert (cvModel.CrossValidatedModel, "ClassificationNeuralNetwork");
-%!test
-%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
-%! k = 3;
-%! a = fitcknn (x, y, "NumNeighbors" ,k);
-%! partition = cvpartition (y, "LeaveOut");
-%! cvModel = ClassificationPartitionedModel (a, partition);
-%! assert (class (cvModel), "ClassificationPartitionedModel");
-%! assert ({cvModel.X, cvModel.Y}, {x, y});
-%! assert (cvModel.NumObservations, 4);
-%! assert (cvModel.ModelParameters.NumNeighbors, k);
-%! assert (cvModel.ModelParameters.NSMethod, "kdtree");
-%! assert (cvModel.ModelParameters.Distance, "euclidean");
-%! assert (! cvModel.ModelParameters.Standardize);
 %!test
 %! load fisheriris
 %! inds = ! strcmp (species, 'setosa');
@@ -624,7 +637,8 @@ endclassdef
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (CVMdl.KFold == 5)
-%! assert (class (CVMdl.Trained{1}), "ClassificationSVM")
+%! assert (class (CVMdl.Trained{1}), "CompactClassificationSVM")
+%! assert (CVMdl.CrossValidatedModel, "ClassificationSVM");
 %!test
 %! load fisheriris
 %! inds = ! strcmp (species, 'setosa');
@@ -634,7 +648,8 @@ endclassdef
 %! CVMdl = crossval (obj, "HoldOut", 0.2);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (class (CVMdl.Trained{1}), "ClassificationSVM")
+%! assert (class (CVMdl.Trained{1}), "CompactClassificationSVM")
+%! assert (CVMdl.CrossValidatedModel, "ClassificationSVM");
 %!test
 %! load fisheriris
 %! inds = ! strcmp (species, 'setosa');
@@ -644,7 +659,8 @@ endclassdef
 %! CVMdl = crossval (obj, "LeaveOut", 'on');
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (class (CVMdl.Trained{1}), "ClassificationSVM")
+%! assert (class (CVMdl.Trained{1}), "CompactClassificationSVM")
+%! assert (CVMdl.CrossValidatedModel, "ClassificationSVM");
 
 ## Test input validation for ClassificationPartitionedModel
 %!error<ClassificationPartitionedModel: too few input arguments.> ...
