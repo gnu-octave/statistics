@@ -652,8 +652,9 @@ classdef ClassificationSVM
       if (isempty (XC))
         error ("ClassificationSVM.predict: XC is empty.");
       elseif (this.NumPredictors != columns (XC))
-        error (strcat (["ClassificationSVM.predict: XC must have the"], ...
-                       [" same number of features as in the SVM model."]));
+        error (strcat (["ClassificationSVM.predict:"], ...
+                       [" XC must have the same number of"], ...
+                       [" predictors as the trained model."]));
       endif
 
       ## Standardize (if necessary)
@@ -825,8 +826,8 @@ classdef ClassificationSVM
       if (isempty (X))
         error ("ClassificationSVM.margin: X is empty.");
       elseif (columns (this.X) != columns (X))
-        error (strcat (["ClassificationSVM.margin: X must have the"], ...
-                       [" same number of features as in the SVM model."]));
+        error (strcat (["ClassificationSVM.margin: X must have the same"], ...
+                       [" number of predictors as the trained model."]));
       endif
 
       ## Check for valid Y
@@ -940,7 +941,7 @@ classdef ClassificationSVM
         error ("ClassificationSVM.loss: X is empty.");
       elseif (columns (this.X) != columns (X))
         error (strcat (["ClassificationSVM.loss: X must have the same"], ...
-                       [" number of features as in the SVM model."]));
+                       [" number of predictors as the trained model."]));
       endif
 
       ## Check for valid Y
@@ -1728,7 +1729,7 @@ endclassdef
 %! predict (ClassificationSVM (ones (40,2), ones (40,1)))
 %!error<ClassificationSVM.predict: XC is empty.> ...
 %! predict (ClassificationSVM (ones (40,2), ones (40,1)), [])
-%!error<ClassificationSVM.predict: XC must have the same number of features> ...
+%!error<ClassificationSVM.predict: XC must have the same number of predictors as the trained model.> ...
 %! predict (ClassificationSVM (ones (40,2), ones (40,1)), 1)
 %!test
 %! objST = fitcsvm (x, y);
@@ -1760,7 +1761,7 @@ endclassdef
 %! margin (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), zeros (2))
 %!error<ClassificationSVM.margin: X is empty.> ...
 %! margin (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), [], zeros (2))
-%!error<ClassificationSVM.margin: X must have the same number of features as in the SVM model.> ...
+%!error<ClassificationSVM.margin: X must have the same number of predictors as the trained model.> ...
 %! margin (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), 1, zeros (2))
 %!error<ClassificationSVM.margin: Y is empty.> ...
 %! margin (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), zeros (2), [])
@@ -1796,7 +1797,7 @@ endclassdef
 %! ones(2,1), "LossFun")
 %!error<ClassificationSVM.loss: X is empty.> ...
 %! loss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), [], zeros (2))
-%!error<ClassificationSVM.loss: X must have the same number of features> ...
+%!error<ClassificationSVM.loss: X must have the same number of predictors as the trained model.> ...
 %! loss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), 1, zeros (2))
 %!error<ClassificationSVM.loss: Y is empty.> ...
 %! loss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), zeros (2), [])

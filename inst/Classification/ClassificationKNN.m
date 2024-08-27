@@ -699,8 +699,9 @@ classdef ClassificationKNN
       if (isempty (XC))
         error ("ClassificationKNN.predict: XC is empty.");
       elseif (this.NumPredictors != columns (XC))
-        error (strcat (["ClassificationKNN.predict: XC must have the same"], ...
-                       [" number of features (columns) as in the kNN model."]));
+        error (strcat (["ClassificationKNN.predict:"], ...
+                       [" XC must have the same number of"], ...
+                       [" predictors as the trained model."]));
       endif
 
       ## Get training data and labels
@@ -879,6 +880,14 @@ classdef ClassificationKNN
                 " pairs."]);
       elseif (nargin > 7)
         error ("ClassificationKNN.loss: too many input arguments.");
+      endif
+
+      ## Check for valid X
+      if (isempty (X))
+        error ("ClassificationKNN.loss: X is empty.");
+      elseif (columns (this.X) != columns (X))
+        error (strcat (["ClassificationKNN.loss: X must have the same"], ...
+                       [" number of predictors as the trained model."]));
       endif
 
       ## Default values
@@ -1104,6 +1113,14 @@ classdef ClassificationKNN
       ## Check for sufficient input arguments
       if (nargin < 3)
         error ("ClassificationKNN.margin: too few input arguments.");
+      endif
+
+      ## Check for valid X
+      if (isempty (X))
+        error ("ClassificationKNN.margin: X is empty.");
+      elseif (columns (this.X) != columns (X))
+        error (strcat (["ClassificationKNN.margin: X must have the same"], ...
+                       [" number of predictors as the trained model."]));
       endif
 
       ## Validate Y
@@ -2235,7 +2252,7 @@ endfunction
 %! predict (ClassificationKNN (ones (4,2), ones (4,1)))
 %!error<ClassificationKNN.predict: XC is empty.> ...
 %! predict (ClassificationKNN (ones (4,2), ones (4,1)), [])
-%!error<ClassificationKNN.predict: XC must have the same number of features> ...
+%!error<ClassificationKNN.predict: XC must have the same number of predictors as the trained model.> ...
 %! predict (ClassificationKNN (ones (4,2), ones (4,1)), 1)
 
 ## Test output for loss method
@@ -2334,6 +2351,10 @@ endfunction
 %! loss (ClassificationKNN (ones (4,2), ones (4,1)))
 %!error<ClassificationKNN.loss: too few input arguments.> ...
 %! loss (ClassificationKNN (ones (4,2), ones (4,1)), ones (4,2))
+%!error<ClassificationKNN.loss: X is empty.> ...
+%! loss (ClassificationKNN (ones (40,2), randi ([1, 2], 40, 1)), [], zeros (2))
+%!error<ClassificationKNN.loss: X must have the same number of predictors as the trained model.> ...
+%! loss (ClassificationKNN (ones (40,2), randi ([1, 2], 40, 1)), 1, zeros (2))
 %!error<ClassificationKNN.loss: name-value arguments must be in pairs.> ...
 %! loss (ClassificationKNN (ones (4,2), ones (4,1)), ones (4,2), ...
 %!        ones (4,1), 'LossFun')
@@ -2386,6 +2407,10 @@ endfunction
 %! margin (ClassificationKNN (ones (4,2), ones (4,1)))
 %!error<ClassificationKNN.margin: too few input arguments.> ...
 %! margin (ClassificationKNN (ones (4,2), ones (4,1)), ones (4,2))
+%!error<ClassificationKNN.margin: X is empty.> ...
+%! margin (ClassificationKNN (ones (40,2), randi ([1, 2], 40, 1)), [], zeros (2))
+%!error<ClassificationKNN.margin: X must have the same number of predictors as the trained model.> ...
+%! margin (ClassificationKNN (ones (40,2), randi ([1, 2], 40, 1)), 1, zeros (2))
 %!error<ClassificationKNN.margin: Y must have the same number of rows as X.> ...
 %! margin (ClassificationKNN (ones (4,2), ones (4,1)), ones (4,2), ones (3,1))
 

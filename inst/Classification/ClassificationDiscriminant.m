@@ -516,8 +516,9 @@ classdef ClassificationDiscriminant
       if (isempty (XC))
         error ("ClassificationDiscriminant.predict: XC is empty.");
       elseif (columns (this.X) != columns (XC))
-        error (strcat (["ClassificationDiscriminant.predict: XC must have"], ...
-                       [" the same number of features as the trained model."]));
+        error (strcat (["ClassificationDiscriminant.predict:"], ...
+                       [" XC must have the same number of"], ...
+                       [" predictors as the trained model."]));
       endif
 
       ## Get training data and labels
@@ -628,6 +629,14 @@ classdef ClassificationDiscriminant
                        [" arguments must be in pairs."]));
       elseif (nargin > 7)
         error ("ClassificationDiscriminant.loss: too many input arguments.");
+      endif
+
+      ## Check for valid X
+      if (isempty (X))
+        error ("ClassificationDiscriminant.loss: X is empty.");
+      elseif (columns (this.X) != columns (X))
+        error (strcat (["ClassificationDiscriminant.loss: X must have the"], ...
+                       [" same number of predictors as the trained model."]));
       endif
 
       ## Default values
@@ -860,6 +869,14 @@ classdef ClassificationDiscriminant
       ## Check for sufficient input arguments
       if (nargin < 3)
         error ("ClassificationDiscriminant.margin: too few input arguments.");
+      endif
+
+      ## Check for valid X
+      if (isempty (X))
+        error ("ClassificationDiscriminant.margin: X is empty.");
+      elseif (columns (this.X) != columns (X))
+        error (strcat (["ClassificationDiscriminant.margin: X must have the"], ...
+                       [" same number of predictors as the trained model."]));
       endif
 
       ## Validate Y
@@ -1265,7 +1282,6 @@ endclassdef
 %! ClassificationDiscriminant (X, Y, "Cost", {eye(2)})
 %!error<ClassificationDiscriminant: the number of rows and columns in 'Cost' must correspond to selected classes in Y.> ...
 %! ClassificationDiscriminant (X, Y, "Cost", ones (3))
-
 %!error<ClassificationDiscriminant: Predictor 'x1' has zero within-class variance.> ...
 %! ClassificationDiscriminant (ones (5,2), [1; 1; 2; 2; 2])
 %!error<ClassificationDiscriminant: Predictor 'A' has zero within-class variance.> ...
@@ -1308,7 +1324,7 @@ endclassdef
 %! predict (MODEL)
 %!error<ClassificationDiscriminant.predict: XC is empty.> ...
 %! predict (MODEL, [])
-%!error<ClassificationDiscriminant.predict: XC must have the same number of features as the trained model.> ...
+%!error<ClassificationDiscriminant.predict: XC must have the same number of predictors as the trained model.> ...
 %! predict (MODEL, 1)
 
 ## Test loss method
@@ -1395,6 +1411,10 @@ endclassdef
 %! loss (MODEL)
 %!error<ClassificationDiscriminant.loss: too few input arguments.> ...
 %! loss (MODEL, ones (4,2))
+%!error<ClassificationDiscriminant.loss: X is empty.> ...
+%! loss (MODEL, [], zeros (2))
+%!error<ClassificationDiscriminant.loss: X must have the same number of predictors as the trained model.> ...
+%! loss (MODEL, 1, zeros (2))
 %!error<ClassificationDiscriminant.loss: name-value arguments must be in pairs.> ...
 %! loss (MODEL, ones (4,2), ones (4,1), 'LossFun')
 %!error<ClassificationDiscriminant.loss: Y must have the same number of rows as X.> ...
@@ -1423,6 +1443,10 @@ endclassdef
 %! margin (MODEL)
 %!error<ClassificationDiscriminant.margin: too few input arguments.> ...
 %! margin (MODEL, ones (4,2))
+%!error<ClassificationDiscriminant.margin: X is empty.> ...
+%! margin (MODEL, [], zeros (2))
+%!error<ClassificationDiscriminant.margin: X must have the same number of predictors as the trained model.> ...
+%! margin (MODEL, 1, zeros (2))
 %!error<ClassificationDiscriminant.margin: Y must have the same number of rows as X.> ...
 %! margin (MODEL, ones (4,2), ones (3,1))
 

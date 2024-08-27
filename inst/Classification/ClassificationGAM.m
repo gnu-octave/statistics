@@ -579,8 +579,9 @@ classdef ClassificationGAM
       if (isempty (XC))
         error ("ClassificationGAM.predict: XC is empty.");
       elseif (this.NumPredictors != columns (XC))
-        error (strcat (["ClassificationGAM.predict: XC must have the same"], ...
-                       [" number of features as the trained model."]));
+        error (strcat (["ClassificationGAM.predict:"], ...
+                       [" XC must have the same number of"], ...
+                       [" predictors as the trained model."]));
       endif
 
       ## Clean XC data
@@ -1160,7 +1161,7 @@ endfunction
 %! predict (ClassificationGAM (ones (4,2), ones (4,1)))
 %!error<ClassificationGAM.predict: XC is empty.> ...
 %! predict (ClassificationGAM (ones (4,2), ones (4,1)), [])
-%!error<ClassificationGAM.predict: XC must have the same number of features as the trained model.> ...
+%!error<ClassificationGAM.predict: XC must have the same number of predictors as the trained model.> ...
 %! predict (ClassificationGAM (ones (4,2), ones (4,1)), 1)
 
 ## Test crossval method
