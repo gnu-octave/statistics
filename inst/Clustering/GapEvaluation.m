@@ -381,3 +381,9 @@ classdef GapEvaluation < ClusterCriterion
     endfunction
   endmethods
 endclassdef
+
+%!test
+%! load fisheriris
+%! eva = evalclusters (meas([1:50],:), "kmeans", "gap", "KList", [1:3], ...
+%!                     "referencedistribution", "uniform");
+%! assert (class (eva), "GapEvaluation");

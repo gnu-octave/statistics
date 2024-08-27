@@ -289,3 +289,8 @@ classdef SilhouetteEvaluation < ClusterCriterion
     endfunction
   endmethods
 endclassdef
+
+%!test
+%! load fisheriris
+%! eva = evalclusters (meas, "kmeans", "silhouette", "KList", [1:6]);
+%! assert (class (eva), "SilhouetteEvaluation");

@@ -244,7 +244,7 @@ function cc = evalclusters (x, clust, criterion, varargin)
 
       case "referencedistribution"
         ## used by gap evaluation
-        if (! ischar (varargin{pair_index + 1}) || any (strcmpi ...
+        if (! ischar (varargin{pair_index + 1}) || ! any (strcmpi ...
             (varargin{pair_index + 1}, {"pca", "uniform"})))
           error (["evalclusters: the reference distribution must be either" ...
                   "'PCA' or 'uniform'"]);
@@ -331,6 +331,12 @@ function cc = evalclusters (x, clust, criterion, varargin)
 endfunction
 
 
+## Demo code
+%!demo
+%! load fisheriris;
+%! eva = evalclusters (meas, "kmeans", "calinskiharabasz", "KList", [1:6])
+%! plot (eva)
+
 ## input tests
 %!error evalclusters ()
 %!error evalclusters ([1 1;0 1])
@@ -360,13 +366,8 @@ endfunction
 
 %!test
 %! load fisheriris;
-%! eva = evalclusters(meas, "kmeans", "calinskiharabasz", "KList", [1:6]);
-%! assert(isa(eva, "CalinskiHarabaszEvaluation"));
-%! assert(eva.NumObservations, 150);
-%! assert(eva.OptimalK, 3);
-%! assert(eva.InspectedK, [1 2 3 4 5 6]);
-
-## demonstration
-#%!demo
-#%! load fisheriris;
-#%! eva = evalclusters(meas, "kmeans", "calinskiharabasz", "KList", [1:6])
+%! eva = evalclusters (meas, "kmeans", "calinskiharabasz", "KList", [1:6]);
+%! assert (isa (eva, "CalinskiHarabaszEvaluation"));
+%! assert (eva.NumObservations, 150);
+%! assert (eva.OptimalK, 3);
+%! assert (eva.InspectedK, [1 2 3 4 5 6]);

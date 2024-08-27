@@ -243,3 +243,13 @@ classdef ClusterCriterion < handle
     endfunction
   endmethods
 endclassdef
+
+## Test input validation
+%!error <ClusterCriterion: 'x' must be a numeric matrix> ...
+%! ClusterCriterion ("1", "kmeans", [1:6])
+%!error <ClusterCriterion: unknown clustering algorithm 'k'> ...
+%! ClusterCriterion ([1, 2, 1, 3, 2, 4, 3], "k", [1:6])
+%!error <ClusterCriterion: invalid matrix of clustering solutions> ...
+%! ClusterCriterion ([1, 2, 1; 3, 2, 4], 1, [1:6])
+%!error <ClusterCriterion: invalid argument> ...
+%! ClusterCriterion ([1, 2, 1; 3, 2, 4], ones (2, 2, 2), [1:6])

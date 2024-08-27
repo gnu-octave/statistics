@@ -237,3 +237,8 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
     endfunction
   endmethods
 endclassdef
+
+%!test
+%! load fisheriris
+%! eva = evalclusters (meas, "kmeans", "calinskiharabasz", "KList", [1:6]);
+%! assert (class (eva), "CalinskiHarabaszEvaluation");

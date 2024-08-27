@@ -240,3 +240,8 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
     endfunction
   endmethods
 endclassdef
+
+%!test
+%! load fisheriris
+%! eva = evalclusters (meas, "kmeans", "DaviesBouldin", "KList", [1:6]);
+%! assert (class (eva), "DaviesBouldinEvaluation");
