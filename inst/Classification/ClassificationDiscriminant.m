@@ -1214,7 +1214,7 @@ endclassdef
 %!              -1.0600e-01, -4.2800e-01, -6.2000e-02, -4.6000e-02; ...
 %!              -3.0600e-01, -2.2800e-01, -1.6200e-01, -4.6000e-02];
 %! assert (class (Mdl), "ClassificationDiscriminant");
-%! assert ({Mdl.X, Mdl.Y, a.NumObservations}, {x, y, 150})
+%! assert ({Mdl.X, Mdl.Y, Mdl.NumObservations}, {x, y, 150})
 %! assert ({Mdl.DiscrimType, Mdl.ResponseName}, {"linear", "Y"})
 %! assert ({Mdl.Gamma, Mdl.MinGamma}, {0.5, 0})
 %! assert (Mdl.ClassNames, unique (species))
