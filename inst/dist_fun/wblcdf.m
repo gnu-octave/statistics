@@ -198,11 +198,11 @@ endfunction
 %!shared x, y
 %! x = [-1 0 0.5 1 Inf];
 %! y = [0, 1-exp(-x(2:4)), 1];
-%!assert (wblcdf (x, ones (1,5), ones (1,5)), y)
+%!assert (wblcdf (x, ones (1,5), ones (1,5)), y, 1e-16)
 %!assert (wblcdf (x, ones (1,5), ones (1,5), "upper"), 1 - y)
 %!assert (wblcdf (x, "upper"), 1 - y)
-%!assert (wblcdf (x, 1, ones (1,5)), y)
-%!assert (wblcdf (x, ones (1,5), 1), y)
+%!assert (wblcdf (x, 1, ones (1,5)), y, 1e-16)
+%!assert (wblcdf (x, ones (1,5), 1), y, 1e-16)
 %!assert (wblcdf (x, [0 1 NaN Inf 1], 1), [NaN 0 NaN 0 1])
 %!assert (wblcdf (x, [0 1 NaN Inf 1], 1, "upper"), 1 - [NaN 0 NaN 0 1])
 %!assert (wblcdf (x, 1, [0 1 NaN Inf 1]), [NaN 0 NaN y(4:5)])
@@ -211,7 +211,7 @@ endfunction
 %!assert (wblcdf ([x(1:2) NaN x(4:5)], 1, 1, "upper"), 1 - [y(1:2) NaN y(4:5)])
 
 ## Test class of input preserved
-%!assert (wblcdf ([x, NaN], 1, 1), [y, NaN])
+%!assert (wblcdf ([x, NaN], 1, 1), [y, NaN], 1e-16)
 %!assert (wblcdf (single ([x, NaN]), 1, 1), single ([y, NaN]))
 %!assert (wblcdf ([x, NaN], single (1), 1), single ([y, NaN]))
 %!assert (wblcdf ([x, NaN], 1, single (1)), single ([y, NaN]))

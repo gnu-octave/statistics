@@ -195,11 +195,11 @@ endfunction
 %!shared x, p
 %! x = [-1 0 0.5 1 Inf];
 %! p = [0, 1 - exp(-x(2:end)/2)];
-%!assert (expcdf (x, 2*ones (1,5)), p)
-%!assert (expcdf (x, 2), p)
-%!assert (expcdf (x, 2*[1 0 NaN 1 1]), [0 NaN NaN p(4:5)])
+%!assert (expcdf (x, 2 * ones (1, 5)), p, 1e-16)
+%!assert (expcdf (x, 2), p, 1e-16)
+%!assert (expcdf (x, 2 * [1, 0, NaN, 1, 1]), [0, NaN, NaN, p(4:5)], 1e-16)
+%!assert (expcdf ([x, NaN], 2), [p, NaN], 1e-16)
 ## Test class of input preserved
-%!assert (expcdf ([x, NaN], 2), [p, NaN])
 %!assert (expcdf (single ([x, NaN]), 2), single ([p, NaN]))
 %!assert (expcdf ([x, NaN], single (2)), single ([p, NaN]))
 

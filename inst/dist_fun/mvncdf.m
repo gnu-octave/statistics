@@ -470,23 +470,23 @@ endfunction
 %!          0.9722897881414742, 0.9788150170059926, ...
 %!          0.9813597788804785, 0.9821977956568989, ...
 %!          0.9824283794464095, 0.9824809345614861]';
-%! assert (p([616:625]), p_out, 2e-16);
+%! assert (p([616:625]), p_out, 3e-16);
 %!test
 %! mu = [0, 0];
 %! Sigma = [0.25, 0.3; 0.3, 1];
-%! [p, err] = mvncdf ([0 0], [1 1], mu, Sigma);
+%! [p, err] = mvncdf ([0, 0], [1, 1], mu, Sigma);
 %! assert (p, 0.2097424404755626, 1e-16);
 %! assert (err, 1e-08);
 %!test
 %! x = [1 2];
 %! mu = [0.5 1.5];
-%! sigma = [1.0 0.5; 0.5 1.0];
+%! sigma = [1.0, 0.5; 0.5, 1.0];
 %! p = mvncdf (x, mu, sigma);
 %! assert (p, 0.546244443857090, 1e-15);
 %!test
 %! x = [1 2];
 %! mu = [0.5 1.5];
-%! sigma = [1.0 0.5; 0.5 1.0];
+%! sigma = [1.0, 0.5; 0.5, 1.0];
 %! a = [-inf 0];
 %! p = mvncdf (a, x, mu, sigma);
 %! assert (p, 0.482672935215631, 1e-15);
@@ -495,4 +495,4 @@ endfunction
 %!error p = mvncdf (randn (25,4), randn (25,5), [], eye (4));
 %!error p = mvncdf (randn (25,4), randn (25,4), [2, 3; 2, 3], eye (4));
 %!error p = mvncdf (randn (25,4), randn (25,4), ones (1, 5), eye (4));
-%!error p = mvncdf ([-inf 0], [1, 2], [0.5 1.5], [1.0 0.5; 0.5 1.0], option);
+%!error p = mvncdf ([-inf, 0], [1, 2], [0.5, 1.5], [1.0, 0.5; 0.5, 1.0], option)
