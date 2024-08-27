@@ -718,19 +718,19 @@ endclassdef
 
 ## Test predict method
 %!test
-%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = {"a"; "a"; "b"; "b"};
-%! Mdl = fitcdiscr (x, y, "Gamma", 0.5);
+%! load fisheriris
+%! x = meas;
+%! y = species;
+%! Mdl = fitcdiscr (meas, species, "Gamma", 0.5);
 %! CMdl = compact (Mdl);
-%! [label, score, cost] = predict (CMdl, x);
-%! l = {'a'; 'a'; 'b'; 'b'};
-%! s = [0.7642, 0.2358; 0.5011, 0.4989; ...
-%!      0.2375, 0.7625; 0.4966, 0.5034];
-%! c = [0.2358, 0.7642; 0.4989, 0.5011; ...
-%!      0.7625, 0.2375; 0.5034, 0.4966];
-%! assert (label, l)
-%! assert (score, s, 1e-4)
-%! assert (cost, c, 1e-4)
+%! [label, score, cost] = predict (CMdl, [2, 2, 2, 2]);
+%! assert (label, {'versicolor'})
+%! assert (score, [0, 0.9999, 0.0001], 1e-4)
+%! assert (cost, [1, 0.0001, 0.9999], 1e-4)
+%! [label, score, cost] = predict (CMdl, [2.5, 2.5, 2.5, 2.5]);
+%! assert (label, {'versicolor'})
+%! assert (score, [0, 0.6368, 0.3632], 1e-4)
+%! assert (cost, [1, 0.3632, 0.6368], 1e-4)
 %!test
 %! load fisheriris
 %! x = meas;
