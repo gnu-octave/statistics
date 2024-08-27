@@ -175,10 +175,6 @@ classdef ClassificationKNN
 
     NumObservations = [];     # Number of observations in training dataset
     RowsUsed        = [];     # Rows used in fitting
-    Standardize     = [];     # Flag to standardize predictors
-    Sigma           = [];     # Predictor standard deviations
-    Mu              = [];     # Predictor means
-
     NumPredictors   = [];     # Number of predictors
     PredictorNames  = [];     # Predictor variables names
     ResponseName    = [];     # Response variable name
@@ -187,6 +183,10 @@ classdef ClassificationKNN
     Cost            = [];     # Cost of misclassification
 
     ScoreTransform  = [];     # Transformation for classification scores
+
+    Standardize     = [];     # Flag to standardize predictors
+    Sigma           = [];     # Predictor standard deviations
+    Mu              = [];     # Predictor means
 
     BreakTies       = [];     # Tie-breaking algorithm
     NumNeighbors    = [];     # Number of nearest neighbors
@@ -316,49 +316,8 @@ classdef ClassificationKNN
             endif
 
           case "scoretransform"
-            ScoreTransform = varargin{2};
-            stList = {"doublelogit", "invlogit", "ismax", "logit", "none", ...
-                      "identity", "sign", "symmetric", "symmetricismax", ...
-                      "symmetriclogit"};
-            if (! (ischar (ScoreTransform) ||
-                   strcmp (class (ScoreTransform), "function_handle")))
-              error (strcat (["ClassificationKNN: 'ScoreTransform' must"], ...
-                             [" be a character vector or a function handle."]));
-            endif
-            if (! ismember (ScoreTransform, stList))
-              error (strcat (["ClassificationKNN: unrecognized"], ...
-                             [" 'ScoreTransform' function."]));
-            endif
-            ## Handle ScoreTransform here
-            if (is_function_handle (ScoreTransform))
-              m = eye (5);
-              if (! isequal (size (m), size (ScoreTransform (m))))
-                error (strcat (["ClassificationKNN: function handle for"], ...
-                               [" 'ScoreTransform' must return the same"], ...
-                               [" size as its input."]));
-              endif
-              this.ScoreTransform = ScoreTransform;
-            else
-              if (strcmpi ("doublelogit", ScoreTransform))
-                this.ScoreTransform = @(x) 1 ./ (1 + exp .^ (-2 * x));
-              elseif (strcmpi ("invlogit", ScoreTransform))
-                this.ScoreTransform = @(x) log (x ./ (1 - x));
-              elseif (strcmpi ("ismax", ScoreTransform))
-                this.ScoreTransform = eval (sprintf ("@(x) ismax (x)"));
-              elseif (strcmpi ("logit", ScoreTransform))
-                this.ScoreTransform = @(x) 1 ./ (1 + exp .^ (-x));
-              elseif (strcmpi ("identity", ScoreTransform))
-                this.ScoreTransform = 'none';
-              elseif (strcmpi ("sign", ScoreTransform))
-                this.ScoreTransform = @(x) sign (x);
-              elseif (strcmpi ("symmetric", ScoreTransform))
-                this.ScoreTransform = @(x) 2 * x - 1;
-              elseif (strcmpi ("symmetricismax", ScoreTransform))
-                this.ScoreTransform = eval (sprintf ("@(x) symmetricismax (x)"));
-              elseif (strcmpi ("symmetriclogit", ScoreTransform))
-                this.ScoreTransform = @(x) 2 ./ (1 + exp .^ (-x)) - 1;
-              endif
-            endif
+            name = "ClassificationKNN";
+            this.ScoreTransform = parseScoreTransform (varargin{2}, name);
 
           case "breakties"
             BreakTies = varargin{2};
@@ -739,7 +698,7 @@ classdef ClassificationKNN
       ## Check for valid XC
       if (isempty (XC))
         error ("ClassificationKNN.predict: XC is empty.");
-      elseif (columns (this.X) != columns (XC))
+      elseif (this.NumPredictors != columns (XC))
         error (strcat (["ClassificationKNN.predict: XC must have the same"], ...
                        [" number of features (columns) as in the kNN model."]));
       endif

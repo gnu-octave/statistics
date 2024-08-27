@@ -23,6 +23,7 @@ classdef ClassificationGAM
 ##
 ## Create a @qcode{ClassificationGAM} class object containing a generalized
 ## additive classification model.
+##
 ## The @qcode{ClassificationGAM} class implements a gradient boosting algorithm
 ## for classification, using spline fitting as the weak learner. This approach
 ## allows the model to capture non-linear relationships between predictors and
@@ -168,16 +169,13 @@ classdef ClassificationGAM
 ## @qcode{"Order"}, and @qcode{"DoF"} to define the required polynomial for
 ## training the GAM model.
 ##
-## @seealso{fitcgam}
+## @seealso{fitcgam, CompactClassificationGAM, ClassificationPartitionedModel}
 ## @end deftypefn
 
   properties (Access = public)
 
-    X         = [];         # Predictor data
-    Y         = [];         # Class labels
-    BaseModel = [];         # Base model parameters (no interactions)
-    ModelwInt = [];         # Model parameters with interactions
-    IntMatrix = [];         # Interactions matrix applied to predictor data
+    X = [];                 # Predictor data
+    Y = [];                 # Class labels
 
     NumObservations = [];   # Number of observations in training dataset
     RowsUsed        = [];   # Rows used in fitting
@@ -188,6 +186,8 @@ classdef ClassificationGAM
     Prior           = [];   # Prior probability for each class
     Cost            = [];   # Cost of Misclassification
 
+    ScoreTransform  = [];   # Transformation for classification scores
+
     Formula         = [];   # Formula for GAM model
     Interactions    = [];   # Number or matrix of interaction terms
 
@@ -197,6 +197,10 @@ classdef ClassificationGAM
 
     LearningRate    = [];   # Learning rate for training
     NumIterations   = [];   # Max number of iterations for training
+
+    BaseModel = [];         # Base model parameters (no interactions)
+    ModelwInt = [];         # Model parameters with interactions
+    IntMatrix = [];         # Interactions matrix applied to predictor data
 
   endproperties
 
@@ -237,6 +241,7 @@ classdef ClassificationGAM
       LearningRate   = 0.1;
       NumIterations  = 100;
       Cost           = [];
+      this.ScoreTransform  = 'none';
 
       ## Number of parameters for Knots, DoF, Order (maximum 2 allowed)
       KOD = 0;
@@ -291,6 +296,10 @@ classdef ClassificationGAM
               error (strcat (["ClassificationGAM: 'Cost' must be"], ...
                              [" a numeric square matrix."]));
             endif
+
+          case "scoretransform"
+            name = "ClassificationGAM";
+            this.ScoreTransform = parseScoreTransform (varargin{2}, name);
 
           case "formula"
             if (F_I < 1)
@@ -537,7 +546,7 @@ classdef ClassificationGAM
     ## labels for the data in @var{X} based on the model stored in the
     ## ClassificationGAM object, @var{obj}.
     ##
-    ## @code{@var{label} = predict (@var{obj}, @var{X}, 'IncludeInteractions',
+    ## @code{@var{label} = predict (@var{obj}, @var{XC}, 'IncludeInteractions',
     ## @var{includeInteractions})} allows you to specify whether interaction
     ## terms should be included when making predictions.
     ##
@@ -549,14 +558,14 @@ classdef ClassificationGAM
     ## @item
     ## @var{obj} must be a @qcode{ClassificationGAM} class object.
     ## @item
-    ## @var{X} must be an @math{MxP} numeric matrix where each row is an
+    ## @var{XC} must be an @math{MxP} numeric matrix where each row is an
     ## observation and each column corresponds to a predictor variable.
     ## @item
     ## @var{includeInteractions} is a 'true' or 'false' indicating whether to
     ## include interaction terms in the predictions.
     ## @end itemize
     ##
-    ## @seealso{ClassificationGAM, fitcgam}
+    ## @seealso{fitcgam, ClassificationGAM}
     ## @end deftypefn
 
     function [labels, scores] = predict (this, XC, varargin)
@@ -569,9 +578,9 @@ classdef ClassificationGAM
       ## Check for valid XC
       if (isempty (XC))
         error ("ClassificationGAM.predict: XC is empty.");
-      elseif (columns (this.X) != columns (XC))
-        error (["ClassificationGAM.predict: XC must have the same", ...
-                " number of features as the trained model."]);
+      elseif (this.NumPredictors != columns (XC))
+        error (strcat (["ClassificationGAM.predict: XC must have the same"], ...
+                       [" number of features as the trained model."]));
       endif
 
       ## Clean XC data
@@ -589,19 +598,19 @@ classdef ClassificationGAM
           case "includeinteractions"
             tmpInt = varargin{2};
             if (! islogical (tmpInt) || (tmpInt != 0 && tmpInt != 1))
-              error (["ClassificatioGAM.predict: includeinteractions", ...
-                        " must be a logical value."]);
+              error (strcat (["ClassificatioGAM.predict:"], ...
+                             [" includeinteractions must be a logical value."]));
             endif
             ## Check model for interactions
             if (tmpInt && isempty (this.IntMatrix))
-              error (["ClassificatioGAM.predict: trained model", ...
-                        " does not include any interactions."]);
+              error (strcat (["ClassificatioGAM.predict: trained model"], ...
+                             [" does not include any interactions."]));
             endif
             incInt = tmpInt;
 
           otherwise
-            error (["ClassificationGAM.predict: invalid NAME in", ...
-                      " optional pairs of arguments."]);
+            error (strcat (["ClassificationGAM.predict: invalid NAME in"], ...
+                           [" optional pairs of arguments."]));
         endswitch
         varargin (1:2) = [];
       endwhile
@@ -918,6 +927,22 @@ classdef ClassificationGAM
   methods (Access = public)
 
     ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationGAM} {@var{CVMdl} =} compact (@var{obj})
+    ##
+    ## Create a CompactClassificationGAM object.
+    ##
+    ## @code{@var{CVMdl} = compact (@var{obj})} creates a compact version of the
+    ## ClassificationGAM object, @var{obj}.
+    ##
+    ## @seealso{fitcdiscr, ClassificationGAM, CompactClassificationGAM}
+    ## @end deftypefn
+
+    function CVMdl = compact (obj)
+      ## Greate a compact model
+      CVMdl = CompactClassificationGAM (obj);
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn  {ClassificationGAM} {} savemodel (@var{obj}, @var{filename})
     ##
     ## Save a ClassificationGAM object.
@@ -936,9 +961,6 @@ classdef ClassificationGAM
       ## Create variables from model properties
       X = obj.X;
       Y = obj.Y;
-      BaseModel       = obj.BaseModel;
-      ModelwInt       = obj.ModelwInt;
-      IntMatrix       = obj.IntMatrix;
       NumObservations = obj.NumObservations;
       RowsUsed        = obj.RowsUsed;
       NumPredictors   = obj.NumPredictors;
@@ -947,17 +969,21 @@ classdef ClassificationGAM
       ClassNames      = obj.ClassNames;
       Prior           = obj.Prior;
       Cost            = obj.Cost;
+      ScoreTransform  = obj.ScoreTransform;
       Formula         = obj.Formula;
       Interactions    = obj.Interactions;
       Knots           = obj.Knots;
       Order           = obj.Order;
       DoF             = obj.DoF;
+      BaseModel       = obj.BaseModel;
+      ModelwInt       = obj.ModelwInt;
+      IntMatrix       = obj.IntMatrix;
 
       ## Save classdef name and all model properties as individual variables
-      save (fname, "classdef_name", "X", "Y", "BaseModel", "ModelwInt", ...
-            "IntMatrix", "NumObservations", "RowsUsed", "NumPredictors", ...
-            "PredictorNames", "ResponseName", "ClassNames", "Prior", "Cost", ...
-            "Formula", "Interactions", "Knots", "Order", "DoF");
+      save (fname, "classdef_name", "X", "Y", "NumObservations", "RowsUsed", ...
+            "NumPredictors", "PredictorNames", "ResponseName", "ClassNames", ...
+            "Prior", "Cost", "ScoreTransform", "Formula", "Interactions", ...
+            "Knots", "Order", "DoF", "BaseModel", "ModelwInt", "IntMatrix");
     endfunction
 
   endmethods
@@ -1022,7 +1048,7 @@ endfunction
 %! XGrid = [x1G(:), x2G(:)];
 %! [labels, score] = predict (obj, XGrid);
 
-## Tests for constructor
+## Test constructor
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = [0; 0; 1; 1];
@@ -1095,7 +1121,7 @@ endfunction
 %!error<ClassificationGAM: 'Cost' must be a numeric square matrix.> ...
 %! ClassificationGAM (ones (5,2), ones (5,1), "Cost", {eye(2)})
 
-## Tests for predict method
+## Test predict method
 %!test
 %! x = [1, 2; 3, 4; 5, 6; 7, 8; 9, 10];
 %! y = [1; 0; 1; 0; 1];

@@ -170,10 +170,6 @@ classdef ClassificationSVM
 
     NumObservations     = [];    # Number of observations in training dataset
     RowsUsed            = [];    # Rows used in fitting
-    Standardize         = [];    # Flag to standardize predictors
-    Sigma               = [];    # Predictor standard deviations
-    Mu                  = [];    # Predictor means
-
     NumPredictors       = [];    # Number of predictors
     PredictorNames      = [];    # Predictor variables names
     ResponseName        = [];    # Response variable name
@@ -182,6 +178,10 @@ classdef ClassificationSVM
     Cost                = [];    # Cost of misclassification
 
     ScoreTransform      = [];    # Transformation for classification scores
+
+    Standardize         = [];    # Flag to standardize predictors
+    Sigma               = [];    # Predictor standard deviations
+    Mu                  = [];    # Predictor means
 
     ModelParameters     = [];    # SVM parameters.
 
@@ -317,6 +317,10 @@ classdef ClassificationSVM
               error (strcat (["ClassificationSVM: 'Cost' must be"], ...
                              [" a numeric square matrix."]));
             endif
+
+          case "scoretransform"
+            name = "ClassificationSVM";
+            this.ScoreTransform = parseScoreTransform (varargin{2}, name);
 
           case "svmtype"
             SVMtype = varargin{2};
@@ -644,8 +648,7 @@ classdef ClassificationSVM
     ##
     ## @code{@var{labels} = predict (@var{obj}, @var{XC})} returns the vector of
     ## labels predicted for the corresponding instances in @var{XC}, using the
-    ## predictor data in @code{obj.X} and corresponding labels, @code{obj.Y},
-    ## stored in the Support Vector Machine classification model, @var{obj}.
+    ## trained Support Vector Machine classification model, @var{obj}.
     ## For one-class SVM model, +1 or -1 is returned.
     ##
     ## @itemize
@@ -653,7 +656,7 @@ classdef ClassificationSVM
     ## @var{obj} must be a @qcode{ClassificationSVM} class object.
     ## @item
     ## @var{XC} must be an @math{MxP} numeric matrix with the same number of
-    ## features @math{P} as the corresponding predictors of the SVM model in
+    ## predictors @math{P} as the corresponding predictors of the SVM model in
     ## @var{obj}.
     ## @end itemize
     ##
@@ -666,22 +669,17 @@ classdef ClassificationSVM
     ## @seealso{fitcsvm, ClassificationSVM.fitPosterior}
     ## @end deftypefn
 
-    function [labels, scores] = predict (this, XC, varargin)
+    function [labels, scores] = predict (this, XC)
 
       ## Check for sufficient input arguments
       if (nargin < 2)
         error ("ClassificationSVM.predict: too few input arguments.");
       endif
 
-      if (mod (nargin, 2) != 0)
-        error (strcat (["ClassificationSVM.predict: Name-Value"], ...
-                       [" arguments must be in pairs."]));
-      endif
-
       ## Check for valid XC
       if (isempty (XC))
         error ("ClassificationSVM.predict: XC is empty.");
-      elseif (columns (this.X) != columns (XC))
+      elseif (this.NumPredictors != columns (XC))
         error (strcat (["ClassificationSVM.predict: XC must have the"], ...
                        [" same number of features as in the SVM model."]));
       endif
@@ -1408,6 +1406,22 @@ classdef ClassificationSVM
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationSVM} {@var{CVMdl} =} compact (@var{obj})
+    ##
+    ## Create a CompactClassificationSVM object.
+    ##
+    ## @code{@var{CVMdl} = compact (@var{obj})} creates a compact version of the
+    ## ClassificationSVM object, @var{obj}.
+    ##
+    ## @seealso{fitcnet, ClassificationSVM, CompactClassificationSVM}
+    ## @end deftypefn
+
+    function CVMdl = compact (obj)
+      ## Greate a compact model
+      CVMdl = CompactClassificationSVM (obj);
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn  {ClassificationSVM} {} savemodel (@var{obj}, @var{filename})
     ##
     ## Save a ClassificationSVM object.
@@ -1427,9 +1441,6 @@ classdef ClassificationSVM
       Y = obj.Y;
       NumObservations     = obj.NumObservations;
       RowsUsed            = obj.RowsUsed;
-      Standardize         = obj.Standardize;
-      Sigma               = obj.Sigma;
-      Mu                  = obj.Mu;
       NumPredictors       = obj.NumPredictors;
       PredictorNames      = obj.PredictorNames;
       ResponseName        = obj.ResponseName;
@@ -1437,6 +1448,9 @@ classdef ClassificationSVM
       Prior               = obj.Prior;
       Cost                = obj.Cost;
       ScoreTransform      = obj.ScoreTransform;
+      Standardize         = obj.Standardize;
+      Sigma               = obj.Sigma;
+      Mu                  = obj.Mu;
       ModelParameters     = obj.ModelParameters;
       Alpha               = obj.Alpha;
       Beta                = obj.Beta;
@@ -1459,8 +1473,8 @@ classdef ClassificationSVM
 
       ## Save classdef name and all model properties as individual variables
       save (fname, "classdef_name", "X", "Y", "NumObservations", "RowsUsed", ...
-            "Standardize", "Sigma", "Mu", "NumPredictors", "PredictorNames", ...
-            "ResponseName", "ClassNames", "Prior", "Cost", "ScoreTransform", ...
+            "NumPredictors", "PredictorNames", "ResponseName", "ClassNames", ...
+            "Prior", "Cost", "ScoreTransform", "Standardize", "Sigma", "Mu", ...
             "ModelParameters", "Alpha", "Beta", "Bias", "IsSupportVector", ...
             "SupportVectorLabels", "SupportVectors", "Model", "SVMtype", ...
             "BoxConstraint", "CacheSize", "KernelScale", "KernelOffset", ...

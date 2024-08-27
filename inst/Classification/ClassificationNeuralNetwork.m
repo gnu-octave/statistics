@@ -158,16 +158,16 @@ classdef ClassificationNeuralNetwork
 
     NumObservations       = [];  # Number of observations in training dataset
     RowsUsed              = [];  # Rows used in fitting
-    Standardize           = [];  # Flag to standardize predictors
-    Sigma                 = [];  # Predictor standard deviations
-    Mu                    = [];  # Predictor means
-
     NumPredictors         = [];  # Number of predictors
     PredictorNames        = [];  # Predictor variables names
     ResponseName          = [];  # Response variable name
     ClassNames            = [];  # Names of classes in Y
 
     ScoreTransform        = [];  # Transformation for classification scores
+
+    Standardize           = [];  # Flag to standardize predictors
+    Sigma                 = [];  # Predictor standard deviations
+    Mu                    = [];  # Predictor means
 
     LayerSizes            = [];  # Size of fully connected layers
     Activations           = [];  # Activation functions for hidden layers
@@ -274,6 +274,10 @@ classdef ClassificationNeuralNetwork
               endif
             endif
 
+          case "scoretransform"
+            name = "ClassificationNeuralNetwork";
+            this.ScoreTransform = parseScoreTransform (varargin{2}, name);
+
           case 'layersizes'
             LayerSizes = varargin{2};
             if (! (isnumeric(LayerSizes) && isvector(LayerSizes)
@@ -338,52 +342,6 @@ classdef ClassificationNeuralNetwork
             if (! (DisplayInfo == true || DisplayInfo == false))
               error (strcat (["ClassificationNeuralNetwork:"], ...
                              [" 'DisplayInfo' must be either true or false."]));
-            endif
-
-          case "scoretransform"
-            ScoreTransform = varargin{2};
-            stList = {"doublelogit", "invlogit", "ismax", "logit", "none", ...
-                      "identity", "sign", "symmetric", "symmetricismax", ...
-                      "symmetriclogit"};
-            if (! (ischar (ScoreTransform) ||
-                   strcmp (class (ScoreTransform), "function_handle")))
-              error (strcat (["ClassificationNeuralNetwork:"], ...
-                             [" 'ScoreTransform' must be a character"], ...
-                             [" vector or a function handle."]));
-            endif
-            if (! ismember (ScoreTransform, stList))
-              error (strcat (["ClassificationNeuralNetwork: unrecognized"], ...
-                             [" 'ScoreTransform' function."]));
-            endif
-            ## Handle ScoreTransform here
-            if (is_function_handle (ScoreTransform))
-              m = eye (5);
-              if (! isequal (size (m), size (ScoreTransform (m))))
-                error (strcat (["ClassificationNeuralNetwork: function"], ...
-                               [" handle for 'ScoreTransform' must return"], ...
-                               [" the same size as its input."]));
-              endif
-              this.ScoreTransform = ScoreTransform;
-            else
-              if (strcmpi ("doublelogit", ScoreTransform))
-                this.ScoreTransform = @(x) 1 ./ (1 + exp .^ (-2 * x));
-              elseif (strcmpi ("invlogit", ScoreTransform))
-                this.ScoreTransform = @(x) log (x ./ (1 - x));
-              elseif (strcmpi ("ismax", ScoreTransform))
-                this.ScoreTransform = eval (sprintf ("@(x) ismax (x)"));
-              elseif (strcmpi ("logit", ScoreTransform))
-                this.ScoreTransform = @(x) 1 ./ (1 + exp .^ (-x));
-              elseif (strcmpi ("identity", ScoreTransform))
-                this.ScoreTransform = 'none';
-              elseif (strcmpi ("sign", ScoreTransform))
-                this.ScoreTransform = @(x) sign (x);
-              elseif (strcmpi ("symmetric", ScoreTransform))
-                this.ScoreTransform = @(x) 2 * x - 1;
-              elseif (strcmpi ("symmetricismax", ScoreTransform))
-                this.ScoreTransform = eval (sprintf ("@(x) symmetricismax (x)"));
-              elseif (strcmpi ("symmetriclogit", ScoreTransform))
-                this.ScoreTransform = @(x) 2 ./ (1 + exp .^ (-x)) - 1;
-              endif
             endif
 
           otherwise
@@ -517,16 +475,15 @@ classdef ClassificationNeuralNetwork
     ##
     ## @code{@var{labels} = predict (@var{obj}, @var{XC})} returns the vector of
     ## labels predicted for the corresponding instances in @var{XC}, using the
-    ## predictor data in @code{obj.X} and corresponding labels, @code{obj.Y},
-    ## stored in the Neural Network classification model, @var{obj}.
+    ## trained neural network classification model in @var{obj}.
     ##
     ## @itemize
     ## @item
     ## @var{obj} must be a @qcode{ClassificationNeuralNetwork} class object.
     ## @item
     ## @var{X} must be an @math{MxP} numeric matrix with the same number of
-    ## features @math{P} as the corresponding predictors of the Neural Network
-    ## model in @var{obj}.
+    ## predictors @math{P} as the corresponding predictors of the trained neural
+    ## network model in @var{obj}.
     ## @end itemize
     ##
     ## @code{[@var{labels}, @var{scores}] = predict (@var{obj}, @var{XC}} also
@@ -549,10 +506,10 @@ classdef ClassificationNeuralNetwork
       ## Check for valid XC
       if (isempty (XC))
         error ("ClassificationNeuralNetwork.predict: XC is empty.");
-      elseif (columns (this.X) != columns (XC))
+      elseif (cthis.NumPredictors != columns (XC))
         error (strcat (["ClassificationNeuralNetwork.predict: XC must"], ...
-                       [" have the same number of features as in the"], ...
-                       [" Neural Network model."]));
+                       [" have the same number of predictors as the"], ...
+                       [" trained neural network model."]));
       endif
 
       ## Standardize (if necessary)
@@ -768,6 +725,23 @@ classdef ClassificationNeuralNetwork
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationNeuralNetwork} {@var{CVMdl} =} compact (@var{obj})
+    ##
+    ## Create a CompactClassificationNeuralNetwork object.
+    ##
+    ## @code{@var{CVMdl} = compact (@var{obj})} creates a compact version of the
+    ## ClassificationNeuralNetwork object, @var{obj}.
+    ##
+    ## @seealso{fitcnet, ClassificationNeuralNetwork,
+    ## CompactClassificationNeuralNetwork}
+    ## @end deftypefn
+
+    function CVMdl = compact (obj)
+      ## Greate a compact model
+      CVMdl = CompactClassificationNeuralNetwork (obj);
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn  {ClassificationNeuralNetwork} {} savemodel (@var{obj}, @var{filename})
     ##
     ## Save a ClassificationNeuralNetwork object.
@@ -788,14 +762,14 @@ classdef ClassificationNeuralNetwork
       Y = obj.Y;
       NumObservations         = obj.NumObservations;
       RowsUsed                = obj.RowsUsed;
-      Standardize             = obj.Standardize;
-      Sigma                   = obj.Sigma;
-      Mu                      = obj.Mu;
       NumPredictors           = obj.NumPredictors;
       PredictorNames          = obj.PredictorNames;
       ResponseName            = obj.ResponseName;
       ClassNames              = obj.ClassNames;
       ScoreTransform          = obj.ScoreTransform;
+      Standardize             = obj.Standardize;
+      Sigma                   = obj.Sigma;
+      Mu                      = obj.Mu;
       LayerSizes              = obj.LayerSizes;
       Activations             = obj.Activations;
       LearningRate            = obj.LearningRate;
@@ -807,8 +781,8 @@ classdef ClassificationNeuralNetwork
 
       ## Save classdef name and all model properties as individual variables
       save (fname, "classdef_name", "X", "Y", "NumObservations", "RowsUsed", ...
-            "Standardize", "Sigma", "Mu", "NumPredictors", "PredictorNames", ...
-            "ResponseName", "ClassNames", "ScoreTransform", "LayerSizes", ...
+            "NumPredictors", "PredictorNames", "ResponseName", "ClassNames", ...
+            "ScoreTransform", "Standardize", "Sigma", "Mu", "LayerSizes", ...
             "Activations", "LearningRate", "IterationLimit", "Solver", ...
             "ModelParameters", "ConvergenceInfo", "DislayInfo");
     endfunction
