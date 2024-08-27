@@ -53,7 +53,7 @@ function f = parseScoreTransform (ScoreTransform, classname)
       f = eval (sprintf ("@(x) ismax (x)"));
     elseif (strcmpi ("logit", ScoreTransform))
       f = @(x) 1 ./ (1 + exp .^ (-x));
-    elseif (strcmpi ("identity", ScoreTransform))
+    elseif (any (strcmpi ({"identity", "none"}, ScoreTransform)))
       f = 'none';
     elseif (strcmpi ("sign", ScoreTransform))
       f = @(x) sign (x);
