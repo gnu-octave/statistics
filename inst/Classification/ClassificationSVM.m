@@ -126,6 +126,9 @@ classdef ClassificationSVM
 ## @code{Nu}, @code{Tolerance}, and @code{Shrinking}.  Type @code{help fitcsvm}
 ## for more info on their usage and default values.
 ##
+## @item @qcode{Model} @tab @tab  A structure containing the trained model in
+## @qcode{'libsvm'} format.
+##
 ## @item @qcode{Alpha} @tab @tab The coefficients of the trained SVM
 ## classifier specified as an @math{sx1} numeric vector, where @math{s} is the
 ## number of support vectors equal to @qcode{sum (obj.IsSupportVector)}.  If the
@@ -183,7 +186,8 @@ classdef ClassificationSVM
     Sigma               = [];    # Predictor standard deviations
     Mu                  = [];    # Predictor means
 
-    ModelParameters     = [];    # SVM parameters.
+    ModelParameters     = [];    # SVM parameters
+    Model               = [];    # Stores the 'libsvm' trained model
 
     Alpha               = [];    # Trained classifier coefficients
     Beta                = [];    # Linear predictor coefficients
@@ -192,23 +196,6 @@ classdef ClassificationSVM
     IsSupportVector     = [];    # Indices of Support vectors
     SupportVectorLabels = [];    # Support vector class labels
     SupportVectors      = [];    # Support vectors
-
-  endproperties
-
-  properties (Access = private)
-
-    Model               = [];    # Stores the 'libsvm' trained model
-
-    SVMtype             = [];    # Type of SVM
-    BoxConstraint       = [];    # Box Constraint
-    CacheSize           = [];    # Cache Size
-    KernelScale         = [];    # gamma = KernelScale / columns (X)
-    KernelOffset        = [];    # Kernel Offset
-    KernelFunction      = [];    # Kernel Function
-    PolynomialOrder     = [];    # Order of Polynomial in kernel
-    Nu                  = [];    # Nu
-    Tolerance           = [];    # Tolerance for convergence
-    Shrinking           = [];    # Shrinking
 
   endproperties
 
@@ -569,17 +556,6 @@ classdef ClassificationSVM
       ## Set svmtrain parameters for gamma
       g = KernelScale / ndims_X;
 
-      ## Assign remaining properties
-      this.SVMtype          = SVMtype;
-      this.KernelFunction   = KernelFunction;
-      this.PolynomialOrder  = PolynomialOrder;
-      this.KernelScale      = KernelScale;
-      this.KernelOffset     = KernelOffset;
-      this.BoxConstraint    = BoxConstraint;
-      this.Nu               = Nu;
-      this.CacheSize        = CacheSize;
-      this.Tolerance        = Tolerance;
-      this.Shrinking        = Shrinking;
       ## svmpredict:
       ##    '-s':  SVMtype
       ##    '-t':  KernelFunction
@@ -625,16 +601,12 @@ classdef ClassificationSVM
       this.SupportVectors = Model.SVs;
 
       ## Populate ModelParameters structure
-      params = struct();
-      paramList = {'SVMtype', 'BoxConstraint', 'CacheSize', ...
-                   'KernelScale', 'KernelOffset', 'KernelFunction', ...
-                   'PolynomialOrder', 'Nu', 'Tolerance', 'Shrinking'};
-      for i = 1:numel (paramList)
-        paramName = paramList{i};
-        if (isprop (this, paramName))
-          params.(paramName) = this.(paramName);
-        endif
-      endfor
+      params = struct ('SVMtype', SVMtype, 'BoxConstraint', BoxConstraint, ...
+                       'CacheSize', CacheSize, 'KernelScale', KernelScale, ...
+                       'KernelOffset', KernelOffset, 'KernelFunction', ...
+                        KernelFunction, 'PolynomialOrder', PolynomialOrder, ...
+                        'Nu', Nu, 'Tolerance',Tolerance, ...
+                        'Shrinking', Shrinking);
       this.ModelParameters = params;
 
     endfunction
@@ -1452,6 +1424,7 @@ classdef ClassificationSVM
       Sigma               = this.Sigma;
       Mu                  = this.Mu;
       ModelParameters     = this.ModelParameters;
+      Model               = this.Model;
       Alpha               = this.Alpha;
       Beta                = this.Beta;
       Bias                = this.Bias;
@@ -1459,26 +1432,12 @@ classdef ClassificationSVM
       SupportVectorLabels = this.SupportVectorLabels;
       SupportVectors      = this.SupportVectors;
 
-      Model               = this.Model;
-      SVMtype             = this.SVMtype;
-      BoxConstraint       = this.BoxConstraint;
-      CacheSize           = this.CacheSize;
-      KernelScale         = this.KernelScale;
-      KernelOffset        = this.KernelOffset;
-      KernelFunction      = this.KernelFunction;
-      PolynomialOrder     = this.PolynomialOrder;
-      Nu                  = this.Nu;
-      Tolerance           = this.Tolerance;
-      Shrinking           = this.Shrinking;
-
       ## Save classdef name and all model properties as individual variables
       save (fname, "classdef_name", "X", "Y", "NumObservations", "RowsUsed", ...
             "NumPredictors", "PredictorNames", "ResponseName", "ClassNames", ...
             "Prior", "Cost", "ScoreTransform", "Standardize", "Sigma", "Mu", ...
-            "ModelParameters", "Alpha", "Beta", "Bias", "IsSupportVector", ...
-            "SupportVectorLabels", "SupportVectors", "Model", "SVMtype", ...
-            "BoxConstraint", "CacheSize", "KernelScale", "KernelOffset", ...
-            "KernelFunction", "PolynomialOrder", "Nu", "Tolerance", "Shrinking");
+            "ModelParameters", "Model", "Alpha", "Beta", "Bias", ...
+            "IsSupportVector", "SupportVectorLabels", "SupportVectors");
     endfunction
 
   endmethods
@@ -1489,18 +1448,16 @@ classdef ClassificationSVM
       ## Create a ClassificationSVM object
       mdl = ClassificationSVM (1, 1);
 
-      ## Get fieldnames from DATA (including private properties)
+      ## Check that fieldnames in DATA match properties in ClassificationSVM
       names = fieldnames (data);
+      props = fieldnames (mdl);
+      if (! isequal (sort (names), sort (props)))
+        error ("ClassificationSVM.load_model: invalid model in '%s'.", filename)
+      endif
 
       ## Copy data into object
-      for i = 1:numel (names)
-        ## Check that fieldnames in DATA match properties in ClassificationSVM
-        try
-          mdl.(names{i}) = data.(names{i});
-        catch
-          error ("ClassificationSVM.load_model: invalid model in '%s'.", ...
-                 filename)
-        end_try_catch
+      for i = 1:numel (props)
+        mdl.(props{i}) = data.(props{i});
       endfor
     endfunction
 
