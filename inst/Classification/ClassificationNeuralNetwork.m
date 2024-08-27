@@ -506,7 +506,7 @@ classdef ClassificationNeuralNetwork
       ## Check for valid XC
       if (isempty (XC))
         error ("ClassificationNeuralNetwork.predict: XC is empty.");
-      elseif (cthis.NumPredictors != columns (XC))
+      elseif (this.NumPredictors != columns (XC))
         error (strcat (["ClassificationNeuralNetwork.predict: XC must"], ...
                        [" have the same number of predictors as the"], ...
                        [" trained neural network model."]));
