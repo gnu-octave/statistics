@@ -129,6 +129,7 @@ classdef ClassificationDiscriminant
 ## @end deftypefn
 
   properties (Access = public)
+
     X = [];                   # Predictor data
     Y = [];                   # Class labels
 
@@ -140,6 +141,8 @@ classdef ClassificationDiscriminant
     ClassNames      = [];     # Names of classes in Y
     Prior           = [];     # Prior probability for each class
     Cost            = [];     # Cost of Misclassification
+
+    ScoreTransform  = [];     # Transformation for classification scores
 
     Sigma           = [];     # Within-class covariance
     Mu              = [];     # Class means
@@ -192,6 +195,7 @@ classdef ClassificationDiscriminant
       ResponseName         = 'Y';
       Prior                = "empirical";
       FillCoeffs           = "on";
+      this.ScoreTransform  = 'none';
 
       ## Parse optional parameters
       while (numel (varargin) > 0)
@@ -251,6 +255,10 @@ classdef ClassificationDiscriminant
               error (strcat (["ClassificationDiscriminant: 'Cost'"], ...
                              [" must be a numeric square matrix."]));
             endif
+
+          case "scoretransform"
+            name = "ClassificationDiscriminant";
+            this.ScoreTransform = parseScoreTransform (varargin{2}, name);
 
           case "discrimtype"
             DiscrimType = tolower (varargin{2});
@@ -1041,6 +1049,23 @@ classdef ClassificationDiscriminant
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationDiscriminant} {@var{CVMdl} =} compact (@var{obj})
+    ##
+    ## Create a CompactClassificationDiscriminant object.
+    ##
+    ## @code{@var{CVMdl} = compact (@var{obj})} creates a compact version of the
+    ## ClassificationDiscriminant object, @var{obj}.
+    ##
+    ## @seealso{fitcdiscr, ClassificationDiscriminant,
+    ## CompactClassificationDiscriminant}
+    ## @end deftypefn
+
+    function CVMdl = compact (obj)
+      ## Greate a compact model
+      CVMdl = CompactClassificationDiscriminant (obj);
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn  {ClassificationDiscriminant} {} savemodel (@var{obj}, @var{filename})
     ##
     ## Save a ClassificationDiscriminant object.
@@ -1066,6 +1091,7 @@ classdef ClassificationDiscriminant
       ClassNames      = obj.ClassNames;
       Prior           = obj.Prior;
       Cost            = obj.Cost;
+      ScoreTransform  = obj.ScoreTransform;
       Sigma           = obj.Sigma;
       Mu              = obj.Mu;
       Coeffs          = obj.Coeffs;
@@ -1079,8 +1105,9 @@ classdef ClassificationDiscriminant
       ## Save classdef name and all model properties as individual variables
       save (fname, "classdef_name", "X", "Y", "NumObservations", "RowsUsed", ...
             "NumPredictors", "PredictorNames", "ResponseName", "ClassNames", ...
-            "Prior", "Cost", "Sigma", "Mu", "Coeffs", "Delta", ...
-            "DiscrimType", "Gamma", "MinGamma", "LogDetSigma", "XCentered");
+            "ScoreTransform", "Prior", "Cost", "Sigma", "Mu", "Coeffs", ...
+            "Delta", "DiscrimType", "Gamma", "MinGamma", "LogDetSigma", ...
+            "XCentered");
     endfunction
 
   endmethods
@@ -1144,53 +1171,57 @@ endclassdef
 %! ## Cross-validation for discriminant model
 %! CVMdl = crossval (obj)
 
-## Test Constructor
+## Test constructor
 %!test
-%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
-%! PredictorNames = {'Feature1', 'Feature2', 'Feature3'};
-%! a = ClassificationDiscriminant (x, y, "PredictorNames", PredictorNames);
-%! sigma = [6.2500, 8.2500, 10.2500; ...
-%!          8.2500, 11.2500, 14.2500; ...
-%!          10.2500, 14.2500, 18.2500];
-%! mu = [2.5000, 3.5000, 4.5000; ...
-%!       5.0000, 5.0000, 5.0000];
-%! xCentered = [-1.5000, -1.5000, -1.5000; ...
-%!              1.5000, 1.5000, 1.5000; ...
-%!              2.0000, 3.0000, 4.0000; ...
-%!             -2.0000, -3.0000, -4.0000];
-%! assert (class (a), "ClassificationDiscriminant");
-%! assert ({a.X, a.Y, a.NumObservations}, {x, y, 4})
-%! assert ({a.DiscrimType, a.ResponseName}, {"linear", "Y"})
-%! assert ({a.Gamma, a.MinGamma}, {1e-15, 1e-15})
-%! assert (a.ClassNames, {'a'; 'b'})
-%! assert (a.Sigma, sigma, 1e-11)
-%! assert (a.Mu, mu)
-%! assert (a.XCentered, xCentered)
-%! assert (a.LogDetSigma, -29.369, 1e-4)
-%! assert (a.PredictorNames, PredictorNames)
+%! load fisheriris
+%! x = meas;
+%! y = species;
+%! PredictorNames = {'Sepal Length', 'Sepal Width', 'Petal Length', 'Petal Width'};
+%! Mdl = ClassificationDiscriminant (x, y, "PredictorNames", PredictorNames);
+%! sigma = [0.265008, 0.092721, 0.167514, 0.038401; ...
+%!          0.092721, 0.115388, 0.055244, 0.032710; ...
+%!          0.167514, 0.055244, 0.185188, 0.042665; ...
+%!          0.038401, 0.032710, 0.042665, 0.041882];
+%! mu = [5.0060, 3.4280, 1.4620, 0.2460; ...
+%!       5.9360, 2.7700, 4.2600, 1.3260; ...
+%!       6.5880, 2.9740, 5.5520, 2.0260];
+%! xCentered = [ 9.4000e-02,  7.2000e-02, -6.2000e-02, -4.6000e-02; ...
+%!              -1.0600e-01, -4.2800e-01, -6.2000e-02, -4.6000e-02; ...
+%!              -3.0600e-01, -2.2800e-01, -1.6200e-01, -4.6000e-02];
+%! assert (class (Mdl), "ClassificationDiscriminant");
+%! assert ({Mdl.X, Mdl.Y, Mdl.NumObservations}, {x, y, 150})
+%! assert ({Mdl.DiscrimType, Mdl.ResponseName}, {"linear", "Y"})
+%! assert ({Mdl.Gamma, Mdl.MinGamma}, {1e-15, 1e-15})
+%! assert (Mdl.ClassNames, {'a'; 'b'})
+%! assert (Mdl.Sigma, sigma, 1e-6)
+%! assert (Mdl.Mu, mu)
+%! assert (Mdl.XCentered([1:3],:), xCentered)
+%! assert (Mdl.LogDetSigma, -9.9585, 1e-4)
+%! assert (Mdl.PredictorNames, PredictorNames)
 %!test
-%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
-%! a = ClassificationDiscriminant (x, y, "Gamma", 0.5);
-%! sigma = [6.2500, 4.1250, 5.1250; ...
-%!          4.1250, 11.2500, 7.1250; ...
-%!          5.1250, 7.1250, 18.2500];
-%! mu = [2.5000, 3.5000, 4.5000; ...
-%!       5.0000, 5.0000, 5.0000];
-%! xCentered = [-1.5000, -1.5000, -1.5000; ...
-%!              1.5000, 1.5000, 1.5000; ...
-%!              2.0000, 3.0000, 4.0000; ...
-%!             -2.0000, -3.0000, -4.0000];
-%! assert (class (a), "ClassificationDiscriminant");
-%! assert ({a.X, a.Y, a.NumObservations}, {x, y, 4})
-%! assert ({a.DiscrimType, a.ResponseName}, {"linear", "Y"})
-%! assert ({a.Gamma, a.MinGamma}, {0.5, 0})
-%! assert (a.ClassNames, {'a'; 'b'})
-%! assert (a.Sigma, sigma)
-%! assert (a.Mu, mu)
-%! assert (a.XCentered, xCentered)
-%! assert (a.LogDetSigma, 6.4940, 1e-4)
+%! load fisheriris
+%! x = meas;
+%! y = species;
+%! Mdl = ClassificationDiscriminant (x, y, "Gamma", 0.5);
+%! sigma = [0.265008, 0.046361, 0.083757, 0.019201; ...
+%!          0.046361, 0.115388, 0.027622, 0.016355; ...
+%!          0.083757, 0.027622, 0.185188, 0.021333; ...
+%!          0.019201, 0.016355, 0.021333, 0.041882];
+%! mu = [5.0060, 3.4280, 1.4620, 0.2460; ...
+%!       5.9360, 2.7700, 4.2600, 1.3260; ...
+%!       6.5880, 2.9740, 5.5520, 2.0260];
+%! xCentered = [ 9.4000e-02,  7.2000e-02, -6.2000e-02, -4.6000e-02; ...
+%!              -1.0600e-01, -4.2800e-01, -6.2000e-02, -4.6000e-02; ...
+%!              -3.0600e-01, -2.2800e-01, -1.6200e-01, -4.6000e-02];
+%! assert (class (Mdl), "ClassificationDiscriminant");
+%! assert ({Mdl.X, Mdl.Y, a.NumObservations}, {x, y, 150})
+%! assert ({Mdl.DiscrimType, a.ResponseName}, {"linear", "Y"})
+%! assert ({Mdl.Gamma, Mdl.MinGamma}, {0.5, 0})
+%! assert (Mdl.ClassNames, {'a'; 'b'})
+%! assert (Mdl.Sigma, sigma)
+%! assert (Mdl.Mu, mu)
+%! assert (Mdl.XCentered, xCentered)
+%! assert (Mdl.LogDetSigma, 6.4940, 1e-4)
 
 ## Test input validation for constructor
 %!shared X, Y, MODEL
