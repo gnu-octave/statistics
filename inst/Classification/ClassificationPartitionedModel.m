@@ -155,6 +155,7 @@ classdef ClassificationPartitionedModel
       this.PredictorNames = Mdl.PredictorNames;
       this.Partition = Partition;
       this.CrossValidatedModel = class (Mdl);
+      this.ScoreTransform = Mdl.ScoreTransform;
       if (! strcmpi (class (Mdl), 'ClassificationNeuralNetwork'))
         this.Prior = Mdl.Prior;
         this.Cost = Mdl.Cost;
@@ -163,7 +164,6 @@ classdef ClassificationPartitionedModel
                   'ClassificationSVM'};
       if (any (strcmpi (class (Mdl), is_valid)))
         this.Standardize = Mdl.Standardize;
-        this.ScoreTransform = Mdl.ScoreTransform;
       endif
 
       ## Switch Classification object types
