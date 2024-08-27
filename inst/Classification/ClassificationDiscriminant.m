@@ -1191,10 +1191,10 @@ endclassdef
 %! assert (class (Mdl), "ClassificationDiscriminant");
 %! assert ({Mdl.X, Mdl.Y, Mdl.NumObservations}, {x, y, 150})
 %! assert ({Mdl.DiscrimType, Mdl.ResponseName}, {"linear", "Y"})
-%! assert ({Mdl.Gamma, Mdl.MinGamma}, {1e-15, 1e-15})
-%! assert (Mdl.ClassNames, {'a'; 'b'})
+%! assert ({Mdl.Gamma, Mdl.MinGamma}, {0, 0}, 1e-15)
+%! assert (Mdl.ClassNames, unique (species))
 %! assert (Mdl.Sigma, sigma, 1e-6)
-%! assert (Mdl.Mu, mu)
+%! assert (Mdl.Mu, mu, 1e-14)
 %! assert (Mdl.XCentered([1:3],:), xCentered)
 %! assert (Mdl.LogDetSigma, -9.9585, 1e-4)
 %! assert (Mdl.PredictorNames, PredictorNames)
@@ -1215,13 +1215,13 @@ endclassdef
 %!              -3.0600e-01, -2.2800e-01, -1.6200e-01, -4.6000e-02];
 %! assert (class (Mdl), "ClassificationDiscriminant");
 %! assert ({Mdl.X, Mdl.Y, a.NumObservations}, {x, y, 150})
-%! assert ({Mdl.DiscrimType, a.ResponseName}, {"linear", "Y"})
+%! assert ({Mdl.DiscrimType, Mdl.ResponseName}, {"linear", "Y"})
 %! assert ({Mdl.Gamma, Mdl.MinGamma}, {0.5, 0})
-%! assert (Mdl.ClassNames, {'a'; 'b'})
-%! assert (Mdl.Sigma, sigma)
-%! assert (Mdl.Mu, mu)
-%! assert (Mdl.XCentered, xCentered)
-%! assert (Mdl.LogDetSigma, 6.4940, 1e-4)
+%! assert (Mdl.ClassNames, unique (species))
+%! assert (Mdl.Sigma, sigma, 1e-6)
+%! assert (Mdl.Mu, mu, 1e-14)
+%! assert (Mdl.XCentered([1:3],:), xCentered)
+%! assert (Mdl.LogDetSigma, -8.6884, 1e-4)
 
 ## Test input validation for constructor
 %!shared X, Y, MODEL
