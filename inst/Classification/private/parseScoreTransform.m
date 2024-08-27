@@ -31,7 +31,7 @@ function f = parseScoreTransform (ScoreTransform, classname)
   if (! (ischar (ScoreTransform) ||
          strcmp (class (ScoreTransform), "function_handle")))
     error (strcat (["%s: 'ScoreTransform' must be a character"], ...
-                   [" or a function handle."]), classname);
+                   [" vector or a function handle."]), classname);
   endif
   if (! ismember (ScoreTransform, stList))
     error ("%s: unrecognized 'ScoreTransform' function.", classname);
