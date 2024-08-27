@@ -28,6 +28,10 @@ Classification Classes
  ClassificationNeuralNetwork
  ClassificationPartitionedModel
  ClassificationSVM
+ CompactClassificationDiscriminant
+ CompactClassificationGAM
+ CompactClassificationNeuralNetwork
+ CompactClassificationSVM
  ConfusionMatrixChart
 Clustering Classes
  CalinskiHarabaszEvaluation
