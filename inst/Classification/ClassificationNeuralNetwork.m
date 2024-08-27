@@ -736,9 +736,9 @@ classdef ClassificationNeuralNetwork
     ## CompactClassificationNeuralNetwork}
     ## @end deftypefn
 
-    function CVMdl = compact (obj)
+    function CVMdl = compact (this)
       ## Greate a compact model
-      CVMdl = CompactClassificationNeuralNetwork (obj);
+      CVMdl = CompactClassificationNeuralNetwork (this);
     endfunction
 
     ## -*- texinfo -*-
@@ -753,38 +753,40 @@ classdef ClassificationNeuralNetwork
     ## ClassificationPartitionedModel}
     ## @end deftypefn
 
-    function savemodel (obj, fname)
+    function savemodel (this, fname)
       ## Generate variable for class name
       classdef_name = "ClassificationNeuralNetwork";
 
       ## Create variables from model properties
-      X = obj.X;
-      Y = obj.Y;
-      NumObservations         = obj.NumObservations;
-      RowsUsed                = obj.RowsUsed;
-      NumPredictors           = obj.NumPredictors;
-      PredictorNames          = obj.PredictorNames;
-      ResponseName            = obj.ResponseName;
-      ClassNames              = obj.ClassNames;
-      ScoreTransform          = obj.ScoreTransform;
-      Standardize             = obj.Standardize;
-      Sigma                   = obj.Sigma;
-      Mu                      = obj.Mu;
-      LayerSizes              = obj.LayerSizes;
-      Activations             = obj.Activations;
-      LearningRate            = obj.LearningRate;
-      IterationLimit          = obj.IterationLimit;
-      ModelParameters         = obj.ModelParameters;
-      ConvergenceInfo         = obj.ConvergenceInfo;
-      DislayInfo              = obj.DislayInfo;
-      Solver                  = obj.Solver;
+      X = this.X;
+      Y = this.Y;
+      NumObservations         = this.NumObservations;
+      RowsUsed                = this.RowsUsed;
+      NumPredictors           = this.NumPredictors;
+      PredictorNames          = this.PredictorNames;
+      ResponseName            = this.ResponseName;
+      ClassNames              = this.ClassNames;
+      ScoreTransform          = this.ScoreTransform;
+      Standardize             = this.Standardize;
+      Sigma                   = this.Sigma;
+      Mu                      = this.Mu;
+      LayerSizes              = this.LayerSizes;
+      Activations             = this.Activations;
+      OutputLayerActivation   = this.OutputLayerActivation;
+      LearningRate            = this.LearningRate;
+      IterationLimit          = this.IterationLimit;
+      ModelParameters         = this.ModelParameters;
+      ConvergenceInfo         = this.ConvergenceInfo;
+      DislayInfo              = this.DislayInfo;
+      Solver                  = this.Solver;
 
       ## Save classdef name and all model properties as individual variables
       save (fname, "classdef_name", "X", "Y", "NumObservations", "RowsUsed", ...
             "NumPredictors", "PredictorNames", "ResponseName", "ClassNames", ...
             "ScoreTransform", "Standardize", "Sigma", "Mu", "LayerSizes", ...
-            "Activations", "LearningRate", "IterationLimit", "Solver", ...
-            "ModelParameters", "ConvergenceInfo", "DislayInfo");
+            "Activations", "OutputLayerActivation", "LearningRate", ...
+            "IterationLimit", "Solver", "ModelParameters", ...
+            "ConvergenceInfo", "DislayInfo");
     endfunction
 
   endmethods
