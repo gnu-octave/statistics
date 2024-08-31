@@ -43,87 +43,114 @@ function [r, tieadj] = tiedrank (x, tieflag, bidir)
   if (nargin < 1 || nargin > 3)
     print_usage ();
   endif
+  if (! isvector (x))
+    error ("tiedrank: X must be a vector.");
+  endif
   if (nargin < 2)
     tieflag = false;
+  elseif (! isscalar (tieflag) || ! (isnumeric (tieflag) || isbool (tieflag)))
+    error ("tiedrank: TIEFLAG must be a numeric or boolean scalar.");
   endif
   if (nargin < 3)
     bidir = false;
+  elseif (! isscalar (bidir) || ! (isnumeric (bidir) || isbool (bidir)))
+    error ("tiedrank: BIDIR must be a numeric or boolean scalar.");
   endif
-  ## X must be a vector
-  if isvector (x)
-    ## Sort X and leave NaNs at the end of vector
-    [sx, idx] = sort (x(:));
-    NaNs = sum (isnan (x));
-    xLen = length (x) - NaNs;
-    ## Count ranks from low end
-    if ! bidir
-      ranks = [1:xLen NaN(1,NaNs)]';
-    ## Count ranks from both ends
-    else
-      ## For even number of samples
-      if mod(xLen,2)==0
-        ranks = [(1:xLen/2), (xLen/2:-1:1), NaN(1,NaNs)]';
-      ## For odd number of samples
-      else
-        ranks = [(1:(xLen+1)/2), ((xLen-1)/2:-1:1), NaN(1,NaNs)]';
-      endif
-    endif
-    ## Define number of adjustments
-    if ! tieflag
-      tieadj = 0;
-    else
-      tieadj = [0; 0; 0];
-    endif
-    ## Check precision of X
-    if isa (x, "single")
-      ranks = single (ranks);
-      tieadj = single (tieadj);
-    endif
-    ## Adjust for ties
-    ties = sx(1:xLen-1) >= sx(2:xLen);
-    tieloc = [find(ties); xLen+2];
-    maxTies = length (tieloc);
-    tiecount = 1;
-    while (tiecount < maxTies)
-      tiestart = tieloc(tiecount);
-      ntied = 2;
-      while(tieloc(tiecount+1) == tieloc(tiecount)+1)
-        tiecount = tiecount + 1;
-        ntied = ntied + 1;
-      endwhile
-      if ! tieflag
-        tieadj = tieadj + ntied * (ntied - 1) * (ntied + 1) / 2;
-      else
-        n2minusn = ntied * (ntied - 1);
-        tieadj = tieadj + [n2minusn/2; n2minusn*(ntied-2); n2minusn*(2*ntied+5)];
-      endif
-      ## Compute mean of tied ranks
-      ranks(tiestart:tiestart+ntied-1) = ...
-                    sum (ranks(tiestart:tiestart+ntied-1)) / ntied;
-      tiecount = tiecount + 1;
-    endwhile
-    ## Reshape ranks including NaN where required.
-    r(idx) = ranks;
-    r = reshape (r, size (x));
+
+  ## Sort X and leave NaNs at the end of vector
+  [sx, idx] = sort (x(:));
+  NaNs = sum (isnan (x));
+  xLen = length (x) - NaNs;
+
+  ## Count ranks from low end
+  if (! bidir)
+    ranks = [1:xLen, NaN(1,NaNs)]';
+  ## Count ranks from both ends
   else
-    error ("X must be a vector");
+    ## For even number of samples
+    if (mod (xLen, 2) == 0)
+      ranks = [(1:xLen/2), (xLen/2:-1:1), NaN(1,NaNs)]';
+    ## For odd number of samples
+    else
+      ranks = [(1:(xLen+1)/2), ((xLen-1)/2:-1:1), NaN(1,NaNs)]';
+    endif
   endif
+
+  ## Define number of adjustments
+  if (! tieflag)
+    tieadj = 0;
+  else
+    tieadj = [0; 0; 0];
+  endif
+
+  ## Check precision of X
+  if (isa (x, "single"))
+    ranks = single (ranks);
+    tieadj = single (tieadj);
+  endif
+
+  ## Adjust for ties
+  ties = sx(1:xLen-1) >= sx(2:xLen);
+  tieloc = [find(ties); xLen+2];
+  maxTies = length (tieloc);
+  tiecount = 1;
+  while (tiecount < maxTies)
+    tiestart = tieloc(tiecount);
+    ntied = 2;
+    while (tieloc(tiecount + 1) == tieloc(tiecount) + 1)
+      tiecount = tiecount + 1;
+      ntied = ntied + 1;
+    endwhile
+    if (! tieflag)
+      tieadj = tieadj + ntied * (ntied - 1) * (ntied + 1) / 2;
+    else
+      n2minusn = ntied * (ntied - 1);
+      tieadj = tieadj + [n2minusn/2; n2minusn*(ntied-2); n2minusn*(2*ntied+5)];
+    endif
+    ## Compute mean of tied ranks
+    ranks(tiestart:tiestart+ntied-1) = ...
+                  sum (ranks(tiestart:tiestart+ntied-1)) / ntied;
+    tiecount = tiecount + 1;
+  endwhile
+
+  ## Reshape ranks including NaN where required.
+  r(idx) = ranks;
+  r = reshape (r, size (x));
 endfunction
 
 ## testing against mileage data and results from Matlab
 %!test
-%! mileage = [33.3, 34.5, 37.4; 33.4, 34.8, 36.8; ...
-%!            32.9, 33.8, 37.6; 32.6, 33.4, 36.6; ...
-%!            32.5, 33.7, 37.0; 33.0, 33.9, 36.7];
-%! [r,tieadj] = tiedrank([10, 20, 30, 40, 50]);
-%! assert (r, [1, 2, 3, 4, 5]);
-%! assert (tieadj, 0);
-%! [r,tieadj] = tiedrank([10, 20, 30, 40, 50]');
-%! assert (r, [1; 2; 3; 4; 5]);
+%! [r,tieadj] = tiedrank ([10, 20, 30, 40, 20]);
+%! assert (r, [1, 2.5, 4, 5, 2.5]);
+%! assert (tieadj, 3);
 %!test
-%! mileage = [33.3, 34.5, 37.4; 33.4, 34.8, 36.8; ...
-%!            32.9, 33.8, 37.6; 32.6, 33.4, 36.6; ...
-%!            32.5, 33.7, 37.0; 33.0, 33.9, 36.7];
-%! [r,tieadj] = tiedrank([10, 20, 30, 40, 50], 1);
-%! assert (r, [1, 2, 3, 4, 5]);
-%! assert (tieadj, [0 0 0]');
+%! [r,tieadj] = tiedrank ([10; 20; 30; 40; 20]);
+%! assert (r, [1; 2.5; 4; 5; 2.5]);
+%! assert (tieadj, 3);
+%!test
+%! [r,tieadj] = tiedrank ([10, 20, 30, 40, 20], 1);
+%! assert (r, [1, 2.5, 4, 5, 2.5]);
+%! assert (tieadj, [1; 0; 18]);
+%!test
+%! [r,tieadj] = tiedrank ([10, 20, 30, 40, 20], 0, 1);
+%! assert (r, [1, 2.5, 2, 1, 2.5]);
+%! assert (tieadj, 3);
+%!test
+%! [r,tieadj] = tiedrank ([10, 20, 30, 40, 20], 1, 1);
+%! assert (r, [1, 2.5, 2, 1, 2.5]);
+%! assert (tieadj, [1; 0; 18]);
+
+## Test input validation
+%!error <tiedrank: X must be a vector.> tiedrank (ones (2))
+%!error <tiedrank: TIEFLAG must be a numeric or boolean scalar.> ...
+%! tiedrank ([1, 2, 3, 4, 5], [1, 1])
+%!error <tiedrank: TIEFLAG must be a numeric or boolean scalar.> ...
+%! tiedrank ([1, 2, 3, 4, 5], "A")
+%!error <tiedrank: TIEFLAG must be a numeric or boolean scalar.> ...
+%! tiedrank ([1, 2, 3, 4, 5], [true, true])
+%!error <tiedrank: BIDIR must be a numeric or boolean scalar.> ...
+%! tiedrank ([1, 2, 3, 4, 5], 0, [1, 1])
+%!error <tiedrank: BIDIR must be a numeric or boolean scalar.> ...
+%! tiedrank ([1, 2, 3, 4, 5], 0, "A")
+%!error <tiedrank: BIDIR must be a numeric or boolean scalar.> ...
+%! tiedrank ([1, 2, 3, 4, 5], 0, [true, true])
