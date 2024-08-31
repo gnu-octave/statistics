@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: exprnd</title>
+    <title>Statistics: signrank</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -62,9 +62,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Distribution Functions">
+                  <a class="nav-link" href="index.html#Hypothesis Testing">
                     <i class="fas fa-list-alt"></i>
-                    Distribution Functions
+                    Hypothesis Testing
                   </a>
                 </li>
                 <li class="nav-item">
@@ -328,7 +328,7 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList9" type="checkbox" checked>
+				<input id="togList9" type="checkbox">
 				<label for="togList9">
 					<span><h6>Distribution Functions</h6></span>
 					<span><h6>Distribution Functions</h6></span>
@@ -371,7 +371,7 @@
 					<li><a href="expcdf.html" class="text-decoration-none font-monospace"><small>expcdf</small></a></li>
 					<li><a href="expinv.html" class="text-decoration-none font-monospace"><small>expinv</small></a></li>
 					<li><a href="exppdf.html" class="text-decoration-none font-monospace"><small>exppdf</small></a></li>
-					<li><a href="exprnd.html" class="text-decoration-none font-monospace fw-bolder"><small>exprnd</small></a></li>
+					<li><a href="exprnd.html" class="text-decoration-none font-monospace"><small>exprnd</small></a></li>
 					<li><a href="fcdf.html" class="text-decoration-none font-monospace"><small>fcdf</small></a></li>
 					<li><a href="finv.html" class="text-decoration-none font-monospace"><small>finv</small></a></li>
 					<li><a href="fpdf.html" class="text-decoration-none font-monospace"><small>fpdf</small></a></li>
@@ -590,7 +590,7 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList13" type="checkbox">
+				<input id="togList13" type="checkbox" checked>
 				<label for="togList13">
 					<span><h6>Hypothesis Testing</h6></span>
 					<span><h6>Hypothesis Testing</h6></span>
@@ -623,7 +623,7 @@
 					<li><a href="regression_ttest.html" class="text-decoration-none font-monospace"><small>regression_ttest</small></a></li>
 					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
 					<li><a href="sampsizepwr.html" class="text-decoration-none font-monospace"><small>sampsizepwr</small></a></li>
-					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
+					<li><a href="signrank.html" class="text-decoration-none font-monospace fw-bolder"><small>signrank</small></a></li>
 					<li><a href="signtest.html" class="text-decoration-none font-monospace"><small>signtest</small></a></li>
 					<li><a href="ttest.html" class="text-decoration-none font-monospace"><small>ttest</small></a></li>
 					<li><a href="ttest2.html" class="text-decoration-none font-monospace"><small>ttest2</small></a></li>
@@ -774,50 +774,101 @@
             <div class="card-header card-header-mod">
               <div class="row d-flex flex-wrap align-items-center">
                 <h3 class="d-inline-block mr-2">
-                Function&nbsp;Reference: <b><code>exprnd</code></b>
+                Function&nbsp;Reference: <b><code>signrank</code></b>
                 </h3>
               </div>
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>r</var> = <b>exprnd</b><i> (<var>mu</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>exprnd</b><i> (<var>mu</var>, <var>rows</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>exprnd</b><i> (<var>mu</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>exprnd</b><i> (<var>mu</var>, [<var>sz</var>])</i></dt>
+<dt><u>statistics:</u> <var>pval</var> = <b>signrank</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>pval</var> = <b>signrank</b><i> (<var>x</var>, <var>my</var>)</i></dt>
+<dt><u>statistics:</u> <var>pval</var> = <b>signrank</b><i> (<var>x</var>, <var>my</var>, <var>Name</var>, <var>Value</var>)</i></dt>
+<dt><u>statistics:</u> [<var>pval</var>, <var>h</var>] = <b>signrank</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>pval</var>, <var>h</var>, <var>stats</var>] = <b>signrank</b><i> (&hellip;)</i></dt>
 </dl>
 
-<p> Random arrays from the exponential distribution.
+<p> Wilcoxon signed rank test for median.
 </p>
 <div class="ms-5">
-<p> <code><var>r</var> = exprnd (<var>mu</var>)</code> returns an array of random numbers chosen
- from the exponential distribution with mean parameter <var>mu</var>.  The size of
- <var>r</var> is the size of <var>mu</var>.
+<p> <code><var>pval</var> = signrank (<var>x</var>)</code> returns the <math>p</math>-value of a
+ two-sided Wilcoxon signed rank test. It tests the null hypothesis that data
+ in <var>x</var> come from a distribution with zero median at the 5% significance
+ level under the assumption that the distribution is symmetric about its
+ median.  <var>x</var> must be a vector.
 </p>
-<p> When called with a single size argument, <code>exprnd</code> returns a square
- matrix with the dimension specified.  When called with more than one scalar
- argument, the first two arguments are taken as the number of rows and columns
- and any further arguments specify additional matrix dimensions.  The size may
- also be specified with a row vector of dimensions, <var>sz</var>.
+<p> If the second argument <var>my</var> is a scalar, the null hypothesis is that
+ <var>x</var> has median <var>my</var>, whereas if <var>my</var> is a vector, the null
+ hypothesis is that the distribution of <code><var>x</var> - <var>my</var></code> has zero
+ median.
 </p>
-<p> A common alternative parameterization of the exponential distribution is to
- use the parameter <math>λ</math> defined as the mean number of events in an
- interval as opposed to the parameter <math>μ</math>, which is the mean wait time
- for an event to occur. <math>λ</math> and <math>μ</math> are reciprocals,
- i.e. <math>μ = 1 / λ</math>.
+<p> <code><var>pval</var> = signrank (&hellip;, <var>Name</var>, <var>Value</var>)</code> performs the
+ Wilcoxon signed rank test with additional options specified by one or more of
+ the following <var>Name</var>, <var>Value</var> pair arguments:
 </p>
-<p> Further information about the exponential distribution can be found at
- <a href="https://en.wikipedia.org/wiki/Exponential_distribution">https://en.wikipedia.org/wiki/Exponential_distribution</a>
+ <table>
+<thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
+<tr><td width="18%"><code>&quot;alpha&quot;</code></td><td width="2%"></td><td width="80%">A scalar value for the significance level of
+ the test.  Default is 0.05.</td></tr>
+<tr><td width="18%"><code>&quot;tail&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the alternative
+ hypothesis.  It can take one of the following values:</td></tr>
+</table>
+
+ <table>
+<thead><tr><th width="5%"></th><th width="20%"><var>Value</var></th><th width="75%"><var>Description</var></th></tr></thead>
+<tr><td width="5%"></td><td width="20%"><code>&quot;both&quot;</code></td><td width="75%">For one-sample test (<var>my</var> is empty or a
+ scalar), the data in <var>x</var> come from a continuous distribution with median
+ different than zero or <var>my</var>.  For two-sample test (<var>my</var> is a vector),
+ the data in <code><var>x</var> - <var>my</var></code> come from a continuous distribution
+ with median different than zero.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;left&quot;</code></td><td width="75%">For one-sample test (<var>my</var> is empty or a
+ scalar), the data in <var>x</var> come from a continuous distribution with median
+ less than zero or <var>my</var>.  For two-sample test (<var>my</var> is a vector), the
+ data in <code><var>x</var> - <var>my</var></code> come from a continuous distribution with
+ median less than zero.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;right&quot;</code></td><td width="75%">For one-sample test (<var>my</var> is empty or a
+ scalar), the data in <var>x</var> come from a continuous distribution with median
+ greater than zero or <var>my</var>.  For two-sample test (<var>my</var> is a vector),
+ the data in <code><var>x</var> - <var>my</var></code> come from a continuous distribution
+ with median greater than zero.</td></tr>
+</table>
+
+ <table>
+<thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
+<tr><td width="18%"><code>&quot;method&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the method for
+ computing the <math>p</math>-value.  It can take one of the following values:</td></tr>
+</table>
+
+ <table>
+<thead><tr><th width="5%"></th><th width="20%"><var>Value</var></th><th width="75%"><var>Description</var></th></tr></thead>
+<tr><td width="5%"></td><td width="20%"><code>&quot;exact&quot;</code></td><td width="75%">Exact computation of the <math>p</math>-value.  It
+ is the default value for 15 of fewer observations when <code>&quot;method&quot;</code> is
+ not specified.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;approximate&quot;</code></td><td width="75%">Using normal approximation for
+ computing the <math>p</math>-value.  It is the default value for more than 15
+ observations when <code>&quot;method&quot;</code> is not specified.</td></tr>
+</table>
+
+<p> <code>[<var>pval</var>, <var>h</var>] = signrank (&hellip;)</code> also returns a logical
+ value indicating the test decision.  If <var>h</var> is 0, the null hypothesis is
+ accepted, whereas if <var>h</var> is 1, the null hypothesis is rejected.
 </p>
+<p> <code>[<var>pval</var>, <var>h</var>, <var>stats</var>] = signrank (&hellip;)</code> also returns
+ the structure <var>stats</var> containing the following fields:
+</p>
+ <table>
+<thead><tr><th width="18%"><var>Field</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
+<tr><td width="18%"><code>signedrank</code></td><td width="2%"></td><td width="80%">Value of the sign rank test statistic.</td></tr>
+<tr><td width="18%"><code>zval</code></td><td width="2%"></td><td width="80%">Value of the <math>z</math>-statistic (only computed
+ when the <code>&quot;method&quot;</code> is <code>&quot;approximate&quot;</code>).</td></tr>
+</table>
+
 <p> <strong>See also: </strong>
-  <a href="expcdf.html">expcdf</a>, 
-  <a href="expinv.html">expinv</a>, 
-  <a href="exppdf.html">exppdf</a>, 
-  <a href="expfit.html">expfit</a>, 
-  <a href="explike.html">explike</a>, 
-  <a href="expstat.html">expstat</a>
+tiedrank, 
+  <a href="signtest.html">signtest</a>, 
+  <a href="runstest.html">runstest</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/exprnd.m">exprnd</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/signrank.m">signrank</a>
 </div>
 
             </div>

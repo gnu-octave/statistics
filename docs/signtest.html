@@ -623,6 +623,7 @@
 					<li><a href="regression_ttest.html" class="text-decoration-none font-monospace"><small>regression_ttest</small></a></li>
 					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
 					<li><a href="sampsizepwr.html" class="text-decoration-none font-monospace"><small>sampsizepwr</small></a></li>
+					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
 					<li><a href="signtest.html" class="text-decoration-none font-monospace fw-bolder"><small>signtest</small></a></li>
 					<li><a href="ttest.html" class="text-decoration-none font-monospace"><small>ttest</small></a></li>
 					<li><a href="ttest2.html" class="text-decoration-none font-monospace"><small>ttest2</small></a></li>
@@ -779,52 +780,95 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>pval</var>, <var>h</var>, <var>stats</var>] = <b>signtest</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> [<var>pval</var>, <var>h</var>, <var>stats</var>] = <b>signtest</b><i> (<var>x</var>, <var>m</var>)</i></dt>
-<dt><u>statistics:</u> [<var>pval</var>, <var>h</var>, <var>stats</var>] = <b>signtest</b><i> (<var>x</var>, <var>y</var>)</i></dt>
-<dt><u>statistics:</u> [<var>pval</var>, <var>h</var>, <var>stats</var>] = <b>signtest</b><i> (<var>x</var>, <var>y</var>, <var>Name</var>, <var>Value</var>)</i></dt>
+<dt><u>statistics:</u> <var>pval</var> = <b>signtest</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>pval</var> = <b>signtest</b><i> (<var>x</var>, <var>my</var>)</i></dt>
+<dt><u>statistics:</u> <var>pval</var> = <b>signtest</b><i> (<var>x</var>, <var>my</var>, <var>Name</var>, <var>Value</var>)</i></dt>
+<dt><u>statistics:</u> [<var>pval</var>, <var>h</var>] = <b>signtest</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>pval</var>, <var>h</var>, <var>stats</var>] = <b>signtest</b><i> (&hellip;)</i></dt>
 </dl>
 
-<p> Test for median.
+<p> Signed test for median.
 </p>
 <div class="ms-5">
-<p> Perform a signtest of the null hypothesis that <var>x</var> is from a distribution
- that has a zero median.  <var>x</var> must be a vector.
+<p> <code><var>pval</var> = signtest (<var>x</var>)</code> returns the <math>p</math>-value of a
+ two-sided sign test. It tests the null hypothesis that data in <var>x</var> come
+ from a distribution with zero median at the 5% significance level.  <var>x</var>
+ must be a vector.
 </p>
-<p> If the second argument <var>m</var> is a scalar, the null hypothesis is that
- X has median m.
+<p> If the second argument <var>my</var> is a scalar, the null hypothesis is that
+ <var>x</var> has median <var>my</var>, whereas if <var>my</var> is a vector, the null
+ hypothesis is that the distribution of <code><var>x</var> - <var>my</var></code> has zero
+ median.
 </p>
-<p> If the second argument <var>y</var> is a vector, the null hypothesis is that
- the distribution of <code><var>x</var> - <var>y</var></code> has zero median.
+<p> <code><var>pval</var> = signtest (&hellip;, <var>Name</var>, <var>Value</var>)</code> performs the
+ Wilcoxon signed rank test with additional options specified by one or more of
+ the following <var>Name</var>, <var>Value</var> pair arguments:
 </p>
-<p> The argument <code>&quot;alpha&quot;</code> can be used to specify the significance level
- of the test (the default value is 0.05).  The string
- argument <code>&quot;tail&quot;</code>, can be used to select the desired alternative
- hypotheses.  If <code>&quot;tail&quot;</code> is <code>&quot;both&quot;</code> (default) the null is
- tested against the two-sided alternative <code>median (<var>x</var>) != <var>m</var></code>.
- If <code>&quot;tail&quot;</code> is <code>&quot;right&quot;</code> the one-sided
- alternative <code>median (<var>x</var>) &gt; <var>m</var></code> is considered.
- Similarly for <code>&quot;left&quot;</code>, the one-sided alternative <code>median
- (<var>x</var>) &lt; <var>m</var></code> is considered.
-</p>
-<p> When <code>&quot;method&quot;</code> is <code>&quot;exact&quot;</code> the p-value is computed using an
- exact method.  When <code>&quot;method&quot;</code> is <code>&quot;approximate&quot;</code> a normal
- approximation is used for the test statistic. When <code>&quot;method&quot;</code> is not
- defined as an optional input argument, then for <code>length (<var>x</var>) &lt; 100</code>
- the <code>&quot;exact&quot;</code> method is computed, otherwise the <code>&quot;approximate&quot;</code>
- method is used.
-</p>
-<p> The p-value of the test is returned in <var>pval</var>. If <var>h</var> is 0 the
- null hypothesis is accepted, if it is 1 the null hypothesis is rejected.
- <var>stats</var> is a structure containing the value of the test statistic
- (<var>sign</var>) and the value of the z statistic (<var>zval</var>) (only computed
- when the &rsquo;method&rsquo; is &rsquo;approximate&rsquo;.
-</p>
+ <table>
+<thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
+<tr><td width="18%"><code>&quot;alpha&quot;</code></td><td width="2%"></td><td width="80%">A scalar value for the significance level of
+ the test.  Default is 0.05.</td></tr>
+<tr><td width="18%"><code>&quot;tail&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the alternative
+ hypothesis.  It can take one of the following values:</td></tr>
+</table>
 
+ <table>
+<thead><tr><th width="5%"></th><th width="20%"><var>Value</var></th><th width="75%"><var>Description</var></th></tr></thead>
+<tr><td width="5%"></td><td width="20%"><code>&quot;both&quot;</code></td><td width="75%">For one-sample test (<var>my</var> is empty or a
+ scalar), the data in <var>x</var> come from a continuous distribution with median
+ different than zero or <var>my</var>.  For two-sample test (<var>my</var> is a vector),
+ the data in <code><var>x</var> - <var>my</var></code> come from a continuous distribution
+ with median different than zero.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;left&quot;</code></td><td width="75%">For one-sample test (<var>my</var> is empty or a
+ scalar), the data in <var>x</var> come from a continuous distribution with median
+ less than zero or <var>my</var>.  For two-sample test (<var>my</var> is a vector), the
+ data in <code><var>x</var> - <var>my</var></code> come from a continuous distribution with
+ median less than zero.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;right&quot;</code></td><td width="75%">For one-sample test (<var>my</var> is empty or a
+ scalar), the data in <var>x</var> come from a continuous distribution with median
+ greater than zero or <var>my</var>.  For two-sample test (<var>my</var> is a vector),
+ the data in <code><var>x</var> - <var>my</var></code> come from a continuous distribution
+ with median greater than zero.</td></tr>
+</table>
+
+ <table>
+<thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
+<tr><td width="18%"><code>&quot;method&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the method for
+ computing the <math>p</math>-value.  It can take one of the following values:</td></tr>
+</table>
+
+ <table>
+<thead><tr><th width="5%"></th><th width="20%"><var>Value</var></th><th width="75%"><var>Description</var></th></tr></thead>
+<tr><td width="5%"></td><td width="20%"><code>&quot;exact&quot;</code></td><td width="75%">Exact computation of the <math>p</math>-value.  It
+ is the default value for fewer than 100 observations when <code>&quot;method&quot;</code> is
+ not specified.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>&quot;approximate&quot;</code></td><td width="75%">Using normal approximation for
+ computing the <math>p</math>-value.  It is the default value for 100 or more
+ observations when <code>&quot;method&quot;</code> is not specified.</td></tr>
+</table>
+
+<p> <code>[<var>pval</var>, <var>h</var>] = signtest (&hellip;)</code> also returns a logical
+ value indicating the test decision.  If <var>h</var> is 0, the null hypothesis is
+ accepted, whereas if <var>h</var> is 1, the null hypothesis is rejected.
+</p>
+<p> <code>[<var>pval</var>, <var>h</var>, <var>stats</var>] = signtest (&hellip;)</code> also returns
+ the structure <var>stats</var> containing the following fields:
+</p>
+ <table>
+<thead><tr><th width="18%"><var>Field</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
+<tr><td width="18%"><code>sign</code></td><td width="2%"></td><td width="80%">Value of the sign test statistic.</td></tr>
+<tr><td width="18%"><code>zval</code></td><td width="2%"></td><td width="80%">Value of the <math>z</math>-statistic (only computed
+ when the <code>&quot;method&quot;</code> is <code>&quot;approximate&quot;</code>).</td></tr>
+</table>
+
+<p> <strong>See also: </strong>
+  <a href="signrank.html">signrank</a>, 
+tiedrank, 
+  <a href="runstest.html">runstest</a>
+</p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/signtest.m">signtest</a>
 </div>
-
 
             </div>
           </div>
