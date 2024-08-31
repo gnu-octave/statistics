@@ -275,6 +275,7 @@ Hypothesis Testing
  regression_ttest
  runstest
  sampsizepwr
+ signrank
  signtest
  ttest
  ttest2
