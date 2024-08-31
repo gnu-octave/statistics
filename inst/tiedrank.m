@@ -20,6 +20,8 @@
 ## @deftypefnx {statistics} {[@var{r}, @var{tieadj}]} = tiedrank (@var{x}, @var{tieflag})
 ## @deftypefnx {statistics} {[@var{r}, @var{tieadj}]} = tiedrank (@var{x}, @var{tieflag}, @var{bidir})
 ##
+## Compute rank adjusted for ties.
+##
 ## @code{[@var{r}, @var{tieadj}] = tiedrank (@var{x})} computes the ranks of the
 ## values in vector @var{x}.  If any values in @var{x} are tied, @code{tiedrank}
 ## computes their average rank.  The return value @var{tieadj} is an adjustment
