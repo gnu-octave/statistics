@@ -4,11 +4,11 @@ This is the official repository for the Statistics package for GNU Octave.
 
 **Content:**
 
-1. About
-2. Documentation
-3. Install statistics
-4. Provide feedback
-5. Contribute
+1. [About](#1-about)
+2. [Documentation](#2-documentation)
+3. [Install statistics](#3-install-statistics)
+4. [Provide feedback](#4-provide-feedback)
+5. [Contribute](#5-contribute)
 
 ## 1. About
 
