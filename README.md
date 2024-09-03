@@ -5,9 +5,10 @@ This is the official repository for the Statistics package for GNU Octave.
 **Content:**
 
 1. About
-2. Install statistics
-3. Provide feedback
-4. Contribute
+2. Documentation
+3. Install statistics
+4. Provide feedback
+5. Contribute
 
 ## 1. About
 
@@ -17,9 +18,18 @@ As of 10.6.2022, the developemnt of the **statistics** package was moved from [S
 - Keep a single dependency to the last two major point releases of GNU Octave.
 - Deprecate old functions once their fully Matlab compatible equivalents are implemented.
 
-You can find its documentation at [https://gnu-octave.github.io/statistics/](https://gnu-octave.github.io/statistics/).
+## 2. Documentation
+All functions, class definitions, and their respective methods are documented with [texinfo](https://www.gnu.org/software/texinfo/) format, which can be accessed from the Octave command with the `help` function.  Use dot notation to access the help of a particular method and new classdefs or the relative path for old style classes. For example:
+```
+help ClassificationKNN.predict
+help @cvpartition/test
+```
+You can also find the entire documentation of the **statistics** package along with its function index at [https://gnu-octave.github.io/statistics/](https://gnu-octave.github.io/statistics/). Alternatively, you can build the online documentation locally using the [`pkg-octave-doc`](https://github.com/gnu-octave/pkg-octave-doc) package. Assuming both packages are installed and loaded, browse to any directory of your choice with *write* permission and run:
+```
+package_texi2html ("statistics")
+```
 
-## 2. Install statistics
+## 3. Install statistics
 
 To install the latest release (1.7.0) you need Octave (>=7.2.0) installed on your system. Install it by typing:
 
@@ -40,7 +50,7 @@ After installation, type:
 
 [^1]: Several functions are still missing from the statistics package, but you are welcome to [contribute](https://github.com/gnu-octave/statistics/blob/main/CONTRIBUTING.md)!
 
-## 3. Provide feedback
+## 4. Provide feedback
 
 You are encouraged to provide feedback regarding possible bugs, missing features[^2], discrepancies or incompatibilities with Matlab functions. You may open an [issue](https://github.com/gnu-octave/statistics/issues) to open a discussion to your particular case. **Please, do NOT use the issue tracker for requesting help.** Use the [discourse group](https://octave.discourse.group/c/help/6) for requesting help with using functions and programming in Octave.
 
@@ -48,7 +58,7 @@ Please, make sure that when reporting a bug you provide as much information as p
 
 [^2]: Don't open an issue just for requesting a missing function! Implement it yourself and make an invaluable contribution :innocent:
 
-## 4. Contribute
+## 5. Contribute
 
 The **statistics** package is **open source**! Everyone is welcome to contribute.
 
