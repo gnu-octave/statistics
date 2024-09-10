@@ -136,12 +136,17 @@ classdef ClassificationPartitionedModel
         error ("ClassificationPartitionedModel: too few input arguments.");
       endif
 
-      ## Check for valid object types
+      ## Check for valid Classification object
       validTypes = {'ClassificationDiscriminant', 'ClassificationGAM', ...
                     'ClassificationKNN', 'ClassificationNeuralNetwork', ...
                     'ClassificationSVM'};
       if (! any (strcmp (class (Mdl), validTypes)))
         error ("ClassificationPartitionedModel: unsupported model type.");
+      endif
+
+      ## Check for valid cvpartition object
+      if (! strcmp (class (Partition), "cvpartition"))
+        error ("ClassificationPartitionedModel: invalid 'cvpartition' object.");
       endif
 
       ## Set properties
@@ -670,6 +675,9 @@ endclassdef
 %!error<ClassificationPartitionedModel: unsupported model type.> ...
 %! ClassificationPartitionedModel (RegressionGAM (ones (40,2), ...
 %! randi ([1, 2], 40, 1)), cvpartition (randi ([1, 2], 40, 1), 'Holdout', 0.3))
+%!error<ClassificationPartitionedModel: invalid 'cvpartition' object.> ...
+%! ClassificationPartitionedModel (ClassificationKNN (ones (4,2), ...
+%! ones (4,1)), 'Holdout')
 
 ## Test for kfoldPredict
 %!test
