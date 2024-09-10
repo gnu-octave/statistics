@@ -116,7 +116,7 @@ function [H, pValue, ksstat, cV] = kstest (x, varargin)
           alpha = prop{2};
         case "tail"
           tail = prop{2};
-        case "CDF"
+        case "cdf"
           CDF = prop{2};
         otherwise
           error ("kstest: unknown option %s", prop{1});
@@ -324,6 +324,9 @@ endfunction
 %! [h, p] = kstest (grades(:,1));
 %! assert (h, true);
 %! assert (p, 7.58603305206105e-107, 1e-14);
+%! [h, p] = kstest (grades(:,1), "CDF", @(x) normcdf(x, 75, 10));
+%! assert (h, false);
+%! assert (p, 0.5612, 1e-4);
 %!test
 %! load stockreturns
 %! x = stocks(:,3);
