@@ -388,7 +388,8 @@ function h = plot_cdf (pd, ax, DistType, Discrete)
     endif
 
     ## Compute the stairs for data
-    [yy, xx, n, ~, eid] = cdfcalc (x);
+    [yy, xx, ~, ~, eid] = cdfcalc (x);
+    n = length (xx);
     ## Create vectors for plotting
     nidx = reshape (repmat (1:n, 2, 1), 2*n, 1);
     xCDF = [-Inf; xx(nidx); Inf];
@@ -474,5 +475,3 @@ function h = plot_prob (pd, ax, DistType, Discrete)
   hold off;
 
 endfunction
-
-
