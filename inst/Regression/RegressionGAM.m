@@ -715,7 +715,7 @@ classdef RegressionGAM
       ns        = rows (X);
       Tol       = this.Tol;
       ## Start training
-      while (! converged || iter < 1000)
+      while (! (converged || iter > 1000))
         iter += 1;
 
         ## Single cycle of backfit
