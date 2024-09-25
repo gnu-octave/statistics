@@ -138,8 +138,8 @@ function [H, pValue, ksstat, cV] = kstest (x, varargin)
   endif
   ## Remove NaNs, get sample size and compute empirical cdf
   x(isnan (x)) = [];
-  n = length(x);
   [sampleCDF, x] = ecdf (x);
+  n = length(x);
   ## Remove 1st element
   x = x(2:end);
   ## Check the hypothesized CDF specified under the null hypothesis.
