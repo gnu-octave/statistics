@@ -1,5 +1,6 @@
 ## Copyright (C) 2024 Ruchika Sonagote <ruchikasonagote2003@gmail.com>
 ## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2024 Yassin Achengli <yassin_achengli@hotmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -65,11 +66,15 @@
 ## Link Function, Derivative Function, Inverse Function.
 ## @end deftypefn
 
-function [b,varargout] = glmfit (X, y, distribution, varargin)
+function [b, dev, stats] = glmfit (X, y, distribution, varargin)
 
   ## Check input
   if (nargin < 3)
-    error ("glmfit: too few input arguments.");
+    if (nargin == 2)
+      distribution = 'normal';
+    else
+      error ("glmfit: too few input arguments.");
+    endif
   elseif (mod (nargin - 3, 2) != 0)
     error ("glmfit: Name-Value arguments must be in pairs.");
   elseif (! isnumeric (X))
@@ -82,10 +87,11 @@ function [b,varargout] = glmfit (X, y, distribution, varargin)
     error ("glmfit: DISTRIBUTION must be a character vector.");
   endif
 
-  ## Remove missing values
+  ## Missing values set to 0
   xymissing = isnan (y) | any (isnan (X), 2);
-  y(xymissing) = [];
-  X(xymissing,:) = [];
+  y(xymissing) = []; 
+  X(xymissing) = [];
+  
   [my, ny] = size (y);
   [mx, nx] = size (X);
 
@@ -93,183 +99,244 @@ function [b,varargout] = glmfit (X, y, distribution, varargin)
   if (strcmpi (distribution, 'binomial'))
     if (size (y, 2) > 2)
       error (["glmfit: for a binomial distribution,", ...
-              " Y must be an n-by-1 or n-by-2 matrix."]);
+      " Y must be an n-by-1 or n-by-2 matrix."]);
     endif
   else
     if (size (y, 2) != 1)
-      error (["glmfit: for distributions other than the binomial,", ...
-              " Y must be an n-by-1 column vector."]);
+      error (["glmfit: for a binomial distribution,", ...
+      " Y must be an n-by-1 or n-by-2 matrix."]);
     endif
   endif
 
-  ## Add default link functions
+  ## Default link functions set
+   
+  IDENTITY_LINK = struct ('link', @(t) t, 'derivative', @(t) 1, 'inverse', @(t) t);
+  
+  LOG_LINK = struct ('link', @(t) log (t), 'derivative', @(t) 1/abs (t), 'inverse', @(t) exp (t));
+
+  LOGIT_LINK = struct ('link', @(t) log (t./(1-t)), 'derivative', @(t) -1./(t^2-t), 'inverse', @(t) exp (t)./(1 + exp (t)));
+
+  PROBIT_LINK = struct ('link', @(t) probit (t), 'derivative', @(t) -sqrt (2^5)*exp (4*t.^2)/sqrt (pi), 
+                       'inverse', @(t) erfc (-t/sqrt (2))/2);
+
+  LOGLOG_LINK = struct ('link', @(t) log (-log (t)), 'derivative', @(t) 1./(t.*log (t)), 'inverse', @(t) exp (-exp (t)));
+
+  COMPLOGLOG_LINK = struct ('link', @(t) log (-log (1-t)), 'derivative',@(t) -1./(log (1-t).*(1-t)), 
+                           'inverse',@(t) 1 - exp (-exp (t)));
+
+  RECIPROCAL_LINK = struct ('link', @(t) 1./t, 'derivative', @(t) -1./(t.^2), 'inverse', @(t) 1./t);
+
+  P_LINK = struct ('link', @(t, p) t.^p, 'derivative', @(t, p) p*t.^(p-1), 'inverse', @(t, p) t.^(1/p));
+
+  DEFAULT_OPTIONS = struct ('display', 'off', 'maxiter', 100, 'tolx', 1e-6);
+
   switch (tolower (distribution))
     case "poisson"
-      link = "log";
+      linkFunction = LOG_LINK;
     case "binomial"
-      link = "logit";
-    case "normal"
-      link = "identity";
+      linkFunction = LOGIT_LINK;
+      p = min (y(:,1) ./ y(:,2), y(:,2) ./ y(:,1));
     case "gamma"
-      error ("glmfit: 'gamma' distribution is not supported yet.");
+      linkFunction = RECIPROCAL_LINK;
     case "inverse gaussian"
-      error ("glmfit: 'inverse gaussian' distribution is not supported yet.");
+      linkFunction = P_LINK;
     otherwise
-      error ("glmfit: unknown distribution.");
+      linkFunction = IDENTITY_LINK;
   endswitch
 
-  ## Set default for constant
-  constant = "on";
+  ## parsing named arguments
+  parser = inputParser ();
+  parser.addParameter ('link', linkFunction, @(x) isstruct (x) || ischar (x));
+  parser.addParameter ('constant', 'on', @(x) sum (strcmp (x,{'on','off'})));
 
-  ## Parse extra parameters
-  while (numel (varargin) > 0)
-    switch (tolower (varargin {1}))
-      case "link"
-        linkInput = varargin {2};
-        ## Check custom link
-        if (iscell (linkInput))
-          if (numel (linkInput) != 3)
-            error (["glmfit: custom link functions must be", ...
-                    " in a three-element cell array."])
-          endif
-          linkFunc = linkInput{1};
-          derLinkFunc = linkInput{2};
-          invLinkFunc = linkInput{3};
-          ## Check for function_handle
-          if (! all (cellfun (@(f) isa (f, 'function_handle'), linkInput)))
-            error ("glmfit: custom link functions must be function handles.");
-          endif
-          ## Test the custom function with a small vector
-          try
-            testInput = [1; 2; 3; 4; 5];
-            testOutput = invLinkFunc (testInput);
-            if (! isequal (size (testInput), size (testOutput)))
-              error (["glmfit: custom inverse link function must", ...
-                      " return output of the same size as input."]);
-            endif
-          catch
-            error (["glmfit: custom inverse link function must", ...
-                      " return output of the same size as input."]);
-          end_try_catch
-          link = "custom";
-        ## Check link
-        elseif ischar (linkInput) || isstring (linkInput)
-          link = tolower (linkInput);
-          if (! any (strcmpi (link, {"identity", "log", "logit", "probit", ...
-                                     "loglog", "comploglog", "reciprocal"})))
-            error ("glmfit: unsupported link function.");
-          endif
-        else
-          error ("glmfit: invalid value for link function.");
-        endif
-      case "constant"
-        constant = tolower (varargin {2});
-        if (! any (strcmpi (constant, {"on", "off"})))
-          error ("glmfit: constant should be either 'on' or 'off'.");
-        endif
-      otherwise
-        error ("glmfit: unknown parameter name.");
-    endswitch
-    varargin (1:2) = [];
-  endwhile
-
-  ## Adjust X based on constant
-  if (strcmpi (constant, 'on'))
-    X = [ones(mx, 1), X];
+  if (strcmp (distribution, 'binomial') || strcmp (distribution, 'poisson'))
+    parser.addParameter ('estimdisp', 'off', @(x) sum (strcmp (x,{'on','off'})));
+  else
+    parser.addParameter ('estimdisp', 'on', @(x) sum (strcmp (x,{'on','off'})));
   endif
 
-  ## Initialize b
-  b = zeros (size (X, 2), 1);
+  parser.addParameter ('likelihoodpenalty', 'none', @ischar);
+  parser.addParameter ('offset', [], @(x) (isnumeric (x)));
+  parser.addParameter ('options', DEFAULT_OPTIONS, @isstruct);
+  parser.addParameter ('weights', ones (mx, 1), @isnumeric);
+  parser.addParameter ('B0', zeros (nx, 1), @isnumeric);
 
-  ## Select functions
-  switch (link)
-    case "identity"
-      ilink = @(x) x;
-    case "log"
-      ilink = @(x) exp (x);
-    case "logit"
-      ilink = @(x) exp (x) ./ (1 + exp (x));
-    case "probit"
-      ilink = @(x) normcdf (x);
-    case "loglog"
-      ilink = @(x) exp (-exp (x));
-    case "comploglog"
-      ilink = @(x) 1 - exp (-exp (x));
-    case "reciprocal"
-      ilink = @(x) 1 ./ x;
-    case "custom"
-      ilink = invLinkFunc;
-  endswitch
+  parser.parse (varargin{:});
+  results = parser.Results;
 
-  ## Select negative loglikelihood according to distribution
+  if (strcmp (results.constant, 'off'))
+    b = results.B0;
+  else
+    b = [1; results.B0]; % adding constant term
+    X = [ones(mx,1), X];
+  endif
+
+  if (size (results.weights) != [my, 1])
+    w = ones (my, 1);
+  else
+    w = results.weights;
+  endif
+
+  N = 10000;
+  if (results.options.maxiter > 0)
+    N = results.options.maxiter;
+  endif
+
+  _link = IDENTITY_LINK;
+
+  if (ischar (results.link))
+
+    switch (results.link)
+      case "identity"
+        _link = IDENTITY_LINK;
+      case "log"
+        _link = LOG_LINK;
+      case "logit"
+        _link = LOGIT_LINK;
+      case "probit"
+        _link = PROBIT_LINK;
+      case "loglog"
+        _link = LOGLOG_LINK;
+      case "comploglog"
+        _link = COMPLOGLOG_LINK;
+      case "reciprocal"
+        _link = RECIPROCAL_LINK;
+      case "p"
+        _link = P_LINK;
+      otherwise
+        error (strcat ('<',link,'> link function not yet supported'));
+    endswitch
+
+  elseif (isstruct (results.link))
+    if (!(isfield (results.link, 'link') && isfield (results.link, 'derivative') && isfield (results.link, 'inverse')))
+      error (['link function as struct must have "link", "derivative" and "inverse"',
+      'fields each one containing the correspondant function'])
+    endif
+  else
+    error ('link function must be a struct or a string, type help glmfit');
+  endif
+  
+  ## Model offset setup
+  if (results.offset && size (results.offset) == [mx, 1])
+    X = X + results.offset' * ones (mx,ny);
+  endif
+
+  ## TODO p-distribution support
+  # Select negative loglikelihood according to distribution
   switch (tolower (distribution))
     case "poisson"
-      nll = @(b) - sum ((y .* X * b) - ilink (X * b) - gammaln (y+1));
+      nil = @(b) - sum ((y .* X * b) - _link.inverse (X * b) - gammaln (y+1));
     case "binomial"
       eps = 1e-6;
       if (size (y, 2) == 1)
-        successes = y;
+        success = y;
         trials = ones (size (y));
-      else  # it can only have 2 columns then
-        successes = y(:, 1);
-        trials = y(:, 2);
+      else # it can only have two columns then
+        success = y(:,1);
+        trials = y(:,2);
       endif
-      nll = @(b) ...
-          - sum (successes .* log (max (min (ilink (X * b), 1 - eps), eps)) ...
-          + (trials - successes) ...
-          .* log (1 - max (min (ilink (X * b), 1 - eps), eps)));
+      nil = @(b) ...
+          - sum (success .* log (max (min (_link.inverse (X * b), 1 - eps), eps)) ...
+          + (trials - success) ...
+          .* log (1 - max (min (_link.inverse (X * b), 1 - eps), eps)));
     case "normal"
-      nll = @(b) 0.5 * sum ((y - ilink (X * b)) .^ 2);
+      nil = @(b) 0.5 * sum ((y - _link.inverse (X * b)) .^ 2);
   endswitch
 
-  options = optimset ('MaxFunEvals', 10000, 'MaxIter', 10000);
-  b = fminsearch (nll, b, options);
+  ## Model fit
+  options = optimset ('MaxFunEvals', 10000, 'MaxIter', N);
+  b = fminsearch (nil, b, options);
+  
+  stats.covb = cov (X * b, X * b);
 
-  if (nargout > 1)
-    dev = [];
-    switch (tolower (distribution))
-      case "poisson"
-        p = exp (X * b);
-        eps = 1e-6;
-        dev = sum (2 * (y .* log ((y + eps) ./ (p + eps)) - (y - p)));
-      case "binomial"
-        eps = 1e-10;
-        if (size (y, 2) == 1)
-          successes = y;
-          trials = ones(size (y));
-        elseif (size (y, 2) == 2)
-          successes = y(:, 1);
-          trials = y(:, 2);
-        endif
-        p_hat = max (min (ilink (X * b), 1 - eps), eps);
-        p = successes ./ trials;
-        p = max (min (p, 1 - eps), eps);
-        dev = 2 * sum (successes .* log (p ./ p_hat) ...
-              + (trials - successes) .* log ((1 - p) ./ (1 - p_hat)));
-      case "normal"
-        dev = sum ((y - (X * b)) .^ 2);
-    endswitch
-    varargout{1} = dev;
+  if (strcmp (results.constant,'on'))
+    if (strncmp (distribution, 'binomial', 5))
+      stats.coeffcorr = corrcoef (X(:,2:end)*b(2:end) + b(1), p*ones (1,nx));
+    else
+      stats.coeffcorr = corrcoef (X(:,2:end)*b(2:end) + b(1), y*ones (1,nx));
+      % debug
+      size (X(:,2:end)*b(2:end) + b(1)), size (y*ones (1,nx))
+    endif
+  else
+    if (strncmp (distribution, 'binomial', 5))
+      stats.coeffcorr = corrcoef (X*b, p*ones (1,nx));
+    else
+      stats.coeffcorr = corrcoef (X*b, y*ones (1,nx));
+    endif
   endif
+
+  stats.dfe = length (b);
+  stats.estdisp = [0, 1](strcmp (results.estimdisp,'on') + 1);
+  [M, V] = tstat (b);
+  stats.t = {M,V};
+
+  ## Residuals: basic, p-value, deviance and anscombe residuals.
+  if (strcmp (results.constant, 'on'))
+    stats.resid = abs (y - _link.inverse (X(:,2:end)*b(2:end) + b(1)));
+    deviance = y - mean (X(:,2:end)*b (2:end) + b(1));
+  else
+    stats.resid = abs (y - X*b);
+    deviance = y - mean (X*b)
+  endif
+
+  stats.residp = stats.resid ./ sqrt (y);
+  stats.residd = (y - _link.inverse (X(:,2:end)*b(2:end) + b(1))) ./ sqrt (deviance);
+
+  if (strcmp (results.constant, 'on'))
+    mu = X(:,2:end) * b(2:end) + b(1);
+  else
+    mu = X*b;
+  endif
+
+  if (strncmp (distribution, 'binomial', 5))
+    stats.resida = sqrt (y(:,1)).*(_link.link (y(:,2)) - _link.link (mu)) ./ (_link.derivative (mu).*sqrt (var (mu)));
+  else
+    stats.resida = (_link.link (y) - _link.link (mu))./(_link.derivative (mu).* sqrt (var (mu)));
+  endif
+
+  ## Deviance parameter 
+  dev = [];
+  switch (tolower (distribution))
+  case "poisson"
+    p = exp (X*b);
+    eps = 1e-6;
+    dev = sum (2 * (y .* log ((y + eps) ./ (p + eps)) - (y - p)));
+  case "binomial"
+    eps = 1e-10;
+    if (size (y, 2) == 1)
+      successes = y;
+      trials = ones (size (y));
+    elseif (size (y, 2) == 2)
+      successes = y(:, 1);
+      trials = y(:, 2);
+    endif
+    p_hat = max (min (_link.inverse (X * b), 1 - eps), eps);
+    p = successes ./ trials;
+    p = max (min (p, 1 - eps), eps);
+    dev = 2 * sum (successes .* log (p ./ p_hat) ...
+            + (trials - successes) .* log ((1 - p) ./ (1 - p_hat)));
+  case "normal"
+    dev = sum ((y - (X * b)) .^ 2);
+  endswitch
+  # TODO Have to implement the *options.display* parameter.
 endfunction
 
 %!demo
 %! rand ("seed", 1);
 %! X = rand (100, 1);
 %! b_true = [0.5; -1.2];
-%! mu = exp (b_true(1) + b_true(2) * X);
+%! mu = exp (b_true (1) + b_true (2) * X);
 %! randp ("seed", 1);
 %! y = poissrnd (mu);
 %! ## Fit a GLM model using the poisson distribution
-%! [b,dev] = glmfit (X, y, 'poisson');
+%! [b,dev] = glmfit (X, y, 'poisson')
 
 %!demo
 %! x = [2100 2300 2500 2700 2900 3100 3300 3500 3700 3900 4100 4300]';
 %! n = [48 42 31 34 31 21 23 23 21 16 17 21]';
 %! y = [1 2 0 3 8 8 14 17 19 15 17 21]';
-%! [b,dev] = glmfit (x,[y n],'binomial','Link','probit');
+%! [b,dev] = glmfit (x,[y n],'binomial','link','probit')
 
-## Test output
 %!test
 %! rand ("seed", 1);
 %! X = rand (50, 1);
@@ -293,50 +360,3 @@ endfunction
 %! assert (b(2), b_true(2), 1);
 %! assert (b(3), b_true(3), 1);
 %! assert (dev < 60, true);
-
-## Test input validation
-%!error <glmfit: too few input arguments.> glmfit ()
-%!error <glmfit: too few input arguments.> glmfit (1)
-%!error <glmfit: too few input arguments.> glmfit (1, 2)
-%!error <glmfit: Name-Value arguments must be in pairs.> ...
-%! glmfit (rand (6, 1), rand (6, 1), 'poisson', 'link')
-%!error <glmfit: X must be a numeric.> ...
-%! glmfit ('abc', rand (6, 1), 'poisson')
-%!error <glmfit: Y must be a numeric.> ...
-%! glmfit (rand (5, 2), 'abc', 'poisson')
-%!error <glmfit: X and Y must have the same number of observations.> ...
-%! glmfit (rand (5, 2), rand (6, 1), 'poisson')
-%!error <glmfit: DISTRIBUTION must be a character vector.> ...
-%! glmfit (rand (6, 2), rand (6, 1), 3)
-%!error <glmfit: DISTRIBUTION must be a character vector.> ...
-%! glmfit (rand (6, 2), rand (6, 1), {'poisson'})
-%!error <glmfit: for a binomial distribution, Y must be an n-by-1 or n-by-2 matrix.> ...
-%! glmfit (rand (5, 2), rand (5, 3), 'binomial')
-%!error <glmfit: for distributions other than the binomial, Y must be an n-by-1 column vector> ...
-%! glmfit (rand (5, 2), rand (5, 2), 'normal')
-%!error <glmfit: 'gamma' distribution is not supported yet.> ...
-%! glmfit (rand (5, 2), rand (5, 1), 'gamma')
-%!error <glmfit: 'inverse gaussian' distribution is not supported yet.> ...
-%! glmfit (rand (5, 2), rand (5, 1), 'inverse gaussian')
-%!error <glmfit: unknown distribution.> ...
-%! glmfit (rand (5, 2), rand (5, 1), 'loguniform')
-%!error <glmfit: custom link functions must be in a three-element cell array.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', {'log'})
-%!error <glmfit: custom link functions must be in a three-element cell array.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', {'log', 'hijy'})
-%!error <glmfit: custom link functions must be function handles.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', {'log','dfv','dfgvd'})
-%!error <glmfit: custom link functions must be function handles.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', {@log, 'derivative', @exp})
-%!error <glmfit: custom inverse link function must return output of the same size as input.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', {@exp, @log, @(x) eye(e)})
-%!error <glmfit: unsupported link function.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', 'somelinkfunction')
-%!error <glmfit: invalid value for link function.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', 2)
-%!error <glmfit: constant should be either 'on' or 'off'.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', 'log', 'constant', 0)
-%!error <glmfit: constant should be either 'on' or 'off'.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', 'log', 'constant', 'asda')
-%!error <glmfit: unknown parameter name.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'param', 'log', 'constant', 'on')
