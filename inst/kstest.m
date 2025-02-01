@@ -138,8 +138,8 @@ function [H, pValue, ksstat, cV] = kstest (x, varargin)
   endif
   ## Remove NaNs, get sample size and compute empirical cdf
   x(isnan (x)) = [];
+  n = length (x);
   [sampleCDF, x] = ecdf (x);
-  n = length(x);
   ## Remove 1st element
   x = x(2:end);
   ## Check the hypothesized CDF specified under the null hypothesis.
@@ -324,6 +324,8 @@ endfunction
 %! [h, p] = kstest (grades(:,1));
 %! assert (h, true);
 %! assert (p, 7.58603305206105e-107, 1e-14);
+%!test
+%! load examgrades
 %! [h, p] = kstest (grades(:,1), "CDF", @(x) normcdf(x, 75, 10));
 %! assert (h, false);
 %! assert (p, 0.5612, 1e-4);
