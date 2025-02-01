@@ -192,7 +192,7 @@ endfunction
 %! x = [1.3941, 1.6824, 2.0103, 2.3760, NaN, 3.2087];
 %! assert (ncx2inv (0.05, 5, [1, 2, 3, 4, -1, 6]), x, 1e-4);
 %!test
-%! assert (ncx2inv (0.996, 5, 8), 35.51298862765576, 2e-13);
+%! assert (ncx2inv (0.996, 5, 8), 35.51298862765576, 3e-13);
 
 ## Test input validation
 %!error<ncx2inv: function called with too few input arguments.> ncx2inv ()

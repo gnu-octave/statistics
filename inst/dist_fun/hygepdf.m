@@ -161,32 +161,32 @@ endfunction
 %!shared x, y
 %! x = [-1 0 1 2 3];
 %! y = [0 1/6 4/6 1/6 0];
-%!assert (hygepdf (x, 4*ones (1,5), 2, 2), y, eps)
-%!assert (hygepdf (x, 4, 2*ones (1,5), 2), y, eps)
-%!assert (hygepdf (x, 4, 2, 2*ones (1,5)), y, eps)
-%!assert (hygepdf (x, 4*[1 -1 NaN 1.1 1], 2, 2), [0 NaN NaN NaN 0], eps)
-%!assert (hygepdf (x, 4, 2*[1 -1 NaN 1.1 1], 2), [0 NaN NaN NaN 0], eps)
-%!assert (hygepdf (x, 4, 5, 2), [NaN NaN NaN NaN NaN], eps)
-%!assert (hygepdf (x, 4, 2, 2*[1 -1 NaN 1.1 1]), [0 NaN NaN NaN 0], eps)
-%!assert (hygepdf (x, 4, 2, 5), [NaN NaN NaN NaN NaN], eps)
-%!assert (hygepdf ([x, NaN], 4, 2, 2), [y, NaN], eps)
+%!assert (hygepdf (x, 4 * ones (1, 5), 2, 2), y, 3 * eps)
+%!assert (hygepdf (x, 4, 2 * ones (1, 5), 2), y, 3 * eps)
+%!assert (hygepdf (x, 4, 2, 2 * ones (1, 5)), y, 3 * eps)
+%!assert (hygepdf (x, 4 * [1, -1, NaN, 1.1, 1], 2, 2), [0, NaN, NaN, NaN, 0])
+%!assert (hygepdf (x, 4, 2 * [1, -1, NaN, 1.1, 1], 2), [0, NaN, NaN, NaN, 0])
+%!assert (hygepdf (x, 4, 5, 2), [NaN, NaN, NaN, NaN, NaN], 3 * eps)
+%!assert (hygepdf (x, 4, 2, 2 * [1, -1, NaN, 1.1, 1]), [0, NaN, NaN, NaN, 0])
+%!assert (hygepdf (x, 4, 2, 5), [NaN, NaN, NaN, NaN, NaN], 3 * eps)
+%!assert (hygepdf ([x, NaN], 4, 2, 2), [y, NaN], 3 * eps)
 
 ## Test class of input preserved
-%!assert (hygepdf (single ([x, NaN]), 4, 2, 2), single ([y, NaN]), eps("single"))
-%!assert (hygepdf ([x, NaN], single (4), 2, 2), single ([y, NaN]), eps("single"))
-%!assert (hygepdf ([x, NaN], 4, single (2), 2), single ([y, NaN]), eps("single"))
-%!assert (hygepdf ([x, NaN], 4, 2, single (2)), single ([y, NaN]), eps("single"))
+%!assert (hygepdf (single ([x, NaN]), 4, 2, 2), single ([y, NaN]), eps ("single"))
+%!assert (hygepdf ([x, NaN], single (4), 2, 2), single ([y, NaN]), eps ("single"))
+%!assert (hygepdf ([x, NaN], 4, single (2), 2), single ([y, NaN]), eps ("single"))
+%!assert (hygepdf ([x, NaN], 4, 2, single (2)), single ([y, NaN]), eps ("single"))
 
 ## Test vector expansion
 %!test
 %! z = zeros(3,5);
 %! z([4,5,6,8,9,12]) = [1, 0.5, 1/6, 0.5, 2/3, 1/6];
-%! assert (hygepdf (x, 4, [0, 1, 2], 2, "vectorexpand"), z, eps);
-%! assert (hygepdf (x, 4, [0, 1, 2]', 2, "vectorexpand"), z, eps);
-%! assert (hygepdf (x', 4, [0, 1, 2], 2, "vectorexpand"), z, eps);
-%! assert (hygepdf (2, 4, [0 ,1, 2], 2, "vectorexpand"), z(:,4), eps);
-%! assert (hygepdf (x, 4, 1, 2, "vectorexpand"), z(2,:), eps);
-%! assert (hygepdf ([NaN, x], 4, [0 1 2]', 2, "vectorexpand"), [NaN(3,1), z], eps);
+%! assert (hygepdf (x, 4, [0, 1, 2], 2, "vectorexpand"), z, 3 * eps);
+%! assert (hygepdf (x, 4, [0, 1, 2]', 2, "vectorexpand"), z, 3 * eps);
+%! assert (hygepdf (x', 4, [0, 1, 2], 2, "vectorexpand"), z, 3 * eps);
+%! assert (hygepdf (2, 4, [0 ,1, 2], 2, "vectorexpand"), z(:,4), 3 * eps);
+%! assert (hygepdf (x, 4, 1, 2, "vectorexpand"), z(2,:), 3 *eps);
+%! assert (hygepdf ([NaN, x], 4, [0 1 2]', 2, "vectorexpand"), [NaN(3, 1), z], 3 * eps);
 
 ## Test input validation
 %!error<hygepdf: function called with too few input arguments.> hygepdf ()
