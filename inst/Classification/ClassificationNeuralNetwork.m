@@ -447,12 +447,12 @@ classdef ClassificationNeuralNetwork
       ActivationCodes = [ActivationCodes, code];
 
       ## Start the training process
-      tic;
+      cnn_timer_ = tic;
       Mdl = fcnntrain (X, Y, LayerSizes, ActivationCodes, ...
                        LearningRate, IterationLimit, DisplayInfo);
 
       ## Store training time, Iterations, and Loss
-      ConvergenceInfo.Time = toc;
+      ConvergenceInfo.Time = toc (cnn_timer_);
       ConvergenceInfo.Accuracy = Mdl.Accuracy;
       ConvergenceInfo.TrainingLoss = Mdl.Loss;
 
