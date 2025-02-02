@@ -31,7 +31,7 @@ package_texi2html ("statistics")
 
 ## 3. Install statistics
 
-To install the latest release (1.7.0) you need Octave (>=7.2.0) installed on your system. Install it by typing:
+To install the latest release, you need Octave (>=7.2.0) installed on your system. Install it by typing:
 
   `pkg install -forge statistics`
 
