@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -38,26 +38,32 @@
 ##
 ## @code{@var{h} = kstest (@var{x}, @var{name}, @var{value})} returns
 ## a test decision for a single-sample K-S test with additional options
-## specified by one or more name-value pair arguments as shown below.
+## specified by one or more @var{Name}-@var{Value} pair arguments as shown
+## below.
 ##
-## @multitable @columnfractions 0.20 0.8
-## @item "alpha" @tab A value @var{alpha} between 0 and 1 specifying the
-## significance level.  Default is 0.05 for 5% significance.
+## @multitable @columnfractions 0.15 0.05 0.8
+## @headitem Name @tab @tab Value
+## @item @qcode{"alpha"} @tab @tab A numeric scalar between 0 and 1 specifying th
+## the significance level.  Default is 0.05 for 5% significance.
 ##
-## @item "CDF" @tab CDF is the c.d.f. under the null hypothesis.  It can be
-## specified either as a function handle or a a function name of an existing
-## cdf function or as a two-column matrix.  If not provided, the default is
-## the standard normal, N(0,1).
+## @item @qcode{"CDF"} @tab @tab The hypothesized CDF under the null hypothesis.
+## It can be specified as a function handle of an existing cdf function, a
+## character vector defining a probability distribution with default parameters,
+## a probability distribution object, or a two-column matrix.  If not provided,
+## the default is the standard normal, @math{N(0,1)}.  The one-sample
+## Kolmogorov-Smirnov test is only valid for continuous cumulative distribution
+## functions, and requires the CDF to be predetermined.  The result is not
+## accurate if CDF is estimated from the data.
 ##
-## @item "tail" @tab A string indicating the type of test:
+## @item @qcode{"tail"} @tab @tab A string indicating the type of test:
 ## @end multitable
+## @multitable @columnfractions 0.2 0.15 0.05 0.5
+## @item @tab @qcode{"unequal"} @tab @tab "F(X) not equal to CDF(X)" (two-sided)
+## (Default)
 ##
-## @multitable @columnfractions 0.03 0.2 0.77
-## @item @tab "unequal" @tab "F(X) not equal to CDF(X)" (two-sided) (Default)
+## @item @tab @qcode{"larger"} @tab @tab "F(X) > CDF(X)" (one-sided)
 ##
-## @item @tab "larger" @tab "F(X) > CDF(X)" (one-sided)
-##
-## @item @tab "smaller" @tab "CDF(X) < F(X)" (one-sided)
+## @item @tab @qcode{"smaller"} @tab @tab "F(X) < CDF(X)" (one-sided)
 ## @end multitable
 ##
 ## Let S(X) be the empirical c.d.f. estimated from the sample vector @var{x},
@@ -96,6 +102,7 @@
 ## @end deftypefn
 
 function [H, pValue, ksstat, cV] = kstest (x, varargin)
+
   ## Check input parameters
   if (nargin < 1)
     error ("kstest: too few inputs.");
@@ -103,10 +110,12 @@ function [H, pValue, ksstat, cV] = kstest (x, varargin)
   if (! isvector (x) || ! isreal (x))
     error ("kstest: X must be a vector of real numbers.");
   endif
+
   ## Add defaults
   alpha = 0.05;
   tail = "unequal";
   CDF = [];
+
   ## Parse extra parameters
   if (length (varargin) > 0 && mod (numel (varargin), 2) == 0)
     [~, prop] = parseparams (varargin);
@@ -119,34 +128,70 @@ function [H, pValue, ksstat, cV] = kstest (x, varargin)
         case "cdf"
           CDF = prop{2};
         otherwise
-          error ("kstest: unknown option %s", prop{1});
+          error ("kstest: unknown option '%s'.", prop{1});
       endswitch
       prop = prop(3:end);
     endwhile
   elseif (mod (numel (varargin), 2) != 0)
     error ("kstest: optional parameters must be in name/value pairs.");
   endif
+
   ## Check for valid alpha and tail parameters
   if (! isnumeric (alpha) || isnan (alpha) || ! isscalar (alpha) ...
                           || alpha <= 0 || alpha >= 1)
     error ("kstest: alpha must be a numeric scalar in the range (0,1).");
   endif
   if (! isa (tail, 'char'))
-    error ("kstest: tail argument must be a string");
+    error ("kstest: tail argument must be a string.");
   elseif (sum (strcmpi (tail, {"unequal", "larger", "smaller"})) < 1)
     error ("kstest: tail value must be either 'both', right' or 'left'.");
   endif
+
   ## Remove NaNs, get sample size and compute empirical cdf
   x(isnan (x)) = [];
   n = length (x);
   [sampleCDF, x] = ecdf (x);
+
   ## Remove 1st element
   x = x(2:end);
+
   ## Check the hypothesized CDF specified under the null hypothesis.
-  ## If CDF is a handle
-  if (isa (CDF, "function_handle") || isa (CDF, "char"))
+  ## No CDF was provided (use default)
+  if (isempty (CDF))
+    xCDF = x;
+    yCDF = normcdf (x, 0, 1);
+
+  ## If CDF is a function handle
+  elseif (isa (CDF, "function_handle"))
     xCDF = x;
     yCDF = feval (CDF, x);
+    if (! isequal (size (xCDF), size (yCDF)))
+      error ("kstest: invalid function handle.");
+    endif
+
+  ## If CDF is character vector
+  elseif (isa (CDF, "char") && isvector (CDF))
+    ## Check for supported distibutions
+    PDO = makedist ();
+    if (! any (strcmpi (PDO, CDF)))
+      error ("kstest: '%s' is not a supported distribution.", CDF);
+    endif
+    pd = makedist (CDF);
+    xCDF = x;
+    yCDF = pd.cdf (x);
+
+  ## If CDF is a probability distribution object
+  elseif (isobject (CDF))
+    PDO = makedist ();
+    PDO = cellfun (@(x) sprintf ("%sDistribution", x), PDO, ...
+                   "UniformOutput", false);
+
+    if (! any (isa (CDF, PDO)))
+      error ("kstest: 'CDF' must be a probability distribution object.");
+    endif
+    xCDF = x;
+    yCDF = CDF.cdf (x);
+
   ## If CDF is numerical
   elseif (! isempty (CDF) && isnumeric (CDF))
     if (size (CDF, 2) != 2)
@@ -162,22 +207,23 @@ function [H, pValue, ksstat, cV] = kstest (x, varargin)
     ## Check that numerical CDF is incrementally sorted
     ydiff = diff (yCDF);
     if (any (ydiff < 0))
-      error("kstest: non-incrementing numerical CDF");
+      error("kstest: non-incrementing numerical CDF.");
     endif
     ## Remove duplicates. Check for consistency
     rd = find (diff (xCDF) == 0);
     if (! isempty (rd))
       if (! all (ydiff(rd) == 0))
-        error ("kstest: wrong duplicates in numericl CDF.");
+        error ("kstest: wrong duplicates in numerical CDF.");
       endif
       xCDF(rd) = [];
       yCDF(rd) = [];
     endif
-  ## If CDF is empty, use standard normal distribution: x ~ N(0,1)
+
+  ## Invalid value parsed as CDF optinonal argument
   else
-    xCDF = x;
-    yCDF = normcdf (x, 0, 1);
+    error ("kstest: invalid value parsed as CDF optinonal argument.");
   endif
+
   ## Check if CDF is specified at the observations in X and assign 2nd column
   ## of numerical CDF to null CDF
   if (isequal (x, xCDF))
@@ -190,6 +236,7 @@ function [H, pValue, ksstat, cV] = kstest (x, varargin)
     endif
     nCDF  =  interp1 (xCDF, yCDF, x);
   endif
+
   ## Calculate the suitable KS statistic according to tail
   switch (tail)
     case "unequal"    # 2-sided test: T = max|S(x) - CDF(x)|.
@@ -205,15 +252,16 @@ function [H, pValue, ksstat, cV] = kstest (x, varargin)
       delta2    =  sampleCDF(2:end) - nCDF;
       deltaCDF  =  [delta1; delta2];
   endswitch
-  ksstat   =  max(deltaCDF);
+  ksstat = max (deltaCDF);
+
   ## Compute the asymptotic P-value approximation
   if (strcmpi (tail, "unequal"))    # 2-sided test
-    s = n*ksstat^2;
+    s = n * ksstat ^ 2;
     ## For d values that are in the far tail of the distribution (i.e.
     ## p-values > .999), the following lines will speed up the computation
     ## significantly, and provide accuracy up to 7 digits.
-    if ((s > 7.24) ||((s > 3.76) && (n > 99)))
-      pValue = 2*exp(-(2.000071+.331/sqrt(n)+1.409/n)*s);
+    if ((s > 7.24) || ((s > 3.76) && (n > 99)))
+      pValue = 2 * exp (-(2.000071 + 0.331 / sqrt (n) + 1.409 / n) * s);
     else
       ## Express d as d = (k-h)/n, where k is a +ve integer and 0 < h < 1.
       k = ceil (ksstat * n);
@@ -248,8 +296,10 @@ function [H, pValue, ksstat, cV] = kstest (x, varargin)
              - gammaln (k + 1) - gammaln (n - k + 1) + k .* log (k - t) ...
              + (n - k - 1) .* log (t + n - k)));
   endif
+
   ## Return hypothesis test
   H = (pValue < alpha);
+
   ## Calculate critical Value (cV) if requested
   if (nargout > 3)
     ## The critical value table used below is expressed in reference to a
@@ -299,24 +349,65 @@ function [H, pValue, ksstat, cV] = kstest (x, varargin)
         cV = asymptoticStat - 0.16693 ./ n - A ./ n .^ 1.5;
         cV = min (cV, 1 - alpha1);
       endif
+
     else
       cV = NaN;
     endif
   endif
 endfunction
 
+%!demo
+%! ## Use the stock return data set to test the null hypothesis that the data
+%! ## come from a standard normal distribution against the alternative
+%! ## hypothesis that the population CDF of the data is larger that the
+%! ## standard normal CDF.
+%!
+%! load stockreturns;
+%! x = stocks(:,2);
+%! [h, p, k, c] = kstest (x, "Tail", "larger")
+%!
+%! ## Compute the empirical CDF and plot against the standard normal CDF
+%! [f, x_values] = ecdf (x);
+%! h1 = plot (x_values, f);
+%! hold on;
+%! h2 = plot (x_values, normcdf (x_values), 'r--');
+%! set (h1, "LineWidth", 2);
+%! set (h2, "LineWidth", 2);
+%! legend ([h1, h2], "Empirical CDF", "Standard Normal CDF", ...
+%!         "Location", "southeast");
+%! title ("Empirical CDF of stock return data against standard normal CDF")
+
 ## Test input
-%!error kstest ()
-%!error kstest (ones(2,4))
-%!error kstest ([2,3,5,7,3+3i])
-%!error kstest ([2,3,4,5,6],"tail")
-%!error kstest ([2,3,4,5,6],"tail", "whatever")
-%!error kstest ([2,3,4,5,6],"badoption", 0.51)
-%!error kstest ([2,3,4,5,6],"tail", 0)
-%!error kstest ([2,3,4,5,6],"alpha", 0)
-%!error kstest ([2,3,4,5,6],"alpha", NaN)
-%!error kstest ([NaN,NaN,NaN,NaN,NaN],"tail", "unequal")
-%!error kstest ([2,3,4,5,6],"alpha", 0.05, "CDF", [2,3,4;1,3,4;1,2,1])
+%!error<kstest: too few inputs.> kstest ()
+%!error<kstest: X must be a vector of real numbers.> kstest (ones (2, 4))
+%!error<kstest: X must be a vector of real numbers.> kstest ([2, 3, 5, 3+3i])
+%!error<kstest: unknown option 'opt'.> kstest ([2, 3, 4, 5, 6], "opt", 0.51)
+%!error<kstest: optional parameters must be in name/value pairs.> ...
+%! kstest ([2, 3, 4, 5, 6], "tail")
+%!error<kstest: alpha must be a numeric scalar in the range> ...
+%! kstest ([2,3,4,5,6],"alpha", [0.05, 0.05])
+%!error<kstest: alpha must be a numeric scalar in the range> ...
+%! kstest ([2, 3, 4, 5, 6], "alpha", NaN)
+%!error<kstest: tail argument must be a string.> ...
+%! kstest ([2, 3, 4, 5, 6], "tail", 0)
+%!error<kstest: tail value must be either 'both', right' or 'left'.> ...
+%! kstest ([2,3,4,5,6], "tail", "whatever")
+%!error<kstest: invalid function handle.> ...
+%! kstest ([1, 2, 3, 4, 5], "CDF", @(x) repmat (x, 2, 3))
+%!error<kstest: 'somedist' is not a supported distribution.> ...
+%! kstest ([1, 2, 3, 4, 5], "CDF", "somedist")
+%!error<kstest: 'CDF' must be a probability distribution object.> ...
+%! kstest ([1, 2, 3, 4, 5], "CDF", cvpartition (5))
+%!error<kstest: numerical CDF should have only 2 columns.> ...
+%! kstest ([2, 3, 4, 5, 6], "alpha", 0.05, "CDF", [2, 3, 4; 1, 3, 4; 1, 2, 1])
+%!error<kstest: numerical CDF should have at least one row.> ...
+%! kstest ([2, 3, 4, 5, 6], "alpha", 0.05, "CDF", nan (5, 2))
+%!error<kstest: non-incrementing numerical CDF.> ...
+%! kstest ([2, 3, 4, 5, 6], "CDF", [2, 3; 1, 4; 3, 2])
+%!error<kstest: wrong duplicates in numerical CDF.> ...
+%! kstest ([2, 3, 4, 5, 6], "CDF", [2, 3; 2, 4; 3, 5])
+%!error<kstest: invalid value parsed as CDF optinonal argument.> ...
+%! kstest ([2, 3, 4, 5, 6], "CDF", {1, 2, 3, 4, 5})
 
 ## Test results
 %!test
@@ -329,6 +420,13 @@ endfunction
 %! [h, p] = kstest (grades(:,1), "CDF", @(x) normcdf(x, 75, 10));
 %! assert (h, false);
 %! assert (p, 0.5612, 1e-4);
+%!test
+%! load examgrades
+%! x = grades(:,1);
+%! test_cdf = makedist ("tlocationscale", "mu", 75, "sigma", 10, "nu", 1);
+%! [h, p] = kstest (x, "alpha", 0.01, "CDF", test_cdf);
+%! assert (h, true);
+%! assert (p, 0.0021, 1e-4);
 %!test
 %! load stockreturns
 %! x = stocks(:,3);
