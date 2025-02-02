@@ -65,3 +65,28 @@
 
  ** PoissonDistribution: fixed computations on truncated distribution
                          methods (github issue #128)
+
+
+ Summary of important user-visible changes for statistics 1.7.1:
+-------------------------------------------------------------------
+
+ Important Notice: 1) `mad`, `mean`, `median`, `std`, `var` functions
+                      shadow core Octave's respective functions prior
+                      to Octave v9.1
+                   2) incompatibility with the `nan` package
+
+ Improvements:
+ =============
+
+ ** ClassificationPartitionedModel: add input validation for cvpartition
+                                    object (github issue #160)
+
+ ** ClassificationNeuralNetwork: use named variable for timing training
+                                 (github issue #169)
+
+ ** kstest: add support for probability distribution objects, fix previous
+            regression related to failing test (github issues #164, #165, #167),
+            add more BISTs and a DEMO
+
+ ** RegressionGAM: add iteration limit to the private fitGAM function to avoid
+                   infinite loop with Netlib BLAS/LAPACK (github issue #160)
