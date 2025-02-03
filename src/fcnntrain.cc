@@ -275,7 +275,7 @@ neural network model's training process. \
   vector<double> Loss;
 
   // Start training
-  int epoch = 0;
+  unsigned int epoch = 0;
   for (; epoch < args(7).uint_value (); epoch++)
   {
     // Initialize Loss and Prediction

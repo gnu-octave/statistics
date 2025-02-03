@@ -40,7 +40,7 @@ double get_random ()
 double accuracy (vector<int> predictions, vector<int> labels)
 {
   double correct = 0.0;
-  for (int i = 0; i < predictions.size (); i++)
+  for (vector<int>::size_type i = 0; i < predictions.size (); i++)
   {
     if (predictions[i] == labels[i] - 1)
     {
@@ -57,7 +57,7 @@ class Neuron
 {
 public:
   // constructor
-  Neuron (int input_size);
+  Neuron (vector<double>::size_type input_size);
   // destructor
   ~Neuron ();
 
@@ -76,11 +76,11 @@ public:
   double bgrad;
 };
 
-Neuron::Neuron (int input_size)
+Neuron::Neuron (vector<double>::size_type input_size)
 {
   this->weights = vector<double> (input_size);
   this->bias = 0.01 * get_random ();
-  for (int i = 0; i < input_size; i++)
+  for (vector<double>::size_type i = 0; i < input_size; i++)
   {
     this->weights[i] = get_random ();
   }
@@ -90,7 +90,7 @@ Neuron::~Neuron () {}
 double Neuron::forward (vector<double> inputs)
 {
   double total = this->bias;
-  for (int i = 0; i < inputs.size (); i++)
+  for (vector<double>::size_type i = 0; i < inputs.size (); i++)
   {
     total += inputs[i] * this->weights[i];
   }
@@ -100,7 +100,7 @@ double Neuron::forward (vector<double> inputs)
 void Neuron::backward (vector<double> last_input, double grad)
 {
   this->bgrad += grad;
-  for (int i = 0; i < this->wgrad.size (); i++)
+  for (vector<double>::size_type i = 0; i < this->wgrad.size (); i++)
   {
     this->wgrad.at (i) = this->wgrad.at (i) + grad * last_input.at (i);
   }
@@ -109,7 +109,7 @@ void Neuron::backward (vector<double> last_input, double grad)
 void Neuron::descend (double learning_rate)
 {
   this->bias -= this->bgrad * learning_rate;
-  for (int i = 0; i < this->weights.size (); i++)
+  for (vector<double>::size_type i = 0; i < this->weights.size (); i++)
   {
     this->weights.at (i) -= this->wgrad.at (i) * learning_rate;
   }
@@ -124,8 +124,8 @@ vector<double> Neuron::get_neuron ()
 
 void Neuron::set_neuron (vector<double> Wb_vector)
 {
-  int w_len = Wb_vector.size () - 1;
-  for (int i; i < w_len; i++)
+  vector<double>::size_type w_len = Wb_vector.size () - 1;
+  for (vector<double>::size_type i = 0; i < w_len; i++)
   {
     this->weights.at (i) = Wb_vector[i];
   }
@@ -142,7 +142,7 @@ class DenseLayer
 {
 public:
   // constructor
-  DenseLayer (int input_size, int output_size);
+  DenseLayer (vector<double>::size_type input_size, vector<double>::size_type output_size);
   // destructor
   ~DenseLayer ();
 
@@ -159,11 +159,11 @@ public:
   vector<double> last_input;
 };
 
-DenseLayer::DenseLayer (int input_size, int output_size)
+DenseLayer::DenseLayer (vector<double>::size_type input_size, vector<double>::size_type output_size)
 {
   // initialize neurons
   this->neurons = vector<Neuron> ();
-  for (int i = 0; i < output_size; i++)
+  for (vector<Neuron>::size_type i = 0; i < output_size; i++)
   {
     Neuron to_add = Neuron (input_size);
     this->neurons.push_back (to_add);
@@ -175,7 +175,7 @@ vector<double> DenseLayer::forward (vector<double> inputs)
 {
   this->last_input = inputs;
   vector<double> outputs = vector<double> (this->neurons.size());
-  for (int i = 0; i < this->neurons.size (); i++)
+  for (vector<double>::size_type i = 0; i < this->neurons.size (); i++)
   {
     outputs[i] = this->neurons[i].forward (inputs);
   }
@@ -184,7 +184,7 @@ vector<double> DenseLayer::forward (vector<double> inputs)
 
 void DenseLayer::backward (vector<double> grad)
 {
-  for (int i = 0; i < this->neurons.size (); i++)
+  for (vector<double>::size_type i = 0; i < this->neurons.size (); i++)
   {
     this->neurons[i].backward (last_input, grad[i]);
   }
@@ -192,7 +192,7 @@ void DenseLayer::backward (vector<double> grad)
 
 void DenseLayer::descend (double learning_rate)
 {
-  for (int i = 0; i < this->neurons.size (); i++)
+  for (vector<Neuron>::size_type i = 0; i < this->neurons.size (); i++)
   {
     this->neurons[i].descend (learning_rate);
   }
@@ -201,7 +201,7 @@ void DenseLayer::descend (double learning_rate)
 vector<vector<double>> DenseLayer::get_layer ()
 {
   vector<vector<double>> Wb_matrix;
-  for (int i = 0; i < this->neurons.size (); i++)
+  for (vector<double>::size_type i = 0; i < this->neurons.size (); i++)
   {
     vector<double> WB_vector = this->neurons[i].get_neuron ();
     Wb_matrix.push_back (WB_vector);
@@ -211,7 +211,7 @@ vector<vector<double>> DenseLayer::get_layer ()
 
 void DenseLayer::set_layer (vector<vector<double>> Wb_matrix)
 {
-  for (int i; i < Wb_matrix.size (); i++)
+  for (vector<double>::size_type i = 0; i < Wb_matrix.size (); i++)
   {
     this->neurons[i].set_neuron (Wb_matrix[i]);
   }
@@ -219,7 +219,7 @@ void DenseLayer::set_layer (vector<vector<double>> Wb_matrix)
 
 void DenseLayer::zero_gradient ()
 {
-  for (int i = 0; i < this->neurons.size (); i++)
+  for (vector<double>::size_type i = 0; i < this->neurons.size (); i++)
   {
     this->neurons[i].zero_gradient ();
   }
@@ -259,7 +259,7 @@ ActivationLayer::~ActivationLayer () {}
 vector<double> ActivationLayer::forward (vector<double> inputs)
 {
   this->last_input = inputs;
-  int layer_size = inputs.size ();
+  vector<double>::size_type layer_size = inputs.size ();
   if (layer_size < 1000)
   {
     this->n_threads = 1;
@@ -275,7 +275,7 @@ vector<double> ActivationLayer::forward (vector<double> inputs)
     #pragma omp parallel
     {
       #pragma omp parallel for
-      for (int i = 0; i < layer_size; i++)
+      for (vector<double>::size_type i = 0; i < layer_size; i++)
       {
         outputs[i] = 1 / (1 + exp (-inputs[i]));
       }
@@ -287,7 +287,7 @@ vector<double> ActivationLayer::forward (vector<double> inputs)
     #pragma omp parallel
     {
       #pragma omp parallel for
-      for (int i = 0; i < layer_size; i++)
+      for (vector<double>::size_type i = 0; i < layer_size; i++)
       {
         outputs[i] = inputs[i] > 0 ? inputs[i] : 0;
       }
@@ -299,7 +299,7 @@ vector<double> ActivationLayer::forward (vector<double> inputs)
     #pragma omp parallel
     {
       #pragma omp parallel for
-      for (int i = 0; i < layer_size; i++)
+      for (vector<double>::size_type i = 0; i < layer_size; i++)
       {
         double ex = exp (inputs[i]);
         double e_x = exp (-inputs[i]);
@@ -311,12 +311,12 @@ vector<double> ActivationLayer::forward (vector<double> inputs)
   {
     double total = 0.0;
     double maxel = *max_element (inputs.begin (), inputs.end ());
-    for (int i = 0; i < layer_size; i++)
+    for (vector<double>::size_type i = 0; i < layer_size; i++)
     {
         outputs[i] = exp (inputs[i] - maxel);
         total += outputs[i];
     }
-    for (int i = 0; i < layer_size; i++)
+    for (vector<double>::size_type i = 0; i < layer_size; i++)
     {
         outputs[i] /= total;
     }
@@ -327,7 +327,7 @@ vector<double> ActivationLayer::forward (vector<double> inputs)
     #pragma omp parallel
     {
       #pragma omp parallel for
-      for (int i = 0; i < layer_size; i++)
+      for (vector<double>::size_type i = 0; i < layer_size; i++)
       {
         outputs[i] = inputs[i] >= 0 ? inputs[i] : inputs[i] * this->alpha;
       }
@@ -339,7 +339,7 @@ vector<double> ActivationLayer::forward (vector<double> inputs)
     #pragma omp parallel
     {
       #pragma omp parallel for
-      for (int i = 0; i < layer_size; i++)
+      for (vector<double>::size_type i = 0; i < layer_size; i++)
       {
         outputs[i] = inputs[i] >= 0 ? inputs[i] : (exp (inputs[i]) - 1)
                                                   * this->alpha;
@@ -352,7 +352,7 @@ vector<double> ActivationLayer::forward (vector<double> inputs)
     #pragma omp parallel
     {
       #pragma omp parallel for
-      for (int i = 0; i < layer_size; i++)
+      for (vector<double>::size_type i = 0; i < layer_size; i++)
       {
         double x_3 = pow (inputs[i], 3) * 0.044715;
         outputs[i] = 0.5 * inputs[i] * (tanh (sqrt (2 / M_PI)
@@ -366,7 +366,7 @@ vector<double> ActivationLayer::forward (vector<double> inputs)
 
 void ActivationLayer::backward (vector<double> chain_grad)
 {
-  int layer_size = this->last_input.size ();
+  vector<double>::size_type layer_size = this->last_input.size ();
   if (layer_size < 1000)
   {
     this->n_threads = 1;
@@ -382,7 +382,7 @@ void ActivationLayer::backward (vector<double> chain_grad)
     #pragma omp parallel
     {
       #pragma omp parallel for
-      for (int i = 0; i < layer_size; i++)
+      for (vector<double>::size_type i = 0; i < layer_size; i++)
       {
         this->grad[i] = this->last_output[i] * (1 - this->last_output[i])
                                              * chain_grad[i];
@@ -395,7 +395,7 @@ void ActivationLayer::backward (vector<double> chain_grad)
     #pragma omp parallel
     {
       #pragma omp parallel for
-      for (int i = 0; i < layer_size; i++)
+      for (vector<double>::size_type i = 0; i < layer_size; i++)
       {
         this->grad[i] = this->last_input[i] > 0 ? chain_grad[i] : 0;
       }
@@ -407,7 +407,7 @@ void ActivationLayer::backward (vector<double> chain_grad)
     #pragma omp parallel
     {
       #pragma omp parallel for
-      for (int i = 0; i < layer_size; i++)
+      for (vector<double>::size_type i = 0; i < layer_size; i++)
       {
         this->grad[i] = (1 - pow (this->last_output[i], 2)) * chain_grad[i];
       }
@@ -424,7 +424,7 @@ void ActivationLayer::backward (vector<double> chain_grad)
     #pragma omp parallel
     {
       #pragma omp parallel for
-      for (int i = 0; i < layer_size; i++)
+      for (vector<double>::size_type i = 0; i < layer_size; i++)
       {
         this->grad[i] = this->last_input[i] >= 0 ? chain_grad[i] :
                                                    chain_grad[i] * this->alpha;
@@ -437,7 +437,7 @@ void ActivationLayer::backward (vector<double> chain_grad)
     #pragma omp parallel
     {
       #pragma omp parallel for
-      for (int i = 0; i < layer_size; i++)
+      for (vector<double>::size_type i = 0; i < layer_size; i++)
       {
         this->grad[i] = this->last_input[i] >= 0 ? chain_grad[i] : chain_grad[i]
                                      * exp (this->last_output[i]) * this->alpha;
@@ -452,7 +452,7 @@ void ActivationLayer::backward (vector<double> chain_grad)
     #pragma omp parallel
     {
       #pragma omp parallel for
-      for (int i = 0; i < layer_size; i++)
+      for (vector<double>::size_type i = 0; i < layer_size; i++)
       {
         double pdf_val = inv_sqrt_2pi * exp (-0.5 * this->last_output[i]
                                                   * this->last_output[i]);
@@ -467,9 +467,9 @@ void ActivationLayer::backward (DenseLayer &prev_layer)
   this->grad = vector<double> (this->last_input.size ());
   if (this->activation == 0) // 'Linear'
   {
-    for (int i = 0; i < prev_layer.last_input.size (); i++)
+    for (vector<double>::size_type i = 0; i < prev_layer.last_input.size (); i++)
     {
-      for (int n = 0; n < prev_layer.neurons.size (); n++)
+      for (vector<double>::size_type n = 0; n < prev_layer.neurons.size (); n++)
       {
         double curr_grad = this->last_output[n];
         double chain_grad = prev_layer.neurons[n].weights[i] *
@@ -481,9 +481,9 @@ void ActivationLayer::backward (DenseLayer &prev_layer)
   }
   else if (this->activation == 1) // Sigmoid function
   {
-    for (int i = 0; i < prev_layer.last_input.size (); i++)
+    for (vector<double>::size_type i = 0; i < prev_layer.last_input.size (); i++)
     {
-      for (int n = 0; n < prev_layer.neurons.size (); n++)
+      for (vector<double>::size_type n = 0; n < prev_layer.neurons.size (); n++)
       {
         double curr_grad = this->last_output[n] * (1 - this->last_output[n]);
         double chain_grad = prev_layer.neurons[n].weights[i] *
@@ -495,9 +495,9 @@ void ActivationLayer::backward (DenseLayer &prev_layer)
   }
   else if (this->activation == 2) // Rectified Linear Unit (ReLU)
   {
-    for (int i = 0; i < prev_layer.last_input.size(); i++)
+    for (vector<double>::size_type i = 0; i < prev_layer.last_input.size(); i++)
     {
-      for (int n = 0; n < prev_layer.neurons.size(); n++)
+      for (vector<double>::size_type n = 0; n < prev_layer.neurons.size(); n++)
       {
         double grad = prev_layer.neurons[n].wgrad[i] / prev_layer.last_input[i];
         if (this->last_input[i] < 0)
@@ -513,9 +513,9 @@ void ActivationLayer::backward (DenseLayer &prev_layer)
   }
   else if (this->activation == 3) // Hyperbolic tangent (tanh)
   {
-    for (int i = 0; i < prev_layer.last_input.size (); i++)
+    for (vector<double>::size_type i = 0; i < prev_layer.last_input.size (); i++)
     {
-      for (int n = 0; n < prev_layer.neurons.size (); n++)
+      for (vector<double>::size_type n = 0; n < prev_layer.neurons.size (); n++)
       {
         double curr_grad = this->last_output[n] *
                            (1 - pow (this->last_output[i], 2));
@@ -529,9 +529,9 @@ void ActivationLayer::backward (DenseLayer &prev_layer)
   else if (this->activation == 4) // Softmax activation
   {
     // WARNING: this code may be incorrect
-    for (int i = 0; i < prev_layer.last_input.size (); i++)
+    for (vector<double>::size_type i = 0; i < prev_layer.last_input.size (); i++)
     {
-      for (int n = 0; n < prev_layer.neurons.size (); n++)
+      for (vector<double>::size_type n = 0; n < prev_layer.neurons.size (); n++)
       {
         double curr_grad = this->last_output[n];
         double chain_grad = prev_layer.neurons[n].weights[i] *
@@ -543,15 +543,15 @@ void ActivationLayer::backward (DenseLayer &prev_layer)
   }
   else if (this->activation == 5) // Parametric or Leaky ReLU
   {
-    for (int i = 0; i < prev_layer.last_input.size(); i++)
+    for (vector<double>::size_type i = 0; i < prev_layer.last_input.size(); i++)
     {
-      for (int n = 0; n < prev_layer.neurons.size(); n++)
+      for (vector<double>::size_type n = 0; n < prev_layer.neurons.size(); n++)
       {
         double grad = prev_layer.neurons[n].wgrad[i] / prev_layer.last_input[i];
         this->grad[i] += prev_layer.neurons[n].weights[i] * grad;
       }
     }
-    for (int i = 0; i < this->last_input.size(); i++)
+    for (vector<double>::size_type i = 0; i < this->last_input.size(); i++)
     {
       this->grad[i] = this->last_input[i] >= 0 ? this->grad[i] :
                                                  this->grad[i] * this->alpha;
@@ -559,15 +559,15 @@ void ActivationLayer::backward (DenseLayer &prev_layer)
   }
   else if (this->activation == 6) // Exponential Linear Unit (ELU)
   {
-    for (int i = 0; i < prev_layer.last_input.size(); i++)
+    for (vector<double>::size_type i = 0; i < prev_layer.last_input.size(); i++)
     {
-      for (int n = 0; n < prev_layer.neurons.size(); n++)
+      for (vector<double>::size_type n = 0; n < prev_layer.neurons.size(); n++)
       {
         double grad = prev_layer.neurons[n].wgrad[i] / prev_layer.last_input[i];
         this->grad[i] += prev_layer.neurons[n].weights[i] * grad;
       }
     }
-    for (int i = 0; i < this->last_input.size(); i++)
+    for (vector<double>::size_type i = 0; i < this->last_input.size(); i++)
     {
       this->grad[i] = this->last_input[i] >= 0 ? this->grad[i] : this->grad[i]
                                    * exp (this->last_output[i]) * this->alpha;
@@ -577,9 +577,9 @@ void ActivationLayer::backward (DenseLayer &prev_layer)
   {
     // WARNING: this code may be incorrect
     static const double inv_sqrt_2pi = 0.3989422804014327;
-    for (int i = 0; i < prev_layer.last_input.size (); i++)
+    for (vector<double>::size_type i = 0; i < prev_layer.last_input.size (); i++)
     {
-      for (int n = 0; n < prev_layer.neurons.size (); n++)
+      for (vector<double>::size_type n = 0; n < prev_layer.neurons.size (); n++)
       {
         double pdf_val = inv_sqrt_2pi * exp (-0.5 * this->last_output[i]
                                                   * this->last_output[i]);
@@ -620,7 +620,7 @@ double MeanSquaredErrorLoss::forward (vector<double> inputs,
 
   double total = 0;
 
-  for (int i = 0; i < inputs.size (); i++)
+  for (vector<double>::size_type i = 0; i < inputs.size (); i++)
   {
     total += pow (inputs[i] - targets[i], 2);
   }
@@ -632,7 +632,7 @@ double MeanSquaredErrorLoss::forward (vector<double> inputs,
 void MeanSquaredErrorLoss::backward (double grad)
 {
   this->grad = vector<double> (this->last_input.size ());
-  for (int i = 0; i < this->last_input.size (); i++)
+  for (vector<double>::size_type i = 0; i < this->last_input.size (); i++)
   {
     this->grad.at(i) = 2 * this->last_input[i] - this->last_target[i];
     this->grad.at(i) *= grad;

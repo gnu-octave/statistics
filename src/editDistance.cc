@@ -182,11 +182,11 @@ vector<vector<int>> IAcellvec (const boolMatrix& B)
 Cell IA2cell (const vector<vector<int>>& IAc, const vector<int>& IAv)
 {
   Cell IA(IAv.size(), 1);
-  for (octave_idx_type i = 0; i < IAv.size(); i++)
+  for (vector<int>::size_type i = 0; i < IAv.size(); i++)
   {
     int idx = IAv[i];
     Matrix IAidx(IAc[idx].size(), 1);
-    for (octave_idx_type j = 0; j < IAc[idx].size(); j++)
+    for (vector<int>::size_type j = 0; j < IAc[idx].size(); j++)
     {
       IAidx(j,0) = IAc[idx][j] + 1;
     }
@@ -200,9 +200,9 @@ vector<int> IAvector (const vector<vector<int>>& IAcell)
 {
   vector<int> IA;
   vector<int> IA_done;
-  for (int i = 0; i < IAcell.size(); i++)
+  for (vector<int>::size_type i = 0; i < IAcell.size(); i++)
   {
-    for (int j = 0; j < IAcell[i].size(); j++)
+    for (vector<int>::size_type j = 0; j < IAcell[i].size(); j++)
     {
       if (binary_search(IA_done.begin(), IA_done.end(), IAcell[i][j]))
       {
@@ -229,7 +229,7 @@ vector<int> IAvector (const vector<vector<int>>& IAcell)
 Matrix IA2mat (const vector<int>& IAv)
 {
   Matrix IA(IAv.size(), 1);
-  for (octave_idx_type i = 0; i < IAv.size(); i++)
+  for (vector<int>::size_type i = 0; i < IAv.size(); i++)
   {
     IA(i,0) = IAv[i] + 1;
   }
@@ -241,9 +241,9 @@ Matrix ICvector (const vector<vector<int>>& IAc, const int& szA)
 {
   Matrix IC(szA, 1);
   vector<int> IC_done;
-  for (int i = 0; i < IAc.size(); i++)
+  for (vector<int>::size_type i = 0; i < IAc.size(); i++)
   {
-    for (int j = 0; j < IAc[i].size(); j++)
+    for (vector<int>::size_type j = 0; j < IAc[i].size(); j++)
     {
       if (binary_search(IC_done.begin(), IC_done.end(), IAc[i][j]))
       {
@@ -251,7 +251,7 @@ Matrix ICvector (const vector<vector<int>>& IAc, const int& szA)
       }
       else
       {
-        octave_idx_type idx = IAc[i][j];
+        vector<int>::size_type idx = IAc[i][j];
         IC(idx,0) = i + 1;
         IC_done.push_back(IAc[i][j]);
       }
@@ -272,14 +272,14 @@ octave_value_list uniquetol (const int& nargout, const Cell& A, const Matrix& D,
   Cell C(IAv.size(), 1);
   if (A.iscellstr())
   {
-    for (octave_idx_type i = 0; i < IAv.size(); i++)
+    for (vector<int>::size_type i = 0; i < IAv.size(); i++)
     {
       C(i,0) = A(IAv[i]).string_value();
     }
   }
   else
   {
-    for (octave_idx_type i = 0; i < IAv.size(); i++)
+    for (vector<int>::size_type i = 0; i < IAv.size(); i++)
     {
       C(i,0) = A.elem(IAv[i]);
     }
