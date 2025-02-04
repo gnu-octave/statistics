@@ -280,12 +280,12 @@ package:\n\n\
   }
 
   // Initialize return variables
-  int max_epochs = args(7).int_value ();
+  octave_idx_type max_epochs = args(7).int_value ();
   vector<double> Accuracy (max_epochs);
   vector<double> Loss (max_epochs);
 
   // Start training
-  int epoch = 0;
+  octave_idx_type epoch = 0;
   for (; epoch < max_epochs; epoch++)
   {
     // Initialize Loss and Prediction
@@ -398,7 +398,7 @@ package:\n\n\
   // Store accuracy and loss vectors in RowVector
   RowVector A(max_epochs);
   RowVector L(max_epochs);
-  for (int epoch = 0; epoch < max_epochs; epoch++)
+  for (epoch = 0; epoch < max_epochs; epoch++)
   {
     A(epoch) = Accuracy[epoch];
     L(epoch) = Loss[epoch];
