@@ -2,6 +2,7 @@
 ## Copyright (C) 2021 Christian Scholz
 ## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2022 Andrew Penn <A.C.Penn@sussex.ac.uk>
+## Copyright (C) 2024 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -38,10 +39,10 @@
 ## Data is a single vector @var{Y} with groups specified by a corresponding
 ## matrix or cell array of group labels @var{GROUP}, where each column of
 ## @var{GROUP} has the same number of rows as @var{Y}. For example, if
-## @code{@var{Y} = [1.1;1.2]; @var{GROUP} = [1,2,1; 1,5,2];} then observation
-## 1.1 was measured under conditions 1,2,1 and observation 1.2 was measured
-## under conditions 1,5,2. If the @var{GROUP} provided is empty, then the linear
-## model is fit with just the intercept (no predictors).
+## @code{@var{Y} = [23; 27; 31; 29; 30; 32]; @var{GROUP} = [1, 2; 1, 3; 1, 2; 2, 3; 2, 3; 3, 2];}
+## then observation 23 was measured under conditions 1,2; observation 27 was
+## measured under conditions 1,3; and so on. If the @var{GROUP} provided is empty,
+## then the linear model is fit with just the intercept (no predictors).
 ##
 ## @code{anovan} can take a number of optional parameters as name-value pairs.
 ##

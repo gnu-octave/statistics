@@ -232,7 +232,7 @@ function [idx, dist] = knnsearch (X, Y, varargin)
 
   ## Check NSMethod and set kdtree as default if the conditions match
   if (isempty (NSMethod))
-    ## Set default method 'kdtree' if condintions are satistfied;
+    ## Set default method 'kdtree' if conditions are satistfied;
     if (! issparse (X) && (columns (X) <= 10) && ...
        (strcmpi (Distance, "euclidean") || strcmpi (Distance, "cityblock")
      || strcmpi (Distance, "minkowski") || strcmpi (Distance, "chebychev")))
@@ -241,7 +241,7 @@ function [idx, dist] = knnsearch (X, Y, varargin)
       NSMethod = "exhaustive";
     endif
   else
-    ## Not empty then check if is exhaustive or kdtree
+    ## Check if kdtree can be used
     if (strcmpi (NSMethod,"kdtree") && ! ( strcmpi (Distance, "euclidean")
      || strcmpi (Distance, "cityblock") || strcmpi (Distance, "minkowski")
      || strcmpi (Distance, "chebychev")))

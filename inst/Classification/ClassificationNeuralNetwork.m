@@ -447,12 +447,14 @@ classdef ClassificationNeuralNetwork
       ActivationCodes = [ActivationCodes, code];
 
       ## Start the training process
-      tic;
-      Mdl = fcnntrain (X, Y, LayerSizes, ActivationCodes, ...
+      NumThreads = nproc ();
+      Alpha = 0.01;  # used for ReLU and ELU activation layers
+      cnn_timer_ = tic;
+      Mdl = fcnntrain (X, Y, LayerSizes, ActivationCodes, NumThreads, Alpha, ...
                        LearningRate, IterationLimit, DisplayInfo);
 
       ## Store training time, Iterations, and Loss
-      ConvergenceInfo.Time = toc;
+      ConvergenceInfo.Time = toc (cnn_timer_);
       ConvergenceInfo.Accuracy = Mdl.Accuracy;
       ConvergenceInfo.TrainingLoss = Mdl.Loss;
 
@@ -518,7 +520,8 @@ classdef ClassificationNeuralNetwork
       endif
 
       ## Predict labels from new data
-      [labels, scores] = fcnnpredict (this.ModelParameters, XC);
+      NumThreads = nproc ();
+      [labels, scores] = fcnnpredict (this.ModelParameters, XC, NumThreads);
 
       # Get class labels
       labels = this.ClassNames(labels);
@@ -582,7 +585,8 @@ classdef ClassificationNeuralNetwork
       endif
 
       ## Predict labels from existing data
-      [labels, scores] = fcnnpredict (this.ModelParameters, X);
+      NumThreads = nproc ();
+      [labels, scores] = fcnnpredict (this.ModelParameters, X, NumThreads);
 
       # Get class labels
       labels = this.ClassNames(labels);

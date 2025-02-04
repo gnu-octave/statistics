@@ -23,6 +23,12 @@ this program; if not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 #include <memory>
 #include <cmath>
+#if defined (_OPENMP)
+  #include <omp.h>
+  #define MY_OMP_SET_THREADS (omp_set_num_threads (this->n_threads))
+#else
+  #define MY_OMP_SET_THREADS
+#endif
 
 using namespace std;
 
@@ -124,7 +130,7 @@ vector<double> Neuron::get_neuron ()
 void Neuron::set_neuron (vector<double> Wb_vector)
 {
   int w_len = Wb_vector.size () - 1;
-  for (int i; i < w_len; i++)
+  for (int i = 0; i < w_len; i++)
   {
     this->weights.at (i) = Wb_vector[i];
   }
@@ -210,7 +216,7 @@ vector<vector<double>> DenseLayer::get_layer ()
 
 void DenseLayer::set_layer (vector<vector<double>> Wb_matrix)
 {
-  for (int i; i < Wb_matrix.size (); i++)
+  for (int i = 0; i < Wb_matrix.size (); i++)
   {
     this->neurons[i].set_neuron (Wb_matrix[i]);
   }
@@ -228,7 +234,7 @@ class ActivationLayer
 {
 public:
   // constructor
-  ActivationLayer (int activation, double alpha);
+  ActivationLayer (int activation, int n_threads, double alpha);
   // destructor
   ~ActivationLayer ();
 
@@ -243,12 +249,14 @@ public:
   vector<double> last_output;
 private:
   int activation;
+  int n_threads;
   double alpha;
 };
 
-ActivationLayer::ActivationLayer (int activation, double alpha)
+ActivationLayer::ActivationLayer (int activation, int n_threads, double alpha)
 {
   this->activation = activation;
+  this->n_threads = n_threads;
   this->alpha = alpha;
 }
 ActivationLayer::~ActivationLayer () {}
@@ -256,17 +264,23 @@ ActivationLayer::~ActivationLayer () {}
 vector<double> ActivationLayer::forward (vector<double> inputs)
 {
   this->last_input = inputs;
-  vector<double> outputs = vector<double> (inputs.size());
+  int layer_size = inputs.size ();
+  if (layer_size < 1000)
+  {
+    this->n_threads = 1;
+  }
+  vector<double> outputs = vector<double> (layer_size);
   if (this->activation == 0) // 'Linear'
   {
     outputs = inputs;
   }
   else if (this->activation == 1) // Sigmoid function
   {
+    MY_OMP_SET_THREADS;
     #pragma omp parallel
     {
       #pragma omp parallel for
-      for (int i = 0; i < inputs.size(); i++)
+      for (int i = 0; i < layer_size; i++)
       {
         outputs[i] = 1 / (1 + exp (-inputs[i]));
       }
@@ -274,10 +288,11 @@ vector<double> ActivationLayer::forward (vector<double> inputs)
   }
   else if (this->activation == 2) // Rectified Linear Unit (ReLU)
   {
+    MY_OMP_SET_THREADS;
     #pragma omp parallel
     {
       #pragma omp parallel for
-      for (int i = 0; i < inputs.size(); i++)
+      for (int i = 0; i < layer_size; i++)
       {
         outputs[i] = inputs[i] > 0 ? inputs[i] : 0;
       }
@@ -285,10 +300,11 @@ vector<double> ActivationLayer::forward (vector<double> inputs)
   }
   else if (this->activation == 3) // Hyperbolic tangent (tanh)
   {
+    MY_OMP_SET_THREADS;
     #pragma omp parallel
     {
       #pragma omp parallel for
-      for (int i = 0; i < inputs.size(); i++)
+      for (int i = 0; i < layer_size; i++)
       {
         double ex = exp (inputs[i]);
         double e_x = exp (-inputs[i]);
@@ -300,22 +316,23 @@ vector<double> ActivationLayer::forward (vector<double> inputs)
   {
     double total = 0.0;
     double maxel = *max_element (inputs.begin (), inputs.end ());
-    for (int i = 0; i < inputs.size(); i++)
+    for (int i = 0; i < layer_size; i++)
     {
         outputs[i] = exp (inputs[i] - maxel);
         total += outputs[i];
     }
-    for (int i = 0; i < inputs.size(); i++)
+    for (int i = 0; i < layer_size; i++)
     {
         outputs[i] /= total;
     }
   }
   else if (this->activation == 5) // Parametric or Leaky ReLU
   {
+    MY_OMP_SET_THREADS;
     #pragma omp parallel
     {
       #pragma omp parallel for
-      for (int i = 0; i < inputs.size(); i++)
+      for (int i = 0; i < layer_size; i++)
       {
         outputs[i] = inputs[i] >= 0 ? inputs[i] : inputs[i] * this->alpha;
       }
@@ -323,10 +340,11 @@ vector<double> ActivationLayer::forward (vector<double> inputs)
   }
   else if (this->activation == 6) // Exponential Linear Unit (ELU)
   {
+    MY_OMP_SET_THREADS;
     #pragma omp parallel
     {
       #pragma omp parallel for
-      for (int i = 0; i < inputs.size(); i++)
+      for (int i = 0; i < layer_size; i++)
       {
         outputs[i] = inputs[i] >= 0 ? inputs[i] : (exp (inputs[i]) - 1)
                                                   * this->alpha;
@@ -335,10 +353,11 @@ vector<double> ActivationLayer::forward (vector<double> inputs)
   }
   else if (this->activation == 7) // Gaussian Error Linear Unit (GELU)
   {
+    MY_OMP_SET_THREADS;
     #pragma omp parallel
     {
       #pragma omp parallel for
-      for (int i = 0; i < inputs.size(); i++)
+      for (int i = 0; i < layer_size; i++)
       {
         double x_3 = pow (inputs[i], 3) * 0.044715;
         outputs[i] = 0.5 * inputs[i] * (tanh (sqrt (2 / M_PI)
@@ -352,17 +371,23 @@ vector<double> ActivationLayer::forward (vector<double> inputs)
 
 void ActivationLayer::backward (vector<double> chain_grad)
 {
-  this->grad = vector<double> (this->last_input.size ());
+  int layer_size = this->last_input.size ();
+  if (layer_size < 1000)
+  {
+    this->n_threads = 1;
+  }
+  this->grad = vector<double> (layer_size);
   if (this->activation == 0) // 'Linear'
   {
     this->grad = chain_grad;
   }
   else if (this->activation == 1) // Sigmoid function
   {
+    MY_OMP_SET_THREADS;
     #pragma omp parallel
     {
       #pragma omp parallel for
-      for (int i = 0; i < this->last_input.size (); i++)
+      for (int i = 0; i < layer_size; i++)
       {
         this->grad[i] = this->last_output[i] * (1 - this->last_output[i])
                                              * chain_grad[i];
@@ -371,10 +396,11 @@ void ActivationLayer::backward (vector<double> chain_grad)
   }
   else if (this->activation == 2) // Rectified Linear Unit (ReLU)
   {
+    MY_OMP_SET_THREADS;
     #pragma omp parallel
     {
       #pragma omp parallel for
-      for (int i = 0; i < last_input.size(); i++)
+      for (int i = 0; i < layer_size; i++)
       {
         this->grad[i] = this->last_input[i] > 0 ? chain_grad[i] : 0;
       }
@@ -382,10 +408,11 @@ void ActivationLayer::backward (vector<double> chain_grad)
   }
   else if (this->activation == 3) // Hyperbolic tangent (tanh)
   {
+    MY_OMP_SET_THREADS;
     #pragma omp parallel
     {
       #pragma omp parallel for
-      for (int i = 0; i < last_input.size(); i++)
+      for (int i = 0; i < layer_size; i++)
       {
         this->grad[i] = (1 - pow (this->last_output[i], 2)) * chain_grad[i];
       }
@@ -398,10 +425,11 @@ void ActivationLayer::backward (vector<double> chain_grad)
   }
   else if (this->activation == 5) // Parametric or Leaky ReLU
   {
+    MY_OMP_SET_THREADS;
     #pragma omp parallel
     {
       #pragma omp parallel for
-      for (int i = 0; i < last_input.size(); i++)
+      for (int i = 0; i < layer_size; i++)
       {
         this->grad[i] = this->last_input[i] >= 0 ? chain_grad[i] :
                                                    chain_grad[i] * this->alpha;
@@ -410,10 +438,11 @@ void ActivationLayer::backward (vector<double> chain_grad)
   }
   else if (this->activation == 6) // Exponential Linear Unit (ELU)
   {
+    MY_OMP_SET_THREADS;
     #pragma omp parallel
     {
       #pragma omp parallel for
-      for (int i = 0; i < last_input.size(); i++)
+      for (int i = 0; i < layer_size; i++)
       {
         this->grad[i] = this->last_input[i] >= 0 ? chain_grad[i] : chain_grad[i]
                                      * exp (this->last_output[i]) * this->alpha;
@@ -424,10 +453,11 @@ void ActivationLayer::backward (vector<double> chain_grad)
   {
     // WARNING: this code may be incorrect
     static const double inv_sqrt_2pi = 0.3989422804014327;
+    MY_OMP_SET_THREADS;
     #pragma omp parallel
     {
       #pragma omp parallel for
-      for (int i = 0; i < last_input.size(); i++)
+      for (int i = 0; i < layer_size; i++)
       {
         double pdf_val = inv_sqrt_2pi * exp (-0.5 * this->last_output[i]
                                                   * this->last_output[i]);

@@ -781,7 +781,7 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>Mdl</var> = <b>fcnntrain</b><i> (<var>X</var>, <var>Y</var>, @ <var>LayerSizes</var>, <var>Activations</var>, <var>LearningRate</var>, <var>Epochs</var>, @ <var>DisplayInfo</var>)</i></dt>
+<dt><u>statistics:</u> <var>Mdl</var> = <b>fcnntrain</b><i> (<var>X</var>, <var>Y</var>, @ <var>LayerSizes</var>, <var>Activations</var>, <var>NumThreads</var>, <var>Alpha</var>, @ <var>LearningRate</var>, <var>Epochs</var>, <var>DisplayInfo</var>)</i></dt>
 </dl>
 
 
@@ -812,6 +812,10 @@
 
 
 
+</li><li> <var>NumThreads</var> : A positive scalar integer value defining the number of threads used for computing the activation layers.  For layers with less than 1000 neurons, <var>NumThreads</var> always defaults to 1. 
+
+</li><li> <var>Alpha</var> : A positive scalar value defining the parameter <code>alpha</code> used in <code>ReLU</code> and <code>ELU</code> activation layers. 
+
 </li><li> <var>LearningRate</var> : A positive scalar value defining the learning rate used by the gradient descend algorithm during training. 
 
 </li><li> <var>Epochs</var> : A positive scalar value defining the number of epochs for training the model. 
@@ -833,9 +837,15 @@
 
 </li><li> <code>Loss</code> : The loss value recorded at each iteration during the neural network model&rsquo;s training process. 
 
+</li><li> <code>Alpha</code> : The value of the Alpha parameter used in <code>ReLU</code> and <code>ELU</code> activation layers. 
+
 </li></ul>
 
 
+<p>Installation Note: in order to support parallel processing on MacOS, users have to manually add support for OpenMP by adding the following flags to <code>CFLAGS</code> and <code>CXXFLAGS</code> prior to installing the statistics package:
+</p>
+<p><code>setenv (&quot;CPPFLAGS&quot;, &quot;-I/opt/homebrew/opt/libomp/include -Xclang -fopenmp&quot;)</code> 
+</p>
 <p><strong>See also: </strong>
   <a href="fcnnpredict.html">fcnnpredict</a>, 
   <a href="fitcnet.html">fitcnet</a>, 

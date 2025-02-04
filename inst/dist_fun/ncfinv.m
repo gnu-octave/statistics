@@ -199,7 +199,7 @@ endfunction
 %! x = [1.6090, 1.8113, 1.9215, 1.9911, NaN, 2.0742];
 %! assert (ncfinv (0.05, 1, [1, 2, 3, 4, -1, 6], 10), x, 1e-4);
 %!test
-%! assert (ncfinv (0.996, 3, 5, 8), 58.0912074080671, 2e-13);
+%! assert (ncfinv (0.996, 3, 5, 8), 58.0912074080671, 4e-12);
 
 ## Test input validation
 %!error<ncfinv: function called with too few input arguments.> ncfinv ()

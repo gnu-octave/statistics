@@ -805,22 +805,28 @@
 </p>
 <p> <code><var>h</var> = kstest (<var>x</var>, <var>name</var>, <var>value</var>)</code> returns
  a test decision for a single-sample K-S test with additional options
- specified by one or more name-value pair arguments as shown below.
+ specified by one or more <var>Name</var>-<var>Value</var> pair arguments as shown
+ below.
 </p>
  <table>
-<tr><td width="20%">&quot;alpha&quot;</td><td width="80%">A value <var>alpha</var> between 0 and 1 specifying the
- significance level.  Default is 0.05 for 5% significance.</td></tr>
-<tr><td width="20%">&quot;CDF&quot;</td><td width="80%">CDF is the c.d.f. under the null hypothesis.  It can be
- specified either as a function handle or a a function name of an existing
- cdf function or as a two-column matrix.  If not provided, the default is
- the standard normal, N(0,1).</td></tr>
-<tr><td width="20%">&quot;tail&quot;</td><td width="80%">A string indicating the type of test:</td></tr>
+<thead><tr><th width="15%">Name</th><th width="5%"></th><th width="80%">Value</th></tr></thead>
+<tr><td width="15%"><code>&quot;alpha&quot;</code></td><td width="5%"></td><td width="80%">A numeric scalar between 0 and 1 specifying th
+ the significance level.  Default is 0.05 for 5% significance.</td></tr>
+<tr><td width="15%"><code>&quot;CDF&quot;</code></td><td width="5%"></td><td width="80%">The hypothesized CDF under the null hypothesis.
+ It can be specified as a function handle of an existing cdf function, a
+ character vector defining a probability distribution with default parameters,
+ a probability distribution object, or a two-column matrix.  If not provided,
+ the default is the standard normal, <math>N(0,1)</math>.  The one-sample
+ Kolmogorov-Smirnov test is only valid for continuous cumulative distribution
+ functions, and requires the CDF to be predetermined.  The result is not
+ accurate if CDF is estimated from the data.</td></tr>
+<tr><td width="15%"><code>&quot;tail&quot;</code></td><td width="5%"></td><td width="80%">A string indicating the type of test:</td></tr>
 </table>
-
  <table>
-<tr><td width="3%"></td><td width="20%">&quot;unequal&quot;</td><td width="77%">&quot;F(X) not equal to CDF(X)&quot; (two-sided) (Default)</td></tr>
-<tr><td width="3%"></td><td width="20%">&quot;larger&quot;</td><td width="77%">&quot;F(X) &gt; CDF(X)&quot; (one-sided)</td></tr>
-<tr><td width="3%"></td><td width="20%">&quot;smaller&quot;</td><td width="77%">&quot;CDF(X) &lt; F(X)&quot; (one-sided)</td></tr>
+<tr><td width="20%"></td><td width="15%"><code>&quot;unequal&quot;</code></td><td width="5%"></td><td width="50%">&quot;F(X) not equal to CDF(X)&quot; (two-sided)
+ (Default)</td></tr>
+<tr><td width="20%"></td><td width="15%"><code>&quot;larger&quot;</code></td><td width="5%"></td><td width="50%">&quot;F(X) &gt; CDF(X)&quot; (one-sided)</td></tr>
+<tr><td width="20%"></td><td width="15%"><code>&quot;smaller&quot;</code></td><td width="5%"></td><td width="50%">&quot;F(X) &lt; CDF(X)&quot; (one-sided)</td></tr>
 </table>
 
 <p> Let S(X) be the empirical c.d.f. estimated from the sample vector <var>x</var>,
@@ -862,6 +868,60 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/kstest.m">kstest</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Use the stock return data set to test the null hypothesis that the data
+ ## come from a standard normal distribution against the alternative
+ ## hypothesis that the population CDF of the data is larger that the
+ ## standard normal CDF.
+
+ load stockreturns;
+ x = stocks(:,2);
+ [h, p, k, c] = kstest (x, "Tail", "larger")
+
+ ## Compute the empirical CDF and plot against the standard normal CDF
+ [f, x_values] = ecdf (x);
+ h1 = plot (x_values, f);
+ hold on;
+ h2 = plot (x_values, normcdf (x_values), 'r--');
+ set (h1, "LineWidth", 2);
+ set (h2, "LineWidth", 2);
+ legend ([h1, h2], "Empirical CDF", "Standard Normal CDF", ...
+         "Location", "southeast");
+ title ("Empirical CDF of stock return data against standard normal CDF")
+
+h = 1
+p = 0.015286
+k = 0.1428
+c = 0.1207
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/kstest_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>

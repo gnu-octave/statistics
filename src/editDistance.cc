@@ -48,21 +48,21 @@ int minimum (int a, int b, int c)
 // Function for computing the Levenshtein distance between two strings
 int LevensDistStr (const string& s1, const string& s2)
 {
-  const int rows = s1.length();
-	const int cols = s2.length();
+  const size_t rows = s1.length();
+	const size_t cols = s2.length();
   vector<int> curr(cols+1, 0);
   int prev;
   // Prepopulate 1st column
-	for (int j = 0; j <= cols; j++)
+	for (size_t j = 0; j <= cols; j++)
 	{
 		curr[j] = j;
 	}
   // Compute all other elements in distance matrix
-	for (int i = 1; i <= rows; i++)
+	for (size_t i = 1; i <= rows; i++)
 	{
     prev = curr[0];
     curr[0] = i;
-		for (int j = 1; j <= cols; j++)
+		for (size_t j = 1; j <= cols; j++)
 		{
       int temp = curr[j];
 			if (s1[i - 1] == s2[j - 1])
@@ -82,21 +82,21 @@ int LevensDistStr (const string& s1, const string& s2)
 // Function for computing the Levenshtein distance between two documents
 int LevensDistDoc (const Cell& d1, const Cell& d2)
 {
-  const int rows = d1.numel();
-	const int cols = d2.numel();
+  const size_t rows = d1.numel();
+	const size_t cols = d2.numel();
   vector<int> curr(cols+1, 0);
   int prev;
   // Prepopulate 1st column
-	for (int j = 0; j <= cols; j++)
+	for (size_t j = 0; j <= cols; j++)
 	{
 		curr[j] = j;
 	}
   // Compute all other elements in distance matrix
-	for (int i = 1; i <= rows; i++)
+	for (size_t i = 1; i <= rows; i++)
 	{
     prev = curr[0];
     curr[0] = i;
-		for (int j = 1; j <= cols; j++)
+		for (size_t j = 1; j <= cols; j++)
 		{
       int temp = curr[j];
 			if (d1(i - 1).string_value() == d2(i - 1).string_value())
@@ -116,12 +116,12 @@ int LevensDistDoc (const Cell& d1, const Cell& d2)
 // Transform a distance triu matric to a boolean triu matrix
 boolMatrix double2bool (const Matrix& D, const int& minDist)
 {
-  const int sz = D.rows();
+  const size_t sz = D.rows();
   boolMatrix Bmat(sz, sz);
-  for (octave_idx_type i = 0; i < sz - 1; i++)
+  for (size_t i = 0; i < sz - 1; i++)
   {
     Bmat(i,i) = true;
-    for (octave_idx_type j = i + 1; j < sz; j++)
+    for (size_t j = i + 1; j < sz; j++)
     {
       if (D(i,j) <= minDist)
       {
@@ -142,13 +142,13 @@ boolMatrix double2bool (const Matrix& D, const int& minDist)
 // Transform a distance triu matric to a distance vector
 Matrix triu2Dvec (const Matrix& D)
 {
-  const int szA = D.rows();
-  const int sz = szA * (szA - 1) / 2;
+  const size_t szA = D.rows();
+  const size_t sz = szA * (szA - 1) / 2;
   octave_idx_type idx = 0;
   Matrix Dvec(sz, 1);
-  for (octave_idx_type i = 0; i < szA - 1; i++)
+  for (size_t i = 0; i < szA - 1; i++)
   {
-    for (octave_idx_type j = i + 1; j < szA; j++)
+    for (size_t j = i + 1; j < szA; j++)
     {
       Dvec(idx++,0) = D(i,j);
     }
@@ -159,14 +159,14 @@ Matrix triu2Dvec (const Matrix& D)
 // Compute unique indexing IA cell of vectors
 vector<vector<int>> IAcellvec (const boolMatrix& B)
 {
-  int rows = B.rows();
-  int cols = B.columns();
+  const size_t rows = B.rows();
+  const size_t cols = B.columns();
   vector<vector<int>> IAcell;
-  for (int i = 0; i < rows; i++)
+  for (size_t i = 0; i < rows; i++)
   {
     vector<int> IA_cIdx;
     IA_cIdx.push_back(i);
-    for (int j = i + 1; j < cols; j++)
+    for (size_t j = i + 1; j < cols; j++)
     {
       if (B(i,j))
       {
@@ -181,12 +181,14 @@ vector<vector<int>> IAcellvec (const boolMatrix& B)
 // Transform to IAcellvec to Cell
 Cell IA2cell (const vector<vector<int>>& IAc, const vector<int>& IAv)
 {
-  Cell IA(IAv.size(), 1);
-  for (octave_idx_type i = 0; i < IAv.size(); i++)
+  const size_t sz_v = IAv.size();
+  Cell IA(sz_v, 1);
+  for (size_t i = 0; i < sz_v; i++)
   {
     int idx = IAv[i];
-    Matrix IAidx(IAc[idx].size(), 1);
-    for (octave_idx_type j = 0; j < IAc[idx].size(); j++)
+    const size_t sz_c = IAc[idx].size();
+    Matrix IAidx(sz_c, 1);
+    for (size_t j = 0; j < sz_c; j++)
     {
       IAidx(j,0) = IAc[idx][j] + 1;
     }
@@ -200,9 +202,9 @@ vector<int> IAvector (const vector<vector<int>>& IAcell)
 {
   vector<int> IA;
   vector<int> IA_done;
-  for (int i = 0; i < IAcell.size(); i++)
+  for (size_t i = 0; i < IAcell.size(); i++)
   {
-    for (int j = 0; j < IAcell[i].size(); j++)
+    for (size_t j = 0; j < IAcell[i].size(); j++)
     {
       if (binary_search(IA_done.begin(), IA_done.end(), IAcell[i][j]))
       {
@@ -228,8 +230,9 @@ vector<int> IAvector (const vector<vector<int>>& IAcell)
 // Transform to IAvector to Matrix
 Matrix IA2mat (const vector<int>& IAv)
 {
-  Matrix IA(IAv.size(), 1);
-  for (octave_idx_type i = 0; i < IAv.size(); i++)
+  const size_t sz_v = IAv.size();
+  Matrix IA(sz_v, 1);
+  for (size_t i = 0; i < sz_v; i++)
   {
     IA(i,0) = IAv[i] + 1;
   }
@@ -237,13 +240,13 @@ Matrix IA2mat (const vector<int>& IAv)
 }
 
 // Compute unique indexing IA vector
-Matrix ICvector (const vector<vector<int>>& IAc, const int& szA)
+Matrix ICvector (const vector<vector<int>>& IAc, const size_t& szA)
 {
   Matrix IC(szA, 1);
   vector<int> IC_done;
-  for (int i = 0; i < IAc.size(); i++)
+  for (size_t i = 0; i < IAc.size(); i++)
   {
-    for (int j = 0; j < IAc[i].size(); j++)
+    for (size_t j = 0; j < IAc[i].size(); j++)
     {
       if (binary_search(IC_done.begin(), IC_done.end(), IAc[i][j]))
       {
@@ -272,14 +275,14 @@ octave_value_list uniquetol (const int& nargout, const Cell& A, const Matrix& D,
   Cell C(IAv.size(), 1);
   if (A.iscellstr())
   {
-    for (octave_idx_type i = 0; i < IAv.size(); i++)
+    for (size_t i = 0; i < IAv.size(); i++)
     {
       C(i,0) = A(IAv[i]).string_value();
     }
   }
   else
   {
-    for (octave_idx_type i = 0; i < IAv.size(); i++)
+    for (size_t i = 0; i < IAv.size(); i++)
     {
       C(i,0) = A.elem(IAv[i]);
     }
@@ -303,11 +306,11 @@ octave_value_list uniquetol (const int& nargout, const Cell& A, const Matrix& D,
 }
 
 // Expand a cell scalar to a cell vector
-Cell expand (const Cell& IN, const int& sz)
+Cell expand (const Cell& IN, const size_t& sz)
 {
   //octave_idx_type sz = static_cast<int>(sz_out);
   Cell OUT(sz, 1);
-  for (octave_idx_type i = 0; i < sz; i++)
+  for (size_t i = 0; i < sz; i++)
   {
     OUT(i,0) = IN.elem(0);
   }
@@ -468,7 +471,7 @@ insertions, deletions, and substitutions required to convert document \
     {
       // Get cellstr input argument
       const Cell strA = args(0).cellstr_value();
-      int szA = strA.numel();
+      size_t szA = strA.numel();
       // For scalar input return distance to itself, i.e. 0
       if (szA == 1)
       {
@@ -480,11 +483,11 @@ insertions, deletions, and substitutions required to convert document \
       #pragma omp parallel
       {
         #pragma omp parallel for
-        for (octave_idx_type i = 0; i < szA - 1; i++)
+        for (size_t i = 0; i < szA - 1; i++)
         {
           D(i,i) = 0;
           string s1 = strA(i).string_value();
-          for (octave_idx_type j = i + 1; j < szA; j++)
+          for (size_t j = i + 1; j < szA; j++)
           {
             D(i,j) = LevensDistStr (s1, strA(j).string_value());
           }
@@ -507,9 +510,9 @@ insertions, deletions, and substitutions required to convert document \
     {
       // Get cell input argument
       const Cell docA = args(0).cell_value();
-      int szA = docA.numel();
+      size_t szA = docA.numel();
       // Check that all cell elements contain cellstring arrays
-      for (octave_idx_type i = 0; i < szA; i++)
+      for (size_t i = 0; i < szA; i++)
       {
         Cell tmp = docA.elem(i);
         if (! tmp.iscellstr())
@@ -529,11 +532,11 @@ insertions, deletions, and substitutions required to convert document \
       #pragma omp parallel
       {
         #pragma omp parallel for
-        for (octave_idx_type i = 0; i < szA - 1; i++)
+        for (size_t i = 0; i < szA - 1; i++)
         {
           D(i,i) = 0;
           Cell d1 = docA.elem(i);
-          for (octave_idx_type j = i + 1; j < szA; j++)
+          for (size_t j = i + 1; j < szA; j++)
           {
             D(i,j) = LevensDistDoc (d1, docA.elem(j));
           }
@@ -565,14 +568,14 @@ insertions, deletions, and substitutions required to convert document \
       Cell strA = args(0).cellstr_value();
       Cell strB = args(1).cellstr_value();
       // Check cellstr sizes match
-      int szA = strA.numel();
-      int szB = strB.numel();
+      size_t szA = strA.numel();
+      size_t szB = strB.numel();
       if (szA != 1 && szB != 1 && szA != szB)
       {
         error ("editDistance: cellstr input arguments size mismatch.");
       }
       // Preallocate the distance vector and expand as necessary
-      int sz = szA;
+      size_t sz = szA;
       if (szA == 1 && szB != 1)
       {
         sz = szB;
@@ -584,7 +587,7 @@ insertions, deletions, and substitutions required to convert document \
       }
       Matrix D(sz, 1);
       // Compute the distance vector
-      for (octave_idx_type i = 0; i < sz; i++)
+      for (size_t i = 0; i < sz; i++)
       {
         D(i,0) = LevensDistStr (strA(i).string_value(), strB(i).string_value());
       }
@@ -596,14 +599,14 @@ insertions, deletions, and substitutions required to convert document \
       Cell docA = args(0).cell_value();
       Cell docB = args(1).cell_value();
       // Check cell sizes match
-      int szA = docA.numel();
-      int szB = docB.numel();
+      size_t szA = docA.numel();
+      size_t szB = docB.numel();
       if (szA != 1 && szB != 1 && szA != szB)
       {
         error ("editDistance: cellstr input arguments size mismatch.");
       }
       // Check both cell arrays contain cellstring arrays
-      for (octave_idx_type i = 0; i < szA; i++)
+      for (size_t i = 0; i < szA; i++)
       {
         Cell tmp = docA.elem(i);
         if (! tmp.iscellstr())
@@ -612,7 +615,7 @@ insertions, deletions, and substitutions required to convert document \
                  "does not contain cellstr arrays.");
         }
       }
-      for (octave_idx_type i = 0; i < szB; i++)
+      for (size_t i = 0; i < szB; i++)
       {
         Cell tmp = docB.elem(i);
         if (! tmp.iscellstr())
@@ -634,7 +637,7 @@ insertions, deletions, and substitutions required to convert document \
       }
       Matrix D(sz, 1);
       // Compute the distance vector
-      for (octave_idx_type i = 0; i < sz; i++)
+      for (size_t i = 0; i < sz; i++)
       {
         D(i,0) = LevensDistDoc (docA.elem(i), docB.elem(i));
       }

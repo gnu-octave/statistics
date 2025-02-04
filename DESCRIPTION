@@ -1,6 +1,6 @@
 Name: statistics
-Version: 1.7.0
-Date: 2024-8-31
+Version: 1.7.2
+Date: 2025-2-4
 Author: various authors
 Maintainer: Andreas Bertsatos <abertsatos@biol.uoa.gr>
 Title: Statistics
@@ -9,3 +9,4 @@ Categories: Statistics
 Depends: octave (>= 7.2.0)
 License: GPLv3+
 Url: https://github.com/gnu-octave/statistics
+Tracker: https://github.com/gnu-octave/statistics/issues
