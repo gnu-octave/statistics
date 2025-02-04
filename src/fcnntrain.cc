@@ -127,8 +127,7 @@ Installation Note: in order to support parallel processing on MacOS, users \
 have to manually add support for OpenMP by adding the following flags to \
 @qcode{CFLAGS} and @qcode{CXXFLAGS} prior to installing the statistics \
 package:\n\n\
-@code{setenv (\"CPPFLAGS\", \"-Xclang -fopenmp -I/opt/homebrew/Cellar/libomp/\
-19.1.7/include\")} \
+@code{setenv (\"CPPFLAGS\", \"-I/opt/homebrew/opt/libomp/include -Xclang -fopenmp\")} \
 \n\
 \n\
 @seealso{fcnnpredict, fitcnet, ClassificationNeuralNetwork} \n\
