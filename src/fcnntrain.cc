@@ -286,7 +286,8 @@ package:\n\n\
 
   // Start training
   int epoch = 0;
-  for (; epoch < args(7).uint_value (); epoch++)
+  int max_epochs = args(7).uint_value ();
+  for (; epoch < max_epochs; epoch++)
   {
     // Initialize Loss and Prediction
     double sum_loss = 0.0;
@@ -395,13 +396,13 @@ package:\n\n\
     LayerWeights.elem(layer_idx) = WB;
   }
 
-  // Store loss vector in RowVector
-  RowVector A(n);
-  RowVector L(n);
-  for (int sample_idx = 0; sample_idx < n; sample_idx++)
+  // Store accuracy and loss vectors in RowVector
+  RowVector A(max_epochs);
+  RowVector L(max_epochs);
+  for (int epoch = 0; epoch < max_epochs; epoch++)
   {
-    A(sample_idx) = Accuracy[sample_idx];
-    L(sample_idx) = Loss[sample_idx];
+    A(epoch) = Accuracy[epoch];
+    L(epoch) = Loss[epoch];
   }
 
   // Prepare returning arguments
