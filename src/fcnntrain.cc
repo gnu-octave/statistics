@@ -123,7 +123,7 @@ neural network model's training process. \
 @end itemize \
 \n\
 \n\
-Installation Note: in order to support parallel procesing on MacOS, users \
+Installation Note: in order to support parallel processing on MacOS, users \
 have to manually add support for OpenMP by adding the following flags to \
 @qcode{CFLAGS} and @qcode{CXXFLAGS} prior to installing the statistics \
 package:\n\n\
