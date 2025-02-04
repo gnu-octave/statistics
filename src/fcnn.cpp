@@ -23,7 +23,7 @@ this program; if not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 #include <memory>
 #include <cmath>
-#if __has_include(<omp.h>)
+#if defined (_OPENMP)
   #include <omp.h>
   #define MY_OMP_SET_THREADS (omp_set_num_threads (this->n_threads))
 #else
