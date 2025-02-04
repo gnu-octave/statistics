@@ -64,6 +64,14 @@ output argument is requested, it also returns the corresponding values of the \
 neural networks output in @var{scores}. \
 \n\
 \n\
+Installation Note: in order to support parallel procesing on MacOS, users \
+have to manually add support for OpenMP by adding the following flags to \
+@qcode{CFLAGS} and @qcode{CXXFLAGS} prior to installing the statistics \
+package:\n\n\
+@code{setenv (\"CPPFLAGS\", \"-Xclang -fopenmp -I/opt/homebrew/Cellar/libomp/\
+19.1.7/include\")} \
+\n\
+\n\
 @seealso{fcnntrain, fitcnet, ClassificationNeuralNetwork} \n\
 @end deftypefn")
 {

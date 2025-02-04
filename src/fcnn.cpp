@@ -23,7 +23,12 @@ this program; if not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 #include <memory>
 #include <cmath>
-#include <omp.h>
+#if __has_include(<omp.h>)
+  #include <omp.h>
+  #define MY_OMP_SET_THREADS (omp_set_num_threads (this->n_threads))
+#else
+  #define MY_OMP_SET_THREADS
+#endif
 
 using namespace std;
 
@@ -271,7 +276,7 @@ vector<double> ActivationLayer::forward (vector<double> inputs)
   }
   else if (this->activation == 1) // Sigmoid function
   {
-    omp_set_num_threads (this->n_threads);
+    MY_OMP_SET_THREADS;
     #pragma omp parallel
     {
       #pragma omp parallel for
@@ -283,7 +288,7 @@ vector<double> ActivationLayer::forward (vector<double> inputs)
   }
   else if (this->activation == 2) // Rectified Linear Unit (ReLU)
   {
-    omp_set_num_threads (this->n_threads);
+    MY_OMP_SET_THREADS;
     #pragma omp parallel
     {
       #pragma omp parallel for
@@ -295,7 +300,7 @@ vector<double> ActivationLayer::forward (vector<double> inputs)
   }
   else if (this->activation == 3) // Hyperbolic tangent (tanh)
   {
-    omp_set_num_threads (this->n_threads);
+    MY_OMP_SET_THREADS;
     #pragma omp parallel
     {
       #pragma omp parallel for
@@ -323,7 +328,7 @@ vector<double> ActivationLayer::forward (vector<double> inputs)
   }
   else if (this->activation == 5) // Parametric or Leaky ReLU
   {
-    omp_set_num_threads (this->n_threads);
+    MY_OMP_SET_THREADS;
     #pragma omp parallel
     {
       #pragma omp parallel for
@@ -335,7 +340,7 @@ vector<double> ActivationLayer::forward (vector<double> inputs)
   }
   else if (this->activation == 6) // Exponential Linear Unit (ELU)
   {
-    omp_set_num_threads (this->n_threads);
+    MY_OMP_SET_THREADS;
     #pragma omp parallel
     {
       #pragma omp parallel for
@@ -348,7 +353,7 @@ vector<double> ActivationLayer::forward (vector<double> inputs)
   }
   else if (this->activation == 7) // Gaussian Error Linear Unit (GELU)
   {
-    omp_set_num_threads (this->n_threads);
+    MY_OMP_SET_THREADS;
     #pragma omp parallel
     {
       #pragma omp parallel for
@@ -378,7 +383,7 @@ void ActivationLayer::backward (vector<double> chain_grad)
   }
   else if (this->activation == 1) // Sigmoid function
   {
-    omp_set_num_threads (this->n_threads);
+    MY_OMP_SET_THREADS;
     #pragma omp parallel
     {
       #pragma omp parallel for
@@ -391,7 +396,7 @@ void ActivationLayer::backward (vector<double> chain_grad)
   }
   else if (this->activation == 2) // Rectified Linear Unit (ReLU)
   {
-    omp_set_num_threads (this->n_threads);
+    MY_OMP_SET_THREADS;
     #pragma omp parallel
     {
       #pragma omp parallel for
@@ -403,7 +408,7 @@ void ActivationLayer::backward (vector<double> chain_grad)
   }
   else if (this->activation == 3) // Hyperbolic tangent (tanh)
   {
-    omp_set_num_threads (this->n_threads);
+    MY_OMP_SET_THREADS;
     #pragma omp parallel
     {
       #pragma omp parallel for
@@ -420,7 +425,7 @@ void ActivationLayer::backward (vector<double> chain_grad)
   }
   else if (this->activation == 5) // Parametric or Leaky ReLU
   {
-    omp_set_num_threads (this->n_threads);
+    MY_OMP_SET_THREADS;
     #pragma omp parallel
     {
       #pragma omp parallel for
@@ -433,7 +438,7 @@ void ActivationLayer::backward (vector<double> chain_grad)
   }
   else if (this->activation == 6) // Exponential Linear Unit (ELU)
   {
-    omp_set_num_threads (this->n_threads);
+    MY_OMP_SET_THREADS;
     #pragma omp parallel
     {
       #pragma omp parallel for
@@ -448,7 +453,7 @@ void ActivationLayer::backward (vector<double> chain_grad)
   {
     // WARNING: this code may be incorrect
     static const double inv_sqrt_2pi = 0.3989422804014327;
-    omp_set_num_threads (this->n_threads);
+    MY_OMP_SET_THREADS;
     #pragma omp parallel
     {
       #pragma omp parallel for
