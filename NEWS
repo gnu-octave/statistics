@@ -90,3 +90,21 @@
 
  ** RegressionGAM: add iteration limit to the private fitGAM function to avoid
                    infinite loop with Netlib BLAS/LAPACK (github issue #160)
+
+
+ Summary of important user-visible changes for statistics 1.7.2:
+-------------------------------------------------------------------
+
+ Important Notice: 1) `mad`, `mean`, `median`, `std`, `var` functions
+                      shadow core Octave's respective functions prior
+                      to Octave v9.1
+                   2) incompatibility with the `nan` package
+
+ Improvements:
+ =============
+
+ ** fcnnpredict, fcnntrain: various bug fixes, allow MacOS users to enable
+                            support for OpenMP (github issues #168, #171, #172)
+
+ ** editDistance: use correct index types to avoid compiler warnings
+                  (github issue #171)
