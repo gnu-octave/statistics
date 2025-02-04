@@ -130,7 +130,7 @@ vector<double> Neuron::get_neuron ()
 void Neuron::set_neuron (vector<double> Wb_vector)
 {
   int w_len = Wb_vector.size () - 1;
-  for (int i; i < w_len; i++)
+  for (int i = 0; i < w_len; i++)
   {
     this->weights.at (i) = Wb_vector[i];
   }
@@ -216,7 +216,7 @@ vector<vector<double>> DenseLayer::get_layer ()
 
 void DenseLayer::set_layer (vector<vector<double>> Wb_matrix)
 {
-  for (int i; i < Wb_matrix.size (); i++)
+  for (int i = 0; i < Wb_matrix.size (); i++)
   {
     this->neurons[i].set_neuron (Wb_matrix[i]);
   }
