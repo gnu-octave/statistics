@@ -43,6 +43,10 @@ If you need to install a specific older release, for example `1.4.2`, type:
 
   `pkg install "https://github.com/gnu-octave/statistics/archive/refs/tags/release-1.4.2.tar.gz"`
 
+MacOS users, who wish to enable parallel processing for the [`fitncet`](https://gnu-octave.github.io/statistics/fitcnet.html) function and the [`ClassifcationNeuralNetwork`](https://gnu-octave.github.io/statistics/ClassificationNeuralNetwork.html) class, should first link to the OpenMP library before installing the **statistics** package. This will enable the compiler to use multithreading in the [`fcnntrain`](https://gnu-octave.github.io/statistics/fcnntrain.html) and [`fcnnpredict`](https://gnu-octave.github.io/statistics/fcnnpredict.html) dynamically linked functions. To do this, type:
+
+  `setenv ("CPPFLAGS", "-I/opt/homebrew/opt/libomp/include -Xclang -fopenmp")`
+
 After installation, type:
 - `pkg load statistics` to load the **statistics** package.
 - `news statistics` to review all the user visible changes since last version.
