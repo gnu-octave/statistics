@@ -280,7 +280,7 @@ package:\n\n\
   }
 
   // Initialize return variables
-  octave_idx_type max_epochs = args(7).int_value ();
+  octave_idx_type max_epochs = args(7).idx_type_value ();
   vector<double> Accuracy (max_epochs);
   vector<double> Loss (max_epochs);
 
