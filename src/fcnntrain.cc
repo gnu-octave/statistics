@@ -280,13 +280,13 @@ package:\n\n\
     error ("fcnntrain: 'DisplayInfo' must be a boolean scalar.");
   }
 
-  // Define return variables
-  vector<double> Accuracy;
-  vector<double> Loss;
+  // Initialize return variables
+  int max_epochs = args(7).int_value ();
+  vector<double> Accuracy (max_epochs);
+  vector<double> Loss (max_epochs);
 
   // Start training
   int epoch = 0;
-  int max_epochs = args(7).uint_value ();
   for (; epoch < max_epochs; epoch++)
   {
     // Initialize Loss and Prediction
