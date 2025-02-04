@@ -1,5 +1,6 @@
 ## Copyright (C) 2024 Ruchika Sonagote <ruchikasonagote2003@gmail.com>
 ## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -58,9 +59,9 @@
 ## returns the estimated coefficient vector, @var{b}, as well as
 ## the deviance, @var{dev}, of the fit.
 ##
-## Supported distributions include 'poisson', 'binomial', and 'normal'.
+## Supported distributions include 'poisson', 'binomial', 'normal', 'gamma', and 'inverse gaussian'.
 ## Supported link functions include 'identity', 'log', 'logit', 'probit',
-## 'loglog', 'comploglog', 'reciprocal' and a custom link.
+## 'loglog', 'comploglog', 'reciprocal', '1/mu^2' and a custom link.
 ## Custom link function provided as a structure with three fields:
 ## Link Function, Derivative Function, Inverse Function.
 ## @end deftypefn
@@ -111,9 +112,9 @@ function [b,varargout] = glmfit (X, y, distribution, varargin)
     case "normal"
       link = "identity";
     case "gamma"
-      error ("glmfit: 'gamma' distribution is not supported yet.");
+      link = "reciprocal";
     case "inverse gaussian"
-      error ("glmfit: 'inverse gaussian' distribution is not supported yet.");
+      link = "1/mu^2";
     otherwise
       error ("glmfit: unknown distribution.");
   endswitch
@@ -156,7 +157,7 @@ function [b,varargout] = glmfit (X, y, distribution, varargin)
         elseif ischar (linkInput) || isstring (linkInput)
           link = tolower (linkInput);
           if (! any (strcmpi (link, {"identity", "log", "logit", "probit", ...
-                                     "loglog", "comploglog", "reciprocal"})))
+                                     "loglog", "comploglog", "reciprocal", "1/mu^2"})))
             error ("glmfit: unsupported link function.");
           endif
         else
@@ -197,6 +198,8 @@ function [b,varargout] = glmfit (X, y, distribution, varargin)
       ilink = @(x) 1 - exp (-exp (x));
     case "reciprocal"
       ilink = @(x) 1 ./ x;
+    case "1/mu^2"
+      ilink = @(x) 1 ./ sqrt (x);
     case "custom"
       ilink = invLinkFunc;
   endswitch
@@ -220,6 +223,10 @@ function [b,varargout] = glmfit (X, y, distribution, varargin)
           .* log (1 - max (min (ilink (X * b), 1 - eps), eps)));
     case "normal"
       nll = @(b) 0.5 * sum ((y - ilink (X * b)) .^ 2);
+    case "gamma"
+      nll = @(b) sum ((y ./ ilink (X * b)) + log (ilink (X * b)));
+    case "inverse gaussian"
+      nll = @(b) sum ((y - ilink (X * b)) .^ 2 ./ (y .* ilink (X * b) .^ 2));
   endswitch
 
   options = optimset ('MaxFunEvals', 10000, 'MaxIter', 10000);
@@ -248,6 +255,10 @@ function [b,varargout] = glmfit (X, y, distribution, varargin)
               + (trials - successes) .* log ((1 - p) ./ (1 - p_hat)));
       case "normal"
         dev = sum ((y - (X * b)) .^ 2);
+      case "gamma"
+        dev = 2 * sum ((y - ilink (X * b)) ./ ilink (X * b) - log (y ./ ilink (X * b)));
+      case "inverse gaussian"
+        dev = sum ((y - ilink (X * b)) .^ 2 ./ (y .* ilink (X * b) .^ 2));
     endswitch
     varargout{1} = dev;
   endif
