@@ -61,7 +61,7 @@
 ##
 ## Supported distributions include 'poisson', 'binomial', 'normal', 'gamma', and 'inverse gaussian'.
 ## Supported link functions include 'identity', 'log', 'logit', 'probit',
-## 'loglog', 'comploglog', 'reciprocal', '1/mu^2' and a custom link.
+## 'loglog', 'comploglog', 'reciprocal', 'p' and a custom link.
 ## Custom link function provided as a structure with three fields:
 ## Link Function, Derivative Function, Inverse Function.
 ## @end deftypefn
@@ -114,7 +114,7 @@ function [b,varargout] = glmfit (X, y, distribution, varargin)
     case "gamma"
       link = "reciprocal";
     case "inverse gaussian"
-      link = "1/mu^2";
+      link = -2;
     otherwise
       error ("glmfit: unknown distribution.");
   endswitch
@@ -157,9 +157,11 @@ function [b,varargout] = glmfit (X, y, distribution, varargin)
         elseif ischar (linkInput) || isstring (linkInput)
           link = tolower (linkInput);
           if (! any (strcmpi (link, {"identity", "log", "logit", "probit", ...
-                                     "loglog", "comploglog", "reciprocal", "1/mu^2"})))
+                                     "loglog", "comploglog", "reciprocal", "p"})))
             error ("glmfit: unsupported link function.");
           endif
+        elseif isnumeric (linkInput)
+          link = linkInput;
         else
           error ("glmfit: invalid value for link function.");
         endif
@@ -198,10 +200,16 @@ function [b,varargout] = glmfit (X, y, distribution, varargin)
       ilink = @(x) 1 - exp (-exp (x));
     case "reciprocal"
       ilink = @(x) 1 ./ x;
-    case "1/mu^2"
-      ilink = @(x) 1 ./ sqrt (x);
+    case "p"
+      if (isnumeric (link))
+        ilink = @(x) x .^ link;
+      else
+        error ("glmfit: invalid value for link function.");
+      endif
     case "custom"
       ilink = invLinkFunc;
+    otherwise
+      error ("glmfit: unsupported link function.");
   endswitch
 
   ## Select negative loglikelihood according to distribution
@@ -351,3 +359,32 @@ endfunction
 %! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', 'log', 'constant', 'asda')
 %!error <glmfit: unknown parameter name.> ...
 %! glmfit (rand(5,2), rand(5,1), 'poisson', 'param', 'log', 'constant', 'on')
+
+%!test
+%! rand ("seed", 1);
+%! X1 = rand (50, 1);
+%! X2 = rand (50, 1) * 0.5;
+%! b_true = [0.4; 1.5; -0.7];
+%! mu_true = exp (b_true(1) + b_true(2) * X1 + b_true(3) * X2);
+%! shape = 2;
+%! scale = mu_true ./ shape;
+%! y = gamrnd (shape, scale);
+%! [b, dev] = glmfit ([X1, X2], y, "gamma", "link", "log");
+%! assert (b(1), b_true(1), 0.5);
+%! assert (b(2), b_true(2), 0.5);
+%! assert (b(3), b_true(3), 0.5);
+%! assert (dev < 100, true);
+
+%!test
+%! rand ("seed", 1);
+%! X1 = rand (50, 1);
+%! X2 = rand (50, 1) * 0.5;
+%! b_true = [0.4; 1.5; -0.7];
+%! mu_true = exp (b_true(1) + b_true(2) * X1 + b_true(3) * X2);
+%! lambda = 1;
+%! y = invgrnd (mu_true, lambda);
+%! [b, dev] = glmfit ([X1, X2], y, "inverse gaussian", "link", "log");
+%! assert (b(1), b_true(1), 1.0);
+%! assert (b(2), b_true(2), 1.0);
+%! assert (b(3), b_true(3), 1.0);
+%! assert (dev < 100, true);
