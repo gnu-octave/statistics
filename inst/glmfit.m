@@ -47,8 +47,12 @@
 ## @multitable @columnfractions 0.18 0.02 0.8
 ## @headitem @var{Name} @tab @tab @var{Value}
 ##
-## @item @qcode{"link"} @tab @tab A character vector specifying a link
-## function.
+## @item @qcode{"link"} @tab @tab A character vector specifying a link function
+## or a numeric scalar for the 'p' link in the case of the Inverse Gaussian
+## distribution. Supported link functions include 'identity', 'log', 'logit',
+## 'probit', 'loglog', 'comploglog', 'reciprocal', and 'p'. For custom link
+## functions, provide a cell array with three function handles: the link
+## function, its derivative, and its inverse.
 ##
 ## @item @qcode{"constant"} @tab @tab Specifies whether to
 ## include a constant term in the model. Options are
@@ -59,11 +63,9 @@
 ## returns the estimated coefficient vector, @var{b}, as well as
 ## the deviance, @var{dev}, of the fit.
 ##
-## Supported distributions include 'poisson', 'binomial', 'normal', 'gamma', and 'inverse gaussian'.
-## Supported link functions include 'identity', 'log', 'logit', 'probit',
-## 'loglog', 'comploglog', 'reciprocal', 'p' and a custom link.
-## Custom link function provided as a structure with three fields:
-## Link Function, Derivative Function, Inverse Function.
+## Supported distributions include 'poisson', 'binomial', 'normal', 'gamma', and
+## 'inverse gaussian'. For the inverse Gaussian distribution, the link function
+## can be specified as a numeric scalar for the 'p' link.
 ## @end deftypefn
 
 function [b,varargout] = glmfit (X, y, distribution, varargin)
