@@ -412,3 +412,22 @@ endfunction
 %! assert (b(1), b_true(1), 0.7);
 %! assert (b(2), b_true(2), 0.7);
 %! assert (dev < 100, true);
+
+%!test
+%! X = [1.2, 2.3, 3.4, 4.5, 5.6, 6.7, 7.8, 8.9, 9.0, 10.1]';
+%! y = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4]';
+%! [b, dev] = glmfit (X, y, "gamma", "link", "log");
+%! b_matlab = [-0.7631; 0.1113];
+%! dev_matlab = 0.0111;
+%! assert (b, b_matlab, 0.001);
+%! assert (dev, dev_matlab, 0.001);
+
+%!test
+%! X = [1.2, 2.3, 3.4, 4.5, 5.6, 6.7, 7.8, 8.9, 9.0, 10.1]';
+%! y = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4]';
+%! p_input = 1;
+%! [b, dev] = glmfit (X, y, "inverse gaussian", "link", p_input);
+%! b_matlab = [0.3813; 0.0950];
+%! dev_matlab = 0.0051;
+%! assert (b, b_matlab, 0.001);
+%! assert (dev, dev_matlab, 0.001);
