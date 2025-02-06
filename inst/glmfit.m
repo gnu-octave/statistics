@@ -161,7 +161,8 @@ function [b,varargout] = glmfit (X, y, distribution, varargin)
             error ("glmfit: unsupported link function.");
           endif
         elseif isnumeric (linkInput)
-          link = linkInput;
+          link = "p";
+          p_value = linkInput;
         else
           error ("glmfit: invalid value for link function.");
         endif
@@ -201,8 +202,8 @@ function [b,varargout] = glmfit (X, y, distribution, varargin)
     case "reciprocal"
       ilink = @(x) 1 ./ x;
     case "p"
-      if (isnumeric (link))
-        ilink = @(x) x .^ link;
+      if (isnumeric (p_value))
+        ilink = @(x) x .^ p_value;
       else
         error ("glmfit: invalid value for link function.");
       endif
