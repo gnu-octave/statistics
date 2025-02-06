@@ -1,5 +1,6 @@
 ## Copyright (C) 2024 Ruchika Sonagote <ruchikasonagote2003@gmail.com>
 ## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -46,8 +47,12 @@
 ## @multitable @columnfractions 0.18 0.02 0.8
 ## @headitem @var{Name} @tab @tab @var{Value}
 ##
-## @item @qcode{"link"} @tab @tab A character vector specifying a link
-## function.
+## @item @qcode{"link"} @tab @tab A character vector specifying a link function
+## or a numeric scalar for the 'p' link in the case of the Inverse Gaussian
+## distribution. Supported link functions include 'identity', 'log', 'logit',
+## 'probit', 'loglog', 'comploglog', 'reciprocal', and 'p'. For custom link
+## functions, provide a cell array with three function handles: the link
+## function, its derivative, and its inverse.
 ##
 ## @item @qcode{"constant"} @tab @tab Specifies whether to
 ## include a constant term in the model. Options are
@@ -58,11 +63,9 @@
 ## returns the estimated coefficient vector, @var{b}, as well as
 ## the deviance, @var{dev}, of the fit.
 ##
-## Supported distributions include 'poisson', 'binomial', and 'normal'.
-## Supported link functions include 'identity', 'log', 'logit', 'probit',
-## 'loglog', 'comploglog', 'reciprocal' and a custom link.
-## Custom link function provided as a structure with three fields:
-## Link Function, Derivative Function, Inverse Function.
+## Supported distributions include 'poisson', 'binomial', 'normal', 'gamma', and
+## 'inverse gaussian'. For the inverse Gaussian distribution, the link function
+## can be specified as a numeric scalar for the 'p' link.
 ## @end deftypefn
 
 function [b,varargout] = glmfit (X, y, distribution, varargin)
@@ -111,9 +114,9 @@ function [b,varargout] = glmfit (X, y, distribution, varargin)
     case "normal"
       link = "identity";
     case "gamma"
-      error ("glmfit: 'gamma' distribution is not supported yet.");
+      link = "reciprocal";
     case "inverse gaussian"
-      error ("glmfit: 'inverse gaussian' distribution is not supported yet.");
+      link = -2;
     otherwise
       error ("glmfit: unknown distribution.");
   endswitch
@@ -156,9 +159,12 @@ function [b,varargout] = glmfit (X, y, distribution, varargin)
         elseif ischar (linkInput) || isstring (linkInput)
           link = tolower (linkInput);
           if (! any (strcmpi (link, {"identity", "log", "logit", "probit", ...
-                                     "loglog", "comploglog", "reciprocal"})))
+                                     "loglog", "comploglog", "reciprocal", "p"})))
             error ("glmfit: unsupported link function.");
           endif
+        elseif isnumeric (linkInput)
+          link = "p";
+          p_input = linkInput;
         else
           error ("glmfit: invalid value for link function.");
         endif
@@ -197,8 +203,16 @@ function [b,varargout] = glmfit (X, y, distribution, varargin)
       ilink = @(x) 1 - exp (-exp (x));
     case "reciprocal"
       ilink = @(x) 1 ./ x;
+    case "p"
+      if (isnumeric (p_input))
+        ilink = @(x) x .^ p_input;
+      else
+        error ("glmfit: invalid value for link function.");
+      endif
     case "custom"
       ilink = invLinkFunc;
+    otherwise
+      error ("glmfit: unsupported link function.");
   endswitch
 
   ## Select negative loglikelihood according to distribution
@@ -220,6 +234,10 @@ function [b,varargout] = glmfit (X, y, distribution, varargin)
           .* log (1 - max (min (ilink (X * b), 1 - eps), eps)));
     case "normal"
       nll = @(b) 0.5 * sum ((y - ilink (X * b)) .^ 2);
+    case "gamma"
+      nll = @(b) sum ((y ./ ilink (X * b)) + log (ilink (X * b)));
+    case "inverse gaussian"
+      nll = @(b) sum ((y - ilink (X * b)) .^ 2 ./ (y .* ilink (X * b) .^ 2));
   endswitch
 
   options = optimset ('MaxFunEvals', 10000, 'MaxIter', 10000);
@@ -248,6 +266,10 @@ function [b,varargout] = glmfit (X, y, distribution, varargin)
               + (trials - successes) .* log ((1 - p) ./ (1 - p_hat)));
       case "normal"
         dev = sum ((y - (X * b)) .^ 2);
+      case "gamma"
+        dev = 2 * sum ((y - ilink (X * b)) ./ ilink (X * b) - log (y ./ ilink (X * b)));
+      case "inverse gaussian"
+        dev = sum ((y - ilink (X * b)) .^ 2 ./ (y .* ilink (X * b) .^ 2));
     endswitch
     varargout{1} = dev;
   endif
@@ -340,3 +362,72 @@ endfunction
 %! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', 'log', 'constant', 'asda')
 %!error <glmfit: unknown parameter name.> ...
 %! glmfit (rand(5,2), rand(5,1), 'poisson', 'param', 'log', 'constant', 'on')
+%!error <glmfit: Name-Value arguments must be in pairs.> ...
+%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', 2, 'constant')
+%!error <glmfit: constant should be either 'on' or 'off'.> ...
+%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', 2, 'constant', 'invalid')
+%!error <glmfit: unknown distribution.> ...
+%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', 2, 'constant', 'invalid')
+%!error <glmfit: unsupported link function.> ...
+%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', "2")
+
+%!test
+%! rand ("seed", 1);
+%! X1 = rand (50, 1);
+%! X2 = rand (50, 1) * 0.5;
+%! b_true = [0.4; 1.5; -0.7];
+%! mu_true = exp (b_true(1) + b_true(2) * X1 + b_true(3) * X2);
+%! shape = 2;
+%! scale = mu_true ./ shape;
+%! y = gamrnd (shape, scale);
+%! [b, dev] = glmfit ([X1, X2], y, "gamma", "link", "log");
+%! assert (b(1), b_true(1), 0.5);
+%! assert (b(2), b_true(2), 0.5);
+%! assert (b(3), b_true(3), 0.5);
+%! assert (dev < 100, true);
+
+%!test
+%! rand ("seed", 1);
+%! X1 = rand (50, 1);
+%! X2 = rand (50, 1) * 0.5;
+%! b_true = [0.4; 1.5; -0.7];
+%! mu_true = exp (b_true(1) + b_true(2) * X1 + b_true(3) * X2);
+%! lambda = 1;
+%! y = invgrnd (mu_true, lambda);
+%! [b, dev] = glmfit ([X1, X2], y, "inverse gaussian", "link", "log");
+%! assert (b(1), b_true(1), 1.0);
+%! assert (b(2), b_true(2), 1.0);
+%! assert (b(3), b_true(3), 1.0);
+%! assert (dev < 100, true);
+
+%!test
+%! rand ("seed", 1);
+%! X = rand (50, 1);
+%! b_true = [0.4; 1.5];
+%! p_input = 2;
+%! mu_true = (b_true(1) + b_true(2) * X).^p_input;
+%! randp ("seed", 1);
+%! y = poissrnd (mu_true);
+%! [b, dev] = glmfit (X, y, "poisson", "link", p_input);
+%! assert (b(1), b_true(1), 0.7);
+%! assert (b(2), b_true(2), 0.7);
+%! assert (dev < 100, true);
+
+%!test
+%! X = [1.2, 2.3, 3.4, 4.5, 5.6, 6.7, 7.8, 8.9, 9.0, 10.1]';
+%! y = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4]';
+%! [b, dev] = glmfit (X, y, "gamma", "link", "log");
+%! b_matlab = [-0.7631; 0.1113];
+%! dev_matlab = 0.0111;
+%! assert (b, b_matlab, 0.001);
+%! assert (dev, dev_matlab, 0.001);
+
+%!test
+%! X = [1.2, 2.3, 3.4, 4.5, 5.6, 6.7, 7.8, 8.9, 9.0, 10.1]';
+%! y = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4]';
+%! p_input = 1;
+%! [b, dev] = glmfit (X, y, "inverse gaussian", "link", p_input);
+%! b_matlab = [0.3813; 0.0950];
+%! dev_matlab = 0.0051;
+%! assert (b, b_matlab, 0.001);
+%! assert (dev, dev_matlab, 0.001);
