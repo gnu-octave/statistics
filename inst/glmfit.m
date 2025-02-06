@@ -389,3 +389,16 @@ endfunction
 %! assert (b(2), b_true(2), 1.0);
 %! assert (b(3), b_true(3), 1.0);
 %! assert (dev < 100, true);
+
+%!test
+%! rand ("seed", 1);
+%! X = rand (50, 1);
+%! b_true = [0.4; 1.5];
+%! p_value = 2;
+%! mu_true = (b_true(1) + b_true(2) * X).^p_value;
+%! randp ("seed", 1);
+%! y = poissrnd (mu_true);
+%! [b, dev] = glmfit (X, y, "poisson", "link", p_value);
+%! assert (b(1), b_true(1), 0.7);
+%! assert (b(2), b_true(2), 0.7);
+%! assert (dev < 100, true);
