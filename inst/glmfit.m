@@ -162,7 +162,7 @@ function [b,varargout] = glmfit (X, y, distribution, varargin)
           endif
         elseif isnumeric (linkInput)
           link = "p";
-          p_value = linkInput;
+          p_input = linkInput;
         else
           error ("glmfit: invalid value for link function.");
         endif
@@ -202,8 +202,8 @@ function [b,varargout] = glmfit (X, y, distribution, varargin)
     case "reciprocal"
       ilink = @(x) 1 ./ x;
     case "p"
-      if (isnumeric (p_value))
-        ilink = @(x) x .^ p_value;
+      if (isnumeric (p_input))
+        ilink = @(x) x .^ p_input;
       else
         error ("glmfit: invalid value for link function.");
       endif
@@ -402,11 +402,11 @@ endfunction
 %! rand ("seed", 1);
 %! X = rand (50, 1);
 %! b_true = [0.4; 1.5];
-%! p_value = 2;
-%! mu_true = (b_true(1) + b_true(2) * X).^p_value;
+%! p_input = 2;
+%! mu_true = (b_true(1) + b_true(2) * X).^p_input;
 %! randp ("seed", 1);
 %! y = poissrnd (mu_true);
-%! [b, dev] = glmfit (X, y, "poisson", "link", p_value);
+%! [b, dev] = glmfit (X, y, "poisson", "link", p_input);
 %! assert (b(1), b_true(1), 0.7);
 %! assert (b(2), b_true(2), 0.7);
 %! assert (dev < 100, true);
