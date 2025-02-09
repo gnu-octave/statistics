@@ -313,6 +313,7 @@ Regression
  cholcov
  dcov
  glmfit
+ glmval
  logistic_regression
  mnrfit
  monotone_smooth
