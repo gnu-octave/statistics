@@ -263,9 +263,7 @@ endclassdef
 %! Y = species;
 %!
 %! Mdl = fitcnet (X, Y, 'ClassNames', unique (species))
-%! CMdl = crossval (Mdl);
-%!
-%! whos ('Mdl', 'CMdl')
+%! CMdl = crossval (Mdl)
 
 ## Test input validation for constructor
 %!error<CompactClassificationDiscriminant: invalid classification object.> ...

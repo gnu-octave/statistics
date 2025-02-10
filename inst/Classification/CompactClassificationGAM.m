@@ -337,9 +337,7 @@ endfunction
 %! Y = species;
 %!
 %! Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))
-%! CMdl = crossval (Mdl);
-%!
-%! whos ('Mdl', 'CMdl')
+%! CMdl = crossval (Mdl)
 
 ## Test constructor
 %!test
