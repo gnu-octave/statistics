@@ -728,6 +728,7 @@
 					<li><a href="cholcov.html" class="text-decoration-none font-monospace"><small>cholcov</small></a></li>
 					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
 					<li><a href="glmfit.html" class="text-decoration-none font-monospace fw-bolder"><small>glmfit</small></a></li>
+					<li><a href="glmval.html" class="text-decoration-none font-monospace"><small>glmval</small></a></li>
 					<li><a href="logistic_regression.html" class="text-decoration-none font-monospace"><small>logistic_regression</small></a></li>
 					<li><a href="mnrfit.html" class="text-decoration-none font-monospace"><small>mnrfit</small></a></li>
 					<li><a href="monotone_smooth.html" class="text-decoration-none font-monospace"><small>monotone_smooth</small></a></li>
@@ -782,55 +783,112 @@
             <div class="card-body">
 <dl>
 <dt><u>statistics:</u> <var>b</var> = <b>glmfit</b><i> (<var>X</var>, <var>y</var>, <var>distribution</var>)</i></dt>
-<dt><u>statistics:</u> <var>b</var> = <b>glmfit</b><i> (<var>X</var>, <var>y</var>, <var>distribution</var>,<var>Name</var>, <var>Value</var>)</i></dt>
+<dt><u>statistics:</u> <var>b</var> = <b>glmfit</b><i> (<var>X</var>, <var>y</var>, <var>distribution</var>, <var>Name</var>, <var>Value</var>)</i></dt>
 <dt><u>statistics:</u> [<var>b</var>, <var>dev</var>] = <b>glmfit</b><i> (&hellip;)</i></dt>
+<dt><u>statistics:</u> [<var>b</var>, <var>dev</var>, <var>stats</var>] = <b>glmfit</b><i> (&hellip;)</i></dt>
 </dl>
 
 <p> Perform generalized linear model fitting.
 </p>
 <div class="ms-5">
 <p> <code><var>b</var> = glmfit (<var>X</var>, <var>y</var>, <var>distribution</var>)</code> returns a
- coefficient estimates vector, <var>b</var> for a
- generalized linear regression model of responses in <var>y</var> and
- predictors in <var>X</var>, using the <var>distribution</var>.
+ vector <var>b</var> of coefficient estimates for a generalized linear regression
+ model of the responses in <var>y</var> on the predictors in <var>X</var>, using the
+ distribution defined in <var>distribution</var>.
 </p>
  <ul>
 <li> <var>X</var> is an <math>n&times;p</math> numeric matrix of predictor variables with
  <math>n</math> observations and <math>p</math> predictors.
- </li><li> <var>y</var> is a <math>n&times; 1</math> numeric vector of responses for all supported
- distributions, except for the &rsquo;binomial&rsquo; distribution which can also have
- <var>y</var> as a <math>n&times; 2</math> matrix, where the first column contains the number
- of successes and the second column contains the number of trials.
- </li><li> <var>distribution</var> specifies the distribution of the response variable
- (e.g., &rsquo;poisson&rsquo;).
+ </li><li> <var>y</var> is an <math>n&times;1</math> numeric vector of responses for all supported
+ distributions, except for the &rsquo;binomial&rsquo; distribution in which case <var>y</var>
+ can be either a numeric or logical <math>n&times;1</math> vector or an <math>n&times;2</math>
+ matrix, where the first column contains the number of successes and the
+ second column contains the number of trials.
+ </li><li> <var>distribution</var> is a character vector specifying the distribution of
+ the response variable. Supported distributions are <code>&quot;normal&quot;</code>,
+ <code>&quot;binomial&quot;</code>, <code>&quot;poisson&quot;</code>, <code>&quot;gamma&quot;</code>, and <code>&quot;inverse
+ gaussian&quot;</code>.
  </li></ul>
 
-<p> <code><var>b</var> = glmfit (&hellip;, <var>Name</var>, <var>Value</var>)</code>
- specifies additional options using <code>Name-Value</code> pair arguments.
+<p> <code><var>b</var> = glmfit (&hellip;, <var>Name</var>, <var>Value</var>)</code> specifies
+ additional options using <code>Name-Value</code> pair arguments.
 </p>
  <table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>&quot;link&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying a link
- function.</td></tr>
-<tr><td width="18%"><code>&quot;constant&quot;</code></td><td width="2%"></td><td width="80%">Specifies whether to
- include a constant term in the model. Options are
- <var>&quot;on&quot;</var> (default) or <var>&quot;off&quot;</var>.</td></tr>
+<tr><td width="18%"><code>&quot;B0&quot;</code></td><td width="2%"></td><td width="80%">A numeric vector specifying initial values for
+ the coefficient estimates.  By default, the initial values are fitted values
+ fitted from the data.</td></tr>
+<tr><td width="18%"><code>&quot;Constant&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying whether to
+ include a constant term in the model.  Valid options are <var>&quot;on&quot;</var> (default)
+ and <var>&quot;off&quot;</var>.</td></tr>
+<tr><td width="18%"><code>&quot;EstDisp&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying whether to
+ compute dispersion parameter. Valid options are <var>&quot;on&quot;</var> and <var>&quot;off&quot;</var>.
+ For <code>&quot;binomial&quot;</code> and <code>&quot;poisson&quot;</code> distributions the default is
+ <var>&quot;off&quot;</var>, whereas for the <code>&quot;normal&quot;</code>, <code>&quot;gamma&quot;</code>, and
+ <code>&quot;inverse gaussian&quot;</code> distributions the default is <var>&quot;on&quot;</var>.</td></tr>
+<tr><td width="18%"><code>&quot;link&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the name of a
+ canonical link function or a numeric scalar for specifying a <code>&quot;power&quot;</code>
+ link function.  Supported canonical link functions include <code>&quot;identity&quot;</code>
+ (default for <code>&quot;normal&quot;</code> distribution), <code>&quot;log&quot;</code> (default for
+ <code>&quot;poisson&quot;</code> distribution), <code>&quot;logit&quot;</code> (default for
+ <code>&quot;binomial&quot;</code> distribution), <code>&quot;probit&quot;</code>, <code>&quot;loglog&quot;</code>,
+ <code>&quot;comploglog&quot;</code>, and <code>&quot;reciprocal&quot;</code> (default for the
+ <code>&quot;gamma&quot;</code> distribution).  The <code>&quot;power&quot;</code> link function is the
+ default for the <code>&quot;inverse gaussian&quot;</code> distribution with <math>p = -2</math>.
+ For custom link functions, the user can provide cell array with three
+ function handles: the link function, its derivative, and its inverse, or
+ alternatively a structure <var>S</var> with three fields: <code>S.Link</code>,
+ <code>S.Derivative</code>, and <code>S.Inverse</code>.  Each field can either contain a
+ function handle or a character vector with the name of an existing function.
+ All custom link functions must accept a vector of inputs and return a vector
+ of the same size.</td></tr>
+<tr><td width="18%"><code>&quot;Offset&quot;</code></td><td width="2%"></td><td width="80%">A numeric vector of the same length as the
+ response <var>y</var> specifying an offset variable in the fit. It is used as an
+ additional predictor with a coefficient value fixed at 1.</td></tr>
+<tr><td width="18%"><code>&quot;Options&quot;</code></td><td width="2%"></td><td width="80%">A scalar structure containing the fields
+ <code>MaxIter</code> and <code>TolX</code>.  <code>MaxIter</code> must be a scalar positive
+ integer specifying the maximum number of iteration allowed for fitting the
+ model, and <code>TolX</code> must be a positive scalar value specifying the
+ termination tolerance.</td></tr>
+<tr><td width="18%"><code>&quot;Weights&quot;</code></td><td width="2%"></td><td width="80%">An <math>n&times;1</math> numeric vector of nonnegative
+ values, where <math>n</math> is the number of observations in <var>X</var>.  By default,
+ it is <code>ones (n, 1)</code>.</td></tr>
 </table>
 
-<p> <code>[<var>b</var>, <var>dev</var>] = glmfit (&hellip;)</code>
- returns the estimated coefficient vector, <var>b</var>, as well as
- the deviance, <var>dev</var>, of the fit.
+<p> <code>[<var>b</var>, <var>dev</var>] = glmfit (&hellip;)</code> also returns the deviance of
+ the fit as a numeric value in <var>dev</var>.  Deviance is a generalization of the
+ residual sum of squares.  It measures the goodness of fit compared to a
+ saturated model.
 </p>
-<p> Supported distributions include &rsquo;poisson&rsquo;, &rsquo;binomial&rsquo;, and &rsquo;normal&rsquo;.
- Supported link functions include &rsquo;identity&rsquo;, &rsquo;log&rsquo;, &rsquo;logit&rsquo;, &rsquo;probit&rsquo;,
- &rsquo;loglog&rsquo;, &rsquo;comploglog&rsquo;, &rsquo;reciprocal&rsquo; and a custom link.
- Custom link function provided as a structure with three fields:
- Link Function, Derivative Function, Inverse Function.
- </p>
+<p> <code>[<var>b</var>, <var>dev</var>, <var>stats</var>] = glmfit (&hellip;)</code> also returns the
+ structure <var>stats</var>, which contains the model statistics in the following
+ fields:
+</p>
+ <ul>
+<li> <code>beta</code> - Coefficient estimates <var>b</var>
+ </li><li> <code>dfe</code> - Degrees of freedom for error
+ </li><li> <code>sfit</code> - Estimated dispersion parameter
+ </li><li> <code>s</code> - Theoretical or estimated dispersion parameter
+ </li><li> <code>estdisp</code> - <code>false</code> when <code>&quot;EstDisp&quot;</code> is <code>&quot;off&quot;</code>
+ and <code>true</code> when <code>&quot;EstDisp&quot;</code> is <code>&quot;on&quot;</code>
+ </li><li> <code>covb</code> - Estimated covariance matrix for <var>b</var>
+ </li><li> <code>se</code> - Vector of standard errors of the coefficient estimates
+ <var>b</var>
+ </li><li> <code>coeffcorr</code> - Correlation matrix for <var>b</var>
+ </li><li> <code>t</code> - <math>t</math> statistics for <var>b</var>
+ </li><li> <code>p</code> - <math>p</math>-values for <var>b</var>
+ </li><li> <code>resid</code> - Vector of residuals
+ </li><li> <code>residp</code> - Vector of Pearson residuals
+ </li><li> <code>residd</code> - Vector of deviance residuals
+ </li><li> <code>resida</code> - Vector of Anscombe residuals
+ </li></ul>
+
+<p> <strong>See also: </strong>
+  <a href="glmval.html">glmval</a>
+</p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/glmfit.m">glmfit</a>
 </div>
-
         <div class="container-xl my-4">
           <div class="card rounded">
             <div class="card-header card-header-mod">
@@ -849,17 +907,18 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- rand ("seed", 1);
- X = rand (100, 1);
- b_true = [0.5; -1.2];
- mu = exp (b_true(1) + b_true(2) * X);
- randp ("seed", 1);
- y = poissrnd (mu);
- ## Fit a GLM model using the poisson distribution
- [b,dev] = glmfit (X, y, 'poisson');
+ x = [210, 230, 250, 270, 290, 310, 330, 350, 370, 390, 410, 430]';
+ n = [48, 42, 31, 34, 31, 21, 23, 23, 21, 16, 17, 21]';
+ y = [1, 2, 0, 3, 8, 8, 14, 17, 19, 15, 17, 21]';
+ b = glmfit (x, [y n], "binomial", "Link", "probit");
+ yfit = glmval (b, x, "probit", "Size", n);
+ plot (x, y./n, 'o', x, yfit ./ n, '-')
 
                     </pre></td></tr></tbody>
                   </table>
+                  <div class="text-center">
+                    <img src="assets/glmfit_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
 
                 </div>
               </div>
@@ -885,10 +944,18 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- x = [2100 2300 2500 2700 2900 3100 3300 3500 3700 3900 4100 4300]';
- n = [48 42 31 34 31 21 23 23 21 16 17 21]';
- y = [1 2 0 3 8 8 14 17 19 15 17 21]';
- [b,dev] = glmfit (x,[y n],'binomial','Link','probit');
+ load fisheriris
+ X = meas (51:end, :);
+ y = strcmp ("versicolor", species(51:end));
+ b = glmfit (X, y, "binomial", "link", "logit")
+
+b =
+
+   42.6378
+    2.4652
+    6.6809
+   -9.4294
+  -18.2861
 
                     </pre></td></tr></tbody>
                   </table>
