@@ -1060,9 +1060,7 @@ compact,
  Y = species;
 
  Mdl = fitcdiscr (X, Y, 'ClassNames', unique (species))
- CMdl = crossval (Mdl);
-
- whos ('Mdl', 'CMdl')
+ CMdl = crossval (Mdl)
 
 Mdl =
 
@@ -1089,16 +1087,27 @@ Mdl =
             XCentered: [150x4 double]
                     Y: [150x1 cell]
 
-Variables visible from the current scope:
+CMdl =
 
-variables in scope: build_DEMOS: /home/promitheas/.local/share/octave/api-v59/packages/pkg-octave-doc-0.5.5/build_DEMOS.m
+  ClassificationPartitionedModel object with properties:
 
-  Attr   Name        Size                     Bytes  Class
-  ====   ====        ====                     =====  ===== 
-         Mdl         1x1                          0  ClassificationDiscriminant
-         CMdl        1x1                          0  ClassificationPartitionedModel
-
-Total is 2 elements using 0 bytes
+                   BinEdges: [0x0 double]
+      CategoricalPredictors: [0x0 double]
+                 ClassNames: [3x1 cell]
+                       Cost: [3x3 double]
+        CrossValidatedModel: ClassificationDiscriminant
+                      KFold: [1x1 double]
+            ModelParameters: [1x1 struct]
+            NumObservations: [1x1 double]
+                  Partition: [1x1 cvpartition]
+             PredictorNames: [1x4 cell]
+                      Prior: [3x1 double]
+               ResponseName: Y
+             ScoreTransform: none
+                Standardize: [0x0 double]
+                    Trained: [10x1 cell]
+                          X: [150x4 double]
+                          Y: [150x1 cell]
 
                     </pre></td></tr></tbody>
                   </table>
