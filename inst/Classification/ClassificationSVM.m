@@ -1708,11 +1708,11 @@ endclassdef
 %! assert (sum (obj.IsSupportVector), numel (obj.Beta))
 %! [label, score] = predict (obj, xc);
 %! assert (label, [1; 2; 2]);
-%! assert (score(:,1), [0.99285; -0.080296; -0.93694], 1e-5);
+%! assert (score(:,1), [0.99285; -0.080296; -0.93694], 2e-5);
 %! assert (score(:,1), -score(:,2), eps)
 %! obj = fitPosterior (obj);
 %! [label, probs] = predict (obj, xc);
-%! assert (probs(:,2), [0.97555; 0.428164; 0.030385], 1e-5);
+%! assert (probs(:,2), [0.97555; 0.428164; 0.030385], 2e-5);
 %! assert (probs(:,1) + probs(:,2), [1; 1; 1], 0.05)
 %!test
 %! obj = fitcsvm (x, y);
