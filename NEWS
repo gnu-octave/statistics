@@ -5,6 +5,7 @@
                       shadow core Octave's respective functions prior
                       to Octave v9.1
                    2) incompatibility with the `nan` package
+
  New functions:
  ==============
 
@@ -108,3 +109,22 @@
 
  ** editDistance: use correct index types to avoid compiler warnings
                   (github issue #171)
+
+
+ Summary of important user-visible changes for statistics 1.7.3:
+-------------------------------------------------------------------
+
+ Important Notice: 1) `mad`, `mean`, `median`, `std`, `var` functions
+                      shadow core Octave's respective functions prior
+                      to Octave v9.1
+                   2) incompatibility with the `nan` package
+
+ New functions:
+ ==============
+
+ ** glmval
+
+ Improvements:
+ =============
+
+ ** glmfit: fixed output and updated functionality and compatibility
