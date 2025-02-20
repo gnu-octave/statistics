@@ -28,9 +28,9 @@
 ## @code{@var{r} = burrrnd (@var{lambda}, @var{c}, @var{k})} returns an array of
 ## random numbers chosen from the Burr type XII distribution with scale
 ## parameter @var{lambda}, first shape parameter @var{c}, and second shape
-## parameter@var{c}, and @var{k}.  The size of @var{r} is the common size of
-## @var{lambda}, @var{c}, and @var{k}.  LAMBDA scalar input functions as a
-## constant matrix of the same size as the other inputs.
+## parameter @var{k}.  The size of @var{r} is the common size of @var{lambda},
+## @var{c}, and @var{k}.  LAMBDA scalar input functions as a constant matrix of
+## the same size as the other inputs.
 ##
 ## When called with a single size argument, @code{burrrnd} returns a square
 ## matrix with the dimension specified.  When called with more than one scalar
