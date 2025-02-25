@@ -49,8 +49,8 @@ function p = chi2cdf (x, df, uflag)
   endif
 
   ## Check for valid "upper" flag
-  if (nargin > 2) 
-    if ! strcmpi (uflag, "upper")
+  if (nargin > 2)
+    if (! strcmpi (uflag, "upper"))
       error ("chi2cdf: invalid argument for upper tail.");
     end
   else
@@ -98,12 +98,11 @@ endfunction
 %!shared x, p, u
 %! x = [-1, 0, 0.5, 1, 2];
 %! p = [0, (1 - exp (-x(2:end) / 2))];
-%! u = [1, 0, NaN, 0.3934693402873666, 0.6321205588285577];
+%! u = [1, 0, NaN, 0.606530659712633, 0.367879441171442];
 %!assert (chi2cdf (x, 2 * ones (1,5)), p, eps)
 %!assert (chi2cdf (x, 2), p, eps)
-%!assert (chi2cdf (x, 2 * [1, 0, NaN, 1, 1]), [p(1), 1, NaN, p(4:5)], eps)
-%!assert (chi2cdf (x, 2 * [1, 0, NaN, 1, 1], "upper"), ...
-%!                        [p(1), 1, NaN, u(4:5)], eps)
+%!assert (chi2cdf (x, 2 * [1, 0, NaN, 1, 1]), [0, 1, NaN, p(4:5)], eps)
+%!assert (chi2cdf (x, 2 * [1, 0, NaN, 1, 1], "upper"), u, 3 * eps)
 %!assert (chi2cdf ([x(1:2), NaN, x(4:5)], 2), [p(1:2), NaN, p(4:5)], eps)
 
 ## Test class of input preserved
