@@ -20,7 +20,7 @@
 ##
 ## Get a field, @var{f}, from a @samp{cvpartition} object, @var{C}.
 ##
-## @seealso{@@cvpartition/cvpartition}
+## @seealso{@cvpartition/cvpartition}
 ## @end deftypefn
 
 function s = get (c, f)

@@ -20,7 +20,7 @@
 ##
 ## Display a @samp{cvpartition} object, @var{C}.
 ##
-## @seealso{@@cvpartition/cvpartition}
+## @seealso{@cvpartition/cvpartition}
 ## @end deftypefn
 
 function display (C)

@@ -21,7 +21,7 @@
 ## Return logical vector for training-subset indices from a @samp{cvpartition}
 ## object, @var{C}.  @var{i} is the fold index (default is 1).
 ##
-## @seealso{@@cvpartition/cvpartition, @@cvpartition/test}
+## @seealso{@cvpartition/cvpartition, @cvpartition/test}
 ## @end deftypefn
 
 function inds = training (C, i = [])

@@ -24,7 +24,7 @@
 ## partition_type as @var{C} but redo any randomization performed (currently,
 ## only the HoldOut type uses randomization).
 ##
-## @seealso{@@cvpartition/cvpartition}
+## @seealso{@cvpartition/cvpartition}
 ## @end deftypefn
 
 function Cnew = repartition (C)
