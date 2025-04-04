@@ -58,8 +58,14 @@ function obj = loadmodel (filename)
     case "ClassificationDiscriminant"
       obj = ClassificationDiscriminant.load_model (filename, data);
 
+    case "CompactClassificationDiscriminant"
+      obj = CompactClassificationDiscriminant.load_model (filename, data);
+
     case "ClassificationGAM"
       obj = ClassificationGAM.load_model (filename, data);
+
+    case "CompactClassificationGAM"
+      obj = CompactClassificationGAM.load_model (filename, data);
 
     case "ClassificationKNN"
       obj = ClassificationKNN.load_model (filename, data);
@@ -67,10 +73,13 @@ function obj = loadmodel (filename)
     case "ClassificationNeuralNetwork"
       obj = ClassificationNeuralNetwork.load_model (filename, data);
 
-    case "ClassificationPartitionedModel"
-      obj = ClassificationPartitionedModel.load_model (filename, data);
+    case "CompactClassificationNeuralNetwork"
+      obj = CompactClassificationNeuralNetwork.load_model (filename, data);
 
     case "ClassificationSVM"
+      obj = ClassificationSVM.load_model (filename, data);
+
+    case "CompactClassificationSVM"
       obj = ClassificationSVM.load_model (filename, data);
 
     case "RegressionGAM"
