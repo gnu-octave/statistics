@@ -1,5 +1,5 @@
 ## Copyright (C) 2024 Ruchika Sonagote <ruchikasonagote2003@gmail.com>
-## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -156,9 +156,105 @@ classdef ClassificationDiscriminant
 
   endproperties
 
+  methods (Hidden)
+
+    ## Custom display
+    function display (this)
+      in_name = inputname (1);
+      if (! isempty (in_name))
+        fprintf ('%s =\n', in_name);
+      endif
+      disp (this);
+    endfunction
+
+    ## Custom display
+    function disp (this)
+      fprintf ("\n  ClassificationDiscriminant\n\n");
+      ## Print selected properties
+      fprintf ("%+25s: '%s'\n", 'ResponseName', this.ResponseName);
+      if (iscellstr (this.ClassNames))
+        str = repmat ({"'%s'"}, 1, numel (this.ClassNames));
+        str = strcat ('{', strjoin (str, ' '), '}');
+        str = sprintf (str, this.ClassNames{:});
+      else # numeric
+        str = repmat ({"%d"}, 1, numel (this.ClassNames));
+        str = strcat ('[', strjoin (str, ' '), ']');
+        str = sprintf (str, this.ClassNames);
+      endif
+      fprintf ("%+25s: '%s'\n", 'ClassNames', str);
+      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
+      fprintf ("%+25s: '%d'\n", 'NumObservations', this.NumObservations);
+      fprintf ("%+25s: '%d'\n", 'NumPredictors', this.NumPredictors);
+      fprintf ("%+25s: '%s'\n", 'DiscrimType', this.DiscrimType);
+      fprintf ("%+25s: [%dx%d double]\n", 'Mu', size (this.Mu));
+      fprintf ("%+25s: [%dx%d struct]\n\n", 'Coeffs', size (this.Sigma));
+    endfunction
+
+    ## Class specific subscripted reference
+    function varargout = subsref (this, s)
+      chain_s = s(2:end);
+      s = s(1);
+      switch (s.type)
+        case '()'
+          error (strcat ("Invalid () indexing for referencing values", ...
+                         " in a ClassificationDiscriminant object."));
+        case '{}'
+          error (strcat ("Invalid {} indexing for referencing values", ...
+                         " in a ClassificationDiscriminant object."));
+        case '.'
+          if (! ischar (s.subs))
+            error (strcat ("ClassificationDiscriminant.subsref: '.'", ...
+                           " indexing argument must be a character vector."));
+          endif
+          try
+            out = this.(s.subs);
+          catch
+            error (strcat ("ClassificationDiscriminant.subref:", ...
+                           " unrecongized property: '%s'"), s.subs);
+          end_try_catch
+      endswitch
+      ## Chained references
+      if (! isempty (chain_s))
+        out = subsref (out, chain_s);
+      endif
+      varargout{1} = out;
+    endfunction
+
+    ## Class specific subscripted assignment
+    function this = subsasgn (this, s, val)
+      if (numel (s) > 1)
+        error (strcat ("ClassificationDiscriminant.subsasgn:", ...
+                       " chained subscripts not allowed."));
+      endif
+      switch s.type
+        case '()'
+          error (strcat ("Invalid () indexing for assigning values", ...
+                         " to a ClassificationDiscriminant object."));
+        case '{}'
+          error (strcat ("Invalid {} indexing for assigning values", ...
+                         " to a ClassificationDiscriminant object."));
+        case '.'
+          if (! ischar (s.subs))
+            error (strcat ("ClassificationDiscriminant.subsasgn: '.'", ...
+                           " indexing argument must be a character vector."));
+          endif
+          switch (s.subs)
+            case 'ScoreTransform'
+              name = "ClassificationDiscriminant";
+              this.ScoreTransform = parseScoreTransform (val, name);
+            otherwise
+              error (strcat ("ClassificationDiscriminant.subsasgn:", ...
+                             " unrecongized or read-only property: '%s'"), ...
+                             s.subs);
+          endswitch
+      endswitch
+    endfunction
+
+  endmethods
+
   methods (Access = public)
 
-    ## constructor
+    ## Constructor
     function this = ClassificationDiscriminant (X, Y, varargin)
 
       ## Check for sufficient number of input arguments
@@ -173,8 +269,8 @@ classdef ClassificationDiscriminant
 
       ## Check X and Y have the same number of observations
       if (rows (X) != rows (Y))
-        error (["ClassificationDiscriminant: number of rows ", ...
-                "in X and Y must be equal."]);
+        error (strcat ("ClassificationDiscriminant: number", ...
+                       " of rows in X and Y must be equal."));
       endif
 
       ## Assign original X and Y data
@@ -204,31 +300,31 @@ classdef ClassificationDiscriminant
           case "predictornames"
             PredictorNames = varargin{2};
             if (! iscellstr (PredictorNames))
-              error (strcat (["ClassificationDiscriminant: 'PredictorNames'"], ...
-                             [" must be supplied as a cellstring array."]));
+              error (strcat ("ClassificationDiscriminant: 'PredictorNames'", ...
+                             " must be supplied as a cellstring array."));
             elseif (numel (PredictorNames) != columns (X))
-              error (strcat (["ClassificationDiscriminant: 'PredictorNames'"], ...
-                             [" must equal the number of columns in X."]));
+              error (strcat ("ClassificationDiscriminant: 'PredictorNames'", ...
+                             " must equal the number of columns in X."));
             endif
 
           case "responsename"
             ResponseName = varargin{2};
             if (! ischar (ResponseName))
-              error (strcat (["ClassificationDiscriminant: 'ResponseName'"], ...
-                             [" must be a character vector."]));
+              error (strcat ("ClassificationDiscriminant: 'ResponseName'", ...
+                             " must be a character vector."));
             endif
 
           case "classnames"
             ClassNames = varargin{2};
             if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
                                           || islogical (ClassNames)))
-              error (strcat (["ClassificationDiscriminant: 'ClassNames'"], ...
-                             [" must be a cellstring, logical or numeric"], ...
-                             [" vector."]));
+              error (strcat ("ClassificationDiscriminant: 'ClassNames'", ...
+                             " must be a cellstring, logical or numeric", ...
+                             " vector."));
             endif
             ## Check that all class names are available in gnY
-            msg = strcat (["ClassificationDiscriminant: not all"], ...
-                          [" 'ClassNames' are present in Y."]);
+            msg = strcat ("ClassificationDiscriminant: not all", ...
+                          " 'ClassNames' are present in Y.");
             if (iscellstr (ClassNames))
               if (! all (cell2mat (cellfun (@(x) any (strcmp (x, gnY)),
                                    ClassNames, "UniformOutput", false))))
@@ -245,15 +341,15 @@ classdef ClassificationDiscriminant
             Prior = varargin{2};
             if (! ((isnumeric (Prior) && isvector (Prior)) ||
                   (strcmpi (Prior, "empirical") || strcmpi (Prior, "uniform"))))
-              error (strcat (["ClassificationDiscriminant: 'Prior' must"], ...
-                             [" be either a numeric or a character vector."]));
+              error (strcat ("ClassificationDiscriminant: 'Prior' must", ...
+                             " be either a numeric or a character vector."));
             endif
 
           case "cost"
             Cost = varargin{2};
             if (! (isnumeric (Cost) && issquare (Cost)))
-              error (strcat (["ClassificationDiscriminant: 'Cost'"], ...
-                             [" must be a numeric square matrix."]));
+              error (strcat ("ClassificationDiscriminant: 'Cost'", ...
+                             " must be a numeric square matrix."));
             endif
 
           case "scoretransform"
@@ -263,27 +359,27 @@ classdef ClassificationDiscriminant
           case "discrimtype"
             DiscrimType = tolower (varargin{2});
             if (! (strcmpi (DiscrimType, "linear")))
-                error (strcat (["ClassificationDiscriminant: unsupported "], ...
-                               [" discriminant type."]));
+                error (strcat ("ClassificationDiscriminant: unsupported", ...
+                               " discriminant type."));
             endif
 
           case "fillcoeffs"
             FillCoeffs = tolower (varargin{2});
             if (! any (strcmpi (FillCoeffs, {"on", "off"})))
-              error (strcat (["ClassificationDiscriminant: 'FillCoeffs'"], ...
-                             [" must be 'on' or 'off'."]));
+              error (strcat ("ClassificationDiscriminant: 'FillCoeffs'", ...
+                             " must be 'on' or 'off'."));
             endif
 
           case "gamma"
             Gamma = varargin{2};
             if (Gamma >= 1 || Gamma < 0)
-              error (strcat (["ClassificationDiscriminant: 'Gamma'"], ...
-                             [" must be between 0 and 1."]));
+              error (strcat ("ClassificationDiscriminant: 'Gamma'", ...
+                             " must be between 0 and 1."));
             endif
 
           otherwise
-            error (strcat (["ClassificationDiscriminant: invalid"], ...
-                           [" parameter name in optional pair arguments."]));
+            error (strcat ("ClassificationDiscriminant: invalid", ...
+                           " parameter name in optional pair arguments."));
         endswitch
         varargin (1:2) = [];
       endwhile
@@ -323,15 +419,18 @@ classdef ClassificationDiscriminant
 
       ## Renew groups in Y
       [gY, gnY, glY] = grp2idx (Y);
-      this.ClassNames = gnY;
+      this.ClassNames = unique (Y);  # Keep the same type as Y
 
       ## Check X contains valid data
       if (! (isnumeric (X) && isfinite (X)))
         error ("ClassificationDiscriminant: invalid values in X.");
       endif
 
-      this.NumObservations = rows (X);
-      this.RowsUsed = cast (RowsUsed, "double");
+      ## Assign the number of observations and their correspoding indices
+      ## on the original data, which will be used for training the model,
+      ## to the ClassificationNeuralNetwork object
+      this.NumObservations = sum (RowsUsed);
+      this.RowsUsed = RowsUsed;
 
       ## Handle Prior and Cost
       if (strcmpi ("uniform", Prior))
@@ -344,9 +443,9 @@ classdef ClassificationDiscriminant
         this.Prior = pr ./ sum (pr);
       elseif (isnumeric (Prior))
         if (numel (gnY) != numel (Prior))
-          error (strcat (["ClassificationDiscriminant: the elements"], ...
-                         [" in 'Prior' do not correspond to the"], ...
-                         [" selected classes in Y."]));
+          error (strcat ("ClassificationDiscriminant: the elements", ...
+                         " in 'Prior' do not correspond to the", ...
+                         " selected classes in Y."));
         endif
         this.Prior = Prior ./ sum (Prior);
       endif
@@ -354,9 +453,9 @@ classdef ClassificationDiscriminant
         this.Cost = cast (! eye (numel (gnY)), "double");
       else
         if (numel (gnY) != sqrt (numel (Cost)))
-          error (strcat (["ClassificationDiscriminant: the number"], ...
-                         [" of rows and columns in 'Cost' must"], ...
-                         [" correspond to selected classes in Y."]));
+          error (strcat ("ClassificationDiscriminant: the number", ...
+                         " of rows and columns in 'Cost' must", ...
+                         " correspond to selected classes in Y."));
         endif
         this.Cost = Cost;
       endif
@@ -392,14 +491,14 @@ classdef ClassificationDiscriminant
         ## Check for predictors zero within-class variance
         zwcv = find (diag (this.Sigma) == 0);
         if (! isempty (zwcv))
-          msg = strcat (["ClassificationDiscriminant: Predictor"], ...
-                        [" '%s' has zero within-class variance."]);
+          msg = strcat ("ClassificationDiscriminant: Predictor", ...
+                        " '%s' has zero within-class variance.");
           error (msg, PredictorNames{zwcv(1)});
         endif
 
         D = diag (diag (this.Sigma));
 
-        ## fix me: MinGamma calculation is not same as Matlab.
+        ## FIX ME: MinGamma calculation is not same as Matlab.
         ## Instead of using (det (sigma) > 0) this criteria (line no: 391)
         ## may be Matlab is using some threshold.
         ## Also linear search might not be best here.
@@ -420,8 +519,8 @@ classdef ClassificationDiscriminant
             endif
             gamma = gamma + step;
             if (gamma > 1)
-              error (["ClassificationDiscriminant: failed to ", ...
-                      "find 'MinGamma' within reasonable range."]);
+              error (strcat ("ClassificationDiscriminant: failed to", ...
+                             " find 'MinGamma' within reasonable range."));
             endif
           endwhile
 
@@ -448,8 +547,8 @@ classdef ClassificationDiscriminant
                 this.Coeffs(i, j).DiscrimType = "";
                 this.Coeffs(i, j).Const = [];
                 this.Coeffs(i, j).Linear = [];
-                this.Coeffs(i, j).Class1 = this.ClassNames{i};
-                this.Coeffs(i, j).Class2 = this.ClassNames{j};
+                this.Coeffs(i, j).Class1 = this.ClassNames(i);
+                this.Coeffs(i, j).Class2 = this.ClassNames(j);
                 if (i != j)
                   A = (this.Mu(i, :) - this.Mu(j, :)) / this.Sigma;
                   K = log (this.Prior(i) ...
@@ -516,14 +615,13 @@ classdef ClassificationDiscriminant
       if (isempty (XC))
         error ("ClassificationDiscriminant.predict: XC is empty.");
       elseif (columns (this.X) != columns (XC))
-        error (strcat (["ClassificationDiscriminant.predict:"], ...
-                       [" XC must have the same number of"], ...
-                       [" predictors as the trained model."]));
+        error (strcat ("ClassificationDiscriminant.predict: XC must have ", ...
+                       " the same number of predictors as the trained model."));
       endif
 
       ## Get training data and labels
-      X = this.X(logical (this.RowsUsed),:);
-      Y = this.Y(logical (this.RowsUsed),:);
+      X = this.X(this.RowsUsed,:);
+      Y = this.Y(this.RowsUsed,:);
 
       numObservations = rows (XC);
       numClasses = numel (this.ClassNames);
@@ -625,8 +723,8 @@ classdef ClassificationDiscriminant
       if (nargin < 3)
         error ("ClassificationDiscriminant.loss: too few input arguments.");
       elseif (mod (nargin - 3, 2) != 0)
-        error (strcat (["ClassificationDiscriminant.loss: name-value"], ...
-                       [" arguments must be in pairs."]));
+        error (strcat ("ClassificationDiscriminant.loss: name-value", ...
+                       " arguments must be in pairs."));
       elseif (nargin > 7)
         error ("ClassificationDiscriminant.loss: too many input arguments.");
       endif
@@ -635,8 +733,8 @@ classdef ClassificationDiscriminant
       if (isempty (X))
         error ("ClassificationDiscriminant.loss: X is empty.");
       elseif (columns (this.X) != columns (X))
-        error (strcat (["ClassificationDiscriminant.loss: X must have the"], ...
-                       [" same number of predictors as the trained model."]));
+        error (strcat ("ClassificationDiscriminant.loss: X must have the", ...
+                       " same number of predictors as the trained model."));
       endif
 
       ## Default values
@@ -651,8 +749,8 @@ classdef ClassificationDiscriminant
 
       ## Validate size of Y
       if (size (Y, 1) != size (X, 1))
-        error (strcat (["ClassificationDiscriminant.loss: Y must"], ...
-                       [" have the same number of rows as X."]));
+        error (strcat ("ClassificationDiscriminant.loss: Y must", ...
+                       " have the same number of rows as X."));
       endif
 
       ## Parse name-value arguments
@@ -665,9 +763,9 @@ classdef ClassificationDiscriminant
             if (isa (Value, 'function_handle'))
               ## Check if the loss function is valid
               if (nargin (Value) != 4)
-                error (strcat (["ClassificationDiscriminant.loss: custom"], ...
-                               [" loss function must accept exactly four"], ...
-                               [" input arguments."]));
+                error (strcat ("ClassificationDiscriminant.loss: custom", ...
+                               " loss function must accept exactly four", ...
+                               " input arguments."));
               endif
               try
                 n = 1;
@@ -678,14 +776,14 @@ classdef ClassificationDiscriminant
                 Cost_test = ones (K) - eye (K);
                 test_output = Value (C_test, S_test, W_test, Cost_test);
                 if (! isscalar (test_output))
-                  error (strcat (["ClassificationDiscriminant.loss:"], ...
-                                 [" custom loss function must return"], ...
-                                 [" a scalar value."]));
+                  error (strcat ("ClassificationDiscriminant.loss:", ...
+                                 " custom loss function must return", ...
+                                 " a scalar value."));
                 endif
               catch
-                error (strcat (["ClassificationDiscriminant.loss: custom"], ...
-                               [" loss function is not valid or does not"], ...
-                               [" produce correct output."]));
+                error (strcat ("ClassificationDiscriminant.loss: custom", ...
+                               " loss function is not valid or does not", ...
+                               " produce correct output."));
               end_try_catch
               LossFun = Value;
             elseif (ischar (Value) && any (strcmpi (Value, lf_opt)))
@@ -697,9 +795,9 @@ classdef ClassificationDiscriminant
           case 'weights'
             if (isnumeric (Value) && isvector (Value))
               if (numel (Value) != size (X ,1))
-                error (strcat (["ClassificationDiscriminant.loss: number"], ...
-                               [" of 'Weights' must be equal to the"], ...
-                               [" number of rows in X."]));
+                error (strcat ("ClassificationDiscriminant.loss: number", ...
+                               " of 'Weights' must be equal to the", ...
+                               " number of rows in X."));
               elseif (numel (Value) == size (X, 1))
                 Weights = Value;
               endif
@@ -708,8 +806,8 @@ classdef ClassificationDiscriminant
             endif
 
           otherwise
-            error (strcat (["ClassificationDiscriminant.loss: invalid"], ...
-                           [" parameter name in optional pair arguments."]));
+            error (strcat ("ClassificationDiscriminant.loss: invalid", ...
+                           " parameter name in optional pair arguments."));
         endswitch
         varargin (1:2) = [];
       endwhile
@@ -734,14 +832,14 @@ classdef ClassificationDiscriminant
       elseif (iscell (Y))
         Y = cellfun (@num2str, Y, 'UniformOutput', false);
       else
-        error (strcat (["ClassificationDiscriminant.loss: Y must be a"], ...
-                       [" numeric, logical, char, string, or cell array."]));
+        error (strcat ("ClassificationDiscriminant.loss: Y must be a", ...
+                       " numeric, logical, char, string, or cell array."));
       endif
 
       ## Check if Y contains correct classes
       if (! all (ismember (unique (Y), this.ClassNames)))
-        error (strcat (["ClassificationDiscriminant.loss: Y must contain"], ...
-                       [" only the classes in ClassNames."]));
+        error (strcat ("ClassificationDiscriminant.loss: Y must contain", ...
+                       " only the classes in ClassNames."));
       endif
 
       ## Set default weights if not specified
@@ -875,8 +973,8 @@ classdef ClassificationDiscriminant
       if (isempty (X))
         error ("ClassificationDiscriminant.margin: X is empty.");
       elseif (columns (this.X) != columns (X))
-        error (strcat (["ClassificationDiscriminant.margin: X must have the"], ...
-                       [" same number of predictors as the trained model."]));
+        error (strcat ("ClassificationDiscriminant.margin: X must have the", ...
+                       " same number of predictors as the trained model."));
       endif
 
       ## Validate Y
@@ -893,8 +991,8 @@ classdef ClassificationDiscriminant
 
       ## Validate size of Y
       if (size (Y, 1) != size (X, 1))
-        error (strcat (["ClassificationDiscriminant.margin: Y must"], ...
-                       [" have the same number of rows as X."]));
+        error (strcat ("ClassificationDiscriminant.margin: Y must", ...
+                       " have the same number of rows as X."));
       endif
 
       ## Convert Y to a cell array of strings
@@ -907,14 +1005,14 @@ classdef ClassificationDiscriminant
       elseif (iscell (Y))
         Y = cellfun (@num2str, Y, 'UniformOutput', false);
       else
-        error (strcat (["ClassificationDiscriminant.margin: Y must be"], ...
-                       [" a numeric, logical, char, string, or cell array."]));
+        error (strcat ("ClassificationDiscriminant.margin: Y must be", ...
+                       " a numeric, logical, char, string, or cell array."));
       endif
 
       ## Check if Y contains correct classes
       if (! all (ismember (unique (Y), this.ClassNames)))
-        error (strcat (["ClassificationDiscriminant.margin: Y must"], ...
-                       [" contain only the classes in ClassNames."]));
+        error (strcat ("ClassificationDiscriminant.margin: Y must", ...
+                       " contain only the classes in ClassNames."));
       endif
 
       ## Number of Observations
@@ -995,11 +1093,11 @@ classdef ClassificationDiscriminant
       endif
 
       if (numel (varargin) == 1)
-        error (strcat (["ClassificationDiscriminant.crossval: Name-Value"], ...
-                       [" arguments must be in pairs."]));
+        error (strcat ("ClassificationDiscriminant.crossval: Name-Value", ...
+                       " arguments must be in pairs."));
       elseif (numel (varargin) > 2)
-        error (strcat (["ClassificationDiscriminant.crossval: specify only"], ...
-                       [" one of the optional Name-Value paired arguments."]));
+        error (strcat ("ClassificationDiscriminant.crossval: specify only", ...
+                       " one of the optional Name-Value paired arguments."));
       endif
 
       ## Add default values
@@ -1016,36 +1114,36 @@ classdef ClassificationDiscriminant
             numFolds = varargin{2};
             if (! (isnumeric (numFolds) && isscalar (numFolds)
                    && (numFolds == fix (numFolds)) && numFolds > 1))
-              error (strcat (["ClassificationDiscriminant.crossval: 'KFold'"], ...
-                             [" must be an integer value greater than 1."]));
+              error (strcat ("ClassificationDiscriminant.crossval: 'KFold'", ...
+                             " must be an integer value greater than 1."));
             endif
 
           case 'holdout'
             Holdout = varargin{2};
             if (! (isnumeric (Holdout) && isscalar (Holdout) && Holdout > 0
                    && Holdout < 1))
-              error (strcat (["ClassificationDiscriminant.crossval: 'Holdout'"], ...
-                             [" must be a numeric value between 0 and 1."]));
+              error (strcat ("ClassificationDiscriminant.crossval: 'Holdout'", ...
+                             " must be a numeric value between 0 and 1."));
             endif
 
           case 'leaveout'
             Leaveout = varargin{2};
             if (! (ischar (Leaveout)
                    && (strcmpi (Leaveout, 'on') || strcmpi (Leaveout, 'off'))))
-              error (strcat (["ClassificationDiscriminant.crossval:"], ...
-                             [" 'Leaveout' must be either 'on' or 'off'."]));
+              error (strcat ("ClassificationDiscriminant.crossval:", ...
+                             " 'Leaveout' must be either 'on' or 'off'."));
             endif
 
           case 'cvpartition'
             CVPartition = varargin{2};
             if (!(isa (CVPartition, 'cvpartition')))
-              error (strcat (["ClassificationDiscriminant.crossval:"],...
-                             [" 'CVPartition' must be a 'cvpartition' object."]));
+              error (strcat ("ClassificationDiscriminant.crossval:",...
+                             " 'CVPartition' must be a 'cvpartition' object."));
             endif
 
           otherwise
-            error (strcat (["ClassificationDiscriminant.crossval: invalid"],...
-                           [" parameter name in optional paired arguments."]));
+            error (strcat ("ClassificationDiscriminant.crossval: invalid",...
+                           " parameter name in optional paired arguments."));
           endswitch
         varargin (1:2) = [];
       endwhile
@@ -1087,8 +1185,12 @@ classdef ClassificationDiscriminant
     ##
     ## Save a ClassificationDiscriminant object.
     ##
-    ## @code{savemodel (@var{obj}, @var{filename})} saves a
-    ## ClassificationDiscriminant object into a file defined by @var{filename}.
+    ## @code{savemodel (@var{obj}, @var{filename})} saves each property of a
+    ## ClassificationDiscriminant object into an Octave binary file, the name of
+    ## which is specified in @var{filename}, along with an extra variable, which
+    ## defines the type classification object these variables constitute.  Use
+    ## @code{loadmodel} in order to load a classification object into Octave's
+    ## workspace.
     ##
     ## @seealso{loadmodel, fitcdiscr, ClassificationDiscriminant}
     ## @end deftypefn
@@ -1120,11 +1222,11 @@ classdef ClassificationDiscriminant
       XCentered       = this.XCentered;
 
       ## Save classdef name and all model properties as individual variables
-      save (fname, "classdef_name", "X", "Y", "NumObservations", "RowsUsed", ...
-            "NumPredictors", "PredictorNames", "ResponseName", "ClassNames", ...
-            "ScoreTransform", "Prior", "Cost", "Sigma", "Mu", "Coeffs", ...
-            "Delta", "DiscrimType", "Gamma", "MinGamma", "LogDetSigma", ...
-            "XCentered");
+      save ("-binary", fname, "classdef_name", "X", "Y", "NumObservations", ...
+            "RowsUsed", "NumPredictors", "PredictorNames", "ResponseName", ...
+            "ClassNames", "ScoreTransform", "Prior", "Cost", "Sigma", "Mu", ...
+            "Coeffs", "Delta", "DiscrimType", "Gamma", "MinGamma", ...
+            "LogDetSigma", "XCentered");
     endfunction
 
   endmethods
