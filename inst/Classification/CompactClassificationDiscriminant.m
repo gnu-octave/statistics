@@ -1,4 +1,4 @@
-## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -63,21 +63,20 @@ classdef CompactClassificationDiscriminant
     Gamma           = [];     # Gamma regularization parameter
     MinGamma        = [];     # Minmum value of Gamma
     LogDetSigma     = [];     # Log of det of within-class covariance matrix
-    XCentered       = [];     # X data with class means subtracted
 
   endproperties
 
   methods (Hidden)
 
-    ## constructor
+    ## Constructor
     function this = CompactClassificationDiscriminant (Mdl = [])
 
       ## Check for appropriate class
       if (isempty (Mdl))
         return;
       elseif (! strcmpi (class (Mdl), "ClassificationDiscriminant"))
-        error (strcat (["CompactClassificationDiscriminant: invalid"], ...
-                       [" classification object."]));
+        error (strcat ("CompactClassificationDiscriminant: invalid", ...
+                       " classification object."));
       endif
 
       ## Save properties to compact model
@@ -98,8 +97,98 @@ classdef CompactClassificationDiscriminant
       this.Gamma           = Mdl.Gamma;
       this.MinGamma        = Mdl.MinGamma;
       this.LogDetSigma     = Mdl.LogDetSigma;
-      this.XCentered       = Mdl.XCentered;
 
+    endfunction
+
+    ## Custom display
+    function display (this)
+      in_name = inputname (1);
+      if (! isempty (in_name))
+        fprintf ('%s =\n', in_name);
+      endif
+      disp (this);
+    endfunction
+
+    ## Custom display
+    function disp (this)
+      fprintf ("\n  CompactClassificationDiscriminant\n\n");
+      ## Print selected properties
+      fprintf ("%+25s: '%s'\n", 'ResponseName', this.ResponseName);
+      if (iscellstr (this.ClassNames))
+        str = repmat ({"'%s'"}, 1, numel (this.ClassNames));
+        str = strcat ('{', strjoin (str, ' '), '}');
+        str = sprintf (str, this.ClassNames{:});
+      else # numeric
+        str = repmat ({"%d"}, 1, numel (this.ClassNames));
+        str = strcat ('[', strjoin (str, ' '), ']');
+        str = sprintf (str, this.ClassNames);
+      endif
+      fprintf ("%+25s: '%s'\n", 'ClassNames', str);
+      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
+      fprintf ("%+25s: '%d'\n", 'NumPredictors', this.NumPredictors);
+      fprintf ("%+25s: '%s'\n", 'DiscrimType', this.DiscrimType);
+      fprintf ("%+25s: [%dx%d double]\n", 'Mu', size (this.Mu));
+      fprintf ("%+25s: [%dx%d struct]\n\n", 'Coeffs', size (this.Sigma));
+    endfunction
+
+    ## Class specific subscripted reference
+    function varargout = subsref (this, s)
+      chain_s = s(2:end);
+      s = s(1);
+      switch (s.type)
+        case '()'
+          error (strcat ("Invalid () indexing for referencing values", ...
+                         " in a CompactClassificationDiscriminant object."));
+        case '{}'
+          error (strcat ("Invalid {} indexing for referencing values", ...
+                         " in a CompactClassificationDiscriminant object."));
+        case '.'
+          if (! ischar (s.subs))
+            error (strcat ("CompactClassificationDiscriminant.subsref: '.'", ...
+                           " indexing argument must be a character vector."));
+          endif
+          try
+            out = this.(s.subs);
+          catch
+            error (strcat ("CompactClassificationDiscriminant.subref:", ...
+                           " unrecongized property: '%s'"), s.subs);
+          end_try_catch
+      endswitch
+      ## Chained references
+      if (! isempty (chain_s))
+        out = subsref (out, chain_s);
+      endif
+      varargout{1} = out;
+    endfunction
+
+    ## Class specific subscripted assignment
+    function this = subsasgn (this, s, val)
+      if (numel (s) > 1)
+        error (strcat ("CompactClassificationDiscriminant.subsasgn:", ...
+                       " chained subscripts not allowed."));
+      endif
+      switch s.type
+        case '()'
+          error (strcat ("Invalid () indexing for assigning values", ...
+                         " to a CompactClassificationDiscriminant object."));
+        case '{}'
+          error (strcat ("Invalid {} indexing for assigning values", ...
+                         " to a CompactClassificationDiscriminant object."));
+        case '.'
+          if (! ischar (s.subs))
+            error (strcat ("CompactClassificationDiscriminant.subsasgn: '.'", ...
+                           " indexing argument must be a character vector."));
+          endif
+          switch (s.subs)
+            case 'ScoreTransform'
+              name = "CompactClassificationDiscriminant";
+              this.ScoreTransform = parseScoreTransform (val, name);
+            otherwise
+              error (strcat ("CompactClassificationDiscriminant.subsasgn:", ...
+                             " unrecongized or read-only property: '%s'"), ...
+                             s.subs);
+          endswitch
+      endswitch
     endfunction
 
   endmethods
@@ -146,18 +235,20 @@ classdef CompactClassificationDiscriminant
     ## @end deftypefn
 
     function [label, score, cost] = predict (this, XC)
+
       ## Check for sufficient input arguments
       if (nargin < 2)
-        error ("CompactClassificationDiscriminant.predict: too few input arguments.");
+        error (strcat ("CompactClassificationDiscriminant.predict:", ...
+                       " too few input arguments."));
       endif
 
       ## Check for valid XC
       if (isempty (XC))
         error ("CompactClassificationDiscriminant.predict: XC is empty.");
       elseif (this.NumPredictors != columns (XC))
-        error (strcat (["CompactClassificationDiscriminant.predict: XC"], ...
-                       [" must have the same number of features as the"], ...
-                       [" trained model."]));
+        error (strcat ("CompactClassificationDiscriminant.predict: XC", ...
+                       " must have the same number of features as the", ...
+                       " trained model."));
       endif
 
       ## Initialize matrices
@@ -259,14 +350,14 @@ classdef CompactClassificationDiscriminant
 
       ## Check for sufficient input arguments
       if (nargin < 3)
-        error (strcat (["CompactClassificationDiscriminant.loss:"], ...
-                       [" too few input arguments."]));
+        error (strcat ("CompactClassificationDiscriminant.loss:", ...
+                       " too few input arguments."));
       elseif (mod (nargin - 3, 2) != 0)
-        error (strcat (["CompactClassificationDiscriminant.loss:"], ...
-                       [" name-value arguments must be in pairs."]));
+        error (strcat ("CompactClassificationDiscriminant.loss:", ...
+                       " name-value arguments must be in pairs."));
       elseif (nargin > 7)
-        error (strcat (["CompactClassificationDiscriminant.loss:"], ...
-                       [" too many input arguments."]));
+        error (strcat ("CompactClassificationDiscriminant.loss:", ...
+                       " too many input arguments."));
       endif
 
       ## Default values
@@ -276,14 +367,14 @@ classdef CompactClassificationDiscriminant
       ## Validate Y
       valid_types = {'char', 'string', 'logical', 'single', 'double', 'cell'};
       if (! (any (strcmp (class (Y), valid_types))))
-        error (strcat (["CompactClassificationDiscriminant.loss:"], ...
-                       [" Y must be of a valid type."]));
+        error (strcat ("CompactClassificationDiscriminant.loss:", ...
+                       " Y must be of a valid type."));
       endif
 
       ## Validate size of Y
       if (size (Y, 1) != size (X, 1))
-        error (strcat (["CompactClassificationDiscriminant.loss: Y must"], ...
-                       [" have the same number of rows as X."]));
+        error (strcat ("CompactClassificationDiscriminant.loss: Y must", ...
+                       " have the same number of rows as X."));
       endif
 
       ## Parse name-value arguments
@@ -296,9 +387,9 @@ classdef CompactClassificationDiscriminant
             if (isa (Value, 'function_handle'))
               ## Check if the loss function is valid
               if (nargin (Value) != 4)
-                error (strcat (["CompactClassificationDiscriminant.loss:"], ...
-                               [" custom loss function must accept"], ...
-                               [" exactly four input arguments."]));
+                error (strcat ("CompactClassificationDiscriminant.loss:", ...
+                               " custom loss function must accept", ...
+                               " exactly four input arguments."));
               endif
               try
                 n = 1;
@@ -309,41 +400,41 @@ classdef CompactClassificationDiscriminant
                 Cost_test = ones (K) - eye (K);
                 test_output = Value (C_test, S_test, W_test, Cost_test);
                 if (! isscalar (test_output))
-                  error (strcat (["CompactClassificationDiscriminant.loss:"], ...
-                                 [" custom loss function must return"], ...
-                                 [" a scalar value."]));
+                  error (strcat ("CompactClassificationDiscriminant.loss:", ...
+                                 " custom loss function must return", ...
+                                 " a scalar value."));
                 endif
               catch
-                error (strcat (["CompactClassificationDiscriminant.loss:"], ...
-                               [" custom loss function is not valid or"], ...
-                               [" does not produce correct output."]));
+                error (strcat ("CompactClassificationDiscriminant.loss:", ...
+                               " custom loss function is not valid or", ...
+                               " does not produce correct output."));
               end_try_catch
               LossFun = Value;
             elseif (ischar (Value) && any (strcmpi (Value, lf_opt)))
               LossFun = Value;
             else
-              error (strcat (["CompactClassificationDiscriminant.loss:"], ...
-                             [" invalid loss function."]));
+              error (strcat ("CompactClassificationDiscriminant.loss:", ...
+                             " invalid loss function."));
             endif
 
           case 'weights'
             if (isnumeric (Value) && isvector (Value))
               if (numel (Value) != size (X ,1))
-                error (strcat (["CompactClassificationDiscriminant.loss:"], ...
-                               [" number of 'Weights' must be equal to"], ...
-                               [" the number of rows in X."]));
+                error (strcat ("CompactClassificationDiscriminant.loss:", ...
+                               " number of 'Weights' must be equal to", ...
+                               " the number of rows in X."));
               elseif (numel (Value) == size (X, 1))
                 Weights = Value;
               endif
             else
-              error (strcat (["CompactClassificationDiscriminant.loss:"], ...
-                             [" invalid 'Weights'."]));
+              error (strcat ("CompactClassificationDiscriminant.loss:", ...
+                             " invalid 'Weights'."));
             endif
 
           otherwise
-            error (strcat (["CompactClassificationDiscriminant.loss:"], ...
-                           [" invalid parameter name in optional pair"], ...
-                           [" arguments."]));
+            error (strcat ("CompactClassificationDiscriminant.loss:", ...
+                           " invalid parameter name in optional pair", ...
+                           " arguments."));
         endswitch
         varargin (1:2) = [];
       endwhile
@@ -368,14 +459,14 @@ classdef CompactClassificationDiscriminant
       elseif (iscell (Y))
         Y = cellfun (@num2str, Y, 'UniformOutput', false);
       else
-        error (strcat (["CompactClassificationDiscriminant.loss: Y must be"], ...
-                       [" a numeric, logical, char, string, or cell array."]));
+        error (strcat ("CompactClassificationDiscriminant.loss: Y must be", ...
+                       " a numeric, logical, char, string, or cell array."));
       endif
 
       ## Check if Y contains correct classes
       if (! all (ismember (unique (Y), this.ClassNames)))
-        error (strcat (["CompactClassificationDiscriminant.loss: Y must"], ...
-                       [" contain only the classes in ClassNames."]));
+        error (strcat ("CompactClassificationDiscriminant.loss: Y must", ...
+                       " contain only the classes in ClassNames."));
       endif
 
       ## Set default weights if not specified
@@ -465,8 +556,8 @@ classdef CompactClassificationDiscriminant
             L = L + Weights(i) * Cost(y_idx, y_hat_idx);
           endfor
         otherwise
-          error (strcat (["CompactClassificationDiscriminant.loss:"], ...
-                         [" invalid loss function."]));
+          error (strcat ("CompactClassificationDiscriminant.loss:", ...
+                         " invalid loss function."));
       endswitch
 
     endfunction
@@ -503,28 +594,28 @@ classdef CompactClassificationDiscriminant
 
       ## Check for sufficient input arguments
       if (nargin < 3)
-        error (strcat (["CompactClassificationDiscriminant.margin:"], ...
-                       [" too few input arguments."]));
+        error (strcat ("CompactClassificationDiscriminant.margin:", ...
+                       " too few input arguments."));
       endif
 
       ## Validate Y
       valid_types = {'char', 'string', 'logical', 'single', 'double', 'cell'};
       if (! (any (strcmp (class (Y), valid_types))))
-        error (strcat (["CompactClassificationDiscriminant.margin:"], ...
-                       [" Y must be of a valid type."]));
+        error (strcat ("CompactClassificationDiscriminant.margin:", ...
+                       " Y must be of a valid type."));
       endif
 
       ## Validate X
       valid_types = {'single', 'double'};
       if (! (any (strcmp (class (X), valid_types))))
-        error (strcat (["CompactClassificationDiscriminant.margin:"], ...
-                       [" X must be of a valid type."]));
+        error (strcat ("CompactClassificationDiscriminant.margin:", ...
+                       " X must be of a valid type."));
       endif
 
       ## Validate size of Y
       if (size (Y, 1) != size (X, 1))
-        error (strcat (["CompactClassificationDiscriminant.margin: Y must"], ...
-                       [" have the same number of rows as X."]));
+        error (strcat ("CompactClassificationDiscriminant.margin: Y must", ...
+                       " have the same number of rows as X."));
       endif
 
       ## Convert Y to a cell array of strings
@@ -537,14 +628,14 @@ classdef CompactClassificationDiscriminant
       elseif (iscell (Y))
         Y = cellfun (@num2str, Y, 'UniformOutput', false);
       else
-        error (strcat (["CompactClassificationDiscriminant.margin: Y must be"], ...
-                       [" a numeric, logical, char, string, or cell array."]));
+        error (strcat ("CompactClassificationDiscriminant.margin: Y must", ...
+                       " be a numeric, logical, char, string, or cell array."));
       endif
 
       ## Check if Y contains correct classes
       if (! all (ismember (unique (Y), this.ClassNames)))
-        error (strcat (["CompactClassificationDiscriminant.margin: Y must"], ...
-                       [" contain only the classes in ClassNames."]));
+        error (strcat ("CompactClassificationDiscriminant.margin: Y must", ...
+                       " contain only the classes in ClassNames."));
       endif
 
       ## Number of Observations
@@ -584,10 +675,14 @@ classdef CompactClassificationDiscriminant
     ##
     ## Save a CompactClassificationDiscriminant object.
     ##
-    ## @code{savemodel (@var{obj}, @var{filename})} saves a
-    ## CompactClassificationDiscriminant object into a file defined by @var{filename}.
+    ## @code{savemodel (@var{obj}, @var{filename})} saves each property of a
+    ## CompactClassificationDiscriminant object into an Octave binary file, the
+    ## name of which is specified in @var{filename}, along with an extra
+    ## variable, which defines the type classification object these variables
+    ## constitute. Use @code{loadmodel} in order to load a classification object
+    ## into Octave's workspace.
     ##
-    ## @seealso{loadmodel, fitcdiscr, CompactClassificationDiscriminant}
+    ## @seealso{loadmodel, fitcdiscr, ClassificationDiscriminant}
     ## @end deftypefn
 
     function savemodel (this, fname)
@@ -610,13 +705,12 @@ classdef CompactClassificationDiscriminant
       Gamma           = this.Gamma;
       MinGamma        = this.MinGamma;
       LogDetSigma     = this.LogDetSigma;
-      XCentered       = this.XCentered;
 
       ## Save classdef name and all model properties as individual variables
-      save (fname, "classdef_name", "NumPredictors", "PredictorNames", ...
-            "ResponseName", "ClassNames", "Prior", "Cost", "ScoreTransform", ...
-            "Sigma", "Mu", "Coeffs", "Delta", "DiscrimType", "Gamma", ...
-            "MinGamma", "LogDetSigma", "XCentered");
+      save ("-binary", fname, "classdef_name", "NumPredictors", ...
+            "PredictorNames", "ResponseName", "ClassNames", "Prior", ...
+            "Cost", "ScoreTransform", "Sigma", "Mu", "Coeffs", "Delta", ...
+            "DiscrimType", "Gamma", "MinGamma", "LogDetSigma");
     endfunction
 
   endmethods
@@ -632,8 +726,8 @@ classdef CompactClassificationDiscriminant
       names = fieldnames (data);
       props = fieldnames (mdl);
       if (! isequal (sort (names), sort (props)))
-        msg = strcat (["CompactClassificationDiscriminant.load_model:"], ...
-                      [" invalid model in '%s'."]);
+        msg = strcat ("CompactClassificationDiscriminant.load_model:", ...
+                      " invalid model in '%s'.");
         error (msg, filename);
       endif
 
@@ -682,7 +776,6 @@ endclassdef
 %! assert (CMdl.ClassNames, unique (species))
 %! assert (CMdl.Sigma, sigma, 1e-6)
 %! assert (CMdl.Mu, mu, 1e-14)
-%! assert (CMdl.XCentered([1:3],:), xCentered, 1e-14)
 %! assert (CMdl.LogDetSigma, -9.9585, 1e-4)
 %! assert (CMdl.PredictorNames, PredictorNames)
 %!test
@@ -707,7 +800,6 @@ endclassdef
 %! assert (CMdl.ClassNames, unique (species))
 %! assert (CMdl.Sigma, sigma, 1e-6)
 %! assert (CMdl.Mu, mu, 1e-14)
-%! assert (CMdl.XCentered([1:3],:), xCentered, 1e-14)
 %! assert (CMdl.LogDetSigma, -8.6884, 1e-4)
 
 ## Test input validation for constructor
