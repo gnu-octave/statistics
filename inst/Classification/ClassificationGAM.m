@@ -1,5 +1,5 @@
 ## Copyright (C) 2024 Ruchika Sonagote <ruchikasonagote2003@gmail.com>
-## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -948,8 +948,12 @@ classdef ClassificationGAM
     ##
     ## Save a ClassificationGAM object.
     ##
-    ## @code{savemodel (@var{obj}, @var{filename})} saves a ClassificationGAM
-    ## object into a file defined by @var{filename}.
+    ## @code{savemodel (@var{obj}, @var{filename})} saves each property of a
+    ## ClassificationGAM object into an Octave binary file, the name of which is
+    ## specified in @var{filename}, along with an extra variable, which defines
+    ## the type classification object these variables constitute.  Use
+    ## @code{loadmodel} in order to load a classification object into Octave's
+    ## workspace.
     ##
     ## @seealso{loadmodel, fitcgam, ClassificationGAM, cvpartition,
     ## ClassificationPartitionedModel}
@@ -981,10 +985,11 @@ classdef ClassificationGAM
       IntMatrix       = this.IntMatrix;
 
       ## Save classdef name and all model properties as individual variables
-      save (fname, "classdef_name", "X", "Y", "NumObservations", "RowsUsed", ...
-            "NumPredictors", "PredictorNames", "ResponseName", "ClassNames", ...
-            "Prior", "Cost", "ScoreTransform", "Formula", "Interactions", ...
-            "Knots", "Order", "DoF", "BaseModel", "ModelwInt", "IntMatrix");
+      save ("-binary", fname, "classdef_name", "X", "Y", "NumObservations", ...
+            "RowsUsed", "NumPredictors", "PredictorNames", "ResponseName", ...
+            "ClassNames", "Prior", "Cost", "ScoreTransform", "Formula", ...
+            "Interactions", "Knots", "Order", "DoF", "BaseModel", ...
+            "ModelwInt", "IntMatrix");
     endfunction
 
   endmethods

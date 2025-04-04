@@ -1,4 +1,4 @@
-## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -457,8 +457,12 @@ classdef CompactClassificationSVM
     ##
     ## Save a CompactClassificationSVM object.
     ##
-    ## @code{savemodel (@var{obj}, @var{filename})} saves a
-    ## CompactClassificationSVM object into a file defined by @var{filename}.
+    ## @code{savemodel (@var{obj}, @var{filename})} saves each property of a
+    ## CompactClassificationSVM object into an Octave binary file, the name
+    ## of which is specified in @var{filename}, along with an extra variable,
+    ## which defines the type classification object these variables constitute.
+    ## Use @code{loadmodel} in order to load a classification object into
+    ## Octave's workspace.
     ##
     ## @seealso{loadmodel, fitcsvm, ClassificationSVM, CompactClassificationSVM}
     ## @end deftypefn
@@ -488,11 +492,11 @@ classdef CompactClassificationSVM
       SupportVectors      = this.SupportVectors;
 
       ## Save classdef name and all model properties as individual variables
-      save (fname, "classdef_name", "NumPredictors", "PredictorNames", ...
-            "ResponseName", "ClassNames", "Prior", "Cost", "ScoreTransform", ...
-            "Standardize", "Sigma", "Mu", "ModelParameters", "Model", ...
-            "Alpha", "Beta", "Bias", "IsSupportVector", ...
-            "SupportVectorLabels", "SupportVectors");
+      save ("-binary", fname, "classdef_name", "NumPredictors", ...
+            "PredictorNames", "ResponseName", "ClassNames", "Prior", ...
+            "Cost", "ScoreTransform", "Standardize", "Sigma", "Mu", ...
+            "ModelParameters", "Model", "Alpha", "Beta", "Bias", ...
+            "IsSupportVector", "SupportVectorLabels", "SupportVectors");
     endfunction
 
   endmethods
