@@ -20,7 +20,7 @@
 ##
 ## Set @var{field}, in a @samp{cvpartition} object, @var{C}.
 ##
-## @seealso{@@cvpartition/cvpartition}
+## @seealso{@cvpartition/cvpartition}
 ## @end deftypefn
 
 function s = set (c, varargin)
