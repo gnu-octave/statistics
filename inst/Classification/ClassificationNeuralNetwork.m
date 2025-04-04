@@ -1,5 +1,5 @@
 ## Copyright (C) 2024 Pallav Purbia <pallavpurbia@gmail.com>
-## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -182,9 +182,117 @@ classdef ClassificationNeuralNetwork
 
   endproperties
 
+  methods (Hidden)
+
+    ## Custom display
+    function display (this)
+      in_name = inputname (1);
+      if (! isempty (in_name))
+        fprintf ('%s =\n', in_name);
+      endif
+      disp (this);
+    endfunction
+
+    ## Custom display
+    function disp (this)
+      fprintf ("\n  ClassificationNeuralNetwork\n\n");
+      ## Print selected properties
+      fprintf ("%+25s: '%s'\n", 'ResponseName', this.ResponseName);
+      if (iscellstr (this.ClassNames))
+        str = repmat ({"'%s'"}, 1, numel (this.ClassNames));
+        str = strcat ('{', strjoin (str, ' '), '}');
+        str = sprintf (str, this.ClassNames{:});
+      else # numeric
+        str = repmat ({"%d"}, 1, numel (this.ClassNames));
+        str = strcat ('[', strjoin (str, ' '), ']');
+        str = sprintf (str, this.ClassNames);
+      endif
+      fprintf ("%+25s: '%s'\n", 'ClassNames', str);
+      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
+      fprintf ("%+25s: '%d'\n", 'NumObservations', this.NumObservations);
+      fprintf ("%+25s: '%d'\n", 'NumPredictors', this.NumPredictors);
+      str = repmat ({"%d"}, 1, numel (this.LayerSizes));
+      str = strcat ('[', strjoin (str, ' '), ']');
+      str = sprintf (str, this.LayerSizes);
+      fprintf ("%+25s: '%s'\n", 'LayerSizes', str);
+      if (iscellstr (this.Activations))
+        str = repmat ({"'%s'"}, 1, numel (this.Activations));
+        str = strcat ('{', strjoin (str, ' '), '}');
+        str = sprintf (str, this.Activations{:});
+        fprintf ("%+25s: '%s'\n", 'Activations', str);
+      else # character vector
+        fprintf ("%+25s: '%s'\n", 'Activations', this.Activations);
+      endif
+      fprintf ("%+25s: '%s'\n", 'OutputLayerActivation', ...
+               this.OutputLayerActivation);
+      fprintf ("%+25s: '%s'\n", 'Solver', this.Solver);
+    endfunction
+
+    ## Class specific subscripted reference
+    function varargout = subsref (this, s)
+      chain_s = s(2:end);
+      s = s(1);
+      switch (s.type)
+        case '()'
+          error (strcat ("Invalid () indexing for referencing values", ...
+                         " in a ClassificationNeuralNetwork object."));
+        case '{}'
+          error (strcat ("Invalid {} indexing for referencing values", ...
+                         " in a ClassificationNeuralNetwork object."));
+        case '.'
+          if (! ischar (s.subs))
+            error (strcat ("ClassificationNeuralNetwork.subsref: '.'", ...
+                           " indexing argument must be a character vector."));
+          endif
+          try
+            out = this.(s.subs);
+          catch
+            error (strcat ("ClassificationNeuralNetwork.subref:", ...
+                           " unrecongized property: '%s'"), s.subs);
+          end_try_catch
+      endswitch
+      ## Chained references
+      if (! isempty (chain_s))
+        out = subsref (out, chain_s);
+      endif
+      varargout{1} = out;
+    endfunction
+
+    ## Class specific subscripted assignment
+    function this = subsasgn (this, s, val)
+      if (numel (s) > 1)
+        error (strcat ("ClassificationNeuralNetwork.subsasgn:", ...
+                       " chained subscripts not allowed."));
+      endif
+      switch s.type
+        case '()'
+          error (strcat ("Invalid () indexing for assigning values", ...
+                         " to a ClassificationNeuralNetwork object."));
+        case '{}'
+          error (strcat ("Invalid {} indexing for assigning values", ...
+                         " to a ClassificationNeuralNetwork object."));
+        case '.'
+          if (! ischar (s.subs))
+            error (strcat ("ClassificationNeuralNetwork.subsasgn: '.'", ...
+                           " indexing argument must be a character vector."));
+          endif
+          switch (s.subs)
+            case 'ScoreTransform'
+              name = "ClassificationNeuralNetwork";
+              this.ScoreTransform = parseScoreTransform (val, name);
+            otherwise
+              error (strcat ("ClassificationNeuralNetwork.subsasgn:", ...
+                             " unrecongized or read-only property: '%s'"), ...
+                             s.subs);
+          endswitch
+      endswitch
+    endfunction
+
+  endmethods
+
   methods (Access = public)
 
-    ## Class object constructor
+    ## Constructor
     function this = ClassificationNeuralNetwork (X, Y, varargin)
       ## Check for sufficient number of input arguments
       if (nargin < 2)
@@ -193,8 +301,8 @@ classdef ClassificationNeuralNetwork
 
       ## Check X and Y have the same number of observations
       if (rows (X) != rows (Y))
-        error (strcat (["ClassificationNeuralNetwork: number of rows in X"], ...
-                       [" and Y must be equal."]));
+        error (strcat ("ClassificationNeuralNetwork: number of", ...
+                       " rows in X and Y must be equal."));
       endif
 
       ## Assign original X and Y data to the ClassificationNeuralNetwork object
@@ -228,49 +336,46 @@ classdef ClassificationNeuralNetwork
           case "standardize"
             Standardize = varargin{2};
             if (! (Standardize == true || Standardize == false))
-              error (strcat (["ClassificationNeuralNetwork:"], ...
-                             [" 'Standardize' must be either true or false."]));
+              error (strcat ("ClassificationNeuralNetwork:", ...
+                             " 'Standardize' must be either true or false."));
             endif
 
           case "predictornames"
             PredictorNames = varargin{2};
             if (! iscellstr (PredictorNames))
-              error (strcat (["ClassificationNeuralNetwork:"], ...
-                             [" 'PredictorNames' must be supplied as a"], ...
-                             [" cellstring array."]));
+              error (strcat ("ClassificationNeuralNetwork: 'PredictorNames'", ...
+                             " must be supplied as a cellstring array."));
             elseif (columns (PredictorNames) != columns (X))
-              error (strcat (["ClassificationNeuralNetwork:"], ...
-                             [" 'PredictorNames' must have the same"], ...
-                             [" number of columns as X."]));
+              error (strcat ("ClassificationNeuralNetwork: 'PredictorNames'", ...
+                             " must have the same number of columns as X."));
             endif
 
           case "responsename"
             ResponseName = varargin{2};
             if (! ischar (ResponseName))
-              error (strcat (["ClassificationNeuralNetwork:"], ...
-                             [" 'ResponseName' must be a character vector."]));
+              error (strcat ("ClassificationNeuralNetwork: 'ResponseName'", ...
+                             " must be a character vector."));
             endif
 
           case "classnames"
             ClassNames = varargin{2};
             if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
                                           || islogical (ClassNames)))
-              error (strcat (["ClassificationNeuralNetwork:"], ...
-                             [" 'ClassNames' must be a cellstring,"], ...
-                             [" logical or numeric vector."]));
+              error (strcat ("ClassificationNeuralNetwork: 'ClassNames'", ...
+                         " must be a cellstring, logical, or numeric vector."));
             endif
             ## Check that all class names are available in gnY
             if (iscellstr (ClassNames))
               if (! all (cell2mat (cellfun (@(x) any (strcmp (x, gnY)),
                                    ClassNames, "UniformOutput", false))))
-                error (strcat (["ClassificationNeuralNetwork: not all"], ...
-                               [" 'ClassNames' are present in Y."]));
+                error (strcat ("ClassificationNeuralNetwork: not all", ...
+                               " 'ClassNames' are present in Y."));
               endif
             else
               if (! all (cell2mat (arrayfun (@(x) any (x == glY),
                                    ClassNames, "UniformOutput", false))))
-                error (strcat (["ClassificationNeuralNetwork: not all"], ...
-                               [" 'ClassNames' are present in Y."]));
+                error (strcat ("ClassificationNeuralNetwork: not all", ...
+                               " 'ClassNames' are present in Y."));
               endif
             endif
 
@@ -282,35 +387,34 @@ classdef ClassificationNeuralNetwork
             LayerSizes = varargin{2};
             if (! (isnumeric(LayerSizes) && isvector(LayerSizes)
               && all(LayerSizes > 0) && all(mod(LayerSizes, 1) == 0)))
-              error (strcat (["ClassificationNeuralNetwork: 'LayerSizes'"], ...
-                             [" must be a positive integer vector."]));
+              error (strcat ("ClassificationNeuralNetwork: 'LayerSizes'", ...
+                             " must be a positive integer vector."));
             endif
 
           case 'learningrate'
             LearningRate = varargin{2};
             if (! (isnumeric(LearningRate) && isscalar (LearningRate) &&
                    LearningRate > 0))
-              error (strcat (["ClassificationNeuralNetwork:"], ...
-                             [" 'LearningRate' must be a positive scalar."]));
+              error (strcat ("ClassificationNeuralNetwork:", ...
+                             " 'LearningRate' must be a positive scalar."));
             endif
 
           case 'activations'
             Activations = varargin{2};
             if (! (ischar (Activations) || iscellstr (Activations)))
-              error (strcat (["ClassificationNeuralNetwork: 'Activations'"], ...
-                             [" must be a character vector or a"], ...
-                             [" cellstring vector."]));
+              error (strcat ("ClassificationNeuralNetwork: 'Activations'", ...
+                        " must be a character vector or a cellstring vector."));
             endif
             if (ischar (Activations))
               if (! any (strcmpi (Activations, acList)))
-                error (strcat (["ClassificationNeuralNetwork: unsupported"], ...
-                               [" 'Activation' function."]));
+                error (strcat ("ClassificationNeuralNetwork: unsupported", ...
+                               " 'Activation' function."));
               endif
             else
               if (! all (cell2mat (cellfun (@(x) any (strcmpi (x, acList)),
                                    Activations, "UniformOutput", false))))
-                error (strcat (["ClassificationNeuralNetwork: unsupported"], ...
-                               [" 'Activation' functions."]));
+                error (strcat ("ClassificationNeuralNetwork: unsupported", ...
+                               " 'Activation' functions."));
               endif
             endif
             Activations = tolower (Activations);
@@ -318,13 +422,12 @@ classdef ClassificationNeuralNetwork
           case 'outputlayeractivation'
             OutputLayerActivation = varargin{2};
             if (! (ischar (OutputLayerActivation)))
-              error (strcat (["ClassificationNeuralNetwork:"], ...
-                             [" 'OutputLayerActivation' must be a"], ...
-                             [" character vector."]));
+              error (strcat ("ClassificationNeuralNetwork:", ...
+                       " 'OutputLayerActivation' must be a character vector."));
             endif
             if (! any (strcmpi (OutputLayerActivation, acList)))
-              error (strcat (["ClassificationNeuralNetwork: unsupported"], ...
-                             [" 'OutputLayerActivation' function."]));
+              error (strcat ("ClassificationNeuralNetwork: unsupported", ...
+                             " 'OutputLayerActivation' function."));
             endif
             OutputLayerActivation = tolower (OutputLayerActivation);
 
@@ -332,31 +435,40 @@ classdef ClassificationNeuralNetwork
             IterationLimit = varargin{2};
             if (! (isnumeric(IterationLimit) && isscalar(IterationLimit)
               && (IterationLimit > 0) && mod(IterationLimit, 1) == 0))
-              error (strcat (["ClassificationNeuralNetwork:"], ...
-                             [" 'IterationLimit' must be a positive"], ...
-                             [" integer."]));
+              error (strcat ("ClassificationNeuralNetwork:", ...
+                             " 'IterationLimit' must be a positive integer."));
             endif
 
           case "displayinfo"
             DisplayInfo = varargin{2};
             if (! (DisplayInfo == true || DisplayInfo == false))
-              error (strcat (["ClassificationNeuralNetwork:"], ...
-                             [" 'DisplayInfo' must be either true or false."]));
+              error (strcat ("ClassificationNeuralNetwork: 'DisplayInfo'", ...
+                             " must be either true or false."));
             endif
 
           otherwise
-            error (strcat (["ClassificationNeuralNetwork: invalid"],...
-                           [" parameter name in optional pair arguments."]));
+            error (strcat ("ClassificationNeuralNetwork: invalid",...
+                           " parameter name in optional pair arguments."));
 
         endswitch
         varargin (1:2) = [];
       endwhile
 
-      ## Get number of variables in training data
-      ndims_X = columns (X);
+      ## Generate default predictors and response variabe names (if necessary)
+      NumPredictors = columns (X);
+      if (isempty (PredictorNames))
+        for i = 1:NumPredictors
+          PredictorNames {i} = strcat ("x", num2str (i));
+        endfor
+      endif
+      if (isempty (ResponseName))
+        ResponseName = "Y";
+      endif
 
-      ## Assign the number of predictors to the object
-      this.NumPredictors = ndims_X;
+      ## Assign predictors and response variable names
+      this.NumPredictors  = NumPredictors;
+      this.PredictorNames = PredictorNames;
+      this.ResponseName   = ResponseName;
 
       ## Handle class names
       if (! isempty (ClassNames))
@@ -392,8 +504,8 @@ classdef ClassificationNeuralNetwork
       ## Assign the number of observations and their correspoding indices
       ## on the original data, which will be used for training the model,
       ## to the ClassificationNeuralNetwork object
-      this.NumObservations = rows (X);
-      this.RowsUsed = cast (RowsUsed, "double");
+      this.NumObservations = sum (RowsUsed);
+      this.RowsUsed = RowsUsed;
 
       ## Handle Standardize flag
       if (Standardize)
@@ -406,20 +518,6 @@ classdef ClassificationNeuralNetwork
         this.Sigma = [];
         this.Mu = [];
       endif
-
-      ## Generate default predictors and response variabe names (if necessary)
-      if (isempty (PredictorNames))
-        for i = 1:ndims_X
-          PredictorNames{i} = strcat ("x", num2str (i));
-        endfor
-      endif
-      if (isempty (ResponseName))
-        ResponseName = "Y";
-      endif
-
-      ## Assign predictors and response variable names
-      this.PredictorNames = PredictorNames;
-      this.ResponseName = ResponseName;
 
       ## Store training parameters
       this.LayerSizes = LayerSizes;
@@ -434,8 +532,8 @@ classdef ClassificationNeuralNetwork
       if (ischar (Activations))
         ActivationCodes = ones (1, nlayers) * activationCode (Activations);
       elseif (nlayers != numel (Activations))
-        error (strcat (["ClassificationNeuralNetwork: 'Activations'"], ...
-                       [" vector does not match the number of layers."]));
+        error (strcat ("ClassificationNeuralNetwork: 'Activations'", ...
+                       " vector does not match the number of layers."));
       else
         ActivationCodes = [];
         for i = 1:nlayers
@@ -509,9 +607,8 @@ classdef ClassificationNeuralNetwork
       if (isempty (XC))
         error ("ClassificationNeuralNetwork.predict: XC is empty.");
       elseif (this.NumPredictors != columns (XC))
-        error (strcat (["ClassificationNeuralNetwork.predict:"], ...
-                       [" XC must have the same number of"], ...
-                       [" predictors as the trained model."]));
+        error (strcat ("ClassificationNeuralNetwork.predict: XC must have", ...
+                       " the same number of predictors as the trained model."));
       endif
 
       ## Standardize (if necessary)
@@ -531,9 +628,8 @@ classdef ClassificationNeuralNetwork
         if (! strcmp (this.ScoreTransform, "none"))
           f = this.ScoreTransform;
           if (! strcmp (class (f), "function_handle"))
-            error (strcat (["ClassificationNeuralNetwork.predict:"], ...
-                           [" 'ScoreTransform' must be a"], ...
-                           [" 'function_handle' object."]));
+            error (strcat ("ClassificationNeuralNetwork.predict:", ...
+                      " 'ScoreTransform' must be a 'function_handle' object."));
           endif
           scores = f (scores);
         endif
@@ -571,13 +667,8 @@ classdef ClassificationNeuralNetwork
 
     function [labels, scores] = resubPredict (this)
 
-      ## Get used rows (if necessary)
-      if (sum (this.RowsUsed) != rows (this.X))
-        RowsUsed = logical (this.RowsUsed);
-        X = this.X(RowsUsed);
-      else
-        X = this.X;
-      endif
+      ## Get used rows
+      X = this.X(RowsUsed);
 
       ## Standardize (if necessary)
       if (this.Standardize)
@@ -596,9 +687,8 @@ classdef ClassificationNeuralNetwork
         if (! strcmp (this.ScoreTransform, "none"))
           f = this.ScoreTransform;
           if (! strcmp (class (f), "function_handle"))
-            error (strcat (["ClassificationNeuralNetwork.resubPredict:"], ...
-                           [" 'ScoreTransform' must be a"], ...
-                           [" 'function_handle' object."]));
+            error (strcat ("ClassificationNeuralNetwork.resubPredict:", ...
+                      " 'ScoreTransform' must be a 'function_handle' object."));
           endif
           scores = f (scores);
         endif
@@ -653,12 +743,11 @@ classdef ClassificationNeuralNetwork
       endif
 
       if (numel (varargin) == 1)
-        error (strcat (["ClassificationNeuralNetwork.crossval: Name-Value"], ...
-                       [" arguments must be in pairs."]));
+        error (strcat ("ClassificationNeuralNetwork.crossval: Name-Value", ...
+                       " arguments must be in pairs."));
       elseif (numel (varargin) > 2)
-        error (strcat (["ClassificationNeuralNetwork.crossval: specify"], ...
-                       [" only one of the optional Name-Value paired"], ...
-                       [" arguments."]));
+        error (strcat ("ClassificationNeuralNetwork.crossval: specify", ...
+                     " only one of the optional Name-Value paired arguments."));
       endif
 
       ## Add default values
@@ -675,39 +764,36 @@ classdef ClassificationNeuralNetwork
             numFolds = varargin{2};
             if (! (isnumeric (numFolds) && isscalar (numFolds)
                    && (numFolds == fix (numFolds)) && numFolds > 1))
-              error (strcat (["ClassificationNeuralNetwork.crossval:"], ...
-                             [" 'KFold' must be an integer value greater"], ...
-                             [" than 1."]));
+              error (strcat ("ClassificationNeuralNetwork.crossval:", ...
+                          " 'KFold' must be an integer value greater than 1."));
             endif
 
           case 'holdout'
             Holdout = varargin{2};
             if (! (isnumeric (Holdout) && isscalar (Holdout) && Holdout > 0
                    && Holdout < 1))
-              error (strcat (["ClassificationNeuralNetwork.crossval:"], ...
-                             [" 'Holdout' must be a numeric value between"], ...
-                             [" 0 and 1."]));
+              error (strcat ("ClassificationNeuralNetwork.crossval:", ...
+                        " 'Holdout' must be a numeric value between 0 and 1."));
             endif
 
           case 'leaveout'
             Leaveout = varargin{2};
             if (! (ischar (Leaveout)
                    && (strcmpi (Leaveout, 'on') || strcmpi (Leaveout, 'off'))))
-              error (strcat (["ClassificationNeuralNetwork.crossval:"], ...
-                             [" 'Leaveout' must be either 'on' or 'off'."]));
+              error (strcat ("ClassificationNeuralNetwork.crossval:", ...
+                             " 'Leaveout' must be either 'on' or 'off'."));
             endif
 
           case 'cvpartition'
             CVPartition = varargin{2};
             if (!(isa (CVPartition, 'cvpartition')))
-              error (strcat (["ClassificationNeuralNetwork.crossval:"], ...
-                             [" 'CVPartition' must be a 'cvpartition'"], ...
-                             [" object."]));
+              error (strcat ("ClassificationNeuralNetwork.crossval:", ...
+                             " 'CVPartition' must be a 'cvpartition' object."));
             endif
 
           otherwise
-            error (strcat (["ClassificationNeuralNetwork.crossval: invalid"],...
-                           [" parameter name in optional paired arguments."]));
+            error (strcat ("ClassificationNeuralNetwork.crossval: invalid",...
+                           " parameter name in optional paired arguments."));
           endswitch
         varargin (1:2) = [];
       endwhile
@@ -750,8 +836,12 @@ classdef ClassificationNeuralNetwork
     ##
     ## Save a ClassificationNeuralNetwork object.
     ##
-    ## @code{savemodel (@var{obj}, @var{filename})} saves a
-    ## ClassificationNeuralNetwork object into a file defined by @var{filename}.
+    ## @code{savemodel (@var{obj}, @var{filename})} saves each property of a
+    ## ClassificationNeuralNetwork object into an Octave binary file, the name
+    ## of which is specified in @var{filename}, along with an extra variable,
+    ## which defines the type classification object these variables constitute.
+    ## Use @code{loadmodel} in order to load a classification object into
+    ## Octave's workspace.
     ##
     ## @seealso{loadmodel, fitcnet, ClassificationNeuralNetwork, cvpartition,
     ## ClassificationPartitionedModel}
@@ -785,11 +875,11 @@ classdef ClassificationNeuralNetwork
       Solver                  = this.Solver;
 
       ## Save classdef name and all model properties as individual variables
-      save (fname, "classdef_name", "X", "Y", "NumObservations", "RowsUsed", ...
-            "NumPredictors", "PredictorNames", "ResponseName", "ClassNames", ...
-            "ScoreTransform", "Standardize", "Sigma", "Mu", "LayerSizes", ...
-            "Activations", "OutputLayerActivation", "LearningRate", ...
-            "IterationLimit", "Solver", "ModelParameters", ...
+      save ("-binary", fname, "classdef_name", "X", "Y", "NumObservations", ...
+            "RowsUsed", "NumPredictors", "PredictorNames", "ResponseName", ...
+            "ClassNames", "ScoreTransform", "Standardize", "Sigma", "Mu", ...
+            "LayerSizes", "Activations", "OutputLayerActivation", ...
+            "LearningRate", "IterationLimit", "Solver", "ModelParameters", ...
             "ConvergenceInfo", "DislayInfo");
     endfunction
 
@@ -810,8 +900,8 @@ classdef ClassificationNeuralNetwork
         try
           mdl.(names{i}) = data.(names{i});
         catch
-          error (strcat (["ClassificationNeuralNetwork.load_model:"], ...
-                         [" invalid model in '%s'."]), filename)
+          error (strcat ("ClassificationNeuralNetwork.load_model:", ...
+                         " invalid model in '%s'."), filename)
         end_try_catch
       endfor
     endfunction
