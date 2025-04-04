@@ -1,6 +1,6 @@
 ## Copyright (C) 2023 Mohammed Azmat Khan <azmat.dev0@gmail.com>
-## Copyright (C) 2023-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2024 Ruchika Sonagote <ruchikasonagote2003@gmail.com>
+## Copyright (C) 2023-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -199,9 +199,105 @@ classdef ClassificationKNN
 
   endproperties
 
+  methods (Hidden)
+
+    ## Custom display
+    function display (this)
+      in_name = inputname (1);
+      if (! isempty (in_name))
+        fprintf ('%s =\n', in_name);
+      endif
+      disp (this);
+    endfunction
+
+    ## Custom display
+    function disp (this)
+      fprintf ("\n  ClassificationKNN\n\n");
+      ## Print selected properties
+      fprintf ("%+25s: '%s'\n", 'ResponseName', this.ResponseName);
+      if (iscellstr (this.ClassNames))
+        str = repmat ({"'%s'"}, 1, numel (this.ClassNames));
+        str = strcat ('{', strjoin (str, ' '), '}');
+        str = sprintf (str, this.ClassNames{:});
+      else # numeric
+        str = repmat ({"%d"}, 1, numel (this.ClassNames));
+        str = strcat ('[', strjoin (str, ' '), ']');
+        str = sprintf (str, this.ClassNames);
+      endif
+      fprintf ("%+25s: '%s'\n", 'ClassNames', str);
+      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
+      fprintf ("%+25s: '%d'\n", 'NumObservations', this.NumObservations);
+      fprintf ("%+25s: '%d'\n", 'NumPredictors', this.NumPredictors);
+      fprintf ("%+25s: '%s'\n", 'Distance', this.Distance);
+      fprintf ("%+25s: '%s'\n", 'NSMethod', this.NSMethod);
+      fprintf ("%+25s: '%s'\n", 'NumNeighbors', this.NumNeighbors);
+    endfunction
+
+    ## Class specific subscripted reference
+    function varargout = subsref (this, s)
+      chain_s = s(2:end);
+      s = s(1);
+      switch (s.type)
+        case '()'
+          error (strcat ("Invalid () indexing for referencing values", ...
+                         " in a ClassificationKNN object."));
+        case '{}'
+          error (strcat ("Invalid {} indexing for referencing values", ...
+                         " in a ClassificationKNN object."));
+        case '.'
+          if (! ischar (s.subs))
+            error (strcat ("ClassificationKNN.subsref: '.'", ...
+                           " indexing argument must be a character vector."));
+          endif
+          try
+            out = this.(s.subs);
+          catch
+            error (strcat ("ClassificationKNN.subref:", ...
+                           " unrecongized property: '%s'"), s.subs);
+          end_try_catch
+      endswitch
+      ## Chained references
+      if (! isempty (chain_s))
+        out = subsref (out, chain_s);
+      endif
+      varargout{1} = out;
+    endfunction
+
+    ## Class specific subscripted assignment
+    function this = subsasgn (this, s, val)
+      if (numel (s) > 1)
+        error (strcat ("ClassificationKNN.subsasgn:", ...
+                       " chained subscripts not allowed."));
+      endif
+      switch s.type
+        case '()'
+          error (strcat ("Invalid () indexing for assigning values", ...
+                         " to a ClassificationKNN object."));
+        case '{}'
+          error (strcat ("Invalid {} indexing for assigning values", ...
+                         " to a ClassificationKNN object."));
+        case '.'
+          if (! ischar (s.subs))
+            error (strcat ("ClassificationKNN.subsasgn: '.'", ...
+                           " indexing argument must be a character vector."));
+          endif
+          switch (s.subs)
+            case 'ScoreTransform'
+              name = "ClassificationKNN";
+              this.ScoreTransform = parseScoreTransform (val, name);
+            otherwise
+              error (strcat ("ClassificationKNN.subsasgn:", ...
+                             " unrecongized or read-only property: '%s'"), ...
+                             s.subs);
+          endswitch
+      endswitch
+    endfunction
+
+  endmethods
+
   methods (Access = public)
 
-    ## Class object constructor
+    ## Constructor
     function this = ClassificationKNN (X, Y, varargin)
       ## Check for sufficient number of input arguments
       if (nargin < 2)
@@ -463,15 +559,10 @@ classdef ClassificationKNN
         varargin (1:2) = [];
       endwhile
 
-      ## Get number of variables in training data
-      ndims_X = columns (X);
-
-      ## Assign the number of predictors to the ClassificationKNN object
-      this.NumPredictors = ndims_X;
-
       ## Generate default predictors and response variabe names (if necessary)
+      NumPredictors = columns (X);
       if (isempty (PredictorNames))
-        for i = 1:ndims_X
+        for i = 1:NumPredictors
           PredictorNames {i} = strcat ("x", num2str (i));
         endfor
       endif
@@ -480,6 +571,7 @@ classdef ClassificationKNN
       endif
 
       ## Assign predictors and response variable names
+      this.NumPredictors  = NumPredictors;
       this.PredictorNames = PredictorNames;
       this.ResponseName   = ResponseName;
 
@@ -502,7 +594,7 @@ classdef ClassificationKNN
 
       ## Renew groups in Y
       [gY, gnY, glY] = grp2idx (Y);
-      this.ClassNames = gnY;
+      this.ClassNames = unique (Y);  # Keep the same type as Y
 
       ## Check X contains valid data
       if (! (isnumeric (X) && isfinite (X)))
@@ -512,8 +604,8 @@ classdef ClassificationKNN
       ## Assign the number of observations and their correspoding indices
       ## on the original data, which will be used for training the model,
       ## to the ClassificationKNN object
-      this.NumObservations = rows (X);
-      this.RowsUsed = cast (RowsUsed, "double");
+      this.NumObservations = sum (RowsUsed);
+      this.RowsUsed = RowsUsed;
 
       ## Handle Standardize flag
       if (Standardize)
@@ -585,7 +677,7 @@ classdef ClassificationKNN
           error (strcat (["ClassificationKNN: 'Scale' is only valid"], ...
                          [" when distance metric is seuclidean."]));
         endif
-        if (numel (Scale) != ndims_X)
+        if (numel (Scale) != NumPredictors)
           error (strcat (["ClassificationKNN: 'Scale' vector must have"], ...
                          [" equal length to the number of columns in X."]));
         endif
@@ -597,7 +689,7 @@ classdef ClassificationKNN
       else
         if (strcmpi (Distance, "seuclidean"))
           if (Standardize)
-            this.DistParameter = ones (1, ndims_X);
+            this.DistParameter = ones (1, NumPredictors);
           else
             this.DistParameter = std (X, [], 1);
           endif
@@ -608,7 +700,7 @@ classdef ClassificationKNN
           error (strcat (["ClassificationKNN: 'Cov' is only valid"], ...
                          [" when distance metric is 'mahalanobis'."]));
         endif
-        if (columns (Cov) != ndims_X)
+        if (columns (Cov) != NumPredictors)
           error (strcat (["ClassificationKNN: 'Cov' matrix"], ...
                          [" must have equal columns as X."]));
         endif
@@ -640,7 +732,7 @@ classdef ClassificationKNN
         endif
         this.NSMethod = NSMethod;
       else
-        if (any (strcmpi (kdm, Distance)) && ndims_X <= 10)
+        if (any (strcmpi (kdm, Distance)) && NumPredictors <= 10)
           this.NSMethod = "kdtree";
         else
           this.NSMethod = "exhaustive";
@@ -705,8 +797,8 @@ classdef ClassificationKNN
       endif
 
       ## Get training data and labels
-      X = this.X(logical (this.RowsUsed),:);
-      Y = this.Y(logical (this.RowsUsed),:);
+      X = this.X(this.RowsUsed,:);
+      Y = this.Y(this.RowsUsed,:);
 
       ## Standardize (if necessary)
       if (this.Standardize)
@@ -744,12 +836,16 @@ classdef ClassificationKNN
       endif
 
       ## Make prediction
-      labels = {};
+      if (iscellstr (this.ClassNames))
+        labels = {};
+      else
+        labels = [];
+      endif
       scores = [];
       cost  = [];
 
-      ## Get IDs and labels for each point in training data
-      [gY, gnY, glY] = grp2idx (Y);
+      ## Get IDs of labels for each point in training data
+      gY = grp2idx (Y);
 
       ## Evaluate the K nearest neighbours for each new point
       for i = 1:rows (idx)
@@ -788,7 +884,7 @@ classdef ClassificationKNN
             endif
           endif
         endif
-        labels = [labels; gnY{idl}];
+        labels = [labels; this.ClassNames(idl)];
 
         ## Calculate scores and cost
         scores = [scores; freq];
@@ -1602,8 +1698,12 @@ classdef ClassificationKNN
     ##
     ## Save a ClassificationKNN object.
     ##
-    ## @code{savemodel (@var{obj}, @var{filename})} saves a ClassificationKNN
-    ## object into a file defined by @var{filename}.
+    ## @code{savemodel (@var{obj}, @var{filename})} saves each property of a
+    ## ClassificationKNN object into an Octave binary file, the name of which is
+    ## specified in @var{filename}, along with an extra variable, which defines
+    ## the type classification object these variables constitute.  Use
+    ## @code{loadmodel} in order to load a classification object into Octave's
+    ## workspace.
     ##
     ## @seealso{loadmodel, fitcknn, ClassificationKNN}
     ## @end deftypefn
@@ -1637,11 +1737,12 @@ classdef ClassificationKNN
       BucketSize      = this.BucketSize;
 
       ## Save classdef name and all model properties as individual variables
-      save (fname, "classdef_name", "X", "Y", "NumObservations", "RowsUsed", ...
-            "Standardize", "Sigma", "Mu", "NumPredictors", "PredictorNames", ...
-            "ResponseName", "ClassNames", "Prior", "Cost", "ScoreTransform", ...
-            "BreakTies", "NumNeighbors", "Distance", "DistanceWeight", ...
-            "DistParameter", "NSMethod", "IncludeTies", "BucketSize");
+      save ("-binary", fname, "classdef_name", "X", "Y", "NumObservations", ...
+            "RowsUsed", "Standardize", "Sigma", "Mu", "NumPredictors", ...
+            "PredictorNames", "ResponseName", "ClassNames", "Prior", "Cost", ...
+            "ScoreTransform", "BreakTies", "NumNeighbors", "Distance", ...
+            "DistanceWeight", "DistParameter", "NSMethod", "IncludeTies", ...
+            "BucketSize");
     endfunction
 
   endmethods
