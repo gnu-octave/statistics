@@ -392,7 +392,7 @@ endclassdef
 %! predict (CMdl, [])
 %!error<CompactClassificationNeuralNetwork.predict: XC must have the same number of predictors as the trained neural network.> ...
 %! predict (CMdl, 1)
-%!test
+
+## Test input validation for assigning a new ScoreTransform
+%!error<CompactClassificationNeuralNetwork: unrecognized 'ScoreTransform' function.> ...
 %! CMdl.ScoreTransform = "a";
-%!error<CompactClassificationNeuralNetwork.predict: 'ScoreTransform' must be a 'function_handle' object.> ...
-%! [labels, scores] = predict (CMdl, x);
