@@ -382,7 +382,7 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
     ## Compute distances and classify
     [D, classes, sumd] = update_dist (data, centers, D, k, dist);
 
-    while (err > 0.001 && iter++ <= max_iter && n_changes != 0)
+    while (err > 0.001 && iter <= max_iter && n_changes != 0)
       ## Calculate new centroids
       replaced_centroids = [];        ## Used by "emptyaction = singleton"
       for i = 1:k
@@ -433,9 +433,10 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
 
       ## display iteration status
       if (strcmp (display, "iter"))
-        printf ("%6d\t%6d\t%8d\t%12.3f\n", (iter - 1), 1, ...
+        printf ("%6d\t%6d\t%8d\t%12.3f\n", (iter), 1, ...
           n_changes, sum (sumd));
       endif
+      iter++;
     endwhile
     ## throw a warning if the algorithm did not converge
     if (iter > max_iter && err > 0.001 && n_changes != 0)
@@ -526,7 +527,7 @@ endfunction
 %! [x1G, x2G] = meshgrid (x1, x2);
 %! XGrid = [x1G(:), x2G(:)];
 %!
-%! idx2Region = kmeans (XGrid, 3, "MaxIter", 1, "Start", C);
+%! idx2Region = kmeans (XGrid, 3, "MaxIter", 10, "Start", C);
 %! figure;
 %! gscatter (XGrid(:,1), XGrid(:,2), idx2Region, ...
 %!           [0, 0.75, 0.75; 0.75, 0, 0.75; 0.75, 0.75, 0], "..");
