@@ -513,7 +513,6 @@ endfunction
 %! load fisheriris
 %! X = meas(:,3:4);
 %!
-%! figure;
 %! plot (X(:,1), X(:,2), "k*", "MarkerSize", 5);
 %! title ("Fisher's Iris Data");
 %! xlabel ("Petal Lengths (cm)");
@@ -548,7 +547,6 @@ endfunction
 %! r2 = randn (100, 2) * 0.5 - ones (100, 2);
 %! X = [r1; r2];
 %!
-%! figure;
 %! plot (X(:,1), X(:,2), ".");
 %! title ("Randomly Generated Data");
 %! rand ("seed", 1)  # for reproducibility
@@ -582,7 +580,6 @@ endfunction
 %!
 %! ## Plot the clusters and the cluster centroids
 %!
-%! figure
 %! gscatter (X(:,1), X(:,2), idx, "bgm", "***");
 %! hold on
 %! plot (C(:,1), C(:,2), "kx");
