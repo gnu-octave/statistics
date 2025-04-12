@@ -351,52 +351,54 @@ classdef ClassificationKNN
             if (SSC < 1)
               Standardize = varargin{2};
               if (! (Standardize == true || Standardize == false))
-                error (strcat (["ClassificationKNN: 'Standardize' must"], ...
-                               [" be either true or false."]));
+                error (strcat ("ClassificationKNN: 'Standardize' must", ...
+                               " be either true or false."));
               endif
               SSC += 1;
             else
-              error (strcat (["ClassificationKNN: 'Standardize' cannot"], ...
-                             [" simultaneously be specified with either"], ...
-                             [" Scale or Cov."]));
+              error (strcat ("ClassificationKNN: 'Standardize' cannot", ...
+                             " simultaneously be specified with either", ...
+                             " Scale or Cov."));
             endif
 
           case "predictornames"
             PredictorNames = varargin{2};
             if (! iscellstr (PredictorNames))
-              error (strcat (["ClassificationKNN: 'PredictorNames' must"], ...
-                             [" be supplied as a cellstring array."]));
+              error (strcat ("ClassificationKNN: 'PredictorNames' must", ...
+                             " be supplied as a cellstring array."));
             elseif (columns (PredictorNames) != columns (X))
-              error (strcat (["ClassificationKNN: 'PredictorNames' must"], ...
-                             [" have the same number of columns as X."]));
+              error (strcat ("ClassificationKNN: 'PredictorNames' must", ...
+                             " have the same number of columns as X."));
             endif
 
           case "responsename"
             ResponseName = varargin{2};
             if (! ischar (ResponseName))
-              error (strcat (["ClassificationKNN: 'ResponseName'"], ...
-                             [" must be a character vector."]));
+              error (strcat ("ClassificationKNN: 'ResponseName'", ...
+                             " must be a character vector."));
             endif
 
           case "classnames"
             ClassNames = varargin{2};
-            if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
-                                          || islogical (ClassNames)))
-              error (strcat (["ClassificationKNN: 'ClassNames' must be a"], ...
-                             [" cellstring, logical or numeric vector."]));
+            if (! (iscellstr (ClassNames) || isnumeric (ClassNames) ||
+                   islogical (ClassNames) || ischar (ClassNames)))
+              error (strcat ("ClassificationKNN: 'ClassNames' must be a", ...
+                             " cell array of character vectors, a logical", ...
+                             " vector, a numeric vector, or a character array."));
             endif
             ## Check that all class names are available in gnY
-            if (iscellstr (ClassNames))
+            if (iscellstr (ClassNames) || ischar (ClassNames))
+              ClassNames = cellstr (ClassNames);
               if (! all (cell2mat (cellfun (@(x) any (strcmp (x, gnY)),
                                    ClassNames, "UniformOutput", false))))
-                error (strcat (["ClassificationKNN: not all 'ClassNames'"], ...
-                               [" are present in Y."]));
+                error (strcat ("ClassificationKNN: not all 'ClassNames'", ...
+                               " are present in Y."));
               endif
             else
               if (! all (cell2mat (arrayfun (@(x) any (x == glY),
                                    ClassNames, "UniformOutput", false))))
-                error (strcat (["ClassificationKNN: not all 'ClassNames'"], ...
-                               [" are present in Y."]));
+                error (strcat ("ClassificationKNN: not all 'ClassNames'", ...
+                               " are present in Y."));
               endif
             endif
 
@@ -404,15 +406,15 @@ classdef ClassificationKNN
             Prior = varargin{2};
             if (! ((isnumeric (Prior) && isvector (Prior)) ||
                   (strcmpi (Prior, "empirical") || strcmpi (Prior, "uniform"))))
-              error (strcat (["ClassificationKNN: 'Prior' must be either"], ...
-                             [" a numeric vector or a character vector."]));
+              error (strcat ("ClassificationKNN: 'Prior' must be either", ...
+                             " a numeric vector or a character vector."));
             endif
 
           case "cost"
             Cost = varargin{2};
             if (! (isnumeric (Cost) && issquare (Cost)))
-              error (strcat (["ClassificationKNN: 'Cost' must be"], ...
-                             [" a numeric square matrix."]));
+              error (strcat ("ClassificationKNN: 'Cost' must be", ...
+                             " a numeric square matrix."));
             endif
 
           case "scoretransform"
@@ -422,8 +424,8 @@ classdef ClassificationKNN
           case "breakties"
             BreakTies = varargin{2};
             if (! ischar (BreakTies))
-              error (strcat (["ClassificationKNN: 'BreakTies'"], ...
-                             [" must be a character vector."]));
+              error (strcat ("ClassificationKNN: 'BreakTies'", ...
+                             " must be a character vector."));
             endif
             ## Check that all class names are available in gnY
             BTs = {"smallest", "nearest", "random"};
@@ -435,8 +437,8 @@ classdef ClassificationKNN
             NumNeighbors = varargin{2};
             if (! (isnumeric (NumNeighbors) && isscalar (NumNeighbors) &&
                    NumNeighbors > 0 && fix (NumNeighbors) == NumNeighbors))
-              error (strcat (["ClassificationKNN: 'NumNeighbors'"], ...
-                             [" must be a positive integer."]));
+              error (strcat ("ClassificationKNN: 'NumNeighbors'", ...
+                             " must be a positive integer."));
             endif
 
           case "distance"
@@ -454,13 +456,13 @@ classdef ClassificationKNN
               try
                 D2 = Distance (X(1,:), Y);
               catch ME
-                error (strcat (["ClassificationKNN: invalid function"], ...
-                               [" handle for distance metric."]));
+                error (strcat ("ClassificationKNN: invalid function", ...
+                               " handle for distance metric."));
               end_try_catch
               Yrows = rows (Y);
               if (! isequal (size (D2), [Yrows, 1]))
-                error (strcat (["ClassificationKNN: custom distance"], ...
-                               [" function produces wrong output size."]));
+                error (strcat ("ClassificationKNN: custom distance", ...
+                               " function produces wrong output size."));
               endif
             else
               error ("ClassificationKNN: invalid distance metric.");
@@ -472,9 +474,9 @@ classdef ClassificationKNN
             if (is_function_handle (DistanceWeight))
               m = eye (5);
               if (! isequal (size (m), size (DistanceWeight (m))))
-                error (strcat (["ClassificationKNN: function handle for"], ...
-                               [" distance weight must return the same"], ...
-                               [" size as its input."]));
+                error (strcat ("ClassificationKNN: function handle for", ...
+                               " distance weight must return the same", ...
+                               " size as its input."));
               endif
               this.DistanceWeight = DistanceWeight;
             else
@@ -500,9 +502,9 @@ classdef ClassificationKNN
               endif
               SSC += 1;
             else
-              error (strcat (["ClassificationKNN: 'Scale' cannot"], ...
-                             [" simultaneously be specified with either"], ...
-                             [" 'Standardize' or 'Cov'."]));
+              error (strcat ("ClassificationKNN: 'Scale' cannot", ...
+                             " simultaneously be specified with either", ...
+                             " 'Standardize' or 'Cov'."));
             endif
 
           case "cov"
@@ -510,54 +512,54 @@ classdef ClassificationKNN
               Cov = varargin{2};
               [~, p] = chol (Cov);
               if (p != 0)
-                error (strcat (["ClassificationKNN: 'Cov' must be a"], ...
-                               [" symmetric positive definite matrix."]));
+                error (strcat ("ClassificationKNN: 'Cov' must be a", ...
+                               " symmetric positive definite matrix."));
               endif
               SSC += 1;
             else
-              error (strcat (["ClassificationKNN: 'Cov' cannot"], ...
-                             [" simultaneously be specified with either"], ...
-                             [" 'Standardize' or 'Scale'."]));
+              error (strcat ("ClassificationKNN: 'Cov' cannot", ...
+                             " simultaneously be specified with either", ...
+                             " 'Standardize' or 'Scale'."));
             endif
 
           case "exponent"
             Exponent = varargin{2};
             if (! (isnumeric (Exponent) && isscalar (Exponent) &&
                            Exponent > 0 && fix (Exponent) == Exponent))
-              error (strcat (["ClassificationKNN: 'Exponent'"], ...
-                             [" must be a positive integer."]));
+              error (strcat ("ClassificationKNN: 'Exponent'", ...
+                             " must be a positive integer."));
             endif
 
           case "nsmethod"
             NSMethod = varargin{2};
             NSM = {"kdtree", "exhaustive"};
             if (! ischar (NSMethod))
-              error (strcat (["ClassificationKNN: 'NSMethod' must"], ...
-                             [" be a character vector."]));
+              error (strcat ("ClassificationKNN: 'NSMethod' must", ...
+                             " be a character vector."));
             endif
             if (! any (strcmpi (NSM, NSMethod)))
-              error (strcat (["ClassificationKNN: 'NSMethod' must"], ...
-                             [" be either 'kdtree' or 'exhaustive'."]));
+              error (strcat ("ClassificationKNN: 'NSMethod' must", ...
+                             " be either 'kdtree' or 'exhaustive'."));
             endif
 
           case "includeties"
             IncludeTies = varargin{2};
             if (! (IncludeTies == true || IncludeTies == false))
-              error (strcat (["ClassificationKNN: 'IncludeTies'"], ...
-                             [" must be either true or false."]));
+              error (strcat ("ClassificationKNN: 'IncludeTies'", ...
+                             " must be either true or false."));
             endif
 
           case "bucketsize"
             BucketSize = varargin{2};
             if (! (isnumeric (BucketSize) && isscalar (BucketSize) &&
                            BucketSize > 0 && fix (BucketSize) == BucketSize))
-              error (strcat (["ClassificationKNN: 'BucketSize'"], ...
-                             [" must be a positive integer."]));
+              error (strcat ("ClassificationKNN: 'BucketSize'", ...
+                             " must be a positive integer."));
             endif
 
           otherwise
-            error (strcat (["ClassificationKNN: invalid parameter"],...
-                           [" name in optional pair arguments."]));
+            error (strcat ("ClassificationKNN: invalid parameter",...
+                           " name in optional pair arguments."));
 
         endswitch
         varargin (1:2) = [];
@@ -640,8 +642,8 @@ classdef ClassificationKNN
         this.Prior = pr ./ sum (pr);
       elseif (isnumeric (Prior))
         if (numel (gnY) != numel (Prior))
-          error (strcat (["ClassificationKNN: the elements in 'Prior'"], ...
-                         [" do not correspond to selected classes in Y."]));
+          error (strcat ("ClassificationKNN: the elements in 'Prior'", ...
+                         " do not correspond to selected classes in Y."));
         endif
         this.Prior = Prior ./ sum (Prior);
       endif
@@ -649,9 +651,9 @@ classdef ClassificationKNN
         this.Cost = cast (! eye (numel (gnY)), "double");
       else
         if (numel (gnY) != sqrt (numel (Cost)))
-          error (strcat (["ClassificationKNN: the number of rows"], ...
-                         [" and columns in 'Cost' must correspond"], ...
-                         [" to selected classes in Y."]));
+          error (strcat ("ClassificationKNN: the number of rows", ...
+                         " and columns in 'Cost' must correspond", ...
+                         " to selected classes in Y."));
         endif
         this.Cost = Cost;
       endif
@@ -677,16 +679,16 @@ classdef ClassificationKNN
       ## Handle distance metric parameters (Scale, Cov, Exponent)
       if (! isempty (Scale))
         if (! strcmpi (Distance, "seuclidean"))
-          error (strcat (["ClassificationKNN: 'Scale' is only valid"], ...
-                         [" when distance metric is seuclidean."]));
+          error (strcat ("ClassificationKNN: 'Scale' is only valid", ...
+                         " when distance metric is seuclidean."));
         endif
         if (numel (Scale) != NumPredictors)
-          error (strcat (["ClassificationKNN: 'Scale' vector must have"], ...
-                         [" equal length to the number of columns in X."]));
+          error (strcat ("ClassificationKNN: 'Scale' vector must have", ...
+                         " equal length to the number of columns in X."));
         endif
         if (any (Scale < 0))
-          error (strcat (["ClassificationKNN: 'Scale' vector must"], ...
-                         [" contain nonnegative scalar values."]));
+          error (strcat ("ClassificationKNN: 'Scale' vector must", ...
+                         " contain nonnegative scalar values."));
         endif
         this.DistParameter = Scale;
       else
@@ -700,12 +702,12 @@ classdef ClassificationKNN
       endif
       if (! isempty (Cov))
         if (! strcmpi (Distance, "mahalanobis"))
-          error (strcat (["ClassificationKNN: 'Cov' is only valid"], ...
-                         [" when distance metric is 'mahalanobis'."]));
+          error (strcat ("ClassificationKNN: 'Cov' is only valid", ...
+                         " when distance metric is 'mahalanobis'."));
         endif
         if (columns (Cov) != NumPredictors)
-          error (strcat (["ClassificationKNN: 'Cov' matrix"], ...
-                         [" must have equal columns as X."]));
+          error (strcat ("ClassificationKNN: 'Cov' matrix", ...
+                         " must have equal columns as X."));
         endif
         this.DistParameter = Cov;
       else
@@ -715,8 +717,8 @@ classdef ClassificationKNN
       endif
       if (! isempty (Exponent))
         if (! strcmpi (Distance, "minkowski"))
-          error (strcat (["ClassificationKNN: 'Exponent' is only"], ...
-                         [" valid when distance metric is 'minkowski'."]));
+          error (strcat ("ClassificationKNN: 'Exponent' is only", ...
+                         " valid when distance metric is 'minkowski'."));
         endif
         this.DistParameter = Exponent;
       else
@@ -729,9 +731,9 @@ classdef ClassificationKNN
       kdm = {"euclidean", "cityblock", "manhattan", "minkowski", "chebychev"};
       if (! isempty (NSMethod))
         if (strcmpi ("kdtree", NSMethod) && (! any (strcmpi (kdm, Distance))))
-          error (strcat (["ClassificationKNN: 'kdtree' method is only va"], ...
-                         ["lid for 'euclidean', 'cityblock', 'manhattan',"], ...
-                         [" 'minkowski', and 'chebychev' distance metrics."]));
+          error (strcat ("ClassificationKNN: 'kdtree' method is only va", ...
+                         "lid for 'euclidean', 'cityblock', 'manhattan',", ...
+                         " 'minkowski', and 'chebychev' distance metrics."));
         endif
         this.NSMethod = NSMethod;
       else
@@ -794,9 +796,9 @@ classdef ClassificationKNN
       if (isempty (XC))
         error ("ClassificationKNN.predict: XC is empty.");
       elseif (this.NumPredictors != columns (XC))
-        error (strcat (["ClassificationKNN.predict:"], ...
-                       [" XC must have the same number of"], ...
-                       [" predictors as the trained model."]));
+        error (strcat ("ClassificationKNN.predict:", ...
+                       " XC must have the same number of", ...
+                       " predictors as the trained model."));
       endif
 
       ## Get training data and labels
@@ -1031,8 +1033,9 @@ classdef ClassificationKNN
                                  " function must return a scalar value."));
                 endif
               catch
-                error (strcat ("ClassificationKNN.loss: custom loss function", ...
-                        " is not valid or does not produce correct output."));
+                error (strcat ("ClassificationKNN.loss: custom loss", ...
+                               " function is not valid or does not", ...
+                               " produce correct output."));
               end_try_catch
               LossFun = Value;
             elseif (ischar (Value) && any (strcmpi (Value, {"binodeviance", ...
@@ -1045,8 +1048,8 @@ classdef ClassificationKNN
           case 'weights'
             if (isnumeric (Value) && isvector (Value))
               if (numel (Value) != size (X ,1))
-                error (["ClassificationKNN.loss: size of Weights must", ...
-                        " be equal to the number of rows in X."]);
+                error ("ClassificationKNN.loss: size of Weights must", ...
+                       " be equal to the number of rows in X.");
               elseif (numel (Value) == size (X, 1))
                 Weights = Value;
               endif
@@ -1360,8 +1363,8 @@ classdef ClassificationKNN
       ## Validate Vars
       if (isnumeric (Vars))
         if (! all (Vars > 0) || ! (numel (Vars) == 1 || numel (Vars) == 2))
-          error (["ClassificationKNN.partialDependence: VARS must be a", ...
-                  " positive integer or vector of two positive integers."]);
+          error ("ClassificationKNN.partialDependence: VARS must be a", ...
+                 " positive integer or vector of two positive integers.");
         endif
       elseif (iscellstr (Vars))
         if (! (numel (Vars) == 1 || numel (Vars) == 2))
@@ -2099,12 +2102,14 @@ endfunction
 %! ClassificationKNN (ones (5,2), ones (5,1), "ResponseName", {"Y"})
 %!error<ClassificationKNN: 'ResponseName' must be a character vector.> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), "ResponseName", 1)
-%!error<ClassificationKNN: 'ClassNames' must be a cellstring, logical or numeric vector.> ...
+%!error<ClassificationKNN: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.> ...
 %! ClassificationKNN (ones(10,2), ones (10,1), "ClassNames", @(x)x)
-%!error<ClassificationKNN: 'ClassNames' must be a cellstring, logical or numeric vector.> ...
-%! ClassificationKNN (ones(10,2), ones (10,1), "ClassNames", ['a'])
+%!error<ClassificationKNN: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.> ...
+%! ClassificationKNN (ones(10,2), ones (10,1), "ClassNames", {1})
 %!error<ClassificationKNN: not all 'ClassNames' are present in Y.> ...
 %! ClassificationKNN (ones(10,2), ones (10,1), "ClassNames", [1, 2])
+%!error<ClassificationKNN: not all 'ClassNames' are present in Y.> ...
+%! ClassificationKNN (ones(5,2), ['a';'b';'a';'a';'b'], "ClassNames", ['a';'c'])
 %!error<ClassificationKNN: not all 'ClassNames' are present in Y.> ...
 %! ClassificationKNN (ones(5,2), {'a';'b';'a';'a';'b'}, "ClassNames", {'a','c'})
 %!error<ClassificationKNN: not all 'ClassNames' are present in Y.> ...

@@ -255,46 +255,49 @@ classdef ClassificationGAM
           case "predictornames"
             PredictorNames = varargin{2};
             if (! iscellstr (PredictorNames))
-              error (strcat (["ClassificationGAM: 'PredictorNames'"], ...
-                             [" must be supplied as a cellstring array."]));
+              error (strcat ("ClassificationGAM: 'PredictorNames'", ...
+                             " must be supplied as a cellstring array."));
             elseif (numel (PredictorNames) != columns (X))
-              error (strcat (["ClassificationGAM: 'PredictorNames'"], ...
-                             [" must equal the number of columns in X."]));
+              error (strcat ("ClassificationGAM: 'PredictorNames'", ...
+                             " must equal the number of columns in X."));
             endif
 
           case "responsename"
             ResponseName = varargin{2};
             if (! ischar (ResponseName))
-              error (strcat (["ClassificationGAM: 'ResponseName'"], ...
-                             [" must be a character vector."]));
+              error (strcat ("ClassificationGAM: 'ResponseName'", ...
+                             " must be a character vector."));
             endif
 
           case "classnames"
             ClassNames = varargin{2};
-            if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
-                                          || islogical (ClassNames)))
-              error (strcat (["ClassificationGAM: 'ClassNames' must be a"], ...
-                             [" cellstring, logical or numeric vector."]));
+            if (! (iscellstr (ClassNames) || isnumeric (ClassNames) ||
+                   islogical (ClassNames) || ischar (ClassNames)))
+              error (strcat ("ClassificationGAM: 'ClassNames' must be a", ...
+                             " cell array of character vectors, a logical", ...
+                             " vector, a numeric vector, or a character array."));
             endif
             ## Check that all class names are available in gnY
-            msg = "ClassificationGAM: not all 'ClassNames' are present in Y.";
-            if (iscellstr (ClassNames))
+            if (iscellstr (ClassNames) || ischar (ClassNames))
+              ClassNames = cellstr (ClassNames);
               if (! all (cell2mat (cellfun (@(x) any (strcmp (x, gnY)),
                                    ClassNames, "UniformOutput", false))))
-                error (msg);
+                error (strcat ("ClassificationGAM: not all 'ClassNames'", ...
+                               " are present in Y."));
               endif
             else
               if (! all (cell2mat (arrayfun (@(x) any (x == glY),
                                    ClassNames, "UniformOutput", false))))
-                error (msg);
+                error (strcat ("ClassificationGAM: not all 'ClassNames'", ...
+                               " are present in Y."));
               endif
             endif
 
           case "cost"
             Cost = varargin{2};
             if (! (isnumeric (Cost) && issquare (Cost)))
-              error (strcat (["ClassificationGAM: 'Cost' must be"], ...
-                             [" a numeric square matrix."]));
+              error (strcat ("ClassificationGAM: 'Cost' must be", ...
+                             " a numeric square matrix."));
             endif
 
           case "scoretransform"
@@ -309,8 +312,8 @@ classdef ClassificationGAM
               endif
               F_I += 1;
             else
-              error (strcat (["ClassificationGAM: 'Interactions'"], ...
-                             [" have already been defined."]))';
+              error (strcat ("ClassificationGAM: 'Interactions'", ...
+                             " have already been defined."));
             endif
 
           case "interactions"
@@ -342,8 +345,8 @@ classdef ClassificationGAM
               Order = DoF - Knots;
               KOD += 1;
             else
-              error (strcat (["ClassificationGAM: 'DoF' and 'Order'"], ...
-                             [" have been set already."]));
+              error (strcat ("ClassificationGAM: 'DoF' and 'Order'", ...
+                             " have been set already."));
             endif
 
           case "order"
@@ -357,8 +360,8 @@ classdef ClassificationGAM
               Knots = DoF - Order;
               KOD += 1;
             else
-              error (strcat (["ClassificationGAM: 'DoF' and 'Knots'"], ...
-                             [" have been set already."]));
+              error (strcat ("ClassificationGAM: 'DoF' and 'Knots'", ...
+                             " have been set already."));
             endif
 
           case "dof"
@@ -372,27 +375,27 @@ classdef ClassificationGAM
               Order = DoF - Knots;
               KOD += 1;
             else
-              error (strcat (["ClassificationGAM: 'Knots' and 'Order'"], ...
-                             [" have been set already."]));
+              error (strcat ("ClassificationGAM: 'Knots' and 'Order'", ...
+                             " have been set already."));
             endif
 
           case "learningrate"
             LearningRate = varargin{2};
             if (LearningRate > 1 || LearningRate <= 0)
-              error (strcat (["ClassificationGAM: 'LearningRate'"], ...
-                             [" must be between 0 and 1."]));
+              error (strcat ("ClassificationGAM: 'LearningRate'", ...
+                             " must be between 0 and 1."));
             endif
 
           case "numiterations"
             NumIterations = varargin{2};
             if (! isnumeric (NumIterations) || NumIterations <= 0)
-              error (strcat (["ClassificationGAM: 'NumIterations'"], ...
-                             [" must be a positive integer value."]));
+              error (strcat ("ClassificationGAM: 'NumIterations'", ...
+                             " must be a positive integer value."));
             endif
 
           otherwise
-            error (strcat (["ClassificationGAM: invalid parameter"], ...
-                           [" name in optional pair arguments."]));
+            error (strcat ("ClassificationGAM: invalid parameter", ...
+                           " name in optional pair arguments."));
 
         endswitch
         varargin (1:2) = [];
@@ -453,9 +456,9 @@ classdef ClassificationGAM
         this.Cost = cast (! eye (numel (gnY)), "double");
       else
         if (numel (gnY) != sqrt (numel (Cost)))
-          error (strcat (["ClassificationGAM: the number of rows"], ...
-                         [" and columns in 'Cost' must correspond"], ...
-                         [" to selected classes in Y."]));
+          error (strcat ("ClassificationGAM: the number of rows", ...
+                         " and columns in 'Cost' must correspond", ...
+                         " to selected classes in Y."));
         endif
         this.Cost = Cost;
       endif
@@ -579,9 +582,9 @@ classdef ClassificationGAM
       if (isempty (XC))
         error ("ClassificationGAM.predict: XC is empty.");
       elseif (this.NumPredictors != columns (XC))
-        error (strcat (["ClassificationGAM.predict:"], ...
-                       [" XC must have the same number of"], ...
-                       [" predictors as the trained model."]));
+        error (strcat ("ClassificationGAM.predict:", ...
+                       " XC must have the same number of", ...
+                       " predictors as the trained model."));
       endif
 
       ## Clean XC data
@@ -599,19 +602,19 @@ classdef ClassificationGAM
           case "includeinteractions"
             tmpInt = varargin{2};
             if (! islogical (tmpInt) || (tmpInt != 0 && tmpInt != 1))
-              error (strcat (["ClassificatioGAM.predict:"], ...
-                             [" includeinteractions must be a logical value."]));
+              error (strcat ("ClassificatioGAM.predict:", ...
+                             " includeinteractions must be a logical value."));
             endif
             ## Check model for interactions
             if (tmpInt && isempty (this.IntMatrix))
-              error (strcat (["ClassificatioGAM.predict: trained model"], ...
-                             [" does not include any interactions."]));
+              error (strcat ("ClassificatioGAM.predict: trained model", ...
+                             " does not include any interactions."));
             endif
             incInt = tmpInt;
 
           otherwise
-            error (strcat (["ClassificationGAM.predict: invalid NAME in"], ...
-                           [" optional pairs of arguments."]));
+            error (strcat ("ClassificationGAM.predict: invalid NAME in", ...
+                           " optional pairs of arguments."));
         endswitch
         varargin (1:2) = [];
       endwhile
@@ -719,11 +722,11 @@ classdef ClassificationGAM
       endif
 
       if (numel (varargin) == 1)
-        error (strcat (["ClassificationGAM.crossval: Name-Value"], ...
-                       [" arguments must be in pairs."]));
+        error (strcat ("ClassificationGAM.crossval: Name-Value", ...
+                       " arguments must be in pairs."));
       elseif (numel (varargin) > 2)
-        error (strcat (["ClassificationGAM.crossval: specify only"], ...
-                       [" one of the optional Name-Value paired arguments."]));
+        error (strcat ("ClassificationGAM.crossval: specify only", ...
+                       " one of the optional Name-Value paired arguments."));
       endif
 
       ## Add default values
@@ -740,36 +743,36 @@ classdef ClassificationGAM
             numFolds = varargin{2};
             if (! (isnumeric (numFolds) && isscalar (numFolds)
                    && (numFolds == fix (numFolds)) && numFolds > 1))
-              error (strcat (["ClassificationGAM.crossval: 'KFold'"], ...
-                             [" must be an integer value greater than 1."]));
+              error (strcat ("ClassificationGAM.crossval: 'KFold'", ...
+                             " must be an integer value greater than 1."));
             endif
 
           case 'holdout'
             Holdout = varargin{2};
             if (! (isnumeric (Holdout) && isscalar (Holdout) && Holdout > 0
                    && Holdout < 1))
-              error (strcat (["ClassificationGAM.crossval: 'Holdout'"], ...
-                             [" must be a numeric value between 0 and 1."]));
+              error (strcat ("ClassificationGAM.crossval: 'Holdout'", ...
+                             " must be a numeric value between 0 and 1."));
             endif
 
           case 'leaveout'
             Leaveout = varargin{2};
             if (! (ischar (Leaveout)
                    && (strcmpi (Leaveout, 'on') || strcmpi (Leaveout, 'off'))))
-              error (strcat (["ClassificationGAM.crossval: 'Leaveout'"], ...
-                             [" must be either 'on' or 'off'."]));
+              error (strcat ("ClassificationGAM.crossval: 'Leaveout'", ...
+                             " must be either 'on' or 'off'."));
             endif
 
           case 'cvpartition'
             CVPartition = varargin{2};
             if (!(isa (CVPartition, 'cvpartition')))
-              error (strcat (["ClassificationGAM.crossval: 'CVPartition'"],...
-                             [" must be a 'cvpartition' object."]));
+              error (strcat ("ClassificationGAM.crossval: 'CVPartition'",...
+                             " must be a 'cvpartition' object."));
             endif
 
           otherwise
-            error (strcat (["ClassificationGAM.crossval: invalid"],...
-                           [" parameter name in optional paired arguments."]));
+            error (strcat ("ClassificationGAM.crossval: invalid",...
+                           " parameter name in optional paired arguments."));
           endswitch
         varargin (1:2) = [];
       endwhile
@@ -799,8 +802,8 @@ classdef ClassificationGAM
       if (islogical (this.Interactions))
         ## Check that interaction matrix corresponds to predictors
         if (numel (this.PredictorNames) != columns (this.Interactions))
-          error (strcat (["ClassificationGAM: columns in 'Interactions'"], ...
-                         [" matrix must equal to the number of predictors."]));
+          error (strcat ("ClassificationGAM: columns in 'Interactions'", ...
+                         " matrix must equal to the number of predictors."));
         endif
         intMat = this.Interactions;
       elseif (isnumeric (this.Interactions))
@@ -809,9 +812,9 @@ classdef ClassificationGAM
         ## p*(p-1)/2, where p is the number of predictors.
         p = this.NumPredictors;
         if (this.Interactions > p * (p - 1) / 2)
-          error (strcat (["ClassificationGAM: number of interaction terms"], ...
-                         [" requested is larger than all possible"], ...
-                         [" combinations of predictors in X."]));
+          error (strcat ("ClassificationGAM: number of interaction terms", ...
+                         " requested is larger than all possible", ...
+                         " combinations of predictors in X."));
         endif
         ## Get all combinations except all zeros
         allMat = flip (fullfact(p)([2:end],:), 2);
@@ -1110,12 +1113,14 @@ endfunction
 %! ClassificationGAM (ones (5,2), ones (5,1), "ResponseName", {"Y"})
 %!error<ClassificationGAM: 'ResponseName' must be a character vector.> ...
 %! ClassificationGAM (ones (5,2), ones (5,1), "ResponseName", 1)
-%!error<ClassificationGAM: 'ClassNames' must be a cellstring, logical or numeric vector.> ...
+%!error<ClassificationGAM: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.> ...
 %! ClassificationGAM (ones(10,2), ones (10,1), "ClassNames", @(x)x)
-%!error<ClassificationGAM: 'ClassNames' must be a cellstring, logical or numeric vector.> ...
-%! ClassificationGAM (ones(10,2), ones (10,1), "ClassNames", ['a'])
+%!error<ClassificationGAM: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.> ...
+%! ClassificationGAM (ones(10,2), ones (10,1), "ClassNames", {1})
 %!error<ClassificationGAM: not all 'ClassNames' are present in Y.> ...
 %! ClassificationGAM (ones(10,2), ones (10,1), "ClassNames", [1, 2])
+%!error<ClassificationGAM: not all 'ClassNames' are present in Y.> ...
+%! ClassificationGAM (ones(5,2), ['a';'b';'a';'a';'b'], "ClassNames", ['a';'c'])
 %!error<ClassificationGAM: not all 'ClassNames' are present in Y.> ...
 %! ClassificationGAM (ones(5,2), {'a';'b';'a';'a';'b'}, "ClassNames", {'a','c'})
 %!error<ClassificationGAM: not all 'ClassNames' are present in Y.> ...

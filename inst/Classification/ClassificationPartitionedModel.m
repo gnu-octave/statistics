@@ -196,7 +196,7 @@ classdef ClassificationPartitionedModel
           ## Train model according to partition object
           for k = 1:this.KFold
             idx = training (this.Partition, k);
-            tmp = fitcdiscr (this.X(idx, :), this.Y(idx), args{:});
+            tmp = fitcdiscr (this.X(idx, :), this.Y(idx,:), args{:});
             this.Trained{k} = compact (tmp);
           endfor
 
@@ -230,7 +230,7 @@ classdef ClassificationPartitionedModel
           ## Train model according to partition object
           for k = 1:this.KFold
             idx = training (this.Partition, k);
-            tmp = fitcgam (this.X(idx, :), this.Y(idx), args{:});
+            tmp = fitcgam (this.X(idx, :), this.Y(idx,:), args{:});
             this.Trained{k} = compact (tmp);
           endfor
 
@@ -287,7 +287,7 @@ classdef ClassificationPartitionedModel
           ## Train model according to partition object
           for k = 1:this.KFold
             idx = training (this.Partition, k);
-            this.Trained{k} = fitcknn (this.X(idx, :), this.Y(idx), args{:});
+            this.Trained{k} = fitcknn (this.X(idx, :), this.Y(idx,:), args{:});
           endfor
 
           ## Store ModelParameters to ClassificationPartitionedModel object
@@ -322,7 +322,7 @@ classdef ClassificationPartitionedModel
           ## Train model according to partition object
           for k = 1:this.KFold
             idx = training (this.Partition, k);
-            tmp = fitcnet (this.X(idx, :), this.Y(idx), args{:});
+            tmp = fitcnet (this.X(idx, :), this.Y(idx,:), args{:});
             this.Trained{k} = compact (tmp);
           endfor
 
@@ -346,7 +346,7 @@ classdef ClassificationPartitionedModel
           for k = 1:this.KFold
             idx = training (this.Partition, k);
             ## Pass all arguments directly to fitcsvm
-            tmp = fitcsvm (this.X(idx, :), this.Y(idx), ...
+            tmp = fitcsvm (this.X(idx, :), this.Y(idx,:), ...
                            'Standardize', Mdl.Standardize, ...
                            'PredictorNames', Mdl.PredictorNames, ...
                            'ResponseName', Mdl.ResponseName, ...
@@ -422,9 +422,9 @@ classdef ClassificationPartitionedModel
       no_cost_models = {'ClassificationNeuralNetwork', 'ClassificationSVM'};
       no_cost = any (strcmp (this.CrossValidatedModel, no_cost_models));
       if (no_cost && nargout > 2)
-        error (strcat (["ClassificationPartitionedModel.kfoldPredict:"], ...
-                       [" 'Cost' output is not supported for %s cross"], ...
-                       [" validated models."]), this.CrossValidatedModel);
+        error (strcat ("ClassificationPartitionedModel.kfoldPredict:", ...
+                       " 'Cost' output is not supported for %s cross", ...
+                       " validated models."), this.CrossValidatedModel);
       endif
 
       ## Initialize the label vector based on the type of Y

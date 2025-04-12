@@ -320,24 +320,26 @@ classdef ClassificationDiscriminant
 
           case "classnames"
             ClassNames = varargin{2};
-            if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
-                                          || islogical (ClassNames)))
+            if (! (iscellstr (ClassNames) || isnumeric (ClassNames) ||
+                   islogical (ClassNames) || ischar (ClassNames)))
               error (strcat ("ClassificationDiscriminant: 'ClassNames'", ...
-                             " must be a cellstring, logical or numeric", ...
-                             " vector."));
+                             " must be a cell array of character vectors,", ...
+                             " a logical vector, a numeric vector,", ...
+                             " or a character array."));
             endif
             ## Check that all class names are available in gnY
-            msg = strcat ("ClassificationDiscriminant: not all", ...
-                          " 'ClassNames' are present in Y.");
-            if (iscellstr (ClassNames))
+            if (iscellstr (ClassNames) || ischar (ClassNames))
+              ClassNames = cellstr (ClassNames);
               if (! all (cell2mat (cellfun (@(x) any (strcmp (x, gnY)),
                                    ClassNames, "UniformOutput", false))))
-                error (msg);
+                error (strcat ("ClassificationDiscriminant: not all", ...
+                               " 'ClassNames' are present in Y."));
               endif
             else
               if (! all (cell2mat (arrayfun (@(x) any (x == glY),
                                    ClassNames, "UniformOutput", false))))
-                error (msg);
+                error (strcat ("ClassificationDiscriminant: not all", ...
+                               " 'ClassNames' are present in Y."));
               endif
             endif
 
@@ -1362,12 +1364,14 @@ endclassdef
 %! ClassificationDiscriminant (X, Y, "ResponseName", {"Y"})
 %!error<ClassificationDiscriminant: 'ResponseName' must be a character vector.> ...
 %! ClassificationDiscriminant (X, Y, "ResponseName", 1)
-%!error<ClassificationDiscriminant: 'ClassNames' must be a cellstring, logical or numeric vector.> ...
+%!error<ClassificationDiscriminant: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.> ...
 %! ClassificationDiscriminant (X, Y, "ClassNames", @(x)x)
-%!error<ClassificationDiscriminant: 'ClassNames' must be a cellstring, logical or numeric vector.> ...
-%! ClassificationDiscriminant (X, Y, "ClassNames", ['a'])
+%!error<ClassificationDiscriminant: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.> ...
+%! ClassificationDiscriminant (X, Y, "ClassNames", {1})
 %!error<ClassificationDiscriminant: not all 'ClassNames' are present in Y.> ...
 %! ClassificationDiscriminant (X, ones (10,1), "ClassNames", [1, 2])
+%!error<ClassificationDiscriminant: not all 'ClassNames' are present in Y.> ...
+%! ClassificationDiscriminant ([1;2;3;4;5], ['a';'b';'a';'a';'b'], "ClassNames", ['a';'c'])
 %!error<ClassificationDiscriminant: not all 'ClassNames' are present in Y.> ...
 %! ClassificationDiscriminant ([1;2;3;4;5], {'a';'b';'a';'a';'b'}, "ClassNames", {'a','c'})
 %!error<ClassificationDiscriminant: not all 'ClassNames' are present in Y.> ...
