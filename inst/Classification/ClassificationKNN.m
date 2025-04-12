@@ -219,18 +219,22 @@ classdef ClassificationKNN
         str = repmat ({"'%s'"}, 1, numel (this.ClassNames));
         str = strcat ('{', strjoin (str, ' '), '}');
         str = sprintf (str, this.ClassNames{:});
-      else # numeric
+      elseif (ischar (this.ClassNames))
+        str = repmat ({"'%s'"}, 1, rows (this.ClassNames));
+        str = strcat ('[', strjoin (str, ' '), ']');
+        str = sprintf (str, cellstr (this.ClassNames){:});
+      else # single, double, logical
         str = repmat ({"%d"}, 1, numel (this.ClassNames));
         str = strcat ('[', strjoin (str, ' '), ']');
         str = sprintf (str, this.ClassNames);
       endif
-      fprintf ("%+25s: '%s'\n", 'ClassNames', str);
+      fprintf ("%+25s: %s\n", 'ClassNames', str);
       fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
-      fprintf ("%+25s: '%d'\n", 'NumObservations', this.NumObservations);
-      fprintf ("%+25s: '%d'\n", 'NumPredictors', this.NumPredictors);
+      fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
+      fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
       fprintf ("%+25s: '%s'\n", 'Distance', this.Distance);
       fprintf ("%+25s: '%s'\n", 'NSMethod', this.NSMethod);
-      fprintf ("%+25s: '%s'\n", 'NumNeighbors', this.NumNeighbors);
+      fprintf ("%+25s: %d\n", 'NumNeighbors', this.NumNeighbors);
     endfunction
 
     ## Class specific subscripted reference
@@ -592,9 +596,8 @@ classdef ClassificationKNN
       Y         = Y (RowsUsed);
       X         = X (RowsUsed, :);
 
-      ## Renew groups in Y
-      [gY, gnY, glY] = grp2idx (Y);
-      this.ClassNames = unique (Y);  # Keep the same type as Y
+      ## Renew groups in Y, get classes ordered, keep the same type
+      [this.ClassNames, gnY, gY] = unique (Y);
 
       ## Check X contains valid data
       if (! (isnumeric (X) && isfinite (X)))
@@ -838,6 +841,8 @@ classdef ClassificationKNN
       ## Make prediction
       if (iscellstr (this.ClassNames))
         labels = {};
+      elseif (ischar (this.ClassNames))
+        labels = '';
       else
         labels = [];
       endif
@@ -845,7 +850,7 @@ classdef ClassificationKNN
       cost  = [];
 
       ## Get IDs of labels for each point in training data
-      gY = grp2idx (Y);
+      [~, ~, gY] = unique (Y);
 
       ## Evaluate the K nearest neighbours for each new point
       for i = 1:rows (idx)
@@ -862,7 +867,7 @@ classdef ClassificationKNN
         kNNgY = gY(NN_idx);
 
         ## Count frequency for each class
-        for c = 1:numel (this.ClassNames)
+        for c = 1:rows (this.ClassNames)
           freq(c) = sum (kNNgY == c) / k;
         endfor
 
@@ -884,7 +889,7 @@ classdef ClassificationKNN
             endif
           endif
         endif
-        labels = [labels; this.ClassNames(idl)];
+        labels = [labels; this.ClassNames(idl,:)];
 
         ## Calculate scores and cost
         scores = [scores; freq];
@@ -894,13 +899,18 @@ classdef ClassificationKNN
         if (! strcmp (this.ScoreTransform, "none"))
           f = this.ScoreTransform;
           if (! strcmp (class (f), "function_handle"))
-            error (strcat (["ClassificationKNN.predict: 'ScoreTransform'"], ...
-                           [" must be a 'function_handle' object."]));
+            error (strcat ("ClassificationKNN.predict: 'ScoreTransform'", ...
+                           " must be a 'function_handle' object."));
           endif
           scores = f (scores);
         endif
 
       endfor
+
+      ## Convert double to logical if ClassNames are logical
+      if (islogical (this.ClassNames))
+        labels = logical (labels);
+      endif
 
     endfunction
 
@@ -972,8 +982,8 @@ classdef ClassificationKNN
       if (nargin < 3)
         error ("ClassificationKNN.loss: too few input arguments.");
       elseif (mod (nargin - 3, 2) != 0)
-        error (["ClassificationKNN.loss: name-value arguments must be in", ...
-                " pairs."]);
+        error (strcat ("ClassificationKNN.loss: name-value", ...
+                       " arguments must be in pairs."));
       elseif (nargin > 7)
         error ("ClassificationKNN.loss: too many input arguments.");
       endif
@@ -982,8 +992,8 @@ classdef ClassificationKNN
       if (isempty (X))
         error ("ClassificationKNN.loss: X is empty.");
       elseif (columns (this.X) != columns (X))
-        error (strcat (["ClassificationKNN.loss: X must have the same"], ...
-                       [" number of predictors as the trained model."]));
+        error (strcat ("ClassificationKNN.loss: X must have the same", ...
+                       " number of predictors as the trained model."));
       endif
 
       ## Default values
@@ -998,8 +1008,8 @@ classdef ClassificationKNN
 
       ## Validate size of Y
       if (size (Y, 1) != size (X, 1))
-        error (["ClassificationKNN.loss: Y must have the same number", ...
-                " of rows as X."]);
+        error (strcat ("ClassificationKNN.loss: Y must have", ...
+                       " the same number of rows as X."));
       endif
 
       ## Parse name-value arguments
@@ -1010,8 +1020,8 @@ classdef ClassificationKNN
             if (isa (Value, 'function_handle'))
               ## Check if the loss function is valid
               if (nargin (Value) != 4)
-                error (["ClassificationKNN.loss: custom loss function", ...
-                        " must accept exactly four input arguments."]);
+                error (strcat ("ClassificationKNN.loss: custom loss function", ...
+                               " must accept exactly four input arguments."));
               endif
               try
                 n = 1;
@@ -1022,12 +1032,12 @@ classdef ClassificationKNN
                 Cost_test = ones (K) - eye (K);
                 test_output = Value (C_test, S_test, W_test, Cost_test);
                 if (! isscalar (test_output))
-                  error (["ClassificationKNN.loss: custom loss function", ...
-                          " must return a scalar value."]);
+                  error (strcat ("ClassificationKNN.loss: custom loss", ...
+                                 " function must return a scalar value."));
                 endif
               catch
-                error (["ClassificationKNN.loss: custom loss function", ...
-                        " is not valid or does not produce correct output."]);
+                error (strcat ("ClassificationKNN.loss: custom loss function", ...
+                        " is not valid or does not produce correct output."));
               end_try_catch
               LossFun = Value;
             elseif (ischar (Value) && any (strcmpi (Value, {"binodeviance", ...
@@ -1065,24 +1075,23 @@ classdef ClassificationKNN
         endif
       endif
 
-      ## Convert Y to a cell array of strings
-      if (ischar (Y))
+      ## If Y is a char array convert it to a cell array of character vectors
+      classes = this.ClassNames;
+      if (ischar (Y) && ischar (classes))
         Y = cellstr (Y);
-      elseif (isnumeric (Y))
-        Y = cellstr (num2str (Y));
-      elseif (islogical (Y))
-        Y = cellstr (num2str (double (Y)));
-      elseif (iscell (Y))
-        Y = cellfun (@num2str, Y, 'UniformOutput', false);
-      else
-        error (["ClassificationKNN.loss: Y must be a numeric,", ...
-                " logical, char, string, or cell array."]);
+        classes = cellstr (classes);
+      endif
+
+      ## Check that Y is of the same type as ClassNames
+      if (! strcmp (class (Y), class (classes)))
+        error (strcat ("ClassificationKNN.loss: Y must be the", ...
+                       " same data type as the model's ClassNames."));
       endif
 
       ## Check if Y contains correct classes
       if (! all (ismember (unique (Y), this.ClassNames)))
-        error (["ClassificationKNN.loss: Y must contain only", ...
-                " the classes in ClassNames."]);
+        error (strcat ("ClassificationKNN.loss: Y must contain only", ...
+                       " the classes in model's ClassNames."));
       endif
 
       ## Set default weights if not specified
@@ -1091,11 +1100,11 @@ classdef ClassificationKNN
       endif
 
       ## Normalize Weights
-      unique_classes = this.ClassNames;
+      K = numel (classes);
       class_prior_probs = this.Prior;
       norm_weights = zeros (size (Weights));
-      for i = 1:numel (unique_classes)
-        class_idx = ismember (Y, unique_classes{i});
+      for i = 1:K
+        class_idx = ismember (Y, classes(i));
         if (sum (Weights(class_idx)) > 0)
           norm_weights(class_idx) = ...
           Weights(class_idx) * class_prior_probs(i) / sum (Weights(class_idx));
@@ -1108,13 +1117,15 @@ classdef ClassificationKNN
 
       ## Predict classification scores
       [label, scores] = predict (this, X);
+      if (ischar (label))
+        label = cellstr (label);
+      endif
 
       ## C is vector of K-1 zeros, with 1 in the
       ## position corresponding to the true class
-      K = numel (this.ClassNames);
       C = false (n, K);
       for i = 1:n
-        class_idx = find (ismember (this.ClassNames, Y{i}));
+        class_idx = find (ismember (classes, Y(i)));
         C(i, class_idx) = true;
       endfor
       Y_new = C';
@@ -1160,15 +1171,15 @@ classdef ClassificationKNN
             f_Xj = scores(i, :);
             gamma_jk = f_Xj * Cost;
             [~, min_cost_class] = min (gamma_jk);
-            cj = Cost(find (ismember (this.ClassNames, Y(i))), min_cost_class);
+            cj = Cost(find (ismember (classes, Y(i))), min_cost_class);
             L = L + Weights(i) * cj;
           endfor
         case 'classifcost'
           Cost = this.Cost;
           L = 0;
           for i = 1:n
-            y_idx = find (ismember (this.ClassNames, Y(i)));
-            y_hat_idx = find (ismember (this.ClassNames, label(i)));
+            y_idx = find (ismember (classes, Y(i)));
+            y_hat_idx = find (ismember (classes, label(i)));
             L = L + Weights(i) * Cost(y_idx, y_hat_idx);
           endfor
         otherwise
@@ -1215,8 +1226,8 @@ classdef ClassificationKNN
       if (isempty (X))
         error ("ClassificationKNN.margin: X is empty.");
       elseif (columns (this.X) != columns (X))
-        error (strcat (["ClassificationKNN.margin: X must have the same"], ...
-                       [" number of predictors as the trained model."]));
+        error (strcat ("ClassificationKNN.margin: X must have the same", ...
+                       " number of predictors as the trained model."));
       endif
 
       ## Validate Y
@@ -1233,28 +1244,27 @@ classdef ClassificationKNN
 
       ## Validate size of Y
       if (size (Y, 1) != size (X, 1))
-        error (["ClassificationKNN.margin: Y must have the same", ...
-                " number of rows as X."]);
+        error (strcat ("ClassificationKNN.margin: Y must have", ...
+                       " the same number of rows as X."));
       endif
 
-      ## Convert Y to a cell array of strings
-      if (ischar (Y))
+      ## If Y is a char array convert it to a cell array of character vectors
+      classes = this.ClassNames;
+      if (ischar (Y) && ischar (classes))
         Y = cellstr (Y);
-      elseif (isnumeric (Y))
-        Y = cellstr (num2str (Y));
-      elseif (islogical (Y))
-        Y = cellstr (num2str (double (Y)));
-      elseif (iscell (Y))
-        Y = cellfun (@num2str, Y, 'UniformOutput', false);
-      else
-        error (["ClassificationKNN.margin: Y must be a numeric,", ...
-                " logical, char, string, or cell array."]);
+        classes = cellstr (classes);
+      endif
+
+      ## Check that Y is of the same type as ClassNames
+      if (! strcmp (class (Y), class (classes)))
+        error (strcat ("ClassificationKNN.margin: Y must be the", ...
+                       " same data type as the model's ClassNames."));
       endif
 
       ## Check if Y contains correct classes
-      if (! all (ismember (unique (Y), this.ClassNames)))
-        error (["ClassificationKNN.margin: Y must contain only", ...
-                " the classes in ClassNames."]);
+      if (! all (ismember (unique (Y), classes)))
+        error (strcat ("ClassificationKNN.margin: Y must contain", ...
+                       " only the classes in model's ClassNames."));
       endif
 
       ## Number of Observations
@@ -1269,7 +1279,7 @@ classdef ClassificationKNN
       ## Loop over each observation to compute the margin
       for i = 1:n
         ## True class index
-        true_class_idx = find (ismember (this.ClassNames, Y{i}));
+        true_class_idx = find (ismember (classes, Y(i)));
 
         ## Score for the true class
         true_class_score = scores(i, true_class_idx);
@@ -1290,7 +1300,7 @@ classdef ClassificationKNN
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn {ClassificationKNN} {@var{[pd, x, y]} =} partialDependence (@var{obj}, @var{Vars}, @var{Labels})
+    ## @deftypefn  {ClassificationKNN} {@var{[pd, x, y]} =} partialDependence (@var{obj}, @var{Vars}, @var{Labels})
     ## @deftypefnx {ClassificationKNN} {@var{[pd, x, y]} =} partialDependence (@dots{}, @var{Data})
     ## @deftypefnx {ClassificationKNN} {@var{[pd, x, y]} =} partialDependence (@dots{}, @var{name}, @var{value})
     ##
@@ -1355,51 +1365,50 @@ classdef ClassificationKNN
       ## Validate Vars
       if (isnumeric (Vars))
         if (! all (Vars > 0) || ! (numel (Vars) == 1 || numel (Vars) == 2))
-          error (["ClassificationKNN.partialDependence: vars must be a", ...
+          error (["ClassificationKNN.partialDependence: VARS must be a", ...
                   " positive integer or vector of two positive integers."]);
         endif
       elseif (iscellstr (Vars))
         if (! (numel (Vars) == 1 || numel (Vars) == 2))
-          error (["ClassificationKNN.partialDependence: vars must be a", ...
-                  " string array or cell array of one or two character", ...
-                  " vectors."]);
+          error (strcat ("ClassificationKNN.partialDependence: VARS must", ...
+                         " be a string array or cell array of one or two", ...
+                         " character vectors."));
         endif
         Vars = cellfun (@(v) find (strcmp (this.PredictorNames, v)), Vars);
       elseif (ischar (Vars))
         Vars = find (strcmp (this.PredictorNames, Vars));
         if (isempty (Vars))
-          error (["ClassificationKNN.partialDependence: vars must", ...
-                  " match one of the predictor names."]);
+          error (strcat ("ClassificationKNN.partialDependence: VARS", ...
+                         " must match one of the predictor names."));
         endif
       else
-        error (["ClassificationKNN.partialDependence: vars must be", ...
-                " a string, or cell array."]);
+        error (strcat ("ClassificationKNN.partialDependence: VARS", ...
+                       " must be a string, or cell array."));
       endif
 
       ## Validate Labels
       if (! (ischar (Labels) || islogical (Labels) || ...
-          isnumeric (Labels) || iscellstr (Labels)))
-        error ("ClassificationKNN.partialDependence: invalid type for Labels.");
+          isnumeric (Labels) || iscellstr (Labels) || islogical (Labels)))
+        error ("ClassificationKNN.partialDependence: invalid type for LABELS.");
       endif
 
-      ## Convert Labels to a cell array of strings
-      if (ischar (Labels))
+      ## If Labels is a char array convert it to a cell array of character vectors
+      classes = this.ClassNames;
+      if (ischar (Labels) && ischar (classes))
         Labels = cellstr (Labels);
-      elseif (isnumeric (Labels))
-        Labels = cellstr (num2str (Labels));
-      elseif (islogical (Labels))
-        Labels = cellstr (num2str (double (Labels)));
-      elseif (iscell (Labels))
-        Labels = cellfun (@num2str, Labels, 'UniformOutput', false);
-      else
-        error (["ClassificationKNN.partialDependence: labels must be", ...
-                " a numeric, logical, string, or cell array."]);
+        classes = cellstr (classes);
+      endif
+
+      ## Check that Y is of the same type as ClassNames
+      if (! strcmp (class (Labels), class (classes)))
+        error (strcat ("ClassificationKNN.margin: LABELS must be the", ...
+                       " same data type as the model's ClassNames."));
       endif
 
       ## Additional validation to match ClassNames
-      if (! all (ismember (Labels, this.ClassNames)))
-        error (["ClassificationKNN.partialDependence: labels must match", ...
-                "the class names in the ClassNames property."]);
+      if (! all (ismember (Labels, classes)))
+        error (strcat ("ClassificationKNN.partialDependence: LABELS must", ...
+                       " match the class names in the model's ClassNames."));
       endif
 
       ## Default values
@@ -1414,15 +1423,15 @@ classdef ClassificationKNN
           Data = varargin{1};
           ## Ensure Data consistency
           if (! all (size (Data, 2) == numel (this.PredictorNames)))
-            error (["ClassificationKNN.partialDependence: data must have", ...
-                    " the same number and order of columns as the", ...
-                    " predictor variables."]);
+            error (strcat ("ClassificationKNN.partialDependence: DATA must", ...
+                           " have the same number and order of columns as", ...
+                           " the predictor variables."));
           endif
 
           ## Ensure Name-Value pairs are even length
           if (mod (nargin - 4, 2) != 0)
-            error (["ClassificationKNN.partialDependence: name-value", ...
-                    " arguments must be in pairs."]);
+            error (strcat ("ClassificationKNN.partialDependence:", ...
+                           " name-value arguments must be in pairs."));
           endif
 
           ## Set the number of observations to sample
@@ -1431,8 +1440,8 @@ classdef ClassificationKNN
         else
           ## Ensure Name-Value pairs are even length
           if (mod (nargin - 3, 2) != 0)
-            error (["ClassificationKNN.partialDependence: name-value", ...
-                    " arguments must be in pairs."]);
+            error (strcat ("ClassificationKNN.partialDependence:", ...
+                           " name-value arguments must be in pairs."));
           endif
           idx = 1;
         endif
@@ -1440,16 +1449,17 @@ classdef ClassificationKNN
         ## Handle name-value pair arguments
         for i = idx:2:length (varargin)
           if (! ischar (varargin{i}))
-            error (["ClassificationKNN.partialDependence: name arguments", ...
-                    " must be strings."]);
+            error (strcat ("ClassificationKNN.partialDependence: name", ...
+                           " arguments must be strings."));
           endif
           Value = varargin{i+1};
           ## Parse name-value pairs
           switch (lower (varargin{i}))
             case 'numobservationstosample'
               if (! isnumeric (Value) || Value <= 0 || Value != round (Value))
-                error (["ClassificationKNN.partialDependence: ", ...
-                        "NumObservationsToSample must be a positive integer."]);
+                error (strcat ("ClassificationKNN.partialDependence:", ...
+                               " NumObservationsToSample must be a", ...
+                               " positive integer."));
               endif
               NumObservationsToSample = Value;
               if (Value > size (Data, 1))
@@ -1457,21 +1467,21 @@ classdef ClassificationKNN
               endif
             case 'querypoints'
               if (! isnumeric (Value) && ! iscell (Value))
-                error (["ClassificationKNN.partialDependence: QueryPoints", ...
-                        " must be a numeric column vector, numeric", ...
-                        " two-column matrix, or cell array of", ...
-                        " character column vectors."]);
+                error (strcat ("ClassificationKNN.partialDependence:", ...
+                               " QueryPoints must be a numeric column", ...
+                               " vector, numeric two-column matrix, or", ...
+                               " cell array of character column vectors."));
               endif
               QueryPoints = Value;
             case 'useparallel'
               if (! islogical (UseParallel))
-                error (["ClassificationKNN.partialDependence: ", ...
-                        "UseParallel must be a logical value."]);
+                error (strcat ("ClassificationKNN.partialDependence:", ...
+                               " UseParallel must be a logical value."));
               endif
               UseParallel = Value;
             otherwise
-              error (["ClassificationKNN.partialDependence: ", ...
-                      "name-value pair argument not recognized."]);
+              error (strcat ("ClassificationKNN.partialDependence:", ...
+                             " name-value pair argument not recognized."));
           endswitch
         endfor
       endif
@@ -1516,7 +1526,7 @@ classdef ClassificationKNN
       endif
 
       ## Predict responses for the grid points
-      numClasses = numel (this.ClassNames);
+      numClasses = numel (classes);
       numQueryPoints = size (gridPoints, 1);
       predictions = zeros (numQueryPoints, numClasses);
 
@@ -1545,12 +1555,12 @@ classdef ClassificationKNN
       ## Compute partial dependence
       if (numel (Vars) == 1)
         if (numel (Labels) == 1)
-          classIndex = find (strcmp (this.ClassNames, Labels));
+          classIndex = find (ismember (classes, Labels));
           pd = predictions(:, classIndex)';
         else
           pd = zeros (numel (Labels), numel (QueryPoints));
           for j = 1:numel (Labels)
-            classIndex = find (strcmp (this.ClassNames, Labels{j}));
+            classIndex = find (ismember (classes, Labels(j)));
             pd(j, :) = predictions(:, classIndex)';
           endfor
         endif
@@ -1558,16 +1568,17 @@ classdef ClassificationKNN
         y = [];
       else
         if (numel (Labels) == 1)
-          classIndex = find (strcmp (this.ClassNames, Labels));
+          classIndex = find (ismember (classes, Labels));
           pd = reshape (predictions(:, classIndex), numel (QueryPoints{1}), ...
-                numel (QueryPoints{2}));
+                        numel (QueryPoints{2}));
         else
           pd = zeros (numel (Labels), numel (QueryPoints{1}), ...
-                numel (QueryPoints{2}));
+                      numel (QueryPoints{2}));
           for j = 1:numel (Labels)
-            classIndex = find (strcmp (this.ClassNames, Labels{j}));
+            classIndex = find (ismember (classes, Labels(j)));
             pd(j, :, :) = reshape (predictions(:, classIndex), ...
-                          numel (QueryPoints{1}), numel (QueryPoints{2}));
+                                   numel (QueryPoints{1}), ...
+                                   numel (QueryPoints{2}));
           endfor
         endif
         x = QueryPoints{1};
@@ -1622,11 +1633,11 @@ classdef ClassificationKNN
       endif
 
       if (numel (varargin) == 1)
-        error (strcat (["ClassificationKNN.crossval: Name-Value arguments"], ...
-                       [" must be in pairs."]));
+        error (strcat ("ClassificationKNN.crossval: Name-Value", ...
+                       " arguments must be in pairs."));
       elseif (numel (varargin) > 2)
-        error (strcat (["ClassificationKNN.crossval: specify only one of"], ...
-                       [" the optional Name-Value paired arguments."]));
+        error (strcat ("ClassificationKNN.crossval: specify only one", ...
+                       " of the optional Name-Value paired arguments."));
       endif
 
       ## Add default values
@@ -1643,36 +1654,36 @@ classdef ClassificationKNN
             numFolds = varargin{2};
             if (! (isnumeric (numFolds) && isscalar (numFolds)
                    && (numFolds == fix (numFolds)) && numFolds > 1))
-              error (strcat (["ClassificationKNN.crossval: 'KFold' must"], ...
-                             [" be an integer value greater than 1."]));
+              error (strcat ("ClassificationKNN.crossval: 'KFold' must", ...
+                             " be an integer value greater than 1."));
             endif
 
           case 'holdout'
             Holdout = varargin{2};
             if (! (isnumeric (Holdout) && isscalar (Holdout) && Holdout > 0
                    && Holdout < 1))
-              error (strcat (["ClassificationKNN.crossval: 'Holdout' must"], ...
-                             [" be a numeric value between 0 and 1."]));
+              error (strcat ("ClassificationKNN.crossval: 'Holdout' must", ...
+                             " be a numeric value between 0 and 1."));
             endif
 
           case 'leaveout'
             Leaveout = varargin{2};
             if (! (ischar (Leaveout)
                    && (strcmpi (Leaveout, 'on') || strcmpi (Leaveout, 'off'))))
-              error (strcat (["ClassificationKNN.crossval: 'Leaveout'"], ...
-                             [" must be either 'on' or 'off'."]));
+              error (strcat ("ClassificationKNN.crossval: 'Leaveout'", ...
+                             " must be either 'on' or 'off'."));
             endif
 
           case 'cvpartition'
             CVPartition = varargin{2};
             if (! (isa (CVPartition, 'cvpartition')))
-              error (strcat (["ClassificationKNN.crossval: 'CVPartition'"],...
-                             [" must be a 'cvpartition' object."]));
+              error (strcat ("ClassificationKNN.crossval: 'CVPartition'",...
+                             " must be a 'cvpartition' object."));
             endif
 
           otherwise
-            error (strcat (["ClassificationKNN.crossval: invalid"],...
-                           [" parameter name in optional paired arguments."]));
+            error (strcat ("ClassificationKNN.crossval: invalid",...
+                           " parameter name in optional paired arguments."));
           endswitch
         varargin (1:2) = [];
       endwhile
@@ -2062,7 +2073,7 @@ endfunction
 %! x = [1, 2; 3, 4; 5,6; 5, 8];
 %! y = {'9'; '9'; '6'; '7'};
 %! a = ClassificationKNN (x, y);
-%! assert (a.Prior, [0.5; 0.25; 0.25])
+%! assert (a.Prior, [0.25; 0.25; 0.5])
 
 ## Test constructor with ClassNames parameter
 %!test
@@ -2364,6 +2375,16 @@ endfunction
 %! Y = {'versicolor'};
 %! L = loss (model, X, Y);
 %! assert (L, 0)
+%!test
+%! load fisheriris
+%! model = fitcknn (meas, species, 'NumNeighbors', 5);
+%! L = loss (model, meas, species, 'LossFun', 'binodeviance');
+%! assert (L, 0.1413, 1e-4)
+%!test
+%! load fisheriris
+%! model = fitcknn (meas, species);
+%! L = loss (model, meas, species, 'LossFun', 'binodeviance');
+%! assert (L, 0.1269, 1e-4)
 %!test
 %! X = [1, 2; 3, 4; 5, 6];
 %! Y = {'A'; 'B'; 'A'};
@@ -2675,10 +2696,10 @@ endfunction
 %! partialDependence (ClassificationKNN (ones (4,2), ones (4,1)), 1)
 %!error<ClassificationKNN.partialDependence: name-value arguments must be in pairs.> ...
 %! partialDependence (ClassificationKNN (ones (4,2), ones (4,1)), 1, ...
-%!          ones (4,1), 'NumObservationsToSample')
+%! ones (4,1), 'NumObservationsToSample')
 %!error<ClassificationKNN.partialDependence: name-value arguments must be in pairs.> ...
 %! partialDependence (ClassificationKNN (ones (4,2), ones (4,1)), 1, ...
-%!          ones (4,1), 2)
+%! ones (4,1), 2)
 
 ## Test output for crossval method
 %!shared x, y, obj
