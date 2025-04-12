@@ -421,9 +421,8 @@ classdef ClassificationDiscriminant
       Y         = Y (RowsUsed);
       X         = X (RowsUsed, :);
 
-      ## Renew groups in Y
-      [gY, gnY, glY] = grp2idx (Y);
-      this.ClassNames = unique (Y);  # Keep the same type as Y
+      ## Renew groups in Y, get classes ordered, keep the same type
+      [this.ClassNames, gnY, gY] = unique (Y);
 
       ## Check X contains valid data
       if (! (isnumeric (X) && isfinite (X)))
@@ -469,7 +468,7 @@ classdef ClassificationDiscriminant
       this.Delta = Delta;
       this.Gamma = Gamma;
 
-      num_classes = numel (this.ClassNames);
+      num_classes = rows (this.ClassNames);
       num_features = columns (X);
       this.Mu = zeros (num_classes, num_features);
       for i = 1:num_classes
@@ -551,8 +550,8 @@ classdef ClassificationDiscriminant
                 this.Coeffs(i, j).DiscrimType = "";
                 this.Coeffs(i, j).Const = [];
                 this.Coeffs(i, j).Linear = [];
-                this.Coeffs(i, j).Class1 = this.ClassNames(i);
-                this.Coeffs(i, j).Class2 = this.ClassNames(j);
+                this.Coeffs(i, j).Class1 = this.ClassNames(i,:);
+                this.Coeffs(i, j).Class2 = this.ClassNames(j,:);
                 if (i != j)
                   A = (this.Mu(i, :) - this.Mu(j, :)) / this.Sigma;
                   K = log (this.Prior(i) ...
@@ -1013,7 +1012,7 @@ classdef ClassificationDiscriminant
       ## Check if Y contains correct classes
       if (! all (ismember (unique (Y), classes)))
         error (strcat ("ClassificationDiscriminant.margin: Y must", ...
-                       " contain only the classes in ClassNames."));
+                       " contain only the classes in model's ClassNames."));
       endif
 
       ## Number of Observations
