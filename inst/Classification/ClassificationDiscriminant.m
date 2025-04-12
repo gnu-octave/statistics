@@ -176,15 +176,19 @@ classdef ClassificationDiscriminant
         str = repmat ({"'%s'"}, 1, numel (this.ClassNames));
         str = strcat ('{', strjoin (str, ' '), '}');
         str = sprintf (str, this.ClassNames{:});
-      else # numeric
+      elseif (ischar (this.ClassNames))
+        str = repmat ({"'%s'"}, 1, rows (this.ClassNames));
+        str = strcat ('[', strjoin (str, ' '), ']');
+        str = sprintf (str, cellstr (this.ClassNames){:});
+      else # single, double, logical
         str = repmat ({"%d"}, 1, numel (this.ClassNames));
         str = strcat ('[', strjoin (str, ' '), ']');
         str = sprintf (str, this.ClassNames);
       endif
-      fprintf ("%+25s: '%s'\n", 'ClassNames', str);
+      fprintf ("%+25s: %s\n", 'ClassNames', str);
       fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
-      fprintf ("%+25s: '%d'\n", 'NumObservations', this.NumObservations);
-      fprintf ("%+25s: '%d'\n", 'NumPredictors', this.NumPredictors);
+      fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
+      fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
       fprintf ("%+25s: '%s'\n", 'DiscrimType', this.DiscrimType);
       fprintf ("%+25s: [%dx%d double]\n", 'Mu', size (this.Mu));
       fprintf ("%+25s: [%dx%d struct]\n\n", 'Coeffs', size (this.Sigma));
@@ -624,7 +628,7 @@ classdef ClassificationDiscriminant
       Y = this.Y(this.RowsUsed,:);
 
       numObservations = rows (XC);
-      numClasses = numel (this.ClassNames);
+      numClasses = rows (this.ClassNames);
       score = zeros (numObservations, numClasses);
       cost = zeros (numObservations, numClasses);
 
@@ -650,7 +654,7 @@ classdef ClassificationDiscriminant
 
       ## Predict the class labels based on the minimum cost
       [~, minIdx] = min (cost, [], 2);
-      label = this.ClassNames(minIdx);
+      label = this.ClassNames(minIdx,:);
 
     endfunction
 
@@ -822,24 +826,23 @@ classdef ClassificationDiscriminant
         endif
       endif
 
-      ## Convert Y to a cell array of strings
-      if (ischar (Y))
+      ## If Y is a char array convert it to a cell array of character vectors
+      classes = this.ClassNames;
+      if (ischar (Y) && ischar (classes))
         Y = cellstr (Y);
-      elseif (isnumeric (Y))
-        Y = cellstr (num2str (Y));
-      elseif (islogical (Y))
-        Y = cellstr (num2str (double (Y)));
-      elseif (iscell (Y))
-        Y = cellfun (@num2str, Y, 'UniformOutput', false);
-      else
-        error (strcat ("ClassificationDiscriminant.loss: Y must be a", ...
-                       " numeric, logical, char, string, or cell array."));
+        classes = cellstr (classes);
+      endif
+
+      ## Check that Y is of the same type as ClassNames
+      if (! strcmp (class (Y), class (classes)))
+        error (strcat ("ClassificationDiscriminant.loss: Y must be", ...
+                       " the same data type as the model's ClassNames."));
       endif
 
       ## Check if Y contains correct classes
-      if (! all (ismember (unique (Y), this.ClassNames)))
+      if (! all (ismember (unique (Y), classes)))
         error (strcat ("ClassificationDiscriminant.loss: Y must contain", ...
-                       " only the classes in ClassNames."));
+                       " only the classes in model's ClassNames."));
       endif
 
       ## Set default weights if not specified
@@ -848,11 +851,11 @@ classdef ClassificationDiscriminant
       endif
 
       ## Normalize Weights
-      unique_classes = this.ClassNames;
+      K = numel (classes);
       class_prior_probs = this.Prior;
       norm_weights = zeros (size (Weights));
-      for i = 1:numel (unique_classes)
-        class_idx = ismember (Y, unique_classes{i});
+      for i = 1:K
+        class_idx = ismember (Y, classes(i));
         if (sum (Weights(class_idx)) > 0)
           norm_weights(class_idx) = ...
           Weights(class_idx) * class_prior_probs(i) / sum (Weights(class_idx));
@@ -868,10 +871,9 @@ classdef ClassificationDiscriminant
 
       ## C is vector of K-1 zeros, with 1 in the
       ## position corresponding to the true class
-      K = numel (this.ClassNames);
       C = false (n, K);
       for i = 1:n
-        class_idx = find (ismember (this.ClassNames, Y{i}));
+        class_idx = find (ismember (classes, Y(i)));
         C(i, class_idx) = true;
       endfor
       Y_new = C';
@@ -917,15 +919,15 @@ classdef ClassificationDiscriminant
             f_Xj = scores(i, :);
             gamma_jk = f_Xj * Cost;
             [~, min_cost_class] = min (gamma_jk);
-            cj = Cost(find (ismember (this.ClassNames, Y(i))), min_cost_class);
+            cj = Cost(find (ismember (classes, Y(i))), min_cost_class);
             L = L + Weights(i) * cj;
           endfor
         case 'classifcost'
           Cost = this.Cost;
           L = 0;
           for i = 1:n
-            y_idx = find (ismember (this.ClassNames, Y(i)));
-            y_hat_idx = find (ismember (this.ClassNames, label(i)));
+            y_idx = find (ismember (classes, Y(i)));
+            y_hat_idx = find (ismember (classes, label(i)));
             L = L + Weights(i) * Cost(y_idx, y_hat_idx);
           endfor
         otherwise
@@ -995,22 +997,21 @@ classdef ClassificationDiscriminant
                        " have the same number of rows as X."));
       endif
 
-      ## Convert Y to a cell array of strings
-      if (ischar (Y))
+      ## If Y is a char array convert it to a cell array of character vectors
+      classes = this.ClassNames;
+      if (ischar (Y) && ischar (classes))
         Y = cellstr (Y);
-      elseif (isnumeric (Y))
-        Y = cellstr (num2str (Y));
-      elseif (islogical (Y))
-        Y = cellstr (num2str (double (Y)));
-      elseif (iscell (Y))
-        Y = cellfun (@num2str, Y, 'UniformOutput', false);
-      else
+        classes = cellstr (classes);
+      endif
+
+      ## Check that Y is of the same type as ClassNames
+      if (! strcmp (class (Y), class (classes)))
         error (strcat ("ClassificationDiscriminant.margin: Y must be", ...
-                       " a numeric, logical, char, string, or cell array."));
+                       " the same data type as the model's ClassNames."));
       endif
 
       ## Check if Y contains correct classes
-      if (! all (ismember (unique (Y), this.ClassNames)))
+      if (! all (ismember (unique (Y), classes)))
         error (strcat ("ClassificationDiscriminant.margin: Y must", ...
                        " contain only the classes in ClassNames."));
       endif
@@ -1027,7 +1028,7 @@ classdef ClassificationDiscriminant
       ## Loop over each observation to compute the margin
       for i = 1:n
         ## True class index
-        true_class_idx = find (ismember (this.ClassNames, Y{i}));
+        true_class_idx = find (ismember (classes, Y(i)));
 
         ## Score for the true class
         true_class_score = scores(i, true_class_idx);
