@@ -158,6 +158,7 @@ endfunction
 ## Demonstration using the confusion matrix example from
 ## R.Bonnin, "Machine Learning for Developers", pp. 55-56
 %!demo
+%! close all
 %! ## Setting the chart properties
 %! Yt = [8 5 6 8 5 3 1 6 4 2 5 3 1 4]';
 %! Yp = [8 5 6 8 5 2 3 4 4 5 5 7 2 6]';
@@ -168,31 +169,38 @@ endfunction
 
 ## example: confusion matrix and class labels
 %!demo
+%! close all
 %! ## Cellstr as inputs
 %! Yt = {"Positive", "Positive", "Positive", "Negative", "Negative"};
 %! Yp = {"Positive", "Positive", "Negative", "Negative", "Negative"};
 %! m = confusionmat (Yt, Yp);
 %! confusionchart (m, {"Positive", "Negative"});
+%! hold off
 
 ## example: editing the properties of an existing ConfusionMatrixChart object
 %!demo
+%! close all
 %! ## Editing the object properties
 %! Yt = {"Positive", "Positive", "Positive", "Negative", "Negative"};
 %! Yp = {"Positive", "Positive", "Negative", "Negative", "Negative"};
 %! cm = confusionchart (Yt, Yp);
 %! cm.Title = "This is an example with a green diagonal";
 %! cm.DiagonalColor = [0.4660, 0.6740, 0.1880];
+%! hold off
 
 ## example: drawing the chart inside a uipanel
 %!demo
+%! close all
 %! ## Confusion chart in a uipanel
 %! h = uipanel ();
 %! Yt = {"Positive", "Positive", "Positive", "Negative", "Negative"};
 %! Yp = {"Positive", "Positive", "Negative", "Negative", "Negative"};
 %! cm = confusionchart (h, Yt, Yp);
+%! hold off
 
 ## example: sortClasses
 %!demo
+%! close all
 %! ## Sorting classes
 %! Yt = [8 5 6 8 5 3 1 6 4 2 5 3 1 4]';
 %! Yp = [8 5 6 8 5 2 3 4 4 5 5 7 2 6]';
