@@ -202,24 +202,28 @@ classdef ClassificationNeuralNetwork
         str = repmat ({"'%s'"}, 1, numel (this.ClassNames));
         str = strcat ('{', strjoin (str, ' '), '}');
         str = sprintf (str, this.ClassNames{:});
-      else # numeric
+      elseif (ischar (this.ClassNames))
+        str = repmat ({"'%s'"}, 1, rows (this.ClassNames));
+        str = strcat ('[', strjoin (str, ' '), ']');
+        str = sprintf (str, cellstr (this.ClassNames){:});
+      else # single, double, logical
         str = repmat ({"%d"}, 1, numel (this.ClassNames));
         str = strcat ('[', strjoin (str, ' '), ']');
         str = sprintf (str, this.ClassNames);
       endif
-      fprintf ("%+25s: '%s'\n", 'ClassNames', str);
+      fprintf ("%+25s: %s\n", 'ClassNames', str);
       fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
-      fprintf ("%+25s: '%d'\n", 'NumObservations', this.NumObservations);
-      fprintf ("%+25s: '%d'\n", 'NumPredictors', this.NumPredictors);
+      fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
+      fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
       str = repmat ({"%d"}, 1, numel (this.LayerSizes));
       str = strcat ('[', strjoin (str, ' '), ']');
       str = sprintf (str, this.LayerSizes);
-      fprintf ("%+25s: '%s'\n", 'LayerSizes', str);
+      fprintf ("%+25s: %s\n", 'LayerSizes', str);
       if (iscellstr (this.Activations))
         str = repmat ({"'%s'"}, 1, numel (this.Activations));
         str = strcat ('{', strjoin (str, ' '), '}');
         str = sprintf (str, this.Activations{:});
-        fprintf ("%+25s: '%s'\n", 'Activations', str);
+        fprintf ("%+25s: %s\n", 'Activations', str);
       else # character vector
         fprintf ("%+25s: '%s'\n", 'Activations', this.Activations);
       endif
@@ -487,14 +491,8 @@ classdef ClassificationNeuralNetwork
       Y         = Y (RowsUsed);
       X         = X (RowsUsed, :);
 
-      ## Renew groups in Y
-      [gY, gnY, glY] = grp2idx (Y);
-      this.ClassNames = unique (Y);  # Keep the same type as Y
-
-      ## Force Y into numeric
-      if (! isnumeric (Y))
-        Y = gY;
-      endif
+      ## Renew groups in Y, get classes ordered, keep the same type
+      [this.ClassNames, gnY, gY] = unique (Y);
 
       ## Check X contains valid data
       if (! (isnumeric (X) && isfinite (X)))
@@ -548,8 +546,8 @@ classdef ClassificationNeuralNetwork
       NumThreads = nproc ();
       Alpha = 0.01;  # used for ReLU and ELU activation layers
       cnn_timer_ = tic;
-      Mdl = fcnntrain (X, Y, LayerSizes, ActivationCodes, NumThreads, Alpha, ...
-                       LearningRate, IterationLimit, DisplayInfo);
+      Mdl = fcnntrain (X, gY, LayerSizes, ActivationCodes, NumThreads, ...
+                       Alpha, LearningRate, IterationLimit, DisplayInfo);
 
       ## Store training time, Iterations, and Loss
       ConvergenceInfo.Time = toc (cnn_timer_);
@@ -626,12 +624,7 @@ classdef ClassificationNeuralNetwork
       if (nargout > 1)
         ## Apply ScoreTransform to return probability estimates
         if (! strcmp (this.ScoreTransform, "none"))
-          f = this.ScoreTransform;
-          if (! strcmp (class (f), "function_handle"))
-            error (strcat ("ClassificationNeuralNetwork.predict:", ...
-                      " 'ScoreTransform' must be a 'function_handle' object."));
-          endif
-          scores = f (scores);
+          scores = this.ScoreTransform (scores);
         endif
       endif
 
@@ -685,12 +678,7 @@ classdef ClassificationNeuralNetwork
       if (nargout > 1)
         ## Apply ScoreTransform to return probability estimates
         if (! strcmp (this.ScoreTransform, "none"))
-          f = this.ScoreTransform;
-          if (! strcmp (class (f), "function_handle"))
-            error (strcat ("ClassificationNeuralNetwork.resubPredict:", ...
-                      " 'ScoreTransform' must be a 'function_handle' object."));
-          endif
-          scores = f (scores);
+          scores = this.ScoreTransform (scores);
         endif
       endif
 
@@ -746,8 +734,9 @@ classdef ClassificationNeuralNetwork
         error (strcat ("ClassificationNeuralNetwork.crossval: Name-Value", ...
                        " arguments must be in pairs."));
       elseif (numel (varargin) > 2)
-        error (strcat ("ClassificationNeuralNetwork.crossval: specify", ...
-                     " only one of the optional Name-Value paired arguments."));
+        error (strcat ("ClassificationNeuralNetwork.crossval:", ...
+                       " specify only one of the optional", ...
+                       " Name-Value paired arguments."));
       endif
 
       ## Add default values
@@ -765,7 +754,8 @@ classdef ClassificationNeuralNetwork
             if (! (isnumeric (numFolds) && isscalar (numFolds)
                    && (numFolds == fix (numFolds)) && numFolds > 1))
               error (strcat ("ClassificationNeuralNetwork.crossval:", ...
-                          " 'KFold' must be an integer value greater than 1."));
+                             " 'KFold' must be an integer value", ...
+                             " greater than 1."));
             endif
 
           case 'holdout'
@@ -773,7 +763,8 @@ classdef ClassificationNeuralNetwork
             if (! (isnumeric (Holdout) && isscalar (Holdout) && Holdout > 0
                    && Holdout < 1))
               error (strcat ("ClassificationNeuralNetwork.crossval:", ...
-                        " 'Holdout' must be a numeric value between 0 and 1."));
+                             " 'Holdout' must be a numeric value", ...
+                             " between 0 and 1."));
             endif
 
           case 'leaveout'
@@ -950,9 +941,9 @@ endfunction
 %! ClassificationNeuralNetwork (ones (5,2), ones (5,1), "ResponseName", {"Y"})
 %!error<ClassificationNeuralNetwork: 'ResponseName' must be a character vector.> ...
 %! ClassificationNeuralNetwork (ones (5,2), ones (5,1), "ResponseName", 1)
-%!error<ClassificationNeuralNetwork: 'ClassNames' must be a cellstring, logical or numeric vector.> ...
+%!error<ClassificationNeuralNetwork: 'ClassNames' must be a cellstring, logical, or numeric vector.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones (10,1), "ClassNames", @(x)x)
-%!error<ClassificationNeuralNetwork: 'ClassNames' must be a cellstring, logical or numeric vector.> ...
+%!error<ClassificationNeuralNetwork: 'ClassNames' must be a cellstring, logical, or numeric vector.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones (10,1), "ClassNames", ['a'])
 %!error<ClassificationNeuralNetwork: not all 'ClassNames' are present in Y.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones (10,1), "ClassNames", [1, 2])
@@ -1004,12 +995,14 @@ endfunction
 %!error<ClassificationNeuralNetwork: invalid values in X.> ...
 %! ClassificationNeuralNetwork ([1;2;3;Inf;4], ones (5,1))
 
-## Test output for predict method
+## Test input validation for subsasgn method
 %!shared x, y, objST, Mdl
 %! load fisheriris
 %! x = meas;
 %! y = grp2idx (species);
 %! Mdl = fitcnet (x, y, "IterationLimit", 100);
+%!error<ClassificationNeuralNetwork: unrecognized 'ScoreTransform' function.> ...
+%! Mdl.ScoreTransform = "a";
 
 ## Test input validation for predict method
 %!error<ClassificationNeuralNetwork.predict: too few input arguments.> ...
@@ -1018,15 +1011,6 @@ endfunction
 %! predict (Mdl, [])
 %!error<ClassificationNeuralNetwork.predict: XC must have the same number of predictors as the trained model.> ...
 %! predict (Mdl, 1)
-%!test
-%! objST = fitcnet (x, y, "IterationLimit", 100);
-%! objST.ScoreTransform = "a";
-%!error<ClassificationNeuralNetwork.predict: 'ScoreTransform' must be a 'function_handle' object.> ...
-%! [labels, scores] = predict (objST, x);
-
-## Test input validation for resubPredict method
-%!error<ClassificationNeuralNetwork.resubPredict: 'ScoreTransform' must be a 'function_handle' object.> ...
-%! [labels, scores] = resubPredict (objST);
 
 ## Test output for crossval method
 %!test
