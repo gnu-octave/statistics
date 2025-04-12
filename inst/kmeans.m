@@ -503,6 +503,7 @@ endfunction
 %! hold on;
 %! plot (data (idx==2, 1), data (idx==2, 2), "bs");
 %! plot (centers (:, 1), centers (:, 2), "kv", "markersize", 10);
+%! title ("A simple two-clusters example");
 %! hold off;
 
 %!demo
@@ -603,6 +604,7 @@ endfunction
 %! ## Plot the test data and label the test data using idx_test with gscatter
 %!
 %! gscatter (Xtest(:,1), Xtest(:,2), group, "bgm", "ooo");
+%! box on;
 %! legend ("Cluster 1", "Cluster 2", "Cluster 3", "Cluster Centroid", ...
 %!         "Data classified to Cluster 1", "Data classified to Cluster 2", ...
 %!         "Data classified to Cluster 3", "Location", "NorthWest");
