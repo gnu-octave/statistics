@@ -897,12 +897,7 @@ classdef ClassificationKNN
 
         ## Apply ScoreTransform (if applicable)
         if (! strcmp (this.ScoreTransform, "none"))
-          f = this.ScoreTransform;
-          if (! strcmp (class (f), "function_handle"))
-            error (strcat ("ClassificationKNN.predict: 'ScoreTransform'", ...
-                           " must be a 'function_handle' object."));
-          endif
-          scores = f (scores);
+          scores = this.ScoreTransform (scores);
         endif
 
       endfor
