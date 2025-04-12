@@ -385,7 +385,7 @@ classdef ConfusionMatrixChart < handle
         tree = linkage (D, "average"); # clustering
         ## we could have optimal leaf ordering with
         Idx = optimalleaforder (tree, D); # optimal clustering
-        ## [sorted_v Idx] = sort (cluster (tree, ));
+        ##[~, Idx] = sort (cluster (tree));
         nodes_to_visit = 2 * cm_size - 1;
         nodecount = 0;
         while (! isempty (nodes_to_visit))
@@ -452,62 +452,59 @@ classdef ConfusionMatrixChart < handle
 
       ## get text and patch handles
       kids = get (this.hax, "children");
-      t_kids = kids(find (isprop (kids, "fontname"))); # hack to find texts
+      t_kid = kids(find (isprop (kids, "fontname"))); # hack to find texts
       m_kid = kids(find (strcmp (get (kids, "userdata"), "MainChart")));
       c_kid = kids(find (strcmp (get (kids, "userdata"), "ColumnSummary")));
       r_kid = kids(find (strcmp (get (kids, "userdata"), "RowSummary")));
 
       ## re-assign colors to the main chart
-      cdata_m = reshape (get (m_kid, "cdata"), cm_size, cm_size);
+      cdata_v = get (m_kid, "cdata");
+      cdata_m = reshape (cdata_v, cm_size, cm_size);
       cdata_m = cdata_m(Idx, :);
       cdata_m = cdata_m(:, Idx);
-
-      cdata_v = vec (cdata_m);
-
+      cdata_v = reshape (cdata_m, size (cdata_v));
       set (m_kid, "cdata", cdata_v);
 
       ## re-assign colors to the column summary
-      cdata_m = reshape (transpose (get (c_kid, "cdata")), cm_size, 2);
+      cdata_v = get (c_kid, "cdata");
+      cdata_m = reshape (transpose (cdata_v), cm_size, 2);
       cdata_m = cdata_m(Idx, :);
-
-      cdata_v = vec (cdata_m);
-
+      cdata_v = reshape (cdata_m, size (cdata_v));
       set (c_kid, "cdata", cdata_v);
 
       ## re-assign colors to the row summary
-      cdata_m = reshape (get (r_kid, "cdata"), cm_size, 2);
+      cdata_v = get (r_kid, "cdata");
+      cdata_m = reshape (cdata_v, cm_size, 2);
       cdata_m = cdata_m(Idx, :);
-
-      cdata_v = vec (cdata_m);
-
+      cdata_v = reshape (cdata_m, size (cdata_v));
       set (r_kid, "cdata", cdata_v);
 
       ## move the text labels
-      for i = 1:length (t_kids)
-        t_pos = get (t_kids(i), "userdata");
+      for i = 1:length (t_kid)
+        t_pos = get (t_kid(i), "userdata");
 
         if (t_pos(2) > cm_size)
           ## row summary
           t_pos(1) = find (Idx == (t_pos(1) + 1)) - 1;
-          set (t_kids(i), "userdata", t_pos);
+          set (t_kid(i), "userdata", t_pos);
 
           t_pos = t_pos([2 1]) + 0.5;
-          set (t_kids(i), "position", t_pos);
+          set (t_kid(i), "position", t_pos);
         elseif (t_pos(1) > cm_size)
           ## column summary
           t_pos(2) = find (Idx == (t_pos(2) + 1)) - 1;
-          set (t_kids(i), "userdata", t_pos);
+          set (t_kid(i), "userdata", t_pos);
 
           t_pos = t_pos([2 1]) + 0.5;
-          set (t_kids(i), "position", t_pos);
+          set (t_kid(i), "position", t_pos);
         else
           ## main chart
           t_pos(1) = find (Idx == (t_pos(1) + 1)) - 1;
           t_pos(2) = find (Idx == (t_pos(2) + 1)) - 1;
-          set (t_kids(i), "userdata", t_pos);
+          set (t_kid(i), "userdata", t_pos);
 
           t_pos = t_pos([2 1]) + 0.5;
-          set (t_kids(i), "position", t_pos);
+          set (t_kid(i), "position", t_pos);
         endif
       endfor
 
