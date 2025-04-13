@@ -30,9 +30,9 @@
 ## A scalar input functions as a constant matrix of the same size as the other
 ## inputs.
 ##
-## @code{@var{p} = burrcdf (@var{x}, @var{beta}, @var{gamma}, "upper")}
-## computes the upper tail probability of the Birnbaum-Saunders distribution
-## with parameters @var{beta} and @var{gamma}, at the values in @var{x}.
+## @code{@var{p} = burrcdf (@var{x}, @var{lambda}, @var{c}, @var{k}, "upper")}
+## computes the upper tail probability of the Burr type XII distribution with
+## parameters @var{lambda}, @var{c} and @var{k}, at the values in @var{x}.
 ##
 ## Further information about the Burr distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Burr_distribution}
