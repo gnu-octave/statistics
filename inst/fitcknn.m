@@ -371,7 +371,7 @@ endfunction
 %! [x1G, x2G] = meshgrid (x1, x2);
 %! XGrid = [x1G(:), x2G(:)];
 %! pred = predict (obj, XGrid);
-%! gidx = logical (str2num (cell2mat (pred)));
+%! gidx = logical (pred);
 %!
 %! figure
 %! scatter (XGrid(gidx,1), XGrid(gidx,2), "markerfacecolor", "magenta");

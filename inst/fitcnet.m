@@ -143,7 +143,8 @@ endfunction
 %! load fisheriris
 %! Mdl = fitcnet (meas, species);
 %! pred_species = resubPredict (Mdl);
-%! confusionchart (species, pred_species);
+%! confusionchart (species, pred_species, "Title", ...
+%! "Fully Connected Neural Network classification on Fisher's Iris dataset");
 
 ## Test constructor
 %!test

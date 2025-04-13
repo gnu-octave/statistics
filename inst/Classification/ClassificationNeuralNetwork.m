@@ -664,7 +664,7 @@ classdef ClassificationNeuralNetwork
     function [labels, scores] = resubPredict (this)
 
       ## Get used rows
-      X = this.X(RowsUsed);
+      X = this.X(this.RowsUsed, :);
 
       ## Standardize (if necessary)
       if (this.Standardize)
