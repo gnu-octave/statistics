@@ -882,8 +882,12 @@
 <p> Save a ClassificationNeuralNetwork object.
 </p>
 <div class="ms-5">
-<p> <code>savemodel (<var>obj</var>, <var>filename</var>)</code> saves a
- ClassificationNeuralNetwork object into a file defined by <var>filename</var>.
+<p> <code>savemodel (<var>obj</var>, <var>filename</var>)</code> saves each property of a
+ CompactClassificationNeuralNetwork object into an Octave binary file, the
+ name of which is specified in <var>filename</var>, along with an extra
+ variable, which defines the type classification object these variables
+ constitute. Use <code>loadmodel</code> in order to load a classification object
+ into Octave&rsquo;s workspace.
 </p>
 <p> <strong>See also: </strong>
   <a href="loadmodel.html">loadmodel</a>, 
@@ -927,30 +931,17 @@ cvpartition,
 
 Mdl =
 
-  ClassificationNeuralNetwork object with properties:
+  ClassificationNeuralNetwork
 
-                Activations: sigmoid
-                 ClassNames: [3x1 cell]
-            ConvergenceInfo: [1x1 struct]
-                DisplayInfo: 0
-             IterationLimit: [1x1 double]
-                 LayerSizes: [1x1 double]
-               LearningRate: [1x1 double]
-            ModelParameters: [1x1 struct]
-                         Mu: [0x0 double]
-            NumObservations: [1x1 double]
-              NumPredictors: [1x1 double]
-      OutputLayerActivation: sigmoid
-             PredictorNames: [1x4 cell]
-               ResponseName: Y
-                   RowsUsed: [150x1 double]
-             ScoreTransform: none
-                      Sigma: [0x0 double]
-                     Solver: Gradient Descend
-                Standardize: 0
-                          X: [150x4 double]
-                          Y: [150x1 cell]
-
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+               LayerSizes: [10]
+              Activations: 'sigmoid'
+    OutputLayerActivation: 'sigmoid'
+                   Solver: 'Gradient Descend'
 CMdl =
 
   ClassificationPartitionedModel object with properties:

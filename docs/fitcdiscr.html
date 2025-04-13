@@ -883,7 +883,7 @@
  [x1G, x2G] = meshgrid (x1, x2);
  XGrid = [x1G(:), x2G(:)];
  pred = predict (obj, XGrid);
- gidx = logical (str2num (cell2mat (pred)));
+ gidx = logical (pred);
 
  figure
  scatter (XGrid(gidx,1), XGrid(gidx,2), "markerfacecolor", "magenta");
@@ -901,28 +901,16 @@
 
 obj =
 
-  ClassificationDiscriminant object with properties:
+  ClassificationDiscriminant
 
-           ClassNames: [2x1 cell]
-               Coeffs: [2x2 struct]
-                 Cost: [2x2 double]
-                Delta: [1x1 double]
-          DiscrimType: linear
-                Gamma: [1x1 double]
-          LogDetSigma: [1x1 double]
-             MinGamma: [1x1 double]
-                   Mu: [2x2 double]
-      NumObservations: [1x1 double]
-        NumPredictors: [1x1 double]
-       PredictorNames: [1x2 cell]
-                Prior: [2x1 double]
-         ResponseName: Y
-             RowsUsed: [100x1 double]
-       ScoreTransform: none
-                Sigma: [2x2 double]
-                    X: [100x2 double]
-            XCentered: [100x2 double]
-                    Y: [100x1 double]
+             ResponseName: 'Y'
+               ClassNames: [0 1]
+           ScoreTransform: 'none'
+          NumObservations: 100
+            NumPredictors: 2
+              DiscrimType: 'linear'
+                       Mu: [2x2 double]
+                   Coeffs: [2x2 struct]
 
                     </pre></td></tr></tbody>
                   </table>

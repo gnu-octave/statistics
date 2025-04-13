@@ -1170,8 +1170,12 @@ cvpartition,
 <p> Save a ClassificationDiscriminant object.
 </p>
 <div class="ms-5">
-<p> <code>savemodel (<var>obj</var>, <var>filename</var>)</code> saves a
- ClassificationDiscriminant object into a file defined by <var>filename</var>.
+<p> <code>savemodel (<var>obj</var>, <var>filename</var>)</code> saves each property of a
+ ClassificationDiscriminant object into an Octave binary file, the name of
+ which is specified in <var>filename</var>, along with an extra variable, which
+ defines the type classification object these variables constitute.  Use
+ <code>loadmodel</code> in order to load a classification object into Octave&rsquo;s
+ workspace.
 </p>
 <p> <strong>See also: </strong>
   <a href="loadmodel.html">loadmodel</a>, 

@@ -885,8 +885,12 @@ compact,
 <p> Save a ClassificationGAM object.
 </p>
 <div class="ms-5">
-<p> <code>savemodel (<var>obj</var>, <var>filename</var>)</code> saves a ClassificationGAM
- object into a file defined by <var>filename</var>.
+<p> <code>savemodel (<var>obj</var>, <var>filename</var>)</code> saves each property of a
+ CompactClassificationGAM object into an Octave binary file, the name
+ of which is specified in <var>filename</var>, along with an extra variable,
+ which defines the type classification object these variables constitute.
+ Use <code>loadmodel</code> in order to load a classification object into
+ Octave&rsquo;s workspace.
 </p>
 <p> <strong>See also: </strong>
   <a href="loadmodel.html">loadmodel</a>, 
@@ -930,28 +934,16 @@ cvpartition,
 
 Mdl =
 
-  ClassificationDiscriminant object with properties:
+  ClassificationDiscriminant
 
-           ClassNames: [3x1 cell]
-               Coeffs: [3x3 struct]
-                 Cost: [3x3 double]
-                Delta: [1x1 double]
-          DiscrimType: linear
-                Gamma: [1x1 double]
-          LogDetSigma: [1x1 double]
-             MinGamma: [1x1 double]
-                   Mu: [3x4 double]
-      NumObservations: [1x1 double]
-        NumPredictors: [1x1 double]
-       PredictorNames: [1x4 cell]
-                Prior: [3x1 double]
-         ResponseName: Y
-             RowsUsed: [150x1 double]
-       ScoreTransform: none
-                Sigma: [4x4 double]
-                    X: [150x4 double]
-            XCentered: [150x4 double]
-                    Y: [150x1 cell]
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 150
+            NumPredictors: 4
+              DiscrimType: 'linear'
+                       Mu: [3x4 double]
+                   Coeffs: [4x4 struct]
 
 CMdl =
 

@@ -1055,7 +1055,7 @@
  [x1G, x2G] = meshgrid (x1, x2);
  XGrid = [x1G(:), x2G(:)];
  pred = predict (obj, XGrid);
- gidx = logical (str2num (cell2mat (pred)));
+ gidx = logical (pred);
 
  figure
  scatter (XGrid(gidx,1), XGrid(gidx,2), "markerfacecolor", "magenta");
@@ -1073,31 +1073,16 @@
 
 obj =
 
-  ClassificationKNN object with properties:
+  ClassificationKNN
 
-            BreakTies: smallest
-           BucketSize: [1x1 double]
-           ClassNames: [2x1 cell]
-                 Cost: [2x2 double]
-        DistParameter: [0x0 double]
-             Distance: euclidean
-       DistanceWeight: [1x1 function_handle]
-          IncludeTies: 0
-                   Mu: [1x2 double]
-             NSMethod: exhaustive
-         NumNeighbors: [1x1 double]
-      NumObservations: [1x1 double]
-        NumPredictors: [1x1 double]
-       PredictorNames: [1x2 cell]
-                Prior: [2x1 double]
-         ResponseName: Y
-             RowsUsed: [100x1 double]
-       ScoreTransform: none
-                Sigma: [1x2 double]
-          Standardize: 1
-                    X: [100x2 double]
-                    Y: [100x1 double]
-
+             ResponseName: 'Y'
+               ClassNames: [0 1]
+           ScoreTransform: 'none'
+          NumObservations: 100
+            NumPredictors: 2
+                 Distance: 'euclidean'
+                 NSMethod: 'exhaustive'
+             NumNeighbors: 10
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">

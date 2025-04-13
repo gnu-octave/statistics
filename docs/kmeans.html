@@ -959,6 +959,7 @@
  hold on;
  plot (data (idx==2, 1), data (idx==2, 2), "bs");
  plot (centers (:, 1), centers (:, 2), "kv", "markersize", 10);
+ title ("A simple two-clusters example");
  hold off;
 
                     </pre></td></tr></tbody>
@@ -998,7 +999,6 @@
  load fisheriris
  X = meas(:,3:4);
 
- figure;
  plot (X(:,1), X(:,2), "k*", "MarkerSize", 5);
  title ("Fisher's Iris Data");
  xlabel ("Petal Lengths (cm)");
@@ -1012,7 +1012,7 @@
  [x1G, x2G] = meshgrid (x1, x2);
  XGrid = [x1G(:), x2G(:)];
 
- idx2Region = kmeans (XGrid, 3, "MaxIter", 1, "Start", C);
+ idx2Region = kmeans (XGrid, 3, "MaxIter", 10, "Start", C);
  figure;
  gscatter (XGrid(:,1), XGrid(:,2), idx2Region, ...
            [0, 0.75, 0.75; 0.75, 0, 0.75; 0.75, 0.75, 0], "..");
@@ -1023,13 +1023,6 @@
  ylabel ("Petal Widths (cm)");
  legend ("Region 1", "Region 2", "Region 3", "Data", "Location", "SouthEast");
  hold off
-
-warning: kmeans: failed to converge in 1 iterations
-warning: called from
-    kmeans at line 442 column 7
-    build_DEMOS at line 94 column 11
-    function_texi2html at line 112 column 14
-    package_texi2html at line 290 column 9
 
                     </pre></td></tr></tbody>
                   </table>
@@ -1072,7 +1065,6 @@ warning: called from
  r2 = randn (100, 2) * 0.5 - ones (100, 2);
  X = [r1; r2];
 
- figure;
  plot (X(:,1), X(:,2), ".");
  title ("Randomly Generated Data");
  rand ("seed", 1)  # for reproducibility
@@ -1144,7 +1136,6 @@ Best total sum of distances = 197.416
 
  ## Plot the clusters and the cluster centroids
 
- figure
  gscatter (X(:,1), X(:,2), idx, "bgm", "***");
  hold on
  plot (C(:,1), C(:,2), "kx");
@@ -1168,6 +1159,7 @@ Best total sum of distances = 197.416
  ## Plot the test data and label the test data using idx_test with gscatter
 
  gscatter (Xtest(:,1), Xtest(:,2), group, "bgm", "ooo");
+ box on;
  legend ("Cluster 1", "Cluster 2", "Cluster 3", "Cluster Centroid", ...
          "Data classified to Cluster 1", "Data classified to Cluster 2", ...
          "Data classified to Cluster 3", "Location", "NorthWest");

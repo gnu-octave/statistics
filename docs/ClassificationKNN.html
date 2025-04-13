@@ -1253,8 +1253,12 @@ cvpartition,
 <p> Save a ClassificationKNN object.
 </p>
 <div class="ms-5">
-<p> <code>savemodel (<var>obj</var>, <var>filename</var>)</code> saves a ClassificationKNN
- object into a file defined by <var>filename</var>.
+<p> <code>savemodel (<var>obj</var>, <var>filename</var>)</code> saves each property of a
+ ClassificationKNN object into an Octave binary file, the name of which is
+ specified in <var>filename</var>, along with an extra variable, which defines
+ the type classification object these variables constitute.  Use
+ <code>loadmodel</code> in order to load a classification object into Octave&rsquo;s
+ workspace.
 </p>
 <p> <strong>See also: </strong>
   <a href="loadmodel.html">loadmodel</a>, 
@@ -1440,31 +1444,16 @@ CVMdl =
 
 ans =
 
-  ClassificationKNN object with properties:
+  ClassificationKNN
 
-            BreakTies: smallest
-           BucketSize: [1x1 double]
-           ClassNames: [3x1 cell]
-                 Cost: [3x3 double]
-        DistParameter: [4x4 double]
-             Distance: mahalanobis
-       DistanceWeight: [1x1 function_handle]
-          IncludeTies: 0
-                   Mu: [0x0 double]
-             NSMethod: exhaustive
-         NumNeighbors: [1x1 double]
-      NumObservations: [1x1 double]
-        NumPredictors: [1x1 double]
-       PredictorNames: [1x4 cell]
-                Prior: [3x1 double]
-         ResponseName: Y
-             RowsUsed: [137x1 double]
-       ScoreTransform: none
-                Sigma: [0x0 double]
-          Standardize: 0
-                    X: [137x4 double]
-                    Y: [137x1 cell]
-
+             ResponseName: 'Y'
+               ClassNames: {'setosa' 'versicolor' 'virginica'}
+           ScoreTransform: 'none'
+          NumObservations: 137
+            NumPredictors: 4
+                 Distance: 'mahalanobis'
+                 NSMethod: 'exhaustive'
+             NumNeighbors: 5
                     </pre></td></tr></tbody>
                   </table>
 

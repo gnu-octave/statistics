@@ -860,6 +860,7 @@ sortClasses
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
+ close all
  ## Setting the chart properties
  Yt = [8 5 6 8 5 3 1 6 4 2 5 3 1 4]';
  Yp = [8 5 6 8 5 2 3 4 4 5 5 7 2 6]';
@@ -906,11 +907,13 @@ ConfusionMatrixChart with properties:
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
+ close all
  ## Cellstr as inputs
  Yt = {"Positive", "Positive", "Positive", "Negative", "Negative"};
  Yp = {"Positive", "Positive", "Negative", "Negative", "Negative"};
  m = confusionmat (Yt, Yp);
  confusionchart (m, {"Positive", "Negative"});
+ hold off
 
                     </pre></td></tr></tbody>
                   </table>
@@ -942,12 +945,14 @@ ConfusionMatrixChart with properties:
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
+ close all
  ## Editing the object properties
  Yt = {"Positive", "Positive", "Positive", "Negative", "Negative"};
  Yp = {"Positive", "Positive", "Negative", "Negative", "Negative"};
  cm = confusionchart (Yt, Yp);
  cm.Title = "This is an example with a green diagonal";
  cm.DiagonalColor = [0.4660, 0.6740, 0.1880];
+ hold off
 
                     </pre></td></tr></tbody>
                   </table>
@@ -979,6 +984,7 @@ ConfusionMatrixChart with properties:
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
+ close all
  ## Sorting classes
  Yt = [8 5 6 8 5 3 1 6 4 2 5 3 1 4]';
  Yp = [8 5 6 8 5 2 3 4 4 5 5 7 2 6]';
