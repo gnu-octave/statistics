@@ -128,3 +128,28 @@
  =============
 
  ** glmfit: fixed output and updated functionality and compatibility
+
+
+ Summary of important user-visible changes for statistics 1.7.4:
+-------------------------------------------------------------------
+
+ Important Notice: 1) `mad`, `mean`, `median`, `std`, `var` functions
+                      shadow core Octave's respective functions prior
+                      to Octave v9.1
+                   2) incompatibility with the `nan` package
+
+ Improvements:
+ =============
+
+ ** ClassificationDiscriminant, ClassificationKNN, ClassificationNeuralNetwork:
+                    fix type of returning labels and ClassNames to be the same
+                    as input Y, add custom display and subsref/subsassgn methods
+
+ ** confusionchart: fix empty figures in demos (github issue #178)
+
+ ** ConfusionMatrixChart: properly update cdata in figure (github issue #178)
+
+ ** fitdist: fix occasionally failing BISTs (github issue #174)
+
+ ** kmeans: fix empty figures in demos (github issue #179)
+
