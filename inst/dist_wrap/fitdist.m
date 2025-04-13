@@ -649,7 +649,9 @@ endfunction
 %! assert ([pd.alpha, pd.c, pd.k], phat);
 %! assert (paramci (pd), pci);
 %!test
+%! rand ("seed", 4);   # for reproducibility
 %! x1 = burrrnd (1, 2, 1, 100, 1);
+%! rand ("seed", 3);   # for reproducibility
 %! x2 = burrrnd (1, 0.5, 2, 100, 1);
 %! pd = fitdist ([x1; x2], "burr", "By", [ones(100,1); 2*ones(100,1)]);
 %! [phat, pci] = burrfit (x1);
