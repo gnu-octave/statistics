@@ -66,7 +66,7 @@
 ## Partition type.
 ## @end table
 ##
-## @seealso{crossval, @@cvpartition/display}
+## @seealso{crossval, @cvpartition/display}
 ## @end deftypefn
 
 function C = cvpartition (X, partition_type = "KFold", k = [])
