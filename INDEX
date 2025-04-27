@@ -8,6 +8,7 @@ Clustering
  crossval
  editDistance
  evalclusters
+ ExhaustiveSearcher
  inconsistent
  kmeans
  knnsearch
