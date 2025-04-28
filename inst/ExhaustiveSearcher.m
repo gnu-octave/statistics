@@ -63,7 +63,7 @@
 
 classdef ExhaustiveSearcher < handle
 
-  properties (SetAccess = private, Hidden)
+  properties (SetAccess = private)
     X             # Training data
   endproperties
 
