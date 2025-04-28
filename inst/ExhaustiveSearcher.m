@@ -18,28 +18,38 @@
 ## -*- texinfo -*-
 ## @deftp {Class} ExhaustiveSearcher
 ##
-## Exhaustive nearest neighbor searcher.
+## Exhaustive nearest neighbor searcher class.
 ##
-## The @qcode{ExhaustiveSearcher} class provides an interface for performing
-## nearest neighbor searches using an exhaustive search algorithm. It supports
-## various distance metrics and allows for efficient querying of nearest neighbors
-## or neighbors within a specified radius.
+## The @qcode{ExhaustiveSearcher} class implements an exhaustive search algorithm
+## for nearest neighbor queries. It stores training data and supports various
+## distance metrics to find the @math{K} nearest neighbors or all neighbors within
+## a specified radius. This class is designed to work seamlessly with Octave's
+## statistical functions and mirrors MATLAB's @code{ExhaustiveSearcher} behavior.
 ##
-## An @qcode{ExhaustiveSearcher} object, @var{obj}, stores the following properties:
+## An @qcode{ExhaustiveSearcher} object, @var{obj}, has the following properties:
 ##
 ## @multitable @columnfractions 0.23 0.02 0.75
 ## @headitem @var{Property} @tab @tab @var{Description}
 ##
 ## @item @qcode{X} @tab @tab Training data, specified as an @math{NxP} numeric
-## matrix. Each row corresponds to an observation, and each column corresponds to
-## a feature or variable. (Private)
+## matrix where each row is an observation and each column is a feature. This
+## property is private and cannot be modified after object creation.
 ##
 ## @item @qcode{Distance} @tab @tab Distance metric used for searches, specified
-## as a character vector or function handle.
+## as a character vector (e.g., @qcode{"euclidean"}, @qcode{"minkowski"}) or a
+## function handle to a custom distance function. Default is @qcode{"euclidean"}.
+## Supported metrics align with those in @code{pdist2}.
 ##
-## @item @qcode{DistParameter} @tab @tab Parameter for the distance metric,
-## specified as a scalar, vector, or matrix depending on the distance metric.
-## Empty for metrics that do not require additional parameters.
+## @item @qcode{DistParameter} @tab @tab Parameter for the distance metric, with
+## type and value depending on @qcode{Distance}:
+## @itemize
+## @item For @qcode{"minkowski"}, a positive scalar exponent (default 2).
+## @item For @qcode{"seuclidean"}, a nonnegative vector of scaling factors matching
+## the number of columns in @qcode{X} (default is standard deviation of @qcode{X}).
+## @item For @qcode{"mahalanobis"}, a positive definite covariance matrix matching
+## the dimensions of @qcode{X} (default is covariance of @qcode{X}).
+## @item Empty for other metrics or custom functions.
+## @end itemize
 ## @end multitable
 ##
 ## @strong{Methods:}
@@ -62,6 +72,36 @@ classdef ExhaustiveSearcher < handle
     DistParameter             # Distance metric parameter
   endproperties
 
+  methods (Hidden)
+
+    ## Custom display
+    function display (this)
+      in_name = inputname (1);
+      if (! isempty (in_name))
+        fprintf ('%s =\n', in_name);
+      endif
+      disp (this);
+    endfunction
+
+    ## Custom display
+    function disp (this)
+      if (isscalar (this))
+        fprintf ('  ExhaustiveSearcher with properties:\n');
+        fprintf ('    X: [%dx%d double]\n', size (this.X, 1), size (this.X, 2));
+        fprintf ('    Distance: "%s"\n', this.Distance);
+        if (! isempty (this.DistParameter))
+          fprintf ('    DistParameter: %s\n', mat2str (this.DistParameter));
+        else
+          fprintf ('    DistParameter: []\n');
+        endif
+      else
+        sz = size (this);
+        fprintf ('  %s ExhaustiveSearcher array\n', mat2str (sz));
+      endif
+    endfunction
+
+  endmethods
+
   methods
 
     ## -*- texinfo -*-
@@ -71,34 +111,31 @@ classdef ExhaustiveSearcher < handle
     ## Create an @qcode{ExhaustiveSearcher} object for nearest neighbor searches.
     ##
     ## @code{@var{obj} = ExhaustiveSearcher (@var{X})} constructs an
-    ## @code{ExhaustiveSearcher} object using the training data @var{X} and the
-    ## default Euclidean distance metric. @var{X} must be an @math{NxP} numeric
-    ## matrix, where rows correspond to observations and columns correspond to
-    ## features or variables.
+    ## @qcode{ExhaustiveSearcher} object with training data @var{X} using the
+    ## default @qcode{"euclidean"} distance metric. @var{X} must be an @math{NxP}
+    ## numeric matrix, where rows represent observations and columns represent
+    ## features.
     ##
     ## @code{@var{obj} = ExhaustiveSearcher (@var{X}, @var{name}, @var{value})}
-    ## allows specification of additional parameters via name-value pairs:
+    ## allows customization through name-value pairs:
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8
     ## @headitem @var{Name} @tab @tab @var{Value}
     ##
-    ## @item @qcode{"Distance"} @tab @tab Distance metric used for searches, specified
-    ## as a character vector or function handle. Default is @qcode{"euclidean"}. See
-    ## supported metrics in @code{pdist2}.
+    ## @item @qcode{"Distance"} @tab @tab Distance metric, specified as a character
+    ## vector (e.g., @qcode{"euclidean"}, @qcode{"minkowski"}) or function handle.
+    ## Default is @qcode{"euclidean"}. See @code{pdist2} for supported metrics.
     ##
-    ## @item @qcode{"P"} @tab @tab Minkowski distance exponent, specified as a
-    ## positive scalar. Valid when @qcode{"Distance"} is @qcode{"minkowski"}. Default
-    ## is 2.
+    ## @item @qcode{"P"} @tab @tab Minkowski distance exponent, a positive scalar.
+    ## Valid when @qcode{"Distance"} is @qcode{"minkowski"}. Default is 2.
     ##
     ## @item @qcode{"Scale"} @tab @tab Scale parameter for standardized Euclidean
-    ## distance, specified as a nonnegative vector matching the number of columns in
-    ## @var{X}. Valid when @qcode{"Distance"} is @qcode{"seuclidean"}. Default is the
-    ## standard deviation of @var{X}.
+    ## distance, a nonnegative vector matching @var{X}'s columns. Valid when
+    ## @qcode{"Distance"} is @qcode{"seuclidean"}. Default is @code{std(X)}.
     ##
-    ## @item @qcode{"Cov"} @tab @tab Covariance matrix for Mahalanobis distance,
-    ## specified as a positive definite matrix matching the number of columns in
-    ## @var{X}. Valid when @qcode{"Distance"} is @qcode{"mahalanobis"}. Default is
-    ## the covariance of @var{X}.
+    ## @item @qcode{"Cov"} @tab @tab Covariance matrix for Mahalanobis distance, a
+    ## positive definite matrix matching @var{X}'s columns. Valid when
+    ## @qcode{"Distance"} is @qcode{"mahalanobis"}. Default is @code{cov(X)}.
     ## @end multitable
     ##
     ## @seealso{ExhaustiveSearcher, knnsearch, rangesearch, pdist2}
@@ -416,7 +453,7 @@ endclassdef
 ## Demo Examples
 
 %!demo
-%! ## Create an ExhaustiveSearcher object with Euclidean distance
+%! ## Create an ExhaustiveSearcher with Euclidean distance
 %! X = [1, 2; 3, 4; 5, 6];
 %! obj = ExhaustiveSearcher (X);
 %! ## Find the nearest neighbor to [2, 3]
@@ -424,13 +461,13 @@ endclassdef
 %! [idx, D] = knnsearch (obj, Y, 1);
 %! disp ("Nearest neighbor index:"); disp (idx);
 %! disp ("Distance:"); disp (D);
-%! ## Find all points within radius 2 from [2, 3]
+%! ## Find all points within radius 2
 %! [idx, D] = rangesearch (obj, Y, 2);
 %! disp ("Indices within radius:"); disp (idx);
 %! disp ("Distances:"); disp (D);
 
 %!demo
-%! ## Create an ExhaustiveSearcher object with Minkowski distance (P=1)
+%! ## Create an ExhaustiveSearcher with Minkowski distance (P=1)
 %! X = [0, 0; 1, 0; 0, 1];
 %! obj = ExhaustiveSearcher (X, "Distance", "minkowski", "P", 1);
 %! ## Find the 2 nearest neighbors to [0.5, 0.5]
@@ -438,15 +475,11 @@ endclassdef
 %! [idx, D] = knnsearch (obj, Y, 2);
 %! disp ("Nearest neighbor indices:"); disp (idx);
 %! disp ("Distances:"); disp (D);
-%! ## Find points within radius 1, unsorted
-%! [idx, D] = rangesearch (obj, Y, 1, "SortIndices", false);
-%! disp ("Indices within radius:"); disp (idx);
-%! disp ("Distances:"); disp (D);
 
 ## Test Cases
 
 %!test
-%! ## Basic constructor test with default settings
+%! ## Basic constructor with default Euclidean
 %! X = [1, 2; 3, 4; 5, 6];
 %! obj = ExhaustiveSearcher (X);
 %! assert (obj.X, X)
@@ -454,48 +487,112 @@ endclassdef
 %! assert (isempty (obj.DistParameter))
 
 %!test
-%! ## Constructor with Minkowski distance and custom P
+%! ## Minkowski distance with custom P
 %! X = [1, 2; 3, 4];
 %! obj = ExhaustiveSearcher (X, "Distance", "minkowski", "P", 3);
 %! assert (obj.Distance, "minkowski")
 %! assert (obj.DistParameter, 3)
 
 %!test
-%! ## knnsearch with K=1
+%! ## Seuclidean distance with custom Scale
+%! X = [1, 2; 3, 4; 5, 6];
+%! S = [1, 2];
+%! obj = ExhaustiveSearcher (X, "Distance", "seuclidean", "Scale", S);
+%! assert (obj.Distance, "seuclidean")
+%! assert (obj.DistParameter, S)
+
+%!test
+%! ## Mahalanobis distance with custom Cov
+%! X = [1, 2; 3, 4; 5, 6];
+%! C = [1, 0; 0, 1];
+%! obj = ExhaustiveSearcher (X, "Distance", "mahalanobis", "Cov", C);
+%! assert (obj.Distance, "mahalanobis")
+%! assert (obj.DistParameter, C)
+
+%!test
+%! ## knnsearch with Euclidean distance
 %! X = [1, 2; 3, 4; 5, 6];
 %! obj = ExhaustiveSearcher (X);
 %! Y = [2, 3];
 %! [idx, D] = knnsearch (obj, Y, 1);
 %! assert (idx, 1)
-%! assert (D, sqrt (2), 1e-10)
+%! assert (D, sqrt(2), 1e-10)
 
 %!test
-%! ## knnsearch with K=2 and IncludeTies
-%! X = [1, 2; 3, 4; 5, 6];
-%! obj = ExhaustiveSearcher (X);
-%! Y = [2, 3];
+%! ## knnsearch with Cityblock distance
+%! X = [0, 0; 1, 1; 2, 2];
+%! obj = ExhaustiveSearcher (X, "Distance", "cityblock");
+%! Y = [1, 0];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! assert (idx, 1)
+%! assert (D, 1, 1e-10)
+
+%!test
+%! ## knnsearch with Chebychev distance
+%! X = [1, 1; 2, 3; 4, 2];
+%! obj = ExhaustiveSearcher (X, "Distance", "chebychev");
+%! Y = [2, 2];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! assert (idx, 1)
+%! assert (D, 1, 1e-10)
+
+%!test
+%! ## knnsearch with Cosine distance
+%! X = [1, 0; 0, 1; 1, 1];
+%! obj = ExhaustiveSearcher (X, "Distance", "cosine");
+%! Y = [1, 0.5];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! assert (idx, 1)
+%! assert (D, 0, 1e-10)
+
+%!test
+%! ## knnsearch with Minkowski P=1 (Manhattan)
+%! X = [0, 0; 1, 0; 0, 1];
+%! obj = ExhaustiveSearcher (X, "Distance", "minkowski", "P", 1);
+%! Y = [0.5, 0.5];
 %! [idx, D] = knnsearch (obj, Y, 2, "IncludeTies", true);
 %! assert (iscell (idx))
-%! assert (idx{1}, [1, 2])
-%! assert (D{1}, [sqrt(2), sqrt(2)], 1e-10)
+%! assert (idx{1}, [2, 3])
+%! assert (D{1}, [1, 1], 1e-10)
 
 %!test
-%! ## rangesearch with default SortIndices
+%! ## rangesearch with Seuclidean
 %! X = [1, 1; 2, 2; 3, 3];
-%! obj = ExhaustiveSearcher (X);
+%! S = [1, 1];
+%! obj = ExhaustiveSearcher (X, "Distance", "seuclidean", "Scale", S);
 %! Y = [0, 0];
 %! [idx, D] = rangesearch (obj, Y, 2);
 %! assert (idx{1}, [1])
 %! assert (D{1}, [sqrt(2)], 1e-10)
 
 %!test
-%! ## rangesearch with SortIndices=false
+%! ## rangesearch with Mahalanobis
 %! X = [1, 1; 2, 2; 3, 3];
-%! obj = ExhaustiveSearcher (X);
+%! C = [1, 0; 0, 1];
+%! obj = ExhaustiveSearcher (X, "Distance", "mahalanobis", "Cov", C);
 %! Y = [0, 0];
 %! [idx, D] = rangesearch (obj, Y, 3, "SortIndices", false);
 %! assert (idx{1}, [1, 2])
 %! assert (D{1}, [sqrt(2), sqrt(8)], 1e-10)
+
+%!test
+%! ## rangesearch with Hamming distance
+%! X = [0, 1; 1, 0; 1, 1];
+%! obj = ExhaustiveSearcher (X, "Distance", "hamming");
+%! Y = [0, 0];
+%! [idx, D] = rangesearch (obj, Y, 0.5);
+%! assert (idx{1}, [1])
+%! assert (D{1}, [0.5], 1e-10)
+
+%!test
+%! ## Custom distance function
+%! X = [1, 2; 3, 4];
+%! custom_dist = @(x, y) sum(abs(x - y));
+%! obj = ExhaustiveSearcher (X, "Distance", custom_dist);
+%! Y = [2, 3];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! assert (idx, 1)
+%! assert (D, 2, 1e-10)
 
 ## Test Input Validation
 
