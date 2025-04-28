@@ -97,18 +97,112 @@ classdef ExhaustiveSearcher < handle
     ## Custom display
     function disp (this)
       if (isscalar (this))
-        fprintf ('  ExhaustiveSearcher with properties:\n');
-        fprintf ('    X: [%dx%d double]\n', size (this.X, 1), size (this.X, 2));
-        fprintf ('    Distance: "%s"\n', this.Distance);
+        fprintf ('\n  ExhaustiveSearcher\n\n');
+        fprintf ('%+25s: [%dx%d double]\n', 'X', size (this.X, 1), size (this.X, 2));
+        fprintf ('%+25s: "%s"\n', 'Distance', this.Distance);
         if (! isempty (this.DistParameter))
-          fprintf ('    DistParameter: %s\n', mat2str (this.DistParameter));
+          fprintf ('%+25s: %s\n', 'DistParameter', mat2str (this.DistParameter));
         else
-          fprintf ('    DistParameter: []\n');
+          fprintf ('%+25s: []\n', 'DistParameter');
         endif
       else
         sz = size (this);
-        fprintf ('  %s ExhaustiveSearcher array\n', mat2str (sz));
+        fprintf ('\n  %s ExhaustiveSearcher array\n\n', mat2str (sz));
       endif
+    endfunction
+
+    ## Class specific subscripted reference
+    function varargout = subsref (this, s)
+      chain_s = s(2:end);
+      s = s(1);
+      switch (s.type)
+        case '()'
+          error ('ExhaustiveSearcher.subsref: () indexing not supported.');
+        case '{}'
+          error ('ExhaustiveSearcher.subsref: {} indexing not supported.');
+        case '.'
+          if (! ischar (s.subs))
+            error ('ExhaustiveSearcher.subsref: property name must be a character vector.');
+          endif
+          try
+            out = this.(s.subs);
+          catch
+            error ('ExhaustiveSearcher.subsref: unrecognized property: "%s".', s.subs);
+          end_try_catch
+      endswitch
+      ## Chained references
+      if (! isempty (chain_s))
+        out = subsref (out, chain_s);
+      endif
+      varargout{1} = out;
+    endfunction
+
+    ## Class specific subscripted assignment
+    function this = subsasgn (this, s, val)
+      if (numel (s) > 1)
+        error ('ExhaustiveSearcher.subsasgn: chained subscripts not allowed.');
+      endif
+      switch s.type
+        case '()'
+          error ('ExhaustiveSearcher.subsasgn: () indexing not supported.');
+        case '{}'
+          error ('ExhaustiveSearcher.subsasgn: {} indexing not supported.');
+        case '.'
+          if (! ischar (s.subs))
+            error ('ExhaustiveSearcher.subsasgn: property name must be a character vector.');
+          endif
+          switch (s.subs)
+            case 'Distance'
+              valid_metrics = {"euclidean", "minkowski", "seuclidean", "mahalanobis", ...
+                               "cityblock", "manhattan", "chebychev", "cosine", ...
+                               "correlation", "spearman", "hamming", "jaccard"};
+              if (ischar (val))
+                if (! any (strcmpi (valid_metrics, val)))
+                  error ('ExhaustiveSearcher.subsasgn: unsupported distance metric "%s".', val);
+                endif
+                this.Distance = val;
+              elseif (isa (val, "function_handle"))
+                try
+                  D = val (this.X(1,:), this.X);
+                  if (! isvector (D) || length (D) != rows (this.X))
+                    error ('ExhaustiveSearcher.subsasgn: custom distance function output invalid.');
+                  endif
+                catch
+                  error ('ExhaustiveSearcher.subsasgn: invalid distance function handle.');
+                end_try_catch
+                this.Distance = val;
+              else
+                error ('ExhaustiveSearcher.subsasgn: Distance must be a string or function handle.');
+              endif
+            case 'DistParameter'
+              if (strcmpi (this.Distance, "minkowski"))
+                if (! (isscalar (val) && isnumeric (val) && val > 0 && isfinite (val)))
+                  error ('ExhaustiveSearcher.subsasgn: DistParameter must be a positive finite scalar for minkowski.');
+                endif
+              elseif (strcmpi (this.Distance, "seuclidean"))
+                if (! (isvector (val) && isnumeric (val) && all (val >= 0) && ...
+                       all (isfinite (val)) && length (val) == columns (this.X)))
+                  error ('ExhaustiveSearcher.subsasgn: DistParameter must be a nonnegative vector matching X columns.');
+                endif
+              elseif (strcmpi (this.Distance, "mahalanobis"))
+                if (! (ismatrix (val) && isnumeric (val) && all (isfinite (val)(:)) && ...
+                       rows (val) == columns (val) && rows (val) == columns (this.X)))
+                  error ('ExhaustiveSearcher.subsasgn: DistParameter must be a square matrix matching X columns.');
+                endif
+                [~, p] = chol (val);
+                if (p != 0)
+                  error ('ExhaustiveSearcher.subsasgn: DistParameter must be positive definite for mahalanobis.');
+                endif
+              else
+                if (! isempty (val))
+                  error ('ExhaustiveSearcher.subsasgn: DistParameter must be empty for this distance metric.');
+                endif
+              endif
+              this.DistParameter = val;
+            otherwise
+              error ('ExhaustiveSearcher.subsasgn: unrecognized or read-only property: "%s".', s.subs);
+          endswitch
+      endswitch
     endfunction
 
   endmethods
@@ -156,6 +250,10 @@ classdef ExhaustiveSearcher < handle
         error ("ExhaustiveSearcher: too few input arguments.");
       endif
 
+      if (mod (numel (varargin), 2) != 0)
+        error ("ExhaustiveSearcher: Name-Value arguments must be in pairs.");
+      endif
+
       if (! (isnumeric (X) && ismatrix (X) && all (isfinite (X)(:))))
         error ("ExhaustiveSearcher: X must be a finite numeric matrix.");
       endif
@@ -163,64 +261,47 @@ classdef ExhaustiveSearcher < handle
       obj.X = X;
 
       ## Default values for optional parameters
+      Distance = "euclidean";
       P = [];
       S = [];
       C = [];
 
-      ## Parse name-value pairs
-      i = 1;
-      while (i <= length (varargin))
-        if (! ischar (varargin{i}))
-          error ("ExhaustiveSearcher: name arguments must be character vectors.");
-        endif
-        switch (tolower (varargin{i}))
+      ## Parse optional parameters
+      while (numel (varargin) > 0)
+        switch (lower (varargin{1}))
           case "distance"
-            if (i + 1 > length (varargin))
-              error ("ExhaustiveSearcher: 'Distance' requires a value.");
-            endif
-            obj.Distance = varargin{i+1};
-            i += 2;
+            Distance = varargin{2};
           case "p"
-            if (i + 1 > length (varargin))
-              error ("ExhaustiveSearcher: 'P' requires a value.");
-            endif
-            P = varargin{i+1};
-            i += 2;
+            P = varargin{2};
           case "scale"
-            if (i + 1 > length (varargin))
-              error ("ExhaustiveSearcher: 'Scale' requires a value.");
-            endif
-            S = varargin{i+1};
-            i += 2;
+            S = varargin{2};
           case "cov"
-            if (i + 1 > length (varargin))
-              error ("ExhaustiveSearcher: 'Cov' requires a value.");
-            endif
-            C = varargin{i+1};
-            i += 2;
+            C = varargin{2};
           otherwise
-            error ("ExhaustiveSearcher: invalid NAME: '%s'.", varargin{i});
+            error ("ExhaustiveSearcher: invalid parameter name: '%s'.", varargin{1});
         endswitch
+        varargin (1:2) = [];
       endwhile
 
       ## Validate and set distance metric
       valid_metrics = {"euclidean", "minkowski", "seuclidean", "mahalanobis", ...
                        "cityblock", "manhattan", "chebychev", "cosine", ...
                        "correlation", "spearman", "hamming", "jaccard"};
-      if (ischar (obj.Distance))
-        if (! any (strcmpi (valid_metrics, obj.Distance)))
-          error ("ExhaustiveSearcher: unsupported distance metric '%s'.", ...
-                 obj.Distance);
+      if (ischar (Distance))
+        if (! any (strcmpi (valid_metrics, Distance)))
+          error ("ExhaustiveSearcher: unsupported distance metric '%s'.", Distance);
         endif
-      elseif (isa (obj.Distance, "function_handle"))
+        obj.Distance = Distance;
+      elseif (isa (Distance, "function_handle"))
         try
-          D = obj.Distance (X(1,:), X);
+          D = Distance (X(1,:), X);
           if (! isvector (D) || length (D) != rows (X))
             error ("ExhaustiveSearcher: custom distance function output invalid.");
           endif
         catch
           error ("ExhaustiveSearcher: invalid distance function handle.");
         end_try_catch
+        obj.Distance = Distance;
       else
         error ("ExhaustiveSearcher: Distance must be a string or function handle.");
       endif
@@ -304,6 +385,10 @@ classdef ExhaustiveSearcher < handle
         error ("ExhaustiveSearcher.knnsearch: too few input arguments.");
       endif
 
+      if (mod (numel (varargin), 2) != 0)
+        error ("ExhaustiveSearcher.knnsearch: Name-Value arguments must be in pairs.");
+      endif
+
       if (! (isnumeric (Y) && ismatrix (Y) && all (isfinite (Y)(:))))
         error ("ExhaustiveSearcher.knnsearch: Y must be a finite numeric matrix.");
       endif
@@ -318,24 +403,17 @@ classdef ExhaustiveSearcher < handle
 
       ## Parse options
       IncludeTies = false;
-      i = 1;
-      while (i <= length (varargin))
-        if (! ischar (varargin{i}))
-          error ("ExhaustiveSearcher.knnsearch: name arguments must be character vectors.");
-        endif
-        switch (tolower (varargin{i}))
+      while (numel (varargin) > 0)
+        switch (lower (varargin{1}))
           case "includeties"
-            if (i + 1 > length (varargin))
-              error ("ExhaustiveSearcher.knnsearch: 'IncludeTies' requires a value.");
-            endif
-            IncludeTies = varargin{i+1};
+            IncludeTies = varargin{2};
             if (! (islogical (IncludeTies) && isscalar (IncludeTies)))
               error ("ExhaustiveSearcher.knnsearch: IncludeTies must be a logical scalar.");
             endif
-            i += 2;
           otherwise
-            error ("ExhaustiveSearcher.knnsearch: invalid NAME: '%s'.", varargin{i});
+            error ("ExhaustiveSearcher.knnsearch: invalid parameter name: '%s'.", varargin{1});
         endswitch
+        varargin (1:2) = [];
       endwhile
 
       ## Compute distance matrix
@@ -404,6 +482,10 @@ classdef ExhaustiveSearcher < handle
         error ("ExhaustiveSearcher.rangesearch: too few input arguments.");
       endif
 
+      if (mod (numel (varargin), 2) != 0)
+        error ("ExhaustiveSearcher.rangesearch: Name-Value arguments must be in pairs.");
+      endif
+
       if (! (isnumeric (Y) && ismatrix (Y) && all (isfinite (Y)(:))))
         error ("ExhaustiveSearcher.rangesearch: Y must be a finite numeric matrix.");
       endif
@@ -418,24 +500,17 @@ classdef ExhaustiveSearcher < handle
 
       ## Parse options
       SortIndices = true;
-      i = 1;
-      while (i <= length (varargin))
-        if (! ischar (varargin{i}))
-          error ("ExhaustiveSearcher.rangesearch: name arguments must be character vectors.");
-        endif
-        switch (tolower (varargin{i}))
+      while (numel (varargin) > 0)
+        switch (lower (varargin{1}))
           case "sortindices"
-            if (i + 1 > length (varargin))
-              error ("ExhaustiveSearcher.rangesearch: 'SortIndices' requires a value.");
-            endif
-            SortIndices = varargin{i+1};
+            SortIndices = varargin{2};
             if (! (islogical (SortIndices) && isscalar (SortIndices)))
               error ("ExhaustiveSearcher.rangesearch: SortIndices must be a logical scalar.");
             endif
-            i += 2;
           otherwise
-            error ("ExhaustiveSearcher.rangesearch: invalid NAME: '%s'.", varargin{i});
+            error ("ExhaustiveSearcher.rangesearch: invalid parameter name: '%s'.", varargin{1});
         endswitch
+        varargin (1:2) = [];
       endwhile
 
       ## Compute distance matrix
