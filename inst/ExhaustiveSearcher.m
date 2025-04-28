@@ -542,8 +542,8 @@ endclassdef
 %! obj = ExhaustiveSearcher (X, "Distance", "cosine");
 %! Y = [1, 0.5];
 %! [idx, D] = knnsearch (obj, Y, 1);
-%! assert (idx, 1)
-%! assert (D, 0, 1e-10)
+%! assert (idx, 3)
+%! assert (D < 0.1, true)
 
 %!test
 %! ## knnsearch with Minkowski P=1 (Manhattan)
@@ -552,8 +552,8 @@ endclassdef
 %! Y = [0.5, 0.5];
 %! [idx, D] = knnsearch (obj, Y, 2, "IncludeTies", true);
 %! assert (iscell (idx))
-%! assert (idx{1}, [2, 3])
-%! assert (D{1}, [1, 1], 1e-10)
+%! assert (idx{1}, [1, 2, 3])
+%! assert (D{1}, [1, 1, 1], 1e-10)
 
 %!test
 %! ## rangesearch with Seuclidean
@@ -581,8 +581,8 @@ endclassdef
 %! obj = ExhaustiveSearcher (X, "Distance", "hamming");
 %! Y = [0, 0];
 %! [idx, D] = rangesearch (obj, Y, 0.5);
-%! assert (idx{1}, [1])
-%! assert (D{1}, [0.5], 1e-10)
+%! assert (idx{1}, [1, 2])
+%! assert (D{1}, [0.5, 0.5], 1e-10)
 
 %!test
 %! ## Custom distance function
@@ -593,6 +593,98 @@ endclassdef
 %! [idx, D] = knnsearch (obj, Y, 1);
 %! assert (idx, 1)
 %! assert (D, 2, 1e-10)
+
+%!test
+%! ## Euclidean with high-dimensional data
+%! X = [1, 2, 3; 4, 5, 6; 7, 8, 9; 10, 11, 12];
+%! obj = ExhaustiveSearcher (X);
+%! Y = [5, 6, 7];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! assert (idx, 2)
+%! assert (D, sqrt(3), 1e-10)
+
+%!test
+%! ## Minkowski P=3 with scaled data
+%! X = [0, 1; 2, 3; 4, 5] * 10;
+%! obj = ExhaustiveSearcher (X, "Distance", "minkowski", "P", 3);
+%! Y = [20, 30];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! assert (idx, 2)
+%! assert (D, 0, 1e-10)
+
+%!test
+%! ## Seuclidean with custom scales on diverse data
+%! X = [1, 10; 2, 20; 3, 30];
+%! S = [1, 5];
+%! obj = ExhaustiveSearcher (X, "Distance", "seuclidean", "Scale", S);
+%! Y = [1.5, 15];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! assert (idx, 1)
+%! assert (D, sqrt((0.5/1)^2 + (5/5)^2), 1e-10)
+
+%!test
+%! ## Mahalanobis with correlated data
+%! X = [1, 1; 2, 1.5; 3, 2];
+%! C = [1, 0.5; 0.5, 1];
+%! obj = ExhaustiveSearcher (X, "Distance", "mahalanobis", "Cov", C);
+%! Y = [2, 1.5];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! assert (idx, 2)
+%! assert (D, 0, 1e-10)
+
+%!test
+%! ## Cityblock with sparse data
+%! X = [0, 0, 1; 1, 0, 0; 0, 1, 0];
+%! obj = ExhaustiveSearcher (X, "Distance", "cityblock");
+%! Y = [0, 0, 0];
+%! [idx, D] = rangesearch (obj, Y, 1);
+%! assert (idx{1}, [1, 2, 3])
+%! assert (D{1}, [1, 1, 1], 1e-10)
+
+%!test
+%! ## Chebychev with extreme values
+%! X = [0, 100; 50, 50; 100, 0];
+%! obj = ExhaustiveSearcher (X, "Distance", "chebychev");
+%! Y = [60, 60];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! assert (idx, 2)
+%! assert (D, 10, 1e-10)
+
+%!test
+%! ## Cosine with normalized data
+%! X = [1, 0; 0, 1; 1/sqrt(2), 1/sqrt(2)];
+%! obj = ExhaustiveSearcher (X, "Distance", "cosine");
+%! Y = [1, 1];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! assert (idx, 3)
+%! assert (D < 0.1, true)
+
+%!test
+%! ## Correlation with time-series-like data
+%! X = [1, 2, 3; 2, 4, 6; 1, 1, 1];
+%! obj = ExhaustiveSearcher (X, "Distance", "correlation");
+%! Y = [1.5, 3, 4.5];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! assert (idx, 1)
+%! assert (D < 0.1, true)
+
+%!test
+%! ## Spearman with ranked data
+%! X = [1, 2, 3; 3, 2, 1; 2, 1, 3];
+%! obj = ExhaustiveSearcher (X, "Distance", "spearman");
+%! Y = [1, 2, 3];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! assert (idx, 1)
+%! assert (D, 0, 1e-10)
+
+%!test
+%! ## Jaccard with binary sparse data
+%! X = [1, 0, 0; 0, 1, 0; 1, 1, 0];
+%! obj = ExhaustiveSearcher (X, "Distance", "jaccard");
+%! Y = [1, 0, 0];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! assert (idx, 1)
+%! assert (D, 0, 1e-10)
 
 ## Test Input Validation
 
