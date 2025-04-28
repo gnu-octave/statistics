@@ -8,7 +8,6 @@ Clustering
  crossval
  editDistance
  evalclusters
- ExhaustiveSearcher
  inconsistent
  kmeans
  knnsearch
@@ -38,6 +37,7 @@ Clustering Classes
  CalinskiHarabaszEvaluation
  ClusterCriterion
  DaviesBouldinEvaluation
+ ExhaustiveSearcher
  GapEvaluation
  SilhouetteEvaluation
 CVpartition
