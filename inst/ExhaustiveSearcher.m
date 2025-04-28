@@ -152,6 +152,8 @@ classdef ExhaustiveSearcher < handle
             error ('ExhaustiveSearcher.subsasgn: property name must be a character vector.');
           endif
           switch (s.subs)
+            case 'X'
+              error ('ExhaustiveSearcher.subsasgn: X is read-only and cannot be modified.');
             case 'Distance'
               valid_metrics = {"euclidean", "minkowski", "seuclidean", "mahalanobis", ...
                                "cityblock", "manhattan", "chebychev", "cosine", ...
@@ -165,42 +167,49 @@ classdef ExhaustiveSearcher < handle
                 try
                   D = val (this.X(1,:), this.X);
                   if (! isvector (D) || length (D) != rows (this.X))
-                    error ('ExhaustiveSearcher.subsasgn: custom distance function output invalid.');
+                    error (strcat ('ExhaustiveSearcher.subsasgn: custom distance function', ...
+                                   ' output invalid.'));
                   endif
                 catch
                   error ('ExhaustiveSearcher.subsasgn: invalid distance function handle.');
                 end_try_catch
                 this.Distance = val;
               else
-                error ('ExhaustiveSearcher.subsasgn: Distance must be a string or function handle.');
+                error (strcat ('ExhaustiveSearcher.subsasgn: Distance must be a string or', ...
+                               ' function handle.'));
               endif
             case 'DistParameter'
               if (strcmpi (this.Distance, "minkowski"))
                 if (! (isscalar (val) && isnumeric (val) && val > 0 && isfinite (val)))
-                  error ('ExhaustiveSearcher.subsasgn: DistParameter must be a positive finite scalar for minkowski.');
+                  error (strcat ('ExhaustiveSearcher.subsasgn: DistParameter must be a', ...
+                                 ' positive finite scalar for minkowski.'));
                 endif
               elseif (strcmpi (this.Distance, "seuclidean"))
                 if (! (isvector (val) && isnumeric (val) && all (val >= 0) && ...
                        all (isfinite (val)) && length (val) == columns (this.X)))
-                  error ('ExhaustiveSearcher.subsasgn: DistParameter must be a nonnegative vector matching X columns.');
+                  error (strcat ('ExhaustiveSearcher.subsasgn: DistParameter must be a', ...
+                                 ' nonnegative vector matching X columns.'));
                 endif
               elseif (strcmpi (this.Distance, "mahalanobis"))
                 if (! (ismatrix (val) && isnumeric (val) && all (isfinite (val)(:)) && ...
                        rows (val) == columns (val) && rows (val) == columns (this.X)))
-                  error ('ExhaustiveSearcher.subsasgn: DistParameter must be a square matrix matching X columns.');
+                  error (strcat ('ExhaustiveSearcher.subsasgn: DistParameter must be a', ...
+                                 ' square matrix matching X columns.'));
                 endif
                 [~, p] = chol (val);
                 if (p != 0)
-                  error ('ExhaustiveSearcher.subsasgn: DistParameter must be positive definite for mahalanobis.');
+                  error (strcat ('ExhaustiveSearcher.subsasgn: DistParameter must be', ...
+                                 ' positive definite for mahalanobis.'));
                 endif
               else
                 if (! isempty (val))
-                  error ('ExhaustiveSearcher.subsasgn: DistParameter must be empty for this distance metric.');
+                  error (strcat ('ExhaustiveSearcher.subsasgn: DistParameter must be empty', ...
+                                 ' for this distance metric.'));
                 endif
               endif
               this.DistParameter = val;
             otherwise
-              error ('ExhaustiveSearcher.subsasgn: unrecognized or read-only property: "%s".', s.subs);
+              error ('ExhaustiveSearcher.subsasgn: unrecognized property: "%s".', s.subs);
           endswitch
       endswitch
     endfunction
@@ -322,7 +331,8 @@ classdef ExhaustiveSearcher < handle
         else
           if (! (isvector (S) && isnumeric (S) && all (S >= 0) && ...
                  all (isfinite (S)) && length (S) == columns (X)))
-            error ("ExhaustiveSearcher: Scale must be a nonnegative vector matching X columns.");
+            error (strcat ("ExhaustiveSearcher: Scale must be a nonnegative vector", ...
+                           " matching X columns."));
           endif
           obj.DistParameter = S;
         endif
@@ -332,7 +342,8 @@ classdef ExhaustiveSearcher < handle
         else
           if (! (ismatrix (C) && isnumeric (C) && all (isfinite (C)(:)) && ...
                  rows (C) == columns (C) && rows (C) == columns (X)))
-            error ("ExhaustiveSearcher: Cov must be a square matrix matching X columns.");
+            error (strcat ("ExhaustiveSearcher: Cov must be a square matrix", ...
+                           " matching X columns."));
           endif
           [~, p] = chol (C);
           if (p != 0)
@@ -774,31 +785,95 @@ endclassdef
 
 ## Test Input Validation
 
-%!error<ExhaustiveSearcher: too few input arguments.> ExhaustiveSearcher ()
-%!error<ExhaustiveSearcher: Name-Value arguments must be in pairs.> ExhaustiveSearcher (ones(3,2), "Distance")
-%!error<ExhaustiveSearcher: X must be a finite numeric matrix.> ExhaustiveSearcher ("abc")
-%!error<ExhaustiveSearcher: X must be a finite numeric matrix.> ExhaustiveSearcher ([1; Inf; 3])
-%!error<ExhaustiveSearcher: invalid parameter name: 'foo'.> ExhaustiveSearcher (ones(3,2), "foo", "bar")
-%!error<ExhaustiveSearcher: unsupported distance metric 'invalid'.> ExhaustiveSearcher (ones(3,2), "Distance", "invalid")
-%!error<ExhaustiveSearcher: invalid distance function handle.> ExhaustiveSearcher (ones(3,2), "Distance", @(x) x)
-%!error<ExhaustiveSearcher: Distance must be a string or function handle.> ExhaustiveSearcher (ones(3,2), "Distance", 1)
-%!error<ExhaustiveSearcher: P must be a positive finite scalar.> ExhaustiveSearcher (ones(3,2), "Distance", "minkowski", "P", -1)
-%!error<ExhaustiveSearcher: Scale must be a nonnegative vector matching X columns.> ExhaustiveSearcher (ones(3,2), "Distance", "seuclidean", "Scale", [-1, 1])
-%!error<ExhaustiveSearcher: Cov must be a square matrix matching X columns.> ExhaustiveSearcher (ones(3,2), "Distance", "mahalanobis", "Cov", ones(3,3))
+%!error<ExhaustiveSearcher: too few input arguments.> ...
+%! ExhaustiveSearcher ()
+%!error<ExhaustiveSearcher: Name-Value arguments must be in pairs.> ...
+%! ExhaustiveSearcher (ones(3,2), "Distance")
+%!error<ExhaustiveSearcher: X must be a finite numeric matrix.> ...
+%! ExhaustiveSearcher ("abc")
+%!error<ExhaustiveSearcher: X must be a finite numeric matrix.> ...
+%! ExhaustiveSearcher ([1; Inf; 3])
+%!error<ExhaustiveSearcher: invalid parameter name: 'foo'.> ...
+%! ExhaustiveSearcher (ones(3,2), "foo", "bar")
+%!error<ExhaustiveSearcher: unsupported distance metric 'invalid'.> ...
+%! ExhaustiveSearcher (ones(3,2), "Distance", "invalid")
+%!error<ExhaustiveSearcher: invalid distance function handle.> ...
+%! ExhaustiveSearcher (ones(3,2), "Distance", @(x) x)
+%!error<ExhaustiveSearcher: Distance must be a string or function handle.> ...
+%! ExhaustiveSearcher (ones(3,2), "Distance", 1)
+%!error<ExhaustiveSearcher: P must be a positive finite scalar.> ...
+%! ExhaustiveSearcher (ones(3,2), "Distance", "minkowski", "P", -1)
+%!error<ExhaustiveSearcher: Scale must be a nonnegative vector matching X columns.> ...
+%! ExhaustiveSearcher (ones(3,2), "Distance", "seuclidean", "Scale", [-1, 1])
+%!error<ExhaustiveSearcher: Cov must be a square matrix matching X columns.> ...
+%! ExhaustiveSearcher (ones(3,2), "Distance", "mahalanobis", "Cov", ones(3,3))
 %!error<ExhaustiveSearcher: Cov must be positive definite.> ExhaustiveSearcher (ones(3,2), "Distance", "mahalanobis", "Cov", -eye(2))
 
-%!error<ExhaustiveSearcher.knnsearch: too few input arguments.> knnsearch (ExhaustiveSearcher (ones(3,2)))
-%!error<ExhaustiveSearcher.knnsearch: Name-Value arguments must be in pairs.> knnsearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), 1, "IncludeTies")
-%!error<ExhaustiveSearcher.knnsearch: Y must be a finite numeric matrix.> knnsearch (ExhaustiveSearcher (ones(3,2)), "abc", 1)
-%!error<ExhaustiveSearcher.knnsearch: number of columns in X and Y must match.> knnsearch (ExhaustiveSearcher (ones(3,2)), ones(3,3), 1)
-%!error<ExhaustiveSearcher.knnsearch: K must be a positive integer.> knnsearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), 0)
-%!error<ExhaustiveSearcher.knnsearch: invalid parameter name: 'foo'.> knnsearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), 1, "foo", "bar")
-%!error<ExhaustiveSearcher.knnsearch: IncludeTies must be a logical scalar.> knnsearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), 1, "IncludeTies", 1)
+%!error<ExhaustiveSearcher.knnsearch: too few input arguments.> ...
+%! knnsearch (ExhaustiveSearcher (ones(3,2)))
+%!error<ExhaustiveSearcher.knnsearch: Name-Value arguments must be in pairs.> ...
+%! knnsearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), 1, "IncludeTies")
+%!error<ExhaustiveSearcher.knnsearch: Y must be a finite numeric matrix.> ...
+%! knnsearch (ExhaustiveSearcher (ones(3,2)), "abc", 1)
+%!error<ExhaustiveSearcher.knnsearch: number of columns in X and Y must match.> ...
+%! knnsearch (ExhaustiveSearcher (ones(3,2)), ones(3,3), 1)
+%!error<ExhaustiveSearcher.knnsearch: K must be a positive integer.> ...
+%! knnsearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), 0)
+%!error<ExhaustiveSearcher.knnsearch: invalid parameter name: 'foo'.> ...
+%! knnsearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), 1, "foo", "bar")
+%!error<ExhaustiveSearcher.knnsearch: IncludeTies must be a logical scalar.> ...
+%! knnsearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), 1, "IncludeTies", 1)
 
-%!error<ExhaustiveSearcher.rangesearch: too few input arguments.> rangesearch (ExhaustiveSearcher (ones(3,2)))
-%!error<ExhaustiveSearcher.rangesearch: Name-Value arguments must be in pairs.> rangesearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), 1, "SortIndices")
-%!error<ExhaustiveSearcher.rangesearch: Y must be a finite numeric matrix.> rangesearch (ExhaustiveSearcher (ones(3,2)), "abc", 1)
-%!error<ExhaustiveSearcher.rangesearch: number of columns in X and Y must match.> rangesearch (ExhaustiveSearcher (ones(3,2)), ones(3,3), 1)
-%!error<ExhaustiveSearcher.rangesearch: r must be a nonnegative finite scalar.> rangesearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), -1)
-%!error<ExhaustiveSearcher.rangesearch: invalid parameter name: 'foo'.> rangesearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), 1, "foo", "bar")
-%!error<ExhaustiveSearcher.rangesearch: SortIndices must be a logical scalar.> rangesearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), 1, "SortIndices", 1)
+%!error<ExhaustiveSearcher.rangesearch: too few input arguments.> ...
+%! rangesearch (ExhaustiveSearcher (ones(3,2)))
+%!error<ExhaustiveSearcher.rangesearch: Name-Value arguments must be in pairs.> ...
+%! rangesearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), 1, "SortIndices")
+%!error<ExhaustiveSearcher.rangesearch: Y must be a finite numeric matrix.> ...
+%! rangesearch (ExhaustiveSearcher (ones(3,2)), "abc", 1)
+%!error<ExhaustiveSearcher.rangesearch: number of columns in X and Y must match.> ...
+%! rangesearch (ExhaustiveSearcher (ones(3,2)), ones(3,3), 1)
+%!error<ExhaustiveSearcher.rangesearch: r must be a nonnegative finite scalar.> ...
+%! rangesearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), -1)
+%!error<ExhaustiveSearcher.rangesearch: invalid parameter name: 'foo'.> ...
+%! rangesearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), 1, "foo", "bar")
+%!error<ExhaustiveSearcher.rangesearch: SortIndices must be a logical scalar.> ...
+%! rangesearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), 1, "SortIndices", 1)
+
+%!error<ExhaustiveSearcher.subsref: () indexing not supported.> ...
+%! obj = ExhaustiveSearcher (ones(3,2)); obj(1)
+%!error<ExhaustiveSearcher.subsref: {} indexing not supported.> ...
+%! obj = ExhaustiveSearcher (ones(3,2)); obj{1}
+%!error<ExhaustiveSearcher.subsref: property name must be a character vector.> ...
+%! obj = ExhaustiveSearcher (ones(3,2)); obj.(1)
+%!error<ExhaustiveSearcher.subsref: unrecognized property: "invalid".> ...
+%! obj = ExhaustiveSearcher (ones(3,2)); obj.invalid
+%!error<ExhaustiveSearcher.subsasgn: () indexing not supported.> ...
+%! obj = ExhaustiveSearcher (ones(3,2)); obj(1) = 1
+%!error<ExhaustiveSearcher.subsasgn: {} indexing not supported.> ...
+%! obj = ExhaustiveSearcher (ones(3,2)); obj{1} = 1
+%!error<ExhaustiveSearcher.subsasgn: chained subscripts not allowed.> ...
+%! obj = ExhaustiveSearcher (ones(3,2)); obj.X.Y = 1
+%!error<ExhaustiveSearcher.subsasgn: property name must be a character vector.> ...
+%! obj = ExhaustiveSearcher (ones(3,2)); obj.(1) = 1
+%!error<ExhaustiveSearcher.subsasgn: X is read-only and cannot be modified.> ...
+%! obj = ExhaustiveSearcher (ones(3,2)); obj.X = 1
+%!error<ExhaustiveSearcher.subsasgn: unsupported distance metric "invalid".> ...
+%! obj = ExhaustiveSearcher (ones(3,2)); obj.Distance = "invalid"
+%!error<ExhaustiveSearcher.subsasgn: custom distance function output invalid.> ...
+%! obj = ExhaustiveSearcher (ones(3,2)); obj.Distance = @(x, y) [1; 1]
+%!error<ExhaustiveSearcher.subsasgn: invalid distance function handle.> ...
+%! obj = ExhaustiveSearcher (ones(3,2)); obj.Distance = @(x) x
+%!error<ExhaustiveSearcher.subsasgn: Distance must be a string or function handle.> ...
+%! obj = ExhaustiveSearcher (ones(3,2)); obj.Distance = 1
+%!error<ExhaustiveSearcher.subsasgn: DistParameter must be a positive finite scalar for minkowski.> ...
+%! obj = ExhaustiveSearcher (ones(3,2), "Distance", "minkowski"); obj.DistParameter = -1
+%!error<ExhaustiveSearcher.subsasgn: DistParameter must be a nonnegative vector matching X columns.> ...
+%! obj = ExhaustiveSearcher (ones(3,2), "Distance", "seuclidean"); obj.DistParameter = [-1, 1]
+%!error<ExhaustiveSearcher.subsasgn: DistParameter must be a square matrix matching X columns.> ...
+%! obj = ExhaustiveSearcher (ones(3,2), "Distance", "mahalanobis"); obj.DistParameter = ones(3,3)
+%!error<ExhaustiveSearcher.subsasgn: DistParameter must be positive definite for mahalanobis.> ...
+%! obj = ExhaustiveSearcher (ones(3,2), "Distance", "mahalanobis"); obj.DistParameter = -eye(2)
+%!error<ExhaustiveSearcher.subsasgn: DistParameter must be empty for this distance metric.> ...
+%! obj = ExhaustiveSearcher (ones(3,2), "Distance", "euclidean"); obj.DistParameter = 1
+%!error<ExhaustiveSearcher.subsasgn: unrecognized property: "invalid".> ...
+%! obj = ExhaustiveSearcher (ones(3,2)); obj.invalid = 1
