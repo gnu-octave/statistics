@@ -26,31 +26,8 @@
 ## a specified radius. This class is designed to work seamlessly with Octave's
 ## statistical functions and mirrors MATLAB's @code{ExhaustiveSearcher} behavior.
 ##
-## An @qcode{ExhaustiveSearcher} object, @var{obj}, has the following properties:
-##
-## @multitable @columnfractions 0.23 0.02 0.75
-## @headitem @var{Property} @tab @tab @var{Description}
-##
-## @item @qcode{X} @tab @tab Training data, specified as an @math{NxP} numeric
-## matrix where each row is an observation and each column is a feature. This
-## property is private and cannot be modified after object creation.
-##
-## @item @qcode{Distance} @tab @tab Distance metric used for searches, specified
-## as a character vector (e.g., @qcode{"euclidean"}, @qcode{"minkowski"}) or a
-## function handle to a custom distance function. Default is @qcode{"euclidean"}.
-## Supported metrics align with those in @code{pdist2}.
-##
-## @item @qcode{DistParameter} @tab @tab Parameter for the distance metric, with
-## type and value depending on @qcode{Distance}:
-## @itemize
-## @item For @qcode{"minkowski"}, a positive scalar exponent (default 2).
-## @item For @qcode{"seuclidean"}, a nonnegative vector of scaling factors matching
-## the number of columns in @qcode{X} (default is standard deviation of @qcode{X}).
-## @item For @qcode{"mahalanobis"}, a positive definite covariance matrix matching
-## the dimensions of @qcode{X} (default is covariance of @qcode{X}).
-## @item Empty for other metrics or custom functions.
-## @end itemize
-## @end multitable
+## Properties and their descriptions are documented with their respective
+## declarations below. The class provides the following methods:
 ##
 ## @strong{Methods:}
 ## @itemize
@@ -64,11 +41,45 @@
 classdef ExhaustiveSearcher < handle
 
   properties (SetAccess = private)
+    ## -*- texinfo -*-
+    ## @deftp {Property} X
+    ##
+    ## Training data, specified as an @math{NxP} numeric matrix where each row is
+    ## an observation and each column is a feature. This property is private and
+    ## cannot be modified after object creation.
+    ##
+    ## @end deftp
     X             # Training data
   endproperties
 
   properties
+    ## -*- texinfo -*-
+    ## @deftp {Property} Distance
+    ##
+    ## Distance metric used for searches, specified as a character vector (e.g.,
+    ## @qcode{"euclidean"}, @qcode{"minkowski"}) or a function handle to a custom
+    ## distance function. Default is @qcode{"euclidean"}. Supported metrics align
+    ## with those in @code{pdist2}.
+    ##
+    ## @end deftp
     Distance = "euclidean"    # Distance metric
+
+    ## -*- texinfo -*-
+    ## @deftp {Property} DistParameter
+    ##
+    ## Parameter for the distance metric, with type and value depending on
+    ## @qcode{Distance}:
+    ## @itemize
+    ## @item For @qcode{"minkowski"}, a positive scalar exponent (default 2).
+    ## @item For @qcode{"seuclidean"}, a nonnegative vector of scaling factors
+    ## matching the number of columns in @qcode{X} (default is standard deviation
+    ## of @qcode{X}).
+    ## @item For @qcode{"mahalanobis"}, a positive definite covariance matrix
+    ## matching the dimensions of @qcode{X} (default is covariance of @qcode{X}).
+    ## @item Empty for other metrics or custom functions.
+    ## @end itemize
+    ##
+    ## @end deftp
     DistParameter             # Distance metric parameter
   endproperties
 
