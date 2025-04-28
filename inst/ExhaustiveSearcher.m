@@ -783,6 +783,32 @@ endclassdef
 %! assert (idx, 1)
 %! assert (D, 0, 1e-10)
 
+%!test
+%! obj = ExhaustiveSearcher (ones(3,2));
+%! assert (obj.X, ones(3,2))
+%! assert (obj.Distance, "euclidean")
+%! assert (isempty (obj.DistParameter))
+
+%!test
+%! obj = ExhaustiveSearcher (ones(3,2));
+%! obj.Distance = "minkowski";
+%! assert (obj.Distance, "minkowski")
+
+%!test
+%! obj = ExhaustiveSearcher (ones(3,2), "Distance", "minkowski");
+%! obj.DistParameter = 3;
+%! assert (obj.DistParameter, 3)
+
+%!test
+%! obj = ExhaustiveSearcher (ones(3,2), "Distance", "seuclidean");
+%! obj.DistParameter = [1, 2];
+%! assert (obj.DistParameter, [1, 2])
+
+%!test
+%! obj = ExhaustiveSearcher (ones(3,2), "Distance", "mahalanobis");
+%! obj.DistParameter = eye(2);
+%! assert (obj.DistParameter, eye(2))
+
 ## Test Input Validation
 
 %!error<ExhaustiveSearcher: too few input arguments.> ...
