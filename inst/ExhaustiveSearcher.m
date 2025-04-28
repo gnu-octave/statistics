@@ -117,17 +117,17 @@ classdef ExhaustiveSearcher < handle
       s = s(1);
       switch (s.type)
         case '()'
-          error ('ExhaustiveSearcher.subsref: () indexing not supported.');
+          error ("ExhaustiveSearcher.subsref: () indexing not supported.");
         case '{}'
-          error ('ExhaustiveSearcher.subsref: {} indexing not supported.');
+          error ("ExhaustiveSearcher.subsref: {} indexing not supported.");
         case '.'
           if (! ischar (s.subs))
-            error ('ExhaustiveSearcher.subsref: property name must be a character vector.');
+            error ("ExhaustiveSearcher.subsref: property name must be a character vector.");
           endif
           try
             out = this.(s.subs);
           catch
-            error ('ExhaustiveSearcher.subsref: unrecognized property: "%s".', s.subs);
+            error ("ExhaustiveSearcher.subsref: unrecognized property: "%s".", s.subs);
           end_try_catch
       endswitch
       ## Chained references
@@ -140,76 +140,76 @@ classdef ExhaustiveSearcher < handle
     ## Class specific subscripted assignment
     function this = subsasgn (this, s, val)
       if (numel (s) > 1)
-        error ('ExhaustiveSearcher.subsasgn: chained subscripts not allowed.');
+        error ("ExhaustiveSearcher.subsasgn: chained subscripts not allowed.");
       endif
       switch s.type
         case '()'
-          error ('ExhaustiveSearcher.subsasgn: () indexing not supported.');
+          error ("ExhaustiveSearcher.subsasgn: () indexing not supported.");
         case '{}'
-          error ('ExhaustiveSearcher.subsasgn: {} indexing not supported.');
+          error ("ExhaustiveSearcher.subsasgn: {} indexing not supported.");
         case '.'
           if (! ischar (s.subs))
-            error ('ExhaustiveSearcher.subsasgn: property name must be a character vector.');
+            error ("ExhaustiveSearcher.subsasgn: property name must be a character vector.");
           endif
           switch (s.subs)
             case 'X'
-              error ('ExhaustiveSearcher.subsasgn: X is read-only and cannot be modified.');
+              error ("ExhaustiveSearcher.subsasgn: X is read-only and cannot be modified.");
             case 'Distance'
               valid_metrics = {"euclidean", "minkowski", "seuclidean", "mahalanobis", ...
                                "cityblock", "manhattan", "chebychev", "cosine", ...
                                "correlation", "spearman", "hamming", "jaccard"};
               if (ischar (val))
                 if (! any (strcmpi (valid_metrics, val)))
-                  error ('ExhaustiveSearcher.subsasgn: unsupported distance metric "%s".', val);
+                  error ("ExhaustiveSearcher.subsasgn: unsupported distance metric "%s".", val);
                 endif
                 this.Distance = val;
               elseif (isa (val, "function_handle"))
                 try
                   D = val (this.X(1,:), this.X);
                   if (! isvector (D) || length (D) != rows (this.X))
-                    error (strcat ('ExhaustiveSearcher.subsasgn: custom distance function', ...
-                                   ' output invalid.'));
+                    error (strcat ("ExhaustiveSearcher.subsasgn: custom distance function", ...
+                                   " output invalid."));
                   endif
                 catch
-                  error ('ExhaustiveSearcher.subsasgn: invalid distance function handle.');
+                  error ("ExhaustiveSearcher.subsasgn: invalid distance function handle.");
                 end_try_catch
                 this.Distance = val;
               else
-                error (strcat ('ExhaustiveSearcher.subsasgn: Distance must be a string or', ...
-                               ' function handle.'));
+                error (strcat ("ExhaustiveSearcher.subsasgn: Distance must be a string or", ...
+                               " function handle."));
               endif
             case 'DistParameter'
               if (strcmpi (this.Distance, "minkowski"))
                 if (! (isscalar (val) && isnumeric (val) && val > 0 && isfinite (val)))
-                  error (strcat ('ExhaustiveSearcher.subsasgn: DistParameter must be a', ...
-                                 ' positive finite scalar for minkowski.'));
+                  error (strcat ("ExhaustiveSearcher.subsasgn: DistParameter must be a", ...
+                                 " positive finite scalar for minkowski."));
                 endif
               elseif (strcmpi (this.Distance, "seuclidean"))
                 if (! (isvector (val) && isnumeric (val) && all (val >= 0) && ...
                        all (isfinite (val)) && length (val) == columns (this.X)))
-                  error (strcat ('ExhaustiveSearcher.subsasgn: DistParameter must be a', ...
-                                 ' nonnegative vector matching X columns.'));
+                  error (strcat ("ExhaustiveSearcher.subsasgn: DistParameter must be a", ...
+                                 " nonnegative vector matching X columns."));
                 endif
               elseif (strcmpi (this.Distance, "mahalanobis"))
                 if (! (ismatrix (val) && isnumeric (val) && all (isfinite (val)(:)) && ...
                        rows (val) == columns (val) && rows (val) == columns (this.X)))
-                  error (strcat ('ExhaustiveSearcher.subsasgn: DistParameter must be a', ...
-                                 ' square matrix matching X columns.'));
+                  error (strcat ("ExhaustiveSearcher.subsasgn: DistParameter must be a", ...
+                                 " square matrix matching X columns."));
                 endif
                 [~, p] = chol (val);
                 if (p != 0)
-                  error (strcat ('ExhaustiveSearcher.subsasgn: DistParameter must be', ...
-                                 ' positive definite for mahalanobis.'));
+                  error (strcat ("ExhaustiveSearcher.subsasgn: DistParameter must be", ...
+                                 " positive definite for mahalanobis."));
                 endif
-              else
+              els"
                 if (! isempty (val))
-                  error (strcat ('ExhaustiveSearcher.subsasgn: DistParameter must be empty', ...
-                                 ' for this distance metric.'));
+                  error (strcat ("ExhaustiveSearcher.subsasgn: DistParameter must be empty", ...
+                                 " for this distance metric."));
                 endif
               endif
               this.DistParameter = val;
             otherwise
-              error ('ExhaustiveSearcher.subsasgn: unrecognized property: "%s".', s.subs);
+              error ("ExhaustiveSearcher.subsasgn: unrecognized property: "%s".", s.subs);
           endswitch
       endswitch
     endfunction
