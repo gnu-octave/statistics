@@ -16,60 +16,30 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{obj} =} ExhaustiveSearcher (@var{X})
-## @deftypefnx {statistics} {@var{obj} =} ExhaustiveSearcher (@var{X}, @var{name}, @var{value})
+## @deftp {Class} ExhaustiveSearcher
 ##
-## Create an @qcode{ExhaustiveSearcher} object for nearest neighbor searches.
+## Exhaustive nearest neighbor searcher.
 ##
-## @code{@var{obj} = ExhaustiveSearcher (@var{X})} constructs an
-## @code{ExhaustiveSearcher} object using the training data @var{X}.
-## @var{X} must be an @math{NxP} numeric matrix, where rows correspond to
-## observations and columns correspond to features or variables. This object
-## performs exhaustive nearest neighbor searches by computing distances from
-## all points in @var{X} to query points using the specified distance metric.
+## The @qcode{ExhaustiveSearcher} class provides an interface for performing
+## nearest neighbor searches using an exhaustive search algorithm. It supports
+## various distance metrics and allows for efficient querying of nearest neighbors
+## or neighbors within a specified radius.
 ##
-## @code{@var{obj} = ExhaustiveSearcher (@var{X}, @var{name}, @var{value})}
-## allows specification of additional parameters via name-value pairs:
-##
-## @multitable @columnfractions 0.18 0.02 0.8
-## @headitem @var{Name} @tab @tab @var{Value}
-##
-## @item @qcode{"Distance"} @tab @tab Distance metric used for searches, specified
-## as a character vector or function handle. Default is @qcode{"euclidean"}. See
-## supported metrics in @code{pdist2}.
-##
-## @item @qcode{"P"} @tab @tab Minkowski distance exponent, specified as a
-## positive scalar. Valid when @qcode{"Distance"} is @qcode{"minkowski"}. Default
-## is 2.
-##
-## @item @qcode{"Scale"} @tab @tab Scale parameter for standardized Euclidean
-## distance, specified as a nonnegative vector matching the number of columns in
-## @var{X}. Valid when @qcode{"Distance"} is @qcode{"seuclidean"}. Default is the
-## standard deviation of @var{X}.
-##
-## @item @qcode{"Cov"} @tab @tab Covariance matrix for Mahalanobis distance,
-## specified as a positive definite matrix matching the number of columns in
-## @var{X}. Valid when @qcode{"Distance"} is @qcode{"mahalanobis"}. Default is
-## the covariance of @var{X}.
-## @end multitable
-##
-## An @qcode{ExhaustiveSearcher} object, @var{obj}, stores the training data and
-## various parameters for nearest neighbor searches, which can be accessed in
-## the following fields:
+## An @qcode{ExhaustiveSearcher} object, @var{obj}, stores the following properties:
 ##
 ## @multitable @columnfractions 0.23 0.02 0.75
-## @headitem @var{Field} @tab @tab @var{Description}
+## @headitem @var{Property} @tab @tab @var{Description}
 ##
 ## @item @qcode{X} @tab @tab Training data, specified as an @math{NxP} numeric
-## matrix. Each column of @var{X} represents one predictor (variable), and each
-## row represents one observation.
+## matrix. Each row corresponds to an observation, and each column corresponds to
+## a feature or variable. (Private)
 ##
 ## @item @qcode{Distance} @tab @tab Distance metric used for searches, specified
 ## as a character vector or function handle.
 ##
 ## @item @qcode{DistParameter} @tab @tab Parameter for the distance metric,
 ## specified as a scalar, vector, or matrix depending on the distance metric.
-## Empty for unsupported metrics.
+## Empty for metrics that do not require additional parameters.
 ## @end multitable
 ##
 ## @strong{Methods:}
@@ -79,11 +49,11 @@
 ## @end itemize
 ##
 ## @seealso{knnsearch, rangesearch, pdist2}
-## @end deftypefn
+## @end deftp
 
 classdef ExhaustiveSearcher < handle
 
-  properties (SetAccess = private)
+  properties (SetAccess = private, Hidden)
     X             # Training data
   endproperties
 
@@ -98,18 +68,40 @@ classdef ExhaustiveSearcher < handle
     ## @deftypefn  {ExhaustiveSearcher} {@var{obj} =} ExhaustiveSearcher (@var{X})
     ## @deftypefnx {ExhaustiveSearcher} {@var{obj} =} ExhaustiveSearcher (@var{X}, @var{name}, @var{value})
     ##
-    ## Construct an @qcode{ExhaustiveSearcher} object.
+    ## Create an @qcode{ExhaustiveSearcher} object for nearest neighbor searches.
     ##
-    ## @code{@var{obj} = ExhaustiveSearcher (@var{X})} creates an
-    ## @qcode{ExhaustiveSearcher} object with the training data @var{X},
-    ## using the default Euclidean distance metric.
+    ## @code{@var{obj} = ExhaustiveSearcher (@var{X})} constructs an
+    ## @code{ExhaustiveSearcher} object using the training data @var{X} and the
+    ## default Euclidean distance metric. @var{X} must be an @math{NxP} numeric
+    ## matrix, where rows correspond to observations and columns correspond to
+    ## features or variables.
     ##
     ## @code{@var{obj} = ExhaustiveSearcher (@var{X}, @var{name}, @var{value})}
-    ## constructs an @qcode{ExhaustiveSearcher} object with additional
-    ## parameters specified by name-value pairs as described in the class
-    ## documentation.
+    ## allows specification of additional parameters via name-value pairs:
     ##
-    ## @seealso{ExhaustiveSearcher, knnsearch, rangesearch}
+    ## @multitable @columnfractions 0.18 0.02 0.8
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{"Distance"} @tab @tab Distance metric used for searches, specified
+    ## as a character vector or function handle. Default is @qcode{"euclidean"}. See
+    ## supported metrics in @code{pdist2}.
+    ##
+    ## @item @qcode{"P"} @tab @tab Minkowski distance exponent, specified as a
+    ## positive scalar. Valid when @qcode{"Distance"} is @qcode{"minkowski"}. Default
+    ## is 2.
+    ##
+    ## @item @qcode{"Scale"} @tab @tab Scale parameter for standardized Euclidean
+    ## distance, specified as a nonnegative vector matching the number of columns in
+    ## @var{X}. Valid when @qcode{"Distance"} is @qcode{"seuclidean"}. Default is the
+    ## standard deviation of @var{X}.
+    ##
+    ## @item @qcode{"Cov"} @tab @tab Covariance matrix for Mahalanobis distance,
+    ## specified as a positive definite matrix matching the number of columns in
+    ## @var{X}. Valid when @qcode{"Distance"} is @qcode{"mahalanobis"}. Default is
+    ## the covariance of @var{X}.
+    ## @end multitable
+    ##
+    ## @seealso{ExhaustiveSearcher, knnsearch, rangesearch, pdist2}
     ## @end deftypefn
     function obj = ExhaustiveSearcher (X, varargin)
       if (nargin < 1)
