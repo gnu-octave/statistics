@@ -261,9 +261,13 @@ classdef ClassificationDiscriminant
     ## Constructor
     function this = ClassificationDiscriminant (X, Y, varargin)
 
-      ## Check for sufficient number of input arguments
+      ## Check for appropriate number of input arguments
       if (nargin < 2)
         error ("ClassificationDiscriminant: too few input arguments.");
+      endif
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("ClassificationDiscriminant: Name-Value", ...
+                       " arguments must be in pairs."));
       endif
 
       ## Validate X
@@ -1352,6 +1356,8 @@ endclassdef
 %!error<ClassificationDiscriminant: too few input arguments.> ClassificationDiscriminant ()
 %!error<ClassificationDiscriminant: too few input arguments.> ...
 %! ClassificationDiscriminant (ones(4, 1))
+%!error<ClassificationDiscriminant: Name-Value arguments must be in pairs.> ...
+%! ClassificationDiscriminant (X, Y, "prior")
 %!error<ClassificationDiscriminant: number of rows in X and Y must be equal.> ...
 %! ClassificationDiscriminant (ones (4,2), ones (1,4))
 %!error<ClassificationDiscriminant: 'PredictorNames' must be supplied as a cellstring array.> ...
