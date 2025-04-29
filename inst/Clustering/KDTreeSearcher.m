@@ -622,7 +622,8 @@ classdef KDTreeSearcher
         farthest = KDTreeSearcher.kdtree_cand_farthest (X, p, nn, dist, ...
                                                          distparam);
         radius = pdist2 (X(farthest,:), p, dist, distparam);
-        if (isfield (node, "right") && (length (nn) < k || p(d) + radius > X(point,d)))
+        if (isfield (node, "right") && ...
+            (length (nn) < k || p(d) + radius > X(point,d)))
           nn = KDTreeSearcher.findkdtree_recur (X, node.right, p, nn, k, ...
                                                  dist, distparam);
         endif
