@@ -667,7 +667,8 @@ classdef KDTreeSearcher
       else
         farthest = KDTreeSearcher.kdtree_cand_farthest (X, p, cand, dist, ...
                                                          distparam);
-        if (pdist2 (X(point,:), p, dist, distparam) < pdist2 (X(farthest,:), p, dist, distparam))
+        if (pdist2 (X(point,:), p, dist, distparam) < ...
+            pdist2 (X(farthest,:), p, dist, distparam))
           cand(find (cand == farthest)) = point;
           inserted = cand;
         else
