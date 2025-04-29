@@ -59,9 +59,9 @@ classdef KDTreeSearcher
     ##
     ## @end deftp
     KDTree
-	endproperties
+  endproperties
 
-	properties
+  properties
     ## -*- texinfo -*-
     ## @deftp {Property} Distance
     ##
@@ -89,7 +89,7 @@ classdef KDTreeSearcher
     ## Default is 50.
     ##
     ## @end deftp
-    BucketSize = 50   # Bucket size for KD-tree
+    BucketSize = 50
   endproperties
 
   methods (Hidden)
@@ -98,7 +98,7 @@ classdef KDTreeSearcher
     function display (this)
       in_name = inputname (1);
       if (! isempty (in_name))
-        fprintf ("%s =\n", in_name);
+        fprintf ('%s =\n', in_name);
       endif
       disp (this);
     endfunction
@@ -107,14 +107,15 @@ classdef KDTreeSearcher
     function disp (this)
       if (isscalar (this))
         fprintf ("\n  KDTreeSearcher\n\n");
-        fprintf ("%+25s: [%dx%d %s]\n", "X", size (this.X), class (this.X));
-        fprintf ("%+25s: \"%s\"\n", "Distance", this.Distance);
+        fprintf ("%+25s: [%dx%d %s]\n", 'X', size (this.X), class (this.X));
+        fprintf ("%+25s: '%s'\n", 'Distance', this.Distance);
         if (! isempty (this.DistParameter))
-          fprintf ("%+25s: %g\n", "DistParameter", this.DistParameter);
+          fprintf ("%+25s: %g\n", 'DistParameter', this.DistParameter);
         else
-          fprintf ("%+25s: []\n", "DistParameter");
+          fprintf ("%+25s: []\n", 'DistParameter');
         endif
-        fprintf ("%+25s: %d\n", "BucketSize", this.BucketSize);
+        fprintf ("%+25s: %d\n", 'BucketSize', this.BucketSize);
+        fprintf ("%+25s: [KD-tree structure]\n", 'KDTree');
       else
         sz = size (this);
         fprintf ("\n  %s KDTreeSearcher array\n\n", mat2str (sz));
@@ -126,22 +127,23 @@ classdef KDTreeSearcher
       chain_s = s(2:end);
       s = s(1);
       switch (s.type)
-        case "()"
+        case '()'
           error ("KDTreeSearcher.subsref: () indexing not supported.");
-        case "{}"
+        case '{}'
           error ("KDTreeSearcher.subsref: {} indexing not supported.");
-        case "."
+        case '.'
           if (! ischar (s.subs))
-            error (strcat ("KDTreeSearcher.subsref: property name must be", ...
-													 " a character vector."));
+            error (strcat ("KDTreeSearcher.subsref: property", ...
+                           " name must be a character vector."));
           endif
           try
             out = this.(s.subs);
           catch
-            error ("KDTreeSearcher.subsref: unrecognized property: '%s'.", ...
-									 s.subs);
+            error (strcat ("KDTreeSearcher.subsref: unrecognized", ...
+                           " property: '%s'"), s.subs);
           end_try_catch
       endswitch
+      ## Chained references
       if (! isempty (chain_s))
         out = subsref (out, chain_s);
       endif
@@ -154,29 +156,58 @@ classdef KDTreeSearcher
         error ("KDTreeSearcher.subsasgn: chained subscripts not allowed.");
       endif
       switch s.type
-        case "()"
+        case '()'
           error ("KDTreeSearcher.subsasgn: () indexing not supported.");
-        case "{}"
+        case '{}'
           error ("KDTreeSearcher.subsasgn: {} indexing not supported.");
-        case "."
+        case '.'
           if (! ischar (s.subs))
-            error (strcat ("KDTreeSearcher.subsasgn: property name must be", ...
-													 " a character vector."));
+            error (strcat ("KDTreeSearcher.subsasgn: property", ...
+                           " name must be a character vector."));
           endif
           switch (s.subs)
-            case "X"
-              error (strcat ("KDTreeSearcher.subsasgn: X is read-only and", ...
-							 							 " cannot be modified."));
-            case "KDTree"
-              error ("KDTreeSearcher.subsasgn: KDTree is read-only and cannot be modified.");
-            case "Distance"
-              error ("KDTreeSearcher.subsasgn: Distance is read-only and cannot be modified.");
-            case "DistParameter"
-              error ("KDTreeSearcher.subsasgn: DistParameter is read-only and cannot be modified.");
-            case "BucketSize"
-              error ("KDTreeSearcher.subsasgn: BucketSize is read-only and cannot be modified.");
+            case 'X'
+              error (strcat ("KDTreeSearcher.subsasgn: X is", ...
+                             " read-only and cannot be modified."));
+            case 'KDTree'
+              error (strcat ("KDTreeSearcher.subsasgn: KDTree is", ...
+                             " read-only and cannot be modified."));
+            case 'Distance'
+              allowed_distances = {'euclidean', 'cityblock', 'minkowski', 'chebychev'};
+              if (ischar (val))
+                if (! any (strcmpi (allowed_distances, val)))
+                  error (strcat ("KDTreeSearcher.subsasgn:", ...
+                                 " unsupported distance metric '%s'."), val);
+                endif
+                this.Distance = val;
+              else
+                error (strcat ("KDTreeSearcher.subsasgn: Distance", ...
+                               " must be a string."));
+              endif
+            case 'DistParameter'
+              if (strcmpi (this.Distance, "minkowski"))
+                if (! (isscalar (val) && isnumeric (val) && val > 0 && isfinite (val)))
+                  error (strcat ("KDTreeSearcher.subsasgn:", ...
+                                 " DistParameter must be a positive", ...
+                                 " finite scalar for minkowski."));
+                endif
+                this.DistParameter = val;
+              else
+                if (! isempty (val))
+                  error (strcat ("KDTreeSearcher.subsasgn: DistParameter", ...
+                                 " must be empty for this distance metric."));
+                endif
+                this.DistParameter = val;
+              endif
+            case 'BucketSize'
+              if (! (isscalar (val) && isnumeric (val) && val > 0 && val == fix (val)))
+                error (strcat ("KDTreeSearcher.subsasgn: BucketSize", ...
+                               " must be a positive integer."));
+              endif
+              this.BucketSize = val;
             otherwise
-              error ("KDTreeSearcher.subsasgn: unrecognized property: '%s'.", s.subs);
+              error (strcat ("KDTreeSearcher.subsasgn:", ...
+                             " unrecognized property: '%s'"), s.subs);
           endswitch
       endswitch
     endfunction
@@ -802,11 +833,15 @@ endclassdef
 %! obj = KDTreeSearcher (ones(3,2)); obj.X = 1
 %!error<KDTreeSearcher.subsasgn: KDTree is read-only and cannot be modified.> ...
 %! obj = KDTreeSearcher (ones(3,2)); obj.KDTree = 1
-%!error<KDTreeSearcher.subsasgn: Distance is read-only and cannot be modified.> ...
-%! obj = KDTreeSearcher (ones(3,2)); obj.Distance = "minkowski"
-%!error<KDTreeSearcher.subsasgn: DistParameter is read-only and cannot be modified.> ...
-%! obj = KDTreeSearcher (ones(3,2)); obj.DistParameter = 3
-%!error<KDTreeSearcher.subsasgn: BucketSize is read-only and cannot be modified.> ...
-%! obj = KDTreeSearcher (ones(3,2)); obj.BucketSize = 10
+%!error<KDTreeSearcher.subsasgn: unsupported distance metric 'invalid'.> ...
+%! obj = KDTreeSearcher (ones(3,2)); obj.Distance = "invalid"
+%!error<KDTreeSearcher.subsasgn: Distance must be a string.> ...
+%! obj = KDTreeSearcher (ones(3,2)); obj.Distance = 1
+%!error<KDTreeSearcher.subsasgn: DistParameter must be a positive finite scalar for minkowski.> ...
+%! obj = KDTreeSearcher (ones(3,2), "Distance", "minkowski"); obj.DistParameter = -1
+%!error<KDTreeSearcher.subsasgn: DistParameter must be empty for this distance metric.> ...
+%! obj = KDTreeSearcher (ones(3,2)); obj.DistParameter = 1
+%!error<KDTreeSearcher.subsasgn: BucketSize must be a positive integer.> ...
+%! obj = KDTreeSearcher (ones(3,2)); obj.BucketSize = 0
 %!error<KDTreeSearcher.subsasgn: unrecognized property: 'invalid'.> ...
 %! obj = KDTreeSearcher (ones(3,2)); obj.invalid = 1
