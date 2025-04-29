@@ -65,6 +65,7 @@ classdef ExhaustiveSearcher
     ##
     ## Parameter for the distance metric, with type and value depending on
     ## @qcode{Distance}:
+    ##
     ## @itemize
     ## @item For @qcode{"minkowski"}, a positive scalar exponent (default 2).
     ## @item For @qcode{"seuclidean"}, a nonnegative vector of scaling factors
