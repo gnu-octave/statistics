@@ -41,9 +41,9 @@ classdef KDTreeSearcher
     ## -*- texinfo -*-
     ## @deftp {Property} X
     ##
-    ## Training data, specified as an @math{NxP} numeric matrix where each row is
-    ## an observation and each column is a feature. This property is private and
-    ## cannot be modified after object creation.
+    ## Training data, specified as an @math{NxP} numeric matrix where each row
+    ## is an observation and each column is a feature.  This property is private
+    ## and cannot be modified after object creation.
     ##
     ## @end deftp
     X = []
@@ -51,7 +51,7 @@ classdef KDTreeSearcher
     ## -*- texinfo -*-
     ## @deftp {Property} KDTree
     ##
-    ## The KD-tree structure built from the training data. This property is
+    ## The KD-tree structure built from the training data.  This property is
     ## private and cannot be modified after object creation.
     ##
     ## @end deftp
@@ -63,9 +63,9 @@ classdef KDTreeSearcher
     ## @deftp {Property} Distance
     ##
     ## Distance metric used for searches, specified as a character vector (e.g.,
-    ## @qcode{"euclidean"}, @qcode{"minkowski"}). Default is @qcode{"euclidean"}.
-    ## Supported metrics are @qcode{"euclidean"}, @qcode{"cityblock"},
-    ## @qcode{"minkowski"}, and @qcode{"chebychev"}.
+    ## @qcode{"euclidean"}, @qcode{"minkowski"}).  Default is
+    ## @qcode{"euclidean"}.  Supported metrics are @qcode{"euclidean"},
+    ## @qcode{"cityblock"}, @qcode{"minkowski"}, and @qcode{"chebychev"}.
     ##
     ## @end deftp
     Distance = 'euclidean'
@@ -73,8 +73,14 @@ classdef KDTreeSearcher
     ## -*- texinfo -*-
     ## @deftp {Property} DistParameter
     ##
-    ## Parameter for the distance metric. For @qcode{"minkowski"}, it is the
-    ## exponent (default 2). For other metrics, it is empty.
+    ## Parameter for the distance metric, with type and value depending on
+    ## @qcode{Distance}:
+    ##
+    ## @itemize
+    ## @item For @qcode{"minkowski"}, a positive scalar exponent (default 2).
+    ## @item Empty for other metrics (@qcode{"euclidean"}, @qcode{"cityblock"},
+    ## @qcode{"chebychev"}).
+    ## @end itemize
     ##
     ## @end deftp
     DistParameter = []
@@ -239,18 +245,23 @@ classdef KDTreeSearcher
     ## @multitable @columnfractions 0.18 0.02 0.8
     ## @headitem @var{Name} @tab @tab @var{Value}
     ##
-    ## @item @qcode{"Distance"} @tab @tab Distance metric, specified as a character
-    ## vector (@qcode{"euclidean"}, @qcode{"cityblock"}, @qcode{"minkowski"},
-    ## @qcode{"chebychev"}). Default is @qcode{"euclidean"}.
+    ## @item @qcode{"Distance"} @tab @tab Distance metric, specified as a
+    ## character vector (@qcode{"euclidean"}, @qcode{"cityblock"},
+    ## @qcode{"minkowski"}, @qcode{"chebychev"}).  Default is
+    ## @qcode{"euclidean"}.
     ##
-    ## @item @qcode{"P"} @tab @tab Minkowski distance exponent, a positive scalar.
-    ## Valid only when @qcode{"Distance"} is @qcode{"minkowski"}. Default is 2.
+    ## @item @qcode{"P"} @tab @tab Minkowski distance exponent, a positive
+    ## scalar.  Valid only when @qcode{"Distance"} is @qcode{"minkowski"}.
+    ## Default is 2.
     ##
     ## @item @qcode{"BucketSize"} @tab @tab Maximum number of data points in the
-    ## leaf node of the KD-tree, a positive integer. Default is 50.
+    ## leaf node of the KD-tree, a positive integer.  Default is 50.
     ## @end multitable
     ##
-    ## @seealso{KDTreeSearcher, knnsearch, rangesearch}
+    ## You can also create a @qcode{KDTreeSearcher} object using the
+    ## @code{createns} function.
+    ##
+    ## @seealso{KDTreeSearcher, knnsearch, rangesearch, createns}
     ## @end deftypefn
     function obj = KDTreeSearcher (X, varargin)
       if (nargin < 1)
@@ -325,14 +336,14 @@ classdef KDTreeSearcher
     ## Find the @math{K} nearest neighbors in the training data to query points.
     ##
     ## @code{[@var{idx}, @var{D}] = knnsearch (@var{obj}, @var{Y}, @var{K})}
-    ## returns the indices @var{idx} and distances @var{D} of the @math{K} nearest
-    ## neighbors in @var{obj.X} to each point in @var{Y}, using the distance metric
-    ## specified in @var{obj.Distance}.
+    ## returns the indices @var{idx} and distances @var{D} of the @math{K}
+    ## nearest neighbors in @var{obj.X} to each point in @var{Y}, using the
+    ## distance metric specified in @var{obj.Distance}.
     ##
     ## @itemize
     ## @item @var{obj} is a @qcode{KDTreeSearcher} object.
-    ## @item @var{Y} is an @math{MxP} numeric matrix of query points, where @math{P}
-    ## must match the number of columns in @var{obj.X}.
+    ## @item @var{Y} is an @math{MxP} numeric matrix of query points, where
+    ## @math{P} must match the number of columns in @var{obj.X}.
     ## @item @var{K} is a positive integer specifying the number of nearest
     ## neighbors to find.
     ## @end itemize
@@ -448,8 +459,8 @@ classdef KDTreeSearcher
     ##
     ## @itemize
     ## @item @var{obj} is a @qcode{KDTreeSearcher} object.
-    ## @item @var{Y} is an @math{MxP} numeric matrix of query points, where @math{P}
-    ## must match the number of columns in @var{obj.X}.
+    ## @item @var{Y} is an @math{MxP} numeric matrix of query points, where
+    ## @math{P} must match the number of columns in @var{obj.X}.
     ## @item @var{r} is a nonnegative scalar specifying the search radius.
     ## @end itemize
     ##
@@ -463,8 +474,8 @@ classdef KDTreeSearcher
     ## sort the indices by distance. Default is @qcode{true}.
     ## @end multitable
     ##
-    ## @var{idx} and @var{D} are cell arrays where each cell contains the indices
-    ## and distances for one query point in @var{Y}.
+    ## @var{idx} and @var{D} are cell arrays where each cell contains the
+    ## indices and distances for one query point in @var{Y}.
     ##
     ## @seealso{KDTreeSearcher, knnsearch}
     ## @end deftypefn
