@@ -297,7 +297,7 @@ classdef KDTreeSearcher
             BucketSize = varargin{2};
           otherwise
             error (strcat ("KDTreeSearcher: invalid parameter", ...
-                           " name: '%s'.", varargin{1}));
+                           " name: '%s'."), varargin{1});
         endswitch
         varargin (1:2) = [];
       endwhile
@@ -501,22 +501,22 @@ classdef KDTreeSearcher
 
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("KDTreeSearcher.rangesearch:", ...
-               " Name-Value arguments must be in pairs."));
+                       " Name-Value arguments must be in pairs."));
       endif
 
       if (! (isnumeric (Y) && ismatrix (Y) && all (isfinite (Y)(:))))
         error (strcat ("KDTreeSearcher.rangesearch:", ...
-               " Y must be a finite numeric matrix."));
+                       " Y must be a finite numeric matrix."));
       endif
 
       if (size (obj.X, 2) != size (Y, 2))
         error (strcat ("KDTreeSearcher.rangesearch:", ...
-               " number of columns in X and Y must match."));
+                       " number of columns in X and Y must match."));
       endif
 
       if (! (isscalar (r) && isnumeric (r) && r >= 0 && isfinite (r)))
         error (strcat ("KDTreeSearcher.rangesearch:", ...
-               " r must be a nonnegative finite scalar."));
+                       " r must be a nonnegative finite scalar."));
       endif
 
       ## Parse options
@@ -527,7 +527,7 @@ classdef KDTreeSearcher
             SortIndices = varargin{2};
             if (! (islogical (SortIndices) && isscalar (SortIndices)))
               error (strcat ("KDTreeSearcher.rangesearch:", ...
-                     " SortIndices must be a logical scalar."));
+                             " SortIndices must be a logical scalar."));
             endif
           otherwise
             error (strcat ("KDTreeSearcher.rangesearch:", ...
@@ -787,8 +787,8 @@ endclassdef
 %! Y = [0.5, 0];
 %! [idx, D] = knnsearch (obj, Y, 1, "IncludeTies", true);
 %! assert (iscell (idx));
-%! assert (sort (idx{1}), [1, 2]);
-%! assert (sort (D{1}), [0.5, 0.5], 1e-10);
+%! assert (sort (idx{1}(:))', [1, 2]);
+%! assert (sort (D{1}(:)), [0.5; 0.5], 1e-10);
 
 %!test
 %! ## rangesearch with Euclidean
@@ -814,8 +814,8 @@ endclassdef
 %! obj = KDTreeSearcher (X, "Distance", "chebychev");
 %! Y = [2, 2];
 %! [idx, D] = rangesearch (obj, Y, 1);
-%! assert (sort (idx{1}), [1, 2]);
-%! assert (sort (D{1}), [1, 1], 1e-10);
+%! assert (sort (idx{1}(:))', [1, 2]);
+%! assert (sort (D{1}(:))', [1, 1], 1e-10);
 
 %!test
 %! ## rangesearch with Minkowski P=3
@@ -823,8 +823,8 @@ endclassdef
 %! obj = KDTreeSearcher (X, "Distance", "minkowski", "P", 3);
 %! Y = [1, 0];
 %! [idx, D] = rangesearch (obj, Y, 1);
-%! assert (sort (idx{1}), [1, 2, 3]);
-%! assert (sort (D{1}), [0, 1, 1], 1e-10);
+%! assert (sort (idx{1}(:))', [1, 2, 3]);
+%! assert (sort (D{1}(:))', [0, 1, 1], 1e-10);
 
 %!test
 %! ## Diverse dataset with Euclidean
