@@ -20,22 +20,19 @@
 ##
 ## KD-tree nearest neighbor searcher class.
 ##
-## The @qcode{KDTreeSearcher} class implements a KD-tree search algorithm for
-## nearest neighbor queries. It stores training data and supports specific
-## distance metrics to find the @math{K} nearest neighbors or all neighbors
-## within a specified radius. This class is designed to work efficiently in
-## lower dimensions and mirrors MATLAB's @code{KDTreeSearcher} behavior.
+## The @code{KDTreeSearcher} class implements a KD-tree search algorithm for
+## nearest neighbor queries.  It stores training data and supports various
+## distance metrics along with their parameter values for performing a KD-tree
+## search.  The KD-tree algorithm partitions the training data into a
+## hierarchical tree structure and performs search operations by traversing the
+## tree to reduce the number of distance computations.  It facilitates a nearest
+## neighborsearch using @code{knnsearch} or a radius search using
+## @code{rangesearch}.
 ##
-## Properties and their descriptions are documented with their respective
-## declarations below. The class provides the following methods:
+## You can either use the @code{KDTreeSearcher} class constructor or the
+## @code{createns} function to create an @qcode{KDTreeSearcher} object.
 ##
-## @strong{Methods:}
-## @itemize
-## @item @code{knnsearch}: Find the @math{K} nearest neighbors.
-## @item @code{rangesearch}: Find all neighbors within a specified radius.
-## @end itemize
-##
-## @seealso{knnsearch, rangesearch, pdist2}
+## @seealso{createns, ExhaustiveSearcher, knnsearch, rangesearch, pdist2}
 ## @end deftp
 
 classdef KDTreeSearcher
@@ -634,6 +631,32 @@ classdef KDTreeSearcher
   endmethods
 
 endclassdef
+
+## Demo Examples
+
+%!demo
+%! ## Create a KDTreeSearcher with Euclidean distance
+%! X = [1, 2; 3, 4; 5, 6];
+%! obj = KDTreeSearcher (X);
+%! ## Find the nearest neighbor to [2, 3]
+%! Y = [2, 3];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! disp ("Nearest neighbor index:"); disp (idx);
+%! disp ("Distance:"); disp (D);
+%! ## Find all points within radius 2
+%! [idx, D] = rangesearch (obj, Y, 2);
+%! disp ("Indices within radius:"); disp (idx);
+%! disp ("Distances:"); disp (D);
+
+%!demo
+%! ## Create a KDTreeSearcher with Minkowski distance (P=3)
+%! X = [0, 0; 1, 0; 2, 0];
+%! obj = KDTreeSearcher (X, "Distance", "minkowski", "P", 3);
+%! ## Find the nearest neighbor to [1, 0]
+%! Y = [1, 0];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! disp ("Nearest neighbor index:"); disp (idx);
+%! disp ("Distance:"); disp (D);
 
 ## Test Cases
 
