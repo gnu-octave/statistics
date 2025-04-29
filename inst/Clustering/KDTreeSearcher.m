@@ -454,7 +454,8 @@ classdef KDTreeSearcher
           else
             kth_dist = sorted_D(end);
           endif
-          [idx_temp, D_temp] = rangesearch (obj, Y(i,:), kth_dist, "SortIndices", SortIndices);
+          [idx_temp, D_temp] = rangesearch (obj, Y(i,:), kth_dist, ...
+                                            "SortIndices", SortIndices);
           idx{i} = idx_temp{1};
           D{i} = D_temp{1};
         endfor
@@ -598,7 +599,8 @@ classdef KDTreeSearcher
     function nn = findkdtree (tree, p, k, dist, distparam)
       X = tree.data;
       root = tree.root;
-      nn = KDTreeSearcher.findkdtree_recur (X, root, p, [], k, dist, distparam);
+      nn = KDTreeSearcher.findkdtree_recur (X, root, p, [], k, ...
+                                            dist, distparam);
     endfunction
 
     function nn = findkdtree_recur (X, node, p, nn, k, dist, distparam)
