@@ -872,7 +872,8 @@ endclassdef
 %! ExhaustiveSearcher (ones(3,2), "Distance", "seuclidean", "Scale", [-1, 1])
 %!error<ExhaustiveSearcher: Cov must be a square matrix matching X columns.> ...
 %! ExhaustiveSearcher (ones(3,2), "Distance", "mahalanobis", "Cov", ones(3,3))
-%!error<ExhaustiveSearcher: Cov must be positive definite.> ExhaustiveSearcher (ones(3,2), "Distance", "mahalanobis", "Cov", -eye(2))
+%!error<ExhaustiveSearcher: Cov must be positive definite.> ...
+%! ExhaustiveSearcher (ones(3,2), "Distance", "mahalanobis", "Cov", -eye(2))
 
 %!error<ExhaustiveSearcher.knnsearch: too few input arguments.> ...
 %! knnsearch (ExhaustiveSearcher (ones(3,2)))
