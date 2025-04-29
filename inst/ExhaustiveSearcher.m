@@ -20,36 +20,32 @@
 ##
 ## Exhaustive nearest neighbor searcher class.
 ##
-## The @qcode{ExhaustiveSearcher} class implements an exhaustive search algorithm
-## for nearest neighbor queries. It stores training data and supports various
-## distance metrics to find the @math{K} nearest neighbors or all neighbors within
-## a specified radius. This class is designed to work seamlessly with Octave's
-## statistical functions and mirrors MATLAB's @code{ExhaustiveSearcher} behavior.
+## The @code{ExhaustiveSearcher} class implements an exhaustive search algorithm
+## for nearest neighbor queries.  It stores training data and supports various
+## distance metrics along with their parameter values for performing an
+## exhaustive search.  The exhaustive search algorithm computes the distance
+## from each query point to all the points in the training data and facilitates
+## a nearest neighbor search using @code{knnsearch} or a radius search using
+## @code{rangesearch}.
 ##
-## Properties and their descriptions are documented with their respective
-## declarations below. The class provides the following methods:
+## You can either use the @code{ExhaustiveSearcher} class constructor or the
+## @code{createns} function to create an @qcode{ExhaustiveSearcher} object.
 ##
-## @strong{Methods:}
-## @itemize
-## @item @code{knnsearch}: Find the @math{K} nearest neighbors.
-## @item @code{rangesearch}: Find all neighbors within a specified radius.
-## @end itemize
-##
-## @seealso{knnsearch, rangesearch, pdist2}
+## @seealso{createns, KDTreeSearcher, hnswSearcher}
 ## @end deftp
 
-classdef ExhaustiveSearcher < handle
+classdef ExhaustiveSearcher
 
   properties (SetAccess = private)
     ## -*- texinfo -*-
     ## @deftp {Property} X
     ##
-    ## Training data, specified as an @math{NxP} numeric matrix where each row is
-    ## an observation and each column is a feature. This property is private and
-    ## cannot be modified after object creation.
+    ## Training data, specified as an @math{NxP} numeric matrix where each row
+    ## is an observation and each column is a feature. This property is private
+    ## and cannot be modified after object creation.
     ##
     ## @end deftp
-    X             # Training data
+    X = []
   endproperties
 
   properties
@@ -57,12 +53,12 @@ classdef ExhaustiveSearcher < handle
     ## @deftp {Property} Distance
     ##
     ## Distance metric used for searches, specified as a character vector (e.g.,
-    ## @qcode{"euclidean"}, @qcode{"minkowski"}) or a function handle to a custom
-    ## distance function. Default is @qcode{"euclidean"}. Supported metrics align
-    ## with those in @code{pdist2}.
+    ## @qcode{"euclidean"}, @qcode{"minkowski"}) or a function handle to a
+    ## custom distance function. Default is @qcode{"euclidean"}.  Supported
+    ## metrics align with those in @code{pdist2}.
     ##
     ## @end deftp
-    Distance = "euclidean"    # Distance metric
+    Distance = 'euclidean'
 
     ## -*- texinfo -*-
     ## @deftp {Property} DistParameter
@@ -72,15 +68,15 @@ classdef ExhaustiveSearcher < handle
     ## @itemize
     ## @item For @qcode{"minkowski"}, a positive scalar exponent (default 2).
     ## @item For @qcode{"seuclidean"}, a nonnegative vector of scaling factors
-    ## matching the number of columns in @qcode{X} (default is standard deviation
-    ## of @qcode{X}).
+    ## matching the number of columns in @qcode{X} (default is standard
+    ## deviation of @qcode{X}).
     ## @item For @qcode{"mahalanobis"}, a positive definite covariance matrix
-    ## matching the dimensions of @qcode{X} (default is covariance of @qcode{X}).
+    ## matching the dimensions of @qcode{X} (default is @code{cov (@var{X})}).
     ## @item Empty for other metrics or custom functions.
     ## @end itemize
     ##
     ## @end deftp
-    DistParameter             # Distance metric parameter
+    DistParameter = []
   endproperties
 
   methods (Hidden)
@@ -97,17 +93,25 @@ classdef ExhaustiveSearcher < handle
     ## Custom display
     function disp (this)
       if (isscalar (this))
-        fprintf ('\n  ExhaustiveSearcher\n\n');
-        fprintf ('%+25s: [%dx%d double]\n', 'X', size (this.X, 1), size (this.X, 2));
-        fprintf ('%+25s: "%s"\n', 'Distance', this.Distance);
+        fprintf ("\n  ExhaustiveSearcher\n\n");
+        fprintf ("%+25s: [%dx%d %s]\n", 'X', size (this.X), class (this.X));
+        fprintf ("%+25s: '%s'\n", 'Distance', this.Distance);
         if (! isempty (this.DistParameter))
-          fprintf ('%+25s: %s\n', 'DistParameter', mat2str (this.DistParameter));
+          if (isscalar (this.DistParameter))
+            fprintf ("%+25s: %g\n", 'DistParameter', this.DistParameter);
+          elseif (isvector (this.DistParameter))
+            fprintf ("%+25s: %s\n", 'DistParameter', ...
+                     mat2str (this.DistParameter));
+          else
+            fprintf ("%+25s: [%dx%d %s]\n", 'DistParameter', ...
+                     size (this.DistParameter), class (this.DistParameter));
+          endif
         else
-          fprintf ('%+25s: []\n', 'DistParameter');
+          fprintf ("%+25s: []\n", 'DistParameter');
         endif
       else
         sz = size (this);
-        fprintf ('\n  %s ExhaustiveSearcher array\n\n', mat2str (sz));
+        fprintf ("\n  %s ExhaustiveSearcher array\n\n", mat2str (sz));
       endif
     endfunction
 
@@ -122,12 +126,14 @@ classdef ExhaustiveSearcher < handle
           error ("ExhaustiveSearcher.subsref: {} indexing not supported.");
         case '.'
           if (! ischar (s.subs))
-            error ("ExhaustiveSearcher.subsref: property name must be a character vector.");
+            error (strcat ("ExhaustiveSearcher.subsref: property", ...
+                           " name must be a character vector."));
           endif
           try
             out = this.(s.subs);
           catch
-            error ("ExhaustiveSearcher.subsref: unrecognized property: "%s".", s.subs);
+            error (strcat ("ExhaustiveSearcher.subsref: unrecognized", ...
+                           " property: '%s'"), s.subs);
           end_try_catch
       endswitch
       ## Chained references
@@ -149,67 +155,80 @@ classdef ExhaustiveSearcher < handle
           error ("ExhaustiveSearcher.subsasgn: {} indexing not supported.");
         case '.'
           if (! ischar (s.subs))
-            error ("ExhaustiveSearcher.subsasgn: property name must be a character vector.");
+            error (strcat ("ExhaustiveSearcher.subsasgn: property", ...
+                           " name must be a character vector."));
           endif
           switch (s.subs)
             case 'X'
-              error ("ExhaustiveSearcher.subsasgn: X is read-only and cannot be modified.");
+              error (strcat ("ExhaustiveSearcher.subsasgn: X is", ...
+                             " read-only and cannot be modified."));
             case 'Distance'
-              valid_metrics = {"euclidean", "minkowski", "seuclidean", "mahalanobis", ...
-                               "cityblock", "manhattan", "chebychev", "cosine", ...
-                               "correlation", "spearman", "hamming", "jaccard"};
+              vm = {'euclidean', 'minkowski', 'seuclidean', 'mahalanobis', ...
+                    'cityblock', 'manhattan', 'chebychev', 'cosine', ...
+                    'correlation', 'spearman', 'hamming', 'jaccard'};
               if (ischar (val))
-                if (! any (strcmpi (valid_metrics, val)))
-                  error ("ExhaustiveSearcher.subsasgn: unsupported distance metric "%s".", val);
+                if (! any (strcmpi (vm, val)))
+                  error (strcat ("ExhaustiveSearcher.subsasgn:", ...
+                                 " unsupported distance metric '%s'."), val);
                 endif
                 this.Distance = val;
               elseif (isa (val, "function_handle"))
                 try
                   D = val (this.X(1,:), this.X);
-                  if (! isvector (D) || length (D) != rows (this.X))
-                    error (strcat ("ExhaustiveSearcher.subsasgn: custom distance function", ...
-                                   " output invalid."));
-                  endif
                 catch
-                  error ("ExhaustiveSearcher.subsasgn: invalid distance function handle.");
+                  error (strcat ("ExhaustiveSearcher.subsasgn:", ...
+                                 " invalid distance function handle."));
                 end_try_catch
+                if (! isvector (D) || length (D) != rows (this.X))
+                  error (strcat ("ExhaustiveSearcher.subsasgn: custom", ...
+                                 " distance function output invalid."));
+                endif
                 this.Distance = val;
               else
-                error (strcat ("ExhaustiveSearcher.subsasgn: Distance must be a string or", ...
-                               " function handle."));
+                error (strcat ("ExhaustiveSearcher.subsasgn: Distance", ...
+                               " must be a string or function handle."));
               endif
             case 'DistParameter'
               if (strcmpi (this.Distance, "minkowski"))
-                if (! (isscalar (val) && isnumeric (val) && val > 0 && isfinite (val)))
-                  error (strcat ("ExhaustiveSearcher.subsasgn: DistParameter must be a", ...
-                                 " positive finite scalar for minkowski."));
+                if (! (isscalar (val) && isnumeric (val)
+                                      && val > 0 && isfinite (val)))
+                  error (strcat ("ExhaustiveSearcher.subsasgn:", ...
+                                 " DistParameter must be a positive", ...
+                                 " finite scalar for minkowski."));
                 endif
               elseif (strcmpi (this.Distance, "seuclidean"))
-                if (! (isvector (val) && isnumeric (val) && all (val >= 0) && ...
-                       all (isfinite (val)) && length (val) == columns (this.X)))
-                  error (strcat ("ExhaustiveSearcher.subsasgn: DistParameter must be a", ...
-                                 " nonnegative vector matching X columns."));
+                if (! (isvector (val) && isnumeric (val) && all (val >= 0)
+                                      && all (isfinite (val))
+                                      && length (val) == columns (this.X)))
+                  error (strcat ("ExhaustiveSearcher.subsasgn:", ...
+                                 " DistParameter must be a nonnegative", ...
+                                 " vector matching X columns."));
                 endif
               elseif (strcmpi (this.Distance, "mahalanobis"))
-                if (! (ismatrix (val) && isnumeric (val) && all (isfinite (val)(:)) && ...
-                       rows (val) == columns (val) && rows (val) == columns (this.X)))
-                  error (strcat ("ExhaustiveSearcher.subsasgn: DistParameter must be a", ...
-                                 " square matrix matching X columns."));
+                if (! (ismatrix (val) && isnumeric (val)
+                                      && all (isfinite (val(:)))
+                                      && rows (val) == columns (val)
+                                      && rows (val) == columns (this.X)))
+                  error (strcat ("ExhaustiveSearcher.subsasgn:", ...
+                                 " DistParameter must be a square", ...
+                                 " matrix matching X columns."));
                 endif
                 [~, p] = chol (val);
                 if (p != 0)
-                  error (strcat ("ExhaustiveSearcher.subsasgn: DistParameter must be", ...
-                                 " positive definite for mahalanobis."));
+                  error (strcat ("ExhaustiveSearcher.subsasgn:", ...
+                                 " DistParameter must be positive", ...
+                                 " definite for mahalanobis."));
                 endif
               else
                 if (! isempty (val))
-                  error (strcat ("ExhaustiveSearcher.subsasgn: DistParameter must be empty", ...
-                                 " for this distance metric."));
+                  error (strcat ("ExhaustiveSearcher.subsasgn: DistParameter", ...
+                                 " must be empty for this distance metric."));
                 endif
               endif
               this.DistParameter = val;
             otherwise
-              error ("ExhaustiveSearcher.subsasgn: unrecognized property: "%s".", s.subs);
+              error (strcat ("ExhaustiveSearcher.subsasgn:", ...
+                             " unrecognized property: '%s'"), s.subs);
           endswitch
       endswitch
     endfunction
@@ -236,20 +255,24 @@ classdef ExhaustiveSearcher < handle
     ## @multitable @columnfractions 0.18 0.02 0.8
     ## @headitem @var{Name} @tab @tab @var{Value}
     ##
-    ## @item @qcode{"Distance"} @tab @tab Distance metric, specified as a character
-    ## vector (e.g., @qcode{"euclidean"}, @qcode{"minkowski"}) or function handle.
-    ## Default is @qcode{"euclidean"}. See @code{pdist2} for supported metrics.
+    ## @item @qcode{"Distance"} @tab @tab Distance metric, specified as a
+    ## character vector (e.g., @qcode{"euclidean"}, @qcode{"minkowski"}) or a
+    ## function handle.  Default is @qcode{"euclidean"}.  See @code{pdist2} for
+    ## supported metrics.
     ##
-    ## @item @qcode{"P"} @tab @tab Minkowski distance exponent, a positive scalar.
-    ## Valid when @qcode{"Distance"} is @qcode{"minkowski"}. Default is 2.
+    ## @item @qcode{"P"} @tab @tab a positive scalar specifying the exponent for
+    ## the Minkowski distance.  Valid only when @qcode{"Distance"} is
+    ## @qcode{"minkowski"}.  Default is 2.
     ##
-    ## @item @qcode{"Scale"} @tab @tab Scale parameter for standardized Euclidean
-    ## distance, a nonnegative vector matching @var{X}'s columns. Valid when
-    ## @qcode{"Distance"} is @qcode{"seuclidean"}. Default is @code{std(X)}.
+    ## @item @qcode{"Scale"} @tab @tab a nonnegative vector with the same number
+    ## of elements as the columns in @var{X} specifying the scale parameter for
+    ## the standardized Euclidean distance.  Valid only when
+    ## @qcode{"Distance"} is @qcode{"seuclidean"}.  Default is @code{std (X)}.
     ##
-    ## @item @qcode{"Cov"} @tab @tab Covariance matrix for Mahalanobis distance, a
-    ## positive definite matrix matching @var{X}'s columns. Valid when
-    ## @qcode{"Distance"} is @qcode{"mahalanobis"}. Default is @code{cov(X)}.
+    ## @item @qcode{"Cov"} @tab @tab a positive definite matrix matching the
+    ## number of columns in @var{X} specifying the covariance matrix for the
+    ## Mahalanobis distance.  Valid only when @qcode{"Distance"} is
+    ## @qcode{"mahalanobis"}.  Default is @code{cov (X)}.
     ## @end multitable
     ##
     ## @seealso{ExhaustiveSearcher, knnsearch, rangesearch, pdist2}
@@ -287,32 +310,36 @@ classdef ExhaustiveSearcher < handle
           case "cov"
             C = varargin{2};
           otherwise
-            error ("ExhaustiveSearcher: invalid parameter name: '%s'.", varargin{1});
+            error (strcat ("ExhaustiveSearcher: invalid parameter", ...
+                           " name: '%s'."), varargin{1});
         endswitch
         varargin (1:2) = [];
       endwhile
 
       ## Validate and set distance metric
-      valid_metrics = {"euclidean", "minkowski", "seuclidean", "mahalanobis", ...
-                       "cityblock", "manhattan", "chebychev", "cosine", ...
-                       "correlation", "spearman", "hamming", "jaccard"};
+      valid_metrics = {'euclidean', 'minkowski', 'seuclidean', 'mahalanobis', ...
+                       'cityblock', 'manhattan', 'chebychev', 'cosine', ...
+                       'correlation', 'spearman', 'hamming', 'jaccard'};
       if (ischar (Distance))
         if (! any (strcmpi (valid_metrics, Distance)))
-          error ("ExhaustiveSearcher: unsupported distance metric '%s'.", Distance);
+          error ("ExhaustiveSearcher: unsupported distance metric '%s'.", ...
+                 Distance);
         endif
         obj.Distance = Distance;
       elseif (isa (Distance, "function_handle"))
         try
           D = Distance (X(1,:), X);
-          if (! isvector (D) || length (D) != rows (X))
-            error ("ExhaustiveSearcher: custom distance function output invalid.");
-          endif
         catch
           error ("ExhaustiveSearcher: invalid distance function handle.");
         end_try_catch
+        if (! isvector (D) || length (D) != rows (X))
+          error (strcat ("ExhaustiveSearcher: custom distance", ...
+                         " function output invalid."));
+        endif
         obj.Distance = Distance;
       else
-        error ("ExhaustiveSearcher: Distance must be a string or function handle.");
+        error (strcat ("ExhaustiveSearcher: Distance must", ...
+                       " be a string or function handle."));
       endif
 
       ## Set DistParameter based on Distance
@@ -331,8 +358,8 @@ classdef ExhaustiveSearcher < handle
         else
           if (! (isvector (S) && isnumeric (S) && all (S >= 0) && ...
                  all (isfinite (S)) && length (S) == columns (X)))
-            error (strcat ("ExhaustiveSearcher: Scale must be a nonnegative vector", ...
-                           " matching X columns."));
+            error (strcat ("ExhaustiveSearcher: Scale must be a", ...
+                           " nonnegative vector matching X columns."));
           endif
           obj.DistParameter = S;
         endif
@@ -342,8 +369,8 @@ classdef ExhaustiveSearcher < handle
         else
           if (! (ismatrix (C) && isnumeric (C) && all (isfinite (C)(:)) && ...
                  rows (C) == columns (C) && rows (C) == columns (X)))
-            error (strcat ("ExhaustiveSearcher: Cov must be a square matrix", ...
-                           " matching X columns."));
+            error (strcat ("ExhaustiveSearcher: Cov must be a square", ...
+                           " matrix matching X columns."));
           endif
           [~, p] = chol (C);
           if (p != 0)
@@ -363,19 +390,19 @@ classdef ExhaustiveSearcher < handle
     ## Find the @math{K} nearest neighbors in the training data to query points.
     ##
     ## @code{[@var{idx}, @var{D}] = knnsearch (@var{obj}, @var{Y}, @var{K})}
-    ## returns the indices @var{idx} and distances @var{D} of the @math{K} nearest
-    ## neighbors in @var{obj.X} to each point in @var{Y}, using the distance metric
-    ## specified in @var{obj.Distance}.
+    ## returns the indices @var{idx} and distances @var{D} of the @math{K}
+    ## nearest neighbors in @var{obj.X} to each point in @var{Y}, using the
+    ## distance metric specified in @var{obj.Distance}.
     ##
     ## @itemize
     ## @item @var{obj} is an @qcode{ExhaustiveSearcher} object.
-    ## @item @var{Y} is an @math{MxP} numeric matrix of query points, where @math{P}
-    ## must match the number of columns in @var{obj.X}.
+    ## @item @var{Y} is an @math{MxP} numeric matrix of query points, where
+    ## @math{P} must match the number of columns in @var{obj.X}.
     ## @item @var{K} is a positive integer specifying the number of nearest
     ## neighbors to find.
     ## @end itemize
     ##
-    ## @code{[@var{idx}, @var{D}] = knnsearch (@var{obj}, @var{Y}, @var{K}, @var{name}, @var{value})}
+    ## @code{[@var{idx}, @var{D}] = knnsearch (@dots{}, @var{name}, @var{value})}
     ## allows additional options via name-value pairs:
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8
@@ -397,19 +424,23 @@ classdef ExhaustiveSearcher < handle
       endif
 
       if (mod (numel (varargin), 2) != 0)
-        error ("ExhaustiveSearcher.knnsearch: Name-Value arguments must be in pairs.");
+        error (strcat ("ExhaustiveSearcher.knnsearch:", ...
+                       " Name-Value arguments must be in pairs."));
       endif
 
       if (! (isnumeric (Y) && ismatrix (Y) && all (isfinite (Y)(:))))
-        error ("ExhaustiveSearcher.knnsearch: Y must be a finite numeric matrix.");
+        error (strcat ("ExhaustiveSearcher.knnsearch: Y", ...
+                       " must be a finite numeric matrix."));
       endif
 
       if (size (obj.X, 2) != size (Y, 2))
-        error ("ExhaustiveSearcher.knnsearch: number of columns in X and Y must match.");
+        error (strcat ("ExhaustiveSearcher.knnsearch: number", ...
+                       " of columns in X and Y must match."));
       endif
 
       if (! (isscalar (K) && isnumeric (K) && K >= 1 && K == fix (K) && isfinite (K)))
-        error ("ExhaustiveSearcher.knnsearch: K must be a positive integer.");
+        error (strcat ("ExhaustiveSearcher.knnsearch: K", ...
+                       " must be a positive integer."));
       endif
 
       ## Parse options
@@ -419,10 +450,12 @@ classdef ExhaustiveSearcher < handle
           case "includeties"
             IncludeTies = varargin{2};
             if (! (islogical (IncludeTies) && isscalar (IncludeTies)))
-              error ("ExhaustiveSearcher.knnsearch: IncludeTies must be a logical scalar.");
+              error (strcat ("ExhaustiveSearcher.knnsearch:", ...
+                             " IncludeTies must be a logical scalar."));
             endif
           otherwise
-            error ("ExhaustiveSearcher.knnsearch: invalid parameter name: '%s'.", varargin{1});
+            error (strcat ("ExhaustiveSearcher.knnsearch:", ...
+                           " invalid parameter name: '%s'."), varargin{1});
         endswitch
         varargin (1:2) = [];
       endwhile
@@ -468,13 +501,13 @@ classdef ExhaustiveSearcher < handle
     ##
     ## @itemize
     ## @item @var{obj} is an @qcode{ExhaustiveSearcher} object.
-    ## @item @var{Y} is an @math{MxP} numeric matrix of query points, where @math{P}
-    ## must match the number of columns in @var{obj.X}.
+    ## @item @var{Y} is an @math{MxP} numeric matrix of query points, where
+    ## @math{P} must match the number of columns in @var{obj.X}.
     ## @item @var{r} is a nonnegative scalar specifying the search radius.
     ## @end itemize
     ##
-    ## @code{[@var{idx}, @var{D}] = rangesearch (@var{obj}, @var{Y}, @var{r}, @var{name}, @var{value})}
-    ## allows additional options via name-value pairs:
+    ## @code{[@var{idx}, @var{D}] = rangesearch (@dots{}, @var{name},
+    ## @var{value})} allows additional options via name-value pairs:
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8
     ## @headitem @var{Name} @tab @tab @var{Value}
@@ -483,8 +516,8 @@ classdef ExhaustiveSearcher < handle
     ## sort the indices by distance. Default is @qcode{true}.
     ## @end multitable
     ##
-    ## @var{idx} and @var{D} are cell arrays where each cell contains the indices
-    ## and distances for one query point in @var{Y}.
+    ## @var{idx} and @var{D} are cell arrays where each cell contains the
+    ## indices and distances for one query point in @var{Y}.
     ##
     ## @seealso{ExhaustiveSearcher, knnsearch, pdist2}
     ## @end deftypefn
@@ -494,19 +527,23 @@ classdef ExhaustiveSearcher < handle
       endif
 
       if (mod (numel (varargin), 2) != 0)
-        error ("ExhaustiveSearcher.rangesearch: Name-Value arguments must be in pairs.");
+        error (strcat ("ExhaustiveSearcher.rangesearch:", ...
+                       " Name-Value arguments must be in pairs."));
       endif
 
       if (! (isnumeric (Y) && ismatrix (Y) && all (isfinite (Y)(:))))
-        error ("ExhaustiveSearcher.rangesearch: Y must be a finite numeric matrix.");
+        error (strcat ("ExhaustiveSearcher.rangesearch: Y", ...
+                       " must be a finite numeric matrix."));
       endif
 
       if (size (obj.X, 2) != size (Y, 2))
-        error ("ExhaustiveSearcher.rangesearch: number of columns in X and Y must match.");
+        error (strcat ("ExhaustiveSearcher.rangesearch: number", ...
+                       " of columns in X and Y must match."));
       endif
 
       if (! (isscalar (r) && isnumeric (r) && r >= 0 && isfinite (r)))
-        error ("ExhaustiveSearcher.rangesearch: r must be a nonnegative finite scalar.");
+        error (strcat ("ExhaustiveSearcher.rangesearch: R", ...
+                       " must be a nonnegative finite scalar."));
       endif
 
       ## Parse options
@@ -516,10 +553,12 @@ classdef ExhaustiveSearcher < handle
           case "sortindices"
             SortIndices = varargin{2};
             if (! (islogical (SortIndices) && isscalar (SortIndices)))
-              error ("ExhaustiveSearcher.rangesearch: SortIndices must be a logical scalar.");
+              error (strcat ("ExhaustiveSearcher.rangesearch:", ...
+                             " SortIndices must be a logical scalar."));
             endif
           otherwise
-            error ("ExhaustiveSearcher.rangesearch: invalid parameter name: '%s'.", varargin{1});
+            error (strcat ("ExhaustiveSearcher.rangesearch: invalid", ...
+                           " parameter name: '%s'."), varargin{1});
         endswitch
         varargin (1:2) = [];
       endwhile
@@ -858,22 +897,22 @@ endclassdef
 %! rangesearch (ExhaustiveSearcher (ones(3,2)), "abc", 1)
 %!error<ExhaustiveSearcher.rangesearch: number of columns in X and Y must match.> ...
 %! rangesearch (ExhaustiveSearcher (ones(3,2)), ones(3,3), 1)
-%!error<ExhaustiveSearcher.rangesearch: r must be a nonnegative finite scalar.> ...
+%!error<ExhaustiveSearcher.rangesearch: R must be a nonnegative finite scalar.> ...
 %! rangesearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), -1)
 %!error<ExhaustiveSearcher.rangesearch: invalid parameter name: 'foo'.> ...
 %! rangesearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), 1, "foo", "bar")
 %!error<ExhaustiveSearcher.rangesearch: SortIndices must be a logical scalar.> ...
 %! rangesearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), 1, "SortIndices", 1)
 
-%!error<ExhaustiveSearcher.subsref: () indexing not supported.> ...
+%!error<ExhaustiveSearcher.subsref: \(\) indexing not supported.> ...
 %! obj = ExhaustiveSearcher (ones(3,2)); obj(1)
 %!error<ExhaustiveSearcher.subsref: {} indexing not supported.> ...
 %! obj = ExhaustiveSearcher (ones(3,2)); obj{1}
 %!error<dynamic structure field names must be strings> ...
 %! obj = ExhaustiveSearcher (ones(3,2)); obj.(1)
-%!error<ExhaustiveSearcher.subsref: unrecognized property: "invalid".> ...
+%!error<ExhaustiveSearcher.subsref: unrecognized property: 'invalid'> ...
 %! obj = ExhaustiveSearcher (ones(3,2)); obj.invalid
-%!error<ExhaustiveSearcher.subsasgn: () indexing not supported.> ...
+%!error<ExhaustiveSearcher.subsasgn: \(\) indexing not supported.> ...
 %! obj = ExhaustiveSearcher (ones(3,2)); obj(1) = 1
 %!error<ExhaustiveSearcher.subsasgn: {} indexing not supported.> ...
 %! obj = ExhaustiveSearcher (ones(3,2)); obj{1} = 1
@@ -883,7 +922,7 @@ endclassdef
 %! obj = ExhaustiveSearcher (ones(3,2)); obj.(1) = 1
 %!error<ExhaustiveSearcher.subsasgn: X is read-only and cannot be modified.> ...
 %! obj = ExhaustiveSearcher (ones(3,2)); obj.X = 1
-%!error<ExhaustiveSearcher.subsasgn: unsupported distance metric "invalid".> ...
+%!error<ExhaustiveSearcher.subsasgn: unsupported distance metric 'invalid'.> ...
 %! obj = ExhaustiveSearcher (ones(3,2)); obj.Distance = "invalid"
 %!error<ExhaustiveSearcher.subsasgn: invalid distance function handle.> ...
 %! obj = ExhaustiveSearcher (ones(3,2)); obj.Distance = @(x) x
@@ -901,5 +940,5 @@ endclassdef
 %! obj = ExhaustiveSearcher (ones(3,2), "Distance", "mahalanobis"); obj.DistParameter = -eye(2)
 %!error<ExhaustiveSearcher.subsasgn: DistParameter must be empty for this distance metric.> ...
 %! obj = ExhaustiveSearcher (ones(3,2), "Distance", "euclidean"); obj.DistParameter = 1
-%!error<ExhaustiveSearcher.subsasgn: unrecognized property: "invalid".> ...
+%!error<ExhaustiveSearcher.subsasgn: unrecognized property: 'invalid'> ...
 %! obj = ExhaustiveSearcher (ones(3,2)); obj.invalid = 1
