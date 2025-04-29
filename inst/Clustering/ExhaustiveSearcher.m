@@ -222,8 +222,9 @@ classdef ExhaustiveSearcher
                 endif
               else
                 if (! isempty (val))
-                  error (strcat ("ExhaustiveSearcher.subsasgn: DistParameter", ...
-                                 " must be empty for this distance metric."));
+                  error (strcat ("ExhaustiveSearcher.subsasgn:" ...
+                                 " DistParameter must be empty for this", ...
+                                 " distance metric."));
                 endif
               endif
               this.DistParameter = val;
