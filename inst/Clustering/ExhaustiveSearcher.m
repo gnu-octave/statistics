@@ -441,7 +441,8 @@ classdef ExhaustiveSearcher
                        " of columns in X and Y must match."));
       endif
 
-      if (! (isscalar (K) && isnumeric (K) && K >= 1 && K == fix (K) && isfinite (K)))
+      if (! (isscalar (K) && isnumeric (K) && K >= 1
+                                           && K == fix (K) && isfinite (K)))
         error (strcat ("ExhaustiveSearcher.knnsearch: K", ...
                        " must be a positive integer."));
       endif
