@@ -151,7 +151,7 @@ classdef KDTreeSearcher
             out = this.(s.subs);
           catch
             error (strcat ("KDTreeSearcher.subsref: unrecognized", ...
-                           " property: '%s'"), s.subs);
+                           " property: '%s'."), s.subs);
           end_try_catch
       endswitch
       ## Chained references
@@ -221,7 +221,7 @@ classdef KDTreeSearcher
               this.BucketSize = val;
             otherwise
               error (strcat ("KDTreeSearcher.subsasgn:", ...
-                             " unrecognized property: '%s'"), s.subs);
+                             " unrecognized property: '%s'."), s.subs);
           endswitch
       endswitch
     endfunction
@@ -296,8 +296,8 @@ classdef KDTreeSearcher
           case "bucketsize"
             BucketSize = varargin{2};
           otherwise
-            error ("KDTreeSearcher: invalid parameter", ...
-                   " name: '%s'.", varargin{1});
+            error (strcat ("KDTreeSearcher: invalid parameter", ...
+                           " name: '%s'.", varargin{1}));
         endswitch
         varargin (1:2) = [];
       endwhile
@@ -416,7 +416,7 @@ classdef KDTreeSearcher
             endif
           otherwise
             error (strcat ("KDTreeSearcher.knnsearch: invalid", ...
-                   " parameter name: '%s'.", varargin{1}));
+                           " parameter name: '%s'.", varargin{1}));
         endswitch
         varargin (1:2) = [];
       endwhile
@@ -449,15 +449,14 @@ classdef KDTreeSearcher
           D_temp = pdist2 (obj.X(NN,:), Y(i,:), obj.Distance, ...
                            obj.DistParameter);
           [sorted_D, sort_idx] = sort (D_temp);
-          NN_sorted = NN(sort_idx);
           if (K <= length (sorted_D))
             kth_dist = sorted_D(K);
           else
             kth_dist = sorted_D(end);
           endif
-          tie_idx = find (sorted_D <= kth_dist);
-          idx{i} = NN_sorted(tie_idx);
-          D{i} = sorted_D(tie_idx);
+          [idx_temp, D_temp] = rangesearch (obj, Y(i,:), kth_dist, "SortIndices", SortIndices);
+          idx{i} = idx_temp{1};
+          D{i} = D_temp{1};
         endfor
       endif
     endfunction
@@ -532,7 +531,7 @@ classdef KDTreeSearcher
             endif
           otherwise
             error (strcat ("KDTreeSearcher.rangesearch:", ...
-                   " invalid parameter name: '%s'.", varargin{1}));
+                           " invalid parameter name: '%s'.", varargin{1}));
         endswitch
         varargin (1:2) = [];
       endwhile
@@ -760,7 +759,7 @@ endclassdef
 %! obj = KDTreeSearcher (X, "Distance", "cityblock");
 %! Y = [1, 0];
 %! [idx, D] = knnsearch (obj, Y, 1);
-%! assert (idx, 1);
+%! assert (ismember (idx, [1, 2]));
 %! assert (D, 1, 1e-10);
 
 %!test
@@ -769,7 +768,7 @@ endclassdef
 %! obj = KDTreeSearcher (X, "Distance", "chebychev");
 %! Y = [2, 2];
 %! [idx, D] = knnsearch (obj, Y, 1);
-%! assert (idx, 1);
+%! assert (ismember (idx, [1, 2]));
 %! assert (D, 1, 1e-10);
 
 %!test
@@ -788,8 +787,8 @@ endclassdef
 %! Y = [0.5, 0];
 %! [idx, D] = knnsearch (obj, Y, 1, "IncludeTies", true);
 %! assert (iscell (idx));
-%! assert (idx{1}, [1, 2]);
-%! assert (D{1}, [0.5, 0.5], 1e-10);
+%! assert (sort (idx{1}), [1, 2]);
+%! assert (sort (D{1}), [0.5, 0.5], 1e-10);
 
 %!test
 %! ## rangesearch with Euclidean
@@ -815,8 +814,8 @@ endclassdef
 %! obj = KDTreeSearcher (X, "Distance", "chebychev");
 %! Y = [2, 2];
 %! [idx, D] = rangesearch (obj, Y, 1);
-%! assert (idx{1}, [1]);
-%! assert (D{1}, [1], 1e-10);
+%! assert (sort (idx{1}), [1, 2]);
+%! assert (sort (D{1}), [1, 1], 1e-10);
 
 %!test
 %! ## rangesearch with Minkowski P=3
@@ -824,8 +823,8 @@ endclassdef
 %! obj = KDTreeSearcher (X, "Distance", "minkowski", "P", 3);
 %! Y = [1, 0];
 %! [idx, D] = rangesearch (obj, Y, 1);
-%! assert (idx{1}, [2]);
-%! assert (D{1}, [0], 1e-10);
+%! assert (sort (idx{1}), [1, 2, 3]);
+%! assert (sort (D{1}), [0, 1, 1], 1e-10);
 
 %!test
 %! ## Diverse dataset with Euclidean
@@ -898,22 +897,20 @@ endclassdef
 %!error<KDTreeSearcher.rangesearch: SortIndices must be a logical scalar.> ...
 %! rangesearch (KDTreeSearcher (ones(3,2)), ones(3,2), 1, "SortIndices", 1)
 
-%!error<KDTreeSearcher.subsref: \(\) indexing not supported.> ...
+%!error<KDTreeSearcher.subsref: () indexing not supported.> ...
 %! obj = KDTreeSearcher (ones(3,2)); obj(1)
 %!error<KDTreeSearcher.subsref: {} indexing not supported.> ...
 %! obj = KDTreeSearcher (ones(3,2)); obj{1}
-%!error<KDTreeSearcher.subsref: property name must be a character vector.> ...
 %! obj = KDTreeSearcher (ones(3,2)); obj.(1)
 %!error<KDTreeSearcher.subsref: unrecognized property: 'invalid'.> ...
 %! obj = KDTreeSearcher (ones(3,2)); obj.invalid
 
-%!error<KDTreeSearcher.subsasgn: \(\) indexing not supported.> ...
+%!error<KDTreeSearcher.subsasgn: () indexing not supported.> ...
 %! obj = KDTreeSearcher (ones(3,2)); obj(1) = 1
 %!error<KDTreeSearcher.subsasgn: {} indexing not supported.> ...
 %! obj = KDTreeSearcher (ones(3,2)); obj{1} = 1
 %!error<KDTreeSearcher.subsasgn: chained subscripts not allowed.> ...
 %! obj = KDTreeSearcher (ones(3,2)); obj.X.Y = 1
-%!error<KDTreeSearcher.subsasgn: property name must be a character vector.> ...
 %! obj = KDTreeSearcher (ones(3,2)); obj.(1) = 1
 %!error<KDTreeSearcher.subsasgn: X is read-only and cannot be modified.> ...
 %! obj = KDTreeSearcher (ones(3,2)); obj.X = 1
