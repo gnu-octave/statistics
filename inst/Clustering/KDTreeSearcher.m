@@ -184,7 +184,8 @@ classdef KDTreeSearcher
               error (strcat ("KDTreeSearcher.subsasgn: KDTree is", ...
                              " read-only and cannot be modified."));
             case 'Distance'
-              allowed_distances = {'euclidean', 'cityblock', 'minkowski', 'chebychev'};
+              allowed_distances = {'euclidean', 'cityblock', 'minkowski', ...
+                                   'chebychev'};
               if (ischar (val))
                 if (! any (strcmpi (allowed_distances, val)))
                   error (strcat ("KDTreeSearcher.subsasgn:", ...
@@ -197,7 +198,8 @@ classdef KDTreeSearcher
               endif
             case 'DistParameter'
               if (strcmpi (this.Distance, "minkowski"))
-                if (! (isscalar (val) && isnumeric (val) && val > 0 && isfinite (val)))
+                if (! (isscalar (val) && isnumeric (val)
+                                      && val > 0 && isfinite (val)))
                   error (strcat ("KDTreeSearcher.subsasgn:", ...
                                  " DistParameter must be a positive", ...
                                  " finite scalar for minkowski."));
@@ -211,7 +213,8 @@ classdef KDTreeSearcher
                 this.DistParameter = val;
               endif
             case 'BucketSize'
-              if (! (isscalar (val) && isnumeric (val) && val > 0 && val == fix (val)))
+              if (! (isscalar (val) && isnumeric (val)
+                                    && val > 0 && val == fix (val)))
                 error (strcat ("KDTreeSearcher.subsasgn: BucketSize", ...
                                " must be a positive integer."));
               endif
@@ -293,7 +296,8 @@ classdef KDTreeSearcher
           case "bucketsize"
             BucketSize = varargin{2};
           otherwise
-            error ("KDTreeSearcher: invalid parameter name: '%s'.", varargin{1});
+            error ("KDTreeSearcher: invalid parameter", ...
+                   " name: '%s'.", varargin{1});
         endswitch
         varargin (1:2) = [];
       endwhile
@@ -320,7 +324,9 @@ classdef KDTreeSearcher
       endif
 
       ## Set BucketSize
-      if (! (isscalar (BucketSize) && isnumeric (BucketSize) && BucketSize > 0 && BucketSize == fix (BucketSize)))
+      if (! (isscalar (BucketSize) && isnumeric (BucketSize)
+                                   && BucketSize > 0
+                                   && BucketSize == fix (BucketSize)))
         error ("KDTreeSearcher: BucketSize must be a positive integer.");
       endif
       obj.BucketSize = BucketSize;
@@ -373,7 +379,8 @@ classdef KDTreeSearcher
       endif
 
       if (mod (numel (varargin), 2) != 0)
-        error ("KDTreeSearcher.knnsearch: Name-Value arguments must be in pairs.");
+        error (strcat ("KDTreeSearcher.knnsearch:", ...
+                       " Name-Value arguments must be in pairs."));
       endif
 
       if (! (isnumeric (Y) && ismatrix (Y) && all (isfinite (Y)(:))))
@@ -381,10 +388,12 @@ classdef KDTreeSearcher
       endif
 
       if (size (obj.X, 2) != size (Y, 2))
-        error ("KDTreeSearcher.knnsearch: number of columns in X and Y must match.");
+        error (strcat ("KDTreeSearcher.knnsearch:"
+                       " number of columns in X and Y must match."));
       endif
 
-      if (! (isscalar (K) && isnumeric (K) && K >= 1 && K == fix (K) && isfinite (K)))
+      if (! (isscalar (K) && isnumeric (K) && K >= 1
+                          && K == fix (K) && isfinite (K)))
         error ("KDTreeSearcher.knnsearch: K must be a positive integer.");
       endif
 
@@ -396,15 +405,18 @@ classdef KDTreeSearcher
           case "includeties"
             IncludeTies = varargin{2};
             if (! (islogical (IncludeTies) && isscalar (IncludeTies)))
-              error ("KDTreeSearcher.knnsearch: IncludeTies must be a logical scalar.");
+              error (strcat ("KDTreeSearcher.knnsearch:", ...
+                             " IncludeTies must be a logical scalar."));
             endif
           case "sortindices"
             SortIndices = varargin{2};
             if (! (islogical (SortIndices) && isscalar (SortIndices)))
-              error ("KDTreeSearcher.knnsearch: SortIndices must be a logical scalar.");
+              error (strcat ("KDTreeSearcher.knnsearch:", ...
+                             " SortIndices must be a logical scalar."));
             endif
           otherwise
-            error ("KDTreeSearcher.knnsearch: invalid parameter name: '%s'.", varargin{1});
+            error (strcat ("KDTreeSearcher.knnsearch: invalid", ...
+                   " parameter name: '%s'.", varargin{1}));
         endswitch
         varargin (1:2) = [];
       endwhile
@@ -414,8 +426,10 @@ classdef KDTreeSearcher
         idx = zeros (rows (Y), K);
         D = zeros (rows (Y), K);
         for i = 1:rows (Y)
-          NN = KDTreeSearcher.findkdtree (obj.KDTree, Y(i,:), K, obj.Distance, obj.DistParameter);
-          D_temp = pdist2 (obj.X(NN,:), Y(i,:), obj.Distance, obj.DistParameter);
+          NN = KDTreeSearcher.findkdtree (obj.KDTree, Y(i,:), K, ...
+                                           obj.Distance, obj.DistParameter);
+          D_temp = pdist2 (obj.X(NN,:), Y(i,:), obj.Distance, ...
+                           obj.DistParameter);
           [sorted_D, sort_idx] = sort (D_temp);
           NN_sorted = NN(sort_idx);
           if (SortIndices)
@@ -430,8 +444,10 @@ classdef KDTreeSearcher
         idx = cell (rows (Y), 1);
         D = cell (rows (Y), 1);
         for i = 1:rows (Y)
-          NN = KDTreeSearcher.findkdtree (obj.KDTree, Y(i,:), K, obj.Distance, obj.DistParameter);
-          D_temp = pdist2 (obj.X(NN,:), Y(i,:), obj.Distance, obj.DistParameter);
+          NN = KDTreeSearcher.findkdtree (obj.KDTree, Y(i,:), K, ...
+                                           obj.Distance, obj.DistParameter);
+          D_temp = pdist2 (obj.X(NN,:), Y(i,:), obj.Distance, ...
+                           obj.DistParameter);
           [sorted_D, sort_idx] = sort (D_temp);
           NN_sorted = NN(sort_idx);
           if (K <= length (sorted_D))
@@ -485,19 +501,23 @@ classdef KDTreeSearcher
       endif
 
       if (mod (numel (varargin), 2) != 0)
-        error ("KDTreeSearcher.rangesearch: Name-Value arguments must be in pairs.");
+        error (strcat ("KDTreeSearcher.rangesearch:", ...
+               " Name-Value arguments must be in pairs."));
       endif
 
       if (! (isnumeric (Y) && ismatrix (Y) && all (isfinite (Y)(:))))
-        error ("KDTreeSearcher.rangesearch: Y must be a finite numeric matrix.");
+        error (strcat ("KDTreeSearcher.rangesearch:", ...
+               " Y must be a finite numeric matrix."));
       endif
 
       if (size (obj.X, 2) != size (Y, 2))
-        error ("KDTreeSearcher.rangesearch: number of columns in X and Y must match.");
+        error (strcat ("KDTreeSearcher.rangesearch:", ...
+               " number of columns in X and Y must match."));
       endif
 
       if (! (isscalar (r) && isnumeric (r) && r >= 0 && isfinite (r)))
-        error ("KDTreeSearcher.rangesearch: r must be a nonnegative finite scalar.");
+        error (strcat ("KDTreeSearcher.rangesearch:", ...
+               " r must be a nonnegative finite scalar."));
       endif
 
       ## Parse options
@@ -507,10 +527,12 @@ classdef KDTreeSearcher
           case "sortindices"
             SortIndices = varargin{2};
             if (! (islogical (SortIndices) && isscalar (SortIndices)))
-              error ("KDTreeSearcher.rangesearch: SortIndices must be a logical scalar.");
+              error (strcat ("KDTreeSearcher.rangesearch:", ...
+                     " SortIndices must be a logical scalar."));
             endif
           otherwise
-            error ("KDTreeSearcher.rangesearch: invalid parameter name: '%s'.", varargin{1});
+            error (strcat ("KDTreeSearcher.rangesearch:", ...
+                   " invalid parameter name: '%s'.", varargin{1}));
         endswitch
         varargin (1:2) = [];
       endwhile
@@ -520,8 +542,10 @@ classdef KDTreeSearcher
       idx = cell (rows (Y), 1);
       D = cell (rows (Y), 1);
       for i = 1:rows (Y)
-        NN = KDTreeSearcher.findkdtree (obj.KDTree, Y(i,:), k, obj.Distance, obj.DistParameter);
-        D_temp = pdist2 (obj.X(NN,:), Y(i,:), obj.Distance, obj.DistParameter);
+        NN = KDTreeSearcher.findkdtree (obj.KDTree, Y(i,:), k, ...
+                                         obj.Distance, obj.DistParameter);
+        D_temp = pdist2 (obj.X(NN,:), Y(i,:), obj.Distance, ...
+                         obj.DistParameter);
         within_r = find (D_temp <= r);
         if (SortIndices)
           [sorted_D, sort_idx] = sort (D_temp(within_r));
@@ -540,7 +564,8 @@ classdef KDTreeSearcher
 
     function ret = buildkdtree (X, BS)
       [val, r] = sort (X(:,1));
-      ret = struct ("data", X, "root", KDTreeSearcher.buildkdtree_recur (X, r, 1, BS));
+      ret = struct ("data", X, "root", ...
+                     KDTreeSearcher.buildkdtree_recur (X, r, 1, BS));
     endfunction
 
     function ret = buildkdtree_recur (X, r, d, BS)
@@ -583,34 +608,44 @@ classdef KDTreeSearcher
       if (X(point,d) > p(d))
         ## Search in left sub tree
         if (isfield (node, "left"))
-          nn = KDTreeSearcher.findkdtree_recur (X, node.left, p, nn, k, dist, distparam);
+          nn = KDTreeSearcher.findkdtree_recur (X, node.left, p, nn, k, ...
+                                                 dist, distparam);
         endif
         ## Add current point if necessary
-        farthest = KDTreeSearcher.kdtree_cand_farthest (X, p, nn, dist, distparam);
+        farthest = KDTreeSearcher.kdtree_cand_farthest (X, p, nn, ...
+                                                         dist, distparam);
         if (length (nn) < k || pdist2 (X(point,:), p, dist, distparam) <= pdist2 (X(farthest,:), p, dist, distparam))
-          nn = KDTreeSearcher.kdtree_cand_insert (X, p, nn, k, point, dist, distparam);
+          nn = KDTreeSearcher.kdtree_cand_insert (X, p, nn, k, point, dist, ...
+                                                   distparam);
         endif
         ## Search in right sub tree if necessary
-        farthest = KDTreeSearcher.kdtree_cand_farthest (X, p, nn, dist, distparam);
+        farthest = KDTreeSearcher.kdtree_cand_farthest (X, p, nn, dist, ...
+                                                         distparam);
         radius = pdist2 (X(farthest,:), p, dist, distparam);
         if (isfield (node, "right") && (length (nn) < k || p(d) + radius > X(point,d)))
-          nn = KDTreeSearcher.findkdtree_recur (X, node.right, p, nn, k, dist, distparam);
+          nn = KDTreeSearcher.findkdtree_recur (X, node.right, p, nn, k, ...
+                                                 dist, distparam);
         endif
       else
         ## Search in right sub tree
         if (isfield (node, "right"))
-          nn = KDTreeSearcher.findkdtree_recur (X, node.right, p, nn, k, dist, distparam);
+          nn = KDTreeSearcher.findkdtree_recur (X, node.right, p, nn, k, ...
+                                                 dist, distparam);
         endif
         ## Add current point if necessary
-        farthest = KDTreeSearcher.kdtree_cand_farthest (X, p, nn, dist, distparam);
+        farthest = KDTreeSearcher.kdtree_cand_farthest (X, p, nn, dist, ...
+                                                         distparam);
         if (length (nn) < k || pdist2 (X(point,:), p, dist, distparam) <= pdist2 (X(farthest,:), p, dist, distparam))
-          nn = KDTreeSearcher.kdtree_cand_insert (X, p, nn, k, point, dist, distparam);
+          nn = KDTreeSearcher.kdtree_cand_insert (X, p, nn, k, point, dist, ...
+                                                   distparam);
         endif
         ## Search in left sub tree if necessary
-        farthest = KDTreeSearcher.kdtree_cand_farthest (X, p, nn, dist, distparam);
+        farthest = KDTreeSearcher.kdtree_cand_farthest (X, p, nn, dist, ...
+                                                         distparam);
         radius = pdist2 (X(farthest,:), p, dist, distparam);
         if (isfield (node, "left") && (length (nn) < k || p(d) - radius <= X(point,d)))
-          nn = KDTreeSearcher.findkdtree_recur (X, node.left, p, nn, k, dist, distparam);
+          nn = KDTreeSearcher.findkdtree_recur (X, node.left, p, nn, k, ...
+                                                 dist, distparam);
         endif
       endif
     endfunction
@@ -625,11 +660,13 @@ classdef KDTreeSearcher
       endif
     endfunction
 
-    function inserted = kdtree_cand_insert (X, p, cand, k, point, dist, distparam)
+    function inserted = kdtree_cand_insert (X, p, cand, k, point, dist, ...
+                                             distparam)
       if (length (cand) < k)
         inserted = [cand; point];
       else
-        farthest = KDTreeSearcher.kdtree_cand_farthest (X, p, cand, dist, distparam);
+        farthest = KDTreeSearcher.kdtree_cand_farthest (X, p, cand, dist, ...
+                                                         distparam);
         if (pdist2 (X(point,:), p, dist, distparam) < pdist2 (X(farthest,:), p, dist, distparam))
           cand(find (cand == farthest)) = point;
           inserted = cand;
