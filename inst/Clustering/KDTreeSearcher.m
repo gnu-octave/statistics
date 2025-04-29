@@ -531,7 +531,7 @@ classdef KDTreeSearcher
             endif
           otherwise
             error (strcat ("KDTreeSearcher.rangesearch:", ...
-                           " invalid parameter name: '%s'.", varargin{1}));
+                           " invalid parameter name: '%s'."), varargin{1});
         endswitch
         varargin (1:2) = [];
       endwhile
