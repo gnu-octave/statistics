@@ -39,6 +39,7 @@ Clustering Classes
  DaviesBouldinEvaluation
  ExhaustiveSearcher
  GapEvaluation
+ KDTreeSearcher
  SilhouetteEvaluation
 CVpartition
  @cvpartition/cvpartition
