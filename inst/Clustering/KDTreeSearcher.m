@@ -388,7 +388,7 @@ classdef KDTreeSearcher
       endif
 
       if (size (obj.X, 2) != size (Y, 2))
-        error (strcat ("KDTreeSearcher.knnsearch:"
+        error (strcat ("KDTreeSearcher.knnsearch:", ...
                        " number of columns in X and Y must match."));
       endif
 
