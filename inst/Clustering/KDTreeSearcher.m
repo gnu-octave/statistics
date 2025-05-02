@@ -517,7 +517,7 @@ classdef KDTreeSearcher
 
       if (! (isscalar (r) && isnumeric (r) && r >= 0 && isfinite (r)))
         error (strcat ("KDTreeSearcher.rangesearch:", ...
-                       " r must be a nonnegative finite scalar."));
+                       " R must be a nonnegative finite scalar."));
       endif
 
       ## Parse options
@@ -717,6 +717,167 @@ endclassdef
 ## Test Cases
 
 %!test
+%! ## Constructor with single-point dataset
+%! X = [0, 0];
+%! obj = KDTreeSearcher (X);
+%! assert (obj.X, X);
+%! assert (obj.Distance, "euclidean");
+%! assert (isempty (obj.DistParameter));
+%! assert (obj.BucketSize, 50);
+
+%!test
+%! ## Constructor with duplicate points
+%! X = [0, 0; 0, 0; 1, 0];
+%! obj = KDTreeSearcher (X, "Distance", "cityblock");
+%! assert (obj.X, X);
+%! assert (obj.Distance, "cityblock");
+
+%!test
+%! ## Constructor with 3D data
+%! X = [0, 0, 0; 1, 0, 0; 0, 1, 0];
+%! obj = KDTreeSearcher (X, "Distance", "minkowski", "P", 3);
+%! assert (obj.X, X);
+%! assert (obj.DistParameter, 3);
+
+%!test
+%! ## knnsearch with grid, K = 1
+%! X = [0, 0; 0, 1; 1, 0; 1, 1];
+%! obj = KDTreeSearcher (X, "Distance", "euclidean");
+%! Y = [0.5, 0.5];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! D_true = pdist2 (X, Y, "euclidean");
+%! assert (D, min (D_true), 1e-10);
+%! assert (any (idx == find (D_true == min (D_true))));
+
+%!test
+%! ## knnsearch with IncludeTies, all points equidistant
+%! X = [0, 0; 0, 1; 1, 0; 1, 1];
+%! obj = KDTreeSearcher (X);
+%! Y = [0.5, 0.5];
+%! [idx, D] = knnsearch (obj, Y, 1, "IncludeTies", true);
+%! D_true = pdist2 (X, Y, "euclidean");
+%! expected_idx = find (D_true == min (D_true));
+%! assert (sort (idx{1}(:)), sort (expected_idx));
+%! assert (D{1}(:)', repmat (min (D_true), 1, 4), 1e-10);
+
+%!test
+%! ## rangesearch with line dataset
+%! X = [0, 0; 1, 0; 2, 0; 3, 0];
+%! obj = KDTreeSearcher (X);
+%! Y = [1.5, 0];
+%! r = 1;
+%! [idx, D] = rangesearch (obj, Y, r);
+%! D_true = pdist2 (X, Y, "euclidean");
+%! expected_idx = find (D_true <= r);
+%! assert (sort (idx{1}(:)), sort (expected_idx));
+%! assert (D{1}, sort (D_true(expected_idx)), 1e-10);
+
+%!test
+%! ## knnsearch with duplicates
+%! X = [0, 0; 0, 0; 1, 0];
+%! obj = KDTreeSearcher (X, "Distance", "cityblock");
+%! Y = [0, 0];
+%! [idx, D] = knnsearch (obj, Y, 1, "IncludeTies", true);
+%! assert (sort (idx{1}(:))', [1, 2]);
+%! assert (D{1}', [0, 0], 1e-10);
+
+%!test
+%! ## rangesearch with 3D data
+%! X = [0, 0, 0; 1, 0, 0; 0, 1, 0];
+%! obj = KDTreeSearcher (X, "Distance", "cityblock");
+%! Y = [0, 0, 0];
+%! r = 1;
+%! [idx, D] = rangesearch (obj, Y, r);
+%! assert (sort (idx{1}(:))', [1, 2, 3]);
+%! assert (D{1}', [0, 1, 1], 1e-10);
+
+%!test
+%! ## knnsearch with P = 2 (Euclidean equivalent)
+%! X = [0, 0; 1, 1];
+%! obj = KDTreeSearcher (X, "Distance", "minkowski", "P", 2);
+%! Y = [0, 1];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! assert (idx, 2);
+%! assert (D, 1, 1e-10);
+
+%!test
+%! ## rangesearch with P = 3
+%! X = [0, 0; 1, 0; 0, 1];
+%! obj = KDTreeSearcher (X, "Distance", "minkowski", "P", 3);
+%! Y = [0.5, 0.5];
+%! r = 0.8;
+%! [idx, D] = rangesearch (obj, Y, r);
+%! D_true = pdist2 (X, Y, "minkowski", 3);
+%! expected_idx = find (D_true <= r);
+%! assert (sort (idx{1}(:)), sort (expected_idx));
+%! assert (D{1}, sort (D_true(expected_idx)), 1e-10);
+
+%!test
+%! ## knnsearch with P = 4, random data
+%! X = rand (5, 2);
+%! obj = KDTreeSearcher (X, "Distance", "minkowski", "P", 4);
+%! Y = rand (1, 2);
+%! [idx, D] = knnsearch (obj, Y, 3);
+%! D_true = pdist2 (X, Y, "minkowski", 4);
+%! [sorted_D, sort_idx] = sort (D_true);
+%! assert (idx', sort_idx(1:3));
+%! assert (D', sorted_D(1:3), 1e-10);
+
+%!test
+%! ## knnsearch with all same points
+%! X = [1, 1; 1, 1; 1, 1];
+%! obj = KDTreeSearcher (X, "Distance", "chebychev");
+%! Y = [1, 1];
+%! [idx, D] = knnsearch (obj, Y, 1, "IncludeTies", true);
+%! assert (sort (idx{1}(:))', [1, 2, 3]);
+%! assert (D{1}', [0, 0, 0], 1e-10);
+
+%!test
+%! ## rangesearch with grid
+%! X = [0, 0; 0, 1; 1, 0; 1, 1];
+%! obj = KDTreeSearcher (X, "Distance", "chebychev");
+%! Y = [0.5, 0.5];
+%! r = 0.5;
+%! [idx, D] = rangesearch (obj, Y, r);
+%! D_true = pdist2 (X, Y, "chebychev");
+%! expected_idx = find (D_true <= r);
+%! assert (sort (idx{1}(:)), sort (expected_idx));
+%! assert (D{1}, D_true(expected_idx), 1e-10);
+
+%!test
+%! ## Changing Distance and verifying search
+%! X = [0,0; 1,0];
+%! obj = KDTreeSearcher(X, "Distance", "euclidean");
+%! Y = [0,1];
+%! [idx, D] = knnsearch(obj, Y, 1);
+%! assert(D, 1, 1e-10);
+%! obj.Distance = "chebychev";
+%! [idx, D] = knnsearch(obj, Y, 1);
+%! assert(D, 1, 1e-10);
+
+%!test
+%! ## Changing DistParameter for minkowski
+%! X = [0,0; 1,0];
+%! obj = KDTreeSearcher(X, "Distance", "minkowski", "P", 1);
+%! Y = [0,1];
+%! [idx, D] = knnsearch(obj, Y, 1);
+%! assert(D, 1, 1e-10);
+%! obj.DistParameter = 3;
+%! [idx, D] = knnsearch(obj, Y, 1);
+%! assert(D, 1, 1e-10);
+
+%!test
+%! ## Different BucketSize values
+%! X = rand(20,2);
+%! obj1 = KDTreeSearcher(X, "BucketSize", 5);
+%! obj2 = KDTreeSearcher(X, "BucketSize", 15);
+%! Y = rand(1,2);
+%! [idx1, D1] = knnsearch(obj1, Y, 3);
+%! [idx2, D2] = knnsearch(obj2, Y, 3);
+%! assert(idx1, idx2);
+%! assert(D1, D2, 1e-10);
+
+%!test
 %! ## Basic constructor with default Euclidean
 %! X = [1, 2; 3, 4; 5, 6];
 %! obj = KDTreeSearcher (X);
@@ -866,6 +1027,8 @@ endclassdef
 %! KDTreeSearcher (ones(3,2), "Distance", "minkowski", "P", -1)
 %!error<KDTreeSearcher: BucketSize must be a positive integer.> ...
 %! KDTreeSearcher (ones(3,2), "BucketSize", 0)
+%!error<KDTreeSearcher: BucketSize must be a positive integer.> ...
+%! KDTreeSearcher(ones(3,2), "BucketSize", -1)
 
 %!error<KDTreeSearcher.knnsearch: too few input arguments.> ...
 %! knnsearch (KDTreeSearcher (ones(3,2)))
@@ -877,6 +1040,8 @@ endclassdef
 %! knnsearch (KDTreeSearcher (ones(3,2)), ones(3,3), 1)
 %!error<KDTreeSearcher.knnsearch: K must be a positive integer.> ...
 %! knnsearch (KDTreeSearcher (ones(3,2)), ones(3,2), 0)
+%!error<KDTreeSearcher.knnsearch: K must be a positive integer.> ...
+%! obj = KDTreeSearcher(ones(3,2)); knnsearch(obj, ones(1,2), Inf)
 %!error<KDTreeSearcher.knnsearch: invalid parameter name: 'foo'.> ...
 %! knnsearch (KDTreeSearcher (ones(3,2)), ones(3,2), 1, "foo", "bar")
 %!error<KDTreeSearcher.knnsearch: IncludeTies must be a logical scalar.> ...
@@ -892,8 +1057,10 @@ endclassdef
 %! rangesearch (KDTreeSearcher (ones(3,2)), "abc", 1)
 %!error<KDTreeSearcher.rangesearch: number of columns in X and Y must match.> ...
 %! rangesearch (KDTreeSearcher (ones(3,2)), ones(3,3), 1)
-%!error<KDTreeSearcher.rangesearch: r must be a nonnegative finite scalar.> ...
+%!error<KDTreeSearcher.rangesearch: R must be a nonnegative finite scalar.> ...
 %! rangesearch (KDTreeSearcher (ones(3,2)), ones(3,2), -1)
+%!error<KDTreeSearcher.rangesearch: R must be a nonnegative finite scalar.> ...
+%! obj = KDTreeSearcher(ones(3,2)); rangesearch(obj, ones(1,2), Inf)
 %!error<KDTreeSearcher.rangesearch: invalid parameter name: 'foo'.> ...
 %! rangesearch (KDTreeSearcher (ones(3,2)), ones(3,2), 1, "foo", "bar")
 %!error<KDTreeSearcher.rangesearch: SortIndices must be a logical scalar.> ...
@@ -928,5 +1095,9 @@ endclassdef
 %! obj = KDTreeSearcher (ones(3,2)); obj.DistParameter = 1
 %!error<KDTreeSearcher.subsasgn: BucketSize must be a positive integer.> ...
 %! obj = KDTreeSearcher (ones(3,2)); obj.BucketSize = 0
+%!error<KDTreeSearcher.subsasgn: BucketSize must be a positive integer.> ...
+%! obj = KDTreeSearcher(ones(3,2)); obj.BucketSize = -1
+%!error<KDTreeSearcher.subsasgn: BucketSize must be a positive integer.> ...
+%! obj = KDTreeSearcher(ones(3,2)); obj.BucketSize = 1.5
 %!error<KDTreeSearcher.subsasgn: unrecognized property: 'invalid'.> ...
 %! obj = KDTreeSearcher (ones(3,2)); obj.invalid = 1
