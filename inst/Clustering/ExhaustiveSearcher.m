@@ -243,13 +243,14 @@ classdef ExhaustiveSearcher
     ## @deftypefn  {ExhaustiveSearcher} {@var{obj} =} ExhaustiveSearcher (@var{X})
     ## @deftypefnx {ExhaustiveSearcher} {@var{obj} =} ExhaustiveSearcher (@var{X}, @var{name}, @var{value})
     ##
-    ## Create an @qcode{ExhaustiveSearcher} object for nearest neighbor searches.
+    ## Create an @qcode{ExhaustiveSearcher} object for nearest neighbor
+    ## searches.
     ##
     ## @code{@var{obj} = ExhaustiveSearcher (@var{X})} constructs an
     ## @qcode{ExhaustiveSearcher} object with training data @var{X} using the
-    ## default @qcode{"euclidean"} distance metric. @var{X} must be an @math{NxP}
-    ## numeric matrix, where rows represent observations and columns represent
-    ## features.
+    ## default @qcode{"euclidean"} distance metric. @var{X} must be an
+    ## @math{NxP} numeric matrix, where rows represent observations and columns
+    ## represent features.
     ##
     ## @code{@var{obj} = ExhaustiveSearcher (@var{X}, @var{name}, @var{value})}
     ## allows customization through name-value pairs:
