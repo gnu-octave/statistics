@@ -238,9 +238,9 @@ classdef KDTreeSearcher
     ##
     ## @code{@var{obj} = KDTreeSearcher (@var{X})} constructs a
     ## @qcode{KDTreeSearcher} object with training data @var{X} using the
-    ## default @qcode{"euclidean"} distance metric. @var{X} must be an @math{NxP}
-    ## numeric matrix, where rows represent observations and columns represent
-    ## features.
+    ## default @qcode{"euclidean"} distance metric. @var{X} must be an
+    ## @math{NxP} numeric matrix, where rows represent observations and columns
+    ## represent features.
     ##
     ## @code{@var{obj} = KDTreeSearcher (@var{X}, @var{name}, @var{value})}
     ## allows customization through name-value pairs:
