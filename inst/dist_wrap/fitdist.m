@@ -18,10 +18,8 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{pd} =} fitdist (@var{x}, @var{distname})
 ## @deftypefnx {statistics} {@var{pd} =} fitdist (@var{x}, @var{distname}, @var{Name}, @var{Value})
-## @deftypefnx {statistics} {[@var{pdca}, @var{gn}, @var{gl}] =} fitdist @
-## (@var{x}, @var{distname}, @qcode{"By"}, @var{groupvar})
-## @deftypefnx {statistics} {[@var{pdca}, @var{gn}, @var{gl}] =} fitdist @
-## (@var{x}, @var{distname}, @qcode{"By"}, @var{groupvar}, @var{Name}, @var{Value})
+## @deftypefnx {statistics} {[@var{pdca}, @var{gn}, @var{gl}] =} fitdist (@var{x}, @var{distname}, @qcode{"By"}, @var{groupvar})
+## @deftypefnx {statistics} {[@var{pdca}, @var{gn}, @var{gl}] =} fitdist (@var{x}, @var{distname}, @qcode{"By"}, @var{groupvar}, @var{Name}, @var{Value})
 ##
 ## Create probability distribution object.
 ##
