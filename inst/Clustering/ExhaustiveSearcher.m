@@ -617,6 +617,79 @@ endclassdef
 %! disp ("Nearest neighbor indices:"); disp (idx);
 %! disp ("Distances:"); disp (D);
 
+%!demo
+%! rng(42);
+%! disp('Demonstrating ExhaustiveSearcher');
+%!
+%! n = 100;
+%! mu1 = [0.3, 0.3];
+%! mu2 = [0.7, 0.7];
+%! sigma = 0.1;
+%! X1 = mu1 + sigma * randn(n/2, 2);
+%! X2 = mu2 + sigma * randn(n/2, 2);
+%! X = [X1; X2];
+%!
+%! obj = ExhaustiveSearcher(X);
+%!
+%! Y = [0.3, 0.3; 0.7, 0.7; 0.5, 0.5];
+%!
+%! K = 5;
+%! [idx, D] = knnsearch(obj, Y, K);
+%!
+%! disp('For the first query point:');
+%! disp(['Query point: ', num2str(Y(1,:))]);
+%! disp('Indices of nearest neighbors:');
+%! disp(idx(1,:));
+%! disp('Distances:');
+%! disp(D(1,:));
+%!
+%! figure;
+%! scatter(X(:,1), X(:,2), 36, 'b', 'filled'); % Training points
+%! hold on;
+%! scatter(Y(:,1), Y(:,2), 36, 'r', 'filled'); % Query points
+%! for i = 1:size(Y,1)
+%!     query = Y(i,:);
+%!     neighbors = X(idx(i,:), :);
+%!     for j = 1:K
+%!         plot([query(1), neighbors(j,1)], [query(2), neighbors(j,2)], 'k-');
+%!     end
+%! end
+%! hold off;
+%! title('K Nearest Neighbors with ExhaustiveSearcher');
+%! xlabel('X1');
+%! ylabel('X2');
+%! 
+%! r = 0.15;
+%! [idx, D] = rangesearch(obj, Y, r);
+%! 
+%! disp('For the first query point in rangesearch:');
+%! disp(['Query point: ', num2str(Y(1,:))]);
+%! disp('Indices of points within radius:');
+%! disp(idx{1});
+%! disp('Distances:');
+%! disp(D{1});
+%! 
+%! figure;
+%! scatter(X(:,1), X(:,2), 36, 'b', 'filled');
+%! hold on;
+%! scatter(Y(:,1), Y(:,2), 36, 'r', 'filled');
+%! theta = linspace(0, 2*pi, 100);
+%! for i = 1:size(Y,1)
+%!     center = Y(i,:);
+%!     x_circle = center(1) + r * cos(theta);
+%!     y_circle = center(2) + r * sin(theta);
+%!     plot(x_circle, y_circle, 'g-');
+%!     % Highlight points within radius
+%!     if ~isempty(idx{i})
+%!         in_radius = X(idx{i}, :);
+%!         scatter(in_radius(:,1), in_radius(:,2), 36, 'g', 'filled');
+%!     end
+%! end
+%! hold off;
+%! title('Points within Radius with ExhaustiveSearcher');
+%! xlabel('X1');
+%! ylabel('X2');
+
 ## Test Cases
 
 %!test
