@@ -79,7 +79,8 @@ classdef KDTreeSearcher
     ## @itemize
     ## @item For @qcode{"minkowski"}, a positive scalar exponent (default 2).
     ## @item Empty for other metrics (@qcode{"euclidean"}, @qcode{"cityblock"},
-    ## @qcode{"chebychev"}).
+    ## @qcode{"chebychev"}). Attempting to set a non-empty value for these
+    ## metrics will result in an error.
     ## @end itemize
     ##
     ## @end deftp
@@ -580,6 +581,19 @@ classdef KDTreeSearcher
       if (nargin < 8)
         r = Inf;
       endif
+      if (strcmpi (dist, "minkowski"))
+        if (! (isscalar (distparam) && isnumeric (distparam) ...
+                                    && distparam > 0 && isfinite (distparam)))
+          error (strcat("KDTreeSearcher.__search_kdtree__:", ...
+                        " distparam must be a positive finite", ...
+                        " scalar for minkowski."));
+        endif
+      else
+        if (! isempty (distparam))
+          error (strcat("KDTreeSearcher.__search_kdtree__:", ...
+                        " distparam must be empty for non-minkowski metrics."));
+        endif
+      endif
       indices = zeros(1, 0);
       distances = zeros(1, 0);
       search (node, 0);
@@ -591,7 +605,11 @@ classdef KDTreeSearcher
 
         if (isfield (node, 'indices'))
           leaf_indices = node.indices;
-          dists = pdist2 (X(leaf_indices,:), query, dist, distparam);
+          if (strcmpi (dist, "minkowski"))
+            dists = pdist2 (X(leaf_indices,:), query, dist, distparam);
+          else
+            dists = pdist2 (X(leaf_indices,:), query, dist);
+          endif
           if (is_range)
             mask = dists <= r;
             indices = horzcat (indices, leaf_indices(mask));
@@ -1096,7 +1114,6 @@ endclassdef
 %! obj = KDTreeSearcher (ones(3,2)); obj(1)
 %!error<KDTreeSearcher.subsref: {} indexing not supported.> ...
 %! obj = KDTreeSearcher (ones(3,2)); obj{1}
-%! obj = KDTreeSearcher (ones(3,2)); obj.(1)
 %!error<KDTreeSearcher.subsref: unrecognized property: 'invalid'.> ...
 %! obj = KDTreeSearcher (ones(3,2)); obj.invalid
 
@@ -1106,7 +1123,6 @@ endclassdef
 %! obj = KDTreeSearcher (ones(3,2)); obj{1} = 1
 %!error<KDTreeSearcher.subsasgn: chained subscripts not allowed.> ...
 %! obj = KDTreeSearcher (ones(3,2)); obj.X.Y = 1
-%! obj = KDTreeSearcher (ones(3,2)); obj.(1) = 1
 %!error<KDTreeSearcher.subsasgn: X is read-only and cannot be modified.> ...
 %! obj = KDTreeSearcher (ones(3,2)); obj.X = 1
 %!error<KDTreeSearcher.subsasgn: KDTree is read-only and cannot be modified.> ...
